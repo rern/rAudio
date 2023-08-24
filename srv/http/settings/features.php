@@ -4,7 +4,7 @@ $ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 $id_data = [
 	  'autoplay'       => [ 'name' => 'AutoPlay' ]
-	, 'camilladsp'     => [ 'name' => 'DSP',              'sub' => 'camilladsp',                            'status' => true ]
+	, 'camilladsp'     => [ 'name' => 'DSP',              'sub' => 'camilladsp',     'setting' => false,    'status' => true ]
 	, 'dabradio'       => [ 'name' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true ]
 	, 'equalizer'      => [ 'name' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
 	, 'hostapd'        => [ 'name' => 'Access Point',     'sub' => 'hostapd',                               'status' => true ]
@@ -24,7 +24,7 @@ $id_data = [
 	, 'upmpdcli'       => [ 'name' => 'UPnP',             'sub' => 'upmpdcli',                              'status' => true ]
 ];
 // ----------------------------------------------------------------------------------
-$head = ['title' => 'Renderers' ]; //////////////////////////////////
+$head = [ 'title' => 'Renderers' ]; //////////////////////////////////
 $body = [
 	[
 		  'id'    => 'shairport-sync'
@@ -32,7 +32,10 @@ $body = [
 		, 'help'  => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
 
-Note: Playing files directly on rAudio yields better quality.
+Note:
+ · No sound: Increase volume on sender device (too low)
+ · If Camilla DSP is enabled, stop current track before start playing.
+ · Playing files directly on rAudio yields better quality.
 EOF
 	]
 	, [
@@ -60,21 +63,26 @@ EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
  · Premium account
- · <code>Client ID</code> and <code>Client Secret</code> from your Spotify private app
+ · <c>Client ID</c> and <c>Client secret</c> from your Spotify private app
 
-To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bll> )
- · <btn>LOG IN</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
+To create Spotify private app:
+<btn>Log in</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
 	· with normal Spotify account
- · <btn>CREATE AN APP</btn>
-	· App name: <code>rAudio</code>
-	· App description: <code>(any)</code>
-· <btn>EDIT SETTINGS</btn>
-	· Redirect URIs: <c id="redirecturi"></c>
-· <btn>USERS AND ACCESS</btn> &raquo; <btn>ADD NEW USER</btn>
-	· Name: <code>(any)</code>
-	· Spotify Account: <code>(email)</code>
-	
-Note: Select the app from Dashboard for <code>Client ID</code> and <code>Client Secret</code>
+	· Verify email if prompted
+<btn>Create app</btn>
+	· App name: <c>rAudio</c>
+	· App description: <c>(any)</c>
+	· Website: <c>(any)</c>
+	· Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
+	· <c>Save</c>
+<btn>Dashboard</btn> · <btn>rAudio</btn> · <btn>Settings</btn>
+	· <btn>Basic Information</btn> · <btn>User Management</btn>
+		· Fullname: <c>(any)</c>
+		· Email: <c>(Spotify Account email)</c>
+		· <c>Add user</c>
+	· <btn>Basic Information</btn>
+		· <c>Client ID</c>
+		· <c>Client secret</c>
 EOF
 	]
 	, [
@@ -149,7 +157,7 @@ $body = [
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
- · Avoid double quotes <code>"</code> in password.
+ · Avoid double quotes <c>"</c> in password.
 EOF
 	]
 	, [
@@ -233,7 +241,7 @@ EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FlabelIcon( 'Shared Data', 'networks' )}
  • <wh>rAudio Shared Data server:</wh>
 	· Must be set to <wh>static IP address</wh> which should be set on router.
-	· In {$Ftab( 'library', '' )} Library
+	· In {$Ftab( 'library' )} Library
 		· {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden.
 		· {$Fi( 'usb btn' )} USB items will be displayed in {$Fi( 'networks btn' )} NAS instead.
 	· On reboot / power off:
@@ -241,7 +249,7 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· {$Ftab( 'system', 'System' )}{$FlabelIcon( 'Shared Data', 'networks' )} Type ● rAudio
+	· {$Ftab( 'system' )}{$FlabelIcon( 'Shared Data', 'networks' )} Type ● rAudio
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>

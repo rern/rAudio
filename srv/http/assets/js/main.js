@@ -89,7 +89,7 @@ var chkdisplay = {
 		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
 		, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
 		, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus infomenusub' ) +'or '+ ico( 'play-replace infomenusub' )
-		, backonleft     : ico( 'arrow-left bl' ) +'Back button on left side'
+		, backonleft     : ico( 'back bl' ) +'Back button on left side'
 		, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 		, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 	}
@@ -192,7 +192,7 @@ $( '#logo, #button-library, #button-playlist, #refresh' ).press( function() {
 $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
-$( '#status' ).on( 'click', function() {
+$( '#debug' ).on( 'click', function() {
 	$( '#data' ).html( highlightJSON( S ) )
 	$( '#button-data, #data' ).removeClass( 'hide' );
 	$( '.page' ).addClass( 'hide' );
@@ -220,12 +220,7 @@ $( '.settings' ).on( 'click', function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
-			if ( $( this ).hasClass( 'i-camilladsp' ) ) {
-				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5005' ) );
-				loader();
-			} else {
-				equalizer();
-			}
+			$( this ).hasClass( 'i-camilladsp' ) ? location.href = 'settings.php?p=camilla' :equalizer();
 			break;
 		case 'logout':
 			$.post( 'cmd.php', { cmd: 'logout' }, () => location.reload() );
@@ -482,12 +477,8 @@ $( '#settings' ).on( 'click', function() {
 $( '#info' ).on( 'click', function() {
 	if ( localhost ) setInfoScroll();
 } );
-$( '.emptyadd' ).on( 'click', function( e ) {
-	if ( $( e.target ).hasClass( 'i-plus-circle' ) ) {
-		$( '#library' ).trigger( 'click' );
-	} else if ( $( e.target ).hasClass( 'i-gear' ) ) {
-		$( '#button-settings' ).trigger( 'click' );
-	}
+$( '.emptyadd' ).on( 'click', function() {
+	$( '#library' ).trigger( 'click' );
 } );
 $( '#artist, #guide-bio' ).on( 'click', function() {
 	bio( S.Artist );
@@ -541,7 +532,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	info( {
 		  icon    : 'audiocd'
 		, title   : 'Audio CD'
-		, oklabel : ico( 'minus-circle' ) +'Eject'
+		, oklabel : ico( 'remove' ) +'Eject'
 		, okcolor : red
 		, ok      : () => bash( [ 'audiocd.sh', 'ejecticonclick' ] )
 	} );
@@ -633,14 +624,13 @@ $( '#volume' ).roundSlider( {
 		} else {
 			var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
 		}
-		S.volume  = e.value;
 		var speed = Math.abs( diff ) * 40; // 1% : 40ms
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );
 			$( '#volume-knob, #volmute' ).removeClass( 'disabled' );
-			$( '#voldn' ).toggleClass( 'disabled', S.volume === 0 );
-			$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
+			$( '#voldn' ).toggleClass( 'disabled', e.value === 0 );
+			$( '#volup' ).toggleClass( 'disabled', e.value === 100 );
 		}, speed );
 	}
 	, drag              : function( e ) {
@@ -690,7 +680,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
 	$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-	bash( [ 'volume' ] );
+	bash( [ 'volume', S.volume, 0, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
 	local();
@@ -865,8 +855,8 @@ $( '.map' ).on( 'click', function( e ) {
 			$( '.band' ).addClass( 'transparent' );
 			$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 			displayBars();
-			setButtonControl();
 			displayPlayback();
+			setButtonOptions();
 			if ( S.state === 'play' && ! S.stream && ! localhost ) {
 				setProgress();
 				setTimeout( setProgressAnimate, 0 );
@@ -1301,7 +1291,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 <div class="menu">
 <a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
 <div class="pllength">
-<a data-cmd="playnext" class="cmd"><i class="i-plus-circle"></i>Play next</a>
+<a data-cmd="playnext" class="cmd"><i class="i-add"></i>Play next</a>
 <a data-cmd="replace" class="sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
 </div>
 </div>`;
@@ -1371,7 +1361,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		  icon    : 'bookmark'
 		, title   : 'Remove Bookmark'
 		, message : icon
-		, oklabel : ico( 'minus-circle' ) +'Remove'
+		, oklabel : ico( 'remove' ) +'Remove'
 		, okcolor : red
 		, ok      : () => bash( [ 'bookmarkremove', name, 'CMD NAME' ] )
 	} );
@@ -1421,7 +1411,6 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
-	, forceFallback : true // fix: iphone safari
 	, onMove       : function() {
 		$( '.bkedit' ).remove();
 		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
@@ -1471,7 +1460,7 @@ ${ ico( 'artist wh' ) } ${ artist }
 
 Exclude this thumbnail?`
 		, okcolor : orange
-		, oklabel : ico( 'minus-circle' ) +'Exclude'
+		, oklabel : ico( 'remove' ) +'Exclude'
 		, ok      : () => {
 			bash( [ 'albumignore', album, artist, 'CMD ALBUM ARTIST' ] );
 			$this.remove();
@@ -1722,7 +1711,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 		info( {
 			  icon        : 'playlist'
 			, title       : 'Clear Playlist'
-			, oklabel     : ico( 'minus-circle' ) +'Clear'
+			, oklabel     : ico( 'remove' ) +'Clear'
 			, okcolor     : red
 			, ok          : () => {
 				bash( [ 'mpcremove' ] );
@@ -1739,9 +1728,10 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			, buttoncolor : [ orange ]
 			, button      : [
 				  () => {
-					local();
-					$( '#pl-list .li1' ).before( ico( 'minus-circle pl-remove' ) );
+					$( '#pl-list .li1' ).before( ico( 'remove pl-remove' ) );
 					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
+					infoButtonCommand();
+					local();
 				}
 				, () => {
 					if ( ! S.librandom ) local();
@@ -1749,7 +1739,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 					$( '#pl-list li:not( .active )' ).remove();
 				}
 			]
-			, oklabel     : ico( 'minus-circle' ) +'All'
+			, oklabel     : ico( 'remove' ) +'All'
 			, okcolor     : red
 			, ok          : () => {
 				bash( [ 'mpcremove' ] );
@@ -1777,7 +1767,6 @@ $( '#button-pl-search' ).on( 'click', function() {
 new Sortable( document.getElementById( 'pl-list' ), {
 	  ghostClass    : 'pl-sortable-ghost'
 	, delay         : 400
-	, forceFallback : true // fix: iphone safari
 	, onStart       : function() {
 		$( '#pl-list li.active' ).addClass( 'sortactive' );
 	}
@@ -1790,7 +1779,6 @@ new Sortable( document.getElementById( 'pl-list' ), {
 new Sortable( document.getElementById( 'pl-savedlist' ), {
 	  ghostClass    : 'pl-sortable-ghost'
 	, delay         : 400
-	, forceFallback : true // fix: iphone safari
 	, onUpdate      : function ( e ) {
 		sortPlaylist( 'pl-savedlist', e.oldIndex, e.newIndex );
 	}
@@ -1865,7 +1853,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 			$menu.find( '.pause, .stop' ).addClass( 'hide' );
 		}
 	} else {
-		$menu.find( '.play, .pause, .stop, .current' ).addClass( 'hide' );
+		$menu.find( '.pause, .stop, .current' ).addClass( 'hide' );
 	}
 	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
 	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
@@ -1914,7 +1902,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				V.list.path   = $this.find( '.lipath' ).text().trim() || V.list.name;
 				V.list.track  = $this.data( 'track' );
 				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', ! S.pllength );
-				$( '.minus-circle' ).removeClass( 'hide' );
+				$( '.remove' ).removeClass( 'hide' );
 				$( '.tag' ).addClass( 'hide' );
 				if ( ( D.tapaddplay || D.tapreplaceplay )
 					&& V.savedpltrack 
@@ -2012,7 +2000,7 @@ $( '#lyricsdelete' ).on( 'click', function() {
 		  icon    : 'lyrics'
 		, title   : 'Lyrics'
 		, message : 'Delete this lyrics?'
-		, oklabel : ico( 'minus-circle' ) +'Delete'
+		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
 			var artist = $( '#lyricsartist' ).text();

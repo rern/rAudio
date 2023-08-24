@@ -103,15 +103,12 @@ heading + .helpblock {
 	text-align: center;
 	vertical-align: -1px;
 }
-.helpblock .tab i {
-	margin-left: 0;
-}
 .helpblock i.btn {
 	width: 22px;
 	line-height: 20px;
 	margin-left: 0;
 	margin-right: 0;
-	border: 1px solid var( --cg );
+	border: 1px solid var( --cga );
 	text-align: center;
 	border-radius: 2px;
 }
@@ -136,6 +133,7 @@ heading + .helpblock {
 	background: var( --cga );
 }
 .helpmenu.tab {
+	padding-left: 0;
 	text-align: center;
 }
 #infoContent .helpmenu.label {
@@ -229,7 +227,7 @@ heading i.help {
 	float: right;
 	text-align: right;
 }
-heading .i-plus-circle,
+heading .i-add,
 heading .i-search {
 	color: var( --cw );
 }
@@ -313,7 +311,9 @@ code {
 	list-style: none;
 }
 .entries li,
-.entries li span {
+.entries li span,
+.entries .li1,
+.entries .li2 {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -346,7 +346,7 @@ code {
 	display: block;
 	width: calc( 100% - 40px );
 }
-.entries li .i-info-circle {
+.entries li .i-info {
     font-size: 22px !important;
 }
 .entries li.active {
@@ -408,7 +408,7 @@ input[type=image] {
 	display: none;
 }
 /* switch: https://codepen.io/mburnette/pen/LxNxNg */
-.container input[type=checkbox] {
+.container input[type=checkbox]:has( + .switchlabel ) {
 	position: absolute;
 	height: 40px;
 	width: 80px;
@@ -496,7 +496,7 @@ input.disabled + .switchlabel:after {
 	max-width: 658px;
 	height: 100%;
 	margin: 0 auto;
-	padding: 30px 0 150px 0;
+	padding: 30px 0 155px 0;
 }
 .col-l,
 .col-r {
@@ -505,8 +505,7 @@ input.disabled + .switchlabel:after {
 }
 .col-l {
 	display: inline-block;
-	width: 165px;
-	height: 40px;
+	width: 170px;
 	font-size: 16px;
 	text-align: right;
 	padding-right: 15px;
@@ -514,6 +513,7 @@ input.disabled + .switchlabel:after {
 }
 .col-l.text {
 	padding-top: 0;
+	height: 100%;
 	line-height: 26px;
 }
 .col-l i {
@@ -557,7 +557,7 @@ input.disabled + .switchlabel:after {
 	text-align: center;
 }
 .col-r {
-	width: calc( 100% - 165px );
+	width: calc( 100% - 170px );
 	padding-right: 0;
 	padding-left: 0 !important;
 	font-weight: normal;
@@ -600,6 +600,7 @@ input.disabled + .switchlabel:after {
 	font-size: 16px;
 	vertical-align: 0;
 }
+
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
 	.helphead::before {
@@ -643,12 +644,10 @@ input.disabled + .switchlabel:after {
 	.settingedit { display: none }
 	heading i.help { width: 30px }
 	.hideN { display: none }
+	.head .title { letter-spacing: calc( ( 100vw - 295px ) / 8 ) }
 }
 @media ( min-width: 466px ) {
 	.hideW { display: none }
-}
-@media (max-width: 440px) {
-	.head .title { letter-spacing: calc( ( 100vw - 280px ) / 8 ) }
 }
 @media (max-width: 450px) {
 	input[type="text"] { padding: 0 7px }
@@ -676,15 +675,20 @@ input.disabled + .switchlabel:after {
 		background-color: var( --cgl );
 	}
 	heading i,
+	table i,
 	.back,
 	.btn,
+	.clipped::after,
 	.close,
 	.code,
 	.col-l.icon,
+	.divgain i,
+	.edit,
 	.entries li,
 	.filetype,
 	.helphead,
 	.helpblock bl,
+	.i-mute,
 	.img,
 	.listtitle,
 	.page-icon,
@@ -694,12 +698,18 @@ input.disabled + .switchlabel:after {
 	.settingedit,
 	.status:not(pre,.single),
 	.switchlabel,
+	.tab .i-add,
+	.tab .i-remove,
+	.tab li i,
+	.tablemapping i,
 	.undervoltage,
 	.wiring,
 	#backend,
 	#button-data,
 	#gpioimgtxt,
-	#menu { cursor: pointer }
+	#menu {
+		cursor: pointer
+	}
 	.switchlabel.focus {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;

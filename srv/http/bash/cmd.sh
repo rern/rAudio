@@ -5,6 +5,25 @@ dirimg=/srv/http/assets/img
 
 args2var "$1"
 
+playerStart() {
+	local player service
+	player=$( < $dirshm/player )
+	mpc -q stop
+	radioStop
+	case $player in
+		airplay )   service=shairport-sync;;
+		bluetooth ) service=bluetoothhd;;
+		spotify )   service=spotifyd;;
+		upnp )      service=upmpdcli;;
+	esac
+	if [[ $service ]]; then
+		for pid in $( pgrep $service ); do
+			ionice -c 0 -n 0 -p $pid &> /dev/null 
+			renice -n -19 -p $pid &> /dev/null
+		done
+	fi
+	pushstream player '{ "player": "'$player'", "active": true }'
+}
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		mpc -q play $pos
@@ -80,6 +99,16 @@ radioStop() {
 		rm -f $dirshm/radio
 		$dirbash/status-push.sh
 	fi
+}
+shairportStop() {
+	systemctl stop shairport
+	systemctl restart shairport-sync
+	rm -f $dirshm/airplay/start
+	echo pause > $dirshm/airplay/state
+	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
+	timestamp=$( date +%s%3N )
+	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
+	$dirbash/status-push.sh
 }
 splashRotate() {
 	local rotate
@@ -218,10 +247,6 @@ bookmarkrename )
 cachebust )
 	cacheBust
 	;;
-camillagui )
-	systemctl start camillagui
-	sed -i '/Connection reset without closing handshake/ d' /var/log/camilladsp.log
-	;;
 color )
 	file=$dirsystem/color
 	[[ $HSL == reset ]] && rm -f $file && HSL=
@@ -262,7 +287,6 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
-	sed -i -E 's/\?v=.{10}/?v='$( date +%s )'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
 coverartreset )
@@ -630,22 +654,7 @@ order )
 	pushstream order $( < $dirsystem/order.json )
 	;;
 playerstart )
-	player=$( < $dirshm/player )
-	mpc -q stop
-	radioStop
-	case $player in
-		airplay )   service=shairport-sync;;
-		bluetooth ) service=bluetoothhd;;
-		spotify )   service=spotifyd;;
-		upnp )      service=upmpdcli;;
-	esac
-	if [[ $service ]]; then
-		for pid in $( pgrep $service ); do
-			ionice -c 0 -n 0 -p $pid &> /dev/null 
-			renice -n -19 -p $pid &> /dev/null
-		done
-	fi
-	pushstream player '{ "player": "'$player'", "active": true }'
+	playerStart
 	;;
 playerstop )
 	player=$( < $dirshm/player )
@@ -654,9 +663,7 @@ playerstop )
 	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
-			systemctl stop shairport
-			rm -f $dirshm/airplay/start
-			systemctl restart shairport-sync
+			shairportStop
 			;;
 		bluetooth )
 			rm -f $dirshm/bluetoothdest
@@ -742,18 +749,13 @@ screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
 shairport )
-	[[ $( < $dirshm/player ) != airplay ]] && echo airplay > $dirshm/player && $dirbash/cmd.sh playerstart
+	[[ $( < $dirshm/player ) != airplay ]] && echo airplay > $dirshm/player && playerStart
 	systemctl start shairport
 	echo play > $dirshm/airplay/state
 	$dirbash/status-push.sh
 	;;
 shairportstop )
-	systemctl stop shairport
-	echo pause > $dirshm/airplay/state
-	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
-	timestamp=$( date +%s%3N )
-	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
-	$dirbash/status-push.sh
+	shairportStop
 	;;
 shareddatampdupdate )
 	systemctl restart mpd

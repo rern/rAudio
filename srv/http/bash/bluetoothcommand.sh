@@ -27,10 +27,11 @@ disconnectRemove() {
 		notify -blink $icon "$name" "${action^} ..."
 		$dirsettings/player-conf.sh
 	fi
-	refreshFeaturesNetworks
+	refreshPages
 }
-refreshFeaturesNetworks() {
+refreshPages() {
 	$dirsettings/features-data.sh pushrefresh
+	[[ $dirsystem/camilladsp ]] && $dirsettings/camilla-data.sh pushrefresh
 	sleep 1
 	$dirsettings/networks-data.sh pushbt
 }
@@ -43,6 +44,7 @@ if [[ $udev && $action == disconnect ]]; then
 		mac=${line/ *}
 		bluetoothctl info $mac | grep -q -m1 'Connected: yes' && mac= || break
 	done
+	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 	if [[ $mac ]]; then
 		type=$( cut -d' ' -f2 <<< $line )
 		name=$( cut -d' ' -f3- <<< $line )
@@ -69,15 +71,7 @@ if [[ $udev && $action == connect ]]; then
 	msg='Connect ...'
 	# fix: rAudio triggered to connect by unpaired sender on boot
 	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
-	if [[ -e /var/lib/bluetooth/$controller/$mac ]]; then
-		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q -m1 'UUID: Audio Sink'; then
-			bluetoothctl disconnect $mac
-#-----X
-			notify $icon "$name" 'Not connected.<br><wh>DSP is currently enabled.</wh>' 6000
-			exit
-			
-		fi
-	else
+	if [[ ! -e /var/lib/bluetooth/$controller/$mac ]]; then
 		for i in {1..5}; do
 			! bluetoothctl info $mac | grep -q -m1 'UUID:' && sleep 1 || break
 		done
@@ -127,7 +121,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### non-audio
 		[[ $mac && $name ]] && echo $mac Device $name >> $dirshm/btconnected
 #-----X
-		refreshFeaturesNetworks
+		refreshPages
 		exit
 		
 	fi
@@ -146,6 +140,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### sender
 		icon=btsender
 		[[ $mac && $name ]] && echo $mac Source $name >> $dirshm/btconnected
+		[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh sender
 	else
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
@@ -154,11 +149,12 @@ if [[ $action == connect || $action == pair ]]; then
 		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
 		notify -blink $icon "$name" 'Connect ...'
 		$dirbash/cmd.sh playerstop
+		[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh receiver
 		$dirsettings/player-conf.sh
 	fi
 #-----
 	msg=Ready
-	refreshFeaturesNetworks
+	refreshPages
 #-------------------------------------------------------------------------------------------
 # from rAudio networks.js
 elif [[ $action == disconnect || $action == remove ]]; then

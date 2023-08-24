@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1687770021' );
+	src         : url( '/assets/fonts/rern.woff2?v=1691584116' );
 }
 @font-face {
 	font-family : Lato;
@@ -32,16 +32,17 @@ i {
 }
 .i-lg { font-size: 22px !important }
 .i-accesspoint::before     { content: '\F554' }
+.i-add::before             { content: '\F519' }
 .i-addons::before          { content: '\F50D' }
 .i-airplay::before         { content: '\F580' }
 .i-album::before           { content: '\F555' }
 .i-albumartist::before     { content: '\F557' }
-.i-arrow-left::before      { content: '\F602' }
 .i-arrow-right::before     { content: '\F603' }
 .i-artist::before          { content: '\F556' }
 .i-audiocd::before         { content: '\F538' }
 .i-audio::before           { content: '\F516' }
 .i-autoplay::before        { content: '\F503' }
+.i-back::before            { content: '\F602' }
 .i-backspace::before       { content: '\F608' }
 .i-backup::before          { content: '\F543' }
 .i-bars::before            { content: '\F51C' }
@@ -61,7 +62,10 @@ i {
 .i-close::before           { content: '\F56C' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
+.i-config::before          { content: '\F548' }
+.i-connect::before         { content: '\F56D' }
 .i-consume::before         { content: '\F566' }
+.i-controls::before        { content: '\F50B' }
 .i-copy::before            { content: '\F54E' }
 .i-coverart::before        { content: '\F58A'; position: absolute; }
 .i-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 40%; text-shadow: none; }
@@ -70,17 +74,22 @@ i {
 .i-dabradio::before        { content: '\F589' }
 .i-dabupdate::before       { content: '\F589'; animation: blinkopaque 1.5s linear infinite; }
 .i-date::before            { content: '\F55C' }
-.i-edit-circle::before     { content: '\F565' }
+.i-devices::before         { content: '\F571' }
+.i-edit::before            { content: '\F565' }
 .i-equalizer::before       { content: '\F50C' }
 .i-eye::before             { content: '\F567' }
 .i-features::before        { content: '\F50B' }
+.i-file::before            { content: '\F548' }
 .i-file-music::before      { content: '\F549' }
 .i-file-playlist::before   { content: '\F548' }
+.i-filters::before         { content: '\F52A' }
 .i-firefox::before         { content: '\F58C'; position: absolute; }
 .i-firefox::after          { content: '\F58D'; position: relative; color: var( --cg60 ); }
 .i-flash::before           { content: '\F566' }
+.i-flowchart::before       { content: '\F52D' }
 .i-folder::before          { content: '\F540' }
 .i-folder-cascade::before  { content: '\F54A' }
+.i-folder-filter::before   { content: '\F53F' }
 .i-folder-forbid::before   { content: '\F537' }
 .i-folder-open::before     { content: '\F541' }
 .i-folder-plus::before     { content: '\F54D' }
@@ -90,6 +99,7 @@ i {
 .i-github::before          { content: '\F583' }
 .i-globe::before           { content: '\F575' }
 .i-gpiopins::before        { content: '\F572' }
+.i-graph::before           { content: '\F52C' }
 .i-guide::before           { content: '\F579' }
 .i-hddsleep::before        { content: '\F553' }
 .i-hdmi::before            { content: '\F57B' }
@@ -99,8 +109,9 @@ i {
 .i-hostname::before        { content: '\F590' }
 .i-httpd::before           { content: '\F55D' }
 .i-i2smodule::before       { content: '\F571' }
-.i-info-circle::before     { content: '\F561' }
+.i-info::before            { content: '\F561' }
 .i-input::before           { content: '\F529' }
+.i-inverted::before        { content: '\F52E' }
 .i-jigsaw::before          { content: '\F50D' }
 .i-lan::before             { content: '\F552' }
 .i-lastfm::before          { content: '\F585' }
@@ -117,7 +128,7 @@ i {
 .i-lyrics::before          { content: '\F54B' }
 .i-microsd::before         { content: '\F543' }
 .i-minus::before           { content: '\F518' }
-.i-minus-circle::before    { content: '\F563' }
+.i-mixers::before          { content: '\F50C' }
 .i-mpd::before             { content: '\F582' }
 .i-mpdoled::before         { content: '\F57A' }
 .i-multiraudio::before     { content: '\F53B' }
@@ -129,6 +140,7 @@ i {
 .i-nfsserver::before       { content: '\F53C' }
 .i-output::before          { content: '\F528' }
 .i-pause::before           { content: '\F504' }
+.i-pipeline::before        { content: '\F52B' }
 .i-play::before            { content: '\F503' }
 .i-playback::before        { content: '\F507' }
 .i-playlist::before        { content: '\F508' }
@@ -139,7 +151,6 @@ i {
 .i-play-power::before      { content: '\F53A' }
 .i-play-replace::before    { content: '\F533' }
 .i-plus::before            { content: '\F519' }
-.i-plus-circle::before     { content: '\F564' }
 .i-plus-o::before          { content: '\F530' }
 .i-power::before           { content: '\F520' }
 .i-powerbutton::before     { content: '\F520' }
@@ -157,6 +168,7 @@ i {
 .i-refresh-library::before { content: '\F536' }
 .i-relays::before          { content: '\F522' }
 .i-reload::before          { content: '\F525' }
+.i-remove::before          { content: '\F563' }
 .i-repeat::before          { content: '\F511' }
 .i-repeat1::before         { content: '\F510' }
 .i-replace::before         { content: '\F531' }
@@ -164,7 +176,6 @@ i {
 .i-restore::before         { content: '\F544' }
 .i-rotaryencoder::before   { content: '\F516' }
 .i-save::before            { content: '\F542' }
-.i-save-circle::before     { content: '\F546' }
 .i-save-plus::before       { content: '\F545' }
 .i-screenoff::before       { content: '\F547' }
 .i-scale-dn::before        { content: '\F591' }
@@ -398,11 +409,12 @@ codered  {
 	font-size: 13px;
 }
 
+.range,
 #infoRange {
-	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px );
-	--trackborder : 1px solid var( --cgd );
+	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
+	--trackborder : 1px solid var( --cgd ) !important;
 }
-#infoRange input {
+input[type=range] {
 	height: 40px;
 	width: 300px;
 	margin: 0;
@@ -411,7 +423,7 @@ codered  {
 	-webkit-appearance: none;
 	cursor: pointer;
 }
-#infoRange input::-webkit-slider-thumb {
+input[type=range]::-webkit-slider-thumb {
 	height: 40px;
 	width: 40px;
 	margin-top: -20px;
@@ -422,7 +434,7 @@ codered  {
 	-webkit-appearance: none;
 	box-shadow: var( --shadow-btn );
 }
-#infoRange input::-moz-range-thumb { /* cannot be combined */
+input[type=range]::-moz-range-thumb { /* cannot be combined */
 	height: 40px;
 	width: 40px;
 	border: none;
@@ -431,33 +443,35 @@ codered  {
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
-#infoRange input:disabled::-webkit-slider-thumb {
+input[type=range]:disabled::-webkit-slider-thumb {
 	background-color: var( --cmd );
 }
-#infoRange input:disabled::-moz-range-thumb {
+input[type=range]:disabled::-moz-range-thumb {
 	background-color: var( --cmd );
 }
-#infoRange input::-webkit-slider-runnable-track {
+input[type=range]::-webkit-slider-runnable-track {
 	width: 100%;
 	height: 4px;
 	background: var( --track );
 	border: var( --trackborder );
 }
-#infoRange input:focus::-webkit-slider-runnable-track {
+input[type=range]:focus::-webkit-slider-runnable-track {
 	background: var( --track );
 }
-#infoRange input::-moz-range-track {
+input[type=range]::-moz-range-track {
 	width: 100%;
 	height: 2px;
 	background: var( --track );
 	border: var( --trackborder );
 }
+.range .value,
 #infoRange .value {
 	height: 30px;
 	font-size: 18px;
 	font-weight: 300;
-	text-align: center;
 }
+.range .min,
+.range .max,
 #infoRange .min,
 #infoRange .max {
 	position: relative;
@@ -469,9 +483,11 @@ codered  {
 	color: var( --cg60 );
 	cursor: pointer;
 }
+.range .max,
 #infoRange .max {
 	text-align: left;
 }
+.range,
 #infoRange {
 	text-align: center;
 }
@@ -548,6 +564,7 @@ input[ type=checkbox ].disabled {
 	color: var( --cw );
 	cursor: pointer;
 }
+
 
 hr {
 	border: none;
@@ -627,6 +644,9 @@ hr {
 	text-align: center;
 	font-size: 28px;
 	line-height: 40px;
+}
+#infoTop .i-camilladsp {
+	margin-right: 6px;
 }
 #infoTop .albumrefresh {
 	color: var( --cw );
@@ -748,6 +768,7 @@ hr {
 	margin-top: 0;
 	text-align: left;
 }
+.infoheader,
 .infomessage,
 .infofooter {
 	width: fit-content;
@@ -759,6 +780,7 @@ hr {
 	overflow: hidden;
 	color: var( --cg60 );
 }
+.infoheader,
 .infofooter {
 	padding: 0 5px;
 }
@@ -935,7 +957,7 @@ input[ type=radio ]:disabled {
 }
 @media ( max-width: 420px ) {
 	#infoContent { padding: 20px 5px 10px 5px }
-	.infofooter { padding: 0 5px }
+	.infoheader, .infofooter { padding: 0 5px }
 }
 @media ( max-width: 330px ) {
 	#infoOverlay {

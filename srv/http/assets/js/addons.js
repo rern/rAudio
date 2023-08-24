@@ -102,7 +102,7 @@ function renderPage() {
 	var addons = '';
 	delete S.push;
 	$.each( S, ( alias, addon ) => {
-		if ( alias === 'status' || ( S.status.hide.includes( alias ) ) ) return
+		if ( alias === 'status' || ( S.status.hidden.includes( alias ) ) ) return
 		var notverified = S.status.notverified.includes( alias );
 		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +' <i class="i-help"></i></a>' : '';
 		if ( 'revision' in addon ) {
@@ -124,10 +124,10 @@ function renderPage() {
 			} else if ( addon.buttonlabel ) {
 				var buttonlabel = buttonLabel( addon.buttonlabel[ 0 ], addon.buttonlabel[ 1 ] );
 			} else {
-				var buttonlabel = buttonLabel( 'plus-circle', 'Install' );
+				var buttonlabel = buttonLabel( 'add', 'Install' );
 			}
 			var button   = '<a class="install infobtn'+ disabled +'">'+ buttonlabel +'</a>';
-			if ( installed && 'uninstall' in addon ) button += ' <a class="uninstall infobtn"><i class="i-minus-circle"></i> Uninstall</a>';
+			if ( installed && 'uninstall' in addon ) button += ' <a class="uninstall infobtn"><i class="i-remove"></i> Uninstall</a>';
 		}
 		addons         += `\
 <div id="${ alias }" class="divaddon">

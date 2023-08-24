@@ -25,6 +25,7 @@ function addToPlaylistCommand() {
 	if ( [ 'addplay', 'replace', 'replaceplay' ].includes( V.action ) ) {
 		varaction = ' ACTION';
 		V.mpccmd.push( V.action );
+		$( '#stop' ).trigger( 'click' );
 	}
 	var mpccmd0   = V.mpccmd[ 0 ];
 	if ( mpccmd0 === 'mpcaddls' ) {
@@ -50,9 +51,11 @@ function addToPlaylistCommand() {
 	V.title  = cmd_title[ V.action ];
 	V.msg =  '<a class="li1">'+ V.list.name +'</a>';
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
-	bash( V.mpccmd, () => {
-		if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
-	} );
+	setTimeout( () => {
+		bash( V.mpccmd, () => {
+			if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
+		} );
+	}, S.stream ? 1000 : 0 );
 	banner( 'playlist', V.title, V.msg );
 }
 function bookmarkNew() {
@@ -163,7 +166,7 @@ function playlistDelete() {
 		, title   : 'Delete Playlist'
 		, message : 'Delete?'
 				   +'<br><wh>'+ V.list.name +'</wh>'
-		, oklabel : ico( 'minus-circle' ) +'Delete'
+		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => bash( [ 'savedpldelete', V.list.name, 'CMD NAME' ] )
 	} );
@@ -295,9 +298,9 @@ function tagEditor() {
 		if ( ! V.list.licover ) message += '<br>'+ ico( fileicon ) + file.split( '/' ).pop();
 		message     += '</div>';
 		var footer   = '<div id="taglabel">'+ ico( 'help i-lg gr' ) +'&emsp;Label</div>';
-		if ( V.list.licover ) footer += '<div><code> * </code>&ensp;Various values in tracks</div>';
+		if ( V.list.licover ) footer += '<div><c> * </c>&ensp;Various values in tracks</div>';
 		info( {
-			  icon         : V.playlist ? 'info-circle' : 'tag'
+			  icon         : V.playlist ? 'info' : 'tag'
 			, title        : V.playlist ? 'Track Info' : 'Tag Editor'
 			, width        : 500
 			, message      : message
@@ -457,7 +460,7 @@ function webRadioDelete() {
 		, message : '<br><img src="'+ img +'">'
 				   +'<br><wh>'+ name +'</wh>'
 				   +'<br>'+ url
-		, oklabel : ico( 'minus-circle' ) +'Delete'
+		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
 			V.list.li.remove();
@@ -476,7 +479,7 @@ function wrDirectoryDelete() {
 		, title   : 'Delete Folder'
 		, message : 'Folder:'
 					+'<br><wh>'+ path +'</wh>'
-		, oklabel : ico( 'minus-circle' ) +'Delete'
+		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
 			bash( [ 'wrdirdelete', path, V.mode, 'CMD NAME MODE' ], std => {
@@ -487,7 +490,7 @@ function wrDirectoryDelete() {
 						, message : 'Folder not empty:'
 									+'<br><wh>'+ path +'</wh>'
 									+'<br>Confirm delete?'
-						, oklabel : ico( 'minus-circle' ) +'Delete'
+						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => bash( [ 'wrdirdelete', path, V.mode, true, 'CMD NAME MODE CONFIRM' ] )
 					} );
@@ -583,6 +586,7 @@ function webRadioNew( name, url, charset ) {
 						, title      : 'Add New Folder'
 						, textlabel  : 'Name'
 						, checkblank : true
+						, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
 						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal(), 'CMD DIR SUB' ] )
 					} );
 				} );
@@ -635,17 +639,10 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		cmd_function[ cmd ]();
 		return
 	}
-	
+	var stream = S.stream;
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		if ( cmd === 'play' ) {
-			if ( S.player !== 'mpd' ) {
-				$( '#stop' ).trigger( 'click' );
-				S.player = 'mpd';
-			}
-			$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
-		} else {
-			$( '#'+ cmd ).trigger( 'click' );
-		}
+		$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
+		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
 	

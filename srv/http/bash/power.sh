@@ -3,6 +3,12 @@
 . /srv/http/bash/common.sh
 
 [[ $1 == reboot ]] && reboot=1
+
+if [[ -e $dirsystem/camilladsp ]]; then
+	$dirsettings/camilla.py save
+	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
+fi
+[[ -e $dirshm/btconnected ]] && cp $dirshm/btconnected $dirsystem
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )
 	ipclients=$( grep -v $ipserver $filesharedip )
@@ -43,5 +49,6 @@ if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
 	sleep 3
 fi
+
 [[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
 [[ $reboot ]] && reboot || poweroff

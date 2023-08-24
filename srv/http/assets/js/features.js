@@ -64,14 +64,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		bash( [ 'spotifyd' ] );
 		notifyCommon( 'Enable ...' );
 	} else if ( S.spotifytoken ) {
-		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, checkbox     : 'Remove client keys?'
-			, values       : false
-			, checkchanged : true
-			, ok           : () => bash( [ 'spotifykeyremove' ] )
-		} );
+		infoSpotifyOutput();
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
 			infoWarning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
@@ -103,7 +96,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 					  response_type : 'code'
 					, client_id     : id
 					, scope         : 'user-read-currently-playing user-read-playback-position'
-					, redirect_uri  : S.spotifyredirect
+					, redirect_uri  : 'https://rern.github.io/raudio/spotify'
 					, state         : window.location.hostname
 				}
 				window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
@@ -118,20 +111,6 @@ $( '#setting-upmpdcli' ).on( 'click', function() {
 		, checkbox     : [ 'Clear Playlist on start' ]
 		, values       : S.upmpdcliconf
 		, checkchanged : S.upmpdcli
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-} );
-$( '#setting-camilladsp' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, textlabel    : 'VU refresh rate <gr>(ms)</gr>'
-		, focus        : 0
-		, checkblank   : true
-		, boxwidth     : 100
-		, values       : S.camilladspconf
-		, checkchanged : S.camilladsp
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
@@ -177,7 +156,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 	</td><td></td></tr>
 <tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
-	<td>&nbsp;<gr>%</gr>${ ico( 'minus-circle btnicon dn' ) + ico( 'plus-circle btnicon up' ) }</td></tr>
+	<td>&nbsp;<gr>%</gr>${ ico( 'remove btnicon dn' ) + ico( 'add btnicon up' ) }</td></tr>
 <tr><td>Screen off</td>
 	<td><select id="screenoff">
 		<option value="0">Disable</option>
@@ -275,8 +254,8 @@ $( '#setting-lyrics' ).on( 'click', function() {
 $( '#setting-multiraudio' ).on( 'click', function() {
 	var trhtml  = '<tr><td style="width: 180px"><input type="text" spellcheck="false"></td>'
 					 +'<td style="width: 130px"><input type="text" class="ip" value="'+ S.ipsub +'" spellcheck="false"></td>'
-					 +'<td>&nbsp;'+ ico( 'minus-circle i-lg pointer ipremove' ) +'</td></tr>';
-	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'plus-circle i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
+					 +'<td>&nbsp;'+ ico( 'remove i-lg pointer ipremove' ) +'</td></tr>';
+	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'add i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
 	
 	if ( S.multiraudioconf ) {
 		var keys = Object.keys( S.multiraudioconf ).sort();
@@ -464,6 +443,34 @@ function infoScrobbleAuth() {
 		, ok           : () => bash( [ 'scrobblekeyremove' ] )
 	} );
 }
+function infoSpotifyKeys() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Output', 'Keys' ]
+		, tab          : [ infoSpotifyOutput, '' ]
+		, checkbox     : 'Remove client keys?'
+		, values       : false
+		, checkchanged : true
+		, ok           : () => bash( [ 'spotifykeyremove' ] )
+	} );
+}
+function infoSpotifyOutput() {
+	bash( [ 'spotifyoutput' ], ( list ) => {
+		info( {
+			  icon         : SW.icon
+			, title        : SW.title
+			, tablabel     : [ 'Output', 'Keys' ]
+			, tab          : [ '', infoSpotifyKeys ]
+			, boxwidth     : 300
+			, selectlabel  : 'Device'
+			, select       : list.devices
+			, values       : list.current
+			, checkchanged : true
+			, ok           : () => bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] )
+		} );
+	}, 'json' );
+}
 function passwordWrong() {
 	bannerHide();
 	info( {
@@ -477,7 +484,6 @@ function renderPage() {
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
 	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! S.snapclientactive );
 	$( '#snapserver' ).toggleClass( 'disabled', S.snapserveractive );
-	$( '#redirecturi' ).text( S.spotifyredirect );
 	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {

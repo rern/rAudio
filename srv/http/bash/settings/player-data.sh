@@ -1,6 +1,6 @@
 #!/bin/bash
 
-! mpc &> /dev/null && echo mpdnotrunning && exit
+! mpc &> /dev/null && echo notrunning && exit
 
 . /srv/http/bash/common.sh
 . $dirsettings/player-devices.sh

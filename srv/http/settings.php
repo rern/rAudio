@@ -16,8 +16,8 @@ function menu( $icon, $name, $iconsub = '' ) {
 	$submenu = $iconsub ? '<i class="i-'.$iconsub.' sub"></i>' : '';
 	return '<a class="helpmenu"><i class="i-'.$icon.'"></i> '.$name.$submenu.'</a>';
 }
-function tab( $icon, $name ) {
-	return '<a class="helpmenu tab"><i class="i-'.$icon.'"></i> '.$name.'</a>';
+function tab( $icon ) {
+	return '<a class="helpmenu tab"><i class="i-'.$icon.'"></i> '.ucfirst( $icon ).'</a>';
 }
 // functions for use inside heredoc
 $Fi         = 'i';
@@ -25,7 +25,7 @@ $FlabelIcon = 'labelIcon';
 $Fmenu      = 'menu';
 $Ftab       = 'tab';
 
-echo '<div class="container hide">';
+echo '<div class="container '.$page.' hide">';
 
 if ( $page !== 'addons' ) include 'settings/'.$page.'.php';
 
@@ -42,10 +42,16 @@ if ( $addonsprogress || $guide ) {
 
 // bottom bar
 $htmlbar = '<div id="bar-bottom">';
-foreach ( [ 'Features', 'Player', 'Networks', 'System', 'Addons' ] as $name ) {
-	$id      = strtolower( $name );
-	$active  = $id === $pagetitle ? ' class="active"' : '';
-	$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
+$prefix  = '';
+if ( $camilla ) {
+	$tabs   = [ 'Filters', 'Mixers', 'Pipeline', 'Devices', 'Config' ];
+	$prefix = 'tab';
+} else {
+	$tabs   = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];
+}
+foreach ( $tabs as $tab ) {
+	$id      = strtolower( $tab );
+	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).'<a> '.$tab.'</a></div>';
 }
 $htmlbar.= '</div>
 <div id="debug"></div>';
@@ -55,6 +61,13 @@ if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keybo
 // <script> -----------------------------------------------------
 foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
 foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+if ( $camilla ) {
+	echo '
+<script>
+var jfiles = '.json_encode( $jfiles ).';
+</script>
+';
+}
 echo '
 </body>
 </html>
@@ -73,7 +86,8 @@ $head = [
 	, 'help'    => 'HELP'
 ];
 $body = [
-	[
+	 'HTML'                             // for status section
+	, [
 		  'label'       => 'LABEL'      // REQUIRED
 		, 'sublabel'    => 'SUB LABEL'
 		, 'id'          => 'ID'         // REQUIRED
@@ -110,11 +124,37 @@ function htmlHead( $data ) {
 	$html   .= '<span class="headtitle">'.$title.'</span>';
 	if ( $button ) foreach( $button as $btnid => $icon ) $html.= i( $icon.' '.$btnid );
 	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
-	$html   .= isset( $data[ 'back' ] ) ? i( 'arrow-left back' ) : '';
+	$html   .= isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
 	$html   .= '</heading>';
 	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echo str_replace( '|', '<g>|</g>', $html );
+}
+function htmlSection( $head, $body, $id = '' ) {
+	$html = '<div';
+	$html.= $id ? ' id="div'.$id.'"' : '';
+	$html.= ' class="section">';
+	echo $html;
+	if ( $head ) htmlHead( $head );
+	foreach( $body as $data ) {
+		if ( is_array( $data ) ) {
+			htmlSetting( $data );
+		} else {
+			echo $data;
+		}
+	}
+	echo '</div>';
+}
+function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
+	if ( ! $labels ) $labels = '&nbsp;';
+	if ( $help ) $help = '<div class="helpblock hide">'.$help.'</div>';
+	return '
+<div id="div'.$id.'">
+<div class="col-l text label gr">'.$labels.'</div>
+<div class="col-r text value">'.$values.'</div>
+<div style="clear:both"></div>
+'.$help.'
+</div>';
 }
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
@@ -136,6 +176,7 @@ function htmlSetting( $data ) {
 	$settingicon = ! $setting || $setting === 'none' ? false : $data[ 'settingicon' ] ?? 'gear';
 	$disabled    = $data[ 'disabled' ] ?? false;
 	$help        = $data[ 'help' ] ?? false;
+	$icon        = $data[ 'icon' ] ?? false;
 	
 	$html        = '<div id="div'.$id.'">';
 	// col-l
@@ -143,13 +184,13 @@ function htmlSetting( $data ) {
 	$html       .= $sublabel ? '' : ' single';
 	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
 	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
-	$html       .= $page === 'features' || $page === 'system' ? i( $id ) : ''; // icon
+	$html       .= $page === 'features' || $page === 'system' || $data[ 'icon' ] ? i( $id ) : ''; // icon
 	$html       .= '</div>';
 	// col-r
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$html   .= $disabled ? '<span class="hide">'.$disabled.'</span>' : '';
-		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel" for="'.$id.'"></div>';
+		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div>';
 	} else {
 		$html   .= $input;
 	}
@@ -161,14 +202,7 @@ function htmlSetting( $data ) {
 					</div>';
 	// status
 	$html       .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
+	if ( $data[ 'returnhtml' ] ) return $html;
+	
 	echo $html;
-}
-function htmlSection( $head, $body, $id = '' ) {
-	$html = '<div';
-	$html.= $id ? ' id="div'.$id.'"' : '';
-	$html.= ' class="section">';
-	echo $html;
-	htmlHead( $head );
-	foreach( $body as $data ) htmlSetting( $data );
-	echo '</div>';
 }

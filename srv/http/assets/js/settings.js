@@ -62,9 +62,10 @@ function json2array( keys, json ) {
 	return values
 }
 function list2JSON( list ) {
-	if ( list.trim() === 'mpdnotrunning' ) {
-		bash( [ 'settings/pkgstatus.sh', 'mpd' ], status => {
-			var error =  iconwarning +'MPD is not running '
+	if ( list.trim() === 'notrunning' ) {
+		var pkg = page === 'player' ? 'mpd' : 'camilladsp';
+		bash( [ 'settings/pkgstatus.sh', pkg ], status => {
+			var error =  iconwarning +'<c>'+ pkg +'</c> is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
 						+ status;
@@ -72,8 +73,9 @@ function list2JSON( list ) {
 				.html( error )
 				.removeClass( 'hide' )
 				.on( 'click', '.restart', function() {
-					bash( [ 'settings/player-conf.sh' ], refreshData );
-					notify( 'mpd', 'MPD', 'Start ...' );
+					var cmdsh = page === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
+					bash( cmdsh, refreshData );
+					notify( pkg, pkg, 'Start ...' );
 				} );
 		loaderHide();
 		} );
@@ -87,6 +89,18 @@ function list2JSON( list ) {
 		return false
 	}
 	return true
+}
+function contextMenu() {
+	$( '#menu' )
+		.removeClass( 'hide' )
+		.css( 'top', V.li.offset().top + 48 );
+	elementScroll( $( '#menu' ) );
+}
+function elementScroll( $el ) {
+	var menuH = $el.height();
+	var targetB = $el.offset().top + menuH;
+	var wH      = window.innerHeight;
+	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 }
 function notify( icon, title, message, delay ) {
 	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
@@ -104,12 +118,7 @@ function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
 	bash( [ 'settings/'+ page +'-data.sh' ], data => {
-		if ( typeof data === 'string' ) { // on load, try catching any errors
-			var list2G = list2JSON( data );
-		} else {
-			S = data;
-		}
-		if ( ! list2G ) return
+		if ( ! list2JSON( data ) ) return // on load, try catching any errors
 		
 		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .infobtn' ).length ) {
 			$( '#data' ).empty();
@@ -144,18 +153,22 @@ function switchEnable() {
 	SWreset();
 }
 function switchIdIconTitle( id ) {
+	id       = id.replace( 'setting-', '' );
 	SW.id    = id;
-	SW.icon  = id;
-	if ( page === 'player' ) SW.icon =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume'
 	SW.title = $( '#div'+ id +' .name' ).text();
+	if ( page === 'player' ) {
+		SW.icon  =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume';
+	} else {
+		SW.icon  = id;
+	}
 }
 function switchSet() {
-	if ( page === 'networks' || page === 'relays' ) return
+	if ( page === 'networks' ) return
 	
 	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
 		var $this = $( el );
-		if ( $this.prev().is( 'select' ) ) return // not switch
+		if ( ! $this.prev().hasClass( 'switchlabel' ) ) return // not switch
 		
 		var sw = el.id.replace( 'setting-', '' );
 		$this.toggleClass( 'hide', ! S[ sw ] );
@@ -172,25 +185,16 @@ function SWreset() {
 if ( page === 'addons' ) {
 	pushstreamChannel( [ 'notify' ] );
 } else {
-	pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'storage', 'volume', 'volumebt', 'wlan' ] );
-}
-function pushstreamDisconnect() {
-	if ( page === 'networks' ) {
-		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
-			bash( [ 'scankill' ] );
-			clearTimeout( V.timeoutscan );
-			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
-			$( '.back' ).trigger( 'click' );
-		}
-	}
+	pushstreamChannel( [ 'bluetooth', 'camilla', 'notify', 'player', 'refresh', 'reload', 'storage', 'volume', 'volumebt', 'wlan' ] );
 }
 pushstream.onmessage = function( data, id, channel ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
+		case 'camilla':   psCamilla( data );   break;
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'refresh':   psRefresh( data );   break;
-		case 'reload':    psReload();          break;
+		case 'reload':    psReload( data );    break;
 		case 'storage':   psStorage( data );   break;
 		case 'volume':    psVolume( data );    break;
 		case 'wlan':      psWlan( data );      break;
@@ -216,6 +220,11 @@ function psBluetooth( data ) { // from networks-data,sh
 	}
 	bannerHide();
 }
+function psCamilla( data ) {
+	S.range = data;
+	$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
+	$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
+}
 function psPlayer( data ) {
 	var player_id = {
 		  airplay   : 'shairport-sync'
@@ -232,13 +241,7 @@ function psRefresh( data ) {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-		if ( page === 'relays' ) {
-			Rs = JSON.stringify( R );
-		} else if ( page === 'networks' ) {
-			$( '.back' ).trigger( 'click' );
-		} else {
-			switchSet();
-		}
+		page === 'networks' ? $( '.back' ).trigger( 'click' ) : switchSet();
 		renderPage();
 	}, 300 );
 }
@@ -309,12 +312,14 @@ var pagenext   = {
 	, system   : [ 'networks', 'features' ]
 }
 
-document.title = page;
+$( '#'+ page ).addClass( 'active' );
+
+document.title = page === 'camilla' ? 'Camilla DSP' : page[ 0 ].toUpperCase() + page.slice( 1 );
 
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
 $( document ).on( 'keyup', function( e ) {
-	if ( I.active ) return
+	if ( I.active || page === 'camilla' ) return
 	
 	var $focus;
 	var key = e.key;
@@ -370,7 +375,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	}
 } );
 $( '.close' ).on( 'click', function() {
-	location.href = '/'; 
+	location.href = '/';
 } );
 $( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return
@@ -415,7 +420,7 @@ $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();
-	switchIdIconTitle( this.id.replace( 'setting-', '' ) );
+	switchIdIconTitle( this.id );
 } );
 $( '.switch' ).on( 'click', function() {
 	if ( V.press ) return
@@ -457,6 +462,8 @@ $( '.switch' ).on( 'click', function() {
 	}
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
+	if ( page === 'camilla' ) return
+	
 	loader();
 	location.href = 'settings.php?p='+ this.id;
 } );

@@ -38,7 +38,7 @@ function bio( artist, getsimilar ) {
 		var name     = data.name;
 		var content  = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
 		var genre    = data.tags.tag[ 0 ].name;
-		var backhtml = getsimilar ? ico( 'arrow-left bioback' ) : '';
+		var backhtml = getsimilar ? ico( 'back bioback' ) : '';
 		var similar  =  data.similar.artist;
 		if ( similar ) {
 			var similarhtml  = '<p>'+ ico( 'artist i-lg' ) +'&ensp;Similar Artists:<p><span>';
@@ -301,13 +301,11 @@ function contextmenuLibrary( $li, $target ) {
 		return
 	}
 	var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
-	$menu.find( '.playnext, .replace' ).toggleClass( 'hide', ! S.pllength );
-	$menu.find( '.replace' ).next().toggleClass( 'hide', ! S.pllength );
+	$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', ! S.pllength );
 	$menu.find( '.refresh-library' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
-	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', V.list.licover && ! filemode );
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
-	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ( ! filemode ) );
+	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
 	$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
 	$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
 	$li.addClass( 'active' );
@@ -376,7 +374,7 @@ function coverartChange() {
 		, filelabel   : ico( 'folder-open' ) +'File'
 		, fileoklabel : ico( 'flash' ) +'Replace'
 		, filetype    : 'image/*'
-		, buttonlabel : ! coverartlocal ? '' : ico( 'minus-circle' ) +'Remove'
+		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +'Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
@@ -493,6 +491,17 @@ function displayBars() {
 		$( '.emptyadd' ).css( 'top', '' );
 	}
 	displayBottom();
+	if ( ! S.state || $bartop.is( ':hidden' ) ) return // suppress on reboot
+	
+	var mpd_upnp = [ 'mpd', 'upnp' ].includes( S.player );
+	var noprevnext = S.pllength < 2 || ! mpd_upnp;
+	$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 && mpd_upnp );
+	$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
+	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
+	$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
+	$( '#pause' ).toggleClass( 'hide', S.stream && S.player !== 'upnp' );
+	$( '#playback-controls i' ).removeClass( 'active' );
+	$( '#'+ S.state ).addClass( 'active' ); // suppress on reboot
 }
 function displayBottom() {
 	$( '#playback' )
@@ -522,7 +531,7 @@ function displayPlayback() {
 	if ( ! hidetime ) $( '#time' ).roundSlider( S.stream || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
-	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
+	$( '#time, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || $volume.is( ':visible' ) );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
@@ -1211,7 +1220,7 @@ function renderLibraryList( data ) { // V.librarylist
 		}
 	}
 	if ( V.mode === 'webradio' ) {
-		htmlpath += ico( 'plus-circle btntitle button-webradio-new' );
+		htmlpath += ico( 'add btntitle button-webradio-new' );
 	} else if ( V.mode === 'latest' ) {
 		htmlpath += ico( 'flash btntitle button-latest-clear' );
 	} else if ( V.mode === 'dabradio' ) {
@@ -1227,7 +1236,7 @@ function renderLibraryList( data ) { // V.librarylist
 	var hash = versionHash();
 	var html = data.html.replace( /\^\^\^/g, hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
-		V.librarytrack = $( '#lib-list .li-icon' ).hasClass( 'i-music' );
+		V.librarytrack = ! $( '#lib-list li:not( .licover )' ).find( '.i-folder, .iconthumb' ).length;
 		if ( $( '.licover' ).length ) { // V.librarytrack
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( V.icoversave );
 		} else {
@@ -1285,6 +1294,7 @@ function renderPlayback() {
 	$( '#coverTR' ).removeClass( 'empty' );
 	setInfo();
 	setCoverart();
+	setButtonOptions();
 	var istate = ico( S.state );
 	if ( S.elapsed === false || S.webradio ) {
 		setBlinkDot();
@@ -1333,7 +1343,6 @@ function renderPlaybackAll() {
 	displayBars();
 	displayPlayback();
 	renderPlayback();
-	setButtonControl();
 	setButtonUpdating();
 }
 function renderPlaylist( data ) { // V.plhome - current playlist
@@ -1476,8 +1485,8 @@ function setBookmarkEdit() {
 	$( '.mode-bookmark' ).each( ( i, el ) => {
 		var $this      = $( el );
 		var path       = $this.find( '.lipath' ).text();
-		var buttonhtml = ico( 'minus-circle bkedit bk-remove' );
-		if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit-circle bkedit bk-rename' );
+		var buttonhtml = ico( 'remove bkedit bk-remove' );
+		if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit bkedit bk-rename' );
 		if ( ! [ 'http', 'rtsp' ].includes( path.slice( 0, 4 ) ) ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
 		$this.append( buttonhtml );
 	} );
@@ -1486,24 +1495,7 @@ function setBookmarkEdit() {
 		.find( '.i-bookmark, .label, img' )
 		.css( 'opacity', 0.33 );
 }
-function setButtonControl() {
-	if ( ! S.state ) return // suppress on reboot
-	
-	if ( $bartop.is( ':visible' ) ) {
-		var mpd_upnp = [ 'mpd', 'upnp' ].includes( S.player );
-		var noprevnext = S.pllength < 2 || ! mpd_upnp;
-		$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 && mpd_upnp );
-		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
-		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
-		$( '#pause' ).toggleClass( 'hide', S.stream && S.player !== 'upnp' );
-		$( '#playback-controls i' ).removeClass( 'active' );
-		$( '#'+ S.state ).addClass( 'active' ); // suppress on reboot
-	}
-	setTimeout( setButtonOptions, 0 );
-}
 function setButtonOptions() {
-	$( '#dsp' ).toggleClass( 'disabled', S.player === 'spotify' );
 	$( '#relays' ).toggleClass( 'on', S.relayson );
 	$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
@@ -1512,7 +1504,7 @@ function setButtonOptions() {
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btreceiver );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
-	if ( ! S.stream && S.player === 'mpd' ) {
+	if ( S.player === 'mpd' ) {
 		if ( $( '#button-time' ).is( ':visible' ) ) {
 			$( '#random' ).toggleClass( 'active', S.random );
 			$( '#repeat' ).toggleClass( 'active', S.repeat );
@@ -1959,17 +1951,7 @@ function thumbUpdate( path ) {
 	$( '#formtemp' ).submit();
 }
 function urlReachable( url, sec ) {
-	if ( ! sec ) {
-		var sec = 0;
-	} else if ( sec === 5 ) {
-		info( {
-			  icon    : 'camilladsp'
-			, title   : 'CamillaDSP'
-			, message : 'CamillaDSP settings not available.'
-		} );
-		loaderHide();
-		return
-	}
+	if ( ! sec ) var sec = 0;
 	
 	fetch( url, { mode: 'no-cors' } ).then( function() {
 		location.href = url;
@@ -2034,7 +2016,9 @@ function volumeColorMute() {
 	$volumetooltip
 		.text( S.volumemute )
 		.addClass( 'bl' );
-	$volumehandle.addClass( 'bgr60' );
+	$volumehandle
+		.addClass( 'bgr60' )
+		.rsRotate( 0 ? -this._handle1.angle : -310 );
 	$( '#volmute' )
 		.removeClass( 'i-volume' )
 		.addClass( 'i-mute active' );

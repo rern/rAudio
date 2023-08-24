@@ -197,7 +197,7 @@ $( '#setting-soxr' ).on( 'click', function() {
 } );
 var custominfo = `\
 <table width="100%">
-<tr><td><code>mpd.conf</code></td></tr>
+<tr><td><c>mpd.conf</c></td></tr>
 <tr><td><pre>
 ...
 user                   "mpd"</pre></td></tr>
@@ -343,25 +343,29 @@ function infoSoxrCustom() {
 		, ok           : switchEnable
 	} );
 }
-function playbackIcon() {
+function renderPage() {
 	$( '.playback' )
 		.removeClass( 'i-pause i-play' )
 		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
 		.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
-}
-function renderPage() {
-	playbackIcon();
 	var htmlstatus =  S.version +'<br>';
 	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
 	htmlstatus += '<br>'+ S.lastupdate;
-	$( '#statusvalue' ).html( htmlstatus );
+	$( '#divstatus .value' ).html( htmlstatus );
+	var icondsp = '';
+	[ 'camilladsp', 'equalizer' ].forEach( k => {
+		if ( S[ k ] ) icondsp = ico( k );
+	} );
+	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
 	if ( S.btaplayname ) {
-		if ( ! $( '#divbtreceiver .col-l i' ).length ) $( '#divbtreceiver .col-l' ).append( ico( 'bluetooth' ) );
+		if ( icondsp ) $( '#divbtreceiver .col-l' ).append( icondsp );
 		$( '#divbtreceiver' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#setting-btreceiver' ).removeClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.btoutputall );
 	} else {
+		if ( icondsp ) $( '#divbtreceiver .col-l' ).append( icondsp );
+		$( '#divaudiooutput .col-l' ).html( $( '#divaudiooutput .col-l' ).html() + icondsp );
 		$( '#divbtreceiver' ).addClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
 	}
@@ -396,14 +400,6 @@ function renderPage() {
 		$( '#novolume' ).prop( 'checked', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
-		if ( S.camilladsp ) {
-			var label = ico( 'camilladsp' );
-		} else if ( S.equalizer ) {
-			var label = 'Equalizer'+ ico( 'equalizer' );
-		} else {
-			var label = 'Device';
-		}
-		$( '#divaudiooutput .col-l' ).html( label );
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );

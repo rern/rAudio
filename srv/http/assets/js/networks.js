@@ -24,15 +24,6 @@ $( '.back' ).on( 'click', function() {
 	refreshData();
 } );
 $( '.btscan' ).on( 'click', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) {
-		info( {
-			  icon    : 'bluetooth'
-			, title   : 'Bluetooth'
-			, message : '<wh>DSP</wh> is currently enabled.'
-		} );
-		return
-	}
-	
 	$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
@@ -109,13 +100,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
 		$( '#menu .info' ).addClass( 'hide' );
 	}
-	var menuH = $( '#menu' ).height();
-	$( '#menu' )
-		.removeClass( 'hide' )
-		.css( 'top', V.li.position().top + 48 );
-	var targetB = $( '#menu' ).offset().top + menuH;
-	var wH      = window.innerHeight;
-	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	contextMenu();
 } );
 $( '.connect' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
@@ -172,7 +157,7 @@ $( '.forget' ).on( 'click', function() {
 		  icon    : icon
 		, title   : ssid
 		, message : S.ipeth || S.ipwl ? '' : iconwarning +'Current Web interface will be dropped.'
-		, oklabel : ico( 'minus-circle' ) +'Forget'
+		, oklabel : ico( 'remove' ) +'Forget'
 		, okcolor : red
 		, ok      : () => {
 			notify( icon, ssid, 'Forget ...' );
@@ -342,6 +327,14 @@ function infoWiFiTab( values ) {
 	keys.forEach( k => v[ k ] = values[ k ] );
 	target === 'dhcp' ? infoWiFi( v ) : infoWiFiStatic( v );
 }
+function pushstreamDisconnect() {
+	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
+	
+	bash( [ 'scankill' ] );
+	clearTimeout( V.timeoutscan );
+	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
+	$( '.back' ).trigger( 'click' );
+}
 function qr( msg ) {
 	return new QRCode( {
 		  msg : msg
@@ -377,7 +370,6 @@ function renderBluetooth() {
 	$( '#divbt' ).removeClass( 'hide' );
 }
 function renderPage() {
-	$( '.btscan' ).toggleClass( 'disabled', S.camilladsp );
 	if ( ! S.activebt ) {
 		$( '#divbt' ).addClass( 'hide' );
 	} else {

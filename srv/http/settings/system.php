@@ -1,7 +1,4 @@
-<div id="gpiosvg" class="hide">
-<?php include 'assets/img/gpio.svg';?>
-</div>
-<div id="divsystem" class="section">
+<div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $id_data = [
 	  'audio'         => [ 'name' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
@@ -26,44 +23,32 @@ $id_data = [
 	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true ]
 ];
 
-htmlHead( [ //////////////////////////////////
+$head = [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => [ 'power' => 'power' ]
 	, 'help'   => i( 'power btn' ).' Power'
-] );
-?>
-	<div id="systemlabel" class="col-l text gr">
-			Version
-		<br>Kernel
-		<br>Hardware
-		<br>SoC
-		<br>CPU
-	</div>
-	<div id="systemvalue" class="col-r text"></div> 
-	<div style="clear:both"></div>
-	<pre id="codesystem" class="hide"></pre>
-</div>
-<div id="divstatus" class="section">
-<?php
-htmlHead( [ //////////////////////////////////
+];
+$labels = 'Version
+	<br>Kernel
+	<br>Hardware
+	<br>SoC
+	<br>CPU';
+$body = [ htmlSectionStatus( 'system', $labels ) ];
+htmlSection( $head, $body, 'system' );
+
+$head = [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'status' => 'status'
 	, 'button' => [ 'refresh' => 'refresh' ]
 	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
-] );
-?>
-	<div id="statuslabel" class="col-l text gr">
-			CPU Load
-		<br>CPU Temp<wide>erature</wide></span>
-		<br>Time
-		<br>Up Time
-		<div id="warning"><i class="i-warning yl"></i>&ensp;<wh>Warning</wh></div>
-	</div>
-	<div id="statustext" class="col-r text"></div>
-	<div style="clear:both"></div>
-	<div class="helpblock hide">
-<wh>• CPU Load:</wh>
+];
+$labels = 'CPU Load
+	<br>CPU Temp<wide>erature</wide></span>
+	<br>Time
+	<br>Up Time
+	<div id="warning">'.i( 'warning yl' ).'>&ensp;<wh>Warning</wh></div>';
+$help = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.
@@ -75,28 +60,27 @@ htmlHead( [ //////////////////////////////////
 	· 85°C: CPU cores and GPU throttled.</a><!--
 --><a class="softlimit">
 	· 60°C: Optimized throttling CPU cores and GPU (Soft limit - 3B+ only)</a>
-· RPi 4: Utilize <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/frequency-management.adoc#using-dvfs">Dynamic Voltage and Frequency Scaling</a> (DVFS)
-</div>
-<?php
-htmlSetting( [
-	  'id'   => 'softlimit'
-	, 'help' => 'Temperature level for CPU optimized throttling (default: 60°C)'
-] );
-?>
-</div>
-<div id="divstorage" class="section">
-<?php
+· RPi 4: Utilize <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/frequency-management.adoc#using-dvfs">Dynamic Voltage and Frequency Scaling</a> (DVFS)';
+$body = [
+	  htmlSectionStatus( 'status', $labels, $help )
+	, [
+		  'id'   => 'softlimit'
+		, 'help' => 'Temperature level for CPU optimized throttling (default: 60°C)'
+	]
+];
+htmlSection( $head, $body, 'status' );
+
 $uid = exec( 'id -u mpd' );
 $gid = exec( 'id -g mpd' );
-htmlHead( [ //////////////////////////////////
+$head = [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
-	, 'button' => [ 'addnas' => 'plus-circle' ]
+	, 'button' => [ 'addnas' => 'add' ]
 	, 'help'   => <<< EOF
-{$Fi( 'plus-circle btn' )} Add network storage
+{$Fi( 'add btn' )} Add network storage
 
  · USB drives  Will be found and mounted automatically.
- · Commands used by {$Fi( 'plus-circle btn' )} Add network storage:
+ · Commands used by {$Fi( 'add btn' )} Add network storage:
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
@@ -109,22 +93,23 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
       -o defaults,noauto,bg,soft,timeo=5
 </pre> · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
-] );
-?>
-	<ul id="list" class="entries"></ul>
-	<div class="helpblock hide"><?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?></div>
-	<pre id="codehddinfo" class="hide"></pre>
-<?php
-htmlSetting( [
-	  'id'       => 'hddsleep'
-	, 'disabled' => 'HDD not support sleep'
-	, 'help'     => 'Sleep timer for USB hard drives.'
-] );
-htmlSetting( [
-	  'id'   => 'usbautoupdate'
-	, 'help' => 'Auto update Library database on insert/remove USB drives.'
-] );
-echo '</div>';
+];
+$body = [
+	'<ul id="list" class="entries"></ul>
+		<div class="helpblock hide">'.i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu'.'</div>
+		<pre id="codehddinfo" class="hide"></pre>'
+	, [
+		  'id'       => 'hddsleep'
+		, 'disabled' => 'HDD not support sleep'
+		, 'help'     => 'Sleep timer for USB hard drives.'
+	]
+	, [
+		  'id'   => 'usbautoupdate'
+		, 'help' => 'Auto update Library database on insert/remove USB drives.'
+	]
+];
+htmlSection( $head, $body, 'storage' );
+
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
@@ -160,7 +145,7 @@ EOF
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 Country of Wi-Fi regulatory domain:
-	· <code>00</code> Least common denominator settings, channels and transmit power are permitted in all countries.
+	· <c>00</c> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
 ■ Auto start Access Point - On failed connection or no router
 EOF
@@ -189,7 +174,7 @@ $body = [
 		<span class="helpblock hide"><!--
 -->I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
- · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
+ · See  if it's already set: {$Ftab( 'player' )}<a class="helpmenu label">Output · Device </a>
 {$Fi( 'gear btn' )}
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 		</span>
@@ -210,11 +195,11 @@ EOF
 		, 'help' => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 {$Fi( 'gear btn' )}
- · On - Fixed to pin <code>5</code>
- · Off - Default: pin <code>5</code> (single pin on+off)
- · If pin <code>5</code> is used by DAC or LCD, set 2 unused pins for:
-	 · Off - Default: pin <code>7</code>
-	 · Reserved - Default: pin <code>29</code>
+ · On - Fixed to pin <c>5</c>
+ · Off - Default: pin <c>5</c> (single pin on+off)
+ · If pin <c>5</c> is used by DAC or LCD, set 2 unused pins for:
+	 · Off - Default: pin <c>7</c>
+	 · Reserved - Default: pin <c>29</c>
 EOF
 	]
 	, [
@@ -277,14 +262,14 @@ EOF
 		, 'help' => <<< EOF
 Tweak kernel parameters to improve sound quality.
 {$Fi( 'gear btn' )}
-Swapiness (default: <code>60</code>)
+Swapiness (default: <c>60</c>)
 	· Balance between swap disk vs system memory cache
 	· Low - less swap
-Maximum Transmission Unit (default: <code>1500</code> bytes)
+Maximum Transmission Unit (default: <c>1500</c> bytes)
 	· Maximum size of one packet that can be transmitted in a network
 	· High - less overhead more efficiency
 	· Low - less delay
-Transmit Queue Length (default: <code>1000</code>)
+Transmit Queue Length (default: <c>1000</c>)
 	· Number of packets allowed per kernel transmit queue in a network
 	· High - improve performance under high load
 EOF
@@ -326,7 +311,7 @@ Note:
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$Ftab( 'features', 'Features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
+	Server: {$Ftab( 'features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
 	Clients: {$FlabelIcon( 'Shared Data', 'networks' )} Type ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
@@ -349,6 +334,10 @@ EOF
 htmlSection( $head, $body, 'datasetting' );
 $listui = [
 	[
+	    'D3'
+	  , 'Library for bespoke data visualization'
+	  , 'https://d3js.org/'
+	],[
 	    'HTML5-Color-Picker'
 	  , 'A scaleable color picker implemented using HTML5'
 	  , 'https://github.com/NC22/HTML5-Color-Picker'
@@ -368,6 +357,10 @@ $listui = [
 	    'pica'
 	  , 'Resize image in browser with high quality and high speed'
 	  , 'https://github.com/nodeca/pica'
+	],[
+	    'Plotly'
+	  , 'Graphing Library'
+	  , 'https://plotly.com/javascript/'
 	],[
 	    'QR Code generator'
 	  , 'QR Code generator'
@@ -447,8 +440,8 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 </div>
 
 <div id="menu" class="menu hide">
-<a class="info"<?=$hdparmhide?>><?=i( 'info-circle' )?>Info</a>
-<a class="forget"><?=i( 'minus-circle' )?>Forget</a>
-<a class="remount"><?=i( 'check' )?>Re-mount</a>
+<a class="info"<?=$hdparmhide?>><?=i( 'info' )?>Info</a>
+<a class="forget"><?=i( 'remove' )?>Forget</a>
+<a class="remount"><?=i( 'connect' )?>Re-mount</a>
 <a class="unmount"><?=i( 'close' )?>Unmount</a>
 </div>

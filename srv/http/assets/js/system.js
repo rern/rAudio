@@ -146,15 +146,15 @@ $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
 	var txtlcdchar       = `\
-<code>GND:(any black pin)</code>
-<wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>
-<wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code>`;
+<c>GND:(any black pin)</c>
+<wh>I²C:</wh> <c>VCC:1</c> <c>SDA:3</c> <c>SCL:5</c> <c>5V:4</c>
+<wh>GPIO:</wh> <c>VCC:4</c> <c>RS:15</c> <c>RW:18</c> <c>E:16</c> <c>D4-7:21-24</c>`;
 	var txtmpdoled       = `\
-<code>GND:(any black pin)</code> <code>VCC:1</code>
-<wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>
-<wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>`;
+<c>GND:(any black pin)</c> <c>VCC:1</c>
+<wh>I²C:</wh> <c>SCL:5</c> <c>SDA:3</c>
+<wh>SPI:</wh> <c>CLK:23</c> <c>MOS:19</c> <c>RES:22</c> <c>DC:18</c> <c>CS:24</c>`;
 	var txtrotaryencoder = `
-<code>GND: (any black pin)</code> &emsp; <code>+: not use</code>`
+<c>GND: (any black pin)</c> &emsp; <c>+: not use</c>`
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
@@ -222,13 +222,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	$( '#menu .forget' ).removeClass( 'hide', list.icon === 'usbdrive' );
 	$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
 	$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
-	var menuH = $( '#menu' ).height();
-	$( '#menu' )
-		.removeClass( 'hide' )
-		.css( 'top', $this.position().top + 48 );
-	var targetB = $( '#menu' ).offset().top + menuH;
-	var wH      = window.innerHeight;
-	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	contextMenu();
 } );
 $( '#menu a' ).on( 'click', function() {
 	var $this      = $( this );
@@ -1142,12 +1136,12 @@ function infoRestore( reset ) {
 	$( '#restore' ).prop( 'checked', 0 );
 }
 function renderPage() {
-	$( '#statustext' ).html( S.status + S.warning );
+	$( '#divsystem .value' ).html( S.system );
+	$( '#divstatus .value' ).html( S.status + S.warning );
 	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
-	$( '#systemvalue' ).html( S.system );
 	$( 'softlimit' in S ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
 	renderStorage();
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .i-usbdrive' ).length === 0 );

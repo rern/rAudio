@@ -12,7 +12,7 @@
 usbdac=$1
 
 . $dirsettings/player-devices.sh # $asoundcard, $A...
-. $dirsettings/player-asound.sh
+. $dirsettings/player-asound.sh  # $bluetooth, $camilladsp, $equalizer
 
 pushData() {
 	$dirbash/status-push.sh
@@ -23,13 +23,14 @@ pushData() {
 rm -f $dirmpdconf/{bluetooth,output}.conf
 
 # outputs -----------------------------------------------------------------------------
-if [[ $btmixer ]]; then # not require audio devices (from player-asound.sh)
+if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
 	[[ ! -e $dirsystem/btoutputall ]] && btoutputonly=1
+	hw=bluealsa
 #---------------< bluetooth
 	audiooutputbt='
-	name        "'$btmixer'"
-	device      "bluealsa"
+	name        "'$bluetooth'"
+	device      "'$hw'"
 	type        "alsa"
 	mixer_type  "hardware"'
 	[[ -e $dirsystem/btformat ]] && audiooutputbt+='
@@ -66,19 +67,18 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 		pushstream refresh '{ "page": "features", "nosound": '$volumenone' }'
 		outputswitch=$name
 	fi
-	if [[ $dsp ]]; then # from player-asound.sh
-		card=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
-		hw=hw:$card,1
+	if [[ $camilladsp ]]; then
+		hw=hw:Loopback,1
 #---------------< camilladsp
 		audiooutput='
-	name           "CamillaDSP (Loopback)"
+	name           "CamillaDSP"
 	device         "'$hw'"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "none"'
 #--------------->
-	elif [[ $equalizer ]]; then # from player-asound.sh
-		[[ -e $dirshm/btreceiver ]] && mixertype=software
+	elif [[ $equalizer ]]; then
+		[[ $bluetooth ]] && mixertype=software
 		hw=plug:plugequal
 #---------------< equalizer
 		audiooutput='
@@ -144,55 +144,53 @@ done
 
 [[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 
-[[ -e $dirshm/btreceiver ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
+[[ $bluetooth && -e $dirsystem/autoplay ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
 
 [[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ ! $Acard && ! $btmixer ]] && pushData && exit # >>>>>>>>>>
+[[ ! $Acard && ! $bluetooth ]] && pushData && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
+[[ $hwmixer && ! $bluetooth && ! $camilladsp && ! $equalizer ]] && mixer=1
 
-if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N";
-	[[ $btmixer ]] && hw=bluealsa         #                 "bluealsa";
+if [[ -e /usr/bin/shairport-sync ]]; then
 ########
-	conf="\
-$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
-alsa = {
-	output_device = \"hw:$card\";"
-	
-	[[ $hwmixer && ! $dsp && ! $equalizer ]] && \
-		conf+='
-	mixer_control_name = "'$hwmixer'";'
-	
+	conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 	conf+='
+alsa = {
+	output_device = "'$hw'";
+	mixer_control_name = "'$hwmixer'";
 }'
+	[[ ! $mixer ]] && conf=$( grep -v mixer_control_name <<< $conf )
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
 	systemctl try-restart shairport-sync
 fi
 
-if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
-									#          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
-	[[ $btmixer ]] && hw=$( bluealsa-aplay -L | head -1 ) || hw=hw:$asoundcard
+if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
+	if [[ $camilladsp ]]; then
+		hw=plughw:Loopback,1
+	elif [[ $bluetooth ]]; then
+		hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
+	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
+		hw=$( < "$dirsystem/spotify-$aplayname" )
+	fi
 ########
 	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
-
 	if [[ ! $equalizer ]]; then
 		conf+='
 device = "'$hw'"
-control = "'$hw'"'
-		
-		[[ $hwmixer && ! $btmixer ]] && \
-			conf+='
+control = "'$hw'"
 mixer = "'$hwmixer'"'
+	[[ ! $mixer ]] && conf=$( grep -v ^mixer <<< $conf )
 	fi
 #-------
 	echo "$conf" > /etc/spotifyd.conf
 	systemctl try-restart spotifyd
 fi
 
-[[ $dsp ]] && systemctl restart camilladsp
+[[ $camilladsp ]] && systemctl start camilladsp
 
 pushData

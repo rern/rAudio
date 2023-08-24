@@ -16,7 +16,7 @@ function radioRefresh() {
 function statusUpdate( data ) {
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
-	setButtonControl();
+	displayBars();
 	if ( D.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( S ) ] );
 }
 function webradioIcon( srcnoext ) {
@@ -38,7 +38,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		var barvisible = $bartop.is( ':visible' );
 		if ( V.playback ) {
 			displayPlayback();
-			setButtonControl();
 			setTimeout( renderPlayback, 50 );
 			setInfoScroll();
 			if ( $( '#bioimg' ).length ) bioTitleSet();
@@ -57,6 +56,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			}
 		}
 		displayBars();
+		if ( I.active ) infoWidth();
 	}, 0 );
 } );
 // pushstreamChannel() in common.js
@@ -140,7 +140,6 @@ function psDisplay( data ) {
 	}
 	displayBars();
 	if ( V.playback ) {
-		setButtonControl();
 		displayPlayback();
 		renderPlayback();
 	} else if ( V.library ) {
@@ -150,15 +149,24 @@ function psDisplay( data ) {
 			$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
 			if ( V.librarytrack ) {
 				if ( hidecoverchanged ) {
-					var query = V.query.slice( -1 )[ 0 ];
-					list( query, function( html ) {
-						var data = {
-							  html      : html
-							, modetitle : query.modetitle
-							, path      : query.path
+					if ( $( '#lib-list .licover' ).length ) {
+						$( '.licover' ).remove();
+					} else {
+						var path = $( '#lib-path .lipath' ).text()
+						var query   = {
+							  query  : 'ls'
+							, string : path
+							, format : [ 'file' ]
 						}
-						renderLibraryList( data );
-					} );
+						list( query, function( html ) {
+							var data = {
+								  html      : html
+								, modetitle : path
+								, path      : path
+							}
+							renderLibraryList( data );
+						} );
+					}
 				} else {
 					$( '.licover' ).toggleClass( 'nofixed', ! D.fixedcover );
 				}

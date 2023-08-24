@@ -5,9 +5,10 @@
 	margin-bottom : 10px;
 	font-size     : 16px;
 	line-height   : 24px;
+	border-radius : 4px;
+	box-shadow    : var( --shadow-select );
 }
 #infoContent .select2-container {
-	max-width     : none;
 	margin-bottom : 0;
 }
 .select2-selection:focus-visible {
@@ -21,11 +22,10 @@
 	border-radius : 4px !important;
 }
 .select2-selection__rendered {
-	color         : var( --cw ) !important;
-	background    : var( --cg );
 	line-height   : 40px !important;
 	border-radius : 4px;
-	box-shadow    : var( --shadow-select );
+	color         : var( --cw ) !important;
+	background    : var( --cg );
 }
 .select2-results__option {
 	padding-left: 8px;

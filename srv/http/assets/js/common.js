@@ -82,7 +82,7 @@ function bash( args, callback, json ) {
 		args = args.cmd;
 	}
 	var args0 = args[ 0 ];
-	if ( args0.slice( -3 ) === '.sh' ) { // CMD.sh
+	if (  [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) { // CMD.sh / CMD.py
 		data.filesh = args.join( ' ' );
 		args = false;
 	} else if ( page ) {                 // CMD - settings
@@ -268,6 +268,7 @@ var $infocontent;
 function info( json ) {
 	local(); // flag for consecutive info
 	I          = json;
+	V.iwidth   = I.width;
 	
 	if ( 'values' in I ) {
 		if ( ! Array.isArray( I.values ) ) {
@@ -282,7 +283,7 @@ function info( json ) {
 		I.values = false;
 	}
 	// fix: narrow screen scroll
-	if ( window.innerWidth < 768 ) $( 'body' ).css( 'overflow-y', 'auto' );
+	if ( V.wW < 768 ) $( 'body' ).css( 'overflow-y', 'auto' );
 	
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
@@ -345,12 +346,12 @@ function info( json ) {
 	} );
 	if ( I.fileoklabel ) { // file api
 		var htmlfile = '<div id="infoFile">'
-					  +'<code id="infoFilename" class="hide"></code>'
+					  +'<c id="infoFilename" class="">(select file)</c><br>&nbsp;'
 					  +'<input type="file" class="hide" id="infoFileBox"'
 					  + ( I.filetype ? ' accept="'+ I.filetype +'">' : '>' )
 					  +'</div>'
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
-					  + ( I.filelabel || ico( 'folder-open' ) +'File' ) +'</a>';
+					  + ( I.filelabel || ico( 'folder-open' ) +' File' ) +'</a>';
 		$( '#infoButton' ).prepend( htmlfile )
 		$( '#infoOk' )
 			.html( I.fileoklabel )
@@ -376,8 +377,8 @@ function info( json ) {
 			if ( ! I.filechecked ) {
 				var htmlprev = $( '#infoContent' ).html();
 				$( '#infoFilename, #infoFileLabel' ).addClass( 'hide' );
-				$( '#infoContent' ).html( '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
-										 +'<tr><td>File not :</td><td><code>'+ I.filetype +'</code></td></tr></table>' );
+				$( '#infoContent' ).html( '<table><tr><td>Selected file :</td><td><c>'+ filename +'</c></td></tr>'
+										 +'<tr><td>File not :</td><td><c>'+ I.filetype +'</c></td></tr></table>' );
 				$( '#infoOk' ).addClass( 'hide' );
 				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
 				$( '#infoButton' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
@@ -415,38 +416,40 @@ function info( json ) {
 	if ( I.content ) { // custom html content
 		var htmlcontent = I.content;
 	} else {
-		var htmls = {}
-		if ( I.message ) {
-			htmls.message  = '<div class="infomessage"';
-			if ( I.messagealign ) htmls.message += ' style="text-align:'+ I.messagealign +'"';
-			htmls.message += '>'+ I.message +'</div>';
-		}
-		if ( I.footer ) {
-			htmls.footer  = '<div class="infofooter"';
-			if ( I.footeralign ) htmls.footer += ' style="text-align:'+ I.footeralign +'"';
-			htmls.footer += '>'+ I.footer +'</div>';
-		}
+		var htmls = {};
+		[ 'header', 'message', 'footer' ].forEach( k => {
+			if ( I[ k ] ) {
+				var kalign = k +'align'
+				var align = I[ kalign ] ? ' style="text-align:'+ I[ kalign ] +'"' : '';
+				htmls[ k ] = '<div class="info'+ k +'" '+ align +'>'+ I[ k ] +'</div>';
+			}
+		} );
 		// inputs html ///////////////////////////////////////////////////////////
 		if ( I.textlabel ) {
 			infoKey2array( 'textlabel' );
 			htmls.text      = '';
-			I.textlabel.forEach( lbl => htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>' );
+			I.textlabel.forEach( lbl => htmls.text += '<tr class="trtext"><td>'+ lbl +'</td><td><input type="text"></td></tr>' );
 		}
 		if ( I.numberlabel ) {
 			infoKey2array( 'numberlabel' );
 			htmls.number    = '';
-			I.numberlabel.forEach( lbl => htmls.number += '<tr><td>'+ lbl +'</td><td><input type="number"></td></tr>' );
+			I.numberlabel.forEach( lbl => htmls.number += '<tr class="trnumber"><td>'+ lbl +'</td><td><input type="number"></td></tr>' );
 		}
 		if ( I.passwordlabel ) {
 			infoKey2array( 'passwordlabel' );
 			htmls.password      = '';
-			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td></tr>' );
+			I.passwordlabel.forEach( lbl => htmls.password += '<tr class="trpassword"><td>'+ lbl +'</td><td><input type="password"></td></tr>' );
 		}
 		if ( I.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
 		}
-		var td0 = htmls.text || htmls.password ? '<td></td>' : '';
+		var td0 = htmls.text || htmls.number || htmls.password ? '<td></td>' : '';
 		if ( I.radio ) {
+			if ( Array.isArray( I.radio ) ) {
+				var kv = {}
+				I.radio.forEach( v => kv[ v ] = v );
+				I.radio = kv;
+			}
 			infoKey2array( 'radio' );
 			I.radio.forEach( radio => {
 				if ( Array.isArray( radio ) ) {
@@ -458,19 +461,25 @@ function info( json ) {
 				var i       = 0;
 				htmls.radio = '';
 				$.each( radio, ( k, v ) => {
-					line = '<td>'+ ( k ? '<label><input type="radio" name="inforadio" value="'+ v +'">'+ k +'</label>' : '' ) +'</td>';
-					if ( ! I.radiocolumn ) {
-						htmls.radio += '<tr>'+ td0 + line +'</tr>';
+					var html = k ? '<label><input type="radio" name="inforadio" value="'+ v +'">'+ k +'</label>' : '';
+					if ( I.radiosingle ) {
+						htmls.radio += html +'&emsp;';
 					} else {
-						i++
-						if ( i % 2 ) {
-							htmls.radio += '<tr>'+ td0 + line;
-							return
+						line = '<td>'+ html +'</td>';
+						if ( ! I.radiocolumn ) {
+							htmls.radio += '<tr class="trradio">'+ td0 + line +'</tr>';
 						} else {
-							htmls.radio += line +'</tr>';
+							i++
+							if ( i % 2 ) {
+								htmls.radio += '<tr class="trradio">'+ td0 + line;
+								return
+							} else {
+								htmls.radio += line +'</tr>';
+							}
 						}
 					}
 				} );
+				if ( I.radiosingle ) htmls.radio = '<tr class="trradio"><td></td><td>'+ htmls.radio +'</td></tr>';
 			} );
 		}
 		if ( I.checkbox ) {
@@ -488,11 +497,11 @@ function info( json ) {
 				}
 				line = '<td>'+ ( lbl ? '<label><input type="checkbox" '+ val +'>'+ lbl +'</label>' : '' ) +'</td>';
 				if ( ! I.checkcolumn ) {
-					htmls.checkbox += '<tr>'+ td0 + line +'</tr>';
+					htmls.checkbox += '<tr class="trcheckbox">'+ td0 + line +'</tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htmls.checkbox += '<tr>'+ td0 + line;
+						htmls.checkbox += '<tr class="trcheckbox">'+ td0 + line;
 						return
 					} else {
 						htmls.checkbox += line +'</tr>';
@@ -501,19 +510,15 @@ function info( json ) {
 			} );
 		}
 		if ( I.select ) {
-			infoKey2array( 'select' );
-			infoKey2array( 'selectlabel' );
+			if ( ! Array.isArray( I.selectlabel ) ) {
+				I.selectlabel = [ I.selectlabel ];
+				I.select      = [ I.select ];
+			}
 			htmls.select = '';
 			I.select.forEach( ( el, i ) => {
-				htmls.select += '<tr><td>'+ ( I.selectlabel[ i ] || '' ) +'</td><td><select>';
-				if ( typeof el !== 'object' ) {     // html
-					htmls.select += el;
-				} else if ( Array.isArray( el ) ) { // name = value
-					el.forEach( v => htmls.select += '<option value="'+ v +'">'+ v +'</option>' );
-				} else {                            // json
-					$.each( el, ( k, v ) => htmls.select += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
-				}
-				htmls.select += '</select></td></tr>';
+				htmls.select +=  '<tr class="trselect"><td>'+ ( I.selectlabel[ i ] || '' ) +'</td><td><select>'
+								+ ( el[ 0 ] === '<' ? el : htmlOption( el ) )
+								+'</select></td></tr>';
 			} );
 		}
 		if ( I.rangelabel ) {
@@ -527,7 +532,7 @@ function info( json ) {
 			} );
 			htmls.range += '</div>';
 		}
-		var htmlcontent = '';
+		var htmlcontent = htmls.header || '';
 		htmlcontent    += htmls.tab || '';
 		htmlcontent    += htmls.message || '';
 		if ( ! I.order ) I.order = [ 'text', 'number', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
@@ -582,32 +587,7 @@ function info( json ) {
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoButtonWidth();
 		// set width: text / password / textarea
-		if ( I.boxwidth ) {
-			var widthmax = I.boxwidth === 'max';
-			if ( widthmax ) $( '#infoBox' ).css( {
-				  width       : '600px'
-				, 'max-width' : I.width +'px' || ''
-			} );
-			var allW = $( '#infoContent' ).width();
-			var labelW = $( '#infoContent td:first-child' ).width() || 0;
-			I.boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
-		} else if ( ! I.contentcssno ) {
-			I.boxW = 230;
-		}
-		if ( I.boxW ) $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
-		if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
-		if ( ! I.contentcssno && $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
-			var $td1st = $( '#infoContent td:first-child' );
-			var input  = $td1st.find( 'input' ).length;
-			$td1st.css( {
-				  'padding-right': input ? '10px' : '5px' // checkbox/radio gutter : text label
-				, 'text-align'   : input ? '' : 'right'   // text label
-			} ); 
-		}
-		if ( htmlinputs && ( I.messagealign || I.footeralign ) ) {
-			var tblW = $( '#infoContent table' ).width();
-			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
-		}
+		infoWidth();
 		if ( I.rangelabel ) {
 			$( '#infoRange input' ).on( 'click input keyup', function() {
 				$( '#infoRange .value' ).text( $( this ).val() );
@@ -655,12 +635,7 @@ function info( json ) {
 function infoButtonCommand( fn, cancel ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( cancel ) delete I.oknoreset;
-	if ( V.press || ( ! V.local && I.oknoreset ) ) return // consecutive info / no reset
-	
-	if ( I.oknoreset ) {
-		$( '#infoContent' ).toggleClass( 'hide' );
-		return
-	}
+	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
 	I = { active: false }
 	$( '#infoOverlay' )
@@ -904,6 +879,9 @@ function infoVal( array ) {
 			case 'text':
 				val = $this.val().trim();
 				break;
+			case 'number':
+				val = +$this.val();
+				break;
 			default:
 				val = $this.val();
 		}
@@ -967,11 +945,84 @@ function infoWarning( icon, title, message ) {
 		, message : iconwarning + message
 	} );
 }
+function infoWidth() {
+	if ( I.boxwidth ) {
+		var widthmax = I.boxwidth === 'max';
+		if ( widthmax ) {
+			if ( I.width ) {
+				var maxw = ( I.width > V.wW ? I.width : V.wW ) +'px';
+			} else {
+				var maxw = '';
+			}
+			$( '#infoBox' ).css( {
+				  width       : V.wW > 600 ? '600px' : V.wW  +'px'
+				, 'max-width' : maxw
+			} );
+		}
+		var allW = $( '#infoContent' ).width();
+		var labelW = $( '#infoContent td:first-child' ).width() || 0;
+		I.boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+	} else if ( ! I.contentcssno ) {
+		I.boxW = 230;
+	}
+	if ( I.boxW ) $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
+	if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
+	if ( ! I.contentcssno && $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
+		var $td1st = $( '#infoContent td:first-child' );
+		var input  = $td1st.find( 'input' ).length;
+		$td1st.css( {
+			  'padding-right': input ? '10px' : '5px' // checkbox/radio gutter : text label
+			, 'text-align'   : input ? '' : 'right'   // text label
+		} ); 
+	}
+	if ( I.headeralign || I.messagealign || I.footeralign ) {
+		$( '#infoContent' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoContent table' ).width() );
+	}
+}
 
+function capitalize( str ) {
+	return str.replace( /\b\w/g, l => l.toUpperCase() );
+}
+function htmlOption( el ) {
+	if ( typeof el === 'number' ) el = [ ...Array( el ).keys() ];
+	var options = '';
+	if ( Array.isArray( el ) ) { // name = value
+		el = el.sort();
+		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
+	} else {                     // json
+		el = jsonSort( el );
+		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
+	}
+	return options
+}
+function jsonChanged( a, b ) {
+	if ( ! a || ! b || ! Object.keys( a ).length || ! Object.keys( b ).length ) return true
+	
+	var changed = false;
+	$.each( a, ( k, v ) => {
+		if ( typeof v === 'object' ) {
+			if ( jsonChanged( v, b[ k ] ) ) {
+				changed = true;
+				return false
+			}
+		} else {
+			if ( v !== b[ k ] ) {
+				changed = true;
+				return false
+			}
+		}
+	} );
+	return changed
+}
 function jsonClone( json ) {
 	return JSON.parse( JSON.stringify( json ) )
 }
-
+function jsonSort( json ) {
+	return Object.keys( json ).sort().reduce( function ( result, key ) {
+		result[ key ] = json[ key ];
+		return result;
+	}, {} );
+}
 // ----------------------------------------------------------------------
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );
@@ -1031,7 +1082,7 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 			refreshData();
 			bannerHide();
 		} else if ( status === 0 ) { // disconnected
-			pushstreamDisconnect();
+			if ( typeof pushstreamDisconnect === 'function' ) pushstreamDisconnect();
 			if ( V.off ) {
 				pushstream.disconnect();
 				$( '#loader' ).css( 'background', '#000000' );
@@ -1067,21 +1118,17 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
-	var options = {}
-	if ( $select ) {
-		var searchbox = page === 'system';
-	} else {
+	var options = { minimumResultsForSearch: 10 }
+	if ( ! $select ) {
 		$select = $( '#infoContent select' );
-		var searchbox = page && SW.icon === 'wlan';
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
-	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
 	$select
 		.select2( options )
 		.on( 'select2:open',    () => { // fix: scroll on info - set current value 3rd from top
 			setTimeout( () => {
 				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
-				if ( searchbox && ! navigator.maxTouchPoints ) scroll -= 12;
+				if ( ! navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
 		} )

@@ -2,7 +2,6 @@
 #colorpicker,
 #lyrics,
 #lyricsfade,
-#status { z-index: 110 }
 #bar-top,
 #bar-bottom { z-index: 106 }
 #settings { z-index: 105 }
@@ -242,14 +241,10 @@ i.map.disabled, .map.disabled i {
 	user-select: none;
 }
 /* ---------------------- bars ----------------------*/
-#refresh,
-#status {
+#refresh {
 	position: fixed;
 	width: 40px;
 	height: 40px;
-}
-#status {
-	left: 40px;
 }
 #bar-top,
 #bar-bottom {
@@ -1366,6 +1361,7 @@ i.map.disabled, .map.disabled i {
 	float: right;
 	font-size: 28px;
 	color: var( --cm );
+	z-index: 115;
 }
 .back-left {
 	float: left !important;
@@ -1449,7 +1445,7 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	text-align: center;
 }
-#pl-path .i-arrow-left {
+#pl-path .i-back {
 	width: 40px !important;
 }
 #lib-search,

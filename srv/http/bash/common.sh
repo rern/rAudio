@@ -77,10 +77,9 @@ args2var() {
 	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$CMD.conf
 }
 cacheBust() {
+	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
 	hash=?v=$( date +%s )
 	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
-	sed -i "s/?v=.*/$hash';/" /srv/http/common.php
-	sed -E -i  "s/\?v=.{10}/$hash/g" /srv/http/settings/camillagui/build/index.html
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
@@ -155,7 +154,7 @@ dirPermissions() {
 	chown -R http:http /srv
 	chown mpd:audio $dirmpd $dirplaylists $dirmpd/mpd.db
 	chmod -R u=rw,go=r,a+X /srv
-	chmod -R +x $dirbash /srv/http/settings/camillagui/{backend,main.py} &> /dev/null
+	chmod -R +x $dirbash
 }
 enableFlagSet() {
 	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
@@ -202,7 +201,7 @@ mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
 notify() { # icon title message delayms
-	local blink delay
+	local blink delay icon json message title
 	blink=
 	delay=3000
 	if [[ $1 == '-blink' ]]; then
@@ -234,14 +233,17 @@ packageActive() {
 	done
 }
 package() {
+	local file
 	file=$( dialog --colors --no-shadow --no-collapse --output-fd 1 --nocancel --menu "
 Package:
 " 8 0 0 \
 1 Build \
-2 'Update repo' )
+2 'Update repo' \
+3 'AUR setup' )
 	case $file in
 		1 ) file=pkgbuild;;
 		2 ) file=repoupdate;;
+		3 ) file=aursetup;;
 	esac
 	bash <( curl -L https://github.com/rern/rern.github.io/raw/main/$file.sh )
 }
@@ -333,6 +335,23 @@ statePlay() {
 }
 stringEscape() {
 	echo ${@//\"/\\\"}
+}
+volumeCardControl() {
+	local card control volume
+	if [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
+		volume=false
+	else
+		if [[ -e $dirshm/btreceiver ]]; then
+			control=$( < $dirshm/btreceiver )
+		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+			control=
+		else
+			card=$( getContent $dirsystem/asoundcard )
+			control=$( getContent $dirshm/amixercontrol )
+		fi
+		volume=$( volumeGet value )
+	fi
+	echo $volume $card $control
 }
 volumeGet() {
 	local amixer card control data mixersoftware val_db

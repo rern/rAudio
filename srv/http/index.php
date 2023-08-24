@@ -9,7 +9,7 @@ function i( $id = '', $class ) {
 // context menus
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( '', 'plus-o' ).'Add</a><i class="i-play-plus submenu" data-cmd="'.$add.'play"></i>';
-	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( '', 'plus-circle' ).'Play next</a>';
+	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( '', 'add' ).'Play next</a>';
 	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( '', 'replace' ).'Replace</a><i class="i-play-replace submenu" data-cmd="'.$replace.'play"></i>';
 	return $htmlcommon;
 }
@@ -53,7 +53,7 @@ $menulist = [
 	  [ 'similar',       'lastfm',        'Add similar' ]
 	, [ 'wrsave',        'save',          'Save to Library' ]
 	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
-	, [ 'savedplremove', 'minus-circle',  'Remove' ]
+	, [ 'savedplremove', 'remove',        'Remove' ]
 	, [ 'tag',           'tag',           'Tag Editor' ]
 ];
 htmlmenu( $menulist, 'filesavedpl' );
@@ -74,19 +74,19 @@ $menulist = [
 	  [ 'play',       'play',          'Play' ]
 	, [ 'pause',      'pause',         'Pause' ]
 	, [ 'stop',       'stop',          'Stop' ]
-	, [ 'current',    'current',         'Current' ]
+	, [ 'current',    'current',       'Current' ]
 	, [ 'wrsave',     'save',          'Save to Library' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'remove',     'minus-circle',  'Remove' ]
+	, [ 'remove',     'remove',        'Remove' ]
 	, [ 'similar',    'lastfm',        'Add similar' ]
-	, [ 'tag',        'info-circle',   'Track Info' ]
+	, [ 'tag',        'info',          'Track Info' ]
 ];
 htmlmenu( $menulist, 'plaction' );
 // playlist
 $html = menucommon( 'pladd', 'plreplace' );
 $menulist = [
-	  [ 'plrename', 'edit-circle',  'Rename' ]
-	, [ 'pldelete', 'minus-circle', 'Delete' ]
+	  [ 'plrename', 'edit',   'Rename' ]
+	, [ 'pldelete', 'remove', 'Delete' ]
 ];
 htmlmenu( $menulist, 'playlist' );
 // radio bookmark
@@ -95,18 +95,18 @@ $menu.= menudiv( 'bkradio', $html );
 // webradio
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
-	  [ 'bookmark',   'star',         'Bookmark' ]
-	, [ 'wredit',     'edit-circle',  'Edit' ]
-	, [ 'wrcoverart', 'coverart',     'Change cover art' ]
-	, [ 'wrdelete',   'minus-circle', 'Delete' ]
+	  [ 'bookmark',   'star',     'Bookmark' ]
+	, [ 'wredit',     'edit',     'Edit' ]
+	, [ 'wrcoverart', 'coverart', 'Change cover art' ]
+	, [ 'wrdelete',   'remove',   'Delete' ]
 ];
 htmlmenu( $menulist, 'webradio' );
 // wrdir
 $html = '';
 $menulist = [
-	  [ 'bookmark',      'star',         'Bookmark' ]
-	, [ 'wrdirdelete',   'minus-circle', 'Delete' ]
-	, [ 'wrdirrename',   'edit-circle',  'Rename' ]
+	  [ 'bookmark',    'star',   'Bookmark' ]
+	, [ 'wrdirdelete', 'remove', 'Delete' ]
+	, [ 'wrdirrename', 'edit',   'Rename' ]
 ];
 htmlmenu( $menulist, 'wrdir' );
 
@@ -151,7 +151,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 }
 ?>
 
-<div id="refresh"></div><div id="status"></div>
+<div id="refresh"></div>
 
 <div id="bar-top" class="hide">
 	<?=i( 'logo', 'raudio-nobg' )?><div id="playback-controls"><?=$htmlcontrols?></div><?=i( 'button-settings', 'gear' )?>
@@ -172,7 +172,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		</div>
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
-			<?=i( 'button-lib-back', 'arrow-left' )?>
+			<?=i( 'button-lib-back', 'back' )?>
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
 			<span class="lipath"></span>
@@ -182,7 +182,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 </div>
 
 <div id="page-playback" class="page">
-	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
+	<?=i( '', 'plus-o emptyadd hide' )?>
 	<?=i( 'guide-bio',    'bio map guide hide' )
 	  .i( 'guide-lyrics', 'lyrics map guide hide' )
 	  .i( 'guide-booklet',  'booklet map guide hide' )?>
@@ -263,19 +263,19 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 </div>
 
 <div id="page-playlist" class="page hide">
-	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
+	<?=i( '', 'plus-o emptyadd hide' )?>
 	<div class="content-top">
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
 		<?=i( 'button-playlist', 'playlist active' )
-		  .i( 'button-pl-back',  'arrow-left hide' )?>
+		  .i( 'button-pl-back',  'back hide' )?>
 		<div id="pl-manage" class="playlist">
 			<?=i( 'button-pl-playlists', 'playlists' )
 			  .i( 'button-pl-save',      'save-plus pllength' )
 			  .i( 'button-pl-consume',   'flash' )
 			  .i( 'button-pl-librandom', 'librandom' )
 			  .i( 'button-pl-shuffle',   'shuffle pllength' )
-			  .i( 'button-pl-clear',     'minus-circle pllength' )
+			  .i( 'button-pl-clear',     'remove pllength' )
 			  .i( 'button-pl-search',    'search pllength' )?>
 		</div>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
@@ -299,12 +299,12 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<img src=""><span id="lyricstitle"></span><?=i( 'lyricsclose', 'close' )?>
 	</div>
 	<div id="divlyricsartist">
-		<span id="lyricsartist"></span><?=i( 'lyricsrefresh', 'refresh' ),i( 'lyricsedit', 'edit-circle' )?>
+		<span id="lyricsartist"></span><?=i( 'lyricsrefresh', 'refresh' ),i( 'lyricsedit', 'edit' )?>
 		<div id="lyricseditbtngroup" class="hide">
 			<?=i( 'lyricsundo',   'undo hide' )
 			  .i( 'lyricssave',   'save hide' )
-			  .i( 'lyricsdelete', 'minus-circle' )
-			  .i( 'lyricsback',   'arrow-left bl' )?>
+			  .i( 'lyricsdelete', 'remove' )
+			  .i( 'lyricsback',   'back bl' )?>
 		</div>
 	</div>
 	<div id="lyricstext" class="lyricstext"></div>

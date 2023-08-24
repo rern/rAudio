@@ -13,7 +13,7 @@
 
 ### included by player-conf.sh, player-data.sh
 
-readarray -t aplay <<< $( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
+readarray -t aplay <<< $( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback.*1/' )
 
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
@@ -24,22 +24,6 @@ if [[ ! $aplay ]]; then
 	pushstream display '{ "volumenone": true }'
 	return
 fi
-
-getControls() {
-	local amixer controls
-	amixer=$( amixer -c $1 scontents )
-	[[ ! $amixer ]] && controls= && return
-	
-	amixer=$( grep -A1 ^Simple <<< $amixer \
-				| sed 's/^\s*Cap.*: /^/' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' \
-				| grep -v "'Mic'" )
-	controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
-	[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
-	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< $controls )
-	[[ $controls ]] && echo "$controls"
-}
 
 rm -f $dirshm/nosound
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
@@ -60,8 +44,8 @@ for line in "${aplay[@]}"; do
 	if [[ $aplayname == Loopback ]]; then
 		device=; hwmixer=; mixers=; mixerdevices=; mixertype=; name=;
 		devices+=',{
-  "aplayname"    : "'$aplayname'"
-, "card"         : '$card'
+  "aplayname" : "'$aplayname'"
+, "card"      : '$card'
 }'
 	else
 		[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
@@ -72,7 +56,17 @@ for line in "${aplay[@]}"; do
 		fi
 		mixertypefile="$dirsystem/mixertype-$aplayname"
 		[[ -e $mixertypefile ]] && mixertype=$( < "$mixertypefile" ) || mixertype=hardware
-		controls=$( getControls $card )
+		amixer=$( amixer -c $card scontents )
+		if [[ $amixer ]]; then
+			amixer=$( grep -A1 ^Simple <<< $amixer \
+						| sed 's/^\s*Cap.*: /^/' \
+						| tr -d '\n' \
+						| sed 's/--/\n/g' \
+						| grep -v "'Mic'" )
+			controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
+			[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
+			[[ $controls ]] && controls=$( cut -d"'" -f2 <<< $controls )
+		fi
 		if [[ ! $controls ]]; then
 			mixerdevices=false
 			mixers=0

@@ -22,7 +22,7 @@ $html = <<< EOF
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	· On rAudio: {$Ftab( 'system', 'System' )}{$FlabelIcon( 'Bluetooth', 'bluetooth' )} ■ Discoverable by senders
+	· On rAudio: {$Ftab( 'system' )}{$FlabelIcon( 'Bluetooth', 'bluetooth' )} ■ Discoverable by senders
 	· On sender: Search &raquo; Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect:
@@ -37,16 +37,16 @@ echo $html;
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
 	, 'status' => 'wl'
-	, 'button' => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
+	, 'button' => [ 'wladd' => 'add', 'wlscan' => 'search' ]
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="helpblock hide"><?=i( 'plus-circle btn' )?> Manual connect
+	<div class="helpblock hide"><?=i( 'add btn' )?> Manual connect
 <?=i( 'search btn' )?> Available networks
 <?=i( 'wifi btn' )?> Context menu
 
 Note:
- · Avoid double quotes <code>"</code> in Wi-Fi name and password.
+ · Avoid double quotes <c>"</c> in Wi-Fi name and password.
  · Access points with 1 bar icon <?=i( 'wifi1' )?> might be unstable.</div>
 </div>
 <div id="divlan" class="section">
@@ -54,7 +54,7 @@ Note:
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
 	, 'status' => 'lan'
-	, 'button' => [ 'lanadd' => 'plus-circle wh' ]
+	, 'button' => [ 'lanadd' => 'add wh' ]
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
@@ -122,9 +122,9 @@ htmlHead( [ //////////////////////////////////
 </div>
 
 <div id="menu" class="menu hide">
-<a class="connect"><?=i( 'check' )?>Connect</a>
+<a class="connect"><?=i( 'connect' )?>Connect</a>
 <a class="disconnect"><?=i( 'close' )?>Disconnect</a>
-<a class="edit"><?=i( 'edit-circle' )?>Edit</a>
-<a class="forget"><?=i( 'minus-circle' )?>Forget</a>
-<a class="info"><?=i( 'info-circle' )?>Info</a>
+<a class="edit"><?=i( 'edit' )?>Edit</a>
+<a class="forget"><?=i( 'remove' )?>Forget</a>
+<a class="info"><?=i( 'info' )?>Info</a>
 </div>

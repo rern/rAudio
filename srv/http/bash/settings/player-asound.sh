@@ -9,8 +9,9 @@ defaults.pcm.card $asoundcard
 defaults.ctl.card $asoundcard
 "
 fi
+[[ -e $dirshm/btreceiver ]] && bluetooth=$( < $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
-	dsp=1
+	camilladsp=1
 	modprobe snd_aloop
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
 	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml )
@@ -44,8 +45,7 @@ ctl.camilladsp {
 	card Loopback
 }'
 else
-	if [[ -e $dirshm/btreceiver ]]; then
-		btmixer=$( < $dirshm/btreceiver )
+	if [[ $bluetooth ]]; then
 ########
 		asound+='
 pcm.bluealsa {
@@ -58,7 +58,7 @@ pcm.bluealsa {
 }'
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
-		if [[ $btmixer ]]; then
+		if [[ $bluetooth ]]; then
 			slavepcm=bluealsa
 		elif [[ $asoundcard != -1 ]]; then
 			slavepcm='"plughw:'$asoundcard',0"'
@@ -93,18 +93,19 @@ if [[ $wm5102card ]]; then
 	$dirsettings/player-wm5102.sh $wm5102card $output
 fi
 
-if [[ $dsp ]]; then
-	$dirsettings/camilladsp-setformat.sh
-else
-	if [[ $btmixer ]]; then
-		if [[ -e "$dirsystem/btvolume-$btmixer" ]]; then
-			btvolume=$( < "$dirsystem/btvolume-$btmixer" )
-			amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
-		fi
-		systemctl -q is-active localbrowser && action=stop || action=start
-		systemctl $action bluetoothbutton
+if [[ $camilladsp ]]; then
+	if [[ $bluetooth ]]; then
+		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
-		systemctl stop bluetoothbutton
+		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
+		$dirsettings/camilla.sh setformat
+	fi
+else
+	if [[ $bluetooth ]]; then
+		if [[ -e "$dirsystem/btvolume-$bluetooth" ]]; then
+			btvolume=$( < "$dirsystem/btvolume-$bluetooth" )
+			amixer -MqD bluealsa sset "$bluetooth" $btvolume% 2> /dev/null
+		fi
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
 		value=$( sed -E -n '/"current":/ {s/.*: "(.*)",/\1/; p}' $dirsystem/equalizer.json )
@@ -115,4 +116,11 @@ $value
 $user
 CMD VALUE USER"
 	fi
+fi
+
+if [[ $bluetooth ]]; then
+	systemctl -q is-active localbrowser && action=stop || action=start
+	systemctl $action bluetoothbutton
+else
+	systemctl stop bluetoothbutton
 fi

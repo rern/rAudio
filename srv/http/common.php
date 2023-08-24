@@ -33,7 +33,7 @@ $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
 // css / js filename with version
-$cssfiles   = array_slice( scandir( '/srv/http/assets/css/plugin' ), 2 );
+$cssfiles  = array_slice( scandir( '/srv/http/assets/css/plugin' ), 2 );
 foreach( $cssfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
 	$cfiles[ $name ] = $file;
@@ -46,7 +46,7 @@ foreach( $jsfiles as $file ) {
 if ( ! $page ) { // main
 	$cssp[] = 'roundslider';
 	$css[]  = 'main';
-	$jsp    = [ 'jquery', 'lazysizes', 'pushstream', 'roundslider', 'Sortable' ]; // dynamically loaded with $.getScript: html5colorpicker, pica, qrcode
+	$jsp    = [ 'jquery', 'lazysizes', 'pushstream', 'roundslider', 'Sortable' ]; // dynamically loaded with $.getScript: html5colorpicker, pica, qrcode, plotly
 	$js     = [ 'common', 'context', 'function', 'main', 'passive' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
@@ -75,15 +75,21 @@ if ( ! $page ) { // main
 	}
 	if ( $addons ) $css[]  = 'addons';
 	
-	$icon = $pagetitle = $page;
+	$icon      = $page;
+	$pagetitle = strtoupper( $page );
 	if ( $addonsprogress ) {
-		$icon = 'addons';
-		$pagetitle = 'addons-progress';
+		$icon      = 'addons';
+		$pagetitle = 'Addons-Progress';
+	} else if ( $camilla ) {
+		$icon      = 'camilladsp';
+		$pagetitle = 'Camilla DSP';
+		$css[]     = 'camilla';
+		$jsp[]     = 'Sortable';
 	} else if ( $guide ) {
-		$icon = 'help';
-		$pagetitle = 'user guide';
+		$icon      = 'help';
+		$pagetitle = 'User Guide';
 	}
-	$title = strtoupper( $pagetitle );
+	$title = $pagetitle;
 }
 // <style> -----------------------------------------------------
 $links = '';

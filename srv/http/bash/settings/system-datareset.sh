@@ -7,8 +7,6 @@ if [[ -e $diraddons ]]; then
 	reset=1
 	statePlay && $dirbash/cmd.sh playerstop
 	mpc -q clear
-# camilla 
-	sed -i -E "s/(status_update_interval: ).*/\1100/" /srv/http/settings/camillagui/config/gui-config.yml &> /dev/null
 # hostapd
 	sed -i -E -e 's/^(dhcp-range=).*/\1192.168.5.2,192.168.5.254,24h/
 ' -e 's/^(.*option:router,).*/\1192.168.5.1/
@@ -96,6 +94,7 @@ fi
 
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
+mkdir $dircamilladsp/{coeffs,configs,configs-bt}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
@@ -113,7 +112,7 @@ fi
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
 	label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
-false='albumbyartist audiocdplclear backonleft barsalways camilladsp covervu hidecover
+false='albumbyartist audiocdplclear backonleft barsalways covervu hidecover
 	multiraudio noswipe radioelapsed tapaddplay tapreplaceplay vumeter'
 for i in $true; do
 	lines+='
@@ -124,6 +123,15 @@ for i in $false; do
 , "'$i'": false'
 done
 jq -S <<< {${lines:2}} > $dirsystem/display.json
+
+# camilladsp
+if [[ -e /usr/bin/camilladsp ]]; then
+	echo "\
+filtersmax=10
+filtersmin=-10
+mixersmax=10
+mixersmin=-10" > $dirsystem/camilla.conf
+fi
 
 # localbrowser
 [[ -e /etc/systemd/system/localbrowser.service ]] && rm -rf /root/.config/chromium /root/.mozilla

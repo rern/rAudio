@@ -1,9 +1,14 @@
 <?php
-include '/srv/http/function.php';
-
-$playlist = $_POST[ 'playlist' ] ?? $argv[ 1 ];
+if ( isset( $argv[ 1 ] ) ) {
+	$playlist = $argv[ 1 ];
+	unset( $argv );
+} else {
+	$playlist = $_POST[ 'playlist' ];
+}
 $add      = $playlist === 'add' ? true : false;
 $headers  = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
+
+include '/srv/http/function.php';
 
 // current playlist
 // saved playlists: delete, edit, get, list, load, rename, save
