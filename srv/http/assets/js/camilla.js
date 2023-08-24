@@ -1913,47 +1913,49 @@ $( '#menu a' ).on( 'click', function( e ) {
 			setting.device( V.li.data( 'type' ) );
 			break;
 		case 'config':
-			case 'edit':
-				var file = V.li.text();
-				info( {
-					  icon        : V.tab
-					, title       : 'Config'
-					, message     : 'File: <wh>'+ file +'</wh>'
-					, textlabel   : 'Name'
-					, radio       : [ 'Rename', 'Copy' ]
-					, radiocolumn : true
-					, values      : [ file, 'Rename' ]
-					, beforeshow  : () => $( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 )
-					, ok          : () => {
-						var val     = infoVal();
-						var newname = val[ 0 ];
-						var copy    = val[ 1 ] === 'Copy';
-						bash( [ copy ? 'confcopy' : 'confrename', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ], () => {
-							if ( ! copy && name === S.configname ) setting.set( newname );
-						} );
-						notify( icon, SW.title, copy ? 'Copy ...' : 'Rename ...' );
-						copy ? S.lsconf.push( newname ) : S.lsconf[ S.lsconf.indexOf( name ) ] = newname;
-						render.status();
-					}
-				} );
+			switch ( cmd ) {
+				case 'edit':
+					var file = V.li.text();
+					info( {
+						  icon        : V.tab
+						, title       : 'Config'
+						, message     : 'File: <wh>'+ file +'</wh>'
+						, textlabel   : 'Name'
+						, radio       : [ 'Rename', 'Copy' ]
+						, radiocolumn : true
+						, values      : [ file, 'Rename' ]
+						, beforeshow  : () => $( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 )
+						, ok          : () => {
+							var val     = infoVal();
+							var newname = val[ 0 ];
+							var copy    = val[ 1 ] === 'Copy';
+							bash( [ copy ? 'confcopy' : 'confrename', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ], () => {
+								if ( ! copy && name === S.configname ) setting.set( newname );
+							} );
+							notify( icon, SW.title, copy ? 'Copy ...' : 'Rename ...' );
+							copy ? S.lsconf.push( newname ) : S.lsconf[ S.lsconf.indexOf( name ) ] = newname;
+							render.status();
+						}
+					} );
+					break;
+				case 'delete':
+					var file = V.li.text();
+					info( {
+						  icon    : V.tab
+						, title   : 'Config'
+						, message : 'Delete <wh>'+ file +'</wh> ?'
+						, oklabel : ico( 'remove' ) +'Delete'
+						, okcolor : red
+						, ok      : () => {
+							S.lsconf.slice( S.lsconf.indexOf( file ), 1 );
+							bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
+							banner( icon, SW.title, 'Delete ...' );
+							render.status();
+						}
+					} );
+					break;
 				break;
-			case 'delete':
-				var file = V.li.text();
-				info( {
-					  icon    : V.tab
-					, title   : 'Config'
-					, message : 'Delete <wh>'+ file +'</wh> ?'
-					, oklabel : ico( 'remove' ) +'Delete'
-					, okcolor : red
-					, ok      : () => {
-						S.lsconf.slice( S.lsconf.indexOf( file ), 1 );
-						bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
-						banner( icon, SW.title, 'Delete ...' );
-						render.status();
-					}
-				} );
-				break;
-			break;
+			}
 	}
 } );
 $( '#filters' ).on( 'click', '.i-add', function() {
