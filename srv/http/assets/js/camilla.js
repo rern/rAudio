@@ -1677,6 +1677,9 @@ $( '#configuration' ).on( 'change', function() {
 	V.graph  = { filters: {}, pipeline: {} }
 	render[ V.tab ];
 } );
+$( '#setting-configuration' ).on( 'click', function() {
+	$( '#tabconfig' ).trigger( 'click' );
+} );
 $( '#divtabs' ).on( 'click', '.graphclose', function() {
 	$( this ).parent().addClass( 'hide' );
 } );

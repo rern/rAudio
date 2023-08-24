@@ -1,6 +1,6 @@
 <?php
 $id_data = [
-	  'configuration'       => [ 'name' => 'Configuration',       'setting' => false ]
+	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom' ]
 	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
