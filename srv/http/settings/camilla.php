@@ -10,7 +10,7 @@ $contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edi
 $contextmixers   = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
 $contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
 $contextconfig   = str_replace( 'mixers' , 'config', $contextmixers );
-$gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' Gain: -0.1dB · 0 · +0.1dB';
+$gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' -0.1dB · 0 · +0.1dB';
 $help = [
 	  'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )} FIR coefficient
@@ -93,11 +93,10 @@ $body = [
 	, [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
-//		, 'settingicon' => 'folder-config'
 		, 'help'  => <<< EOF
+{$Fi( 'gear btn' )} Configuration files
 {$Fi( 'minus btn' )}{$Fi( 'mute btn' )}{$Fi( 'plus btn' )} -1% · mute · +1%
-{$Fi( 'set0 btn' )} Reset clipped
-{$Fi( 'folder-config btn' )} Configuration files
+{$Fi( 'set0 btn' )} Reset clipped count (if any)
 EOF
 	]
 ];
