@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1691584114' );
+	src         : url( '/assets/fonts/rern.woff2?v=1691584116' );
 }
 @font-face {
 	font-family : Lato;
@@ -62,6 +62,7 @@ i {
 .i-close::before           { content: '\F56C' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
+.i-config::before          { content: '\F548' }
 .i-connect::before         { content: '\F56D' }
 .i-consume::before         { content: '\F566' }
 .i-controls::before        { content: '\F50B' }
@@ -88,7 +89,6 @@ i {
 .i-flowchart::before       { content: '\F52D' }
 .i-folder::before          { content: '\F540' }
 .i-folder-cascade::before  { content: '\F54A' }
-.i-folder-config::before   { content: '\F53E' }
 .i-folder-filter::before   { content: '\F53F' }
 .i-folder-forbid::before   { content: '\F537' }
 .i-folder-open::before     { content: '\F541' }

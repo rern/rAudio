@@ -1,14 +1,15 @@
 <?php
 $id_data = [
-	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom' ]
+	  'configuration'       => [ 'name' => 'Configuration',       'setting' => false ]
 	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
 ];
 $sliderrange     = i( 'gear btn' ).' Gain slider range';
 $contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
-$contextmixers   = str_replace( 'filters' , 'mixers', $contextfilters );
+$contextmixers   = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
 $contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
+$contextconfig   = str_replace( 'mixers' , 'config', $contextmixers );
 $gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' Gain: -0.1dB · 0 · +0.1dB';
 $help = [
 	  'filters'   => <<< EOF
@@ -25,22 +26,22 @@ EOF
 EOF
 	, 'pipeline' => <<< EOF
 {$Fi( 'flowchart btn' )} Step flowchart
-{$Fi( 'plus btn' )} Add entry
-{$contextmixers}
+{$contextpipeline}
 EOF
 	, 'devices'  => <<< EOF
 {$Fi( 'gear btn' )} Capture sampling
 {$Fi( 'input btn' )}{$Fi( 'output btn' )} Device settings
 EOF
+	, 'config'   => <<< EOF
+{$contextconfig}
+EOF
 ];
 $htmltabs = '<div id="divtabs">';
-foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
+foreach( [ 'filters', 'mixers', 'pipeline', 'devices', 'config' ] as $id ) {
 	$htmltabs.= '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$help[ $id ].'</div>';
 	if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
 	$htmltabs.= '<ul class="entries main"></ul>';
-	if ( $id !== 'devices' ) {
-		$htmltabs.= '<ul class="entries sub"></ul>';
-	} else {
+	if ( $id === 'devices' ) {
 		$htmltabs.= '
 <div id="divdevices" class="section">
 '.htmlSectionStatus( 'sampling' ).'
@@ -51,6 +52,8 @@ foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
 '.htmlSetting( [ 'id' => 'enable_resampling',   'returnhtml' => true ] ).'
 </div>
 ';
+	} else if ( $id !== 'config' ) {
+		$htmltabs.= '<ul class="entries sub"></ul>';
 	}
 	$htmltabs.= '</div>';
 }
@@ -90,7 +93,7 @@ $body = [
 	, [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
-		, 'settingicon' => 'folder-config'
+//		, 'settingicon' => 'folder-config'
 		, 'help'  => <<< EOF
 {$Fi( 'minus btn' )}{$Fi( 'mute btn' )}{$Fi( 'plus btn' )} -1% · mute · +1%
 {$Fi( 'set0 btn' )} Reset clipped

@@ -523,6 +523,11 @@ var render   = {
 		$( '#'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
+		if ( V.tab === 'config' ) {
+			render.config();
+			return
+		}
+		
 		if ( $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) {
 			render.prevconfig();
 			render[ V.tab ]();
@@ -647,7 +652,7 @@ var render   = {
 		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
 	}
 	, filtersSub  : ( k ) => {
-		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coeffifients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoef.length ) S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		render.toggle( li, 'sub' );
 	} //---------------------------------------------------------------------------------------------
@@ -790,6 +795,13 @@ var render   = {
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		switchSet();
 		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', DEV.enable_resampling && DEV.resampler_type === 'Synchronous' );
+	} //---------------------------------------------------------------------------------------------
+	, config      : () => {
+		var li  = '';
+		S.lsconf.forEach( f => {
+			li += '<li>'+ ico( 'file liicon edit' ) +f +'</li>';
+		} );
+		$( '#config .entries.main' ).html( li );
 	} //---------------------------------------------------------------------------------------------
 	, dataSort    : ( tab ) => {
 		var kv   = S.config[ tab ];
@@ -1384,28 +1396,27 @@ var setting  = {
 		ws.send( '"Reload"' );
 		bash( [ 'confswitch', name, 'CMD NAME' ] );
 	}
-	, upload        : ( icon ) => {
-		if ( icon === 'filters' ) {
-			var title   = 'Add Filter File';
+	, upload        : () => {
+		var filters = V.tab === 'filters';
+		var title   = 'Add File';
+		if ( filters ) {
 			var dir     = 'coeffs';
-			var message = 'Upload filter file:';
+			var message = 'Upload <wh>coefficient</wh> file:';
 		} else {
-			var title   = 'Add Configuration';
 			var dir     = S.bluetooth ? 'configs-bt' : 'configs';
-			var message = 'Upload configuration file:'
+			var message = 'Upload <wh>configuration</wh> file:'
 		}
 		info( {
-			  icon        : icon
+			  icon        : V.tab
 			, title       : title
 			, message     : message
 			, fileoklabel : ico( 'file' ) +'Upload'
 			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml'
 			, cancel      : () => {
-				if ( icon !== 'filters' ) $( '#setting-configuration' ).trigger( 'click' );
 				if ( ! ws ) util.webSocket();
 			}
 			, ok          : () => {
-				notify( icon, title, 'Upload ...' );
+				notify( V.tab, title, 'Upload ...' );
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'camilla' );
 				formdata.append( 'dir', dir );
@@ -1415,7 +1426,7 @@ var setting  = {
 					.then( message => {
 						if ( message ) {
 							bannerHide();
-							infoWarning(  icon,  title, message );
+							infoWarning(  V.tab,  title, message );
 						}
 					} );
 				if ( ! ws ) util.webSocket();
@@ -1666,71 +1677,6 @@ $( '#configuration' ).on( 'change', function() {
 	V.graph  = { filters: {}, pipeline: {} }
 	render[ V.tab ];
 } );
-$( '#setting-configuration' ).on( 'click', function() {
-	var content = '<table style="border-collapse: collapse; width: 300px; margin: -20px auto 10px;">'
-				 +'<tr><td colspan="3"><label class="add">File: '+ ico( 'add' ) +'</label></td></tr>'
-	S.lsconf.forEach( f => {
-		var current = f === S.configname ? '<grn> • </grn>' : '';
-		var tdicon  = '<td style="width: 30px; text-align: center;">';
-		var ibt     = S.bluetooth ? ico( 'btreceiver' ) : '';
-		var iremove = current ? '' : ico( 'remove gr' );
-		content    += '<tr style="border: 1px solid var( --cgl ); border-style: solid none;">'
-					 + tdicon + ibt + ico( 'file gr' ) +'</td><td><a class="name">'+ f +'</a>'+ current +'</td>'
-					 + tdicon + iremove +'</td>'+ tdicon + ico( 'copy gr' ) +'</td>'
-					 +'</tr>';
-	} );
-	var icon  = 'folder-config';
-	info( {
-		  icon        : icon
-		, title       : SW.title
-		, content     : content
-		, beforeshow  : () => {
-			$( '#infoContent' ).on( 'click', '.add', function() {
-				setting.upload( 'camilladsp' );
-			} ).on( 'click', '.i-file, .i-copy', function() {
-				var $this  = $( this );
-				var rename = $this.hasClass( 'i-file' );
-				var name   = $this.parents( 'tr' ).find( '.name' ).text();
-				info( {
-					  icon         : icon
-					, title        : SW.title
-					, message      : rename ? 'Rename <wh>'+ name +'</wh> to:' : 'Copy <wh>'+ name +'</wh> as:'
-					, textlabel    : 'Name'
-					, values       : name
-					, checkblank   : true
-					, checkchanged : true
-					, cancel       : () => $( '#setting-configuration' ).trigger( 'click' )
-					, ok           : () => {
-						var newname = infoVal();
-						bash( [ rename ? 'confrename' : 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ], () => {
-							if ( rename && name === S.configname ) setting.set( newname );
-						} );
-						notify( icon, SW.title, rename ? 'Rename ...' : 'Copy ...' );
-						rename ? S.lsconf[ S.lsconf.indexOf( name ) ] = newname : S.lsconf.push( newname );
-						render.status();
-					}
-				} );
-			} ).on( 'click', '.i-remove', function() {
-				var file = $( this ).parent().prev().text();
-				info( {
-					  icon    : icon
-					, title   : SW.title
-					, message : 'Delete <wh>'+ file +'</wh> ?'
-					, cancel  : () => $( '#setting-configuration' ).trigger( 'click' )
-					, oklabel : ico( 'remove' ) +'Delete'
-					, okcolor : red
-					, ok      : () => {
-						S.lsconf.slice( S.lsconf.indexOf( name ), 1 );
-						bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
-						banner( icon, SW.title, 'Delete ...' );
-						render.status();
-					}
-				} );
-			} );
-		}
-		, okno       : true
-	} );
-} );
 $( '#divtabs' ).on( 'click', '.graphclose', function() {
 	$( this ).parent().addClass( 'hide' );
 } );
@@ -1743,6 +1689,8 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		setting.mixer();
 	} else if ( V.tab === 'pipeline' ) {
 		setting.pipeline();
+	} else if ( V.tab === 'config' ) {
+		setting.upload();
 	}
 } ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '.flowchart' );
@@ -1800,10 +1748,8 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		}
 	} );
 } );
-$( '.entries' ).on( 'click', 'i', function() {
+$( '.entries' ).on( 'click', '.liicon', function() {
 	var $this  = $( this );
-	if ( ! $this.hasClass( 'liicon' ) ) return
-	
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
 	$( '#menu' ).addClass( 'hide' );
@@ -1812,6 +1758,7 @@ $( '.entries' ).on( 'click', 'i', function() {
 	
 	V.li.addClass( 'active' );
 	contextMenu();
+	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
@@ -1848,22 +1795,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 			var name  = V.li.data( 'name' );
 			var file  = V.li.find( '.i-file' ).length;
 			switch ( cmd ) {
-				case 'delete':
-					if ( util.inUse( name ) ) return
-					
-					info( {
-						  icon    : V.tab
-						, title   : title
-						, message : 'Delete: <wh>'+ name +'</wh> ?'
-						, oklabel : ico( 'remove' ) +'Delete'
-						, okcolor : red
-						, ok      : () => {
-							file ? bash( [ 'coefdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
-							setting.save( title, 'Delete ...' );
-							V.li.remove();
-						}
-					} );
-					break;
 				case 'edit':
 					if ( file ) {
 						info( {
@@ -1889,6 +1820,22 @@ $( '#menu a' ).on( 'click', function( e ) {
 						setting.filter( type, subtype, name );
 					}
 					break;
+				case 'delete':
+					if ( util.inUse( name ) ) return
+					
+					info( {
+						  icon    : V.tab
+						, title   : title
+						, message : 'Delete: <wh>'+ name +'</wh> ?'
+						, oklabel : ico( 'remove' ) +'Delete'
+						, okcolor : red
+						, ok      : () => {
+							file ? bash( [ 'coefdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
+							setting.save( title, 'Delete ...' );
+							V.li.remove();
+						}
+					} );
+					break;
 			}
 			break;
 		case 'mixers':
@@ -1896,6 +1843,9 @@ $( '#menu a' ).on( 'click', function( e ) {
 			var name  = V.li.data( 'name' );
 			var main  = $( '#mixers .entries.sub' ).hasClass( 'hide' );
 			switch ( cmd ) {
+				case 'edit':
+					setting.mixer( name );
+					break;
 				case 'delete':
 					var dest = V.li.hasClass( 'liinput main' );
 					if ( main ) {
@@ -1934,9 +1884,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 						}
 					} );
 					break;
-				case 'edit':
-					setting.mixer( name );
-					break;
 			}
 			break;
 		case 'pipeline':
@@ -1965,10 +1912,52 @@ $( '#menu a' ).on( 'click', function( e ) {
 		case 'devices':
 			setting.device( V.li.data( 'type' ) );
 			break;
+		case 'config':
+			case 'edit':
+				var file = V.li.text();
+				info( {
+					  icon        : V.tab
+					, title       : 'Config'
+					, message     : 'File: <wh>'+ file +'</wh>'
+					, textlabel   : 'Name'
+					, radio       : [ 'Rename', 'Copy' ]
+					, radiocolumn : true
+					, values      : [ file, 'Rename' ]
+					, beforeshow  : () => $( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 )
+					, ok          : () => {
+						var val     = infoVal();
+						var newname = val[ 0 ];
+						var copy    = val[ 1 ] === 'Copy';
+						bash( [ copy ? 'confcopy' : 'confrename', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ], () => {
+							if ( ! copy && name === S.configname ) setting.set( newname );
+						} );
+						notify( icon, SW.title, copy ? 'Copy ...' : 'Rename ...' );
+						copy ? S.lsconf.push( newname ) : S.lsconf[ S.lsconf.indexOf( name ) ] = newname;
+						render.status();
+					}
+				} );
+				break;
+			case 'delete':
+				var file = V.li.text();
+				info( {
+					  icon    : V.tab
+					, title   : 'Config'
+					, message : 'Delete <wh>'+ file +'</wh> ?'
+					, oklabel : ico( 'remove' ) +'Delete'
+					, okcolor : red
+					, ok      : () => {
+						S.lsconf.slice( S.lsconf.indexOf( file ), 1 );
+						bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
+						banner( icon, SW.title, 'Delete ...' );
+						render.status();
+					}
+				} );
+				break;
+			break;
 	}
 } );
 $( '#filters' ).on( 'click', '.i-add', function() {
-	setting.upload( 'filters' );
+	setting.upload();
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
@@ -2094,6 +2083,9 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 } );
 $( '#devices' ).on( 'click', 'li', function() {
 	setting.device( $( this ).data( 'type' ) );
+} );
+$( '#config' ).on( 'click', '.i-add', function() {
+	setting.upload();
 } );
 $( '.switch' ).on( 'click', function() {
 	var id = this.id;
