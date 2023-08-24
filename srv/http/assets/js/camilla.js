@@ -833,14 +833,7 @@ var render   = {
 	}
 }
 var setting  = {
-	  volume        : ( val ) => {
-		$( '#gain' ).text( val );
-		bash( [ 'volume', S.volume, val, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
-		S.volumemute = val === 0 ? S.volume : 0;
-		S.volume = val;
-		$( '#divvolume .i-mute' ).toggleClass( 'bl', S.volumemute !== 0 );
-	} //---------------------------------------------------------------------------------------------
-	, filter        : ( type, subtype, name ) => {
+	  filter        : ( type, subtype, name ) => {
 		if ( name ) {
 			var ekv = { type : type }
 			$.each( FIL[ name ].parameters, ( k, v ) => ekv[ k === 'type' ? 'subtype' : k ] = v );
@@ -1513,6 +1506,13 @@ var util     = {
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
+	, volume        : ( val ) => {
+		$( '#gain' ).text( val );
+		bash( [ 'volume', S.volume, val, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+		S.volumemute = val === 0 ? S.volume : 0;
+		S.volume = val;
+		$( '#divvolume .i-mute' ).toggleClass( 'bl', S.volumemute !== 0 );
+	}
 	, webSocket     : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		ws.onopen    = () => {
@@ -1630,10 +1630,10 @@ $( '.playback' ).on( 'click', function() {
 	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
 $( '#divvolume .i-mute' ).on( 'click', function() {
-	setting.volume( S.volumemute );
+	util.volume( S.volumemute );
 } );
 $( '#volume' ).on( 'input', function() {
-	setting.volume( +$( this ).val() );
+	util.volume( +$( this ).val() );
 } );
 $( '.container' ).on( 'click', '.divgain i', function() {
 	clearTimeout( V.timeoutgain );
