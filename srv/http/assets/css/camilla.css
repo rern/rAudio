@@ -177,7 +177,7 @@ input[ type=range ] {
 #divvolume .col-l {
 	padding-top: 6px;
 }
-#divvolume .i-mute {
+#divvolume .i-volume {
 	width: 40px;
 	margin-right: 8px;
 	line-height: 40px;
@@ -374,6 +374,9 @@ i.disabled,
 }
 .helpmenu {
 	border-bottom: 1px solid var( --cga );
+}
+.bl {
+	color : var( --cm60 ) !important
 }
 @media (max-width: 700px) {
 	#mixers .i-inverted { display: none }

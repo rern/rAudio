@@ -605,7 +605,7 @@ var render   = {
 		if ( S.volume !== false ) {
 			$( '#gain' ).text( S.volume );
 			$( '#volume' ).val( S.volume );
-			$( '#divvolume .i-mute' ).toggleClass( 'bl', S.volumemute !== 0 );
+			$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute !== 0 );
 			$( '#divvolume' ).removeClass( 'hide' );
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
@@ -685,7 +685,7 @@ var render   = {
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
 						+'<div><select>'+ opts +'</select></div>'
-						+'<div>'+ ico( kv.mute ? 'mute bl' : 'mute' ) + ico( 'add' )
+						+'<div>'+ ico( kv.mute ? 'volume mute bl' : 'volume' ) + ico( 'add' )
 						+'</li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
@@ -694,7 +694,7 @@ var render   = {
 				var val      = util.dbRound( source.gain );
 				var disabled = ( source.mute ? ' disabled' : '' );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<c class="db">'+ val +'</c>'
+					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="db">'+ val +'</c>'
 					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIXERSMIN +'" max="'+ S.range.MIXERSMAX +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
@@ -1437,7 +1437,7 @@ var setting  = {
 	}
 }
 var util     = {
-	  db2percent( v ) {
+	  db2percent   : ( v ) => {
 		var value = 0;
 		if ( v >= -12 ) {
 			value = 81.25 + 12.5 * v / 6
@@ -1448,7 +1448,7 @@ var util     = {
 		}
 		return value < 0 ? 0 : ( value > 100 ? 100 : value )
 	}
-	, dbRound     : ( num ) => {
+	, dbRound      : ( num ) => {
 		return Math.round( num * 10 ) / 10
 	}
 	, inUse        : ( name ) => {
@@ -1508,14 +1508,13 @@ var util     = {
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
-	, volume        : ( val ) => {
-		$( '#gain' ).text( val );
-		bash( [ 'volume', S.volume, val, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
-		S.volumemute = val === 0 ? S.volume : 0;
-		S.volume = val;
-		$( '#divvolume .i-mute' ).toggleClass( 'bl', S.volumemute !== 0 );
+	, volume       : ( volume ) => {
+		bash( [ 'volume', S.volume, volume, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+		S.volume = volume;
+		$( '#gain' ).text( S.volume );
+		$( '#volume' ).val( S.volume );
 	}
-	, webSocket     : () => {
+	, webSocket    : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		ws.onopen    = () => {
 			V.intervalstatus = setInterval( () => {
@@ -1631,8 +1630,18 @@ $( '.playback' ).on( 'click', function() {
 	
 	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
-$( '#divvolume .i-mute' ).on( 'click', function() {
-	util.volume( S.volumemute );
+$( '#divvolume .i-volume' ).on( 'click', function() {
+	if ( S.volumemute === 0 ) {
+		var mute     = true;
+		S.volumemute = S.volume;
+		volume       = 0;
+	} else {
+		var mute     = false;
+		volume       = S.volumemute;
+		S.volumemute = 0;
+	}
+	$( '#divvolume .i-volume' ).toggleClass( 'mute bl', mute );
+	util.volume( volume );
 } );
 $( '#volume' ).on( 'input', function() {
 	util.volume( +$( this ).val() );
@@ -1641,7 +1650,7 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	clearTimeout( V.timeoutgain );
 	var $this = $( this );
 	var action = $this.prop( 'class' ).slice( 2, 6 );
-	if ( action === 'mute' || $this.parent().hasClass( 'disabled' ) ) return
+	if ( $this.hasClass( 'mute' ) || $this.parent().hasClass( 'disabled' ) ) return
 	
 	var $gain  = $this.parent().prev();
 	var $db    = $gain.prev();
@@ -1651,14 +1660,14 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 		if ( val === 0 ) return
 		
 		val = 0;
+	} else if ( action === 'minus' ) {
+		if ( val === $gain.prop( 'min' ) ) return
+		
+		val -= volume ? 1 : 0.1;
 	} else if ( action === 'plus' ) {
 		if ( val === $gain.prop( 'max' ) ) return
 		
 		val += volume ? 1 : 0.1;
-	} else {
-		if ( val === $gain.prop( 'min' ) ) return
-		
-		val -= volume ? 1 : 0.1;
 	}
 	$gain
 		.val( val )
@@ -1987,10 +1996,9 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	if ( $this.is( '.liicon, .i-mixers, .i-back' ) || $this.parent().hasClass( 'divgain' ) ) return
 	
 	V.li       = $this.parents( 'li' );
-	var action = $this.prop( 'class' ).replace( /i-| bl/g, '' );
 	var name   = V.li.data( 'name' );
 	var title  = util.key2label( V.tab );
-	if ( action === 'add' ) {
+	if ( $this.hasClass( 'i-add' ) ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		setting.mixerMap( name, index );
 	} else {
@@ -1999,8 +2007,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		var mapping = MIX[ name ].mapping[ index ];
 		var source  = mapping.sources[ si ];
 		var checked = ! $this.hasClass( 'bl' );
-		$this.toggleClass( 'bl', checked );
-		if ( action === 'mute' ) {
+		if ( $this.hasClass( 'i-volume' ) ) {
 			if ( V.li.hasClass( 'main' ) ) {
 				mapping.mute = checked;
 			} else {
@@ -2008,7 +2015,10 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 				V.li.find( 'input[type=range]' ).prop( 'disabled', checked );
 				V.li.find( '.divgain' ).toggleClass( 'disabled', checked );
 			}
-		} else if ( action === 'inverted' ) {
+			$this.toggleClass( 'mute bl', checked );
+		console.log(checked)
+		} else if ( $this.hasClass( 'i-inverted' ) ) {
+			$this.toggleClass( 'bl', checked );
 			source.inverted = checked;
 		}
 		setting.save( 'Mixer', 'Change ...' );
@@ -2064,14 +2074,13 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 		} );
 	}
 } ).on( 'click', 'li i', function() {
-	var $this  = $( this );
+	var $this = $( this );
 	if ( $this.is( '.liicon, .i-back' ) ) return
 	
-	V.li       = $this.parents( 'li' );
-	var title  = util.key2label( V.tab );
-	var index  = V.li.data( 'index' );
-	var action = $this.prop( 'class' ).slice( 2 );
-	if ( action === 'add' ) {
+	V.li      = $this.parents( 'li' );
+	var title = util.key2label( V.tab );
+	var index = V.li.data( 'index' );
+	if ( $this.hasClass( 'i-add' ) ) {
 		var title = 'Add Filter';
 		info( {
 			  icon        : V.tab

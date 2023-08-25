@@ -2019,9 +2019,7 @@ function volumeColorMute() {
 	$volumehandle
 		.addClass( 'bgr60' )
 		.rsRotate( 0 ? -this._handle1.angle : -310 );
-	$( '#volmute' )
-		.removeClass( 'i-volume' )
-		.addClass( 'i-mute active' );
+	$( '#volmute' ).addClass( 'mute active' );
 	if ( $volume.is( ':hidden' ) ) {
 		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 		$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
@@ -2030,9 +2028,7 @@ function volumeColorMute() {
 function volumeColorUnmute() {
 	$volumetooltip.removeClass( 'bl' );
 	$volumehandle.removeClass( 'bgr60' );
-	$( '#volmute' )
-		.removeClass( 'i-mute active' )
-		.addClass( 'i-volume' );
+	$( '#volmute' ).removeClass( 'mute active' )
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeUpDown( up ) {

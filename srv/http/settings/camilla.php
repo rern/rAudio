@@ -22,7 +22,7 @@ EOF
 {$sliderrange}
 {$contextmixers}
 {$gaincontrols}
-{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mute, Invert
+{$Fi( 'volume btn' )}{$Fi( 'inverted btn' )} Mute, Invert
 EOF
 	, 'pipeline' => <<< EOF
 {$Fi( 'flowchart btn' )} Step flowchart
@@ -64,7 +64,7 @@ $htmlvolume = '
 <div class="col-l text">Volume&emsp;<c id="gain">0</c></div>
 <div class="col-r text">
 	<input id="volume" type="range" min="0" max="100">
-	<div class="divgain">'.i( 'minus' ).i( 'mute' ).i( 'plus' ).'</div>
+	<div class="divgain">'.i( 'minus' ).i( 'volume' ).i( 'plus' ).'</div>
 </div>
 <div style="clear:both"></div>
 </div>
@@ -95,7 +95,7 @@ $body = [
 		, 'input' => '<select id="configuration"></select>'
 		, 'help'  => <<< EOF
 {$Fi( 'gear btn' )} Configuration files
-{$Fi( 'minus btn' )}{$Fi( 'mute btn' )}{$Fi( 'plus btn' )} -1% · mute · +1%
+{$Fi( 'minus btn' )}{$Fi( 'volume btn' )}{$Fi( 'plus btn' )} -1% · mute · +1%
 {$Fi( 'set0 btn' )} Reset clipped count (if any)
 EOF
 	]
