@@ -675,8 +675,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	
 	if ( ! V.start ) return
 	
+	if ( ! V.drag ) volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	V.start = V.drag = false;
-	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
 	$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );

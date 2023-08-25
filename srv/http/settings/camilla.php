@@ -63,7 +63,11 @@ $htmlvolume = '
 <div id="divvolume">
 <div class="col-l text">Volume&emsp;<c id="gain">0</c></div>
 <div class="col-r text">
-	<input id="volume" type="range" min="0" max="100">
+	<div id="volume" class="slider">
+		<div class="track"></div>
+		<div class="slide"></div>
+		<div class="thumb"></div>
+	</div>
 	<div class="divgain">'.i( 'minus' ).i( 'volume' ).i( 'plus' ).'</div>
 </div>
 <div style="clear:both"></div>

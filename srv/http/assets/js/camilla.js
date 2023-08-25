@@ -489,9 +489,9 @@ var render   = {
 		PIP = S.config.pipeline;
 		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
 		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
+		showContent();
 		render.status();
 		render.tab();
-		showContent();
 		[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
 		[ 'capture', 'playback' ].forEach( k => {
 			S.devices[ k ].forEach( d => {
@@ -603,10 +603,10 @@ var render   = {
 		$( '#divstate .label' ).html( label );
 		$( '#divstate .value' ).html( status );
 		if ( S.volume !== false ) {
-			$( '#gain' ).text( S.volume );
-			$( '#volume' ).val( S.volume );
-			$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute !== 0 );
 			$( '#divvolume' ).removeClass( 'hide' );
+			$( '#gain' ).text( S.volume );
+			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
+			$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute !== 0 );
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
@@ -1508,11 +1508,26 @@ var util     = {
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
-	, volume       : ( volume ) => {
-		bash( [ 'volume', S.volume, volume, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
-		S.volume = volume;
-		$( '#gain' ).text( S.volume );
-		$( '#volume' ).val( S.volume );
+	, volume       : ( pageX ) => {
+		var posX    = pageX - $( '#volume .slide' ).offset().left;
+		var bandW   = $( '#volume .slide' ).width();
+		posX        = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
+		var current = V.drag ? 'drag' : S.volume;
+		var vol     = Math.round( posX / bandW * 100 );
+		if ( V.drag ) {
+			$( '#volume .thumb' ).css( 'margin-left', posX );
+		} else {
+			$( '#volume .thumb' ).animate(
+				  { 'margin-left': posX }
+				, {
+					  duration : Math.abs( vol - S.volume ) * 40
+					, easing   : 'linear'
+				}
+			);
+		}
+		$( '#gain' ).text( vol );
+		bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+		S.volume = vol;
 	}
 	, webSocket    : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
@@ -1643,8 +1658,18 @@ $( '#divvolume .i-volume' ).on( 'click', function() {
 	$( '#divvolume .i-volume' ).toggleClass( 'mute bl', mute );
 	util.volume( volume );
 } );
-$( '#volume' ).on( 'input', function() {
-	util.volume( +$( this ).val() );
+$( '#volume' ).on( 'touchstart mousedown', function( e ) {
+	V.start = true;
+} ).on( 'touchmove mousemove', function( e ) {
+	if ( ! V.start ) return
+	
+	V.drag = true;
+	util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
+} ).on( 'touchend mouseup mouseleave', function( e ) {
+	if ( ! V.start ) return
+	
+	if ( ! V.drag ) util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.start = V.drag = false;
 } );
 $( '.container' ).on( 'click', '.divgain i', function() {
 	clearTimeout( V.timeoutgain );

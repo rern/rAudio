@@ -953,6 +953,39 @@ input[ type=radio ]:disabled {
 #infoPrompt {
 	margin-top: 20px;
 }
+.slider {
+	position: relative;
+	display: inline-block;
+	width: 100%;
+	max-width: 230px;
+	height: 40px;
+}
+.slider .track {
+	position: absolute;
+	width: calc( 100% - 20px );
+	height: 4px;
+	top: 18px;
+	left: 10px;
+	border: 1px solid var( --cga );
+	background: linear-gradient( 90deg, transparent 10px, var( --cga ) 10px, var( --cga ) calc( 100% - 10px ), transparent 10px );
+}
+.slider .slide {
+	position: absolute;
+	width: calc( 100% - 40px );
+	height: 100%;
+	top: 0;
+	left: 20px;
+	z-index: 1;
+}
+.slider .thumb {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	border-radius: 4px;
+	background: var( --glossy-btn );
+	background-color: var( --cm );
+	box-shadow: var( --shadow-btn );
+}
 @media ( max-height: 420px ) {
 	#infoContent { padding: 10px 5px }
 }
