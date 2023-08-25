@@ -1509,11 +1509,16 @@ var util     = {
 		return capitalized
 	}
 	, volume       : ( pageX ) => {
-		var posX    = pageX - $( '#volume .slide' ).offset().left;
 		var bandW   = $( '#volume .slide' ).width();
-		posX        = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
+		if ( V.start ) {
+			var posX = pageX - $( '#volume .slide' ).offset().left;
+			posX     = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
+			var vol  = Math.round( posX / bandW * 100 );
+		} else {
+			var vol  = pageX;
+			var posX = bandW * vol / 100;
+		}
 		var current = V.drag ? 'drag' : S.volume;
-		var vol     = Math.round( posX / bandW * 100 );
 		if ( V.drag ) {
 			$( '#volume .thumb' ).css( 'margin-left', posX );
 		} else {
@@ -1645,18 +1650,35 @@ $( '.playback' ).on( 'click', function() {
 	
 	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
-$( '#divvolume .i-volume' ).on( 'click', function() {
-	if ( S.volumemute === 0 ) {
-		var mute     = true;
-		S.volumemute = S.volume;
-		volume       = 0;
-	} else {
-		var mute     = false;
-		volume       = S.volumemute;
-		S.volumemute = 0;
+$( '#divvolume' ).on( 'click', '.divgain i', function() {
+	var $this  = $( this );
+	if ( $this.hasClass( 'i-volume' ) ) {
+		if ( S.volumemute === 0 ) {
+			var mute     = true;
+			S.volumemute = S.volume;
+			var vol      = 0;
+		} else {
+			var mute     = false;
+			var vol      = S.volumemute;
+			S.volumemute = 0;
+		}
+		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', mute );
+		util.volume( vol );
+		return
 	}
-	$( '#divvolume .i-volume' ).toggleClass( 'mute bl', mute );
-	util.volume( volume );
+	
+	if ( $this.hasClass( 'i-minus' ) ) {
+		if ( S.volume === 0 ) return
+		
+		var vol = S.volume - 1;
+	} else if ( $this.hasClass( 'i-plus' ) ) {
+		if ( S.volume === 100 ) return
+		
+		var vol = S.volume + 1;
+	}
+	bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+	S.volume = vol;
+	$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 } );
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	V.start = true;
@@ -1671,28 +1693,26 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	if ( ! V.drag ) util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
 	V.start = V.drag = false;
 } );
-$( '.container' ).on( 'click', '.divgain i', function() {
-	clearTimeout( V.timeoutgain );
+$( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	var $this = $( this );
-	var action = $this.prop( 'class' ).slice( 2, 6 );
-	if ( $this.hasClass( 'mute' ) || $this.parent().hasClass( 'disabled' ) ) return
+	if ( $this.parent().hasClass( 'disabled' ) ) return
 	
+	clearTimeout( V.timeoutgain );
 	var $gain  = $this.parent().prev();
 	var $db    = $gain.prev();
 	var val    = +$gain.val();
-	var volume = $this.parents( '#divvolume' ).length;
-	if ( action === 'set0' ) {
+	if ( $this.hasClass( 'i-set0' ) ) {
 		if ( val === 0 ) return
 		
 		val = 0;
-	} else if ( action === 'minus' ) {
+	} else if ( $this.hasClass( 'i-minus' ) ) {
 		if ( val === $gain.prop( 'min' ) ) return
 		
-		val -= volume ? 1 : 0.1;
-	} else if ( action === 'plus' ) {
+		val -= 0.1;
+	} else if ( $this.hasClass( 'i-plus' ) ) {
 		if ( val === $gain.prop( 'max' ) ) return
 		
-		val += volume ? 1 : 0.1;
+		val += 0.1;
 	}
 	$gain
 		.val( val )
@@ -2041,7 +2061,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 				V.li.find( '.divgain' ).toggleClass( 'disabled', checked );
 			}
 			$this.toggleClass( 'mute bl', checked );
-		console.log(checked)
 		} else if ( $this.hasClass( 'i-inverted' ) ) {
 			$this.toggleClass( 'bl', checked );
 			source.inverted = checked;
