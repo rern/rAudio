@@ -54,10 +54,10 @@ else
 	[[ $player != mpd ]] && icon=$player
 	
 	[[ $( mpc status %consume% ) == on ]] && consume=true
-	vcc=$( volumeCardControl )
-	volume=${vcc/ *}
-	card=$( cut -d' ' -f2 <<< $vcc )
-	control=$( cut -d' ' -f3- <<< $vcc )
+	readarray -t vcc <<< $( volumeCardControl )
+	volume=${vcc[0]}
+	card=${vcc[1]}
+	control=${vcc[2]}
 	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
 		updating_db=true
 	fi

@@ -351,7 +351,10 @@ volumeCardControl() {
 		fi
 		volume=$( volumeGet value )
 	fi
-	echo $volume $card $control
+	echo "\
+$volume
+$card
+$control"
 }
 volumeGet() {
 	local amixer card control data mixersoftware val_db

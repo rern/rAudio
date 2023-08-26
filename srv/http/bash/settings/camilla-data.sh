@@ -25,10 +25,10 @@ if grep -q configs-bt /etc/default/camilladsp; then
 "bluealsa"'
 	fi
 fi
-vcc=$( volumeCardControl )
-volume=${vcc/ *}
-card=$( cut -d' ' -f2 <<< $vcc )
-control=$( cut -d' ' -f3- <<< $vcc )
+readarray -t vcc <<< $( volumeCardControl )
+volume=${vcc[0]}
+card=${vcc[1]}
+control=${vcc[2]}
 [[ -e $dirsystem/volumemute ]] && volumemute=$( < $dirsystem/volumemute ) || volumemute=0
 	
 data=${data:1:-1}
