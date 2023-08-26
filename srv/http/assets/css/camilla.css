@@ -375,9 +375,6 @@ i.disabled,
 .helpmenu {
 	border-bottom: 1px solid var( --cga );
 }
-.bl {
-	color : var( --cm60 ) !important
-}
 .slider {
 	position: relative;
 	display: inline-block;
