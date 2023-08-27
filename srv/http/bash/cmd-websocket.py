@@ -9,8 +9,8 @@ async def cmd( websocket ):
     async for data in websocket:
         data = json.loads( data )
         if data[ 'cmd' ] == 'volume':
-            val = list( map( str, data[ 'values' ] ) )
-            cmd = [ '/srv/http/bash/cmd.sh', 'volume' ] + val
+            args = list( map( str, data[ 'args' ] ) )
+            cmd = [ '/srv/http/bash/cmd.sh', 'volume' ] + args
         subprocess.call( cmd )
 
 async def main():
