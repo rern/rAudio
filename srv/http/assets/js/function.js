@@ -1982,7 +1982,8 @@ function volumeBarSet( pageX ) {
 		var cmd     = [ 'volume', current, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ];
 	}
 	if ( V.drag ) {
-		bash( cmd );
+		volumeSet( vol );
+		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	} else {
 		$( '#volume-bar' ).animate(
 			  { width: vol +'%' }
@@ -2030,6 +2031,17 @@ function volumeColorUnmute() {
 	$volumehandle.removeClass( 'bgr60' );
 	$( '#volmute' ).removeClass( 'mute active' )
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
+}
+function volumeSet( target ) {
+	var cmd = JSON.stringify( { cmd: 'volume', values: [ 'drag', target, S.control, S.card ] } )
+	if ( ws ) {
+		ws.send( cmd );
+		return
+	}
+	
+	ws         = new WebSocket( 'ws://'+ window.location.host +':8080' );
+	ws.onclose = () => ws = null;
+	ws.onopen  = () => ws.send( cmd );
 }
 function volumeUpDown( up ) {
 	up ? S.volume++ : S.volume--;
