@@ -2059,7 +2059,11 @@ function volumeUpDown( up ) {
 	} else if ( ! S.control ) {
 		cmd += 'mpc';
 	}
-	bash( [ cmd, up ? '+' : '-', S.control, S.card, 'CMD UPDN CONTROL CARD' ] );
+	if ( V.press ) {
+		volumeSet( S.volume );
+	} else {
+		bash( [ cmd, up ? '+' : '-', S.control, S.card, 'CMD UPDN CONTROL CARD' ] );
+	}
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
