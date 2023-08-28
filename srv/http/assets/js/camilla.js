@@ -8,7 +8,7 @@ V            = {
 	, sortable   : {}
 	, tab        : 'filters'
 }
-var ws;
+var ws, wsvolume;
 var format   = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
 	var key       = k
@@ -1520,7 +1520,9 @@ var util     = {
 		}
 		var current = V.drag ? 'drag' : S.volume;
 		if ( V.drag ) {
-			$( '#volume .thumb' ).css( 'margin-left', posX );
+			S.volume = vol;
+			util.volumeThumb();
+			util.volumeDrag();
 		} else {
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
@@ -1529,10 +1531,23 @@ var util     = {
 					, easing   : 'linear'
 				}
 			);
+			bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+			S.volume = vol;
 		}
-		$( '#gain' ).text( vol );
-		bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
-		S.volume = vol;
+		$( '#gain' ).text( S.volume );
+	}
+	, volumeDrag   : () => {
+		var cmd = [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' );
+		if ( wsvolume ) {
+			wsvolume.send( cmd );
+		} else {
+			wsvolume         = new WebSocket( 'ws://'+ window.location.host +':8080' );
+			wsvolume.onclose = () => wsvolume = null;
+			wsvolume.onopen  = () => wsvolume.send( cmd );
+		}
+	}
+	,volumeThumb   : () => {
+		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 	}
 	, webSocket    : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
@@ -1678,7 +1693,17 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 	}
 	bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 	S.volume = vol;
-	$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
+	util.volumeThumb();
+} ).on( 'touchend mouseup', function() {
+	clearInterval( V.intervalvolume );
+} ).press( '.divgain i', function( e ) {
+	var up           = $( e.currentTarget ).hasClass( 'i-plus' );
+	V.intervalvolume = setInterval( () => {
+		up ? S.volume++ : S.volume--;
+		util.volumeDrag();
+		util.volumeThumb();
+		$( '#gain' ).text( S.volume );
+	}, 100 );
 } );
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	V.start = true;
