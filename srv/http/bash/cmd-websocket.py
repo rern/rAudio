@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import asyncio
-import json
 import subprocess
 from websockets.server import serve
 
