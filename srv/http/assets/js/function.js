@@ -2033,7 +2033,7 @@ function volumeColorUnmute() {
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeSet( target ) {
-	var cmd = [ 'volume', 'drag', target, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' );
+	var cmd = [ 'volumedrag', target, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' );
 	if ( ws ) {
 		ws.send( cmd );
 		return

@@ -769,15 +769,10 @@ splashrotate )
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
+volumedrag )
+	volumeSetAt $TARGET "$CONTROL" $CARD
+	;;
 volume ) # no TARGET = toggle mute / unmute
-	if [[ ! $TARGET ]]; then # for volumesocket.py
-		CURRENT=$2
-		TARGET=$3
-		CONTROL=$4
-		CARD=$5
-	fi
-	[[ $CURRENT == drag ]] && volumeSetAt $TARGET "$CONTROL" $CARD && exit
-	
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )
 	filevolumemute=$dirsystem/volumemute
 	if [[ $TARGET > 0 ]]; then      # set
