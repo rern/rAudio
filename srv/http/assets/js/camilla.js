@@ -1717,7 +1717,18 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( ! volume && V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
+	if ( V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
+} ).on( 'touchend mouseup', function() {
+	clearInterval( V.intervalgain );
+} ).press( '.divgain i', function( e ) {
+	var $this = $( e.currentTarget );
+	var $gain = $this.parent().prev();
+	var val   = +$gain.val();
+	var up    = $this.hasClass( 'i-plus' );
+	V.intervalgain = setInterval( () => {
+		val = up ? val + 0.1 : val - 0.1;
+		$gain.val( val ).trigger( 'input' );
+	}, 100 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
