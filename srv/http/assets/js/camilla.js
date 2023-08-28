@@ -1808,6 +1808,7 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	} );
 } );
 $( '.entries' ).on( 'click', '.liicon', function() {
+	console.log(9)
 	var $this  = $( this );
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
@@ -1818,6 +1819,7 @@ $( '.entries' ).on( 'click', '.liicon', function() {
 	V.li.addClass( 'active' );
 	contextMenu();
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
+	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
