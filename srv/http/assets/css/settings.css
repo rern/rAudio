@@ -696,6 +696,7 @@ input.disabled + .switchlabel:after {
 	.setting,
 	.settings,
 	.settingedit,
+	.slider,
 	.status:not(pre,.single),
 	.switchlabel,
 	.tab .i-add,

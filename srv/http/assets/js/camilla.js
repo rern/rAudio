@@ -8,7 +8,7 @@ V            = {
 	, sortable   : {}
 	, tab        : 'filters'
 }
-var ws;
+var ws, wsvolume;
 var format   = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
 	var key       = k
@@ -489,9 +489,9 @@ var render   = {
 		PIP = S.config.pipeline;
 		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
 		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
+		showContent();
 		render.status();
 		render.tab();
-		showContent();
 		[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
 		[ 'capture', 'playback' ].forEach( k => {
 			S.devices[ k ].forEach( d => {
@@ -603,10 +603,10 @@ var render   = {
 		$( '#divstate .label' ).html( label );
 		$( '#divstate .value' ).html( status );
 		if ( S.volume !== false ) {
-			$( '#gain' ).text( S.volume );
-			$( '#volume' ).val( S.volume );
-			$( '#divvolume .i-mute' ).toggleClass( 'bl', S.volumemute !== 0 );
 			$( '#divvolume' ).removeClass( 'hide' );
+			$( '#gain' ).text( S.volume );
+			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
+			$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute !== 0 );
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
@@ -685,7 +685,7 @@ var render   = {
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
 						+'<div><select>'+ opts +'</select></div>'
-						+'<div>'+ ico( kv.mute ? 'mute bl' : 'mute' ) + ico( 'add' )
+						+'<div>'+ ico( kv.mute ? 'volume mute bl' : 'volume' ) + ico( 'add' )
 						+'</li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
@@ -694,7 +694,7 @@ var render   = {
 				var val      = util.dbRound( source.gain );
 				var disabled = ( source.mute ? ' disabled' : '' );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<c class="db">'+ val +'</c>'
+					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="db">'+ val +'</c>'
 					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIXERSMIN +'" max="'+ S.range.MIXERSMAX +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
@@ -1437,7 +1437,7 @@ var setting  = {
 	}
 }
 var util     = {
-	  db2percent( v ) {
+	  db2percent   : ( v ) => {
 		var value = 0;
 		if ( v >= -12 ) {
 			value = 81.25 + 12.5 * v / 6
@@ -1448,7 +1448,7 @@ var util     = {
 		}
 		return value < 0 ? 0 : ( value > 100 ? 100 : value )
 	}
-	, dbRound     : ( num ) => {
+	, dbRound      : ( num ) => {
 		return Math.round( num * 10 ) / 10
 	}
 	, inUse        : ( name ) => {
@@ -1508,14 +1508,48 @@ var util     = {
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
-	, volume        : ( val ) => {
-		$( '#gain' ).text( val );
-		bash( [ 'volume', S.volume, val, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
-		S.volumemute = val === 0 ? S.volume : 0;
-		S.volume = val;
-		$( '#divvolume .i-mute' ).toggleClass( 'bl', S.volumemute !== 0 );
+	, volume       : ( pageX ) => {
+		var bandW   = $( '#volume .slide' ).width();
+		if ( V.start ) {
+			var posX = pageX - $( '#volume .slide' ).offset().left;
+			posX     = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
+			var vol  = Math.round( posX / bandW * 100 );
+		} else {
+			var vol  = pageX;
+			var posX = bandW * vol / 100;
+		}
+		var current = V.drag ? 'drag' : S.volume;
+		if ( V.drag ) {
+			S.volume = vol;
+			util.volumeThumb();
+			util.volumeDrag();
+		} else {
+			$( '#volume .thumb' ).animate(
+				  { 'margin-left': posX }
+				, {
+					  duration : Math.abs( vol - S.volume ) * 40
+					, easing   : 'linear'
+				}
+			);
+			bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+			S.volume = vol;
+		}
+		$( '#gain' ).text( S.volume );
 	}
-	, webSocket     : () => {
+	, volumeDrag   : () => {
+		var cmd = [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' );
+		if ( wsvolume ) {
+			wsvolume.send( cmd );
+		} else {
+			wsvolume         = new WebSocket( 'ws://'+ window.location.host +':8080' );
+			wsvolume.onclose = () => wsvolume = null;
+			wsvolume.onopen  = () => wsvolume.send( cmd );
+		}
+	}
+	,volumeThumb   : () => {
+		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
+	}
+	, webSocket    : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		ws.onopen    = () => {
 			V.intervalstatus = setInterval( () => {
@@ -1631,39 +1665,95 @@ $( '.playback' ).on( 'click', function() {
 	
 	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
-$( '#divvolume .i-mute' ).on( 'click', function() {
-	util.volume( S.volumemute );
-} );
-$( '#volume' ).on( 'input', function() {
-	util.volume( +$( this ).val() );
-} );
-$( '.container' ).on( 'click', '.divgain i', function() {
-	clearTimeout( V.timeoutgain );
-	var $this = $( this );
-	var action = $this.prop( 'class' ).slice( 2, 6 );
-	if ( action === 'mute' || $this.parent().hasClass( 'disabled' ) ) return
+$( '#divvolume' ).on( 'click', '.divgain i', function() {
+	var $this  = $( this );
+	if ( $this.hasClass( 'i-volume' ) ) {
+		if ( S.volumemute === 0 ) {
+			var mute     = true;
+			S.volumemute = S.volume;
+			var vol      = 0;
+		} else {
+			var mute     = false;
+			var vol      = S.volumemute;
+			S.volumemute = 0;
+		}
+		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', mute );
+		util.volume( vol );
+		return
+	}
 	
+	if ( $this.hasClass( 'i-minus' ) ) {
+		if ( S.volume === 0 ) return
+		
+		var vol = S.volume - 1;
+	} else if ( $this.hasClass( 'i-plus' ) ) {
+		if ( S.volume === 100 ) return
+		
+		var vol = S.volume + 1;
+	}
+	bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+	S.volume = vol;
+	util.volumeThumb();
+} ).on( 'touchend mouseup', function() {
+	clearInterval( V.intervalvolume );
+} ).press( '.divgain i', function( e ) {
+	var up           = $( e.currentTarget ).hasClass( 'i-plus' );
+	V.intervalvolume = setInterval( () => {
+		up ? S.volume++ : S.volume--;
+		util.volumeDrag();
+		util.volumeThumb();
+		$( '#gain' ).text( S.volume );
+	}, 100 );
+} );
+$( '#volume' ).on( 'touchstart mousedown', function( e ) {
+	V.start = true;
+} ).on( 'touchmove mousemove', function( e ) {
+	if ( ! V.start ) return
+	
+	V.drag = true;
+	util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
+} ).on( 'touchend mouseup mouseleave', function( e ) {
+	if ( ! V.start ) return
+	
+	if ( ! V.drag ) util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.start = V.drag = false;
+} );
+$( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
+	var $this = $( this );
+	if ( $this.parent().hasClass( 'disabled' ) ) return
+	
+	clearTimeout( V.timeoutgain );
 	var $gain  = $this.parent().prev();
 	var $db    = $gain.prev();
 	var val    = +$gain.val();
-	var volume = $this.parents( '#divvolume' ).length;
-	if ( action === 'set0' ) {
+	if ( $this.hasClass( 'i-set0' ) ) {
 		if ( val === 0 ) return
 		
 		val = 0;
-	} else if ( action === 'plus' ) {
-		if ( val === $gain.prop( 'max' ) ) return
-		
-		val += volume ? 1 : 0.1;
-	} else {
+	} else if ( $this.hasClass( 'i-minus' ) ) {
 		if ( val === $gain.prop( 'min' ) ) return
 		
-		val -= volume ? 1 : 0.1;
+		val -= 0.1;
+	} else if ( $this.hasClass( 'i-plus' ) ) {
+		if ( val === $gain.prop( 'max' ) ) return
+		
+		val += 0.1;
 	}
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( ! volume && V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
+	if ( V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
+} ).on( 'touchend mouseup', function() {
+	clearInterval( V.intervalgain );
+} ).press( '.divgain i', function( e ) {
+	var $this = $( e.currentTarget );
+	var $gain = $this.parent().prev();
+	var val   = +$gain.val();
+	var up    = $this.hasClass( 'i-plus' );
+	V.intervalgain = setInterval( () => {
+		val = up ? val + 0.1 : val - 0.1;
+		$gain.val( val ).trigger( 'input' );
+	}, 100 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
@@ -1754,6 +1844,7 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	} );
 } );
 $( '.entries' ).on( 'click', '.liicon', function() {
+	console.log(9)
 	var $this  = $( this );
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
@@ -1764,6 +1855,7 @@ $( '.entries' ).on( 'click', '.liicon', function() {
 	V.li.addClass( 'active' );
 	contextMenu();
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
+	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
@@ -1987,10 +2079,9 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	if ( $this.is( '.liicon, .i-mixers, .i-back' ) || $this.parent().hasClass( 'divgain' ) ) return
 	
 	V.li       = $this.parents( 'li' );
-	var action = $this.prop( 'class' ).replace( /i-| bl/g, '' );
 	var name   = V.li.data( 'name' );
 	var title  = util.key2label( V.tab );
-	if ( action === 'add' ) {
+	if ( $this.hasClass( 'i-add' ) ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		setting.mixerMap( name, index );
 	} else {
@@ -1999,8 +2090,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		var mapping = MIX[ name ].mapping[ index ];
 		var source  = mapping.sources[ si ];
 		var checked = ! $this.hasClass( 'bl' );
-		$this.toggleClass( 'bl', checked );
-		if ( action === 'mute' ) {
+		if ( $this.hasClass( 'i-volume' ) ) {
 			if ( V.li.hasClass( 'main' ) ) {
 				mapping.mute = checked;
 			} else {
@@ -2008,7 +2098,9 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 				V.li.find( 'input[type=range]' ).prop( 'disabled', checked );
 				V.li.find( '.divgain' ).toggleClass( 'disabled', checked );
 			}
-		} else if ( action === 'inverted' ) {
+			$this.toggleClass( 'mute bl', checked );
+		} else if ( $this.hasClass( 'i-inverted' ) ) {
+			$this.toggleClass( 'bl', checked );
 			source.inverted = checked;
 		}
 		setting.save( 'Mixer', 'Change ...' );
@@ -2064,14 +2156,13 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 		} );
 	}
 } ).on( 'click', 'li i', function() {
-	var $this  = $( this );
+	var $this = $( this );
 	if ( $this.is( '.liicon, .i-back' ) ) return
 	
-	V.li       = $this.parents( 'li' );
-	var title  = util.key2label( V.tab );
-	var index  = V.li.data( 'index' );
-	var action = $this.prop( 'class' ).slice( 2 );
-	if ( action === 'add' ) {
+	V.li      = $this.parents( 'li' );
+	var title = util.key2label( V.tab );
+	var index = V.li.data( 'index' );
+	if ( $this.hasClass( 'i-add' ) ) {
 		var title = 'Add Filter';
 		info( {
 			  icon        : V.tab

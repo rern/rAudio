@@ -1982,7 +1982,8 @@ function volumeBarSet( pageX ) {
 		var cmd     = [ 'volume', current, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ];
 	}
 	if ( V.drag ) {
-		bash( cmd );
+		volumeSet( vol );
+		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	} else {
 		$( '#volume-bar' ).animate(
 			  { width: vol +'%' }
@@ -2019,9 +2020,7 @@ function volumeColorMute() {
 	$volumehandle
 		.addClass( 'bgr60' )
 		.rsRotate( 0 ? -this._handle1.angle : -310 );
-	$( '#volmute' )
-		.removeClass( 'i-volume' )
-		.addClass( 'i-mute active' );
+	$( '#volmute' ).addClass( 'mute active' );
 	if ( $volume.is( ':hidden' ) ) {
 		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 		$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
@@ -2030,10 +2029,19 @@ function volumeColorMute() {
 function volumeColorUnmute() {
 	$volumetooltip.removeClass( 'bl' );
 	$volumehandle.removeClass( 'bgr60' );
-	$( '#volmute' )
-		.removeClass( 'i-mute active' )
-		.addClass( 'i-volume' );
+	$( '#volmute' ).removeClass( 'mute active' )
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
+}
+function volumeSet( target ) {
+	var cmd = [ 'volumedrag', target, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' );
+	if ( ws ) {
+		ws.send( cmd );
+		return
+	}
+	
+	ws         = new WebSocket( 'ws://'+ window.location.host +':8080' );
+	ws.onclose = () => ws = null;
+	ws.onopen  = () => ws.send( cmd );
 }
 function volumeUpDown( up ) {
 	up ? S.volume++ : S.volume--;
@@ -2051,7 +2059,11 @@ function volumeUpDown( up ) {
 	} else if ( ! S.control ) {
 		cmd += 'mpc';
 	}
-	bash( [ cmd, up ? '+' : '-', S.control, S.card, 'CMD UPDN CONTROL CARD' ] );
+	if ( V.press ) {
+		volumeSet( S.volume );
+	} else {
+		bash( [ cmd, up ? '+' : '-', S.control, S.card, 'CMD UPDN CONTROL CARD' ] );
+	}
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {

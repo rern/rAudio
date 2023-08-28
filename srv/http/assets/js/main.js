@@ -111,6 +111,7 @@ var chkdisplay = {
 		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
 	}
 }
+var ws;
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -636,7 +637,7 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
-		bash( [ 'volume', 'drag', e.value, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+		volumeSet( e.value );
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return
@@ -675,8 +676,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	
 	if ( ! V.start ) return
 	
+	if ( ! V.drag ) volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	V.start = V.drag = false;
-	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
 	$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );

@@ -4,7 +4,24 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20230822
+# 20230828
+file=/etc/systemd/system/cmd-websocket.service
+if [[ ! -e $file ]]; then
+	pacman -S --noconfirm --needed python-websockets
+	echo "\
+[Unit]
+Description=Command websocket server
+After=startup.service
+
+[Service]
+ExecStart=/srv/http/bash/cmd-websocket.py
+
+[Install]
+WantedBy=multi-user.target" > $file
+	systemctl daemon-reload
+	systemctl enable --now cmd-websocket
+fi
+
 if [[ ! -e $dircamilladsp/configs-bt ]]; then
 	cat << EOF > /etc/default/camilladsp
 ADDRESS=0.0.0.0
@@ -32,15 +49,6 @@ mixersmax=10
 mixersmin=-10" > $dirsystem/camilla.conf
 fi
 
-# 20230630
-if ! grep -q sudo /etc/conf.d/devmon; then
-	sed -i 's|/srv|/usr/bin/sudo /srv|g' /etc/conf.d/devmon
-	systemctl restart devmon@http
-fi
-
-file=/etc/systemd/system/spotifyd.service
-grep -q CPUAffinity $file && sed -i '/CPUAffinity/ d' $file
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -54,18 +62,3 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
-#-------------------------------------------------------------------------------
-
-# 20230623
-if [[ -e $dirmpd/album ]]; then
-	files=$( ls -1 $dirmpd | grep -Ev 'mpd.db|listing|updating' )
-	for f in $files; do
-		charlast=$( tail -c 1 $dirmpd/$f )
-		[[ $charlast ]] && echo >> $dirmpd/$f
-	done
-fi
-
-# 20230822
-[[ -e $dirsystem/camilladsp && ! -e $dirsystem/camillavolume ]] && $dirsettings/camilla.py save &> /dev/null
-
-$dirsettings/player-conf.sh
