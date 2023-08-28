@@ -1154,6 +1154,8 @@ function selectText2Html( pattern ) {
 		htmlSet( $rendered );
 	} );
 }
+
+// websocket
 function volumeDrag() {
 	wsvolume.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
