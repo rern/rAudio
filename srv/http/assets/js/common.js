@@ -13,6 +13,7 @@ var iconwarning = ico( 'warning i-lg yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
+var wsvolume;
 
 // ----------------------------------------------------------------------
 /*
@@ -1152,4 +1153,13 @@ function selectText2Html( pattern ) {
 	} ).on( 'select2:select', function() {
 		htmlSet( $rendered );
 	} );
+}
+function volumeDrag() {
+	wsvolume.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+}
+function volumeSocket() {
+	if ( ! wsvolume ) {
+		wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080' );
+		wsvolume.onclose = () => wsvolume = null;
+	}
 }

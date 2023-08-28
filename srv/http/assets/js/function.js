@@ -1982,7 +1982,8 @@ function volumeBarSet( pageX ) {
 		var cmd     = [ 'volume', current, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ];
 	}
 	if ( V.drag ) {
-		volumeSet( vol );
+		S.volume    = vol;
+		volumeDrag();
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	} else {
 		$( '#volume-bar' ).animate(
@@ -1995,11 +1996,11 @@ function volumeBarSet( pageX ) {
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
 		bash( cmd, () => $( '.volumeband' ).removeClass( 'disabled' ) );
+		S.volume = vol;
 	}
 	$( '#volume-bar' ).css( 'width', vol +'%' );
 	$( '#volume-text' ).text( S.volumemute || vol );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
-	S.volume = vol;
 	$volumeRS.setValue( S.volume );
 }
 function volumeBarShow() {
@@ -2032,17 +2033,6 @@ function volumeColorUnmute() {
 	$( '#volmute' ).removeClass( 'mute active' )
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
-function volumeSet( target ) {
-	var cmd = [ 'volumedrag', target, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' );
-	if ( ws ) {
-		ws.send( cmd );
-		return
-	}
-	
-	ws         = new WebSocket( 'ws://'+ window.location.host +':8080' );
-	ws.onclose = () => ws = null;
-	ws.onopen  = () => ws.send( cmd );
-}
 function volumeUpDown( up ) {
 	up ? S.volume++ : S.volume--;
 	if ( S.volume < 0 || S.volume > 100 ) return
@@ -2060,7 +2050,7 @@ function volumeUpDown( up ) {
 		cmd += 'mpc';
 	}
 	if ( V.press ) {
-		volumeSet( S.volume );
+		volumeDrag();
 	} else {
 		bash( [ cmd, up ? '+' : '-', S.control, S.card, 'CMD UPDN CONTROL CARD' ] );
 	}

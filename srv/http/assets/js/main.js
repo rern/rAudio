@@ -111,7 +111,6 @@ var chkdisplay = {
 		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
 	}
 }
-var ws;
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -614,6 +613,7 @@ $( '#volume' ).roundSlider( {
 	}
 	, start             : function( e ) {
 		V.drag = true;
+		volumeSocket();
 		if ( e.value === 0 ) volumeColorUnmute(); // restore handle color immediately on start drag
 		$( '.map' ).removeClass( 'mapshow' );
 	}
@@ -637,7 +637,7 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
-		volumeSet( e.value );
+		volumeDrag();
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return
@@ -654,7 +654,7 @@ $( '#volume' ).roundSlider( {
 	}
 	, stop              : function() {
 		V.drag = false;
-		bash( [ 'volumepushstream' ] );
+		setTimeout( () => bash( [ 'volumepushstream' ] ), 900 );
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
@@ -663,6 +663,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	V.start = true;
+	volumeSocket();
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.start ) return
 	
@@ -700,6 +701,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	}
 } ).press( function( e ) {
 	clearTimeout( V.volumebar );
+	volumeSocket();
 	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	var up = $( e.currentTarget ).hasClass( 'up' );
 	V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );

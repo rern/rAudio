@@ -8,7 +8,7 @@ V            = {
 	, sortable   : {}
 	, tab        : 'filters'
 }
-var ws, wsvolume;
+var ws;
 var format   = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
 	var key       = k
@@ -1522,7 +1522,7 @@ var util     = {
 		if ( V.drag ) {
 			S.volume = vol;
 			util.volumeThumb();
-			util.volumeDrag();
+			volumeDrag();
 		} else {
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
@@ -1535,16 +1535,6 @@ var util     = {
 			S.volume = vol;
 		}
 		$( '#gain' ).text( S.volume );
-	}
-	, volumeDrag   : () => {
-		var cmd = [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' );
-		if ( wsvolume ) {
-			wsvolume.send( cmd );
-		} else {
-			wsvolume         = new WebSocket( 'ws://'+ window.location.host +':8080' );
-			wsvolume.onclose = () => wsvolume = null;
-			wsvolume.onopen  = () => wsvolume.send( cmd );
-		}
 	}
 	,volumeThumb   : () => {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
@@ -1697,16 +1687,18 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 } ).on( 'touchend mouseup', function() {
 	clearInterval( V.intervalvolume );
 } ).press( '.divgain i', function( e ) {
+	volumeSocket();
 	var up           = $( e.currentTarget ).hasClass( 'i-plus' );
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
-		util.volumeDrag();
+		volumeDrag();
 		util.volumeThumb();
 		$( '#gain' ).text( S.volume );
 	}, 100 );
 } );
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	V.start = true;
+	volumeSocket();
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.start ) return
 	
