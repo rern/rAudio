@@ -6,12 +6,8 @@ import subprocess
 from websockets.server import serve
 
 async def cmd( websocket ):
-    async for data in websocket:
-        data = json.loads( data )
-        if data[ 'cmd' ] == 'volume':
-            args = list( map( str, data[ 'args' ] ) )
-            cmd = [ '/srv/http/bash/cmd.sh', 'volume' ] + args
-        subprocess.call( cmd )
+    async for args in websocket:
+        subprocess.call( [ '/srv/http/bash/cmd.sh', args ] )
 
 async def main():
     async with serve( cmd, '0.0.0.0', 8080 ):
