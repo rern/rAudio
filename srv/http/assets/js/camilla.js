@@ -308,9 +308,6 @@ var axes     = {
 function renderPage() { // common from settings.js
 	render.page();
 }
-function pushstreamDisconnect() { // from common.js
-	if ( ws ) ws.close();
-}
 
 var graph    = {
 	  list     : () => {

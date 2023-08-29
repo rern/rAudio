@@ -13,7 +13,6 @@ var iconwarning = ico( 'warning i-lg yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
-var wsvolume;
 
 // ----------------------------------------------------------------------
 /*
@@ -1093,6 +1092,12 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 					loader();
 				}, 10000 );
 			}
+			[ ws, wsvolume ].forEach( socket => {
+				if ( socket ) {
+					socket.close();
+					socket = null;
+				}
+			} );
 		}
 	}
 	// page visibility -----------------------------------------------------------------
@@ -1156,6 +1161,7 @@ function selectText2Html( pattern ) {
 }
 
 // websocket
+var ws, wsvolume;
 function volumeDrag() {
 	wsvolume.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }

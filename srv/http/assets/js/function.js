@@ -1133,6 +1133,7 @@ function refreshData() {
 			eqOptionPreset();
 		}, 'json' );
 	}
+	volumeSocket();
 }
 function renderLibrary() { // library home
 	V.mode         = '';
