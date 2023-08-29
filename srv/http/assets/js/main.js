@@ -363,7 +363,8 @@ $( '#displayplayback' ).on( 'click', function() {
 						$el[ el ]
 							.prop( 'checked', false )
 							.prop( 'disabled', true );
-					} );				} else {
+					} );
+				} else {
 					restoreEnabled();
 				}
 			} );
