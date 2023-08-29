@@ -22,7 +22,7 @@ function bio( artist, getsimilar ) {
 			 +'&method=artist.getinfo'
 			 +'&api_key='+ V.apikeylastfm
 			 +'&artist='+ encodeURI( artist.replace( '&', 'and' ) );
-	$.post( url, function( data ) {
+	$.post( url, data => {
 		if ( 'error' in data || ( ! data.artist.bio.content ) ) {
 			info( {
 				  icon    : 'bio'
@@ -77,9 +77,7 @@ function bio( artist, getsimilar ) {
 				}
 				bioImageSet( imageshtml )
 				$( '#bio' ).scrollTop( 0 );
-			} ).fail( function() { // 404 not found
-				bioImageSet();
-			} );
+			} ).fail( bioImageSet ); // 404 not found
 		} );
 	} );
 }
@@ -246,7 +244,7 @@ function colorSetPicker() {
 		, size   : 230
 		, color  : $( '#button-library' ).css( 'background-color' )
 		, userEvents : {
-			change : function( e ) {
+			change : e => {
 				var hex = e.getCurColorHex();
 				var h = Math.round( 360 * e.getCurColorHsv().h );
 				var hsg = 'hsl('+ h +',3%,';
@@ -421,7 +419,7 @@ function coverartSave() {
 	}
 	var img    = new Image();
 	img.src    = src;
-	img.onload = function() {
+	img.onload = () => {
 		var imgW          = img.width;
 		var imgH          = img.height;
 		var filecanvas    = document.createElement( 'canvas' );
@@ -635,7 +633,7 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 		, bookmarkname : bookmarkname || ''
 		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 	}
-	$.post( 'cmd.php', data, function( std ) {
+	$.post( 'cmd.php', data, std => {
 		if ( std == -1 ) infoWarning( I.icon, I.title, 'Target directory not writable.' )
 	} );
 	banner( 'coverart', I.title, 'Change ...', -1 );
@@ -803,7 +801,7 @@ function infoUpdate( path ) {
 	} );
 }
 function libraryHome() {
-	list( { query: 'home' }, function( data ) {
+	list( { query: 'home' }, data => {
 		C        = data.counts;
 		O        = data.order;
 		var html = data.html;
@@ -1007,7 +1005,7 @@ function playlistInsertTarget() {
 		, radio      : { First : 1, Select: 'select', Last: 'last' }
 		, values     : 'last'
 		, beforeshow : () => {
-			$( '#infoContent input' ).eq( 1 ).on( 'click', function() {
+			$( '#infoContent input' ).eq( 1 ).on( 'click', () => {
 				local();
 				$( '#infoX' ).trigger( 'click' );
 			} );
@@ -1033,9 +1031,9 @@ function playlistFilter() {
 		count      = match ? ( count + 1 ) : count;
 		$this.toggleClass( 'hide', ! match );
 		if ( match ) {
-			name   = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			artist = artist.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			album  = album.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			name   = name.replace( regex, match => '<bll>'+ match +'</bll>' );
+			artist = artist.replace( regex, match => '<bll>'+ match +'</bll>' );
+			album  = album.replace( regex, match => '<bll>'+ match +'</bll>' );
 			$this.find( '.name' ).html( name );
 			$this.find( '.artist' ).html( artist );
 			$this.find( '.album' ).html( album );
@@ -1128,7 +1126,7 @@ function refreshData() {
 		}
 	}
 	if ( 'active' in E ) {
-		bash( [ 'equalizerget' ], function( data ) {
+		bash( [ 'equalizerget' ], data => {
 			E = data;
 			eqOptionPreset();
 		}, 'json' );
@@ -1426,7 +1424,7 @@ function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
 	V.savedpl      = false;
 	V.savedpltrack = true;
 	menuHide();
-	list( { playlist: 'get', name: name }, function( data ) {
+	list( { playlist: 'get', name: name }, data => {
 		$( '#savedpl-path' ).html( data.counthtml );
 		var hash = versionHash();
 		var html = data.html.replace( /\^\^\^/g, hash );
@@ -1692,9 +1690,7 @@ function setPlaybackBlank() {
 		$( '#sampling' )
 			.css( 'display', 'block' )
 			.html( 'Network not connected:&emsp; '+ ico( 'networks i-lg wh' ) +'&ensp;Setup' )
-			.on( 'click', '.i-networks', function() {
-				location.href = 'settings.php?p=networks';
-			} );
+			.on( 'click', '.i-networks', () => location.href = 'settings.php?p=networks' );
 		$( '.qr' ).addClass( 'hide' );
 	}
 	vu();
@@ -1953,9 +1949,9 @@ function thumbUpdate( path ) {
 function urlReachable( url, sec ) {
 	if ( ! sec ) var sec = 0;
 	
-	fetch( url, { mode: 'no-cors' } ).then( function() {
+	fetch( url, { mode: 'no-cors' } ).then( () => {
 		location.href = url;
-	} ).catch( function() {
+	} ).catch( () => {
 		sec++
 		setTimeout( () => urlReachable( url, sec ), 1000 );
 	} );

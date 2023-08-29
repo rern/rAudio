@@ -117,7 +117,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 if ( navigator.maxTouchPoints ) { // swipeleft / right ////////////////////////////////
 	if ( ! D.noswipe ) {
 		var xstart;
-		window.addEventListener( 'touchstart', function( e ) {
+		window.addEventListener( 'touchstart', e => {
 			var $target = $( e.target );
 			if ( [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
 				|| $target.parents( '#time-knob' ).length
@@ -129,7 +129,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 			
 			xstart = e.changedTouches[ 0 ].pageX;
 		} );
-		window.addEventListener( 'touchend', function( e ) {
+		window.addEventListener( 'touchend', e => {
 			if ( ! xstart ) return
 			
 			var diff = xstart - e.changedTouches[ 0 ].pageX;
@@ -137,7 +137,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 			xstart = false;
 		} );
 	}
-	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
+	$( '.page' ).on( 'contextmenu', e => { // on press - disable default context menu
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
@@ -146,7 +146,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	$( '#hovercursor, #shortcut' ).remove();
 }
 	
-$( 'body' ).on( 'click', function( e ) {
+$( 'body' ).on( 'click', e => {
 	if ( I.active || V.colorpicker ) return
 	
 	var $target = $( e.target );
@@ -154,7 +154,7 @@ $( 'body' ).on( 'click', function( e ) {
 	if ( ! V.local && $( '.pl-remove' ).length && ! $target.hasClass( 'pl-remove' ) ) $( '.pl-remove' ).remove();
 	if ( V.guide ) guideHide();
 } );
-$( '#page-playback' ).on( 'click', function( e ) {
+$( '#page-playback' ).on( 'click', e => {
 	if ( V.press
 		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].includes( e.target.id ) ) return
 	
@@ -165,10 +165,8 @@ $( '#page-playback' ).on( 'click', function( e ) {
 		}
 	}
 } );
-$( '#loader' ).on( 'click', function() {
-	loaderHide();
-} );
-$( '#coverart' ).on( 'load', function() {
+$( '#loader' ).on( 'click', loaderHide );
+$( '#coverart' ).on( 'load', () => {
 	if ( ! S.stream && S.player === 'mpd' && S.coverart.slice( 0, 16 ) === '/data/shm/online' ) {
 		$( '#coverart' ).after( V.icoversave );
 	} else {
@@ -186,22 +184,20 @@ $( '#coverart' ).on( 'load', function() {
 } ).on( 'error', coverartDefault );
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #button-library, #button-playlist, #refresh' ).press( function() {
-	location.reload();
-} );
-$( '#logo, #refresh' ).on( 'click', function() {
+$( '#logo, #button-library, #button-playlist, #refresh' ).press( location.reload );
+$( '#logo, #refresh' ).on( 'click', () => {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
-$( '#debug' ).on( 'click', function() {
+$( '#debug' ).on( 'click', () => {
 	$( '#data' ).html( highlightJSON( S ) )
 	$( '#button-data, #data' ).removeClass( 'hide' );
 	$( '.page' ).addClass( 'hide' );
 } );
-$( '#button-data' ).on( 'click', function() {
+$( '#button-data' ).on( 'click', () => {
 	$( '#page-'+ V.page ).removeClass( 'hide' );
 	$( '#button-data, #data' ).addClass( 'hide' );
 } );
-$( '#button-settings' ).on( 'click', function( e ) {
+$( '#button-settings' ).on( 'click', e => {
 	e.stopPropagation();
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		menuHide();
@@ -280,11 +276,11 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					, title      : 'Switch rAudio'
 					, radio      : data.list
 					, values     : currentip
-					, beforeshow : function() {
+					, beforeshow : () => {
 						$( '#infoContent input' ).each( ( i, el ) => {
 							if ( $( el ).val() === currentip ) $( el ).prop( 'disabled', true );
 						} );	
-						$( '#infoContent input' ).on( 'change', function() {
+						$( '#infoContent input' ).on( 'change', () => {
 							var ip = infoVal();
 							if ( typeof Android === 'object' ) Android.changeIP( ip );
 							loader();
@@ -299,7 +295,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 } );
 $( '#power' ).on( 'click', infoPower );
 $( '#displaylibrary' ).on( 'click', infoLibrary );
-$( '#displayplayback' ).on( 'click', function() {
+$( '#displayplayback' ).on( 'click', () => {
 	if ( 'coverTL' in V ) $( '#coverTL' ).trigger( 'click' );
 	var keys    = Object.keys( chkdisplay.playback );
 	var values  = {}
@@ -339,7 +335,7 @@ $( '#displayplayback' ).on( 'click', function() {
 						.prop( 'disabled', true );
 				}
 			} );
-			$el.time.on( 'change', function() {
+			$el.time.on( 'change', () => {
 				var tcv = tcvValue();
 				if ( ! tcv.time ) {
 					if ( tcv.cover ) {
@@ -351,7 +347,7 @@ $( '#displayplayback' ).on( 'click', function() {
 					restoreEnabled();
 				}
 			} );
-			$el.cover.on( 'change', function() {
+			$el.cover.on( 'change', () => {
 				var tcv = tcvValue();
 				if ( ! tcv.cover ) {
 					if ( tcv.time ) {
@@ -363,11 +359,12 @@ $( '#displayplayback' ).on( 'click', function() {
 						$el[ el ]
 							.prop( 'checked', false )
 							.prop( 'disabled', true );
-					} );				} else {
+					} );
+				} else {
 					restoreEnabled();
 				}
 			} );
-			$el.volume.on( 'change', function() {
+			$el.volume.on( 'change', () => {
 				var tcv = tcvValue();
 				if ( ! tcv.volume ) {
 					if ( tcv.cover ) {
@@ -389,7 +386,7 @@ $( '#displayplayback' ).on( 'click', function() {
 		, ok           : displaySave
 	} );
 } );
-$( '#displayplaylist' ).on( 'click', function() {
+$( '#displayplaylist' ).on( 'click', () => {
 	if ( 'coverTL' in V ) $( '#coverTL' ).trigger( 'click' );
 	var keys   = Object.keys( chkdisplay.playlist );
 	var values = {};
@@ -405,7 +402,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 		, ok           : () => displaySave( keys )
 	} );
 } );
-$( 'body' ).on( 'click', '#colorok', function() {
+$( 'body' ).on( 'click', '#colorok', () => {
 	var hsv = V.colorpicker.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
 	var s   = hsv.s;
 	var v   = hsv.v;
@@ -422,7 +419,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	}
 	bash( [ 'color', h +' '+ s +' '+ l, 'CMD HSL' ] );
 	loader();
-} ).on( 'click', '#colorreset', function() {
+} ).on( 'click', '#colorreset', () => {
 	info( {
 		  icon       : 'color'
 		, title      : 'Colors'
@@ -433,7 +430,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 			loader();
 		}
 	} );
-} ).on( 'click', '#colorcancel', function() {
+} ).on( 'click', '#colorcancel', () => {
 	$( '#colorpicker' ).remove();
 	V.colorpicker.destroy();
 	V.colorpicker   = false;
@@ -451,7 +448,7 @@ $( '#library, #button-library' ).on( 'click', function() {
 	}
 	if ( S.updating_db ) banner( 'library blink', 'Library Database', 'Update ...' );
 } );
-$( '#playback' ).on( 'click', function() {
+$( '#playback' ).on( 'click', () => {
 	if ( V.playback && ( V.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
 		$( '#stop' ).trigger( 'click' );
 	} else {
@@ -459,7 +456,7 @@ $( '#playback' ).on( 'click', function() {
 		switchPage( 'playback' );
 	}
 } );
-$( '#playlist, #button-playlist' ).on( 'click', function() {
+$( '#playlist, #button-playlist' ).on( 'click', () => {
 	if ( ! V.local ) V.pladd = {}
 	if ( V.playlist ) {
 		if ( ! V.plhome ) playlistGet();
@@ -467,28 +464,28 @@ $( '#playlist, #button-playlist' ).on( 'click', function() {
 		V.plhome ? playlistGet() : switchPage( 'playlist' );
 	}
 } );
-$( '#bar-top' ).on( 'click', function( e ) {
+$( '#bar-top' ).on( 'click', e => {
 	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide ' );
 } );
 $( '#settings' ).on( 'click', function() {
 	$( this ).addClass( 'hide' );
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
-$( '#info' ).on( 'click', function() {
+$( '#info' ).on( 'click', () => {
 	if ( localhost ) setInfoScroll();
 } );
-$( '.emptyadd' ).on( 'click', function() {
+$( '.emptyadd' ).on( 'click', () => {
 	$( '#library' ).trigger( 'click' );
 } );
-$( '#artist, #guide-bio' ).on( 'click', function() {
+$( '#artist, #guide-bio' ).on( 'click', () => {
 	bio( S.Artist );
 } );
-$( '#title, #guide-lyrics' ).on( 'click', function() {
+$( '#title, #guide-lyrics' ).on( 'click', () => {
 	if ( S.lyrics
 		&& ( ! S.stream || ( S.state === 'play' && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
 		if ( S.Title.includes( '(' ) ) {
-			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], function( paren ) {
+			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], paren => {
 				paren === '-1' ? infoTitle() : lyricsGet();
 			} );
 		} else {
@@ -499,7 +496,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	}
 	
 } );
-$( '#album, #guide-booklet' ).on( 'click', function() {
+$( '#album, #guide-booklet' ).on( 'click', () => {
 	if ( localhost ) return
 	
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
@@ -528,7 +525,7 @@ $( '#album, #guide-booklet' ).on( 'click', function() {
 		window.open( urllastfm, '_blank' );
 	}
 } );
-$( '#infoicon' ).on( 'click', '.i-audiocd', function() {
+$( '#infoicon' ).on( 'click', '.i-audiocd', () => {
 	info( {
 		  icon    : 'audiocd'
 		, title   : 'Audio CD'
@@ -537,7 +534,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 		, ok      : () => bash( [ 'audiocd.sh', 'ejecticonclick' ] )
 	} );
 } );
-$( '#elapsed' ).on( 'click', function() {
+$( '#elapsed' ).on( 'click', () => {
 	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
 } );
 $( '#time' ).roundSlider( {
@@ -550,40 +547,40 @@ $( '#time' ).roundSlider( {
 	, endAngle    : 450
 	, showTooltip : false
 	, animation   : false
-	, create      : function ( e ) {
+	, create      : function () {
 		$timeRS       = this;
 		$timeprogress = $( '#time .rs-transition, #time-bar' );
 	}
-	, start       : function () { // drag start
+	, start       : () => { // drag start
 		V.drag = true;
 		clearIntervalAll();
 		$( '.map' ).removeClass( 'mapshow' );
 		if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
 	}
-	, drag        : function ( e ) { // drag with no transition by default
+	, drag        : e => { // drag with no transition by default
 		$( '#elapsed' ).text( second2HMS( e.value ) );
 	}
-	, change      : function( e ) { // not fire on 'setValue'
+	, change      : e => { // not fire on 'setValue'
 		clearIntervalAll();
 		mpcSeek( e.value );
 	}
-	, stop        : function() {
+	, stop        : () => {
 		V.drag = false;
 	}
 } );
-$( '#time-band' ).on( 'touchstart mousedown', function() {
+$( '#time-band' ).on( 'touchstart mousedown', () => {
 	if ( S.player !== 'mpd' || S.stream ) return
 	
 	V.start = true;
 	guideHide();
 	clearIntervalAll();
 	if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
-} ).on( 'touchmove mousemove', function( e ) {
+} ).on( 'touchmove mousemove', e => {
 	if ( ! V.start ) return
 	
 	V.drag = true;
 	mpcSeekBar( e.pageX || e.changedTouches[ 0 ].pageX );
-} ).on( 'touchend mouseup', function( e ) {
+} ).on( 'touchend mouseup', e => {
 	if ( ! V.start ) return
 	
 	V.start = V.drag = false;
@@ -611,13 +608,13 @@ $( '#volume' ).roundSlider( {
 		$volumehandle  = $( '#volume .rs-handle' );
 		$volumehandlerotate = $( '#volume .rs-transition, #volume .rs-handle' );
 	}
-	, start             : function( e ) {
+	, start             : e => {
 		V.drag = true;
 		volumeSocket();
 		if ( e.value === 0 ) volumeColorUnmute(); // restore handle color immediately on start drag
 		$( '.map' ).removeClass( 'mapshow' );
 	}
-	, beforeValueChange : function( e ) {
+	, beforeValueChange : e => {
 		if ( V.local || V.drag ) return
 		
 		if ( V.press ) {
@@ -652,23 +649,21 @@ $( '#volume' ).roundSlider( {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
-	, stop              : function() {
-		volumePush();
-	}
+	, stop              : volumePush
 } );
-$( '#volume-band' ).on( 'touchstart mousedown', function() {
+$( '#volume-band' ).on( 'touchstart mousedown', () => {
 	guideHide();
 	clearTimeout( V.volumebar );
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	V.start = true;
 	volumeSocket();
-} ).on( 'touchmove mousemove', function( e ) {
+} ).on( 'touchmove mousemove', e => {
 	if ( ! V.start ) return
 	
 	V.drag = true;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
-} ).on( 'touchend mouseup', function( e ) {
+} ).on( 'touchend mouseup', e => {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		volumeBarShow();
 		return
@@ -676,19 +671,19 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	
 	V.drag ? volumePush() : volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	V.start = V.drag = false;
-} ).on( 'mouseleave', function() {
+} ).on( 'mouseleave', () => {
 	V.start = V.drag = false;
 } );
-$( '#volmute, #volM' ).on( 'click', function() {
+$( '#volmute, #volM' ).on( 'click', () => {
 	$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
 	bash( [ 'volume', S.volume, 0, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 } );
-$( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
+$( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', e => {
 	local();
 	guideHide();
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
 	if ( $( e.currentTarget ).hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
-} ).on( 'touchend mouseup mouseleave', function() {
+} ).on( 'touchend mouseup mouseleave', () => {
 	if ( ! V.press ) return
 	
 	clearInterval( V.interval.volume );
@@ -701,18 +696,18 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	}
 	if ( V.press ) volumePush();
-} ).press( function( e ) {
+} ).press( e => {
 	clearTimeout( V.volumebar );
 	volumeSocket();
 	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	var up = $( e.currentTarget ).hasClass( 'up' );
 	V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );
 } );
-$( '#volume-text' ).on( 'click', function() { // mute / unmute
+$( '#volume-text' ).on( 'click', () => { // mute / unmute
 	clearTimeout( V.volumebar );
 	volumeBarSet( 'toggle' );
 } );
-$( '#divcover' ).press( function( e ) {
+$( '#divcover' ).press( e => {
 	if (
 		( S.stream && S.state === 'play' )
 		|| ! S.pllength
@@ -724,12 +719,12 @@ $( '#divcover' ).press( function( e ) {
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
 		.after( V.icoveredit );
-} ).on( 'click', '.cover-save', function() {
+} ).on( 'click', '.cover-save', () => {
 	coverartSave();
-} ).on( 'click', '.cover-change', function() {
+} ).on( 'click', '.cover-change', () => {
 	S.webradio ? webRadioCoverart() : coverartChange();
 } );
-$( '#coverT' ).press( function() {
+$( '#coverT' ).press( () => {
 	if ( typeof Android === 'object' ) {
 		changeIP();
 	} else {
@@ -995,12 +990,12 @@ $( '.btn-cmd' ).on( 'click', function() {
 $( '#bio' ).on( 'click', '.biosimilar', function() {
 	bio( $( this ).text(), 'getsimilar' );
 } );
-$( '#bio' ).on( 'click', '.bioback', function() {
+$( '#bio' ).on( 'click', '.bioback', () => {
 	V.bioartist.pop();
 	var getsimilar = V.bioartist.length > 1 ? 'getsimilar' : '';
 	bio( V.bioartist.pop(), getsimilar );
 } );
-$( '#bio' ).on( 'click', '.closebio', function() {
+$( '#bio' ).on( 'click', '.closebio', () => {
 	V.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
 	if ( 'observer' in V ) V.observer.disconnect();
@@ -1036,16 +1031,16 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 	query.path      = path;
 	query.modetitle = path;
 } );
-$( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
+$( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', () => {
 	webRadioNew();
-} ).on( 'click', '.button-dab-refresh', function() {
+} ).on( 'click', '.button-dab-refresh', () => {
 	info( {
 		  icon     : 'dabradio'
 		, title    : 'DAB Radio'
 		, message  : ( $( '#lib-list li' ).length ? 'Rescan' : 'Scan' ) +' digital radio stations?'
 		, ok       : () => bash( [ 'dabscan' ] )
 	} );
-} ).on( 'click', '.button-latest-clear', function() {
+} ).on( 'click', '.button-latest-clear', () => {
 	if ( V.librarytrack ) {
 		info( {
 			  icon         : 'latest'
@@ -1082,14 +1077,14 @@ $( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
 		, ok           : thumbUpdate
 	} );
 } );
-$( '#button-lib-search' ).on( 'click', function() { // icon
+$( '#button-lib-search' ).on( 'click', () => { // icon
 	$( '#lib-path span, #button-lib-back, #button-lib-search' ).addClass( 'hide' );
 	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path' ).css( 'max-width', 40 );
 	$( '#lib-search-input' ).focus();
 } );
-$( '#lib-search-btn' ).on( 'click', function() { // search
+$( '#lib-search-btn' ).on( 'click', () => { // search
 	var keyword = $( '#lib-search-input' ).val();
 	if ( ! keyword ) {
 		$( '#lib-search-close' ).trigger( 'click' );
@@ -1108,7 +1103,7 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 			}
 		}
-		list( query, function( data ) {
+		list( query, data => {
 			if ( data !== -1 ) {
 				var list = {
 					  html      : data.html
@@ -1129,7 +1124,7 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 		}, 'json' );
 	}
 } );
-$( '#lib-search-close' ).on( 'click', function( e ) {
+$( '#lib-search-close' ).on( 'click', e => {
 	e.stopPropagation();
 	$( '#lib-search, #lib-search-btn' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
@@ -1142,10 +1137,10 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 		$( '#lib-breadcrumbs a' ).length ? $( '#lib-breadcrumbs a' ).last().trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 	}
 } );
-$( '#lib-search-input' ).on( 'keyup paste cut', function( e ) {
+$( '#lib-search-input' ).on( 'keyup paste cut', e => {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).trigger( 'click' );
 } );
-$( '#button-lib-back' ).on( 'click', function() {
+$( '#button-lib-back' ).on( 'click', () => {
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL           = $breadcrumbs.length
 	if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
@@ -1164,7 +1159,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 			$( '#mode-album' ).trigger( 'click' );
 		} else {
 			if ( 'gmode' in query ) V.mode = query.gmode;
-			list( query, function( html ) {
+			list( query, html => {
 				if ( html != -1 ) {
 					if ( backmode ) V.mode = V.gmode;
 					if ( V.mode === 'album' ) {
@@ -1185,7 +1180,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		}
 	}
 } );
-$( '#lib-mode-list' ).on( 'click', function( e ) {
+$( '#lib-mode-list' ).on( 'click', e => {
 	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
 } ).on( 'click', '.mode', function() {
 	var $this = $( this );
@@ -1210,7 +1205,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 							 + ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgm' ) +'</div>';
 			json.okno       = true;
 			json.beforeshow = () => {
-				$( '#infoContent' ).on( 'click', '.submenu', function() {
+				$( '#infoContent' ).on( 'click', '.submenu', () => {
 					$( '#update' ).trigger( 'click' );
 				} );
 			}
@@ -1256,7 +1251,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 	}
 	query.gmode = V.mode;
-	list( query, function( html ) {
+	list( query, html => {
 		var data = {
 			  html      : html
 			, modetitle : path
@@ -1341,7 +1336,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 	}
 	V.mode = mode;
-	list( query, function( html ) {
+	list( query, html => {
 		var data = {
 			  html      : html
 			, modetitle : path
@@ -1416,11 +1411,11 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
-	, onMove       : function() {
+	, onMove       : () => {
 		$( '.bkedit' ).remove();
 		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
 	}
-	, onUpdate      : function () {
+	, onUpdate      : () => {
 		var order = [];
 		$( '.mode' ).each( ( i, el ) => order.push( $( el ).find( '.lipath' ).text() ) );
 		bash( { cmd: [ 'order' ], json: order } );
@@ -1526,7 +1521,7 @@ Exclude this thumbnail?`
 				, format : [ 'file' ]
 			}
 			query.gmode = V.mode;
-			list( query, function( html ) {
+			list( query, html => {
 				var data = {
 					  html      : html
 					, modetitle : path
@@ -1614,7 +1609,7 @@ Exclude this thumbnail?`
 	}
 	V.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode            = V.mode;
-	list( query, function( html ) {
+	list( query, html => {
 		var data = {
 			  html      : html
 			, modetitle : modetitle
@@ -1643,13 +1638,13 @@ $( '.page' ).on( 'click', '.index a', function() {
 	pageScroll( scrollT - ( $bartop.is( ':visible' ) ? 80 : 40 ) );
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
-$( '#button-pl-back' ).on( 'click', function() {
+$( '#button-pl-back' ).on( 'click', () => {
 	V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 } );
-$( '#button-pl-playlists' ).on( 'click', function() {
+$( '#button-pl-playlists' ).on( 'click', () => {
 	list( { playlist: 'list' }, ( data ) => renderSavedPl( data ), 'json' );
 } );
-$( '#button-pl-save' ).on( 'click', function() {
+$( '#button-pl-save' ).on( 'click', () => {
 	var audiocdL  = $( '#pl-list .i-audiocd' ).length;
 	var upnpL     = $( '#pl-list .i-upnp' ).length;
 	var notsavedL = $( '#pl-list .notsaved' ).length;
@@ -1703,7 +1698,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 		} );
 	}
 } );
-$( '#button-pl-shuffle' ).on( 'click', function() {
+$( '#button-pl-shuffle' ).on( 'click', () => {
 	info( {
 		  icon    : 'shuffle'
 		, title   : 'Shuffle Playlist'
@@ -1711,7 +1706,7 @@ $( '#button-pl-shuffle' ).on( 'click', function() {
 		, ok      : () => bash( [ 'mpcshuffle' ] )
 	} );
 } );
-$( '#button-pl-clear' ).on( 'click', function() {
+$( '#button-pl-clear' ).on( 'click', () => {
 	if ( S.pllength === 1 ) {
 		info( {
 			  icon        : 'playlist'
@@ -1755,7 +1750,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 	}
 } );
 $( '#pl-search-input' ).on( 'keyup paste cut', playlistFilter );
-$( '#pl-search-close, #pl-search-btn' ).on( 'click', function() {
+$( '#pl-search-close, #pl-search-btn' ).on( 'click', () => {
 	$( '#pl-search-close' ).empty();
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).addClass( 'hide' );
 	$( '#pl-manage, #button-pl-search, #pl-list li' ).removeClass( 'hide' );
@@ -1764,7 +1759,7 @@ $( '#pl-search-close, #pl-search-btn' ).on( 'click', function() {
 		return $( this ).html().replace( /<bll>|<\/bll>/g, '' );
 	} )
 } );
-$( '#button-pl-search' ).on( 'click', function() {
+$( '#button-pl-search' ).on( 'click', () => {
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).removeClass( 'hide' );
 	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
 	$( '#pl-search-input' ).focus();
@@ -1772,10 +1767,10 @@ $( '#button-pl-search' ).on( 'click', function() {
 new Sortable( document.getElementById( 'pl-list' ), {
 	  ghostClass    : 'pl-sortable-ghost'
 	, delay         : 400
-	, onStart       : function() {
+	, onStart       : () => {
 		$( '#pl-list li.active' ).addClass( 'sortactive' );
 	}
-	, onUpdate      : function ( e ) {
+	, onUpdate      : e => {
 		S.song = $( '#pl-list li.sortactive' ).index();
 		$( '#pl-list li.sortactive' ).removeClass( 'sortactive' );
 		sortPlaylist( 'pl-list', e.oldIndex, e.newIndex );
@@ -1784,7 +1779,7 @@ new Sortable( document.getElementById( 'pl-list' ), {
 new Sortable( document.getElementById( 'pl-savedlist' ), {
 	  ghostClass    : 'pl-sortable-ghost'
 	, delay         : 400
-	, onUpdate      : function ( e ) {
+	, onUpdate      : e => {
 		sortPlaylist( 'pl-savedlist', e.oldIndex, e.newIndex );
 	}
 } );
@@ -1868,7 +1863,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	playlistRemove( $( this ).parent() );
 } );
-$( '#savedpl-path' ).on( 'click', '.savedlist', function() {
+$( '#savedpl-path' ).on( 'click', '.savedlist', () => {
 	var $menu   = $( '#menu-playlist' );
 	var active = ! $menu.hasClass( 'hide' );
 	menuHide();
@@ -1943,7 +1938,7 @@ $( '#lyricstextarea' ).on( 'input', function() {
 		$( '#lyricsback' ).addClass( 'hide' );
 	}
 } );
-$( '#lyricsedit' ).on( 'click', function() {
+$( '#lyricsedit' ).on( 'click', () => {
 	$( '#lyricsundo, #lyricssave' ).addClass( 'hide' );
 	$( '#lyricsdelete' ).toggleClass( 'hide', ! V.lyrics );
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
@@ -1952,10 +1947,8 @@ $( '#lyricsedit' ).on( 'click', function() {
 		.val( V.lyrics )
 		.scrollTop( $( '#lyricstext' ).scrollTop() );
 } );
-$( '#lyricsrefresh' ).on( 'click', function() {
-	lyricsGet();
-} );
-$( '#lyricsclose' ).on( 'click', function() {
+$( '#lyricsrefresh' ).on( 'click', lyricsGet );
+$( '#lyricsclose' ).on( 'click', () => {
 	if ( $( '#lyricstextarea' ).val() === V.lyrics || ! $( '#lyricstextarea' ).val() ) {
 		lyricsHide();
 	} else {
@@ -1967,11 +1960,11 @@ $( '#lyricsclose' ).on( 'click', function() {
 		} );
 	}
 } );
-$( '#lyricsback' ).on( 'click', function() {
+$( '#lyricsback' ).on( 'click', () => {
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 } );
-$( '#lyricsundo' ).on( 'click', function() {
+$( '#lyricsundo' ).on( 'click', () => {
 	info( {
 		  icon     : 'lyrics'
 		, title    : 'Lyrics'
@@ -1983,7 +1976,7 @@ $( '#lyricsundo' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#lyricssave' ).on( 'click', function() {
+$( '#lyricssave' ).on( 'click', () => {
 	info( {
 		  icon     : 'lyrics'
 		, title    : 'Lyrics'
@@ -2000,7 +1993,7 @@ $( '#lyricssave' ).on( 'click', function() {
 		}
 	} );
 } );	
-$( '#lyricsdelete' ).on( 'click', function() {
+$( '#lyricsdelete' ).on( 'click', () => {
 	info( {
 		  icon    : 'lyrics'
 		, title   : 'Lyrics'

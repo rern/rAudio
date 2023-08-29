@@ -1,7 +1,7 @@
 function radioRefresh() {
 	if ( V.query.length ) {
 		var query = V.query.slice( -1 )[ 0 ];
-		list( query, function( html ) {
+		list( query, html => {
 			var data = {
 				  html      : html
 				, modetitle : query.modetitle
@@ -158,7 +158,7 @@ function psDisplay( data ) {
 							, string : path
 							, format : [ 'file' ]
 						}
-						list( query, function( html ) {
+						list( query, html => {
 							var data = {
 								  html      : html
 								, modetitle : path

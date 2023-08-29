@@ -125,7 +125,7 @@ function directoryList() {
 		var modetitle = path;
 		query.gmode   = V.mode;
 		V.mode        = path.split( '/' )[ 0 ].toLowerCase();
-		list( query, function( html ) {
+		list( query, html => {
 			var data = {
 				  html      : html
 				, modetitle : modetitle
@@ -174,7 +174,7 @@ function playlistDelete() {
 function playlistLoad( name, play, replace ) {
 	V.local = true;
 	banner( 'file-playlist', name, 'Load ...' );
-	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], function() {
+	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], () => {
 		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
 	} );
 }
@@ -279,7 +279,7 @@ function tagEditor() {
 		, file   : file
 		, format : format
 	}
-	list( query, function( values ) {
+	list( query, values => {
 		name[ 1 ]    = 'Album Artist';
 		var label    = [];
 		format.forEach( ( el, i ) => {
@@ -341,7 +341,7 @@ function tagEditor() {
 						, string : string
 						, format : [ 'album', 'artist' ]
 					}
-					list( query, function( html ) {
+					list( query, html => {
 						var data = {
 							  html      : html
 							, modetitle : string
@@ -355,7 +355,7 @@ function tagEditor() {
 						V.query.push( query );
 					} );
 				} );
-				$( '.infomessage' ).on( 'click', function() {
+				$( '.infomessage' ).on( 'click', () => {
 					if ( V.library ) return
 					
 					var query = {
@@ -363,7 +363,7 @@ function tagEditor() {
 						, string : V.library ? file : dir
 						, format : [ 'file' ]
 					}
-					list( query, function( html ) {
+					list( query, html => {
 						var data = {
 							  html      : html
 							, modetitle : dir
@@ -580,7 +580,7 @@ function webRadioNew( name, url, charset ) {
 			if ( $( '#lib-path .lipath' ).text() ) {
 				$( '#addwebradiodir' ).remove();
 			} else {
-				$( '#addwebradiodir' ).on( 'click', function() {
+				$( '#addwebradiodir' ).on( 'click', () => {
 					info( {
 						  icon       : 'webradio'
 						, title      : 'Add New Folder'

@@ -122,16 +122,16 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 	);
 }
 // debug
-$( '#debug' ).press( function() {
+$( '#debug' ).press( () => {
 	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Pushstream', 5000 );
 	bash( [ 'cmd.sh', 'cachebust' ] );
 } );
-$( '#infoOverlay' ).press( '#infoOk', function() {
+$( '#infoOverlay' ).press( '#infoOk', () => {
 	V.consoleonly = true;
 	I.ok();
 } );
-$( '.col-r .switch' ).press( function( e ) {
+$( '.col-r .switch' ).press( e => {
 	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
 		$( '#setting-'+ e.target.id ).trigger( 'click' );
 		return
@@ -164,7 +164,7 @@ function bannerHide() {
 $( '#banner' ).on( 'click', bannerHide );
 
 // ----------------------------------------------------------------------
-$( '#data' ).on( 'click', '.copy', function() {
+$( '#data' ).on( 'click', '.copy', () => {
 	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
 	// copy2clipboard - for non https which cannot use clipboard API
 	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
@@ -200,7 +200,7 @@ function highlightJSON( json ) {
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
 	json = '\n\n'+ JSON.stringify( json, null, '\t' );
 	json = json.replace( /</g, '&lt;' );
-	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) {
+	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, match => {
 		if ( /^"/.test( match ) ) {              // string
 			if ( /:$/.test( match ) ) { // key
 				return match
@@ -223,13 +223,13 @@ function ico( cls, id ) {
 }
 
 // info ----------------------------------------------------------------------
-$( '#infoOverlay' ).press( '#infoIcon', function() { // usage
+$( '#infoOverlay' ).press( '#infoIcon', () => { // usage
 	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
 } );
-$( '#infoOverlay' ).on( 'click', '#infoContent', function() {
+$( '#infoOverlay' ).on( 'click', '#infoContent', () => {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
-$( '#infoOverlay' ).on( 'keydown', function( e ) {
+$( '#infoOverlay' ).on( 'keydown', e => {
 /*
 all:      [Tab]       - focus / next input
 		  [Shift+Tab] - previous input
@@ -337,9 +337,7 @@ function info( json ) {
 			infoButtonCommand( buttonfn );
 		} );
 	}
-	$( '#infoX, #infoCancel' ).on( 'click', function() {
-		infoButtonCommand( I.cancel, 'cancel' );
-	} );
+	$( '#infoX, #infoCancel' ).on( 'click', () => infoButtonCommand( I.cancel, 'cancel' ) );
 	$( '#infoOk' ).on( 'click', function() {
 		if ( V.press || $( this ).hasClass( 'disabled' ) ) return
 		
@@ -357,9 +355,7 @@ function info( json ) {
 		$( '#infoOk' )
 			.html( I.fileoklabel )
 			.addClass( 'hide' );
-		$( '#infoFileLabel' ).on( 'click', function() {
-			$( '#infoFileBox' ).trigger( 'click' );
-		} );
+		$( '#infoFileLabel' ).on( 'click', () => $( '#infoFileBox' ).trigger( 'click' ) );
 		$( '#infoFileBox' ).on( 'change', function() {
 			if ( ! this.files.length ) return
 			
@@ -554,7 +550,7 @@ function info( json ) {
 	}
 	
 	// populate layout //////////////////////////////////////////////////////////////////////////////
-	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
+	$( '#infoContent' ).html( htmlcontent ).promise().done( () => {
 		
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields
@@ -688,7 +684,7 @@ function infoCheckLength() {
 }
 function infoCheckSet() {
 	if ( I.checkblank || I.checkip || I.checklength || I.checkchanged ) {
-		$inputbox.on( 'keyup paste cut', function() {
+		$inputbox.on( 'keyup paste cut', () => {
 			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
 			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
@@ -728,7 +724,7 @@ function infoFileImage() {
 					I.infofilegif = '/srv/http/data/shm/local/tmp.gif';
 					var img    = new Image();
 					img.src    = URL.createObjectURL( I.infofile );
-					img.onload = function() {
+					img.onload = () => {
 						var imgW   = img.width;
 						var imgH   = img.height;
 						var resize = infoFileImageResize( 'gif', imgW, imgH );
@@ -748,10 +744,10 @@ function infoFileImageLoad() {
 function infoFileImageReader() {
 	var maxsize   = ( V.library && ! V.librarylist ) ? 200 : 1000;
 	var reader    = new FileReader();
-	reader.onload = function( e ) {
+	reader.onload = e => {
 		var img    = new Image();
 		img.src    = e.target.result;
-		img.onload = function() {
+		img.onload = () => {
 			var imgW          = img.width;
 			var imgH          = img.height;
 			var filecanvas    = document.createElement( 'canvas' );
@@ -764,7 +760,7 @@ function infoFileImageReader() {
 				var canvas    = document.createElement( 'canvas' );
 				canvas.width  = resize.w;
 				canvas.height = resize.h;
-				V.pica = pica.resize( filecanvas, canvas, picaOption ).then( function() {
+				V.pica = pica.resize( filecanvas, canvas, picaOption ).then( () => {
 					infoFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
 				} );
 			} else {
@@ -1019,7 +1015,7 @@ function jsonClone( json ) {
 	return JSON.parse( JSON.stringify( json ) )
 }
 function jsonSort( json ) {
-	return Object.keys( json ).sort().reduce( function ( result, key ) {
+	return Object.keys( json ).sort().reduce( ( result, key ) => {
 		result[ key ] = json[ key ];
 		return result;
 	}, {} );
@@ -1150,9 +1146,7 @@ function selectText2Html( pattern ) {
 	htmlSet( $rendered );
 	$( '#infoContent select' ).on( 'select2:open', () => {
 		setTimeout( () => $( '.select2-results__options li' ).each( ( i, el ) => htmlSet( $( el ) ) ), 0 );
-	} ).on( 'select2:select', function() {
-		htmlSet( $rendered );
-	} );
+	} ).on( 'select2:select', () => htmlSet( $rendered ) );
 }
 
 // websocket
