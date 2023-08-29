@@ -78,7 +78,7 @@ setformat )
 statuslog )
 	cat /var/log/camilladsp.log
 	;;
-volume )
+volume|volumepushstream )
 	$dirbash/cmd.sh "$1"
 	;;
 	

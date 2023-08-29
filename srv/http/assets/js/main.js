@@ -653,8 +653,7 @@ $( '#volume' ).roundSlider( {
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, stop              : function() {
-		V.drag = false;
-		setTimeout( () => bash( [ 'volumepushstream' ] ), 900 );
+		volumePush();
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
@@ -675,9 +674,9 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		return
 	}
 	
-	if ( ! V.start ) return
-	
-	if ( ! V.drag ) volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.drag ? volumePush() : volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.start = V.drag = false;
+} ).on( 'mouseleave', function() {
 	V.start = V.drag = false;
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
@@ -689,7 +688,9 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	guideHide();
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
 	if ( $( e.currentTarget ).hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
-} ).on( 'touchend mouseup', function( e ) {
+} ).on( 'touchend mouseup mouseleave', function() {
+	if ( ! V.press ) return
+	
 	clearInterval( V.interval.volume );
 	if ( D.volume ) {
 		$( '#volume-text' ).text( S.volume );
@@ -699,6 +700,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 		clearTimeout( V.volumebar );
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	}
+	if ( V.press ) volumePush();
 } ).press( function( e ) {
 	clearTimeout( V.volumebar );
 	volumeSocket();

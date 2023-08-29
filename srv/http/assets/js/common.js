@@ -1159,6 +1159,9 @@ function selectText2Html( pattern ) {
 function volumeDrag() {
 	wsvolume.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
+function volumePush() {
+	bash( [ 'volumepushstream', S.volume, 'CMD VOLUME' ] );
+}
 function volumeSocket() {
 	if ( ! wsvolume ) {
 		wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080' );

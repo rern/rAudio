@@ -1684,8 +1684,9 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 	bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 	S.volume = vol;
 	util.volumeThumb();
-} ).on( 'touchend mouseup', function() {
+} ).on( 'touchend mouseup mouseleave', function() {
 	clearInterval( V.intervalvolume );
+	volumePush();
 } ).press( '.divgain i', function( e ) {
 	volumeSocket();
 	var up           = $( e.currentTarget ).hasClass( 'i-plus' );
@@ -1694,6 +1695,10 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 		volumeDrag();
 		util.volumeThumb();
 		$( '#gain' ).text( S.volume );
+		if ( S.volume === 0 || S.volume === 100 ) {
+			clearInterval( V.intervalvolume );
+			volumePush();
+		}
 	}, 100 );
 } );
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
@@ -1704,10 +1709,12 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	
 	V.drag = true;
 	util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
-} ).on( 'touchend mouseup mouseleave', function( e ) {
+} ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.start ) return
 	
-	if ( ! V.drag ) util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.drag ? volumePush() : util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.start = V.drag = false;
+} ).on( 'mouseleave', function() {
 	V.start = V.drag = false;
 } );
 $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
@@ -1735,7 +1742,7 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 		.val( val )
 		.trigger( 'input' );
 	if ( V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
-} ).on( 'touchend mouseup', function() {
+} ).on( 'touchend mouseup mouseleave', function() {
 	clearInterval( V.intervalgain );
 } ).press( '.divgain i', function( e ) {
 	var $this = $( e.currentTarget );

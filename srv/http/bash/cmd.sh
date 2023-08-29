@@ -795,7 +795,7 @@ volumeget )
 	volumeGet value
 	;;
 volumepushstream )
-	volumeGet push
+	[[ $VOLUME ]] && pushstream volume '{ "type": "push", "val": '$VOLUME' }' || volumeGet push
 	;;
 volumeupdn )
 	volumeUpDn 1%$UPDN "$CONTROL" $CARD
