@@ -57,11 +57,15 @@ camilladsp )
 	[[ $( < $dirshm/player ) == mpd ]] && mpc -q stop || $dirbash/cmd.sh playerstop
 	enableFlagSet
 	if [[ $ON ]]; then
+		if grep -q configs-bt /etc/default/camilladsp && [[ ! -e $dirshm/btreceiver ]]; then
+			yml=$( ls -1 $dircamilladsp/configs/* | head -1 )
+			sed -i 's|^CONFIG=.*|CONFIG="'$yml'"|' /etc/default/camilladsp
+		fi
 		pushRestartMpd camilladsp $TF
 		! systemctl -q is-active camilladsp && rm $dirsystem/camilladsp
 	else
 		$dirsettings/camilla.py save
-		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
+		[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 		systemctl stop camilladsp
 		pushRestartMpd camilladsp $TF
 		rmmod snd-aloop &> /dev/null
