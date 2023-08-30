@@ -1,9 +1,23 @@
 #!/usr/bin/python
 
 import json
-import os
-import os.path
 import sys
+
+argvL = len( sys.argv )
+
+if argvL > 2: # graph
+    cmd    = sys.argv[ 1 ]
+    values = json.loads( sys.argv[ 2 ] )
+    if cmd == 'filters':
+        from camilladsp_plot import eval_filter
+        data = eval_filter( values )
+    elif cmd == 'pipeline':
+        from camilladsp_plot import eval_filterstep
+        data = eval_filterstep( values, int( sys.argv[ 3 ] ) )
+    print( json.dumps( data ) )
+    sys.exit()
+    
+
 from websocket import create_connection
 
 try:
@@ -13,28 +27,19 @@ except:
 
 def getValue( cmd ):
     ws.send( json.dumps( cmd ) )
-    data  = json.loads( ws.recv() )
+    data = json.loads( ws.recv() )
     return data[ cmd ][ 'value' ]
     
-if len( sys.argv ) > 1:
-    cmd = sys.argv[ 1 ]
-    if cmd == 'save':
-        config = getValue( 'GetConfig' )
-        file   = getValue( 'GetConfigName' )
-        with open( file, 'w' ) as f: f.write( config )
-    else:
-        target = sys.argv[ 2 ]
-        config = json.loads( getValue( 'GetConfigJson' ) )
-        if cmd == 'filters':
-            from camilladsp_plot import eval_filter
-            data = eval_filter( config[ 'filters' ][ target ] )
-        elif cmd == 'pipeline':
-            from camilladsp_plot import eval_filterstep
-            data  = eval_filterstep( config, int( target ) )
-        print( json.dumps( data ) )
-        
+if argvL > 1: # save
+    config = getValue( 'GetConfig' )
+    file   = getValue( 'GetConfigName' )
+    with open( file, 'w' ) as f: f.write( config )
+    
     ws.close()
     sys.exit()
+
+import os
+import os.path
 
 status     = {}
 for k in [ 'GetState', 'GetCaptureRate', 'GetBufferLevel', 'GetClippedSamples', 'GetRateAdjust' ]:

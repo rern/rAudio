@@ -361,7 +361,8 @@ var graph    = {
 			} );
 		}
 		notify( tab, util.key2label( tab ), 'Plot ...' );
-		bash( [ 'settings/camilla.py', tab +' "'+ val +'"' ], data => { // groupdelay = delay, magnitude = gain
+		var cmd = filters ? " '"+ JSON.stringify( FIL[ val ] ) +"'" : " '"+ JSON.stringify( S.config ) +"' "+ val;
+		bash( [ 'settings/camilla.py', tab + cmd ], data => { // groupdelay = delay, magnitude = gain
 			var impulse   = 'impulse' in data;
 			if ( filterdelay ) {
 				plots.magnitude.y   = 0;
@@ -1845,7 +1846,6 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	} );
 } );
 $( '.entries' ).on( 'click', '.liicon', function() {
-	console.log(9)
 	var $this  = $( this );
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
