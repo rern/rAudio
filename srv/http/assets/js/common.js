@@ -1092,12 +1092,6 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 					loader();
 				}, 10000 );
 			}
-			[ ws, wsvolume ].forEach( socket => {
-				if ( socket ) {
-					socket.close();
-					socket = null;
-				}
-			} );
 		}
 	}
 	// page visibility -----------------------------------------------------------------

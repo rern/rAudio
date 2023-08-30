@@ -308,6 +308,10 @@ var axes     = {
 function renderPage() { // common from settings.js
 	render.page();
 }
+function pushstreamDisconnect() {
+	ws.close();
+	wsvolume.close();
+}
 
 var graph    = {
 	  list     : () => {
@@ -505,6 +509,7 @@ var render   = {
 		S.lscoef.forEach( f => {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
+		volumeSocket();
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
