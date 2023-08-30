@@ -1725,13 +1725,15 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	if ( $this.parent().hasClass( 'disabled' ) ) return
 	
 	clearTimeout( V.timeoutgain );
-	var $gain  = $this.parent().prev();
-	var $db    = $gain.prev();
-	var val    = +$gain.val();
+	var $gain = $this.parent().prev();
+	var $db   = $gain.prev();
+	var val   = +$gain.val();
+	var set0  = false;
 	if ( $this.hasClass( 'i-set0' ) ) {
 		if ( val === 0 ) return
 		
-		val = 0;
+		val  = 0;
+		set0 = true;
 	} else if ( $this.hasClass( 'i-minus' ) ) {
 		if ( val === $gain.prop( 'min' ) ) return
 		
