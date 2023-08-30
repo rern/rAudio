@@ -68,7 +68,7 @@ function pushstreamDisconnect() {
 	clearIntervalAll();
 	guideHide();
 	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
-	wsvolume.close();
+	wscommand.close();
 }
 pushstream.onmessage = ( data, id, channel ) => {
 	switch ( channel ) {

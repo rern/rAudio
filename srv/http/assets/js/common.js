@@ -1155,16 +1155,16 @@ function selectText2Html( pattern ) {
 }
 
 // websocket
-var ws, wsvolume;
+var ws, wscommand;
 function volumeDrag() {
-	wsvolume.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+	wscommand.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function volumePush() {
 	bash( [ 'volumepushstream', S.volume, 'CMD VOLUME' ] );
 }
 function volumeSocket() {
-	if ( ! wsvolume ) {
-		wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080' );
-		wsvolume.onclose = () => wsvolume = null;
+	if ( ! wscommand ) {
+		wscommand = new WebSocket( 'ws://'+ window.location.host +':8080' );
+		wscommand.onclose = () => wscommand = null;
 	}
 }
