@@ -5,8 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20230828
+[[ -e /boot/kernel.img ]] && rpi0=1
 file=/etc/systemd/system/cmd-websocket.service
-if [[ ! -e $file ]]; then
+if [[ ! -e $file && ! $rpi0 ]]; then
 	pacman -S --noconfirm --needed python-websockets
 	echo "\
 [Unit]
@@ -22,7 +23,7 @@ WantedBy=multi-user.target" > $file
 	systemctl enable --now cmd-websocket
 fi
 
-if [[ ! -e $dircamilladsp/configs-bt ]]; then
+if [[ ! -e $dircamilladsp/configs-bt && ! $rpi0 ]]; then
 	cat << EOF > /etc/default/camilladsp
 ADDRESS=0.0.0.0
 CONFIG=/srv/http/data/camilladsp/configs/camilladsp.yml
