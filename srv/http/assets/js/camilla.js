@@ -612,6 +612,7 @@ var render   = {
 		delete V.intervalvu;
 		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 		$( '.rms' ).css( 'width', 0 );
+		$( '#divstate .value' ).html( '&emsp;·&ensp;·&ensp;·' );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		graph.list();
@@ -1629,7 +1630,7 @@ var util     = {
 				case 'GetCaptureRate':
 				case 'GetBufferLevel':
 				case 'GetRateAdjust':
-					if ( ! ( 'status' in S ) ) S.status = { GetState: '&emsp;'+ blinkdot }
+					if ( ! ( 'status' in S ) ) S.status = { GetState: blinkdot }
 					if ( cmd === 'GetState' ) {
 						if ( value !== 'Running' ) {
 							render.vuClear();
