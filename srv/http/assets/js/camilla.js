@@ -1629,6 +1629,7 @@ var util     = {
 				case 'GetCaptureRate':
 				case 'GetBufferLevel':
 				case 'GetRateAdjust':
+					if ( ! ( 'status' in S ) ) S.status = { GetState: '&emsp;'+ blinkdot }
 					if ( cmd === 'GetState' ) {
 						if ( value !== 'Running' ) {
 							render.vuClear();
