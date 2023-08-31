@@ -537,7 +537,6 @@ var render   = {
 		V.statusget   = [ 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
-		if ( ! ( 'status' in S ) ) S.status = { GetState: '&emsp;<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>' };
 		render.statusValue();
 		if ( $( '.vubar' ).length ) return
 		
@@ -1530,6 +1529,7 @@ var util     = {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		ws.onopen    = () => {
 			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => ws.send( '"'+ cmd +'"' ) );
+			S.status         = { GetState: '&emsp;'+ blinkdot }
 			V.intervalstatus = setInterval( () => {
 				if ( ! V.local ) V.statusget.forEach( k => ws.send( '"'+ k +'"' ) )
 			}, 1000 );
@@ -1629,7 +1629,6 @@ var util     = {
 				case 'GetCaptureRate':
 				case 'GetBufferLevel':
 				case 'GetRateAdjust':
-					if ( ! ( cmd in S.status ) ) S.status[ cmd ] = '';
 					if ( cmd === 'GetState' ) {
 						if ( value !== 'Running' ) {
 							render.vuClear();
