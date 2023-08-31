@@ -30,38 +30,7 @@ def getValue( cmd ):
     data = json.loads( ws.recv() )
     return data[ cmd ][ 'value' ]
     
-if argvL > 1: # save
-    config = getValue( 'GetConfig' )
-    file   = getValue( 'GetConfigName' )
-    with open( file, 'w' ) as f: f.write( config )
-    
-    ws.close()
-    sys.exit()
-
-import os
-import os.path
-
-status     = {}
-for k in [ 'GetState', 'GetCaptureRate', 'GetBufferLevel', 'GetClippedSamples', 'GetRateAdjust' ]:
-    status[ k ] = getValue( k )
-    
-config     = json.loads( getValue( 'GetConfigJson' ) )
-devicetype = getValue( 'GetSupportedDeviceTypes' )
-dircamilla = '/srv/http/data/camilladsp/'
-value      = {
-      'page'       : 'camilla'
-    , 'config'     : config
-    , 'devicetype' : { 'capture': sorted( devicetype[ 1 ] ), 'playback': sorted( devicetype[ 0 ] ) }
-    , 'status'     : status
-    , 'configname' : os.path.basename( getValue( 'GetConfigName' ) )
-    , 'lscoef'     : sorted( os.listdir( dircamilla +'coeffs' ) )
-    , 'lsconf'     : sorted( os.listdir( dircamilla +'configs' ) )
-    , 'lsconfbt'   : sorted( os.listdir( dircamilla +'configs-bt' ) )
-}
-devices    = config[ 'devices' ]
-for k in [ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ]:
-    value[ k ] = devices[ k ]
-
-print( json.dumps( value ) )
-
+config = getValue( 'GetConfig' )
+file   = getValue( 'GetConfigName' )
+with open( file, 'w' ) as f: f.write( config )
 ws.close()

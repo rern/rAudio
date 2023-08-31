@@ -486,29 +486,12 @@ var graph    = {
 }
 var render   = {
 	  page        : () => {
-		DEV = S.config.devices;
-		FIL = S.config.filters;
-		MIX = S.config.mixers;
-		PIP = S.config.pipeline;
-		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
+		if ( ! ws ) util.webSocket();
+		if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
 		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
-		showContent();
-		render.status();
-		render.tab();
-		[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
-		[ 'capture', 'playback' ].forEach( k => {
-			S.devices[ k ].forEach( d => {
-				var v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
-				C.devices[ k ][ v ] = d;
-			} );
-			S.devicetype[ k ].forEach( t => {
-				var v = render.typeReplace( t );
-				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
-			} );
-		} );
 		S.lscoefraw = [];
 		S.lscoefwav = [];
-		S.lscoef.forEach( f => {
+		S.lscoeffs.forEach( f => {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
 		volumeSocket();
@@ -551,10 +534,10 @@ var render   = {
 		}
 	}
 	, status      : () => {
-		if ( ! ws ) util.webSocket();
 		V.statusget   = [ 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
+		if ( ! ( 'status' in S ) ) S.status = { GetState: '&emsp;<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>' };
 		render.statusValue();
 		if ( $( '.vubar' ).length ) return
 		
@@ -616,7 +599,7 @@ var render   = {
 		}
 		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
 		$( '#configuration' )
-			.html( htmlOption( S.lsconf ) )
+			.html( htmlOption( S.lsconfigs ) )
 			.val( S.configname );
 	}
 	, vu          : () => {
@@ -659,7 +642,7 @@ var render   = {
 	}
 	, filtersSub  : ( k ) => {
 		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
-		if ( S.lscoef.length ) S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
+		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		render.toggle( li, 'sub' );
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
@@ -804,7 +787,7 @@ var render   = {
 	} //---------------------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
-		S.lsconf.forEach( f => {
+		S.lsconfigs.forEach( f => {
 			li += '<li>'+ ico( 'file liicon edit' ) +f +'</li>';
 		} );
 		$( '#config .entries.main' ).html( li );
@@ -1194,7 +1177,7 @@ var setting  = {
 					var s = jsonClone( C.devices[ dev ] );
 					var v = { device: data.device };
 				} else if ( key === 'filename' ) {
-					var s   = S.lscoef.length ? S.lscoef : [ '(n/a)' ];
+					var s   = S.lscoef.length ? S.lscoeffs : [ '(n/a)' ];
 					var v   = { filename: data.filename };
 				}
 				selectlabel = [ ...selectlabel, key ];
@@ -1546,6 +1529,7 @@ var util     = {
 	, webSocket    : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		ws.onopen    = () => {
+			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => ws.send( '"'+ cmd +'"' ) );
 			V.intervalstatus = setInterval( () => {
 				if ( ! V.local ) V.statusget.forEach( k => ws.send( '"'+ k +'"' ) )
 			}, 1000 );
@@ -1562,6 +1546,37 @@ var util     = {
 			var value = data[ cmd ].value;
 			var cl, cp, css;
 			switch ( cmd ) {
+				case 'GetConfigName':
+					S.configname = value.split( '/' ).pop();
+					break;
+				case 'GetConfigJson':
+					S.config = JSON.parse( value );
+					DEV = S.config.devices;
+					FIL = S.config.filters;
+					MIX = S.config.mixers;
+					PIP = S.config.pipeline;
+					[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
+					break;
+				case 'GetSupportedDeviceTypes':
+					S.devicetype = { 
+						  capture  : value[ 1 ].sort()
+						, playback : value[ 0 ].sort()
+					};
+					[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
+					[ 'capture', 'playback' ].forEach( k => {
+						S.devices[ k ].forEach( d => {
+							var v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
+							C.devices[ k ][ v ] = d;
+						} );
+						S.devicetype[ k ].forEach( t => {
+							var v = render.typeReplace( t );
+							C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+						} );
+					} );
+					showContent();
+					render.status();
+					render.tab();
+					break;
 				case 'GetCaptureSignalPeak':
 				case 'GetCaptureSignalRms':
 				case 'GetPlaybackSignalPeak':
@@ -1614,6 +1629,7 @@ var util     = {
 				case 'GetCaptureRate':
 				case 'GetBufferLevel':
 				case 'GetRateAdjust':
+					if ( ! ( cmd in S.status ) ) S.status[ cmd ] = '';
 					if ( cmd === 'GetState' ) {
 						if ( value !== 'Running' ) {
 							render.vuClear();
@@ -2034,7 +2050,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 								if ( ! copy && name === S.configname ) setting.set( newname );
 							} );
 							notify( icon, SW.title, copy ? 'Copy ...' : 'Rename ...' );
-							copy ? S.lsconf.push( newname ) : S.lsconf[ S.lsconf.indexOf( name ) ] = newname;
+							copy ? S.lsconfigs.push( newname ) : S.lsconfigs[ S.lsconfigs.indexOf( name ) ] = newname;
 							render.status();
 						}
 					} );
@@ -2048,7 +2064,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
-							S.lsconf.slice( S.lsconf.indexOf( file ), 1 );
+							S.lsconfigs.slice( S.lsconfigs.indexOf( file ), 1 );
 							bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
 							banner( icon, SW.title, 'Delete ...' );
 							render.status();

@@ -965,19 +965,6 @@ i.map.disabled, .map.disabled i {
 	position: relative;
 }
 
-@keyframes blinkdot {
-	50% { opacity: 0 }
-}
-.dot {
-	animation: 1s infinite blinkdot;
-}
-.dot2 {
-	animation-delay: 250ms;
-}
-.dot3 {
-	animation-delay: 500ms;
-}
-
 /* ---------------------- bio ---------------------- */
 #bio {
 	position: fixed;
