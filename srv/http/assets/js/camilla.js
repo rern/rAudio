@@ -565,10 +565,7 @@ var render   = {
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
-		$( '.playback' )
-			.removeClass( 'i-pause i-play' )
-			.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
-			.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
+		playbackButton();
 		var label  = 'Buffer · Sampling';
 		var status = S.status.GetState;
 		if ( [ 'Running', 'Starting' ].includes( status ) ) {
@@ -1674,11 +1671,6 @@ $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
 } )
-$( '.playback' ).on( 'click', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) return
-	
-	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
-} );
 $( '#divvolume' ).on( 'click', '.divgain i', function() {
 	var $this  = $( this );
 	if ( $this.hasClass( 'i-volume' ) ) {

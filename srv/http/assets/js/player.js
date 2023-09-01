@@ -1,10 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.playback' ).on( 'click', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) return
-	
-	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
-} );
 $( '.btoutputall' ).on( 'click', function() {
 	SW.icon  = 'volume';
 	SW.title = 'Output All';
@@ -344,10 +339,7 @@ function infoSoxrCustom() {
 	} );
 }
 function renderPage() {
-	$( '.playback' )
-		.removeClass( 'i-pause i-play' )
-		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
-		.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
+	playbackButton();
 	var htmlstatus =  S.version +'<br>';
 	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
 	htmlstatus += '<br>'+ S.lastupdate;

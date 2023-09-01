@@ -114,6 +114,12 @@ function notifyCommon( message ) {
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
+function playbackButton() {
+	$( '.playback' )
+		.removeClass( 'i-pause i-play' )
+		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
+		.toggleClass( 'hide', ! S.pllength || ( S.player !== 'mpd' && S.state !== 'play' ) );
+}
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
@@ -410,6 +416,11 @@ $( '.helphead' ).on( 'click', function() {
 	}
 	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 	$( '.sub' ).next().toggleClass( 'hide', visible );
+} );
+$( '.playback' ).on( 'click', function() { // for player and camilla
+	if ( ! S.pllength || ( S.player !== 'mpd' && S.state !== 'play' ) ) return
+	
+	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
 $( '.help' ).on( 'click', function() {
 	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
