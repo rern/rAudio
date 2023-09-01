@@ -118,7 +118,7 @@ function playbackButton() {
 	$( '.playback' )
 		.removeClass( 'i-pause i-play' )
 		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
-		.toggleClass( 'hide', ! S.pllength || ( S.player !== 'mpd' && S.state !== 'play' ) );
+		.toggleClass( 'disabled', ! S.pllength || ( S.player !== 'mpd' && S.state !== 'play' ) );
 }
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
@@ -370,15 +370,10 @@ $( document ).on( 'keyup', function( e ) {
 			break;
 	}
 } );
-$( '.container' ).on( 'click', '.status', function( e ) {
-	if ( $( e.target ).is( 'i' ) ) return
-	
-	var $this = $( this );
-	if ( ! $this.hasClass( 'single' ) ) {
-		var id   = $this.data( 'status' );
-		var $code = $( '#code'+ id );
-		$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
-	}
+$( '.status .headtitle' ).on( 'click', function() {
+	var id    = $( this ).parent().data( 'status' );
+	var $code = $( '#code'+ id );
+	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 } );
 $( '.close' ).on( 'click', function() {
 	location.href = '/';
@@ -417,9 +412,7 @@ $( '.helphead' ).on( 'click', function() {
 	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 	$( '.sub' ).next().toggleClass( 'hide', visible );
 } );
-$( '.playback' ).on( 'click', function() { // for player and camilla
-	if ( ! S.pllength || ( S.player !== 'mpd' && S.state !== 'play' ) ) return
-	
+$( '.playback' ).on( 'click', function( e ) { // for player and camilla
 	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
 $( '.help' ).on( 'click', function() {

@@ -530,8 +530,7 @@ input[ type=checkbox ] {
 .infobtn-default {
 	background-color: var( --cg );
 }
-.disabled,
-.disabled i {
+.disabled {
 	color: var( --cg60 ) !important;
 	pointer-events: none;
 }
