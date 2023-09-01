@@ -612,7 +612,6 @@ var render   = {
 		delete V.intervalvu;
 		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 		$( '.rms' ).css( 'width', 0 );
-		$( '#divstate .value' ).html( '&emsp;·&ensp;·&ensp;·' );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		graph.list();
@@ -1543,6 +1542,7 @@ var util     = {
 			render.vuClear();
 			clearInterval( V.intervalstatus );
 			util.save2file();
+			$( '#divstate .value' ).html( '&emsp;·&ensp;·&ensp;·' );
 		}
 		ws.onmessage = response => {
 			var data  = JSON.parse( response.data );
