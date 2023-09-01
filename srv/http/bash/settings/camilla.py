@@ -20,16 +20,12 @@ if argvL > 2: # graph
 
 from websocket import create_connection
 
-try:
-    ws = create_connection( 'ws://127.0.0.1:1234' )
-except:
-    sys.exit()
-
 def getValue( cmd ):
     ws.send( json.dumps( cmd ) )
     data = json.loads( ws.recv() )
     return data[ cmd ][ 'value' ]
     
+ws     = create_connection( 'ws://127.0.0.1:1234' )
 config = getValue( 'GetConfig' )
 file   = getValue( 'GetConfigName' )
 with open( file, 'w' ) as f: f.write( config )

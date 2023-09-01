@@ -1495,6 +1495,9 @@ var util     = {
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
+	, save2file    : () => {
+		bash( [ 'settings/camilla.py' ] );
+	}
 	, volume       : ( pageX ) => {
 		var bandW   = $( '#volume .slide' ).width();
 		if ( V.start ) {
@@ -1539,7 +1542,7 @@ var util     = {
 			ws = null;
 			render.vuClear();
 			clearInterval( V.intervalstatus );
-			bash( [ 'save' ] );
+			util.save2file();
 		}
 		ws.onmessage = response => {
 			var data  = JSON.parse( response.data );
@@ -1665,7 +1668,7 @@ var util     = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '.close' ).on( 'click', function() {
-	bash( [ 'save' ] );
+	util.save2file();
 } );
 $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
