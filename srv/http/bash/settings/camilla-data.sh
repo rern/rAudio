@@ -40,7 +40,7 @@ data='
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
 }
 , "player"     : "'$( < $dirshm/player )'"
-, "pllength"   : '$( mpc playlist | wc -l )'
+, "pllength"   : '$( mpc status %length% )'
 , "range"      : '$( conf2json camilla.conf )'
 , "state"      : "'$( getVar state $dirshm/status )'"
 , "volume"     : '$volume'

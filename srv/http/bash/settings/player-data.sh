@@ -57,7 +57,7 @@ data='
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
 , "player"           : "'$( < $dirshm/player )'"
-, "pllength"         : '$( mpc playlist | wc -l )'
+, "pllength"         : '$( mpc status %length% )'
 , "replaygain"       : '$replaygain'
 , "replaygainconf"   : '$replaygainconf'
 , "soxr"             : '$soxr'
