@@ -1083,7 +1083,7 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 			refreshData();
 			bannerHide();
 		} else if ( status === 0 ) { // disconnected
-			if ( typeof pushstreamDisconnect === 'function' ) pushstreamDisconnect();
+			var disconnect = typeof pushstreamDisconnect === 'function';
 			if ( V.off ) {
 				pushstream.disconnect();
 				$( '#loader' ).css( 'background', '#000000' );
@@ -1091,7 +1091,10 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 					$( '#loader svg' ).css( 'animation', 'none' );
 					bannerHide();
 					loader();
+					if ( disconnect ) pushstreamDisconnect();
 				}, 10000 );
+			} else {
+				if ( disconnect ) pushstreamDisconnect();
 			}
 		}
 	}
