@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20230909
+[[ -e /usr/bin/chromium && ! -e /usr/bin/firefox ]] && pacman -Sy --noconfirm firefox
+
 # 20230828
 [[ -e /boot/kernel.img ]] && rpi0=1
 file=/etc/systemd/system/cmd-websocket.service
