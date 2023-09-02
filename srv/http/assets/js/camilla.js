@@ -600,6 +600,7 @@ var render   = {
 		$( '#configuration' )
 			.html( htmlOption( S.lsconfigs ) )
 			.val( S.configname );
+		$( '#configuration' ).prop( 'disabled', $( '#configuration option' ).length === 1 );
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
