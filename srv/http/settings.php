@@ -202,7 +202,7 @@ function htmlSetting( $data ) {
 					</div>';
 	// status
 	$html       .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
-	if ( $data[ 'returnhtml' ] ) return $html;
+	if ( isset( $data[ 'returnhtml' ] ) ) return $html;
 	
 	echo $html;
 }
