@@ -876,7 +876,7 @@ input[ type=number ] {
 }
 input[ type=radio ],
 input[ type=checkbox ] {
-	display: none;
+	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
 	margin: 3px 6px 3px 1px;
@@ -884,6 +884,10 @@ input[ type=checkbox ] {
 	border: none;
 	border-radius: 3px;
 	background-color: var( --cg );
+}
+.container input[ type=radio ],
+.container input[ type=checkbox ] {
+	display:none;
 }
 input[ type=radio ] {
 	width: 26px;

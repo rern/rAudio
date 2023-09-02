@@ -370,14 +370,6 @@ $( document ).on( 'keyup', function( e ) {
 			break;
 	}
 } );
-$( '.status .headtitle' ).on( 'click', function() {
-	var id    = $( this ).parent().data( 'status' );
-	var $code = $( '#code'+ id );
-	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
-} );
-$( '.close' ).on( 'click', function() {
-	location.href = '/';
-} );
 $( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return
 	
@@ -390,6 +382,15 @@ $( '#button-data' ).on( 'click', function() {
 	switchSet();
 	renderPage();
 	$( '#button-data, #data' ).addClass( 'hide' );
+} );
+$( '.status .headtitle, .col-l.status' ).on( 'click', function() {
+	var $this = $( this );
+	var id    = $this.hasClass( 'col-l' ) ? $this.data( 'status' ) : $this.parent().data( 'status' );
+	var $code = $( '#code'+ id );
+	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
+} );
+$( '.close' ).on( 'click', function() {
+	location.href = '/';
 } );
 $( '.helphead' ).on( 'click', function() {
 	var $this = $( this );
@@ -419,7 +420,6 @@ $( '.help' ).on( 'click', function() {
 	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.helpblock:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
-
 $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
 	
