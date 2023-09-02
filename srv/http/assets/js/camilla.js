@@ -459,10 +459,13 @@ var graph    = {
 		V.graphlist = {}
 	}
 	, gain     : () => {
-		var $divgraph = V.li.find( '.divgraph' );
+		var $divgraph = $( '.divgraph' );
 		if ( ! $divgraph.length ) return
 		
-		$divgraph.hasClass( 'hide' ) ? $divgraph.remove() : graph.plot();
+		$divgraph.each( ( i, el ) => {
+			var $this = $( el );
+			$this.hasClass( 'hide' ) ? $this.remove() : graph.plot( $this.parent() );
+		} );
 	}
 	, toggle   : () => {
 		var $divgraph = V.li.find( '.divgraph' );
@@ -1760,6 +1763,9 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 		.val( val )
 		.trigger( 'input' );
 	if ( V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
+	if ( V.tab === 'filters' ) {
+		
+	}
 } ).on( 'touchend mouseup mouseleave', function() {
 	clearInterval( V.intervalgain );
 } ).press( '.divgain i', function( e ) {
