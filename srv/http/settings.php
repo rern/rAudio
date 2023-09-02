@@ -190,7 +190,7 @@ function htmlSetting( $data ) {
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$html   .= $disabled ? '<span class="hide">'.$disabled.'</span>' : '';
-		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div>';
+		$html   .= '<label><input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div></label>';
 	} else {
 		$html   .= $input;
 	}

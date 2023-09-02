@@ -25,8 +25,6 @@ if [[ -e $diraddons ]]; then
 	sed -i -E 's/(name = ").*/\1rAudio"/' /etc/shairport-sync.conf &> /dev/null
 # smb
 	sed -i '/read only = no/ d' smbconf=/etc/samba/smb.conf &> /dev/null
-# snapclient
-	echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient &> /dev/null
 # upmpdcli
 	sed -i -E -e 's/^(friendlyname = ).*/\1rAudio/
 ' -e 's/(ownqueue = )./\10' /etc/upmpdcli.conf &> /dev/null
@@ -138,6 +136,9 @@ fi
 
 # mirror
 sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
+
+# snapclient
+echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient
 
 # system
 hostnamectl set-hostname rAudio

@@ -876,7 +876,7 @@ input[ type=number ] {
 }
 input[ type=radio ],
 input[ type=checkbox ] {
-	-webkit-appearance: none;
+	display: none;
 	width: 24px;
 	height: 24px;
 	margin: 3px 6px 3px 1px;

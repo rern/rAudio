@@ -174,7 +174,7 @@ function switchSet() {
 	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
 		var $this = $( el );
-		if ( ! $this.prev().hasClass( 'switchlabel' ) ) return // not switch
+		if ( ! $this.prev().find( '.switchlabel' ).length ) return // not switch
 		
 		var sw = el.id.replace( 'setting-', '' );
 		$this.toggleClass( 'hide', ! S[ sw ] );
