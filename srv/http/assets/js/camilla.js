@@ -2037,15 +2037,16 @@ $( '#menu a' ).on( 'click', function( e ) {
 				case 'edit':
 					var file = V.li.text();
 					info( {
-						  icon        : V.tab
-						, title       : 'Config'
-						, message     : 'File: <wh>'+ file +'</wh>'
-						, textlabel   : 'Name'
-						, radio       : [ 'Rename', 'Copy' ]
-						, radiocolumn : true
-						, values      : [ file, 'Rename' ]
-						, beforeshow  : () => $( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 )
-						, ok          : () => {
+						  icon         : V.tab
+						, title        : 'Config'
+						, message      : 'File: <wh>'+ file +'</wh>'
+						, textlabel    : 'Name'
+						, radio        : [ 'Rename', 'Copy' ]
+						, radiocolumn  : true
+						, values       : [ file, 'Rename' ]
+						, checkchanged : true
+						, beforeshow   : () => $( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 )
+						, ok           : () => {
 							var val     = infoVal();
 							var newname = val[ 0 ];
 							var copy    = val[ 1 ] === 'Copy';
