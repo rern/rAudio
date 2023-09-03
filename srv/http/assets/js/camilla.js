@@ -2044,8 +2044,13 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, radio        : [ 'Rename', 'Copy' ]
 						, radiocolumn  : true
 						, values       : [ file, 'Rename' ]
-						, checkchanged : true
-						, beforeshow   : () => $( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 )
+						, beforeshow   : () => {
+							$( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 );
+							$( '#infoOk' ).addClass( 'disabled' );
+							$( '#infoContent input:text' ).on( 'keyup paste cut', function() {
+								$( '#infoOk' ).toggleClass( 'disabled', file === $( '#infoContent input:text' ).val() );
+							} );
+						}
 						, ok           : () => {
 							var val     = infoVal();
 							var newname = val[ 0 ];
