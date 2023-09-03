@@ -6,6 +6,7 @@ from websockets.server import serve
 
 async def cmd( websocket ):
     async for args in websocket:
+        #arg0 = args.split( '\n' )[ 0 ]
         subprocess.call( [ '/srv/http/bash/cmd.sh', args ] )
 
 async def main():
