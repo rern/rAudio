@@ -5,7 +5,11 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20230909
-[[ -e /usr/bin/chromium && ! -e /usr/bin/firefox ]] && pacman -Sy --noconfirm firefox
+if [[ -e /usr/bin/chromium && ! -e /usr/lib/libre2.so.10 ]]; then
+	wget https://alaa.ad24.cz/packages/r/re2/re2-1%3A20230301-1-aarch64.pkg.tar.xz
+	pacman -U --noconfirm re2*.xz
+	rm re2*.xz
+fi
 
 # 20230828
 [[ -e /boot/kernel.img ]] && rpi0=1

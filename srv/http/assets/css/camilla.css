@@ -369,8 +369,11 @@ i.disabled,
 }
 .clipped::after {
 	content: "\f515";
-	bottom: 0;
+	line-height: 22px;
 	color: var( --cg60 );
+}
+#divconfiguration {
+	margin-top: 20px;
 }
 .helpmenu {
 	border-bottom: 1px solid var( --cga );
