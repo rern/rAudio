@@ -9,6 +9,7 @@ skip='register IPv6'
 
 case $CMD in
 	bluetooth )
+		fileconf=/etc/bluetooth/main.conf
 		PKG=bluez
 		;;
 	camilladsp )
@@ -99,7 +100,7 @@ else
 	[[ ! $fileconf ]] && fileconf=/etc/$PKG.conf
 	config+="
 <bll># cat $fileconf</bll>
-$( grep -v ^# $fileconf )"
+$( grep -Ev '^#|^$' $fileconf )"
 fi
 
 echo "\
