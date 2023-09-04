@@ -132,7 +132,7 @@ mixersmin=-10" > $dirsystem/camilla.conf
 fi
 
 # localbrowser
-[[ -e /etc/systemd/system/localbrowser.service ]] && rm -rf /root/.config/chromium /root/.mozilla
+[[ -e /usr/bin/firefox ]] && rm -rf /root/.mozilla
 
 # mirror
 sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist

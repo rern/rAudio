@@ -143,12 +143,6 @@ EOF
 ];
 htmlSection( $head, $body, 'dsp' );
 $head = [ 'title' => 'Others' ]; //////////////////////////////////
-$browser = '';
-if ( file_exists( '/usr/bin/firefox' ) ) {
-	$browser = '<a href="https://www.mozilla.org/firefox/browsers/">Firefox</a>';
-} else if ( file_exists( '/usr/bin/chromium' ) ) {
-	$browser = '<a href="https://github.com/chromium/chromium">Chromium</a>';
-}
 $body = [
 	[
 		  'id'       => 'hostapd'
@@ -171,9 +165,9 @@ EOF
 	]
 	, [
 		  'id'    => 'localbrowser'
-		, 'exist' => $browser
+		, 'exist' => '/usr/bin/firefox'
 		, 'help'  => <<< EOF
-$browser - Browser on RPi connected screen.
+<a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )}
 	· Backlight still on - no energy saved

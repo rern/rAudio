@@ -203,8 +203,7 @@ localbrowser )
 			systemctl enable bootsplash localbrowser
 			systemctl stop bluetoothbutton
 		else
-			[[ -e /usr/bin/firefox ]] && icon=firefox || icon=chromium
-			! systemctl -q is-active localbrowser && notify $icon 'Browser on RPi' 'Start failed.' 5000
+			! systemctl -q is-active localbrowser && notify firefox 'Browser on RPi' 'Start failed.' 5000
 			localbrowserDisable
 		fi
 	fi
