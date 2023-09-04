@@ -24,8 +24,8 @@ $( '#hwmixer' ).on( 'change', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
 	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
 } );
-$( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
-	var bt = this.id === 'setting-btreceiver';
+$( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
+	var bt = this.id === 'setting-bluealsa';
 	bash( [ 'volumeget' ], data => {
 		if ( bt ) {
 			var cmd    = 'volumebt';
@@ -350,15 +350,15 @@ function renderPage() {
 	} );
 	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
 	if ( S.btaplayname ) {
-		if ( icondsp ) $( '#divbtreceiver .col-l' ).append( icondsp );
-		$( '#divbtreceiver' ).removeClass( 'hide' );
+		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
+		$( '#divbluealsa' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
-		$( '#setting-btreceiver' ).removeClass( 'hide' );
+		$( '#setting-bluealsa' ).removeClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.btoutputall );
 	} else {
-		if ( icondsp ) $( '#divbtreceiver .col-l' ).append( icondsp );
+		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divaudiooutput .col-l' ).html( $( '#divaudiooutput .col-l' ).html() + icondsp );
-		$( '#divbtreceiver' ).addClass( 'hide' );
+		$( '#divbluealsa' ).addClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {

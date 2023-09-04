@@ -49,6 +49,7 @@ i {
 .i-bio::before             { content: '\F51D' }
 .i-booklet::before         { content: '\F53D' }
 .i-bookmark::before        { content: '\F550' }
+.i-bluealsa::before        { content: '\F51A' }
 .i-bluetooth::before       { content: '\F51A' }
 .i-btreceiver::before      { content: '\F51A' }
 .i-btsender::before        { content: '\F51B' }

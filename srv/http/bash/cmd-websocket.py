@@ -2,7 +2,7 @@
 
 import asyncio
 import subprocess
-from websockets.server import serve
+import websockets
 
 async def cmd( websocket ):
     async for args in websocket:
@@ -10,7 +10,7 @@ async def cmd( websocket ):
         subprocess.call( [ '/srv/http/bash/cmd.sh', args ] )
 
 async def main():
-    async with serve( cmd, '0.0.0.0', 8080 ):
+    async with websockets.serve( cmd, '0.0.0.0', 8080 ):
         await asyncio.Future()  # run forever
 
 asyncio.run( main() )

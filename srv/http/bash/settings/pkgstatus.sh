@@ -8,6 +8,11 @@ SERVICE=$1
 skip='register IPv6'
 
 case $CMD in
+	bluealsa )
+		conf="\
+<bll># bluealsa-aplay -L</bll>
+$( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
+		;;
 	bluetooth )
 		fileconf=/etc/bluetooth/main.conf
 		PKG=bluez
