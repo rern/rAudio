@@ -309,9 +309,8 @@ function renderPage() { // common from settings.js
 	render.page();
 }
 function pushstreamDisconnect() {
-	[ ws, wscommand ].forEach( socket => {
-		if ( socket ) socket.close();
-	} );
+	ws.close();
+	wscommand.close( 1000 );
 }
 
 var graph    = {
