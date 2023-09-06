@@ -327,7 +327,7 @@ function infoWiFiTab( values ) {
 	keys.forEach( k => v[ k ] = values[ k ] );
 	target === 'dhcp' ? infoWiFi( v ) : infoWiFiStatic( v );
 }
-function pushstreamDisconnect() {
+function psOnClose() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
 	
 	bash( [ 'scankill' ] );

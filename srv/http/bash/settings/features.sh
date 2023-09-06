@@ -58,8 +58,8 @@ camilladsp )
 	enableFlagSet
 	if [[ $ON ]]; then
 		if grep -q configs-bt /etc/default/camilladsp && [[ ! -e $dirshm/btreceiver ]]; then
-			yml=$( ls -1 $dircamilladsp/configs/* | head -1 )
-			sed -i 's|^CONFIG=.*|CONFIG="'$yml'"|' /etc/default/camilladsp
+			fileconfig=$( ls -1 $dircamilladsp/configs/* | head -1 )
+			sed -i 's|^CONFIG=.*|CONFIG="'$fileconfig'"|' /etc/default/camilladsp
 		fi
 		pushRestartMpd camilladsp $TF
 		! systemctl -q is-active camilladsp && rm $dirsystem/camilladsp
@@ -69,7 +69,8 @@ camilladsp )
 		systemctl stop camilladsp
 		pushRestartMpd camilladsp $TF
 		rmmod snd-aloop &> /dev/null
-		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1FLOAT64LE/}}' $dircamilladsp/configs/camilladsp.yml
+		camilladspyml=$( getVar CONFIG /etc/default/camilladsp )
+		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1FLOAT64LE/}}' "$camilladspyml"
 	fi
 	;;
 dabradio )
@@ -394,7 +395,7 @@ spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey
 	;;
 spotifykeyremove )
-	notify -blink spotify 'Spotify' "Remove ..."
+	notify 'spotify blink' 'Spotify' "Remove ..."
 	rm -f $dirsystem/spotifykey $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh
@@ -427,7 +428,7 @@ spotifytoken )
 				-d grant_type=authorization_code \
 				--data-urlencode "redirect_uri=$spotifyredirect" )
 	if grep -q -m1 error <<< $tokens; then
-		notify -blink spotify 'Spotify' "Error: $( jq -r .error <<< $tokens )"
+		notify 'spotify blink' 'Spotify' "Error: $( jq -r .error <<< $tokens )"
 		exit
 	fi
 	

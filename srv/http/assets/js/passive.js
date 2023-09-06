@@ -59,18 +59,12 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		if ( I.active ) infoWidth();
 	}, 0 );
 } );
-// pushstreamChannel() in common.js
-var channels = [ 'airplay', 'bookmark', 'coverart',  'display',   'equalizer', 'mpdplayer', 'mpdradio',      'mpdupdate', 'notify'
-			   , 'option',  'order',    'playlist',  'radiolist', 'relays',    'reload',    'savedplaylist', 'volume',    'webradio' ];
-if ( ! localhost ) channels.push( 'vumeter' );
-pushstreamChannel( channels );
-function pushstreamDisconnect() {
-	clearIntervalAll();
-	guideHide();
-	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
-	wscommand.close( 1000 );
-}
-pushstream.onmessage = ( data, id, channel ) => {
+
+// push status
+function psOnMessage( message ) {
+	var json    = JSON.parse( message.data );
+	var channel = json.channel;
+	var data    = json.data;
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
@@ -91,6 +85,15 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'restore':       psRestore( data );        break;
 		case 'volume':        psVolume( data );         break;
 		case 'vumeter':       psVUmeter( data );        break;
+	}
+}
+function psOnClose() {
+	clearIntervalAll();
+	guideHide();
+	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
+	if ( ws ) {
+		ws.send( 'disconnect' );
+		ws = null;
 	}
 }
 function psAirplay( data ) {

@@ -44,10 +44,10 @@ if [[ -e $dirshm/clientip ]]; then
 	[[ ! $status ]] && status=$( $dirbash/status.sh ) # $statusradio
 	status=$( sed -E -e '1,/^, "single" *:/ d;/^, "icon" *:/ d; /^, "login" *:/ d; /^}/ d
 					' -e '/^, "stationcover"|^, "coverart"/ s|(" *: *")|\1http://'$serverip'|' <<< $status )
-	status="{ ${status:1} }"
+	data='{ "channel": "mpdplayer", "data": { ${status:1} }'
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
-		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
+		$dirbash/websocket-push.py "$data" $ip
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then

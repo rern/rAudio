@@ -46,7 +46,7 @@ foreach( $jsfiles as $file ) {
 if ( ! $page ) { // main
 	$cssp[] = 'roundslider';
 	$css[]  = 'main';
-	$jsp    = [ 'jquery', 'lazysizes', 'pushstream', 'roundslider', 'Sortable' ]; // dynamically loaded with $.getScript: html5colorpicker, pica, qrcode, plotly
+	$jsp    = [ 'jquery', 'lazysizes', 'roundslider', 'Sortable' ]; // dynamically loaded with $.getScript: html5colorpicker, pica, qrcode, plotly
 	$js     = [ 'common', 'context', 'function', 'main', 'passive' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
@@ -67,7 +67,7 @@ if ( ! $page ) { // main
 //	foreach( [ 'addons', 'addonsprogress', 'guide', 'networks' ] as $k ) ${ $k } = $page === $k;
 	$$page = true; // $$ - variable variables
 	$css[] = 'settings';
-	$jsp   = [ 'jquery', 'pushstream', $networks ? 'qrcode' : 'select2' ];
+	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ];
 	$js    = [ 'common', 'settings', $page ];
 	if ( ! $guide && ! $networks && ! $addonsprogress ) {
 		$cssp[] = 'select2';

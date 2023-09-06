@@ -614,7 +614,6 @@ $( '#volume' ).roundSlider( {
 	}
 	, start             : function( e ) {
 		V.drag = true;
-		volumeSocket();
 		if ( e.value === 0 ) volumeColorUnmute(); // restore handle color immediately on start drag
 		$( '.map' ).removeClass( 'mapshow' );
 	}
@@ -663,7 +662,6 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	V.start = true;
-	volumeSocket();
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.start ) return
 	
@@ -704,7 +702,6 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	if ( V.press ) volumePush();
 } ).press( function( e ) {
 	clearTimeout( V.volumebar );
-	volumeSocket();
 	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	var up = $( e.currentTarget ).hasClass( 'up' );
 	V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );

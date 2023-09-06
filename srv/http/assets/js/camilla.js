@@ -8,7 +8,7 @@ V            = {
 	, sortable   : {}
 	, tab        : 'filters'
 }
-var ws;
+var wscamilla;
 var format   = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
 	var key       = k
@@ -308,9 +308,9 @@ var axes     = {
 function renderPage() { // common from settings.js
 	render.page();
 }
-function pushstreamDisconnect() {
-	ws.close();
-	wscommand.close( 1000 );
+function psOnClose() {
+	clearInterval( V.intervalvu );
+	if ( wscamilla ) wscamilla.close();
 }
 
 var graph    = {
@@ -488,7 +488,7 @@ var graph    = {
 }
 var render   = {
 	  page        : () => {
-		if ( ! ws ) util.webSocket();
+		if ( ! wscamilla ) util.webSocket();
 		if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
 		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
 		S.lscoefraw = [];
@@ -496,7 +496,7 @@ var render   = {
 		S.lscoeffs.forEach( f => {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
-		volumeSocket();
+		websocketConnect();
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
@@ -567,6 +567,7 @@ var render   = {
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
+		if ( ! ( 'status' in S ) ) S.status = { GetState: blinkdot }
 		playbackButton();
 		var label  = 'Buffer · Sampling';
 		var status = S.status.GetState;
@@ -603,7 +604,7 @@ var render   = {
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
-		V.intervalvu = setInterval( () => C.signal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
+		V.intervalvu = setInterval( () => C.signal.forEach( k => wscamilla.send( '"'+ k +'"' ) ), 100 );
 	}
 	, vuClear() {
 		if ( ! ( 'intervalvu' in V ) ) return
@@ -1373,15 +1374,15 @@ var setting  = {
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
-			ws.send( '{ "SetConfigJson": "'+ config +'" }' );
-			ws.send( '"Reload"' );
-		}, ws ? 0 : 300 );
-		if ( ! ws ) util.webSocket(); // websocket migth be closed by setting.filter()
+			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
+			wscamilla.send( '"Reload"' );
+		}, wscamilla ? 0 : 300 );
+		if ( ! wscamilla ) util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
 	, set           : () => {
-		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
-		ws.send( '"Reload"' );
+		wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
+		wscamilla.send( '"Reload"' );
 		bash( [ 'confswitch', name, 'CMD NAME' ] );
 	}
 	, upload        : () => {
@@ -1401,7 +1402,7 @@ var setting  = {
 			, fileoklabel : ico( 'file' ) +'Upload'
 			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml'
 			, cancel      : () => {
-				if ( ! ws ) util.webSocket();
+				if ( ! wscamilla ) util.webSocket();
 			}
 			, ok          : () => {
 				notify( V.tab, title, 'Upload ...' );
@@ -1417,7 +1418,7 @@ var setting  = {
 							infoWarning(  V.tab,  title, message );
 						}
 					} );
-				if ( ! ws ) util.webSocket();
+				if ( ! wscamilla ) util.webSocket();
 			}
 		} );
 	}
@@ -1529,22 +1530,22 @@ var util     = {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 	}
 	, webSocket    : () => {
-		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
-		ws.onopen    = () => {
-			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => ws.send( '"'+ cmd +'"' ) );
+		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
+		wscamilla.onopen    = () => {
+			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
 			S.status         = { GetState: '&emsp;'+ blinkdot }
 			V.intervalstatus = setInterval( () => {
-				if ( ! V.local ) V.statusget.forEach( k => ws.send( '"'+ k +'"' ) )
+				if ( ! V.local ) V.statusget.forEach( k => wscamilla.send( '"'+ k +'"' ) )
 			}, 1000 );
 		}
-		ws.onclose   = () => {
-			ws = null;
+		wscamilla.onclose   = () => {
+			wscamilla = null;
 			render.vuClear();
 			clearInterval( V.intervalstatus );
 			util.save2file();
 			$( '#divstate .value' ).html( '&emsp;·&ensp;·&ensp;·' );
 		}
-		ws.onmessage = response => {
+		wscamilla.onmessage = response => {
 			var data  = JSON.parse( response.data );
 			var cmd   = Object.keys( data )[ 0 ];
 			var value = data[ cmd ].value;
@@ -1604,6 +1605,8 @@ var util     = {
 					} );
 					break;
 				case 'GetClippedSamples':
+					if ( ! ( 'status' in S ) ) return
+					
 					if ( V.clipped ) {
 						S.status.GetClippedSamples = value;
 						break;
@@ -1707,7 +1710,6 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 	clearInterval( V.intervalvolume );
 	volumePush();
 } ).press( '.divgain i', function( e ) {
-	volumeSocket();
 	var up           = $( e.currentTarget ).hasClass( 'i-plus' );
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
@@ -1722,7 +1724,6 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 } );
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	V.start = true;
-	volumeSocket();
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.start ) return
 	

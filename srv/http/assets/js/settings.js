@@ -135,6 +135,7 @@ function refreshData() {
 			$( '#data' ).html( highlightJSON( S ) )
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
+		websocketConnect();
 	} );
 }
 function showContent() {
@@ -187,13 +188,11 @@ function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
 }
 
-// pushstreamChannel() in common.js
-if ( page === 'addons' ) {
-	pushstreamChannel( [ 'notify' ] );
-} else {
-	pushstreamChannel( [ 'bluetooth', 'camilla', 'notify', 'player', 'refresh', 'reload', 'storage', 'volume', 'volumebt', 'wlan' ] );
-}
-pushstream.onmessage = function( data, id, channel ) {
+// push status
+function psOnMessage( message ) {
+	var json    = JSON.parse( message.data );
+	var channel = json.channel;
+	var data    = json.data;
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'camilla':   psCamilla( data );   break;

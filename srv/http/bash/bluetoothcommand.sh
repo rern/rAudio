@@ -24,7 +24,7 @@ disconnectRemove() {
 		icon=btsender
 	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
-		notify -blink $icon "$name" "${action^} ..."
+		notify "$icon blink" "$name" "${action^} ..."
 		$dirsettings/player-conf.sh
 	fi
 	refreshPages
@@ -79,7 +79,7 @@ if [[ $udev && $action == connect ]]; then
 		
 	fi
 #-----
-	notify -blink $icon "$name" "$msg"
+	notify "$icon blink" "$name" "$msg"
 	if (( $( bluetoothctl info $mac | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
 		action=connect
 	else
@@ -110,7 +110,7 @@ if [[ $action == connect || $action == pair ]]; then
 		notify $icon "$name" 'Paired successfully.'
 		sleep 3
 #-----
-		notify -blink $icon "$name" 'Connect ...'
+		notify "$icon blink" "$name" 'Connect ...'
 	fi
 	bluetoothctl info $mac | grep -q -m1 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
@@ -147,7 +147,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
 		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
-		notify -blink $icon "$name" 'Connect ...'
+		notify "$icon blink" "$name" 'Connect ...'
 		$dirbash/cmd.sh playerstop
 		[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh receiver
 		$dirsettings/player-conf.sh

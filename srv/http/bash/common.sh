@@ -202,24 +202,17 @@ mpcElapsed() {
 }
 notify() { # icon title message delayms
 	local blink delay icon json message title
-	blink=
-	delay=3000
-	if [[ $1 == '-blink' ]]; then
-		blink=' blink'
-		delay=-1
-		shift
+	[[ $1 == '-ip' ]] && ip=$2 && shift 2
+	if [[ $4 ]]; then
+		delay=$4
+	else
+		[[ ${1: -5} == 'blink' ]] && delay=-1 || delay=3000
 	fi
-	[[ $1 == *.*.*.* ]] && ip=$1 && shift
-	[[ $4 ]] && delay=$4
-	icon=$1$blink
+	icon=$1
 	title=$( stringEscape $2 )
 	message=$( stringEscape $3 )
-	json='{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
-	if [[ $ip ]]; then
-		curl -s -X POST http://$ip/pub?id=notify -d "$json"
-	else
-		pushstream notify "$json"
-	fi
+	data='{ "channel": "notify", "data": { "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' } }'
+	$dirbash/websocket-push.py "$data" $ip
 }
 packageActive() {
 	local active pkg pkgs status
@@ -259,7 +252,8 @@ pushstream() {
 	channel=$1
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
-	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$json"
+	data='{ "channel": "'$channel'", "data": '$json' }'
+	$dirbash/websocket-push.py "$data"
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
@@ -281,7 +275,7 @@ pushstream() {
 	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		ipOnline $ip && curl -s -X POST http://$ip/pub?id=$channel -d "$json"
+		ipOnline $ip && $dirbash/websocket-push.py "$data" $ip
 	done
 }
 serviceRestartEnable() {

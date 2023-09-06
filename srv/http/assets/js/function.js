@@ -459,12 +459,6 @@ function cssKeyframes( name, trx0, trx100 ) {
 		+'</style>'
 	);
 }
-function curl( channel, key, value ) {
-	return 'curl -s -X POST http://127.0.0.1/pub?id='+ channel +' -d \'{ "'+ key +'": "'+ value +'" }\''
-}
-function curlPackage( pkg, active, enabled ) {
-	return 'curl -s -X POST http://127.0.0.1/pub?id=package -d \'[ "'+ pkg +'", '+ active +', '+ enabled +' ]\''
-}
 function dirName( path ) {
 	return path.substring( 0, path.lastIndexOf( '/' ) )
 }	
@@ -1133,7 +1127,7 @@ function refreshData() {
 			eqOptionPreset();
 		}, 'json' );
 	}
-	volumeSocket();
+	websocketConnect();
 }
 function renderLibrary() { // library home
 	V.mode         = '';

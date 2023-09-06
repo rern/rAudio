@@ -6,7 +6,7 @@
 
 if [[ -e $dirsystem/camilladsp ]]; then
 	$dirsettings/camilla.py save
-	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
+	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 fi
 [[ -e $dirshm/btconnected ]] && cp $dirshm/btconnected $dirsystem
 if systemctl -q is-active nfs-server; then # server rAudio
@@ -17,9 +17,9 @@ if systemctl -q is-active nfs-server; then # server rAudio
 		
 		for ip in $ipclients; do
 			if [[ $reboot ]]; then
-				notify -blink $ip networks 'Server rAudio' 'Reboot ...'
+				notify -ip $ip 'networks blink' 'Server rAudio' 'Reboot ...'
 			else
-				notify $ip 'networks' 'Server rAudio' 'Power off' -1
+				notify -ip $ip 'networks' 'Server rAudio' 'Power off' -1
 			fi
 		done
 	fi
@@ -27,7 +27,7 @@ if systemctl -q is-active nfs-server; then # server rAudio
 elif [[ -e $filesharedip ]]; then
 	sed -i "/$( ipAddress )/ d" $filesharedip
 fi
-[[ $reboot ]] && notify -blink reboot Power 'Reboot ...' || notify -blink power Power 'Off ...'
+[[ $reboot ]] && notify 'reboot blink' Power 'Reboot ...' || notify 'power blink' Power 'Off ...'
 touch $dirshm/power
 mpc -q stop
 if [[ -e $dirsystem/lcdchar ]]; then

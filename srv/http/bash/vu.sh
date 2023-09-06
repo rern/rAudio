@@ -34,7 +34,7 @@ while read vu; do
 	if [[ $vumeter ]]; then
 		(( j++ ))
 		if (( $j == 10 )); then # framerate throttle - 60 to 6
-			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":'$v'}'
+			pushstream vumeter '{"val":'$v'}'
 			j=0
 		fi
 	fi

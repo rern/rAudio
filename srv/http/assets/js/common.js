@@ -3,7 +3,7 @@ bash()
 $.fn.press
 banner() copy        errorDisplay() 
 info()   infoPower() infoPowerCommand() infoWarning()
-loader() local()     pushstream         selectSet()
+loader() local()     selectSet()
 */
 
 var page        = location.search.replace( '?p=', '' );
@@ -98,7 +98,7 @@ function bash( args, callback, json ) {
 V.debug - press: $( '#debug' )
 	- all
 	- console.log commands
-	- active pushstream (no disconnect)
+	- active push status (no disconnect)
 V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 	- each
 	- console.log commands only (NOT run)
@@ -124,7 +124,7 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 // debug
 $( '#debug' ).press( function() {
 	V.debug = true;
-	banner( 'gear', 'Debug', 'Console.log + Pushstream', 5000 );
+	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
 	bash( [ 'cmd.sh', 'cachebust' ] );
 } );
 $( '#infoOverlay' ).press( '#infoOk', function() {
@@ -1038,7 +1038,7 @@ function local( delay ) {
 	setTimeout( () => V.local = false, delay || 300 );
 }
 
-// pushstream -----------------------------------------------------------------
+// push status
 if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 	function psNotify( data ) {
 		var icon    = data.icon;
@@ -1061,53 +1061,35 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 		banner( icon, title, message, delay );
 	}
 
-	var pushstream  = new PushStream( {
-		  modes                                 : 'websocket'
-		, reconnectOnChannelUnavailableInterval : 3000
-	} );
-	function pushstreamChannel( channels ) {
-		channels.forEach( channel => pushstream.addChannel( channel ) );
-		pushstream.connect();
-	}
-	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
-		if ( status === 2 ) {        // connected
-			if ( V.reboot ) {
-				if ( S.login ) {
-					location.href = '/';
-					return
-				}
-				
-				delete V.reboot;
-				loaderHide();
-			}
-			refreshData();
-			bannerHide();
-		} else if ( status === 0 ) { // disconnected
-			if ( typeof pushstreamDisconnect === 'function' ) pushstreamDisconnect();
-			if ( V.off ) {
-				$( '#loader' ).css( 'background', '#000000' );
-				setTimeout( () => {
-					$( '#loader svg' ).css( 'animation', 'none' );
-					bannerHide();
-					loader();
-				}, 10000 );
-			}
-		}
-	}
 	// page visibility -----------------------------------------------------------------
-	var active  = true;  // fix: multiple firings
 	var select2 = false; // fix: closing > blur > disconnect
 	function connect() {
-		if ( active || V.off ) return
+		if ( V.off ) return
 		
-		active = true;
-		pushstream.connect();
+		if ( V.reboot ) {
+			if ( S.login ) {
+				location.href = '/';
+				return
+			}
+			
+			delete V.reboot;
+			loaderHide();
+		}
+		refreshData();
+		bannerHide();
 	}
 	function disconnect() {
-		if ( ! active || V.debug ) return
+		if ( V.debug ) return
 		
-		active = false;
-		pushstream.disconnect();
+		if ( typeof psOnClose === 'function' ) psOnClose();
+		if ( V.off ) {
+			$( '#loader' ).css( 'background', '#000000' );
+			setTimeout( () => {
+				$( '#loader svg' ).css( 'animation', 'none' );
+				bannerHide();
+				loader();
+			}, 10000 );
+		}
 	}
 	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 	window.onpagehide = disconnect;
@@ -1155,16 +1137,18 @@ function selectText2Html( pattern ) {
 }
 
 // websocket
-var ws, wscommand;
+var ws, wsvolume;
 function volumeDrag() {
-	wscommand.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+	wsvolume.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function volumePush() {
 	bash( [ 'volumepushstream', S.volume, 'CMD VOLUME' ] );
 }
-function volumeSocket() {
-	if ( ! wscommand ) {
-		wscommand = new WebSocket( 'ws://'+ window.location.host +':8080' );
-		wscommand.onclose = () => wscommand = null;
+function websocketConnect() {
+	if ( ! wsvolume && ( ! page || page === 'camilla' ) ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8081' );
+	if ( ! ws ) {
+		ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
+		ws.onopen    = () => ws.send( 'connect' );
+		ws.onmessage = message => psOnMessage( message );
 	}
 }

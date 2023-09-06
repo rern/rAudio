@@ -56,7 +56,7 @@ setformat )
 	camilladsp $configfile &> /dev/null &
 	pgrep -x camilladsp &> /dev/null && killall camilladsp && exit
 
-	notify -blink camilladsp CamillaDSP "Set Playback format ..."
+	notify 'camilladsp blink' CamillaDSP "Set Playback format ..."
 	for format in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $configfile
 		camilladsp $configfile &> /dev/null &
