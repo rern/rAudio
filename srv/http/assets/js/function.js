@@ -1086,6 +1086,7 @@ function playlistRemove( $li ) {
 	}
 }
 function refreshData() {
+	websocketConnect();
 	if ( V.library ) {
 		if ( $( '#lib-search-input' ).val() ) return
 		
@@ -1127,7 +1128,6 @@ function refreshData() {
 			eqOptionPreset();
 		}, 'json' );
 	}
-	websocketConnect();
 }
 function renderLibrary() { // library home
 	V.mode         = '';
