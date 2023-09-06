@@ -1147,6 +1147,10 @@ function volumePush() {
 function websocketConnect() {
 	if ( ! page || page === 'camilla' ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8081' );
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
-	ws.onopen    = () => ws.send( 'connect' );
+	ws.onopen    = () => {
+		setTimeout( () => {
+			ws.send( 'connect' );
+		}, 600 );
+	}
 	ws.onmessage = message => psOnMessage( message );
 }
