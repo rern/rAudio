@@ -92,10 +92,7 @@ function psOnClose() {
 	clearIntervalAll();
 	guideHide();
 	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
-	if ( ws ) {
-		ws.send( 'disconnect' );
-		ws = null;
-	}
+	if ( ws ) ws.send( 'disconnect' );
 }
 function psAirplay( data ) {
 	statusUpdate( data );

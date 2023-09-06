@@ -1145,10 +1145,8 @@ function volumePush() {
 	bash( [ 'volumepushstream', S.volume, 'CMD VOLUME' ] );
 }
 function websocketConnect() {
-	if ( ! wsvolume && ( ! page || page === 'camilla' ) ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8081' );
-	if ( ! ws ) {
-		ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
-		ws.onopen    = () => ws.send( 'connect' );
-		ws.onmessage = message => psOnMessage( message );
-	}
+	if ( ! page || page === 'camilla' ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8081' );
+	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
+	ws.onopen    = () => ws.send( 'connect' );
+	ws.onmessage = message => psOnMessage( message );
 }
