@@ -25,6 +25,7 @@ disconnectRemove() {
 	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
 		notify "$icon blink" "$name" "${action^} ..."
+		pushstream btreceiver 1
 		$dirsettings/player-conf.sh
 	fi
 	refreshPages
@@ -148,6 +149,7 @@ if [[ $action == connect || $action == pair ]]; then
 		echo $btmixer > $dirshm/btreceiver
 		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
 		notify "$icon blink" "$name" 'Connect ...'
+		pushstream btreceiver 1
 		$dirbash/cmd.sh playerstop
 		[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh receiver
 		$dirsettings/player-conf.sh

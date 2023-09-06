@@ -68,6 +68,7 @@ function psOnMessage( message ) {
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
+		case 'btreceiver':    psBtReceiver();           break;
 		case 'coverart':      psCoverart( data );       break;
 		case 'display':       psDisplay( data );        break;
 		case 'equalizer':     psEqualizer( data );      break;
@@ -99,6 +100,12 @@ function psOnClose() {
 function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
+}
+function psBtReceiver() {
+	setTimeout( () => {
+		refreshData();
+		bannerHide();
+	}, 2000 );
 }
 function psBookmark() {
 	V.libraryhtml = '';
