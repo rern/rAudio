@@ -79,6 +79,7 @@ function psOnMessage( message ) {
 		case 'option':        psOption( data );         break;
 		case 'order':         psOrder( data );          break;
 		case 'playlist':      psPlaylist( data );       break;
+		case 'power':         psPower( data );          break;
 		case 'savedplaylist': psSavedPlaylists( data ); break;
 		case 'radiolist':     psRadioList( data );      break;
 		case 'relays':        psRelays( data );         break;

@@ -155,7 +155,7 @@ function banner( icon, title, message, delay ) {
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
-	if ( $( '#banner' ).hasClass( 'hide' ) || V.reboot ) return
+	if ( $( '#banner' ).hasClass( 'hide' ) ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -1045,11 +1045,7 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 		var title   = data.title;
 		var message = data.message;
 		var delay   = data.delay;
-		if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
-			var type  = message.split( ' ' )[ 0 ].toLowerCase();
-			V[ type ] = true;
-			loader();
-		} else if ( ! page ) {
+		if ( ! page ) {
 			if ( message === 'Change track ...' ) { // audiocd
 				clearIntervalAll();
 			} else if ( title === 'Latest' ) {
@@ -1060,36 +1056,43 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 		}
 		banner( icon, title, message, delay );
 	}
-
-	// page visibility -----------------------------------------------------------------
-	var select2 = false; // fix: closing > blur > disconnect
-	function connect() {
-		if ( V.off ) return
-		
-		if ( V.reboot ) {
-			if ( S.login ) {
-				location.href = '/';
-				return
-			}
-			
-			delete V.reboot;
-			loaderHide();
-		}
-		refreshData();
-		bannerHide();
-	}
-	function disconnect() {
-		if ( V.debug ) return
-		
-		if ( typeof psOnClose === 'function' ) psOnClose();
-		if ( V.off ) {
+	function psPower( data ) {
+		loader();
+		banner( data.type +' blink', 'Power', data.type === 'reboot' ? 'Reboot ...' : 'Off ...', -1 );
+		if ( data.type === 'off' ) {
 			$( '#loader' ).css( 'background', '#000000' );
 			setTimeout( () => {
 				$( '#loader svg' ).css( 'animation', 'none' );
 				bannerHide();
-				loader();
 			}, 10000 );
+		} else { // reconnect after reboot
+			setTimeout( () => {
+				V.intreboot = setInterval( () => {
+					websocketConnect();
+					setTimeout( () => {
+						if ( ws.readyState === 1 ) {
+							clearTimeout( V.intreboot );
+							if ( S.login ) {
+								location.href = '/';
+								return
+							}
+							
+							loaderHide();
+							bannerHide();
+						}
+					}, 2000 );
+				}, 3000 );
+			}, 20000 );
 		}
+	}
+	// page visibility -----------------------------------------------------------------
+	var select2 = false; // fix: closing > blur > disconnect
+	function connect() {
+		refreshData();
+		bannerHide();
+	}
+	function disconnect() {
+		if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
 	}
 	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 	window.onpagehide = disconnect;

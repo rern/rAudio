@@ -10,8 +10,6 @@ SW             = {} // switch
 V              = {} // var global
 
 function bannerReset() {
-	if ( V.off || V.reboot ) return
-	
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
 	clearTimeout( I.timeoutbanner );
@@ -198,6 +196,7 @@ function psOnMessage( message ) {
 		case 'camilla':   psCamilla( data );   break;
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
+		case 'power':     psPower( data );     break;
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload( data );    break;
 		case 'storage':   psStorage( data );   break;

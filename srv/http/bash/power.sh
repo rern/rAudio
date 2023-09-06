@@ -27,7 +27,8 @@ if systemctl -q is-active nfs-server; then # server rAudio
 elif [[ -e $filesharedip ]]; then
 	sed -i "/$( ipAddress )/ d" $filesharedip
 fi
-[[ $reboot ]] && notify 'reboot blink' Power 'Reboot ...' || notify 'power blink' Power 'Off ...'
+[[ $reboot ]] && type=reboot || type=off
+pushstream power '{ "type": "'$type'" }'
 touch $dirshm/power
 mpc -q stop
 if [[ -e $dirsystem/lcdchar ]]; then

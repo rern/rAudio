@@ -33,7 +33,7 @@ if [[ ! -e $file ]]; then
 	echo "\
 [Unit]
 Description=Websocket server
-After=startup.service
+Before=startup.service
 BindsTo=websocket-volume.service
 
 [Service]
@@ -44,7 +44,7 @@ WantedBy=multi-user.target" > $file
 	echo "\
 [Unit]
 Description=Volume websocket server
-After=startup.service
+After=websocket.service
 
 [Service]
 ExecStart=/srv/http/bash/websocket-volume.py
