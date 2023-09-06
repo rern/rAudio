@@ -1063,6 +1063,7 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 			$( '#loader' ).css( 'background', '#000000' );
 			setTimeout( () => {
 				$( '#loader svg' ).css( 'animation', 'none' );
+				$( '#bannerIcon i' ).removeClass( 'blink' );
 				bannerHide();
 			}, 10000 );
 		} else { // reconnect after reboot
