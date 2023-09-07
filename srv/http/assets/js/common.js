@@ -1105,7 +1105,7 @@ function websocketConnect() {
 	ws.onopen    = () => {
 		setTimeout( () => {
 			ws.send( 'connect' );
-		}, 600 );
+		}, 1000 );
 	}
 	ws.onmessage = message => psOnMessage( message );
 }
@@ -1149,7 +1149,7 @@ function psPower( data ) {
 							bannerHide();
 						}
 					}
-				}, 2000 );
+				}, 1000 );
 			}, 3000 );
 		}, 20000 );
 	}
