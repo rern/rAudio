@@ -34,23 +34,12 @@ if [[ ! -e $file ]]; then
 [Unit]
 Description=Websocket server
 Before=startup.service
-BindsTo=websocket-volume.service
 
 [Service]
 ExecStart=/srv/http/bash/websocket-server.py
 
 [Install]
 WantedBy=multi-user.target" > $file
-	echo "\
-[Unit]
-Description=Volume websocket server
-After=websocket.service
-
-[Service]
-ExecStart=/srv/http/bash/websocket-volume.py
-
-[Install]
-WantedBy=multi-user.target" > /etc/systemd/system/websocket-volume.service
 	systemctl daemon-reload
 	systemctl enable --now websocket
 fi

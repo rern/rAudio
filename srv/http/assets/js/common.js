@@ -1100,7 +1100,7 @@ function volumePush() {
 	bash( [ 'volumepushstream', S.volume, 'CMD VOLUME' ] );
 }
 function websocketConnect() {
-	if ( ! page || page === 'camilla' ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8081' );
+	if ( ! page || page === 'camilla' ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
 	ws.onopen    = () => {
 		setTimeout( () => {

@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
 import asyncio
+import subprocess
 import websockets
 
 CLIENTS = set()
 
-async def cmd( websocket ):
+async def cmd( websocket, path ):
     async for args in websocket:
-        if args == 'connect':
+        if path == '/volume':
+            subprocess.call( [ '/srv/http/bash/cmd.sh', args ] )
+        elif args == 'connect':
             if websocket not in CLIENTS:
                 CLIENTS.add( websocket )
         elif args == 'disconnect':
