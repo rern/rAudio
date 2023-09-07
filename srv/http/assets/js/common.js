@@ -1038,68 +1038,20 @@ function local( delay ) {
 	setTimeout( () => V.local = false, delay || 300 );
 }
 
-// push status
-if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
-	function psNotify( data ) {
-		var icon    = data.icon;
-		var title   = data.title;
-		var message = data.message;
-		var delay   = data.delay;
-		if ( ! page ) {
-			if ( message === 'Change track ...' ) { // audiocd
-				clearIntervalAll();
-			} else if ( title === 'Latest' ) {
-				C.latest = 0;
-				$( '#mode-latest gr' ).empty();
-				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-			}
-		}
-		banner( icon, title, message, delay );
-	}
-	function psPower( data ) {
-		loader();
-		banner( data.type +' blink', 'Power', data.type === 'reboot' ? 'Reboot ...' : 'Off ...', -1 );
-		if ( data.type === 'off' ) {
-			$( '#loader' ).css( 'background', '#000000' );
-			setTimeout( () => {
-				$( '#loader svg' ).css( 'animation', 'none' );
-				bannerHide();
-			}, 10000 );
-		} else { // reconnect after reboot
-			setTimeout( () => {
-				V.intreboot = setInterval( () => {
-					websocketConnect();
-					setTimeout( () => {
-						if ( ws.readyState === 1 ) {
-							clearTimeout( V.intreboot );
-							if ( S.login ) {
-								location.href = '/';
-								return
-							}
-							
-							loaderHide();
-							bannerHide();
-						}
-					}, 2000 );
-				}, 3000 );
-			}, 20000 );
-		}
-	}
-	// page visibility -----------------------------------------------------------------
-	var select2 = false; // fix: closing > blur > disconnect
-	function connect() {
-		refreshData();
-		bannerHide();
-	}
-	function disconnect() {
-		if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
-	}
-	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
-	window.onpagehide = disconnect;
-	window.onpageshow = connect;
-	window.onblur     = () => { if ( ! select2 ) disconnect() }
-	window.onfocus    = connect;
+// page visibility -----------------------------------------------------------------
+var select2 = false; // fix: closing > blur > disconnect
+function connect() {
+	refreshData();
+	bannerHide();
 }
+function disconnect() {
+	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
+}
+document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
+window.onpagehide = disconnect;
+window.onpageshow = connect;
+window.onblur     = () => { if ( ! select2 ) disconnect() }
+window.onfocus    = connect;
 
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
@@ -1156,4 +1108,49 @@ function websocketConnect() {
 		}, 600 );
 	}
 	ws.onmessage = message => psOnMessage( message );
+}
+// push status
+function psNotify( data ) {
+	var icon    = data.icon;
+	var title   = data.title;
+	var message = data.message;
+	var delay   = data.delay;
+	if ( ! page ) {
+		if ( message === 'Change track ...' ) { // audiocd
+			clearIntervalAll();
+		} else if ( title === 'Latest' ) {
+			C.latest = 0;
+			$( '#mode-latest gr' ).empty();
+			if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
+		}
+	}
+	banner( icon, title, message, delay );
+}
+function psPower( data ) {
+	loader();
+	banner( data.type +' blink', 'Power', data.type === 'reboot' ? 'Reboot ...' : 'Off ...', -1 );
+	if ( data.type === 'off' ) {
+		$( '#loader' ).css( 'background', '#000000' );
+		setTimeout( () => {
+			$( '#loader svg' ).css( 'animation', 'none' );
+			bannerHide();
+		}, 10000 );
+	} else { // reconnect after reboot
+		setTimeout( () => {
+			var interval = setInterval( () => {
+				websocketConnect();
+				setTimeout( () => {
+					if ( ws.readyState === 1 ) {
+						clearTimeout( interval );
+						if ( S.login ) {
+							location.href = '/';
+						} else {
+							loaderHide();
+							bannerHide();
+						}
+					}
+				}, 2000 );
+			}, 3000 );
+		}, 20000 );
+	}
 }
