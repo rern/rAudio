@@ -313,7 +313,7 @@ function psOnClose() {
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
-	util.volume( data.val, 'push' )
+	if ( ! V.drag && ! V.press ) util.volume( data.val, 'push' )
 }
 
 var graph    = {
@@ -1736,9 +1736,10 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	if ( ! V.start ) return
 	
 	V.drag ? volumePush() : util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
-	V.start = V.drag = false;
+	V.start = false;
+	setTimeout( () => V.drag = false, 1000 );
 } ).on( 'mouseleave', function() {
-	V.start = V.drag = false;
+	if ( V.start ) $( '#volume' ).trigger( 'mouseup' );
 } );
 $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	var $this = $( this );

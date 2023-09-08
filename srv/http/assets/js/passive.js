@@ -192,8 +192,8 @@ function psEqualizer( data ) {
 	eqOptionPreset();
 }
 function psMpdPlayer( data ) {
-	clearTimeout( V.debouncempdplayer );
-	V.debouncempdplayer = setTimeout( () => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
 		if ( ! data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control;
 			delete data.volume;
@@ -264,8 +264,8 @@ function psPlaylist( data ) {
 		&& ( V.local || V.sortable || $( '.pl-remove' ).length )
 	) return
 	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
+	clearTimeout( V.debouncepl );
+	V.debouncepl = setTimeout( () => {
 		if ( data == -1 ) {
 			setPlaybackBlank();
 			renderPlaylist( -1 );
@@ -377,18 +377,21 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
-	if ( data.type === 'mute' ) {
-		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		S.volumemute = data.val;
-		setVolume( 0 );
-	} else if ( 'volumenone' in data ) {
-		D.volumenone = data.volumenone;
-		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
-	} else {
-		if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		S.volumemute = 0;
-		setVolume( data.val );
-	}
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		if ( data.type === 'mute' ) {
+			$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+			S.volumemute = data.val;
+			setVolume( 0 );
+		} else if ( 'volumenone' in data ) {
+			D.volumenone = data.volumenone;
+			$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
+		} else {
+			if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+			S.volumemute = 0;
+			setVolume( data.val );
+		}
+	}, 300 );
 }
 function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
