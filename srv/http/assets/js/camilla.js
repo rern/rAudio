@@ -312,6 +312,9 @@ function psOnClose() {
 	clearInterval( V.intervalvu );
 	if ( wscamilla ) wscamilla.close();
 }
+function psVolume( data ) {
+	util.volume( data.val, 'push' )
+}
 
 var graph    = {
 	  list     : () => {
@@ -1498,7 +1501,7 @@ var util     = {
 	, save2file    : () => {
 		bash( [ 'settings/camilla.py' ] );
 	}
-	, volume       : ( pageX ) => {
+	, volume       : ( pageX, push ) => {
 		var bandW   = $( '#volume .slide' ).width();
 		if ( V.start ) {
 			var posX = pageX - $( '#volume .slide' ).offset().left;
@@ -1521,7 +1524,7 @@ var util     = {
 					, easing   : 'linear'
 				}
 			);
-			bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+			if ( ! push ) bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 			S.volume = vol;
 		}
 		$( '#gain' ).text( S.volume );

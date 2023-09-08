@@ -258,38 +258,6 @@ function psStorage( data ) {
 		renderStorage();
 	}
 }
-function psVolume( data ) {
-	if ( page !== 'player' || ! I.rangelabel ) return
-	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		V.local = true;
-		var val = data.type !== 'mute' ? data.val : 0;
-		$( '#infoContent' ).removeClass( 'hide' );
-		$( '.confirm' ).addClass( 'hide' );
-		if ( 'db' in data ) {
-			$( '#infoRange .value' ).text( val );
-			$( '#infoRange input' ).val( val );
-			volumeSet( data );
-		} else { // from playback
-			var current = +$( '#infoRange input' ).val();
-			var diff    = Math.abs( current - val );
-			var up      = current < val;
-			var i       = current
-			var interval = setInterval( () => {
-				up ? i++ : i--;
-				$( '#infoRange .value' ).text( i );
-				$( '#infoRange input' ).val( i );
-				if ( i === val ) clearInterval( interval );
-			}, 40 );
-			setTimeout( () => {
-				bash( [ 'volumeget' ], function( data ) {
-					if ( data.db ) volumeSet( data );
-				}, 'json' );
-			}, diff * 50 );
-		}
-	}, 300 );
-}
 function psWlan( data ) {
 	if ( data && 'reboot' in data ) {
 		info( {
