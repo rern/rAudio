@@ -239,8 +239,5 @@ volume0dbbt )
 volumeget )
 	volumeGet valdb
 	;;
-volumepush )
-	volumeGet push
-	;;
 	
 esac

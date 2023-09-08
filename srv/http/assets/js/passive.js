@@ -377,21 +377,18 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		if ( data.type === 'mute' ) {
-			$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-			S.volumemute = data.val;
-			setVolume( 0 );
-		} else if ( 'volumenone' in data ) {
-			D.volumenone = data.volumenone;
-			$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
-		} else {
-			if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-			S.volumemute = 0;
-			setVolume( data.val );
-		}
-	}, 300 );
+	if ( data.type === 'mute' ) {
+		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+		S.volumemute = data.val;
+		setVolume( 0 );
+	} else if ( 'volumenone' in data ) {
+		D.volumenone = data.volumenone;
+		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
+	} else {
+		if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+		S.volumemute = 0;
+		setVolume( data.val );
+	}
 }
 function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree

@@ -769,9 +769,6 @@ splashrotate )
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
-volumedrag )
-	volumeSetAt $TARGET "$CONTROL" $CARD
-	;;
 volume ) # no TARGET = toggle mute / unmute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )
 	filevolumemute=$dirsystem/volumemute
@@ -794,8 +791,8 @@ volume ) # no TARGET = toggle mute / unmute
 volumeget )
 	volumeGet value
 	;;
-volumepush )
-	[[ $VOLUME ]] && pushstreamVolume push $VOLUME || volumeGet push
+volumesetat )
+	volumeSetAt $TARGET "$CONTROL" $CARD
 	;;
 volumeupdn )
 	volumeUpDn 1%$UPDN "$CONTROL" $CARD

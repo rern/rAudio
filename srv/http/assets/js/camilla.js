@@ -313,7 +313,7 @@ function psOnClose() {
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
-	if ( ! V.drag && ! V.press ) util.volume( data.val, 'push' )
+	if ( ! V.local ) util.volume( data.val, 'push' );
 }
 
 var graph    = {

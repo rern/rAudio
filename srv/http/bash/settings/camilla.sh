@@ -81,9 +81,6 @@ statuslog )
 volume )
 	$dirbash/cmd.sh "$1"
 	;;
-volumepush )
-	volumeGet push
-	;;
 	
 esac
 

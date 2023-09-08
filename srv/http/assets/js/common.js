@@ -1093,11 +1093,16 @@ function selectText2Html( pattern ) {
 
 // websocket
 var ws, wsvolume;
+function volumeSet( vol ) {
+	console.log( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
+	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
+}
 function volumeSetAt() {
 	wsvolume.send( [ 'volumesetat', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function volumePush() {
-	bash( [ 'volumepush', S.volume, 'CMD VOLUME' ] );
+	local();
+	ws.send( '{ "channel": "volume", "data": { "type": "push", "val": '+ S.volume +' } }' );
 }
 function websocketConnect() {
 	if ( ! page || page === 'camilla' ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );

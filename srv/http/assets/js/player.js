@@ -51,7 +51,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 					
 					bash( [ cmd, $( this ).val(), mixer, card, 'CMD VAL MIXER CARD' ] );
 				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ 'volumepush' ] );
+					volumePush();
 				} );
 				volumeInfoSet( data );
 			}
@@ -395,7 +395,7 @@ function renderPage() {
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
-	if ( I.rangelabel ) bash( [ 'volumepush' ] );
+	if ( I.rangelabel ) volumePush();
 	showContent();
 }
 function setMixerType( mixertype ) {
