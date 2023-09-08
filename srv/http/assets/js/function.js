@@ -1978,7 +1978,7 @@ function volumeBarSet( pageX ) {
 	}
 	if ( V.drag ) {
 		S.volume    = vol;
-		volumeDrag();
+		volumeSet();
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	} else {
 		$( '#volume-bar' ).animate(
@@ -2045,7 +2045,7 @@ function volumeUpDown( up ) {
 		cmd += 'mpc';
 	}
 	if ( V.press ) {
-		volumeDrag();
+		volumeSet();
 	} else {
 		bash( [ cmd, up ? '+' : '-', S.control, S.card, 'CMD UPDN CONTROL CARD' ] );
 	}

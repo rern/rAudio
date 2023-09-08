@@ -53,7 +53,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepush' ] );
 				} );
-				volumeSet( data );
+				volumeInfoSet( data );
 			}
 			, oklabel      : ico( 'set0' ) +'0dB'
 			, ok           : () => {
@@ -403,7 +403,7 @@ function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', D.card, mixertype, hwmixer, D.aplayname, 'CMD CARD MIXERTYPE HWMIXER APLAYNAME' ] );
 }
-function volumeSet( data ) {
+function volumeInfoSet( data ) {
 	$( '#infoRange .sub' ).text( data.val === 0 ? 'Mute' : data.db +' dB' );
 	$( '#infoOk' ).toggleClass( 'disabled', data.db === 0 || data.db === '' );
 	V.local = false;
@@ -420,7 +420,7 @@ function psVolume( data ) {
 		if ( 'db' in data ) {
 			$( '#infoRange .value' ).text( val );
 			$( '#infoRange input' ).val( val );
-			volumeSet( data );
+			volumeInfoSet( data );
 		} else { // from playback
 			var current = +$( '#infoRange input' ).val();
 			var diff    = Math.abs( current - val );
@@ -434,7 +434,7 @@ function psVolume( data ) {
 			}, 40 );
 			setTimeout( () => {
 				bash( [ 'volumeget' ], function( data ) {
-					if ( data.db ) volumeSet( data );
+					if ( data.db ) volumeInfoSet( data );
 				}, 'json' );
 			}, diff * 50 );
 		}
