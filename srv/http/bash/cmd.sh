@@ -777,7 +777,7 @@ volume ) # no TARGET = toggle mute / unmute
 	filevolumemute=$dirsystem/volumemute
 	if [[ $TARGET > 0 ]]; then      # set
 		rm -f $filevolumemute
-		pushstreamVolume set $TARGET
+		pushstreamVolume push $TARGET
 	else
 		if (( $CURRENT > 0 )); then # mute
 			TARGET=0
@@ -795,7 +795,7 @@ volumeget )
 	volumeGet value
 	;;
 volumepush )
-	[[ $VOLUME ]] && pushstream volume '{ "type": "push", "val": '$VOLUME' }' || volumeGet push
+	[[ $VOLUME ]] && pushstreamVolume push $VOLUME || volumeGet push
 	;;
 volumeupdn )
 	volumeUpDn 1%$UPDN "$CONTROL" $CARD
