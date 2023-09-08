@@ -1093,8 +1093,8 @@ function selectText2Html( pattern ) {
 
 // websocket
 var ws, wsvolume;
-function volumeSet() {
-	wsvolume.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+function volumeSetAt() {
+	wsvolume.send( [ 'volumesetat', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function volumePush() {
 	bash( [ 'volumepush', S.volume, 'CMD VOLUME' ] );

@@ -639,7 +639,7 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
-		volumeSet();
+		volumeSetAt();
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return

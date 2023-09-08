@@ -1515,7 +1515,7 @@ var util     = {
 		if ( V.drag ) {
 			S.volume = vol;
 			util.volumeThumb();
-			volumeSet();
+			volumeSetAt();
 		} else {
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
@@ -1716,7 +1716,7 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 	var up           = $( e.currentTarget ).hasClass( 'i-plus' );
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
-		volumeSet();
+		volumeSetAt();
 		util.volumeThumb();
 		$( '#gain' ).text( S.volume );
 		if ( S.volume === 0 || S.volume === 100 ) {
