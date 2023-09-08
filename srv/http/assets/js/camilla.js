@@ -1706,7 +1706,7 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 	bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 	S.volume = vol;
 	util.volumeThumb();
-} ).on( 'touchend mouseup mouseleave', function() {
+} ).on( 'touchend mouseup mouseleave', '.divgain i', function() {
 	clearInterval( V.intervalvolume );
 	volumePush();
 } ).press( '.divgain i', function( e ) {
