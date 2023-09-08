@@ -794,7 +794,7 @@ volume ) # no TARGET = toggle mute / unmute
 volumeget )
 	volumeGet value
 	;;
-volumepushstream )
+volumepush )
 	[[ $VOLUME ]] && pushstream volume '{ "type": "push", "val": '$VOLUME' }' || volumeGet push
 	;;
 volumeupdn )

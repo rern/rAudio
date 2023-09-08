@@ -19,7 +19,7 @@ if [[ $( < $dirshm/player ) != spotify ]]; then
 	exit
 fi
 
-[[ $PLAYER_EVENT == volumeset ]] && $dirbash/cmd.sh volumepushstream
+[[ $PLAYER_EVENT == volumeset ]] && volumeGet push
 
 dirspotify=$dirshm/spotify
 for key in elapsed expire start state status token; do # var fileKEY=$dirspotify/KEY

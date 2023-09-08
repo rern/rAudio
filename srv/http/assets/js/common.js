@@ -1097,7 +1097,7 @@ function volumeDrag() {
 	wsvolume.send( [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function volumePush() {
-	bash( [ 'volumepushstream', S.volume, 'CMD VOLUME' ] );
+	bash( [ 'volumepush', S.volume, 'CMD VOLUME' ] );
 }
 function websocketConnect() {
 	if ( ! page || page === 'camilla' ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );

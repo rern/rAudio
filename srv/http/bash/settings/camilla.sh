@@ -78,8 +78,11 @@ setformat )
 statuslog )
 	cat /var/log/camilladsp.log
 	;;
-volume|volumepushstream )
+volume )
 	$dirbash/cmd.sh "$1"
+	;;
+volumepush )
+	volumeGet push
 	;;
 	
 esac
