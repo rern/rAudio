@@ -1524,7 +1524,6 @@ var util     = {
 					, easing   : 'linear'
 				}
 			);
-			//if ( ! push ) bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 			S.volume = vol;
 			if ( ! push ) {
 				volumePush( vol );
@@ -1710,7 +1709,6 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 		
 		var vol = S.volume + 1;
 	}
-	//bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 	S.volume = vol;
 	volumePush( vol );
 	volumeSetAt();

@@ -645,7 +645,7 @@ $( '#volume' ).roundSlider( {
 		if ( V.drag ) return
 		
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		bash( [ 'volume', S.volume, e.value, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+		volumeSet( e.value );
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, valueChange       : function( e ) {

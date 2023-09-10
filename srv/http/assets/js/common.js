@@ -1102,10 +1102,10 @@ function volumeSetAt() { // drag / press
 }
 function volumePush( vol ) {
 	local();
-	ws.send( '{ "channel": "volume", "data": { "type": "push", "val": '+ vol || S.volume +' } }' );
+	ws.send( '{ "channel": "volume", "data": { "type": "push", "val": '+ ( vol || S.volume ) +' } }' );
 }
 function websocketConnect() {
-	if ( page || page === 'camilla' ) {
+	if ( ! page || page === 'camilla' ) {
 		if ( ! wsvolume || wsvolume.readyState !== 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
 	}
 	if ( ws && ws.readyState === 1 ) return
