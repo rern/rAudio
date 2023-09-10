@@ -1865,12 +1865,9 @@ function setTrackCoverart() {
 	}
 }
 function setVolume( val ) {
-	var mute = S.volumemute !== 0;
 	$volumeRS.setValue( val );
+	var mute = S.volumemute !== 0;
 	mute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
-	$( '#voldn' ).toggleClass( 'disabled', val === 0 );
-	$( '#volmute' ).toggleClass( 'disabled', val === 0 && ! mute );
-	$( '#volup' ).toggleClass( 'disabled', val === 100 );
 	$( '#volume-bar' ).css( 'width', val +'%' );
 	$( '#volume-text' )
 		.text( S.volumemute || val )
