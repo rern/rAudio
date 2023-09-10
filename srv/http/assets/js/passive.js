@@ -377,8 +377,11 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
-	if ( data.type === 'mute' ) {
+	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
+		V.local = false; // allow beforeValueChange()
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+	}
+	if ( data.type === 'mute' ) {
 		S.volumemute = data.val;
 		setVolume( 0 );
 	} else if ( 'volumenone' in data ) {

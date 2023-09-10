@@ -769,22 +769,13 @@ splashrotate )
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
-volume ) # no TARGET = toggle mute / unmute
+volume )
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )
 	filevolumemute=$dirsystem/volumemute
-	if [[ $TARGET > 0 ]]; then      # set
+	if (( $TARGET > 0 )); then
 		rm -f $filevolumemute
-		pushstreamVolume push $TARGET
 	else
-		if (( $CURRENT > 0 )); then # mute
-			TARGET=0
-			echo $CURRENT > $filevolumemute
-			pushstreamVolume mute $CURRENT
-		else                        # unmute
-			TARGET=$( < $filevolumemute )
-			rm -f $filevolumemute
-			pushstreamVolume unmute $TARGET
-		fi
+		(( $CURRENT > 0 )) && echo $CURRENT > $filevolumemute || rm -f $filevolumemute
 	fi
 	volumeSet $CURRENT $TARGET "$CONTROL" $CARD
 	;;

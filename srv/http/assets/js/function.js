@@ -1864,13 +1864,13 @@ function setTrackCoverart() {
 		$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
 	}
 }
-function setVolume( val ) {
-	$volumeRS.setValue( val );
+function setVolume( vol ) {
+	$volumeRS.setValue( vol );
 	var mute = S.volumemute !== 0;
 	mute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
-	$( '#volume-bar' ).css( 'width', val +'%' );
+	$( '#volume-bar' ).css( 'width', vol +'%' );
 	$( '#volume-text' )
-		.text( S.volumemute || val )
+		.text( mute ? S.volumemute : vol )
 		.toggleClass( 'bl', mute );
 	if ( $volume.is( ':hidden' ) ) {
 		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
@@ -1963,34 +1963,38 @@ function volumeBarHide() {
 function volumeBarSet( pageX ) {
 	clearTimeout( V.volumebar );
 	if ( pageX === 'toggle' ) {
-		var vol = S.volumemute || 0;
-		var cmd = [ 'volume' ];
+		var vol     = S.volumemute || 0;
+		var mute    = ! vol;
 	} else {
 		var posX    = pageX - $( '#volume-band' ).offset().left;
 		var bandW   = $( '#volume-band' ).width();
 		posX        = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 		var current = V.drag ? 'drag' : S.volume;
 		var vol     = Math.round( posX / bandW * 100 );
-		var cmd     = [ 'volume', current, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ];
+		var mute    = false;
 	}
 	if ( V.drag ) {
 		S.volume    = vol;
 		volumeSetAt();
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
+		$( '#volume-bar' ).css( 'width', vol +'%' );
 	} else {
+		$( '#volume-text' ).toggleClass( 'bl', mute );
+		$( '.volumeband' ).addClass( 'disabled' );
 		$( '#volume-bar' ).animate(
 			  { width: vol +'%' }
 			, {
 				  duration : Math.abs( vol - S.volume ) * 40
 				, easing   : 'linear'
-				, complete : () => V.volumebar = setTimeout( volumeBarHide, 3000 )
+				, complete : () => {
+					V.volumebar = setTimeout( volumeBarHide, 3000 );
+					$( '.volumeband' ).removeClass( 'disabled' );
+					S.volume = vol;
+				}
 			}
 		);
-		$( '.volumeband' ).addClass( 'disabled' );
-		bash( cmd, () => $( '.volumeband' ).removeClass( 'disabled' ) );
-		S.volume = vol;
+		$( '#volmute' ).trigger( 'click' );
 	}
-	$( '#volume-bar' ).css( 'width', vol +'%' );
 	$( '#volume-text' ).text( S.volumemute || vol );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 	$volumeRS.setValue( S.volume );
@@ -2000,7 +2004,7 @@ function volumeBarShow() {
 	
 	V.volumebar = setTimeout( volumeBarHide, 3000 );
 	$( '#volume-text' )
-		.text( S.volumemute === 0 ? S.volume : S.volumemute )
+		.text( S.volumemute || S.volume )
 		.toggleClass( 'bl', S.volumemute !== 0 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );

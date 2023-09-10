@@ -654,9 +654,7 @@ $( '#volume' ).roundSlider( {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
-	, stop              : function() {
-		volumePush();
-	}
+	, stop              : volumePush
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	guideHide();
@@ -681,8 +679,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	V.start = V.drag = false;
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
-	if ( S.volumemute ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-	bash( [ 'volume', S.volume, 0, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
+	volumeSet( S.volumemute, 'toggle' );
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
 	local();
