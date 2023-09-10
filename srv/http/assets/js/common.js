@@ -1094,18 +1094,22 @@ function selectText2Html( pattern ) {
 // websocket
 var ws, wsvolume;
 function volumeSet( vol ) {
-	console.log( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
+	volumePush( vol );
 	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
 }
-function volumeSetAt() {
+function volumeSetAt() { // drag / press
 	wsvolume.send( [ 'volumesetat', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
-function volumePush() {
+function volumePush( vol ) {
 	local();
-	ws.send( '{ "channel": "volume", "data": { "type": "push", "val": '+ S.volume +' } }' );
+	ws.send( '{ "channel": "volume", "data": { "type": "push", "val": '+ vol || S.volume +' } }' );
 }
 function websocketConnect() {
-	if ( ! page || page === 'camilla' ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
+	if ( page || page === 'camilla' ) {
+		if ( ! wsvolume || wsvolume.readyState !== 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
+	}
+	if ( ws && ws.readyState === 1 ) return
+	
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
 	ws.onopen    = () => {
 		setTimeout( () => {

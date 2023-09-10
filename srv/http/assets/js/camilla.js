@@ -1524,8 +1524,12 @@ var util     = {
 					, easing   : 'linear'
 				}
 			);
-			if ( ! push ) bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+			//if ( ! push ) bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 			S.volume = vol;
+			if ( ! push ) {
+				volumePush( vol );
+				volumeSetAt();
+			}
 		}
 		$( '#gain' ).text( S.volume );
 	}
@@ -1706,8 +1710,10 @@ $( '#divvolume' ).on( 'click', '.divgain i', function() {
 		
 		var vol = S.volume + 1;
 	}
-	bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+	//bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 	S.volume = vol;
+	volumePush( vol );
+	volumeSetAt();
 	util.volumeThumb();
 } ).on( 'touchend mouseup mouseleave', '.divgain i', function() {
 	clearInterval( V.intervalvolume );
