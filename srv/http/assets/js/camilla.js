@@ -313,7 +313,17 @@ function psOnClose() {
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
-	if ( ! V.local ) util.volume( data.val, 'push' );
+	var vol = data.val;
+	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
+		V.local = false;
+		if ( data.type === 'mute' ) {
+			vol          = 0;
+			S.volumemute = data.val;
+		} else {
+			S.volumemute = 0;
+		}
+	}
+	if ( ! V.local ) util.volume( vol, 'push' );
 }
 
 var graph    = {
@@ -1502,7 +1512,7 @@ var util     = {
 	, save2file    : () => {
 		bash( [ 'settings/camilla.py' ] );
 	}
-	, volume       : ( pageX, push ) => {
+	, volume       : ( pageX, type ) => {
 		var bandW   = $( '#volume .slide' ).width();
 		if ( V.start ) {
 			var posX = pageX - $( '#volume .slide' ).offset().left;
@@ -1518,20 +1528,23 @@ var util     = {
 			util.volumeThumb();
 			volumeSetAt();
 		} else {
+			$( '#volume,  #divvolume .divgain i' ).addClass( 'disabled' );
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
 				, {
 					  duration : Math.abs( vol - S.volume ) * 40
 					, easing   : 'linear'
+					, complete : () => $( '#volume,  #divvolume .divgain i' ).removeClass( 'disabled' )
 				}
 			);
 			S.volume = vol;
-			if ( ! push ) {
+			if ( ! type ) { // not from push
 				volumePush( vol );
 				volumeSetAt();
 			}
 		}
 		$( '#gain' ).text( S.volume );
+		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
 	}
 	,volumeThumb   : () => {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
@@ -1687,17 +1700,8 @@ $( '.log' ).on( 'click', function() {
 $( '#divvolume' ).on( 'click', '.divgain i', function() {
 	var $this  = $( this );
 	if ( $this.hasClass( 'i-volume' ) ) {
-		if ( S.volumemute === 0 ) {
-			var mute     = true;
-			S.volumemute = S.volume;
-			var vol      = 0;
-		} else {
-			var mute     = false;
-			var vol      = S.volumemute;
-			S.volumemute = 0;
-		}
-		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', mute );
-		util.volume( vol );
+		S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
+		volumeSet( S.volumemute, 'toggle' );
 		return
 	}
 	
