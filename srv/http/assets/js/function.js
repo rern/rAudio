@@ -1871,7 +1871,7 @@ function setVolume( vol ) {
 	$( '#volume-bar' ).css( 'width', vol +'%' );
 	$( '#volume-text' )
 		.text( mute ? S.volumemute : vol )
-		.toggleClass( 'bl', mute );
+		.toggleClass( 'bll', mute );
 	if ( $volume.is( ':hidden' ) ) {
 		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! mute );
@@ -1979,7 +1979,6 @@ function volumeBarSet( pageX ) {
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
 	} else {
-		$( '#volume-text' ).toggleClass( 'bl', mute );
 		$( '.volumeband' ).addClass( 'disabled' );
 		$( '#volume-bar' ).animate(
 			  { width: vol +'%' }
@@ -2003,10 +2002,6 @@ function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	V.volumebar = setTimeout( volumeBarHide, 3000 );
-	$( '#volume-text' )
-		.text( S.volumemute || S.volume )
-		.toggleClass( 'bl', S.volumemute !== 0 );
-	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 }
