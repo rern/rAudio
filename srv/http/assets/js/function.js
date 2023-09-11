@@ -1992,7 +1992,7 @@ function volumeBarSet( pageX ) {
 				}
 			}
 		);
-		$( '#volmute' ).trigger( 'click' );
+		mute ? $( '#volmute' ).trigger( 'click' ) : volumeSet( vol );
 	}
 	$( '#volume-text' ).text( S.volumemute || vol );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
