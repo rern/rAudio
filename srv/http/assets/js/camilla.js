@@ -499,6 +499,7 @@ var render   = {
 		S.lscoeffs.forEach( f => {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
+		$( '.container' ).removeClass( 'hide' );
 		websocketConnect();
 	}
 	, tab         : () => {
