@@ -2,13 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-if [[ $1 == reboot ]]; then
-	reboot=1
-	type=reboot
-else
-	type=off
-fi
-pushstream power '{ "type": "'$type'" }'
+[[ $1 == reboot ]] && reboot=1
 
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )
@@ -16,7 +10,7 @@ if systemctl -q is-active nfs-server; then # server rAudio
 	if [[ $ipclients ]]; then
 		[[ ! $2 ]] && echo -1 && exit # $2 confirm proceed
 		
-		[[ $reboot ]] && msg='Reboot ...' || msg='Power off'
+		[[ $reboot ]] && msg='Reboot ...' || msg='Power off ...'
 		for ip in $ipclients; do
 			notify -ip $ip 'networks blink' 'Server rAudio' "$msg"
 		done

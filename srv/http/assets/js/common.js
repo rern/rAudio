@@ -915,14 +915,15 @@ function infoPower() {
 		, button      : () => infoPowerCommand( 'reboot' )
 		, oklabel     : ico( 'power' ) +'Off'
 		, okcolor     : red
-		, ok          : () => infoPowerCommand( 'poweroff' )
+		, ok          : () => infoPowerCommand( 'off' )
 	} );
 }
 function infoPowerCommand( action ) {
+	wsPush( 'power', '{ "type": "'+ action +'" }' );
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
-		var poweroff = action === 'poweroff';
+		var off = action === 'off';
 		info( {
 			  icon    : 'power'
 			, title   : 'Power'
@@ -930,8 +931,8 @@ function infoPowerCommand( action ) {
 						+'<br><wh>Shared Data</wh> on clients will stop.'
 						+'<br>(Resume when server online again)'
 						+'<br><br>Continue?'
-			, oklabel : poweroff ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
-			, okcolor : poweroff ? red : orange
+			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
+			, okcolor : off ? red : orange
 			, ok      : () => {
 				bash( [ 'power.sh', action, 1  ] );
 				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
@@ -1045,7 +1046,7 @@ function connect() {
 	websocketConnect();
 }
 function disconnect() {
-	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
+//	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
 }
 document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 window.onpagehide = disconnect;
@@ -1103,7 +1104,7 @@ function volumeSetAt() { // drag / press
 }
 function volumePush( vol, type ) {
 	local();
-	ws.send( '{ "channel": "volume", "data": { "type": "'+ ( type || 'push' ) +'", "val": '+ ( vol || S.volume ) +' } }' );
+	wsPush( 'volume', '{ "type": "'+ ( type || 'push' ) +'", "val": '+ ( vol || S.volume ) +' }' );
 }
 function volumeMuteToggle() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
@@ -1118,6 +1119,9 @@ function websocketConnect() {
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
 	ws.onopen    = () => setTimeout( () => ws.send( 'connect' ), 600 );
 	ws.onmessage = message => psOnMessage( message );
+}
+function wsPush( channel, data ) {
+	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
 }
 // push status
 function psNotify( data ) {
@@ -1138,8 +1142,9 @@ function psNotify( data ) {
 }
 function psPower( data ) {
 	loader();
-	banner( data.type +' blink', 'Power', data.type === 'reboot' ? 'Reboot ...' : 'Off ...', -1 );
-	if ( data.type === 'off' ) {
+	var off = data.type === 'off';
+	banner( data.type +' blink', 'Power', off ? 'Off ...' : 'Reboot ...', -1 );
+	if ( off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {
 			$( '#loader svg' ).css( 'animation', 'none' );
