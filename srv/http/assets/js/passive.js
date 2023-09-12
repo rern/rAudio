@@ -382,15 +382,17 @@ function psVolume( data ) {
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
 	}
 	if ( data.type === 'mute' ) {
+		S.volume = 0;
 		S.volumemute = data.val;
-		setVolume( 0 );
+		setVolume();
 	} else if ( 'volumenone' in data ) {
 		D.volumenone = data.volumenone;
 		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
 	} else {
 		if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+		S.volume = data.val;
 		S.volumemute = 0;
-		setVolume( data.val );
+		setVolume();
 	}
 }
 function psVUmeter( data ) {

@@ -1274,7 +1274,7 @@ function renderPlayback() {
 	
 	local();
 	if ( S.state === 'stop' ) setProgress( 0 );
-	setVolume( S.volume );
+	setVolume();
 	clearInterval( V.interval.blinkdot );
 	$( '#qrwebui, #qrip' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
@@ -1863,18 +1863,17 @@ function setTrackCoverart() {
 		$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
 	}
 }
-function setVolume( vol ) {
-	$volumeRS.setValue( vol );
-	var mute = S.volumemute !== 0;
-	mute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
-	$( '#volume-bar' ).css( 'width', vol +'%' );
+function setVolume() {
+	$volumeRS.setValue( S.volume );
+	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
-		.text( mute ? S.volumemute : vol )
-		.toggleClass( 'bll', mute );
+		.text( S.volumemute || S.volume )
+		.toggleClass( 'bll', S.volumemute );
 	if ( $volume.is( ':hidden' ) ) {
 		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
-		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! mute );
+		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! S.volumemute );
 	}
+	S.volumemute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
 }
 function sortPlaylist( pl, iold, inew ) {
 	V.sortable = true;
@@ -1963,14 +1962,12 @@ function volumeBarSet( pageX ) {
 	clearTimeout( V.volumebar );
 	if ( pageX === 'toggle' ) {
 		var vol     = S.volumemute || 0;
-		var mute    = ! vol;
 	} else {
 		var posX    = pageX - $( '#volume-band' ).offset().left;
 		var bandW   = $( '#volume-band' ).width();
 		posX        = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 		var current = V.drag ? 'drag' : S.volume;
 		var vol     = Math.round( posX / bandW * 100 );
-		var mute    = false;
 	}
 	if ( V.drag ) {
 		S.volume    = vol;
@@ -1991,7 +1988,7 @@ function volumeBarSet( pageX ) {
 				}
 			}
 		);
-		mute ? $( '#volmute' ).trigger( 'click' ) : volumeSet( vol );
+		volumeSet( vol );
 	}
 	$( '#volume-text' ).text( S.volumemute || vol );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );

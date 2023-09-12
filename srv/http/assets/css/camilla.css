@@ -251,7 +251,7 @@ i.disabled,
 	background: var( --cgl );
 }
 .db,
-#gain {
+#volume-text {
 	display: inline-block;
 	width: 45px;
 	line-height: 16px;

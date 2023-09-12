@@ -603,9 +603,8 @@ var render   = {
 		$( '#divstate .value' ).html( status );
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#gain' ).text( S.volume );
 			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
-			$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute !== 0 );
+			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
@@ -626,6 +625,12 @@ var render   = {
 		delete V.intervalvu;
 		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 		$( '.rms' ).css( 'width', 0 );
+	}
+	, volume      : () => {
+		$( '#volume-text' )
+			.text( S.volumemute || S.volume )
+			.toggleClass( 'bll', S.volumemute > 0 );
+		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		graph.list();
@@ -1521,7 +1526,6 @@ var util     = {
 			var vol  = pageX;
 			var posX = bandW * vol / 100;
 		}
-		var current = V.drag ? 'drag' : S.volume;
 		if ( V.drag ) {
 			S.volume = vol;
 			util.volumeThumb();
@@ -1542,8 +1546,7 @@ var util     = {
 				volumeSetAt();
 			}
 		}
-		$( '#gain' ).text( S.volume );
-		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
+		render.volume();
 	}
 	,volumeThumb   : () => {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
@@ -1695,43 +1698,6 @@ $( '.close' ).on( 'click', function() {
 $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
-} )
-$( '#divvolume' ).on( 'click', '.divgain i', function() {
-	var $this  = $( this );
-	if ( $this.hasClass( 'i-volume' ) ) {
-		S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
-		volumeSet( S.volumemute, 'toggle' );
-		return
-	}
-	
-	if ( $this.hasClass( 'i-minus' ) ) {
-		if ( S.volume === 0 ) return
-		
-		var vol = S.volume - 1;
-	} else if ( $this.hasClass( 'i-plus' ) ) {
-		if ( S.volume === 100 ) return
-		
-		var vol = S.volume + 1;
-	}
-	S.volume = vol;
-	volumePush( vol );
-	volumeSetAt();
-	util.volumeThumb();
-} ).on( 'touchend mouseup mouseleave', '.divgain i', function() {
-	clearInterval( V.intervalvolume );
-	volumePush();
-} ).press( '.divgain i', function( e ) {
-	var up           = $( e.currentTarget ).hasClass( 'i-plus' );
-	V.intervalvolume = setInterval( () => {
-		up ? S.volume++ : S.volume--;
-		volumeSetAt();
-		util.volumeThumb();
-		$( '#gain' ).text( S.volume );
-		if ( S.volume === 0 || S.volume === 100 ) {
-			clearInterval( V.intervalvolume );
-			volumePush();
-		}
-	}, 100 );
 } );
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	V.start = true;
@@ -1748,6 +1714,45 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	setTimeout( () => V.drag = false, 1000 );
 } ).on( 'mouseleave', function() {
 	if ( V.start ) $( '#volume' ).trigger( 'mouseup' );
+} );
+$( '#voldn, #volup' ).on( 'click', function() {
+	var $this  = $( this );
+	if ( this.id === 'vuldn' ) {
+		if ( S.volume === 0 ) return
+		
+		var vol = S.volume - 1;
+	} else {
+		if ( S.volume === 100 ) return
+		
+		var vol = S.volume + 1;
+	}
+	S.volume = vol;
+	volumePush( vol );
+	volumeSetAt();
+	util.volumeThumb();
+} ).on( 'touchend mouseup', function() {
+	clearInterval( V.intervalvolume );
+	volumePush();
+} ).on( 'mouseleave', function() {
+	console.log(V.press)
+	if ( V.press ) $( '#voldn' ).trigger( 'mouseup' );
+} ).press( function( e ) {
+	console.log(this)
+	var up           = e.target.id === 'volup';
+	V.intervalvolume = setInterval( () => {
+		up ? S.volume++ : S.volume--;
+		volumeSetAt();
+		util.volumeThumb();
+		$( '#volume-text' ).text( S.volume );
+		if ( S.volume === 0 || S.volume === 100 ) {
+			clearInterval( V.intervalvolume );
+			volumePush();
+		}
+	}, 100 );
+} );
+$( '#volmute' ).on( 'click', function() {
+	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
+	volumeSet( S.volumemute, 'toggle' );
 } );
 $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	var $this = $( this );
