@@ -682,11 +682,12 @@ $( '#volmute, #volM' ).on( 'click', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 } );
-$( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
+$( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function() {
+	var $this = $( this );
 	local();
 	guideHide();
-	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
-	if ( $( e.currentTarget ).hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
+	volumeUpDown( $this.hasClass( 'up' ) );
+	if ( $this.hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( ! V.press ) return
 	
