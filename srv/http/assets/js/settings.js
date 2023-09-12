@@ -133,7 +133,6 @@ function refreshData() {
 			$( '#data' ).html( highlightJSON( S ) )
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
-		websocketConnect();
 	} );
 }
 function showContent() {

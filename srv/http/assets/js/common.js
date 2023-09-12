@@ -1039,10 +1039,10 @@ function local( delay ) {
 }
 
 // page visibility -----------------------------------------------------------------
-var select2 = false; // fix: closing > blur > disconnect
 function connect() {
 	refreshData();
 	bannerHide();
+	websocketConnect();
 }
 function disconnect() {
 	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
@@ -1054,6 +1054,7 @@ window.onblur     = () => { if ( ! select2 ) disconnect() }
 window.onfocus    = connect;
 
 // select2 --------------------------------------------------------------------
+var select2 = false; // fix: closing > blur > disconnect
 function selectSet( $select ) {
 	var options = { minimumResultsForSearch: 10 }
 	if ( ! $select ) {
@@ -1115,11 +1116,7 @@ function websocketConnect() {
 	if ( ws && ws.readyState === 1 ) return
 	
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
-	ws.onopen    = () => {
-		setTimeout( () => {
-			ws.send( 'connect' );
-		}, 1000 );
-	}
+	ws.onopen    = () => setTimeout( () => ws.send( 'connect' ), 600 );
 	ws.onmessage = message => psOnMessage( message );
 }
 // push status
@@ -1158,6 +1155,7 @@ function psPower( data ) {
 						if ( S.login ) {
 							location.href = '/';
 						} else {
+							refreshData();
 							loaderHide();
 							bannerHide();
 						}
