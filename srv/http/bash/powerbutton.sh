@@ -3,7 +3,7 @@
 # output : mode in  > write 0/1
 # input  : mode out > mode  up/down
 
-if [[ -e /srv/http/data/system/audiophonics ]]; then
+if grep -q 'poweroff,gpiopin=22' /boot/config.txt; then
 	gpio -1 mode 7 out  # atx
 	gpio -1 write 7 0
 	
