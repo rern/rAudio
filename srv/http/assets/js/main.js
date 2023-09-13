@@ -654,7 +654,9 @@ $( '#volume' ).roundSlider( {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
-	, stop              : volumePush
+	, stop              : () => {
+		volumePush();
+	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	guideHide();
