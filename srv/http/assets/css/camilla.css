@@ -173,6 +173,8 @@ input[ type=range ] {
 	font-size: 24px;
 	text-align: center;
 	color: var( --cg60 );
+	-webkit-user-select: none;
+	user-select: none;
 }
 #divvolume .col-l {
 	padding-top: 6px;
