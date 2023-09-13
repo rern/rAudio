@@ -1099,7 +1099,7 @@ function volumeSet( vol, type ) {
 	if ( ! type ) volumePush( vol );
 	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
 }
-function volumeSetAt() { // drag / press
+function volumeSetAt() { // drag / press / updn
 	wsvolume.send( [ 'volumesetat', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function volumePush( vol, type ) {

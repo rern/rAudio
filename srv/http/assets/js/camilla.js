@@ -1716,28 +1716,18 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	if ( V.start ) $( '#volume' ).trigger( 'mouseup' );
 } );
 $( '#voldn, #volup' ).on( 'click', function() {
-	var $this  = $( this );
-	if ( this.id === 'vuldn' ) {
-		if ( S.volume === 0 ) return
-		
-		var vol = S.volume - 1;
-	} else {
-		if ( S.volume === 100 ) return
-		
-		var vol = S.volume + 1;
-	}
-	S.volume = vol;
-	volumePush( vol );
+	if ( S.volume === 0 || S.volume === 100 ) return
+	
+	this.id === 'volup' ? S.volume++ : S.volume--;
+	volumePush( S.volume );
 	volumeSetAt();
-	util.volumeThumb();
+	$( '#volume-text' ).text( S.volume );
 } ).on( 'touchend mouseup', function() {
 	clearInterval( V.intervalvolume );
 	volumePush();
 } ).on( 'mouseleave', function() {
-	console.log(V.press)
 	if ( V.press ) $( '#voldn' ).trigger( 'mouseup' );
 } ).press( function( e ) {
-	console.log(this)
 	var up           = e.target.id === 'volup';
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;

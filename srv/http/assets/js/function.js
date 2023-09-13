@@ -2021,26 +2021,11 @@ function volumeColorUnmute() {
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeUpDown( up ) {
-	up ? S.volume++ : S.volume--;
-	if ( S.volume < 0 || S.volume > 100 ) return
+	if ( S.volume === 0 || S.volume === 100 ) return
 	
-	if ( D.volume ) {
-		$volumeRS.setValue( S.volume );
-	} else {
-		$( '#volume-text' ).text( S.volume );
-		$( '#volume-bar' ).css( 'width', S.volume +'%' );
-	}
-	var cmd = 'volumeupdn';
-	if ( S.btreceiver ) {
-		cmd += 'bt';
-	} else if ( ! S.control ) {
-		cmd += 'mpc';
-	}
-	if ( V.press ) {
-		volumeSetAt();
-	} else {
-		bash( [ cmd, up ? '+' : '-', S.control, S.card, 'CMD UPDN CONTROL CARD' ] );
-	}
+	up ? S.volume++ : S.volume--;
+	volumePush( S.volume );
+	volumeSetAt();
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
