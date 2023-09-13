@@ -1000,7 +1000,7 @@ function infoPowerbuttonAudiophonics() {
 		, tab          : [ infoPowerbutton, '' ]
 		, checkbox     : 'Power management module'
 		, checkchanged : S.powerbutton
-		, values       : S.poweraudiophonics
+		, values       : { ON: S.poweraudiophonics }
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
