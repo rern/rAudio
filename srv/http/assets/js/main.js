@@ -655,7 +655,8 @@ $( '#volume' ).roundSlider( {
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, stop              : () => {
-		volumePush();
+		volumePush( S.volume, V.drag ? 'dragpress' : 'push' );
+		V.drag = false;
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
@@ -675,10 +676,10 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		return
 	}
 	
-	V.drag ? volumePush() : volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.drag ? volumePush( S.volume, 'dragpress' ) : volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	V.start = V.drag = false;
 } ).on( 'mouseleave', function() {
-	V.start = V.drag = false;
+	if ( V.start ) $( '#volume-band' ).trigger( 'mouseup' );
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
