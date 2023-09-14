@@ -257,8 +257,9 @@ i.disabled,
 	display: inline-block;
 	width: 45px;
 	line-height: 16px;
-	color: var( --cw );
 	text-align: center;
+	color: var( --cw );
+	background-color: var( --cga );
 }
 #mixers .db {
 	margin: 0 0 0 10px;

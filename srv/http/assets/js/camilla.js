@@ -629,7 +629,7 @@ var render   = {
 	, volume      : () => {
 		$( '#volume-text' )
 			.text( S.volumemute || S.volume )
-			.toggleClass( 'bll', S.volumemute > 0 );
+			.toggleClass( 'bl', S.volumemute > 0 );
 		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
