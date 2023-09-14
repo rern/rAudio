@@ -1046,7 +1046,7 @@ function connect() {
 	websocketConnect();
 }
 function disconnect() {
-//	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
+	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
 }
 document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 window.onpagehide = disconnect;
