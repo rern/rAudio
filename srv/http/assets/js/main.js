@@ -625,9 +625,9 @@ $( '#volume' ).roundSlider( {
 		if ( V.press ) {
 			var diff  = 3;
 		} else {
-			var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
+			var diff  = Math.abs( e.value - S.volume || S.volume - S.volumemute ); // change || mute/unmute
 		}
-		var speed = Math.abs( diff ) * 40; // 1% : 40ms
+		var speed = diff * 40; // 1% : 40ms
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );

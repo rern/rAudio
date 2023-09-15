@@ -323,7 +323,13 @@ function psVolume( data ) {
 			S.volumemute = 0;
 		}
 	}
-	if ( ! V.local ) util.volume( vol, 'push' );
+	if ( ! V.local ) {
+		if ( data.type === 'dragpress' ) {
+			V.dragpress = true;
+			setTimeout( () => V.dragpress = false, 300 );
+		}
+		util.volume( vol, 'push' );
+	}
 }
 
 var graph    = {
@@ -1531,11 +1537,12 @@ var util     = {
 			util.volumeThumb();
 			volumeSetAt();
 		} else {
+			var diff = V.dragpress ? 3 : Math.abs( vol - S.volume );
 			$( '#volume,  #divvolume .divgain i' ).addClass( 'disabled' );
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
 				, {
-					  duration : Math.abs( vol - S.volume ) * 40
+					  duration : diff * 40
 					, easing   : 'linear'
 					, complete : () => $( '#volume,  #divvolume .divgain i' ).removeClass( 'disabled' )
 				}
