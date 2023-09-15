@@ -309,6 +309,8 @@ function renderPage() { // common from settings.js
 	render.page();
 }
 function psOnClose() {
+	if ( V.off ) return
+	
 	clearInterval( V.intervalvu );
 	if ( wscamilla ) wscamilla.close();
 }

@@ -1039,21 +1039,6 @@ function local( delay ) {
 	setTimeout( () => V.local = false, delay || 300 );
 }
 
-// page visibility -----------------------------------------------------------------
-function connect() {
-	refreshData();
-	bannerHide();
-	websocketConnect();
-}
-function disconnect() {
-	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
-}
-document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
-window.onpagehide = disconnect;
-window.onpageshow = connect;
-window.onblur     = () => { if ( ! select2 ) disconnect() }
-window.onfocus    = connect;
-
 // select2 --------------------------------------------------------------------
 var select2 = false; // fix: closing > blur > disconnect
 function selectSet( $select ) {
@@ -1092,6 +1077,23 @@ function selectText2Html( pattern ) {
 		htmlSet( $rendered );
 	} );
 }
+
+// page visibility -----------------------------------------------------------------
+function connect() {
+	if ( V.off ) return
+	
+	refreshData();
+	bannerHide();
+	websocketConnect();
+}
+function disconnect() {
+	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
+}
+document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
+window.onpagehide = disconnect;
+window.onpageshow = connect;
+window.onblur     = () => { if ( ! select2 ) disconnect() }
+window.onfocus    = connect;
 
 // websocket
 var ws, wsvolume;
@@ -1142,9 +1144,9 @@ function psNotify( data ) {
 }
 function psPower( data ) {
 	loader();
-	var off = data.type === 'off';
-	banner( data.type +' blink', 'Power', off ? 'Off ...' : 'Reboot ...', -1 );
-	if ( off ) {
+	V.off = data.type === 'off';
+	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
+	if ( V.off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {
 			$( '#loader svg' ).css( 'animation', 'none' );

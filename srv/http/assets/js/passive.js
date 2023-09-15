@@ -90,6 +90,8 @@ function psOnMessage( message ) {
 	}
 }
 function psOnClose() {
+	if ( V.off ) return
+	
 	clearIntervalAll();
 	guideHide();
 	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
