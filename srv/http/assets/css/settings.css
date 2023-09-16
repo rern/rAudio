@@ -231,8 +231,8 @@ heading .i-add,
 heading .i-search {
 	color: var( --cw );
 }
-heading .disabled {
-	color: var( --cg );
+heading i.disabled {
+	color: var( --cg ) !important;
 }
 .page-icon {
 	background: var( --cm );

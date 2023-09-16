@@ -13,10 +13,10 @@ fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	camilladsp=1
 	modprobe snd_aloop
-	camilladspyml=$dircamilladsp/configs/camilladsp.yml
-	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml )
-	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $camilladspyml )
-	rate=$( awk '/^\s*samplerate:/ {print $NF}' $camilladspyml )
+	fileconfig=$( getVar CONFIG /etc/default/camilladsp )
+	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $fileconfig )
+	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $fileconfig )
+	rate=$( awk '/^\s*samplerate:/ {print $NF}' $fileconfig )
 ########
 	asound+='
 pcm.!default { 

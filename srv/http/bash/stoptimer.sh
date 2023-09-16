@@ -12,9 +12,21 @@ rm -f $dirshm/relaystimer
 
 sleep $(( min * 60 ))
 
-$dirbash/cmd.sh volume # mute
+readarray -t vcc <<< $( volumeCardControl )
+volume=${vcc[0]}
+card=${vcc[1]}
+control=${vcc[2]}
+
+$dirbash/cmd.sh "volume
+$volume
+0
+$control
+$card"
 [[ $( < $dirshm/player ) == mpd ]] && $dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION' || $dirbash/cmd.sh playerstop
-$dirbash/cmd.sh volume # unmute
+$dirbash/cmd.sh "volumesetat
+0
+$control
+$card"
 
 if [[ $poweroff ]]; then
 	$dirbash/power.sh

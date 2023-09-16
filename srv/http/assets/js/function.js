@@ -459,12 +459,6 @@ function cssKeyframes( name, trx0, trx100 ) {
 		+'</style>'
 	);
 }
-function curl( channel, key, value ) {
-	return 'curl -s -X POST http://127.0.0.1/pub?id='+ channel +' -d \'{ "'+ key +'": "'+ value +'" }\''
-}
-function curlPackage( pkg, active, enabled ) {
-	return 'curl -s -X POST http://127.0.0.1/pub?id=package -d \'[ "'+ pkg +'", '+ active +', '+ enabled +' ]\''
-}
 function dirName( path ) {
 	return path.substring( 0, path.lastIndexOf( '/' ) )
 }	
@@ -1280,7 +1274,7 @@ function renderPlayback() {
 	
 	local();
 	if ( S.state === 'stop' ) setProgress( 0 );
-	setVolume( S.volume );
+	setVolume();
 	clearInterval( V.interval.blinkdot );
 	$( '#qrwebui, #qrip' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
@@ -1869,21 +1863,17 @@ function setTrackCoverart() {
 		$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
 	}
 }
-function setVolume( val ) {
-	var mute = S.volumemute !== 0;
-	$volumeRS.setValue( val );
-	mute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
-	$( '#voldn' ).toggleClass( 'disabled', val === 0 );
-	$( '#volmute' ).toggleClass( 'disabled', val === 0 && ! mute );
-	$( '#volup' ).toggleClass( 'disabled', val === 100 );
-	$( '#volume-bar' ).css( 'width', val +'%' );
+function setVolume() {
+	$volumeRS.setValue( S.volume );
+	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
-		.text( S.volumemute || val )
-		.toggleClass( 'bl', mute );
+		.text( S.volumemute || S.volume )
+		.toggleClass( 'bll', S.volumemute > 0 );
 	if ( $volume.is( ':hidden' ) ) {
 		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
-		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! mute );
+		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! S.volumemute );
 	}
+	S.volumemute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
 }
 function sortPlaylist( pl, iold, inew ) {
 	V.sortable = true;
@@ -1971,45 +1961,44 @@ function volumeBarHide() {
 function volumeBarSet( pageX ) {
 	clearTimeout( V.volumebar );
 	if ( pageX === 'toggle' ) {
-		var vol = S.volumemute || 0;
-		var cmd = [ 'volume' ];
+		var vol     = S.volumemute || 0;
 	} else {
 		var posX    = pageX - $( '#volume-band' ).offset().left;
 		var bandW   = $( '#volume-band' ).width();
 		posX        = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 		var current = V.drag ? 'drag' : S.volume;
 		var vol     = Math.round( posX / bandW * 100 );
-		var cmd     = [ 'volume', current, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ];
 	}
 	if ( V.drag ) {
-		volumeSet( vol );
+		S.volume    = vol;
+		volumeSetAt();
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
+		$( '#volume-bar' ).css( 'width', vol +'%' );
 	} else {
+		var duration = Math.abs( vol - S.volume ) * 40;
+		S.volume = vol;
+		volumeSet( S.volume );
+		$( '.volumeband' ).addClass( 'disabled' );
 		$( '#volume-bar' ).animate(
-			  { width: vol +'%' }
+			  { width: S.volume +'%' }
 			, {
-				  duration : Math.abs( vol - S.volume ) * 40
+				  duration : duration
 				, easing   : 'linear'
-				, complete : () => V.volumebar = setTimeout( volumeBarHide, 3000 )
+				, complete : () => {
+					V.volumebar = setTimeout( volumeBarHide, 3000 );
+					$( '.volumeband' ).removeClass( 'disabled' );
+				}
 			}
 		);
-		$( '.volumeband' ).addClass( 'disabled' );
-		bash( cmd, () => $( '.volumeband' ).removeClass( 'disabled' ) );
 	}
-	$( '#volume-bar' ).css( 'width', vol +'%' );
 	$( '#volume-text' ).text( S.volumemute || vol );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
-	S.volume = vol;
 	$volumeRS.setValue( S.volume );
 }
 function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	V.volumebar = setTimeout( volumeBarHide, 3000 );
-	$( '#volume-text' )
-		.text( S.volumemute === 0 ? S.volume : S.volumemute )
-		.toggleClass( 'bl', S.volumemute !== 0 );
-	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 }
@@ -2032,38 +2021,12 @@ function volumeColorUnmute() {
 	$( '#volmute' ).removeClass( 'mute active' )
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
-function volumeSet( target ) {
-	var cmd = [ 'volumedrag', target, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' );
-	if ( ws ) {
-		ws.send( cmd );
-		return
-	}
-	
-	ws         = new WebSocket( 'ws://'+ window.location.host +':8080' );
-	ws.onclose = () => ws = null;
-	ws.onopen  = () => ws.send( cmd );
-}
 function volumeUpDown( up ) {
-	up ? S.volume++ : S.volume--;
-	if ( S.volume < 0 || S.volume > 100 ) return
+	if ( S.volume === 0 || S.volume === 100 ) return
 	
-	if ( D.volume ) {
-		$volumeRS.setValue( S.volume );
-	} else {
-		$( '#volume-text' ).text( S.volume );
-		$( '#volume-bar' ).css( 'width', S.volume +'%' );
-	}
-	var cmd = 'volumeupdn';
-	if ( S.btreceiver ) {
-		cmd += 'bt';
-	} else if ( ! S.control ) {
-		cmd += 'mpc';
-	}
-	if ( V.press ) {
-		volumeSet( S.volume );
-	} else {
-		bash( [ cmd, up ? '+' : '-', S.control, S.card, 'CMD UPDN CONTROL CARD' ] );
-	}
+	up ? S.volume++ : S.volume--;
+	volumePush( S.volume );
+	volumeSetAt();
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {

@@ -18,23 +18,14 @@ else
 	cursor=yes
 fi
 matchbox-window-manager -use_cursor $cursor &
-
 scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
-
-if [[ -e /usr/bin/firefox ]]; then
-	rm -rf /root/.mozilla
-	timeout 1 firefox --headless &> dev/null
-	profile=$( grep -m1 ^Default /root/.mozilla/firefox/profiles.ini | cut -d= -f2 )
-	fileuserjs=/root/.mozilla/firefox/$profile/user.js
-	if [[ $scale == 1.00 ]]; then
-		rm -f $fileuserjs
-	else
-		echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $fileuserjs
-	fi
-	firefox -kiosk http://localhost
+rm -rf /root/.mozilla
+timeout 1 firefox --headless &> dev/null
+profile=$( grep -m1 ^Default /root/.mozilla/firefox/profiles.ini | cut -d= -f2 )
+fileuserjs=/root/.mozilla/firefox/$profile/user.js
+if [[ $scale == 1.00 ]]; then
+	rm -f $fileuserjs
 else
-	[[ $scale != 1.00 ]] && options="--force-device-scale-factor=$scale"
-	[[ -e /boot/kernel7.img ]] && options+=' --no-xshm'
-	grep -q fbcon=map /boot/cmdline.txt && options+=' --disable-software-rasterizer'
-	chromium localhost $options --incognito --kiosk --no-sandbox
+	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $fileuserjs
 fi
+firefox -kiosk http://localhost

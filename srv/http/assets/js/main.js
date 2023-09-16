@@ -8,7 +8,7 @@ V = {   // var global
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
 	, bioartist     : []
-	, blinkdot      : '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>'
+	, blinkdot      : blinkdot
 	, coverart      : '/assets/img/coverart.svg'
 	, icoveredit    : '<div class="coveredit cover-change">'+ ico( 'coverart' ) +'</div>'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
@@ -111,7 +111,6 @@ var chkdisplay = {
 		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
 	}
 }
-var ws;
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -194,6 +193,8 @@ $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
 $( '#debug' ).on( 'click', function() {
+	if ( V.press ) return
+	
 	$( '#data' ).html( highlightJSON( S ) )
 	$( '#button-data, #data' ).removeClass( 'hide' );
 	$( '.page' ).addClass( 'hide' );
@@ -364,7 +365,8 @@ $( '#displayplayback' ).on( 'click', function() {
 						$el[ el ]
 							.prop( 'checked', false )
 							.prop( 'disabled', true );
-					} );				} else {
+					} );
+				} else {
 					restoreEnabled();
 				}
 			} );
@@ -623,9 +625,9 @@ $( '#volume' ).roundSlider( {
 		if ( V.press ) {
 			var diff  = 3;
 		} else {
-			var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
+			var diff  = Math.abs( e.value - S.volume || S.volume - S.volumemute ); // change || mute/unmute
 		}
-		var speed = Math.abs( diff ) * 40; // 1% : 40ms
+		var speed = diff * 40; // 1% : 40ms
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );
@@ -637,13 +639,13 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
-		volumeSet( e.value );
+		volumeSetAt();
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		bash( [ 'volume', S.volume, e.value, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+		volumeSet( e.value );
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, valueChange       : function( e ) {
@@ -652,9 +654,9 @@ $( '#volume' ).roundSlider( {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
-	, stop              : function() {
+	, stop              : () => {
+		volumePush( S.volume, V.drag ? 'dragpress' : 'push' );
 		V.drag = false;
-		bash( [ 'volumepushstream' ] );
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
@@ -674,21 +676,24 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		return
 	}
 	
-	if ( ! V.start ) return
-	
-	if ( ! V.drag ) volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.drag ? volumePush( S.volume, 'dragpress' ) : volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	V.start = V.drag = false;
+} ).on( 'mouseleave', function() {
+	if ( V.start ) $( '#volume-band' ).trigger( 'mouseup' );
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
-	$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-	bash( [ 'volume', S.volume, 0, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
+	volumeSet( S.volumemute, 'toggle' );
 } );
-$( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
+$( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function() {
+	var $this = $( this );
 	local();
 	guideHide();
-	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
-	if ( $( e.currentTarget ).hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
-} ).on( 'touchend mouseup', function( e ) {
+	volumeUpDown( $this.hasClass( 'up' ) );
+	if ( $this.hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
+} ).on( 'touchend mouseup mouseleave', function() {
+	if ( ! V.press ) return
+	
 	clearInterval( V.interval.volume );
 	if ( D.volume ) {
 		$( '#volume-text' ).text( S.volume );
@@ -698,6 +703,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 		clearTimeout( V.volumebar );
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	}
+	if ( V.press ) volumePush();
 } ).press( function( e ) {
 	clearTimeout( V.volumebar );
 	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );

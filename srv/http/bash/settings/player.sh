@@ -162,14 +162,6 @@ $data
 statusalbumignore )
 	cat $dirmpd/albumignore
 	;;
-statusbtreceiver )
-	mac=$( cut -d' ' -f1 $dirshm/btconnected )
-	echo "\
-<c>$( pacman -Q bluealsa )</c>
-
-<bll># bluealsa-aplay -L</bll>
-$( bluealsa-aplay -L | grep -A2 $mac )"
-	;;
 statusmpdignore )
 	file=$dirmpd/mpdignorelist
 	readarray -t files < $file
@@ -246,9 +238,6 @@ volume0dbbt )
 	;;
 volumeget )
 	volumeGet valdb
-	;;
-volumepush )
-	volumeGet push
 	;;
 	
 esac

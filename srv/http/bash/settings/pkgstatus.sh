@@ -8,7 +8,13 @@ SERVICE=$1
 skip='register IPv6'
 
 case $CMD in
+	bluealsa )
+		conf="\
+<bll># bluealsa-aplay -L</bll>
+$( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
+		;;
 	bluetooth )
+		fileconf=/etc/bluetooth/main.conf
 		PKG=bluez
 		;;
 	camilladsp )
@@ -77,6 +83,7 @@ $sharedip"
 		;;
 	snapserver )
 		PKG=snapcast
+		fileconf=/etc/default/snapserver
 		;;
 	spotifyd )
 		skip+='|No.*specified|no usable credentials'
@@ -99,7 +106,7 @@ else
 	[[ ! $fileconf ]] && fileconf=/etc/$PKG.conf
 	config+="
 <bll># cat $fileconf</bll>
-$( grep -v ^# $fileconf )"
+$( grep -Ev '^#|^$' $fileconf )"
 fi
 
 echo "\

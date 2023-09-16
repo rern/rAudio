@@ -357,27 +357,23 @@ $description
 	fi
 	grep -B1 -A2 --no-group-separator ^$PKG $filepackages
 	;;
-poweraudiophonics )
-	enableFlagSet
-	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
-	if [[ $ON ]]; then
-		config+="
-dtoverlay=gpio-poweroff,gpiopin=22
-dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
-	fi
-	configTxt
-	;;
 powerbutton )
 	enableFlagSet
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 	if [[ $ON ]]; then
-		serviceRestartEnable
-		if [[ $SW != 5 ]]; then
-			config+='
+		if [[ $SW ]]; then
+			serviceRestartEnable
+			if [[ $SW != 5 ]]; then
+				config+='
 dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
+			fi
+		else
+			config+="
+dtoverlay=gpio-poweroff,gpiopin=22
+dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	else
-		if [[ ! -e $dirsystem/audiophonics ]]; then
+		if systemctl -q is-active powerbutton; then
 			systemctl disable --now powerbutton
 			gpio -1 write $( getVar led $dirsystem/powerbutton.conf ) 0
 		fi

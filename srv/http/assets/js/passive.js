@@ -59,20 +59,16 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		if ( I.active ) infoWidth();
 	}, 0 );
 } );
-// pushstreamChannel() in common.js
-var channels = [ 'airplay', 'bookmark', 'coverart',  'display',   'equalizer', 'mpdplayer', 'mpdradio',      'mpdupdate', 'notify'
-			   , 'option',  'order',    'playlist',  'radiolist', 'relays',    'reload',    'savedplaylist', 'volume',    'webradio' ];
-if ( ! localhost ) channels.push( 'vumeter' );
-pushstreamChannel( channels );
-function pushstreamDisconnect() {
-	clearIntervalAll();
-	guideHide();
-	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
-}
-pushstream.onmessage = ( data, id, channel ) => {
+
+// push status
+function psOnMessage( message ) {
+	var json    = JSON.parse( message.data );
+	var channel = json.channel;
+	var data    = json.data;
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
+		case 'btreceiver':    psBtReceiver();           break;
 		case 'coverart':      psCoverart( data );       break;
 		case 'display':       psDisplay( data );        break;
 		case 'equalizer':     psEqualizer( data );      break;
@@ -83,6 +79,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'option':        psOption( data );         break;
 		case 'order':         psOrder( data );          break;
 		case 'playlist':      psPlaylist( data );       break;
+		case 'power':         psPower( data );          break;
 		case 'savedplaylist': psSavedPlaylists( data ); break;
 		case 'radiolist':     psRadioList( data );      break;
 		case 'relays':        psRelays( data );         break;
@@ -92,9 +89,23 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'vumeter':       psVUmeter( data );        break;
 	}
 }
+function psOnClose() {
+	if ( V.off ) return
+	
+	clearIntervalAll();
+	guideHide();
+	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
+	if ( ws ) ws.send( 'disconnect' );
+}
 function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
+}
+function psBtReceiver() {
+	setTimeout( () => {
+		refreshData();
+		bannerHide();
+	}, 2000 );
 }
 function psBookmark() {
 	V.libraryhtml = '';
@@ -183,8 +194,8 @@ function psEqualizer( data ) {
 	eqOptionPreset();
 }
 function psMpdPlayer( data ) {
-	clearTimeout( V.debouncempdplayer );
-	V.debouncempdplayer = setTimeout( () => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
 		if ( ! data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control;
 			delete data.volume;
@@ -255,8 +266,8 @@ function psPlaylist( data ) {
 		&& ( V.local || V.sortable || $( '.pl-remove' ).length )
 	) return
 	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
+	clearTimeout( V.debouncepl );
+	V.debouncepl = setTimeout( () => {
 		if ( data == -1 ) {
 			setPlaybackBlank();
 			renderPlaylist( -1 );
@@ -368,17 +379,26 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
-	if ( data.type === 'mute' ) {
+	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
+		V.local = false; // allow beforeValueChange()
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+	}
+	if ( data.type === 'mute' ) {
+		S.volume = 0;
 		S.volumemute = data.val;
-		setVolume( 0 );
+		setVolume();
 	} else if ( 'volumenone' in data ) {
 		D.volumenone = data.volumenone;
 		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
 	} else {
 		if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+		if ( data.type === 'dragpress' ) {
+			V.press = true;
+			setTimeout( () => V.press = false, 300 );
+		}
+		S.volume = data.val;
 		S.volumemute = 0;
-		setVolume( data.val );
+		setVolume();
 	}
 }
 function psVUmeter( data ) {

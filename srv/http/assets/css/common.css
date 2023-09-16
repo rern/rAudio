@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1691584117' );
+	src         : url( '/assets/fonts/rern.woff2?v=1693402800' );
 }
 @font-face {
 	font-family : Lato;
@@ -49,6 +49,7 @@ i {
 .i-bio::before             { content: '\F51D' }
 .i-booklet::before         { content: '\F53D' }
 .i-bookmark::before        { content: '\F550' }
+.i-bluealsa::before        { content: '\F51A' }
 .i-bluetooth::before       { content: '\F51A' }
 .i-btreceiver::before      { content: '\F51A' }
 .i-btsender::before        { content: '\F51B' }
@@ -138,6 +139,7 @@ i {
 .i-networks::before        { content: '\F551' }
 .i-next::before            { content: '\F505' }
 .i-nfsserver::before       { content: '\F53C' }
+.i-off::before             { content: '\F520' }
 .i-output::before          { content: '\F528' }
 .i-pause::before           { content: '\F504' }
 .i-pipeline::before        { content: '\F52B' }
@@ -530,8 +532,7 @@ input[ type=checkbox ] {
 .infobtn-default {
 	background-color: var( --cg );
 }
-.disabled,
-.disabled i {
+.disabled {
 	color: var( --cg60 ) !important;
 	pointer-events: none;
 }
@@ -886,6 +887,10 @@ input[ type=checkbox ] {
 	border-radius: 3px;
 	background-color: var( --cg );
 }
+.container input[ type=radio ],
+.container input[ type=checkbox ] {
+	display:none;
+}
 input[ type=radio ] {
 	width: 26px;
 	height: 26px;
@@ -953,6 +958,19 @@ input[ type=radio ]:disabled {
 #infoPrompt {
 	margin-top: 20px;
 }
+@keyframes blinkdot {
+	50% { opacity: 0 }
+}
+.dot {
+	animation: 1s infinite blinkdot;
+}
+.dot2 {
+	animation-delay: 250ms;
+}
+.dot3 {
+	animation-delay: 500ms;
+}
+
 @media ( max-height: 420px ) {
 	#infoContent { padding: 10px 5px }
 }

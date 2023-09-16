@@ -31,7 +31,7 @@
 }
 
 bl,  .bl  { color : var( --cm ) !important }
-bll       { color : var( --cm60 ) !important }
+bll, .bll { color : var( --cm60 ) !important }
 g         { color : var( --cgl ) }
 gr,  .gr  { color : var( --cg60 ) !important }
 grn, .grn { color : #0f0 !important }

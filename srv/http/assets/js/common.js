@@ -3,7 +3,7 @@ bash()
 $.fn.press
 banner() copy        errorDisplay() 
 info()   infoPower() infoPowerCommand() infoWarning()
-loader() local()     pushstream         selectSet()
+loader() local()     selectSet()
 */
 
 var page        = location.search.replace( '?p=', '' );
@@ -13,6 +13,7 @@ var iconwarning = ico( 'warning i-lg yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
+var blinkdot    = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 
 // ----------------------------------------------------------------------
 /*
@@ -97,7 +98,7 @@ function bash( args, callback, json ) {
 V.debug - press: $( '#debug' )
 	- all
 	- console.log commands
-	- active pushstream (no disconnect)
+	- active push status (no disconnect)
 V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 	- each
 	- console.log commands only (NOT run)
@@ -123,7 +124,7 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 // debug
 $( '#debug' ).press( function() {
 	V.debug = true;
-	banner( 'gear', 'Debug', 'Console.log + Pushstream', 5000 );
+	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
 	bash( [ 'cmd.sh', 'cachebust' ] );
 } );
 $( '#infoOverlay' ).press( '#infoOk', function() {
@@ -154,7 +155,7 @@ function banner( icon, title, message, delay ) {
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
-	if ( $( '#banner' ).hasClass( 'hide' ) || V.reboot ) return
+	if ( $( '#banner' ).hasClass( 'hide' ) ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -914,14 +915,15 @@ function infoPower() {
 		, button      : () => infoPowerCommand( 'reboot' )
 		, oklabel     : ico( 'power' ) +'Off'
 		, okcolor     : red
-		, ok          : () => infoPowerCommand( 'poweroff' )
+		, ok          : () => infoPowerCommand( 'off' )
 	} );
 }
 function infoPowerCommand( action ) {
+	wsPush( 'power', '{ "type": "'+ action +'" }' );
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
-		var poweroff = action === 'poweroff';
+		var off = action === 'off';
 		info( {
 			  icon    : 'power'
 			, title   : 'Power'
@@ -929,8 +931,8 @@ function infoPowerCommand( action ) {
 						+'<br><wh>Shared Data</wh> on clients will stop.'
 						+'<br>(Resume when server online again)'
 						+'<br><br>Continue?'
-			, oklabel : poweroff ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
-			, okcolor : poweroff ? red : orange
+			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
+			, okcolor : off ? red : orange
 			, ok      : () => {
 				bash( [ 'power.sh', action, 1  ] );
 				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
@@ -1037,86 +1039,8 @@ function local( delay ) {
 	setTimeout( () => V.local = false, delay || 300 );
 }
 
-// pushstream -----------------------------------------------------------------
-if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
-	function psNotify( data ) {
-		var icon    = data.icon;
-		var title   = data.title;
-		var message = data.message;
-		var delay   = data.delay;
-		if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
-			var type  = message.split( ' ' )[ 0 ].toLowerCase();
-			V[ type ] = true;
-			loader();
-		} else if ( ! page ) {
-			if ( message === 'Change track ...' ) { // audiocd
-				clearIntervalAll();
-			} else if ( title === 'Latest' ) {
-				C.latest = 0;
-				$( '#mode-latest gr' ).empty();
-				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-			}
-		}
-		banner( icon, title, message, delay );
-	}
-
-	var pushstream  = new PushStream( {
-		  modes                                 : 'websocket'
-		, reconnectOnChannelUnavailableInterval : 3000
-	} );
-	function pushstreamChannel( channels ) {
-		channels.forEach( channel => pushstream.addChannel( channel ) );
-		pushstream.connect();
-	}
-	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
-		if ( status === 2 ) {        // connected
-			if ( V.reboot ) {
-				if ( S.login ) {
-					location.href = '/';
-					return
-				}
-				
-				delete V.reboot;
-				loaderHide();
-			}
-			refreshData();
-			bannerHide();
-		} else if ( status === 0 ) { // disconnected
-			if ( typeof pushstreamDisconnect === 'function' ) pushstreamDisconnect();
-			if ( V.off ) {
-				pushstream.disconnect();
-				$( '#loader' ).css( 'background', '#000000' );
-				setTimeout( () => {
-					$( '#loader svg' ).css( 'animation', 'none' );
-					bannerHide();
-					loader();
-				}, 10000 );
-			}
-		}
-	}
-	// page visibility -----------------------------------------------------------------
-	var active  = true;  // fix: multiple firings
-	var select2 = false; // fix: closing > blur > disconnect
-	function connect() {
-		if ( active || V.off ) return
-		
-		active = true;
-		pushstream.connect();
-	}
-	function disconnect() {
-		if ( ! active || V.debug ) return
-		
-		active = false;
-		pushstream.disconnect();
-	}
-	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
-	window.onpagehide = disconnect;
-	window.onpageshow = connect;
-	window.onblur     = () => { if ( ! select2 ) disconnect() }
-	window.onfocus    = connect;
-}
-
 // select2 --------------------------------------------------------------------
+var select2 = false; // fix: closing > blur > disconnect
 function selectSet( $select ) {
 	var options = { minimumResultsForSearch: 10 }
 	if ( ! $select ) {
@@ -1152,4 +1076,99 @@ function selectText2Html( pattern ) {
 	} ).on( 'select2:select', function() {
 		htmlSet( $rendered );
 	} );
+}
+
+// page visibility -----------------------------------------------------------------
+function connect() {
+	if ( V.off ) return
+	
+	refreshData();
+	bannerHide();
+	websocketConnect();
+}
+function disconnect() {
+	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
+}
+document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
+window.onpagehide = disconnect;
+window.onpageshow = connect;
+window.onblur     = () => { if ( ! select2 ) disconnect() }
+window.onfocus    = connect;
+
+// websocket
+var ws, wsvolume;
+function volumeSet( vol, type ) {
+	if ( ! type ) volumePush( vol );
+	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
+}
+function volumeSetAt() { // drag / press / updn
+	wsvolume.send( [ 'volumesetat', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+}
+function volumePush( vol, type ) {
+	local();
+	wsPush( 'volume', '{ "type": "'+ ( type || 'push' ) +'", "val": '+ ( vol || S.volume ) +' }' );
+}
+function volumeMuteToggle() {
+	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
+	volumeSet( S.volumemute, 'toggle' );
+}
+function websocketConnect() {
+	if ( ! page || page === 'camilla' ) {
+		if ( ! wsvolume || wsvolume.readyState !== 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
+	}
+	if ( ws && ws.readyState === 1 ) return
+	
+	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
+	ws.onopen    = () => setTimeout( () => ws.send( 'connect' ), 600 );
+	ws.onmessage = message => psOnMessage( message );
+}
+function wsPush( channel, data ) {
+	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
+}
+// push status
+function psNotify( data ) {
+	var icon    = data.icon;
+	var title   = data.title;
+	var message = data.message;
+	var delay   = data.delay;
+	if ( ! page ) {
+		if ( message === 'Change track ...' ) { // audiocd
+			clearIntervalAll();
+		} else if ( title === 'Latest' ) {
+			C.latest = 0;
+			$( '#mode-latest gr' ).empty();
+			if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
+		}
+	}
+	banner( icon, title, message, delay );
+}
+function psPower( data ) {
+	loader();
+	V.off = data.type === 'off';
+	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
+	if ( V.off ) {
+		$( '#loader' ).css( 'background', '#000000' );
+		setTimeout( () => {
+			$( '#loader svg' ).css( 'animation', 'none' );
+			bannerHide();
+		}, 10000 );
+	} else { // reconnect after reboot
+		setTimeout( () => {
+			var interval = setInterval( () => {
+				websocketConnect();
+				setTimeout( () => {
+					if ( ws.readyState === 1 ) {
+						clearTimeout( interval );
+						if ( S.login ) {
+							location.href = '/';
+						} else {
+							refreshData();
+							loaderHide();
+							bannerHide();
+						}
+					}
+				}, 1000 );
+			}, 3000 );
+		}, 20000 );
+	}
 }

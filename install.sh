@@ -4,26 +4,47 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20230828
-[[ -e /boot/kernel.img ]] && rpi0=1
-file=/etc/systemd/system/cmd-websocket.service
-if [[ ! -e $file && ! $rpi0 ]]; then
-	pacman -S --noconfirm --needed python-websockets
+# 20230909
+if [[ -e /usr/bin/chromium && ! -e /usr/bin/firefox ]]; then
+	pacman -Sy --noconfirm firefox
+	systemctl try-restart localbrowser
+fi
+
+#-------------------------------------------------------------------------------
+installstart "$1"
+
+rm -rf /srv/http/assets/{css,js}
+
+getinstallzip
+
+. $dirbash/common.sh
+dirPermissions
+cacheBust
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+
+installfinish
+
+# 20230916
+file=/etc/systemd/system/websocket.service
+if [[ ! -e $file ]]; then
+	systemctl disable --now cmd-websocket &> /dev/null
+	rm /etc/systemd/system/cmd-websocket.service
+	! pacman -Q python-websockets &> /dev/null && pacman -Sy --noconfirm python-websockets
 	echo "\
 [Unit]
-Description=Command websocket server
-After=startup.service
+Description=Websocket server
+Before=startup.service
 
 [Service]
-ExecStart=/srv/http/bash/cmd-websocket.py
+ExecStart=/srv/http/bash/websocket-server.py
 
 [Install]
 WantedBy=multi-user.target" > $file
 	systemctl daemon-reload
-	systemctl enable --now cmd-websocket
+	systemctl enable --now websocket
 fi
 
-if [[ ! -e $dircamilladsp/configs-bt && ! $rpi0 ]]; then
+if [[ -e /usr/bin/camilladsp && ! -e /etc/default/camilladsp ]]; then
 	cat << EOF > /etc/default/camilladsp
 ADDRESS=0.0.0.0
 CONFIG=/srv/http/data/camilladsp/configs/camilladsp.yml
@@ -49,17 +70,3 @@ filtersmin=-10
 mixersmax=10
 mixersmin=-10" > $dirsystem/camilla.conf
 fi
-
-#-------------------------------------------------------------------------------
-installstart "$1"
-
-rm -rf /srv/http/assets/{css,js}
-
-getinstallzip
-
-. $dirbash/common.sh
-dirPermissions
-cacheBust
-[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
-
-installfinish

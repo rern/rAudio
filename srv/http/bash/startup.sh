@@ -107,7 +107,7 @@ if [[ $connected  ]]; then
 		if [[ -s $filesharedip ]]; then
 			sharedip=$( < $filesharedip )
 			for ip in $sharedip; do
-				notify $ip networks 'Server rAudio' Online
+				notify -ip $ip networks 'Server rAudio' Online
 			done
 		fi
 		appendSortUnique $( ipAddress ) $filesharedip

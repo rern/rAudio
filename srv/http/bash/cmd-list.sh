@@ -53,7 +53,7 @@ albumList() {
 
 albumList
 if [[ ! $mpclistall ]]; then # very large database
-	notify -blink refresh-library 'Library Database' 'Increase buffer for large Library ...' 3000
+	notify 'refresh-library blink' 'Library Database' 'Increase buffer for large Library ...' 3000
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
 	for (( i=0; i < 10; i++ )); do # increase buffer
@@ -65,7 +65,7 @@ if [[ ! $mpclistall ]]; then # very large database
 	done
 	
 	if [[ ! $mpclistall ]]; then # too large - get by album list instead
-		notify -blink refresh-library 'Library Database' 'Parse each album for large Library ...' 3000
+		notify 'refresh-library blink' 'Library Database' 'Parse each album for large Library ...' 3000
 		echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
 		readarray -t albums <<< $( mpc list album 2> /dev/null )
@@ -84,7 +84,7 @@ if [[ ! $mpclistall ]]; then # very large database
 				albumlist+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$a" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
 			done
 		else
-			notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
+			notify 'refresh-library blink' 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
 		fi
 	fi
 fi
@@ -148,7 +148,7 @@ updateDone
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )
 	if [[ $nonutf8 ]]; then
 		echo "$nonutf8" > $dirmpd/nonutf8
-		notify -blink library 'Metadata Encoding' 'UTF-8 conversion needed: Player > Non UTF-8 Files'
+		notify 'library blink' 'Metadata Encoding' 'UTF-8 conversion needed: Player > Non UTF-8 Files'
 	else
 		rm -f $dirmpd/nonutf8
 	fi

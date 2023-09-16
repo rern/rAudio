@@ -10,8 +10,6 @@ SW             = {} // switch
 V              = {} // var global
 
 function bannerReset() {
-	if ( V.off || V.reboot ) return
-	
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
 	clearTimeout( I.timeoutbanner );
@@ -20,8 +18,8 @@ function bannerReset() {
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
-	var services   = [ 'bluetooth',      'camilladsp', 'dabradio',   'hostapd',    'localbrowser', 'mpd',     'nfsserver'
-					 , 'shairport-sync', 'smb',        'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
+	var services   = [ 'bluealsa',  'bluetooth',      'camilladsp', 'dabradio',   'hostapd',    'localbrowser', 'mpd'
+					 , 'nfsserver', 'shairport-sync', 'smb',        'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
 	var command = services.includes( id ) ? [ 'settings/pkgstatus.sh', id ] : [ 'status'+ id ];
 	bash( command, status => {
 		clearTimeout( timeoutGet );
@@ -114,6 +112,12 @@ function notifyCommon( message ) {
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
+function playbackButton() {
+	$( '.playback' )
+		.removeClass( 'i-pause i-play' )
+		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
+		.toggleClass( 'disabled', ! S.pllength || ( S.player !== 'mpd' && S.state !== 'play' ) );
+}
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
@@ -168,7 +172,7 @@ function switchSet() {
 	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
 		var $this = $( el );
-		if ( ! $this.prev().hasClass( 'switchlabel' ) ) return // not switch
+		if ( ! $this.prev().find( '.switchlabel' ).length ) return // not switch
 		
 		var sw = el.id.replace( 'setting-', '' );
 		$this.toggleClass( 'hide', ! S[ sw ] );
@@ -181,18 +185,17 @@ function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
 }
 
-// pushstreamChannel() in common.js
-if ( page === 'addons' ) {
-	pushstreamChannel( [ 'notify' ] );
-} else {
-	pushstreamChannel( [ 'bluetooth', 'camilla', 'notify', 'player', 'refresh', 'reload', 'storage', 'volume', 'volumebt', 'wlan' ] );
-}
-pushstream.onmessage = function( data, id, channel ) {
+// push status
+function psOnMessage( message ) {
+	var json    = JSON.parse( message.data );
+	var channel = json.channel;
+	var data    = json.data;
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'camilla':   psCamilla( data );   break;
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
+		case 'power':     psPower( data );     break;
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload( data );    break;
 		case 'storage':   psStorage( data );   break;
@@ -253,38 +256,6 @@ function psStorage( data ) {
 		S.list = data.list;
 		renderStorage();
 	}
-}
-function psVolume( data ) {
-	if ( page !== 'player' || ! I.rangelabel ) return
-	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		V.local = true;
-		var val = data.type !== 'mute' ? data.val : 0;
-		$( '#infoContent' ).removeClass( 'hide' );
-		$( '.confirm' ).addClass( 'hide' );
-		if ( 'db' in data ) {
-			$( '#infoRange .value' ).text( val );
-			$( '#infoRange input' ).val( val );
-			volumeSet( data );
-		} else { // from playback
-			var current = +$( '#infoRange input' ).val();
-			var diff    = Math.abs( current - val );
-			var up      = current < val;
-			var i       = current
-			var interval = setInterval( () => {
-				up ? i++ : i--;
-				$( '#infoRange .value' ).text( i );
-				$( '#infoRange input' ).val( i );
-				if ( i === val ) clearInterval( interval );
-			}, 40 );
-			setTimeout( () => {
-				bash( [ 'volumeget' ], function( data ) {
-					if ( data.db ) volumeSet( data );
-				}, 'json' );
-			}, diff * 50 );
-		}
-	}, 300 );
 }
 function psWlan( data ) {
 	if ( data && 'reboot' in data ) {
@@ -364,19 +335,6 @@ $( document ).on( 'keyup', function( e ) {
 			break;
 	}
 } );
-$( '.container' ).on( 'click', '.status', function( e ) {
-	if ( $( e.target ).is( 'i' ) ) return
-	
-	var $this = $( this );
-	if ( ! $this.hasClass( 'single' ) ) {
-		var id   = $this.data( 'status' );
-		var $code = $( '#code'+ id );
-		$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
-	}
-} );
-$( '.close' ).on( 'click', function() {
-	location.href = '/';
-} );
 $( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return
 	
@@ -389,6 +347,15 @@ $( '#button-data' ).on( 'click', function() {
 	switchSet();
 	renderPage();
 	$( '#button-data, #data' ).addClass( 'hide' );
+} );
+$( '.status .headtitle, .col-l.status' ).on( 'click', function() {
+	var $this = $( this );
+	var id    = $this.hasClass( 'col-l' ) ? $this.data( 'status' ) : $this.parent().data( 'status' );
+	var $code = $( '#code'+ id );
+	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
+} );
+$( '.close' ).on( 'click', function() {
+	location.href = '/';
 } );
 $( '.helphead' ).on( 'click', function() {
 	var $this = $( this );
@@ -411,11 +378,13 @@ $( '.helphead' ).on( 'click', function() {
 	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 	$( '.sub' ).next().toggleClass( 'hide', visible );
 } );
+$( '.playback' ).on( 'click', function( e ) { // for player and camilla
+	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
+} );
 $( '.help' ).on( 'click', function() {
 	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.helpblock:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
-
 $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
 	

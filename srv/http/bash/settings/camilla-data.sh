@@ -1,10 +1,8 @@
 #!/bin/bash
 
+! systemctl -q is-active camilladsp && echo notrunning && exit
+
 . /srv/http/bash/common.sh
-
-data=$( $dirsettings/camilla.py )
-
-[[ ! $data ]] && echo notrunning && exit
 
 aplay=$( aplay -l | grep ^card )
 playback=$( grep -v Loopback <<< $aplay | sed -E -n '/^card/ { s/^card (.): .*device (.): .*/"hw:\1,\2"/; p}' )
@@ -31,20 +29,26 @@ card=${vcc[1]}
 control=${vcc[2]}
 [[ -e $dirsystem/volumemute ]] && volumemute=$( < $dirsystem/volumemute ) || volumemute=0
 	
-data=${data:1:-1}
-data+='
-, "bluetooth" : '$bluetooth'
-, "card"      : '$card'
-, "clipped"   : '$( cat $dirshm/clipped 2> /dev/null || echo 0 )'
-, "control"   : "'$control'"
-, "devices"   : {
+data='
+  "page"       : "camilla"
+, "bluetooth"  : '$bluetooth'
+, "card"       : '$card'
+, "clipped"    : '$( cat $dirshm/clipped 2> /dev/null || echo 0 )'
+, "control"    : "'$control'"
+, "devices"    : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
 }
-, "player"    : "'$( < $dirshm/player )'"
-, "range"     : '$( conf2json camilla.conf )'
-, "state"     : "'$( getVar state $dirshm/status )'"
-, "volume"    : '$volume'
-, "volumemute"   : '$volumemute
+, "player"     : "'$( < $dirshm/player )'"
+, "pllength"   : '$( mpc status %length% )'
+, "range"      : '$( conf2json camilla.conf )'
+, "state"      : "'$( getVar state $dirshm/status )'"
+, "volume"     : '$volume'
+, "volumemute" : '$volumemute
+
+for dir in coeffs configs configs-bt; do
+	data+='
+, "ls'$dir'" : [ '$( ls -1 $dircamilladsp/$dir | tr '\n' ^ | sed 's/\^$/"/; s/^/"/; s/\^/", "/g' )' ]'
+done
 
 data2json "$data" $1

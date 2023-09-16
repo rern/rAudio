@@ -173,6 +173,8 @@ input[ type=range ] {
 	font-size: 24px;
 	text-align: center;
 	color: var( --cg60 );
+	-webkit-user-select: none;
+	user-select: none;
 }
 #divvolume .col-l {
 	padding-top: 6px;
@@ -251,12 +253,13 @@ i.disabled,
 	background: var( --cgl );
 }
 .db,
-#gain {
+#volume-text {
 	display: inline-block;
 	width: 45px;
 	line-height: 16px;
-	color: var( --cw );
 	text-align: center;
+	color: var( --cw );
+	background-color: var( --cga );
 }
 #mixers .db {
 	margin: 0 0 0 10px;
@@ -369,8 +372,11 @@ i.disabled,
 }
 .clipped::after {
 	content: "\f515";
-	bottom: 0;
+	line-height: 22px;
 	color: var( --cg60 );
+}
+#divconfiguration {
+	margin-top: 20px;
 }
 .helpmenu {
 	border-bottom: 1px solid var( --cga );

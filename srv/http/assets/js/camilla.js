@@ -8,7 +8,7 @@ V            = {
 	, sortable   : {}
 	, tab        : 'filters'
 }
-var ws, wsvolume;
+var wscamilla;
 var format   = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
 	var key       = k
@@ -308,8 +308,30 @@ var axes     = {
 function renderPage() { // common from settings.js
 	render.page();
 }
-function pushstreamDisconnect() { // from common.js
-	if ( ws ) ws.close();
+function psOnClose() {
+	if ( V.off ) return
+	
+	clearInterval( V.intervalvu );
+	if ( wscamilla ) wscamilla.close();
+}
+function psVolume( data ) {
+	var vol = data.val;
+	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
+		V.local = false;
+		if ( data.type === 'mute' ) {
+			vol          = 0;
+			S.volumemute = data.val;
+		} else {
+			S.volumemute = 0;
+		}
+	}
+	if ( ! V.local ) {
+		if ( data.type === 'dragpress' ) {
+			V.dragpress = true;
+			setTimeout( () => V.dragpress = false, 300 );
+		}
+		util.volume( vol, 'push' );
+	}
 }
 
 var graph    = {
@@ -360,7 +382,8 @@ var graph    = {
 			} );
 		}
 		notify( tab, util.key2label( tab ), 'Plot ...' );
-		bash( [ 'settings/camilla.py', tab +' "'+ val +'"' ], data => { // groupdelay = delay, magnitude = gain
+		var cmd = filters ? " '"+ JSON.stringify( FIL[ val ] ) +"'" : " '"+ JSON.stringify( S.config ) +"' "+ val;
+		bash( [ 'settings/camilla.py', tab + cmd ], data => { // groupdelay = delay, magnitude = gain
 			var impulse   = 'impulse' in data;
 			if ( filterdelay ) {
 				plots.magnitude.y   = 0;
@@ -456,10 +479,13 @@ var graph    = {
 		V.graphlist = {}
 	}
 	, gain     : () => {
-		var $divgraph = V.li.find( '.divgraph' );
+		var $divgraph = $( '.divgraph' );
 		if ( ! $divgraph.length ) return
 		
-		$divgraph.hasClass( 'hide' ) ? $divgraph.remove() : graph.plot();
+		$divgraph.each( ( i, el ) => {
+			var $this = $( el );
+			$this.hasClass( 'hide' ) ? $this.remove() : graph.plot( $this.parent() );
+		} );
 	}
 	, toggle   : () => {
 		var $divgraph = V.li.find( '.divgraph' );
@@ -483,31 +509,15 @@ var graph    = {
 }
 var render   = {
 	  page        : () => {
-		DEV = S.config.devices;
-		FIL = S.config.filters;
-		MIX = S.config.mixers;
-		PIP = S.config.pipeline;
-		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
+		if ( ! wscamilla ) util.webSocket();
+		if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
 		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
-		showContent();
-		render.status();
-		render.tab();
-		[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
-		[ 'capture', 'playback' ].forEach( k => {
-			S.devices[ k ].forEach( d => {
-				var v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
-				C.devices[ k ][ v ] = d;
-			} );
-			S.devicetype[ k ].forEach( t => {
-				var v = render.typeReplace( t );
-				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
-			} );
-		} );
 		S.lscoefraw = [];
 		S.lscoefwav = [];
-		S.lscoef.forEach( f => {
+		S.lscoeffs.forEach( f => {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
+		$( '.container' ).removeClass( 'hide' );
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
@@ -547,7 +557,6 @@ var render   = {
 		}
 	}
 	, status      : () => {
-		if ( ! ws ) util.webSocket();
 		V.statusget   = [ 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
@@ -579,10 +588,8 @@ var render   = {
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
-		$( '.playback' )
-			.removeClass( 'i-pause i-play' )
-			.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
-			.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
+		if ( ! ( 'status' in S ) ) S.status = { GetState: blinkdot }
+		playbackButton();
 		var label  = 'Buffer · Sampling';
 		var status = S.status.GetState;
 		if ( [ 'Running', 'Starting' ].includes( status ) ) {
@@ -604,20 +611,20 @@ var render   = {
 		$( '#divstate .value' ).html( status );
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#gain' ).text( S.volume );
 			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
-			$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute !== 0 );
+			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
 		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
 		$( '#configuration' )
-			.html( htmlOption( S.lsconf ) )
+			.html( htmlOption( S.lsconfigs ) )
 			.val( S.configname );
+		$( '#configuration' ).prop( 'disabled', $( '#configuration option' ).length === 1 );
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
-		V.intervalvu = setInterval( () => C.signal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
+		V.intervalvu = setInterval( () => C.signal.forEach( k => wscamilla.send( '"'+ k +'"' ) ), 100 );
 	}
 	, vuClear() {
 		if ( ! ( 'intervalvu' in V ) ) return
@@ -626,6 +633,12 @@ var render   = {
 		delete V.intervalvu;
 		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 		$( '.rms' ).css( 'width', 0 );
+	}
+	, volume      : () => {
+		$( '#volume-text' )
+			.text( S.volumemute || S.volume )
+			.toggleClass( 'bl', S.volumemute > 0 );
+		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		graph.list();
@@ -655,7 +668,7 @@ var render   = {
 	}
 	, filtersSub  : ( k ) => {
 		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
-		if ( S.lscoef.length ) S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
+		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		render.toggle( li, 'sub' );
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
@@ -800,7 +813,7 @@ var render   = {
 	} //---------------------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
-		S.lsconf.forEach( f => {
+		S.lsconfigs.forEach( f => {
 			li += '<li>'+ ico( 'file liicon edit' ) +f +'</li>';
 		} );
 		$( '#config .entries.main' ).html( li );
@@ -1190,7 +1203,7 @@ var setting  = {
 					var s = jsonClone( C.devices[ dev ] );
 					var v = { device: data.device };
 				} else if ( key === 'filename' ) {
-					var s   = S.lscoef.length ? S.lscoef : [ '(n/a)' ];
+					var s   = S.lscoef.length ? S.lscoeffs : [ '(n/a)' ];
 					var v   = { filename: data.filename };
 				}
 				selectlabel = [ ...selectlabel, key ];
@@ -1387,15 +1400,15 @@ var setting  = {
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
-			ws.send( '{ "SetConfigJson": "'+ config +'" }' );
-			ws.send( '"Reload"' );
-		}, ws ? 0 : 300 );
-		if ( ! ws ) util.webSocket(); // websocket migth be closed by setting.filter()
+			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
+			wscamilla.send( '"Reload"' );
+		}, wscamilla ? 0 : 300 );
+		if ( ! wscamilla ) util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
 	, set           : () => {
-		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
-		ws.send( '"Reload"' );
+		wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
+		wscamilla.send( '"Reload"' );
 		bash( [ 'confswitch', name, 'CMD NAME' ] );
 	}
 	, upload        : () => {
@@ -1415,7 +1428,7 @@ var setting  = {
 			, fileoklabel : ico( 'file' ) +'Upload'
 			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml'
 			, cancel      : () => {
-				if ( ! ws ) util.webSocket();
+				if ( ! wscamilla ) util.webSocket();
 			}
 			, ok          : () => {
 				notify( V.tab, title, 'Upload ...' );
@@ -1431,7 +1444,7 @@ var setting  = {
 							infoWarning(  V.tab,  title, message );
 						}
 					} );
-				if ( ! ws ) util.webSocket();
+				if ( ! wscamilla ) util.webSocket();
 			}
 		} );
 	}
@@ -1508,7 +1521,10 @@ var util     = {
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
-	, volume       : ( pageX ) => {
+	, save2file    : () => {
+		bash( [ 'settings/camilla.py' ] );
+	}
+	, volume       : ( pageX, type ) => {
 		var bandW   = $( '#volume .slide' ).width();
 		if ( V.start ) {
 			var posX = pageX - $( '#volume .slide' ).offset().left;
@@ -1518,56 +1534,85 @@ var util     = {
 			var vol  = pageX;
 			var posX = bandW * vol / 100;
 		}
-		var current = V.drag ? 'drag' : S.volume;
 		if ( V.drag ) {
 			S.volume = vol;
 			util.volumeThumb();
-			util.volumeDrag();
+			volumeSetAt();
 		} else {
+			var diff = V.dragpress ? 3 : Math.abs( vol - S.volume );
+			$( '#volume,  #divvolume .divgain i' ).addClass( 'disabled' );
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
 				, {
-					  duration : Math.abs( vol - S.volume ) * 40
+					  duration : diff * 40
 					, easing   : 'linear'
+					, complete : () => $( '#volume,  #divvolume .divgain i' ).removeClass( 'disabled' )
 				}
 			);
-			bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 			S.volume = vol;
+			if ( ! type ) { // not from push
+				volumePush( vol );
+				volumeSetAt();
+			}
 		}
-		$( '#gain' ).text( S.volume );
-	}
-	, volumeDrag   : () => {
-		var cmd = [ 'volumedrag', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' );
-		if ( wsvolume ) {
-			wsvolume.send( cmd );
-		} else {
-			wsvolume         = new WebSocket( 'ws://'+ window.location.host +':8080' );
-			wsvolume.onclose = () => wsvolume = null;
-			wsvolume.onopen  = () => wsvolume.send( cmd );
-		}
+		render.volume();
 	}
 	,volumeThumb   : () => {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 	}
 	, webSocket    : () => {
-		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
-		ws.onopen    = () => {
+		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
+		wscamilla.onopen    = () => {
+			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
+			S.status         = { GetState: '&emsp;'+ blinkdot }
 			V.intervalstatus = setInterval( () => {
-				if ( ! V.local ) V.statusget.forEach( k => ws.send( '"'+ k +'"' ) )
+				if ( ! V.local ) V.statusget.forEach( k => wscamilla.send( '"'+ k +'"' ) )
 			}, 1000 );
 		}
-		ws.onclose   = () => {
-			ws = null;
+		wscamilla.onclose   = () => {
+			wscamilla = null;
 			render.vuClear();
 			clearInterval( V.intervalstatus );
-			bash( [ 'save' ] );
+			util.save2file();
+			$( '#divstate .value' ).html( '&emsp;·&ensp;·&ensp;·' );
 		}
-		ws.onmessage = response => {
+		wscamilla.onmessage = response => {
 			var data  = JSON.parse( response.data );
 			var cmd   = Object.keys( data )[ 0 ];
 			var value = data[ cmd ].value;
-			var cl, cp, css;
+			var cl, cp, css, v;
 			switch ( cmd ) {
+				case 'GetConfigName':
+					S.configname = value.split( '/' ).pop();
+					break;
+				case 'GetConfigJson':
+					S.config = JSON.parse( value );
+					DEV = S.config.devices;
+					FIL = S.config.filters;
+					MIX = S.config.mixers;
+					PIP = S.config.pipeline;
+					[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
+					break;
+				case 'GetSupportedDeviceTypes':
+					S.devicetype = { 
+						  capture  : value[ 1 ].sort()
+						, playback : value[ 0 ].sort()
+					};
+					[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
+					[ 'capture', 'playback' ].forEach( k => {
+						S.devices[ k ].forEach( d => {
+							v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
+							C.devices[ k ][ v ] = d;
+						} );
+						S.devicetype[ k ].forEach( t => {
+							v = render.typeReplace( t );
+							C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+						} );
+					} );
+					showContent();
+					render.status();
+					render.tab();
+					break;
 				case 'GetCaptureSignalPeak':
 				case 'GetCaptureSignalRms':
 				case 'GetPlaybackSignalPeak':
@@ -1591,6 +1636,8 @@ var util     = {
 					} );
 					break;
 				case 'GetClippedSamples':
+					if ( ! ( 'status' in S ) ) return
+					
 					if ( V.clipped ) {
 						S.status.GetClippedSamples = value;
 						break;
@@ -1620,6 +1667,7 @@ var util     = {
 				case 'GetCaptureRate':
 				case 'GetBufferLevel':
 				case 'GetRateAdjust':
+					if ( ! ( 'status' in S ) ) S.status = { GetState: blinkdot }
 					if ( cmd === 'GetState' ) {
 						if ( value !== 'Running' ) {
 							render.vuClear();
@@ -1654,56 +1702,11 @@ var util     = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '.close' ).on( 'click', function() {
-	bash( [ 'save' ] );
+	util.save2file();
 } );
 $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
-} )
-$( '.playback' ).on( 'click', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) return
-	
-	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
-} );
-$( '#divvolume' ).on( 'click', '.divgain i', function() {
-	var $this  = $( this );
-	if ( $this.hasClass( 'i-volume' ) ) {
-		if ( S.volumemute === 0 ) {
-			var mute     = true;
-			S.volumemute = S.volume;
-			var vol      = 0;
-		} else {
-			var mute     = false;
-			var vol      = S.volumemute;
-			S.volumemute = 0;
-		}
-		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', mute );
-		util.volume( vol );
-		return
-	}
-	
-	if ( $this.hasClass( 'i-minus' ) ) {
-		if ( S.volume === 0 ) return
-		
-		var vol = S.volume - 1;
-	} else if ( $this.hasClass( 'i-plus' ) ) {
-		if ( S.volume === 100 ) return
-		
-		var vol = S.volume + 1;
-	}
-	bash( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
-	S.volume = vol;
-	util.volumeThumb();
-} ).on( 'touchend mouseup', function() {
-	clearInterval( V.intervalvolume );
-} ).press( '.divgain i', function( e ) {
-	var up           = $( e.currentTarget ).hasClass( 'i-plus' );
-	V.intervalvolume = setInterval( () => {
-		up ? S.volume++ : S.volume--;
-		util.volumeDrag();
-		util.volumeThumb();
-		$( '#gain' ).text( S.volume );
-	}, 100 );
 } );
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	V.start = true;
@@ -1712,24 +1715,58 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	
 	V.drag = true;
 	util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
-} ).on( 'touchend mouseup mouseleave', function( e ) {
+} ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.start ) return
 	
-	if ( ! V.drag ) util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
-	V.start = V.drag = false;
+	V.drag ? volumePush() : util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.start = false;
+	setTimeout( () => V.drag = false, 1000 );
+} ).on( 'mouseleave', function() {
+	if ( V.start ) $( '#volume' ).trigger( 'mouseup' );
+} );
+$( '#voldn, #volup' ).on( 'click', function() {
+	if ( S.volume === 0 || S.volume === 100 ) return
+	
+	this.id === 'volup' ? S.volume++ : S.volume--;
+	volumePush( S.volume );
+	volumeSetAt();
+	$( '#volume-text' ).text( S.volume );
+} ).on( 'touchend mouseup', function() {
+	clearInterval( V.intervalvolume );
+	volumePush();
+} ).on( 'mouseleave', function() {
+	if ( V.press ) $( '#voldn' ).trigger( 'mouseup' );
+} ).press( function( e ) {
+	var up           = e.target.id === 'volup';
+	V.intervalvolume = setInterval( () => {
+		up ? S.volume++ : S.volume--;
+		volumeSetAt();
+		util.volumeThumb();
+		$( '#volume-text' ).text( S.volume );
+		if ( S.volume === 0 || S.volume === 100 ) {
+			clearInterval( V.intervalvolume );
+			volumePush();
+		}
+	}, 100 );
+} );
+$( '#volmute' ).on( 'click', function() {
+	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
+	volumeSet( S.volumemute, 'toggle' );
 } );
 $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	var $this = $( this );
 	if ( $this.parent().hasClass( 'disabled' ) ) return
 	
 	clearTimeout( V.timeoutgain );
-	var $gain  = $this.parent().prev();
-	var $db    = $gain.prev();
-	var val    = +$gain.val();
+	var $gain = $this.parent().prev();
+	var $db   = $gain.prev();
+	var val   = +$gain.val();
+	var set0  = false;
 	if ( $this.hasClass( 'i-set0' ) ) {
 		if ( val === 0 ) return
 		
-		val = 0;
+		val  = 0;
+		set0 = true;
 	} else if ( $this.hasClass( 'i-minus' ) ) {
 		if ( val === $gain.prop( 'min' ) ) return
 		
@@ -1743,7 +1780,10 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 		.val( val )
 		.trigger( 'input' );
 	if ( V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
-} ).on( 'touchend mouseup', function() {
+	if ( V.tab === 'filters' ) {
+		
+	}
+} ).on( 'touchend mouseup mouseleave', function() {
 	clearInterval( V.intervalgain );
 } ).press( '.divgain i', function( e ) {
 	var $this = $( e.currentTarget );
@@ -1844,7 +1884,6 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	} );
 } );
 $( '.entries' ).on( 'click', '.liicon', function() {
-	console.log(9)
 	var $this  = $( this );
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
@@ -2014,15 +2053,21 @@ $( '#menu a' ).on( 'click', function( e ) {
 				case 'edit':
 					var file = V.li.text();
 					info( {
-						  icon        : V.tab
-						, title       : 'Config'
-						, message     : 'File: <wh>'+ file +'</wh>'
-						, textlabel   : 'Name'
-						, radio       : [ 'Rename', 'Copy' ]
-						, radiocolumn : true
-						, values      : [ file, 'Rename' ]
-						, beforeshow  : () => $( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 )
-						, ok          : () => {
+						  icon         : V.tab
+						, title        : 'Config'
+						, message      : 'File: <wh>'+ file +'</wh>'
+						, textlabel    : 'Name'
+						, radio        : [ 'Rename', 'Copy' ]
+						, radiocolumn  : true
+						, values       : [ file, 'Rename' ]
+						, beforeshow   : () => {
+							$( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 );
+							$( '#infoOk' ).addClass( 'disabled' );
+							$( '#infoContent input:text' ).on( 'keyup paste cut', function() {
+								$( '#infoOk' ).toggleClass( 'disabled', file === $( '#infoContent input:text' ).val() );
+							} );
+						}
+						, ok           : () => {
 							var val     = infoVal();
 							var newname = val[ 0 ];
 							var copy    = val[ 1 ] === 'Copy';
@@ -2030,7 +2075,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 								if ( ! copy && name === S.configname ) setting.set( newname );
 							} );
 							notify( icon, SW.title, copy ? 'Copy ...' : 'Rename ...' );
-							copy ? S.lsconf.push( newname ) : S.lsconf[ S.lsconf.indexOf( name ) ] = newname;
+							copy ? S.lsconfigs.push( newname ) : S.lsconfigs[ S.lsconfigs.indexOf( name ) ] = newname;
 							render.status();
 						}
 					} );
@@ -2044,7 +2089,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
-							S.lsconf.slice( S.lsconf.indexOf( file ), 1 );
+							S.lsconfigs.slice( S.lsconfigs.indexOf( file ), 1 );
 							bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
 							banner( icon, SW.title, 'Delete ...' );
 							render.status();

@@ -5,10 +5,7 @@
 mpc idleloop | while read changed; do
 	case $changed in
 		mixer ) # for upmpdcli
-			if [[ $( < $dirshm/player ) == upnp ]]; then
-				volumePushReset
-				volumePushSet
-			fi
+			[[ $( < $dirshm/player ) == upnp ]] && volumePushSet
 			;;
 		playlist )
 			if [[ $( mpc status %consume% ) == on ]]; then

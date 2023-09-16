@@ -526,7 +526,7 @@ mpcplayback )
 	if [[ $ACTION == play ]]; then
 		[[ $( mpc status %state% ) == paused ]] && pause=1
 		mpc -q $ACTION $POS
-		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify -blink audiocd 'Audio CD' 'Start play ...'
+		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify 'audiocd blink' 'Audio CD' 'Start play ...'
 	else
 		mpc -q $ACTION
 		killProcess cava
@@ -568,7 +568,7 @@ mpcprevnext )
 	fi
 	if [[ $playing ]]; then
 		mpc -q play
-		[[ $( mpc | head -c 4 ) == cdda ]] && notify -blink audiocd 'Audio CD' 'Change track ...'
+		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
@@ -769,33 +769,21 @@ splashrotate )
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
-volumedrag )
-	volumeSetAt $TARGET "$CONTROL" $CARD
-	;;
-volume ) # no TARGET = toggle mute / unmute
+volume )
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )
 	filevolumemute=$dirsystem/volumemute
-	if [[ $TARGET > 0 ]]; then      # set
+	if (( $TARGET > 0 )); then
 		rm -f $filevolumemute
-		pushstreamVolume set $TARGET
 	else
-		if (( $CURRENT > 0 )); then # mute
-			TARGET=0
-			echo $CURRENT > $filevolumemute
-			pushstreamVolume mute $CURRENT
-		else                        # unmute
-			TARGET=$( < $filevolumemute )
-			rm -f $filevolumemute
-			pushstreamVolume unmute $TARGET
-		fi
+		(( $CURRENT > 0 )) && echo $CURRENT > $filevolumemute || rm -f $filevolumemute
 	fi
 	volumeSet $CURRENT $TARGET "$CONTROL" $CARD
 	;;
 volumeget )
 	volumeGet value
 	;;
-volumepushstream )
-	volumeGet push
+volumesetat )
+	volumeSetAt $TARGET "$CONTROL" $CARD
 	;;
 volumeupdn )
 	volumeUpDn 1%$UPDN "$CONTROL" $CARD
