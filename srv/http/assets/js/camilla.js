@@ -1580,7 +1580,7 @@ var util     = {
 			var data  = JSON.parse( response.data );
 			var cmd   = Object.keys( data )[ 0 ];
 			var value = data[ cmd ].value;
-			var cl, cp, css;
+			var cl, cp, css, v;
 			switch ( cmd ) {
 				case 'GetConfigName':
 					S.configname = value.split( '/' ).pop();
@@ -1601,11 +1601,11 @@ var util     = {
 					[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
 					[ 'capture', 'playback' ].forEach( k => {
 						S.devices[ k ].forEach( d => {
-							var v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
+							v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
 							C.devices[ k ][ v ] = d;
 						} );
 						S.devicetype[ k ].forEach( t => {
-							var v = render.typeReplace( t );
+							v = render.typeReplace( t );
 							C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
