@@ -1865,6 +1865,7 @@ function setTrackCoverart() {
 }
 function setVolume() {
 	$volumeRS.setValue( S.volume );
+	if ( ! S.volume ) $volumehandle.rsRotate( -310 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
 		.text( S.volumemute || S.volume )
@@ -2006,9 +2007,7 @@ function volumeColorMute() {
 	$volumetooltip
 		.text( S.volumemute )
 		.addClass( 'bl' );
-	$volumehandle
-		.addClass( 'bgr60' )
-		.rsRotate( 0 ? -this._handle1.angle : -310 );
+	$volumehandle.addClass( 'bgr60' );
 	$( '#volmute' ).addClass( 'mute active' );
 	if ( $volume.is( ':hidden' ) ) {
 		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
