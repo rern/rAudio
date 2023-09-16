@@ -24,7 +24,7 @@ cacheBust
 
 installfinish
 
-# 20230909
+# 20230916
 file=/etc/systemd/system/websocket.service
 if [[ ! -e $file ]]; then
 	systemctl disable --now cmd-websocket &> /dev/null
