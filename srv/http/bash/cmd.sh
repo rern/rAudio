@@ -127,6 +127,7 @@ urldecode() { # for webradio url to filename
 	echo -e "${_//%/\\x}"
 }
 volumeSet() {
+	touch $dirshm/volumeset
 	local card control current diff target values
 	current=$1
 	target=$2
@@ -144,6 +145,7 @@ volumeSet() {
 			sleep 0.2
 		done
 	fi
+	rm $dirshm/volumeset
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 volumeSetAt() {
