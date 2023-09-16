@@ -607,6 +607,7 @@ $( '#volume' ).roundSlider( {
 	, endAngle          : 230
 	, editableTooltip   : false
 	, animation         : false
+	, value             : 50
 	, create            : function () {
 		V.create       = true;
 		$volumeRS      = this;

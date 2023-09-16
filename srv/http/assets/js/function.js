@@ -2022,7 +2022,7 @@ function volumeColorUnmute() {
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeUpDown( up ) {
-	if ( S.volume === 0 || S.volume === 100 ) return
+	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
 	volumePush( S.volume );

@@ -1725,9 +1725,10 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	if ( V.start ) $( '#volume' ).trigger( 'mouseup' );
 } );
 $( '#voldn, #volup' ).on( 'click', function() {
-	if ( S.volume === 0 || S.volume === 100 ) return
+	var up = this.id === 'volup';
+	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
-	this.id === 'volup' ? S.volume++ : S.volume--;
+	up ? S.volume++ : S.volume--;
 	volumePush( S.volume );
 	volumeSetAt();
 	$( '#volume-text' ).text( S.volume );
