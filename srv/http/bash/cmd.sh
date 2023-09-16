@@ -127,7 +127,6 @@ urldecode() { # for webradio url to filename
 	echo -e "${_//%/\\x}"
 }
 volumeSet() {
-	touch $dirshm/volumeset
 	local card control current diff target values
 	current=$1
 	target=$2
@@ -137,6 +136,7 @@ volumeSet() {
 	if (( ${diff#-} < 5 )); then
 		volumeSetAt $target "$control" $card
 	else # increment
+		echo $target > $dirshm/volumeset
 		(( $diff > 0 )) && incr=5 || incr=-5
 		values=( $( seq $(( current + incr )) $incr $target ) )
 		(( $diff % 5 )) && values+=( $target )
@@ -144,9 +144,9 @@ volumeSet() {
 			volumeSetAt $i "$control" $card
 			sleep 0.2
 		done
+		rm $dirshm/volumeset
 	fi
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
-	rm $dirshm/volumeset
 }
 volumeSetAt() {
 	local card control target

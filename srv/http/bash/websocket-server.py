@@ -13,9 +13,9 @@ async def cmd( websocket, path ):
         elif args == 'connect':
             if websocket not in CLIENTS:
                 CLIENTS.add( websocket )
-#        elif args == 'disconnect':
-#            if websocket in CLIENTS:
-#                CLIENTS.remove( websocket )
+        elif args == 'disconnect':
+            if websocket in CLIENTS:
+                CLIENTS.remove( websocket )
         else:
             websockets.broadcast( CLIENTS, args )
 
