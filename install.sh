@@ -44,7 +44,7 @@ WantedBy=multi-user.target" > $file
 	systemctl enable --now websocket
 fi
 
-if [[ ! -e /etc/default/camilladsp ]]; then
+if [[ -e /usr/bin/camilladsp && ! -e /etc/default/camilladsp ]]; then
 	cat << EOF > /etc/default/camilladsp
 ADDRESS=0.0.0.0
 CONFIG=/srv/http/data/camilladsp/configs/camilladsp.yml
