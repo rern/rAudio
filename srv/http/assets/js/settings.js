@@ -186,6 +186,9 @@ function SWreset() {
 }
 
 // push status
+function psOnClose() {
+	if ( ws ) ws.send( 'disconnect' );
+}
 function psOnMessage( message ) {
 	var json    = JSON.parse( message.data );
 	var channel = json.channel;
