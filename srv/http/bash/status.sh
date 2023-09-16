@@ -83,11 +83,11 @@ else
 , "updateaddons" : '$( exists $diraddons/update )'
 , "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
-, "volumemute"   : '$volumemute'
 , "webradio"     : false'
 fi
 [[ ! -e $dirshm/volumeset ]] && status+='
-, "volume"       : '$volume
+, "volume"       : '$volume'
+, "volumemute"   : '$volumemute
 [[ $display ]] && status+='
 , "display"      : '$display
 

@@ -145,8 +145,8 @@ volumeSet() {
 			sleep 0.2
 		done
 	fi
-	rm $dirshm/volumeset
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
+	rm $dirshm/volumeset
 }
 volumeSetAt() {
 	local card control target
