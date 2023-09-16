@@ -29,7 +29,7 @@ file=/etc/systemd/system/websocket.service
 if [[ ! -e $file ]]; then
 	systemctl disable --now cmd-websocket &> /dev/null
 	rm /etc/systemd/system/cmd-websocket.service
-	pacman -Sy --noconfirm --needed python-websockets
+	! pacman -Q python-websockets &> /dev/null && pacman -Sy --noconfirm python-websockets
 	echo "\
 [Unit]
 Description=Websocket server
