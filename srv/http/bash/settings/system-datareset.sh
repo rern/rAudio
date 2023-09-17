@@ -132,7 +132,16 @@ mixersmin=-10" > $dirsystem/camilla.conf
 fi
 
 # localbrowser
-[[ -e /usr/bin/firefox ]] && rm -rf /root/.mozilla
+if [[ -e /usr/bin/firefox ]]; then
+	rm -rf /root/.mozilla
+	echo "\
+rotate=0
+zoom=100
+screenoff=0
+onwhileplay=
+hdmi=
+cursor=" > $dirsystem/localbrowser.conf
+fi
 
 # mirror
 sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist

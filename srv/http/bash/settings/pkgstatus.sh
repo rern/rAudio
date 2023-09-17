@@ -37,12 +37,8 @@ $( < /etc/dnsmasq.conf )"
 		;;
 	localbrowser )
 		fileconf=$dirsystem/localbrowser.conf
-		if [[ -e /usr/bin/firefox ]]; then
-			PKG=firefox
-		else
-			PKG=chromium
-			skip+='|Could not resolve keysym|ERROR:chrome_browser_main_extra_parts_metrics'
-		fi
+		PKG=firefox
+		skip+='|FATAL: Module g2d_23 not found'
 		;;
 	mpd )
 		conf=$( grep -v ^i $mpdconf )
