@@ -343,7 +343,7 @@ volumeCardControl() {
 			card=$( getContent $dirsystem/asoundcard )
 			control=$( getContent $dirshm/amixercontrol )
 		fi
-		volume=$( volumeGet value )
+		[[ -e $dirshm/volumeset ]] && volume=$( < $dirshm/volumeset ) || volume=$( volumeGet value )
 	fi
 	echo "\
 $volume

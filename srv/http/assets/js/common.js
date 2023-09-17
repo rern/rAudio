@@ -1082,9 +1082,9 @@ function selectText2Html( pattern ) {
 function connect() {
 	if ( V.off ) return
 	
-	refreshData();
+	ws ? ws.send( 'connect' ) : websocketConnect();
 	bannerHide();
-	websocketConnect();
+	setTimeout( refreshData, page ? 300 : 0 );
 }
 function disconnect() {
 	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
