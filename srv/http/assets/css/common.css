@@ -153,6 +153,7 @@ i {
 .i-play-power::before      { content: '\F53A' }
 .i-play-replace::before    { content: '\F533' }
 .i-plus::before            { content: '\F519' }
+.i-plus-circle::before     { content: '\F564' }
 .i-plus-o::before          { content: '\F530' }
 .i-power::before           { content: '\F520' }
 .i-powerbutton::before     { content: '\F520' }

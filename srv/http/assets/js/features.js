@@ -156,7 +156,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 	</td><td></td></tr>
 <tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
-	<td>&nbsp;<gr>%</gr>${ ico( 'remove btnicon dn' ) + ico( 'add btnicon up' ) }</td></tr>
+	<td>&nbsp;<gr>%</gr>&emsp;${ ico( 'remove btnicon dn' ) }&emsp;${ ico( 'plus-circle btnicon up' ) }</td></tr>
 <tr><td>Screen off</td>
 	<td><select id="screenoff">
 		<option value="0">Disable</option>
