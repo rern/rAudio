@@ -319,7 +319,7 @@ $( '#setting-wlan' ).on( 'click', function() {
 		} );
 	}, 'json' );
 } );
-$( '#i2smodulesw' ).on( 'click', function() {
+$( '#divi2smodulesw' ).on( 'click', function() {
 	setTimeout( i2sOptionSet, 0 );
 } );
 $( '#i2smodule' ).on( 'change', function() {
