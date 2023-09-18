@@ -173,7 +173,7 @@ getVar(){
 	stringEscape $line
 }
 internetConnected() {
-	ipOnline 8.8.8.8
+	ping -c 1 -w 1 8.8.8.8 &> /dev/null && return 0
 }
 ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}' | head -1
