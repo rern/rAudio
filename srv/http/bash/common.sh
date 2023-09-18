@@ -248,7 +248,7 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushstream() {
-	local channel ip json path sharedip updatedone webradiocopy
+	local channel data ip json path sharedip updatedone webradiocopy
 	channel=$1
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
