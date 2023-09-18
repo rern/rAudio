@@ -15,6 +15,8 @@ if [[ -e $diraddons ]]; then
 	sed -i -E -e 's/^(ssid=).*/\1rAudio/
 ' -e 's/(wpa_passphrase=).*/\1raudioap/
 ' /etc/hostapd/hostapd.conf &> /dev/null
+# localbrowser
+[[ -e /usr/bin/firefox ]] && rm -rf /root/.mozilla
 # mpd
 	mpc -q crossfade 0
 	find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
@@ -133,7 +135,7 @@ fi
 
 # localbrowser
 if [[ -e /usr/bin/firefox ]]; then
-	rm -rf /root/.mozilla
+	timeout 1 firefox --headless &> /dev/null
 	echo "\
 rotate=0
 zoom=100

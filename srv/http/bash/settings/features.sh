@@ -16,7 +16,6 @@ localbrowserDisable() {
 	systemctl enable --now getty@tty1
 	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
 	rm -f $dirsystem/onwhileplay
-	rm -rf /root/.mozilla
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 }
 localbrowserXset() {
