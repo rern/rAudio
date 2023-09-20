@@ -533,7 +533,7 @@ function displayPlayback() {
 }
 function displaySave() {
 	var values  = infoVal();
-	[ 'libmain', 'liboption', 'playback' ].forEach( chk => {
+	[ 'libmain', 'liboption', 'playback', 'playlist' ].forEach( chk => {
 		$.each( chkdisplay[ chk ], ( k, v ) => {
 			if ( ! ( k in values ) && k !== '-' ) values[ k ] = D[ k ];
 		} );

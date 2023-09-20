@@ -1082,7 +1082,11 @@ function selectText2Html( pattern ) {
 function connect() {
 	if ( V.off ) return
 	
-	ws ? ws.send( 'connect' ) : websocketConnect();
+	if ( ws ) {
+		ws.readyState === 1 ? ws.send( 'connect' ) : websocketConnect();
+	} else {
+		websocketConnect();
+	}
 	bannerHide();
 	setTimeout( refreshData, page ? 300 : 0 );
 }

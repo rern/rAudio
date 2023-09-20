@@ -4,6 +4,16 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20230920
+file=$dirsystem/display.json
+if ! grep -q plclear $file; then
+	sed -i '1 a\
+    "plclear": true,\
+    "plsimilar": true,\
+    "audiocdplclear": false,
+' $file
+fi
+
 # 20230909
 if [[ -e /usr/bin/chromium && ! -e /usr/bin/firefox ]]; then
 	pacman -Sy --noconfirm firefox
