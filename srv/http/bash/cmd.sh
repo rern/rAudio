@@ -28,6 +28,7 @@ plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		mpc -q play $pos
 		$dirbash/status-push.sh
+		[[ $( mpc status %state% ) != playing ]] && mpc -q play $pos
 	fi
 	pushstreamPlaylist add
 }
