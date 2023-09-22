@@ -1,3 +1,4 @@
+var redirect_uri   = 'https://rern.github.io/raudio/spotify';
 var default_v      = {
 	  autoplay     : {
 		  BLUETOOTH : true
@@ -96,7 +97,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 					  response_type : 'code'
 					, client_id     : id
 					, scope         : 'user-read-currently-playing user-read-playback-position'
-					, redirect_uri  : 'https://rern.github.io/raudio/spotify'
+					, redirect_uri  : redirect_uri
 					, state         : window.location.hostname
 				}
 				window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
@@ -521,7 +522,7 @@ function renderPage() {
 			}
 		} );
 	} else if ( code ) {
-		bash( [ 'spotifytoken', code, 'CMD CODE' ], () => showContent );
+		bash( [ 'spotifytoken', code, 'CMD CODE' ], showContent );
 	} else if ( error ) {
 		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 	}

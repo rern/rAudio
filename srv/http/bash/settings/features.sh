@@ -419,7 +419,7 @@ spotifyoutputset )
 	;;
 spotifytoken )
 	. $dirsystem/spotifykey
-	spotifyredirect=$( grep ^spotifyredirect $dirsettings/features-data.sh | cut -d= -f2 )
+	spotifyredirect=$( grep '^var redirect_uri' /srv/http/assets/js/features.js | cut -d"'" -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
