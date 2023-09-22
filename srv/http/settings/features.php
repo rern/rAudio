@@ -21,7 +21,7 @@ $id_data = [
 	, 'snapserver'     => [ 'name' => 'SnapServer',       'sub' => 'snapserver',     'setting' => false,    'status' => true ]
 	, 'spotifyd'       => [ 'name' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true ]
 	, 'stoptimer'      => [ 'name' => 'Stop Timer' ]
-	, 'upmpdcli'       => [ 'name' => 'UPnP',             'sub' => 'upmpdcli',                              'status' => true ]
+	, 'upmpdcli'       => [ 'name' => 'UPnP',             'sub' => 'upmpdcli',       'setting' => false,    'status' => true ]
 ];
 // ----------------------------------------------------------------------------------
 $head = [ 'title' => 'Renderers' ]; //////////////////////////////////

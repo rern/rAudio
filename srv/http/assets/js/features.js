@@ -104,17 +104,6 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		} );
 	}
 } );
-$( '#setting-upmpdcli' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, checkbox     : [ 'Clear Playlist on start' ]
-		, values       : S.upmpdcliconf
-		, checkchanged : S.upmpdcli
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-} );
 $( '#setting-hostapd' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon

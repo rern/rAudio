@@ -329,11 +329,11 @@ scrobblekeyremove )
 	rm -f $dirsystem/{scrobble,scrobblekey}
 	pushRefresh
 	;;
-shairport-sync | spotifyd )
+shairport-sync | spotifyd | upmpdcli )
 	if [[ $ON ]]; then
 		serviceRestartEnable
 	else
-		[[ $( < $dirshm/player ) == airplay ]] && $dirbash/cmd.sh playerstop
+		[[ $( < $dirshm/player ) =~ (airplay|spotify|upnp) ]] && $dirbash/cmd.sh playerstop
 		systemctl disable --now $CMD
 	fi
 	pushRefresh
@@ -451,16 +451,6 @@ stoptimer )
 			echo $timer > $timerfile
 			$dirbash/relays-timer.sh &> /dev/null &
 		fi
-	fi
-	pushRefresh
-	;;
-upmpdcli )
-	if [[ $ON ]]; then
-		[[ $OWNQUEUE ]] && ownqueue=1 || ownqueue=0
-		sed -i "/^ownqueue/ s/= ./= $ownqueue/" /etc/upmpdcli.conf
-		serviceRestartEnable
-	else
-		systemctl disable --now upmpdcli
 	fi
 	pushRefresh
 	;;
