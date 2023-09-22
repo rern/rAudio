@@ -4,6 +4,7 @@
 
 [[ $1 == reboot ]] && reboot=1
 
+[[ $( < $dirshm/player ) == upnp ]] && $dirbash/cmd.sh playerstop
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )
 	ipclients=$( grep -v $ipserver $filesharedip )

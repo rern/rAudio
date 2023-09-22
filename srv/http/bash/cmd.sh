@@ -680,14 +680,8 @@ playerstop )
 			systemctl restart spotifyd
 			;;
 		upnp )
-			fileheader=$( mpc -f %file% playlist | head -1 | cut -d/ -f1-3 )
 			systemctl restart upmpdcli
-			mpc -q stop
-			sleep 1
-			tracks=$( mpc -f %file%^%position% playlist | grep "^$fileheader" | cut -d^ -f2 )
-			for i in $tracks; do
-				mpc -q del $i
-			done
+			mpc -q clear
 			$dirbash/status-push.sh
 			;;
 	esac
