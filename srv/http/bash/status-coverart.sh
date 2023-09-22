@@ -4,16 +4,15 @@
 
 args2var "$1"
 
-if [[ ${FILE:0:4} != http ]]; then # upnp
-	filename=$( basename "$FILE" )
-	path="/mnt/MPD/$FILE"
-	[[ -f "$path" ]] && path=$( dirname "$path" )
-	localname=$( tr -d ' "`?/#&'"'" <<< $path )
-	localfile=$dirshm/local/$localname
-else
+if [[ $( < $dirshm/player ) == upnp ]]; then
 	upnp=1
 	name=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
 	localfile=$dirshm/local/${name,,}
+else
+	filename=$( basename "$FILE" )
+	path="/mnt/MPD/$FILE"
+	[[ -f "$path" ]] && path=$( dirname "$path" )
+	localfile=$dirshm/local/$( tr -d ' "`?/#&'"'" <<< $path )
 fi
 # found cover file
 if [[ -f $localfile ]]; then
