@@ -4,18 +4,28 @@
 
 args2var "$1"
 
-filename=$( basename "$FILE" )
-path="/mnt/MPD/$FILE"
-[[ -f "$path" ]] && path=$( dirname "$path" )
-
+if [[ ${FILE:0:4} != http ]]; then # upnp
+	filename=$( basename "$FILE" )
+	path="/mnt/MPD/$FILE"
+	[[ -f "$path" ]] && path=$( dirname "$path" )
+	localname=$( tr -d ' "`?/#&'"'" <<< $path )
+	localfile=$dirshm/local/$localname
+else
+	upnp=1
+	name=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
+	localfile=$dirshm/local/${name,,}
+fi
 # found cover file
-localname=$( tr -d ' "`?/#&'"'" <<< $path )
-localfile=$dirshm/local/$localname
 if [[ -f $localfile ]]; then
 	localpath=$( cat $localfile )
-	if [[ -e $localpath ]]; then
+	if [[ $upnp ]]; then
+		echo $localpath
+		exit
+		
+	elif [[ -e $localpath ]]; then
 		php -r "echo rawurlencode( '${localpath//\'/\\\'}' );"
 		exit
+		
 	else
 		rm $localfile
 	fi
@@ -31,11 +41,15 @@ onlinefile=$( ls -1X $dirshm/online/${covername,,}.{jpg,png} 2> /dev/null | head
 [[ -f $onlinefile ]] && echo ${onlinefile:9} && exit
 
 ##### cover file
-coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
-[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
+if [[ $upnp ]]; then
+	coverfile=$( $dirbash/status-coverartupnp.py )
+else
+	coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
+	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
+fi
 if [[ $coverfile ]]; then
 	echo $coverfile > $localfile
-	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );"
+	[[ $upnp ]] && echo $coverfile || php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );"
 	$dirbash/cmd.sh coverfileslimit
 	exit
 fi

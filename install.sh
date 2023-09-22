@@ -5,6 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20230920
+sed -i 's/^onstart.*/onstart = /usr/bin/sudo /srv/http/bash/cmd.sh upnpstart' /etc/upmpdcli.conf
+systemctl try-restart upmpdcli
+
 file=$dirsystem/display.json
 if ! grep -q plclear $file; then
 	sed -i '1 a\

@@ -345,12 +345,12 @@ $radiosampling" > $dirshm/radio
 , "Time"         : false
 , "Title"        : "'$Title'"
 , "webradio"     : true'
-	if [[ $id ]]; then
-		[[ ! $snapclient ]] && pos="$(( song + 1 ))/$pllength • "
-		sampling="$pos$radiosampling"
-		elapsed=$( mpcElapsed )
+		if [[ $id ]]; then
+			[[ ! $snapclient ]] && pos="$(( song + 1 ))/$pllength • "
+			sampling="$pos$radiosampling"
+			elapsed=$( mpcElapsed )
 ########
-		status+='
+			status+='
 , "coverart"     : "'$coverart'"
 , "elapsed"      : '$elapsed'
 , "ext"          : "Radio"
@@ -358,9 +358,8 @@ $radiosampling" > $dirshm/radio
 , "sampling"     : "'$sampling'"
 , "song"         : '$song
 # >>>>>>>>>> rp / rf webradio
-		outputStatus
-	fi
-	
+			outputStatus
+		fi
 	fi
 else
 	ext=${file/*.}
@@ -496,8 +495,9 @@ if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 	outputStatus
 fi
 
-if [[ $ext != CD && ! $stream ]]; then
+if [[ $player == upnp || ( ! $stream && $ext != CD ) ]]; then
 	getcover=1
+	[[ ! $AlbumArtist ]] && AlbumArtist=$Artist
 	coverart=$( $dirbash/status-coverart.sh "cmd
 $AlbumArtist
 $Album

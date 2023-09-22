@@ -680,13 +680,15 @@ playerstop )
 			systemctl restart spotifyd
 			;;
 		upnp )
+			fileheader=$( mpc -f %file% playlist | head -1 | cut -d/ -f1-3 )
+			systemctl restart upmpdcli
 			mpc -q stop
-			tracks=$( mpc -f %file%^%position% playlist | grep 'http://192' | cut -d^ -f2 )
+			sleep 1
+			tracks=$( mpc -f %file%^%position% playlist | grep "^$fileheader" | cut -d^ -f2 )
 			for i in $tracks; do
 				mpc -q del $i
 			done
 			$dirbash/status-push.sh
-			systemctl restart upmpdcli
 			;;
 	esac
 	pushstream player '{ "player": "'$player'", "active": false }'
@@ -771,6 +773,10 @@ splashrotate )
 	;;
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
+	;;
+upnpstart )
+	echo upnp > $dirshm/player
+	playerStart
 	;;
 volume )
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )
