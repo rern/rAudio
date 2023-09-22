@@ -394,7 +394,7 @@ spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey
 	;;
 spotifykeyremove )
-	notify 'spotify blink' 'Spotify' "Remove ..."
+	notify 'spotify blink' 'Spotify Client Keys' "Remove ..."
 	rm -f $dirsystem/spotifykey $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh

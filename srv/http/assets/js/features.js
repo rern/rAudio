@@ -78,7 +78,8 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 			, title       : SW.title
 			, textlabel   : [ 'ID', 'Secret' ]
 			, focus       : 0
-			, footer      : 'Keys from private app: '+ ico( 'help help' )
+			, footer      : '<br><wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
+			, footeralign : 'right'
 			, boxwidth    : 320
 			, checklength : { 0: 32, 1: 32 }
 			, beforeshow  : () => {
@@ -439,9 +440,11 @@ function infoSpotifyKeys() {
 		, title        : SW.title
 		, tablabel     : [ 'Output', 'Keys' ]
 		, tab          : [ infoSpotifyOutput, '' ]
-		, checkbox     : 'Remove client keys?'
+		, checkbox     : 'Remove client keys'
 		, values       : false
 		, checkchanged : true
+		, okcolor      : orange
+		, oklabel      : ico( 'remove' ) +'Remove'
 		, ok           : () => bash( [ 'spotifykeyremove' ] )
 	} );
 }
