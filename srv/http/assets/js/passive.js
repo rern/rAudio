@@ -90,7 +90,7 @@ function psOnMessage( message ) {
 	}
 }
 function psOnClose() {
-	if ( V.off ) return
+	if ( D.progress || V.off ) return
 	
 	clearIntervalAll();
 	guideHide();

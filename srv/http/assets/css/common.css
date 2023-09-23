@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1693402800' );
+	src         : url( '/assets/fonts/rern.woff2?v=1695433891' );
 }
 @font-face {
 	font-family : Lato;
@@ -157,6 +157,7 @@ i {
 .i-power::before           { content: '\F520' }
 .i-powerbutton::before     { content: '\F520' }
 .i-previous::before        { content: '\F501' }
+.i-progress::before        { content: '\F526' }
 .i-radiofrance::before     { content: '\F586' }
 .i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
 .i-radioparadise::after    { content: '\F594'; position: relative; }

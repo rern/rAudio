@@ -14,6 +14,7 @@ $id_data = [
 	, 'lyrics'         => [ 'name' => 'Lyrics' ]
 	, 'multiraudio'    => [ 'name' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
 	, 'nfsserver'      => [ 'name' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false,    'status' => true ]
+	, 'progress'       => [ 'name' => 'Progress - Active','sub' => 'in background',  'setting' => false ]
 	, 'scrobble'       => [ 'name' => 'Scrobbler',        'sub' => 'Last.fm' ]
 	, 'shairport-sync' => [ 'name' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true ]
 	, 'smb'            => [ 'name' => 'File Sharing',     'sub' => 'samba',                                 'status' => true ]
@@ -219,6 +220,10 @@ EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
 Lock: {$Fmenu( 'player', 'Player', 'lock' )}
 EOF
+	]
+	, [
+		  'id'       => 'progress'
+		, 'help'     => 'Keep playback progess when rAudio window not active.'
 	]
 	, [
 		  'id'   => 'scrobble'

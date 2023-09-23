@@ -38,6 +38,7 @@ if [[ $1 == withdisplay ]]; then
 , "dabradio"    : '$dabradio'
 , "equalizer"   : '$( exists $dirsystem/equalizer )'
 , "multiraudio" : '$( exists $dirsystem/multiraudio )'
+, "progress"    : '$( exists $dirsystem/progress )'
 , "relays"      : '$( exists $dirsystem/relays )'
 , "screenoff"   : '$screenoff'
 , "snapclient"  : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
