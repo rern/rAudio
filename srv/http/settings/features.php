@@ -92,7 +92,6 @@ EOF
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device
  · Playlist - replaced by playlist of UPnP / DLNA on start
  · Playback stop button - Clear UPnP / DLNA playlist
- · Artist might be displayed as "Various Artists" from some apps if AlbumArtist tag was blank.
 
 Note: Playing files directly on rAudio yields better quality.
 EOF
