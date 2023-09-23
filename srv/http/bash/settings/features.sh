@@ -44,7 +44,7 @@ pushSubmenu() {
 
 case $CMD in
 
-autoplay | lyrics | progress | scrobble )
+autoplay | lyrics | scrobble )
 	[[ $CMD == lyrics ]] && sed -i '/^url/ s|/$||' $dirsystem/lyrics.conf
 	enableFlagSet
 	pushRefresh
