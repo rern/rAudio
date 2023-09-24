@@ -5,14 +5,14 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20230924
-[[ -e /boot/kernel.img && pythonver=python3.10 || pythonver=$( ls /usr/lib | grep ^python | tail -1 )
-! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
-
-if grep -q ownqueue /etc/upmpdcli.conf; then
-	sed -i -e '/^ownqueue/ d
+if [[ -e /usr/bin/upmpdcli ]]; then
+	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
+	if grep -q ownqueue /etc/upmpdcli.conf; then
+		sed -i -e '/^ownqueue/ d
 ' -e 's|^onstart.*|onstart = /usr/bin/sudo /srv/http/bash/cmd.sh upnpstart|
 ' /etc/upmpdcli.conf
-	systemctl try-restart upmpdcli
+		systemctl try-restart upmpdcli
+	fi
 fi
 
 file=$dirsystem/display.json
