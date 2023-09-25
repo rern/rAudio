@@ -213,18 +213,15 @@ function psMpdPlayer( data ) {
 function psMpdRadio( data ) {
 	statusUpdate( data );
 	setProgress( 0 );
-	if ( V.playback ) {
-		setInfo();
-		setCoverart();
-		if ( D.radioelapsed ) {
-			$( '#progress' ).html( ico( 'play' ) +'<span></span>' );
-			setProgressElapsed();
-		} else {
-			setBlinkDot();
-		}
-	} else if ( V.playlist ) {
-		setPlaylistScroll();
+	setInfo();
+	setCoverart();
+	if ( D.radioelapsed ) {
+		$( '#progress' ).html( ico( 'play' ) +'<span></span>' );
+		setProgressElapsed();
+	} else {
+		setBlinkDot();
 	}
+	if ( V.playlist ) setPlaylistScroll();
 }	
 function psMpdUpdate( data ) {
 	if ( 'type' in data ) {
