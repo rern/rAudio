@@ -97,13 +97,13 @@ var chkdisplay = {
 		  bars             : 'Top-Bottom bars'
 			, barsalways   : 'Bars always on'
 		, time             : 'Time'
-			, radioelapsed : 'Web Radio time'
+			, radioelapsed : 'Web Radio elapsed'
 		, cover            : 'Cover art'
 			, covervu      : vumeter +'As default'
 		, volume           : 'Volume'
 			, vumeter      : vumeter +'VU meter'
 		, buttons          : 'Buttons'
-			, progress     : 'Progress always on'
+			, progress     : 'Keep progess alive'
 	}
 	, playlist  : {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
