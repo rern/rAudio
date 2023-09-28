@@ -17,8 +17,9 @@ fi
 
 file=$dirsystem/display.json
 if ! grep -q plclear $file; then
+	grep -q 'tapreplaceplay.*true' $dirsystem/display.json && plclear=false || plclear=true
 	sed -i '1 a\
-    "plclear": true,\
+    "plclear": '$plclear',\
     "plsimilar": true,\
     "audiocdplclear": false,
 ' $file
