@@ -538,7 +538,6 @@ function displaySave() {
 			if ( ! ( k in values ) && k !== '-' ) values[ k ] = D[ k ];
 		} );
 	} );
-	if ( values.tapreplaceplay ) values.plclear = false;
 	bash( { cmd: [ 'display' ], json: values } );
 }
 function displaySubMenu() {
