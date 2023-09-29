@@ -5,11 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231001
-file=$dirsystem/display.json
-if [[ $( grep 'tapreplaceplay.*true\|plclear.*true' $file | wc -l ) == 2 ]]; then
-	sed -i -E 's/("plclear": ).*/\1false,/' $file
-fi
-
 if [[ -e /usr/bin/upmpdcli ]]; then
 	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
 	if grep -q ownqueue /etc/upmpdcli.conf; then
@@ -22,8 +17,9 @@ fi
 
 file=$dirsystem/display.json
 if ! grep -q plclear $file; then
+	grep 'tapreplaceplay.*true' $file && plclear=false || plclear=true
 	sed -i '1 a\
-    "plclear": true,\
+    "plclear": '$plclear',\
     "plsimilar": true,\
     "audiocdplclear": false,
 ' $file
