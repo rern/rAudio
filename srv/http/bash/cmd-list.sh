@@ -18,7 +18,7 @@ updateDone() {
 	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	rm -f $dirmpd/listing
 	pushstream mpdupdate '{ "done": 1 }'
-	pushStatus
+	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &
 }
 

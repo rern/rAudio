@@ -25,18 +25,7 @@ playerStart() {
 	pushstream player '{ "player": "'$player'", "active": true }'
 }
 plAddPlay() {
-	if [[ ${ACTION: -4} == play ]]; then
-		mpc -q play $pos
-		$dirbash/status-push.sh
-		if [[ $( mpc status %state% ) != playing ]]; then
-			mpc -q play $pos
-			(
-				sleep 3
-				echo 'state="stop"' > $dirshm/status
-				pushStatus
-			) &
-		fi
-	fi
+	[[ ${ACTION: -4} == play ]] && mpc -q play $pos
 	pushstreamPlaylist add
 }
 plAddPosition() {
@@ -766,7 +755,7 @@ shairportstop )
 shareddatampdupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
-	pushStatus
+	$dirbash/status-push.sh
 	;;
 splashrotate )
 	splashRotate
