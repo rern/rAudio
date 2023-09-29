@@ -247,6 +247,10 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
+pushStatus() {
+	status=$( $dirbash/status.sh )
+	pushstream mpdplayer "$status"
+}
 pushstream() {
 	local channel data ip json path sharedip updatedone webradiocopy
 	channel=$1

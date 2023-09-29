@@ -405,7 +405,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 		, checkbox     : Object.values( chkdisplay.playlist )
 		, values       : values
 		, checkchanged : true
-		, ok           : () => displaySave( keys )
+		, ok           : displaySave
 	} );
 } );
 $( 'body' ).on( 'click', '#colorok', function() {

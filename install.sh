@@ -4,7 +4,12 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20230924
+# 20231001
+file=$dirsystem/display.json
+if [[ $( grep 'tapreplaceplay.*true\|plclear.*true' $file | wc -l ) == 2 ]]; then
+	sed -i -E 's/("plclear": ).*/\1false,/' $file
+fi
+
 if [[ -e /usr/bin/upmpdcli ]]; then
 	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
 	if grep -q ownqueue /etc/upmpdcli.conf; then
