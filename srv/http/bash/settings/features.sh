@@ -174,8 +174,8 @@ localbrowser )
 			case $ROTATE in
 				0 )   rotate=NORMAL;;
 				270 ) rotate=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
-				90)   rotate=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
-				180)  rotate=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
+				90 )  rotate=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
+				180 ) rotate=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
 			if [[ $rotateprev != $rotate ]]; then
 				if [[ $ROTATE == 0 ]]; then
