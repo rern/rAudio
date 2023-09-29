@@ -25,6 +25,16 @@ if ! grep -q plclear $file; then
 ' $file
 fi
 
+if [[ ! -e $dirsystem/localbrowser.conf ]]; then
+	echo "\
+rotate=0
+zoom=100
+screenoff=0
+onwhileplay=
+hdmi=
+cursor=" > $dirsystem/localbrowser.conf
+fi
+
 # 20230909
 if [[ -e /usr/bin/chromium && ! -e /usr/bin/firefox ]]; then
 	pacman -Sy --noconfirm firefox
