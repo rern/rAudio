@@ -123,7 +123,7 @@ bluetooth )
 	else
 		config+='
 dtoverlay=disable-bt'
-		if ! rfkill | grep -q -m1 bluetooth; then
+		if rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
 			grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
