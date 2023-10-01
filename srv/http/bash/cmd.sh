@@ -25,10 +25,7 @@ playerStart() {
 	pushstream player '{ "player": "'$player'", "active": true }'
 }
 plAddPlay() {
-	if [[ ${ACTION: -4} == play ]]; then
-		mpc -q play $pos
-		$dirbash/status-push.sh
-	fi
+	[[ ${ACTION: -4} == play ]] && mpc -q play $pos
 	pushstreamPlaylist add
 }
 plAddPosition() {
@@ -679,13 +676,9 @@ playerstop )
 			systemctl restart spotifyd
 			;;
 		upnp )
-			mpc -q stop
-			tracks=$( mpc -f %file%^%position% playlist | grep 'http://192' | cut -d^ -f2 )
-			for i in $tracks; do
-				mpc -q del $i
-			done
-			$dirbash/status-push.sh
 			systemctl restart upmpdcli
+			mpc -q clear
+			$dirbash/status-push.sh
 			;;
 	esac
 	pushstream player '{ "player": "'$player'", "active": false }'
@@ -762,14 +755,17 @@ shairportstop )
 shareddatampdupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
-	status=$( $dirbash/status.sh )
-	pushstream mpdplayer "$status"
+	$dirbash/status-push.sh
 	;;
 splashrotate )
 	splashRotate
 	;;
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
+	;;
+upnpstart )
+	echo upnp > $dirshm/player
+	playerStart
 	;;
 volume )
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )

@@ -1,3 +1,4 @@
+var redirect_uri   = 'https://rern.github.io/raudio/spotify';
 var default_v      = {
 	  autoplay     : {
 		  BLUETOOTH : true
@@ -77,7 +78,8 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 			, title       : SW.title
 			, textlabel   : [ 'ID', 'Secret' ]
 			, focus       : 0
-			, footer      : 'Keys from private app: '+ ico( 'help help' )
+			, footer      : '<br><wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
+			, footeralign : 'right'
 			, boxwidth    : 320
 			, checklength : { 0: 32, 1: 32 }
 			, beforeshow  : () => {
@@ -96,24 +98,13 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 					  response_type : 'code'
 					, client_id     : id
 					, scope         : 'user-read-currently-playing user-read-playback-position'
-					, redirect_uri  : 'https://rern.github.io/raudio/spotify'
+					, redirect_uri  : redirect_uri
 					, state         : window.location.hostname
 				}
 				window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
 			}
 		} );
 	}
-} );
-$( '#setting-upmpdcli' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, checkbox     : [ 'Clear Playlist on start' ]
-		, values       : S.upmpdcliconf
-		, checkchanged : S.upmpdcli
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
 } );
 $( '#setting-hostapd' ).on( 'click', function() {
 	info( {
@@ -449,9 +440,11 @@ function infoSpotifyKeys() {
 		, title        : SW.title
 		, tablabel     : [ 'Output', 'Keys' ]
 		, tab          : [ infoSpotifyOutput, '' ]
-		, checkbox     : 'Remove client keys?'
+		, checkbox     : 'Remove client keys'
 		, values       : false
 		, checkchanged : true
+		, okcolor      : orange
+		, oklabel      : ico( 'remove' ) +'Remove'
 		, ok           : () => bash( [ 'spotifykeyremove' ] )
 	} );
 }
@@ -532,7 +525,7 @@ function renderPage() {
 			}
 		} );
 	} else if ( code ) {
-		bash( [ 'spotifytoken', code, 'CMD CODE' ], () => showContent );
+		bash( [ 'spotifytoken', code, 'CMD CODE' ], showContent );
 	} else if ( error ) {
 		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 	}

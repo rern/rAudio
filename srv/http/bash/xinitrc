@@ -20,7 +20,7 @@ fi
 matchbox-window-manager -use_cursor $cursor &
 scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 rm -rf /root/.mozilla
-timeout 1 firefox --headless &> dev/null
+timeout 1 firefox --headless &> /dev/null
 profile=$( grep -m1 ^Default /root/.mozilla/firefox/profiles.ini | cut -d= -f2 )
 fileuserjs=/root/.mozilla/firefox/$profile/user.js
 if [[ $scale == 1.00 ]]; then

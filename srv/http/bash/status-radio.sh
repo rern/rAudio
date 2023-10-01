@@ -68,16 +68,21 @@ metadataGet() {
 		icon=radiofrance
 		radiofranceData
 	fi
+	if [[ ! $metadata ]]; then
+		for i in {1..10}; do
+			sleep 1
+			metadataGet
+			[[ $metadata ]] && break
+		done
+		[[ ! $metadata ]] && notify $icon Metadata 'Not available' && exit
+		return
+	fi
+	
 	artist=$( stringEscape ${metadata[0]} )
 	title=$( stringEscape ${metadata[1]} )
 	album=$( stringEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
 	countdown=${metadata[4]} # countdown
-	if [[ ! $album && ! $title ]]; then
-		sleep 5
-		metadataGet
-		return
-	fi
 	
 	if [[ ! $countdown ]]; then
 		countdown=5

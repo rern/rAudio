@@ -16,7 +16,6 @@ localbrowserDisable() {
 	systemctl enable --now getty@tty1
 	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
 	rm -f $dirsystem/onwhileplay
-	rm -rf /root/.mozilla
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 }
 localbrowserXset() {
@@ -175,8 +174,8 @@ localbrowser )
 			case $ROTATE in
 				0 )   rotate=NORMAL;;
 				270 ) rotate=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
-				90)   rotate=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
-				180)  rotate=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
+				90 )  rotate=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
+				180 ) rotate=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
 			if [[ $rotateprev != $rotate ]]; then
 				if [[ $ROTATE == 0 ]]; then
@@ -330,11 +329,11 @@ scrobblekeyremove )
 	rm -f $dirsystem/{scrobble,scrobblekey}
 	pushRefresh
 	;;
-shairport-sync | spotifyd )
+shairport-sync | spotifyd | upmpdcli )
 	if [[ $ON ]]; then
 		serviceRestartEnable
 	else
-		[[ $( < $dirshm/player ) == airplay ]] && $dirbash/cmd.sh playerstop
+		[[ $( < $dirshm/player ) =~ (airplay|spotify|upnp) ]] && $dirbash/cmd.sh playerstop
 		systemctl disable --now $CMD
 	fi
 	pushRefresh
@@ -395,7 +394,7 @@ spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey
 	;;
 spotifykeyremove )
-	notify 'spotify blink' 'Spotify' "Remove ..."
+	notify 'spotify blink' 'Spotify Client Keys' "Remove ..."
 	rm -f $dirsystem/spotifykey $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh
@@ -420,7 +419,7 @@ spotifyoutputset )
 	;;
 spotifytoken )
 	. $dirsystem/spotifykey
-	spotifyredirect=$( grep ^spotifyredirect $dirsettings/features-data.sh | cut -d= -f2 )
+	spotifyredirect=$( grep '^var redirect_uri' /srv/http/assets/js/features.js | cut -d"'" -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
@@ -452,16 +451,6 @@ stoptimer )
 			echo $timer > $timerfile
 			$dirbash/relays-timer.sh &> /dev/null &
 		fi
-	fi
-	pushRefresh
-	;;
-upmpdcli )
-	if [[ $ON ]]; then
-		[[ $OWNQUEUE ]] && ownqueue=1 || ownqueue=0
-		sed -i "/^ownqueue/ s/= ./= $ownqueue/" /etc/upmpdcli.conf
-		serviceRestartEnable
-	else
-		systemctl disable --now upmpdcli
 	fi
 	pushRefresh
 	;;

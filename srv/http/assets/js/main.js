@@ -97,13 +97,13 @@ var chkdisplay = {
 		  bars             : 'Top-Bottom bars'
 			, barsalways   : 'Bars always on'
 		, time             : 'Time'
-			, radioelapsed : 'Web Radio time'
+			, radioelapsed : 'Web Radio elapsed'
 		, cover            : 'Cover art'
 			, covervu      : vumeter +'As default'
 		, volume           : 'Volume'
 			, vumeter      : vumeter +'VU meter'
 		, buttons          : 'Buttons'
-			, noswipe      : 'Disable swipe'
+			, progress     : 'Progess keep-alive'
 	}
 	, playlist  : {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
@@ -405,7 +405,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 		, checkbox     : Object.values( chkdisplay.playlist )
 		, values       : values
 		, checkchanged : true
-		, ok           : () => displaySave( keys )
+		, ok           : displaySave
 	} );
 } );
 $( 'body' ).on( 'click', '#colorok', function() {

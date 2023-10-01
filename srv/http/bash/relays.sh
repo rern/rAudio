@@ -41,7 +41,6 @@ if [[ $action == ON && ! -e $dirshm/stoptimer && $timer > 0 ]]; then
 	$dirbash/relays-timer.sh &> /dev/null &
 fi
 alsactl store
-status=$( $dirbash/status.sh )
-pushstream mpdplayer "$status"
+$dirbash/status-push.sh
 sleep 1
 pushstream relays '{ "done": 1 }'

@@ -15,6 +15,8 @@ if [[ -e $diraddons ]]; then
 	sed -i -E -e 's/^(ssid=).*/\1rAudio/
 ' -e 's/(wpa_passphrase=).*/\1raudioap/
 ' /etc/hostapd/hostapd.conf &> /dev/null
+# localbrowser
+[[ -e /usr/bin/firefox ]] && rm -rf /root/.mozilla
 # mpd
 	mpc -q crossfade 0
 	find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
@@ -111,7 +113,7 @@ fi
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
 	label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
 false='albumbyartist audiocdplclear backonleft barsalways covervu hidecover
-	multiraudio noswipe radioelapsed tapaddplay tapreplaceplay vumeter'
+	multiraudio noswipe progress radioelapsed tapaddplay tapreplaceplay vumeter'
 for i in $true; do
 	lines+='
 , "'$i'": true'
@@ -133,7 +135,7 @@ fi
 
 # localbrowser
 if [[ -e /usr/bin/firefox ]]; then
-	rm -rf /root/.mozilla
+	timeout 1 firefox --headless &> /dev/null
 	echo "\
 rotate=0
 zoom=100

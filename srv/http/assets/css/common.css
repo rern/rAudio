@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1693402800' );
+	src         : url( '/assets/fonts/rern.woff2?v=1695433891' );
 }
 @font-face {
 	font-family : Lato;
@@ -59,7 +59,6 @@ i {
 .i-capslock::before        { content: '\F607' }
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }
-.i-chromium::before        { content: '\F584' }
 .i-close::before           { content: '\F56C' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }

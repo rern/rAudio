@@ -4,6 +4,37 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231001
+if [[ -e /usr/bin/upmpdcli ]]; then
+	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
+	if grep -q ownqueue /etc/upmpdcli.conf; then
+		sed -i -e '/^ownqueue/ d
+' -e 's|^onstart.*|onstart = /usr/bin/sudo /srv/http/bash/cmd.sh upnpstart|
+' /etc/upmpdcli.conf
+		systemctl try-restart upmpdcli
+	fi
+fi
+
+file=$dirsystem/display.json
+if ! grep -q plclear $file; then
+	grep 'tapreplaceplay.*true' $file && plclear=false || plclear=true
+	sed -i '1 a\
+    "plclear": '$plclear',\
+    "plsimilar": true,\
+    "audiocdplclear": false,
+' $file
+fi
+
+if [[ ! -e $dirsystem/localbrowser.conf ]]; then
+	echo "\
+rotate=0
+zoom=100
+screenoff=0
+onwhileplay=
+hdmi=
+cursor=" > $dirsystem/localbrowser.conf
+fi
+
 # 20230909
 if [[ -e /usr/bin/chromium && ! -e /usr/bin/firefox ]]; then
 	pacman -Sy --noconfirm firefox

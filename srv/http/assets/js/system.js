@@ -1149,7 +1149,7 @@ function renderPage() {
 	$( '#divusbautoupdate' ).toggleClass( 'hide', S.shareddata || S.nfsserver );
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
-			$( '#bluetooth' ).parent().prev().toggleClass( 'single', ! S.bluetoothactive );
+			$( '#divbluetooth .col-l.status' ).toggleClass( 'single', ! S.bluetoothactive );
 		} else {
 			$( '#divbluetooth' ).addClass( 'hide' );
 		}

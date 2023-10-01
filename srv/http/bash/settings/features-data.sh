@@ -58,8 +58,7 @@ fi
 , "spotifyd"         : '$spotifyd'
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotifykey 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
-, "upmpdcli"         : '$upmpdcli'
-, "upmpdcliconf"     : { "OWNQUEUE": '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true || echo false )' }'
+, "upmpdcli"         : '$upmpdcli
 if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 	[[ ! -e /tmp/localbrowser.conf && -e $dirsystem/localbrowser.conf ]] && cp $dirsystem/localbrowser.conf /tmp
 	data+='
