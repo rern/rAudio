@@ -30,7 +30,6 @@ plAddPlay() {
 }
 plAddPosition() {
 	if [[ ${ACTION:0:7} == replace ]]; then
-		mpc -q stop
 		plClear
 		pos=1
 	else
