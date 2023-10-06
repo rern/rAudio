@@ -4,10 +4,6 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20231007
-sed -i '/^.USB/ a\\tdfree command = /srv/http/bash/smbdfree.sh' /etc/samba/smb.conf
-systemctl try-restart smb
-
 # 20231001
 if [[ -e /usr/bin/upmpdcli ]]; then
 	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
@@ -58,6 +54,12 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20231007
+if ! grep -q smbdfree /etc/samba/smb.conf; then
+	sed -i '/^.USB/ a\\tdfree command = /srv/http/bash/smbdfree.sh' /etc/samba/smb.conf
+	systemctl try-restart smb
+fi
 
 # 20230916
 file=/etc/systemd/system/websocket.service
