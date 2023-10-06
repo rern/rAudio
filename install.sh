@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231007
+sed -i '/^.USB/ a\\tdfree command = /srv/http/bash/smbdfree.sh' /etc/samba/smb.conf
+systemctl try-restart smb
+
 # 20231001
 if [[ -e /usr/bin/upmpdcli ]]; then
 	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
