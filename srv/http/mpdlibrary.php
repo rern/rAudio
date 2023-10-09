@@ -501,6 +501,8 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	if ( ! count( $lists ) ) exit;
 	
 	global $mode, $gmode, $html;
+	$searchmode = $filemode === 'search';
+	if ( ! $searchmode ) $html = str_replace( '">', ' track">' , $html );
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
@@ -518,8 +520,6 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
 	
 	$hidecover  = exec( 'grep "hidecover.*true" /srv/http/data/system/display.json' );
-	$searchmode = $filemode === 'search';
-	if ( ! $searchmode ) $html = str_replace( '">', ' track">' , $html );
 	$cuefile    = preg_replace( "/\.[^.]+$/", '.cue', $file0 );
 	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {
 		$cue       = true;
