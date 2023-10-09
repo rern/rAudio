@@ -519,6 +519,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	
 	$hidecover  = exec( 'grep "hidecover.*true" /srv/http/data/system/display.json' );
 	$searchmode = $filemode === 'search';
+	if ( ! $searchmode ) $html = str_replace( '"list"', '"list track"' , $html );
 	$cuefile    = preg_replace( "/\.[^.]+$/", '.cue', $file0 );
 	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {
 		$cue       = true;
@@ -614,7 +615,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	$html.=
 '</ul>';
 	if ( $searchmode ) {
-		echo json_encode( [ 'html' => $html, 'count' => $i ] );
+		echo json_encode( [ 'html' => $html, 'count' => $i, 'librarytrack' => true ] );
 	} else {
 		echo $html;
 	}

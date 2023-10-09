@@ -1231,10 +1231,11 @@ function renderLibraryList( data ) { // V.librarylist
 	var hash = versionHash();
 	var html = data.html.replace( /\^\^\^/g, hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
-		V.librarytrack = ! $( '#lib-list li:not( .licover )' ).find( '.i-folder, .iconthumb' ).length;
-		if ( $( '.licover' ).length ) { // V.librarytrack
+		if ( $( '#lib-list' ).hasClass( 'track' ) ) {
+			V.librarytrack = true;
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( V.icoversave );
 		} else {
+			V.librarytrack = false;
 			imageLoad( 'lib-list' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
