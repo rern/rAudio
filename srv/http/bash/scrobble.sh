@@ -8,7 +8,7 @@
 
 ! internetConnected && exit
 
-sleep 2 # wait - after track change pushstream
+sleep 2 # wait - after track change pushData
 
 . $dirsystem/scrobblekey # sharedsecret
 

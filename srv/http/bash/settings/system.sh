@@ -69,10 +69,10 @@ sharedDataSet() {
 	if [[ $rescan ]]; then
 		echo rescan > $dirmpd/updating
 		mpc -q rescan
-		pushstream mpdupdate '{ "type": "mpd" }'
+		pushData mpdupdate '{ "type": "mpd" }'
 	fi
 	pushRefresh
-	pushstream refresh '{ "page": "features", "shareddata": true }'
+	pushData refresh '{ "page": "features", "shareddata": true }'
 }
 soundProfile() {
 	local lan mtu swappiness txqueuelen
@@ -115,7 +115,7 @@ bluetooth )
 			systemctl start bluetooth
 			bluetoothctl discoverable $yesno &> /dev/null
 			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
-			rfkill | grep -q -m1 bluetooth && pushstream refresh '{ "page": "networks", "activebt": true }'
+			rfkill | grep -q -m1 bluetooth && pushData refresh '{ "page": "networks", "activebt": true }'
 		fi
 		[[ -e $dirsystem/btformat  ]] && prevbtformat=true
 		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
@@ -187,7 +187,7 @@ hdmi )
 	[[ $ON ]] && config+="
 hdmi_force_hotplug=1"
 	configTxt
-	pushstream refresh '{ "page": "features", "hdmihotplug": '$TF' }'
+	pushData refresh '{ "page": "features", "hdmihotplug": '$TF' }'
 	;;
 hostname )
 	hostnamectl set-hostname $NAME
@@ -404,7 +404,7 @@ orderon="'$( stringEscape ${neworderon:0:-2} )'"
 orderoff="'$( stringEscape ${neworderoff:0:-2} )'"' >> $dirsystem/relays.conf
 	fi
 	pushRefresh
-	pushstream display '{ "submenu": "relays", "value": '$TF' }'
+	pushData display '{ "submenu": "relays", "value": '$TF' }'
 	;;
 rotaryencoder )
 	if [[ $ON ]]; then
@@ -433,7 +433,7 @@ shareddatadisable )  # server rAudio / other server
 	systemctl daemon-reload
 	systemctl restart mpd
 	pushRefresh
-	pushstream refresh '{ "page": "features", "shareddata": false }'
+	pushData refresh '{ "page": "features", "shareddata": false }'
 	;;
 shareddataset )
 	sharedDataSet
@@ -591,7 +591,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action
-	pushstream storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
+	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	[[ -e $dirsystem/usbautoupdateno || -e $filesharedip ]] && exit
 	
 	echo USB > $dirmpd/updating
@@ -599,7 +599,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	;;
 usbautoupdate )
 	[[ $ON ]] && rm -f $dirsystem/usbautoupdateno || touch $dirsystem/usbautoupdateno
-	pushstream refresh '{ "page": "system", "usbautoupdate": '$TF' }'
+	pushData refresh '{ "page": "system", "usbautoupdate": '$TF' }'
 	;;
 vuled )
 	enableFlagSet
@@ -641,7 +641,7 @@ wlan )
 	fi
 	pushRefresh
 	ifconfig wlan0 | grep -q -m1 wlan0.*UP && active=true || active=false
-	pushstream refresh '{ "page": "networks", "activewlan": '$active' }'
+	pushData refresh '{ "page": "networks", "activewlan": '$active' }'
 	;;
 	
 esac

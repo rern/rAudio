@@ -2,8 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-pushstreamPlaylist() {
-	pushstream playlist $( php /srv/http/mpdplaylist.php current )
+pushPlaylist() {
+	pushData playlist $( php /srv/http/mpdplaylist.php current )
 }
 
 [[ $1 ]] && notify audiocd 'Audio CD' "USB CD $1"
@@ -26,7 +26,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 			mpc -q play $(( tracktop - 1 ))
 			mpc -q stop
 		fi
-		pushstreamPlaylist
+		pushPlaylist
 	fi
 	if [[ $1 == off ]]; then
 		rm -f $dirshm/audiocd $dirmpdconf/cdio.conf
@@ -86,7 +86,7 @@ fi
 # suppress laybackStatusGet in passive.js
 if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
 	autoplaycd=1
-	pushstream playlist '{ "autoplaycd": 1 }'
+	pushData playlist '{ "autoplaycd": 1 }'
 fi
 # add tracks to playlist
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
@@ -96,7 +96,7 @@ for i in $( seq 1 $trackL ); do
   mpc -q add cdda:///$i
 done
 echo $discid > $dirshm/audiocd
-pushstreamPlaylist
+pushPlaylist
 eject -x 4
 
 if [[ $autoplaycd ]]; then

@@ -10,7 +10,7 @@ mpc idleloop | while read changed; do
 		playlist )
 			if [[ $( mpc status %consume% ) == on ]]; then
 				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
-					pushstream playlist $( php /srv/http/mpdplaylist.php current )
+					pushData playlist $( php /srv/http/mpdplaylist.php current )
 				) &> /dev/null &
 			fi
 			;;

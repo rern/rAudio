@@ -34,7 +34,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirairplay/coverart.jpg
-		pushstream airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
+		pushData airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
@@ -45,7 +45,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			elapsedms=$( awk 'BEGIN { printf "%.0f", '$(( current - start ))/44.1' }' )
 			elapsed=$(( ( elapsedms + 500 ) / 1000 ))
 			Time=$(( ( end - start + 22050 ) / 44100 ))
-			pushstream airplay '{ "elapsed": '$elapsed', "Time": '$Time' }'
+			pushData airplay '{ "elapsed": '$elapsed', "Time": '$Time' }'
 			timestamp=$( date +%s%3N )
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirairplay/start
@@ -53,7 +53,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			$dirbash/status-push.sh
 		else
 			echo $data > $dirairplay/$code
-			pushstream airplay '{ "'$code'": "'$( stringEscape $data )'" }'
+			pushData airplay '{ "'$code'": "'$( stringEscape $data )'" }'
 		fi
 	fi
 	code= # reset after $code + $data were set

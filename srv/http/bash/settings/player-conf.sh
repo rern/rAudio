@@ -17,7 +17,7 @@ usbdac=$1
 pushData() {
 	$dirbash/status-push.sh
 	$dirsettings/player-data.sh pushrefresh
-	[[ $usbdac ]] && pushstream refresh '{ "page": "system", "audiocards": '$( aplay -l | grep ^card | grep -c -v Loopback )' }'
+	[[ $usbdac ]] && pushData refresh '{ "page": "system", "audiocards": '$( aplay -l | grep ^card | grep -c -v Loopback )' }'
 }
 
 rm -f $dirmpdconf/{bluetooth,output}.conf
@@ -47,8 +47,8 @@ fi
 
 if [[ $asoundcard == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
-		pushstream display '{ "volumenone": true }'
-		pushstream refresh '{ "page": "features", "nosound": true }'
+		pushData display '{ "volumenone": true }'
+		pushData refresh '{ "page": "features", "nosound": true }'
 		systemctl stop camilladsp &> /dev/null
 		outputswitch='(None)'
 	fi
@@ -63,8 +63,8 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
 		[[ $mixertype == none ]] && volumenone=true || volumenone=false
-		pushstream display '{ "volumenone": '$volumenone' }'
-		pushstream refresh '{ "page": "features", "nosound": '$volumenone' }'
+		pushData display '{ "volumenone": '$volumenone' }'
+		pushData refresh '{ "page": "features", "nosound": '$volumenone' }'
 		outputswitch=$name
 	fi
 	if [[ $camilladsp ]]; then

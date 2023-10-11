@@ -32,7 +32,7 @@ for pin in $pins; do
 	message=$( sed "$line s|$|</$color>|" <<< $( echo -e $order ) ) # \n      > newline > sed appends color close tag
 	message=$( sed -z 's/\n/\\n/g' <<< $message )                   # newline > \n for json
 	message=$( stringEscape $message )                              # escape " `
-	pushstream relays '{ "state": "'$action'", "message": "'$message'" }'
+	pushData relays '{ "state": "'$action'", "message": "'$message'" }'
 	[[ $i < $dL ]] && sleep ${delay[i]}
 	(( i++ ))
 done
@@ -43,4 +43,4 @@ fi
 alsactl store
 $dirbash/status-push.sh
 sleep 1
-pushstream relays '{ "done": 1 }'
+pushData relays '{ "done": 1 }'

@@ -29,7 +29,7 @@ else
 	fi
 	[[ -e $dirsystem/scrobble ]] && mv -f $dirshm/status{,prev}
 	mv -f $dirshm/status{new,}
-	pushstream mpdplayer "$status"
+	pushData mpdplayer "$status"
 fi
 
 if systemctl -q is-active localbrowser; then
@@ -65,7 +65,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		echo $! > $dirshm/pidcava
 	else
-		pushstream vumeter '{ "val": 0 }'
+		pushData vumeter '{ "val": 0 }'
 		if [[ -e $dirsystem/vuled ]]; then
 			p=$( < $dirsystem/vuled.conf )
 			for i in $p; do
@@ -78,7 +78,7 @@ fi
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom
 
 for p in player features camilla; do
-	pushstream refresh '{ "page": "'$p'", "state": "'$state'" }'
+	pushData refresh '{ "page": "'$p'", "state": "'$state'" }'
 done
 
 [[ ! -e $dirsystem/scrobble ]] && exit

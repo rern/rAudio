@@ -69,5 +69,5 @@ if [[ $TYPE == webradio ]]; then
 	data+='
 , "Album" : "'$ALBUM'"'
 fi
-pushstream coverart "{ $data }"
+pushData coverart "{ $data }"
 $dirbash/cmd.sh coverfileslimit

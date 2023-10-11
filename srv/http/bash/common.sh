@@ -148,7 +148,7 @@ data2json() {
 				s/\[\s*,/[ false,/g
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g' <<< $json )
-	[[ $2 ]] && pushstream refresh "$json" || echo "$json"
+	[[ $2 ]] && pushData refresh "$json" || echo "$json"
 }
 dirPermissions() {
 	chown -R http:http /srv
@@ -240,14 +240,7 @@ Package:
 	esac
 	bash <( curl -L https://github.com/rern/rern.github.io/raw/main/$file.sh )
 }
-pushRefresh() {
-	local page push
-	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
-	[[ $2 ]] && push=$2 || push=push
-	[[ $page == networks ]] && sleep 2
-	$dirsettings/$page-data.sh $push
-}
-pushstream() {
+pushData() {
 	local channel data ip json path sharedip updatedone webradiocopy
 	channel=$1
 	json=${@:2} # $2 ...
@@ -277,6 +270,13 @@ pushstream() {
 	for ip in $sharedip; do
 		ipOnline $ip && $dirbash/websocket-push.py "$data" $ip
 	done
+}
+pushRefresh() {
+	local page push
+	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
+	[[ $2 ]] && push=$2 || push=push
+	[[ $page == networks ]] && sleep 2
+	$dirsettings/$page-data.sh $push
 }
 serviceRestartEnable() {
 	systemctl restart $CMD
@@ -383,7 +383,7 @@ volumeGet() {
 	case $1 in
 		value ) echo $val;;
 		valdb ) echo '{ "val": '$val', "db": '$db' }';;
-		* )     pushstream volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
+		* )     pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
 }

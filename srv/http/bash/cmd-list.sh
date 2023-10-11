@@ -17,7 +17,7 @@ modes='album albumbyartist-year latest albumartist artist composer conductor gen
 updateDone() {
 	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	rm -f $dirmpd/listing
-	pushstream mpdupdate '{ "done": 1 }'
+	pushData mpdupdate '{ "done": 1 }'
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &
 }

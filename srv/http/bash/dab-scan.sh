@@ -51,5 +51,5 @@ echo "$list" >> $fileyml
 chown -R http:http $dirdabradio
 dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l )
 sed -i -E 's/("dabradio": ).*/\1'$dabradio',/' $dirmpd/counts
-pushstream mpdupdate $( < $dirmpd/counts )
+pushData mpdupdate $( < $dirmpd/counts )
 rm $dirshm/{dabscan,updatingdab}
