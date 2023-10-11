@@ -1042,6 +1042,8 @@ function local( delay ) {
 // select2 --------------------------------------------------------------------
 var select2 = false; // fix: closing > blur > disconnect
 function selectSet( $select ) {
+	if ( select2 ) return
+	
 	var options = { minimumResultsForSearch: 10 }
 	if ( ! $select ) {
 		$select = $( '#infoContent select' );
@@ -1050,6 +1052,7 @@ function selectSet( $select ) {
 	$select
 		.select2( options )
 		.on( 'select2:open',    () => { // fix: scroll on info - set current value 3rd from top
+			select2 = true;
 			setTimeout( () => {
 				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
 				if ( ! navigator.maxTouchPoints ) scroll -= 12;

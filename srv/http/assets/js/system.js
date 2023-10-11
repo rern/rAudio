@@ -319,8 +319,8 @@ $( '#setting-wlan' ).on( 'click', function() {
 		} );
 	}, 'json' );
 } );
-$( '#divi2smodulesw' ).on( 'click', function() {
-	setTimeout( i2sOptionSet, 0 );
+$( '#divi2s .col-r' ).on( 'click', function( e ) {
+	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
 } );
 $( '#i2smodule' ).on( 'change', function() {
 	var aplayname = $( this ).val();
@@ -337,9 +337,6 @@ $( '#i2smodule' ).on( 'change', function() {
 		i2sSelectHide();
 	}
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
-} );
-$( '#divi2s .col-r' ).on( 'click', function( e ) {
-	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
 } );
 $( '#setting-i2smodule' ).on( 'click', function() {
 	info( {
@@ -536,7 +533,7 @@ $( '#divtimezone .col-r' ).on( 'click', function( e ) {
 	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
 	
 	$( '#timezone' ).select2( 'close' )
-	$.post( 'cmd.php', { cmd: 'selecttimezone' }, function( data ) {
+	$.post( 'cmd.php', { cmd: 'timezonelist' }, function( data ) {
 		$( '#timezone' )
 			.html( data )
 			.val( S.timezone )
@@ -677,15 +674,15 @@ function i2sOptionSet() {
 		}
 	} else {
 		$( '#i2smodule' ).select2( 'close' );
-		$.post( 'cmd.php', { cmd: 'selecti2s' }, function( data ) {
-			$( '#i2smodule' ).html( data );
+		bash( [ 'i2slist' ], list => {
+			$( '#i2smodule' ).html( htmlOption( list ) );
 			$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
 				var $this = $( el );
 				return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
 			} ).prop( 'selected', true );
 			i2sSelectShow();
 			$( '#i2smodule' ).select2( 'open' );
-		} );
+		}, 'json' );
 	}
 }
 function i2sSelectHide() {
@@ -823,6 +820,35 @@ var contentmount = {
 </tr>
 </table>`
 }
+function infoMirror() {
+	SW.id    = 'mirror';
+	SW.title = 'Servers';
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Time', 'Package Mirror' ]
+		, tab          : [ infoNtp, '' ]
+		, selectlabel  : 'Mirror'
+		, select       : V.htmlmirror
+		, boxwidth     : 240
+		, values       : { MIRROR: S.mirror }
+		, checkchanged : true
+		, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
+		, ok           : switchEnable
+	} );
+}
+function infoMirrorList() {
+	if ( 'htmlmirror' in V ) {
+		infoMirror();
+	} else {
+		notifyCommon( 'Get mirror server list ...' );
+		bash( [ 'mirrorlist' ], list => {
+			V.htmlmirror = htmlOption( list );
+			infoMirror();
+			bannerHide();
+		}, 'json' );
+	}
+}
 function infoMount( nfs ) {
 	var nfs        = nfs || false;
 	var shareddata = SW.id === 'shareddata';
@@ -930,35 +956,6 @@ function infoNtp() {
 		json.tab      = [ '', infoMirrorList ];
 	}
 	info( json );
-}
-function infoMirror() {
-	SW.id    = 'mirror';
-	SW.title = 'Servers';
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Time', 'Package Mirror' ]
-		, tab          : [ infoNtp, '' ]
-		, selectlabel  : 'Mirror'
-		, select       : V.htmlmirror
-		, boxwidth     : 240
-		, values       : { MIRROR: S.mirror }
-		, checkchanged : true
-		, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
-		, ok           : switchEnable
-	} );
-}
-function infoMirrorList() {
-	if ( 'htmlmirror' in V ) {
-		infoMirror();
-	} else {
-		notifyCommon( 'Get mirror server list ...' );
-		bash( [ 'mirrorlist' ], list => {
-			V.htmlmirror = htmlOption( list );
-			infoMirror();
-			bannerHide();
-		}, 'json' );
-	}
 }
 function infoPowerbutton() {
 	var optionpin = htmlOption( Object.keys( board2bcm ) );

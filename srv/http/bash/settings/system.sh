@@ -203,6 +203,9 @@ i2seeprom )
 force_eeprom_read=0"
 	configTxt
 	;;
+i2slist )
+	sed '1 a\\t"None / Auto detect": "none",' /srv/http/assets/data/system-i2s.json
+	;;
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
 	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
