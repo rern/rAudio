@@ -41,7 +41,6 @@ if [[ $1 == withdisplay ]]; then
 , "relays"      : '$( exists $dirsystem/relays )'
 , "screenoff"   : '$screenoff'
 , "snapclient"  : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
-, "tageditor"   : '$( exists /usr/bin/kid3-cli )'
 , "volumenone"  : '$volumenone'
 }'
 fi
