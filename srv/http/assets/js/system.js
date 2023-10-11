@@ -319,6 +319,9 @@ $( '#setting-wlan' ).on( 'click', function() {
 		} );
 	}, 'json' );
 } );
+$( '#divi2smodulesw' ).on( 'click', function() {
+	setTimeout( i2sOptionSet, 0 );
+} );
 $( '#divi2s .col-r' ).on( 'click', function( e ) {
 	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
 } );
@@ -1167,7 +1170,7 @@ function renderPage() {
 		$( '#divaudio' ).addClass( 'hide' );
 	}
 	if ( S.i2smodulesw ) {
-		$( '#i2smodule' ).html( `
+		if ( ! $( '#i2smodule option' ).length ) $( '#i2smodule' ).html( `
 <option></option>
 <option value="${ S.audioaplayname }" selected>${ S.audiooutput }</option>
 ` );
