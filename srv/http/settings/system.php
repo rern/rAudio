@@ -7,6 +7,7 @@ $id_data = [
 	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
 	, 'hdmi'          => [ 'name' => 'HDMI',              'sub' => 'hot plug',    'setting' => false ]
 	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
+	, 'i2smodule'     => [ 'name' => 'Audio - I²S' ]
 	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'HD44780' ]
 	, 'mpdoled'       => [ 'name' => 'Spectrum OLED' ]
 	, 'powerbutton'   => [ 'name' => 'Power Button',      'sub' => 'Power LED' ]

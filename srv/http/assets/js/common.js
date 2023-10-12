@@ -1040,10 +1040,7 @@ function local( delay ) {
 }
 
 // select2 --------------------------------------------------------------------
-var select2 = false; // fix: closing > blur > disconnect
 function selectSet( $select ) {
-	if ( select2 ) return
-	
 	var options = { minimumResultsForSearch: 10 }
 	if ( ! $select ) {
 		$select = $( '#infoContent select' );
@@ -1051,16 +1048,15 @@ function selectSet( $select ) {
 	}
 	$select
 		.select2( options )
-		.on( 'select2:open',    () => { // fix: scroll on info - set current value 3rd from top
-			select2 = true;
+		.on( 'select2:open',  () => { // fix: scroll on info - set current value 3rd from top
+			local(); // fix: onblur / onpagehide
 			setTimeout( () => {
 				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
 				if ( ! navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
 		} )
-		.on( 'select2:closing', () => select2 = true )
-		.on( 'select2:close',   () => select2 = false )
+		.on( 'select2:closing', local ) // fix: onblur / onpagehide
 		.each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );
@@ -1083,7 +1079,7 @@ function selectText2Html( pattern ) {
 
 // page visibility -----------------------------------------------------------------
 function connect() {
-	if ( V.off ) return
+	if ( V.local || V.off ) return // V.local from select2
 	
 	if ( ws ) {
 		ws.readyState === 1 ? ws.send( 'connect' ) : websocketConnect();
@@ -1094,12 +1090,12 @@ function connect() {
 	setTimeout( refreshData, page ? 300 : 0 );
 }
 function disconnect() {
-	if ( ! V.debug && typeof psOnClose === 'function' ) psOnClose();
+	if ( ! V.local && ! V.debug && typeof psOnClose === 'function' ) psOnClose(); // V.local from select2
 }
 document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 window.onpagehide = disconnect;
 window.onpageshow = connect;
-window.onblur     = () => { if ( ! select2 ) disconnect() }
+window.onblur     = disconnect;
 window.onfocus    = connect;
 
 // websocket

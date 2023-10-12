@@ -328,12 +328,12 @@ $( '#divi2s .col-r' ).on( 'click', function( e ) {
 $( '#i2smodule' ).on( 'change', function() {
 	var aplayname = $( this ).val();
 	var output    = $( this ).find( ':selected' ).text();
-	var icon      = 'volume';
-	var title     = 'Audio I&#178;S';
+	var icon      = 'i2smodule';
+	var title     = 'Audio - I²S';
 	if ( aplayname !== 'none' ) {
 		notify( icon, title, 'Enable ...' );
 	} else {
-		notify( icon, title, 'Disable ...' );
+		setTimeout( () => { notify( icon, title, 'Disable ...' ) }, 300 ); // fix - hide banner too soon
 		S.i2smodulesw = false;
 		aplayname = 'onboard';
 		output = '';
