@@ -679,14 +679,17 @@ function i2sOptionSet() {
 		$( '#i2smodule' ).select2( 'close' );
 		bash( [ 'i2slist' ], list => {
 			$( '#i2smodule' ).html( htmlOption( list ) );
-			$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
-				var $this = $( el );
-				return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
-			} ).prop( 'selected', true );
+			i2sOptionSetSelect();
 			i2sSelectShow();
 			$( '#i2smodule' ).select2( 'open' );
 		}, 'json' );
 	}
+}
+function i2sOptionSetSelect() {
+	$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
+		var $this = $( el );
+		return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
+	} ).prop( 'selected', true );
 }
 function i2sSelectHide() {
 	$( '#i2smodulesw' ).prop( 'checked', S.i2smodulesw );
@@ -1170,10 +1173,14 @@ function renderPage() {
 		$( '#divaudio' ).addClass( 'hide' );
 	}
 	if ( S.i2smodulesw ) {
-		if ( ! $( '#i2smodule option' ).length ) $( '#i2smodule' ).html( `
+		if ( $( '#i2smodule option' ).length ) {
+			i2sOptionSetSelect();
+		} else {
+			$( '#i2smodule' ).html( `
 <option></option>
 <option value="${ S.audioaplayname }" selected>${ S.audiooutput }</option>
 ` );
+		}
 		i2sSelectShow();
 	} else {
 		i2sSelectHide();
@@ -1181,10 +1188,14 @@ function renderPage() {
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.soundprofileconf );
 	$( '#hostname' ).val( S.hostname );
 	$( '#avahiurl' ).text( S.hostname +'.local' );
-	if ( ! $( '#timezone option' ).length ) $( '#timezone' ).html( `
+	if ( $( '#timezone option' ).length ) {
+		$( '#timezone' ).val( S.timezone );
+	} else {
+		$( '#timezone' ).html( `
 <option></option>
 <option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' &middot; ' ) +'&ensp;'+ S.timezoneoffset }</option>
 ` );
+	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
