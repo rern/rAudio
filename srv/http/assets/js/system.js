@@ -1181,14 +1181,10 @@ function renderPage() {
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.soundprofileconf );
 	$( '#hostname' ).val( S.hostname );
 	$( '#avahiurl' ).text( S.hostname +'.local' );
-	if ( $( '#timezone option' ).length > 2 ) {
-		$( '#timezone' ).val( S.timezone );
-	} else {
-		$( '#timezone' ).html( `
+	if ( ! $( '#timezone option' ).length ) $( '#timezone' ).html( `
 <option></option>
 <option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' &middot; ' ) +'&ensp;'+ S.timezoneoffset }</option>
 ` );
-	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
