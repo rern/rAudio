@@ -137,6 +137,8 @@ fi
 ### mpd restart ##########################################################################
 systemctl restart mpd
 
+systemctl try-restart camilladsp
+
 for pid in $( pgrep mpd ); do # set priority
 	ionice -c 0 -n 0 -p $pid &> /dev/null 
 	renice -n -19 -p $pid &> /dev/null

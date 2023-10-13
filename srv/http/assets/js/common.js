@@ -1059,7 +1059,7 @@ function selectSet( $select ) {
 		.on( 'select2:closing', local ) // fix: onblur / onpagehide
 		.each( ( i, el ) => {
 			var $this = $( el );
-			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );
+			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
 		} );
 }
 function selectText2Html( pattern ) {
