@@ -108,7 +108,7 @@ mixertype )
 	[[ $MIXERTYPE != software ]] && rm -f $dirsystem/replaygain-hw
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && tf=true || tf=false
-	pushstream display '{ "volumenone": '$tf' }'
+	pushData display '{ "volumenone": '$tf' }'
 	;;
 novolume )
 	mpc -q crossfade 0
@@ -117,7 +117,7 @@ novolume )
 	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
 	$dirsettings/player-conf.sh
-	pushstream display '{ "volumenone": true }'
+	pushData display '{ "volumenone": true }'
 	;;
 replaygain )
 	fileoutput=$dirmpdconf/output.conf

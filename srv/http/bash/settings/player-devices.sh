@@ -21,7 +21,7 @@ if [[ ! $aplay ]]; then
 	devices=false
 	touch $dirshm/nosound
 	rm -f $dirshm/amixercontrol
-	pushstream display '{ "volumenone": true }'
+	pushData display '{ "volumenone": true }'
 	return
 fi
 

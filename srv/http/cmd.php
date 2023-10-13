@@ -84,13 +84,7 @@ case 'logout':
 	session_start();
 	session_destroy();
 	break;
-case 'selecti2s':
-	$list   = json_decode( file_get_contents( '/srv/http/assets/data/system-i2s.json' ) );
-	$option = '<option value="none">None / Auto detect</option>';
-	foreach( $list as $name => $sysname ) $option .= '<option value="'.$sysname.'">'.$name.'</option>';
-	echo $option;
-	break;
-case 'selecttimezone':
+case 'timezonelist':
 	$list   = timezone_identifiers_list();
 	$option = '<option value="auto">Auto</option>';
 	foreach( $list as $key => $zone ) {

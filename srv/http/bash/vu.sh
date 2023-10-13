@@ -34,7 +34,7 @@ while read vu; do
 	if [[ $vumeter ]]; then
 		(( j++ ))
 		if (( $j == 10 )); then # framerate throttle - 60 to 6
-			pushstream vumeter '{"val":'$v'}'
+			pushData vumeter '{"val":'$v'}'
 			j=0
 		fi
 	fi

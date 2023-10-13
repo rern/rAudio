@@ -110,7 +110,7 @@ metadataGet() {
 , "Time"     : false
 , "Title"    : "'$title'"
 }'
-	pushstream mpdradio "$data"
+	pushData mpdradio "$data"
 	status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
 	status+='
 timestamp='$( date +%s%3N )'

@@ -87,7 +87,7 @@ Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
 	
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then # boot to hostapd when no network connection
-		pushstream wlan '{"ssid":"'$ESSID'","reboot":1}'
+		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
 	fi
 	

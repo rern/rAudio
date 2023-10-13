@@ -54,7 +54,6 @@ $menulist = [
 	, [ 'wrsave',        'save',          'Save to Library' ]
 	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
 	, [ 'savedplremove', 'remove',        'Remove' ]
-	, [ 'tag',           'tag',           'Tag Editor' ]
 ];
 htmlmenu( $menulist, 'filesavedpl' );
 // folder

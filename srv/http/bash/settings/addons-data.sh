@@ -36,7 +36,7 @@ done
 [[ $notverified ]] && notverified='['${notverified:1}']' || notverified='[""]'
 if [[ $update ]]; then
 	update='['${update:1}']'
-	pushstream option '{ "addons": 1 }'
+	pushData option '{ "addons": 1 }'
 	touch $diraddons/update
 else
 	update='[""]'

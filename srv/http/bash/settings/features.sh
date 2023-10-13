@@ -39,7 +39,7 @@ pushRestartMpd() {
 	$dirsettings/features-data.sh pushrefresh
 }
 pushSubmenu() {
-	pushstream display '{ "submenu": "'$1'", "value": '$2' }'
+	pushData display '{ "submenu": "'$1'", "value": '$2' }'
 }
 
 case $CMD in
@@ -89,7 +89,7 @@ dabradio )
 	;;
 equalizer )
 	enableFlagSet
-	pushstream reload 1
+	pushData reload 1
 	pushRestartMpd equalizer $TF
 	;;
 hostapd )
@@ -117,7 +117,7 @@ hostapd )
 		$dirsettings/system.sh wlan$'\n'OFF
 	fi
 	pushRefresh
-	pushstream refresh '{ "page": "system", "hostapd": '$TF' }'
+	pushData refresh '{ "page": "system", "hostapd": '$TF' }'
 	pushRefresh networks
 	;;
 httpd )
@@ -143,10 +143,10 @@ localbrowser )
 					notify hdmi 'HDMI Hotplug' 'Reboot required.' 5000
 				fi
 			fi
-			pushstream refresh '{ "page": "system", "hdmi": true }'
+			pushData refresh '{ "page": "system", "hdmi": true }'
 		else
 			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
-			pushstream refresh '{ "page": "system", "hdmi": false }'
+			pushData refresh '{ "page": "system", "hdmi": false }'
 		fi
 		if [[ -e /tmp/localbrowser.conf ]]; then
 			diff=$( grep -Fxvf $dirsystem/localbrowser.conf /tmp/localbrowser.conf )
@@ -210,7 +210,7 @@ localbrowser )
 	pushRefresh
 	;;
 localbrowserreload )
-	pushstream reload 1
+	pushData reload 1
 	;;
 localbrowserxset )
 	localbrowserXset
@@ -233,7 +233,7 @@ multiraudio )
 			sshCommand $ip << EOF
 echo "$conf" > $fileconf
 touch $dirsystem/multiraudio
-pushstream display '{ "submenu": "multiraudio", "value": true }'
+pushData display '{ "submenu": "multiraudio", "value": true }'
 EOF
 		done
 	fi
@@ -269,7 +269,7 @@ nfsserver )
 		if [[ $rescan ]]; then
 			echo rescan > $dirmpd/updating
 			mpc -q rescan
-			pushstream mpdupdate '{ "type": "mpd" }'
+			pushData mpdupdate '{ "type": "mpd" }'
 		fi
 		# prepend path
 		files=$( ls -1 $dirbookmarks/* )
@@ -293,7 +293,7 @@ nfsserver )
 		systemctl restart mpd
 	fi
 	pushRefresh
-	pushstream refresh '{ "page": "system", "nfsserver": '$TF' }'
+	pushData refresh '{ "page": "system", "nfsserver": '$TF' }'
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1

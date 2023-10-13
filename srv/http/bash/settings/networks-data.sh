@@ -24,11 +24,11 @@ if [[ $1 == pushbt ]]; then
 	if [[ $listbt ]]; then
 		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
 		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
-		pushstream bluetooth '{ "connected": '$connected', "btreceiver": '$btreceiver' }'
+		pushData bluetooth '{ "connected": '$connected', "btreceiver": '$btreceiver' }'
 	else
 		listbt=false
 	fi
-	pushstream bluetooth "$listbt"
+	pushData bluetooth "$listbt"
 	exit
 fi
 
@@ -66,7 +66,7 @@ listWlan() {
 if [[ $1 == pushwl ]]; then
 	pushwl=1
 	listWlan
-	pushstream wlan '{ "listwl": '$LISTWL', "ipwl": "'$IPWL'", "gatewaywl": "'$gatewaywl'" }'
+	pushData wlan '{ "listwl": '$LISTWL', "ipwl": "'$IPWL'", "gatewaywl": "'$gatewaywl'" }'
 	exit
 fi
 

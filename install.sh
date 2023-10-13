@@ -55,6 +55,12 @@ cacheBust
 
 installfinish
 
+# 20231007
+if ! grep -q smbdfree /etc/samba/smb.conf; then
+	sed -i '/^.USB/ a\\tdfree command = /srv/http/bash/smbdfree.sh' /etc/samba/smb.conf
+	systemctl try-restart smb
+fi
+
 # 20230916
 file=/etc/systemd/system/websocket.service
 if [[ ! -e $file ]]; then

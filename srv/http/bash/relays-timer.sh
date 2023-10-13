@@ -25,6 +25,6 @@ while sleep 60; do
 		echo $i > $timerfile
 		(( $i > 1 )) && continue
 		
-		pushstream relays '{ "state": "IDLE", "timer": '$timer' }'
+		pushData relays '{ "state": "IDLE", "timer": '$timer' }'
 	fi
 done

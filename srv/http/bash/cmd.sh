@@ -22,11 +22,11 @@ playerStart() {
 			renice -n -19 -p $pid &> /dev/null
 		done
 	fi
-	pushstream player '{ "player": "'$player'", "active": true }'
+	pushData player '{ "player": "'$player'", "active": true }'
 }
 plAddPlay() {
 	[[ ${ACTION: -4} == play ]] && mpc -q play $pos
-	pushstreamPlaylist add
+	pushPlaylist add
 }
 plAddPosition() {
 	if [[ ${ACTION:0:7} == replace ]]; then
@@ -39,7 +39,7 @@ plAddPosition() {
 plAddRandom() {
 	local cuefile diffcount dir file mpcls plL range tail
 	tail=$( plTail )
-	(( $tail > 1 )) && pushstreamPlaylist add && return
+	(( $tail > 1 )) && pushPlaylist add && return
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
@@ -75,19 +75,16 @@ plTail() {
 	pos=$( mpc status %songpos% )
 	echo $(( total - pos ))
 }
-pushstreamPlaylist() {
+pushPlaylist() {
 	local arg
 	[[ $1 ]] && arg=$1 || arg=current
-	pushstream playlist $( php /srv/http/mpdplaylist.php $arg )
+	pushData playlist $( php /srv/http/mpdplaylist.php $arg )
 }
-pushstreamSavedPlaylist() {
-	pushstream savedplaylist $( php /srv/http/mpdplaylist.php list )
+pushRadioList() {
+	pushData radiolist '{ "type": "webradio" }'
 }
-pushstreamRadioList() {
-	pushstream radiolist '{ "type": "webradio" }'
-}
-pushstreamVolume() {
-	pushstream volume '{ "type": "'$1'", "val": '$2' }'
+pushSavedPlaylist() {
+	pushData savedplaylist $( php /srv/http/mpdplaylist.php list )
 }
 radioStop() {
 	if [[ -e $dirshm/radio ]]; then
@@ -163,7 +160,7 @@ webradioCount() {
 	local count type
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
-	pushstream radiolist '{ "type": "'$type'", "count": '$count' }'
+	pushData radiolist '{ "type": "'$type'", "count": '$count' }'
 	grep -q -m1 "$type.*,"$ $dirmpd/counts && count+=,
 	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
@@ -221,13 +218,13 @@ bookmarkadd )
 		order=$( jq '. + ["'$DIR'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json
 	fi
-	pushstream bookmark 1
+	pushData bookmark 1
 	;;
 bookmarkcoverreset )
 	path=$( < "$dirbookmarks/$NAME" )
 	[[ ${path:0:1} != '/' ]] && path="/mnt/MPD/$path"
 	rm -f "$path/coverart".*
-	pushstream bookmark 1
+	pushData bookmark 1
 	;;
 bookmarkremove )
 	bkfile="$dirbookmarks/${NAME//\//|}"
@@ -237,11 +234,11 @@ bookmarkremove )
 		echo "$order" > $dirsystem/order.json
 	fi
 	rm "$bkfile"
-	pushstream bookmark 1
+	pushData bookmark 1
 	;;
 bookmarkrename )
 	mv $dirbookmarks/{"${NAME//\//|}","${NEWNAME//\//|}"} 
-	pushstream bookmark 1
+	pushData bookmark 1
 	;;
 cachebust )
 	cacheBust
@@ -286,7 +283,7 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
-	pushstream reload 1
+	pushData reload 1
 	;;
 coverartreset )
 	dir=$( dirname "$COVERFILE" )
@@ -315,7 +312,7 @@ CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
 			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
 			convert "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		fi
-		pushstream coverart '{ "url": "'$restorefile'", "type": "coverart" }'
+		pushData coverart '{ "url": "'$restorefile'", "type": "coverart" }'
 		exit
 	fi
 		url=$( $dirbash/status-coverart.sh "cmd
@@ -324,7 +321,7 @@ $ALBUM
 $COVERFILE
 CMD ARTIST ALBUM FILE" )
 	[[ ! $url ]] && url=reset
-	pushstream coverart '{ "url": "'$url'", "type": "coverart" }'
+	pushData coverart '{ "url": "'$url'", "type": "coverart" }'
 	;;
 coverfileslimit )
 	for type in local online webradio; do
@@ -336,13 +333,13 @@ coverfileslimit )
 dabscan )
 	touch $dirshm/updatingdab
 	$dirbash/dab-scan.sh &> /dev/null &
-	pushstream mpdupdate '{ "type": "dabradio" }'
+	pushData mpdupdate '{ "type": "dabradio" }'
 	;;
 display )
-	pushstream display $( < $dirsystem/display.json )
+	pushData display $( < $dirsystem/display.json )
 	# temp
 	if grep -q albumyear.*true $dirsystem/display.json && [[ ! -e $dirmpd/albumbyartist-year ]]; then
-		pushstream mpdupdate '{ "type": "mpd" }'
+		pushData mpdupdate '{ "type": "mpd" }'
 		$dirbash/cmd-list.sh &> /dev/null &
 	fi
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
@@ -374,7 +371,7 @@ equalizer )
 			sudo -u $USER amixer -MqD equal sset "$band" ${v[i]}
 		done
 	fi
-	pushstream equalizer $( < $dirsystem/equalizer.json )
+	pushData equalizer $( < $dirsystem/equalizer.json )
 	;;
 equalizerget )
 	cat $dirsystem/equalizer.json 2> /dev/null || echo false
@@ -387,7 +384,7 @@ ignoredir )
 	dir=$( basename "$DIR" )
 	mpdpath=$( dirname "$DIR" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
-	pushstream mpdupdate '{ "type": "mpd" }'
+	pushData mpdupdate '{ "type": "mpd" }'
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
@@ -417,7 +414,7 @@ librandom )
 	else
 		rm -f $dirsystem/librandom
 	fi
-	pushstream option '{ "librandom": '$TF' }'
+	pushData option '{ "librandom": '$TF' }'
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
@@ -454,7 +451,7 @@ mpcadd )
 	;;
 mpcaddplaynext )
 	mpc -q insert "$FILE"
-	pushstreamPlaylist add
+	pushPlaylist add
 	;;
 mpcaddfind )
 	if [[ $TYPE2 ]]; then
@@ -493,19 +490,19 @@ mpccrop )
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom
 	$dirbash/status-push.sh
-	pushstreamPlaylist
+	pushPlaylist
 	;;
 mpclibrandom )
 	plAddRandom
 	;;
 mpcmove )
 	mpc -q move $FROM $TO
-	pushstreamPlaylist
+	pushPlaylist
 	;;
 mpcoption )
 	[[ ! $ONOFF ]] && ONOFF=false
 	mpc -q $OPTION $ONOFF
-	pushstream option '{ "'$OPTION'": '$ONOFF' }'
+	pushData option '{ "'$OPTION'": '$ONOFF' }'
 	;;
 mpcplayback )
 	if [[ ! $ACTION ]]; then
@@ -543,8 +540,8 @@ mpcplayback )
 		rm $dirshm/snapclient
 	fi
 	systemctl $action snapclient
-	pushstream option '{ "snapclient": '$active' }'
-	pushstream refresh '{ "page": "features", "snapclientactive": '$active' }'
+	pushData option '{ "snapclient": '$active' }'
+	pushData refresh '{ "page": "features", "snapclientactive": '$active' }'
 	;;
 mpcprevnext )
 	current=$( mpc status %songpos% )
@@ -582,7 +579,7 @@ mpcremove )
 		plClear
 	fi
 	$dirbash/status-push.sh
-	pushstreamPlaylist
+	pushPlaylist
 	;;
 mpcseek )
 	if [[ $STATE == stop ]]; then
@@ -596,12 +593,12 @@ mpcseek )
 mpcsetcurrent )
 	mpc -q play $POS
 	mpc -q stop
-	pushstreamPlaylist
+	pushPlaylist
 	$dirbash/status-push.sh
 	;;
 mpcshuffle )
 	mpc -q shuffle
-	pushstreamPlaylist
+	pushPlaylist
 	;;
 mpcsimilar )
 	readarray -t lines <<< $( curl -sfG -m 5 \
@@ -629,7 +626,7 @@ mpcsimilar )
 	
 	plLprev=$( mpc status %length% )
 	awk NF <<< $list | mpc -q add
-	pushstreamPlaylist
+	pushPlaylist
 	added=$(( $( mpc status %length% ) - plLprev ))
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
@@ -639,7 +636,7 @@ mpcupdate )
 	elif [[ -e $dirmpd/updating ]]; then
 		DIR=$( < $dirmpd/updating )
 	fi
-	pushstream mpdupdate '{ "type": "mpd" }'
+	pushData mpdupdate '{ "type": "mpd" }'
 	mpc | grep -q ^Updating && systemctl restart mpd
 	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
 	;;
@@ -650,7 +647,7 @@ multiraudiolist )
 }'
 	;;
 order )
-	pushstream order $( < $dirsystem/order.json )
+	pushData order $( < $dirsystem/order.json )
 	;;
 playerstart )
 	playerStart
@@ -681,24 +678,24 @@ playerstop )
 			$dirbash/status-push.sh
 			;;
 	esac
-	pushstream player '{ "player": "'$player'", "active": false }'
+	pushData player '{ "player": "'$player'", "active": false }'
 	;;
 playlist )
 	[[ $REPLACE ]] && plClear
 	mpc -q load "$NAME"
 	[[ $PLAY ]] && mpc -q play
 	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
-	pushstreamPlaylist
+	pushPlaylist
 	;;
 relaystimerreset )
 	$dirbash/relays-timer.sh &> /dev/null &
-	pushstream relays '{ "done": 1 }'
+	pushData relays '{ "done": 1 }'
 	;;
 savedpldelete )
 	rm "$dirplaylists/$NAME.m3u"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	pushstreamSavedPlaylist
+	pushSavedPlaylist
 	;;
 savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	plfile="$dirplaylists/$NAME.m3u"
@@ -711,7 +708,7 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 		[[ $FROM < $TO ]] && (( TO++ ))
 		sed -i -e "$FROM d" -e "$TO i$file" "$plfile"
 	fi
-	pushstreamSavedPlaylist
+	pushSavedPlaylist
 	;;
 savedplrename )
 	plfile="$dirplaylists/$NEWNAME.m3u"
@@ -723,7 +720,7 @@ savedplrename )
 	fi
 	
 	mv "$dirplaylists/$NAME.m3u" "$plfile"
-	pushstreamSavedPlaylist
+	pushSavedPlaylist
 	;;
 savedplsave )
 	plfile="$dirplaylists/$NAME.m3u"
@@ -738,7 +735,7 @@ savedplsave )
 	chmod 777 "$plfile"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -E -i 's/(,*)(.*playlists" *: ).*(,)/\1\2'$count'\3/' $dirmpd/counts
-	pushstreamSavedPlaylist
+	pushSavedPlaylist
 	;;
 screenoff )
 	DISPLAY=:0 xset dpms force off
@@ -812,7 +809,7 @@ $CHARSET" > "$file"
 	;;
 webradiocoverreset )
 	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-	pushstream coverart '{ "url": "", "type": "'$MODE'" }'
+	pushData coverart '{ "url": "", "type": "'$MODE'" }'
 	;;
 webradiodelete )
 	urlname=${URL//\//|}
@@ -855,7 +852,7 @@ webradioedit )
 $NAME
 $sampling
 $CHARSET" > "$newfile"
-	pushstreamRadioList
+	pushRadioList
 	;;
 wrdirdelete )
 	file="$dirdata/$MODE/$NAME"
@@ -864,18 +861,18 @@ wrdirdelete )
 	rm -rf "$file"
 	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 	sed -E -i 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
-	pushstreamRadioList
+	pushRadioList
 	;;
 wrdirnew )
 	[[ $DIR ]] && path="$dirwebradio/$DIR/$SUB" || path="$dirwebradio/$SUB"
 	mkdir -p "$path"
 	chown -h http:http "$path"
 	chmod 755 "$path"
-	pushstreamRadioList
+	pushRadioList
 	;;
 wrdirrename )
 	mv -f "$dirdata/$MODE/{$NAME,$NEWNAME}"
-	pushstreamRadioList
+	pushRadioList
 	;;
 	
 esac

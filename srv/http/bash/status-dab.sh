@@ -32,7 +32,7 @@ while true; do
 , "Time"     : false
 , "Title"    : "'$( < $filetitle )'"
 }'
-		pushstream mpdradio "$data"
+		pushData mpdradio "$data"
 		status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
 		status+='
 timestamp='$( date +%s%3N )'
@@ -53,7 +53,7 @@ player="mpd"'
 ' -e "$ a\
 coverart=$coverart
 " $dirshm/status
-		pushstream coverart '{ "url": "'$coverart'", "type": "coverart" }'
+		pushData coverart '{ "url": "'$coverart'", "type": "coverart" }'
 	fi
 	sleep 10
 done
