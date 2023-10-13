@@ -449,6 +449,17 @@ function infoSpotifyKeys() {
 	} );
 }
 function infoSpotifyOutput() {
+	if ( S.camilladsp ) {
+		info( {
+			  icon     : SW.icon
+			, title    : SW.title
+			, tablabel : [ 'Output', 'Keys' ]
+			, tab      : [ '', infoSpotifyKeys ]
+			, message  : '<br>Loopback is currently set for <a class="helpmenu label">DSP<i class="i-camilladsp"></i></a><br>&nbsp;'
+		} );
+		return
+	}
+	
 	bash( [ 'spotifyoutput' ], ( list ) => {
 		info( {
 			  icon         : SW.icon
