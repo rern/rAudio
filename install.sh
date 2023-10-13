@@ -55,7 +55,7 @@ cacheBust
 
 installfinish
 
-# 20231007
+# 20231013
 if ! grep -q smbdfree /etc/samba/smb.conf; then
 	sed -i '/^.USB/ a\\tdfree command = /srv/http/bash/smbdfree.sh' /etc/samba/smb.conf
 	systemctl try-restart smb

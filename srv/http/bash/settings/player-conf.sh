@@ -14,13 +14,13 @@ usbdac=$1
 . $dirsettings/player-devices.sh # $asoundcard, $A...
 . $dirsettings/player-asound.sh  # $bluetooth, $camilladsp, $equalizer
 
-pushData() {
+pushStatus() {
 	$dirbash/status-push.sh
 	$dirsettings/player-data.sh pushrefresh
 	[[ $usbdac ]] && pushData refresh '{ "page": "system", "audiocards": '$( aplay -l | grep ^card | grep -c -v Loopback )' }'
 }
 
-rm -f $dirmpdconf/{bluetooth,output}.conf
+rm -f $dirmpdconf/bluetooth.conf
 
 # outputs -----------------------------------------------------------------------------
 if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)
@@ -137,6 +137,8 @@ fi
 ### mpd restart ##########################################################################
 systemctl restart mpd
 
+systemctl try-restart camilladsp
+
 for pid in $( pgrep mpd ); do # set priority
 	ionice -c 0 -n 0 -p $pid &> /dev/null 
 	renice -n -19 -p $pid &> /dev/null
@@ -150,7 +152,7 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ ! $Acard && ! $bluetooth ]] && pushData && exit # >>>>>>>>>>
+[[ ! $Acard && ! $bluetooth ]] && pushStatus && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
 [[ $hwmixer && ! $bluetooth && ! $camilladsp && ! $equalizer ]] && mixer=1
@@ -193,4 +195,4 @@ fi
 
 [[ $camilladsp ]] && systemctl start camilladsp
 
-pushData
+pushStatus

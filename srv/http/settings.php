@@ -174,7 +174,6 @@ function htmlSetting( $data ) {
 	$label       = '<span class="name">'.$name.'</span>';
 	$input       = $data[ 'input' ] ?? false;
 	$settingicon = ! $setting || $setting === 'none' ? false : $data[ 'settingicon' ] ?? 'gear';
-	$disabled    = $data[ 'disabled' ] ?? false;
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
 	
@@ -189,10 +188,10 @@ function htmlSetting( $data ) {
 	// col-r
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
-		$html   .= $disabled ? '<span class="hide">'.$disabled.'</span>' : '';
-		$html   .= '<label><input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div></label>';
+		$disabled = isset( $data[ 'disabled' ] ) ? '<span class="hide">'.$data[ 'disabled' ].'</span>' : '';
+		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div></label>';
 	} else {
-		$html   .= $input;
+		$html    .= $input;
 	}
 	// setting
 	$html       .= $settingicon ? i( $settingicon.' setting', $id ) : '';
