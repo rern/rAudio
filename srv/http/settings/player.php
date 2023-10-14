@@ -45,37 +45,35 @@ EOF
 ];
 $body = [
 	[
-		  'id'          => 'bluealsa'
-		, 'icon'        => true
-		, 'input'       => '<select id="btaplayname"></select>'
-		, 'settingicon' => 'volume'
-		, 'help'        => <<< EOF
+		  'id'       => 'bluealsa'
+		, 'icon'     => true
+		, 'input'    => '<select id="btaplayname"></select>'
+		, 'help'     => <<< EOF
 {$Fi( 'volume btn' )} Sender volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
 	, [
-		  'id'    => 'audiooutput'
-		, 'input' => '<select id="audiooutput"></select>'
-		, 'help'  => <<< EOF
+		  'id'       => 'audiooutput'
+		, 'input'    => '<select id="audiooutput"></select>'
+		, 'help'     => <<< EOF
 HDMI audio:
  · Available when connected before boot only
  · Enable plug and play: {$Ftab( 'player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
 EOF
 	]
 	, [
-		  'id'          => 'hwmixer'
-		, 'input'       => '<select id="hwmixer"></select>'
-		, 'settingicon' => 'volume'
-		, 'help'        => <<< EOF
+		  'id'       => 'hwmixer'
+		, 'input'    => '<select id="hwmixer"></select>'
+		, 'help'     => <<< EOF
 {$Fi( 'volume btn' )}
 Mixer device volume control
 EOF
 	]
 	, [
-		  'id'    => 'mixertype'
-		, 'input' => '<select id="mixertype"></select>'
-		, 'help'  => <<< EOF
+		  'id'       => 'mixertype'
+		, 'input'    => '<select id="mixertype"></select>'
+		, 'help'     => <<< EOF
 Volume control for each device.
 The later in the signal chain the better sound quality.
 <pre>
@@ -90,8 +88,8 @@ htmlSection( $head, $body, 'output' );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'   => 'novolume'
-		, 'help' => <<< EOF
+		  'id'       => 'novolume'
+		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
  · Mixer device volume: <c>0dB</c>
@@ -103,8 +101,8 @@ Note: Not for DACs with on-board amplifier.
 EOF
 	]
 	, [
-		  'id'   => 'dop'
-		, 'help' => <<< EOF
+		  'id'       => 'dop'
+		, 'help'     => <<< EOF
 <wh>D</wh>SD <wh>o</wh>ver <wh>P</wh>CM for DSD-capable devices that not support native DSD
  · DoP repacks 16bit DSD stream into 24bit PCM frames. 
  · PCM frames transmitted to DAC and reassembled back to original DSD stream.
@@ -120,20 +118,20 @@ EOF
 htmlSection( $head, $body, 'bitperfect' );
 $head = [ 'title' => 'Volume' ]; //////////////////////////////////
 $body = [
-	[	  'id'   => 'crossfade'
-		, 'help' => <<< EOF
+	[	  'id'       => 'crossfade'
+		, 'help'     => <<< EOF
 Fade-out to fade-in between playing tracks (same audio format only)
 EOF
 	]
 	, [
-		  'id'   => 'normalization'
-		, 'help' => <<< EOF
+		  'id'       => 'normalization'
+		, 'help'     => <<< EOF
 Normalize the volume level of songs as they play. (16 bit PCM only)
 EOF
 	] 
 	, [
-		  'id'   => 'replaygain'
-		, 'help' => <<< EOF
+		  'id'       => 'replaygain'
+		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 
@@ -150,16 +148,16 @@ htmlSection( $head, $body, 'volume' );
 $head = [ 'title' => 'Options' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'   => 'buffer'
-		, 'help' => <<< EOF
+		  'id'       => 'buffer'
+		, 'help'     => <<< EOF
 Increase to fix intermittent audio.
 
 (default: <c>4096</c> kB - 24s of CD-quality audio)
 EOF
 	]
 	, [
-		  'id'   => 'outputbuffer'
-		, 'help' => <<< EOF
+		  'id'       => 'outputbuffer'
+		, 'help'     => <<< EOF
 Increase to fix missing Album list with large Library.
 
 (default: <c>8192</c> kB)
@@ -175,12 +173,12 @@ Note: Should be disabled for faster Library update if not used.
 EOF
 	]
 	, [
-		  'id'   => 'autoupdate'
-		, 'help' => 'Automatic update MPD database when files changed.'
+		  'id'       => 'autoupdate'
+		, 'help'     => 'Automatic update MPD database when files changed.'
 	]
 	, [
-		 'id'    => 'soxr'
-		, 'help' => <<< EOF
+		 'id'        => 'soxr'
+		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 {$Fi( 'gear btn' )}
  • Presets:
@@ -204,8 +202,8 @@ EOF
 EOF
 	]
 	, [
-		  'id'   => 'custom'
-		, 'help' => 'Insert custom configurations into <c>mpd.conf</c>.'
+		  'id'       => 'custom'
+		, 'help'     => 'Insert custom configurations into <c>mpd.conf</c>.'
 	]
 ];
 htmlSection( $head, $body, 'options' );

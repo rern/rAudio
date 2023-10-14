@@ -1,9 +1,10 @@
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
+$onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 'x';
 $id_data = [
 	  'audio'         => [ 'name' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
-	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluez',                              'status' => true ]
+	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluez',                              'status' => true, 'exist' => $onboardwlan ]
 	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
 	, 'hdmi'          => [ 'name' => 'HDMI',              'sub' => 'hot plug',    'setting' => false ]
 	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
@@ -17,11 +18,11 @@ $id_data = [
 	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'client',      'setting' => 'custom' ]
 	, 'softlimit'     => [ 'name' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
 	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
-	, 'tft'           => [ 'name' => 'TFT 3.5" LCD' ]
+	, 'tft'           => [ 'name' => 'TFT 3.5" LCD',                                                                       'exist' => 'firefox' ]
 	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
 	, 'usbautoupdate' => [ 'name' => 'Hotplug Update',                            'setting' => false ]
 	, 'vuled'         => [ 'name' => 'VU LED' ]
-	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true ]
+	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
 
 $head = [ //////////////////////////////////
@@ -65,8 +66,8 @@ $help = '<wh>• CPU Load:</wh>
 $body = [
 	  htmlSectionStatus( 'status', $labels, $help )
 	, [
-		  'id'   => 'softlimit'
-		, 'help' => 'Temperature level for CPU optimized throttling (default: 60°C)'
+		  'id'       => 'softlimit'
+		, 'help'     => 'Temperature level for CPU optimized throttling (default: 60°C)'
 	]
 ];
 htmlSection( $head, $body, 'status' );
@@ -105,13 +106,12 @@ $body = [
 		, 'help'     => 'Sleep timer for USB hard drives.'
 	]
 	, [
-		  'id'   => 'usbautoupdate'
-		, 'help' => 'Auto update Library database on insert/remove USB drives.'
+		  'id'       => 'usbautoupdate'
+		, 'help'     => 'Auto update Library database on insert/remove USB drives.'
 	]
 ];
 htmlSection( $head, $body, 'storage' );
 
-if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'On-board Devices'
@@ -126,15 +126,15 @@ $body = [
 EOF
 	]
 	, [
-		  'id'   => 'bluetooth'
-		, 'help' => <<< EOF
+		  'id'       => 'bluetooth'
+		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 ■ Sampling 16bit - Bluetooth receivers with fixed sampling
 EOF
 	]
 	, [
-		  'id'   => 'hdmi'
-		, 'help' => <<< EOF
+		  'id'       => 'hdmi'
+		, 'help'     => <<< EOF
  · Force enable HDMI without connecting before boot
  · Enable if not detected properly
  · Should be disabled if not used.
@@ -154,13 +154,13 @@ EOF
 ];
 htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
-}
+
 $head = [ //////////////////////////////////
 	  'title' => 'GPIO Devices'
 ];
 $body = [
 	[
-		  'html' => <<< EOF
+		  'html'     => <<< EOF
 <div id="divi2s">
 	<div class="col-l single">Audio - I²S<i class="i-i2smodule"></i></div>
 	<div class="col-r">
@@ -184,16 +184,16 @@ Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF
 	]
 	, [
-		  'id'   => 'lcdchar'
-		, 'help' => <<< EOF
+		  'id'       => 'lcdchar'
+		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  · Support 16x2 and 20x4 LCD modules.
  · {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 EOF
 	]
 	, [
-		  'id'   => 'powerbutton'
-		, 'help' => <<< EOF
+		  'id'       => 'powerbutton'
+		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 {$Fi( 'gear btn' )}
  · On - Fixed to pin <c>5</c>
@@ -204,8 +204,8 @@ EOF
 EOF
 	]
 	, [
-		  'id'   => 'relays'
-		, 'help' => <<< EOF
+		  'id'       => 'relays'
+		, 'help'     => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
@@ -213,25 +213,24 @@ On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
 EOF
 	],
 	[
-		  'id'   => 'rotaryencoder'
-		, 'help' => <<< EOF
+		  'id'       => 'rotaryencoder'
+		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  · Turn volume up/down
  · Push to play/pause
 EOF
 	]
 	,[
-		  'id'   => 'mpdoled'
-		, 'help' => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
+		  'id'       => 'mpdoled'
+		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
-		  'id'    => 'tft'
-		, 'exist' => file_exists( '/etc/systemd/system/localbrowser.service' )
-		, 'help'  => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
+		  'id'       => 'tft'
+		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 	]
 	, [
-		  'id'   => 'vuled'
-		, 'help' => <<< EOF
+		  'id'       => 'vuled'
+		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
 EOF
@@ -241,9 +240,9 @@ htmlSection( $head, $body, 'gpio' );
 $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'    => 'hostname'
-		, 'input' => '<input type="text" id="hostname" readonly>'
-		, 'help'  => <<< EOF
+		  'id'       => 'hostname'
+		, 'input'    => '<input type="text" id="hostname" readonly>'
+		, 'help'     => <<< EOF
 For:
  · Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
  · Web Interface URL: <c id="avahiurl"></c>
@@ -251,16 +250,16 @@ For:
 EOF
 	]
 	, [
-		  'id'    => 'timezone'
-		, 'input' => '<select id="timezone"></select>'
-		, 'help'  => <<< EOF
+		  'id'       => 'timezone'
+		, 'input'    => '<select id="timezone"></select>'
+		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 Servers for time sync and package mirror
 EOF
 	]
 	, [
-		  'id'   => 'soundprofile'
-		, 'help' => <<< EOF
+		  'id'       => 'soundprofile'
+		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
 {$Fi( 'gear btn' )}
 Swapiness (default: <c>60</c>)
@@ -280,8 +279,8 @@ htmlSection( $head, $body, 'environment' );
 $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'   => 'backup'
-		, 'help' => <<< EOF
+		  'id'       => 'backup'
+		, 'help'     => <<< EOF
 Backup all data and settings:
  · Library: Database, Bookmarks, DAB Radio, Web Radio
  · Playback: Lyrics
@@ -290,8 +289,8 @@ Backup all data and settings:
 EOF
 	]
 	, [
-		  'id'   => 'restore'
-		, 'help' => <<< EOF
+		  'id'       => 'restore'
+		, 'help'     => <<< EOF
  · Restore all data and settings from a backup file.
  · Reset to default - Reset everything except Wi-Fi connection and custom LAN
 EOF

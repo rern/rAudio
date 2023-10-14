@@ -86,23 +86,22 @@ $head = [
 	, 'help'    => 'HELP'
 ];
 $body = [
-	 'HTML'                             // for status section
+	 'HTML'                          // for status section
 	, [
-		  'label'       => 'LABEL'      // REQUIRED
-		, 'sublabel'    => 'SUB LABEL'
-		, 'id'          => 'ID'         // REQUIRED
-		, 'status'      => 'COMMAND'    // include status icon and status box
-		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     =>  ***         // default  = $( '#setting-'+ id ).click() before enable
-		                                // false    = no setting
-		                                // 'custom' = custom setting
-		                                // 'none'   = no setting - custom enable
-		, 'settingicon' => 'ICON'       // default = 'gear' 
-		                                // false   = no icon
-		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on setting
-		                                // 'js' = set by js condition
-		, 'help'        => 'HELP'
-		, 'exist'       => ***          // omit if not exist
+		  'label'    => 'LABEL'      // REQUIRED
+		, 'sublabel' => 'SUB LABEL'
+		, 'id'       => 'ID'         // REQUIRED
+		, 'status'   => 'COMMAND'    // include status icon and status box
+		, 'input'    => 'HTML'       // alternative - if not switch
+		, 'setting'  =>  ***         // default  = $( '#setting-'+ id ).click() before enable
+		                             // false    = no setting
+		                             // 'custom' = custom setting
+		                             // 'none'   = no setting - custom enable
+		                             // false    = no icon
+		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on setting
+		                             // 'js'     = set by js condition
+		, 'help'     => 'HELP'
+		, 'exist'    => ***          // omit if not exist
 	]
 	, ...
 ];
@@ -157,14 +156,17 @@ function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
 </div>';
 }
 function htmlSetting( $data ) {
-	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
+	global $id_data;
+	$id          = $data[ 'id' ];
+	$iddata      = $id_data[ $id ];
+	if ( isset( $iddata[ 'exist' ] ) && ! file_exists( '/usr/bin/'.$iddata[ 'exist' ] ) ) return;
 	
 	if ( isset( $data[ 'html' ] ) ) {
 		echo str_replace( '|', '<g>|</g>', $data[ 'html' ] );
 		return;
 	}
 	
-	global $page, $id_data;
+	global $page;
 	$id          = $data[ 'id' ];
 	$iddata      = $id_data[ $id ];
 	$name        = $iddata[ 'name' ];
@@ -173,7 +175,13 @@ function htmlSetting( $data ) {
 	$setting     = $iddata[ 'setting' ] ?? 'common';
 	$label       = '<span class="name">'.$name.'</span>';
 	$input       = $data[ 'input' ] ?? false;
-	$settingicon = ! $setting || $setting === 'none' ? false : $data[ 'settingicon' ] ?? 'gear';
+	if ( $id === 'bluealsa' || $id === 'hwmixer' ) {
+		$settingicon = 'volume';
+	} else if ( ! $setting || $setting === 'none' ) {
+		$settingicon = false;
+	} else {
+		$settingicon = 'gear';
+	}
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
 	
