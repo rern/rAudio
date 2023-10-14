@@ -85,11 +85,11 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 				, boxwidth     : 300
 				, values       : list.current
 				, checkchanged : true
-				, buttonlabel  : ico( 'remove' ) +'Key'
+				, buttonlabel  : ico( 'remove' ) +'Keys'
 				, buttoncolor  : red
 				, button       : () => {
 					bash( [ 'spotifykeyremove' ] );
-					notifyCommon( 'Remove client key ...' );
+					notifyCommon( 'Remove keys ...' );
 				}
 				, ok           : () => {
 					bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
