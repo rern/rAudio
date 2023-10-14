@@ -65,7 +65,38 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		bash( [ 'spotifyd' ] );
 		notifyCommon( 'Enable ...' );
 	} else if ( S.spotifytoken ) {
-		infoSpotifyOutput();
+		if ( S.camilladsp ) {
+			info( {
+				  icon     : SW.icon
+				, title    : SW.title
+				, tablabel : [ 'Output', 'Keys' ]
+				, tab      : [ '', infoSpotifyKeys ]
+				, message  : '<br>Loopback is currently set for <a class="helpmenu label">DSP<i class="i-camilladsp"></i></a><br>&nbsp;'
+			} );
+			return
+		}
+		
+		bash( [ 'spotifyoutput' ], ( list ) => {
+			info( {
+				  icon         : SW.icon
+				, title        : SW.title
+				, selectlabel  : 'Device'
+				, select       : list.devices
+				, boxwidth     : 300
+				, values       : list.current
+				, checkchanged : true
+				, buttonlabel  : ico( 'remove' ) +'Key'
+				, buttoncolor  : red
+				, button       : () => {
+					bash( [ 'spotifykeyremove' ] );
+					notifyCommon( 'Remove client key ...' );
+				}
+				, ok           : () => {
+					bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
+					notifyCommon();
+				}
+			} );
+		}, 'json' );
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
 			infoWarning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
@@ -433,53 +464,6 @@ function infoScrobbleAuth() {
 		, cancel       : switchCancel
 		, ok           : () => bash( [ 'scrobblekeyremove' ] )
 	} );
-}
-function infoSpotifyKeys() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Output', 'Keys' ]
-		, tab          : [ infoSpotifyOutput, '' ]
-		, checkbox     : 'Remove client keys'
-		, values       : false
-		, checkchanged : true
-		, okcolor      : orange
-		, oklabel      : ico( 'remove' ) +'Remove'
-		, ok           : () => {
-			bash( [ 'spotifykeyremove' ] );
-			notifyCommon();
-		}
-	} );
-}
-function infoSpotifyOutput() {
-	if ( S.camilladsp ) {
-		info( {
-			  icon     : SW.icon
-			, title    : SW.title
-			, tablabel : [ 'Output', 'Keys' ]
-			, tab      : [ '', infoSpotifyKeys ]
-			, message  : '<br>Loopback is currently set for <a class="helpmenu label">DSP<i class="i-camilladsp"></i></a><br>&nbsp;'
-		} );
-		return
-	}
-	
-	bash( [ 'spotifyoutput' ], ( list ) => {
-		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, tablabel     : [ 'Output', 'Keys' ]
-			, tab          : [ '', infoSpotifyKeys ]
-			, boxwidth     : 300
-			, selectlabel  : 'Device'
-			, select       : list.devices
-			, values       : list.current
-			, checkchanged : true
-			, ok           : () => {
-				bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
-				notifyCommon();
-			}
-		} );
-	}, 'json' );
 }
 function passwordWrong() {
 	bannerHide();

@@ -9,6 +9,7 @@
 	box-shadow    : var( --shadow-select );
 }
 #infoContent .select2-container {
+	max-width     : none;
 	margin-bottom : 0;
 }
 .select2-selection:focus-visible {
@@ -35,7 +36,7 @@
 	width  : 30px !important;
 }
 .select2-search--dropdown {
-	box-shadow: var( --shadow-menu );
+	box-shadow: var( --shadow-select );
 }
 .select2-dropdown {
 	background    : var( --cga );
