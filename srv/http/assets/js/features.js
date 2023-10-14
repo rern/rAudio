@@ -445,7 +445,10 @@ function infoSpotifyKeys() {
 		, checkchanged : true
 		, okcolor      : orange
 		, oklabel      : ico( 'remove' ) +'Remove'
-		, ok           : () => bash( [ 'spotifykeyremove' ] )
+		, ok           : () => {
+			bash( [ 'spotifykeyremove' ] );
+			notifyCommon();
+		}
 	} );
 }
 function infoSpotifyOutput() {
@@ -471,7 +474,10 @@ function infoSpotifyOutput() {
 			, select       : list.devices
 			, values       : list.current
 			, checkchanged : true
-			, ok           : () => bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] )
+			, ok           : () => {
+				bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
+				notifyCommon();
+			}
 		} );
 	}, 'json' );
 }

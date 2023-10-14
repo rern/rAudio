@@ -402,19 +402,21 @@ spotifykeyremove )
 spotifyoutput )
 	file=$( aplaynameFile )
 	[[ -e $file ]] && current='"'$( < "$file" )'"' || current=false
-	devices='"hw:'$( head -1 /etc/asound.conf | cut -d' ' -f2 )',0"'
+	devices='"Default"'
 	readarray -t lines <<< $( aplay -L | grep ^.*:CARD )
 	for l in ${lines[@]}; do
 		devices+=', "'$l'"'
 	done
+	current=$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )
+	[[ ${current:0:3} == hw: ]] && current=Default
 	echo '{
-  "current" : "'$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )'"
+  "current" : "'$current'"
 , "devices" : [ '$devices' ]
 }'
 	;;
 spotifyoutputset )
 	file=$( aplaynameFile )
-	[[ ${OUTPUT:0:3} == hw: ]] && rm -f "$file" || echo $OUTPUT > "$file"
+	[[ $OUTPUT == Default ]] && rm -f "$file" || echo $OUTPUT > "$file"
 	$dirsettings/player-conf.sh
 	;;
 spotifytoken )
