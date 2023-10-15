@@ -176,9 +176,8 @@ if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
 		hw=plughw:Loopback,1
 	elif [[ $bluetooth ]]; then
 		hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
-	else
-		devname=$( aplay -l | sed -E -n '/^card '$card':/ {s/^.*\[|].*//g; p}' )
-		[[ -e "$dirsystem/spotify-$devname" ]] && hw=$( < "$dirsystem/spotify-$devname" )
+	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
+		hw=$( < "$dirsystem/spotify-$aplayname" )
 	fi
 ########
 	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )

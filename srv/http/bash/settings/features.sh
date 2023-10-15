@@ -7,7 +7,7 @@ args2var "$1"
 aplaynameFile() {
 	local aplayname card
 	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-	aplayname=$( aplay -l | sed -E -n '/^card '$card':/ {s/^.*\[|].*//g; p}' )
+	aplayname=$( aplay -l | sed -E -n '/^card '$card':/ {s/^.*\[(.*)],.*/\1/; p}' )
 	echo $dirsystem/spotify-$aplayname
 }
 localbrowserDisable() {
