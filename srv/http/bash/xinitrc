@@ -20,4 +20,4 @@ scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 profile=$( ls /root/.mozilla/firefox | grep release$ )
 echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
 
-firefox -kiosk http://localhost
+firefox -kiosk -private http://localhost
