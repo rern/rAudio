@@ -88,8 +88,17 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 				, buttonlabel  : ico( 'remove' ) +'Keys'
 				, buttoncolor  : red
 				, button       : () => {
-					bash( [ 'spotifykeyremove' ] );
-					notifyCommon( 'Remove keys ...' );
+					info( {
+						  icon    : SW.icon
+						, title   : SW.title
+						, message : 'Remove client <wh>ID</wh> and <wh>Secret</wh>?'
+						, oklabel : ico( 'remove' ) +'Remove'
+						, okcolor : red
+						, ok      : () => {
+							bash( [ 'spotifykeyremove' ] );
+							notifyCommon( 'Remove keys ...' );
+						}
+					} );
 				}
 				, ok           : () => {
 					bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
