@@ -17,7 +17,7 @@
 <?php
 $hash      = '?v='.time();
 $page      = $_GET[ 'p' ] ?? '';
-$addons    = $addonsprogress = $guide = $networks = false;
+$addons    = $addonsprogress = $camilla = $guide = $networks = false;
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 if ( file_exists( '/srv/http/data/system/login' ) ) {
