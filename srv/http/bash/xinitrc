@@ -16,15 +16,17 @@ else
 	cursor=yes
 fi
 matchbox-window-manager -use_cursor $cursor &
-scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 rm -rf /root/.mozilla
 timeout 1 firefox --headless &> /dev/null
-sleep 1
-profile=$( grep -m1 ^Default /root/.mozilla/firefox/profiles.ini | cut -d= -f2 )
-fileuserjs=/root/.mozilla/firefox/$profile/user.js
+for i in {1..5}; do
+	[[ -e /root/.mozilla ]] && break || sleep 1
+done
+scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 if [[ $scale == 1.00 ]]; then
 	rm -f $fileuserjs
 else
+	profile=$( grep -m1 ^Default /root/.mozilla/firefox/profiles.ini | cut -d= -f2 )
+	fileuserjs=/root/.mozilla/firefox/$profile/user.js
 	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $fileuserjs
 fi
 firefox -kiosk http://localhost
