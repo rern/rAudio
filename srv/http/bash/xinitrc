@@ -18,7 +18,6 @@ fi
 matchbox-window-manager -use_cursor $cursor &
 scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 profile=$( ls /root/.mozilla/firefox | grep release$ )
-fileuserjs=/root/.mozilla/firefox/$profile/user.js
-[[ $scale == 1.00 ]] && rm -f $fileuserjs || echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $fileuserjs
+echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
 
 firefox -kiosk http://localhost
