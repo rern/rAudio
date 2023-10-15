@@ -12,6 +12,7 @@ var default_v      = {
 		, ONWHILEPLAY : false
 		, HDMI        : false
 		, CURSOR      : false
+		, RUNXINITRCD : false
 	}
 	, lyrics       : {
 		  URL      : 'https://'
@@ -200,8 +201,8 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 	</td><td>&nbsp;<gr>minutes</gr></td></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox" id="onwhileplay">On while play</label></td></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox">HDMI Hotplug</label></td></tr>
-<tr><td></td>
-	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
+<tr><td></td><td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
+<tr><td></td><td colspan="2"><label><input type="checkbox">run <c>xinitrc.d</c></td></label></tr>
 </table>
 <div id="infoRange"><input type="range" min="0" max="255" value="${ S.brightness }"><div>Brightness</div></div><br>
 <div class="btnbottom">
