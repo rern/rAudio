@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231020
+file=$dirsystem/localbrowser.conf
+grep -q runxinitrcd $file || echo runxinitrcd= >> $file
+
 # 20231001
 if [[ -e /usr/bin/upmpdcli ]]; then
 	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp

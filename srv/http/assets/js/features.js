@@ -175,7 +175,7 @@ $( '#setting-autoplay' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-localbrowser' ).on( 'click', function() {
-	var htmlbrightness = S.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
+	var htmlbrightness = S.brightness ? '<span class="brightness">'+ ico( 'gear' ) +' Brightness</span>' : '';
 	var content        = `
 <table>
 <tr><td style="width:110px">Rotation</td>
@@ -204,9 +204,9 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 <tr><td></td><td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox">run <c>xinitrc.d</c></td></label></tr>
 </table>
-<div id="infoRange"><input type="range" min="0" max="255" value="${ S.brightness }"><div>Brightness</div></div><br>
-<div class="btnbottom">
-	&nbsp;<span class="reload">Reload ${ ico( 'redo' ) }</span>&emsp;
+<div class="btnbottom"><br>
+	${ htmlbrightness }
+	&nbsp;<span class="reload">${ ico( 'redo' ) } Reload</span>&emsp;
 	<span class="screenoff">${ ico( 'screenoff' ) } On/Off</span><br>&nbsp;
 </div>`;
 	info( {
@@ -219,7 +219,6 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, beforeshow   : () => {
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
 			$( '#onwhileplay' ).prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
-			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
 			$( '#infoContent .btnicon' ).on( 'click', function() {
 				var up   = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();
@@ -235,20 +234,28 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 						.prop( 'disabled', 1 );
 				}
 			} );
+			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
+			$( '.brightness' ).on( 'click', function() {
+				switchCancel();
+				info( {
+					  icon       : 'firefox'
+					, title      : 'Browser on RPi'
+					, rangelabel : 'Brightness'
+					, values     : S.brightness
+					, beforeshow : () => {
+						$( '#infoRange input' ).on( 'input', function() {
+							bash( [ 'brightness', $( this ).val(), 'CMD VAL' ] );
+						} );
+					}
+					, okno       : true
+				} );
+			} );
 			$( '.reload' ).on( 'click', function() {
 				bash( [ 'localbrowserreload' ] );
 			} );
 			$( '.screenoff' ).on( 'click', function() {
 				bash( [ 'screenofftoggle' ] );
 			} );
-			if ( S.brightness ) {
-				var $range = $( '#infoRange input' );
-				$range.on( 'input', function() {
-					bash( [ 'brightness', $range.val(), 'CMD VAL' ] );
-				} );
-			} else {
-				$( '#infoRange' ).remove();
-			}
 		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
