@@ -6,7 +6,12 @@ alias=r1
 
 # 20231020
 file=$dirsystem/localbrowser.conf
-grep -q runxinitrcd $file || echo runxinitrcd= >> $file
+if ! grep -q runxinitrcd $file; then
+	sed -i -e '/hdmi/ d
+' -e '$ a\
+runxinitrcd=
+' $file
+fi
 
 # 20231001
 if [[ -e /usr/bin/upmpdcli ]]; then

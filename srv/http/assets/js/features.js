@@ -10,7 +10,6 @@ var default_v      = {
 		, ZOOM        : 100
 		, SCREENOFF   : 0
 		, ONWHILEPLAY : false
-		, HDMI        : false
 		, CURSOR      : false
 		, RUNXINITRCD : false
 	}
@@ -200,7 +199,6 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		</select>
 	</td><td>&nbsp;<gr>minutes</gr></td></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox" id="onwhileplay">On while play</label></td></tr>
-<tr><td></td><td colspan="2"><label><input type="checkbox">HDMI Hotplug</label></td></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox">run <c>xinitrc.d</c></td></label></tr>
 </table>

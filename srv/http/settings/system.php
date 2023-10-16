@@ -6,7 +6,7 @@ $id_data = [
 	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluez',                              'status' => true, 'exist' => $onboardwlan ]
 	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
-	, 'hdmi'          => [ 'name' => 'HDMI',              'sub' => 'hot plug',    'setting' => false ]
+	, 'hdmi'          => [ 'name' => 'HDMI Hotplug',                              'setting' => false ]
 	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'name' => 'Audio - I²S' ]
 	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'HD44780' ]

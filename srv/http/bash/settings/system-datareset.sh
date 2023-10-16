@@ -141,7 +141,6 @@ rotate=0
 zoom=100
 screenoff=0
 onwhileplay=
-hdmi=
 cursor=
 runxinitrcd=" > $dirsystem/localbrowser.conf
 fi

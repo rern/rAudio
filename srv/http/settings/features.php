@@ -163,10 +163,9 @@ EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
  · Rotate - TFT 3.5" LCD needs reboot.
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )} (Backlight still on - no energy saved)
- · HDMI Hotplug:
-	 · Disabled - Display must be connected before boot.
-	 · Enable - If connect before boot but not detected properly.
  · run <c>xinitrc.d</c> - execute custom scripts in <c>/etc/X11/xinit/xinitrc.d</c>
+
+Note: Connect display before boot or enable {$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
 EOF
 	]
 	, [
