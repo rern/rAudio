@@ -165,7 +165,7 @@ EOF
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )} (Backlight still on - no energy saved)
  · run <c>xinitrc.d</c> - execute custom scripts in <c>/etc/X11/xinit/xinitrc.d</c>
 
-Note: HDMI - Connect before boot or
+Note: HDMI display - Connect before boot or
 enable {$Ftab( 'system' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
 EOF
 	]
