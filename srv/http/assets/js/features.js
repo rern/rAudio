@@ -407,7 +407,34 @@ $( '#setting-login' ).on( 'click', function() {
 } );
 $( '#setting-scrobble' ).on( 'click', function() {
 	if ( S.scrobblekey ) {
-		infoScrobble();
+		info( {
+			  icon         : SW.icon
+			, title        : SW.title
+			, checkbox     : [
+				  ico( 'airplay' ) +'AirPlay'
+				, ico( 'bluetooth' ) +'Bluetooth'
+				, ico( 'spotify' ) +'Spotify'
+				, ' '+ ico( 'upnp' ) +' UPnP / DLNA'
+			]
+			, footer       : '<br><label><input type="checkbox">Notify on scrobbling</label>'
+			, boxwidth     : 170
+			, values       : S.scrobbleconf || default_v.scrobble
+			, checkchanged : S.scrobble
+			, buttonlabel  : ico( 'remove' ) +'Auth.'
+			, buttoncolor  : red
+			, button       : () => {
+				switchCancel();
+				info( {
+					  icon    : 'scrobble'
+					, title   : 'Scrobbler'
+					, message : 'Remove authorization?'
+					, ok      : () => bash( [ 'scrobblekeyremove' ] )
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
 	} else {
 		info( {
 			  icon    : SW.icon
@@ -445,40 +472,6 @@ function infoCheckEvenOdd( length ) {
 	I.checkblank = [];
 	I.checkip    = [];
 	for ( i = 0; i < length; i++ ) i % 2 ? I.checkip.push( i ) : I.checkblank.push( i );
-}
-function infoScrobble() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Players', 'Authorization' ]
-		, tab          : [ '', infoScrobbleAuth ]
-		, checkbox     : [
-			  ico( 'airplay' ) +'AirPlay'
-			, ico( 'bluetooth' ) +'Bluetooth'
-			, ico( 'spotify' ) +'Spotify'
-			, ico( 'upnp' ) +'UPnP'
-		]
-		, footer       : '<br><label><input type="checkbox">Notify on scrobbling</label>'
-		, boxwidth     : 170
-		, values       : S.scrobbleconf || default_v.scrobble
-		, checkchanged : S.scrobble
-		, cancel       : switchCancel
-		, ok           : switchEnable
-		, fileconf     : true
-	} );
-}
-function infoScrobbleAuth() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Players', 'Authorization' ]
-		, tab          : [ infoScrobble, '' ]
-		, checkbox     : 'Remove authorization'
-		, values       : false
-		, checkchanged : true
-		, cancel       : switchCancel
-		, ok           : () => bash( [ 'scrobblekeyremove' ] )
-	} );
 }
 function passwordWrong() {
 	bannerHide();
