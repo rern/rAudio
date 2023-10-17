@@ -84,8 +84,7 @@ done
 [[ ! -e $dirsystem/scrobble ]] && exit
 
 . $dirshm/statusprev
-[[ $player != mpd ]] || ! grep -q $player=true $dirsystem/scrobble.conf && exit
-
+[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
 
 [[ ! $Artist \
 	|| ! $Title \
