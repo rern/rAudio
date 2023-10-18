@@ -416,7 +416,7 @@ $( '#setting-scrobble' ).on( 'click', function() {
 				, ico( 'spotify' ) +'Spotify'
 				, ' '+ ico( 'upnp' ) +' UPnP / DLNA'
 			]
-			, footer       : '<br><label><input type="checkbox">Notify on scrobbling</label>'
+			, footer       : '<br><label><input type="checkbox"><wh>Notify</wh> on scrobbling</label>'
 			, boxwidth     : 170
 			, values       : S.scrobbleconf || default_v.scrobble
 			, checkchanged : S.scrobble
