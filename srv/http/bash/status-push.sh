@@ -86,8 +86,6 @@ done
 . $dirshm/statusprev
 [[ ! $Artist || ! $Title || $webradio == true || $state == pause ]] || (( $Time < 30 )) && exit
 
-[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
-
 (( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
 
-$dirbash/scrobble.sh &
+[[ $player == mpd ]] || grep -q $player=true $dirsystem/scrobble.conf && $dirbash/scrobble.sh &
