@@ -36,7 +36,7 @@ for pin in $pins; do
 	[[ $i < $dL ]] && sleep ${delay[i]}
 	(( i++ ))
 done
-if [[ $action == ON && ! -e $dirshm/stoptimer && $timer > 0 ]]; then
+if [[ $action == ON && ! -e $dirshm/pidstoptimer && $timer > 0 ]]; then
 	echo $timer > $timerfile
 	$dirbash/relays-timer.sh &> /dev/null &
 fi

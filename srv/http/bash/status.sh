@@ -79,7 +79,7 @@ else
 , "scrobble"     : '$( exists $dirsystem/scrobble )'
 , "shareddata"   : '$( exists $filesharedip )'
 , "snapclient"   : '$( exists $dirshm/snapclient )'
-, "stoptimer"    : '$( exists $dirshm/stoptimer )'
+, "stoptimer"    : '$( exists $dirshm/pidstoptimer )'
 , "updateaddons" : '$( exists $diraddons/update )'
 , "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'

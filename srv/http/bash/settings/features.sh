@@ -441,12 +441,11 @@ spotifytoken )
 	pushRefresh
 	;;
 stoptimer )
+	killProcess stoptimer
 	if [[ $ON ]]; then
-		touch $dirshm/stoptimer
 		$dirbash/stoptimer.sh &> /dev/null &
 	else
-		killProcess stoptimer
-		rm -f $dirshm/stoptimer
+		rm -f $dirshm/pidstoptimer
 		if [[ -e $dirshm/relayson ]]; then
 			. $dirsystem/relays.conf
 			echo $timer > $timerfile

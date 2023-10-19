@@ -500,7 +500,6 @@ function renderPage() {
 	} else {
 		$( '#nfsserver' ).removeClass( 'disabled' );
 	}
-	$( '#stoptimer' ).toggleClass( 'disabled', ! S.stoptimer && S.state !== 'play' );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {

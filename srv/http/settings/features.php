@@ -244,7 +244,6 @@ EOF
 	]
 	, [
 		  'id'       => 'stoptimer'
-		, 'disabled' => 'Player is currently not playing.'
 		, 'help'     => <<< EOF
 Stop timer:
  · Mute
