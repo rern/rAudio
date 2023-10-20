@@ -2,34 +2,33 @@
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
-$id_data = [
+$id_data      = [
 	  'autoplay'       => [ 'name' => 'AutoPlay' ]
-	, 'camilladsp'     => [ 'name' => 'DSP',              'sub' => 'camilladsp',     'setting' => false,    'status' => true ]
-	, 'dabradio'       => [ 'name' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true ]
+	, 'camilladsp'     => [ 'name' => 'DSP',              'sub' => 'camilladsp',     'setting' => false,    'status' => true, 'exist' => 'camilladsp' ]
+	, 'dabradio'       => [ 'name' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true, 'exist' => 'mediamtx' ]
 	, 'equalizer'      => [ 'name' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
-	, 'hostapd'        => [ 'name' => 'Access Point',     'sub' => 'hostapd',                               'status' => true ]
+	, 'hostapd'        => [ 'name' => 'Access Point',     'sub' => 'hostapd',                               'status' => true, 'exist' => 'hostapd' ]
 	, 'httpd'          => [ 'name' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
-	, 'localbrowser'   => [ 'name' => 'Browser on RPi',   'sub' => 'localbrowser',                          'status' => true ]
+	, 'localbrowser'   => [ 'name' => 'Browser on RPi',   'sub' => 'localbrowser',                          'status' => true, 'exist' => 'firefox' ]
 	, 'login'          => [ 'name' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
 	, 'lyrics'         => [ 'name' => 'Lyrics' ]
 	, 'multiraudio'    => [ 'name' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
 	, 'nfsserver'      => [ 'name' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false,    'status' => true ]
 	, 'scrobble'       => [ 'name' => 'Scrobbler',        'sub' => 'Last.fm' ]
-	, 'shairport-sync' => [ 'name' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true ]
-	, 'smb'            => [ 'name' => 'File Sharing',     'sub' => 'samba',                                 'status' => true ]
-	, 'snapclient'     => [ 'name' => 'SnapClient',       'sub' => 'snapclient',                            'status' => true ]
-	, 'snapserver'     => [ 'name' => 'SnapServer',       'sub' => 'snapserver',     'setting' => false,    'status' => true ]
-	, 'spotifyd'       => [ 'name' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true ]
+	, 'shairport-sync' => [ 'name' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true, 'exist' => 'shairport-sync' ]
+	, 'smb'            => [ 'name' => 'File Sharing',     'sub' => 'samba',                                 'status' => true, 'exist' => 'smbd' ]
+	, 'snapclient'     => [ 'name' => 'SnapClient',       'sub' => 'snapclient',                            'status' => true, 'exist' => 'snapclient' ]
+	, 'snapserver'     => [ 'name' => 'SnapServer',       'sub' => 'snapserver',     'setting' => false,    'status' => true, 'exist' => 'snapclient' ]
+	, 'spotifyd'       => [ 'name' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true, 'exist' => 'spotifyd' ]
 	, 'stoptimer'      => [ 'name' => 'Stop Timer' ]
-	, 'upmpdcli'       => [ 'name' => 'UPnP',             'sub' => 'upmpdcli',       'setting' => false,    'status' => true ]
+	, 'upmpdcli'       => [ 'name' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
 ];
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Renderers' ]; //////////////////////////////////
-$body = [
+$head         = [ 'title' => 'Renderers' ]; //////////////////////////////////
+$body         = [
 	[
-		  'id'    => 'shairport-sync'
-		, 'exist' => file_exists( '/usr/bin/shairport-sync' )
-		, 'help'  => <<< EOF
+		  'id'       => 'shairport-sync'
+		, 'help'     => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
 
 Note:
@@ -41,13 +40,11 @@ EOF
 	, [
 		  'id'       => 'dabradio'
 		, 'disabled' => 'No DAB devices found.'
-		, 'exist'    => file_exists( '/usr/bin/mediamtx' )
 		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
 	]
 	, [
-		  'id'    => 'snapclient'
-		, 'exist' => file_exists( '/usr/bin/snapclient' )
-		, 'help'  => <<< EOF
+		  'id'       => 'snapclient'
+		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  · SSH passwords must be default.
  · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
@@ -57,9 +54,8 @@ EOF
 EOF
 	]
 	, [
-		  'id'    => 'spotifyd'
-		, 'exist' => file_exists( '/usr/bin/spotifyd' )
-		, 'help'  => <<< EOF
+		  'id'       => 'spotifyd'
+		, 'help'     => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
  · Premium account
@@ -86,9 +82,8 @@ To create Spotify private app:
 EOF
 	]
 	, [
-		  'id'    => 'upmpdcli'
-		, 'exist' => file_exists( '/usr/bin/upmpdcli' )
-		, 'help'  => <<< EOF
+		  'id'       => 'upmpdcli'
+		, 'help'     => <<< EOF
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device
  · Playlist - replaced by playlist of UPnP / DLNA on start
  · Playback stop button - Clear UPnP / DLNA playlist
@@ -103,15 +98,14 @@ htmlSection( $head, $body, 'renderers' );
 $head = [ 'title' => 'Streamers' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'   => 'httpd'
-		, 'help' => <<< EOF
+		  'id'       => 'httpd'
+		, 'help'     => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
 	]
 	, [
 		  'id'       => 'snapserver'
 		, 'disabled' => labelIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
-		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
 
@@ -125,7 +119,6 @@ $body = [
 	[
 		  'id'       => 'camilladsp'
 		, 'disabled' => labelIcon( 'Equalizer', 'equalizer' ).' is currently enabled.'
-		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: {$Fmenu( 'features', 'Features', 'camilladsp' )}
@@ -149,7 +142,6 @@ $body = [
 	[
 		  'id'       => 'hostapd'
 		, 'disabled' => labelIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
-		, 'exist'    => file_exists( '/usr/bin/hostapd' )
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
@@ -157,8 +149,8 @@ $body = [
 EOF
 	]
 	, [
-		  'id'   => 'autoplay'
-		, 'help' => <<< EOF
+		  'id'       => 'autoplay'
+		, 'help'     => <<< EOF
 Start playing automatically on:
  · Bluetooth connected
  · Audio CD inserting
@@ -166,24 +158,20 @@ Start playing automatically on:
 EOF
 	]
 	, [
-		  'id'    => 'localbrowser'
-		, 'exist' => '/usr/bin/firefox'
-		, 'help'  => <<< EOF
+		  'id'       => 'localbrowser'
+		, 'help'     => <<< EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
- · TFT 3.5" LCD: Rotate needs reboot.
- · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )}
-	· Backlight still on - no energy saved
-	· Sleep timer in {$Fi( 'gear btn' )}
+ · Rotate - TFT 3.5" LCD needs reboot.
+ · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )} (Backlight still on - no energy saved)
+ · run <c>xinitrc.d</c> - execute custom scripts in <c>/etc/X11/xinit/xinitrc.d</c>
 
-Note: HDMI Hotplug
- · Disabled - Display must be connected before boot.
- · Enable - If connect before boot but not detected properly.
+Note: HDMI display - Connect before boot or
+enable {$Ftab( 'system' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
 EOF
 	]
 	, [
 		  'id'       => 'smb'
 		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
-		, 'exist'    => file_exists( '/usr/bin/smbd' )
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
@@ -194,8 +182,8 @@ Note: {$FlabelIcon( 'Server rAudio', 'rserver' )} should yield better performanc
 EOF
 	]
 	, [
-		  'id'   => 'lyrics'
-		, 'help' => <<< EOF
+		  'id'       => 'lyrics'
+		, 'help'     => <<< EOF
  · Search lyrics from user specified URL and tags.
  · Embedded lyrics:
 	 · Get lyrics from local files.
@@ -204,8 +192,8 @@ EOF
 EOF
 	]
 	, [
-		  'id'   => 'multiraudio'
-		, 'help' => <<< EOF
+		  'id'       => 'multiraudio'
+		, 'help'     => <<< EOF
 Switch between multiple rAudio devices.
 Switch: {$Fmenu( 'playlist', 'Playlist', 'multiraudio' )}
 
@@ -213,15 +201,15 @@ Note: SSH password must be default.
 EOF
 	]
 	, [
-		  'id'   => 'login'
-		, 'help' => <<< EOF
+		  'id'       => 'login'
+		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
 Lock: {$Fmenu( 'player', 'Player', 'lock' )}
 EOF
 	]
 	, [
-		  'id'   => 'scrobble'
-		, 'help' => <<< EOF
+		  'id'       => 'scrobble'
+		, 'help'     => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.
@@ -231,7 +219,6 @@ EOF
 	]
 	, [
 		  'id'          => 'nfsserver'
-		, 'settingicon' => false
 		, 'disabled'    => 'js'
 		, 'help'        => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FlabelIcon( 'Shared Data', 'networks' )}
@@ -257,7 +244,6 @@ EOF
 	]
 	, [
 		  'id'       => 'stoptimer'
-		, 'disabled' => 'Player is currently not playing.'
 		, 'help'     => <<< EOF
 Stop timer:
  · Mute

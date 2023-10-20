@@ -10,8 +10,8 @@ var default_v      = {
 		, ZOOM        : 100
 		, SCREENOFF   : 0
 		, ONWHILEPLAY : false
-		, HDMI        : false
 		, CURSOR      : false
+		, RUNXINITRCD : false
 	}
 	, lyrics       : {
 		  URL      : 'https://'
@@ -65,7 +65,47 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		bash( [ 'spotifyd' ] );
 		notifyCommon( 'Enable ...' );
 	} else if ( S.spotifytoken ) {
-		infoSpotifyOutput();
+		if ( S.camilladsp ) {
+			info( {
+				  icon     : SW.icon
+				, title    : SW.title
+				, tablabel : [ 'Output', 'Keys' ]
+				, tab      : [ '', infoSpotifyKeys ]
+				, message  : '<br>Loopback is currently set for <a class="helpmenu label">DSP<i class="i-camilladsp"></i></a><br>&nbsp;'
+			} );
+			return
+		}
+		
+		bash( [ 'spotifyoutput' ], ( list ) => {
+			info( {
+				  icon         : SW.icon
+				, title        : SW.title
+				, selectlabel  : 'Device'
+				, select       : list.devices
+				, boxwidth     : 300
+				, values       : list.current
+				, checkchanged : true
+				, buttonlabel  : ico( 'remove' ) +'Keys'
+				, buttoncolor  : red
+				, button       : () => {
+					info( {
+						  icon    : SW.icon
+						, title   : SW.title
+						, message : 'Remove client <wh>ID</wh> and <wh>Secret</wh>?'
+						, oklabel : ico( 'remove' ) +'Remove'
+						, okcolor : red
+						, ok      : () => {
+							bash( [ 'spotifykeyremove' ] );
+							notifyCommon( 'Remove keys ...' );
+						}
+					} );
+				}
+				, ok           : () => {
+					bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
+					notifyCommon();
+				}
+			} );
+		}, 'json' );
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
 			infoWarning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
@@ -134,7 +174,7 @@ $( '#setting-autoplay' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-localbrowser' ).on( 'click', function() {
-	var htmlbrightness = S.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
+	var htmlbrightness = S.brightness ? '<span class="brightness">'+ ico( 'gear' ) +' Brightness</span>' : '';
 	var content        = `
 <table>
 <tr><td style="width:110px">Rotation</td>
@@ -159,13 +199,12 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		</select>
 	</td><td>&nbsp;<gr>minutes</gr></td></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox" id="onwhileplay">On while play</label></td></tr>
-<tr><td></td><td colspan="2"><label><input type="checkbox">HDMI Hotplug</label></td></tr>
-<tr><td></td>
-	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
+<tr><td></td><td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
+<tr><td></td><td colspan="2"><label><input type="checkbox">run <c>xinitrc.d</c></td></label></tr>
 </table>
-<div id="infoRange"><input type="range" min="0" max="255" value="${ S.brightness }"><div>Brightness</div></div><br>
-<div class="btnbottom">
-	&nbsp;<span class="reload">Reload ${ ico( 'redo' ) }</span>&emsp;
+<div class="btnbottom"><br>
+	${ htmlbrightness }
+	&nbsp;<span class="reload">${ ico( 'redo' ) } Reload</span>&emsp;
 	<span class="screenoff">${ ico( 'screenoff' ) } On/Off</span><br>&nbsp;
 </div>`;
 	info( {
@@ -178,11 +217,10 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, beforeshow   : () => {
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
 			$( '#onwhileplay' ).prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
-			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
 			$( '#infoContent .btnicon' ).on( 'click', function() {
 				var up   = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();
-				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
+				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 5 : zoom -= 5 );
 				$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal( 'array' ).join( '' ) );
 			} );
 			$( '#infoContent' ).on( 'change', '#screenoff', function() {
@@ -194,20 +232,28 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 						.prop( 'disabled', 1 );
 				}
 			} );
+			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
+			$( '.brightness' ).on( 'click', function() {
+				switchCancel();
+				info( {
+					  icon       : 'firefox'
+					, title      : 'Browser on RPi'
+					, rangelabel : 'Brightness'
+					, values     : S.brightness
+					, beforeshow : () => {
+						$( '#infoRange input' ).on( 'input', function() {
+							bash( [ 'brightness', $( this ).val(), 'CMD VAL' ] );
+						} );
+					}
+					, okno       : true
+				} );
+			} );
 			$( '.reload' ).on( 'click', function() {
 				bash( [ 'localbrowserreload' ] );
 			} );
 			$( '.screenoff' ).on( 'click', function() {
 				bash( [ 'screenofftoggle' ] );
 			} );
-			if ( S.brightness ) {
-				var $range = $( '#infoRange input' );
-				$range.on( 'input', function() {
-					bash( [ 'brightness', $range.val(), 'CMD VAL' ] );
-				} );
-			} else {
-				$( '#infoRange' ).remove();
-			}
 		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -361,7 +407,34 @@ $( '#setting-login' ).on( 'click', function() {
 } );
 $( '#setting-scrobble' ).on( 'click', function() {
 	if ( S.scrobblekey ) {
-		infoScrobble();
+		info( {
+			  icon         : SW.icon
+			, title        : SW.title
+			, checkbox     : [
+				  ico( 'airplay' ) +'AirPlay'
+				, ico( 'bluetooth' ) +'Bluetooth'
+				, ico( 'spotify' ) +'Spotify'
+				, ' '+ ico( 'upnp' ) +' UPnP / DLNA'
+			]
+			, footer       : '<br><label><input type="checkbox"><wh>Notify</wh> on scrobbling</label>'
+			, boxwidth     : 170
+			, values       : S.scrobbleconf || default_v.scrobble
+			, checkchanged : S.scrobble
+			, buttonlabel  : ico( 'remove' ) +'Auth.'
+			, buttoncolor  : red
+			, button       : () => {
+				switchCancel();
+				info( {
+					  icon    : 'scrobble'
+					, title   : 'Scrobbler'
+					, message : 'Remove authorization?'
+					, ok      : () => bash( [ 'scrobblekeyremove' ] )
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
 	} else {
 		info( {
 			  icon    : SW.icon
@@ -400,81 +473,6 @@ function infoCheckEvenOdd( length ) {
 	I.checkip    = [];
 	for ( i = 0; i < length; i++ ) i % 2 ? I.checkip.push( i ) : I.checkblank.push( i );
 }
-function infoScrobble() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Players', 'Authorization' ]
-		, tab          : [ '', infoScrobbleAuth ]
-		, checkbox     : [
-			  ico( 'airplay' ) +'AirPlay'
-			, ico( 'bluetooth' ) +'Bluetooth'
-			, ico( 'spotify' ) +'Spotify'
-			, ico( 'upnp' ) +'UPnP'
-		]
-		, footer       : '<br><label><input type="checkbox">Notify on scrobbling</label>'
-		, boxwidth     : 170
-		, values       : S.scrobbleconf || default_v.scrobble
-		, checkchanged : S.scrobble
-		, cancel       : switchCancel
-		, ok           : switchEnable
-		, fileconf     : true
-	} );
-}
-function infoScrobbleAuth() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Players', 'Authorization' ]
-		, tab          : [ infoScrobble, '' ]
-		, checkbox     : 'Remove authorization'
-		, values       : false
-		, checkchanged : true
-		, cancel       : switchCancel
-		, ok           : () => bash( [ 'scrobblekeyremove' ] )
-	} );
-}
-function infoSpotifyKeys() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Output', 'Keys' ]
-		, tab          : [ infoSpotifyOutput, '' ]
-		, checkbox     : 'Remove client keys'
-		, values       : false
-		, checkchanged : true
-		, okcolor      : orange
-		, oklabel      : ico( 'remove' ) +'Remove'
-		, ok           : () => bash( [ 'spotifykeyremove' ] )
-	} );
-}
-function infoSpotifyOutput() {
-	if ( S.camilladsp ) {
-		info( {
-			  icon     : SW.icon
-			, title    : SW.title
-			, tablabel : [ 'Output', 'Keys' ]
-			, tab      : [ '', infoSpotifyKeys ]
-			, message  : '<br>Loopback is currently set for <a class="helpmenu label">DSP<i class="i-camilladsp"></i></a><br>&nbsp;'
-		} );
-		return
-	}
-	
-	bash( [ 'spotifyoutput' ], ( list ) => {
-		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, tablabel     : [ 'Output', 'Keys' ]
-			, tab          : [ '', infoSpotifyKeys ]
-			, boxwidth     : 300
-			, selectlabel  : 'Device'
-			, select       : list.devices
-			, values       : list.current
-			, checkchanged : true
-			, ok           : () => bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] )
-		} );
-	}, 'json' );
-}
 function passwordWrong() {
 	bannerHide();
 	info( {
@@ -502,7 +500,6 @@ function renderPage() {
 	} else {
 		$( '#nfsserver' ).removeClass( 'disabled' );
 	}
-	$( '#stoptimer' ).toggleClass( 'disabled', ! S.stoptimer && S.state !== 'play' );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {

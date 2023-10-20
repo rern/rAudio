@@ -4,7 +4,16 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20231013
+# 20231020
+file=$dirsystem/localbrowser.conf
+if ! grep -q runxinitrcd $file; then
+	sed -i -e '/hdmi/ d
+' -e '$ a\
+runxinitrcd=
+' $file
+fi
+
+# 20231001
 if [[ -e /usr/bin/upmpdcli ]]; then
 	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
 	if grep -q ownqueue /etc/upmpdcli.conf; then
@@ -31,8 +40,8 @@ rotate=0
 zoom=100
 screenoff=0
 onwhileplay=
-hdmi=
-cursor=" > $dirsystem/localbrowser.conf
+cursor=
+runxinitrcd" > $dirsystem/localbrowser.conf
 fi
 
 # 20230909

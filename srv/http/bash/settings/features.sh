@@ -7,7 +7,7 @@ args2var "$1"
 aplaynameFile() {
 	local aplayname card
 	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-	aplayname=$( aplay -l | sed -E -n '/^card '$card':/ {s/^.*\[|].*//g; p}' )
+	aplayname=$( aplay -l | sed -E -n '/^card '$card':/ {s/^.*\[(.*)],.*/\1/; p}' )
 	echo $dirsystem/spotify-$aplayname
 }
 localbrowserDisable() {
@@ -15,7 +15,6 @@ localbrowserDisable() {
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
-	rm -f $dirsystem/onwhileplay
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 }
 localbrowserXset() {
@@ -27,7 +26,7 @@ localbrowserXset() {
 	xset dpms $off $off $off
 	if [[ $off == 0 ]]; then
 		xset -dpms
-	elif [[ -e $dirsystem/onwhileplay ]]; then
+	elif [[ $onwhileplay ]]; then
 		statePlay && xset -dpms || xset +dpms
 	else
 		xset +dpms
@@ -402,19 +401,21 @@ spotifykeyremove )
 spotifyoutput )
 	file=$( aplaynameFile )
 	[[ -e $file ]] && current='"'$( < "$file" )'"' || current=false
-	devices='"hw:'$( head -1 /etc/asound.conf | cut -d' ' -f2 )',0"'
+	devices='"Default"'
 	readarray -t lines <<< $( aplay -L | grep ^.*:CARD )
 	for l in ${lines[@]}; do
 		devices+=', "'$l'"'
 	done
+	current=$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )
+	[[ ${current:0:3} == hw: ]] && current=Default
 	echo '{
-  "current" : "'$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )'"
+  "current" : "'$current'"
 , "devices" : [ '$devices' ]
 }'
 	;;
 spotifyoutputset )
 	file=$( aplaynameFile )
-	[[ ${OUTPUT:0:3} == hw: ]] && rm -f "$file" || echo $OUTPUT > "$file"
+	[[ $OUTPUT == Default ]] && rm -f "$file" || echo $OUTPUT > "$file"
 	$dirsettings/player-conf.sh
 	;;
 spotifytoken )
@@ -440,12 +441,11 @@ spotifytoken )
 	pushRefresh
 	;;
 stoptimer )
+	killProcess stoptimer
 	if [[ $ON ]]; then
-		touch $dirshm/stoptimer
 		$dirbash/stoptimer.sh &> /dev/null &
 	else
-		killProcess stoptimer
-		rm -f $dirshm/stoptimer
+		rm -f $dirshm/pidstoptimer
 		if [[ -e $dirshm/relayson ]]; then
 			. $dirsystem/relays.conf
 			echo $timer > $timerfile

@@ -35,7 +35,7 @@ data+='
 , "scrobblekey"      : '$( exists $dirsystem/scrobblekey )'
 , "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
 , "state"            : "'$( getVar state $dirshm/status )'"
-, "stoptimer"        : '$( exists $dirshm/stoptimer )'
+, "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )
 if [[ -e /usr/bin/hostapd ]]; then
 	ip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )

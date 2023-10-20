@@ -12,6 +12,7 @@ rm -f $dirshm/relaystimer
 
 sleep $(( min * 60 ))
 
+rm $dirshm/pidstoptimer
 readarray -t vcc <<< $( volumeCardControl )
 volume=${vcc[0]}
 card=${vcc[1]}
