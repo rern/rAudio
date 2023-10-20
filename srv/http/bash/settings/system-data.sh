@@ -156,7 +156,7 @@ data+='
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2smodulesw"       : '$i2smodulesw'
-, "ipsub"                : "'$( ipSub )'"
+, "ipsub"             : "'$( ipSub )'"
 , "lcdchar"           : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"       : '$lcdcharaddr'
 , "lcdcharconf"       : '$( conf2json lcdcharconf.py )'
