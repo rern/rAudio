@@ -4,9 +4,22 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231022
+if [[ -e /boot/kernel.img && ! -e /lib/python3.10/site-packages/websocket ]]; then
+	echo '
+[alarm]
+SigLevel = PackageRequired
+Include = /etc/pacman.d/mirrorlist
+
+[community]
+SigLevel = PackageRequired
+Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
+	pacman -Sy --noconfirm python-websocket-client
+fi
+
 # 20231020
 file=$dirsystem/localbrowser.conf
-if ! grep -q runxinitrcd $file; then
+if [[ -e $file ]] && ! grep -q runxinitrcd $file; then
 	sed -i -e '/hdmi/ d
 ' -e '$ a\
 runxinitrcd=
