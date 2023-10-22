@@ -282,17 +282,17 @@ function infoWiFi( v ) {
 		, checkbox      : [ 'WEP', 'Hidden SSID' ]
 		, values        : values
 		, checkblank    : [ 0 ]
-		, checkchanged  : true
+		, checkchanged  : ! V.wifistatic
 		, ok            : () => connectWiFi( infoVal() )
 	} );
 }
 function infoWiFiGet() {
 	bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD SSID' ], v => {
-		var static = v.IP === 'static'
+		V.wifistatic = v.IP === 'static'
 		v.SECURITY = v.SECURITY === 'wep';
 		v.HIDDEN   = 'HIDDEN' in v;
 		[ 'INTERFACE', 'CONNECTION', 'IP' ].forEach( k => delete v[ k ] );
-		static ? infoWiFiStatic( v ) : infoWiFi( v );
+		V.wifistatic ? infoWiFiStatic( v ) : infoWiFi( v );
 	}, 'json' );
 }
 function infoWiFiStatic( v ) {
@@ -314,7 +314,7 @@ function infoWiFiStatic( v ) {
 		, checkbox      : [ 'WEP', 'Hidden SSID' ]
 		, values        : values
 		, checkblank    : [ 0 ]
-		, checkchanged  : true
+		, checkchanged  : V.wifistatic
 		, checkip       : [ 2, 3 ]
 		, beforeshow    : () => $('#infoContent input' ).eq( 1 ).attr( 'type', 'password' )
 		, ok            : () => connectWiFi( infoVal() )

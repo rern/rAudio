@@ -38,6 +38,7 @@ listWlan() {
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
+			ssid=$( stringEscape $profile )
 			! grep -q 'Interface="*'$wldev "/etc/netctl/$profile" && continue
 			if netctl is-active "$profile" &> /dev/null; then
 				for i in {1..10}; do
@@ -48,14 +49,14 @@ listWlan() {
 				dbm=$( awk '/'$wldev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
-	  "dbm"      : '$dbm'
-	, "gateway"  : "'$gatewaywl'"
-	, "ip"       : "'$IPWL'"
-	, "ssid"     : "'$( stringEscape $profile )'"
+	  "dbm"     : '$dbm'
+	, "gateway" : "'$gatewaywl'"
+	, "ip"      : "'$IPWL'"
+	, "ssid"    : "'$ssid'"
 	}'
 			else
 				notconnected+=',{
-	  "ssid"     : "'$( stringEscape $profile )'"
+	  "ssid"    : "'$ssid'"
 	}'
 			fi
 		done
