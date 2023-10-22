@@ -15,7 +15,7 @@ Include = /etc/pacman.d/mirrorlist
 SigLevel = PackageRequired
 Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
 	pacman -Sy --noconfirm python-websocket-client
-	systemctl start websocket
+	systemctl restart websocket
 fi
 
 # 20231020
