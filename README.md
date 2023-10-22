@@ -139,7 +139,7 @@ Audio player for
 			- Copy `backup.gz` to `BOOT`
 			- Use only backup made from rAudio with the latest update
 		- Expand `root` partition:
-			- By default, `root` partition will be expaned on initial boot.
+			- By default, `root` partition will be expanded on initial boot.
 			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
 
 - Boot duration
