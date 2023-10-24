@@ -152,7 +152,8 @@ data2json() {
 }
 dirPermissions() {
 	chown -R http:http /srv
-	chown mpd:audio $dirmpd $dirplaylists $dirmpd/mpd.db
+	chown mpd:audio $dirmpd $dirplaylists
+ 	[[ -e $dirmpd/mpd.db ]] && chown mpd:audio $dirmpd/mpd.db
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
 }
