@@ -100,7 +100,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		Time=$( getContent $dirairplay/Time )
 		timestamp=$( date +%s%3N )
 		if [[ $state == pause ]]; then
-			elapsedms=$( getContent $dirairplay/elapsed )
+			elapsedms=$( < $dirairplay/elapsed )
 		else
 			[[ -e $dirairplay/start ]] && start=$( < $dirairplay/start ) || start=0
 			elapsedms=$(( timestamp - start ))

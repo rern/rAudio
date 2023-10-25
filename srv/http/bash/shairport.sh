@@ -6,6 +6,11 @@
 . /srv/http/bash/common.sh
 dirairplay=$dirshm/airplay
 
+pause() {
+	echo pause > $dirairplay/state
+	pushData airplay '{ "state": "pause" }'
+}
+
 cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue # skip: no value / double codes
 	
@@ -18,6 +23,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			6173616c ) code=Album    && continue;;
 			50494354 ) code=coverart && continue;;
 			70726772 ) code=progress && continue;;
+			63617073 ) code=state    && continue;;
 		esac
 	fi
 	
@@ -35,6 +41,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirairplay/coverart.jpg
 		pushData airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
+	elif [[ $code == state ]]; then
+		[[ $base64 == 'Ag==' ]] && pause
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
@@ -50,6 +58,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirairplay/start
 			echo $Time > $dirairplay/Time
+			echo $elapsed > $dirairplay/elapsed
 			$dirbash/status-push.sh
 		else
 			echo $data > $dirairplay/$code
@@ -58,3 +67,5 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	fi
 	code= # reset after $code + $data were set
 done
+
+pause # fix - sometime no state emits but script always exits
