@@ -41,7 +41,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirairplay/coverart.jpg
 		pushData airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
-	elif [[ $code == state ]]; then
+	elif [[ $code == state ]]; then # play: 1-AQ==, pause: 2-Ag==
 		[[ $base64 == 'Ag==' ]] && pause
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
