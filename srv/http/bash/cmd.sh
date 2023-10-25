@@ -97,11 +97,6 @@ radioStop() {
 shairportStop() {
 	systemctl stop shairport
 	systemctl restart shairport-sync
-	rm -f $dirshm/airplay/start
-	echo pause > $dirshm/airplay/state
-	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
-	timestamp=$( date +%s%3N )
-	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
 	$dirbash/status-push.sh
 }
 splashRotate() {

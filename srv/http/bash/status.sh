@@ -100,12 +100,16 @@ if [[ $player != mpd && $player != upnp ]]; then
 		Time=$( getContent $dirairplay/Time )
 		timestamp=$( date +%s%3N )
 		if [[ $state == pause ]]; then
-			elapsedms=$( < $dirairplay/elapsed )
+			elapsed=$( < $dirairplay/elapsed )
 		else
-			[[ -e $dirairplay/start ]] && start=$( < $dirairplay/start ) || start=0
-			elapsedms=$(( timestamp - start ))
+			if [[ -e $dirairplay/pause ]]; then
+				rm $dirairplay/pause
+			else
+				[[ -e $dirairplay/start ]] && start=$( < $dirairplay/start ) || start=0
+				elapsedms=$(( timestamp - start ))
+				elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
+			fi
 		fi
-		elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
 ########
 		status+='
 , "Album"     : "'$( getContent $dirairplay/Album )'"

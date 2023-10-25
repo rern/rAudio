@@ -5,9 +5,11 @@
 
 . /srv/http/bash/common.sh
 dirairplay=$dirshm/airplay
+rm -f $dirairplay/{elapsed,pause,start}
 
 pause() {
 	echo pause > $dirairplay/state
+	touch $dirairplay/pause
 	pushData airplay '{ "state": "pause" }'
 }
 
