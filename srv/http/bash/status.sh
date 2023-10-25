@@ -80,6 +80,7 @@ else
 , "shareddata"   : '$( exists $filesharedip )'
 , "snapclient"   : '$( exists $dirshm/snapclient )'
 , "stoptimer"    : '$( exists $dirshm/pidstoptimer )'
+, "stream"       : false
 , "updateaddons" : '$( exists $diraddons/update )'
 , "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
@@ -209,10 +210,11 @@ if [[ $pllength  == 0 && ! $snapclient ]]; then
 	outputStatus
 fi
 fileheader=${file:0:4}
-[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true
+if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
+	stream=true
 ########
-	status+='
-, "stream" : '$stream
+	status=$( sed -E 's/(, "stream" *: ).*/\1true/' <<< $status )
+fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
