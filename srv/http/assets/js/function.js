@@ -172,7 +172,7 @@ function changeIP() { // for android app
 }
 function clearIntervalAll() {
 	$.each( V.interval, ( k, v ) => clearInterval( v ) );
-	if ( S.state === 'play' && ! S.stream ) setProgress(); // stop progress animation
+	if ( S.state === 'play' && ! S.webradio ) setProgress(); // stop progress animation
 	$( '#vuneedle' ).css( 'transform', '' );
 }
 function colorIcon( el ) {
@@ -493,7 +493,7 @@ function displayBars() {
 	$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 	$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
-	$( '#pause' ).toggleClass( 'hide', S.stream && S.player !== 'upnp' );
+	$( '#pause' ).toggleClass( 'hide', S.webradio && S.player !== 'upnp' );
 	$( '#playback-controls i' ).removeClass( 'active' );
 	$( '#'+ S.state ).addClass( 'active' ); // suppress on reboot
 }
@@ -522,10 +522,10 @@ function displayPlayback() {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
 		$cover.css( { width: '', 'max-width': '' } );
 	}
-	if ( ! hidetime ) $( '#time' ).roundSlider( S.stream || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
+	if ( ! hidetime ) $( '#time' ).roundSlider( S.webradio || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
-	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
-	$( '#time, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
+	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.webradio || S.player !== 'mpd' );
+	$( '#time, #coverBL, #coverBR' ).toggleClass( 'disabled', S.webradio || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || $volume.is( ':visible' ) );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
@@ -1483,7 +1483,7 @@ function setBookmarkEdit() {
 		var path       = $this.find( '.lipath' ).text();
 		var buttonhtml = ico( 'remove bkedit bk-remove' );
 		if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit bkedit bk-rename' );
-		if ( ! S.stream ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
+		if ( ! S.webradio ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
@@ -1570,7 +1570,7 @@ function setCoverart() {
 		$( '#vu' ).removeClass( 'hide' );
 		loaderHide();
 	} else {
-		var coverart = S.stream ? ( S.coverart || S.stationcover ) : S.coverart;
+		var coverart = S.webradio ? ( S.coverart || S.stationcover ) : S.coverart;
 		if ( coverart ) {
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
@@ -1587,7 +1587,7 @@ function setInfo() {
 		, Title  : $( '#title' ).text()
 		, Album  : $( '#album' ).text()
 	}
-	if ( ! S.stream || S.player === 'upnp' ) {
+	if ( ! S.webradio || S.player === 'upnp' ) {
 		$( '#artist' ).text( S.Artist );
 		$( '#title' )
 			.text( S.Title )
@@ -1614,7 +1614,7 @@ function setInfo() {
 	} );
 	if ( changed ) setInfoScroll();
 	var sampling = S.sampling;
-	if ( S.stream ) {
+	if ( S.webradio ) {
 		if ( S.icon === 'dabradio' ) {
 			sampling += ' • DAB';
 		} else if ( S.Album && S.station ) {

@@ -80,7 +80,6 @@ else
 , "shareddata"   : '$( exists $filesharedip )'
 , "snapclient"   : '$( exists $dirshm/snapclient )'
 , "stoptimer"    : '$( exists $dirshm/pidstoptimer )'
-, "stream"       : false
 , "updateaddons" : '$( exists $diraddons/update )'
 , "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
@@ -214,11 +213,7 @@ if [[ $pllength  == 0 && ! $snapclient ]]; then
 	outputStatus
 fi
 fileheader=${file:0:4}
-if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
-	stream=true
-########
-	status=$( sed -E 's/(, "stream" *: ).*/\1true/' <<< $status )
-fi
+[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true # webradio dab upnp
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
@@ -339,7 +334,7 @@ $radiosampling" > $dirshm/radio
 			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
 			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
 		fi
-		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< $status )
+		status=$( grep -E -v '^, "state"|^, "webradio"' <<< $status )
 ########
 		status+='
 , "Album"        : "'$Album'"

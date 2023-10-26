@@ -54,7 +54,7 @@ function addToPlaylistCommand() {
 		bash( V.mpccmd, () => {
 			if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
 		} );
-	}, S.stream ? 1000 : 0 );
+	}, S.webradio ? 1000 : 0 );
 	banner( 'playlist', V.title, V.msg );
 }
 function bookmarkNew() {
@@ -638,7 +638,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		cmd_function[ cmd ]();
 		return
 	}
-	var stream = S.stream;
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
 		$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
 		$( '#'+ cmd ).trigger( 'click' );
