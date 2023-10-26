@@ -1809,11 +1809,11 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$liactive.find( '.li2 .radioname' ).addClass( 'hide' );
 	if ( $this.hasClass( 'active' ) ) {
 		if ( S.state == 'play' ) {
-			if ( $this.find( '.lipath' ).text().slice( 0, 4 ) !== 'http' ) {
-				$( '#pause' ).trigger( 'click' );
-				$this.find( '.elapsed i' ).removeClass( 'i-play' ).addClass( 'i-pause' );
-			} else {
+			if ( S.stream ) {
 				$( '#stop' ).trigger( 'click' );
+			} else {
+				$( '#pause' ).trigger( 'click' );
+				$this.find( '.elapsed i' ).toggleClass( 'i-play i-pause' );
 			}
 		} else {
 			$( '#play' ).trigger( 'click' );
@@ -1846,7 +1846,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var active    = $thisli.hasClass( 'active' );
 	var audiocd   = $thisli.hasClass( 'audiocd' );
 	var notsaved  = $thisli.hasClass( 'notsaved' );
-	var radio     = $thisli.hasClass( 'webradio' );
 	var upnp      = $thisli.hasClass( 'upnp' );
 	$thisli.addClass( 'updn' );
 	$( '#menu-plaction a' ).removeClass( 'hide' );
@@ -1854,7 +1853,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( S.player === 'mpd' || S.player === 'upnp' ) {
 		if ( active ) {
 			$menu.find( '.play' ).toggleClass( 'hide', play );
-			$menu.find( '.pause' ).toggleClass( 'hide', ! play || radio );
+			$menu.find( '.pause' ).toggleClass( 'hide', ! play || S.stream );
 			$menu.find( '.stop' ).toggleClass( 'hide', state === 'stop' );
 		} else {
 			$menu.find( '.pause, .stop' ).addClass( 'hide' );
@@ -1863,8 +1862,8 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$menu.find( '.pause, .stop, .current' ).addClass( 'hide' );
 	}
 	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
-	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
-	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
+	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', S.stream );
+	$menu.find( '.tag' ).toggleClass( 'hide', S.stream || upnp || audiocd );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', ! notsaved );
 	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
@@ -1921,7 +1920,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				}
 				
 				$menu.find( '.replace' ).toggleClass( 'hide', ! S.pllength );
-				$menu.find( '.similar' ).toggleClass( 'hide', V.list.path.slice( 0, 4 ) === 'http' );
+				$menu.find( '.similar' ).toggleClass( 'hide', S.stream );
 				$menu.find( '.wrsave' ).toggleClass( 'hide', ! $this.hasClass( 'notsaved' ) );
 			}
 			$this.addClass( 'active' );
