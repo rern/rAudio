@@ -4,13 +4,21 @@
 #    - /tmp/shairport-sync-metadata emits data
 
 . /srv/http/bash/common.sh
+
 dirairplay=$dirshm/airplay
 rm -f $dirairplay/{elapsed,pause,start}
+echo stop > $dirairplay/state
 
 pause() {
 	echo pause > $dirairplay/state
 	touch $dirairplay/pause
-	pushData airplay '{ "state": "pause" }'
+	elapsed=$( < $dirairplay/elapsed )
+	pushData airplay '{ "state": "pause", "elapsed": '$elapsed' }'
+}
+play() {
+	rm -f $dirairplay/pause
+	echo play > $dirairplay/state
+	$dirbash/status-push.sh
 }
 
 cat /tmp/shairport-sync-metadata | while read line; do
@@ -18,14 +26,14 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	
 	##### code - hex matched
 	hex=$( sed -E 's|.*code>(.*)</code.*|\1|' <<< $line )
-	if [[ $hex ]]; then # found code > [next line]
+	if [[ ${#hex} == 8 ]]; then # found code > [next line]
 		case $hex in
-			61736172 ) code=Artist   && continue;;
-			6d696e6d ) code=Title    && continue;;
-			6173616c ) code=Album    && continue;;
-			50494354 ) code=coverart && continue;;
-			70726772 ) code=progress && continue;;
-			63617073 ) code=state    && continue;;
+			61736172|61736161 ) code=Artist   && continue;; # asar|asaa
+			6d696e6d )          code=Title    && continue;; # minm
+			6173616c )          code=Album    && continue;; # asal
+			50494354 )          code=coverart && continue;; # PICT
+			70726772 )          code=progress && continue;; # prgr
+			63617073 )          code=state    && continue;; # caps
 		esac
 	fi
 	
@@ -43,11 +51,16 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirairplay/coverart.jpg
 		pushData airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
-	elif [[ $code == state ]]; then # play: 1-AQ==, pause: 2-Ag==
-		[[ $base64 == 'Ag==' ]] && pause
+	elif [[ $code == state ]]; then
+		if [[ $base64 == 'AQ==' ]]; then # 1
+			play
+		elif [[ $base64 == 'Ag==' ]]; then # 2
+			pause
+		fi
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
+			play
 			progress=( ${data//\// } )
 			start=${progress[0]}
 			current=${progress[1]}
@@ -58,9 +71,9 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			pushData airplay '{ "elapsed": '$elapsed', "Time": '$Time' }'
 			timestamp=$( date +%s%3N )
 			starttime=$(( timestamp - elapsedms ))
+			echo $elapsed > $dirairplay/elapsed
 			echo $starttime > $dirairplay/start
 			echo $Time > $dirairplay/Time
-			echo $elapsed > $dirairplay/elapsed
 			$dirbash/status-push.sh
 		else
 			echo $data > $dirairplay/$code
@@ -70,4 +83,4 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	code= # reset after $code + $data were set
 done
 
-pause # fix - sometime no state emits but script always exits
+[[ ! -e $dirairplay/pause ]] && pause # fix - if no state emits (script always exits)
