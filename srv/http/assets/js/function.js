@@ -493,7 +493,7 @@ function displayBars() {
 	$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 	$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
-	$( '#pause' ).toggleClass( 'hide', S.webradio && S.player !== 'upnp' );
+	$( '#pause' ).toggleClass( 'hide', S.webradio );
 	$( '#playback-controls i' ).removeClass( 'active' );
 	$( '#'+ S.state ).addClass( 'active' ); // suppress on reboot
 }
@@ -1587,13 +1587,7 @@ function setInfo() {
 		, Title  : $( '#title' ).text()
 		, Album  : $( '#album' ).text()
 	}
-	if ( ! S.webradio || S.player === 'upnp' ) {
-		$( '#artist' ).text( S.Artist );
-		$( '#title' )
-			.text( S.Title )
-			.toggleClass( 'gr', S.state === 'pause' );
-		$( '#album' ).text( S.Album || S.file );
-	} else { // webradio
+	if ( S.webradio ) {
 		var url = S.file.replace( /#charset=.*/, '' );
 		if ( S.state !== 'play' ) {
 			$( '#artist' ).text( S.station );
@@ -1605,6 +1599,12 @@ function setInfo() {
 			blinkDot();
 			$( '#album' ).text( S.Album || url );
 		}
+	} else {
+		$( '#artist' ).text( S.Artist );
+		$( '#title' )
+			.text( S.Title )
+			.toggleClass( 'gr', S.state === 'pause' );
+		$( '#album' ).text( S.Album || S.file );
 	}
 	$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );

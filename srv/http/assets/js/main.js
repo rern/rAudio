@@ -791,10 +791,9 @@ $( '.map' ).on( 'click', function( e ) {
 		var volume = $volume.is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.mapcover, .guide' ).addClass( 'mapshow' );
-		$( '.guide' ).toggleClass( 'hide', ! S.pllength && S.player === 'mpd' );
-		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', S.webradio && S.state === 'stop' );
-		$( '#guide-booklet' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
-		$( '#guide-bio, #guide-lyrics, #guide-booklet' ).toggleClass( 'hide', ! S.pllength || ( S.webradio && S.state !== 'play' ) );
+		$( '#guide-bio' ).toggleClass( 'hide', S.Artist === '' );
+		$( '#guide-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
+		$( '#guide-booklet' ).toggleClass( 'hide', S.Album === '' );
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', ! S.pllength );
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
