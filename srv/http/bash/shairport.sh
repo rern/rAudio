@@ -16,7 +16,7 @@ pause() {
 	pushData airplay '{ "state": "pause", "elapsed": '$elapsed' }'
 }
 play() {
-	rm -f $dirairplay/pause
+	[[ -e $dirairplay/pause ]] && rm $dirairplay/{elapsed,pause}
 	echo play > $dirairplay/state
 	$dirbash/status-push.sh
 }
