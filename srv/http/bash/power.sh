@@ -27,7 +27,7 @@ fi
 [[ -e $dirshm/btconnected ]] && cp $dirshm/btconnected $dirsystem
 touch $dirshm/power
 mpc -q stop
-[[ -e /sys/class/backlight/rpi_backlight ]] && echo 1 > /sys/class/backlight/rpi_backlight/bl_power
+[[ -e /sys/class/backlight/rpi_backlight ]] && sudo sh -c "echo 1 > /sys/class/backlight/rpi_backlight/bl_power"
 if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl stop lcdchar
 	$dirbash/lcdchar.py logo
