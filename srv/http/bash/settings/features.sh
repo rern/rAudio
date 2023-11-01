@@ -298,8 +298,8 @@ nfsserver )
 	pushData refresh '{ "page": "system", "nfsserver": '$TF' }'
 	;;
 screenofftoggle )
-#	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
-#	/opt/vc/bin/vcgencmd display_power $toggle # hdmi
+#	[[ $( /usr/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
+#	/usr/bin/vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
 	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;

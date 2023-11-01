@@ -73,6 +73,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			starttime=$(( timestamp - elapsedms ))
 			echo $elapsed > $dirairplay/elapsed
 			echo $starttime > $dirairplay/start
+			echo $timestamp > $dirairplay/timestamp
 			echo $Time > $dirairplay/Time
 			$dirbash/status-push.sh
 		else

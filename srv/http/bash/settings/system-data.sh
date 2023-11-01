@@ -8,14 +8,14 @@ timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
 uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
 status="\
 $( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
-$( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
+$( /usr/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 if [[ $rpi3bplus ]]; then
 	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
 	[[ $degree ]] && softlimit=true || degree=60
 fi
-throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
+throttled=$( /usr/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x0 ]]; then
 	binary=$( python -c "print( bin( int( '$throttled', 16 ) ) )" ) # 0b01234567890123456789
 	current=${binary: -4}                                                             # 6789
