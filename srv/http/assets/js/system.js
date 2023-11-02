@@ -219,7 +219,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	
 	$this.addClass( 'active' );
 	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
-	$( '#menu .forget' ).removeClass( 'hide', list.icon === 'usbdrive' );
+	$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 13 ) !== '/mnt/MPD/NAS/' );
 	$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
 	$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
 	contextMenu();
