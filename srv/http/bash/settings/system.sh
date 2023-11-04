@@ -470,12 +470,16 @@ statusaudio )
 $( aplay -l | grep bcm2835 )"
 	;;
 statussoundprofile )
-	lan=$( ifconfig | grep ^e | cut -d: -f1 )
-	echo "\
-<bll># sysctl vm.swappiness
-# ifconfig $lan | grep -E 'mtu|txq'</bll>
-$( sysctl vm.swappiness )
-$( ifconfig $lan | sed -E -n '/mtu|txq/ {s/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ / = /; p}' )"
+	dirlan=/sys/class/net/$( ifconfig | grep ^e | head -1 | cut -d: -f1 )
+	for f in /proc/sys/vm/swappiness $dirlan/mtu $dirlan/tx_queue_len; do
+		[[ ! -e $f ]] && continue
+		
+		status+="\
+<bll># cat $f</bll>
+$( < $f )
+"
+	done
+	echo "$status"
 	;;
 statusstatus )
 	filebootlog=/tmp/bootlog
