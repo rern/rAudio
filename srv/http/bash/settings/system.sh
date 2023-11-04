@@ -504,6 +504,7 @@ $( < /etc/fstab )
 "
 	;;
 statussystem )
+	firmware="pacman -Qs 'firmware|bootloader' | grep -Ev '^\s|whence' | cut -d/ -f2"
 	config="\
 <bll># cat /boot/cmdline.txt</bll>
 $( < /boot/cmdline.txt )
@@ -511,8 +512,8 @@ $( < /boot/cmdline.txt )
 <bll># cat /boot/config.txt</bll>
 $( grep -Ev '^#|^\s*$' /boot/config.txt )
 
-<bll># pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2</bll>
-$( pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2 )"
+<bll># $firmware</bll>
+$( eval $firmware )"
 	raspberrypiconf=$( cat $filemodule 2> /dev/null )
 	if [[ $raspberrypiconf ]]; then
 		config+="
