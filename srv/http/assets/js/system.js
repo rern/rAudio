@@ -1142,14 +1142,8 @@ function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status + S.warning );
 	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
-	$( '#codehddinfo' )
-		.empty()
-		.addClass( 'hide' );
 	$( 'softlimit' in S ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
 	renderStorage();
-	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .i-usbdrive' ).length === 0 );
-	$( '#hddsleep' ).toggleClass( 'disabled', ! S.hddapm );
-	$( '#divusbautoupdate' ).toggleClass( 'hide', S.shareddata || S.nfsserver );
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
 			$( '#divbluetooth .col-l.status' ).toggleClass( 'single', ! S.bluetoothactive );
@@ -1217,6 +1211,16 @@ function renderStorage() {
 		html += '</li>';
 	} );
 	$( '#list' ).html( html );
+	if ( $( '#list .i-usbdrive' ).length ) {
+		$( '#divhddsleep' ).removeClass( 'hide' );
+		$( '#hddsleep' ).toggleClass( 'disabled', ! S.hddapm );
+	} else {
+		$( '#divhddsleep' ).addClass( 'hide' );
+	}
+	$( '#divusbautoupdate' ).toggleClass( 'hide', S.shareddata || S.nfsserver );
+	$( '#codehddinfo' )
+		.empty()
+		.addClass( 'hide' );
 }
 function values2info( keys, v ) {
 	var values = {}
