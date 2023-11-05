@@ -15,6 +15,7 @@ else
 	notify addons Addons 'Internet is offline.' -1
 fi
 
+installed='"r1"'
 addons=$( sed -n '/^\s, .*{$/ {s/.*, "\(.*\)".*/\1/; p}' <<< $data )
 for addon in $addons; do
 	addondata=$( sed -n '/"'$addon'"/,/^\s}$/ p' <<< $data )
@@ -32,7 +33,7 @@ for addon in $addons; do
 	fi
 done
 [[ $hidden ]] && hidden='['${hidden:1}']' || hidden='[""]'
-[[ $installed ]] && installed='['${installed:1}']' || installed='[""]'
+installed='['$installed']'
 [[ $notverified ]] && notverified='['${notverified:1}']' || notverified='[""]'
 if [[ $update ]]; then
 	update='['${update:1}']'
