@@ -158,6 +158,9 @@ localbrowser )
 		else
 			restart=1
 		fi
+		scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
+		profile=$( ls /root/.mozilla/firefox | grep release$ )
+		echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then # tft
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
@@ -295,8 +298,8 @@ nfsserver )
 	pushData refresh '{ "page": "system", "nfsserver": '$TF' }'
 	;;
 screenofftoggle )
-#	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
-#	/opt/vc/bin/vcgencmd display_power $toggle # hdmi
+#	[[ $( /usr/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
+#	/usr/bin/vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
 	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;

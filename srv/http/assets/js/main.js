@@ -103,7 +103,7 @@ var chkdisplay = {
 		, volume           : 'Volume'
 			, vumeter      : vumeter +'VU meter'
 		, buttons          : 'Buttons'
-			, progress     : 'Progess keep-alive'
+			, progress     : 'Progress keep-alive'
 	}
 	, playlist  : {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
@@ -169,7 +169,7 @@ $( '#loader' ).on( 'click', function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
-	if ( ! S.stream && S.player === 'mpd' && S.coverart.slice( 0, 16 ) === '/data/shm/online' ) {
+	if ( ! S.webradio && S.player === 'mpd' && S.coverart.slice( 0, 16 ) === '/data/shm/online' ) {
 		$( '#coverart' ).after( V.icoversave );
 	} else {
 		$( '#divcover .coveredit' ).remove();
@@ -488,7 +488,7 @@ $( '#artist, #guide-bio' ).on( 'click', function() {
 } );
 $( '#title, #guide-lyrics' ).on( 'click', function() {
 	if ( S.lyrics
-		&& ( ! S.stream || ( S.state === 'play' && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
+		&& ( ! S.webradio || ( S.state === 'play' && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
 		if ( S.Title.includes( '(' ) ) {
 			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], function( paren ) {
@@ -575,7 +575,7 @@ $( '#time' ).roundSlider( {
 	}
 } );
 $( '#time-band' ).on( 'touchstart mousedown', function() {
-	if ( S.player !== 'mpd' || S.stream ) return
+	if ( S.player !== 'mpd' || S.webradio ) return
 	
 	V.start = true;
 	guideHide();
@@ -716,7 +716,7 @@ $( '#volume-text' ).on( 'click', function() { // mute / unmute
 } );
 $( '#divcover' ).press( function( e ) {
 	if (
-		( S.stream && S.state === 'play' )
+		( S.webradio && S.state === 'play' )
 		|| ! S.pllength
 		|| V.guide
 		|| $( e.target ).hasClass( 'band' )
@@ -791,10 +791,9 @@ $( '.map' ).on( 'click', function( e ) {
 		var volume = $volume.is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.mapcover, .guide' ).addClass( 'mapshow' );
-		$( '.guide' ).toggleClass( 'hide', ! S.pllength && S.player === 'mpd' );
-		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', S.stream && S.state === 'stop' );
-		$( '#guide-booklet' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
-		$( '#guide-bio, #guide-lyrics, #guide-booklet' ).toggleClass( 'hide', ! S.pllength || ( S.stream && S.state !== 'play' ) );
+		$( '#guide-bio' ).toggleClass( 'hide', S.Artist === '' );
+		$( '#guide-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
+		$( '#guide-booklet' ).toggleClass( 'hide', S.Album === '' );
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', ! S.pllength );
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
@@ -809,7 +808,7 @@ $( '.map' ).on( 'click', function( e ) {
 				.addClass( 'i-scale-dn' );
 		}
 		if ( S.player === 'mpd' ) {
-			if ( ! time && ! S.stream ) {
+			if ( ! time && ! S.webradio ) {
 				$( '#time-band' )
 					.removeClass( 'transparent' )
 					.text( S.Time ? second2HMS( S.Time ) : '' );
@@ -864,7 +863,7 @@ $( '.map' ).on( 'click', function( e ) {
 			displayBars();
 			displayPlayback();
 			setButtonOptions();
-			if ( S.state === 'play' && ! S.stream && ! localhost ) {
+			if ( S.state === 'play' && ! S.webradio && ! localhost ) {
 				setProgress();
 				setTimeout( setProgressAnimate, 0 );
 			}
@@ -891,7 +890,7 @@ $( '.map' ).on( 'click', function( e ) {
 			}
 			break
 		default:
-			if ( cmd === 'play' && S.state === 'play' ) cmd = ! S.stream ? 'pause' : 'stop';
+			if ( cmd === 'play' && S.state === 'play' ) cmd = ! S.webradio ? 'pause' : 'stop';
 			$( '#'+ cmd ).trigger( 'click' );
 	}
 } );
@@ -905,7 +904,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 		setButtonOptions();
 		local( 600 );
 	} else {
-		if ( S.stream ) {
+		if ( S.webradio ) {
 			$( '#divcover .cover-change' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
@@ -914,7 +913,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			
 			S.state = cmd;
 			if ( ! S.elapsed ) $( '#elapsed' ).empty(); // 0 or false
-			if ( ! S.stream && S.elapsed !== false ) setProgressAnimate();
+			if ( ! S.webradio && S.elapsed !== false ) setProgressAnimate();
 			bash( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
 			$( '#title' ).removeClass( 'gr' );
 			$( '#elapsed' ).removeClass( 'bl gr' );
@@ -922,7 +921,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 				.text( second2HMS( S.Time ) )
 				.removeClass( 'wh' );
 			$( '#progress i' ).removeAttr( 'class' ).addClass( 'i-play' );
-			if ( S.stream ) $( '#title, #elapsed' ).html( V.blinkdot );
+			if ( S.webradio ) $( '#title, #elapsed' ).html( V.blinkdot );
 			vu();
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
@@ -953,7 +952,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 					$( '#elapsed, #progress' ).empty();
 					vu();
 				}
-				if ( V.playback && S.stream ) {
+				if ( V.playback && S.webradio ) {
 					[ 'Artist', 'Title', 'Album', 'coverart' ].forEach( el => S[ el ] = '' );
 					setInfo();
 					setCoverart();
@@ -1809,11 +1808,11 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$liactive.find( '.li2 .radioname' ).addClass( 'hide' );
 	if ( $this.hasClass( 'active' ) ) {
 		if ( S.state == 'play' ) {
-			if ( $this.find( '.lipath' ).text().slice( 0, 4 ) !== 'http' ) {
-				$( '#pause' ).trigger( 'click' );
-				$this.find( '.elapsed i' ).removeClass( 'i-play' ).addClass( 'i-pause' );
-			} else {
+			if ( S.webradio ) {
 				$( '#stop' ).trigger( 'click' );
+			} else {
+				$( '#pause' ).trigger( 'click' );
+				$this.find( '.elapsed i' ).toggleClass( 'i-play i-pause' );
 			}
 		} else {
 			$( '#play' ).trigger( 'click' );
@@ -1846,7 +1845,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var active    = $thisli.hasClass( 'active' );
 	var audiocd   = $thisli.hasClass( 'audiocd' );
 	var notsaved  = $thisli.hasClass( 'notsaved' );
-	var radio     = $thisli.hasClass( 'webradio' );
 	var upnp      = $thisli.hasClass( 'upnp' );
 	$thisli.addClass( 'updn' );
 	$( '#menu-plaction a' ).removeClass( 'hide' );
@@ -1854,7 +1852,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( S.player === 'mpd' || S.player === 'upnp' ) {
 		if ( active ) {
 			$menu.find( '.play' ).toggleClass( 'hide', play );
-			$menu.find( '.pause' ).toggleClass( 'hide', ! play || radio );
+			$menu.find( '.pause' ).toggleClass( 'hide', ! play || S.webradio );
 			$menu.find( '.stop' ).toggleClass( 'hide', state === 'stop' );
 		} else {
 			$menu.find( '.pause, .stop' ).addClass( 'hide' );
@@ -1863,8 +1861,8 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$menu.find( '.pause, .stop, .current' ).addClass( 'hide' );
 	}
 	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
-	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
-	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
+	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', S.webradio );
+	$menu.find( '.tag' ).toggleClass( 'hide', S.webradio || upnp || audiocd );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', ! notsaved );
 	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
@@ -1921,7 +1919,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				}
 				
 				$menu.find( '.replace' ).toggleClass( 'hide', ! S.pllength );
-				$menu.find( '.similar' ).toggleClass( 'hide', V.list.path.slice( 0, 4 ) === 'http' );
+				$menu.find( '.similar' ).toggleClass( 'hide', S.webradio );
 				$menu.find( '.wrsave' ).toggleClass( 'hide', ! $this.hasClass( 'notsaved' ) );
 			}
 			$this.addClass( 'active' );

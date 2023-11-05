@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 29231101
+[[ ! -e /usr/bin/vcgencmd ]] && cp /opt/vc/bin/{dtoverlay,vcgencmd} /usr/bin
+
 # 20231022
 if [[ -e /boot/kernel.img && ! -e /lib/python3.10/site-packages/websocket ]]; then
 	echo '

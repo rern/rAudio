@@ -99,12 +99,17 @@ if [[ $player != mpd && $player != upnp ]]; then
 		Time=$( getContent $dirairplay/Time )
 		timestamp=$( date +%s%3N )
 		if [[ $state == pause ]]; then
-			elapsedms=$( getContent $dirairplay/elapsed )
+			elapsed=$( < $dirairplay/elapsed )
 		else
 			[[ -e $dirairplay/start ]] && start=$( < $dirairplay/start ) || start=0
 			elapsedms=$(( timestamp - start ))
+			elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
 		fi
-		elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
+		
+		if [[ -e $dirairplay/timestamp ]]; then
+			diff=$(( timestamp - $( < $dirairplay/timestamp ) ))
+			elapsed=$(( diff / 1000 + elapsed ))
+		fi
 ########
 		status+='
 , "Album"     : "'$( getContent $dirairplay/Album )'"
@@ -209,10 +214,7 @@ if [[ $pllength  == 0 && ! $snapclient ]]; then
 	outputStatus
 fi
 fileheader=${file:0:4}
-[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true
-########
-	status+='
-, "stream" : '$stream
+[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true # webradio dab upnp
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
@@ -333,7 +335,7 @@ $radiosampling" > $dirshm/radio
 			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
 			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
 		fi
-		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< $status )
+		status=$( grep -E -v '^, "state"|^, "webradio"' <<< $status )
 ########
 		status+='
 , "Album"        : "'$Album'"

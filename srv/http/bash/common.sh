@@ -152,7 +152,8 @@ data2json() {
 }
 dirPermissions() {
 	chown -R http:http /srv
-	chown mpd:audio $dirmpd $dirplaylists $dirmpd/mpd.db
+	chown mpd:audio $dirmpd $dirplaylists
+ 	[[ -e $dirmpd/mpd.db ]] && chown mpd:audio $dirmpd/mpd.db
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
 }
@@ -214,17 +215,6 @@ notify() { # icon title message delayms
 	data='{ "channel": "notify", "data": { "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' } }'
 	$dirbash/websocket-push.py "$data" $ip
 }
-packageActive() {
-	local active pkg pkgs status
-	pkgs=$@
-	status=( $( systemctl is-active $pkgs ) )
-	i=0
-	for pkg in ${pkgs[@]}; do
-		[[ ${status[i]} == active ]] && active=true || active=false
-		printf -v ${pkg//-} '%s' $active
-		(( i++ ))
-	done
-}
 package() {
 	local file
 	file=$( dialog --colors --no-shadow --no-collapse --output-fd 1 --nocancel --menu "
@@ -239,6 +229,17 @@ Package:
 		3 ) file=aursetup;;
 	esac
 	bash <( curl -L https://github.com/rern/rern.github.io/raw/main/$file.sh )
+}
+packageActive() {
+	local active pkg pkgs status
+	pkgs=$@
+	status=( $( systemctl is-active $pkgs ) )
+	i=0
+	for pkg in ${pkgs[@]}; do
+		[[ ${status[i]} == active ]] && active=true || active=false
+		printf -v ${pkg//-} '%s' $active
+		(( i++ ))
+	done
 }
 pushData() {
 	local channel data ip json path sharedip updatedone webradiocopy
