@@ -52,7 +52,7 @@ fi
 [[ ! $url || $url == null ]] && exit
 
 ext=${url/*.}
-if [[ $TYPE == audiocd ]]; then
+if [[ $DISCID ]]; then
 	coverfile=$diraudiocd/$DISCID.$ext
 else
 	[[ $TYPE ]] && prefix=$TYPE || prefix=online
@@ -70,4 +70,4 @@ if [[ $TYPE == webradio ]]; then
 , "Album" : "'$ALBUM'"'
 fi
 pushData coverart "{ $data }"
-[[ $TYPE != audiocd ]] && $dirbash/cmd.sh coverfileslimit
+[[ ! $DISCID ]] && $dirbash/cmd.sh coverfileslimit
