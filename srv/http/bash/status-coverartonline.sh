@@ -57,6 +57,7 @@ if [[ $DISCID ]]; then
 else
 	[[ $TYPE ]] && prefix=$TYPE || prefix=online
 	coverfile=$dirshm/$prefix/$name.$ext
+	$dirbash/cmd.sh coverfileslimit
 fi
 curl -sfL $url -o $coverfile || exit
 
@@ -70,4 +71,3 @@ if [[ $TYPE == webradio ]]; then
 , "Album" : "'$ALBUM'"'
 fi
 pushData coverart "{ $data }"
-[[ ! $DISCID ]] && $dirbash/cmd.sh coverfileslimit
