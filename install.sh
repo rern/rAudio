@@ -61,12 +61,6 @@ cursor=
 runxinitrcd" > $dirsystem/localbrowser.conf
 fi
 
-# 20230909
-if [[ -e /usr/bin/chromium && ! -e /usr/bin/firefox ]]; then
-	pacman -Sy --noconfirm firefox
-	systemctl try-restart localbrowser
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
