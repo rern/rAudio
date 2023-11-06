@@ -118,6 +118,5 @@ fi
 $dirbash/status-coverartonline.sh "cmd
 $artist
 $album
-audiocd
 $discid
-CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
+CMD ARTIST ALBUM DISCID" &> /dev/null &
