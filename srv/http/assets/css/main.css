@@ -1989,6 +1989,7 @@ li.active .li2 bl {
 	.emptyadd.barsalways { top: 90px }
 	#bar-bottom {
 		height: 30px !important;
+		line-height: 30px;
 		font-size: 21px;
 	}
 	.index0 { display: none !important }
