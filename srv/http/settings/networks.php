@@ -3,7 +3,7 @@
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'status' => 'bt'
+	, 'status' => 'bluez'
 	, 'button' => [ 'btscan' => 'search' ]
 	, 'help'   => i( 'search btn' ).' Available devices'
 ] );

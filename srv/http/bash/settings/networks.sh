@@ -156,11 +156,6 @@ profileremove )
 scankill ) 
 	killProcess networksscan
 	;;
-statusbt )
-	echo "\
-<bll># bluetoothctl show</bll>
-$( bluetoothctl show )"
-	;;
 statuslan )
 	lan=$( ifconfig | grep ^e | cut -d: -f1 )
 	echo "\

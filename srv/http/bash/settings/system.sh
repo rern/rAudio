@@ -469,6 +469,11 @@ statusaudio )
 <bll># aplay -l | grep bcm2835</bll>
 $( aplay -l | grep bcm2835 )"
 	;;
+statusbluetooth )
+	echo "\
+<bll># bluetoothctl show</bll>
+$( bluetoothctl show )"
+	;;
 statussoundprofile )
 	dirlan=/sys/class/net/$( ifconfig | grep ^e | head -1 | cut -d: -f1 )
 	for f in /proc/sys/vm/swappiness $dirlan/mtu $dirlan/tx_queue_len; do

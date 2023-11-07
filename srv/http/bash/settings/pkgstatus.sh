@@ -17,6 +17,11 @@ $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 		fileconf=/etc/bluetooth/main.conf
 		PKG=bluez
 		;;
+	bluez )
+		fileconf=/etc/bluetooth/main.conf
+		PKG=bluez
+		SERVICE=bluetooth
+		;;
 	camilladsp )
 		fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		;;
