@@ -13,13 +13,8 @@ case $CMD in
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 		;;
-	bluetooth )
-		fileconf=/etc/bluetooth/main.conf
-		PKG=bluez
-		;;
 	bluez )
 		fileconf=/etc/bluetooth/main.conf
-		PKG=bluez
 		SERVICE=bluetooth
 		;;
 	camilladsp )
