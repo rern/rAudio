@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231111
+if [[ -e /boot/kernel8.img ]]; then
+	! grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/#(IgnorePkg   =)/\1 dhcpcd/' /etc/pacman.conf
+fi
+
 # 29231101
 [[ ! -e /usr/bin/vcgencmd ]] && cp /opt/vc/bin/{dtoverlay,vcgencmd} /usr/bin
 
