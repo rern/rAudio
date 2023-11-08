@@ -6,8 +6,7 @@
 
 . /srv/http/bash/common.sh
 
-url=http://ws.audioscrobbler.com/2.0
-! internetConnected $url && exit
+! urlReachable ws.audioscrobbler.com scrobble 'Scrobble Server' && exit
 
 sleep 2 # wait - after track change pushData
 
@@ -36,7 +35,7 @@ response=$( curl -sX POST \
 	--data-urlencode "track=$Title" \
 	--data "api_sig=$apisig" \
 	--data "format=json" \
-	$url )
+	http://ws.audioscrobbler.com/2.0 )
 if [[ $response =~ error ]]; then
 	msg="Error: $( jq -r .message <<< $response )"
 else

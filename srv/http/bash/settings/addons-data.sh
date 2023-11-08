@@ -6,13 +6,12 @@ online=true
 if [[ -e $dirshm/addonsprogress ]]; then
 	rm $dirshm/addonsprogress
 	data=$( < $diraddons/addonslist.json )
-elif internetConnected; then
+elif urlReachable github.com addons 'Addons Server'; then
 	data=$( curl -sSfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
 	[[ $? == 0 ]] && echo "$data" > $diraddons/addonslist.json || notify addons Addons 'Database download failed.' -1
 else
 	online=false
 	data=$( < $diraddons/addonslist.json )
-	notify addons Addons 'Internet is offline.' -1
 fi
 
 installed='"r1"'

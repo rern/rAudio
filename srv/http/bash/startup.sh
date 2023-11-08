@@ -133,9 +133,7 @@ fi
 
 # after all sources connected ........................................................
 if [[ $connected ]]; then
-	if internetConnected; then
-		$dirsettings/addons-data.sh &> /dev/null &
-	fi
+	$dirsettings/addons-data.sh &> /dev/null &
 elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
 	$dirsettings/features.sh hostapdset
 	systemctl -q disable hostapd
