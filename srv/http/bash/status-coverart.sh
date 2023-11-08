@@ -47,8 +47,8 @@ else
 	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 fi
 if [[ $coverfile ]]; then
-	echo $coverfile > $localfile
-	[[ $upnp ]] && echo $coverfile || php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );"
+	echo "$coverfile" > $localfile
+	[[ $upnp ]] && echo "$coverfile" || php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );"
 	$dirbash/cmd.sh coverfileslimit
 	exit
 fi
