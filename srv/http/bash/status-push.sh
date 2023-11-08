@@ -81,11 +81,9 @@ for p in player features camilla; do
 	pushData refresh '{ "page": "'$p'", "state": "'$state'" }'
 done
 
-[[ ! -e $dirsystem/scrobble ]] && exit
+[[ ! -e $dirsystem/scrobble || ! $trackchanged || $state != play ]] && exit
+
+[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
 
 . $dirshm/statusprev
-[[ ! $Artist || ! $Title || $webradio == true || $state == pause ]] || (( $Time < 30 )) && exit
-
-(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
-
-[[ $player == mpd ]] || grep -q $player=true $dirsystem/scrobble.conf && $dirbash/scrobble.sh &
+[[ $Artist && $Title && $webradio != true && $Time -gt 30 ]] && $dirbash/scrobble.sh &
