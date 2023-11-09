@@ -5,9 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231111
-pacman -Q wiringpi | grep 181 && pacman -Sy --noconfirm wiringpi
-
 if [[ -e /boot/kernel8.img ]]; then
+	pacman -Q wiringpi | grep 181 && pacman -Sy --noconfirm wiringpi
 	! grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/#(IgnorePkg   =)/\1 dhcpcd/' /etc/pacman.conf
 fi
 
