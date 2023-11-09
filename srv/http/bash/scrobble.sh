@@ -25,10 +25,6 @@ response=$( curl -sX POST \
 	--data "api_sig=$apisig" \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
-if [[ $response =~ error ]]; then
-	msg="Error: $( jq -r .message <<< $response )"
-else
-	grep -q notify=true $dirsystem/scrobble.conf && msg=$( stringEscape $TITLE )
-fi
+[[ $response =~ error ]] && msg="Error: $( jq -r .message <<< $response )" || msg=$( stringEscape $TITLE )
 [[ $msg ]] && notify lastfm Scrobble "$msg"
 rm -f $dirshm/scrobble
