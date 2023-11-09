@@ -747,7 +747,7 @@ function infoTitle() {
 			} );
 			$( '#infoContent .lyrics' ).toggleClass( 'hide', ! S.lyrics );
 			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
-			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! S.scrobble || ! S.webradio );
+			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! S.scrobble || ! S.webradio || ! S.Artist || ! S.Album );
 			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
 				var artist = values[ 0 ]
@@ -764,7 +764,7 @@ function infoTitle() {
 				} else if ( $this.hasClass( 'similar' ) ) {
 					addSimilar();
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...values, 'CMD ARTIST TITLE ALBUM' ] );
+					bash( [ 'scrobble', ...values, 'CMD ARTIST TITLE' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
 				$( '#infoX' ).trigger( 'click' );
