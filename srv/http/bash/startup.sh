@@ -9,6 +9,8 @@ wlandev=$( $dirsettings/networks.sh wlandevice )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
+	rm /etc/machine-id
+	systemd-machine-id-setup
 	rm /boot/expand
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
 	[[ ${partition:0:7} == /dev/sd ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
