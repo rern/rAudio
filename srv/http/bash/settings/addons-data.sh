@@ -5,49 +5,45 @@
 online=true
 if [[ -e $dirshm/addonsprogress ]]; then
 	rm $dirshm/addonsprogress
-	data=$( < $diraddons/addonslist.json )
-elif urlReachable github.com addons 'Addons Server'; then
-	data=$( curl -sSfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
-	[[ $? == 0 ]] && echo "$data" > $diraddons/addonslist.json || notify addons Addons 'Database download failed.' -1
 else
-	online=false
-	data=$( < $diraddons/addonslist.json )
+	data=$( curl -sfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
+	if [[ $? == 0 ]]; then
+		echo "$data" > $diraddons/addonslist.json
+	else
+		online=false
+		data=$( < $diraddons/addonslist.json )
+		notify addons Addons 'Server not reachable.' -1
+	fi
 fi
-
-installed='"r1"'
-addons=$( sed -n '/^\s, .*{$/ {s/.*, "\(.*\)".*/\1/; p}' <<< $data )
-for addon in $addons; do
-	addondata=$( sed -n '/"'$addon'"/,/^\s}$/ p' <<< $data )
-	if grep -q '"hide"' <<< $addondata; then
-		hide=$( sed -n '/"hide"/ {s/.* : "//; s/"$//; p}' <<< $addondata )
+[[ ! $data ]] && data=$( < $diraddons/addonslist.json )
+addons=( $( jq keys <<< $data | tr -d '[",]' ) )
+for addon in ${addons[@]}; do
+	addondata=$( jq -r ."$addon" <<< $data )
+	hide=$( jq -r .hide <<< $addondata )
+	if [[ $hide != null ]]; then
 		[[ $hide != 1 ]] && hide=$( eval $hide )
 		[[ $hide ]] && hidden+=',"'$addon'"'
 	fi
-	verify=$( sed -n '/"verify"/ {s/.* : "//; s/"$//; p}' <<< $addondata )
+	verify=$( jq -r .verify <<< $addondata )
 	[[ $verify && $( eval $verify 2> /dev/null ) == 1 ]] && notverified+=',"'$addon'"'
 	if [[ -e $diraddons/$addon ]]; then
 		installed+=',"'$addon'"'
-		version=$( sed -n '/"version"/ {s/.* : "//; s/"$//; p}' <<< $addondata )
+		version=$( jq -r .version <<< $addondata )
 		[[ $( < $diraddons/$addon ) < $version ]] && update+=',"'$addon'"'
 	fi
 done
-[[ $hidden ]] && hidden='['${hidden:1}']' || hidden='[""]'
-installed='['$installed']'
-[[ $notverified ]] && notverified='['${notverified:1}']' || notverified='[""]'
 if [[ $update ]]; then
-	update='['${update:1}']'
 	pushData option '{ "addons": 1 }'
 	touch $diraddons/update
 else
-	update='[""]'
 	rm -f $diraddons/update
 fi
 echo $( head -n -1 <<< $data )'
 	, "status" : {
-		  "hidden"      : '$hidden'
-		, "installed"   : '$installed'
-		, "notverified" : '$notverified'
-		, "update"      : '$update'
+		  "hidden"      : [ '${hidden:1}' ]
+		, "installed"   : [ '${installed:1}' ]
+		, "notverified" : [ '${notverified:1}' ]
+		, "update"      : [ '${update:1}' ]
 		, "online"      : '$online'
 	}
 }'

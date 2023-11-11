@@ -2,8 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-! urlReachable ws.audioscrobbler.com coverart 'Online Cover Art' && exit
-
 args2var "$1"
 
 name=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
@@ -32,22 +30,22 @@ data=$( curl -sfG -m 5 \
 	--data "api_key=$apikey" \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
-[[ $TYPE == webradio ]] && album=$( jq -r .track.album <<< $data ) || album=$( jq -r .album <<< $data )
-[[ $album == null ]] && exit
-
-image=$( jq -r .image <<< $album )
-if [[ $image && $image != null ]]; then
-	extralarge=$( jq -r '.[3]."#text"' <<< $image )
-	if [[ $extralarge ]]; then
-		url=$( sed 's|/300x300/|/_/|' <<< $extralarge ) # get larger size than 300x300
-	else
+if [[ $? == 0 && $data ]]; then
+	[[ $TYPE == webradio ]] && album=$( jq -r .track.album <<< $data ) || album=$( jq -r .album <<< $data )
+	[[ $album && $album != null ]] && image=$( jq -r .image <<< $album )
+	if [[ $image && $image != null ]]; then
+		extralarge=$( jq -r '.[3]."#text"' <<< $image )
+		[[ $extralarge && $extralarge != null ]] && url=$( sed 's|/300x300/|/_/|' <<< $extralarge ) # get larger size than 300x300
+	fi
+fi
 ### 2 - coverartarchive.org #####################################
-		mbid=$( jq -r .mbid <<< $album )
-		if [[ $mbid && $mbid != null ]]; then
-			! urlReachable coverartarchive.org coverart 'Online Cover Art' && exit
-			imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
-			[[ $? == 0 ]] && url=$( jq -r .images[0].image <<< $imgdata )
-		fi
+if [[ ! $url ]]; then
+	mbid=$( jq -r .mbid <<< $album )
+	if [[ $mbid && $mbid != null ]]; then
+		imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
+		[[ $? != 0 ]] && notify coverart 'Online Cover Art' 'Server not reachable.' && exit
+		
+		url=$( jq -r .images[0].image <<< $imgdata )
 	fi
 fi
 [[ ! $url || $url == null ]] && exit

@@ -249,17 +249,15 @@ mirror )
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
-	mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
-	if urlReachable github.com timezone 'Package Mirror Server'; then
-		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
-		if [[ $? == 0 ]]; then
-			mv -f mirrorlist $file
-			[[ $mirror ]] && sed -i "0,/^Server/ s|//.*mirror|//$mirror.mirror|" $file
-		else
-			rm mirrorlist
-		fi
+	list=$( curl -sfL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist )
+	if [[ $? == 0 ]]; then
+		mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
+		[[ $mirror ]] && list=$( sed -i "0,/^Server/ s|//.*mirror|//$mirror.mirror|" <<< $list )
+		echo "$list" > $file
+	else
+		list=$( < $file )
 	fi
-	readarray -t lines <<< $( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' $file )
+	readarray -t lines <<< $( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' <<< $list )
 	codelist='"Auto":""'
 	for line in "${lines[@]}"; do
 		if [[ ${line:0:4} == '### ' ]];then
