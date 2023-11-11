@@ -30,7 +30,6 @@ $body         = [
 		  'id'       => 'shairport-sync'
 		, 'help'     => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
-
 Note:
  · No sound: Increase volume on sender device (too low)
  · If Camilla DSP is enabled, stop current track before start playing.

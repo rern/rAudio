@@ -4,6 +4,15 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231111
+file=$dirsystem/scrobble.conf
+[[ -e $file ]] && sed -i '/notify/ d' $file
+
+if [[ -e /boot/kernel8.img ]]; then
+	pacman -Q wiringpi | grep 181 && pacman -Sy --noconfirm wiringpi
+	! grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/#(IgnorePkg   =)/\1 dhcpcd/' /etc/pacman.conf
+fi
+
 # 29231101
 [[ ! -e /usr/bin/vcgencmd ]] && cp /opt/vc/bin/{dtoverlay,vcgencmd} /usr/bin
 
@@ -59,12 +68,6 @@ screenoff=0
 onwhileplay=
 cursor=
 runxinitrcd" > $dirsystem/localbrowser.conf
-fi
-
-# 20230909
-if [[ -e /usr/bin/chromium && ! -e /usr/bin/firefox ]]; then
-	pacman -Sy --noconfirm firefox
-	systemctl try-restart localbrowser
 fi
 
 #-------------------------------------------------------------------------------

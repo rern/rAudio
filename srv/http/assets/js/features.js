@@ -24,7 +24,6 @@ var default_v      = {
 		, BLUETOOTH : true
 		, SPOTIFY   : true
 		, UPNP      : true
-		, NOTIFY    : true
 	}
 	, stoptimer    : {
 		  MIN      : ''
@@ -416,11 +415,10 @@ $( '#setting-scrobble' ).on( 'click', function() {
 				, ico( 'spotify' ) +'Spotify'
 				, ' '+ ico( 'upnp' ) +' UPnP / DLNA'
 			]
-			, footer       : '<br><label><input type="checkbox"><wh>Notify</wh> on scrobbling</label>'
 			, boxwidth     : 170
 			, values       : S.scrobbleconf || default_v.scrobble
 			, checkchanged : S.scrobble
-			, buttonlabel  : ico( 'remove' ) +'Auth.'
+			, buttonlabel  : ico( 'remove' ) +'Keys'
 			, buttoncolor  : red
 			, button       : () => {
 				switchCancel();

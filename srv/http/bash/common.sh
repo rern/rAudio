@@ -173,9 +173,6 @@ getVar(){
 	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"']$//g" <<< $line )
 	stringEscape $line
 }
-internetConnected() {
-	ping -c 1 -w 1 8.8.8.8 &> /dev/null && return 0
-}
 ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}' | head -1
 }
@@ -330,6 +327,18 @@ statePlay() {
 }
 stringEscape() {
 	echo ${@//\"/\\\"}
+}
+urlReachable() {
+	url=$1
+	if ping -c 1 -w 1 $url &> /dev/null; then
+		return 0
+	else
+		icon=$2
+		title=$3
+		ping -c 1 -w 1 8.8.8.8 &> /dev/null && text="Unreachable: $url" || text='Internet is offline'
+		notify $icon "$title" "$text"
+		return 1
+	fi
 }
 volumeCardControl() {
 	local card control volume

@@ -40,7 +40,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 	
 fi
 
-! internetConnected || [[ $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
+! urlReachable gnudb.org audiocd 'Audio CD Database' || [[ $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
 if [[ ! $cddiscid ]]; then
@@ -53,7 +53,7 @@ discid=${cddiscid[0]}
 
 if [[ ! -e $diraudiocd/$discid ]]; then
 	notify 'audiocd blink' 'Audio CD' 'Search CD data ...'
-	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
+	server='http://gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
 	query=$( curl -sL "$server+query+$discdata&$options" | head -2 | tr -d '\r' )
@@ -118,6 +118,5 @@ fi
 $dirbash/status-coverartonline.sh "cmd
 $artist
 $album
-audiocd
 $discid
-CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
+CMD ARTIST ALBUM DISCID" &> /dev/null &

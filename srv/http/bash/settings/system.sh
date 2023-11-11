@@ -250,7 +250,7 @@ mirror )
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
 	mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
-	if internetConnected; then
+	if urlReachable github.com timezone 'Package Mirror Server'; then
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
 		if [[ $? == 0 ]]; then
 			mv -f mirrorlist $file
@@ -468,6 +468,11 @@ statusaudio )
 	echo "\
 <bll># aplay -l | grep bcm2835</bll>
 $( aplay -l | grep bcm2835 )"
+	;;
+statusbluetooth )
+	echo "\
+<bll># bluetoothctl show</bll>
+$( bluetoothctl show )"
 	;;
 statussoundprofile )
 	dirlan=/sys/class/net/$( ifconfig | grep ^e | head -1 | cut -d: -f1 )

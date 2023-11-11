@@ -1987,10 +1987,6 @@ li.active .li2 bl {
 }
 @media ( max-height: 590px) {
 	.emptyadd.barsalways { top: 90px }
-	#bar-bottom {
-		height: 30px !important;
-		font-size: 21px;
-	}
 	.index0 { display: none !important }
 	.index1 {
 		display: flex;

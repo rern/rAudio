@@ -151,7 +151,6 @@ $body = [
 		  'id'       => 'buffer'
 		, 'help'     => <<< EOF
 Increase to fix intermittent audio.
-
 (default: <c>4096</c> kB - 24s of CD-quality audio)
 EOF
 	]
@@ -159,7 +158,6 @@ EOF
 		  'id'       => 'outputbuffer'
 		, 'help'     => <<< EOF
 Increase to fix missing Album list with large Library.
-
 (default: <c>8192</c> kB)
 EOF
 	]

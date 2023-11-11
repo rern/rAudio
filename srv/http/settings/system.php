@@ -4,7 +4,7 @@ $onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 'x';
 $id_data = [
 	  'audio'         => [ 'name' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
-	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluez',                              'status' => true, 'exist' => $onboardwlan ]
+	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
 	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
 	, 'hdmi'          => [ 'name' => 'HDMI Hotplug',                              'setting' => false ]
 	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
