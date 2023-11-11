@@ -4,13 +4,15 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231118
+grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/(IgnorePkg   =).*/#\1/' /etc/pacman.conf
+
 # 20231111
 file=$dirsystem/scrobble.conf
 [[ -e $file ]] && sed -i '/notify/ d' $file
 
 if [[ -e /boot/kernel8.img ]]; then
 	pacman -Q wiringpi | grep 181 && pacman -Sy --noconfirm wiringpi
-	! grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/#(IgnorePkg   =)/\1 dhcpcd/' /etc/pacman.conf
 fi
 
 # 29231101
@@ -88,51 +90,4 @@ installfinish
 if ! grep -q smbdfree /etc/samba/smb.conf; then
 	sed -i '/^.USB/ a\\tdfree command = /srv/http/bash/smbdfree.sh' /etc/samba/smb.conf
 	systemctl try-restart smb
-fi
-
-# 20230916
-file=/etc/systemd/system/websocket.service
-if [[ ! -e $file ]]; then
-	systemctl disable --now cmd-websocket &> /dev/null
-	rm /etc/systemd/system/cmd-websocket.service
-	! pacman -Q python-websockets &> /dev/null && pacman -Sy --noconfirm python-websockets
-	echo "\
-[Unit]
-Description=Websocket server
-Before=startup.service
-
-[Service]
-ExecStart=/srv/http/bash/websocket-server.py
-
-[Install]
-WantedBy=multi-user.target" > $file
-	systemctl daemon-reload
-	systemctl enable --now websocket
-fi
-
-if [[ -e /usr/bin/camilladsp && ! -e /etc/default/camilladsp ]]; then
-	cat << EOF > /etc/default/camilladsp
-ADDRESS=0.0.0.0
-CONFIG=/srv/http/data/camilladsp/configs/camilladsp.yml
-LOGFILE=/var/log/camilladsp.log
-MUTE=
-PORT=1234
-GAIN=-g0
-EOF
-	sed -i -e '/^ExecStart/ d
-' -e '/^Type/ a\
-EnvironmentFile=-/etc/default/camilladsp\
-ExecStartPre=/bin/bash -c "echo 0 > /dev/shm/clipped"\
-ExecStart=/usr/bin/camilladsp $CONFIG -p $PORT -a $ADDRESS -o $LOGFILE $GAIN
-' /usr/lib/systemd/system/camilladsp.service
-	systemctl daemon-reload
-	systemctl try-restart camilladsp
-	rm -rf /srv/http/settings/camillagui
-	rm -f $dircamilladsp/configs/{active,default}_config.yml
-	mkdir -p $dircamilladsp/configs-bt
-	echo "\
-filtersmax=10
-filtersmin=-10
-mixersmax=10
-mixersmin=-10" > $dirsystem/camilla.conf
 fi
