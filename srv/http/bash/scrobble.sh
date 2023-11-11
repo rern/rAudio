@@ -6,8 +6,6 @@
 
 . /srv/http/bash/common.sh
 
-! urlReachable ws.audioscrobbler.com scrobble 'Scrobble Server' && rm -f $dirshm/scrobble && exit
-
 args2var "$1"
 
 . $dirsystem/scrobblekey # sharedsecret
@@ -15,7 +13,7 @@ timestamp=$( date +%s )
 apisig=$( echo -n "api_key${apikey}artist${ARTIST}methodtrack.scrobblesk${sk}timestamp${timestamp}track${TITLE}${sharedsecret}" \
 			| md5sum \
 			| cut -c1-32 )
-response=$( curl -sX POST \
+response=$( curl -sfX POST \
 	--data "api_key=$apikey" \
 	--data-urlencode "artist=$ARTIST" \
 	--data "method=track.scrobble" \
@@ -25,6 +23,10 @@ response=$( curl -sX POST \
 	--data "api_sig=$apisig" \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
-[[ $response =~ error ]] && msg="Error: $( jq -r .message <<< $response )" || msg=$( stringEscape $TITLE )
+if [[ $? == 0 ]]; then
+	[[ $response =~ error ]] && msg="Error: $( jq -r .message <<< $response )" || msg=$( stringEscape $TITLE )
+else
+	msg='Server not reachable.'
+fi
 [[ $msg ]] && notify lastfm Scrobble "$msg"
 rm -f $dirshm/scrobble

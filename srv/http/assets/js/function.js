@@ -1943,16 +1943,6 @@ function thumbUpdate( path ) {
 	);
 	$( '#formtemp' ).submit();
 }
-function urlReachable( url, sec ) {
-	if ( ! sec ) var sec = 0;
-	
-	fetch( url, { mode: 'no-cors' } ).then( function() {
-		location.href = url;
-	} ).catch( function() {
-		sec++
-		setTimeout( () => urlReachable( url, sec ), 1000 );
-	} );
-}
 function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )
 }
