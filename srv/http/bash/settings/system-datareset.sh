@@ -45,23 +45,21 @@ if [[ -e $diraddons ]]; then
 initramfs initramfs-linux.img followkernel
 disable_overscan=1
 disable_splash=1
-dtparam=audio=on"
-	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
+dtparam=audio=on
 hdmi_force_hotplug=1"
-	grep -q rpi0 $dirshm/cpuinfo && config+="
+	[[ ! -e /usr/bin/firefox ]] && config=$( sed '/^hdmi/ d' <<< $config )
+	[[ -e /boot/kernel.img ]] && config+="
 gpu_mem=32
 force_turbo=1
 gpu_mem=32
 hdmi_drive=2
 max_usb_current=1
-over_voltage=2" # rpi 0
+over_voltage=2"
+	fi
 	echo "$config" > /boot/config.txt
 	# css color
 	[[ -e $dirsystem/color ]] && rm $dirsystem/color && $dirbash/cmd.sh color
 	# lcd
-	if [[ -e $dirbash/xinitrc ]]; then
-		! grep -q disable-software-rasterizer $dirbash/xinitrc && sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
-	fi
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf &> /dev/null
 	# nas
 	readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )

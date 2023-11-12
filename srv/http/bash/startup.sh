@@ -2,7 +2,14 @@
 
 . /srv/http/bash/common.sh
 
-$dirsettings/system.sh cpuinfo
+hwrevision=$( grep ^Revision /proc/cpuinfo )
+BB=${hwrevision: -3:2}
+C=${hwrevision: -4:1}
+data=BB=$BB
+data+=$'\n'C=$C
+[[ $BB =~ ^(09|0c|12)$ ]]          || data+=$'\n'onboardsound=true    # not zero, zero w, zero 2w
+[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || data+=$'\n'onboardwireless=true # not zero, 1, 2
+echo "$data" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )

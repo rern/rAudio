@@ -1,21 +1,26 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-. $dirshm/cpuinfo
 
+data+='
+  "page"              : "system"'
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
 uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
 status="\
 $( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
-$( /usr/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
+$( vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
-if [[ $rpi3bplus ]]; then
+. $dirshm/cpuinfo
+if [[ $BB == 0d ]]; then # 3B+
 	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
 	[[ $degree ]] && softlimit=true || degree=60
+	data+='
+, "softlimit"         : '$softlimit'
+, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
-throttled=$( /usr/bin/vcgencmd get_throttled | cut -d= -f2 )
+throttled=$( vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x0 ]]; then
 	binary=$( python -c "print( bin( int( '$throttled', 16 ) ) )" ) # 0b01234567890123456789
 	current=${binary: -4}                                                             # 6789
@@ -53,7 +58,7 @@ else
 	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
 	(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 	soccpu+=" @ $speed"
-	rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
+	rpimodel=$( sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' /proc/device-tree/model )
 	if [[ $rpimodel == *BeagleBone* ]]; then
 		soc=AM3358
 	else
@@ -146,7 +151,6 @@ baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 
 data+='
-  "page"              : "system"
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiooutput"       : "'$audiooutput'"
 , "hddapm"            : '$hddapm'
@@ -220,11 +224,6 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
-fi
-if [[ $rpi3bplus ]]; then
-	data+='
-, "softlimit"         : '$softlimit'
-, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
 
 data2json "$data" $1
