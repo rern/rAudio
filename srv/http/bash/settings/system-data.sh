@@ -58,7 +58,7 @@ else
 	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
 	(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 	soccpu+=" @ $speed"
-	rpimodel=$( sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' /proc/device-tree/model )
+	rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
 	if [[ $rpimodel == *BeagleBone* ]]; then
 		soc=AM3358
 	else
@@ -76,12 +76,12 @@ else
 	fi
 	soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
 	system="\
-rAudio $( getContent $diraddons/r1 )<br>\
-$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>\
-$rpimodel<br>\
-$soc<br>\
+rAudio $( getContent $diraddons/r1 )<br>
+$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>
+$rpimodel<br>
+$soc<br>
 $soccpu"
-	echo "$system" > $dirshm/system
+	echo $system > $dirshm/system
 fi
 
 ifconfiglan=$( ifconfig | grep -A2 ^e | head -3 )
