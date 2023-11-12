@@ -13,7 +13,7 @@ $( vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 . $dirshm/cpuinfo
-if [[ $BB == 0d ]]; then # 3B+
+if [[ $rpi3bplus ]]; then
 	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
 	[[ $degree ]] && softlimit=true || degree=60
 	data+='

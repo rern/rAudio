@@ -2,13 +2,13 @@
 
 . /srv/http/bash/common.sh
 
-hwrevision=$( grep ^Revision /proc/cpuinfo )
-BB=${hwrevision: -3:2}
-C=${hwrevision: -4:1}
+revision=$( grep ^Revision /proc/cpuinfo )
+BB=${revision: -3:2}
 data=BB=$BB
-data+=$'\n'C=$C
+data+=$'\n'C=${revision: -4:1}
 [[ $BB =~ ^(09|0c|12)$ ]]          || data+=$'\n'onboardsound=true    # not zero, zero w, zero 2w
 [[ $BB =~ ^(00|01|02|03|04|09)$ ]] || data+=$'\n'onboardwireless=true # not zero, 1, 2
+[[ $BB == 0d ]]                    && data+=$'\n'rpi3bplus=true
 echo "$data" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
