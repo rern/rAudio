@@ -20,28 +20,22 @@ if [[ $rpi3bplus ]]; then
 , "softlimit"         : '$softlimit'
 , "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
-throttled=$( vcgencmd get_throttled | cut -d= -f2 )
+throttled=$( vcgencmd get_throttled | cut -d= -f2 )       # hex
 if [[ $throttled != 0x0 ]]; then
-	binary=$( python -c "print( bin( int( '$throttled', 16 ) ) )" ) # 0b01234567890123456789 (20 bits - 0/1)
-	current=${binary: -4}                                           #                   0123
-	occured=${binary:2:4}                                           #   0123
-	e_current=(
-		"Soft temperature limit active <gr>(>$degree°C)</gr>"
-		'Currently throttled'
-		'Arm frequency capped'
-		'<red>Under-voltage</red> detected <gr>(<4.7V)</gr>'
+	binary=$( python -c "print( f'{$throttled:0>20b}')" ) # hex > bin (20 bits)
+	# 11110000000000001111
+	declare -A warnings=(
+		[19]='<red>Under-voltage</red> detected <gr>(<4.7V)</gr>'
+		[18]='CPU frequency capped'
+		[17]='CPU throttled'
+		[16]="Soft temperature limit active <gr>(>$degree°C)</gr>"
+		[3]='<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>'
+		[2]='CPU frequency capping has occurred'
+		[1]='CPU throttling has occurred'
+		[0]="Soft temperature limit has occurred <gr>(>$degree°C)</gr>"
 	)
-	e_occured=(
-		"Soft temperature limit has occurred <gr>(>$degree°C)</gr>"
-		'Throttling has occurred'
-		'Arm frequency capping has occurred'
-		'<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>'
-	)
-	for i in 0 1 2 3; do
-		[[ ${current:i:1} == 1 ]] && warning+=" · ${e_current[i]}<br>"
-	done
-	for i in 0 1 2 3; do
-		[[ ${occured:i:1} == 1 ]] && warning+=" · ${e_occured[i]}<br>"
+	for i in 19 18 17 16 3 2 1 0; do
+		[[ ${binary:i:1} == 1 ]] && warning+=" · ${warnings[$i]}<br>"
 	done
 fi
 # for interval refresh
