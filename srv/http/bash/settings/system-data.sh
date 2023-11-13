@@ -22,26 +22,25 @@ if [[ $rpi3bplus ]]; then
 fi
 throttled=$( vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x0 ]]; then
-	binary=$( python -c "print( bin( int( '$throttled', 16 ) ) )" ) # 0b01234567890123456789
-	current=${binary: -4}                                                             # 6789
-	occured=${binary:2:4}                                           # 0123
-	e_current=( \
-		"Soft temperature limit active <gr>(>$softlimit°C)</gr>" \
-		'Currently throttled' \
-		'Arm frequency capped' \
-		'<red>Under-voltage</red> detected <gr>(<4.7V)</gr>' \
+	binary=$( python -c "print( bin( int( '$throttled', 16 ) ) )" ) # 0b01234567890123456789 (20 bits - 0/1)
+	current=${binary: -4}                                           #                   0123
+	occured=${binary:2:4}                                           #   0123
+	e_current=(
+		"Soft temperature limit active <gr>(>$degree°C)</gr>"
+		'Currently throttled'
+		'Arm frequency capped'
+		'<red>Under-voltage</red> detected <gr>(<4.7V)</gr>'
 	)
-	e_occured=( \
-		"Soft temperature limit has occurred <gr>(>$softlimit°C)</gr>" \
-		'Throttling has occurred' \
-		'Arm frequency capping has occurred' \
-		'<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' \
+	e_occured=(
+		"Soft temperature limit has occurred <gr>(>$degree°C)</gr>"
+		'Throttling has occurred'
+		'Arm frequency capping has occurred'
+		'<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>'
 	)
-	[[ $softlimit ]] && digit='0 1 2 3' || digit='1 2 3'
-	for i in $digit; do
+	for i in 0 1 2 3; do
 		[[ ${current:i:1} == 1 ]] && warning+=" · ${e_current[i]}<br>"
 	done
-	for i in $digit; do
+	for i in 0 1 2 3; do
 		[[ ${occured:i:1} == 1 ]] && warning+=" · ${e_occured[i]}<br>"
 	done
 fi
