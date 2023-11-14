@@ -3,13 +3,9 @@
 . /srv/http/bash/common.sh
 
 revision=$( grep ^Revision /proc/cpuinfo )
+echo "\
 BB=${revision: -3:2}
-data=BB=$BB
-data+=$'\n'C=${revision: -4:1}
-[[ $BB =~ ^(09|0c|12)$ ]]          || data+=$'\n'onboardsound=true    # not zero, zero w, zero 2w
-[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || data+=$'\n'onboardwireless=true # not zero, 1, 2
-[[ $BB == 0d ]]                    && data+=$'\n'rpi3bplus=true
-echo "$data" > $dirshm/cpuinfo
+C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )

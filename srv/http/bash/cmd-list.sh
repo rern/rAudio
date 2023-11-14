@@ -92,7 +92,7 @@ if [[ $albumlist ]]; then # album^^artist^^date^^file
 	[[ -e $dirmpd/albumignore ]] && albumignore=$( < $dirmpd/albumignore )
 	readarray -t lines <<< $albumlist
 	for l in "${lines[@]}"; do
-		readarray -t tags <<< $( echo -e ${l//^^/\\n} )
+		readarray -t tags <<< $( echo -e "${l//^^/\\n}" )
 		tagalbum=${tags[0]}
 		tagartist=${tags[1]}
 		[[ $albumignore ]] && grep -q "^$tagalbum^^$tagartist\$" <<< $albumignore && continue

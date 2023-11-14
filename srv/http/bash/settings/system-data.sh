@@ -14,13 +14,17 @@ $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $time
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 . $dirshm/cpuinfo
 if [[ ! $degree ]]; then
-	if [[ $rpi3bplus ]]; then
+	[[ ! $BB =~ ^(09|0c|12)$ ]] && onboardsound=1
+	if [[ $BB == 0d ]]; then
+		rpi3bplus=1
 		degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
 		[[ $degree ]] && softlimit=1 || degree=60
 	else
 		degree=60
 	fi
 	cpuinfo=degree=$degree
+	[[ $onboardsound ]] && cpuinfo+=$'\n'onboardsound=true
+	[[ $rpi3bplus ]] && cpuinfo+=$'\n'rpi3bplus=true
 	[[ $softlimit ]] && cpuinfo+=$'\n'softlimit=true
 	echo "$cpuinfo" >> $dirshm/cpuinfo
 fi
