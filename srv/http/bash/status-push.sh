@@ -80,23 +80,4 @@ fi
 for p in player features camilla; do
 	pushData refresh '{ "page": "'$p'", "state": "'$state'" }'
 done
-
-[[ ! -e $dirsystem/scrobble || -e $dirshm/scrobble || ! $trackchanged ]] && exit
-
-if [[ -e $dirshm/statusprevnext ]]; then
-	. $dirshm/statusprevnext
-	rm $dirshm/statusprevnext
-else
-	. $dirshm/statusprev
-	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
-fi
-[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
-
-[[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
-
-touch $dirshm/scrobble
-sleep 2 # wait - after track change pushData
-$dirbash/scrobble.sh "cmd
-$Artist
-$Title
-CMD ARTIST TITLE"
+[[ $trackchanged && -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && $dirbash/scrobble.sh &> /dev/null &

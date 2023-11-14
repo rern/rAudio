@@ -542,13 +542,7 @@ mpcprevnext )
 	current=$( mpc status %songpos% )
 	length=$( mpc status %length% )
 	[[ $( mpc status %state% ) == playing ]] && playing=1
-	if [[ -e $dirsystem/scrobble && $playing ]]; then
-		. $dirshm/status
-		if [[ $webradio != true && $Time -gt 30 ]]; then
-			elapsed=$( mpcElapsed )
-			(( $elapsed > 240 || $elapsed > $(( Time / 2 )) )) && sed -E 's/^(elapsed=).*/\1'$elapsed'/' $dirshm/status > $dirshm/statusprevnext
-		fi
-	fi
+	[[ -e $dirsystem/scrobble ]] && $dirbash/scrobble.sh status &> /dev/null &
 	mpc -q stop
 	radioStop
 	[[ ! $playing ]] && touch $dirshm/prevnextseek
