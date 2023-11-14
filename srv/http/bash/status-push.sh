@@ -80,4 +80,4 @@ fi
 for p in player features camilla; do
 	pushData refresh '{ "page": "'$p'", "state": "'$state'" }'
 done
-[[ $trackchanged && -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && $dirbash/scrobble.sh &> /dev/null &
+[[ $trackchanged && -e $dirsystem/scrobble ]] && $dirbash/scrobble.sh &> /dev/null &

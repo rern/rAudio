@@ -542,7 +542,7 @@ mpcprevnext )
 	current=$( mpc status %songpos% )
 	length=$( mpc status %length% )
 	[[ $( mpc status %state% ) == playing ]] && playing=1
-	[[ -e $dirsystem/scrobble ]] && $dirbash/scrobble.sh status &> /dev/null &
+	[[ -e $dirsystem/scrobble && $playing ]] && echo "elapsed=$( mpcElapsed )" >> $dirshm/status
 	mpc -q stop
 	radioStop
 	[[ ! $playing ]] && touch $dirshm/prevnextseek
