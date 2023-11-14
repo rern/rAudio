@@ -80,4 +80,16 @@ fi
 for p in player features camilla; do
 	pushData refresh '{ "page": "'$p'", "state": "'$state'" }'
 done
-[[ $trackchanged && -e $dirsystem/scrobble ]] && $dirbash/scrobble.sh &> /dev/null &
+[[ ! $trackchanged || ! -e $dirsystem/scrobble ]] && exit
+
+. $dirshm/statusprev
+[[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
+
+[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
+
+(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
+
+$dirbash/scrobble.sh "cmd
+$Artist
+$Title
+CMD ARTIST TITLE"&> /dev/null &
