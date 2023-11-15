@@ -519,6 +519,7 @@ mpcplayback )
 		mpc -q $ACTION $POS
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify 'audiocd blink' 'Audio CD' 'Start play ...'
 	else
+		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
 		mpc -q $ACTION
 		killProcess cava
 	fi
@@ -543,7 +544,8 @@ mpcprevnext )
 	length=$( mpc status %length% )
 	[[ $( mpc status %state% ) == playing ]] && playing=1
 	if [[ -e $dirsystem/scrobble ]]; then
-		! grep -q ^state=stop $dirshm/status && mpcElapsed > $dirshm/elapsed
+		. $dirshm/status
+		[[ $state != stop ]] && mpcElapsed > $dirshm/elapsed
 	fi
 	radioStop
 	[[ ! $playing ]] && touch $dirshm/prevnextseek
