@@ -87,8 +87,12 @@ done
 
 [[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
 
-(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
-
+if [[ -e $dirshm/elapsed ]];then
+	elapsed=$( < $dirshm/elapsed )
+	rm $dirshm/elapsed
+	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
+	
+fi
 $dirbash/scrobble.sh "cmd
 $Artist
 $Title
