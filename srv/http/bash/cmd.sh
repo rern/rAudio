@@ -543,10 +543,7 @@ mpcprevnext )
 	current=$( mpc status %songpos% )
 	length=$( mpc status %length% )
 	[[ $( mpc status %state% ) == playing ]] && playing=1
-	if [[ -e $dirsystem/scrobble ]]; then
-		. $dirshm/status
-		[[ $state != stop ]] && mpcElapsed > $dirshm/elapsed
-	fi
+	[[ -e $dirsystem/scrobble ]] && ! grep -q '^state="*stop' $dirshm/status && mpcElapsed > $dirshm/elapsed
 	radioStop
 	[[ ! $playing ]] && touch $dirshm/prevnextseek
 	if [[ $( mpc status %random% ) == on ]]; then
