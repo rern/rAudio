@@ -747,7 +747,7 @@ function infoTitle() {
 			} );
 			$( '#infoContent .lyrics' ).toggleClass( 'hide', ! S.lyrics );
 			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
-			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! S.scrobble || ! S.webradio || ! S.Artist || ! S.Album );
+			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! S.scrobble || ( ! S.webradio && S.player === 'mpd' ) || ! S.Artist || ! S.Album );
 			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
 				var artist = values[ 0 ]
