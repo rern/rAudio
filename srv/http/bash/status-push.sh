@@ -95,7 +95,7 @@ done
 if [[ $player != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
 	
-	if [[ $player != upnp && $state == play ]]; then # renderers prev/next
+	if [[ $state =~ ^(play|pause)$ ]]; then # renderers prev/next
 		elapsed=$(( ( timestampnew - timestamp ) / 1000 ))
 		(( $elapsed < $Time )) && echo $elapsed > $dirshm/elapsed
 	fi
