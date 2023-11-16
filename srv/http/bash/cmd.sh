@@ -655,7 +655,8 @@ playerstop )
 	player=$( < $dirshm/player )
 	killProcess cava
 	echo mpd > $dirshm/player
-	[[ $player != upnp ]] && $dirbash/status-push.sh
+	[[ -e $dirsystem/scrobble ]] && echo $ELAPSED > $dirshm/elapsed
+	$dirbash/status-push.sh
 	case $player in
 		airplay )
 			shairportStop

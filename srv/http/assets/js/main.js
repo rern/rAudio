@@ -928,7 +928,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			clearInterval( V.interval.elapsed );
 			clearInterval( V.interval.elapsedpl );
 			if ( S.player !== 'mpd' ) {
-				bash( [ 'playerstop' ] );
+				bash( [ 'playerstop', S.elapsed, 'CMD ELAPSED' ] );
 				banner( S.player, icon_player[ S.player ], 'Stop ...' );
 				return
 			}

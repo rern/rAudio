@@ -82,14 +82,14 @@ for p in player features camilla; do
 done
 [[ ! -e $dirsystem/scrobble ]] && exit
 
-[[ ! $trackchanged && ! -e $dirshm/elapsed ]] && exit # stop at middle of song
+[[ ! $trackchanged && ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
 
 . $dirshm/statusprev
 [[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 
 [[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
 
-if [[ -e $dirshm/elapsed ]];then # prev/next
+if [[ -e $dirshm/elapsed ]];then
 	elapsed=$( < $dirshm/elapsed )
 	rm $dirshm/elapsed
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
