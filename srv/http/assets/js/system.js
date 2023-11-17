@@ -79,7 +79,7 @@ var default_v      = {
 		, STEP : 1
 	}
 	, softlimit     : {
-		SOFTLIMIT : 60
+		SOFTLIMIT : 65
 	}
 	, vuled         : {
 		  P0 : 14

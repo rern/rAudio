@@ -49,13 +49,13 @@ $labels = 'CPU Load
 	<br>CPU Temp<wide>erature</wide></span>
 	<br>Time
 	<br>Up Time
-	<div id="warning">'.i( 'warning yl' ).'&ensp;<wh>Warning</wh></div>';
+	<div id="warning">'.i( 'warning yl' ).' <wh>Warning</wh></div>';
 $help = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.
  
-<wh>• Warnings:</wh> (if any)
+'.i( 'warning yl' ).' <wh>Warnings:</wh> (if any)
  · Power supply voltage and throttled state (<a href="https://www.raspberrypi.com/documentation/computers/os.html#get_throttled">vcgencmd get_throttled</a>)<!--
 --><a class="softlimitno">
 	· 80-84°C: CPU cores throttled.

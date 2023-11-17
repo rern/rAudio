@@ -29,4 +29,3 @@ else
 	msg='Server not reachable.'
 fi
 [[ $msg ]] && notify lastfm Scrobble "$msg"
-rm -f $dirshm/scrobble

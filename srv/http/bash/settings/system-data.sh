@@ -1,43 +1,54 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-. $dirshm/cpuinfo
 
+data+='
+  "page"              : "system"'
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
 uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
 status="\
 $( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
-$( /usr/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
+$( vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
-if [[ $rpi3bplus ]]; then
-	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
-	[[ $degree ]] && softlimit=true || degree=60
+. $dirshm/cpuinfo
+if [[ ! $degree ]]; then
+	[[ ! $BB =~ ^(09|0c|12)$ ]] && onboardsound=1
+	if [[ $BB == 0d ]]; then
+		rpi3bplus=1
+		degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
+		[[ $degree ]] && softlimit=1 || degree=60
+	else
+		degree=60
+	fi
+	cpuinfo=degree=$degree
+	[[ $onboardsound ]] && cpuinfo+=$'\n'onboardsound=true
+	[[ $rpi3bplus ]] && cpuinfo+=$'\n'rpi3bplus=true
+	[[ $softlimit ]] && cpuinfo+=$'\n'softlimit=true
+	echo "$cpuinfo" >> $dirshm/cpuinfo
 fi
-throttled=$( /usr/bin/vcgencmd get_throttled | cut -d= -f2 )
+if [[ $rpi3bplus ]]; then
+	data+='
+, "softlimit"         : '$softlimit'
+, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
+fi
+throttled=$( vcgencmd get_throttled | cut -d= -f2 )  # hex
 if [[ $throttled != 0x0 ]]; then
-	binary=$( python -c "print( bin( int( '$throttled', 16 ) ) )" ) # 0b01234567890123456789
-	current=${binary: -4}                                                             # 6789
-	occured=${binary:2:4}                                           # 0123
-	e_current=( \
-		"Soft temperature limit active <gr>(>$softlimit°C)</gr>" \
-		'Currently throttled' \
-		'Arm frequency capped' \
-		'<red>Under-voltage</red> detected <gr>(<4.7V)</gr>' \
+	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
+	# 20 bits: occurred > 11110000000000001111 < current
+	declare -A warnings=(
+		[0]="CPU temperature limit - occurred <gr>(>$degree°C)</gr>"
+		[1]='CPU throttling - occurred'
+		[2]='CPU frequency capping - occurred'
+		[3]='<yl>Under-voltage</yl> - occurred <gr>(<4.7V)</gr>'
+		[16]="CPU temperature limit - active <gr>(>$degree°C)</gr>"
+		[17]='CPU throttled'
+		[18]='CPU frequency capped'
+		[19]='<red>Under-voltage</red> - currently <gr>(<4.7V)</gr>'
 	)
-	e_occured=( \
-		"Soft temperature limit has occurred <gr>(>$softlimit°C)</gr>" \
-		'Throttling has occurred' \
-		'Arm frequency capping has occurred' \
-		'<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' \
-	)
-	[[ $softlimit ]] && digit='0 1 2 3' || digit='1 2 3'
-	for i in $digit; do
-		[[ ${current:i:1} == 1 ]] && warning+=" · ${e_current[i]}<br>"
-	done
-	for i in $digit; do
-		[[ ${occured:i:1} == 1 ]] && warning+=" · ${e_occured[i]}<br>"
+	for i in 19 18 17 16 3 2 1 0; do
+		[[ ${binary:i:1} == 1 ]] && warning+=" · ${warnings[$i]}<br>"
 	done
 fi
 # for interval refresh
@@ -71,12 +82,12 @@ else
 	fi
 	soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
 	system="\
-rAudio $( getContent $diraddons/r1 )<br>\
-$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>\
-$rpimodel<br>\
-$soc<br>\
+rAudio $( getContent $diraddons/r1 )<br>
+$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>
+$rpimodel<br>
+$soc<br>
 $soccpu"
-	echo "$system" > $dirshm/system
+	echo $system > $dirshm/system
 fi
 
 ifconfiglan=$( ifconfig | grep -A2 ^e | head -3 )
@@ -146,7 +157,6 @@ baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 
 data+='
-  "page"              : "system"
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiooutput"       : "'$audiooutput'"
 , "hddapm"            : '$hddapm'
@@ -220,11 +230,6 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
-fi
-if [[ $rpi3bplus ]]; then
-	data+='
-, "softlimit"         : '$softlimit'
-, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
 
 data2json "$data" $1

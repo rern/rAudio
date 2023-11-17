@@ -2,7 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-$dirsettings/system.sh cpuinfo
+revision=$( grep ^Revision /proc/cpuinfo )
+echo "\
+BB=${revision: -3:2}
+C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )

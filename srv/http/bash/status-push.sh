@@ -27,9 +27,13 @@ else
 		[[ ! $trackchanged && ! $statuschanged ]] && exit # >>>>>>>>>>
 		
 	fi
-	[[ -e $dirsystem/scrobble ]] && mv -f $dirshm/status{,prev}
-	mv -f $dirshm/status{new,}
+########
 	pushData mpdplayer "$status"
+	if [[ -e $dirsystem/scrobble ]]; then
+		mv -f $dirshm/status{,prev}
+		timestampnew=$( grep ^timestamp <<< $statusnew | cut -d= -f2 )
+	fi
+	mv -f $dirshm/status{new,}
 fi
 
 if systemctl -q is-active localbrowser; then
@@ -81,22 +85,28 @@ for p in player features camilla; do
 	pushData refresh '{ "page": "'$p'", "state": "'$state'" }'
 done
 
-[[ ! -e $dirsystem/scrobble || -e $dirshm/scrobble || ! $trackchanged ]] && exit
+[[ ! -e $dirsystem/scrobble ]] && exit
 
-if [[ -e $dirshm/statusprevnext ]]; then
-	. $dirshm/statusprevnext
-	rm $dirshm/statusprevnext
-else
-	. $dirshm/statusprev
-	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
-fi
-[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
+[[ ! $trackchanged && ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
 
+. $dirshm/statusprev
 [[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
 
-touch $dirshm/scrobble
-sleep 2 # wait - after track change pushData
+if [[ $player != mpd ]]; then
+	! grep -q $player=true $dirsystem/scrobble.conf && exit
+	
+	if [[ $state =~ ^(play|pause)$ ]]; then # renderers prev/next
+		elapsed=$(( ( timestampnew - timestamp ) / 1000 ))
+		(( $elapsed < $Time )) && echo $elapsed > $dirshm/elapsed
+	fi
+fi
+if [[ -e $dirshm/elapsed ]];then
+	elapsed=$( < $dirshm/elapsed )
+	rm $dirshm/elapsed
+	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
+	
+fi
 $dirbash/scrobble.sh "cmd
 $Artist
 $Title
-CMD ARTIST TITLE"
+CMD ARTIST TITLE"&> /dev/null &

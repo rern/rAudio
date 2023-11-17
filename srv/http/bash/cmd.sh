@@ -519,6 +519,7 @@ mpcplayback )
 		mpc -q $ACTION $POS
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify 'audiocd blink' 'Audio CD' 'Start play ...'
 	else
+		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
 		mpc -q $ACTION
 		killProcess cava
 	fi
@@ -542,14 +543,7 @@ mpcprevnext )
 	current=$( mpc status %songpos% )
 	length=$( mpc status %length% )
 	[[ $( mpc status %state% ) == playing ]] && playing=1
-	if [[ -e $dirsystem/scrobble && $playing ]]; then
-		. $dirshm/status
-		if [[ $webradio != true && $Time -gt 30 ]]; then
-			elapsed=$( mpcElapsed )
-			(( $elapsed > 240 || $elapsed > $(( Time / 2 )) )) && sed -E 's/^(elapsed=).*/\1'$elapsed'/' $dirshm/status > $dirshm/statusprevnext
-		fi
-	fi
-	mpc -q stop
+	[[ -e $dirsystem/scrobble ]] && ! grep -q '^state="*stop' $dirshm/status && mpcElapsed > $dirshm/elapsed
 	radioStop
 	[[ ! $playing ]] && touch $dirshm/prevnextseek
 	if [[ $( mpc status %random% ) == on ]]; then
@@ -658,7 +652,8 @@ playerstop )
 	player=$( < $dirshm/player )
 	killProcess cava
 	echo mpd > $dirshm/player
-	[[ $player != upnp ]] && $dirbash/status-push.sh
+	[[ -e $dirsystem/scrobble ]] && echo $ELAPSED > $dirshm/elapsed
+	$dirbash/status-push.sh
 	case $player in
 		airplay )
 			shairportStop

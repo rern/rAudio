@@ -76,7 +76,6 @@ else
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
-, "scrobble"     : '$( exists $dirsystem/scrobble )'
 , "shareddata"   : '$( exists $filesharedip )'
 , "snapclient"   : '$( exists $dirshm/snapclient )'
 , "stoptimer"    : '$( exists $dirshm/pidstoptimer )'
@@ -86,6 +85,12 @@ else
 , "volume"       : '$volume'
 , "volumemute"   : '$volumemute'
 , "webradio"     : false'
+	if [[ -e $dirsystem/scrobble ]]; then
+		scrobbleconf=$( conf2json $dirsystem/scrobble.conf )
+		status+='
+, "scrobble"     : true
+, "scrobbleconf" : '${scrobbleconf,,}
+	fi
 fi
 [[ $display ]] && status+='
 , "display"      : '$display

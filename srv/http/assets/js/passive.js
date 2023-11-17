@@ -225,19 +225,33 @@ function psMpdRadio( data ) {
 }	
 function psMpdUpdate( data ) {
 	if ( 'type' in data ) {
-		if ( data.type === 'mpd' ) {
-			S.updating_db = true;
-		} else {
-			S.updatingdab = true;
-		}
-		setButtonUpdating();
+		data.type === 'mpd' ? S.updating_db = true : S.updatingdab = true;
 	} else if ( 'done' in data ) {
 		S.updating_db = false;
 		S.updatingdab = false;
-		setButtonUpdating();
 		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		banner( 'refresh-library', 'Library Update', 'Done' );
+		if ( data.done === 'tageditor' ) {
+			var path  = $( '.licover .lipath' ).text()
+			var query = {
+				  query  : 'ls'
+				, string : path
+				, format : [ 'file' ]
+			}
+			list( query, function( html ) {
+				var data = {
+					  html      : html
+					, modetitle : path
+					, path      : path
+				}
+				renderLibraryList( data );
+			} );
+		} else {
+			C = data.done;
+			renderLibraryCounts();
+		}
 	}
+	setButtonUpdating();
 }
 function psOption( data ) {
 	if ( V.local ) return
