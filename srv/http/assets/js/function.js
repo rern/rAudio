@@ -747,7 +747,12 @@ function infoTitle() {
 			} );
 			$( '#infoContent .lyrics' ).toggleClass( 'hide', ! S.lyrics );
 			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
-			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! S.scrobble || ( ! S.webradio && S.player === 'mpd' ) || ! S.Artist || ! S.Album );
+			if ( S.player === 'mpd' ) {
+				var btnscrobble = S.scrobble && S.webradio;
+			} else {
+				var btnscrobble = S.scrobble && ! S.scrobbleconf[ S.player ];
+			}
+			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! btnscrobble );
 			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
 				var artist = values[ 0 ]
