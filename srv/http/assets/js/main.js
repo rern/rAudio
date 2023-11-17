@@ -492,10 +492,14 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	) {
 		if ( S.Title.includes( '(' ) ) {
 			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], function( paren ) {
-				paren === '-1' ? infoTitle() : lyricsGet();
+				if ( paren === '-1' ) {
+					infoTitle();
+				} else {
+					S.scrobble && S.webradio ? infoTitle() : lyricsGet();
+				}
 			} );
 		} else {
-			lyricsGet();
+			S.scrobble && S.webradio ? infoTitle() : lyricsGet();
 		}
 	} else if ( S.Artist || S.Title ) {
 		infoTitle();
