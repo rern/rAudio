@@ -175,11 +175,11 @@ $( '#data' ).on( 'click', '.copy', function() {
 
 // ----------------------------------------------------------------------
 function errorDisplay( msg, list ) {
-	var pos = '';
+	var pos = msg.replace( /.* position /, '' );
 	if ( msg.includes( 'position' ) ) {
-		pos = msg.replace( /.* position /, '' );
+		pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
 	} else if ( msg.includes( 'column' ) ) {
-		pos = msg.replace( /.* column (.*) of .*/, '$1' );
+		pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
 	}
 	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
 	var error =  '<codered>Errors:</codered> '+ msg
@@ -989,7 +989,7 @@ function htmlOption( el ) {
 	if ( typeof el === 'number' ) el = [ ...Array( el ).keys() ];
 	var options = '';
 	if ( Array.isArray( el ) ) { // name = value
-		el = el.sort();
+		el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
 		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
 	} else {                     // json
 		el = jsonSort( el );

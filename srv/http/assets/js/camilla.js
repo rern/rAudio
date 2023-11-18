@@ -848,7 +848,7 @@ var render   = {
 	}
 }
 var setting  = {
-	  filter        : ( type, subtype, name ) => {
+	  filter        : ( type, subtype, name, newname ) => {
 		if ( name ) {
 			var ekv = { type : type }
 			$.each( FIL[ name ].parameters, ( k, v ) => ekv[ k === 'type' ? 'subtype' : k ] = v );
@@ -879,7 +879,7 @@ var setting  = {
 		selectlabel     = util.labels2array( selectlabel );
 		// text
 		var textlabel   = [ 'name' ];
-		values.name     = name;
+		values.name     = name || newname;
 		if ( 'text' in key_val ) {
 			var kv    = key_val.text;
 			var k     = Object.keys( kv );
@@ -952,13 +952,13 @@ var setting  = {
 				$selecttype.on( 'change', function() {
 					var type    = $( this ).val();
 					var subtype = type in C.subtype ? C.subtype[ type ][ 0 ] : '';
-					setting.filter( type, subtype );
+					setting.filter( type, subtype, '', infoVal().name );
 				} );
 				if ( $select.length > 1 ) {
 					$select.eq( 1 ).on( 'change', function() {
 						var type    = $selecttype.val();
 						var subtype = $( this ).val();
-						setting.filter( type, subtype );
+						setting.filter( type, subtype, '', infoVal().name );
 					} );
 				}
 				if ( radio ) {
@@ -1364,7 +1364,7 @@ var setting  = {
 					}
 				} );
 				$( '.trselect select' ).eq( 1 ).on( 'change', function() {
-				setting.hidetrinfo( $trother, $( this ).val() );
+					setting.hidetrinfo( $trother, $( this ).val() );
 				} );
 			}
 			, cancel       : switchCancel
@@ -1402,11 +1402,12 @@ var setting  = {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			wscamilla.send( '"Reload"' );
+			setTimeout( util.save2file, 300 );
 		}, wscamilla ? 0 : 300 );
 		if ( ! wscamilla ) util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
-	, set           : () => {
+	, set           : ( name ) => {
 		wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
 		wscamilla.send( '"Reload"' );
 		bash( [ 'confswitch', name, 'CMD NAME' ] );
