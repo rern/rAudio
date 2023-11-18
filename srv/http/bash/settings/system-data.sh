@@ -84,10 +84,11 @@ else
 			3 ) soc+=2711;; # 4
 		esac
 	fi
+	kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
 	soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>
-$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>
+$kernel<br>
 $rpimodel<br>
 $soc<br>
 $soccpu"
