@@ -4,14 +4,18 @@
 
 data+='
   "page"              : "system"'
+date=$( date +'%F <gr>•</gr> %T' )
+load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )
+temp=$( vcgencmd measure_temp | tr -cd '0-9.' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
+since=$( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )
 uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
 status="\
-$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
-$( vcgencmd measure_temp | tr -cd '0-9.' ) °C<br>\
-$( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
-$uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
+$load<br>\
+$temp °C<br>\
+$date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
+$uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
 . $dirshm/cpuinfo
 if [[ ! $degree ]]; then
 	[[ ! $BB =~ ^(09|0c|12)$ ]] && onboardsound=1

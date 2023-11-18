@@ -175,11 +175,11 @@ $( '#data' ).on( 'click', '.copy', function() {
 
 // ----------------------------------------------------------------------
 function errorDisplay( msg, list ) {
-	var pos = '';
+	var pos = msg.replace( /.* position /, '' );
 	if ( msg.includes( 'position' ) ) {
-		pos = msg.replace( /.* position /, '' );
+		pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
 	} else if ( msg.includes( 'column' ) ) {
-		pos = msg.replace( /.* column (.*) of .*/, '$1' );
+		pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
 	}
 	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
 	var error =  '<codered>Errors:</codered> '+ msg
