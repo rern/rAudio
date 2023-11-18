@@ -1406,7 +1406,7 @@ var setting  = {
 		if ( ! wscamilla ) util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
-	, set           : () => {
+	, set           : ( name ) => {
 		wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
 		wscamilla.send( '"Reload"' );
 		bash( [ 'confswitch', name, 'CMD NAME' ] );
