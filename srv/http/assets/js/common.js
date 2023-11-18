@@ -989,7 +989,7 @@ function htmlOption( el ) {
 	if ( typeof el === 'number' ) el = [ ...Array( el ).keys() ];
 	var options = '';
 	if ( Array.isArray( el ) ) { // name = value
-		el = el.sort();
+		el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
 		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
 	} else {                     // json
 		el = jsonSort( el );
