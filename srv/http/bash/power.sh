@@ -21,7 +21,7 @@ elif [[ -e $filesharedip ]]; then
 	sed -i "/$( ipAddress )/ d" $filesharedip
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
-	$dirsettings/camilla.py save
+	$dirsettings/camilla.py
 	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 fi
 [[ -e $dirshm/btconnected ]] && cp $dirshm/btconnected $dirsystem

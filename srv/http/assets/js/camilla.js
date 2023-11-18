@@ -1402,6 +1402,7 @@ var setting  = {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			wscamilla.send( '"Reload"' );
+			setTimeout( util.save2file, 300 );
 		}, wscamilla ? 0 : 300 );
 		if ( ! wscamilla ) util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
