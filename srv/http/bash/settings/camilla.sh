@@ -40,7 +40,7 @@ confrename )
 	pushRefresh
 	;;
 confswitch )
-	sed -i -E "s|^(CONFIG.*/).*|\1$NAME.yml|" /etc/default/camilladsp
+	sed -i -E "s|^(CONFIG.*/).*|\1$NAME|" /etc/default/camilladsp
 	pushRefresh
 	;;
 restart )

@@ -364,10 +364,9 @@ var graph    = {
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
 			return
 		}
-		var tab     = $li.data( 'name' ) ? 'filters' : 'pipeline';
-		var filters = tab === 'filters';
+		var filters = V.tab === 'filters';
 		var val     = $li.data( filters ? 'name' : 'index' );
-		V.graph[ tab ][ val ] = jsonClone( S.config[ tab ][ val ] );
+		V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
 		var filterdelay = false;
 		if ( filters ) {
 			filterdelay = FIL[ val ].type === 'Delay';
@@ -381,9 +380,9 @@ var graph    = {
 				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
 			} );
 		}
-		notify( tab, util.key2label( tab ), 'Plot ...' );
+		notify( V.tab, util.key2label( V.tab ), 'Plot ...' );
 		var cmd = filters ? " '"+ JSON.stringify( FIL[ val ] ) +"'" : " '"+ JSON.stringify( S.config ) +"' "+ val;
-		bash( [ 'settings/camilla.py', tab + cmd ], data => { // groupdelay = delay, magnitude = gain
+		bash( [ 'settings/camilla.py', V.tab + cmd ], data => { // groupdelay = delay, magnitude = gain
 			var impulse   = 'impulse' in data;
 			if ( filterdelay ) {
 				plots.magnitude.y   = 0;
@@ -518,6 +517,11 @@ var render   = {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
 		$( '.container' ).removeClass( 'hide' );
+		if ( V.tab === 'config' ) {
+			render.tab();
+			render.status();
+		}
+		bannerHide();
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
@@ -561,6 +565,11 @@ var render   = {
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
+		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
+		$( '#configuration' )
+			.html( htmlOption( S.lsconfigs ) )
+			.val( S.configname );
+		$( '#configuration' ).prop( 'disabled', $( '#configuration option' ).length === 1 );
 		if ( $( '.vubar' ).length ) return
 		
 		var vugrid  = '<div id="vugrid">';
@@ -616,11 +625,6 @@ var render   = {
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
-		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
-		$( '#configuration' )
-			.html( htmlOption( S.lsconfigs ) )
-			.val( S.configname );
-		$( '#configuration' ).prop( 'disabled', $( '#configuration option' ).length === 1 );
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
@@ -814,12 +818,12 @@ var render   = {
 	, config      : () => {
 		var li  = '';
 		S.lsconfigs.forEach( f => {
-			li += '<li>'+ ico( 'file liicon edit' ) +f +'</li>';
+			li += '<li>'+ ico( 'file liicon' ) +f +'</li>';
 		} );
 		$( '#config .entries.main' ).html( li );
 	} //---------------------------------------------------------------------------------------------
-	, dataSort    : ( tab ) => {
-		var kv   = S.config[ tab ];
+	, dataSort    : () => {
+		var kv   = S.config[ V.tab ];
 		var data = {};
 		var keys = Object.keys( kv );
 		keys.sort().forEach( k => data[ k ] = kv[ k ] );
@@ -1407,11 +1411,6 @@ var setting  = {
 		if ( ! wscamilla ) util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
-	, set           : ( name ) => {
-		wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
-		wscamilla.send( '"Reload"' );
-		bash( [ 'confswitch', name, 'CMD NAME' ] );
-	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
 		var title   = 'Add File';
@@ -1805,7 +1804,9 @@ $( '#configuration' ).on( 'change', function() {
 	if ( V.local ) return
 	
 	var name = $( this ).val();
-	setting.set( name );
+	wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
+	wscamilla.send( '"Reload"' );
+	bash( [ 'confswitch', name, 'CMD NAME' ] );
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 	V.graph  = { filters: {}, pipeline: {} }
 	render[ V.tab ];
@@ -1896,6 +1897,7 @@ $( '.entries' ).on( 'click', '.liicon', function() {
 	contextMenu();
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
+	$( '#menu' ).find( '.copy, .rename' ).toggleClass( 'hide', V.tab !== 'config' );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
@@ -2051,33 +2053,34 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break;
 		case 'config':
 			switch ( cmd ) {
-				case 'edit':
-					var file = V.li.text();
+				case 'copy':
+					var name = V.li.text();
 					info( {
 						  icon         : V.tab
-						, title        : 'Config'
-						, message      : 'File: <wh>'+ file +'</wh>'
-						, textlabel    : 'Name'
-						, radio        : [ 'Rename', 'Copy' ]
-						, radiocolumn  : true
-						, values       : [ file, 'Rename' ]
-						, beforeshow   : () => {
-							$( '#infoContent td' ).eq( 1 ).prop( 'colspan', 2 );
-							$( '#infoOk' ).addClass( 'disabled' );
-							$( '#infoContent input:text' ).on( 'keyup paste cut', function() {
-								$( '#infoOk' ).toggleClass( 'disabled', file === $( '#infoContent input:text' ).val() );
-							} );
-						}
+						, title        : 'Config Copy'
+						, message      : 'File: <wh>'+ name +'</wh>'
+						, textlabel    : 'Copy as'
+						, values       : [ name ]
+						, checkchanged : true
 						, ok           : () => {
-							var val     = infoVal();
-							var newname = val[ 0 ];
-							var copy    = val[ 1 ] === 'Copy';
-							bash( [ copy ? 'confcopy' : 'confrename', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ], () => {
-								if ( ! copy && name === S.configname ) setting.set( newname );
-							} );
-							notify( icon, SW.title, copy ? 'Copy ...' : 'Rename ...' );
-							copy ? S.lsconfigs.push( newname ) : S.lsconfigs[ S.lsconfigs.indexOf( name ) ] = newname;
-							render.status();
+							var newname = infoVal();
+							bash( [ 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ], bannerHide );
+							notify( V.tab, SW.title, 'Copy ...' );
+						}
+					} );
+					break;
+				case 'rename':
+					var name = V.li.text();
+					info( {
+						  icon         : V.tab
+						, title        : 'Config Rename'
+						, textlabel    : 'Name'
+						, values       : [ name ]
+						, checkchanged : true
+						, ok           : () => {
+							var newname = infoVal();
+							bash( [ 'confrename', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
+							notify( V.tab, SW.title, 'Rename ...' );
 						}
 					} );
 					break;
@@ -2090,10 +2093,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
-							S.lsconfigs.slice( S.lsconfigs.indexOf( file ), 1 );
-							bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
-							banner( icon, SW.title, 'Delete ...' );
-							render.status();
+							bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ], bannerHide );
+							notify( V.tab, SW.title, 'Delete ...' );
 						}
 					} );
 					break;
