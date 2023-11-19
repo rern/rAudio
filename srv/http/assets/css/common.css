@@ -298,16 +298,22 @@ body {
 	white-space : pre-wrap;
 	background  : #000;
 }
-.datahead {
+#data .error {
 	position: fixed;
 	top: 0;
 	width: 100%;
 	padding-top: 10px;
 	background: #000;
 }
-.databody {
+#data .data {
 	margin-top: 50px;
 }
+#data g,
+#data gr,
+#data .gr {
+	color: var( --cw ) !important;
+}
+
 #debug {
 	position: fixed;
 	display: none;
