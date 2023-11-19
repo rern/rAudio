@@ -306,7 +306,7 @@ var axes     = {
 
 // functions //////////////////////////////////////////////////////////////////////////////
 function renderPage() { // common from settings.js
-	render.page();
+	wscamilla ? util.wsGetConfig() : util.webSocket();
 }
 function psOnClose() {
 	if ( V.off ) return
@@ -508,7 +508,6 @@ var graph    = {
 }
 var render   = {
 	  page        : () => {
-		if ( ! wscamilla ) util.webSocket();
 		if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
 		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
 		S.lscoefraw = [];
@@ -517,10 +516,8 @@ var render   = {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
 		$( '.container' ).removeClass( 'hide' );
-		if ( V.tab === 'config' ) {
-			render.tab();
-			render.status();
-		}
+		render.tab();
+		render.status();
 		bannerHide();
 	}
 	, tab         : () => {
@@ -1557,13 +1554,13 @@ var util     = {
 		}
 		render.volume();
 	}
-	,volumeThumb   : () => {
+	, volumeThumb  : () => {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 	}
 	, webSocket    : () => {
 		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		wscamilla.onopen    = () => {
-			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
+			util.wsGetConfig();
 			S.status         = { GetState: '&emsp;'+ blinkdot }
 			V.intervalstatus = setInterval( () => {
 				if ( ! V.local ) V.statusget.forEach( k => wscamilla.send( '"'+ k +'"' ) )
@@ -1696,6 +1693,9 @@ var util     = {
 			}
 		}
 	}
+	, wsGetConfig  : () => {
+		[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
+	}
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1806,7 +1806,8 @@ $( '#configuration' ).on( 'change', function() {
 	bash( [ 'confswitch', name, 'CMD NAME' ], () => {
 		wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
 		wscamilla.send( '"Reload"' );
-		setTimeout( () => wscamilla.send( '"GetConfigJson"' ), 300 );
+		S.configname = name;
+		setTimeout( () => util.wsGetConfig(), 300 );
 	} );
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 	V.graph  = { filters: {}, pipeline: {} }
