@@ -132,15 +132,14 @@ confFromJson() { # $1 - file
 	sed -E '/\{|}/d; s/,//; s/^\s*"(.*)": "*(.*)"*$/\1="\2"/' "$1"
 }
 data2json() {
-	local data json
-	data="$1"
-	if [[ ${data:0:1} != , ]]; then # status.sh PAGE-data.sh
-		data+='
+	local json page
+	page=$( basename ${0/-*} )
+	[[ $page == status.sh ]] && page=false || page='"'$page'"'
+	json='{
+  "page"  : '$page'
 , "login" : '$( exists $dirsystem/login )
-		json="{ $data }"
-	else
-		json="[ ${data:1} ]"
-	fi
+	json+="$1
+}"
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
 	json=$( sed 's/:\s*$/: false/
 				s/:\s*}$/: false }/

@@ -2,8 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-data+='
-  "page"              : "system"'
 date=$( date +'%F <gr>•</gr> %T' )
 load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )
 temp=$( vcgencmd measure_temp | tr -cd '0-9.' )
@@ -31,11 +29,6 @@ if [[ ! $degree ]]; then
 	[[ $rpi3bplus ]] && cpuinfo+=$'\n'rpi3bplus=true
 	[[ $softlimit ]] && cpuinfo+=$'\n'softlimit=true
 	echo "$cpuinfo" >> $dirshm/cpuinfo
-fi
-if [[ $rpi3bplus ]]; then
-	data+='
-, "softlimit"         : '$softlimit'
-, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
 throttled=$( vcgencmd get_throttled | cut -d= -f2 )  # hex
 if [[ $throttled != 0x0 ]]; then
@@ -160,8 +153,8 @@ chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baud ]] && baud=800000
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
-
-data+='
+##########
+data='
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiooutput"       : "'$audiooutput'"
 , "hddapm"            : '$hddapm'
@@ -208,6 +201,7 @@ data+='
 , "warning"           : "'$warning'"'
 
 if [[ $onboardsound ]]; then
+##########
 	data+='
 , "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
@@ -216,6 +210,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
 	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
 	wlanconf='{ "REGDOM": "'$regdom'", "APAUTO": '$apauto' }'
+##########
 	data+='
 , "wlan"              : '$( [[ -e $dirshm/startup ]] && lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconf"          : '$wlanconf'
@@ -230,11 +225,18 @@ if [[ -e $dirshm/onboardwlan ]]; then
 	fi
 	format=$( exists $dirsystem/btformat )
 	bluetoothconf='{ "DISCOVERABLE": '$discoverable', "FORMAT": '$format' }'
+##########
 	data+='
 , "bluetooth"         : '$bluetoothon'
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
+fi
+if [[ $rpi3bplus ]]; then
+##########
+	data+='
+, "softlimit"         : '$softlimit'
+, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
 
 data2json "$data" $1

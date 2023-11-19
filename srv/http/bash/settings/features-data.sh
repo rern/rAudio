@@ -9,9 +9,8 @@
 . /srv/http/bash/common.sh
 
 packageActive camilladsp hostapd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
-
-data+='
-  "page"             : "features"
+##########
+data='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
 , "autoplayconf"     : '$( conf2json $dirsystem/autoplay.conf )'
 , "camilladsp"       : '$camilladsp'
@@ -40,27 +39,33 @@ data+='
 if [[ -e /usr/bin/hostapd ]]; then
 	ip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
 	wpa_passphrase=$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )
+##########
 	data+='
 , "hostapd"          : '$hostapd'
 , "hostapdconf"      : { "IP": "'$ip'", "PASSPHRASE": "'$wpa_passphrase'" }
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 fi
+##########
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$shairportsync
+##########
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapclientactive" : '$snapclient'
 , "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapclientconf"   : { "LATENCY": '$( grep latency /etc/default/snapclient | tr -d -c 0-9 )' }'
+##########
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$spotifyd'
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotifykey 2> /dev/null && echo true )
+##########
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$upmpdcli
 if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 	[[ ! -e /tmp/localbrowser.conf && -e $dirsystem/localbrowser.conf ]] && cp $dirsystem/localbrowser.conf /tmp
+##########
 	data+='
 , "brightness"       : '$( getContent /sys/class/backlight/rpi_backlight/brightness )'
 , "localbrowser"     : '$localbrowser'
@@ -71,12 +76,14 @@ if [[ -e /usr/bin/smbd ]]; then
 	sed -n '/\[SD]/,/^\[/ p' $file | grep -q 'read only = no' && sd=true || sd=false
 	sed -n '/\[USB]/,/^\[/ p' $file | grep -q 'read only = no' && usb=true || usb=false
 	smbconf='{ "SD": '$sd', "USB": '$usb' }'
+##########
 	data+='
 , "smb"              : '$smb'
 , "smbconf"          : '$smbconf
 fi
 if [[ -e /usr/bin/mediamtx ]]; then
 	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now mediamtx
+##########
 	data+='
 , "dabdevice"        : '$dabdevice'
 , "dabradio"         : '$mediamtx

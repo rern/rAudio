@@ -63,8 +63,8 @@ else
 	fi
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( < $dirsystem/volumemute ) || volumemute=0
 ########
-	status='
-  "player"       : "'$player'"
+	status+='
+, "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
 , "consume"      : '$consume'
@@ -87,11 +87,13 @@ else
 , "webradio"     : false'
 	if [[ -e $dirsystem/scrobble ]]; then
 		scrobbleconf=$( conf2json $dirsystem/scrobble.conf )
+########
 		status+='
 , "scrobble"     : true
 , "scrobbleconf" : '${scrobbleconf,,}
 	fi
 fi
+########
 [[ $display ]] && status+='
 , "display"      : '$display
 
@@ -340,6 +342,7 @@ $radiosampling" > $dirshm/radio
 			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
 			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
 		fi
+########
 		status=$( grep -E -v '^, "state"|^, "webradio"' <<< $status )
 ########
 		status+='
@@ -485,9 +488,9 @@ else
 	fi
 fi
 
-########
 [[ ! $snapclient ]] && pos="$(( song + 1 ))/$pllength • "
 sampling="$pos$sampling"
+########
 status+='
 , "ext"      : "'$ext'"
 , "coverart" : "'$coverart'"
@@ -497,6 +500,7 @@ status+='
 if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 	elapsed=$( mpcElapsed )
 # >>>>>>>>>> webradio with found coverart
+########
 	status+='
 , "elapsed"  : '$elapsed
 	outputStatus
