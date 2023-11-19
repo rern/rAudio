@@ -352,7 +352,7 @@ display )
 			
 		fi
 	else
-		rm -f $dirsystem/vumeter $dirshm/status
+		rm -f $dirsystem/vumeter
 	fi
 	$dirsettings/player-conf.sh
 	;;
