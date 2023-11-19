@@ -17,8 +17,7 @@ if argvL > 2:
     print( json.dumps( data ) )
     sys.exit()
     
-# config - get / save
-#  - camilla-data.sh
+# save
 #  - camilla.js (save2file) : $( '.close' ), wscamilla.onclose(), setting.save()
 #  - features.sh : disable
 #  - power.sh
@@ -30,11 +29,7 @@ def getValue( cmd ):
     return data[ cmd ][ 'value' ]
     
 ws     = create_connection( 'ws://127.0.0.1:1234' )
-if argvL == 1:
-    config = getValue( 'GetConfig' )
-    file   = getValue( 'GetConfigName' )
-    with open( file, 'w' ) as f: f.write( config )
-else:
-    config = getValue( 'GetConfigJson' )
-    print( config )
+config = getValue( 'GetConfig' )
+file   = getValue( 'GetConfigName' )
+with open( file, 'w' ) as f: f.write( config )
 ws.close()
