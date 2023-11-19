@@ -1781,9 +1781,8 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
-	if ( V.tab === 'filters' ) {
-		
+	if ( V.li.find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) {
+		V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
 	}
 } ).on( 'touchend mouseup mouseleave', function() {
 	clearInterval( V.intervalgain );
