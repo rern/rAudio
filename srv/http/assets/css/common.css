@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1696132666' );
+	src         : url( '/assets/fonts/rern.woff2?v=1700315400' );
 }
 @font-face {
 	font-family : Lato;
@@ -297,6 +297,16 @@ body {
 	overflow    : auto;
 	white-space : pre-wrap;
 	background  : #000;
+}
+.datahead {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	padding-top: 10px;
+	background: #000;
+}
+.databody {
+	margin-top: 50px;
 }
 #debug {
 	position: fixed;

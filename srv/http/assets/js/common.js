@@ -182,10 +182,12 @@ function errorDisplay( msg, list ) {
 		pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
 	}
 	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
-	var error =  '<codered>Errors:</codered> '+ msg
+	var error =  '<div class="datahead"><codered>Errors:</codered> '+ msg
 				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
 				+'<hr>'
-				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
+				+'</div><div class="databody">'
+				+ list.slice( 0, pos ) +'<codered>&lt;</codered>'+ list.slice( pos );
+				+ '</div>'
 	$( '#data' )
 		.html( error )
 		.removeClass( 'hide' );
