@@ -1582,37 +1582,6 @@ var util     = {
 			var value = data[ cmd ].value;
 			var cl, cp, css, v;
 			switch ( cmd ) {
-				case 'GetConfigName':
-					S.configname = value.split( '/' ).pop();
-					break;
-				case 'GetConfigJson':
-					S.config = JSON.parse( value );
-					DEV = S.config.devices;
-					FIL = S.config.filters;
-					MIX = S.config.mixers;
-					PIP = S.config.pipeline;
-					[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
-					break;
-				case 'GetSupportedDeviceTypes':
-					S.devicetype = { 
-						  capture  : value[ 1 ].sort()
-						, playback : value[ 0 ].sort()
-					};
-					[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
-					[ 'capture', 'playback' ].forEach( k => {
-						S.devices[ k ].forEach( d => {
-							v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
-							C.devices[ k ][ v ] = d;
-						} );
-						S.devicetype[ k ].forEach( t => {
-							v = render.typeReplace( t );
-							C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
-						} );
-					} );
-					showContent();
-					render.status();
-					render.tab();
-					break;
 				case 'GetCaptureSignalPeak':
 				case 'GetCaptureSignalRms':
 				case 'GetPlaybackSignalPeak':
@@ -1660,9 +1629,6 @@ var util     = {
 					}
 					S.status.GetClippedSamples = value;
 					break;
-				case 'GetConfigName':
-					S.configname = value.split( '/' ).pop();
-					break;
 				case 'GetState':
 				case 'GetCaptureRate':
 				case 'GetBufferLevel':
@@ -1686,6 +1652,39 @@ var util     = {
 						S.status[ cmd ] = value;
 						if ( cmd === V.statuslast ) render.statusValue();
 					}
+					break;
+				case 'GetConfigName':
+					S.configname = value.split( '/' ).pop();
+					break;
+				case 'GetConfigJson':
+					S.config = JSON.parse( value );
+					DEV = S.config.devices;
+					FIL = S.config.filters;
+					MIX = S.config.mixers;
+					PIP = S.config.pipeline;
+					[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
+					render.page();
+					render.tab();
+					break;
+				case 'GetSupportedDeviceTypes':
+					S.devicetype = { 
+						  capture  : value[ 1 ].sort()
+						, playback : value[ 0 ].sort()
+					};
+					[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
+					[ 'capture', 'playback' ].forEach( k => {
+						S.devices[ k ].forEach( d => {
+							v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
+							C.devices[ k ][ v ] = d;
+						} );
+						S.devicetype[ k ].forEach( t => {
+							v = render.typeReplace( t );
+							C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+						} );
+					} );
+					showContent();
+					render.status();
+					render.tab();
 					break;
 				case 'Invalid':
 					info( {
@@ -1804,12 +1803,13 @@ $( '#configuration' ).on( 'change', function() {
 	if ( V.local ) return
 	
 	var name = $( this ).val();
-	wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
-	wscamilla.send( '"Reload"' );
-	bash( [ 'confswitch', name, 'CMD NAME' ] );
+	bash( [ 'confswitch', name, 'CMD NAME' ], () => {
+		wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
+		wscamilla.send( '"Reload"' );
+		setTimeout( () => wscamilla.send( '"GetConfigJson"' ), 300 );
+	} );
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 	V.graph  = { filters: {}, pipeline: {} }
-	render[ V.tab ];
 } );
 $( '#setting-configuration' ).on( 'click', function() {
 	$( '#tabconfig' ).trigger( 'click' );
