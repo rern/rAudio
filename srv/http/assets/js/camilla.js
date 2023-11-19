@@ -2064,7 +2064,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, checkchanged : true
 						, ok           : () => {
 							var newname = infoVal();
-							bash( [ 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ], bannerHide );
+							bash( [ 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
 							notify( V.tab, SW.title, 'Copy ...' );
 						}
 					} );
@@ -2093,7 +2093,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
-							bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ], bannerHide );
+							bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
 							notify( V.tab, SW.title, 'Delete ...' );
 						}
 					} );
