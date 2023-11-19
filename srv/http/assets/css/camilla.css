@@ -161,9 +161,6 @@ input[ type=range ] {
 #volume {
 	margin: 0;
 }
-#divconfiguration {
-	margin-top: 10px;
-}
 .divgain {
 	display: inline-block;
 	width: 120px !important;
@@ -377,6 +374,7 @@ i.disabled,
 }
 #divconfiguration {
 	margin-top: 20px;
+	height: 50px;
 }
 .helpmenu {
 	border-bottom: 1px solid var( --cga );

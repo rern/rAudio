@@ -33,6 +33,7 @@ data='
 , "bluetooth"  : '$bluetooth'
 , "card"       : '$card'
 , "clipped"    : '$( cat $dirshm/clipped 2> /dev/null || echo 0 )'
+, "config"     : '$( $dirsettings/camilla.py getconfig )'
 , "control"    : "'$control'"
 , "devices"    : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]

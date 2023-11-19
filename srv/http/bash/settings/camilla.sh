@@ -40,8 +40,8 @@ confrename )
 	pushRefresh
 	;;
 confswitch )
+	$dirsettings/camilla.py
 	sed -i -E "s|^(CONFIG.*/).*|\1$NAME|" /etc/default/camilladsp
-	pushRefresh
 	;;
 restart )
 	systemctl restart camilladsp
