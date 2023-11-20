@@ -30,7 +30,7 @@ else
 ########
 	pushData mpdplayer "$status"
 	if [[ -e $dirsystem/scrobble ]]; then
-		mv -f $dirshm/status{,prev}
+		cp -f $dirshm/status{,prev}
 		timestampnew=$( grep ^timestamp <<< $statusnew | cut -d= -f2 )
 	fi
 	mv -f $dirshm/status{new,}
