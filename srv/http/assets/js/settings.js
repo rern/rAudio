@@ -116,7 +116,7 @@ function playbackButton() {
 	$( '.playback' )
 		.removeClass( 'i-pause i-play' )
 		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
-		.toggleClass( 'disabled', ! S.pllength || ( S.player !== 'mpd' && S.state !== 'play' ) );
+		.toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' );
 }
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
