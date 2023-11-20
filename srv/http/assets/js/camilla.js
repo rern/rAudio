@@ -1695,7 +1695,9 @@ var util     = {
 		}
 	}
 	, wsGetConfig  : () => {
-		[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
+		setTimeout( () => {
+			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
+		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 }
 
