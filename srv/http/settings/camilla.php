@@ -1,6 +1,6 @@
 <?php
 $id_data = [
-	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom' ]
+	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom', 'status' => true, 'sub' => 'current' ]
 	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
@@ -100,6 +100,7 @@ $body = [
 	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
 	, [
 		  'id'    => 'configuration'
+		, 'status' => true
 		, 'input' => '<select id="configuration"></select>'
 		, 'help'  => <<< EOF
 {$Fi( 'gear btn' )} Configuration files

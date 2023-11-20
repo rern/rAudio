@@ -519,7 +519,7 @@ var render   = {
 		bannerHide();
 	}
 	, status      : () => {
-		V.statusget   = [ 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
+		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
@@ -1650,9 +1650,7 @@ var util     = {
 						if ( cmd === V.statuslast ) render.statusValue();
 					}
 					break;
-				case 'GetConfigName':
-					S.configname = value.split( '/' ).pop();
-					break;
+				// config
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
 					DEV = S.config.devices;
@@ -1662,6 +1660,9 @@ var util     = {
 					[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
 					render.page();
 					render.tab();
+					break;
+				case 'GetConfigName':
+					S.configname = value.split( '/' ).pop();
 					break;
 				case 'GetSupportedDeviceTypes':
 					S.devicetype = { 
@@ -1894,7 +1895,7 @@ $( '.entries' ).on( 'click', '.liicon', function() {
 	contextMenu();
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
-	$( '#menu' ).find( '.copy, .rename' ).toggleClass( 'hide', V.tab !== 'config' );
+	$( '#menu' ).find( '.copy, .rename, .view' ).toggleClass( 'hide', V.tab !== 'config' );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
@@ -2049,9 +2050,9 @@ $( '#menu a' ).on( 'click', function( e ) {
 			setting.device( V.li.data( 'type' ) );
 			break;
 		case 'config':
+			var name = V.li.text();
 			switch ( cmd ) {
 				case 'copy':
-					var name = V.li.text();
 					info( {
 						  icon         : V.tab
 						, title        : 'Config Copy'
@@ -2067,7 +2068,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 					} );
 					break;
 				case 'rename':
-					var name = V.li.text();
 					info( {
 						  icon         : V.tab
 						, title        : 'Config Rename'
@@ -2082,15 +2082,14 @@ $( '#menu a' ).on( 'click', function( e ) {
 					} );
 					break;
 				case 'delete':
-					var file = V.li.text();
 					info( {
 						  icon    : V.tab
 						, title   : 'Config'
-						, message : 'Delete <wh>'+ file +'</wh> ?'
+						, message : 'Delete <wh>'+ name +'</wh> ?'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
-							bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
+							bash( [ 'confdelete', name, S.bluetooth, 'CMD NAME BT' ] );
 							notify( V.tab, SW.title, 'Delete ...' );
 						}
 					} );
@@ -2228,6 +2227,20 @@ $( '#devices' ).on( 'click', 'li', function() {
 } );
 $( '#config' ).on( 'click', '.i-add', function() {
 	setting.upload();
+} ).on( 'click', 'li', function( e ) {
+	if ( $( e.target ).hasClass( 'liicon' ) ) return
+	
+	var $this = $( this )
+	var $pre  = $this.find( 'pre' );
+	if ( $pre.length ) {
+		$pre.toggleClass( 'hide' );
+	} else {
+		var dir = '/srv/http/data/camilladsp/configs';
+		if ( S.bluetooth ) dir += '-bt';
+		bash( [ 'statusconfiguration', dir +'/'+ $this.text(), 'CMD FILE' ], config => {
+			$this.append( '<pre class="status">'+ config +'</pre>' );
+		} );
+	}
 } );
 $( '.switch' ).on( 'click', function() {
 	var id = this.id;

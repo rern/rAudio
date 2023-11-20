@@ -75,6 +75,10 @@ setformat )
 		alsactl nrestore &> /dev/null
 	fi
 	;;
+statusconfiguration )
+	[[ ! $FILE ]] && FILE=$( getVar CONFIG /etc/default/camilladsp )
+	cat "$FILE"
+	;;
 statuslog )
 	cat /var/log/camilladsp.log
 	;;
