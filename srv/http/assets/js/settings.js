@@ -381,8 +381,8 @@ $( '.helphead' ).on( 'click', function() {
 	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 	$( '.sub' ).next().toggleClass( 'hide', visible );
 } );
-$( '.playback' ).on( 'click', function( e ) { // for player and camilla
-	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
+$( '.playback' ).on( 'click', function() { // for player and camilla
+	bash( [ 'cmd.sh', 'mpcplayback' ] );
 } );
 $( '.help' ).on( 'click', function() {
 	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
