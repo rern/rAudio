@@ -62,7 +62,7 @@ i {
 .i-close::before           { content: '\F56C' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
-.i-config::before          { content: '\F548' }
+.i-config::before          { content: '\F53E' }
 .i-connect::before         { content: '\F56D' }
 .i-consume::before         { content: '\F566' }
 .i-controls::before        { content: '\F50B' }

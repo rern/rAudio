@@ -18,7 +18,8 @@ $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 		SERVICE=bluetooth
 		;;
 	camilladsp )
-		fileconf=$( getVar CONFIG /etc/default/camilladsp )
+		fileconf=/etc/default/camilladsp
+		extra=$( < /var/log/camilladsp.log )
 		;;
 	dabradio )
 		PKG=mediamtx
@@ -108,4 +109,5 @@ fi
 echo "\
 $config
 
-$status"
+$status
+$extra"
