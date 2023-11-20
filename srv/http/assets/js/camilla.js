@@ -3,7 +3,6 @@ V            = {
 	  clipped    : 0
 	, graph      : { filters: {}, pipeline: {} }
 	, graphlist  : {}
-	, graphplot  : []
 	, prevconfig : {}
 	, sortable   : {}
 	, tab        : 'filters'
@@ -349,7 +348,6 @@ var graph    = {
 	, list     : () => {
 		var $divgraph = $( '#'+ V.tab +' .divgraph' );
 		if ( $divgraph.length ) {
-			V.graphplot = [];
 			$divgraph.each( ( i, el ) => {
 				var $this = $( el );
 				var val   = $this.data( 'val' );
@@ -357,9 +355,8 @@ var graph    = {
 					if ( $this.hasClass( 'hide' ) ) {       // remove - changed + hide
 						$this.remove();
 						return
+						
 					}
-					
-					V.graphplot.push( val );               // refresh after re-render tab
 				}
 				V.graphlist[ val ] = $this[ 0 ].outerHTML; // include in re-render
 			} );
@@ -484,9 +481,8 @@ var graph    = {
 		}, 'json' );
 	}
 	, refresh  : () => {
-		if ( V.graphplot.length ) V.graphplot.forEach( n => graph.plot( $( '#filters li[data-name='+ n +']' ) ) );
-		V.graphplot = [];
-		V.graphlist = {}
+		var $divgraph = $( '#'+ V.tab +' .divgraph' ).not( '.hide' );
+		if ( $divgraph.length ) $divgraph.each( ( i, el ) => graph.plot( $( el ).parent() ) );
 	}
 	, toggle   : () => {
 		var $divgraph = V.li.find( '.divgraph' );
