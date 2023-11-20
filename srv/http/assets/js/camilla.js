@@ -335,7 +335,18 @@ function psVolume( data ) {
 }
 
 var graph    = {
-	  list     : () => {
+	  gain     : () => {
+		var $divgraph = $( '.divgraph' );
+		if ( ! $divgraph.length ) return
+		
+		V.timeoutgain = setTimeout( () => {
+			$divgraph.each( ( i, el ) => {
+				var $this = $( el );
+				$this.hasClass( 'hide' ) ? $this.remove() : graph.plot( $this.parent() );
+			} );
+		}, 300 );
+	}
+	, list     : () => {
 		var $divgraph = $( '#'+ V.tab +' .divgraph' );
 		if ( $divgraph.length ) {
 			V.graphplot = [];
@@ -477,15 +488,6 @@ var graph    = {
 		V.graphplot = [];
 		V.graphlist = {}
 	}
-	, gain     : () => {
-		var $divgraph = $( '.divgraph' );
-		if ( ! $divgraph.length ) return
-		
-		$divgraph.each( ( i, el ) => {
-			var $this = $( el );
-			$this.hasClass( 'hide' ) ? $this.remove() : graph.plot( $this.parent() );
-		} );
-	}
 	, toggle   : () => {
 		var $divgraph = V.li.find( '.divgraph' );
 		if ( ! $divgraph.length ) {
@@ -516,46 +518,9 @@ var render   = {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
 		$( '.container' ).removeClass( 'hide' );
-		render.tab();
 		render.status();
+		render[ V.tab ]();
 		bannerHide();
-	}
-	, tab         : () => {
-		var title = util.key2label( V.tab );
-		if ( V.tab === 'filters' ) {
-			title += ico( 'folder-filter' );
-		} else if ( V.tab === 'pipeline' && PIP.length ) {
-			title += ico( 'flowchart' );
-		} else if ( V.tab === 'config' ) {
-			title += 'uration';
-		}
-		if ( V.tab === 'filters' || V.tab === 'mixers' ) title += ico( 'gear' );
-		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
-		$( '#divsettings .headtitle' ).eq( 0 ).html( title );
-		$( '#divsettings .tab' ).addClass( 'hide' );
-		$( '#'+ V.tab ).removeClass( 'hide' );
-		$( '#bar-bottom div' ).removeClass( 'active' );
-		$( '#tab'+ V.tab ).addClass( 'active' );
-		if ( V.tab === 'config' ) {
-			render.config();
-			return
-		}
-		
-		if ( $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) {
-			render.prevconfig();
-			render[ V.tab ]();
-		} else {
-			if ( ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
-			
-			render.prevconfig();
-			if ( ! $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) {
-				render[ V.tab ]();
-			} else {
-				var data = V.tab === 'mixers' ? 'name' : 'index';
-				var val  = $( '#'+ V.tab +' .entries.sub .lihead' ).data( data );
-				render[ V.tab +'Sub' ]( val );
-			}
-		}
 	}
 	, status      : () => {
 		V.statusget   = [ 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
@@ -621,6 +586,43 @@ var render   = {
 			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
+		}
+	}
+	, tab         : () => {
+		var title = util.key2label( V.tab );
+		if ( V.tab === 'filters' ) {
+			title += ico( 'folder-filter' );
+		} else if ( V.tab === 'pipeline' && PIP.length ) {
+			title += ico( 'flowchart' );
+		} else if ( V.tab === 'config' ) {
+			title += 'uration';
+		}
+		if ( V.tab === 'filters' || V.tab === 'mixers' ) title += ico( 'gear' );
+		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
+		$( '#divsettings .headtitle' ).eq( 0 ).html( title );
+		$( '#divsettings .tab' ).addClass( 'hide' );
+		$( '#'+ V.tab ).removeClass( 'hide' );
+		$( '#bar-bottom div' ).removeClass( 'active' );
+		$( '#tab'+ V.tab ).addClass( 'active' );
+		if ( V.tab === 'config' ) {
+			render.config();
+			return
+		}
+		
+		if ( $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) {
+			render.prevconfig();
+			render[ V.tab ]();
+		} else {
+			if ( ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
+			
+			render.prevconfig();
+			if ( ! $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) {
+				render[ V.tab ]();
+			} else {
+				var data = V.tab === 'mixers' ? 'name' : 'index';
+				var val  = $( '#'+ V.tab +' .entries.sub .lihead' ).data( data );
+				render[ V.tab +'Sub' ]( val );
+			}
 		}
 	}
 	, vu          : () => {
@@ -1405,7 +1407,7 @@ var setting  = {
 			wscamilla.send( '"Reload"' );
 			setTimeout( util.save2file, 300 );
 		}, wscamilla ? 0 : 300 );
-		if ( ! wscamilla ) util.webSocket(); // websocket migth be closed by setting.filter()
+		util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
 	, upload        : () => {
@@ -1425,7 +1427,7 @@ var setting  = {
 			, fileoklabel : ico( 'file' ) +'Upload'
 			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml'
 			, cancel      : () => {
-				if ( ! wscamilla ) util.webSocket();
+				util.webSocket();
 			}
 			, ok          : () => {
 				notify( V.tab, title, 'Upload ...' );
@@ -1441,7 +1443,7 @@ var setting  = {
 							infoWarning(  V.tab,  title, message );
 						}
 					} );
-				if ( ! wscamilla ) util.webSocket();
+				util.webSocket();
 			}
 		} );
 	}
@@ -1558,6 +1560,8 @@ var util     = {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 	}
 	, webSocket    : () => {
+		if ( wscamilla ) return
+		
 		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		wscamilla.onopen    = () => {
 			util.wsGetConfig();
@@ -1761,12 +1765,10 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	var $gain = $this.parent().prev();
 	var $db   = $gain.prev();
 	var val   = +$gain.val();
-	var set0  = false;
 	if ( $this.hasClass( 'i-set0' ) ) {
 		if ( val === 0 ) return
 		
 		val  = 0;
-		set0 = true;
 	} else if ( $this.hasClass( 'i-minus' ) ) {
 		if ( val === $gain.prop( 'min' ) ) return
 		
@@ -1779,9 +1781,7 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( V.li.find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) {
-		V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
-	}
+	if ( V.li.find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) graph.gain();
 } ).on( 'touchend mouseup mouseleave', function() {
 	clearInterval( V.intervalgain );
 } ).press( '.divgain i', function( e ) {
