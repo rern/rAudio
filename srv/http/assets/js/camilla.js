@@ -813,7 +813,7 @@ var render   = {
 	, config      : () => {
 		var li  = '';
 		S.lsconfigs.forEach( f => {
-			li += '<li>'+ ico( 'file liicon' ) +f +'</li>';
+			li += '<li>'+ ico( 'file liicon' ) +'<a class="name">'+ f +'</a></li>';
 		} );
 		$( '#config .entries.main' ).html( li );
 	} //---------------------------------------------------------------------------------------------
@@ -2050,12 +2050,12 @@ $( '#menu a' ).on( 'click', function( e ) {
 			setting.device( V.li.data( 'type' ) );
 			break;
 		case 'config':
-			var name = V.li.text();
+			var name = V.li.find( '.name' ).text();
 			switch ( cmd ) {
 				case 'copy':
 					info( {
 						  icon         : V.tab
-						, title        : 'Config Copy'
+						, title        : 'Configuration'
 						, message      : 'File: <wh>'+ name +'</wh>'
 						, textlabel    : 'Copy as'
 						, values       : [ name ]
@@ -2070,8 +2070,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 				case 'rename':
 					info( {
 						  icon         : V.tab
-						, title        : 'Config Rename'
-						, textlabel    : 'Name'
+						, title        : 'Configuration'
+						, textlabel    : 'Rename to'
 						, values       : [ name ]
 						, checkchanged : true
 						, ok           : () => {
@@ -2084,7 +2084,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 				case 'delete':
 					info( {
 						  icon    : V.tab
-						, title   : 'Config'
+						, title   : 'Configuration'
 						, message : 'Delete <wh>'+ name +'</wh> ?'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
