@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # pin number : -1 = board, -g = BCM, (none) = wiringpi
+# http://wiringpi.com/the-gpio-utility/
 
 if grep -q 'poweroff,gpiopin=22' /boot/config.txt; then
 	gpio -1 mode 7 out  # atx
