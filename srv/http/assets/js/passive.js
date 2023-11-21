@@ -401,7 +401,7 @@ function psVolume( data ) {
 		D.volumenone = data.volumenone;
 		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
 	} else {
-		if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+		V.drag = data.type === 'updn'; // multiples - handle like drag
 		if ( data.type === 'dragpress' ) {
 			V.press = true;
 			setTimeout( () => V.press = false, 300 );
