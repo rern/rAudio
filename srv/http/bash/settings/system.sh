@@ -604,8 +604,11 @@ usbautoupdate )
 	;;
 vuled )
 	enableFlagSet
+	pins=$( cut -d= -f2 $dirsystem/vuled.conf )
 	if [[ $ON ]]; then
-		vuLed enable
+		for i in $pins; do
+			gpio export $i out
+		done
 		systemctl enable --now cava
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	else
@@ -615,7 +618,10 @@ vuled )
 			systemctl disable --now cava
 			$dirsettings/player-conf.sh
 		fi
-		vuLed disable
+		for i in $pins; do
+			echo 0 > /sys/class/gpio/gpio$i/value
+			gpio unexport $i
+		done
 	fi
 	pushRefresh
 	;;

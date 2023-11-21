@@ -409,23 +409,3 @@ volumePushSet() {
 	volumePush &> /dev/null &
 	echo $! > $dirshm/pidvol
 }
-vuLed() {
-	local disable enable onoff pins
-	if [[ $1 == off ]]; then
-		onoff=0
-	elif [[ $1 == enable ]]; then
-		onoff=0
-		enable=1
-	elif [[ $1 == disable ]]; then
-		onoff=0
-		disable=1
-	else
-		onoff=1
-	fi
-	pins=$( cut -d= -f2 $dirsystem/vuled.conf )
-	for i in $pins; do
-		[[ $enable ]] && gpio export $i out
-		echo $onoff > /sys/class/gpio/gpio$i/value
-		[[ $disable ]] && gpio unexport $i
-	done
-}
