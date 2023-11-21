@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231125
+[[ ! e /lib/libfdt.so ]] && pacman -Sy --noconfirm dtc
+
 # 20231118
 grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/(IgnorePkg   =).*/#\1/' /etc/pacman.conf
 
