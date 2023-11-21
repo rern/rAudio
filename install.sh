@@ -5,6 +5,17 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231125
+file=/etc/systemd/system/cava.service
+if [[ ! -e $file ]]; then
+	echo '[Unit]
+Description=VU level for VU LED and VU meter
+
+[Service]
+ExecStart=/srv/http/bash/cava.sh' > $file
+	systemctl daemon-reload
+	[[ -e $dirsystem/vuled ]] && killall -9 cava &> /dev/null && rm $dirsystem/vuled
+fi
+
 if [[ ! e /lib/libfdt.so ]]; then
 	pacman -Sy --noconfirm dtc
 	systemctl try-restart rotaryencoder

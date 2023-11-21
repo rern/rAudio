@@ -410,7 +410,7 @@ volumePushSet() {
 	echo $! > $dirshm/pidvol
 }
 vuLed() {
-	local disable onoff pins
+	local disable enable onoff pins
 	if [[ $1 == off ]]; then
 		onoff=0
 	elif [[ $1 == enable ]]; then
