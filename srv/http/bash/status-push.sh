@@ -63,19 +63,10 @@ if [[ -e $dirsystem/mpdoled ]]; then
 	[[ $state == play ]] && systemctl start mpd_oled || systemctl stop mpd_oled
 fi
 
-if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
-	killProcess cava
-	if [[ $state == play ]]; then
-		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		echo $! > $dirshm/pidcava
-	else
+if [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]]; then
+	if [[ $state != play ]]; then
 		pushData vumeter '{ "val": 0 }'
-		if [[ -e $dirsystem/vuled ]]; then
-			p=$( < $dirsystem/vuled.conf )
-			for i in $p; do
-				echo 0 > /sys/class/gpio/gpio$i/value
-			done
-		fi
+		[[ -e $dirsystem/vuled ]] && vuLed off
 	fi
 fi
 

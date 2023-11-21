@@ -604,21 +604,16 @@ usbautoupdate )
 	;;
 vuled )
 	enableFlagSet
-	killProcess cava
 	if [[ $ON ]]; then
+		vuLed enable
+		systemctl enable --now cava
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
-		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		echo $! > $dirshm/pidcava
 	else
-		. $dirsystem/vuled.conf
-		for (( i=0; i < 7; i++ )); do
-			pin=P$i
-			echo 0 > /sys/class/gpio/gpio${!pin}/value
-		done
+		vuLed disable
 		if [[ -e $dirsystem/vumeter ]]; then
-			cava -p /etc/cava.conf | $dirsettings/vu.sh &> /dev/null &
-			echo $! > $dirshm/pidcava
+			systemctl restart cava
 		else
+			systemctl disable --now cava
 			$dirsettings/player-conf.sh
 		fi
 	fi

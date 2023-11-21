@@ -5,12 +5,9 @@ dirsystem=/srv/http/data/system
 [[ -e $dirsystem/vumeter ]] && vumeter=1
 if [[ -e $dirsystem/vuled ]]; then
 	vuled=1
-	p=( $( < $dirsystem/vuled.conf ) )
-	for i in ${p[@]}; do
-		gpio export $i out
-	done
+	pins=$( cut -d= -f2 $dirsystem/vuled.conf )
+	p=( $pins )
 	for i in {0..7}; do
-		off+=( "$( echo ${p[@]:$i} )" )
 		on+=( "$( echo ${p[@]:0:$i} )" )
 	done
 fi
@@ -19,12 +16,10 @@ j=0
 while read vu; do
 	v=${vu:0:-1}
 	if [[ $vuled ]]; then
+		for i in $pins; do
+			echo 0 > /sys/class/gpio/gpio$i/value
+		done
 		l=$(( v / 6 ))
-		if (( $l < 7 )); then
-			for i in ${off[$l]}; do
-				echo 0 > /sys/class/gpio/gpio$i/value
-			done
-		fi
 		if (( $l > 0 )); then
 			for i in ${on[$l]}; do
 				echo 1 > /sys/class/gpio/gpio$i/value

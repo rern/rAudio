@@ -128,7 +128,7 @@ $( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
 fi
 
 if [[ ( ! $audiooutput && ! $btoutputonly && ! -e $dirsystem/snapclientserver )
-	|| -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
+	|| -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
 else
 	rm -f $dirmpdconf/fifo.conf

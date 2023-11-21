@@ -5,7 +5,10 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231125
-[[ ! e /lib/libfdt.so ]] && pacman -Sy --noconfirm dtc
+if [[ ! e /lib/libfdt.so ]]; then
+	pacman -Sy --noconfirm dtc
+	systemctl try-restart rotaryencoder
+fi
 
 # 20231118
 grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/(IgnorePkg   =).*/#\1/' /etc/pacman.conf
