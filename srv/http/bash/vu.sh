@@ -1,6 +1,7 @@
 #!/bin/bash
 
-dirsystem=/srv/http/data/system
+. /srv/http/bash/common.sh
+dirgpio=/sys/class/gpio/gpio
 
 [[ -e $dirsystem/vumeter ]] && vumeter=1
 if [[ -e $dirsystem/vuled ]]; then
@@ -17,12 +18,14 @@ while read vu; do
 	v=${vu:0:-1}
 	if [[ $vuled ]]; then
 		for i in $pins; do
-			echo 0 > /sys/class/gpio/gpio$i/value
+			echo 0 > $dirgpio$i/value
 		done
+		[[ -e $dirshm/vuledoff ]] && continue
+		
 		l=$(( v / 6 ))
 		if (( $l > 0 )); then
 			for i in ${on[$l]}; do
-				echo 1 > /sys/class/gpio/gpio$i/value
+				echo 1 > $dirgpio$i/value
 			done
 		fi
 	fi
