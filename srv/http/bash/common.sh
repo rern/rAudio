@@ -414,7 +414,7 @@ vuLed() {
 	if [[ $1 == off ]]; then
 		onoff=0
 	elif [[ $1 == enable ]]; then
-		onoff=1
+		onoff=0
 		enable=1
 	elif [[ $1 == disable ]]; then
 		onoff=0
