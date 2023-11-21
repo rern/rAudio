@@ -609,13 +609,13 @@ vuled )
 		systemctl enable --now cava
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	else
-		vuLed disable
 		if [[ -e $dirsystem/vumeter ]]; then
 			systemctl restart cava
 		else
 			systemctl disable --now cava
 			$dirsettings/player-conf.sh
 		fi
+		vuLed disable
 	fi
 	pushRefresh
 	;;
