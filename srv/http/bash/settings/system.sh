@@ -400,6 +400,8 @@ rotaryencoder )
 		serviceRestartEnable
 	else
 		systemctl disable --now rotaryencoder
+		dtoverlay -r gpio-key
+		dtoverlay -r rotary-encoder
 	fi
 	pushRefresh
 	;;
