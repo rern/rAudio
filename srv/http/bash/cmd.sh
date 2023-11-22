@@ -342,12 +342,10 @@ display )
 	[[ $prevvumeter == $vumeter ]] && exit
 	
 	if [[ $vumeter ]]; then
-		[[ -e $dirsystem/vuled ]] && systemctl restart cava || systemctl enable --now cava
+		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	else
 		rm -f $dirsystem/vumeter
-		[[ ! -e $dirsystem/vuled ]] && systemctl disable --now cava
 	fi
-	[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	;;
 equalizer )
 	if [[ $VALUES ]]; then # preset ( delete, rename, new - save json only )

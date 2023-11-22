@@ -609,13 +609,11 @@ vuled )
 		for i in $pins; do
 			gpio export $i out
 		done
-		systemctl enable --now cava
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	else
 		if [[ -e $dirsystem/vumeter ]]; then
 			systemctl restart cava
 		else
-			systemctl disable --now cava
 			$dirsettings/player-conf.sh
 		fi
 		for i in $pins; do

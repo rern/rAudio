@@ -63,10 +63,11 @@ if [[ -e $dirsystem/mpdoled ]]; then
 	[[ $state == play ]] && systemctl start mpd_oled || systemctl stop mpd_oled
 fi
 
+[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && cava=1
 if [[ $state == play ]]; then
-	[[ -e $dirsystem/vuled ]] && rm $dirshm/vuledoff
+	[[ $cava ]] && rm $dirshm/vuledoff && systemctl restart cava
 else
-	[[ -e $dirsystem/vuled ]] && touch $dirshm/vuledoff
+	[[ $cava ]] && touch $dirshm/vuledoff && systemctl stop cava
 	[[ -e $dirsystem/vumeter ]] && pushData vumeter '{ "val": 0 }'
 fi
 
