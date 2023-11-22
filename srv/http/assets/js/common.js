@@ -1089,7 +1089,7 @@ function connect() {
 		websocketConnect();
 	}
 	bannerHide();
-	setTimeout( refreshData, page ? 300 : 0 );
+	setTimeout( refreshData, 300 );
 }
 function disconnect() {
 	if ( ! V.local && ! V.debug && typeof psOnClose === 'function' ) psOnClose(); // V.local from select2
