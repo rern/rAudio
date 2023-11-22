@@ -6,7 +6,7 @@ $id_data = [
 	, 'buffer'        => [ 'name' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
 	, 'crossfade'     => [ 'name' => 'Cross-Fading',          'sub' => 'crossfade' ]
 	, 'custom'        => [ 'name' => "User's Configurations", 'sub' => 'custom' ]
-	, 'dop'           => [ 'name' => 'DSD over PCM',                                           'setting' => 'none' ]
+	, 'dop'           => [ 'name' => 'DSD over PCM',          'sub' => 'dop',                  'setting' => 'none' ]
 	, 'ffmpeg'        => [ 'name' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
 	, 'hwmixer'       => [ 'name' => 'Mixer Device',                                           'setting' => 'custom' ]
 	, 'mixertype'     => [ 'name' => 'Volume Control',                                         'setting' => 'none' ]
