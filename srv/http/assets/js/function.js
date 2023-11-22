@@ -1643,7 +1643,6 @@ function setInfo() {
 				.removeAttr( 'class' )
 				.addClass( 'hide' );
 	}
-	if ( $time.is( ':hidden' ) ) setProgressElapsed();
 }
 function setInfoScroll() {
 	var tWmax = 0;
@@ -1818,8 +1817,7 @@ function setProgressElapsed() {
 	var $elapsed = S.elapsed === false ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
 	if ( S.elapsed ) $elapsed.text( second2HMS( S.elapsed ) );
 	if ( S.Time ) {
-		var time = S.Time;
-		$timeRS.option( 'max', time );
+		$timeRS.option( 'max', S.Time );
 		setProgress();
 		if ( ! localhost ) {
 			setTimeout( setProgressAnimate, 0 ); // delay to after setvalue on load
@@ -1828,10 +1826,10 @@ function setProgressElapsed() {
 		}
 		V.interval.elapsed = setInterval( () => {
 			S.elapsed++;
-			if ( S.elapsed < time ) {
+			if ( S.elapsed < S.Time ) {
 				if ( localhost ) {
 					$timeRS.setValue( S.elapsed );
-					$( '#time-bar' ).css( 'width', S.elapsed / time * 100 +'%' );
+					$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
 				}
 				elapsedhms = second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
