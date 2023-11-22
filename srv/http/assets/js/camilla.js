@@ -1567,7 +1567,6 @@ var util     = {
 			}, 1000 );
 		}
 		wscamilla.onclose   = () => {
-			wscamilla = null;
 			render.vuClear();
 			clearInterval( V.intervalstatus );
 			util.save2file();
