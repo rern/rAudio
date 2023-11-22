@@ -77,6 +77,8 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
 */
 function bash( args, callback, json ) {
+	if ( ws.readyState !== 1 ) return
+	
 	var data = { cmd: 'bash' }
 	if ( 'json' in args ) {
 		data.json = JSON.stringify( args.json );
