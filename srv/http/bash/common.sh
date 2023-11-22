@@ -172,6 +172,11 @@ getVar(){
 	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"']$//g" <<< $line )
 	stringEscape $line
 }
+inOutputConf() {
+	local file
+	file=$dirmpdconf/output.conf
+	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
+}
 ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}' | head -1
 }
@@ -334,7 +339,7 @@ volumeCardControl() {
 	else
 		if [[ -e $dirshm/btreceiver ]]; then
 			control=$( < $dirshm/btreceiver )
-		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+		elif inOutputConf mixer_type.*software; then
 			control=
 		else
 			card=$( getContent $dirsystem/asoundcard )
@@ -359,7 +364,7 @@ volumeGet() {
 		
 		if [[ -e $dirsystem/snapclientserver ]]; then
 			mixersoftware=
-		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+		elif inOutputConf mixer_type.*software; then
 			mixersoftware=1
 		fi
 		if [[ $mixersoftware && $( < $dirshm/player ) == mpd ]]; then

@@ -103,6 +103,7 @@ dtparam=audio=on"
 	;;
 bluetooth )
 	config=$( grep -E -v 'disable-bt' /boot/config.txt )
+	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
@@ -114,7 +115,7 @@ bluetooth )
 		if ls -l /sys/class/bluetooth 2> /dev/null | grep -q -m1 serial; then
 			systemctl start bluetooth
 			bluetoothctl discoverable $yesno &> /dev/null
-			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+			[[ ! $bluealsa ]] && $dirsettings/player-conf.sh
 			rfkill | grep -q -m1 bluetooth && pushData refresh '{ "page": "networks", "activebt": true }'
 		fi
 		[[ -e $dirsystem/btformat  ]] && prevbtformat=true
@@ -126,7 +127,7 @@ dtoverlay=disable-bt'
 		if rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
-			grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+			[[ $bluealsa ]] && $dirsettings/player-conf.sh
 		fi
 	fi
 	configTxt
