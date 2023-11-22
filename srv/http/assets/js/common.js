@@ -1089,11 +1089,13 @@ function connect() {
 		websocketConnect();
 	}
 	bannerHide();
-	setTimeout( refreshData, 300 );
+	setTimeout( refreshData, page ? 300 : 0 );
 }
 function disconnect() {
-	if ( ws ) ws.send( 'disconnect' );
-	if ( ! V.local && ! V.debug && typeof psOnClose === 'function' ) psOnClose(); // V.local from select2
+	if ( ! V.local && ! V.debug && typeof psOnClose === 'function' ) {
+		psOnClose(); // V.local from select2
+		if ( ws ) ws.send( 'disconnect' );
+	}
 }
 document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 window.onpagehide = disconnect;
