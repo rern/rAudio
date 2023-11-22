@@ -20,7 +20,7 @@ pushStatus() {
 	[[ $usbdac ]] && pushData refresh '{ "page": "system", "audiocards": '$( aplay -l | grep ^card | grep -c -v Loopback )' }'
 }
 
-rm -f $dirmpdconf/bluetooth.conf
+rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
 
 # outputs -----------------------------------------------------------------------------
 if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)
@@ -69,14 +69,7 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 	fi
 	if [[ $camilladsp ]]; then
 		hw=hw:Loopback,1
-#---------------< camilladsp
-		audiooutput='
-	name           "CamillaDSP"
-	device         "'$hw'"
-	type           "alsa"
-	auto_resample  "no"
-	mixer_type     "none"'
-#--------------->
+		ln -sf $dirmpdconf/{conf/,}camilladsp.conf
 	elif [[ $equalizer ]]; then
 		[[ $bluetooth ]] && mixertype=software
 		hw=plug:plugequal
@@ -119,25 +112,27 @@ $( sed 's/^/\t/' "$customfile" )"
 		[[ $mixertype == none ]] && touch $dirshm/mixernone || rm -f $dirshm/mixernone
 	fi
 ########
-	[[ $audiooutput ]] && echo "\
+	if [[ $audiooutput ]]; then
+		echo "\
 audio_output {
 $( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
 }
 " > $dirmpdconf/output.conf
+	else
+		rm -f $dirmpdconf/output.conf
+	fi
 ########
 fi
 
 if [[ ( ! $audiooutput && ! $btoutputonly && ! -e $dirsystem/snapclientserver )
 	|| -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
-else
-	rm -f $dirmpdconf/fifo.conf
 fi
 
 ### mpd restart ##########################################################################
 systemctl restart mpd
 
-systemctl try-restart camilladsp
+[[ $camilladsp ]] && systemctl start camilladsp
 
 for pid in $( pgrep mpd ); do # set priority
 	ionice -c 0 -n 0 -p $pid &> /dev/null 

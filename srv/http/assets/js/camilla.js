@@ -1706,10 +1706,6 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $( '.close' ).on( 'click', function() {
 	util.save2file();
 } );
-$( '.log' ).on( 'click', function() {
-	var $code = $( '#codelog' );
-	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
-} );
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	V.start = true;
 } ).on( 'touchmove mousemove', function( e ) {

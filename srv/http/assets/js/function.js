@@ -172,8 +172,8 @@ function changeIP() { // for android app
 }
 function clearIntervalAll() {
 	$.each( V.interval, ( k, v ) => clearInterval( v ) );
-	if ( S.state === 'play' && ! S.webradio ) setProgress(); // stop progress animation
-	$( '#vuneedle' ).css( 'transform', '' );
+	setProgress(); // stop progress animation
+	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
 function colorIcon( el ) {
 	$( el ).html( '<canvas></canvas>' );
@@ -1332,10 +1332,10 @@ function renderPlayback() {
 		$( '#progress' ).html( istate +'<span></span>'+ timehms );
 		setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
 	}
-	setProgress();
 	if ( S.state === 'pause' ) {
 		$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 		$( '#total' ).addClass( 'wh' );
+		setProgress();
 	} else { //play
 		setProgressElapsed();
 	}
@@ -1794,8 +1794,8 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position ) {
-	if ( S.state !== 'play' || S.elapsed === 0 ) clearInterval( V.interval.elapsed );
 	if ( position !== 0 ) position = S.elapsed;
+	if ( S.state !== 'play' || position === 0 || ! S.elapsed ) clearInterval( V.interval.elapsed );
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
 	var w = position && S.Time ? position / S.Time * 100 : 0;

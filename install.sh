@@ -5,6 +5,18 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231125
+file=$dirmpdconf/conf/camilladsp.conf
+if [[ ! -e $file ]]; then
+	echo 'audio_output {
+	name           "CamillaDSP"
+	device         "hw:Loopback,1"
+	type           "alsa"
+	auto_resample  "no"
+	mixer_type     "none"
+}' > $file
+	echo 'include_optional    "camilladsp.conf"' >> $dirmpdconf/mpd.conf
+fi
+
 file=/etc/systemd/system/cava.service
 if [[ ! -e $file ]]; then
 	echo '[Unit]

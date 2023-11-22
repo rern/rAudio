@@ -212,13 +212,13 @@ function psMpdPlayer( data ) {
 }
 function psMpdRadio( data ) {
 	statusUpdate( data );
-	setProgress( 0 );
 	setInfo();
 	setCoverart();
 	if ( D.radioelapsed ) {
 		$( '#progress' ).html( ico( 'play' ) +'<span></span>' );
 		setProgressElapsed();
 	} else {
+		setProgress( 0 );
 		setBlinkDot();
 	}
 	if ( V.playlist ) setPlaylistScroll();
