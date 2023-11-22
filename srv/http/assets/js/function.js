@@ -172,7 +172,7 @@ function changeIP() { // for android app
 }
 function clearIntervalAll() {
 	$.each( V.interval, ( k, v ) => clearInterval( v ) );
-	setProgress(); // stop progress animation
+	setProgress( S.webradio ? 0 : '' ); // stop progress animation
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
 function colorIcon( el ) {
@@ -1324,7 +1324,7 @@ function renderPlayback() {
 		blinkDot();
 		return
 	}
-
+	
 	if ( S.elapsed ) {
 		var elapsedhms = second2HMS( S.elapsed );
 		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
@@ -1472,6 +1472,8 @@ function setBlinkDot() {
 		if ( D.radioelapsed ) {
 			$( '#progress' ).html( ico( S.state ) +'<span></span>' );
 			setProgressElapsed();
+		} else {
+			setProgress( 0 );
 		}
 	}
 }
