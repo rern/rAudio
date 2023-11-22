@@ -1084,7 +1084,7 @@ function connect() {
 	if ( V.local || V.off ) return // V.local from select2
 	
 	if ( ws ) {
-		ws.readyState === 1 ? ws.send( 'connect' ) : websocketConnect();
+		if ( ws.readyState !== 1 ) ws.send( 'connect' );
 	} else {
 		websocketConnect();
 	}
