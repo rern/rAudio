@@ -89,13 +89,6 @@ function psOnMessage( message ) {
 		case 'vumeter':       psVUmeter( data );        break;
 	}
 }
-function psOnClose() {
-	if ( D.progress || V.off ) return
-	
-	clearIntervalAll();
-	guideHide();
-	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
-}
 function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
@@ -252,6 +245,13 @@ function psMpdUpdate( data ) {
 		}
 	}
 	setButtonUpdating();
+}
+function psOnClose() {
+	if ( D.progress || V.off ) return
+	
+	clearIntervalAll();
+	guideHide();
+	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
 }
 function psOption( data ) {
 	if ( V.local ) return

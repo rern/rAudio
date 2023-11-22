@@ -185,10 +185,6 @@ function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
 }
 
-// push status
-function psOnClose() {
-	if ( ws ) ws.send( 'disconnect' );
-}
 function psOnMessage( message ) {
 	var json    = JSON.parse( message.data );
 	var channel = json.channel;

@@ -1092,6 +1092,7 @@ function connect() {
 	setTimeout( refreshData, 300 );
 }
 function disconnect() {
+	if ( ws ) ws.send( 'disconnect' );
 	if ( ! V.local && ! V.debug && typeof psOnClose === 'function' ) psOnClose(); // V.local from select2
 }
 document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
