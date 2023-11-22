@@ -1094,7 +1094,7 @@ function connect() {
 function disconnect() {
 	if ( ! V.local && ! V.debug && typeof psOnClose === 'function' ) {
 		psOnClose(); // V.local from select2
-		if ( ws ) ws.send( 'disconnect' );
+//		if ( ws ) ws.send( 'disconnect' );
 	}
 }
 document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
