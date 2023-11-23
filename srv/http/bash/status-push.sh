@@ -65,9 +65,9 @@ fi
 
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && cava=1
 if [[ $state == play ]]; then
-	[[ $cava ]] && rm $dirshm/vuledoff && systemctl restart cava
+	[[ $cava ]] && systemctl start cava
 else
-	[[ $cava ]] && touch $dirshm/vuledoff && systemctl stop cava
+	[[ $cava ]] && systemctl stop cava
 	[[ -e $dirsystem/vumeter ]] && pushData vumeter '{ "val": 0 }'
 fi
 

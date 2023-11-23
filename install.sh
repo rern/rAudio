@@ -23,7 +23,8 @@ if [[ ! -e $file ]]; then
 Description=VU level for VU LED and VU meter
 
 [Service]
-ExecStart=/srv/http/bash/cava.sh' > $file
+ExecStart=/srv/http/bash/cava.sh
+ExecStop=/srv/http/bash/cava.sh stop' > $file
 	systemctl daemon-reload
 	[[ -e $dirsystem/vuled ]] && killall -9 cava &> /dev/null && rm $dirsystem/vuled
 fi

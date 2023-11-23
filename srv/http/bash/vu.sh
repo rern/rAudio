@@ -20,8 +20,6 @@ while read vu; do
 		for i in $pins; do
 			echo 0 > $dirgpio$i/value
 		done
-		[[ -e $dirshm/vuledoff ]] && continue
-		
 		l=$(( v / 6 ))
 		if (( $l > 0 )); then
 			for i in ${on[$l]}; do

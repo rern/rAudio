@@ -607,20 +607,15 @@ vuled )
 	enableFlagSet
 	pins=$( cut -d= -f2 $dirsystem/vuled.conf )
 	if [[ $ON ]]; then
-		for i in $pins; do
-			gpio export $i out
-		done
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
+		grep -q 'state="*play' $dirshm/status && systemctl start cava
 	else
 		if [[ -e $dirsystem/vumeter ]]; then
 			systemctl restart cava
 		else
+			systemctl stop cava
 			$dirsettings/player-conf.sh
 		fi
-		for i in $pins; do
-			echo 0 > /sys/class/gpio/gpio$i/value
-			gpio unexport $i
-		done
 	fi
 	pushRefresh
 	;;
