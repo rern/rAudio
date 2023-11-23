@@ -899,6 +899,8 @@ $( '.map' ).on( 'click', function( e ) {
 	}
 } );
 $( '.btn-cmd' ).on( 'click', function() {
+	if ( ws.readyState !== 1 ) return // fix - missing elapsed if ws closed > reconnect
+	
 	var $this = $( this );
 	var cmd   = this.id;
 	if ( $this.hasClass( 'btn-toggle' ) ) {

@@ -1083,19 +1083,13 @@ function selectText2Html( pattern ) {
 function connect() {
 	if ( V.local || V.off ) return // V.local from select2
 	
-	if ( ws ) {
-		if ( ws.readyState !== 1 ) ws.send( 'connect' );
-	} else {
-		websocketConnect();
-	}
-	bannerHide();
-	setTimeout( refreshData, page ? 300 : 0 );
+	websocketConnect();
+	page ? setTimeout( refreshData, 300 ) : refreshData();
 }
 function disconnect() {
-	if ( ! V.local && ! V.debug && typeof psOnClose === 'function' ) {
-		psOnClose(); // V.local from select2
-//		if ( ws ) ws.send( 'disconnect' );
-	}
+	if ( V.local || V.debug ) return // V.local from select2
+	
+	if ( typeof psOnClose === 'function' ) psOnClose();
 }
 document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 window.onpagehide = disconnect;
@@ -1120,15 +1114,24 @@ function volumeMuteToggle() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 }
-function websocketConnect() {
+function websocketConnect( callback ) {
 	if ( ! page || page === 'camilla' ) {
-		if ( ! wsvolume || wsvolume.readyState !== 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
+		if ( ! wsvolume || wsvolume.readyState > 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
 	}
-	if ( ws && ws.readyState === 1 ) return
+	if ( ws && ws.readyState > 1 ) return
 	
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
-	ws.onopen    = () => setTimeout( () => ws.send( 'connect' ), 600 );
-	ws.onmessage = message => psOnMessage( message );
+	ws.onopen    = () => {
+		var interval = setTimeout( () => {
+			if ( ws.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+				clearTimeout( interval );
+				ws.send( 'connect' );
+				if ( typeof callback === 'function' ) callback();
+			}
+		}, 100 );
+	}
+	ws.onclose   = () => ws = null; // page not active but on devtools console
+	ws.onmessage = message => psOnMessage( message ); // data pushed from server
 }
 function wsPush( channel, data ) {
 	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
@@ -1162,21 +1165,15 @@ function psPower( data ) {
 		}, 10000 );
 	} else { // reconnect after reboot
 		setTimeout( () => {
-			var interval = setInterval( () => {
-				websocketConnect();
-				setTimeout( () => {
-					if ( ws.readyState === 1 ) {
-						clearTimeout( interval );
-						if ( S.login ) {
-							location.href = '/';
-						} else {
-							refreshData();
-							loaderHide();
-							bannerHide();
-						}
-					}
-				}, 1000 );
-			}, 3000 );
+			websocketConnect( () => {
+				if ( S.login ) {
+					location.href = '/';
+				} else {
+					refreshData();
+					loaderHide();
+					bannerHide();
+				}
+			} );
 		}, 20000 );
 	}
 }
