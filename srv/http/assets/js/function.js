@@ -1796,7 +1796,7 @@ function setPlaylistScroll() {
 }
 function setProgress( position ) {
 	if ( position !== 0 ) position = S.elapsed;
-	if ( S.state !== 'play' || position === 0 || ! S.elapsed ) clearInterval( V.interval.elapsed );
+	if ( S.state !== 'play' || ! position ) clearInterval( V.interval.elapsed );
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
 	var w = position && S.Time ? position / S.Time * 100 : 0;
