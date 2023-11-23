@@ -4,11 +4,11 @@
 
 pins=$( cut -d= -f2 $dirsystem/vuled.conf )
 if [[ $1 == stop ]]; then
-	killall vu.sh
+	touch $dirshm/cavastop
 	for i in $pins; do
-		echo 0 > /sys/class/gpio/gpio$i/value
 		gpio unexport $i
 	done
+	rm $dirshm/cavastop
 	exit
 fi
 
