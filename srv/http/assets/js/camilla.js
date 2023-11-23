@@ -1556,7 +1556,7 @@ var util     = {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 	}
 	, webSocket    : () => {
-		if ( wscamilla ) return
+		if ( wscamilla && wscamilla.readyState < 2 ) return
 		
 		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		wscamilla.onopen    = () => {
