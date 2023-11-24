@@ -1113,24 +1113,38 @@ function volumeMuteToggle() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 }
-function websocketConnect( callback ) {
+function websocketConnect( reboot ) {
 	if ( ! page || page === 'camilla' ) {
 		if ( ! wsvolume || wsvolume.readyState !== 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
 	}
 	if ( ws && ws.readyState === 1 ) return
 	
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
+	ws.onready   = () => { // custom
+		ws.send( 'connect' );
+		if ( ! reboot ) return
+		
+		if ( S.login ) {
+			location.href = '/';
+		} else {
+			refreshData();
+			loaderHide();
+			bannerHide();
+		}
+	}
 	ws.onopen    = () => {
-		var interval = setTimeout( () => {
-			if ( ws.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
-				clearTimeout( interval );
-				ws.send( 'connect' );
-				if ( typeof callback === 'function' ) callback();
-			}
-		}, 100 );
+		websocketReady( ws );
 	}
 	ws.onclose   = () => ws = null;
 	ws.onmessage = message => psOnMessage( message ); // data pushed from server
+}
+function websocketReady( socket ) {
+	var interval = setTimeout( () => {
+		if ( socket.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+			clearTimeout( interval );
+			socket.onready();
+		}
+	}, 100 );
 }
 function wsPush( channel, data ) {
 	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
@@ -1164,15 +1178,7 @@ function psPower( data ) {
 		}, 10000 );
 	} else { // reconnect after reboot
 		setTimeout( () => {
-			websocketConnect( () => {
-				if ( S.login ) {
-					location.href = '/';
-				} else {
-					refreshData();
-					loaderHide();
-					bannerHide();
-				}
-			} );
+			websocketConnect( 'reboot' );
 		}, data.wait * 1000 );
 	}
 }

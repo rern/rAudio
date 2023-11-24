@@ -305,13 +305,14 @@ var axes     = {
 
 // functions //////////////////////////////////////////////////////////////////////////////
 function renderPage() { // common from settings.js
-	wscamilla ? util.wsGetConfig() : util.webSocket();
+	wscamilla && wscamilla.readyState === 1 ? util.wsGetConfig() : util.webSocket();
 }
 function psOnClose() {
 	if ( V.off ) return
 	
 	clearInterval( V.intervalvu );
 	if ( wscamilla ) wscamilla.close();
+	$( '#divstate .label' ).html( 'Buffer · Sampling' );
 }
 function psVolume( data ) {
 	var vol = data.val;
@@ -1559,12 +1560,15 @@ var util     = {
 		if ( wscamilla && wscamilla.readyState < 2 ) return
 		
 		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
-		wscamilla.onopen    = () => {
+		wscamilla.onready   = () => { // custom
 			util.wsGetConfig();
 			S.status         = { GetState: '&emsp;'+ blinkdot }
 			V.intervalstatus = setInterval( () => {
-				if ( ! V.local ) V.statusget.forEach( k => wscamilla.send( '"'+ k +'"' ) )
+				if ( ! V.local ) V.statusget.forEach( k => wscamilla.send( '"'+ k +'"' ) );
 			}, 1000 );
+		}
+		wscamilla.onopen    = () => {
+			websocketReady( wscamilla );
 		}
 		wscamilla.onclose   = () => {
 			render.vuClear();
