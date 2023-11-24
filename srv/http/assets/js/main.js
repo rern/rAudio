@@ -918,16 +918,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( S.state === 'play' ) return
 			
 			S.state = cmd;
-			if ( ! S.elapsed ) $( '#elapsed' ).empty(); // 0 or false
-			if ( ! S.webradio && S.elapsed !== false ) setProgressAnimate();
 			bash( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
-			$( '#title' ).removeClass( 'gr' );
-			$( '#elapsed' ).removeClass( 'bl gr' );
-			$( '#total' )
-				.text( second2HMS( S.Time ) )
-				.removeClass( 'wh' );
-			$( '#progress i' ).removeAttr( 'class' ).addClass( 'i-play' );
-			if ( S.webradio ) $( '#title, #elapsed' ).html( V.blinkdot );
 			vu();
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
@@ -939,45 +930,12 @@ $( '.btn-cmd' ).on( 'click', function() {
 				return
 			}
 			
-			$( '#title' ).removeClass( 'gr' );
-			if ( ! S.pllength ) return
-			bash( [ 'mpcplayback', 'stop', 'CMD ACTION' ] );
-			$( '#pl-list .elapsed' ).empty();
-			if ( V.playback ) {
-				$( '#total' ).empty();
-				if ( S.Time ) {
-					var timehms = second2HMS( S.Time );
-					setProgress( 0 );
-					$( '#elapsed' )
-						.text( timehms )
-						.addClass( 'gr' );
-					$( '#total, #progress' ).empty();
-					$( '#progress' ).html( ico( 'stop' ) +'<span></span>'+ timehms );
-				} else {
-					$( '#title' ).html( '·&ensp;·&ensp;·' );
-					$( '#elapsed, #progress' ).empty();
-					vu();
-				}
-				if ( V.playback && S.webradio ) {
-					[ 'Artist', 'Title', 'Album', 'coverart' ].forEach( el => S[ el ] = '' );
-					setInfo();
-					setCoverart();
-				}
-			} else if ( V.playlist ) {
-				$( '#pl-list .song' ).empty();
-				$( '#pl-list .li1' ).find( '.name, .song' ).css( 'max-width', '' );
-				$( '#pl-list .li2 .radioname' ).addClass( 'hide' );
-				$( '#pl-list .li1 .radioname' ).removeClass( 'hide' );
-			}
+			if ( S.pllength ) bash( [ 'mpcplayback', 'stop', 'CMD ACTION' ] );
 		} else if ( cmd === 'pause' ) {
 			if ( S.state === 'stop' ) return
 			
 			S.state = cmd;
 			bash( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
-			$( '#title' ).addClass( 'gr' );
-			$( '#elapsed' ).addClass( 'bl' );
-			$( '#total' ).addClass( 'wh' );
-			$( '#progress i' ).removeAttr( 'class' ).addClass( 'i-pause' );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			var pllength = S.pllength;
 			var song     = S.song;
@@ -987,12 +945,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 			$timeRS.setValue( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
-			if ( V.playlist ) {
-				$( '#pl-list li.active' )
-					.removeClass( 'active' )
-					.find( '.elapsed' ).empty();
-				$( '#pl-list li' ).eq( cmd === 'next' ? song + 1 : song - 1  ).addClass( 'active' );
-			}
 		}
 		$( '#playback-controls .btn' ).removeClass( 'active' );
 		$( '#'+ cmd ).addClass( 'active' );
