@@ -921,7 +921,6 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
-	wsPush( 'power', '{ "type": "'+ action +'" }' );
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
@@ -1174,6 +1173,6 @@ function psPower( data ) {
 					bannerHide();
 				}
 			} );
-		}, 20000 );
+		}, data.wait * 1000 );
 	}
 }
