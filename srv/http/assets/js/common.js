@@ -1130,7 +1130,7 @@ function websocketConnect( callback ) {
 			}
 		}, 100 );
 	}
-	ws.onclose   = () => ws = null; // page not active but on devtools console
+	ws.onclose   = () => ws = null;
 	ws.onmessage = message => psOnMessage( message ); // data pushed from server
 }
 function wsPush( channel, data ) {
