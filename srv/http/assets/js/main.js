@@ -924,6 +924,11 @@ $( '.btn-cmd' ).on( 'click', function() {
 			S.state = cmd;
 			clearInterval( V.interval.elapsed );
 			clearInterval( V.interval.elapsedpl );
+			setProgress( 0 );
+			$( '#elapsed' )
+				.text( V.timehms )
+				.addClass( 'gr' );
+			$( '#total' ).empty();
 			if ( S.player !== 'mpd' ) {
 				bash( [ 'playerstop', S.elapsed, 'CMD ELAPSED' ] );
 				banner( S.player, icon_player[ S.player ], 'Stop ...' );
@@ -935,6 +940,8 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( S.state === 'stop' ) return
 			
 			S.state = cmd;
+			clearInterval( V.interval.elapsed );
+			clearInterval( V.interval.elapsedpl );
 			bash( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return

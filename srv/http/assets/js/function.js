@@ -1303,16 +1303,16 @@ function renderPlayback() {
 	}
 	
 	var time    = 'Time' in S ? S.Time : '';
-	var timehms = time ? second2HMS( time ) : '';
-	$( '#total' ).text( timehms );
+	V.timehms = time ? second2HMS( time ) : '';
+	$( '#total' ).text( V.timehms );
 	$timeRS.option( 'max', time || 100 );
 	if ( S.state === 'stop' ) {
 		$( '#elapsed, #total, #progress' ).empty();
 		$( '#title' ).removeClass( 'gr' );
-		if ( timehms ) {
-			$( '#progress' ).html( istate +'<span></span>'+ timehms );
+		if ( V.timehms ) {
+			$( '#progress' ).html( istate +'<span></span>'+ V.timehms );
 			$( '#elapsed' )
-				.text( timehms )
+				.text( V.timehms )
 				.addClass( 'gr' );
 		}
 		return
@@ -1327,9 +1327,9 @@ function renderPlayback() {
 	
 	if ( S.elapsed ) {
 		var elapsedhms = second2HMS( S.elapsed );
-		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
+		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ V.timehms );
 	} else {
-		$( '#progress' ).html( istate +'<span></span>'+ timehms );
+		$( '#progress' ).html( istate +'<span></span>'+ V.timehms );
 		setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
 	}
 	if ( S.state === 'pause' ) {
