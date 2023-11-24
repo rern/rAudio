@@ -1345,6 +1345,7 @@ function renderPlaybackAll() {
 	displayPlayback();
 	renderPlayback();
 	setButtonUpdating();
+	bannerHide();
 }
 function renderPlaylist( data ) { // V.plhome - current playlist
 	V.plhome       = true;

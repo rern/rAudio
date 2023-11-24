@@ -941,6 +941,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			
 			clearIntervalAll();
 			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
+			banner( 'playlist', 'Skip', cmd[ 0 ].toUpperCase() + cmd.substr( 1 ) +' ...' );
 		}
 		$( '#playback-controls .btn' ).removeClass( 'active' );
 		$( '#'+ cmd ).addClass( 'active' );
