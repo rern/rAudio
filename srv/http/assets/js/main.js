@@ -937,13 +937,9 @@ $( '.btn-cmd' ).on( 'click', function() {
 			S.state = cmd;
 			bash( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
-			var pllength = S.pllength;
-			var song     = S.song;
-			if ( pllength < 2 ) return
+			if ( S.pllength < 2 ) return
 			
 			clearIntervalAll();
-			$timeRS.setValue( 0 );
-			$( '#elapsed, #total, #progress' ).empty();
 			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
 		}
 		$( '#playback-controls .btn' ).removeClass( 'active' );
