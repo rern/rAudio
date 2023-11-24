@@ -563,7 +563,7 @@ $( '#time' ).roundSlider( {
 	}
 	, start       : function () { // drag start
 		V.drag = true;
-		clearIntervalAll();
+		intervalClear();
 		$( '.map' ).removeClass( 'mapshow' );
 		if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
 	}
@@ -571,7 +571,7 @@ $( '#time' ).roundSlider( {
 		$( '#elapsed' ).text( second2HMS( e.value ) );
 	}
 	, change      : function( e ) { // not fire on 'setValue'
-		clearIntervalAll();
+		intervalClear();
 		mpcSeek( e.value );
 	}
 	, stop        : function() {
@@ -583,7 +583,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	
 	V.start = true;
 	guideHide();
-	clearIntervalAll();
+	intervalClear();
 	if ( S.state !== 'play' ) $( '#title' ).addClass( 'gr' );
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.start ) return
@@ -922,13 +922,8 @@ $( '.btn-cmd' ).on( 'click', function() {
 			vu();
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
-			clearInterval( V.interval.elapsed );
-			clearInterval( V.interval.elapsedpl );
-			setProgress( 0 );
-			$( '#elapsed' )
-				.text( V.timehms )
-				.addClass( 'gr' );
-			$( '#total' ).empty();
+			intervalElapsedClear();
+			setPlaybackStop();
 			if ( S.player !== 'mpd' ) {
 				bash( [ 'playerstop', S.elapsed, 'CMD ELAPSED' ] );
 				banner( S.player, icon_player[ S.player ], 'Stop ...' );
@@ -940,13 +935,16 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( S.state === 'stop' ) return
 			
 			S.state = cmd;
-			clearInterval( V.interval.elapsed );
-			clearInterval( V.interval.elapsedpl );
+			intervalElapsedClear();
+			$( '#elapsed' ).addClass( 'bl' );
+			$( '#total' ).addClass( 'wh' );
 			bash( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 			
-			clearIntervalAll();
+			intervalClear();
+			setProgress( 0 );
+			$( '#elapsed, #total, #progress' ).empty();
 			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
 			banner( 'playlist', 'Skip', cmd[ 0 ].toUpperCase() + cmd.substr( 1 ) +' ...' );
 		}
@@ -1780,7 +1778,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 			$( '#play' ).trigger( 'click' );
 		}
 	} else {
-		clearIntervalAll();
+		intervalClear();
 		$( '.elapsed' ).empty();
 		bash( [ 'mpcplayback', 'play', listnumber, 'CMD ACTION POS' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );

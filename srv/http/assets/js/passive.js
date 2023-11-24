@@ -249,7 +249,7 @@ function psMpdUpdate( data ) {
 function psOnClose() {
 	if ( D.progress || V.off ) return
 	
-	clearIntervalAll();
+	intervalClear();
 	guideHide();
 	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
 }

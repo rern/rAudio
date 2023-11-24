@@ -1157,7 +1157,7 @@ function psNotify( data ) {
 	var delay   = data.delay;
 	if ( ! page ) {
 		if ( message === 'Change track ...' ) { // audiocd
-			clearIntervalAll();
+			intervalClear();
 		} else if ( title === 'Latest' ) {
 			C.latest = 0;
 			$( '#mode-latest gr' ).empty();

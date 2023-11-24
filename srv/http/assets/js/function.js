@@ -170,11 +170,6 @@ function changeIP() { // for android app
 		}
 	} );
 }
-function clearIntervalAll() {
-	$.each( V.interval, ( k, v ) => clearInterval( v ) );
-	setProgress( S.webradio ? 0 : '' ); // stop progress animation
-	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
-}
 function colorIcon( el ) {
 	$( el ).html( '<canvas></canvas>' );
 	var canvas      = $( el ).find( 'canvas' )[ 0 ];
@@ -802,6 +797,16 @@ function infoUpdate( path ) {
 		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD DIR' ] )
 	} );
 }
+function intervalClear() {
+	$.each( V.interval, ( k, v ) => clearInterval( v ) );
+	setProgress( S.webradio ? 0 : '' ); // stop progress animation
+	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
+}
+function intervalElapsedClear() {
+	clearInterval( V.interval.elapsed );
+	clearInterval( V.interval.elapsedpl );
+	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
+}
 function libraryHome() {
 	list( { query: 'home' }, function( data ) {
 		C        = data.counts;
@@ -1307,14 +1312,7 @@ function renderPlayback() {
 	$( '#total' ).text( V.timehms );
 	$timeRS.option( 'max', time || 100 );
 	if ( S.state === 'stop' ) {
-		$( '#elapsed, #total, #progress' ).empty();
-		$( '#title' ).removeClass( 'gr' );
-		if ( V.timehms ) {
-			$( '#progress' ).html( istate +'<span></span>'+ V.timehms );
-			$( '#elapsed' )
-				.text( V.timehms )
-				.addClass( 'gr' );
-		}
+		setPlaybackStop();
 		return
 	}
 	
@@ -1325,15 +1323,17 @@ function renderPlayback() {
 		return
 	}
 	
+	var elapsedhms = S.elapsed ? second2HMS( S.elapsed ) : '';
+	var htmlelapsed = istate +'<span>'+ elapsedhms +'</span>';
 	if ( S.elapsed ) {
-		var elapsedhms = second2HMS( S.elapsed );
-		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ V.timehms );
+		htmlelapsed += ' / ';
 	} else {
-		$( '#progress' ).html( istate +'<span></span>'+ V.timehms );
 		setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
 	}
+	htmlelapsed +=  V.timehms;
+	$( '#progress' ).html( htmlelapsed );
 	if ( S.state === 'pause' ) {
-		$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
+		if ( S.elapsed ) $( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 		$( '#total' ).addClass( 'wh' );
 		setProgress();
 	} else { //play
@@ -1464,7 +1464,7 @@ function second2HMS( second ) {
 	return hh  +':'+ mm +':'+ ss;
 }
 function setBlinkDot() {
-	clearIntervalAll();
+	intervalClear();
 	$( '#vuneedle' ).css( 'transform', '' );
 	$( '#elapsed, #total, #progress' ).empty();
 	if ( S.state === 'play' ) {
@@ -1713,6 +1713,17 @@ function setPlaybackBlankQR() {
 <div id="qrip"><gr>http://</gr>${ S.ip }<br><gr>http://</gr>${ S.hostname }
 </div>` );
 }
+function setPlaybackStop() {
+	setProgress( 0 );
+	$( '#elapsed, #total, #progress' ).empty();
+	$( '#title' ).removeClass( 'gr' );
+	if ( V.timehms ) {
+		$( '#progress' ).html( ico( 'stop' ) +'<span></span>'+ V.timehms );
+		$( '#elapsed' )
+			.text( V.timehms )
+			.addClass( 'gr' );
+	}
+}
 function setPlaylistInfoWidth() {
 	// li-icon + margin + duration + margin
 	var $liactive = $( '#pl-list li.active' );
@@ -1724,7 +1735,7 @@ function setPlaylistInfoWidth() {
 	$title.css(  'max-width', iWdW + titleW < cW ? '' : cW - iWdW );
 }
 function setPlaylistScroll() {
-	clearIntervalAll();
+	intervalClear();
 	switchPage( 'playlist' );
 	if ( V.sortable
 		|| [ 'airplay', 'spotify' ].includes( S.player )
@@ -1778,7 +1789,7 @@ function setPlaylistScroll() {
 			V.interval.elapsedpl = setInterval( () => {
 				S.elapsed++;
 				if ( S.elapsed === S.Time ) {
-					clearIntervalAll();
+					intervalClear();
 					S.elapsed = 0;
 					$elapsed.empty();
 					setPlaylistScroll();
@@ -1837,7 +1848,7 @@ function setProgressElapsed() {
 				if ( S.state !== 'play' ) clearInterval( V.interval.elapsed );
 			} else {
 				S.elapsed = 0;
-				clearIntervalAll();
+				intervalClear();
 				$elapsed.empty();
 				setProgress( 0 );
 			}
@@ -1909,7 +1920,7 @@ function stopAirplay() {
 	} );
 }
 function switchPage( page ) {
-	clearIntervalAll();
+	intervalClear();
 	// get scroll position before changed
 	if ( V.library ) {
 		if ( V.librarylist ) {
