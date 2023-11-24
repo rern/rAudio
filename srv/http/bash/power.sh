@@ -5,14 +5,8 @@
 if [[ $1 == reboot ]]; then
 	reboot=1
 	. $dirshm/cpuinfo
-	case $C in
-		0 ) sec=80;;
-		1 ) sec=70;;
-		2 ) sec=50;;
-		3 ) sec=20;;
-		4 ) sec=15;;
-	esac
-	wait=', "wait": '$sec
+	sec=( 80 70 50 20 15 )
+	wait=', "wait": '${sec[C]}
 fi
 pushData power '{ "type": "'$1'"'$wait' }'
 [[ $( < $dirshm/player ) == upnp ]] && $dirbash/cmd.sh playerstop
