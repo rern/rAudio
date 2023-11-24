@@ -1,6 +1,6 @@
 <?php
 $id_data = [
-	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom' ]
+	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom', 'status' => true, 'sub' => 'current' ]
 	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
@@ -82,10 +82,7 @@ $htmlvolume = '
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [
-		  'log'      => 'file'
-		, 'playback' => 'play'
-	]
+	, 'button' => [ 'playback' => 'play' ]
 	, 'help'   => <<< EOF
 {$Fi( 'file btn' )} Log
 {$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
@@ -100,6 +97,7 @@ $body = [
 	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
 	, [
 		  'id'    => 'configuration'
+		, 'status' => true
 		, 'input' => '<select id="configuration"></select>'
 		, 'help'  => <<< EOF
 {$Fi( 'gear btn' )} Configuration files
@@ -119,5 +117,7 @@ htmlSection( $head, $body, 'settings' );
 <div id="menu" class="menu hide">
 <a class="graph"><i class="i-graph"></i>Graph</a>
 <a class="edit"><i class="i-edit"></i>Edit</a>
+<a class="copy"><i class="i-copy"></i>Copy</a>
+<a class="rename"><i class="i-edit"></i>Rename</a>
 <a class="delete"><i class="i-remove"></i>Delete</a>
 </div>

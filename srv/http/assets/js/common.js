@@ -182,10 +182,12 @@ function errorDisplay( msg, list ) {
 		pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
 	}
 	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
-	var error =  '<codered>Errors:</codered> '+ msg
+	var error =  '<div class="error"><codered>Errors:</codered> '+ msg
 				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
 				+'<hr>'
-				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
+				+'</div><div class="data">'
+				+ list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&lt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
+				+ '</div>'
 	$( '#data' )
 		.html( error )
 		.removeClass( 'hide' );
@@ -919,7 +921,6 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
-	wsPush( 'power', '{ "type": "'+ action +'" }' );
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
@@ -1081,16 +1082,13 @@ function selectText2Html( pattern ) {
 function connect() {
 	if ( V.local || V.off ) return // V.local from select2
 	
-	if ( ws ) {
-		ws.readyState === 1 ? ws.send( 'connect' ) : websocketConnect();
-	} else {
-		websocketConnect();
-	}
-	bannerHide();
-	setTimeout( refreshData, page ? 300 : 0 );
+	websocketConnect();
+	page ? setTimeout( refreshData, 300 ) : refreshData();
 }
 function disconnect() {
-	if ( ! V.local && ! V.debug && typeof psOnClose === 'function' ) psOnClose(); // V.local from select2
+	if ( V.local || V.debug ) return // V.local from select2
+	
+	if ( typeof psOnClose === 'function' ) psOnClose();
 }
 document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 window.onpagehide = disconnect;
@@ -1115,15 +1113,38 @@ function volumeMuteToggle() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 }
-function websocketConnect() {
+function websocketConnect( reboot ) {
 	if ( ! page || page === 'camilla' ) {
 		if ( ! wsvolume || wsvolume.readyState !== 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
 	}
 	if ( ws && ws.readyState === 1 ) return
 	
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
-	ws.onopen    = () => setTimeout( () => ws.send( 'connect' ), 600 );
-	ws.onmessage = message => psOnMessage( message );
+	ws.onready   = () => { // custom
+		ws.send( 'connect' );
+		if ( ! reboot ) return
+		
+		if ( S.login ) {
+			location.href = '/';
+		} else {
+			refreshData();
+			loaderHide();
+			bannerHide();
+		}
+	}
+	ws.onopen    = () => {
+		websocketReady( ws );
+	}
+	ws.onclose   = () => ws = null;
+	ws.onmessage = message => psOnMessage( message ); // data pushed from server
+}
+function websocketReady( socket ) {
+	var interval = setTimeout( () => {
+		if ( socket.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+			clearTimeout( interval );
+			socket.onready();
+		}
+	}, 100 );
 }
 function wsPush( channel, data ) {
 	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
@@ -1157,21 +1178,7 @@ function psPower( data ) {
 		}, 10000 );
 	} else { // reconnect after reboot
 		setTimeout( () => {
-			var interval = setInterval( () => {
-				websocketConnect();
-				setTimeout( () => {
-					if ( ws.readyState === 1 ) {
-						clearTimeout( interval );
-						if ( S.login ) {
-							location.href = '/';
-						} else {
-							refreshData();
-							loaderHide();
-							bannerHide();
-						}
-					}
-				}, 1000 );
-			}, 3000 );
-		}, 20000 );
+			websocketConnect( 'reboot' );
+		}, data.wait * 1000 );
 	}
 }

@@ -18,7 +18,8 @@ $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 		SERVICE=bluetooth
 		;;
 	camilladsp )
-		fileconf=$( getVar CONFIG /etc/default/camilladsp )
+		fileconf=/etc/default/camilladsp
+		extra=$( < /var/log/camilladsp.log )
 		;;
 	dabradio )
 		PKG=mediamtx
@@ -42,12 +43,12 @@ $( < /etc/dnsmasq.conf )"
 		;;
 	mpd )
 		conf=$( grep -v ^i $mpdconf )
-		for file in autoupdate buffer outputbuffer replaygain normalization custom; do
+		for file in autoupdate buffer normalization outputbuffer replaygain custom; do
 			fileconf=$dirmpdconf/$file.conf
 			[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
 		done
 		conf=$( sort <<< $conf | sed 's/  *"/^"/' | column -t -s^ )
-		for file in cdio curl ffmpeg fifo httpd snapserver soxr-custom soxr bluetooth output; do
+		for file in curl cdio ffmpeg bluetooth camilladsp fifo httpd snapserver output soxr soxr-custom; do
 			fileconf=$dirmpdconf/$file.conf
 			[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
 		done
@@ -108,4 +109,5 @@ fi
 echo "\
 $config
 
-$status"
+$status
+$extra"

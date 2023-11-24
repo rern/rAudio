@@ -111,9 +111,8 @@ if systemctl -q is-active hostapd; then
 , "passphrase" : "'$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )'"
 }'
 fi
-
+##########
 data='
-  "page"        : "networks"
 , "activebt"    : '$activebt'
 , "activeeth"   : '$( ip -br link | grep -q -m1 ^e && echo true )'
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'

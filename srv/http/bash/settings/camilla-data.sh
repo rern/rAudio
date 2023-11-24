@@ -28,9 +28,8 @@ volume=${vcc[0]}
 card=${vcc[1]}
 control=${vcc[2]}
 [[ -e $dirsystem/volumemute ]] && volumemute=$( < $dirsystem/volumemute ) || volumemute=0
-	
+########
 data='
-  "page"       : "camilla"
 , "bluetooth"  : '$bluetooth'
 , "card"       : '$card'
 , "clipped"    : '$( cat $dirshm/clipped 2> /dev/null || echo 0 )'
@@ -45,10 +44,9 @@ data='
 , "state"      : "'$( getVar state $dirshm/status )'"
 , "volume"     : '$volume'
 , "volumemute" : '$volumemute
-
 for dir in coeffs configs configs-bt; do
+########
 	data+='
 , "ls'$dir'" : [ '$( ls -1 $dircamilladsp/$dir | tr '\n' ^ | sed 's/\^$/"/; s/^/"/; s/\^/", "/g' )' ]'
 done
-
 data2json "$data" $1

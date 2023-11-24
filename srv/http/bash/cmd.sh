@@ -341,20 +341,11 @@ display )
 	grep -q -m1 vumeter.*true $dirsystem/display.json && touch $dirsystem/vumeter && vumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
 	
-	killProcess cava
 	if [[ $vumeter ]]; then
-		if [[ -e $dirmpdconf/fifo.conf ]]; then
-			if statePlay; then
-				cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-				echo $! > $dirshm/pidcava
-			fi
-			exit
-			
-		fi
+		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	else
-		rm -f $dirsystem/vumeter $dirshm/status
+		rm -f $dirsystem/vumeter
 	fi
-	$dirsettings/player-conf.sh
 	;;
 equalizer )
 	if [[ $VALUES ]]; then # preset ( delete, rename, new - save json only )
@@ -521,7 +512,6 @@ mpcplayback )
 	else
 		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
 		mpc -q $ACTION
-		killProcess cava
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
 	# snapclient
@@ -650,7 +640,6 @@ playerstart )
 	;;
 playerstop )
 	player=$( < $dirshm/player )
-	killProcess cava
 	echo mpd > $dirshm/player
 	[[ -e $dirsystem/scrobble ]] && echo $ELAPSED > $dirshm/elapsed
 	$dirbash/status-push.sh

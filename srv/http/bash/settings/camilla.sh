@@ -40,8 +40,8 @@ confrename )
 	pushRefresh
 	;;
 confswitch )
-	sed -i -E "s|^(CONFIG.*/).*|\1$NAME.yml|" /etc/default/camilladsp
-	pushRefresh
+	$dirsettings/camilla.py
+	sed -i -E "s|^(CONFIG.*/).*|\1$NAME|" /etc/default/camilladsp
 	;;
 restart )
 	systemctl restart camilladsp
@@ -74,6 +74,10 @@ setformat )
 		alsactl store &> /dev/null
 		alsactl nrestore &> /dev/null
 	fi
+	;;
+statusconfiguration )
+	[[ ! $FILE ]] && FILE=$( getVar CONFIG /etc/default/camilladsp )
+	cat "$FILE"
 	;;
 statuslog )
 	cat /var/log/camilladsp.log

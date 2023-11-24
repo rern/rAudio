@@ -89,13 +89,6 @@ function psOnMessage( message ) {
 		case 'vumeter':       psVUmeter( data );        break;
 	}
 }
-function psOnClose() {
-	if ( D.progress || V.off ) return
-	
-	clearIntervalAll();
-	guideHide();
-	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
-}
 function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
@@ -212,13 +205,13 @@ function psMpdPlayer( data ) {
 }
 function psMpdRadio( data ) {
 	statusUpdate( data );
-	setProgress( 0 );
 	setInfo();
 	setCoverart();
 	if ( D.radioelapsed ) {
 		$( '#progress' ).html( ico( 'play' ) +'<span></span>' );
 		setProgressElapsed();
 	} else {
+		setProgress( 0 );
 		setBlinkDot();
 	}
 	if ( V.playlist ) setPlaylistScroll();
@@ -252,6 +245,13 @@ function psMpdUpdate( data ) {
 		}
 	}
 	setButtonUpdating();
+}
+function psOnClose() {
+	if ( D.progress || V.off ) return
+	
+	clearIntervalAll();
+	guideHide();
+	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
 }
 function psOption( data ) {
 	if ( V.local ) return
@@ -401,7 +401,7 @@ function psVolume( data ) {
 		D.volumenone = data.volumenone;
 		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
 	} else {
-		if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+		V.drag = data.type === 'updn'; // multiples - handle like drag
 		if ( data.type === 'dragpress' ) {
 			V.press = true;
 			setTimeout( () => V.press = false, 300 );

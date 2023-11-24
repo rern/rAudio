@@ -103,6 +103,7 @@ dtparam=audio=on"
 	;;
 bluetooth )
 	config=$( grep -E -v 'disable-bt' /boot/config.txt )
+	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
@@ -114,7 +115,7 @@ bluetooth )
 		if ls -l /sys/class/bluetooth 2> /dev/null | grep -q -m1 serial; then
 			systemctl start bluetooth
 			bluetoothctl discoverable $yesno &> /dev/null
-			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+			[[ ! $bluealsa ]] && $dirsettings/player-conf.sh
 			rfkill | grep -q -m1 bluetooth && pushData refresh '{ "page": "networks", "activebt": true }'
 		fi
 		[[ -e $dirsystem/btformat  ]] && prevbtformat=true
@@ -126,7 +127,7 @@ dtoverlay=disable-bt'
 		if rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
-			grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+			[[ $bluealsa ]] && $dirsettings/player-conf.sh
 		fi
 	fi
 	configTxt
@@ -400,6 +401,8 @@ rotaryencoder )
 		serviceRestartEnable
 	else
 		systemctl disable --now rotaryencoder
+		dtoverlay -r gpio-key
+		dtoverlay -r rotary-encoder
 	fi
 	pushRefresh
 	;;
@@ -602,21 +605,15 @@ usbautoupdate )
 	;;
 vuled )
 	enableFlagSet
-	killProcess cava
+	pins=$( cut -d= -f2 $dirsystem/vuled.conf )
 	if [[ $ON ]]; then
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
-		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		echo $! > $dirshm/pidcava
+		grep -q 'state="*play' $dirshm/status && systemctl start cava
 	else
-		. $dirsystem/vuled.conf
-		for (( i=0; i < 7; i++ )); do
-			pin=P$i
-			echo 0 > /sys/class/gpio/gpio${!pin}/value
-		done
 		if [[ -e $dirsystem/vumeter ]]; then
-			cava -p /etc/cava.conf | $dirsettings/vu.sh &> /dev/null &
-			echo $! > $dirshm/pidcava
+			systemctl restart cava
 		else
+			systemctl stop cava
 			$dirsettings/player-conf.sh
 		fi
 	fi

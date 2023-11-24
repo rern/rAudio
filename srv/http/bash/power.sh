@@ -2,8 +2,13 @@
 
 . /srv/http/bash/common.sh
 
-[[ $1 == reboot ]] && reboot=1
-
+if [[ $1 == reboot ]]; then
+	reboot=1
+	. $dirshm/cpuinfo
+	sec=( 80 70 50 20 15 )
+	wait=', "wait": '${sec[C]}
+fi
+pushData power '{ "type": "'$1'"'$wait' }'
 [[ $( < $dirshm/player ) == upnp ]] && $dirbash/cmd.sh playerstop
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )

@@ -9,19 +9,19 @@ $id_data = [
 	, 'hdmi'          => [ 'name' => 'HDMI Hotplug',                              'setting' => false ]
 	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'name' => 'Audio - I²S' ]
-	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'HD44780' ]
-	, 'mpdoled'       => [ 'name' => 'Spectrum OLED' ]
-	, 'powerbutton'   => [ 'name' => 'Power Button',      'sub' => 'Power LED' ]
-	, 'relays'        => [ 'name' => 'Relay Module' ]
+	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'RPLCD' ]
+	, 'mpdoled'       => [ 'name' => 'Spectrum OLED',     'sub' => 'mpd_oled' ]
+	, 'powerbutton'   => [ 'name' => 'Power Button',      'sub' => 'Wiring Pi' ]
+	, 'relays'        => [ 'name' => 'Relay Module',      'sub' => 'Wiring Pi' ]
 	, 'restore'       => [ 'name' => 'Restore',                                   'setting' => 'none' ]
-	, 'rotaryencoder' => [ 'name' => 'Rotary Encoder' ]
-	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'client',      'setting' => 'custom' ]
+	, 'rotaryencoder' => [ 'name' => 'Rotary Encoder',    'sub' => 'evtest' ]
+	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
 	, 'softlimit'     => [ 'name' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
 	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
-	, 'tft'           => [ 'name' => 'TFT 3.5" LCD',                                                                       'exist' => 'firefox' ]
+	, 'tft'           => [ 'name' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
 	, 'usbautoupdate' => [ 'name' => 'Hotplug Update',                            'setting' => false ]
-	, 'vuled'         => [ 'name' => 'VU LED' ]
+	, 'vuled'         => [ 'name' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
 
@@ -186,7 +186,7 @@ EOF
 	, [
 		  'id'       => 'lcdchar'
 		, 'help'     => <<< EOF
-<a class="img" data-name="lcdchar">LCD module</a> - display playback data
+<a class="img" data-name="lcdchar">LCD module</a> (HD44780) - display playback data
  · Support 16x2 and 20x4 LCD modules.
  · {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 EOF

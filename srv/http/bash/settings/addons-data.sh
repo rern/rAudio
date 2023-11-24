@@ -6,6 +6,7 @@ online=true
 if [[ -e $dirshm/addonsprogress ]]; then
 	rm $dirshm/addonsprogress
 else
+########
 	data=$( curl -sfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
 	if [[ $? == 0 ]]; then
 		echo "$data" > $diraddons/addonslist.json
@@ -15,6 +16,7 @@ else
 		notify addons Addons 'Server not reachable.' -1
 	fi
 fi
+########
 [[ ! $data ]] && data=$( < $diraddons/addonslist.json )
 addons=( $( jq keys <<< $data | tr -d '[",]' ) )
 for addon in ${addons[@]}; do
@@ -38,7 +40,8 @@ if [[ $update ]]; then
 else
 	rm -f $diraddons/update
 fi
-echo $( head -n -1 <<< $data )'
+data=$( head -n -1 <<< $data )
+data+='
 	, "status" : {
 		  "hidden"      : [ '${hidden:1}' ]
 		, "installed"   : [ '${installed:1}' ]
@@ -47,3 +50,4 @@ echo $( head -n -1 <<< $data )'
 		, "online"      : '$online'
 	}
 }'
+echo "$data"

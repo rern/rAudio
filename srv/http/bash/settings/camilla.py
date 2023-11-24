@@ -4,8 +4,8 @@ import json
 import sys
 
 argvL = len( sys.argv )
-
-if argvL > 2: # graph
+# graph
+if argvL > 2:
     cmd    = sys.argv[ 1 ]
     values = json.loads( sys.argv[ 2 ] )
     if cmd == 'filters':
@@ -17,7 +17,10 @@ if argvL > 2: # graph
     print( json.dumps( data ) )
     sys.exit()
     
-
+# save
+#  - camilla.js (save2file) : $( '.close' ), wscamilla.onclose(), setting.save()
+#  - features.sh : disable
+#  - power.sh
 from websocket import create_connection
 
 def getValue( cmd ):

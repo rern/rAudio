@@ -28,9 +28,8 @@ lists='{
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
-
+##########
 data='
-  "page"             : "player"
 , "devices"          : '$devices'
 , "asoundcard"       : '$asoundcard'
 , "audioaplayname"   : "'$aplayname'"

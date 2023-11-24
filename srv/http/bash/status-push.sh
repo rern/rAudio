@@ -30,7 +30,7 @@ else
 ########
 	pushData mpdplayer "$status"
 	if [[ -e $dirsystem/scrobble ]]; then
-		mv -f $dirshm/status{,prev}
+		cp -f $dirshm/status{,prev}
 		timestampnew=$( grep ^timestamp <<< $statusnew | cut -d= -f2 )
 	fi
 	mv -f $dirshm/status{new,}
@@ -63,20 +63,12 @@ if [[ -e $dirsystem/mpdoled ]]; then
 	[[ $state == play ]] && systemctl start mpd_oled || systemctl stop mpd_oled
 fi
 
-if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
-	killProcess cava
-	if [[ $state == play ]]; then
-		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		echo $! > $dirshm/pidcava
-	else
-		pushData vumeter '{ "val": 0 }'
-		if [[ -e $dirsystem/vuled ]]; then
-			p=$( < $dirsystem/vuled.conf )
-			for i in $p; do
-				echo 0 > /sys/class/gpio/gpio$i/value
-			done
-		fi
-	fi
+[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && cava=1
+if [[ $state == play ]]; then
+	[[ $cava ]] && systemctl start cava
+else
+	[[ $cava ]] && systemctl stop cava
+	[[ -e $dirsystem/vumeter ]] && pushData vumeter '{ "val": 0 }'
 fi
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom

@@ -132,15 +132,14 @@ confFromJson() { # $1 - file
 	sed -E '/\{|}/d; s/,//; s/^\s*"(.*)": "*(.*)"*$/\1="\2"/' "$1"
 }
 data2json() {
-	local data json
-	data="$1"
-	if [[ ${data:0:1} != , ]]; then # status.sh PAGE-data.sh
-		data+='
+	local json page
+	page=$( basename ${0/-*} )
+	[[ $page == status.sh ]] && page=false || page='"'$page'"'
+	json='{
+  "page"  : '$page'
 , "login" : '$( exists $dirsystem/login )
-		json="{ $data }"
-	else
-		json="[ ${data:1} ]"
-	fi
+	json+="$1
+}"
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
 	json=$( sed 's/:\s*$/: false/
 				s/:\s*}$/: false }/
@@ -172,6 +171,11 @@ getVar(){
 	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )
 	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"']$//g" <<< $line )
 	stringEscape $line
+}
+inOutputConf() {
+	local file
+	file=$dirmpdconf/output.conf
+	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}' | head -1
@@ -335,7 +339,7 @@ volumeCardControl() {
 	else
 		if [[ -e $dirshm/btreceiver ]]; then
 			control=$( < $dirshm/btreceiver )
-		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+		elif inOutputConf mixer_type.*software; then
 			control=
 		else
 			card=$( getContent $dirsystem/asoundcard )
@@ -360,7 +364,7 @@ volumeGet() {
 		
 		if [[ -e $dirsystem/snapclientserver ]]; then
 			mixersoftware=
-		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+		elif inOutputConf mixer_type.*software; then
 			mixersoftware=1
 		fi
 		if [[ $mixersoftware && $( < $dirshm/player ) == mpd ]]; then

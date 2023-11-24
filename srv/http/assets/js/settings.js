@@ -116,7 +116,7 @@ function playbackButton() {
 	$( '.playback' )
 		.removeClass( 'i-pause i-play' )
 		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
-		.toggleClass( 'disabled', ! S.pllength || ( S.player !== 'mpd' && S.state !== 'play' ) );
+		.toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' );
 }
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
@@ -185,10 +185,6 @@ function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
 }
 
-// push status
-function psOnClose() {
-	if ( ws ) ws.send( 'disconnect' );
-}
 function psOnMessage( message ) {
 	var json    = JSON.parse( message.data );
 	var channel = json.channel;
@@ -381,8 +377,8 @@ $( '.helphead' ).on( 'click', function() {
 	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 	$( '.sub' ).next().toggleClass( 'hide', visible );
 } );
-$( '.playback' ).on( 'click', function( e ) { // for player and camilla
-	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
+$( '.playback' ).on( 'click', function() { // for player and camilla
+	bash( [ 'cmd.sh', 'mpcplayback' ] );
 } );
 $( '.help' ).on( 'click', function() {
 	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
