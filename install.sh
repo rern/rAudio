@@ -29,7 +29,7 @@ ExecStop=/srv/http/bash/cava.sh stop' > $file
 	[[ -e $dirsystem/vuled ]] && killall -9 cava &> /dev/null && rm $dirsystem/vuled
 fi
 
-if [[ ! e /lib/libfdt.so ]]; then
+if [[ ! -e /lib/libfdt.so ]]; then
 	pacman -Sy --noconfirm dtc
 	systemctl try-restart rotaryencoder
 fi
