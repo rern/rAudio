@@ -1117,7 +1117,7 @@ function websocketConnect( callback ) {
 	if ( ! page || page === 'camilla' ) {
 		if ( ! wsvolume || wsvolume.readyState > 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
 	}
-	if ( ws && ws.readyState > 1 ) return
+	if ( ws && ws.readyState === 1 ) return
 	
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
 	ws.onopen    = () => {
