@@ -925,6 +925,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 				if ( V.timehms ) $( '#total' ).text( V.timehms );
 			}
+			$( '#progress i' ).prop( 'class', 'i-play' );
 			bash( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
@@ -944,6 +945,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			intervalElapsedClear();
 			$( '#elapsed' ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
+			$( '#progress i' ).prop( 'class', 'i-pause' );
 			bash( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
