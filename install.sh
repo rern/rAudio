@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231125
+grep -q connect $dirbash/websocket-server.py && websocketrestart=1
+
 file=$dirmpdconf/conf/camilladsp.conf
 if [[ ! -e $file ]]; then
 	echo 'audio_output {
@@ -15,6 +17,7 @@ if [[ ! -e $file ]]; then
 	mixer_type     "none"
 }' > $file
 	echo 'include_optional    "camilladsp.conf"' >> $dirmpdconf/mpd.conf
+	[[ -e $dirsystem/camilladsp ]] && mpdrestart=1
 fi
 
 file=/etc/systemd/system/cava.service
@@ -115,6 +118,10 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20231125
+[[ $websocketrestart ]] && systemctl restart websocket
+[[ $mpdrestart ]] && $dirsettings/player-conf.sh
 
 # 20231013
 if ! grep -q smbdfree /etc/samba/smb.conf; then
