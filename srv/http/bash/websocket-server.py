@@ -10,10 +10,10 @@ async def cmd( websocket, path ):
     async for args in websocket:
         if path == '/volume':
             subprocess.call( [ '/srv/http/bash/cmd.sh', args ] )
-        elif args == 'connect':
+        elif args == 'clientadd':
             if websocket not in CLIENTS:
                 CLIENTS.add( websocket )
-        elif args == 'disconnect':
+        elif args == 'clientremove':
             if websocket in CLIENTS:
                 CLIENTS.remove( websocket )
         else:

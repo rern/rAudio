@@ -98,7 +98,7 @@ function bash( args, callback, json ) {
 V.debug - press: $( '#debug' )
 	- all
 	- console.log commands
-	- active push status (no disconnect)
+	- active push status (no pageInactive)
 V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 	- each
 	- console.log commands only (NOT run)
@@ -1079,22 +1079,23 @@ function selectText2Html( pattern ) {
 }
 
 // page visibility -----------------------------------------------------------------
-function connect() {
+function pageActive() {
 	if ( V.local || V.off ) return // V.local from select2
 	
 	websocketConnect();
 	page ? setTimeout( refreshData, 300 ) : refreshData();
 }
-function disconnect() {
+function pageInactive() {
 	if ( V.local || V.debug ) return // V.local from select2
 	
 	if ( typeof psOnClose === 'function' ) psOnClose();
+	ws.send( 'clientremove' );
 }
-document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
-window.onpagehide = disconnect;
-window.onpageshow = connect;
-window.onblur     = disconnect;
-window.onfocus    = connect;
+document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
+window.onblur     = pageInactive;
+window.onfocus    = pageActive;
+window.onpagehide = pageInactive;
+window.onpageshow = pageActive;
 
 // websocket
 var ws, wsvolume;
@@ -1121,7 +1122,7 @@ function websocketConnect( reboot ) {
 	
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
 	ws.onready   = () => { // custom
-		ws.send( 'connect' );
+		ws.send( 'clientadd' );
 		if ( ! reboot ) return
 		
 		if ( S.login ) {
