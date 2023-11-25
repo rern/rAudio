@@ -923,6 +923,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( stateprev === 'stop' ) {
 				$( '#elapsed' ).empty();
 				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
+				if ( ! S.Time ) V.timehms = '';
 				$( '#total' ).text( V.timehms );
 			}
 			$( '#progress i' ).prop( 'class', 'i-play' );
