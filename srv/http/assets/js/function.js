@@ -1721,6 +1721,13 @@ function setPlaybackStop() {
 			.text( V.timehms )
 			.addClass( 'gr' );
 	}
+	if ( ! S.webradio ) return
+	
+	S.coverart = false;
+	setCoverart();
+	setInfo();
+	$( '#artist, #title, #album' ).addClass( 'disabled' );
+	$( '#sampling' ).html( S.sampling +' • '+ S.ext );
 }
 function setPlaylistInfoWidth() {
 	// li-icon + margin + duration + margin

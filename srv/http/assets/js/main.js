@@ -921,7 +921,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			S.state = cmd;
 			vu();
 			if ( stateprev === 'stop' ) {
-				$( '#elapsed' ).empty();
+				S.webradio ? $( '#elapsed' ).html( blinkdot ) : $( '#elapsed' ).empty();
 				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 				$( '#total' ).text( V.timehms );
 			}
