@@ -922,7 +922,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			vu();
 			setPlayPauseColor();
 			if ( stateprev === 'stop' ) {
-				S.webradio ? $( '#elapsed' ).html( blinkdot ) : $( '#elapsed' ).empty();
+				S.webradio ? $( '#title, #elapsed' ).html( blinkdot ) : $( '#elapsed' ).empty();
 				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 				$( '#total' ).text( V.timehms );
 			}
