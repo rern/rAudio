@@ -629,7 +629,8 @@ $( '#volume' ).roundSlider( {
 		if ( V.press ) {
 			var diff  = 3;
 		} else {
-			var diff  = Math.abs( e.value - S.volume || S.volume - S.volumemute ); // change || mute/unmute
+			if ( ! V.volumeprev ) V.volumeprev = S.volume; // V.volumeprev from psVolume()
+			var diff  = Math.abs( e.value - V.volumeprev || S.volume - S.volumemute ); // change || mute/unmute
 		}
 		var speed = diff * 40; // 1% : 40ms
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
@@ -655,7 +656,8 @@ $( '#volume' ).roundSlider( {
 	, valueChange       : function( e ) {
 		if ( V.drag || ! V.create ) return // ! V.create - suppress fire before 'create'
 		
-		S.volume = e.value;
+		S.volume     = e.value;
+		V.volumeprev = false;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, stop              : () => {

@@ -389,6 +389,7 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
+	V.volumeprev = S.volume;
 	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
 		V.local = false; // allow beforeValueChange()
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
