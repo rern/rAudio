@@ -1301,15 +1301,13 @@ function renderPlayback() {
 	setInfo();
 	setCoverart();
 	setButtonOptions();
-	var istate = ico( S.state );
+	V.timehms = S.Time ? second2HMS( S.Time ) : '';
 	if ( S.elapsed === false || S.webradio ) {
 		setBlinkDot();
 		return
 	}
 	
-	var time    = 'Time' in S ? S.Time : '';
-	V.timehms = time ? second2HMS( time ) : '';
-	$timeRS.option( 'max', time || 100 );
+	$timeRS.option( 'max', S.Time || 100 );
 	if ( S.state === 'stop' ) {
 		setPlaybackStop();
 		return
@@ -1317,14 +1315,14 @@ function renderPlayback() {
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 	$( '#total' ).text( V.timehms );
-	if ( S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > time ) {
+	if ( S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > S.Time ) {
 		$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
 		blinkDot();
 		return
 	}
 	
 	var elapsedhms = S.elapsed ? second2HMS( S.elapsed ) : '';
-	var htmlelapsed = istate +'<span>'+ elapsedhms +'</span>';
+	var htmlelapsed = ico( S.state ) +'<span>'+ elapsedhms +'</span>';
 	if ( S.elapsed ) {
 		htmlelapsed += ' / ';
 	} else {
