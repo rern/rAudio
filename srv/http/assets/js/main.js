@@ -923,7 +923,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( stateprev === 'stop' ) {
 				$( '#elapsed' ).empty();
 				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
-				if ( V.timehms ) $( '#total' ).text( V.timehms );
+				$( '#total' ).text( V.timehms );
 			}
 			$( '#progress i' ).prop( 'class', 'i-play' );
 			bash( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
