@@ -1309,7 +1309,6 @@ function renderPlayback() {
 	
 	var time    = 'Time' in S ? S.Time : '';
 	V.timehms = time ? second2HMS( time ) : '';
-	$( '#total' ).text( V.timehms );
 	$timeRS.option( 'max', time || 100 );
 	if ( S.state === 'stop' ) {
 		setPlaybackStop();
@@ -1317,6 +1316,7 @@ function renderPlayback() {
 	}
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
+	$( '#total' ).text( V.timehms );
 	if ( S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > time ) {
 		$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
 		blinkDot();

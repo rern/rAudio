@@ -917,9 +917,15 @@ $( '.btn-cmd' ).on( 'click', function() {
 		if ( cmd === 'play' ) {
 			if ( S.state === 'play' ) return
 			
+			var stateprev = S.state;
 			S.state = cmd;
-			bash( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
 			vu();
+			if ( stateprev === 'stop' ) {
+				$( '#elapsed' ).empty();
+				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
+				if ( V.timehms ) $( '#total' ).text( V.timehms );
+			}
+			bash( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
 			intervalElapsedClear();
