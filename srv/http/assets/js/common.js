@@ -1089,7 +1089,7 @@ function pageInactive() {
 	if ( V.local || V.debug ) return // V.local from select2
 	
 	if ( typeof psOnClose === 'function' ) psOnClose();
-	ws.send( 'clientremove' );
+//	ws.send( 'clientremove' ); // 'clientremove' = missing 1st message on pageActive
 }
 document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
