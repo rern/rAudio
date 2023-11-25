@@ -903,6 +903,8 @@ $( '.btn-cmd' ).on( 'click', function() {
 	
 	var $this = $( this );
 	var cmd   = this.id;
+	if ( S.state === cmd ) return
+	
 	if ( $this.hasClass( 'btn-toggle' ) ) {
 		var onoff = ! S[ cmd ];
 		S[ cmd ] = onoff;
@@ -915,17 +917,15 @@ $( '.btn-cmd' ).on( 'click', function() {
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 		if ( cmd === 'play' ) {
-			if ( S.state === 'play' ) return
-			
 			var stateprev = S.state;
 			S.state = cmd;
 			vu();
+			setPlayPauseColor();
 			if ( stateprev === 'stop' ) {
 				S.webradio ? $( '#elapsed' ).html( blinkdot ) : $( '#elapsed' ).empty();
 				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 				$( '#total' ).text( V.timehms );
 			}
-			$( '#progress i' ).prop( 'class', 'i-play' );
 			bash( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
@@ -943,9 +943,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			
 			S.state = cmd;
 			intervalElapsedClear();
-			$( '#elapsed' ).addClass( 'bl' );
-			$( '#total' ).addClass( 'wh' );
-			$( '#progress i' ).prop( 'class', 'i-pause' );
+			setPlayPauseColor();
 			bash( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return

@@ -1811,6 +1811,13 @@ function setPlaylistScroll() {
 		}
 	}
 }
+function setPlayPauseColor() {
+	var pause = S.state === 'pause';
+	$( '#title' ).toggleClass( 'gr', pause );
+	$( '#elapsed' ).toggleClass( 'bl', pause );
+	$( '#total' ).toggleClass( 'wh', pause );
+	$( '#progress i' ).prop( 'class', pause ? 'i-pause' : 'i-play' );
+}
 function setProgress( position ) {
 	if ( position !== 0 ) position = S.elapsed;
 	if ( S.state !== 'play' || ! position ) clearInterval( V.interval.elapsed );
