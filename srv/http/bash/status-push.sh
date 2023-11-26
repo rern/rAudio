@@ -10,7 +10,7 @@ if [[ $1 == statusradio ]]; then # from status-radio.sh
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( sed '/^, "counts"/,/}/ d' <<< $status \
-					| sed -E -n '/^, "Artist|^, "Album|^, "elapsed|^, "file| *"player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {
+					| sed -E -n '/^, "Artist|^, "Album|^, "Composer|^, "elapsed|^, "file| *"player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {
 						s/^,* *"//; s/" *: */=/; p
 						}' )
 	echo "$statusnew" > $dirshm/statusnew

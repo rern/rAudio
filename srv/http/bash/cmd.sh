@@ -623,8 +623,15 @@ mpcupdate )
 		DIR=$( < $dirmpd/updating )
 	fi
 	pushData mpdupdate '{ "type": "mpd" }'
-	mpc | grep -q ^Updating && systemctl restart mpd
 	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
+	;;
+mpcupdatestop )
+	pushData mpdupdate '{ "stop": true }'
+	systemctl restart mpd
+	if [[ -e $dirmpd/listing ]]; then
+		killall cmd-list.sh
+		rm -f $dirmpd/{listing,updating} $dirshm/{listing,tageditor}
+	fi
 	;;
 multiraudiolist )
 	echo '{

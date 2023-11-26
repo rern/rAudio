@@ -775,11 +775,7 @@ function infoTitle() {
 }
 function infoUpdate( path ) {
 	if ( S.updating_db ) {
-		info( {
-			  icon    : 'refresh-library'
-			, title   : 'Library Database'
-			, message : 'Update in progress ...'
-		} );
+		infoUpdating();
 		return
 	}
 	
@@ -795,6 +791,13 @@ function infoUpdate( path ) {
 			}
 		}
 		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD DIR' ] )
+	} );
+}
+function infoUpdating() {
+	info( {
+		  icon    : 'refresh-library'
+		, title   : 'Library Database'
+		, message : 'Update in progress ...'
 	} );
 }
 function intervalClear() {
