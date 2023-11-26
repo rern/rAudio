@@ -2084,6 +2084,8 @@ li.active .li2 bl {
 		#time-knob,
 		#coverart-block,
 		#volume-knob { min-width: 30% }
+		#divcomposer,
+		#divconductor,
 		#button-time,
 		#button-volume { display: none }
 	}
