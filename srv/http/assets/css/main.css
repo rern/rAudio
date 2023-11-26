@@ -336,7 +336,10 @@ i.map.disabled, .map.disabled i {
 	padding: 120px 0 60px;
 }
 /* ---------------------- info ----------------------*/
-#artist, #title, #album {
+#artist,
+#title,
+#album,
+#composer {
 	display: table; /* allow get width */
 	margin: 0 auto;
 	text-align: center;
@@ -361,17 +364,28 @@ i.map.disabled, .map.disabled i {
 	font-size: 24px;
 }
 #divartist,
-#divalbum {
+#divalbum,
+#divcomposer {
 	height: 25px;
 }
 #artist,
 #title,
-#album {
+#album,
+#composer {
 	overflow: hidden;
 	position: relative;
 }
 #artist,
-#album {
+#album,
+#composer {
+	font-size: 18px
+}
+#divcomposer {
+	color: var( --cg60 );
+}
+#composer::before {
+	content: '\F558\20';
+	font-family : rern;
 	font-size: 18px
 }
 #album.disabled {
@@ -420,7 +434,8 @@ i.map.disabled, .map.disabled i {
 /* ---------------------- info scrolling ----------------------*/
 #divartist,
 #divtitle,
-#divalbum {
+#divalbum,
+#divcomposer {
 	position: relative;
 	overflow: hidden;
 }

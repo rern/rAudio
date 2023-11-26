@@ -795,9 +795,12 @@ function infoUpdate( path ) {
 }
 function infoUpdating() {
 	info( {
-		  icon    : 'refresh-library'
-		, title   : 'Library Database'
-		, message : 'Update in progress ...'
+		  icon        : 'refresh-library'
+		, title       : 'Library Database'
+		, message     : 'Update in progress ...<br>&nbsp;'
+		, buttonlabel : 'Stop'
+		, buttoncolor : orange
+		, button      : () => bash( [ 'mpcupdatestop' ] )
 	} );
 }
 function intervalClear() {
@@ -1613,14 +1616,22 @@ function setInfo() {
 		$( '#title' )
 			.text( S.Title )
 			.toggleClass( 'gr', S.state === 'pause' );
-		$( '#album' ).text( S.Album || S.file );
+		var album = S.Album || S.file;
+		$( '#album' ).html( S.Album || S.file );
+		$( '#composer' ).text( S.Composer );
+		$( '#divcomposer' ).toggleClass( 'hide', S.Composer === '' );
 	}
+	var current = {
+		  Artist : $( '#artist' ).text()
+		, Title  : $( '#title' ).text()
+		, Album  : $( '#album' ).text()
+	}
+	var changed = [ 'Artist', 'Title', 'Album' ].some( k => {
+		return prev[ k ] !== current[ k ]
+	} );
 	$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );
-	$( '#album' ).toggleClass( 'disabled', S.Album === '' );
-	var changed = [ 'Artist', 'Title', 'Album' ].some( k => {
-		return prev[ k ] !== S[ k ]
-	} );
+	$( '#album' ).toggleClass( 'disabled', S.Album === '' && S.Composer === '' );
 	if ( changed ) setInfoScroll();
 	var sampling = S.sampling;
 	if ( S.webradio ) {

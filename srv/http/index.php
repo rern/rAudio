@@ -189,6 +189,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<div id="divartist"><span id="artist"></span></div>
 		<div id="divtitle"><span id="title"></i></span></div>
 		<div id="divalbum"><span id="album"></span></div>
+		<div id="divcomposer"><span id="composer"></span></div>
 		<div id="infoicon">
 			<i id="playericon"></i>
 			<span id="progress"></span>
