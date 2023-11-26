@@ -630,46 +630,48 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 	} );
 	banner( 'coverart', I.title, 'Change ...', -1 );
 }
-function infoLibrary() {
-	var keys     = Object.keys( chkdisplay.libmain );
-	keys         = keys.filter( k => k !== '-' );
-	var values   = {}
+function infoDisplayKeyValue( type ) {
+	var json   = chkdisplay[ type ];
+	var keys   = Object.keys( json );
+	keys       = keys.filter( k => k !== '-' );
+	var values = {}
 	keys.forEach( k => { values[ k ] = D[ k ] } );
+	return { keys : keys, values: values, checkbox: Object.values( json ) }
+}
+function infoLibrary() {
+	var kv = infoDisplayKeyValue( 'libmain' );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ '', infoLibraryOption ]
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkdisplay.libmain )
+		, checkbox     : kv.checkbox
 		, checkcolumn  : true
-		, values       : values
+		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $el  = {};
-			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			$el.sd.add( $el.usb ).prop( 'disabled', S.shareddata );
 		}
 		, ok           : displaySave
 	} );
 }
 function infoLibraryOption() {
-	var keys     = Object.keys( chkdisplay.liboption );
-	keys         = keys.filter( k => k !== '-' );
-	var values   = {}
-	keys.forEach( k => { values[ k ] = D[ k ] } );
+	var kv = infoDisplayKeyValue( 'liboption' );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ infoLibrary, '' ]
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkdisplay.liboption )
-		, values       : values
+		, checkbox     : kv.checkbox
+		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $el  = {}
-			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			$( '#infoContent tr' ).css( 'height', '36px' );
 			$( '#infoContent td' ).css( 'width', '294px' );
 			$el.albumyear.prop( 'disabled', ! D.albumbyartist );

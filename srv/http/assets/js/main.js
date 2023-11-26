@@ -104,6 +104,8 @@ var chkdisplay = {
 			, vumeter      : vumeter +'VU meter'
 		, buttons          : 'Buttons'
 			, progress     : 'Progress keep-alive'
+		, '-'              : ''
+			, composername : ico( 'composer' ) +'Composer'
 	}
 	, playlist  : {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
@@ -303,22 +305,20 @@ $( '#power' ).on( 'click', infoPower );
 $( '#displaylibrary' ).on( 'click', infoLibrary );
 $( '#displayplayback' ).on( 'click', function() {
 	if ( 'coverTL' in V ) $( '#coverTL' ).trigger( 'click' );
-	var keys    = Object.keys( chkdisplay.playback );
-	var values  = {}
-	keys.forEach( k => { values[ k ] = D[ k ] } );
+	var kv = infoDisplayKeyValue( 'playback' );
 	info( {
 		  icon         : 'playback'
 		, title        : 'Playback'
 		, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkdisplay.playback )
+		, checkbox     : kv.checkbox
 		, checkcolumn  : true
-		, values       : values
+		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $chk = $( '#infoContent input' );
 			var $el  = {}
-			keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
 			function restoreEnabled() {
 				var list = [ 'time', 'cover', 'covervu', 'vumeter', 'volume' ];
 				if ( D.volumenone ) list.pop();
@@ -394,16 +394,14 @@ $( '#displayplayback' ).on( 'click', function() {
 } );
 $( '#displayplaylist' ).on( 'click', function() {
 	if ( 'coverTL' in V ) $( '#coverTL' ).trigger( 'click' );
-	var keys   = Object.keys( chkdisplay.playlist );
-	var values = {};
-	keys.forEach( k => values[ k ] = D[ k ] );
+	var kv = infoDisplayKeyValue( 'playlist' );
 	info( {
 		  icon         : 'playlist'
 		, title        : 'Playlist'
 		, message      : 'Options:'
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkdisplay.playlist )
-		, values       : values
+		, checkbox     : kv.checkbox
+		, values       : kv.values
 		, checkchanged : true
 		, ok           : displaySave
 	} );
