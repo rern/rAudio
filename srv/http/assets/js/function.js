@@ -1621,7 +1621,7 @@ function setInfo() {
 		var album = S.Album || S.file;
 		$( '#album' ).html( S.Album || S.file );
 		$( '#composer' ).text( S.Composer );
-		$( '#divcomposer' ).toggleClass( 'hide', S.Composer === '' );
+		$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );
 	}
 	var current = {
 		  Artist : $( '#artist' ).text()
@@ -1633,7 +1633,7 @@ function setInfo() {
 	} );
 	$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );
-	$( '#album' ).toggleClass( 'disabled', S.Album === '' && S.Composer === '' );
+	$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 	if ( changed ) setInfoScroll();
 	var sampling = S.sampling;
 	if ( S.webradio ) {
