@@ -186,10 +186,11 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	  .i( 'guide-lyrics', 'lyrics map guide hide' )
 	  .i( 'guide-booklet',  'booklet map guide hide' )?>
 	<div id="info">
-		<div id="divartist"><span id="artist"></span></div>
-		<div id="divtitle"><span id="title"></i></span></div>
-		<div id="divalbum"><span id="album"></span></div>
-		<div id="divcomposer"><span id="composer"></span></div>
+		<div id="divartist"><span id="artist" class="info"></span></div>
+		<div id="divtitle"><span id="title" class="info"></i></span></div>
+		<div id="divalbum"><span id="album" class="info"></span></div>
+		<div id="divcomposer"><span id="composer" class="info"></span></div>
+		<div id="divconductor"><span id="conductor" class="info"></span></div>
 		<div id="infoicon">
 			<i id="playericon"></i>
 			<span id="progress"></span>

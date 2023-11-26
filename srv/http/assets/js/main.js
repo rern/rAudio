@@ -104,8 +104,9 @@ var chkdisplay = {
 			, vumeter      : vumeter +'VU meter'
 		, buttons          : 'Buttons'
 			, progress     : 'Progress keep-alive'
-		, '-'              : ''
-			, composername : ico( 'composer' ) +'Composer'
+		, composername     : ico( 'composer' ) +'<gr>Composer</gr>'
+			, '-'              : ''
+		, conductorname     : ico( 'conductor' ) +'<gr>Conductor</gr>'
 	}
 	, playlist  : {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'

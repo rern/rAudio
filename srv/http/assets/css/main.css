@@ -335,22 +335,6 @@ i.map.disabled, .map.disabled i {
 #page-playback {
 	padding: 120px 0 60px;
 }
-/* ---------------------- info ----------------------*/
-#artist,
-#title,
-#album,
-#composer {
-	display: table; /* allow get width */
-	margin: 0 auto;
-	text-align: center;
-	white-space: nowrap;
-}
-#divtitle {
-	height: 34px;
-	line-height: 34px;
-	font-size: 30px;
-	color: var( --cm );
-}
 .emptyadd {
 	position: absolute;
 	top: 140px;
@@ -363,30 +347,41 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	font-size: 24px;
 }
+/* ---------------------- info ----------------------*/
 #divartist,
 #divalbum,
 #divcomposer {
 	height: 25px;
 }
-#artist,
-#title,
-#album,
-#composer {
-	overflow: hidden;
-	position: relative;
+#divtitle {
+	height: 34px;
+	line-height: 34px;
+	color: var( --cm );
 }
-#artist,
-#album,
-#composer {
-	font-size: 18px
-}
-#divcomposer {
+#divcomposer,
+#divconductor {
 	color: var( --cg60 );
 }
-#composer::before {
+.info {
+	position: relative;
+	display: table; /* allow get width */
+	margin: 0 auto;
+	text-align: center;
+	font-size: 18px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+#title {
+	font-size: 30px;
+}
+#composer::before,
+#conductor::before {
 	content: '\F558\20';
 	font-family : rern;
 	font-size: 18px
+}
+#conductor::before {
+	content: '\F559\20';
 }
 #album.disabled {
 	font-weight: 300;

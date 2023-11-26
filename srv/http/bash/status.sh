@@ -160,7 +160,7 @@ fi
 
 (( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 
-filter='Album AlbumArtist Artist Composer audio bitrate duration file Name state Time Title'
+filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file Name state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
 songpos=$( mpc status %songpos% )                       # mpc songpos : start at 1
@@ -183,7 +183,7 @@ for line in "${lines[@]}"; do
 		duration | playlistlength | state | Time )
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
-		Album | AlbumArtist | Artist | Composer | Name | Title )
+		Album | AlbumArtist | Artist | Composer | Conductor | Name | Title )
 			printf -v $key '%s' "$( stringEscape $val )"
 			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
@@ -380,19 +380,18 @@ else
 	fi
 	ext=${ext^^}
 	# missing id3tags
-	[[ ! $Album ]] && Album=
 	[[ ! $AlbumArtist ]] && AlbumArtist=$Artist
 	[[ ! $Artist ]] && Artist=$AlbumArtist
 	[[ ! $Artist ]] && dirname=${file%\/*} && Artist=${dirname/*\/}
-	[[ ! $Composer ]] && Composer=
 	[[ ! $Title ]] && filename=${file/*\/} && Title=${filename%.*}
 ########
 	status+='
-, "Album"    : "'$Album'"
-, "Artist"   : "'$Artist'"
-, "Composer" : "'$Composer'"
-, "Time"     : '$Time'
-, "Title"    : "'$Title'"'
+, "Album"     : "'$Album'"
+, "Artist"    : "'$Artist'"
+, "Composer"  : "'$Composer'"
+, "Conductor" : "'$Conductor'"
+, "Time"      : '$Time'
+, "Title"     : "'$Title'"'
 fi
 
 samplingfile=$dirshm/sampling/$( tr -d ' "`?/#&'"'_.\-" <<< $file )

@@ -1622,6 +1622,8 @@ function setInfo() {
 		$( '#album' ).html( S.Album || S.file );
 		$( '#composer' ).text( S.Composer );
 		$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );
+		$( '#conductor' ).text( S.Conductor );
+		$( '#divconductor' ).toggleClass( 'hide', ! D.conductorname || S.Conductor === '' );
 	}
 	var current = {
 		  Artist : $( '#artist' ).text()
