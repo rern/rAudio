@@ -8,7 +8,7 @@ alias=r1
 grep -q connect $dirbash/websocket-server.py && websocketrestart=1
 
 file=$dirmpdconf/conf/camilladsp.conf
-if [[ ! -e $file ]]; then
+if [[ -e /usr/bin/camilladsp && ! -e $file ]]; then
 	echo 'audio_output {
 	name           "CamillaDSP"
 	device         "hw:Loopback,1"
@@ -95,7 +95,7 @@ if ! grep -q plclear $file; then
 ' $file
 fi
 
-if [[ ! -e $dirsystem/localbrowser.conf ]]; then
+if [[ ! -e /boot/kernel.img && ! -e $dirsystem/localbrowser.conf ]]; then
 	echo "\
 rotate=0
 zoom=100
