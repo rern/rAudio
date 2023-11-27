@@ -1613,7 +1613,6 @@ function setInfo() {
 			blinkDot();
 			$( '#album' ).text( S.Album || url );
 		}
-		$( '#divcomposer, #divconductor' ).addClass( 'hide' );
 	} else {
 		$( '#artist' ).text( S.Artist );
 		$( '#title' )
@@ -1622,10 +1621,10 @@ function setInfo() {
 		var album = S.Album || S.file;
 		$( '#album' ).html( S.Album || S.file );
 		$( '#composer' ).text( S.Composer );
-		$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );
 		$( '#conductor' ).text( S.Conductor );
-		$( '#divconductor' ).toggleClass( 'hide', ! D.conductorname || S.Conductor === '' );
 	}
+	$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );
+	$( '#divconductor' ).toggleClass( 'hide', ! D.conductorname || S.Conductor === '' );
 	var current = {
 		  Artist : $( '#artist' ).text()
 		, Title  : $( '#title' ).text()
