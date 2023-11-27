@@ -189,7 +189,7 @@ for line in "${lines[@]}"; do
 		file )
 			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
-			file=$( stringEscape $val )
+			file=$( stringEscape "$val" )
 			;;   # escape " for json
 		random | repeat | single )
 			[[ $val == 1 ]] && tf=true || tf=false
@@ -372,10 +372,12 @@ $radiosampling" > $dirshm/radio
 		fi
 	fi
 else
+	mpdpath=$( dirname "$file" )
+	path="/mnt/MPD/$mpdpath"
+	[[ -e "$path/booklet.pdf" ]] && booklet=true
 	ext=${file/*.}
 	if [[ ${ext:0:9} == cue/track ]]; then
-		cuefile=$( dirname "$file" )
-		cuesrc=$( grep -m1 ^FILE "/mnt/MPD/$cuefile" | cut -d'"' -f2 )
+		cuesrc=$( grep -m1 ^FILE "$path" | cut -d'"' -f2 )
 		ext=${cuesrc/*.}
 	fi
 	ext=${ext^^}
@@ -388,6 +390,7 @@ else
 	status+='
 , "Album"     : "'$Album'"
 , "Artist"    : "'$Artist'"
+, "booklet"   : '$booklet'
 , "Composer"  : "'$Composer'"
 , "Conductor" : "'$Conductor'"
 , "Time"      : '$Time'
@@ -468,7 +471,7 @@ else
 			if [[ $ext == DSF || $ext == DFF ]]; then
 				# DSF: byte# 56+4 ? DSF: byte# 60+4
 				[[ $ext == DSF ]] && byte=56 || byte=60;
-				[[ $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
+				[[ $cuesrc ]] && file="$( dirname "$mpdpath" )/$cuesrc"
 				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
 				bitrate=$( calc 2 $dsd*44100/1000000 )

@@ -1619,7 +1619,8 @@ function setInfo() {
 			.text( S.Title )
 			.toggleClass( 'gr', S.state === 'pause' );
 		var album = S.Album || S.file;
-		$( '#album' ).html( S.Album || S.file );
+		if ( S.booklet ) album += ' '+ ico( 'booklet gr' );
+		$( '#album' ).html( album );
 		$( '#composer' ).text( S.Composer );
 		$( '#conductor' ).text( S.Conductor );
 	}

@@ -335,7 +335,7 @@ statePlay() {
 	grep -q -m1 '^state.*play' $dirshm/status && return 0
 }
 stringEscape() {
-	echo ${@//\"/\\\"}
+	echo "${@//\"/\\\"}"
 }
 volumeCardControl() {
 	local card control volume

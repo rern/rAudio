@@ -509,27 +509,20 @@ $( '#album, #guide-booklet' ).on( 'click', function() {
 	if ( localhost ) return
 	
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
-	if ( [ 'NAS', 'SD/', 'USB' ].includes( S.file.slice( 0, 3 ) ) ) {
-		var urlbooklet = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
-		var newwindow  = window.open( '', '_blank' );  // fix: popup blocked on mobile
-		bash( [ 'booklet', urlbooklet, 'CMD FILE' ], url => {
-			if ( typeof Android !== 'object' ) {
-				newwindow.location.href = url || urllastfm;
-			} else {
-				if ( url ) {
-					info( {
-						  icon    : 'booklet'
-						, title   : 'Album Booklet'
-						, message : ico( 'warning' ) +' View on Android with <wh>rAudio</wh> on <wh>Firefox</wh>.'
-									+'<br><br>Or continue with album on <wh>Last.fm</wh> ?'
-						, oklabel : ico( 'lastfm' ) +'Album'
-						, ok      : () => window.open( urllastfm, '_blank' )
-					} );
-				} else {
-					window.open( urllastfm, '_blank' );
-				}
-			}
-		} );
+	if ( S.booklet ) {
+		if ( typeof Android !== 'object' ) {
+			var newwindow  = window.open( '', '_blank' ); // fix: popup blocked on mobile
+			newwindow.location.href = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
+		} else {
+			info( {
+				  icon    : 'booklet'
+				, title   : 'Album Booklet'
+				, message : ico( 'warning' ) +' View on Android with <wh>rAudio</wh> on <wh>Firefox</wh>.'
+						  +'<br><br>Or continue with album on <wh>Last.fm</wh> ?'
+				, oklabel : ico( 'lastfm' ) +'Album'
+				, ok      : () => window.open( urllastfm, '_blank' )
+			} );
+		}
 	} else {
 		window.open( urllastfm, '_blank' );
 	}
