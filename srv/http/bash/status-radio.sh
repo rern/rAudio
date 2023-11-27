@@ -10,6 +10,7 @@ pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
 sampling="$pos/$total • ${tmpradio[3]}"
 song=$(( $pos - 1 ))
+grep -q radioelapsed.*true $dirsystem/display.json && radioelapsed=1
 
 case $id in
 	flac )   id=0;;
@@ -38,54 +39,42 @@ case $id in
 	opera )               id=409;; # Opéra
 esac
 
-radiofranceData() {
-	metadata=$( curl -sGk https://api.radiofrance.fr/livemeta/pull/$id )
-}
-radioparadiseData() {
-	readarray -t metadata <<< $( curl -sGk -m 5 \
-		--data-urlencode "chan=$id" \
-		https://api.radioparadise.com/api/now_playing \
-		| jq -r .artist,.title,.album,.cover,.time \
-		| sed 's/^null$//' )
-}
 metadataGet() {
 	if [[ $id < 4 ]]; then
 		radioparadise=1
 		icon=radioparadise
-		radioparadiseData
+		json=$( curl -sGk -m 5 --data-urlencode "chan=$id" https://api.radioparadise.com/api/now_playing )
 	else
 		icon=radiofrance
-		radiofranceData
+		json=$( curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id )
 	fi
-	if [[ ! $metadata ]]; then
+	if [[ ! $json ]]; then
 		for i in {1..10}; do
 			sleep 1
 			metadataGet
-			[[ $metadata ]] && break
+			[[ $json ]] && break
 		done
-		[[ ! $metadata ]] && notify $icon Metadata 'Not available' && exit
-		return
+		[[ ! $json ]] && notify $icon Metadata 'Not available' && return
 	fi
+	
 	if [[ $radioparadise ]]; then
-		artist=$( stringEscape ${metadata[0]} )
-		title=$( stringEscape ${metadata[1]} )
-		album=$( stringEscape ${metadata[2]} )
-		coverurl=${metadata[3]}
+		readarray -t metadata <<< $( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
 		countdown=${metadata[4]} # countdown
 	else
-		levels=$( jq .levels[0] <<< $data )
+		levels=$( jq .levels[0] <<< $json )
 		position=$( jq .position <<< $levels )
 		item=$( jq .items[$position] <<< $levels )
-		step=$( jq .steps[$item] <<< $data )
-		now=$( date +%s )
+		step=$( jq .steps[$item] <<< $json )
+		readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual,.end <<< $step | sed 's/^null$//' )
 		end=$( jq .end <<< $step )
+		now=$( date +%s )
 		countdown=$(( end - now ))
-		artist=$( jq .authors <<< $step )
-		title=$( jq .title <<< $step )
-		album=$( jq .titreAlbum <<< $step )
-		coverurl=$( jq .visual <<< $step )
-		countdown=$( jq .visual <<< $step )
 	fi
+	artist=$( stringEscape ${metadata[0]} )
+	title=$( stringEscape ${metadata[1]} )
+	album=$( stringEscape ${metadata[2]} )
+	coverurl=${metadata[3]}
+	[[ ! $artist ]] && artist=$( jq -r .composers <<< $step )
 	
 	if [[ ! $countdown ]]; then
 		countdown=5
@@ -97,7 +86,7 @@ metadataGet() {
 		coverart=/data/shm/webradio/$name.jpg
 		curl -s $coverurl -o $dirshm/webradio/$name.jpg
 	fi
-	elapsed=$( mpcElapsed )
+	[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
 	data='{
   "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
