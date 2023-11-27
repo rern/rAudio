@@ -921,9 +921,11 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
+	loader();
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
+		loaderHide();
 		var off = action === 'off';
 		info( {
 			  icon    : 'power'
@@ -935,7 +937,7 @@ function infoPowerCommand( action ) {
 			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
 			, okcolor : off ? red : orange
 			, ok      : () => {
-				bash( [ 'power.sh', action, 1  ] );
+				bash( [ 'power.sh', action, 'confirm' ] );
 				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
 			}
 		} );
