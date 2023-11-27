@@ -16,42 +16,30 @@ case $id in
 	mellow ) id=1;;
 	rock )   id=2;;
 	global ) id=3;;
-	fip )           id=7;;
-	fipelectro )    id=74;;
-	fipgroove )     id=66;;
-	fipjazz )       id=65;;
-	fipnouveautes ) id=70;;
-	fippop )        id=78;;
-	fipreggae )     id=71;;
-	fiprock )       id=64;;
-	fipworld )      id=69;;
-	francemusique )       id=4;;
-	baroque )             id=408;;
-	classiqueplus )       id=402;;
-	concertsradiofrance ) id=403;;
-	easyclassique )       id=401;;
-	labo )                id=407;;
-	lacontemporaine )     id=406;;
-	lajazz )              id=405;;
-	ocoramonde )          id=404;;
-	opera )               id=409;;
+	fip )           id=7;;  # FIP
+	fipelectro )    id=74;; # Electro
+	fipgroove )     id=66;; # Groove
+	fipjazz )       id=65;; # Jazz
+	fipnouveautes ) id=70;; # Nouveautés
+	fippop )        id=78;; # Pop
+	fipreggae )     id=71;; # Reggae
+	fiprock )       id=64;; # Rock
+	fipworld )      id=69;; # Monde
+	
+	francemusique )       id=4;;   # France Musique
+	baroque )             id=408;; # La Baroque
+	classiqueplus )       id=402;; # Classique Plus
+	concertsradiofrance ) id=403;; # Concerts Radio France
+	easyclassique )       id=401;; # Classique Easy
+	labo )                id=407;; # Musique de Films
+	lacontemporaine )     id=406;; # La Contemporaine
+	lajazz )              id=405;; # La Jazz
+	ocoramonde )          id=404;; # Ocora Musiques du Monde
+	opera )               id=409;; # Opéra
 esac
 
 radiofranceData() {
-	readarray -t metadata <<< $( curl -sGk -m 5 \
-		--data-urlencode "operationName=Now" \
-		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \
-		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
-		--data-urlencode "v=$( date +%s )" \
-		https://www.fip.fr/latest/api/graphql \
-		| jq -r \
- .data.now.playing_item.title\
-,.data.now.playing_item.subtitle\
-,.data.now.song.album\
-,.data.now.playing_item.cover\
-,.data.now.playing_item.end_time\
-,.data.now.server_time \
-		| sed 's/""/"/g; s/^null$//' ) # trim 2 x doublequotes and null(jq empty value)
+	metadata=$( curl -sGk https://api.radiofrance.fr/livemeta/pull/$id )
 }
 radioparadiseData() {
 	readarray -t metadata <<< $( curl -sGk -m 5 \
@@ -62,6 +50,7 @@ radioparadiseData() {
 }
 metadataGet() {
 	if [[ $id < 4 ]]; then
+		radioparadise=1
 		icon=radioparadise
 		radioparadiseData
 	else
@@ -77,12 +66,26 @@ metadataGet() {
 		[[ ! $metadata ]] && notify $icon Metadata 'Not available' && exit
 		return
 	fi
-	
-	artist=$( stringEscape ${metadata[0]} )
-	title=$( stringEscape ${metadata[1]} )
-	album=$( stringEscape ${metadata[2]} )
-	coverurl=${metadata[3]}
-	countdown=${metadata[4]} # countdown
+	if [[ $radioparadise ]]; then
+		artist=$( stringEscape ${metadata[0]} )
+		title=$( stringEscape ${metadata[1]} )
+		album=$( stringEscape ${metadata[2]} )
+		coverurl=${metadata[3]}
+		countdown=${metadata[4]} # countdown
+	else
+		levels=$( jq .levels[0] <<< $data )
+		position=$( jq .position <<< $levels )
+		item=$( jq .items[$position] <<< $levels )
+		step=$( jq .steps[$item] <<< $data )
+		now=$( date +%s )
+		end=$( jq .end <<< $step )
+		countdown=$(( end - now ))
+		artist=$( jq .authors <<< $step )
+		title=$( jq .title <<< $step )
+		album=$( jq .titreAlbum <<< $step )
+		coverurl=$( jq .visual <<< $step )
+		countdown=$( jq .visual <<< $step )
+	fi
 	
 	if [[ ! $countdown ]]; then
 		countdown=5
