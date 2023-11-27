@@ -17,6 +17,7 @@ case $id in
 	mellow ) id=1;;
 	rock )   id=2;;
 	global ) id=3;;
+# list: https://www.radiofrance.fr/data/streams
 	fip )           id=7;;  # FIP
 	fipelectro )    id=74;; # Electro
 	fipgroove )     id=66;; # Groove
@@ -26,7 +27,6 @@ case $id in
 	fipreggae )     id=71;; # Reggae
 	fiprock )       id=64;; # Rock
 	fipworld )      id=69;; # Monde
-	
 	francemusique )       id=4;;   # France Musique
 	baroque )             id=408;; # La Baroque
 	classiqueplus )       id=402;; # Classique Plus
