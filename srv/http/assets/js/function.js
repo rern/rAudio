@@ -1613,6 +1613,7 @@ function setInfo() {
 			blinkDot();
 			$( '#album' ).text( S.Album || url );
 		}
+		$( '#divcomposer, #divconductor' ).addClass( 'hide' );
 	} else {
 		$( '#artist' ).text( S.Artist );
 		$( '#title' )
