@@ -26,6 +26,7 @@ case $id in
 	fipreggae )     id=71;; # Reggae
 	fiprock )       id=64;; # Rock
 	fipworld )      id=69;; # Monde
+	
 	francemusique )       id=4;;   # France Musique
 	baroque )             id=408;; # La Baroque
 	classiqueplus )       id=402;; # Classique Plus

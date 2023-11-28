@@ -4,7 +4,7 @@
 
 args2var "$1"
 
-if [[ $( < $dirshm/player ) == upnp ]]; then
+if playerActive upnp; then
 	upnp=1
 	name=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
 	localfile=$dirshm/local/${name,,}

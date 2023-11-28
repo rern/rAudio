@@ -247,6 +247,9 @@ packageActive() {
 		(( i++ ))
 	done
 }
+playerActive() {
+	[[ $( < $dirshm/player ) == $1 ]] && return 0
+}
 pushData() {
 	local channel data ip json path sharedip updatedone webradiocopy
 	channel=$1
@@ -372,7 +375,7 @@ volumeGet() {
 		elif inOutputConf mixer_type.*software; then
 			mixersoftware=1
 		fi
-		if [[ $mixersoftware && $( < $dirshm/player ) == mpd ]]; then
+		if [[ $mixersoftware ]] && playerActive mpd; then
 			val=$( mpc status %volume% | tr -dc [0-9] )
 		elif [[ -e $dirshm/amixercontrol ]]; then
 			card=$( < $dirsystem/asoundcard )

@@ -9,7 +9,7 @@ if [[ $1 == reboot ]]; then
 	wait=', "wait": '${sec[C]}
 fi
 pushData power '{ "type": "'$1'"'$wait' }'
-[[ $( < $dirshm/player ) == upnp ]] && $dirbash/cmd.sh playerstop
+playerActive upnp && $dirbash/cmd.sh playerstop
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )
 	ipclients=$( grep -v $ipserver $filesharedip )

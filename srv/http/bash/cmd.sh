@@ -5,27 +5,11 @@ dirimg=/srv/http/assets/img
 
 args2var "$1"
 
-playerStart() {
-	local player service
-	player=$( < $dirshm/player )
-	mpc -q stop
-	radioStop
-	case $player in
-		airplay )   service=shairport-sync;;
-		bluetooth ) service=bluetoothhd;;
-		spotify )   service=spotifyd;;
-		upnp )      service=upmpdcli;;
-	esac
-	if [[ $service ]]; then
-		for pid in $( pgrep $service ); do
-			ionice -c 0 -n 0 -p $pid &> /dev/null 
-			renice -n -19 -p $pid &> /dev/null
-		done
-	fi
-	pushData player '{ "player": "'$player'", "active": true }'
-}
 plAddPlay() {
-	[[ ${ACTION: -4} == play ]] && mpc -q play $pos
+	if [[ ${ACTION: -4} == play ]]; then
+		! playerActive mpd && playerStop
+		mpc -q play $pos
+	fi
 	pushPlaylist add
 }
 plAddPosition() {
@@ -64,6 +48,54 @@ plAddRandom() {
 		> $dirsystem/librandom
 	fi
 	(( $tail > 1 )) || plAddRandom
+}
+playerStart() {
+	local player service
+	player=$( < $dirshm/player )
+	mpc -q stop
+	radioStop
+	case $player in
+		airplay )   service=shairport-sync;;
+		bluetooth ) service=bluetoothhd;;
+		spotify )   service=spotifyd;;
+		upnp )      service=upmpdcli;;
+	esac
+	if [[ $service ]]; then
+		for pid in $( pgrep $service ); do
+			ionice -c 0 -n 0 -p $pid &> /dev/null 
+			renice -n -19 -p $pid &> /dev/null
+		done
+	fi
+	pushData player '{ "player": "'$player'", "active": true }'
+}
+playerStop() {
+	local player
+	player=$( < $dirshm/player )
+	echo mpd > $dirshm/player
+	[[ -e $dirsystem/scrobble && $ELAPSED ]] && echo $ELAPSED > $dirshm/elapsed
+	$dirbash/status-push.sh
+	case $player in
+		airplay )
+			shairportStop
+			;;
+		bluetooth )
+			rm -f $dirshm/bluetoothdest
+			systemctl restart bluetooth
+			;;
+		snapcast )
+			$dirbash/snapcast.sh stop
+			;;
+		spotify )
+			rm -f $dirshm/spotify/start
+			systemctl restart spotifyd
+			;;
+		upnp )
+			systemctl restart upmpdcli
+			mpc -q clear
+			$dirbash/status-push.sh
+			;;
+	esac
+	pushData player '{ "player": "'$player'", "active": false }'
 }
 plClear() {
 	mpc -q clear
@@ -411,7 +443,7 @@ lyrics )
 		cat "$lyricsfile"
 	else
 		. $dirsystem/lyrics.conf
-		if [[ $embedded && $( < $dirshm/player ) == mpd ]]; then
+		if [[ $embedded ]] && playerActive mpd; then
 			file=$( getVar file $dirshm/status )
 			if [[ ${file/\/*} =~ ^(USB|NAS|SD)$ ]]; then
 				file="/mnt/MPD/$file"
@@ -489,11 +521,7 @@ mpcoption )
 	;;
 mpcplayback )
 	if [[ ! $ACTION ]]; then
-		player=$( < $dirshm/player )
-		if [[ $( < $dirshm/player ) != mpd ]]; then
-			$dirbash/cmd.sh playerstop
-			exit
-		fi
+		! playerActive mpd && $dirbash/cmd.sh playerstop && exit
 		
 		if statePlay; then
 			grep -q -m1 webradio=true $dirshm/status && ACTION=stop || ACTION=pause
@@ -643,32 +671,7 @@ playerstart )
 	playerStart
 	;;
 playerstop )
-	player=$( < $dirshm/player )
-	echo mpd > $dirshm/player
-	[[ -e $dirsystem/scrobble ]] && echo $ELAPSED > $dirshm/elapsed
-	$dirbash/status-push.sh
-	case $player in
-		airplay )
-			shairportStop
-			;;
-		bluetooth )
-			rm -f $dirshm/bluetoothdest
-			systemctl restart bluetooth
-			;;
-		snapcast )
-			$dirbash/snapcast.sh stop
-			;;
-		spotify )
-			rm -f $dirshm/spotify/start
-			systemctl restart spotifyd
-			;;
-		upnp )
-			systemctl restart upmpdcli
-			mpc -q clear
-			$dirbash/status-push.sh
-			;;
-	esac
-	pushData player '{ "player": "'$player'", "active": false }'
+	playerStop
 	;;
 playlist )
 	[[ $REPLACE ]] && plClear
@@ -731,7 +734,7 @@ screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
 shairport )
-	[[ $( < $dirshm/player ) != airplay ]] && echo airplay > $dirshm/player && playerStart
+	! playerActive airplay && echo airplay > $dirshm/player && playerStart
 	systemctl start shairport
 	$dirbash/status-push.sh
 	;;

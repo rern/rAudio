@@ -52,7 +52,7 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
-	[[ $( < $dirshm/player ) == mpd ]] && mpc -q stop || $dirbash/cmd.sh playerstop
+	playerActive mpd && mpc -q stop || $dirbash/cmd.sh playerstop
 	enableFlagSet
 	if [[ $ON ]]; then
 		if grep -q configs-bt /etc/default/camilladsp && [[ ! -e $dirshm/btreceiver ]]; then
@@ -335,7 +335,12 @@ shairport-sync | spotifyd | upmpdcli )
 	if [[ $ON ]]; then
 		serviceRestartEnable
 	else
-		[[ $( < $dirshm/player ) =~ (airplay|spotify|upnp) ]] && $dirbash/cmd.sh playerstop
+		case $CMD in
+			shairport-sync ) player=airplay;;
+			spotifyd )       player=spotify;;
+			upmpdcli )       player=upnp;;
+		esac
+		playerActive $player && $dirbash/cmd.sh playerstop
 		systemctl disable --now $CMD
 	fi
 	pushRefresh

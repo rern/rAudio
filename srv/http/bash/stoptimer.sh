@@ -23,7 +23,7 @@ $volume
 0
 $control
 $card"
-[[ $( < $dirshm/player ) == mpd ]] && $dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION' || $dirbash/cmd.sh playerstop
+playerActive mpd && $dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION' || $dirbash/cmd.sh playerstop
 $dirbash/cmd.sh "volumesetat
 0
 $control
