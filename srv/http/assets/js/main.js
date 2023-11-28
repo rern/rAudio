@@ -104,6 +104,9 @@ var chkdisplay = {
 			, vumeter      : vumeter +'VU meter'
 		, buttons          : 'Buttons'
 			, progress     : 'Progress keep-alive'
+		, composername     : ico( 'composer' ) +'<gr>Composer</gr>'
+			, '-'              : ''
+		, conductorname     : ico( 'conductor' ) +'<gr>Conductor</gr>'
 	}
 	, playlist  : {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
@@ -197,10 +200,8 @@ $( '#debug' ).on( 'click', function() {
 	
 	$( '#data' ).html( highlightJSON( S ) )
 	$( '#button-data, #data' ).removeClass( 'hide' );
-	$( '.page' ).addClass( 'hide' );
 } );
 $( '#button-data' ).on( 'click', function() {
-	$( '#page-'+ V.page ).removeClass( 'hide' );
 	$( '#button-data, #data' ).addClass( 'hide' );
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
@@ -303,22 +304,20 @@ $( '#power' ).on( 'click', infoPower );
 $( '#displaylibrary' ).on( 'click', infoLibrary );
 $( '#displayplayback' ).on( 'click', function() {
 	if ( 'coverTL' in V ) $( '#coverTL' ).trigger( 'click' );
-	var keys    = Object.keys( chkdisplay.playback );
-	var values  = {}
-	keys.forEach( k => { values[ k ] = D[ k ] } );
+	var kv = infoDisplayKeyValue( 'playback' );
 	info( {
 		  icon         : 'playback'
 		, title        : 'Playback'
 		, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkdisplay.playback )
+		, checkbox     : kv.checkbox
 		, checkcolumn  : true
-		, values       : values
+		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $chk = $( '#infoContent input' );
 			var $el  = {}
-			keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
 			function restoreEnabled() {
 				var list = [ 'time', 'cover', 'covervu', 'vumeter', 'volume' ];
 				if ( D.volumenone ) list.pop();
@@ -394,16 +393,14 @@ $( '#displayplayback' ).on( 'click', function() {
 } );
 $( '#displayplaylist' ).on( 'click', function() {
 	if ( 'coverTL' in V ) $( '#coverTL' ).trigger( 'click' );
-	var keys   = Object.keys( chkdisplay.playlist );
-	var values = {};
-	keys.forEach( k => values[ k ] = D[ k ] );
+	var kv = infoDisplayKeyValue( 'playlist' );
 	info( {
 		  icon         : 'playlist'
 		, title        : 'Playlist'
 		, message      : 'Options:'
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkdisplay.playlist )
-		, values       : values
+		, checkbox     : kv.checkbox
+		, values       : kv.values
 		, checkchanged : true
 		, ok           : displaySave
 	} );
@@ -510,27 +507,20 @@ $( '#album, #guide-booklet' ).on( 'click', function() {
 	if ( localhost ) return
 	
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
-	if ( [ 'NAS', 'SD/', 'USB' ].includes( S.file.slice( 0, 3 ) ) ) {
-		var urlbooklet = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
-		var newwindow  = window.open( '', '_blank' );  // fix: popup blocked on mobile
-		bash( [ 'booklet', urlbooklet, 'CMD FILE' ], url => {
-			if ( typeof Android !== 'object' ) {
-				newwindow.location.href = url || urllastfm;
-			} else {
-				if ( url ) {
-					info( {
-						  icon    : 'booklet'
-						, title   : 'Album Booklet'
-						, message : ico( 'warning' ) +' View on Android with <wh>rAudio</wh> on <wh>Firefox</wh>.'
-									+'<br><br>Or continue with album on <wh>Last.fm</wh> ?'
-						, oklabel : ico( 'lastfm' ) +'Album'
-						, ok      : () => window.open( urllastfm, '_blank' )
-					} );
-				} else {
-					window.open( urllastfm, '_blank' );
-				}
-			}
-		} );
+	if ( S.booklet ) {
+		if ( typeof Android !== 'object' ) {
+			var newwindow  = window.open( '', '_blank' ); // fix: popup blocked on mobile
+			newwindow.location.href = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
+		} else {
+			info( {
+				  icon    : 'booklet'
+				, title   : 'Album Booklet'
+				, message : ico( 'warning' ) +' View on Android with <wh>rAudio</wh> on <wh>Firefox</wh>.'
+						  +'<br><br>Or continue with album on <wh>Last.fm</wh> ?'
+				, oklabel : ico( 'lastfm' ) +'Album'
+				, ok      : () => window.open( urllastfm, '_blank' )
+			} );
+		}
 	} else {
 		window.open( urllastfm, '_blank' );
 	}

@@ -13,7 +13,7 @@
 . /srv/http/bash/common.sh
 
 ##### start
-if [[ $( < $dirshm/player ) != spotify ]]; then
+if ! playerActive spotify; then
 	echo spotify > $dirshm/player
 	$dirbash/cmd.sh playerstart
 	exit

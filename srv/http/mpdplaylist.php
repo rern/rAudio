@@ -100,7 +100,10 @@ function htmlSavedPlaylist() {
 	exec( 'mpc lsplaylists'
 		, $lists );
 	$count = count( $lists );
-	if ( ! $count ) return [ 'count' => 0 ];
+	if ( ! $count ) {
+		echo json_encode( [ 'count' => 0 ] );
+		exit;
+	}
 	
 	foreach( $lists as $list ) {
 		$each       = ( object )[];

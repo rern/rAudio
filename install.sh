@@ -95,14 +95,15 @@ if ! grep -q plclear $file; then
 ' $file
 fi
 
-if [[ ! -e /boot/kernel.img && ! -e $dirsystem/localbrowser.conf ]]; then
+file=$dirsystem/localbrowser.conf
+if [[ ! -e /boot/kernel.img && ! -e $file ]]; then
 	echo "\
 rotate=0
 zoom=100
 screenoff=0
 onwhileplay=
 cursor=
-runxinitrcd" > $dirsystem/localbrowser.conf
+runxinitrcd" > $file
 fi
 
 #-------------------------------------------------------------------------------

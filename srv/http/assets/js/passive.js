@@ -219,6 +219,8 @@ function psMpdRadio( data ) {
 function psMpdUpdate( data ) {
 	if ( 'type' in data ) {
 		data.type === 'mpd' ? S.updating_db = true : S.updatingdab = true;
+	} else if ( 'stop' in data ) {
+		S.updating_db = false;
 	} else if ( 'done' in data ) {
 		S.updating_db = false;
 		S.updatingdab = false;

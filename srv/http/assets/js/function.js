@@ -630,46 +630,48 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 	} );
 	banner( 'coverart', I.title, 'Change ...', -1 );
 }
-function infoLibrary() {
-	var keys     = Object.keys( chkdisplay.libmain );
-	keys         = keys.filter( k => k !== '-' );
-	var values   = {}
+function infoDisplayKeyValue( type ) {
+	var json   = chkdisplay[ type ];
+	var keys   = Object.keys( json );
+	keys       = keys.filter( k => k !== '-' );
+	var values = {}
 	keys.forEach( k => { values[ k ] = D[ k ] } );
+	return { keys : keys, values: values, checkbox: Object.values( json ) }
+}
+function infoLibrary() {
+	var kv = infoDisplayKeyValue( 'libmain' );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ '', infoLibraryOption ]
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkdisplay.libmain )
+		, checkbox     : kv.checkbox
 		, checkcolumn  : true
-		, values       : values
+		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $el  = {};
-			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			$el.sd.add( $el.usb ).prop( 'disabled', S.shareddata );
 		}
 		, ok           : displaySave
 	} );
 }
 function infoLibraryOption() {
-	var keys     = Object.keys( chkdisplay.liboption );
-	keys         = keys.filter( k => k !== '-' );
-	var values   = {}
-	keys.forEach( k => { values[ k ] = D[ k ] } );
+	var kv = infoDisplayKeyValue( 'liboption' );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ infoLibrary, '' ]
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkdisplay.liboption )
-		, values       : values
+		, checkbox     : kv.checkbox
+		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $el  = {}
-			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			$( '#infoContent tr' ).css( 'height', '36px' );
 			$( '#infoContent td' ).css( 'width', '294px' );
 			$el.albumyear.prop( 'disabled', ! D.albumbyartist );
@@ -775,11 +777,7 @@ function infoTitle() {
 }
 function infoUpdate( path ) {
 	if ( S.updating_db ) {
-		info( {
-			  icon    : 'refresh-library'
-			, title   : 'Library Database'
-			, message : 'Update in progress ...'
-		} );
+		infoUpdating();
 		return
 	}
 	
@@ -795,6 +793,16 @@ function infoUpdate( path ) {
 			}
 		}
 		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD DIR' ] )
+	} );
+}
+function infoUpdating() {
+	info( {
+		  icon        : 'refresh-library'
+		, title       : 'Library Database'
+		, message     : 'Update in progress ...<br>&nbsp;'
+		, buttonlabel : 'Stop'
+		, buttoncolor : orange
+		, button      : () => bash( [ 'mpcupdatestop' ] )
 	} );
 }
 function intervalClear() {
@@ -1593,31 +1601,43 @@ function setInfo() {
 		, Title  : $( '#title' ).text()
 		, Album  : $( '#album' ).text()
 	}
+	var dots = '·&ensp;·&ensp;·';
 	if ( S.webradio ) {
 		var url = S.file.replace( /#charset=.*/, '' );
 		if ( S.state !== 'play' ) {
 			$( '#artist' ).text( S.station );
-			$( '#title' ).html( '·&ensp;·&ensp;·' );
+			$( '#title' ).html( dots );
 			$( '#album' ).text( url );
 		} else {
-			$( '#artist' ).text( S.Artist || ( ! S.Artist && ! S.Title ? S.station : '' ) );
+			$( '#artist' ).text( S.Artist || S.station );
 			$( '#title' ).html( S.Title || V.blinkdot );
 			blinkDot();
 			$( '#album' ).text( S.Album || url );
 		}
 	} else {
-		$( '#artist' ).text( S.Artist );
+		$( '#artist' ).text( S.Artist || dots );
 		$( '#title' )
-			.text( S.Title )
+			.text( S.Title || dots )
 			.toggleClass( 'gr', S.state === 'pause' );
-		$( '#album' ).text( S.Album || S.file );
+		var album = S.Album || S.file;
+		if ( S.booklet ) album += ' '+ ico( 'booklet gr' );
+		$( '#album' ).html( album );
+		$( '#composer' ).text( S.Composer );
+		$( '#conductor' ).text( S.Conductor );
 	}
+	$( '#divcomposer' ).toggleClass( 'hide', ! D.composername || S.Composer === '' );
+	$( '#divconductor' ).toggleClass( 'hide', ! D.conductorname || S.Conductor === '' );
+	var current = {
+		  Artist : $( '#artist' ).text()
+		, Title  : $( '#title' ).text()
+		, Album  : $( '#album' ).text()
+	}
+	var changed = [ 'Artist', 'Title', 'Album' ].some( k => {
+		return prev[ k ] !== current[ k ]
+	} );
 	$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', S.Album === '' );
-	var changed = [ 'Artist', 'Title', 'Album' ].some( k => {
-		return prev[ k ] !== S[ k ]
-	} );
 	if ( changed ) setInfoScroll();
 	var sampling = S.sampling;
 	if ( S.webradio ) {

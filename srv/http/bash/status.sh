@@ -160,7 +160,7 @@ fi
 
 (( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 
-filter='Album AlbumArtist Artist audio bitrate duration file Name state Time Title'
+filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file Name state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
 songpos=$( mpc status %songpos% )                       # mpc songpos : start at 1
@@ -183,13 +183,13 @@ for line in "${lines[@]}"; do
 		duration | playlistlength | state | Time )
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
-		Album | AlbumArtist | Artist | Name | Title )
+		Album | AlbumArtist | Artist | Composer | Conductor | Name | Title )
 			printf -v $key '%s' "$( stringEscape $val )"
 			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
 			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
-			file=$( stringEscape $val )
+			file=$( stringEscape "$val" )
 			;;   # escape " for json
 		random | repeat | single )
 			[[ $val == 1 ]] && tf=true || tf=false
@@ -372,30 +372,34 @@ $radiosampling" > $dirshm/radio
 		fi
 	fi
 else
+	mpdpath=$( dirname "$file" )
+	path="/mnt/MPD/$mpdpath"
+	[[ -e "$path/booklet.pdf" ]] && booklet=true
 	ext=${file/*.}
 	if [[ ${ext:0:9} == cue/track ]]; then
-		cuefile=$( dirname "$file" )
-		cuesrc=$( grep -m1 ^FILE "/mnt/MPD/$cuefile" | cut -d'"' -f2 )
+		cuesrc=$( grep -m1 ^FILE "$path" | cut -d'"' -f2 )
 		ext=${cuesrc/*.}
 	fi
 	ext=${ext^^}
 	# missing id3tags
-	[[ ! $Album ]] && Album=
 	[[ ! $AlbumArtist ]] && AlbumArtist=$Artist
 	[[ ! $Artist ]] && Artist=$AlbumArtist
 	[[ ! $Artist ]] && dirname=${file%\/*} && Artist=${dirname/*\/}
 	[[ ! $Title ]] && filename=${file/*\/} && Title=${filename%.*}
 ########
 	status+='
-, "Album"  : "'$Album'"
-, "Artist" : "'$Artist'"
-, "Time"   : '$Time'
-, "Title"  : "'$Title'"'
+, "Album"     : "'$Album'"
+, "Artist"    : "'$Artist'"
+, "booklet"   : '$booklet'
+, "Composer"  : "'$Composer'"
+, "Conductor" : "'$Conductor'"
+, "Time"      : '$Time'
+, "Title"     : "'$Title'"'
 fi
 
 samplingfile=$dirshm/sampling/$( tr -d ' "`?/#&'"'_.\-" <<< $file )
 samplingSave() {
-	if [[ $player != upnp ]]; then
+	if [[ $sampling && $player != upnp ]]; then
 		echo $sampling > $samplingfile
 		files=$( ls -1t $dirshm/sampling 2> /dev/null )
 		(( $( wc -l <<< $files ) > 20 )) && rm -f "$( tail -1 <<< $files )"
@@ -467,7 +471,7 @@ else
 			if [[ $ext == DSF || $ext == DFF ]]; then
 				# DSF: byte# 56+4 ? DSF: byte# 60+4
 				[[ $ext == DSF ]] && byte=56 || byte=60;
-				[[ $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
+				[[ $cuesrc ]] && file="$( dirname "$mpdpath" )/$cuesrc"
 				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
 				bitrate=$( calc 2 $dsd*44100/1000000 )

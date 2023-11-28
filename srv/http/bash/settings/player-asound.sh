@@ -109,8 +109,7 @@ else
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
 		value=$( sed -E -n '/"current":/ {s/.*: "(.*)",/\1/; p}' $dirsystem/equalizer.json )
-		player=$( < $dirshm/player )
-		[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
+		[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
 		$dirbash/cmd.sh "equalizer
 $value
 $user

@@ -217,19 +217,24 @@ notify() { # icon title message delayms
 	$dirbash/websocket-push.py "$data" $ip
 }
 package() {
-	local file
+	local file urlio
+	urlio=https://github.com/rern/rern.github.io/raw/main
 	file=$( dialog --colors --no-shadow --no-collapse --output-fd 1 --nocancel --menu "
 Package:
 " 8 0 0 \
-1 Build \
+1  Build \
 2 'Update repo' \
-3 'AUR setup' )
+3 'AUR setup' \
+4 'Create regdomcodes.json' \
+5 'Create guide.tar.xz' )
 	case $file in
 		1 ) file=pkgbuild;;
 		2 ) file=repoupdate;;
 		3 ) file=aursetup;;
+		4 ) bash <( curl -L $urlio/wirelessregdom.sh ); exit;;
+		5 )	bsdtar cjvf guide.tar.xz -C /srv/http/assets/img/guide .; exit;;
 	esac
-	bash <( curl -L https://github.com/rern/rern.github.io/raw/main/$file.sh )
+	bash <( curl -L $urlio/$file.sh )
 }
 packageActive() {
 	local active pkg pkgs status
@@ -241,6 +246,9 @@ packageActive() {
 		printf -v ${pkg//-} '%s' $active
 		(( i++ ))
 	done
+}
+playerActive() {
+	[[ $( < $dirshm/player ) == $1 ]] && return 0
 }
 pushData() {
 	local channel data ip json path sharedip updatedone webradiocopy
@@ -330,7 +338,7 @@ statePlay() {
 	grep -q -m1 '^state.*play' $dirshm/status && return 0
 }
 stringEscape() {
-	echo ${@//\"/\\\"}
+	echo "${@//\"/\\\"}"
 }
 volumeCardControl() {
 	local card control volume
@@ -367,7 +375,7 @@ volumeGet() {
 		elif inOutputConf mixer_type.*software; then
 			mixersoftware=1
 		fi
-		if [[ $mixersoftware && $( < $dirshm/player ) == mpd ]]; then
+		if [[ $mixersoftware ]] && playerActive mpd; then
 			val=$( mpc status %volume% | tr -dc [0-9] )
 		elif [[ -e $dirshm/amixercontrol ]]; then
 			card=$( < $dirsystem/asoundcard )
