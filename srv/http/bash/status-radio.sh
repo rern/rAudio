@@ -17,7 +17,6 @@ case $id in
 	mellow ) id=1;;
 	rock )   id=2;;
 	global ) id=3;;
-# list: https://www.radiofrance.fr/data/streams
 	fip )           id=7;;  # FIP
 	fipelectro )    id=74;; # Electro
 	fipgroove )     id=66;; # Groove
