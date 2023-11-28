@@ -92,7 +92,7 @@ fi
 
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
-mkdir -p $dircamilladsp/{coeffs,configs,configs-bt}
+[[ -e /usr/bin/camilladsp ]] && mkdir -p $dircamilladsp/{coeffs,configs,configs-bt}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
