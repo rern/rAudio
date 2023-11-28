@@ -48,43 +48,45 @@ metadataGet() {
 		icon=radiofrance
 		json=$( curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id )
 	fi
+	[[ $? != 0 ]] && notreachable=1
 	if [[ ! $json ]]; then
+		notify $icon Metadata 'Retry ...' -1
 		for i in {1..10}; do
 			sleep 1
 			metadataGet
-			[[ $json ]] && break
+			[[ $json ]] && pushData notify false && break
 		done
-		[[ ! $json ]] && notify $icon Metadata 'Not available' && return
+		[[ ! $json ]] && notify $icon Metadata 'Not available'
 	fi
-	
-	if [[ $radioparadise ]]; then
-		readarray -t metadata <<< $( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
-		countdown=${metadata[4]} # countdown
-	else
-		levels=$( jq .levels[0] <<< $json )
-		position=$( jq .position <<< $levels )
-		item=$( jq .items[$position] <<< $levels )
-		step=$( jq .steps[$item] <<< $json )
-		readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual,.end <<< $step | sed 's/^null$//' )
-		end=$( jq .end <<< $step )
-		now=$( date +%s )
-		countdown=$(( end - now ))
-	fi
-	artist=$( stringEscape ${metadata[0]} )
-	title=$( stringEscape ${metadata[1]} )
-	album=$( stringEscape ${metadata[2]} )
-	coverurl=${metadata[3]}
-	[[ ! $artist ]] && artist=$( jq -r .composers <<< $step )
-	
-	if [[ ! $countdown ]]; then
-		countdown=5
-	elif [[ ${#metadata[@]} == 6 ]]; then
-		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
-	fi
-	if [[ $coverurl && ! -e $dirsystem/vumeter ]]; then
-		name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
-		coverart=/data/shm/webradio/$name.jpg
-		curl -s $coverurl -o $dirshm/webradio/$name.jpg
+	if [[ $json ]]; then
+		if [[ $radioparadise ]]; then
+			readarray -t metadata <<< $( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
+			countdown=${metadata[4]} # countdown
+		else
+			levels=$( jq .levels[0] <<< $json )
+			position=$( jq .position <<< $levels )
+			item=$( jq .items[$position] <<< $levels )
+			step=$( jq .steps[$item] <<< $json )
+			readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual,.end <<< $step | sed 's/^null$//' )
+			end=$( jq .end <<< $step )
+			now=$( date +%s )
+			countdown=$(( end - now ))
+		fi
+		artist=$( stringEscape ${metadata[0]} )
+		title=$( stringEscape ${metadata[1]} )
+		album=$( stringEscape ${metadata[2]} )
+		coverurl=${metadata[3]}
+		[[ ! $artist ]] && artist=$( jq -r .composers <<< $step | sed 's/^null$//' )
+		if [[ ! $countdown ]]; then
+			countdown=5
+		elif [[ ${#metadata[@]} == 6 ]]; then
+			countdown=$(( countdown - ${metadata[5]} )) # radiofrance
+		fi
+		if [[ $coverurl && ! -e $dirsystem/vumeter ]]; then
+			name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
+			coverart=/data/shm/webradio/$name.jpg
+			curl -s $coverurl -o $dirshm/webradio/$name.jpg
+		fi
 	fi
 	[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
 	data='{
@@ -111,6 +113,8 @@ player="mpd"'
 	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
 	echo "$status" > $dirshm/status
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
+	[[ ! $json ]] && systemctl stop radio && exit
+	
 	$dirbash/cmd.sh coverfileslimit
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay

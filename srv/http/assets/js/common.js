@@ -1154,6 +1154,11 @@ function wsPush( channel, data ) {
 }
 // push status
 function psNotify( data ) {
+	if ( data === false ) {
+		bannerHide();
+		return
+	}
+	
 	var icon    = data.icon;
 	var title   = data.title;
 	var message = data.message;
