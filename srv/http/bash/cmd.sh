@@ -557,25 +557,27 @@ mpcplayback )
 mpcprevnext )
 	current=$( mpc status %songpos% )
 	length=$( mpc status %length% )
-	[[ $( mpc status %state% ) == playing ]] && playing=1
-	[[ -e $dirsystem/scrobble ]] && ! grep -q '^state="*stop' $dirshm/status && mpcElapsed > $dirshm/elapsed
+	if [[ $( mpc status %state% ) == playing ]]; then
+		playing=1
+		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
+	else
+		touch $dirshm/prevnextseek
+	fi
 	radioStop
-	[[ ! $playing ]] && touch $dirshm/prevnextseek
 	if [[ $( mpc status %random% ) == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
-		mpc -q play $pos
 	else
 		if [[ $ACTION == next ]]; then
-			(( $current != $length )) && mpc -q play $(( current + 1 )) || mpc -q play 1
-			[[ $( mpc status %consume% ) == on ]] && mpc -q del $current
-			[[ -e $dirsystem/librandom ]] && plAddRandom
+			(( $current != $length )) && pos=$(( current + 1 )) || pos=1
 		else
-			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
+			(( $current != 1 )) && pos=$(( current - 1 )) || pos=$length
 		fi
 	fi
+	mpc -q play $pos
+	[[ -e $dirsystem/librandom ]] && plAddRandom
 	if [[ $playing ]]; then
-		mpc -q play
-		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+		[[ $( mpc status %consume% ) == on ]] && mpc -q del $current
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop

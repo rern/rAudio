@@ -200,10 +200,8 @@ $( '#debug' ).on( 'click', function() {
 	
 	$( '#data' ).html( highlightJSON( S ) )
 	$( '#button-data, #data' ).removeClass( 'hide' );
-	$( '.page' ).addClass( 'hide' );
 } );
 $( '#button-data' ).on( 'click', function() {
-	$( '#page-'+ V.page ).removeClass( 'hide' );
 	$( '#button-data, #data' ).addClass( 'hide' );
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
