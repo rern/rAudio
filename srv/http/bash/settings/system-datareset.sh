@@ -92,7 +92,6 @@ fi
 
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
-mkdir -p $dircamilladsp/{coeffs,configs,configs-bt}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
@@ -104,7 +103,19 @@ else # from create-ros.sh
 	for dir in $dirs; do
 		printf -v dir$dir '%s' $dirdata/$dir
 	done
-	curl -sL https://github.com/rern/rAudio-addons/raw/main/addonslist.json | sed -E -n '/"rAudio"/ {n;s/.*: *"(.*)"/\1/; p}' > $diraddons/r1
+ 	mv /boot/release $diraddons/r1
+fi
+
+# camilladsp
+if [[ -e /usr/bin/camilladsp ]]; then
+	mkdir -p $dircamilladsp/{coeffs,configs,configs-bt}
+ 	echo "\
+filtersmax=10
+filtersmin=-10
+mixersmax=10
+mixersmin=-10" > $dirsystem/camilla.conf
+else
+ 	rm -rf $dircamilladsp
 fi
 
 # display
@@ -121,15 +132,6 @@ for i in $false; do
 , "'$i'": false'
 done
 jq -S <<< {${lines:2}} > $dirsystem/display.json
-
-# camilladsp
-if [[ -e /usr/bin/camilladsp ]]; then
-	echo "\
-filtersmax=10
-filtersmin=-10
-mixersmax=10
-mixersmin=-10" > $dirsystem/camilla.conf
-fi
 
 # localbrowser
 if [[ -e /usr/bin/firefox ]]; then
