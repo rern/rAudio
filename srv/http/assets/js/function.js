@@ -1601,22 +1601,23 @@ function setInfo() {
 		, Title  : $( '#title' ).text()
 		, Album  : $( '#album' ).text()
 	}
+	var dots = '·&ensp;·&ensp;·';
 	if ( S.webradio ) {
 		var url = S.file.replace( /#charset=.*/, '' );
 		if ( S.state !== 'play' ) {
 			$( '#artist' ).text( S.station );
-			$( '#title' ).html( '·&ensp;·&ensp;·' );
+			$( '#title' ).html( dots );
 			$( '#album' ).text( url );
 		} else {
-			$( '#artist' ).text( S.Artist || ( ! S.Artist && ! S.Title ? S.station : '' ) );
+			$( '#artist' ).text( S.Artist || S.station );
 			$( '#title' ).html( S.Title || V.blinkdot );
 			blinkDot();
 			$( '#album' ).text( S.Album || url );
 		}
 	} else {
-		$( '#artist' ).text( S.Artist );
+		$( '#artist' ).text( S.Artist || dots );
 		$( '#title' )
-			.text( S.Title )
+			.text( S.Title || dots )
 			.toggleClass( 'gr', S.state === 'pause' );
 		var album = S.Album || S.file;
 		if ( S.booklet ) album += ' '+ ico( 'booklet gr' );
