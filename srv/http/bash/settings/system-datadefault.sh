@@ -12,7 +12,7 @@ dirs=$( ls $dirdata )
 for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done
-[[ $1 ]] && echo $1 $diraddons/r1
+[[ $1 ]] && echo $1 > $diraddons/r1
 
 # camilladsp
 if [[ -e /usr/bin/camilladsp ]]; then
