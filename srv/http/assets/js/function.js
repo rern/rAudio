@@ -1695,7 +1695,7 @@ function setInfoScroll() {
 }
 function setPlaybackBlank() {
 	$( '#page-playback .emptyadd' ).toggleClass( 'hide', S.player !== 'mpd' );
-	$( '#playback-controls, #infoicon i, #vu' ).addClass( 'hide' );
+	$( '#playback-controls, #infoicon i, #vu,#divcomposer, #divconductor' ).addClass( 'hide' );
 	$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
 	setProgress( 0 );
