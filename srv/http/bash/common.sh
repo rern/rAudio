@@ -150,6 +150,14 @@ data2json() {
 	[[ $2 ]] && pushData refresh "$json" || echo "$json"
 }
 dirPermissions() {
+	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
+	[[ ! -e /usr/bin/firefox ]] && rm -f /srv/http/assets/img/splash.png $dirbash/xinitrc
+	if [[ ! -e /usr/bin/camilladsp ]]; then
+		rm -f /srv/http/assets/css/camilla.css \
+			/srv/http/assets/js/{camilla,pipelineplotter}.js \
+			/srv/http/settings/camilla.php \
+			$dirsettings/camilla*
+	fi
 	chown -R http:http /srv
 	chown mpd:audio $dirmpd $dirplaylists
  	[[ -e $dirmpd/mpd.db ]] && chown mpd:audio $dirmpd/mpd.db
