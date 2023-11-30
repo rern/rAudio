@@ -267,7 +267,7 @@ function contextmenuLibrary( $li, $target ) {
 	menuHide();
 	var $menu          = $( '#menu-'+ $li.find( '.li-icon' ).data( 'menu' ) );
 	V.list             = {};
-	V.list.li          = $li; // for contextmenu
+	V.list.li          = $li;
 	V.list.licover     = $li.hasClass( 'licover' );
 	V.list.singletrack = ! V.list.licover && $li.find( '.li-icon' ).hasClass( 'i-music' );
 	// file modes  - path > path ... > tracks

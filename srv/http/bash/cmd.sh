@@ -469,12 +469,13 @@ mpcaddplaynext )
 	pushPlaylist add
 	;;
 mpcaddfind )
-	if [[ $TYPE2 ]]; then
-		plAddPosition
-		mpc -q findadd $TYPE "$STRING" $TYPE2 "$STRING2"
+	plAddPosition
+	if [[ $MODE3 ]]; then
+		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2" $MODE3 "$STRING3"
+	elif [[ $MODE2 ]]; then
+		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2"
 	else
-		plAddPosition
-		mpc -q findadd $TYPE "$STRING"
+		mpc -q findadd $MODE "$STRING"
 	fi
 	plAddPlay
 	;;

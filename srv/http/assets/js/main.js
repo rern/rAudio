@@ -1692,7 +1692,6 @@ $( '#button-pl-clear' ).on( 'click', function() {
 					local();
 				}
 				, () => {
-					if ( ! S.librandom ) local();
 					bash( [ 'mpccrop' ] );
 					$( '#pl-list li:not( .active )' ).remove();
 				}
