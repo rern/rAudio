@@ -109,6 +109,7 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 		console.log( data );
 		console.log( bashcmd );
 		if ( V.consoleonly ) {
+			V.consoleonly = false;
 			setTimeout( () => page ? switchCancel() : bannerHide(), 5000 );
 			return
 		}
@@ -122,6 +123,7 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 	);
 }
 // debug
+$( '.page-icon' ).press( () => location.reload() );
 $( '#debug' ).press( function() {
 	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );

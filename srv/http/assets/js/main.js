@@ -189,9 +189,6 @@ $( '#coverart' ).on( 'load', function() {
 } ).on( 'error', coverartDefault );
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #button-library, #button-playlist, #refresh' ).press( function() {
-	location.reload();
-} );
 $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
