@@ -970,8 +970,7 @@ function playbackStatusGet( withdisplay ) {
 			}
 			renderPlaybackAll();
 		} else {
-			$( '#data' ).html( highlightJSON( S ) )
-			$( '#button-data, #data' ).removeClass( 'hide' );
+			setStatusData();
 		}
 	} );
 }
@@ -1594,6 +1593,17 @@ function setCoverart() {
 			coverartDefault();
 		}
 	}
+}
+function setStatusData() {
+	var list = {
+		  status  : S
+		, display : D
+		, count   : C
+	}
+	var html = '';
+	$.each( list, ( k, v ) => html += '<br><br>"'+ k +'":'+ highlightJSON( v ) );
+	$( '#data' ).html( html );
+	$( '#button-data, #data' ).removeClass( 'hide' );
 }
 function setInfo() {
 	var prev = {

@@ -193,10 +193,7 @@ $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
 $( '#debug' ).on( 'click', function() {
-	if ( V.press ) return
-	
-	$( '#data' ).html( highlightJSON( S ) )
-	$( '#button-data, #data' ).removeClass( 'hide' );
+	if ( ! V.press ) setStatusData();
 } );
 $( '#button-data' ).on( 'click', function() {
 	$( '#button-data, #data' ).addClass( 'hide' );

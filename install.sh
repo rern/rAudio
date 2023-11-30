@@ -74,38 +74,6 @@ runxinitrcd=
 ' $file
 fi
 
-# 20231001
-if [[ -e /usr/bin/upmpdcli ]]; then
-	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
-	if grep -q ownqueue /etc/upmpdcli.conf; then
-		sed -i -e '/^ownqueue/ d
-' -e 's|^onstart.*|onstart = /usr/bin/sudo /srv/http/bash/cmd.sh upnpstart|
-' /etc/upmpdcli.conf
-		systemctl try-restart upmpdcli
-	fi
-fi
-
-file=$dirsystem/display.json
-if ! grep -q plclear $file; then
-	grep 'tapreplaceplay.*true' $file && plclear=false || plclear=true
-	sed -i '1 a\
-    "plclear": '$plclear',\
-    "plsimilar": true,\
-    "audiocdplclear": false,
-' $file
-fi
-
-file=$dirsystem/localbrowser.conf
-if [[ ! -e /boot/kernel.img && ! -e $file ]]; then
-	echo "\
-rotate=0
-zoom=100
-screenoff=0
-onwhileplay=
-cursor=
-runxinitrcd" > $file
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
