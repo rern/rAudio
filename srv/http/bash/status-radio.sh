@@ -114,11 +114,6 @@ $album" )
 	album=$( stringEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
 	[[ ! $artist ]] && artist=$( jq -r .composers <<< $step | sed 's/^null$//' )
-	if [[ ! $countdown ]]; then
-		countdown=5
-	elif [[ ${#metadata[@]} == 6 ]]; then
-		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
-	fi
 	if [[ $coverurl && ! -e $dirsystem/vumeter ]]; then
 		name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
 		coverart=/data/shm/webradio/$name.jpg
@@ -149,10 +144,9 @@ player="mpd"'
 	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
 	echo "$status" > $dirshm/status
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
-	[[ ! $json ]] && systemctl stop radio && exit
-	
 	$dirbash/cmd.sh coverfileslimit
 	# next fetch
+	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet
 }
