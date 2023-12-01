@@ -49,7 +49,22 @@ metadataGet() {
 		json=$( curl -sGk -m 5 --data-urlencode "chan=$id" https://api.radioparadise.com/api/now_playing )
 	else
 		icon=radiofrance
-		json=$( curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id )
+		if [[ $id == 95 ]]; then # hiphop must get data by open api
+			hiphop=1
+			query='{ "query": "{ live( station: FIP_HIP_HOP ) { song { end track { title albumTitle mainArtists } } } }" }'
+			json=$( curl -s 'https://openapi.radiofrance.fr/v1/graphql' \
+						-H 'Accept-Encoding: gzip, deflate, br' \
+						-H 'Content-Type: application/json' \
+						-H 'Accept: application/json' \
+						-H 'Connection: keep-alive' \
+						-H 'DNT: 1' \
+						-H 'Origin: https://openapi.radiofrance.fr' \
+						-H "x-token: 0390600a-5407-4e86-b439-24e5d48427dc" \
+						--compressed \
+						--data-binary "$query" )
+		else
+			json=$( curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id )
+		fi
 	fi
 	if [[ ! $json || ${json:0:1} != '{' ]]; then
 		(( i++ ))
@@ -71,13 +86,26 @@ metadataGet() {
 	if [[ $radioparadise ]]; then
 		readarray -t metadata <<< $( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
 		countdown=${metadata[4]} # countdown
-	else
-		levels=$( jq .levels[0] <<< $json )
-		position=$( jq .position <<< $levels )
-		item=$( jq .items[$position] <<< $levels )
-		step=$( jq .steps[$item] <<< $json )
-		readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual,.end <<< $step | sed 's/^null$//' )
-		end=$( jq .end <<< $step )
+	else 
+		if [[ $hiphop ]]; then
+			song=$( jq -r .data.live.song <<< $json )
+			track=$( jq .track <<< $song )
+			artists=$(  jq -r '.mainArtists[]' <<< $track )
+			title=$( jq -r .title <<< $track )
+			album=$( jq -r .albumTitle <<< $track )
+			end=$( jq -r .end <<< $song )
+			readarray -t metadata <<< $( echo "\
+${artists//$'\n'/, }
+$title
+$album" )
+		else
+			levels=$( jq .levels[0] <<< $json )
+			position=$( jq .position <<< $levels )
+			item=$( jq .items[$position] <<< $levels )
+			step=$( jq .steps[$item] <<< $json )
+			readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual,.end <<< $step | sed 's/^null$//' )
+			end=$( jq -r .end <<< $step )
+		fi
 		now=$( date +%s )
 		countdown=$(( end - now ))
 	fi
