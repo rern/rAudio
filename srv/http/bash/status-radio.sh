@@ -20,7 +20,9 @@ case $id in
 	fip )           id=7;;  # FIP
 	fipelectro )    id=74;; # Electro
 	fipgroove )     id=66;; # Groove
+	fiphiphop )     id=95;; # Hip-Hop
 	fipjazz )       id=65;; # Jazz
+	fipmetal )      id=77;; # Metal
 	fipnouveautes ) id=70;; # Nouveautés
 	fippop )        id=78;; # Pop
 	fipreggae )     id=71;; # Reggae
@@ -49,7 +51,7 @@ metadataGet() {
 		json=$( curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id )
 	fi
 	[[ $? != 0 ]] && notreachable=1
-	if [[ ! $json ]]; then
+	if [[ ! $json || ${json:0:1} == '>' ]]; then
 		notify $icon Metadata 'Retry ...' -1
 		for i in {1..10}; do
 			sleep 1
