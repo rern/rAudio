@@ -222,8 +222,13 @@ notify() { # icon title message delayms
 	title=$( stringEscape $2 )
 	message=$( stringEscape $3 )
 	data='{ "channel": "notify", "data": { "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' } }'
-	[[ ! $ip ]] && ip=127.0.0.1
-	echo $data | wsdump ws://$ip:8080 &> /dev/null
+	if [[ $ip ]]; then
+		! ipOnline $ip && exit
+		
+	else
+		ip=127.0.0.1
+	fi
+	echo $data | websocat ws://$ip:8080
 }
 package() {
 	local file urlio
@@ -265,7 +270,7 @@ pushData() {
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	data='{ "channel": "'$channel'", "data": '$json' }'
-	echo $data | wsdump ws://127.0.0.1:8080 &> /dev/null
+	echo $data | websocat ws://127.0.0.1:8080
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
@@ -287,7 +292,7 @@ pushData() {
 	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		ipOnline $ip && echo $data | wsdump ws://$ip:8080 &> /dev/null
+		ipOnline $ip && echo $data | websocat ws://$ip:8080
 	done
 }
 pushRefresh() {

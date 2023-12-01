@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231205
+[[ ! -e /usr/bin/websocat ]] && pacman -Sy --noconfirm websocat
+
 # 20231125
 grep -q connect $dirbash/websocket-server.py && websocketrestart=1
 
