@@ -222,7 +222,8 @@ notify() { # icon title message delayms
 	title=$( stringEscape $2 )
 	message=$( stringEscape $3 )
 	data='{ "channel": "notify", "data": { "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' } }'
-	$dirbash/websocket-push.py "$data" $ip
+	[[ ! $ip ]] && ip=127.0.0.1
+	echo $data | wsdump ws://$ip:8080 &> /dev/null
 }
 package() {
 	local file urlio
@@ -264,7 +265,7 @@ pushData() {
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	data='{ "channel": "'$channel'", "data": '$json' }'
-	$dirbash/websocket-push.py "$data"
+	echo $data | wsdump ws://127.0.0.1:8080 &> /dev/null
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
@@ -286,7 +287,7 @@ pushData() {
 	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		ipOnline $ip && $dirbash/websocket-push.py "$data" $ip
+		ipOnline $ip && echo $data | wsdump ws://$ip:8080 &> /dev/null
 	done
 }
 pushRefresh() {

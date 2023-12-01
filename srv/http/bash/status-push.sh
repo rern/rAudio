@@ -51,7 +51,7 @@ if [[ -e $dirshm/clientip ]]; then
 	data='{ "channel": "mpdplayer", "data": { ${status:1} }'
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
-		$dirbash/websocket-push.py "$data" $ip
+		echo $data | wsdump ws://$ip:8080 &> /dev/null
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
