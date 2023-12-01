@@ -113,11 +113,21 @@ $album" )
 	title=$( stringEscape ${metadata[1]} )
 	album=$( stringEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
+	if [[ ! $title ]]; then
+		sleep 5
+		metadataGet
+		return
+	fi
+	
 	[[ ! $artist ]] && artist=$( jq -r .composers <<< $step | sed 's/^null$//' )
-	if [[ $coverurl && ! -e $dirsystem/vumeter ]]; then
-		name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
-		coverart=/data/shm/webradio/$name.jpg
-		curl -s $coverurl -o $dirshm/webradio/$name.jpg
+	if [[ ! -e $dirsystem/vumeter ]]; then
+		if [[ $coverurl ]]; then
+			name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
+			coverart=/data/shm/webradio/$name.jpg
+			curl -s $coverurl -o $dirshm/webradio/$name.jpg
+		else
+			coverart=/data/webradio/img/${file//\//|}.jpg
+		fi
 	fi
 	[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
 	data='{
