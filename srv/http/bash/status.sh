@@ -340,7 +340,10 @@ $radiosampling" > $dirshm/radio
 		fi
 		if [[ $displaycover ]]; then
 			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
-			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
+			if [[ $stationcover ]]; then
+				stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
+				[[ ! $coverart ]] && coverart=$stationcover
+			fi
 		fi
 ########
 		status=$( grep -E -v '^, "state"|^, "webradio"' <<< $status )

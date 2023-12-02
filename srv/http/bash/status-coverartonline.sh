@@ -60,12 +60,14 @@ else
 fi
 curl -sfL $url -o $coverfile || exit
 
+coverurl=${coverfile:9}
 data='
-  "url"   : "'${coverfile:9}'"
+  "url"   : "'$coverurl'"
 , "type"  : "coverart"'
 if [[ $TYPE == webradio ]]; then
 	Album=$( jq -r .title <<< $album )
 	echo $ALBUM > $dirshm/webradio/$name
+	[[ -e $dirshm/radio ]] && sed -i -e '/^coverart=/ d' -e "1 a\coverart=$coverurl" $dirshm/status
 	data+='
 , "Album" : "'$ALBUM'"'
 fi

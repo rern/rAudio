@@ -88,17 +88,20 @@ metadataGet() {
 		countdown=${metadata[4]} # countdown
 	else 
 		if [[ $hiphop ]]; then
-			song=$( jq -r .data.live.song <<< $json )
+			song=$( jq -r .data.live.song <<< $json | sed 's/^null$//' )
+			if [[ ! $song ]]; then
+				sleep 5
+				metadataGet
+				return
+			fi
+			
 			track=$( jq .track <<< $song )
 			artists=$(  jq -r '.mainArtists[]' <<< $track )
-			artist=${artists//$'\n'/, }
-			title=$( jq -r .title <<< $track )
-			album=$( jq -r .albumTitle <<< $track )
+			readarray -t metadata <<< "\
+${artists//$'\n'/, }
+$( jq -r .title <<< $track )
+$( jq -r .albumTitle <<< $track )"
 			end=$( jq -r .end <<< $song )
-			readarray -t metadata <<< $( echo "\
-$artist
-$title
-$album" )
 		else
 			levels=$( jq .levels[0] <<< $json )
 			position=$( jq .position <<< $levels )
@@ -110,11 +113,12 @@ $album" )
 		now=$( date +%s )
 		countdown=$(( end - now ))
 	fi
+	dataprev="$artist $title $album"
 	artist=$( stringEscape ${metadata[0]} )
 	title=$( stringEscape ${metadata[1]} )
 	album=$( stringEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
-	if [[ ! $title ]]; then
+	if [[ ! $title || "$artist $title $album" == $dataprev ]]; then
 		sleep 5
 		metadataGet
 		return
@@ -124,15 +128,15 @@ $album" )
 	if [[ ! -e $dirsystem/vumeter ]]; then
 		if [[ $coverurl ]]; then
 			name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
-			coverart=/data/shm/webradio/$name.jpg
-			curl -s $coverurl -o $dirshm/webradio/$name.jpg
+			ext=${coverurl/*.}
+			coverart=/data/shm/webradio/$name.$ext
+			curl -s $coverurl -o $dirshm/webradio/$name.$ext
 		else
-			coverart=/data/webradio/img/${file//\//|}.jpg
 			$dirbash/status-coverartonline.sh "cmd
 $artist
 $title
-webtadio
-CMD ARTIST ALBUM TYPE"
+webradio
+CMD ARTIST ALBUM TYPE" &> /dev/null &
 		fi
 	fi
 	[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
