@@ -91,11 +91,12 @@ metadataGet() {
 			song=$( jq -r .data.live.song <<< $json )
 			track=$( jq .track <<< $song )
 			artists=$(  jq -r '.mainArtists[]' <<< $track )
+			artist=${artists//$'\n'/, }
 			title=$( jq -r .title <<< $track )
 			album=$( jq -r .albumTitle <<< $track )
 			end=$( jq -r .end <<< $song )
 			readarray -t metadata <<< $( echo "\
-${artists//$'\n'/, }
+$artist
 $title
 $album" )
 		else
@@ -127,6 +128,11 @@ $album" )
 			curl -s $coverurl -o $dirshm/webradio/$name.jpg
 		else
 			coverart=/data/webradio/img/${file//\//|}.jpg
+			$dirbash/status-coverartonline.sh "cmd
+$artist
+$title
+webtadio
+CMD ARTIST ALBUM TYPE"
 		fi
 	fi
 	[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
