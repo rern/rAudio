@@ -67,8 +67,11 @@ data='
 if [[ $TYPE == webradio ]]; then
 	Album=$( jq -r .title <<< $album )
 	echo $ALBUM > $dirshm/webradio/$name
-	[[ -e $dirshm/radio ]] && sed -i -e '/^coverart=/ d' -e "1 a\coverart=$coverurl" $dirshm/status
-	data+='
+	if [[ -e $dirshm/radio ]]; then
+		sed -i -e '/^coverart=/ d' -e "1 a\coverart=$coverurl" $dirshm/status
+	else
+		data+='
 , "Album" : "'$ALBUM'"'
+	fi
 fi
 pushData coverart "{ $data }"
