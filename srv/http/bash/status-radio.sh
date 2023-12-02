@@ -160,7 +160,6 @@ CMD ARTIST ALBUM TYPE" &> /dev/null &
 , "song"         : '$song'
 , "station"      : "'$station'"
 , "stationcover" : "'$stationcover'"
-, "stream"       : true
 , "Time"         : false
 , "Title"        : "'$title'"
 }'
