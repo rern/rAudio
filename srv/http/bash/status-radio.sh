@@ -50,7 +50,7 @@ metadataGet() {
 		json=$( curl -sGk -m 5 --data-urlencode "chan=$id" https://api.radioparadise.com/api/now_playing )
 	else
 		icon=radiofrance
-		if [[ $id == 95 ]]; then # hiphop must get data by open api
+		if [[ $id == 95 ]]; then # openapi: only needed by hiphop (no coverart for openapi)
 			hiphop=1
 			query='{ "query": "{ live( station: FIP_HIP_HOP ) { song { end track { title albumTitle mainArtists } } } }" }'
 			json=$( curl -s 'https://openapi.radiofrance.fr/v1/graphql' \
@@ -63,7 +63,7 @@ metadataGet() {
 						-H "x-token: 0390600a-5407-4e86-b439-24e5d48427dc" \
 						--compressed \
 						--data-binary "$query" )
-		else
+		else # api: current until switched to openapi ( except hophop)
 			json=$( curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id )
 		fi
 	fi
