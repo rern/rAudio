@@ -5,6 +5,7 @@
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
 station=$( stringEscape ${tmpradio[1]} )
+stationcover=/data/webradio/img/${file//\//|}.jpg
 id=${tmpradio[2]}
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
@@ -137,7 +138,7 @@ $( jq -r .albumTitle <<< $track )"
 			if [[ -e coverfile ]]; then
 				coverart=${coverfile:9}
 			else
-				coverart=${dirwebradio:9}/img/${file//\//|}.jpg
+				coverart=$stationcover
 				$dirbash/status-coverartonline.sh "cmd
 $artist
 $album
@@ -148,19 +149,20 @@ CMD ARTIST ALBUM TYPE" &> /dev/null &
 	fi
 	[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
 	data='{
-  "Album"    : "'$album'"
-, "Artist"   : "'$artist'"
-, "coverart" : "'$coverart'"
-, "elapsed"  : '$elapsed'
-, "file"     : "'$file'"
-, "icon"     : "'$icon'"
-, "sampling" : "'$sampling'"
-, "state"    : "play"
-, "song"     : '$song'
-, "station"  : "'$station'"
-, "stream"   : true
-, "Time"     : false
-, "Title"    : "'$title'"
+  "Album"        : "'$album'"
+, "Artist"       : "'$artist'"
+, "coverart"     : "'$coverart'"
+, "elapsed"      : '$elapsed'
+, "file"         : "'$file'"
+, "icon"         : "'$icon'"
+, "sampling"     : "'$sampling'"
+, "state"        : "play"
+, "song"         : '$song'
+, "station"      : "'$station'"
+, "stationcover" : "'$stationcover'"
+, "stream"       : true
+, "Time"         : false
+, "Title"        : "'$title'"
 }'
 	pushData mpdradio "$data"
 	status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
