@@ -543,7 +543,7 @@ function webRadioEdit() {
 		, beforeshow   : () => {
 			var src  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
 			$( '#infoContent' ).prepend( '<div class="infomessage"><img src="'+ src +'"></div>' );
-			if ( url.includes( 'icecast.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
+			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
 				$( '#infoContent tr' ).last().remove();
 			} else {
 				$( '#addwebradiodir' ).remove();
