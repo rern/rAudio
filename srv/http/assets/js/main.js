@@ -519,13 +519,6 @@ $( '#album, #guide-booklet' ).on( 'click', function() {
 		window.open( urllastfm, '_blank' );
 	}
 } );
-$( '#album' ).press( function() {
-	banner( 'coverart blink', 'Coverart Online', 'Fetch ...', -1 );
-	bash( [ 'coverartonline', S.Artist, S.Album.replace( /\(.*/, '' ), 'CMD ARTIST ALBUM' ], url => {
-		console.log( url );
-		bannerHide();
-	} );
-} );
 $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	info( {
 		  icon    : 'audiocd'
@@ -731,7 +724,11 @@ $( '#coverT' ).press( function() {
 	if ( typeof Android === 'object' ) {
 		changeIP();
 	} else {
-		location.reload();
+		banner( 'coverart blink', 'Coverart Online', 'Fetch ...', -1 );
+		bash( [ 'coverartonline', S.Artist, S.Album.replace( /\(.*/, '' ), 'CMD ARTIST ALBUM' ], url => {
+			console.log( url );
+			bannerHide();
+		} );
 	}
 } );
 var btnctrl = {
