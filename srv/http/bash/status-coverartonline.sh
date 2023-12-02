@@ -8,12 +8,13 @@ name=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
 name=${name,,}
 
 ### 1 - lastfm ##################################################
-if [[ $TYPE == webradio ]]; then
-	param="track=${ALBUM//&/ and }" # $ALBUM = track
-	method='method=track.getInfo'
-else
+if [[ $TYPE != webradio || -e $dirshm/radio ]]; then # not webradio || radioparadise / radiofrance
 	param="album=${ALBUM//&/ and }"
 	method='method=album.getInfo'
+else
+	artist_title=1
+	param="track=${ALBUM//&/ and }" # $ALBUM = track
+	method='method=track.getInfo'
 fi
 apikey=$( grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -sfG -m 5 \
@@ -24,7 +25,7 @@ data=$( curl -sfG -m 5 \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
 if [[ $? == 0 && $data ]]; then
-	[[ $TYPE == webradio ]] && album=$( jq -r .track.album <<< $data ) || album=$( jq -r .album <<< $data )
+	[[ $artist_title ]] && album=$( jq -r .track.album <<< $data ) || album=$( jq -r .album <<< $data )
 	[[ $album && $album != null ]] && image=$( jq -r .image <<< $album )
 	if [[ $image && $image != null ]]; then
 		extralarge=$( jq -r '.[3]."#text"' <<< $image )
@@ -65,7 +66,7 @@ data='
   "url"   : "'$coverurl'"
 , "type"  : "coverart"'
 if [[ $TYPE == webradio ]]; then
-	if [[ -e $dirshm/radio ]]; then
+	if [[ -e $dirshm/radio ]]; then # radioparadise / radiofrance - already got album name
 		sed -i -e '/^coverart=/ d' -e "1 a\coverart=$coverurl" $dirshm/status
 	else
 		Album=$( jq -r .title <<< $album )

@@ -140,7 +140,7 @@ $( jq -r .albumTitle <<< $track )"
 				coverart=${dirwebradio:9}/img/${file//\//|}.jpg
 				$dirbash/status-coverartonline.sh "cmd
 $artist
-$title
+$album
 webradio
 CMD ARTIST ALBUM TYPE" &> /dev/null &
 			fi

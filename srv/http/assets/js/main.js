@@ -521,7 +521,7 @@ $( '#album, #guide-booklet' ).on( 'click', function() {
 } );
 $( '#album' ).press( function() {
 	banner( 'coverart blink', 'Coverart Online', 'Fetch ...', -1 );
-	bash( [ 'coverartonline', S.Artist, S.Title.replace( /\(.*/, '' ), 'CMD ARTIST TITLE' ], url => {
+	bash( [ 'coverartonline', S.Artist, S.Album.replace( /\(.*/, '' ), 'CMD ARTIST ALBUM' ], url => {
 		console.log( url );
 		bannerHide();
 	} );

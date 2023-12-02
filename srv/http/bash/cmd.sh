@@ -312,10 +312,9 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd
 $ARTIST
-$TITLE
-webradio
+$ALBUM
 debug
-CMD ARTIST ALBUM TYPE DEBUG"
+CMD ARTIST ALBUM DEBUG"
 	;;
 coverartreset )
 	dir=$( dirname "$COVERFILE" )
