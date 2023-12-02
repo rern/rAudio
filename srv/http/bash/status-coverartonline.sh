@@ -7,13 +7,6 @@ args2var "$1"
 name=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
 name=${name,,}
 
-# suppress multiple calls
-[[ -e $dirshm/$name ]] && exit
-
-trap "rm -f $dirshm/$name" EXIT
-
-touch $dirshm/$name
-
 ### 1 - lastfm ##################################################
 if [[ $TYPE == webradio ]]; then
 	param="track=${ALBUM//&/ and }" # $ALBUM = track
@@ -48,6 +41,12 @@ if [[ ! $url ]]; then
 		url=$( jq -r .images[0].image <<< $imgdata )
 	fi
 fi
+if [[ $DEBUG ]]; then
+	[[ ! $url ]] && url="(Not found: $ARTIST - $ALBUM)"
+	echo coverart: $url
+	exit
+fi
+
 [[ ! $url || $url == null ]] && exit
 
 ext=${url/*.}
@@ -58,7 +57,8 @@ else
 	coverfile=$dirshm/$prefix/$name.$ext
 	$dirbash/cmd.sh coverfileslimit
 fi
-curl -sfL $url -o $coverfile || exit
+curl -sfL $url -o $coverfile
+[[ $? != 0 ]] && exit
 
 coverurl=${coverfile:9}
 data='

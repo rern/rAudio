@@ -309,6 +309,14 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
 	pushData reload 1
 	;;
+coverartonline )
+	$dirbash/status-coverartonline.sh "cmd
+$ARTIST
+$TITLE
+webradio
+debug
+CMD ARTIST ALBUM TYPE DEBUG"
+	;;
 coverartreset )
 	dir=$( dirname "$COVERFILE" )
 	filename=$( basename "$COVERFILE" )

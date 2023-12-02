@@ -137,6 +137,7 @@ $( jq -r .albumTitle <<< $track )"
 			if [[ -e coverfile ]]; then
 				coverart=${coverfile:9}
 			else
+				coverart=${dirwebradio:9}/img/${file//\//|}.jpg
 				$dirbash/status-coverartonline.sh "cmd
 $artist
 $title

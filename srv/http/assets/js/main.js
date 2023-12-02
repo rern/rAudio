@@ -498,7 +498,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	
 } );
 $( '#album, #guide-booklet' ).on( 'click', function() {
-	if ( localhost ) return
+	if ( V.press || localhost ) return
 	
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
 	if ( S.booklet ) {
@@ -518,6 +518,13 @@ $( '#album, #guide-booklet' ).on( 'click', function() {
 	} else {
 		window.open( urllastfm, '_blank' );
 	}
+} );
+$( '#album' ).press( function() {
+	banner( 'coverart blink', 'Coverart Online', 'Fetch ...', -1 );
+	bash( [ 'coverartonline', S.Artist, S.Title.replace( /\(.*/, '' ), 'CMD ARTIST TITLE' ], url => {
+		console.log( url );
+		bannerHide();
+	} );
 } );
 $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	info( {
@@ -705,10 +712,9 @@ $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	volumeBarSet( 'toggle' );
 } );
 $( '#divcover' ).press( function( e ) {
-	if (
-		( S.webradio && S.state === 'play' )
-		|| ! S.pllength
+	if ( ! S.pllength
 		|| V.guide
+		|| ( S.webradio && S.state === 'play' )
 		|| $( e.target ).hasClass( 'band' )
 		|| e.target.id === 'coverT'
 	) return
