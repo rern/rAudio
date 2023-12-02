@@ -132,11 +132,17 @@ $( jq -r .albumTitle <<< $track )"
 			coverart=/data/shm/webradio/$name.$ext
 			curl -s $coverurl -o $dirshm/webradio/$name.$ext
 		else
-			$dirbash/status-coverartonline.sh "cmd
+			name=$( tr -d ' "`?/#&'"'" <<< $artist$album )
+			coverfile=$( ls $dirshm/webradio/${name,,}.* )
+			if [[ -e coverfile ]]; then
+				coverart=${coverfile:9}
+			else
+				$dirbash/status-coverartonline.sh "cmd
 $artist
 $title
 webradio
 CMD ARTIST ALBUM TYPE" &> /dev/null &
+			fi
 		fi
 	fi
 	[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
