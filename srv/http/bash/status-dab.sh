@@ -30,6 +30,7 @@ while true; do
 , "station"  : ""
 , "Time"     : false
 , "Title"    : "'$( < $filetitle )'"
+, "webradio" : true
 }'
 		pushData mpdradio "$data"
 		status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )

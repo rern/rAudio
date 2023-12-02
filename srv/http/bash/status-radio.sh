@@ -162,6 +162,7 @@ CMD ARTIST ALBUM TYPE" &> /dev/null &
 , "stationcover" : "'$stationcover'"
 , "Time"         : false
 , "Title"        : "'$title'"
+, "webradio"     : true
 }'
 	pushData mpdradio "$data"
 	status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
