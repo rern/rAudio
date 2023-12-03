@@ -6,8 +6,6 @@
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
 sampling="$pos/$total • $radiosampling"
-song=$(( $pos - 1 ))
-grep -q radioelapsed.*true $dirsystem/display.json && radioelapsed=1
 
 case $id in
 	flac )   id=0;;
@@ -134,7 +132,7 @@ $( jq -r .albumTitle <<< $track )"
 			coverart=${coverfile:9}
 		fi
 	fi
-	[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
+	elapsed=$( mpcElapsed )
 	data='
   "Album"        : "'$album'"
 , "Artist"       : "'$artist'"
@@ -143,7 +141,6 @@ $( jq -r .albumTitle <<< $track )"
 , "icon"         : "'$icon'"
 , "sampling"     : "'$sampling'"
 , "state"        : "play"
-, "song"         : '$song'
 , "station"      : "'$station'"
 , "stationcover" : "'$stationcover'"
 , "Time"         : false
@@ -160,14 +157,10 @@ webradio
 CMD ARTIST ALBUM TYPE" &> /dev/null &
 	fi
 	pushData mpdradio "{ $data }"
-	status=$( sed 's/^.."//; s/" *: /=/' <<< $data )
-	status+='
-webradio=true
-player="mpd"'
 	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
-	echo "$status" > $dirshm/status
+	sed 's/^.."//; s/" *: /=/' <<< $data > $dirshm/status
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
-	$dirbash/cmd.sh coverfileslimit
+	[[ $coverart ]] && $dirbash/cmd.sh coverfileslimit
 	# next fetch
 	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0
 	sleep $(( countdown + 5 )) # add 5s delay

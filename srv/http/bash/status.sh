@@ -304,7 +304,7 @@ elif [[ $stream ]]; then
 				fi
 				if [[ ! -e $dirshm/radio ]]; then
 					stationcover=${dirradio:9}/img/$urlname.jpg
-					pushData coverart '{ "type": "coverart", "url": "'$stationcover'" }'
+					pushData mpdradio '{ "coverart": "'$stationcover'" }'
 					radio="\
 file=$file
 station=\"$station\""
