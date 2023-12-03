@@ -2,17 +2,12 @@
 
 . /srv/http/bash/common.sh
 
-readarray -t tmpradio < $dirshm/radio
-file=${tmpradio[0]}
-station=$( stringEscape ${tmpradio[1]} )
-id=${tmpradio[2]}
+. $dirshm/radio
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
-sampling="$pos/$total • ${tmpradio[3]}"
+sampling="$pos/$total • $radiosampling"
 song=$(( $pos - 1 ))
 grep -q radioelapsed.*true $dirsystem/display.json && radioelapsed=1
-stationcover=/data/webradio/img/${file//\//|}.jpg
-pushData coverart '{ "type": "coverart", "url": "'$stationcover'" }'
 
 case $id in
 	flac )   id=0;;
@@ -167,7 +162,6 @@ CMD ARTIST ALBUM TYPE" &> /dev/null &
 	pushData mpdradio "{ $data }"
 	status=$( sed 's/^.."//; s/" *: /=/' <<< $data )
 	status+='
-timestamp='$( date +%s%3N )'
 webradio=true
 player="mpd"'
 	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}

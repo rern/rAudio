@@ -295,8 +295,6 @@ elif [[ $stream ]]; then
 		else
 			if [[ $icon == dabradio || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
 				if [[ $icon == dabradio ]]; then
-					id=dabradio
-					radiosampling='48 kHz 160 kbit/s'
 					service=dab
 				else
 					id=$( basename ${file/-*} )
@@ -305,11 +303,16 @@ elif [[ $stream ]]; then
 					service=radio
 				fi
 				if [[ ! -e $dirshm/radio ]]; then
-					echo "\
-$file
-$station
-$id
-$radiosampling" > $dirshm/radio
+					stationcover=${dirradio:9}/img/$urlname.jpg
+					pushData coverart '{ "type": "coverart", "url": "'$stationcover'" }'
+					radio="\
+file=$file
+station=\"$station\""
+					[[ $icon != dabradio ]] && radio+='
+id='$id'
+radiosampling="'$radiosampling'"
+stationcover="'$stationcover'"'
+					echo "$radio" > $dirshm/radio
 					if ! systemctl -q is-active $service; then
 						mpc -q stop
 						mpc -q play

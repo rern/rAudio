@@ -2,11 +2,11 @@
 
 . /srv/http/bash/common.sh
 
-readarray -t tmpradio < $dirshm/radio
-file=${tmpradio[0]}
-station=$( stringEscape ${tmpradio[1]} )
+. $dirshm/radio
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
+song=$(( $pos - 1 ))
+grep -q radioelapsed.*true $dirsystem/display.json && radioelapsed=1
 filelabel=$dirshm/webradio/DABlabel.txt
 filecover=$dirshm/webradio/DABslide.jpg
 filetitle=$dirshm/webradio/DABtitle
@@ -17,28 +17,26 @@ while true; do
 	
 	if ! cmp -s $filelabel $filetitle; then
 		cp -f $filelabel $filetitle
-		data='{
+		[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
+		data='
   "Album"    : "DAB Radio"
 , "Artist"   : "'$station'"
 , "coverart" : ""
-, "elapsed"  : '$( mpcElapsed )'
+, "elapsed"  : '$elapsed'
 , "file"     : "'$file'"
 , "icon"     : "dabradio"
 , "sampling" : "'$pos'/'$total' • 48 kHz 160 kbit/s • DAB"
 , "state"    : "play"
-, "song"     : '$(( $pos - 1 ))'
+, "song"     : '$song'
 , "station"  : ""
 , "Time"     : false
 , "Title"    : "'$( < $filetitle )'"
-, "webradio" : true
-}'
-		pushData mpdradio "$data"
-		status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
-		status+='
-timestamp='$( date +%s%3N )'
-webradio=true
-player="mpd"'
-		echo "$status" > $dirshm/status
+, "webradio" : true'
+		pushData mpdradio "{ $data }"
+		data+='
+, "webradio"  : true
+, "player"    : "mpd"'
+		sed 's/^.."//; s/" *: /=/' <<< $data > $dirshm/status
 		$dirbash/status-push.sh statusradio &
 	fi
 	# coverart
