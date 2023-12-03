@@ -107,10 +107,10 @@ function psCoverart( data ) {
 	clearTimeout( V.timeoutCover );
 	bannerHide();
 	$( '#coverart, #liimg' ).css( 'opacity', '' );
-	data.type === 'coverart' ? S.coverart = data.url : S.stationcover = data.url;
+	'stationcover' in data ? S.stationcover = data.url : S.coverart = data.url;
 	setCoverart();
-	if ( 'Album' in data ) { // online coverarts come with album name
-		S.Album = data.Album;
+	if ( 'radioalbum' in data ) { // online coverarts come with album name
+		S.Album = data.radioalbum;
 		setInfo();
 	}
 	if ( V.library && data.url.slice( 0, 13 ) === '/data/audiocd' ) return

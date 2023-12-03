@@ -43,7 +43,7 @@ while true; do
 ' -e "$ a\
 coverart=$coverart
 " $dirshm/status
-		pushData coverart '{ "url": "'$coverart'", "type": "coverart" }'
+		pushData coverart '{ "url": "'$coverart'" }'
 	fi
 	sleep 10
 done

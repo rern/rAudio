@@ -448,7 +448,7 @@ function webRadioCoverart() {
 		}
 		, buttonlabel : ico( mode ) +'Default'
 		, buttoncolor : orange
-		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, mode, 'CMD FILENOEXT MODE' ] )
+		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, 'CMD FILENOEXT' ] )
 		, ok          : () => imageReplace( mode, imagefilenoext )
 	} );
 }

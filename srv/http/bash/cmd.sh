@@ -343,7 +343,7 @@ CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
 			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
 			convert "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		fi
-		pushData coverart '{ "url": "'$restorefile'", "type": "coverart" }'
+		pushData coverart '{ "url": "'$restorefile'" }'
 		exit
 	fi
 		url=$( $dirbash/status-coverart.sh "cmd
@@ -352,7 +352,7 @@ $ALBUM
 $COVERFILE
 CMD ARTIST ALBUM FILE" )
 	[[ ! $url ]] && url=reset
-	pushData coverart '{ "url": "'$url'", "type": "coverart" }'
+	pushData coverart '{ "url": "'$url'" }'
 	;;
 coverfileslimit )
 	for type in local online webradio; do
@@ -811,7 +811,7 @@ $CHARSET" > "$file"
 	;;
 webradiocoverreset )
 	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-	pushData coverart '{ "url": "", "type": "'$MODE'" }'
+	pushData coverart '{ "url": "" }'
 	;;
 webradiodelete )
 	urlname=${URL//\//|}

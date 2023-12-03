@@ -25,21 +25,21 @@ data=$( curl -sfG -m 5 \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
 if [[ $? == 0 && $data ]]; then
-	[[ $artist_title ]] && album=$( jq -r .track.album <<< $data ) || album=$( jq -r .album <<< $data )
-	[[ $album && $album != null ]] && image=$( jq -r .image <<< $album )
-	if [[ $image && $image != null ]]; then
-		extralarge=$( jq -r '.[3]."#text"' <<< $image )
-		[[ $extralarge && $extralarge != null ]] && url=$( sed 's|/300x300/|/_/|' <<< $extralarge ) # get larger size than 300x300
+	[[ $artist_title ]] && album=$( jq -r .track.album <<< $data | sed 's/^null$//' ) || album=$( jq -r .album <<< $data | sed 's/^null$//' )
+	[[ $album ]] && image=$( jq -r .image <<< $album | sed 's/^null$//' )
+	if [[ $image ]]; then
+		extralarge=$( jq -r '.[3]."#text"' <<< $image | sed 's/^null$//' )
+		[[ $extralarge ]] && url=$( sed 's|/300x300/|/_/|' <<< $extralarge ) # get larger size than 300x300
 	fi
 fi
 ### 2 - coverartarchive.org #####################################
 if [[ ! $url ]]; then
-	mbid=$( jq -r .mbid <<< $album )
-	if [[ $mbid && $mbid != null ]]; then
+	mbid=$( jq -r .mbid <<< $album | sed 's/^null$//' )
+	if [[ $mbid ]]; then
 		imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
 		[[ $? != 0 ]] && notify coverart 'Online Cover Art' 'Server not reachable.' && exit
 		
-		url=$( jq -r .images[0].image <<< $imgdata )
+		url=$( jq -r .images[0].image <<< $imgdata | sed 's/^null$//' )
 	fi
 fi
 if [[ $DEBUG ]]; then
@@ -48,7 +48,11 @@ if [[ $DEBUG ]]; then
 	exit
 fi
 
-[[ ! $url || $url == null ]] && exit
+if [[ ! $url ]]; then
+	. $dirshm/radio
+	pushData coverart '{ "url": "" }'
+	exit
+fi
 
 ext=${url/*.}
 if [[ $DISCID ]]; then
@@ -62,17 +66,16 @@ curl -sfL $url -o $coverfile
 [[ $? != 0 ]] && exit
 
 coverurl=${coverfile:9}
-data='
-  "url"   : "'$coverurl'"
-, "type"  : "coverart"'
+data='"url": "'$coverurl'"'
 if [[ $TYPE == webradio ]]; then
-	if [[ -e $dirshm/radio ]]; then # radioparadise / radiofrance - already got album name
+	if [[ -e $dirshm/radio ]] && grep -q -m1 ^id $dirshm/radio; then # radioparadise / radiofrance - already got album name
 		sed -i -e '/^coverart=/ d' -e "1 a\coverart=$coverurl" $dirshm/status
 	else
-		Album=$( jq -r .title <<< $album )
-		echo $ALBUM > $dirshm/webradio/$name
-		data+='
-, "Album" : "'$ALBUM'"'
+		radioalbum=$( jq -r .title <<< $album | sed 's/^null$//' )
+		if [[ $radioalbum ]]; then
+			echo $radioalbum > $dirshm/webradio/$name
+			data+=', "radioalbum" : "'$radioalbum'"'
+		fi
 	fi
 fi
 pushData coverart "{ $data }"
