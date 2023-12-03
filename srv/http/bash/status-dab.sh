@@ -3,9 +3,6 @@
 . /srv/http/bash/common.sh
 
 . $dirshm/radio
-pos=$( mpc status %songpos% )
-total=$( mpc status %length% )
-sampling="$pos/$total • 48 kHz 160 kbit/s • DAB"
 filelabel=$dirshm/webradio/DABlabel.txt
 filecover=$dirshm/webradio/DABslide.jpg
 filetitle=$dirshm/webradio/DABtitle

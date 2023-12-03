@@ -297,20 +297,21 @@ elif [[ $stream ]]; then
 				if [[ $icon == dabradio ]]; then
 					service=dab
 				else
+					service=radio
 					id=$( basename ${file/-*} )
 					[[ ${id:0:13} == francemusique ]] && id=${id:13}
 					[[ ! $id ]] && id=francemusique
-					service=radio
 				fi
 				if [[ ! -e $dirshm/radio ]]; then
+					sampling="$songpos/$pllength • $radiosampling"
 					stationcover=${dirradio:9}/img/$urlname.jpg
-					pushData mpdradio '{ "coverart": "'$stationcover'" }'
+					pushData mpdplayer '{ "coverart": "'$stationcover'", "sampling": "'$sampling'" }'
 					radio="\
 file=$file
 station=\"$station\""
 					[[ $icon != dabradio ]] && radio+='
 id='$id'
-radiosampling="'$radiosampling'"
+sampling="'$sampling'"
 stationcover="'$stationcover'"'
 					echo "$radio" > $dirshm/radio
 					if ! systemctl -q is-active $service; then
@@ -361,9 +362,7 @@ stationcover="'$stationcover'"'
 , "Time"         : false
 , "Title"        : "'$Title'"
 , "webradio"     : true'
-		if [[ $id ]]; then
-			[[ ! $snapclient ]] && pos="$(( song + 1 ))/$pllength • "
-			sampling="$pos$radiosampling"
+		if [[ $service ]]; then # rp / rf / dab
 			elapsed=$( mpcElapsed )
 ########
 			status+='
@@ -373,7 +372,7 @@ stationcover="'$stationcover'"'
 , "icon"         : "'$icon'"
 , "sampling"     : "'$sampling'"
 , "song"         : '$song
-# >>>>>>>>>> rp / rf webradio
+# >>>>>>>>>>
 			outputStatus
 		fi
 	fi

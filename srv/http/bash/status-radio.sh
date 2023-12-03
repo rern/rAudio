@@ -3,9 +3,6 @@
 . /srv/http/bash/common.sh
 
 . $dirshm/radio
-pos=$( mpc status %songpos% )
-total=$( mpc status %length% )
-sampling="$pos/$total • $radiosampling"
 
 case $id in
 	flac )   id=0;;
