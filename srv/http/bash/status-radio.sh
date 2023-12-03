@@ -5,13 +5,14 @@
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
 station=$( stringEscape ${tmpradio[1]} )
-stationcover=/data/webradio/img/${file//\//|}.jpg
 id=${tmpradio[2]}
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
 sampling="$pos/$total • ${tmpradio[3]}"
 song=$(( $pos - 1 ))
 grep -q radioelapsed.*true $dirsystem/display.json && radioelapsed=1
+stationcover=/data/webradio/img/${file//\//|}.jpg
+pushData coverart '{ "type": "coverart", "url": "'$stationcover'" }'
 
 case $id in
 	flac )   id=0;;
