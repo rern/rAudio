@@ -135,23 +135,13 @@ $( jq -r .albumTitle <<< $track )"
 		else
 			name=$( tr -d ' "`?/#&'"'" <<< $artist$album )
 			coverfile=$( ls $dirshm/webradio/${name,,}.* )
-			if [[ -e coverfile ]]; then
-				coverart=${coverfile:9}
-			else
-				coverart=$stationcover
-				$dirbash/status-coverartonline.sh "cmd
-$artist
-$album
-webradio
-CMD ARTIST ALBUM TYPE" &> /dev/null &
-			fi
+			coverart=${coverfile:9}
 		fi
 	fi
 	[[ $radioelapsed ]] && elapsed=$( mpcElapsed ) || elapsed=false
-	data='{
+	data='
   "Album"        : "'$album'"
 , "Artist"       : "'$artist'"
-, "coverart"     : "'$coverart'"
 , "elapsed"      : '$elapsed'
 , "file"         : "'$file'"
 , "icon"         : "'$icon'"
@@ -162,10 +152,19 @@ CMD ARTIST ALBUM TYPE" &> /dev/null &
 , "stationcover" : "'$stationcover'"
 , "Time"         : false
 , "Title"        : "'$title'"
-, "webradio"     : true
-}'
-	pushData mpdradio "$data"
-	status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
+, "webradio"     : true'
+	if [[ $coverart ]]; then
+		data+='
+, "coverart"     : "'$coverart'"'
+	else
+		$dirbash/status-coverartonline.sh "cmd
+$artist
+$album
+webradio
+CMD ARTIST ALBUM TYPE" &> /dev/null &
+	fi
+	pushData mpdradio "{ $data }"
+	status=$( sed 's/^.."//; s/" *: /=/' <<< $data )
 	status+='
 timestamp='$( date +%s%3N )'
 webradio=true
