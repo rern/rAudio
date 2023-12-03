@@ -6,6 +6,7 @@
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
 song=$(( $pos - 1 ))
+sampling="$pos/$total • 48 kHz 160 kbit/s • DAB"
 grep -q radioelapsed.*true $dirsystem/display.json && radioelapsed=1
 filelabel=$dirshm/webradio/DABlabel.txt
 filecover=$dirshm/webradio/DABslide.jpg
@@ -25,7 +26,7 @@ while true; do
 , "elapsed"  : '$elapsed'
 , "file"     : "'$file'"
 , "icon"     : "dabradio"
-, "sampling" : "'$pos'/'$total' • 48 kHz 160 kbit/s • DAB"
+, "sampling" : "'$sampling'"
 , "state"    : "play"
 , "song"     : '$song'
 , "station"  : ""
