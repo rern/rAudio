@@ -296,14 +296,15 @@ elif [[ $stream ]]; then
 			if [[ $icon == dabradio || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
 				if [[ $icon == dabradio ]]; then
 					service=dab
+					radiosampling="48 kHz 160 kbit/s"
 				else
 					service=radio
 					id=$( basename ${file/-*} )
 					[[ ${id:0:13} == francemusique ]] && id=${id:13}
 					[[ ! $id ]] && id=francemusique
 				fi
+				sampling="$songpos/$pllength • $radiosampling"
 				if [[ ! -e $dirshm/radio ]]; then
-					sampling="$songpos/$pllength • $radiosampling"
 					stationcover=${dirradio:9}/img/$urlname.jpg
 					pushData mpdplayer '{ "coverart": "'$stationcover'", "sampling": "'$sampling'" }'
 					radio="\
