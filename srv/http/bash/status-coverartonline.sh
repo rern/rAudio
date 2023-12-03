@@ -25,21 +25,21 @@ data=$( curl -sfG -m 5 \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
 if [[ $? == 0 && $data ]]; then
-	[[ $artist_title ]] && album=$( jq -r '.track.album | select(.)' <<< $data ) || album=$( jq -r '.album | select(.)' <<< $data )
-	[[ $album ]] && image=$( jq -r '.image | select(.)' <<< $album )
+	[[ $artist_title ]] && album=$( jq -r '.track.album // empty' <<< $data ) || album=$( jq -r '.album // empty' <<< $data )
+	[[ $album ]] && image=$( jq -r '.image // empty' <<< $album )
 	if [[ $image ]]; then
-		extralarge=$( jq -r '.[3]."#text" | select(.)' <<< $image )
+		extralarge=$( jq -r '.[3]."#text" // empty' <<< $image )
 		[[ $extralarge ]] && url=$( sed 's|/300x300/|/_/|' <<< $extralarge ) # get larger size than 300x300
 	fi
 fi
 ### 2 - coverartarchive.org #####################################
 if [[ ! $url ]]; then
-	mbid=$( jq -r '.mbid | select(.)' <<< $album )
+	mbid=$( jq -r '.mbid // empty' <<< $album )
 	if [[ $mbid ]]; then
 		imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
 		[[ $? != 0 ]] && notify coverart 'Online Cover Art' 'Server not reachable.' && exit
 		
-		url=$( jq -r '.images[0].image | select(.)' <<< $imgdata )
+		url=$( jq -r '.images[0].image // empty' <<< $imgdata )
 	fi
 fi
 if [[ $DEBUG ]]; then
@@ -71,7 +71,7 @@ if [[ $TYPE == webradio ]]; then
 	if [[ -e $dirshm/radio ]] && grep -q -m1 ^id $dirshm/radio; then # radioparadise / radiofrance - already got album name
 		sed -i -e '/^coverart=/ d' -e "1 a\coverart=$coverurl" $dirshm/status
 	else
-		radioalbum=$( jq -r '.title | select(.)' <<< $album )
+		radioalbum=$( jq -r '.title // empty' <<< $album )
 		if [[ $radioalbum ]]; then
 			echo $radioalbum > $dirshm/webradio/$name
 			data+=', "radioalbum" : "'$radioalbum'"'

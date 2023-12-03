@@ -76,11 +76,11 @@ metadataGet() {
 	fi
 	
 	if [[ $radioparadise ]]; then
-		readarray -t metadata <<< $( jq -r '.artist,.title,.album,.cover,.time | select(.)' <<< $json )
+		readarray -t metadata <<< $( jq -r '.artist,.title,.album,.cover,.time // empty' <<< $json )
 		countdown=${metadata[4]} # countdown
 	else 
 		if [[ $hiphop ]]; then
-			song=$( jq -r '.data.live.song | select(.)' <<< $json )
+			song=$( jq -r '.data.live.song // empty' <<< $json )
 			if [[ ! $song ]]; then
 				sleep 5
 				metadataGet
@@ -99,7 +99,7 @@ $( jq -r .albumTitle <<< $track )"
 			position=$( jq .position <<< $levels )
 			item=$( jq .items[$position] <<< $levels )
 			step=$( jq .steps[$item] <<< $json )
-			readarray -t metadata <<< $( jq -r '.authors,.title,.titreAlbum,.visual,.end | select(.)' <<< $step )
+			readarray -t metadata <<< $( jq -r '.authors,.title,.titreAlbum,.visual,.end // empty' <<< $step )
 			end=$( jq -r .end <<< $step )
 		fi
 		now=$( date +%s )
@@ -116,7 +116,7 @@ $( jq -r .albumTitle <<< $track )"
 		return
 	fi
 	
-	[[ ! $artist ]] && artist=$( jq -r '.composers | select(.)' <<< $step )
+	[[ ! $artist ]] && artist=$( jq -r '.composers // empty' <<< $step )
 	if [[ ! -e $dirsystem/vumeter ]]; then
 		if [[ $coverurl ]]; then
 			name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
