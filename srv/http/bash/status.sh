@@ -306,7 +306,12 @@ elif [[ $stream ]]; then
 				sampling="$songpos/$pllength • $radiosampling"
 				if [[ ! -e $dirshm/radio ]]; then
 					stationcover=${dirradio:9}/img/$urlname.jpg
-					pushData mpdplayer '{ "coverart": "'$stationcover'", "sampling": "'$sampling'" }'
+					datastation='
+  "coverart" : "'$stationcover'"
+, "file"     : "'$file'"
+, "sampling" : "'$sampling'"
+, "station"  : "'$station'"'
+					pushData mpdplayer "{ $datastation }"
 					radio="\
 file=$file
 station=\"$station\""
