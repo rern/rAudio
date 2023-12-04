@@ -309,6 +309,7 @@ elif [[ $stream ]]; then
 					datastation='
   "coverart" : "'$stationcover'"
 , "file"     : "'$file'"
+, "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"
 , "station"  : "'$station'"'
 					pushData mpdplayer "{ $datastation }"
