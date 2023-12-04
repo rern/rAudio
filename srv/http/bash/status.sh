@@ -313,14 +313,12 @@ elif [[ $stream ]]; then
 , "sampling" : "'$sampling'"
 , "station"  : "'$station'"'
 					pushData mpdplayer "{ $datastation }"
-					radio="\
-file=$file
-station=\"$station\""
-					[[ $icon != dabradio ]] && radio+='
+					echo '
+file='$file'
 id='$id'
 sampling="'$sampling'"
-stationcover="'$stationcover'"'
-					echo "$radio" > $dirshm/radio
+station="'$station'"
+stationcover="'$stationcover'"' > $dirshm/radio
 					! systemctl -q is-active $rp_rf && systemctl start $rp_rf
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart' $dirshm/status )

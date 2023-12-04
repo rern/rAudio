@@ -9,24 +9,29 @@ filetitle=$dirshm/webradio/DABtitle
 
 while true; do
 	# title
-	[[ ! $( awk NF $filelabel ) ]] && sleep 10 && continue
+	if [[ ! $( awk NF $filelabel ) ]]; then
+		pushData mpdradio '{ "Title": "" }'
+		sleep 10
+		continue
+	fi
 	
 	if ! cmp -s $filelabel $filetitle; then
 		cp -f $filelabel $filetitle
 		elapsed=$( mpcElapsed )
 		data='
-  "Album"    : "DAB Radio"
-, "Artist"   : "'$station'"
-, "coverart" : ""
-, "elapsed"  : '$elapsed'
-, "file"     : "'$file'"
-, "icon"     : "dabradio"
-, "sampling" : "'$sampling'"
-, "state"    : "play"
-, "station"  : ""
-, "Time"     : false
-, "Title"    : "'$( < $filetitle )'"
-, "webradio" : true'
+  "Album"        : "DAB Radio"
+, "Artist"       : "'$station'"
+, "coverart"     : ""
+, "elapsed"      : '$elapsed'
+, "file"         : "'$file'"
+, "icon"         : "dabradio"
+, "sampling"     : "'$sampling'"
+, "state"        : "play"
+, "station"      : ""
+, "stationcover" : "'$stationcover'"
+, "Time"         : false
+, "Title"        : "'$( < $filetitle )'"
+, "webradio"     : true'
 		pushData mpdradio "{ $data }"
 		sed 's/^.."//; s/" *: /=/' <<< $data > $dirshm/status
 		$dirbash/status-push.sh statusradio &
@@ -39,10 +44,7 @@ while true; do
 	if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
 		cp -f $filecover $coverfile
 		coverart="${coverfile:9}"
-		sed -i -e '/^coverart=/ d
-' -e "$ a\
-coverart=$coverart
-" $dirshm/status
+		sed -i -E "s/^(coverart=).*/\1$coverart/" $dirshm/status
 		pushData coverart '{ "url": "'$coverart'" }'
 	fi
 	sleep 10
