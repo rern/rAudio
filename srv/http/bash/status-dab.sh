@@ -12,7 +12,6 @@ filetitle=$dirshm/webradio/DABtitle
 while true; do
 	# title
 	if [[ ! $( awk NF $filelabel ) ]] || cmp -s $filelabel $filetitle; then
-		title=
 		pushData mpdradio '{ "Title": "" }'
 		sleep 10
 		continue
