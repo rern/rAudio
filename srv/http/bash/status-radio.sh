@@ -99,7 +99,7 @@ $( jq -r .albumTitle <<< $track )"
 			position=$( jq .position <<< $levels )
 			item=$( jq .items[$position] <<< $levels )
 			step=$( jq .steps[$item] <<< $json )
-			readarray -t metadata <<< $( jq -r '.authors // empty,.end // empty,.title // empty,.titreAlbum // empty,.visual // empty' <<< $step )
+			readarray -t metadata <<< $( jq -r '.authors // empty,.title // empty,.titreAlbum // empty,.visual // empty,.end // empty' <<< $step )
 			end=$( jq -r .end <<< $step )
 		fi
 		now=$( date +%s )
@@ -110,6 +110,9 @@ $( jq -r .albumTitle <<< $track )"
 	title=$( stringEscape ${metadata[1]} )
 	album=$( stringEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
+	jq .steps[$item] <<< $json
+	echo "$artist - $title - $album - $coverurl"
+	
 	if [[ ! $title || "$artist $title $album" == $dataprev ]]; then
 		sleep 5
 		metadataGet
