@@ -81,8 +81,14 @@ metadataGet() {
 	else 
 		if [[ $hiphop ]]; then
 			song=$( jq -r '.data.live.song // empty' <<< $json )
+			if [[ ! $song ]]; then
+				sleep 5
+				metadataGet
+				return
+			fi
+			
 			track=$( jq .track <<< $song )
-			artists=$(  jq -r '.mainArtists[]' <<< $track )
+			artists=$(  jq -r '.mainArtists[] // empty' <<< $track )
 			readarray -t metadata <<< "\
 ${artists//$'\n'/, }
 $( jq -r .title <<< $track )
