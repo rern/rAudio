@@ -295,10 +295,10 @@ elif [[ $stream ]]; then
 		else
 			if [[ $icon == dabradio || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
 				if [[ $icon == dabradio ]]; then
-					rprf=dab
+					rp_rf=dab
 					radiosampling="48 kHz 160 kbit/s"
 				else
-					rprf=radio
+					rp_rf=radio
 					id=$( basename ${file/-*} )
 					[[ ${id:0:13} == francemusique ]] && id=${id:13}
 					[[ ! $id ]] && id=francemusique
@@ -320,7 +320,7 @@ id='$id'
 sampling="'$sampling'"
 stationcover="'$stationcover'"'
 					echo "$radio" > $dirshm/radio
-					! systemctl -q is-active $rprf && systemctl start $rprf
+					! systemctl -q is-active $rp_rf && systemctl start $rp_rf
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
@@ -364,7 +364,7 @@ stationcover="'$stationcover'"'
 , "Time"         : false
 , "Title"        : "'$Title'"
 , "webradio"     : true'
-		if [[ $rprf ]]; then # rp / rf / dab
+		if [[ $rp_rf ]]; then # rp / rf / dab
 			elapsed=$( mpcElapsed )
 ########
 			status+='
