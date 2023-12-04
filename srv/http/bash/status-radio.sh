@@ -76,7 +76,7 @@ metadataGet() {
 	fi
 	
 	if [[ $radioparadise ]]; then
-		readarray -t metadata <<< $( jq -r '.artist // empty,.title // empty,.album // empty,.cover // empty,.time // empty' <<< $json )
+		readarray -t metadata <<< $( jq -r .artist,.title,.album,.cover,.time <<< $json | sed 's/^null$//' )
 		countdown=${metadata[4]} # countdown
 	else 
 		if [[ $hiphop ]]; then
@@ -99,7 +99,7 @@ $( jq -r .albumTitle <<< $track )"
 			position=$( jq .position <<< $levels )
 			item=$( jq .items[$position] <<< $levels )
 			step=$( jq .steps[$item] <<< $json )
-			readarray -t metadata <<< $( jq -r '.authors // empty,.title // empty,.titreAlbum // empty,.visual // empty,.end // empty' <<< $step )
+			readarray -t metadata <<< $( jq -r .authors,.title,.titreAlbum,.visual,.end <<< $step | sed 's/^null$//' )
 			end=$( jq -r .end <<< $step )
 		fi
 		now=$( date +%s )
