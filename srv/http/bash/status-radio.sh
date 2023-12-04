@@ -3,6 +3,9 @@
 . /srv/http/bash/common.sh
 
 . $dirshm/radio
+id=$( basename ${file/-*} )
+[[ ${id:0:13} == francemusique ]] && id=${id:13}
+[[ ! $id ]] && id=francemusique
 
 case $id in
 	flac )   id=0;;
@@ -133,18 +136,10 @@ $( jq -r .albumTitle <<< $track )"
 	fi
 	elapsed=$( mpcElapsed )
 	data='
-  "Album"        : "'$album'"
-, "Artist"       : "'$artist'"
-, "elapsed"      : '$elapsed'
-, "file"         : "'$file'"
-, "icon"         : "'$icon'"
-, "sampling"     : "'$sampling'"
-, "state"        : "play"
-, "station"      : "'$station'"
-, "stationcover" : "'$stationcover'"
-, "Time"         : false
-, "Title"        : "'$title'"
-, "webradio"     : true'
+  "Album"    : "'$album'"
+, "Artist"   : "'$artist'"
+, "elapsed"  : '$elapsed'
+, "Title"    : "'$title'"'
 	if [[ $coverart ]]; then
 		data+='
 , "coverart"     : "'$coverart'"'
@@ -157,8 +152,7 @@ CMD ARTIST ALBUM TYPE" &> /dev/null &
 	fi
 	pushData mpdradio "{ $data }"
 	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
-	sed 's/^.."//; s/" *: /=/' <<< $data > $dirshm/status
-	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
+	radioStatusFile
 	[[ $coverart ]] && $dirbash/cmd.sh coverfileslimit
 	# next fetch
 	[[ ! $countdown || $countdown -lt 0 ]] && countdown=0

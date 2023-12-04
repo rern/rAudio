@@ -295,31 +295,28 @@ elif [[ $stream ]]; then
 		else
 			if [[ $icon == dabradio || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
 				if [[ $icon == dabradio ]]; then
-					rp_rf=dab
+					radio_dab=dab
 					radiosampling="48 kHz 160 kbit/s"
 				else
-					rp_rf=radio
-					id=$( basename ${file/-*} )
-					[[ ${id:0:13} == francemusique ]] && id=${id:13}
-					[[ ! $id ]] && id=francemusique
+					radio_dab=radio
 				fi
 				sampling="$songpos/$pllength • $radiosampling"
 				if [[ ! -e $dirshm/radio ]]; then
+					state=play
 					stationcover=${dirradio:9}/img/$urlname.jpg
 					datastation='
-  "coverart" : "'$stationcover'"
-, "file"     : "'$file'"
-, "icon"     : "'$icon'"
-, "sampling" : "'$sampling'"
-, "station"  : "'$station'"'
+  "coverart"     : "'$stationcover'"
+, "file"         : "'$file'"
+, "icon"         : "'$icon'"
+, "sampling"     : "'$sampling'"
+, "state"        : "play"
+, "station"      : "'$station'"
+, "stationcover" : "'$stationcover'"
+, "Time"         : false
+, "webradio"     : true'
 					pushData mpdplayer "{ $datastation }"
-					echo '
-file='$file'
-id='$id'
-sampling="'$sampling'"
-station="'$station'"
-stationcover="'$stationcover'"' > $dirshm/radio
-					! systemctl -q is-active $rp_rf && systemctl start $rp_rf
+					echo "file=$file" > $dirshm/radio
+					! systemctl -q is-active $radio_dab && systemctl start $radio_dab
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
@@ -363,7 +360,7 @@ stationcover="'$stationcover'"' > $dirshm/radio
 , "Time"         : false
 , "Title"        : "'$Title'"
 , "webradio"     : true'
-		if [[ $rp_rf ]]; then # rp / rf / dab
+		if [[ $radio_dab ]]; then # rp / rf / dab
 			elapsed=$( mpcElapsed )
 ########
 			status+='

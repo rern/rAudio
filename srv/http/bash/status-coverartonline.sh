@@ -68,8 +68,8 @@ curl -sfL $url -o $coverfile
 coverurl=${coverfile:9}
 data='"url": "'$coverurl'"'
 if [[ $TYPE == webradio ]]; then
-	if [[ -e $dirshm/radio ]] && grep -q -m1 ^id $dirshm/radio; then # radioparadise / radiofrance - already got album name
-		sed -i -e '/^coverart=/ d' -e "1 a\coverart=$coverurl" $dirshm/status
+	if [[ -e $dirshm/radio ]]; then # radioparadise / radiofrance - already got album name
+		sed -i -e '/^coverart=/ d' -e "$ a\coverart=$coverurl" $dirshm/status
 	else
 		radioalbum=$( jq -r '.title // empty' <<< $album )
 		if [[ $radioalbum ]]; then
