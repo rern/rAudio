@@ -6,7 +6,6 @@ $id_data = [
 	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
 	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
-	, 'hdmi'          => [ 'name' => 'HDMI Hotplug',                              'setting' => false ]
 	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'name' => 'Audio - I²S' ]
 	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'RPLCD' ]
@@ -130,14 +129,6 @@ EOF
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 ■ Sampling 16bit - Bluetooth receivers with fixed sampling
-EOF
-	]
-	, [
-		  'id'       => 'hdmi'
-		, 'help'     => <<< EOF
- · Force enable HDMI without connecting before boot
- · Enable if not detected properly
- · Should be disabled if not used.
 EOF
 	]
 	, [

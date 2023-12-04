@@ -171,13 +171,6 @@ hddsleep )
 	fi
 	pushRefresh
 	;;
-hdmi )
-	config=$( grep -v hdmi_force_hotplug /boot/config.txt )
-	[[ $ON ]] && config+="
-hdmi_force_hotplug=1"
-	configTxt
-	pushData refresh '{ "page": "features", "hdmihotplug": '$TF' }'
-	;;
 hostname )
 	hostnamectl set-hostname $NAME
 	sed -i -E 's/^(ssid=).*/\1'$NAME'/' /etc/hostapd/hostapd.conf

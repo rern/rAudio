@@ -159,7 +159,6 @@ data='
 , "audiooutput"       : "'$audiooutput'"
 , "hddapm"            : '$hddapm'
 , "hddsleep"          : '${hddapm/128/false}'
-, "hdmi"              : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
 , "hostapd"           : '$hostapd'
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
