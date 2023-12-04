@@ -58,12 +58,11 @@ metadataGet() {
 			json=$( curl -sGk -m 5 https://api.radiofrance.fr/livemeta/pull/$id )
 		fi
 	fi
-	if [[ ! $json || ${json:0:1} != '{' ]]; then
+	if [[ ! $json || ${json:0:1} != '{' || $json == *,\"error\":* ]]; then
 		(( i++ ))
 		if [[ $i == 1 ]]; then
 			notify "$icon blink" Metadata 'Retry ...' -1
-			status=$( $dirbash/status.sh )
-			pushData mpdradio "$status"
+			pushData mpdradio '{ "Artist": "", "Title": "", "Album": "" }'
 		elif [[ $i == 10 ]]; then
 			notify $icon Metadata 'Not available'
 			systemctl stop radio
