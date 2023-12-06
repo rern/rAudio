@@ -16,30 +16,30 @@ for line in "${lines[@]}"; do
 	val=${line#*: }
 	case $key in
 		audio )
-			status+="samplerate=${val/:*}; "
-			status+="bitdepth=${val/*:}; "
+			samplerate=${val/:*}
+			bitdepth=${val/*:}
 			;;
 		bitrate )
-			status+="bitrate=$(( val * 1000 )); "
+			bitrate=$(( val * 1000 ))
 			;;
 		duration | playlistlength | state | Time )
-			status+="$key=$val; "
+			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
 		Album | AlbumArtist | Artist | Composer | Conductor | Name | Title )
-			status+=$key'="'$( stringEscape "$val" )'"; '
+			printf -v $key '%s' "$( stringEscape $val )"
 			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
 			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
-			status+='file="'$( stringEscape "$val" )'"; filenoesc="'$filenoesc'" ; '
+			file=$( stringEscape "$val" )
 			;;   # escape " for json
 		random | repeat | single )
-			[[ $val == 1 ]] && tf=true || tf=false
-			status+="$key=$tf; "
+			[[ $val == 1 ]] && val=true || val=false
+			printf -v $key '%s' $val
 			;;
 	esac
 done
-echo "status"
+
 exit
 
 . <( mpc playlist -f 'album="%album%"; artist="%artist%"; composer="%composer%"; conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' | sed -n ${pos}p )
