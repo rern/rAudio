@@ -562,12 +562,8 @@ mpcplayback )
 	;;
 mpcprevnext )
 	touch $dirshm/prevnextseek
-	status=( $( mpc status '%state% %songpos% %length% %random% %consume%' ) )
-	[[ ${status[0]} == playing ]] && play=1
-	current=${status[1]}
-	length=${status[2]}
-	random=${status[3]}
-	consume=${status[4]}
+	. <( mpc status 'state=%state%; current=%songpos%; length=%length%; random=%random%; consume=%consume%' )
+	[[ $state == playing ]] && play=1
 	if [[ $random == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 	else
