@@ -37,7 +37,7 @@ if [[ ! $url ]]; then
 	mbid=$( jq -r '.mbid // empty' <<< $album )
 	if [[ $mbid ]]; then
 		imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
-		[[ $? != 0 ]] && notify coverart 'Online Cover Art' 'Server not reachable.' && exit
+		[[ $? != 0 ]] && pushDataCoverart && exit
 		
 		url=$( jq -r '.images[0].image // empty' <<< $imgdata )
 	fi
@@ -48,11 +48,7 @@ if [[ $DEBUG ]]; then
 	exit
 fi
 
-if [[ ! $url ]]; then
-	. $dirshm/radio
-	pushData coverart '{ "url": "" }'
-	exit
-fi
+[[ ! $url ]] && pushDataCoverart && exit
 
 ext=${url/*.}
 if [[ $DISCID ]]; then
@@ -60,22 +56,10 @@ if [[ $DISCID ]]; then
 else
 	[[ $TYPE ]] && prefix=$TYPE || prefix=online
 	coverfile=$dirshm/$prefix/$name.$ext
-	$dirbash/cmd.sh coverfileslimit
 fi
 curl -sfL $url -o $coverfile
-[[ $? != 0 ]] && exit
+[[ $? != 0 ]] && pushDataCoverart && exit
 
 coverurl=${coverfile:9}
-data='"url": "'$coverurl'"'
-if [[ $TYPE == webradio ]]; then
-	if [[ -e $dirshm/radio ]]; then # radioparadise / radiofrance - already got album name
-		sed -i -e '/^coverart=/ d' -e "$ a\coverart=$coverurl" $dirshm/status
-	else
-		radioalbum=$( jq -r '.title // empty' <<< $album )
-		if [[ $radioalbum ]]; then
-			echo $radioalbum > $dirshm/webradio/$name
-			data+=', "radioalbum" : "'$radioalbum'"'
-		fi
-	fi
-fi
-pushData coverart "{ $data }"
+[[ $TYPE == webradio && ! -e $dirshm/radio ]] && radioalbum=$( jq -r '.title // empty' <<< $album ) # radioparadise / radiofrance - already got album name
+pushDataCoverart "$coverurl" "$radioalbum"

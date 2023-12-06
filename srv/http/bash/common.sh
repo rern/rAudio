@@ -295,6 +295,11 @@ pushData() {
 		ipOnline $ip && echo $data | websocat ws://$ip:8080
 	done
 }
+pushDataCoverart() {
+	pushData coverart '{ "url": "'$1'", "radioalbum" : "'$2'" }'
+	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status
+	$dirbash/cmd.sh coverfileslimit
+}
 pushRefresh() {
 	local page push
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )

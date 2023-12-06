@@ -38,7 +38,7 @@ while true; do
 			sed -i -E "s/^(coverart=).*/\1$coverart/" $dirshm/status
 		fi
 	fi
-	pushData coverart '{ "url": "'$coverart'" }'
+	pushDataCoverart "$coverart"
 	radioStatusFile
 	sleep 10
 done

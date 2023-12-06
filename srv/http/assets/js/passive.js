@@ -109,7 +109,7 @@ function psCoverart( data ) {
 	$( '#coverart, #liimg' ).css( 'opacity', '' );
 	'stationcover' in data ? S.stationcover = data.url : S.coverart = data.url;
 	setCoverart();
-	if ( 'radioalbum' in data ) { // online coverarts come with album name
+	if ( data.radioalbum ) { // online coverarts come with album name
 		S.Album = data.radioalbum;
 		setInfo();
 	}
