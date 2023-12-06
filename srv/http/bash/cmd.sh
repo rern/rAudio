@@ -578,10 +578,14 @@ mpcprevnext )
 	fileheader=${file:0:4}
 	if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
 		webradio=true
-		path=$( find $dirwebradio -name ${file//\//|} )
+		urlname=${file//\//|}
+		path=$( find $dirwebradio -name $urlname )
 		station=$( head -1 $path )
+		coverfile=$dirwebradio/img/$urlname.jpg
 	else
 		webradio=false
+		path=$( dirname "/mnt/MPD/$file" )
+		coverfile=$( coverFileGet "$path" )
 	fi
 	data='
   "Artist"   : "'$artist'"
@@ -590,6 +594,11 @@ mpcprevnext )
 , "station"  : "'$station'"
 , "Title"    : "'$title'"
 , "webradio" : '$webradio
+	if [[ -e $coverfile ]]; then
+		[[ $webradio == true ]] && coverart=${coverfile:9} || coverart=$coverfile
+		data+='
+, "coverart" : "'$coverart'"'
+	fi
 	pushData mpdplayer "{ $data }"
 	
 	mpc -q play $POS

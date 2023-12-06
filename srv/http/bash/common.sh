@@ -131,6 +131,12 @@ confNotString() {
 confFromJson() { # $1 - file
 	sed -E '/\{|}/d; s/,//; s/^\s*"(.*)": "*(.*)"*$/\1="\2"/' "$1"
 }
+coverFileGet() {
+	path=$1
+	coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
+	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
+	[[ $coverfile ]] && echo "$coverfile"
+}
 data2json() {
 	local json page
 	page=$( basename ${0/-*} )
@@ -228,7 +234,7 @@ notify() { # icon title message delayms
 	else
 		ip=127.0.0.1
 	fi
-	echo $data | websocat ws://$ip:8080
+	tr -d '\n' <<< $data | websocat ws://$ip:8080
 }
 package() {
 	local file urlio
@@ -270,7 +276,7 @@ pushData() {
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	data='{ "channel": "'$channel'", "data": '$json' }'
-	echo $data | websocat ws://127.0.0.1:8080
+	tr -d '\n' <<< $data | websocat ws://127.0.0.1:8080 # remove newlines while preserve spaces
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
@@ -292,7 +298,7 @@ pushData() {
 	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		ipOnline $ip && echo $data | websocat ws://$ip:8080
+		ipOnline $ip && tr -d '\n' <<< $data | websocat ws://$ip:8080
 	done
 }
 pushDataCoverart() {
