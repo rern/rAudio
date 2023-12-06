@@ -583,47 +583,7 @@ mpcprevnext )
 		radioStop
 	fi
 	# prefetch before play
-	readarray -t data <<< $(  mpc playlist -f %artist%^%title%^%album%^%file%^%time% | sed -n "$pos {s/\^/\\n/g; p}" )
-	artist=$( stringEscape ${data[0]} )
-	title=$( stringEscape ${data[1]} )
-	album=$( stringEscape ${data[2]} )
-	file=${data[3]}
-	fileheader=${file:0:4}
-	if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
-		webradio=true
-		urlname=${file//\//|}
-		path=$( find $dirwebradio -name $urlname )
-		station=$( head -1 "$path" )
-		coverfile=$dirwebradio/img/$urlname.jpg
-		Time=false
-	else
-		webradio=false
-		path=$( dirname "/mnt/MPD/$file" )
-		coverfile=$( coverFileGet "$path" )
-		hms=${data[4]}
-		colon=$( tr -cd : <<< $hms | wc -c )
-		if (( $colon == 0 )); then
-			hms="0:0:$hms"
-		elif (( $colon == 1 )); then
-			hms="0:$hms"
-		fi
-		Time=$( date +'%s' -d "1970-01-01 $hms Z" )
-	fi
-	data='
-  "Artist"   : "'$artist'"
-, "Album"    : "'$album'"
-, "file"     : "'$file'"
-, "station"  : "'$station'"
-, "Time"     : '$Time'
-, "Title"    : "'$title'"
-, "webradio" : '$webradio
-	if [[ -e $coverfile ]]; then
-		[[ $webradio == true ]] && coverart=${coverfile:9} || coverart=$coverfile
-		data+='
-, "coverart" : "'$coverart'"'
-	fi
-	pushData mpdplayer "{ $data }"
-	
+	$dirbash/cmd-currentdata.sh $pos
 	rm -f $dirshm/prevnextseek
 	mpc -q play $pos
 	if [[ $play ]]; then
