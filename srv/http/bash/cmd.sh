@@ -562,33 +562,35 @@ mpcplayback )
 	pushData refresh '{ "page": "features", "snapclientactive": '$active' }'
 	;;
 mpcprevnext )
-	current=$( mpc status %songpos% )
-	length=$( mpc status %length% )
-	if [[ $( mpc status %state% ) == playing ]]; then
-		playing=1
+	if [[ $STATE == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
+		radioStop
 	else
 		touch $dirshm/prevnextseek
 	fi
-	radioStop
-	if [[ $( mpc status %random% ) == on ]]; then
-		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
-	else
-		if [[ $ACTION == next ]]; then
-			(( $current != $length )) && pos=$(( current + 1 )) || pos=1
-		else
-			(( $current != 1 )) && pos=$(( current - 1 )) || pos=$length
-		fi
-	fi
-	mpc -q play $pos
-	[[ -e $dirsystem/librandom ]] && plAddRandom
-	if [[ $playing ]]; then
-		[[ $( mpc status %consume% ) == on ]] && mpc -q del $current
+	readarray -t data <<< $(  mpc playlist -f %artist%^%title%^%album%^%file% | sed -n "$POS {s/\^/\\n/g; p}" )
+	artist=$( stringEscape ${data[0]} )
+	title=$( stringEscape ${data[1]} )
+	album=$( stringEscape ${data[2]} )
+	file=${data[3]}
+	fileheader=${file:0:4}
+	[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && webradio=true || webradio=false
+	data='
+  "Artist"   : "'$artist'"
+, "Album"    : "'$album'"
+, "file"     : "'$file'"
+, "Title"    : "'$title'"
+, "webradio" : '$webradio
+	pushData mpdplayer "{ $data }"
+	mpc -q play $POS
+	if [[ $STATE == play ]]; then
+		[[ $CONSUME ]] && mpc -q del $CONSUME
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
+	[[ -e $dirsystem/librandom ]] && plAddRandom
 	;;
 mpcremove )
 	if [[ $POS ]]; then

@@ -17,7 +17,26 @@ evtest /dev/input/$event | while read line; do
 	key=$( sed -E 's/.*KEY_(.*)\).*/\1/; s/CD|IOUSSONG|SONG//' <<< $line )
 	key=${key,,}
 	case $key in
-		next|prev )  $dirbash/cmd.sh mpcprevnext$'\n'$key$'\nCMD ACTION';;
+		next|prev )
+			[[ $( mpc status %state% ) == playing ]] && state=play
+			current=$( mpc status %songpos% )
+			length=$( mpc status %length% )
+			if [[ $( mpc status %random% ) == on ]]; then
+				pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
+				[[ $( mpc status %consume% ) == on ]] && consume=CONSUME
+			else
+				if [[ $key == next ]]; then
+					(( $current != $length )) && pos=$(( current + 1 )) || pos=1
+				else
+					(( $current != 1 )) && pos=$(( current - 1 )) || pos=$length
+				fi
+			fi
+			$dirbash/cmd.sh "mpcprevnext
+$state
+$pos
+$current
+CMD STATE POS $consume"
+			;;
 		play|pause ) $dirbash/cmd.sh mpcplayback;;
 		stop )       $dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION';;
 		volumedown ) volumeUpDnBt 1%- "$control";;

@@ -901,6 +901,8 @@ $( '.btn-cmd' ).on( 'click', function() {
 		setButtonOptions();
 		local( 600 );
 	} else {
+		$( '#playback-controls .btn' ).removeClass( 'active' );
+		$( '#'+ cmd ).addClass( 'active' );
 		if ( S.webradio ) {
 			$( '#divcover .cover-change' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
@@ -940,11 +942,15 @@ $( '.btn-cmd' ).on( 'click', function() {
 			intervalClear();
 			setProgress( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
-			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
-			banner( 'playlist', 'Skip', cmd[ 0 ].toUpperCase() + cmd.substr( 1 ) +' ...' );
+			if ( S.random ) {
+				var pos = Math.floor( Math.random() * ( S.pllength + 1 ) );
+			} else {
+				var pos = cmd === 'next' ? S.song + 2 : S.song;
+			}
+			var varlist = 'CMD STATE POS';
+			if ( S.consume ) varlist += ' CONSUME';
+			bash( [ 'mpcprevnext', S.state, pos, S.song + 1, varlist ] );
 		}
-		$( '#playback-controls .btn' ).removeClass( 'active' );
-		$( '#'+ cmd ).addClass( 'active' );
 	}
 	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );
 } );
