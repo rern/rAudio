@@ -184,7 +184,8 @@ localbrowser )
 		fi
 		if [[ $diffscreenoff ]]; then
 			localbrowserXset
-			[[ $SCREENOFF == 0 ]] && pushSubmenu screenoff false || pushSubmenu screenoff true
+			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
+			pushSubmenu screenoff $tf
 		fi
 		if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
 			restartlocalbrowser=1

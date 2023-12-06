@@ -60,7 +60,8 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 
 if [[ -e $dirsystem/mpdoled ]]; then
-	[[ $state == play ]] && systemctl start mpd_oled || systemctl stop mpd_oled
+	[[ $state == play ]] && start_stop=start || start_stop=stop
+	systemctl $start_stop mpd_oled
 fi
 
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && cava=1

@@ -122,7 +122,7 @@ radioStop() {
 		mpc -q stop
 		systemctl stop radio dab &> /dev/null
 		rm -f $dirshm/radio
-		$dirbash/status-push.sh
+		[[ ! -e $dirshm/prevnextseek ]] && $dirbash/status-push.sh
 	fi
 }
 shairportStop() {
@@ -561,6 +561,7 @@ mpcplayback )
 	pushData refresh '{ "page": "features", "snapclientactive": '$active' }'
 	;;
 mpcprevnext )
+	touch $dirshm/prevnextseek
 	status=( $( mpc status '%state% %songpos% %length% %random% %consume%' ) )
 	[[ ${status[0]} == playing ]] && play=1
 	current=${status[1]}
@@ -580,8 +581,6 @@ mpcprevnext )
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 		radioStop
-	else
-		touch $dirshm/prevnextseek
 	fi
 	# prefetch before play
 	readarray -t data <<< $(  mpc playlist -f %artist%^%title%^%album%^%file% | sed -n "$pos {s/\^/\\n/g; p}" )
@@ -615,11 +614,11 @@ mpcprevnext )
 	fi
 	pushData mpdplayer "{ $data }"
 	
+	rm -f $dirshm/prevnextseek
 	mpc -q play $pos
 	if [[ $play ]]; then
 		[[ $consume == on ]] && mpc -q del $current
 	else
-		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom

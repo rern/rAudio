@@ -17,7 +17,11 @@ if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
 fi
 
 outputStatus() {
-	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
+	if [[ $snapclient ]]; then
+		echo "$status" # - no braces
+	else
+		data2json "$status"
+	fi
 	[[ $1 != noexit ]] && exit # >>>>>>>>>>
 }
 

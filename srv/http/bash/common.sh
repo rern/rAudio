@@ -153,7 +153,11 @@ data2json() {
 				s/\[\s*,/[ false,/g
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g' <<< $json )
-	[[ $2 ]] && pushData refresh "$json" || echo "$json"
+	if [[ $2 ]]; then
+		pushData refresh "$json"
+	else
+		echo "$json"
+	fi
 }
 dirPermissions() {
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
