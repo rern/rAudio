@@ -102,10 +102,9 @@ plClear() {
 	radioStop
 }
 plTail() {
-	local pos total
-	total=$( mpc status %length% )
-	pos=$( mpc status %songpos% )
-	echo $(( total - pos ))
+	local pos_len
+	pos_len=( $( mpc status '%songpos% %length%' ) )
+	echo $(( ${pos_len[1]} - ${pos_len[0]} ))
 }
 pushPlaylist() {
 	local arg
