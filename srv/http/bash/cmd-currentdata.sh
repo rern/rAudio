@@ -31,7 +31,7 @@ else
 	Time=$( date +'%s' -d "1970-01-01 $time Z" )
 fi
 data='
-"Album"     : "'$Album'"
+  "Album"     : "'$Album'"
 , "Artist"    : "'$Artist'"
 , "Composer"  : "'$Composer'"
 , "Conductor" : "'$Conductor'"

@@ -168,6 +168,9 @@ fi
 
 (( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 
+#. <( mpc playlist -f 'Album="%album%"; Artist="%artist%"; Composer="%composer%"; Conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' | sed -n ${song}p )
+#. <( mpc status 'state=%state%; current=%songpos%; length=%length%; random=%random%; consume=%consume%' )
+
 filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file Name state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
