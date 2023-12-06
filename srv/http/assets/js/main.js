@@ -942,14 +942,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			intervalClear();
 			setProgress( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
-			if ( S.random ) {
-				var pos = Math.floor( Math.random() * ( S.pllength + 1 ) );
-			} else {
-				var pos = cmd === 'next' ? S.song + 2 : S.song;
-			}
-			var varlist = 'CMD STATE POS';
-			if ( S.consume ) varlist += ' CONSUME';
-			bash( [ 'mpcprevnext', S.state, pos, S.song + 1, varlist ] );
+			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
 		}
 	}
 	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );

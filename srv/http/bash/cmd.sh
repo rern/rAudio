@@ -562,7 +562,22 @@ mpcplayback )
 	pushData refresh '{ "page": "features", "snapclientactive": '$active' }'
 	;;
 mpcprevnext )
-	if [[ $STATE == play ]]; then
+	status=( $( mpc status '%state% %songpos% %length% %random% %consume%' ) )
+	[[ ${status[0]} == playing ]] && play=1
+	current=${status[1]}
+	length=${status[2]}
+	random=${status[3]}
+	consume=${status[4]}
+	if [[ $random == on ]]; then
+		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
+	else
+		if [[ $ACTION == next ]]; then
+			(( $current != $length )) && pos=$(( current + 1 )) || pos=1
+		else
+			(( $current != 1 )) && pos=$(( current - 1 )) || pos=$length
+		fi
+	fi
+	if [[ $play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 		radioStop
@@ -570,7 +585,7 @@ mpcprevnext )
 		touch $dirshm/prevnextseek
 	fi
 	# prefetch before play
-	readarray -t data <<< $(  mpc playlist -f %artist%^%title%^%album%^%file% | sed -n "$POS {s/\^/\\n/g; p}" )
+	readarray -t data <<< $(  mpc playlist -f %artist%^%title%^%album%^%file% | sed -n "$pos {s/\^/\\n/g; p}" )
 	artist=$( stringEscape ${data[0]} )
 	title=$( stringEscape ${data[1]} )
 	album=$( stringEscape ${data[2]} )
@@ -601,9 +616,9 @@ mpcprevnext )
 	fi
 	pushData mpdplayer "{ $data }"
 	
-	mpc -q play $POS
-	if [[ $STATE == play ]]; then
-		[[ $CONSUME ]] && mpc -q del $CONSUME
+	mpc -q play $pos
+	if [[ $play ]]; then
+		[[ $consume == on ]] && mpc -q del $current
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
