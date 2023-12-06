@@ -594,7 +594,7 @@ mpcprevnext )
 		webradio=true
 		urlname=${file//\//|}
 		path=$( find $dirwebradio -name $urlname )
-		station=$( head -1 $path )
+		station=$( head -1 "$path" )
 		coverfile=$dirwebradio/img/$urlname.jpg
 	else
 		webradio=false
