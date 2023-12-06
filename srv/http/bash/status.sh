@@ -182,9 +182,8 @@ for line in "${lines[@]}"; do
 	val=${line#*: }
 	case $key in
 		audio )
-			data=( ${val//:/ } )
-			samplerate=${data[0]}
-			bitdepth=${data[1]}
+			samplerate=${val/:*}
+			bitdepth=${val/*:}
 			;;
 		bitrate )
 			bitrate=$(( val * 1000 ))
@@ -201,10 +200,10 @@ for line in "${lines[@]}"; do
 			file=$( stringEscape "$val" )
 			;;   # escape " for json
 		random | repeat | single )
-			[[ $val == 1 ]] && tf=true || tf=false
+			[[ $val == 1 ]] && val=true || val=false
 ########
 			status+='
-, "'$key'" : '$tf
+, "'$key'" : '$val
 			;;
 	esac
 done
