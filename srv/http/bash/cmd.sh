@@ -569,20 +569,29 @@ mpcprevnext )
 	else
 		touch $dirshm/prevnextseek
 	fi
+	# prefetch before play
 	readarray -t data <<< $(  mpc playlist -f %artist%^%title%^%album%^%file% | sed -n "$POS {s/\^/\\n/g; p}" )
 	artist=$( stringEscape ${data[0]} )
 	title=$( stringEscape ${data[1]} )
 	album=$( stringEscape ${data[2]} )
 	file=${data[3]}
 	fileheader=${file:0:4}
-	[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && webradio=true || webradio=false
+	if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
+		webradio=true
+		path=$( find $dirwebradio -name ${file//\//|} )
+		station=$( head -1 $path )
+	else
+		webradio=false
+	fi
 	data='
   "Artist"   : "'$artist'"
 , "Album"    : "'$album'"
 , "file"     : "'$file'"
+, "station"  : "'$station'"
 , "Title"    : "'$title'"
 , "webradio" : '$webradio
 	pushData mpdplayer "{ $data }"
+	
 	mpc -q play $POS
 	if [[ $STATE == play ]]; then
 		[[ $CONSUME ]] && mpc -q del $CONSUME
