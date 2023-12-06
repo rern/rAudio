@@ -4,12 +4,6 @@
 
 args2var "$1"
 
-aplaynameFile() {
-	local aplayname card
-	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-	aplayname=$( aplay -l | sed -E -n '/^card '$card':/ {s/^.*\[(.*)],.*/\1/; p}' )
-	echo $dirsystem/spotify-$aplayname
-}
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser
@@ -407,7 +401,7 @@ spotifykeyremove )
 	pushRefresh
 	;;
 spotifyoutput )
-	file=$( aplaynameFile )
+	file=$dirsystem/spotifyoutput
 	[[ -e $file ]] && current='"'$( < "$file" )'"' || current=false
 	devices='"Default"'
 	readarray -t lines <<< $( aplay -L | grep ^.*:CARD )
@@ -422,7 +416,7 @@ spotifyoutput )
 }'
 	;;
 spotifyoutputset )
-	file=$( aplaynameFile )
+	file=$dirsystem/spotifyoutput
 	[[ $OUTPUT == Default ]] && rm -f "$file" || echo $OUTPUT > "$file"
 	$dirsettings/player-conf.sh
 	;;
