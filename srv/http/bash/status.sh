@@ -45,6 +45,11 @@ if [[ $1 == withdisplay ]]; then
 }'
 fi
 
+comsume_pos=( $( mpc status '%consume% %songpos%' ) )
+[[ ${comsume_pos[0]} == on ]] && consume=true
+songpos=${comsume_pos[1]}                     # mpc songpos : start at 1
+(( $songpos > 0 )) && song=$(( songpos - 1 )) # mpd song    : start at 0
+
 if [[ $1 == snapclient ]]; then
 	snapclient=1
 	player=mpd
@@ -53,7 +58,6 @@ else
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
 	
-	[[ $( mpc status %consume% ) == on ]] && consume=true
 	readarray -t vcc <<< $( volumeCardControl )
 	volume=${vcc[0]}
 	card=${vcc[1]}
@@ -163,8 +167,6 @@ fi
 filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file Name state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
-songpos=$( mpc status %songpos% )                       # mpc songpos : start at 1
-(( $songpos > 0 )) && song=$(( songpos - 1 )) || song=0 # mpd song    : start at 0
 readarray -t lines <<< $( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
 								| telnet 127.0.0.1 6600 2> /dev/null \
 								| grep -E $filter )
