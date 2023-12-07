@@ -51,8 +51,8 @@ fi
 
 comsume_pos=( $( mpc status '%consume% %songpos%' ) )
 [[ ${comsume_pos[0]} == on ]] && consume=true
-songpos=${comsume_pos[1]}                     # mpc songpos : start at 1
-(( $songpos > 0 )) && song=$(( songpos - 1 )) # mpd song    : start at 0
+pos=${comsume_pos[1]}                 # mpc songpos : start at 1
+(( $pos > 0 )) && song=$(( pos - 1 )) # mpd song    : start at 0
 
 if [[ $1 == snapclient ]]; then
 	snapclient=1
@@ -308,7 +308,7 @@ elif [[ $stream ]]; then
 				else
 					radio_dab=radio
 				fi
-				sampling="$songpos/$pllength • $radiosampling"
+				sampling="$pos/$pllength • $radiosampling"
 				if [[ ! -e $dirshm/radio ]]; then
 					state=play
 					stationcover=${dirradio:9}/img/$urlname.jpg
@@ -503,8 +503,7 @@ else
 	fi
 fi
 
-[[ ! $snapclient ]] && pos="$(( song + 1 ))/$pllength • "
-sampling="$pos$sampling"
+[[ ! $snapclient ]] && sampling="$pos/$pllength • $sampling"
 ########
 status+='
 , "ext"      : "'$ext'"
