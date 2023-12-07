@@ -578,8 +578,6 @@ mpcprevnext )
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 		radioStop
 	fi
-	# prefetch before play
-	#$dirbash/cmd-metadata.sh $(( pos - 1 )) prevnext &
 	rm -f $dirshm/prevnextseek
 	mpc -q play $pos
 	if [[ $play ]]; then
