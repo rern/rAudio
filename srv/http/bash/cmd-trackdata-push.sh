@@ -45,7 +45,6 @@ data='
 , "ext"       : "'$ext'"
 , "file"      : "'$file'"
 , "icon"      : "'$icon'"
-, "sampling"  : "'$sampling'"
 , "song"      : '$(( $1 - 1 ))'
 , "station"   : "'$station'"
 , "Time"      : '$time'
@@ -56,5 +55,8 @@ if [[ -e $coverfile ]]; then
 	data+='
 , "coverart"  : "'$coverart'"'
 fi
+[[ $sampling ]] && data+='
+, "sampling"  : "'$sampling'"'
+
 
 pushData mpdplayer "{ $data }"
