@@ -168,7 +168,7 @@ fi
 
 (( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 
-#. <( mpc playlist -f 'Album="%album%"; Artist="%artist%"; Composer="%composer%"; Conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' | sed -n ${song}p )
+#. <( mpc playlist -f 'Album="%album%"; Artist="%artist%"; Composer="%composer%"; Conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' | sed "$song q;d" )
 #. <( mpc status 'state=%state%; current=%songpos%; length=%length%; random=%random%; consume=%consume%' )
 
 filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file Name state Time Title'
@@ -236,7 +236,7 @@ if [[ $fileheader == cdda ]]; then
 	if [[ -e $dirshm/audiocd && -e $diraudiocd/$discid ]]; then
 		discid=$( < $dirshm/audiocd )
 		track=${file/*\/}
-		readarray -t audiocd <<< $( sed -n ${track}p $diraudiocd/$discid | tr ^ '\n' )
+		readarray -t audiocd <<< $( sed "$track q:d" $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${audiocd[0]}
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}

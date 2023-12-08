@@ -703,7 +703,7 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	elif [[ $TYPE == add ]]; then
 		[[ $TO == last ]] && echo $FILE >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
 	else # move
-		file=$( sed -n "$FROM p" "$plfile" )
+		file=$( sed "$FROM q;d" "$plfile" )
 		[[ $FROM < $TO ]] && (( TO++ ))
 		sed -i -e "$FROM d" -e "$TO i$file" "$plfile"
 	fi
@@ -825,7 +825,7 @@ webradioedit )
 	newfile="$path/$newurlname"
 	prevfile="$path/$urlname"
 	if [[ $NEWURL == $URL ]]; then
-		sampling=$( sed -n 2p "$prevfile" )
+		sampling=$( sed '2q;d' "$prevfile" )
 	else
 		[[ -e $newfile ]] && echo 'URL exists:' && exit
 		

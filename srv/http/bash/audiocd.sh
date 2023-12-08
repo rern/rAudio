@@ -62,7 +62,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	
 	code=$( head -c 3 <<< $query )
 	if (( $code == 210 )); then  # exact match
-	  genre_id=$( sed -n 2p <<< $query | cut -d' ' -f1,2 | tr ' ' + )
+	  genre_id=$( sed '2q;d' <<< $query | cut -d' ' -f1,2 | tr ' ' + )
 	elif (( $code == 200 )); then
 	  genre_id=$( cut -d' ' -f2,3 <<< $query | tr ' ' + )
 	fi
