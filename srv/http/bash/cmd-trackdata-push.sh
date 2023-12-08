@@ -19,7 +19,7 @@ if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
 	time=false
 	webradio=true
 	case $file in
-		*icecast.radiofrance.fr* ) icon=radiofrance;;
+		*icecast.radiofrance.fr* )   icon=radiofrance;;
 		*stream.radioparadise.com* ) icon=radioparadise;;
 	esac
 	ext=Radio
