@@ -260,7 +260,7 @@ function htmlTrack( $lists, $plname = '' ) {
 	$mmss = $time_song[ 0 ];
 	$mmss = explode( ':', $mmss );
 	$elapsed = $mmss[ 0 ] * 60 + $mmss[ 1 ];
-	$song = $time_song[ 1 ]; - 1;
+	$song = $time_song[ 1 ] - 1;
 	if ( $song < 0 ) $song = 0;
 	echo json_encode( [
 		  'html'      => $html
