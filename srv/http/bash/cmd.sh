@@ -572,7 +572,7 @@ mpcprevnext )
 			(( $current != 1 )) && pos=$(( current - 1 )) || pos=$length
 		fi
 	fi
-	$dirbash/cmd-trackdata-push.sh $pos &
+	$dirbash/cmd-prevnextdata.sh $pos &
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed

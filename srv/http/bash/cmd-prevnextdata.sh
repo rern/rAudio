@@ -58,5 +58,4 @@ fi
 [[ $sampling ]] && data+='
 , "sampling"  : "'$sampling'"'
 
-
 pushData mpdplayer "{ $data }"
