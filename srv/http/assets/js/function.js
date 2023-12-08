@@ -1594,17 +1594,6 @@ function setCoverart() {
 		}
 	}
 }
-function setStatusData() {
-	var list = {
-		  status  : S
-		, display : D
-		, count   : C
-	}
-	var html = '';
-	$.each( list, ( k, v ) => html += '<br><br>"'+ k +'":'+ highlightJSON( v ) );
-	$( '#data' ).html( html );
-	$( '#button-data, #data' ).removeClass( 'hide' );
-}
 function setInfo() {
 	var prev = {
 		  Artist : $( '#artist' ).text()
@@ -1649,8 +1638,8 @@ function setInfo() {
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 	if ( changed ) setInfoScroll();
-	var sampling = [ 'mpd', 'upnp' ].includes( S.player ) ? S.song + 1 +'/'+ S.pllength +' • ' : '';
-	sampling    += S.sampling;
+	var sampling = [ 'mpd', 'upnp' ].includes( S.player ) ? S.song + 1 +'/'+ S.pllength : '';
+	if ( S.sampling ) sampling += ' • '+ S.sampling;
 	if ( S.webradio ) {
 		if ( S.icon === 'dabradio' ) {
 			sampling += ' • DAB';
@@ -1907,6 +1896,17 @@ function setProgressElapsed() {
 			if ( S.state !== 'play' ) clearInterval( V.interval.elapsed );
 		}, 1000 );
 	}
+}
+function setStatusData() {
+	var list = {
+		  status  : S
+		, display : D
+		, count   : C
+	}
+	var html = '';
+	$.each( list, ( k, v ) => html += '<br><br>"'+ k +'":'+ highlightJSON( v ) );
+	$( '#data' ).html( html );
+	$( '#button-data, #data' ).removeClass( 'hide' );
 }
 function setTrackCoverart() {
 	if ( D.hidecover || ! $( '#liimg' ).length ) return

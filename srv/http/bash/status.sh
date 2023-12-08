@@ -279,13 +279,10 @@ elif [[ $stream ]]; then
 			icon=dabradio
 		else
 			dirradio=$dirwebradio
-			if [[ $file == *icecast.radiofrance.fr* ]]; then
-				icon=radiofrance
-			elif [[ $file == *stream.radioparadise.com* ]]; then
-				icon=radioparadise
-			else
-				icon=webradio
-			fi
+			case $file in
+				*icecast.radiofrance.fr* )   icon=radiofrance;;
+				*stream.radioparadise.com* ) icon=radioparadise;;
+			esac
 		fi
 		# before webradio play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
@@ -301,7 +298,7 @@ elif [[ $stream ]]; then
 			state=stop
 			Title=
 		else
-			if [[ $icon == dabradio || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
+			if [[ $icon =~ ^(radioparadise|radiofrance|dabradio)$ ]]; then # while playing: status-push.sh
 				if [[ $icon == dabradio ]]; then
 					radio_dab=dab
 					radiosampling="48 kHz 160 kbit/s"
