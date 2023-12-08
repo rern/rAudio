@@ -1217,7 +1217,6 @@ function renderStorage() {
 	} else {
 		$( '#divhddsleep' ).addClass( 'hide' );
 	}
-	$( '#divusbautoupdate' ).toggleClass( 'hide', S.shareddata || S.nfsserver );
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );

@@ -19,7 +19,6 @@ $id_data = [
 	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
 	, 'tft'           => [ 'name' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
-	, 'usbautoupdate' => [ 'name' => 'Hotplug Update',                            'setting' => false ]
 	, 'vuled'         => [ 'name' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
@@ -103,10 +102,6 @@ $body = [
 		  'id'       => 'hddsleep'
 		, 'disabled' => 'HDD not support sleep'
 		, 'help'     => 'Sleep timer for USB hard drives.'
-	]
-	, [
-		  'id'       => 'usbautoupdate'
-		, 'help'     => 'Auto update Library database on insert/remove USB drives.'
 	]
 ];
 htmlSection( $head, $body, 'storage' );

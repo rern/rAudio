@@ -346,7 +346,6 @@ sharedDataBackupLink() {
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
 	echo data > $dirnas/.mpdignore
-	touch $dirsystem/usbautoupdateno
 }
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
