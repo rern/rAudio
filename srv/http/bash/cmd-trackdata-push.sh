@@ -25,12 +25,14 @@ else
 	time=$( date +'%s' -d "1970-01-01 $time Z" )
 	webradio=false
 fi
+
 data='
   "Album"     : "'$album'"
 , "Artist"    : "'$artist'"
 , "Composer"  : "'$composer'"
 , "Conductor" : "'$conductor'"
 , "file"      : "'$file'"
+, "song"      : '$(( $1 - 1 ))'
 , "station"   : "'$station'"
 , "Time"      : '$time'
 , "Title"     : "'$title'"

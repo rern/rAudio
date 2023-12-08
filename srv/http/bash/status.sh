@@ -308,7 +308,7 @@ elif [[ $stream ]]; then
 				else
 					radio_dab=radio
 				fi
-				sampling="$pos/$pllength • $radiosampling"
+				sampling=$radiosampling
 				if [[ ! -e $dirshm/radio ]]; then
 					state=play
 					stationcover=${dirradio:9}/img/$urlname.jpg
@@ -503,7 +503,6 @@ else
 	fi
 fi
 
-[[ ! $snapclient ]] && sampling="$pos/$pllength • $sampling"
 ########
 status+='
 , "ext"      : "'$ext'"

@@ -1649,7 +1649,8 @@ function setInfo() {
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 	if ( changed ) setInfoScroll();
-	var sampling = S.sampling;
+	var sampling = [ 'mpd', 'upnp' ].includes( S.player ) ? S.song + 1 +'/'+ S.pllength +' • ' : '';
+	sampling    += S.sampling;
 	if ( S.webradio ) {
 		if ( S.icon === 'dabradio' ) {
 			sampling += ' • DAB';
