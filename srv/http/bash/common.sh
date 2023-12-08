@@ -128,9 +128,6 @@ confNotString() {
 	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
 	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
-confFromJson() { # $1 - file
-	sed -E '/\{|}/d; s/,//; s/^\s*"(.*)": "*(.*)"*$/\1="\2"/' "$1"
-}
 coverFileGet() {
 	path=$1
 	coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
@@ -205,6 +202,10 @@ ipSub() {
 }
 ipOnline() {
 	ping -c 1 -w 1 $1 &> /dev/null && return 0
+}
+json2var() {
+	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
+	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
 }
 killProcess() {
 	local filepid

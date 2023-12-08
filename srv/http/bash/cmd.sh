@@ -109,7 +109,7 @@ plTail() {
 pushPlaylist() {
 	local arg
 	[[ $1 ]] && arg=$1 || arg=current
-	pushData playlist $( php /srv/http/mpdplaylist.php $arg )
+	pushData playlist '{ "refresh": true }'
 }
 pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
@@ -563,7 +563,6 @@ mpcplayback )
 mpcprevnext )
 	touch $dirshm/prevnextseek
 	. <( mpc status 'state=%state%; current=%songpos%; length=%length%; random=%random%; consume=%consume%' )
-	[[ $state == playing ]] && play=1
 	if [[ $random == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 	else
@@ -573,16 +572,17 @@ mpcprevnext )
 			(( $current != 1 )) && pos=$(( current - 1 )) || pos=$length
 		fi
 	fi
-	if [[ $play ]]; then
+	$dirbash/cmd-trackdata.sh $pos
+	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 		radioStop
-	fi
-	rm -f $dirshm/prevnextseek
-	mpc -q play $pos
-	if [[ $play ]]; then
+		rm -f $dirshm/prevnextseek
+		mpc -q play $pos
 		[[ $consume == on ]] && mpc -q del $current
 	else
+		mpc -q play $pos
+		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom

@@ -287,9 +287,8 @@ function psPlaylist( data ) {
 		} else if ( 'autoplaycd' in data ) {
 			V.autoplaycd = true;
 			setTimeout( () => delete V.autoplaycd, 5000 );
-		} else if ( 'html' in data ) {
-			S.song = data.song;
-			if ( V.playlist && ! V.savedpl && ! V.savedpltrack ) renderPlaylist( data );
+		} else if ( 'refresh' in data ) {
+			if ( V.playlist && ! V.plhome ) playlistGet();
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( V.savedpltrack && data.playlist === name ) renderSavedPlTrack( name );
