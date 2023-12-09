@@ -16,11 +16,11 @@ $( '.btoutputall' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#audiooutput' ).on( 'change', function() {
+$( '#audiooutput' ).on( 'input', function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
 	bash( [ 'audiooutput', $( this ).val(), 'CMD CARD' ] );
 } );
-$( '#hwmixer' ).on( 'change', function() {
+$( '#hwmixer' ).on( 'input', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
 	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
 } );
@@ -67,7 +67,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		} );
 	}, 'json' );
 } );
-$( '#mixertype' ).on( 'change', function() {
+$( '#mixertype' ).on( 'input', function() {
 	var mixertype = $( this ).val();
 	if ( mixertype === 'none' ) {
 		info( {

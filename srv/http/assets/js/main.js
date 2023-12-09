@@ -281,7 +281,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 						$( '#infoContent input' ).each( ( i, el ) => {
 							if ( $( el ).val() === currentip ) $( el ).prop( 'disabled', true );
 						} );	
-						$( '#infoContent input' ).on( 'change', function() {
+						$( '#infoContent input' ).on( 'input', function() {
 							var ip = infoVal();
 							if ( typeof Android === 'object' ) Android.changeIP( ip );
 							loader();
@@ -325,7 +325,7 @@ $( '#displayplayback' ).on( 'click', function() {
 				}
 			}
 			if ( D.volumenone ) $el.volume.prop( 'disabled', true ).prop( 'checked', false );
-			$el.bars.on( 'change', function() {
+			$el.bars.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) {
 					$el.barsalways.prop( 'disabled', false );
 				} else {
@@ -334,7 +334,7 @@ $( '#displayplayback' ).on( 'click', function() {
 						.prop( 'disabled', true );
 				}
 			} );
-			$el.time.on( 'change', function() {
+			$el.time.on( 'input', function() {
 				var tcv = tcvValue();
 				if ( ! tcv.time ) {
 					if ( tcv.cover ) {
@@ -346,7 +346,7 @@ $( '#displayplayback' ).on( 'click', function() {
 					restoreEnabled();
 				}
 			} );
-			$el.cover.on( 'change', function() {
+			$el.cover.on( 'input', function() {
 				var tcv = tcvValue();
 				if ( ! tcv.cover ) {
 					if ( tcv.time ) {
@@ -363,7 +363,7 @@ $( '#displayplayback' ).on( 'click', function() {
 					restoreEnabled();
 				}
 			} );
-			$el.volume.on( 'change', function() {
+			$el.volume.on( 'input', function() {
 				var tcv = tcvValue();
 				if ( ! tcv.volume ) {
 					if ( tcv.cover ) {
@@ -375,10 +375,10 @@ $( '#displayplayback' ).on( 'click', function() {
 					restoreEnabled();
 				}
 			} );
-			$el.covervu.on( 'change', function() {
+			$el.covervu.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.vumeter.prop( 'checked', false );
 			} );
-			$el.vumeter.on( 'change', function() {
+			$el.vumeter.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.covervu.prop( 'checked', false );
 			} );
 		}

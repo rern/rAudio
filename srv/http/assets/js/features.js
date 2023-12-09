@@ -222,7 +222,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 5 : zoom -= 5 );
 				$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal( 'array' ).join( '' ) );
 			} );
-			$( '#infoContent' ).on( 'change', '#screenoff', function() {
+			$( '#infoContent' ).on( 'input', '#screenoff', function() {
 				if ( $( this ).val() != 0 ) {
 					$( '#onwhileplay' ).prop( 'disabled', 0 );
 				} else {

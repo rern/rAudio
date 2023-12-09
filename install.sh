@@ -4,13 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20231205
-if ! grep -q composername $dirsystem/display.json; then
-	sed -i '/conductor/ a\
-  "composername": false,\
-  "conductorname": false,
-' $dirsystem/display.json
-fi
+# 202312010
+file=$dirsystem/display.json
+for k in albumyear composername conductorname; do
+	! grep -q $k $file && sed -i '/"artist"/ i\  "'$k'": false,' $file
+done
 
 [[ ! -e /usr/bin/websocat ]] && pacman -Sy --noconfirm websocat
 

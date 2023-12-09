@@ -676,18 +676,18 @@ function infoLibraryOption() {
 			$( '#infoContent td' ).css( 'width', '294px' );
 			$el.albumyear.prop( 'disabled', ! D.albumbyartist );
 			$el.fixedcover.prop( 'disabled', D.hidecover );
-			$el.albumbyartist.on( 'click', function() {
+			$el.albumbyartist.on( 'input', function() {
 				var enable = $( this ).prop( 'checked' );
 				if ( ! enable ) $el.albumyear.prop( 'checked', false );
 				$el.albumyear.prop( 'disabled', ! enable )
 			} );
-			$el.tapaddplay.on( 'click', function() {
+			$el.tapaddplay.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
 			} );
-			$el.tapreplaceplay.on( 'click', function() {
+			$el.tapreplaceplay.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', false );
 			} );
-			$el.hidecover.on( 'change', function() {
+			$el.hidecover.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) {
 					$el.fixedcover.prop( 'checked', false ).prop( 'disabled', true );
 				} else {
