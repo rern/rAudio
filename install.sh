@@ -5,6 +5,13 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231205
+if ! grep -q composername $dirsystem/display.json; then
+	sed -i '/conductor/ a\
+  "composername": false,\
+  "conductorname": false,
+' $dirsystem/display.json
+fi
+
 [[ ! -e /usr/bin/websocat ]] && pacman -Sy --noconfirm websocat
 
 # 20231125
