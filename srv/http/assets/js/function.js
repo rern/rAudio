@@ -267,7 +267,7 @@ function contextmenuLibrary( $li, $target ) {
 	menuHide();
 	var $menu          = $( '#menu-'+ $li.find( '.li-icon' ).data( 'menu' ) );
 	V.list             = {};
-	V.list.li          = $li; // for contextmenu
+	V.list.li          = $li;
 	V.list.licover     = $li.hasClass( 'licover' );
 	V.list.singletrack = ! V.list.licover && $li.find( '.li-icon' ).hasClass( 'i-music' );
 	// file modes  - path > path ... > tracks
@@ -676,18 +676,18 @@ function infoLibraryOption() {
 			$( '#infoContent td' ).css( 'width', '294px' );
 			$el.albumyear.prop( 'disabled', ! D.albumbyartist );
 			$el.fixedcover.prop( 'disabled', D.hidecover );
-			$el.albumbyartist.on( 'click', function() {
+			$el.albumbyartist.on( 'input', function() {
 				var enable = $( this ).prop( 'checked' );
 				if ( ! enable ) $el.albumyear.prop( 'checked', false );
 				$el.albumyear.prop( 'disabled', ! enable )
 			} );
-			$el.tapaddplay.on( 'click', function() {
+			$el.tapaddplay.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
 			} );
-			$el.tapreplaceplay.on( 'click', function() {
+			$el.tapreplaceplay.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', false );
 			} );
-			$el.hidecover.on( 'change', function() {
+			$el.hidecover.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) {
 					$el.fixedcover.prop( 'checked', false ).prop( 'disabled', true );
 				} else {
@@ -733,11 +733,11 @@ function infoTitle() {
 			if ( noparen ) {
 				$( '#paren' ).addClass( 'hide' );
 			} else {
-				$( '#infoContent input:checkbox' ).on( 'change', function() {
+				$( '#infoContent input:checkbox' ).on( 'input', function() {
 					$( '#infoContent input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
-			$( '#infoContent input.required' ).on( 'keyup paste cut', function() {
+			$( '#infoContent input.required' ).on( 'input', function() {
 				var $this = $( this );
 				$this.css( 'border-color', $this.val() ? '' : 'red' );
 				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
@@ -970,8 +970,7 @@ function playbackStatusGet( withdisplay ) {
 			}
 			renderPlaybackAll();
 		} else {
-			$( '#data' ).html( highlightJSON( S ) )
-			$( '#button-data, #data' ).removeClass( 'hide' );
+			setStatusData();
 		}
 	} );
 }
@@ -1639,7 +1638,8 @@ function setInfo() {
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 	if ( changed ) setInfoScroll();
-	var sampling = S.sampling;
+	var sampling = [ 'mpd', 'upnp' ].includes( S.player ) ? S.song + 1 +'/'+ S.pllength : '';
+	if ( S.sampling ) sampling += ' • '+ S.sampling;
 	if ( S.webradio ) {
 		if ( S.icon === 'dabradio' ) {
 			sampling += ' • DAB';
@@ -1896,6 +1896,17 @@ function setProgressElapsed() {
 			if ( S.state !== 'play' ) clearInterval( V.interval.elapsed );
 		}, 1000 );
 	}
+}
+function setStatusData() {
+	var list = {
+		  status  : S
+		, display : D
+		, count   : C
+	}
+	var html = '';
+	$.each( list, ( k, v ) => html += '<br><br>"'+ k +'":'+ highlightJSON( v ) );
+	$( '#data' ).html( html );
+	$( '#button-data, #data' ).removeClass( 'hide' );
 }
 function setTrackCoverart() {
 	if ( D.hidecover || ! $( '#liimg' ).length ) return

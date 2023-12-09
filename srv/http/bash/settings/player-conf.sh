@@ -171,8 +171,8 @@ if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
 		hw=plughw:Loopback,1
 	elif [[ $bluetooth ]]; then
 		hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
-	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
-		hw=$( < "$dirsystem/spotify-$aplayname" )
+	elif [[ -e $dirsystem/spotifyoutput ]]; then
+		hw=$( < $dirsystem/spotifyoutput )
 	fi
 ########
 	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )

@@ -189,17 +189,11 @@ $( '#coverart' ).on( 'load', function() {
 } ).on( 'error', coverartDefault );
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #button-library, #button-playlist, #refresh' ).press( function() {
-	location.reload();
-} );
 $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
 $( '#debug' ).on( 'click', function() {
-	if ( V.press ) return
-	
-	$( '#data' ).html( highlightJSON( S ) )
-	$( '#button-data, #data' ).removeClass( 'hide' );
+	if ( ! V.press ) setStatusData();
 } );
 $( '#button-data' ).on( 'click', function() {
 	$( '#button-data, #data' ).addClass( 'hide' );
@@ -287,7 +281,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 						$( '#infoContent input' ).each( ( i, el ) => {
 							if ( $( el ).val() === currentip ) $( el ).prop( 'disabled', true );
 						} );	
-						$( '#infoContent input' ).on( 'change', function() {
+						$( '#infoContent input' ).on( 'input', function() {
 							var ip = infoVal();
 							if ( typeof Android === 'object' ) Android.changeIP( ip );
 							loader();
@@ -331,7 +325,7 @@ $( '#displayplayback' ).on( 'click', function() {
 				}
 			}
 			if ( D.volumenone ) $el.volume.prop( 'disabled', true ).prop( 'checked', false );
-			$el.bars.on( 'change', function() {
+			$el.bars.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) {
 					$el.barsalways.prop( 'disabled', false );
 				} else {
@@ -340,7 +334,7 @@ $( '#displayplayback' ).on( 'click', function() {
 						.prop( 'disabled', true );
 				}
 			} );
-			$el.time.on( 'change', function() {
+			$el.time.on( 'input', function() {
 				var tcv = tcvValue();
 				if ( ! tcv.time ) {
 					if ( tcv.cover ) {
@@ -352,7 +346,7 @@ $( '#displayplayback' ).on( 'click', function() {
 					restoreEnabled();
 				}
 			} );
-			$el.cover.on( 'change', function() {
+			$el.cover.on( 'input', function() {
 				var tcv = tcvValue();
 				if ( ! tcv.cover ) {
 					if ( tcv.time ) {
@@ -369,7 +363,7 @@ $( '#displayplayback' ).on( 'click', function() {
 					restoreEnabled();
 				}
 			} );
-			$el.volume.on( 'change', function() {
+			$el.volume.on( 'input', function() {
 				var tcv = tcvValue();
 				if ( ! tcv.volume ) {
 					if ( tcv.cover ) {
@@ -381,10 +375,10 @@ $( '#displayplayback' ).on( 'click', function() {
 					restoreEnabled();
 				}
 			} );
-			$el.covervu.on( 'change', function() {
+			$el.covervu.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.vumeter.prop( 'checked', false );
 			} );
-			$el.vumeter.on( 'change', function() {
+			$el.vumeter.on( 'input', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.covervu.prop( 'checked', false );
 			} );
 		}
@@ -504,7 +498,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	
 } );
 $( '#album, #guide-booklet' ).on( 'click', function() {
-	if ( localhost ) return
+	if ( V.press || localhost ) return
 	
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
 	if ( S.booklet ) {
@@ -711,10 +705,9 @@ $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	volumeBarSet( 'toggle' );
 } );
 $( '#divcover' ).press( function( e ) {
-	if (
-		( S.webradio && S.state === 'play' )
-		|| ! S.pllength
+	if ( ! S.pllength
 		|| V.guide
+		|| ( S.webradio && S.state === 'play' )
 		|| $( e.target ).hasClass( 'band' )
 		|| e.target.id === 'coverT'
 	) return
@@ -731,7 +724,11 @@ $( '#coverT' ).press( function() {
 	if ( typeof Android === 'object' ) {
 		changeIP();
 	} else {
-		location.reload();
+		banner( 'coverart blink', 'Coverart Online', 'Fetch ...', -1 );
+		bash( [ 'coverartonline', S.Artist, S.Album.replace( /\(.*/, '' ), 'CMD ARTIST ALBUM' ], url => {
+			console.log( url );
+			bannerHide();
+		} );
 	}
 } );
 var btnctrl = {
@@ -904,6 +901,8 @@ $( '.btn-cmd' ).on( 'click', function() {
 		setButtonOptions();
 		local( 600 );
 	} else {
+		$( '#playback-controls .btn' ).removeClass( 'active' );
+		$( '#'+ cmd ).addClass( 'active' );
 		if ( S.webradio ) {
 			$( '#divcover .cover-change' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
@@ -941,13 +940,12 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( S.pllength < 2 ) return
 			
 			intervalClear();
-			setProgress( 0 );
-			$( '#elapsed, #total, #progress' ).empty();
+			if ( S.state !== 'stop' ) {
+				setProgress( 0 );
+				$( '#elapsed, #total, #progress' ).empty();
+			}
 			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
-			banner( 'playlist', 'Skip', cmd[ 0 ].toUpperCase() + cmd.substr( 1 ) +' ...' );
 		}
-		$( '#playback-controls .btn' ).removeClass( 'active' );
-		$( '#'+ cmd ).addClass( 'active' );
 	}
 	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );
 } );
@@ -1101,7 +1099,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 		$( '#lib-breadcrumbs a' ).length ? $( '#lib-breadcrumbs a' ).last().trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 	}
 } );
-$( '#lib-search-input' ).on( 'keyup paste cut', function( e ) {
+$( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).trigger( 'click' );
 } );
 $( '#button-lib-back' ).on( 'click', function() {
@@ -1153,28 +1151,28 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( V.mode === 'bookmark' ) return
 	
 	if ( ! C[ V.mode ] && V.mode.slice( -5 ) !== 'radio' ) {
-		var json = {
+		var dir, mode, message;
+		if ( V.mode === 'playlists' ) {
+			message = 'No saved playlists available.';
+		} else if ( V.mode === 'latest' ) {
+			message = 'No new albums added since last update.';
+		} else {
+			if ( [ 'nas', 'sd', 'usb' ].includes( V.mode ) ) {
+				dir  = V.mode.toUpperCase();
+				mode = dir;
+			} else {
+				dir  = '';
+				mode = V.mode[ 0 ].toUpperCase() + V.mode.slice( 1 );
+			}
+			message = 'Database not found in '+ ico( V.mode ) +' '+ mode
+		}
+		info( {
 			  icon    : 'library'
 			, title   : 'Library Database'
-		}
-		if ( V.mode === 'playlists' ) {
-			json.message = 'No saved playlists found.';
-		} else if ( V.mode === 'latest' ) {
-			json.message = 'No new albums added since last update.';
-		} else {
-			json.message    = 'Database not yet available in this mode.'
-							 +'<br>If music files already in SD, NAS or USB,'
-							 +'<br>import them to database:'
-							 +'<div class="menu" style="width: 160px"><a class="sub nohover">'
-							 + ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgm' ) +'</div>';
-			json.okno       = true;
-			json.beforeshow = () => {
-				$( '#infoContent' ).on( 'click', '.submenu', function() {
-					$( '#update' ).trigger( 'click' );
-				} );
-			}
-		}
-		info( json );
+			, message : message
+			, oklabel : mode ? ico( 'refresh-library' ) + 'Update' : ''
+			, ok      : mode ? () => bash( [ 'mpcupdate', dir, 'CMD DIR' ] ) : ''
+		} );
 		return
 	}
 	
@@ -1698,7 +1696,6 @@ $( '#button-pl-clear' ).on( 'click', function() {
 					local();
 				}
 				, () => {
-					if ( ! S.librandom ) local();
 					bash( [ 'mpccrop' ] );
 					$( '#pl-list li:not( .active )' ).remove();
 				}
@@ -1713,7 +1710,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 		} );
 	}
 } );
-$( '#pl-search-input' ).on( 'keyup paste cut', playlistFilter );
+$( '#pl-search-input' ).on( 'input', playlistFilter );
 $( '#pl-search-close, #pl-search-btn' ).on( 'click', function() {
 	$( '#pl-search-close' ).empty();
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).addClass( 'hide' );

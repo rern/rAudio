@@ -153,13 +153,17 @@ chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baud ]] && baud=800000
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
+if [[ -e $dirsystem/volumeboot.conf ]]; then
+	volumebootconf=$( conf2json $dirsystem/volumeboot.conf )
+else
+	volumebootconf='{ "VOLUME": '$( volumeGet value )' }'
+fi
 ##########
 data='
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiooutput"       : "'$audiooutput'"
 , "hddapm"            : '$hddapm'
 , "hddsleep"          : '${hddapm/128/false}'
-, "hdmi"              : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
 , "hostapd"           : '$hostapd'
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
@@ -195,7 +199,8 @@ data='
 , "tftreboot"         : '$tftreboot'
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"
-, "usbautoupdate"     : '$( [[ ! -e $dirsystem/usbautoupdateno && ! -e $filesharedip ]] && echo true )'
+, "volumeboot"        : '$( exists $dirsystem/volumeboot )'
+, "volumebootconf"    : '$volumebootconf'
 , "vuled"             : '$( exists $dirsystem/vuled )'
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'

@@ -128,8 +128,11 @@ confNotString() {
 	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
 	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
-confFromJson() { # $1 - file
-	sed -E '/\{|}/d; s/,//; s/^\s*"(.*)": "*(.*)"*$/\1="\2"/' "$1"
+coverFileGet() {
+	path=$1
+	coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
+	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
+	[[ $coverfile ]] && echo "$coverfile"
 }
 data2json() {
 	local json page
@@ -147,7 +150,11 @@ data2json() {
 				s/\[\s*,/[ false,/g
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g' <<< $json )
-	[[ $2 ]] && pushData refresh "$json" || echo "$json"
+	if [[ $2 ]]; then
+		pushData refresh "$json"
+	else
+		echo "$json"
+	fi
 }
 dirPermissions() {
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
@@ -196,6 +203,10 @@ ipSub() {
 ipOnline() {
 	ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
+json2var() {
+	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
+	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
+}
 killProcess() {
 	local filepid
 	filepid=$dirshm/pid$1
@@ -222,7 +233,14 @@ notify() { # icon title message delayms
 	title=$( stringEscape $2 )
 	message=$( stringEscape $3 )
 	data='{ "channel": "notify", "data": { "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' } }'
-	$dirbash/websocket-push.py "$data" $ip
+	if [[ $ip ]]; then
+		! ipOnline $ip && exit
+		
+	else
+		ip=127.0.0.1
+	fi
+	data=$( tr -d '\n' <<< $data )
+	echo "$data" | websocat ws://$ip:8080
 }
 package() {
 	local file urlio
@@ -264,7 +282,8 @@ pushData() {
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	data='{ "channel": "'$channel'", "data": '$json' }'
-	$dirbash/websocket-push.py "$data"
+	data=$( tr -d '\n' <<< $data )
+	echo "$data" | websocat ws://127.0.0.1:8080 # remove newlines while preserve spaces
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
@@ -286,8 +305,16 @@ pushData() {
 	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		ipOnline $ip && $dirbash/websocket-push.py "$data" $ip
+		! ipOnline $ip && continue
+		
+		data=$( tr -d '\n' <<< $data )
+		echo "$data" | websocat ws://$ip:8080
 	done
+}
+pushDataCoverart() {
+	pushData coverart '{ "url": "'$1'", "radioalbum" : "'$2'" }'
+	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status
+	$dirbash/cmd.sh coverfileslimit
 }
 pushRefresh() {
 	local page push
@@ -295,6 +322,17 @@ pushRefresh() {
 	[[ $2 ]] && push=$2 || push=push
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
+}
+radioStatusFile() {
+	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^Title' $dirshm/status )
+	status+='
+Artist="'$artist'"
+Album="'$album'"
+coverart="'$coverart'"
+Title="'$title'"
+elapsed='$elapsed
+	echo "$status" > $dirshm/status
+	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
 }
 serviceRestartEnable() {
 	systemctl restart $CMD
@@ -308,7 +346,6 @@ sharedDataBackupLink() {
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
 	echo data > $dirnas/.mpdignore
-	touch $dirsystem/usbautoupdateno
 }
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}

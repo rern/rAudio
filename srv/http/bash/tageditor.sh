@@ -16,7 +16,8 @@ if [[ $FILE != *.cue ]]; then
 		[[ $v == '*' ]] && continue
 		
 		[[ $v ]] && v=$( stringEscape $v )
-		[[ $istrack ]] && kid3-cli -c "set $k \"$v\"" "$path" || kid3-cli -c "set $k \"$v\"" "$path/"*.*
+		[[ ! $istrack ]] && all='/*.*'
+		kid3-cli -c "set $k \"$v\"" "$path"$all
 	done
 	[[ $istrack ]] && dirupdate=$( dirname "$FILE" ) || dirupdate=$FILE
 else

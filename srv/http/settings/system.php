@@ -6,7 +6,6 @@ $id_data = [
 	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
 	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
-	, 'hdmi'          => [ 'name' => 'HDMI Hotplug',                              'setting' => false ]
 	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'name' => 'Audio - I²S' ]
 	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'RPLCD' ]
@@ -18,9 +17,9 @@ $id_data = [
 	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
 	, 'softlimit'     => [ 'name' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
 	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
+	, 'volumeboot'    => [ 'name' => 'Volume on Boot' ]
 	, 'tft'           => [ 'name' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
-	, 'usbautoupdate' => [ 'name' => 'Hotplug Update',                            'setting' => false ]
 	, 'vuled'         => [ 'name' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
@@ -105,10 +104,6 @@ $body = [
 		, 'disabled' => 'HDD not support sleep'
 		, 'help'     => 'Sleep timer for USB hard drives.'
 	]
-	, [
-		  'id'       => 'usbautoupdate'
-		, 'help'     => 'Auto update Library database on insert/remove USB drives.'
-	]
 ];
 htmlSection( $head, $body, 'storage' );
 
@@ -130,14 +125,6 @@ EOF
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 ■ Sampling 16bit - Bluetooth receivers with fixed sampling
-EOF
-	]
-	, [
-		  'id'       => 'hdmi'
-		, 'help'     => <<< EOF
- · Force enable HDMI without connecting before boot
- · Enable if not detected properly
- · Should be disabled if not used.
 EOF
 	]
 	, [
@@ -272,6 +259,14 @@ Maximum Transmission Unit (default: <c>1500</c> bytes)
 Transmit Queue Length (default: <c>1000</c>)
 	· Number of packets allowed per kernel transmit queue in a network
 	· High - improve performance under high load
+EOF
+	]
+	, [
+		  'id'       => 'volumeboot'
+		, 'help'     => <<< EOF
+Set volume level on startup:
+ · If sound devices not maintain last set value
+ · As default level every startup
 EOF
 	]
 ];

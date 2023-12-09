@@ -4,6 +4,14 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 202312010
+file=$dirsystem/display.json
+for k in albumyear composername conductorname; do
+	! grep -q $k $file && sed -i '/"artist"/ i\  "'$k'": false,' $file
+done
+
+[[ ! -e /usr/bin/websocat ]] && pacman -Sy --noconfirm websocat
+
 # 20231125
 grep -q connect $dirbash/websocket-server.py && websocketrestart=1
 
@@ -72,38 +80,6 @@ if [[ -e $file ]] && ! grep -q runxinitrcd $file; then
 ' -e '$ a\
 runxinitrcd=
 ' $file
-fi
-
-# 20231001
-if [[ -e /usr/bin/upmpdcli ]]; then
-	! pacman -Q python-upnpp &> /dev/null && pacman -Sy --noconfirm python-upnpp
-	if grep -q ownqueue /etc/upmpdcli.conf; then
-		sed -i -e '/^ownqueue/ d
-' -e 's|^onstart.*|onstart = /usr/bin/sudo /srv/http/bash/cmd.sh upnpstart|
-' /etc/upmpdcli.conf
-		systemctl try-restart upmpdcli
-	fi
-fi
-
-file=$dirsystem/display.json
-if ! grep -q plclear $file; then
-	grep 'tapreplaceplay.*true' $file && plclear=false || plclear=true
-	sed -i '1 a\
-    "plclear": '$plclear',\
-    "plsimilar": true,\
-    "audiocdplclear": false,
-' $file
-fi
-
-file=$dirsystem/localbrowser.conf
-if [[ ! -e /boot/kernel.img && ! -e $file ]]; then
-	echo "\
-rotate=0
-zoom=100
-screenoff=0
-onwhileplay=
-cursor=
-runxinitrcd" > $file
 fi
 
 #-------------------------------------------------------------------------------

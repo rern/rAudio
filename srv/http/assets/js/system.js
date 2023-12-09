@@ -116,11 +116,6 @@ $( 'body' ).on( 'click', function( e ) {
 	) {
 		i2sSelectHide();
 	}
-} ).on( 'keyup', function( e ) {
-	if ( e.key === 'Escape' ) {
-		$( 'select' ).select2( 'close' );
-		i2sSelectHide();
-	}
 } );
 $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.js
 	bash( [ 'rebootlist' ], list => {
@@ -325,7 +320,7 @@ $( '#divi2smodulesw' ).on( 'click', function() {
 $( '#divi2s .col-r' ).on( 'click', function( e ) {
 	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
 } );
-$( '#i2smodule' ).on( 'change', function() {
+$( '#i2smodule' ).on( 'input', function() {
 	var aplayname = $( this ).val();
 	var output    = $( this ).find( ':selected' ).text();
 	var icon      = 'i2smodule';
@@ -422,7 +417,7 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 		, beforeshow   : () => {
 			var i2c = ! S.mpdoled || ( S.mpdoled && S.mpdoledconf[ 1 ] );
 			$( '.baud' ).toggleClass( 'hide', ! i2c );
-			$( '.oledchip' ).on( 'change', function() {
+			$( '.oledchip' ).on( 'input', function() {
 				var val = $( this ).val();
 				$( '.baud' ).toggleClass( 'hide', val < 3 || val > 6 );
 			} );
@@ -495,7 +490,7 @@ $( '#ledcalc' ).on( 'click', function() {
 			$( '#infoContent input' ).prop( 'disabled', 1 );
 			$( '#infoContent input' ).eq( 2 )
 				.prop( 'disabled', 0 )
-				.on( 'keyup paste cut', function() {
+				.on( 'input', function() {
 					var fv = $( this ).val();
 					if ( fv > 3.3 ) {
 						var ohm = '( > 3.3V)';
@@ -521,14 +516,14 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {
-			$( '#infoContent input' ).on( 'keyup paste', function() {
+			$( '#infoContent input' ).on( 'input', function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}
 		, ok           : switchEnable
 	} );
 } );
-$( '#timezone' ).on( 'change', function( e ) {
+$( '#timezone' ).on( 'input', function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
 } );
@@ -555,6 +550,25 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 		, values       : S.soundprofileconf
 		, checkchanged : true
 		, checkblank   : true
+		, cancel       : switchCancel
+		, ok           : switchEnable
+		, fileconf     : true
+	} );
+} );
+$( '#setting-volumeboot' ).on( 'click', function() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, rangelabel   : 'Volume'
+		, values       : S.volumebootconf
+		, checkchanged : S.volumeboot
+		, beforeshow   : () => {
+			if ( ! S.volumeboot ) return
+			
+			$( '#infoRange input' ).on( 'input', function() {
+				$( '#infoOk' ).toggleClass( 'disabled', +$( this ).val() === S.volumebootconf.VOLUME );
+			} );
+		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -888,7 +902,7 @@ function infoMount( nfs ) {
 				$mountpoint.val( 'data' ).prop( 'disabled', true );
 				$mountpoint.next().remove();
 			} else {
-				$mountpoint.on( 'keyup paste', function() {
+				$mountpoint.on( 'input', function() {
 					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 				} );
 			}
@@ -986,7 +1000,7 @@ function infoPowerbutton() {
 			var $sw       = $( '#infoContent select' ).eq( 0 );
 			var $reserved = $( '#infoContent .reserved' );
 			$reserved.toggleClass( 'hide', $sw.val() == 5 );
-			$sw.on( 'change', function() {
+			$sw.on( 'input', function() {
 				$reserved.toggleClass( 'hide', $( this ).val() == 5 );
 			} );
 		}
@@ -1217,7 +1231,6 @@ function renderStorage() {
 	} else {
 		$( '#divhddsleep' ).addClass( 'hide' );
 	}
-	$( '#divusbautoupdate' ).toggleClass( 'hide', S.shareddata || S.nfsserver );
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );

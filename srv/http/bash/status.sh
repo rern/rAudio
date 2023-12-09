@@ -17,7 +17,11 @@ if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
 fi
 
 outputStatus() {
-	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
+	if [[ $snapclient ]]; then
+		echo "$status" # - no braces
+	else
+		data2json "$status"
+	fi
 	[[ $1 != noexit ]] && exit # >>>>>>>>>>
 }
 
@@ -45,6 +49,11 @@ if [[ $1 == withdisplay ]]; then
 }'
 fi
 
+comsume_pos=( $( mpc status '%consume% %songpos%' ) )
+[[ ${comsume_pos[0]} == on ]] && consume=true
+pos=${comsume_pos[1]}                 # mpc songpos : start at 1
+(( $pos > 0 )) && song=$(( pos - 1 )) # mpd song    : start at 0
+
 if [[ $1 == snapclient ]]; then
 	snapclient=1
 	player=mpd
@@ -53,7 +62,6 @@ else
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
 	
-	[[ $( mpc status %consume% ) == on ]] && consume=true
 	readarray -t vcc <<< $( volumeCardControl )
 	volume=${vcc[0]}
 	card=${vcc[1]}
@@ -160,11 +168,12 @@ fi
 
 (( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 
+#. <( mpc playlist -f 'Album="%album%"; Artist="%artist%"; Composer="%composer%"; Conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' | sed "$song q;d" )
+#. <( mpc status 'state=%state%; current=%songpos%; length=%length%; random=%random%; consume=%consume%' )
+
 filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file Name state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
-songpos=$( mpc status %songpos% )                       # mpc songpos : start at 1
-(( $songpos > 0 )) && song=$(( songpos - 1 )) || song=0 # mpd song    : start at 0
 readarray -t lines <<< $( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
 								| telnet 127.0.0.1 6600 2> /dev/null \
 								| grep -E $filter )
@@ -173,9 +182,8 @@ for line in "${lines[@]}"; do
 	val=${line#*: }
 	case $key in
 		audio )
-			data=( ${val//:/ } )
-			samplerate=${data[0]}
-			bitdepth=${data[1]}
+			samplerate=${val/:*}
+			bitdepth=${val/*:}
 			;;
 		bitrate )
 			bitrate=$(( val * 1000 ))
@@ -192,10 +200,10 @@ for line in "${lines[@]}"; do
 			file=$( stringEscape "$val" )
 			;;   # escape " for json
 		random | repeat | single )
-			[[ $val == 1 ]] && tf=true || tf=false
+			[[ $val == 1 ]] && val=true || val=false
 ########
 			status+='
-, "'$key'" : '$tf
+, "'$key'" : '$val
 			;;
 	esac
 done
@@ -228,7 +236,7 @@ if [[ $fileheader == cdda ]]; then
 	if [[ -e $dirshm/audiocd && -e $diraudiocd/$discid ]]; then
 		discid=$( < $dirshm/audiocd )
 		track=${file/*\/}
-		readarray -t audiocd <<< $( sed -n ${track}p $diraudiocd/$discid | tr ^ '\n' )
+		readarray -t audiocd <<< $( sed "$track q:d" $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${audiocd[0]}
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
@@ -271,13 +279,10 @@ elif [[ $stream ]]; then
 			icon=dabradio
 		else
 			dirradio=$dirwebradio
-			if [[ $file == *icecast.radiofrance.fr* ]]; then
-				icon=radiofrance
-			elif [[ $file == *stream.radioparadise.com* ]]; then
-				icon=radioparadise
-			else
-				icon=webradio
-			fi
+			case $file in
+				*icecast.radiofrance.fr* )   icon=radiofrance;;
+				*stream.radioparadise.com* ) icon=radioparadise;;
+			esac
 		fi
 		# before webradio play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
@@ -293,30 +298,32 @@ elif [[ $stream ]]; then
 			state=stop
 			Title=
 		else
-			if [[ $icon == dabradio || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
+			if [[ $icon =~ ^(radioparadise|radiofrance|dabradio)$ ]]; then # while playing: status-push.sh
 				if [[ $icon == dabradio ]]; then
-					id=dabradio
-					radiosampling='48 kHz 160 kbit/s'
-					service=dab
+					radio_dab=dab
+					radiosampling="48 kHz 160 kbit/s"
 				else
-					id=$( basename ${file/-*} )
-					[[ ${id:0:13} == francemusique ]] && id=${id:13}
-					[[ ! $id ]] && id=francemusique
-					service=radio
+					radio_dab=radio
 				fi
+				sampling=$radiosampling
 				if [[ ! -e $dirshm/radio ]]; then
-					echo "\
-$file
-$station
-$id
-$radiosampling" > $dirshm/radio
-					if ! systemctl -q is-active $service; then
-						mpc -q stop
-						mpc -q play
-						systemctl start $service
-					fi
+					state=play
+					stationcover=${dirradio:9}/img/$urlname.jpg
+					datastation='
+  "coverart"     : "'$stationcover'"
+, "file"         : "'$file'"
+, "icon"         : "'$icon'"
+, "sampling"     : "'$sampling'"
+, "state"        : "play"
+, "station"      : "'$station'"
+, "stationcover" : "'$stationcover'"
+, "Time"         : false
+, "webradio"     : true'
+					pushData mpdplayer "{ $datastation }"
+					echo "file=$file" > $dirshm/radio
+					! systemctl -q is-active $radio_dab && systemctl start $radio_dab
 				else
-					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
+					. <( grep -E '^Artist|^Album|^Title|^coverart' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
@@ -340,7 +347,10 @@ $radiosampling" > $dirshm/radio
 		fi
 		if [[ $displaycover ]]; then
 			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
-			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
+			if [[ $stationcover ]]; then
+				stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
+				[[ ! $coverart ]] && coverart=$stationcover
+			fi
 		fi
 ########
 		status=$( grep -E -v '^, "state"|^, "webradio"' <<< $status )
@@ -355,9 +365,7 @@ $radiosampling" > $dirshm/radio
 , "Time"         : false
 , "Title"        : "'$Title'"
 , "webradio"     : true'
-		if [[ $id ]]; then
-			[[ ! $snapclient ]] && pos="$(( song + 1 ))/$pllength • "
-			sampling="$pos$radiosampling"
+		if [[ $radio_dab ]]; then # rp / rf / dab
 			elapsed=$( mpcElapsed )
 ########
 			status+='
@@ -367,7 +375,7 @@ $radiosampling" > $dirshm/radio
 , "icon"         : "'$icon'"
 , "sampling"     : "'$sampling'"
 , "song"         : '$song
-# >>>>>>>>>> rp / rf webradio
+# >>>>>>>>>>
 			outputStatus
 		fi
 	fi
@@ -492,8 +500,6 @@ else
 	fi
 fi
 
-[[ ! $snapclient ]] && pos="$(( song + 1 ))/$pllength • "
-sampling="$pos$sampling"
 ########
 status+='
 , "ext"      : "'$ext'"

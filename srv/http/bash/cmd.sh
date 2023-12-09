@@ -102,15 +102,14 @@ plClear() {
 	radioStop
 }
 plTail() {
-	local pos total
-	total=$( mpc status %length% )
-	pos=$( mpc status %songpos% )
-	echo $(( total - pos ))
+	local pos_len
+	pos_len=( $( mpc status '%songpos% %length%' ) )
+	echo $(( ${pos_len[1]} - ${pos_len[0]} ))
 }
 pushPlaylist() {
 	local arg
 	[[ $1 ]] && arg=$1 || arg=current
-	pushData playlist $( php /srv/http/mpdplaylist.php $arg )
+	pushData playlist '{ "refresh": true }'
 }
 pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
@@ -123,7 +122,7 @@ radioStop() {
 		mpc -q stop
 		systemctl stop radio dab &> /dev/null
 		rm -f $dirshm/radio
-		$dirbash/status-push.sh
+		[[ ! -e $dirshm/prevnextseek ]] && $dirbash/status-push.sh
 	fi
 }
 shairportStop() {
@@ -309,6 +308,13 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
 	pushData reload 1
 	;;
+coverartonline )
+	$dirbash/status-coverartonline.sh "cmd
+$ARTIST
+$ALBUM
+debug
+CMD ARTIST ALBUM DEBUG"
+	;;
 coverartreset )
 	dir=$( dirname "$COVERFILE" )
 	filename=$( basename "$COVERFILE" )
@@ -329,6 +335,7 @@ CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
 	if [[ -e $backupfile ]]; then
 		restorefile=${backupfile:0:-7}
 		mv "$backupfile" "$restorefile"
+		pushDataCoverart "$restorefile"
 		if [[ ${restorefile: -3} != gif ]]; then
 			convert "$restorefile" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
@@ -336,16 +343,14 @@ CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
 			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
 			convert "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		fi
-		pushData coverart '{ "url": "'$restorefile'", "type": "coverart" }'
-		exit
-	fi
+	else
 		url=$( $dirbash/status-coverart.sh "cmd
 $ARTIST
 $ALBUM
 $COVERFILE
 CMD ARTIST ALBUM FILE" )
-	[[ ! $url ]] && url=reset
-	pushData coverart '{ "url": "'$url'", "type": "coverart" }'
+		pushDataCoverart "$url"
+	fi
 	;;
 coverfileslimit )
 	for type in local online webradio; do
@@ -469,12 +474,13 @@ mpcaddplaynext )
 	pushPlaylist add
 	;;
 mpcaddfind )
-	if [[ $TYPE2 ]]; then
-		plAddPosition
-		mpc -q findadd $TYPE "$STRING" $TYPE2 "$STRING2"
+	plAddPosition
+	if [[ $MODE3 ]]; then
+		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2" $MODE3 "$STRING3"
+	elif [[ $MODE2 ]]; then
+		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2"
 	else
-		plAddPosition
-		mpc -q findadd $TYPE "$STRING"
+		mpc -q findadd $MODE "$STRING"
 	fi
 	plAddPlay
 	;;
@@ -555,17 +561,9 @@ mpcplayback )
 	pushData refresh '{ "page": "features", "snapclientactive": '$active' }'
 	;;
 mpcprevnext )
-	current=$( mpc status %songpos% )
-	length=$( mpc status %length% )
-	if [[ $( mpc status %state% ) == playing ]]; then
-		playing=1
-		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
-		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
-	else
-		touch $dirshm/prevnextseek
-	fi
-	radioStop
-	if [[ $( mpc status %random% ) == on ]]; then
+	touch $dirshm/prevnextseek
+	. <( mpc status 'state=%state%; current=%songpos%; length=%length%; random=%random%; consume=%consume%' )
+	if [[ $random == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 	else
 		if [[ $ACTION == next ]]; then
@@ -574,14 +572,20 @@ mpcprevnext )
 			(( $current != 1 )) && pos=$(( current - 1 )) || pos=$length
 		fi
 	fi
-	mpc -q play $pos
-	[[ -e $dirsystem/librandom ]] && plAddRandom
-	if [[ $playing ]]; then
-		[[ $( mpc status %consume% ) == on ]] && mpc -q del $current
+	$dirbash/cmd-prevnextdata.sh $pos &
+	if [[ $state == playing ]]; then
+		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
+		radioStop
+		rm -f $dirshm/prevnextseek
+		mpc -q play $pos
+		[[ $consume == on ]] && mpc -q del $current
 	else
+		mpc -q play $pos
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
+	[[ -e $dirsystem/librandom ]] && plAddRandom
 	;;
 mpcremove )
 	if [[ $POS ]]; then
@@ -699,7 +703,7 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	elif [[ $TYPE == add ]]; then
 		[[ $TO == last ]] && echo $FILE >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
 	else # move
-		file=$( sed -n "$FROM p" "$plfile" )
+		file=$( sed "$FROM q;d" "$plfile" )
 		[[ $FROM < $TO ]] && (( TO++ ))
 		sed -i -e "$FROM d" -e "$TO i$file" "$plfile"
 	fi
@@ -803,7 +807,7 @@ $CHARSET" > "$file"
 	;;
 webradiocoverreset )
 	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-	pushData coverart '{ "url": "", "type": "'$MODE'" }'
+	pushDataCoverart
 	;;
 webradiodelete )
 	urlname=${URL//\//|}
@@ -821,7 +825,7 @@ webradioedit )
 	newfile="$path/$newurlname"
 	prevfile="$path/$urlname"
 	if [[ $NEWURL == $URL ]]; then
-		sampling=$( sed -n 2p "$prevfile" )
+		sampling=$( sed '2q;d' "$prevfile" )
 	else
 		[[ -e $newfile ]] && echo 'URL exists:' && exit
 		

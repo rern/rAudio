@@ -80,10 +80,10 @@ function eqOptionPreset() {
 	eqnames.forEach( n => optpreset += '<option>'+ n +'</option>' );
 	if ( ! I.active ) return optpreset
 	
-	local(); // suppress change event
+	local(); // suppress input event
 	$( '#eqpreset' )
 		.html( optpreset )
-		.trigger( 'change' );
+		.trigger( 'input' );
 	I.values = [ '', E.active, ...E.preset[ E.active ] ];
 	infoSetValues();
 }
@@ -122,11 +122,11 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	$( '#eqdelete, #eqsave, #eqname, #eqback' ).addClass( 'hide' );
 	$( '#eqname' ).empty();
 	$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
-} ).on( 'keyup paste cut', '#eqname', function( e ) {
+} ).on( 'input', '#eqname', function( e ) {
 	var $eqsave = $( '#eqsave' );
 	$eqsave.toggleClass( 'disabled', $( this ).val().trim() in E.preset );
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );
-} ).on( 'change', '#eqpreset', function() {      // preset
+} ).on( 'input', '#eqpreset', function() {      // preset
 	if ( V.local ) return
 	
 	var name = $( this ).val();

@@ -109,6 +109,7 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 		console.log( data );
 		console.log( bashcmd );
 		if ( V.consoleonly ) {
+			V.consoleonly = false;
 			setTimeout( () => page ? switchCancel() : bannerHide(), 5000 );
 			return
 		}
@@ -122,6 +123,7 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 	);
 }
 // debug
+$( '.page-icon' ).press( () => location.reload() );
 $( '#debug' ).press( function() {
 	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
@@ -247,13 +249,15 @@ select:   [U] [D]     - check
 			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).trigger( 'click' );
 			break;
 		case 'Escape':
-			local(); // prevent toggle setting menu
-			$( '#infoX' ).trigger( 'click' );
+			if ( I.active ) {
+				$( '#infoX' ).trigger( 'click' );
+				local(); // prevent toggle setting menu
+			}
 			break;
 		case 'ArrowLeft':
 		case 'ArrowRight':
 			var activeinput = $( document.activeElement ).attr( 'type' );
-			if ( [ 'text', 'password', 'textarea' ].includes( activeinput ) ) return
+			if ( [ 'text', 'number', 'password', 'range', 'textarea' ].includes( activeinput ) ) return
 			
 			var $tabactive = $( '#infoTab a.active' );
 			if ( key === 'ArrowLeft' ) {
@@ -592,9 +596,19 @@ function info( json ) {
 		// set width: text / password / textarea
 		infoWidth();
 		if ( I.rangelabel ) {
-			$( '#infoRange input' ).on( 'click input keyup', function() {
+			$( '#infoRange input' ).on( 'input', function() {
 				$( '#infoRange .value' ).text( $( this ).val() );
 			} );
+			if ( I.rangeupdn ) {
+				$( '#infoRange a' ).on( 'click', function() {
+					var updn   = $( this ).hasClass( 'max' ) ? 1 : -1;
+					var $range = $( '#infoRange input' );
+					var val    = +$range.val() + updn;
+					$range.val( val );
+					$( '#infoRange .value' ).text( val );
+					if ( typeof I.rangeupdn === 'function' ) I.rangeupdn( val );
+				} );
+			}
 		}
 		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
 		// custom function before show
@@ -689,25 +703,15 @@ function infoCheckLength() {
 	} );
 }
 function infoCheckSet() {
-	if ( I.checkblank || I.checkip || I.checklength || I.checkchanged ) {
-		$inputbox.on( 'keyup paste cut', function() {
+	if ( I.checkchanged || I.checkblank || I.checkip || I.checklength ) {
+		$( '#infoContent' ).find( 'input, select, textarea' ).on( 'input', function() {
+			if ( I.checkchanged ) I.nochange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
 			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
 			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
-			if ( I.checkchanged ) {
-				var values  = infoVal( 'array' );
-				I.nochange  = I.values.join( '' ) === values.join( '' );
-			}
 			setTimeout( () => {
-				$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange )
+				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short )
 			}, 75 ); // ios: force after infoCheckLength
-		} );
-	}
-	if ( I.checkchanged ) {
-		$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', function() {
-			var values = infoVal( 'array' );
-			I.nochange = I.values.join( '' ) === values.join( '' );
-			$( '#infoOk' ).toggleClass( 'disabled', I.nochange );
 		} );
 	}
 }

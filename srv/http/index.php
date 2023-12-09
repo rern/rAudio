@@ -150,10 +150,10 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 }
 ?>
 
-<div id="refresh"></div>
+<div id="refresh" class="page-icon"></div>
 
 <div id="bar-top" class="hide">
-	<?=i( 'logo', 'raudio-nobg' )?><div id="playback-controls"><?=$htmlcontrols?></div><?=i( 'button-settings', 'gear' )?>
+	<?=i( 'logo', 'raudio-nobg page-icon' )?><div id="playback-controls"><?=$htmlcontrols?></div><?=i( 'button-settings', 'gear' )?>
 </div>
 <div id="settings" class="menu hide">
 	<?=$htmlsettings?>
@@ -161,7 +161,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 
 <div id="page-library" class="page hide">
 	<div class="content-top">
-		<?=i( 'button-library',    'library active' )
+		<?=i( 'button-library',    'library active page-icon' )
 		  .i( 'button-lib-search', 'search' )?>
 		<div id="lib-search" class="hide">
 			<div class="input-group">
@@ -268,7 +268,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	<div class="content-top">
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
-		<?=i( 'button-playlist', 'playlist active' )
+		<?=i( 'button-playlist', 'playlist active page-icon' )
 		  .i( 'button-pl-back',  'back hide' )?>
 		<div id="pl-manage" class="playlist">
 			<?=i( 'button-pl-playlists', 'playlists' )

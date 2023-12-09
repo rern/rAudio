@@ -25,10 +25,15 @@ updateDone() {
 }
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
+if [[ -e $dirdabradio ]]; then
+	dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l )
+else
+	dabradio=0
+fi
 counts='
   "song"      : '$song'
 , "playlists" : '$( ls -1 $dirplaylists | wc -l )'
-, "dabradio"  : '$( [[ -e $dirdabradio ]] && find -L $dirdabradio -type f ! -path '*/img/*' | wc -l || echo 0 )'
+, "dabradio"  : '$dabradio'
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 if [[ $song == 0 ]]; then
 	for mode in "$modes albumbyartist"; do

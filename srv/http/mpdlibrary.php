@@ -341,11 +341,10 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		if ( ! $val0 ) continue;
 		
 		$icon = '<img class="iconthumb li-icon lazyload" data-src="/mnt/MPD/'.$each->file.'thumb.jpg^^^" data-menu="album">';
-		if ( $modeartist || ! $key1 ) {
-			$name = $val0;
-		} else {
+		$name = '<a class="name">'.$val0.'</a>';
+		if ( ! $modeartist && $key1 ) {
 			$val1 = $each->$key1;
-			$name = $val0.'<gr> • </gr>'.$val1;
+			$name.= '<gr> • </gr>'.$val1;
 		}
 		
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
@@ -355,7 +354,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		$html     .=
 '<li data-mode="'.$datamode.'" data-index="'.$index.'">
 	<a class="liname">'.$liname.'</a>
-	'.$icon.'<span class="single name">'.$name.'</span>
+	'.$icon.'<span class="single">'.$name.'</span>
 </li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );

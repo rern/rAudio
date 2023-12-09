@@ -28,7 +28,11 @@ btoutputall )
 	else
 		[[ $bluetooth && $output ]] && restart=1
 	fi
-	[[ $restart ]] && $dirsettings/player-conf.sh || pushRefresh
+	if [[ $restart ]]; then
+		$dirsettings/player-conf.sh
+	else
+		pushRefresh
+	fi
 	;;
 buffer | outputbuffer )
 	if [[ $ON ]]; then
@@ -45,7 +49,8 @@ buffer | outputbuffer )
 	$dirsettings/player-conf.sh
 	;;
 crossfade )
-	[[ $ON ]] && mpc -q crossfade $SEC || mpc -q crossfade 0
+	[[ $ON ]] && sec=$SEC || sec=0
+	mpc -q crossfade $sec
 	pushRefresh
 	;;
 customget )

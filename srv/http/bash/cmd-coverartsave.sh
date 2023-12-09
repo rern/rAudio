@@ -52,5 +52,7 @@ case $type in
 esac
 coverart=${target/\/srv\/http}
 [[ ${target:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
-pushData coverart '{ "url": "'$coverart'", "type": "'$type'" }'
+data='"url": "'$coverart'"'
+[[ $type != coverart ]] && data+=', "stationcover": true'
+pushData coverart "{ $data }"
 rm -f $dirshm/{embedded,local,online}/*

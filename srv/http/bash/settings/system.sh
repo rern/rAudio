@@ -171,13 +171,6 @@ hddsleep )
 	fi
 	pushRefresh
 	;;
-hdmi )
-	config=$( grep -v hdmi_force_hotplug /boot/config.txt )
-	[[ $ON ]] && config+="
-hdmi_force_hotplug=1"
-	configTxt
-	pushData refresh '{ "page": "features", "hdmihotplug": '$TF' }'
-	;;
 hostname )
 	hostnamectl set-hostname $NAME
 	sed -i -E 's/^(ssid=).*/\1'$NAME'/' /etc/hostapd/hostapd.conf
@@ -589,19 +582,14 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
 	else
 		action=Removed
-		mpc | grep -q ^Updating && systemctl restart mpd
 	fi
 	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
-	[[ -e $dirsystem/usbautoupdateno || -e $filesharedip ]] && exit
-	
-	echo USB > $dirmpd/updating
-	$dirbash/cmd.sh mpcupdate
 	;;
-usbautoupdate )
-	[[ $ON ]] && rm -f $dirsystem/usbautoupdateno || touch $dirsystem/usbautoupdateno
-	pushData refresh '{ "page": "system", "usbautoupdate": '$TF' }'
+volumeboot )
+	enableFlagSet
+	pushRefresh
 	;;
 vuled )
 	enableFlagSet

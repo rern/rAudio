@@ -949,13 +949,13 @@ var setting  = {
 				$( '#infoContent tr' ).eq( 0 ).before( $tdname.parent() );
 				var $select     = $( '#infoContent select' );
 				var $selecttype = $select.eq( 0 );
-				$selecttype.on( 'change', function() {
+				$selecttype.on( 'input', function() {
 					var type    = $( this ).val();
 					var subtype = type in C.subtype ? C.subtype[ type ][ 0 ] : '';
 					setting.filter( type, subtype, '', infoVal().name );
 				} );
 				if ( $select.length > 1 ) {
-					$select.eq( 1 ).on( 'change', function() {
+					$select.eq( 1 ).on( 'input', function() {
 						var type    = $selecttype.val();
 						var subtype = $( this ).val();
 						setting.filter( type, subtype, '', infoVal().name );
@@ -966,7 +966,7 @@ var setting  = {
 					var itr    = $tr.index()
 					var $label = $tr.find( 'td' ).eq( 0 );
 					var $radio = $( '#infoContent input:radio' );
-					$radio.on( 'change', function() {
+					$radio.on( 'input', function() {
 						var val       = $( this ).filter( ':checked' ).val();
 						I.keys[ itr ] = val.toLowerCase();
 						$label.text( val );
@@ -1264,7 +1264,7 @@ var setting  = {
 				$( '#infoContent input[type=number]' ).css( 'width', '70px' );
 				$( '#infoContent td:first-child' ).css( 'width', '128px' );
 				var $select = $( '#infoContent select' );
-				$select.eq( 0 ).on( 'change', function() {
+				$select.eq( 0 ).on( 'input', function() {
 					setting.device( dev, $( this ).val() );
 				} );
 			}
@@ -1297,7 +1297,7 @@ var setting  = {
 				$( '.trselect' ).after( $( 'tr' ).last() );
 				var $trother = $( '.trtext' ).eq( 0 );
 				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
-				$( '.trselect select' ).on( 'change', function() {
+				$( '.trselect select' ).on( 'input', function() {
 					setting.hidetrinfo( $trother, $( this ).val() );
 				} );
 			}
@@ -1356,14 +1356,14 @@ var setting  = {
 				var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
 				indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
 				$trother.toggleClass( 'hide', values.capture_samplerate !== 'Other' );
-				$( '.trselect select' ).eq( 0 ).on( 'change', function() {
+				$( '.trselect select' ).eq( 0 ).on( 'input', function() {
 					if ( $( this ).val() === 'FreeAsync' ) {
 						setting.resampling( 'freeasync' );
 					} else if ( $trnumber.length > 1 ) {
 						setting.resampling();
 					}
 				} );
-				$( '.trselect select' ).eq( 1 ).on( 'change', function() {
+				$( '.trselect select' ).eq( 1 ).on( 'input', function() {
 					setting.hidetrinfo( $trother, $( this ).val() );
 				} );
 			}
@@ -1797,7 +1797,7 @@ $( '#divstate' ).on( 'click', '.clipped', function() {
 	bash( [ 'clippedreset', S.clipped, 'CMD CLIPPED' ] );
 	render.status();
 } );
-$( '#configuration' ).on( 'change', function() {
+$( '#configuration' ).on( 'input', function() {
 	if ( V.local ) return
 	
 	var name = $( this ).val();
@@ -2149,7 +2149,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		}
 		setting.save( 'Mixer', 'Change ...' );
 	}
-} ).on( 'change', 'select', function() {
+} ).on( 'input', 'select', function() {
 	var $this = $( this );
 	V.li      = $this.parents( 'li' );
 	var name  = V.li.data( 'name' );
