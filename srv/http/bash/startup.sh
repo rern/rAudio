@@ -177,6 +177,14 @@ elif [[ $nas && ! $nasonline ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
 
+# fix: some devices not maintain volume on boot
+if [[ -e $dirshm/amixercontrol ]]; then
+	card=$( < $dirsystem/asoundcard )
+	control=$( < $dirshm/amixercontrol )
+	[[ -e $dirsystem/volume ]] && volume=$( < $dirsystem/volume ) || volume=50
+	amixer -c $card -M sset "$control" ${volume}%
+fi
+
 touch $dirshm/startup
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
 	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'

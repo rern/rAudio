@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+[[ -e $dirshm/amixercontrol ]] && volumeGet value > $dirsystem/volume
+
 if [[ $1 == reboot ]]; then
 	reboot=1
 	. $dirshm/cpuinfo
