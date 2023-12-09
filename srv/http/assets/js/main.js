@@ -1163,12 +1163,12 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 				mode = V.mode[ 0 ].toUpperCase() + V.mode.slice( 1 );
 			}
 			message = 'Database not found in '+ ico( V.mode ) +' '+ mode
-					 +'<br><br>Update?'
 		}
 		info( {
 			  icon    : 'library'
 			, title   : 'Library Database'
 			, message : message
+			, oklabel : mode ? ico( 'refresh-library' ) + 'Update' : ''
 			, ok      : mode ? () => bash( [ 'mpcupdate', dir, 'CMD DIR' ] ) : ''
 		} );
 		return
