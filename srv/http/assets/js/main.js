@@ -1149,28 +1149,28 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( V.mode === 'bookmark' ) return
 	
 	if ( ! C[ V.mode ] && V.mode.slice( -5 ) !== 'radio' ) {
-		var json = {
+		var dir, mode, message;
+		if ( V.mode === 'playlists' ) {
+			message = 'No saved playlists available.';
+		} else if ( V.mode === 'latest' ) {
+			message = 'No new albums added since last update.';
+		} else {
+			if ( [ 'nas', 'sd', 'usb' ].includes( V.mode ) ) {
+				dir  = V.mode.toUpperCase();
+				mode = dir;
+			} else {
+				dir  = '';
+				mode = V.mode[ 0 ].toUpperCase() + V.mode.slice( 1 );
+			}
+			message = 'Database not found in '+ ico( V.mode ) +' '+ mode
+					 +'<br><br>Update?'
+		}
+		info( {
 			  icon    : 'library'
 			, title   : 'Library Database'
-		}
-		if ( V.mode === 'playlists' ) {
-			json.message = 'No saved playlists found.';
-		} else if ( V.mode === 'latest' ) {
-			json.message = 'No new albums added since last update.';
-		} else {
-			json.message    = 'Database not yet available in this mode.'
-							 +'<br>If music files already in SD, NAS or USB,'
-							 +'<br>import them to database:'
-							 +'<div class="menu" style="width: 160px"><a class="sub nohover">'
-							 + ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgm' ) +'</div>';
-			json.okno       = true;
-			json.beforeshow = () => {
-				$( '#infoContent' ).on( 'click', '.submenu', function() {
-					$( '#update' ).trigger( 'click' );
-				} );
-			}
-		}
-		info( json );
+			, message : message
+			, ok      : mode ? () => bash( [ 'mpcupdate', dir, 'CMD DIR' ] ) : ''
+		} );
 		return
 	}
 	
