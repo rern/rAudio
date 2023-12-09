@@ -17,7 +17,7 @@ $id_data = [
 	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
 	, 'softlimit'     => [ 'name' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
 	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
-	, 'volume'        => [ 'name' => 'Volume on Boot' ]
+	, 'volumeboot'    => [ 'name' => 'Volume on Boot' ]
 	, 'tft'           => [ 'name' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
 	, 'vuled'         => [ 'name' => 'VU LED',            'sub' => 'cava' ]
@@ -262,9 +262,11 @@ Transmit Queue Length (default: <c>1000</c>)
 EOF
 	]
 	, [
-		  'id'       => 'volume'
+		  'id'       => 'volumeboot'
 		, 'help'     => <<< EOF
-Set default level for volume on startup
+Set volume level on startup:
+ · If sound devices not maintain last set value
+ · As default level every startup
 EOF
 	]
 ];

@@ -587,9 +587,8 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	notify usbdrive "$name" $action
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	;;
-volume )
+volumeboot )
 	enableFlagSet
-	[[ $ON ]] && echo $VOL > $dirsystem/volumeconf
 	pushRefresh
 	;;
 vuled )

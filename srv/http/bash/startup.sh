@@ -135,11 +135,18 @@ if [[ -e $dirshm/btreceiver ]]; then
 else # start mpd.service if not started by bluetoothcommand.sh
 	$dirsettings/player-conf.sh
 fi
-if [[ -e $dirsystem/volume ]]; then
-	card=$( < $dirsystem/asoundcard )
-	control=$( < $dirshm/amixercontrol )
-	volume=$( < $dirsystem/volumeconf )
-	amixer -c $card -M sset "$control" ${volume}%
+if [[ -e $dirsystem/volumeboot ]]; then
+	. $dirsystem/volumeboot.conf
+	if [[ -e $dirshm/btreceiver ]]; then
+		control=$( < $dirshm/btreceiver )
+		amixer -MqD bluealsa sset "$control" $volume
+	elif [[ -e $dirshm/amixercontrol ]]; then
+		card=$( < $dirsystem/asoundcard )
+		control=$( < $dirshm/amixercontrol )
+		amixer -c $card -M sset "$control" ${volume}%
+	else
+		mpc -q volume $volume
+	fi
 fi
 
 # after all sources connected ........................................................
