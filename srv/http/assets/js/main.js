@@ -941,7 +941,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			
 			intervalClear();
 			setProgress( 0 );
-			$( '#elapsed, #total, #progress' ).empty();
+			if ( S.state === 'play' ) $( '#elapsed, #total, #progress' ).empty();
 			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
 		}
 	}
