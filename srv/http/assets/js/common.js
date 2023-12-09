@@ -556,6 +556,7 @@ function info( json ) {
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		infoButtonWidth();
+		$( '#infoOverlay' ).focus();
 		return
 	}
 	
