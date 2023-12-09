@@ -940,8 +940,10 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( S.pllength < 2 ) return
 			
 			intervalClear();
-			setProgress( 0 );
-			if ( S.state === 'play' ) $( '#elapsed, #total, #progress' ).empty();
+			if ( S.state !== 'stop' ) {
+				setProgress( 0 );
+				$( '#elapsed, #total, #progress' ).empty();
+			}
 			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
 		}
 	}
