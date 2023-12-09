@@ -116,11 +116,6 @@ $( 'body' ).on( 'click', function( e ) {
 	) {
 		i2sSelectHide();
 	}
-} ).on( 'keyup', function( e ) {
-	if ( e.key === 'Escape' ) {
-		$( 'select' ).select2( 'close' );
-		i2sSelectHide();
-	}
 } );
 $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.js
 	bash( [ 'rebootlist' ], list => {
