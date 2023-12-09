@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1701344781' );
+	src         : url( '/assets/fonts/rern.woff2?v=1701344782' );
 }
 @font-face {
 	font-family : Lato;
@@ -220,6 +220,7 @@ i {
 .i-usbdrive::before        { content: '\F553' }
 .i-volume::before          { content: '\F516' }
 .i-volume.mute::before     { content: '\F517' }
+.i-volumeboot::before      { content: '\F51E' }
 .i-vuled::before           { content: '\F57C' }
 .i-warning::before         { content: '\F562' }
 .i-webradio::before        { content: '\F55D' }
