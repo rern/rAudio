@@ -702,7 +702,7 @@ function infoCheckLength() {
 }
 function infoCheckSet() {
 	if ( I.checkchanged || I.checkblank || I.checkip || I.checklength ) {
-		$( '#infoContent' ).find( 'input, select' ).on( 'input', function() {
+		$( '#infoContent' ).find( 'input, select, textarea' ).on( 'input', function() {
 			if ( I.checkchanged ) I.nochange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
 			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
