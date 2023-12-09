@@ -18,9 +18,10 @@ if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
 	coverfile=$dirwebradio/img/$urlname.jpg
 	time=false
 	webradio=true
-	case $file in
-		*icecast.radiofrance.fr* )   icon=radiofrance;;
-		*stream.radioparadise.com* ) icon=radioparadise;;
+	host=$( cut -d/ -f3 <<< $file )
+	case $host in
+		icecast.radiofrance.fr )   icon=radiofrance;;
+		stream.radioparadise.com ) icon=radioparadise;;
 	esac
 	ext=Radio
 else
@@ -31,8 +32,7 @@ else
 	title=$( stringEscape $title )
 	path=$( dirname "/mnt/MPD/$file" )
 	coverfile=$( coverFileGet "$path" )
-	(( ${#time} < 6 )) && time="0:$time"
-	time=$( date +'%s' -d "1970-01-01 $time Z" )
+	time=$(( ${time:0:-3} * 60 + ${time: -2} ))
 	webradio=false
 	ext=${file/*.}
 fi
