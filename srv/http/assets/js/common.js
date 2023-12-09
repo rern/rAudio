@@ -249,8 +249,10 @@ select:   [U] [D]     - check
 			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).trigger( 'click' );
 			break;
 		case 'Escape':
-			local(); // prevent toggle setting menu
-			$( '#infoX' ).trigger( 'click' );
+			if ( I.active ) {
+				$( '#infoX' ).trigger( 'click' );
+				local(); // prevent toggle setting menu
+			}
 			break;
 		case 'ArrowLeft':
 		case 'ArrowRight':
