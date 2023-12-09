@@ -701,21 +701,15 @@ function infoCheckLength() {
 	} );
 }
 function infoCheckSet() {
-	if ( I.checkblank || I.checkip || I.checklength ) {
-		$inputbox.on( 'input', function() {
+	if ( I.checkchanged || I.checkblank || I.checkip || I.checklength ) {
+		$( '#infoContent' ).find( 'input, select' ).on( 'input', function() {
+			if ( I.checkchanged ) I.nochange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
 			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
 			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
 			setTimeout( () => {
-				$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange )
+				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short )
 			}, 75 ); // ios: force after infoCheckLength
-		} );
-	}
-	if ( I.checkchanged ) {
-		$( '#infoContent' ).find( 'input, select' ).on( 'input', function() {
-			var values = infoVal( 'array' );
-			I.nochange = I.values.join( '' ) === values.join( '' );
-			$( '#infoOk' ).toggleClass( 'disabled', I.nochange );
 		} );
 	}
 }
