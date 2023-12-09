@@ -560,6 +560,27 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 		, fileconf     : true
 	} );
 } );
+$( '#setting-volume' ).on( 'click', function() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, textlabel    : 'Level'
+		, boxwidth     : 80
+		, values       : S.volumeconf
+		, checkchanged : S.volume
+		, checkblank   : true
+		, cancel       : switchCancel
+		, ok           : () => {
+			var vol = parseInt( infoVal() );
+			if ( vol < 0 ) {
+				vol = 0;
+			} else if ( vol > 100 ) {
+				 vol = 100;
+			}
+			bash( [ 'volume', vol, 'CMD VOL' ] );
+		}
+	} );
+} );
 $( '#backup' ).on( 'click', function() {
 	info( {
 		  icon    : SW.icon

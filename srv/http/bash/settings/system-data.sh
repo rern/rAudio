@@ -153,6 +153,7 @@ chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baud ]] && baud=800000
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
+[[ -e $dirsystem/volumeconf ]] && volumeconf=$( < $dirsystem/volumeconf ) || volumeconf=$( volumeGet value )
 ##########
 data='
 , "audioaplayname"    : "'$audioaplayname'"
@@ -194,6 +195,8 @@ data='
 , "tftreboot"         : '$tftreboot'
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"
+, "volume"            : '$( exists $dirsystem/volume )'
+, "volumeconf"        : '$volumeconf'
 , "vuled"             : '$( exists $dirsystem/vuled )'
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'

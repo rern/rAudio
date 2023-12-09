@@ -582,17 +582,15 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
 	else
 		action=Removed
-		mpc | grep -q ^Updating && systemctl restart mpd
 	fi
 	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
-	exit ###### 
-	
-	[[ -e $dirsystem/usbautoupdateno || -e $filesharedip ]] && exit
-	
-	echo USB > $dirmpd/updating
-	$dirbash/cmd.sh mpcupdate
+	;;
+volume )
+	enableFlagSet
+	[[ $ON ]] && echo $VOL > $dirsystem/volumeconf
+	pushRefresh
 	;;
 vuled )
 	enableFlagSet

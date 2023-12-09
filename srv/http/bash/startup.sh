@@ -135,6 +135,12 @@ if [[ -e $dirshm/btreceiver ]]; then
 else # start mpd.service if not started by bluetoothcommand.sh
 	$dirsettings/player-conf.sh
 fi
+if [[ -e $dirsystem/volume ]]; then
+	card=$( < $dirsystem/asoundcard )
+	control=$( < $dirshm/amixercontrol )
+	volume=$( < $dirsystem/volumeconf )
+	amixer -c $card -M sset "$control" ${volume}%
+fi
 
 # after all sources connected ........................................................
 if [[ $connected ]]; then
@@ -175,14 +181,6 @@ if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000
 elif [[ $nas && ! $nasonline ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
-fi
-
-# fix: some devices not maintain volume on boot
-if [[ -e $dirshm/amixercontrol ]]; then
-	card=$( < $dirsystem/asoundcard )
-	control=$( < $dirshm/amixercontrol )
-	[[ -e $dirsystem/volume ]] && volume=$( < $dirsystem/volume ) || volume=50
-	amixer -c $card -M sset "$control" ${volume}%
 fi
 
 touch $dirshm/startup
