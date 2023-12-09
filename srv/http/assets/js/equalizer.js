@@ -122,7 +122,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	$( '#eqdelete, #eqsave, #eqname, #eqback' ).addClass( 'hide' );
 	$( '#eqname' ).empty();
 	$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
-} ).on( 'keyup paste cut', '#eqname', function( e ) {
+} ).on( 'input', '#eqname', function( e ) {
 	var $eqsave = $( '#eqsave' );
 	$eqsave.toggleClass( 'disabled', $( this ).val().trim() in E.preset );
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );

@@ -495,7 +495,7 @@ $( '#ledcalc' ).on( 'click', function() {
 			$( '#infoContent input' ).prop( 'disabled', 1 );
 			$( '#infoContent input' ).eq( 2 )
 				.prop( 'disabled', 0 )
-				.on( 'keyup paste cut', function() {
+				.on( 'input', function() {
 					var fv = $( this ).val();
 					if ( fv > 3.3 ) {
 						var ohm = '( > 3.3V)';
@@ -521,7 +521,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {
-			$( '#infoContent input' ).on( 'keyup paste', function() {
+			$( '#infoContent input' ).on( 'input', function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}
@@ -907,7 +907,7 @@ function infoMount( nfs ) {
 				$mountpoint.val( 'data' ).prop( 'disabled', true );
 				$mountpoint.next().remove();
 			} else {
-				$mountpoint.on( 'keyup paste', function() {
+				$mountpoint.on( 'input', function() {
 					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 				} );
 			}

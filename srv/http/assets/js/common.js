@@ -255,7 +255,7 @@ select:   [U] [D]     - check
 		case 'ArrowLeft':
 		case 'ArrowRight':
 			var activeinput = $( document.activeElement ).attr( 'type' );
-			if ( [ 'text', 'password', 'textarea' ].includes( activeinput ) ) return
+			if ( [ 'text', 'number', 'password', 'range', 'textarea' ].includes( activeinput ) ) return
 			
 			var $tabactive = $( '#infoTab a.active' );
 			if ( key === 'ArrowLeft' ) {
@@ -594,9 +594,19 @@ function info( json ) {
 		// set width: text / password / textarea
 		infoWidth();
 		if ( I.rangelabel ) {
-			$( '#infoRange input' ).on( 'click input keyup', function() {
+			$( '#infoRange input' ).on( 'input', function() {
 				$( '#infoRange .value' ).text( $( this ).val() );
 			} );
+			if ( I.rangeupdn ) {
+				$( '#infoRange a' ).on( 'click', function() {
+					var updn   = $( this ).hasClass( 'max' ) ? 1 : -1;
+					var $range = $( '#infoRange input' );
+					var val    = +$range.val() + updn;
+					$range.val( val );
+					$( '#infoRange .value' ).text( val );
+					if ( typeof I.rangeupdn === 'function' ) I.rangeupdn( val );
+				} );
+			}
 		}
 		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
 		// custom function before show
@@ -691,22 +701,18 @@ function infoCheckLength() {
 	} );
 }
 function infoCheckSet() {
-	if ( I.checkblank || I.checkip || I.checklength || I.checkchanged ) {
-		$inputbox.on( 'keyup paste cut', function() {
+	if ( I.checkblank || I.checkip || I.checklength ) {
+		$inputbox.on( 'input', function() {
 			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
 			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
-			if ( I.checkchanged ) {
-				var values  = infoVal( 'array' );
-				I.nochange  = I.values.join( '' ) === values.join( '' );
-			}
 			setTimeout( () => {
 				$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange )
 			}, 75 ); // ios: force after infoCheckLength
 		} );
 	}
 	if ( I.checkchanged ) {
-		$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', function() {
+		$( '#infoContent' ).find( 'input, select' ).on( 'input', function() {
 			var values = infoVal( 'array' );
 			I.nochange = I.values.join( '' ) === values.join( '' );
 			$( '#infoOk' ).toggleClass( 'disabled', I.nochange );

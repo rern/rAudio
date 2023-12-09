@@ -733,11 +733,11 @@ function infoTitle() {
 			if ( noparen ) {
 				$( '#paren' ).addClass( 'hide' );
 			} else {
-				$( '#infoContent input:checkbox' ).on( 'change', function() {
+				$( '#infoContent input:checkbox' ).on( 'input', function() {
 					$( '#infoContent input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
-			$( '#infoContent input.required' ).on( 'keyup paste cut', function() {
+			$( '#infoContent input.required' ).on( 'input', function() {
 				var $this = $( this );
 				$this.css( 'border-color', $this.val() ? '' : 'red' );
 				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
