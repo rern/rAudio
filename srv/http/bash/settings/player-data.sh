@@ -28,6 +28,7 @@ lists='{
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
+. $dirshm/status
 ##########
 data='
 , "devices"          : '$devices'
@@ -55,7 +56,7 @@ data='
 , "novolume"         : '$( [[ $mixertype == none && ! $resampled ]] && echo true )'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
-, "player"           : "'$( < $dirshm/player )'"
+, "player"           : "'$player'"
 , "pllength"         : '$( mpc status %length% )'
 , "replaygain"       : '$replaygain'
 , "replaygainconf"   : '$replaygainconf'
@@ -63,7 +64,7 @@ data='
 , "soxrconf"         : '$( conf2json $dirmpdconf/conf/soxr.conf )'
 , "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
-, "state"            : "'$( getVar state $dirshm/status )'"
+, "state"            : "'$state'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 [[ -e $dirshm/amixercontrol ]] && data+='
 , "volume"           : '$( volumeGet valdb hw )

@@ -28,6 +28,7 @@ volume=${vcc[0]}
 card=${vcc[1]}
 control=${vcc[2]}
 [[ -e $dirsystem/volumemute ]] && volumemute=$( < $dirsystem/volumemute ) || volumemute=0
+. $dirshm/status 
 ########
 data='
 , "bluetooth"  : '$bluetooth'
@@ -38,10 +39,10 @@ data='
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
 }
-, "player"     : "'$( < $dirshm/player )'"
+, "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
 , "range"      : '$( conf2json camilla.conf )'
-, "state"      : "'$( getVar state $dirshm/status )'"
+, "state"      : "'$state'"
 , "volume"     : '$volume'
 , "volumemute" : '$volumemute
 for dir in coeffs configs configs-bt; do

@@ -108,15 +108,16 @@ function notifyCommon( message ) {
 	if ( ! message ) {
 		message = S[ SW.id ] ? 'Change ...' : 'Enable ...';
 	} else if ( typeof message === 'boolean' ) {
-		message = message ? 'Enable ...' : 'Disable ...'
+		message = message ? 'Enable ...' : 'Disable ...';
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
 function playbackButton() {
+	$( '.icon' ).toggleClass( 'hide', S.player === 'mpd' );
 	$( '.playback' )
 		.removeClass( 'i-pause i-play' )
 		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
-		.toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' );
+		.toggleClass( 'disabled', S.player === 'mpd' ? ! S.pllength : S.state !== 'play' );
 }
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
