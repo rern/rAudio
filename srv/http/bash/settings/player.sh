@@ -103,6 +103,11 @@ hwmixer )
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
+	if [[ $MIXERTYPE == software ]]; then
+		[[ -e $dirshm/amixercontrol ]] && mpc volume $( volumeGet value )
+	else
+		rm -f $dirsystem/replaygain-hw
+	fi
 	if [[ $HWMIXER ]]; then # set 0dB
 		mpc -q stop
 		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB
@@ -110,7 +115,6 @@ mixertype )
 	fi
 	filemixertype=$dirsystem/mixertype-$APLAYNAME
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
-	[[ $MIXERTYPE != software ]] && rm -f $dirsystem/replaygain-hw
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && tf=true || tf=false
 	pushData display '{ "volumenone": '$tf' }'
@@ -232,15 +236,18 @@ volume0db )
 	card=$( < $dirsystem/asoundcard )
 	control=$( < $dirshm/amixercontrol )
 	amixer -c $card -Mq sset "$control" 0dB
-	volumeGet push
+	volumeGet push hw
 	;;
 volume0dbbt )
 	btdevice=$( < $dirshm/btreceiver )
 	amixer -MqD bluealsa sset "$btdevice" 0dB 2> /dev/null
-	volumeGet push
+	volumeGet push hw
 	;;
 volumeget )
 	volumeGet valdb
+	;;
+volumepush )
+	volumeGet push hw
 	;;
 	
 esac

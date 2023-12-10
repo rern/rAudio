@@ -65,5 +65,7 @@ data='
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
 , "state"            : "'$( getVar state $dirshm/status )'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
+[[ -e $dirshm/amixercontrol ]] && data+='
+, "volume"           : '$( volumeGet valdb hw )
 
 data2json "$data" $1

@@ -420,7 +420,7 @@ volumeGet() {
 		elif inOutputConf mixer_type.*software; then
 			mixersoftware=1
 		fi
-		if [[ $mixersoftware ]] && playerActive mpd; then
+		if [[ $2 != hw && $mixersoftware ]] && playerActive mpd; then
 			val=$( mpc status %volume% | tr -dc [0-9] )
 		elif [[ -e $dirshm/amixercontrol ]]; then
 			card=$( < $dirsystem/asoundcard )
