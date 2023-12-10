@@ -314,6 +314,20 @@ function psOnClose() {
 	if ( wscamilla ) wscamilla.close();
 	$( '#divstate .label' ).html( 'Buffer · Sampling' );
 }
+function playbackButton() {
+	var play = S.state === 'play';
+	if ( S.player === 'mpd' ) {
+		if ( S.pllength ) {
+			var btn = play ? 'pause' : 'play';
+		} else {
+			var btn = 'play disabled';
+		}
+	} else {
+		var btn = play ? 'stop' : 'play disabled';
+	}
+	$( '.icon' ).prop( 'class', 'icon i-'+ S.player );
+	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
+}
 function psVolume( data ) {
 	var vol = data.val;
 	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {

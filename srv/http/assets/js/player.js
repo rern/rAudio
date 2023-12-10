@@ -410,6 +410,14 @@ function volumeInfoSet() {
 	$( '#infoOk' ).toggleClass( 'disabled', S.volume.db === 0 || S.volume.db === '' );
 	V.local = false;
 }
+function playbackButton() {
+	if ( S.pllength ) {
+		var btn = S.state === 'play' ? 'pause' : 'play';
+	} else {
+		var btn = 'play disabled';
+	}
+	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
+}
 function psVolume( data ) {
 	S.volume = data;
 	if ( ! I.rangelabel ) return

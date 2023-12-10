@@ -112,19 +112,6 @@ function notifyCommon( message ) {
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
-function playbackButton() {
-	var mpd  = S.player === 'mpd';
-	var play = S.state === 'play';
-	if ( page === 'camilla' ) {
-		$( '.icon' ).prop( 'class', 'icon i-'+ S.player );
-		$( '.playback' ).toggleClass( 'disabled', mpd ? ! S.pllength : ! play );
-	} else {
-		$( '.playback' ).toggleClass( 'disabled', ! mpd || S.pllength === 0 );
-	}
-	$( '.playback' )
-		.removeClass( 'i-pause i-play' )
-		.addClass( play ? 'i-pause' : 'i-play' );
-}
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
