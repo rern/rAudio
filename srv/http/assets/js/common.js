@@ -243,16 +243,14 @@ select:   [U] [D]     - check
 */
 	if ( ! I.active ) return
 	
+	e.stopPropagation(); // suppress others
 	var key = e.key;
 	switch ( key ) {
 		case 'Enter':
 			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).trigger( 'click' );
 			break;
 		case 'Escape':
-			if ( I.active ) {
-				$( '#infoX' ).trigger( 'click' );
-				local(); // prevent toggle setting menu
-			}
+			$( '#infoX' ).trigger( 'click' );
 			break;
 		case 'ArrowLeft':
 		case 'ArrowRight':
