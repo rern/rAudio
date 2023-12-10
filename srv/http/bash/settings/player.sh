@@ -232,7 +232,6 @@ volume0db )
 	card=$( < $dirsystem/asoundcard )
 	control=$( < $dirshm/amixercontrol )
 	amixer -c $card -Mq sset "$control" 0dB
-	alsactl store
 	volumeGet push
 	;;
 volume0dbbt )

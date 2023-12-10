@@ -47,31 +47,26 @@ restart )
 	systemctl restart camilladsp
 	;;
 setformat )
-	systemctl stop camilladsp
-	killall camilladsp &> /dev/null
-
 	card=$( < $dirsystem/asoundcard )
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
 	sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $configfile
-	camilladsp $configfile &> /dev/null &
-	pgrep -x camilladsp &> /dev/null && killall camilladsp && exit
-
 	notify 'camilladsp blink' CamillaDSP "Set Playback format ..."
-	for format in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
-		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $configfile
+	for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
+		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$f'/}}' $configfile
 		camilladsp $configfile &> /dev/null &
-		pgrep -x camilladsp &> /dev/null && break || format=
+		if pgrep -x camilladsp &> /dev/null; then
+			format=$f
+			killall camilladsp
+			break
+		fi
 	done
 	if [[ $format ]]; then
-		killall camilladsp
 		notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
 	else
-		dsp=
 		notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
 		rm -f $dirsystem/camilladsp
 		sed -i '/pcm.!default/,$ d' /etc/asound.conf
 		rmmod snd_aloop
-		alsactl store &> /dev/null
 		alsactl nrestore &> /dev/null
 	fi
 	;;

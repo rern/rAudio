@@ -8,17 +8,12 @@ args2var "$1"
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		! playerActive mpd && playerStop
-		mpc -q play $pos
+		mpc -q play $1
 	fi
 	pushPlaylist add
 }
 plAddPosition() {
-	if [[ ${ACTION:0:7} == replace ]]; then
-		plClear
-		pos=1
-	else
-		pos=$(( $( mpc status %length% ) + 1 ))
-	fi
+	[[ ${ACTION:0:7} == replace ]] && plClear || echo $(( $( mpc status %length% ) + 1 ))
 }
 plAddRandom() {
 	local cuefile diffcount dir file mpcls plL range tail
@@ -166,7 +161,6 @@ volumeSet() {
 		done
 		rm $dirshm/volumeset
 	fi
-	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 volumeSetAt() {
 	local card control target
@@ -190,16 +184,18 @@ webradioCount() {
 	grep -q -m1 "$type.*,"$ $dirmpd/counts && count+=,
 	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
-webradioPlaylistVerify() {
+webradioM3uPlsVerify() {
 	local ext url
-	ext=$1
-	url=$2
+	url=$1
+	ext=${url/*.}
+	[[ ! $ext =~ ^(m3u|pls)$ ]] && return
+	
 	if [[ $ext == m3u ]]; then
 		url=$( curl -s $url 2> /dev/null | grep -m1 ^http )
 	elif [[ $ext == pls ]]; then
 		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
-	[[ ! $url ]] && echo 'No valid URL found in:' && exit
+	[[ ! $url ]] && echo 'No valid URL found in:'$url && exit
 }
 webRadioSampling() {
 	local bitrate data file kb rate sample samplerate url
@@ -465,16 +461,16 @@ lyrics )
 	fi
 	;;
 mpcadd )
-	plAddPosition
+	pos=$( plAddPosition )
 	mpc -q add "$FILE"
-	plAddPlay
+	plAddPlay $pos
 	;;
 mpcaddplaynext )
 	mpc -q insert "$FILE"
 	pushPlaylist add
 	;;
 mpcaddfind )
-	plAddPosition
+	pos=$( plAddPosition )
 	if [[ $MODE3 ]]; then
 		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2" $MODE3 "$STRING3"
 	elif [[ $MODE2 ]]; then
@@ -482,15 +478,15 @@ mpcaddfind )
 	else
 		mpc -q findadd $MODE "$STRING"
 	fi
-	plAddPlay
+	plAddPlay $pos
 	;;
 mpcaddload )
-	plAddPosition
+	pos=$( plAddPosition )
 	mpc -q load "$FILE"
-	plAddPlay
+	plAddPlay $pos
 	;;
 mpcaddls )
-	plAddPosition
+	pos=$( plAddPosition )
 	readarray -t cuefiles <<< $( mpc ls "$DIR" | grep '\.cue$' | sort -u )
 	if [[ ! $cuefiles ]]; then
 		mpc ls "$DIR" | mpc -q add &> /dev/null
@@ -499,7 +495,7 @@ mpcaddls )
 			mpc -q load "$cuefile"
 		done
 	fi
-	plAddPlay
+	plAddPlay $pos
 	;;
 mpccrop )
 	if statePlay; then
@@ -790,9 +786,7 @@ volumeupdnmpc )
 webradioadd )
 	url=$( urldecode $URL )
 	urlname=${url//\//|}
-	ext=${url/*.}
-	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
-	
+	webradioM3uPlsVerify $url
 	file=$dirwebradio
 	[[ $DIR ]] && file+="/$DIR"
 	file+="/$urlname"
@@ -829,9 +823,7 @@ webradioedit )
 	else
 		[[ -e $newfile ]] && echo 'URL exists:' && exit
 		
-		ext=${NEWURL##*.}
-		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $NEWURL
-		
+		webradioM3uPlsVerify $NEWURL
 		rm "$prevfile"
 		# stationcover
 		imgurl="$dirwebradio/img/$urlname"

@@ -36,7 +36,6 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl stop lcdchar
 	$dirbash/lcdchar.py logo
 fi
-alsactl store
 if [[ -e $dirshm/clientip ]]; then
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
@@ -51,6 +50,7 @@ if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
 	sleep 3
 fi
+alsactl store
 
 [[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
 [[ $reboot ]] && reboot || poweroff

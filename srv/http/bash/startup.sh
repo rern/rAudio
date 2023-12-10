@@ -147,6 +147,7 @@ if [[ -e $dirsystem/volumeboot ]]; then
 	else
 		mpc -q volume $volume
 	fi
+	pushData volume '{ "val": '$volume' }'
 fi
 
 # after all sources connected ........................................................
