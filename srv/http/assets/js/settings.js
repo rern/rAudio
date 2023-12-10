@@ -115,9 +115,7 @@ function notifyCommon( message ) {
 function playbackButton() {
 	var mpd  = S.player === 'mpd';
 	var play = S.state === 'play';
-	$( '.icon' )
-		.prop( 'class', 'icon i-'+ S.player )
-		.toggleClass( 'hide', mpd );
+	if ( page === 'camilla' ) $( '.icon' ).prop( 'class', 'icon i-'+ S.player );
 	$( '.playback' )
 		.removeClass( 'i-pause i-play' )
 		.addClass( play ? 'i-pause' : 'i-play' )
