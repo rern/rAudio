@@ -113,11 +113,15 @@ function notifyCommon( message ) {
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
 function playbackButton() {
-	$( '.icon' ).toggleClass( 'hide', S.player === 'mpd' );
+	var mpd  = S.player === 'mpd';
+	var play = S.state === 'play';
+	$( '.icon' )
+		.prop( 'class', 'icon i-'+ S.player )
+		.toggleClass( 'hide', mpd );
 	$( '.playback' )
 		.removeClass( 'i-pause i-play' )
-		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
-		.toggleClass( 'disabled', S.player === 'mpd' ? ! S.pllength : S.state !== 'play' );
+		.addClass( play ? 'i-pause' : 'i-play' )
+		.toggleClass( 'disabled', mpd ? ! S.pllength : ! play );
 }
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
