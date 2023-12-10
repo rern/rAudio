@@ -103,21 +103,21 @@ hwmixer )
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
-	if [[ $MIXERTYPE == software ]]; then
+	mpc -q stop
+	filemixertype=$dirsystem/mixertype-$APLAYNAME
+	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
+	if [[ $MIXERTYPE == software ]]; then # [sw] set to current [hw]
 		[[ -e $dirshm/amixercontrol ]] && mpc volume $( volumeGet value )
 	else
 		rm -f $dirsystem/replaygain-hw
 	fi
-	if [[ $HWMIXER ]]; then # set 0dB
-		mpc -q stop
-		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB
+	if [[ $HWMIXER ]]; then
+		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB # [hw] set to current [sw] || [sw/none] set 0dB
 		amixer -c $CARD -Mq sset "$HWMIXER" $vol
 	fi
-	filemixertype=$dirsystem/mixertype-$APLAYNAME
-	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
 	$dirsettings/player-conf.sh
-	[[ $MIXERTYPE == none ]] && tf=true || tf=false
-	pushData display '{ "volumenone": '$tf' }'
+	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false
+	pushData display '{ "volumenone": '$volumenone' }'
 	;;
 novolume )
 	mpc -q crossfade 0

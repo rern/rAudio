@@ -596,8 +596,11 @@ function info( json ) {
 		infoWidth();
 		if ( I.rangelabel ) {
 			$( '#infoRange input' ).on( 'input', function() {
-				$( '#infoRange .value' ).text( $( this ).val() );
+				I.val = $( this ).val();
+				$( '#infoRange .value' ).text( I.val );
+				if ( I.rangeinput ) I.rangeinput();
 			} );
+			if ( I.rangeend ) $( '#infoRange input' ).on( 'touchend mouseup keyup', I.rangeend );
 			if ( I.rangeupdn ) {
 				$( '#infoRange a' ).on( 'click', function() {
 					var updn   = $( this ).hasClass( 'max' ) ? 1 : -1;

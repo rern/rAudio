@@ -192,6 +192,7 @@ function psOnMessage( message ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'camilla':   psCamilla( data );   break;
+		case 'mpdplayer': psMpdPlayer( data ); break;
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'power':     psPower( data );     break;
@@ -226,6 +227,10 @@ function psCamilla( data ) {
 	S.range = data;
 	$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
 	$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
+}
+function psMpdPlayer( data ) {
+	[ 'player', 'pllength', 'state' ].forEach( k => S[ k ] = data[ k ] );
+	playbackButton();
 }
 function psPlayer( data ) {
 	var player_id = {
@@ -378,6 +383,8 @@ $( '.helphead' ).on( 'click', function() {
 	$( '.sub' ).next().toggleClass( 'hide', visible );
 } );
 $( '.playback' ).on( 'click', function() { // for player and camilla
+	S.state = S.state === 'play' ? 'pause' : 'play';
+	playbackButton();
 	bash( [ 'cmd.sh', 'mpcplayback' ] );
 } );
 $( '.help' ).on( 'click', function() {

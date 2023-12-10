@@ -73,13 +73,6 @@ fi
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom
 
-if [[ $( < $dirshm/stateprev ) != $state ]]; then
-	for p in player features camilla; do
-		pushData refresh '{ "page": "'$p'", "state": "'$state'" }'
-	done
-fi
-echo $state > $dirshm/stateprev
-
 [[ ! -e $dirsystem/scrobble ]] && exit
 
 [[ ! $trackchanged && ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
