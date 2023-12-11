@@ -10,7 +10,7 @@ plAddPlay() {
 		! playerActive mpd && playerStop
 		mpc -q play $1
 	fi
-	pushPlaylist add
+	pushPlaylist
 }
 plAddPosition() {
 	[[ ${ACTION:0:7} == replace ]] && plClear || echo $(( $( mpc status %length% ) + 1 ))
@@ -102,8 +102,6 @@ plTail() {
 	echo $(( ${pos_len[1]} - ${pos_len[0]} ))
 }
 pushPlaylist() {
-	local arg
-	[[ $1 ]] && arg=$1 || arg=current
 	pushData playlist '{ "refresh": true }'
 }
 pushRadioList() {
@@ -467,7 +465,7 @@ mpcadd )
 	;;
 mpcaddplaynext )
 	mpc -q insert "$FILE"
-	pushPlaylist add
+	pushPlaylist
 	;;
 mpcaddfind )
 	pos=$( plAddPosition )

@@ -2,10 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-pushPlaylist() {
-	pushData playlist $( php /srv/http/mpdplaylist.php current )
-}
-
 [[ $1 ]] && notify audiocd 'Audio CD' "USB CD $1"
 
 if [[ $1 == on ]]; then
@@ -26,7 +22,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 			mpc -q play $(( tracktop - 1 ))
 			mpc -q stop
 		fi
-		pushPlaylist
+		pushData playlist '{ "refresh": true }'
 	fi
 	if [[ $1 == off ]]; then
 		rm -f $dirshm/audiocd $dirmpdconf/cdio.conf
@@ -98,7 +94,7 @@ for i in $( seq 1 $trackL ); do
   mpc -q add cdda:///$i
 done
 echo $discid > $dirshm/audiocd
-pushPlaylist
+pushData playlist '{ "refresh": true }'
 eject -x 4
 
 if [[ $autoplaycd ]]; then

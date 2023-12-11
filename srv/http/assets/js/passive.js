@@ -274,9 +274,7 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
-	if ( ! data.add
-		&& ( V.local || V.sortable || $( '.pl-remove' ).length )
-	) return
+	if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 	
 	if ( 'skip' in data ) {
 		S.song = data.skip;
