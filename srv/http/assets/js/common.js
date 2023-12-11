@@ -595,22 +595,24 @@ function info( json ) {
 		// set width: text / password / textarea
 		infoWidth();
 		if ( I.rangelabel ) {
-			$( '#infoRange input' ).on( 'input', function() {
-				I.val = $( this ).val();
-				$( '#infoRange .value' ).text( I.val );
-				if ( I.rangeinput ) I.rangeinput();
+			var $range   = $( '#infoRange input' );
+			var ivalues0 = I.values[ 0 ];
+			$range.on( 'input', function() {
+				var val = +$range.val();
+				$( '#infoRange .value' ).text( val );
+				if ( I.rangechange ) I.rangechange( val );
+				if ( I.checkchanged ) $( '#infoOk' ).toggleClass( 'disabled', ivalues0 === val );
+			} ).on( 'touchend mouseup keyup', function() {
+				if ( I.rangestop ) I.rangestop( +$range.val() );
 			} );
-			if ( I.rangeend ) $( '#infoRange input' ).on( 'touchend mouseup keyup', I.rangeend );
-			if ( I.rangeupdn ) {
-				$( '#infoRange a' ).on( 'click', function() {
-					var updn   = $( this ).hasClass( 'max' ) ? 1 : -1;
-					var $range = $( '#infoRange input' );
-					var val    = +$range.val() + updn;
-					$range.val( val );
-					$( '#infoRange .value' ).text( val );
-					if ( typeof I.rangeupdn === 'function' ) I.rangeupdn( val );
-				} );
-			}
+			$( '#infoRange a' ).on( 'click', function() {
+				var updn = $( this ).hasClass( 'max' ) ? 1 : -1;
+				var val  = +$range.val() + updn;
+				$range.val( val );
+				$( '#infoRange .value' ).text( val );
+				if ( I.checkchanged ) $( '#infoOk' ).toggleClass( 'disabled', ivalues0 === val );
+				if ( I.rangeupdn ) I.rangeupdn( val );
+			} );
 		}
 		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
 		// custom function before show

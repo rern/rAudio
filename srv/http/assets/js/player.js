@@ -42,16 +42,13 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		, title        : SW.title
 		, rangelabel   : bt ? mixer.replace( ' - A2DP', '' ) : mixer
 		, rangesub     : 'dB'
+		, values       : S.volume.val
 		, beforeshow   : () => {
 			volumeInfoSet();
 			$( '#infoContent' ).after( '<div class="confirm infomessage hide" style="padding: 15px">'+ warning +'</div>' );
-			$( '#infoRange input' ).on( 'input', function() {
-				bash( [ cmd, $( this ).val(), mixer, card, 'CMD VAL MIXER CARD' ] );
-			} ).on( 'touchend mouseup keyup', function() {
-				volumeGetPush();
-			} );
 		}
-		, values       : S.volume.val
+		, rangechange  : val => bash( [ cmd, val, mixer, card, 'CMD VAL MIXER CARD' ] )
+		, rangestop    : volumeGetPush
 		, oklabel      : ico( 'set0' ) +'0dB'
 		, ok           : () => {
 			if ( $( '#infoRange .sub' ).text() < '0 dB' && $( '.confirm' ).hasClass( 'hide' ) ) {
