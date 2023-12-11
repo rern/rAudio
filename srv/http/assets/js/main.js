@@ -890,11 +890,10 @@ $( '.map' ).on( 'click', function( e ) {
 $( '.btn-cmd' ).on( 'click', function() {
 	if ( ws.readyState !== 1 ) return // fix - missing elapsed if ws closed > reconnect
 	
-	var $this = $( this );
 	var cmd   = this.id;
 	if ( S.state === cmd ) return
 	
-	if ( $this.hasClass( 'btn-toggle' ) ) {
+	if ( $( this ).hasClass( 'btn-toggle' ) ) {
 		var onoff = ! S[ cmd ];
 		S[ cmd ] = onoff;
 		bash( [ 'mpcoption', cmd, onoff, 'CMD OPTION ONOFF' ] );
@@ -944,10 +943,20 @@ $( '.btn-cmd' ).on( 'click', function() {
 				setProgress( 0 );
 				$( '#elapsed, #total, #progress' ).empty();
 			}
-			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
+			if ( cmd == 'next' ) {
+				var pos = S.song + 2 > S.pllength ? 1 : S.song + 2;
+			} else {
+				var pos = S.song === 0 ? S.pllength : S.song;
+			}
+			bash( [ 'mpcskip', pos, 'CMD POS' ] );
 		}
 	}
 	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );
+} ).on( 'dblclick', function() {
+	if ( ws.readyState !== 1 ) return
+	
+	var cmd   = this.id;
+	if ( cmd === 'previous' || cmd === 'next' ) bash( [ 'mpcskip', cmd, 'CMD POS' ] );
 } );
 $( '#bio' ).on( 'click', '.biosimilar', function() {
 	bio( $( this ).text(), 'getsimilar' );
@@ -1756,7 +1765,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	}
 	
 	var $liactive  = $( '#pl-list li.active' );
-	var listnumber = $this.index() + 1;
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$liactive.find( '.song' ).empty();
 	$liactive.find( '.li1 .radioname' ).removeClass( 'hide' );
@@ -1775,7 +1783,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		intervalClear();
 		$( '.elapsed' ).empty();
-		bash( [ 'mpcplayback', 'play', listnumber, 'CMD ACTION POS' ] );
+		bash( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS PLAY' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}

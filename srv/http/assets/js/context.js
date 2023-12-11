@@ -110,7 +110,7 @@ function bookmarkNew() {
 	} );
 }
 function currentSet() {
-	bash( [ 'mpcsetcurrent', V.list.index + 1, 'CMD POS' ] );
+	bash( [ 'mpcskip', V.list.index + 1, 'CMD POS' ] );
 }
 function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {

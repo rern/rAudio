@@ -117,7 +117,7 @@ radioStop() {
 		mpc -q stop
 		systemctl stop radio dab &> /dev/null
 		rm -f $dirshm/radio
-		[[ ! -e $dirshm/prevnextseek ]] && $dirbash/status-push.sh
+		[[ ! -e $dirshm/skip ]] && $dirbash/status-push.sh
 	fi
 }
 shairportStop() {
@@ -534,7 +534,7 @@ mpcplayback )
 	radioStop
 	if [[ $ACTION == play ]]; then
 		[[ $( mpc status %state% ) == paused ]] && pause=1
-		mpc -q $ACTION $POS
+		mpc -q $ACTION
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify 'audiocd blink' 'Audio CD' 'Start play ...'
 	else
 		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
@@ -556,33 +556,6 @@ mpcplayback )
 	pushData option '{ "snapclient": '$active' }'
 	pushData refresh '{ "page": "features", "snapclientactive": '$active' }'
 	;;
-mpcprevnext )
-	touch $dirshm/prevnextseek
-	. <( mpc status 'state=%state%; current=%songpos%; length=%length%; random=%random%; consume=%consume%' )
-	if [[ $random == on ]]; then
-		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
-	else
-		if [[ $ACTION == next ]]; then
-			(( $current != $length )) && pos=$(( current + 1 )) || pos=1
-		else
-			(( $current != 1 )) && pos=$(( current - 1 )) || pos=$length
-		fi
-	fi
-	$dirbash/cmd-prevnextdata.sh $pos &
-	if [[ $state == playing ]]; then
-		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
-		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
-		radioStop
-		rm -f $dirshm/prevnextseek
-		mpc -q play $pos
-		[[ $consume == on ]] && mpc -q del $current
-	else
-		mpc -q play $pos
-		rm -f $dirshm/prevnextseek
-		mpc -q stop
-	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom
-	;;
 mpcremove )
 	if [[ $POS ]]; then
 		[[ $( mpc status %songpos% ) == $POS ]] && radioStop
@@ -596,18 +569,12 @@ mpcremove )
 	;;
 mpcseek )
 	if [[ $STATE == stop ]]; then
-		touch $dirshm/prevnextseek
+		touch $dirshm/skip
 		mpc -q play
 		mpc -q pause
-		rm $dirshm/prevnextseek
+		rm $dirshm/skip
 	fi
 	mpc -q seek $ELAPSED
-	;;
-mpcsetcurrent )
-	mpc -q play $POS
-	mpc -q stop
-	pushPlaylist
-	$dirbash/status-push.sh
 	;;
 mpcshuffle )
 	mpc -q shuffle
@@ -642,6 +609,24 @@ mpcsimilar )
 	pushPlaylist
 	added=$(( $( mpc status %length% ) - plLprev ))
 	notify lastfm 'Add Similar' "$added tracks added."
+	;;
+mpcskip )
+	touch $dirshm/skip
+	. <( mpc status 'state=%state%; consume=%consume%' )
+	$dirbash/cmd-prevnextdata.sh $POS &
+	if [[ $state == playing ]]; then
+		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
+		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
+		radioStop
+		rm -f $dirshm/skip
+		mpc -q play $POS
+		[[ $consume == on ]] && mpc -q del $current
+	else
+		mpc -q play $POS
+		rm -f $dirshm/skip
+		[[ ! $PLAY ]] && mpc -q stop
+	fi
+	[[ -e $dirsystem/librandom ]] && plAddRandom
 	;;
 mpcupdate )
 	if [[ $DIR ]]; then
