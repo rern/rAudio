@@ -709,7 +709,7 @@ $( '#divcover' ).press( function( e ) {
 		|| V.guide
 		|| ( S.webradio && S.state === 'play' )
 		|| $( e.target ).hasClass( 'band' )
-		|| e.target.id === 'coverT'
+		|| [ 'coverL', 'coverR', 'coverT' ].includes( e.target.id )
 	) return
 	
 	$( '#coverart' )
@@ -888,7 +888,7 @@ $( '.map' ).on( 'click', function( e ) {
 	}
 } );
 $( '.btn-cmd' ).on( 'click', function() {
-	if ( ws.readyState !== 1 ) return // fix - missing elapsed if ws closed > reconnect
+	if ( V.press || ws.readyState !== 1 ) return // fix - missing elapsed if ws closed > reconnect
 	
 	var cmd   = this.id;
 	if ( S.state === cmd ) return
@@ -938,25 +938,22 @@ $( '.btn-cmd' ).on( 'click', function() {
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 			
-			intervalClear();
-			if ( S.state !== 'stop' ) {
-				setProgress( 0 );
-				$( '#elapsed, #total, #progress' ).empty();
-			}
 			if ( cmd == 'next' ) {
 				var pos = S.song + 2 > S.pllength ? 1 : S.song + 2;
 			} else {
 				var pos = S.song === 0 ? S.pllength : S.song;
 			}
-			bash( [ 'mpcskip', pos, 'CMD POS' ] );
+			setPlaylistSkip( pos );
 		}
 	}
 	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );
-} ).on( 'dblclick', function() {
-	if ( ws.readyState !== 1 ) return
+} );
+$( '#previous, #next, #coverR, #coverL' ).press( function( e ) {
+	var next = [ 'next', 'coverR' ].includes( e.target.id );
+	if ( ( next && S.song + 1 === S.pllength ) || ( ! next && S.song === 0 ) ) return
 	
-	var cmd   = this.id;
-	if ( cmd === 'previous' || cmd === 'next' ) bash( [ 'mpcskip', cmd, 'CMD POS' ] );
+	banner( 'playlist', 'Playlist', 'Skip to '+ ( next ? 'last ...' : 'first ...' ) );
+	setPlaylistSkip( next ? S.pllength : 1 );
 } );
 $( '#bio' ).on( 'click', '.biosimilar', function() {
 	bio( $( this ).text(), 'getsimilar' );

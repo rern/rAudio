@@ -1831,6 +1831,14 @@ function setPlaylistScroll() {
 		}
 	}
 }
+function setPlaylistSkip( pos ) {
+	intervalClear();
+	if ( S.state !== 'stop' ) {
+		setProgress( 0 );
+		$( '#elapsed, #total, #progress' ).empty();
+	}
+	bash( [ 'mpcskip', pos, 'CMD POS' ] );
+}
 function setPlayPauseColor() {
 	var pause = S.state === 'pause';
 	$( '#title' ).toggleClass( 'gr', pause );
