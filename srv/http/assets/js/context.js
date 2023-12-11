@@ -433,8 +433,6 @@ function webRadioCoverart() {
 		var name      = V.list.name;
 	}
 	var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
-	$( '#coverart' ).removeAttr( 'style' );
-	$( '.coveredit' ).remove();
 	info( {
 		  icon        : 'coverart'
 		, title       : ( mode === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'

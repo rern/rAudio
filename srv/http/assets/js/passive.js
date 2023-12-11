@@ -106,7 +106,7 @@ function psBookmark() {
 function psCoverart( data ) {
 	clearTimeout( V.timeoutCover );
 	bannerHide();
-	$( '#coverart, #liimg' ).css( 'opacity', '' );
+	$( '#liimg' ).css( 'opacity', '' );
 	'stationcover' in data ? S.stationcover = data.url : S.coverart = data.url;
 	setCoverart();
 	if ( data.radioalbum ) { // online coverarts come with album name

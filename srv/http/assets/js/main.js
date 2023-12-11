@@ -10,7 +10,6 @@ V = {   // var global
 	, bioartist     : []
 	, blinkdot      : blinkdot
 	, coverart      : '/assets/img/coverart.svg'
-	, icoveredit    : '<div class="coveredit cover-change">'+ ico( 'coverart' ) +'</div>'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
 	, interval      : {}
 	, covervu       : '/assets/img/vu.svg'
@@ -157,26 +156,12 @@ $( 'body' ).on( 'click', function( e ) {
 	if ( ! V.local && $( '.pl-remove' ).length && ! $target.hasClass( 'pl-remove' ) ) $( '.pl-remove' ).remove();
 	if ( V.guide ) guideHide();
 } );
-$( '#page-playback' ).on( 'click', function( e ) {
-	if ( V.press
-		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].includes( e.target.id ) ) return
-	
-	if ( $( '#divcover .coveredit' ).length ) {
-		if ( ! $( e.target ).hasClass( 'coveredit' ) ) {
-			$( '#divcover .cover-change' ).remove();
-			$( '#coverart' ).css( 'opacity', '' );
-		}
-	}
-} );
 $( '#loader' ).on( 'click', function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
 	if ( ! S.webradio && S.player === 'mpd' && S.coverart.slice( 0, 16 ) === '/data/shm/online' ) {
 		$( '#coverart' ).after( V.icoversave );
-	} else {
-		$( '#divcover .coveredit' ).remove();
-		$( '#coverart' ).css( 'opacity', '' );
 	}
 	if ( ( V.wW - $( '#divcover' ).width() ) < 80 ) {
 		$( '#volume-band-dn' ).css( 'left', 0 );
@@ -704,7 +689,7 @@ $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	clearTimeout( V.volumebar );
 	volumeBarSet( 'toggle' );
 } );
-$( '#divcover' ).press( function( e ) {
+$( '#coverM' ).press( function( e ) {
 	if ( ! S.pllength
 		|| V.guide
 		|| ( S.webradio && S.state === 'play' )
@@ -712,13 +697,9 @@ $( '#divcover' ).press( function( e ) {
 		|| [ 'coverL', 'coverR', 'coverT' ].includes( e.target.id )
 	) return
 	
-	$( '#coverart' )
-		.css( 'opacity', 0.33 )
-		.after( V.icoveredit );
+	S.webradio ? webRadioCoverart() : coverartChange();
 } ).on( 'click', '.cover-save', function() {
 	coverartSave();
-} ).on( 'click', '.cover-change', function() {
-	S.webradio ? webRadioCoverart() : coverartChange();
 } );
 $( '#coverT' ).press( function() {
 	if ( typeof Android === 'object' ) {
@@ -759,11 +740,6 @@ $( '.map' ).on( 'click', function( e ) {
 		$( '#info' ).removeClass( 'hide' );
 		clearTimeout( V.volumebar );
 		volumeBarHide();
-		return
-		
-	} else if ( $( '#divcover .cover-change' ).length ) {
-		$( '#divcover .cover-change' ).remove();
-		$( '#coverart' ).css( 'opacity', '' );
 		return
 		
 	} else if ( 'screenoff' in V ) {
@@ -902,10 +878,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 	} else {
 		$( '#playback-controls .btn' ).removeClass( 'active' );
 		$( '#'+ cmd ).addClass( 'active' );
-		if ( S.webradio ) {
-			$( '#divcover .cover-change' ).remove();
-			$( '#coverart' ).css( 'opacity', '' );
-		}
 		if ( cmd === 'play' ) {
 			var stateprev = S.state;
 			S.state = cmd;
@@ -1451,18 +1423,11 @@ Exclude this thumbnail?`
 	var $this = $( e.currentTarget );
 	$this.parent().removeClass( 'active' );
 	$( '#menu-album' ).addClass( 'hide' );
-	$this.find( 'img' )
-		.css( 'opacity', '0.33' )
-		.after( V.icoveredit );
+	coverartChange();
 } ).on( 'click', '#lib-list li', function( e ) {
 	e.stopPropagation();
 	if ( V.press ) return
 	
-	if ( $( '.licover .cover-change' ).length ) {
-		$( '.licover .cover-change' ).remove();
-		$( '.licover img' ).css( 'opacity', '' );
-		return
-	}
 	var $this   = $( this );
 	var $target = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
