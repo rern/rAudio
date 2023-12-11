@@ -278,6 +278,12 @@ function psPlaylist( data ) {
 		&& ( V.local || V.sortable || $( '.pl-remove' ).length )
 	) return
 	
+	if ( 'skip' in data ) {
+		S.song = data.skip;
+		if ( V.playlist ) setPlaylistScroll();
+		return
+	}
+	
 	clearTimeout( V.debouncepl );
 	V.debouncepl = setTimeout( () => {
 		if ( data == -1 ) {

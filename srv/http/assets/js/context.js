@@ -110,6 +110,9 @@ function bookmarkNew() {
 	} );
 }
 function currentSet() {
+	S.song = V.list.index;
+	setPlaylistScroll();
+	local();
 	bash( [ 'mpcskip', V.list.index + 1, 'CMD POS' ] );
 }
 function directoryList() {

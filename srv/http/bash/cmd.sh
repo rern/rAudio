@@ -626,7 +626,7 @@ mpcskip )
 		rm -f $dirshm/skip
 		[[ ! $PLAY ]] && mpc -q stop
 	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom
+	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "skip": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
 	if [[ $DIR ]]; then
