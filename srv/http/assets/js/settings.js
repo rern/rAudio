@@ -223,7 +223,7 @@ function psCamilla( data ) {
 	$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 }
 function psMpdPlayer( data ) {
-	if ( [ 'camilla', 'player' ].includes( page ) ) return
+	if ( ! [ '', 'camilla', 'player' ].includes( page ) ) return
 	
 	[ 'player', 'pllength', 'state' ].forEach( k => S[ k ] = data[ k ] );
 	playbackButton();
