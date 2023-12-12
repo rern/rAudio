@@ -23,6 +23,7 @@ resampled=$( [[ $camilladsp == true \
 				|| $replaygain == true \
 				|| $soxr == true \
 					]] && echo true );
+volumempd=$( mpc status %volume% | tr -dc [0-9] )
 lists='{
   "albumignore" : '$( exists $dirmpd/albumignore )'
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
@@ -65,7 +66,8 @@ data='
 , "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
 , "state"            : "'$state'"
-, "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
+, "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
+, "volumempd"        : '$volumempd
 [[ -e $dirshm/amixercontrol ]] && data+='
 , "volume"           : '$( volumeGet valdb hw )
 

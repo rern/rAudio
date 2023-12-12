@@ -9,7 +9,7 @@ $id_data = [
 	, 'dop'           => [ 'name' => 'DSD over PCM',          'sub' => 'dop',                  'setting' => 'none' ]
 	, 'ffmpeg'        => [ 'name' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
 	, 'hwmixer'       => [ 'name' => 'Mixer Device',                                           'setting' => 'custom' ]
-	, 'mixertype'     => [ 'name' => 'Volume Control',                                         'setting' => 'none' ]
+	, 'mixertype'     => [ 'name' => 'Volume Control',                                         'setting' => 'custom' ]
 	, 'normalization' => [ 'name' => 'Normalization',         'sub' => 'volume_normalization', 'setting' => false ]
 	, 'novolume'      => [ 'name' => 'No Volume',                                              'setting' => 'none' ]
 	, 'outputbuffer'  => [ 'name' => 'Buffer - Output',       'sub' => 'max_output_buffer' ]

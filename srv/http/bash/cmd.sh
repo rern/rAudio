@@ -611,7 +611,7 @@ mpcsimilar )
 mpcskip )
 	touch $dirshm/skip
 	. <( mpc status 'state=%state%; consume=%consume%' )
-	$dirbash/cmd-prevnextdata.sh $POS &
+	$dirbash/cmd-pskipdata.sh $POS &
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed

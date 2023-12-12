@@ -74,6 +74,17 @@ $( '#mixertype' ).on( 'input', function() {
 		setMixerType( mixertype );
 	}
 } );
+$( '#setting-mixertype' ).on( 'click', function() {
+	info( {
+		  icon        : SW.icon
+		, title       : SW.title
+		, rangelabel  : 'MPD Software'
+		, values      : S.volumempd
+		, rangechange : val => bash( [ 'volumempc', val, 'CMD VAL' ] )
+		, rangestop   : () => bash( [ 'volumepush', 'sw', 'CMD SW' ] )
+		, okno        : true
+	} );
+} );
 $( '#novolume' ).on( 'click', function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( checked ) {
@@ -382,13 +393,15 @@ function renderPage() {
 			.html( htmlmixertype )
 			.val( D.mixertype );
 		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volume' in S ) );
+		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
+		$( '#setting-mixertype' ).toggleClass( 'hide', D.mixertype !== 'software' );
 		$( '#novolume' ).prop( 'checked', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
-	if ( I.rangelabel ) volumeGetPush();
+	if ( I.rangelabel ) bash( [ 'volumepush', I.okno ? 'sw' : '', 'CMD SW' ] );
 	showContent();
 }
 function setMixerType( mixertype ) {
@@ -416,8 +429,14 @@ function playbackButton() {
 	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
 }
 function psVolume( data ) {
-	S.volume = data;
+	data.type === 'mpd' ? S.volume = data : S.volumempd = data.val;
 	if ( ! I.rangelabel ) return
+	
+	if ( I.okno ) { // info software volume
+		$( '#infoRange .value' ).text( S.volumempd );
+		$( '#infoContent input' ).val( S.volumempd );
+		return
+	}
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {

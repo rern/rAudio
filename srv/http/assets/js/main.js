@@ -698,14 +698,13 @@ $( '#coverM' ).press( function( e ) {
 	) return
 	
 	S.webradio ? webRadioCoverart() : coverartChange();
-} );
-$( '#divcover' ).on( 'click', '.cover-save', function() {
+} ).on( 'click', '.cover-save', function() {
 	coverartSave();
 } );
 $( '#coverT' ).press( function() {
 	if ( typeof Android === 'object' ) {
 		changeIP();
-	} else if ( V.debug ) {
+	} else {
 		banner( 'coverart blink', 'Coverart Online', 'Fetch ...', -1 );
 		bash( [ 'coverartonline', S.Artist, S.Album.replace( /\(.*/, '' ), 'CMD ARTIST ALBUM' ], url => {
 			console.log( url );

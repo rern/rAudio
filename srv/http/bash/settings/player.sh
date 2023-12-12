@@ -227,9 +227,6 @@ volume )
 	amixer -c $CARD -Mq sset "$MIXER" $VAL%
 	[[ $VAL > 0 ]] && rm -f $dirsystem/volumemute
 	;;
-volumebt )
-	amixer -MqD bluealsa sset "$MIXER" $VAL%
-	;;
 volume0db )
 	[[ ! -e $dirshm/amixercontrol ]] && exit
 	
@@ -243,11 +240,18 @@ volume0dbbt )
 	amixer -MqD bluealsa sset "$btdevice" 0dB 2> /dev/null
 	volumeGet push hw
 	;;
+volumebt )
+	amixer -MqD bluealsa sset "$MIXER" $VAL%
+	;;
 volumeget )
 	volumeGet valdb
 	;;
+volumempc )
+	mpc volume $VAL
+	;;
 volumepush )
-	volumeGet push hw
+	[[ ! $SW ]] && hw=hw
+	volumeGet push $hw
 	;;
 	
 esac

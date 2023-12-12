@@ -175,13 +175,7 @@ function htmlSetting( $data ) {
 	$setting     = $iddata[ 'setting' ] ?? 'common';
 	$label       = '<span class="name">'.$name.'</span>';
 	$input       = $data[ 'input' ] ?? false;
-	if ( $id === 'bluealsa' || $id === 'hwmixer' ) {
-		$settingicon = 'volume';
-	} else if ( ! $setting || $setting === 'none' ) {
-		$settingicon = false;
-	} else {
-		$settingicon = 'gear';
-	}
+	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
 	
