@@ -2025,9 +2025,9 @@ function volumeBarSet( pageX ) {
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
 	} else {
+		var duration = Math.abs( vol - S.volume ) * 40;
 		volumeSet( vol );
 		S.volume = vol;
-		var duration = Math.abs( vol - S.volume ) * 40;
 		$( '.volumeband' ).addClass( 'disabled' );
 		$( '#volume-bar' ).animate(
 			  { width: S.volume +'%' }
