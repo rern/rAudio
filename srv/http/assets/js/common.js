@@ -596,22 +596,33 @@ function info( json ) {
 		infoWidth();
 		if ( I.rangelabel ) {
 			var $range   = $( '#infoRange input' );
-			var ivalues0 = I.values[ 0 ];
-			$range.on( 'input', function() {
-				var val = +$range.val();
+			var timeout, val;
+			$range.on( 'input', function() { // drag/click
+				val = +$range.val();
 				$( '#infoRange .value' ).text( val );
 				if ( I.rangechange ) I.rangechange( val );
-				if ( I.checkchanged ) $( '#infoOk' ).toggleClass( 'disabled', ivalues0 === val );
-			} ).on( 'touchend mouseup keyup', function() {
-				if ( I.rangestop ) I.rangestop( +$range.val() );
+			} ).on( 'touchend mouseup keyup', function() { // drag stop
+				if ( I.rangestop ) setTimeout( I.rangestop, 300 );
 			} );
-			$( '#infoRange a' ).on( 'click', function() {
-				var updn = $( this ).hasClass( 'max' ) ? 1 : -1;
-				var val  = +$range.val() + updn;
-				$range.val( val );
-				$( '#infoRange .value' ).text( val );
-				if ( I.checkchanged ) $( '#infoOk' ).toggleClass( 'disabled', ivalues0 === val );
-				if ( I.rangeupdn ) I.rangeupdn( val );
+			$( '#infoRange a' ).on( 'mouseup keyup', function() { // increment up/dn
+				clearTimeout( timeout );
+				if ( ! V.press ) {
+					val = +$range.val();
+					$( this ).hasClass( 'max' ) ? val++ : val--;
+					$range
+						.val( val )
+						.trigger( 'input' );
+				}
+				if ( I.rangestop ) timeout = setTimeout( I.rangestop, 600 );
+			} ).press( function( e ) {
+				val = +$range.val();
+				var up  = $( e.target ).hasClass( 'max' )
+				timeout = setInterval( () => {
+					up ? val++ : val--;
+					$range
+						.val( val )
+						.trigger( 'input' );
+				}, 100 );
 			} );
 		}
 		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
