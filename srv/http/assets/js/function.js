@@ -1708,6 +1708,7 @@ function setPlaybackBlank() {
 		$( '.qr' ).addClass( 'hide' );
 	}
 	vu();
+	loaderHide();
 }
 function setPlaybackBlankQR() {
 	V.qr = new QRCode( {
