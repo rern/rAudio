@@ -29,28 +29,29 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	if ( bt ) {
 		var cmd    = 'volumebt';
 		var cmd0db = 'volume0dbbt';
-		var mixer  = S.btaplayname;
-		var card   = '';
+		S.control  = S.btaplayname;
+		S.card     = '';
 	} else {
 		var cmd    = 'volume';
 		var cmd0db = 'volume0db';
-		var mixer  = D.hwmixer;
-		var card   = D.card;
+		S.control  = D.hwmixer;
+		S.card     = D.card;
 	}
+	S.volume = S.volumedb.val;
 	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, rangelabel   : bt ? mixer.replace( ' - A2DP', '' ) : mixer
-		, rangesub     : 'dB'
-		, values       : S.volume.val
-		, beforeshow   : () => {
+		  icon        : SW.icon
+		, title       : SW.title
+		, rangelabel  : bt ? S.control.replace( ' - A2DP', '' ) : S.control
+		, rangesub    : 'dB'
+		, values      : S.volume
+		, beforeshow  : () => {
 			volumeInfoSet();
 			$( '#infoContent' ).after( '<div class="confirm infomessage hide" style="padding: 15px">'+ warning +'</div>' );
 		}
-		, rangechange  : val => bash( [ cmd, val, mixer, card, 'CMD VAL MIXER CARD' ] )
-		, rangestop    : volumeGetPush
-		, oklabel      : ico( 'set0' ) +'0dB'
-		, ok           : () => {
+		, rangechange : val => volumeSetAt( val )
+		, rangestop   : () => bash( [ 'volumepush' ] )
+		, oklabel     : ico( 'set0' ) +'0dB'
+		, ok          : () => {
 			if ( $( '#infoRange .sub' ).text() < '0 dB' && $( '.confirm' ).hasClass( 'hide' ) ) {
 				$( '#infoContent, .confirm' ).toggleClass( 'hide' );
 			} else {
@@ -75,13 +76,15 @@ $( '#mixertype' ).on( 'input', function() {
 	}
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
+	S.control = '';
+	S.card    = '';
 	info( {
 		  icon        : SW.icon
 		, title       : SW.title
 		, rangelabel  : 'MPD Software'
 		, values      : S.volumempd
-		, rangechange : val => bash( [ 'volumempc', val, 'CMD VAL' ] )
-		, rangestop   : () => bash( [ 'volumepush', 'sw', 'CMD SW' ] )
+		, rangechange : val => volumeSetAt( val )
+		, rangestop   : val => volumePush( val, 'mpd' )
 		, okno        : true
 	} );
 } );
@@ -392,7 +395,7 @@ function renderPage() {
 		$( '#mixertype' )
 			.html( htmlmixertype )
 			.val( D.mixertype );
-		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volume' in S ) );
+		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volumedb' in S ) );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#setting-mixertype' ).toggleClass( 'hide', D.mixertype !== 'software' );
 		$( '#novolume' ).prop( 'checked', S.novolume );
@@ -413,11 +416,12 @@ function volumeGetPush() {
 	bash( [ 'volumepush' ] );
 }
 function volumeInfoSet() {
-	var val = S.volume.type !== 'mute' ? S.volume.val : 0;
+	var val = S.volumedb.val || 0;
+	var db  = S.volumedb.db;
 	$( '#infoRange .value' ).text( val );
 	$( '#infoRange input' ).val( val );
-	$( '#infoRange .sub' ).text( val ? S.volume.db +' dB' : 'Mute' );
-	$( '#infoOk' ).toggleClass( 'disabled', S.volume.db === 0 || S.volume.db === '' );
+	$( '#infoRange .sub' ).text( val ? db +' dB' : 'Mute' );
+	$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 	V.local = false;
 }
 function playbackButton() {
@@ -429,10 +433,10 @@ function playbackButton() {
 	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
 }
 function psVolume( data ) {
-	data.type === 'mpd' ? S.volume = data : S.volumempd = data.val;
+	data.type === 'mpd' ? S.volumempd = data.val : S.volumedb = data;
 	if ( ! I.rangelabel ) return
 	
-	if ( I.okno ) { // info software volume
+	if ( data.type === 'mpd' ) { // info software volume
 		$( '#infoRange .value' ).text( S.volumempd );
 		$( '#infoContent input' ).val( S.volumempd );
 		return

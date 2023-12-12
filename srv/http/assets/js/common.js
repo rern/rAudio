@@ -624,7 +624,7 @@ function info( json ) {
 				$( '#infoRange .value' ).text( val );
 				if ( I.rangechange ) I.rangechange( val );
 			} ).on( 'touchend mouseup keyup', function() { // drag stop
-				if ( I.rangestop ) setTimeout( I.rangestop, 300 );
+				if ( I.rangestop ) setTimeout( () => I.rangestop( val ), 300 );
 			} );
 			$( '#infoRange i' ).on( 'mouseup keyup', function() { // increment up/dn
 				clearTimeout( timeout );
@@ -635,7 +635,7 @@ function info( json ) {
 						.val( val )
 						.trigger( 'input' );
 				}
-				if ( I.rangestop ) timeout = setTimeout( I.rangestop, 600 );
+				if ( I.rangestop ) timeout = setTimeout( () => I.rangestop( val ), 600 );
 			} ).press( function( e ) {
 				val = +$range.val();
 				var up  = $( e.target ).hasClass( 'dn' )
@@ -1119,23 +1119,23 @@ window.onpageshow = pageActive;
 
 // websocket
 var ws, wsvolume;
-function volumeSet( vol, type ) {
-	if ( ! type ) volumePush( vol );
-	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
-}
-function volumeSetAt() { // drag / press / updn
-	wsvolume.send( [ 'volumesetat', S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+function volumeMuteToggle() {
+	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
+	volumeSet( S.volumemute, 'toggle' );
 }
 function volumePush( vol, type ) {
 	local();
 	wsPush( 'volume', '{ "type": "'+ ( type || 'push' ) +'", "val": '+ ( vol || S.volume ) +' }' );
 }
-function volumeMuteToggle() {
-	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
-	volumeSet( S.volumemute, 'toggle' );
+function volumeSet( vol, type ) {
+	if ( ! type ) volumePush( vol );
+	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
+}
+function volumeSetAt( val ) { // drag / press / updn
+	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function websocketConnect( reboot ) {
-	if ( ! page || page === 'camilla' ) {
+	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
 		if ( ! wsvolume || wsvolume.readyState !== 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
 	}
 	if ( ws && ws.readyState === 1 ) return

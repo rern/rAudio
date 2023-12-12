@@ -246,12 +246,8 @@ volumebt )
 volumeget )
 	volumeGet valdb
 	;;
-volumempc )
-	mpc volume $VAL
-	;;
 volumepush )
-	[[ ! $SW ]] && hw=hw
-	volumeGet push $hw
+	volumeGet push hw
 	;;
 	
 esac
