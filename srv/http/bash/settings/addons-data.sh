@@ -2,6 +2,16 @@
 
 . /srv/http/bash/common.sh
 
+evalData() {
+	local cmd
+	cmd=$( grep '"'$1'"' <<< $addondata | cut -d'"' -f4 )
+	if [[ $1 == version ]]; then
+		[[ $( < $diraddons/$addon ) < $cmd ]] && return 0
+	else
+		[[ $cmd && $( eval $cmd ) ]] && return 0
+	fi
+}
+
 online=true
 if [[ -e $dirshm/addonsprogress ]]; then
 	rm $dirshm/addonsprogress
@@ -18,20 +28,15 @@ else
 fi
 ########
 [[ ! $data ]] && data=$( < $diraddons/addonslist.json )
-addons=( $( jq keys <<< $data | tr -d '[",]' ) )
+list=$( grep ', .*: {$' $diraddons/addonslist.json | tr -d '\t, ":{' | grep -v option )
+addons=( $list )
 for addon in ${addons[@]}; do
-	addondata=$( jq -r ."$addon" <<< $data )
-	hide=$( jq -r .hide <<< $addondata )
-	if [[ $hide != null ]]; then
-		[[ $hide != 1 ]] && hide=$( eval $hide )
-		[[ $hide ]] && hidden+=',"'$addon'"'
-	fi
-	verify=$( jq -r .verify <<< $addondata )
-	[[ $verify && $( eval $verify 2> /dev/null ) == 1 ]] && notverified+=',"'$addon'"'
+	addondata=$( sed -n "/$addon/,/}/ p" <<< $data )
+	evalData hide && hidden+=',"'$addon'"'
+	evalData verify && notverified+=',"'$addon'"'
 	if [[ -e $diraddons/$addon ]]; then
 		installed+=',"'$addon'"'
-		version=$( jq -r .version <<< $addondata )
-		[[ $( < $diraddons/$addon ) < $version ]] && update+=',"'$addon'"'
+		evalData version && update+=',"'$addon'"'
 	fi
 done
 if [[ $update ]]; then
