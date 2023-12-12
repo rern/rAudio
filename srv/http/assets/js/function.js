@@ -2027,10 +2027,9 @@ function volumeBarSet( pageX ) {
 	} else {
 		var duration = Math.abs( vol - S.volume ) * 40;
 		volumeSet( vol );
-		S.volume = vol;
 		$( '.volumeband' ).addClass( 'disabled' );
 		$( '#volume-bar' ).animate(
-			  { width: S.volume +'%' }
+			  { width: vol +'%' }
 			, {
 				  duration : duration
 				, easing   : 'linear'
@@ -2043,7 +2042,8 @@ function volumeBarSet( pageX ) {
 	}
 	$( '#volume-text' ).text( S.volumemute || vol );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
-	$volumeRS.setValue( S.volume );
+	S.volume = vol;
+	$volumeRS.setValue( vol );
 }
 function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return

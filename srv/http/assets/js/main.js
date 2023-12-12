@@ -566,11 +566,11 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	mpcSeekBar( e.pageX || e.changedTouches[ 0 ].pageX );
 } );
 $( '#volume' ).roundSlider( {
-	// init : valueChange > create > beforeValueChange > valueChange
-	// tap  : beforeValueChange > change > valueChange
-	// drag : start > [ beforeValueChange > drag > valueChange ] > change > stop
+	// init     : valueChange > create > beforeValueChange > valueChange
+	// tap      : beforeValueChange > change > valueChange
+	// drag     : start > [ beforeValueChange > drag > valueChange ] > change > stop
 	// setValue : beforeValueChange > valueChange
-	// angle : this._handle1.angle (instaed of inconsistent e.handle.angle/e.handles[ 0 ].angle)
+	// angle    : this._handle1.angle (instaed of inconsistent e.handle.angle/e.handles[ 0 ].angle)
 	  svgMode           : true
 	, borderWidth       : 0
 	, radius            : 115
