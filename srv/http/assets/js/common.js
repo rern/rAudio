@@ -443,7 +443,7 @@ function info( json ) {
 		if ( I.passwordlabel ) {
 			infoKey2array( 'passwordlabel' );
 			htmls.password      = '';
-			I.passwordlabel.forEach( lbl => htmls.password += '<tr class="trpassword"><td>'+ lbl +'</td><td><input type="password"></td></tr>' );
+			I.passwordlabel.forEach( lbl => htmls.password += '<tr class="trpassword"><td>'+ lbl +'</td><td><input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>' );
 		}
 		if ( I.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
@@ -532,7 +532,7 @@ function info( json ) {
 			I.rangelabel.forEach( range => {
 				htmls.range += '<div class="name">'+ I.rangelabel +'</div>'
 							  +'<div class="value gr"></div>'
-							  +'<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>'
+							  + ico( 'remove dn' ) +'<input type="range" min="0" max="100">'+ ico( 'plus-circle' )
 							  + ( I.rangesub ? '<div class="sub gr">'+ I.rangesub +'</div>' : '' )
 			} );
 			htmls.range += '</div>';
@@ -594,43 +594,10 @@ function info( json ) {
 		infoButtonWidth();
 		// set width: text / password / textarea
 		infoWidth();
-		if ( I.rangelabel ) {
-			var $range   = $( '#infoRange input' );
-			var timeout, val;
-			$range.on( 'input', function() { // drag/click
-				val = +$range.val();
-				$( '#infoRange .value' ).text( val );
-				if ( I.rangechange ) I.rangechange( val );
-			} ).on( 'touchend mouseup keyup', function() { // drag stop
-				if ( I.rangestop ) setTimeout( I.rangestop, 300 );
-			} );
-			$( '#infoRange a' ).on( 'mouseup keyup', function() { // increment up/dn
-				clearTimeout( timeout );
-				if ( ! V.press ) {
-					val = +$range.val();
-					$( this ).hasClass( 'max' ) ? val++ : val--;
-					$range
-						.val( val )
-						.trigger( 'input' );
-				}
-				if ( I.rangestop ) timeout = setTimeout( I.rangestop, 600 );
-			} ).press( function( e ) {
-				val = +$range.val();
-				var up  = $( e.target ).hasClass( 'max' )
-				timeout = setInterval( () => {
-					up ? val++ : val--;
-					$range
-						.val( val )
-						.trigger( 'input' );
-				}, 100 );
-			} );
-		}
-		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
-		// custom function before show
-		$( '#infoContent input:password' ).parent().after( '<td>'+ ico( 'eye' ) +'</td>' );
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
 		// set at current scroll position
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
+		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
 		// check inputs: blank / length / change
 		if ( I.checkblank ) {
 			if ( I.checkblank === true ) I.checkblank = [ ...Array( $inputbox.length ).keys() ];
@@ -649,6 +616,38 @@ function info( json ) {
 		I.nochange = I.values && I.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
 		infoCheckSet();
+		if ( htmls.range ) {
+			var $range   = $( '#infoRange input' );
+			var timeout, val;
+			$range.on( 'input', function() { // drag/click
+				val = +$range.val();
+				$( '#infoRange .value' ).text( val );
+				if ( I.rangechange ) I.rangechange( val );
+			} ).on( 'touchend mouseup keyup', function() { // drag stop
+				if ( I.rangestop ) setTimeout( I.rangestop, 300 );
+			} );
+			$( '#infoRange i' ).on( 'mouseup keyup', function() { // increment up/dn
+				clearTimeout( timeout );
+				if ( ! V.press ) {
+					val = +$range.val();
+					$( this ).hasClass( 'dn' ) ? val-- : val++;
+					$range
+						.val( val )
+						.trigger( 'input' );
+				}
+				if ( I.rangestop ) timeout = setTimeout( I.rangestop, 600 );
+			} ).press( function( e ) {
+				val = +$range.val();
+				var up  = $( e.target ).hasClass( 'dn' )
+				timeout = setInterval( () => {
+					up ? val-- : val++;
+					$range
+						.val( val )
+						.trigger( 'input' );
+				}, 100 );
+			} );
+		}
+		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
 	} );
 	$( '#infoContent .i-eye' ).on( 'click', function() {

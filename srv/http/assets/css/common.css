@@ -484,32 +484,20 @@ input[type=range]::-moz-range-track {
 	background: var( --track );
 	border: var( --trackborder );
 }
-.range .value,
+#infoRange {
+	text-align: center;
+}
 #infoRange .value {
 	height: 30px;
 	font-size: 18px;
 	font-weight: 300;
 }
-.range .min,
-.range .max,
-#infoRange .min,
-#infoRange .max {
+#infoRange i {
 	position: relative;
-	display: inline-block;
 	width: 40px;
-	padding: 0 10px;
-	vertical-align: 16px;
-	text-align: right;
-	color: var( --cg60 );
+	vertical-align: 14px !important;;
+	color: var( --cg60 ) !important;
 	cursor: pointer;
-}
-.range .max,
-#infoRange .max {
-	text-align: left;
-}
-.range,
-#infoRange {
-	text-align: center;
 }
 
 /* info */
