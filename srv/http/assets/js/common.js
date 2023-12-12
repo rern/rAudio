@@ -616,7 +616,7 @@ function info( json ) {
 		I.nochange = I.values && I.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
 		infoCheckSet();
-		if ( htmls.range ) {
+		if ( I.rangelabel ) {
 			var $range   = $( '#infoRange input' );
 			var timeout, val;
 			$range.on( 'input', function() { // drag/click
