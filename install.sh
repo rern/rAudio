@@ -5,6 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231216
+if [[ $( pacman -Q python-websockets ) != 'python-websockets 11.0-1' ]]; then
+	pacman -Sy --noconfirm python-websockets
+fi
 
 # 202312010
 file=$dirsystem/display.json
