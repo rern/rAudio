@@ -4,6 +4,14 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231216
+file=/etc/systemd/system/websocket.service
+if grep -q ^Before $file; then
+	sed -i 's/^Before/After/' $file
+	systemctl daemon-reload
+	systemctl restart websocket
+fi
+
 # 202312010
 file=$dirsystem/display.json
 for k in albumyear composername conductorname; do
@@ -99,9 +107,3 @@ installfinish
 # 20231125
 [[ $websocketrestart ]] && systemctl restart websocket
 [[ $mpdrestart ]] && $dirsettings/player-conf.sh
-
-# 20231013
-if ! grep -q smbdfree /etc/samba/smb.conf; then
-	sed -i '/^.USB/ a\\tdfree command = /srv/http/bash/smbdfree.sh' /etc/samba/smb.conf
-	systemctl try-restart smb
-fi
