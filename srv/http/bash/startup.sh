@@ -187,7 +187,7 @@ elif [[ $nas && ! $nasonline ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
 
-cp /srv/http/assets/img/icon.svg $dirshm/startup.svg
+touch $dirshm/startup
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
 	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
 fi

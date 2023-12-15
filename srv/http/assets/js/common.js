@@ -1059,9 +1059,6 @@ function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
 }
-function versionHash() {
-	return '?v='+ Math.round( Date.now() / 1000 )
-}
 
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
@@ -1174,10 +1171,10 @@ function websocketReady( socket ) {
 	}, 100 );
 }
 function websocketReconnect() {
-	var img = new Image();
-	img.onload = websocketConnect;
-	img.onerror = () => setTimeout( websocketReconnect, 1000 );
-	img.src = '/assets/img/icon.svg'+ versionHash();
+	fetch( '/data/shm/startup' )
+		.then( response => {
+			response.ok ? websocketConnect : setTimeout( websocketReconnect, 1000 );
+		} );
 }
 function wsPush( channel, data ) {
 	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
