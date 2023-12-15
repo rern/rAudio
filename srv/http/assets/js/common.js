@@ -1134,30 +1134,29 @@ function volumeSet( vol, type ) {
 function volumeSetAt( val ) { // drag / press / updn
 	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
-function websocketConnect( reboot ) {
+function websocketConnect() {
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
 		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
 	}
 	if ( websocketOk( ws ) ) return
 	
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
-	ws.onready   = () => { // custom
-		ws.send( 'clientadd' );
-		if ( ! reboot ) return
-		
-		if ( S.login ) {
-			location.href = '/';
-		} else {
-			refreshData();
-			loaderHide();
-			bannerHide();
-		}
-	}
-	ws.onopen    = () => {
-		websocketReady( ws );
-	}
+	ws.onopen    = () => websocketReady( ws );
 	ws.onclose   = () => ws = null;
 	ws.onmessage = message => psOnMessage( message ); // data pushed from server
+	ws.onready   = () => { // custom
+		ws.send( 'clientadd' );
+		if ( V.reboot ) {
+			delete V.reboot
+			if ( S.login ) {
+				location.href = '/';
+			} else {
+				refreshData();
+				loaderHide();
+				bannerHide();
+			}
+		}
+	}
 }
 function websocketOk( socket ) {
 	return socket !== null && typeof socket === 'object' && socket.readyState === 1
@@ -1203,10 +1202,10 @@ function psNotify( data ) {
 }
 function psPower( data ) {
 	loader();
-	V.off = data.type === 'off';
+	V[ data.type ] = true;
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 	ws.close();
-	if ( typeof wsvolume !== 'undefined' ) wsvolume.close();
+	if ( typeof wsvolume === 'object' ) wsvolume.close();
 	if ( V.off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {
