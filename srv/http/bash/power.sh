@@ -5,8 +5,10 @@
 if [[ $1 == reboot ]]; then
 	reboot=1
 	. $dirshm/cpuinfo
-	sec=( 80 70 50 20 15 )
-	wait=', "wait": '${sec[C]}
+	sec=( 75 65 45 15 10 )
+	wait=${sec[C]}
+	netctl list | grep -q -m1 '^\*' && wait$(( wait + 5 ))
+	wait=', "wait": '$wait
 fi
 pushData power '{ "type": "'$1'"'$wait' }'
 playerActive upnp && $dirbash/cmd.sh playerstop
