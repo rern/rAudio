@@ -6,7 +6,7 @@ alias=r1
 
 # 20231216
 if [[ $( pacman -Q python-websockets ) != 'python-websockets 11.0-1' ]]; then
-	pacman -Sy --noconfirm python-websockets
+	pacman -Sy --needed --noconfirm python-websockets
 fi
 
 # 202312010
