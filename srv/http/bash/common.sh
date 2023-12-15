@@ -239,7 +239,7 @@ notify() { # icon title message delayms
 	else
 		ip=127.0.0.1
 	fi
-	tr -d '\n' <<< $data | websocat ws://$ip:8080
+	websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 }
 package() {
 	local file urlio
@@ -281,7 +281,7 @@ pushData() {
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	data='{ "channel": "'$channel'", "data": '$json' }'
-	tr -d '\n' <<< $data | websocat ws://127.0.0.1:8080 # remove newlines - preserve spaces
+	websocat ws://127.0.0.1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
@@ -303,7 +303,7 @@ pushData() {
 	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		ipOnline $ip && tr -d '\n' <<< $data | websocat ws://$ip:8080
+		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 	done
 }
 pushDataCoverart() {
