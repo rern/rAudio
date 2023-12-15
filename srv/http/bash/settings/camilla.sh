@@ -75,7 +75,7 @@ setformat )
 	done
 	if [[ $format ]]; then
 		notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
-		echo ${formats[@]:5} > $dirsystem/camillaformat
+		sed -E 's/ /" "/g; s/^|$/"/g' <<< ${formats[@]:i} > $dirsystem/camilladsp
 	else
 		notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
 		$dirsettings/features.sh camilladsp
