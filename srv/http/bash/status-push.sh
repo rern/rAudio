@@ -49,7 +49,7 @@ if [[ -e $dirshm/clientip ]]; then
 	data='{ "channel": "mpdplayer", "data": { ${status:1} }'
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
-		tr -d '\n' <<< $data | websocat ws://127.0.0.1:8080
+		websocat ws://127.0.0.1:8080 <<< $( tr -d '\n' <<< $data )
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
