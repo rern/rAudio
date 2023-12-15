@@ -8,6 +8,8 @@ if [[ $asoundcard != -1 ]]; then # from player-devices.sh
 defaults.pcm.card $asoundcard
 defaults.ctl.card $asoundcard
 "
+else
+	[[ -e $dirsystem/camilladsp ]] && $dirsettings/features.sh camilladsp
 fi
 [[ -e $dirshm/btreceiver ]] && bluetooth=$( < $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then

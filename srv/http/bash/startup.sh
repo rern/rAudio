@@ -130,8 +130,8 @@ if [[ -e $dirsystem/btconnected ]]; then
 	done
 fi
 
-if [[ -e $dirshm/btreceiver ]]; then
-	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh receiver
+if [[ -e $dirshm/btreceiver && -e $dirsystem/camilladsp ]]; then
+	$dirsettings/camilla-bluetooth.sh receiver
 else # start mpd.service if not started by bluetoothcommand.sh
 	$dirsettings/player-conf.sh
 fi
