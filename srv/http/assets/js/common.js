@@ -1059,6 +1059,9 @@ function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
 }
+function versionHash() {
+	return '?v='+ Math.round( Date.now() / 1000 )
+}
 
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
@@ -1136,9 +1139,9 @@ function volumeSetAt( val ) { // drag / press / updn
 }
 function websocketConnect( reboot ) {
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
-		if ( ! wsvolume || wsvolume.readyState !== 1 ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
+		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
 	}
-	if ( ws && ws.readyState === 1 ) return
+	if ( websocketOk( ws ) ) return
 	
 	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
 	ws.onready   = () => { // custom
@@ -1159,6 +1162,9 @@ function websocketConnect( reboot ) {
 	ws.onclose   = () => ws = null;
 	ws.onmessage = message => psOnMessage( message ); // data pushed from server
 }
+function websocketOk( socket ) {
+	return socket !== null && typeof socket === 'object' && socket.readyState === 1
+}
 function websocketReady( socket ) {
 	var interval = setTimeout( () => {
 		if ( socket.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
@@ -1166,6 +1172,12 @@ function websocketReady( socket ) {
 			socket.onready();
 		}
 	}, 100 );
+}
+function websocketReconnect() {
+	var img = new Image();
+	img.onload = websocketConnect;
+	img.onerror = () => setTimeout( websocketReconnect, 1000 );
+	img.src = '/assets/img/icon.svg'+ versionHash();
 }
 function wsPush( channel, data ) {
 	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
@@ -1196,6 +1208,8 @@ function psPower( data ) {
 	loader();
 	V.off = data.type === 'off';
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
+	ws.close();
+	if ( typeof wsvolume !== 'undefined' ) wsvolume.close();
 	if ( V.off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {
@@ -1203,8 +1217,6 @@ function psPower( data ) {
 			bannerHide();
 		}, 10000 );
 	} else { // reconnect after reboot
-		setTimeout( () => {
-			websocketConnect( 'reboot' );
-		}, data.wait * 1000 );
+		setTimeout( websocketReconnect, data.wait * 1000 );
 	}
 }
