@@ -1173,7 +1173,7 @@ function websocketReady( socket ) {
 function websocketReconnect() {
 	fetch( '/data/shm/startup' )
 		.then( response => {
-			response.ok ? websocketConnect : setTimeout( websocketReconnect, 1000 );
+			response.ok ? websocketConnect() : setTimeout( websocketReconnect, 1000 );
 		} );
 }
 function wsPush( channel, data ) {
