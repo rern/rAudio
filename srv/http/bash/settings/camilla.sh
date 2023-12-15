@@ -60,23 +60,25 @@ setformat )
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
 	sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $configfile
 	notify 'camilladsp blink' CamillaDSP "Set Playback format ..."
-	for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
-		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$f'/}}' $configfile
+	formats=( FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE )
+	for (( i=0; i < 6; i++ )); do
+		format=${formats[i]}
+		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $configfile
 		camilladsp $configfile &> /dev/null &
+		sleep 1
 		if pgrep -x camilladsp &> /dev/null; then
-			format=$f
 			killall camilladsp
 			break
+		else
+			format=
 		fi
 	done
 	if [[ $format ]]; then
 		notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
+		echo ${formats[@]:5} > $dirsystem/camillaformat
 	else
 		notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
-		rm -f $dirsystem/camilladsp
-		sed -i '/pcm.!default/,$ d' /etc/asound.conf
-		rmmod snd_aloop
-		alsactl nrestore &> /dev/null
+		$dirsettings/features.sh camilladsp
 	fi
 	;;
 statusconfiguration )
