@@ -5,12 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231216
-file=/etc/systemd/system/websocket.service
-if grep -q ^Before $file; then
-	sed -i 's/^Before/After/' $file
-	systemctl daemon-reload
-	systemctl restart websocket
-fi
 
 # 202312010
 file=$dirsystem/display.json
