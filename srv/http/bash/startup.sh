@@ -147,7 +147,6 @@ if [[ -e $dirsystem/volumeboot ]]; then
 	else
 		mpc -q volume $volume
 	fi
-	volumeGet push
 fi
 
 # after all sources connected ........................................................
@@ -167,7 +166,6 @@ fi
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	echo rescan > $dirmpd/updating
 	mpc -q rescan
-	pushData mpdupdate '{ "type": "mpd" }'
 elif [[ -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
@@ -182,8 +180,6 @@ if (( $( rfkill | grep -c wlan ) > 1 )) \
 else
 	onboardwlan=true
 fi
-pushData refresh '{ "page": "system", "wlan": '$onboardwlan' }'
-pushData refresh '{ "page": "networks", "activewl": '$onboardwlan' }'
 
 if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000
@@ -191,7 +187,7 @@ elif [[ $nas && ! $nasonline ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
 
-touch $dirshm/startup
+cp /srv/http/assets/img/icon.svg $dirshm/startup.svg
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
 	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
 fi

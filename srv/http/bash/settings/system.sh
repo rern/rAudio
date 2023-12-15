@@ -575,7 +575,7 @@ timezone )
 	pushRefresh
 	;;
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
+	[[ ! -e $dirshm/startup.svg || -e $dirshm/audiocd ]] && exit
 	
 	if [[ $CMD == usbconnect ]]; then
 		action=Ready

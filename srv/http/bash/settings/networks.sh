@@ -182,7 +182,7 @@ $( iwconfig $wlandev | awk NF )"
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
-	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
+	[[ ! -e $dirshm/startup.svg ]] && exit # suppress on startup
 	
 	sleep 3
 	pushRefresh features
@@ -197,7 +197,7 @@ usbbluetoothoff ) # from usbbluetooth.rules
 	;;
 usbwifion )
 	wlanDevice
-	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
+	[[ ! -e $dirshm/startup.svg ]] && exit # suppress on startup
 	
 	notify wifi 'USB Wi-Fi' Ready
 	pushRefresh

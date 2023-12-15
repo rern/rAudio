@@ -217,7 +217,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 	wlanconf='{ "REGDOM": "'$regdom'", "APAUTO": '$apauto' }'
 ##########
 	data+='
-, "wlan"              : '$( [[ -e $dirshm/startup ]] && lsmod | grep -q -m1 brcmfmac && echo true )'
+, "wlan"              : '$( [[ -e $dirshm/startup.svg ]] && lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconf"          : '$wlanconf'
 , "wlanconnected"     : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 	discoverable=true
