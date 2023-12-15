@@ -100,7 +100,9 @@ if [[ $camilladsp ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
-		! systemctl -q is-active camilladsp && $dirsettings/camilla.sh setformat
+		if ! systemctl -q is-active camilladsp; then
+			[[ -e $dirshm/startup ]] && $dirsettings/camilla.sh setformat || systemctl start camilladsp
+		fi
 	fi
 else
 	if [[ $bluetooth ]]; then

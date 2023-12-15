@@ -79,6 +79,7 @@ setformat )
 	else
 		notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
 		$dirsettings/features.sh camilladsp
+		exit
 	fi
 	;;
 statusconfiguration )

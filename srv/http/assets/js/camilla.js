@@ -1211,7 +1211,7 @@ var setting  = {
 			k           = Object.keys( kv );
 			k.forEach( key => {
 				if ( key === 'format' ) {
-					var s = jsonClone( C.format );
+					var s = jsonClone( dev === 'capture' ? C.format : S.format );
 					var v = { format: data.format };
 				} else if ( key === 'device' ) {
 					var s = jsonClone( C.devices[ dev ] );
