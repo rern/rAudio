@@ -5,7 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231216
-sed -i 's/^Before/After/' /etc/systemd/system/websocket.service
 
 # 202312010
 file=$dirsystem/display.json
