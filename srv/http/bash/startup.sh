@@ -143,7 +143,7 @@ if [[ -e $dirsystem/volumeboot ]]; then
 	elif [[ -e $dirshm/amixercontrol ]]; then
 		card=$( < $dirsystem/asoundcard )
 		control=$( < $dirshm/amixercontrol )
-		amixer -c $card -M sset "$control" ${volume}%
+		amixer -c $card -Mq sset "$control" ${volume}%
 	else
 		mpc -q volume $volume
 	fi
