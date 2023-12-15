@@ -1532,7 +1532,7 @@ var util     = {
 		return capitalized
 	}
 	, save2file    : () => {
-		bash( [ 'settings/camilla.py' ] );
+		bash( [ 'saveconfig' ] );
 	}
 	, volume       : ( pageX, type ) => {
 		var bandW   = $( '#volume .slide' ).width();

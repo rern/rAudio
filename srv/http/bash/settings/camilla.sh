@@ -5,6 +5,12 @@
 dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
 
+saveConfig() {
+	configfile=$( getVar CONFIG /etc/default/camilladsp )
+	config=$( echo '"GetConfig"' | websocat ws://192.168.1.94:1234 )
+	echo -e "$config " | sed 's/.*GetConfig.*/---/; $d; s/\\"/"/g' > "$configfile"
+}
+
 args2var "$1"
 
 case $CMD in
@@ -40,11 +46,14 @@ confrename )
 	pushRefresh
 	;;
 confswitch )
-	$dirsettings/camilla.py
+	saveConfig
 	sed -i -E "s|^(CONFIG.*/).*|\1$NAME|" /etc/default/camilladsp
 	;;
 restart )
 	systemctl restart camilladsp
+	;;
+saveconfig )
+	saveConfig
 	;;
 setformat )
 	card=$( < $dirsystem/asoundcard )

@@ -56,7 +56,7 @@ camilladsp )
 		pushRestartMpd camilladsp $TF
 		! systemctl -q is-active camilladsp && rm $dirsystem/camilladsp
 	else
-		$dirsettings/camilla.py
+		$dirsettings/camilla.sh saveconfig
 		[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 		systemctl stop camilladsp
 		pushRestartMpd camilladsp $TF
