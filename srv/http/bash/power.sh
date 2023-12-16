@@ -2,15 +2,13 @@
 
 . /srv/http/bash/common.sh
 
-if [[ $1 == reboot ]]; then
+if [[ $1 == off ]]; then
+	pushData power '{ "type": "off" }'
+else
 	reboot=1
-	. $dirshm/cpuinfo
-	sec=( 75 65 45 15 10 )
-	wait=${sec[C]}
-	netctl list | grep -q -m1 '^\*' && wait$(( wait + 5 ))
-	wait=', "wait": '$wait
+	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
+	pushData power '{ "type": "reboot", "startup": '$startup' }'
 fi
-pushData power '{ "type": "'$1'"'$wait' }'
 playerActive upnp && $dirbash/cmd.sh playerstop
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )

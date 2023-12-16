@@ -1213,6 +1213,6 @@ function psPower( data ) {
 			bannerHide();
 		}, 10000 );
 	} else { // reconnect after reboot
-		setTimeout( websocketReconnect, data.wait * 1000 );
+		setTimeout( websocketReconnect, data.startup );
 	}
 }
