@@ -1,11 +1,11 @@
 // var //////////////////////////////////////////////////////////////////////////////
 V            = {
-	  clipped    : false
-	, graph      : { filters: {}, pipeline: {} }
+	  graph      : { filters: {}, pipeline: {} }
 	, graphlist  : {}
 	, prevconfig : {}
 	, sortable   : {}
 	, tab        : 'filters'
+	, timeoutred : true
 }
 var wscamilla;
 var format   = {};
@@ -1608,7 +1608,7 @@ var util     = {
 				case 'GetCaptureSignalRms':
 				case 'GetPlaybackSignalPeak':
 				case 'GetPlaybackSignalRms':
-					cp   = cmd[ 3 ];
+					cp  = cmd[ 3 ];
 					rms = cmd.slice( -1 ) === 's';
 					value.forEach( ( val, i ) => {
 						v = util.db2percent( val );
@@ -1617,19 +1617,18 @@ var util     = {
 						} else {
 							$( '.peak.'+ cp + i ).css( 'left', v +'%' );
 							if ( val > 0 ) {
-								clearTimeout( V.unclipped );
 								wscamilla.send( '"GetClippedSamples"' );
-								if ( V.clipped ) return
+								if ( ! V.timeoutred ) return
 								
-								V.clipped = true;
+								clearTimeout( V.timeoutred );
+								V.timeoutred = false;
 								$( '.peak, .clipped' )
 									.css( 'transition-duration', 0 )
 									.addClass( 'red' );
 							} else {
-								if ( ! V.clipped ) return
+								if ( V.timeoutred ) return
 								
-								V.clipped   = false;
-								V.unclipped = setTimeout( () => {
+								V.timeoutred = setTimeout( () => {
 									$( '.peak, .clipped' )
 										.css( 'transition-duration', '' )
 										.removeClass( 'red' );
