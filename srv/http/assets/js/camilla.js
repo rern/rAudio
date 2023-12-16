@@ -1,6 +1,7 @@
 // var //////////////////////////////////////////////////////////////////////////////
 V            = {
-	  graph      : { filters: {}, pipeline: {} }
+	  clipped    : false
+	, graph      : { filters: {}, pipeline: {} }
 	, graphlist  : {}
 	, prevconfig : {}
 	, sortable   : {}
@@ -608,10 +609,17 @@ var render   = {
 	}
 	, clippedCss : value => {
 		if ( value > 0 ) {
+			if ( V.clipped ) return
+			
+			V.clipped = true;
+			wscamilla.send( '"GetClippedSamples"' );
 			$( '.peak, .clipped' )
 				.css( 'transition-duration', 0 )
 				.addClass( 'red' );
 		} else {
+			if ( ! V.clipped ) return
+			
+			V.clipped = false;
 			$( '.peak, .clipped' )
 				.css( 'transition-duration', '' )
 				.removeClass( 'red' );
@@ -1612,22 +1620,23 @@ var util     = {
 			var data  = JSON.parse( response.data );
 			var cmd   = Object.keys( data )[ 0 ];
 			var value = data[ cmd ].value;
-			var cp, v;
+			var cp, peak, v;
 			switch ( cmd ) {
 				case 'GetCaptureSignalPeak':
 				case 'GetCaptureSignalRms':
 				case 'GetPlaybackSignalPeak':
 				case 'GetPlaybackSignalRms':
-					cp = cmd[ 3 ];
-					v  = [];
-					value.forEach( val => v.push( util.db2percent( val ) ) );
-					if ( cmd.slice( -1 ) === 'k' ) {
-						render.clippedCss( value );
-						v.forEach( ( w, i ) => $( '.peak.'+ cp + i ).css( 'left', w +'%' ) );
-						wscamilla.send( '"GetClippedSamples"' );
-					} else {
-						v.forEach( ( w, i ) => $( '.rms.'+ cp + i ).css( 'width', w +'%' ) );
-					}
+					cp   = cmd[ 3 ];
+					peak = cmd.slice( -1 ) === 'k';
+					value.forEach( ( val, i ) => {
+						v = util.db2percent( val );
+						if ( peak ) {
+							render.clippedCss( val );
+							$( '.peak.'+ cp + i ).css( 'left', v +'%' );
+						} else {
+							$( '.rms.'+ cp + i ).css( 'width', v +'%' );
+						}
+					} );
 					break;
 				case 'GetClippedSamples':
 					S.clipped = value;
