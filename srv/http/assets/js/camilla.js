@@ -607,27 +607,6 @@ var render   = {
 			$( '#divstate .value' ).append( '<div class="divclipped clipped">'+ clipped.toLocaleString() +'</div>' );
 		}
 	}
-	, clippedCss : value => {
-		if ( value > 0 ) {
-			clearTimeout( V.unclipped );
-			if ( V.clipped ) return
-			
-			V.clipped = true;
-			wscamilla.send( '"GetClippedSamples"' );
-			$( '.peak, .clipped' )
-				.css( 'transition-duration', 0 )
-				.addClass( 'red' );
-		} else {
-			if ( ! V.clipped ) return
-			
-			V.clipped   = false;
-			V.unclipped = setTimeout( () => {
-				$( '.peak, .clipped' )
-					.css( 'transition-duration', '' )
-					.removeClass( 'red' );
-			}, 1000 );
-		}
-	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
 		if ( V.tab === 'filters' ) {
@@ -1630,14 +1609,32 @@ var util     = {
 				case 'GetPlaybackSignalPeak':
 				case 'GetPlaybackSignalRms':
 					cp   = cmd[ 3 ];
-					peak = cmd.slice( -1 ) === 'k';
+					rms = cmd.slice( -1 ) === 's';
 					value.forEach( ( val, i ) => {
 						v = util.db2percent( val );
-						if ( peak ) {
-							render.clippedCss( val );
-							$( '.peak.'+ cp + i ).css( 'left', v +'%' );
-						} else {
+						if ( rms ) {
 							$( '.rms.'+ cp + i ).css( 'width', v +'%' );
+						} else {
+							$( '.peak.'+ cp + i ).css( 'left', v +'%' );
+							if ( val > 0 ) {
+								clearTimeout( V.unclipped );
+								if ( V.clipped ) return
+								
+								V.clipped = true;
+								wscamilla.send( '"GetClippedSamples"' );
+								$( '.peak, .clipped' )
+									.css( 'transition-duration', 0 )
+									.addClass( 'red' );
+							} else {
+								if ( ! V.clipped ) return
+								
+								V.clipped   = false;
+								V.unclipped = setTimeout( () => {
+									$( '.peak, .clipped' )
+										.css( 'transition-duration', '' )
+										.removeClass( 'red' );
+								}, 1000 );
+							}
 						}
 					} );
 					break;
