@@ -239,8 +239,7 @@ notify() { # icon title message delayms
 	else
 		ip=127.0.0.1
 	fi
-	data=$( tr -d '\n' <<< $data )
-	echo "$data" | websocat ws://$ip:8080
+	websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 }
 package() {
 	local file urlio
@@ -282,8 +281,7 @@ pushData() {
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	data='{ "channel": "'$channel'", "data": '$json' }'
-	data=$( tr -d '\n' <<< $data )
-	echo "$data" | websocat ws://127.0.0.1:8080 # remove newlines while preserve spaces
+	websocat ws://127.0.0.1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
@@ -305,10 +303,7 @@ pushData() {
 	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		! ipOnline $ip && continue
-		
-		data=$( tr -d '\n' <<< $data )
-		echo "$data" | websocat ws://$ip:8080
+		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 	done
 }
 pushDataCoverart() {
@@ -398,7 +393,7 @@ volumeCardControl() {
 			card=$( getContent $dirsystem/asoundcard )
 			control=$( getContent $dirshm/amixercontrol )
 		fi
-		[[ -e $dirshm/volumeset ]] && volume=$( < $dirshm/volumeset ) || volume=$( volumeGet value )
+		volume=$( volumeGet value )
 	fi
 	echo "\
 $volume
@@ -420,7 +415,7 @@ volumeGet() {
 		elif inOutputConf mixer_type.*software; then
 			mixersoftware=1
 		fi
-		if [[ $mixersoftware ]] && playerActive mpd; then
+		if [[ $2 != hw && $mixersoftware ]] && playerActive mpd; then
 			val=$( mpc status %volume% | tr -dc [0-9] )
 		elif [[ -e $dirshm/amixercontrol ]]; then
 			card=$( < $dirsystem/asoundcard )

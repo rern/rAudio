@@ -130,8 +130,8 @@ if [[ -e $dirsystem/btconnected ]]; then
 	done
 fi
 
-if [[ -e $dirshm/btreceiver ]]; then
-	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh receiver
+if [[ -e $dirshm/btreceiver && -e $dirsystem/camilladsp ]]; then
+	$dirsettings/camilla-bluetooth.sh receiver
 else # start mpd.service if not started by bluetoothcommand.sh
 	$dirsettings/player-conf.sh
 fi
@@ -143,7 +143,7 @@ if [[ -e $dirsystem/volumeboot ]]; then
 	elif [[ -e $dirshm/amixercontrol ]]; then
 		card=$( < $dirsystem/asoundcard )
 		control=$( < $dirshm/amixercontrol )
-		amixer -c $card -M sset "$control" ${volume}%
+		amixer -c $card -Mq sset "$control" ${volume}%
 	else
 		mpc -q volume $volume
 	fi
@@ -166,7 +166,6 @@ fi
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	echo rescan > $dirmpd/updating
 	mpc -q rescan
-	pushData mpdupdate '{ "type": "mpd" }'
 elif [[ -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
@@ -181,8 +180,6 @@ if (( $( rfkill | grep -c wlan ) > 1 )) \
 else
 	onboardwlan=true
 fi
-pushData refresh '{ "page": "system", "wlan": '$onboardwlan' }'
-pushData refresh '{ "page": "networks", "activewl": '$onboardwlan' }'
 
 if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000

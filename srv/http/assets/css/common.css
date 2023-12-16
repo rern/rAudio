@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1701344782' );
+	src         : url( '/assets/fonts/rern.woff2?v=1702394239' );
 }
 @font-face {
 	font-family : Lato;
@@ -230,6 +230,7 @@ i {
 .i-wifi2::before           { content: '\F59A'; position: absolute; }
 .i-wifi2::after            { content: '\F59B'; color: var( --cga ); }
 .i-wlan::before            { content: '\F597' }
+#divoutput .i-gear::before { content: '\F516' }
 
 html {
 	height  : 100%;
@@ -483,32 +484,21 @@ input[type=range]::-moz-range-track {
 	background: var( --track );
 	border: var( --trackborder );
 }
-.range .value,
+#infoRange {
+	text-align: center;
+}
 #infoRange .value {
 	height: 30px;
 	font-size: 18px;
 	font-weight: 300;
 }
-.range .min,
-.range .max,
-#infoRange .min,
-#infoRange .max {
+#infoRange i {
 	position: relative;
-	display: inline-block;
-	width: 40px;
-	padding: 0 10px;
-	vertical-align: 16px;
-	text-align: right;
-	color: var( --cg60 );
+	width: 40px !important;
+	line-height: 40px;
+	vertical-align: 14px !important;
+	color: var( --cg60 ) !important;
 	cursor: pointer;
-}
-.range .max,
-#infoRange .max {
-	text-align: left;
-}
-.range,
-#infoRange {
-	text-align: center;
 }
 
 /* info */

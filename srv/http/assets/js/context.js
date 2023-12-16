@@ -110,7 +110,10 @@ function bookmarkNew() {
 	} );
 }
 function currentSet() {
-	bash( [ 'mpcsetcurrent', V.list.index + 1, 'CMD POS' ] );
+	S.song = V.list.index;
+	setPlaylistScroll();
+	local();
+	bash( [ 'mpcskip', V.list.index + 1, 'CMD POS' ] );
 }
 function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
@@ -430,8 +433,6 @@ function webRadioCoverart() {
 		var name      = V.list.name;
 	}
 	var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
-	$( '#coverart' ).removeAttr( 'style' );
-	$( '.coveredit' ).remove();
 	info( {
 		  icon        : 'coverart'
 		, title       : ( mode === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'

@@ -354,8 +354,6 @@ function coverartChange() {
 	var coverartlocal = ( V.playback && ! embedded && ! pbonlinefetched && ! pbcoverdefault )
 						|| ( V.library && ! embedded && ! lionlinefetched && ! licoverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
-	$( '#coverart, #liimg' ).removeAttr( 'style' );
-	$( '.coveredit' ).remove();
 	var icon  = 'coverart';
 	var title = 'Change Album Cover Art';
 	info( {
@@ -398,8 +396,6 @@ function coverartDefault() {
 		$( '#vu' ).removeClass( 'hide' );
 		vu();
 	}
-	$( '#divcover .coveredit' ).remove();
-	$( '#coverart' ).css( 'opacity', '' );
 }
 function coverartSave() {
 	if ( V.playback ) {
@@ -554,7 +550,6 @@ function guideHide() {
 		if ( ! barvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
 		$( '.band, #volbar' ).addClass( 'transparent' );
 		$( '.guide, #volume-bar, #volume-text' ).addClass( 'hide' );
-		$( '.coveredit' ).css( 'z-index', '' );
 	}
 }
 function HMS2Second( HMS ) {
@@ -1302,8 +1297,6 @@ function renderPlayback() {
 	}
 	
 	$( '.emptyadd, .qr' ).addClass( 'hide' );
-	$( '#coverart' ).css( 'opacity', '' );
-	$( '#divcover .cover-change' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
 	setInfo();
 	setCoverart();
@@ -1699,10 +1692,6 @@ function setPlaybackBlank() {
 	$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
 	setProgress( 0 );
-	$( '#divcover .coveredit' ).remove();
-	$( '#coverart' )
-		.attr( 'src', V.coverdefault )
-		.css( 'opacity', '' );
 	if ( S.ip ) {
 		V.qr ? setPlaybackBlankQR() : $.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
 		$( '#coverTR' ).toggleClass( 'empty', $bartop.is( ':hidden' ) );
@@ -1719,6 +1708,7 @@ function setPlaybackBlank() {
 		$( '.qr' ).addClass( 'hide' );
 	}
 	vu();
+	loaderHide();
 }
 function setPlaybackBlankQR() {
 	V.qr = new QRCode( {
@@ -1830,6 +1820,14 @@ function setPlaylistScroll() {
 			}, 1000 );
 		}
 	}
+}
+function setPlaylistSkip( pos ) {
+	intervalClear();
+	if ( S.state !== 'stop' ) {
+		setProgress( 0 );
+		$( '#elapsed, #total, #progress' ).empty();
+	}
+	bash( [ 'mpcskip', pos, 'CMD POS' ] );
 }
 function setPlayPauseColor() {
 	var pause = S.state === 'pause';
@@ -2029,11 +2027,10 @@ function volumeBarSet( pageX ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
 	} else {
 		var duration = Math.abs( vol - S.volume ) * 40;
-		S.volume = vol;
-		volumeSet( S.volume );
+		volumeSet( vol );
 		$( '.volumeband' ).addClass( 'disabled' );
 		$( '#volume-bar' ).animate(
-			  { width: S.volume +'%' }
+			  { width: vol +'%' }
 			, {
 				  duration : duration
 				, easing   : 'linear'
@@ -2046,7 +2043,8 @@ function volumeBarSet( pageX ) {
 	}
 	$( '#volume-text' ).text( S.volumemute || vol );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
-	$volumeRS.setValue( S.volume );
+	S.volume = vol;
+	$volumeRS.setValue( vol );
 }
 function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return

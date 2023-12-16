@@ -106,7 +106,7 @@ function psBookmark() {
 function psCoverart( data ) {
 	clearTimeout( V.timeoutCover );
 	bannerHide();
-	$( '#coverart, #liimg' ).css( 'opacity', '' );
+	$( '#liimg' ).css( 'opacity', '' );
 	'stationcover' in data ? S.stationcover = data.url : S.coverart = data.url;
 	setCoverart();
 	if ( data.radioalbum ) { // online coverarts come with album name
@@ -274,9 +274,13 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
-	if ( ! data.add
-		&& ( V.local || V.sortable || $( '.pl-remove' ).length )
-	) return
+	if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
+	
+	if ( 'skip' in data ) {
+		S.song = data.skip;
+		if ( V.playlist ) setPlaylistScroll();
+		return
+	}
 	
 	clearTimeout( V.debouncepl );
 	V.debouncepl = setTimeout( () => {

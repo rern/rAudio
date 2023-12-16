@@ -22,6 +22,7 @@ else
 	delay=( $offd )
 	order="<gr>$orderoff"
 	color=gr
+	alsactl store
 fi
 dL=${#delay[@]}
 i=0
@@ -40,7 +41,7 @@ if [[ $action == ON && ! -e $dirshm/pidstoptimer && $timer > 0 ]]; then
 	echo $timer > $timerfile
 	$dirbash/relays-timer.sh &> /dev/null &
 fi
-alsactl store
+
 $dirbash/status-push.sh
 sleep 1
 pushData relays '{ "done": 1 }'

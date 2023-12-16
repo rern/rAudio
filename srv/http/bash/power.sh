@@ -2,13 +2,13 @@
 
 . /srv/http/bash/common.sh
 
-if [[ $1 == reboot ]]; then
+if [[ $1 == off ]]; then
+	pushData power '{ "type": "off" }'
+else
 	reboot=1
-	. $dirshm/cpuinfo
-	sec=( 80 70 50 20 15 )
-	wait=', "wait": '${sec[C]}
+	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
+	pushData power '{ "type": "reboot", "startup": '$startup' }'
 fi
-pushData power '{ "type": "'$1'"'$wait' }'
 playerActive upnp && $dirbash/cmd.sh playerstop
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )
@@ -26,7 +26,7 @@ elif [[ -e $filesharedip ]]; then
 	sed -i "/$( ipAddress )/ d" $filesharedip
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
-	$dirsettings/camilla.py
+	$dirsettings/camilla.sh saveconfig
 	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 fi
 [[ -e $dirshm/btconnected ]] && cp $dirshm/btconnected $dirsystem
@@ -36,7 +36,6 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl stop lcdchar
 	$dirbash/lcdchar.py logo
 fi
-alsactl store
 if [[ -e $dirshm/clientip ]]; then
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
@@ -51,6 +50,7 @@ if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
 	sleep 3
 fi
+alsactl store
 
 [[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
 [[ $reboot ]] && reboot || poweroff

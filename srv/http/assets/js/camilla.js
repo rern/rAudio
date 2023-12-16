@@ -314,6 +314,20 @@ function psOnClose() {
 	if ( wscamilla ) wscamilla.close();
 	$( '#divstate .label' ).html( 'Buffer · Sampling' );
 }
+function playbackButton() {
+	var play = S.state === 'play';
+	if ( S.player === 'mpd' ) {
+		if ( S.pllength ) {
+			var btn = play ? 'pause' : 'play';
+		} else {
+			var btn = 'play disabled';
+		}
+	} else {
+		var btn = play ? 'stop' : 'play disabled';
+	}
+	$( '.icon' ).prop( 'class', 'icon i-'+ S.player );
+	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
+}
 function psVolume( data ) {
 	var vol = data.val;
 	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
@@ -524,7 +538,11 @@ var render   = {
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
-		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
+		if ( S.bluetooth ) {
+			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ico( 'bluetooth' ) );
+		} else {
+			$( '#divconfiguration .col-l i' ).remove();
+		}
 		$( '#configuration' )
 			.html( htmlOption( S.lsconfigs ) )
 			.val( S.configname );
@@ -1197,7 +1215,7 @@ var setting  = {
 			k           = Object.keys( kv );
 			k.forEach( key => {
 				if ( key === 'format' ) {
-					var s = jsonClone( C.format );
+					var s = jsonClone( dev === 'capture' ? C.format : S.format );
 					var v = { format: data.format };
 				} else if ( key === 'device' ) {
 					var s = jsonClone( C.devices[ dev ] );
@@ -1518,7 +1536,7 @@ var util     = {
 		return capitalized
 	}
 	, save2file    : () => {
-		bash( [ 'settings/camilla.py' ] );
+		bash( [ 'saveconfig' ] );
 	}
 	, volume       : ( pageX, type ) => {
 		var bandW   = $( '#volume .slide' ).width();

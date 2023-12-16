@@ -235,16 +235,12 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			$( '.brightness' ).on( 'click', function() {
 				switchCancel();
 				info( {
-					  icon       : 'firefox'
-					, title      : 'Browser on RPi'
-					, rangelabel : 'Brightness'
-					, values     : S.brightness
-					, beforeshow : () => {
-						$( '#infoRange input' ).on( 'input', function() {
-							bash( [ 'brightness', $( this ).val(), 'CMD VAL' ] );
-						} );
-					}
-					, okno       : true
+					  icon        : 'firefox'
+					, title       : 'Browser on RPi'
+					, rangelabel  : 'Brightness'
+					, values      : S.brightness
+					, rangechange : val => bash( [ 'brightness', val, 'CMD VAL' ] )
+					, okno        : true
 				} );
 			} );
 			$( '.reload' ).on( 'click', function() {

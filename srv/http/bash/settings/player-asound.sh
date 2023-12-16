@@ -8,6 +8,8 @@ if [[ $asoundcard != -1 ]]; then # from player-devices.sh
 defaults.pcm.card $asoundcard
 defaults.ctl.card $asoundcard
 "
+else
+	[[ -e $dirsystem/camilladsp ]] && $dirsettings/features.sh camilladsp
 fi
 [[ -e $dirshm/btreceiver ]] && bluetooth=$( < $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
@@ -82,8 +84,8 @@ ctl.equal {
 	fi
 fi
 
-echo "$asound" > /etc/asound.conf
 alsactl store &> /dev/null
+echo "$asound" > /etc/asound.conf
 alsactl nrestore &> /dev/null # notify changes to running daemons
 
 # ----------------------------------------------------------------------------
@@ -98,7 +100,9 @@ if [[ $camilladsp ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
-		! systemctl -q is-active camilladsp && $dirsettings/camilla.sh setformat
+		if ! systemctl -q is-active camilladsp; then
+			[[ -e $dirshm/startup ]] && $dirsettings/camilla.sh setformat || systemctl start camilladsp
+		fi
 	fi
 else
 	if [[ $bluetooth ]]; then

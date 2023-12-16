@@ -7,6 +7,7 @@ echo $$ > $dirshm/pidstatuspush
 
 if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
+	playing=1
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( sed -E -n '/^, "Artist|^, "Album|^, "Composer|^, "elapsed|^, "file| *"player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {s/^,* *"//; s/" *: */=/; p}' <<< $status )
@@ -17,7 +18,7 @@ else
 	. <( echo "$statusnew" )
 	[[ $state == play ]] && playing=1
 	if [[ $webradio == true ]]; then
-		[[ ! $trackchanged && playing ]] && exit # >>>>>>>>>>
+		[[ ! $trackchanged && $playing ]] && exit # >>>>>>>>>>
 		
 	else
 		compare='^state|^elapsed'
@@ -37,7 +38,7 @@ fi
 if systemctl -q is-active localbrowser; then
 	if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
 		export DISPLAY=:0
-		[[ playing ]] && sudo xset -dpms || sudo xset +dpms
+		[[ $playing ]] && sudo xset -dpms || sudo xset +dpms
 	fi
 fi
 
@@ -49,8 +50,7 @@ if [[ -e $dirshm/clientip ]]; then
 	data='{ "channel": "mpdplayer", "data": { ${status:1} }'
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
-		data=$( tr -d '\n' <<< $data )
-		echo "$data" | websocat ws://127.0.0.1:8080
+		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
@@ -59,12 +59,12 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 
 if [[ -e $dirsystem/mpdoled ]]; then
-	[[ playing ]] && start_stop=start || start_stop=stop
+	[[ $playing ]] && start_stop=start || start_stop=stop
 	systemctl $start_stop mpd_oled
 fi
 
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && cava=1
-if [[ playing ]]; then
+if [[ $playing ]]; then
 	[[ $cava ]] && systemctl start cava
 else
 	[[ $cava ]] && systemctl stop cava
@@ -72,13 +72,6 @@ else
 fi
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom
-
-if [[ $( < $dirshm/stateprev ) != $state ]]; then
-	for p in player features camilla; do
-		pushData refresh '{ "page": "'$p'", "state": "'$state'" }'
-	done
-fi
-echo $state > $dirshm/stateprev
 
 [[ ! -e $dirsystem/scrobble ]] && exit
 

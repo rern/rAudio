@@ -103,17 +103,21 @@ hwmixer )
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
-	if [[ $HWMIXER ]]; then # set 0dB
-		mpc -q stop
-		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB
-		amixer -c $CARD -Mq sset "$HWMIXER" $vol
-	fi
+	mpc -q stop
 	filemixertype=$dirsystem/mixertype-$APLAYNAME
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
-	[[ $MIXERTYPE != software ]] && rm -f $dirsystem/replaygain-hw
+	if [[ $MIXERTYPE == software ]]; then # [sw] set to current [hw]
+		[[ -e $dirshm/amixercontrol ]] && mpc volume $( volumeGet value )
+	else
+		rm -f $dirsystem/replaygain-hw
+	fi
+	if [[ $HWMIXER ]]; then
+		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB # [hw] set to current [sw] || [sw/none] set 0dB
+		amixer -c $CARD -Mq sset "$HWMIXER" $vol
+	fi
 	$dirsettings/player-conf.sh
-	[[ $MIXERTYPE == none ]] && tf=true || tf=false
-	pushData display '{ "volumenone": '$tf' }'
+	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false
+	pushData display '{ "volumenone": '$volumenone' }'
 	;;
 novolume )
 	mpc -q crossfade 0
@@ -223,25 +227,27 @@ volume )
 	amixer -c $CARD -Mq sset "$MIXER" $VAL%
 	[[ $VAL > 0 ]] && rm -f $dirsystem/volumemute
 	;;
-volumebt )
-	amixer -MqD bluealsa sset "$MIXER" $VAL%
-	;;
 volume0db )
 	[[ ! -e $dirshm/amixercontrol ]] && exit
 	
 	card=$( < $dirsystem/asoundcard )
 	control=$( < $dirshm/amixercontrol )
 	amixer -c $card -Mq sset "$control" 0dB
-	alsactl store
-	volumeGet push
+	volumeGet push hw
 	;;
 volume0dbbt )
 	btdevice=$( < $dirshm/btreceiver )
 	amixer -MqD bluealsa sset "$btdevice" 0dB 2> /dev/null
-	volumeGet push
+	volumeGet push hw
+	;;
+volumebt )
+	amixer -MqD bluealsa sset "$MIXER" $VAL%
 	;;
 volumeget )
 	volumeGet valdb
+	;;
+volumepush )
+	volumeGet push hw
 	;;
 	
 esac

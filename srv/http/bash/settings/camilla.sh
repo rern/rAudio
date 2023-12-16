@@ -5,6 +5,12 @@
 dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
 
+saveConfig() {
+	configfile=$( getVar CONFIG /etc/default/camilladsp )
+	config=$( echo '"GetConfig"' | websocat ws://192.168.1.94:1234 )
+	echo -e "$config " | sed 's/.*GetConfig.*/---/; $d; s/\\"/"/g' > "$configfile"
+}
+
 args2var "$1"
 
 case $CMD in
@@ -40,39 +46,40 @@ confrename )
 	pushRefresh
 	;;
 confswitch )
-	$dirsettings/camilla.py
+	saveConfig
 	sed -i -E "s|^(CONFIG.*/).*|\1$NAME|" /etc/default/camilladsp
 	;;
 restart )
 	systemctl restart camilladsp
 	;;
+saveconfig )
+	saveConfig
+	;;
 setformat )
-	systemctl stop camilladsp
-	killall camilladsp &> /dev/null
-
 	card=$( < $dirsystem/asoundcard )
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
 	sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $configfile
-	camilladsp $configfile &> /dev/null &
-	pgrep -x camilladsp &> /dev/null && killall camilladsp && exit
-
 	notify 'camilladsp blink' CamillaDSP "Set Playback format ..."
-	for format in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
+	formats=( FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE )
+	for (( i=0; i < 6; i++ )); do
+		format=${formats[i]}
 		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $configfile
 		camilladsp $configfile &> /dev/null &
-		pgrep -x camilladsp &> /dev/null && break || format=
+		sleep 1
+		if pgrep -x camilladsp &> /dev/null; then
+			killall camilladsp
+			break
+		else
+			format=
+		fi
 	done
 	if [[ $format ]]; then
-		killall camilladsp
 		notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
+		sed -E 's/ /" "/g; s/^|$/"/g' <<< ${formats[@]:i} > $dirsystem/camilladsp
 	else
-		dsp=
 		notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
-		rm -f $dirsystem/camilladsp
-		sed -i '/pcm.!default/,$ d' /etc/asound.conf
-		rmmod snd_aloop
-		alsactl store &> /dev/null
-		alsactl nrestore &> /dev/null
+		$dirsettings/features.sh camilladsp
+		exit
 	fi
 	;;
 statusconfiguration )

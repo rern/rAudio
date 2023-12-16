@@ -15,7 +15,7 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		player )
-			if [[ ! -e $dirshm/radio && ! -e $dirshm/prevnextseek ]]; then
+			if [[ ! -e $dirshm/radio && ! -e $dirshm/skip ]]; then
 				$dirbash/status-push.sh & # need to run in background for snapcast ssh
 			fi
 			;;

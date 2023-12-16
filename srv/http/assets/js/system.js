@@ -562,13 +562,6 @@ $( '#setting-volumeboot' ).on( 'click', function() {
 		, rangelabel   : 'Volume'
 		, values       : S.volumebootconf
 		, checkchanged : S.volumeboot
-		, beforeshow   : () => {
-			if ( ! S.volumeboot ) return
-			
-			$( '#infoRange input' ).on( 'input', function() {
-				$( '#infoOk' ).toggleClass( 'disabled', +$( this ).val() === S.volumebootconf.VOLUME );
-			} );
-		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true

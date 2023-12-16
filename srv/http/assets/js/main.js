@@ -10,7 +10,6 @@ V = {   // var global
 	, bioartist     : []
 	, blinkdot      : blinkdot
 	, coverart      : '/assets/img/coverart.svg'
-	, icoveredit    : '<div class="coveredit cover-change">'+ ico( 'coverart' ) +'</div>'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
 	, interval      : {}
 	, covervu       : '/assets/img/vu.svg'
@@ -157,26 +156,12 @@ $( 'body' ).on( 'click', function( e ) {
 	if ( ! V.local && $( '.pl-remove' ).length && ! $target.hasClass( 'pl-remove' ) ) $( '.pl-remove' ).remove();
 	if ( V.guide ) guideHide();
 } );
-$( '#page-playback' ).on( 'click', function( e ) {
-	if ( V.press
-		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].includes( e.target.id ) ) return
-	
-	if ( $( '#divcover .coveredit' ).length ) {
-		if ( ! $( e.target ).hasClass( 'coveredit' ) ) {
-			$( '#divcover .cover-change' ).remove();
-			$( '#coverart' ).css( 'opacity', '' );
-		}
-	}
-} );
 $( '#loader' ).on( 'click', function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
 	if ( ! S.webradio && S.player === 'mpd' && S.coverart.slice( 0, 16 ) === '/data/shm/online' ) {
 		$( '#coverart' ).after( V.icoversave );
-	} else {
-		$( '#divcover .coveredit' ).remove();
-		$( '#coverart' ).css( 'opacity', '' );
 	}
 	if ( ( V.wW - $( '#divcover' ).width() ) < 80 ) {
 		$( '#volume-band-dn' ).css( 'left', 0 );
@@ -581,11 +566,11 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	mpcSeekBar( e.pageX || e.changedTouches[ 0 ].pageX );
 } );
 $( '#volume' ).roundSlider( {
-	// init : valueChange > create > beforeValueChange > valueChange
-	// tap  : beforeValueChange > change > valueChange
-	// drag : start > [ beforeValueChange > drag > valueChange ] > change > stop
+	// init     : valueChange > create > beforeValueChange > valueChange
+	// tap      : beforeValueChange > change > valueChange
+	// drag     : start > [ beforeValueChange > drag > valueChange ] > change > stop
 	// setValue : beforeValueChange > valueChange
-	// angle : this._handle1.angle (instaed of inconsistent e.handle.angle/e.handles[ 0 ].angle)
+	// angle    : this._handle1.angle (instaed of inconsistent e.handle.angle/e.handles[ 0 ].angle)
 	  svgMode           : true
 	, borderWidth       : 0
 	, radius            : 115
@@ -704,21 +689,17 @@ $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	clearTimeout( V.volumebar );
 	volumeBarSet( 'toggle' );
 } );
-$( '#divcover' ).press( function( e ) {
+$( '#coverM' ).press( function( e ) {
 	if ( ! S.pllength
 		|| V.guide
 		|| ( S.webradio && S.state === 'play' )
 		|| $( e.target ).hasClass( 'band' )
-		|| e.target.id === 'coverT'
+		|| [ 'coverL', 'coverR', 'coverT' ].includes( e.target.id )
 	) return
 	
-	$( '#coverart' )
-		.css( 'opacity', 0.33 )
-		.after( V.icoveredit );
+	S.webradio ? webRadioCoverart() : coverartChange();
 } ).on( 'click', '.cover-save', function() {
 	coverartSave();
-} ).on( 'click', '.cover-change', function() {
-	S.webradio ? webRadioCoverart() : coverartChange();
 } );
 $( '#coverT' ).press( function() {
 	if ( typeof Android === 'object' ) {
@@ -759,11 +740,6 @@ $( '.map' ).on( 'click', function( e ) {
 		$( '#info' ).removeClass( 'hide' );
 		clearTimeout( V.volumebar );
 		volumeBarHide();
-		return
-		
-	} else if ( $( '#divcover .cover-change' ).length ) {
-		$( '#divcover .cover-change' ).remove();
-		$( '#coverart' ).css( 'opacity', '' );
 		return
 		
 	} else if ( 'screenoff' in V ) {
@@ -888,13 +864,12 @@ $( '.map' ).on( 'click', function( e ) {
 	}
 } );
 $( '.btn-cmd' ).on( 'click', function() {
-	if ( ws.readyState !== 1 ) return // fix - missing elapsed if ws closed > reconnect
+	if ( V.press || ws.readyState !== 1 ) return // fix - missing elapsed if ws closed > reconnect
 	
-	var $this = $( this );
 	var cmd   = this.id;
 	if ( S.state === cmd ) return
 	
-	if ( $this.hasClass( 'btn-toggle' ) ) {
+	if ( $( this ).hasClass( 'btn-toggle' ) ) {
 		var onoff = ! S[ cmd ];
 		S[ cmd ] = onoff;
 		bash( [ 'mpcoption', cmd, onoff, 'CMD OPTION ONOFF' ] );
@@ -903,10 +878,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 	} else {
 		$( '#playback-controls .btn' ).removeClass( 'active' );
 		$( '#'+ cmd ).addClass( 'active' );
-		if ( S.webradio ) {
-			$( '#divcover .cover-change' ).remove();
-			$( '#coverart' ).css( 'opacity', '' );
-		}
 		if ( cmd === 'play' ) {
 			var stateprev = S.state;
 			S.state = cmd;
@@ -939,15 +910,22 @@ $( '.btn-cmd' ).on( 'click', function() {
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 			
-			intervalClear();
-			if ( S.state !== 'stop' ) {
-				setProgress( 0 );
-				$( '#elapsed, #total, #progress' ).empty();
+			if ( cmd == 'next' ) {
+				var pos = S.song + 2 > S.pllength ? 1 : S.song + 2;
+			} else {
+				var pos = S.song === 0 ? S.pllength : S.song;
 			}
-			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
+			setPlaylistSkip( pos );
 		}
 	}
 	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );
+} );
+$( '#previous, #next, #coverR, #coverL' ).press( function( e ) {
+	var next = [ 'next', 'coverR' ].includes( e.target.id );
+	if ( ( next && S.song + 1 === S.pllength ) || ( ! next && S.song === 0 ) ) return
+	
+	banner( 'playlist', 'Playlist', 'Skip to '+ ( next ? 'last ...' : 'first ...' ) );
+	setPlaylistSkip( next ? S.pllength : 1 );
 } );
 $( '#bio' ).on( 'click', '.biosimilar', function() {
 	bio( $( this ).text(), 'getsimilar' );
@@ -1445,18 +1423,11 @@ Exclude this thumbnail?`
 	var $this = $( e.currentTarget );
 	$this.parent().removeClass( 'active' );
 	$( '#menu-album' ).addClass( 'hide' );
-	$this.find( 'img' )
-		.css( 'opacity', '0.33' )
-		.after( V.icoveredit );
+	coverartChange();
 } ).on( 'click', '#lib-list li', function( e ) {
 	e.stopPropagation();
 	if ( V.press ) return
 	
-	if ( $( '.licover .cover-change' ).length ) {
-		$( '.licover .cover-change' ).remove();
-		$( '.licover img' ).css( 'opacity', '' );
-		return
-	}
 	var $this   = $( this );
 	var $target = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
@@ -1756,7 +1727,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	}
 	
 	var $liactive  = $( '#pl-list li.active' );
-	var listnumber = $this.index() + 1;
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$liactive.find( '.song' ).empty();
 	$liactive.find( '.li1 .radioname' ).removeClass( 'hide' );
@@ -1775,7 +1745,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		intervalClear();
 		$( '.elapsed' ).empty();
-		bash( [ 'mpcplayback', 'play', listnumber, 'CMD ACTION POS' ] );
+		bash( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS PLAY' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
