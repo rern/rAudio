@@ -609,6 +609,7 @@ var render   = {
 	}
 	, clippedCss : value => {
 		if ( value > 0 ) {
+			clearTimeout( V.unclipped );
 			if ( V.clipped ) return
 			
 			V.clipped = true;
@@ -619,10 +620,12 @@ var render   = {
 		} else {
 			if ( ! V.clipped ) return
 			
-			V.clipped = false;
-			$( '.peak, .clipped' )
-				.css( 'transition-duration', '' )
-				.removeClass( 'red' );
+			V.clipped   = false;
+			V.unclipped = setTimeout( () => {
+				$( '.peak, .clipped' )
+					.css( 'transition-duration', '' )
+					.removeClass( 'red' );
+			}, 1000 );
 		}
 	}
 	, tab         : () => {
