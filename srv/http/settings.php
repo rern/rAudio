@@ -185,7 +185,7 @@ function htmlSetting( $data ) {
 	$html       .= $sublabel ? '' : ' single';
 	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
 	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
-	$html       .= $page === 'features' || $page === 'system' || $data[ 'icon' ] ? i( $id ) : ''; // icon
+	$html       .= $page === 'features' || $page === 'system' || $icon ? i( $id ) : ''; // icon
 	$html       .= '</div>';
 	// col-r
 	$html       .= '<div class="col-r">';
