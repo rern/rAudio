@@ -4,8 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20231223
+
+
 # 20231216
-if [[ $( pacman -Q python-websockets ) != 'python-websockets 11.0-1' ]]; then
+if [[ ! -e /boot/kernel/img && $( pacman -Q python-websockets ) != 'python-websockets 12.0-1' ]]; then
 	pacman -Sy --needed --noconfirm python-websockets
 	systemctl restart websocket
 fi
@@ -64,29 +67,6 @@ fi
 
 # 29231101
 [[ ! -e /usr/bin/vcgencmd ]] && cp /opt/vc/bin/{dtoverlay,vcgencmd} /usr/bin
-
-# 20231022
-if [[ -e /boot/kernel.img && ! -e /lib/python3.10/site-packages/websocket ]]; then
-	echo '
-[alarm]
-SigLevel = PackageRequired
-Include = /etc/pacman.d/mirrorlist
-
-[community]
-SigLevel = PackageRequired
-Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
-	pacman -Sy --noconfirm python-websocket-client
-	systemctl restart websocket
-fi
-
-# 20231020
-file=$dirsystem/localbrowser.conf
-if [[ -e $file ]] && ! grep -q runxinitrcd $file; then
-	sed -i -e '/hdmi/ d
-' -e '$ a\
-runxinitrcd=
-' $file
-fi
 
 #-------------------------------------------------------------------------------
 installstart "$1"
