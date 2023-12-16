@@ -1,7 +1,6 @@
 // var //////////////////////////////////////////////////////////////////////////////
 V            = {
-	  clipped    : 0
-	, graph      : { filters: {}, pipeline: {} }
+	  graph      : { filters: {}, pipeline: {} }
 	, graphlist  : {}
 	, prevconfig : {}
 	, sortable   : {}
@@ -26,7 +25,7 @@ var C        = {
 	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
 	, sampletype : [ 'AccurateAsync', 'BalancedAsync', 'FastAsync', 'FreeAsync', 'Synchronous' ]
 	, sampling   : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
-	, signal     : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms', 'GetClippedSamples' ]
+	, signal     : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ]
 	, subtype    : {
 		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
 						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
@@ -534,7 +533,7 @@ var render   = {
 		bannerHide();
 	}
 	, status      : () => {
-		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
+		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ];
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
@@ -587,20 +586,35 @@ var render   = {
 			}
 			status = status.join( ' <gr>·</gr> ' );
 		}
-		var clipped = S.status.GetClippedSamples;
-		S.clipped > clipped ? S.clipped = 0 : clipped = clipped - S.clipped;
-		if ( clipped ) {
-			label  += '<br>Clipped';
-			status += '<br><a class="clipped">'+ clipped.toLocaleString() +'</a>';
-		}
 		$( '#divstate .label' ).html( label );
 		$( '#divstate .value' ).html( status );
+		S.clipped > S.clipped0 ? render.statusClipped() : $( '.divclipped' ).remove();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
 			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
+		}
+	}
+	, statusClipped : () => {
+		var clipped = S.clipped - S.clipped0;
+		if ( $( '.divclipped' ).length ) {
+			$( '.clipped' ).text( clipped );
+		} else {
+			$( '#divstate .label' ).append( '<div class="divclipped">Clipped</div>' );
+			$( '#divstate .value' ).append( '<div class="divclipped clipped">'+ clipped.toLocaleString() +'</div>' );
+		}
+	}
+	, clippedCss : value => {
+		if ( value > 0 ) {
+			$( '.peak, .clipped' )
+				.css( 'transition-duration', 0 )
+				.addClass( 'red' );
+		} else {
+			$( '.peak, .clipped' )
+				.css( 'transition-duration', '' )
+				.removeClass( 'red' );
 		}
 	}
 	, tab         : () => {
@@ -1598,54 +1612,26 @@ var util     = {
 			var data  = JSON.parse( response.data );
 			var cmd   = Object.keys( data )[ 0 ];
 			var value = data[ cmd ].value;
-			var cl, cp, css, v;
+			var cp, v;
 			switch ( cmd ) {
 				case 'GetCaptureSignalPeak':
 				case 'GetCaptureSignalRms':
 				case 'GetPlaybackSignalPeak':
 				case 'GetPlaybackSignalRms':
 					cp = cmd[ 3 ];
+					v  = [];
+					value.forEach( val => v.push( util.db2percent( val ) ) );
 					if ( cmd.slice( -1 ) === 'k' ) {
-						if ( V.clipped ) break;
-						
-						cl  = '.peak';
-						css = 'left';
-						V[ cmd ] = value;
-						V[ cp ] = [];
+						render.clippedCss( value );
+						v.forEach( ( w, i ) => $( '.peak.'+ cp + i ).css( 'left', w +'%' ) );
+						wscamilla.send( '"GetClippedSamples"' );
 					} else {
-						cl  = '.rms'
-						css = 'width';
+						v.forEach( ( w, i ) => $( '.rms.'+ cp + i ).css( 'width', w +'%' ) );
 					}
-					value.forEach( ( v, i ) => {
-						v = S.volumemute && cp === 'P' ? 0 : util.db2percent( v );
-						V[ cp ].push( v );
-						$( '.'+ cmd[ 3 ] + i + cl ).css( css, v +'%' );
-					} );
 					break;
 				case 'GetClippedSamples':
-					if ( ! ( 'status' in S ) ) return
-					
-					if ( V.clipped ) {
-						S.status.GetClippedSamples = value;
-						break;
-					}
-					
-					if ( value > S.status.GetClippedSamples ) {
-						V.clipped = true;
-						clearTimeout( V.timeoutclipped );
-						$( '.peak, .clipped' )
-							.css( 'transition-duration', 0 )
-							.addClass( 'red' );
-						V.timeoutclipped = setTimeout( () => {
-							V.clipped = false;
-							$( '.peak, .clipped' )
-								.removeClass( 'red' )
-								.css( 'transition-duration', '' );
-							// set clipped value to previous peak
-							[ 'C', 'P' ].forEach( ( k, i ) => $( '.peak.'+ k + i ).css( 'left', util.db2percent( V[ k ][ i ] ) +'%' ) );
-						}, 1000 );
-					}
-					S.status.GetClippedSamples = value;
+					S.clipped = value;
+					render.statusClipped();
 					break;
 				case 'GetState':
 				case 'GetCaptureRate':
@@ -1811,9 +1797,9 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	}, 100 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
-	S.clipped = S.status.GetClippedSamples;
+	S.clipped0 = S.clipped;
 	bash( [ 'clippedreset', S.clipped, 'CMD CLIPPED' ] );
-	render.status();
+	$( '.divclipped' ).remove();
 } );
 $( '#configuration' ).on( 'input', function() {
 	if ( V.local ) return
