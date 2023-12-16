@@ -7,7 +7,7 @@ if [[ $1 == off ]]; then
 else
 	reboot=1
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
-	pushData power '{ "type": "reboot", "startup": '$startup' }'
+	pushData power '{ "type": "reboot", "startup": '$(( startup + 3000 ))' }' # add shutdown 3s
 fi
 playerActive upnp && $dirbash/cmd.sh playerstop
 if systemctl -q is-active nfs-server; then # server rAudio
