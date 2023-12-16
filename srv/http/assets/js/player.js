@@ -358,7 +358,6 @@ function renderPage() {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divbluealsa' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
-		$( '#setting-bluealsa' ).removeClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.btoutputall );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
@@ -402,7 +401,7 @@ function renderPage() {
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
-	if ( I.rangelabel ) bash( [ 'volumepush', I.okno ? 'sw' : '', 'CMD SW' ] );
+	if ( I.rangelabel ) $( '#setting-'+ ( S.btaplayname ? 'bluealsa' : 'hwmixer' ) ).trigger( 'click' );
 	showContent();
 }
 function setMixerType( mixertype ) {
