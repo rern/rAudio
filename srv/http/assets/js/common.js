@@ -532,7 +532,7 @@ function info( json ) {
 			I.rangelabel.forEach( range => {
 				htmls.range += '<div class="name">'+ I.rangelabel +'</div>'
 							  +'<div class="value gr"></div>'
-							  + ico( 'remove dn' ) +'<input type="range" min="0" max="100">'+ ico( 'plus-circle' )
+							  + ico( 'minus dn' ) +'<input type="range" min="0" max="100">'+ ico( 'plus' )
 							  + ( I.rangesub ? '<div class="sub gr">'+ I.rangesub +'</div>' : '' )
 			} );
 			htmls.range += '</div>';

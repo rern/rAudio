@@ -68,7 +68,7 @@ data='
 , "state"            : "'$state'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volumempd"        : '$volumempd
-[[ -e $dirshm/amixercontrol ]] && data+='
+[[ -e $dirshm/amixercontrol || -e $dirshm/btreceiver ]] && data+='
 , "volume"           : '$( volumeGet valdb hw )
 
 data2json "$data" $1

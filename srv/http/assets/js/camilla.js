@@ -538,7 +538,11 @@ var render   = {
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
-		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
+		if ( S.bluetooth ) {
+			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ico( 'bluetooth' ) );
+		} else {
+			$( '#divconfiguration .col-l i' ).remove();
+		}
 		$( '#configuration' )
 			.html( htmlOption( S.lsconfigs ) )
 			.val( S.configname );

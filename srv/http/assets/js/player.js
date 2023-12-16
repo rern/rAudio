@@ -37,13 +37,11 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		S.control  = D.hwmixer;
 		S.card     = D.card;
 	}
-	S.volume = S.volumedb.val;
 	info( {
 		  icon        : SW.icon
 		, title       : SW.title
 		, rangelabel  : bt ? S.control.replace( ' - A2DP', '' ) : S.control
 		, rangesub    : 'dB'
-		, values      : S.volume
 		, beforeshow  : () => {
 			volumeInfoSet();
 			$( '#infoContent' ).after( '<div class="confirm infomessage hide" style="padding: 15px">'+ warning +'</div>' );
@@ -395,7 +393,7 @@ function renderPage() {
 		$( '#mixertype' )
 			.html( htmlmixertype )
 			.val( D.mixertype );
-		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volumedb' in S ) );
+		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volume' in S ) );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#setting-mixertype' ).toggleClass( 'hide', D.mixertype !== 'software' );
 		$( '#novolume' ).prop( 'checked', S.novolume );
@@ -416,8 +414,8 @@ function volumeGetPush() {
 	bash( [ 'volumepush' ] );
 }
 function volumeInfoSet() {
-	var val = S.volumedb.val || 0;
-	var db  = S.volumedb.db;
+	var val = S.volume.val || 0;
+	var db  = S.volume.db;
 	$( '#infoRange .value' ).text( val );
 	$( '#infoRange input' ).val( val );
 	$( '#infoRange .sub' ).text( val ? db +' dB' : 'Mute' );
@@ -433,7 +431,7 @@ function playbackButton() {
 	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
 }
 function psVolume( data ) {
-	data.type === 'mpd' ? S.volumempd = data.val : S.volumedb = data;
+	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;
 	if ( ! I.rangelabel ) return
 	
 	if ( data.type === 'mpd' ) { // info software volume
