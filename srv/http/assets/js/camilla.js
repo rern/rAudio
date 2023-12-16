@@ -1618,10 +1618,10 @@ var util     = {
 							$( '.peak.'+ cp + i ).css( 'left', v +'%' );
 							if ( val > 0 ) {
 								clearTimeout( V.unclipped );
+								wscamilla.send( '"GetClippedSamples"' );
 								if ( V.clipped ) return
 								
 								V.clipped = true;
-								wscamilla.send( '"GetClippedSamples"' );
 								$( '.peak, .clipped' )
 									.css( 'transition-duration', 0 )
 									.addClass( 'red' );
