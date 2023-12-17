@@ -5,13 +5,21 @@ V            = {
 	, graphlist  : {}
 	, prevconfig : {}
 	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
-	, sampletype : [ 'AccurateAsync', 'BalancedAsync', 'FastAsync', 'FreeAsync', 'Synchronous' ]
 	, signal     : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ]
 	, sortable   : {}
+	, state      : {
+		  GetBufferLevel    : 'buffer'
+		, GetCaptureRate    : 'capture'
+		, GetClippedSamples : 'clipped'
+		, GetProcessingLoad : 'load'
+		, GetRateAdjust     : 'rate'
+	}
+	, status     : [ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad', 'GetRateAdjust' ]
 	, tab        : 'filters'
 	, timeoutred : true
 	, wscamilla  : null
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	, sampletype : [ 'AccurateAsync', 'BalancedAsync', 'FastAsync', 'FreeAsync', 'Synchronous' ]
 	, freeasync  : {
 		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
 		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
@@ -549,8 +557,6 @@ var render   = {
 		bannerHide();
 	}
 	, status      : () => {
-		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ];
-		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		render.statusValue();
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ico( 'bluetooth' ) );
@@ -585,38 +591,24 @@ var render   = {
 		} );
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 		$( '#divstate .label' ).html( `
-Buffer · Sampling<span class="rate"> · Adj</span>
-<div class="clipped">Clipped</div>` );
+Buffer · Load
+<br>Sampling · Adjust
+<br>Clipped` );
 		$( '#divstate .value' ).html( `
-<a class="buffer">·</a>&emsp;·&emsp;<a class="capture">·</a><a class="rate"></a>
-<div class="clipped"></div>` );
+<a class="buffer">·</a>&emsp;·&emsp;<a class="load">·</a>
+<br><a class="capture"></a>&emsp;·&emsp;<a class="rate">0</a>
+<br><a class="clipped">0</a>` );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
-		if ( ! ( 'status' in S ) ) S.status = { GetState: blinkdot }
 		playbackButton();
-		if ( [ 'Running', 'Starting' ].includes( S.status.GetState ) ) {
-			$( '#divstate .rate' ).toggleClass( 'hide', DEV.enable_rate_adjust );
-		} else {
-			$( '#divstate .rate' ).addClass( 'hide' );
-		}
-		render.statusClipped();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
 			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
-		}
-	}
-	, statusClipped : () => {
-		if ( S.clipped === S.clipped0 ) {
-			$( '#divstate .clipped' ).addClass( 'hide' );
-		} else {
-			var clipped = S.clipped - S.clipped0;
-			$( '#divstate .value .clipped' ).text( clipped.toLocaleString() );
-			$( '#divstate .clipped' ).removeClass( 'hide' );
 		}
 	}
 	, tab         : () => {
@@ -1599,9 +1591,9 @@ var util     = {
 		V.wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		V.wscamilla.onready   = () => { // custom
 			util.wsGetConfig();
-			S.status         = { GetState: '&emsp;'+ blinkdot }
+			S.status         = { GetState: '' }
 			V.intervalstatus = setInterval( () => {
-				if ( ! V.local ) V.statusget.forEach( k => V.wscamilla.send( '"'+ k +'"' ) );
+				if ( ! V.local ) V.status.forEach( k => V.wscamilla.send( '"'+ k +'"' ) );
 			}, 1000 );
 		}
 		V.wscamilla.onopen    = () => {
@@ -1611,13 +1603,14 @@ var util     = {
 			render.vuClear();
 			clearInterval( V.intervalstatus );
 			util.save2file();
-			$( '#divstate' ).find( '.buffer, .capture' ).text( '·' );
+			$( '#divstate .value a' ).text( '·' );
 		}
 		V.wscamilla.onmessage = response => {
-			var data  = JSON.parse( response.data );
-			var cmd   = Object.keys( data )[ 0 ];
-			var value = data[ cmd ].value;
-			var cp, peak, v;
+			var data    = JSON.parse( response.data );
+			var cmd     = Object.keys( data )[ 0 ];
+			var value   = data[ cmd ].value;
+			var running = 'status' in S && S.status.GetState === 'Running';
+			var cl, cp, v;
 			switch ( cmd ) {
 				case 'GetCaptureSignalPeak':
 				case 'GetCaptureSignalRms':
@@ -1632,7 +1625,6 @@ var util     = {
 						} else {
 							$( '.peak.'+ cp + i ).css( 'left', v +'%' );
 							if ( val > 0 ) {
-								V.wscamilla.send( '"GetClippedSamples"' );
 								if ( ! V.timeoutred ) return
 								
 								clearTimeout( V.timeoutred );
@@ -1652,33 +1644,28 @@ var util     = {
 						}
 					} );
 					break;
-				case 'GetClippedSamples':
-					S.clipped = value;
-					render.statusClipped();
-					break;
 				case 'GetBufferLevel':
 				case 'GetCaptureRate':
+				case 'GetClippedSamples':
+				case 'GetProcessingLoad':
 				case 'GetRateAdjust':
-					S.status[ cmd ] = value;
-					var cl = cmd.replace( /Get|Level|Rate|Adjust/g, '' ).toLowerCase();
-					$( '#divstate .value .'+ cl ).text( value.toLocaleString() );
+					if ( ! running ) return
+					
+					$( '#divstate .value .'+ V.state[ cmd ] ).text( value.toLocaleString() );
 					break;
 				case 'GetState':
-					if ( ! ( 'status' in S ) ) return
-						
-					if ( value !== 'Running' ) {
+					if ( ! ( 'status' in S || S.status.GetState === value ) ) return
+					
+					S.status.GetState = value;
+					if ( ! running ) {
 						render.vuClear();
-						if ( S.status.GetState !== value ) {
-							S.status.GetState = value;
-							render.statusValue();
-						}
+						render.statusValue();
 					} else {
-						S.status.GetState = value;
-						if ( ! ( 'intervalvu' in V ) ) {
-							$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
-							setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
-							V.intervalvu = setInterval( () => V.signal.forEach( k => V.wscamilla.send( '"'+ k +'"' ) ), 100 );
-						}
+						if ( 'intervalvu' in V ) return
+						
+						$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
+						setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
+						V.intervalvu = setInterval( () => V.signal.forEach( k => V.wscamilla.send( '"'+ k +'"' ) ), 100 );
 					}
 					break;
 				// config
@@ -1692,7 +1679,7 @@ var util     = {
 					render.page();
 					render.tab();
 					break;
-				case 'GetConfigName':
+				case 'GetConfigFilePath':
 					S.configname = value.split( '/' ).pop();
 					break;
 				case 'GetSupportedDeviceTypes':
@@ -1727,7 +1714,7 @@ var util     = {
 	}
 	, wsGetConfig  : () => {
 		setTimeout( () => {
-			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => V.wscamilla.send( '"'+ cmd +'"' ) );
+			[ 'GetConfigFilePath', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => V.wscamilla.send( '"'+ cmd +'"' ) );
 		}, V.wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 }
@@ -1821,9 +1808,10 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	}, 100 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
-	S.clipped0 = S.clipped;
-	$( '#divstate .clipped' ).addClass( 'hide' );
-	bash( [ 'clippedreset', S.clipped, 'CMD CLIPPED' ] );
+	if ( ! S.status.GetClippedSamples ) return
+	
+	$( '#divstate .clipped' ).text( 0 );
+	wscamilla.send( '"ResetClippedSamples"' );
 } );
 $( '#configuration' ).on( 'input', function() {
 	if ( V.local ) return

@@ -33,8 +33,6 @@ control=${vcc[2]}
 data='
 , "bluetooth"  : '$bluetooth'
 , "card"       : '$card'
-, "clipped"    : '$( echo '"GetClippedSamples"' | websocat ws://127.0.0.1:1234  | tr -cd [0-9] )'
-, "clipped0"   : '$( getContent $dirshm/clipped )'
 , "control"    : "'$control'"
 , "devices"    : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
