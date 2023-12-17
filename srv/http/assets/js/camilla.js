@@ -596,9 +596,9 @@ Buffer · Load
 <br>Sampling · Adjust
 <div class="divclipped hide">Clipped</div>` );
 		$( '#divstate .value' ).html( `
-<a class="buffer">·</a>&emsp;·&emsp;<a class="load">·</a>
-<br><a class="capture"></a>&emsp;·&emsp;<a class="rate">0</a>
-<div class="divclipped hide"><a class="clipped">0</a></div>` );
+<a class="buffer">·</a> · <a class="load">·</a>
+<br><a class="capture">·</a> · <a class="rate">·</a>
+<div class="divclipped hide"><a class="clipped">·</a></div>` );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
