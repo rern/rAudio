@@ -10,6 +10,7 @@ V            = {
 	, sortable   : {}
 	, tab        : 'filters'
 	, timeoutred : true
+	, wscamilla  : null
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	, freeasync  : {
 		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
@@ -18,7 +19,6 @@ V            = {
 	}
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 }
-var wscamilla;
 // filters //////////////////////////////////////////////////////////////////////////////
 var Fkv      = {
 	  pass    : {
@@ -321,13 +321,13 @@ var axes     = {
 
 // functions //////////////////////////////////////////////////////////////////////////////
 function renderPage() { // common from settings.js
-	wscamilla && wscamilla.readyState === 1 ? util.wsGetConfig() : util.webSocket();
+	V.wscamilla && V.wscamilla.readyState === 1 ? util.wsGetConfig() : util.webSocket();
 }
 function psOnClose() {
 	if ( V.off ) return
 	
 	clearInterval( V.intervalvu );
-	if ( wscamilla ) wscamilla.close();
+	if ( V.wscamilla ) V.wscamilla.close();
 }
 function playbackButton() {
 	var play = S.state === 'play';
@@ -1437,10 +1437,10 @@ var setting  = {
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
-			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			wscamilla.send( '"Reload"' );
+			V.wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
+			V.wscamilla.send( '"Reload"' );
 			setTimeout( util.save2file, 300 );
-		}, wscamilla ? 0 : 300 );
+		}, V.wscamilla ? 0 : 300 );
 		util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
@@ -1594,26 +1594,26 @@ var util     = {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 	}
 	, webSocket    : () => {
-		if ( wscamilla && wscamilla.readyState < 2 ) return
+		if ( V.wscamilla && V.wscamilla.readyState < 2 ) return
 		
-		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
-		wscamilla.onready   = () => { // custom
+		V.wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
+		V.wscamilla.onready   = () => { // custom
 			util.wsGetConfig();
 			S.status         = { GetState: '&emsp;'+ blinkdot }
 			V.intervalstatus = setInterval( () => {
-				if ( ! V.local ) V.statusget.forEach( k => wscamilla.send( '"'+ k +'"' ) );
+				if ( ! V.local ) V.statusget.forEach( k => V.wscamilla.send( '"'+ k +'"' ) );
 			}, 1000 );
 		}
-		wscamilla.onopen    = () => {
-			websocketReady( wscamilla );
+		V.wscamilla.onopen    = () => {
+			websocketReady( V.wscamilla );
 		}
-		wscamilla.onclose   = () => {
+		V.wscamilla.onclose   = () => {
 			render.vuClear();
 			clearInterval( V.intervalstatus );
 			util.save2file();
 			$( '#divstate' ).find( '.buffer, .capture' ).text( '·' );
 		}
-		wscamilla.onmessage = response => {
+		V.wscamilla.onmessage = response => {
 			var data  = JSON.parse( response.data );
 			var cmd   = Object.keys( data )[ 0 ];
 			var value = data[ cmd ].value;
@@ -1632,7 +1632,7 @@ var util     = {
 						} else {
 							$( '.peak.'+ cp + i ).css( 'left', v +'%' );
 							if ( val > 0 ) {
-								wscamilla.send( '"GetClippedSamples"' );
+								V.wscamilla.send( '"GetClippedSamples"' );
 								if ( ! V.timeoutred ) return
 								
 								clearTimeout( V.timeoutred );
@@ -1677,7 +1677,7 @@ var util     = {
 						if ( ! ( 'intervalvu' in V ) ) {
 							$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
 							setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
-							V.intervalvu = setInterval( () => V.signal.forEach( k => wscamilla.send( '"'+ k +'"' ) ), 100 );
+							V.intervalvu = setInterval( () => V.signal.forEach( k => V.wscamilla.send( '"'+ k +'"' ) ), 100 );
 						}
 					}
 					break;
@@ -1727,8 +1727,8 @@ var util     = {
 	}
 	, wsGetConfig  : () => {
 		setTimeout( () => {
-			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
-		}, wscamilla.readyState === 1 ? 0 : 300 ); 
+			[ 'GetConfigName', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => V.wscamilla.send( '"'+ cmd +'"' ) );
+		}, V.wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 }
 
@@ -1830,8 +1830,8 @@ $( '#configuration' ).on( 'input', function() {
 	
 	var name = $( this ).val();
 	bash( [ 'confswitch', name, 'CMD NAME' ], () => {
-		wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
-		wscamilla.send( '"Reload"' );
+		V.wscamilla.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
+		V.wscamilla.send( '"Reload"' );
 		S.configname = name;
 		setTimeout( () => util.wsGetConfig(), 300 );
 	} );
