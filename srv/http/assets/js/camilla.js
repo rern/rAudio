@@ -1,98 +1,24 @@
-// var //////////////////////////////////////////////////////////////////////////////
+// variables //////////////////////////////////////////////////////////////////////////////
 V            = {
-	  graph      : { filters: {}, pipeline: {} }
+	  format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
+	, graph      : { filters: {}, pipeline: {} }
 	, graphlist  : {}
 	, prevconfig : {}
+	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+	, sampletype : [ 'AccurateAsync', 'BalancedAsync', 'FastAsync', 'FreeAsync', 'Synchronous' ]
+	, signal     : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ]
 	, sortable   : {}
 	, tab        : 'filters'
 	, timeoutred : true
-}
-var wscamilla;
-var format   = {};
-[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
-	var key       = k
-					.replace( 'FLOAT', 'Float' )
-					.replace( 'TEXT',  'Text' );
-	format[ key ] = k;
-} );
-var dots     = '&emsp;·&ensp;·&ensp;·';
-// const //////////////////////////////////////////////////////////////////////////////
-var C        = {
-	  format     : format
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	, freeasync  : {
 		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
 		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
 		, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
 	}
-	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
-	, sampletype : [ 'AccurateAsync', 'BalancedAsync', 'FastAsync', 'FreeAsync', 'Synchronous' ]
-	, sampling   : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
-	, signal     : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ]
-	, subtype    : {
-		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
-						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
-		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
-		, Conv        : [ 'Raw', 'Wav', 'Values' ]
-		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
-	}
-	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Loudness', 'DiffEq', 'Dither' ] // omit Volume - use raAudio volume
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 }
-// capture / playback //////////////////////////////////////////////////////////////////////////////
-var CPkv     = {
-	  tc     : {
-		  number : { channels: 2 }
-	}
-	, tcsd   : {
-		  select : { device: '', format: '' }
-		, number : { channels: 2 }
-	}
-	, wasapi : {
-		  select : { device: '', format: '' }
-		, number   : { channels: 2 }
-		, checkbox : { exclusive: false, loopback: false }
-	}
-}
-var CP       = {
-	  capture  : {
-		  Alsa      : CPkv.tcsd
-		, CoreAudio : {
-			  select : { device: '', format: '' }
-			, number   : { channels: 2 }
-			, checkbox : { change_format: false }
-		}
-		, Pulse     : CPkv.tcsd
-		, Wasapi    : CPkv.wasapi
-		, Jack      : CPkv.tc
-		, Stdin     : {
-			  select : { format: '' }
-			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		}
-		, File      : {
-			  select : { format: '' }
-			, text   : { filename: '' }
-			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		}
-	}
-	, playback : {
-		  Alsa      : CPkv.tcsd
-		, CoreAudio : {
-			  select   : { device: '', format: '' }
-			, number   : { channels: 2 }
-			, checkbox : { exclusive: false, change_format: false }
-		}
-		, Pulse     : CPkv.tcsd
-		, Wasapi    : CPkv.wasapi
-		, Jack      : CPkv.tc
-		, Stdout    : {
-			  select : { format: '' }
-			, number : { channels: 2 }
-		}
-		, File      : {
-			  select : { filename: '', format: '' }
-			, number : { channels: 2 }
-		}
-	}
-}
+var wscamilla;
 // filters //////////////////////////////////////////////////////////////////////////////
 var Fkv      = {
 	  pass    : {
@@ -114,7 +40,16 @@ var Fkv      = {
 	}
 }
 var F        = {
-	  Lowpass           : Fkv.pass
+	  type              : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Loudness', 'DiffEq', 'Dither' ] // omit Volume - use raAudio volume
+	, subtype           : {
+		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
+						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
+		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
+		, Conv        : [ 'Raw', 'Wav', 'Values' ]
+		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
+	}
+	// parameters
+	, Lowpass           : Fkv.pass
 	, Highpass          : Fkv.pass
 	, Lowshelf          : Fkv.shelf
 	, Highshelf         : Fkv.shelf
@@ -171,6 +106,86 @@ var F        = {
 	}
 	, Dither            : {
 		number: { bits: 16 }
+	}
+}
+// devices /////////////////////////////////////////////////////////////////////////////////////////
+var CPkv     = {
+	  tc     : {
+		  number : { channels: 2 }
+	}
+	, tcsd   : {
+		  select : { device: '', format: '' }
+		, number : { channels: 2 }
+	}
+	, wasapi : {
+		  select : { device: '', format: '' }
+		, number   : { channels: 2 }
+		, checkbox : { exclusive: false, loopback: false }
+	}
+}
+var D       = {
+	  sampling  : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
+	// parameters - capture / playback
+	, capture   : {
+		  Alsa      : CPkv.tcsd
+		, CoreAudio : {
+			  select : { device: '', format: '' }
+			, number   : { channels: 2 }
+			, checkbox : { change_format: false }
+		}
+		, Pulse     : CPkv.tcsd
+		, Wasapi    : CPkv.wasapi
+		, Jack      : CPkv.tc
+		, Stdin     : {
+			  select : { format: '' }
+			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		}
+		, File      : {
+			  select : { format: '' }
+			, text   : { filename: '' }
+			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		}
+	}
+	, playback  : {
+		  Alsa      : CPkv.tcsd
+		, CoreAudio : {
+			  select   : { device: '', format: '' }
+			, number   : { channels: 2 }
+			, checkbox : { exclusive: false, change_format: false }
+		}
+		, Pulse     : CPkv.tcsd
+		, Wasapi    : CPkv.wasapi
+		, Jack      : CPkv.tc
+		, Stdout    : {
+			  select : { format: '' }
+			, number : { channels: 2 }
+		}
+		, File      : {
+			  select : { filename: '', format: '' }
+			, number : { channels: 2 }
+		}
+	}
+	, resampler : {
+		  type        : [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ]
+		, AsyncSinc   : {
+			  param   : [ 'profile', 'capture_samplerate' ]
+			, profile : {
+				  subtype       : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
+				, param         : {
+					  custom        : [ 'sinc_len', 'oversampling_factor', 'interpolation', 'window', 'f_cutoff' ] // f_cutoff: 0.9 - 0.99
+					, interpolation : [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ]
+					, window        : [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ]
+				}
+			}
+		}
+		, AsyncPoly   : {
+			  param         : [ 'interpolation', 'capture_samplerate' ]
+			, interpolation : {
+				subtype: [ 'Linear', 'Cubic', 'Quintic', 'Septic' ]
+			}
+		}
+		, Synchronous : [ 'capture_samplerate' ] // not with rate_adjust enabled - AsyncSinc / AsyncPoly only
+		, capture_samplerate : V.samplerate
 	}
 }
 // graph //////////////////////////////////////////////////////////////////////////////
@@ -805,7 +820,7 @@ Buffer · Sampling<span class="rate"> · Adj</span>
 		[ 'enable_rate_adjust', 'stop_on_rate_change', 'enable_resampling' ].forEach( k => S[ k ] = DEV[ k ] );
 		var labels = '';
 		var values = '';
-		C.sampling.forEach( k => {
+		D.sampling.forEach( k => {
 			labels += util.key2label( k ) +'<br>';
 			values += DEV[ k ].toLocaleString() +'<br>';
 		} );
@@ -870,11 +885,11 @@ var setting  = {
 		}
 		// select
 		var selectlabel = [ 'type' ];
-		var select      = [ jsonClone( C.type ) ];
+		var select      = [ jsonClone( F.type ) ];
 		var values      = { type: type }
 		if ( subtype ) {
 			selectlabel.push( 'subtype' )
-			select.push( jsonClone( C.subtype[ type ] ) );
+			select.push( jsonClone( F.subtype[ type ] ) );
 			values.subtype = subtype;
 			var key_val    = subtype in F ? jsonClone( F[ subtype ] ) : jsonClone( F[ type ] );
 			if ( subtype === 'Uniform' ) key_val.amplitude = 1;
@@ -966,7 +981,7 @@ var setting  = {
 				var $selecttype = $select.eq( 0 );
 				$selecttype.on( 'input', function() {
 					var type    = $( this ).val();
-					var subtype = type in C.subtype ? C.subtype[ type ][ 0 ] : '';
+					var subtype = type in F.subtype ? F.subtype[ type ][ 0 ] : '';
 					setting.filter( type, subtype, '', infoVal().name );
 				} );
 				if ( $select.length > 1 ) {
@@ -1199,27 +1214,34 @@ var setting  = {
 		render.sortable( k );
 	} //---------------------------------------------------------------------------------------------
 	, device        : ( dev, type ) => {
-		var key_val, kv, k, v;
+		var k, key_val, kv, s, v;
 		var data        = jsonClone( DEV[ dev ] );
 		var type        = type || data.type;
 		// select
 		var selectlabel = [ 'type' ];
-		var select      = [ jsonClone( C.devicetype[ dev ] ) ];
+		var select      = [ jsonClone( V.devicetype[ dev ] ) ];
 		var values      = { type: type }
-		key_val         = jsonClone( CP[ dev ][ type ] );
+		key_val         = jsonClone( D[ dev ][ type ] );
 		if ( 'select' in key_val ) {
 			kv          = key_val.select;
 			k           = Object.keys( kv );
 			k.forEach( key => {
 				if ( key === 'format' ) {
-					var s = jsonClone( dev === 'capture' ? C.format : S.format );
-					var v = { format: data.format };
+					var format = dev === 'capture' ? V.format : S.format;
+					s          = {};
+					format.forEach( k => {
+						var label = k
+									.replace( 'FLOAT', 'Float' )
+									.replace( 'TEXT',  'Text' );
+						s[ label ] = k;
+					} );
+					v = { format: data.format };
 				} else if ( key === 'device' ) {
-					var s = jsonClone( C.devices[ dev ] );
-					var v = { device: data.device };
+					s = jsonClone( V.devices[ dev ] );
+					v = { device: data.device };
 				} else if ( key === 'filename' ) {
-					var s   = S.lscoef.length ? S.lscoeffs : [ '(n/a)' ];
-					var v   = { filename: data.filename };
+					s   = S.lscoef.length ? S.lscoeffs : [ '(n/a)' ];
+					v   = { filename: data.filename };
 				}
 				selectlabel = [ ...selectlabel, key ];
 				select      = [ ...select, s ];
@@ -1290,18 +1312,18 @@ var setting  = {
 		} );
 	}
 	, devicesampling : () => {
-		var textlabel  = [ ...C.sampling ].slice( 1 );
+		var textlabel  = [ ...D.sampling ].slice( 1 );
 		textlabel.push( 'Other' );
 		var values     = {};
-		C.sampling.forEach( k => values[ k ] = DEV[ k ] );
-		if ( ! C.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
+		D.sampling.forEach( k => values[ k ] = DEV[ k ] );
+		if ( ! V.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
 		values.other = values.samplerate;
 		var title = util.key2label( V.tab );
 		info( {
 			  icon         : V.tab
 			, title        : title
 			, selectlabel  : 'Sample Rate'
-			, select       : C.samplerate
+			, select       : V.samplerate
 			, textlabel    : util.labels2array( textlabel )
 			, boxwidth     : 120
 			, order        : [ 'select', 'text' ]
@@ -1330,12 +1352,12 @@ var setting  = {
 		var rateadjust  = DEV.enable_rate_adjust;
 		var samplerate  = DEV.capture_samplerate;
 		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
-		var select      = [ rateadjust ? C.sampletype.slice( 0, -1 ) : C.sampletype, C.samplerate ];
+		var select      = [ rateadjust ? V.sampletype.slice( 0, -1 ) : V.sampletype, V.samplerate ];
 		var numberlabel = [ 'Other' ];
-		var capturerate = C.samplerate.includes( samplerate ) ? samplerate : 'Other';
+		var capturerate = V.samplerate.includes( samplerate ) ? samplerate : 'Other';
 		if ( freeasync ) {
 			selectlabel.push( 'interpolation', 'window' );
-			select.push( C.freeasync.interpolation, C.freeasync.window );
+			select.push( V.freeasync.interpolation, V.freeasync.window );
 			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
 			var f  = jsonClone( DEV.resampler_type.FreeAsync ) || {};
 			var values = {
@@ -1389,7 +1411,7 @@ var setting  = {
 				[ 'resampler_type', 'capture_samplerate' ].forEach( k => DEV[ k ] = val[ k ] );
 				if ( freeasync ) {
 					var v = {}
-					C.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
+					V.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
 					DEV.resampler_type = { FreeAsync: v }
 				}
 				setting.switchSave( 'enable_resampling' );
@@ -1655,7 +1677,7 @@ var util     = {
 						if ( ! ( 'intervalvu' in V ) ) {
 							$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
 							setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
-							V.intervalvu = setInterval( () => C.signal.forEach( k => wscamilla.send( '"'+ k +'"' ) ), 100 );
+							V.intervalvu = setInterval( () => V.signal.forEach( k => wscamilla.send( '"'+ k +'"' ) ), 100 );
 						}
 					}
 					break;
@@ -1678,15 +1700,15 @@ var util     = {
 						  capture  : value[ 1 ].sort()
 						, playback : value[ 0 ].sort()
 					};
-					[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
+					[ 'devices', 'devicetype' ].forEach( k => V[ k ] = { capture: {}, playback: {} } );
 					[ 'capture', 'playback' ].forEach( k => {
 						S.devices[ k ].forEach( d => {
 							v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
-							C.devices[ k ][ v ] = d;
+							V.devices[ k ][ v ] = d;
 						} );
 						S.devicetype[ k ].forEach( t => {
 							v = render.typeReplace( t );
-							C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+							V.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
 					showContent();
