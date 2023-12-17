@@ -52,7 +52,7 @@ function currentPlaylist() {
 		, $lists ); // avoid json literal issue with escape double quotes
 	if ( ! count( $lists ) ) exit( '-1' );
 	
-	if ( substr( $list[ 3 ], 0, 4 ) === 'cdda' ) {
+	if ( substr( $lists[ 3 ], 0, 4 ) === 'cdda' ) {
 		foreach( $lists as $list ) {
 			$list = explode( '^^', $list );
 				$each         = ( object )[];
