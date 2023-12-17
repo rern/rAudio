@@ -1821,7 +1821,7 @@ $( '#configuration' ).on( 'input', function() {
 	
 	var name = $( this ).val();
 	var path = '/srv/http/data/camilladsp/configs'+ ( S.bluetooth ? '-bt' : '' ) +'/'+ name;
-	bash( [ 'confswitch', name, 'CMD NAME' ], () => {
+	bash( [ 'confswitch', path, 'CMD PATH' ], () => {
 		V.wscamilla.send( '{ "SetConfigFilePath": "'+ path +'" }' );
 		V.wscamilla.send( '"Reload"' );
 		S.configname = name;
