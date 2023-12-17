@@ -1820,7 +1820,7 @@ $( '#configuration' ).on( 'input', function() {
 	if ( V.local ) return
 	
 	var name = $( this ).val();
-	var path = '/srv/http/data/camilladsp/configs'+ ( S.bluetooth ? '-bt' : '' ) +'/'+ name;
+	var path = '/srv/http/data/camilladsp/configs'+ ( S.bluetooth ? '-bt/' : '/' ) + name;
 	bash( [ 'confswitch', path, 'CMD PATH' ], () => {
 		V.wscamilla.send( '{ "SetConfigFilePath": "'+ path +'" }' );
 		V.wscamilla.send( '"Reload"' );
