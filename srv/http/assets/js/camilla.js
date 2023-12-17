@@ -1649,23 +1649,18 @@ var util     = {
 				case 'GetCaptureRate':
 				case 'GetProcessingLoad':
 				case 'GetRateAdjust':
-					$( '#divstate .value .'+ V.state[ cmd ] ).text( value.toLocaleString() );
+					$( '#divstate .'+ V.state[ cmd ] ).text( value.toLocaleString() );
 					break;
 				case 'GetClippedSamples':
-					if ( ! value ) {
-						if ( V.clipped ) return
-						
-						V.clipped = false;
-						$( '.divclipped' ).addClass( 'hide' );
-						return
-						
+					if ( V.local ) return
+					
+					if ( value ) {
+						$( '.divclipped' )
+							.removeClass( 'hide' )
+							.find( '.clipped' ).text( value.toLocaleString() );
 					} else {
-						if ( ! V.clipped ) {
-							V.clipped = true;
-							$( '.divclipped' ).removeClass( 'hide' );
-						}
+						$( '.divclipped' ).addClass( 'hide' );
 					}
-					$( '#divstate .value .clipped' ).text( value.toLocaleString() );
 					break;
 				case 'GetState':
 					if ( ! ( 'status' in S || S.status.GetState === value ) ) return
@@ -1817,8 +1812,9 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	}, 100 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
-	$( '#divstate .clipped' ).text( 0 );
-	wscamilla.send( '"ResetClippedSamples"' );
+	local( 2000 );
+	$( '.divclipped' ).addClass( 'hide' );
+	V.wscamilla.send( '"ResetClippedSamples"' );
 } );
 $( '#configuration' ).on( 'input', function() {
 	if ( V.local ) return
