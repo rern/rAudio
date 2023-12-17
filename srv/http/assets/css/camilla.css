@@ -353,7 +353,7 @@ i.disabled,
 .sortable-ghost .li2 {
 	color: var( --cg ) !important;
 }
-.clipped::after,
+.value .clipped::after,
 .sortable-ghost::before {
 	position: absolute;
 	content: "\f601";
@@ -364,10 +364,10 @@ i.disabled,
 	text-align: center;
 	color: var( --cw );
 }
-.clipped {
+.value .clipped {
 	color: #f80;
 }
-.clipped::after {
+.value .clipped::after {
 	content: "\f515";
 	line-height: 22px;
 	color: var( --cg60 );

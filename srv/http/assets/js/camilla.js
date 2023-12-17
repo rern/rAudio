@@ -15,6 +15,7 @@ var format   = {};
 					.replace( 'TEXT',  'Text' );
 	format[ key ] = k;
 } );
+var dots     = '&emsp;·&ensp;·&ensp;·';
 // const //////////////////////////////////////////////////////////////////////////////
 var C        = {
 	  format     : format
@@ -312,7 +313,6 @@ function psOnClose() {
 	
 	clearInterval( V.intervalvu );
 	if ( wscamilla ) wscamilla.close();
-	$( '#divstate .label' ).html( 'Buffer · Sampling' );
 }
 function playbackButton() {
 	var play = S.state === 'play';
@@ -536,7 +536,6 @@ var render   = {
 	, status      : () => {
 		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ];
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
-		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ico( 'bluetooth' ) );
@@ -570,26 +569,24 @@ var render   = {
 			}
 		} );
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
+		$( '#divstate .label' ).html( `
+Buffer · Sampling<span class="rate"> · Adj</span>
+<div class="clipped">Clipped</div>` );
+		$( '#divstate .value' ).html( `
+<a class="buffer">·</a>&emsp;·&emsp;<a class="capture">·</a><a class="rate"></a>
+<div class="clipped"></div>` );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
 		if ( ! ( 'status' in S ) ) S.status = { GetState: blinkdot }
 		playbackButton();
-		var label  = 'Buffer · Sampling';
-		var status = S.status.GetState;
-		if ( [ 'Running', 'Starting' ].includes( status ) ) {
-			status = [];
-			[ 'GetBufferLevel', 'GetCaptureRate' ].forEach( k => status.push( S.status[ k ].toLocaleString() ) );
-			if ( DEV.enable_rate_adjust ) {
-				label  += ' · Adj';
-				status.push( S.status.GetRateAdjust.toLocaleString() );
-			}
-			status = status.join( ' <gr>·</gr> ' );
+		if ( [ 'Running', 'Starting' ].includes( S.status.GetState ) ) {
+			$( '#divstate .rate' ).toggleClass( 'hide', DEV.enable_rate_adjust );
+		} else {
+			$( '#divstate .rate' ).addClass( 'hide' );
 		}
-		$( '#divstate .label' ).html( label );
-		$( '#divstate .value' ).html( status );
-		S.clipped > S.clipped0 ? render.statusClipped() : $( '.divclipped' ).remove();
+		render.statusClipped();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
 			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
@@ -599,12 +596,12 @@ var render   = {
 		}
 	}
 	, statusClipped : () => {
-		var clipped = S.clipped - S.clipped0;
-		if ( $( '.divclipped' ).length ) {
-			$( '.clipped' ).text( clipped );
+		if ( S.clipped === S.clipped0 ) {
+			$( '#divstate .clipped' ).addClass( 'hide' );
 		} else {
-			$( '#divstate .label' ).append( '<div class="divclipped">Clipped</div>' );
-			$( '#divstate .value' ).append( '<div class="divclipped clipped">'+ clipped.toLocaleString() +'</div>' );
+			var clipped = S.clipped - S.clipped0;
+			$( '#divstate .value .clipped' ).text( clipped.toLocaleString() );
+			$( '#divstate .clipped' ).removeClass( 'hide' );
 		}
 	}
 	, tab         : () => {
@@ -643,10 +640,6 @@ var render   = {
 				render[ V.tab +'Sub' ]( val );
 			}
 		}
-	}
-	, vu          : () => {
-		$( '.peak' ).css( 'background', 'var( --cm )' );
-		V.intervalvu = setInterval( () => C.signal.forEach( k => wscamilla.send( '"'+ k +'"' ) ), 100 );
 	}
 	, vuClear() {
 		if ( ! ( 'intervalvu' in V ) ) return
@@ -1596,7 +1589,7 @@ var util     = {
 			render.vuClear();
 			clearInterval( V.intervalstatus );
 			util.save2file();
-			$( '#divstate .value' ).html( '&emsp;·&ensp;·&ensp;·' );
+			$( '#divstate' ).find( '.buffer, .capture' ).text( '·' );
 		}
 		wscamilla.onmessage = response => {
 			var data  = JSON.parse( response.data );
@@ -1623,7 +1616,7 @@ var util     = {
 								clearTimeout( V.timeoutred );
 								V.timeoutred = false;
 								$( '.peak, .clipped' )
-									.css( 'transition-duration', 0 )
+									.css( 'transition-duration', '0s' )
 									.addClass( 'red' );
 							} else {
 								if ( V.timeoutred ) return
@@ -1632,7 +1625,7 @@ var util     = {
 									$( '.peak, .clipped' )
 										.css( 'transition-duration', '' )
 										.removeClass( 'red' );
-								}, 1000 );
+								}, 200 );
 							}
 						}
 					} );
@@ -1641,28 +1634,29 @@ var util     = {
 					S.clipped = value;
 					render.statusClipped();
 					break;
-				case 'GetState':
-				case 'GetCaptureRate':
 				case 'GetBufferLevel':
+				case 'GetCaptureRate':
 				case 'GetRateAdjust':
-					if ( ! ( 'status' in S ) ) S.status = { GetState: blinkdot }
-					if ( cmd === 'GetState' ) {
-						if ( value !== 'Running' ) {
-							render.vuClear();
-							if ( S.status.GetState !== value ) {
-								S.status.GetState = value;
-								render.statusValue();
-							}
-						} else {
+					S.status[ cmd ] = value;
+					var cl = cmd.replace( /Get|Level|Rate|Adjust/g, '' ).toLowerCase();
+					$( '#divstate .value .'+ cl ).text( value.toLocaleString() );
+					break;
+				case 'GetState':
+					if ( ! ( 'status' in S ) ) return
+						
+					if ( value !== 'Running' ) {
+						render.vuClear();
+						if ( S.status.GetState !== value ) {
 							S.status.GetState = value;
-							if ( ! ( 'intervalvu' in V ) ) {
-								$( '.peak' ).css( 'background', '' );
-								render.vu();
-							}
+							render.statusValue();
 						}
 					} else {
-						S.status[ cmd ] = value;
-						if ( cmd === V.statuslast ) render.statusValue();
+						S.status.GetState = value;
+						if ( ! ( 'intervalvu' in V ) ) {
+							$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
+							setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
+							V.intervalvu = setInterval( () => C.signal.forEach( k => wscamilla.send( '"'+ k +'"' ) ), 100 );
+						}
 					}
 					break;
 				// config
@@ -1806,8 +1800,8 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped0 = S.clipped;
+	$( '#divstate .clipped' ).addClass( 'hide' );
 	bash( [ 'clippedreset', S.clipped, 'CMD CLIPPED' ] );
-	$( '.divclipped' ).remove();
 } );
 $( '#configuration' ).on( 'input', function() {
 	if ( V.local ) return
