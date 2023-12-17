@@ -1,6 +1,7 @@
 // variables //////////////////////////////////////////////////////////////////////////////
 V            = {
-	  format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
+	  clipped    : false
+	, format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
 	, graph      : { filters: {}, pipeline: {} }
 	, graphlist  : {}
 	, prevconfig : {}
@@ -593,11 +594,11 @@ var render   = {
 		$( '#divstate .label' ).html( `
 Buffer · Load
 <br>Sampling · Adjust
-<br>Clipped` );
+<div class="divclipped hide">Clipped</div>` );
 		$( '#divstate .value' ).html( `
 <a class="buffer">·</a>&emsp;·&emsp;<a class="load">·</a>
 <br><a class="capture"></a>&emsp;·&emsp;<a class="rate">0</a>
-<br><a class="clipped">0</a>` );
+<div class="divclipped hide"><a class="clipped">0</a></div>` );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
@@ -1646,27 +1647,35 @@ var util     = {
 					break;
 				case 'GetBufferLevel':
 				case 'GetCaptureRate':
-				case 'GetClippedSamples':
 				case 'GetProcessingLoad':
 				case 'GetRateAdjust':
-					if ( ! running ) return
-					
 					$( '#divstate .value .'+ V.state[ cmd ] ).text( value.toLocaleString() );
+					break;
+				case 'GetClippedSamples':
+					if ( ! value ) {
+						if ( V.clipped ) return
+						
+						V.clipped = false;
+						$( '.divclipped' ).addClass( 'hide' );
+						return
+						
+					} else {
+						if ( ! V.clipped ) {
+							V.clipped = true;
+							$( '.divclipped' ).removeClass( 'hide' );
+						}
+					}
+					$( '#divstate .value .clipped' ).text( value.toLocaleString() );
 					break;
 				case 'GetState':
 					if ( ! ( 'status' in S || S.status.GetState === value ) ) return
 					
 					S.status.GetState = value;
-					if ( ! running ) {
-						render.vuClear();
-						render.statusValue();
-					} else {
-						if ( 'intervalvu' in V ) return
-						
-						$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
-						setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
-						V.intervalvu = setInterval( () => V.signal.forEach( k => V.wscamilla.send( '"'+ k +'"' ) ), 100 );
-					}
+					if ( 'intervalvu' in V ) return
+					
+					$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
+					setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
+					V.intervalvu = setInterval( () => V.signal.forEach( k => V.wscamilla.send( '"'+ k +'"' ) ), 100 );
 					break;
 				// config
 				case 'GetConfigJson':
@@ -1808,8 +1817,6 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	}, 100 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
-	if ( ! S.status.GetClippedSamples ) return
-	
 	$( '#divstate .clipped' ).text( 0 );
 	wscamilla.send( '"ResetClippedSamples"' );
 } );
