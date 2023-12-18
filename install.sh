@@ -5,7 +5,15 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231223
-
+if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 2.0.0' ]]
+	systemctl stop camilladsp
+	pacman -Sy --needed --noconfirm camilladsp
+	readarray -t files <<< $( grep -rl enable_resampling $dircamilladsp )
+	for f in "${files[@]}"; do
+		sed -i '/enable_resampling\|resampler_type/ d' "$f"
+	done
+	[[ -e $dirsystem/camilladsp ]] && systemctl start camilladsp
+fi
 
 # 20231216
 if [[ ! -e /boot/kernel/img && $( pacman -Q python-websockets ) != 'python-websockets 12.0-1' ]]; then
