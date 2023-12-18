@@ -1412,8 +1412,7 @@ var setting  = {
 				if ( custom ) delete val.profile;
 				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = null;
 				DEV.resampler = val;
-				console.log(DEV.resampler)
-//				setting.switchSave( 'resampler' );
+				setting.switchSave( 'resampler' );
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
