@@ -6,7 +6,7 @@ V            = {
 	, graphlist  : {}
 	, prevconfig : {}
 	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
-	, signal     : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ]
+	, signal     : [ 'playback_peak', 'playback_rms', 'capture_peak', 'capture_rms' ]
 	, sortable   : {}
 	, state      : {
 		  GetBufferLevel    : 'buffer'
@@ -19,14 +19,6 @@ V            = {
 	, tab        : 'filters'
 	, timeoutred : true
 	, wscamilla  : null
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-	, sampletype : [ 'AccurateAsync', 'BalancedAsync', 'FastAsync', 'FreeAsync', 'Synchronous' ]
-	, freeasync  : {
-		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
-		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
-		, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
-	}
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 }
 // filters //////////////////////////////////////////////////////////////////////////////
 var Fkv      = {
@@ -133,7 +125,7 @@ var CPkv     = {
 	}
 }
 var D       = {
-	  sampling  : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
+	  main      : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
 	// parameters - capture / playback
 	, capture   : {
 		  Alsa      : CPkv.tcsd
@@ -175,26 +167,25 @@ var D       = {
 		}
 	}
 	, resampler : {
-		  type        : [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ]
-		, AsyncSinc   : {
-			  param   : [ 'profile', 'capture_samplerate' ]
-			, profile : {
-				  subtype       : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
-				, param         : {
-					  custom        : [ 'sinc_len', 'oversampling_factor', 'interpolation', 'window', 'f_cutoff' ] // f_cutoff: 0.9 - 0.99
-					, interpolation : [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ]
-					, window        : [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ]
-				}
+		  type            : [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ]
+		, AsyncSinc       : {
+			  select  : {
+				  profile       : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
 			}
 		}
-		, AsyncPoly   : {
-			  param         : [ 'interpolation', 'capture_samplerate' ]
-			, interpolation : {
-				subtype: [ 'Linear', 'Cubic', 'Quintic', 'Septic' ]
+		, AsyncSincCustom : {
+			  select : {
+				  profile       : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
+				, interpolation : [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ]
+				, window        : [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ]
+			}
+			, number : { sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9 }
+		}
+		, AsyncPoly       : {
+			  select   : {
+				  interpolation : [ 'Linear', 'Cubic', 'Quintic', 'Septic' ]
 			}
 		}
-		, Synchronous : [ 'capture_samplerate' ] // not with rate_adjust enabled - AsyncSinc / AsyncPoly only
-		, capture_samplerate : V.samplerate
 	}
 }
 // graph //////////////////////////////////////////////////////////////////////////////
@@ -579,7 +570,7 @@ var render   = {
 					 +'<div id="in">';
 		[ 'capture', 'playback' ].forEach( k => {
 			var lb = false;
-			var cp = k[ 0 ].toUpperCase();
+			var cp = k[ 0 ];
 			if ( ! lb && k === 'playback' ) {
 				lb = true;
 				vubar += '</div>'+ vulabel +'</div><div id="out">';
@@ -810,17 +801,17 @@ Buffer · Load
 					+'</li>';
 		} );
 		$( '#devices .entries.main' ).html( li );
-		[ 'enable_rate_adjust', 'stop_on_rate_change', 'enable_resampling' ].forEach( k => S[ k ] = DEV[ k ] );
 		var labels = '';
 		var values = '';
-		D.sampling.forEach( k => {
-			labels += util.key2label( k ) +'<br>';
-			values += DEV[ k ].toLocaleString() +'<br>';
+		D.main.forEach( k => {
+			if ( k in DEV ) {
+				labels += util.key2label( k ) +'<br>';
+				values += DEV[ k ].toLocaleString() +'<br>';
+			}
 		} );
 		var keys = [];
-		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
-		if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
-		if ( DEV.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
+		if ( S.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
+		if ( S.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
 		if ( keys.length ) {
 			labels += '<hr>';
 			values += '<hr>';
@@ -829,10 +820,22 @@ Buffer · Load
 				values += DEV[ k ] +'<br>';
 			} );
 		}
+		if ( S.resampler ) {
+			labels += 'Resampler<br>'
+			values += DEV.resampler.type +'<br>';
+			if ( 'profile' in DEV.resampler ) {
+				labels += 'Profile<br>'
+				values += DEV.resampler.profile +'<br>';
+			}
+			if ( S.capture_samplerate ) {
+				labels += 'Capture samplerate<br>'
+				values += DEV.capture_samplerate +'<br>';
+			}
+		}
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		switchSet();
-		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', DEV.enable_resampling && DEV.resampler_type === 'Synchronous' );
+		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
 	} //---------------------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
@@ -1304,19 +1307,19 @@ var setting  = {
 			}
 		} );
 	}
-	, devicesampling : () => {
-		var textlabel  = [ ...D.sampling ].slice( 1 );
+	, main          : () => {
+		var textlabel  = [ ...D.main ].slice( 1 );
 		textlabel.push( 'Other' );
 		var values     = {};
-		D.sampling.forEach( k => values[ k ] = DEV[ k ] );
+		D.main.forEach( k => values[ k ] = DEV[ k ] );
 		if ( ! V.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
 		values.other = values.samplerate;
 		var title = util.key2label( V.tab );
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, selectlabel  : 'Sample Rate'
-			, select       : V.samplerate
+			, selectlabel  : [ 'Sample Rate' ]
+			, select       : [ V.samplerate ]
 			, textlabel    : util.labels2array( textlabel )
 			, boxwidth     : 120
 			, order        : [ 'select', 'text' ]
@@ -1341,35 +1344,42 @@ var setting  = {
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
-	, resampling    : ( freeasync ) => {
-		var rateadjust  = DEV.enable_rate_adjust;
-		var samplerate  = DEV.capture_samplerate;
-		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
-		var select      = [ rateadjust ? V.sampletype.slice( 0, -1 ) : V.sampletype, V.samplerate ];
-		var numberlabel = [ 'Other' ];
-		var capturerate = V.samplerate.includes( samplerate ) ? samplerate : 'Other';
-		if ( freeasync ) {
-			selectlabel.push( 'interpolation', 'window' );
-			select.push( V.freeasync.interpolation, V.freeasync.window );
-			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
-			var f  = jsonClone( DEV.resampler_type.FreeAsync ) || {};
-			var values = {
-				  resampler_type     : 'FreeAsync'
-				, capture_samplerate : capturerate
-				, interpolation      : f.interpolation      || 'Linear'
-				, window             : f.window             || 'Blackman2'
-				, other              : capturerate
-				, sinc_len           : f.sinc_len           || 128
-				, oversampling_ratio : f.oversampling_ratio || 1024
-				, f_cutoff           : f.f_cutoff           || 0.925
-			}
+	, resampler     : ( type ) => {
+		var Dtype       = D.resampler[ type ];
+		if ( type === 'Synchronous' ) {
+			var selectlabel = [ 'type' ];
+			var select      = [ D.resampler.type ];
 		} else {
-			var values      = {
-				  resampler_type     : rateadjust && DEV.resampler_type === 'Synchronous' ? 'BalancedAsync' : DEV.resampler_type
-				, capture_samplerate : capturerate
-				, other              : capturerate
+			var selectlabel = [ 'type', ...Object.keys( Dtype.select ) ];
+			var select      = [ D.resampler.type, ...Object.values( Dtype.select ) ];
+		}
+		var numberlabel = false;
+		var custom      = false;
+		if ( type === 'AsyncSincCustom' ) {
+			custom      = true;
+			type        = 'AsyncSinc';
+			numberlabel = Object.keys( Dtype.number );
+			numberlabel = util.labels2array( numberlabel );
+		}
+		var values      = { type: type };
+		if ( custom ) values.profile = 'Custom';
+		if ( S.resampler ) {
+			DEV.resample.each( ( k, v ) => values[ k ] = v );
+			if ( ! S.capture_samplerate ) values.capture_samplerate = '';
+		} else {
+			selectlabel.forEach( k => values[ k ] = '' );
+			values.type = type;
+			values.capture_samplerate = '';
+			if ( custom ) {
+				values.profile = 'Custom';
+				$.each( Dtype.number, ( k, v ) => values[ k ] = v );
 			}
 		}
+		selectlabel.push( 'capture_samplerate' );
+		selectlabel     = util.labels2array( selectlabel );
+		var samplerate  = jsonClone( V.samplerate );
+		samplerate[ samplerate.length - 1 ] = '(matched)';
+		select.push( samplerate );
 		info( {
 			  icon         : V.tab
 			, title        : SW.title
@@ -1379,35 +1389,31 @@ var setting  = {
 			, boxwidth     : 160
 			, order        : [ 'select', 'number' ]
 			, values       : values
-			, checkchanged : DEV.enable_resampling
+			, checkblank   : custom
+			, checkchanged : S.resampler
 			, beforeshow   : () => {
-				var $trnumber = $( '.trnumber' );
-				var $trother = $trnumber.eq( 0 );
-				var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
-				indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
-				$trother.toggleClass( 'hide', values.capture_samplerate !== 'Other' );
-				$( '.trselect select' ).eq( 0 ).on( 'input', function() {
-					if ( $( this ).val() === 'FreeAsync' ) {
-						setting.resampling( 'freeasync' );
-					} else if ( $trnumber.length > 1 ) {
-						setting.resampling();
-					}
+				var $select = $( '.trselect select' );
+				$select.eq( 0 ).on( 'input', function() {
+					setting.resampler( $( this ).val() );
 				} );
-				$( '.trselect select' ).eq( 1 ).on( 'input', function() {
-					setting.hidetrinfo( $trother, $( this ).val() );
-				} );
+				if ( type === 'AsyncSinc' ) {
+					$select.eq( 1 ).on( 'input', function() {
+						setting.resampler( $( this ).val() === 'Custom' ? 'AsyncSincCustom' : 'AsyncSinc' );
+					} );
+				}
+				if ( custom ) $( '.trselect' ).slice( 2, 5 ).appendTo( $( '#infoContent tbody' ) );
 			}
 			, cancel       : switchCancel
 			, ok           : () => {
 				var val = infoVal();
-				if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
-				[ 'resampler_type', 'capture_samplerate' ].forEach( k => DEV[ k ] = val[ k ] );
-				if ( freeasync ) {
-					var v = {}
-					V.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
-					DEV.resampler_type = { FreeAsync: v }
-				}
-				setting.switchSave( 'enable_resampling' );
+				var samplerate = val.capture_samplerate;
+				DEV.capture_samplerate = samplerate === '(matched)' ? null : samplerate;
+				delete val.capture_samplerate;
+				if ( custom ) delete val.profile;
+				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = null;
+				DEV.resampler = val;
+				console.log(DEV.resampler)
+//				setting.switchSave( 'resampler' );
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
@@ -1419,7 +1425,7 @@ var setting  = {
 	, switchSave    : ( id, disable ) => {
 		if ( disable === 'disable' ) {
 			var msg   = 'Disable ...';
-			DEV[ id ] = false;
+			DEV[ id ] = null;
 		} else {
 			var msg   = DEV[ id ] ? 'Change ...' : 'Enable ...';
 			DEV[ id ] = true;
@@ -1611,44 +1617,48 @@ var util     = {
 			var cmd     = Object.keys( data )[ 0 ];
 			var value   = data[ cmd ].value;
 			var running = 'status' in S && S.status.GetState === 'Running';
-			var cl, cp, v;
+			var cp, v;
 			switch ( cmd ) {
-				case 'GetCaptureSignalPeak':
-				case 'GetCaptureSignalRms':
-				case 'GetPlaybackSignalPeak':
-				case 'GetPlaybackSignalRms':
-					cp  = cmd[ 3 ];
-					rms = cmd.slice( -1 ) === 's';
-					value.forEach( ( val, i ) => {
-						v = util.db2percent( val );
-						if ( rms ) {
-							$( '.rms.'+ cp + i ).css( 'width', v +'%' );
-						} else {
-							$( '.peak.'+ cp + i ).css( 'left', v +'%' );
-							if ( val > 0 ) {
-								if ( ! V.timeoutred ) return
-								
-								clearTimeout( V.timeoutred );
-								V.timeoutred = false;
-								$( '.peak, .clipped' )
-									.css( 'transition-duration', '0s' )
-									.addClass( 'red' );
+				case 'GetSignalLevels':
+					V.signal.forEach( k => {
+						cp = k[ 0 ];
+						value[ k ].forEach( ( val, i ) => {
+							v = util.db2percent( val );
+							if ( k.slice( -1 ) === 's' ) {
+								$( '.rms.'+ cp + i ).css( 'width', v +'%' );
 							} else {
-								if ( V.timeoutred ) return
-								
-								V.timeoutred = setTimeout( () => {
+								$( '.peak.'+ cp + i ).css( 'left', v +'%' );
+								if ( val > 0 ) {
+									if ( ! V.timeoutred ) return
+									
+									clearTimeout( V.timeoutred );
+									V.timeoutred = false;
 									$( '.peak, .clipped' )
-										.css( 'transition-duration', '' )
-										.removeClass( 'red' );
-								}, 200 );
+										.css( 'transition-duration', '0s' )
+										.addClass( 'red' );
+								} else {
+									if ( V.timeoutred ) return
+									
+									V.timeoutred = setTimeout( () => {
+										$( '.peak, .clipped' )
+											.css( 'transition-duration', '' )
+											.removeClass( 'red' );
+									}, 200 );
+								}
 							}
-						}
+						} );
 					} );
 					break;
 				case 'GetBufferLevel':
 				case 'GetCaptureRate':
 				case 'GetProcessingLoad':
 				case 'GetRateAdjust':
+					if ( S.state !== 'play' ) {
+						$( '#divstate .value a:not(.clipped)' ).text( '·' );
+						render.vuClear();
+						return
+					}
+					
 					$( '#divstate .'+ V.state[ cmd ] ).text( value.toLocaleString() );
 					break;
 				case 'GetClippedSamples':
@@ -1663,14 +1673,14 @@ var util     = {
 					}
 					break;
 				case 'GetState':
-					if ( ! ( 'status' in S || S.status.GetState === value ) ) return
+					if ( ! ( 'status' in S ) || S.status.GetState === value ) return
 					
 					S.status.GetState = value;
-					if ( 'intervalvu' in V ) return
+					if ( 'intervalvu' in V || S.state !== 'play' ) return
 					
 					$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
 					setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
-					V.intervalvu = setInterval( () => V.signal.forEach( k => V.wscamilla.send( '"'+ k +'"' ) ), 100 );
+					V.intervalvu = setInterval( () => V.wscamilla.send( '"GetSignalLevels"' ), 100 );
 					break;
 				// config
 				case 'GetConfigJson':
@@ -1679,7 +1689,9 @@ var util     = {
 					FIL = S.config.filters;
 					MIX = S.config.mixers;
 					PIP = S.config.pipeline;
-					[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
+					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
+						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
+					} );
 					render.page();
 					render.tab();
 					break;
@@ -1865,7 +1877,7 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	}
 } ).on( 'click', '.i-gear', function() {
 	if ( V.tab === 'devices' )  {
-		setting.devicesampling();
+		setting.main();
 		return
 	}
 	
@@ -2274,7 +2286,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		info( {
 			  icon    : V.tab
 			, title   : SW.title
-			, message : 'Resampling type is <wh>Synchronous</wh>'
+			, message : 'Resampler type is <wh>Synchronous</wh>'
 		} );
 		switchCancel();
 		return
@@ -2289,7 +2301,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 			  adjust_period       : DEV.adjust_period
 			, target_level        : DEV.target_level
 		}
-		, checkchanged : DEV.enable_rate_adjust
+		, checkchanged : S.enable_rate_adjust
 		, cancel       : switchCancel
 		, ok           : () => {
 			var val =  infoVal();
@@ -2305,7 +2317,7 @@ $( '#setting-stop_on_rate_change' ).on( 'click', function() {
 		, numberlabel  : 'Rate mearsure interval'
 		, boxwidth     : 65
 		, values       : DEV.rate_measure_interval
-		, checkchanged : DEV.stop_on_rate_change
+		, checkchanged : S.stop_on_rate_change
 		, cancel       : switchCancel
 		, ok           : () => {
 			DEV.rate_measure_interval = infoVal();
@@ -2313,8 +2325,8 @@ $( '#setting-stop_on_rate_change' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#setting-enable_resampling' ).on( 'click', function() {
-	setting.resampling( DEV.resampler_type === 'FreeAsync' );
+$( '#setting-resampler' ).on( 'click', function() {
+	setting.resampler( S.resampler ? DEV.resampler.type : 'AsyncSinc' );
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
 	V.tab = this.id.slice( 3 );

@@ -3,7 +3,7 @@ $id_data = [
 	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
 	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
-	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
+	, 'resampler'           => [ 'name' => 'Resampler',           'setting' => 'custom' ]
 ];
 $sliderrange     = i( 'gear btn' ).' Gain slider range';
 $contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
@@ -49,7 +49,7 @@ foreach( [ 'filters', 'mixers', 'pipeline', 'devices', 'config' ] as $id ) {
 <div id="divoptions" class="section">
 '.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ] ).'
-'.htmlSetting( [ 'id' => 'enable_resampling',   'returnhtml' => true ] ).'
+'.htmlSetting( [ 'id' => 'resampler',           'returnhtml' => true ] ).'
 </div>
 ';
 	} else if ( $id !== 'config' ) {
