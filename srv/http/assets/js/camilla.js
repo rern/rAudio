@@ -1436,10 +1436,8 @@ var setting  = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			V.wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			V.wscamilla.send( '"Reload"' );
 			setTimeout( util.save2file, 300 );
 		}, V.wscamilla ? 0 : 300 );
-		util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
 	, upload        : () => {
@@ -1681,7 +1679,6 @@ var util     = {
 					setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
 					V.intervalvu = setInterval( () => V.wscamilla.send( '"GetSignalLevels"' ), 100 );
 					break;
-				// config
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
 					DEV = S.config.devices;
