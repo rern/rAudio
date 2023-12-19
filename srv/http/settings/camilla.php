@@ -77,6 +77,16 @@ $htmlvolume = '
 <div style="clear:both"></div>
 </div>
 ';
+$htmllabels = '
+Buffer · Load
+<br>Sampling<span class="rateadjust"> · Adjust</span>
+<div class="divclipped hide">Clipped</div>
+';
+$htmlvalues = '
+<a class="buffer">·</a> · <a class="load">·</a>
+<br><a class="capture">·</a><span class="rateadjust"> · <a class="rate">·</a></span>
+<div class="divclipped hide"><a class="clipped">·</a></div>
+';
 
 //////////////////////////////////
 $head = [ 
@@ -94,7 +104,7 @@ $body = [
 	  '<pre id="codelog" class="hide"></pre>'
 	, htmlSectionStatus( 'vu' )
 	, $htmlvolume
-	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
+	, htmlSectionStatus( 'state', $htmllabels, $htmlvalues )
 	, [
 		  'id'    => 'configuration'
 		, 'status' => true
