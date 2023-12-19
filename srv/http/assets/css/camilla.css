@@ -1,6 +1,9 @@
 #divtabs {
 	position: relative;
 }
+#tabconfig {
+	display: none !important;
+}
 .tab {
 	margin-top: -16px;
 }
@@ -369,7 +372,7 @@ i.disabled,
 }
 .value .clipped::after {
 	content: "\f515";
-	line-height: 22px;
+	line-height: 24px;
 	color: var( --cg60 );
 }
 #divconfiguration {

@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1702394239' );
+	src         : url( '/assets/fonts/rern.woff2?v=1702708712' );
 }
 @font-face {
 	font-family : Lato;
@@ -157,6 +157,7 @@ i {
 .i-power::before           { content: '\F520' }
 .i-powerbutton::before     { content: '\F520' }
 .i-previous::before        { content: '\F501' }
+.i-processors::before      { content: '\F576' }
 .i-radiofrance::before     { content: '\F586' }
 .i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
 .i-radioparadise::after    { content: '\F594'; position: relative; }
@@ -429,7 +430,6 @@ codered  {
 	font-size: 13px;
 }
 
-.range,
 #infoRange {
 	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
 	--trackborder : 1px solid var( --cgd ) !important;
@@ -496,7 +496,7 @@ input[type=range]::-moz-range-track {
 	position: relative;
 	width: 40px !important;
 	line-height: 40px;
-	vertical-align: 14px !important;
+	vertical-align: 13px !important;
 	color: var( --cg60 ) !important;
 	cursor: pointer;
 }
