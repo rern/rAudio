@@ -1,21 +1,10 @@
 // variables //////////////////////////////////////////////////////////////////////////////
 V            = {
 	  clipped    : false
-	, format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
 	, graph      : { filters: {}, pipeline: {} }
 	, graphlist  : {}
 	, prevconfig : {}
-	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
-	, signal     : [ 'playback_peak', 'playback_rms', 'capture_peak', 'capture_rms' ]
 	, sortable   : {}
-	, state      : {
-		  GetBufferLevel    : 'buffer'
-		, GetCaptureRate    : 'capture'
-		, GetClippedSamples : 'clipped'
-		, GetProcessingLoad : 'load'
-		, GetRateAdjust     : 'rate'
-	}
-	, status     : [ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad', 'GetRateAdjust' ]
 	, tab        : 'filters'
 	, timeoutred : true
 	, wscamilla  : null
@@ -111,7 +100,12 @@ var F        = {
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
 var Dkv      = {
-	  tc     : {
+	  format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
+	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+	, type       : [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ]
+	, profile    : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
+	// param
+	, tc     : {
 		  number : { channels: 2 }
 	}
 	, tcsd   : {
@@ -123,9 +117,6 @@ var Dkv      = {
 		, number   : { channels: 2 }
 		, checkbox : { exclusive: false, loopback: false }
 	}
-	// resampler
-	, type    : [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ]
-	, profile : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
 }
 var D       = {
 	  main      : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
@@ -993,7 +984,15 @@ var setting  = {
 				$selecttype.on( 'input', function() {
 					var type    = $( this ).val();
 					var subtype = type in F.subtype ? F.subtype[ type ][ 0 ] : '';
-					setting.filter( type, subtype, '', infoVal().name );
+					if ( type === 'Conv' && ! S.lscoeffs.length ) {
+						info( {
+							  icon    : V.tab
+							, title   : title
+							, message : 'FIR files not available.'
+						} );
+					} else {
+						setting.filter( type, subtype, '', infoVal().name );
+					}
 				} );
 				if ( $select.length > 1 ) {
 					$select.eq( 1 ).on( 'input', function() {
@@ -1238,7 +1237,7 @@ var setting  = {
 			k           = Object.keys( kv );
 			k.forEach( key => {
 				if ( key === 'format' ) {
-					var format = dev === 'capture' ? V.format : S.format;
+					var format = dev === 'capture' ? Dkv.format : S.format;
 					s          = {};
 					format.forEach( k => {
 						var label = k
@@ -1327,14 +1326,14 @@ var setting  = {
 		textlabel.push( 'Other' );
 		var values     = {};
 		D.main.forEach( k => values[ k ] = DEV[ k ] );
-		if ( ! V.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
+		if ( ! Dkv.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
 		values.other = values.samplerate;
 		var title = util.key2label( V.tab );
 		info( {
 			  icon         : V.tab
 			, title        : title
 			, selectlabel  : [ 'Sample Rate' ]
-			, select       : [ V.samplerate ]
+			, select       : [ Dkv.samplerate ]
 			, textlabel    : util.labels2array( textlabel )
 			, boxwidth     : 120
 			, order        : [ 'select', 'text' ]
@@ -1580,12 +1579,24 @@ var util     = {
 	, webSocket    : () => {
 		if ( V.wscamilla && V.wscamilla.readyState < 2 ) return
 		
+		var cmd_el            = {
+			  GetBufferLevel    : 'buffer'
+			, GetCaptureRate    : 'capture'
+			, GetClippedSamples : 'clipped'
+			, GetProcessingLoad : 'load'
+			, GetRateAdjust     : 'rate'
+		}
 		V.wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		V.wscamilla.onready   = () => { // custom
 			util.wsGetConfig();
 			S.status         = { GetState: '' }
 			V.intervalstatus = setInterval( () => {
-				if ( ! V.local ) V.status.forEach( k => V.wscamilla.send( '"'+ k +'"' ) );
+				if ( V.local ) return
+				
+				[ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ].forEach( k => {
+					V.wscamilla.send( '"'+ k +'"' );
+				} );
+				if ( S.enable_rate_adjust ) V.wscamilla.send( '"GetRateAdjust"' );
 			}, 1000 );
 		}
 		V.wscamilla.onopen    = () => {
@@ -1605,7 +1616,7 @@ var util     = {
 			var cp, v;
 			switch ( cmd ) {
 				case 'GetSignalLevels':
-					V.signal.forEach( k => {
+					[ 'playback_peak', 'playback_rms', 'capture_peak', 'capture_rms' ].forEach( k => {
 						cp = k[ 0 ];
 						value[ k ].forEach( ( val, i ) => {
 							v = util.db2percent( val );
@@ -1644,7 +1655,7 @@ var util     = {
 						return
 					}
 					
-					$( '#divstate .'+ V.state[ cmd ] ).text( value.toLocaleString() );
+					$( '#divstate .'+ cmd_el[ cmd ] ).text( value.toLocaleString() );
 					break;
 				case 'GetClippedSamples':
 					if ( V.local ) return
