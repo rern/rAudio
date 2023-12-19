@@ -174,8 +174,8 @@ var D       = {
 				, interpolation : [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ]
 				, window        : [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ]
 			}
-			, param : { type: 'AsyncSinc', profile: 'Custom', interpolation: 'Cubic', window: 'Hann2', sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9, capture_samplerate: '' }
 			, number  : [ 'sinc_len',' oversampling_factor', 'f_cutoff', 'capture_samplerate' ]
+			, param : { type: 'AsyncSinc', profile: 'Custom', interpolation: 'Cubic', window: 'Hann2', sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9, capture_samplerate: '' }
 		}
 		, AsyncPoly       : {
 			  select : {
