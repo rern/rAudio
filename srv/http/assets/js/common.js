@@ -202,9 +202,9 @@ function highlightJSON( json ) {
 	var json = Object.keys( json )
 					.sort()
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
-	json = '\n\n'+ JSON.stringify( json, null, '\t' );
-	json = json.replace( /</g, '&lt;' );
-	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) {
+	json = JSON.stringify( json, null, '\t' )
+			.replace( /</g, '&lt;' )
+			.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) { // source: https://stackoverflow.com/a/7220510
 		if ( /^"/.test( match ) ) {              // string
 			if ( /:$/.test( match ) ) { // key
 				return match
@@ -220,7 +220,8 @@ function highlightJSON( json ) {
 		} else if ( /[{}\[\]]/.test( match ) ) { // braces
 			return '<pur>'+ match +'</pur>'
 		}
-	} ); // source: https://stackoverflow.com/a/7220510
+	} );
+	return '\n\n'+ json.replace( /: null,/g, ': <red>null</red>,' );
 }
 function ico( cls, id ) {
 	return '<i '+ ( id ? 'id="'+ id +'" ' : '' ) +'class="i-'+ cls +'"></i>'

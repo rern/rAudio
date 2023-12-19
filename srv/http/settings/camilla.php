@@ -37,7 +37,7 @@ EOF
 EOF
 ];
 $htmltabs = '<div id="divtabs">';
-foreach( [ 'filters', 'mixers', 'pipeline', 'devices', 'config' ] as $id ) {
+foreach( [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ] as $id ) {
 	$htmltabs.= '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$help[ $id ].'</div>';
 	if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
 	$htmltabs.= '<ul class="entries main"></ul>';
