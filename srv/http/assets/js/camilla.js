@@ -35,7 +35,7 @@ var F        = {
 		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
 						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
 		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
-		, Conv        : [ 'Raw', 'Wav', 'Values' ]
+		, Conv        : [ 'Dummy', 'Raw', 'Wav', 'Values' ]
 		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
 	}
 	// parameters
@@ -63,6 +63,9 @@ var F        = {
 	}
 	, BiquadCombo       : {
 		number: { order: 2, freq: 1000 }
+	}
+	, Dummy             : {
+		number: { length: 65536 }
 	}
 	, Raw               : { 
 		  select : { filename: '' }
@@ -980,23 +983,25 @@ var setting  = {
 				var $select     = $( '#infoContent select' );
 				var $selecttype = $select.eq( 0 );
 				$selecttype.on( 'input', function() {
-					var type    = $( this ).val();
-					var subtype = type in F.subtype ? F.subtype[ type ][ 0 ] : '';
-					if ( type === 'Conv' && ! S.lscoeffs.length ) {
-						info( {
-							  icon    : V.tab
-							, title   : title
-							, message : 'FIR files not available.'
-						} );
-					} else {
-						setting.filter( type, subtype, '', infoVal().name );
-					}
+					var typenew    = $( this ).val();
+					var subtypenew = typenew in F.subtype ? F.subtype[ typenew ][ 0 ] : '';
+					setting.filter( typenew, subtypenew, '', infoVal().name );
 				} );
 				if ( $select.length > 1 ) {
 					$select.eq( 1 ).on( 'input', function() {
-						var type    = $selecttype.val();
-						var subtype = $( this ).val();
-						setting.filter( type, subtype, '', infoVal().name );
+						var typenew    = $selecttype.val();
+						var subtypenew = $( this ).val();
+						var namenew    = infoVal().name;
+						if ( typenew === 'Conv' && [ 'Raw', 'Wav' ].includes( subtypenew ) && ! S.lscoeffs.length ) {
+							info( {
+								  icon    : V.tab
+								, title   : title
+								, message : 'Filter files not available.'
+								, ok      : () => setting.filter( 'Conv', subtype, '', namenew )
+							} );
+						} else {
+							setting.filter( typenew, subtypenew, '', namenew );
+						}
 					} );
 				}
 				if ( radio ) {
