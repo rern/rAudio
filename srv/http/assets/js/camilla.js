@@ -654,7 +654,7 @@ var render   = {
 		setTimeout( () => {
 			$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 			$( '.rms' ).css( 'width', 0 );
-			$( '#divstate .value a:not(.clipped)' ).text( ' · ' );
+			$( '#divstate .value a:not(.clipped)' ).text( '·' );
 		}, 300 );
 	}
 	, volume      : () => {
