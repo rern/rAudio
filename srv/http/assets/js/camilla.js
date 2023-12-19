@@ -1660,7 +1660,6 @@ var util     = {
 		V.wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		V.wscamilla.onready   = () => { // custom
 			util.wsGetConfig();
-			S.status         = { GetState: '' }
 			V.intervalstatus = setInterval( () => {
 				if ( V.local ) return
 				
@@ -1683,7 +1682,6 @@ var util     = {
 			var data    = JSON.parse( response.data );
 			var cmd     = Object.keys( data )[ 0 ];
 			var value   = data[ cmd ].value;
-			var running = 'status' in S && S.status.GetState === 'Running';
 			var cp, v;
 			switch ( cmd ) {
 				case 'GetSignalLevels':
@@ -1740,9 +1738,6 @@ var util     = {
 					}
 					break;
 				case 'GetState':
-					if ( ! ( 'status' in S ) || S.status.GetState === value ) return
-					
-					S.status.GetState = value;
 					if ( 'intervalvu' in V || S.state !== 'play' ) return
 					
 					$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
