@@ -110,7 +110,7 @@ var F        = {
 	}
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
-var CPkv     = {
+var Dkv      = {
 	  tc     : {
 		  number : { channels: 2 }
 	}
@@ -123,20 +123,23 @@ var CPkv     = {
 		, number   : { channels: 2 }
 		, checkbox : { exclusive: false, loopback: false }
 	}
+	// resampler
+	, type    : [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ]
+	, profile : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
 }
 var D       = {
 	  main      : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
 	// parameters - capture / playback
 	, capture   : {
-		  Alsa      : CPkv.tcsd
+		  Alsa      : Dkv.tcsd
 		, CoreAudio : {
 			  select : { device: '', format: '' }
 			, number   : { channels: 2 }
 			, checkbox : { change_format: false }
 		}
-		, Pulse     : CPkv.tcsd
-		, Wasapi    : CPkv.wasapi
-		, Jack      : CPkv.tc
+		, Pulse     : Dkv.tcsd
+		, Wasapi    : Dkv.wasapi
+		, Jack      : Dkv.tc
 		, Stdin     : {
 			  select : { format: '' }
 			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
@@ -148,15 +151,15 @@ var D       = {
 		}
 	}
 	, playback  : {
-		  Alsa      : CPkv.tcsd
+		  Alsa      : Dkv.tcsd
 		, CoreAudio : {
 			  select   : { device: '', format: '' }
 			, number   : { channels: 2 }
 			, checkbox : { exclusive: false, change_format: false }
 		}
-		, Pulse     : CPkv.tcsd
-		, Wasapi    : CPkv.wasapi
-		, Jack      : CPkv.tc
+		, Pulse     : Dkv.tcsd
+		, Wasapi    : Dkv.wasapi
+		, Jack      : Dkv.tc
 		, Stdout    : {
 			  select : { format: '' }
 			, number : { channels: 2 }
@@ -167,24 +170,36 @@ var D       = {
 		}
 	}
 	, resampler : {
-		  type            : [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ]
-		, AsyncSinc       : {
+		  AsyncSinc       : {
 			  select  : {
-				  profile       : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
+				  type    : Dkv.type
+				, profile : Dkv.profile
 			}
+			, number : [ 'capture_samplerate' ]
+			, param  : { type: 'AsyncSinc', profile: 'Balanced', capture_samplerate: '' }
 		}
 		, AsyncSincCustom : {
 			  select : {
-				  profile       : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
+				  type          : Dkv.type
+				, profile       : Dkv.profile
 				, interpolation : [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ]
 				, window        : [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ]
 			}
-			, number : { sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9 }
+			, param : { type: 'AsyncSinc', profile: 'Custom', interpolation: 'Cubic', window: 'Hann2', sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9, capture_samplerate: '' }
+			, number  : [ 'sinc_len',' oversampling_factor', 'f_cutoff', 'capture_samplerate' ]
 		}
 		, AsyncPoly       : {
-			  select   : {
-				  interpolation : [ 'Linear', 'Cubic', 'Quintic', 'Septic' ]
+			  select : {
+				  type          : Dkv.type
+				, interpolation : [ 'Linear', 'Cubic', 'Quintic', 'Septic' ]
 			}
+			, number : [ 'capture_samplerate' ]
+			, param  : { type: 'AsyncSinc', interpolation: 'Cubic', capture_samplerate: '' }
+		}
+		, Synchronous    : {
+			  select : { type: Dkv.type }
+			, number : [ 'capture_samplerate' ]
+			, param  : { type: 'Synchronous', capture_samplerate: '' }
 		}
 	}
 }
@@ -1344,73 +1359,46 @@ var setting  = {
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
-	, resampler     : ( type ) => {
-		var Dtype       = D.resampler[ type ];
-		if ( type === 'Synchronous' ) {
-			var selectlabel = [ 'type' ];
-			var select      = [ D.resampler.type ];
-		} else {
-			var selectlabel = [ 'type', ...Object.keys( Dtype.select ) ];
-			var select      = [ D.resampler.type, ...Object.values( Dtype.select ) ];
-		}
-		var numberlabel = false;
-		var custom      = false;
-		if ( type === 'AsyncSincCustom' ) {
-			custom      = true;
-			type        = 'AsyncSinc';
-			numberlabel = Object.keys( Dtype.number );
-			numberlabel = util.labels2array( numberlabel );
-		}
-		var values      = { type: type };
-		if ( custom ) values.profile = 'Custom';
-		if ( S.resampler ) {
-			DEV.resample.each( ( k, v ) => values[ k ] = v );
-			if ( ! S.capture_samplerate ) values.capture_samplerate = '';
-		} else {
-			selectlabel.forEach( k => values[ k ] = '' );
-			values.type = type;
-			values.capture_samplerate = '';
-			if ( custom ) {
-				values.profile = 'Custom';
-				$.each( Dtype.number, ( k, v ) => values[ k ] = v );
-			}
-		}
-		selectlabel.push( 'capture_samplerate' );
-		selectlabel     = util.labels2array( selectlabel );
-		var samplerate  = jsonClone( V.samplerate );
-		samplerate[ samplerate.length - 1 ] = '(matched)';
-		select.push( samplerate );
+	, resampler     : ( type, profile ) => {
+		var Dtype  = D.resampler[ type ];
+		var values = Dtype.param;
+		if ( S.resampler ) DEV.resample.each( ( k, v ) => values[ k ] = v );
+		values.capture_samplerate = DEV.capture_samplerate || DEV.samplerate;
+		if ( profile ) values.profile = profile;
 		info( {
 			  icon         : V.tab
 			, title        : SW.title
-			, selectlabel  : selectlabel
-			, select       : select
-			, numberlabel  : numberlabel
+			, selectlabel  : util.labels2array( Object.keys( Dtype.select ) )
+			, select       : Object.values( Dtype.select )
+			, numberlabel  : util.labels2array( Dtype.number )
 			, boxwidth     : 160
 			, order        : [ 'select', 'number' ]
 			, values       : values
-			, checkblank   : custom
+			, checkblank   : true
 			, checkchanged : S.resampler
 			, beforeshow   : () => {
 				var $select = $( '.trselect select' );
 				$select.eq( 0 ).on( 'input', function() {
 					setting.resampler( $( this ).val() );
 				} );
-				if ( type === 'AsyncSinc' ) {
+				if ( type.slice( 0, 9 ) === 'AsyncSinc' ) {
 					$select.eq( 1 ).on( 'input', function() {
-						setting.resampler( $( this ).val() === 'Custom' ? 'AsyncSincCustom' : 'AsyncSinc' );
+						var profile = $( this ).val();
+						setting.resampler( profile === 'Custom' ? 'AsyncSincCustom' : 'AsyncSinc', profile );
 					} );
+					if ( type === 'AsyncSincCustom' ) {
+						var $tbody = $( '#infoContent tbody' );
+						$( '.trselect' ).slice( 2, 4 ).appendTo( $tbody );
+						$( '.trnumber' ).last().appendTo( $tbody );
+					}
 				}
-				if ( custom ) $( '.trselect' ).slice( 2, 5 ).appendTo( $( '#infoContent tbody' ) );
 			}
 			, cancel       : switchCancel
 			, ok           : () => {
 				var val = infoVal();
-				var samplerate = val.capture_samplerate;
-				DEV.capture_samplerate = samplerate === '(matched)' ? null : samplerate;
+				DEV.capture_samplerate = val.capture_samplerate === DEV.samplerate ? null : val.capture_samplerate;
 				delete val.capture_samplerate;
-				if ( custom ) delete val.profile;
-				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = null;
+				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = false;
 				DEV.resampler = val;
 				setting.switchSave( 'resampler' );
 			}
