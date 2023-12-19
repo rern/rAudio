@@ -100,8 +100,7 @@ var F        = {
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
 var Dkv      = {
-	  format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
-	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
 	, type       : [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ]
 	, profile    : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
 	// param
@@ -119,9 +118,8 @@ var Dkv      = {
 	}
 }
 var D       = {
-	  main      : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
 	// parameters - capture / playback
-	, capture   : {
+	  capture   : {
 		  Alsa      : Dkv.tcsd
 		, CoreAudio : {
 			  select : { device: '', format: '' }
@@ -809,7 +807,7 @@ Buffer · Load
 		$( '#devices .entries.main' ).html( li );
 		var labels = '';
 		var values = '';
-		D.main.forEach( k => {
+		Dkv.main.forEach( k => {
 			if ( k in DEV ) {
 				labels += util.key2label( k ) +'<br>';
 				values += DEV[ k ].toLocaleString() +'<br>';
@@ -1237,7 +1235,7 @@ var setting  = {
 			k           = Object.keys( kv );
 			k.forEach( key => {
 				if ( key === 'format' ) {
-					var format = dev === 'capture' ? Dkv.format : S.format;
+					var format = dev === 'playback' ? S.format : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ];
 					s          = {};
 					format.forEach( k => {
 						var label = k
@@ -1322,18 +1320,19 @@ var setting  = {
 		} );
 	}
 	, main          : () => {
-		var textlabel  = [ ...D.main ].slice( 1 );
+		var textlabel  = [ ...Dkv.main ].slice( 1 );
 		textlabel.push( 'Other' );
 		var values     = {};
-		D.main.forEach( k => values[ k ] = DEV[ k ] );
-		if ( ! Dkv.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
+		Dkv.main.forEach( k => values[ k ] = DEV[ k ] );
+		var samplerate = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ];
+		if ( ! samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
 		values.other = values.samplerate;
 		var title = util.key2label( V.tab );
 		info( {
 			  icon         : V.tab
 			, title        : title
 			, selectlabel  : [ 'Sample Rate' ]
-			, select       : [ Dkv.samplerate ]
+			, select       : [ samplerate ]
 			, textlabel    : util.labels2array( textlabel )
 			, boxwidth     : 120
 			, order        : [ 'select', 'text' ]
