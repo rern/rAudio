@@ -597,11 +597,11 @@ var render   = {
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 		$( '#divstate .label' ).html( `
 Buffer · Load
-<br>Sampling · Adjust
+<br>Sampling<span class="rateadjust"> · Adjust</span>
 <div class="divclipped hide">Clipped</div>` );
 		$( '#divstate .value' ).html( `
 <a class="buffer">·</a> · <a class="load">·</a>
-<br><a class="capture">·</a> · <a class="rate">·</a>
+<br><a class="capture">·</a><span class="rateadjust"> · <a class="rate">·</a></span>
 <div class="divclipped hide"><a class="clipped">·</a></div>` );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
@@ -615,6 +615,7 @@ Buffer · Load
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
+		$( '.rateadjust' ).toggleClass( 'hide', ! S.enable_rate_adjust );
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
