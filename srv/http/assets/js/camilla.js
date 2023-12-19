@@ -651,8 +651,11 @@ var render   = {
 			
 		clearInterval( V.intervalvu );
 		delete V.intervalvu;
-		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
-		$( '.rms' ).css( 'width', 0 );
+		setTimeout( () => {
+			$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
+			$( '.rms' ).css( 'width', 0 );
+			$( '#divstate .value a:not(.clipped)' ).text( ' · ' );
+		}, 300 );
 	}
 	, volume      : () => {
 		$( '#volume-text' )
@@ -1676,7 +1679,6 @@ var util     = {
 			render.vuClear();
 			clearInterval( V.intervalstatus );
 			util.save2file();
-			$( '#divstate .value a' ).text( '·' );
 		}
 		V.wscamilla.onmessage = response => {
 			var data    = JSON.parse( response.data );
@@ -1719,7 +1721,6 @@ var util     = {
 				case 'GetProcessingLoad':
 				case 'GetRateAdjust':
 					if ( S.state !== 'play' ) {
-						$( '#divstate .value a:not(.clipped)' ).text( '·' );
 						render.vuClear();
 						return
 					}
