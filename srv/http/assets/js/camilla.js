@@ -420,19 +420,19 @@ var graph    = {
 		V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
 		var filterdelay = false;
 		if ( filters ) {
-			filterdelay = C.FIL[ val ].type === 'Delay';
-			var delay0  = ! filterdelay && 'gain' in C.FIL[ val ].parameters && C.FIL[ val ].parameters.gain === 0;
+			filterdelay = FIL[ val ].type === 'Delay';
+			var delay0  = ! filterdelay && 'gain' in FIL[ val ].parameters && FIL[ val ].parameters.gain === 0;
 		} else {
 			var pipelinedelay = false;
 			var delay0        = true;
-			C.PIP[ val ].names.forEach( n => {
-				var filter = C.FIL[ n ];
+			PIP[ val ].names.forEach( n => {
+				var filter = FIL[ n ];
 				if ( ! pipelinedelay && filter.type === 'Delay' ) pipelinedelay = true;
 				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
 			} );
 		}
 		notify( V.tab, util.key2label( V.tab ), 'Plot ...' );
-		var cmd = filters ? " '"+ JSON.stringify( C.FIL[ val ] ) +"'" : " '"+ JSON.stringify( S.config ) +"' "+ val;
+		var cmd = filters ? " '"+ JSON.stringify( FIL[ val ] ) +"'" : " '"+ JSON.stringify( S.config ) +"' "+ val;
 		bash( [ 'settings/camilla.py', V.tab + cmd ], data => { // groupdelay = delay, magnitude = gain
 			var impulse   = 'impulse' in data;
 			if ( filterdelay ) {
@@ -588,7 +588,7 @@ var render   = {
 				lb = true;
 				vubar += '</div>'+ vulabel +'</div><div id="out">';
 			}
-			for ( i = 0; i < C.DEV[ k ].channels; i++ ) {
+			for ( i = 0; i < DEV[ k ].channels; i++ ) {
 				vubar += '<div class="vubar"></div>'
 						+'<div class="vubar peak '+ cp + i +' "></div>'
 						+'<div class="vubar rms '+ cp + i +' "></div>';
@@ -603,7 +603,7 @@ Buffer · Load
 <a class="buffer">·</a> · <a class="load">·</a>
 <br><a class="capture">·</a> · <a class="rate">·</a>
 <div class="divclipped hide"><a class="clipped">·</a></div>` );
-		var ch   = C.DEV.capture.channels > C.DEV.playback.channels ? C.DEV.capture.channels : C.DEV.playback.channels;
+		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
@@ -620,7 +620,7 @@ Buffer · Load
 		var title = util.key2label( V.tab );
 		if ( V.tab === 'filters' ) {
 			title += ico( 'folder-filter' );
-		} else if ( V.tab === 'pipeline' && C.PIP.length ) {
+		} else if ( V.tab === 'pipeline' && PIP.length ) {
 			title += ico( 'flowchart' );
 		} else if ( V.tab === 'config' ) {
 			title += 'uration';
@@ -698,19 +698,6 @@ Buffer · Load
 		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		render.toggle( li, 'sub' );
 	} //---------------------------------------------------------------------------------------------
-	, processors  : () => {
-		if ( ! S.config.processors ) return
-		
-		var data = render.dataSort( 'processors' );
-		var li = '';
-		$.each( data, ( k, v ) => {
-			li+= '<li data-name="'+ k +'">'+ ico( 'processors liicon edit' )
-				+'<div class="li1">'+ k +'</div>'
-				+'<div class="li2">'+ v.type +' · '+ render.json2string( param )+'</div>'
-				+'</li>'
-		} );
-//		render.toggle( li );
-	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
 		var data = render.dataSort( 'mixers' );
 		var li = '';
@@ -724,10 +711,10 @@ Buffer · Load
 				+'</li>'
 	}
 	, mixersSub   : name => {
-		var data      = C.MIX[ name ].mapping;
+		var data      = MIX[ name ].mapping;
 		var chmapping = data.length;
-		var chin      = C.DEV.capture.channels;
-		var chout     = C.DEV.playback.channels;
+		var chin      = DEV.capture.channels;
+		var chout     = DEV.playback.channels;
 		var iconadd   = chout === chmapping ? '' : ico( 'add' );
 		var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + iconadd + ico( 'back' ) +'</li>';
 		var optin     = htmlOption( chin );
@@ -757,10 +744,25 @@ Buffer · Load
 		render.toggle( li, 'sub' );
 		selectSet( $( '#mixers select' ) );
 	} //---------------------------------------------------------------------------------------------
+	, processors  : () => {
+		if ( ! PRO ) return
+		
+		var data = render.dataSort( 'processors' );
+		var li = '';
+		$.each( data, ( k, v ) => {
+			var param = jsonClone( v.parameters );
+			[ 'channels', 'monitor_channels', 'process_channels' ].forEach( k => delete param[ k ] );
+			li+= '<li data-name="'+ k +'">'+ ico( 'processors liicon edit' )
+				+'<div class="li1">'+ k +'</div>'
+				+'<div class="li2">'+ v.type +' · '+ render.json2string( param )+'</div>'
+				+'</li>'
+		} );
+		render.toggle( li );
+	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
 		graph.list();
 		var li = '';
-		C.PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
+		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		render.toggle( li );
 		render.sortable( 'main' );
 		graph.refresh();
@@ -778,7 +780,7 @@ Buffer · Load
 		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline liicon '+ graph ) + each +'</li>'
 	}
 	, pipelineSub : index => {
-		var data = C.PIP[ index ];
+		var data = PIP[ index ];
 		var li   = '<li class="lihead main" data-index="'+ index +'">'+ ico( 'pipeline' ) +'Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
 		data.names.forEach( ( name, i ) => li += render.pipeFilter( name, i ) );
 		render.toggle( li, 'sub' );
@@ -787,7 +789,7 @@ Buffer · Load
 	, pipeFilter  : ( name, i ) => {
 		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon' )
 			  +'<div class="li1">'+ name +'</div>'
-			  +'<div class="li2">'+ C.FIL[ name ].type +' · '+ render.json2string( C.FIL[ name ].parameters ) +'</div>'
+			  +'<div class="li2">'+ FIL[ name ].type +' · '+ render.json2string( FIL[ name ].parameters ) +'</div>'
 			  +'</li>'
 	}
 	, sortable    : el => {
@@ -799,10 +801,10 @@ Buffer · Load
 			, onUpdate   : function ( e ) {
 				var ai      = e.oldIndex;
 				var bi      = e.newIndex;
-				var pip     = C.PIP;
+				var pip     = PIP;
 				var $lihead = $( '#pipeline .lihead' );
 				if ( $lihead.length ) {
-					pip = C.PIP[ $lihead.data( 'index' ) ].names;
+					pip = PIP[ $lihead.data( 'index' ) ].names;
 					ai--;
 					bi--;
 				}
@@ -817,7 +819,7 @@ Buffer · Load
 	, devices     : () => {
 		var li  = '';
 		[ 'playback', 'capture' ].forEach( d => {
-			var dev = C.DEV[ d ];
+			var dev = DEV[ d ];
 			var data = jsonClone( dev );
 			[ 'device', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
@@ -830,9 +832,9 @@ Buffer · Load
 		var labels = '';
 		var values = '';
 		Dkv.main.forEach( k => {
-			if ( k in C.DEV ) {
+			if ( k in DEV ) {
 				labels += util.key2label( k ) +'<br>';
-				values += C.DEV[ k ].toLocaleString() +'<br>';
+				values += DEV[ k ].toLocaleString() +'<br>';
 			}
 		} );
 		var keys = [];
@@ -843,25 +845,25 @@ Buffer · Load
 			values += '<hr>';
 			keys.forEach( k => {
 				labels += util.key2label( k ) +'<br>';
-				values += C.DEV[ k ] +'<br>';
+				values += DEV[ k ] +'<br>';
 			} );
 		}
 		if ( S.resampler ) {
 			labels += 'Resampler<br>'
-			values += C.DEV.resampler.type +'<br>';
-			if ( 'profile' in C.DEV.resampler ) {
+			values += DEV.resampler.type +'<br>';
+			if ( 'profile' in DEV.resampler ) {
 				labels += 'Profile<br>'
-				values += C.DEV.resampler.profile +'<br>';
+				values += DEV.resampler.profile +'<br>';
 			}
 			if ( S.capture_samplerate ) {
 				labels += 'Capture samplerate<br>'
-				values += C.DEV.capture_samplerate +'<br>';
+				values += DEV.capture_samplerate +'<br>';
 			}
 		}
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		switchSet();
-		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', S.resampler && C.DEV.resampler.type === 'Synchronous' );
+		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
 	} //---------------------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
@@ -903,7 +905,7 @@ var setting  = {
 	  filter        : ( type, subtype, name, newname ) => {
 		if ( name ) {
 			var ekv = { type : type }
-			$.each( C.FIL[ name ].parameters, ( k, v ) => ekv[ k === 'type' ? 'subtype' : k ] = v );
+			$.each( FIL[ name ].parameters, ( k, v ) => ekv[ k === 'type' ? 'subtype' : k ] = v );
 		}
 		// select
 		var selectlabel = [ 'type' ];
@@ -1053,10 +1055,10 @@ var setting  = {
 					param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
 					if ( subtype === 'Raw' ) param.format = 'TEXT';
 				}
-				C.FIL[ newname ] = { type: type, parameters : param }
+				FIL[ newname ] = { type: type, parameters : param }
 				if ( name !== newname ) {
-					delete C.FIL[ name ];
-					C.PIP.forEach( p => {
+					delete FIL[ name ];
+					PIP.forEach( p => {
 						if ( p.type === 'Filter' ) {
 							p.names.forEach( ( f, i ) => {
 								if ( f === name ) p.names[ i ] = newname;
@@ -1066,43 +1068,6 @@ var setting  = {
 				}
 				setting.save( title, name ? 'Change ...' : 'Save ...' );
 				render.filters();
-			}
-		} );
-	} //---------------------------------------------------------------------------------------------
-	, processor     : name => {
-		var title  = name ? 'Processor' : 'Add Processor'
-		var param  = [ 'select', 'number', 'checkbox', 'text' ];
-		var label  = {};
-		var values = {}
-		param.forEach( k => label[ k ] = util.labels2array( Object.keys( P[ k ] ) ) );
-		info( {
-			  icon         : V.tab
-			, title        : title
-			, selectlabel  : label.select
-			, select       : Object.values( P.select )
-			, numberlabel  : label.number
-			, textlabel    : label.text
-			, checkbox     : label.checkbox
-			, order        : param
-			, boxwidth     : 150
-			, values       : C.PRO || P.param
-			, checkblank   : true
-			, checkchanged : name
-			, beforeshow   : () => {
-				var $tr = $( '#infoContent tr' );
-				$tr.first().before( $tr.last() )
-			}
-			, ok           : () => {
-				var val = infoVal();
-				var v   = {};
-				[ 'name', 'type' ].forEach( k => {
-					v[ k ] = val[ k ];
-					delete val[ k ];
-				} );
-				[ 'monitor_channels', 'process_channels' ].forEach( k => val[ k ] = util.list2array( val[ k ] ) );
-				if ( ! C.PRO ) C.PRO = {}
-				C.PRO[ v.name ] = { type: v.type, parameters: val }
-				console.log( C.PRO )
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
@@ -1118,7 +1083,7 @@ var setting  = {
 			, checkchanged : name
 			, ok           : () => {
 				var newname = infoVal();
-				if ( newname in C.MIX ) {
+				if ( newname in MIX ) {
 					info( {
 						  icon    : V.tab
 						, title   : title
@@ -1129,16 +1094,16 @@ var setting  = {
 				}
 				
 				if ( name ) {
-					C.MIX[ newname ] = C.MIX[ name ];
-					delete C.MIX[ name ];
-					C.PIP.forEach( p => {
+					MIX[ newname ] = MIX[ name ];
+					delete MIX[ name ];
+					PIP.forEach( p => {
 						if ( p.type === 'Mixer' && p.name === name ) p.name = newname;
 					} );
 				} else {
-					C.MIX[ newname ] = {
+					MIX[ newname ] = {
 						  channels : {
-							  in  : C.DEV.capture.channels
-							, out : C.DEV.playback.channels
+							  in  : DEV.capture.channels
+							, out : DEV.playback.channels
 						}
 						, mapping  : [ {
 							  dest    : 0
@@ -1159,8 +1124,8 @@ var setting  = {
 	}
 	, mixerMap      : ( name, index ) => {
 		var option = {
-			  dest   : htmlOption( C.DEV.playback.channels )
-			, source : htmlOption( C.DEV.capture.channels )
+			  dest   : htmlOption( DEV.playback.channels )
+			, source : htmlOption( DEV.capture.channels )
 		}
 		var trdest   = `
 	<tr class="trsource">
@@ -1186,7 +1151,7 @@ var setting  = {
 				, title        : title
 				, content      : '<table class="tablemapping">'+ trdest + trsource +'</table>'
 				, contentcssno : true
-				, values       : [ C.MIX[ name ].mapping.length, 0, 0, false, false ]
+				, values       : [ MIX[ name ].mapping.length, 0, 0, false, false ]
 				, checkblank   : true
 				, ok           : () => {
 					var s = {}
@@ -1199,7 +1164,7 @@ var setting  = {
 						, mute    : false
 						, sources : [ s ]
 					}
-					C.MIX[ name ].mapping.push( mapping );
+					MIX[ name ].mapping.push( mapping );
 					setting.save( title, 'Save ...' );
 					render.mixersSub( name );
 				}
@@ -1219,22 +1184,68 @@ var setting  = {
 						var $this = $( el )
 						s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
 					} );
-					C.MIX[ name ].mapping[ index ].sources.push( s );
+					MIX[ name ].mapping[ index ].sources.push( s );
 					setting.save( title, 'Save ...' );
 					render.mixersSub( name );
 				}
 			} );
 		}
 	} //---------------------------------------------------------------------------------------------
+	, processor     : name => {
+		var title  = name ? 'Processor' : 'Add Processor'
+		var param  = [ 'select', 'number', 'checkbox', 'text' ];
+		var label  = {};
+		param.forEach( k => label[ k ] = util.labels2array( Object.keys( P[ k ] ) ) );
+		var values = jsonClone( P.param );
+		if ( name ) {
+			$.each( PRO[ name ].parameters, ( k, v ) => values[ k ] = v );
+			values.name = name;
+		}
+		info( {
+			  icon         : V.tab
+			, title        : title
+			, selectlabel  : label.select
+			, select       : Object.values( P.select )
+			, numberlabel  : label.number
+			, textlabel    : label.text
+			, checkbox     : label.checkbox
+			, order        : param
+			, boxwidth     : 150
+			, values       : values
+			, checkblank   : true
+			, checkchanged : name
+			, beforeshow   : () => {
+				var $tr = $( '#infoContent tr' );
+				$tr.first().before( $tr.last() )
+			}
+			, ok           : () => {
+				var val = infoVal();
+				var v   = {};
+				[ 'name', 'type' ].forEach( k => {
+					v[ k ] = val[ k ];
+					delete val[ k ];
+				} );
+				[ 'monitor_channels', 'process_channels' ].forEach( k => val[ k ] = util.list2array( val[ k ] ) );
+				if ( ! PRO ) {
+					S.config.processors = {}
+					PRO = S.config.processors;
+				}
+				PRO[ v.name ] = { type: v.type, parameters: val }
+				console.log( S.config );
+				setting.save( title, name ? 'Change ...' : 'Save ...' );
+				render.processors();
+			}
+		} );
+	} //---------------------------------------------------------------------------------------------
 	, pipeline      : () => {
-		var filters = Object.keys( C.FIL );
+		var filters = Object.keys( FIL );
 		info( {
 			  icon        : V.tab
 			, title       : 'Add Pipeline'
 			, tablabel    : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
 			, tab         : [ '', setting.pipelineMixer ]
 			, selectlabel : [ 'Channel', 'Filters' ]
-			, select      : [ [ ...Array( C.DEV.playback.channels ).keys() ], filters ]
+			, select      : [ [ ...Array( DEV.playback.channels ).keys() ], filters ]
 			, beforeshow  : () => {
 				$( '#infoContent .select2-container' ).eq( 0 ).addClass( 'channel' )
 				$( '#infoContent td' ).last().append( ico( 'add' ) );
@@ -1253,7 +1264,7 @@ var setting  = {
 				} else {
 					var names = filters[ 0 ];
 				}
-				C.PIP.push( {
+				PIP.push( {
 					  type    : 'Filter'
 					, channel : +$( '#infoContent select' ).eq( 0 ).val()
 					, names   : names
@@ -1269,9 +1280,9 @@ var setting  = {
 			, tablabel     : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
 			, tab          : [ setting.pipeline, '' ]
 			, selectlabel  : 'Mixers'
-			, select       : Object.keys( C.MIX )
+			, select       : Object.keys( MIX )
 			, ok          : () => {
-				C.PIP.push( {
+				PIP.push( {
 					  type : 'Mixer'
 					, name : infoVal()
 				} );
@@ -1290,7 +1301,7 @@ var setting  = {
 	} //---------------------------------------------------------------------------------------------
 	, device        : ( dev, type ) => {
 		var k, key_val, kv, s, v;
-		var data        = jsonClone( C.DEV[ dev ] );
+		var data        = jsonClone( DEV[ dev ] );
 		var type        = type || data.type;
 		// select
 		var selectlabel = [ 'type' ];
@@ -1381,7 +1392,7 @@ var setting  = {
 				} );
 			}
 			, ok           : () => {
-				C.DEV[ dev ] = infoVal();
+				DEV[ dev ] = infoVal();
 				setting.save( title, 'Change ...' );
 			}
 		} );
@@ -1390,9 +1401,9 @@ var setting  = {
 		var textlabel  = [ ...Dkv.main ].slice( 1 );
 		textlabel.push( 'Other' );
 		var values     = {};
-		Dkv.main.forEach( k => values[ k ] = C.DEV[ k ] );
+		Dkv.main.forEach( k => values[ k ] = DEV[ k ] );
 		var samplerate = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ];
-		if ( ! samplerate.includes( C.DEV.samplerate ) ) values.samplerate = 'Other';
+		if ( ! samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
 		values.other = values.samplerate;
 		var title = util.key2label( V.tab );
 		info( {
@@ -1411,14 +1422,17 @@ var setting  = {
 				var $trother = $( '.trtext' ).eq( 0 );
 				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
 				$( '.trselect select' ).on( 'input', function() {
-					setting.hidetrinfo( $trother, $( this ).val() );
+					var rate  = $( this ).val();
+					var other = rate === 'Other';
+					$trother.toggleClass( 'hide', ! other );
+					if ( ! other ) $trother.find( 'input' ).val( rate );
 				} );
 			}
 			, ok           : () => {
 				var val = infoVal();
 				if ( val.samplerate === 'Other' ) val.samplerate = val.other;
 				delete val.other;
-				$.each( val, ( k, v ) => C.DEV[ k ] = v );
+				$.each( val, ( k, v ) => DEV[ k ] = v );
 				setting.save( title, 'Change ...' );
 				render.devices();
 			}
@@ -1427,8 +1441,8 @@ var setting  = {
 	, resampler     : ( type, profile ) => {
 		var Dtype  = D.resampler[ type ];
 		var values = Dtype.param;
-		if ( S.resampler ) C.DEV.resample.each( ( k, v ) => values[ k ] = v );
-		values.capture_samplerate = C.DEV.capture_samplerate || C.DEV.samplerate;
+		if ( S.resampler ) DEV.resample.each( ( k, v ) => values[ k ] = v );
+		values.capture_samplerate = DEV.capture_samplerate || DEV.samplerate;
 		if ( profile ) values.profile = profile;
 		info( {
 			  icon         : V.tab
@@ -1461,30 +1475,14 @@ var setting  = {
 			, cancel       : switchCancel
 			, ok           : () => {
 				var val = infoVal();
-				C.DEV.capture_samplerate = val.capture_samplerate === C.DEV.samplerate ? null : val.capture_samplerate;
+				DEV.capture_samplerate = val.capture_samplerate === DEV.samplerate ? null : val.capture_samplerate;
 				delete val.capture_samplerate;
-				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) C.DEV.enable_rate_adjust = false;
-				C.DEV.resampler = val;
+				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = false;
+				DEV.resampler = val;
 				setting.switchSave( 'resampler' );
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
-	, hidetrinfo    : ( $trother, rate ) => {
-		var other = rate === 'Other';
-		$trother.toggleClass( 'hide', ! other );
-		if ( ! other ) $trother.find( 'input' ).val( rate );
-	}
-	, switchSave    : ( id, disable ) => {
-		if ( disable === 'disable' ) {
-			var msg   = 'Disable ...';
-			C.DEV[ id ] = null;
-		} else {
-			var msg   = C.DEV[ id ] ? 'Change ...' : 'Enable ...';
-			C.DEV[ id ] = true;
-		}
-		setting.save( SW.title, msg );
-		render.devices();
-	}
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
@@ -1492,6 +1490,17 @@ var setting  = {
 			setTimeout( util.save2file, 300 );
 		}, V.wscamilla ? 0 : 300 );
 		if ( msg ) banner( V.tab, titlle, msg );
+	}
+	, switchSave    : ( id, disable ) => {
+		if ( disable === 'disable' ) {
+			var msg   = 'Disable ...';
+			DEV[ id ] = null;
+		} else {
+			var msg   = DEV[ id ] ? 'Change ...' : 'Enable ...';
+			DEV[ id ] = true;
+		}
+		setting.save( SW.title, msg );
+		render.devices();
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
@@ -1549,14 +1558,14 @@ var util     = {
 	, inUse        : name => {
 		var filters = V.tab === 'filters';
 		var inuse   = [];
-		if ( filters && ! ( name in C.FIL ) ) { // file
-			$.each( C.FIL, ( k, v ) => {
+		if ( filters && ! ( name in FIL ) ) { // file
+			$.each( FIL, ( k, v ) => {
 				if ( 'filename' in v.parameters && v.parameters.filename === name ) {
 					inuse.push( 'Filter: '+ k );
 				}
 			} );
 		}
-		C.PIP.forEach( ( k, i ) => {
+		PIP.forEach( ( k, i ) => {
 			if ( filters ) {
 				if ( k.type === 'Filter' ) {
 					k.names.forEach( ( n, ni ) => {
@@ -1749,10 +1758,13 @@ var util     = {
 					break;
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
-					C = {};
-					[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => C[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ] );
+					DEV = S.config.devices;
+					FIL = S.config.filters;
+					MIX = S.config.mixers;
+					PIP = S.config.pipeline;
+					PRO = S.config.processors;
 					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
-						S[ k ] = ! [ null, false ].includes( C.DEV[ k ] );
+						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
 					render.page();
 					render.tab();
@@ -1976,7 +1988,8 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		}
 	} );
 } );
-$( '.entries' ).on( 'click', '.liicon', function() {
+$( '.entries' ).on( 'click', '.liicon', function( e ) {
+	e.stopPropagation();
 	var $this  = $( this );
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
@@ -1992,14 +2005,14 @@ $( '.entries' ).on( 'click', '.liicon', function() {
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
-		if ( ! C.MIX[ name ].mapping.length ) { // no mapping left
-			delete C.MIX[ name ];
+		if ( ! MIX[ name ].mapping.length ) { // no mapping left
+			delete MIX[ name ];
 			setting.save( title, 'Remove ...' );
 		}
 	} else if ( V.tab === 'pipeline' ) {
 		if ( ! $( '#pipeline .i-filters' ).length ) {
 			var pi = $( '#pipeline .lihead' ).data( 'index' );
-			C.PIP.splice( pi, 1 );
+			PIP.splice( pi, 1 );
 			setting.save( title, 'Remove filter ...' );
 		} 
 	}
@@ -2038,15 +2051,15 @@ $( '#menu a' ).on( 'click', function( e ) {
 							, ok           : () => { // in filters Conv
 								var newname    = infoVal();
 								bash( [ 'coefrename', name, newname, 'CMD NAME NEWNAME' ] );
-								$.each( C.FIL, ( k, v ) => {
-									if ( v.type === 'Conv' && v.parameters.filename === name ) C.FIL[ name ].parameters.filename = newname;
+								$.each( FIL, ( k, v ) => {
+									if ( v.type === 'Conv' && v.parameters.filename === name ) FIL[ name ].parameters.filename = newname;
 								} );
 								setting.save( title, 'Rename ...' );
 							}
 						} );
 					} else {
-						var type    = C.FIL[ name ].type;
-						var subtype = 'type' in C.FIL[ name ].parameters ? C.FIL[ name ].parameters.type : '';
+						var type    = FIL[ name ].type;
+						var subtype = 'type' in FIL[ name ].parameters ? FIL[ name ].parameters.type : '';
 						setting.filter( type, subtype, name );
 					}
 					break;
@@ -2060,7 +2073,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
-							file ? bash( [ 'coefdelete', name, 'CMD NAME' ] ) : delete C.FIL[ name ];
+							file ? bash( [ 'coefdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
 							setting.save( title, 'Delete ...' );
 							V.li.remove();
 						}
@@ -2097,18 +2110,39 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, message : message
 						, ok      : () => {
 							if ( main ) {
-								delete C.MIX[ name ];
+								delete MIX[ name ];
 							} else if ( dest ) {
-								C.MIX[ name ].mapping.splice( mi, 1 );
-								if ( ! C.MIX[ name ].mapping.length ) {
+								MIX[ name ].mapping.splice( mi, 1 );
+								if ( ! MIX[ name ].mapping.length ) {
 									$( '#mixers .i-back' ).trigger( 'click' );
 									return
 								}
 								
 								V.li.siblings( '.dest'+ mi ).remove();
 							} else {
-								C.MIX[ name ].mapping[ mi ].sources.splice( si, 1 );
+								MIX[ name ].mapping[ mi ].sources.splice( si, 1 );
 							}
+							setting.save( title, 'Remove ...' );
+							V.li.remove();
+						}
+					} );
+					break;
+			}
+			break;
+		case 'processors':
+			var title = 'Processors';
+			var name  = V.li.data( 'name' );
+			switch ( cmd ) {
+				case 'edit':
+					setting.processor( name );
+					break;
+				case 'delete':
+					info( {
+						  icon    : V.tab
+						, title   : title
+						, message : 'Delete <wh>'+ name +'</wh> ?'
+						, ok      : () => {
+							delete PRO[ name ];
 							setting.save( title, 'Remove ...' );
 							V.li.remove();
 						}
@@ -2126,11 +2160,11 @@ $( '#menu a' ).on( 'click', function( e ) {
 				, ok      : () => {
 					if ( main ) {
 						var index = V.li.data( 'index' );
-						C.PIP.splice( index, 1 );
+						PIP.splice( index, 1 );
 					} else {
 						var pi = $( '#pipeline .lihead' ).data( 'index' );
 						var ni = V.li.data( 'index' );
-						C.PIP[ pi ].names.splice( ni, 1 );
+						PIP[ pi ].names.splice( ni, 1 );
 					}
 					setting.save( 'Pipeline', 'Remove '+ type +' ...' );
 					V.li.remove();
@@ -2199,7 +2233,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	$this.prev().text( util.dbRound( val ) );
 	V.li     = $this.parents( 'li' );
 	var name = V.li.data( 'name' );
-	C.FIL[ name ].parameters.gain = val;
+	FIL[ name ].parameters.gain = val;
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	graph.gain();
@@ -2223,7 +2257,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	} else {
 		var index   = V.li.data( 'index' );
 		var si      = V.li.data( 'si' );
-		var mapping = C.MIX[ name ].mapping[ index ];
+		var mapping = MIX[ name ].mapping[ index ];
 		var source  = mapping.sources[ si ];
 		var checked = ! $this.hasClass( 'bl' );
 		if ( $this.hasClass( 'i-volume' ) ) {
@@ -2248,10 +2282,10 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var mi    = V.li.data( 'index' );
 	var val   = +$this.val();
 	if ( V.li.hasClass( 'main' ) ) {
-		C.MIX[ name ].mapping[ mi ].dest = val;
+		MIX[ name ].mapping[ mi ].dest = val;
 	} else {
 		var si    = V.li.data( 'si' );
-		C.MIX[ name ].mapping[ mi ].sources[ si ].channel = val;
+		MIX[ name ].mapping[ mi ].sources[ si ].channel = val;
 	}
 	setting.save( 'Mixer', 'Change ...');
 } ).on( 'input', 'input[type=range]', function() {
@@ -2262,12 +2296,16 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var name  = V.li.data( 'name' );
 	var index = V.li.data( 'index' );
 	var si    = V.li.data( 'si' );
-	C.MIX[ name ].mapping[ index ].sources[ si ].gain = val;
+	MIX[ name ].mapping[ index ].sources[ si ].gain = val;
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	graph.gain();
 } );
-$( '#pipeline' ).on( 'click', 'li', function( e ) { 
+$( '#processors' ).on( 'click', 'li', function( e ) {
+	e.stopPropagation();
+	$( this ).find( '.liicon' ).trigger( 'click' );
+} );
+$( '#pipeline' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	if ( $( e.target ).is( 'i' ) || $this.parent().is( '.sub, .divgain' ) ) return
 	
@@ -2275,7 +2313,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	if ( $this.data( 'type' ) === 'Filter' ) {
 		render.pipelineSub( index );
 	} else {
-		var names  = Object.keys( C.MIX );
+		var names  = Object.keys( MIX );
 		if ( names.length === 1 ) return
 		
 		var values = $this.find( '.li2' ).text();
@@ -2286,7 +2324,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			, select  : names
 			, values  : values
 			, ok      : () => {
-				C.PIP[ index ].name = infoVal();
+				PIP[ index ].name = infoVal();
 				setting.save( 'Add Mixer', 'Save ...' );
 			}
 		} );
@@ -2304,9 +2342,9 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			  icon        : V.tab
 			, title       : title
 			, selectlabel : 'Filter'
-			, select      : Object.keys( C.FIL )
+			, select      : Object.keys( FIL )
 			, ok          : () => {
-				C.PIP[ index ].names.push( infoVal() );
+				PIP[ index ].names.push( infoVal() );
 				setting.save( title, 'Save ...' );
 				setting.sortRefresh( 'sub' );
 				render.pipelineSub( index );
@@ -2330,7 +2368,7 @@ $( '#config' ).on( 'click', '.i-add', function() {
 	} else {
 		var dir = '/srv/http/data/camilladsp/configs';
 		if ( S.bluetooth ) dir += '-bt';
-		bash( [ 'statusconfiguration', dir +'/'+ $this.text(), 'CMD C.FILE' ], config => {
+		bash( [ 'statusconfiguration', dir +'/'+ $this.text(), 'CMD FILE' ], config => {
 			$this.append( '<pre class="status">'+ config +'</pre>' );
 		} );
 	}
@@ -2338,7 +2376,7 @@ $( '#config' ).on( 'click', '.i-add', function() {
 $( '.switch' ).on( 'click', function() {
 	var id = this.id;
 	var $setting = $( '#setting-'+ id );
-	C.DEV[ id ] ? setting.switchSave( id, 'disable' ) : $setting.trigger( 'click' );
+	DEV[ id ] ? setting.switchSave( id, 'disable' ) : $setting.trigger( 'click' );
 } );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	var $this = $( this );
@@ -2358,14 +2396,14 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		, numberlabel  : [ 'Adjust period', 'Target level' ]
 		, boxwidth     : 100
 		, values       : {
-			  adjust_period       : C.DEV.adjust_period
-			, target_level        : C.DEV.target_level
+			  adjust_period       : DEV.adjust_period
+			, target_level        : DEV.target_level
 		}
 		, checkchanged : S.enable_rate_adjust
 		, cancel       : switchCancel
 		, ok           : () => {
 			var val =  infoVal();
-			[ 'adjust_period', 'target_level' ].forEach( k => C.DEV[ k ] = val[ k ] );
+			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
 			setting.switchSave( 'enable_rate_adjust' );
 		}
 	} );
@@ -2376,17 +2414,17 @@ $( '#setting-stop_on_rate_change' ).on( 'click', function() {
 		, title        : SW.title
 		, numberlabel  : 'Rate mearsure interval'
 		, boxwidth     : 65
-		, values       : C.DEV.rate_measure_interval
+		, values       : DEV.rate_measure_interval
 		, checkchanged : S.stop_on_rate_change
 		, cancel       : switchCancel
 		, ok           : () => {
-			C.DEV.rate_measure_interval = infoVal();
+			DEV.rate_measure_interval = infoVal();
 			setting.switchSave( 'stop_on_rate_change' );
 		}
 	} );
 } );
 $( '#setting-resampler' ).on( 'click', function() {
-	setting.resampler( S.resampler ? C.DEV.resampler.type : 'AsyncSinc' );
+	setting.resampler( S.resampler ? DEV.resampler.type : 'AsyncSinc' );
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
 	V.tab = this.id.slice( 3 );
