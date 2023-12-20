@@ -181,9 +181,9 @@ for line in "${lines[@]}"; do
 	key=${line/:*}
 	val=${line#*: }
 	case $key in
-		audio )
+		audio ) # samplerate:bitdepth:channel
 			samplerate=${val/:*}
-			bitdepth=${val/*:}
+			bitdepth=$( cut -d: -f2 <<< $val )
 			;;
 		bitrate )
 			bitrate=$(( val * 1000 ))
