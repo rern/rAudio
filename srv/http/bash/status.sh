@@ -168,10 +168,15 @@ fi
 
 (( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 
-#. <( mpc playlist -f 'Album="%album%"; Artist="%artist%"; Composer="%composer%"; Conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' | sed "$song q;d" )
-#. <( mpc status 'state=%state%; current=%songpos%; length=%length%; random=%random%; consume=%consume%' )
+# status with mpc
+#. <( mpc status 'state=%state%; pos=%songpos%; pllength=%length%; random=%random%; repeat=%repeat%; single=%single%; consume=%consume%' | sed 's/=off/=false/g; s/=on/=true/g' )
+#[[ $state != stopped ]] && \
+#. <( mpc playlist -f 'album="%album%"; albumartist="%albumartist%"; artist="%artist%"; composer="%composer%"; conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"; bitdepth=%bits%; samplerate=%samplerate%; bitrate=%kbitrate%; currenttime=%currenttime%' | sed "$pos q;d" )
+#song=$(( pos + 1 ))
+#Time=$(( ${time:0:-3} * 60 + ${time: -2} ))
+#elpased=$(( ${currenttime:0:-3} * 60 + ${currenttime: -2} ))
 
-filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file Name state Time Title'
+filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
 readarray -t lines <<< $( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
@@ -191,7 +196,7 @@ for line in "${lines[@]}"; do
 		duration | playlistlength | state | Time )
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
-		Album | AlbumArtist | Artist | Composer | Conductor | Name | Title )
+		Album | AlbumArtist | Artist | Composer | Conductor | Title )
 			printf -v $key '%s' "$( stringEscape $val )"
 			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
@@ -284,7 +289,6 @@ elif [[ $stream ]]; then
 				*stream.radioparadise.com* ) icon=radioparadise;;
 			esac
 		fi
-		# before webradio play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
 		urlname=${url//\//|}
 		radiofile=$dirradio/$urlname
@@ -359,7 +363,6 @@ elif [[ $stream ]]; then
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
 , "stationcover" : "'$stationcover'"
-, "Name"         : "'$Name'"
 , "state"        : "'$state'"
 , "station"      : "'$station'"
 , "Time"         : false
