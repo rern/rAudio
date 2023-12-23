@@ -171,7 +171,7 @@ fi
 # status with mpc
 #. <( mpc status 'state=%state%; pos=%songpos%; pllength=%length%; random=%random%; repeat=%repeat%; single=%single%; consume=%consume%' | sed 's/=off/=false/g; s/=on/=true/g' )
 #[[ $state != stopped ]] && \
-#. <( mpc playlist -f 'album="%album%"; albumartist="%albumartist%"; artist="%artist%"; composer="%composer%"; conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"; bitdepth=%bits%; samplerate=%samplerate%; bitrate=%kbitrate%; currenttime=%currenttime%' | sed "$pos q;d" )
+#. <( mpc playlist -f 'Album="%album%"; AlbumArtist="%albumartist%"; Artist="%artist%"; Composer="%composer%"; Conductor="%conductor%"; file="%file%"; time=%time%; Title="%title%"; bitdepth=%bits%; samplerate=%samplerate%; bitrate=%kbitrate%; currenttime=%currenttime%' | sed "$pos q;d" )
 #song=$(( pos + 1 ))
 #Time=$(( ${time:0:-3} * 60 + ${time: -2} ))
 #elpased=$(( ${currenttime:0:-3} * 60 + ${currenttime: -2} ))
