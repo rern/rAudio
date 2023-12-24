@@ -10,194 +10,346 @@ V            = {
 	, wscamilla  : null
 }
 // filters //////////////////////////////////////////////////////////////////////////////
-var Fkv      = {
-	  pass    : {
-		  number : { freq: 1000, q: 0 }
-	  }
-	, shelf   : {
-		  number : { gain: 0, freq: 1000, q: 0 }
-		, radio  : [ 'Q', 'Samples' ]
+var F0         = {
+	  type       : [
+		  'Type'
+		, 'select'
+		, [ 'Gain', /*'Volume', */'Loudness', 'Delay', 'Conv', 'Biquad', 'BiquadCombo', 'Dither', 'Limiter', 'DiffEq' ] // omit Volume - use alsa directly
+	]
+	, subtype    : {
+		  Conv        : [
+			  'Subtype'
+			, 'select'
+			, [ 'Dummy', 'Raw', 'Wav', 'Values' ]
+		]
+		, Biquad      : [
+		    'Subtype'
+		  , 'select'
+		  , [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
+			, 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform' ]
+		]
+		, BiquadCombo : [
+			  'Subtype'
+			, 'select'
+			, [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass', 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ]
+		]
+		, Dither      : [
+			  'Subtype'
+			, 'select'
+			, [ 'None', 'Flat', 'Highpass', 'Fweighted441', 'FweightedShort441', 'FweightedLong441', 'Gesemann441', 'Gesemann48', 'Lipshitz441', 'LipshitzLong441'
+			  , 'Shibata441', 'ShibataHigh441', 'ShibataLow441', 'Shibata48', 'ShibataHigh48', 'ShibataLow48', 'Shibata882', 'ShibataLow882', 'Shibata96', 'ShibataLow96', 'Shibata192', 'ShibataLow192' ]
+		]
 	}
-	, passFO  : {
-		  number : { freq: 1000 }
-	}
-	, shelfFO : {
-		  number : { gain: 0, freq: 1000 }
-	}
-	, notch   : {
-		  number : { freq: 1000, q: 0 }
-		, radio  : [ 'Q', 'Bandwidth' ]
+	, freq       : [ 'Frequency', 'number' ]
+	, gain       : [ 'Gain',      'number' ]
+	, q          : [ 'Q',         'number' ]
+	, qbandwidth : [ '',          'radio', { Q: 'q', Bandwidth: 'bandwidth' } ]
+	, name       : [ 'Name',      'text' ]
+	, fader      : [ 'Fader',     'text' ]
+	, FivePointPeq : {
+		  Lowshelf  : [ 'fls', 'gls', 'qls' ]
+		, Peaking1  : [ 'fp1', 'gp1', 'qp1' ]
+		, Peaking2  : [ 'fp2', 'gp2', 'qp2' ]
+		, Peaking3  : [ 'fp3', 'gp3', 'qp3' ]
+		, Highshelf : [ 'fhs', 'ghs', 'qhs' ]
 	}
 }
+var F1         = {
+	  pass   : [ F0.name, F0.type, F0.subtype.Biquad, F0.freq, F0.q ]
+	, conv   : [ F0.name, F0.type, F0.subtype.Cov ]
+	, fader  : [ F0.name, F0.type, F0.fader ]
+	, combo  : [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' ], F0.freq ]
+}
+var Flist      = {
+	  pass    : F1.pass
+	, shelf   : [ ...F1.pass.slice( 0, 4 ), F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
+	, passFO  : F1.pass.slice( 0, 4 )
+	, shelfFO : [ ...F1.pass.slice( 0, 4 ), F0.gain ]
+	, notch   : [ ...F1.pass, F0.qbandwidth ]
+}
 var F        = {
-	  type              : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Loudness', 'DiffEq', 'Dither' ] // omit Volume - use raAudio volume
-	, subtype           : {
-		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
-						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
-		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
-		, Conv        : [ 'Dummy', 'Raw', 'Wav', 'Values' ]
-		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
+	  Gain        : [
+		  F0.name
+		, F0.type
+		, F0.gain
+		, [ '',         'radio', { dB: 'dB', Linear: 'linear' } ]
+		, [ 'Inverted', 'checkbox' ]
+		, [ 'Mute',     'checkbox' ]
+	]
+	, Volume      : [
+		  ...F1.fader
+		, [ 'Ramp time', 'number' ]
+	]
+	, Loudness    : [
+		  ...F1.fader
+		, [ 'Reference level', 'number' ]
+		, [ 'High boost',      'number' ]
+		, [ 'Low boost',       'number' ]
+		, [ 'Attenuate mid',   'checkbox' ]
+	]
+	, Delay       : [
+		  F0.name
+		, F0.type
+		, [ 'ms',        'number' ]
+		, [ '',          'radio', { ms: 'ms', mm: 'mm', Samples: 'samples' } ]
+		, [ 'Subsample', 'checkbox' ]
+	]
+	, Conv        : {
+		  Dummy  : [
+			  ...F1.conv
+			, [ 'Length', 'number' ]
+		]
+		, Raw    : [
+			  ...F1.conv
+			, [ 'File',             'select' ]
+			, [ 'Format',           'select', [ 'TEXT' ] ]
+			, [ 'Skip bytes lines', 'number' ]
+			, [ 'Read bytes lines', 'number' ]
+		]
+		, Wav    : [
+			  ...F1.conv
+			, [ 'File',    'select' ]
+			, [ 'Channel', 'number' ]
+		]
+		, Values : [
+			  ...F1.conv
+			, [ 'Values', 'text' ]
+		]
 	}
-	// parameters
-	, Lowpass           : Fkv.pass
-	, Highpass          : Fkv.pass
-	, Lowshelf          : Fkv.shelf
-	, Highshelf         : Fkv.shelf
-	, LowpassFO         : Fkv.passFO
-	, HighpassFO        : Fkv.passFO
-	, LowshelfFO        : Fkv.shelfFO
-	, HighshelfFO       : Fkv.shelfFO
-	, Peaking           : {
-		  number : { gain: 0, freq: 1000, q: 0 }
-		, radio  : [ 'Q', 'Bandwidth' ]
+	, Biquad : {
+		  Free              : [
+			...F1.pass.slice( 0, 3 )
+			, [ 'a1', 'number' ]
+			, [ 'a2', 'number' ]
+			, [ 'b0', 'number' ]
+			, [ 'b1', 'number' ]
+			, [ 'b2', 'number' ]
+		]
+		, Lowpass           : Flist.pass
+		, Highpass          : Flist.pass
+		, Lowshelf          : Flist.shelf
+		, Highshelf         : Flist.shelf
+		, LowpassFO         : Flist.passFO
+		, HighpassFO        : Flist.passFO
+		, LowshelfFO        : Flist.shelfFO
+		, HighshelfFO       : Flist.shelfFO
+		, Peaking           : [ ...F1.pass.slice( 0, 4 ), F0.gain, F0.q, F0.qbandwidth ]
+		, Notch             : Flist.notch
+		, GeneralNotch      : [
+			  F0.name
+			, F0.type
+			, [ 'Zero frequency',  'number' ]
+			, [ 'Pole frequency',  'number' ]
+			, [ 'Pole Q',          'number' ]
+			, [ 'Normalize at DC', 'checkbox' ]
+		]
+		, Bandpass          : Flist.notch
+		, Allpass           : Flist.notch
+		, AllpassFO         : Flist.passFO
+		, LinkwitzTransform : [
+			...F1.pass.slice( 0, 3 )
+			, [ 'Q act',            'number' ]
+			, [ 'Q target',         'number' ]
+			, [ 'Frequency act',    'number' ]
+			, [ 'Frequency target', 'number' ]
+		]
 	}
-	, Notch             : Fkv.notch
-	, Bandpass          : Fkv.notch
-	, Allpass           : Fkv.notch
-	, AllpassFO         : Fkv.passFO
-	, LinkwitzTransform : {
-		number: { q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
+	, BiquadCombo : {
+		  ButterworthLowpass    : F1.combo
+		, ButterworthHighpass   : F1.combo
+		, LinkwitzRileyLowpass  : F1.combo
+		, LinkwitzRileyHighpass : F1.combo
+		, Tilt                  : [
+			  ...F1.combo.slice( 0, 3 )
+			, [ 'Gain', 'number' ]
+		]
+		, FivePointPeq          : [
+			  ...F1.combo.slice( 0, 3 )
+			, [ 'Lowshelf',  'text' ] // fls, gls, qls
+			, [ 'Peaking 1', 'text' ] // fp1, gp1, qp1
+			, [ 'Peaking 2', 'text' ] // fp2, gp2, qp2
+			, [ 'Peaking 3', 'text' ] // fp3, gp3, qp3
+			, [ 'Highshelf', 'text' ] // fhs, ghs, qhs
+		]
+		, GraphicEqualizer     : [
+			  ...F1.combo.slice( 0, 3 )
+			, [ 'Frequency min', 'number' ]
+			, [ 'Frequency max', 'number' ]
+			, [ 'Bands',         'number' ]
+		]
 	}
-	, Free              : {
-		number: { a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
-	}
-	, BiquadCombo       : {
-		number: { order: 2, freq: 1000 }
-	}
-	, Dummy             : {
-		number: { length: 65536 } // min = 1
-	}
-	, Raw               : { 
-		  select : { filename: '' }
-		, number : { skip_bytes_lines: 0, read_bytes_lines: 0 }
-	}
-	, Wav               : {
-		  select : { filename: '' }
-		, number : { channel: 0 }
-	}
-	, Values            : {
-		  text   : { values: '1, 0, 0, 0' }
-	}
-	, Delay             : {
-		  number   : { ms: 0 }
-		, radio    : [ 'ms', 'Samples' ]
-		, checkbox : { subsample: false }
-	}
-	, Gain              : {
-		  number   : { gain: 0 }
-		, checkbox : { inverted: false, mute: false }
-	}
-	, Volume            : {
-		number: { ramp_time: 200 }
-	}
-	, Loudness          : {
-		number: { reference_level: 5, high_boost: 5, low_boost: 5, ramp_time: 200 }
-	}
-	, DiffEq            : {
-		text: { a: '1, 0', b: '1, 0' }
-	}
-	, Dither            : {
-		number: { bits: 16 }
+	, Dither      : [
+		  F0.name
+		, F0.type
+		, F0.subtype.Dither
+		, [ 'Bits', 'number' ]
+	]
+	, Limiter     : [
+		  F0.name
+		, F0.type
+		, [ 'Clip limit', 'number' ]
+		, [ 'Soft clip',  'checkbox' ]
+	]
+	, DiffEq      : [
+		F0.name
+	  , F0.type
+	  , [ 'a', 'text' ]
+	  , [ 'b', 'text' ]
+	]
+//
+	, values  : {
+		  Gain              : { name: '', type: '', gain: 0, scale: 'dB', inverted: false, mute: false } // +-150dB / +-10 linear
+		, Volume            : { name: '', type: '', ramp_time: 400, fader: 'Aux1' }
+		, Loudness          : { name: '', type: '', fader : 'main', reference_level: 25, high_boost: 10, low_boost: 10, attenuate_mid: false }
+		, Delay             : { name: '', type: '', delay: 0, unit: 'ms', subsample: false }
+		// Conv
+		, Dummy             : { name: '', type: '', subtype: '', length: 65536 } // min = 1
+		, Raw               : { name: '', type: '', subtype: '', filename: '', format: 'TEXT', skip_bytes_lines: 0, read_bytes_lines: 0 }
+		, Wav               : { name: '', type: '', subtype: '', filename: '', channel: 0 }
+		, Values            : { name: '', type: '', subtype: '', values: [ 1, 0, 0, 0 ] }
+		// Biquad
+		, pass              : { name: '', type: '', subtype: '', freq: 1000, q: 0 }
+		, shelf             : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
+		, passFO            : { name: '', type: '', subtype: '', freq: 1000, name: '' }
+		, shelfFO           : { name: '', type: '', subtype: '', freq: 1000, gain: 0 }
+		, notch             : { name: '', type: '', subtype: '', freq: 1000, q: 0, unit: 'q' }
+		, GeneralNotch      : { name: '', type: '', subtype: '', freq_z: 0, freq_p: 0, q_p: 0, normalize_at_dc:false }
+		, Peaking           : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
+		, LinkwitzTransform : { name: '', type: '', subtype: '', q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
+		, Free              : { name: '', type: '', subtype: '', a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
+		// BiquadCombo
+		, BiquadCombo       : { name: '', type: '', subtype: '', order: 2, freq: 1000 }
+		, Tilt              : { name: '', type: '', subtype: '', gain: 0 }
+		, FivePointPeq      : { name: '', type: '', subtype: '', Lowshelf: [ 0, 0, 0 ], Peaking1: [ 0, 0, 0 ], Peaking2: [ 0, 0, 0 ], Peaking3: [ 0, 0, 0 ], Highshelf: [ 0, 0, 0 ] }
+		, GraphicEqualizer  : { name: '', type: '', subtype: '', freq_min: 20, freq_max: 20000, bands: 10 }
+		//
+		, Dither            : { name: '', type: '', subtype: '', bits: 16 }
+		, Limiter           : { name: '', type: '', clip_limit: -10.0, soft_clip: false }
+		, DiffEq            : { name: '', type: '', a: [ 1, 0 ], b: [ 1, 0 ] }
 	}
 }
 var P        = { // processor
-	  select   : { type: { Compressor: 'Compressor' } }
-	, number   : { channels: '', attack: '', release: '', threshold: '', factor: '', makeup_gain: '', clip_limit: '' }
-	, checkbox : { soft_clip: '' }
-	, text     : { monitor_channels: '', process_channels: '', name: '' }
-	, param    : { type: 'Compressor', channels: 2, attack: 0.025, release: 1.0, threshold: -25, factor: 5.0, makeup_gain: 0, clip_limit: 0, soft_clip: false, monitor_channels: '0, 1', process_channels: '0, 1', name: '' }
+	  Compressor : [
+		  [ 'Name',             'text' ]
+		, [ 'Type',             'select', [ 'Compressor' ] ]
+		, [ 'Channels',         'number' ]
+		, [ 'Attack',           'number' ]
+		, [ 'Release',          'number' ]
+		, [ 'Threshold',        'number' ]
+		, [ 'Factor',           'number' ]
+		, [ 'Makeup gain',      'number' ]
+		, [ 'Clip limit',       'number' ]
+		, [ 'Soft clip',        'checkbox' ]
+		, [ 'Monitor channels', 'text' ]
+		, [ 'Process channels', 'text' ]
+	]
+	, values     : {
+		Compressor : { name: '', type: '', channels: 2, attack: 0.025, release: 1.0, threshold: -25, factor: 5.0, makeup_gain: 0, clip_limit: 0, soft_clip: false, monitor_channels: '0, 1', process_channels: '0, 1' }
+	}
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
-var Dkv      = {
+var format   = {};
+[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
+	var key       = k
+					.replace( 'FLOAT', 'Float' )
+					.replace( 'TEXT',  'Text' );
+	format[ key ] = k;
+} );
+var D0      = {
 	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
-	, type       : [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ]
-	, profile    : [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ]
-	// param
-	, tc     : {
-		  number : { channels: 2 }
-	}
-	, tcsd   : {
-		  select : { device: '', format: '' }
-		, number : { channels: 2 }
-	}
-	, wasapi : {
-		  select   : { device: '', format: '' }
-		, number   : { channels: 2 }
-		, checkbox : { exclusive: false, loopback: false }
-	}
+	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+}
+var Dlist        = {
+	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
+	, profile            : [ 'Profile',            'select', [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ] ]
+	, typeC              : [ 'Type',               'select' ] // option: wait for ws 'GetSupportedDeviceTypes'
+	, typeP              : [ 'Type',               'select' ] // ^
+	, deviceC            : [ 'Device',             'select' ] // ^
+	, deviceP            : [ 'Device',             'select' ] // ^
+	, format             : [ 'Format',             'select', format ]
+	, filename           : [ 'Filename',           'select', S.lsraw ]
+	, channels           : [ 'Channels',           'number' ]
+	, extra_samples      : [ 'Extra samples',      'number' ]
+	, skip_bytes         : [ 'Skip bytes',         'number' ]
+	, read_bytes         : [ 'Read bytes',         'number' ]
+	, capture_samplerate : [ 'Capture samplerate', 'number' ]
+	, exclusive          : [ 'Exclusive',          'checkbox' ]
+	, loopback           : [ 'Loopback',           'checkbox' ]
+	, change_format      : [ 'Change format',      'checkbox' ]
+}
+var D1      = {
+	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.format, Dlist.channels ]
+	, AlsaP : [ Dlist.typeP, Dlist.deviceP, Dlist.format, Dlist.channels ]
+	, extra : [ Dlist.extra_samples, Dlist.skip_bytes, Dlist.read_bytes ]
 }
 var D       = {
-	// parameters - capture / playback
-	  capture   : {
-		  Alsa      : Dkv.tcsd
-		, CoreAudio : {
-			  select : { device: '', format: '' }
-			, number   : { channels: 2 }
-			, checkbox : { change_format: false }
-		}
-		, Pulse     : Dkv.tcsd
-		, Wasapi    : Dkv.wasapi
-		, Jack      : Dkv.tc
-		, Stdin     : {
-			  select : { format: '' }
-			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		}
-		, File      : {
-			  select : { format: '' }
-			, text   : { filename: '' }
-			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		}
+	  main      : [
+		  [ 'Sample Rate',       'select', D0.samplerate ]
+		, [ 'Other',             'number' ]
+		, [ 'Chunk size',        'number' ]
+		, [ 'Queue limit',       'number' ]
+		, [ 'Silence Threshold', 'number' ]
+		, [ 'Silence Timeout',   'number' ]
+	]
+	, capture   : {
+		  Alsa      : D1.AlsaC
+		, CoreAudio : [ ...D1.AlsaC, Dlist.change_format ]
+		, Pulse     : D1.AlsaC
+		, Wasapi    : [ ...D1.AlsaC, Dlist.exclusive, Dlist.loopback ]
+		, Jack      : [ Dlist.typeC, Dlist.channels ]
+		, Stdin     : [ Dlist.typeC, Dlist.format, Dlist.channels, ...D1.extra ]
+		, File      : [ Dlist.typeC, Dlist.filename, Dlist.format, Dlist.channels, ...D1.extra ]
 	}
 	, playback  : {
-		  Alsa      : Dkv.tcsd
-		, CoreAudio : {
-			  select   : { device: '', format: '' }
-			, number   : { channels: 2 }
-			, checkbox : { exclusive: false, change_format: false }
-		}
-		, Pulse     : Dkv.tcsd
-		, Wasapi    : Dkv.wasapi
-		, Jack      : Dkv.tc
-		, Stdout    : {
-			  select : { format: '' }
-			, number : { channels: 2 }
-		}
-		, File      : {
-			  select : { filename: '', format: '' }
-			, number : { channels: 2 }
-		}
+		  Alsa      : D1.AlsaP
+		, CoreAudio : [ ...D1.AlsaP, Dlist.change_format ]
+		, Pulse     : D1.AlsaP
+		, Wasapi    : [ ...D1.AlsaP, Dlist.exclusive, Dlist.loopback ]
+		, Jack      : [ Dlist.typeP, Dlist.channels ]
+		, Stdout    : [ Dlist.typeP, Dlist.format, Dlist.channels ]
+		, File      : [ Dlist.typeP, Dlist.filename, Dlist.format, Dlist.channels ]
+	}
+	, values    : {
+		  Alsa      : { type: '', device: '',   format: '', channels: 2 }
+		, CoreAudio : { type: '', device: '',   format: '', channels: 2, change_format: '' }
+		, Pulse     : { type: '', device: '',   format: '', channels: 2 }
+		, Wasapi    : { type: '', device: '',   format: '', channels: 2, exclusive: false, loopback: false }
+		, Jack      : { type: '',                           channels: 2 }
+		, Stdin     : { type: '',               format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, Stdout    : { type: '',               format: '', channels: 2 }
+		, File      : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, FileP     : { type: '', filename: '', format: '', channels: 2 }
 	}
 	, resampler : {
-		  AsyncSinc       : {
-			  select  : {
-				  type    : Dkv.type
-				, profile : Dkv.profile
-			}
-			, number : [ 'capture_samplerate' ]
-			, param  : { type: 'AsyncSinc', profile: 'Balanced', capture_samplerate: '' }
-		}
-		, AsyncSincCustom : {
-			  select : {
-				  type          : Dkv.type
-				, profile       : Dkv.profile
-				, interpolation : [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ]
-				, window        : [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ]
-			}
-			, number  : [ 'sinc_len',' oversampling_factor', 'f_cutoff', 'capture_samplerate' ]
-			, param : { type: 'AsyncSinc', profile: 'Custom', interpolation: 'Cubic', window: 'Hann2', sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9, capture_samplerate: '' }
-		}
-		, AsyncPoly       : {
-			  select : {
-				  type          : Dkv.type
-				, interpolation : [ 'Linear', 'Cubic', 'Quintic', 'Septic' ]
-			}
-			, number : [ 'capture_samplerate' ]
-			, param  : { type: 'AsyncSinc', interpolation: 'Cubic', capture_samplerate: '' }
-		}
-		, Synchronous    : {
-			  select : { type: Dkv.type }
-			, number : [ 'capture_samplerate' ]
-			, param  : { type: 'Synchronous', capture_samplerate: '' }
+		  AsyncSinc    : [
+			  Dlist.type
+			, Dlist.profile
+			, Dlist.capture_samplerate
+		]
+		, Custom       : [
+			  Dlist.type
+			, Dlist.profile
+			, [ 'Sinc length',         'number' ]
+			, [ 'Oversampling factor', 'number' ]
+			, [ 'F cutoff',            'number' ]
+			, [ 'Interpolation',       'select', [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ] ]
+			, [ 'Window',              'select', [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ] ]
+			, Dlist.capture_samplerate
+		]
+		, AsyncPoly    : [
+			  Dlist.type
+			, [ 'Interpolation',      'select', [ 'Linear', 'Cubic', 'Quintic', 'Septic' ] ]
+			, Dlist.capture_samplerate
+		]
+		, Synchronous : [
+			  Dlist.type
+			, Dlist.capture_samplerate
+		]
+		, values      : {
+			  AsyncSinc   : { type: 'AsyncSinc', profile: 'Balanced', capture_samplerate: '' }
+			, Custom      : { type: 'AsyncSinc', profile: 'Custom', sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9, interpolation: 'Cubic', window: 'Hann2', capture_samplerate: '' }
+			, AsyncPoly   : { type: 'AsyncSinc', interpolation: 'Cubic', capture_samplerate: '' }
+			, Synchronous : { type: 'Synchronous', capture_samplerate: '' }
 		}
 	}
 }
@@ -415,6 +567,7 @@ var graph    = {
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
 			return
 		}
+		
 		var filters = V.tab === 'filters';
 		var val     = $li.data( filters ? 'name' : 'index' );
 		V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
@@ -519,7 +672,9 @@ var graph    = {
 			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
 			elementScroll( $divgraph.parent() );
 			bannerHide();
-			$divgraph.append( '<i class="i-close graphclose"></i>' );
+			$divgraph
+				.append( '<i class="i-close graphclose"></i>' )
+				.removeClass( 'hide' );
 			$li.removeClass( 'disabled' );
 		}, 'json' );
 	}
@@ -684,10 +839,12 @@ var render   = {
 							+'</div>';
 			if ( k in V.graphlist ) licontent += V.graphlist[ k ];
 		} else {
+			var paramdata     = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type ) ? param.type : render.json2string( param );
 			var licontent =  '<div class="li1">'+ k +'</div>'
-							+'<div class="li2">'+ v.type +' · '+ render.json2string( param ) +'</div>';
+							+'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
-		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
+		var classeq = param.type === 'GraphicEqualizer' ? ' class="eq"' : '';
+		return '<li data-name="'+ k +'"'+ classeq +'>'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -827,7 +984,7 @@ var render   = {
 		$( '#devices .entries.main' ).html( li );
 		var labels = '';
 		var values = '';
-		Dkv.main.forEach( k => {
+		D0.main.forEach( k => {
 			if ( k in DEV ) {
 				labels += util.key2label( k ) +'<br>';
 				values += DEV[ k ].toLocaleString() +'<br>';
@@ -898,138 +1055,85 @@ var render   = {
 	}
 }
 var setting  = {
-	  filter        : ( type, subtype, name, newname ) => {
-		if ( name ) {
-			var ekv = { type : type }
-			$.each( FIL[ name ].parameters, ( k, v ) => ekv[ k === 'type' ? 'subtype' : k ] = v );
-		}
-		// select
-		var selectlabel = [ 'type' ];
-		var select      = [ jsonClone( F.type ) ];
-		var values      = { type: type }
-		if ( subtype ) {
-			selectlabel.push( 'subtype' )
-			select.push( jsonClone( F.subtype[ type ] ) );
-			values.subtype = subtype;
-			var key_val    = subtype in F ? jsonClone( F[ subtype ] ) : jsonClone( F[ type ] );
-			if ( subtype === 'Uniform' ) key_val.amplitude = 1;
-		}
-		if ( ! key_val ) var key_val = jsonClone( F[ type ] );
-		if ( 'select' in key_val ) {
-			var kv      = key_val.select;
-			var k       = Object.keys( kv );
-			selectlabel = [ ...selectlabel, ...k ];
-			if ( [ 'Raw', 'Wav' ].includes( subtype ) ) {
-				var lscoef = jsonClone( S[ subtype === 'Raw' ? 'lscoefraw' : 'lscoefwav' ] );
-				select     = [ ...select, lscoef ];
+	  filter        : ( type, subtype, name ) => {
+		var list  = subtype ? F[ type ][ subtype ] : F[ type ];
+		if ( type === 'Biquad' ) {
+			if ( [ 'Hig', 'Low' ].includes( subtype.slice( 0, 3 ) ) ) {
+				var vsubtype = subtype.replace( /High|Low/, '' );
+			} else if ( subtype.slice( -4 ) === 'pass' ) {
+				var vsubtype = 'notch';
+			} else if ( subtype === 'AllpassFO' ) {
+				var vsubtype = 'passFO';
+			} else {
+				var vsubtype = type;
 			}
-			if ( name ) k.forEach( key => kv[ key ] = ekv[ key ] );
-			values      = { ...values, ...kv };
+		} else if ( type === 'BiquadCombo' ) {
+			var vsubtype = [ 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ].includes( subtype ) ? subtype : type;
+		} else {
+			var vsubtype = type;
 		}
-		selectlabel     = util.labels2array( selectlabel );
-		// text
-		var textlabel   = [ 'name' ];
-		values.name     = name || newname;
-		if ( 'text' in key_val ) {
-			var kv    = key_val.text;
-			var k     = Object.keys( kv );
-			textlabel = [ ...textlabel, ...k ];
-			if ( name ) k.forEach( key => kv[ key ] = ekv[ key ] );
-			values    = { ...values, ...kv };
-		}
-		textlabel       = util.labels2array( textlabel );
-		// number
-		var numberlabel = false;
-		if ( 'number' in key_val ) {
-			var kv      = key_val.number;
-			var k       = Object.keys( kv );
-			numberlabel = k;
-			if ( name ) {
-				k.forEach( key => {
-					if ( [ 'q', 'samples' ].includes( key ) ) {
-						if ( ! ( 'q' in ekv ) ) {
-							delete kv.q;
-							key = 'samples';
-						}
-						numberlabel[ numberlabel.length - 1 ] = key;
-					}
-					kv[ key ] = ekv[ key ];
+		var values  = F.values[ vsubtype ];
+		values.type = type;
+		if ( subtype ) values.subtype = subtype;
+		if ( name ) {
+			values.name = name;
+			if ( subtype === 'FivePointPeq' ) {
+				Object.keys( F0.FivePointPeq ).forEach( k => {
+					values[ k ] = [];
+					F0.FivePointPeq[ k ].forEach( key => values[ k ].push( FIL[ name ].parameters[ key ] ) );
+				} );
+			} else if ( subtype === 'GraphicEqualizer' ) {
+				$.each( FIL[ name ].parameters, ( k, v ) => {
+					if ( k === 'type' ) return
+					
+					k === 'gains' ? values.bands = v.length : values[ k ] = v;
+				} );
+			} else {
+				$.each( FIL[ name ].parameters, ( k, v ) => {
+					if ( k === 'type' ) return
+					
+					values[ k ] = v;
 				} );
 			}
-			values      = { ...values, ...kv };
-			numberlabel = util.labels2array( numberlabel );
 		}
-		// radio - q / samples
-		var radio       = false;
-		if ( 'radio' in key_val ) {
-			radio  = key_val.radio;
-			values = { ...values, radio: numberlabel[ numberlabel.length - 1 ] };
-		}
-		// checkbox
-		var checkbox    = false;
-		if ( 'checkbox' in key_val ) {
-			var kv   = key_val.checkbox;
-			var k    = Object.keys( kv );
-			checkbox = util.labels2array( k );
-			if ( name ) k.forEach( key => kv[ key ] = ekv[ key ] );
-			values   = { ...values, ...kv };
-		}
-		if ( 'filename' in values ) values.filename = values.filename.split( '/' ).pop();
 		var title       = name ? 'Filter' : 'Add Filter';
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, selectlabel  : selectlabel
-			, select       : select
-			, textlabel    : textlabel
-			, numberlabel  : numberlabel
-			, radio        : radio
-			, radiosingle  : true
-			, checkbox     : checkbox
+			, list         : list
 			, boxwidth     : 198
-			, order        : [ 'select', 'text', 'number', 'radio', 'checkbox' ]
 			, values       : values
 			, checkblank   : true
-			, checkchanged : name
+			, checkchanged : name in FIL
 			, beforeshow   : () => {
+				if ( subtype === 'FivePointPeq' ) $( '#infoContent table' ).after( '&emsp;&emsp;<gr>freq, gain, q<gr><br>&nbsp;' );
 				$( '#infoContent td:first-child' ).css( 'min-width', '125px' );
-				var $tdname = $( '#infoContent td' ).filter( function() {
-					return $( this ).text() === 'Name'
+				var $select = $( '#infoContent select' );
+				$select.eq( 0 ).on( 'input', function() {
+					var val     = infoVal();
+					var subtype = val.type in F0.subtype ? F0.subtype[ val.type ][ 2 ][ 0 ] : '';
+					setting.filter( val.type, subtype, val.name );
 				} );
-				$( '#infoContent tr' ).eq( 0 ).before( $tdname.parent() );
-				var $select     = $( '#infoContent select' );
-				var $selecttype = $select.eq( 0 );
-				$selecttype.on( 'input', function() {
-					var typenew    = $( this ).val();
-					var subtypenew = typenew in F.subtype ? F.subtype[ typenew ][ 0 ] : '';
-					setting.filter( typenew, subtypenew, '', infoVal().name );
-				} );
-				if ( $select.length > 1 ) {
+				if ( subtype ) {
 					$select.eq( 1 ).on( 'input', function() {
-						var typenew    = $selecttype.val();
-						var subtypenew = $( this ).val();
-						var namenew    = infoVal().name;
-						if ( typenew === 'Conv' && [ 'Raw', 'Wav' ].includes( subtypenew ) && ! S.lscoeffs.length ) {
+						var val = infoVal();
+						if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.lscoeffs.length ) {
 							info( {
 								  icon    : V.tab
 								, title   : title
 								, message : 'Filter files not available.'
-								, ok      : () => setting.filter( 'Conv', subtype, '', namenew )
+								, ok      : () => setting.filter( 'Conv', subtype, val.name )
 							} );
 						} else {
-							setting.filter( typenew, subtypenew, '', namenew );
+							setting.filter( val.type, val.subtype, val.name );
 						}
 					} );
 				}
-				if ( radio ) {
-					var $tr    = $( '#infoContent .trradio' ).prev();
-					var itr    = $tr.index()
-					var $label = $tr.find( 'td' ).eq( 0 );
-					var $radio = $( '#infoContent input:radio' );
+				var $radio = $( '#infoContent input:radio' );
+				if ( $radio.length ) {
+					var $label = $radio.parents( 'tr' ).prev().find( 'td' ).eq( 0 );
 					$radio.on( 'input', function() {
-						var val       = $( this ).filter( ':checked' ).val();
-						I.keys[ itr ] = val.toLowerCase();
-						$label.text( val );
+						$label.text( $( this ).filter( ':checked' ).parent().text() );
 					} );
 				}
 			}
@@ -1040,19 +1144,37 @@ var setting  = {
 				subtype     = val.subtype;
 				if ( type === 'DiffEq' ) {
 					[ 'a', 'b' ].forEach( k => val[ k ] = util.list2array( val[ k ] ) );
-				} else if ( type === 'Conv' && subtype === 'Values' ) {
+				} else if ( subtype === 'FivePointPeq' ) {
+					Object.keys( F0.FivePointPeq ).forEach( k => {
+						var v = util.list2array( val[ k ] );
+						F0.FivePointPeq[ k ].forEach( ( key, i ) => {
+							val[ key ] = v[ i ];
+						} );
+						delete val[ k ];
+					} );
+				} else if ( subtype === 'GraphicEqualizer' ) {
+					var bands = val.bands;
+					delete val.bands;
+					val.gains = Array( bands ).fill( 0 );
+				} else if ( subtype === 'Values' ) {
 					val.values = util.list2array( val.values );
 				}
 				var param = {}
 				if ( 'subtype' in val ) param.type = subtype;
-				[ 'name', 'type', 'subtype', 'radio' ].forEach( k => delete val[ k ] );
+				[ 'name', 'type', 'subtype' ].forEach( k => delete val[ k ] );
+				if ( 'q' in values && 'unit' in values ) {
+					var q    = val.q;
+					var unit = val.unit;
+					[ 'q', 'bandwidth', 'slope', 'unit' ].forEach( k => delete val[ k ] );
+					val[ unit ] = q;
+				}
 				$.each( val, ( k, v ) => param[ k ] = v );
 				if ( 'filename' in param ) {
 					param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
 					if ( subtype === 'Raw' ) param.format = 'TEXT';
 				}
 				FIL[ newname ] = { type: type, parameters : param }
-				if ( name !== newname ) {
+				if ( name in FIL && name !== newname ) {
 					delete FIL[ name ];
 					PIP.forEach( p => {
 						if ( p.type === 'Filter' ) {
@@ -1188,46 +1310,33 @@ var setting  = {
 		}
 	} //---------------------------------------------------------------------------------------------
 	, processor     : name => {
-		var title  = name ? 'Processor' : 'Add Processor'
-		var param  = [ 'select', 'number', 'checkbox', 'text' ];
-		var label  = {};
-		param.forEach( k => label[ k ] = util.labels2array( Object.keys( P[ k ] ) ) );
-		var values = jsonClone( P.param );
+		var type   = name ? PRO[ name ].type : 'Compressor';
+		var values = jsonClone( P.values[ type ] );
 		if ( name ) {
 			$.each( PRO[ name ].parameters, ( k, v ) => values[ k ] = v );
 			values.name = name;
 		}
+		var title  = name ? 'Processor' : 'Add Processor'
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, selectlabel  : label.select
-			, select       : Object.values( P.select )
-			, numberlabel  : label.number
-			, textlabel    : label.text
-			, checkbox     : label.checkbox
-			, order        : param
+			, list         : name ? P[ PRO[ name ].type ] : P.Compressor
 			, boxwidth     : 150
 			, values       : values
 			, checkblank   : true
 			, checkchanged : name
-			, beforeshow   : () => {
-				var $tr = $( '#infoContent tr' );
-				$tr.first().before( $tr.last() )
-			}
 			, ok           : () => {
 				var val = infoVal();
-				var v   = {};
-				[ 'name', 'type' ].forEach( k => {
-					v[ k ] = val[ k ];
-					delete val[ k ];
-				} );
+				var typenew = val.type;
+				var namenew = val.name;
+				[ 'name', 'type' ].forEach( k => delete val[ k ] );
 				[ 'monitor_channels', 'process_channels' ].forEach( k => val[ k ] = util.list2array( val[ k ] ) );
 				if ( ! PRO ) {
 					S.config.processors = {}
 					PRO = S.config.processors;
 				}
-				PRO[ v.name ] = { type: v.type, parameters: val }
-				console.log( S.config );
+				PRO[ namenew ] = { type: v.type, parameters: val }
+				if ( name in PRO && name !== namenew ) delete PRO[ name ];
 				setting.save( title, name ? 'Change ...' : 'Save ...' );
 				render.processors();
 			}
@@ -1296,95 +1405,35 @@ var setting  = {
 		render.sortable( k );
 	} //---------------------------------------------------------------------------------------------
 	, device        : ( dev, type ) => {
-		var k, key_val, kv, s, v;
-		var data        = jsonClone( DEV[ dev ] );
-		var type        = type || data.type;
-		// select
-		var selectlabel = [ 'type' ];
-		var select      = [ jsonClone( V.devicetype[ dev ] ) ];
-		var values      = { type: type }
-		key_val         = jsonClone( D[ dev ][ type ] );
-		if ( 'select' in key_val ) {
-			kv          = key_val.select;
-			k           = Object.keys( kv );
-			k.forEach( key => {
-				if ( key === 'format' ) {
-					var format = dev === 'playback' ? S.format : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ];
-					s          = {};
-					format.forEach( k => {
-						var label = k
-									.replace( 'FLOAT', 'Float' )
-									.replace( 'TEXT',  'Text' );
-						s[ label ] = k;
-					} );
-					v = { format: data.format };
-				} else if ( key === 'device' ) {
-					s = jsonClone( V.devices[ dev ] );
-					v = { device: data.device };
-				} else if ( key === 'filename' ) {
-					s   = S.lscoef.length ? S.lscoeffs : [ '(n/a)' ];
-					v   = { filename: data.filename };
-				}
-				selectlabel = [ ...selectlabel, key ];
-				select      = [ ...select, s ];
-				values      = { ...values, ...v };
-			} );
-		}
-		selectlabel     = util.labels2array( selectlabel );
-		// text
-		var textlabel = false;
-		if ( 'text' in key_val ) {
-			kv        = key_val.text;
-			k         = Object.keys( kv );
-			textlabel = util.labels2array( k );
-			k.forEach( key => {
-				if ( key in data ) kv[ key ] = data[ key ];
-			} );
-			values    = { ...values, ...kv };
-		}
-		// number
-		var numberlabel = false;
-		if ( 'number' in key_val ) {
-			kv          = key_val.number;
-			k           = Object.keys( kv );
-			numberlabel = util.labels2array( k );
-			k.forEach( key => {
-				if ( key in data ) kv[ key ] = data[ key ];
-			} );
-			values      = { ...values, ...kv };
-		}
-		// checkbox
-		var checkbox    = false;
-		if ( 'checkbox' in key_val ) {
-			kv       = key_val.checkbox;
-			k        = Object.keys( kv );
-			checkbox = util.labels2array( k );
-			k.forEach( key => {
-				if ( key in data ) kv[ key ] = data[ key ];
-			} );
-			values   = { ...values, ...kv };
-		}
-		$.each( v, ( k, v ) => values[ k ] = v );
-		var title = util.key2label( dev );
+		var type    = type || 'Alsa';
+		var vtype   = type === 'File' && dev === 'playback' ? 'FileP' : type;
+		var values  = jsonClone( D.values[ vtype ] );
+		values.type = type;
+		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => values[ k ] = DEV[ dev ][ k ] );
+		var title   = util.key2label( dev );
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, selectlabel  : selectlabel
-			, select       : select
-			, textlabel    : textlabel
-			, numberlabel  : numberlabel
-			, checkbox     : checkbox
+			, list         : D[ dev ][ type ]
 			, boxwidth     : 198
-			, order        : [ 'select', 'text', 'number', 'checkbox' ]
 			, values       : values
 			, checkblank   : true
-			, checkchanged : type === data.type
+			, checkchanged : true
 			, beforeshow   : () => {
 				$( '#infoContent input[type=number]' ).css( 'width', '70px' );
 				$( '#infoContent td:first-child' ).css( 'width', '128px' );
-				var $select = $( '#infoContent select' );
-				$select.eq( 0 ).on( 'input', function() {
-					setting.device( dev, $( this ).val() );
+				$( '#infoContent select' ).eq( 0 ).on( 'input', function() {
+					var typenew = $( this ).val();
+					if ( typenew === 'File' && ! S.lsraw.length ) {
+						info( {
+							  icon    : V.tab
+							, title   : title
+							, message : 'No raw files available.'
+							, ok      : () => setting.device( dev, type )
+						} );
+					} else {
+						setting.device( dev, typenew );
+					}
 				} );
 			}
 			, ok           : () => {
@@ -1394,30 +1443,25 @@ var setting  = {
 		} );
 	}
 	, main          : () => {
-		var textlabel  = [ ...Dkv.main ].slice( 1 );
-		textlabel.push( 'Other' );
-		var values     = {};
-		Dkv.main.forEach( k => values[ k ] = DEV[ k ] );
-		var samplerate = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ];
-		if ( ! samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
-		values.other = values.samplerate;
+		var values = {};
+		D0.main.forEach( k => {
+			values[ k ] = DEV[ k ];
+			if ( k === 'samplerate' ) values.other = DEV.samplerate;
+		} );
+		if ( ! D0.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
 		var title = util.key2label( V.tab );
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, selectlabel  : [ 'Sample Rate' ]
-			, select       : [ samplerate ]
-			, textlabel    : util.labels2array( textlabel )
+			, list         : D.main
 			, boxwidth     : 120
-			, order        : [ 'select', 'text' ]
 			, values       : values
 			, checkblank   : true
 			, checkchanged : true
 			, beforeshow   : () => {
-				$( '.trselect' ).after( $( 'tr' ).last() );
-				var $trother = $( '.trtext' ).eq( 0 );
+				var $trother = $( '#infoContent tr' ).eq( 1 );
 				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
-				$( '.trselect select' ).on( 'input', function() {
+				$( '#infoContent select' ).on( 'input', function() {
 					var rate  = $( this ).val();
 					var other = rate === 'Other';
 					$trother.toggleClass( 'hide', ! other );
@@ -1436,18 +1480,15 @@ var setting  = {
 	} //---------------------------------------------------------------------------------------------
 	, resampler     : ( type, profile ) => {
 		var Dtype  = D.resampler[ type ];
-		var values = Dtype.param;
+		var values = D.resampler.values[ type ];
+		if (profile ) values.profile = profile;
 		if ( S.resampler ) DEV.resample.each( ( k, v ) => values[ k ] = v );
 		values.capture_samplerate = DEV.capture_samplerate || DEV.samplerate;
-		if ( profile ) values.profile = profile;
 		info( {
 			  icon         : V.tab
 			, title        : SW.title
-			, selectlabel  : util.labels2array( Object.keys( Dtype.select ) )
-			, select       : Object.values( Dtype.select )
-			, numberlabel  : util.labels2array( Dtype.number )
+			, list         : Dtype
 			, boxwidth     : 160
-			, order        : [ 'select', 'number' ]
 			, values       : values
 			, checkblank   : true
 			, checkchanged : S.resampler
@@ -1456,16 +1497,15 @@ var setting  = {
 				$select.eq( 0 ).on( 'input', function() {
 					setting.resampler( $( this ).val() );
 				} );
-				if ( type.slice( 0, 9 ) === 'AsyncSinc' ) {
+				if ( values.type === 'AsyncSinc' ) {
 					$select.eq( 1 ).on( 'input', function() {
 						var profile = $( this ).val();
-						setting.resampler( profile === 'Custom' ? 'AsyncSincCustom' : 'AsyncSinc', profile );
+						if ( type === 'Custom' ) {
+							setting.resampler( 'AsyncSinc', profile );
+						} else {
+							if ( profile === 'Custom' ) setting.resampler( 'Custom' );
+						}
 					} );
-					if ( type === 'AsyncSincCustom' ) {
-						var $tbody = $( '#infoContent tbody' );
-						$( '.trselect' ).slice( 2, 4 ).appendTo( $tbody );
-						$( '.trnumber' ).last().appendTo( $tbody );
-					}
 				}
 			}
 			, cancel       : switchCancel
@@ -1605,6 +1645,8 @@ var util     = {
 		return str + key
 	}
 	, labels2array : array => {
+		if ( ! array ) return false
+		
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
@@ -1755,6 +1797,7 @@ var util     = {
 					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
+					if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) );
 					render.page();
 					render.tab();
 					break;
@@ -1766,17 +1809,18 @@ var util     = {
 						  capture  : value[ 1 ].sort()
 						, playback : value[ 0 ].sort()
 					};
-					[ 'devices', 'devicetype' ].forEach( k => V[ k ] = { capture: {}, playback: {} } );
+					var type = {};
 					[ 'capture', 'playback' ].forEach( k => {
-						S.devices[ k ].forEach( d => {
-							v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
-							V.devices[ k ][ v ] = d;
-						} );
+						type[ k ] = {};
 						S.devicetype[ k ].forEach( t => {
 							v = render.typeReplace( t );
-							V.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
+					Dlist.typeC[ 2 ]   = type.capture;
+					Dlist.typeP[ 2 ]   = type.playback;
+					Dlist.deviceC[ 2 ] = S.devices.capture;
+					Dlist.deviceP[ 2 ] = S.devices.playback;
 					showContent();
 					render.status();
 					render.tab();
@@ -2226,6 +2270,49 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	graph.gain();
+} ).on( 'click', 'li.eq', function( e ) {
+	if ( $( e.target ).parents( '.divgraph' ).length ) return
+	
+	var name  = $( this ).data( 'name' );
+	var param = FIL[ name ].parameters;
+	var bands = param.gains.length;
+	var min   = Math.log10( param.freq_min );
+	var max   = Math.log10( param.freq_max );
+	var width = ( max - min ) / bands;
+	var v0    = min + width / 2;
+	var v     = [ v0 ];
+	for ( i = 0; i < bands - 1; i++ ) {
+		v0 += width;
+		v.push( v0 );
+	}
+	var labelhz = '';
+	v.forEach( val => {
+		var hz = Math.round( Math.pow( 10, val ) );
+		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k'
+		labelhz += '<a>'+ hz +'</a>';
+	} );
+	var content   = `
+<div id="eq">
+<div class="label up">${ labelhz }</div>
+<div class="bottom"><div class="label dn">${ labelhz }</div></div>
+<div id="infoRange" class="vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
+</div>`;
+	info( {
+		  icon         : 'equalizer'
+		, title        : name
+		, content      : content
+		, width        : 50 * bands + 40
+		, contentcssno : true
+		, values       : param.gains
+		, beforeshow   : () => {
+			$( '#infoRange input' ).on( 'input', function() {
+				var $this = $( this );
+				param.gains[ $this.index() ] = +$this.val();
+				setting.save( name, 'Change ...' );
+			} );
+		}
+		, okno         : true
+	} );
 } );
 $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );

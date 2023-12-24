@@ -155,7 +155,7 @@ tr .i-remove {
 	width: 100% !important;
 	height: 40px !important;
 }
-input[ type=range ] {
+.container input[ type=range ] {
 	--track: linear-gradient( 90deg, transparent 10px, var( --cga ) 10px, var( --cga ) calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cga );
 	max-width: 230px;
@@ -415,6 +415,15 @@ i.disabled,
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
+#eq {
+	height: 385px !important;
+}
+#eq .vertical::before {
+	right: 150px !important;
+}
+#eq .bottom {
+	font-size: 16px !important;
+}
 @media (max-width: 700px) {
 	#mixers .i-inverted { display: none }
 }
@@ -429,7 +438,7 @@ i.disabled,
 	}
 }
 @media (max-width: 570px) {
-	input[ type=range ] { width: 100% }
+	.container input[ type=range ] { width: 100% }
 	.divgain { display: none !important }
 }
 @media (max-width: 500px) {

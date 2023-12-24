@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231223
+[[ -e $dircamilladsp && ! -e $dircamilladsp/raw ]] && mkdir -p $dircamilladsp/raw
+
 if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 2.0.0' ]]
 	systemctl stop camilladsp
 	pacman -Sy --needed --noconfirm camilladsp

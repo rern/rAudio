@@ -45,7 +45,8 @@ data='
 , "state"      : "'$state'"
 , "volume"     : '$volume'
 , "volumemute" : '$volumemute
-for dir in coeffs configs configs-bt; do
+dirs=$( ls $dircamilladsp )
+for dir in $dirs; do
 ########
 	data+='
 , "ls'$dir'" : [ '$( ls -1 $dircamilladsp/$dir | tr '\n' ^ | sed 's/\^$/"/; s/^/"/; s/\^/", "/g' )' ]'

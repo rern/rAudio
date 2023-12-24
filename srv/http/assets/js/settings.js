@@ -124,7 +124,7 @@ function refreshData() {
 			switchSet();
 			renderPage();
 		} else {
-			$( '#data' ).html( highlightJSON( S ) )
+			page === 'camilla' ? renderPage() : $( '#data' ).html( highlightJSON( S ) );
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
 	} );

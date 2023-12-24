@@ -421,6 +421,39 @@ function info( json ) {
 	
 	if ( I.content ) { // custom html content
 		var htmlcontent = I.content;
+	} else if ( I.list ) {
+		i = 0; // for radio name
+		var htmlcontent = '<table>';
+		I.list.forEach( l => {
+			var label = l[ 0 ];
+			var type  = l[ 1 ];
+			htmlcontent += '<tr class="tr'+ type +'"><td>'+ ( type === 'checkbox' ? '' : label ) +'</td><td>';
+			switch ( type ) {
+				case 'text':
+				case 'number':
+				case 'password':
+					htmlcontent += '<input type="'+ type +'"></td></tr>';
+					break;
+				case 'textarea':
+					htmlcontent += '<textarea></textarea></td></tr>';
+					break;
+				case 'checkbox':
+					htmlcontent += '<label><input type="checkbox">'+ label +'</label></td></tr>';
+					break;
+				case 'radio':
+					var isarray = $.isArray( l[ 2 ] );
+					$.each( l[ 2 ], ( k, v ) => {
+						var k = isarray ? v : k;
+						htmlcontent += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>&emsp;';
+					} );
+					htmlcontent += '</td></tr>';
+					i++;
+					break;
+				case 'select':
+					htmlcontent += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td></tr>';
+			}
+		} );
+		htmlcontent += '</table>';
 	} else {
 		var htmls = {};
 		[ 'header', 'message', 'footer' ].forEach( k => {
