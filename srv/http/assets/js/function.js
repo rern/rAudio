@@ -970,7 +970,7 @@ function playbackStatusGet( withdisplay ) {
 	} );
 }
 function playlistInsert( indextarget ) {
-	var plname = $( '#pl-path .lipath' ).text();
+	var plname = $( '#savedpl-path .lipath' ).text();
 	bash( [ 'savedpledit', plname, 'add', indextarget, V.pladd.file, 'CMD NAME TYPE TO FILE' ], () => {
 		renderSavedPlTrack( plname );
 		if ( indextarget === 'last' ) {

@@ -388,7 +388,7 @@ function psSavedPlaylists( data ) {
 	if ( V.savedpl ) {
 		count ? renderSavedPl( data ) : $( '#playlist' ).trigger( 'click' );
 	} else if ( V.savedpltrack ) {
-		if ( 'delete' in data && $( '#pl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
+		if ( 'delete' in data && $( '#savedpl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 	}
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 	$( '#mode-playlists gr' ).text( count || '' );
