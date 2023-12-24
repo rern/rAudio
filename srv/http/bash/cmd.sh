@@ -386,7 +386,11 @@ equalizer )
 	pushData equalizer $( < $dirsystem/equalizer.json )
 	;;
 equalizerget )
-	cat $dirsystem/equalizer.json 2> /dev/null || echo false
+	if [[ -e $dirsystem/equalizer.json ]]; then
+		cat $dirsystem/equalizer.json
+	else
+		echo '{ "active": "Flat", "preset": { "Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ] } }'
+	fi
 	;;
 equalizerset ) # slide
 	sudo -u $USER amixer -MqD equal sset "$BAND" $VAL
