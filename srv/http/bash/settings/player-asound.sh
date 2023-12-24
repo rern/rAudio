@@ -109,7 +109,7 @@ else
 			amixer -MqD bluealsa sset "$bluetooth" $btvolume% 2> /dev/null
 		fi
 	fi
-	if [[ -e $dirsystem/equalizer ]]; then
+	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
 		value=$( sed -E -n '/"current":/ {s/.*: "(.*)",/\1/; p}' $dirsystem/equalizer.json )
 		[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
 		$dirbash/cmd.sh "equalizer
