@@ -389,7 +389,12 @@ equalizerget )
 	if [[ -e $dirsystem/equalizer.json ]]; then
 		cat $dirsystem/equalizer.json
 	else
-		echo '{ "active": "Flat", "preset": { "Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ] } }'
+		echo '{
+  "active" : "Flat"
+, "preset" : {
+		"Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]
+	}
+}'
 	fi
 	;;
 equalizerset ) # slide
