@@ -2,7 +2,7 @@ r A u d i o
 ---
 Audio player for 
 - **Raspberry Pi**s:
-	- 64bit: `4` `3` `2` `Zero 2`
+	- 64bit: `5` `4` `3` `2` `Zero 2`
 	- 32bit: `2 (BCM2836)`
 	- Legacy: `1` `Zero`
 - BeagleBone Black
