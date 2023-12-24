@@ -2276,10 +2276,10 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	var name  = $( this ).data( 'name' );
 	var param = FIL[ name ].parameters;
 	var bands = param.gains.length;
-	var min   = Math.log10( param.freq_min );
-	var max   = Math.log10( param.freq_max );
-	var width = ( max - min ) / bands;
-	var v0    = min + width / 2;
+	var min   = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
+	var max   = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
+	var width = ( max - min ) / bands;        // log10 / band
+	var v0    = min + width / 2;              // log10 midband
 	var v     = [ v0 ];
 	for ( i = 0; i < bands - 1; i++ ) {
 		v0 += width;
@@ -2287,7 +2287,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	}
 	var labelhz = '';
 	v.forEach( val => {
-		var hz = Math.round( Math.pow( 10, val ) );
+		var hz = Math.round( Math.pow( 10, val ) ); // log10 > Hz
 		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k'
 		labelhz += '<a>'+ hz +'</a>';
 	} );
