@@ -64,7 +64,7 @@ camilladsp )
 			format=${formats[i]}
 			sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $configfile
 			camilladsp $configfile &> /dev/null &
-			sleep 1
+			sleep 0.5
 			if pgrep -x camilladsp &> /dev/null; then
 				killall camilladsp
 				break
