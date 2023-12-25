@@ -170,6 +170,7 @@ var F        = {
 			, [ 'Peaking 2', 'text' ] // fp2, gp2, qp2
 			, [ 'Peaking 3', 'text' ] // fp3, gp3, qp3
 			, [ 'Highshelf', 'text' ] // fhs, ghs, qhs
+			, [ '',          '', '&nbsp;<c>freq, gain, q</c>' ]
 		]
 		, GraphicEqualizer     : [
 			  ...F1.combo.slice( 0, 3 )
@@ -843,8 +844,11 @@ var render   = {
 			var licontent =  '<div class="li1">'+ k +'</div>'
 							+'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
-		var classeq = param.type === 'GraphicEqualizer' ? ' class="eq"' : '';
-		return '<li data-name="'+ k +'"'+ classeq +'>'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
+		if ( param.type === 'GraphicEqualizer' ) {
+			return '<li data-name="'+ k +'" class="eq">'+ ico( 'equalizer liicon edit graph' ) + licontent  +'</li>'
+		} else {
+			return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>'
+		}
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -1106,7 +1110,6 @@ var setting  = {
 			, checkblank   : true
 			, checkchanged : name in FIL
 			, beforeshow   : () => {
-				if ( subtype === 'FivePointPeq' ) $( '#infoContent table' ).after( '&emsp;&emsp;<gr>freq, gain, q<gr><br>&nbsp;' );
 				$( '#infoContent td:first-child' ).css( 'min-width', '125px' );
 				var $select = $( '#infoContent select' );
 				$select.eq( 0 ).on( 'input', function() {
@@ -1189,6 +1192,9 @@ var setting  = {
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
+	, filterEqFlat  : () => {
+		
+	}
 	, mixer         : name => {
 		var title = name ? 'Mixer' : 'Add Mixer'
 		info( {
@@ -2291,12 +2297,13 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k'
 		labelhz += '<a>'+ hz +'</a>';
 	} );
-	var content   = `
+	var content = `
 <div id="eq">
 <div class="label up">${ labelhz }</div>
 <div class="bottom"><div class="label dn">${ labelhz }</div></div>
 <div id="infoRange" class="vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
 </div>`;
+	var flatButton = () => $( '#infoOk' ).toggleClass( 'disabled', param.gains.reduce( ( a, b ) => a + b, 0 ) === 0 );
 	info( {
 		  icon         : 'equalizer'
 		, title        : name
@@ -2305,13 +2312,34 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 		, contentcssno : true
 		, values       : param.gains
 		, beforeshow   : () => {
+			flatButton();
 			$( '#infoRange input' ).on( 'input', function() {
 				var $this = $( this );
 				param.gains[ $this.index() ] = +$this.val();
-				setting.save( name, 'Change ...' );
+				setting.save();
+				flatButton();
+			} );
+			$( '#eq .label a' ).on( 'click', function() {
+				var $this = $( this );
+				var i     = $this.index();
+				var gain  = param.gains[ i ];
+				$this.parent().hasClass( 'up' ) ? gain++ : gain--;
+				$( '#infoRange input' ).eq( i ).val( gain );
+				param.gains[ i ] = gain;
+				setting.save();
+				flatButton();
 			} );
 		}
-		, okno         : true
+		, oklabel      : ico( 'set0' ) +'Flat'
+		, oknoreset    : true
+		, ok           : () => {
+			$( '#infoRange input' )
+				.val( 0 )
+				.trigger( 'input' );
+			$( '#infoOk' ).addClass( 'disabled' );
+			param.gains = Array( bands ).fill( 0 );
+			setting.save();
+		}
 	} );
 } );
 $( '#mixers' ).on( 'click', 'li', function( e ) {

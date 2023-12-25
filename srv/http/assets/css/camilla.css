@@ -422,7 +422,7 @@ i.disabled,
 	right: 150px !important;
 }
 #eq .bottom {
-	font-size: 16px !important;
+	bottom: 50px !important;
 }
 @media (max-width: 700px) {
 	#mixers .i-inverted { display: none }

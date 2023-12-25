@@ -303,7 +303,7 @@ function info( json ) {
 	$infocontent = $( '#infoContent' );
 	
 	// title
-	if ( I.width ) $( '#infoBox' ).css( 'width', I.width );
+	if ( I.width ) $( '#infoBox' ).css( 'min-width', I.width );
 	if ( I.height ) $( '#infoContent' ).css( 'height', I.height );
 	if ( I.icon ) {
 		I.icon.charAt( 0 ) !== '<' ? $( '#infoIcon' ).addClass( 'i-'+ I.icon ) : $( '#infoIcon' ).html( I.icon );
@@ -451,6 +451,10 @@ function info( json ) {
 					break;
 				case 'select':
 					htmlcontent += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td></tr>';
+					break;
+				default: // generic string
+					htmlcontent += l[ 2 ] +'</td></tr>'
+					break;
 			}
 		} );
 		htmlcontent += '</table>';
