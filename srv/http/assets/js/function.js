@@ -1056,7 +1056,7 @@ function playlistFilter() {
 	}
 }
 function playlistGet() {
-	list( { playlist: 'current' }, ( data ) => renderPlaylist( data ), 'json' );
+	list( { playlist: 'current' }, data => renderPlaylist( data ), 'json' );
 }
 function playlistRemove( $li ) {
 	if ( $( '#pl-list li' ).length === 1 ) {
