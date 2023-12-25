@@ -30,7 +30,7 @@ $control
 $card"
 
 if [[ $poweroff ]]; then
-	$dirbash/power.sh
+	$dirbash/power.sh off
 elif [[ -e $dirshm/relayson ]]; then
 	$dirbash/relays.sh off
 fi
