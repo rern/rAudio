@@ -705,15 +705,11 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	pushSavedPlaylist
 	;;
 savedplrename )
-	plfile="$dirplaylists/$NEWNAME.m3u"
-	if [[ $REPLACE ]]; then
-		rm -f "$plfile"
-	elif [[ -e "$plfile" ]]; then
-		echo -1
-		exit
+	if [[ ! $REPLACE ]]; then
+		mpc lsplaylists | grep -q "$NEWNAME" && echo -1 && exit
 	fi
 	
-	mv "$dirplaylists/$NAME.m3u" "$plfile"
+	mpc renplaylist "$NAME" "$NEWNAME"
 	pushSavedPlaylist
 	;;
 savedplsave )
