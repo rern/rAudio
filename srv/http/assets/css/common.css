@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1702708712' );
+	src         : url( '/assets/fonts/rern.woff2?v=1703385854' );
 }
 @font-face {
 	font-family : Lato;
@@ -309,11 +309,6 @@ body {
 }
 #data .data {
 	margin-top: 50px;
-}
-#data g,
-#data gr,
-#data .gr {
-	color: var( --cw ) !important;
 }
 
 #debug {
