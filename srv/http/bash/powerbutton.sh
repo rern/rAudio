@@ -27,4 +27,4 @@ else
 	gpio -1 wfi $sw falling
 fi
 
-/srv/http/bash/power.sh
+/srv/http/bash/power.sh off
