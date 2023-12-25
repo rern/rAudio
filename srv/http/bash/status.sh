@@ -72,7 +72,6 @@ else
 , "card"         : '$card'
 , "control"      : "'$control'"
 , "counts"       : '$( getContent $dirmpd/counts )'
-, "file"         : ""
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
@@ -123,13 +122,14 @@ if [[ $player != mpd && $player != upnp ]]; then
 		status+='
 , "Album"     : "'$( getContent $dirairplay/Album )'"
 , "Artist"    : "'$( getContent $dirairplay/Artist )'"
-, "Title"     : "'$( getContent $dirairplay/Title )'"
 , "coverart"  : "/data/shm/airplay/coverart.jpg"
 , "elapsed"   : '$elapsed'
+, "file"      : ""
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"     : "'$state'"
 , "Time"      : '$Time'
-, "timestamp" : '$timestamp
+, "timestamp" : '$timestamp'
+, "Title"     : "'$( getContent $dirairplay/Title )'"'
 		;;
 	bluetooth )
 ########
@@ -200,7 +200,6 @@ for line in "${lines[@]}"; do
 done
 
 [[ $playlistlength ]] && pllength=$playlistlength || pllength=0
-status=$( grep -v '^, "file"' <<< $status )
 ########
 status+='
 , "file"      : "'$file'"
