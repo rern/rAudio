@@ -49,11 +49,6 @@ if [[ $1 == withdisplay ]]; then
 }'
 fi
 
-comsume_pos=( $( mpc status '%consume% %songpos%' ) )
-[[ ${comsume_pos[0]} == on ]] && consume=true
-pos=${comsume_pos[1]}                 # mpc songpos : start at 1
-(( $pos > 0 )) && song=$(( pos - 1 )) # mpd song    : start at 0
-
 if [[ $1 == snapclient ]]; then
 	snapclient=1
 	player=mpd
@@ -75,7 +70,6 @@ else
 , "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
-, "consume"      : '$consume'
 , "control"      : "'$control'"
 , "counts"       : '$( getContent $dirmpd/counts )'
 , "file"         : ""
@@ -166,18 +160,10 @@ $( < $dirshm/spotify/status )"
 	outputStatus
 fi
 
-(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
-
-# status with mpc
-#. <( mpc status 'state=%state%; pos=%songpos%; pllength=%length%; random=%random%; repeat=%repeat%; single=%single%; consume=%consume%' | sed 's/=off/=false/g; s/=on/=true/g' )
-#[[ $state != stopped ]] && \
-#. <( mpc playlist -f 'Album="%album%"; AlbumArtist="%albumartist%"; Artist="%artist%"; Composer="%composer%"; Conductor="%conductor%"; file="%file%"; time=%time%; Title="%title%"; bitdepth=%bits%; samplerate=%samplerate%; bitrate=%kbitrate%; currenttime=%currenttime%' | sed "$pos q;d" )
-#song=$(( pos + 1 ))
-#Time=$(( ${time:0:-3} * 60 + ${time: -2} ))
-#elpased=$(( ${currenttime:0:-3} * 60 + ${currenttime: -2} ))
-
+pos=$( mpc status %songpos% )
+(( $pos > 0 )) && song=$(( pos - 1 )) || song=0 # mpd song    : start at 0
 filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file state Time Title'
-[[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
+[[ ! $snapclient ]] && filter+=' playlistlength consume random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
 readarray -t lines <<< $( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
 								| telnet 127.0.0.1 6600 2> /dev/null \
@@ -204,7 +190,7 @@ for line in "${lines[@]}"; do
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
 			file=$( stringEscape "$val" )
 			;;   # escape " for json
-		random | repeat | single )
+		consume | random | repeat | single )
 			[[ $val == 1 ]] && val=true || val=false
 ########
 			status+='
@@ -233,6 +219,7 @@ if [[ $pllength  == 0 && ! $snapclient ]]; then
 # >>>>>>>>>> empty playlist
 	outputStatus
 fi
+(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 fileheader=${file:0:4}
 [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true # webradio dab upnp
 if [[ $fileheader == cdda ]]; then
