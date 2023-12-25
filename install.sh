@@ -7,7 +7,7 @@ alias=r1
 # 20231223
 [[ -e $dircamilladsp && ! -e $dircamilladsp/raw ]] && mkdir -p $dircamilladsp/raw
 
-if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 2.0.0' ]]
+if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 2.0.0' ]]; then
 	systemctl stop camilladsp
 	pacman -Sy --needed --noconfirm camilladsp
 	readarray -t files <<< $( grep -rl enable_resampling $dircamilladsp )
