@@ -276,8 +276,8 @@ function psOrder( data ) {
 function psPlaylist( data ) {
 	if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 	
-	if ( 'skip' in data ) {
-		S.song = data.skip;
+	if ( 'song' in data ) {
+		$.each( data, ( k, v ) => S[ k ] = v );
 		if ( V.playlist ) setPlaylistScroll();
 		return
 	}

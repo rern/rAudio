@@ -616,6 +616,15 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
+	if [[ $ACTION ]]; then # playlist
+		mpc -q play $POS
+		Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
+		[[ $Time == 0 ]] && Time=false
+		[[ $ACTION == stop ]] && mpc -q stop
+		pushData playlist '{ "song": '$(( POS - 1 ))', "elapsed": 0, "Time": '$Time', "state": "'$ACTION'" }'
+		exit
+	fi
+	
 	touch $dirshm/skip
 	. <( mpc status 'state=%state%; consume=%consume%' )
 	$dirbash/cmd-pskipdata.sh $POS &
@@ -631,7 +640,7 @@ mpcskip )
 		rm -f $dirshm/skip
 		[[ ! $PLAY ]] && mpc -q stop
 	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "skip": '$(( POS - 1 ))' }'
+	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
 	if [[ $DIR ]]; then
