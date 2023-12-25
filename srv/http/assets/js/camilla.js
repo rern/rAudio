@@ -2333,12 +2333,10 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 		, oklabel      : ico( 'set0' ) +'Flat'
 		, oknoreset    : true
 		, ok           : () => {
-			$( '#infoRange input' )
-				.val( 0 )
-				.trigger( 'input' );
-			$( '#infoOk' ).addClass( 'disabled' );
 			param.gains = Array( bands ).fill( 0 );
 			setting.save();
+			$( '#infoRange input' ).val( 0 );
+			$( '#infoOk' ).addClass( 'disabled' );
 		}
 	} );
 } );
