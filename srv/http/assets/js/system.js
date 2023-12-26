@@ -819,34 +819,6 @@ function infoLcdcharButton() {
 		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] )
 	} );
 }
-var contentmount = {
-	  common     : `\
-<input type="hidden">
-<table>
-<tr><td style="width: 90px">Name</td>
-<td><input id="mountpoint" type="text"
-		placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /"
-		style="font-family: rern, Lato;"><a>&ensp;*</a></td>
-</tr>
-<tr><td>Server IP</td>
-	<td><input type="text">&ensp;*</td>
-</tr>
-<tr><td id="sharelabel">Share</td>
-	<td><input id="share" type="text">&ensp;*</td>
-</tr>`
-	, cifs       : `\
-<tr><td>User</td>
-	<td><input type="text" placeholder="if required by server"></td>
-</tr>
-<tr><td>Password</td>
-	<td><input type="password" placeholder="if required by server"></td>
-</tr>`
-	, option     : `\
-<tr><td>Options</td>
-	<td><input type="text" placeholder="if required by server"></td>
-</tr>
-</table>`
-}
 function infoMirror() {
 	SW.id    = 'mirror';
 	SW.title = 'Servers';
@@ -891,16 +863,27 @@ function infoMount( nfs ) {
 	if ( shareddata ) tab.push( infoMountRserver );
 	var icon       = 'networks';
 	var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+	var list       = [
+		  [ 'Type',      'hidden' ]
+		, [ 'Name',      'text',     'for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name / *' ]
+		, [ 'Server IP', 'text' ]
+		, [ 'Share',     'text' ]
+		, [ 'User',      'text',     'if required by server' ]
+		, [ 'Password',  'password', 'if required by server' ]
+		, [ 'Options',   'text',     'if required by server' ]
+	];
+	if ( nfs ) list.splice( 3, 2 );
 	info( {
 		  icon       : icon
 		, title      : title
 		, tablabel   : shareddata ? tabshareddata : [ 'CIFS', 'NFS' ]
 		, tab        : tab
-		, content    : contentmount.common + ( nfs ? '' : contentmount.cifs ) + contentmount.option
+		, list       : list
 		, values     : values
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
+			$( '#infoContent input' ).eq( 1 ).css( 'font-family', 'rern, Lato' );
 			var $mountpoint = $( '#mountpoint' );
 			var $share      = $( '#share' );
 			$share.prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );

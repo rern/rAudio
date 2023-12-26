@@ -451,16 +451,17 @@ function info( json ) {
 			if ( type === 'checkbox' ) {
 				htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td>';
 			} else {
-				htmls.list += '<tr><td>'+ label +'</td><td>';
+				htmls.list += '<tr'+ ( type === 'hidden' ? ' class="hide"' : '' ) +'><td>'+ label +'</td><td>';
 			}
 			switch ( type ) {
 				case 'checkbox':
 					htmls.list += label ? '<label><input type="checkbox">'+ label +'</label></td>' : '';
 					htmls.list += l[ 2 ] ? '' : '</tr>'; // same line || 1:1 line
 					break;
+				case 'hidden':
 				case 'number':
 				case 'text':
-					htmls.list += '<input type="'+ type +'"></td></tr>';
+					htmls.list += '<input type="'+ type +'"'+ ( l[ 2 ] ? ' placeholder="'+ l[ 2 ] +'"' : '' ) +'></td></tr>';
 					break;
 				case 'password':
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
