@@ -405,22 +405,24 @@ function info( json ) {
 			}
 		} );
 	}
-	var htmls = {};
-	[ 'tab', 'header', 'message', 'footer' ].forEach( k => htmls[ k ] = '' );
 	if ( I.tab ) {
+		var htmltab = '';
 		I.tablabel.forEach( ( lbl, i ) => {
-			htmls.tab += '<a '+ ( I.tab[ i ] ? '' : 'class="active"' ) +'>'+ lbl +'</a>';
+			htmltab += '<a '+ ( I.tab[ i ] ? '' : 'class="active"' ) +'>'+ lbl +'</a>';
 		} );
-		$( '#infoTopBg' ).after( '<div id="infoTab">'+ htmls.tab +'</div>' );
+		$( '#infoTopBg' ).after( '<div id="infoTab">'+ htmltab +'</div>' );
 		$( '#infoTab a' ).on( 'click', function() {
 			if ( ! $( this ).hasClass( 'active' ) ) I.tab[ $( this ).index() ]();
 		} );
 	}
+	var htmls = {};
 	[ 'header', 'message', 'footer' ].forEach( k => {
 		if ( I[ k ] ) {
 			var kalign = k +'align'
 			var align = I[ kalign ] ? ' style="text-align:'+ I[ kalign ] +'"' : '';
 			htmls[ k ] = '<div class="info'+ k +'" '+ align +'>'+ I[ k ] +'</div>';
+		} else {
+			htmls[ k ] = '';
 		}
 	} );
 	if ( ! I.list && ! I.content ) {
@@ -434,66 +436,68 @@ function info( json ) {
 		return
 	}
 	
-	if ( I.list ) {
+	if ( I.content ) {
+		htmls.list = I.content;
+	} else if ( I.list ) {
+		htmls.list = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		var checkboxonly = ! I.list.some( l => l[ 1 ] !== 'checkbox' );
 		var td0   = checkboxonly ? '<tr><td>' : '<tr><td></td><td>'; // no label <td></td>
 		var label, type;
 		var i     = 0; // for radio name
-		var content = '';
 		I.list.forEach( l => {
 			label = l[ 0 ];
 			type  = l[ 1 ];
 			if ( type === 'checkbox' ) {
-				content += content.slice( -3 ) === 'tr>' ? td0 : '<td>';
+				htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td>';
 			} else {
-				content += '<tr><td>'+ label +'</td><td>';
+				htmls.list += '<tr><td>'+ label +'</td><td>';
 			}
 			switch ( type ) {
 				case 'checkbox':
-					content += label ? '<label><input type="checkbox">'+ label +'</label></td>' : '';
-					content += l[ 2 ] ? '' : '</tr>'; // same line || 1:1 line
+					htmls.list += label ? '<label><input type="checkbox">'+ label +'</label></td>' : '';
+					htmls.list += l[ 2 ] ? '' : '</tr>'; // same line || 1:1 line
 					break;
 				case 'number':
 				case 'text':
-					content += '<input type="'+ type +'"></td></tr>';
+					htmls.list += '<input type="'+ type +'"></td></tr>';
 					break;
 				case 'password':
-					content += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
+					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
 					break;
 				case 'radio':
 					var isarray = $.isArray( l[ 2 ] );
 					$.each( l[ 2 ], ( k, v ) => {
 						var k = isarray ? v : k;
-						content += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
-						content += l[ 3 ] ? '<br>' : '&emsp;'; // 1:1 line || same line
+						htmls.list += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
+						htmls.list += l[ 3 ] ? '<br>' : '&emsp;'; // 1:1 line || same line
 					} );
-					content += '</td></tr>';
+					htmls.list += '</td></tr>';
 					i++;
 					break;
 				case 'range':
 					V.range  = true;
-					content  = '<div class="inforange">'
+					htmls.list += '<div class="inforange">'
 								+'<div class="name">'+ label +'</div>'
 								+'<div class="value gr"></div>'
 								+ ico( 'minus dn' ) +'<input type="range" min="0" max="100">'+ ico( 'plus' )
 								+'</div>';
 					break
 				case 'select':
-					content += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td></tr>';
+					htmls.list += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td></tr>';
 					break;
 				case 'textarea':
-					content += '<textarea></textarea></td></tr>';
+					htmls.list += '<textarea></textarea></td></tr>';
 					break;
 				default: // generic string
-					content += l[ 2 ] +'</td></tr>'
+					htmls.list += l[ 2 ] +'</td></tr>'
 			}
 		} );
-		I.content = type === 'range' ? content : '<table>'+ content +'</table>';
+		if ( type !== 'range' ) htmls.list = '<table>'+ htmls.list +'</table>';
 	}
 	
 	// populate layout //////////////////////////////////////////////////////////////////////////////
-	$( '#infoContent' ).html( htmls.header + htmls.message + I.content + htmls.footer ).promise().done( function() {
+	$( '#infoContent' ).html( Object.values( htmls ).join( '' ) ).promise().done( function() {
 		
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields
