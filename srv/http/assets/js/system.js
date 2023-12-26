@@ -869,7 +869,7 @@ function infoMirrorList() {
 	} else {
 		notifyCommon( 'Get mirror server list ...' );
 		bash( [ 'mirrorlist' ], list => {
-			V.htmlmirror = htmlOption( list );
+			V.htmlmirror = list;
 			infoMirror();
 			bannerHide();
 		}, 'json' );
