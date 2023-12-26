@@ -565,7 +565,9 @@ input[ type=checkbox ].disabled {
 	color: var( --cw );
 	cursor: pointer;
 }
-
+.btnicon {
+	line-height: 40px;
+}
 
 hr {
 	border: none;

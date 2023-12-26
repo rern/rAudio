@@ -805,9 +805,7 @@ function infoSetValues() {
 			}
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
-		} else if ( $this.is( 'select' ) ) {
-			val ? $this.val( val ) : el.selectedIndex = 0;
-		} else { // hidden, number, text, password, textarea, range
+		} else {
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
 		}

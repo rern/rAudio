@@ -182,65 +182,45 @@ $( '#setting-autoplay' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-localbrowser' ).on( 'click', function() {
-	var htmlbrightness = S.brightness ? '<span class="brightness">'+ ico( 'gear' ) +' Brightness</span>' : '';
-	var content        = `
-<table>
-<tr><td style="width:110px">Rotation</td>
-	<td><select>
-		<option value="0">Normal</option>
-		<option value="90">90° CW</option>
-		<option value="270">90° CCW</option>
-		<option value="180">180°</option>
-		</select>
-	</td><td></td></tr>
-<tr><td>Zoom</td>
-	<td><input id="zoom" type="text" disabled></td>
-	<td>&nbsp;<gr>%</gr>&emsp;${ ico( 'remove btnicon dn' ) }&emsp;${ ico( 'plus-circle btnicon up' ) }</td></tr>
-<tr><td>Screen off</td>
-	<td><select id="screenoff">
-		<option value="0">Disable</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="5">5</option>
-		<option value="10">10</option>
-		<option value="15">15</option>
-		</select>
-	</td><td>&nbsp;<gr>minutes</gr></td></tr>
-<tr><td></td><td colspan="2"><label><input type="checkbox" id="onwhileplay">On while play</label></td></tr>
-<tr><td></td><td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
-<tr><td></td><td colspan="2"><label><input type="checkbox">run <c>xinitrc.d</c></td></label></tr>
-</table>
-<div class="btnbottom"><br>
-	${ htmlbrightness }
-	&nbsp;<span class="reload">${ ico( 'redo' ) } Reload</span>&emsp;
-	<span class="screenoff">${ ico( 'screenoff' ) } On/Off</span><br>&nbsp;
-</div>`;
+	var brightness = S.brightness ? '<span class="brightness">'+ ico( 'gear' ) +' Brightness</span>&emsp;' : '';
+	var button	   = '<span class="reload">'+ ico( 'redo' ) +' Reload</span>&emsp;<span class="screenoff">'+ ico( 'screenoff' ) +' On/Off</span>';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, content      : content
-		, boxwidth     : 110
+		, list         : [
+			  [ 'Rotation',                  'select', { Normal: 0, '90° CW': 90, '90° CCW': 270, '180°': 180 } ]
+			, [ 'Zoom <gr>(%)</gr>',         'number' ]
+			, [ 'Screen off <gr>(min)</gr>', 'select', { Disable: 0, 1: 1, 2: 2, 5: 5, 10: 10, 15: 15 } ]
+			, [ 'On while play',             'checkbox' ]
+			, [ 'Mouse pointer',             'checkbox' ]
+			, [ 'run <c>xinitrc.d</c>',      'checkbox' ]
+		]
+		, footer       : '<br>'+ brightness + button
+		, boxwidth     : 140
 		, values       : S.localbrowserconf || default_v.localbrowser
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
-			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
-			$( '#onwhileplay' ).prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
+			var $zoom        = $( '#infoContent input' ).eq( 0 );
+			var $onwhileplay = $( '#infoContent input:checkbox' ).eq( 0 );
+			$zoom.attr( 'disabled', true );
+			$onwhileplay.prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
+			$( '#infoContent tr' ).eq( 1 ).append( '&emsp;'+ ico( 'remove btnicon dn' ) +'&emsp;'+ ico( 'plus-circle btnicon up' ) );
 			$( '#infoContent .btnicon' ).on( 'click', function() {
 				var up   = $( this ).hasClass( 'up' );
-				var zoom = +$( '#zoom' ).val();
-				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 5 : zoom -= 5 );
+				var zoom = +$zoom.val();
+				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $zoom.val( up ? zoom += 5 : zoom -= 5 );
 				$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal( 'array' ).join( '' ) );
 			} );
 			$( '#infoContent' ).on( 'input', '#screenoff', function() {
 				if ( $( this ).val() != 0 ) {
-					$( '#onwhileplay' ).prop( 'disabled', 0 );
+					$onwhileplay.prop( 'disabled', 0 );
 				} else {
-					$( '#onwhileplay' )
+					$onwhileplay
 						.prop( 'checked', 0 )
 						.prop( 'disabled', 1 );
 				}
 			} );
-			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
+			$( '.infofooter' ).toggleClass( 'hide', ! S.localbrowser );
 			$( '.brightness' ).on( 'click', function() {
 				switchCancel();
 				info( {
