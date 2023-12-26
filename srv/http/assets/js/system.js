@@ -967,30 +967,29 @@ function infoNtp() {
 	info( json );
 }
 function infoPowerbutton() {
-	var optionpin = htmlOption( Object.keys( board2bcm ) );
-	var infopowerbutton = `\
-<table>
-<tr><td width="40">On</td><td><input type="text" disabled></td></tr>
-<tr><td>Off</td><td><select >${ optionpin }</select></td></tr>
-<tr><td>LED</td><td><select >${ optionpin }</select></td></tr>
-<tr class="reserved hide"><td>Reserved</td><td><select >${ optionpin }</select></td></tr>
-</table>
-`;
+	var pins =  Object.keys( board2bcm );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'Generic', 'Audiophonic' ]
 		, tab          : [ '', infoPowerbuttonAudiophonics ]
-		, content      : gpiosvg + infopowerbutton
+		, message      : gpiosvg
+		, list         : [ 
+			  [ 'On',       'text' ]
+			, [ 'Off',      'select', pins ]
+			, [ 'LED',      'select', pins ]
+			, [ 'Reserved', 'select', pins ]
+		]
 		, boxwidth     : 70
 		, values       : S.powerbuttonconf || default_v.powerbutton
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			var $sw       = $( '#infoContent select' ).eq( 0 );
-			var $reserved = $( '#infoContent .reserved' );
-			$reserved.toggleClass( 'hide', $sw.val() == 5 );
+			$( '#infoContent input' ).addClass( 'disabled' );
+			var $sw         = $( '#infoContent select' ).eq( 0 );
+			var $trreserved = $( '#infoContent tr' ).last();
+			$trreserved.toggleClass( 'hide', $sw.val() == 5 );
 			$sw.on( 'input', function() {
-				$reserved.toggleClass( 'hide', $( this ).val() == 5 );
+				$trreserved.toggleClass( 'hide', $( this ).val() == 5 );
 			} );
 		}
 		, cancel       : switchCancel
