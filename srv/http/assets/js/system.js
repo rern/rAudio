@@ -100,8 +100,6 @@ var board2bcm      = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
-var html_optionpin = htmlOption( board2bcm );
-var html_boardpin  = htmlOption( Object.keys( board2bcm ) );
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -298,16 +296,13 @@ $( '#setting-bluetooth' ).on( 'click', function() {
 } );
 $( '#setting-wlan' ).on( 'click', function() {
 	bash( [ 'regdomlist' ], list => {
-		var options  = htmlOption( list );
-		var infowifi = `\
-<table>
-<tr><td>Country</td><td><select>${ options }</select></td></tr>
-<tr><td></td><td><label><input type="checkbox">Auto start Access Point</label></td></tr>
-</table>`;
 		info( {
 			  icon         : SW.icon
 			, title        : SW.title
-			, content      : infowifi
+			, list         : [
+				  [ 'Country', 'select', list ]
+				, [ 'Auto start Access Point', 'checkbox' ]
+			]
 			, boxwidth     : 250
 			, values       : S.wlanconf || default_v.wlan
 			, checkchanged : S.wlan
@@ -376,21 +371,16 @@ $( '#setting-relays' ).on( 'click', function() {
 	S.relays ? infoRelays() : infoRelaysName();
 } );
 $( '#setting-rotaryencoder' ).on( 'click', function() {
-	var pin  = '<td><select >'+ html_optionpin +'</select></td>';
-	var inforotaryencoder = `\
-<table>
-<tr><td width="60">CLK</td>${ pin }</tr>
-<tr><td>DT</td>${ pin }</tr>
-<tr><td>SW</td>${ pin }</tr>
-<tr><td>Step</td>
-	<td><label><input type="radio" name="step" value="1">1%</label></td>
-	<td><label><input type="radio" name="step" value="2">2%</label></td>
-</tr>
-</table>`;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, content      : gpiosvg + inforotaryencoder
+		, message      : gpiosvg
+		, list         : [
+			  [ 'CLK', 'select', board2bcm ]
+			, [ 'DT',  'select', board2bcm ]
+			, [ 'SW',  'select', board2bcm ]
+			, [ 'Step', 'radio', { '1%': 1, '2%': 2 } ]
+		]
 		, boxwidth     : 70
 		, values       : S.rotaryencoderconf || default_v.rotaryencoder
 		, checkchanged : S.rotaryencoder
@@ -467,14 +457,13 @@ $( '#setting-tft' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-vuled' ).on( 'click', function() {
-	var htmlpins = '';
-	for ( i = 1; i < 8; i++ ) {
-		htmlpins += '<tr><td>'+ i +'<gr>/7</gr></td><td><select>'+ html_optionpin +'</select></td></tr>';
-	}
+	var list = [];
+	for ( i = 1; i < 8; i++ ) list.push(  [ i +'<gr>/7</gr>', 'select', board2bcm ] );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, content      : gpiosvg +'<table>'+ htmlpins +'</table>'
+		, message      : gpiosvg
+		, list         : list
 		, values       : S.vuledconf || default_v.vuled
 		, checkchanged : S.vuled
 		, boxwidth     : 70
@@ -748,25 +737,21 @@ function htmlOption( values ) {
 }
 function infoLcdChar() {
 	var lcdcharaddr = S.lcdcharaddr || [ 39, 63 ];
-	var i2caddress  = '';
-	lcdcharaddr.forEach( el => {
-		i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
-	} );
-	var options = htmlOption( [ 'PCF8574', 'MCP23008', 'MCP23017' ] );
-	var content = `
-${ htmllcdchar.common }
-<tr id="i2caddress" class="i2c"><td>Address</td>${ i2caddress }</tr>
-<tr class="i2c"><td>I&#178;C Chip</td>
-	<td colspan="2"><select id="i2cchip">${ options }</select></td>
-</tr>
-${ htmllcdchar.sleep }
-`;
+	var i2caddress  = {};
+	lcdcharaddr.forEach( el => i2caddress[ '0x'+ el.toString( 16 ) ] = el );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'I&#178;C', 'GPIO' ]
 		, tab          : [ '', infoLcdCharGpio ]
-		, content      : content
+		, list         : [
+			  [ 'Type',                       'hidden' ]
+			, [ 'Size',                       'radio', { '20x4': 20, '16x2': 16 } ]
+			, [ 'Char<wide>acter</wide> Map', 'radio', [ 'A00', 'A02' ] ]
+			, [ 'Address',                    'radio', i2caddress ]
+			, [ 'I&#178;C Chip',              'select', [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
+			, [ 'Sleep <gr>(60s)',            'checkbox' ]
+		]
 		, boxwidth     : 180
 		, values       : values2info(
 			  Object.keys( default_v.lcdchar_i2c )
@@ -780,22 +765,23 @@ ${ htmllcdchar.sleep }
 	} );
 }
 function infoLcdCharGpio() {
-	var optpins = '<select>'+ html_optionpin +'</select>';
-	var content = `
-${ gpiosvg }
-${ htmllcdchar.common }
-</table>
-<table class="gpio">
-<tr><td>RS</td><td>${ optpins }</td><td>RW</td><td>${ optpins }</td><td>E</td><td>${ optpins }</td><td></td><td></td></tr>
-<tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
-${ htmllcdchar.sleep }
-`;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'I&#178;C', 'GPIO' ]
 		, tab          : [ infoLcdChar, '' ]
-		, content      : content
+		, list         : [
+			  [ 'Type',                       'hidden' ]
+			, [ 'Size',                       'radio', { '20x4': 20, '16x2': 16 } ]
+			, [ 'Char<wide>acter</wide> Map', 'radio', [ 'A00', 'A02' ] ]
+			, [ 'RS',                         'select', board2bcm ]
+			, [ 'RW',                         'select', board2bcm ]
+			, [ 'E',                         'select', board2bcm ]
+			, [ 'D4',                         'select', board2bcm ]
+			, [ 'D5',                         'select', board2bcm ]
+			, [ 'D6',                         'select', board2bcm ]
+			, [ 'Sleep <gr>(60s)',            'checkbox' ]
+		]
 		, boxwidth     : 180
 		, values       : values2info(
 			  Object.keys( default_v.lcdchar_gpio )
@@ -1088,7 +1074,7 @@ function infoRelaysName() {
 	var name     = S.relaysnameconf || default_v.relaysname;
 	var values   = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
-	var pin_name = '<tr><td><select>'+ html_boardpin +'</select></td><td><input type="text"></td></tr>';
+	var pin_name = '<tr><td><select>'+ htmlOption( Object.keys( board2bcm ) ) +'</select></td><td><input type="text"></td></tr>';
 	var content  = '<tr><td>'+ ico( 'gpiopins bl' ) +' Pin</td><td>'+ ico( 'tag bl' ) +' Name</td></tr>';
 	for( i = 0; i < 4; i++ ) content += pin_name;
 	info( {

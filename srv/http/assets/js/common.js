@@ -503,8 +503,9 @@ function info( json ) {
 	}
 	
 	// populate layout //////////////////////////////////////////////////////////////////////////////
-	$( '#infoContent' ).html( Object.values( htmls ).join( '' ) ).promise().done( function() {
-		
+	var content = '';
+	[ 'header', 'message', 'list', 'footer' ].forEach( k => content += htmls[ k ] );
+	$( '#infoContent' ).html( content ).promise().done( function() {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields
 		$inputbox = $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea' );
