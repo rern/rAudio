@@ -847,10 +847,10 @@ function infoVal( array ) {
 			default: // hidden, select
 				val = $this.val();
 		}
-		if ( typeof val !== 'string'                // boolean
-			|| val === ''                           // empty
-			|| isNaN( val )                         // NotaNumber 
-			|| val[ 0 ] === '0' && val[ 1 ] !== '.' // '0123' not 0.123
+		if ( typeof val !== 'string'                    // boolean
+			|| val === ''                               // empty
+			|| isNaN( val )                             // Not a Number 
+			|| ( val[ 0 ] === '0' && val[ 1 ] !== '.' ) // '0123' not 0.123
 		) {
 			values.push( val );
 		} else {
