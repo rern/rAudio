@@ -448,10 +448,15 @@ function info( json ) {
 		I.list.forEach( l => {
 			label = l[ 0 ];
 			type  = l[ 1 ];
-			if ( type === 'checkbox' ) {
-				htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td>';
-			} else {
-				htmls.list += '<tr'+ ( type === 'hidden' ? ' class="hide"' : '' ) +'><td>'+ label +'</td><td>';
+			switch ( type ) {
+				case 'checkbox':
+					htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td>';
+					break;
+				case 'hidden':
+					htmls.list += '<tr class="hide"><td>'+ label +'</td><td>';
+					break
+				default:
+					htmls.list += '<tr><td>'+ label +'</td><td>';
 			}
 			switch ( type ) {
 				case 'checkbox':
@@ -476,9 +481,9 @@ function info( json ) {
 					htmls.list += '</td></tr>';
 					i++;
 					break;
-				case 'range':
+				case 'range': // single only
 					V.range  = true;
-					htmls.list += '<div class="inforange">'
+					htmls.list = '<div class="inforange">'
 								+'<div class="name">'+ label +'</div>'
 								+'<div class="value gr"></div>'
 								+ ico( 'minus dn' ) +'<input type="range" min="0" max="100">'+ ico( 'plus' )
@@ -521,21 +526,17 @@ function info( json ) {
 			var $this = $( el );
 			if ( $this.find( 'input:checkbox, input:radio' ).length ) $this.css( 'height', '36px' );
 		} );
-		// show	
+		// show
 		$( '#infoOverlay' ).removeClass( 'hide' );
+		// set at current scroll position
+		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		I.active = true;
-		if ( 'focus' in I ) {
-			$inputbox.eq( I.focus ).focus();
-		} else {
-			$( '#infoOverlay' ).focus();
-		}
+		'focus' in I ? $inputbox.eq( I.focus ).focus() : $( '#infoOverlay' ).focus();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoButtonWidth();
 		// set width: text / password / textarea
 		infoWidth();
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
-		// set at current scroll position
-		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
 		// check inputs: blank / length / change
 		if ( I.checkblank ) {
@@ -805,7 +806,7 @@ function infoSetValues() {
 			$this.prop( 'checked',  val );
 		} else if ( $this.is( 'select' ) ) {
 			val ? $this.val( val ) : el.selectedIndex = 0;
-		} else { // text, password, textarea, range
+		} else { // hidden, number, text, password, textarea, range
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
 		}
@@ -818,6 +819,17 @@ function infoVal( array ) {
 		$this = $( el );
 		type  = $this.prop( 'type' );
 		switch ( type ) {
+			case 'checkbox':
+				val = $this.prop( 'checked' );
+				if ( val && $this.attr( 'value' ) ) val = $this.val(); // if value defined
+				break;
+			case 'number':
+			case 'range':
+				val = +$this.val();
+				break;
+			case 'password':
+				val = $this.val().trim().replace( /(["&()\\])/g, '\$1' ); // escape extra characters
+				break;
 			case 'radio': // radio has only single checked - skip unchecked inputs
 				val = $( '#infoContent input:radio[name='+ el.name +']:checked' ).val();
 				if ( val === 'true' ) {
@@ -826,26 +838,16 @@ function infoVal( array ) {
 					val = false;
 				}
 				break;
-			case 'checkbox':
-				val = $this.prop( 'checked' );
-				if ( val && $this.attr( 'value' ) ) val = $this.val(); // if value defined
+			case 'text':
+				val = $this.val().trim();
 				break;
 			case 'textarea':
 				val = $this.val().trim().replace( /\n/g, '\\n' );
 				break;
-			case 'password':
-				val = $this.val().trim().replace( /(["&()\\])/g, '\$1' ); // escape extra characters
-				break;
-			case 'text':
-				val = $this.val().trim();
-				break;
-			case 'number':
-				val = +$this.val();
-				break;
-			default:
+			default: // hidden, select
 				val = $this.val();
 		}
-		if (   typeof val !== 'string'              // boolean
+		if ( typeof val !== 'string'                // boolean
 			|| val === ''                           // empty
 			|| isNaN( val )                         // NotaNumber 
 			|| val[ 0 ] === '0' && val[ 1 ] !== '.' // '0123' not 0.123
