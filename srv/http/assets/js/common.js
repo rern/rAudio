@@ -405,20 +405,9 @@ function info( json ) {
 			}
 		} );
 	}
-	if ( ! I.list && ! I.content ) {
-		I.active = true;
-		$( '#infoButton' ).css( 'padding', '0 0 20px 0' );
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
-		infoButtonWidth();
-		$( '#infoOverlay' ).focus();
-		return
-	}
-	
 	var htmls = {};
-	// tab
+	[ 'tab', 'header', 'message', 'footer' ].forEach( k => htmls[ k ] = '' );
 	if ( I.tab ) {
-		htmls.tab      = '';
 		I.tablabel.forEach( ( lbl, i ) => {
 			htmls.tab += '<a '+ ( I.tab[ i ] ? '' : 'class="active"' ) +'>'+ lbl +'</a>';
 		} );
@@ -432,10 +421,19 @@ function info( json ) {
 			var kalign = k +'align'
 			var align = I[ kalign ] ? ' style="text-align:'+ I[ kalign ] +'"' : '';
 			htmls[ k ] = '<div class="info'+ k +'" '+ align +'>'+ I[ k ] +'</div>';
-		} else {
-			htmls[ k ] = '';
 		}
 	} );
+	if ( ! I.list && ! I.content ) {
+		I.active = true;
+		$( '#infoContent' ).html( Object.values( htmls ).join( '' ) );
+		$( '#infoButton' ).css( 'padding', '0 0 20px 0' );
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
+		infoButtonWidth();
+		$( '#infoOverlay' ).focus();
+		return
+	}
+	
 	if ( I.list ) {
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		var checkboxonly = ! I.list.some( l => l[ 1 ] !== 'checkbox' );
