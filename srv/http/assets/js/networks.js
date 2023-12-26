@@ -42,12 +42,12 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 	var encrypt  = $this.data( 'encrypt' );
 	if ( encrypt === 'on' ) {
 		info( {
-			  icon          : 'wifi'
-			, title         : ssid
-			, passwordlabel : 'Password'
-			, focus         : 0
-			, oklabel       : 'Connect'
-			, ok            : () => connectWiFi( { ESSID: ssid, KEY: infoVal(), SECURITY: security } )
+			  icon    : 'wifi'
+			, title   : ssid
+			, list    : [ 'Password', 'password' ]
+			, focus   : 0
+			, oklabel : 'Connect'
+			, ok      : () => connectWiFi( { ESSID: ssid, KEY: infoVal(), SECURITY: security } )
 		} );
 	} else {
 		connectWiFi( { ESSID: ssid } );
@@ -231,7 +231,10 @@ function infoLan() {
 	info( {
 		  icon         : icon
 		, title        : title
-		, textlabel    : [ 'IP', 'Gateway' ]
+		, list         : [
+			  [ 'IP',      'text' ]
+			, [ 'Gateway', 'text' ]
+		]
 		, focus        : 0
 		, values       : { IP: S.ipeth, GATEWAY: S.listeth.gateway }
 		, checkchanged : true
@@ -272,18 +275,21 @@ function infoWiFi( v ) {
 		var values = default_v.dhcp;
 	}
 	info( {
-		  icon          : 'wifi'
-		, title         : v ? 'Saved Connection' : 'Add Connection'
-		, tablabel      : [ 'DHCP', 'Static IP' ]
-		, tab           : [ '', () => infoWiFiTab( infoVal() ) ]
-		, boxwidth      : 180
-		, textlabel     : [ 'SSID' ]
-		, passwordlabel : 'Password'
-		, checkbox      : [ 'WEP', 'Hidden SSID' ]
-		, values        : values
-		, checkblank    : [ 0 ]
-		, checkchanged  : ! V.wifistatic
-		, ok            : () => connectWiFi( infoVal() )
+		  icon         : 'wifi'
+		, title        : v ? 'Saved Connection' : 'Add Connection'
+		, tablabel     : [ 'DHCP', 'Static IP' ]
+		, tab          : [ '', () => infoWiFiTab( infoVal() ) ]
+		, boxwidth     : 180
+		, list         : [
+			  [ 'SSID',        'text' ]
+			, [ 'Password',    'password' ]
+			, [ 'WEP',         'checkbox' ]
+			, [ 'Hidden SSID', 'checkbox' ]
+		]
+		, values       : values
+		, checkblank   : [ 0 ]
+		, checkchanged : ! V.wifistatic
+		, ok           : () => connectWiFi( infoVal() )
 	} );
 }
 function infoWiFiGet() {
@@ -310,13 +316,18 @@ function infoWiFiStatic( v ) {
 		, tablabel      : [ 'DHCP', 'Static IP' ]
 		, tab           : [ () => infoWiFiTab( infoVal() ), '' ]
 		, boxwidth      : 180
-		, textlabel     : [ 'SSID', 'Password', 'IP', 'Gateway' ]
-		, checkbox      : [ 'WEP', 'Hidden SSID' ]
+		, list          : [
+			  [ 'SSID',        'text' ]
+			, [ 'Password',    'password' ]
+			, [ 'IP',          'text' ]
+			, [ 'Gateway',     'text' ]
+			, [ 'WEP',         'checkbox' ]
+			, [ 'Hidden SSID', 'checkbox' ]
+		]
 		, values        : values
 		, checkblank    : [ 0 ]
 		, checkchanged  : V.wifistatic
 		, checkip       : [ 2, 3 ]
-		, beforeshow    : () => $('#infoContent input' ).eq( 1 ).attr( 'type', 'password' )
 		, ok            : () => connectWiFi( infoVal() )
 	} );
 }

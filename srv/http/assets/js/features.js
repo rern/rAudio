@@ -46,7 +46,7 @@ $( '#setting-snapclient' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : 'Sync SnapClient with SnapServer:'
-		, numberlabel  : 'Latency <gr>(ms)</gr>'
+		, list         : [ 'Latency <gr>(ms)</gr>', 'number' ]
 		, focus        : 0
 		, checkblank   : true
 		, values       : S.snapclientconf
@@ -79,8 +79,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 			info( {
 				  icon         : SW.icon
 				, title        : SW.title
-				, selectlabel  : 'Device'
-				, select       : list.devices
+				, list         : [ 'Device', 'select', list.devices ]
 				, boxwidth     : 300
 				, values       : list.current
 				, checkchanged : true
@@ -115,7 +114,10 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		info( {
 			  icon        : SW.icon
 			, title       : SW.title
-			, textlabel   : [ 'ID', 'Secret' ]
+			, list        : [
+				  [ 'ID',     'text' ]
+				, [ 'Secret', 'text' ]
+			]
 			, focus       : 0
 			, footer      : '<br><wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
 			, footeralign : 'right'
@@ -150,7 +152,10 @@ $( '#setting-hostapd' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, footer       : '(8 characters or more)'
-		, textlabel    : [ 'IP', 'Password' ]
+		, list         : [
+			  [ 'IP',       'text' ]
+			, [ 'Password', 'text' ]
+		]
 		, values       : S.hostapd
 		, checkchanged : S.hostapd
 		, checkblank   : true
@@ -164,7 +169,11 @@ $( '#setting-autoplay' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
+		, list         : [
+			  [ 'Bluetooth connected',        'checkbox' ]
+			, [ 'Audio CD inserted',          'checkbox' ]
+			, [ 'Power on <gr>/ Reboot</gr>', 'checkbox' ]
+		]
 		, values       : S.autoplayconf || default_v.autoplay
 		, checkchanged : S.autoplay
 		, cancel       : switchCancel
@@ -237,7 +246,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 				info( {
 					  icon        : 'firefox'
 					, title       : 'Browser on RPi'
-					, rangelabel  : 'Brightness'
+					, range       : 'Brightness'
 					, values      : S.brightness
 					, rangechange : val => bash( [ 'brightness', val, 'CMD VAL' ] )
 					, okno        : true
@@ -260,7 +269,10 @@ $( '#setting-smb' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : '<wh>Write</wh> permission:'
-		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
+		, list         : [
+			  [ '<gr>/mnt/MPD/</gr>SD',  'checkbox' ]
+			, [ '<gr>/mnt/MPD/</gr>USB', 'checkbox' ]
+		]
 		, values       : S.smbconf
 		, checkchanged : S.smb
 		, cancel       : switchCancel
@@ -271,13 +283,17 @@ $( '#setting-lyrics' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : [ 'URL', 'Start tag', 'End tag' ]
-		, checkbox     : 'Embedded lyrics'
+		, list         : [
+			  [ 'URL',             'text' ]
+			, [ 'Start tag',       'text' ]
+			, [ '',                '', '<gr>Lyrics content ...</gr>' ]
+			, [ 'End tag',         'text' ]
+			, [ 'Embedded lyrics', 'checkbox' ]
+		]
 		, boxwidth     : 300
 		, values       : S.lyricsconf || default_v.lyrics
 		, checkchanged : S.lyrics
 		, checkblank   : true
-		, beforeshow   : () => $( '#infoContent tr' ).eq( 1 ).after( '<tr><td></td><td><gr>Lyrics content ...</gr></td></tr>' )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -358,14 +374,14 @@ $( '#login' ).on( 'click', function() {
 		$( '#setting-login' ).trigger( 'click' );
 	} else {
 		info( {
-			  icon          : SW.icon
-			, title         : SW.title
-			, message       : 'Disable:'
-			, passwordlabel : 'Password'
-			, focus         : 0
-			, checkblank    : true
-			, cancel        : switchCancel
-			, ok            : () => {
+			  icon       : SW.icon
+			, title      : SW.title
+			, message    : 'Disable:'
+			, list       : [ 'Password', 'password' ]
+			, focus      : 0
+			, checkblank : true
+			, cancel     : switchCancel
+			, ok         : () => {
 				notifyCommon();
 				$.post( 'cmd.php', {
 					  cmd      : 'login'
@@ -380,14 +396,14 @@ $( '#login' ).on( 'click', function() {
 } );
 $( '#setting-login' ).on( 'click', function() {
 	info( {
-		  icon          : SW.icon
-		, title         : SW.title
-		, message       : ( S.login ? 'Change password:' : 'New setup:' )
-		, passwordlabel : ( S.login ? [ 'Existing', 'New' ] : 'Password' )
-		, focus         : 0
-		, checkblank    : true
-		, cancel        : switchCancel
-		, ok            : () => {
+		  icon       : SW.icon
+		, title      : SW.title
+		, message    : ( S.login ? 'Change password:' : 'New setup:' )
+		, list       : S.login ? [ [ 'Existing', 'password' ], [ 'New', 'password' ] ] : [ 'Password', 'password' ]
+		, focus      : 0
+		, checkblank : true
+		, cancel     : switchCancel
+		, ok         : () => {
 			var infoval = infoVal();
 			notifyCommon();
 			$.post( 'cmd.php', {
@@ -405,11 +421,11 @@ $( '#setting-scrobble' ).on( 'click', function() {
 		info( {
 			  icon         : SW.icon
 			, title        : SW.title
-			, checkbox     : [
-				  ico( 'airplay' ) +'AirPlay'
-				, ico( 'bluetooth' ) +'Bluetooth'
-				, ico( 'spotify' ) +'Spotify'
-				, ' '+ ico( 'upnp' ) +' UPnP / DLNA'
+			, list         : [
+				  [ ico( 'airplay' ) +'AirPlay',        'checkbox' ]
+				, [ ico( 'bluetooth' ) +'Bluetooth',    'checkbox' ]
+				, [ ico( 'spotify' ) +'Spotify',        'checkbox' ]
+				, [ ' '+ ico( 'upnp' ) +' UPnP / DLNA', 'checkbox' ]
 			]
 			, boxwidth     : 170
 			, values       : S.scrobbleconf || default_v.scrobble
@@ -447,8 +463,11 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, radio        : { '5 minutes': 5, '15 minutes': 15, '30 minutes': 30, '60 minutes': 60 }
-		, checkbox     : [ 'Power off on stop' ]
+		, list         : [
+			  [ 'Minutes',          'select', [ 5, 15, 30, 45, 60 ] ]
+			, [ 'Stop + Power off', 'checkbox' ]
+		]
+		, boxwidth     : 160
 		, values       : S.stoptimerconf || default_v.stoptimer
 		, checkchanged : S.stoptimer
 		, beforeshow   : () => {

@@ -147,7 +147,7 @@ function changeIP() { // for android app
 		  icon         : 'networks'
 		, title        : 'IP Address'
 		, message      : 'Switch rAudio:'
-		, textlabel    : 'New IP'
+		, list         : [ 'New IP', 'text' ]
 		, focus        : 0
 		, boxwidth     : 170
 		, values       : location.host
@@ -524,7 +524,7 @@ function displayPlayback() {
 }
 function displaySave() {
 	var values  = infoVal();
-	[ 'libmain', 'liboption', 'playback', 'playlist' ].forEach( chk => {
+	[ 'library', 'libraryoption', 'playback', 'playlist' ].forEach( chk => {
 		$.each( chkdisplay[ chk ], ( k, v ) => {
 			if ( ! ( k in values ) && k !== '-' ) values[ k ] = D[ k ];
 		} );
@@ -631,17 +631,25 @@ function infoDisplayKeyValue( type ) {
 	keys       = keys.filter( k => k !== '-' );
 	var values = {}
 	keys.forEach( k => { values[ k ] = D[ k ] } );
-	return { keys : keys, values: values, checkbox: Object.values( json ) }
+	var list   = [];
+	Object.values( json ).forEach( ( l, i ) => {
+		if ( [ 'library', 'playback' ].includes( type ) ) {
+			list.push( i % 2 ? [ l, 'checkbox' ] : [ l, 'checkbox', 'td' ] );
+		} else {
+			list.push( [ l, 'checkbox' ] );
+		}
+	} );
+	return { keys : keys, values: values, list: list }
 }
 function infoLibrary() {
-	var kv = infoDisplayKeyValue( 'libmain' );
+	var kv = infoDisplayKeyValue( 'library' );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ '', infoLibraryOption ]
 		, messagealign : 'left'
-		, checkbox     : kv.checkbox
+		, list         : kv.list
 		, checkcolumn  : true
 		, values       : kv.values
 		, checkchanged : true
@@ -654,14 +662,14 @@ function infoLibrary() {
 	} );
 }
 function infoLibraryOption() {
-	var kv = infoDisplayKeyValue( 'liboption' );
+	var kv = infoDisplayKeyValue( 'libraryoption' );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ infoLibrary, '' ]
 		, messagealign : 'left'
-		, checkbox     : kv.checkbox
+		, list         : kv.list
 		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
@@ -780,7 +788,7 @@ function infoUpdate( path ) {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : path ? ico( 'folder' ) +' <wh>'+ path +'</wh>' : ''
-		, radio      : path ? '' : { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }
+		, list       : path ? '' : [ '', 'radio', { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }, 'br' ]
 		, beforeshow : () => {
 			if ( ! C ) {
 				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', true );
@@ -1011,7 +1019,7 @@ function playlistInsertTarget() {
 					  +'<br>'+ V.pladd.album
 					  +'<hr>'
 					  +'Select where to add:'
-		, radio      : { First : 1, Select: 'select', Last: 'last' }
+		, list       : [ '', 'radio', { First : 1, Select: 'select', Last: 'last' }, 'br' ]
 		, values     : 'last'
 		, beforeshow : () => {
 			$( '#infoContent input' ).eq( 1 ).on( 'click', function() {

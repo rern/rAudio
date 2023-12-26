@@ -263,7 +263,7 @@ $( '#setting-softlimit' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, radio        : { '65°C': 65, '70°C': 70, '75°C': 75 }
+		, list         : [ '', 'radio', { '65°C': 65, '70°C': 70, '75°C': 75 } ]
 		, values       : S.softlimitconf || default_v.softlimit
 		, checkchanged : S.softlimit
 		, cancel       : switchCancel
@@ -275,7 +275,7 @@ $( '#setting-hddsleep' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : 'Timer:'
-		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
+		, list         : [ '', 'radio', { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }, 'br' ]
 		, values       : { APM: S.hddsleep } || default_v.hddsleep
 		, checkchanged : S.hddsleep
 		, cancel       : switchCancel
@@ -286,7 +286,10 @@ $( '#setting-bluetooth' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
+		, list         : [
+			  [ 'Discoverable <gr>by senders</gr>',             'checkbox' ]
+			, [ 'Sampling 16bit 44.1kHz <gr>to receivers</gr>', 'checkbox' ]
+		]
 		, values       : S.bluetoothconf || default_v.bluetooth
 		, checkchanged : S.bluetooth
 		, cancel       : switchCancel
@@ -340,7 +343,7 @@ $( '#setting-i2smodule' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, checkbox     : [ 'Disable I²S HAT EEPROM read' ]
+		, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
 		, values       : S.i2seeprom
 		, checkchanged : S.i2seeprom
 		, ok           : () => bash( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
@@ -409,8 +412,10 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, selectlabel  : [ 'Controller', 'Refresh <gr>(baud)</gr>' ]
-		, select       : [ chip, [ 800000, 1000000, 1200000 ] ]
+		, list         : [
+			  [ 'Controller',              'select', chip ]
+			, [ 'Refresh <gr>(baud)</gr>', 'select', [ 800000, 1000000, 1200000 ] ]
+		]
 		, values       : S.mpdoledconf
 		, checkchanged : S.mpdoled
 		, boxwidth     : 140
@@ -433,14 +438,14 @@ $( '#setting-tft' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, selectlabel  : 'Type'
-		, select       : {
-			  'Generic'               : 'tft35a'
-			, 'Waveshare (A)'         : 'waveshare35a'
-			, 'Waveshare (B)'         : 'waveshare35b'
-			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
-			, 'Waveshare (C)'         : 'waveshare35c'
-		}
+		, list         : [ 'Type', 'select', {
+				  'Generic'               : 'tft35a'
+				, 'Waveshare (A)'         : 'waveshare35a'
+				, 'Waveshare (B)'         : 'waveshare35b'
+				, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
+				, 'Waveshare (C)'         : 'waveshare35c'
+			}
+		]
 		, values       : { MODEL: S.tftconf || 'tft35a' }
 		, checkchanged : S.tft
 		, boxwidth     : 190
@@ -482,7 +487,12 @@ $( '#ledcalc' ).on( 'click', function() {
 	info( {
 		  icon       : 'led'
 		, title      : 'LED Resister Calculator'
-		, textlabel  : [ 'GPIO <gr>(V)</gr>', 'Current <gr>(mA)</gr>', 'LED forward voltage <gr>(V)</gr>', 'Resister <gr>(&#8486;)</gr>' ]
+		, list       : [
+			  [ 'GPIO <gr>(V)</gr>',                'number' ]
+			, [ 'Current <gr>(mA)</gr>',            'number' ]
+			, [ 'LED forward voltage <gr>(V)</gr>', 'number' ]
+			, [ 'Resister <gr>(&#8486;)</gr>',      'number' ]
+		]
 		, focus      : 0
 		, values     : [ 3.3, 5 ]
 		, boxwidth   : 70
@@ -510,7 +520,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : 'Name'
+		, list         : [ 'Name', 'text' ]
 		, focus        : 0
 		, values       : { NAME: S.hostname }
 		, checkblank   : true
@@ -545,7 +555,11 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, numberlabel  : [ 'Swappiness', 'Maximum Transmission Unit <gr>(B)</gr>', 'Transmit Queue Length' ]
+		, list         : [ 
+			  [ 'Swappiness',                             'number' ]
+			, [ 'Maximum Transmission Unit <gr>(B)</gr>', 'number' ]
+			, [ 'Transmit Queue Length',                  'number' ]
+		]
 		, boxwidth     : 80
 		, values       : S.soundprofileconf
 		, checkchanged : true
@@ -559,7 +573,7 @@ $( '#setting-volumeboot' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, rangelabel   : 'Volume'
+		, range        : 'Volume'
 		, values       : S.volumebootconf
 		, checkchanged : S.volumeboot
 		, cancel       : switchCancel
@@ -841,8 +855,7 @@ function infoMirror() {
 		, title        : SW.title
 		, tablabel     : [ 'Time', 'Package Mirror' ]
 		, tab          : [ infoNtp, '' ]
-		, selectlabel  : 'Mirror'
-		, select       : V.htmlmirror
+		, list         : [ 'Mirror', 'select', V.htmlmirror ]
 		, boxwidth     : 240
 		, values       : { MIRROR: S.mirror }
 		, checkchanged : true
@@ -925,15 +938,15 @@ function infoMount( nfs ) {
 }
 function infoMountRserver() {
 	info( {
-		  icon       : SW.icon
-		, title      : SW.title
-		, tablabel   : tabshareddata
-		, tab        : [ infoMount, () => infoMount( 'nfs' ), '' ]
-		, textlabel  : 'Server IP'
-		, values     : { IP: I.active && I.values ? infoVal().IP : S.ipsub }
-		, checkip    : [ 0 ]
-		, cancel     : switchCancel
-		, ok         : () => {
+		  icon     : SW.icon
+		, title    : SW.title
+		, tablabel : tabshareddata
+		, tab      : [ infoMount, () => infoMount( 'nfs' ), '' ]
+		, list     : [ 'Server IP', 'text' ]
+		, values   : { IP: I.active && I.values ? infoVal().IP : S.ipsub }
+		, checkip  : [ 0 ]
+		, cancel   : switchCancel
+		, ok       : () => {
 			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
 			bash( [ 'mount', infoVal().IP, 'CMD IP' ], error => {
 				bannerHide();
@@ -957,7 +970,7 @@ function infoNtp() {
 	var json = {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : 'NTP'
+		, list         : [ 'NTP', 'text' ]
 		, boxwidth     : 240
 		, values       : { NTP: S.ntp }
 		, checkchanged : true
@@ -1008,7 +1021,7 @@ function infoPowerbuttonAudiophonics() {
 		, title        : SW.title
 		, tablabel     : [ 'Generic', 'Audiophonic' ]
 		, tab          : [ infoPowerbutton, '' ]
-		, checkbox     : 'Power management module'
+		, list         : [ 'Power management module', 'checkbox' ]
 		, checkchanged : S.powerbutton
 		, values       : { ON: S.poweraudiophonics }
 		, cancel       : switchCancel
@@ -1118,7 +1131,7 @@ function infoRestore( reset ) {
 		, title       : SW.title
 		, tablabel    : [ 'From Backup', 'Reset To Default' ]
 		, tab         : reset ? [ infoRestore, '' ] : [ '', () => infoRestore( 'reset' ) ]
-		, checkbox    : reset ? [ 'Keep Library data', 'Keep Network settings' ] : [ 'Library data only' ]
+		, list        : reset ? [ [ 'Keep Library data', 'checkbox' ], [ 'Keep Network settings', 'checkbox' ] ] : [ 'Library data only', 'checkbox' ]
 		, fileoklabel : reset ? '' : ico( 'restore' ) +'Restore'
 		, filetype    : '.gz'
 		, okcolor     : orange

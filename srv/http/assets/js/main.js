@@ -64,7 +64,7 @@ var icon_player = {
 }
 var vumeter = '<img class="imgicon" src="'+ V.covervu +'"> ';
 var chkdisplay = {
-	  libmain   : {
+	  library       : {
 		  album          : ico( 'album' ) +'<gr>Album</gr>'
 			, nas        : ico( 'networks' ) +'<gr>Network</gr>'
 		, albumartist    : ico( 'albumartist' ) +'<gr>Album Artist</gr>'
@@ -82,7 +82,7 @@ var chkdisplay = {
 		, latest         : ico( 'latest' ) +'<gr>Latest</gr>'
 			, label      : 'Label'
 	}
-	, liboption : {
+	, libraryoption : {
 		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artist'
 		, albumyear      : ico( 'album' ) +'Sort by artist > year'
 		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
@@ -92,7 +92,7 @@ var chkdisplay = {
 		, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 		, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 	}
-	, playback  : {
+	, playback      : {
 		  bars             : 'Top-Bottom bars'
 			, barsalways   : 'Bars always on'
 		, time             : 'Time'
@@ -107,7 +107,7 @@ var chkdisplay = {
 			, '-'              : ''
 		, conductorname     : ico( 'conductor' ) +'<gr>Conductor</gr>'
 	}
-	, playlist  : {
+	, playlist      : {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
 		, plsimilar      : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'lastfm' ) +'Add similar</a>'
 		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
@@ -260,7 +260,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				info( {
 					  icon       : 'multiraudio'
 					, title      : 'Switch rAudio'
-					, radio      : data.list
+					, list       : [ '', 'radio', data.list, 'br' ]
 					, values     : currentip
 					, beforeshow : function() {
 						$( '#infoContent input' ).each( ( i, el ) => {
@@ -289,8 +289,7 @@ $( '#displayplayback' ).on( 'click', function() {
 		, title        : 'Playback'
 		, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
 		, messagealign : 'left'
-		, checkbox     : kv.checkbox
-		, checkcolumn  : true
+		, list         : kv.list
 		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
@@ -378,7 +377,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 		, title        : 'Playlist'
 		, message      : 'Options:'
 		, messagealign : 'left'
-		, checkbox     : kv.checkbox
+		, list         : kv.list
 		, values       : kv.values
 		, checkchanged : true
 		, ok           : displaySave
@@ -1313,7 +1312,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, title        : 'Rename Bookmark'
 		, message      : '<div class="infobookmark">'+ ico( 'bookmark bookmark' )
 						+'<br><span class="bklabel">'+ name +'</span></div>'
-		, textlabel    : 'To:'
+		, list         : [ 'To:', 'text' ]
 		, values       : name
 		, checkblank   : true
 		, checkchanged : true
@@ -1619,7 +1618,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 			  icon       : icon
 			, title      : title
 			, message    : 'Randomly add songs and play continuously.'
-			, checkbox   : [ 'Start playing the random songs' ]
+			, list       : [ 'Start playing the random songs', 'checkbox' ]
 			, values     : [ true ]
 			, beforeshow : () => $( '#infoContent table' ).toggleClass( 'hide', S.song + 1 === S.pllength )
 			, ok         : () => {

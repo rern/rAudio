@@ -1201,7 +1201,7 @@ var setting  = {
 			  icon         : V.tab
 			, title        : title
 			, message      : name ? 'Rename <wh>'+ name +'</wh> to:' : ''
-			, textlabel    : 'Name'
+			, list         : [ 'Name', 'text' ]
 			, values       : name
 			, checkblank   : true
 			, checkchanged : name
@@ -1351,13 +1351,15 @@ var setting  = {
 	, pipeline      : () => {
 		var filters = Object.keys( FIL );
 		info( {
-			  icon        : V.tab
-			, title       : 'Add Pipeline'
-			, tablabel    : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
-			, tab         : [ '', setting.pipelineMixer ]
-			, selectlabel : [ 'Channel', 'Filters' ]
-			, select      : [ [ ...Array( DEV.playback.channels ).keys() ], filters ]
-			, beforeshow  : () => {
+			  icon       : V.tab
+			, title      : 'Add Pipeline'
+			, tablabel   : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
+			, tab        : [ '', setting.pipelineMixer ]
+			, list       : [
+				  [ 'Channel', 'select', [ ...Array( DEV.playback.channels ).keys() ] ]
+				, [ 'Filters', 'select', filters ]
+			]
+			, beforeshow : () => {
 				$( '#infoContent .select2-container' ).eq( 0 ).addClass( 'channel' )
 				$( '#infoContent td' ).last().append( ico( 'add' ) );
 				var tradd = '<tr class="trlist"><td></td><td><input type="text" disabled value="VALUE">'+ ico( 'remove' ) +'</td></tr>';
@@ -1367,7 +1369,7 @@ var setting  = {
 					$( this ).parents( 'tr' ).remove();
 				} );
 			}
-			, ok          : () => {
+			, ok         : () => {
 				var $input = $( '#infoContent input' );
 				if ( $input.length ) {
 					var names = [];
@@ -1385,14 +1387,23 @@ var setting  = {
 		} );
 	}
 	, pipelineMixer : () => {
+		if ( ! Object.keys( MIX ).length ) {
+			info( {
+				  icon    : V.tab
+				, title   : 'Add Pipeline'
+				, message : 'No mixers found.'
+				, ok      : setting.pipeline
+			} );
+			return
+		}
+		
 		info( {
-			  icon         : V.tab
-			, title        : 'Add Pipeline'
-			, tablabel     : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
-			, tab          : [ setting.pipeline, '' ]
-			, selectlabel  : 'Mixers'
-			, select       : Object.keys( MIX )
-			, ok          : () => {
+			  icon     : V.tab
+			, title    : 'Add Pipeline'
+			, tablabel : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
+			, tab      : [ setting.pipeline, '' ]
+			, list     : [ 'Mixers', 'select', Object.keys( MIX ) ]
+			, ok       : () => {
 				PIP.push( {
 					  type : 'Mixer'
 					, name : infoVal()
@@ -1998,8 +2009,11 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	info( {
 		  icon       : V.tab
 		, title      : 'Gain Slider Range'
-		, numberlabel : [ 'Max', 'Min' ]
-		, footer      : '(50 ... -50)'
+		, list       :  [
+			  [ 'Max', 'number' ]
+			, [ 'Min', 'number' ]
+		]
+		, footer     : '(50 ... -50)'
 		, boxwidth   : 110
 		, values     : values
 		, beforeshow : () => {
@@ -2083,7 +2097,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							  icon         : V.tab
 							, title        : title
 							, message      : 'Rename <wh>'+ name +'</wh> to:'
-							, textlabel    : 'Name'
+							, list         : [ 'Name', 'text' ]
 							, values       : name
 							, checkblank   : true
 							, checkchanged : true
@@ -2223,7 +2237,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						  icon         : V.tab
 						, title        : 'Configuration'
 						, message      : 'File: <wh>'+ name +'</wh>'
-						, textlabel    : 'Copy as'
+						, list         : [ 'Copy as', 'text' ]
 						, values       : [ name ]
 						, checkchanged : true
 						, ok           : () => {
@@ -2237,7 +2251,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon         : V.tab
 						, title        : 'Configuration'
-						, textlabel    : 'Rename to'
+						, list         : [ 'Rename to', 'text' ]
 						, values       : [ name ]
 						, checkchanged : true
 						, ok           : () => {
@@ -2423,7 +2437,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			  icon    : V.tab
 			, title   : 'Pipeline'
 			, message : values
-			, select  : names
+			, list    : [ '', 'select', names ]
 			, values  : values
 			, ok      : () => {
 				PIP[ index ].name = infoVal();
@@ -2441,11 +2455,10 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	if ( $this.hasClass( 'i-add' ) ) {
 		var title = 'Add Filter';
 		info( {
-			  icon        : V.tab
-			, title       : title
-			, selectlabel : 'Filter'
-			, select      : Object.keys( FIL )
-			, ok          : () => {
+			  icon  : V.tab
+			, title : title
+			, list  : [ 'Filter', 'select', Object.keys( FIL ) ]
+			, ok    : () => {
 				PIP[ index ].names.push( infoVal() );
 				setting.save( title, 'Save ...' );
 				setting.sortRefresh( 'sub' );
@@ -2495,11 +2508,14 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	info( {
 		  icon         : V.tab
 		, title        : SW.title
-		, numberlabel  : [ 'Adjust period', 'Target level' ]
+		, list         : [
+			  [ 'Adjust period', 'number' ]
+			, [ 'Target level', 'number' ]
+		]
 		, boxwidth     : 100
 		, values       : {
-			  adjust_period       : DEV.adjust_period
-			, target_level        : DEV.target_level
+			  adjust_period : DEV.adjust_period
+			, target_level  : DEV.target_level
 		}
 		, checkchanged : S.enable_rate_adjust
 		, cancel       : switchCancel
@@ -2514,7 +2530,7 @@ $( '#setting-stop_on_rate_change' ).on( 'click', function() {
 	info( {
 		  icon         : V.tab
 		, title        : SW.title
-		, numberlabel  : 'Rate mearsure interval'
+		, list         : [ 'Rate mearsure interval', 'number' ]
 		, boxwidth     : 65
 		, values       : DEV.rate_measure_interval
 		, checkchanged : S.stop_on_rate_change

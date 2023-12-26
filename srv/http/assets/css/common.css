@@ -490,8 +490,8 @@ input[type=range]::-moz-range-track {
 #infoRange i {
 	position: relative;
 	width: 40px !important;
-	line-height: 40px;
-	vertical-align: 13px !important;
+	line-height: 39px;
+	vertical-align: top !important;
 	color: var( --cg60 ) !important;
 	cursor: pointer;
 }

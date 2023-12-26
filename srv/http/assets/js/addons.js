@@ -49,11 +49,11 @@ $( '.container' ).on( 'click', '.revision', function() {
 	
 	addonData( $( e.currentTarget ) );
 	info( {
-		  icon      : icon
-		, title     : V.addon.title
-		, textlabel : 'Branch / Release'
-		, values    : 'UPDATE'
-		, ok        : () => {
+		  icon   : icon
+		, title  : V.addon.title
+		, list   : [ 'Branch / Release', 'text' ]
+		, values : 'UPDATE'
+		, ok     : () => {
 			V.branch = infoVal();
 			if ( ! V.branch ) return
 			
@@ -74,14 +74,11 @@ function buttonLabel( icon, label ) {
 	return ico( icon ) +' <span class="label">'+ label +'</span>';
 }
 function optionGet() {
-	info( $.extend(
-		{
+	info( $.extend( {
 			  icon  : icon
 			, title : V.addon.title
 			, ok    : () => postData( infoVal() )
-		}
-		, V.addon.option )
-	);
+		}, V.addon.option ) );
 }
 function postData( opt ) {
 	var htmlform = '';

@@ -6,7 +6,7 @@ $( '.btoutputall' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, checkbox     : [ 'Enable all while Bluetooth connected' ]
+		, list         : [ 'Enable all while Bluetooth connected', 'checkbox' ]
 		, values       : S.btoutputall
 		, checkchanged : true
 		, ok           : () => {
@@ -40,7 +40,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	info( {
 		  icon        : SW.icon
 		, title       : SW.title
-		, rangelabel  : bt ? S.control.replace( ' - A2DP', '' ) : S.control
+		, range       : bt ? S.control.replace( ' - A2DP', '' ) : S.control
 		, rangesub    : 'dB'
 		, beforeshow  : () => {
 			volumeInfoSet();
@@ -79,7 +79,7 @@ $( '#setting-mixertype' ).on( 'click', function() {
 	info( {
 		  icon        : SW.icon
 		, title       : SW.title
-		, rangelabel  : 'MPD Software'
+		, range       : 'MPD Software'
 		, values      : S.volumempd
 		, rangechange : val => volumeSetAt( val )
 		, rangestop   : val => volumePush( val, 'mpd' )
@@ -123,7 +123,7 @@ $( '#setting-crossfade' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, numberlabel  : 'Seconds'
+		, list         : [ 'Seconds', 'number' ]
 		, focus        : 0
 		, boxwidth     : 60
 		, values       : S.crossfadeconf
@@ -139,7 +139,7 @@ $( '#setting-replaygain' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
+		, list         : [ '', 'radio', { Auto: 'auto', Album: 'album', Track: 'track' }, 'br' ]
 		, footer       : hardware ? '<label><input type="checkbox"><wh>Gain control by Mixer device</wh></label>' : ''
 		, values       : S.replaygainconf
 		, checkchanged : S.replaygain
@@ -164,7 +164,7 @@ $( '#setting-buffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, numberlabel  : 'audio_buffer_size <gr>(kB)</gr>'
+		, list         : [ 'audio_buffer_size <gr>(kB)</gr>', 'number' ]
 		, focus        : 0
 		, footer       : '(default: 4096)'
 		, footeralign  : 'right'
@@ -180,7 +180,7 @@ $( '#setting-outputbuffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, numberlabel  : 'max_output_buffer_size <gr>(kB)</gr>'
+		, list         : [ 'max_output_buffer_size <gr>(kB)</gr>', 'number' ]
 		, focus        : 0
 		, footer       : '(default: 8192)'
 		, footeralign  : 'right'
@@ -401,7 +401,7 @@ function renderPage() {
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
-	if ( I.rangelabel ) $( '#setting-'+ ( S.btaplayname ? 'bluealsa' : 'hwmixer' ) ).trigger( 'click' );
+	if ( I.range ) $( '#setting-'+ ( S.btaplayname ? 'bluealsa' : 'hwmixer' ) ).trigger( 'click' );
 	showContent();
 }
 function setMixerType( mixertype ) {
@@ -431,7 +431,7 @@ function playbackButton() {
 }
 function psVolume( data ) {
 	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;
-	if ( ! I.rangelabel ) return
+	if ( ! I.range ) return
 	
 	if ( data.type === 'mpd' ) { // info software volume
 		$( '#infoRange .value' ).text( S.volumempd );

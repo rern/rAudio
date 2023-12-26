@@ -82,7 +82,7 @@ function bookmarkNew() {
 		, title      : 'Add Bookmark'
 		, message    : '<img src="'+ src + versionHash() +'">'
 					  +'<br><wh>'+ msgpath +'</wh>'
-		, textlabel  : 'As:'
+		, list       : [ 'As:', 'text' ]
 		, focus      : 0
 		, values     : name
 		, checkblank : true
@@ -184,7 +184,7 @@ function playlistNew( name ) {
 		  icon         : 'file-playlist'
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
-		, textlabel    : 'Name'
+		, list         : [ 'Name', 'text' ]
 		, focus        : 0
 		, values       : name
 		, checkblank   : true
@@ -197,7 +197,7 @@ function playlistRename() {
 		  icon         : 'file-playlist'
 		, title        : 'Rename Playlist'
 		, message      : 'From: <wh>'+ name +'</wh>'
-		, textlabel    : 'To'
+		, list         : [ 'To', 'text' ]
 		, focus        : 0
 		, values       : name
 		, checkchanged : true
@@ -289,7 +289,7 @@ function tagEditor() {
 		name[ 1 ]    = 'Album Artist';
 		var label    = [];
 		format.forEach( ( el, i ) => {
-			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			label.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>', 'text' ] );
 		} );
 		if ( V.library ) {
 			var $img = V.librarytrack ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
@@ -311,9 +311,9 @@ function tagEditor() {
 			, width        : 500
 			, message      : message
 			, messagealign : 'left'
+			, list         : label
 			, footer       : footer
 			, footeralign  : 'left'
-			, textlabel    : label
 			, boxwidth     : 'max'
 			, values       : values
 			, checkchanged : true
@@ -510,7 +510,7 @@ function wrDirectoryRename() {
 	info( {
 		  icon         : V.mode
 		, title        : 'Rename Folder'
-		, textlabel    : 'Name'
+		, list         : [ 'Name', 'text' ]
 		, focus        : 0
 		, values       : name
 		, checkblank   : true
@@ -588,7 +588,7 @@ function webRadioNew( name, url, charset ) {
 					info( {
 						  icon       : 'webradio'
 						, title      : 'Add New Folder'
-						, textlabel  : 'Name'
+						, list       : [ 'Name', 'text' ]
 						, checkblank : true
 						, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
 						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal(), 'CMD DIR SUB' ] )
