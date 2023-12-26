@@ -753,10 +753,7 @@ function infoLcdChar() {
 			, [ 'Sleep <gr>(60s)',            'checkbox' ]
 		]
 		, boxwidth     : 180
-		, values       : values2info(
-			  Object.keys( default_v.lcdchar_i2c )
-			, S.lcdcharconf || default_v.lcdchar_i2c
-		)
+		, values       : S.lcdcharconf || default_v.lcdchar_i2c
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'i2c'
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
@@ -776,17 +773,15 @@ function infoLcdCharGpio() {
 			, [ 'Char<wide>acter</wide> Map', 'radio', [ 'A00', 'A02' ] ]
 			, [ 'RS',                         'select', board2bcm ]
 			, [ 'RW',                         'select', board2bcm ]
-			, [ 'E',                         'select', board2bcm ]
+			, [ 'E',                          'select', board2bcm ]
 			, [ 'D4',                         'select', board2bcm ]
 			, [ 'D5',                         'select', board2bcm ]
 			, [ 'D6',                         'select', board2bcm ]
+			, [ 'D7',                         'select', board2bcm ]
 			, [ 'Sleep <gr>(60s)',            'checkbox' ]
 		]
 		, boxwidth     : 180
-		, values       : values2info(
-			  Object.keys( default_v.lcdchar_gpio )
-			, S.lcdcharconf || default_v.lcdchar_gpio
-		)
+		, values       : S.lcdcharconf || default_v.lcdchar_gpio
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
@@ -837,26 +832,25 @@ function infoMount( nfs ) {
 	var nfs        = nfs || false;
 	var shareddata = SW.id === 'shareddata';
 	if ( I.active && $input.length ) {
-		var v = infoVal();
-		if ( 'USER' in v || nfs ) var nfs = true;
-		v.PROTOCOL = nfs ? 'nfs' : 'cifs';
-		var values = values2info( Object.keys( default_v[ nfs ? 'mountnfs' : 'mountcifs' ] ), v );
+		var val = infoVal();
+		var values = val.PROTOCOL === 'nfs' ? default_v.mountnfs : default_v.mountcifs;
+		$.each( values, ( k, v ) => values[ k ] = val[ k ] );
 	} else {
 		var values = default_v.mountcifs;
 		values.IP  = S.ipsub;
 	}
-	var tab = nfs ? [ infoMount, '' ] : [ '', infoMount ];
+	var tab = nfs ? [ infoMount, '' ] : [ '', () => infoMount( 'nfs' ) ];
 	if ( shareddata ) tab.push( infoMountRserver );
 	var icon       = 'networks';
 	var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 	var list       = [
 		  [ 'Type',      'hidden' ]
-		, [ 'Name',      'text',     'for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name / *' ]
+		, [ 'Name',      'text' ]
 		, [ 'Server IP', 'text' ]
 		, [ 'Share',     'text' ]
-		, [ 'User',      'text',     'if required by server' ]
-		, [ 'Password',  'password', 'if required by server' ]
-		, [ 'Options',   'text',     'if required by server' ]
+		, [ 'User',      'text' ]
+		, [ 'Password',  'password' ]
+		, [ 'Options',   'text' ]
 	];
 	if ( nfs ) list.splice( 3, 2 );
 	info( {
@@ -1208,9 +1202,4 @@ function renderStorage() {
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
-}
-function values2info( keys, v ) {
-	var values = {}
-	keys.forEach( k => values[ k ] = v[ k ] || '' );
-	return values
 }

@@ -258,58 +258,6 @@ $( '#setting-custom' ).on( 'click', function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-var soxr       = `\
-<table>
-<tr><td>Quality</td>
-	<td><select>
-		<option value="very high">Very high</option>
-		<option value="high">High</option>
-		<option value="medium">Medium</option>
-		<option value="low">Low</option>
-		<option value="quick">Quick</option>
-	</select></td>
-</tr>
-<tr><td>Threads</td>
-	<td><label><input type="radio" name="soxr" value="0">Auto</label>&emsp;
-		<label><input type="radio" name="soxr" value="1">Single</label></td>
-</tr>
-<table>`;
-var soxrcustom = `
-<table>
-<tr class="hide"><td><input type="text" value="custom"></td></tr>
-<tr><td>Precision</td>
-	<td><select>
-		<option value="16">16</option>
-		<option value="20">20</option>
-		<option value="24">24</option>
-		<option value="28">28</option>
-		<option value="32">32</option>
-		</select></td><td>&nbsp;<gr>bit</gr></td>
-</tr>
-<tr><td>Phase Response</td>
-	<td><input type="number"></td><td style="width: 115px">&nbsp;<gr>0-100</gr></td>
-</tr>
-<tr><td>Passband End</td>
-	<td><input type="number"></td><td>&nbsp;<gr>0-100%</gr></td>
-</tr>
-<tr><td>Stopband Begin</td>
-	<td><input type="number"></td><td>&nbsp;<gr>100-150%</gr></td>
-</tr>
-<tr><td>Attenuation</td>
-	<td><input type="number"></td><td>&nbsp;<gr>0-30dB</gr></td>
-</tr>
-<tr><td>Bitmask Flag</td>
-	<td colspan="2"><select>
-			<option value="0">0 - Rolloff - Small</option>
-			<option value="1">1 - Rolloff - Medium</option>
-			<option value="2">2 - Rolloff - None</option>
-			<option value="8">8 - High precision</option>
-			<option value="16">16 - Double precision</option>
-			<option value="32">32 - Variable rate</option>
-		</select>
-	</td>
-</tr>
-</table>`;
 var warning = `
 ${ iconwarning }<wh>Lower speakers / headphones volume
 
@@ -324,7 +272,10 @@ function infoSoxr( quality ) {
 		, title        : SW.title
 		, tablabel     : [ 'Presets', 'Custom' ]
 		, tab          : [ '', infoSoxrCustom ]
-		, content      : soxr
+		, list         : [
+			  [ 'Quality', 'select', { 'Very high': 'very high', High: 'high', Medium: 'medium', Low: 'low', Quick: 'quick' } ]
+			, [ 'Threads', 'radio',  { Auto: 0, Single: 1 } ]
+		]
 		, values       : S.soxrconf
 		, checkblank   : true
 		, checkchanged : S.soxr
@@ -335,16 +286,33 @@ function infoSoxr( quality ) {
 }
 function infoSoxrCustom() {
 	delete S.soxrcustomconf.PLUGIN
+	var flag = {
+		  'Rolloff - Small'  : 0
+		, 'Rolloff - Medium' : 1
+		, 'Rolloff - None'   : 2
+		, 'High precision'   : 8
+		, 'Double precision' : 16
+		, 'Variable rate'    : 32
+	}
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'Presets', 'Custom' ]
 		, tab          : [ infoSoxr, '' ]
-		, content      : soxrcustom
+		, list         : [
+			  [ 'Type',                               'hidden' ]
+			, [ 'Precision',      'select', [ 16, 20, 24, 28, 32 ], 'bit' ]
+			, [ 'Phase Response', 'number', '0-100' ]
+			, [ 'Passband End',   'number', '0-100%' ]
+			, [ 'Stopband Begin', 'number', '100-150%' ]
+			, [ 'Attenuation',    'number', '0-30dB' ]
+			, [ 'Bitmask Flag',   'select', flag ]
+		]
 		, values       : S.soxrcustomconf
 		, checkblank   : true
 		, checkchanged : S.soxr
-		, boxwidth     : 85
+		, boxwidth     : 105
+		, beforeshow   : () => $( '#infoContent td' ).last().prop( 'colspan', 2 )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );

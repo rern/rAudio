@@ -461,12 +461,13 @@ function info( json ) {
 			switch ( type ) {
 				case 'checkbox':
 					htmls.list += label ? '<label><input type="checkbox">'+ label +'</label></td>' : '';
-					htmls.list += l[ 2 ] ? '' : '</tr>'; // same line || 1:1 line
+					htmls.list += l[ 2 ] === 'td' ? '' : '</tr>'; // same line || 1:1 line
 					break;
 				case 'hidden':
 				case 'number':
 				case 'text':
-					htmls.list += '<input type="'+ type +'"'+ ( l[ 2 ] ? ' placeholder="'+ l[ 2 ] +'"' : '' ) +'></td></tr>';
+					htmls.list += '<input type="'+ type +'"></td>';
+					htmls.list += l[ 2 ] ? '<td>&nbsp;<gr>'+ l[ 2 ] +'</gr></td</tr>' : '</tr>'; // unit
 					break;
 				case 'password':
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
@@ -476,7 +477,7 @@ function info( json ) {
 					$.each( l[ 2 ], ( k, v ) => {
 						var k = isarray ? v : k;
 						htmls.list += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
-						htmls.list += l[ 3 ] ? '<br>' : '&emsp;'; // 1:1 line || same line
+						htmls.list += l[ 3 ] === 'br' ? '<br>' : '&emsp;'; // 1:1 line || same line
 					} );
 					htmls.list += '</td></tr>';
 					i++;
@@ -490,7 +491,8 @@ function info( json ) {
 								+'</div>';
 					break
 				case 'select':
-					htmls.list += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td></tr>';
+					htmls.list += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td>';
+					htmls.list += l[ 3 ] ? '<td>&nbsp;<gr>'+ l[ 3 ] +'</gr></td</tr>' : '</tr>'; // unit
 					break;
 				case 'textarea':
 					htmls.list += '<textarea></textarea></td></tr>';
