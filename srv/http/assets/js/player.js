@@ -25,7 +25,7 @@ $( '#hwmixer' ).on( 'input', function() {
 	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
 } );
 $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
-	if ( this.id === 'setting-bluealsa' ) {
+	if ( this.id.slice( -1 ) === 'a' ) {
 		var cmd    = 'volumebt';
 		var cmd0db = 'volume0dbbt';
 		S.control  = S.btaplayname;
