@@ -25,8 +25,7 @@ $( '#hwmixer' ).on( 'input', function() {
 	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
 } );
 $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
-	var bt = this.id === 'setting-bluealsa';
-	if ( bt ) {
+	if ( this.id === 'setting-bluealsa' ) {
 		var cmd    = 'volumebt';
 		var cmd0db = 'volume0dbbt';
 		S.control  = S.btaplayname;
@@ -43,14 +42,21 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		, list        : [ S.control.replace( ' - A2DP', '' ), 'range' ]
 		, beforeshow  : () => {
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
-			volumeInfoSet();
 			$( '#infoContent' ).after( '<div class="confirm infomessage hide" style="padding: 15px">'+ warning +'</div>' );
+			volumeInfoSet();
 		}
 		, rangechange : val => volumeSetAt( val )
 		, rangestop   : () => bash( [ 'volumepush' ] )
+		, cancel      : () => {
+			if ( ! $( '.confirm' ).hasClass( 'hide' ) ) {
+				local();
+				$( '#infoContent, .confirm' ).toggleClass( 'hide' );
+				setTimeout( () => I.oknoreset = true, 300 );
+			}
+		}
 		, oklabel     : ico( 'set0' ) +'0dB'
 		, ok          : () => {
-			if ( $( '.inforange .sub' ).text() < '0 dB' && $( '.confirm' ).hasClass( 'hide' ) ) {
+			if ( parseFloat( $( '.inforange .sub' ).text() ) < 0 && $( '.confirm' ).hasClass( 'hide' ) ) {
 				$( '#infoContent, .confirm' ).toggleClass( 'hide' );
 			} else {
 				bash( [ cmd0db ] );
