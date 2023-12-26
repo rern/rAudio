@@ -405,6 +405,16 @@ function info( json ) {
 			}
 		} );
 	}
+	if ( ! I.list && ! I.content ) {
+		I.active = true;
+		$( '#infoButton' ).css( 'padding', '0 0 20px 0' );
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
+		infoButtonWidth();
+		$( '#infoOverlay' ).focus();
+		return
+	}
+	
 	var htmls = {};
 	// tab
 	if ( I.tab ) {
@@ -430,65 +440,58 @@ function info( json ) {
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		var checkboxonly = ! I.list.some( l => l[ 1 ] !== 'checkbox' );
 		var td0   = checkboxonly ? '<tr><td>' : '<tr><td></td><td>'; // no label <td></td>
+		var label, type;
 		var i     = 0; // for radio name
-		I.content = '<table>';
+		var content = '';
 		I.list.forEach( l => {
-			var label = l[ 0 ];
-			var type  = l[ 1 ];
+			label = l[ 0 ];
+			type  = l[ 1 ];
 			if ( type === 'checkbox' ) {
-				I.content += I.content.slice( -3 ) === 'tr>' ? td0 : '<td>';
+				content += content.slice( -3 ) === 'tr>' ? td0 : '<td>';
 			} else {
-				I.content += '<tr><td>'+ label +'</td><td>';
+				content += '<tr><td>'+ label +'</td><td>';
 			}
 			switch ( type ) {
 				case 'checkbox':
-					I.content += label ? '<label><input type="checkbox">'+ label +'</label></td>' : '';
-					I.content += l[ 2 ] ? '' : '</tr>'; // same line || 1:1 line
+					content += label ? '<label><input type="checkbox">'+ label +'</label></td>' : '';
+					content += l[ 2 ] ? '' : '</tr>'; // same line || 1:1 line
 					break;
 				case 'number':
 				case 'text':
-					I.content += '<input type="'+ type +'"></td></tr>';
+					content += '<input type="'+ type +'"></td></tr>';
 					break;
 				case 'password':
-					I.content += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
+					content += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
 					break;
 				case 'radio':
 					var isarray = $.isArray( l[ 2 ] );
 					$.each( l[ 2 ], ( k, v ) => {
 						var k = isarray ? v : k;
-						I.content += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
-						I.content += l[ 3 ] ? '<br>' : '&emsp;'; // 1:1 line || same line
+						content += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
+						content += l[ 3 ] ? '<br>' : '&emsp;'; // 1:1 line || same line
 					} );
-					I.content += '</td></tr>';
+					content += '</td></tr>';
 					i++;
 					break;
+				case 'range':
+					V.range  = true;
+					content  = '<div class="inforange">'
+								+'<div class="name">'+ label +'</div>'
+								+'<div class="value gr"></div>'
+								+ ico( 'minus dn' ) +'<input type="range" min="0" max="100">'+ ico( 'plus' )
+								+'</div>';
+					break
 				case 'select':
-					I.content += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td></tr>';
+					content += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td></tr>';
 					break;
 				case 'textarea':
-					I.content += '<textarea></textarea></td></tr>';
+					content += '<textarea></textarea></td></tr>';
 					break;
 				default: // generic string
-					I.content += l[ 2 ] +'</td></tr>'
+					content += l[ 2 ] +'</td></tr>'
 			}
 		} );
-		I.content += '</table>';
-	} else if ( I.range ) {
-		I.content  = '<div id="infoRange">'
-					+'<div class="name">'+ I.range +'</div>'
-					+'<div class="value gr"></div>'
-					+ ico( 'minus dn' ) +'<input type="range" min="0" max="100">'+ ico( 'plus' )
-					+ ( I.rangesub ? '<div class="sub gr">'+ I.rangesub +'</div>' : '' )
-					+'</div>';
-	}
-	if ( ! I.content ) {
-		I.active = true;
-		$( '#infoButton' ).css( 'padding', '0 0 20px 0' );
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
-		infoButtonWidth();
-		$( '#infoOverlay' ).focus();
-		return
+		I.content = type === 'range' ? content : '<table>'+ content +'</table>';
 	}
 	
 	// populate layout //////////////////////////////////////////////////////////////////////////////
@@ -549,17 +552,17 @@ function info( json ) {
 		I.nochange = I.values && I.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
 		infoCheckSet();
-		if ( I.range ) {
-			var $range   = $( '#infoRange input' );
+		if ( V.range ) {
+			var $range   = $( '.inforange input' );
 			var timeout, val;
 			$range.on( 'input', function() { // drag/click
 				val = +$range.val();
-				$( '#infoRange .value' ).text( val );
+				$( '.inforange .value' ).text( val );
 				if ( I.rangechange ) I.rangechange( val );
 			} ).on( 'touchend mouseup keyup', function() { // drag stop
-				if ( I.rangestop ) setTimeout( () => I.rangestop( val ), 300 );
+				if ( I.rangestop ) setTimeout( () => I.rangestop(), 300 );
 			} );
-			$( '#infoRange i' ).on( 'mouseup keyup', function() { // increment up/dn
+			$( '.inforange i' ).on( 'mouseup keyup', function() { // increment up/dn
 				clearTimeout( timeout );
 				if ( ! V.press ) {
 					val = +$range.val();
@@ -568,7 +571,7 @@ function info( json ) {
 						.val( val )
 						.trigger( 'input' );
 				}
-				if ( I.rangestop ) timeout = setTimeout( () => I.rangestop( val ), 600 );
+				if ( I.rangestop ) timeout = setTimeout( () => I.rangestop(), 600 );
 			} ).press( function( e ) {
 				val = +$range.val();
 				var up  = $( e.target ).hasClass( 'dn' )
@@ -801,7 +804,7 @@ function infoSetValues() {
 			val ? $this.val( val ) : el.selectedIndex = 0;
 		} else { // text, password, textarea, range
 			$this.val( val );
-			if ( type === 'range' ) $('#infoRange .value' ).text( val );
+			if ( type === 'range' ) $('.inforange .value' ).text( val );
 		}
 	} );
 }

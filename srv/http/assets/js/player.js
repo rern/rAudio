@@ -40,9 +40,9 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	info( {
 		  icon        : SW.icon
 		, title       : SW.title
-		, range       : bt ? S.control.replace( ' - A2DP', '' ) : S.control
-		, rangesub    : 'dB'
+		, list        : [ S.control.replace( ' - A2DP', '' ), 'range' ]
 		, beforeshow  : () => {
+			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			volumeInfoSet();
 			$( '#infoContent' ).after( '<div class="confirm infomessage hide" style="padding: 15px">'+ warning +'</div>' );
 		}
@@ -50,7 +50,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		, rangestop   : () => bash( [ 'volumepush' ] )
 		, oklabel     : ico( 'set0' ) +'0dB'
 		, ok          : () => {
-			if ( $( '#infoRange .sub' ).text() < '0 dB' && $( '.confirm' ).hasClass( 'hide' ) ) {
+			if ( $( '.inforange .sub' ).text() < '0 dB' && $( '.confirm' ).hasClass( 'hide' ) ) {
 				$( '#infoContent, .confirm' ).toggleClass( 'hide' );
 			} else {
 				bash( [ cmd0db ] );
@@ -79,7 +79,7 @@ $( '#setting-mixertype' ).on( 'click', function() {
 	info( {
 		  icon        : SW.icon
 		, title       : SW.title
-		, range       : 'MPD Software'
+		, list        : [ 'MPD Software', 'range' ]
 		, values      : S.volumempd
 		, rangechange : val => volumeSetAt( val )
 		, rangestop   : val => volumePush( val, 'mpd' )
@@ -415,9 +415,9 @@ function volumeGetPush() {
 function volumeInfoSet() {
 	var val = S.volume.val || 0;
 	var db  = S.volume.db;
-	$( '#infoRange .value' ).text( val );
-	$( '#infoRange input' ).val( val );
-	$( '#infoRange .sub' ).text( val ? db +' dB' : 'Mute' );
+	$( '.inforange .value' ).text( val );
+	$( '.inforange input' ).val( val );
+	$( '.inforange .sub' ).text( val ? db +' dB' : 'Mute' );
 	$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 	V.local = false;
 }
@@ -431,10 +431,10 @@ function playbackButton() {
 }
 function psVolume( data ) {
 	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;
-	if ( ! I.range ) return
+	if ( ! $( '.inforange' ).length ) return
 	
 	if ( data.type === 'mpd' ) { // info software volume
-		$( '#infoRange .value' ).text( S.volumempd );
+		$( '.inforange .value' ).text( S.volumempd );
 		$( '#infoContent input' ).val( S.volumempd );
 		return
 	}

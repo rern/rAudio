@@ -573,7 +573,7 @@ $( '#setting-volumeboot' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, range        : 'Volume'
+		, list         : [ 'Volume', 'range' ]
 		, values       : S.volumebootconf
 		, checkchanged : S.volumeboot
 		, cancel       : switchCancel

@@ -2315,7 +2315,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 <div id="eq">
 <div class="label up">${ labelhz }</div>
 <div class="bottom"><div class="label dn">${ labelhz }</div></div>
-<div id="infoRange" class="vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
+<div class="inforange vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
 </div>`;
 	var flatButton = () => $( '#infoOk' ).toggleClass( 'disabled', param.gains.reduce( ( a, b ) => a + b, 0 ) === 0 );
 	info( {
@@ -2327,7 +2327,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 		, values       : param.gains
 		, beforeshow   : () => {
 			flatButton();
-			$( '#infoRange input' ).on( 'input', function() {
+			$( '.inforange input' ).on( 'input', function() {
 				var $this = $( this );
 				param.gains[ $this.index() ] = +$this.val();
 				setting.save();
@@ -2338,7 +2338,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 				var i     = $this.index();
 				var gain  = param.gains[ i ];
 				$this.parent().hasClass( 'up' ) ? gain++ : gain--;
-				$( '#infoRange input' ).eq( i ).val( gain );
+				$( '.inforange input' ).eq( i ).val( gain );
 				param.gains[ i ] = gain;
 				setting.save();
 				flatButton();
@@ -2349,7 +2349,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 		, ok           : () => {
 			param.gains = Array( bands ).fill( 0 );
 			setting.save();
-			$( '#infoRange input' ).val( 0 );
+			$( '.inforange input' ).val( 0 );
 			$( '#infoOk' ).addClass( 'disabled' );
 		}
 	} );

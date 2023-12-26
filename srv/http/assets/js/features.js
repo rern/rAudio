@@ -246,7 +246,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 				info( {
 					  icon        : 'firefox'
 					, title       : 'Browser on RPi'
-					, range       : 'Brightness'
+					, list        : [ 'Brightness', 'range' ]
 					, values      : S.brightness
 					, rangechange : val => bash( [ 'brightness', val, 'CMD VAL' ] )
 					, okno        : true

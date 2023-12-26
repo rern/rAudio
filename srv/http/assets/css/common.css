@@ -425,11 +425,9 @@ codered  {
 	font-size: 13px;
 }
 
-#infoRange {
+input[type=range] {
 	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
 	--trackborder : 1px solid var( --cgd ) !important;
-}
-input[type=range] {
 	height: 40px;
 	width: 300px;
 	margin: 0;
@@ -479,15 +477,15 @@ input[type=range]::-moz-range-track {
 	background: var( --track );
 	border: var( --trackborder );
 }
-#infoRange {
+.inforange {
 	text-align: center;
 }
-#infoRange .value {
+.inforange .value {
 	height: 30px;
 	font-size: 18px;
 	font-weight: 300;
 }
-#infoRange i {
+.inforange i {
 	position: relative;
 	width: 40px !important;
 	line-height: 39px;
@@ -1020,11 +1018,11 @@ input:focus {
 	}
 	input[ type=radio ]:focus-visible,
 	input[ type=checkbox ]:focus-visible,
-	#infoRange input:focus-visible::-webkit-slider-thumb {
+	input[ type=range ]:focus-visible::-webkit-slider-thumb {
 		outline: 2px solid var( --cgl );
 		outline-offset: 1px;
 	}
-	#infoRange input:focus-visible::-moz-range-thumb {
+	input[ type=range ]:focus-visible::-moz-range-thumb {
 		outline: 2px solid var( --cgl );
 		outline-offset: 1px;
 	}

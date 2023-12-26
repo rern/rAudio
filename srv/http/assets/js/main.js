@@ -262,7 +262,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					, title      : 'Switch rAudio'
 					, list       : [ '', 'radio', data.list, 'br' ]
 					, values     : currentip
-					, beforeshow : function() {
+					, beforeshow : () => {
 						$( '#infoContent input' ).each( ( i, el ) => {
 							if ( $( el ).val() === currentip ) $( el ).prop( 'disabled', true );
 						} );	

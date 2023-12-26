@@ -18,7 +18,7 @@ var content   = `
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
 	${ ico( 'add', 'eqnew' ) + ico( 'back bl hide', 'eqback' ) }
 </div>
-<div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
+<div class="inforange vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
@@ -35,9 +35,9 @@ function equalizer() {
 				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
 				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
 					var $this, ystart, val, prevval;
-					var yH   = $( '#infoRange input' ).width() - 40;
+					var yH   = $( '.inforange input' ).width() - 40;
 					var step = yH / 40;
-					$( '#infoRange input' ).on( 'touchstart', function( e ) {
+					$( '.inforange input' ).on( 'touchstart', function( e ) {
 						$this  = $( this );
 						ystart = e.changedTouches[ 0 ].pageY;
 						val    = +$this.val();
@@ -56,7 +56,7 @@ function equalizer() {
 						eqSlideEnd();
 					} );
 				} else {
-					$( '#infoRange input' ).on( 'input', function() {
+					$( '.inforange input' ).on( 'input', function() {
 						var $this = $( this );
 						eqSlide( band[ $this.index() ], +$this.val() );
 					} ).on( 'touchend mouseup keyup', function() {
@@ -168,7 +168,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 		var v    = '1%-';
 		var updn = -1;
 	}
-	var $range = $( '#infoRange input' ).eq( i );
+	var $range = $( '.inforange input' ).eq( i );
 	$range.val( +$range.val() + updn );
 	eqSlide( band[ i ], v );
 	eqtimeout = setTimeout( eqSlideEnd, 1000 );
