@@ -615,8 +615,9 @@ function info( json ) {
 					$dn.toggleClass( 'disabled', val === el.min );
 					$up.toggleClass( 'disabled', val === el.max );
 				}
-				$dn.toggleClass( 'disabled', I.values[ i ] === el.min );
-				$up.toggleClass( 'disabled', I.values[ i ] === el.max );
+				var ivalue = I.values[ $trupdn.index() ];
+				$dn.toggleClass( 'disabled', ivalue === el.min );
+				$up.toggleClass( 'disabled', ivalue === el.max );
 				$updn.on( 'touchend mouseup keyup', function() {
 					clearTimeout( timeout );
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );

@@ -190,29 +190,30 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, list         : [
 			  [ 'Rotation',                  'select', { Normal: 0, '90° CW': 90, '90° CCW': 270, '180°': 180 } ]
 			, [ 'Zoom <gr>(%)</gr>',         'number', { step: 5, min: 50, max: 300 } ]
-			, [ 'Screen off <gr>(min)</gr>', 'select', { Disable: 0, 1: 1, 2: 2, 5: 5, 10: 10, 15: 15 } ]
+			, [ 'Screen off <gr>(min)</gr>', 'number', { step: 1, min: 0, max: 30 } ]
 			, [ 'On while play',             'checkbox' ]
 			, [ 'Mouse pointer',             'checkbox' ]
 			, [ 'run <c>xinitrc.d</c>',      'checkbox' ]
 		]
 		, footer       : '<br>'+ brightness + button
-		, boxwidth     : 140
+		, boxwidth     : 110
 		, values       : S.localbrowserconf || default_v.localbrowser
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
+			$( '#infoContent input:checkbox' ).parents( 'td' ).prop( 'colspan', 2 );
 			var $onwhileplay = $( '#infoContent input:checkbox' ).eq( 0 );
 			$onwhileplay.prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
-			$( '#infoContent' ).on( 'input', '#screenoff', function() {
-				if ( $( this ).val() != 0 ) {
-					$onwhileplay.prop( 'disabled', 0 );
+			$( '.infofooter' ).toggleClass( 'hide', ! S.localbrowser );
+			$( '#infoContent tr:eq( 2 )' ).on( 'click', '.updn', function() {
+				if ( $( this ).parents( 'td' ).prev().find( 'input' ).val() != 0 ) {
+					$onwhileplay.prop( 'disabled', false );
 				} else {
 					$onwhileplay
-						.prop( 'checked', 0 )
-						.prop( 'disabled', 1 );
+						.prop( 'disabled', true )
+						.prop( 'checked', false );
 				}
 			} );
-			$( '.infofooter' ).toggleClass( 'hide', ! S.localbrowser );
-			$( '.brightness' ).on( 'click', function() {
+			$( '#infoContent' ).on( 'click', '.brightness', function() {
 				switchCancel();
 				info( {
 					  icon        : 'firefox'
@@ -226,11 +227,9 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 					}
 					, okno        : true
 				} );
-			} );
-			$( '.reload' ).on( 'click', function() {
+			} ).on( 'click', '.reload', function() {
 				bash( [ 'localbrowserreload' ] );
-			} );
-			$( '.screenoff' ).on( 'click', function() {
+			} ).on( 'click', '.screenoff', function() {
 				bash( [ 'screenofftoggle' ] );
 			} );
 		}
@@ -442,7 +441,7 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 			  [ 'Minutes',           'number', { step: 5, min: 5, max: 120 } ]
 			, [ 'Power off on stop', 'checkbox' ]
 		]
-		, boxwidth     : 80
+		, boxwidth     : 70
 		, values       : S.stoptimerconf || default_v.stoptimer
 		, checkchanged : S.stoptimer
 		, beforeshow   : () => $( '#infoContent td:last' ).prop( 'colspan', 2 )
