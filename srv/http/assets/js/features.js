@@ -189,7 +189,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, title        : SW.title
 		, list         : [
 			  [ 'Rotation',                  'select', { Normal: 0, '90° CW': 90, '90° CCW': 270, '180°': 180 } ]
-			, [ 'Zoom <gr>(%)</gr>',         'number' ]
+			, [ 'Zoom <gr>(%)</gr>',         'number', { step: 5, min: 50, max: 300 } ]
 			, [ 'Screen off <gr>(min)</gr>', 'select', { Disable: 0, 1: 1, 2: 2, 5: 5, 10: 10, 15: 15 } ]
 			, [ 'On while play',             'checkbox' ]
 			, [ 'Mouse pointer',             'checkbox' ]
@@ -200,17 +200,8 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, values       : S.localbrowserconf || default_v.localbrowser
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
-			var $zoom        = $( '#infoContent input' ).eq( 0 );
 			var $onwhileplay = $( '#infoContent input:checkbox' ).eq( 0 );
-			$zoom.attr( 'disabled', true );
 			$onwhileplay.prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
-			$( '#infoContent tr' ).eq( 1 ).append( '&emsp;'+ ico( 'remove btnicon dn' ) +'&emsp;'+ ico( 'plus-circle btnicon up' ) );
-			$( '#infoContent .btnicon' ).on( 'click', function() {
-				var up   = $( this ).hasClass( 'up' );
-				var zoom = +$zoom.val();
-				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $zoom.val( up ? zoom += 5 : zoom -= 5 );
-				$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal( 'array' ).join( '' ) );
-			} );
 			$( '#infoContent' ).on( 'input', '#screenoff', function() {
 				if ( $( this ).val() != 0 ) {
 					$onwhileplay.prop( 'disabled', 0 );

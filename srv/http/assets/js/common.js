@@ -273,8 +273,7 @@ var $infocontent;
 
 function info( json ) {
 	local(); // flag for consecutive info
-	I          = json;
-	V.iwidth   = I.width;
+	I = json;
 	
 	if ( 'values' in I ) {
 		if ( ! Array.isArray( I.values ) ) {
@@ -466,8 +465,16 @@ function info( json ) {
 				case 'hidden':
 				case 'number':
 				case 'text':
-					htmls.list += '<input type="'+ type +'"></td>';
-					htmls.list += l[ 2 ] ? '<td>&nbsp;<gr>'+ l[ 2 ] +'</gr></td</tr>' : '</tr>'; // unit
+					var unit = typeof l[ 2 ] === 'object' ? false : l[ 2 ];
+					var updn = unit ? false : l[ 2 ];
+					htmls.list += '<input type="'+ type +'"'+ ( updn ? ' disabled' : '' ) +'></td><td>';
+					if ( unit ) {
+						htmls.list += '&nbsp;<gr>'+ unit +'</gr>';
+					} else if ( updn ) { // single only
+						I.updn = updn;
+						htmls.list += ico( 'remove updn dn' ) + ico( 'plus-circle updn up' );
+					}
+					htmls.list += '</td></tr>';
 					break;
 				case 'password':
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
@@ -483,7 +490,7 @@ function info( json ) {
 					i++;
 					break;
 				case 'range': // single only
-					V.range  = true;
+					I.range  = true;
 					htmls.list = '<div class="inforange">'
 								+'<div class="name">'+ label +'</div>'
 								+'<div class="value gr"></div>'
@@ -559,7 +566,7 @@ function info( json ) {
 		I.nochange = I.values && I.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
 		infoCheckSet();
-		if ( V.range ) {
+		if ( I.range ) {
 			var $range   = $( '.inforange input' );
 			var timeout, val;
 			$range.on( 'input', function() { // drag/click
@@ -588,6 +595,20 @@ function info( json ) {
 						.val( val )
 						.trigger( 'input' );
 				}, 100 );
+			} );
+		}
+		if ( I.updn ) {
+			var $updn = $( '#infoContent .updn' );
+			$updn.on( 'click', function() {
+				var $this = $( this );
+				var $num  = $this.parent().prev().find( 'input' );
+				var up    = $this.hasClass( 'up' );
+				var v     = +$num.val();
+				v         = up ? v + I.updn.step : v - I.updn.step;
+				$num.val( v );
+				if ( I.checkchanged ) $num.trigger( 'input' );
+				$updn.eq( 0 ).toggleClass( 'disabled', v === I.updn.min );
+				$updn.eq( 1 ).toggleClass( 'disabled', v === I.updn.max );
 			} );
 		}
 		// custom function before show
