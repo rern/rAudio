@@ -560,7 +560,7 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 			, [ 'Maximum Transmission Unit <gr>(B)</gr>', 'number' ]
 			, [ 'Transmit Queue Length',                  'number' ]
 		]
-		, boxwidth     : 80
+		, boxwidth     : 70
 		, values       : S.soundprofileconf
 		, checkchanged : true
 		, checkblank   : true
@@ -756,7 +756,7 @@ function infoLcdCharGpio() {
 		, tablabel     : [ 'I&#178;C', 'GPIO' ]
 		, tab          : [ infoLcdChar, '' ]
 		, list         : list
-		, boxwidth     : 180
+		, boxwidth     : 70
 		, values       : S.lcdcharconf || default_v.lcdchar_gpio
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
 		, beforeshow   : infoLcdcharButton
@@ -767,7 +767,6 @@ function infoLcdCharGpio() {
 }
 function infoLcdcharButton() {
 	$( '#infoContent svg .power' ).remove();
-	if ( I.values[ 0 ] === 'gpio' ) $( '.select2-container' ).attr( 'style', 'width: 80px !important' );
 	if ( ! S.lcdchar || S.lcdcharreboot ) return
 	
 	$( '#infoOk' )
@@ -810,7 +809,7 @@ function infoMount( nfs ) {
 	var shareddata = SW.id === 'shareddata';
 	var values     = default_v.mountcifs;
 	values.IP      = S.ipsub;
-	var tab = nfs ? [ infoMount, '' ] : [ '', infoMount ];
+	var tab = nfs ? [ infoMount, '' ] : [ '', () => infoMount( 'nfs' ) ];
 	if ( shareddata ) tab.push( infoMountRserver );
 	var icon       = 'networks';
 	var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
