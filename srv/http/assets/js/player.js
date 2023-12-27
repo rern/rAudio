@@ -40,9 +40,9 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		  icon        : SW.icon
 		, title       : SW.title
 		, list        : [ S.control.replace( ' - A2DP', '' ), 'range' ]
+		, prompt      : warning
 		, beforeshow  : () => {
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
-			$( '#infoContent' ).after( '<div class="confirm infomessage hide" style="padding: 15px">'+ warning +'</div>' );
 			$( '#infoContent input' ).on( 'input', function() {
 				volumeSetAt( +$( this ).val() );
 			} ).on( 'touchend mouseup keyup', function() {
@@ -51,16 +51,16 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 			volumeInfoSet();
 		}
 		, cancel      : () => {
-			if ( ! $( '.confirm' ).hasClass( 'hide' ) ) {
+			if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) {
 				local();
-				$( '#infoContent, .confirm' ).toggleClass( 'hide' );
+				$( '#infoContent, .infoprompt' ).toggleClass( 'hide' );
 				setTimeout( () => I.oknoreset = true, 300 );
 			}
 		}
 		, oklabel     : ico( 'set0' ) +'0dB'
 		, ok          : () => {
-			if ( parseFloat( $( '.inforange .sub' ).text() ) < 0 && $( '.confirm' ).hasClass( 'hide' ) ) {
-				$( '#infoContent, .confirm' ).toggleClass( 'hide' );
+			if ( parseFloat( $( '.inforange .sub' ).text() ) < 0 && $( '.infoprompt' ).hasClass( 'hide' ) ) {
+				$( '#infoContent, .infoprompt' ).toggleClass( 'hide' );
 			} else {
 				bash( [ cmd0db ] );
 			}

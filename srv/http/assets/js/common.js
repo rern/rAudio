@@ -414,6 +414,7 @@ function info( json ) {
 			if ( ! $( this ).hasClass( 'active' ) ) I.tab[ $( this ).index() ]();
 		} );
 	}
+	if ( I.prompt ) $( '#infoContent' ).after( '<div class="infoprompt hide">'+ I.prompt +'</div>' );
 	var htmls = {};
 	[ 'header', 'message', 'footer' ].forEach( k => {
 		if ( I[ k ] ) {

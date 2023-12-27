@@ -788,6 +788,9 @@ hr {
 .infofooter {
 	padding: 0 5px;
 }
+.infoprompt {
+	padding: 15px 5px;
+}
 .infomessage i {
 	width: 25px;
 	vertical-align: 0;

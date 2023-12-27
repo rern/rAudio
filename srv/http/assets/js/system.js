@@ -848,27 +848,20 @@ function infoMirrorList() {
 function infoMount( nfs ) {
 	var nfs        = nfs || false;
 	var shareddata = SW.id === 'shareddata';
-	if ( I.active && $input.length ) {
-		var v = infoVal();
-		if ( 'USER' in v || nfs ) var nfs = true;
-		v.PROTOCOL = nfs ? 'nfs' : 'cifs';
-		var values = values2info( Object.keys( default_v[ nfs ? 'mountnfs' : 'mountcifs' ] ), v );
-	} else {
-		var values = default_v.mountcifs;
-		values.IP  = S.ipsub;
-	}
+	var values     = default_v.mountcifs;
+	values.IP      = S.ipsub;
 	var tab = nfs ? [ infoMount, '' ] : [ '', infoMount ];
 	if ( shareddata ) tab.push( infoMountRserver );
 	var icon       = 'networks';
 	var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 	var list       = [
 		  [ 'Type',      'hidden' ]
-		, [ 'Name',      'text',     'for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name / *' ]
+		, [ 'Name',      'text' ]
 		, [ 'Server IP', 'text' ]
 		, [ 'Share',     'text' ]
-		, [ 'User',      'text',     'if required by server' ]
-		, [ 'Password',  'password', 'if required by server' ]
-		, [ 'Options',   'text',     'if required by server' ]
+		, [ 'User',      'text']
+		, [ 'Password',  'password' ]
+		, [ 'Options',   'text' ]
 	];
 	if ( nfs ) list.splice( 3, 2 );
 	info( {
@@ -877,11 +870,11 @@ function infoMount( nfs ) {
 		, tablabel   : shareddata ? tabshareddata : [ 'CIFS', 'NFS' ]
 		, tab        : tab
 		, list       : list
+		, prompt     : 'error'
 		, values     : values
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			$( '#infoContent input' ).eq( 1 ).css( 'font-family', 'rern, Lato' );
 			var $mountpoint = $( '#mountpoint' );
 			var $share      = $( '#share' );
 			$share.prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
@@ -903,11 +896,12 @@ function infoMount( nfs ) {
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
 			bash( [ 'mount', ...vals, 'CMD '+ keys.join( ' ' ) ], error => {
 				if ( error ) {
-					info( {
-						  icon    : icon
-						, title   : title
-						, message : error
-						, ok      : () => setTimeout( infoMount, 0 )
+					$( '.infoprompt' ).text( 'Error: '+ error );
+					local();
+					$( '#infoTab, #infoContent, .infoprompt' ).toggleClass( 'hide' );
+					$( '#infoOk' ).off( 'click' ).on( 'click', function() {
+						$( '#infoTab, #infoContent, .infoprompt' ).toggleClass( 'hide' );
+						$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
 					} );
 					bannerHide();
 				} else {
