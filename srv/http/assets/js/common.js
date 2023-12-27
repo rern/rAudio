@@ -602,6 +602,8 @@ function info( json ) {
 			I.updn.forEach( ( el, i ) => {
 				var $trupdn   = $( '#infoContent .updn' ).parent().eq( i ).parent()
 				var $updn     = $trupdn.find( '.updn' );
+				var $up       = $updn.eq( 1 );
+				var $dn       = $updn.eq( 0 );
 				var $num      = $updn.parent().prev().find( 'input' );
 				var timeout, val;
 				var numberset = up => {
@@ -610,9 +612,11 @@ function info( json ) {
 					if ( val === el.min || val === el.max ) clearTimeout( timeout );
 					$num.val( val );
 					if ( I.checkchanged ) $num.trigger( 'input' );
-					$updn.eq( 0 ).toggleClass( 'disabled', val === el.min );
-					$updn.eq( 1 ).toggleClass( 'disabled', val === el.max );
+					$dn.toggleClass( 'disabled', val === el.min );
+					$up.toggleClass( 'disabled', val === el.max );
 				}
+				$dn.toggleClass( 'disabled', I.values[ i ] === el.min );
+				$up.toggleClass( 'disabled', I.values[ i ] === el.max );
 				$updn.on( 'touchend mouseup keyup', function() {
 					clearTimeout( timeout );
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );

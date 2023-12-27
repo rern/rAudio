@@ -137,9 +137,9 @@ $( '#setting-crossfade' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ 'Seconds', 'number' ]
+		, list         : [ 'Seconds', 'number', { step: 1, min: 0, max: 10 } ]
 		, focus        : 0
-		, boxwidth     : 60
+		, boxwidth     : 70
 		, values       : S.crossfadeconf
 		, checkchanged : S.crossfade
 		, checkblank   : true
@@ -320,7 +320,10 @@ function infoSoxrCustom() {
 		, checkblank   : true
 		, checkchanged : S.soxr
 		, boxwidth     : 105
-		, beforeshow   : () => $( '#infoContent td' ).last().prop( 'colspan', 2 )
+		, beforeshow   : () => {
+			$( '#infoContent td' ).last().prop( 'colspan', 2 );
+			$( '#infoContent .select2-container' ).last().attr( 'style', 'width: 100% !important' )
+		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
