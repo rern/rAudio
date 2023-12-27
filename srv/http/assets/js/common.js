@@ -822,6 +822,16 @@ function infoFileImageResize( ext, imgW, imgH ) {
 function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 }
+function infoPrompt() {
+	infoPromptToggle();
+	$( '#infoOk' ).off( 'click' ).on( 'click', function() {
+		infoPromptToggle();
+		$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
+	} );
+}
+function infoPromptToggle() {
+	$( '#infoTab, #infoContent, .infoprompt' ).toggleClass( 'hide' );
+}
 function infoSetValues() {
 	var $this, type, val;
 	$input.each( ( i, el ) => {
