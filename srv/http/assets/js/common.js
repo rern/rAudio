@@ -830,7 +830,7 @@ function infoPrompt() {
 	} );
 }
 function infoPromptToggle() {
-	$( '#infoTab, #infoContent, .infoprompt' ).toggleClass( 'hide' );
+	$( '#infoTab, .infoheader, #infoContent, .infofooter, .infoprompt' ).toggleClass( 'hide' );
 }
 function infoSetValues() {
 	var $this, type, val;
