@@ -100,8 +100,17 @@ var board2bcm      = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
-var html_optionpin = htmlOption( board2bcm );
-var html_boardpin  = htmlOption( Object.keys( board2bcm ) );
+var lcdcharaddr = S.lcdcharaddr || [ 39, 63 ];
+var i2caddress  = {};
+lcdcharaddr.forEach( el => i2caddress[ '0x'+ el.toString( 16 ) ] = el );
+var lcdcharlist    = [
+	  [ 'Type',            'hidden' ]
+	, [ 'Size',            'radio', { '20x4': 20, '16x2': 16 } ]
+	, [ 'Character Map',   'radio', [ 'A00', 'A02' ] ]
+	, [ 'Address',         'radio', i2caddress ]
+	, [ 'I&#178;C Chip',   'select', [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
+	, [ 'Sleep <gr>(60s)', 'checkbox' ]
+];
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -712,22 +721,6 @@ function i2sSelectShow() {
 	$( '#divi2smodulesw' ).addClass( 'hide' );
 	$( '#divi2smodule, #setting-i2smodule' ).removeClass( 'hide' );
 }
-var htmllcdchar = {
-	  common : `
-<input type="hidden" value="">
-<table>
-<tr id="cols"><td width="115">Size</td>
-	<td width="90"><label><input type="radio" name="cols" value="20">20x4</label></td>
-	<td width="90"><label><input type="radio" name="cols" value="16">16x2</label></td>
-</tr>
-<tr><td>Char<wide>acter</wide> Map</td>
-	<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
-	<td><label><input type="radio" name="charmap" value="A02">A02</label></td>
-</tr>`
-	, sleep  : `\
-</table>
-<label style="margin-left: 40px"><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label>`
-}
 function htmlOption( values ) {
 	var options = '';
 	if ( Array.isArray( values ) ) {
@@ -738,27 +731,14 @@ function htmlOption( values ) {
 	return options
 }
 function infoLcdChar() {
-	var lcdcharaddr = S.lcdcharaddr || [ 39, 63 ];
-	var i2caddress  = {};
-	lcdcharaddr.forEach( el => i2caddress[ '0x'+ el.toString( 16 ) ] = el );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'I&#178;C', 'GPIO' ]
 		, tab          : [ '', infoLcdCharGpio ]
-		, list         : [
-			  [ 'Type',                       'hidden' ]
-			, [ 'Size',                       'radio', { '20x4': 20, '16x2': 16 } ]
-			, [ 'Char<wide>acter</wide> Map', 'radio', [ 'A00', 'A02' ] ]
-			, [ 'Address',                    'radio', i2caddress ]
-			, [ 'I&#178;C Chip',              'select', [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
-			, [ 'Sleep <gr>(60s)',            'checkbox' ]
-		]
+		, list         : lcdcharlist
 		, boxwidth     : 180
-		, values       : values2info(
-			  Object.keys( default_v.lcdchar_i2c )
-			, S.lcdcharconf || default_v.lcdchar_i2c
-		)
+		, values       : S.lcdcharconf || default_v.lcdchar_i2c
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'i2c'
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
@@ -767,38 +747,17 @@ function infoLcdChar() {
 	} );
 }
 function infoLcdCharGpio() {
-	var optpins = '<select>'+ html_optionpin +'</select>';
-	var content = `
-${ gpiosvg }
-${ htmllcdchar.common }
-</table>
-<table class="gpio">
-<tr><td>RS</td><td>${ optpins }</td><td>RW</td><td>${ optpins }</td><td>E</td><td>${ optpins }</td><td></td><td></td></tr>
-<tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
-${ htmllcdchar.sleep }
-`;
+	var list = lcdcharlist.slice( 0, 3 );
+	[ 'RS', 'RW', 'E', 'D4', 'D5', 'D6', 'D7' ].forEach( k => list.push( [ k, 'select', board2bcm ] ) );
+	list.push( lcdcharlist.slice( -1 )[ 0 ] );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'I&#178;C', 'GPIO' ]
 		, tab          : [ infoLcdChar, '' ]
-		, list         : [
-			  [ 'Type',                       'hidden' ]
-			, [ 'Size',                       'radio', { '20x4': 20, '16x2': 16 } ]
-			, [ 'Char<wide>acter</wide> Map', 'radio', [ 'A00', 'A02' ] ]
-			, [ 'RS',                         'select', board2bcm ]
-			, [ 'RW',                         'select', board2bcm ]
-			, [ 'E',                         'select', board2bcm ]
-			, [ 'D4',                         'select', board2bcm ]
-			, [ 'D5',                         'select', board2bcm ]
-			, [ 'D6',                         'select', board2bcm ]
-			, [ 'Sleep <gr>(60s)',            'checkbox' ]
-		]
+		, list         : list
 		, boxwidth     : 180
-		, values       : values2info(
-			  Object.keys( default_v.lcdchar_gpio )
-			, S.lcdcharconf || default_v.lcdchar_gpio
-		)
+		, values       : S.lcdcharconf || default_v.lcdchar_gpio
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
@@ -808,6 +767,7 @@ ${ htmllcdchar.sleep }
 }
 function infoLcdcharButton() {
 	$( '#infoContent svg .power' ).remove();
+	if ( I.values[ 0 ] === 'gpio' ) $( '.select2-container' ).attr( 'style', 'width: 80px !important' );
 	if ( ! S.lcdchar || S.lcdcharreboot ) return
 	
 	$( '#infoOk' )
@@ -870,7 +830,7 @@ function infoMount( nfs ) {
 		, tablabel   : shareddata ? tabshareddata : [ 'CIFS', 'NFS' ]
 		, tab        : tab
 		, list       : list
-		, prompt     : 'error'
+		, prompt     : true
 		, values     : values
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
@@ -894,20 +854,7 @@ function infoMount( nfs ) {
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
-			bash( [ 'mount', ...vals, 'CMD '+ keys.join( ' ' ) ], error => {
-				if ( error ) {
-					$( '.infoprompt' ).text( 'Error: '+ error );
-					local();
-					$( '#infoTab, #infoContent, .infoprompt' ).toggleClass( 'hide' );
-					$( '#infoOk' ).off( 'click' ).on( 'click', function() {
-						$( '#infoTab, #infoContent, .infoprompt' ).toggleClass( 'hide' );
-						$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
-					} );
-					bannerHide();
-				} else {
-					refreshData();
-				}
-			} );
+			bash( [ 'mount', ...vals, 'CMD '+ keys.join( ' ' ) ], error => infoMountSet( error ) );
 		}
 	} );
 }
@@ -918,26 +865,23 @@ function infoMountRserver() {
 		, tablabel : tabshareddata
 		, tab      : [ infoMount, () => infoMount( 'nfs' ), '' ]
 		, list     : [ 'Server IP', 'text' ]
+		, prompt   : true
 		, values   : { IP: I.active && I.values ? infoVal().IP : S.ipsub }
 		, checkip  : [ 0 ]
 		, cancel   : switchCancel
 		, ok       : () => {
 			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-			bash( [ 'mount', infoVal().IP, 'CMD IP' ], error => {
-				bannerHide();
-				if ( error ) {
-					info( {
-						  icon    : SW.icon
-						, title   : SW.title
-						, message : error
-						, cancel  : switchCancel
-						, ok      : () => setTimeout( infoMountRserver, 0 )
-					} );
-					return
-				}
-			} );
+			bash( [ 'mount', infoVal().IP, 'CMD IP' ], error => infoMountSet( error ) );
 		}
 	} );
+}
+function infoMountSet( error ) {
+	if ( error ) {
+		infoPrompt( '<wh>Mount failed:</wh><br><br>'+ error );
+	} else {
+		$( '#infoX' ).trigger( 'click' );
+	}
+	bannerHide();
 }
 function infoNtp() {
 	SW.id    = 'ntp';
@@ -1080,7 +1024,7 @@ function infoRelaysName() {
 	var name     = S.relaysnameconf || default_v.relaysname;
 	var values   = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
-	var pin_name = '<tr><td><select>'+ html_boardpin +'</select></td><td><input type="text"></td></tr>';
+	var pin_name = '<tr><td><select>'+ htmlOption( Object.keys( board2bcm ) ) +'</select></td><td><input type="text"></td></tr>';
 	var content  = '<tr><td>'+ ico( 'gpiopins bl' ) +' Pin</td><td>'+ ico( 'tag bl' ) +' Name</td></tr>';
 	for( i = 0; i < 4; i++ ) content += pin_name;
 	info( {
@@ -1214,9 +1158,4 @@ function renderStorage() {
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
-}
-function values2info( keys, v ) {
-	var values = {}
-	keys.forEach( k => values[ k ] = v[ k ] || '' );
-	return values
 }

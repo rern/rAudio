@@ -414,7 +414,10 @@ function info( json ) {
 			if ( ! $( this ).hasClass( 'active' ) ) I.tab[ $( this ).index() ]();
 		} );
 	}
-	if ( I.prompt ) $( '#infoContent' ).after( '<div class="infoprompt hide">'+ I.prompt +'</div>' );
+	if ( I.prompt ) {
+		I.oknoreset = true;
+		$( '#infoContent' ).after( '<div class="infoprompt gr hide">'+ I.prompt +'</div>' );
+	}
 	var htmls = {};
 	[ 'header', 'message', 'footer' ].forEach( k => {
 		if ( I[ k ] ) {
@@ -822,7 +825,8 @@ function infoFileImageResize( ext, imgW, imgH ) {
 function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 }
-function infoPrompt() {
+function infoPrompt( message ) {
+	$( '.infoprompt' ).html( message );
 	infoPromptToggle();
 	$( '#infoOk' ).off( 'click' ).on( 'click', function() {
 		infoPromptToggle();
