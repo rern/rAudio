@@ -266,12 +266,12 @@ $( '#setting-custom' ).on( 'click', function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-var warning = `
+var warning = `<br>
 ${ iconwarning }<wh>Lower speakers / headphones volume
-
-<gr>Signal will be set to original level at 0dB.</gr>
-Beware of too high volume.</wh>
-<br>`;
+<br>
+<br><gr>Signal will be set to original level at 0dB.</gr>
+<br>Beware of too high volume.</wh>
+<br>&nbsp;`;
 
 function infoSoxr( quality ) {
 	delete S.soxrconf.PLUGIN
