@@ -978,7 +978,7 @@ function infoWidth() {
 	if ( I.boxW ) $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
 	if ( $( '#infoContent select' ).length ) {
 		selectSet(); // render select to set width
-		$( '.select2-container' ).attr( 'style', 'width: '+ I.boxwidth +'px !important' );
+		$( '#infoContent .select2-container' ).attr( 'style', 'width: '+ I.boxwidth +'px !important' );
 	}
 	if ( ! I.contentcssno && $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
 		var $td1st = $( '#infoContent td:first-child' );
