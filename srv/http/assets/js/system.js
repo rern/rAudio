@@ -957,29 +957,41 @@ function infoRelays() {
 		}
 	} );
 	var option_delay = htmlOption( [ ...Array(10).keys() ] );
-	var td_name      = '<td colspan="2"><select>'+ option_name +'</select></td>';
+	var td_name      = '<td colspan="2" style="width: 170px"><select>'+ option_name +'</select></td>';
 	var tr_name      = '<tr>'+ td_name + td_name +'</tr>';
-	var td_delay     = '<td><select>'+ option_delay +'</select></td><td>sec.</td>';
+	var td_delay     = '<td style="width: 70px"><input type="text" disabled></td><td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td>';
 	var tr_delay     = '<tr>'+ td_delay + td_delay +'</tr>';
-	var content      = '<tr><td colspan="2">'+ ico( 'power grn' ) +' On</td><td colspan="2">'+ ico( 'power red' ) +' Off</td></tr>';
+	var content      = '<tr><td colspan="2">'+ ico( 'power grn' ) +' On <gr>(s)</gr></td><td colspan="2">'+ ico( 'power red' ) +' Off <gr>(s)</gr></td></tr>';
 	for ( i = 0; i < pL; i++ ) {
 		content += tr_name;
 		if ( i < ( pL -1 ) ) content += tr_delay;
 	}
-	content += '<tr><td style="text-align: right">'+ ico( 'stoptimer yl' ) +' Idle</td><td><select>'+ option_delay +'</select></td>'
-			  +'<td colspan="2">min. to '+ ico( 'power red' ) +' Off</td></tr>';
+	content += '<tr><td colspan="2" style="text-align: right">'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled></td>'
+			  +'<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td></tr>';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'Sequence', 'Name' ]
 		, tab          : [ '', infoRelaysName ]
-		, content      : '<table>'+ content +'</table>'
+		, content      : '<table style="border-spacing: 5px 1px;">'+ content +'</table>'
 		, contentcssno : true
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			$( '#infoContent td' ).css( { width: '90px', padding: '0 0 0 5px' } );
-			$( 'tr:even .select2-selection__rendered' ).css( 'background', 'var( --cgd )' );
+			var min   = 0;
+			var max   = 10;
+			$( '#infoContent .updn' ).on( 'touchend mouseup keyup', function() {
+				var $this = $( this );
+				var up    = $this.hasClass( 'up' );
+				var $up   = up ? $this : $this.next();
+				var $dn   = up ? $this.prev() : $this;
+				var $num  = $this.parent().prev().find( 'input' );
+				var val   = +$num.val();
+				up ? val++ : val--;
+				$num.val( val );
+				$up.toggleClass( 'disabled', val === max );
+				$dn.toggleClass( 'disabled', val === min );
+			} );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysCmd
@@ -1035,7 +1047,7 @@ function infoRelaysName() {
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			$( '#infoContent tr td:first-child' ).css( { 'text-align': 'left', width: '70px' } );
+			$( '#infoContent tr td:first-child' ).css( { 'text-align': 'left', width: '75px' } );
 			$( '#infoContent tr td:last-child' ).css( 'width', '160px' );
 		}
 		, cancel       : switchCancel
