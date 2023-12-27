@@ -26,7 +26,7 @@ var default_v      = {
 		, UPNP      : true
 	}
 	, stoptimer    : {
-		  MIN      : ''
+		  MIN      : 30
 		, POWEROFF : false
 	}
 }
@@ -219,7 +219,11 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 					, title       : 'Browser on RPi'
 					, list        : [ 'Brightness', 'range' ]
 					, values      : S.brightness
-					, rangechange : val => bash( [ 'brightness', val, 'CMD VAL' ] )
+					, beforeshow  : () => {
+						$( '#infoContent input' ).on( 'input', function() {
+							bash( [ 'brightness', val, 'CMD VAL' ] )
+						} );
+					}
 					, okno        : true
 				} );
 			} );
@@ -435,15 +439,13 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, list         : [
-			  [ 'Minutes',          'select', [ 5, 15, 30, 45, 60 ] ]
-			, [ 'Stop + Power off', 'checkbox' ]
+			  [ 'Minutes',           'number', { step: 5, min: 5, max: 120 } ]
+			, [ 'Power off on stop', 'checkbox' ]
 		]
-		, boxwidth     : 160
+		, boxwidth     : 80
 		, values       : S.stoptimerconf || default_v.stoptimer
 		, checkchanged : S.stoptimer
-		, beforeshow   : () => {
-			$( '#infoContent tr:last' ).css( 'height', '60px' );
-		}
+		, beforeshow   : () => $( '#infoContent td:last' ).prop( 'colspan', 2 )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true

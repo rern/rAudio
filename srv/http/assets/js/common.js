@@ -435,6 +435,7 @@ function info( json ) {
 		return
 	}
 	
+	[ 'range', 'updn' ].forEach( k => I[ k ] = [] );
 	if ( I.content ) {
 		htmls.list = I.content;
 	} else if ( I.list ) {
@@ -454,6 +455,9 @@ function info( json ) {
 				case 'hidden':
 					htmls.list += '<tr class="hide"><td>'+ label +'</td><td>';
 					break
+				case 'range':
+					htmls.list += '<tr><td>';
+					break;
 				default:
 					htmls.list += '<tr><td>'+ label +'</td><td>';
 			}
@@ -470,8 +474,8 @@ function info( json ) {
 					htmls.list += '<input type="'+ type +'"'+ ( updn ? ' disabled' : '' ) +'></td><td>';
 					if ( unit ) {
 						htmls.list += '&nbsp;<gr>'+ unit +'</gr>';
-					} else if ( updn ) { // single only
-						I.updn = updn;
+					} else if ( updn ) {
+						I.updn.push( updn );
 						htmls.list += ico( 'remove updn dn' ) + ico( 'plus-circle updn up' );
 					}
 					htmls.list += '</td></tr>';
@@ -489,13 +493,13 @@ function info( json ) {
 					htmls.list += '</td></tr>';
 					i++;
 					break;
-				case 'range': // single only
-					I.range  = true;
-					htmls.list = '<div class="inforange">'
+				case 'range':
+					I.range = true;
+					htmls.list += '<div class="inforange">'
 								+'<div class="name">'+ label +'</div>'
 								+'<div class="value gr"></div>'
-								+ ico( 'minus dn' ) +'<input type="range" min="0" max="100">'+ ico( 'plus' )
-								+'</div>';
+								+ ico( 'minus dn' ) +'<input type="range" min="0" max="100">'+ ico( 'plus up' )
+								+'</div></td></tr>';
 					break
 				case 'select':
 					htmls.list += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td>';
@@ -567,48 +571,51 @@ function info( json ) {
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
 		infoCheckSet();
 		if ( I.range ) {
-			var $range   = $( '.inforange input' );
 			var timeout, val;
-			$range.on( 'input', function() { // drag/click
-				val = +$range.val();
-				$( '.inforange .value' ).text( val );
-				if ( I.rangechange ) I.rangechange( val );
-			} ).on( 'touchend mouseup keyup', function() { // drag stop
-				if ( I.rangestop ) setTimeout( () => I.rangestop(), 300 );
+			$( '.inforange input' ).on( 'input', function() {
+				var $this = $( this );
+				$this.siblings( '.value' ).text( +$this.val() );
 			} );
-			$( '.inforange i' ).on( 'mouseup keyup', function() { // increment up/dn
-				clearTimeout( timeout );
-				if ( ! V.press ) {
-					val = +$range.val();
-					$( this ).hasClass( 'dn' ) ? val-- : val++;
-					$range
-						.val( val )
-						.trigger( 'input' );
-				}
-				if ( I.rangestop ) timeout = setTimeout( () => I.rangestop(), 600 );
-			} ).press( function( e ) {
+			var rangeset = ( $range, up ) => {
 				val = +$range.val();
-				var up  = $( e.target ).hasClass( 'dn' )
-				timeout = setInterval( () => {
-					up ? val-- : val++;
-					$range
-						.val( val )
-						.trigger( 'input' );
-				}, 100 );
+				up ? val++ : val--;
+				$range
+					.val( val )
+					.siblings( '.value' ).text( val );
+			}
+			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
+				clearTimeout( timeout );
+				var $this = $( this );
+				if ( ! V.press ) rangeset( $this.siblings( 'input' ), $this.hasClass( 'up' ) );
+			} ).press( function( e ) {
+				var $this  = $( e.target );
+				var $range = $this.siblings( 'input' )
+				var up     = $this.hasClass( 'up' );
+				timeout    = setInterval( () => rangeset( $range, up ), 100 );
 			} );
 		}
-		if ( I.updn ) {
-			var $updn = $( '#infoContent .updn' );
-			$updn.on( 'click', function() {
-				var $this = $( this );
-				var $num  = $this.parent().prev().find( 'input' );
-				var up    = $this.hasClass( 'up' );
-				var v     = +$num.val();
-				v         = up ? v + I.updn.step : v - I.updn.step;
-				$num.val( v );
-				if ( I.checkchanged ) $num.trigger( 'input' );
-				$updn.eq( 0 ).toggleClass( 'disabled', v === I.updn.min );
-				$updn.eq( 1 ).toggleClass( 'disabled', v === I.updn.max );
+		if ( I.updn.length ) {
+			I.updn.forEach( ( el, i ) => {
+				var $trupdn   = $( '#infoContent .updn' ).parent().eq( i ).parent()
+				var $updn     = $trupdn.find( '.updn' );
+				var $num      = $updn.parent().prev().find( 'input' );
+				var timeout, val;
+				var numberset = up => {
+					var val = +$num.val();
+					val     = up ? val + el.step : val - el.step;
+					if ( val === el.min || val === el.max ) clearTimeout( timeout );
+					$num.val( val );
+					if ( I.checkchanged ) $num.trigger( 'input' );
+					$updn.eq( 0 ).toggleClass( 'disabled', val === el.min );
+					$updn.eq( 1 ).toggleClass( 'disabled', val === el.max );
+				}
+				$updn.on( 'touchend mouseup keyup', function() {
+					clearTimeout( timeout );
+					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
+				} ).press( function( e ) {
+					var up  = $( e.target ).hasClass( 'up' );
+					timeout = setInterval( () => numberset( up ), 100 );
+				} );
 			} );
 		}
 		// custom function before show
@@ -828,6 +835,8 @@ function infoSetValues() {
 			}
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
+		} else if ( $this.is( 'select' ) ) {
+			val ? $this.val( val ) : el.selectedIndex = 0;
 		} else {
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );

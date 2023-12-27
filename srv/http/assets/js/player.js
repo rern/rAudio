@@ -43,10 +43,13 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		, beforeshow  : () => {
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			$( '#infoContent' ).after( '<div class="confirm infomessage hide" style="padding: 15px">'+ warning +'</div>' );
+			$( '#infoContent input' ).on( 'input', function() {
+				volumeSetAt( +$( this ).val() );
+			} ).on( 'touchend mouseup keyup', function() {
+				bash( [ 'volumepush' ] );
+			} );
 			volumeInfoSet();
 		}
-		, rangechange : val => volumeSetAt( val )
-		, rangestop   : () => bash( [ 'volumepush' ] )
 		, cancel      : () => {
 			if ( ! $( '.confirm' ).hasClass( 'hide' ) ) {
 				local();
@@ -87,8 +90,13 @@ $( '#setting-mixertype' ).on( 'click', function() {
 		, title       : SW.title
 		, list        : [ 'MPD Software', 'range' ]
 		, values      : S.volumempd
-		, rangechange : val => volumeSetAt( val )
-		, rangestop   : val => volumePush( val, 'mpd' )
+		, beforeshow  : () => {
+			$( '#infoContent input' ).on( 'input', function() {
+				volumeSetAt( +$( this ).val() );
+			} ).on( 'touchend mouseup keyup', function() {
+				volumePush( +$( this ).val(), 'mpd' );
+			} );
+		}
 		, okno        : true
 	} );
 } );

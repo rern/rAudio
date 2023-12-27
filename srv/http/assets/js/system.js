@@ -100,6 +100,8 @@ var board2bcm      = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
+var html_optionpin = htmlOption( board2bcm );
+var html_boardpin  = htmlOption( Object.keys( board2bcm ) );
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -753,7 +755,10 @@ function infoLcdChar() {
 			, [ 'Sleep <gr>(60s)',            'checkbox' ]
 		]
 		, boxwidth     : 180
-		, values       : S.lcdcharconf || default_v.lcdchar_i2c
+		, values       : values2info(
+			  Object.keys( default_v.lcdchar_i2c )
+			, S.lcdcharconf || default_v.lcdchar_i2c
+		)
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'i2c'
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
@@ -762,6 +767,16 @@ function infoLcdChar() {
 	} );
 }
 function infoLcdCharGpio() {
+	var optpins = '<select>'+ html_optionpin +'</select>';
+	var content = `
+${ gpiosvg }
+${ htmllcdchar.common }
+</table>
+<table class="gpio">
+<tr><td>RS</td><td>${ optpins }</td><td>RW</td><td>${ optpins }</td><td>E</td><td>${ optpins }</td><td></td><td></td></tr>
+<tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
+${ htmllcdchar.sleep }
+`;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -773,15 +788,17 @@ function infoLcdCharGpio() {
 			, [ 'Char<wide>acter</wide> Map', 'radio', [ 'A00', 'A02' ] ]
 			, [ 'RS',                         'select', board2bcm ]
 			, [ 'RW',                         'select', board2bcm ]
-			, [ 'E',                          'select', board2bcm ]
+			, [ 'E',                         'select', board2bcm ]
 			, [ 'D4',                         'select', board2bcm ]
 			, [ 'D5',                         'select', board2bcm ]
 			, [ 'D6',                         'select', board2bcm ]
-			, [ 'D7',                         'select', board2bcm ]
 			, [ 'Sleep <gr>(60s)',            'checkbox' ]
 		]
 		, boxwidth     : 180
-		, values       : S.lcdcharconf || default_v.lcdchar_gpio
+		, values       : values2info(
+			  Object.keys( default_v.lcdchar_gpio )
+			, S.lcdcharconf || default_v.lcdchar_gpio
+		)
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
@@ -832,25 +849,26 @@ function infoMount( nfs ) {
 	var nfs        = nfs || false;
 	var shareddata = SW.id === 'shareddata';
 	if ( I.active && $input.length ) {
-		var val = infoVal();
-		var values = val.PROTOCOL === 'nfs' ? default_v.mountnfs : default_v.mountcifs;
-		$.each( values, ( k, v ) => values[ k ] = val[ k ] );
+		var v = infoVal();
+		if ( 'USER' in v || nfs ) var nfs = true;
+		v.PROTOCOL = nfs ? 'nfs' : 'cifs';
+		var values = values2info( Object.keys( default_v[ nfs ? 'mountnfs' : 'mountcifs' ] ), v );
 	} else {
 		var values = default_v.mountcifs;
 		values.IP  = S.ipsub;
 	}
-	var tab = nfs ? [ infoMount, '' ] : [ '', () => infoMount( 'nfs' ) ];
+	var tab = nfs ? [ infoMount, '' ] : [ '', infoMount ];
 	if ( shareddata ) tab.push( infoMountRserver );
 	var icon       = 'networks';
 	var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 	var list       = [
 		  [ 'Type',      'hidden' ]
-		, [ 'Name',      'text' ]
+		, [ 'Name',      'text',     'for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name / *' ]
 		, [ 'Server IP', 'text' ]
 		, [ 'Share',     'text' ]
-		, [ 'User',      'text' ]
-		, [ 'Password',  'password' ]
-		, [ 'Options',   'text' ]
+		, [ 'User',      'text',     'if required by server' ]
+		, [ 'Password',  'password', 'if required by server' ]
+		, [ 'Options',   'text',     'if required by server' ]
 	];
 	if ( nfs ) list.splice( 3, 2 );
 	info( {
@@ -1068,7 +1086,7 @@ function infoRelaysName() {
 	var name     = S.relaysnameconf || default_v.relaysname;
 	var values   = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
-	var pin_name = '<tr><td><select>'+ htmlOption( Object.keys( board2bcm ) ) +'</select></td><td><input type="text"></td></tr>';
+	var pin_name = '<tr><td><select>'+ html_boardpin +'</select></td><td><input type="text"></td></tr>';
 	var content  = '<tr><td>'+ ico( 'gpiopins bl' ) +' Pin</td><td>'+ ico( 'tag bl' ) +' Name</td></tr>';
 	for( i = 0; i < 4; i++ ) content += pin_name;
 	info( {
@@ -1202,4 +1220,9 @@ function renderStorage() {
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
+}
+function values2info( keys, v ) {
+	var values = {}
+	keys.forEach( k => values[ k ] = v[ k ] || '' );
+	return values
 }
