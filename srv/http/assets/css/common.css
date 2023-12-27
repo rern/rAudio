@@ -557,7 +557,7 @@ input[ type=checkbox ].disabled {
 	cursor: pointer;
 }
 .btnbottom i,
-.btnicon {
+.updn {
 	width: 40px;
 	font-size: 22px;
 	vertical-align: -3px;
@@ -565,7 +565,8 @@ input[ type=checkbox ].disabled {
 	color: var( --cw );
 	cursor: pointer;
 }
-.btnicon {
+.updn {
+	width: 35px !important;
 	line-height: 40px;
 }
 
