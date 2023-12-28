@@ -2029,18 +2029,15 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		, beforeshow : () => {
 			$( '#infoList td' ).last().prop( 'colspan', 2 );
 			var $maxmin = $( '#infoList tr' ).slice( 0, 2 );
-			if ( V.tab === 'mixers' ) $maxmin.toggleClass( 'hide', S.range.mixersscale === 'linear' );
 			$( '#infoList' ).on( 'input', 'input', function() {
 				var $this = $( this );
-				if ( $this.is( ':radio' ) ) {
-					$maxmin.toggleClass( 'hide', $( this ).val() === 'linear' );
+				if ( $this.is( ':radio' ) ) return
+				
+				var val = +$this.val();
+				if ( $this.index() ) { // min
+					if ( val < min ) $this.val( min );
 				} else {
-					var val = +$this.val();
-					if ( $this.index() ) { // min
-						if ( val < min ) $this.val( min );
-					} else {
-						if ( val > max ) $this.val( max );
-					}
+					if ( val > max ) $this.val( max );
 				}
 			} );
 		}
