@@ -890,12 +890,11 @@ var render   = {
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var val      = util.dbRound( source.gain );
 				var disabled = source.mute ? ' disabled' : '';
-				var scale    = source.scale === 'linear' ? 'linear' : 'db';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="'+ scale +'">' + val +'</c>'
+					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="db">' + val +'</c>'
 					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIXERSMIN +'" max="'+ S.range.MIXERSMAX +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
-					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
+					 + ico( source.inverted ? 'inverted bl' : 'inverted' ) + ico( source.scale === 'linear' ? 'linear bl' : 'linear' )
 					 +'</li>';
 			} );
 		} );
@@ -1257,15 +1256,16 @@ var setting  = {
 `;
 		var trsource = `
 <tr class="trhead">
-	<td>${ ico( 'input' ) }</td><td>Gain</td><td>${ ico( 'mute' ) }</td><td>${ ico( 'inverted' ) }</td>
+	<td>${ ico( 'input' ) }</td><td>Gain</td><td>${ ico( 'mute' ) }</td><td>${ ico( 'inverted' ) }</td><td>${ ico( 'linear' ) }</td>
 </tr>
 <tr style="height: 10px"></tr>
 <tr class="trsource">
 	<td><select data-k="channel">${ option.source }</select></td><td><input type="number" data-k="gain" value="0"></td>
-	<td><input type="checkbox" data-k="mute"></td><td><input type="checkbox" data-k="inverted">
+	<td><input type="checkbox" data-k="mute"></td><td><input type="checkbox" data-k="inverted"></td><td><input type="checkbox" data-k="linear"></td>
 </tr>
 `;
-		
+		var mixer0  = Object.keys( MIX )[ 0 ];
+		var source0 = MIX[ mixer0 ].mapping[ 0 ].sources[ 0 ];
 		if ( index === '' ) {
 			var title = 'Add Destination';
 			info( {
@@ -1308,6 +1308,7 @@ var setting  = {
 						var $this = $( el )
 						s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
 					} );
+					if ( sources0.scale ) s.scale = sources0.scale;
 					MIX[ name ].mapping[ index ].sources.push( s );
 					setting.save( title, 'Save ...' );
 					render.mixersSub( name );
@@ -2011,14 +2012,7 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	var list   = [
 		  [ 'Max',   'number', { step: 1, min: -50, max: 50 } ]
 		, [ 'Min',   'number', { step: 1, min: -50, max: 50 } ]
-		, [ 'Scale', 'radio',  { dB: 'dB', Linear: 'linear' } ]
 	];
-	if ( V.tab === 'filters' ) {
-		list = list.slice( 0, 2 );
-	} else {
-		var mixer0 = Object.keys( MIX )[ 0 ];
-		values.scale = MIX[ mixer0 ].mapping[ 0 ].sources[ 0 ].scale || 'dB';
-	}
 	info( {
 		  icon       : V.tab
 		, title      : 'Gain Slider Range'
@@ -2027,12 +2021,8 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		, values     : values
 		, checkchanged : true
 		, beforeshow : () => {
-			$( '#infoList td' ).last().prop( 'colspan', 2 );
-			var $maxmin = $( '#infoList tr' ).slice( 0, 2 );
 			$( '#infoList' ).on( 'input', 'input', function() {
 				var $this = $( this );
-				if ( $this.is( ':radio' ) ) return
-				
 				var val = +$this.val();
 				if ( $this.index() ) { // min
 					if ( val < min ) $this.val( min );
@@ -2045,15 +2035,6 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 			var val = infoVal();
 			[ 'MAX', 'MIN' ].forEach( k => S.range[ TAB + k ] = val[ TAB + k ] );
 			$( '#'+ V.tab +' input[type=range]' ).prop( { min: S.range[ TAB +'MIN' ], max: S.range[ TAB +'MAX' ] } );
-			if ( 'scale' in val ) {
-				var scale = val.scale === 'dB' ? null : 'linear';
-				$.each( MIX, ( m, v ) => {
-					v.mapping.forEach( map => {
-						map.sources.forEach( s => s.scale = scale );
-					} );
-				} );
-				setting.save();
-			}
 			bash( [ 'camilla', ...Object.values( S.range ), 'CFG '+ Object.keys( S.range ).join( ' ' ) ] );
 		}
 	} );
@@ -2409,6 +2390,9 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		} else if ( $this.hasClass( 'i-inverted' ) ) {
 			$this.toggleClass( 'bl', checked );
 			source.inverted = checked;
+		} else if ( $this.hasClass( 'i-linear' ) ) {
+			$this.toggleClass( 'bl', checked );
+			source.scale = checked ? 'linear' : null;
 		}
 		setting.save( 'Mixer', 'Change ...' );
 	}

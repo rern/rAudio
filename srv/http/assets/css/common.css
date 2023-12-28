@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1703385854' );
+	src         : url( '/assets/fonts/rern.woff2?v=1703385856' );
 }
 @font-face {
 	font-family : Lato;
@@ -121,6 +121,7 @@ i {
 .i-librandom::before       { content: '\F569' }
 .i-library::before         { content: '\F506' }
 .i-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
+.i-linear::before          { content: '\F52F' }
 .i-link::before            { content: '\F56B' }
 .i-localbrowser::before    { content: '\F584' }
 .i-lock::before            { content: '\F574' }
