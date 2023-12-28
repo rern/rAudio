@@ -395,7 +395,7 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 		, boxwidth     : 70
 		, values       : S.rotaryencoderconf || default_v.rotaryencoder
 		, checkchanged : S.rotaryencoder
-		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
+		, beforeshow   : () => $( '#infoList svg .power' ).remove()
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -497,8 +497,8 @@ $( '#ledcalc' ).on( 'click', function() {
 		, values     : [ 3.3, 5 ]
 		, boxwidth   : 70
 		, beforeshow : () => {
-			$( '#infoContent input' ).prop( 'disabled', 1 );
-			$( '#infoContent input' ).eq( 2 )
+			$( '#infoList input' ).prop( 'disabled', 1 );
+			$( '#infoList input' ).eq( 2 )
 				.prop( 'disabled', 0 )
 				.on( 'input', function() {
 					var fv = $( this ).val();
@@ -507,7 +507,7 @@ $( '#ledcalc' ).on( 'click', function() {
 					} else {
 						var ohm = fv ? Math.round( ( 3.3 - fv ) / 0.005 ) : '';
 					}
-					$( '#infoContent input' ).eq( 3 ).val( ohm );
+					$( '#infoList input' ).eq( 3 ).val( ohm );
 				} );
 		}
 		, okno       : true
@@ -526,7 +526,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {
-			$( '#infoContent input' ).on( 'input', function() {
+			$( '#infoList input' ).on( 'input', function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}
@@ -766,7 +766,7 @@ function infoLcdCharGpio() {
 	} );
 }
 function infoLcdcharButton() {
-	$( '#infoContent svg .power' ).remove();
+	$( '#infoList svg .power' ).remove();
 	if ( ! S.lcdchar || S.lcdcharreboot ) return
 	
 	$( '#infoOk' )
@@ -919,9 +919,9 @@ function infoPowerbutton() {
 		, values       : S.powerbuttonconf || default_v.powerbutton
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			$( '#infoContent input' ).addClass( 'disabled' );
-			var $sw         = $( '#infoContent select' ).eq( 0 );
-			var $trreserved = $( '#infoContent tr' ).last();
+			$( '#infoList input' ).addClass( 'disabled' );
+			var $sw         = $( '#infoList select' ).eq( 0 );
+			var $trreserved = $( '#infoList tr' ).last();
 			$trreserved.toggleClass( 'hide', $sw.val() == 5 );
 			$sw.on( 'input', function() {
 				$trreserved.toggleClass( 'hide', $( this ).val() == 5 );
@@ -961,28 +961,27 @@ function infoRelays() {
 	var tr_name      = '<tr>'+ td_name + td_name +'</tr>';
 	var td_delay     = '<td style="width: 70px"><input type="text" disabled></td><td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td>';
 	var tr_delay     = '<tr>'+ td_delay + td_delay +'</tr>';
-	var content      = '<tr><td colspan="2">'+ ico( 'power grn' ) +' On <gr>(s)</gr></td><td colspan="2">'+ ico( 'power red' ) +' Off <gr>(s)</gr></td></tr>';
+	var list         = '<tr><td colspan="2">'+ ico( 'power grn' ) +' On <gr>(s)</gr></td><td colspan="2">'+ ico( 'power red' ) +' Off <gr>(s)</gr></td></tr>';
 	for ( i = 0; i < pL; i++ ) {
-		content += tr_name;
-		if ( i < ( pL -1 ) ) content += tr_delay;
+		list += tr_name;
+		if ( i < ( pL -1 ) ) list += tr_delay;
 	}
-	content += '<tr><td colspan="2">'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled></td>'
-			  +'<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td></tr>';
+	list            += '<tr><td colspan="2">'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled></td>'
+					  +'<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td></tr>';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'Sequence', 'Name' ]
 		, tab          : [ '', infoRelaysName ]
-		, content      : '<table>'+ content +'</table>'
-		, contentcssno : true
+		, list         : '<table>'+ list +'</table>'
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			$( '#infoContent td:first-child' ).css( 'text-align', 'left' );
-			$( '#infoContent tr' ).last().find( 'td:first-child' ).css( 'text-align', '' );
+			$( '#infoList td:first-child' ).css( 'text-align', 'left' );
+			$( '#infoList tr:last-child td:first-child' ).css( 'text-align', '' );
 			var min   = 0;
 			var max   = 10;
-			$( '#infoContent .updn' ).on( 'touchend mouseup keyup', function() {
+			$( '#infoList .updn' ).on( 'touchend mouseup keyup', function() {
 				var $this = $( this );
 				var up    = $this.hasClass( 'up' );
 				var $up   = up ? $this : $this.next();
@@ -1038,19 +1037,19 @@ function infoRelaysName() {
 	var values   = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
 	var pin_name = '<tr><td><select>'+ htmlOption( Object.keys( board2bcm ) ) +'</select></td><td><input type="text"></td></tr>';
-	var content  = '<tr><td>'+ ico( 'gpiopins bl' ) +' Pin</td><td>'+ ico( 'tag bl' ) +' Name</td></tr>';
-	for( i = 0; i < 4; i++ ) content += pin_name;
+	var list     = '<tr><td>'+ ico( 'gpiopins bl' ) +' Pin</td><td>'+ ico( 'tag bl' ) +' Name</td></tr>';
+	for( i = 0; i < 4; i++ ) list += pin_name;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'Sequence', 'Name' ]
 		, tab          : [ infoRelays, '' ]
-		, content      : gpiosvg + '<br>&nbsp;<table>'+ content +'</table><br>'
+		, list         : gpiosvg + '<br>&nbsp;<table>'+ list +'</table><br>'
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			$( '#infoContent tr td:first-child' ).css( { 'text-align': 'left', width: '75px' } );
-			$( '#infoContent tr td:last-child' ).css( 'width', '160px' );
+			$( '#infoList td:first-child' ).css( { 'text-align': 'left', width: '75px' } );
+			$( '#infoList td:last-child' ).css( 'width', '160px' );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysCmd

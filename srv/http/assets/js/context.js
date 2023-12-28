@@ -87,8 +87,8 @@ function bookmarkNew() {
 		, values     : name
 		, checkblank : true
 		, beforeshow : () => {
-			$( '#infoContent input' ).parents( 'tr' ).addClass( 'hide' );
-			$( '#infoContent img' ).off( 'error' ).on( 'error', function() {
+			$( '#infoList input' ).parents( 'tr' ).addClass( 'hide' );
+			$( '#infoList img' ).off( 'error' ).on( 'error', function() {
 				imageOnError( this, 'bookmark' );
 			} );
 		}
@@ -318,18 +318,18 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : true
 			, beforeshow   : () => {
-				$( '#infoContent img' ).on( 'error', function() {
+				$( '#infoList img' ).on( 'error', function() {
 					imageOnError( this );
 				} );
-				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
-				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
-				$( '#infoContent td i' ).css( 'cursor', 'pointer' );
-				if ( V.playlist ) $( '#infoContent input' ).prop( 'disabled', 1 );
-				var tableW = $( '#infoContent table' ).width();
-				$( '#infoContent' ).on( 'click', '#taglabel', function() {
+				$( '#infoList .infomessage' ).addClass( 'tagmessage' );
+				$( '#infoList .infofooter' ).addClass( 'tagfooter' );
+				$( '#infoList td i' ).css( 'cursor', 'pointer' );
+				if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
+				var tableW = $( '#infoList table' ).width();
+				$( '#infoList' ).on( 'click', '#taglabel', function() {
 					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
 						$( '.taglabel' ).removeClass( 'hide' );
-						$( '#infoContent table' ).width( tableW );
+						$( '#infoList table' ).width( tableW );
 					} else {
 						$( '.taglabel' ).addClass( 'hide' );
 					}
@@ -519,7 +519,7 @@ function wrDirectoryRename() {
 		, ok           : () => bash( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal(), 'CMD MODE NAME NEWNAME' ] )
 	} );
 }
-var htmlwebradio = `\
+var listwebradio = `\
 <table>
 <tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
 <tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
@@ -536,16 +536,16 @@ function webRadioEdit() {
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit Web Radio'
-		, content      : htmlwebradio
+		, list         : listwebradio
 		, values       : [ V.list.name, url, V.list.li.data( 'charset' ) || 'UTF-8' ]
 		, checkchanged : true
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
 		, beforeshow   : () => {
 			var src  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
-			$( '#infoContent' ).prepend( '<div class="infomessage"><img src="'+ src +'"></div>' );
+			$( '#infoList' ).prepend( '<div class="infomessage"><img src="'+ src +'"></div>' );
 			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
-				$( '#infoContent tr' ).last().remove();
+				$( '#infoList tr' ).last().remove();
 			} else {
 				$( '#addwebradiodir' ).remove();
 			}
@@ -577,7 +577,7 @@ function webRadioNew( name, url, charset ) {
 		  icon         : 'webradio'
 		, title        : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
 		, boxwidth     : 'max'
-		, content      : htmlwebradio
+		, list         : listwebradio
 		, values       : [ name, url, charset || 'UTF-8' ]
 		, checkblank   : [ 0, 1 ]
 		, beforeshow   : () => {
@@ -595,7 +595,7 @@ function webRadioNew( name, url, charset ) {
 					} );
 				} );
 			}
-			if ( V.playlist ) $( '#infoContent input' ).eq( 1 ).prop( 'disabled', true );
+			if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
 		}
 		, ok           : () => {
 			var values  = infoVal();

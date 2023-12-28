@@ -263,10 +263,10 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					, list       : [ '', 'radio', data.list, 'br' ]
 					, values     : currentip
 					, beforeshow : () => {
-						$( '#infoContent input' ).each( ( i, el ) => {
+						$( '#infoList input' ).each( ( i, el ) => {
 							if ( $( el ).val() === currentip ) $( el ).prop( 'disabled', true );
 						} );	
-						$( '#infoContent input' ).on( 'input', function() {
+						$( '#infoList input' ).on( 'input', function() {
 							var ip = infoVal();
 							if ( typeof Android === 'object' ) Android.changeIP( ip );
 							loader();
@@ -293,7 +293,7 @@ $( '#displayplayback' ).on( 'click', function() {
 		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
-			var $chk = $( '#infoContent input' );
+			var $chk = $( '#infoList input' );
 			var $el  = {}
 			kv.keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
 			function restoreEnabled() {
@@ -1222,7 +1222,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	
 	var $img = V.list.li.find( '.bkcoverart' );
 	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
-	var content = `\
+	var list = `\
 <div class="infomessage">${ icon }
 <wh>${ V.list.name }</wh>
 <a class="li2 hide">${ V.list.path }</a>
@@ -1237,11 +1237,11 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	info( {
 		  icon       : 'playlist'
 		, title      : 'Add to Playlist'
-		, content    : content
+		, list       : list
 		, values     : 'addplay'
 		, beforeshow : () => {
-			$( '#infoContent .pllength' ).toggleClass( 'hide', ! S.pllength );
-			$( '#infoContent' ).on( 'click', '.cmd', function() {
+			$( '#infoList .pllength' ).toggleClass( 'hide', ! S.pllength );
+			$( '#infoList' ).on( 'click', '.cmd', function() {
 				V.list.li = $( '.infomessage' );
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];
 				V.action  = $( this ).data( 'cmd' );
@@ -1620,7 +1620,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 			, message    : 'Randomly add songs and play continuously.'
 			, list       : [ 'Start playing the random songs', 'checkbox' ]
 			, values     : [ true ]
-			, beforeshow : () => $( '#infoContent table' ).toggleClass( 'hide', S.song + 1 === S.pllength )
+			, beforeshow : () => $( '#infoList table' ).toggleClass( 'hide', S.song + 1 === S.pllength )
 			, ok         : () => {
 				S.librandom = true;
 				$this.addClass( 'bl' );

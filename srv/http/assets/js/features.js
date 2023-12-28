@@ -124,7 +124,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 			, boxwidth    : 320
 			, checklength : { 0: 32, 1: 32 }
 			, beforeshow  : () => {
-				$( '#infoContent .help' ).on( 'click', function() {
+				$( '#infoList .help' ).on( 'click', function() {
 					$( '.container .help' ).eq( 0 ).trigger( 'click' );
 					$( '#infoX' ).trigger( 'click' );
 				} );
@@ -200,11 +200,11 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, values       : S.localbrowserconf || default_v.localbrowser
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
-			$( '#infoContent input:checkbox' ).parents( 'td' ).prop( 'colspan', 2 );
-			var $onwhileplay = $( '#infoContent input:checkbox' ).eq( 0 );
+			$( '#infoList input:checkbox' ).parents( 'td' ).prop( 'colspan', 2 );
+			var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
 			$onwhileplay.prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
 			$( '.infofooter' ).toggleClass( 'hide', ! S.localbrowser );
-			$( '#infoContent tr:eq( 2 )' ).on( 'click', '.updn', function() {
+			$( '#infoList tr:eq( 2 )' ).on( 'click', '.updn', function() {
 				if ( $( this ).parents( 'td' ).prev().find( 'input' ).val() != 0 ) {
 					$onwhileplay.prop( 'disabled', false );
 				} else {
@@ -213,7 +213,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 						.prop( 'checked', false );
 				}
 			} );
-			$( '#infoContent' ).on( 'click', '.brightness', function() {
+			$( '#infoList' ).on( 'click', '.brightness', function() {
 				switchCancel();
 				info( {
 					  icon        : 'firefox'
@@ -221,7 +221,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 					, list        : [ 'Brightness', 'range' ]
 					, values      : S.brightness
 					, beforeshow  : () => {
-						$( '#infoContent input' ).on( 'input', function() {
+						$( '#infoList input' ).on( 'input', function() {
 							bash( [ 'brightness', val, 'CMD VAL' ] )
 						} );
 					}
@@ -274,17 +274,17 @@ $( '#setting-lyrics' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-multiraudio' ).on( 'click', function() {
-	var trhtml  = '<tr><td style="width: 180px"><input type="text" spellcheck="false"></td>'
-					 +'<td style="width: 130px"><input type="text" class="ip" value="'+ S.ipsub +'" spellcheck="false"></td>'
-					 +'<td>&nbsp;'+ ico( 'remove i-lg pointer ipremove' ) +'</td></tr>';
-	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'add i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
+	var trhtml = '<tr><td><input type="text"></td>'
+				+'<td><input type="text" class="ip" value="'+ S.ipsub +'"></td>'
+				+'<td>&nbsp;'+ ico( 'remove i-lg pointer ipremove' ) +'</td></tr>';
+	var list   = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'add i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
 	
 	if ( S.multiraudioconf ) {
 		var keys = Object.keys( S.multiraudioconf ).sort();
 		var values = [];
 		keys.forEach( k => values.push( k, S.multiraudioconf[ k ] ) );
 		var iL     = values.length / 2 - 1;
-		for ( i = 0; i < iL; i++ ) content += trhtml;
+		for ( i = 0; i < iL; i++ ) list += trhtml;
 	} else {
 		values = [ S.hostname, S.hostip ];
 	}
@@ -292,28 +292,30 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, content      : '<table>'+ content +'</table>'
-		, contentcssno : true
+		, list         : '<table>'+ list +'</table>'
+		, boxwidth     : 130
 		, values       : values
 		, checkchanged : S.multiraudio && values.length > 2
 		, checkblank   : I.checkblank
 		, checkip      : I.checkip
 		, checkunique  : true
 		, beforeshow   : () => {
+			$( '#infoList td:first-child' ).css( 'width', '180px' );
+			$( '#infoList td' ).eq( 0 ).css( 'text-align', 'left' );
 			setTimeout( () => $( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 ), 0 );
-			$( '#infoContent input' ).each( ( i, el ) => {
+			$( '#infoList input' ).each( ( i, el ) => {
 				if ( $( el ).val() === S.hostip ) $( el ).addClass( 'disabled' );
 			} );
-			$( '#infoContent' ).on( 'click', 'i', function() {
+			$( '#infoList' ).on( 'click', 'i', function() {
 				var $this = $( this );
 				var add   = $this.hasClass( 'ipadd' );
 				if ( add ) {
-					$( '#infoContent table' ).append( trhtml );
-					$( '#infoContent input' ).last().val( S.ipsub );
+					$( '#infoList table' ).append( trhtml );
+					$( '#infoList input' ).last().val( S.ipsub );
 				} else {
 					$this.parents( 'tr' ).remove();
 				}
-				$inputbox = $( '#infoContent input' );
+				$inputbox = $( '#infoList input' );
 				$input    = $inputbox;
 				infoCheckEvenOdd( $input.length );
 				infoCheckSet();
@@ -444,7 +446,7 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 		, boxwidth     : 70
 		, values       : S.stoptimerconf || default_v.stoptimer
 		, checkchanged : S.stoptimer
-		, beforeshow   : () => $( '#infoContent td:last' ).prop( 'colspan', 2 )
+		, beforeshow   : () => $( '#infoList td:last' ).prop( 'colspan', 2 )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true

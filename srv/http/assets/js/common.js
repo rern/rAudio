@@ -231,7 +231,7 @@ function ico( cls, id ) {
 $( '#infoOverlay' ).press( '#infoIcon', function() { // usage
 	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
 } );
-$( '#infoOverlay' ).on( 'click', '#infoContent', function() {
+$( '#infoOverlay' ).on( 'click', '#infoList', function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
@@ -269,7 +269,6 @@ select:   [U] [D]     - check
 } );
 	
 I = { active: false }
-var $infocontent;
 
 function info( json ) {
 	local(); // flag for consecutive info
@@ -295,15 +294,13 @@ function info( json ) {
 	<div id="infoTopBg">
 		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div>${ ico( 'close', 'infoX' ) }
 	</div>
-	<div id="infoContent"></div>
+	<div id="infoList"></div>
 	<div id="infoButton"></div>
 </div>
 ` );
-	$infocontent = $( '#infoContent' );
-	
 	// title
 	if ( I.width ) $( '#infoBox' ).css( 'min-width', I.width );
-	if ( I.height ) $( '#infoContent' ).css( 'height', I.height );
+	if ( I.height ) $( '#infoList' ).css( 'height', I.height );
 	if ( I.icon ) {
 		I.icon.charAt( 0 ) !== '<' ? $( '#infoIcon' ).addClass( 'i-'+ I.icon ) : $( '#infoIcon' ).html( I.icon );
 	} else {
@@ -380,15 +377,15 @@ function info( json ) {
 				}
 			}
 			if ( ! I.filechecked ) {
-				var htmlprev = $( '#infoContent' ).html();
+				var htmlprev = $( '#infoList' ).html();
 				$( '#infoFilename, #infoFileLabel' ).addClass( 'hide' );
-				$( '#infoContent' ).html( '<table><tr><td>Selected file :</td><td><c>'+ filename +'</c></td></tr>'
+				$( '#infoList' ).html( '<table><tr><td>Selected file :</td><td><c>'+ filename +'</c></td></tr>'
 										 +'<tr><td>File not :</td><td><c>'+ I.filetype +'</c></td></tr></table>' );
 				$( '#infoOk' ).addClass( 'hide' );
 				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
 				$( '#infoButton' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
 				$( '#infoButton' ).one( 'click', '.btntemp', function() {
-					$( '#infoContent' ).html( htmlprev );
+					$( '#infoList' ).html( htmlprev );
 					infoSetValues();
 					$( this ).remove();
 					$( '#infoFileLabel' ).removeClass( 'hide' );
@@ -416,7 +413,7 @@ function info( json ) {
 	}
 	if ( I.prompt ) {
 		I.oknoreset = true;
-		$( '#infoContent' ).after( '<div class="infoprompt gr hide">'+ I.prompt +'</div>' );
+		$( '#infoList' ).after( '<div class="infoprompt gr hide">'+ I.prompt +'</div>' );
 	}
 	var htmls = {};
 	[ 'header', 'message', 'footer' ].forEach( k => {
@@ -428,9 +425,9 @@ function info( json ) {
 			htmls[ k ] = '';
 		}
 	} );
-	if ( ! I.list && ! I.content ) {
+	if ( ! I.list ) {
 		I.active = true;
-		$( '#infoContent' ).html( Object.values( htmls ).join( '' ) );
+		$( '#infoList' ).html( Object.values( htmls ).join( '' ) );
 		$( '#infoButton' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
@@ -440,9 +437,9 @@ function info( json ) {
 	}
 	
 	[ 'range', 'updn' ].forEach( k => I[ k ] = [] );
-	if ( I.content ) {
-		htmls.list = I.content;
-	} else if ( I.list ) {
+	if ( typeof I.list === 'string' ) {
+		htmls.list = I.list;
+	} else {
 		htmls.list = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		var checkboxonly = ! I.list.some( l => l[ 1 ] !== 'checkbox' );
@@ -522,11 +519,11 @@ function info( json ) {
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	var content = '';
 	[ 'header', 'message', 'list', 'footer' ].forEach( k => content += htmls[ k ] );
-	$( '#infoContent' ).html( content ).promise().done( function() {
-		$( '#infoContent input:text' ).prop( 'spellcheck', false );
+	$( '#infoList' ).html( content ).promise().done( function() {
+		$( '#infoList input:text' ).prop( 'spellcheck', false );
 		// get all input fields
-		$inputbox = $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea' );
-		$input    = $( '#infoContent' ).find( 'input, select, textarea' );
+		$inputbox = $( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' );
+		$input    = $( '#infoList' ).find( 'input, select, textarea' );
 		var name, nameprev;
 		$input    = $input.filter( ( i, el ) => { // filter each radio per group ( multiple inputs with same name )
 			name = el.name;
@@ -540,7 +537,7 @@ function info( json ) {
 		// assign values
 		infoSetValues();
 		// set height shorter if checkbox / radio only
-		$( '#infoContent tr' ).each( ( i, el ) => {
+		$( '#infoList tr' ).each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.find( 'input:checkbox, input:radio' ).length ) $this.css( 'height', '36px' );
 		} );
@@ -554,8 +551,8 @@ function info( json ) {
 		infoButtonWidth();
 		// set width: text / password / textarea
 		infoWidth();
-		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
-		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
+		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
+		if ( I.tab && $input.length === 1 ) $( '#infoList' ).css( 'padding', '30px' );
 		// check inputs: blank / length / change
 		if ( I.checkblank ) {
 			if ( I.checkblank === true ) I.checkblank = [ ...Array( $inputbox.length ).keys() ];
@@ -600,7 +597,7 @@ function info( json ) {
 		}
 		if ( I.updn.length ) {
 			I.updn.forEach( ( el, i ) => {
-				var $trupdn   = $( '#infoContent .updn' ).parent().eq( i ).parent()
+				var $trupdn   = $( '#infoList .updn' ).parent().eq( i ).parent()
 				var $updn     = $trupdn.find( '.updn' );
 				var $up       = $updn.eq( 1 );
 				var $dn       = $updn.eq( 0 );
@@ -630,7 +627,7 @@ function info( json ) {
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
 	} );
-	$( '#infoContent .i-eye' ).on( 'click', function() {
+	$( '#infoList .i-eye' ).on( 'click', function() {
 		var $this = $( this );
 		var $pwd  = $this.parent().prev().find( 'input' );
 		if ( $pwd.prop( 'type' ) === 'text' ) {
@@ -698,7 +695,7 @@ function infoCheckLength() {
 }
 function infoCheckSet() {
 	if ( I.checkchanged || I.checkblank || I.checkip || I.checklength ) {
-		$( '#infoContent' ).find( 'input, select, textarea' ).on( 'input', function() {
+		$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
 			if ( I.checkchanged ) I.nochange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
 			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
@@ -775,7 +772,7 @@ function infoFileImageReader() {
 		}
 	}
 	reader.readAsDataURL( I.infofile );
-	$( '#infoContent' )
+	$( '#infoList' )
 		.off( 'click', '.infoimgnew' )
 		.on( 'click', '.infoimgnew', function() {
 		if ( ! $( '.infomessage .rotate' ).length ) return
@@ -839,7 +836,7 @@ function infoPrompt( message ) {
 	} );
 }
 function infoPromptToggle() {
-	$( '#infoX, #infoTab, .infoheader, #infoContent, .infofooter, .infoprompt' ).toggleClass( 'hide' );
+	$( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' ).toggleClass( 'hide' );
 }
 function infoSetValues() {
 	var $this, type, val;
@@ -849,9 +846,9 @@ function infoSetValues() {
 		val   = I.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
 			if ( val ) {
-				$( '#infoContent input:radio[name='+ el.name +']' ).val( [ val ] );
+				$( '#infoList input:radio[name='+ el.name +']' ).val( [ val ] );
 			} else {
-				$( '#infoContent input:radio' ).eq( 0 ).prop( 'checked', true );
+				$( '#infoList input:radio' ).eq( 0 ).prop( 'checked', true );
 			}
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
@@ -882,7 +879,7 @@ function infoVal( array ) {
 				val = $this.val().trim().replace( /(["&()\\])/g, '\$1' ); // escape extra characters
 				break;
 			case 'radio': // radio has only single checked - skip unchecked inputs
-				val = $( '#infoContent input:radio[name='+ el.name +']:checked' ).val();
+				val = $( '#infoList input:radio[name='+ el.name +']:checked' ).val();
 				if ( val === 'true' ) {
 					val = true;
 				} else if ( val === 'false' ) {
@@ -974,19 +971,19 @@ function infoWidth() {
 				, 'max-width' : maxw
 			} );
 		}
-		var allW = $( '#infoContent' ).width();
-		var labelW = $( '#infoContent td:first-child' ).width() || 0;
+		var allW = $( '#infoList' ).width();
+		var labelW = $( '#infoList td:first-child' ).width() || 0;
 		I.boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
-	} else if ( ! I.contentcssno ) {
+	} else if ( ! I.listcssno ) {
 		I.boxW = 230;
 	}
-	if ( I.boxW ) $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
-	if ( $( '#infoContent select' ).length ) {
+	if ( I.boxW ) $( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
+	if ( $( '#infoList select' ).length ) {
 		selectSet(); // render select to set width
-		if ( I.boxwidth ) $( '#infoContent .select2-container' ).attr( 'style', 'width: '+ I.boxwidth +'px !important' );
+		if ( I.boxwidth ) $( '#infoList .select2-container' ).attr( 'style', 'width: '+ I.boxwidth +'px !important' );
 	}
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
-		$( '#infoContent' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoContent table' ).width() );
+		$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
 	}
 }
 
@@ -1051,7 +1048,7 @@ function local( delay ) {
 function selectSet( $select ) {
 	var options = { minimumResultsForSearch: 10 }
 	if ( ! $select ) {
-		$select = $( '#infoContent select' );
+		$select = $( '#infoList select' );
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	$select
@@ -1078,7 +1075,7 @@ function selectText2Html( pattern ) {
 	}
 	var $rendered = $( '.select2-selection__rendered' ).eq( 0 );
 	htmlSet( $rendered );
-	$( '#infoContent select' ).on( 'select2:open', () => {
+	$( '#infoList select' ).on( 'select2:open', () => {
 		setTimeout( () => $( '.select2-results__options li' ).each( ( i, el ) => htmlSet( $( el ) ) ), 0 );
 	} ).on( 'select2:select', function() {
 		htmlSet( $rendered );

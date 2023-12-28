@@ -622,7 +622,7 @@ hr {
 #infoOverlay .button-coverart::before {
 	top: 1px;
 }
-#infoContent .bklabel {
+#infoList .bklabel {
 	height: auto;
 	line-height: 30px;
 }
@@ -713,43 +713,43 @@ hr {
 	width: 24px;
 	color: var( --cg60 );
 }
-#infoContent {
+#infoList {
 	padding: 20px 10px 10px 10px;
 	font-size: 16px;
 	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
-#infoContent table {
+#infoList table {
 	margin: 0 auto;
 	border-spacing: 5px 1px;
 }
-#infoContent tr {
+#infoList tr {
 	height: 42px;
 }
-#infoContent td {
+#infoList td {
 	padding: 0;
 	text-align: left;
 	white-space: nowrap;
 }
-#infoContent td:first-child { /* label */
+#infoList td:first-child { /* label */
 	padding-right: 5px;
 	text-align: right;
 }
-#infoContent td:last-child { /* chekbox only which has no label */
+#infoList td:last-child { /* chekbox only which has no label */
 	text-align: left;
 }
-#infoContent label i {
+#infoList label i {
 	text-align: center;
 	width: 22px;
 	font-size: 20px;
 	margin-right: 5px;
 }
-#infoContent i {
+#infoList i {
 	width: 24px;
 	font-size: 20px;
 	text-align: center;
     color: var( --cw );
 }
-#infoContent pre {
+#infoList pre {
 	margin: 0;
 	padding: 0 10px;
 	text-align: left;
@@ -757,16 +757,16 @@ hr {
 	color: var( --cg60 );
 	background: none;
 }
-#infoContent .menu {
+#infoList .menu {
 	position: relative;
 	left: 0;
 	margin: 10px auto;
 	text-align: left;
 }
-#infoContent .menu a {
+#infoList .menu a {
 	height: 41px;
 }
-#infoContent .menu i {
+#infoList .menu i {
 	width: 40px;
 }
 .infomessage {
@@ -832,7 +832,7 @@ hr {
 	font-size: 18px;
 	margin: 0;
 }
-#infoContent textarea {
+#infoList textarea {
 	width: 100%;
 	height: 100px;
 	margin: 0 !important;
@@ -883,7 +883,7 @@ input[ type=number ] {
 	margin-top: 0 !important;
 	outline: none;
 }
-#infoContent .i-eye {
+#infoList .i-eye {
 	width: 30px;
 	margin-right: -25px;
 	text-align: center;
@@ -922,11 +922,21 @@ input[ type=radio ]:disabled {
 	background-color: var( --cgd );
 	box-shadow: var( --shadow-select );
 }
-#infoContent button {
+#infoList button {
 	height: 40px;
 	margin-left: 5px;
 	padding-right: 25px;
 	font-size: 16px;
+}
+#infoList .imgicon {
+	width: 30px !important;
+	margin-right: 5px !important;
+	vertical-align: -10px;
+	border: none;
+}
+#infoList .select2-container {
+	max-width     : none;
+	margin-bottom : 0;
 }
 #infoFilename {
 	max-width: 95%;
@@ -985,10 +995,10 @@ input[ type=radio ]:disabled {
 }
 
 @media ( max-height: 420px ) {
-	#infoContent { padding: 10px 5px }
+	#infoList { padding: 10px 5px }
 }
 @media ( max-width: 420px ) {
-	#infoContent { padding: 20px 5px 10px 5px }
+	#infoList { padding: 20px 5px 10px 5px }
 	.infoheader, .infofooter { padding: 0 5px }
 }
 @media ( max-width: 330px ) {
@@ -1027,7 +1037,7 @@ input:focus {
 	input[ type=number ]:focus-visible,
 	input[ type=tel ]:focus-visible,
 	input[ type=password ]:focus-visible,
-	#infoContent textarea:focus-visible {
+	#infoList textarea:focus-visible {
 		outline: 1px solid var( --cgl ) !important;
 	}
 	input[ type=radio ]:focus-visible,

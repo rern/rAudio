@@ -7,7 +7,7 @@ freq.forEach( ( hz, i ) => {
 	band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
 	labelhz += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
 } );
-var content   = `
+var list    = `
 <div id="eq">
 <div class="label up">${ labelhz }</div>
 <div class="bottom">
@@ -25,12 +25,12 @@ function equalizer() {
 		E      = data || { active: "Flat", preset: { Flat: Array.from( new Array( 10 ), () => 62 ) } }
 		equser = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
 		info( {
-			  icon         : 'equalizer'
-			, title        : 'Equalizer'
-			, content      : content.replace( 'PRESETS', eqOptionPreset() )
-			, contentcssno : true
-			, values       : [ '', E.active, ...E.preset[ E.active ] ]
-			, beforeshow   : () => {
+			  icon       : 'equalizer'
+			, title      : 'Equalizer'
+			, list       : list.replace( 'PRESETS', eqOptionPreset() )
+			, listcssno  : true
+			, values     : [ '', E.active, ...E.preset[ E.active ] ]
+			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 550 );
 				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
 				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
@@ -64,8 +64,8 @@ function equalizer() {
 					} );
 				}
 			}
-			, cancel       : () => E = {}
-			, okno         : true
+			, cancel     : () => E = {}
+			, okno       : true
 		} );
 	}, 'json' );
 }

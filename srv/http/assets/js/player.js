@@ -43,7 +43,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		, prompt      : warning
 		, beforeshow  : () => {
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
-			$( '#infoContent input' ).on( 'input', function() {
+			$( '#infoList input' ).on( 'input', function() {
 				volumeSetAt( +$( this ).val() );
 			} ).on( 'touchend mouseup keyup', function() {
 				bash( [ 'volumepush' ] );
@@ -53,14 +53,14 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		, cancel      : () => {
 			if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) {
 				local();
-				$( '#infoContent, .infoprompt' ).toggleClass( 'hide' );
+				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
 				setTimeout( () => I.oknoreset = true, 300 );
 			}
 		}
 		, oklabel     : ico( 'set0' ) +'0dB'
 		, ok          : () => {
 			if ( parseFloat( $( '.inforange .sub' ).text() ) < 0 && $( '.infoprompt' ).hasClass( 'hide' ) ) {
-				$( '#infoContent, .infoprompt' ).toggleClass( 'hide' );
+				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
 			} else {
 				bash( [ cmd0db ] );
 			}
@@ -91,7 +91,7 @@ $( '#setting-mixertype' ).on( 'click', function() {
 		, list        : [ 'MPD Software', 'range' ]
 		, values      : S.volumempd
 		, beforeshow  : () => {
-			$( '#infoContent input' ).on( 'input', function() {
+			$( '#infoList input' ).on( 'input', function() {
 				volumeSetAt( +$( this ).val() );
 			} ).on( 'touchend mouseup keyup', function() {
 				volumePush( +$( this ).val(), 'mpd' );
@@ -209,7 +209,8 @@ $( '#setting-outputbuffer' ).on( 'click', function() {
 $( '#setting-soxr' ).on( 'click', function() {
 	S.soxrquality === 'custom' ? infoSoxrCustom() : infoSoxr();
 } );
-var custominfo = `\
+$( '#setting-custom' ).on( 'click', function() {
+	var list = `\
 <table width="100%">
 <tr><td><c>mpd.conf</c></td></tr>
 <tr><td><pre>
@@ -220,12 +221,11 @@ user                   "mpd"</pre></td></tr>
 ...
 audio_output {
 	...
-	mixer_device   "hw:N"</pre></td></tr>
+	mixer_device   "hw:${ S.asoundcard }"</pre></td></tr>
 <tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
 </table>`;
-$( '#setting-custom' ).on( 'click', function() {
 	bash( [ 'customget', D.aplayname, 'CMD APLAYNAME' ], val => {
 		var val       = val.split( '^^' );
 		var global = val[ 0 ].trim(); // remove trailing
@@ -233,7 +233,7 @@ $( '#setting-custom' ).on( 'click', function() {
 		info( {
 			  icon         : SW.icon
 			, title        : SW.title
-			, content      : custominfo.replace( 'N', S.asoundcard )
+			, list         : list
 			, values       : [ global, output ]
 			, checkchanged : S.custom
 			, cancel       : switchCancel
@@ -321,8 +321,8 @@ function infoSoxrCustom() {
 		, checkchanged : S.soxr
 		, boxwidth     : 105
 		, beforeshow   : () => {
-			$( '#infoContent td' ).last().prop( 'colspan', 2 );
-			$( '#infoContent .select2-container' ).last().attr( 'style', 'width: 100% !important' )
+			$( '#infoList td' ).last().prop( 'colspan', 2 );
+			$( '#infoList .select2-container' ).last().attr( 'style', 'width: 100% !important' )
 		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -420,14 +420,14 @@ function psVolume( data ) {
 	
 	if ( data.type === 'mpd' ) { // info software volume
 		$( '.inforange .value' ).text( S.volumempd );
-		$( '#infoContent input' ).val( S.volumempd );
+		$( '#infoList input' ).val( S.volumempd );
 		return
 	}
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		V.local = true;
-		$( '#infoContent' ).removeClass( 'hide' );
+		$( '#infoList' ).removeClass( 'hide' );
 		$( '.confirm' ).addClass( 'hide' );
 		volumeInfoSet();
 	}, 300 );

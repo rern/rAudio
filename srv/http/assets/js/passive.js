@@ -355,7 +355,7 @@ function psRelays( response ) {
 		}, 1000 );
 	} else {
 		if ( I.active ) {
-			$( '#infoContent .msg-r' ).html( response.message );
+			$( '#infoList .msg-r' ).html( response.message );
 			return
 		}
 		
@@ -368,7 +368,7 @@ function psRelays( response ) {
 			, oknoreset  : true
 			, beforeshow : () => {
 				$( '#infoX' ).addClass( 'hide' );
-				if ( state === 'OFF' ) $( '#infoContent .msg-r' ).addClass( 'wh' );
+				if ( state === 'OFF' ) $( '#infoList .msg-r' ).addClass( 'wh' );
 			}
 		} );
 	}

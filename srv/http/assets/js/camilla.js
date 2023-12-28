@@ -1110,8 +1110,8 @@ var setting  = {
 			, checkblank   : true
 			, checkchanged : name in FIL
 			, beforeshow   : () => {
-				$( '#infoContent td:first-child' ).css( 'min-width', '125px' );
-				var $select = $( '#infoContent select' );
+				$( '#infoList td:first-child' ).css( 'min-width', '125px' );
+				var $select = $( '#infoList select' );
 				$select.eq( 0 ).on( 'input', function() {
 					var val     = infoVal();
 					var subtype = val.type in F0.subtype ? F0.subtype[ val.type ][ 2 ][ 0 ] : '';
@@ -1132,7 +1132,7 @@ var setting  = {
 						}
 					} );
 				}
-				var $radio = $( '#infoContent input:radio' );
+				var $radio = $( '#infoList input:radio' );
 				if ( $radio.length ) {
 					var $label = $radio.parents( 'tr' ).prev().find( 'td' ).eq( 0 );
 					$radio.on( 'input', function() {
@@ -1271,13 +1271,13 @@ var setting  = {
 		if ( index === '' ) {
 			var title = 'Add Destination';
 			info( {
-				  icon         : V.tab
-				, title        : title
-				, content      : '<table class="tablemapping">'+ trdest + trsource +'</table>'
-				, contentcssno : true
-				, values       : [ MIX[ name ].mapping.length, 0, 0, false, false ]
-				, checkblank   : true
-				, ok           : () => {
+				  icon       : V.tab
+				, title      : title
+				, list       : '<table class="tablemapping">'+ trdest + trsource +'</table>'
+				, listcssno  : true
+				, values     : [ MIX[ name ].mapping.length, 0, 0, false, false ]
+				, checkblank : true
+				, ok         : () => {
 					var s = {}
 					$( '.trsource' ).find( 'select, input' ).each( ( i, el ) => {
 						var $this = $( el )
@@ -1296,13 +1296,13 @@ var setting  = {
 		} else {
 			var title = 'Add Source';
 			info( {
-				  icon         : V.tab
-				, title        : title
-				, content      : '<table class="tablemapping">'+ trsource +'</table>'
-				, contentcssno : true
-				, values       : [ 0, 0, false, false ]
-				, checkblank   : true
-				, ok           : () => {
+				  icon       : V.tab
+				, title      : title
+				, list       : '<table class="tablemapping">'+ trsource +'</table>'
+				, listcssno  : true
+				, values     : [ 0, 0, false, false ]
+				, checkblank : true
+				, ok         : () => {
 					var s = {}
 					$( '.trsource' ).find( 'select, input' ).each( ( i, el ) => {
 						var $this = $( el )
@@ -1360,17 +1360,17 @@ var setting  = {
 				, [ 'Filters', 'select', filters ]
 			]
 			, beforeshow : () => {
-				$( '#infoContent .select2-container' ).eq( 0 ).addClass( 'channel' )
-				$( '#infoContent td' ).last().append( ico( 'add' ) );
+				$( '#infoList .select2-container' ).eq( 0 ).addClass( 'channel' )
+				$( '#infoList td' ).last().append( ico( 'add' ) );
 				var tradd = '<tr class="trlist"><td></td><td><input type="text" disabled value="VALUE">'+ ico( 'remove' ) +'</td></tr>';
-				$( '#infoContent' ).on( 'click', '.i-add', function() {
-					$( '#infoContent table' ).append( tradd.replace( 'VALUE', $( '#infoContent select' ).eq( 1 ).val() ) );
+				$( '#infoList' ).on( 'click', '.i-add', function() {
+					$( '#infoList table' ).append( tradd.replace( 'VALUE', $( '#infoList select' ).eq( 1 ).val() ) );
 				} ).on( 'click', '.i-remove', function() {
 					$( this ).parents( 'tr' ).remove();
 				} );
 			}
 			, ok         : () => {
-				var $input = $( '#infoContent input' );
+				var $input = $( '#infoList input' );
 				if ( $input.length ) {
 					var names = [];
 					$input.each( ( i, el ) => names.push( $( el ).val() ) );
@@ -1379,7 +1379,7 @@ var setting  = {
 				}
 				PIP.push( {
 					  type    : 'Filter'
-					, channel : +$( '#infoContent select' ).eq( 0 ).val()
+					, channel : +$( '#infoList select' ).eq( 0 ).val()
 					, names   : names
 				} );
 				setting.pipelineSave();
@@ -1437,9 +1437,9 @@ var setting  = {
 			, checkblank   : true
 			, checkchanged : true
 			, beforeshow   : () => {
-				$( '#infoContent input[type=number]' ).css( 'width', '70px' );
-				$( '#infoContent td:first-child' ).css( 'width', '128px' );
-				$( '#infoContent select' ).eq( 0 ).on( 'input', function() {
+				$( '#infoList input[type=number]' ).css( 'width', '70px' );
+				$( '#infoList td:first-child' ).css( 'width', '128px' );
+				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
 					if ( typenew === 'File' && ! S.lsraw.length ) {
 						info( {
@@ -1476,9 +1476,9 @@ var setting  = {
 			, checkblank   : true
 			, checkchanged : true
 			, beforeshow   : () => {
-				var $trother = $( '#infoContent tr' ).eq( 1 );
+				var $trother = $( '#infoList tr' ).eq( 1 );
 				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
-				$( '#infoContent select' ).on( 'input', function() {
+				$( '#infoList select' ).on( 'input', function() {
 					var rate  = $( this ).val();
 					var other = rate === 'Other';
 					$trother.toggleClass( 'hide', ! other );
@@ -2017,10 +2017,10 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		, boxwidth   : 110
 		, values     : values
 		, beforeshow : () => {
-			var $input = $( '#infoContent input' );
+			var $input = $( '#infoList input' );
 			var $max   = $input.eq( 0 );
 			var $min   = $input.eq( 1 );
-			$( '#infoContent' ).on( 'blur', 'input', function() {
+			$( '#infoList' ).on( 'blur', 'input', function() {
 				if ( $max.val() > 50 ) {
 					$max.val( 50 );
 				} else if ( $max.val() < 0 ) {
@@ -2311,7 +2311,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k'
 		labelhz += '<a>'+ hz +'</a>';
 	} );
-	var content = `
+	var list    = `
 <div id="eq">
 <div class="label up">${ labelhz }</div>
 <div class="bottom"><div class="label dn">${ labelhz }</div></div>
@@ -2319,13 +2319,13 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 </div>`;
 	var flatButton = () => $( '#infoOk' ).toggleClass( 'disabled', param.gains.reduce( ( a, b ) => a + b, 0 ) === 0 );
 	info( {
-		  icon         : 'equalizer'
-		, title        : name
-		, content      : content
-		, width        : 50 * bands + 40
-		, contentcssno : true
-		, values       : param.gains
-		, beforeshow   : () => {
+		  icon       : 'equalizer'
+		, title      : name
+		, list       : list
+		, width      : 50 * bands + 40
+		, listcssno  : true
+		, values     : param.gains
+		, beforeshow : () => {
 			flatButton();
 			$( '.inforange input' ).on( 'input', function() {
 				var $this = $( this );
@@ -2344,9 +2344,9 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 				flatButton();
 			} );
 		}
-		, oklabel      : ico( 'set0' ) +'Flat'
-		, oknoreset    : true
-		, ok           : () => {
+		, oklabel    : ico( 'set0' ) +'Flat'
+		, oknoreset  : true
+		, ok         : () => {
 			param.gains = Array( bands ).fill( 0 );
 			setting.save();
 			$( '.inforange input' ).val( 0 );

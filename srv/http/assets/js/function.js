@@ -153,7 +153,7 @@ function changeIP() { // for android app
 		, values       : location.host
 		, checkchanged : true
 		, checkip      : [ 0 ]
-		, beforeshow   : () => $( '#infoContent input' ).prop( 'type', 'tel' )
+		, beforeshow   : () => $( '#infoList input' ).prop( 'type', 'tel' )
 		, ok           : () => {
 			var ip = infoVal();
 			var changed = Android.changeIP( ip );
@@ -609,7 +609,7 @@ function imageOnError( el, bookmark ) {
 		var icon = ico( 'bookmark bl' );
 		if ( ! V.librarylist ) icon += '<a class="label">'+ bookmark +'</a>';
 		$this.replaceWith( icon );
-		$( '#infoContent input' ).parents( 'tr' ).removeClass( 'hide' );
+		$( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
 	}
 }
 function imageReplace( type, imagefilenoext, bookmarkname ) {
@@ -655,7 +655,7 @@ function infoLibrary() {
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $el  = {};
-			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoList input' ).eq( i ) );
 			$el.sd.add( $el.usb ).prop( 'disabled', S.shareddata );
 		}
 		, ok           : displaySave
@@ -674,9 +674,9 @@ function infoLibraryOption() {
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $el  = {}
-			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
-			$( '#infoContent tr' ).css( 'height', '36px' );
-			$( '#infoContent td' ).css( 'width', '294px' );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoList input' ).eq( i ) );
+			$( '#infoList tr' ).css( 'height', '36px' );
+			$( '#infoList td' ).css( 'width', '294px' );
 			$el.albumyear.prop( 'disabled', ! D.albumbyartist );
 			$el.fixedcover.prop( 'disabled', D.hidecover );
 			$el.albumbyartist.on( 'input', function() {
@@ -711,7 +711,7 @@ function infoTitle() {
 	var noparen      = title.slice( -1 ) !== ')';
 	var titlenoparen = title.replace( / $|\(.*$/, '' );
 	var paren        = title.replace( /^.*\(/, '(' );
-	var content      = `\
+	var list         = `\
 <table>
 <tr><td>${ ico( 'artist wh' ) }</td><td><input class="required" type="text"></td></tr>
 <tr><td>${ ico( 'music wh' ) }</td><td><input class="required" type="text"></td></tr>
@@ -728,7 +728,7 @@ function infoTitle() {
 	info( {
 		  icon        : 'playback'
 		, title       : 'Current Track'
-		, content     : content
+		, list        : list
 		, width       : 460
 		, boxwidth    : 'max'
 		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
@@ -736,24 +736,24 @@ function infoTitle() {
 			if ( noparen ) {
 				$( '#paren' ).addClass( 'hide' );
 			} else {
-				$( '#infoContent input:checkbox' ).on( 'input', function() {
-					$( '#infoContent input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
+				$( '#infoList input:checkbox' ).on( 'input', function() {
+					$( '#infoList input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
-			$( '#infoContent input.required' ).on( 'input', function() {
+			$( '#infoList input.required' ).on( 'input', function() {
 				var $this = $( this );
 				$this.css( 'border-color', $this.val() ? '' : 'red' );
-				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
+				$( '#infoList .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
 			} );
-			$( '#infoContent .lyrics' ).toggleClass( 'hide', ! S.lyrics );
-			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
+			$( '#infoList .lyrics' ).toggleClass( 'hide', ! S.lyrics );
+			$( '#infoList .album' ).toggleClass( 'hide', album === '' );
 			if ( S.player === 'mpd' ) {
 				var btnscrobble = S.scrobble && S.webradio;
 			} else {
 				var btnscrobble = S.scrobble && ! S.scrobbleconf[ S.player ];
 			}
-			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! btnscrobble );
-			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
+			$( '#infoList .scrobble' ).toggleClass( 'hide', ! btnscrobble );
+			$( '#infoList' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
 				var artist = values[ 0 ]
 				var title  = values[ 1 ]
@@ -791,8 +791,8 @@ function infoUpdate( path ) {
 		, list       : path ? '' : [ '', 'radio', { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }, 'br' ]
 		, beforeshow : () => {
 			if ( ! C ) {
-				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', true );
-				$( '#infoContent input' ).eq( 1 ).prop( 'checked', true );
+				$( '#infoList input' ).eq( 0 ).prop( 'disabled', true );
+				$( '#infoList input' ).eq( 1 ).prop( 'checked', true );
 			}
 		}
 		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD DIR' ] )
@@ -989,7 +989,7 @@ function playlistInsert( indextarget ) {
 }
 function playlistInsertSelect( $this ) {
 	var track = '<gr>'+ ( $this.index() + 1 ) +' - </gr>'+ $this.find( '.name' ).text();
-	var content = `\
+	var list  = `\
 ${ V.pladd.title }
 <br><gr>${ V.pladd.album }</gr>
 <br><br>
@@ -1002,7 +1002,7 @@ ${ track }
 	info( {
 		  icon        : 'file-playlist'
 		, title       : 'Insert'
-		, content     : content
+		, list        : list
 		, values      : [ 1 ]
 		, buttonlabel : ico( 'undo' ) +'Select'
 		, button      : playlistInsertTarget
@@ -1022,7 +1022,7 @@ function playlistInsertTarget() {
 		, list       : [ '', 'radio', { First : 1, Select: 'select', Last: 'last' }, 'br' ]
 		, values     : 'last'
 		, beforeshow : () => {
-			$( '#infoContent input' ).eq( 1 ).on( 'click', function() {
+			$( '#infoList input' ).eq( 1 ).on( 'click', function() {
 				local();
 				$( '#infoX' ).trigger( 'click' );
 			} );
