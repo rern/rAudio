@@ -7,6 +7,7 @@
 	line-height   : 24px;
 	border-radius : 4px;
 	box-shadow    : var( --shadow-select );
+	text-align    : left;
 }
 .select2-selection:focus-visible {
 	outline: none;

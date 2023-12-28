@@ -1192,9 +1192,6 @@ var setting  = {
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
-	, filterEqFlat  : () => {
-		
-	}
 	, mixer         : name => {
 		var title = name ? 'Mixer' : 'Add Mixer'
 		info( {
@@ -2323,7 +2320,6 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 		, title      : name
 		, list       : list
 		, width      : 50 * bands + 40
-		, listcssno  : true
 		, values     : param.gains
 		, beforeshow : () => {
 			flatButton();

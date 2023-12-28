@@ -28,7 +28,6 @@ function equalizer() {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
 			, list       : htmllist.replace( 'PRESETS', eqOptionPreset() )
-			, listcssno  : true
 			, values     : [ '', E.active, ...E.preset[ E.active ] ]
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 550 );
