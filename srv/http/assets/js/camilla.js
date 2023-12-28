@@ -828,15 +828,25 @@ var render   = {
 		graph.refresh();
 	}
 	, filter      : ( k, v ) => {
-		var param     = v.parameters;
+		var param  = v.parameters;
+		if ( k === 'Gain' ) {
+			var iconlinear = ico( param.scale === 'linear' ? 'linear bl' : 'linear' );
+		} else {
+			var iconlinear = '';
+		}
 		if ( 'gain' in v.parameters ) {
 			var val       = util.dbRound( param.gain );
 			var licontent =  '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
-							+'<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>'
+							+'<div class="li2">'
+							+ ( 'freq' in param ? param.freq +'Hz ' : k )
+							+ ( 'q' in param ? 'Q:'+ param.q : '' )
+							+ ( 'slope' in param ?  'S:'+ param.slope : '' )
+							+'</div>'
 							+'</div>'
 							+'<c class="db">'+ val +'</c>'
 							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.FILTERSMIN +'" max="'+ S.range.FILTERSMAX +'">'
-							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
+							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) + iconlinear
+							+'</div>'
 							+'</div>';
 			if ( k in V.graphlist ) licontent += V.graphlist[ k ];
 		} else {
@@ -1244,49 +1254,25 @@ var setting  = {
 		} );
 	}
 	, mixerMap      : ( name, index ) => {
-		var option = {
-			  dest   : htmlOption( DEV.playback.channels )
-			, source : htmlOption( DEV.capture.channels )
-		}
-		var trdest   = `
-<tr class="trsource">
-	<td><select data-k="dest">${ option.dest }</select></td>
-</tr>
-<tr style="height: 10px"></tr>
-`;
-		var trsource = `
-<tr class="trhead">
-	<td>${ ico( 'input' ) }</td><td>Gain</td><td>${ ico( 'mute' ) }</td><td>${ ico( 'inverted' ) }</td><td>${ ico( 'linear' ) }</td>
-</tr>
-<tr style="height: 10px"></tr>
-<tr class="trsource">
-	<td><select data-k="channel">${ option.source }</select></td><td><input type="number" data-k="gain" value="0"></td>
-	<td><input type="checkbox" data-k="mute"></td><td><input type="checkbox" data-k="inverted"></td><td><input type="checkbox" data-k="linear"></td>
-</tr>
-`;
-		var mixer0  = Object.keys( MIX )[ 0 ];
-		var source0 = MIX[ mixer0 ].mapping[ 0 ].sources[ 0 ];
 		if ( index === '' ) {
 			var title = 'Add Destination';
 			info( {
 				  icon       : V.tab
 				, title      : title
-				, list       : '<table class="tablemapping">'+ trdest + trsource +'</table>'
-				, listcssno  : true
-				, values     : [ MIX[ name ].mapping.length, 0, 0, false, false ]
-				, checkblank : true
+				, list       : [ 'Playback channel', 'select', DEV.playback.channels ]
+				, boxwidth   : 70
 				, ok         : () => {
-					var s = {}
-					$( '.trsource' ).find( 'select, input' ).each( ( i, el ) => {
-						var $this = $( el )
-						s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
-					} );
-					var dest    = s.dest;
-					delete s.dest;
 					var mapping = {
-						  dest    : dest
+						  dest    : infoVal()
 						, mute    : false
-						, sources : [ s ]
+						, sources : [
+							{
+								  channel  : 0
+								, gain     : 0
+								, inverted : false
+								, mute     : false
+							}
+						]
 					}
 					MIX[ name ].mapping.push( mapping );
 					setting.save( title, 'Save ...' );
@@ -1298,18 +1284,16 @@ var setting  = {
 			info( {
 				  icon       : V.tab
 				, title      : title
-				, list       : '<table class="tablemapping">'+ trsource +'</table>'
-				, listcssno  : true
-				, values     : [ 0, 0, false, false ]
-				, checkblank : true
+				, list       : [ 'Capture channel', 'select', DEV.capture.channels ]
+				, boxwidth   : 70
 				, ok         : () => {
-					var s = {}
-					$( '.trsource' ).find( 'select, input' ).each( ( i, el ) => {
-						var $this = $( el )
-						s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
-					} );
-					if ( sources0.scale ) s.scale = sources0.scale;
-					MIX[ name ].mapping[ index ].sources.push( s );
+					var source = {
+						  channel  : infoVal()
+						, gain     : 0
+						, inverted : false
+						, mute     : false
+					}
+					MIX[ name ].mapping[ index ].sources.push( source );
 					setting.save( title, 'Save ...' );
 					render.mixersSub( name );
 				}
@@ -1541,7 +1525,10 @@ var setting  = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			V.wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			setTimeout( util.save2file, 300 );
+			setTimeout( () => {
+				V.wscamilla.send( '"GetConfigJson"' );
+				util.save2file();
+			}, 300 );
 		}, V.wscamilla ? 0 : 300 );
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
@@ -1913,11 +1900,17 @@ $( '#volmute' ).on( 'click', function() {
 } );
 $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	var $this = $( this );
+	if ( $this.hasClass( 'i-linear' ) ) {
+		var name = $this.parents( 'li' ).data( 'name' );
+		FIL[ name ].parameters.scale = $this.hasClass( 'bl' ) ? 'dB' : 'linear';
+		setting.save( 'Gain', 'Change ...' );
+		return
+	}
+	
 	if ( $this.parent().hasClass( 'disabled' ) ) return
 	
 	clearTimeout( V.timeoutgain );
 	var $gain = $this.parent().prev();
-	var $db   = $gain.prev();
 	var val   = +$gain.val();
 	if ( $this.hasClass( 'i-set0' ) ) {
 		if ( val === 0 ) return

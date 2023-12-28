@@ -141,9 +141,6 @@ tr .i-remove {
 	background: var( --cga ) !important;
 	border: none !important;
 }
-.liinput .filter {
-	width: 130px;
-}
 .liinput .filter div {
 	display: block;
 }
@@ -169,7 +166,7 @@ tr .i-remove {
 }
 .divgain {
 	display: inline-block;
-	width: 120px !important;
+	min-width: 120px !important;
 }
 .divgain i {
 	width: 40px;
