@@ -889,10 +889,10 @@ var render   = {
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var val      = util.dbRound( source.gain );
-				var disabled = ( source.mute ? ' disabled' : '' );
-				var linear   = source.scale ? ' linear' : '';
+				var disabled = source.mute ? ' disabled' : '';
+				var scale    = source.scale === 'linear' ? 'linear' : 'db';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="db'+ linear +'">' + val +'</c>'
+					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="'+ scale +'">' + val +'</c>'
 					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIXERSMIN +'" max="'+ S.range.MIXERSMAX +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )

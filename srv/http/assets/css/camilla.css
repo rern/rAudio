@@ -256,6 +256,7 @@ i.disabled,
 	background: var( --cgl );
 }
 .db,
+.linear,
 #volume-text {
 	display: inline-block;
 	width: 45px;
@@ -264,10 +265,11 @@ i.disabled,
 	color: var( --cw );
 	background-color: var( --cga );
 }
-#mixers .db {
+#mixers .db,
+#mixers .linear {
 	margin: 0 0 0 10px;
 }
-#mixers .db.linear {
+#mixers .linear {
 	border: 1px solid var( --cgl );
 }
 #in::before {
