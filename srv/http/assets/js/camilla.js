@@ -829,12 +829,21 @@ var render   = {
 	}
 	, filter      : ( k, v ) => {
 		var param  = v.parameters;
+		var iconlinear, linear;
 		if ( v.type === 'Gain' ) {
-			var iconlinear = ico( param.scale === 'linear' ? 'linear bl' : 'linear' );
-		} else {
-			var iconlinear = '';
+			var linear     = param.scale === 'linear';
+			var iconlinear = ico( linear ? 'linear bl' : 'linear' );
 		}
-		if ( 'gain' in v.parameters ) {
+		if ( linear ) {
+			var min        = -10;
+			var max        = 10;
+			var step       = 0.1;
+		} else {
+			var min        = S.range.FILTERSMIN;
+			var max        = S.range.FILTERSMAX;
+			var step       = 1;
+		}
+		if ( 'gain' in param ) {
 			var val       = util.dbRound( param.gain );
 			var licontent =  '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
 							+'<div class="li2">'
@@ -844,7 +853,7 @@ var render   = {
 							+'</div>'
 							+'</div>'
 							+'<c class="db">'+ val +'</c>'
-							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.FILTERSMIN +'" max="'+ S.range.FILTERSMAX +'">'
+							+'<input type="range" step="'+ step +'" value="'+ val +'" min="'+ min +'" max="'+ max +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) + iconlinear
 							+'</div>'
 							+'</div>';
@@ -1317,6 +1326,9 @@ var setting  = {
 			, values       : values
 			, checkblank   : true
 			, checkchanged : name
+			, beforeshow   : () => {
+				if ( name ) $( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
+			}
 			, ok           : () => {
 				var val = infoVal();
 				var typenew = val.type;
@@ -2008,13 +2020,13 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		, [ 'Min',   'number', { step: 1, min: min, max: max } ]
 	];
 	info( {
-		  icon       : V.tab
-		, title      : 'Gain Slider Range'
-		, list       :  list
-		, boxwidth   : 70
-		, values     : values
+		  icon         : V.tab
+		, title        : 'Gain Slider Range'
+		, list         :  list
+		, boxwidth     : 70
+		, values       : values
 		, checkchanged : true
-		, beforeshow : () => {
+		, beforeshow   : () => {
 			$( '#infoList' ).on( 'input', 'input', function() {
 				var $this = $( this );
 				var val = +$this.val();

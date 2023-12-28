@@ -5,7 +5,7 @@ $id_data = [
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'resampler'           => [ 'name' => 'Resampler',           'setting' => 'custom' ]
 ];
-$sliderrange     = i( 'gear btn' ).' Gain slider range';
+$sliderrange     = i( 'gear btn' ).' Gain slider range (dB)';
 $contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
 $contextmixers   = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
 $contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
@@ -17,7 +17,7 @@ $help = [
 {$sliderrange}
 {$contextfilters}
 {$gaincontrols}
-{$Fi( 'linear btn' )} Linear scale
+{$Fi( 'linear btn' )} Linear scale (-10 - +10)
 EOF
 	, 'mixers'   => <<< EOF
 {$sliderrange}
