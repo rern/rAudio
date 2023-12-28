@@ -7,7 +7,7 @@ freq.forEach( ( hz, i ) => {
 	band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
 	labelhz += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
 } );
-var list    = `
+var htmllist    = `
 <div id="eq">
 <div class="label up">${ labelhz }</div>
 <div class="bottom">
@@ -27,7 +27,7 @@ function equalizer() {
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
-			, list       : list.replace( 'PRESETS', eqOptionPreset() )
+			, list       : htmllist.replace( 'PRESETS', eqOptionPreset() )
 			, listcssno  : true
 			, values     : [ '', E.active, ...E.preset[ E.active ] ]
 			, beforeshow : () => {

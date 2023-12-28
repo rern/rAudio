@@ -210,7 +210,7 @@ $( '#setting-soxr' ).on( 'click', function() {
 	S.soxrquality === 'custom' ? infoSoxrCustom() : infoSoxr();
 } );
 $( '#setting-custom' ).on( 'click', function() {
-	var list = `\
+	var htmllist = `\
 <table width="100%">
 <tr><td><c>mpd.conf</c></td></tr>
 <tr><td><pre>
@@ -233,7 +233,7 @@ audio_output {
 		info( {
 			  icon         : SW.icon
 			, title        : SW.title
-			, list         : list
+			, list         : htmllist
 			, values       : [ global, output ]
 			, checkchanged : S.custom
 			, cancel       : switchCancel

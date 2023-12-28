@@ -1222,7 +1222,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	
 	var $img = V.list.li.find( '.bkcoverart' );
 	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
-	var list = `\
+	var htmllist = `\
 <div class="infomessage">${ icon }
 <wh>${ V.list.name }</wh>
 <a class="li2 hide">${ V.list.path }</a>
@@ -1237,7 +1237,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	info( {
 		  icon       : 'playlist'
 		, title      : 'Add to Playlist'
-		, list       : list
+		, list       : htmllist
 		, values     : 'addplay'
 		, beforeshow : () => {
 			$( '#infoList .pllength' ).toggleClass( 'hide', ! S.pllength );

@@ -711,7 +711,7 @@ function infoTitle() {
 	var noparen      = title.slice( -1 ) !== ')';
 	var titlenoparen = title.replace( / $|\(.*$/, '' );
 	var paren        = title.replace( /^.*\(/, '(' );
-	var list         = `\
+	var htmllist         = `\
 <table>
 <tr><td>${ ico( 'artist wh' ) }</td><td><input class="required" type="text"></td></tr>
 <tr><td>${ ico( 'music wh' ) }</td><td><input class="required" type="text"></td></tr>
@@ -728,7 +728,7 @@ function infoTitle() {
 	info( {
 		  icon        : 'playback'
 		, title       : 'Current Track'
-		, list        : list
+		, list        : htmllist
 		, width       : 460
 		, boxwidth    : 'max'
 		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
@@ -989,7 +989,7 @@ function playlistInsert( indextarget ) {
 }
 function playlistInsertSelect( $this ) {
 	var track = '<gr>'+ ( $this.index() + 1 ) +' - </gr>'+ $this.find( '.name' ).text();
-	var list  = `\
+	var htmllist  = `\
 ${ V.pladd.title }
 <br><gr>${ V.pladd.album }</gr>
 <br><br>
@@ -1002,7 +1002,7 @@ ${ track }
 	info( {
 		  icon        : 'file-playlist'
 		, title       : 'Insert'
-		, list        : list
+		, list        : htmllist
 		, values      : [ 1 ]
 		, buttonlabel : ico( 'undo' ) +'Select'
 		, button      : playlistInsertTarget
