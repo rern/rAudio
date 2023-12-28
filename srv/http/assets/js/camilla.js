@@ -829,7 +829,7 @@ var render   = {
 	}
 	, filter      : ( k, v ) => {
 		var param  = v.parameters;
-		if ( k === 'Gain' ) {
+		if ( v.type === 'Gain' ) {
 			var iconlinear = ico( param.scale === 'linear' ? 'linear bl' : 'linear' );
 		} else {
 			var iconlinear = '';
@@ -838,7 +838,7 @@ var render   = {
 			var val       = util.dbRound( param.gain );
 			var licontent =  '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
 							+'<div class="li2">'
-							+ ( 'freq' in param ? param.freq +'Hz ' : k )
+							+ ( 'freq' in param ? param.freq +'Hz ' : v.type )
 							+ ( 'q' in param ? 'Q:'+ param.q : '' )
 							+ ( 'slope' in param ?  'S:'+ param.slope : '' )
 							+'</div>'
@@ -1120,6 +1120,7 @@ var setting  = {
 			, checkblank   : true
 			, checkchanged : name in FIL
 			, beforeshow   : () => {
+				if ( name ) $( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
 				$( '#infoList td:first-child' ).css( 'min-width', '125px' );
 				var $select = $( '#infoList select' );
 				$select.eq( 0 ).on( 'input', function() {
@@ -1997,14 +1998,14 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		return
 	}
 	
-	var max    = 50;
-	var min    = -50;
+	var max    = 150;
+	var min    = -150;
 	var TAB    = V.tab.toUpperCase();
 	var values = {};
 	[ 'MAX', 'MIN' ].forEach( k => values[ TAB + k ] = S.range[ TAB + k ] );
 	var list   = [
-		  [ 'Max',   'number', { step: 1, min: -50, max: 50 } ]
-		, [ 'Min',   'number', { step: 1, min: -50, max: 50 } ]
+		  [ 'Max',   'number', { step: 1, min: min, max: max } ]
+		, [ 'Min',   'number', { step: 1, min: min, max: max } ]
 	];
 	info( {
 		  icon       : V.tab

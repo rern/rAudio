@@ -17,12 +17,13 @@ $help = [
 {$sliderrange}
 {$contextfilters}
 {$gaincontrols}
+{$Fi( 'linear btn' )} Linear scale
 EOF
 	, 'mixers'   => <<< EOF
 {$sliderrange}
 {$contextmixers}
 {$gaincontrols}
-{$Fi( 'volume btn' )}{$Fi( 'inverted btn' )} Mute, Invert
+{$Fi( 'volume btn' )}{$Fi( 'inverted btn' )}{$Fi( 'linear btn' )} Mute, Invert, Linear scale
 EOF
 	, 'pipeline' => <<< EOF
 {$Fi( 'flowchart btn' )} Step flowchart

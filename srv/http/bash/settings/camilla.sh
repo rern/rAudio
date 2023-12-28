@@ -6,6 +6,11 @@ dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
 
 saveConfig() {
+	data=$( echo '"GetConfigJson"' \
+				| websocat ws://127.0.0.1:1234 \
+				| jq -r .GetConfigJson.value \
+				| sed 's|^{|{"page":"camilla",|' )
+	pushData refresh "$data"
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
 	config=$( echo '"GetConfig"' | websocat ws://127.0.0.1:1234 )
 	echo -e "$config " | sed 's/.*GetConfig.*/---/; $d; s/\\"/"/g' > "$configfile"

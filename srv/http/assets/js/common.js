@@ -596,17 +596,20 @@ function info( json ) {
 			} );
 		}
 		if ( I.updn.length ) {
+			var interval, timeout, val;
 			I.updn.forEach( ( el, i ) => {
 				var $trupdn   = $( '#infoList .updn' ).parent().eq( i ).parent()
 				var $updn     = $trupdn.find( '.updn' );
 				var $up       = $updn.eq( 1 );
 				var $dn       = $updn.eq( 0 );
 				var $num      = $updn.parent().prev().find( 'input' );
-				var timeout, val;
 				var numberset = up => {
 					var val = +$num.val();
 					val     = up ? val + el.step : val - el.step;
-					if ( val === el.min || val === el.max ) clearTimeout( timeout );
+					if ( val === el.min || val === el.max ) {
+						clearInterval( interval );
+						clearTimeout( timeout );
+					}
 					$num.val( val );
 					if ( I.checkchanged ) $num.trigger( 'input' );
 					$dn.toggleClass( 'disabled', val === el.min );
@@ -616,11 +619,16 @@ function info( json ) {
 				$dn.toggleClass( 'disabled', ivalue === el.min );
 				$up.toggleClass( 'disabled', ivalue === el.max );
 				$updn.on( 'touchend mouseup keyup', function() {
+					clearInterval( interval );
 					clearTimeout( timeout );
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
 				} ).press( function( e ) {
 					var up  = $( e.target ).hasClass( 'up' );
-					timeout = setInterval( () => numberset( up ), 100 );
+					interval = setInterval( () => numberset( up ), 100 );
+					timeout  = setTimeout( () => { // 4x speed after 3s
+						clearInterval( interval );
+						interval = setInterval( () => numberset( up ), 25 );
+					}, 3000 );
 				} );
 			} );
 		}
@@ -973,14 +981,14 @@ function infoWidth() {
 		}
 		var allW = $( '#infoList' ).width();
 		var labelW = $( '#infoList td:first-child' ).width() || 0;
-		I.boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
-	} else if ( ! I.listcssno ) {
-		I.boxW = 230;
+		var boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+	} else {
+		var boxW = 230;
 	}
-	if ( I.boxW ) $( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).css( 'width', I.boxW );
+	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).css( 'width', boxW );
 	if ( $( '#infoList select' ).length ) {
 		selectSet(); // render select to set width
-		if ( I.boxW ) $( '#infoList .select2-container' ).attr( 'style', 'width: '+ I.boxW +'px !important' );
+		$( '#infoList .select2-container' ).attr( 'style', 'width: '+ boxW +'px !important' );
 	}
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
 		$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
