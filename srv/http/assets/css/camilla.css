@@ -62,6 +62,9 @@
 .tablemapping {
 	border-collapse: collapse !important;
 }
+.tablemapping input[ type=checkbox ] {
+	margin: 0;
+}
 .trhead {
 	border: 1px solid var( --cgl );
 	border-left: none;

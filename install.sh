@@ -5,7 +5,10 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20231223
-[[ -e $dircamilladsp && ! -e $dircamilladsp/raw ]] && mkdir -p $dircamilladsp/raw
+if [[ -e $dircamilladsp ]]; then
+	grep -q ^min $dirsystem/camilla.conf && sed -i -E 's/^min|^max/mixers&/' $dirsystem/camilla.conf
+	[[ ! -e $dircamilladsp/raw ]] && mkdir -p $dircamilladsp/raw
+fi
 
 if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 2.0.0' ]]; then
 	systemctl stop camilladsp

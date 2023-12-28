@@ -1249,21 +1249,21 @@ var setting  = {
 			, source : htmlOption( DEV.capture.channels )
 		}
 		var trdest   = `
-	<tr class="trsource">
-		<td><select data-k="dest">${ option.dest }</select></td>
-	</tr>
-	<tr style="height: 10px"></tr>
-	`;
+<tr class="trsource">
+	<td><select data-k="dest">${ option.dest }</select></td>
+</tr>
+<tr style="height: 10px"></tr>
+`;
 		var trsource = `
-	<tr class="trhead">
-		<td>Source</td><td>Gain</td><td>Mute</td><td>Invert</td>
-	</tr>
-	<tr style="height: 10px"></tr>
-	<tr class="trsource">
-		<td><select data-k="channel">${ option.source }</select></td><td><input type="number" data-k="gain" value="0"></td>
-		<td><input type="checkbox" data-k="mute"></td><td><input type="checkbox" data-k="inverted">
-	</tr>
-	`;
+<tr class="trhead">
+	<td>${ ico( 'input' ) }</td><td>Gain</td><td>${ ico( 'mute' ) }</td><td>${ ico( 'inverted' ) }</td>
+</tr>
+<tr style="height: 10px"></tr>
+<tr class="trsource">
+	<td><select data-k="channel">${ option.source }</select></td><td><input type="number" data-k="gain" value="0"></td>
+	<td><input type="checkbox" data-k="mute"></td><td><input type="checkbox" data-k="inverted">
+</tr>
+`;
 		
 		if ( index === '' ) {
 			var title = 'Add Destination';
@@ -2057,13 +2057,13 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 		var name = $( '#mixers .lihead' ).text();
 		if ( ! MIX[ name ].mapping.length ) { // no mapping left
 			delete MIX[ name ];
-			setting.save( title, 'Remove ...' );
+			setting.save( 'Mixer', 'Remove ...' );
 		}
 	} else if ( V.tab === 'pipeline' ) {
 		if ( ! $( '#pipeline .i-filters' ).length ) {
 			var pi = $( '#pipeline .lihead' ).data( 'index' );
 			PIP.splice( pi, 1 );
-			setting.save( title, 'Remove filter ...' );
+			setting.save( 'Pipeline', 'Remove filter ...' );
 		} 
 	}
 	render[ V.tab ]();
@@ -2201,11 +2201,12 @@ $( '#menu a' ).on( 'click', function( e ) {
 			}
 			break;
 		case 'pipeline':
+			var title = 'Pipeline';
 			var main = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
 			var type = main ? V.li.data( 'type' ).toLowerCase() : 'filter';
 			info( {
 				  icon    : V.tab
-				, title   : 'Pipeline'
+				, title   : title
 				, message : main ? 'Delete this '+ type +'?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
 				, ok      : () => {
 					if ( main ) {
@@ -2216,7 +2217,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						var ni = V.li.data( 'index' );
 						PIP[ pi ].names.splice( ni, 1 );
 					}
-					setting.save( 'Pipeline', 'Remove '+ type +' ...' );
+					setting.save( title, 'Remove '+ type +' ...' );
 					V.li.remove();
 					setting.sortRefresh( main ? 'main' : 'sub' );
 					graph.pipeline();
