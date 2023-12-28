@@ -442,8 +442,8 @@ function info( json ) {
 	} else {
 		htmls.list = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
-		var checkboxonly = ! I.list.some( l => l[ 1 ] !== 'checkbox' );
-		var td0   = checkboxonly ? '<tr><td>' : '<tr><td></td><td>'; // no label <td></td>
+		I.checkboxonly = ! I.list.some( l => l[ 1 ] !== 'checkbox' );
+		var td0   = I.checkboxonly ? '<tr><td>' : '<tr><td></td><td>'; // no label <td></td>
 		var label, type;
 		var i     = 0; // for radio name
 		I.list.forEach( l => {
@@ -985,6 +985,7 @@ function infoWidth() {
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
 		$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
 	}
+	if ( I.checkboxonly ) $( '#infoList td' ).css( 'text-align', 'left' );
 }
 
 function capitalize( str ) {
