@@ -487,6 +487,7 @@ var axes     = {
 
 // functions //////////////////////////////////////////////////////////////////////////////
 function renderPage() { // common from settings.js
+	V.mainhide = $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' );
 	V.wscamilla && V.wscamilla.readyState === 1 ? util.wsGetConfig() : util.webSocket();
 }
 function psOnClose() {
@@ -793,12 +794,12 @@ var render   = {
 			if ( ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
 			
 			render.prevconfig();
-			if ( ! $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) {
-				render[ V.tab ]();
-			} else {
+			if ( V.mainhide ) {
 				var data = V.tab === 'mixers' ? 'name' : 'index';
 				var val  = $( '#'+ V.tab +' .entries.sub .lihead' ).data( data );
 				render[ V.tab +'Sub' ]( val );
+			} else {
+				render[ V.tab ]();
 			}
 		}
 	}
@@ -835,13 +836,13 @@ var render   = {
 			var iconlinear = ico( linear ? 'linear bl' : 'linear' );
 		}
 		if ( linear ) {
-			var min        = -10;
-			var max        = 10;
-			var step       = 0.1;
+			var min  = -10;
+			var max  = 10;
+			var step = 0.1;
 		} else {
-			var min        = S.range.FILTERSMIN;
-			var max        = S.range.FILTERSMAX;
-			var step       = 1;
+			var min  = S.range.FILTERSMIN;
+			var max  = S.range.FILTERSMAX;
+			var step = 1;
 		}
 		if ( 'gain' in param ) {
 			var val       = util.dbRound( param.gain );
@@ -909,11 +910,21 @@ var render   = {
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var val      = util.dbRound( source.gain );
 				var disabled = source.mute ? ' disabled' : '';
+				var linear   = source.scale === 'linear';
+				if ( linear ) {
+					var min  = -10;
+					var max  = 10;
+					var step = 0.1;
+				} else {
+					var min  = S.range.MIXERSMIN;
+					var max  = S.range.MIXERSMAX;
+					var step = 1;
+				}
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="db">' + val +'</c>'
-					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIXERSMIN +'" max="'+ S.range.MIXERSMAX +'" '+ disabled +'>'
+					 +'<input type="range" step="'+ step +'" value="'+ val +'" min="'+ min +'" max="'+ max +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
-					 + ico( source.inverted ? 'inverted bl' : 'inverted' ) + ico( source.scale === 'linear' ? 'linear bl' : 'linear' )
+					 + ico( source.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' )
 					 +'</li>';
 			} );
 		} );
@@ -1738,7 +1749,6 @@ var util     = {
 		V.wscamilla.onclose   = () => {
 			render.vuClear();
 			clearInterval( V.intervalstatus );
-			util.save2file();
 		}
 		V.wscamilla.onmessage = response => {
 			var data    = JSON.parse( response.data );
