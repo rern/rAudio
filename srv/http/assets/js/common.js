@@ -977,10 +977,10 @@ function infoWidth() {
 	} else if ( ! I.listcssno ) {
 		I.boxW = 230;
 	}
-	if ( I.boxW ) $( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
+	if ( I.boxW ) $( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).css( 'width', I.boxW );
 	if ( $( '#infoList select' ).length ) {
 		selectSet(); // render select to set width
-		if ( I.boxwidth ) $( '#infoList .select2-container' ).attr( 'style', 'width: '+ I.boxwidth +'px !important' );
+		if ( I.boxW ) $( '#infoList .select2-container' ).attr( 'style', 'width: '+ I.boxW +'px !important' );
 	}
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
 		$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );

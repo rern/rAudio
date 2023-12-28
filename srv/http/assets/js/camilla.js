@@ -890,8 +890,9 @@ var render   = {
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var val      = util.dbRound( source.gain );
 				var disabled = ( source.mute ? ' disabled' : '' );
+				var linear   = source.scale ? ' linear' : '';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="db">'+ val +'</c>'
+					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="db'+ linear +'">' + val +'</c>'
 					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIXERSMIN +'" max="'+ S.range.MIXERSMAX +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
@@ -1280,8 +1281,10 @@ var setting  = {
 						var $this = $( el )
 						s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
 					} );
+					var dest    = s.dest;
+					delete s.dest;
 					var mapping = {
-						  dest    : +$( '.trsource select' ).val()
+						  dest    : dest
 						, mute    : false
 						, sources : [ s ]
 					}
@@ -2000,33 +2003,44 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		return
 	}
 	
+	var max    = 50;
+	var min    = -50;
 	var TAB    = V.tab.toUpperCase();
 	var values = {};
 	[ 'MAX', 'MIN' ].forEach( k => values[ TAB + k ] = S.range[ TAB + k ] );
+	var list   = [
+		  [ 'Max',   'number', { step: 1, min: -50, max: 50 } ]
+		, [ 'Min',   'number', { step: 1, min: -50, max: 50 } ]
+		, [ 'Scale', 'radio',  { dB: 'dB', Linear: 'linear' } ]
+	];
+	if ( V.tab === 'filters' ) {
+		list = list.slice( 0, 2 );
+	} else {
+		var mixer0 = Object.keys( MIX )[ 0 ];
+		values.scale = MIX[ mixer0 ].mapping[ 0 ].sources[ 0 ].scale || 'dB';
+	}
 	info( {
 		  icon       : V.tab
 		, title      : 'Gain Slider Range'
-		, list       :  [
-			  [ 'Max', 'number' ]
-			, [ 'Min', 'number' ]
-		]
-		, footer     : '(50 ... -50)'
-		, boxwidth   : 110
+		, list       :  list
+		, boxwidth   : 70
 		, values     : values
+		, checkchanged : true
 		, beforeshow : () => {
-			var $input = $( '#infoList input' );
-			var $max   = $input.eq( 0 );
-			var $min   = $input.eq( 1 );
-			$( '#infoList' ).on( 'blur', 'input', function() {
-				if ( $max.val() > 50 ) {
-					$max.val( 50 );
-				} else if ( $max.val() < 0 ) {
-					$max.val( 0 );
-				}
-				if ( $min.val() < -50 ) {
-					$min.val( -50 );
-				} else if ( $min.val() > 0 ) {
-					$min.val( 0 );
+			$( '#infoList td' ).last().prop( 'colspan', 2 );
+			var $maxmin = $( '#infoList tr' ).slice( 0, 2 );
+			if ( V.tab === 'mixers' ) $maxmin.toggleClass( 'hide', S.range.mixersscale === 'linear' );
+			$( '#infoList' ).on( 'input', 'input', function() {
+				var $this = $( this );
+				if ( $this.is( ':radio' ) ) {
+					$maxmin.toggleClass( 'hide', $( this ).val() === 'linear' );
+				} else {
+					var val = +$this.val();
+					if ( $this.index() ) { // min
+						if ( val < min ) $this.val( min );
+					} else {
+						if ( val > max ) $this.val( max );
+					}
 				}
 			} );
 		}
@@ -2034,6 +2048,15 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 			var val = infoVal();
 			[ 'MAX', 'MIN' ].forEach( k => S.range[ TAB + k ] = val[ TAB + k ] );
 			$( '#'+ V.tab +' input[type=range]' ).prop( { min: S.range[ TAB +'MIN' ], max: S.range[ TAB +'MAX' ] } );
+			if ( 'scale' in val ) {
+				var scale = val.scale === 'dB' ? null : 'linear';
+				$.each( MIX, ( m, v ) => {
+					v.mapping.forEach( map => {
+						map.sources.forEach( s => s.scale = scale );
+					} );
+				} );
+				setting.save();
+			}
 			bash( [ 'camilla', ...Object.values( S.range ), 'CFG '+ Object.keys( S.range ).join( ' ' ) ] );
 		}
 	} );
@@ -2132,7 +2155,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 			}
 			break;
 		case 'mixers':
-			var title = 'Mixer';
 			var name  = V.li.data( 'name' );
 			var main  = $( '#mixers .entries.sub' ).hasClass( 'hide' );
 			switch ( cmd ) {
@@ -2144,20 +2166,25 @@ $( '#menu a' ).on( 'click', function( e ) {
 					if ( main ) {
 						if ( util.inUse( name ) ) return
 						
+						var title = 'Mixer';
 						var msg = name;
 					} else if ( dest ) {
-						var mi  = V.li.data( 'index' );
-						var msg = 'output #'+ mi;
+						var mi    = V.li.data( 'index' );
+						var title = 'Destination';
+						var msg   = '#'+ mi;
 					} else {
-						var mi  = V.li.siblings( '.main' ).data( 'index' );
-						var si  = V.li.data( 'index' );
-						var msg = 'input #'+ si;
+						var mi    = V.li.siblings( '.main' ).data( 'index' );
+						var title = 'Source';
+						var si    = V.li.data( 'index' );
+						var msg   = '#'+ si;
 					}
 					var message = 'Delete <wh>'+ msg +'</wh> ?';
 					info( {
 						  icon    : V.tab
 						, title   : title
 						, message : message
+						, oklabel : ico( 'remove' ) +'Delete'
+						, okcolor : red
 						, ok      : () => {
 							if ( main ) {
 								delete MIX[ name ];

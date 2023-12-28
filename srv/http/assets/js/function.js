@@ -676,7 +676,7 @@ function infoLibraryOption() {
 			var $el  = {}
 			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoList input' ).eq( i ) );
 			$( '#infoList tr' ).css( 'height', '36px' );
-			$( '#infoList td' ).css( 'width', '294px' );
+			$( '#infoList td' ).css( 'width', '293px' );
 			$el.albumyear.prop( 'disabled', ! D.albumbyartist );
 			$el.fixedcover.prop( 'disabled', D.hidecover );
 			$el.albumbyartist.on( 'input', function() {
