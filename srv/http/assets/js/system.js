@@ -414,8 +414,8 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, list         : [
-			  [ 'Controller',              'select', chip ]
-			, [ 'Refresh <gr>(baud)</gr>', 'select', [ 800000, 1000000, 1200000 ] ]
+			  [ 'Controller', 'select', chip ]
+			, [ 'Refresh',    'select', [ 800000, 1000000, 1200000 ], 'baud' ]
 		]
 		, values       : S.mpdoledconf
 		, checkchanged : S.mpdoled
@@ -556,9 +556,9 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, list         : [ 
-			  [ 'Swappiness',                             'number' ]
-			, [ 'Maximum Transmission Unit <gr>(B)</gr>', 'number' ]
-			, [ 'Transmit Queue Length',                  'number' ]
+			  [ 'Swappiness',            'number' ]
+			, [ 'Max Transmission Unit', 'number', 'byte' ]
+			, [ 'Transmit Queue Length', 'number' ]
 		]
 		, boxwidth     : 70
 		, values       : S.soundprofileconf
@@ -966,18 +966,20 @@ function infoRelays() {
 		content += tr_name;
 		if ( i < ( pL -1 ) ) content += tr_delay;
 	}
-	content += '<tr><td colspan="2" style="text-align: right">'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled></td>'
+	content += '<tr><td colspan="2">'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled></td>'
 			  +'<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td></tr>';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'Sequence', 'Name' ]
 		, tab          : [ '', infoRelaysName ]
-		, content      : '<table style="border-spacing: 5px 1px;">'+ content +'</table>'
+		, content      : '<table>'+ content +'</table>'
 		, contentcssno : true
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
+			$( '#infoContent td:first-child' ).css( 'text-align', 'left' );
+			$( '#infoContent tr' ).last().find( 'td:first-child' ).css( 'text-align', '' );
 			var min   = 0;
 			var max   = 10;
 			$( '#infoContent .updn' ).on( 'touchend mouseup keyup', function() {

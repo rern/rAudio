@@ -983,15 +983,7 @@ function infoWidth() {
 	if ( I.boxW ) $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
 	if ( $( '#infoContent select' ).length ) {
 		selectSet(); // render select to set width
-		$( '#infoContent .select2-container' ).attr( 'style', 'width: '+ I.boxwidth +'px !important' );
-	}
-	if ( ! I.contentcssno && $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
-		var $td1st = $( '#infoContent td:first-child' );
-		var input  = $td1st.find( 'input' ).length;
-		$td1st.css( {
-			  'padding-right': input ? '10px' : '5px' // checkbox/radio gutter : text label
-			, 'text-align'   : input ? '' : 'right'   // text label
-		} ); 
+		if ( I.boxwidth ) $( '#infoContent .select2-container' ).attr( 'style', 'width: '+ I.boxwidth +'px !important' );
 	}
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
 		$( '#infoContent' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoContent table' ).width() );

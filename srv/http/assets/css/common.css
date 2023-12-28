@@ -720,6 +720,7 @@ hr {
 }
 #infoContent table {
 	margin: 0 auto;
+	border-spacing: 5px 1px;
 }
 #infoContent tr {
 	height: 42px;
@@ -728,6 +729,13 @@ hr {
 	padding: 0;
 	text-align: left;
 	white-space: nowrap;
+}
+#infoContent td:first-child { /* label */
+	padding-right: 5px;
+	text-align: right;
+}
+#infoContent td:last-child { /* chekbox only which has no label */
+	text-align: left;
 }
 #infoContent label i {
 	text-align: center;
