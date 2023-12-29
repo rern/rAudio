@@ -784,18 +784,14 @@ hr {
 .infoheader,
 .infomessage,
 .infofooter {
-	width: fit-content;
-	max-width: 100%;
+	width: 100%;
 	max-height: 800px;
 	margin: 0 auto 5px;
+	padding: 10px 5px;
 	white-space: pre-wrap;
 	word-wrap: break-word;
 	overflow: hidden;
 	color: var( --cg60 );
-}
-.infoheader,
-.infofooter {
-	padding: 0 5px;
 }
 .infoprompt {
 	padding: 15px 5px;

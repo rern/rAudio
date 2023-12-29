@@ -443,7 +443,7 @@ function info( json ) {
 		htmls.list = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] !== 'checkbox' );
-		var td0   = I.checkboxonly ? '<tr><td>' : '<tr><td></td><td>'; // no label <td></td>
+		var td0   = I.checkboxonly ? '<tr><td>' : '<tr><td></td><td colspan="2">'; // no label <td></td>
 		var label, type;
 		var i     = 0; // for radio name
 		I.list.forEach( l => {
@@ -455,7 +455,10 @@ function info( json ) {
 					break;
 				case 'hidden':
 					htmls.list += '<tr class="hide"><td>'+ label +'</td><td>';
-					break
+					break;
+				case 'radio':
+					htmls.list += '<tr><td>'+ label +'</td><td colspan="2">';
+					break;
 				case 'range':
 					htmls.list += '<tr><td>';
 					break;
@@ -472,14 +475,14 @@ function info( json ) {
 				case 'text':
 					var unit = typeof l[ 2 ] === 'object' ? false : l[ 2 ];
 					var updn = unit ? false : l[ 2 ];
-					htmls.list += '<input type="'+ type +'"'+ ( updn ? ' disabled' : '' ) +'></td><td>';
+					htmls.list += '<input type="'+ type +'"'+ ( updn ? ' disabled' : '' ) +'></td>';
 					if ( unit ) {
-						htmls.list += '&nbsp;<gr>'+ unit +'</gr>';
+						htmls.list += '<td>&nbsp;<gr>'+ unit +'</gr></td>';
 					} else if ( updn ) {
 						I.updn.push( updn );
-						htmls.list += ico( 'remove updn dn' ) + ico( 'plus-circle updn up' );
+						htmls.list += '<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td>';
 					}
-					htmls.list += '</td></tr>';
+					htmls.list += '</tr>';
 					break;
 				case 'password':
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
@@ -596,39 +599,46 @@ function info( json ) {
 			} );
 		}
 		if ( I.updn.length ) {
-			var interval, timeout, val;
 			I.updn.forEach( ( el, i ) => {
-				var $trupdn   = $( '#infoList .updn' ).parent().eq( i ).parent()
-				var $updn     = $trupdn.find( '.updn' );
-				var $up       = $updn.eq( 1 );
-				var $dn       = $updn.eq( 0 );
-				var $num      = $updn.parent().prev().find( 'input' );
+				var interval, timeout;
+				var $trupdn = $( '#infoList .updn' ).parent().eq( i ).parent()
+				var $updn   = $trupdn.find( '.updn' );
+				var $up     = $updn.eq( 1 );
+				var $dn     = $updn.eq( 0 );
+				var $num    = $updn.parent().prev().find( 'input' );
+				var step    = el.step;
+				var v       = 0;
 				var numberset = up => {
-					var val = +$num.val();
-					val     = up ? val + el.step : val - el.step;
-					if ( val === el.min || val === el.max ) {
+					v = +$num.val();
+					v = up ? v + step : v - step;
+					if ( v === el.min || v === el.max ) {
 						clearInterval( interval );
 						clearTimeout( timeout );
 					}
-					$num.val( val );
-					if ( I.checkchanged ) $num.trigger( 'input' );
-					$dn.toggleClass( 'disabled', val === el.min );
-					$up.toggleClass( 'disabled', val === el.max );
+					$num.val( v );
 				}
 				var ivalue = I.values[ $trupdn.index() ];
 				$dn.toggleClass( 'disabled', ivalue === el.min );
 				$up.toggleClass( 'disabled', ivalue === el.max );
-				$updn.on( 'touchend mouseup keyup', function() {
-					clearInterval( interval );
-					clearTimeout( timeout );
+				$updn.on( 'click', function() {
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
 				} ).press( function( e ) {
 					var up  = $( e.target ).hasClass( 'up' );
 					interval = setInterval( () => numberset( up ), 100 );
-					timeout  = setTimeout( () => { // 4x speed after 3s
+					timeout  = setTimeout( () => { // @5 after 3s
 						clearInterval( interval );
-						interval = setInterval( () => numberset( up ), 25 );
+						step    *= 5;
+						v = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
+						$num.val( v );
+						interval = setInterval( () => numberset( up ), 100 );
 					}, 3000 );
+				} ).on( 'touchend mouseup keyup', function() {
+					clearInterval( interval );
+					clearTimeout( timeout );
+					step = el.step;
+					if ( I.checkchanged ) $num.trigger( 'input' );
+					$dn.toggleClass( 'disabled', v === el.min );
+					$up.toggleClass( 'disabled', v === el.max );
 				} );
 			} );
 		}
@@ -985,7 +995,7 @@ function infoWidth() {
 	} else {
 		var boxW = 230;
 	}
-	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).css( 'width', boxW );
+	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).parent().css( 'width', boxW );
 	if ( $( '#infoList select' ).length ) {
 		selectSet(); // render select to set width
 		$( '#infoList .select2-container' ).attr( 'style', 'width: '+ boxW +'px !important' );

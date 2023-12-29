@@ -190,7 +190,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, list         : [
 			  [ 'Rotation',                  'select', { Normal: 0, '90° CW': 90, '90° CCW': 270, '180°': 180 } ]
 			, [ 'Zoom <gr>(%)</gr>',         'number', { step: 5, min: 50, max: 300 } ]
-			, [ 'Screen off <gr>(min)</gr>', 'number', { step: 1, min: 0, max: 30 } ]
+			, [ 'Screen off <gr>(min)</gr>', 'number', { step: 1, min: 0, max: 60 } ]
 			, [ 'On while play',             'checkbox' ]
 			, [ 'Mouse pointer',             'checkbox' ]
 			, [ 'run <c>xinitrc.d</c>',      'checkbox' ]
@@ -200,7 +200,6 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, values       : S.localbrowserconf || default_v.localbrowser
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
-			$( '#infoList input:checkbox' ).parents( 'td' ).prop( 'colspan', 2 );
 			var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
 			$onwhileplay.prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
 			$( '.infofooter' ).toggleClass( 'hide', ! S.localbrowser );
@@ -446,7 +445,6 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 		, boxwidth     : 70
 		, values       : S.stoptimerconf || default_v.stoptimer
 		, checkchanged : S.stoptimer
-		, beforeshow   : () => $( '#infoList td:last' ).prop( 'colspan', 2 )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true

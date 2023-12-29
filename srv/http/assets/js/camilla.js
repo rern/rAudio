@@ -830,10 +830,12 @@ var render   = {
 	}
 	, filter      : ( k, v ) => {
 		var param  = v.parameters;
-		var iconlinear, linear;
 		if ( v.type === 'Gain' ) {
 			var linear     = param.scale === 'linear';
 			var iconlinear = ico( linear ? 'linear bl' : 'linear' );
+		} else {
+			var iconlinear = '';
+			var linear = '';
 		}
 		if ( linear ) {
 			var min  = -10;
@@ -842,7 +844,7 @@ var render   = {
 		} else {
 			var min  = S.range.FILTERSMIN;
 			var max  = S.range.FILTERSMAX;
-			var step = 1;
+			var step = S.range.FILTERSSTEP;
 		}
 		if ( 'gain' in param ) {
 			var val       = util.dbRound( param.gain );
@@ -918,7 +920,7 @@ var render   = {
 				} else {
 					var min  = S.range.MIXERSMIN;
 					var max  = S.range.MIXERSMAX;
-					var step = 1;
+					var step = S.range.MIXERSSTEP;
 				}
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="db">' + val +'</c>'
@@ -1519,12 +1521,11 @@ var setting  = {
 			, checkblank   : true
 			, checkchanged : S.resampler
 			, beforeshow   : () => {
-				var $select = $( '.trselect select' );
-				$select.eq( 0 ).on( 'input', function() {
+				$( 'select' ).eq( 0 ).on( 'input', function() {
 					setting.resampler( $( this ).val() );
 				} );
 				if ( values.type === 'AsyncSinc' ) {
-					$select.eq( 1 ).on( 'input', function() {
+					$( 'select' ).eq( 1 ).on( 'input', function() {
 						var profile = $( this ).val();
 						if ( type === 'Custom' ) {
 							setting.resampler( 'AsyncSinc', profile );
@@ -2024,15 +2025,16 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	var min    = -150;
 	var TAB    = V.tab.toUpperCase();
 	var values = {};
-	[ 'MAX', 'MIN' ].forEach( k => values[ TAB + k ] = S.range[ TAB + k ] );
+	[ 'MAX', 'MIN', 'STEP' ].forEach( k => values[ TAB + k ] = S.range[ TAB + k ] );
 	var list   = [
-		  [ 'Max',   'number', { step: 1, min: min, max: max } ]
-		, [ 'Min',   'number', { step: 1, min: min, max: max } ]
+		  [ 'Max',  'number', { step: 1, min: min, max: max } ]
+		, [ 'Min',  'number', { step: 1, min: min, max: max } ]
+		, [ 'Step', 'radio',  [ 0.1, 0.5, 1.0 ] ]
 	];
 	info( {
 		  icon         : V.tab
-		, title        : 'Gain Slider Range'
-		, list         :  list
+		, title        : 'Gain Slider dB'
+		, list         : list
 		, boxwidth     : 70
 		, values       : values
 		, checkchanged : true
@@ -2049,8 +2051,7 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		}
 		, ok         : () => {
 			var val = infoVal();
-			[ 'MAX', 'MIN' ].forEach( k => S.range[ TAB + k ] = val[ TAB + k ] );
-			$( '#'+ V.tab +' input[type=range]' ).prop( { min: S.range[ TAB +'MIN' ], max: S.range[ TAB +'MAX' ] } );
+			$.each( val, ( k, v ) => S.range[ k ] = v );
 			bash( [ 'camilla', ...Object.values( S.range ), 'CFG '+ Object.keys( S.range ).join( ' ' ) ] );
 		}
 	} );

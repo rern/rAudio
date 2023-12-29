@@ -6,7 +6,12 @@ alias=r1
 
 # 20231223
 if [[ -e $dircamilladsp ]]; then
-	grep -q ^min $dirsystem/camilla.conf && sed -i -E 's/^min|^max/mixers&/' $dirsystem/camilla.conf
+	file=$dirsystem/camilla.conf
+	! grep -q ^mixersmin $file && sed -i -E 's/^min|^max/mixers&/' $file
+	! grep -q step $file && echo "\
+filtersstep=0.1
+mixersstep=0.1
+" >> $file
 	[[ ! -e $dircamilladsp/raw ]] && mkdir -p $dircamilladsp/raw
 fi
 

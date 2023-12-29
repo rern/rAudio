@@ -519,37 +519,33 @@ function wrDirectoryRename() {
 		, ok           : () => bash( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal(), 'CMD MODE NAME NEWNAME' ] )
 	} );
 }
-var listwebradio = `\
-<table>
-<tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
-<tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
-<tr><td>Charset</td><td><input type="text">
-	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank">${ ico( 'help i-lg gr' ) }</a></td>
-	<td style="width: 50%; text-align: right">
-		<a id="addwebradiodir" style="cursor: pointer">${ ico( 'folder-plus i-lg' ) }&ensp;New folder&ensp;</a>
-	</td>
-</tr>
-</table>
-`;
+var listwebradio = {
+	  list : [
+		  [ 'Name',    'text' ]
+		, [ 'URL',     'text' ]
+		, [ 'Charset', 'text' ]
+		, [ '',        '', '<a id="addwebradiodir">'+ ico( 'folder-plus i-lg' ) +'&ensp;New folder&ensp;</a>' ]
+	]
+	, help : '&emsp;<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-lg gr' ) +'</a>'
+	, fn   : () => {
+		$( '#infoList input' ).last()
+			.css( 'width', '230px' )
+			.after( listwebradio.help );
+	}
+}
 function webRadioEdit() {
-	var url = V.list.path;
+	var url  = V.list.path;
+	var rprf = url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' );
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit Web Radio'
-		, list         : listwebradio
+		, message      : '<img src="'+ ( V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
+		, list         : rprf ? listwebradio.list.slice( 0, 2 ) : listwebradio.list.slice( 0, -1 )
 		, values       : [ V.list.name, url, V.list.li.data( 'charset' ) || 'UTF-8' ]
 		, checkchanged : true
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
-		, beforeshow   : () => {
-			var src  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
-			$( '#infoList' ).prepend( '<div class="infomessage"><img src="'+ src +'"></div>' );
-			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
-				$( '#infoList tr' ).last().remove();
-			} else {
-				$( '#addwebradiodir' ).remove();
-			}
-		}
+		, beforeshow   : rprf ? '' : listwebradio.fn
 		, oklabel      : ico( 'save' ) +'Save'
 		, ok           : () => {
 			var dir     = $( '#lib-path .lipath' ).text();
@@ -574,13 +570,14 @@ function webRadioExists( error, name, url, charset ) {
 }
 function webRadioNew( name, url, charset ) {
 	info( {
-		  icon         : 'webradio'
-		, title        : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
-		, boxwidth     : 'max'
-		, list         : listwebradio
-		, values       : [ name, url, charset || 'UTF-8' ]
-		, checkblank   : [ 0, 1 ]
-		, beforeshow   : () => {
+		  icon       : 'webradio'
+		, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
+		, boxwidth   : 'max'
+		, list       : listwebradio.list
+		, values     : [ name, url, charset || 'UTF-8' ]
+		, checkblank : [ 0, 1 ]
+		, beforeshow : () => {
+			listwebradio.fn()
 			if ( $( '#lib-path .lipath' ).text() ) {
 				$( '#addwebradiodir' ).remove();
 			} else {
@@ -597,7 +594,7 @@ function webRadioNew( name, url, charset ) {
 			}
 			if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
 		}
-		, ok           : () => {
+		, ok         : () => {
 			var values  = infoVal();
 			var name    = values[ 0 ];
 			var url     = values[ 1 ];

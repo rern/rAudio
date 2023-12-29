@@ -19,8 +19,10 @@ if [[ -e /usr/bin/camilladsp ]]; then
 	echo "\
 filtersmax=10
 filtersmin=-10
+filtersstep=0.1
 mixersmax=10
-mixersmin=-10" > $dirsystem/camilla.conf
+mixersmin=-10
+mixersstep=0.1" > $dirsystem/camilla.conf
 else
 	rm -rf $dircamilladsp
 fi
