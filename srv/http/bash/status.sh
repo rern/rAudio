@@ -182,8 +182,9 @@ for line in "${lines[@]}"; do
 	val=${line#*: }
 	case $key in
 		audio )
-			samplerate=${val/:*}
-			bitdepth=${val/*:}
+   			data=( ${val//:/ } )
+			samplerate=${data[0]}
+			bitdepth=${data[1]}
 			;;
 		bitrate )
 			bitrate=$(( val * 1000 ))
