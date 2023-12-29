@@ -791,10 +791,12 @@ var render   = {
 		var linear     = '';
 		var iconmute   = '';
 		var iconlinear = '';
+		var disabled   = '';
 		if ( v.type === 'Gain' ) {
 			linear     = param.scale === 'linear';
 			iconlinear = ico( param.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' );
 			iconmute   = ico( param.mute ? 'mute bl' : 'volume' );
+			disabled   = param.mute ? ' disabled' : '';
 		}
 		if ( linear ) {
 			var min  = -10;
@@ -815,7 +817,7 @@ var render   = {
 					+'</div>'
 					+'</div>'+ iconmute
 					+'<c class="db">'+ gain +'</c>'
-					+'<input type="range" step="'+ step +'" value="'+ gain +'" min="'+ min +'" max="'+ max +'">'
+					+'<input type="range" step="'+ step +'" value="'+ gain +'" min="'+ min +'" max="'+ max +'"'+ disabled +'>'
 					+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) + iconlinear
 					+'</div>'
 					+'</div>';
