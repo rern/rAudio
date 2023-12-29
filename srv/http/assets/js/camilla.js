@@ -650,6 +650,7 @@ var graph    = {
 }
 var render   = {
 	  page        : () => {
+		console.log('page')
 		if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
 		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
 		S.lscoefraw = [];
@@ -659,10 +660,10 @@ var render   = {
 		} );
 		$( '.container' ).removeClass( 'hide' );
 		render.status();
-		render[ V.tab ]();
 		bannerHide();
 	}
 	, status      : () => {
+		console.log('status')
 		render.statusValue();
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ico( 'bluetooth' ) );
@@ -700,6 +701,7 @@ var render   = {
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
+		console.log('statusValue')
 		var play = S.state === 'play';
 		if ( S.player === 'mpd' ) {
 			if ( S.pllength ) {
@@ -722,6 +724,7 @@ var render   = {
 		$( '.rateadjust' ).toggleClass( 'hide', ! S.enable_rate_adjust );
 	}
 	, tab         : () => {
+		console.log('tab')
 		var title = util.key2label( V.tab );
 		if ( V.tab === 'filters' ) {
 			title += ico( 'folder-filter' );
@@ -771,15 +774,16 @@ var render   = {
 		}, 300 );
 	}
 	, volume      : () => {
+		console.log('volume')
 		$( '#volume-text' )
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bl', S.volumemute > 0 );
 		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
-		if ( ! Object.keys( FIL ).length || V.local ) return
+		console.log('filters')
+		if ( ! Object.keys( FIL ).length ) return
 		
-		local();
 		var data     = render.dataSort( 'filters' );
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
@@ -832,18 +836,16 @@ var render   = {
 		return '<li data-name="'+ k +'">'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
-		if ( V.local ) return
-		
-		local();
+		console.log('filtersSub')
 		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
-		if ( ! Object.keys( MIX ).length || V.local ) return
+		console.log('mixers')
+		if ( ! Object.keys( MIX ).length ) return
 		
-		local();
 		var data = render.dataSort( 'mixers' );
 		var li = '';
 		$.each( data, ( k, v ) => li+= render.mixer( k, v ) );
@@ -857,9 +859,7 @@ var render   = {
 				+'</li>'
 	}
 	, mixersSub   : name => {
-		if ( V.local ) return
-		
-		local();
+		console.log('mixersSub')
 		var data      = MIX[ name ].mapping;
 		var chmapping = data.length;
 		var chin      = DEV.capture.channels;
@@ -905,9 +905,9 @@ var render   = {
 		selectSet( $( '#mixers select' ) );
 	} //---------------------------------------------------------------------------------------------
 	, processors  : () => {
-		if ( ! PRO || V.local ) return
+		console.log('processors')
+		if ( ! PRO || ! Object.keys( PRO ).length ) return
 		
-		local();
 		var data = render.dataSort( 'processors' );
 		var li = '';
 		$.each( data, ( k, v ) => {
@@ -922,9 +922,8 @@ var render   = {
 		render.toggle();
 	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
-		if ( ! PIP.length || V.local ) return
+		if ( ! PIP.length ) return
 		
-		local();
 		var li = '';
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
@@ -945,9 +944,6 @@ var render   = {
 		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
 	}
 	, pipelineSub : index => {
-		if ( V.local ) return
-		
-		local();
 		var data = PIP[ index ];
 		var li   = '<li class="lihead main" data-index="'+ index +'">'+ ico( 'pipeline' ) +'Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
 		data.names.forEach( ( name, i ) => li += render.pipeFilter( name, i ) );
@@ -986,9 +982,6 @@ var render   = {
 		} );
 	} //---------------------------------------------------------------------------------------------
 	, devices     : () => {
-		if ( V.local ) return
-		
-		local();
 		var li  = '';
 		[ 'playback', 'capture' ].forEach( d => {
 			var dev = DEV[ d ];
@@ -1839,8 +1832,6 @@ var util     = {
 					Dlist.deviceC[ 2 ] = S.devices.capture;
 					Dlist.deviceP[ 2 ] = S.devices.playback;
 					showContent();
-					render.status();
-					render.tab();
 					break;
 				case 'Invalid':
 					info( {
