@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20231223
+# 20231230
 if [[ -e $dircamilladsp ]]; then
 	file=$dirsystem/camilla.conf
 	! grep -q ^mixersmin $file && sed -i -E 's/^min|^max/mixers&/' $file

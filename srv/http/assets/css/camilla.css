@@ -169,7 +169,8 @@ tr .i-remove {
 	min-width: 120px !important;
 }
 .divgain i {
-	width: 40px;
+	width: 38px;
+	min-width: 38px !important;
 	font-size: 24px;
 	text-align: center;
 	color: var( --cg60 );

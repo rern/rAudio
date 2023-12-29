@@ -39,7 +39,7 @@ data='
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
 }
 , "format"     : [ '$( getContent $dirsystem/camilladsp )' ]
-, "player"     : "'$player'"
+, "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
 , "range"      : '$( conf2json camilla.conf )'
 , "state"      : "'$state'"

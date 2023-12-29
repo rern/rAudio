@@ -1,8 +1,7 @@
 // variables //////////////////////////////////////////////////////////////////////////////
 V            = {
 	  clipped    : false
-	, graph      : { filters: {}, pipeline: {} }
-	, graphlist  : {}
+	, graph      : { filters: [], pipeline: [] }
 	, prevconfig : {}
 	, sortable   : {}
 	, tab        : 'filters'
@@ -487,7 +486,6 @@ var axes     = {
 
 // functions //////////////////////////////////////////////////////////////////////////////
 function renderPage() { // common from settings.js
-	V.mainhide = $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' );
 	V.wscamilla && V.wscamilla.readyState === 1 ? util.wsGetConfig() : util.webSocket();
 }
 function psOnClose() {
@@ -495,20 +493,6 @@ function psOnClose() {
 	
 	clearInterval( V.intervalvu );
 	if ( V.wscamilla ) V.wscamilla.close();
-}
-function playbackButton() {
-	var play = S.state === 'play';
-	if ( S.player === 'mpd' ) {
-		if ( S.pllength ) {
-			var btn = play ? 'pause' : 'play';
-		} else {
-			var btn = 'play disabled';
-		}
-	} else {
-		var btn = play ? 'stop' : 'play disabled';
-	}
-	$( '.icon' ).prop( 'class', 'icon i-'+ S.player );
-	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
 }
 function psVolume( data ) {
 	var vol = data.val;
@@ -542,23 +526,6 @@ var graph    = {
 			} );
 		}, 300 );
 	}
-	, list     : () => {
-		var $divgraph = $( '#'+ V.tab +' .divgraph' );
-		if ( $divgraph.length ) {
-			$divgraph.each( ( i, el ) => {
-				var $this = $( el );
-				var val   = $this.data( 'val' );
-				if ( jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) {
-					if ( $this.hasClass( 'hide' ) ) {       // remove - changed + hide
-						$this.remove();
-						return
-						
-					}
-				}
-				V.graphlist[ val ] = $this[ 0 ].outerHTML; // include in re-render
-			} );
-		}
-	}
 	, pipeline : () => {
 		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 	}
@@ -572,7 +539,7 @@ var graph    = {
 		
 		var filters = V.tab === 'filters';
 		var val     = $li.data( filters ? 'name' : 'index' );
-		V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
+		V.graph[ V.tab ].push( val );
 		var filterdelay = false;
 		if ( filters ) {
 			filterdelay = FIL[ val ].type === 'Delay';
@@ -680,29 +647,6 @@ var graph    = {
 			$li.removeClass( 'disabled' );
 		}, 'json' );
 	}
-	, refresh  : () => {
-		var $divgraph = $( '#'+ V.tab +' .divgraph' ).not( '.hide' );
-		if ( $divgraph.length ) $divgraph.each( ( i, el ) => graph.plot( $( el ).parent() ) );
-	}
-	, toggle   : () => {
-		var $divgraph = V.li.find( '.divgraph' );
-		if ( ! $divgraph.length ) {
-			graph.plot();
-			return
-		}
-		
-		if ( ! $divgraph.hasClass( 'hide' ) ) {
-			$divgraph.addClass( 'hide' );
-		} else {
-			var val     = $divgraph.data( 'val' );
-			if ( jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) {
-				graph.plot();
-			} else {
-				$divgraph.removeClass( 'hide' );
-				elementScroll( $divgraph.parent() );
-			}
-		}
-	}
 }
 var render   = {
 	  page        : () => {
@@ -756,7 +700,18 @@ var render   = {
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
-		playbackButton();
+		var play = S.state === 'play';
+		if ( S.player === 'mpd' ) {
+			if ( S.pllength ) {
+				var btn = play ? 'pause' : 'play';
+			} else {
+				var btn = 'play disabled';
+			}
+		} else {
+			var btn = play ? 'stop' : 'play disabled';
+		}
+		$( '.icon' ).prop( 'class', 'icon i-'+ S.player );
+		$( '.playback' ).prop( 'class', 'playback i-'+ btn );
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
 			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
@@ -787,16 +742,17 @@ var render   = {
 			return
 		}
 		
-		if ( $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) {
+		var $main = $( '#'+ V.tab +' .entries.main' );
+		if ( $main.is( ':empty' ) ) {
 			render.prevconfig();
 			render[ V.tab ]();
 		} else {
 			if ( ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
 			
 			render.prevconfig();
-			if ( V.mainhide ) {
-				var data = V.tab === 'mixers' ? 'name' : 'index';
-				var val  = $( '#'+ V.tab +' .entries.sub .lihead' ).data( data );
+			if ( $main.hasClass( 'hide' ) ) {
+				var data = V.tab === 'pipeline' ? 'index' : 'name';
+				var val  = $( '#'+ V.tab +' .entries.sub li' ).eq( 0 ).data( data );
 				render[ V.tab +'Sub' ]( val );
 			} else {
 				render[ V.tab ]();
@@ -821,18 +777,20 @@ var render   = {
 		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
-		graph.list();
+		if ( ! Object.keys( FIL ).length || V.local ) return
+		
+		local();
 		var data     = render.dataSort( 'filters' );
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
-		render.toggle( li );
-		graph.refresh();
+		$( '#'+ V.tab +' .entries.main' ).html( li );
+		render.toggle();
 	}
 	, filter      : ( k, v ) => {
 		var param  = v.parameters;
 		if ( v.type === 'Gain' ) {
 			var linear     = param.scale === 'linear';
-			var iconlinear = ico( linear ? 'linear bl' : 'linear' );
+			var iconlinear = ico( param.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' );
 		} else {
 			var iconlinear = '';
 			var linear = '';
@@ -847,41 +805,47 @@ var render   = {
 			var step = S.range.FILTERSSTEP;
 		}
 		if ( 'gain' in param ) {
-			var val       = util.dbRound( param.gain );
-			var licontent =  '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
-							+'<div class="li2">'
-							+ ( 'freq' in param ? param.freq +'Hz ' : v.type )
-							+ ( 'q' in param ? 'Q:'+ param.q : '' )
-							+ ( 'slope' in param ?  'S:'+ param.slope : '' )
-							+'</div>'
-							+'</div>'
-							+'<c class="db">'+ val +'</c>'
-							+'<input type="range" step="'+ step +'" value="'+ val +'" min="'+ min +'" max="'+ max +'">'
-							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) + iconlinear
-							+'</div>'
-							+'</div>';
-			if ( k in V.graphlist ) licontent += V.graphlist[ k ];
+			var gain = util.dbRound( param.gain );
+			var li   = '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
+					+'<div class="li2">'
+					+ ( 'freq' in param ? param.freq +'Hz ' : v.type )
+					+ ( 'q' in param ? 'Q:'+ param.q : '' )
+					+ ( 'slope' in param ?  'S:'+ param.slope : '' )
+					+'</div>'
+					+'</div>'
+					+'<c class="db">'+ gain +'</c>'
+					+'<input type="range" step="'+ step +'" value="'+ gain +'" min="'+ min +'" max="'+ max +'">'
+					+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) + iconlinear
+					+'</div>'
+					+'</div>';
 		} else {
-			var paramdata     = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type ) ? param.type : render.json2string( param );
-			var licontent =  '<div class="li1">'+ k +'</div>'
+			var paramdata = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type ) ? param.type : render.json2string( param );
+			var li        =  '<div class="li1">'+ k +'</div>'
 							+'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
-		if ( param.type === 'GraphicEqualizer' ) {
-			return '<li data-name="'+ k +'" class="eq">'+ ico( 'equalizer liicon edit graph' ) + licontent  +'</li>'
-		} else {
-			return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>'
-		}
+		var $graph = $( '#filters .entries.main li[data-name="'+ k +'"]' ).find( '.divgraph' );
+		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
+		var icon  = param.type === 'GraphicEqualizer' ? 'equalizer' : 'filters';
+		return '<li data-name="'+ k +'">'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
+		if ( V.local ) return
+		
+		local();
 		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
-		render.toggle( li, 'sub' );
+		$( '#'+ V.tab +' .entries.sub' ).html( li );
+		render.toggle( 'sub' );
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
+		if ( ! Object.keys( MIX ).length || V.local ) return
+		
+		local();
 		var data = render.dataSort( 'mixers' );
 		var li = '';
 		$.each( data, ( k, v ) => li+= render.mixer( k, v ) );
-		render.toggle( li );
+		$( '#'+ V.tab +' .entries.main' ).html( li );
+		render.toggle();
 	}
 	, mixer       : ( k, v ) => {
 		return   '<li data-name="'+ k +'">'+ ico( 'mixers liicon edit' )
@@ -890,6 +854,9 @@ var render   = {
 				+'</li>'
 	}
 	, mixersSub   : name => {
+		if ( V.local ) return
+		
+		local();
 		var data      = MIX[ name ].mapping;
 		var chmapping = data.length;
 		var chin      = DEV.capture.channels;
@@ -930,12 +897,14 @@ var render   = {
 					 +'</li>';
 			} );
 		} );
-		render.toggle( li, 'sub' );
+		$( '#'+ V.tab +' .entries.sub' ).html( li );
+		render.toggle( 'sub' );
 		selectSet( $( '#mixers select' ) );
 	} //---------------------------------------------------------------------------------------------
 	, processors  : () => {
-		if ( ! PRO ) return
+		if ( ! PRO || V.local ) return
 		
+		local();
 		var data = render.dataSort( 'processors' );
 		var li = '';
 		$.each( data, ( k, v ) => {
@@ -946,33 +915,41 @@ var render   = {
 				+'<div class="li2">'+ v.type +' · '+ render.json2string( param )+'</div>'
 				+'</li>'
 		} );
-		render.toggle( li );
+		$( '#'+ V.tab +' .entries.main' ).html( li );
+		render.toggle();
 	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
-		graph.list();
+		if ( ! PIP.length || V.local ) return
+		
+		local();
 		var li = '';
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
-		render.toggle( li );
+		$( '#'+ V.tab +' .entries.main' ).html( li );
+		render.toggle();
 		render.sortable( 'main' );
-		graph.refresh();
 	}
 	, pipe        : ( el, i ) => {
+		var icon = 'pipeline liicon';
 		if ( el.type === 'Filter' ) {
-			var graph = 'graph';
-			var each  =  '<div class="li1">' + el.type +'</div>'
+			icon  += ' graph';
+			var li = '<div class="li1">' + el.type +'</div>'
 						+'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
-			if ( i in V.graphlist ) each += V.graphlist[ i ];
 		} else {
-			var graph = '';
-			var each  = '<gr>Mixer:</gr> '+ el.name;
+			var li = '<gr>Mixer:</gr> '+ el.name;
 		}
-		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline liicon '+ graph ) + each +'</li>'
+		var $graph = $( '#filters .entries.main li[data-index="'+ i +'"]' ).find( '.divgraph' );
+		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
+		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
 	}
 	, pipelineSub : index => {
+		if ( V.local ) return
+		
+		local();
 		var data = PIP[ index ];
 		var li   = '<li class="lihead main" data-index="'+ index +'">'+ ico( 'pipeline' ) +'Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
 		data.names.forEach( ( name, i ) => li += render.pipeFilter( name, i ) );
-		render.toggle( li, 'sub' );
+		$( '#'+ V.tab +' .entries.sub' ).html( li );
+		render.toggle( 'sub' );
 		render.sortable( 'sub' );
 	}
 	, pipeFilter  : ( name, i ) => {
@@ -1006,6 +983,9 @@ var render   = {
 		} );
 	} //---------------------------------------------------------------------------------------------
 	, devices     : () => {
+		if ( V.local ) return
+		
+		local();
 		var li  = '';
 		[ 'playback', 'capture' ].forEach( d => {
 			var dev = DEV[ d ];
@@ -1059,7 +1039,7 @@ var render   = {
 		S.lsconfigs.forEach( f => {
 			li += '<li>'+ ico( 'file liicon' ) +'<a class="name">'+ f +'</a></li>';
 		} );
-		$( '#config .entries.main' ).html( li );
+		$( '#'+ V.tab +' .entries.main' ).html( li );
 	} //---------------------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];
@@ -1076,13 +1056,24 @@ var render   = {
 					.replace( /([:,])/g, '$1 ' )
 	}
 	, prevconfig  : () => V.prevconfig[ V.tab ] = jsonClone( S.config[ V.tab ] )
-	, toggle      : ( li, sub ) => {
-		var ms = sub ? [ 'main', 'sub' ] : [ 'sub', 'main' ];
-		$( '#'+ V.tab +' .entries.'+ ms[ 0 ] ).addClass( 'hide' );
-		$( '#'+ V.tab +' .entries.'+ ms[ 1 ] )
-			.html( li )
-			.removeClass( 'hide' );
+	, toggle      : ( sub ) => {
+		var $main = $( '#'+ V.tab +' .entries.main' );
+		var $sub  = $( '#'+ V.tab +' .entries.sub' );
+		if ( sub || $main.hasClass( 'hide' ) ) {
+			$main.addClass( 'hide' );
+			$sub.removeClass( 'hide' );
+		} else {
+			$main.removeClass( 'hide' );
+			$sub.addClass( 'hide' );
+		}
 		$( '#menu' ).addClass( 'hide' );
+		if ( [ 'filters', 'pipeline' ].includes( V.tab ) && V.graph[ V.tab ].length ) {
+			var val = V.tab === 'filters' ? 'name' : 'index';
+			$( '#'+ V.tab +' .entries.main li' ).each( ( i, el ) => {
+				var $el  = $( el );
+				if ( V.graph[ V.tab ].includes( $el.data( val ) ) ) graph.plot( $el );
+			} );
+		}
 	}
 	, typeReplace : str => {
 		return str
@@ -1982,13 +1973,16 @@ $( '#configuration' ).on( 'input', function() {
 		setTimeout( () => util.wsGetConfig(), 300 );
 	} );
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
-	V.graph  = { filters: {}, pipeline: {} }
 } );
 $( '#setting-configuration' ).on( 'click', function() {
 	$( '#tabconfig' ).trigger( 'click' );
 } );
 $( '#divtabs' ).on( 'click', '.graphclose', function() {
-	$( this ).parent().addClass( 'hide' );
+	var $this = $( this );
+	var $li   = $this.parents( 'li' );
+	$this.parent().remove();
+	var val = $li.data( V.tab === 'filters' ? 'name' : 'index' );
+	V.graph[ V.tab ] = V.graph[ V.tab ].filter( v => v !== val );
 } );
 $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	render.filtersSub();
@@ -2084,6 +2078,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 			setting.save( 'Pipeline', 'Remove filter ...' );
 		} 
 	}
+	$( '#'+ V.tab +' .entries.main' ).removeClass( 'hide' );
 	render[ V.tab ]();
 } );
 $( 'body' ).on( 'click', function( e ) {
@@ -2096,7 +2091,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 	var $this = $( this );
 	var cmd   = $this.prop( 'class' );
 	if ( cmd === 'graph' ) {
-		graph.toggle();
+		graph.plot();
 		return
 	}
 	
