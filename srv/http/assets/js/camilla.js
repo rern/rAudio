@@ -650,7 +650,6 @@ var graph    = {
 }
 var render   = {
 	  page        : () => {
-		console.log('page')
 		if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
 		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
 		S.lscoefraw = [];
@@ -663,7 +662,6 @@ var render   = {
 		bannerHide();
 	}
 	, status      : () => {
-		console.log('status')
 		render.statusValue();
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ico( 'bluetooth' ) );
@@ -701,7 +699,6 @@ var render   = {
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
-		console.log('statusValue')
 		var play = S.state === 'play';
 		if ( S.player === 'mpd' ) {
 			if ( S.pllength ) {
@@ -724,7 +721,6 @@ var render   = {
 		$( '.rateadjust' ).toggleClass( 'hide', ! S.enable_rate_adjust );
 	}
 	, tab         : () => {
-		console.log('tab')
 		var title = util.key2label( V.tab );
 		if ( V.tab === 'filters' ) {
 			title += ico( 'folder-filter' );
@@ -774,14 +770,12 @@ var render   = {
 		}, 300 );
 	}
 	, volume      : () => {
-		console.log('volume')
 		$( '#volume-text' )
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bl', S.volumemute > 0 );
 		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
-		console.log('filters')
 		if ( ! Object.keys( FIL ).length ) return
 		
 		var data     = render.dataSort( 'filters' );
@@ -836,14 +830,12 @@ var render   = {
 		return '<li data-name="'+ k +'">'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
-		console.log('filtersSub')
 		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
-		console.log('mixers')
 		if ( ! Object.keys( MIX ).length ) return
 		
 		var data = render.dataSort( 'mixers' );
@@ -859,7 +851,6 @@ var render   = {
 				+'</li>'
 	}
 	, mixersSub   : name => {
-		console.log('mixersSub')
 		var data      = MIX[ name ].mapping;
 		var chmapping = data.length;
 		var chin      = DEV.capture.channels;
@@ -905,7 +896,6 @@ var render   = {
 		selectSet( $( '#mixers select' ) );
 	} //---------------------------------------------------------------------------------------------
 	, processors  : () => {
-		console.log('processors')
 		if ( ! PRO || ! Object.keys( PRO ).length ) return
 		
 		var data = render.dataSort( 'processors' );
