@@ -144,6 +144,9 @@ tr .i-remove {
 .liinput .filter div {
 	display: block;
 }
+.liinput .filter.linear {
+	width: 90px;
+}
 .liinput.main div:first-child,
 .liinput .select2-container {
 	width: 60px !important;

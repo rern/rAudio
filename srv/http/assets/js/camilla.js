@@ -787,13 +787,14 @@ var render   = {
 		render.toggle();
 	}
 	, filter      : ( k, v ) => {
-		var param  = v.parameters;
+		var param      = v.parameters;
+		var linear     = '';
+		var iconmute   = '';
+		var iconlinear = '';
 		if ( v.type === 'Gain' ) {
-			var linear     = param.scale === 'linear';
-			var iconlinear = ico( param.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' );
-		} else {
-			var iconlinear = '';
-			var linear = '';
+			linear     = param.scale === 'linear';
+			iconlinear = ico( param.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' );
+			iconmute   = ico( param.mute ? 'mute bl' : 'volume' );
 		}
 		if ( linear ) {
 			var min  = -10;
@@ -806,13 +807,13 @@ var render   = {
 		}
 		if ( 'gain' in param ) {
 			var gain = util.dbRound( param.gain );
-			var li   = '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
+			var li   = '<div class="liinput"><div class="filter'+ ( iconlinear ? ' linear' : '' ) +'"><div class="li1">'+ k +'</div>'
 					+'<div class="li2">'
 					+ ( 'freq' in param ? param.freq +'Hz ' : v.type )
 					+ ( 'q' in param ? 'Q:'+ param.q : '' )
 					+ ( 'slope' in param ?  'S:'+ param.slope : '' )
 					+'</div>'
-					+'</div>'
+					+'</div>'+ iconmute
 					+'<c class="db">'+ gain +'</c>'
 					+'<input type="range" step="'+ step +'" value="'+ gain +'" min="'+ min +'" max="'+ max +'">'
 					+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) + iconlinear
@@ -1541,10 +1542,7 @@ var setting  = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			V.wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			setTimeout( () => {
-				V.wscamilla.send( '"GetConfigJson"' );
-				util.save2file();
-			}, 300 );
+			setTimeout( () => bash( [ 'saveconfig' ] ), 300 );
 		}, V.wscamilla ? 0 : 300 );
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
@@ -1673,9 +1671,6 @@ var util     = {
 	}
 	, list2array   : list => { // '1, 2, 3' > [ 1, 2, 3 ]
 		return list.replace( /[ \]\[]/g, '' ).split( ',' ).map( Number )
-	}
-	, save2file    : () => {
-		bash( [ 'saveconfig' ] );
 	}
 	, volume       : ( pageX, type ) => {
 		var bandW   = $( '#volume .slide' ).width();
@@ -1864,9 +1859,6 @@ var util     = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.close' ).on( 'click', function() {
-	util.save2file();
-} );
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	V.start = true;
 } ).on( 'touchmove mousemove', function( e ) {
@@ -1915,11 +1907,18 @@ $( '#volmute' ).on( 'click', function() {
 } );
 $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	var $this = $( this );
-	if ( $this.hasClass( 'i-linear' ) ) {
-		var name = $this.parents( 'li' ).data( 'name' );
-		FIL[ name ].parameters.scale = $this.hasClass( 'bl' ) ? 'dB' : 'linear';
+	var cmd   = $this.prop( 'class' ).replace( ' bl', '' ).slice( 2 );
+	if ( [ 'inverted', 'linear' ].includes( cmd ) ) {
+		var linear = cmd === 'linear';
+		var name   = $this.parents( 'li' ).data( 'name' );
+		var val    = ! $this.hasClass( 'bl' );
+		$this.toggleClass( 'bl', val );
+		if ( linear ) val = val ? 'linear' : 'dB';
+		FIL[ name ].parameters[ linear ? 'scale' : 'inverted' ] = val;
 		setting.save( 'Gain', 'Change ...' );
 		return
+	} else if ( cmd === 'inverted' ) {
+		
 	}
 	
 	if ( $this.parent().hasClass( 'disabled' ) ) return
@@ -1927,15 +1926,15 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	clearTimeout( V.timeoutgain );
 	var $gain = $this.parent().prev();
 	var val   = +$gain.val();
-	if ( $this.hasClass( 'i-set0' ) ) {
+	if ( cmd === 'set0' ) {
 		if ( val === 0 ) return
 		
 		val  = 0;
-	} else if ( $this.hasClass( 'i-minus' ) ) {
+	} else if ( cmd === 'minus' ) {
 		if ( val === $gain.prop( 'min' ) ) return
 		
 		val -= 0.1;
-	} else if ( $this.hasClass( 'i-plus' ) ) {
+	} else if ( cmd === 'plus' ) {
 		if ( val === $gain.prop( 'max' ) ) return
 		
 		val += 0.1;
@@ -2295,6 +2294,13 @@ $( '#menu a' ).on( 'click', function( e ) {
 } );
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload();
+} ).on( 'click', '.i-volume, .i-mute', function() {
+	var $this = $( this );
+	var name = $this.parents( 'li' ).data( 'name' );
+	var mute = ! $this.hasClass( 'bl' );
+	$this.toggleClass( 'mute bl', mute );
+	FIL[ name ].parameters.mute = mute;
+	setting.save( 'Gain', 'Change ...' );
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
