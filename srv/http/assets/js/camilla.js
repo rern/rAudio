@@ -662,7 +662,15 @@ var render   = {
 		bannerHide();
 	}
 	, status      : () => {
-		render.statusValue();
+		playbackButton();
+		if ( S.volume !== false ) {
+			$( '#divvolume' ).removeClass( 'hide' );
+			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
+			render.volume();
+		} else {
+			$( '#divvolume' ).addClass( 'hide' );
+		}
+		$( '.rateadjust' ).toggleClass( 'hide', ! S.enable_rate_adjust );
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ico( 'bluetooth' ) );
 		} else {
@@ -697,28 +705,6 @@ var render   = {
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
-	}
-	, statusValue : () => {
-		var play = S.state === 'play';
-		if ( S.player === 'mpd' ) {
-			if ( S.pllength ) {
-				var btn = play ? 'pause' : 'play';
-			} else {
-				var btn = 'play disabled';
-			}
-		} else {
-			var btn = play ? 'stop' : 'play disabled';
-		}
-		$( '.icon' ).prop( 'class', 'icon i-'+ S.player );
-		$( '.playback' ).prop( 'class', 'playback i-'+ btn );
-		if ( S.volume !== false ) {
-			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
-			render.volume();
-		} else {
-			$( '#divvolume' ).addClass( 'hide' );
-		}
-		$( '.rateadjust' ).toggleClass( 'hide', ! S.enable_rate_adjust );
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
@@ -758,7 +744,7 @@ var render   = {
 			}
 		}
 	}
-	, vuClear() {
+	, vuClear     : () => {
 		if ( ! ( 'intervalvu' in V ) ) return
 			
 		clearInterval( V.intervalvu );

@@ -1044,6 +1044,14 @@ function jsonSort( json ) {
 		return result;
 	}, {} );
 }
+function playbackButton() {
+	if ( S.pllength ) {
+		var btn = S.state === 'play' ? 'pause' : 'play';
+	} else {
+		var btn = 'play disabled';
+	}
+	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
+}
 // ----------------------------------------------------------------------
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );

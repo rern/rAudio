@@ -403,14 +403,6 @@ function volumeInfoSet() {
 	$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 	V.local = false;
 }
-function playbackButton() {
-	if ( S.pllength ) {
-		var btn = S.state === 'play' ? 'pause' : 'play';
-	} else {
-		var btn = 'play disabled';
-	}
-	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
-}
 function psVolume( data ) {
 	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;
 	if ( ! $( '.inforange' ).length ) return

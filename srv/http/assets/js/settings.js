@@ -186,7 +186,8 @@ function psOnMessage( message ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'camilla':   psCamilla( data );   break;
-		case 'mpdplayer': psMpdPlayer( data ); break;
+		case 'mpdplayer':
+		case 'mpdradio':  psMpdPlayer( data ); break;
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'power':     psPower( data );     break;
@@ -223,10 +224,11 @@ function psCamilla( data ) {
 	$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 }
 function psMpdPlayer( data ) {
-	if ( ! [ '', 'camilla', 'player' ].includes( page ) ) return
+	if ( ! [ 'camilla', 'player' ].includes( page ) ) return
 	
-	[ 'player', 'pllength', 'state' ].forEach( k => S[ k ] = data[ k ] );
+	[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
 	playbackButton();
+	console.log(data)
 }
 function psPlayer( data ) {
 	var player_id = {

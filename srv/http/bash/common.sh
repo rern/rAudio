@@ -319,13 +319,15 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 radioStatusFile() {
-	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^Title' $dirshm/status )
+	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^state|^Title' $dirshm/status )
 	status+='
 Artist="'$artist'"
 Album="'$album'"
 coverart="'$coverart'"
-Title="'$title'"
-elapsed='$elapsed
+elapsed='$elapsed'
+pllength='$pllength'
+state="play"
+Title="'$title'"'
 	echo "$status" > $dirshm/status
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
 }

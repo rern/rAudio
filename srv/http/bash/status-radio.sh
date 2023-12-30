@@ -135,14 +135,18 @@ $( jq -r .albumTitle <<< $track )"
 		fi
 	fi
 	elapsed=$( mpcElapsed )
+	pllength=$( mpc status %length% )
 	data='
-  "Album"    : "'$album'"
+  "player"   : "mpd"
+, "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
 , "elapsed"  : '$elapsed'
+, "pllength" : '$pllength'
+, "state"    : "play"
 , "Title"    : "'$title'"'
 	if [[ $coverart ]]; then
 		data+='
-, "coverart"     : "'$coverart'"'
+, "coverart" : "'$coverart'"'
 	else
 		$dirbash/status-coverartonline.sh "cmd
 $artist
