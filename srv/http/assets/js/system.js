@@ -582,16 +582,16 @@ $( '#setting-volumeboot' ).on( 'click', function() {
 	} );
 } );
 $( '#backup' ).on( 'click', function() {
-	var d      = new Date();
-	var month  = '0'+ ( d.getMonth() + 1 );
-	var date   = '0'+ d.getDate();
-	var values = 'rAudio_backup-'+ d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
+	var d     = new Date();
+	var month = '0'+ ( d.getMonth() + 1 );
+	var date  = '0'+ d.getDate();
+	var ymd   = d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
 	info( {
 		  icon    : SW.icon
 		, title   : SW.title
 		, message : 'Save all data and settings'
 		, list    : [ 'Filename', 'text', '.gz' ]
-		, values  : values
+		, values  : 'rAudio_backup-'+ ymd
 		, ok      : () => {
 			notifyCommon( 'Process ...' );
 			bash( [ 'settings/system-databackup.sh' ], data => {
