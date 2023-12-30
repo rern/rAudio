@@ -1553,15 +1553,12 @@ var setting  = {
 			var message = 'Upload <wh>configuration</wh> file:'
 		}
 		info( {
-			  icon        : V.tab
-			, title       : title
-			, message     : message
-			, fileoklabel : ico( 'file' ) +'Upload'
-			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml'
-			, cancel      : () => {
-				util.webSocket();
-			}
-			, ok          : () => {
+			  icon    : V.tab
+			, title   : title
+			, message : message
+			, file    : { oklabel: ico( 'file' ) +'Upload', type: dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml' }
+			, cancel  : util.webSocket
+			, ok      : () => {
 				notify( V.tab, title, 'Upload ...' );
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'camilla' );

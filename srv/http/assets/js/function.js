@@ -364,9 +364,7 @@ function coverartChange() {
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
 		, beforeshow  : () => $( '.imgold' ).attr( 'src', src ) // fix direct replace src
-		, filelabel   : ico( 'folder-open' ) +'File'
-		, fileoklabel : ico( 'flash' ) +'Replace'
-		, filetype    : 'image/*'
+		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +'Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {

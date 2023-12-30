@@ -178,10 +178,8 @@ $( '#setting-buffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ 'audio_buffer_size <gr>(kB)</gr>', 'number' ]
-		, focus        : 0
-		, footer       : '(default: 4096)'
-		, footeralign  : 'right'
+		, message      : '<c>audio_buffer_size</c>'
+		, list         : [ 'kB', 'number', { step: 1024, min: 1024, max: 8192 } ]
 		, boxwidth     : 110
 		, values       : S.bufferconf
 		, checkchanged : true
@@ -194,10 +192,9 @@ $( '#setting-outputbuffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ 'max_output_buffer_size <gr>(kB)</gr>', 'number' ]
+		, message      : '<c>max_output_buffer_size</c>'
+		, list         : [ 'kB', 'number', { step: 1024, min: 1024, max: 16384 } ]
 		, focus        : 0
-		, footer       : '(default: 8192)'
-		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : S.outputbufferconf
 		, checkchanged : true

@@ -370,11 +370,18 @@ $( '#login' ).on( 'click', function() {
 	}
 } );
 $( '#setting-login' ).on( 'click', function() {
+	var list = {
+		  existing : [
+			  [ 'Existing', 'password' ]
+			, [ 'New', 'password' ]
+		]
+		, new      : [ 'Password', 'password' ]
+	}
 	info( {
 		  icon       : SW.icon
 		, title      : SW.title
 		, message    : ( S.login ? 'Change password:' : 'New setup:' )
-		, list       : S.login ? [ [ 'Existing', 'password' ], [ 'New', 'password' ] ] : [ 'Password', 'password' ]
+		, list       : S.login ? list.existing : list.new
 		, focus      : 0
 		, checkblank : true
 		, cancel     : switchCancel

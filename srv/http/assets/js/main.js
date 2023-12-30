@@ -1337,9 +1337,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
 		, message     : message
-		, filelabel   : ico( 'folder-open' ) +'File'
-		, fileoklabel : ico( 'flash' ) +'Replace'
-		, filetype    : 'image/*'
+		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )

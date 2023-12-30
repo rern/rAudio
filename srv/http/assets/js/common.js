@@ -346,17 +346,14 @@ function info( json ) {
 		
 		infoButtonCommand( I.ok );
 	} );
-	if ( I.fileoklabel ) { // file api
-		var htmlfile = '<div id="infoFile">'
-					  +'<c id="infoFilename" class="">(select file)</c><br>&nbsp;'
-					  +'<input type="file" class="hide" id="infoFileBox"'
-					  + ( I.filetype ? ' accept="'+ I.filetype +'">' : '>' )
-					  +'</div>'
+	if ( I.file ) {
+		var htmlfile = '<div id="infoFilename"><c>(select file)</c></div>'
+					  +'<input type="file" class="hide" id="infoFileBox"'+ ( I.file.type ? ' accept="'+ I.file.type +'">' : '>' )
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
-					  + ( I.filelabel || ico( 'folder-open' ) +' File' ) +'</a>';
+					  + ( I.file.label || ico( 'folder-open' ) +' File' ) +'</a>';
 		$( '#infoButton' ).prepend( htmlfile )
 		$( '#infoOk' )
-			.html( I.fileoklabel )
+			.html( I.file.oklabel )
 			.addClass( 'hide' );
 		$( '#infoFileLabel' ).on( 'click', function() {
 			$( '#infoFileBox' ).trigger( 'click' );
@@ -368,19 +365,19 @@ function info( json ) {
 			var filename  = I.infofile.name;
 			var typeimage = I.infofile.type.slice( 0, 5 ) === 'image';
 			I.filechecked = true;
-			if ( I.filetype ) {
-				if ( I.filetype === 'image/*' ) {
+			if ( I.file.type ) {
+				if ( I.file.type === 'image/*' ) {
 					I.filechecked = typeimage;
 				} else {
 					var ext = filename.includes( '.' ) ? filename.split( '.' ).pop() : 'none';
-					I.filechecked = I.filetype.includes( ext );
+					I.filechecked = I.file.type.includes( ext );
 				}
 			}
 			if ( ! I.filechecked ) {
 				var htmlprev = $( '#infoList' ).html();
 				$( '#infoFilename, #infoFileLabel' ).addClass( 'hide' );
 				$( '#infoList' ).html( '<table><tr><td>Selected file :</td><td><c>'+ filename +'</c></td></tr>'
-										 +'<tr><td>File not :</td><td><c>'+ I.filetype +'</c></td></tr></table>' );
+										 +'<tr><td>File not :</td><td><c>'+ I.file.type +'</c></td></tr></table>' );
 				$( '#infoOk' ).addClass( 'hide' );
 				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
 				$( '#infoButton' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
@@ -555,7 +552,6 @@ function info( json ) {
 		// set width: text / password / textarea
 		infoWidth();
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
-		if ( I.tab && $input.length === 1 ) $( '#infoList' ).css( 'padding', '30px' );
 		// check inputs: blank / length / change
 		if ( I.checkblank ) {
 			if ( I.checkblank === true ) I.checkblank = [ ...Array( $inputbox.length ).keys() ];

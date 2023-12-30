@@ -1056,16 +1056,20 @@ function infoRelaysName() {
 	} );
 }
 function infoRestore( reset ) {
+	var list = [
+		  [ 'Keep Library data',     'checkbox' ]
+		, [ 'Keep Network settings', 'checkbox' ]
+	];
 	info( {
-		  icon        : SW.icon
-		, title       : SW.title
-		, tablabel    : [ 'From Backup', 'Reset To Default' ]
-		, tab         : reset ? [ infoRestore, '' ] : [ '', () => infoRestore( 'reset' ) ]
-		, list        : reset ? [ [ 'Keep Library data', 'checkbox' ], [ 'Keep Network settings', 'checkbox' ] ] : [ 'Library data only', 'checkbox' ]
-		, fileoklabel : reset ? '' : ico( 'restore' ) +'Restore'
-		, filetype    : '.gz'
-		, okcolor     : orange
-		, ok          : reset ? () => {
+		  icon     : SW.icon
+		, title    : SW.title
+		, tablabel : [ 'From Backup', 'Reset To Default' ]
+		, tab      : reset ? [ infoRestore, '' ] : [ '', () => infoRestore( 'reset' ) ]
+		, list     : reset ? list : list[ 0 ]
+		, file     : reset ? '' : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
+		, oklabel  : ico( 'restore' ) +'Restore'
+		, okcolor  : orange
+		, ok       : reset ? () => {
 				notifyCommon( 'Reset to default ...' );
 				bash( [ 'settings/system-datareset.sh '+ infoVal().join( ' ' ) ] );
 				loader();

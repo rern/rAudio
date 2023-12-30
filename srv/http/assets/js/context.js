@@ -438,9 +438,7 @@ function webRadioCoverart() {
 		, title       : ( mode === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 					  + '<p class="infoimgname">'+ name +'</p>'
-		, filelabel   : ico( 'folder-open' ) +'File'
-		, fileoklabel : ico( 'flash' ) +'Replace'
-		, filetype    : 'image/*'
+		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, beforeshow  : () => {
 			$( '.imgold' ).on( 'error', function() {
 				imageOnError( this );
