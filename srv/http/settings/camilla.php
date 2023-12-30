@@ -62,7 +62,7 @@ foreach( [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ] 
 $htmltabs.= '</div>';
 $htmlvolume = '
 <div id="divvolume">
-<div class="col-l text">Volume<i id="volmute" class="i-volume"></i></div>
+<div class="col-l text"><span class="name">Volume</span><i id="volmute" class="i-volume"></i></div>
 <div class="col-r text">
 	<div id="volume" class="slider">
 		<div class="track"></div>
