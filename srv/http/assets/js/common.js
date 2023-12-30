@@ -600,12 +600,12 @@ function info( json ) {
 		}
 		if ( I.updn.length ) {
 			I.updn.forEach( ( el, i ) => {
-				var interval, timeout;
 				var $tr   = $( '#infoList .updn' ).parent().eq( i ).parent()
 				var $updn = $tr.find( '.updn' );
 				var $num  = $updn.parent().prev().find( 'input' );
 				var step  = el.step;
 				var v     = 0;
+				var interval, timeout;
 				function numberset( up ) {
 					v = +$num.val();
 					v = up ? v + step : v - step;
