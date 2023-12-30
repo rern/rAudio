@@ -608,6 +608,10 @@ function info( json ) {
 				var $num    = $updn.parent().prev().find( 'input' );
 				var step    = el.step;
 				var v       = 0;
+				var toggle  = v => {
+					$dn.toggleClass( 'disabled', v === el.min );
+					$up.toggleClass( 'disabled', v === el.max );
+				}
 				var numberset = up => {
 					v = +$num.val();
 					v = up ? v + step : v - step;
@@ -616,10 +620,10 @@ function info( json ) {
 						clearTimeout( timeout );
 					}
 					$num.val( v );
+					if ( I.checkchanged ) $num.trigger( 'input' );
+					toggle( v );
 				}
-				var ivalue = I.values[ $trupdn.index() ];
-				$dn.toggleClass( 'disabled', ivalue === el.min );
-				$up.toggleClass( 'disabled', ivalue === el.max );
+				toggle( I.values[ $trupdn.index() ] );
 				$updn.on( 'click', function() {
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
 				} ).press( function( e ) {
@@ -636,9 +640,6 @@ function info( json ) {
 					clearInterval( interval );
 					clearTimeout( timeout );
 					step = el.step;
-					if ( I.checkchanged ) $num.trigger( 'input' );
-					$dn.toggleClass( 'disabled', v === el.min );
-					$up.toggleClass( 'disabled', v === el.max );
 				} );
 			} );
 		}
