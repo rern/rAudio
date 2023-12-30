@@ -79,11 +79,11 @@ $htmlvolume = '
 </div>
 ';
 $htmllabels = '
-Buffer · Load<span class="divclipped"> · Clipped</span>
+Buffer · Load<span class="divclipped hide"> · Clipped</span>
 <br>Sampling<span class="rateadjust"> · Adjust</span>
 ';
 $htmlvalues = '
-<a class="buffer">·</a> <gr>·</gr> <a class="load">·</a><span class="divclipped"> <gr>·</gr> <a class="clipped">·</a></span>
+<a class="buffer">·</a> <gr>·</gr> <a class="load">·</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">·</a></span>
 <br><a class="capture">·</a><span class="rateadjust"> <gr>·</gr> <a class="rate">·</a></span>
 ';
 
