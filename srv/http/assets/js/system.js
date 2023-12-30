@@ -582,10 +582,19 @@ $( '#setting-volumeboot' ).on( 'click', function() {
 	} );
 } );
 $( '#backup' ).on( 'click', function() {
+	var date = new Date();
+	var values  = 'rAudio_backup-';
+	[ 'year', 'month', 'day' ].forEach( k => {
+		var opt   = {}
+		opt[ k ]  = 'numeric';
+		values += new Intl.DateTimeFormat( undefined, opt ).format( date );
+	} );
 	info( {
 		  icon    : SW.icon
 		, title   : SW.title
-		, message : 'Save all data and settings to file?'
+		, message : 'Save all data and settings'
+		, list    : [ 'Filename', 'text', '.gz' ]
+		, values  : values
 		, ok      : () => {
 			notifyCommon( 'Process ...' );
 			bash( [ 'settings/system-databackup.sh' ], data => {
@@ -598,7 +607,7 @@ $( '#backup' ).on( 'click', function() {
 							var a = document.createElement( 'a' );
 							a.style.display = 'none';
 							a.href = url;
-							a.download = 'backup.gz';
+							a.download = infoVal() +'.gz';
 							document.body.appendChild( a );
 							a.click();
 							setTimeout( () => {
