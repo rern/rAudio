@@ -585,9 +585,9 @@ $( '#backup' ).on( 'click', function() {
 	var date = new Date();
 	var values  = 'rAudio_backup-';
 	[ 'year', 'month', 'day' ].forEach( k => {
-		var opt   = {}
-		opt[ k ]  = 'numeric';
-		values += new Intl.DateTimeFormat( undefined, opt ).format( date );
+		var opt  = {}
+		opt[ k ] = 'numeric';
+		values  += date.toLocaleDateString( undefined, opt );
 	} );
 	info( {
 		  icon    : SW.icon
