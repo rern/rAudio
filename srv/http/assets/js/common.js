@@ -601,18 +601,12 @@ function info( json ) {
 		if ( I.updn.length ) {
 			I.updn.forEach( ( el, i ) => {
 				var interval, timeout;
-				var $trupdn = $( '#infoList .updn' ).parent().eq( i ).parent()
-				var $updn   = $trupdn.find( '.updn' );
-				var $up     = $updn.eq( 1 );
-				var $dn     = $updn.eq( 0 );
-				var $num    = $updn.parent().prev().find( 'input' );
-				var step    = el.step;
-				var v       = 0;
-				var toggle  = v => {
-					$dn.toggleClass( 'disabled', v === el.min );
-					$up.toggleClass( 'disabled', v === el.max );
-				}
-				var numberset = up => {
+				var $tr   = $( '#infoList .updn' ).parent().eq( i ).parent()
+				var $updn = $tr.find( '.updn' );
+				var $num  = $updn.parent().prev().find( 'input' );
+				var step  = el.step;
+				var v     = 0;
+				function numberset( up ) {
 					v = +$num.val();
 					v = up ? v + step : v - step;
 					if ( v === el.min || v === el.max ) {
@@ -621,9 +615,13 @@ function info( json ) {
 					}
 					$num.val( v );
 					if ( I.checkchanged ) $num.trigger( 'input' );
-					toggle( v );
+					updnToggle( v );
 				}
-				toggle( I.values[ $trupdn.index() ] );
+				function updnToggle( v ) {
+					$updn.eq( 0 ).toggleClass( 'disabled', v === el.min );
+					$updn.eq( 1 ).toggleClass( 'disabled', v === el.max );
+				}
+				updnToggle( I.values[ $tr.index() ] );
 				$updn.on( 'click', function() {
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
 				} ).press( function( e ) {
