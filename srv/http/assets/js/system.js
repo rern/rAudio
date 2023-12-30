@@ -582,13 +582,10 @@ $( '#setting-volumeboot' ).on( 'click', function() {
 	} );
 } );
 $( '#backup' ).on( 'click', function() {
-	var date = new Date();
-	var values  = 'rAudio_backup-';
-	[ 'year', 'month', 'day' ].forEach( k => {
-		var opt  = {}
-		opt[ k ] = 'numeric';
-		values  += date.toLocaleDateString( undefined, opt );
-	} );
+	var d      = new Date();
+	var month  = '0'+ ( d.getMonth() + 1 );
+	var date   = '0'+ d.getDate();
+	var values = 'rAudio_backup-'+ d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
 	info( {
 		  icon    : SW.icon
 		, title   : SW.title
