@@ -1749,8 +1749,8 @@ var util     = {
 						render.vuClear();
 						return
 					}
-					
-					$( '#divstate .'+ cmd_el[ cmd ] ).text( value.toLocaleString() );
+					v = cmd === 'GetProcessingLoad' ? value.toLocaleString( undefined, { minimumFractionDigits: 3 } ) : value.toLocaleString();
+					$( '#divstate .'+ cmd_el[ cmd ] ).text( v );
 					break;
 				case 'GetClippedSamples':
 					if ( V.local ) return

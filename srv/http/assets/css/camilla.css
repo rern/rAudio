@@ -55,6 +55,9 @@
 .section hr {
 	border-bottom-color: var( --cga );
 }
+.col-l {
+	padding-right: 14px;
+}
 .col-r hr {
 	margin-left: 0;
 	max-width: 230px;
