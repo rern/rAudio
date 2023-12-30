@@ -178,20 +178,20 @@ tr .i-remove {
 	width: 38px;
 	min-width: 38px !important;
 	font-size: 24px;
+	line-height: 40px;
 	text-align: center;
 	color: var( --cg60 );
 	-webkit-user-select: none;
 	user-select: none;
 }
-#divvolume .col-l {
-	padding-top: 6px;
-}
 #divvolume .i-volume {
 	width: 40px;
-	margin-right: 8px;
+	margin-right: -10px;
 	line-height: 40px;
+	vertical-align: 0;
 	text-align: center;
-	color: var( --cg60 )
+	color: var( --cg60 );
+	cursor: pointer;
 }
 li .i-mute {
 	margin-left: 20px !important;
@@ -264,12 +264,14 @@ i.disabled,
 	display: inline-block;
 	width: 45px;
 	line-height: 16px;
+	vertical-align: 4px;
 	text-align: center;
 	color: var( --cw );
 	background-color: var( --cga );
 }
-#mixers .db {
-	margin: 0 0 0 10px;
+.db {
+	float: left;
+	margin-top: 12px;
 }
 #in::before {
 	content: 'In';
@@ -421,6 +423,9 @@ i.disabled,
 	background: var( --glossy-btn );
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
+}
+.slider.disabled .thumb {
+	background-color: var( --cmd );
 }
 #eq {
 	height: 385px !important;

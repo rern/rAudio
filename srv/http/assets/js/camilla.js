@@ -752,7 +752,6 @@ var render   = {
 		setTimeout( () => {
 			$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 			$( '.rms' ).css( 'width', 0 );
-			$( '#divstate .value a:not(.clipped)' ).text( '·' );
 		}, 300 );
 	}
 	, volume      : () => {
@@ -760,6 +759,7 @@ var render   = {
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bl', S.volumemute > 0 );
 		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
+		$( '#volume' ).toggleClass( 'disabled', S.volumemute > 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		if ( ! Object.keys( FIL ).length ) return
@@ -800,9 +800,8 @@ var render   = {
 					+ ( 'slope' in param ?  'S:'+ param.slope : '' )
 					+'</div>'
 					+'</div>'+ iconmute
-					+'<c class="db">'+ gain +'</c>'
 					+'<input type="range" step="'+ step +'" value="'+ gain +'" min="'+ min +'" max="'+ max +'"'+ disabled +'>'
-					+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) + iconlinear
+					+'<div class="divgain filter">'+ ico( 'minus' ) +'<c class="db">'+ gain +'</c>'+ ico( 'plus' ) + iconlinear
 					+'</div>'
 					+'</div>';
 		} else {
@@ -870,9 +869,9 @@ var render   = {
 					var step = S.range.MIXERSSTEP;
 				}
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + ico( source.mute ? 'volume mute bl' : 'volume' ) +'<c class="db">' + val +'</c>'
+					 + ico( source.mute ? 'volume mute bl' : 'volume' )
 					 +'<input type="range" step="'+ step +'" value="'+ val +'" min="'+ min +'" max="'+ max +'" '+ disabled +'>'
-					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
+					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) +'<c class="db">' + val +'</c>'+ ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' )
 					 +'</li>';
 			} );
@@ -1662,7 +1661,10 @@ var util     = {
 				, {
 					  duration : diff * 40
 					, easing   : 'linear'
-					, complete : () => $( '#volume,  #divvolume .divgain i' ).removeClass( 'disabled' )
+					, complete : () => {
+						$( '#divvolume .divgain i' ).removeClass( 'disabled' );
+						$( '#volume' ).toggleClass( 'disabled', S.volumemute > 0 );
+					}
 				}
 			);
 			S.volume = vol;
@@ -1712,6 +1714,11 @@ var util     = {
 			var cp, v;
 			switch ( cmd ) {
 				case 'GetSignalLevels':
+					if ( S.state !== 'play' || S.volume === 0 ) {
+						render.vuClear();
+						return
+					}
+					
 					[ 'playback_peak', 'playback_rms', 'capture_peak', 'capture_rms' ].forEach( k => {
 						cp = k[ 0 ];
 						value[ k ].forEach( ( val, i ) => {
@@ -1749,6 +1756,7 @@ var util     = {
 						render.vuClear();
 						return
 					}
+					
 					v = cmd === 'GetProcessingLoad' ? value.toLocaleString( undefined, { minimumFractionDigits: 3 } ) : value.toLocaleString();
 					$( '#divstate .'+ cmd_el[ cmd ] ).text( v );
 					break;
@@ -1867,9 +1875,10 @@ $( '#volmute' ).on( 'click', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 } );
-$( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
+$( '#filters, #mixers' ).on( 'click', '.divgain i, .divgain c', function() {
 	var $this = $( this );
-	var cmd   = $this.prop( 'class' ).replace( ' bl', '' ).slice( 2 );
+	var cmd   = $this.prop( 'class' );
+	if ( cmd !== 'db' ) cmd = cmd.replace( ' bl', '' ).slice( 2 );
 	if ( [ 'inverted', 'linear' ].includes( cmd ) ) {
 		var linear = cmd === 'linear';
 		var name   = $this.parents( 'li' ).data( 'name' );
@@ -1888,7 +1897,7 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	clearTimeout( V.timeoutgain );
 	var $gain = $this.parent().prev();
 	var val   = +$gain.val();
-	if ( cmd === 'set0' ) {
+	if ( cmd === 'db' ) {
 		if ( val === 0 ) return
 		
 		val  = 0;
@@ -2266,7 +2275,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
-	$this.prev().text( util.dbRound( val ) );
+	$this.next().find( '.db' ).text( util.dbRound( val ) );
 	V.li     = $this.parents( 'li' );
 	var name = V.li.data( 'name' );
 	FIL[ name ].parameters.gain = val;
@@ -2392,7 +2401,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
-	$this.prev().text( util.dbRound( val ) );
+	$this.next().find( '.db' ).text( util.dbRound( val ) );
 	V.li      = $( this ).parents( 'li' );
 	var name  = V.li.data( 'name' );
 	var index = V.li.data( 'index' );
