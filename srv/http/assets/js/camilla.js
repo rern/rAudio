@@ -1788,14 +1788,10 @@ var util     = {
 					S.configname = value.split( '/' ).pop();
 					break;
 				case 'GetSupportedDeviceTypes':
-					S.devicetype = { 
-						  capture  : value[ 1 ].sort()
-						, playback : value[ 0 ].sort()
-					};
 					var type = {};
-					[ 'capture', 'playback' ].forEach( k => {
+					[ 'playback', 'capture' ].forEach( ( k, i ) => {
 						type[ k ] = {};
-						S.devicetype[ k ].forEach( t => {
+						value[ i ].forEach( t => {
 							v = render.typeReplace( t );
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
