@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1703385856' );
+	src         : url( '/assets/fonts/rern.woff2?v=1703385858' );
 }
 @font-face {
 	font-family : Lato;
@@ -60,6 +60,7 @@ i {
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }
 .i-close::before           { content: '\F56C' }
+.i-code::before            { content: '\F59E' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
 .i-config::before          { content: '\F53E' }
@@ -786,12 +787,15 @@ hr {
 .infofooter {
 	width: 100%;
 	max-height: 800px;
-	margin: 0 auto 5px;
+	margin: 0 auto;
 	padding: 10px 5px;
 	white-space: pre-wrap;
 	word-wrap: break-word;
 	overflow: hidden;
 	color: var( --cg60 );
+}
+.infomessage {
+	padding-top: 5px;
 }
 .infoprompt {
 	padding: 15px 5px;
@@ -937,10 +941,10 @@ input[ type=radio ]:disabled {
 }
 #infoFilename {
 	max-width: 95%;
-	margin-bottom: 10px;
+	height: 37px;
 }
-#infoButtons {
-	padding-top: 10px;
+#infoButton {
+	margin-top: 5px;
 }
 #infoOverlay code {
 	display: inline-block;
