@@ -144,6 +144,9 @@ tr .i-remove {
 	background: var( --cga ) !important;
 	border: none !important;
 }
+.liinput.main i.disabled {
+	color: var( --cgl ) !important;
+}
 .liinput .filter div {
 	display: block;
 }
@@ -204,6 +207,10 @@ i.disabled,
 	pointer-events: none;
 	color: var( --cg ) !important;
 }
+.divgain.disabled c {
+	color: var( --cgl ) !important;
+}
+
 li .i-volume.mute {
 	color: var( --cm ) !important;
 }

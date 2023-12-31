@@ -801,7 +801,7 @@ var render   = {
 					+'</div>'
 					+'</div>'
 					+'<input type="range" step="'+ step +'" value="'+ gain +'" min="'+ min +'" max="'+ max +'"'+ disabled +'>'
-					+'<div class="divgain filter">'+ ico( 'minus' ) +'<c class="db">'+ gain +'</c>'+ ico( 'plus' ) +'</div>'
+					+'<div class="divgain filter'+ disabled +'">'+ ico( 'minus' ) +'<c class="db">'+ gain +'</c>'+ ico( 'plus' ) +'</div>'
 					+ iconmute + iconlinear
 					+'</div>';
 		} else {
@@ -1508,6 +1508,11 @@ var setting  = {
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
+	, muteToggle    : ( $this, checked ) => {
+		$this.toggleClass( 'mute', checked );
+		$this.prev().toggleClass( 'disabled', checked );
+		$this.siblings( 'input' ).prop( 'disabled', checked );
+	}
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
@@ -2266,7 +2271,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	var $this   = $( this );
 	var name    = $this.parents( 'li' ).data( 'name' );
 	var checked = ! $this.hasClass( 'mute' );
-	$this.toggleClass( 'mute', checked );
+	setting.muteToggle( $this, checked );
 	FIL[ name ].parameters.mute = checked;
 	setting.save( 'Gain', 'Change ...' );
 } ).on( 'click', '.i-inverted, .i-linear', function() {
@@ -2357,6 +2362,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	if ( $this.hasClass( 'i-volume' ) ) {
 		var mapping = MIX[ name ].mapping[ V.li.data( 'index' ) ];
 		var checked = ! $this.hasClass( 'mute' );
+		setting.muteToggle( $this, checked );
 		if ( V.li.hasClass( 'main' ) ) {
 			mapping.mute = checked;
 		} else {
