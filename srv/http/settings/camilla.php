@@ -5,29 +5,30 @@ $id_data = [
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'resampler'           => [ 'name' => 'Resampler',           'setting' => 'custom' ]
 ];
-$sliderrange     = i( 'gear btn' ).' Gain slider range (dB)';
-$contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
-$contextmixers   = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
-$contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
-$contextconfig   = str_replace( 'mixers' , 'config', $contextmixers );
-$gaincontrols    = i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' ).i( 'volume btn' ).' -1step · set 0 · +1step · mute<br>&emsp;(-+ support long-press)';
-$controls        = i( 'inverted btn' ).i( 'linear btn' ).' invert · linear';
+$contextfilters    = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
+$contextmixers     = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
+$contextprocessors = str_replace( 'mixers' , 'processors', $contextmixers );
+$contextpipeline   = str_replace( 'filters' , 'pipeline', $contextfilters );
+$contextconfig     = str_replace( 'mixers' , 'config', $contextmixers );
+$gaincontrols      = i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' ).i( 'volume btn' );
+$controls          = $gaincontrols.i( 'inverted btn' ).i( 'linear btn' ).' -1step · Set 0 · +1step · Mute · Invert · Linear';
 $help = [
 	  'filters'   => <<< EOF
-{$Fi( 'folder-filter btn' )} FIR coefficient
-{$sliderrange}
+{$Fi( 'folder-filter btn' )}{$Fi( 'gear btn' )}{$Fi( 'plus btn' )} FIR coefficient files · Gain slider range · New
 {$contextfilters}
-{$gaincontrols}
 {$controls}
 EOF
 	, 'mixers'   => <<< EOF
-{$sliderrange}
+{$Fi( 'gear btn' )}{$Fi( 'plus btn' )} Gain slider range · New
 {$contextmixers}
-{$gaincontrols}
 {$controls}
 EOF
+	, 'processors'   => <<< EOF
+{$Fi( 'plus btn' )} New
+{$contextprocessors}
+EOF
 	, 'pipeline' => <<< EOF
-{$Fi( 'flowchart btn' )} Step flowchart
+{$Fi( 'flowchart btn' )}{$Fi( 'plus btn' )} Step flowchart · New
 {$contextpipeline}
 EOF
 	, 'devices'  => <<< EOF
@@ -100,7 +101,6 @@ $head = [
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
 ];
-$gaincontrols = str_replace( [ 'step', 'set 0' ], [ '%', 'volume' ], $gaincontrols );
 $body = [
 	  htmlSectionStatus( 'vu' )
 	, $htmlvolume
@@ -110,7 +110,7 @@ $body = [
 		, 'status' => true
 		, 'input' => '<select id="configuration"></select>'
 		, 'help'  => <<< EOF
-{$gaincontrols}
+{$gaincontrols} -% · Volume · +% · Mute
 {$Fi( 'set0 btn' )} Reset clipped count (if any)
 {$Fi( 'gear btn' )} Configuration files
 EOF
