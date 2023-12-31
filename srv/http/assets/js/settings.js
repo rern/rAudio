@@ -228,7 +228,6 @@ function psMpdPlayer( data ) {
 	
 	[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
 	playbackButton();
-	console.log(data)
 }
 function psPlayer( data ) {
 	var player_id = {
