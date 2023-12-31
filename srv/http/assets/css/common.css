@@ -427,7 +427,7 @@ codered  {
 	font-size: 13px;
 }
 
-input[type=range] {
+input[ type=range ] {
 	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
 	--trackborder : 1px solid var( --cgd ) !important;
 	height: 40px;
@@ -436,9 +436,8 @@ input[type=range] {
 	max-width: 70%;
 	background: transparent;
 	-webkit-appearance: none;
-	cursor: pointer;
 }
-input[type=range]::-webkit-slider-thumb {
+input[ type=range ]::-webkit-slider-thumb {
 	height: 40px;
 	width: 40px;
 	margin-top: -20px;
@@ -449,7 +448,7 @@ input[type=range]::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	box-shadow: var( --shadow-btn );
 }
-input[type=range]::-moz-range-thumb { /* cannot be combined */
+input[ type=range ]::-moz-range-thumb { /* cannot be combined */
 	height: 40px;
 	width: 40px;
 	border: none;
@@ -458,22 +457,22 @@ input[type=range]::-moz-range-thumb { /* cannot be combined */
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
-input[type=range]:disabled::-webkit-slider-thumb {
+input[ type=range ]:disabled::-webkit-slider-thumb {
 	background-color: var( --cmd );
 }
-input[type=range]:disabled::-moz-range-thumb {
+input[ type=range ]:disabled::-moz-range-thumb {
 	background-color: var( --cmd );
 }
-input[type=range]::-webkit-slider-runnable-track {
+input[ type=range ]::-webkit-slider-runnable-track {
 	width: 100%;
 	height: 4px;
 	background: var( --track );
 	border: var( --trackborder );
 }
-input[type=range]:focus::-webkit-slider-runnable-track {
+input[ type=range ]:focus::-webkit-slider-runnable-track {
 	background: var( --track );
 }
-input[type=range]::-moz-range-track {
+input[ type=range ]::-moz-range-track {
 	width: 100%;
 	height: 2px;
 	background: var( --track );
@@ -493,7 +492,6 @@ input[type=range]::-moz-range-track {
 	line-height: 39px;
 	vertical-align: top !important;
 	color: var( --cg60 ) !important;
-	cursor: pointer;
 }
 
 /* info */
@@ -520,7 +518,6 @@ input[ type=checkbox ] {
 	color: var( --cw ) !important;
 	background-color: var( --cg );
 	box-shadow: var( --shadow-btn );
-	cursor: pointer;
 	-webkit-user-select: none;
 	user-select: none;
 }
@@ -556,7 +553,6 @@ input[ type=checkbox ].disabled {
 }
 .btnbottom span {
 	color: var( --cg60 );
-	cursor: pointer;
 }
 .btnbottom i,
 .updn {
@@ -565,7 +561,6 @@ input[ type=checkbox ].disabled {
 	vertical-align: -3px;
 	text-align: center;
 	color: var( --cw );
-	cursor: pointer;
 }
 .updn {
 	width: 35px !important;
@@ -679,7 +674,6 @@ hr {
 	padding: 0;
 	font-size: 24px;
 	color: var( --cm );
-	cursor: pointer;
 }
 #infoTitle {
 	display: inline-block;
@@ -1016,13 +1010,22 @@ input:focus {
 @media ( hover:hover ) {
 	#debug { display: block }
 	/* :hover *********************************************************/
-	#infoTab,
-	#infoButton gr,
 	label,
 	input[ type=checkbox ],
 	input[ type=radio ],
+	input[ type=range ],
+	.btnbottom i,
+	.btnbottom span,
+	.divgain,
 	.i-eye,
-	.pointer {
+	.i-volume,
+	.infobtn,
+	.inforange i,
+	.pointer,
+	.updn,
+	#infoTab,
+	#infoButton gr,
+	#infoX {
 		cursor: pointer;
 	}
 	#infoX:hover,

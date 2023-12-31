@@ -755,7 +755,7 @@ var render   = {
 		}, 300 );
 	}
 	, volume      : () => {
-		$( '#volume-text' )
+		$( '#vollevel' )
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bl', S.volumemute > 0 );
 		$( '#divvolume .i-volume' ).toggleClass( 'mute', S.volumemute > 0 );
@@ -1673,8 +1673,7 @@ var util     = {
 					  duration : diff * 40
 					, easing   : 'linear'
 					, complete : () => {
-						$( '#divvolume .divgain i' ).removeClass( 'disabled' );
-						$( '#volume' ).toggleClass( 'disabled', S.volumemute > 0 );
+						$( '#volume,  #divvolume .divgain i' ).toggleClass( 'disabled', S.volumemute > 0 );
 					}
 				}
 			);
@@ -1725,7 +1724,7 @@ var util     = {
 			var cp, v;
 			switch ( cmd ) {
 				case 'GetSignalLevels':
-					if ( S.state !== 'play' || S.volume === 0 ) {
+					if ( S.state !== 'play' || S.volumemute ) {
 						render.vuClear();
 						return
 					}
@@ -1785,7 +1784,7 @@ var util     = {
 				case 'GetState':
 					if ( 'intervalvu' in V || S.state !== 'play' ) return
 					
-					$( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
+					if ( ! S.volumemute ) $( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
 					setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
 					V.intervalvu = setInterval( () => V.wscamilla.send( '"GetSignalLevels"' ), 100 );
 					break;
@@ -1864,7 +1863,7 @@ $( '#voldn, #volup' ).on( 'click', function() {
 	up ? S.volume++ : S.volume--;
 	volumePush( S.volume );
 	volumeSetAt();
-	$( '#volume-text' ).text( S.volume );
+	$( '#vollevel' ).text( S.volume );
 } ).on( 'touchend mouseup', function() {
 	clearInterval( V.intervalvolume );
 	volumePush();
@@ -1876,14 +1875,14 @@ $( '#voldn, #volup' ).on( 'click', function() {
 		up ? S.volume++ : S.volume--;
 		volumeSetAt();
 		util.volumeThumb();
-		$( '#volume-text' ).text( S.volume );
+		$( '#vollevel' ).text( S.volume );
 		if ( S.volume === 0 || S.volume === 100 ) {
 			clearInterval( V.intervalvolume );
 			volumePush();
 		}
 	}, 100 );
 } );
-$( '#volmute' ).on( 'click', function() {
+$( '#volmute, #vollevel' ).on( 'click', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 } );

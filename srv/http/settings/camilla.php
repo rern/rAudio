@@ -73,10 +73,10 @@ $htmlvolume = '
 	</div>
 	<div class="divgain">
 		<i id="voldn" class="i-minus"></i>
-		<c id="volume-text">0</c>
+		<c id="vollevel">0</c>
 		<i id="volup" class="i-plus"></i>
-		<i id="volmute" class="i-volume"></i>
 	</div>
+	<i id="volmute" class="i-volume"></i>
 </div>
 <div style="clear:both"></div>
 </div>

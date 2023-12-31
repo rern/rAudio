@@ -190,17 +190,16 @@ tr .i-remove {
 	top: 7px;
 }
 #divvolume .i-volume {
+	position: absolute;
 	width: 40px;
-	margin-right: -10px;
 	line-height: 40px;
 	vertical-align: 0;
+	font-size: 24px;
 	text-align: center;
 	color: var( --cg60 );
-	cursor: pointer;
 }
 #divvolume .divgain {
-	position: absolute;
-	padding-left: 5px;
+	vertical-align: 11px;
 }
 i.disabled,
 .divgain.disabled i {
@@ -211,7 +210,7 @@ i.disabled,
 	color: var( --cgl ) !important;
 }
 
-li .i-volume.mute {
+.i-volume.mute {
 	color: var( --cm ) !important;
 }
 .liinput input[ type=checkbox ] {
@@ -269,7 +268,7 @@ li .i-volume.mute {
 	background: var( --cgl );
 }
 .db,
-#volume-text {
+#vollevel {
 	display: inline-block;
 	width: 45px;
 	line-height: 16px;
