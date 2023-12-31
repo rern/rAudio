@@ -836,12 +836,13 @@ var render   = {
 				+'</li>'
 	}
 	, mixersSub   : name => {
+		var iconadd   = max => ico( max ? 'add disabled' : 'add' );
 		var data      = MIX[ name ].mapping;
-		var chmapping = data.length;
 		var chin      = DEV.capture.channels;
 		var chout     = DEV.playback.channels;
-		var iconadd   = chout === chmapping ? '' : ico( 'add' );
-		var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + iconadd + ico( 'back' ) +'</li>';
+		var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name
+						+ iconadd( chout === data.length ) + ico( 'back' )
+						+'</li>';
 		var optin     = htmlOption( chin );
 		var optout    = htmlOption( chout );
 		data.forEach( ( kv, i ) => {
@@ -850,7 +851,7 @@ var render   = {
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
 						+'<div><select>'+ opts +'</select></div>'
-						+'<div>'+ ico( kv.mute ? 'volume mute' : 'volume' ) + ico( 'add' )
+						+ ico( kv.mute ? 'volume mute' : 'volume' ) + iconadd( chout === kv.sources.length )
 						+'</li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
