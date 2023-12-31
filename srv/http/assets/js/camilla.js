@@ -811,8 +811,14 @@ var render   = {
 		}
 		var $graph = $( '#filters .entries.main li[data-name="'+ k +'"]' ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
-		var icon  = param.type === 'GraphicEqualizer' ? 'equalizer' : 'filters';
-		return '<li data-name="'+ k +'">'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
+		if ( param.type === 'GraphicEqualizer' ) {
+			var icon    = 'equalizer';
+			var classeq = ' class="eq"';
+		} else {
+			var icon    = 'filters';
+			var classeq = '';
+		}
+		return '<li data-name="'+ k +'"'+ classeq +'>'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
