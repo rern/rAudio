@@ -184,11 +184,6 @@ tr .i-remove {
 	-webkit-user-select: none;
 	user-select: none;
 }
-#divvolume .name {
-	position: absolute;
-	right: 40px;
-	top: 7px;
-}
 #divvolume .i-volume {
 	position: absolute;
 	width: 40px;

@@ -1,6 +1,7 @@
 <?php
 $id_data = [
-	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
+	  'volume'              => [ 'name' => 'Master',              'setting' => false,    'sub' => 'hw', ]
+	, 'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
 	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'resampler'           => [ 'name' => 'Resampler',           'setting' => 'custom' ]
@@ -13,7 +14,17 @@ $contextconfig     = str_replace( 'mixers' , 'config', $contextmixers );
 $gaincontrols      = i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' );
 $controls          = i( 'volume btn' ).i( 'inverted btn' ).i( 'linear btn' );
 $help = [
-	  'filters'   => <<< EOF
+	  'status'      => <<< EOF
+{$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
+
+<a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
+EOF
+	, 'volume'    => <<< EOF
+{$Fi( 'gear btn' )} Configuration files'
+{$gaincontrols}{$Fi( 'volume btn' )} -% · Volume · +% · Mute
+{$Fi( 'set0 btn' )} Reset clipped count (if any)
+EOF
+	, 'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )}{$Fi( 'gear btn' )}{$Fi( 'plus btn' )} FIR coefficient files · Gain slider range · New
 {$contextfilters} Graph · Edit · Delete
 {$gaincontrols} -1step · Set 0 · +1step
@@ -63,58 +74,48 @@ foreach( [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ] 
 }
 
 $htmltabs.= '</div>';
-$htmlvolume = '
-<div id="divvolume">
-<div class="col-l"><a>Master<gr>hw</gr></a></div>
-<div class="col-r">
-	<div id="volume" class="slider">
-		<div class="track"></div>
-		<div class="slide"></div>
-		<div class="thumb"></div>
-	</div>
-	<div class="divgain">
-		<i id="voldn" class="i-minus"></i>
-		<c id="vollevel">0</c>
-		<i id="volup" class="i-plus"></i>
-	</div>
-	<i id="volmute" class="i-volume"></i>
+$htmls = [
+	  'volume' => '
+<div id="volume" class="slider">
+	<div class="track"></div>
+	<div class="slide"></div>
+	<div class="thumb"></div>
 </div>
-<div style="clear:both"></div>
+<div class="divgain">
+	<i id="voldn" class="i-minus"></i>
+	<c id="vollevel">0</c>
+	<i id="volup" class="i-plus"></i>
 </div>
-';
-$htmllabels = '
+<i id="volmute" class="i-volume"></i>
+'
+	, 'labels' => '
 Buffer · Load<span class="divclipped hide"> · Clipped</span>
 <br>Sampling<span class="rateadjust"> · Adjust</span>
-';
-$htmlvalues = '
+'
+	, 'values' => '
 <a class="buffer">·</a> <gr>·</gr> <a class="load">·</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">·</a></span>
 <br><a class="capture">·</a><span class="rateadjust"> <gr>·</gr> <a class="rate">·</a></span>
-';
+'
+];
 
 //////////////////////////////////
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
 	, 'button' => [ 'icon' => 'mpd', 'playback' => 'play' ]
-	, 'help'   => <<< EOF
-{$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
-
-<a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
-EOF
+	, 'help'   => $help[ 'status' ]
 ];
 $body = [
 	  htmlSectionStatus( 'vu' )
-	, $htmlvolume
-	, htmlSectionStatus( 'state', $htmllabels, $htmlvalues )
+	, [   'id'    => 'volume'
+		, 'input' => $htmls[ 'volume' ]
+	]
+	, htmlSectionStatus( 'state', $htmls[ 'labels' ], $htmls[ 'values' ] )
 	, [
-		  'id'    => 'configuration'
+		  'id'     => 'configuration'
 		, 'status' => true
-		, 'input' => '<select id="configuration"></select>'
-		, 'help'  => <<< EOF
-{$gaincontrols}{$Fi( 'volume btn' )} -% · Volume · +% · Mute
-{$Fi( 'set0 btn' )} Reset clipped count (if any)
-{$Fi( 'gear btn' )} Configuration files
-EOF
+		, 'input'  => '<select id="configuration"></select>'
+		, 'help'   => $help[ 'volume' ]
 	]
 ];
 htmlSection( $head, $body, 'status' );
