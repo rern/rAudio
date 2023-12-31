@@ -1666,14 +1666,14 @@ var util     = {
 			volumeSetAt();
 		} else {
 			var diff = V.dragpress ? 3 : Math.abs( vol - S.volume );
-			$( '#volume,  #divvolume .divgain i' ).addClass( 'disabled' );
+			$( '#volume, #divvolume .divgain' ).addClass( 'disabled' );
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
 				, {
 					  duration : diff * 40
 					, easing   : 'linear'
 					, complete : () => {
-						$( '#volume,  #divvolume .divgain i' ).toggleClass( 'disabled', S.volumemute > 0 );
+						$( '#volume, #divvolume .divgain' ).toggleClass( 'disabled', S.volumemute > 0 );
 					}
 				}
 			);
@@ -1882,7 +1882,7 @@ $( '#voldn, #volup' ).on( 'click', function() {
 		}
 	}, 100 );
 } );
-$( '#volmute, #vollevel' ).on( 'click', function() {
+$( '#volmute' ).on( 'click', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 } );
