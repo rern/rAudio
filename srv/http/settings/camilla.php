@@ -10,8 +10,8 @@ $contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edi
 $contextmixers   = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
 $contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
 $contextconfig   = str_replace( 'mixers' , 'config', $contextmixers );
-$gaincontrols    = i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' ).i( 'volume btn' ).' -step · level · +step · mute';
-$controls        = i( 'inverted btn' ).i( 'linear btn' ).' Invert, Linear scale';
+$gaincontrols    = i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' ).i( 'volume btn' ).' -1step · set 0 · +1step · mute';
+$controls        = i( 'inverted btn' ).i( 'linear btn' ).' Invert · Linear';
 $help = [
 	  'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )} FIR coefficient
@@ -100,6 +100,7 @@ $head = [
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
 ];
+$gaincontrols = str_replace( [ 'step', 'set 0' ], [ '%', 'volume' ], $gaincontrols );
 $body = [
 	  htmlSectionStatus( 'vu' )
 	, $htmlvolume
