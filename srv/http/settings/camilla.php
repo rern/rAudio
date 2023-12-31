@@ -10,26 +10,27 @@ $contextmixers     = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'rem
 $contextprocessors = str_replace( 'mixers' , 'processors', $contextmixers );
 $contextpipeline   = str_replace( 'filters' , 'pipeline', $contextfilters );
 $contextconfig     = str_replace( 'mixers' , 'config', $contextmixers );
-$gaincontrols      = i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' ).i( 'volume btn' );
-$controls          = $gaincontrols.i( 'inverted btn' ).i( 'linear btn' ).' -1step · Set 0 · +1step · Mute · Invert · Linear';
+$gaincontrols      = i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' );
+$controls          = i( 'volume btn' ).i( 'inverted btn' ).i( 'linear btn' );
 $help = [
 	  'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )}{$Fi( 'gear btn' )}{$Fi( 'plus btn' )} FIR coefficient files · Gain slider range · New
-{$contextfilters}
-{$controls}
+{$contextfilters} Graph · Edit · Delete
+{$gaincontrols} -1step · Set 0 · +1step
+{$controls} Mute · Invert · Linear (Gain)
 EOF
 	, 'mixers'   => <<< EOF
 {$Fi( 'gear btn' )}{$Fi( 'plus btn' )} Gain slider range · New
-{$contextmixers}
-{$controls}
+{$contextmixers} Edit · Delete
+{$gaincontrols}{$controls} -1step · Set 0 · +1step · Mute · Invert · Linear
 EOF
 	, 'processors'   => <<< EOF
 {$Fi( 'plus btn' )} New
-{$contextprocessors}
+{$contextprocessors} Edit · Delete
 EOF
 	, 'pipeline' => <<< EOF
 {$Fi( 'flowchart btn' )}{$Fi( 'plus btn' )} Step flowchart · New
-{$contextpipeline}
+{$contextpipeline} Graph · Edit · Delete
 EOF
 	, 'devices'  => <<< EOF
 {$Fi( 'gear btn' )} Capture sampling
@@ -110,7 +111,7 @@ $body = [
 		, 'status' => true
 		, 'input' => '<select id="configuration"></select>'
 		, 'help'  => <<< EOF
-{$gaincontrols} -% · Volume · +% · Mute
+{$gaincontrols}{$Fi( 'volume btn' )} -% · Volume · +% · Mute
 {$Fi( 'set0 btn' )} Reset clipped count (if any)
 {$Fi( 'gear btn' )} Configuration files
 EOF
