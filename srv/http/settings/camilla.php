@@ -6,14 +6,18 @@ $id_data = [
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'resampler'           => [ 'name' => 'Resampler',           'setting' => 'custom' ]
 ];
-$contextfilters    = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
-$contextmixers     = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
-$contextprocessors = str_replace( 'mixers' , 'processors', $contextmixers );
-$contextpipeline   = str_replace( 'filters' , 'pipeline', $contextfilters );
-$contextconfig     = str_replace( 'mixers' , 'config', $contextmixers );
-$gaincontrols      = i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' );
-$controls          = i( 'volume btn' ).i( 'inverted btn' ).i( 'linear btn' );
-$help = [
+$btnfilters = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
+$btnmixers  = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
+$button     = [
+	  'filters'    => i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' )
+	, 'mixers'     => $btnmixers
+	, 'processors' => str_replace( 'mixers' , 'processors', $btnmixers )
+	, 'pipeline'   => str_replace( 'filters' , 'pipeline', $btnfilters )
+	, 'config'     => str_replace( 'mixers' , 'config', $btnmixers )
+	, 'gain'       => i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' )
+	, 'control'    => i( 'volume btn' ).i( 'inverted btn' ).i( 'linear btn' )
+];
+$help       = [
 	  'status'      => <<< EOF
 {$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
 
@@ -21,35 +25,58 @@ $help = [
 EOF
 	, 'volume'    => <<< EOF
 {$Fi( 'gear btn' )} Configuration files'
-{$gaincontrols}{$Fi( 'volume btn' )} -% · Volume · +% · Mute
+{$$button[ 'gain' ]}{$Fi( 'volume btn' )} -% · Volume · +% · Mute
 {$Fi( 'set0 btn' )} Reset clipped count (if any)
 EOF
 	, 'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )}{$Fi( 'gear btn' )}{$Fi( 'plus btn' )} FIR coefficient files · Gain slider range · New
-{$contextfilters} Graph · Edit · Delete
-{$gaincontrols} -1step · Set 0 · +1step
-{$controls} Mute · Invert · Linear (Gain)
+{$button[ 'filters' ]} Graph · Edit · Delete
+{$button[ 'gain' ]} -1step · Set 0 · +1step
+{$button[ 'control' ]} Mute · Invert · Linear (Gain)
 EOF
 	, 'mixers'   => <<< EOF
 {$Fi( 'gear btn' )}{$Fi( 'plus btn' )} Gain slider range · New
-{$contextmixers} Edit · Delete
-{$gaincontrols}{$controls} -1step · Set 0 · +1step · Mute · Invert · Linear
+{$button[ 'mixers' ]} Edit · Delete
+{$button[ 'gain' ]}{$button[ 'control' ]} -1step · Set 0 · +1step · Mute · Invert · Linear
 EOF
 	, 'processors'   => <<< EOF
 {$Fi( 'plus btn' )} New
-{$contextprocessors} Edit · Delete
+{$button[ 'processors' ]} Edit · Delete
 EOF
 	, 'pipeline' => <<< EOF
 {$Fi( 'flowchart btn' )}{$Fi( 'plus btn' )} Step flowchart · New
-{$contextpipeline} Graph · Edit · Delete
+{$button[ 'pipeline' ]} Graph · Edit · Delete
 EOF
 	, 'devices'  => <<< EOF
 {$Fi( 'gear btn' )} Capture sampling
 {$Fi( 'input btn' )}{$Fi( 'output btn' )} Device settings
 EOF
 	, 'config'   => <<< EOF
-{$contextconfig}
+{$$button[ 'config' ]}
 EOF
+];
+$htmls = [
+	  'volume' => '
+<div id="volume" class="slider">
+	<div class="track"></div>
+	<div class="slide"></div>
+	<div class="thumb"></div>
+</div>
+<div class="divgain">
+	<i id="voldn" class="i-minus"></i>
+	<c id="vollevel">0</c>
+	<i id="volup" class="i-plus"></i>
+</div>
+<i id="volmute" class="i-volume"></i>
+'
+	, 'labels' => '
+Buffer · Load<span class="divclipped hide"> · Clipped</span>
+<br>Sampling<span class="rateadjust"> · Adjust</span>
+'
+	, 'values' => '
+<a class="buffer">·</a> <gr>·</gr> <a class="load">·</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">·</a></span>
+<br><a class="capture">·</a><span class="rateadjust"> <gr>·</gr> <a class="rate">·</a></span>
+'
 ];
 $htmltabs = '<div id="divtabs">';
 foreach( [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ] as $id ) {
@@ -74,29 +101,6 @@ foreach( [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ] 
 }
 
 $htmltabs.= '</div>';
-$htmls = [
-	  'volume' => '
-<div id="volume" class="slider">
-	<div class="track"></div>
-	<div class="slide"></div>
-	<div class="thumb"></div>
-</div>
-<div class="divgain">
-	<i id="voldn" class="i-minus"></i>
-	<c id="vollevel">0</c>
-	<i id="volup" class="i-plus"></i>
-</div>
-<i id="volmute" class="i-volume"></i>
-'
-	, 'labels' => '
-Buffer · Load<span class="divclipped hide"> · Clipped</span>
-<br>Sampling<span class="rateadjust"> · Adjust</span>
-'
-	, 'values' => '
-<a class="buffer">·</a> <gr>·</gr> <a class="load">·</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">·</a></span>
-<br><a class="capture">·</a><span class="rateadjust"> <gr>·</gr> <a class="rate">·</a></span>
-'
-];
 
 //////////////////////////////////
 $head = [ 
