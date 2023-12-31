@@ -758,7 +758,7 @@ var render   = {
 		$( '#volume-text' )
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bl', S.volumemute > 0 );
-		$( '#divvolume .i-volume' ).toggleClass( 'mute bl', S.volumemute > 0 );
+		$( '#divvolume .i-volume' ).toggleClass( 'mute', S.volumemute > 0 );
 		$( '#volume' ).toggleClass( 'disabled', S.volumemute > 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
@@ -779,7 +779,7 @@ var render   = {
 		if ( v.type === 'Gain' ) {
 			linear     = param.scale === 'linear';
 			iconlinear = ico( param.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' );
-			iconmute   = ico( param.mute ? 'mute bl' : 'volume' );
+			iconmute   = ico( param.mute ? 'volume mute' : 'volume' );
 			disabled   = param.mute ? ' disabled' : '';
 		}
 		if ( linear ) {
@@ -793,16 +793,16 @@ var render   = {
 		}
 		if ( 'gain' in param ) {
 			var gain = util.dbRound( param.gain );
-			var li   = '<div class="liinput"><div class="filter'+ ( iconlinear ? ' linear' : '' ) +'"><div class="li1">'+ k +'</div>'
+			var li   = '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
 					+'<div class="li2">'
 					+ ( 'freq' in param ? param.freq +'Hz ' : v.type )
 					+ ( 'q' in param ? 'Q:'+ param.q : '' )
 					+ ( 'slope' in param ?  'S:'+ param.slope : '' )
 					+'</div>'
-					+'</div>'+ iconmute
-					+'<input type="range" step="'+ step +'" value="'+ gain +'" min="'+ min +'" max="'+ max +'"'+ disabled +'>'
-					+'<div class="divgain filter">'+ ico( 'minus' ) +'<c class="db">'+ gain +'</c>'+ ico( 'plus' ) + iconlinear
 					+'</div>'
+					+'<input type="range" step="'+ step +'" value="'+ gain +'" min="'+ min +'" max="'+ max +'"'+ disabled +'>'
+					+'<div class="divgain filter">'+ ico( 'minus' ) +'<c class="db">'+ gain +'</c>'+ ico( 'plus' ) +'</div>'
+					+ iconmute + iconlinear
 					+'</div>';
 		} else {
 			var paramdata = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type ) ? param.type : render.json2string( param );
@@ -850,7 +850,7 @@ var render   = {
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
 						+'<div><select>'+ opts +'</select></div>'
-						+'<div>'+ ico( kv.mute ? 'volume mute bl' : 'volume' ) + ico( 'add' )
+						+'<div>'+ ico( kv.mute ? 'volume mute' : 'volume' ) + ico( 'add' )
 						+'</li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
@@ -868,11 +868,10 @@ var render   = {
 					var max  = S.range.MIXERSMAX;
 					var step = S.range.MIXERSSTEP;
 				}
-				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + ico( source.mute ? 'volume mute bl' : 'volume' )
+				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 +'<input type="range" step="'+ step +'" value="'+ val +'" min="'+ min +'" max="'+ max +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) +'<c class="db">' + val +'</c>'+ ico( 'plus' ) +'</div>'
-					 + ico( source.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' )
+					 + ico( source.mute ? 'volume mute' : 'volume' ) + ico( source.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' )
 					 +'</li>';
 			} );
 		} );
@@ -1877,26 +1876,12 @@ $( '#volmute' ).on( 'click', function() {
 } );
 $( '#filters, #mixers' ).on( 'click', '.divgain i, .divgain c', function() {
 	var $this = $( this );
-	var cmd   = $this.prop( 'class' );
-	if ( cmd !== 'db' ) cmd = cmd.replace( ' bl', '' ).slice( 2 );
-	if ( [ 'inverted', 'linear' ].includes( cmd ) ) {
-		var linear = cmd === 'linear';
-		var name   = $this.parents( 'li' ).data( 'name' );
-		var val    = ! $this.hasClass( 'bl' );
-		$this.toggleClass( 'bl', val );
-		if ( linear ) val = val ? 'linear' : 'dB';
-		FIL[ name ].parameters[ linear ? 'scale' : 'inverted' ] = val;
-		setting.save( 'Gain', 'Change ...' );
-		return
-	} else if ( cmd === 'inverted' ) {
-		
-	}
-	
 	if ( $this.parent().hasClass( 'disabled' ) ) return
 	
 	clearTimeout( V.timeoutgain );
 	var $gain = $this.parent().prev();
 	var val   = +$gain.val();
+	var cmd   = $this.prop( 'class' ).replace( 'i-', '' );
 	if ( cmd === 'db' ) {
 		if ( val === 0 ) return
 		
@@ -2265,13 +2250,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 } );
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload();
-} ).on( 'click', '.i-volume, .i-mute', function() {
-	var $this = $( this );
-	var name = $this.parents( 'li' ).data( 'name' );
-	var mute = ! $this.hasClass( 'bl' );
-	$this.toggleClass( 'mute bl', mute );
-	FIL[ name ].parameters.mute = mute;
-	setting.save( 'Gain', 'Change ...' );
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
@@ -2282,6 +2260,22 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	graph.gain();
+} ).on( 'click', '.i-volume', function() {
+	var $this   = $( this );
+	var name    = $this.parents( 'li' ).data( 'name' );
+	var checked = ! $this.hasClass( 'mute' );
+	$this.toggleClass( 'mute', checked );
+	FIL[ name ].parameters.mute = checked;
+	setting.save( 'Gain', 'Change ...' );
+} ).on( 'click', '.i-inverted, .i-linear', function() {
+	var $this   = $( this );
+	var linear = $this.hasClass( 'i-linear' );
+	var name   = $this.parents( 'li' ).data( 'name' );
+	var checked    = ! $this.hasClass( 'bl' );
+	$this.toggleClass( 'bl', checked );
+	if ( linear ) checked = checked ? 'linear' : 'dB';
+	FIL[ name ].parameters[ linear ? 'scale' : 'inverted' ] = checked;
+	setting.save( 'Gain', 'Change ...' );
 } ).on( 'click', 'li.eq', function( e ) {
 	if ( $( e.target ).parents( '.divgraph' ).length ) return
 	
@@ -2346,19 +2340,28 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	} );
 } );
 $( '#mixers' ).on( 'click', 'li', function( e ) {
-	var $this  = $( this );
+	var $this = $( this );
 	if ( $( e.target ).is( 'i' ) || $this.parent().hasClass( 'sub' ) ) return
 	
-	var name   = $this.find( '.li1' ).text();
+	var name  = $this.find( '.li1' ).text();
 	render.mixersSub( name );
 } ).on( 'click', 'li i', function() {
-	var $this  = $( this );
+	var $this = $( this );
 	if ( $this.is( '.liicon, .i-mixers, .i-back' ) || $this.parent().hasClass( 'divgain' ) ) return
 	
-	V.li       = $this.parents( 'li' );
-	var name   = V.li.data( 'name' );
-	var title  = util.key2label( V.tab );
-	if ( $this.hasClass( 'i-add' ) ) {
+	V.li      = $this.parents( 'li' );
+	var name  = V.li.data( 'name' );
+	var title = 'Mixer';
+	if ( $this.hasClass( 'i-volume' ) ) {
+		var mapping = MIX[ name ].mapping[ V.li.data( 'index' ) ];
+		var checked = ! $this.hasClass( 'mute' );
+		if ( V.li.hasClass( 'main' ) ) {
+			mapping.mute = checked;
+		} else {
+			mapping.sources[ V.li.data( 'si' ) ].mute = checked;
+		}
+		setting.save( title, 'Change ...' );
+	} else if ( $this.hasClass( 'i-add' ) ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		setting.mixerMap( name, index );
 	} else {
@@ -2367,23 +2370,14 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		var mapping = MIX[ name ].mapping[ index ];
 		var source  = mapping.sources[ si ];
 		var checked = ! $this.hasClass( 'bl' );
-		if ( $this.hasClass( 'i-volume' ) ) {
-			if ( V.li.hasClass( 'main' ) ) {
-				mapping.mute = checked;
-			} else {
-				source.mute = checked;
-				V.li.find( 'input[type=range]' ).prop( 'disabled', checked );
-				V.li.find( '.divgain' ).toggleClass( 'disabled', checked );
-			}
-			$this.toggleClass( 'mute bl', checked );
-		} else if ( $this.hasClass( 'i-inverted' ) ) {
+		if ( $this.hasClass( 'i-inverted' ) ) {
 			$this.toggleClass( 'bl', checked );
 			source.inverted = checked;
 		} else if ( $this.hasClass( 'i-linear' ) ) {
 			$this.toggleClass( 'bl', checked );
 			source.scale = checked ? 'linear' : null;
 		}
-		setting.save( 'Mixer', 'Change ...' );
+		setting.save( title, 'Change ...' );
 	}
 } ).on( 'input', 'select', function() {
 	var $this = $( this );

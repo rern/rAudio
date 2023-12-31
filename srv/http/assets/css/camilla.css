@@ -147,9 +147,6 @@ tr .i-remove {
 .liinput .filter div {
 	display: block;
 }
-.liinput .filter.linear {
-	width: 90px;
-}
 .liinput.main div:first-child,
 .liinput .select2-container {
 	width: 60px !important;
@@ -198,9 +195,6 @@ tr .i-remove {
 	color: var( --cg60 );
 	cursor: pointer;
 }
-li .i-mute {
-	margin-left: 20px !important;
-}
 #divvolume .divgain {
 	position: absolute;
 	padding-left: 5px;
@@ -209,6 +203,9 @@ i.disabled,
 .divgain.disabled i {
 	pointer-events: none;
 	color: var( --cg ) !important;
+}
+li .i-volume.mute {
+	color: var( --cm ) !important;
 }
 .liinput input[ type=checkbox ] {
 	margin: 0 16px;
