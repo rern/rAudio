@@ -495,23 +495,17 @@ function psOnClose() {
 	if ( V.wscamilla ) V.wscamilla.close();
 }
 function psVolume( data ) {
-	var vol = data.val;
 	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
 		V.local = false;
-		if ( data.type === 'mute' ) {
-			vol          = 0;
-			S.volumemute = data.val;
-		} else {
-			S.volumemute = 0;
-		}
+		S.volumemute = data.type === 'mute' ? data.val : 0;
 	}
-	if ( ! V.local ) {
-		if ( data.type === 'dragpress' ) {
-			V.dragpress = true;
-			setTimeout( () => V.dragpress = false, 300 );
-		}
-		util.volume( vol, 'push' );
+	if ( V.local ) return
+	
+	if ( data.type === 'dragpress' ) {
+		V.dragpress = true;
+		setTimeout( () => V.dragpress = false, 300 );
 	}
+	util.volume( S.volumemute ? 0 : data.val, 'push' );
 }
 
 var graph    = {
