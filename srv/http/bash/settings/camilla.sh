@@ -64,8 +64,8 @@ statusconfiguration )
 	[[ ! $FILE ]] && FILE=$( getVar CONFIG /etc/default/camilladsp )
 	cat "$FILE"
 	;;
-statuslog )
-	cat /var/log/camilladsp.log
+statusoutput )
+	$dirsettings/player.sh statusoutput
 	;;
 	
 esac

@@ -547,7 +547,7 @@ var graph    = {
 				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
 			} );
 		}
-		notify( V.tab, util.key2label( V.tab ), 'Plot ...' );
+		notify( V.tab, util.tabTitle(), 'Plot ...' );
 		var cmd = filters ? " '"+ JSON.stringify( FIL[ val ] ) +"'" : " '"+ JSON.stringify( S.config ) +"' "+ val;
 		bash( [ 'settings/camilla.py', V.tab + cmd ], data => { // groupdelay = delay, magnitude = gain
 			var impulse   = 'impulse' in data;
@@ -701,17 +701,11 @@ var render   = {
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, tab         : () => {
-		var title = util.key2label( V.tab );
-		if ( V.tab === 'filters' ) {
-			title += ico( 'folder-filter' );
-		} else if ( V.tab === 'pipeline' && PIP.length ) {
-			title += ico( 'flowchart' );
-		} else if ( V.tab === 'config' ) {
-			title += 'uration';
-		}
-		if ( V.tab === 'filters' || V.tab === 'mixers' ) title += ico( 'gear' );
-		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
-		$( '#divsettings .headtitle' ).eq( 0 ).html( title );
+		$( '#divsettings .headtitle' ).html( util.tabTitle() );
+		var $heading = $( '#divsettings heading' );
+		$heading.find( 'i' ).addClass( 'hide' );
+		$heading.find( '.'+ V.tab ).removeClass( 'hide' );
+		$heading.toggleClass( 'status', V.tab === 'devices' );
 		$( '#divsettings .tab' ).addClass( 'hide' );
 		$( '#'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
@@ -897,6 +891,7 @@ var render   = {
 		render.toggle();
 	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
+		$( '.i-flowchart' ).toggleClass( 'disabled', PIP.length === 0 );
 		if ( ! PIP.length ) return
 		
 		var li = '';
@@ -1330,12 +1325,11 @@ var setting  = {
 			, tab        : [ '', setting.pipelineMixer ]
 			, list       : [
 				  [ 'Channel', 'select', [ ...Array( DEV.playback.channels ).keys() ] ]
-				, [ 'Filters', 'select', filters ]
+				, [ 'Filters', 'select', filters, ico( 'add' ) ]
 			]
 			, beforeshow : () => {
-				$( '#infoList .select2-container' ).eq( 0 ).addClass( 'channel' )
-				$( '#infoList td' ).last().append( ico( 'add' ) );
-				var tradd = '<tr class="trlist"><td></td><td><input type="text" disabled value="VALUE">'+ ico( 'remove' ) +'</td></tr>';
+				$( '#infoList .select2-container' ).eq( 0 ).attr( 'style', 'width: 70px !important' );
+				var tradd = '<tr><td></td><td><input type="text" disabled value="VALUE"></td><td>&nbsp;'+ ico( 'remove' ) +'</td></tr>';
 				$( '#infoList' ).on( 'click', '.i-add', function() {
 					$( '#infoList table' ).append( tradd.replace( 'VALUE', $( '#infoList select' ).eq( 1 ).val() ) );
 				} ).on( 'click', '.i-remove', function() {
@@ -1439,7 +1433,7 @@ var setting  = {
 			if ( k === 'samplerate' ) values.other = DEV.samplerate;
 		} );
 		if ( ! D0.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
-		var title = util.key2label( V.tab );
+		var title = util.tabTitle();
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -1644,6 +1638,7 @@ var util     = {
 	, list2array   : list => { // '1, 2, 3' > [ 1, 2, 3 ]
 		return list.replace( /[ \]\[]/g, '' ).split( ',' ).map( Number )
 	}
+	, tabTitle     : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
 	, volume       : ( pageX, type ) => {
 		var bandW   = $( '#volume .slide' ).width();
 		if ( V.start ) {
@@ -1945,7 +1940,7 @@ $( '#divtabs' ).on( 'click', '.graphclose', function() {
 	var val = $li.data( V.tab === 'filters' ? 'name' : 'index' );
 	V.graph[ V.tab ] = V.graph[ V.tab ].filter( v => v !== val );
 } );
-$( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
+$( '#divsettings heading' ).on( 'click', '.fir', function() {
 	render.filtersSub();
 } ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {
@@ -1955,7 +1950,7 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	} else {
 		setting[ V.tab.replace( /s$/, '' ) ]();
 	}
-} ).on( 'click', '.i-flowchart', function() {
+} ).on( 'click', '.diagram', function() {
 	var $flowchart = $( '.flowchart' );
 	if ( $flowchart.hasClass( 'hide' ) ) {
 		if ( typeof d3 !== 'object' ) {
@@ -1984,7 +1979,7 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	var list   = [
 		  [ 'Max',  'number', { step: 1, min: min, max: max } ]
 		, [ 'Min',  'number', { step: 1, min: min, max: max } ]
-		, [ 'Step', 'radio',  [ 0.1, 0.5, 1.0 ] ]
+		, [ '-/+ Step', 'radio',  [ 0.1, 0.2, 0.5, 1.0 ] ]
 	];
 	info( {
 		  icon         : V.tab
@@ -2445,7 +2440,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	if ( $this.is( '.liicon, .i-back' ) ) return
 	
 	V.li      = $this.parents( 'li' );
-	var title = util.key2label( V.tab );
+	var title = util.tabTitle();
 	var index = V.li.data( 'index' );
 	if ( $this.hasClass( 'i-add' ) ) {
 		var title = 'Add Filter';

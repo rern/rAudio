@@ -1,6 +1,6 @@
 <?php
 $id_data = [
-	  'volume'              => [ 'name' => 'Master',              'setting' => false,    'sub' => 'hw', ]
+	  'volume'              => [ 'name' => 'Master',              'setting' => false,    'sub' => 'hw' ]
 	, 'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
 	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
@@ -126,6 +126,13 @@ htmlSection( $head, $body, 'status' );
 //////////////////////////////////
 $head = [
 	  'title'  => 'Filters'
+	, 'button' => [
+		  'fir'     => 'folder-filter filters'
+		, 'gear'    => 'gear filters mixers devices'
+		, 'diagram' => 'flowchart pipeline'
+		, 'add'     => 'add filters mixers processors pipeline'
+	]
+	, 'status' => 'output'
 ];
 $body = [ $htmltabs ];
 htmlSection( $head, $body, 'settings' );

@@ -349,7 +349,7 @@ $( '#button-data' ).on( 'click', function() {
 	renderPage();
 	$( '#button-data, #data' ).addClass( 'hide' );
 } );
-$( '.status .headtitle, .col-l.status' ).on( 'click', function() {
+$( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );
 	var id    = $this.hasClass( 'col-l' ) ? $this.data( 'status' ) : $this.parent().data( 'status' );
 	var $code = $( '#code'+ id );
