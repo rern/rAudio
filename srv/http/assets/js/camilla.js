@@ -1807,6 +1807,7 @@ var util     = {
 					Dlist.typeP[ 2 ]   = type.playback;
 					Dlist.deviceC[ 2 ] = S.devices.capture;
 					Dlist.deviceP[ 2 ] = S.devices.playback;
+					$( '#divvolume .col-l gr' ).text( S.control );
 					showContent();
 					break;
 				case 'Invalid':

@@ -62,7 +62,7 @@ foreach( [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ] 
 $htmltabs.= '</div>';
 $htmlvolume = '
 <div id="divvolume">
-<div class="col-l"><a>Master<gr>'.file_get_contents( '/srv/http/data/shm/amixercontrol' ).'</gr></a></div>
+<div class="col-l"><a>Master<gr>hw</gr></a></div>
 <div class="col-r">
 	<div id="volume" class="slider">
 		<div class="track"></div>
