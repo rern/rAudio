@@ -25,7 +25,7 @@
 <div id="infoOverlay" class="hide">
 	<div id="infoBox">
 		<div id="infoTopBg"><div id="infoTop"><i class="i-lock"></i><a id="infoTitle">Login</a></div></div>
-		<div id="infoContent"><div class="infomessage">Wrong password.</div></div>
+		<div id="infoList"><div class="infomessage">Wrong password.</div></div>
 		<div id="infoOk" class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>

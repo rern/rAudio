@@ -676,6 +676,7 @@ var render   = {
 		$( '#configuration' ).prop( 'disabled', $( '#configuration option' ).length === 1 );
 		if ( $( '.vubar' ).length ) return
 		
+		// run once
 		var vugrid  = '<div id="vugrid">';
 		for ( i = 0; i < 4; i++ ) vugrid  += '<a class="g'+ i +'"></>';
 		var vulabel = '<div id="vulabel">';
@@ -699,15 +700,12 @@ var render   = {
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
+		$( '#devices' ).prepend( $( '#codeoutput' ) );
 	}
 	, tab         : () => {
-		$( '#divsettings .headtitle' ).html( util.tabTitle() );
 		var $heading = $( '#divsettings heading' );
-		$heading.find( 'i' ).addClass( 'hide' );
-		$heading.find( '.'+ V.tab ).removeClass( 'hide' );
-		$heading.toggleClass( 'status', V.tab === 'devices' );
-		$( '#divsettings .tab' ).addClass( 'hide' );
-		$( '#'+ V.tab ).removeClass( 'hide' );
+		$( '.tab' ).addClass( 'hide' );
+		$( '.tab.'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
 		if ( V.tab === 'config' ) {
@@ -1931,16 +1929,24 @@ $( '#configuration' ).on( 'input', function() {
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 } );
 $( '#setting-configuration' ).on( 'click', function() {
-	$( '#tabconfig' ).trigger( 'click' );
+	if ( $( '#config' ).hasClass( 'hide' ) ) {
+		V.tabprev = V.tab;
+		$( '#tabconfig' ).trigger( 'click' );
+	} else {
+		$( '#tab'+ V.tabprev ).trigger( 'click' );
+	}
 } );
-$( '#divtabs' ).on( 'click', '.graphclose', function() {
+$( '.tab' ).on( 'click', '.graphclose', function() {
 	var $this = $( this );
 	var $li   = $this.parents( 'li' );
 	$this.parent().remove();
 	var val = $li.data( V.tab === 'filters' ? 'name' : 'index' );
 	V.graph[ V.tab ] = V.graph[ V.tab ].filter( v => v !== val );
 } );
-$( '#divsettings heading' ).on( 'click', '.fir', function() {
+$( '.tab .headtitle' ).on( 'click', function() {
+	if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) $( '#'+ V.tab +' .i-back' ).trigger( 'click' );
+} );
+$( 'heading' ).on( 'click', '.i-folder-filter', function() {
 	render.filtersSub();
 } ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {
@@ -1950,7 +1956,7 @@ $( '#divsettings heading' ).on( 'click', '.fir', function() {
 	} else {
 		setting[ V.tab.replace( /s$/, '' ) ]();
 	}
-} ).on( 'click', '.diagram', function() {
+} ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '.flowchart' );
 	if ( $flowchart.hasClass( 'hide' ) ) {
 		if ( typeof d3 !== 'object' ) {

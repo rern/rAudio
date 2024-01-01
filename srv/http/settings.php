@@ -76,32 +76,34 @@ echo '
 if ( $addons ) exit;
 
 /*
+$id_data = [ 'ID' => [               // REQUIRED
+	  'label'   => 'LABEL'
+	, 'sub'     => 'SUBLABEL'
+	, 'setting' => 'TYPE'
+	, 'status'  => 'SCRIPTCOMMAND'
+];
 $head = [
-	  'title'   => 'TITLE'                  // REQUIRED
-	, 'subhead' => true/false               // with no help icon
-	, 'status'  => 'COMMAND'                // include status icon and status box
-	, 'button'  => [ 'ID' => 'ICON', ... ]  // icon button
-	, 'back'    => true/false               // back button
+	  'title'   => 'TITLE'           // REQUIRED
+	, 'subhead' => true/false        // with no help icon
+	, 'status'  => 'COMMAND'         // include status icon and status box
+	, 'button'  => [ 'ICON', ... ]   // icon button
+	, 'back'    => true/false        // back button
 	, 'nohelp'  => true/false
 	, 'help'    => 'HELP'
 ];
 $body = [
-	 'HTML'                          // for status section
+	 'HTML'                          // for non-switch section
 	, [
-		  'label'    => 'LABEL'      // REQUIRED
-		, 'sublabel' => 'SUB LABEL'
-		, 'id'       => 'ID'         // REQUIRED
-		, 'status'   => 'COMMAND'    // include status icon and status box
+		  'id'       => 'ID'         // REQUIRED
 		, 'input'    => 'HTML'       // alternative - if not switch
-		, 'setting'  =>  ***         // default  = $( '#setting-'+ id ).click() before enable
+		, 'setting'  => TYPE         // default  = $( '#setting-'+ id ).click() before enable
 		                             // false    = no setting
 		                             // 'custom' = custom setting
 		                             // 'none'   = no setting - custom enable
-		                             // false    = no icon
-		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on setting
+		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting
 		                             // 'js'     = set by js condition
 		, 'help'     => 'HELP'
-		, 'exist'    => ***          // omit if not exist
+		, 'exist'    => 'COMMAND'    // hide if COMMAND = false
 	]
 	, ...
 ];
@@ -115,13 +117,14 @@ function htmlHead( $data ) {
 	$status  = $data[ 'status' ] ?? false;
 	$button  = $data[ 'button' ] ?? false;
 	$help    = $data[ 'help' ] ?? false;
-	$class   = $status ? 'status' : '';
+	$class   = $data[ 'class' ] ?? '';
+	$class  .= $status ? ' status' : '';
 	$class  .= $subhead ? ' subhead' : '';
 	
 	$html    = '<heading '.( $status ? ' data-status="'.$status.'"' : '' );
 	$html   .= $class ? ' class="'.$class.'">' : '>';
 	$html   .= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) foreach( $button as $btnid => $icon ) $html.= i( $icon.' '.$btnid );
+	if ( $button ) foreach( $button as $icon ) $html.= i( $icon );
 	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
 	$html   .= isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
 	$html   .= '</heading>';
@@ -169,11 +172,11 @@ function htmlSetting( $data ) {
 	global $page;
 	$id          = $data[ 'id' ];
 	$iddata      = $id_data[ $id ];
-	$name        = $iddata[ 'name' ];
+	$label       = $iddata[ 'label' ];
 	$sublabel    = $iddata[ 'sub' ] ?? false;
 	$status      = $iddata[ 'status' ] ?? false;
 	$setting     = $iddata[ 'setting' ] ?? 'common';
-	$label       = '<span class="name">'.$name.'</span>';
+	$label       = '<span class="label">'.$label.'</span>';
 	$input       = $data[ 'input' ] ?? false;
 	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
 	$help        = $data[ 'help' ] ?? false;

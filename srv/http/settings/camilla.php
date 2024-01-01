@@ -1,10 +1,10 @@
 <?php
 $id_data = [
-	  'volume'              => [ 'name' => 'Master',              'setting' => false,    'sub' => 'hw' ]
-	, 'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
-	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
-	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
-	, 'resampler'           => [ 'name' => 'Resampler',           'setting' => 'custom' ]
+	  'volume'              => [ 'label' => 'Master',              'setting' => false,    'sub' => 'hw' ]
+	, 'configuration'       => [ 'label' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
+	, 'enable_rate_adjust'  => [ 'label' => 'Rate Adjust',         'setting' => 'custom' ]
+	, 'stop_on_rate_change' => [ 'label' => 'Stop on Rate Change', 'setting' => 'custom' ]
+	, 'resampler'           => [ 'label' => 'Resampler',           'setting' => 'custom' ]
 ];
 $btnfilters = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
 $btnmixers  = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
@@ -78,13 +78,14 @@ Buffer · Load<span class="divclipped hide"> · Clipped</span>
 <br><a class="capture">·</a><span class="rateadjust"> <gr>·</gr> <a class="rate">·</a></span>
 '
 ];
-$htmltabs = '<div id="divtabs">';
-foreach( [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ] as $id ) {
-	$htmltabs.= '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$help[ $id ].'</div>';
-	if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
-	$htmltabs.= '<ul class="entries main"></ul>';
+$tabs     = [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ];
+$htmltabs = [];
+foreach( $tabs as $id ) {
+	$html = '<div id="'.$id.'" class="tab '.$id.'"><div class="helpblock hide">'.$help[ $id ].'</div>';
+	if ( $id === 'pipeline' ) $html.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
+	$html.= '<ul class="entries main"></ul>';
 	if ( $id === 'devices' ) {
-		$htmltabs.= '
+		$html.= '
 <div id="divdevices" class="section">
 '.htmlSectionStatus( 'sampling' ).'
 </div>
@@ -95,18 +96,24 @@ foreach( [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ] 
 </div>
 ';
 	} else if ( $id !== 'config' ) {
-		$htmltabs.= '<ul class="entries sub"></ul>';
+		$html.= '<ul class="entries sub"></ul>';
 	}
-	$htmltabs.= '</div>';
+	$htmltabs[ $id ] = $html.'</div>';
 }
-
-$htmltabs.= '</div>';
+$button = [
+	  'filters'    => [ 'folder-filter', 'gear', 'add' ]
+	, 'mixers'     => [ 'gear', 'add' ]
+	, 'processors' => [ 'add' ]
+	, 'pipeline'   => [ 'flowchart', 'add' ]
+	, 'devices'    => [ 'gear' ]
+	, 'config'     => ''
+];
 
 //////////////////////////////////
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [ 'icon' => 'mpd', 'playback' => 'play' ]
+	, 'button' => [ 'mpd icon', 'play playback' ]
 	, 'help'   => $help[ 'status' ]
 ];
 $body = [
@@ -124,18 +131,16 @@ $body = [
 ];
 htmlSection( $head, $body, 'status' );
 //////////////////////////////////
-$head = [
-	  'title'  => 'Filters'
-	, 'button' => [
-		  'fir'     => 'folder-filter filters'
-		, 'gear'    => 'gear filters mixers devices'
-		, 'diagram' => 'flowchart pipeline'
-		, 'add'     => 'add filters mixers processors pipeline'
-	]
-	, 'status' => 'output'
-];
-$body = [ $htmltabs ];
-htmlSection( $head, $body, 'settings' );
+foreach( $tabs as $id ) {
+	$head = [
+		  'title'  => ucfirst( $id ).( $id === 'config' ? 'uration' : '' )
+		, 'class'  => 'tab '.$id
+		, 'button' => $button[ $id ]
+		, 'status' => $id === 'devices' ? 'output' : false
+	];
+	$body = [ $htmltabs[ $id ] ];
+	htmlSection( $head, $body, 'settings' );
+}
 ?>
 <div id="menu" class="menu hide">
 <a class="graph"><i class="i-graph"></i>Graph</a>

@@ -153,7 +153,7 @@ function switchEnable() {
 function switchIdIconTitle( id ) {
 	id       = id.replace( 'setting-', '' );
 	SW.id    = id;
-	SW.title = $( '#div'+ id +' .name' ).text();
+	SW.title = $( '#div'+ id +' .label' ).text();
 	if ( page === 'player' ) {
 		SW.icon  =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume';
 	} else {

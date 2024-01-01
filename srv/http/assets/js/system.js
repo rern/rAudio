@@ -134,7 +134,7 @@ $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.
 		}
 		
 		var line = '<wh>Reboot required for:</wh><p>';
-		list.split( '\n' ).forEach( id => line += ico( id ) + $( '#div'+ id +' .name' ).text() +'\n' );
+		list.split( '\n' ).forEach( id => line += ico( id ) + $( '#div'+ id +' .label' ).text() +'\n' );
 		info( {
 			  icon    : page
 			, title   : 'System Setting'

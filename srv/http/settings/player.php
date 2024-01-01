@@ -1,26 +1,26 @@
 <?php
 $id_data = [
-	  'audiooutput'   => [ 'name' => 'Device',                                                 'setting' => 'none' ]
-	, 'autoupdate'    => [ 'name' => 'Library Auto Update',   'sub' => 'auto_update',          'setting' => false ]
-	, 'bluealsa'      => [ 'name' => 'Bluetooth',             'sub' => 'bluealsa',             'setting' => 'custom', 'status' => true ]
-	, 'buffer'        => [ 'name' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
-	, 'crossfade'     => [ 'name' => 'Cross-Fading',          'sub' => 'crossfade' ]
-	, 'custom'        => [ 'name' => "User's Configurations", 'sub' => 'custom' ]
-	, 'dop'           => [ 'name' => 'DSD over PCM',          'sub' => 'dop',                  'setting' => 'none' ]
-	, 'ffmpeg'        => [ 'name' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
-	, 'hwmixer'       => [ 'name' => 'Mixer Device',                                           'setting' => 'custom' ]
-	, 'mixertype'     => [ 'name' => 'Volume Control',                                         'setting' => 'custom' ]
-	, 'normalization' => [ 'name' => 'Normalization',         'sub' => 'volume_normalization', 'setting' => false ]
-	, 'novolume'      => [ 'name' => 'No Volume',                                              'setting' => 'none' ]
-	, 'outputbuffer'  => [ 'name' => 'Buffer - Output',       'sub' => 'max_output_buffer' ]
-	, 'replaygain'    => [ 'name' => 'ReplayGain',            'sub' => 'replaygain' ]
-	, 'soxr'          => [ 'name' => 'SoX Resampler',         'sub' => 'resampler' ]
+	  'audiooutput'   => [ 'label' => 'Device',                                                 'setting' => 'none' ]
+	, 'autoupdate'    => [ 'label' => 'Library Auto Update',   'sub' => 'auto_update',          'setting' => false ]
+	, 'bluealsa'      => [ 'label' => 'Bluetooth',             'sub' => 'bluealsa',             'setting' => 'custom', 'status' => true ]
+	, 'buffer'        => [ 'label' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
+	, 'crossfade'     => [ 'label' => 'Cross-Fading',          'sub' => 'crossfade' ]
+	, 'custom'        => [ 'label' => "User's Configurations", 'sub' => 'custom' ]
+	, 'dop'           => [ 'label' => 'DSD over PCM',          'sub' => 'dop',                  'setting' => 'none' ]
+	, 'ffmpeg'        => [ 'label' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
+	, 'hwmixer'       => [ 'label' => 'Mixer Device',                                           'setting' => 'custom' ]
+	, 'mixertype'     => [ 'label' => 'Volume Control',                                         'setting' => 'custom' ]
+	, 'normalization' => [ 'label' => 'Normalization',         'sub' => 'volume_normalization', 'setting' => false ]
+	, 'novolume'      => [ 'label' => 'No Volume',                                              'setting' => 'none' ]
+	, 'outputbuffer'  => [ 'label' => 'Buffer - Output',       'sub' => 'max_output_buffer' ]
+	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
+	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
 
 $head = [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
-	, 'button' => [ 'playback' => 'play' ]
+	, 'button' => [ 'play playback' ]
 	, 'help'   => <<< EOF
 {$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
 
@@ -37,7 +37,7 @@ htmlSection( $head, $body, 'mpd' );
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
 	, 'status' => 'output'
-	, 'button' => [ 'btoutputall' => 'gear' ]
+	, 'button' => [ 'gear btoutputall' ]
 	, 'help'   => <<< EOF
 {$Fi( 'gear btn' )} Other outputs while Bluetooth connected
  · Should be disabled if not used simultaneously
