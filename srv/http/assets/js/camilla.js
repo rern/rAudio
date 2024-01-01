@@ -712,6 +712,12 @@ var render   = {
 			return
 		}
 		
+		if ( [ 'filters', 'mixers' ].includes( V.tab ) ) {
+			var K  = V.tab.toUpperCase();
+			V.max  = S.range[ K +'MAX' ];
+			V.min  = S.range[ K +'MIN' ];
+			V.step = S.range[ K +'STEP' ];
+		}
 		var $main = $( '#'+ V.tab +' .entries.main' );
 		if ( $main.is( ':empty' ) ) {
 			render.prevconfig();
@@ -767,15 +773,6 @@ var render   = {
 			iconmute   = ico( param.mute ? 'volume mute' : 'volume' );
 			disabled   = param.mute ? ' disabled' : '';
 		}
-		if ( linear ) {
-			var min  = -10;
-			var max  = 10;
-			var step = 0.1;
-		} else {
-			var min  = S.range.FILTERSMIN;
-			var max  = S.range.FILTERSMAX;
-			var step = S.range.FILTERSSTEP;
-		}
 		if ( 'gain' in param ) {
 			var gain = util.dbRound( param.gain );
 			var li   = '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
@@ -785,8 +782,7 @@ var render   = {
 					+ ( 'slope' in param ?  'S:'+ param.slope : '' )
 					+'</div>'
 					+'</div>'
-					+'<input type="range" step="'+ step +'" value="'+ gain +'" min="'+ min +'" max="'+ max +'"'+ disabled +'>'
-					+'<div class="divgain filter'+ disabled +'">'+ ico( 'minus' ) +'<c class="db">'+ gain +'</c>'+ ico( 'plus' ) +'</div>'
+					+ render.htmlRange( linear, gain, disabled )
 					+ iconmute + iconlinear
 					+'</div>';
 		} else {
@@ -848,21 +844,11 @@ var render   = {
 				var source   = data[ i ].sources[ si ];
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
-				var val      = util.dbRound( source.gain );
+				var gain     = util.dbRound( source.gain );
 				var disabled = source.mute ? ' disabled' : '';
 				var linear   = source.scale === 'linear';
-				if ( linear ) {
-					var min  = -10;
-					var max  = 10;
-					var step = 0.1;
-				} else {
-					var min  = S.range.MIXERSMIN;
-					var max  = S.range.MIXERSMAX;
-					var step = S.range.MIXERSSTEP;
-				}
 				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 +'<input type="range" step="'+ step +'" value="'+ val +'" min="'+ min +'" max="'+ max +'" '+ disabled +'>'
-					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) +'<c class="db">' + val +'</c>'+ ico( 'plus' ) +'</div>'
+					 + render.htmlRange( linear, gain, disabled )
 					 + ico( source.mute ? 'volume mute' : 'volume' ) + ico( source.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' )
 					 +'</li>';
 			} );
@@ -1010,6 +996,18 @@ var render   = {
 		var keys = Object.keys( kv );
 		keys.sort().forEach( k => data[ k ] = kv[ k ] );
 		return data
+	}
+	, htmlRange   : ( linear, gain, disabled ) => {
+		if ( linear ) {
+			V.max  = 10;
+			V.min  = -10;
+			V.step = 0.1;
+		}
+		var db = V.step < 1 ? gain.toFixed( 1 ) : gain;
+		return   '<i class="i-minus"></i>'
+				+'<input type="range" step="'+ V.step +'" value="'+ gain +'" min="'+ V.min +'" max="'+ V.max +'"'+ disabled +'>'
+				+'<i class="i-plus"></i>'
+				+'<c class="db">'+ db +'</c>'
 	}
 	, json2string : json => {
 		return JSON.stringify( json )
@@ -1504,6 +1502,31 @@ var setting  = {
 		$this.prev().toggleClass( 'disabled', checked );
 		$this.siblings( 'input' ).prop( 'disabled', checked );
 	}
+	, rangeSet    : r => {
+		if ( r.step < 1 ) {
+			r.val = Math.round( r.val * 10 ) / 10;
+			var db = r.val.toFixed( 1 );
+		} else {
+			var db = r.val;
+		}
+		r.db.text( db );
+		r.gain.val( r.val )
+		if ( ! V.local ) r.gain.trigger( 'input' );
+	}
+	, rangeValues : $this => {
+		var $gain = $this.siblings( 'input' );
+		var step  = +$gain.prop( 'step' );
+		var val   = +$gain.val();
+		return {
+			  db   : $this.siblings( 'c' )
+			, gain : $gain
+			, max  : +$gain.prop( 'max' )
+			, min  : +$gain.prop( 'min' )
+			, step : step
+			, up   : $this.hasClass( 'i-plus' )
+			, val  : val
+		}
+	}
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
@@ -1850,11 +1873,11 @@ $( '#voldn, #volup' ).on( 'click', function() {
 	volumePush( S.volume );
 	volumeSetAt();
 	$( '#vollevel' ).text( S.volume );
-} ).on( 'touchend mouseup', function() {
+} ).on( 'touchend mouseup mouseleave', function() {
+	if ( ! V.press )  return
+	
 	clearInterval( V.intervalvolume );
 	volumePush();
-} ).on( 'mouseleave', function() {
-	if ( V.press ) $( '#voldn' ).trigger( 'mouseup' );
 } ).press( function( e ) {
 	var up           = e.target.id === 'volup';
 	V.intervalvolume = setInterval( () => {
@@ -1872,41 +1895,37 @@ $( '#volmute' ).on( 'click', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 } );
-$( '#filters, #mixers' ).on( 'click', '.divgain i, .divgain c', function() {
+$( '.entries' ).on( 'click', '.i-minus, .i-plus, c', function() { // filters, mixersSub
 	var $this = $( this );
-	if ( $this.parent().hasClass( 'disabled' ) ) return
+	if ( $this.hasClass( 'disabled' ) ) return
 	
 	clearTimeout( V.timeoutgain );
-	var $gain = $this.parent().prev();
-	var val   = +$gain.val();
+	var r = setting.rangeValues( $this );
 	var cmd   = $this.prop( 'class' ).replace( 'i-', '' );
 	if ( cmd === 'db' ) {
-		if ( val === 0 ) return
+		if ( r.val === 0 ) return
 		
-		val  = 0;
+		r.val  = 0;
 	} else if ( cmd === 'minus' ) {
-		if ( val === $gain.prop( 'min' ) ) return
+		if ( r.val === r.min ) return
 		
-		val -= 0.1;
+		r.val = r.val - r.step;
 	} else if ( cmd === 'plus' ) {
-		if ( val === $gain.prop( 'max' ) ) return
+		if ( r.val === r.max ) return
 		
-		val += 0.1;
+		r.val = r.val + r.step;
 	}
-	$gain
-		.val( val )
-		.trigger( 'input' );
-	if ( V.li.find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) graph.gain();
-} ).on( 'touchend mouseup mouseleave', function() {
+	setting.rangeSet( r );
+} ).on( 'touchend mouseup mouseleave', '.i-minus, .i-plus, c', function() {
+	if ( ! V.press ) return
+	
 	clearInterval( V.intervalgain );
-} ).press( '.divgain i', function( e ) {
-	var $this = $( e.currentTarget );
-	var $gain = $this.parent().prev();
-	var val   = +$gain.val();
-	var up    = $this.hasClass( 'i-plus' );
+	if ( $( this ).parents( 'li' ).find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) graph.gain();
+} ).press( '.i-minus, .i-plus', function( e ) {
+	var r = setting.rangeValues( $( e.currentTarget ) );
 	V.intervalgain = setInterval( () => {
-		val = up ? val + 0.1 : val - 0.1;
-		$gain.val( val ).trigger( 'input' );
+		r.val = r.up ? r.val + r.step : r.val - r.step;
+		setting.rangeSet( r );
 	}, 100 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
@@ -2258,11 +2277,16 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload();
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
-	var val   = +$this.val();
-	$this.next().find( '.db' ).text( util.dbRound( val ) );
-	V.li     = $this.parents( 'li' );
-	var name = V.li.data( 'name' );
-	FIL[ name ].parameters.gain = val;
+	var r     = {
+		  db   : $this.siblings( 'c' )
+		, gain : $this
+		, step : +$this.prop( 'step' )
+		, val  : +$this.val()
+	}
+	local();
+	setting.rangeSet( r );
+	var name = $this.parents( 'li' ).data( 'name' );
+	FIL[ name ].parameters.gain = r.val;
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	graph.gain();
@@ -2353,34 +2377,35 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	render.mixersSub( name );
 } ).on( 'click', 'li i', function() {
 	var $this = $( this );
-	if ( $this.is( '.liicon, .i-mixers, .i-back' ) || $this.parent().hasClass( 'divgain' ) ) return
+	var cmd   = $this.prop( 'class' ).slice( 2 );
+	if ( ! [ 'volume', 'add', 'inverted', 'linear' ].includes( cmd ) ) return
 	
-	V.li      = $this.parents( 'li' );
-	var name  = V.li.data( 'name' );
+	var $li   = $this.parents( 'li' );
+	var name  = $li.data( 'name' );
 	var title = 'Mixer';
-	if ( $this.hasClass( 'i-volume' ) ) {
-		var mapping = MIX[ name ].mapping[ V.li.data( 'index' ) ];
+	if ( cmd === 'volume' ) {
+		var mapping = MIX[ name ].mapping[ $li.data( 'index' ) ];
 		var checked = ! $this.hasClass( 'mute' );
 		setting.muteToggle( $this, checked );
-		if ( V.li.hasClass( 'main' ) ) {
+		if ( $li.hasClass( 'main' ) ) {
 			mapping.mute = checked;
 		} else {
-			mapping.sources[ V.li.data( 'si' ) ].mute = checked;
+			mapping.sources[ $li.data( 'si' ) ].mute = checked;
 		}
 		setting.save( title, 'Change ...' );
-	} else if ( $this.hasClass( 'i-add' ) ) {
-		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
+	} else if ( cmd === 'add' ) {
+		var index = $li.hasClass( 'lihead' ) ? '' : $li.data( 'index' );
 		setting.mixerMap( name, index );
 	} else {
-		var index   = V.li.data( 'index' );
-		var si      = V.li.data( 'si' );
+		var index   = $li.data( 'index' );
+		var si      = $li.data( 'si' );
 		var mapping = MIX[ name ].mapping[ index ];
 		var source  = mapping.sources[ si ];
 		var checked = ! $this.hasClass( 'bl' );
-		if ( $this.hasClass( 'i-inverted' ) ) {
+		if ( cmd === 'inverted' ) {
 			$this.toggleClass( 'bl', checked );
 			source.inverted = checked;
-		} else if ( $this.hasClass( 'i-linear' ) ) {
+		} else if ( cmd === 'linear' ) {
 			$this.toggleClass( 'bl', checked );
 			source.scale = checked ? 'linear' : null;
 		}
@@ -2388,26 +2413,32 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	}
 } ).on( 'input', 'select', function() {
 	var $this = $( this );
-	V.li      = $this.parents( 'li' );
-	var name  = V.li.data( 'name' );
-	var mi    = V.li.data( 'index' );
+	var $li   = $this.parents( 'li' );
+	var name  = $li.data( 'name' );
+	var mi    = $li.data( 'index' );
 	var val   = +$this.val();
-	if ( V.li.hasClass( 'main' ) ) {
+	if ( $li.hasClass( 'main' ) ) {
 		MIX[ name ].mapping[ mi ].dest = val;
 	} else {
-		var si    = V.li.data( 'si' );
+		var si    = $li.data( 'si' );
 		MIX[ name ].mapping[ mi ].sources[ si ].channel = val;
 	}
 	setting.save( 'Mixer', 'Change ...');
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
-	var val   = +$this.val();
-	$this.next().find( '.db' ).text( util.dbRound( val ) );
-	V.li      = $( this ).parents( 'li' );
-	var name  = V.li.data( 'name' );
-	var index = V.li.data( 'index' );
-	var si    = V.li.data( 'si' );
-	MIX[ name ].mapping[ index ].sources[ si ].gain = val;
+	var r     = {
+		  db   : $this.siblings( 'c' )
+		, gain : $this
+		, step : +$this.prop( 'step' )
+		, val  : +$this.val()
+	}
+	local();
+	setting.rangeSet( r );
+	var $li   = $( this ).parents( 'li' );
+	var name  = $li.data( 'name' );
+	var index = $li.data( 'index' );
+	var si    = $li.data( 'si' );
+	MIX[ name ].mapping[ index ].sources[ si ].gain = r.val;
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	graph.gain();
@@ -2444,9 +2475,8 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	if ( $this.is( '.liicon, .i-back' ) ) return
 	
-	V.li      = $this.parents( 'li' );
 	var title = util.tabTitle();
-	var index = V.li.data( 'index' );
+	var index = $this.parents( 'li' ).data( 'index' );
 	if ( $this.hasClass( 'i-add' ) ) {
 		var title = 'Add Filter';
 		info( {
