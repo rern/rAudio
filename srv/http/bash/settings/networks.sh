@@ -164,8 +164,8 @@ $( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
 	;;
 statuswebui )
 	echo "\
-<bll># avahi-browse -d local _http._tcp -rpt</bll>
-$( avahi-browse -d local _http._tcp -rpt | awk -F';' '/80;$/ && !/127.0.0.1/ {print $7": "$8}' )"
+<bll># avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print \$7\": \"\$8}'</bll>
+$( avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print $7": "$8}' )"
 	;;
 statuswl )
 	wlandev=$( < $dirshm/wlan )
