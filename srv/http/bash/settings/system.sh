@@ -472,20 +472,16 @@ statusstatus )
 	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
 	
-	journal="\
-<bll># journalctl -b</bll>"
-	journal+="
-$( journalctl -b | sed -n '1,/Startup finished.*kernel/ {s|Failed to start .*|<red>&</red>|; p}' )
-"
-	startupfinished=$( sed -E -n '/Startup finished/ {s/^.*(Startup)/\1/; p}' <<< $journal )
-	if [[ $startupfinished ]]; then
+	startupfinished=$( systemd-analyze )
+	if grep -q 'Startup finished' <<< $startupfinished; then
 		echo "\
-<bll># journalctl -b -o cat -g 'Startup finished'</bll>
+<bll># systemd-analyze</bll>
 $startupfinished
 
-$journal" | tee $filebootlog
+<bll># journalctl -b</bll>
+$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
 	else
-		echo "$journal"
+		journalctl -b
 	fi
 	;;
 statusstorage )

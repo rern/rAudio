@@ -163,15 +163,9 @@ statuslan )
 $( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
 	;;
 statuswebui )
-	hostname=$( hostname )
 	echo "\
-<bll># avahi-browse -arp | cut -d';' -f7,8 | grep $hostname</bll>
-$( timeout 1 avahi-browse -arp \
-	| cut -d';' -f7,8 \
-	| grep $hostname \
-	| grep -v 127.0.0.1 \
-	| sed 's/;/ : /' \
-	| sort -u )"
+<bll># avahi-browse -d local _http._tcp -rpt</bll>
+$( avahi-browse -d local _http._tcp -rpt | awk -F';' '/80;$/ && !/127.0.0.1/ {print $7": "$8}' )"
 	;;
 statuswl )
 	wlandev=$( < $dirshm/wlan )
