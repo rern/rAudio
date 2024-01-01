@@ -75,6 +75,7 @@ else
 					12 )    soc+=2710A1;; # 0 2W
 				esac;;
 			3 ) soc+=2711;; # 4
+			4 ) soc+=2712;; # 5
 		esac
 	fi
 	kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
