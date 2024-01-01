@@ -1858,7 +1858,6 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 } );
 $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
-	console.log(up)
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
