@@ -713,10 +713,12 @@ var render   = {
 		}
 		
 		if ( [ 'filters', 'mixers' ].includes( V.tab ) ) {
-			var K  = V.tab.toUpperCase();
-			V.max  = S.range[ K +'MAX' ];
-			V.min  = S.range[ K +'MIN' ];
-			V.step = S.range[ K +'STEP' ];
+			var K   = V.tab.toUpperCase();
+			V.range = {
+				  max  : S.range[ K +'MAX' ]
+				, min  : S.range[ K +'MIN' ]
+				, step : S.range[ K +'STEP' ]
+			}
 		}
 		var $main = $( '#'+ V.tab +' .entries.main' );
 		if ( $main.is( ':empty' ) ) {
@@ -998,14 +1000,10 @@ var render   = {
 		return data
 	}
 	, htmlRange   : ( linear, gain, disabled ) => {
-		if ( linear ) {
-			V.max  = 10;
-			V.min  = -10;
-			V.step = 0.1;
-		}
-		var db = V.step < 1 ? gain.toFixed( 1 ) : gain;
+		var range = linear ? { max: 10, min: -10, step: 0.1 } : V.range;
+		var db    = range.step < 1 ? gain.toFixed( 1 ) : gain;
 		return   '<i class="i-minus"></i>'
-				+'<input type="range" step="'+ V.step +'" value="'+ gain +'" min="'+ V.min +'" max="'+ V.max +'"'+ disabled +'>'
+				+'<input type="range" step="'+ range.step +'" value="'+ gain +'" min="'+ range.min +'" max="'+ range.max +'"'+ disabled +'>'
 				+'<i class="i-plus"></i>'
 				+'<c class="db">'+ db +'</c>'
 	}
