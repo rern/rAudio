@@ -1750,7 +1750,7 @@ var util     = {
 									
 									V.timeoutred = setTimeout( () => {
 										$( '.peak, .clipped' )
-											.css( 'transition-duration', '' )
+											.css( 'transition-duration', '1s' )
 											.removeClass( 'red' );
 									}, 200 );
 								}
@@ -1785,7 +1785,7 @@ var util     = {
 					if ( 'intervalvu' in V || S.state !== 'play' ) return
 					
 					if ( ! S.volumemute ) $( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
-					setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
+					setTimeout( () => $( '.peak' ).css( 'transition-duration', '1s' ), 200 );
 					V.intervalvu = setInterval( () => V.wscamilla.send( '"GetSignalLevels"' ), 100 );
 					break;
 				case 'GetConfigJson':
