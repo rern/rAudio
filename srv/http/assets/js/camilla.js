@@ -743,7 +743,7 @@ var render   = {
 		clearInterval( V.intervalvu );
 		delete V.intervalvu;
 		setTimeout( () => {
-			$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
+			$( '.peak' ).css( { left: 0, background: 'var( --cga )', 'transition-duration': '0s' } );
 			$( '.rms' ).css( 'width', 0 );
 		}, 300 );
 	}
@@ -1733,7 +1733,7 @@ var util     = {
 								p = 56.25 + 12.5 * val / 24
 							}
 							v = p < 0 ? 0 : ( p > 100 ? 100 : p )
-							if ( k.slice( -1 ) === 's' ) {
+							if ( k.slice( -1 ) === 's' ) { // rms
 								$( '.rms.'+ cp + i ).css( 'width', v +'%' );
 							} else {
 								$( '.peak.'+ cp + i ).css( 'left', v +'%' );
