@@ -703,13 +703,12 @@ var render   = {
 		$( '#devices' ).prepend( $( '#codeoutput' ) );
 	}
 	, tab         : () => {
-		var $heading = $( '#divsettings heading' );
-		$( '.tab' ).addClass( 'hide' );
-		$( '.tab.'+ V.tab ).removeClass( 'hide' );
+		$( '.section:not( #divstatus )' ).addClass( 'hide' );
+		$( '#div'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
-		if ( V.tab === 'config' ) {
-			render.config();
+		if ( [ 'config', 'devices', 'pipeline' ].includes( V.tab ) ) {
+			render[ V.tab ]();
 			return
 		}
 		
@@ -1929,7 +1928,7 @@ $( '#configuration' ).on( 'input', function() {
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 } );
 $( '#setting-configuration' ).on( 'click', function() {
-	if ( $( '#config' ).hasClass( 'hide' ) ) {
+	if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
 		V.tabprev = V.tab;
 		$( '#tabconfig' ).trigger( 'click' );
 	} else {

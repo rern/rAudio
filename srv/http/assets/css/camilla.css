@@ -1,6 +1,3 @@
-#divtabs {
-	position: relative;
-}
 #tabconfig {
 	display: none !important;
 }
@@ -350,9 +347,6 @@ i.disabled,
 #vulabel .l7 {
 	padding-left: 11px;
 }
-#divdevices {
-	margin-top: 10px;
-}
 .flowchart {
 	display: block;
 	margin: 0 auto;
@@ -389,7 +383,6 @@ i.disabled,
 }
 #divconfiguration {
 	margin-top: 20px;
-	height: 50px;
 }
 .helpmenu {
 	border-bottom: 1px solid var( --cga );
@@ -438,6 +431,9 @@ i.disabled,
 }
 #eq .bottom {
 	bottom: 50px !important;
+}
+#codeoutput {
+	margin-top: 15px;
 }
 @media (max-width: 700px) {
 	#mixers .i-inverted { display: none }

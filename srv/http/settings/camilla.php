@@ -81,7 +81,7 @@ Buffer · Load<span class="divclipped hide"> · Clipped</span>
 $tabs     = [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ];
 $htmltabs = [];
 foreach( $tabs as $id ) {
-	$html = '<div id="'.$id.'" class="tab '.$id.'"><div class="helpblock hide">'.$help[ $id ].'</div>';
+	$html = '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$help[ $id ].'</div>';
 	if ( $id === 'pipeline' ) $html.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
 	$html.= '<ul class="entries main"></ul>';
 	if ( $id === 'devices' ) {
@@ -134,12 +134,11 @@ htmlSection( $head, $body, 'status' );
 foreach( $tabs as $id ) {
 	$head = [
 		  'title'  => ucfirst( $id ).( $id === 'config' ? 'uration' : '' )
-		, 'class'  => 'tab '.$id
 		, 'button' => $button[ $id ]
 		, 'status' => $id === 'devices' ? 'output' : false
 	];
 	$body = [ $htmltabs[ $id ] ];
-	htmlSection( $head, $body, 'settings' );
+	htmlSection( $head, $body, $id );
 }
 ?>
 <div id="menu" class="menu hide">

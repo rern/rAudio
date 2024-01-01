@@ -117,8 +117,7 @@ function htmlHead( $data ) {
 	$status  = $data[ 'status' ] ?? false;
 	$button  = $data[ 'button' ] ?? false;
 	$help    = $data[ 'help' ] ?? false;
-	$class   = $data[ 'class' ] ?? '';
-	$class  .= $status ? ' status' : '';
+	$class   = $status ? 'status' : '';
 	$class  .= $subhead ? ' subhead' : '';
 	
 	$html    = '<heading '.( $status ? ' data-status="'.$status.'"' : '' );
@@ -151,10 +150,9 @@ function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
 	if ( ! $labels ) $labels = '&nbsp;';
 	if ( $help ) $help = '<div class="helpblock hide">'.$help.'</div>';
 	return '
-<div id="div'.$id.'">
+<div id="div'.$id.'" class="row">
 <div class="col-l text label gr">'.$labels.'</div>
 <div class="col-r text value">'.$values.'</div>
-<div style="clear:both"></div>
 '.$help.'
 </div>';
 }
@@ -182,7 +180,7 @@ function htmlSetting( $data ) {
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
 	
-	$html        = '<div id="div'.$id.'">';
+	$html        = '<div id="div'.$id.'" class="row">';
 	// col-l
 	$html       .= '<div class="col-l';
 	$html       .= $sublabel ? '' : ' single';

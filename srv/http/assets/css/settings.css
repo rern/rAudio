@@ -62,7 +62,8 @@ ul {
 	margin: 0;
 }
 .container::after,
-.section::after {
+.section::after,
+.row::after {
 	content: '';
 	display: block;
 	clear: both;
