@@ -1,3 +1,140 @@
+#vu {
+	position: relative;
+	width: 230px;
+	margin-bottom: 15px;
+	font-family: Inconsolata;
+}
+#in,
+#out {
+	position: relative;
+	line-height: 18px;
+}
+#out {
+	margin-top: 20px;
+}
+#in::before,
+#out::before {
+	position: absolute;
+	display: block;
+	left: -60px;
+	top: calc(50% - 7px);
+	width: 45px;
+	line-height: 16px;
+	text-align: center;
+	background: var( --cg );
+	border-radius: 3px;
+}
+#in::before {
+	color: #000;
+	background: var( --cgl );
+}
+#in::before {
+	content: 'In';
+}
+#out::before {
+	content: 'Out';
+}
+.vubar {
+	position: absolute;
+	width: 100%;
+	height: 3px;
+	background: var( --cga );
+	margin-bottom: 10px;
+}
+.vubar.peak {
+	width: 3px;
+}
+.vubar.peak.red {
+	background: #f00 !important;
+}
+.vubar.rms {
+	position: relative;
+	width: 0;
+	background: var( --cm );
+	transition-duration: 0.1s;
+}
+#vugrid {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	padding-left: calc( 100% * 0.0625 );
+}
+#vugrid a {
+	display: inline-block;
+	width: calc( 100% * 0.125 );
+	height: 100%;
+	margin-right: calc( 100% * 0.125 );
+	border: 1px solid var( --cga );
+	border-top: none;
+	border-bottom: none;
+}
+#vugrid .g3 {
+	border-left: 1px solid var( --cgl );
+}
+#vulabel {
+	position: absolute;
+	top: 16px;
+	width: 100%;
+	height: 20px;
+	line-height: 20px;
+	font-size: 14px;
+	color: var( --cg60 );
+	background: #000;
+	z-index: 0;
+}
+#vulabel a {
+	display: inline-block;
+	width: calc( 100% * 0.117 );
+}
+#vulabel a:nth-child(even) {
+	color: var( --cg );
+}
+#vulabel .l4 {
+	padding-left: 1px;
+}
+#vulabel .l5 {
+	padding-left: 4px;
+}
+#vulabel .l6 {
+	padding-left: 12px;
+}
+#vulabel .l7 {
+	padding-left: 11px;
+}
+#divvolume {
+	margin-bottom: 10px;
+}
+#volume {
+	float: left;
+}
+#divvolume .i-minus {
+	color: var( --cg60 );
+}
+#divvolume .i-plus,
+#divvolume .i-volume {
+	width: 40px;
+	line-height: 40px;
+	vertical-align: 0;
+	font-size: 24px;
+	text-align: center;
+	color: var( --cg60 );
+}
+.db,
+#divvolume .level {
+	display: inline-block;
+	width: 45px;
+	line-height: 16px;
+	vertical-align: 4px;
+	text-align: center;
+	color: var( --cw );
+	background-color: var( --cga );
+}
+.db {
+	float: left;
+}
+#divconfiguration {
+	margin-top: 10px;
+}
 #tabconfig {
 	display: none !important;
 }
@@ -158,21 +295,6 @@ tr .i-remove {
 	--trackborder : 1px solid var( --cga ) !important;
 	max-width: 230px;
 }
-#volume {
-	float: left;
-}
-#divvolume .i-minus {
-	color: var( --cg60 );
-}
-#divvolume .i-plus,
-#divvolume .i-volume {
-	width: 40px;
-	line-height: 40px;
-	vertical-align: 0;
-	font-size: 24px;
-	text-align: center;
-	color: var( --cg60 );
-}
 i.disabled {
 	pointer-events: none;
 	color: var( --cg ) !important;
@@ -204,122 +326,6 @@ i.disabled {
 }
 .overplot .lines path {
 	stroke-opacity: 0.75 !important;
-}
-#vu {
-	position: relative;
-	width: 230px;
-	margin-bottom: 15px;
-	font-family: Inconsolata;
-}
-#in,
-#out {
-	position: relative;
-	line-height: 18px;
-}
-#out {
-	margin-top: 20px;
-}
-#in::before,
-#out::before {
-	position: absolute;
-	display: block;
-	left: -60px;
-	top: calc(50% - 7px);
-	width: 45px;
-	line-height: 16px;
-	text-align: center;
-	background: var( --cg );
-	border-radius: 3px;
-}
-#in::before {
-	color: #000;
-	background: var( --cgl );
-}
-.db,
-#divvolume .level {
-	display: inline-block;
-	width: 45px;
-	line-height: 16px;
-	vertical-align: 4px;
-	text-align: center;
-	color: var( --cw );
-	background-color: var( --cga );
-}
-.db {
-	float: left;
-}
-#in::before {
-	content: 'In';
-}
-#out::before {
-	content: 'Out';
-}
-.vubar {
-	position: absolute;
-	width: 100%;
-	height: 3px;
-	background: var( --cga );
-	margin-bottom: 10px;
-}
-.vubar.peak {
-	width: 3px;
-}
-.vubar.peak.red {
-	background: #f00 !important;
-}
-.vubar.rms {
-	position: relative;
-	width: 0;
-	background: var( --cm );
-	transition-duration: 0.1s;
-}
-#vugrid {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	padding-left: calc( 100% * 0.0625 );
-}
-#vugrid a {
-	display: inline-block;
-	width: calc( 100% * 0.125 );
-	height: 100%;
-	margin-right: calc( 100% * 0.125 );
-	border: 1px solid var( --cga );
-	border-top: none;
-	border-bottom: none;
-}
-#vugrid .g3 {
-	border-left: 1px solid var( --cgl );
-}
-#vulabel {
-	position: absolute;
-	top: 16px;
-	width: 100%;
-	height: 20px;
-	line-height: 20px;
-	font-size: 14px;
-	color: var( --cg60 );
-	background: #000;
-	z-index: 0;
-}
-#vulabel a {
-	display: inline-block;
-	width: calc( 100% * 0.117 );
-}
-#vulabel a:nth-child(even) {
-	color: var( --cg );
-}
-#vulabel .l4 {
-	padding-left: 1px;
-}
-#vulabel .l5 {
-	padding-left: 4px;
-}
-#vulabel .l6 {
-	padding-left: 12px;
-}
-#vulabel .l7 {
-	padding-left: 11px;
 }
 .flowchart {
 	display: block;
@@ -354,9 +360,6 @@ i.disabled {
 	content: "\f515";
 	line-height: 24px;
 	color: var( --cg60 );
-}
-#divconfiguration {
-	margin-top: 20px;
 }
 .helpmenu {
 	border-bottom: 1px solid var( --cga );
