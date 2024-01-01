@@ -776,7 +776,7 @@ var render   = {
 			disabled   = param.mute ? ' disabled' : '';
 		}
 		if ( 'gain' in param ) {
-			var gain = util.dbRound( param.gain );
+			var gain = param.gain;
 			var li   = '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
 					+'<div class="li2">'
 					+ ( 'freq' in param ? param.freq +'Hz ' : v.type )
@@ -846,7 +846,7 @@ var render   = {
 				var source   = data[ i ].sources[ si ];
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
-				var gain     = util.dbRound( source.gain );
+				var gain     = source.gain;
 				var disabled = source.mute ? ' disabled' : '';
 				var linear   = source.scale === 'linear';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
@@ -1580,21 +1580,7 @@ var setting  = {
 	}
 }
 var util     = {
-	  db2percent   : v => {
-		var value = 0;
-		if ( v >= -12 ) {
-			value = 81.25 + 12.5 * v / 6
-		} else if ( v >= -24 ) {
-			value = 68.75 + 12.5 * v / 12
-		} else {
-			value = 56.25 + 12.5 * v / 24
-		}
-		return value < 0 ? 0 : ( value > 100 ? 100 : value )
-	}
-	, dbRound      : num => {
-		return Math.round( num * 10 ) / 10
-	}
-	, inUse        : name => {
+	  inUse        : name => {
 		var filters = V.tab === 'filters';
 		var inuse   = [];
 		if ( filters && ! ( name in FIL ) ) { // file
@@ -1728,7 +1714,7 @@ var util     = {
 			var data    = JSON.parse( response.data );
 			var cmd     = Object.keys( data )[ 0 ];
 			var value   = data[ cmd ].value;
-			var cp, v;
+			var cp, p, v;
 			switch ( cmd ) {
 				case 'GetSignalLevels':
 					if ( S.state !== 'play' || S.volumemute ) {
@@ -1739,7 +1725,14 @@ var util     = {
 					[ 'playback_peak', 'playback_rms', 'capture_peak', 'capture_rms' ].forEach( k => {
 						cp = k[ 0 ];
 						value[ k ].forEach( ( val, i ) => {
-							v = util.db2percent( val );
+							if ( val >= -12 ) { // db > percent
+								p = 81.25 + 12.5 * val / 6
+							} else if ( val >= -24 ) {
+								p = 68.75 + 12.5 * val / 12
+							} else {
+								p = 56.25 + 12.5 * val / 24
+							}
+							v = p < 0 ? 0 : ( p > 100 ? 100 : p )
 							if ( k.slice( -1 ) === 's' ) {
 								$( '.rms.'+ cp + i ).css( 'width', v +'%' );
 							} else {
