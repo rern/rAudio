@@ -62,12 +62,9 @@ $htmls = [
 	<div class="slide"></div>
 	<div class="thumb"></div>
 </div>
-<div class="divgain">
-	<i id="voldn" class="i-minus"></i>
-	<c id="vollevel">0</c>
-	<i id="volup" class="i-plus"></i>
-</div>
-<i id="volmute" class="i-volume"></i>
+<i class="i-plus"></i>
+<c class="level">0</c>
+<i class="i-volume"></i>
 '
 	, 'labels' => '
 Buffer · Load<span class="divclipped hide"> · Clipped</span>
@@ -119,6 +116,7 @@ $head = [
 $body = [
 	  htmlSectionStatus( 'vu' )
 	, [   'id'    => 'volume'
+		, 'icon'  => 'minus'
 		, 'input' => $htmls[ 'volume' ]
 	]
 	, htmlSectionStatus( 'state', $htmls[ 'labels' ], $htmls[ 'values' ] )

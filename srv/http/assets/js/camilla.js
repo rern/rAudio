@@ -748,11 +748,11 @@ var render   = {
 		}, 300 );
 	}
 	, volume      : () => {
-		$( '#vollevel' )
+		$( '#divvolume .level' )
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bl', S.volumemute > 0 );
 		$( '#divvolume .i-volume' ).toggleClass( 'mute', S.volumemute > 0 );
-		$( '#volume' ).toggleClass( 'disabled', S.volumemute > 0 );
+		$( '#divvolume .i-minus, #divvolume .i-plus, #volume' ).toggleClass( 'disabled', S.volumemute > 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		if ( ! Object.keys( FIL ).length ) return
@@ -1000,12 +1000,12 @@ var render   = {
 		return data
 	}
 	, htmlRange   : ( linear, gain, disabled ) => {
-		var range = linear ? { max: 10, min: -10, step: 0.1 } : V.range;
-		var db    = range.step < 1 ? gain.toFixed( 1 ) : gain;
-		return   '<i class="i-minus"></i>'
+		var range      = linear ? { max: 10, min: -10, step: 0.1 } : V.range;
+		var db         = range.step < 1 ? gain.toFixed( 1 ) : gain;
+		return   '<i class="i-minus'+ disabled +'"></i>'
 				+'<input type="range" step="'+ range.step +'" value="'+ gain +'" min="'+ range.min +'" max="'+ range.max +'"'+ disabled +'>'
-				+'<i class="i-plus"></i>'
-				+'<c class="db">'+ db +'</c>'
+				+'<i class="i-plus'+ disabled +'"></i>'
+				+'<c class="db'+ disabled +'">'+ db +'</c>'
 	}
 	, json2string : json => {
 		return JSON.stringify( json )
@@ -1856,33 +1856,33 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 } ).on( 'mouseleave', function() {
 	if ( V.start ) $( '#volume' ).trigger( 'mouseup' );
 } );
-$( '#voldn, #volup' ).on( 'click', function() {
-	var up = this.id === 'volup';
+$( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
+	var up = $( this ).hasClass( 'i-plus' );
+	console.log(up)
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
 	volumePush( S.volume );
 	volumeSetAt();
-	$( '#vollevel' ).text( S.volume );
+	$( '#divvolume .level' ).text( S.volume );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( ! V.press )  return
 	
 	clearInterval( V.intervalvolume );
 	volumePush();
 } ).press( function( e ) {
-	var up           = e.target.id === 'volup';
+	var up           = $( e.target ).hasClass( 'i-plus' );
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
 		volumeSetAt();
 		util.volumeThumb();
-		$( '#vollevel' ).text( S.volume );
+		$( '#divvolume .level' ).text( S.volume );
 		if ( S.volume === 0 || S.volume === 100 ) {
 			clearInterval( V.intervalvolume );
 			volumePush();
 		}
 	}, 100 );
-} );
-$( '#volmute' ).on( 'click', function() {
+} ).on( 'click', '.i-volume', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 } );
@@ -2440,7 +2440,7 @@ $( '#processors' ).on( 'click', 'li', function( e ) {
 } );
 $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
-	if ( $( e.target ).is( 'i' ) || $this.parent().is( '.sub, .divgain' ) ) return
+	if ( $( e.target ).is( 'i' ) || $this.parent().is( '.sub' ) ) return
 	
 	var index = $this.data( 'index' );
 	if ( $this.data( 'type' ) === 'Filter' ) {

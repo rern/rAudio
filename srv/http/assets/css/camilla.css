@@ -18,9 +18,6 @@
 	height: auto;
 	min-height: 50px;
 }
-.entries.sub li {
-	cursor: default;
-}
 .tab li i {
 	min-width: 40px;
 }
@@ -119,9 +116,6 @@ tr .i-remove {
 .tab li i {
 	margin: 0 !important;
 }
-#filters li {
-	cursor: default !important;
-}
 .tab li.active {
 	background: var( --cgd );
 }
@@ -165,24 +159,13 @@ tr .i-remove {
 	max-width: 230px;
 }
 #volume {
-	margin: 0;
+	float: left;
 }
-.divgain {
-	display: inline-block;
-	min-width: 120px !important;
-}
-.divgain i {
-	width: 38px;
-	min-width: 38px !important;
-	font-size: 24px;
-	line-height: 40px;
-	text-align: center;
+#divvolume .i-minus {
 	color: var( --cg60 );
-	-webkit-user-select: none;
-	user-select: none;
 }
+#divvolume .i-plus,
 #divvolume .i-volume {
-	position: absolute;
 	width: 40px;
 	line-height: 40px;
 	vertical-align: 0;
@@ -190,16 +173,9 @@ tr .i-remove {
 	text-align: center;
 	color: var( --cg60 );
 }
-#divvolume .divgain {
-	vertical-align: 11px;
-}
-i.disabled,
-.divgain.disabled i {
+i.disabled {
 	pointer-events: none;
 	color: var( --cg ) !important;
-}
-.divgain.disabled c {
-	color: var( --cgl ) !important;
 }
 
 .i-volume.mute {
@@ -260,7 +236,7 @@ i.disabled,
 	background: var( --cgl );
 }
 .db,
-#vollevel {
+#divvolume .level {
 	display: inline-block;
 	width: 45px;
 	line-height: 16px;
@@ -271,7 +247,6 @@ i.disabled,
 }
 .db {
 	float: left;
-	cursor: pointer;
 }
 #in::before {
 	content: 'In';
@@ -395,10 +370,9 @@ i.disabled,
 }
 .slider .track {
 	position: absolute;
-	width: calc( 100% - 20px );
+	width: 100%;
 	height: 4px;
 	top: 18px;
-	left: 10px;
 	border: 1px solid var( --cga );
 	background: linear-gradient( 90deg, transparent 10px, var( --cga ) 10px, var( --cga ) calc( 100% - 10px ), transparent 10px );
 }
@@ -434,6 +408,7 @@ i.disabled,
 #codeoutput {
 	margin-top: 15px;
 }
+
 @media (max-width: 700px) {
 	#mixers .i-inverted { display: none }
 }
@@ -449,9 +424,16 @@ i.disabled,
 }
 @media (max-width: 570px) {
 	.container input[ type=range ] { width: 100% }
-	.divgain { display: none !important }
 }
 @media (max-width: 500px) {
 	.helphead { display: none }
 }
 
+.db,
+#divvolume {
+	cursor: pointer;
+}
+.entries.sub li,
+#filters li {
+	cursor: default !important;
+}

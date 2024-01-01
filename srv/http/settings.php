@@ -179,6 +179,7 @@ function htmlSetting( $data ) {
 	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
+	if ( $page === 'features' || $page === 'system' ) $icon = $id;
 	
 	$html        = '<div id="div'.$id.'" class="row">';
 	// col-l
@@ -186,7 +187,7 @@ function htmlSetting( $data ) {
 	$html       .= $sublabel ? '' : ' single';
 	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
 	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
-	$html       .= $page === 'features' || $page === 'system' || $icon ? i( $id ) : ''; // icon
+	$html       .= $icon ? i( $icon ) : ''; // icon
 	$html       .= '</div>';
 	// col-r
 	$html       .= '<div class="col-r">';
