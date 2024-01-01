@@ -14,7 +14,6 @@ $button     = [
 	, 'processors' => str_replace( 'mixers' , 'processors', $btnmixers )
 	, 'pipeline'   => str_replace( 'filters' , 'pipeline', $btnfilters )
 	, 'config'     => str_replace( 'mixers' , 'config', $btnmixers )
-	, 'gain'       => i( 'minus btn' ).i( 'code btn' ).i( 'plus btn' )
 	, 'control'    => i( 'volume btn' ).i( 'inverted btn' ).i( 'linear btn' )
 ];
 $help       = [
@@ -24,20 +23,19 @@ $help       = [
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
 	, 'volume'    => <<< EOF
-{$Fi( 'gear btn' )} Configuration files'
-{$$button[ 'gain' ]}{$Fi( 'volume btn' )} -% · Volume · +% · Mute
+{$Fi( 'gear btn' )} Configuration files
 {$Fi( 'set0 btn' )} Reset clipped count (if any)
 EOF
 	, 'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )}{$Fi( 'gear btn' )}{$Fi( 'plus btn' )} FIR coefficient files · Gain slider range · New
 {$button[ 'filters' ]} Graph · Edit · Delete
-{$button[ 'gain' ]} -1step · Set 0 · +1step
+{$Fi( 'code btn' )} Set 0
 {$button[ 'control' ]} Mute · Invert · Linear (Gain)
 EOF
 	, 'mixers'   => <<< EOF
 {$Fi( 'gear btn' )}{$Fi( 'plus btn' )} Gain slider range · New
 {$button[ 'mixers' ]} Edit · Delete
-{$button[ 'gain' ]}{$button[ 'control' ]} -1step · Set 0 · +1step · Mute · Invert · Linear
+{$Fi( 'code btn' )}{$button[ 'control' ]} Set 0 · Mute · Invert · Linear
 EOF
 	, 'processors'   => <<< EOF
 {$Fi( 'plus btn' )} New
