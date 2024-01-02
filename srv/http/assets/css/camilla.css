@@ -300,7 +300,10 @@ i.disabled {
 	color: var( --cg ) !important;
 }
 .liinput .i-volume::before {
-	margin-left: 5px !important;
+	margin-left: 7px !important;
+}
+#divvolume c {
+	margin: 0 -4px;
 }
 .i-volume.mute {
 	color: var( --cm ) !important;
