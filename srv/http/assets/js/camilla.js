@@ -737,16 +737,6 @@ var render   = {
 			}
 		}
 	}
-	, vuClear     : () => {
-		if ( ! ( 'intervalvu' in V ) ) return
-			
-		clearInterval( V.intervalvu );
-		delete V.intervalvu;
-		setTimeout( () => {
-			$( '.peak' ).css( { left: 0, background: 'var( --cga )', 'transition-duration': '0s' } );
-			$( '.rms' ).css( 'width', 0 );
-		}, 300 );
-	}
 	, volume      : () => {
 		$( '#divvolume .level' )
 			.text( S.volumemute || S.volume )
@@ -1038,6 +1028,16 @@ var render   = {
 		return str
 				.replace( 'Alsa', 'ALSA' )
 				.replace( 'Std',  'std' )
+	}
+	, vuClear     : () => {
+		if ( ! ( 'intervalvu' in V ) ) return
+		
+		V.signal = false;
+		clearInterval( V.intervalvu );
+		delete V.intervalvu;
+		$( '.peak, .rms' ).css( 'transition-duration', '0s' );
+		$( '.rms' ).css( 'width', 0 );
+		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 	}
 }
 var setting  = {
@@ -1711,9 +1711,9 @@ var util     = {
 			clearInterval( V.intervalstatus );
 		}
 		V.wscamilla.onmessage = response => {
-			var data    = JSON.parse( response.data );
-			var cmd     = Object.keys( data )[ 0 ];
-			var value   = data[ cmd ].value;
+			var data  = JSON.parse( response.data );
+			var cmd   = Object.keys( data )[ 0 ];
+			var value = data[ cmd ].value;
 			var cp, p, v;
 			switch ( cmd ) {
 				case 'GetSignalLevels':
@@ -1735,6 +1735,12 @@ var util     = {
 							v = p < 0 ? 0 : ( p > 100 ? 100 : p )
 							if ( k.slice( -1 ) === 's' ) { // rms
 								$( '.rms.'+ cp + i ).css( 'width', v +'%' );
+								if ( ! V.signal ) { // restore after 1st set
+									V.signal = true;
+									$( '.peak' ).css( 'background', 'var( --cm )' );
+									$( '.rms' ).css( 'transition-duration', '' );
+									setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 100 );
+								}
 							} else {
 								$( '.peak.'+ cp + i ).css( 'left', v +'%' );
 								if ( val > 0 ) {
@@ -1750,7 +1756,7 @@ var util     = {
 									
 									V.timeoutred = setTimeout( () => {
 										$( '.peak, .clipped' )
-											.css( 'transition-duration', '1s' )
+											.css( 'transition-duration', '' )
 											.removeClass( 'red' );
 									}, 200 );
 								}
@@ -1784,8 +1790,6 @@ var util     = {
 				case 'GetState':
 					if ( 'intervalvu' in V || S.state !== 'play' ) return
 					
-					if ( ! S.volumemute ) $( '.peak' ).css( { background: 'var( --cm )', 'transition-duration': '0s' } );
-					setTimeout( () => $( '.peak' ).css( 'transition-duration', '1s' ), 200 );
 					V.intervalvu = setInterval( () => V.wscamilla.send( '"GetSignalLevels"' ), 100 );
 					break;
 				case 'GetConfigJson':

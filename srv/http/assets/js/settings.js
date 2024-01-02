@@ -112,6 +112,14 @@ function notifyCommon( message ) {
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
+function playbackButton() {
+	if ( S.pllength ) {
+		var btn = S.state === 'play' ? 'pause' : 'play';
+	} else {
+		var btn = 'play disabled';
+	}
+	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
+}
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
@@ -381,6 +389,7 @@ $( '.helphead' ).on( 'click', function() {
 } );
 $( '.playback' ).on( 'click', function() { // for player and camilla
 	S.state = S.state === 'play' ? 'pause' : 'play';
+	if ( page === 'camilla' && S.state === 'pause' ) render.vuClear();
 	playbackButton();
 	bash( [ 'cmd.sh', 'mpcplayback' ] );
 } );
