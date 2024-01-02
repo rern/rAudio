@@ -299,7 +299,9 @@ i.disabled {
 	pointer-events: none;
 	color: var( --cg ) !important;
 }
-
+.liinput .i-volume::before {
+	margin-left: 5px !important;
+}
 .i-volume.mute {
 	color: var( --cm ) !important;
 }
