@@ -1,14 +1,14 @@
 // variables //////////////////////////////////////////////////////////////////////////////
-V            = {
+V              = {
 	  clipped    : false
 	, graph      : { filters: [], pipeline: [] }
 	, prevconfig : {}
 	, sortable   : {}
 	, tab        : 'filters'
 	, timeoutred : true
-	, wscamilla  : null
 }
-var $master  = $( '#volume, #divvolume .i-minus, #divvolume .i-plus' )
+var wscamilla  = null
+var $master    = $( '#volume, #divvolume .i-minus, #divvolume .i-plus' )
 // filters //////////////////////////////////////////////////////////////////////////////
 var F0         = {
 	  type       : [
@@ -487,13 +487,13 @@ var axes     = {
 
 // functions //////////////////////////////////////////////////////////////////////////////
 function renderPage() { // common from settings.js
-	V.wscamilla && V.wscamilla.readyState === 1 ? util.wsGetConfig() : util.webSocket();
+	wscamilla && wscamilla.readyState === 1 ? util.wsGetConfig() : util.webSocket();
 }
 function psOnClose() {
 	if ( V.off ) return
 	
 	clearInterval( V.intervalvu );
-	if ( V.wscamilla ) V.wscamilla.close();
+	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
 	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
@@ -820,7 +820,7 @@ var render   = {
 		var data      = MIX[ name ].mapping;
 		var chin      = DEV.capture.channels;
 		var chout     = DEV.playback.channels;
-		var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name
+		var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers subicon' ) + name
 						+ iconadd( chout === data.length ) + ico( 'back' )
 						+'</li>';
 		var optin     = htmlOption( chin );
@@ -1529,9 +1529,9 @@ var setting  = {
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
-			V.wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
+			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			setTimeout( () => bash( [ 'saveconfig' ] ), 300 );
-		}, V.wscamilla ? 0 : 300 );
+		}, wscamilla ? 0 : 300 );
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
 	, switchSave    : ( id, disable ) => {
@@ -1683,7 +1683,7 @@ var util     = {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 	}
 	, webSocket    : () => {
-		if ( V.wscamilla && V.wscamilla.readyState < 2 ) return
+		if ( wscamilla && wscamilla.readyState < 2 ) return
 		
 		var cmd_el            = {
 			  GetBufferLevel    : 'buffer'
@@ -1692,25 +1692,25 @@ var util     = {
 			, GetProcessingLoad : 'load'
 			, GetRateAdjust     : 'rate'
 		}
-		V.wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
-		V.wscamilla.onready   = () => { // custom
+		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
+		wscamilla.onready   = () => { // custom
 			util.wsGetState();
 			util.wsGetConfig();
 			V.intervalstatus = setInterval( () => {
 				if ( V.local ) return
 				
 				util.wsGetState();
-				if ( S.enable_rate_adjust ) V.wscamilla.send( '"GetRateAdjust"' );
+				if ( S.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
 			}, 1000 );
 		}
-		V.wscamilla.onopen    = () => {
-			websocketReady( V.wscamilla );
+		wscamilla.onopen    = () => {
+			websocketReady( wscamilla );
 		}
-		V.wscamilla.onclose   = () => {
+		wscamilla.onclose   = () => {
 			render.vuClear();
 			clearInterval( V.intervalstatus );
 		}
-		V.wscamilla.onmessage = response => {
+		wscamilla.onmessage = response => {
 			var data  = JSON.parse( response.data );
 			var cmd   = Object.keys( data )[ 0 ];
 			var value = data[ cmd ].value;
@@ -1790,7 +1790,7 @@ var util     = {
 				case 'GetState':
 					if ( 'intervalvu' in V || S.state !== 'play' ) return
 					
-					V.intervalvu = setInterval( () => V.wscamilla.send( '"GetSignalLevels"' ), 100 );
+					V.intervalvu = setInterval( () => wscamilla.send( '"GetSignalLevels"' ), 100 );
 					break;
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
@@ -1837,12 +1837,12 @@ var util     = {
 	}
 	, wsGetConfig  : () => {
 		setTimeout( () => {
-			[ 'GetConfigFilePath', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => V.wscamilla.send( '"'+ cmd +'"' ) );
-		}, V.wscamilla.readyState === 1 ? 0 : 300 ); 
+			[ 'GetConfigFilePath', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
+		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 	, wsGetState  : () => {
 		[ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ].forEach( k => {
-			V.wscamilla.send( '"'+ k +'"' );
+			wscamilla.send( '"'+ k +'"' );
 		} );
 	}
 }
@@ -1930,7 +1930,7 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, c', function() { // filters, mi
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	local( 2000 );
 	$( '.divclipped' ).addClass( 'hide' );
-	V.wscamilla.send( '"ResetClippedSamples"' );
+	wscamilla.send( '"ResetClippedSamples"' );
 } );
 $( '#configuration' ).on( 'input', function() {
 	if ( V.local ) return
@@ -1938,8 +1938,8 @@ $( '#configuration' ).on( 'input', function() {
 	var name = $( this ).val();
 	var path = '/srv/http/data/camilladsp/configs'+ ( S.bluetooth ? '-bt/' : '/' ) + name;
 	bash( [ 'confswitch', path, 'CMD PATH' ], () => {
-		V.wscamilla.send( '{ "SetConfigFilePath": "'+ path +'" }' );
-		V.wscamilla.send( '"Reload"' );
+		wscamilla.send( '{ "SetConfigFilePath": "'+ path +'" }' );
+		wscamilla.send( '"Reload"' );
 		S.configname = name;
 		setTimeout( () => util.wsGetConfig(), 300 );
 	} );
@@ -2295,7 +2295,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	var checked = ! $this.hasClass( 'mute' );
 	setting.muteToggle( $this, checked );
 	FIL[ name ].parameters.mute = checked;
-	setting.save( 'Gain', 'Change ...' );
+	setting.save();
 } ).on( 'click', '.i-inverted, .i-linear', function() {
 	var $this   = $( this );
 	var linear = $this.hasClass( 'i-linear' );
@@ -2304,7 +2304,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	$this.toggleClass( 'bl', checked );
 	if ( linear ) checked = checked ? 'linear' : 'dB';
 	FIL[ name ].parameters[ linear ? 'scale' : 'inverted' ] = checked;
-	setting.save( 'Gain', 'Change ...' );
+	setting.save( name, 'Change ...' );
 } ).on( 'click', 'li.eq', function( e ) {
 	if ( $( e.target ).parents( '.divgraph' ).length ) return
 	
@@ -2374,16 +2374,15 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	
 	var name  = $this.find( '.li1' ).text();
 	render.mixersSub( name );
-} ).on( 'click', 'li i', function() {
+} ).on( 'click', 'li i:not( .subicon )', function() {
 	var $this = $( this );
-	var cmd   = $this.prop( 'class' ).slice( 2 );
-	if ( ! [ 'volume', 'add', 'inverted', 'linear' ].includes( cmd ) ) return
-	
+	var cmd   = $this.prop( 'class' ).replace( /i-| .*/g, '' );
 	var $li   = $this.parents( 'li' );
 	var name  = $li.data( 'name' );
+	var index = $li.data( 'index' );
 	var title = 'Mixer';
 	if ( cmd === 'volume' ) {
-		var mapping = MIX[ name ].mapping[ $li.data( 'index' ) ];
+		var mapping = MIX[ name ].mapping[ index ];
 		var checked = ! $this.hasClass( 'mute' );
 		setting.muteToggle( $this, checked );
 		if ( $li.hasClass( 'main' ) ) {
@@ -2391,24 +2390,18 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		} else {
 			mapping.sources[ $li.data( 'si' ) ].mute = checked;
 		}
-		setting.save( title, 'Change ...' );
+		setting.save();
 	} else if ( cmd === 'add' ) {
-		var index = $li.hasClass( 'lihead' ) ? '' : $li.data( 'index' );
+		var index = $li.hasClass( 'lihead' ) ? '' : index;
 		setting.mixerMap( name, index );
-	} else {
-		var index   = $li.data( 'index' );
+	} else if ( [ 'inverted', 'linear' ].includes( cmd ) ) {
 		var si      = $li.data( 'si' );
 		var mapping = MIX[ name ].mapping[ index ];
 		var source  = mapping.sources[ si ];
 		var checked = ! $this.hasClass( 'bl' );
-		if ( cmd === 'inverted' ) {
-			$this.toggleClass( 'bl', checked );
-			source.inverted = checked;
-		} else if ( cmd === 'linear' ) {
-			$this.toggleClass( 'bl', checked );
-			source.scale = checked ? 'linear' : null;
-		}
-		setting.save( title, 'Change ...' );
+		$this.toggleClass( 'bl', checked );
+		cmd === 'inverted' ? source.inverted = checked : source.scale = checked ? 'linear' : null;
+		setting.save( name, 'Change ...' );
 	}
 } ).on( 'input', 'select', function() {
 	var $this = $( this );
