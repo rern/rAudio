@@ -8,6 +8,7 @@ V            = {
 	, timeoutred : true
 	, wscamilla  : null
 }
+var $master  = $( '#volume, #divvolume .i-minus, #divvolume .i-plus' )
 // filters //////////////////////////////////////////////////////////////////////////////
 var F0         = {
 	  type       : [
@@ -742,7 +743,7 @@ var render   = {
 			.text( S.volumemute || S.volume )
 			.toggleClass( 'bl', S.volumemute > 0 );
 		$( '#divvolume .i-volume' ).toggleClass( 'mute', S.volumemute > 0 );
-		$( '#divvolume .i-minus, #divvolume .i-plus, #volume' ).toggleClass( 'disabled', S.volumemute > 0 );
+		if ( S.volumemute ) $master.addClass( 'disabled' );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		if ( ! Object.keys( FIL ).length ) return
@@ -1659,14 +1660,14 @@ var util     = {
 			volumeSetAt();
 		} else {
 			var diff = V.dragpress ? 3 : Math.abs( vol - S.volume );
-			$( '#volume, #divvolume .divgain' ).addClass( 'disabled' );
+			$master.addClass( 'disabled' );
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
 				, {
 					  duration : diff * 40
 					, easing   : 'linear'
 					, complete : () => {
-						$( '#volume, #divvolume .divgain' ).toggleClass( 'disabled', S.volumemute > 0 );
+						$master.toggleClass( 'disabled', S.volumemute > 0 );
 					}
 				}
 			);
