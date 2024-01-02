@@ -276,8 +276,8 @@ tr .i-remove {
 .liinput.main i.disabled {
 	color: var( --cgl ) !important;
 }
-.liinput .filter div {
-	display: block;
+.liinput .name {
+	width: 142px;
 }
 .liinput.main div:first-child,
 .liinput .select2-container {

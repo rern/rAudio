@@ -777,7 +777,7 @@ var render   = {
 		}
 		if ( 'gain' in param ) {
 			var gain = param.gain;
-			var li   = '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
+			var li   = '<div class="liinput"><div class="name"><div class="li1">'+ k +'</div>'
 					+'<div class="li2">'
 					+ ( 'freq' in param ? param.freq +'Hz ' : v.type )
 					+ ( 'q' in param ? 'Q:'+ param.q : '' )
