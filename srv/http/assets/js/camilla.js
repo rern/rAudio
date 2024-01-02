@@ -1693,13 +1693,12 @@ var util     = {
 		}
 		V.wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		V.wscamilla.onready   = () => { // custom
+			util.wsGetState();
 			util.wsGetConfig();
 			V.intervalstatus = setInterval( () => {
 				if ( V.local ) return
 				
-				[ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ].forEach( k => {
-					V.wscamilla.send( '"'+ k +'"' );
-				} );
+				util.wsGetState();
 				if ( S.enable_rate_adjust ) V.wscamilla.send( '"GetRateAdjust"' );
 			}, 1000 );
 		}
@@ -1839,6 +1838,11 @@ var util     = {
 		setTimeout( () => {
 			[ 'GetConfigFilePath', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => V.wscamilla.send( '"'+ cmd +'"' ) );
 		}, V.wscamilla.readyState === 1 ? 0 : 300 ); 
+	}
+	, wsGetState  : () => {
+		[ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ].forEach( k => {
+			V.wscamilla.send( '"'+ k +'"' );
+		} );
 	}
 }
 
