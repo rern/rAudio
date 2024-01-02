@@ -307,7 +307,7 @@ i.disabled {
 	margin: 0 -4px;
 }
 .i-volume.mute {
-	color: var( --cm ) !important;
+	color: var( --cml ) !important;
 }
 .liinput input[ type=checkbox ] {
 	margin: 0 16px;
@@ -438,6 +438,9 @@ i.disabled {
 	.helphead { display: none }
 }
 
+.bl {
+	color: var( --cml ) !important;
+}
 .db,
 #divvolume {
 	cursor: pointer;
