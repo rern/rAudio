@@ -27,13 +27,13 @@ EOF
 {$Fi( 'set0 btn' )} Reset clipped count (if any)
 EOF
 	, 'filters'   => <<< EOF
-{$Fi( 'folder-filter btn' )}{$Fi( 'gear btn' )}{$Fi( 'plus btn' )} FIR coefficient files · Gain slider range · New
+{$Fi( 'folder-filter btn' )}{$Fi( 'plus btn' )} FIR coefficient files · New
 {$button[ 'filters' ]} Graph · Edit · Delete
 {$Fi( 'code btn' )} Set 0
 {$button[ 'control' ]} Mute · Invert · Linear (Gain)
 EOF
 	, 'mixers'   => <<< EOF
-{$Fi( 'gear btn' )}{$Fi( 'plus btn' )} Gain slider range · New
+{$Fi( 'plus btn' )} New
 {$button[ 'mixers' ]} Edit · Delete
 {$Fi( 'code btn' )}{$button[ 'control' ]} Set 0 · Mute · Invert · Linear
 EOF
@@ -96,8 +96,8 @@ foreach( $tabs as $id ) {
 	$htmltabs[ $id ] = $html.'</div>';
 }
 $button = [
-	  'filters'    => [ 'folder-filter', 'gear', 'add' ]
-	, 'mixers'     => [ 'gear', 'add' ]
+	  'filters'    => [ 'folder-filter', 'add' ]
+	, 'mixers'     => [ 'add' ]
 	, 'processors' => [ 'add' ]
 	, 'pipeline'   => [ 'flowchart', 'add' ]
 	, 'devices'    => [ 'gear' ]
