@@ -756,11 +756,17 @@ var render    = {
 		$( '.peak' ).css( { left: 0, width: 0 } );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
-		var width = db < -98 ? 0 : Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
+		if ( db < -98 ) {
+			var width = 0;
+			var left  = 0;
+		} else {
+			var width = Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
+			var left  = width - 2;
+		}
 		if ( rms ) {
 			$( '.rms.'+ cpi ).css( 'width', width +'px' );
 		} else {
-			$( '.peak.'+ cpi ).css( 'left', ( width - 2 ) +'px' );
+			$( '.peak.'+ cpi ).css( 'left', left +'px' );
 			if ( db > 0 ) {
 				if ( ! V.timeoutred ) return
 				
