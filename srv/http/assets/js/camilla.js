@@ -2266,16 +2266,14 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.save();
 } ).on( 'click', '.i-inverted, .i-linear', function() {
 	var $this   = $( this );
-	var name   = $this.parents( 'li' ).data( 'name' );
-	var checked    = ! $this.hasClass( 'bl' );
+	var name    = $this.parents( 'li' ).data( 'name' );
+	var checked = ! $this.hasClass( 'bl' );
 	$this.toggleClass( 'bl', checked );
+	var param   = FIL[ name ].parameters;
 	if ( $this.hasClass( 'i-inverted' ) ) {
-		FIL[ name ].parameter.inverted = checked;
+		param.inverted = checked;
 	} else {
-		var gain = $this.siblings( 'input' ).val();
-		if ( checked ) gain /= 10;
-		FIL[ name ].parameters.scale = checked ? 'linear' : 'dB';
-		FIL[ name ].parameters.gain  = gain;
+		param.scale = checked ? 'linear' : 'dB';
 	}
 	setting.save( name, 'Change ...' );
 } ).on( 'click', 'li.eq', function( e ) {
@@ -2367,10 +2365,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	if ( $this.hasClass( 'i-inverted' ) ) {
 		source.inverted = M.checked
 	} else {
-		var gain     = $this.siblings( 'input' ).val();
-		if ( M.checked ) gain /= 10;
-		source.scale = M.checked ? 'linear' : null;
-		source.gain  = gain;
+		source.scale = M.checked ? 'linear' : 'dB';
 	}
 	setting.save( M.name, 'Change ...' );
 } ).on( 'input', 'select', function() {
