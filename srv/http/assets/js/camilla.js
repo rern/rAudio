@@ -682,7 +682,7 @@ var render    = {
 		var vugrid  = '<div id="vugrid">';
 		for ( i = 0; i < 4; i++ ) vugrid  += '<a class="g'+ i +'"></>';
 		var vulabel = '<div id="vulabel">';
-		[ '', -96, -48, -24, -12, -6, 0, 6 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
+		[ '', -96, -48, -24, -12, -6, 0 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
 		var vubar   = '<div id="vu">'
 					 + vugrid +'</div>'
 					 +'<div id="in">';
@@ -749,6 +749,39 @@ var render    = {
 		} else {
 			$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
 			$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
+		}
+	}
+	, vuClear     : () => {
+		if ( ! ( 'intervalvu' in V ) ) return
+		
+		V.signal = false;
+		clearInterval( V.intervalvu );
+		delete V.intervalvu;
+		$( '.peak, .rms' ).css( 'transition-duration', '0s' );
+		$( '.rms' ).css( 'width', 0 );
+		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
+	}
+	, vuLevel     : ( rms, cpi, db ) => {
+		var width = Math.log10( ( 100 + db ) / 10 ) * 200;
+		if ( rms ) {
+			$( '.rms.'+ cpi ).css( 'width', width +'px' );
+		} else {
+			$( '.peak.'+ cpi ).css( 'left', width +'px' );
+			if ( db > 0 ) {
+				if ( ! V.timeoutred ) return
+				
+				clearTimeout( V.timeoutred );
+				V.timeoutred = false;
+				$( '.peak, .clipped' )
+					.css( 'transition-duration', '0s' )
+					.addClass( 'red' );
+			} else if ( ! V.timeoutred ) {
+				V.timeoutred = setTimeout( () => {
+					$( '.peak, .clipped' )
+						.css( 'transition-duration', '' )
+						.removeClass( 'red' );
+				}, 200 );
+			}
 		}
 	} //-----------------------------------------------------------------------------------
 	, filters     : () => {
@@ -1042,16 +1075,6 @@ var render    = {
 				.replace( 'Alsa', 'ALSA' )
 				.replace( 'Std',  'std' )
 	}
-	, vuClear     : () => {
-		if ( ! ( 'intervalvu' in V ) ) return
-		
-		V.signal = false;
-		clearInterval( V.intervalvu );
-		delete V.intervalvu;
-		$( '.peak, .rms' ).css( 'transition-duration', '0s' );
-		$( '.rms' ).css( 'width', 0 );
-		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
-	}
 }
 var setting   = {
 	  filter        : ( type, subtype, name ) => {
@@ -1240,7 +1263,7 @@ var setting   = {
 		} );
 	}
 	, mixerMap      : ( name, index ) => {
-		if ( index === '' ) {
+		if ( index === 'dest' ) {
 			var title = 'Add Destination';
 			info( {
 				  icon       : V.tab
@@ -1513,7 +1536,7 @@ var setting   = {
 		return {
 			  $li     : $li
 			, name    : $li.data( 'name' )
-			, index   : $li.hasClass( 'lihead' ) ? '' : $li.data( 'index' )
+			, index   : $li.hasClass( 'lihead' ) ? 'dest' : $li.data( 'index' )
 			, si      : $li.data( 'si' )
 			, checked : ! ( $this.hasClass( 'bl' ) || $this.hasClass( 'mute' ) )
 		}
@@ -1773,46 +1796,15 @@ var common    = {
 						return
 					}
 					
+					if ( ! V.signal ) { // restore after 1st set
+						V.signal = true;
+						$( '.peak' ).css( 'background', 'var( --cm )' );
+						$( '.rms' ).css( 'transition-duration', '' );
+						setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 100 );
+					}
 					[ 'playback_peak', 'playback_rms', 'capture_peak', 'capture_rms' ].forEach( k => {
 						cp = k[ 0 ];
-						value[ k ].forEach( ( val, i ) => {
-							if ( val >= -12 ) { // db > percent
-								p = 81.25 + 12.5 * val / 6
-							} else if ( val >= -24 ) {
-								p = 68.75 + 12.5 * val / 12
-							} else {
-								p = 56.25 + 12.5 * val / 24
-							}
-							v = p < 0 ? 0 : ( p > 100 ? 100 : p )
-							if ( k.slice( -1 ) === 's' ) { // rms
-								$( '.rms.'+ cp + i ).css( 'width', v +'%' );
-								if ( ! V.signal ) { // restore after 1st set
-									V.signal = true;
-									$( '.peak' ).css( 'background', 'var( --cm )' );
-									$( '.rms' ).css( 'transition-duration', '' );
-									setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 100 );
-								}
-							} else {
-								$( '.peak.'+ cp + i ).css( 'left', v +'%' );
-								if ( val > 0 ) {
-									if ( ! V.timeoutred ) return
-									
-									clearTimeout( V.timeoutred );
-									V.timeoutred = false;
-									$( '.peak, .clipped' )
-										.css( 'transition-duration', '0s' )
-										.addClass( 'red' );
-								} else {
-									if ( V.timeoutred ) return
-									
-									V.timeoutred = setTimeout( () => {
-										$( '.peak, .clipped' )
-											.css( 'transition-duration', '' )
-											.removeClass( 'red' );
-									}, 200 );
-								}
-							}
-						} );
+						value[ k ].forEach( ( db, i ) => render.vuLevel( k.slice( -1 ) === 's', cp + i, db ) );
 					} );
 					break;
 				case 'GetBufferLevel':
@@ -2355,29 +2347,30 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	
 	var name  = $this.find( '.li1' ).text();
 	render.mixersSub( name );
-} ).on( 'click', 'li i:not( .subicon )', function() {
+} ).on( 'input', 'input[type=range]', function() {
+	setting.rangeGet( $( this ), 'input' );
+} ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
+	graph.gain();
+} ).on( 'click', '.i-volume', function() {
 	var $this = $( this );
-	var cmd   = $this.prop( 'class' ).replace( /i-| .*/g, '' );
 	var M     = setting.mixerGet( $this );
-	if ( cmd === 'volume' ) {
-		var mapping = MIX[ M.name ].mapping[ M.index ];
-		setting.muteToggle( $this, M.checked );
-		typeof M.si === 'number' ? mapping.sources[ M.si ].mute = M.checked : mapping.mute = M.checked;
-		setting.save();
-	} else if ( cmd === 'add' ) {
-		setting.mixerMap( M.name, M.index );
-	} else if ( [ 'inverted', 'linear' ].includes( cmd ) ) {
-		var source  = MIX[ M.name ].mapping[ M.index ].sources[ M.si ];
-		$this.toggleClass( 'bl', M.checked );
-		if ( cmd === 'inverted' ) {
-			source.inverted = M.checked
-		} else {
-			source.scale = M.checked ? 'linear' : null;
-			var gain     = M.checked ? source.gain / 15 : source.gain * 15;
-			source.gain  = Math.round( gain * 10 ) / 10;
-		}
-		setting.save( M.name, 'Change ...' );
+	var mapping = MIX[ M.name ].mapping[ M.index ];
+	setting.muteToggle( $this, M.checked );
+	typeof M.si === 'number' ? mapping.sources[ M.si ].mute = M.checked : mapping.mute = M.checked;
+	setting.save();
+} ).on( 'click', '.i-inverted, .i-linear', function() {
+	var $this = $( this );
+	var M     = setting.mixerGet( $this );
+	var source  = MIX[ M.name ].mapping[ M.index ].sources[ M.si ];
+	$this.toggleClass( 'bl', M.checked );
+	if ( $this.hasClass( 'i-inverted' ) ) {
+		source.inverted = M.checked
+	} else {
+		source.scale = M.checked ? 'linear' : null;
+		var gain     = M.checked ? source.gain / 15 : source.gain * 15;
+		source.gain  = Math.round( gain * 10 ) / 10;
 	}
+	setting.save( M.name, 'Change ...' );
 } ).on( 'input', 'select', function() {
 	var M   = setting.mixerGet( $( this ) );
 	var val = +$this.val();
@@ -2387,10 +2380,9 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		MIX[ M.name ].mapping[ M.index ].dest = val;
 	}
 	setting.save( M.name, 'Change ...');
-} ).on( 'input', 'input[type=range]', function() {
-	setting.rangeGet( $( this ), 'input' );
-} ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	graph.gain();
+} ).on( 'click', '.i-add', function() {
+	var M = setting.mixerGet( $( this ) );
+	setting.mixerMap( M.name, M.index );
 } );
 // processors ---------------------------------------------------------------------------------------
 $( '#processors' ).on( 'click', 'li', function( e ) {

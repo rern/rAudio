@@ -56,21 +56,22 @@
 }
 #vugrid {
 	position: absolute;
+	left: 7px;
 	width: 100%;
 	height: 100%;
-	padding-left: calc( 100% * 0.0625 );
 }
 #vugrid a {
 	display: inline-block;
-	width: calc( 100% * 0.125 );
+	margin-right: 32px;
+	width: 32px;
 	height: 100%;
-	margin-right: calc( 100% * 0.125 );
 	border: 1px solid var( --cga );
 	border-top: none;
 	border-bottom: none;
 }
 #vugrid .g3 {
 	border-left: 1px solid var( --cgl );
+	border-right: none;
 }
 #vulabel {
 	position: absolute;
@@ -85,22 +86,16 @@
 }
 #vulabel a {
 	display: inline-block;
-	width: calc( 100% * 0.117 );
+	width: 33px;
 }
 #vulabel a:nth-child(even) {
 	color: var( --cg );
 }
-#vulabel .l4 {
-	padding-left: 1px;
-}
-#vulabel .l5 {
-	padding-left: 4px;
+#vulabel .l0 {
+	width: 24px;
 }
 #vulabel .l6 {
-	padding-left: 12px;
-}
-#vulabel .l7 {
-	padding-left: 11px;
+	margin-left: 7px;
 }
 #divvolume {
 	margin-bottom: 10px;
@@ -445,4 +440,9 @@ i.disabled {
 .entries.sub li,
 #filters li {
 	cursor: default !important;
+}
+.i-minus,
+.i-plus {
+	-webkit-user-select: none;
+	user-select: none;
 }
