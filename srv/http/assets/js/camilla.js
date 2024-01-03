@@ -1728,6 +1728,7 @@ var common    = {
 			S.volume = vol;
 			common.volumeThumb();
 			volumeSetAt();
+			render.volume();
 		} else {
 			var diff = V.dragpress ? 3 : Math.abs( vol - S.volume );
 			$master.addClass( 'disabled' );
@@ -1738,6 +1739,7 @@ var common    = {
 					, easing   : 'linear'
 					, complete : () => {
 						$master.toggleClass( 'disabled', S.volumemute > 0 );
+						render.volume();
 					}
 				}
 			);
@@ -1747,7 +1749,6 @@ var common    = {
 				volumeSetAt();
 			}
 		}
-		render.volume();
 	}
 	, volumeThumb  : () => {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
