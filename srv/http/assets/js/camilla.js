@@ -714,14 +714,6 @@ var render    = {
 			return
 		}
 		
-		if ( [ 'filters', 'mixers' ].includes( V.tab ) ) {
-			var K   = V.tab.toUpperCase();
-			V.range = {
-				  max  : S.range[ K +'MAX' ]
-				, min  : S.range[ K +'MIN' ]
-				, step : S.range[ K +'STEP' ]
-			}
-		}
 		var $main = $( '#'+ V.tab +' .entries.main' );
 		if ( $main.is( ':empty' ) ) {
 			render.prevconfig();
@@ -740,16 +732,18 @@ var render    = {
 		}
 	}
 	, volume      : () => {
-		$( '#divvolume .level' )
-			.text( S.volumemute || S.volume )
-			.toggleClass( 'bl', S.volumemute > 0 );
-		$( '#divvolume .i-volume' ).toggleClass( 'mute', S.volumemute > 0 );
 		if ( S.volumemute ) {
 			$master.addClass( 'disabled' );
+			$( '#divvolume .level' ).addClass( 'bl' );
+			$( '#divvolume .i-volume' ).addClass( 'mute' );
 		} else {
+			$master.removeClass( 'disabled' );
 			$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
 			$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
+			$( '#divvolume .level' ).removeClass( 'bl' );
+			$( '#divvolume .i-volume' ).removeClass( 'mute' );
 		}
+		$( '#divvolume .level' ).text( S.volumemute || S.volume )
 	}
 	, vuClear     : () => {
 		if ( ! ( 'intervalvu' in V ) ) return
@@ -759,7 +753,7 @@ var render    = {
 		delete V.intervalvu;
 		$( '.peak, .rms' ).css( 'transition-duration', '0s' );
 		$( '.rms' ).css( 'width', 0 );
-		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
+		$( '.peak' ).css( { left: 0, width: 0 } );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		var width = db < -98 ? 0 : Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
@@ -1787,20 +1781,23 @@ var common    = {
 			var cp, p, v;
 			switch ( cmd ) {
 				case 'GetSignalLevels':
-					if ( S.state !== 'play' || S.volumemute ) {
+					if ( S.state !== 'play' ) {
 						render.vuClear();
 						return
 					}
 					
 					if ( ! V.signal ) { // restore after 1st set
 						V.signal = true;
-						$( '.peak' ).css( 'background', 'var( --cm )' );
+						$( '.peak' ).css( 'width', '' );
 						$( '.rms' ).css( 'transition-duration', '' );
 						setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 100 );
 					}
 					[ 'playback_peak', 'playback_rms', 'capture_peak', 'capture_rms' ].forEach( k => {
 						cp = k[ 0 ];
-						value[ k ].forEach( ( db, i ) => render.vuLevel( k.slice( -1 ) === 's', cp + i, db ) );
+						value[ k ].forEach( ( db, i ) => {
+							if ( S.volumemute && cp === 'p' ) db = -99;
+							render.vuLevel( k.slice( -1 ) === 's', cp + i, db );
+						} );
 					} );
 					break;
 				case 'GetBufferLevel':
@@ -1930,7 +1927,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 			volumePush();
 		}
 	}, 100 );
-} ).on( 'click', '.i-volume', function() {
+} ).on( 'click', '.i-volume, c', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 } );

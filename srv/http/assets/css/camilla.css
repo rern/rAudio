@@ -43,6 +43,7 @@
 }
 .vubar.peak {
 	width: 3px;
+	background: var( --cm );
 	transition-duration: 1s;
 }
 .vubar.peak.red {
