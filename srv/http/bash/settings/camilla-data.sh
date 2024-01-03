@@ -41,7 +41,6 @@ data='
 , "format"     : [ '$( getContent $dirsystem/camilladsp )' ]
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
-, "range"      : '$( conf2json camilla.conf )'
 , "state"      : "'$state'"
 , "volume"     : '$volume'
 , "volumemute" : '$volumemute

@@ -1,5 +1,5 @@
 // variables //////////////////////////////////////////////////////////////////////////////
-V              = {
+V             = {
 	  clipped    : false
 	, graph      : { filters: [], pipeline: [] }
 	, prevconfig : {}
@@ -7,17 +7,17 @@ V              = {
 	, tab        : 'filters'
 	, timeoutred : true
 }
-var wscamilla  = null
-var $master    = $( '#volume, #divvolume .i-minus, #divvolume .i-plus' );
-var R          = {}
+var wscamilla = null
+var $master   = $( '#volume, #divvolume .i-minus, #divvolume .i-plus' );
+var R         = {}
 // filters //////////////////////////////////////////////////////////////////////////////
-var F0         = {
-	  type       : [
+var F0        = {
+	  type         : [
 		  'Type'
 		, 'select'
-		, [ 'Gain', /*'Volume', */'Loudness', 'Delay', 'Conv', 'Biquad', 'BiquadCombo', 'Dither', 'Limiter', 'DiffEq' ] // omit Volume - use alsa directly
+		, [ 'Gain', 'Loudness', 'Delay', 'Conv', 'Biquad', 'BiquadCombo', 'Dither', 'Limiter', 'DiffEq' ] // omit Volume - use alsa directly
 	]
-	, subtype    : {
+	, subtype      : {
 		  Conv        : [
 			  'Subtype'
 			, 'select'
@@ -41,12 +41,12 @@ var F0         = {
 			  , 'Shibata441', 'ShibataHigh441', 'ShibataLow441', 'Shibata48', 'ShibataHigh48', 'ShibataLow48', 'Shibata882', 'ShibataLow882', 'Shibata96', 'ShibataLow96', 'Shibata192', 'ShibataLow192' ]
 		]
 	}
-	, freq       : [ 'Frequency', 'number' ]
-	, gain       : [ 'Gain',      'number' ]
-	, q          : [ 'Q',         'number' ]
-	, qbandwidth : [ '',          'radio', { Q: 'q', Bandwidth: 'bandwidth' } ]
-	, name       : [ 'Name',      'text' ]
-	, fader      : [ 'Fader',     'text' ]
+	, freq         : [ 'Frequency', 'number' ]
+	, gain         : [ 'Gain',      'number' ]
+	, q            : [ 'Q',         'number' ]
+	, qbandwidth   : [ '',          'radio', { Q: 'q', Bandwidth: 'bandwidth' } ]
+	, name         : [ 'Name',      'text' ]
+	, fader        : [ 'Fader',     'text' ]
 	, FivePointPeq : {
 		  Lowshelf  : [ 'fls', 'gls', 'qls' ]
 		, Peaking1  : [ 'fp1', 'gp1', 'qp1' ]
@@ -55,20 +55,20 @@ var F0         = {
 		, Highshelf : [ 'fhs', 'ghs', 'qhs' ]
 	}
 }
-var F1         = {
+var F1        = {
 	  pass   : [ F0.name, F0.type, F0.subtype.Biquad, F0.freq, F0.q ]
 	, conv   : [ F0.name, F0.type, F0.subtype.Cov ]
 	, fader  : [ F0.name, F0.type, F0.fader ]
 	, combo  : [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' ], F0.freq ]
 }
-var Flist      = {
+var Flist     = {
 	  pass    : F1.pass
 	, shelf   : [ ...F1.pass.slice( 0, 4 ), F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
 	, passFO  : F1.pass.slice( 0, 4 )
 	, shelfFO : [ ...F1.pass.slice( 0, 4 ), F0.gain ]
 	, notch   : [ ...F1.pass, F0.qbandwidth ]
 }
-var F        = {
+var F         = {
 	  Gain        : [
 		  F0.name
 		, F0.type
@@ -117,7 +117,7 @@ var F        = {
 			, [ 'Values', 'text' ]
 		]
 	}
-	, Biquad : {
+	, Biquad      : {
 		  Free              : [
 			...F1.pass.slice( 0, 3 )
 			, [ 'a1', 'number' ]
@@ -199,7 +199,7 @@ var F        = {
 	  , [ 'b', 'text' ]
 	]
 //
-	, values  : {
+	, values      : {
 		  Gain              : { name: '', type: '', gain: 0, scale: 'dB', inverted: false, mute: false } // +-150dB / +-10 linear
 		, Volume            : { name: '', type: '', ramp_time: 400, fader: 'Aux1' }
 		, Loudness          : { name: '', type: '', fader : 'main', reference_level: 25, high_boost: 10, low_boost: 10, attenuate_mid: false }
@@ -230,7 +230,7 @@ var F        = {
 		, DiffEq            : { name: '', type: '', a: [ 1, 0 ], b: [ 1, 0 ] }
 	}
 }
-var P        = { // processor
+var P         = { // processor
 	  Compressor : [
 		  [ 'Name',             'text' ]
 		, [ 'Type',             'select', [ 'Compressor' ] ]
@@ -250,18 +250,18 @@ var P        = { // processor
 	}
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
-var format   = {};
+var format    = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
 	var key       = k
 					.replace( 'FLOAT', 'Float' )
 					.replace( 'TEXT',  'Text' );
 	format[ key ] = k;
 } );
-var D0      = {
+var D0        = {
 	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
 	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
 }
-var Dlist        = {
+var Dlist     = {
 	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
 	, profile            : [ 'Profile',            'select', [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ] ]
 	, typeC              : [ 'Type',               'select' ] // option: wait for ws 'GetSupportedDeviceTypes'
@@ -279,12 +279,12 @@ var Dlist        = {
 	, loopback           : [ 'Loopback',           'checkbox' ]
 	, change_format      : [ 'Change format',      'checkbox' ]
 }
-var D1      = {
+var D1        = {
 	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.format, Dlist.channels ]
 	, AlsaP : [ Dlist.typeP, Dlist.deviceP, Dlist.format, Dlist.channels ]
 	, extra : [ Dlist.extra_samples, Dlist.skip_bytes, Dlist.read_bytes ]
 }
-var D       = {
+var D         = {
 	  main      : [
 		  [ 'Sample Rate',       'select', D0.samplerate ]
 		, [ 'Other',             'number' ]
@@ -356,7 +356,7 @@ var D       = {
 	}
 }
 // graph //////////////////////////////////////////////////////////////////////////////
-var color    = {
+var color     = {
 	  g   : 'hsl( 100, 90%,  40% )'
 	, gd  : 'hsl( 100, 90%,  20% )'
 	, gr  : 'hsl( 200, 3%,   30% )'
@@ -372,7 +372,7 @@ var color    = {
 	, w   : 'hsl( 200, 3%,   60% )'
 	, wl  : 'hsl( 200, 3%,   80% )'
 }
-var plots    = {
+var plots     = {
 	  magnitude  : {
 		  yaxis : 'y'
 		, type  : 'scatter'
@@ -399,13 +399,13 @@ var plots    = {
 		, line  : { width : 1, color: color.g }
 	}
 }
-var ycommon  = {
+var ycommon   = {
 	  overlaying : 'y'
 	, side       : 'right'
 	, anchor     : 'free'
 	, autoshift  : true
 }
-var axes     = {
+var axes      = {
 	  freq       : {
 		  title     : {
 			  text     : 'Frequency'
@@ -488,7 +488,7 @@ var axes     = {
 
 // functions //////////////////////////////////////////////////////////////////////////////
 function renderPage() { // common from settings.js
-	wscamilla && wscamilla.readyState === 1 ? util.wsGetConfig() : util.webSocket();
+	wscamilla && wscamilla.readyState === 1 ? common.wsGetConfig() : common.webSocket();
 }
 function psOnClose() {
 	if ( V.off ) return
@@ -507,10 +507,10 @@ function psVolume( data ) {
 		V.dragpress = true;
 		setTimeout( () => V.dragpress = false, 300 );
 	}
-	util.volume( S.volumemute ? 0 : data.val, 'push' );
+	common.volume( S.volumemute ? 0 : data.val, 'push' );
 }
 
-var graph    = {
+var graph     = {
 	  gain     : () => {
 		var $divgraph = $( '.divgraph' );
 		if ( ! $divgraph.length ) return
@@ -549,7 +549,7 @@ var graph    = {
 				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
 			} );
 		}
-		notify( V.tab, util.tabTitle(), 'Plot ...' );
+		notify( V.tab, common.tabTitle(), 'Plot ...' );
 		var cmd = filters ? " '"+ JSON.stringify( FIL[ val ] ) +"'" : " '"+ JSON.stringify( S.config ) +"' "+ val;
 		bash( [ 'settings/camilla.py', V.tab + cmd ], data => { // groupdelay = delay, magnitude = gain
 			var impulse   = 'impulse' in data;
@@ -644,7 +644,7 @@ var graph    = {
 		}, 'json' );
 	}
 }
-var render   = {
+var render    = {
 	  page        : () => {
 		if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
 		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
@@ -750,7 +750,7 @@ var render   = {
 			$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
 			$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 		}
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, filters     : () => {
 		if ( ! Object.keys( FIL ).length ) return
 		
@@ -786,8 +786,8 @@ var render   = {
 					+'</div>';
 		} else {
 			var paramdata = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type ) ? param.type : render.json2string( param );
-			var li        =  '<div class="li1">'+ k +'</div>'
-							+'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
+			var li        = '<div class="li1">'+ k +'</div>'
+						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
 		var $graph = $( '#filters .entries.main li[data-name="'+ k +'"]' ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
@@ -805,7 +805,7 @@ var render   = {
 		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, mixers      : () => {
 		if ( ! Object.keys( MIX ).length ) return
 		
@@ -816,26 +816,26 @@ var render   = {
 		render.toggle();
 	}
 	, mixer       : ( k, v ) => {
-		return   '<li data-name="'+ k +'">'+ ico( 'mixers liicon edit' )
-				+'<div class="li1">'+ k +'</div>'
-				+'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
-				+'</li>'
+		return '<li data-name="'+ k +'">'+ ico( 'mixers liicon edit' )
+			  +'<div class="li1">'+ k +'</div>'
+			  +'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
+			  +'</li>'
 	}
 	, mixersSub   : name => {
-		var iconadd   = max => ico( max ? 'add disabled' : 'add' );
-		var data      = MIX[ name ].mapping;
-		var chin      = DEV.capture.channels;
-		var chout     = DEV.playback.channels;
-		var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers subicon' ) + name
-						+ iconadd( chout === data.length ) + ico( 'back' )
-						+'</li>';
-		var optin     = htmlOption( chin );
-		var optout    = htmlOption( chout );
+		var iconadd = max => ico( max ? 'add disabled' : 'add' );
+		var data    = MIX[ name ].mapping;
+		var chin    = DEV.capture.channels;
+		var chout   = DEV.playback.channels;
+		var li      = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers subicon' ) + name
+					 + iconadd( chout === data.length ) + ico( 'back' )
+					 +'</li>';
+		var optin   = htmlOption( chin );
+		var optout  = htmlOption( chout );
 		data.forEach( ( kv, i ) => {
-			var dest     = kv.dest;
-			var opts     = optout.replace( '>'+ dest, ' selected>'+ dest );
-			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
-			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
+			var dest   = kv.dest;
+			var opts   = optout.replace( '>'+ dest, ' selected>'+ dest );
+			var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
+			li        += '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
 						+'<div><select>'+ opts +'</select></div>'
 						+ ico( kv.mute ? 'volume mute' : 'volume' ) + iconadd( chout === kv.sources.length )
 						+'</li>';
@@ -855,7 +855,7 @@ var render   = {
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
 		selectSet( $( '#mixers select' ) );
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, processors  : () => {
 		if ( ! PRO || ! Object.keys( PRO ).length ) return
 		
@@ -864,14 +864,14 @@ var render   = {
 		$.each( data, ( k, v ) => {
 			var param = jsonClone( v.parameters );
 			[ 'channels', 'monitor_channels', 'process_channels' ].forEach( k => delete param[ k ] );
-			li+= '<li data-name="'+ k +'">'+ ico( 'processors liicon edit' )
-				+'<div class="li1">'+ k +'</div>'
-				+'<div class="li2">'+ v.type +' · '+ render.json2string( param )+'</div>'
-				+'</li>'
+			li += '<li data-name="'+ k +'">'+ ico( 'processors liicon edit' )
+				 +'<div class="li1">'+ k +'</div>'
+				 +'<div class="li2">'+ v.type +' · '+ render.json2string( param )+'</div>'
+				 +'</li>'
 		} );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, pipeline    : () => {
 		$( '.i-flowchart' ).toggleClass( 'disabled', PIP.length === 0 );
 		if ( ! PIP.length ) return
@@ -887,7 +887,7 @@ var render   = {
 		if ( el.type === 'Filter' ) {
 			icon  += ' graph';
 			var li = '<div class="li1">' + el.type +'</div>'
-						+'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
+					+'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
 		} else {
 			var li = '<gr>Mixer:</gr> '+ el.name;
 		}
@@ -932,7 +932,7 @@ var render   = {
 				graph.pipeline();
 			}
 		} );
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, devices     : () => {
 		var li  = '';
 		[ 'playback', 'capture' ].forEach( d => {
@@ -940,17 +940,17 @@ var render   = {
 			var data = jsonClone( dev );
 			[ 'device', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
-					+'<div class="li1">'+ util.key2label( d ) +' <gr>·</gr> '+ render.typeReplace( dev.type )
-					+ ( 'device' in dev ? ' <gr>·</gr> '+ dev.device +'</div>' : '' )
-					+'<div class="li2">'+ render.json2string( data ) +'</div>'
-					+'</li>';
+				 +'<div class="li1">'+ common.key2label( d ) +' <gr>·</gr> '+ render.typeReplace( dev.type )
+				 + ( 'device' in dev ? ' <gr>·</gr> '+ dev.device +'</div>' : '' )
+				 +'<div class="li2">'+ render.json2string( data ) +'</div>'
+				 +'</li>';
 		} );
 		$( '#devices .entries.main' ).html( li );
 		var labels = '';
 		var values = '';
 		D0.main.forEach( k => {
 			if ( k in DEV ) {
-				labels += util.key2label( k ) +'<br>';
+				labels += common.key2label( k ) +'<br>';
 				values += DEV[ k ].toLocaleString() +'<br>';
 			}
 		} );
@@ -961,7 +961,7 @@ var render   = {
 			labels += '<hr>';
 			values += '<hr>';
 			keys.forEach( k => {
-				labels += util.key2label( k ) +'<br>';
+				labels += common.key2label( k ) +'<br>';
 				values += DEV[ k ] +'<br>';
 			} );
 		}
@@ -981,14 +981,14 @@ var render   = {
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		switchSet();
 		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
 		S.lsconfigs.forEach( f => {
 			li += '<li>'+ ico( 'file liicon' ) +'<a class="name">'+ f +'</a></li>';
 		} );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];
 		var data = {};
@@ -1053,7 +1053,7 @@ var render   = {
 		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 	}
 }
-var setting  = {
+var setting   = {
 	  filter        : ( type, subtype, name ) => {
 		var list  = subtype ? F[ type ][ subtype ] : F[ type ];
 		if ( type === 'Biquad' ) {
@@ -1142,10 +1142,10 @@ var setting  = {
 				type        = val.type;
 				subtype     = val.subtype;
 				if ( type === 'DiffEq' ) {
-					[ 'a', 'b' ].forEach( k => val[ k ] = util.list2array( val[ k ] ) );
+					[ 'a', 'b' ].forEach( k => val[ k ] = common.list2array( val[ k ] ) );
 				} else if ( subtype === 'FivePointPeq' ) {
 					Object.keys( F0.FivePointPeq ).forEach( k => {
-						var v = util.list2array( val[ k ] );
+						var v = common.list2array( val[ k ] );
 						F0.FivePointPeq[ k ].forEach( ( key, i ) => {
 							val[ key ] = v[ i ];
 						} );
@@ -1156,7 +1156,7 @@ var setting  = {
 					delete val.bands;
 					val.gains = Array( bands ).fill( 0 );
 				} else if ( subtype === 'Values' ) {
-					val.values = util.list2array( val.values );
+					val.values = common.list2array( val.values );
 				}
 				var param = {}
 				if ( 'subtype' in val ) param.type = subtype;
@@ -1187,7 +1187,7 @@ var setting  = {
 				render.filters();
 			}
 		} );
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, mixer         : name => {
 		var title = name ? 'Mixer' : 'Add Mixer'
 		info( {
@@ -1285,7 +1285,7 @@ var setting  = {
 				}
 			} );
 		}
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, processor     : name => {
 		var type   = name ? PRO[ name ].type : 'Compressor';
 		var values = jsonClone( P.values[ type ] );
@@ -1310,7 +1310,7 @@ var setting  = {
 				var typenew = val.type;
 				var namenew = val.name;
 				[ 'name', 'type' ].forEach( k => delete val[ k ] );
-				[ 'monitor_channels', 'process_channels' ].forEach( k => val[ k ] = util.list2array( val[ k ] ) );
+				[ 'monitor_channels', 'process_channels' ].forEach( k => val[ k ] = common.list2array( val[ k ] ) );
 				if ( ! PRO ) {
 					S.config.processors = {}
 					PRO = S.config.processors;
@@ -1321,7 +1321,7 @@ var setting  = {
 				render.processors();
 			}
 		} );
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, pipeline      : () => {
 		var filters = Object.keys( FIL );
 		info( {
@@ -1393,14 +1393,14 @@ var setting  = {
 		V.sortable[ k ].destroy();
 		delete V.sortable[ k ];
 		render.sortable( k );
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, device        : ( dev, type ) => {
 		var type    = type || 'Alsa';
 		var vtype   = type === 'File' && dev === 'playback' ? 'FileP' : type;
 		var values  = jsonClone( D.values[ vtype ] );
 		values.type = type;
 		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => values[ k ] = DEV[ dev ][ k ] );
-		var title   = util.key2label( dev );
+		var title   = common.key2label( dev );
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -1439,7 +1439,7 @@ var setting  = {
 			if ( k === 'samplerate' ) values.other = DEV.samplerate;
 		} );
 		if ( ! D0.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
-		var title = util.tabTitle();
+		var title = common.tabTitle();
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -1467,7 +1467,7 @@ var setting  = {
 				render.devices();
 			}
 		} );
-	} //---------------------------------------------------------------------------------------------
+	} //-----------------------------------------------------------------------------------
 	, resampler     : ( type, profile ) => {
 		var Dtype  = D.resampler[ type ];
 		var values = D.resampler.values[ type ];
@@ -1507,8 +1507,8 @@ var setting  = {
 				setting.switchSave( 'resampler' );
 			}
 		} );
-	} //---------------------------------------------------------------------------------------------
-	, mixersValues : $this => {
+	} //-----------------------------------------------------------------------------------
+	, mixerGet      : $this => {
 		var $li = $this.parents( 'li' );
 		return {
 			  $li     : $li
@@ -1523,24 +1523,7 @@ var setting  = {
 		$this.prev().toggleClass( 'disabled', checked );
 		$this.siblings( 'input' ).prop( 'disabled', checked );
 	}
-	, rangeSet    : () => {
-		if ( R.step < 1 ) {
-			R.val = Math.round( R.val * 10 ) / 10;
-			var db = R.val.toFixed( 1 );
-		} else {
-			var db = R.val;
-		}
-		if ( R.val === R.min || R.val === R.max ) clearTimeout( V.timeoutgain );
-		R.$db.text( db );
-		R.$gain.val( R.val );
-		if ( V.tab === 'filters' ) {
-			FIL[ R.name ].parameters.gain = R.val;
-		} else {
-			MIX[ R.name ].mapping[ R.index ].sources[ R.si ].gain = R.val;
-		}
-		setting.save();
-	}
-	, rangeValues : ( $this, type ) => {
+	, rangeGet      : ( $this, type ) => {
 		var input = type === 'input';
 		var $li   = $this.parents( 'li' );
 		var $gain = input ? $this : $this.siblings( 'input' );
@@ -1567,7 +1550,7 @@ var setting  = {
 			}, 100 );
 		} else { // from .i-minus, .i-plus, c
 			if ( R.cmd === 'db' ) {
-				R.val  = 0;
+				R.val = 0;
 			} else if ( R.cmd === 'minus' ) {
 				R.val = R.val - R.step;
 			} else if ( R.cmd === 'plus' ) {
@@ -1576,11 +1559,29 @@ var setting  = {
 			setting.rangeSet();
 		}
 	}
+	, rangeSet      : () => {
+		if ( R.step < 1 ) {
+			R.val  = Math.round( R.val * 10 ) / 10;
+			var db = R.val.toFixed( 1 );
+		} else {
+			var db = R.val;
+		}
+		if ( R.val === R.min || R.val === R.max ) clearTimeout( V.timeoutgain );
+		R.$db.text( db );
+		R.$gain.val( R.val );
+		if ( V.tab === 'filters' ) {
+			FIL[ R.name ].parameters.gain = R.val;
+		} else {
+			MIX[ R.name ].mapping[ R.index ].sources[ R.si ].gain = R.val;
+		}
+		setting.save();
+	}
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			setTimeout( () => bash( [ 'saveconfig' ] ), 300 );
+			clearTimeout( V.timeoutsave );
+			V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 2000 );
 		}, wscamilla ? 0 : 300 );
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
@@ -1610,7 +1611,7 @@ var setting  = {
 			, title   : title
 			, message : message
 			, file    : { oklabel: ico( 'file' ) +'Upload', type: dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml' }
-			, cancel  : util.webSocket
+			, cancel  : common.webSocket
 			, ok      : () => {
 				notify( V.tab, title, 'Upload ...' );
 				var formdata = new FormData();
@@ -1625,12 +1626,12 @@ var setting  = {
 							infoWarning(  V.tab,  title, message );
 						}
 					} );
-				util.webSocket();
+				common.webSocket();
 			}
 		} );
 	}
 }
-var util     = {
+var common    = {
 	  inUse        : name => {
 		var filters = V.tab === 'filters';
 		var inuse   = [];
@@ -1687,7 +1688,7 @@ var util     = {
 	, labels2array : array => {
 		if ( ! array ) return false
 		
-		var capitalized = array.map( el => util.key2label( el ) );
+		var capitalized = array.map( el => common.key2label( el ) );
 		return capitalized
 	}
 	, list2array   : list => { // '1, 2, 3' > [ 1, 2, 3 ]
@@ -1706,7 +1707,7 @@ var util     = {
 		}
 		if ( V.drag ) {
 			S.volume = vol;
-			util.volumeThumb();
+			common.volumeThumb();
 			volumeSetAt();
 		} else {
 			var diff = V.dragpress ? 3 : Math.abs( vol - S.volume );
@@ -1744,12 +1745,12 @@ var util     = {
 		}
 		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		wscamilla.onready   = () => { // custom
-			util.wsGetState();
-			util.wsGetConfig();
+			common.wsGetState();
+			common.wsGetConfig();
 			V.intervalstatus = setInterval( () => {
 				if ( V.local ) return
 				
-				util.wsGetState();
+				common.wsGetState();
 				if ( S.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
 			}, 1000 );
 		}
@@ -1844,11 +1845,11 @@ var util     = {
 					break;
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
-					DEV = S.config.devices;
-					FIL = S.config.filters;
-					MIX = S.config.mixers;
-					PIP = S.config.pipeline;
-					PRO = S.config.processors;
+					DEV      = S.config.devices;
+					FIL      = S.config.filters;
+					MIX      = S.config.mixers;
+					PIP      = S.config.pipeline;
+					PRO      = S.config.processors;
 					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
@@ -1899,18 +1900,18 @@ var util     = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-// volume -------------------------------------------------------------------------------
+// volume ---------------------------------------------------------------------------------
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 	V.start = true;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.start ) return
 	
 	V.drag = true;
-	util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
+	common.volume( e.pageX || e.changedTouches[ 0 ].pageX );
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.start ) return
 	
-	V.drag ? volumePush() : util.volume( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.drag ? volumePush() : common.volume( e.pageX || e.changedTouches[ 0 ].pageX );
 	V.start = false;
 	setTimeout( () => V.drag = false, 1000 );
 } ).on( 'mouseleave', function() {
@@ -1934,7 +1935,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
 		volumeSetAt();
-		util.volumeThumb();
+		common.volumeThumb();
 		$( '#divvolume .level' ).text( S.volume );
 		if ( S.volume === 0 || S.volume === 100 ) {
 			clearInterval( V.intervalvolume );
@@ -1945,16 +1946,16 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 } );
-// common -------------------------------------------------------------------------------
+// common ---------------------------------------------------------------------------------
 $( '.entries' ).on( 'click', '.i-minus, .i-plus, c', function() { // filters, mixersSub
-	setting.rangeValues( $( this ), 'click' );
+	setting.rangeGet( $( this ), 'click' );
 } ).on( 'touchend mouseup mouseleave', '.i-minus, .i-plus, c', function() {
 	if ( ! V.press ) return
 	
 	clearInterval( V.intervalgain );
 	if ( $( this ).parents( 'li' ).find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) graph.gain();
 } ).press( '.i-minus, .i-plus', function( e ) {
-	setting.rangeValues( $( e.currentTarget ), 'press' );
+	setting.rangeGet( $( e.currentTarget ), 'press' );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	local( 2000 );
@@ -1970,7 +1971,7 @@ $( '#configuration' ).on( 'input', function() {
 		wscamilla.send( '{ "SetConfigFilePath": "'+ path +'" }' );
 		wscamilla.send( '"Reload"' );
 		S.configname = name;
-		setTimeout( () => util.wsGetConfig(), 300 );
+		setTimeout( () => common.wsGetConfig(), 300 );
 	} );
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 } );
@@ -2095,7 +2096,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					}
 					break;
 				case 'delete':
-					if ( util.inUse( name ) ) return
+					if ( common.inUse( name ) ) return
 					
 					info( {
 						  icon    : V.tab
@@ -2122,7 +2123,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 				case 'delete':
 					var dest = V.li.hasClass( 'liinput main' );
 					if ( main ) {
-						if ( util.inUse( name ) ) return
+						if ( common.inUse( name ) ) return
 						
 						var title = 'Mixer';
 						var msg = name;
@@ -2261,11 +2262,11 @@ $( '#menu a' ).on( 'click', function( e ) {
 			}
 	}
 } );
-// filters -------------------------------------------------------------------------------
+// filters --------------------------------------------------------------------------------
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload();
 } ).on( 'input', 'input[type=range]', function() {
-	setting.rangeValues( $( this ), 'input' );
+	setting.rangeGet( $( this ), 'input' );
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	graph.gain();
 } ).on( 'click', '.i-volume', function() {
@@ -2347,7 +2348,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 		}
 	} );
 } );
-// mixers -------------------------------------------------------------------------------
+// mixers ---------------------------------------------------------------------------------
 $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	if ( $( e.target ).is( 'i' ) || $this.parent().hasClass( 'sub' ) ) return
@@ -2357,7 +2358,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', 'li i:not( .subicon )', function() {
 	var $this = $( this );
 	var cmd   = $this.prop( 'class' ).replace( /i-| .*/g, '' );
-	var M     = setting.mixersValues( $this );
+	var M     = setting.mixerGet( $this );
 	if ( cmd === 'volume' ) {
 		var mapping = MIX[ M.name ].mapping[ M.index ];
 		setting.muteToggle( $this, M.checked );
@@ -2378,7 +2379,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		setting.save( M.name, 'Change ...' );
 	}
 } ).on( 'input', 'select', function() {
-	var M   = setting.mixersValues( $( this ) );
+	var M   = setting.mixerGet( $( this ) );
 	var val = +$this.val();
 	if ( typeof M.si === 'number' ) {
 		MIX[ M.name ].mapping[ M.index ].sources[ M.si ].channel = val;
@@ -2387,11 +2388,11 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	}
 	setting.save( M.name, 'Change ...');
 } ).on( 'input', 'input[type=range]', function() {
-	setting.rangeValues( $( this ), 'input' );
+	setting.rangeGet( $( this ), 'input' );
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	graph.gain();
 } );
-// processors -------------------------------------------------------------------------------
+// processors ---------------------------------------------------------------------------------------
 $( '#processors' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	$( this ).find( '.liicon' ).trigger( 'click' );
@@ -2425,7 +2426,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	if ( $this.is( '.liicon, .i-back' ) ) return
 	
-	var title = util.tabTitle();
+	var title = common.tabTitle();
 	var index = $this.parents( 'li' ).data( 'index' );
 	if ( $this.hasClass( 'i-add' ) ) {
 		var title = 'Add Filter';
@@ -2443,11 +2444,11 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 		} );
 	}
 } );
-// devices -------------------------------------------------------------------------------
+// devices --------------------------------------------------------------------------------
 $( '#devices' ).on( 'click', 'li', function() {
 	setting.device( $( this ).data( 'type' ) );
 } );
-// config -------------------------------------------------------------------------------
+// config ---------------------------------------------------------------------------------
 $( '#config' ).on( 'click', '.i-add', function() {
 	setting.upload();
 } ).on( 'click', 'li', function( e ) {
@@ -2465,7 +2466,7 @@ $( '#config' ).on( 'click', '.i-add', function() {
 		} );
 	}
 } );
-// --------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------
 $( '.switch' ).on( 'click', function() {
 	var id = this.id;
 	var $setting = $( '#setting-'+ id );

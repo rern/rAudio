@@ -6,12 +6,7 @@ alias=r1
 
 # 20231230
 if [[ -e $dircamilladsp ]]; then
-	file=$dirsystem/camilla.conf
-	! grep -q ^mixersmin $file && sed -i -E 's/^min|^max/mixers&/' $file
-	! grep -q step $file && echo "\
-filtersstep=0.1
-mixersstep=0.1
-" >> $file
+	rm -f $dirsystem/camilla.conf
 	[[ ! -e $dircamilladsp/raw ]] && mkdir -p $dircamilladsp/raw
 fi
 
@@ -82,9 +77,6 @@ file=$dirsystem/scrobble.conf
 if [[ -e /boot/kernel8.img ]]; then
 	pacman -Q wiringpi | grep 181 && pacman -Sy --noconfirm wiringpi
 fi
-
-# 29231101
-[[ ! -e /usr/bin/vcgencmd ]] && cp /opt/vc/bin/{dtoverlay,vcgencmd} /usr/bin
 
 #-------------------------------------------------------------------------------
 installstart "$1"

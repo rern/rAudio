@@ -15,17 +15,7 @@ done
 [[ $1 ]] && echo $1 > $diraddons/r1
 
 # camilladsp
-if [[ -e /usr/bin/camilladsp ]]; then
-	echo "\
-filtersmax=10
-filtersmin=-10
-filtersstep=0.1
-mixersmax=10
-mixersmin=-10
-mixersstep=0.1" > $dirsystem/camilla.conf
-else
-	rm -rf $dircamilladsp
-fi
+[[ ! -e /usr/bin/camilladsp ]] && rm -rf $dircamilladsp
 
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre

@@ -20,9 +20,6 @@ args2var "$1"
 
 case $CMD in
 
-camilla )
-	pushData camilla $( conf2json camilla.conf )
-	;;
 clippedreset )
 	echo $CLIPPED > $dirshm/clipped
 	pushRefresh
