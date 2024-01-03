@@ -1936,6 +1936,9 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 } ).on( 'click', '.i-volume, c', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
+	$( '#out .peak' ).css( 'transition-duration', '0s' );
+	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
+
 } );
 // common ---------------------------------------------------------------------------------
 $( '.entries' ).on( 'click', '.i-minus, .i-plus, c', function() { // filters, mixersSub
