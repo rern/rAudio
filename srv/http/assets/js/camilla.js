@@ -762,11 +762,11 @@ var render    = {
 		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
-		var width = Math.log10( ( 100 + db ) / 10 ) * 200;
+		var width = db < -98 ? 0 : Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
 		if ( rms ) {
 			$( '.rms.'+ cpi ).css( 'width', width +'px' );
 		} else {
-			$( '.peak.'+ cpi ).css( 'left', width +'px' );
+			$( '.peak.'+ cpi ).css( 'left', ( width - 2 ) +'px' );
 			if ( db > 0 ) {
 				if ( ! V.timeoutred ) return
 				
@@ -800,7 +800,7 @@ var render    = {
 		var iconlinear = '';
 		var disabled   = '';
 		if ( v.type === 'Gain' ) {
-			linear     = param.scale === 'linear';
+			if ( param.scale === 'linear' ) linear = ' data-scale="linear"';
 			iconlinear = ico( param.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' );
 			iconmute   = ico( param.mute ? 'volume mute' : 'volume' );
 			disabled   = param.mute ? ' disabled' : '';
@@ -878,7 +878,7 @@ var render    = {
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var gain     = source.gain || 0;
 				var disabled = source.mute ? ' disabled' : '';
-				var linear   = source.scale === 'linear';
+				var linear   = source.scale === 'linear' ? ' data-scale="linear"' : '';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 + render.htmlRange( linear, gain, disabled )
 					 + ico( source.mute ? 'volume mute' : 'volume' ) + ico( source.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' )
@@ -1030,18 +1030,17 @@ var render    = {
 		return data
 	}
 	, htmlRange   : ( linear, gain, disabled ) => {
-		var range    = linear ? { max: 10, min: -10, step: 0.1 } : { max: 150, min: -150, step: 1 };
-		var db       = linear ? gain.toFixed( 1 ) : gain;
+		if ( linear ) gain *= 10;
 		var disabled = {
 			  range : disabled
-			, min   : disabled || ( gain === range.min ? ' disabled' : '' )
-			, max   : disabled || ( gain === range.max ? ' disabled' : '' )
-			, db    : disabled || ( gain === 0 ? ' disabled' : '' )
+			, min   : disabled || ( gain === -100 ? ' disabled' : '' )
+			, max   : disabled || ( gain ===  100 ? ' disabled' : '' )
+			, db    : disabled || ( gain ===    0 ? ' disabled' : '' )
 		}
 		return   '<i class="i-minus'+ disabled.min +'"></i>'
-				+'<input type="range" step="'+ range.step +'" value="'+ gain +'" min="'+ range.min +'" max="'+ range.max +'"'+ disabled.range +'>'
+				+'<input type="range" value="'+ gain +'" min="-100" max="100"'+ disabled.range + linear +'>'
 				+'<i class="i-plus'+ disabled.max +'"></i>'
-				+'<c class="db'+ disabled.db +'">'+ db +'</c>'
+				+'<c class="db'+ disabled.db +'">'+ gain +'</c>'
 	}
 	, json2string : json => {
 		return JSON.stringify( json )
@@ -1551,47 +1550,44 @@ var setting   = {
 		var $li   = $this.parents( 'li' );
 		var $gain = input ? $this : $this.siblings( 'input' );
 		R = {
-			  $gain : $gain
-			, $db   : $this.siblings( 'c' )
-			, max   : +$gain.prop( 'max' )
-			, min   : +$gain.prop( 'min' )
-			, step  : +$gain.prop( 'step' )
-			, val   : +$gain.val()
-			, cmd   : input ? '' : $this.prop( 'class' ).replace( 'i-', '' )
-			, up    : input ? '' : $this.hasClass( 'i-plus' )
-			, name  : $li.data( 'name' )
-			, index : $li.data( 'index' )
-			, si    : $li.data( 'si' )
+			  $gain  : $gain
+			, $db    : $li.find( 'c' )
+			, val    : +$gain.val()
+			, cmd    : input ? '' : $this.prop( 'class' ).replace( 'i-', '' )
+			, up     : input ? '' : $this.hasClass( 'i-plus' )
+			, linear : $gain.data( 'scale' )
+			, name   : $li.data( 'name' )
+			, index  : $li.data( 'index' )
+			, si     : $li.data( 'si' )
 		}
 		if ( input ) {
-			R.$db.text( R.step < 1 ? R.val.toFixed( 1 ) : R.val );
 			setting.rangeSet();
 		} else if ( type === 'press' ) {
 			V.intervalgain = setInterval( () => {
-				R.val = R.up ? R.val + R.step : R.val - R.step;
+				R.up ? R.val++ : R.val--;
 				setting.rangeSet();
 			}, 100 );
 		} else { // from .i-minus, .i-plus, c
-			if ( R.cmd === 'db' ) {
-				R.val = 0;
-			} else if ( R.cmd === 'minus' ) {
-				R.val = R.val - R.step;
-			} else if ( R.cmd === 'plus' ) {
-				R.val = R.val + R.step;
+			switch ( R.cmd ) {
+				case 'minus':
+					R.val--;
+					break;
+				case 'plus':
+					R.val++;
+					break;
+				default:
+					R.val = 0;
 			}
 			setting.rangeSet();
 		}
 	}
 	, rangeSet      : () => {
-		if ( R.step < 1 ) {
-			R.val  = Math.round( R.val * 10 ) / 10;
-			var db = R.val.toFixed( 1 );
-		} else {
-			var db = R.val;
-		}
-		if ( R.val === R.min || R.val === R.max ) clearTimeout( V.timeoutgain );
-		R.$db.text( db );
+		if ( R.val === -100 || R.val === 100 ) clearTimeout( V.timeoutgain );
+		R.$db
+			.text( R.val )
+			.toggleClass( 'disabled', R.val === 0 );
 		R.$gain.val( R.val );
+		if ( R.linear ) R.val /= 10; // db: -+100, linear: -+10
 		if ( V.tab === 'filters' ) {
 			FIL[ R.name ].parameters.gain = R.val;
 		} else {
@@ -2270,12 +2266,17 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.save();
 } ).on( 'click', '.i-inverted, .i-linear', function() {
 	var $this   = $( this );
-	var linear = $this.hasClass( 'i-linear' );
 	var name   = $this.parents( 'li' ).data( 'name' );
 	var checked    = ! $this.hasClass( 'bl' );
 	$this.toggleClass( 'bl', checked );
-	if ( linear ) checked = checked ? 'linear' : 'dB';
-	FIL[ name ].parameters[ linear ? 'scale' : 'inverted' ] = checked;
+	if ( $this.hasClass( 'i-inverted' ) ) {
+		FIL[ name ].parameter.inverted = checked;
+	} else {
+		var gain = $this.siblings( 'input' ).val();
+		if ( checked ) gain /= 10;
+		FIL[ name ].parameters.scale = checked ? 'linear' : 'dB';
+		FIL[ name ].parameters.gain  = gain;
+	}
 	setting.save( name, 'Change ...' );
 } ).on( 'click', 'li.eq', function( e ) {
 	if ( $( e.target ).parents( '.divgraph' ).length ) return
@@ -2366,9 +2367,10 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	if ( $this.hasClass( 'i-inverted' ) ) {
 		source.inverted = M.checked
 	} else {
+		var gain     = $this.siblings( 'input' ).val();
+		if ( M.checked ) gain /= 10;
 		source.scale = M.checked ? 'linear' : null;
-		var gain     = M.checked ? source.gain / 15 : source.gain * 15;
-		source.gain  = Math.round( gain * 10 ) / 10;
+		source.gain  = gain;
 	}
 	setting.save( M.name, 'Change ...' );
 } ).on( 'input', 'select', function() {
