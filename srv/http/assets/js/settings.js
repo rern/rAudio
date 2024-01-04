@@ -250,6 +250,8 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
+	if ( V.local && page === 'camilla' ) return
+	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces

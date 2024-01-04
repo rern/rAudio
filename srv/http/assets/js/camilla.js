@@ -1618,7 +1618,10 @@ var setting   = {
 	}
 	, save2file     : () => {
 		clearTimeout( V.timeoutsave );
-		V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
+		V.timeoutsave = setTimeout( () => {
+			local();
+			bash( [ 'saveconfig' ] );
+		}, 1000 );
 	}
 	, switchSave    : ( id, disable ) => {
 		if ( disable === 'disable' ) {
