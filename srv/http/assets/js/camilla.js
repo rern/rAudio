@@ -751,9 +751,8 @@ var render    = {
 		V.signal = false;
 		clearInterval( V.intervalvu );
 		delete V.intervalvu;
-		$( '.peak, .rms' ).css( 'transition-duration', '0s' );
-		$( '.rms' ).css( 'width', 0 );
-		$( '.peak' ).css( { left: 0, width: 0 } );
+		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
+		$( '.peak' ).css( 'left', 0 );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -795,15 +794,15 @@ var render    = {
 	}
 	, filter      : ( k, v ) => {
 		var param      = v.parameters;
-		var linear     = '';
-		var iconmute   = '';
-		var iconlinear = '';
+		var scale      = false;
+		var icongain   = '';
 		var disabled   = '';
 		if ( v.type === 'Gain' ) {
-			if ( param.scale === 'linear' ) linear = ' data-scale="linear"';
-			iconlinear = ico( param.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' );
-			iconmute   = ico( param.mute ? 'volume mute' : 'volume' );
-			disabled   = param.mute ? ' disabled' : '';
+			var scale = param.scale === 'linear' ? 10 : 100;
+			icongain  = ico( param.mute ? 'volume mute' : 'volume' )
+					  + ico( param.inverted ? 'inverted bl' : 'inverted' )
+					  + ico( param.scale === 'linear' ? 'linear bl' : 'linear' );
+			disabled  = param.mute ? ' disabled' : '';
 		}
 		if ( 'gain' in param ) {
 			var gain = param.gain;
@@ -814,8 +813,8 @@ var render    = {
 					+ ( 'slope' in param ?  'S:'+ param.slope : '' )
 					+'</div>'
 					+'</div>'
-					+ render.htmlRange( linear, gain, disabled )
-					+ iconmute + iconlinear
+					+ render.htmlRange( scale, gain, disabled )
+					+ icongain
 					+'</div>';
 		} else {
 			var paramdata = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type ) ? param.type : render.json2string( param );
@@ -878,10 +877,12 @@ var render    = {
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var gain     = source.gain || 0;
 				var disabled = source.mute ? ' disabled' : '';
-				var linear   = source.scale === 'linear' ? ' data-scale="linear"' : '';
+				var linear   = source.scale === 'linear';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + render.htmlRange( linear, gain, disabled )
-					 + ico( source.mute ? 'volume mute' : 'volume' ) + ico( source.inverted ? 'inverted bl' : 'inverted' ) + ico( linear ? 'linear bl' : 'linear' )
+					 + render.htmlRange( linear ? 10 : 100, gain, disabled )
+					 + ico( source.mute ? 'volume mute' : 'volume' )
+					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
+					 + ico( linear ? 'linear bl' : 'linear' )
 					 +'</li>';
 			} );
 		} );
@@ -1029,18 +1030,24 @@ var render    = {
 		keys.sort().forEach( k => data[ k ] = kv[ k ] );
 		return data
 	}
-	, htmlRange   : ( linear, gain, disabled ) => {
-		if ( linear ) gain *= 10;
+	, htmlRange   : ( scale, gain, disabled ) => {
+		if ( scale === 100 ) { // filter - Gain / mixer - dB
+			var db    = gain;
+			var value = gain;
+		} else {
+			var db    = gain.toFixed( 1 );
+			var value = gain * 10
+		}
 		var disabled = {
 			  range : disabled
-			, min   : disabled || ( gain === -100 ? ' disabled' : '' )
-			, max   : disabled || ( gain ===  100 ? ' disabled' : '' )
-			, db    : disabled || ( gain ===    0 ? ' disabled' : '' )
+			, min   : disabled || ( value === -100 ? ' disabled' : '' )
+			, max   : disabled || ( value ===  100 ? ' disabled' : '' )
+			, db    : disabled || ( value ===    0 ? ' disabled' : '' )
 		}
 		return   '<i class="i-minus'+ disabled.min +'"></i>'
-				+'<input type="range" value="'+ gain +'" min="-100" max="100"'+ disabled.range + linear +'>'
+				+'<input type="range" value="'+ value +'" min="-100" max="100" data-scale="'+ scale +'"'+ disabled.range +'>'
 				+'<i class="i-plus'+ disabled.max +'"></i>'
-				+'<c class="db'+ disabled.db +'">'+ gain +'</c>'
+				+'<c class="db'+ disabled.db +'">'+ db +'</c>'
 	}
 	, json2string : json => {
 		return JSON.stringify( json )
@@ -1542,23 +1549,23 @@ var setting   = {
 	}
 	, muteToggle    : ( $this, checked ) => {
 		$this.toggleClass( 'mute', checked );
-		$this.prev().toggleClass( 'disabled', checked );
 		$this.siblings( 'input' ).prop( 'disabled', checked );
+		$this.parent().find( '.i-minus, .i-plus, .db' ).toggleClass( 'disabled', checked );
 	}
 	, rangeGet      : ( $this, type ) => {
 		var input = type === 'input';
 		var $li   = $this.parents( 'li' );
 		var $gain = input ? $this : $this.siblings( 'input' );
 		R = {
-			  $gain  : $gain
-			, $db    : $li.find( 'c' )
-			, val    : +$gain.val()
-			, cmd    : input ? '' : $this.prop( 'class' ).replace( 'i-', '' )
-			, up     : input ? '' : $this.hasClass( 'i-plus' )
-			, linear : $gain.data( 'scale' )
-			, name   : $li.data( 'name' )
-			, index  : $li.data( 'index' )
-			, si     : $li.data( 'si' )
+			  $gain : $gain
+			, $db   : $li.find( 'c' )
+			, val   : +$gain.val()
+			, cmd   : input ? '' : $this.prop( 'class' ).replace( 'i-', '' )
+			, up    : input ? '' : $this.hasClass( 'i-plus' )
+			, scale : $gain.data( 'scale' )
+			, name  : $li.data( 'name' )
+			, index : $li.data( 'index' )
+			, si    : $li.data( 'si' )
 		}
 		if ( input ) {
 			setting.rangeSet();
@@ -1567,7 +1574,7 @@ var setting   = {
 				R.up ? R.val++ : R.val--;
 				setting.rangeSet();
 			}, 100 );
-		} else { // from .i-minus, .i-plus, c
+		} else {
 			switch ( R.cmd ) {
 				case 'minus':
 					R.val--;
@@ -1575,7 +1582,7 @@ var setting   = {
 				case 'plus':
 					R.val++;
 					break;
-				default:
+				default: // db
 					R.val = 0;
 			}
 			setting.rangeSet();
@@ -1583,11 +1590,16 @@ var setting   = {
 	}
 	, rangeSet      : () => {
 		if ( R.val === -100 || R.val === 100 ) clearTimeout( V.timeoutgain );
-		R.$db
-			.text( R.val )
-			.toggleClass( 'disabled', R.val === 0 );
 		R.$gain.val( R.val );
-		if ( R.linear ) R.val /= 10; // db: -+100, linear: -+10
+		if ( R.scale === 100 ) { // filter - Gain / mixer - dB
+			var db = R.val;
+		} else {
+			R.val /= 10;
+			var db = R.val.toFixed( 1 );
+		}
+		R.$db
+			.text( db )
+			.toggleClass( 'disabled', R.val === 0 );
 		if ( V.tab === 'filters' ) {
 			FIL[ R.name ].parameters.gain = R.val;
 		} else {
@@ -1731,14 +1743,16 @@ var common    = {
 			render.volume();
 		} else {
 			var diff = V.dragpress ? 3 : Math.abs( vol - S.volume );
-			$master.addClass( 'disabled' );
+			$master.css( 'pointer-events', 'none' );
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
 				, {
 					  duration : diff * 40
 					, easing   : 'linear'
 					, complete : () => {
-						$master.toggleClass( 'disabled', S.volumemute > 0 );
+						$master
+							.css( 'pointer-events', '' )
+							.toggleClass( 'disabled', S.volumemute > 0 );
 						render.volume();
 					}
 				}
@@ -1795,9 +1809,9 @@ var common    = {
 					
 					if ( ! V.signal ) { // restore after 1st set
 						V.signal = true;
-						$( '.peak' ).css( 'width', '' );
+						$( '.peak' ).css( 'width', '3px' );
 						$( '.rms' ).css( 'transition-duration', '' );
-						setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 100 );
+						setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
 					}
 					[ 'playback_peak', 'playback_rms', 'capture_peak', 'capture_rms' ].forEach( k => {
 						cp = k[ 0 ];
@@ -1934,7 +1948,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 			volumePush();
 		}
 	}, 100 );
-} ).on( 'click', '.i-volume, c', function() {
+} ).on( 'click', '.i-volume, .db', function() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
@@ -1942,9 +1956,9 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 
 } );
 // common ---------------------------------------------------------------------------------
-$( '.entries' ).on( 'click', '.i-minus, .i-plus, c', function() { // filters, mixersSub
+$( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, mixersSub
 	setting.rangeGet( $( this ), 'click' );
-} ).on( 'touchend mouseup mouseleave', '.i-minus, .i-plus, c', function() {
+} ).on( 'touchend mouseup mouseleave', '.i-minus, .i-plus, .db', function() {
 	if ( ! V.press ) return
 	
 	clearInterval( V.intervalgain );
@@ -2282,7 +2296,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	} else {
 		param.scale = checked ? 'linear' : 'dB';
 	}
-	setting.save( name, 'Change ...' );
+	setting.save();
 } ).on( 'click', 'li.eq', function( e ) {
 	if ( $( e.target ).parents( '.divgraph' ).length ) return
 	
@@ -2374,7 +2388,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	} else {
 		source.scale = M.checked ? 'linear' : 'dB';
 	}
-	setting.save( M.name, 'Change ...' );
+	setting.save();
 } ).on( 'input', 'select', function() {
 	var M   = setting.mixerGet( $( this ) );
 	var val = +$this.val();
@@ -2383,7 +2397,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	} else {
 		MIX[ M.name ].mapping[ M.index ].dest = val;
 	}
-	setting.save( M.name, 'Change ...');
+	setting.save( M.name, 'Change ...' );
 } ).on( 'click', '.i-add', function() {
 	var M = setting.mixerGet( $( this ) );
 	setting.mixerMap( M.name, M.index );

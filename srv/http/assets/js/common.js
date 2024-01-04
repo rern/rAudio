@@ -841,15 +841,13 @@ function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 }
 function infoPrompt( message ) {
+	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
 	$( '.infoprompt' ).html( message );
-	infoPromptToggle();
+	$toggle.toggleClass( 'hide' );
 	$( '#infoOk' ).off( 'click' ).on( 'click', function() {
-		infoPromptToggle();
+		$toggle.toggleClass( 'hide' );
 		$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
 	} );
-}
-function infoPromptToggle() {
-	$( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' ).toggleClass( 'hide' );
 }
 function infoSetValues() {
 	var $this, type, val;
