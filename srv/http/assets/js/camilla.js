@@ -497,13 +497,11 @@ function psOnClose() {
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
-	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
-		V.local = false;
-		S.volumemute = data.type === 'mute' ? data.val : 0;
-	}
 	if ( V.local ) return
 	
-	if ( data.type === 'dragpress' ) {
+	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
+		S.volumemute = data.type === 'mute' ? data.val : 0;
+	} else if ( data.type === 'dragpress' ) {
 		V.dragpress = true;
 		setTimeout( () => V.dragpress = false, 300 );
 	}
@@ -1746,6 +1744,7 @@ var common    = {
 		if ( V.drag ) {
 			S.volume = vol;
 			common.volumeThumb();
+			local();
 			volumeSetAt();
 			render.volume();
 		} else {
@@ -1766,6 +1765,7 @@ var common    = {
 			);
 			S.volume = vol;
 			if ( ! type ) { // not from push
+				volumeSetAt();
 				volumePush( vol );
 				volumeSetAt();
 			}
