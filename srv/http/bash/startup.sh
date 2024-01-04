@@ -175,6 +175,7 @@ fi
 if (( $( rfkill | grep -c wlan ) > 1 )) \
 	|| ! rfkill | grep -q wlan \
 	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q -m1 '^\*' ); then
+	rmmod brcmfmac_wcc &> /dev/null
 	rmmod brcmfmac &> /dev/null
 	onboardwlan=false
 else

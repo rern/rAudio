@@ -617,6 +617,7 @@ wlan )
 	else
 		systemctl -q is-active hostapd && $dirsettings/features.sh hostapd$'\n'OFF
 		ifconfig wlan0 down
+		rmmod brcmfmac_wcc &> /dev/null
 		rmmod brcmfmac
 	fi
 	pushRefresh
