@@ -1591,19 +1591,20 @@ var setting   = {
 	, rangeSet      : () => {
 		if ( R.val === -100 || R.val === 100 ) clearTimeout( V.timeoutgain );
 		R.$gain.val( R.val );
-		if ( R.scale === 100 ) { // filter - Gain / mixer - dB
-			var db = R.val;
+		if ( R.scale === 100 ) { // filter - Gain dB / mixer - dB
+			var val = R.val;
+			var db  = R.val;
 		} else {
-			R.val /= 10;
-			var db = R.val.toFixed( 1 );
+			var val = R.val / 10;
+			var db  = val.toFixed( 1 );
 		}
 		R.$db
 			.text( db )
 			.toggleClass( 'disabled', R.val === 0 );
 		if ( V.tab === 'filters' ) {
-			FIL[ R.name ].parameters.gain = R.val;
+			FIL[ R.name ].parameters.gain = val;
 		} else {
-			MIX[ R.name ].mapping[ R.index ].sources[ R.si ].gain = R.val;
+			MIX[ R.name ].mapping[ R.index ].sources[ R.si ].gain = val;
 		}
 		setting.save();
 	}
@@ -1611,10 +1612,13 @@ var setting   = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			clearTimeout( V.timeoutsave );
-			V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 2000 );
+			if ( ! V.press ) setting.save2file();
 		}, wscamilla ? 0 : 300 );
 		if ( msg ) banner( V.tab, titlle, msg );
+	}
+	, save2file     : () => {
+		clearTimeout( V.timeoutsave );
+		V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
 	}
 	, switchSave    : ( id, disable ) => {
 		if ( disable === 'disable' ) {
@@ -1963,6 +1967,7 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 	
 	clearInterval( V.intervalgain );
 	if ( $( this ).parents( 'li' ).find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) graph.gain();
+	setting.save2file();
 } ).press( '.i-minus, .i-plus', function( e ) {
 	setting.rangeGet( $( e.currentTarget ), 'press' );
 } );
