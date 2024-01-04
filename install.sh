@@ -4,20 +4,19 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20231230
-if [[ -e $dircamilladsp ]]; then
+# 20240105
+if [[ -e /usr/bin/camilladsp ]]; then
 	rm -f $dirsystem/camilla.conf
-	[[ ! -e $dircamilladsp/raw ]] && mkdir -p $dircamilladsp/raw
-fi
-
-if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 2.0.0' ]]; then
-	systemctl stop camilladsp
-	pacman -Sy --needed --noconfirm camilladsp
-	readarray -t files <<< $( grep -rl enable_resampling $dircamilladsp )
-	for f in "${files[@]}"; do
-		sed -i '/enable_resampling\|resampler_type/ d' "$f"
-	done
-	[[ -e $dirsystem/camilladsp ]] && systemctl start camilladsp
+	mkdir -p $dircamilladsp/raw
+	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.0' ]]; then
+		systemctl stop camilladsp
+		pacman -Sy --needed --noconfirm camilladsp
+		readarray -t files <<< $( grep -rl enable_resampling $dircamilladsp )
+		for f in "${files[@]}"; do
+			sed -i '/enable_resampling\|resampler_type/ d' "$f"
+		done
+		[[ -e $dirsystem/camilladsp ]] && systemctl start camilladsp
+	fi
 fi
 
 # 20231216
