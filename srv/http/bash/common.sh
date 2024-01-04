@@ -244,14 +244,31 @@ notify() { # icon title message delayms
 package() {
 	local file urlio
 	urlio=https://github.com/rern/rern.github.io/raw/main
-	file=$( dialog --colors --no-shadow --no-collapse --output-fd 1 --nocancel --menu "
+	opt=( --colors --no-shadow --no-collapse --output-fd 1 --nocancel --menu )
+	if [[ -e /boot/kernel.img ]]; then
+		rpi01=1
+		file=$( dialog ${opt[@]} "
 Package:
-" 8 0 0 \
+" 0 0 0 \
+1  Build \
+2 'Update firmware' )
+	else
+		file=$( dialog ${opt[@]} "
+Package:
+" 0 0 0 \
 1  Build \
 2 'Update repo' \
 3 'AUR setup' \
 4 'Create regdomcodes.json' \
 5 'Create guide.tar.xz' )
+	fi
+	if [[ $rpi01 && $file == 2 ]]; then
+		sed -i '1 i\Server = http://mirror.archlinuxarm.org/armv7h/$repo' /etc/pacman.d/mirrorlist
+		pacman -Sy --noconfirm --needed firmware-raspberrypi linux-firmware linux-firmware-whence raspberrypi-bootloader
+		sed -i '/armv7h/ d' /etc/pacman.d/mirrorlist
+		exit
+	fi
+	
 	case $file in
 		1 ) file=pkgbuild;;
 		2 ) file=repoupdate;;
