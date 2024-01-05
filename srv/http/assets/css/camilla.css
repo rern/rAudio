@@ -42,7 +42,7 @@
 	margin-bottom: 10px;
 }
 .vubar.peak {
-	width: 3px;
+	width: 0;
 	background: var( --cm );
 	transition-duration: 1s;
 }
