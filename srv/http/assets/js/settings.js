@@ -365,9 +365,6 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $code = $( '#code'+ id );
 	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 } );
-$( '.close' ).on( 'click', function() {
-	location.href = '/';
-} );
 $( '.helphead' ).on( 'click', function() {
 	var $this  = $( this );
 	var active = $this.hasClass( 'bl' );
@@ -391,6 +388,9 @@ $( '.playback' ).on( 'click', function() { // for player and camilla
 	if ( page === 'camilla' && S.state === 'pause' ) render.vuClear();
 	playbackButton();
 	bash( [ 'cmd.sh', 'mpcplayback' ] );
+} );
+$( '.close' ).on( 'click', function() {
+	location.href = '/';
 } );
 $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
