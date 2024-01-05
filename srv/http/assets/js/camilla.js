@@ -1606,6 +1606,20 @@ var setting   = {
 		}
 		setting.save();
 	}
+	, scaleSet      : ( checked, key, $this ) => {
+		var $db = $this.siblings( '.db' );
+		if ( checked ) {
+			var gain  = key.gain / 10;
+			key.scale = 'linear';
+			key.gain  = gain;
+			$db.text( gain.toFixed( 1 ) );
+		} else {
+			var gain  = key.gain * 10;
+			key.scale = 'dB';
+			key.gain  = gain;
+			$db.text( gain );
+		}
+	}
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
@@ -2299,11 +2313,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	var checked = ! $this.hasClass( 'bl' );
 	$this.toggleClass( 'bl', checked );
 	var param   = FIL[ name ].parameters;
-	if ( $this.hasClass( 'i-inverted' ) ) {
-		param.inverted = checked;
-	} else {
-		param.scale = checked ? 'linear' : 'dB';
-	}
+	$this.hasClass( 'i-inverted' ) ? param.inverted = checked : setting.scaleSet( checked, param, $this );
 	setting.save();
 } ).on( 'click', 'li.eq', function( e ) {
 	if ( $( e.target ).parents( '.divgraph' ).length ) return
@@ -2380,22 +2390,18 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	graph.gain();
 } ).on( 'click', '.i-volume', function() {
-	var $this = $( this );
-	var M     = setting.mixerGet( $this );
+	var $this   = $( this );
+	var M       = setting.mixerGet( $this );
 	var mapping = MIX[ M.name ].mapping[ M.index ];
 	setting.muteToggle( $this, M.checked );
 	typeof M.si === 'number' ? mapping.sources[ M.si ].mute = M.checked : mapping.mute = M.checked;
 	setting.save();
 } ).on( 'click', '.i-inverted, .i-linear', function() {
-	var $this = $( this );
-	var M     = setting.mixerGet( $this );
-	var source  = MIX[ M.name ].mapping[ M.index ].sources[ M.si ];
+	var $this  = $( this );
+	var M      = setting.mixerGet( $this );
+	var source = MIX[ M.name ].mapping[ M.index ].sources[ M.si ];
 	$this.toggleClass( 'bl', M.checked );
-	if ( $this.hasClass( 'i-inverted' ) ) {
-		source.inverted = M.checked
-	} else {
-		source.scale = M.checked ? 'linear' : 'dB';
-	}
+	$this.hasClass( 'i-inverted' ) ? source.inverted = M.checked : setting.scaleSet( M.checked, source, $this );
 	setting.save();
 } ).on( 'input', 'select', function() {
 	var M   = setting.mixerGet( $( this ) );
