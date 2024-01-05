@@ -534,6 +534,9 @@ input[ type=checkbox ] {
 	color: var( --cg60 ) !important;
 	pointer-events: none;
 }
+.noclick {
+	pointer-events: none;
+}
 .infobtn.disabled {
 	background-color: var( --cgd ) !important;
 	box-shadow: none;

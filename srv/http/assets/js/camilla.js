@@ -1763,7 +1763,7 @@ var common    = {
 			render.volume();
 		} else {
 			var diff = V.dragpress ? 3 : Math.abs( vol - S.volume );
-			$master.css( 'pointer-events', 'none' );
+			$master.addClass( 'noclick' );
 			$( '#volume .thumb' ).animate(
 				  { 'margin-left': posX }
 				, {
@@ -1771,7 +1771,7 @@ var common    = {
 					, easing   : 'linear'
 					, complete : () => {
 						$master
-							.css( 'pointer-events', '' )
+							.removeClass( 'noclick' )
 							.toggleClass( 'disabled', S.volumemute > 0 );
 						render.volume();
 					}

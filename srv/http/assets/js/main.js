@@ -604,7 +604,7 @@ $( '#volume' ).roundSlider( {
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );
-			$( '#volume-knob, #volmute' ).removeClass( 'disabled' );
+			$( '#volume-knob, #button-volume i' ).removeClass( 'noclick' );
 			$( '#voldn' ).toggleClass( 'disabled', e.value === 0 );
 			$( '#volup' ).toggleClass( 'disabled', e.value === 100 );
 		}, speed );
@@ -617,7 +617,7 @@ $( '#volume' ).roundSlider( {
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
-		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+		$( '#volume-knob, #button-volume i' ).addClass( 'noclick' );
 		volumeSet( e.value );
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}

@@ -395,10 +395,7 @@ function psSavedPlaylists( data ) {
 }
 function psVolume( data ) {
 	V.volumeprev = S.volume;
-	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
-		V.local = false; // allow beforeValueChange()
-		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-	}
+	if ( [ 'mute', 'unmute' ].includes( data.type ) ) V.local = false; // allow beforeValueChange()
 	if ( data.type === 'mute' ) {
 		S.volume = 0;
 		S.volumemute = data.val;
