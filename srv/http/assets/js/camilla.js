@@ -501,15 +501,15 @@ function psVolume( data ) {
 	
 	var vol = data.val;
 	if ( data.type === 'mute' ) {
-		common.volume( 0, S.volume );
+		common.volumeAnimate( 0, S.volume );
 		S.volume     = 0;
 		S.volumemute = vol;
 	} else if ( data.type === 'unmute' ) {
-		common.volume( S.volumemute, 0 );
+		common.volumeAnimate( S.volumemute, 0 );
 		S.volume     = vol;
 		S.volumemute = 0;
 	} else {
-		common.volume( vol, S.volume );
+		common.volumeAnimate( vol, S.volume );
 		S.volume = vol;
 		if ( data.type === 'dragpress' ) {
 			V.dragpress = true;
@@ -1692,7 +1692,7 @@ var setting   = {
 	}
 }
 var common    = {
-	  inUse        : name => {
+	  inUse         : name => {
 		var filters = V.tab === 'filters';
 		var inuse   = [];
 		if ( filters && ! ( name in FIL ) ) { // file
@@ -1726,7 +1726,7 @@ var common    = {
 		
 		return false
 	}
-	, key2label    : key => {
+	, key2label     : key => {
 		if ( key === 'ms' ) return 'ms'
 		
 		var str = key[ 0 ].toUpperCase();
@@ -1745,23 +1745,23 @@ var common    = {
 				.slice( 1 )
 		return str + key
 	}
-	, labels2array : array => {
+	, labels2array  : array => {
 		if ( ! array ) return false
 		
 		var capitalized = array.map( el => common.key2label( el ) );
 		return capitalized
 	}
-	, list2array   : list => { // '1, 2, 3' > [ 1, 2, 3 ]
+	, list2array    : list => { // '1, 2, 3' > [ 1, 2, 3 ]
 		return list.replace( /[ \]\[]/g, '' ).split( ',' ).map( Number )
 	}
-	, pagex2level  : pagex => {
+	, pagex2level   : pagex => {
 		var bandW = $( '#volume .slide' ).width();
 		var posX  = pagex - $( '#volume .slide' ).offset().left;
 		posX      = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 		return Math.round( posX / bandW * 100 );
 	}
-	, tabTitle     : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
-	, volume       : ( target, volume ) => {
+	, tabTitle      : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
+	, volumeAnimate : ( target, volume ) => {
 		var bandW = $( '#volume .slide' ).width();
 		var diff = V.dragpress ? 3 : Math.abs( target - volume );
 		$master.addClass( 'noclick' );
@@ -1779,10 +1779,10 @@ var common    = {
 			}
 		);
 	}
-	, volumeThumb  : () => {
+	, volumeThumb   : () => {
 		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 	}
-	, webSocket    : () => {
+	, webSocket     : () => {
 		if ( wscamilla && wscamilla.readyState < 2 ) return
 		
 		var cmd_el            = {
@@ -1907,12 +1907,12 @@ var common    = {
 			}
 		}
 	}
-	, wsGetConfig  : () => {
+	, wsGetConfig   : () => {
 		setTimeout( () => {
 			[ 'GetConfigFilePath', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
 		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
-	, wsGetState  : () => {
+	, wsGetState    : () => {
 		[ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ].forEach( k => {
 			wscamilla.send( '"'+ k +'"' );
 		} );
@@ -1942,7 +1942,7 @@ $( '#volume' ).on( 'touchstart mousedown', function( e ) {
 		var volume = S.volume;
 		S.volume   = vol;
 		$( '#divvolume .level' ).text( S.volume );
-		common.volume( vol, volume );
+		common.volumeAnimate( vol, volume );
 		volumeSetAt();
 		volumePush();
 	}
@@ -1976,10 +1976,10 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 			volumePush();
 		}
 	}, 100 );
-} ).on( 'click', '.i-volume, .db', function() {
+} ).on( 'click', '.i-volume, .level', function() {
 	var volume     = S.volume;
 	var volumemute = S.volumemute;
-	common.volume( volumemute, volume );
+	common.volumeAnimate( volumemute, volume );
 	volumeSetAt( volumemute );
 	volumemute ? volumePush( volumemute, 'unmute' ) : volumePush( volume, 'mute' );
 	if ( volumemute ) {
