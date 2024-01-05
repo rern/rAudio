@@ -20,7 +20,7 @@ if [[ -e /usr/bin/camilladsp ]]; then
 fi
 
 # 20231216
-if [[ ! -e /boot/kernel/img && $( pacman -Q python-websockets ) != 'python-websockets 12.0-1' ]]; then
+if [[ ! -e /boot/kernel.img && $( pacman -Q python-websockets ) != 'python-websockets 12.0-1' ]]; then
 	pacman -Sy --needed --noconfirm python-websockets
 	systemctl restart websocket
 fi
