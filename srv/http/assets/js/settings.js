@@ -365,6 +365,12 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $code = $( '#code'+ id );
 	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 } );
+$( '.playback' ).on( 'click', function() { // for player and camilla
+	S.state = S.state === 'play' ? 'pause' : 'play';
+	if ( page === 'camilla' && S.state === 'pause' ) render.vuClear();
+	playbackButton();
+	bash( [ 'cmd.sh', 'mpcplayback' ] );
+} );
 $( '.helphead' ).on( 'click', function() {
 	var $this  = $( this );
 	var active = $this.hasClass( 'bl' );
@@ -377,20 +383,14 @@ $( '.helphead' ).on( 'click', function() {
 		$( '.helpblock' ).removeClass( 'hide' );
 	}
 } );
+$( '.close' ).on( 'click', function() {
+	location.href = '/';
+} );
 $( '.help' ).on( 'click', function() {
 	var $this  = $( this );
 	$this.toggleClass( 'bl' );
 	$this.parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.help' ).hasClass( 'bl' ) );
-} );
-$( '.playback' ).on( 'click', function() { // for player and camilla
-	S.state = S.state === 'play' ? 'pause' : 'play';
-	if ( page === 'camilla' && S.state === 'pause' ) render.vuClear();
-	playbackButton();
-	bash( [ 'cmd.sh', 'mpcplayback' ] );
-} );
-$( '.close' ).on( 'click', function() {
-	location.href = '/';
 } );
 $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
