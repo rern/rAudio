@@ -33,7 +33,6 @@ control=${vcc[2]}
 data='
 , "bluetooth"  : '$bluetooth'
 , "card"       : '$card'
-, "clipped"    : '$( cat $dirshm/clipped 2> /dev/null || echo 0 )'
 , "control"    : "'$control'"
 , "devices"    : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
@@ -42,11 +41,11 @@ data='
 , "format"     : [ '$( getContent $dirsystem/camilladsp )' ]
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
-, "range"      : '$( conf2json camilla.conf )'
 , "state"      : "'$state'"
 , "volume"     : '$volume'
 , "volumemute" : '$volumemute
-for dir in coeffs configs configs-bt; do
+dirs=$( ls $dircamilladsp )
+for dir in $dirs; do
 ########
 	data+='
 , "ls'$dir'" : [ '$( ls -1 $dircamilladsp/$dir | tr '\n' ^ | sed 's/\^$/"/; s/^/"/; s/\^/", "/g' )' ]'

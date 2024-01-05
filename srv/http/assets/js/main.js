@@ -64,7 +64,7 @@ var icon_player = {
 }
 var vumeter = '<img class="imgicon" src="'+ V.covervu +'"> ';
 var chkdisplay = {
-	  libmain   : {
+	  library       : {
 		  album          : ico( 'album' ) +'<gr>Album</gr>'
 			, nas        : ico( 'networks' ) +'<gr>Network</gr>'
 		, albumartist    : ico( 'albumartist' ) +'<gr>Album Artist</gr>'
@@ -82,7 +82,7 @@ var chkdisplay = {
 		, latest         : ico( 'latest' ) +'<gr>Latest</gr>'
 			, label      : 'Label'
 	}
-	, liboption : {
+	, libraryoption : {
 		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artist'
 		, albumyear      : ico( 'album' ) +'Sort by artist > year'
 		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
@@ -92,7 +92,7 @@ var chkdisplay = {
 		, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 		, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 	}
-	, playback  : {
+	, playback      : {
 		  bars             : 'Top-Bottom bars'
 			, barsalways   : 'Bars always on'
 		, time             : 'Time'
@@ -107,7 +107,7 @@ var chkdisplay = {
 			, '-'              : ''
 		, conductorname     : ico( 'conductor' ) +'<gr>Conductor</gr>'
 	}
-	, playlist  : {
+	, playlist      : {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
 		, plsimilar      : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'lastfm' ) +'Add similar</a>'
 		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
@@ -260,13 +260,13 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				info( {
 					  icon       : 'multiraudio'
 					, title      : 'Switch rAudio'
-					, radio      : data.list
+					, list       : [ '', 'radio', data.list, 'br' ]
 					, values     : currentip
-					, beforeshow : function() {
-						$( '#infoContent input' ).each( ( i, el ) => {
+					, beforeshow : () => {
+						$( '#infoList input' ).each( ( i, el ) => {
 							if ( $( el ).val() === currentip ) $( el ).prop( 'disabled', true );
 						} );	
-						$( '#infoContent input' ).on( 'input', function() {
+						$( '#infoList input' ).on( 'input', function() {
 							var ip = infoVal();
 							if ( typeof Android === 'object' ) Android.changeIP( ip );
 							loader();
@@ -289,12 +289,11 @@ $( '#displayplayback' ).on( 'click', function() {
 		, title        : 'Playback'
 		, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
 		, messagealign : 'left'
-		, checkbox     : kv.checkbox
-		, checkcolumn  : true
+		, list         : kv.list
 		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
-			var $chk = $( '#infoContent input' );
+			var $chk = $( '#infoList input' );
 			var $el  = {}
 			kv.keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
 			function restoreEnabled() {
@@ -378,7 +377,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 		, title        : 'Playlist'
 		, message      : 'Options:'
 		, messagealign : 'left'
-		, checkbox     : kv.checkbox
+		, list         : kv.list
 		, values       : kv.values
 		, checkchanged : true
 		, ok           : displaySave
@@ -605,7 +604,7 @@ $( '#volume' ).roundSlider( {
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );
-			$( '#volume-knob, #volmute' ).removeClass( 'disabled' );
+			$( '#volume-knob, #button-volume i' ).removeClass( 'noclick' );
 			$( '#voldn' ).toggleClass( 'disabled', e.value === 0 );
 			$( '#volup' ).toggleClass( 'disabled', e.value === 100 );
 		}, speed );
@@ -618,7 +617,7 @@ $( '#volume' ).roundSlider( {
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
-		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+		$( '#volume-knob, #button-volume i' ).addClass( 'noclick' );
 		volumeSet( e.value );
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
@@ -1223,7 +1222,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	
 	var $img = V.list.li.find( '.bkcoverart' );
 	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
-	var content = `\
+	var htmllist = `\
 <div class="infomessage">${ icon }
 <wh>${ V.list.name }</wh>
 <a class="li2 hide">${ V.list.path }</a>
@@ -1238,11 +1237,11 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	info( {
 		  icon       : 'playlist'
 		, title      : 'Add to Playlist'
-		, content    : content
+		, list       : htmllist
 		, values     : 'addplay'
 		, beforeshow : () => {
-			$( '#infoContent .pllength' ).toggleClass( 'hide', ! S.pllength );
-			$( '#infoContent' ).on( 'click', '.cmd', function() {
+			$( '#infoList .pllength' ).toggleClass( 'hide', ! S.pllength );
+			$( '#infoList' ).on( 'click', '.cmd', function() {
 				V.list.li = $( '.infomessage' );
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];
 				V.action  = $( this ).data( 'cmd' );
@@ -1313,7 +1312,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, title        : 'Rename Bookmark'
 		, message      : '<div class="infobookmark">'+ ico( 'bookmark bookmark' )
 						+'<br><span class="bklabel">'+ name +'</span></div>'
-		, textlabel    : 'To:'
+		, list         : [ 'To:', 'text' ]
 		, values       : name
 		, checkblank   : true
 		, checkchanged : true
@@ -1338,9 +1337,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
 		, message     : message
-		, filelabel   : ico( 'folder-open' ) +'File'
-		, fileoklabel : ico( 'flash' ) +'Replace'
-		, filetype    : 'image/*'
+		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
@@ -1619,9 +1616,9 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 			  icon       : icon
 			, title      : title
 			, message    : 'Randomly add songs and play continuously.'
-			, checkbox   : [ 'Start playing the random songs' ]
+			, list       : [ 'Start playing the random songs', 'checkbox' ]
 			, values     : [ true ]
-			, beforeshow : () => $( '#infoContent table' ).toggleClass( 'hide', S.song + 1 === S.pllength )
+			, beforeshow : () => $( '#infoList table' ).toggleClass( 'hide', S.song + 1 === S.pllength )
 			, ok         : () => {
 				S.librandom = true;
 				$this.addClass( 'bl' );
@@ -1745,7 +1742,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		intervalClear();
 		$( '.elapsed' ).empty();
-		bash( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS PLAY' ] );
+		bash( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}

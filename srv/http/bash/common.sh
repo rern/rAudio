@@ -241,26 +241,6 @@ notify() { # icon title message delayms
 	fi
 	websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 }
-package() {
-	local file urlio
-	urlio=https://github.com/rern/rern.github.io/raw/main
-	file=$( dialog --colors --no-shadow --no-collapse --output-fd 1 --nocancel --menu "
-Package:
-" 8 0 0 \
-1  Build \
-2 'Update repo' \
-3 'AUR setup' \
-4 'Create regdomcodes.json' \
-5 'Create guide.tar.xz' )
-	case $file in
-		1 ) file=pkgbuild;;
-		2 ) file=repoupdate;;
-		3 ) file=aursetup;;
-		4 ) bash <( curl -L $urlio/wirelessregdom.sh ); exit;;
-		5 )	bsdtar cjvf guide.tar.xz -C /srv/http/assets/img/guide .; exit;;
-	esac
-	bash <( curl -L $urlio/$file.sh )
-}
 packageActive() {
 	local active pkg pkgs status
 	pkgs=$@
@@ -319,13 +299,15 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 radioStatusFile() {
-	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^Title' $dirshm/status )
+	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^state|^Title' $dirshm/status )
 	status+='
 Artist="'$artist'"
 Album="'$album'"
 coverart="'$coverart'"
-Title="'$title'"
-elapsed='$elapsed
+elapsed='$elapsed'
+pllength='$pllength'
+state="play"
+Title="'$title'"'
 	echo "$status" > $dirshm/status
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
 }

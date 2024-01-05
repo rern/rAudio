@@ -1,118 +1,141 @@
 <?php
 $id_data = [
-	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
-	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
-	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
-	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
+	  'volume'              => [ 'label' => 'Master',              'setting' => false,    'sub' => 'hw' ]
+	, 'configuration'       => [ 'label' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
+	, 'enable_rate_adjust'  => [ 'label' => 'Rate Adjust',         'setting' => 'custom' ]
+	, 'stop_on_rate_change' => [ 'label' => 'Stop on Rate Change', 'setting' => 'custom' ]
+	, 'resampler'           => [ 'label' => 'Resampler',           'setting' => 'custom' ]
 ];
-$sliderrange     = i( 'gear btn' ).' Gain slider range';
-$contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
-$contextmixers   = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
-$contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
-$contextconfig   = str_replace( 'mixers' , 'config', $contextmixers );
-$gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' -0.1dB · 0 · +0.1dB';
-$help = [
-	  'filters'   => <<< EOF
-{$Fi( 'folder-filter btn' )} FIR coefficient
-{$sliderrange}
-{$contextfilters}
-{$gaincontrols}
+$btnfilters = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
+$btnmixers  = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
+$button     = [
+	  'filters'    => i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' )
+	, 'mixers'     => $btnmixers
+	, 'processors' => str_replace( 'mixers' , 'processors', $btnmixers )
+	, 'pipeline'   => str_replace( 'filters' , 'pipeline', $btnfilters )
+	, 'config'     => str_replace( 'mixers' , 'config', $btnmixers )
+	, 'control'    => i( 'volume btn' ).i( 'inverted btn' ).i( 'linear btn' )
+];
+$help       = [
+	  'status'      => <<< EOF
+{$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
+
+<a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
+EOF
+	, 'volume'    => <<< EOF
+{$Fi( 'gear btn' )} Configuration files
+{$Fi( 'set0 btn' )} Reset clipped count (if any)
+EOF
+	, 'filters'   => <<< EOF
+{$Fi( 'folder-filter btn' )}{$Fi( 'plus btn' )} FIR coefficient files · New
+{$button[ 'filters' ]} Graph · Edit · Delete
+{$Fi( 'code btn' )} Set 0
+{$button[ 'control' ]} Mute · Invert · Linear (Gain)
 EOF
 	, 'mixers'   => <<< EOF
-{$sliderrange}
-{$contextmixers}
-{$gaincontrols}
-{$Fi( 'volume btn' )}{$Fi( 'inverted btn' )} Mute, Invert
+{$Fi( 'plus btn' )} New
+{$button[ 'mixers' ]} Edit · Delete
+{$Fi( 'code btn' )}{$button[ 'control' ]} Set 0 · Mute · Invert · Linear
+EOF
+	, 'processors'   => <<< EOF
+{$Fi( 'plus btn' )} New
+{$button[ 'processors' ]} Edit · Delete
 EOF
 	, 'pipeline' => <<< EOF
-{$Fi( 'flowchart btn' )} Step flowchart
-{$contextpipeline}
+{$Fi( 'flowchart btn' )}{$Fi( 'plus btn' )} Step flowchart · New
+{$button[ 'pipeline' ]} Graph · Edit · Delete
 EOF
 	, 'devices'  => <<< EOF
 {$Fi( 'gear btn' )} Capture sampling
 {$Fi( 'input btn' )}{$Fi( 'output btn' )} Device settings
 EOF
 	, 'config'   => <<< EOF
-{$contextconfig}
+{$$button[ 'config' ]}
 EOF
 ];
-$htmltabs = '<div id="divtabs">';
-foreach( [ 'filters', 'mixers', 'pipeline', 'devices', 'config' ] as $id ) {
-	$htmltabs.= '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$help[ $id ].'</div>';
-	if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
-	$htmltabs.= '<ul class="entries main"></ul>';
+$htmls = [
+	  'volume' => '
+<div id="volume" class="slider">
+	<div class="track"></div>
+	<div class="slide"></div>
+	<div class="thumb"></div>
+</div>
+<i class="i-plus"></i>
+<c class="level">0</c>
+<i class="i-volume"></i>
+'
+	, 'labels' => '
+Buffer · Load<span class="divclipped hide"> · Clipped</span>
+<br>Sampling<span class="rateadjust"> · Adjust</span>
+'
+	, 'values' => '
+<a class="buffer">·</a> <gr>·</gr> <a class="load">·</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">·</a></span>
+<br><a class="capture">·</a><span class="rateadjust"> <gr>·</gr> <a class="rate">·</a></span>
+'
+];
+$tabs     = [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ];
+$htmltabs = [];
+foreach( $tabs as $id ) {
+	$html = '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$help[ $id ].'</div>';
+	if ( $id === 'pipeline' ) $html.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
+	$html.= '<ul class="entries main"></ul>';
 	if ( $id === 'devices' ) {
-		$htmltabs.= '
+		$html.= '
 <div id="divdevices" class="section">
 '.htmlSectionStatus( 'sampling' ).'
 </div>
 <div id="divoptions" class="section">
 '.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ] ).'
-'.htmlSetting( [ 'id' => 'enable_resampling',   'returnhtml' => true ] ).'
+'.htmlSetting( [ 'id' => 'resampler',           'returnhtml' => true ] ).'
 </div>
 ';
 	} else if ( $id !== 'config' ) {
-		$htmltabs.= '<ul class="entries sub"></ul>';
+		$html.= '<ul class="entries sub"></ul>';
 	}
-	$htmltabs.= '</div>';
+	$htmltabs[ $id ] = $html.'</div>';
 }
-
-$htmltabs.= '</div>';
-$htmlvolume = '
-<div id="divvolume">
-<div class="col-l text">Volume&emsp;<c id="volume-text">0</c></div>
-<div class="col-r text">
-	<div id="volume" class="slider">
-		<div class="track"></div>
-		<div class="slide"></div>
-		<div class="thumb"></div>
-	</div>
-	<div class="divgain">
-		<i id="voldn" class="i-minus"></i>
-		<i id="volmute" class="i-volume"></i>
-		<i id="volup" class="i-plus"></i>
-	</div>
-</div>
-<div style="clear:both"></div>
-</div>
-';
+$button = [
+	  'filters'    => [ 'folder-filter', 'add' ]
+	, 'mixers'     => [ 'add' ]
+	, 'processors' => [ 'add' ]
+	, 'pipeline'   => [ 'flowchart', 'add' ]
+	, 'devices'    => [ 'gear' ]
+	, 'config'     => ''
+];
 
 //////////////////////////////////
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [ 'icon' => 'mpd', 'playback' => 'play' ]
-	, 'help'   => <<< EOF
-{$Fi( 'file btn' )} Log
-{$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
-
-<a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
-EOF
+	, 'button' => [ 'mpd icon', 'play playback' ]
+	, 'help'   => $help[ 'status' ]
 ];
 $body = [
-	  '<pre id="codelog" class="hide"></pre>'
-	, htmlSectionStatus( 'vu' )
-	, $htmlvolume
-	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
+	  htmlSectionStatus( 'vu' )
+	, [   'id'    => 'volume'
+		, 'icon'  => 'minus'
+		, 'input' => $htmls[ 'volume' ]
+	]
+	, htmlSectionStatus( 'state', $htmls[ 'labels' ], $htmls[ 'values' ] )
 	, [
-		  'id'    => 'configuration'
+		  'id'     => 'configuration'
 		, 'status' => true
-		, 'input' => '<select id="configuration"></select>'
-		, 'help'  => <<< EOF
-{$Fi( 'gear btn' )} Configuration files
-{$Fi( 'minus btn' )}{$Fi( 'volume btn' )}{$Fi( 'plus btn' )} -1% · mute · +1%
-{$Fi( 'set0 btn' )} Reset clipped count (if any)
-EOF
+		, 'input'  => '<select id="configuration"></select>'
+		, 'help'   => $help[ 'volume' ]
 	]
 ];
 htmlSection( $head, $body, 'status' );
 //////////////////////////////////
-$head = [
-	  'title'  => 'Filters'
-];
-$body = [ $htmltabs ];
-htmlSection( $head, $body, 'settings' );
+foreach( $tabs as $id ) {
+	$head = [
+		  'title'  => ucfirst( $id ).( $id === 'config' ? 'uration' : '' )
+		, 'button' => $button[ $id ]
+		, 'status' => $id === 'devices' ? 'output' : false
+	];
+	$body = [ $htmltabs[ $id ] ];
+	htmlSection( $head, $body, $id );
+}
 ?>
 <div id="menu" class="menu hide">
 <a class="graph"><i class="i-graph"></i>Graph</a>

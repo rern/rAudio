@@ -62,7 +62,8 @@ ul {
 	margin: 0;
 }
 .container::after,
-.section::after {
+.section::after,
+.row::after {
 	content: '';
 	display: block;
 	clear: both;
@@ -136,10 +137,10 @@ heading + .helpblock {
 	padding-left: 0;
 	text-align: center;
 }
-#infoContent .helpmenu.label {
+#infoList .helpmenu.label {
 	background: var( --cgd );
 }
-#infoContent p i {
+#infoList p i {
 	width: 40px;
 }
 .helpmenu.label i {
@@ -582,12 +583,12 @@ input.disabled + .switchlabel:after {
 	border-radius: 6px;
 	background: var( --cw );
 }
-#infoContent .gpio tr td:nth-child( odd ) {
+#infoList .gpio tr td:nth-child( odd ) {
 	width: 35px !important;
 	padding-right: 2px !important;
 	text-align: right !important;
 }
-#infoContent .gpio tr td:nth-child( even ) {
+#infoList .gpio tr td:nth-child( even ) {
 	width: 55px !important;
 }
 #hostname {

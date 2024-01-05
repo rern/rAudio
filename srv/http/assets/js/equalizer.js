@@ -7,7 +7,7 @@ freq.forEach( ( hz, i ) => {
 	band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
 	labelhz += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
 } );
-var content   = `
+var htmllist    = `
 <div id="eq">
 <div class="label up">${ labelhz }</div>
 <div class="bottom">
@@ -18,26 +18,25 @@ var content   = `
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
 	${ ico( 'add', 'eqnew' ) + ico( 'back bl hide', 'eqback' ) }
 </div>
-<div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
+<div class="inforange vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
 		E      = data || { active: "Flat", preset: { Flat: Array.from( new Array( 10 ), () => 62 ) } }
 		equser = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
 		info( {
-			  icon         : 'equalizer'
-			, title        : 'Equalizer'
-			, content      : content.replace( 'PRESETS', eqOptionPreset() )
-			, contentcssno : true
-			, values       : [ '', E.active, ...E.preset[ E.active ] ]
-			, beforeshow   : () => {
+			  icon       : 'equalizer'
+			, title      : 'Equalizer'
+			, list       : htmllist.replace( 'PRESETS', eqOptionPreset() )
+			, values     : [ '', E.active, ...E.preset[ E.active ] ]
+			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 550 );
 				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
 				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
 					var $this, ystart, val, prevval;
-					var yH   = $( '#infoRange input' ).width() - 40;
+					var yH   = $( '.inforange input' ).width() - 40;
 					var step = yH / 40;
-					$( '#infoRange input' ).on( 'touchstart', function( e ) {
+					$( '.inforange input' ).on( 'touchstart', function( e ) {
 						$this  = $( this );
 						ystart = e.changedTouches[ 0 ].pageY;
 						val    = +$this.val();
@@ -56,7 +55,7 @@ function equalizer() {
 						eqSlideEnd();
 					} );
 				} else {
-					$( '#infoRange input' ).on( 'input', function() {
+					$( '.inforange input' ).on( 'input', function() {
 						var $this = $( this );
 						eqSlide( band[ $this.index() ], +$this.val() );
 					} ).on( 'touchend mouseup keyup', function() {
@@ -64,8 +63,8 @@ function equalizer() {
 					} );
 				}
 			}
-			, cancel       : () => E = {}
-			, okno         : true
+			, cancel     : () => E = {}
+			, okno       : true
 		} );
 	}, 'json' );
 }
@@ -168,7 +167,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 		var v    = '1%-';
 		var updn = -1;
 	}
-	var $range = $( '#infoRange input' ).eq( i );
+	var $range = $( '.inforange input' ).eq( i );
 	$range.val( +$range.val() + updn );
 	eqSlide( band[ i ], v );
 	eqtimeout = setTimeout( eqSlideEnd, 1000 );

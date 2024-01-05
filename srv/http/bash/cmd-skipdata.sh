@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# cmd-trackdata.sh POS
-
 . /srv/http/bash/common.sh
 
 . <( mpc playlist -f 'album="%album%"; artist="%artist%"; composer="%composer%"; conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' | sed "$1 q;d" )

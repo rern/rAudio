@@ -147,13 +147,13 @@ function changeIP() { // for android app
 		  icon         : 'networks'
 		, title        : 'IP Address'
 		, message      : 'Switch rAudio:'
-		, textlabel    : 'New IP'
+		, list         : [ 'New IP', 'text' ]
 		, focus        : 0
 		, boxwidth     : 170
 		, values       : location.host
 		, checkchanged : true
 		, checkip      : [ 0 ]
-		, beforeshow   : () => $( '#infoContent input' ).prop( 'type', 'tel' )
+		, beforeshow   : () => $( '#infoList input' ).prop( 'type', 'tel' )
 		, ok           : () => {
 			var ip = infoVal();
 			var changed = Android.changeIP( ip );
@@ -364,9 +364,7 @@ function coverartChange() {
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
 		, beforeshow  : () => $( '.imgold' ).attr( 'src', src ) // fix direct replace src
-		, filelabel   : ico( 'folder-open' ) +'File'
-		, fileoklabel : ico( 'flash' ) +'Replace'
-		, filetype    : 'image/*'
+		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +'Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {
@@ -524,7 +522,7 @@ function displayPlayback() {
 }
 function displaySave() {
 	var values  = infoVal();
-	[ 'libmain', 'liboption', 'playback', 'playlist' ].forEach( chk => {
+	[ 'library', 'libraryoption', 'playback', 'playlist' ].forEach( chk => {
 		$.each( chkdisplay[ chk ], ( k, v ) => {
 			if ( ! ( k in values ) && k !== '-' ) values[ k ] = D[ k ];
 		} );
@@ -609,7 +607,7 @@ function imageOnError( el, bookmark ) {
 		var icon = ico( 'bookmark bl' );
 		if ( ! V.librarylist ) icon += '<a class="label">'+ bookmark +'</a>';
 		$this.replaceWith( icon );
-		$( '#infoContent input' ).parents( 'tr' ).removeClass( 'hide' );
+		$( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
 	}
 }
 function imageReplace( type, imagefilenoext, bookmarkname ) {
@@ -631,44 +629,52 @@ function infoDisplayKeyValue( type ) {
 	keys       = keys.filter( k => k !== '-' );
 	var values = {}
 	keys.forEach( k => { values[ k ] = D[ k ] } );
-	return { keys : keys, values: values, checkbox: Object.values( json ) }
+	var list   = [];
+	Object.values( json ).forEach( ( l, i ) => {
+		if ( [ 'library', 'playback' ].includes( type ) ) {
+			list.push( i % 2 ? [ l, 'checkbox' ] : [ l, 'checkbox', 'td' ] );
+		} else {
+			list.push( [ l, 'checkbox' ] );
+		}
+	} );
+	return { keys : keys, values: values, list: list }
 }
 function infoLibrary() {
-	var kv = infoDisplayKeyValue( 'libmain' );
+	var kv = infoDisplayKeyValue( 'library' );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ '', infoLibraryOption ]
 		, messagealign : 'left'
-		, checkbox     : kv.checkbox
+		, list         : kv.list
 		, checkcolumn  : true
 		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $el  = {};
-			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoList input' ).eq( i ) );
 			$el.sd.add( $el.usb ).prop( 'disabled', S.shareddata );
 		}
 		, ok           : displaySave
 	} );
 }
 function infoLibraryOption() {
-	var kv = infoDisplayKeyValue( 'liboption' );
+	var kv = infoDisplayKeyValue( 'libraryoption' );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ infoLibrary, '' ]
 		, messagealign : 'left'
-		, checkbox     : kv.checkbox
+		, list         : kv.list
 		, values       : kv.values
 		, checkchanged : true
 		, beforeshow   : () => {
 			var $el  = {}
-			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
-			$( '#infoContent tr' ).css( 'height', '36px' );
-			$( '#infoContent td' ).css( 'width', '294px' );
+			kv.keys.forEach( ( k, i ) => $el[ k ] = $( '#infoList input' ).eq( i ) );
+			$( '#infoList tr' ).css( 'height', '36px' );
+			$( '#infoList td' ).css( 'width', '293px' );
 			$el.albumyear.prop( 'disabled', ! D.albumbyartist );
 			$el.fixedcover.prop( 'disabled', D.hidecover );
 			$el.albumbyartist.on( 'input', function() {
@@ -703,7 +709,7 @@ function infoTitle() {
 	var noparen      = title.slice( -1 ) !== ')';
 	var titlenoparen = title.replace( / $|\(.*$/, '' );
 	var paren        = title.replace( /^.*\(/, '(' );
-	var content      = `\
+	var htmllist         = `\
 <table>
 <tr><td>${ ico( 'artist wh' ) }</td><td><input class="required" type="text"></td></tr>
 <tr><td>${ ico( 'music wh' ) }</td><td><input class="required" type="text"></td></tr>
@@ -720,7 +726,7 @@ function infoTitle() {
 	info( {
 		  icon        : 'playback'
 		, title       : 'Current Track'
-		, content     : content
+		, list        : htmllist
 		, width       : 460
 		, boxwidth    : 'max'
 		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
@@ -728,24 +734,24 @@ function infoTitle() {
 			if ( noparen ) {
 				$( '#paren' ).addClass( 'hide' );
 			} else {
-				$( '#infoContent input:checkbox' ).on( 'input', function() {
-					$( '#infoContent input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
+				$( '#infoList input:checkbox' ).on( 'input', function() {
+					$( '#infoList input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
-			$( '#infoContent input.required' ).on( 'input', function() {
+			$( '#infoList input.required' ).on( 'input', function() {
 				var $this = $( this );
 				$this.css( 'border-color', $this.val() ? '' : 'red' );
-				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
+				$( '#infoList .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
 			} );
-			$( '#infoContent .lyrics' ).toggleClass( 'hide', ! S.lyrics );
-			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
+			$( '#infoList .lyrics' ).toggleClass( 'hide', ! S.lyrics );
+			$( '#infoList .album' ).toggleClass( 'hide', album === '' );
 			if ( S.player === 'mpd' ) {
 				var btnscrobble = S.scrobble && S.webradio;
 			} else {
 				var btnscrobble = S.scrobble && ! S.scrobbleconf[ S.player ];
 			}
-			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! btnscrobble );
-			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
+			$( '#infoList .scrobble' ).toggleClass( 'hide', ! btnscrobble );
+			$( '#infoList' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
 				var artist = values[ 0 ]
 				var title  = values[ 1 ]
@@ -780,11 +786,11 @@ function infoUpdate( path ) {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : path ? ico( 'folder' ) +' <wh>'+ path +'</wh>' : ''
-		, radio      : path ? '' : { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }
+		, list       : path ? '' : [ '', 'radio', { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }, 'br' ]
 		, beforeshow : () => {
 			if ( ! C ) {
-				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', true );
-				$( '#infoContent input' ).eq( 1 ).prop( 'checked', true );
+				$( '#infoList input' ).eq( 0 ).prop( 'disabled', true );
+				$( '#infoList input' ).eq( 1 ).prop( 'checked', true );
 			}
 		}
 		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD DIR' ] )
@@ -970,7 +976,7 @@ function playbackStatusGet( withdisplay ) {
 	} );
 }
 function playlistInsert( indextarget ) {
-	var plname = $( '#pl-path .lipath' ).text();
+	var plname = $( '#savedpl-path .lipath' ).text();
 	bash( [ 'savedpledit', plname, 'add', indextarget, V.pladd.file, 'CMD NAME TYPE TO FILE' ], () => {
 		renderSavedPlTrack( plname );
 		if ( indextarget === 'last' ) {
@@ -981,7 +987,7 @@ function playlistInsert( indextarget ) {
 }
 function playlistInsertSelect( $this ) {
 	var track = '<gr>'+ ( $this.index() + 1 ) +' - </gr>'+ $this.find( '.name' ).text();
-	var content = `\
+	var htmllist  = `\
 ${ V.pladd.title }
 <br><gr>${ V.pladd.album }</gr>
 <br><br>
@@ -994,7 +1000,7 @@ ${ track }
 	info( {
 		  icon        : 'file-playlist'
 		, title       : 'Insert'
-		, content     : content
+		, list        : htmllist
 		, values      : [ 1 ]
 		, buttonlabel : ico( 'undo' ) +'Select'
 		, button      : playlistInsertTarget
@@ -1011,10 +1017,10 @@ function playlistInsertTarget() {
 					  +'<br>'+ V.pladd.album
 					  +'<hr>'
 					  +'Select where to add:'
-		, radio      : { First : 1, Select: 'select', Last: 'last' }
+		, list       : [ '', 'radio', { First : 1, Select: 'select', Last: 'last' }, 'br' ]
 		, values     : 'last'
 		, beforeshow : () => {
-			$( '#infoContent input' ).eq( 1 ).on( 'click', function() {
+			$( '#infoList input' ).eq( 1 ).on( 'click', function() {
 				local();
 				$( '#infoX' ).trigger( 'click' );
 			} );
@@ -1056,7 +1062,7 @@ function playlistFilter() {
 	}
 }
 function playlistGet() {
-	list( { playlist: 'current' }, ( data ) => renderPlaylist( data ), 'json' );
+	list( { playlist: 'current' }, data => renderPlaylist( data ), 'json' );
 }
 function playlistRemove( $li ) {
 	if ( $( '#pl-list li' ).length === 1 ) {
@@ -1781,7 +1787,7 @@ function setPlaylistScroll() {
 	var $stationname = $this.find( '.li2 .stationname' );
 	$stationname.addClass( 'hide' );
 	if ( S.state === 'stop' ) {
-		if ( S.webradio ) $name.text( $this.find( '.liname' ).text() );
+		if ( $liactive.hasClass( 'webradio' ) ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
 		if ( S.elapsed === false ) return

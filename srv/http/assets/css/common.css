@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1702394239' );
+	src         : url( '/assets/fonts/rern.woff2?v=1704028430' );
 }
 @font-face {
 	font-family : Lato;
@@ -60,6 +60,7 @@ i {
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }
 .i-close::before           { content: '\F56C' }
+.i-code::before            { content: '\F59E' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
 .i-config::before          { content: '\F53E' }
@@ -121,6 +122,7 @@ i {
 .i-librandom::before       { content: '\F569' }
 .i-library::before         { content: '\F506' }
 .i-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
+.i-linear::before          { content: '\F52F' }
 .i-link::before            { content: '\F56B' }
 .i-localbrowser::before    { content: '\F584' }
 .i-lock::before            { content: '\F574' }
@@ -157,6 +159,7 @@ i {
 .i-power::before           { content: '\F520' }
 .i-powerbutton::before     { content: '\F520' }
 .i-previous::before        { content: '\F501' }
+.i-processors::before      { content: '\F576' }
 .i-radiofrance::before     { content: '\F586' }
 .i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
 .i-radioparadise::after    { content: '\F594'; position: relative; }
@@ -309,11 +312,6 @@ body {
 #data .data {
 	margin-top: 50px;
 }
-#data g,
-#data gr,
-#data .gr {
-	color: var( --cw ) !important;
-}
 
 #debug {
 	position: fixed;
@@ -429,21 +427,17 @@ codered  {
 	font-size: 13px;
 }
 
-.range,
-#infoRange {
+input[ type=range ] {
 	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
 	--trackborder : 1px solid var( --cgd ) !important;
-}
-input[type=range] {
 	height: 40px;
 	width: 300px;
 	margin: 0;
 	max-width: 70%;
 	background: transparent;
 	-webkit-appearance: none;
-	cursor: pointer;
 }
-input[type=range]::-webkit-slider-thumb {
+input[ type=range ]::-webkit-slider-thumb {
 	height: 40px;
 	width: 40px;
 	margin-top: -20px;
@@ -454,7 +448,7 @@ input[type=range]::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	box-shadow: var( --shadow-btn );
 }
-input[type=range]::-moz-range-thumb { /* cannot be combined */
+input[ type=range ]::-moz-range-thumb { /* cannot be combined */
 	height: 40px;
 	width: 40px;
 	border: none;
@@ -463,42 +457,41 @@ input[type=range]::-moz-range-thumb { /* cannot be combined */
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
-input[type=range]:disabled::-webkit-slider-thumb {
+input[ type=range ]:disabled::-webkit-slider-thumb {
 	background-color: var( --cmd );
 }
-input[type=range]:disabled::-moz-range-thumb {
+input[ type=range ]:disabled::-moz-range-thumb {
 	background-color: var( --cmd );
 }
-input[type=range]::-webkit-slider-runnable-track {
+input[ type=range ]::-webkit-slider-runnable-track {
 	width: 100%;
 	height: 4px;
 	background: var( --track );
 	border: var( --trackborder );
 }
-input[type=range]:focus::-webkit-slider-runnable-track {
+input[ type=range ]:focus::-webkit-slider-runnable-track {
 	background: var( --track );
 }
-input[type=range]::-moz-range-track {
+input[ type=range ]::-moz-range-track {
 	width: 100%;
 	height: 2px;
 	background: var( --track );
 	border: var( --trackborder );
 }
-#infoRange {
+.inforange {
 	text-align: center;
 }
-#infoRange .value {
+.inforange .value {
 	height: 30px;
 	font-size: 18px;
 	font-weight: 300;
 }
-#infoRange i {
+.inforange i {
 	position: relative;
 	width: 40px !important;
-	line-height: 40px;
-	vertical-align: 14px !important;
+	line-height: 39px;
+	vertical-align: top !important;
 	color: var( --cg60 ) !important;
-	cursor: pointer;
 }
 
 /* info */
@@ -525,7 +518,6 @@ input[ type=checkbox ] {
 	color: var( --cw ) !important;
 	background-color: var( --cg );
 	box-shadow: var( --shadow-btn );
-	cursor: pointer;
 	-webkit-user-select: none;
 	user-select: none;
 }
@@ -540,6 +532,9 @@ input[ type=checkbox ] {
 }
 .disabled {
 	color: var( --cg60 ) !important;
+	pointer-events: none;
+}
+.noclick {
 	pointer-events: none;
 }
 .infobtn.disabled {
@@ -561,18 +556,19 @@ input[ type=checkbox ].disabled {
 }
 .btnbottom span {
 	color: var( --cg60 );
-	cursor: pointer;
 }
 .btnbottom i,
-.btnicon {
+.updn {
 	width: 40px;
 	font-size: 22px;
 	vertical-align: -3px;
 	text-align: center;
 	color: var( --cw );
-	cursor: pointer;
 }
-
+.updn {
+	width: 35px !important;
+	line-height: 40px;
+}
 
 hr {
 	border: none;
@@ -626,7 +622,7 @@ hr {
 #infoOverlay .button-coverart::before {
 	top: 1px;
 }
-#infoContent .bklabel {
+#infoList .bklabel {
 	height: auto;
 	line-height: 30px;
 }
@@ -681,7 +677,6 @@ hr {
 	padding: 0;
 	font-size: 24px;
 	color: var( --cm );
-	cursor: pointer;
 }
 #infoTitle {
 	display: inline-block;
@@ -717,35 +712,43 @@ hr {
 	width: 24px;
 	color: var( --cg60 );
 }
-#infoContent {
+#infoList {
 	padding: 20px 10px 10px 10px;
 	font-size: 16px;
 	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
-#infoContent table {
+#infoList table {
 	margin: 0 auto;
+	border-spacing: 5px 1px;
 }
-#infoContent tr {
+#infoList tr {
 	height: 42px;
 }
-#infoContent td {
+#infoList td {
 	padding: 0;
 	text-align: left;
 	white-space: nowrap;
 }
-#infoContent label i {
+#infoList td:first-child { /* label */
+	padding-right: 5px;
+	text-align: right;
+}
+#infoList td:last-child { /* chekbox only which has no label */
+	text-align: left;
+}
+#infoList label i {
 	text-align: center;
 	width: 22px;
 	font-size: 20px;
 	margin-right: 5px;
 }
-#infoContent i {
+#infoList i {
 	width: 24px;
 	font-size: 20px;
 	text-align: center;
     color: var( --cw );
 }
-#infoContent pre {
+#infoList pre {
 	margin: 0;
 	padding: 0 10px;
 	text-align: left;
@@ -753,16 +756,16 @@ hr {
 	color: var( --cg60 );
 	background: none;
 }
-#infoContent .menu {
+#infoList .menu {
 	position: relative;
 	left: 0;
 	margin: 10px auto;
 	text-align: left;
 }
-#infoContent .menu a {
+#infoList .menu a {
 	height: 41px;
 }
-#infoContent .menu i {
+#infoList .menu i {
 	width: 40px;
 }
 .infomessage {
@@ -779,18 +782,20 @@ hr {
 .infoheader,
 .infomessage,
 .infofooter {
-	width: fit-content;
-	max-width: 100%;
+	width: 100%;
 	max-height: 800px;
-	margin: 0 auto 5px;
+	margin: 0 auto;
+	padding: 10px 5px;
 	white-space: pre-wrap;
 	word-wrap: break-word;
 	overflow: hidden;
 	color: var( --cg60 );
 }
-.infoheader,
-.infofooter {
-	padding: 0 5px;
+.infomessage {
+	padding-top: 5px;
+}
+.infoprompt {
+	padding: 15px 5px;
 }
 .infomessage i {
 	width: 25px;
@@ -825,7 +830,7 @@ hr {
 	font-size: 18px;
 	margin: 0;
 }
-#infoContent textarea {
+#infoList textarea {
 	width: 100%;
 	height: 100px;
 	margin: 0 !important;
@@ -876,7 +881,7 @@ input[ type=number ] {
 	margin-top: 0 !important;
 	outline: none;
 }
-#infoContent .i-eye {
+#infoList .i-eye {
 	width: 30px;
 	margin-right: -25px;
 	text-align: center;
@@ -915,18 +920,28 @@ input[ type=radio ]:disabled {
 	background-color: var( --cgd );
 	box-shadow: var( --shadow-select );
 }
-#infoContent button {
+#infoList button {
 	height: 40px;
 	margin-left: 5px;
 	padding-right: 25px;
 	font-size: 16px;
 }
+#infoList .imgicon {
+	width: 30px !important;
+	margin-right: 5px !important;
+	vertical-align: -10px;
+	border: none;
+}
+#infoList .select2-container {
+	max-width     : none;
+	margin-bottom : 0;
+}
 #infoFilename {
 	max-width: 95%;
-	margin-bottom: 10px;
+	height: 37px;
 }
-#infoButtons {
-	padding-top: 10px;
+#infoButton {
+	margin-top: 5px;
 }
 #infoOverlay code {
 	display: inline-block;
@@ -978,10 +993,10 @@ input[ type=radio ]:disabled {
 }
 
 @media ( max-height: 420px ) {
-	#infoContent { padding: 10px 5px }
+	#infoList { padding: 10px 5px }
 }
 @media ( max-width: 420px ) {
-	#infoContent { padding: 20px 5px 10px 5px }
+	#infoList { padding: 20px 5px 10px 5px }
 	.infoheader, .infofooter { padding: 0 5px }
 }
 @media ( max-width: 330px ) {
@@ -998,13 +1013,22 @@ input:focus {
 @media ( hover:hover ) {
 	#debug { display: block }
 	/* :hover *********************************************************/
-	#infoTab,
-	#infoButton gr,
 	label,
 	input[ type=checkbox ],
 	input[ type=radio ],
+	input[ type=range ],
+	.btnbottom i,
+	.btnbottom span,
+	.divgain,
 	.i-eye,
-	.pointer {
+	.i-volume,
+	.infobtn,
+	.inforange i,
+	.pointer,
+	.updn,
+	#infoTab,
+	#infoButton gr,
+	#infoX {
 		cursor: pointer;
 	}
 	#infoX:hover,
@@ -1020,16 +1044,16 @@ input:focus {
 	input[ type=number ]:focus-visible,
 	input[ type=tel ]:focus-visible,
 	input[ type=password ]:focus-visible,
-	#infoContent textarea:focus-visible {
+	#infoList textarea:focus-visible {
 		outline: 1px solid var( --cgl ) !important;
 	}
 	input[ type=radio ]:focus-visible,
 	input[ type=checkbox ]:focus-visible,
-	#infoRange input:focus-visible::-webkit-slider-thumb {
+	input[ type=range ]:focus-visible::-webkit-slider-thumb {
 		outline: 2px solid var( --cgl );
 		outline-offset: 1px;
 	}
-	#infoRange input:focus-visible::-moz-range-thumb {
+	input[ type=range ]:focus-visible::-moz-range-thumb {
 		outline: 2px solid var( --cgl );
 		outline-offset: 1px;
 	}

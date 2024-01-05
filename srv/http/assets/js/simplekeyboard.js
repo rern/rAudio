@@ -82,7 +82,7 @@ var inputs            = 'input[type=text], input[type=textarea], input[type=pass
 
 $( 'body' ).on( 'click', inputs, function() {
 	$kb.removeClass( 'hide' );
-	$( '#infoContent input' ).removeClass( 'active' );
+	$( '#infoList input' ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
 	keyboard.setInput( $( this ).val() );
 } ).on( 'click touchstart', function( e ) {
@@ -102,7 +102,7 @@ function onChange( value ) {
 	if ( $( 'input.active' ).prop( 'id' ) === 'pl-search-input' ) {
 		playlistFilter();
 	} else {
-		$( '#infoContent input' ).trigger( 'keyup' );
+		$( '#infoList input' ).trigger( 'keyup' );
 	}
 }
 function onKeyPress( key ) { // input value not yet changed until onChange

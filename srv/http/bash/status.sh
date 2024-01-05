@@ -49,11 +49,6 @@ if [[ $1 == withdisplay ]]; then
 }'
 fi
 
-comsume_pos=( $( mpc status '%consume% %songpos%' ) )
-[[ ${comsume_pos[0]} == on ]] && consume=true
-pos=${comsume_pos[1]}                 # mpc songpos : start at 1
-(( $pos > 0 )) && song=$(( pos - 1 )) # mpd song    : start at 0
-
 if [[ $1 == snapclient ]]; then
 	snapclient=1
 	player=mpd
@@ -75,10 +70,8 @@ else
 , "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
-, "consume"      : '$consume'
 , "control"      : "'$control'"
 , "counts"       : '$( getContent $dirmpd/counts )'
-, "file"         : ""
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
@@ -129,13 +122,14 @@ if [[ $player != mpd && $player != upnp ]]; then
 		status+='
 , "Album"     : "'$( getContent $dirairplay/Album )'"
 , "Artist"    : "'$( getContent $dirairplay/Artist )'"
-, "Title"     : "'$( getContent $dirairplay/Title )'"
 , "coverart"  : "/data/shm/airplay/coverart.jpg"
 , "elapsed"   : '$elapsed'
+, "file"      : ""
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"     : "'$state'"
 , "Time"      : '$Time'
-, "timestamp" : '$timestamp
+, "timestamp" : '$timestamp'
+, "Title"     : "'$( getContent $dirairplay/Title )'"'
 		;;
 	bluetooth )
 ########
@@ -166,13 +160,10 @@ $( < $dirshm/spotify/status )"
 	outputStatus
 fi
 
-(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
-
-#. <( mpc playlist -f 'Album="%album%"; Artist="%artist%"; Composer="%composer%"; Conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' | sed "$song q;d" )
-#. <( mpc status 'state=%state%; current=%songpos%; length=%length%; random=%random%; consume=%consume%' )
-
-filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file Name state Time Title'
-[[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
+pos=$( mpc status %songpos% )
+(( $pos > 0 )) && song=$(( pos - 1 )) || song=0 # mpd song    : start at 0
+filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file state Time Title'
+[[ ! $snapclient ]] && filter+=' playlistlength consume random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
 readarray -t lines <<< $( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
 								| telnet 127.0.0.1 6600 2> /dev/null \
@@ -181,9 +172,9 @@ for line in "${lines[@]}"; do
 	key=${line/:*}
 	val=${line#*: }
 	case $key in
-		audio )
+		audio ) # samplerate:bitdepth:channel
 			samplerate=${val/:*}
-			bitdepth=${val/*:}
+			bitdepth=$( cut -d: -f2 <<< $val )
 			;;
 		bitrate )
 			bitrate=$(( val * 1000 ))
@@ -191,7 +182,7 @@ for line in "${lines[@]}"; do
 		duration | playlistlength | state | Time )
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
-		Album | AlbumArtist | Artist | Composer | Conductor | Name | Title )
+		Album | AlbumArtist | Artist | Composer | Conductor | Title )
 			printf -v $key '%s' "$( stringEscape $val )"
 			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
@@ -199,7 +190,7 @@ for line in "${lines[@]}"; do
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
 			file=$( stringEscape "$val" )
 			;;   # escape " for json
-		random | repeat | single )
+		consume | random | repeat | single )
 			[[ $val == 1 ]] && val=true || val=false
 ########
 			status+='
@@ -209,7 +200,6 @@ for line in "${lines[@]}"; do
 done
 
 [[ $playlistlength ]] && pllength=$playlistlength || pllength=0
-status=$( grep -v '^, "file"' <<< $status )
 ########
 status+='
 , "file"      : "'$file'"
@@ -228,6 +218,7 @@ if [[ $pllength  == 0 && ! $snapclient ]]; then
 # >>>>>>>>>> empty playlist
 	outputStatus
 fi
+(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 fileheader=${file:0:4}
 [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && stream=true # webradio dab upnp
 if [[ $fileheader == cdda ]]; then
@@ -284,7 +275,6 @@ elif [[ $stream ]]; then
 				*stream.radioparadise.com* ) icon=radioparadise;;
 			esac
 		fi
-		# before webradio play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
 		urlname=${url//\//|}
 		radiofile=$dirradio/$urlname
@@ -359,7 +349,6 @@ elif [[ $stream ]]; then
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
 , "stationcover" : "'$stationcover'"
-, "Name"         : "'$Name'"
 , "state"        : "'$state'"
 , "station"      : "'$station'"
 , "Time"         : false

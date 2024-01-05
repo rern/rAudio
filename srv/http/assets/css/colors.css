@@ -44,3 +44,5 @@ wh,  .wh  { color : var( --cw ) !important }
 .bgm      { background       : var( --cm ) !important }
 .bgr      { background       : var( --cgd ) !important }
 .bgr60    { background-color : var( --cg60 ) !important }
+
+i.bl      { color : var( --cml ) !important }

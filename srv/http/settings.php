@@ -44,7 +44,7 @@ if ( $addonsprogress || $guide ) {
 $htmlbar = '<div id="bar-bottom">';
 $prefix  = '';
 if ( $camilla ) {
-	$tabs   = [ 'Filters', 'Mixers', 'Pipeline', 'Devices', 'Config' ];
+	$tabs   = [ 'Filters', 'Mixers', 'Processors', 'Pipeline', 'Devices', 'Config' ];
 	$prefix = 'tab';
 } else {
 	$tabs   = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];
@@ -76,32 +76,34 @@ echo '
 if ( $addons ) exit;
 
 /*
+$id_data = [ 'ID' => [               // REQUIRED
+	  'label'   => 'LABEL'
+	, 'sub'     => 'SUBLABEL'
+	, 'setting' => 'TYPE'
+	, 'status'  => 'SCRIPTCOMMAND'
+];
 $head = [
-	  'title'   => 'TITLE'                  // REQUIRED
-	, 'subhead' => true/false               // with no help icon
-	, 'status'  => 'COMMAND'                // include status icon and status box
-	, 'button'  => [ 'ID' => 'ICON', ... ]  // icon button
-	, 'back'    => true/false               // back button
+	  'title'   => 'TITLE'           // REQUIRED
+	, 'subhead' => true/false        // with no help icon
+	, 'status'  => 'COMMAND'         // include status icon and status box
+	, 'button'  => [ 'ICON', ... ]   // icon button
+	, 'back'    => true/false        // back button
 	, 'nohelp'  => true/false
 	, 'help'    => 'HELP'
 ];
 $body = [
-	 'HTML'                          // for status section
+	 'HTML'                          // for non-switch section
 	, [
-		  'label'    => 'LABEL'      // REQUIRED
-		, 'sublabel' => 'SUB LABEL'
-		, 'id'       => 'ID'         // REQUIRED
-		, 'status'   => 'COMMAND'    // include status icon and status box
+		  'id'       => 'ID'         // REQUIRED
 		, 'input'    => 'HTML'       // alternative - if not switch
-		, 'setting'  =>  ***         // default  = $( '#setting-'+ id ).click() before enable
+		, 'setting'  => TYPE         // default  = $( '#setting-'+ id ).click() before enable
 		                             // false    = no setting
 		                             // 'custom' = custom setting
 		                             // 'none'   = no setting - custom enable
-		                             // false    = no icon
-		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on setting
+		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting
 		                             // 'js'     = set by js condition
 		, 'help'     => 'HELP'
-		, 'exist'    => ***          // omit if not exist
+		, 'exist'    => 'COMMAND'    // hide if COMMAND = false
 	]
 	, ...
 ];
@@ -121,7 +123,7 @@ function htmlHead( $data ) {
 	$html    = '<heading '.( $status ? ' data-status="'.$status.'"' : '' );
 	$html   .= $class ? ' class="'.$class.'">' : '>';
 	$html   .= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) foreach( $button as $btnid => $icon ) $html.= i( $icon.' '.$btnid );
+	if ( $button ) foreach( $button as $icon ) $html.= i( $icon );
 	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
 	$html   .= isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
 	$html   .= '</heading>';
@@ -144,14 +146,13 @@ function htmlSection( $head, $body, $id = '' ) {
 	}
 	echo '</div>';
 }
-function htmlSectionStatus( $id, $labels = '', $help = '' ) {
+function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
 	if ( ! $labels ) $labels = '&nbsp;';
 	if ( $help ) $help = '<div class="helpblock hide">'.$help.'</div>';
 	return '
-<div id="div'.$id.'">
+<div id="div'.$id.'" class="row">
 <div class="col-l text label gr">'.$labels.'</div>
-<div class="col-r text value"></div>
-<div style="clear:both"></div>
+<div class="col-r text value">'.$values.'</div>
 '.$help.'
 </div>';
 }
@@ -169,23 +170,24 @@ function htmlSetting( $data ) {
 	global $page;
 	$id          = $data[ 'id' ];
 	$iddata      = $id_data[ $id ];
-	$name        = $iddata[ 'name' ];
+	$label       = $iddata[ 'label' ];
 	$sublabel    = $iddata[ 'sub' ] ?? false;
 	$status      = $iddata[ 'status' ] ?? false;
 	$setting     = $iddata[ 'setting' ] ?? 'common';
-	$label       = '<span class="name">'.$name.'</span>';
+	$label       = '<span class="label">'.$label.'</span>';
 	$input       = $data[ 'input' ] ?? false;
 	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
+	if ( $page === 'features' || $page === 'system' ) $icon = $id;
 	
-	$html        = '<div id="div'.$id.'">';
+	$html        = '<div id="div'.$id.'" class="row">';
 	// col-l
 	$html       .= '<div class="col-l';
 	$html       .= $sublabel ? '' : ' single';
 	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
 	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
-	$html       .= $page === 'features' || $page === 'system' || $data[ 'icon' ] ? i( $id ) : ''; // icon
+	$html       .= $icon ? i( $icon ) : ''; // icon
 	$html       .= '</div>';
 	// col-r
 	$html       .= '<div class="col-r">';

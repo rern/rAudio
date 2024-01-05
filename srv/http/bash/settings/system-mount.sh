@@ -45,10 +45,7 @@ if [[ $? != 0 ]]; then
 	mv -f /etc/fstab{.backup,}
 	rmdir "$mountpoint"
 	systemctl daemon-reload
-	echo "\
-Mount failed:
-<br><code>$source</code>
-<br>$( sed -n '1 {s/.*: //; p}' <<< $std )"
+	sed -n '1 {s/.*: //; p}' <<< $std
 	exit
 	
 else
@@ -66,5 +63,5 @@ done
 if [[ $SHAREDDATA ]]; then
 	$dirsettings/system.sh shareddataset
 else
-	pushRefresh
+	pushRefresh system
 fi

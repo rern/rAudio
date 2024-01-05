@@ -4,7 +4,7 @@
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
-	, 'button' => [ 'btscan' => 'search' ]
+	, 'button' => [ 'search btscan' ]
 	, 'help'   => i( 'search btn' ).' Available devices'
 ] );
 $html = <<< EOF
@@ -37,7 +37,7 @@ echo $html;
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
 	, 'status' => 'wl'
-	, 'button' => [ 'wladd' => 'add', 'wlscan' => 'search' ]
+	, 'button' => [ 'add wladd', 'search wlscan' ]
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
@@ -54,7 +54,7 @@ Note:
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
 	, 'status' => 'lan'
-	, 'button' => [ 'lanadd' => 'add wh' ]
+	, 'button' => [ 'add wh lanadd' ]
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
@@ -102,7 +102,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'button' => [ 'scanning-bt' => 'bluetooth blink' ]
+	, 'button' => [ 'bluetooth blink scanning-bt' ]
 	, 'back'   => true
 	, 'nohelp' => true
 ] );
@@ -113,7 +113,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
-	, 'button' => [ 'scanning-wifi' => 'wifi blink' ]
+	, 'button' => [ 'wifi blink scanning-wifi' ]
 	, 'back'   => true
 	, 'nohelp' => true
 ] );

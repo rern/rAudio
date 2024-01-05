@@ -100,9 +100,7 @@ if [[ $camilladsp ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
-		if ! systemctl -q is-active camilladsp; then
-			[[ -e $dirshm/startup ]] && $dirsettings/camilla.sh setformat || systemctl start camilladsp
-		fi
+		systemctl restart camilladsp
 	fi
 else
 	if [[ $bluetooth ]]; then
@@ -111,7 +109,7 @@ else
 			amixer -MqD bluealsa sset "$bluetooth" $btvolume% 2> /dev/null
 		fi
 	fi
-	if [[ -e $dirsystem/equalizer ]]; then
+	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
 		value=$( sed -E -n '/"current":/ {s/.*: "(.*)",/\1/; p}' $dirsystem/equalizer.json )
 		[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
 		$dirbash/cmd.sh "equalizer

@@ -81,7 +81,7 @@ pre hr.hrlight {
 		<div id="infoTopBg">
 			<div id="infoTop"><i class="i-jigsaw"></i><a id="infoTitle"><?=$title?></a></div><i id="infoX" class="i-close infox"></i>
 		</div>
-		<div id="infoContent"><div class="infomessage"><?=$postmsg?></div></div>
+		<div id="infoList"><div class="infomessage"><?=$postmsg?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>

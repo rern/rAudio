@@ -82,13 +82,13 @@ function bookmarkNew() {
 		, title      : 'Add Bookmark'
 		, message    : '<img src="'+ src + versionHash() +'">'
 					  +'<br><wh>'+ msgpath +'</wh>'
-		, textlabel  : 'As:'
+		, list       : [ 'As:', 'text' ]
 		, focus      : 0
 		, values     : name
 		, checkblank : true
 		, beforeshow : () => {
-			$( '#infoContent input' ).parents( 'tr' ).addClass( 'hide' );
-			$( '#infoContent img' ).off( 'error' ).on( 'error', function() {
+			$( '#infoList input' ).parents( 'tr' ).addClass( 'hide' );
+			$( '#infoList img' ).off( 'error' ).on( 'error', function() {
 				imageOnError( this, 'bookmark' );
 			} );
 		}
@@ -113,7 +113,7 @@ function currentSet() {
 	S.song = V.list.index;
 	setPlaylistScroll();
 	local();
-	bash( [ 'mpcskip', V.list.index + 1, 'CMD POS' ] );
+	bash( [ 'mpcskip', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
 }
 function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
@@ -184,7 +184,7 @@ function playlistNew( name ) {
 		  icon         : 'file-playlist'
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
-		, textlabel    : 'Name'
+		, list         : [ 'Name', 'text' ]
 		, focus        : 0
 		, values       : name
 		, checkblank   : true
@@ -197,7 +197,7 @@ function playlistRename() {
 		  icon         : 'file-playlist'
 		, title        : 'Rename Playlist'
 		, message      : 'From: <wh>'+ name +'</wh>'
-		, textlabel    : 'To'
+		, list         : [ 'To', 'text' ]
 		, focus        : 0
 		, values       : name
 		, checkchanged : true
@@ -252,7 +252,7 @@ function savedPlaylistAdd() {
 }
 function savedPlaylistRemove() {
 	local();
-	var plname = $( '#pl-path .lipath' ).text();
+	var plname = $( '#savedpl-path .lipath' ).text();
 	bash( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1, 'CMD NAME TYPE POS' ] );
 	V.list.li.remove();
 }
@@ -289,7 +289,7 @@ function tagEditor() {
 		name[ 1 ]    = 'Album Artist';
 		var label    = [];
 		format.forEach( ( el, i ) => {
-			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			label.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>', 'text' ] );
 		} );
 		if ( V.library ) {
 			var $img = V.librarytrack ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
@@ -311,25 +311,25 @@ function tagEditor() {
 			, width        : 500
 			, message      : message
 			, messagealign : 'left'
+			, list         : label
 			, footer       : footer
 			, footeralign  : 'left'
-			, textlabel    : label
 			, boxwidth     : 'max'
 			, values       : values
 			, checkchanged : true
 			, beforeshow   : () => {
-				$( '#infoContent img' ).on( 'error', function() {
+				$( '#infoList img' ).on( 'error', function() {
 					imageOnError( this );
 				} );
-				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
-				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
-				$( '#infoContent td i' ).css( 'cursor', 'pointer' );
-				if ( V.playlist ) $( '#infoContent input' ).prop( 'disabled', 1 );
-				var tableW = $( '#infoContent table' ).width();
-				$( '#infoContent' ).on( 'click', '#taglabel', function() {
+				$( '#infoList .infomessage' ).addClass( 'tagmessage' );
+				$( '#infoList .infofooter' ).addClass( 'tagfooter' );
+				$( '#infoList td i' ).css( 'cursor', 'pointer' );
+				if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
+				var tableW = $( '#infoList table' ).width();
+				$( '#infoList' ).on( 'click', '#taglabel', function() {
 					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
 						$( '.taglabel' ).removeClass( 'hide' );
-						$( '#infoContent table' ).width( tableW );
+						$( '#infoList table' ).width( tableW );
 					} else {
 						$( '.taglabel' ).addClass( 'hide' );
 					}
@@ -438,9 +438,7 @@ function webRadioCoverart() {
 		, title       : ( mode === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 					  + '<p class="infoimgname">'+ name +'</p>'
-		, filelabel   : ico( 'folder-open' ) +'File'
-		, fileoklabel : ico( 'flash' ) +'Replace'
-		, filetype    : 'image/*'
+		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, beforeshow  : () => {
 			$( '.imgold' ).on( 'error', function() {
 				imageOnError( this );
@@ -510,7 +508,7 @@ function wrDirectoryRename() {
 	info( {
 		  icon         : V.mode
 		, title        : 'Rename Folder'
-		, textlabel    : 'Name'
+		, list         : [ 'Name', 'text' ]
 		, focus        : 0
 		, values       : name
 		, checkblank   : true
@@ -519,37 +517,33 @@ function wrDirectoryRename() {
 		, ok           : () => bash( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal(), 'CMD MODE NAME NEWNAME' ] )
 	} );
 }
-var htmlwebradio = `\
-<table>
-<tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
-<tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
-<tr><td>Charset</td><td><input type="text">
-	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank">${ ico( 'help i-lg gr' ) }</a></td>
-	<td style="width: 50%; text-align: right">
-		<a id="addwebradiodir" style="cursor: pointer">${ ico( 'folder-plus i-lg' ) }&ensp;New folder&ensp;</a>
-	</td>
-</tr>
-</table>
-`;
+var listwebradio = {
+	  list : [
+		  [ 'Name',    'text' ]
+		, [ 'URL',     'text' ]
+		, [ 'Charset', 'text' ]
+		, [ '',        '', '<a id="addwebradiodir">'+ ico( 'folder-plus i-lg' ) +'&ensp;New folder&ensp;</a>' ]
+	]
+	, help : '&emsp;<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-lg gr' ) +'</a>'
+	, fn   : () => {
+		$( '#infoList input' ).last()
+			.css( 'width', '230px' )
+			.after( listwebradio.help );
+	}
+}
 function webRadioEdit() {
-	var url = V.list.path;
+	var url  = V.list.path;
+	var rprf = url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' );
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit Web Radio'
-		, content      : htmlwebradio
+		, message      : '<img src="'+ ( V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
+		, list         : rprf ? listwebradio.list.slice( 0, 2 ) : listwebradio.list.slice( 0, -1 )
 		, values       : [ V.list.name, url, V.list.li.data( 'charset' ) || 'UTF-8' ]
 		, checkchanged : true
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
-		, beforeshow   : () => {
-			var src  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
-			$( '#infoContent' ).prepend( '<div class="infomessage"><img src="'+ src +'"></div>' );
-			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
-				$( '#infoContent tr' ).last().remove();
-			} else {
-				$( '#addwebradiodir' ).remove();
-			}
-		}
+		, beforeshow   : rprf ? '' : listwebradio.fn
 		, oklabel      : ico( 'save' ) +'Save'
 		, ok           : () => {
 			var dir     = $( '#lib-path .lipath' ).text();
@@ -574,13 +568,14 @@ function webRadioExists( error, name, url, charset ) {
 }
 function webRadioNew( name, url, charset ) {
 	info( {
-		  icon         : 'webradio'
-		, title        : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
-		, boxwidth     : 'max'
-		, content      : htmlwebradio
-		, values       : [ name, url, charset || 'UTF-8' ]
-		, checkblank   : [ 0, 1 ]
-		, beforeshow   : () => {
+		  icon       : 'webradio'
+		, title      : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
+		, boxwidth   : 'max'
+		, list       : listwebradio.list
+		, values     : [ name, url, charset || 'UTF-8' ]
+		, checkblank : [ 0, 1 ]
+		, beforeshow : () => {
+			listwebradio.fn()
 			if ( $( '#lib-path .lipath' ).text() ) {
 				$( '#addwebradiodir' ).remove();
 			} else {
@@ -588,16 +583,16 @@ function webRadioNew( name, url, charset ) {
 					info( {
 						  icon       : 'webradio'
 						, title      : 'Add New Folder'
-						, textlabel  : 'Name'
+						, list       : [ 'Name', 'text' ]
 						, checkblank : true
 						, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
 						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal(), 'CMD DIR SUB' ] )
 					} );
 				} );
 			}
-			if ( V.playlist ) $( '#infoContent input' ).eq( 1 ).prop( 'disabled', true );
+			if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
 		}
-		, ok           : () => {
+		, ok         : () => {
 			var values  = infoVal();
 			var name    = values[ 0 ];
 			var url     = values[ 1 ];

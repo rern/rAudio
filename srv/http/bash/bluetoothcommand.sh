@@ -19,6 +19,7 @@ disconnectRemove() {
 	[[ ! $type ]] && type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
+	mpc -q stop
 	$dirbash/cmd.sh playerstop
 	if [[ $type == Source ]]; then
 		icon=btsender

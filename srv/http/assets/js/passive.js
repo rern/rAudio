@@ -276,8 +276,8 @@ function psOrder( data ) {
 function psPlaylist( data ) {
 	if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 	
-	if ( 'skip' in data ) {
-		S.song = data.skip;
+	if ( 'song' in data ) {
+		$.each( data, ( k, v ) => S[ k ] = v );
 		if ( V.playlist ) setPlaylistScroll();
 		return
 	}
@@ -355,7 +355,7 @@ function psRelays( response ) {
 		}, 1000 );
 	} else {
 		if ( I.active ) {
-			$( '#infoContent .msg-r' ).html( response.message );
+			$( '#infoList .msg-r' ).html( response.message );
 			return
 		}
 		
@@ -368,7 +368,7 @@ function psRelays( response ) {
 			, oknoreset  : true
 			, beforeshow : () => {
 				$( '#infoX' ).addClass( 'hide' );
-				if ( state === 'OFF' ) $( '#infoContent .msg-r' ).addClass( 'wh' );
+				if ( state === 'OFF' ) $( '#infoList .msg-r' ).addClass( 'wh' );
 			}
 		} );
 	}
@@ -388,17 +388,14 @@ function psSavedPlaylists( data ) {
 	if ( V.savedpl ) {
 		count ? renderSavedPl( data ) : $( '#playlist' ).trigger( 'click' );
 	} else if ( V.savedpltrack ) {
-		if ( 'delete' in data && $( '#pl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
+		if ( 'delete' in data && $( '#savedpl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 	}
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
 	V.volumeprev = S.volume;
-	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
-		V.local = false; // allow beforeValueChange()
-		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-	}
+	if ( [ 'mute', 'unmute' ].includes( data.type ) ) V.local = false; // allow beforeValueChange()
 	if ( data.type === 'mute' ) {
 		S.volume = 0;
 		S.volumemute = data.val;

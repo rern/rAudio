@@ -4,7 +4,7 @@
 
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
-mkdir -p $dircamilladsp/{coeffs,configs,configs-bt}
+mkdir -p $dircamilladsp/{coeffs,configs,configs-bt,raw}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
@@ -15,15 +15,7 @@ done
 [[ $1 ]] && echo $1 > $diraddons/r1
 
 # camilladsp
-if [[ -e /usr/bin/camilladsp ]]; then
-	echo "\
-filtersmax=10
-filtersmin=-10
-mixersmax=10
-mixersmin=-10" > $dirsystem/camilla.conf
-else
-	rm -rf $dircamilladsp
-fi
+[[ ! -e /usr/bin/camilladsp ]] && rm -rf $dircamilladsp
 
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre

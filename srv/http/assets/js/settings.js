@@ -112,6 +112,14 @@ function notifyCommon( message ) {
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
+function playbackButton() {
+	if ( S.pllength ) {
+		var btn = S.state === 'play' ? 'pause' : 'play';
+	} else {
+		var btn = 'play disabled';
+	}
+	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
+}
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
@@ -124,7 +132,7 @@ function refreshData() {
 			switchSet();
 			renderPage();
 		} else {
-			$( '#data' ).html( highlightJSON( S ) )
+			page === 'camilla' ? renderPage() : $( '#data' ).html( highlightJSON( S ) );
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
 	} );
@@ -153,7 +161,7 @@ function switchEnable() {
 function switchIdIconTitle( id ) {
 	id       = id.replace( 'setting-', '' );
 	SW.id    = id;
-	SW.title = $( '#div'+ id +' .name' ).text();
+	SW.title = $( '#div'+ id +' .label' ).text();
 	if ( page === 'player' ) {
 		SW.icon  =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume';
 	} else {
@@ -186,7 +194,8 @@ function psOnMessage( message ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'camilla':   psCamilla( data );   break;
-		case 'mpdplayer': psMpdPlayer( data ); break;
+		case 'mpdplayer':
+		case 'mpdradio':  psMpdPlayer( data ); break;
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'power':     psPower( data );     break;
@@ -223,9 +232,9 @@ function psCamilla( data ) {
 	$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 }
 function psMpdPlayer( data ) {
-	if ( ! [ '', 'camilla', 'player' ].includes( page ) ) return
+	if ( ! [ 'camilla', 'player' ].includes( page ) ) return
 	
-	[ 'player', 'pllength', 'state' ].forEach( k => S[ k ] = data[ k ] );
+	[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
 	playbackButton();
 }
 function psPlayer( data ) {
@@ -240,6 +249,8 @@ function psPlayer( data ) {
 }
 function psRefresh( data ) {
 	if ( data.page !== page ) return
+	
+	if ( V.local && page === 'camilla' ) return
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
@@ -348,7 +359,7 @@ $( '#button-data' ).on( 'click', function() {
 	renderPage();
 	$( '#button-data, #data' ).addClass( 'hide' );
 } );
-$( '.status .headtitle, .col-l.status' ).on( 'click', function() {
+$( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );
 	var id    = $this.hasClass( 'col-l' ) ? $this.data( 'status' ) : $this.parent().data( 'status' );
 	var $code = $( '#code'+ id );
@@ -380,6 +391,7 @@ $( '.helphead' ).on( 'click', function() {
 } );
 $( '.playback' ).on( 'click', function() { // for player and camilla
 	S.state = S.state === 'play' ? 'pause' : 'play';
+	if ( page === 'camilla' && S.state === 'pause' ) render.vuClear();
 	playbackButton();
 	bash( [ 'cmd.sh', 'mpcplayback' ] );
 } );

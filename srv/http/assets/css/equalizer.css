@@ -76,7 +76,6 @@
 	bottom: 15px;
 	left: 50%;
 	transform: translateX( -50% );
-	font-size: 0; /* force no space between inline-block */
 }
 #eq i {
 	font-size: 24px;

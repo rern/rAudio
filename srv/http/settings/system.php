@@ -2,32 +2,32 @@
 <?php
 $onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 'x';
 $id_data = [
-	  'audio'         => [ 'name' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
-	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
-	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
-	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
-	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
-	, 'i2smodule'     => [ 'name' => 'Audio - I²S' ]
-	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'RPLCD' ]
-	, 'mpdoled'       => [ 'name' => 'Spectrum OLED',     'sub' => 'mpd_oled' ]
-	, 'powerbutton'   => [ 'name' => 'Power Button',      'sub' => 'Wiring Pi' ]
-	, 'relays'        => [ 'name' => 'Relay Module',      'sub' => 'Wiring Pi' ]
-	, 'restore'       => [ 'name' => 'Restore',                                   'setting' => 'none' ]
-	, 'rotaryencoder' => [ 'name' => 'Rotary Encoder',    'sub' => 'evtest' ]
-	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
-	, 'softlimit'     => [ 'name' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
-	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
-	, 'volumeboot'    => [ 'name' => 'Volume on Boot' ]
-	, 'tft'           => [ 'name' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
-	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
-	, 'vuled'         => [ 'name' => 'VU LED',            'sub' => 'cava' ]
-	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
+	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
+	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
+	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
+	, 'hddsleep'      => [ 'label' => 'Hard Drive Sleep' ]
+	, 'hostname'      => [ 'label' => 'Player Name',                               'setting' => 'none' ]
+	, 'i2smodule'     => [ 'label' => 'Audio - I²S' ]
+	, 'lcdchar'       => [ 'label' => 'Character LCD',     'sub' => 'RPLCD' ]
+	, 'mpdoled'       => [ 'label' => 'Spectrum OLED',     'sub' => 'mpd_oled' ]
+	, 'powerbutton'   => [ 'label' => 'Power Button',      'sub' => 'Wiring Pi' ]
+	, 'relays'        => [ 'label' => 'Relay Module',      'sub' => 'Wiring Pi' ]
+	, 'restore'       => [ 'label' => 'Restore',                                   'setting' => 'none' ]
+	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
+	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
+	, 'softlimit'     => [ 'label' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
+	, 'soundprofile'  => [ 'label' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
+	, 'volumeboot'    => [ 'label' => 'Volume on Boot' ]
+	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
+	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
+	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
+	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
 
 $head = [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
-	, 'button' => [ 'power' => 'power' ]
+	, 'button' => [ 'power power' ]
 	, 'help'   => i( 'power btn' ).' Power'
 ];
 $labels = 'Version
@@ -41,7 +41,7 @@ htmlSection( $head, $body, 'system' );
 $head = [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'status' => 'status'
-	, 'button' => [ 'refresh' => 'refresh' ]
+	, 'button' => [ 'refresh refresh' ]
 	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
 ];
 $labels = 'CPU Load
@@ -76,7 +76,7 @@ $gid = exec( 'id -g mpd' );
 $head = [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
-	, 'button' => [ 'addnas' => 'add' ]
+	, 'button' => [ 'add addnas' ]
 	, 'help'   => <<< EOF
 {$Fi( 'add btn' )} Add network storage
 

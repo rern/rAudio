@@ -36,13 +36,6 @@
 #time .rs-inner-container::after { z-index: 1 }
 @media ( orientation: portrait ) { @media ( max-width: 480px ) { #bioimg { z-index: -5 } } }
 
-#infoContent .imgicon {
-	width: 30px !important;
-	margin-right: 5px !important;
-	vertical-align: -10px;
-	border: none;
-}
-
 img {
 	-webkit-touch-callout: none;
 }
