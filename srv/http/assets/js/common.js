@@ -1123,7 +1123,7 @@ function volumePush( vol, type ) {
 	local();
 	wsPush( 'volume', '{ "type": "'+ ( type || 'push' ) +'", "val": '+ ( vol || S.volume ) +' }' );
 }
-function volumeSet( vol, type ) {
+function volumeSet( vol, type ) { // increment from current to target
 	if ( ! type ) volumePush( vol );
 	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
 }
