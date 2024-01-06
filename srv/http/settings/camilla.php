@@ -57,8 +57,10 @@ $htmls = [
 	  'volume' => '
 <div id="volume" class="slider">
 	<div class="track"></div>
-	<div id="volume-bar"></div>
 	<div class="thumb"></div>
+	<div id="volume-0"></div>
+	<div id="volume-band"></div>
+	<div id="volume-100"></div>
 </div>
 <i class="i-plus"></i>
 <c class="level">0</c>

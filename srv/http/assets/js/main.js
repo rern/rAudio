@@ -638,25 +638,43 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	clearTimeout( V.volumebar );
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
-	V.start = true;
+	V.volume = volumeX( $( this ) );
 } ).on( 'touchmove mousemove', function( e ) {
-	if ( ! V.start ) return
+	clearTimeout( V.volumebar );
+	if ( ! V.volume ) return
 	
 	V.drag = true;
-	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
+	volumeX2percent( e.pageX || e.changedTouches[ 0 ].pageX );
+	$( '#volume-text' ).text( S.volume );
+	$( '#volume-bar' ).css( 'width', S.x );
+	volumeSetAt();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		volumeBarShow();
 		return
 	}
 	
-	V.drag ? volumePush( S.volume, 'drag' ) : volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
-	V.start = V.drag = false;
+	if ( V.drag ) {
+		volumePush( S.volume, 'drag' );
+	} else { // click
+		volumeX2percent( e.pageX || e.changedTouches[ 0 ].pageX );
+		$( '#volume-text' ).text( S.volume );
+		volumeAnimate( S.volume, V.volume.current );
+		volumeSetAt();
+		volumePush();
+	}
+	$volumeRS.setValue( S.volume );
+	V.volume = V.drag = false;
+	V.volumebar = setTimeout( volumeBarHide, 3000 );
 } ).on( 'mouseleave', function() {
-	if ( V.start ) $( '#volume-band' ).trigger( 'mouseup' );
+	$volumeRS.setValue( S.volume );
+	V.volume = V.drag = false;
+	V.volumebar = setTimeout( volumeBarHide, 3000 );
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
 	volumeMuteToggle();
+	V.local = false;
+	setVolume();
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function() {
 	var $this = $( this );
@@ -685,7 +703,8 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 } );
 $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	clearTimeout( V.volumebar );
-	volumeBarSet( 'toggle' );
+	volumeAnimate( S.volumemute, S.volume );
+	volumeMuteToggle();
 } );
 $( '#coverM' ).press( function( e ) {
 	if ( ! S.pllength

@@ -394,6 +394,11 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
+	if ( V.local ) {
+		V.local = false;
+		return
+	}
+	
 	if ( 'volumenone' in data ) {
 		D.volumenone = data.volumenone;
 		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
