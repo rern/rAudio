@@ -394,18 +394,21 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
+	if ( 'volumenone' in data ) {
+		D.volumenone = data.volumenone;
+		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
+		return
+	}
+	
 	V.volumeprev = S.volume;
 	if ( [ 'mute', 'unmute' ].includes( data.type ) ) V.local = false; // allow beforeValueChange()
 	if ( data.type === 'mute' ) {
 		S.volume = 0;
 		S.volumemute = data.val;
 		setVolume();
-	} else if ( 'volumenone' in data ) {
-		D.volumenone = data.volumenone;
-		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
 	} else {
 		V.drag = data.type === 'updn'; // multiples - handle like drag
-		if ( data.type === 'dragpress' ) {
+		if ( data.type === 'drag' ) {
 			V.press = true;
 			setTimeout( () => V.press = false, 300 );
 		}

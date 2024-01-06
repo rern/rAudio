@@ -2017,8 +2017,11 @@ function volumeBarHide() {
 }
 function volumeBarSet( pageX ) {
 	clearTimeout( V.volumebar );
-	if ( pageX === 'toggle' ) {
-		var vol     = S.volumemute || 0;
+	var mute = '';
+	if ( toggle = pageX === 'toggle' ) {
+		var mute     = S.volumemute ? 'unmute' : 'mute'
+		var vol      = S.volumemute || 0;
+		S.volumemute = vol ? 0 : S.volume;
 	} else {
 		var posX    = pageX - $( '#volume-band' ).offset().left;
 		var bandW   = $( '#volume-band' ).width();
@@ -2033,7 +2036,9 @@ function volumeBarSet( pageX ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
 	} else {
 		var duration = Math.abs( vol - S.volume ) * 40;
-		volumeSet( vol );
+		S.volume = vol;
+		volumeSet();
+		volumePush( S.volumemute, mute );
 		$( '.volumeband' ).addClass( 'disabled' );
 		$( '#volume-bar' ).animate(
 			  { width: vol +'%' }
@@ -2046,11 +2051,10 @@ function volumeBarSet( pageX ) {
 				}
 			}
 		);
+		$volumeRS.setValue( vol );
 	}
-	$( '#volume-text' ).text( S.volumemute || vol );
+	$( '#volume-text' ).text( S.volumemute || S.volume );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
-	S.volume = vol;
-	$volumeRS.setValue( vol );
 }
 function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return

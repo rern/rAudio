@@ -509,12 +509,12 @@ function psVolume( data ) {
 		S.volume     = vol;
 		S.volumemute = 0;
 	} else {
+		if ( data.type === 'drag' ) {
+			V.drag = true;
+			setTimeout( () => V.drag = false, 300 );
+		}
 		common.volumeAnimate( vol, S.volume );
 		S.volume = vol;
-		if ( data.type === 'dragpress' ) {
-			V.dragpress = true;
-			setTimeout( () => V.dragpress = false, 300 );
-		}
 	}
 }
 
@@ -669,7 +669,7 @@ var render    = {
 		playbackButton();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
+			$( '#volume .thumb' ).css( 'margin-left', $( '#volume-bar' ).width() / 100 * S.volume );
 			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
@@ -1754,16 +1754,10 @@ var common    = {
 	, list2array    : list => { // '1, 2, 3' > [ 1, 2, 3 ]
 		return list.replace( /[ \]\[]/g, '' ).split( ',' ).map( Number )
 	}
-	, pagex2level   : pagex => {
-		var bandW = $( '#volume .slide' ).width();
-		var posX  = pagex - $( '#volume .slide' ).offset().left;
-		posX      = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-		return Math.round( posX / bandW * 100 );
-	}
 	, tabTitle      : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
 	, volumeAnimate : ( target, volume ) => {
-		var bandW = $( '#volume .slide' ).width();
-		var diff = V.dragpress ? 3 : Math.abs( target - volume );
+		var bandW = $( '#volume-bar' ).width();
+		var diff  = V.drag ? 3 : Math.abs( target - volume );
 		$master.addClass( 'noclick' );
 		$( '#volume .thumb' ).animate(
 			  { 'margin-left': bandW * target / 100 }
@@ -1780,7 +1774,7 @@ var common    = {
 		);
 	}
 	, volumeThumb   : () => {
-		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
+		$( '#volume .thumb' ).css( 'margin-left', $( '#volume-bar' ).width() / 100 * S.volume );
 	}
 	, webSocket     : () => {
 		if ( wscamilla && wscamilla.readyState < 2 ) return
@@ -1923,33 +1917,35 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
 $( '#volume' ).on( 'touchstart mousedown', function( e ) {
-	V.start = true;
+	var $volumebar = $( '#volume-bar' );
+	V.volume = {
+		  current : S.volume
+		, left    : $volumebar.offset().left
+		, width   : $volumebar.width()
+	}
 } ).on( 'touchmove mousemove', function( e ) {
-	if ( ! V.start ) return
+	if ( ! V.volume ) return
 	
-	V.drag = true;
-	S.volume = common.pagex2level( e.pageX || e.changedTouches[ 0 ].pageX );
+	V.drag       = true;
+	volumeX2percent( e.pageX || e.changedTouches[ 0 ].pageX );
 	common.volumeThumb();
 	volumeSetAt();
 	render.volume();
 } ).on( 'touchend mouseup', function( e ) {
-	if ( ! V.start ) return
+	if ( ! V.volume ) return
 	
 	if ( V.drag ) {
 		volumePush();
 	} else { // click
-		var vol    = common.pagex2level( e.pageX || e.changedTouches[ 0 ].pageX );
-		var volume = S.volume;
-		S.volume   = vol;
+		volumeX2percent( e.pageX || e.changedTouches[ 0 ].pageX );
 		$( '#divvolume .level' ).text( S.volume );
-		common.volumeAnimate( vol, volume );
+		common.volumeAnimate( S.volume, V.volume.current );
 		volumeSetAt();
 		volumePush();
 	}
-	V.start = false;
-	setTimeout( () => V.drag = false, 1000 );
+	V.volume = V.drag = false;
 } ).on( 'mouseleave', function() {
-	if ( V.start ) $( '#volume' ).trigger( 'mouseup' );
+	if ( V.volume ) $( '#volume' ).trigger( 'mouseup' );
 } );
 $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
@@ -1977,18 +1973,8 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 		}
 	}, 100 );
 } ).on( 'click', '.i-volume, .level', function() {
-	var volume     = S.volume;
-	var volumemute = S.volumemute;
-	common.volumeAnimate( volumemute, volume );
-	volumeSetAt( volumemute );
-	volumemute ? volumePush( volumemute, 'unmute' ) : volumePush( volume, 'mute' );
-	if ( volumemute ) {
-		S.volume     = volumemute;
-		S.volumemute = 0;
-	} else {
-		S.volumemute = volume;
-		S.volume     = 0;
-	}
+	common.volumeAnimate( S.volumemute, S.volume );
+	volumeMuteToggle();
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 

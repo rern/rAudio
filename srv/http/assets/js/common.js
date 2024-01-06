@@ -1118,9 +1118,16 @@ var ws, wsvolume;
 function volumeMuteToggle() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
+	if ( S.volumemute ) {
+		S.volume     = S.volumemute;
+		S.volumemute = 0;
+	} else {
+		S.volumemute = S.volume;
+		S.volume     = 0;
+	}
 }
 function volumePush( vol, type ) {
-	local();
+	if ( page === 'camilla' ) local(); // suppress refresh
 	wsPush( 'volume', '{ "type": "'+ ( type || 'push' ) +'", "val": '+ ( vol || S.volume ) +' }' );
 }
 function volumeSet( vol, type ) { // increment from current to target
@@ -1129,6 +1136,12 @@ function volumeSet( vol, type ) { // increment from current to target
 }
 function volumeSetAt( val ) { // drag / press / updn
 	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+}
+function volumeX2percent( pagex ) {
+	var x = pagex - V.volume.left;
+	if ( x < 0 || x > V.volume.width ) return
+	
+	S.volume = Math.round( x / V.volume.width * 100 );
 }
 function websocketConnect() {
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
