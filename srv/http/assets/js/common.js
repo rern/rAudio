@@ -425,7 +425,6 @@ function info( json ) {
 	if ( ! I.list ) {
 		I.active = true;
 		$( '#infoList' ).html( Object.values( htmls ).join( '' ) );
-		$( '#infoButton' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		infoButtonWidth();
