@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240105
+# 20240107
 if [[ -e /usr/bin/camilladsp ]]; then
 	rm -f $dirsystem/camilla.conf
 	mkdir -p $dircamilladsp/raw
