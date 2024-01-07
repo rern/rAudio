@@ -37,11 +37,12 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		S.card     = D.card;
 	}
 	info( {
-		  icon        : SW.icon
-		, title       : SW.title
-		, list        : [ S.control.replace( ' - A2DP', '' ), 'range' ]
-		, prompt      : warning
-		, beforeshow  : () => {
+		  icon       : SW.icon
+		, title      : SW.title
+		, list       : [ S.control.replace( ' - A2DP', '' ), 'range' ]
+		, prompt     : warning
+		, beforeshow : () => {
+			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			$( '#infoList input' ).on( 'input', function() {
 				volumeSetAt( +$( this ).val() );
@@ -50,17 +51,21 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 			} );
 			volumeInfoSet();
 		}
-		, cancel      : () => {
+		, cancel     : () => {
 			if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) {
 				local();
 				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
 				setTimeout( () => I.oknoreset = true, 300 );
 			}
 		}
-		, oklabel     : ico( 'set0' ) +'0dB'
-		, ok          : () => {
-			if ( parseFloat( $( '.inforange .sub' ).text() ) >= 0 || ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
-			$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
+		, oklabel    : ico( 'set0' ) +'0dB'
+		, ok         : () => {
+			if ( S.volume.db >= 0 ) {
+				bash( [ cmd0db ] );
+			} else {
+				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
+				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
+			}
 		}
 		, oknoreset    : true
 	} );
@@ -265,7 +270,7 @@ ${ iconwarning }<wh>Lower speakers / headphones volume
 <br>
 <br><gr>Signal will be set to original level at 0dB.</gr>
 <br>Beware of too high volume.</wh>
-<br>&nbsp;`;
+`;
 
 function infoSoxr( quality ) {
 	delete S.soxrconf.PLUGIN

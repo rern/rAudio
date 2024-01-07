@@ -963,17 +963,17 @@ function infoRelays() {
 		}
 	} );
 	var option_delay = htmlOption( [ ...Array(10).keys() ] );
-	var td_name      = '<td colspan="2" style="width: 170px"><select>'+ option_name +'</select></td>';
+	var updn         = ico( 'remove updn dn' ) + ico( 'plus-circle updn up' );
+	var td_name      = '<td><select>'+ option_name +'</select></td>';
 	var tr_name      = '<tr>'+ td_name + td_name +'</tr>';
-	var td_delay     = '<td style="width: 70px"><input type="text" disabled></td><td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td>';
+	var td_delay     = '<td><input type="text" disabled>'+ updn +'</td>';
 	var tr_delay     = '<tr>'+ td_delay + td_delay +'</tr>';
-	var list         = '<tr><td colspan="2">'+ ico( 'power grn' ) +' On <gr>(s)</gr></td><td colspan="2">'+ ico( 'power red' ) +' Off <gr>(s)</gr></td></tr>';
+	var list         = '<tr><td>'+ ico( 'power grn' ) +' On <gr>(s)</gr></td><td>'+ ico( 'power red' ) +' Off <gr>(s)</gr></td></tr>';
 	for ( i = 0; i < pL; i++ ) {
 		list += tr_name;
 		if ( i < ( pL -1 ) ) list += tr_delay;
 	}
-	list            += '<tr><td colspan="2">'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled></td>'
-					  +'<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td></tr>';
+	list            += '<tr><td class="idle">'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled>'+ updn +'</td></tr>';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -983,8 +983,10 @@ function infoRelays() {
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			$( '#infoList td:first-child' ).css( 'text-align', 'left' );
-			$( '#infoList tr:last-child td:first-child' ).css( 'text-align', '' );
+			$( '#infoList td' ).css( 'text-align', 'left' );
+			$( '#infoList .select2-container' ).attr( 'style', 'width: 180px !important' );
+			$( '#infoList input' ).css( 'width', '70px' );
+			$( '#infoList .idle' ).css( 'text-align', 'right' );
 			var min   = 0;
 			var max   = 10;
 			$( '#infoList .updn' ).on( 'touchend mouseup keyup', function() {
@@ -1042,7 +1044,7 @@ function infoRelaysName() {
 	var name     = S.relaysnameconf || default_v.relaysname;
 	var values   = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
-	var pin_name = '<tr><td><select>'+ htmlOption( Object.keys( board2bcm ) ) +'</select></td><td><input type="text"></td></tr>';
+	var pin_name = '<tr><td><select>'+ htmlOption( Object.keys( board2bcm ) ) +'</select></td><td colspan="2"><input type="text"></td></tr>';
 	var list     = '<tr><td>'+ ico( 'gpiopins bl' ) +' Pin</td><td>'+ ico( 'tag bl' ) +' Name</td></tr>';
 	for( i = 0; i < 4; i++ ) list += pin_name;
 	info( {
@@ -1054,8 +1056,10 @@ function infoRelaysName() {
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			$( '#infoList td:first-child' ).css( { 'text-align': 'left', width: '75px' } );
-			$( '#infoList td:last-child' ).css( 'width', '160px' );
+			$( '#infoList table' ).css( 'margin-left', '70px' );
+			$( '#infoList td' ).css( 'text-align', 'left' );
+			$( '#infoList .select2-container' ).attr( 'style', 'width: 70px !important' );
+			$( '#infoList input' ).css( 'width', '160px' );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysCmd
