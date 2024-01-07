@@ -629,7 +629,7 @@ $( '#volume' ).roundSlider( {
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, stop              : () => {
-		volumePush( S.volume, V.drag ? 'dragpress' : 'push' );
+		volumePush( S.volume, V.drag ? 'drag' : 'push' );
 		V.drag = false;
 	}
 } );
@@ -638,26 +638,46 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	clearTimeout( V.volumebar );
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
-	V.start = true;
+	var $this = $( this );
+	V.volume  = {
+		  current : S.volume
+		, min     : $this.offset().left
+		, width   : $this.width()
+	}
 } ).on( 'touchmove mousemove', function( e ) {
-	if ( ! V.start ) return
+	clearTimeout( V.volumebar );
+	if ( ! V.volume ) return
 	
 	V.drag = true;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
+	$( '#volume-bar' ).css( 'width', V.volume.x );
+	volumeSetAt();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		volumeBarShow();
 		return
 	}
 	
-	V.drag ? volumePush( S.volume, 'dragpress' ) : volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
-	V.start = V.drag = false;
+	if ( V.drag ) {
+		volumePush( S.volume, 'drag' );
+	} else { // click
+		volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
+		volumeAnimate( S.volume, V.volume.current );
+		volumeSetAt();
+		volumePush();
+	}
+	$volumeRS.setValue( S.volume );
+	V.volume = V.drag = false;
+	V.volumebar = setTimeout( volumeBarHide, 3000 );
 } ).on( 'mouseleave', function() {
-	if ( V.start ) $( '#volume-band' ).trigger( 'mouseup' );
+	$volumeRS.setValue( S.volume );
+	V.volume = V.drag = false;
+	V.volumebar = setTimeout( volumeBarHide, 3000 );
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
-	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
-	volumeSet( S.volumemute, 'toggle' );
+	volumeMuteToggle();
+	V.local = false;
+	setVolume();
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function() {
 	var $this = $( this );
@@ -686,7 +706,8 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 } );
 $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	clearTimeout( V.volumebar );
-	volumeBarSet( 'toggle' );
+	volumeAnimate( S.volumemute, S.volume );
+	volumeMuteToggle();
 } );
 $( '#coverM' ).press( function( e ) {
 	if ( ! S.pllength

@@ -365,39 +365,32 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $code = $( '#code'+ id );
 	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 } );
-$( '.close' ).on( 'click', function() {
-	location.href = '/';
-} );
-$( '.helphead' ).on( 'click', function() {
-	var $this = $( this );
-	var eltop = $( 'heading' ).filter( ( i, el ) => el.getBoundingClientRect().top > 0 )[ 0 ]; // return 1st element
-	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
-	if ( window.innerHeight > 570 ) {
-		var visible = $this.hasClass( 'bl' );
-		$this.toggleClass( 'bl', ! visible );
-		$( '.section' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.hasClass( 'hide' ) ) return
-			
-			$this.find( '.helpblock' ).toggleClass( 'hide', visible );
-		} )
-		
-	} else {
-		var visible = $( '#bar-bottom' ).css( 'display' ) !== 'none';
-		$( '#bar-bottom' ).css( 'display', visible ? '' : 'block' );
-	}
-	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
-	$( '.sub' ).next().toggleClass( 'hide', visible );
-} );
 $( '.playback' ).on( 'click', function() { // for player and camilla
 	S.state = S.state === 'play' ? 'pause' : 'play';
 	if ( page === 'camilla' && S.state === 'pause' ) render.vuClear();
 	playbackButton();
 	bash( [ 'cmd.sh', 'mpcplayback' ] );
 } );
+$( '.helphead' ).on( 'click', function() {
+	var $this  = $( this );
+	var active = $this.hasClass( 'bl' );
+	$this.toggleClass( 'bl' );
+	if ( active ) {
+		$( '.help' ).removeClass( 'bl' );
+		$( '.helpblock' ).addClass( 'hide' );
+	} else {
+		$( '.help' ).addClass( 'bl' );
+		$( '.helpblock' ).removeClass( 'hide' );
+	}
+} );
+$( '.close' ).on( 'click', function() {
+	location.href = '/';
+} );
 $( '.help' ).on( 'click', function() {
-	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
-	$( '.helphead' ).toggleClass( 'bl', $( '.helpblock:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
+	var $this  = $( this );
+	$this.toggleClass( 'bl' );
+	$this.parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
+	$( '.helphead' ).toggleClass( 'bl', $( '.help' ).hasClass( 'bl' ) );
 } );
 $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return

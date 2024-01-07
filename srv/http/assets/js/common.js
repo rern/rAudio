@@ -1118,12 +1118,19 @@ var ws, wsvolume;
 function volumeMuteToggle() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
+	if ( S.volumemute ) {
+		S.volume     = S.volumemute;
+		S.volumemute = 0;
+	} else {
+		S.volumemute = S.volume;
+		S.volume     = 0;
+	}
 }
 function volumePush( vol, type ) {
-	local();
+	V.local = true; // suppress local refresh
 	wsPush( 'volume', '{ "type": "'+ ( type || 'push' ) +'", "val": '+ ( vol || S.volume ) +' }' );
 }
-function volumeSet( vol, type ) {
+function volumeSet( vol, type ) { // increment from current to target
 	if ( ! type ) volumePush( vol );
 	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
 }

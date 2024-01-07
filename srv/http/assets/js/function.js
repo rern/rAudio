@@ -2010,48 +2010,33 @@ function thumbUpdate( path ) {
 function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )
 }
+function volumeAnimate( target, volume ) {
+	clearTimeout( V.volumebar );
+	$( '.volumeband' ).addClass( 'disabled' );
+	$( '#volume-bar' ).animate(
+		  { width: target +'%' }
+		, {
+			  duration : Math.abs( target - volume ) * 40
+			, easing   : 'linear'
+			, complete : () => {
+				V.volumebar = setTimeout( volumeBarHide, 3000 );
+				$( '.volumeband' ).removeClass( 'disabled' );
+				setVolume();
+			}
+		}
+	);
+}
 function volumeBarHide() {
 	$( '#info' ).removeClass( 'hide' ); // 320 x 480
 	$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 	$( '.volumeband' ).addClass( 'transparent' );
 }
-function volumeBarSet( pageX ) {
-	clearTimeout( V.volumebar );
-	if ( pageX === 'toggle' ) {
-		var vol     = S.volumemute || 0;
-	} else {
-		var posX    = pageX - $( '#volume-band' ).offset().left;
-		var bandW   = $( '#volume-band' ).width();
-		posX        = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-		var current = V.drag ? 'drag' : S.volume;
-		var vol     = Math.round( posX / bandW * 100 );
-	}
-	if ( V.drag ) {
-		S.volume    = vol;
-		volumeSetAt();
-		V.volumebar = setTimeout( volumeBarHide, 3000 );
-		$( '#volume-bar' ).css( 'width', vol +'%' );
-	} else {
-		var duration = Math.abs( vol - S.volume ) * 40;
-		volumeSet( vol );
-		$( '.volumeband' ).addClass( 'disabled' );
-		$( '#volume-bar' ).animate(
-			  { width: vol +'%' }
-			, {
-				  duration : duration
-				, easing   : 'linear'
-				, complete : () => {
-					V.volumebar = setTimeout( volumeBarHide, 3000 );
-					$( '.volumeband' ).removeClass( 'disabled' );
-				}
-			}
-		);
-	}
-	$( '#volume-text' ).text( S.volumemute || vol );
-	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
-	S.volume = vol;
-	$volumeRS.setValue( vol );
+function volumeBarSet( pagex ) {
+	V.volume.x = pagex - V.volume.min;
+	S.volume   = Math.round( V.volume.x / V.volume.width * 100 );
+	$( '#volume-text' ).text( S.volume );
 }
+
 function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
@@ -2080,6 +2065,7 @@ function volumeUpDown( up ) {
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
+	setVolume();
 	volumePush( S.volume );
 	volumeSetAt();
 }

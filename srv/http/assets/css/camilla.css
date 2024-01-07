@@ -57,23 +57,22 @@
 }
 #vugrid {
 	position: absolute;
-	left: 7px;
 	width: 100%;
 	height: 100%;
 }
 #vugrid a {
-	display: inline-block;
-	margin-right: 32px;
-	width: 32px;
+	position: absolute;
+	width: 1px;
 	height: 100%;
-	border: 1px solid var( --cga );
-	border-top: none;
-	border-bottom: none;
+	background: var( --cga );
 }
-#vugrid .g3 {
-	border-left: 1px solid var( --cgl );
-	border-right: none;
-}
+#vugrid .g0 { left: 39px }
+#vugrid .g1 { left: 85px }
+#vugrid .g2 { left: 120px }
+#vugrid .g3 { left: 150px }
+#vugrid .g4 { left: 177px }
+#vugrid .g5 { left: 199px; background: var( --cgl ); }
+#vugrid .g6 { left: 221px }
 #vulabel {
 	position: absolute;
 	top: 16px;
@@ -86,23 +85,23 @@
 	z-index: 0;
 }
 #vulabel a {
-	display: inline-block;
-	width: 33px;
+	position: absolute;
 }
-#vulabel a:nth-child(even) {
-	color: var( --cg );
-}
-#vulabel .l0 {
-	width: 24px;
-}
-#vulabel .l6 {
-	margin-left: 7px;
-}
+#vulabel .l0 { left: 25px }
+#vulabel .l1 { left: 71px }
+#vulabel .l2 { left: 106px }
+#vulabel .l3 { left: 136px }
+#vulabel .l4 { left: 164px }
+#vulabel .l5 { left: 196px }
+#vulabel .l6 { left: 215px; color: var( --cg ); }
 #divvolume {
 	margin-bottom: 10px;
 }
 #volume {
 	float: left;
+}
+#divvolume .col-r {
+	white-space: nowrap;
 }
 #divvolume .i-minus {
 	color: var( --cg60 );
@@ -120,6 +119,7 @@
 #divvolume .level {
 	display: inline-block;
 	width: 45px;
+	min-width: 45px;
 	line-height: 16px;
 	vertical-align: 4px;
 	text-align: center;
@@ -275,6 +275,7 @@ tr .i-remove {
 }
 .liinput .name {
 	width: 142px;
+	min-width: 142px;
 }
 .liinput.main div:first-child,
 .liinput .select2-container {
@@ -381,13 +382,12 @@ i.disabled {
 	border: 1px solid var( --cga );
 	background: linear-gradient( 90deg, transparent 10px, var( --cga ) 10px, var( --cga ) calc( 100% - 10px ), transparent 10px );
 }
-.slider .slide {
+#volume-band {
 	position: absolute;
-	width: calc( 100% - 40px );
+	width: 100%;
 	height: 100%;
 	top: 0;
-	left: 20px;
-	z-index: 1;
+	left: 0;
 }
 .slider .thumb {
 	position: relative;
@@ -414,9 +414,6 @@ i.disabled {
 	margin-top: 15px;
 }
 
-@media (max-width: 700px) {
-	#mixers .i-inverted { display: none }
-}
 @media (max-width: 610px) {
 	.liicon { display: none }
 }
@@ -428,7 +425,7 @@ i.disabled {
 	}
 }
 @media (max-width: 570px) {
-	.container input[ type=range ] { width: 100% }
+	.container input[ type=range ] { min-width: 100px }
 }
 @media (max-width: 500px) {
 	.helphead { display: none }
@@ -442,6 +439,7 @@ i.disabled {
 #filters li {
 	cursor: default !important;
 }
+#divvolume,
 .i-minus,
 .i-plus {
 	-webkit-user-select: none;

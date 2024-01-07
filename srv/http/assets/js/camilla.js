@@ -8,7 +8,6 @@ V             = {
 	, timeoutred : true
 }
 var wscamilla = null
-var $master   = $( '#volume, #divvolume .i-minus, #divvolume .i-plus' );
 var R         = {}
 // filters //////////////////////////////////////////////////////////////////////////////
 var F0        = {
@@ -497,15 +496,27 @@ function psOnClose() {
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
-	if ( V.local ) return
-	
-	if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
-		S.volumemute = data.type === 'mute' ? data.val : 0;
-	} else if ( data.type === 'dragpress' ) {
-		V.dragpress = true;
-		setTimeout( () => V.dragpress = false, 300 );
+	if ( V.local ) {
+		V.local = false;
+		return
 	}
-	common.volume( S.volumemute ? 0 : data.val, 'push' );
+	var vol = data.val;
+	if ( data.type === 'mute' ) {
+		common.volumeAnimate( 0, S.volume );
+		S.volume     = 0;
+		S.volumemute = vol;
+	} else if ( data.type === 'unmute' ) {
+		common.volumeAnimate( S.volumemute, 0 );
+		S.volume     = vol;
+		S.volumemute = 0;
+	} else {
+		if ( data.type === 'drag' ) {
+			V.drag = true;
+			setTimeout( () => V.drag = false, 300 );
+		}
+		common.volumeAnimate( vol, S.volume );
+		S.volume = vol;
+	}
 }
 
 var graph     = {
@@ -659,7 +670,6 @@ var render    = {
 		playbackButton();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
 			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
@@ -678,9 +688,9 @@ var render    = {
 		
 		// run once
 		var vugrid  = '<div id="vugrid">';
-		for ( i = 0; i < 4; i++ ) vugrid  += '<a class="g'+ i +'"></>';
+		for ( i = 0; i < 7; i++ ) vugrid  += '<a class="g'+ i +'"></>';
 		var vulabel = '<div id="vulabel">';
-		[ '', -96, -48, -24, -12, -6, 0 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
+		[ -60, -48, -36, -24, -12, 0, 12 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
 		var vubar   = '<div id="vu">'
 					 + vugrid +'</div>'
 					 +'<div id="in">';
@@ -730,14 +740,13 @@ var render    = {
 		}
 	}
 	, volume      : () => {
+		$( '#volume .thumb' ).css( 'margin-left', ( $( '#volume-band' ).width() - 40 ) / 100 * S.volume );
+		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
+		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 		if ( S.volumemute ) {
-			$master.addClass( 'disabled' );
 			$( '#divvolume .level' ).addClass( 'bl' );
 			$( '#divvolume .i-volume' ).addClass( 'mute' );
 		} else {
-			$master.removeClass( 'disabled' );
-			$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
-			$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 			$( '#divvolume .level' ).removeClass( 'bl' );
 			$( '#divvolume .i-volume' ).removeClass( 'mute' );
 		}
@@ -758,6 +767,7 @@ var render    = {
 			var left  = 0;
 		} else {
 			var width = Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
+			width     = ( width - 100 ) * 2;
 			var left  = width - 2;
 		}
 		if ( rms ) {
@@ -1682,7 +1692,7 @@ var setting   = {
 	}
 }
 var common    = {
-	  inUse        : name => {
+	  inUse         : name => {
 		var filters = V.tab === 'filters';
 		var inuse   = [];
 		if ( filters && ! ( name in FIL ) ) { // file
@@ -1716,7 +1726,7 @@ var common    = {
 		
 		return false
 	}
-	, key2label    : key => {
+	, key2label     : key => {
 		if ( key === 'ms' ) return 'ms'
 		
 		var str = key[ 0 ].toUpperCase();
@@ -1735,60 +1745,32 @@ var common    = {
 				.slice( 1 )
 		return str + key
 	}
-	, labels2array : array => {
+	, labels2array  : array => {
 		if ( ! array ) return false
 		
 		var capitalized = array.map( el => common.key2label( el ) );
 		return capitalized
 	}
-	, list2array   : list => { // '1, 2, 3' > [ 1, 2, 3 ]
+	, list2array    : list => { // '1, 2, 3' > [ 1, 2, 3 ]
 		return list.replace( /[ \]\[]/g, '' ).split( ',' ).map( Number )
 	}
-	, tabTitle     : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
-	, volume       : ( pageX, type ) => {
-		var bandW   = $( '#volume .slide' ).width();
-		if ( V.start ) {
-			var posX = pageX - $( '#volume .slide' ).offset().left;
-			posX     = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-			var vol  = Math.round( posX / bandW * 100 );
-		} else {
-			var vol  = pageX;
-			var posX = bandW * vol / 100;
-		}
-		if ( V.drag ) {
-			S.volume = vol;
-			common.volumeThumb();
-			local();
-			volumeSetAt();
-			render.volume();
-		} else {
-			var diff = V.dragpress ? 3 : Math.abs( vol - S.volume );
-			$master.addClass( 'noclick' );
-			$( '#volume .thumb' ).animate(
-				  { 'margin-left': posX }
-				, {
-					  duration : diff * 40
-					, easing   : 'linear'
-					, complete : () => {
-						$master
-							.removeClass( 'noclick' )
-							.toggleClass( 'disabled', S.volumemute > 0 );
-						render.volume();
-					}
+	, tabTitle      : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
+	, volumeAnimate : ( target, volume ) => {
+		var bandW = $( '#volume-band' ).width() - 40;
+		$( '#divvolume' ).addClass( 'noclick' );
+		$( '#volume .thumb' ).animate(
+			  { 'margin-left': bandW / 100 * target }
+			, {
+				  duration : Math.abs( target - volume ) * 40
+				, easing   : 'linear'
+				, complete : () => {
+					$( '#divvolume' ).removeClass( 'noclick' );
+					render.volume();
 				}
-			);
-			S.volume = vol;
-			if ( ! type ) { // not from push
-				volumeSetAt();
-				volumePush( vol );
-				volumeSetAt();
 			}
-		}
+		);
 	}
-	, volumeThumb  : () => {
-		$( '#volume .thumb' ).css( 'margin-left', $( '#volume .slide' ).width() / 100 * S.volume );
-	}
-	, webSocket    : () => {
+	, webSocket     : () => {
 		if ( wscamilla && wscamilla.readyState < 2 ) return
 		
 		var cmd_el            = {
@@ -1913,12 +1895,12 @@ var common    = {
 			}
 		}
 	}
-	, wsGetConfig  : () => {
+	, wsGetConfig   : () => {
 		setTimeout( () => {
 			[ 'GetConfigFilePath', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
 		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
-	, wsGetState  : () => {
+	, wsGetState    : () => {
 		[ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ].forEach( k => {
 			wscamilla.send( '"'+ k +'"' );
 		} );
@@ -1928,21 +1910,58 @@ var common    = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
-$( '#volume' ).on( 'touchstart mousedown', function( e ) {
-	V.start = true;
+$( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
+	var $this = $( this );
+	var left  = $this.offset().left;
+	var width = $this.width();
+	V.volume = {
+		  current : S.volume
+		, min     : left
+		, max     : left + width - 40
+		, width   : width - 40
+	}
+	S.volumemute    = 0;
 } ).on( 'touchmove mousemove', function( e ) {
-	if ( ! V.start ) return
+	if ( ! V.volume ) return
 	
 	V.drag = true;
-	common.volume( e.pageX || e.changedTouches[ 0 ].pageX );
-} ).on( 'touchend mouseup', function( e ) {
-	if ( ! V.start ) return
+	var x  = e.pageX || e.changedTouches[ 0 ].pageX;
+	if ( x < V.volume.min + 20 || x > V.volume.max + 20 ) return
 	
-	V.drag ? volumePush() : common.volume( e.pageX || e.changedTouches[ 0 ].pageX );
-	V.start = false;
-	setTimeout( () => V.drag = false, 1000 );
+	S.volume = Math.round( ( x - 20 - V.volume.min ) / V.volume.width * 100 );
+	render.volume();
+	volumeSetAt();
+} ).on( 'touchend mouseup', function( e ) {
+	if ( ! V.volume ) return
+	
+	if ( V.drag ) {
+		volumePush();
+	} else { // click
+		var current = V.volume.current;
+		var x       = e.pageX || e.changedTouches[ 0 ].pageX;
+		if ( x < V.volume.min + 20 ) {   // 0-20: volume = 0
+			S.volume = 0;
+		} else if ( x > V.volume.max + 20 ) {
+			S.volume = 100;
+		} else {
+			S.volume = Math.round( ( x - V.volume.min - 20 ) / V.volume.width * 100 );
+		}
+		$( '#divvolume .level' ).text( S.volume );
+		common.volumeAnimate( S.volume, current );
+		volumeSetAt();
+		volumePush();
+	}
+	V.volume = V.drag = false;
 } ).on( 'mouseleave', function() {
-	if ( V.start ) $( '#volume' ).trigger( 'mouseup' );
+	V.volume = V.drag = false;
+} );
+$( '#volume-0, #volume-100' ).on( 'click', function() {
+	var current = S.volume;
+	S.volume    = this.id === 'volume-0' ? 0 : 100;
+	$( '#divvolume .level' ).text( S.volume );
+	common.volumeAnimate( S.volume, current );
+	volumeSetAt();
+	volumePush();
 } );
 $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
@@ -1950,7 +1969,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	
 	up ? S.volume++ : S.volume--;
 	render.volume();
-	volumePush( S.volume );
+	volumePush();
 	volumeSetAt();
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( ! V.press )  return
@@ -1962,16 +1981,16 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
 		volumeSetAt();
-		common.volumeThumb();
+		$( '#volume .thumb' ).css( 'margin-left', V.volume.x );
 		$( '#divvolume .level' ).text( S.volume );
 		if ( S.volume === 0 || S.volume === 100 ) {
 			clearInterval( V.intervalvolume );
 			volumePush();
 		}
 	}, 100 );
-} ).on( 'click', '.i-volume, .db', function() {
-	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
-	volumeSet( S.volumemute, 'toggle' );
+} ).on( 'click', '.i-volume, .level', function() {
+	common.volumeAnimate( S.volumemute, S.volume );
+	volumeMuteToggle();
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
