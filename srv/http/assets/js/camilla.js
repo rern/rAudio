@@ -670,7 +670,7 @@ var render    = {
 		playbackButton();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#volume .thumb' ).css( 'margin-left', $( '#volume-band' ).width() / 100 * S.volume );
+			$( '#volume .thumb' ).css( 'margin-left', ( $( '#volume-band' ).width() - 40 ) / 100 * S.volume );
 			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
@@ -1755,7 +1755,7 @@ var common    = {
 	}
 	, tabTitle      : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
 	, volumeAnimate : ( target, volume ) => {
-		var bandW = $( '#volume-band' ).width();
+		var bandW = $( '#volume-band' ).width() - 40;
 		$( '#divvolume' ).addClass( 'noclick' );
 		$( '#volume .thumb' ).animate(
 			  { 'margin-left': bandW / 100 * target }
@@ -1910,8 +1910,10 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
 $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
-	V.volume       = volumeBarGet( $( '#volume-band' ) );
-	S.volumemute   = 0;
+	V.volume        = volumeBarGet( $( '#volume-band' ) );
+	V.volume.max   -= 40;
+	V.volume.width -= 40
+	S.volumemute    = 0;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return
 	
@@ -1926,9 +1928,18 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( V.drag ) {
 		volumePush();
 	} else { // click
-		volumeBarPercent( e.pageX || e.changedTouches[ 0 ].pageX );
+		var current = V.volume.current;
+		var x       = e.pageX || e.changedTouches[ 0 ].pageX;
+		if ( x < V.volume.min + 20 ) {   // 0-20: volume = 0
+			S.volume = 0;
+		} else if ( x > V.volume.max + 20 ) {
+			S.volume = 100;
+		} else {
+			volumeBarPercent( x - 20 );
+		}
+		volumeBarPercent( x - 20 );
 		$( '#divvolume .level' ).text( S.volume );
-		common.volumeAnimate( S.volume, V.volume.current );
+		common.volumeAnimate( S.volume, current );
 		volumeSetAt();
 		volumePush();
 	}

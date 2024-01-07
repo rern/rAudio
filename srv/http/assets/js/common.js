@@ -1137,17 +1137,22 @@ function volumeSet( vol, type ) { // increment from current to target
 function volumeSetAt( val ) { // drag / press / updn
 	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
-function volumeBarGet( $bar ) {
+function volumeBarGet( $band, thumb ) {
+	if ( ! thumb ) thumb = 0;
+	var left  = $band.offset().left;
+	var width = $band.width();
 	return {
 		  current : S.volume
-		, left    : $bar.offset().left
-		, width   : $bar.width()
+		, max     : left + width
+		, min     : left
+		, thumb   : thumb
+		, width   : width
 	}
 }
 function volumeBarPercent( pagex ) {
-	var x = pagex - V.volume.left;
-	if ( x < 0 || x > V.volume.width ) return
+	if ( pagex < V.volume.min || pagex > V.volume.max ) return
 	
+	var x = pagex - V.volume.min;
 	V.volume.x = x;
 	S.volume   = Math.round( x / V.volume.width * 100 );
 }
