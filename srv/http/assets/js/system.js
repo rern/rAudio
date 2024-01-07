@@ -973,7 +973,7 @@ function infoRelays() {
 		list += tr_name;
 		if ( i < ( pL -1 ) ) list += tr_delay;
 	}
-	list            += '<tr><td>'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled>'+ updn +'</td></tr>';
+	list            += '<tr><td class="idle">'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled>'+ updn +'</td></tr>';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -986,7 +986,7 @@ function infoRelays() {
 			$( '#infoList td' ).css( 'text-align', 'left' );
 			$( '#infoList .select2-container' ).attr( 'style', 'width: 180px !important' );
 			$( '#infoList input' ).css( 'width', '70px' );
-			$( '#infoList tr:last-child td:first-child' ).css( 'text-align', '' );
+			$( '#infoList .idle' ).css( 'text-align', 'right' );
 			var min   = 0;
 			var max   = 10;
 			$( '#infoList .updn' ).on( 'touchend mouseup keyup', function() {
