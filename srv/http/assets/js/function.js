@@ -2012,7 +2012,6 @@ function versionHash() {
 }
 function volumeAnimate( target, volume ) {
 	clearTimeout( V.volumebar );
-	var bandW = $( '#volume-band' ).width();
 	$( '.volumeband' ).addClass( 'disabled' );
 	$( '#volume-bar' ).animate(
 		  { width: target +'%' }

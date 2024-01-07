@@ -8,7 +8,6 @@ V             = {
 	, timeoutred : true
 }
 var wscamilla = null
-var $master   = $( '#volume, #divvolume .i-minus, #divvolume .i-plus' );
 var R         = {}
 // filters //////////////////////////////////////////////////////////////////////////////
 var F0        = {
@@ -742,14 +741,12 @@ var render    = {
 		}
 	}
 	, volume      : () => {
+		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
+		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 		if ( S.volumemute ) {
-			$master.addClass( 'disabled' );
 			$( '#divvolume .level' ).addClass( 'bl' );
 			$( '#divvolume .i-volume' ).addClass( 'mute' );
 		} else {
-			$master.removeClass( 'disabled' );
-			$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
-			$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 			$( '#divvolume .level' ).removeClass( 'bl' );
 			$( '#divvolume .i-volume' ).removeClass( 'mute' );
 		}
@@ -1758,7 +1755,7 @@ var common    = {
 	}
 	, tabTitle      : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
 	, volumeAnimate : ( target, volume ) => {
-		var bandW = $( '#volume' ).width() - 40;
+		var bandW = $( '#volume-band' ).width();
 		$( '#divvolume' ).addClass( 'noclick' );
 		$( '#volume .thumb' ).animate(
 			  { 'margin-left': bandW / 100 * target }
@@ -1766,16 +1763,11 @@ var common    = {
 				  duration : Math.abs( target - volume ) * 40
 				, easing   : 'linear'
 				, complete : () => {
-					$( '#divvolume' )
-						.removeClass( 'noclick' )
-						.toggleClass( 'disabled', S.volumemute > 0 );
+					$( '#divvolume' ).removeClass( 'noclick' );
 					render.volume();
 				}
 			}
 		);
-	}
-	, volumeThumb   : () => {
-		$( '#volume .thumb' ).css( 'margin-left', S.x );
 	}
 	, webSocket     : () => {
 		if ( wscamilla && wscamilla.readyState < 2 ) return
@@ -1918,13 +1910,14 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
 $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
-	V.volume = volumeX( $( this ) );
+	V.volume       = volumeBarGet( $( '#volume-band' ) );
+	S.volumemute   = 0;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return
 	
-	V.drag       = true;
-	volumeX2percent( e.pageX || e.changedTouches[ 0 ].pageX );
-	common.volumeThumb();
+	V.drag = true;
+	volumeBarPercent( e.pageX || e.changedTouches[ 0 ].pageX );
+	$( '#volume .thumb' ).css( 'margin-left', V.volume.x );
 	volumeSetAt();
 	render.volume();
 } ).on( 'touchend mouseup', function( e ) {
@@ -1933,7 +1926,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( V.drag ) {
 		volumePush();
 	} else { // click
-		volumeX2percent( e.pageX || e.changedTouches[ 0 ].pageX );
+		volumeBarPercent( e.pageX || e.changedTouches[ 0 ].pageX );
 		$( '#divvolume .level' ).text( S.volume );
 		common.volumeAnimate( S.volume, V.volume.current );
 		volumeSetAt();
@@ -1945,7 +1938,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 } );
 $( '#volume-0, #volume-100' ).on( 'click', function() {
 	var current = S.volume;
-	S.volume = this.id === 'volume-0' ? 0 : 100;
+	S.volume    = this.id === 'volume-0' ? 0 : 100;
 	$( '#divvolume .level' ).text( S.volume );
 	common.volumeAnimate( S.volume, current );
 	volumeSetAt();
@@ -1969,7 +1962,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
 		volumeSetAt();
-		common.volumeThumb();
+		$( '#volume .thumb' ).css( 'margin-left', V.volume.x );
 		$( '#divvolume .level' ).text( S.volume );
 		if ( S.volume === 0 || S.volume === 100 ) {
 			clearInterval( V.intervalvolume );

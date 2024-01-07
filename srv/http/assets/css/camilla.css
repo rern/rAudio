@@ -104,6 +104,9 @@
 #volume {
 	float: left;
 }
+#divvolume .col-r {
+	white-space: nowrap;
+}
 #divvolume .i-minus {
 	color: var( --cg60 );
 }
@@ -120,6 +123,7 @@
 #divvolume .level {
 	display: inline-block;
 	width: 45px;
+	min-width: 45px;
 	line-height: 16px;
 	vertical-align: 4px;
 	text-align: center;
@@ -275,6 +279,7 @@ tr .i-remove {
 }
 .liinput .name {
 	width: 142px;
+	min-width: 142px;
 }
 .liinput.main div:first-child,
 .liinput .select2-container {
@@ -425,9 +430,6 @@ i.disabled {
 	margin-top: 15px;
 }
 
-@media (max-width: 700px) {
-	#mixers .i-inverted { display: none }
-}
 @media (max-width: 610px) {
 	.liicon { display: none }
 }
@@ -439,7 +441,7 @@ i.disabled {
 	}
 }
 @media (max-width: 570px) {
-	.container input[ type=range ] { width: 100% }
+	.container input[ type=range ] { min-width: 100px }
 }
 @media (max-width: 500px) {
 	.helphead { display: none }

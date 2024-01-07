@@ -1137,19 +1137,19 @@ function volumeSet( vol, type ) { // increment from current to target
 function volumeSetAt( val ) { // drag / press / updn
 	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
-function volumeX( $bar ) {
+function volumeBarGet( $bar ) {
 	return {
 		  current : S.volume
 		, left    : $bar.offset().left
 		, width   : $bar.width()
 	}
 }
-function volumeX2percent( pagex ) {
+function volumeBarPercent( pagex ) {
 	var x = pagex - V.volume.left;
 	if ( x < 0 || x > V.volume.width ) return
 	
-	S.x      = x;
-	S.volume = Math.round( x / V.volume.width * 100 );
+	V.volume.x = x;
+	S.volume   = Math.round( x / V.volume.width * 100 );
 }
 function websocketConnect() {
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
