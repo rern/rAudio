@@ -2031,6 +2031,12 @@ function volumeBarHide() {
 	$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 	$( '.volumeband' ).addClass( 'transparent' );
 }
+function volumeBarSet( pagex ) {
+	V.volume.x = pagex - V.volume.min;
+	S.volume   = Math.round( V.volume.x / V.volume.width * 100 );
+	$( '#volume-text' ).text( S.volume );
+}
+
 function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	

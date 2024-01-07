@@ -670,7 +670,6 @@ var render    = {
 		playbackButton();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
-			$( '#volume .thumb' ).css( 'margin-left', ( $( '#volume-band' ).width() - 40 ) / 100 * S.volume );
 			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
@@ -741,6 +740,7 @@ var render    = {
 		}
 	}
 	, volume      : () => {
+		$( '#volume .thumb' ).css( 'margin-left', ( $( '#volume-band' ).width() - 40 ) / 100 * S.volume );
 		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
 		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 		if ( S.volumemute ) {
@@ -1910,18 +1910,26 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
 $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
-	V.volume        = volumeBarGet( $( '#volume-band' ) );
-	V.volume.max   -= 40;
-	V.volume.width -= 40
+	var $this = $( this );
+	var left  = $this.offset().left;
+	var width = $this.width();
+	V.volume = {
+		  current : S.volume
+		, min     : left
+		, max     : left + width - 40
+		, width   : width - 40
+	}
 	S.volumemute    = 0;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return
 	
 	V.drag = true;
-	volumeBarPercent( e.pageX || e.changedTouches[ 0 ].pageX );
-	$( '#volume .thumb' ).css( 'margin-left', V.volume.x );
-	volumeSetAt();
+	var x  = e.pageX || e.changedTouches[ 0 ].pageX;
+	if ( x < V.volume.min + 20 || x > V.volume.max + 20 ) return
+	
+	S.volume = Math.round( ( x - 20 - V.volume.min ) / V.volume.width * 100 );
 	render.volume();
+	volumeSetAt();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
 	
@@ -1935,9 +1943,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 		} else if ( x > V.volume.max + 20 ) {
 			S.volume = 100;
 		} else {
-			volumeBarPercent( x - 20 );
+			S.volume = Math.round( ( x - V.volume.min - 20 ) / V.volume.width * 100 );
 		}
-		volumeBarPercent( x - 20 );
 		$( '#divvolume .level' ).text( S.volume );
 		common.volumeAnimate( S.volume, current );
 		volumeSetAt();

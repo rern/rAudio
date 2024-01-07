@@ -638,14 +638,18 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	clearTimeout( V.volumebar );
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
-	V.volume = volumeBarGet( $( this ) );
+	var $this = $( this );
+	V.volume  = {
+		  current : S.volume
+		, min     : $this.offset().left
+		, width   : $this.width()
+	}
 } ).on( 'touchmove mousemove', function( e ) {
 	clearTimeout( V.volumebar );
 	if ( ! V.volume ) return
 	
 	V.drag = true;
-	volumeBarPercent( e.pageX || e.changedTouches[ 0 ].pageX );
-	$( '#volume-text' ).text( S.volume );
+	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	$( '#volume-bar' ).css( 'width', V.volume.x );
 	volumeSetAt();
 } ).on( 'touchend mouseup', function( e ) {
@@ -657,8 +661,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	if ( V.drag ) {
 		volumePush( S.volume, 'drag' );
 	} else { // click
-		volumeBarPercent( e.pageX || e.changedTouches[ 0 ].pageX );
-		$( '#volume-text' ).text( S.volume );
+		volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 		volumeAnimate( S.volume, V.volume.current );
 		volumeSetAt();
 		volumePush();
