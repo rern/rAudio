@@ -688,9 +688,9 @@ var render    = {
 		
 		// run once
 		var vugrid  = '<div id="vugrid">';
-		for ( i = 0; i < 4; i++ ) vugrid  += '<a class="g'+ i +'"></>';
+		for ( i = 0; i < 6; i++ ) vugrid  += '<a class="g'+ i +'"></>';
 		var vulabel = '<div id="vulabel">';
-		[ '', -96, -48, -24, -12, -6, 0 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
+		[ -60, -48, -36, -24, -12, 0 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
 		var vubar   = '<div id="vu">'
 					 + vugrid +'</div>'
 					 +'<div id="in">';
@@ -767,6 +767,7 @@ var render    = {
 			var left  = 0;
 		} else {
 			var width = Math.log10( ( 100 + db ) / 10 ) * 200; // -99 = -1, - 100 = -Infinity
+			width     = ( width - 100 ) * 2;
 			var left  = width - 2;
 		}
 		if ( rms ) {
