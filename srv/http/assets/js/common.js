@@ -485,12 +485,19 @@ function info( json ) {
 					break;
 				case 'radio':
 					var isarray = $.isArray( l[ 2 ] );
+					var br      = false;
 					$.each( l[ 2 ], ( k, v ) => {
 						var k = isarray ? v : k;
+						if ( br ) htmls.list += '<tr><td></td><td colspan="2">';
 						htmls.list += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
-						htmls.list += l[ 3 ] === 'br' ? '<br>' : '&emsp;'; // 1:1 line || same line
+						if ( l[ 3 ] === 'br' ) {
+							br          = true;
+							htmls.list += '</td></tr>'; // 1:1 line
+						} else {
+							htmls.list += '&emsp;'; // same line
+						}
 					} );
-					htmls.list += '</td></tr>';
+					htmls.list += br ? '' : '</td></tr>';
 					i++;
 					break;
 				case 'range':

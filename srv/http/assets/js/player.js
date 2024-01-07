@@ -42,6 +42,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		, list       : [ S.control.replace( ' - A2DP', '' ), 'range' ]
 		, prompt     : warning
 		, beforeshow : () => {
+			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			$( '#infoList input' ).on( 'input', function() {
 				volumeSetAt( +$( this ).val() );
@@ -269,7 +270,7 @@ ${ iconwarning }<wh>Lower speakers / headphones volume
 <br>
 <br><gr>Signal will be set to original level at 0dB.</gr>
 <br>Beware of too high volume.</wh>
-<br>&nbsp;`;
+`;
 
 function infoSoxr( quality ) {
 	delete S.soxrconf.PLUGIN
