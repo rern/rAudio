@@ -59,11 +59,8 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		}
 		, oklabel     : ico( 'set0' ) +'0dB'
 		, ok          : () => {
-			if ( parseFloat( $( '.inforange .sub' ).text() ) < 0 && $( '.infoprompt' ).hasClass( 'hide' ) ) {
-				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
-			} else {
-				bash( [ cmd0db ] );
-			}
+			if ( parseFloat( $( '.inforange .sub' ).text() ) >= 0 || ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
+			$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
 		}
 		, oknoreset    : true
 	} );
