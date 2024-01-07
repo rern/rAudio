@@ -71,10 +71,8 @@
 #vugrid .g2 { left: 120px }
 #vugrid .g3 { left: 150px }
 #vugrid .g4 { left: 177px }
-#vugrid .g5 {
-	left: 199px;
-	background: var( --cgl );
-}
+#vugrid .g5 { left: 199px; background: var( --cgl ); }
+#vugrid .g6 { left: 221px }
 #vulabel {
 	position: absolute;
 	top: 16px;
@@ -95,6 +93,7 @@
 #vulabel .l3 { left: 136px }
 #vulabel .l4 { left: 164px }
 #vulabel .l5 { left: 196px }
+#vulabel .l6 { left: 215px; color: var( --cg ); }
 #divvolume {
 	margin-bottom: 10px;
 }
