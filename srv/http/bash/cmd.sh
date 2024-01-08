@@ -228,7 +228,7 @@ bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
 	[[ -e $bkfile ]] && echo -1 && exit
 	
-	echo $DIR > "$bkfile"
+	echo "$DIR" > "$bkfile"
 	if [[ -e $dirsystem/order.json ]]; then
 		order=$( jq '. + ["'$DIR'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json

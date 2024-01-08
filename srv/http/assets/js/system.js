@@ -284,7 +284,7 @@ $( '#setting-hddsleep' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : 'Timer:'
-		, list         : [ '', 'radio', { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }, 'br' ]
+		, list         : [ '', 'radio', { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }, 'tr' ]
 		, values       : { APM: S.hddsleep } || default_v.hddsleep
 		, checkchanged : S.hddsleep
 		, cancel       : switchCancel
@@ -952,55 +952,36 @@ function infoPowerbuttonAudiophonics() {
 	} );
 }
 function infoRelays() {
-	var values       = S.relaysconf || default_v.relays;
-	var name         = S.relaysnameconf || default_v.relaysname;
-	var pL           = 0;
-	var option_name  = '';
-	$.each( name, ( k, v ) => {
-		if ( v ) {
-			option_name += '<option value="'+ k +'">'+ v +'</option>';
-			pL++;
-		}
-	} );
-	var option_delay = htmlOption( [ ...Array(10).keys() ] );
-	var updn         = ico( 'remove updn dn' ) + ico( 'plus-circle updn up' );
-	var td_name      = '<td><select>'+ option_name +'</select></td>';
-	var tr_name      = '<tr>'+ td_name + td_name +'</tr>';
-	var td_delay     = '<td><input type="text" disabled>'+ updn +'</td>';
-	var tr_delay     = '<tr>'+ td_delay + td_delay +'</tr>';
-	var list         = '<tr><td>'+ ico( 'power grn' ) +' On <gr>(s)</gr></td><td>'+ ico( 'power red' ) +' Off <gr>(s)</gr></td></tr>';
-	for ( i = 0; i < pL; i++ ) {
-		list += tr_name;
-		if ( i < ( pL -1 ) ) list += tr_delay;
-	}
-	list            += '<tr><td class="idle">'+ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr></td><td><input type="text" disabled>'+ updn +'</td></tr>';
+	var values = S.relaysconf || default_v.relays;
+	var name   = S.relaysnameconf || default_v.relaysname;
+	var names  = {};
+	$.each( name, ( k, v ) => names[ v ] = k );
+	var step   = { step: 1, min: 0, max: 10 }
+	var list   = [
+		  [ '', '', ico( 'power grn' ) +' On <gr>(s)</gr>',  'td', 2 ]
+		, [ '', '', ico( 'power red' ) +' Off <gr>(s)</gr>', '',   2 ]
+	];
+	for ( i = 0; i < 4; i++ ) list.push(
+		  [ '', 'select', names, 'td', 2 ]
+		, [ '', 'select', names, '',   2 ]
+		, [ '', 'number', step, 'td' ]
+		, [ '', 'number', step ]
+	);
+	list[ 16 ] = [ '', '', ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', 'td', 2 ];
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'Sequence', 'Name' ]
 		, tab          : [ '', infoRelaysName ]
-		, list         : '<table>'+ list +'</table>'
+		, list         : list
+		, lableno      : true
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
 			$( '#infoList td' ).css( 'text-align', 'left' );
+			$( '#infoList tr:last-child td:nth-child( 2 )' ).css( 'text-align', 'right' );
 			$( '#infoList .select2-container' ).attr( 'style', 'width: 180px !important' );
-			$( '#infoList input' ).css( 'width', '70px' );
-			$( '#infoList .idle' ).css( 'text-align', 'right' );
-			var min   = 0;
-			var max   = 10;
-			$( '#infoList .updn' ).on( 'touchend mouseup keyup', function() {
-				var $this = $( this );
-				var up    = $this.hasClass( 'up' );
-				var $up   = up ? $this : $this.next();
-				var $dn   = up ? $this.prev() : $this;
-				var $num  = $this.parent().prev().find( 'input' );
-				var val   = +$num.val();
-				up ? val++ : val--;
-				$num.val( val );
-				$up.toggleClass( 'disabled', val === max );
-				$dn.toggleClass( 'disabled', val === min );
-			} );
+			$( '#infoList input' ).parent().css( 'width', '70px' );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysCmd
@@ -1044,15 +1025,19 @@ function infoRelaysName() {
 	var name     = S.relaysnameconf || default_v.relaysname;
 	var values   = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
-	var pin_name = '<tr><td><select>'+ htmlOption( Object.keys( board2bcm ) ) +'</select></td><td colspan="2"><input type="text"></td></tr>';
-	var list     = '<tr><td>'+ ico( 'gpiopins bl' ) +' Pin</td><td>'+ ico( 'tag bl' ) +' Name</td></tr>';
-	for( i = 0; i < 4; i++ ) list += pin_name;
+	var list = [
+		  [ '', '', ico( 'gpiopins bl' ) +' Pin', 'td' ]
+		, [ '', '', ico( 'tag bl' ) +' Name' ]
+	]
+	var pins = Object.keys( board2bcm )
+	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', pins, 'td' ], [ '', 'text',   '' ] );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'Sequence', 'Name' ]
 		, tab          : [ infoRelays, '' ]
-		, list         : gpiosvg + '<br>&nbsp;<table>'+ list +'</table><br>'
+		, message      : gpiosvg
+		, list         : list
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {

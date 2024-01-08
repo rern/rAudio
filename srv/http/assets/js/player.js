@@ -155,7 +155,7 @@ $( '#setting-replaygain' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ '', 'radio', { Auto: 'auto', Album: 'album', Track: 'track' }, 'br' ]
+		, list         : [ '', 'radio', { Auto: 'auto', Album: 'album', Track: 'track' }, 'tr' ]
 		, footer       : hardware ? '<label><input type="checkbox"><wh>Gain control by Mixer device</wh></label>' : ''
 		, values       : S.replaygainconf
 		, checkchanged : S.replaygain

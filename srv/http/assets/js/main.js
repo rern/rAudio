@@ -260,7 +260,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				info( {
 					  icon       : 'multiraudio'
 					, title      : 'Switch rAudio'
-					, list       : [ '', 'radio', data.list, 'br' ]
+					, list       : [ '', 'radio', data.list, 'tr' ]
 					, values     : currentip
 					, beforeshow : () => {
 						$( '#infoList input' ).each( ( i, el ) => {
@@ -1314,7 +1314,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( $img.length ) {
 		var icon = '<img src="'+ $img.attr( 'src' ) +'">'
 	} else {
-		var icon = ico( 'bookmark bookmark bl' )
+		var icon = ico( 'bookmark bl' )
 				  +'<br><a class="bklabel">'+ name +'</a>'
 	}
 	info( {
