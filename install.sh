@@ -69,6 +69,13 @@ fi
 # 20231118
 grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/(IgnorePkg   =).*/#\1/' /etc/pacman.conf
 
+# 20231111
+file=$dirsystem/scrobble.conf
+[[ -e $file ]] && sed -i '/notify/ d' $file
+
+if [[ -e /boot/kernel8.img ]]; then
+	pacman -Q wiringpi | grep 181 && pacman -Sy --noconfirm wiringpi
+fi
 #-------------------------------------------------------------------------------
 installstart "$1"
 
