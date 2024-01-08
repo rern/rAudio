@@ -287,9 +287,9 @@ function tagEditor() {
 	}
 	list( query, function( values ) {
 		name[ 1 ]    = 'Album Artist';
-		var label    = [];
+		var list     = [];
 		format.forEach( ( el, i ) => {
-			label.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>', 'text' ] );
+			list.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>', 'text' ] );
 		} );
 		if ( V.library ) {
 			var $img = V.librarytrack ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
@@ -310,7 +310,7 @@ function tagEditor() {
 			, title        : V.playlist ? 'Track Info' : 'Tag Editor'
 			, message      : message
 			, messagealign : 'left'
-			, list         : label
+			, list         : list
 			, footer       : footer
 			, footeralign  : 'left'
 			, boxwidth     : 'max'
