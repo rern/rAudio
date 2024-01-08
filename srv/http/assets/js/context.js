@@ -308,7 +308,6 @@ function tagEditor() {
 		info( {
 			  icon         : V.playlist ? 'info' : 'tag'
 			, title        : V.playlist ? 'Track Info' : 'Tag Editor'
-			, width        : 500
 			, message      : message
 			, messagealign : 'left'
 			, list         : label
