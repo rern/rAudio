@@ -629,7 +629,7 @@ function info( json ) {
 					$updn.eq( 0 ).toggleClass( 'disabled', v === el.min );
 					$updn.eq( 1 ).toggleClass( 'disabled', v === el.max );
 				}
-				updnToggle( I.values[ $td.index() ] );
+				updnToggle( +$num.val() );
 				$updn.on( 'click', function() {
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
 				} ).press( function( e ) {
