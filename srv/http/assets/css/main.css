@@ -69,7 +69,8 @@ a {
 	min-width: 100px;
 	height: 100px;
 }
-.infobookmark .i-bookmark {
+.infobookmark .i-bookmark,
+#infoList .i-bookmark {
 	width: 100px !important;
 	font-size: 48px !important;
 	line-height: 72px;

@@ -786,7 +786,7 @@ function infoUpdate( path ) {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : path ? ico( 'folder' ) +' <wh>'+ path +'</wh>' : ''
-		, list       : path ? '' : [ '', 'radio', { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }, 'br' ]
+		, list       : path ? '' : [ '', 'radio', { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }, 'tr' ]
 		, beforeshow : () => {
 			if ( ! C ) {
 				$( '#infoList input' ).eq( 0 ).prop( 'disabled', true );
@@ -1017,7 +1017,7 @@ function playlistInsertTarget() {
 					  +'<br>'+ V.pladd.album
 					  +'<hr>'
 					  +'Select where to add:'
-		, list       : [ '', 'radio', { First : 1, Select: 'select', Last: 'last' }, 'br' ]
+		, list       : [ '', 'radio', { First : 1, Select: 'select', Last: 'last' }, 'tr' ]
 		, values     : 'last'
 		, beforeshow : () => {
 			$( '#infoList input' ).eq( 1 ).on( 'click', function() {

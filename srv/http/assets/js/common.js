@@ -450,7 +450,7 @@ function info( json ) {
 					htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td>';
 					break;
 				case 'hidden':
-					htmls.list += '<tr class="hide"><td>'+ label +'</td><td>';
+					htmls.list += '<tr class="hide"><td></td><td>';
 					break;
 				case 'radio':
 					htmls.list += '<tr><td>'+ label +'</td><td colspan="2">';
@@ -459,7 +459,8 @@ function info( json ) {
 					htmls.list += '<tr><td>';
 					break;
 				default:
-					htmls.list += '<tr><td>'+ label +'</td><td>';
+					htmls.list += htmls.list.slice( -3 ) === 'td>' ? '' : '<tr><td>'+ label +'</td>';
+					htmls.list += l[ 4 ] ? '<td colspan="'+ l[ 4 ] +'">' : '<td>';
 			}
 			switch ( type ) {
 				case 'checkbox':
@@ -471,33 +472,33 @@ function info( json ) {
 				case 'text':
 					var unit = typeof l[ 2 ] === 'object' ? false : l[ 2 ];
 					var updn = unit ? false : l[ 2 ];
-					htmls.list += '<input type="'+ type +'"'+ ( updn ? ' disabled' : '' ) +'></td>';
+					htmls.list += '<input type="'+ type +'"'+ ( updn ? ' disabled' : '' ) +'>';
 					if ( unit ) {
-						htmls.list += '<td>&nbsp;<gr>'+ unit +'</gr></td>';
+						htmls.list += l[ 3 ] === 'td' ? '' : '<td>&nbsp;<gr>'+ unit +'</gr>';
 					} else if ( updn ) {
 						I.updn.push( updn );
-						htmls.list += '<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' ) +'</td>';
+						htmls.list += '<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' );
 					}
-					htmls.list += '</tr>';
+					htmls.list += l[ 3 ] === 'td' ? '</td>' : '</tr>';
 					break;
 				case 'password':
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
 					break;
 				case 'radio':
 					var isarray = $.isArray( l[ 2 ] );
-					var br      = false;
+					var tr      = false;
 					$.each( l[ 2 ], ( k, v ) => {
 						var k = isarray ? v : k;
-						if ( br ) htmls.list += '<tr><td></td><td colspan="2">';
+						if ( tr ) htmls.list += '<tr><td></td><td colspan="2">';
 						htmls.list += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
-						if ( l[ 3 ] === 'br' ) {
-							br          = true;
+						if ( l[ 3 ] === 'tr' ) {
+							tr          = true;
 							htmls.list += '</td></tr>'; // 1:1 line
 						} else {
 							htmls.list += '&emsp;'; // same line
 						}
 					} );
-					htmls.list += br ? '' : '</td></tr>';
+					htmls.list += tr ? '' : '</td></tr>';
 					i++;
 					break;
 				case 'range':
@@ -509,14 +510,19 @@ function info( json ) {
 								+'</div></td></tr>';
 					break
 				case 'select':
-					htmls.list += '<select>'+ htmlOption( l[ 2 ] ) +'</select></td>';
-					htmls.list += l[ 3 ] ? '<td>&nbsp;<gr>'+ l[ 3 ] +'</gr></td</tr>' : '</tr>'; // unit
+					htmls.list += '<select>'+ htmlOption( l[ 2 ] ) +'</select>';
+					if ( l[ 3 ] ) {
+						htmls.list += l[ 3 ] === 'td' ? '</td>' : '<td>&nbsp;<gr>'+ l[ 3 ] +'</gr></td></tr>'; // unit
+					} else {
+						htmls.list += '</tr>';
+					}
 					break;
 				case 'textarea':
 					htmls.list += '<textarea></textarea></td></tr>';
 					break;
 				default: // generic string
-					htmls.list += l[ 2 ] +'</td></tr>'
+					htmls.list += l[ 2 ];
+					htmls.list += l[ 3 ] === 'td' ? '</td>' : '</td></tr>';
 			}
 		} );
 		if ( type !== 'range' ) htmls.list = '<table>'+ htmls.list +'</table>';
@@ -602,9 +608,9 @@ function info( json ) {
 		}
 		if ( I.updn.length ) {
 			I.updn.forEach( ( el, i ) => {
-				var $tr   = $( '#infoList .updn' ).parent().eq( i ).parent()
-				var $updn = $tr.find( '.updn' );
-				var $num  = $updn.parent().prev().find( 'input' );
+				var $td   = $( '#infoList .updn' ).parent().eq( i );
+				var $updn = $td.find( '.updn' );
+				var $num  = $td.prev().find( 'input' );
 				var step  = el.step;
 				var v     = 0;
 				var interval, timeout;
@@ -623,7 +629,7 @@ function info( json ) {
 					$updn.eq( 0 ).toggleClass( 'disabled', v === el.min );
 					$updn.eq( 1 ).toggleClass( 'disabled', v === el.max );
 				}
-				updnToggle( I.values[ $tr.index() ] );
+				updnToggle( +$num.val() );
 				$updn.on( 'click', function() {
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
 				} ).press( function( e ) {

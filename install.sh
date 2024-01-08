@@ -4,12 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240107
+# 20240108
 if [[ -e /usr/bin/camilladsp ]]; then
 	rm -f $dirsystem/camilla.conf
 	mkdir -p $dircamilladsp/raw
 	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.0' ]]; then
 		systemctl stop camilladsp
+		rm -f /etc/default/camilladsp /usr/lib/systemd/system/camilladsp.service
 		pacman -Sy --needed --noconfirm camilladsp
 		readarray -t files <<< $( grep -rl enable_resampling $dircamilladsp )
 		for f in "${files[@]}"; do
