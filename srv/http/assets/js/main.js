@@ -1590,6 +1590,7 @@ $( '.page' ).on( 'click', '.index a', function() {
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).on( 'click', function() {
+	V.pladd= {};
 	V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 } );
 $( '#button-pl-playlists' ).on( 'click', function() {
@@ -1835,7 +1836,9 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	var liicon   = $target.hasClass( 'li-icon' );
 	if ( V.savedpltrack || liicon ) {
 		if ( pladd ) {
-			playlistInsertSelect( $this );
+			V.pladd.index = $this.index();
+			V.pladd.track = $this.find( '.name' ).eq( 0 ).text();
+			playlistInsertSelect();
 		} else {
 			var menu  = $target.data( 'menu' ) || $this.find( '.li-icon' ).data ( 'menu' );
 			var $menu = $( '#menu-'+ menu );

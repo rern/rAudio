@@ -4,11 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240108
+# 20240109
 if [[ -e /usr/bin/camilladsp ]]; then
 	rm -f $dirsystem/camilla.conf
 	mkdir -p $dircamilladsp/raw
-	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.0' ]]; then
+	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.1' ]]; then
 		systemctl stop camilladsp
 		rm -f /etc/default/camilladsp /usr/lib/systemd/system/camilladsp.service
 		pacman -Sy --needed --noconfirm camilladsp
