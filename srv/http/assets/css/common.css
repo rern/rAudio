@@ -559,14 +559,14 @@ input[ type=checkbox ].disabled {
 	color: var( --cg60 );
 }
 .btnbottom i,
-.updn {
+#infoList .updn {
 	width: 40px;
 	font-size: 22px;
 	vertical-align: -3px;
 	text-align: center;
 	color: var( --cw );
 }
-.updn {
+#infoList .updn {
 	width: 35px !important;
 	line-height: 40px;
 }
@@ -1026,7 +1026,7 @@ input:focus {
 	.infobtn,
 	.inforange i,
 	.pointer,
-	.updn,
+	#infoList .updn,
 	#infoTab,
 	#infoButton gr,
 	#infoX {
