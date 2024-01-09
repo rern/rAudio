@@ -671,11 +671,7 @@ function infoButtonCommand( fn, cancel ) {
 	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
 	I = { active: false }
-	$( '#infoOverlay' )
-		.addClass( 'hide' )
-		.removeAttr( 'style' )
-		.empty();
-	$( 'body' ).css( 'overflow-y', '' );
+	infoReset();
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
@@ -860,6 +856,13 @@ function infoPrompt( message ) {
 		$toggle.toggleClass( 'hide' );
 		$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
 	} );
+}
+function infoReset() {
+	$( '#infoOverlay' )
+		.addClass( 'hide' )
+		.removeAttr( 'style' )
+		.empty();
+	$( 'body' ).css( 'overflow-y', '' );
 }
 function infoSetValues() {
 	var $this, type, val;

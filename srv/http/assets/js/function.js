@@ -274,10 +274,7 @@ function contextmenuLibrary( $li, $target ) {
 	// album mode  - path > tracks
 	// other modes - name > name-album > filtered tracks
 	V.list.path        = $li.find( '.lipath' ).text() || $( '#mode-title' ).text();
-	if ( V.playlist ) {
-		V.list.name   = $li.find( '.liname' ).text() || '';
-		V.list.artist = $li.find( '.liartist' ).text() || '';
-	} else if ( V.librarytrack && ! V.list.licover ) {
+	if ( V.librarytrack && ! V.list.licover ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 		V.list.artist = $( '.licover .liartist' ).text() || '';
 	} else {
@@ -981,26 +978,18 @@ function playlistInsert( indextarget ) {
 	} );
 }
 function playlistInsertSelect( $this ) {
-	var track = '<gr>'+ ( $this.index() + 1 ) +' - </gr>'+ $this.find( '.name' ).text();
-	var htmllist  = `\
-${ V.pladd.title }
-<br><gr>${ V.pladd.album }</gr>
-<br><br>
-<input type="radio" name="inforadio" value="1">Before</label>
-<hr>
-${ track }
-<hr>
-<input type="radio" name="inforadio" value="2">After</label>
-`;
+	var index = $this.index();
 	info( {
 		  icon        : 'file-playlist'
 		, title       : 'Insert'
-		, list        : htmllist
-		, values      : [ 1 ]
+		, message     : '<wh>'+ ( index + 1 ) +'<gr> • </gr>'+ $this.find( '.name' ).eq( 0 ).text() +'</wh>'
+						+'<hr>'
+		, list        : [ '', 'radio', { Before: 1, After: 2 } ]
 		, buttonlabel : ico( 'undo' ) +'Select'
-		, button      : playlistInsertTarget
+		, buttoncolor : orange
+		, button      : infoReset
 		, cancel      : () => V.pladd = {}
-		, ok          : () => playlistInsert( +infoVal() + $this.index() )
+		, ok          : () => playlistInsert( +infoVal() + index )
 	} );
 	bannerHide();
 }
@@ -1008,20 +997,22 @@ function playlistInsertTarget() {
 	info( {
 		  icon       : 'file-playlist'
 		, title      : 'Add to a playlist'
-		, message    : '<wh>'+ V.pladd.title +'</wh>'
-					  +'<br>'+ V.pladd.album
+		, message    : ico( 'music' ) +'<wh>'+ V.pladd.title +'</wh>'
+					  +'<br>'+ ico( 'album' ) + V.pladd.album
 					  +'<hr>'
-					  +'Select where to add:'
+					  +'Position:'
 		, list       : [ '', 'radio', { First : 1, Select: 'select', Last: 'last' }, 'tr' ]
 		, values     : 'last'
 		, beforeshow : () => {
-			$( '#infoList input' ).eq( 1 ).on( 'click', function() {
-				local();
-				$( '#infoX' ).trigger( 'click' );
+			$( '.infomessage' ).css( 'line-height', '30px' );
+			$( '#infoList' ).on( 'click', 'tr:eq( 1 )', function() {
+				infoReset();
+				banner( 'file-playlist', 'Insert', 'Select position', 6000 );
 			} );
 		}
 		, cancel     : () => {
-			if ( ! V.local ) V.pladd = {}
+			V.pladd = {}
+			$( '#playlist' ).trigger( 'click' );
 		}
 		, ok         : () => playlistInsert( infoVal() )
 	} );
