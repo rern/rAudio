@@ -978,16 +978,47 @@ function infoRelays() {
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			$( '#infoList td' ).css( 'text-align', 'left' );
-			$( '#infoList tr:last-child td:nth-child( 2 )' ).css( 'text-align', 'right' );
-			$( '#infoList .select2-container' ).attr( 'style', 'width: 180px !important' );
-			$( '#infoList input' ).parent().css( 'width', '70px' );
+			infoRelaysCss( 180, 70 );
+			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
 		}
 		, cancel       : switchCancel
-		, ok           : infoRelaysCmd
+		, ok           : infoRelaysOk
 	} );
 }
-function infoRelaysCmd() {
+function infoRelaysCss( sW, iW ) {
+	$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+	$( '#infoList td:first-child' ).remove();
+	$( '#infoList .select2-container' ).attr( 'style', 'width: '+ sW +'px !important' );
+	$( '#infoList input' ).parent().css( 'width', iW +'px' );
+}
+function infoRelaysName() {
+	var name     = S.relaysnameconf || default_v.relaysname;
+	var values   = [];
+	$.each( name, ( k, v ) => values.push( k, v ) );
+	var list = [
+		  [ '', '', ico( 'gpiopins bl' ) +' Pin', 'td' ]
+		, [ '', '', ico( 'tag bl' ) +' Name' ]
+	]
+	var pins = Object.keys( board2bcm )
+	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', pins, 'td' ], [ '', 'text',   '' ] );
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Sequence', 'Name' ]
+		, tab          : [ infoRelays, '' ]
+		, message      : gpiosvg
+		, list         : list
+		, values       : values
+		, checkchanged : S.relays
+		, beforeshow   : () => {
+			infoRelaysCss( 70, 160 );
+			$( '#infoList table' ).css( 'margin-left', '70px' );
+		}
+		, cancel       : switchCancel
+		, ok           : infoRelaysOk
+	} );
+}
+function infoRelaysOk() {
 	var keys    = [ 'ON', 'OFF', 'OND', 'OFFD' ];
 	var infoval = infoVal();
 	if ( 'ON0' in infoval ) {
@@ -1020,35 +1051,6 @@ function infoRelaysCmd() {
 	values.push( pin.TIMER );
 	notifyCommon();
 	bash( { cmd: [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ], json: name } );
-}
-function infoRelaysName() {
-	var name     = S.relaysnameconf || default_v.relaysname;
-	var values   = [];
-	$.each( name, ( k, v ) => values.push( k, v ) );
-	var list = [
-		  [ '', '', ico( 'gpiopins bl' ) +' Pin', 'td' ]
-		, [ '', '', ico( 'tag bl' ) +' Name' ]
-	]
-	var pins = Object.keys( board2bcm )
-	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', pins, 'td' ], [ '', 'text',   '' ] );
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Sequence', 'Name' ]
-		, tab          : [ infoRelays, '' ]
-		, message      : gpiosvg
-		, list         : list
-		, values       : values
-		, checkchanged : S.relays
-		, beforeshow   : () => {
-			$( '#infoList table' ).css( 'margin-left', '70px' );
-			$( '#infoList td' ).css( 'text-align', 'left' );
-			$( '#infoList .select2-container' ).attr( 'style', 'width: 70px !important' );
-			$( '#infoList input' ).css( 'width', '160px' );
-		}
-		, cancel       : switchCancel
-		, ok           : infoRelaysCmd
-	} );
 }
 function infoRestore( reset ) {
 	var list = [
