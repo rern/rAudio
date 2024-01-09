@@ -968,18 +968,20 @@ function playbackStatusGet( withdisplay ) {
 }
 function playlistInsert( pos ) {
 	var plname = $( '#savedpl-path .lipath' ).text();
+	banner( 'file-playlist', V.pladd.name, 'Add ...' );
 	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.file, 'CMD NAME TYPE TO FILE' ], () => {
 		renderSavedPlTrack( plname );
 		if ( pos === 'last' ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
 		}
+		bannerHide();
 		V.pladd = {}
 	} );
 }
 function playlistInsertSelect() {
 	info( {
 		  icon        : 'file-playlist'
-		, title       : 'Insert'
+		, title       : 'Add to '+ V.pladd.name
 		, message     : V.pladd.message
 		, list        : [ '', 'radio', { Before: 1, After: 2 } ]
 		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
@@ -1000,9 +1002,11 @@ function playlistInsertSet() {
 	$( '#infoList table' ).before( '<hr>' ).after( '<hr>' );
 }
 function playlistInsertTarget() {
+	var icon  = 'file-playlist';
+	var title = 'Add to '+ V.pladd.name;
 	info( {
-		  icon       : 'file-playlist'
-		, title      : 'Add to '+ V.pladd.name
+		  icon       : icon
+		, title      : title
 		, message    : V.pladd.message
 		, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 		, values     : 'last'
@@ -1010,7 +1014,7 @@ function playlistInsertTarget() {
 			playlistInsertSet();
 			$( '#infoList' ).on( 'click', 'label:eq( 1 )', function() {
 				infoReset();
-				banner( 'file-playlist', 'Insert', 'Select position', 6000 );
+				banner( icon, title, 'Select position', 6000 );
 			} );
 		}
 		, cancel     : () => {

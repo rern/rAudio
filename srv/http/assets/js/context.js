@@ -259,9 +259,10 @@ function savedPlaylistAdd() {
 		V.pladd.message = ico( 'music' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'album' ) +' '+ V.pladd.album;
 	}
 	V.pladd.message += '<br>'+ ico( 'file' ) +' '+ V.pladd.file;
+	var icon  = 'file-playlist';
 	var title = 'Add to a playlist';
 	info( {
-		  icon       : 'file-playlist'
+		  icon       : icon
 		, title      : title
 		, message    : V.pladd.message
 		, footer     : '<hr>Select target playlist'
@@ -272,7 +273,7 @@ function savedPlaylistAdd() {
 		, ok         : () => {
 			if ( ! V.playlist ) $( '#playlist' ).trigger( 'click' );
 			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
-			banner( 'file-playlist', title, 'Select playlist', 6000 );
+			banner( icon, title, 'Select playlist', 6000 );
 		}
 	} );
 }
