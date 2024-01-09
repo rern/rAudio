@@ -996,7 +996,7 @@ function infoRelaysName() {
 	var values   = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
 	var list = [
-		  [ '', '', ico( 'gpiopins bl' ) +' Pin', 'td' ]
+		  [ '', '', ico( 'gpiopins bl' ) +'Pin', 'td' ]
 		, [ '', '', ico( 'tag bl' ) +' Name' ]
 	]
 	var pins = Object.keys( board2bcm )
@@ -1010,10 +1010,7 @@ function infoRelaysName() {
 		, list         : list
 		, values       : values
 		, checkchanged : S.relays
-		, beforeshow   : () => {
-			infoRelaysCss( 70, 160 );
-			$( '#infoList table' ).css( 'margin-left', '70px' );
-		}
+		, beforeshow   : () => infoRelaysCss( 70, 160 )
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
 	} );
