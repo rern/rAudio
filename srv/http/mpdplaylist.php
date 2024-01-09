@@ -207,7 +207,7 @@ function htmlTrack( $lists, $plname = '' ) {
 			if ( ! $artist && ! $album ) $li2.= $file;
 			$html  .=
 '<li class="upnp">
-	'.i( 'upnp i-lg', 'filesavedpl' ).'
+	'.i( 'upnp i-22', 'filesavedpl' ).'
 	<div class="li1"><span class="name">'.$list->Title.'</span>
 	<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
 	<div class="li2"><a class="pos">'.$i.'</a> • <span class="name">'.$li2.'</span></div>

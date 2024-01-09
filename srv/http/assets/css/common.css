@@ -30,7 +30,8 @@ i {
 	font-family : rern;
 	font-style  : normal;
 }
-.i-lg { font-size: 22px !important }
+.i-22 { font-size: 22px !important }
+.i-30 { font-size: 30px !important }
 .i-accesspoint::before     { content: '\F554' }
 .i-add::before             { content: '\F519' }
 .i-addons::before          { content: '\F50D' }
@@ -786,7 +787,8 @@ hr {
 .infoheader,
 .infomessage,
 .infofooter {
-	width: 100%;
+	width: fit-content;
+	max-width: 100%;
 	max-height: 800px;
 	margin: 0 auto;
 	padding: 10px 5px;

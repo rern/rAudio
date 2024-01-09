@@ -248,7 +248,33 @@ function savedPlaylistAdd() {
 		var album = $( '.licover .lialbum' ).text();
 		var file  = V.list.li.find( '.lipath' ).text();
 	}
-	saveToPlaylist( V.list.name, album, file );
+	V.pladd = {
+		  title : V.list.name
+		, album : album
+		, file  : file
+	}
+	if ( V.pladd.file.slice( 0, 4 ) === 'http' ) {
+		V.pladd.message = ico( 'webradio' ) +' <wh>'+ V.pladd.title +'</wh>';
+	} else {
+		V.pladd.message = ico( 'music' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'album' ) +' '+ V.pladd.album;
+	}
+	V.pladd.message += '<br>'+ ico( 'file' ) +' '+ V.pladd.file;
+	var title = 'Add to a playlist';
+	info( {
+		  icon       : 'file-playlist'
+		, title      : title
+		, message    : V.pladd.message
+		, footer     : '<hr>Select target playlist'
+		, beforeshow : () => {
+			$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );
+			playlistInsertSet();
+		}
+		, ok         : () => {
+			if ( ! V.playlist ) $( '#playlist' ).trigger( 'click' );
+			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
+			banner( 'file-playlist', title, 'Select playlist', 6000 );
+		}
+	} );
 }
 function savedPlaylistRemove() {
 	local();
@@ -303,7 +329,7 @@ function tagEditor() {
 					  +'<div>'+ ico( 'folder' ) + file;
 		if ( ! V.list.licover ) message += '<br>'+ ico( fileicon ) + file.split( '/' ).pop();
 		message     += '</div>';
-		var footer   = '<div id="taglabel">'+ ico( 'help i-lg gr' ) +'&emsp;Label</div>';
+		var footer   = '<div id="taglabel">'+ ico( 'help i-22 gr' ) +'&emsp;Label</div>';
 		if ( V.list.licover ) footer += '<div><c> * </c>&ensp;Various values in tracks</div>';
 		info( {
 			  icon         : V.playlist ? 'info' : 'tag'
@@ -521,9 +547,9 @@ var listwebradio = {
 		  [ 'Name',    'text' ]
 		, [ 'URL',     'text' ]
 		, [ 'Charset', 'text' ]
-		, [ '',        '', '<a id="addwebradiodir">'+ ico( 'folder-plus i-lg' ) +'&ensp;New folder&ensp;</a>' ]
+		, [ '',        '', '<a id="addwebradiodir">'+ ico( 'folder-plus i-22' ) +'&ensp;New folder&ensp;</a>' ]
 	]
-	, help : '&emsp;<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-lg gr' ) +'</a>'
+	, help : '&emsp;<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-22 gr' ) +'</a>'
 	, fn   : () => {
 		$( '#infoList input' ).last()
 			.css( 'width', '230px' )

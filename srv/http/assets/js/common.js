@@ -9,7 +9,7 @@ loader() local()     selectSet()
 var page        = location.search.replace( '?p=', '' );
 var dirbash     = '/srv/http/bash/';
 var dirsettings = '/srv/http/bash/settings/';
-var iconwarning = ico( 'warning i-lg yl' ) +'&ensp;';
+var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
@@ -983,6 +983,7 @@ function infoPower() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
+		, message     : ico( 'raudio i-30 gr' ) +'&ensp; r A u d i o'
 		, buttonlabel : ico( 'reboot' ) +'Reboot'
 		, buttoncolor : orange
 		, button      : () => infoPowerCommand( 'reboot' )

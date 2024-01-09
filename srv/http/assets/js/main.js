@@ -1591,6 +1591,7 @@ $( '.page' ).on( 'click', '.index a', function() {
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).on( 'click', function() {
 	V.pladd= {};
+	bannerHide();
 	V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 } );
 $( '#button-pl-playlists' ).on( 'click', function() {
@@ -1661,22 +1662,15 @@ $( '#button-pl-shuffle' ).on( 'click', function() {
 } );
 $( '#button-pl-clear' ).on( 'click', function() {
 	if ( S.pllength === 1 ) {
-		info( {
-			  icon        : 'playlist'
-			, title       : 'Clear Playlist'
-			, oklabel     : ico( 'remove' ) +'Clear'
-			, okcolor     : red
-			, ok          : () => {
-				bash( [ 'mpcremove' ] );
-				renderPlaylist( -1 );
-			}
-		} );
+		bash( [ 'mpcremove' ] );
+		renderPlaylist( -1 );
 	} else if ( $( '.pl-remove' ).length ) {
 		$( '.pl-remove' ).remove();
 	} else {
 		info( {
 			  icon        : 'playlist'
 			, title       : 'Remove From Playlist'
+			, message     : 'Method:'
 			, buttonlabel : [ ico( 'playlist' ) +'Select', ico( 'crop' ) +'Crop' ]
 			, buttoncolor : [ orange ]
 			, button      : [

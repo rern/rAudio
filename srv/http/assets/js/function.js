@@ -41,7 +41,7 @@ function bio( artist, getsimilar ) {
 		var backhtml = getsimilar ? ico( 'back bioback' ) : '';
 		var similar  =  data.similar.artist;
 		if ( similar ) {
-			var similarhtml  = '<p>'+ ico( 'artist i-lg' ) +'&ensp;Similar Artists:<p><span>';
+			var similarhtml  = '<p>'+ ico( 'artist i-22' ) +'&ensp;Similar Artists:<p><span>';
 			similar.forEach( a => similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;' );
 			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
 		}
@@ -49,7 +49,7 @@ function bio( artist, getsimilar ) {
 <div class="container">
 <div id="biocontent">
 	<p class="artist">${ ico( 'close close-root closebio' ) + name }</p>
-	<p class="genre">${ backhtml + ico( 'genre i-lg' ) +'&ensp;'+ genre }</p>
+	<p class="genre">${ backhtml + ico( 'genre i-22' ) +'&ensp;'+ genre }</p>
 	${ similarhtml }
 	<p>${ content }</p>
 	<div style="clear: both;"></div>
@@ -1431,32 +1431,6 @@ function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
 		} );
 	}, 'json' );
 }
-function saveToPlaylist( title, album, file ) {
-	V.pladd.title = title;
-	V.pladd.album = album;
-	V.pladd.file  = file;
-	if ( V.pladd.file.slice( 0, 4 ) === 'http' ) {
-		V.pladd.message = ico( 'webradio' ) +' <wh>'+ V.pladd.title +'</wh>';
-	} else {
-		V.pladd.message = ico( 'music' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'album' ) +' '+ V.pladd.album;
-	}
-	V.pladd.message += '<br>'+ ico( 'file' ) +' '+ V.pladd.file;
-	info( {
-		  icon       : 'file-playlist'
-		, title      : 'Add to a playlist'
-		, message    : V.pladd.message
-		, footer     : '<hr>Select target playlist'
-		, beforeshow : () => {
-			$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );
-			playlistInsertSet();
-		}
-		, ok         : () => {
-			if ( ! V.playlist ) $( '#playlist' ).trigger( 'click' );
-			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
-			banner( 'file-playlist', 'Insert', 'Select playlist', 6000 );
-		}
-	} );
-}
 function second2HMS( second ) {
 	if ( ! second || second < 1 ) return ''
 	
@@ -1712,7 +1686,7 @@ function setPlaybackBlank() {
 		$( '#coverart' ).removeClass( 'hide' );
 		$( '#sampling' )
 			.css( 'display', 'block' )
-			.html( 'Network not connected:&emsp; '+ ico( 'networks i-lg wh' ) +'&ensp;Setup' )
+			.html( 'Network not connected:&emsp; '+ ico( 'networks i-22 wh' ) +'&ensp;Setup' )
 			.on( 'click', '.i-networks', function() {
 				location.href = 'settings.php?p=networks';
 			} );
