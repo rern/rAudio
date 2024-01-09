@@ -29,6 +29,7 @@ lists='{
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
+
 . $dirshm/status
 ##########
 data='
@@ -42,6 +43,8 @@ data='
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$camilladsp'
+, "card"             : '$card'
+, "control"          : "'$control'"
 , "countsong"        : '$( grep song $dirmpd/counts | tr -dc [0-9] )'
 , "countwebradio"    : '$( grep webradio $dirmpd/counts | tr -dc [0-9] )'
 , "crossfade"        : '$crossfade'

@@ -33,14 +33,12 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	} else {
 		var cmd    = 'volume';
 		var cmd0db = 'volume0db';
-		S.control  = D.hwmixer;
-		S.card     = D.card;
 	}
 	info( {
 		  icon       : SW.icon
 		, title      : SW.title
 		, list       : [ S.control.replace( ' - A2DP', '' ), 'range' ]
-		, prompt     : warning
+		, prompt     : '<br>'+ warning
 		, beforeshow : () => {
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
@@ -266,12 +264,9 @@ audio_output {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-var warning = `<br>
-${ iconwarning }<wh>Lower speakers / headphones volume
-<br>
-<br><gr>Signal will be set to original level at 0dB.</gr>
-<br>Beware of too high volume.</wh>
-`;
+var warning = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
+			+'<gr>Signal will be set to original level at 0dB.</gr><br>'
+			+'Beware of too high volume.</wh>';
 
 function infoSoxr( quality ) {
 	delete S.soxrconf.PLUGIN
