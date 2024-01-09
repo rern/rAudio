@@ -219,8 +219,9 @@ user                   "mpd"</pre></td></tr>
 	<tr><td><pre>
 ...
 audio_output {
-	...
-	mixer_device   "hw:${ S.asoundcard }"</pre></td></tr>
+    ...
+    mixer_device   "hw:${ S.asoundcard }"
+</pre></td></tr>
 <tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
@@ -307,7 +308,7 @@ function infoSoxrCustom() {
 		, tablabel     : [ 'Presets', 'Custom' ]
 		, tab          : [ infoSoxr, '' ]
 		, list         : [
-			  [ 'Type',                               'hidden' ]
+			  [ 'Type',           'hidden' ]
 			, [ 'Precision',      'select', [ 16, 20, 24, 28, 32 ], 'bit' ]
 			, [ 'Phase Response', 'number', '0-100' ]
 			, [ 'Passband End',   'number', '0-100%' ]

@@ -273,17 +273,11 @@ $( '#setting-lyrics' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-multiraudio' ).on( 'click', function() {
-	var trhtml = '<tr><td><input type="text"></td>'
-				+'<td><input type="text" class="ip" value="'+ S.ipsub +'"></td>'
-				+'<td>&nbsp;'+ ico( 'remove i-lg pointer ipremove' ) +'</td></tr>';
-	var list   = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'add i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
-	
 	if ( S.multiraudioconf ) {
 		var keys = Object.keys( S.multiraudioconf ).sort();
 		var values = [];
 		keys.forEach( k => values.push( k, S.multiraudioconf[ k ] ) );
 		var iL     = values.length / 2 - 1;
-		for ( i = 0; i < iL; i++ ) list += trhtml;
 	} else {
 		values = [ S.hostname, S.hostip ];
 	}
@@ -291,7 +285,12 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : '<table>'+ list +'</table>'
+		, list         : [
+			  [ '', '', 'Name', 'td' ]
+			, [ '', '', 'IP / URL' ]
+			, [ '', 'text',     '', 'td' ]
+			, [ '', 'text',     ico( 'remove' ) ]
+		]
 		, boxwidth     : 130
 		, values       : values
 		, checkchanged : S.multiraudio && values.length > 2
@@ -299,17 +298,25 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		, checkip      : I.checkip
 		, checkunique  : true
 		, beforeshow   : () => {
-			$( '#infoList td:first-child' ).css( 'width', '180px' );
-			$( '#infoList td' ).eq( 0 ).css( 'text-align', 'left' );
-			setTimeout( () => $( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 ), 0 );
+			$( '#infoList td:first-child' ).remove();
+			$( '#infoList td' ).css( { width: '180px', 'padding-right': 0, 'text-align': 'left' } );
+			$( '#infoList td:last-child' ).css( 'width', '40px' );
+			$( '#infoList tr' ).first().append( '<td>'+ ico( 'plus' ) +'</td>' );
+			$( '#infoList tr:first-child td' ).css( 'padding-left', '5px' );
+			var htmltr = $( '#infoList tr' ).last()[ 0 ].outerHTML;
 			$( '#infoList input' ).each( ( i, el ) => {
-				if ( $( el ).val() === S.hostip ) $( el ).addClass( 'disabled' );
+				if ( $( el ).val() === S.hostip ) {
+					var $tr = $( el ).parents( 'tr' );
+					$tr.find( 'input' ).addClass( 'disabled' );
+					$tr.find( 'i' ).remove();
+				}
 			} );
+			$( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 );
 			$( '#infoList' ).on( 'click', 'i', function() {
 				var $this = $( this );
-				var add   = $this.hasClass( 'ipadd' );
+				var add   = $this.hasClass( 'i-plus' );
 				if ( add ) {
-					$( '#infoList table' ).append( trhtml );
+					$( '#infoList table' ).append( htmltr );
 					$( '#infoList input' ).last().val( S.ipsub );
 				} else {
 					$this.parents( 'tr' ).remove();
@@ -370,18 +377,16 @@ $( '#login' ).on( 'click', function() {
 	}
 } );
 $( '#setting-login' ).on( 'click', function() {
-	var list = {
-		  existing : [
-			  [ 'Existing', 'password' ]
-			, [ 'New', 'password' ]
-		]
-		, new      : [ 'Password', 'password' ]
-	}
+	var list = [
+		  [ 'Existing', 'password' ]
+		, [ 'New', 'password' ]
+		, [ 'Password', 'password' ]
+	]
 	info( {
 		  icon       : SW.icon
 		, title      : SW.title
 		, message    : ( S.login ? 'Change password:' : 'New setup:' )
-		, list       : S.login ? list.existing : list.new
+		, list       : S.login ? list.slice( 0, 2 ) : list.slice( -1 )
 		, focus      : 0
 		, checkblank : true
 		, cancel     : switchCancel

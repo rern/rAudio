@@ -311,7 +311,7 @@ $( '#setting-wlan' ).on( 'click', function() {
 			  icon         : SW.icon
 			, title        : SW.title
 			, list         : [
-				  [ 'Country', 'select', list ]
+				  [ 'Country',                 'select', list ]
 				, [ 'Auto start Access Point', 'checkbox' ]
 			]
 			, boxwidth     : 250
