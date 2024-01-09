@@ -980,9 +980,10 @@ function playlistInsertSelect() {
 	info( {
 		  icon        : 'file-playlist'
 		, title       : 'Insert'
-		, message     : V.pladd.message +'<hr>'
+		, message     : V.pladd.message
 		, list        : [ '', 'radio', { Before: 1, After: 2 } ]
-		, footer      : '<hr><wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
+		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
+		, beforeshow  : playlistInsertSet
 		, buttonlabel : ico( 'undo' ) +'Select'
 		, buttoncolor : orange
 		, button      : infoReset
@@ -994,20 +995,19 @@ function playlistInsertSelect() {
 	} );
 	bannerHide();
 }
+function playlistInsertSet() {
+	$( '.infomessage' ).css( { 'line-height': '30px', 'text-align': 'left' } );
+	$( '#infoList table' ).before( '<hr>' ).after( '<hr>' );
+}
 function playlistInsertTarget() {
-	if ( V.pladd.file.slice( 0, 4 ) === 'http' ) {
-		V.pladd.message = ico( 'webradio' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'file' ) +' '+ V.pladd.file;
-	} else {
-		V.pladd.message = ico( 'music' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'album' ) +' '+ V.pladd.album;
-	}
 	info( {
 		  icon       : 'file-playlist'
 		, title      : 'Add to '+ V.pladd.name
-		, message    : V.pladd.message +'<hr>'
+		, message    : V.pladd.message
 		, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 		, values     : 'last'
 		, beforeshow : () => {
-			$( '.infomessage' ).css( 'line-height', '30px' );
+			playlistInsertSet();
 			$( '#infoList' ).on( 'click', 'label:eq( 1 )', function() {
 				infoReset();
 				banner( 'file-playlist', 'Insert', 'Select position', 6000 );
@@ -1435,13 +1435,25 @@ function saveToPlaylist( title, album, file ) {
 	V.pladd.title = title;
 	V.pladd.album = album;
 	V.pladd.file  = file;
+	if ( V.pladd.file.slice( 0, 4 ) === 'http' ) {
+		V.pladd.message = ico( 'webradio' ) +' <wh>'+ V.pladd.title +'</wh>';
+	} else {
+		V.pladd.message = ico( 'music' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'album' ) +' '+ V.pladd.album;
+	}
+	V.pladd.message += '<br>'+ ico( 'file' ) +' '+ V.pladd.file;
 	info( {
-		  icon    : 'file-playlist'
-		, title   : 'Add to a playlist'
-		, message : 'Select target playlist'
-		, ok      : () => {
+		  icon       : 'file-playlist'
+		, title      : 'Add to a playlist'
+		, message    : V.pladd.message
+		, footer     : '<hr>Select target playlist'
+		, beforeshow : () => {
+			$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );
+			playlistInsertSet();
+		}
+		, ok         : () => {
 			if ( ! V.playlist ) $( '#playlist' ).trigger( 'click' );
 			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
+			banner( 'file-playlist', 'Insert', 'Select playlist', 6000 );
 		}
 	} );
 }
