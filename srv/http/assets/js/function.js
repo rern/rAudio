@@ -274,10 +274,7 @@ function contextmenuLibrary( $li, $target ) {
 	// album mode  - path > tracks
 	// other modes - name > name-album > filtered tracks
 	V.list.path        = $li.find( '.lipath' ).text() || $( '#mode-title' ).text();
-	if ( V.playlist ) {
-		V.list.name   = $li.find( '.liname' ).text() || '';
-		V.list.artist = $li.find( '.liartist' ).text() || '';
-	} else if ( V.librarytrack && ! V.list.licover ) {
+	if ( V.librarytrack && ! V.list.licover ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 		V.list.artist = $( '.licover .liartist' ).text() || '';
 	} else {
@@ -706,52 +703,47 @@ function infoTitle() {
 	if ( album.includes( '://' ) ) album = '';
 	artist  = artist.replace( /(["`])/g, '\\$1' );
 	title   = title.replace( /(["`])/g, '\\$1' );
-	var noparen      = title.slice( -1 ) !== ')';
-	var titlenoparen = title.replace( / $|\(.*$/, '' );
-	var paren        = title.replace( /^.*\(/, '(' );
-	var htmllist         = `\
-<table>
-<tr><td>${ ico( 'artist wh' ) }</td><td><input class="required" type="text"></td></tr>
-<tr><td>${ ico( 'music wh' ) }</td><td><input class="required" type="text"></td></tr>
-<tr class="album"><td>${ ico( 'album wh' ) }</td><td><input type="text"></td></tr>
-<tr id="paren"><td></td><td><label><input type="checkbox"><gr>${ ico( 'music wh' ) }Title includes:</gr> ${ paren }</label></td></tr>
-<tr style="height: 10px;"></tr>
-<tr><td colspan="2" class="btnbottom">
-	<span class="lyrics">${ ico( 'lyrics' ) } Lyrics</span>
-	<span class="bio">&emsp;${ ico( 'bio' ) } Bio</span>
-	<span class="similar">&emsp;${ ico( 'lastfm' ) } Add Similar</span>
-	<span class="scrobble">&emsp;${ ico( 'lastfm' ) } Scrobble</span>
-	</td></tr>
-</table>`;
+	var list = [
+		  [ ico( 'artist wh' ), 'text' ]
+		, [ ico( 'music wh' ),  'text' ]
+		, [ ico( 'album wh' ),  'text' ]
+	];
+	var paren      = title.slice( -1 ) === ')';
+	if ( paren ) {
+		var titlenoparen = title.replace( / $|\(.*$/, '' );
+		list.push( [ ico( 'music wh' ) +'<gr>Title includes: </gr>'+ title.replace( /^.*\(/, '(' ),  'checkbox' ] );
+	}
+	var footer = '<span class="lyrics">'+ ico( 'lyrics' ) +' Lyrics</span>'
+				+'<span class="bio">'+ ico( 'bio' ) +' Bio</span>'
+				+'<span class="similar">'+ ico( 'lastfm' ) +' Add Similar</span>'
+				+'<span class="scrobble">'+ ico( 'lastfm' ) +' Scrobble</span>';
 	info( {
 		  icon        : 'playback'
 		, title       : 'Current Track'
-		, list        : htmllist
+		, list        : list
+		, footer      : footer
+		, footeralign : 'left'
 		, width       : 460
 		, boxwidth    : 'max'
-		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
+		, values      : paren ? [ artist, titlenoparen, album ] : [ artist, title, album ]
 		, beforeshow  : () => {
-			if ( noparen ) {
-				$( '#paren' ).addClass( 'hide' );
-			} else {
+			$( '#infoList input' ).eq( 2 ).toggleClass( 'hide', album === '' );
+			$( '.infofooter' )
+				.css( 'padding-left', '40px' )
+				.find( 'span' ).css( { 'margin-right': '20px', cursor: 'pointer' } );
+			$( '.infofooter .lyrics' ).toggleClass( 'hide', ! S.lyrics );
+			$( '.infofooter .scrobble' ).toggleClass( 'hide', ! S.scrobble );
+			if ( S.scrobble ) $( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || S.scrobbleconf[ S.player ] );
+			if ( paren ) {
 				$( '#infoList input:checkbox' ).on( 'input', function() {
-					$( '#infoList input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
+					$( '#infoList input' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
-			$( '#infoList input.required' ).on( 'input', function() {
-				var $this = $( this );
-				$this.css( 'border-color', $this.val() ? '' : 'red' );
-				$( '#infoList .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
+			$( '#infoList input' ).on( 'input', function() {
+				var val = infoVal();
+				$( '#infoList .scrobble' ).toggleClass( 'disabled', val[ 0 ] === '' || val[ 1 ] === '' );
 			} );
-			$( '#infoList .lyrics' ).toggleClass( 'hide', ! S.lyrics );
-			$( '#infoList .album' ).toggleClass( 'hide', album === '' );
-			if ( S.player === 'mpd' ) {
-				var btnscrobble = S.scrobble && S.webradio;
-			} else {
-				var btnscrobble = S.scrobble && ! S.scrobbleconf[ S.player ];
-			}
-			$( '#infoList .scrobble' ).toggleClass( 'hide', ! btnscrobble );
-			$( '#infoList' ).on( 'click', '.btnbottom span', function() {
+			$( '#infoList' ).on( 'click', '.infofooter span', function() {
 				var values = infoVal();
 				var artist = values[ 0 ]
 				var title  = values[ 1 ]
@@ -975,58 +967,53 @@ function playbackStatusGet( withdisplay ) {
 		}
 	} );
 }
-function playlistInsert( indextarget ) {
+function playlistInsert( pos ) {
 	var plname = $( '#savedpl-path .lipath' ).text();
-	bash( [ 'savedpledit', plname, 'add', indextarget, V.pladd.file, 'CMD NAME TYPE TO FILE' ], () => {
+	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.file, 'CMD NAME TYPE TO FILE' ], () => {
 		renderSavedPlTrack( plname );
-		if ( indextarget === 'last' ) {
+		if ( pos === 'last' ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
 		}
 		V.pladd = {}
 	} );
 }
 function playlistInsertSelect( $this ) {
-	var track = '<gr>'+ ( $this.index() + 1 ) +' - </gr>'+ $this.find( '.name' ).text();
-	var htmllist  = `\
-${ V.pladd.title }
-<br><gr>${ V.pladd.album }</gr>
-<br><br>
-<input type="radio" name="inforadio" value="1">Before</label>
-<hr>
-${ track }
-<hr>
-<input type="radio" name="inforadio" value="2">After</label>
-`;
+	var index = $this.index();
 	info( {
 		  icon        : 'file-playlist'
 		, title       : 'Insert'
-		, list        : htmllist
-		, values      : [ 1 ]
+		, list        : [ '', 'radio', { Before: 1, After: 2 } ]
+		, footer      : '<hr><wh>'+ ( index + 1 ) +'<gr> • </gr>'+ $this.find( '.name' ).eq( 0 ).text() +'</wh>'
 		, buttonlabel : ico( 'undo' ) +'Select'
-		, button      : playlistInsertTarget
+		, buttoncolor : orange
+		, button      : infoReset
 		, cancel      : () => V.pladd = {}
-		, ok          : () => playlistInsert( +infoVal() + $this.index() )
+		, ok          : () => playlistInsert( +infoVal() + index )
 	} );
 	bannerHide();
 }
 function playlistInsertTarget() {
+	if ( V.pladd.file.slice( 0, 4 ) === 'http' ) {
+		var message = ico( 'webradio' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'file' ) +' '+ V.pladd.file;
+	} else {
+		var message = ico( 'music' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'album' ) +' '+ V.pladd.album;
+	}
 	info( {
 		  icon       : 'file-playlist'
-		, title      : 'Add to a playlist'
-		, message    : '<wh>'+ V.pladd.title +'</wh>'
-					  +'<br>'+ V.pladd.album
-					  +'<hr>'
-					  +'Select where to add:'
-		, list       : [ '', 'radio', { First : 1, Select: 'select', Last: 'last' }, 'tr' ]
+		, title      : 'Add to '+ V.pladd.name
+		, message    : message +'<hr>'
+		, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 		, values     : 'last'
 		, beforeshow : () => {
-			$( '#infoList input' ).eq( 1 ).on( 'click', function() {
-				local();
-				$( '#infoX' ).trigger( 'click' );
+			$( '.infomessage' ).css( 'line-height', '30px' );
+			$( '#infoList' ).on( 'click', 'label:eq( 1 )', function() {
+				infoReset();
+				banner( 'file-playlist', 'Insert', 'Select position', 6000 );
 			} );
 		}
 		, cancel     : () => {
-			if ( ! V.local ) V.pladd = {}
+			V.pladd = {}
+			$( '#playlist' ).trigger( 'click' );
 		}
 		, ok         : () => playlistInsert( infoVal() )
 	} );

@@ -378,6 +378,9 @@ codered  {
 	line-height: 18px;
 	background: linear-gradient( to right, var( --cm ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% );
 }
+.infoheader,
+.infomessage,
+.infofooter,
 #bannerTitle,
 #bannerMessage {
 	white-space: nowrap;
@@ -559,14 +562,14 @@ input[ type=checkbox ].disabled {
 	color: var( --cg60 );
 }
 .btnbottom i,
-.updn {
+#infoList .updn {
 	width: 40px;
 	font-size: 22px;
 	vertical-align: -3px;
 	text-align: center;
 	color: var( --cw );
 }
-.updn {
+#infoList .updn {
 	width: 35px !important;
 	line-height: 40px;
 }
@@ -787,14 +790,10 @@ hr {
 	max-height: 800px;
 	margin: 0 auto;
 	padding: 10px 5px;
-	white-space: pre-wrap;
-	word-wrap: break-word;
-	overflow: hidden;
 	color: var( --cg60 );
 }
 .infomessage {
 	padding-top: 5px;
-	line-height: 10px;
 }
 .infoprompt {
 	padding: 15px 5px;
@@ -1027,7 +1026,7 @@ input:focus {
 	.infobtn,
 	.inforange i,
 	.pointer,
-	.updn,
+	#infoList .updn,
 	#infoTab,
 	#infoButton gr,
 	#infoX {

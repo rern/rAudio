@@ -671,11 +671,7 @@ function infoButtonCommand( fn, cancel ) {
 	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
 	I = { active: false }
-	$( '#infoOverlay' )
-		.addClass( 'hide' )
-		.removeAttr( 'style' )
-		.empty();
-	$( 'body' ).css( 'overflow-y', '' );
+	infoReset();
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
@@ -861,6 +857,13 @@ function infoPrompt( message ) {
 		$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
 	} );
 }
+function infoReset() {
+	$( '#infoOverlay' )
+		.addClass( 'hide' )
+		.removeAttr( 'style' )
+		.empty();
+	$( 'body' ).css( 'overflow-y', '' );
+}
 function infoSetValues() {
 	var $this, type, val;
 	$input.each( ( i, el ) => {
@@ -936,43 +939,6 @@ function infoVal( array ) {
 	I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );
 	return v                                                        // json
 }
-
-// common info functions --------------------------------------------------
-function infoPower() {
-	info( {
-		  icon        : 'power'
-		, title       : 'Power'
-		, buttonlabel : ico( 'reboot' ) +'Reboot'
-		, buttoncolor : orange
-		, button      : () => infoPowerCommand( 'reboot' )
-		, oklabel     : ico( 'power' ) +'Off'
-		, okcolor     : red
-		, ok          : () => infoPowerCommand( 'off' )
-	} );
-}
-function infoPowerCommand( action ) {
-	loader();
-	bash( [ 'power.sh', action ], nfs => {
-		if ( nfs != -1 ) return
-		
-		loaderHide();
-		var off = action === 'off';
-		info( {
-			  icon    : 'power'
-			, title   : 'Power'
-			, message : 'This <wh>Server rAudio '+ ico( 'rserver' ) +'</wh> is currently active.'
-						+'<br><wh>Shared Data</wh> on clients will stop.'
-						+'<br>(Resume when server online again)'
-						+'<br><br>Continue?'
-			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
-			, okcolor : off ? red : orange
-			, ok      : () => {
-				bash( [ 'power.sh', action, 'confirm' ] );
-				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
-			}
-		} );
-	} );
-}
 function infoWarning( icon, title, message ) {
 	info( {
 		  icon    : icon
@@ -1009,6 +975,43 @@ function infoWidth() {
 		$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
 	}
 	if ( I.checkboxonly ) $( '#infoList td' ).css( 'text-align', 'left' );
+}
+
+// common info functions --------------------------------------------------
+function infoPower() {
+	info( {
+		  icon        : 'power'
+		, title       : 'Power'
+		, buttonlabel : ico( 'reboot' ) +'Reboot'
+		, buttoncolor : orange
+		, button      : () => infoPowerCommand( 'reboot' )
+		, oklabel     : ico( 'power' ) +'Off'
+		, okcolor     : red
+		, ok          : () => infoPowerCommand( 'off' )
+	} );
+}
+function infoPowerCommand( action ) {
+	loader();
+	bash( [ 'power.sh', action ], nfs => {
+		if ( nfs != -1 ) return
+		
+		loaderHide();
+		var off = action === 'off';
+		info( {
+			  icon    : 'power'
+			, title   : 'Power'
+			, message : 'This <wh>Server rAudio '+ ico( 'rserver' ) +'</wh> is currently active.'
+						+'<br><wh>Shared Data</wh> on clients will stop.'
+						+'<br>(Resume when server online again)'
+						+'<br><br>Continue?'
+			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
+			, okcolor : off ? red : orange
+			, ok      : () => {
+				bash( [ 'power.sh', action, 'confirm' ] );
+				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
+			}
+		} );
+	} );
 }
 
 function capitalize( str ) {
