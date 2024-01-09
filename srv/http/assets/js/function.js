@@ -1441,8 +1441,8 @@ function saveToPlaylist( title, album, file ) {
 		, title   : 'Add to a playlist'
 		, message : 'Select target playlist'
 		, ok      : () => {
-			$( '#button-pl-playlists' ).trigger( 'click' );
 			if ( ! V.playlist ) $( '#playlist' ).trigger( 'click' );
+			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
 		}
 	} );
 }
@@ -1779,9 +1779,10 @@ function setPlaylistScroll() {
 	var $elapsed     = $this.find( '.elapsed' );
 	var $name        = $this.find( '.name' );
 	var $stationname = $this.find( '.li2 .stationname' );
+	var webradio     = $this.hasClass( 'webradio' )
 	$stationname.addClass( 'hide' );
 	if ( S.state === 'stop' ) {
-		if ( $liactive.hasClass( 'webradio' ) ) $name.text( $this.find( '.liname' ).text() );
+		if ( webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
 		if ( S.elapsed === false ) return
@@ -1794,7 +1795,7 @@ function setPlaylistScroll() {
 			setPlaylistInfoWidth();
 		} else if ( S.state === 'play' ) {
 			$stationname.removeClass( 'hide' );
-			if ( S.webradio ) {
+			if ( webradio ) {
 				$stationname.removeClass( 'hide' );
 				$name.html( S.Title || '·&ensp;·&ensp;·' );
 			}

@@ -1594,6 +1594,7 @@ $( '#button-pl-back' ).on( 'click', function() {
 	V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 } );
 $( '#button-pl-playlists' ).on( 'click', function() {
+	pageScroll( 0 );
 	list( { playlist: 'list' }, ( data ) => renderSavedPl( data ), 'json' );
 } );
 $( '#button-pl-save' ).on( 'click', function() {
