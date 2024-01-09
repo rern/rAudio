@@ -982,9 +982,8 @@ function playlistInsertSelect( $this ) {
 	info( {
 		  icon        : 'file-playlist'
 		, title       : 'Insert'
-		, message     : '<wh>'+ ( index + 1 ) +'<gr> • </gr>'+ $this.find( '.name' ).eq( 0 ).text() +'</wh>'
-						+'<hr>'
 		, list        : [ '', 'radio', { Before: 1, After: 2 } ]
+		, footer      : '<hr><wh>'+ ( index + 1 ) +'<gr> • </gr>'+ $this.find( '.name' ).eq( 0 ).text() +'</wh>'
 		, buttonlabel : ico( 'undo' ) +'Select'
 		, buttoncolor : orange
 		, button      : infoReset
@@ -994,13 +993,17 @@ function playlistInsertSelect( $this ) {
 	bannerHide();
 }
 function playlistInsertTarget() {
+	if ( V.pladd.file.slice( 0, 4 ) === 'http' ) {
+		var message = ico( 'webradio' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'file' ) +' '+ V.pladd.file;
+	} else {
+		var message = ico( 'music' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'album' ) +' '+ V.pladd.album;
+	}
 	info( {
 		  icon       : 'file-playlist'
 		, title      : 'Add to a playlist'
-		, message    : ico( 'music' ) +'<wh>'+ V.pladd.title +'</wh>'
-					  +'<br>'+ ico( 'album' ) + V.pladd.album
+		, message    : message
 					  +'<hr>'
-					  +'Position:'
+					  +'Position in <wh>'+ V.pladd.name +' </wh>:'
 		, list       : [ '', 'radio', { First : 1, Select: 'select', Last: 'last' }, 'tr' ]
 		, values     : 'last'
 		, beforeshow : () => {

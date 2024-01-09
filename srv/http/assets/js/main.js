@@ -1774,7 +1774,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	V.list.li     = $thisli;
 	V.list.path   = $thisli.find( '.lipath' ).text();
 	V.list.artist = $thisli.find( '.artist' ).text();
-	V.list.name   = $thisli.find( '.name' ).eq( 0 ).text();
+	V.list.name   = $thisli.find( $this.hasClass( 'webradio' ) ? '.liname' : '.name' ).eq( 0 ).text();
 	V.list.index  = $thisli.index();
 	var $menu = $( '#menu-plaction' );
 	var menushow  = ! $menu.hasClass( 'hide' );
@@ -1873,7 +1873,10 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 		V.savedpl      = false;
 		V.savedpltrack = true;
 		renderSavedPlTrack( $this.find( '.plname' ).text() );
-		if ( pladd ) playlistInsertTarget();
+		if ( pladd ) {
+			V.pladd.name = $this.find( '.lipath' ).text();
+			playlistInsertTarget();
+		}
 	}
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
