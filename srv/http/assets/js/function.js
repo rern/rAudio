@@ -736,7 +736,6 @@ function infoTitle() {
 				.find( 'span' ).css( { 'margin-right': '20px', cursor: 'pointer' } );
 			$( '.infofooter .lyrics' ).toggleClass( 'hide', ! S.lyrics );
 			$( '.infofooter .scrobble' ).toggleClass( 'hide', ! S.scrobble );
-			console.log(! artist || ! title || ! S.webradio || S.scrobbleconf[ S.player ])
 			if ( S.scrobble ) $( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || S.scrobbleconf[ S.player ] );
 			if ( paren ) {
 				$( '#infoList input:checkbox' ).on( 'input', function() {
