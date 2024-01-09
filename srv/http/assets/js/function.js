@@ -706,52 +706,46 @@ function infoTitle() {
 	if ( album.includes( '://' ) ) album = '';
 	artist  = artist.replace( /(["`])/g, '\\$1' );
 	title   = title.replace( /(["`])/g, '\\$1' );
-	var noparen      = title.slice( -1 ) !== ')';
-	var titlenoparen = title.replace( / $|\(.*$/, '' );
-	var paren        = title.replace( /^.*\(/, '(' );
-	var htmllist         = `\
-<table>
-<tr><td>${ ico( 'artist wh' ) }</td><td><input class="required" type="text"></td></tr>
-<tr><td>${ ico( 'music wh' ) }</td><td><input class="required" type="text"></td></tr>
-<tr class="album"><td>${ ico( 'album wh' ) }</td><td><input type="text"></td></tr>
-<tr id="paren"><td></td><td><label><input type="checkbox"><gr>${ ico( 'music wh' ) }Title includes:</gr> ${ paren }</label></td></tr>
-<tr style="height: 10px;"></tr>
-<tr><td colspan="2" class="btnbottom">
-	<span class="lyrics">${ ico( 'lyrics' ) } Lyrics</span>
-	<span class="bio">&emsp;${ ico( 'bio' ) } Bio</span>
-	<span class="similar">&emsp;${ ico( 'lastfm' ) } Add Similar</span>
-	<span class="scrobble">&emsp;${ ico( 'lastfm' ) } Scrobble</span>
-	</td></tr>
-</table>`;
+	var list = [
+		  [ ico( 'artist wh' ), 'text' ]
+		, [ ico( 'music wh' ),  'text' ]
+		, [ ico( 'album wh' ),  'text' ]
+	];
+	var paren      = title.slice( -1 ) === ')';
+	if ( paren ) {
+		var titlenoparen = title.replace( / $|\(.*$/, '' );
+		list.push( [ ico( 'music wh' ) +'<gr>Title includes: </gr>'+ title.replace( /^.*\(/, '(' ),  'checkbox' ] );
+	}
+	var footer = '<span class="lyrics">'+ ico( 'lyrics' ) +' Lyrics</span>'
+				+'<span class="bio">'+ ico( 'bio' ) +' Bio</span>'
+				+'<span class="similar">'+ ico( 'lastfm' ) +' Add Similar</span>'
+				+'<span class="scrobble">'+ ico( 'lastfm' ) +' Scrobble</span>';
 	info( {
 		  icon        : 'playback'
 		, title       : 'Current Track'
-		, list        : htmllist
+		, list        : list
+		, footer      : footer
+		, footeralign : 'left'
 		, width       : 460
 		, boxwidth    : 'max'
-		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
+		, values      : paren ? [ artist, titlenoparen, album ] : [ artist, title, album ]
 		, beforeshow  : () => {
-			if ( noparen ) {
-				$( '#paren' ).addClass( 'hide' );
-			} else {
+			$( '#infoList input' ).eq( 2 ).toggleClass( 'hide', album === '' );
+			$( '.infofooter' )
+				.css( 'padding-left', '40px' )
+				.find( 'span' ).css( { 'margin-right': '20px', cursor: 'pointer' } );
+			$( '.infofooter .lyrics' ).toggleClass( 'hide', ! S.lyrics );
+			$( '.infofooter .scrobble' ).toggleClass( 'hide', ! S.scrobble || ( ! S.webradio && S.scrobbleconf[ S.player ] ) );
+			if ( paren ) {
 				$( '#infoList input:checkbox' ).on( 'input', function() {
-					$( '#infoList input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
+					$( '#infoList input' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
-			$( '#infoList input.required' ).on( 'input', function() {
-				var $this = $( this );
-				$this.css( 'border-color', $this.val() ? '' : 'red' );
-				$( '#infoList .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
+			$( '#infoList input' ).on( 'input', function() {
+				var val = infoVal();
+				$( '#infoList .scrobble' ).toggleClass( 'disabled', val[ 0 ] === '' || val[ 1 ] === '' );
 			} );
-			$( '#infoList .lyrics' ).toggleClass( 'hide', ! S.lyrics );
-			$( '#infoList .album' ).toggleClass( 'hide', album === '' );
-			if ( S.player === 'mpd' ) {
-				var btnscrobble = S.scrobble && S.webradio;
-			} else {
-				var btnscrobble = S.scrobble && ! S.scrobbleconf[ S.player ];
-			}
-			$( '#infoList .scrobble' ).toggleClass( 'hide', ! btnscrobble );
-			$( '#infoList' ).on( 'click', '.btnbottom span', function() {
+			$( '#infoList' ).on( 'click', '.infofooter span', function() {
 				var values = infoVal();
 				var artist = values[ 0 ]
 				var title  = values[ 1 ]
