@@ -1770,11 +1770,12 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', '.li-icon, .savewr', function() {
 	var $this     = $( this );
 	var $thisli   = $this.parent();
+	var webradio  = $this.hasClass( 'webradio' );
 	V.list        = {};
 	V.list.li     = $thisli;
 	V.list.path   = $thisli.find( '.lipath' ).text();
 	V.list.artist = $thisli.find( '.artist' ).text();
-	V.list.name   = $thisli.find( $this.hasClass( 'webradio' ) ? '.liname' : '.name' ).eq( 0 ).text();
+	V.list.name   = $thisli.find( webradio ? '.liname' : '.name' ).eq( 0 ).text();
 	V.list.index  = $thisli.index();
 	var $menu = $( '#menu-plaction' );
 	var menushow  = ! $menu.hasClass( 'hide' );
@@ -1804,8 +1805,8 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$menu.find( '.pause, .stop, .current' ).addClass( 'hide' );
 	}
 	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
-	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', S.webradio );
-	$menu.find( '.tag' ).toggleClass( 'hide', S.webradio || upnp || audiocd );
+	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', webradio );
+	$menu.find( '.tag' ).toggleClass( 'hide', webradio || upnp || audiocd );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', ! notsaved );
 	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
