@@ -356,11 +356,10 @@ function coverartChange() {
 	info( {
 		  icon        : icon
 		, title       : title
-		, message     : '<img class="imgold">'
+		, message     : '<img class="imgold" src="'+ src +'">'
 					   +'<p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
-		, beforeshow  : () => $( '.imgold' ).attr( 'src', src ) // fix direct replace src
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +'Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
