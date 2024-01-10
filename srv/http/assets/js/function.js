@@ -979,16 +979,21 @@ function playlistInsert( pos ) {
 	} );
 }
 function playlistInsertSelect() {
+	var icon  = 'file-playlist';
+	var title = 'Add to '+ V.pladd.name;
 	info( {
-		  icon        : 'file-playlist'
-		, title       : 'Add to '+ V.pladd.name
+		  icon        : icon
+		, title       : title
 		, message     : V.pladd.message
 		, list        : [ '', 'radio', { Before: 1, After: 2 } ]
 		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
 		, beforeshow  : playlistInsertSet
 		, buttonlabel : ico( 'undo' ) +'Select'
 		, buttoncolor : orange
-		, button      : infoReset
+		, button      : () => {
+			infoReset();
+			banner( icon, title, 'Select position to insert', -1 );
+		}
 		, cancel      : () => {
 			V.pladd = {}
 			$( '#playlist' ).trigger( 'click' );
@@ -1014,7 +1019,7 @@ function playlistInsertTarget() {
 			playlistInsertSet();
 			$( '#infoList' ).on( 'click', 'label:eq( 1 )', function() {
 				infoReset();
-				banner( icon, title, 'Select position', 6000 );
+				banner( icon, title, 'Select position to insert', -1 );
 			} );
 		}
 		, cancel     : () => {

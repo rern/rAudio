@@ -74,9 +74,9 @@ $menulist = [
 	, [ 'pause',      'pause',         'Pause' ]
 	, [ 'stop',       'stop',          'Stop' ]
 	, [ 'current',    'current',       'Current' ]
+	, [ 'remove',     'remove',        'Remove' ]
 	, [ 'wrsave',     'save',          'Save to Library' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'remove',     'remove',        'Remove' ]
 	, [ 'similar',    'lastfm',        'Add similar' ]
 	, [ 'tag',        'info',          'Track Info' ]
 ];

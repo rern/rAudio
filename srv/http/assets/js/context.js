@@ -273,7 +273,7 @@ function savedPlaylistAdd() {
 		, ok         : () => {
 			if ( ! V.playlist ) $( '#playlist' ).trigger( 'click' );
 			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
-			banner( icon, title, 'Select playlist', 6000 );
+			banner( icon, title, 'Select playlist to add', -1 );
 		}
 	} );
 }
