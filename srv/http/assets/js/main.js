@@ -1591,12 +1591,13 @@ $( '.page' ).on( 'click', '.index a', function() {
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).on( 'click', function() {
 	if ( V.pladd ) {
-		V.savedpl = true;
 		I.active  = false;
-		V.pladd   = false
+		V.pladd   = false;
+		playlistGet();
 		bannerHide();
+	} else {
+		V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 	}
-	V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 } );
 $( '#button-pl-playlists' ).on( 'click', function() {
 	pageScroll( 0 );
@@ -1835,7 +1836,8 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	if ( V.savedpltrack || liicon ) {
 		if ( V.pladd ) {
 			V.pladd.index = $this.index();
-			V.pladd.track = $this.find( '.name' ).eq( 0 ).text();
+			V.pladd.track = $this.find( '.li1 .name' ).text()
+							+'<br><gr>'+ $this.find( '.li2 .name' ).text() +'</gr>';
 			playlistInsertSelect();
 		} else {
 			var menu  = $target.data( 'menu' ) || $this.find( '.li-icon' ).data ( 'menu' );
@@ -1872,8 +1874,6 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 			contextmenuScroll( $menu, $this.position().top + 48 );
 		}
 	} else {
-		V.savedpl      = false;
-		V.savedpltrack = true;
 		renderSavedPlTrack( $this.find( '.plname' ).text() );
 		if ( V.pladd ) {
 			V.pladd.name = $this.find( '.lipath' ).text();
