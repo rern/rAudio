@@ -24,7 +24,7 @@ V = {   // var global
 	, mode          : ''
 	, modescrolltop : 0
 	, page          : 'playback'
-	, pladd         : {}
+	, pladd         : false
 	, playback      : true
 	, playlist      : false
 	, plhome        : true
@@ -438,7 +438,7 @@ $( '#playback' ).on( 'click', function() {
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
-	if ( ! V.local ) V.pladd = {}
+	if ( ! V.local ) V.pladd = false;
 	if ( V.playlist ) {
 		if ( ! V.plhome ) playlistGet();
 	} else {
@@ -1590,8 +1590,12 @@ $( '.page' ).on( 'click', '.index a', function() {
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).on( 'click', function() {
-	V.pladd= {};
-	bannerHide();
+	if ( V.pladd ) {
+		V.savedpl = true;
+		I.active  = false;
+		V.pladd   = false
+		bannerHide();
+	}
 	V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 } );
 $( '#button-pl-playlists' ).on( 'click', function() {
@@ -1827,10 +1831,9 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	menuHide();
 	if ( menushow && active ) return
 	
-	var pladd    = 'file' in V.pladd;
 	var liicon   = $target.hasClass( 'li-icon' );
 	if ( V.savedpltrack || liicon ) {
-		if ( pladd ) {
+		if ( V.pladd ) {
 			V.pladd.index = $this.index();
 			V.pladd.track = $this.find( '.name' ).eq( 0 ).text();
 			playlistInsertSelect();
@@ -1872,7 +1875,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 		V.savedpl      = false;
 		V.savedpltrack = true;
 		renderSavedPlTrack( $this.find( '.plname' ).text() );
-		if ( pladd ) {
+		if ( V.pladd ) {
 			V.pladd.name = $this.find( '.lipath' ).text();
 			playlistInsertTarget();
 		}

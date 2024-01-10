@@ -975,27 +975,26 @@ function playlistInsert( pos ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
 		}
 		bannerHide();
-		V.pladd = {}
+		V.pladd = false;
 	} );
 }
 function playlistInsertSelect() {
-	var icon  = 'file-playlist';
-	var title = 'Add to '+ V.pladd.name;
 	info( {
-		  icon        : icon
-		, title       : title
+		  icon        : V.pladd.icon
+		, title       : V.pladd.title
 		, message     : V.pladd.message
-		, list        : [ '', 'radio', { Before: 1, After: 2 } ]
+		, width       : V.pladd.width
+		, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
 		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
 		, beforeshow  : playlistInsertSet
 		, buttonlabel : ico( 'undo' ) +'Select'
 		, buttoncolor : orange
 		, button      : () => {
 			infoReset();
-			banner( icon, title, 'Select position to insert', -1 );
+			banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
 		}
 		, cancel      : () => {
-			V.pladd = {}
+			V.pladd = false;
 			$( '#playlist' ).trigger( 'click' );
 		}
 		, ok          : () => playlistInsert( +infoVal() + V.pladd.index )
@@ -1003,27 +1002,27 @@ function playlistInsertSelect() {
 	bannerHide();
 }
 function playlistInsertSet() {
-	$( '.infomessage' ).css( { 'line-height': '30px', 'text-align': 'left' } );
+	$( '.infomessage' ).addClass( 'tagmessage' );
 	$( '#infoList table' ).before( '<hr>' ).after( '<hr>' );
 }
 function playlistInsertTarget() {
-	var icon  = 'file-playlist';
-	var title = 'Add to '+ V.pladd.name;
+	V.pladd.title = 'Add to '+ V.pladd.name;
 	info( {
-		  icon       : icon
-		, title      : title
+		  icon       : V.pladd.icon
+		, title      : V.pladd.title
 		, message    : V.pladd.message
+		, width      : V.pladd.width
 		, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 		, values     : 'last'
 		, beforeshow : () => {
 			playlistInsertSet();
 			$( '#infoList' ).on( 'click', 'label:eq( 1 )', function() {
 				infoReset();
-				banner( icon, title, 'Select position to insert', -1 );
+				banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
 			} );
 		}
 		, cancel     : () => {
-			V.pladd = {}
+			V.pladd = false;
 			$( '#playlist' ).trigger( 'click' );
 		}
 		, ok         : () => playlistInsert( infoVal() )

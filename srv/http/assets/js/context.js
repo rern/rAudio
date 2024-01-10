@@ -249,23 +249,26 @@ function savedPlaylistAdd() {
 		var file  = V.list.li.find( '.lipath' ).text();
 	}
 	V.pladd = {
-		  title : V.list.name
+		  icon  : 'file-playlist'
+		, title : 'Add to a playlist'
 		, album : album
 		, file  : file
+		, width : 500
 	}
+	var img = '<img src="'+ V.list.li.find( 'img' ).attr( 'src' ) +'">';
 	if ( V.pladd.file.slice( 0, 4 ) === 'http' ) {
-		V.pladd.message = ico( 'webradio' ) +' <wh>'+ V.pladd.title +'</wh>';
+		V.pladd.message = img +'<div>'+ ico( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
+						  +'<br>'+ ico( 'file' ) +' '+ file +'</div>';
 	} else {
-		V.pladd.message = ico( 'music' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'album' ) +' '+ V.pladd.album;
+		V.pladd.message = img +'<div>'+ ico( 'folder' ) +' '+ dirName( file )
+						  +'<br>'+ ico( 'file' ) +' '+ file.split( '/' ).pop() +'</div>';
 	}
-	V.pladd.message += '<br>'+ ico( 'file' ) +' '+ V.pladd.file;
-	var icon  = 'file-playlist';
-	var title = 'Add to a playlist';
 	info( {
-		  icon       : icon
-		, title      : title
+		  icon       : V.pladd.icon
+		, title      : V.pladd.title
 		, message    : V.pladd.message
-		, footer     : '<hr>Select target playlist'
+		, width      : V.pladd.width
+		, footer     : '<hr><wh>Choose target playlist</wh>'
 		, beforeshow : () => {
 			$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );
 			playlistInsertSet();
@@ -273,7 +276,7 @@ function savedPlaylistAdd() {
 		, ok         : () => {
 			if ( ! V.playlist ) $( '#playlist' ).trigger( 'click' );
 			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
-			banner( icon, title, 'Select playlist to add', -1 );
+			banner( V.pladd.icon, V.pladd.title, 'Choose target playlist', -1 );
 		}
 	} );
 }
@@ -304,7 +307,7 @@ function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
 	var file   = V.list.path;
-	var dir    = dirName( file );
+	var dir    = V.list.licover ? file : dirName( file );
 	var cue    = file.slice( -4 ) === '.cue';
 	if ( V.list.licover ) format = format.slice( 0, -2 );
 	var query = {
@@ -327,9 +330,8 @@ function tagEditor() {
 		}
 		var fileicon = cue ? 'file-music' : 'file-playlist';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-					  +'<div>'+ ico( 'folder' ) + file;
-		if ( ! V.list.licover ) message += '<br>'+ ico( fileicon ) + file.split( '/' ).pop();
-		message     += '</div>';
+					  +'<div>'+ ico( 'folder' ) +' '+ dir;
+		message += V.list.licover ? '</div>' : '<br>'+ ico( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
 		var footer   = '<div id="taglabel">'+ ico( 'help i-22 gr' ) +'&emsp;Label</div>';
 		if ( V.list.licover ) footer += '<div><c> * </c>&ensp;Various values in tracks</div>';
 		info( {
