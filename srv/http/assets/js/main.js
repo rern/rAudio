@@ -1748,12 +1748,18 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var $liactive  = $( '#pl-list li.active' );
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$liactive.find( '.song' ).empty();
-	$liactive.find( '.li1 .radioname' ).removeClass( 'hide' );
-	$liactive.find( '.li2 .radioname' ).addClass( 'hide' );
-	if ( $this.hasClass( 'active' ) ) {
+	if ( $liactive.hasClass( 'webradio' ) ) {
 		if ( S.state == 'play' ) {
+			$liactive.find( '.li1 .name' ).text( $liactive.find( '.liname' ).text() );
+			$liactive.find( '.li2 .stationname' ).addClass( 'hide' );
+			$liactive.find( '.li2 .name' ).removeClass( 'hide' );
+		}
+	}
+	if ( $this.hasClass( 'active' ) ) {
+		if ( S.state === 'play' ) {
 			if ( S.webradio ) {
 				$( '#stop' ).trigger( 'click' );
+				$this.find( '.elapsed' ).empty();
 			} else {
 				$( '#pause' ).trigger( 'click' );
 				$this.find( '.elapsed i' ).toggleClass( 'i-play i-pause' );
@@ -1797,7 +1803,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( S.player === 'mpd' || S.player === 'upnp' ) {
 		if ( active ) {
 			$menu.find( '.play' ).toggleClass( 'hide', play );
-			$menu.find( '.pause' ).toggleClass( 'hide', ! play || S.webradio );
+			$menu.find( '.pause' ).toggleClass( 'hide', ! play || webradio );
 			$menu.find( '.stop' ).toggleClass( 'hide', state === 'stop' );
 		} else {
 			$menu.find( '.pause, .stop' ).addClass( 'hide' );

@@ -1764,7 +1764,7 @@ function setPlaylistScroll() {
 	$( '#pl-list .elapsed' ).empty();
 	var $this        = $( '#pl-list li' ).eq( S.song );
 	var $elapsed     = $this.find( '.elapsed' );
-	var $name        = $this.find( '.name' );
+	var $name        = $this.find( '.li1 .name' );
 	var $stationname = $this.find( '.li2 .stationname' );
 	var webradio     = $this.hasClass( 'webradio' )
 	$stationname.addClass( 'hide' );
