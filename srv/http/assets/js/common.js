@@ -273,7 +273,7 @@ I = { active: false }
 function info( json ) {
 	local(); // flag for consecutive info
 	I = json;
-	
+	if ( 'json' in I ) $.each( I.json, ( k, v ) => I[ k ] = v );
 	if ( 'values' in I ) {
 		if ( ! Array.isArray( I.values ) ) {
 			if ( typeof I.values === 'object' ) { // json

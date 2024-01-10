@@ -252,11 +252,11 @@ function savedPlaylistAdd() {
 		  icon  : 'file-playlist'
 		, title : 'Add to a playlist'
 		, album : album
-		, file  : file
+		, path  : file
 		, width : 500
 	}
 	var img = '<img src="'+ V.list.li.find( 'img' ).attr( 'src' ) +'">';
-	if ( V.pladd.file.slice( 0, 4 ) === 'http' ) {
+	if ( V.pladd.path.slice( 0, 4 ) === 'http' ) {
 		V.pladd.message = img +'<div>'+ ico( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
 						  +'<br>'+ ico( 'file' ) +' '+ file +'</div>';
 	} else {
@@ -264,10 +264,7 @@ function savedPlaylistAdd() {
 						  +'<br>'+ ico( 'file' ) +' '+ file.split( '/' ).pop() +'</div>';
 	}
 	info( {
-		  icon       : V.pladd.icon
-		, title      : V.pladd.title
-		, message    : V.pladd.message
-		, width      : V.pladd.width
+		  json       : V.pladd
 		, footer     : '<hr><wh>Choose target playlist</wh>'
 		, beforeshow : () => {
 			$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );

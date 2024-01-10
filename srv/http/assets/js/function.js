@@ -969,7 +969,7 @@ function playbackStatusGet( withdisplay ) {
 function playlistInsert( pos ) {
 	var plname = $( '#savedpl-path .lipath' ).text();
 	banner( 'file-playlist', V.pladd.name, 'Add ...' );
-	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.file, 'CMD NAME TYPE TO FILE' ], () => {
+	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME TYPE TO FILE' ], () => {
 		renderSavedPlTrack( plname );
 		if ( pos === 'last' ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
@@ -980,10 +980,7 @@ function playlistInsert( pos ) {
 }
 function playlistInsertSelect() {
 	info( {
-		  icon        : V.pladd.icon
-		, title       : V.pladd.title
-		, message     : V.pladd.message
-		, width       : V.pladd.width
+		  json        : V.pladd
 		, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
 		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
 		, beforeshow  : playlistInsertSet
@@ -1008,10 +1005,7 @@ function playlistInsertSet() {
 function playlistInsertTarget() {
 	V.pladd.title = 'Add to '+ V.pladd.name;
 	info( {
-		  icon       : V.pladd.icon
-		, title      : V.pladd.title
-		, message    : V.pladd.message
-		, width      : V.pladd.width
+		  json       : V.pladd
 		, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 		, values     : 'last'
 		, beforeshow : () => {
