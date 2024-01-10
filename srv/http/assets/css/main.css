@@ -1958,7 +1958,7 @@ li.active .li2 bl {
 .tagmessage {
 	display: flex;
 	align-items: flex-end;
-	width: calc( 100% - 40px );
+	width: calc( 100% - 10px );
 	margin: -13px 0 7px 5px;
 	line-height: 24px;
 	cursor: pointer;

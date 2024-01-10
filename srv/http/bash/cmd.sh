@@ -696,7 +696,7 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	if [[ $TYPE == remove ]]; then
 		sed -i "$POS d" "$plfile"
 	elif [[ $TYPE == add ]]; then
-		[[ $TO == last ]] && echo $FILE >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
+		[[ $TO == last ]] && echo "$FILE" >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
 	else # move
 		file=$( sed "$FROM q;d" "$plfile" )
 		[[ $FROM < $TO ]] && (( TO++ ))

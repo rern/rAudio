@@ -248,20 +248,23 @@ function savedPlaylistAdd() {
 		var album = $( '.licover .lialbum' ).text();
 		var file  = V.list.li.find( '.lipath' ).text();
 	}
-	V.pladd = {
-		  icon  : 'file-playlist'
-		, title : 'Add to a playlist'
-		, album : album
-		, path  : file
-		, width : 500
-	}
-	var img = '<img src="'+ V.list.li.find( 'img' ).attr( 'src' ) +'">';
-	if ( V.pladd.path.slice( 0, 4 ) === 'http' ) {
-		V.pladd.message = img +'<div>'+ ico( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
-						  +'<br>'+ ico( 'file' ) +' '+ file +'</div>';
+	
+	var $img     = V.library && V.librarytrack ? $( '#liimg' ) : V.list.li.find( 'img' );
+	var message  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '';
+	if ( file.slice( 0, 4 ) === 'http' ) { // webradio
+		message += '<div>'+ ico( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
+				  +'<br>'+ ico( 'file' ) +' '+ file +'</div>';
 	} else {
-		V.pladd.message = img +'<div>'+ ico( 'folder' ) +' '+ dirName( file )
-						  +'<br>'+ ico( 'file' ) +' '+ file.split( '/' ).pop() +'</div>';
+		message += '<div>'+ ico( 'folder' ) +' '+ dirName( file )
+				  +'<br>'+ ico( 'file' ) +' '+ file.split( '/' ).pop() +'</div>';
+	}
+	V.pladd      = {
+		  icon    : 'file-playlist'
+		, title   : 'Add to a playlist'
+		, album   : album
+		, path    : file
+		, width   : 500
+		, message : message
 	}
 	info( {
 		  keyvalue   : V.pladd
@@ -271,7 +274,7 @@ function savedPlaylistAdd() {
 			playlistInsertSet();
 		}
 		, ok         : () => {
-			if ( ! V.playlist ) $( '#playlist' ).trigger( 'click' );
+			if ( ! V.playlist ) playlistGet();
 			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
 			banner( V.pladd.icon, V.pladd.title, 'Choose target playlist', -1 );
 		}

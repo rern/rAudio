@@ -981,7 +981,7 @@ function playlistInsert( pos ) {
 function playlistInsertSelect() {
 	info( {
 		  keyvalue    : V.pladd
-		, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
+		, list        : [ 'Position:', 'radio', { Before: 1, After: 2, Last: 'last' } ]
 		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
 		, beforeshow  : playlistInsertSet
 		, buttonlabel : ico( 'undo' ) +'Select'

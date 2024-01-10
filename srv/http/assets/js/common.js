@@ -299,7 +299,7 @@ function info( json ) {
 </div>
 ` );
 	// title
-	if ( I.width ) $( '#infoBox' ).css( 'min-width', I.width );
+	if ( I.width ) $( '#infoBox' ).css( 'width', I.width );
 	if ( I.height ) $( '#infoList' ).css( 'height', I.height );
 	if ( I.icon ) {
 		I.icon.charAt( 0 ) !== '<' ? $( '#infoIcon' ).addClass( 'i-'+ I.icon ) : $( '#infoIcon' ).html( I.icon );
@@ -958,7 +958,7 @@ function infoWidth() {
 			}
 			$( '#infoBox' ).css( {
 				  width       : V.wW > 600 ? '600px' : V.wW  +'px'
-				, 'max-width' : maxw
+				, 'width' : maxw
 			} );
 		}
 		var allW = $( '#infoList' ).width();

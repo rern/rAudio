@@ -94,10 +94,11 @@ $menu.= menudiv( 'bkradio', $html );
 // webradio
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
-	  [ 'bookmark',   'star',     'Bookmark' ]
-	, [ 'wredit',     'edit',     'Edit' ]
-	, [ 'wrcoverart', 'coverart', 'Change cover art' ]
-	, [ 'wrdelete',   'remove',   'Delete' ]
+	  [ 'bookmark',   'star',          'Bookmark' ]
+	, [ 'wredit',     'edit',          'Edit' ]
+	, [ 'wrcoverart', 'coverart',      'Change cover art' ]
+	, [ 'wrdelete',   'remove',        'Delete' ]
+	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
 ];
 htmlmenu( $menulist, 'webradio' );
 // wrdir
