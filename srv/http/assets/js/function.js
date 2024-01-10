@@ -980,7 +980,7 @@ function playlistInsert( pos ) {
 }
 function playlistInsertSelect() {
 	info( {
-		  json        : V.pladd
+		  keyvalue    : V.pladd
 		, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
 		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
 		, beforeshow  : playlistInsertSet
@@ -1005,7 +1005,7 @@ function playlistInsertSet() {
 function playlistInsertTarget() {
 	V.pladd.title = 'Add to '+ V.pladd.name;
 	info( {
-		  json       : V.pladd
+		  keyvalue   : V.pladd
 		, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 		, values     : 'last'
 		, beforeshow : () => {

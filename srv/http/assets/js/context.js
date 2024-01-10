@@ -264,7 +264,7 @@ function savedPlaylistAdd() {
 						  +'<br>'+ ico( 'file' ) +' '+ file.split( '/' ).pop() +'</div>';
 	}
 	info( {
-		  json       : V.pladd
+		  keyvalue   : V.pladd
 		, footer     : '<hr><wh>Choose target playlist</wh>'
 		, beforeshow : () => {
 			$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );
