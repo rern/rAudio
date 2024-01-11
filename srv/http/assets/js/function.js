@@ -1815,7 +1815,8 @@ function setPlaylistSkip( pos ) {
 		setProgress( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 	}
-	bash( [ 'mpcskip', pos, 'CMD POS' ] );
+	file = $( '#pl-list li' ).length ? $( '#pl-list li' ).eq( pos - 1 ).find( '.lipath' ).text() : '';
+	bash( [ 'mpcskip', pos, file, 'CMD POS FILE' ] );
 }
 function setPlayPauseColor() {
 	var pause = S.state === 'pause';
