@@ -12,10 +12,13 @@ if [[ -e /usr/bin/camilladsp ]]; then
 		systemctl stop camilladsp
 		rm -f /etc/default/camilladsp /usr/lib/systemd/system/camilladsp.service
 		pacman -Sy --needed --noconfirm camilladsp
-		readarray -t files <<< $( grep -rl enable_resampling $dircamilladsp )
-		for f in "${files[@]}"; do
-			sed -i '/enable_resampling\|resampler_type/ d' "$f"
-		done
+		files=$( grep -rl enable_resampling $dircamilladsp )
+		if [[ $files ]]; then
+			readarray -t files <<< $files
+			for f in "${files[@]}"; do
+				sed -i '/enable_resampling\|resampler_type/ d' "$f"
+			done
+		fi
 		[[ -e $dirsystem/camilladsp ]] && systemctl start camilladsp
 	fi
 fi
