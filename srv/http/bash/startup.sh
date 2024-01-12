@@ -167,9 +167,8 @@ CMD APM"
 fi
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
-	$dirbash/cmd.sh 'mpcupdate
-rescan
-CMD DIR'
+	echo rescan > $dirmpd/updating
+	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
