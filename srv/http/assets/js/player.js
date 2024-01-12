@@ -328,6 +328,7 @@ function renderPage() {
 	var htmlstatus =  S.version +'<br>';
 	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
 	htmlstatus += '<br>'+ S.lastupdate;
+	if ( S.updatetime ) htmlstatus += ' <gr>('+ new Date( S.updatetime * 1000 ).toISOString().slice( 11, 19 ) +')</gr>';
 	$( '#divstatus .value' ).html( htmlstatus );
 	var icondsp = '';
 	[ 'camilladsp', 'equalizer' ].forEach( k => {
