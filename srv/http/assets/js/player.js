@@ -327,8 +327,14 @@ function renderPage() {
 	playbackButton();
 	var htmlstatus =  S.version +'<br>';
 	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
+	if ( S.updating_db ) htmlstatus += ico( 'refresh blink' );
 	htmlstatus += '<br>'+ S.lastupdate;
-	if ( S.updatetime ) htmlstatus += ' <gr>('+ new Date( S.updatetime * 1000 ).toISOString().slice( 11, 19 ) +')</gr>';
+	if ( S.updatetime ) {
+		htmlstatus += ' <wide><gr>(MPD: '
+					+ second2hhmmss( S.updatetime.MPD )
+					+' + cache: '+ second2hhmmss( S.updatetime.LIST )
+					+')</gr></wide>';
+	}
 	$( '#divstatus .value' ).html( htmlstatus );
 	var icondsp = '';
 	[ 'camilladsp', 'equalizer' ].forEach( k => {
@@ -384,6 +390,11 @@ function renderPage() {
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
 	if ( I.range ) $( '#setting-'+ ( S.btaplayname ? 'bluealsa' : 'hwmixer' ) ).trigger( 'click' );
 	showContent();
+}
+function second2hhmmss( seconds ) {
+	return new Date( seconds * 1000 )
+				.toISOString()
+				.slice( 11, 19 )
 }
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';

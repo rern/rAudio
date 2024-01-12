@@ -29,6 +29,9 @@ lists='{
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
+if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
+	updating_db=true
+fi
 
 . $dirshm/status
 ##########
@@ -69,7 +72,8 @@ data='
 , "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
 , "state"            : "'$state'"
-, "updatetime"       : '$( getContent $dirsystem/updatetime )'
+, "updatetime"       : '$( conf2json $dirsystem/updatetime )'
+, "updating_db"      : '$updating_db'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volumempd"        : '$volumempd
 [[ -e $dirshm/amixercontrol || -e $dirshm/btreceiver ]] && data+='

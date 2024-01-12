@@ -627,7 +627,7 @@ mpcskip )
 	
 	touch $dirshm/skip
 	. <( mpc status 'state=%state%; consume=%consume%' )
-	$dirbash/cmd-skipdata.sh $POS &
+	$dirbash/cmd-skipdata.sh $POS "$FILE" &
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
@@ -643,6 +643,7 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
+	echo mpd=$( date +%s ) > $dirsystem/updatetime
 	if [[ $DIR ]]; then
 		echo $DIR > $dirmpd/updating
 	elif [[ -e $dirmpd/updating ]]; then
