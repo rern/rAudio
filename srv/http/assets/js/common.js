@@ -465,7 +465,7 @@ function info( json ) {
 			}
 			switch ( type ) {
 				case 'checkbox':
-					htmls.list += label ? '<label><input type="checkbox">'+ label +'</label></td>' : '';
+					htmls.list += '<label><input type="checkbox">'+ label +'</label></td>';
 					htmls.list += l[ 2 ] === 'td' ? '' : '</tr>'; // same line || 1:1 line
 					break;
 				case 'hidden':
