@@ -327,7 +327,7 @@ function renderPage() {
 	playbackButton();
 	var htmlstatus =  S.version +'<br>';
 	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
-	if ( S.updating_db ) htmlstatus += ico( 'refresh blink' );
+	if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
 	htmlstatus += '<br>'+ S.lastupdate;
 	if ( S.updatetime ) htmlstatus += ' <gr>('+ S.updatetime.MPD +' • '+ S.updatetime.LIST +')</gr>';
 	$( '#divstatus .value' ).html( htmlstatus );
