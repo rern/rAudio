@@ -69,6 +69,7 @@ data='
 , "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
 , "state"            : "'$state'"
+, "updatetime"       : '$( getContent $dirsystem/updatetime )'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volumempd"        : '$volumempd
 [[ -e $dirshm/amixercontrol || -e $dirshm/btreceiver ]] && data+='
