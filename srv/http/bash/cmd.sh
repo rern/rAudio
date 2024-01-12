@@ -643,7 +643,7 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
-	date +%s > $dirsystem/updatetime
+	date +%s > $dirmpd/updatestart
 	if [[ $DIR ]]; then
 		echo $DIR > $dirmpd/updating
 	elif [[ -e $dirmpd/updating ]]; then
