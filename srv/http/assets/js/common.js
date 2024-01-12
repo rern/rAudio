@@ -446,6 +446,20 @@ function info( json ) {
 		I.list.forEach( l => {
 			label = l[ 0 ];
 			type  = l[ 1 ];
+/*			if ( [ 'radio', 'select' ].includes( type ) ) {
+				var option = l[ 2 ];
+				var attr = l[ 3 ] || false;
+			} else {
+				var attr = l[ 2 ] || false;
+			}
+			var col = tdtr = unit = updn = width = '';
+			if ( attr ) {
+				tdtr  = attr.tdtr || '';
+				unit  = attr.unit || '';
+				updn  = attr.updn || '';
+				col   = attr.col ? ' colspan="'+ attr.col +'"' : '';
+				width = attr.width ? ' style="width: '+  +'"' : '';
+			}*/
 			switch ( type ) {
 				case 'checkbox':
 					htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td>';
