@@ -21,6 +21,8 @@ mpc idleloop | while read changed; do
 			;;
 		update )
 			if [[ ! -e $dirshm/listing ]]; then
+				seconds=$(( $( date +%s ) - $( < $dirsystem/updatetime ) ))
+				echo mpd=$( date -d@$seconds -u +%H:%M:%S ) > $dirsystem/updatetime
 				! mpc | grep -q -m1 '^Updating' && $dirbash/cmd-list.sh
 			fi
 			;;

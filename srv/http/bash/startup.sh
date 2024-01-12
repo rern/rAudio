@@ -167,11 +167,11 @@ CMD APM"
 fi
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
-	echo mpd=$( date +%s ) > $dirsystem/updatetime
+	date +%s > $dirsystem/updatetime
 	echo rescan > $dirmpd/updating
 	mpc -q rescan
 elif [[ -e $dirmpd/updating ]]; then
-	echo mpd=$( date +%s ) > $dirsystem/updatetime
+	date +%s > $dirsystem/updatetime
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &

@@ -67,7 +67,7 @@ sharedDataSet() {
 	mpc -q clear
 	systemctl restart mpd
 	if [[ $rescan ]]; then
-		echo mpd=$( date +%s ) > $dirsystem/updatetime
+		date +%s > $dirsystem/updatetime
 		echo rescan > $dirmpd/updating
 		mpc -q rescan
 		pushData mpdupdate '{ "type": "mpd" }'
