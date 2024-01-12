@@ -196,6 +196,7 @@ function psOnMessage( message ) {
 		case 'camilla':   psCamilla( data );   break;
 		case 'mpdplayer':
 		case 'mpdradio':  psMpdPlayer( data ); break;
+		case 'mpdupdate': psMpdUpdate( data ); break;
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'power':     psPower( data );     break;
@@ -236,6 +237,13 @@ function psMpdPlayer( data ) {
 	
 	[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
 	playbackButton();
+}
+function psMpdUpdate( data ) {
+	if ( page === 'player' && 'done' in data ) {
+		S.counts     = data.done;
+		S.updatetime = data.updatetime
+		renderStatus();
+	}
 }
 function psPlayer( data ) {
 	var player_id = {

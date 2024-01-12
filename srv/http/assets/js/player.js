@@ -325,12 +325,7 @@ function infoSoxrCustom() {
 }
 function renderPage() {
 	playbackButton();
-	var htmlstatus =  S.version +'<br>';
-	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
-	if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
-	htmlstatus += '<br>'+ S.lastupdate;
-	if ( S.updatetime ) htmlstatus += '<wide> <gr>(MPD: '+ S.updatetime.MPD +' + Cache :'+ S.updatetime.LIST +')</gr></wide>';
-	$( '#divstatus .value' ).html( htmlstatus );
+	renderStatus();
 	var icondsp = '';
 	[ 'camilladsp', 'equalizer' ].forEach( k => {
 		if ( S[ k ] ) icondsp = ico( k );
@@ -385,6 +380,14 @@ function renderPage() {
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
 	if ( I.range ) $( '#setting-'+ ( S.btaplayname ? 'bluealsa' : 'hwmixer' ) ).trigger( 'click' );
 	showContent();
+}
+function renderStatus() {
+	var htmlstatus =  S.version +'<br>';
+	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S.counts[ k ] || 0 ).toLocaleString() +'&emsp;' );
+	if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
+	htmlstatus += '<br>'+ S.lastupdate;
+	if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';
+	$( '#divstatus .value' ).html( htmlstatus );
 }
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';

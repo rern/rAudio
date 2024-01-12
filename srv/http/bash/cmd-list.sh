@@ -24,10 +24,9 @@ timeFormat() {
 updateDone() {
 	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	[[ -e $dirshm/tageditor ]] && counts='"tageditor"' || counts=$( < $dirmpd/counts )
-	echo "\
-list=$( timeFormat $SECONDS )
-mpd=$( timeFormat $mpdtime )" > $dirmpd/updatetime
-	pushData mpdupdate '{ "done": '$counts' }'
+	updatetime="(MPD: $( timeFormat $mpdtime ) + Cache: $( timeFormat $SECONDS ))"
+	echo $updatetime > $dirmpd/updatetime
+	pushData mpdupdate '{ "done": '$counts', "updatetime": "'$updatetime'" }'
 	rm -f $dirmpd/listing $dirshm/tageditor
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &
