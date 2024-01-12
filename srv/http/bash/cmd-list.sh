@@ -18,6 +18,7 @@ modes='album albumbyartist-year latest albumartist artist composer conductor gen
 updateDone() {
 	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	[[ -e $dirshm/tageditor ]] && counts='"tageditor"' || counts=$( < $dirmpd/counts )
+	echo $SECONDS > $dirsystem/updatetime
 	pushData mpdupdate '{ "done": '$counts' }'
 	rm -f $dirmpd/listing $dirshm/tageditor
 	$dirbash/status-push.sh
