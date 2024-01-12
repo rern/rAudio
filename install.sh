@@ -4,6 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240111
+file=/etc/security/pam_env.conf
+if [[ -e /usr/bin/firefox ]] && ! grep -q MOZ_USE_XINPUT2 $file; then
+	echo MOZ_USE_XINPUT2 DEFAULT=1 >> $file
+	systemctl try-restart localbrowser
+fi
+
 # 20240109
 if [[ -e /usr/bin/camilladsp ]]; then
 	rm -f $dirsystem/camilla.conf
