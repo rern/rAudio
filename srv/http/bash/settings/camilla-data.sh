@@ -38,7 +38,7 @@ data='
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
 }
-, "format"     : [ '$( getContent $dirsystem/camilladsp )' ]
+, "format"     : [ '$( getContent $dirsystem/camilladsp | tr ' ' , )' ]
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$state'"

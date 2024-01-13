@@ -51,6 +51,7 @@ if mount | grep -q -m1 $dirnas; then
 	sleep 3
 fi
 alsactl store
+echo 1 > /sys/class/backlight/rpi_backlight/bl_power
 
 [[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
 [[ $reboot ]] && reboot || poweroff

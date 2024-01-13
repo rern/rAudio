@@ -13,12 +13,20 @@ touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
 [[ -s $dirmpd/album && $( getContent $dirmpd/updating ) != rescan ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
 rm -f $dirmpd/updating
 
+mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) ))
+rm -f $dirmpd/updatestart
+
 modes='album albumbyartist-year latest albumartist artist composer conductor genre date'
 
+timeFormat() {
+	date -d@$1 -u '+%-Hh %-Mm %-Ss' | sed -E 's/0h 0m |0h //'
+}
 updateDone() {
 	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	[[ -e $dirshm/tageditor ]] && counts='"tageditor"' || counts=$( < $dirmpd/counts )
-	pushData mpdupdate '{ "done": '$counts' }'
+	updatetime="(MPD: $( timeFormat $mpdtime ) + Cache: $( timeFormat $SECONDS ))"
+	echo $updatetime > $dirmpd/updatetime
+	pushData mpdupdate '{ "done": '$counts', "updatetime": "'$updatetime'" }'
 	rm -f $dirmpd/listing $dirshm/tageditor
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &

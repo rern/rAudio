@@ -74,9 +74,9 @@ $menulist = [
 	, [ 'pause',      'pause',         'Pause' ]
 	, [ 'stop',       'stop',          'Stop' ]
 	, [ 'current',    'current',       'Current' ]
+	, [ 'remove',     'remove',        'Remove' ]
 	, [ 'wrsave',     'save',          'Save to Library' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'remove',     'remove',        'Remove' ]
 	, [ 'similar',    'lastfm',        'Add similar' ]
 	, [ 'tag',        'info',          'Track Info' ]
 ];
@@ -94,10 +94,11 @@ $menu.= menudiv( 'bkradio', $html );
 // webradio
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
-	  [ 'bookmark',   'star',     'Bookmark' ]
-	, [ 'wredit',     'edit',     'Edit' ]
-	, [ 'wrcoverart', 'coverart', 'Change cover art' ]
-	, [ 'wrdelete',   'remove',   'Delete' ]
+	  [ 'bookmark',   'star',          'Bookmark' ]
+	, [ 'wredit',     'edit',          'Edit' ]
+	, [ 'wrcoverart', 'coverart',      'Change cover art' ]
+	, [ 'wrdelete',   'remove',        'Delete' ]
+	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
 ];
 htmlmenu( $menulist, 'webradio' );
 // wrdir

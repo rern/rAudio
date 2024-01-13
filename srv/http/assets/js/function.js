@@ -41,7 +41,7 @@ function bio( artist, getsimilar ) {
 		var backhtml = getsimilar ? ico( 'back bioback' ) : '';
 		var similar  =  data.similar.artist;
 		if ( similar ) {
-			var similarhtml  = '<p>'+ ico( 'artist i-lg' ) +'&ensp;Similar Artists:<p><span>';
+			var similarhtml  = '<p>'+ ico( 'artist i-22' ) +'&ensp;Similar Artists:<p><span>';
 			similar.forEach( a => similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;' );
 			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
 		}
@@ -49,7 +49,7 @@ function bio( artist, getsimilar ) {
 <div class="container">
 <div id="biocontent">
 	<p class="artist">${ ico( 'close close-root closebio' ) + name }</p>
-	<p class="genre">${ backhtml + ico( 'genre i-lg' ) +'&ensp;'+ genre }</p>
+	<p class="genre">${ backhtml + ico( 'genre i-22' ) +'&ensp;'+ genre }</p>
 	${ similarhtml }
 	<p>${ content }</p>
 	<div style="clear: both;"></div>
@@ -356,11 +356,10 @@ function coverartChange() {
 	info( {
 		  icon        : icon
 		, title       : title
-		, message     : '<img class="imgold">'
+		, message     : '<img class="imgold" src="'+ src +'">'
 					   +'<p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
-		, beforeshow  : () => $( '.imgold' ).attr( 'src', src ) // fix direct replace src
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +'Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
@@ -917,8 +916,8 @@ function orderLibrary() {
 		$( '#lib-mode-list' ).append( $libmode );
 	} );
 }
-function pageScroll( pos ) {
-	setTimeout( () => $( 'html, body' ).scrollTop( pos ), 0 );
+function pageScroll( top ) {
+	setTimeout( () => $( 'html, body' ).scrollTop( top ), 0 );
 }
 function playbackStatusGet( withdisplay ) {
 	bash( [ 'status.sh', withdisplay ], list => {
@@ -969,50 +968,55 @@ function playbackStatusGet( withdisplay ) {
 }
 function playlistInsert( pos ) {
 	var plname = $( '#savedpl-path .lipath' ).text();
-	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.file, 'CMD NAME TYPE TO FILE' ], () => {
+	banner( 'file-playlist', V.pladd.name, 'Add ...' );
+	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME TYPE TO FILE' ], () => {
 		renderSavedPlTrack( plname );
 		if ( pos === 'last' ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
 		}
-		V.pladd = {}
+		bannerHide();
+		V.pladd = false;
 	} );
 }
-function playlistInsertSelect( $this ) {
-	var index = $this.index();
+function playlistInsertSelect() {
 	info( {
-		  icon        : 'file-playlist'
-		, title       : 'Insert'
-		, list        : [ '', 'radio', { Before: 1, After: 2 } ]
-		, footer      : '<hr><wh>'+ ( index + 1 ) +'<gr> • </gr>'+ $this.find( '.name' ).eq( 0 ).text() +'</wh>'
+		  keyvalue    : V.pladd
+		, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
+		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
+		, beforeshow  : playlistInsertSet
 		, buttonlabel : ico( 'undo' ) +'Select'
 		, buttoncolor : orange
-		, button      : infoReset
-		, cancel      : () => V.pladd = {}
-		, ok          : () => playlistInsert( +infoVal() + index )
+		, button      : () => {
+			infoReset();
+			banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
+		}
+		, cancel      : () => {
+			V.pladd = false;
+			$( '#playlist' ).trigger( 'click' );
+		}
+		, ok          : () => playlistInsert( +infoVal() + V.pladd.index )
 	} );
 	bannerHide();
 }
+function playlistInsertSet() {
+	$( '.infomessage' ).addClass( 'tagmessage' );
+	$( '#infoList table' ).before( '<hr>' ).after( '<hr>' );
+}
 function playlistInsertTarget() {
-	if ( V.pladd.file.slice( 0, 4 ) === 'http' ) {
-		var message = ico( 'webradio' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'file' ) +' '+ V.pladd.file;
-	} else {
-		var message = ico( 'music' ) +' <wh>'+ V.pladd.title +'</wh><br>'+ ico( 'album' ) +' '+ V.pladd.album;
-	}
+	V.pladd.title = 'Add to '+ V.pladd.name;
 	info( {
-		  icon       : 'file-playlist'
-		, title      : 'Add to '+ V.pladd.name
-		, message    : message +'<hr>'
+		  keyvalue   : V.pladd
 		, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 		, values     : 'last'
 		, beforeshow : () => {
-			$( '.infomessage' ).css( 'line-height', '30px' );
+			playlistInsertSet();
 			$( '#infoList' ).on( 'click', 'label:eq( 1 )', function() {
 				infoReset();
-				banner( 'file-playlist', 'Insert', 'Select position', 6000 );
+				banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
 			} );
 		}
 		, cancel     : () => {
-			V.pladd = {}
+			V.pladd = false;
 			$( '#playlist' ).trigger( 'click' );
 		}
 		, ok         : () => playlistInsert( infoVal() )
@@ -1411,7 +1415,6 @@ function renderSavedPl( data ) { // V.savedpl - list of saved playlists
 		$( '#pl-index' ).html( data.index[ 0 ] );
 		$( '#pl-index1' ).html( data.index[ 1 ] );
 		renderPlaylistSet();
-		pageScroll( 0 );
 	} );
 }
 function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
@@ -1429,15 +1432,6 @@ function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
 			pageScroll( 0 );
 		} );
 	}, 'json' );
-}
-function saveToPlaylist( title, album, file ) {
-	V.pladd.title = title;
-	V.pladd.album = album;
-	V.pladd.file  = file;
-	local();
-	$( '#button-pl-playlists' ).trigger( 'click' );
-	if ( ! V.playlist ) setTimeout( () => $( '#button-playlist' ).trigger( 'click' ), 100 );
-	banner( 'file-playlist blink', 'Add to a playlist', 'Select target playlist', 5000 );
 }
 function second2HMS( second ) {
 	if ( ! second || second < 1 ) return ''
@@ -1694,7 +1688,7 @@ function setPlaybackBlank() {
 		$( '#coverart' ).removeClass( 'hide' );
 		$( '#sampling' )
 			.css( 'display', 'block' )
-			.html( 'Network not connected:&emsp; '+ ico( 'networks i-lg wh' ) +'&ensp;Setup' )
+			.html( 'Network not connected:&emsp; '+ ico( 'networks i-22 wh' ) +'&ensp;Setup' )
 			.on( 'click', '.i-networks', function() {
 				location.href = 'settings.php?p=networks';
 			} );
@@ -1770,11 +1764,12 @@ function setPlaylistScroll() {
 	$( '#pl-list .elapsed' ).empty();
 	var $this        = $( '#pl-list li' ).eq( S.song );
 	var $elapsed     = $this.find( '.elapsed' );
-	var $name        = $this.find( '.name' );
+	var $name        = $this.find( '.li1 .name' );
 	var $stationname = $this.find( '.li2 .stationname' );
+	var webradio     = $this.hasClass( 'webradio' )
 	$stationname.addClass( 'hide' );
 	if ( S.state === 'stop' ) {
-		if ( $liactive.hasClass( 'webradio' ) ) $name.text( $this.find( '.liname' ).text() );
+		if ( webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
 		if ( S.elapsed === false ) return
@@ -1787,7 +1782,7 @@ function setPlaylistScroll() {
 			setPlaylistInfoWidth();
 		} else if ( S.state === 'play' ) {
 			$stationname.removeClass( 'hide' );
-			if ( S.webradio ) {
+			if ( webradio ) {
 				$stationname.removeClass( 'hide' );
 				$name.html( S.Title || '·&ensp;·&ensp;·' );
 			}
@@ -1820,7 +1815,8 @@ function setPlaylistSkip( pos ) {
 		setProgress( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 	}
-	bash( [ 'mpcskip', pos, 'CMD POS' ] );
+	file = $( '#pl-list li' ).length ? $( '#pl-list li' ).eq( pos - 1 ).find( '.lipath' ).text() : '';
+	bash( [ 'mpcskip', pos, file, 'CMD POS FILE' ] );
 }
 function setPlayPauseColor() {
 	var pause = S.state === 'pause';

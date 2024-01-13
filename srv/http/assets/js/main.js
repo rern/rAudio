@@ -24,7 +24,7 @@ V = {   // var global
 	, mode          : ''
 	, modescrolltop : 0
 	, page          : 'playback'
-	, pladd         : {}
+	, pladd         : false
 	, playback      : true
 	, playlist      : false
 	, plhome        : true
@@ -438,7 +438,7 @@ $( '#playback' ).on( 'click', function() {
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
-	if ( ! V.local ) V.pladd = {}
+	if ( ! V.local ) V.pladd = false;
 	if ( V.playlist ) {
 		if ( ! V.plhome ) playlistGet();
 	} else {
@@ -1590,9 +1590,17 @@ $( '.page' ).on( 'click', '.index a', function() {
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).on( 'click', function() {
-	V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
+	if ( V.pladd ) {
+		I.active  = false;
+		V.pladd   = false;
+		playlistGet();
+		bannerHide();
+	} else {
+		V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
+	}
 } );
 $( '#button-pl-playlists' ).on( 'click', function() {
+	pageScroll( 0 );
 	list( { playlist: 'list' }, ( data ) => renderSavedPl( data ), 'json' );
 } );
 $( '#button-pl-save' ).on( 'click', function() {
@@ -1659,22 +1667,15 @@ $( '#button-pl-shuffle' ).on( 'click', function() {
 } );
 $( '#button-pl-clear' ).on( 'click', function() {
 	if ( S.pllength === 1 ) {
-		info( {
-			  icon        : 'playlist'
-			, title       : 'Clear Playlist'
-			, oklabel     : ico( 'remove' ) +'Clear'
-			, okcolor     : red
-			, ok          : () => {
-				bash( [ 'mpcremove' ] );
-				renderPlaylist( -1 );
-			}
-		} );
+		bash( [ 'mpcremove' ] );
+		renderPlaylist( -1 );
 	} else if ( $( '.pl-remove' ).length ) {
 		$( '.pl-remove' ).remove();
 	} else {
 		info( {
 			  icon        : 'playlist'
 			, title       : 'Remove From Playlist'
+			, message     : 'Method:'
 			, buttonlabel : [ ico( 'playlist' ) +'Select', ico( 'crop' ) +'Crop' ]
 			, buttoncolor : [ orange ]
 			, button      : [
@@ -1747,12 +1748,18 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var $liactive  = $( '#pl-list li.active' );
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$liactive.find( '.song' ).empty();
-	$liactive.find( '.li1 .radioname' ).removeClass( 'hide' );
-	$liactive.find( '.li2 .radioname' ).addClass( 'hide' );
-	if ( $this.hasClass( 'active' ) ) {
+	if ( $liactive.hasClass( 'webradio' ) ) {
 		if ( S.state == 'play' ) {
+			$liactive.find( '.li1 .name' ).text( $liactive.find( '.liname' ).text() );
+			$liactive.find( '.li2 .stationname' ).addClass( 'hide' );
+			$liactive.find( '.li2 .name' ).removeClass( 'hide' );
+		}
+	}
+	if ( $this.hasClass( 'active' ) ) {
+		if ( S.state === 'play' ) {
 			if ( S.webradio ) {
 				$( '#stop' ).trigger( 'click' );
+				$this.find( '.elapsed' ).empty();
 			} else {
 				$( '#pause' ).trigger( 'click' );
 				$this.find( '.elapsed i' ).toggleClass( 'i-play i-pause' );
@@ -1796,7 +1803,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( S.player === 'mpd' || S.player === 'upnp' ) {
 		if ( active ) {
 			$menu.find( '.play' ).toggleClass( 'hide', play );
-			$menu.find( '.pause' ).toggleClass( 'hide', ! play || S.webradio );
+			$menu.find( '.pause' ).toggleClass( 'hide', ! play || webradio );
 			$menu.find( '.stop' ).toggleClass( 'hide', state === 'stop' );
 		} else {
 			$menu.find( '.pause, .stop' ).addClass( 'hide' );
@@ -1831,11 +1838,13 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	menuHide();
 	if ( menushow && active ) return
 	
-	var pladd    = 'file' in V.pladd;
 	var liicon   = $target.hasClass( 'li-icon' );
 	if ( V.savedpltrack || liicon ) {
-		if ( pladd ) {
-			playlistInsertSelect( $this );
+		if ( V.pladd ) {
+			V.pladd.index = $this.index();
+			V.pladd.track = $this.find( '.li1 .name' ).text()
+							+'<br><gr>'+ $this.find( '.li2 .name' ).text() +'</gr>';
+			playlistInsertSelect();
 		} else {
 			var menu  = $target.data( 'menu' ) || $this.find( '.li-icon' ).data ( 'menu' );
 			var $menu = $( '#menu-'+ menu );
@@ -1871,10 +1880,8 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 			contextmenuScroll( $menu, $this.position().top + 48 );
 		}
 	} else {
-		V.savedpl      = false;
-		V.savedpltrack = true;
 		renderSavedPlTrack( $this.find( '.plname' ).text() );
-		if ( pladd ) {
+		if ( V.pladd ) {
 			V.pladd.name = $this.find( '.lipath' ).text();
 			playlistInsertTarget();
 		}

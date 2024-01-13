@@ -248,7 +248,37 @@ function savedPlaylistAdd() {
 		var album = $( '.licover .lialbum' ).text();
 		var file  = V.list.li.find( '.lipath' ).text();
 	}
-	saveToPlaylist( V.list.name, album, file );
+	
+	var $img     = V.library && V.librarytrack ? $( '#liimg' ) : V.list.li.find( 'img' );
+	var message  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '';
+	if ( file.slice( 0, 4 ) === 'http' ) { // webradio
+		message += '<div>'+ ico( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
+				  +'<br>'+ ico( 'file' ) +' '+ file +'</div>';
+	} else {
+		message += '<div>'+ ico( 'folder' ) +' '+ dirName( file )
+				  +'<br>'+ ico( 'file' ) +' '+ file.split( '/' ).pop() +'</div>';
+	}
+	V.pladd      = {
+		  icon    : 'file-playlist'
+		, title   : 'Add to a playlist'
+		, album   : album
+		, path    : file
+		, width   : 500
+		, message : message
+	}
+	info( {
+		  keyvalue   : V.pladd
+		, footer     : '<hr><wh>Choose target playlist</wh>'
+		, beforeshow : () => {
+			$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );
+			playlistInsertSet();
+		}
+		, ok         : () => {
+			if ( ! V.playlist ) playlistGet();
+			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
+			banner( V.pladd.icon, V.pladd.title, 'Choose target playlist', -1 );
+		}
+	} );
 }
 function savedPlaylistRemove() {
 	local();
@@ -277,7 +307,7 @@ function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
 	var file   = V.list.path;
-	var dir    = dirName( file );
+	var dir    = V.list.licover ? file : dirName( file );
 	var cue    = file.slice( -4 ) === '.cue';
 	if ( V.list.licover ) format = format.slice( 0, -2 );
 	var query = {
@@ -300,10 +330,9 @@ function tagEditor() {
 		}
 		var fileicon = cue ? 'file-music' : 'file-playlist';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-					  +'<div>'+ ico( 'folder' ) + file;
-		if ( ! V.list.licover ) message += '<br>'+ ico( fileicon ) + file.split( '/' ).pop();
-		message     += '</div>';
-		var footer   = '<div id="taglabel">'+ ico( 'help i-lg gr' ) +'&emsp;Label</div>';
+					  +'<div>'+ ico( 'folder' ) +' '+ dir;
+		message += V.list.licover ? '</div>' : '<br>'+ ico( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
+		var footer   = '<div id="taglabel">'+ ico( 'help i-22 gr' ) +'&emsp;Label</div>';
 		if ( V.list.licover ) footer += '<div><c> * </c>&ensp;Various values in tracks</div>';
 		info( {
 			  icon         : V.playlist ? 'info' : 'tag'
@@ -521,9 +550,9 @@ var listwebradio = {
 		  [ 'Name',    'text' ]
 		, [ 'URL',     'text' ]
 		, [ 'Charset', 'text' ]
-		, [ '',        '', '<a id="addwebradiodir">'+ ico( 'folder-plus i-lg' ) +'&ensp;New folder&ensp;</a>' ]
+		, [ '',        '', '<a id="addwebradiodir">'+ ico( 'folder-plus i-22' ) +'&ensp;New folder&ensp;</a>' ]
 	]
-	, help : '&emsp;<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-lg gr' ) +'</a>'
+	, help : '&emsp;<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-22 gr' ) +'</a>'
 	, fn   : () => {
 		$( '#infoList input' ).last()
 			.css( 'width', '230px' )

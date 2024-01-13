@@ -29,6 +29,9 @@ lists='{
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
+if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
+	updating_db=true
+fi
 
 . $dirshm/status
 ##########
@@ -45,8 +48,7 @@ data='
 , "camilladsp"       : '$camilladsp'
 , "card"             : '$card'
 , "control"          : "'$control'"
-, "countsong"        : '$( grep song $dirmpd/counts | tr -dc [0-9] )'
-, "countwebradio"    : '$( grep webradio $dirmpd/counts | tr -dc [0-9] )'
+, "counts"           : '$( < $dirmpd/counts )'
 , "crossfade"        : '$crossfade'
 , "crossfadeconf"    : { "SEC": '$crossfadesec' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
@@ -69,6 +71,8 @@ data='
 , "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
 , "state"            : "'$state'"
+, "updatetime"       : "'$( getContent $dirmpd/updatetime )'"
+, "updating_db"      : '$updating_db'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volumempd"        : '$volumempd
 [[ -e $dirshm/amixercontrol || -e $dirshm/btreceiver ]] && data+='

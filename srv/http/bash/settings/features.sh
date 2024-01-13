@@ -291,8 +291,7 @@ nfsserver )
 		systemctl restart mpd
 		if [[ $rescan ]]; then
 			echo rescan > $dirmpd/updating
-			mpc -q rescan
-			pushData mpdupdate '{ "type": "mpd" }'
+			$dirbash/cmd.sh mpcupdate
 		fi
 		# prepend path
 		files=$( ls -1 $dirbookmarks/* )

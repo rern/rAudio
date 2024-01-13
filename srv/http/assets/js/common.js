@@ -9,7 +9,7 @@ loader() local()     selectSet()
 var page        = location.search.replace( '?p=', '' );
 var dirbash     = '/srv/http/bash/';
 var dirsettings = '/srv/http/bash/settings/';
-var iconwarning = ico( 'warning i-lg yl' ) +'&ensp;';
+var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
@@ -273,7 +273,7 @@ I = { active: false }
 function info( json ) {
 	local(); // flag for consecutive info
 	I = json;
-	
+	if ( 'keyvalue' in I ) $.each( I.keyvalue, ( k, v ) => I[ k ] = v );
 	if ( 'values' in I ) {
 		if ( ! Array.isArray( I.values ) ) {
 			if ( typeof I.values === 'object' ) { // json
@@ -299,7 +299,7 @@ function info( json ) {
 </div>
 ` );
 	// title
-	if ( I.width ) $( '#infoBox' ).css( 'min-width', I.width );
+	if ( I.width ) $( '#infoBox' ).css( 'width', I.width );
 	if ( I.height ) $( '#infoList' ).css( 'height', I.height );
 	if ( I.icon ) {
 		I.icon.charAt( 0 ) !== '<' ? $( '#infoIcon' ).addClass( 'i-'+ I.icon ) : $( '#infoIcon' ).html( I.icon );
@@ -425,6 +425,7 @@ function info( json ) {
 	if ( ! I.list ) {
 		I.active = true;
 		$( '#infoList' ).html( Object.values( htmls ).join( '' ) );
+		if ( I.beforeshow ) I.beforeshow();
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		infoButtonWidth();
@@ -445,6 +446,20 @@ function info( json ) {
 		I.list.forEach( l => {
 			label = l[ 0 ];
 			type  = l[ 1 ];
+/*			if ( [ 'radio', 'select' ].includes( type ) ) {
+				var option = l[ 2 ];
+				var attr = l[ 3 ] || false;
+			} else {
+				var attr = l[ 2 ] || false;
+			}
+			var col = tdtr = unit = updn = width = '';
+			if ( attr ) {
+				tdtr  = attr.tdtr || '';
+				unit  = attr.unit || '';
+				updn  = attr.updn || '';
+				col   = attr.col ? ' colspan="'+ attr.col +'"' : '';
+				width = attr.width ? ' style="width: '+  +'"' : '';
+			}*/
 			switch ( type ) {
 				case 'checkbox':
 					htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td>';
@@ -464,7 +479,7 @@ function info( json ) {
 			}
 			switch ( type ) {
 				case 'checkbox':
-					htmls.list += label ? '<label><input type="checkbox">'+ label +'</label></td>' : '';
+					htmls.list += '<label><input type="checkbox">'+ label +'</label></td>';
 					htmls.list += l[ 2 ] === 'td' ? '' : '</tr>'; // same line || 1:1 line
 					break;
 				case 'hidden':
@@ -957,7 +972,7 @@ function infoWidth() {
 			}
 			$( '#infoBox' ).css( {
 				  width       : V.wW > 600 ? '600px' : V.wW  +'px'
-				, 'max-width' : maxw
+				, 'width' : maxw
 			} );
 		}
 		var allW = $( '#infoList' ).width();
@@ -982,6 +997,7 @@ function infoPower() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
+		, message     : ico( 'raudio i-30 gr' ) +'&ensp; r A u d i o'
 		, buttonlabel : ico( 'reboot' ) +'Reboot'
 		, buttoncolor : orange
 		, button      : () => infoPowerCommand( 'reboot' )

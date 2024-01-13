@@ -627,7 +627,7 @@ mpcskip )
 	
 	touch $dirshm/skip
 	. <( mpc status 'state=%state%; consume=%consume%' )
-	$dirbash/cmd-pskipdata.sh $POS &
+	$dirbash/cmd-skipdata.sh $POS "$FILE" &
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
@@ -643,6 +643,7 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
+	date +%s > $dirmpd/updatestart
 	if [[ $DIR ]]; then
 		echo $DIR > $dirmpd/updating
 	elif [[ -e $dirmpd/updating ]]; then
@@ -696,7 +697,7 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	if [[ $TYPE == remove ]]; then
 		sed -i "$POS d" "$plfile"
 	elif [[ $TYPE == add ]]; then
-		[[ $TO == last ]] && echo $FILE >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
+		[[ $TO == last ]] && echo "$FILE" >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
 	else # move
 		file=$( sed "$FROM q;d" "$plfile" )
 		[[ $FROM < $TO ]] && (( TO++ ))

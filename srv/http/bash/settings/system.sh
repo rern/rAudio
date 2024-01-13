@@ -68,8 +68,7 @@ sharedDataSet() {
 	systemctl restart mpd
 	if [[ $rescan ]]; then
 		echo rescan > $dirmpd/updating
-		mpc -q rescan
-		pushData mpdupdate '{ "type": "mpd" }'
+		$dirbash/cmd.sh mpcupdate
 	fi
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": true }'

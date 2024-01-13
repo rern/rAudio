@@ -776,8 +776,8 @@ function infoLcdcharButton() {
 	if ( ! S.lcdchar || S.lcdcharreboot ) return
 	
 	$( '#infoOk' )
-		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
-		.after( '&emsp;<gr id="lcdoff">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
+		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-22 wh' ) +'&ensp;Logo</gr>&ensp;' )
+		.after( '&emsp;<gr id="lcdoff">'+ ico( 'screenoff i-22 wh' ) +'&ensp;Sleep</gr>' );
 	$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
 		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] )
 	} );
@@ -958,16 +958,16 @@ function infoRelays() {
 	$.each( name, ( k, v ) => names[ v ] = k );
 	var step   = { step: 1, min: 0, max: 10 }
 	var list   = [
-		  [ '', '', ico( 'power grn' ) +' On <gr>(s)</gr>',  'td', 2 ]
-		, [ '', '', ico( 'power red' ) +' Off <gr>(s)</gr>', '',   2 ]
+		  [ '', '', ico( 'power grn' ) +' On <gr>(s)</gr>',  'td' ]
+		, [ '', '', ico( 'power red' ) +' Off <gr>(s)</gr>' ]
 	];
 	for ( i = 0; i < 4; i++ ) list.push(
-		  [ '', 'select', names, 'td', 2 ]
-		, [ '', 'select', names, '',   2 ]
+		  [ '', 'select', names, 'td' ]
+		, [ '', 'select', names, '' ]
 		, [ '', 'number', step, 'td' ]
 		, [ '', 'number', step ]
 	);
-	list[ 16 ] = [ '', '', ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', 'td', 2 ];
+	list[ 16 ] = [ '', '', ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', 'td' ];
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -979,7 +979,10 @@ function infoRelays() {
 		, checkchanged : S.relays
 		, beforeshow   : () => {
 			infoRelaysCss( 180, 70 );
-			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
+			$( '#infoList tr:odd td' ).prop( 'colspan', 2 );
+			$( '#infoList tr' ).last().find( 'td' ).eq( 0 )
+				.prop( 'colspan', 2 )
+				.css( 'text-align', 'right' );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
