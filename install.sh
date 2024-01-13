@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240111
+# 20240113
 file=/etc/security/pam_env.conf
 if [[ -e /usr/bin/firefox ]] && ! grep -q MOZ_USE_XINPUT2 $file; then
 	echo MOZ_USE_XINPUT2 DEFAULT=1 >> $file
@@ -76,9 +76,6 @@ if [[ ! -e /lib/libfdt.so ]]; then
 	pacman -Sy --noconfirm dtc
 	systemctl try-restart rotaryencoder
 fi
-
-# 20231118
-grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/(IgnorePkg   =).*/#\1/' /etc/pacman.conf
 
 #-------------------------------------------------------------------------------
 installstart "$1"

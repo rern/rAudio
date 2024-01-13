@@ -2,9 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-[[ $2 ]] && FILE=$2 || FILE=$( mpc -f %file% playlist | sed "$1 q;d" )
-. <( mpc -f 'album="%album%"; artist="%artist%"; composer="%composer%"; conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' ls "$FILE" )
-echo $FILE > $dirshm/x
+. <( mpc -f 'album="%album%"; artist="%artist%"; composer="%composer%"; conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' ls "$1" )
 
 fileheader=${file:0:4}
 if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
@@ -45,7 +43,6 @@ data='
 , "ext"       : "'$ext'"
 , "file"      : "'$file'"
 , "icon"      : "'$icon'"
-, "song"      : '$(( $1 - 1 ))'
 , "station"   : "'$station'"
 , "Time"      : '$time'
 , "Title"     : "'$title'"
