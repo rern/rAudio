@@ -667,7 +667,7 @@ multiraudiolist )
 }'
 	;;
 order )
-	pushData order $( < $dirsystem/order.json )
+	pushData order "$( < $dirsystem/order.json )" # quoted - keep double spaces
 	;;
 playerstart )
 	playerStart
