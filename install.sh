@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240120
+[[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/armv6h/$repo' > /etc/pacman.d/mirrorlist
+
 # 20240113
 file=/etc/security/pam_env.conf
 if [[ -e /usr/bin/firefox ]] && ! grep -q MOZ_USE_XINPUT2 $file; then
