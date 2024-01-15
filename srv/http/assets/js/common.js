@@ -973,7 +973,7 @@ function infoWidth() {
 			$( '#infoBox' ).css( 'width', maxW +'px' );
 		}
 		var allW   = $( '#infoList' ).width();
-		var labelW = $( '#infoList td:first-child' ).width() || 0;
+		var labelW = Math.round( $( '#infoList td:first-child' ).width() ) || 0;
 		var boxW   = ( widthmax ? allW - labelW - 20 : I.boxwidth );
 	} else {
 		var boxW   = 230;
