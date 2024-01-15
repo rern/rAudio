@@ -356,7 +356,8 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	else
 		if systemctl -q is-active powerbutton; then
 			systemctl disable --now powerbutton
-			gpio -1 write $( getVar led $dirsystem/powerbutton.conf ) 0
+			. $dirsystem/powerbutton.conf
+			gpioset -t0 -c0 $led=0
 		fi
 	fi
 	configTxt

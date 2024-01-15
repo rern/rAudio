@@ -6,6 +6,7 @@ dirgpio=/sys/class/gpio/gpio
 [[ -e $dirsystem/vumeter ]] && vumeter=1
 if [[ -e $dirsystem/vuled ]]; then
 	vuled=1
+	pin_0=$( sed 's/^.*=//; s/$/=0/' $dirsystem/vuled.conf )
 	pins=$( cut -d= -f2 $dirsystem/vuled.conf )
 	p=( $pins )
 	for i in {0..7}; do
@@ -17,13 +18,11 @@ j=0
 while read vu; do
 	v=${vu:0:-1}
 	if [[ $vuled ]]; then
-		for i in $pins; do
-			echo 0 > $dirgpio$i/value
-		done
+		gpioset -t0 -c0 $pin_0 # all off
 		l=$(( v / 6 ))
 		if (( $l > 0 )); then
 			for i in ${on[$l]}; do
-				echo 1 > $dirgpio$i/value
+				gpioset -t0 -c0 $i=1
 			done
 		fi
 	fi

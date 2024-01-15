@@ -908,7 +908,6 @@ function infoNtp() {
 	info( json );
 }
 function infoPowerbutton() {
-	var pins =  Object.keys( board2bcm );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -917,9 +916,9 @@ function infoPowerbutton() {
 		, message      : gpiosvg
 		, list         : [ 
 			  [ 'On',       'text' ]
-			, [ 'Off',      'select', pins ]
-			, [ 'LED',      'select', pins ]
-			, [ 'Reserved', 'select', pins ]
+			, [ 'Off',      'select', board2bcm ]
+			, [ 'LED',      'select', board2bcm ]
+			, [ 'Reserved', 'select', board2bcm ]
 		]
 		, boxwidth     : 70
 		, values       : S.powerbuttonconf || default_v.powerbutton
@@ -1002,8 +1001,7 @@ function infoRelaysName() {
 		  [ '', '', ico( 'gpiopins bl' ) +'Pin', 'td' ]
 		, [ '', '', ico( 'tag bl' ) +' Name' ]
 	]
-	var pins = Object.keys( board2bcm )
-	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', pins, 'td' ], [ '', 'text',   '' ] );
+	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', board2bcm, 'td' ], [ '', 'text',   '' ] );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title

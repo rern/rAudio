@@ -5,6 +5,44 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240120
+if [[ ! -e /usr/bin/gpioset ]]; then
+	pacman -Sy --noconfirm libgpiod
+	j8_bcm=( '' '' '' 2 '' 3 '' 4 14 '' 15 17 18 27 '' 22 23 '' 24 10 '' 9 25 11 8 '' 7 '' '' 5 '' 6 12 13 '' 19 16 26 20 '' 21 )
+	file=$dirsystem/powerbutton.conf
+	if [[ -e $file ]]; then
+	. $file
+	echo "\
+ON=${j8_bcm[ON]}
+SW=${j8_bcm[SW]}
+LED=${j8_bcm[LED]}
+RESERVED=${j8_bcm[RESERVED]}" > $file
+		systemctl -q is-enabled powerbutton && powerbuttonrestart=1
+	fi
+	file=$dirsystem/relays.conf
+	if [[ -e $file ]]; then
+		. $file
+		for i in $on; do
+			onnew+=" ${j8_bcm[i]}"
+		done
+		for i in $off; do
+			offnew+=" ${j8_bcm[i]}"
+		done
+		new=$( grep -Ev '^on=|^off=' $file )
+		conf="\
+on='${onnew:1}'
+off='${offnew:1}'
+$( grep -Ev '^on=|^off=' $file )"
+		echo "$conf" > $file
+		
+		file=$dirsystem/relays.json
+		pins=$( jq keys < $file | tr -d '"[],\n' )
+		for p in $pins; do
+			json+=', "'${j8_bcm[p]}'": '$( jq '.["'$p'"]' < $file )
+		done
+		jq <<< "{ ${json:1} }" > $file
+	fi
+fi
+
 [[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/armv6h/$repo' > /etc/pacman.d/mirrorlist
 
 # 20240113
@@ -103,6 +141,9 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20240120
+[[ $powerbuttonrestart ]] && systemctl restart powerbutton
 
 # 20231125
 [[ $websocketrestart ]] && systemctl restart websocket
