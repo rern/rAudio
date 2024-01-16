@@ -156,7 +156,7 @@ $( '#setting-hostapd' ).on( 'click', function() {
 			  [ 'IP',       'text' ]
 			, [ 'Password', 'text' ]
 		]
-		, values       : S.hostapd
+		, values       : S.hostapdconf
 		, checkchanged : S.hostapd
 		, checkblank   : true
 		, checkip      : [ 0 ]
