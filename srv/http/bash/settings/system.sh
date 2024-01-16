@@ -42,6 +42,8 @@ i2c-dev"
 	fi
 	grep -Ev '^#|^\s*$' <<< $config | sort -u > /boot/config.txt
 	pushRefresh
+	[[ $CMD == powerbutton ]] && return
+	
 	list=$( grep -v "$CMD" $dirshm/reboot 2> /dev/null )
 	if [[ $rebooti2c ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
