@@ -1,4 +1,4 @@
-var default_v      = {
+var default_v     = {
 	  bluetooth     : {
 		  DISCOVERABLE : true
 		, FORMAT       : false 
@@ -95,15 +95,16 @@ var default_v      = {
 		, APAUTO : true
 	}
 }
-var gpiosvg        = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
-var board2bcm      = {
+var gpiosvg       = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
+var bcm           = [ 2, 3, 4, 14, 15, 17, 18, 27, 22, 23, 24, 10, 9, 25, 11, 8, 7, 5, 6, 12, 13, 19, 16, 26, 20, 21 ];
+var board2bcm     = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
-var lcdcharaddr = S.lcdcharaddr || [ 39, 63 ];
-var i2caddress  = {};
+var lcdcharaddr   = S.lcdcharaddr || [ 39, 63 ];
+var i2caddress    = {};
 lcdcharaddr.forEach( el => i2caddress[ '0x'+ el.toString( 16 ) ] = el );
-var lcdcharlist    = [
+var lcdcharlist   = [
 	  [ 'Type',            'hidden' ]
 	, [ 'Size',            'radio', { '20x4': 20, '16x2': 16 } ]
 	, [ 'Character Map',   'radio', [ 'A00', 'A02' ] ]
@@ -995,8 +996,13 @@ function infoRelaysCss( sW, iW ) {
 }
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;
+	var key    = Object.keys( name );
+	var pin    = [];
+	bcm.forEach( p => {
+		if ( key.includes( ''+ p ) ) pin.push( p );
+	} );
 	var values = [];
-	$.each( name, ( k, v ) => values.push( k, v ) );
+	pin.forEach( p => values.push( p, name[ p ] ) );
 	var list   = [
 		  [ '', '', ico( 'gpiopins bl' ) +'Pin', 'td' ]
 		, [ '', '', ico( 'tag bl' ) +' Name' ]
