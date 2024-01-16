@@ -930,13 +930,12 @@ $( '.btn-cmd' ).on( 'click', function() {
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 			
-			cmd == 'next' ? S.song++ : S.song--;
-			if ( S.song < 0 ) {
-				S.song = S.pllength - 1;
-			} else if ( S.song === S.pllength ) {
-				S.song = 0;
+			if ( cmd == 'next' ) {
+				var pos = S.song + 2 > S.pllength ? 1 : S.song + 2;
+			} else {
+				var pos = S.song === 0 ? S.pllength : S.song;
 			}
-			playlistSkip();
+			setPlaylistSkip( pos );
 		}
 	}
 	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );
@@ -946,8 +945,7 @@ $( '#previous, #next, #coverR, #coverL' ).press( function( e ) {
 	if ( ( next && S.song + 1 === S.pllength ) || ( ! next && S.song === 0 ) ) return
 	
 	banner( 'playlist', 'Playlist', 'Skip to '+ ( next ? 'last ...' : 'first ...' ) );
-	S.song   = next ? S.pllength - 1 : 0;
-	playlistSkip();
+	setPlaylistSkip( next ? S.pllength : 1 );
 } );
 $( '#bio' ).on( 'click', '.biosimilar', function() {
 	bio( $( this ).text(), 'getsimilar' );
@@ -1413,10 +1411,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	info( {
 		  icon    : 'album'
 		, title   : 'Album Thumbnail'
-		, message :  '<img src="'+ src +'">'
-					+'<br><wh>'+ ico( 'album' ) + album +'</wh>'
-					+'<br>'+ ico( 'artist wh' ) + artist
-					+'<br><br>Exclude this thumbnail?'
+		, message : `\
+<img src="${ src }">
+<wh>${ ico( 'album' ) } ${ album }</wh>
+${ ico( 'artist wh' ) } ${ artist }
+
+Exclude this thumbnail?`
 		, okcolor : orange
 		, oklabel : ico( 'remove' ) +'Exclude'
 		, ok      : () => {

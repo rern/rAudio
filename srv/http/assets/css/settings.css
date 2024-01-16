@@ -295,6 +295,15 @@ heading i.disabled {
 	float: right;
 	color: var( --cm );
 }
+c,
+code {
+	font-family: 'Inconsolata';
+	font-size: 15px;
+	color: var( --cg75 );
+	background-color: var( --cg );
+	padding: 0 4px;
+	border-radius: 3px;
+}
 .entries {
 	display: block;
 	margin: -16px 0 10px 0;

@@ -357,7 +357,7 @@ function coverartChange() {
 		  icon        : icon
 		, title       : title
 		, message     : '<img class="imgold" src="'+ src +'">'
-					   +'<br><p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
+					   +'<p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
@@ -966,38 +966,6 @@ function playbackStatusGet( withdisplay ) {
 		}
 	} );
 }
-function playlistFilter() {
-	var keyword = $( '#pl-search-input' ).val();
-	var regex   = new RegExp( keyword, 'i' );
-	var count   = 0;
-	$( '#pl-list li' ).each( ( i, el ) => {
-		var $this = $( el );
-		var name   = $this.find( '.name' ).text();
-		var artist = $this.find( '.artist' ).text();
-		var album  = $this.find( '.album' ).text();
-		var txt    = name + artist + album;
-		var match  = txt.search( regex ) !== -1 ? true : false;
-		count      = match ? ( count + 1 ) : count;
-		$this.toggleClass( 'hide', ! match );
-		if ( match ) {
-			name   = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			artist = artist.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			album  = album.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			$this.find( '.name' ).html( name );
-			$this.find( '.artist' ).html( artist );
-			$this.find( '.album' ).html( album );
-		}
-	} );
-	pageScroll( 0 );
-	if ( keyword ) {
-		$( '#pl-search-close' ).html( ico( 'close' ) +'<span>'+ count +' <gr>of</gr> </span>' );
-	} else {
-		$( '#pl-search-close' ).empty();
-	}
-}
-function playlistGet() {
-	list( { playlist: 'current' }, data => renderPlaylist( data ), 'json' );
-}
 function playlistInsert( pos ) {
 	var plname = $( '#savedpl-path .lipath' ).text();
 	banner( 'file-playlist', V.pladd.name, 'Add ...' );
@@ -1055,6 +1023,38 @@ function playlistInsertTarget() {
 	} );
 	bannerHide();
 }
+function playlistFilter() {
+	var keyword = $( '#pl-search-input' ).val();
+	var regex   = new RegExp( keyword, 'i' );
+	var count   = 0;
+	$( '#pl-list li' ).each( ( i, el ) => {
+		var $this = $( el );
+		var name   = $this.find( '.name' ).text();
+		var artist = $this.find( '.artist' ).text();
+		var album  = $this.find( '.album' ).text();
+		var txt    = name + artist + album;
+		var match  = txt.search( regex ) !== -1 ? true : false;
+		count      = match ? ( count + 1 ) : count;
+		$this.toggleClass( 'hide', ! match );
+		if ( match ) {
+			name   = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			artist = artist.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			album  = album.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			$this.find( '.name' ).html( name );
+			$this.find( '.artist' ).html( artist );
+			$this.find( '.album' ).html( album );
+		}
+	} );
+	pageScroll( 0 );
+	if ( keyword ) {
+		$( '#pl-search-close' ).html( ico( 'close' ) +'<span>'+ count +' <gr>of</gr> </span>' );
+	} else {
+		$( '#pl-search-close' ).empty();
+	}
+}
+function playlistGet() {
+	list( { playlist: 'current' }, data => renderPlaylist( data ), 'json' );
+}
 function playlistRemove( $li ) {
 	if ( $( '#pl-list li' ).length === 1 ) {
 		bash( [ 'mpcremove' ] );
@@ -1094,24 +1094,6 @@ function playlistRemove( $li ) {
 		} );
 		$li.remove();
 	}
-}
-function playlistSkip() {
-	intervalClear();
-	if ( S.state !== 'stop' ) {
-		setProgress( 0 );
-		$( '#elapsed, #total, #progress' ).empty();
-	}
-	if ( $( '#pl-list li' ).length ) {
-		playlistSkipSet();
-	} else {
-		list( { playlist: 'current' }, data => {
-			$( '#pl-list' ).html( data.html ).promise().done( playlistSkipSet );
-		}, 'json' );
-	}
-}
-function playlistSkipSet() {
-	var file = $( '#pl-list li' ).eq( S.song ).find( '.lipath' ).text();
-	bash( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
 }
 function refreshData() {
 	if ( V.library ) {
@@ -1826,6 +1808,15 @@ function setPlaylistScroll() {
 			}, 1000 );
 		}
 	}
+}
+function setPlaylistSkip( pos ) {
+	intervalClear();
+	if ( S.state !== 'stop' ) {
+		setProgress( 0 );
+		$( '#elapsed, #total, #progress' ).empty();
+	}
+	file = $( '#pl-list li' ).length ? $( '#pl-list li' ).eq( pos - 1 ).find( '.lipath' ).text() : '';
+	bash( [ 'mpcskip', pos, file, 'CMD POS FILE' ] );
 }
 function setPlayPauseColor() {
 	var pause = S.state === 'pause';
