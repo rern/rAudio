@@ -40,13 +40,13 @@ if [[ -e /boot/wifi && $wlandev ]]; then
 	wifi=$( sed 's/\r//; s/\$/\\$/g' /boot/wifi ) # remove windows \r and escape $
 	ssid=$( getVar ESSID <<< $wifi )
 	key=$( getVar Key <<< $wifi )
-	profile="\
+	filebootwifi="/etc/netctl/$ssid"
+	cat << EOF > "$filebootwifi"
 Interface=$wlandev
-$( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )"
-	profile+='
-ESSID="'$ssid'"
-Key="'$key'"'
-	echo "$profile" > "/etc/netctl/$ssid"
+$( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )
+ESSID="$ssid"
+Key="$key"
+EOF
 	$dirsettings/networks.sh "profileconnect
 $ssid
 CMD SSID"
