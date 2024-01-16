@@ -117,7 +117,7 @@ data='
 , "activeeth"   : '$( ip -br link | grep -q -m1 ^e && echo true )'
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
-, "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
+, "connectedwl" : '$( netctl list | grep -q -m1 ^* && echo true )'
 , "gateway"     : "'$gateway'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipSub )'"

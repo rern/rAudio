@@ -83,17 +83,9 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 # wait 5s max for lan connection
 connectedCheck 5 1
-# if lan not connected, wait 30s max for wi-fi connection
-[[ ! $connected ]] && connectedCheck 30 3
-# if wlan not connected, try connect with saved profile
-if [[ ! $connected && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
-	fileprofile=$( grep -rl $wlandev /etc/netctl | head -1 )
-	if [[ $fileprofile ]]; then
-		$dirsettings/networks.sh "profileconnect
-$( basename "$fileprofile" )
-CMD SSID"
-		connectedCheck 30 3
-	fi
+# if lan not connected and wifi profile available, wait 30s max for wi-fi connection
+if [[ ! $connected ]]; then
+	grep -qrl $wlandev --exclude-dir examples* /etc/netctl && connectedCheck 30 3
 fi
 
 if [[ $connected  ]]; then
@@ -155,11 +147,9 @@ fi
 # after all sources connected ........................................................
 if [[ $connected ]]; then
 	$dirsettings/addons-data.sh &> /dev/null &
-elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then # enable hostapd
-	if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then
-		modprobe brcmfmac
-		iw wlan0 set power_save off
-	fi
+elif [[ $wlandev ]] && ! systemctl -q is-enabled hostapd; then # enable hostapd
+	modprobe brcmfmac
+	iw $wlandev set power_save off
 	systemctl start hostapd
 fi
 
