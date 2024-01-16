@@ -995,9 +995,10 @@ function infoRelaysCss( sW, iW ) {
 }
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;
+	console.log(JSON.stringify(name))
 	var values = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
-	var list   = [
+	var list = [
 		  [ '', '', ico( 'gpiopins bl' ) +'Pin', 'td' ]
 		, [ '', '', ico( 'tag bl' ) +' Name' ]
 	]
