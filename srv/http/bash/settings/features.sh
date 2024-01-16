@@ -123,13 +123,12 @@ hostapd )
 ' -e 's/^(.*option:dns-server,).*/\1'$IP'/
 ' /etc/dnsmasq.conf
 		sed -i -E 's/(wpa_passphrase=).*/\1'$PASSPHRASE'/' /etc/hostapd/hostapd.conf
-		netctl stop-all
+		netctl list | grep -q ^* && netctl stop-all
+		modprobe brcmfmac
 		wlandev=$( < $dirshm/wlan )
-		if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then
-			modprobe brcmfmac
-			iw wlan0 set power_save off
-		fi
+		ifconfig $wlandev up
 		serviceRestartEnable
+		iw $wlandev set power_save off
 	else
 		systemctl disable --now hostapd
 		$dirsettings/system.sh wlan$'\n'OFF

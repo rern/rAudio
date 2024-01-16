@@ -149,8 +149,10 @@ if [[ $connected ]]; then
 	$dirsettings/addons-data.sh &> /dev/null &
 elif [[ $wlandev ]] && ! systemctl -q is-enabled hostapd; then # enable hostapd
 	modprobe brcmfmac
-	iw $wlandev set power_save off
+	wlandev=$( < $dirshm/wlan )
+	ifconfig $wlandev up
 	systemctl start hostapd
+	iw $wlandev set power_save off
 fi
 
 if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
