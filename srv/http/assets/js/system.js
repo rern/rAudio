@@ -44,10 +44,10 @@ var default_v      = {
 		, OPTIONS  : ''
 	}
 	, powerbutton   : {
-		  ON       : 3
-		, SW       : 3
-		, LED      : 21
-		, RESERVED : 5
+		  ON       : 5
+		, SW       : 5
+		, LED      : 40
+		, RESERVED : 29
 	}
 	, relays       : {
 		  ON0   : 11
@@ -915,7 +915,7 @@ function infoPowerbutton() {
 		, tab          : [ '', infoPowerbuttonAudiophonics ]
 		, message      : gpiosvg
 		, list         : [ 
-			  [ 'On',       'select', board2bcm ]
+			  [ 'On',       'text' ]
 			, [ 'Off',      'select', board2bcm ]
 			, [ 'LED',      'select', board2bcm ]
 			, [ 'Reserved', 'select', board2bcm ]
@@ -924,7 +924,7 @@ function infoPowerbutton() {
 		, values       : S.powerbuttonconf || default_v.powerbutton
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			$( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
+			$( '#infoList input' ).addClass( 'disabled' );
 			var $sw         = $( '#infoList select' ).eq( 0 );
 			var $trreserved = $( '#infoList tr' ).last();
 			$trreserved.toggleClass( 'hide', $sw.val() == 5 );

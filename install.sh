@@ -12,10 +12,10 @@ if [[ ! -e /usr/bin/gpioset ]]; then
 	if [[ -e $file ]]; then
 	. $file
 	echo "\
-on=${j8_bcm[on]}
-sw=${j8_bcm[sw]}
-led=${j8_bcm[led]}
-reserved=${j8_bcm[reserved]}" > $file
+ON=${j8_bcm[ON]}
+SW=${j8_bcm[SW]}
+LED=${j8_bcm[LED]}
+RESERVED=${j8_bcm[RESERVED]}" > $file
 		systemctl -q is-enabled powerbutton && powerbuttonrestart=1
 	fi
 	file=$dirsystem/relays.conf
