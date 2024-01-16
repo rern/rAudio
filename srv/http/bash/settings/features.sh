@@ -129,7 +129,6 @@ hostapd )
 			modprobe brcmfmac
 			iw wlan0 set power_save off
 		fi
-		ifconfig $wlandev $router
 		serviceRestartEnable
 	else
 		systemctl disable --now hostapd

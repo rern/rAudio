@@ -1413,12 +1413,10 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	info( {
 		  icon    : 'album'
 		, title   : 'Album Thumbnail'
-		, message : `\
-<img src="${ src }">
-<wh>${ ico( 'album' ) } ${ album }</wh>
-${ ico( 'artist wh' ) } ${ artist }
-
-Exclude this thumbnail?`
+		, message :  '<img src="'+ src +'">'
+					+'<br><wh>'+ ico( 'album' ) + album +'</wh>'
+					+'<br>'+ ico( 'artist wh' ) + artist
+					+'<br><br>Exclude this thumbnail?'
 		, okcolor : orange
 		, oklabel : ico( 'remove' ) +'Exclude'
 		, ok      : () => {

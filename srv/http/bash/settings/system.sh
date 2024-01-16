@@ -42,12 +42,14 @@ i2c-dev"
 	fi
 	grep -Ev '^#|^\s*$' <<< $config | sort -u > /boot/config.txt
 	pushRefresh
+	[[ $CMD == powerbutton ]] && return
+	
 	list=$( grep -v "$CMD" $dirshm/reboot 2> /dev/null )
 	if [[ $rebooti2c ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
 		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
-		name=$( sed -n "/.*'$CMD' *=>/ {s/.*'name' => '//; s/'.*//; p}" /srv/http/settings/system.php )
-		notify $CMD "$name" 'Reboot required.' 5000
+		label=$( sed -n "/.*'$CMD' *=>/ {s/.*'label' => '//; s/'.*//; p}" /srv/http/settings/system.php )
+		notify $CMD "$label" 'Reboot required.' 5000
 		list+="
 $CMD"
 	fi
@@ -356,7 +358,8 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	else
 		if systemctl -q is-active powerbutton; then
 			systemctl disable --now powerbutton
-			gpio -1 write $( getVar led $dirsystem/powerbutton.conf ) 0
+			. $dirsystem/powerbutton.conf
+			gpioset -t0 -c0 $led=0
 		fi
 	fi
 	configTxt
