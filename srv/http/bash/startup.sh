@@ -155,12 +155,9 @@ fi
 # after all sources connected ........................................................
 if [[ $connected ]]; then
 	$dirsettings/addons-data.sh &> /dev/null &
-elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then # enable hostapd
-	if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then
-		modprobe brcmfmac
-		iw wlan0 set power_save off
-	fi
-	systemctl start hostapd
+elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
+	$dirsettings/features.sh hostapdset
+	systemctl -q disable hostapd
 fi
 
 if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
