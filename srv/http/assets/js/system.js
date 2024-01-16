@@ -927,9 +927,9 @@ function infoPowerbutton() {
 			$( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
 			var $sw         = $( '#infoList select' ).eq( 0 );
 			var $trreserved = $( '#infoList tr' ).last();
-			$trreserved.toggleClass( 'hide', $sw.val() == 5 );
+			$trreserved.toggleClass( 'hide', $sw.val() == 3 );
 			$sw.on( 'input', function() {
-				$trreserved.toggleClass( 'hide', $( this ).val() == 5 );
+				$trreserved.toggleClass( 'hide', $( this ).val() == 3 );
 			} );
 		}
 		, cancel       : switchCancel
@@ -995,6 +995,7 @@ function infoRelaysCss( sW, iW ) {
 }
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;
+	console.log(JSON.stringify(name))
 	var values = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
 	var list = [
