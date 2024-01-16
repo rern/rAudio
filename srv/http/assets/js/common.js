@@ -966,17 +966,20 @@ function infoWidth() {
 		var widthmax = I.boxwidth === 'max';
 		if ( widthmax ) {
 			if ( I.width ) {
-				var maxW = I.width < V.wW ? I.width : V.wW;
+				var maxw = ( I.width > V.wW ? I.width : V.wW ) +'px';
 			} else {
-				var maxW = V.wW > 600 ? 600 : V.wW;
+				var maxw = '';
 			}
-			$( '#infoBox' ).css( 'width', maxW +'px' );
+			$( '#infoBox' ).css( {
+				  width       : V.wW > 600 ? '600px' : V.wW  +'px'
+				, 'width' : maxw
+			} );
 		}
-		var allW   = $( '#infoList' ).width();
+		var allW = $( '#infoList' ).width();
 		var labelW = $( '#infoList td:first-child' ).width() || 0;
-		var boxW   = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+		var boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
 	} else {
-		var boxW   = 230;
+		var boxW = 230;
 	}
 	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).parent().css( 'width', boxW );
 	if ( $( '#infoList select' ).length ) {
