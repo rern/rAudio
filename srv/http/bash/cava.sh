@@ -2,10 +2,21 @@
 
 . /srv/http/bash/common.sh
 
+pins=$( cut -d= -f2 $dirsystem/vuled.conf )
 if [[ $1 == stop ]]; then
 	killall vu.sh
-	pin_0=$( sed 's/^.*=//; s/$/=0/' $dirsystem/vuled.conf )
-	gpioset -t0 -c0 $pin_0 # all off
-else
-	[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && cava -p /etc/cava.conf | $dirbash/vu.sh
+	for i in $pins; do
+		echo 0 > /sys/class/gpio/gpio$i/value
+		gpio unexport $i
+	done
+	exit
 fi
+
+if [[ -e $dirsystem/vuled ]]; then
+	for i in $pins; do
+		gpio export $i out
+	done
+fi
+
+[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && cava -p /etc/cava.conf | $dirbash/vu.sh
+

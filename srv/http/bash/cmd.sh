@@ -627,7 +627,7 @@ mpcskip )
 	
 	touch $dirshm/skip
 	. <( mpc status 'state=%state%; consume=%consume%' )
-	$dirbash/cmd-skipdata.sh "$FILE" &
+	$dirbash/cmd-skipdata.sh $POS "$FILE" &
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
@@ -667,7 +667,7 @@ multiraudiolist )
 }'
 	;;
 order )
-	pushData order "$( < $dirsystem/order.json )" # quoted - keep double spaces
+	pushData order $( < $dirsystem/order.json )
 	;;
 playerstart )
 	playerStart

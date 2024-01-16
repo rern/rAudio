@@ -1,16 +1,30 @@
 #!/bin/bash
 
-if grep -q 'poweroff,gpiopin=22' /boot/config.txt; then # audiophonic
-	gpioset -t0 -c0 4=0
-	gpioset -t0 -c0 22=1
-	gpiomon -b pull-down -e rising -c0 17
-	gpioset -t0 -c0 4=1
+# pin number : -1 = board, -g = BCM, (none) = wiringpi
+# http://wiringpi.com/the-gpio-utility/
+
+if grep -q 'poweroff,gpiopin=22' /boot/config.txt; then
+	gpio -1 mode 7 out  # atx
+	gpio -1 write 7 0
+	
+	gpio -1 mode 15 out # led
+	gpio -1 write 15 1
+	
+	gpio -1 mode 11 in  # sw
+	gpio -1 write 11 down
+	gpio -1 wfi 11 rising
+	
+	gpio -1 write 7 1
 	sleep 1
-	gpioset -t0 -c0 4=0
+	gpio -1 write 7 0
 else
 	. /srv/http/data/system/powerbutton.conf
-	gpioset -t0 -c0 $led=1
-	gpiomon -b pull-up -e falling -c0 $sw
+	gpio -1 mode $led out
+	gpio -1 write $led 1
+	
+	gpio -1 mode $sw in
+	gpio -1 mode $sw up
+	gpio -1 wfi $sw falling
 fi
 
 /srv/http/bash/power.sh off
