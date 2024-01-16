@@ -4,6 +4,48 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240120
+if [[ ! -e /usr/bin/gpioset ]]; then
+	pacman -Sy --noconfirm libgpiod
+	
+	file=$dirsystem/powerbutton.conf
+	if [[ -e $file ]]; then
+	. $file
+	echo "\
+on=${j8_bcm[on]}
+sw=${j8_bcm[sw]}
+led=${j8_bcm[led]}
+reserved=${j8_bcm[reserved]}" > $file
+		systemctl -q is-enabled powerbutton && powerbuttonrestart=1
+	fi
+	
+	file=$dirsystem/relays.conf
+	if [[ -e $file ]]; then
+		. $file
+		for i in $on; do
+			onnew+=" ${j8_bcm[i]}"
+		done
+		for i in $off; do
+			offnew+=" ${j8_bcm[i]}"
+		done
+		new=$( grep -Ev '^on=|^off=' $file )
+		conf="\
+on='${onnew:1}'
+off='${offnew:1}'
+$( grep -Ev '^on=|^off=' $file )"
+		echo "$conf" > $file
+		
+		file=$dirsystem/relays.json
+		pins=$( jq keys < $file | tr -d '"[],\n' )
+		for p in $pins; do
+			json+=', "'${j8_bcm[p]}'": '$( jq '.["'$p'"]' < $file )
+		done
+		jq <<< "{ ${json:1} }" > $file
+	fi
+fi
+
+[[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/armv6h/$repo' > /etc/pacman.d/mirrorlist
+
 # 20240113
 file=/etc/security/pam_env.conf
 if [[ -e /usr/bin/firefox ]] && ! grep -q MOZ_USE_XINPUT2 $file; then
