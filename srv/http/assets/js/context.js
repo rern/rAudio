@@ -550,7 +550,7 @@ var listwebradio = {
 		  [ 'Name',    'text' ]
 		, [ 'URL',     'text' ]
 		, [ 'Charset', 'text', '', 'td' ]
-		, [ '',        '',     '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-22 gr' ), 'td' ]
+		, [ '',        '',     '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ico( 'help i-22 gr' ), 'td' ]
 		, [ '',        '',     '<gr>New folder</gr>&ensp;'+ ico( 'folder-plus i-22' ) ]
 	]
 	, button : () => {
