@@ -50,27 +50,27 @@ var default_v      = {
 		, RESERVED : 5
 	}
 	, relays       : {
-		  ON0   : 11
-		, OFF0  : 16
+		  ON0   : 17
+		, OFF0  : 23
 		, OND0  : 2
 		, OFFD0 : 2
-		, ON1   : 13
-		, OFF1  : 15
+		, ON1   : 27
+		, OFF1  : 22
 		, OND1  : 2
 		, OFFD1 : 2
-		, ON2   : 15
-		, OFF2  : 13
+		, ON2   : 22
+		, OFF2  : 27
 		, OND2  : 2
 		, OFFD2 : 2
-		, ON3   : 16
-		, OFF3  : 11
+		, ON3   : 23
+		, OFF3  : 17
 		, TIMER : 5
 	}
 	, relaysname    : {
-		  "11" : "DAC"
-		, "13" : "PreAmp"
-		, "15" : "Amp"
-		, "16" : "Subwoofer"
+		  "17" : "DAC"
+		, "27" : "PreAmp"
+		, "22" : "Amp"
+		, "23" : "Subwoofer"
 	}
 	, rotaryencoder : {
 		  PINA : 27
@@ -994,8 +994,8 @@ function infoRelaysCss( sW, iW ) {
 	$( '#infoList input' ).parent().css( 'width', iW +'px' );
 }
 function infoRelaysName() {
-	var name     = S.relaysnameconf || default_v.relaysname;
-	var values   = [];
+	var name   = S.relaysnameconf || default_v.relaysname;
+	var values = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
 	var list = [
 		  [ '', '', ico( 'gpiopins bl' ) +'Pin', 'td' ]
