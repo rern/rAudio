@@ -2285,7 +2285,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon         : V.tab
 						, title        : 'Configuration'
-						, message      : 'File: '+ name
 						, list         : [ 'Rename to', 'text' ]
 						, values       : [ name ]
 						, checkchanged : true
