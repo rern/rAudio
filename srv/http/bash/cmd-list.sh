@@ -13,7 +13,7 @@ touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
 [[ -s $dirmpd/album && $( getContent $dirmpd/updating ) != rescan ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
 rm -f $dirmpd/updating
 
-[[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
+mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) ))
 rm -f $dirmpd/updatestart
 
 modes='album albumbyartist-year latest albumartist artist composer conductor genre date'
@@ -99,28 +99,11 @@ if [[ ! $mpclistall ]]; then # very large database
 		fi
 	fi
 fi
-if [[ $albumlist ]]; then # album^^artist^^date^^dir
-	filewav=$( grep \.wav$ <<< $mpclistall )
-	if [[ $filewav ]]; then # mpd not support *.wav albumartist
-		readarray -t dirwav <<< $( sed 's|.*\^||; s|/[^/]*$||' <<< $filewav | sort -u )
-		if [[ $dirwav ]]; then
-			for dir in "${dirwav[@]}"; do
-				file=$( grep -m1 "$dir" <<< $mpclistall )
-				albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/${file/*^}" )
-				if [[ $albumartist ]]; then
-					line=$( grep -m1 "$dir$" <<< $albumlist )
-					readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
-					albumlist="\
-$( grep -v "$dir$" <<< $albumlist )
-${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
-				fi
-			done
-		fi
-	fi
+if [[ $albumlist ]]; then # album^^artist^^date^^file
 	[[ -e $dirmpd/albumignore ]] && albumignore=$( < $dirmpd/albumignore )
 	readarray -t lines <<< $albumlist
-	for line in "${lines[@]}"; do
-		readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
+	for l in "${lines[@]}"; do
+		readarray -t tags <<< $( echo -e "${l//^^/\\n}" )
 		tagalbum=${tags[0]}
 		tagartist=${tags[1]}
 		[[ $albumignore ]] && grep -q "^$tagalbum^^$tagartist\$" <<< $albumignore && continue
