@@ -105,7 +105,6 @@ if [[ $albumlist ]]; then # album^^artist^^date^^dir
 		readarray -t dirwav <<< $( sed 's|.*\^||; s|/[^/]*$||' <<< $filewav | sort -u )
 		if [[ $dirwav ]]; then
 			for dir in "${dirwav[@]}"; do
-				dir=${dir//[/\\[/} # escape \[n-n] > not as range in grep
 				file=$( grep -m1 "$dir" <<< $mpclistall )
 				albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/${file/*^}" )
 				if [[ $albumartist ]]; then
