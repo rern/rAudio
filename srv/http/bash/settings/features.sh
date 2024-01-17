@@ -112,6 +112,7 @@ equalizer )
 	pushRestartMpd equalizer $TF
 	;;
 hostapd )
+	wlandev=$( < $dirshm/wlan )
 	if [[ $ON ]]; then
 		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan
 		ipsub=${IP%.*}
@@ -125,13 +126,15 @@ hostapd )
 		sed -i -E 's/(wpa_passphrase=).*/\1'$PASSPHRASE'/' /etc/hostapd/hostapd.conf
 		netctl list | grep -q ^* && netctl stop-all
 		modprobe brcmfmac
-		wlandev=$( < $dirshm/wlan )
 		ifconfig $wlandev up
 		serviceRestartEnable
 		iw $wlandev set power_save off
 	else
 		systemctl disable --now hostapd
-		$dirsettings/system.sh wlan$'\n'OFF
+		ifconfig $wlandev down
+		if [[ $wlandev == wlan0 ]] && lsmod | grep -q brcmfmac; then
+			$dirsettings/system.sh wlan$'\n'OFF
+		fi
 	fi
 	pushRefresh
 	pushData refresh '{ "page": "system", "hostapd": '$TF' }'
