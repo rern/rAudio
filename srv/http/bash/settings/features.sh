@@ -126,12 +126,10 @@ hostapd )
 		sed -i -E 's/(wpa_passphrase=).*/\1'$PASSPHRASE'/' /etc/hostapd/hostapd.conf
 		netctl list | grep -q ^* && netctl stop-all
 		modprobe brcmfmac
-		ifconfig $wlandev up
 		serviceRestartEnable
 		iw $wlandev set power_save off
 	else
 		systemctl disable --now hostapd
-		ifconfig $wlandev down
 		if [[ $wlandev == wlan0 ]] && lsmod | grep -q brcmfmac; then
 			$dirsettings/system.sh wlan$'\n'OFF
 		fi
