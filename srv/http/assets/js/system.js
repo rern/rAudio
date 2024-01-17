@@ -1101,7 +1101,9 @@ function renderPage() {
 	renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
-			$( '#divbluetooth .col-l.status' ).toggleClass( 'single', ! S.bluetoothactive );
+			$( '#divbluetooth .col-l' )
+				.toggleClass( 'single', ! S.bluetoothactive )
+				.toggleClass( 'status', S.bluetoothactive );
 		} else {
 			$( '#divbluetooth' ).addClass( 'hide' );
 		}
@@ -1109,7 +1111,9 @@ function renderPage() {
 			$( '#wlan' )
 				.toggleClass( 'disabled', S.iwd || S.wlanconnected )
 				.prev().html( S.iwd ? '<wh>Access Point '+ ico( 'accesspoint' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
-			$( '#divwlan .col-l.status' ).toggleClass( 'single', ! S.wlan );
+			$( '#divwlan .col-l' )
+				.toggleClass( 'single', ! S.wlan )
+				.toggleClass( 'status', S.wlan );
 		} else {
 			$( '#divwlan' ).addClass( 'hide' );
 		}
