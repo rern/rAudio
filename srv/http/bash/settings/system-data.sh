@@ -102,6 +102,8 @@ if [[ $ifconfiglan ]]; then
 fi
 
 packageActive bluetooth iwd nfs-server rotaryencoder smb
+iwctl ap list | awk NF | tail -1 | grep -q 'No devices' && iwd=false
+
 # i2smodule
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )

@@ -36,6 +36,7 @@ data='
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )
 if [[ -e /usr/bin/iwctl ]]; then
+	iwctl ap list | awk NF | tail -1 | grep -q 'No devices' && iwd=false
 	pwd_ip=( $( grep -E '^Passphrase|^Address' /var/lib/iwd/ap/$( hostname ).ap | cut -d= -f2 ) )
 ##########
 	data+='
