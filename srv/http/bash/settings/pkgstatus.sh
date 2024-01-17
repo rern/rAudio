@@ -29,7 +29,7 @@ $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		;;
 	iwd )
-		fileconf=/var/lib/iwd/ap/$( ls -1 /var/lib/iwd/ap | head -1 )
+		fileconf=/var/lib/iwd/ap/$( hostname ).ap
 		conf="\
 <bll># cat $fileconf</bll>
 $( < $fileconf )"

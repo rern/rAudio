@@ -619,10 +619,10 @@ wlan )
 		fi
 	else
 		rmmod brcmfmac_wcc &> /dev/null
-		rmmod brcmfmac
+		rmmod brcmfmac &> /dev/null
 	fi
 	pushRefresh
-	ifconfig wlan0 | grep -q -m1 wlan0.*UP && active=true || active=false
+	ifconfig wlan0 2> /dev/null | grep -q -m1 wlan0.*UP && active=true || active=false
 	pushData refresh '{ "page": "networks", "activewlan": '$active' }'
 	;;
 	

@@ -5,14 +5,19 @@
 args2var "$1"
 
 iwctlAP() {
-	! rfkill | grep -q wlan && $dirsettings/system.sh wlan
+	wlanDisable # on-board wlan - force rmmod for ap to start
 	wlandev=$( < $dirshm/wlan )
+	if ! rfkill | grep -q wlan; then
+		modprobe brcmfmac
+	else
+		ifconfig $wlandev down
+	fi
 	ifconfig $wlandev up
-	iw $wlandev set power_save off
 	systemctl restart iwd
 	sleep 1
 	iwctl device $wlandev set-property Mode ap
 	iwctl ap $wlandev start-profile $( hostname )
+	iw $wlandev set power_save off
 }
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
@@ -43,6 +48,9 @@ pushRestartMpd() {
 }
 pushSubmenu() {
 	pushData display '{ "submenu": "'$1'", "value": '$2' }'
+}
+wlanDisable() {
+	lsmod | grep -q brcmfmac && $dirsettings/system.sh wlan$'\n'OFF
 }
 
 case $CMD in
@@ -141,13 +149,14 @@ iwd )
 ' -e 's/(IPRange=).*/\1'$ipnext,$iplast'/
 ' /var/lib/iwd/ap/$( hostname ).ap
 		iwctlAP
-		systemctl -q is-active iwd && systemctl enable iwd
-	else
-		iwctl ap $wlandev stop
-		systemctl disable --now iwd
-		if [[ $wlandev == wlan0 ]] && lsmod | grep -q brcmfmac; then
-			$dirsettings/system.sh wlan$'\n'OFF
+		if iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then
+			systemctl enable iwd
+		else
+			systemctl stop iwd
 		fi
+	else
+		systemctl disable --now iwd
+		wlanDisable
 	fi
 	pushRefresh
 	pushData refresh '{ "page": "system", "iwd": '$TF' }'

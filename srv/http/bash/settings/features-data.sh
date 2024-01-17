@@ -9,6 +9,9 @@
 . /srv/http/bash/common.sh
 
 packageActive camilladsp iwd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
+if [[ $iwd == true ]]; then
+	! iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes" && iwd=false
+fi
 ##########
 data='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
@@ -36,7 +39,6 @@ data='
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )
 if [[ -e /usr/bin/iwctl ]]; then
-	iwctl ap list | awk NF | tail -1 | grep -q 'No devices' && iwd=false
 	pwd_ip=( $( grep -E '^Passphrase|^Address' /var/lib/iwd/ap/$( hostname ).ap | cut -d= -f2 ) )
 ##########
 	data+='

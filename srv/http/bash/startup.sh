@@ -147,8 +147,11 @@ fi
 # after all sources connected ........................................................
 if [[ $connected ]]; then
 	$dirsettings/addons-data.sh &> /dev/null &
-elif [[ $wlandev ]] && ! systemctl -q is-enabled iwd; then # enable iwd
-	$dirsettings/features.sh iwctlap
+	systemctl -q is-enabled iwd && $dirsettings/features.sh iwctlap
+else
+	if [[ $wlandev ]] && ! systemctl -q is-enabled iwd; then # start iwd ap
+		$dirsettings/features.sh iwctlap
+	fi
 fi
 
 if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
