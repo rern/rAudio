@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240120
+[[ ! -e /usr/bin/iwctl ]] && pacman -Sy --noconfirm iwd
+
 if [[ ! -e /usr/bin/gpioset ]]; then
 	pacman -Sy --noconfirm libgpiod
 	
@@ -44,8 +46,6 @@ $( grep -Ev '^on=|^off=' $file )"
 	fi
 fi
 
-[[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/armv6h/$repo' > /etc/pacman.d/mirrorlist
-
 # 20240113
 file=/etc/security/pam_env.conf
 if [[ -e /usr/bin/firefox ]] && ! grep -q MOZ_USE_XINPUT2 $file; then
@@ -60,7 +60,7 @@ if [[ -e /usr/bin/camilladsp ]]; then
 	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.1' ]]; then
 		systemctl stop camilladsp
 		rm -f /etc/default/camilladsp /usr/lib/systemd/system/camilladsp.service
-		pacman -Sy --needed --noconfirm camilladsp
+		pacman -Sy --noconfirm camilladsp
 		files=$( grep -rl enable_resampling $dircamilladsp )
 		if [[ $files ]]; then
 			readarray -t files <<< $files
@@ -74,7 +74,7 @@ fi
 
 # 20231216
 if [[ ! -e /boot/kernel.img && $( pacman -Q python-websockets ) != 'python-websockets 12.0-1' ]]; then
-	pacman -Sy --needed --noconfirm python-websockets
+	pacman -Sy --noconfirm python-websockets
 	systemctl restart websocket
 fi
 

@@ -101,7 +101,7 @@ if [[ $ifconfiglan ]]; then
 	fi
 fi
 
-packageActive bluetooth hostapd nfs-server rotaryencoder smb
+packageActive bluetooth iwd nfs-server rotaryencoder smb
 # i2smodule
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )
@@ -165,7 +165,7 @@ data='
 , "audiooutput"       : "'$audiooutput'"
 , "hddapm"            : '$hddapm'
 , "hddsleep"          : '${hddapm/128/false}'
-, "hostapd"           : '$hostapd'
+, "iwd"               : '$iwd'
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2smodulesw"       : '$i2smodulesw'

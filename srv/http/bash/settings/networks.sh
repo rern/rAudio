@@ -86,7 +86,7 @@ Security='$security
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
 	
-	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then # boot to hostapd when no network connection
+	if systemctl -q is-active iwd && ! systemctl -q is-enabled iwd; then # boot to iwd when no network connection
 		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
 	fi
@@ -132,8 +132,8 @@ Gateway='$GATEWAY $file
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )
-	if systemctl -q is-active hostapd; then
-		systemctl disable --now hostapd
+	if systemctl -q is-active iwd; then
+		systemctl disable --now iwd
 		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi

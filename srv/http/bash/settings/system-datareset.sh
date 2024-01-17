@@ -6,14 +6,11 @@ keeplibrary=$1
 keepnetwork=$2
 
 ! playerActive mpd && $dirbash/cmd.sh playerstop
-# hostapd
-sed -i -E -e 's/^(dhcp-range=).*/\1192.168.5.2,192.168.5.254,24h/
-' -e 's/^(.*option:router,).*/\1192.168.5.1/
-' -e 's/^(.*option:dns-server,).*/\1192.168.5.1/
-' /etc/dnsmasq.conf &> /dev/null
-sed -i -E -e 's/^(ssid=).*/\1rAudio/
-' -e 's/(wpa_passphrase=).*/\1raudioap/
-' /etc/hostapd/hostapd.conf &> /dev/null
+# iwd
+sed -i -E -e 's/(Passphrase=).*/\1raudioap/
+' -e 's/(Address=|Gateway=).*/\1192.168.5.1/
+' -e 's/(IPRange=).*/\1192.168.5.2,192.168.5.254/
+' /var/lib/iwd/ap/$( hostname ).ap
 # localbrowser
 [[ -e /usr/bin/firefox ]] && rm -rf /root/.mozilla
 # mpd
@@ -68,7 +65,7 @@ for dir in "${dirs[@]}"; do
 done
 sed -i '3,$ d' /etc/fstab
 
-systemctl -q disable bluetooth hostapd camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
+systemctl -q disable bluetooth camilladsp iwd mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
 mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
 [[ $keeplibrary ]] && mv $dirdata/{mpd,playlists,webradio} /tmp
 rm -rf $dirdata $dirshareddata \

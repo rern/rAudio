@@ -1107,8 +1107,8 @@ function renderPage() {
 		}
 		if ( 'wlan' in S ) {
 			$( '#wlan' )
-				.toggleClass( 'disabled', S.hostapd || S.wlanconnected )
-				.prev().html( S.hostapd ? '<wh>Access Point '+ ico( 'accesspoint' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
+				.toggleClass( 'disabled', S.iwd || S.wlanconnected )
+				.prev().html( S.iwd ? '<wh>Access Point '+ ico( 'accesspoint' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
 			$( '#divwlan .col-l.status' ).toggleClass( 'single', ! S.wlan );
 		} else {
 			$( '#divwlan' ).addClass( 'hide' );

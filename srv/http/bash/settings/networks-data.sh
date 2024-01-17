@@ -103,12 +103,13 @@ if [[ $ipeth ]]; then
 fi
 [[ ! $gateway ]] && gateway=$gatewaywl
 
-# hostapd
-if systemctl -q is-active hostapd; then
-	hostapd='{
+# iwd
+if systemctl -q is-active iwd; then
+	pwd_ip=( $( grep -E '^Passphrase|^Address' /var/lib/iwd/ap/$( hostname ).ap | cut -d= -f2 ) )
+	iwd='{
   "ssid"       : "'$( hostname )'"
-, "ip"         : "'$( grep router /etc/dnsmasq.conf | cut -d, -f2 )'"
-, "passphrase" : "'$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )'"
+, "ip"         : "'${pwd_ip[1]}'"
+, "passphrase" : "'${pwd_ip[0]}'"
 }'
 fi
 ##########
@@ -117,7 +118,7 @@ data='
 , "activeeth"   : '$( ip -br link | grep -q -m1 ^e && echo true )'
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
-, "connectedwl" : '$( netctl list | grep -q -m1 ^* && echo true )'
+, "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
 , "gateway"     : "'$gateway'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipSub )'"
@@ -125,7 +126,7 @@ data='
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
 , "listwl"      : '$LISTWL'
-, "hostapd"     : '$hostapd'
+, "iwd"         : '$iwd'
 , "hostname"    : "'$( hostname )'"
 , "wldev"       : "'$wldev'"'
 

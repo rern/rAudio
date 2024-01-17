@@ -4,6 +4,16 @@
 
 args2var "$1"
 
+iwctlAP() {
+	! rfkill | grep -q wlan && $dirsettings/system.sh wlan
+	wlandev=$( < $dirshm/wlan )
+	ifconfig $wlandev up
+	iw $wlandev set power_save off
+	systemctl restart iwd
+	sleep 1
+	iwctl device $wlandev set-property Mode ap
+	iwctl ap $wlandev start-profile $( hostname )
+}
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser
@@ -111,38 +121,37 @@ equalizer )
 	pushData reload 1
 	pushRestartMpd equalizer $TF
 	;;
-hostapd )
-	wlandev=$( < $dirshm/wlan )
-	if [[ $ON ]]; then
-		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan
-		ipsub=${IP%.*}
-		ipnext=$ipsub.$(( ${IP/*.} + 1 ))
-		iplast=$ipsub.254
-		iprange=$ipnext,$iplast,24h
-		sed -i -E -e 's/^(dhcp-range=).*/\1'$iprange'/
-' -e 's/^(.*option:router,).*/\1'$IP'/
-' -e 's/^(.*option:dns-server,).*/\1'$IP'/
-' /etc/dnsmasq.conf
-		sed -i -E 's/(wpa_passphrase=).*/\1'$PASSPHRASE'/' /etc/hostapd/hostapd.conf
-		netctl list | grep -q ^* && netctl stop-all
-		modprobe brcmfmac
-		serviceRestartEnable
-		iw $wlandev set power_save off
-	else
-		systemctl disable --now hostapd
-		if [[ $wlandev == wlan0 ]] && lsmod | grep -q brcmfmac; then
-			$dirsettings/system.sh wlan$'\n'OFF
-		fi
-	fi
-	pushRefresh
-	pushData refresh '{ "page": "system", "hostapd": '$TF' }'
-	pushRefresh networks
-	;;
 httpd )
 	[[ $ON ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
 	pushRefresh
 	$dirsettings/player-data.sh pushrefresh
+	;;
+iwctlap )
+	iwctlAP
+	;;
+iwd )
+	wlandev=$( < $dirshm/wlan )
+	if [[ $ON ]]; then
+		ipsub=${IP%.*}
+		ipnext=$ipsub.$(( ${IP/*.} + 1 ))
+		iplast=$ipsub.254
+		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
+' -e 's/(Address=|Gateway=).*/\1'$IP'/
+' -e 's/(IPRange=).*/\1'$ipnext,$iplast'/
+' /var/lib/iwd/ap/$( hostname ).ap
+		iwctlAP
+		systemctl -q is-active iwd && systemctl enable iwd
+	else
+		iwctl ap $wlandev stop
+		systemctl disable --now iwd
+		if [[ $wlandev == wlan0 ]] && lsmod | grep -q brcmfmac; then
+			$dirsettings/system.sh wlan$'\n'OFF
+		fi
+	fi
+	pushRefresh
+	pushData refresh '{ "page": "system", "iwd": '$TF' }'
+	pushRefresh networks
 	;;
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2

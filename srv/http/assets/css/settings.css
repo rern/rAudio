@@ -80,6 +80,9 @@ ul {
 	line-height: 20px;
 	overflow-x: auto;
 }
+.section pre code {
+	background: var( --cg );
+}
 #prefiletype {
 	white-space: pre-wrap;
 }

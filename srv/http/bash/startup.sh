@@ -147,10 +147,8 @@ fi
 # after all sources connected ........................................................
 if [[ $connected ]]; then
 	$dirsettings/addons-data.sh &> /dev/null &
-elif [[ $wlandev ]] && ! systemctl -q is-enabled hostapd; then # enable hostapd
-	modprobe brcmfmac
-	systemctl start hostapd
-	iw $( < $dirshm/wlan ) set power_save off
+elif [[ $wlandev ]] && ! systemctl -q is-enabled iwd; then # enable iwd
+	$dirsettings/features.sh iwctlap
 fi
 
 if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
@@ -167,10 +165,10 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
-# if no wlan // usb wlan // no hostapd and no connected wlan, disable wlan
+# if no wlan // usb wlan // no iwd and no connected wlan, disable wlan
 if (( $( rfkill | grep -c wlan ) > 1 )) \
 	|| ! rfkill | grep -q wlan \
-	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q -m1 '^\*' ); then
+	|| ( ! systemctl -q is-active iwd && ! netctl list | grep -q -m1 '^\*' ); then
 	rmmod brcmfmac_wcc &> /dev/null
 	rmmod brcmfmac &> /dev/null
 	onboardwlan=false

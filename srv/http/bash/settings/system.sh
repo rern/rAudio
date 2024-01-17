@@ -173,11 +173,12 @@ hddsleep )
 	pushRefresh
 	;;
 hostname )
+	nameprev=$( hostname )
+	mv /var/lib/iwd/ap/{$nameprev,$NAME}.ap
 	hostnamectl set-hostname $NAME
-	sed -i -E 's/^(ssid=).*/\1'$NAME'/' /etc/hostapd/hostapd.conf
 	sed -i -E 's/(name = ").*/\1'$NAME'"/' /etc/shairport-sync.conf
 	sed -i -E 's/^(friendlyname = ).*/\1'$NAME'/' /etc/upmpdcli.conf
-	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
+	systemctl try-restart avahi-daemon bluetooth iwd localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	pushRefresh
 	;;
 i2seeprom )

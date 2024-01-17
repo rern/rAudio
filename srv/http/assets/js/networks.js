@@ -57,7 +57,7 @@ $( '.wladd' ).on( 'click', function() {
 	infoWiFi();
 } );
 $( '.wlscan' ).on( 'click', function() {
-	if ( S.hostapd ) {
+	if ( S.iwd ) {
 		infoAccesspoint();
 	} else {
 		$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
@@ -109,7 +109,7 @@ $( '.connect' ).on( 'click', function() {
 		return
 	}
 	
-	if ( S.hostapd ) {
+	if ( S.iwd ) {
 		infoAccesspoint();
 		return
 	}
@@ -391,7 +391,7 @@ function renderPage() {
 	} else {
 		renderWlan();
 	}
-	$( '.wladd' ).toggleClass( 'hide', S.hostapd !== false );
+	$( '.wladd' ).toggleClass( 'hide', S.iwd !== false );
 	if ( ! S.activeeth ) {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
@@ -402,7 +402,7 @@ function renderPage() {
 		$( '.lanadd' ).toggleClass( 'hide', S.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
-	$( '#divaccesspoint' ).toggleClass( 'hide', ! S.hostapd );
+	$( '#divaccesspoint' ).toggleClass( 'hide', ! S.iwd );
 	if ( ! $( '#divinterface' ).hasClass( 'hide' ) ) renderQR();
 	showContent();
 }
@@ -410,7 +410,7 @@ function renderQR() {
 	var ip = S.ipeth || S.ipwl;
 	if ( ! ip ) return
 	
-	if ( ip && ip !== S.hostapd.ip ) {
+	if ( ip && ip !== S.iwd.ip ) {
 		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
 		if( S.hostname ) ip += '<br><gr>http://</gr>'+ S.hostname +'.local';
 		$( '#ipwebui' ).html( ip );
@@ -418,12 +418,12 @@ function renderQR() {
 	} else {
 		$( '#divwebui' ).addClass( 'hide' );
 	}
-	if ( S.hostapd ) {
-		$( '#ipwebuiap' ).html( 'Web User Interface<br>http://<wh>'+ S.hostapd.ip +'</wh>' );
-		$( '#ssid' ).text( S.hostapd.ssid );
-		$( '#passphrase' ).text( S.hostapd.passphrase )
-		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ S.hostapd.ssid +';T:WPA;P:'+ S.hostapd.passphrase +';' ) );
-		$( '#qrwebuiap' ).html( qr( 'http://'+ S.hostapd.ip ) );
+	if ( S.iwd ) {
+		$( '#ipwebuiap' ).html( 'Web User Interface<br>http://<wh>'+ S.iwd.ip +'</wh>' );
+		$( '#ssid' ).text( S.iwd.ssid );
+		$( '#passphrase' ).text( S.iwd.passphrase )
+		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ S.iwd.ssid +';T:WPA;P:'+ S.iwd.passphrase +';' ) );
+		$( '#qrwebuiap' ).html( qr( 'http://'+ S.iwd.ip ) );
 		$( '#boxqr' ).removeClass( 'hide' );
 	} else {
 		$( '#ipwebuiap, #ssid, #passphrase, #qraccesspoint, #qrwebuiap' ).empty();
@@ -436,14 +436,14 @@ function renderWlan() {
 	if ( S.listwl ) {
 		S.listwl.forEach( list => {
 			if ( list.ip ) {
-				if ( ! S.hostapd ) {
+				if ( ! S.iwd ) {
 					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
 					htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
 							 + ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
 							 +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
 				} else {
 					htmlwl += '<li class="wl accesspoint">'+ ico( 'accesspoint' ) +'<grn>•</grn>&ensp;'
-							 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.hostapd.ip +'</li>';
+							 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.iwd.ip +'</li>';
 				}
 			} else {
 				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•&ensp;</gr>'+ list.ssid +'</li>';

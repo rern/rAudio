@@ -28,13 +28,11 @@ $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 <bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		;;
-	hostapd )
+	iwd )
+		fileconf=/var/lib/iwd/ap/$( ls -1 /var/lib/iwd/ap | head -1 )
 		conf="\
-<bll># cat /etc/hostapd/hostapd.conf</bll>
-$( < /etc/hostapd/hostapd.conf )
-
-<bll># cat /etc/dnsmasq.conf</bll>
-$( < /etc/dnsmasq.conf )"
+<bll># cat $fileconf</bll>
+$( < $fileconf )"
 		;;
 	localbrowser )
 		fileconf=$dirsystem/localbrowser.conf

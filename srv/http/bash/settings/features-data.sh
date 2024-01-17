@@ -8,7 +8,7 @@
 
 . /srv/http/bash/common.sh
 
-packageActive camilladsp hostapd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
+packageActive camilladsp iwd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
 ##########
 data='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
@@ -35,13 +35,12 @@ data='
 , "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )
-if [[ -e /usr/bin/hostapd ]]; then
-	ip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
-	wpa_passphrase=$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )
+if [[ -e /usr/bin/iwctl ]]; then
+	pwd_ip=( $( grep -E '^Passphrase|^Address' /var/lib/iwd/ap/$( hostname ).ap | cut -d= -f2 ) )
 ##########
 	data+='
-, "hostapd"          : '$hostapd'
-, "hostapdconf"      : { "IP": "'$ip'", "PASSPHRASE": "'$wpa_passphrase'" }
+, "iwd"              : '$iwd'
+, "iwdconf"          : { "IP": "'${pwd_ip[1]}'", "PASSPHRASE": "'${pwd_ip[0]}'" }
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 fi
