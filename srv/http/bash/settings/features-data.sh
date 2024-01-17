@@ -39,11 +39,11 @@ data='
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )
 if [[ -e /usr/bin/iwctl ]]; then
-	pwd_ip=( $( grep -E '^Passphrase|^Address' /var/lib/iwd/ap/$( hostname ).ap | cut -d= -f2 ) )
+	fileap=/var/lib/iwd/ap/$( hostname ).ap
 ##########
 	data+='
 , "iwd"              : '$iwd'
-, "iwdconf"          : { "IP": "'${pwd_ip[1]}'", "PASSPHRASE": "'${pwd_ip[0]}'" }
+, "iwdconf"          : { "IP": "'$( getVar Address $fileap )'", "PASSPHRASE": "'$( getVar Passphrase $fileap )'" }
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 fi

@@ -141,12 +141,8 @@ iwctlap )
 iwd )
 	wlandev=$( < $dirshm/wlan )
 	if [[ $ON ]]; then
-		ipsub=${IP%.*}
-		ipnext=$ipsub.$(( ${IP/*.} + 1 ))
-		iplast=$ipsub.254
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
 ' -e 's/(Address=|Gateway=).*/\1'$IP'/
-' -e 's/(IPRange=).*/\1'$ipnext,$iplast'/
 ' /var/lib/iwd/ap/$( hostname ).ap
 		iwctlAP
 		if iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then

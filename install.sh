@@ -5,7 +5,24 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240120
-[[ ! -e /usr/bin/iwctl ]] && pacman -Sy --noconfirm iwd
+if [[ ! -e /usr/bin/iwctl ]]; then
+	pacman -Sy --noconfirm iwd
+	mkdir -p /etc/iwd /var/lib/iwd/ap
+	echo "\
+[General]
+EnableNetworkConfiguration=true
+" >/etc/iwd/main.conf
+	echo "\
+[Security]
+Passphrase=raudioap
+
+[IPv4]
+Address=192.168.5.1
+Gateway=192.168.5.1
+Netmask=255.255.255.0
+DNSList=8.8.8.8
+" > /var/lib/iwd/ap/rAudio.ap
+fi
 
 if [[ ! -e /usr/bin/gpioset ]]; then
 	pacman -Sy --noconfirm libgpiod

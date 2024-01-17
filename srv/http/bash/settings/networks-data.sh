@@ -105,11 +105,11 @@ fi
 
 # iwd
 if systemctl -q is-active iwd; then
-	pwd_ip=( $( grep -E '^Passphrase|^Address' /var/lib/iwd/ap/$( hostname ).ap | cut -d= -f2 ) )
+	fileap=/var/lib/iwd/ap/$( hostname ).ap
 	iwd='{
   "ssid"       : "'$( hostname )'"
-, "ip"         : "'${pwd_ip[1]}'"
-, "passphrase" : "'${pwd_ip[0]}'"
+, "ip"         : "'$( getVar Address $fileap )'"
+, "passphrase" : "'$( getVar Passphrase $fileap )'"
 }'
 fi
 ##########
