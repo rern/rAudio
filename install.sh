@@ -11,6 +11,12 @@ if [[ ! -e /usr/bin/iwctl ]]; then
 	echo "\
 [General]
 EnableNetworkConfiguration=true
+
+[Scan]
+DisablePeriodicScan=true
+
+[Network]
+EnableIPv6=false
 " >/etc/iwd/main.conf
 	echo "\
 [Security]

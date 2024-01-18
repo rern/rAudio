@@ -32,7 +32,10 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		fileconf=/var/lib/iwd/ap/$( hostname ).ap
 		conf="\
 <bll># cat $fileconf</bll>
-$( < $fileconf )"
+$( awk NF $fileconf )
+
+<bll># cat /etc/iwd/main.conf</bll>
+$( awk NF /etc/iwd/main.conf )"
 		;;
 	localbrowser )
 		fileconf=$dirsystem/localbrowser.conf
