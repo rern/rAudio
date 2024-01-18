@@ -107,8 +107,7 @@ fi
 if systemctl -q is-active iwd && iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then
 	fileap=/var/lib/iwd/ap/$( hostname ).ap
 	iwd='{
-  "ssid"       : "'$( hostname )'"
-, "ip"         : "'$( getVar Address $fileap )'"
+  "ip"         : "'$( getVar Address $fileap )'"
 , "passphrase" : "'$( getVar Passphrase $fileap )'"
 }'
 fi

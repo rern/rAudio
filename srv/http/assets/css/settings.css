@@ -63,7 +63,8 @@ ul {
 }
 .container::after,
 .section::after,
-.row::after {
+.row::after,
+#boxqr::after {
 	content: '';
 	display: block;
 	clear: both;
