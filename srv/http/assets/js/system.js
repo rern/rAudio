@@ -828,7 +828,7 @@ function infoMount( nfs ) {
 		, [ 'Password',  'password' ]
 		, [ 'Options',   'text' ]
 	];
-	if ( nfs ) list.splice( 3, 2 );
+	if ( nfs ) list.splice( 4, 2 );
 	info( {
 		  icon       : icon
 		, title      : title
