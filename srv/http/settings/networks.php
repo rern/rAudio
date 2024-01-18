@@ -71,7 +71,7 @@ htmlHead( [ //////////////////////////////////
 	<gr>http://<wh id="ipwebui"></wh>
 	<br>http://<wh id="hostwebui"></wh></gr>
 	<div id="qrwebui" class="qr"></div>
-	<div class="helpblock hide">Use IP address / URL or scan QR code to connect with web user interface.</div>
+	<div class="helpblock hide">Scan QR code or use IP address to connect rAudio UI with any web browsers.</div>
 </div>
 <div id="divaccesspoint" class="section hide">
 <?php
@@ -97,8 +97,7 @@ Access rAudio directly without Wi-Fi router:
 • Scan QR code #1 or use SSID and password to connect rAudio access point.
 • Scan QR code #2 or use IP address to connect rAudio UI with any web browsers.
 • Access point setting: <?=( tab( 'features', 'Features' ).labelIcon( 'Access Point', 'iwd' ) )?>
-
-
+<br>
 Note: No internet connection.
 </div>
 <div style="clear:both"></div>
