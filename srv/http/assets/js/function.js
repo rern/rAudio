@@ -1716,15 +1716,18 @@ function setPlaybackBlank() {
 	loaderHide();
 }
 function setPlaybackBlankQR() {
+	if ( $( '#qrwebui' ).length ) return
+	
 	V.qr = new QRCode( {
 		  msg : 'http://'+ S.ip
 		, dim : 230
 		, pad : 11
 	} );
-	$( '#map-cover' ).before( `
-<div id="qrwebui">${ V.qr.outerHTML }</div>
-<div id="qrip"><gr>http://</gr>${ S.ip }<br><gr>http://</gr>${ S.hostname }
-</div>` );
+	var htmlqr = '<div id="qrwebui">'+ V.qr.outerHTML +'</div>'
+				+'<div id="qrip" class="gr">http://<wh>'+ S.ip +'</wh>'
+				+'<br>http://<wh>'+ S.hostname +'</wh>'
+				+'</div>';
+	$( '#map-cover' ).before( htmlqr );
 }
 function setPlaybackStop() {
 	setProgress( 0 );
