@@ -87,16 +87,8 @@ if [[ $ipeth ]]; then
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
 	gateway=$( cut -d' ' -f3 <<< $ipr )
 	[[ ! $gateway ]] && gateway=$( ip r | awk '/^default/ {print $3;exit}' )
-	if [[ $ipeth ]]; then
-		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
-		if [[ ! $hostname ]]; then
-			systemctl restart avahi-daemon
-			hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
-		fi
-	fi
 	listeth='{
   "gateway"  : "'$gateway'"
-, "hostname" : "'$hostname'"
 , "ip"       : "'$ipeth'"
 , "static"   : '$static'
 }'

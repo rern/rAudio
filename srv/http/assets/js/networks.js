@@ -420,9 +420,9 @@ function renderQR() {
 	}
 	if ( S.iwd ) {
 		$( '#ipwebuiap' ).html( 'Web User Interface<br>http://<wh>'+ S.iwd.ip +'</wh>' );
-		$( '#ssid' ).text( S.iwd.ssid );
+		$( '#ssid' ).text( S.hostname );
 		$( '#passphrase' ).text( S.iwd.passphrase )
-		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ S.iwd.ssid +';T:WPA;P:'+ S.iwd.passphrase +';' ) );
+		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ S.hostname +';T:WPA;P:'+ S.iwd.passphrase +';' ) );
 		$( '#qrwebuiap' ).html( qr( 'http://'+ S.iwd.ip ) );
 		$( '#boxqr' ).removeClass( 'hide' );
 	} else {
