@@ -63,8 +63,7 @@ ul {
 }
 .container::after,
 .section::after,
-.row::after,
-#boxqr::after {
+.row::after {
 	content: '';
 	display: block;
 	clear: both;
@@ -595,6 +594,10 @@ input.disabled + .switchlabel:after {
 #warning i {
 	font-size: 16px;
 	vertical-align: 0;
+}
+.divap {
+	float: left;
+	margin-right: 40px;
 }
 
 @media (max-height: 570px) {

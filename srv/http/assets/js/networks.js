@@ -424,10 +424,6 @@ function renderQR() {
 		$( '#passphrase' ).text( S.iwd.passphrase )
 		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ S.hostname +';T:WPA;P:'+ S.iwd.passphrase +';' ) );
 		$( '#qrwebuiap' ).html( qr( 'http://'+ S.iwd.ip ) );
-		$( '#boxqr' ).removeClass( 'hide' );
-	} else {
-		$( '#ipwebuiap, #ssid, #passphrase, #qraccesspoint, #qrwebuiap' ).empty();
-		$( '#boxqr' ).addClass( 'hide' );
 	}
 }
 function renderWlan() {

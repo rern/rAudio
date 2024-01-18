@@ -78,19 +78,18 @@ htmlHead( [ //////////////////////////////////
 	  'title' => 'Access Point'
 ] );
 ?>
-	<div id="boxqr" class="hide">
-		<div class="col-l">
-			<span id="ipwebuiap" class="gr"></span>
-			<div class="divqr">
-				<div id="qrwebuiap" class="qr"></div>
-			</div>
-		</div>
-		<div class="col-r">
-			<gr>SSID:</gr> <span id="ssid"></span><br>
-			<gr>Password:</gr> <span id="passphrase"></span>
-			<div id="qraccesspoint" class="qr"></div>
+	<div class="divap">
+		<span id="ipwebuiap" class="gr"></span>
+		<div class="divqr">
+			<div id="qrwebuiap" class="qr"></div>
 		</div>
 	</div>
+	<div class="divap">
+		<gr>SSID:</gr> <span id="ssid"></span><br>
+		<gr>Password:</gr> <span id="passphrase"></span>
+		<div id="qraccesspoint" class="qr"></div>
+	</div>
+	<div style="clear: both"></div>
 	<div class="helpblock hide">
 • Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 • Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
