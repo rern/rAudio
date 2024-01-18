@@ -104,7 +104,7 @@ fi
 [[ ! $gateway ]] && gateway=$gatewaywl
 
 # iwd
-if systemctl -q is-active iwd; then
+if systemctl -q is-active iwd && iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then
 	fileap=/var/lib/iwd/ap/$( hostname ).ap
 	iwd='{
   "ssid"       : "'$( hostname )'"
