@@ -79,21 +79,25 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<div class="divap">
+		<gr>SSID:</gr> <span id="ssid"></span><br>
+		<gr>Password:</gr> <span id="passphrase"></span>
+		<div id="qraccesspoint" class="qr"></div>
+	</div>
+	<div class="divap">
 		<span id="ipwebuiap" class="gr"></span>
 		<div class="divqr">
 			<div id="qrwebuiap" class="qr"></div>
 		</div>
 	</div>
-	<div class="divap">
-		<gr>SSID:</gr> <span id="ssid"></span><br>
-		<gr>Password:</gr> <span id="passphrase"></span>
-		<div id="qraccesspoint" class="qr"></div>
-	</div>
 	<div style="clear: both"></div>
 	<div class="helpblock hide">
-• Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
-• Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
+Access rAudio directly without Wi-Fi router:
+• Scan QR code #1 or use SSID and password to connect rAudio access point.
+• Scan QR code #2 or use IP address to connect rAudio UI with any web browsers.
 • Access point setting: <?=( tab( 'features', 'Features' ).labelIcon( 'Access Point', 'iwd' ) )?>
+
+
+Note: No internet connection.
 </div>
 <div style="clear:both"></div>
 </div>
