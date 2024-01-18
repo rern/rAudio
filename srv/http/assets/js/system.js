@@ -840,9 +840,7 @@ function infoMount( nfs ) {
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			var $mountpoint = $( '#mountpoint' );
-			var $share      = $( '#share' );
-			$share.prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
+			var $mountpoint = $( '#infoList input' ).eq( 1 );
 			if ( shareddata ) {
 				$mountpoint.val( 'data' ).prop( 'disabled', true );
 				$mountpoint.next().remove();
@@ -851,6 +849,8 @@ function infoMount( nfs ) {
 					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 				} );
 			}
+			$mountpoint.prop( 'placeholder', 'Name in Library' );
+			$( '#infoList input' ).eq( 3 ).prop( 'placeholder', 'Share '+ ( nfs ? 'path' : 'name' ) +' on server' );
 		}
 		, cancel     : switchCancel
 		, ok         : () => {
