@@ -597,7 +597,7 @@ input.disabled + .switchlabel:after {
 }
 .divap {
 	float: left;
-	margin-right: 40px;
+	width: 170px;
 }
 
 @media (max-height: 570px) {

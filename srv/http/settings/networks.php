@@ -68,7 +68,8 @@ htmlHead( [ //////////////////////////////////
 	, 'status' => 'webui'
 ] );
 ?>
-	<gr>http://</gr><span id="ipwebui"></span>
+	<gr>http://<wh id="ipwebui"></wh>
+	<br>http://<wh id="hostwebui"></wh></gr>
 	<div id="qrwebui" class="qr"></div>
 	<div class="helpblock hide">Use IP address / URL or scan QR code to connect with web user interface.</div>
 </div>
@@ -79,15 +80,16 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<div class="divap">
-		<gr>SSID:</gr> <span id="ssid"></span><br>
-		<gr>Password:</gr> <span id="passphrase"></span>
+		<gr>Connect
+		<br>SSID: <wh id="ssid"></wh>
+		<br>Password: <wh id="passphrase"></wh></gr>
 		<div id="qraccesspoint" class="qr"></div>
 	</div>
 	<div class="divap">
-		<span id="ipwebuiap" class="gr"></span>
-		<div class="divqr">
-			<div id="qrwebuiap" class="qr"></div>
-		</div>
+		<gr>Web User Interface
+		<br>http://<wh id="ipap"></wh>
+		<br>http://<wh id="hostap"></wh></gr>
+		<div id="qrwebuiap" class="qr"></div>
 	</div>
 	<div style="clear: both"></div>
 	<div class="helpblock hide">

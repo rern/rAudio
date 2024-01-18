@@ -411,18 +411,19 @@ function renderQR() {
 	if ( ! ip ) return
 	
 	if ( ip && ip !== S.iwd.ip ) {
-		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
-		if( S.hostname ) ip += '<br><gr>http://</gr>'+ S.hostname +'.local';
 		$( '#ipwebui' ).html( ip );
+		$( '#hostwebui' ).html( S.hostname +'.local' );
+		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
 		$( '#divwebui' ).removeClass( 'hide' );
 	} else {
 		$( '#divwebui' ).addClass( 'hide' );
 	}
 	if ( S.iwd ) {
-		$( '#ipwebuiap' ).html( 'Web User Interface<br>http://<wh>'+ S.iwd.ip +'</wh>' );
 		$( '#ssid' ).text( S.hostname );
 		$( '#passphrase' ).text( S.iwd.passphrase )
 		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ S.hostname +';T:WPA;P:'+ S.iwd.passphrase +';' ) );
+		$( '#ipap' ).html( S.iwd.ip );
+		$( '#hostap' ).html( S.hostname +'.local' );
 		$( '#qrwebuiap' ).html( qr( 'http://'+ S.iwd.ip ) );
 	}
 }
