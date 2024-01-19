@@ -87,7 +87,7 @@ Security='$security
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
 	
-	if systemctl -q is-active iwd && ! systemctl -q is-enabled iwd; then # running iwd when no network connection
+	if systemctl -q is-active iwd && ! systemctl -q is-enabled iwd; then # running iwd ap on boot without network connection
 		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
 	fi
