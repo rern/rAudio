@@ -831,7 +831,7 @@ function infoMount( nfs ) {
 		, [ 'Password',  'password' ]
 		, [ 'Options',   'text' ]
 	];
-	if ( nfs ) list.splice( 3, 2 );
+	if ( nfs ) list.splice( 4, 2 );
 	info( {
 		  icon       : icon
 		, title      : title
@@ -843,9 +843,9 @@ function infoMount( nfs ) {
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			var $mountpoint = $( '#mountpoint' );
-			var $share      = $( '#share' );
-			$share.prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
+			var $mountpoint = $( '#infoList input' ).eq( 1 );
+			$mountpoint.prop( 'placeholder', 'Name to display in Library' );
+			$( '#infoList input' ).eq( 3 ).prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
 			if ( shareddata ) {
 				$mountpoint.val( 'data' ).prop( 'disabled', true );
 				$mountpoint.next().remove();
