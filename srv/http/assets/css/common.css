@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1705411523' );
+	src         : url( '/assets/fonts/rern.woff2?v=1705743236' );
 }
 @font-face {
 	font-family : Lato;
@@ -107,13 +107,13 @@ i {
 .i-hdmi::before            { content: '\F57B' }
 .i-help::before            { content: '\F560' }
 .i-hide::before            { content: '\F575' }
-.i-hostapd::before         { content: '\F554' }
 .i-hostname::before        { content: '\F590' }
 .i-httpd::before           { content: '\F55D' }
 .i-i2smodule::before       { content: '\F571' }
 .i-info::before            { content: '\F561' }
 .i-input::before           { content: '\F529' }
 .i-inverted::before        { content: '\F52E' }
+.i-iwd::before             { content: '\F554' }
 .i-jigsaw::before          { content: '\F50D' }
 .i-lan::before             { content: '\F552' }
 .i-lastfm::before          { content: '\F585' }
