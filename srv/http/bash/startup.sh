@@ -89,7 +89,6 @@ fi
 
 systemctl -q is-enabled iwd && ap=1
 if [[ $ipaddress ]]; then
-	touch $dirshm/Xconnected
 	[[ -e $filebootwifi ]] && rm -f /boot/wifi
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
