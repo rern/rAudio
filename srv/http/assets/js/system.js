@@ -1113,8 +1113,8 @@ function renderPage() {
 		}
 		if ( 'wlan' in S ) {
 			$( '#wlan' )
-				.toggleClass( 'disabled', S.iwd || S.wlanconnected )
-				.prev().html( S.iwd ? '<wh>Access Point '+ ico( 'accesspoint' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
+				.toggleClass( 'disabled', S.accesspoint || S.wlanconnected )
+				.prev().html( S.accesspoint ? '<wh>Access Point '+ ico( 'accesspoint' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
 			$( '#divwlan .col-l' )
 				.toggleClass( 'single', ! S.wlan )
 				.toggleClass( 'status', S.wlan );

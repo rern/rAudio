@@ -94,10 +94,10 @@ if [[ $ipr ]]; then
 fi
 [[ ! $gateway ]] && gateway=$gatewaywl
 
-# iwd
-if systemctl -q is-active iwd && iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then
+# accesspoint
+if [[ -e $dirsystem/accesspoint ]]; then
 	fileap=/var/lib/iwd/ap/$( hostname ).ap
-	iwd='{
+	accesspoint='{
   "ip"         : "'$( getVar Address $fileap )'"
 , "passphrase" : "'$( getVar Passphrase $fileap )'"
 }'

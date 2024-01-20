@@ -1305,7 +1305,6 @@ function renderPlayback() {
 	if ( S.state === 'stop' ) setProgress( 0 );
 	setVolume();
 	clearInterval( V.interval.blinkdot );
-	$( '#qrwebui, #qrip' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
 		setPlaybackBlank();
 		return
@@ -1697,36 +1696,46 @@ function setPlaybackBlank() {
 	$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
 	setProgress( 0 );
-	if ( S.ip ) {
-		V.qr ? setPlaybackBlankQR() : $.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
+	$( '#sampling' ).empty();
+	if ( S.ip || D.accesspoint ) {
+		if ( V.qr ) {
+			setPlaybackBlankQR();
+		} else {
+			$.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
+		}
 		$( '#coverTR' ).toggleClass( 'empty', $bartop.is( ':hidden' ) );
 		$( '#coverart' ).addClass( 'hide' );
-		$( '#sampling' ).empty();
 	} else {
 		$( '#coverart' ).removeClass( 'hide' );
-		$( '#sampling' )
-			.css( 'display', 'block' )
-			.html( 'Network not connected:&emsp; '+ ico( 'networks i-22 wh' ) +'&ensp;Setup' )
-			.on( 'click', '.i-networks', function() {
-				location.href = 'settings.php?p=networks';
-			} );
-		$( '.qr' ).addClass( 'hide' );
+		$( '#sampling' ).html( 'Network not connected:&emsp; <a href="settings.php?p=networks">'+ ico( 'networks i-22 wh' ) +'&ensp;Setup</a>' );
+		$( '.qr' ).remove();
 	}
 	vu();
 	loaderHide();
 }
 function setPlaybackBlankQR() {
-	if ( $( '#qrwebui' ).length ) return
+	if ( $( '.qr' ).length ) return
 	
-	V.qr = new QRCode( {
-		  msg : 'http://'+ S.ip
-		, dim : 230
-		, pad : 11
+	var htmlqr = '';
+	if ( ! S.ip && D.accesspoint ) {
+		var qrap = new QRCode( {
+			  msg : D.accesspoint.connect
+			, dim : 115
+			, pad : 0
+		} );
+		htmlqr += '<div class="qr container">'+ ico( 'accesspoint i-22 gr' ) +'&ensp;Access Point</div>'
+				 +'<div id="qrconnect" class="qr">'+ qrap.outerHTML +'</div>';
+	}
+	var ip = S.ip ? S.ip : D.accesspoint.ip;
+	var qr = new QRCode( {
+		  msg : ip
+		, dim : 115
+		, pad : 0
 	} );
-	var htmlqr = '<div id="qrwebui">'+ V.qr.outerHTML +'</div>'
-				+'<div id="qrip" class="gr">http://<wh>'+ S.ip +'</wh>'
-				+'<br>http://<wh>'+ S.hostname +'</wh>'
-				+'</div>';
+	htmlqr += '<div class="qr container">'+ qr.outerHTML +'</div>'
+			 +'<div class="qr"><gr>http://</gr>'+ ip
+			 +'<br><gr>http://</gr>'+ S.hostname
+			 +'</div>';
 	$( '#map-cover' ).before( htmlqr );
 }
 function setPlaybackStop() {

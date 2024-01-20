@@ -102,10 +102,8 @@ if [[ $lan ]]; then
 	fi
 fi
 
-packageActive bluetooth iwd nfs-server rotaryencoder smb
-if [[ $iwd == true ]]; then
-	! iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes" && iwd=false
-fi
+packageActive bluetooth nfs-server rotaryencoder smb
+
 # i2smodule
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )
@@ -165,11 +163,11 @@ else
 fi
 ##########
 data='
+, "accesspoint"       : '$( exists $dirsystem/accesspoint )'
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiooutput"       : "'$audiooutput'"
 , "hddapm"            : '$hddapm'
 , "hddsleep"          : '${hddapm/128/false}'
-, "iwd"               : '$iwd'
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2smodulesw"       : '$i2smodulesw'

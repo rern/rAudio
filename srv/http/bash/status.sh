@@ -36,6 +36,7 @@ if [[ $1 == withdisplay ]]; then
 	display=$( grep -v } $dirsystem/display.json )
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	display+='
+, "accesspoint" : '$( getContent $dirsystem/accesspoint )'
 , "audiocd"     : '$( exists $dirshm/audiocd )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "color"       : "'$( getContent $dirsystem/color )'"

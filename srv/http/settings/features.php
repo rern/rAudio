@@ -3,12 +3,12 @@ $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 $id_data      = [
-	  'autoplay'       => [ 'label' => 'AutoPlay' ]
+	  'accesspoint'    => [ 'label' => 'Access Point',     'sub' => 'iwd',                                   'status' => true, 'exist' => 'iwctl' ]
+	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
 	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false,    'status' => true, 'exist' => 'camilladsp' ]
 	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true, 'exist' => 'mediamtx' ]
 	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
 	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
-	, 'iwd'            => [ 'label' => 'Access Point',     'sub' => 'iwd',                                   'status' => true, 'exist' => 'iwctl' ]
 	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'localbrowser',                          'status' => true, 'exist' => 'firefox' ]
 	, 'login'          => [ 'label' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
 	, 'lyrics'         => [ 'label' => 'Lyrics' ]
@@ -139,7 +139,7 @@ htmlSection( $head, $body, 'dsp' );
 $head = [ 'title' => 'Others' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'       => 'iwd'
+		  'id'       => 'accesspoint'
 		, 'disabled' => labelIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://iwd.wiki.kernel.org/ap_mode">iNet Wireless Daemon</a> (iwd) - Connect with rAudio hotspot directly when no routers available.

@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1705743236' );
+	src         : url( '/assets/fonts/rern.woff2?v=1705756816' );
 }
 @font-face {
 	font-family : Lato;
@@ -113,7 +113,6 @@ i {
 .i-info::before            { content: '\F561' }
 .i-input::before           { content: '\F529' }
 .i-inverted::before        { content: '\F52E' }
-.i-iwd::before             { content: '\F554' }
 .i-jigsaw::before          { content: '\F50D' }
 .i-lan::before             { content: '\F552' }
 .i-lastfm::before          { content: '\F585' }

@@ -17,6 +17,7 @@ iwctlAP() {
 	sleep 1
 	iwctl device $wlandev set-property Mode ap
 	iwctl ap $wlandev start-profile $( hostname )
+	iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes" && touch $dirsystem/accesspoint || rm -f $dirsystem/accesspoint
 	iw $wlandev set power_save off
 }
 localbrowserDisable() {
@@ -55,6 +56,31 @@ wlanDisable() {
 
 case $CMD in
 
+accesspoint )
+	wlandev=$( < $dirshm/wlan )
+	if [[ $ON ]]; then
+		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
+' -e 's/(Address=|Gateway=).*/\1'$IP'/
+' /var/lib/iwd/ap/$( hostname ).ap
+		iwctlAP
+		if [[ -e $dirsystem/accesspoint ]]; then
+			systemctl enable iwd
+			echo '{
+  "connect" : "WIFI:S:'$( hostname )';T:WPA;P:'$PASSPHRASE';"
+, "ip"      : "'$IP'"
+}' > $dirsystem/accesspoint
+		else
+			systemctl stop iwd
+		fi
+	else
+		systemctl disable --now iwd
+		rm -f $dirsystem/accesspoint
+		wlanDisable
+	fi
+	pushRefresh
+	pushData refresh '{ "page": "system", "iwd": '$TF' }'
+	pushRefresh networks
+	;;
 autoplay | lyrics | scrobble )
 	[[ $CMD == lyrics ]] && sed -i '/^url/ s|/$||' $dirsystem/lyrics.conf
 	enableFlagSet
@@ -137,26 +163,6 @@ httpd )
 	;;
 iwctlap )
 	iwctlAP
-	;;
-iwd )
-	wlandev=$( < $dirshm/wlan )
-	if [[ $ON ]]; then
-		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
-' -e 's/(Address=|Gateway=).*/\1'$IP'/
-' /var/lib/iwd/ap/$( hostname ).ap
-		iwctlAP
-		if iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then
-			systemctl enable iwd
-		else
-			systemctl stop iwd
-		fi
-	else
-		systemctl disable --now iwd
-		wlanDisable
-	fi
-	pushRefresh
-	pushData refresh '{ "page": "system", "iwd": '$TF' }'
-	pushRefresh networks
 	;;
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2

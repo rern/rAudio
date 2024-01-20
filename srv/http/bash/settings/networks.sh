@@ -91,9 +91,11 @@ Security='$security
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
 	
-	if systemctl -q is-active iwd && ! systemctl -q is-enabled iwd; then # running iwd ap on boot without network connection
-		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
-		exit
+	if [[ -e $dirsystem/accesspoint ]]; then
+		if [[ ! -e $dirsystem/accesspoint ]]; then # running iwd ap on boot without network connection
+			pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
+			exit
+		fi
 	fi
 	
 	if ! netctl is-active "$ESSID" &> /dev/null; then
@@ -137,7 +139,7 @@ Gateway='$GATEWAY $file
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )
-	if systemctl -q is-active iwd; then
+	if [[ -e $dirsystem/accesspoint ]]; then
 		systemctl disable --now iwd
 		ifconfig $wlandev 0.0.0.0
 		sleep 2

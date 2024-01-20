@@ -18,8 +18,8 @@ function bannerReset() {
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
-	var services   = [ 'bluealsa',  'bluez',          'camilladsp', 'dabradio',   'iwd',        'localbrowser', 'mpd'
-					 , 'nfsserver', 'shairport-sync', 'smb',        'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
+	var services   = [ 'accesspoint', 'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
+					 , 'nfsserver',   'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
 	var command = services.includes( id ) ? [ 'settings/pkgstatus.sh', id ] : [ 'status'+ id ];
 	bash( command, status => {
 		clearTimeout( timeoutGet );

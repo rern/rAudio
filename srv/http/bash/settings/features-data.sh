@@ -8,10 +8,7 @@
 
 . /srv/http/bash/common.sh
 
-packageActive camilladsp iwd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
-if [[ $iwd == true ]]; then
-	! iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes" && iwd=false
-fi
+packageActive camilladsp localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
 ##########
 data='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
@@ -42,8 +39,8 @@ if [[ -e /usr/bin/iwctl ]]; then
 	fileap=/var/lib/iwd/ap/$( hostname ).ap
 ##########
 	data+='
-, "iwd"              : '$iwd'
-, "iwdconf"          : { "IP": "'$( getVar Address $fileap )'", "PASSPHRASE": "'$( getVar Passphrase $fileap )'" }
+, "accesspoint"      : '$( exists $dirsystem/accesspoint )'
+, "accesspointconf"  : { "IP": "'$( getVar Address $fileap )'", "PASSPHRASE": "'$( getVar Passphrase $fileap )'" }
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 fi
