@@ -9,10 +9,13 @@ netctlSwitch() {
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
 	connected=$( iwgetid $wlandev -r )
+	# iwctl station $wlandev disconnect
+	# iwctl station $wlandev connect "$ssid"
 	ifconfig $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
+		# if [[ $( iwgetid $wlandev -r ) == $connected ]]; then
 		if netctl is-active "$ssid" &> /dev/null; then
 			[[ $connected ]] && netctl disable "$connected"
 			netctl enable "$ssid"
@@ -24,6 +27,7 @@ netctlSwitch() {
 		$dirsettings/networks-data.sh pushwl
 	else
 		echo -1
+		# [[ $connected ]] && iwctl station $wlandev connect "$connected"
 		[[ $connected ]] && netctl switch-to "$connected"
 	fi
 }

@@ -828,7 +828,7 @@ function infoMount( nfs ) {
 		, [ 'Password',  'password' ]
 		, [ 'Options',   'text' ]
 	];
-	if ( nfs ) list.splice( 4, 2 );
+	if ( nfs ) list.splice( 3, 2 );
 	info( {
 		  icon       : icon
 		, title      : title
@@ -840,7 +840,9 @@ function infoMount( nfs ) {
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			var $mountpoint = $( '#infoList input' ).eq( 1 );
+			var $mountpoint = $( '#mountpoint' );
+			var $share      = $( '#share' );
+			$share.prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
 			if ( shareddata ) {
 				$mountpoint.val( 'data' ).prop( 'disabled', true );
 				$mountpoint.next().remove();
@@ -849,8 +851,6 @@ function infoMount( nfs ) {
 					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 				} );
 			}
-			$mountpoint.prop( 'placeholder', 'Name in Library' );
-			$( '#infoList input' ).eq( 3 ).prop( 'placeholder', 'Share '+ ( nfs ? 'path' : 'name' ) +' on server' );
 		}
 		, cancel     : switchCancel
 		, ok         : () => {
@@ -924,11 +924,12 @@ function infoPowerbutton() {
 		, values       : S.powerbuttonconf || default_v.powerbutton
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
+			$( '#infoList td' ).css( 'width', '70px' );
+			$( '#infoList td:last-child' ).css( 'width', '110px' );
 			$( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
-			var $sw         = $( '#infoList select' ).eq( 0 );
 			var $trreserved = $( '#infoList tr' ).last();
-			$trreserved.toggleClass( 'hide', $sw.val() == 3 );
-			$sw.on( 'input', function() {
+			$trreserved.toggleClass( 'hide', S.powerbuttonconf.SW == 3 );
+			$( '#infoList select' ).eq( 1 ).on( 'input', function() {
 				$trreserved.toggleClass( 'hide', $( this ).val() == 3 );
 			} );
 		}
