@@ -1,90 +1,122 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="380px" height="80px" viewBox="0 0 380 80">
+<svg xmlns="http://www.w3.org/2000/svg" width="360px" height="110px" viewBox="0 0 380 100">
 <style type="text/css">
-	.st0,.st1,.st2,.st3,.st4,.st5{stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
-	.st0{fill:#808080;}
-	.st1{fill:#FF0000;}
-	.st3{fill:#00FF00;}
-	.st4,.st6{fill:#B5B3B3;}
-	.st5{fill:#FF5F00;}
-	.st6{font-family:'Inconsolata';font-size:15px;}
-	.st7{fill:#FFFFFF;}
-	.st8{stroke:#000000;;font-size:9px;}
+	.st0,.st1,.st2,.st3,.st4,.st5 {stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
+	.st0 {fill:#808080;}
+	.st1 {fill:#FF0000;}
+	.st3 {fill:#00FF00;}
+	.st4,.st6 {fill:#B5B3B3;}
+	.st5 {fill:#FF5F00;}
+	.st6, .st9 {font-family:'Inconsolata';font-size:15px;}
+	.st7 {fill:#FFFFFF;}
+	.st8 {stroke:#000000;;font-size:9px;}
+	.st9 {fill:#706E6E;}
 </style>
-<path class="st0" d="M378.7,24c0,12.9,0,24.2,0,37.1H1.2v-45c123.5,0,245.5,0,369,0L378.7,24z"/>
+<path class="st0" d="M378.7,37.2c0,12.9,0,24.2,0,37.1H1.2v-45c123.5,0,245.5,0,369,0L378.7,37.2z"/>
 
-<circle class="st2" cx="14.2" cy="29.3" r="6.7"/>
-<circle class="st3" cx="32.7" cy="29.3" r="6.7"/>
-<circle class="st3" cx="51.2" cy="29.3" r="6.7"/>
-<circle class="st3" cx="69.7" cy="29.3" r="6.7"/>
-<circle class="st3" cx="88.2" cy="29.3" r="6.7"/>
-<circle class="st3" cx="106.7" cy="29.3" r="6.7"/>
-<circle class="st4" cx="125.2" cy="29.3" r="6.7"/>
-<circle class="st2" cx="143.7" cy="29.3" r="6.7"/>
-<circle class="st3" cx="162.2" cy="29.3" r="6.7"/>
-<circle class="st3" cx="180.7" cy="29.3" r="6.7"/>
-<circle class="st3" cx="199.2" cy="29.3" r="6.7"/>
-<circle class="st5" cx="217.7" cy="29.3" r="6.7"/>
-<circle class="st3" cx="236.2" cy="29.3" r="6.7"/>
-<circle class="st3" cx="254.7" cy="29.3" r="6.7"/>
-<circle class="st3" cx="273.2" cy="29.3" r="6.7"/>
-<circle class="st2" cx="291.7" cy="29.3" r="6.7"/>
-<circle class="st3" cx="310.2" cy="29.3" r="6.7"/>
-<circle class="st3" cx="329.2" cy="29.3" r="6.7"/>
-<path class="st5" d="M359.1,34.3V24.3c0-1,0.8-1.6,1.6-1.6h10.1c1,0,1.6,0.8,1.6,1.6v10.1c0,1-0.8,1.6-1.6,1.6h-10.1 C359.8,36.1,359.1,35.3,359.1,34.3z"/>
+<circle class="st2" cx="14.2" cy="42.5" r="6.7"/>
+<circle class="st3" cx="32.7" cy="42.5" r="6.7"/>
+<circle class="st3" cx="51.2" cy="42.5" r="6.7"/>
+<circle class="st3" cx="69.7" cy="42.5" r="6.7"/>
+<circle class="st3" cx="88.2" cy="42.5" r="6.7"/>
+<circle class="st3" cx="106.7" cy="42.5" r="6.7"/>
+<circle class="st4" cx="125.2" cy="42.5" r="6.7"/>
+<circle class="st2" cx="143.7" cy="42.5" r="6.7"/>
+<circle class="st3" cx="162.2" cy="42.5" r="6.7"/>
+<circle class="st3" cx="180.7" cy="42.5" r="6.7"/>
+<circle class="st3" cx="199.2" cy="42.5" r="6.7"/>
+<circle class="st5" cx="217.7" cy="42.5" r="6.7"/>
+<circle class="st3" cx="236.2" cy="42.5" r="6.7"/>
+<circle class="st3" cx="254.7" cy="42.5" r="6.7"/>
+<circle class="st3" cx="273.2" cy="42.5" r="6.7"/>
+<circle class="st2" cx="291.7" cy="42.5" r="6.7"/>
+<circle class="st3" cx="310.2" cy="42.5" r="6.7"/>
+<circle class="st3" cx="329.2" cy="42.5" r="6.7"/>
+<path class="st4" d="M359.1,47.5v-10c0-1,0.8-1.6,1.6-1.6h10.1c1,0,1.6,0.8,1.6,1.6v10.1c0,1-0.8,1.6-1.6,1.6h-10.1 C359.8,49.3,359.1,48.5,359.1,47.5z"/>
 
-<circle class="st3" cx="347.2" cy="29.3" r="6.7"/>
-<circle class="st3" cx="14.2" cy="47.8" r="6.7"/>
-<circle class="st3" cx="32.7" cy="47.8" r="6.7"/>
-<circle class="st3" cx="51.2" cy="47.8" r="6.7"/>
-<circle class="st2" cx="69.7" cy="47.8" r="6.7"/>
-<circle class="st3" cx="88.2" cy="47.8" r="6.7"/>
-<circle class="st2" cx="106.7" cy="47.8" r="6.7"/>
-<circle class="st4" cx="125.2" cy="47.8" r="6.7"/>
-<circle class="st3" cx="143.7" cy="47.8" r="6.7"/>
-<circle class="st3" cx="162.2" cy="47.8" r="6.7"/>
-<circle class="st3" cx="180.7" cy="47.8" r="6.7"/>
-<circle class="st2" cx="199.2" cy="47.8" r="6.7"/>
-<circle class="st3" cx="217.7" cy="47.8" r="6.7"/>
-<circle class="st3" cx="236.2" cy="47.8" r="6.7"/>
-<circle class="st2" cx="254.7" cy="47.8" r="6.7"/>
-<circle class="st3" cx="273.2" cy="47.8" r="6.7"/>
-<circle class="st3" cx="291.7" cy="47.8" r="6.7"/>
-<circle class="st3" cx="310.2" cy="47.8" r="6.7"/>
-<circle class="st2" cx="328.7" cy="47.8" r="6.7"/>
-<circle class="st1" cx="347.2" cy="47.8" r="6.7"/>
-<circle class="st1" cx="365.7" cy="47.8" r="6.7"/>
+<circle class="st3" cx="347.2" cy="42.5" r="6.7"/>
+<circle class="st3" cx="14.2" cy="61" r="6.7"/>
+<circle class="st3" cx="32.7" cy="61" r="6.7"/>
+<circle class="st3" cx="51.2" cy="61" r="6.7"/>
+<circle class="st2" cx="69.7" cy="61" r="6.7"/>
+<circle class="st3" cx="88.2" cy="61" r="6.7"/>
+<circle class="st2" cx="106.7" cy="61" r="6.7"/>
+<circle class="st4" cx="125.2" cy="61" r="6.7"/>
+<circle class="st3" cx="143.7" cy="61" r="6.7"/>
+<circle class="st3" cx="162.2" cy="61" r="6.7"/>
+<circle class="st3" cx="180.7" cy="61" r="6.7"/>
+<circle class="st2" cx="199.2" cy="61" r="6.7"/>
+<circle class="st3" cx="217.7" cy="61" r="6.7"/>
+<circle class="st3" cx="236.2" cy="61" r="6.7"/>
+<circle class="st2" cx="254.7" cy="61" r="6.7"/>
+<circle class="st3" cx="273.2" cy="61" r="6.7"/>
+<circle class="st3" cx="291.7" cy="61" r="6.7"/>
+<circle class="st3" cx="310.2" cy="61" r="6.7"/>
+<circle class="st2" cx="328.7" cy="61" r="6.7"/>
+<circle class="st1" cx="347.2" cy="61" r="6.7"/>
+<circle class="st1" cx="365.7" cy="61" r="6.7"/>
 
-<text class="st6" transform="matrix(1 0 0 1 1.2269 11.4678)">
-	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="0">37</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="0">35</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="61.3" y="0">33</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="79.8" y="0">31</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="98.3" y="0">29</tspan>
-	<tspan x="153.8" y="0">23</tspan>
-	<tspan class="mpdoled-no" x="172.3" y="0">21</tspan>
-	<tspan class="lcdchar-no" x="190" y="0">19</tspan>
-	<tspan class="mpdoled-no" x="226.5" y="0">15</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="245" y="0">13</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="265" y="0">11</tspan>
-	<tspan class="lcdchar-no gpio-no mpdoled-no" x="304" y="0">7</tspan>
-	<tspan class="gpio-no" x="323.9" y="0">5</tspan>
-	<tspan class="gpio-no st8" x="325.8" y="19.8">|</tspan>
-	<tspan class="gpio-no" x="342" y="0">3</tspan>
-	<tspan class="gpio-no rotaryencoder-no power" x="360" y="0">1</tspan>
+<text class="st9" transform="matrix(1 0 0 1 1.2269 -14.5)">
+	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="24.7">26</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="24.7">19</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="61.3" y="24.7">13</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="83" y="24.7">6</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="103" y="24.7">5</tspan>
+	<tspan x="153.8" y="24.7">11</tspan>
+	<tspan class="mpdoled-no" x="176" y="24.7">9</tspan>
+	<tspan class="lcdchar-no" x="190" y="24.7">10</tspan>
+	<tspan class="mpdoled-no" x="226.5" y="24.7">22</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="245" y="24.7">27</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="265" y="24.7">17</tspan>
+	<tspan class="lcdchar-no gpio-no mpdoled-no" x="304" y="24.7">4</tspan>
+	<tspan class="gpio-no" x="323.9" y="24.7">3</tspan>
+	<tspan class="gpio-no" x="342" y="24.7">2</tspan>
 </text>
-<text class="st6" transform="matrix(1 0 0 1 1.2268 75.4674)">
-	<tspan class="lcdchar-no mpdoled-no" x="5.8" y="0">40</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="0">38</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="0">36</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="79.8" y="0">32</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="135.3" y="0">26</tspan>
-	<tspan x="153.8" y="0">24</tspan>
-	<tspan x="172.3" y="0">22</tspan>
-	<tspan x="209.3" y="0">18</tspan>
-	<tspan class="mpdoled-no" x="227.8" y="0">16</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="264.8" y="0">12</tspan>
-	<tspan class="lcdchar-no gpio-no mpdoled-no" x="283" y="0">10</tspan>
-	<tspan class="lcdchar-no gpio-no mpdoled-no" x="306" y="0">8</tspan>
-	<tspan class="gpio-no mpdoled-no rotaryencoder-no power" x="342.5" y="0">4</tspan>
+<text class="st6" transform="matrix(1 0 0 1 1.2269 0)">
+	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="24.7">37</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="24.7">35</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="61.3" y="24.7">33</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="79.8" y="24.7">31</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="98.3" y="24.7">29</tspan>
+	<tspan x="153.8" y="24.7">23</tspan>
+	<tspan class="mpdoled-no" x="172.3" y="24.7">21</tspan>
+	<tspan class="lcdchar-no" x="190" y="24.7">19</tspan>
+	<tspan class="mpdoled-no" x="226.5" y="24.7">15</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="245" y="24.7">13</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="265" y="24.7">11</tspan>
+	<tspan class="lcdchar-no gpio-no mpdoled-no" x="304" y="24.7">7</tspan>
+	<tspan class="gpio-no" x="323.9" y="24.7">5</tspan>
+	<tspan class="gpio-no" x="342" y="24.7">3</tspan>
+	<tspan class="gpio-no rotaryencoder-no power" x="360" y="24.7">1</tspan>
+	<tspan class="gpio-no st8" x="325.8" y="44.5">|</tspan>
+</text>
+<text class="st6" transform="matrix(1 0 0 1 1.2268 64)">
+	<tspan class="lcdchar-no mpdoled-no" x="5.8" y="24.7">40</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="24.7">38</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="24.7">36</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="79.8" y="24.7">32</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="135.3" y="24.7">26</tspan>
+	<tspan x="153.8" y="24.7">24</tspan>
+	<tspan x="172.3" y="24.7">22</tspan>
+	<tspan x="209.3" y="24.7">18</tspan>
+	<tspan class="mpdoled-no" x="227.8" y="24.7">16</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="264.8" y="24.7">12</tspan>
+	<tspan class="lcdchar-no gpio-no mpdoled-no" x="283" y="24.7">10</tspan>
+	<tspan class="lcdchar-no gpio-no mpdoled-no" x="306" y="24.7">8</tspan>
+	<tspan class="gpio-no mpdoled-no rotaryencoder-no power" x="342.5" y="24.7">4</tspan>
+</text>
+<text class="st9" transform="matrix(1 0 0 1 1.2268 78.5)">
+	<tspan class="lcdchar-no mpdoled-no" x="5.8" y="24.7">21</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="24.7">20</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="24.7">16</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="79.8" y="24.7">12</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="138" y="24.7">7</tspan>
+	<tspan x="158" y="24.7">8</tspan>
+	<tspan x="172.3" y="24.7">25</tspan>
+	<tspan x="209.3" y="24.7">24</tspan>
+	<tspan class="mpdoled-no" x="227.8" y="24.7">23</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="264.8" y="24.7">18</tspan>
+	<tspan class="lcdchar-no gpio-no mpdoled-no" x="283" y="24.7">15</tspan>
+	<tspan class="lcdchar-no gpio-no mpdoled-no" x="301" y="24.7">14</tspan>
+	<tspan x="353" y="24.7">BCM</tspan>
 </text>
 </svg>
