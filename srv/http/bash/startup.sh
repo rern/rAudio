@@ -88,7 +88,7 @@ if [[ ! $connected ]]; then
 	grep -qrl $wlandev --exclude-dir examples* /etc/netctl && connectedCheck 30 3
 fi
 
-if [[ $connected  ]]; then
+if [[ $connected ]]; then
 	[[ -e $filebootwifi ]] && rm -f /boot/wifi
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
@@ -112,8 +112,6 @@ if [[ $connected  ]]; then
 		fi
 		appendSortUnique $( ipAddress ) $filesharedip
 	fi
-else
-	[[ -e $filebootwifi ]] && rm -f "$filebootwifi"
 fi
 
 if [[ -e $dirsystem/btconnected ]]; then
