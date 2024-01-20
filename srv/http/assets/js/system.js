@@ -765,7 +765,10 @@ function infoLcdCharGpio() {
 		, boxwidth     : 70
 		, values       : S.lcdcharconf || default_v.lcdchar_gpio
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
-		, beforeshow   : infoLcdcharButton
+		, beforeshow   : () => { 
+			infoLcdcharButton();
+			$( '#infoList tr' ).eq( 2 ).after( '<tr><td colspan="3">'+ gpiosvg +'</td></tr>' )
+		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
