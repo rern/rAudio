@@ -89,14 +89,15 @@ $soccpu"
 	echo $system > $dirshm/system
 fi
 
-ifconfiglan=$( ifconfig | grep -A2 ^e | head -3 )
-if [[ $ifconfiglan ]]; then
+lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
+if [[ $lan ]]; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf=$( conf2json $dirsystem/soundprofile.conf )
 	else
 		swappiness=$( sysctl vm.swappiness | cut -d' ' -f3 )
-		mtu=$( awk '/mtu/ {print $4}' <<< $ifconfiglan )
-		txqueuelen=$( awk '/txqueuelen/ {print $4}' <<< $ifconfiglan )
+		dirlan=/sys/class/net/$lan
+		mtu=$( cat $dirlan/mtu )
+		txqueuelen=$( cat $dirlan/tx_queue_len )
 		soundprofileconf='{ "SWAPPINESS": '$swappiness', "MTU": '$mtu', "TXQUEUELEN": '$txqueuelen' }'
 	fi
 fi

@@ -2,6 +2,13 @@
 
 . /srv/http/bash/common.sh
 
+connectedCheck() {
+	for (( i=0; i < $1; i++ )); do
+		ipaddress=$( ipAddress )
+		[[ ! $ipaddress ]] && sleep 1 || break
+	done
+}
+
 revision=$( grep ^Revision /proc/cpuinfo )
 echo "\
 BB=${revision: -3:2}
@@ -65,14 +72,6 @@ if [[ -e $filebrightness ]]; then
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $filebrightness
 fi
 
-connectedCheck() {
-	for (( i=0; i < $1; i++ )); do
-		ifconfig | grep -q -m1 inet.*broadcast && connected=1 && break
-
-		sleep $2
-	done
-}
-
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
@@ -82,13 +81,15 @@ echo mpd > $dirshm/player
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 # wait 5s max for lan connection
-connectedCheck 5 1
-# if lan not connected and wifi profile available, wait 30s max for wi-fi connection
-if [[ ! $connected ]]; then
-	grep -qrl $wlandev --exclude-dir examples* /etc/netctl && connectedCheck 30 3
+connectedCheck 5
+# if lan not connected and wifi profile available, wait for wi-fi connection
+if [[ ! $ipaddress && $wlandev ]]; then
+	grep -qrl $wlandev --exclude-dir examples* /etc/netctl && connectedCheck 30
 fi
 
-if [[ $connected ]]; then
+systemctl -q is-enabled iwd && ap=1
+if [[ $ipaddress ]]; then
+	touch $dirshm/Xconnected
 	[[ -e $filebootwifi ]] && rm -f /boot/wifi
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
@@ -110,9 +111,19 @@ if [[ $connected ]]; then
 				notify -ip $ip networks 'Server rAudio' Online
 			done
 		fi
-		appendSortUnique $( ipAddress ) $filesharedip
+		appendSortUnique $ipaddress $filesharedip
+	fi
+	$dirsettings/addons-data.sh &> /dev/null &
+else
+	if [[ $wlandev && ! $ap ]]; then
+		if [[ $( netctl list ) ]]; then
+			[[ ! -e $dirsystem/wlannoap ]] && ap=1
+		else
+			ap=1
+		fi
 	fi
 fi
+[[ $ap ]] && $dirsettings/features.sh iwctlap
 
 if [[ -e $dirsystem/btconnected ]]; then
 	readarray -t devices < $dirsystem/btconnected
@@ -143,20 +154,6 @@ if [[ -e $dirsystem/volumeboot ]]; then
 fi
 
 # after all sources connected ........................................................
-systemctl -q is-enabled iwd && ap=1
-if [[ $connected ]]; then
-	$dirsettings/addons-data.sh &> /dev/null &
-else
-	if [[ $wlandev && ! $ap ]]; then
-		if [[ $( netctl list ) ]]; then
-			[[ ! -e $dirsystem/wlannoap ]] && ap=1
-		else
-			ap=1
-		fi
-	fi
-fi
-[[ $ap ]] && $dirsettings/features.sh iwctlap
-
 if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
 	$dirsettings/system.sh "hddsleep
 $( < $dirsystem/apm )
@@ -174,7 +171,7 @@ fi
 # if no wlan // usb wlan // no iwd and no connected wlan, disable wlan
 if (( $( rfkill | grep -c wlan ) > 1 )) \
 	|| ! rfkill | grep -q wlan \
-	|| ( ! systemctl -q is-active iwd && ! netctl list | grep -q -m1 '^\*' ); then
+	|| ( ! systemctl -q is-active iwd && ! netctl list | grep -q -m1 ^* ); then
 	rmmod brcmfmac_wcc &> /dev/null
 	rmmod brcmfmac &> /dev/null
 	onboardwlan=false

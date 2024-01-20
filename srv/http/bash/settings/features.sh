@@ -10,9 +10,9 @@ iwctlAP() {
 	if ! rfkill | grep -q wlan; then
 		modprobe brcmfmac
 	else
-		ifconfig $wlandev down
+		ip link set $wlandev down
 	fi
-	ifconfig $wlandev up
+	ip link set $wlandev up
 	systemctl restart iwd
 	sleep 1
 	iwctl device $wlandev set-property Mode ap

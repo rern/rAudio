@@ -87,8 +87,8 @@ soundProfile() {
 		touch $dirsystem/soundprofile
 	fi
 	sysctl vm.swappiness=$swappiness
-	lan=$( ifconfig | grep ^e | cut -d: -f1 )
-	if ifconfig | grep -q -m1 $lan; then
+	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
+	if [[ $lan ]]; then
 		ip link set $lan mtu $mtu
 		ip link set $lan txqueuelen $txqueuelen
 	fi
@@ -460,7 +460,7 @@ statusbluetooth )
 $( bluetoothctl show )"
 	;;
 statussoundprofile )
-	dirlan=/sys/class/net/$( ifconfig | grep ^e | head -1 | cut -d: -f1 )
+	dirlan=/sys/class/net/$( ip -br link | awk '/^e/ {print $1; exit}' )
 	for f in /proc/sys/vm/swappiness $dirlan/mtu $dirlan/tx_queue_len; do
 		[[ ! -e $f ]] && continue
 		
@@ -609,7 +609,7 @@ vuled )
 wlan )
 	if [[ $ON ]]; then
 		! lsmod | grep -q -m1 brcmfmac && modprobe brcmfmac
-		ifconfig wlan0 up
+		ip link set wlan0 up
 		echo wlan0 > $dirshm/wlan
 		iw wlan0 set power_save off
 		[[ $APAUTO ]] && rm -f $dirsystem/wlannoap || touch $dirsystem/wlannoap
@@ -622,7 +622,7 @@ wlan )
 		rmmod brcmfmac &> /dev/null
 	fi
 	pushRefresh
-	ifconfig wlan0 2> /dev/null | grep -q -m1 wlan0.*UP && active=true || active=false
+	[[ $( cat /sys/class/net/wlan0/operstate ) == up ]] && active=true || active=false
 	pushData refresh '{ "page": "networks", "activewlan": '$active' }'
 	;;
 	

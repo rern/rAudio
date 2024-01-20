@@ -193,7 +193,7 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	ifconfig | awk '/inet.*broadcast/ {print $2;exit}' | head -1
+	ip route get 1 | awk '{print $(NF-2);exit}'
 }
 ipSub() {
 	local ip

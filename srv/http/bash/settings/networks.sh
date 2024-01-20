@@ -11,7 +11,7 @@ netctlSwitch() {
 	connected=$( iwgetid $wlandev -r )
 	# iwctl station $wlandev disconnect
 	# iwctl station $wlandev connect "$ssid"
-	ifconfig $wlandev down
+	ip link set $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
@@ -33,11 +33,11 @@ netctlSwitch() {
 }
 wlanDevice() {
 	local iplinkw wlandev
-	iplinkw=$( ip -br link | grep ^w )
+	iplinkw=$( ip -br link | grep -m1 ^w )
 	if [[ ! $iplinkw ]]; then
 		if [[ -e $dirshm/onboardwlan ]]; then
 			modprobe brcmfmac
-			ifconfig wlan0 up
+			ip link set wlan0 up
 			sleep 1
 			iplinkw=$( ip -br link | grep ^w )
 		fi
@@ -109,7 +109,7 @@ disconnect )
 	netctl stop "$connected"
 	netctl disable "$connected"
 	systemctl stop wpa_supplicant
-	ifconfig $wlandev up
+	ip link set $wlandev up
 	$dirsettings/networks-data.sh pushwl
 	;;
 lanedit )
@@ -153,7 +153,7 @@ profileremove )
 		netctl stop "$SSID"
 		systemctl stop wpa_supplicant
 		wlandev=$( < $dirshm/wlan )
-		ifconfig $wlandev up
+		ip link set $wlandev up
 	fi
 	rm "/etc/netctl/$SSID"
 	$dirsettings/networks-data.sh pushwl
@@ -162,7 +162,7 @@ scankill )
 	killProcess networksscan
 	;;
 statuslan )
-	lan=$( ifconfig | grep ^e | cut -d: -f1 )
+	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 	echo "\
 <bll># ifconfig $lan</bll>
 $( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
