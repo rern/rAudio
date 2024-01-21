@@ -1722,9 +1722,9 @@ function setPlaybackBlankQR() {
 	if ( ! S.ip && D.accesspoint ) {
 		htmlqr += '<div class="qr gr">Access Point: <wh>'+ S.hostname +'</wh>'
 				 +'<br>Password: <wh>'+ D.accesspoint.passphrase +'</wh></div>'
-				 +'<div class="qr container">'+ qr( S.accesspoint.qr ).outerHTML +'</div>';
+				 +'<div class="qr container">'+ qrCode( S.accesspoint.qr ).outerHTML +'</div>';
 	}
-	htmlqr += '<div class="qr container">'+ qr( ip ).outerHTML +'</div>'
+	htmlqr += '<div class="qr container">'+ qrCode( ip ).outerHTML +'</div>'
 			 +'<div class="qr"><gr>http://</gr>'+ ip
 			 +'<br><gr>http://</gr>'+ S.hostname +'.local'
 			 +'</div>';

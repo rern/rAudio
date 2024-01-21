@@ -409,12 +409,12 @@ function renderQR() {
 	if ( S.accesspoint ) {
 		$( '#ssid' ).text( S.hostname );
 		$( '#passphrase' ).text( S.accesspoint.passphrase )
-		$( '#qraccesspoint' ).html( qr( S.accesspoint.qr ) );
+		$( '#qraccesspoint' ).html( qrCode( S.accesspoint.qr ) );
 	}
 	if ( ip ) {
 		$( '#ipwebui' ).html( ip );
 		$( '#hostwebui' ).html( S.hostname +'.local' );
-		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
+		$( '#qrwebui' ).html( qrCode( 'http://'+ ip ) );
 	}
 	$( '#divwebui' ).removeClass( 'hide' );
 }

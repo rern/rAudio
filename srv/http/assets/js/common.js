@@ -1083,8 +1083,8 @@ function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
 }
-function qr( msg ) {
-	return new QRCode( {
+function qrCode( msg ) {
+	return QRCode( {
 		  msg : msg
 		, dim : 115
 		, pad : 0
