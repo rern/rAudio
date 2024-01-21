@@ -80,12 +80,10 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-# wait 5s max for lan connection
+# wait for lan connection
 connectedCheck 5
-# if lan not connected and wifi profile available, wait for wi-fi connection
-if [[ ! $ipaddress && $wlandev ]]; then
-	grep -qrl $wlandev --exclude-dir examples* /etc/netctl && connectedCheck 30
-fi
+# if lan not connected and active wifi profile available, wait for wi-fi connection
+[[ ! $ipaddress && $wlandev ]] && netctl list | greq -q ^+ && connectedCheck 30
 
 [[ -e $dirsystem/ap ]] && ap=1
 if [[ $ipaddress ]]; then
