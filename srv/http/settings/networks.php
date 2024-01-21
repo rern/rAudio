@@ -61,47 +61,36 @@ htmlHead( [ //////////////////////////////////
 	<div class="helpblock hide"><?=i( 'lan btn' )?> Context menu</div>
 </div>
 </div>
-<div id="divwebui" class="section hide"> <!-- ------------------------------------------------------------ -->
 <?php
-htmlHead( [ //////////////////////////////////
-	  'title'  => 'Web <a class="hideN">User </a>Interface'
-	, 'status' => 'webui'
-] );
+$head = [ 'title'  => 'Web <a class="hideN">User </a>Interface' ];
+$body = [
+	  htmlSectionStatus(
+		  'ap'
+		, 'Access Point<br>Password'
+		, '<a id="ssid"></a>
+		   <br><a id="passphrase"></a>
+		   <div id="qraccesspoint" class="qr"></div>
+		   <div class="helpblock hide">Access rAudio directly without Wi-Fi router:
+ • Connect:
+	- Scan QR code - or
+	- Find the <wh>Access Point</wh> and connect with the password.
+ • Access point setting: '.tab( 'features', 'Features' ).labelIcon( 'Access Point', 'accesspoint' ).'
+
+Note: No internet connection.</div>'
+	)
+	, htmlSectionStatus(
+		  'url'
+		, 'URL'
+		, '<gr>http://</gr><a id="ipwebui"></a>
+			<br><gr>http://</gr><a id="hostwebui"></a>
+			<div id="qrwebui" class="qr"></div>
+			<div class="helpblock hide">Connect:
+ • Scan QR code - or
+ • Open the <wh>URL</wh> with any web browsers.</div>'
+	)
+];
+htmlSection( $head, $body, 'webui' );
 ?>
-	<gr>http://<wh id="ipwebui"></wh>
-	<br>http://<wh id="hostwebui"></wh></gr>
-	<div id="qrwebui" class="qr"></div>
-	<div class="helpblock hide">Scan QR code or use IP address to connect rAudio UI with any web browsers.</div>
-</div>
-<div id="divaccesspoint" class="section hide">
-<?php
-htmlHead( [ //////////////////////////////////
-	  'title' => 'Access Point'
-] );
-?>
-	<div class="divap">
-		<gr>Connect
-		<br>SSID: <wh id="ssid"></wh>
-		<br>Password: <wh id="passphrase"></wh></gr>
-		<div id="qraccesspoint" class="qr"></div>
-	</div>
-	<div class="divap">
-		<gr>Web User Interface
-		<br>http://<wh id="ipap"></wh>
-		<br>http://<wh id="hostap"></wh></gr>
-		<div id="qrwebuiap" class="qr"></div>
-	</div>
-	<div style="clear: both"></div>
-	<div class="helpblock hide">
-Access rAudio directly without Wi-Fi router:
-• Scan QR code #1 or use SSID and password to connect rAudio access point.
-• Scan QR code #2 or use IP address to connect rAudio UI with any web browsers.
-• Access point setting: <?=( tab( 'features', 'Features' ).labelIcon( 'Access Point', 'iwd' ) )?>
-<br>
-Note: No internet connection.
-</div>
-<div style="clear:both"></div>
-</div>
 <div id="divbluetooth" class="section hide"> <!-- -------------------------------------------------------------- -->
 <?php
 htmlHead( [ //////////////////////////////////

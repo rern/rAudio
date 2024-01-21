@@ -103,6 +103,7 @@ data='
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
 , "gateway"     : "'$gateway'"
+, "hostname"    : "'$( hostname )'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipSub )'"
 , "ipwl"        : "'$ipwl'"
@@ -114,18 +115,7 @@ if [[ -e $dirsystem/accesspoint ]]; then
 	ssid=$( hostname )
 	. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$ssid.ap )
 	data+='
-, "accesspointconf" : { "ip": "'$Address'", "passphrase": "'$Passphrase'", "ssid": "'$ssid'" }'
-fi
-
-if [[ $ipeth || $ipwl ]]; then
-	hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
-	if [[ ! $hostname ]]; then
-		systemctl restart avahi-daemon
-		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
-	fi
-	[[ ! $hostname ]] && hostname=$( hostname )
-	data+='
-, "hostname" : "'$hostname'"'
+, "accesspointconf" : { "ip": "'$Address'", "passphrase": "'$Passphrase'" }'
 fi
 
 data2json "$data" $1
