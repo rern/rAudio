@@ -1310,8 +1310,9 @@ function renderPlayback() {
 		return
 	}
 	
-	$( '.emptyadd, .qr' ).addClass( 'hide' );
+	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#coverTR' ).removeClass( 'empty' );
+	$( '#qr' ).empty();
 	setInfo();
 	setCoverart();
 	setButtonOptions();
@@ -1714,7 +1715,8 @@ function setPlaybackBlank() {
 	loaderHide();
 }
 function setPlaybackBlankQR() {
-	if ( $( '.qr' ).length ) return
+	var ip = S.ip || D.accesspoint.ip;
+	if ( ! ip ) return
 	
 	var htmlqr = '';
 	if ( ! S.ip && D.accesspoint ) {
@@ -1727,7 +1729,6 @@ function setPlaybackBlankQR() {
 				 +'<br>Password: <wh>'+ D.accesspoint.passphrase +'</wh></div>'
 				 +'<div class="qr container">'+ qrap.outerHTML +'</div>';
 	}
-	var ip = S.ip ? S.ip : D.accesspoint.ip;
 	var qr = new QRCode( {
 		  msg : ip
 		, dim : 115
@@ -1737,7 +1738,7 @@ function setPlaybackBlankQR() {
 			 +'<div class="qr"><gr>http://</gr>'+ ip
 			 +'<br><gr>http://</gr>'+ S.hostname +'.local'
 			 +'</div>';
-	$( '#map-cover' ).before( htmlqr );
+	$( '#qr' ).html( htmlqr );
 }
 function setPlaybackStop() {
 	setProgress( 0 );
