@@ -71,22 +71,18 @@ $body = [
 		   <br><a id="passphrase"></a>
 		   <div id="qraccesspoint" class="qr"></div>
 		   <div class="helpblock hide">Access rAudio directly without Wi-Fi router:
- • Connect:
-	- Scan QR code - or
-	- Find the <wh>Access Point</wh> and connect with the password.
+ • Connect <wh>Access Point</wh> with the password or scan QR code
  • Access point setting: '.tab( 'features', 'Features' ).labelIcon( 'Access Point', 'accesspoint' ).'
 
 Note: No internet connection.</div>'
 	)
 	, htmlSectionStatus(
 		  'url'
-		, 'URL'
+		, 'Browser URL'
 		, '<gr>http://</gr><a id="ipwebui"></a>
 			<br><gr>http://</gr><a id="hostwebui"></a>
 			<div id="qrwebui" class="qr"></div>
-			<div class="helpblock hide">Connect:
- • Scan QR code - or
- • Open the <wh>URL</wh> with any web browsers.</div>'
+			<div class="helpblock hide"> • Open <wh>URL</wh> with any web browsers or scan QR code</div>'
 	)
 ];
 htmlSection( $head, $body, 'webui' );

@@ -474,12 +474,8 @@ input.disabled + .switchlabel:after {
 .cga {
 	background: var( --cga ) !important;
 }
-#boxqr .col-l {
-	padding-top: 0;
-	text-align: left;
-}
 .qr {
-	margin: 10px 0 20px 0;
+	margin: 5px 0 10px 0;
 }
 .container {
 	max-width: 658px;

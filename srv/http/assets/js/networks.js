@@ -384,7 +384,7 @@ function renderPage() {
 	} else {
 		renderWlan();
 	}
-	$( '.wladd' ).toggleClass( 'hide', S.accesspoint );
+	$( '.wladd' ).toggleClass( 'hide', S.accesspoint !== false );
 	if ( ! S.activeeth ) {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
