@@ -222,7 +222,7 @@ mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
 notify() { # icon title message delayms
-	local blink delay icon json message title
+	local blink data delay icon json message title
 	[[ $1 == '-ip' ]] && ip=$2 && shift 2
 	if [[ $4 ]]; then
 		delay=$4

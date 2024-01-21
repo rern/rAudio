@@ -22,7 +22,6 @@ else
 		echo "$data" > $diraddons/addonslist.json
 	else
 		online=false
-		data=$( < $diraddons/addonslist.json )
 		notify addons Addons 'Server not reachable.' -1
 	fi
 fi
