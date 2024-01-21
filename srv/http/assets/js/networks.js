@@ -416,7 +416,7 @@ function renderQR() {
 		var http = '<gr>http://</gr>';
 		var html   = http + ip
 				  +'<br>'+ http + S.hostname +'.local'
-				  +'<br>'+ qrCode( http + ip )
+				  +'<br>'+ qrCode( 'http://'+ ip )
 		$( '#qrurl' ).html( html );
 	}
 	$( '#divwebui' ).removeClass( 'hide' );

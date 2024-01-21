@@ -1725,7 +1725,7 @@ function setPlaybackBlankQR() {
 				 +'<div class="qr container">'+ qrCode( D.accesspoint.qr ) +'</div>';
 	}
 	var http  = '<gr>http://</gr>';
-	htmlqr   +=  '<div class="qr container">'+ qrCode( ip ) +'</div>'
+	htmlqr   +=  '<div class="qr container">'+ qrCode( 'http://'+ ip ) +'</div>'
 				+'<div class="qr">'+ http + ip
 				+'<br>'+ http + S.hostname +'.local'
 				+'</div>';
