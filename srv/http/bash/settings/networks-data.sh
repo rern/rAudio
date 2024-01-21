@@ -94,9 +94,11 @@ if [[ $ipr ]]; then
 fi
 [[ ! $gateway ]] && gateway=$gatewaywl
 
+[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ##########
 data='
-, "accesspoint" : '$( getContent $dirsystem/accesspoint )'
+, "ap"          : '$( exists $dirsystem/ap )'
+, "apconf"      : '$apconf'
 , "activebt"    : '$activebt'
 , "activeeth"   : '$( ip -br link | grep -q -m1 ^e && echo true )'
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'

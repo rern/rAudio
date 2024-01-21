@@ -35,8 +35,10 @@ if [[ $1 == withdisplay ]]; then
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
 	display=$( grep -v } $dirsystem/display.json )
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
+	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 	display+='
-, "accesspoint" : '$( getContent $dirsystem/accesspoint )'
+, "ap"          : '$( exists $dirsystem/ap )'
+, "apconf"      : '$apconf'
 , "audiocd"     : '$( exists $dirshm/audiocd )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "color"       : "'$( getContent $dirsystem/color )'"

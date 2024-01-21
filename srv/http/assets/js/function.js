@@ -1698,7 +1698,7 @@ function setPlaybackBlank() {
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
 	setProgress( 0 );
 	$( '#sampling' ).empty();
-	if ( S.ip || D.accesspoint ) {
+	if ( S.ip || D.ap ) {
 		if ( typeof QRCode === 'function' ) {
 			setPlaybackBlankQR();
 		} else {
@@ -1714,19 +1714,19 @@ function setPlaybackBlank() {
 	loaderHide();
 }
 function setPlaybackBlankQR() {
-	var ip = S.ip || D.accesspoint.ip;
+	var ip = S.ip || D.apconf.ip;
 	if ( ! ip ) return
 	
 	var htmlqr = '';
-	if ( ! S.ip && D.accesspoint ) {
-		htmlqr += '<div class="qr gr">Access Point: <wh>'+ D.accesspoint.ssid +'</wh>'
-				 +'<br>Password: <wh>'+ D.accesspoint.passphrase +'</wh></div>'
-				 +'<div class="qr container">'+ qrCode( D.accesspoint.qr ) +'</div>';
+	if ( ! S.ip && D.ap ) {
+		htmlqr += '<div class="qr gr">Access Point: <wh>'+ D.apconf.ssid +'</wh>'
+				 +'<br>Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
+				 +'<div class="qr container">'+ qrCode( D.apconf.qr ) +'</div>';
 	}
 	var http  = '<gr>http://</gr>';
 	htmlqr   +=  '<div class="qr container">'+ qrCode( 'http://'+ ip ) +'</div>'
 				+'<div class="qr">'+ http + ip
-				+'<br>'+ http + S.hostname
+				+'<br>'+ http + ( D.ap ? D.apconf.ssid +'.local' : S.hostname )
 				+'</div>';
 	$( '#qr' ).html( htmlqr );
 }

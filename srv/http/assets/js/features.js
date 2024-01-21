@@ -156,8 +156,8 @@ $( '#setting-accesspoint' ).on( 'click', function() {
 			  [ 'IP',       'text' ]
 			, [ 'Password', 'text' ]
 		]
-		, values       : S.accesspointconf
-		, checkchanged : S.accesspoint
+		, values       : S.apconf
+		, checkchanged : S.ap
 		, checkblank   : true
 		, checkip      : [ 0 ]
 		, checklength  : { 1: [ 8, 'min' ] }

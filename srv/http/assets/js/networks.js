@@ -57,7 +57,7 @@ $( '.wladd' ).on( 'click', function() {
 	infoWiFi();
 } );
 $( '.wlscan' ).on( 'click', function() {
-	if ( S.accesspoint ) {
+	if ( S.ap ) {
 		infoAccesspoint();
 	} else {
 		$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
@@ -109,7 +109,7 @@ $( '.connect' ).on( 'click', function() {
 		return
 	}
 	
-	if ( S.accesspoint ) {
+	if ( S.ap ) {
 		infoAccesspoint();
 		return
 	}
@@ -384,7 +384,7 @@ function renderPage() {
 	} else {
 		renderWlan();
 	}
-	$( '.wladd' ).toggleClass( 'hide', S.accesspoint !== false );
+	$( '.wladd' ).toggleClass( 'hide', S.ap );
 	if ( ! S.activeeth ) {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
@@ -395,21 +395,21 @@ function renderPage() {
 		$( '.lanadd' ).toggleClass( 'hide', S.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
-	$( '#divap' ).toggleClass( 'hide', ! S.accesspoint );
+	$( '#divap' ).toggleClass( 'hide', ! S.ap );
 	renderQR();
 	showContent();
 }
 function renderQR() {
-	var ip = S.ipeth || S.ipwl || S.accesspoint.ip;
+	var ip = S.ipeth || S.ipwl || S.apconf.ip;
 	if ( ! ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return
 	}
 	
-	if ( S.accesspoint ) {
-		var html = S.accesspoint.ssid
-				  +'<br>'+ S.accesspoint.passphrase
-				  +'<br>'+ qrCode( S.accesspoint.qr )
+	if ( S.ap ) {
+		var html = S.apconf.ssid
+				  +'<br>'+ S.apconf.passphrase
+				  +'<br>'+ qrCode( S.apconf.qr )
 		$( '#qrap' ).html( html );
 	}
 	if ( ip ) {
@@ -424,9 +424,9 @@ function renderQR() {
 function renderWlan() {
 	if ( ! $( '#divwifi' ).hasClass( 'hide' ) ) $( '#divwifi .back' ).trigger( 'click' );
 	var htmlwl = '';
-	if ( S.accesspoint ) {
+	if ( S.ap ) {
 		htmlwl += '<li class="wl accesspoint">'+ ico( 'accesspoint' ) +'<grn>•</grn>&ensp;'
-				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.accesspoint.ip +'</li>';
+				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip +'</li>';
 	}
 	if ( S.listwl ) {
 		S.listwl.forEach( list => {

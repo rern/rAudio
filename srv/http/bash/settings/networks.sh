@@ -91,7 +91,7 @@ Security='$security
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
 	
-	if [[ -e $dirsystem/accesspoint && ! $( ipAddress ) ]]; then
+	if [[ -e $dirsystem/ap ]]; then
 		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
 	fi
@@ -137,8 +137,8 @@ Gateway='$GATEWAY $file
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )
-	if [[ -e $dirsystem/accesspoint ]]; then
-		rm -f $dirsystem/accesspoint
+	if [[ -e $dirsystem/ap ]]; then
+		rm -f $dirsystem/{ap,ap.conf}
 		systemctl stop iwd
 		ifconfig $wlandev 0.0.0.0
 		sleep 2

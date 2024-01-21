@@ -25,9 +25,10 @@ iwctlAP() {
 , "passphrase" : "'$Passphrase'"
 , "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
 , "ssid"       : "'$hostname'"
-}' > $dirsystem/accesspoint
+}' > $dirsystem/ap.conf
+		touch $dirsystem/ap
 	else
-		rm -f $dirsystem/accesspoint
+		rm -f $dirsystem/{ap,ap.conf}
 		systemctl stop iwd
 	fi
 	iw $wlandev set power_save off
@@ -77,7 +78,7 @@ accesspoint )
 		iwctlAP
 	else
 		systemctl stop iwd
-		rm -f $dirsystem/accesspoint
+		rm -f $dirsystem/{ap,ap.conf}
 		wlanDisable
 	fi
 	pushRefresh

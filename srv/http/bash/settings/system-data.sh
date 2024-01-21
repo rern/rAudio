@@ -163,7 +163,7 @@ else
 fi
 ##########
 data='
-, "accesspoint"       : '$( exists $dirsystem/accesspoint )'
+, "ap"                : '$( exists $dirsystem/ap )'
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiooutput"       : "'$audiooutput'"
 , "hddapm"            : '$hddapm'

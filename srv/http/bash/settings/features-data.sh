@@ -40,8 +40,8 @@ if [[ -e /usr/bin/iwctl ]]; then
 	. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$( hostname ).ap )
 ##########
 	data+='
-, "accesspoint"      : '$( exists $dirsystem/accesspoint )'
-, "accesspointconf"  : { "IP": "'$Address'", "PASSPHRASE": "'$Passphrase'" }'
+, "ap"               : '$( exists $dirsystem/ap )'
+, "apconf"           : { "IP": "'$Address'", "PASSPHRASE": "'$Passphrase'" }'
 fi
 
 if [[ -e /etc/systemd/system/localbrowser.service ]]; then

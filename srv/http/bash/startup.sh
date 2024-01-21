@@ -87,7 +87,7 @@ if [[ ! $ipaddress && $wlandev ]]; then
 	grep -qrl $wlandev --exclude-dir examples* /etc/netctl && connectedCheck 30
 fi
 
-[[ -e $dirsystem/accesspoint ]] && ap=1
+[[ -e $dirsystem/ap ]] && ap=1
 if [[ $ipaddress ]]; then
 	[[ -e $filebootwifi ]] && rm -f /boot/wifi
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
@@ -171,7 +171,7 @@ fi
 # if no wlan // usb wlan // no access point and no connected wlan, disable wlan
 if (( $( rfkill | grep -c wlan ) > 1 )) \
 	|| ! rfkill | grep -q wlan \
-	|| ( [[ ! -e $dirsystem/accesspoint ]] && ! netctl list | grep -q -m1 ^* ); then
+	|| ( [[ ! -e $dirsystem/ap ]] && ! netctl list | grep -q -m1 ^* ); then
 	rmmod brcmfmac_wcc &> /dev/null
 	rmmod brcmfmac &> /dev/null
 	onboardwlan=false
