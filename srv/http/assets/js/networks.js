@@ -413,13 +413,9 @@ function renderQR() {
 		$( '#qrap' ).html( html );
 	}
 	if ( ip ) {
-		var hostname = '';
-		if ( S.ipeth || S.ipwl ) hostname = S.hostname;
-		if ( ! hostname && S.ap ) hostname = S.apconf.ssid +'.local';
-		var http     = '<gr>http://</gr>';
-		var html     = http + ip
-					 + ( hostname ? '<br>'+ http + hostname : '' )
-					 +'<br>'+ qrCode( 'http://'+ ip )
+		var html = '<gr>http://</gr>'+ ip
+				 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
+				 +'<br>'+ qrCode( 'http://'+ ip )
 		$( '#qrurl' ).html( html );
 	}
 	$( '#divwebui' ).removeClass( 'hide' );
