@@ -4,7 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240120
+# 20240121
+file=$dirshm/avahihostname
+[[ ! -e $file ]] && avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $file
+
 if [[ ! -e /usr/bin/iwctl ]]; then
 	pacman -Sy --noconfirm iwd
 	mkdir -p /etc/iwd /var/lib/iwd/ap

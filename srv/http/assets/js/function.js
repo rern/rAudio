@@ -1699,7 +1699,7 @@ function setPlaybackBlank() {
 	setProgress( 0 );
 	$( '#sampling' ).empty();
 	if ( S.ip || D.accesspoint ) {
-		if ( V.qr ) {
+		if ( typeof QRCode === 'function' ) {
 			setPlaybackBlankQR();
 		} else {
 			$.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
@@ -1709,7 +1709,6 @@ function setPlaybackBlank() {
 	} else {
 		$( '#coverart' ).removeClass( 'hide' );
 		$( '#sampling' ).html( 'Network not connected:&emsp; <a href="settings.php?p=networks">'+ ico( 'networks i-22 wh' ) +'&ensp;Setup</a>' );
-		$( '.qr' ).remove();
 	}
 	vu();
 	loaderHide();
