@@ -243,7 +243,7 @@ function infoLan() {
 		, buttonlabel  : static ? ico( 'undo' ) +'DHCP' : ''
 		, button       : static ? () => {
 			bash( [ 'lanedit' ] );
-			reconnect( icon, S.hostname +'.local', 10 );
+			reconnect( icon, S.hostname, 10 );
 		} : ''
 		, ok           : () => infoLanSet( infoVal() )
 	} );
@@ -407,7 +407,7 @@ function renderQR() {
 	}
 	
 	if ( S.accesspoint ) {
-		var html = S.hostname
+		var html = S.accesspoint.ssid
 				  +'<br>'+ S.accesspoint.passphrase
 				  +'<br>'+ qrCode( S.accesspoint.qr )
 		$( '#qrap' ).html( html );
@@ -415,7 +415,7 @@ function renderQR() {
 	if ( ip ) {
 		var http = '<gr>http://</gr>';
 		var html   = http + ip
-				  +'<br>'+ http + S.hostname +'.local'
+				  +'<br>'+ http + S.hostname
 				  +'<br>'+ qrCode( 'http://'+ ip )
 		$( '#qrurl' ).html( html );
 	}

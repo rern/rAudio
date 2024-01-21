@@ -213,7 +213,7 @@ if [[ $pllength  == 0 && ! $snapclient ]]; then
 ########
 	status+='
 , "coverart" : ""
-, "hostname" : "'$( hostname )'"
+, "hostname" : "'$( getContent $dirshm/avahihostname )'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
 	outputStatus

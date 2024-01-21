@@ -103,7 +103,7 @@ data='
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
 , "gateway"     : "'$gateway'"
-, "hostname"    : "'$( hostname )'"
+, "hostname"    : "'$( getContent $dirshm/avahihostname )'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipSub )'"
 , "ipwl"        : "'$ipwl'"

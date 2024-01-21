@@ -112,6 +112,7 @@ if [[ $ipaddress ]]; then
 		fi
 		appendSortUnique $ipaddress $filesharedip
 	fi
+	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
 	$dirsettings/addons-data.sh &> /dev/null &
 else
 	if [[ $wlandev && ! $ap ]]; then

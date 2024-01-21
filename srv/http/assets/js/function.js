@@ -1720,14 +1720,14 @@ function setPlaybackBlankQR() {
 	
 	var htmlqr = '';
 	if ( ! S.ip && D.accesspoint ) {
-		htmlqr += '<div class="qr gr">Access Point: <wh>'+ S.hostname +'</wh>'
+		htmlqr += '<div class="qr gr">Access Point: <wh>'+ D.accesspoint.ssid +'</wh>'
 				 +'<br>Password: <wh>'+ D.accesspoint.passphrase +'</wh></div>'
 				 +'<div class="qr container">'+ qrCode( D.accesspoint.qr ) +'</div>';
 	}
 	var http  = '<gr>http://</gr>';
 	htmlqr   +=  '<div class="qr container">'+ qrCode( 'http://'+ ip ) +'</div>'
 				+'<div class="qr">'+ http + ip
-				+'<br>'+ http + S.hostname +'.local'
+				+'<br>'+ http + S.hostname
 				+'</div>';
 	$( '#qr' ).html( htmlqr );
 }
