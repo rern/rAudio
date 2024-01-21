@@ -21,15 +21,16 @@ DisablePeriodicScan=true
 [Network]
 EnableIPv6=false
 " >/etc/iwd/main.conf
+	passphrase=$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )
+	address=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
 	echo "\
 [Security]
-Passphrase=raudioap
+Passphrase=$passphrase
 
 [IPv4]
-Address=192.168.5.1
-Gateway=192.168.5.1
+Address=$address
+Gateway=$address
 Netmask=255.255.255.0
-DNSList=8.8.8.8
 " > /var/lib/iwd/ap/rAudio.ap
 fi
 
