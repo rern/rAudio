@@ -84,13 +84,7 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 connectedCheck 5
 # if lan not connected and enabled wifi profile available, wait for wi-fi connection
 if [[ ! $ipaddress && $wlandev ]]; then
-	readarray -t netctllist <<< $( netctl list | sed -E 's/^. //' )
-	if [[ $netctllist ]]; then
-		for profile in "${netctllist[@]}"; do
-			[[ $( netctl is-enabled "$profile" ) == enabled ]] && enabledprofile=1 && break
-		done
-		[[ $enabledprofile ]] && connectedCheck 30
-	fi
+	ls -d /etc/systemd/system/netctl* &> /dev/null && connectedCheck 30
 fi
 
 [[ -e $dirsystem/ap ]] && ap=1
