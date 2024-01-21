@@ -34,7 +34,7 @@ fi
 
 wlandev=$( < $dirshm/wlan )
 listWlan() {
-	local dbm listwl notconnected profiles profile
+	local dbm notconnected profiles profile
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
@@ -63,12 +63,12 @@ listWlan() {
 		done
 	fi
 	[[ $notconnected ]] && listwl+="$notconnected"
-	[[ $listwl ]] && LISTWL='[ '${listwl:1}' ]' || LISTWL=false
+	[[ $listwl ]] && listwl='[ '${listwl:1}' ]' || listwl=false
 }
 if [[ $1 == pushwl ]]; then
 	pushwl=1
 	listWlan
-	pushData wlan '{ "listwl": '$LISTWL', "ipwl": "'$IPWL'", "gatewaywl": "'$gatewaywl'" }'
+	pushData wlan '{ "listwl": '$listwl', "ipwl": "'$ipwl'", "gatewaywl": "'$gatewaywl'" }'
 	exit
 fi
 
@@ -94,30 +94,26 @@ if [[ $ipr ]]; then
 fi
 [[ ! $gateway ]] && gateway=$gatewaywl
 
-# accesspoint
-if [[ -e $dirsystem/accesspoint ]]; then
-	fileap=/var/lib/iwd/ap/$( hostname ).ap
-	accesspoint='{
-  "ip"         : "'$( getVar Address $fileap )'"
-, "passphrase" : "'$( getVar Passphrase $fileap )'"
-}'
-fi
 ##########
 data='
+, "accesspoint" : '$( exists $dirsystem/accesspoint )'
 , "activebt"    : '$activebt'
 , "activeeth"   : '$( ip -br link | grep -q -m1 ^e && echo true )'
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
 , "gateway"     : "'$gateway'"
+, "hostname"    : "'$( hostname )'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipSub )'"
-, "ipwl"        : "'$IPWL'"
+, "ipwl"        : "'$ipwl'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
-, "listwl"      : '$LISTWL'
-, "iwd"         : '$iwd'
-, "hostname"    : "'$( hostname )'"
-, "wldev"       : "'$wldev'"'
+, "listwl"      : '$listwl
+
+if [[ -e $dirsystem/accesspoint ]]; then
+	data+='
+, "accesspointconf" : { "IP": "'$( getVar Address $fileap )'", "PASSPHRASE": "'$( getVar Passphrase $fileap )'" }'
+fi
 
 data2json "$data" $1
