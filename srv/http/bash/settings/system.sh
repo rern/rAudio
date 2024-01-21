@@ -42,12 +42,14 @@ i2c-dev"
 	fi
 	grep -Ev '^#|^\s*$' <<< $config | sort -u > /boot/config.txt
 	pushRefresh
+	[[ $CMD == powerbutton ]] && return
+	
 	list=$( grep -v "$CMD" $dirshm/reboot 2> /dev/null )
 	if [[ $rebooti2c ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
 		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
-		name=$( sed -n "/.*'$CMD' *=>/ {s/.*'name' => '//; s/'.*//; p}" /srv/http/settings/system.php )
-		notify $CMD "$name" 'Reboot required.' 5000
+		label=$( sed -n "/.*'$CMD' *=>/ {s/.*'label' => '//; s/'.*//; p}" /srv/http/settings/system.php )
+		notify $CMD "$label" 'Reboot required.' 5000
 		list+="
 $CMD"
 	fi
@@ -85,8 +87,8 @@ soundProfile() {
 		touch $dirsystem/soundprofile
 	fi
 	sysctl vm.swappiness=$swappiness
-	lan=$( ifconfig | grep ^e | cut -d: -f1 )
-	if ifconfig | grep -q -m1 $lan; then
+	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
+	if [[ $lan ]]; then
 		ip link set $lan mtu $mtu
 		ip link set $lan txqueuelen $txqueuelen
 	fi
@@ -171,11 +173,13 @@ hddsleep )
 	pushRefresh
 	;;
 hostname )
+	nameprev=$( hostname )
 	hostnamectl set-hostname $NAME
-	sed -i -E 's/^(ssid=).*/\1'$NAME'/' /etc/hostapd/hostapd.conf
 	sed -i -E 's/(name = ").*/\1'$NAME'"/' /etc/shairport-sync.conf
 	sed -i -E 's/^(friendlyname = ).*/\1'$NAME'/' /etc/upmpdcli.conf
-	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
+	systemctl try-restart avahi-daemon bluetooth localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
+	mv /var/lib/iwd/ap/{$nameprev,$NAME}.ap
+	[[ -e $dirsystem/ap ]] && $dirsettings/features.sh iwctlap
 	pushRefresh
 	;;
 i2seeprom )
@@ -356,7 +360,8 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	else
 		if systemctl -q is-active powerbutton; then
 			systemctl disable --now powerbutton
-			gpio -1 write $( getVar led $dirsystem/powerbutton.conf ) 0
+			. $dirsystem/powerbutton.conf
+			gpioset -t0 -c0 $led=0
 		fi
 	fi
 	configTxt
@@ -456,7 +461,7 @@ statusbluetooth )
 $( bluetoothctl show )"
 	;;
 statussoundprofile )
-	dirlan=/sys/class/net/$( ifconfig | grep ^e | head -1 | cut -d: -f1 )
+	dirlan=/sys/class/net/$( ip -br link | awk '/^e/ {print $1; exit}' )
 	for f in /proc/sys/vm/swappiness $dirlan/mtu $dirlan/tx_queue_len; do
 		[[ ! -e $f ]] && continue
 		
@@ -605,7 +610,7 @@ vuled )
 wlan )
 	if [[ $ON ]]; then
 		! lsmod | grep -q -m1 brcmfmac && modprobe brcmfmac
-		ifconfig wlan0 up
+		ip link set wlan0 up
 		echo wlan0 > $dirshm/wlan
 		iw wlan0 set power_save off
 		[[ $APAUTO ]] && rm -f $dirsystem/wlannoap || touch $dirsystem/wlannoap
@@ -614,13 +619,11 @@ wlan )
 			iw reg set $REGDOM
 		fi
 	else
-		systemctl -q is-active hostapd && $dirsettings/features.sh hostapd$'\n'OFF
-		ifconfig wlan0 down
 		rmmod brcmfmac_wcc &> /dev/null
-		rmmod brcmfmac
+		rmmod brcmfmac &> /dev/null
 	fi
 	pushRefresh
-	ifconfig wlan0 | grep -q -m1 wlan0.*UP && active=true || active=false
+	[[ $( cat /sys/class/net/wlan0/operstate ) == up ]] && active=true || active=false
 	pushData refresh '{ "page": "networks", "activewlan": '$active' }'
 	;;
 	

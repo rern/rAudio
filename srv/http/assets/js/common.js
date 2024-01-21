@@ -966,20 +966,17 @@ function infoWidth() {
 		var widthmax = I.boxwidth === 'max';
 		if ( widthmax ) {
 			if ( I.width ) {
-				var maxw = ( I.width > V.wW ? I.width : V.wW ) +'px';
+				var maxW = I.width < V.wW ? I.width : V.wW;
 			} else {
-				var maxw = '';
+				var maxW = V.wW > 600 ? 600 : V.wW;
 			}
-			$( '#infoBox' ).css( {
-				  width       : V.wW > 600 ? '600px' : V.wW  +'px'
-				, 'width' : maxw
-			} );
+			$( '#infoBox' ).css( 'width', maxW +'px' );
 		}
-		var allW = $( '#infoList' ).width();
-		var labelW = $( '#infoList td:first-child' ).width() || 0;
-		var boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+		var allW   = $( '#infoList' ).width();
+		var labelW = Math.round( $( '#infoList td:first-child' ).width() ) || 0;
+		var boxW   = ( widthmax ? allW - labelW - 20 : I.boxwidth );
 	} else {
-		var boxW = 230;
+		var boxW   = 230;
 	}
 	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).parent().css( 'width', boxW );
 	if ( $( '#infoList select' ).length ) {
@@ -1085,6 +1082,15 @@ function loaderHide() {
 function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
+}
+function qrCode( msg ) {
+	var qr = QRCode( {
+		  msg : msg
+		, dim : 115
+		, pad : 0
+		, pal : [ '#969a9c' ]
+	} );
+	return qr.outerHTML
 }
 
 // select2 --------------------------------------------------------------------

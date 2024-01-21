@@ -24,7 +24,7 @@ $( '.back' ).on( 'click', function() {
 	refreshData();
 } );
 $( '.btscan' ).on( 'click', function() {
-	$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
+	$( '#help, #divinterface, #divwebui' ).addClass( 'hide' );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
 } );
@@ -57,10 +57,10 @@ $( '.wladd' ).on( 'click', function() {
 	infoWiFi();
 } );
 $( '.wlscan' ).on( 'click', function() {
-	if ( S.hostapd ) {
+	if ( S.ap ) {
 		infoAccesspoint();
 	} else {
-		$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
+		$( '#help, #divinterface, #divwebui' ).addClass( 'hide' );
 		$( '#divwifi' ).removeClass( 'hide' );
 		scanWlan();
 	}
@@ -73,7 +73,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	if ( V.li.hasClass( 'accesspoint' ) ) return
+	if ( V.li.hasClass( 'ap' ) ) return
 	
 	V.listid  = V.li.parent().prop( 'id' );
 	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
@@ -109,7 +109,7 @@ $( '.connect' ).on( 'click', function() {
 		return
 	}
 	
-	if ( S.hostapd ) {
+	if ( S.ap ) {
 		infoAccesspoint();
 		return
 	}
@@ -243,7 +243,7 @@ function infoLan() {
 		, buttonlabel  : static ? ico( 'undo' ) +'DHCP' : ''
 		, button       : static ? () => {
 			bash( [ 'lanedit' ] );
-			reconnect( icon, S.hostname +'.local', 10 );
+			reconnect( icon, S.hostname, 10 );
 		} : ''
 		, ok           : () => infoLanSet( infoVal() )
 	} );
@@ -346,13 +346,6 @@ function psOnClose() {
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
 }
-function qr( msg ) {
-	return new QRCode( {
-		  msg : msg
-		, dim : 130
-		, pad : 0
-	} );
-}
 function reconnect( icon, ip, delay ) {
 	loader();
 	notify( icon, 'IP Address', 'Change to '+ ip +' in <a>'+ delay +'</a>s ...' );
@@ -391,7 +384,7 @@ function renderPage() {
 	} else {
 		renderWlan();
 	}
-	$( '.wladd' ).toggleClass( 'hide', S.hostapd !== false );
+	$( '.wladd' ).toggleClass( 'hide', S.ap );
 	if ( ! S.activeeth ) {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
@@ -402,57 +395,51 @@ function renderPage() {
 		$( '.lanadd' ).toggleClass( 'hide', S.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
-	$( '#divaccesspoint' ).toggleClass( 'hide', ! S.hostapd );
-	if ( ! $( '#divinterface' ).hasClass( 'hide' ) ) renderQR();
+	$( '#divap' ).toggleClass( 'hide', ! S.ap );
+	renderQR();
 	showContent();
 }
 function renderQR() {
-	var ip = S.ipeth || S.ipwl;
-	if ( ! ip ) return
-	
-	if ( ip && ip !== S.hostapd.ip ) {
-		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
-		if( S.hostname ) ip += '<br><gr>http://</gr>'+ S.hostname +'.local';
-		$( '#ipwebui' ).html( ip );
-		$( '#divwebui' ).removeClass( 'hide' );
-	} else {
+	var ip = S.ipeth || S.ipwl || S.apconf.ip;
+	if ( ! ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
+		return
 	}
-	if ( S.hostapd ) {
-		$( '#ipwebuiap' ).html( 'Web User Interface<br>http://<wh>'+ S.hostapd.ip +'</wh>' );
-		$( '#ssid' ).text( S.hostapd.ssid );
-		$( '#passphrase' ).text( S.hostapd.passphrase )
-		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ S.hostapd.ssid +';T:WPA;P:'+ S.hostapd.passphrase +';' ) );
-		$( '#qrwebuiap' ).html( qr( 'http://'+ S.hostapd.ip ) );
-		$( '#boxqr' ).removeClass( 'hide' );
-	} else {
-		$( '#ipwebuiap, #ssid, #passphrase, #qraccesspoint, #qrwebuiap' ).empty();
-		$( '#boxqr' ).addClass( 'hide' );
+	
+	if ( S.ap ) {
+		var html = S.apconf.ssid
+				  +'<br>'+ S.apconf.passphrase
+				  +'<br>'+ qrCode( S.apconf.qr )
+		$( '#qrap' ).html( html );
 	}
+	if ( ip ) {
+		var html = '<gr>http://</gr>'+ ip
+				 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
+				 +'<br>'+ qrCode( 'http://'+ ip )
+		$( '#qrurl' ).html( html );
+	}
+	$( '#divwebui' ).removeClass( 'hide' );
 }
 function renderWlan() {
 	if ( ! $( '#divwifi' ).hasClass( 'hide' ) ) $( '#divwifi .back' ).trigger( 'click' );
 	var htmlwl = '';
+	if ( S.ap ) {
+		htmlwl += '<li class="wl ap">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
+				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip +'</li>';
+	}
 	if ( S.listwl ) {
 		S.listwl.forEach( list => {
 			if ( list.ip ) {
-				if ( ! S.hostapd ) {
-					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
-					htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
-							 + ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
-							 +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
-				} else {
-					htmlwl += '<li class="wl accesspoint">'+ ico( 'accesspoint' ) +'<grn>•</grn>&ensp;'
-							 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.hostapd.ip +'</li>';
-				}
+				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
+				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
+						 + ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
+						 +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
 				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•&ensp;</gr>'+ list.ssid +'</li>';
 			}
 		} );
-		$( '#listwl' ).html( htmlwl );
-	} else {
-		$( '#listwl' ).empty();
 	}
+	$( '#listwl' ).html( htmlwl );
 	$( '#divwl' ).removeClass( 'hide' );
 	bannerHide();
 }

@@ -9,7 +9,10 @@ else
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
 	pushData power '{ "type": "reboot", "startup": '$startup' }'
 fi
+
 playerActive upnp && $dirbash/cmd.sh playerstop
+[[ -e $dirshm/apstartup ]] && rm -f $dirsystem/{ap,ap.conf}
+
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )
 	ipclients=$( grep -v $ipserver $filesharedip )

@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1704627299' );
+	src         : url( '/assets/fonts/rern.woff2?v=1705839327' );
 }
 @font-face {
 	font-family : Lato;
@@ -38,6 +38,7 @@ i {
 .i-airplay::before         { content: '\F580' }
 .i-album::before           { content: '\F555' }
 .i-albumartist::before     { content: '\F557' }
+.i-ap::before              { content: '\F554' }
 .i-arrow-right::before     { content: '\F603' }
 .i-artist::before          { content: '\F556' }
 .i-audiocd::before         { content: '\F538' }
@@ -107,7 +108,6 @@ i {
 .i-hdmi::before            { content: '\F57B' }
 .i-help::before            { content: '\F560' }
 .i-hide::before            { content: '\F575' }
-.i-hostapd::before         { content: '\F554' }
 .i-hostname::before        { content: '\F590' }
 .i-httpd::before           { content: '\F55D' }
 .i-i2smodule::before       { content: '\F571' }
@@ -365,6 +365,16 @@ codered  {
 }
 .splash svg {
 	animation: none !important;
+}
+
+c,
+code {
+	font-family: 'Inconsolata';
+	font-size: 15px;
+	color: var( --cg75 );
+	background-color: var( --cgd );
+	padding: 0 4px;
+	border-radius: 3px;
 }
 
 /* banner() */
@@ -940,20 +950,11 @@ input[ type=radio ]:disabled {
 	margin-bottom : 0;
 }
 #infoFilename {
-	max-width: 95%;
 	height: 37px;
+	padding: 0 10px;
 }
 #infoButton {
 	margin-top: 5px;
-}
-#infoOverlay code {
-	display: inline-block;
-	padding: 3px;
-	line-height: 14px;
-	border-radius: 3px;
-	background: #000000;
-	font-family: Inconsolata !important;
-	color: var( --cw );
 }
 .infomenu {
 	display: inline-block;

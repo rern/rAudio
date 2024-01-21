@@ -80,6 +80,9 @@ ul {
 	line-height: 20px;
 	overflow-x: auto;
 }
+.section pre code {
+	background: var( --cg );
+}
 #prefiletype {
 	white-space: pre-wrap;
 }
@@ -295,15 +298,6 @@ heading i.disabled {
 	float: right;
 	color: var( --cm );
 }
-c,
-code {
-	font-family: 'Inconsolata';
-	font-size: 15px;
-	color: var( --cg75 );
-	background-color: var( --cg );
-	padding: 0 4px;
-	border-radius: 3px;
-}
 .entries {
 	display: block;
 	margin: -16px 0 10px 0;
@@ -480,18 +474,8 @@ input.disabled + .switchlabel:after {
 .cga {
 	background: var( --cga ) !important;
 }
-#boxqr .col-l {
-	padding-top: 0;
-	text-align: left;
-}
-.qr {
-	margin: 15px 0;
-	width: 130px;
-	height: 130px;
-}
-.qr svg {
-	fill: var( --cg60 );
-	background: #000000;
+#divwebui svg {
+	margin: 5px 0 10px 0;
 }
 .container {
 	max-width: 658px;
@@ -600,6 +584,10 @@ input.disabled + .switchlabel:after {
 #warning i {
 	font-size: 16px;
 	vertical-align: 0;
+}
+.divap {
+	float: left;
+	width: 170px;
 }
 
 @media (max-height: 570px) {

@@ -10,7 +10,7 @@ fi
 
 /srv/http/bash/settings/features.sh localbrowserxset
 
-if ifconfig | grep -q -m1 inet.*broadcast; then
+if [[ $( ipAddress ) ]]; then
 	[[ $cursor ]] && cursor=yes || cursor=no
 else
 	cursor=yes

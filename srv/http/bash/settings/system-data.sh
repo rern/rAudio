@@ -89,19 +89,21 @@ $soccpu"
 	echo $system > $dirshm/system
 fi
 
-ifconfiglan=$( ifconfig | grep -A2 ^e | head -3 )
-if [[ $ifconfiglan ]]; then
+lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
+if [[ $lan ]]; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf=$( conf2json $dirsystem/soundprofile.conf )
 	else
 		swappiness=$( sysctl vm.swappiness | cut -d' ' -f3 )
-		mtu=$( awk '/mtu/ {print $4}' <<< $ifconfiglan )
-		txqueuelen=$( awk '/txqueuelen/ {print $4}' <<< $ifconfiglan )
+		dirlan=/sys/class/net/$lan
+		mtu=$( cat $dirlan/mtu )
+		txqueuelen=$( cat $dirlan/tx_queue_len )
 		soundprofileconf='{ "SWAPPINESS": '$swappiness', "MTU": '$mtu', "TXQUEUELEN": '$txqueuelen' }'
 	fi
 fi
 
-packageActive bluetooth hostapd nfs-server rotaryencoder smb
+packageActive bluetooth nfs-server rotaryencoder smb
+
 # i2smodule
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )
@@ -161,11 +163,11 @@ else
 fi
 ##########
 data='
+, "ap"                : '$( exists $dirsystem/ap )'
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiooutput"       : "'$audiooutput'"
 , "hddapm"            : '$hddapm'
 , "hddsleep"          : '${hddapm/128/false}'
-, "hostapd"           : '$hostapd'
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2smodulesw"       : '$i2smodulesw'
@@ -212,6 +214,7 @@ if [[ $onboardsound ]]; then
 , "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 fi
+
 if [[ -e $dirshm/onboardwlan ]]; then
 	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
 	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
@@ -238,6 +241,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
 fi
+
 if [[ $rpi3bplus ]]; then
 ##########
 	data+='

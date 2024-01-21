@@ -3,11 +3,11 @@ $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 $id_data      = [
-	  'autoplay'       => [ 'label' => 'AutoPlay' ]
+	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                   'status' => true, 'exist' => 'iwctl' ]
+	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
 	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false,    'status' => true, 'exist' => 'camilladsp' ]
 	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true, 'exist' => 'mediamtx' ]
 	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
-	, 'hostapd'        => [ 'label' => 'Access Point',     'sub' => 'hostapd',                               'status' => true, 'exist' => 'hostapd' ]
 	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
 	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'localbrowser',                          'status' => true, 'exist' => 'firefox' ]
 	, 'login'          => [ 'label' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
@@ -139,10 +139,10 @@ htmlSection( $head, $body, 'dsp' );
 $head = [ 'title' => 'Others' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'       => 'hostapd'
+		  'id'       => 'ap'
 		, 'disabled' => labelIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
 		, 'help'     => <<< EOF
-<a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
+<a href="https://iwd.wiki.kernel.org/ap_mode">iNet Wireless Daemon</a> (iwd) - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
  · Avoid double quotes <c>"</c> in password.
 EOF

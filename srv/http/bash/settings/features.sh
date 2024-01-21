@@ -4,6 +4,35 @@
 
 args2var "$1"
 
+iwctlAP() {
+	wlanDisable # on-board wlan - force rmmod for ap to start
+	wlandev=$( < $dirshm/wlan )
+	if ! rfkill | grep -q wlan; then
+		modprobe brcmfmac
+	else
+		ip link set $wlandev down
+	fi
+	ip link set $wlandev up
+	systemctl restart iwd
+	sleep 1
+	hostname=$( hostname )
+	iwctl device $wlandev set-property Mode ap
+	iwctl ap $wlandev start-profile $hostname
+	if iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then
+		. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
+		echo '{
+  "ip"         : "'$Address'"
+, "passphrase" : "'$Passphrase'"
+, "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
+, "ssid"       : "'$hostname'"
+}' > $dirsystem/ap.conf
+		touch $dirsystem/ap
+	else
+		rm -f $dirsystem/{ap,ap.conf}
+		systemctl stop iwd
+	fi
+	iw $wlandev set power_save off
+}
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser
@@ -34,9 +63,28 @@ pushRestartMpd() {
 pushSubmenu() {
 	pushData display '{ "submenu": "'$1'", "value": '$2' }'
 }
+wlanDisable() {
+	lsmod | grep -q brcmfmac && $dirsettings/system.sh wlan$'\n'OFF
+}
 
 case $CMD in
 
+ap )
+	wlandev=$( < $dirshm/wlan )
+	if [[ $ON ]]; then
+		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
+' -e 's/(Address=).*/\1'$IP'/
+' /var/lib/iwd/ap/$( hostname ).ap
+		iwctlAP
+	else
+		systemctl stop iwd
+		rm -f $dirsystem/{ap,ap.conf}
+		wlanDisable
+	fi
+	pushRefresh
+	pushData refresh '{ "page": "system", "iwd": '$TF' }'
+	pushRefresh networks
+	;;
 autoplay | lyrics | scrobble )
 	[[ $CMD == lyrics ]] && sed -i '/^url/ s|/$||' $dirsystem/lyrics.conf
 	enableFlagSet
@@ -111,39 +159,14 @@ equalizer )
 	pushData reload 1
 	pushRestartMpd equalizer $TF
 	;;
-hostapd )
-	if [[ $ON ]]; then
-		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan
-		ipsub=${IP%.*}
-		ipnext=$ipsub.$(( ${IP/*.} + 1 ))
-		iplast=$ipsub.254
-		iprange=$ipnext,$iplast,24h
-		sed -i -E -e 's/^(dhcp-range=).*/\1'$iprange'/
-' -e 's/^(.*option:router,).*/\1'$IP'/
-' -e 's/^(.*option:dns-server,).*/\1'$IP'/
-' /etc/dnsmasq.conf
-		sed -i -E 's/(wpa_passphrase=).*/\1'$PASSPHRASE'/' /etc/hostapd/hostapd.conf
-		netctl stop-all
-		wlandev=$( < $dirshm/wlan )
-		if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then
-			modprobe brcmfmac
-			iw wlan0 set power_save off
-		fi
-		ifconfig $wlandev $router
-		serviceRestartEnable
-	else
-		systemctl disable --now hostapd
-		$dirsettings/system.sh wlan$'\n'OFF
-	fi
-	pushRefresh
-	pushData refresh '{ "page": "system", "hostapd": '$TF' }'
-	pushRefresh networks
-	;;
 httpd )
 	[[ $ON ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
 	pushRefresh
 	$dirsettings/player-data.sh pushrefresh
+	;;
+iwctlap )
+	iwctlAP
 	;;
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2

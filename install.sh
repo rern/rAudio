@@ -4,7 +4,76 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240111
+# 20240121
+file=$dirshm/avahihostname
+[[ ! -e $file ]] && avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $file
+
+if [[ ! -e /usr/bin/iwctl ]]; then
+	pacman -Sy --noconfirm iwd
+	mkdir -p /etc/iwd /var/lib/iwd/ap
+	echo "\
+[General]
+EnableNetworkConfiguration=true
+
+[Scan]
+DisablePeriodicScan=true
+
+[Network]
+EnableIPv6=false
+" >/etc/iwd/main.conf
+	passphrase=$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )
+	address=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
+	echo "\
+[Security]
+Passphrase=$passphrase
+
+[IPv4]
+Address=$address
+" > /var/lib/iwd/ap/rAudio.ap
+fi
+
+if [[ ! -e /usr/bin/gpioset ]]; then
+	pacman -Sy --noconfirm libgpiod
+	
+	file=$dirsystem/powerbutton.conf
+	if [[ -e $file ]]; then
+	. $file
+	echo "\
+on=${j8_bcm[on]}
+sw=${j8_bcm[sw]}
+led=${j8_bcm[led]}
+reserved=${j8_bcm[reserved]}" > $file
+		systemctl -q is-enabled powerbutton && powerbuttonrestart=1
+	fi
+	
+	file=$dirsystem/relays.conf
+	if [[ -e $file ]]; then
+		. $file
+		for i in $on; do
+			onnew+=" ${j8_bcm[i]}"
+		done
+		for i in $off; do
+			offnew+=" ${j8_bcm[i]}"
+		done
+		new=$( grep -Ev '^on=|^off=' $file )
+		conf="\
+on='${onnew:1}'
+off='${offnew:1}'
+$( grep -Ev '^on=|^off=' $file )"
+		echo "$conf" > $file
+		
+		file=$dirsystem/relays.json
+		pins=$( jq keys < $file | tr -d '"[],\n' )
+		for p in $pins; do
+			json+=', "'${j8_bcm[p]}'": '$( jq '.["'$p'"]' < $file )
+		done
+		jq <<< "{ ${json:1} }" > $file
+	fi
+fi
+
+[[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/$arch/$repo' > /etc/pacman.d/mirrorlist
+
+# 20240113
 file=/etc/security/pam_env.conf
 if [[ -e /usr/bin/firefox ]] && ! grep -q MOZ_USE_XINPUT2 $file; then
 	echo MOZ_USE_XINPUT2 DEFAULT=1 >> $file
@@ -18,7 +87,7 @@ if [[ -e /usr/bin/camilladsp ]]; then
 	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.1' ]]; then
 		systemctl stop camilladsp
 		rm -f /etc/default/camilladsp /usr/lib/systemd/system/camilladsp.service
-		pacman -Sy --needed --noconfirm camilladsp
+		pacman -Sy --noconfirm camilladsp
 		files=$( grep -rl enable_resampling $dircamilladsp )
 		if [[ $files ]]; then
 			readarray -t files <<< $files
@@ -32,7 +101,7 @@ fi
 
 # 20231216
 if [[ ! -e /boot/kernel.img && $( pacman -Q python-websockets ) != 'python-websockets 12.0-1' ]]; then
-	pacman -Sy --needed --noconfirm python-websockets
+	pacman -Sy --noconfirm python-websockets
 	systemctl restart websocket
 fi
 
@@ -77,16 +146,6 @@ if [[ ! -e /lib/libfdt.so ]]; then
 	systemctl try-restart rotaryencoder
 fi
 
-# 20231118
-grep -q dhcpcd /etc/pacman.conf && sed -i -E 's/(IgnorePkg   =).*/#\1/' /etc/pacman.conf
-
-# 20231111
-file=$dirsystem/scrobble.conf
-[[ -e $file ]] && sed -i '/notify/ d' $file
-
-if [[ -e /boot/kernel8.img ]]; then
-	pacman -Q wiringpi | grep 181 && pacman -Sy --noconfirm wiringpi
-fi
 #-------------------------------------------------------------------------------
 installstart "$1"
 

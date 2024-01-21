@@ -27,8 +27,7 @@ fi
 dL=${#delay[@]}
 i=0
 for pin in $pins; do
-	gpio -1 mode $pin out
-	gpio -1 write $pin $onoff
+	gpioset -t0 -c0 $pin=$onoff
 	line=$(( i + 1 ))
 	message=$( sed "$line s|$|</$color>|" <<< $( echo -e $order ) ) # \n      > newline > sed appends color close tag
 	message=$( sed -z 's/\n/\\n/g' <<< $message )                   # newline > \n for json

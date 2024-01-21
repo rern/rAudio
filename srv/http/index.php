@@ -228,6 +228,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 				<div id="time-band" class="band transparent"></div>
 				<img id="coverart" src="" class="cover hide">
 				<?=$htmlvumeter?>
+				<div id="qr"></div>
 				<div id="map-cover">
 					<?=i( 'coverTL', 'scale-dn map mapcover r1 c1 ws hs' )
 					  .i( 'coverT',  'guide map mapcover r1 c2 wl hs' )

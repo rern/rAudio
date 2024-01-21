@@ -8,7 +8,7 @@
 
 . /srv/http/bash/common.sh
 
-packageActive camilladsp hostapd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
+packageActive camilladsp localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
 ##########
 data='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
@@ -35,33 +35,15 @@ data='
 , "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )
-if [[ -e /usr/bin/hostapd ]]; then
-	ip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
-	wpa_passphrase=$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )
+
+if [[ -e /usr/bin/iwctl ]]; then
+	. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$( hostname ).ap )
 ##########
 	data+='
-, "hostapd"          : '$hostapd'
-, "hostapdconf"      : { "IP": "'$ip'", "PASSPHRASE": "'$wpa_passphrase'" }
-, "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
+, "ap"               : '$( exists $dirsystem/ap )'
+, "apconf"           : { "IP": "'$Address'", "PASSPHRASE": "'$Passphrase'" }'
 fi
-##########
-[[ -e /usr/bin/shairport-sync ]] && data+='
-, "shairport-sync"   : '$shairportsync
-##########
-[[ -e /usr/bin/snapserver ]] && data+='
-, "snapclientactive" : '$snapclient'
-, "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
-, "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
-, "snapclient"       : '$( exists $dirsystem/snapclient )'
-, "snapclientconf"   : { "LATENCY": '$( grep latency /etc/default/snapclient | tr -d -c 0-9 )' }'
-##########
-[[ -e /usr/bin/spotifyd ]] && data+='
-, "spotifyd"         : '$spotifyd'
-, "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotifykey 2> /dev/null && echo true )
-##########
-[[ -e /usr/bin/upmpdcli ]] && data+='
-, "upmpdcli"         : '$upmpdcli
+
 if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 	[[ ! -e /tmp/localbrowser.conf && -e $dirsystem/localbrowser.conf ]] && cp $dirsystem/localbrowser.conf /tmp
 ##########
@@ -70,6 +52,19 @@ if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 , "localbrowser"     : '$localbrowser'
 , "localbrowserconf" : '$( conf2json $dirsystem/localbrowser.conf )
 fi
+
+if [[ -e /usr/bin/mediamtx ]]; then
+	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now mediamtx
+##########
+	data+='
+, "dabdevice"        : '$dabdevice'
+, "dabradio"         : '$mediamtx
+fi
+
+##########
+[[ -e /usr/bin/shairport-sync ]] && data+='
+, "shairport-sync"   : '$shairportsync
+
 if [[ -e /usr/bin/smbd ]]; then
 	file=/etc/samba/smb.conf
 	sed -n '/\[SD]/,/^\[/ p' $file | grep -q 'read only = no' && sd=true || sd=false
@@ -80,11 +75,27 @@ if [[ -e /usr/bin/smbd ]]; then
 , "smb"              : '$smb'
 , "smbconf"          : '$smbconf
 fi
-if [[ -e /usr/bin/mediamtx ]]; then
-	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now mediamtx
+
 ##########
-	data+='
-, "dabdevice"        : '$dabdevice'
-, "dabradio"         : '$mediamtx
-fi
+[[ -e /usr/bin/snapserver ]] && data+='
+, "snapclientactive" : '$snapclient'
+, "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
+, "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
+, "snapclient"       : '$( exists $dirsystem/snapclient )'
+, "snapclientconf"   : { "LATENCY": '$( grep latency /etc/default/snapclient | tr -d -c 0-9 )' }'
+
+##########
+[[ -e /usr/bin/spotifyd ]] && data+='
+, "spotifyd"         : '$spotifyd'
+, "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotifykey 2> /dev/null && echo true )
+
+##########
+[[ -e /usr/bin/upmpdcli ]] && data+='
+, "upmpdcli"         : '$upmpdcli
+
+##########
+[[ -e $dirshm/wlan ]] && data+='
+, "wlan"             : true
+, "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*$( < $dirshm/wlan )" && echo true )
+
 data2json "$data" $1

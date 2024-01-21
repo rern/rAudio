@@ -357,7 +357,7 @@ function coverartChange() {
 		  icon        : icon
 		, title       : title
 		, message     : '<img class="imgold" src="'+ src +'">'
-					   +'<p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
+					   +'<br><p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
@@ -966,6 +966,38 @@ function playbackStatusGet( withdisplay ) {
 		}
 	} );
 }
+function playlistFilter() {
+	var keyword = $( '#pl-search-input' ).val();
+	var regex   = new RegExp( keyword, 'i' );
+	var count   = 0;
+	$( '#pl-list li' ).each( ( i, el ) => {
+		var $this = $( el );
+		var name   = $this.find( '.name' ).text();
+		var artist = $this.find( '.artist' ).text();
+		var album  = $this.find( '.album' ).text();
+		var txt    = name + artist + album;
+		var match  = txt.search( regex ) !== -1 ? true : false;
+		count      = match ? ( count + 1 ) : count;
+		$this.toggleClass( 'hide', ! match );
+		if ( match ) {
+			name   = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			artist = artist.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			album  = album.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			$this.find( '.name' ).html( name );
+			$this.find( '.artist' ).html( artist );
+			$this.find( '.album' ).html( album );
+		}
+	} );
+	pageScroll( 0 );
+	if ( keyword ) {
+		$( '#pl-search-close' ).html( ico( 'close' ) +'<span>'+ count +' <gr>of</gr> </span>' );
+	} else {
+		$( '#pl-search-close' ).empty();
+	}
+}
+function playlistGet() {
+	list( { playlist: 'current' }, data => renderPlaylist( data ), 'json' );
+}
 function playlistInsert( pos ) {
 	var plname = $( '#savedpl-path .lipath' ).text();
 	banner( 'file-playlist', V.pladd.name, 'Add ...' );
@@ -1023,38 +1055,6 @@ function playlistInsertTarget() {
 	} );
 	bannerHide();
 }
-function playlistFilter() {
-	var keyword = $( '#pl-search-input' ).val();
-	var regex   = new RegExp( keyword, 'i' );
-	var count   = 0;
-	$( '#pl-list li' ).each( ( i, el ) => {
-		var $this = $( el );
-		var name   = $this.find( '.name' ).text();
-		var artist = $this.find( '.artist' ).text();
-		var album  = $this.find( '.album' ).text();
-		var txt    = name + artist + album;
-		var match  = txt.search( regex ) !== -1 ? true : false;
-		count      = match ? ( count + 1 ) : count;
-		$this.toggleClass( 'hide', ! match );
-		if ( match ) {
-			name   = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			artist = artist.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			album  = album.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			$this.find( '.name' ).html( name );
-			$this.find( '.artist' ).html( artist );
-			$this.find( '.album' ).html( album );
-		}
-	} );
-	pageScroll( 0 );
-	if ( keyword ) {
-		$( '#pl-search-close' ).html( ico( 'close' ) +'<span>'+ count +' <gr>of</gr> </span>' );
-	} else {
-		$( '#pl-search-close' ).empty();
-	}
-}
-function playlistGet() {
-	list( { playlist: 'current' }, data => renderPlaylist( data ), 'json' );
-}
 function playlistRemove( $li ) {
 	if ( $( '#pl-list li' ).length === 1 ) {
 		bash( [ 'mpcremove' ] );
@@ -1094,6 +1094,24 @@ function playlistRemove( $li ) {
 		} );
 		$li.remove();
 	}
+}
+function playlistSkip() {
+	intervalClear();
+	if ( S.state !== 'stop' ) {
+		setProgress( 0 );
+		$( '#elapsed, #total, #progress' ).empty();
+	}
+	if ( $( '#pl-list li' ).length ) {
+		playlistSkipSet();
+	} else {
+		list( { playlist: 'current' }, data => {
+			$( '#pl-list' ).html( data.html ).promise().done( playlistSkipSet );
+		}, 'json' );
+	}
+}
+function playlistSkipSet() {
+	var file = $( '#pl-list li' ).eq( S.song ).find( '.lipath' ).text();
+	bash( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
 }
 function refreshData() {
 	if ( V.library ) {
@@ -1287,14 +1305,14 @@ function renderPlayback() {
 	if ( S.state === 'stop' ) setProgress( 0 );
 	setVolume();
 	clearInterval( V.interval.blinkdot );
-	$( '#qrwebui, #qrip' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
 		setPlaybackBlank();
 		return
 	}
 	
-	$( '.emptyadd, .qr' ).addClass( 'hide' );
+	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#coverTR' ).removeClass( 'empty' );
+	$( '#qr' ).empty();
 	setInfo();
 	setCoverart();
 	setButtonOptions();
@@ -1679,34 +1697,37 @@ function setPlaybackBlank() {
 	$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
 	setProgress( 0 );
-	if ( S.ip ) {
-		V.qr ? setPlaybackBlankQR() : $.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
+	$( '#sampling' ).empty();
+	if ( S.ip || D.ap ) {
+		if ( typeof QRCode === 'function' ) {
+			setPlaybackBlankQR();
+		} else {
+			$.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
+		}
 		$( '#coverTR' ).toggleClass( 'empty', $bartop.is( ':hidden' ) );
 		$( '#coverart' ).addClass( 'hide' );
-		$( '#sampling' ).empty();
 	} else {
 		$( '#coverart' ).removeClass( 'hide' );
-		$( '#sampling' )
-			.css( 'display', 'block' )
-			.html( 'Network not connected:&emsp; '+ ico( 'networks i-22 wh' ) +'&ensp;Setup' )
-			.on( 'click', '.i-networks', function() {
-				location.href = 'settings.php?p=networks';
-			} );
-		$( '.qr' ).addClass( 'hide' );
+		$( '#sampling' ).html( 'Network not connected:&emsp; <a href="settings.php?p=networks">'+ ico( 'networks i-22 wh' ) +'&ensp;Setup</a>' );
 	}
 	vu();
 	loaderHide();
 }
 function setPlaybackBlankQR() {
-	V.qr = new QRCode( {
-		  msg : 'http://'+ S.ip
-		, dim : 230
-		, pad : 11
-	} );
-	$( '#map-cover' ).before( `
-<div id="qrwebui">${ V.qr.outerHTML }</div>
-<div id="qrip"><gr>http://</gr>${ S.ip }<br><gr>http://</gr>${ S.hostname }
-</div>` );
+	var ip = S.ip || D.apconf.ip;
+	if ( ! ip ) return
+	
+	var htmlqr = '';
+	if ( ! S.ip && D.ap ) {
+		htmlqr += '<div class="qr gr">Access Point: <wh>'+ D.apconf.ssid +'</wh>'
+				 +'<br>Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
+				 +'<div class="qr container">'+ qrCode( D.apconf.qr ) +'</div>';
+	}
+	htmlqr   +=  '<div class="qr container">'+ qrCode( 'http://'+ ip ) +'</div>'
+				+'<div class="qr"><gr>http://</gr>'+ ip
+				+ ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
+				+'</div>';
+	$( '#qr' ).html( htmlqr );
 }
 function setPlaybackStop() {
 	setProgress( 0 );
@@ -1808,15 +1829,6 @@ function setPlaylistScroll() {
 			}, 1000 );
 		}
 	}
-}
-function setPlaylistSkip( pos ) {
-	intervalClear();
-	if ( S.state !== 'stop' ) {
-		setProgress( 0 );
-		$( '#elapsed, #total, #progress' ).empty();
-	}
-	file = $( '#pl-list li' ).length ? $( '#pl-list li' ).eq( pos - 1 ).find( '.lipath' ).text() : '';
-	bash( [ 'mpcskip', pos, file, 'CMD POS FILE' ] );
 }
 function setPlayPauseColor() {
 	var pause = S.state === 'pause';

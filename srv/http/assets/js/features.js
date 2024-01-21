@@ -147,7 +147,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		} );
 	}
 } );
-$( '#setting-hostapd' ).on( 'click', function() {
+$( '#setting-ap' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -156,8 +156,8 @@ $( '#setting-hostapd' ).on( 'click', function() {
 			  [ 'IP',       'text' ]
 			, [ 'Password', 'text' ]
 		]
-		, values       : S.hostapd
-		, checkchanged : S.hostapd
+		, values       : S.apconf
+		, checkchanged : S.ap
 		, checkblank   : true
 		, checkip      : [ 0 ]
 		, checklength  : { 1: [ 8, 'min' ] }
@@ -483,7 +483,7 @@ function renderPage() {
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
 	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! S.snapclientactive );
 	$( '#snapserver' ).toggleClass( 'disabled', S.snapserveractive );
-	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
+	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {
 		var nfsdisabled = '<a class="helpmenu label">Shared Data'+ ico( 'networks' ) +'</a> is currently enabled.';

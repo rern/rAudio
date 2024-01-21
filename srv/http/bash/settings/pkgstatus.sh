@@ -13,6 +13,14 @@ case $CMD in
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 		;;
+	ap )
+		PKG=iwd
+		SERVICE=iwd
+		fileconf=/var/lib/iwd/ap/$( hostname ).ap
+		conf="\
+<bll># cat $fileconf</bll>
+$( awk NF $fileconf )"
+		;;
 	bluez )
 		fileconf=/etc/bluetooth/main.conf
 		SERVICE=bluetooth
@@ -27,14 +35,6 @@ $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 		conf="\
 <bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
-		;;
-	hostapd )
-		conf="\
-<bll># cat /etc/hostapd/hostapd.conf</bll>
-$( < /etc/hostapd/hostapd.conf )
-
-<bll># cat /etc/dnsmasq.conf</bll>
-$( < /etc/dnsmasq.conf )"
 		;;
 	localbrowser )
 		fileconf=$dirsystem/localbrowser.conf

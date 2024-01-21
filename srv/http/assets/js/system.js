@@ -1,4 +1,4 @@
-var default_v      = {
+var default_v     = {
 	  bluetooth     : {
 		  DISCOVERABLE : true
 		, FORMAT       : false 
@@ -44,33 +44,33 @@ var default_v      = {
 		, OPTIONS  : ''
 	}
 	, powerbutton   : {
-		  ON       : 5
-		, SW       : 5
-		, LED      : 40
-		, RESERVED : 29
+		  ON       : 3
+		, SW       : 3
+		, LED      : 21
+		, RESERVED : 5
 	}
 	, relays       : {
-		  ON0   : 11
-		, OFF0  : 16
+		  ON0   : 17
+		, OFF0  : 23
 		, OND0  : 2
 		, OFFD0 : 2
-		, ON1   : 13
-		, OFF1  : 15
+		, ON1   : 27
+		, OFF1  : 22
 		, OND1  : 2
 		, OFFD1 : 2
-		, ON2   : 15
-		, OFF2  : 13
+		, ON2   : 22
+		, OFF2  : 27
 		, OND2  : 2
 		, OFFD2 : 2
-		, ON3   : 16
-		, OFF3  : 11
+		, ON3   : 23
+		, OFF3  : 17
 		, TIMER : 5
 	}
 	, relaysname    : {
-		  "11" : "DAC"
-		, "13" : "PreAmp"
-		, "15" : "Amp"
-		, "16" : "Subwoofer"
+		  "17" : "DAC"
+		, "27" : "PreAmp"
+		, "22" : "Amp"
+		, "23" : "Subwoofer"
 	}
 	, rotaryencoder : {
 		  PINA : 27
@@ -95,15 +95,15 @@ var default_v      = {
 		, APAUTO : true
 	}
 }
-var gpiosvg        = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
-var board2bcm      = {
+var gpiosvg       = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
+var board2bcm     = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
-var lcdcharaddr = S.lcdcharaddr || [ 39, 63 ];
-var i2caddress  = {};
+var lcdcharaddr   = S.lcdcharaddr || [ 39, 63 ];
+var i2caddress    = {};
 lcdcharaddr.forEach( el => i2caddress[ '0x'+ el.toString( 16 ) ] = el );
-var lcdcharlist    = [
+var lcdcharlist   = [
 	  [ 'Type',            'hidden' ]
 	, [ 'Size',            'radio', { '20x4': 20, '16x2': 16 } ]
 	, [ 'Character Map',   'radio', [ 'A00', 'A02' ] ]
@@ -765,7 +765,10 @@ function infoLcdCharGpio() {
 		, boxwidth     : 70
 		, values       : S.lcdcharconf || default_v.lcdchar_gpio
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
-		, beforeshow   : infoLcdcharButton
+		, beforeshow   : () => { 
+			infoLcdcharButton();
+			$( '#infoList tr' ).eq( 2 ).after( '<tr><td colspan="3">'+ gpiosvg +'</td></tr>' )
+		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -828,7 +831,7 @@ function infoMount( nfs ) {
 		, [ 'Password',  'password' ]
 		, [ 'Options',   'text' ]
 	];
-	if ( nfs ) list.splice( 3, 2 );
+	if ( nfs ) list.splice( 4, 2 );
 	info( {
 		  icon       : icon
 		, title      : title
@@ -840,9 +843,9 @@ function infoMount( nfs ) {
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			var $mountpoint = $( '#mountpoint' );
-			var $share      = $( '#share' );
-			$share.prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
+			var $mountpoint = $( '#infoList input' ).eq( 1 );
+			$mountpoint.prop( 'placeholder', 'Name to display in Library' );
+			$( '#infoList input' ).eq( 3 ).prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
 			if ( shareddata ) {
 				$mountpoint.val( 'data' ).prop( 'disabled', true );
 				$mountpoint.next().remove();
@@ -908,7 +911,6 @@ function infoNtp() {
 	info( json );
 }
 function infoPowerbutton() {
-	var pins =  Object.keys( board2bcm );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -916,21 +918,22 @@ function infoPowerbutton() {
 		, tab          : [ '', infoPowerbuttonAudiophonics ]
 		, message      : gpiosvg
 		, list         : [ 
-			  [ 'On',       'text' ]
-			, [ 'Off',      'select', pins ]
-			, [ 'LED',      'select', pins ]
-			, [ 'Reserved', 'select', pins ]
+			  [ 'On',       'select', board2bcm ]
+			, [ 'Off',      'select', board2bcm ]
+			, [ 'LED',      'select', board2bcm ]
+			, [ 'Reserved', 'select', board2bcm ]
 		]
 		, boxwidth     : 70
 		, values       : S.powerbuttonconf || default_v.powerbutton
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			$( '#infoList input' ).addClass( 'disabled' );
-			var $sw         = $( '#infoList select' ).eq( 0 );
+			$( '#infoList td' ).css( 'width', '70px' );
+			$( '#infoList td:last-child' ).css( 'width', '110px' );
+			$( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
 			var $trreserved = $( '#infoList tr' ).last();
-			$trreserved.toggleClass( 'hide', $sw.val() == 5 );
-			$sw.on( 'input', function() {
-				$trreserved.toggleClass( 'hide', $( this ).val() == 5 );
+			$trreserved.toggleClass( 'hide', S.powerbuttonconf.SW == 3 );
+			$( '#infoList select' ).eq( 1 ).on( 'input', function() {
+				$trreserved.toggleClass( 'hide', $( this ).val() == 3 );
 			} );
 		}
 		, cancel       : switchCancel
@@ -995,15 +998,20 @@ function infoRelaysCss( sW, iW ) {
 	$( '#infoList input' ).parent().css( 'width', iW +'px' );
 }
 function infoRelaysName() {
-	var name     = S.relaysnameconf || default_v.relaysname;
-	var values   = [];
-	$.each( name, ( k, v ) => values.push( k, v ) );
-	var list = [
+	var name   = S.relaysnameconf || default_v.relaysname;
+	var keys   = Object.keys( name );
+	var bcmpin = [ 2, 3, 4, 14, 15, 17, 18, 27, 22, 23, 24, 10, 9, 25, 11, 8, 7, 5, 6, 12, 13, 19, 16, 26, 20, 21 ];
+	var pin    = [];
+	bcmpin.forEach( p => { // fix - numeric keys unsort
+		if ( keys.includes( ''+ p ) ) pin.push( p );
+	} );
+	var values = [];
+	pin.forEach( p => values.push( p, name[ p ] ) );
+	var list   = [
 		  [ '', '', ico( 'gpiopins bl' ) +'Pin', 'td' ]
 		, [ '', '', ico( 'tag bl' ) +' Name' ]
 	]
-	var pins = Object.keys( board2bcm )
-	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', pins, 'td' ], [ '', 'text',   '' ] );
+	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', board2bcm, 'td' ], [ '', 'text',   '' ] );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -1097,15 +1105,19 @@ function renderPage() {
 	renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
-			$( '#divbluetooth .col-l.status' ).toggleClass( 'single', ! S.bluetoothactive );
+			$( '#divbluetooth .col-l' )
+				.toggleClass( 'single', ! S.bluetoothactive )
+				.toggleClass( 'status', S.bluetoothactive );
 		} else {
 			$( '#divbluetooth' ).addClass( 'hide' );
 		}
 		if ( 'wlan' in S ) {
 			$( '#wlan' )
-				.toggleClass( 'disabled', S.hostapd || S.wlanconnected )
-				.prev().html( S.hostapd ? '<wh>Access Point '+ ico( 'accesspoint' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
-			$( '#divwlan .col-l.status' ).toggleClass( 'single', ! S.wlan );
+				.toggleClass( 'disabled', S.ap || S.wlanconnected )
+				.prev().html( S.ap ? '<wh>Access Point '+ ico( 'ap' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
+			$( '#divwlan .col-l' )
+				.toggleClass( 'single', ! S.wlan )
+				.toggleClass( 'status', S.wlan );
 		} else {
 			$( '#divwlan' ).addClass( 'hide' );
 		}

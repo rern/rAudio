@@ -2,6 +2,13 @@
 
 . /srv/http/bash/common.sh
 
+connectedCheck() {
+	for (( i=0; i < $1; i++ )); do
+		ipaddress=$( ipAddress )
+		[[ ! $ipaddress ]] && sleep 1 || break
+	done
+}
+
 revision=$( grep ^Revision /proc/cpuinfo )
 echo "\
 BB=${revision: -3:2}
@@ -40,13 +47,13 @@ if [[ -e /boot/wifi && $wlandev ]]; then
 	wifi=$( sed 's/\r//; s/\$/\\$/g' /boot/wifi ) # remove windows \r and escape $
 	ssid=$( getVar ESSID <<< $wifi )
 	key=$( getVar Key <<< $wifi )
-	filebootwifi="/etc/netctl/$ssid"
-	cat << EOF > "$filebootwifi"
+	profile="\
 Interface=$wlandev
-$( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )
-ESSID="$ssid"
-Key="$key"
-EOF
+$( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )"
+	profile+='
+ESSID="'$ssid'"
+Key="'$key'"'
+	echo "$profile" > "/etc/netctl/$ssid"
 	$dirsettings/networks.sh "profileconnect
 $ssid
 CMD SSID"
@@ -65,14 +72,6 @@ if [[ -e $filebrightness ]]; then
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $filebrightness
 fi
 
-connectedCheck() {
-	for (( i=0; i < $1; i++ )); do
-		ifconfig | grep -q -m1 inet.*broadcast && connected=1 && break
-
-		sleep $2
-	done
-}
-
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
@@ -81,22 +80,21 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-# wait 5s max for lan connection
-connectedCheck 5 1
-# if lan not connected, wait 30s max for wi-fi connection
-[[ ! $connected ]] && connectedCheck 30 3
-# if wlan not connected, try connect with saved profile
-if [[ ! $connected && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
-	fileprofile=$( grep -rl $wlandev /etc/netctl | head -1 )
-	if [[ $fileprofile ]]; then
-		$dirsettings/networks.sh "profileconnect
-$( basename "$fileprofile" )
-CMD SSID"
-		connectedCheck 30 3
+# wait for lan connection
+connectedCheck 5
+# if lan not connected and enabled wifi profile available, wait for wi-fi connection
+if [[ ! $ipaddress && $wlandev ]]; then
+	readarray -t netctllist <<< $( netctl list | sed -E 's/^. //' )
+	if [[ $netctllist ]]; then
+		for profile in "${netctllist[@]}"; do
+			[[ $( netctl is-enabled "$profile" ) == enabled ]] && enabledprofile=1 && break
+		done
+		[[ $enabledprofile ]] && connectedCheck 30
 	fi
 fi
 
-if [[ $connected  ]]; then
+[[ -e $dirsystem/ap ]] && ap=1
+if [[ $ipaddress ]]; then
 	[[ -e $filebootwifi ]] && rm -f /boot/wifi
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
@@ -118,11 +116,21 @@ if [[ $connected  ]]; then
 				notify -ip $ip networks 'Server rAudio' Online
 			done
 		fi
-		appendSortUnique $( ipAddress ) $filesharedip
+		appendSortUnique $ipaddress $filesharedip
 	fi
+	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
+	$dirsettings/addons-data.sh &> /dev/null &
 else
-	[[ -e $filebootwifi ]] && rm -f "$filebootwifi"
+	if [[ $wlandev && ! $ap ]]; then
+		if [[ $netctllist ]]; then
+			[[ ! -e $dirsystem/wlannoap ]] && ap=1
+		else
+			ap=1
+		fi
+		[[ $ap ]] && touch $dirshm/apstartup
+	fi
 fi
+[[ $ap ]] && $dirsettings/features.sh iwctlap
 
 if [[ -e $dirsystem/btconnected ]]; then
 	readarray -t devices < $dirsystem/btconnected
@@ -153,13 +161,6 @@ if [[ -e $dirsystem/volumeboot ]]; then
 fi
 
 # after all sources connected ........................................................
-if [[ $connected ]]; then
-	$dirsettings/addons-data.sh &> /dev/null &
-elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
-	$dirsettings/features.sh hostapdset
-	systemctl -q disable hostapd
-fi
-
 if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
 	$dirsettings/system.sh "hddsleep
 $( < $dirsystem/apm )
@@ -174,10 +175,10 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
-# if no wlan // usb wlan // no hostapd and no connected wlan, disable wlan
+# if no wlan // usb wlan // no access point and no connected wlan, disable wlan
 if (( $( rfkill | grep -c wlan ) > 1 )) \
 	|| ! rfkill | grep -q wlan \
-	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q -m1 '^\*' ); then
+	|| ( [[ ! -e $dirsystem/ap ]] && ! netctl list | grep -q -m1 ^* ); then
 	rmmod brcmfmac_wcc &> /dev/null
 	rmmod brcmfmac &> /dev/null
 	onboardwlan=false

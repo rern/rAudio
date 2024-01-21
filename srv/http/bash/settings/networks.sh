@@ -9,10 +9,13 @@ netctlSwitch() {
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
 	connected=$( iwgetid $wlandev -r )
-	ifconfig $wlandev down
+	# iwctl station $wlandev disconnect
+	# iwctl station $wlandev connect "$ssid"
+	ip link set $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
+		# if [[ $( iwgetid $wlandev -r ) == $connected ]]; then
 		if netctl is-active "$ssid" &> /dev/null; then
 			[[ $connected ]] && netctl disable "$connected"
 			netctl enable "$ssid"
@@ -24,23 +27,25 @@ netctlSwitch() {
 		$dirsettings/networks-data.sh pushwl
 	else
 		echo -1
+		# [[ $connected ]] && iwctl station $wlandev connect "$connected"
 		[[ $connected ]] && netctl switch-to "$connected"
 	fi
 }
 wlanDevice() {
 	local iplinkw wlandev
-	iplinkw=$( ip -br link | grep ^w )
+	iplinkw=$( ip -br link | grep -m1 ^w )
 	if [[ ! $iplinkw ]]; then
 		if [[ -e $dirshm/onboardwlan ]]; then
 			modprobe brcmfmac
+			ip link set wlan0 up
 			sleep 1
 			iplinkw=$( ip -br link | grep ^w )
 		fi
 	fi
 	if [[ $iplinkw ]]; then
 		wlandev=$( tail -1 <<< "$iplinkw" | cut -d' ' -f1 )
-		iw $wlandev set power_save off
 		echo $wlandev | tee $dirshm/wlan
+		( sleep 1 && iw $wlandev set power_save off ) &
 	else
 		rm -f $dirshm/wlan
 	fi
@@ -86,7 +91,7 @@ Security='$security
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
 	
-	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then # boot to hostapd when no network connection
+	if [[ -e $dirsystem/ap ]]; then
 		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
 	fi
@@ -104,7 +109,7 @@ disconnect )
 	netctl stop "$connected"
 	netctl disable "$connected"
 	systemctl stop wpa_supplicant
-	ifconfig $wlandev up
+	ip link set $wlandev up
 	$dirsettings/networks-data.sh pushwl
 	;;
 lanedit )
@@ -132,8 +137,9 @@ Gateway='$GATEWAY $file
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )
-	if systemctl -q is-active hostapd; then
-		systemctl disable --now hostapd
+	if [[ -e $dirsystem/ap ]]; then
+		rm -f $dirsystem/{ap,ap.conf}
+		systemctl stop iwd
 		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi
@@ -148,7 +154,7 @@ profileremove )
 		netctl stop "$SSID"
 		systemctl stop wpa_supplicant
 		wlandev=$( < $dirshm/wlan )
-		ifconfig $wlandev up
+		ip link set $wlandev up
 	fi
 	rm "/etc/netctl/$SSID"
 	$dirsettings/networks-data.sh pushwl
@@ -157,7 +163,7 @@ scankill )
 	killProcess networksscan
 	;;
 statuslan )
-	lan=$( ifconfig | grep ^e | cut -d: -f1 )
+	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 	echo "\
 <bll># ifconfig $lan</bll>
 $( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
