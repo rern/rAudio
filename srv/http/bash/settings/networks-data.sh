@@ -97,11 +97,11 @@ fi
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ##########
 data='
-, "ap"          : '$( exists $dirsystem/ap )'
-, "apconf"      : '$apconf'
 , "activebt"    : '$activebt'
 , "activeeth"   : '$( ip -br link | grep -q -m1 ^e && echo true )'
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
+, "ap"          : '$( exists $dirsystem/ap )'
+, "apconf"      : '$apconf'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
 , "gateway"     : "'$gateway'"

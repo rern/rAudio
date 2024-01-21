@@ -70,7 +70,7 @@ $body = [
 		, '<div id="qrap"></div>
 		   <div class="helpblock hide">Access rAudio directly without Wi-Fi router:
  • Connect <wh>Access Point</wh> with the password or scan QR code
- • Access point setting: '.tab( 'features', 'Features' ).labelIcon( 'Access Point', 'accesspoint' ).'
+ • Access point setting: '.tab( 'features', 'Features' ).labelIcon( 'Access Point', 'ap' ).'
 
 Note: No internet connection.</div>'
 	)

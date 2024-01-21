@@ -13,7 +13,7 @@ case $CMD in
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 		;;
-	accesspoint )
+	ap )
 		PKG=iwd
 		SERVICE=iwd
 		fileconf=/var/lib/iwd/ap/$( hostname ).ap

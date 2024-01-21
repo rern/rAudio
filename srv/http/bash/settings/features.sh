@@ -69,7 +69,7 @@ wlanDisable() {
 
 case $CMD in
 
-accesspoint )
+ap )
 	wlandev=$( < $dirshm/wlan )
 	if [[ $ON ]]; then
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/

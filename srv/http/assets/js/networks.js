@@ -24,7 +24,7 @@ $( '.back' ).on( 'click', function() {
 	refreshData();
 } );
 $( '.btscan' ).on( 'click', function() {
-	$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
+	$( '#help, #divinterface, #divwebui' ).addClass( 'hide' );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
 } );
@@ -60,7 +60,7 @@ $( '.wlscan' ).on( 'click', function() {
 	if ( S.ap ) {
 		infoAccesspoint();
 	} else {
-		$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
+		$( '#help, #divinterface, #divwebui' ).addClass( 'hide' );
 		$( '#divwifi' ).removeClass( 'hide' );
 		scanWlan();
 	}
@@ -73,7 +73,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	if ( V.li.hasClass( 'accesspoint' ) ) return
+	if ( V.li.hasClass( 'ap' ) ) return
 	
 	V.listid  = V.li.parent().prop( 'id' );
 	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
@@ -425,7 +425,7 @@ function renderWlan() {
 	if ( ! $( '#divwifi' ).hasClass( 'hide' ) ) $( '#divwifi .back' ).trigger( 'click' );
 	var htmlwl = '';
 	if ( S.ap ) {
-		htmlwl += '<li class="wl accesspoint">'+ ico( 'accesspoint' ) +'<grn>•</grn>&ensp;'
+		htmlwl += '<li class="wl ap">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
 				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip +'</li>';
 	}
 	if ( S.listwl ) {
