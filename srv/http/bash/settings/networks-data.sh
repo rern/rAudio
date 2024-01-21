@@ -96,14 +96,13 @@ fi
 
 ##########
 data='
-, "accesspoint" : '$( exists $dirsystem/accesspoint )'
+, "accesspoint" : '$( getContent $dirsystem/accesspoint )'
 , "activebt"    : '$activebt'
 , "activeeth"   : '$( ip -br link | grep -q -m1 ^e && echo true )'
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
 , "gateway"     : "'$gateway'"
-, "hostname"    : "'$( hostname )'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipSub )'"
 , "ipwl"        : "'$ipwl'"
@@ -112,8 +111,21 @@ data='
 , "listwl"      : '$listwl
 
 if [[ -e $dirsystem/accesspoint ]]; then
+	ssid=$( hostname )
+	. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$ssid.ap )
 	data+='
-, "accesspointconf" : { "IP": "'$( getVar Address $fileap )'", "PASSPHRASE": "'$( getVar Passphrase $fileap )'" }'
+, "accesspointconf" : { "ip": "'$Address'", "passphrase": "'$Passphrase'", "ssid": "'$ssid'" }'
+fi
+
+if [[ $ipeth || $ipwl ]]; then
+	hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
+	if [[ ! $hostname ]]; then
+		systemctl restart avahi-daemon
+		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
+	fi
+	[[ ! $hostname ]] && hostname=$( hostname )
+	data+='
+, "hostname" : "'$hostname'"'
 fi
 
 data2json "$data" $1

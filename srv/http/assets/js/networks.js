@@ -417,12 +417,13 @@ function renderQR() {
 		$( '#divwebui' ).addClass( 'hide' );
 	}
 	if ( S.accesspoint ) {
-		$( '#ssid' ).text( S.hostname );
-		$( '#passphrase' ).text( S.accesspoint.passphrase )
-		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ S.hostname +';T:WPA;P:'+ S.accesspointconf.passphrase +';' ) );
-		$( '#ipap' ).html( S.accesspointconf.ip );
-		$( '#hostap' ).html( S.hostname +'.local' );
-		$( '#qrwebuiap' ).html( qr( 'http://'+ S.accesspointconf.ip ) );
+		var conf = S.accesspointconf;
+		$( '#ssid' ).text( conf.ssid );
+		$( '#passphrase' ).text( conf.passphrase )
+		$( '#qraccesspoint' ).html( qr( S.accesspoint ) );
+		$( '#ipap' ).html( conf.ip );
+		$( '#hostap' ).html( conf.hostname +'.local' );
+		$( '#qrwebuiap' ).html( qr( 'http://'+ conf.ip ) );
 	}
 }
 function renderWlan() {
