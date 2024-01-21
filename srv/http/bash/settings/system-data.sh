@@ -214,6 +214,7 @@ if [[ $onboardsound ]]; then
 , "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 fi
+
 if [[ -e $dirshm/onboardwlan ]]; then
 	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
 	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
@@ -240,6 +241,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
 fi
+
 if [[ $rpi3bplus ]]; then
 ##########
 	data+='
