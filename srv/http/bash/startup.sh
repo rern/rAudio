@@ -82,9 +82,14 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 # wait for lan connection
 connectedCheck 5
-# if lan not connected and active wifi profile available, wait for wi-fi connection
-[[ ! $ipaddress && $wlandev ]] && netctl list | greq -q ^+ && connectedCheck 30
-
+# if lan not connected and enabled wifi profile available, wait for wi-fi connection
+readarray -t netctllist <<< $( netctl list )
+if [[ ! $ipaddress && $wlandev && $netctllist ]]; then
+	for p in "${netctllist[@]}"; do
+		[[ $( netctl is-enabled "$p" ) == enabled ]] && enabledprofile=1 && break
+	done
+	[[ $enabledprofile ]] && connectedCheck 30
+fi
 [[ -e $dirsystem/ap ]] && ap=1
 if [[ $ipaddress ]]; then
 	[[ -e $filebootwifi ]] && rm -f /boot/wifi
@@ -114,7 +119,7 @@ if [[ $ipaddress ]]; then
 	$dirsettings/addons-data.sh &> /dev/null &
 else
 	if [[ $wlandev && ! $ap ]]; then
-		if [[ $( netctl list ) ]]; then
+		if [[ $netctllist ]]; then
 			[[ ! -e $dirsystem/wlannoap ]] && ap=1
 		else
 			ap=1
