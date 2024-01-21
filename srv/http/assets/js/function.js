@@ -1723,10 +1723,13 @@ function setPlaybackBlankQR() {
 				 +'<br>Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
 				 +'<div class="qr container">'+ qrCode( D.apconf.qr ) +'</div>';
 	}
+	var hostname = '';
+	if ( S.ip ) hostname = S.hostname;
+	if ( ! hostname && D.ap ) hostname = D.apconf.ssid +'.local';
 	var http  = '<gr>http://</gr>';
 	htmlqr   +=  '<div class="qr container">'+ qrCode( 'http://'+ ip ) +'</div>'
 				+'<div class="qr">'+ http + ip
-				+'<br>'+ http + ( D.ap ? D.apconf.ssid +'.local' : S.hostname )
+				+ ( hostname ? '<br>'+ http + hostname : '' )
 				+'</div>';
 	$( '#qr' ).html( htmlqr );
 }
