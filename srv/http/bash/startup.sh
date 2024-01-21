@@ -121,6 +121,7 @@ else
 		else
 			ap=1
 		fi
+		[[ $ap ]] && touch $dirshm/apstartup
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
