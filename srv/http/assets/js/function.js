@@ -1722,12 +1722,13 @@ function setPlaybackBlankQR() {
 	if ( ! S.ip && D.accesspoint ) {
 		htmlqr += '<div class="qr gr">Access Point: <wh>'+ S.hostname +'</wh>'
 				 +'<br>Password: <wh>'+ D.accesspoint.passphrase +'</wh></div>'
-				 +'<div class="qr container">'+ qrCode( S.accesspoint.qr ) +'</div>';
+				 +'<div class="qr container">'+ qrCode( D.accesspoint.qr ) +'</div>';
 	}
-	htmlqr += '<div class="qr container">'+ qrCode( ip ) +'</div>'
-			 +'<div class="qr"><gr>http://</gr>'+ ip
-			 +'<br><gr>http://</gr>'+ S.hostname +'.local'
-			 +'</div>';
+	var http  = '<gr>http://</gr>';
+	htmlqr   +=  '<div class="qr container">'+ qrCode( ip ) +'</div>'
+				+'<div class="qr">'+ http + ip
+				+'<br>'+ http + S.hostname +'.local'
+				+'</div>';
 	$( '#qr' ).html( htmlqr );
 }
 function setPlaybackStop() {
