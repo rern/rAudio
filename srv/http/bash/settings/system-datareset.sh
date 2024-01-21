@@ -65,7 +65,7 @@ for dir in "${dirs[@]}"; do
 done
 sed -i '3,$ d' /etc/fstab
 
-systemctl -q disable bluetooth camilladsp iwd mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
+systemctl -q disable bluetooth camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
 mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
 [[ $keeplibrary ]] && mv $dirdata/{mpd,playlists,webradio} /tmp
 rm -rf $dirdata $dirshareddata \

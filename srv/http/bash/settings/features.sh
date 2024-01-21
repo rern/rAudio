@@ -15,9 +15,21 @@ iwctlAP() {
 	ip link set $wlandev up
 	systemctl restart iwd
 	sleep 1
+	hostname=$( hostname )
 	iwctl device $wlandev set-property Mode ap
-	iwctl ap $wlandev start-profile $( hostname )
-	iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes" && touch $dirsystem/accesspoint || rm -f $dirsystem/accesspoint
+	iwctl ap $wlandev start-profile $hostname
+	if iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then
+		. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
+		echo '{
+  "ip"         : "'$Address'"
+, "passphrase" : "'$Passphrase'"
+, "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
+, "ssid"       : "'$hostname'"
+}' > $dirsystem/accesspoint
+	else
+		rm -f $dirsystem/accesspoint
+		systemctl stop iwd
+	fi
 	iw $wlandev set power_save off
 }
 localbrowserDisable() {
@@ -57,26 +69,14 @@ wlanDisable() {
 case $CMD in
 
 accesspoint )
-	hostname=$( hostname )
 	wlandev=$( < $dirshm/wlan )
 	if [[ $ON ]]; then
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
 ' -e 's/(Address=|Gateway=).*/\1'$IP'/
-' /var/lib/iwd/ap/$hostname.ap
+' /var/lib/iwd/ap/$( hostname ).ap
 		iwctlAP
-		if [[ -e $dirsystem/accesspoint ]]; then
-			systemctl enable iwd
-			echo '{
-  "ip"         : "'$IP'"
-, "passphrase" : "'$PASSPHRASE'"
-, "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$PASSPHRASE';"
-, "ssid"       : "'$hostname'"
-}' > $dirsystem/accesspoint
-		else
-			systemctl stop iwd
-		fi
 	else
-		systemctl disable --now iwd
+		systemctl stop iwd
 		rm -f $dirsystem/accesspoint
 		wlanDisable
 	fi
