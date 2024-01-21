@@ -147,7 +147,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		} );
 	}
 } );
-$( '#setting-accesspoint' ).on( 'click', function() {
+$( '#setting-ap' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -483,7 +483,7 @@ function renderPage() {
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
 	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! S.snapclientactive );
 	$( '#snapserver' ).toggleClass( 'disabled', S.snapserveractive );
-	$( '#accesspoint' ).toggleClass( 'disabled', S.wlanconnected );
+	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {
 		var nfsdisabled = '<a class="helpmenu label">Shared Data'+ ico( 'networks' ) +'</a> is currently enabled.';

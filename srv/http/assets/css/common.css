@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1705756816' );
+	src         : url( '/assets/fonts/rern.woff2?v=1705839327' );
 }
 @font-face {
 	font-family : Lato;
@@ -38,6 +38,7 @@ i {
 .i-airplay::before         { content: '\F580' }
 .i-album::before           { content: '\F555' }
 .i-albumartist::before     { content: '\F557' }
+.i-ap::before              { content: '\F554' }
 .i-arrow-right::before     { content: '\F603' }
 .i-artist::before          { content: '\F556' }
 .i-audiocd::before         { content: '\F538' }
