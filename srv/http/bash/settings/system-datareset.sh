@@ -9,7 +9,6 @@ keepnetwork=$2
 # iwd
 sed -i -E -e 's/(Passphrase=).*/\1raudioap/
 ' -e 's/(Address=|Gateway=).*/\1192.168.5.1/
-' -e 's/(IPRange=).*/\1192.168.5.2,192.168.5.254/
 ' /var/lib/iwd/ap/$( hostname ).ap
 # localbrowser
 [[ -e /usr/bin/firefox ]] && rm -rf /root/.mozilla
