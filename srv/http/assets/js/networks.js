@@ -346,13 +346,6 @@ function psOnClose() {
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
 }
-function qr( msg ) {
-	return new QRCode( {
-		  msg : msg
-		, dim : 130
-		, pad : 0
-	} );
-}
 function reconnect( icon, ip, delay ) {
 	loader();
 	notify( icon, 'IP Address', 'Change to '+ ip +' in <a>'+ delay +'</a>s ...' );

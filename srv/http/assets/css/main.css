@@ -581,10 +581,6 @@ i.map.disabled, .map.disabled i {
 .qr.container {
 	margin: 10px auto;
 }
-.qr svg {
-	fill: var( --cg60 );
-	background: #000000;
-}
 #coverart svg .text {
 	fill: var( --cw ) !important;
 }

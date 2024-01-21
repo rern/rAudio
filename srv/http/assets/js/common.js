@@ -1083,6 +1083,14 @@ function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
 }
+function qr( msg ) {
+	return new QRCode( {
+		  msg : msg
+		, dim : 115
+		, pad : 0
+		, pal : [ '#969a9c' ]
+	} );
+}
 
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
