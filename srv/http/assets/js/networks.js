@@ -436,10 +436,8 @@ function renderWlan() {
 				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•&ensp;</gr>'+ list.ssid +'</li>';
 			}
 		} );
-		$( '#listwl' ).html( htmlwl );
-	} else {
-		$( '#listwl' ).empty();
 	}
+	$( '#listwl' ).html( htmlwl );
 	$( '#divwl' ).removeClass( 'hide' );
 	bannerHide();
 }
