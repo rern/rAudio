@@ -1084,12 +1084,13 @@ function local( delay ) {
 	setTimeout( () => V.local = false, delay || 300 );
 }
 function qrCode( msg ) {
-	return QRCode( {
+	var qr = QRCode( {
 		  msg : msg
 		, dim : 115
 		, pad : 0
 		, pal : [ '#969a9c' ]
 	} );
+	return qr.outerHTML
 }
 
 // select2 --------------------------------------------------------------------

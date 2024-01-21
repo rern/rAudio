@@ -407,14 +407,17 @@ function renderQR() {
 	}
 	
 	if ( S.accesspoint ) {
-		$( '#ssid' ).text( S.hostname );
-		$( '#passphrase' ).text( S.accesspoint.passphrase )
-		$( '#qraccesspoint' ).html( qrCode( S.accesspoint.qr ) );
+		var html = S.hostname
+				  +'<br>'+ S.accesspoint.passphrase
+				  +'<br>'+ qrCode( S.accesspoint.qr )
+		$( '#qrap' ).html( html );
 	}
 	if ( ip ) {
-		$( '#ipwebui' ).html( ip );
-		$( '#hostwebui' ).html( S.hostname +'.local' );
-		$( '#qrwebui' ).html( qrCode( 'http://'+ ip ) );
+		var http = '<gr>http://</gr>';
+		var html   = http + ip
+				  +'<br>'+ http + S.hostname +'.local'
+				  +'<br>'+ qrCode( http + ip )
+		$( '#qrurl' ).html( html );
 	}
 	$( '#divwebui' ).removeClass( 'hide' );
 }

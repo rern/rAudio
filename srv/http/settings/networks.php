@@ -67,9 +67,7 @@ $body = [
 	  htmlSectionStatus(
 		  'ap'
 		, 'Access Point<br>Password'
-		, '<a id="ssid"></a>
-		   <br><a id="passphrase"></a>
-		   <div id="qraccesspoint" class="qr"></div>
+		, '<div id="qrap"></div>
 		   <div class="helpblock hide">Access rAudio directly without Wi-Fi router:
  • Connect <wh>Access Point</wh> with the password or scan QR code
  • Access point setting: '.tab( 'features', 'Features' ).labelIcon( 'Access Point', 'accesspoint' ).'
@@ -79,10 +77,8 @@ Note: No internet connection.</div>'
 	, htmlSectionStatus(
 		  'url'
 		, 'Browser URL'
-		, '<gr>http://</gr><a id="ipwebui"></a>
-			<br><gr>http://</gr><a id="hostwebui"></a>
-			<div id="qrwebui" class="qr"></div>
-			<div class="helpblock hide"> • Open <wh>URL</wh> with any web browsers or scan QR code</div>'
+		, '<div id="qrurl"></div>
+		   <div class="helpblock hide"> • Open <wh>URL</wh> with any web browsers or scan QR code</div>'
 	)
 ];
 htmlSection( $head, $body, 'webui' );

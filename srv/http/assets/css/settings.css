@@ -474,7 +474,7 @@ input.disabled + .switchlabel:after {
 .cga {
 	background: var( --cga ) !important;
 }
-.qr {
+#divwebui svg {
 	margin: 5px 0 10px 0;
 }
 .container {
