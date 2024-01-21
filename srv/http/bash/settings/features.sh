@@ -73,7 +73,7 @@ ap )
 	wlandev=$( < $dirshm/wlan )
 	if [[ $ON ]]; then
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
-' -e 's/(Address=|Gateway=).*/\1'$IP'/
+' -e 's/(Address=).*/\1'$IP'/
 ' /var/lib/iwd/ap/$( hostname ).ap
 		iwctlAP
 	else

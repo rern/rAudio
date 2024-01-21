@@ -29,8 +29,6 @@ Passphrase=$passphrase
 
 [IPv4]
 Address=$address
-Gateway=$address
-Netmask=255.255.255.0
 " > /var/lib/iwd/ap/rAudio.ap
 fi
 
