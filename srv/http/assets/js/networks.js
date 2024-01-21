@@ -421,18 +421,17 @@ function renderQR() {
 function renderWlan() {
 	if ( ! $( '#divwifi' ).hasClass( 'hide' ) ) $( '#divwifi .back' ).trigger( 'click' );
 	var htmlwl = '';
+	if ( S.accesspoint ) {
+		htmlwl += '<li class="wl accesspoint">'+ ico( 'accesspoint' ) +'<grn>•</grn>&ensp;'
+				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.accesspoint.ip +'</li>';
+	}
 	if ( S.listwl ) {
 		S.listwl.forEach( list => {
 			if ( list.ip ) {
-				if ( ! S.accesspoint ) {
-					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
-					htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
-							 + ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
-							 +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
-				} else {
-					htmlwl += '<li class="wl accesspoint">'+ ico( 'accesspoint' ) +'<grn>•</grn>&ensp;'
-							 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.accesspoint.ip +'</li>';
-				}
+				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
+				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
+						 + ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
+						 +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
 				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•&ensp;</gr>'+ list.ssid +'</li>';
 			}
