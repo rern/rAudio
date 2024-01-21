@@ -66,8 +66,9 @@ accesspoint )
 		if [[ -e $dirsystem/accesspoint ]]; then
 			systemctl enable iwd
 			echo '{
-  "connect" : "WIFI:S:'$( hostname )';T:WPA;P:'$PASSPHRASE';"
-, "ip"      : "'$IP'"
+  "ip"         : "'$IP'"
+, "passphrase" : "'$PASSPHRASE'"
+, "qr"         : "WIFI:S:'$( hostname )';T:WPA;P:'$PASSPHRASE';"
 }' > $dirsystem/accesspoint
 		else
 			systemctl stop iwd

@@ -402,12 +402,12 @@ function renderPage() {
 		$( '.lanadd' ).toggleClass( 'hide', S.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
-	$( '#divaccesspoint' ).toggleClass( 'hide', ! S.accesspoint );
-	if ( ! $( '#divinterface' ).hasClass( 'hide' ) ) renderQR();
+	$( '#divap' ).toggleClass( 'hide', ! S.accesspoint );
+	renderQR();
 	showContent();
 }
 function renderQR() {
-	var ip = S.ipeth || S.ipwl || S.accesspointconf.ip;
+	var ip = S.ipeth || S.ipwl || S.accesspoint.ip;
 	if ( ! ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return
@@ -415,8 +415,8 @@ function renderQR() {
 	
 	if ( S.accesspoint ) {
 		$( '#ssid' ).text( S.hostname );
-		$( '#passphrase' ).text( S.accesspointconf.passphrase )
-		$( '#qraccesspoint' ).html( qr( S.accesspoint ) );
+		$( '#passphrase' ).text( S.accesspoint.passphrase )
+		$( '#qraccesspoint' ).html( qr( S.accesspoint.qr ) );
 	}
 	if ( ip ) {
 		$( '#ipwebui' ).html( ip );

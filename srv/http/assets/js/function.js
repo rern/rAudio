@@ -1719,12 +1719,13 @@ function setPlaybackBlankQR() {
 	var htmlqr = '';
 	if ( ! S.ip && D.accesspoint ) {
 		var qrap = new QRCode( {
-			  msg : D.accesspoint.connect
+			  msg : D.accesspoint.qr
 			, dim : 115
 			, pad : 0
 		} );
-		htmlqr += '<div class="qr container">'+ ico( 'accesspoint i-22 gr' ) +'&ensp;Access Point</div>'
-				 +'<div id="qrconnect" class="qr">'+ qrap.outerHTML +'</div>';
+		htmlqr += '<div class="qr gr">Access Point: <wh>'+ S.hostname +'</wh>'
+				 +'<br>Password: <wh>'+ D.accesspoint.passphrase +'</wh></div>'
+				 +'<div class="qr container">'+ qrap.outerHTML +'</div>';
 	}
 	var ip = S.ip ? S.ip : D.accesspoint.ip;
 	var qr = new QRCode( {
@@ -1734,7 +1735,7 @@ function setPlaybackBlankQR() {
 	} );
 	htmlqr += '<div class="qr container">'+ qr.outerHTML +'</div>'
 			 +'<div class="qr"><gr>http://</gr>'+ ip
-			 +'<br><gr>http://</gr>'+ S.hostname
+			 +'<br><gr>http://</gr>'+ S.hostname +'.local'
 			 +'</div>';
 	$( '#map-cover' ).before( htmlqr );
 }

@@ -111,11 +111,4 @@ data='
 , "listeth"     : '$listeth'
 , "listwl"      : '$listwl
 
-if [[ -e $dirsystem/accesspoint ]]; then
-	ssid=$( hostname )
-	. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$ssid.ap )
-	data+='
-, "accesspointconf" : { "ip": "'$Address'", "passphrase": "'$Passphrase'" }'
-fi
-
 data2json "$data" $1

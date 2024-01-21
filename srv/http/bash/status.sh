@@ -210,11 +210,10 @@ status+='
 , "timestamp" : '$( date +%s%3N )
 if [[ $pllength  == 0 && ! $snapclient ]]; then
 	ip=$( ipAddress )
-	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='
 , "coverart" : ""
-, "hostname" : "'$hostname'"
+, "hostname" : "'$( hostname )'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
 	outputStatus
