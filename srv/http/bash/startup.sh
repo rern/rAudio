@@ -169,15 +169,11 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
-# if no wlan // usb wlan // no access point and no connected wlan, disable wlan
-if (( $( rfkill | grep -c wlan ) > 1 )) \
-	|| ! rfkill | grep -q wlan \
-	|| ( [[ ! -e $dirsystem/ap ]] && ! netctl list | grep -q -m1 ^* ); then
-	rmmod brcmfmac_wcc &> /dev/null
-	rmmod brcmfmac &> /dev/null
-	onboardwlan=false
-else
-	onboardwlan=true
+
+if (( $( rfkill | grep -c wlan ) > 1 )) \                           # usb wlan
+	|| ! rfkill | grep -q wlan \                                    # no wlan
+	|| [[ ! -e $dirsystem/ap && ! $( iwgetid -r $wlandev ) ]]; then # not ap and not connected
+	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
 if [[ $restorefailed ]]; then
