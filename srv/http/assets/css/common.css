@@ -10,20 +10,20 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1705850359' );
+	src         : url( '../../assets/fonts/rern.woff2?v=1705937605' );
 }
 @font-face {
 	font-family : Lato;
-	src         : url( '/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
+	src         : url( '../../assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
 }
 @font-face {
 	font-family : Lato;
-	src         : url( '/assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
+	src         : url( '../../assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
 	font-weight : 300;
 }
 @font-face {
 	font-family : Inconsolata;
-	src         : url('/assets/fonts/Inconsolata.woff2') format('woff2');
+	src         : url('../../assets/fonts/Inconsolata.woff2') format('woff2');
 }
 i {
 	display     : inline-block;
