@@ -182,6 +182,7 @@ fi
 if (( $( rfkill | grep -c wlan ) > 1 )) || ! rfkill | grep -q wlan || [[ ! -e $dirsystem/ap && ! $( iwgetid -r $wlandev ) ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
+! rfkill | grep -q wlan && systemctl stop iwd
 
 if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000
