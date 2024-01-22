@@ -80,11 +80,10 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-# wait for lan connection
-connectedCheck 5
-# if lan not connected and enabled wifi profile available, wait for wi-fi connection
-if [[ ! $ipaddress && $wlandev ]]; then
-	ls -d /etc/systemd/system/netctl* &> /dev/null && connectedCheck 30
+# wait for connection
+connectedCheck 5 # lan
+if [[ ! $ipaddress && $wlandev ]]; then # if lan not connected and wlan exists
+	ls -d /etc/systemd/system/netctl* &> /dev/null && connectedCheck 30 # wlan
 fi
 
 [[ -e $dirsystem/ap ]] && ap=1
@@ -115,8 +114,9 @@ if [[ $ipaddress ]]; then
 	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
 	$dirsettings/addons-data.sh &> /dev/null &
 else
+	[[ -e $filebootwifi ]] && mv /boot/wifi{,X}
 	if [[ $wlandev && ! $ap ]]; then
-		if [[ $netctllist ]]; then
+		if [[ $( netctl list ) ]]; then
 			[[ ! -e $dirsystem/wlannoap ]] && ap=1
 		else
 			ap=1

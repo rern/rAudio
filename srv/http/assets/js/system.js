@@ -306,22 +306,14 @@ $( '#setting-bluetooth' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-wlan' ).on( 'click', function() {
-	bash( [ 'regdomlist' ], list => {
-		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, list         : [
-				  [ 'Country',                 'select', list ]
-				, [ 'Auto start Access Point', 'checkbox' ]
-			]
-			, boxwidth     : 250
-			, values       : S.wlanconf || default_v.wlan
-			, checkchanged : S.wlan
-			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
-			, cancel       : switchCancel
-			, ok           : switchEnable
-		} );
-	}, 'json' );
+	if ( V.regdomlist ) {
+		infoWlan();
+	} else {
+		bash( [ 'regdomlist' ], list => {
+			V.regdomlist = list;
+			infoWlan();
+		}, 'json' );
+	}
 } );
 $( '#divi2smodulesw' ).on( 'click', function() {
 	setTimeout( i2sOptionSet, 0 );
@@ -816,7 +808,7 @@ function infoMirrorList() {
 function infoMount( nfs ) {
 	var nfs        = nfs || false;
 	var shareddata = SW.id === 'shareddata';
-	var values     = default_v.mountcifs;
+	var values     = nfs ? default_v.mountnfs : default_v.mountcifs;
 	values.IP      = S.ipsub;
 	var tab = nfs ? [ infoMount, '' ] : [ '', () => infoMount( 'nfs' ) ];
 	if ( shareddata ) tab.push( infoMountRserver );
@@ -1096,6 +1088,23 @@ function infoRestore( reset ) {
 			}
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
+}
+function infoWlan() {
+	var autostart = 'Auto start Access Point<br> &emsp; &emsp; <gr>(if not connected)</gr>';
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, list         : [
+			  [ 'Country', 'select', V.regdomlist ]
+			, [ autostart, 'checkbox' ]
+		]
+		, boxwidth     : 250
+		, values       : S.wlanconf || default_v.wlan
+		, checkchanged : S.wlan
+		, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
 }
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
