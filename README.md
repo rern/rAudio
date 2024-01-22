@@ -115,15 +115,12 @@ Audio player for
 	- Try with a spare one before moving forward.
 	- Always use backup.gz created by latest update to restore system.
 - Before power on:
-	- Wi-Fi pre-configure - 4 alternatives: (Only if no wired LAN available.)
+	- Wi-Fi pre-configure - 3 alternatives: (Only if no wired LAN available.)
 		- From `backup.gz`
 		- From existing
-			- Copy an existing profile file from `/etc/netctl`
+			- Copy an existing profile file from `/var/lib/iwd`
 			- Rename it to `wifi` then copy it to `BOOT` before power on.
-		- Edit template file - name and password.
-			- Rename `wifi0` in `BOOT` to `wifi`
-			- Edit SSID and Key.
-		- Generate a complex profile - static IP, hidden SSID
+		- Generate a profile:
 			- With [Pre-configure Wi-Fi connection](https://rern.github.io/WiFi_profile/index.html)
 			- Save it in `BOOT`
 	- Wi-Fi access point mode
