@@ -52,7 +52,7 @@ if [[ -e /boot/wifi && $wlandev ]]; then
 	wifi=$( sed 's/\r//; s/\$/\\$/g' /boot/wifi ) # remove windows \r and escape $
 	grep -q ^ESSID <<< $wifi && wifi=$( sed 's/^ESSID/SSID/; s/^Key/Passphrase/' <<< $wifi ) # previous release format
 	ssid=$( sed -n '/^SSID=/ {s/.*=//; p}' <<< $wifi )
-	if grep -Eq 'Passphrase=""|Passphrase=$' <<< $wifi; then
+	if ! grep -q ^Passphrase <<< $wifi || grep -Eq 'Passphrase=""|Passphrase=$' <<< $wifi; then
 		wifi=$( grep -Ev '\[Security]|^Passphrase' <<< $wifi )
 		type=open
 	else
