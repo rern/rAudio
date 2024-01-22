@@ -325,9 +325,9 @@ if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keybo
 
 // <script> -----------------------------------------------------
 $script = '';
-foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )  $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-if ( ! $page )        $script.= '<script id="shortcut" src="/assets/js/shortcut.js'.$hash.'"></script>';
+foreach( $jsp as $j ) $script.= '<script src="assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )  $script.= '<script src="assets/js/'.$j.'.js'.$hash.'"></script>';
+if ( ! $page )        $script.= '<script id="shortcut" src="assets/js/shortcut.js'.$hash.'"></script>';
 echo $script;
 ?>
 <script>
