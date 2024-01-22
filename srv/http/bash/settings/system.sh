@@ -618,9 +618,11 @@ wlan )
 			sed -i 's/".*"/"'$REGDOM'"/' /etc/conf.d/wireless-regdom
 			iw reg set $REGDOM
 		fi
+		systemctl start iwd
 	else
 		rmmod brcmfmac_wcc &> /dev/null
 		rmmod brcmfmac &> /dev/null
+		! rfkill | grep -q wlan && systemctl stop iwd
 	fi
 	pushRefresh
 	[[ $( cat /sys/class/net/wlan0/operstate ) == up ]] && active=true || active=false
