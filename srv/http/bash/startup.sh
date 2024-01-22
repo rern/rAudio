@@ -16,6 +16,11 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
+if [[ -e $dirshm/wlan ]]; then
+	systemctl start iwd
+	iwctl station $wlandev scan
+	iwdprofiles=$( ls -p /var/lib/iwd | grep -v / )
+fi
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -45,18 +50,20 @@ fi
 
 if [[ -e /boot/wifi && $wlandev ]]; then
 	wifi=$( sed 's/\r//; s/\$/\\$/g' /boot/wifi ) # remove windows \r and escape $
-	ssid=$( getVar ESSID <<< $wifi )
-	key=$( getVar Key <<< $wifi )
-	profile="\
-Interface=$wlandev
-$( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )"
-	profile+='
-ESSID="'$ssid'"
-Key="'$key'"'
-	echo "$profile" > "/etc/netctl/$ssid"
-	$dirsettings/networks.sh "profileconnect
-$ssid
-CMD SSID"
+	grep -q ^ESSID <<< $wifi && wifi=$( sed 's/^ESSID/SSID/; s/^Key/Passphrase/' <<< $wifi ) # previous release format
+	ssid=$( sed -n '/^SSID=/ {s/.*=//; p}' <<< $wifi )
+	if grep -Eq 'Passphrase=""|Passphrase=$' <<< $wifi; then
+		wifi=$( grep -Ev '\[Security]|^Passphrase' <<< $wifi )
+		type=open
+	else
+		type=psk
+	fi
+	grep -Ev '^#|^SSID|^$' <<< $wifi > "/var/lib/iwd/$ssid.$type"
+	grep -q ^Hidden=true <<< $wifi && hidden=-hidden
+	iwctl station $wlandev scan "$ssid" # get ssid list ($ssid - force to include hidden ssid)
+	sleep 3
+	iwctl station $wlandev connect$hidden "$ssid" --passphrase $passphrase
+	[[ $( iwgetid -r $wlandev ) ]] && rm -f /boot/wifi || mv /boot/wifi{,X}
 fi
 # ----------------------------------------------------------------------------
 
@@ -83,12 +90,15 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 # wait for connection
 connectedCheck 5 # lan
 if [[ ! $ipaddress && $wlandev ]]; then # if lan not connected and wlan exists
-	ls -d /etc/systemd/system/netctl* &> /dev/null && connectedCheck 30 # wlan
+	if [[ $iwdprofiles ]]; then
+		profiles=$( wc -l <<< "$iwdprofiles" )
+		manual=$( grep -c AutoConnect=false /var/lib/iwd/*.* )
+		(( $profile > $manual )) && connectedCheck 30 # wlan
+	fi
 fi
 
 [[ -e $dirsystem/ap ]] && ap=1
 if [[ $ipaddress ]]; then
-	[[ -e $filebootwifi ]] && rm -f /boot/wifi
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
 		for line in "${lines[@]}"; do # ping target before mount
@@ -114,9 +124,8 @@ if [[ $ipaddress ]]; then
 	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
 	$dirsettings/addons-data.sh &> /dev/null &
 else
-	[[ -e $filebootwifi ]] && mv /boot/wifi{,X}
 	if [[ $wlandev && ! $ap ]]; then
-		if [[ $( netctl list ) ]]; then
+		if [[ $iwdprofiles ]]; then
 			[[ ! -e $dirsystem/wlannoap ]] && ap=1
 		else
 			ap=1
@@ -169,10 +178,8 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
-# usb wlan || no wlan || not ap + not connected
-if (( $( rfkill | grep -c wlan ) > 1 )) \
-	|| ! rfkill | grep -q wlan \
-	|| [[ ! -e $dirsystem/ap && ! $( iwgetid -r $wlandev ) ]]; then
+
+if (( $( rfkill | grep -c wlan ) > 1 )) || ! rfkill | grep -q wlan || [[ ! -e $dirsystem/ap && ! $( iwgetid -r $wlandev ) ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 

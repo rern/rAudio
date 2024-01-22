@@ -4,29 +4,6 @@
 
 args2var "$1"
 
-netctlSwitch() {
-	local active connected ssid wlandev
-	ssid=$1
-	wlandev=$( < $dirshm/wlan )
-	connected=$( iwgetid -r $wlandev )
-	ip link set $wlandev down
-	netctl switch-to "$ssid"
-	for i in {1..10}; do
-		sleep 1
-		if netctl is-active "$ssid" &> /dev/null; then
-			[[ $connected ]] && netctl disable "$connected"
-			netctl enable "$ssid"
-			active=1
-			break
-		fi
-	done
-	if [[ $active ]]; then
-		$dirsettings/networks-data.sh pushwl
-	else
-		echo -1
-		[[ $connected ]] && netctl switch-to "$connected"
-	fi
-}
 wlanDevice() {
 	local iplinkw wlandev
 	iplinkw=$( ip -br link | grep -m1 ^w )
@@ -58,84 +35,42 @@ bluetoothinfo )
 $info"
 	;;
 connect )
-	[[ $ADDRESS ]] && ip=static || ip=dhcp
-	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
-		if ipOnline $ADDRESS; then
-			rm "$file"
-			echo 'IP <wh>'$ADDRESS'</wh> already in use.'
-			exit
+	wlandev=$( < $dirshm/wlan )
+	if [[ $HIDDEN == true ]]; then
+		hidden=-hidden
+		iwctl station $wlandev scan "$SSID"
+		sleep 3
+	fi
+	if [[ $ADDRESS ]]; then # static
+		if [[ $PASSPHRASE ]]; then
+			data+='
+[Security]
+Passphrase="'$PASSPHRASE'"'
+			type=psk
+		else
+			type=open
 		fi
-	fi
-	
-	data='Interface='$( < $dirshm/wlan )'
-Connection=wireless
-IP='$ip'
-ESSID="'$ESSID'"'
-	if [[ $KEY ]]; then
-		[[ $SECURITY ]] && security=wep || security=wpa
+		[[ $hidden ]] && data+='
+[Settings]
+Hidden=true'
 		data+='
-Key="'$KEY'"'
-	else
-		security=none
-	fi
-	[[ $ADDRESS ]] && data+='
-Address='$ADDRESS'/24
+[IPv4]
+Address='$ADDRESS'
 Gateway='$GATEWAY
-	data+='
-Security='$security
-	[[ $HIDDEN ]] && data+='
-Hidden=yes'
-	echo "$data" > "/etc/netctl/$ESSID"
-	
-	if [[ -e $dirsystem/ap ]]; then
-		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
-		exit
+		awk NF <<< $data > "/var/lib/iwd/$SSID.$type"
+		iwctl station $wlandev connect$hidden "$SSID"
+		[[ ! $( iwgetid -r $wlandev ) ]] && rm -f "/var/lib/iwd/$SSID.$type"
+	elif [[ $PASSPHRASE ]]; then
+		iwctl station $wlandev connect$hidden "$SSID" --passphrase "$PASSPHRASE"
+	else # open
+		iwctl station $wlandev connect$hidden "$SSID"
 	fi
-	
-	if ! netctl is-active "$ESSID" &> /dev/null; then
-		netctlSwitch "$ESSID"
-		avahi-daemon --kill # flush cache and restart
-	else
-		pushRefresh
-	fi
-	
-#	wlandev=$( < $dirshm/wlan )
-#	iwctl station wlan0 scan "$SSID"
-#	[[ $HIDDEN ]] && connect=connect-hidden || connect=connect
-#	if [[ $ADDRESS ]]; then # static
-#		file="/var/lib/iwd/$SSID."
-#		if [[ $KEY ]]; then
-#			file+=psk
-#			data='[Security]
-#Passphrase="'$KEY'"'
-#		else
-#			file+=open
-#		fi
-#		data+="\
-#[IPv4]
-#Address=$ADRESS
-#Gateway=$GATEWAY
-#" > "$file"
-#		iwctl station $wlandev $connect "$SSID"
-#	elif [[ $KEY ]]; then
-#		iwctl station $wlandev $connect "$SSID" --passphrase $KEY
-#	else # open
-#		iwctl station $wlandev $connect "$SSID"
-#	fi
-#	avahi-daemon --kill # flush cache and restart
-#	pushRefresh
+	avahi-daemon --kill # flush cache and restart
+	pushRefresh
 	;;
 disconnect )
-	wlandev=$( < $dirshm/wlan )
-	connected=$( iwgetid -r $wlandev )
-	netctl stop "$connected"
-	netctl disable "$connected"
-	systemctl stop wpa_supplicant
-	ip link set $wlandev up
+	iwctl station $( < $dirshm/wlan ) disconnect
 	$dirsettings/networks-data.sh pushwl
-	
-#	iwctl station $wlandev disconnect
-#	$dirsettings/networks-data.sh pushwl
 	;;
 lanedit )
 	if [[ $IP ]]; then
@@ -162,45 +97,25 @@ Gateway='$GATEWAY $file
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )
-	if [[ -e $dirsystem/ap ]]; then
-		rm -f $dirsystem/{ap,ap.conf}
-		systemctl stop iwd
-		ifconfig $wlandev 0.0.0.0
-		sleep 2
-	fi
-	netctlSwitch "$SSID"
-	
-#	wlandev=$( < $dirshm/wlan )
-#	[[ -e $dirsystem/ap ]] && rm -f $dirsystem/{ap,ap.conf} && systemctl restart iwd
-#	file=$( ls "/var/lib/iwd/$SSID".* )
-#	grep -q ^Hidden "$file" && connect=connect-hidden || connect=connect
-#	iwctl station $wlandev $connect "$SSID"
+	[[ -e $dirsystem/ap ]] && rm -f $dirsystem/{ap,ap.conf} && systemctl restart iwd
+	grep -q ^Hidden=true "/var/lib/iwd/$SSID".* && hidden=-hidden
+	iwctl station $wlandev connect$hidden "$SSID"
+	$dirsettings/networks-data.sh pushwl
 	;;
 profileget )
-	conf2json "/etc/netctl/$SSID"
-	
-#	file=$( ls "/var/lib/iwd/$SSID".* )
-#	. <( grep -E '^Add|^Hid|^Pas' "$file" )
-#	echo '{
-#		  "Address"    : "'$Address'"
-#		, "Hidden"     : "'$Hidden'"
-#		, "type"       : "'${file/*.}'"
-#		, "Passphrase" : "'$Passphrase'"
-#}'
+	data=$( cat "/var/lib/iwd/$SSID".* )
+	. <( grep -E '^Address|^Gateway|^Hidden|^Passphrase' <<< $data )
+	[[ ! $Hidden ]] && Hidden=false
+	echo '{
+		  "ADDRESS"    : "'$Address'"
+		, "GATEWAY"    : "'$Gateway'"
+		, "HIDDEN"     : '$Hidden'
+		, "PASSPHRASE" : "'$Passphrase'"
+}'
 	;;
 profileremove )
-	netctl is-enabled "$SSID" && netctl disable "$SSID"
-	if netctl is-active "$SSID" &> /dev/null; then
-		netctl stop "$SSID"
-		systemctl stop wpa_supplicant
-		wlandev=$( < $dirshm/wlan )
-		ip link set $wlandev up
-	fi
-	rm "/etc/netctl/$SSID"
+	iwctl known-networks "$SSID" forget
 	$dirsettings/networks-data.sh pushwl
-	
-#	iwctl known-networks "$SSID" forget
-#	$dirsettings/networks-data.sh pushwl
 	;;
 scankill ) 
 	killProcess networksscan

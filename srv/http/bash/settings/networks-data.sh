@@ -35,12 +35,10 @@ fi
 wlandev=$( < $dirshm/wlan )
 listWlan() {
 	local dbm notconnected profiles profile
-	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
+	readarray -t profiles <<< $( ls -1 /var/lib/iwd/*.* 2> /dev/null | sed -E 's|.*/||; s/.psk|.open//' )
 	if [[ $profiles ]]; then
-		for profile in "${profiles[@]}"; do
-			ssid=$( stringEscape $profile )
-			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
-			if netctl is-active "$profile" &> /dev/null; then
+		for ssid in "${profiles[@]}"; do
+			if [[ $( iwgetid -r $wlandev ) == $ssid ]]; then
 				for i in {1..10}; do
 					ipr=$( ip r |  grep -m1 $wlandev )
 					[[ $ipr ]] && break || sleep 1
@@ -53,7 +51,7 @@ listWlan() {
 	  "dbm"     : '$dbm'
 	, "gateway" : "'$gatewaywl'"
 	, "ip"      : "'$ipwl'"
-	, "ssid"    : "'$ssid'"
+	, "ssid"    : "'$( stringEscape $ssid )'"
 	}'
 			else
 				notconnected+=',{

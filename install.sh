@@ -4,7 +4,34 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240121
+# 20240129
+readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+if [[ $profiles ]]; then
+	for p in "${profiles[@]}"; do
+		data=
+		. <( grep = "/etc/netctl/$p" )
+		if [[ $Key ]]; then
+			data+='
+[Security]
+Passphrase="'$Key'"'
+			type=psk
+		else
+			type=open
+		fi
+		[[ $Hidden ]] && data+='
+[Settings]
+Hidden=true'
+		[[ $Address ]] && data+='
+[IPv4]
+Address='${Address:0:-3}'
+Gateway='$Gateway
+		awk NF <<< "$data" > /boot/wifi
+		netctl disable "$ESSID" &> /dev/null
+		rm -f "/etc/netctl/$ESSID"
+	done
+fi
+
+# 20240122
 file=$dirshm/avahihostname
 [[ ! -e $file ]] && avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $file
 

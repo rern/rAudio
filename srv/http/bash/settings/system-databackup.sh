@@ -26,7 +26,6 @@ files=(
 	/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 	/mnt/MPD/NAS/data
 	/var/lib/alsa/asound.state
-	/var/lib/iwd/ap/$( hostname ).ap
 )
 for file in ${files[@]}; do
 	if [[ -e $file ]]; then
@@ -34,20 +33,11 @@ for file in ${files[@]}; do
 		cp {,$dirconfig}$file
 	fi
 done
+cp -r /var/lib/iwd $dirconfig/var/lib
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 [[ $crossfade ]] && echo $crossfade > $dirsystem/crossfade
 hostname > $dirsystem/hostname
 timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
-readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
-if [[ $profiles ]]; then
-	cp -r /etc/netctl $dirconfig/etc
-	for profile in "${profiles[@]}"; do
-		if [[ $( netctl is-enabled "$profile" ) == enabled ]]; then
-			echo $profile > $dirsystem/netctlprofile
-			break
-		fi
-	done
-fi
 mkdir -p $dirconfig/var/lib
 cp -r /var/lib/bluetooth $dirconfig/var/lib &> /dev/null
 xinitrcfiles=$( ls /etc/X11/xinit/xinitrc.d | grep -v 50-systemd-user.sh )

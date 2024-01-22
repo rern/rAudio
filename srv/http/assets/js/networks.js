@@ -1,6 +1,6 @@
 var default_v = {
-	  dhcp   : { ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
-	, static : { ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
+	  dhcp   : { SSID: '', PASSPHRASE: '', HIDDEN: false }
+	, static : { SSID: '', PASSPHRASE: '', ADDRESS: '', GATEWAY: '', HIDDEN: false }
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -38,7 +38,6 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this    = $( this );
 	var ssid     = $this.data( 'ssid' );
-	var security = $this.data( 'wpa' ) === 'wep';
 	var encrypt  = $this.data( 'encrypt' );
 	if ( encrypt === 'on' ) {
 		info( {
@@ -47,10 +46,10 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 			, list    : [ 'Password', 'password' ]
 			, focus   : 0
 			, oklabel : 'Connect'
-			, ok      : () => connectWiFi( { ESSID: ssid, KEY: infoVal(), SECURITY: security } )
+			, ok      : () => connectWiFi( { SSID: ssid, KEY: infoVal() } )
 		} );
 	} else {
-		connectWiFi( { ESSID: ssid } );
+		connectWiFi( { SSID: ssid } );
 	}
 } );
 $( '.wladd' ).on( 'click', function() {
@@ -126,21 +125,16 @@ $( '.disconnect' ).on( 'click', function() {
 	
 	var ssid = V.li.data( 'ssid' );
 	var icon = 'wifi';
-	if ( S.ipeth ) {
-		notify( icon, ssid, 'Disconnect ...' );
-		bash( [ 'disconnect' ] )
-	} else {
-		info( {
-			  icon    : icon
-			, title   : ssid
-			, message : ( S.listeth ? '' : iconwarning +'No network connections after this.<br>' ) +'Disconnect?'
-			, okcolor : orange
-			, ok      : () => {
-				notify( icon, ssid, 'Disconnect ...' );
-				bash( [ 'disconnect' ] )
-			}
-		} );
-	}
+	info( {
+		  icon    : icon
+		, title   : ssid
+		, message : ( S.listeth ? '' : iconwarning +'No network connections after this.<br>' ) +'Disconnect?'
+		, okcolor : orange
+		, ok      : () => {
+			notify( icon, ssid, 'Disconnect ...' );
+			bash( [ 'disconnect' ] )
+		}
+	} );
 } );
 $( '.edit' ).on( 'click', function() {
 	V.listid === 'listwl' ? infoWiFiGet() : infoLan();
@@ -283,7 +277,6 @@ function infoWiFi( v ) {
 		, list         : [
 			  [ 'SSID',        'text' ]
 			, [ 'Password',    'password' ]
-			, [ 'WEP',         'checkbox' ]
 			, [ 'Hidden SSID', 'checkbox' ]
 		]
 		, values       : values
@@ -293,12 +286,10 @@ function infoWiFi( v ) {
 	} );
 }
 function infoWiFiGet() {
-	bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD SSID' ], v => {
-		V.wifistatic = v.IP === 'static'
-		v.SECURITY = v.SECURITY === 'wep';
-		v.HIDDEN   = 'HIDDEN' in v;
-		[ 'INTERFACE', 'CONNECTION', 'IP' ].forEach( k => delete v[ k ] );
-		V.wifistatic ? infoWiFiStatic( v ) : infoWiFi( v );
+	var ssid = V.li.data( 'ssid' );
+	bash( [ 'profileget', ssid, 'CMD SSID' ], v => {
+		v.SSID = ssid;
+		v.ADDRESS ? infoWiFiStatic( v ) : infoWiFi( v );
 	}, 'json' );
 }
 function infoWiFiStatic( v ) {
@@ -321,7 +312,6 @@ function infoWiFiStatic( v ) {
 			, [ 'Password',    'password' ]
 			, [ 'IP',          'text' ]
 			, [ 'Gateway',     'text' ]
-			, [ 'WEP',         'checkbox' ]
 			, [ 'Hidden SSID', 'checkbox' ]
 		]
 		, values        : values

@@ -70,15 +70,7 @@ mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
 rm -rf $dirdata $dirshareddata \
 		/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 		/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
-if [[ ! $keepnetwork ]]; then
-	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
-	if [[ $profiles ]]; then
-		for profile in "${profiles[@]}"; do
-			[[ $( netctl is-enabled "$profile" ) == enabled ]] && netctl disable "$profile"
-			rm "/etc/netctl/$profile"
-		done
-	fi
-fi
+[[ ! $keepnetwork ]] && rm -f /var/lib/iwd/*.*
 
 $dirsettings/system-datadefault.sh
 

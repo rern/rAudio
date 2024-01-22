@@ -27,11 +27,10 @@ iwctlAP() {
 , "ssid"       : "'$hostname'"
 }' > $dirsystem/ap.conf
 		touch $dirsystem/ap
+		iw $wlandev set power_save off
 	else
 		rm -f $dirsystem/{ap,ap.conf}
-		systemctl stop iwd
 	fi
-	iw $wlandev set power_save off
 }
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
@@ -77,7 +76,6 @@ ap )
 ' /var/lib/iwd/ap/$( hostname ).ap
 		iwctlAP
 	else
-		systemctl stop iwd
 		rm -f $dirsystem/{ap,ap.conf}
 		wlanDisable
 	fi

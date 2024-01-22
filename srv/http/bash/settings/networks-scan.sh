@@ -33,13 +33,14 @@ if [[ $1 == wlan ]]; then
 				| sort )
 	
 	# omit saved profile
-	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
+	readarray -t profiles <<< $( ls -p /var/lib/iwd | grep -v / | sed -E 's/.psk$|.open$//' )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
 			scan=$( grep -v "ssid.*$profile" <<< $scan  )
 		done
 	fi
 	echo "[ ${scan:1} ]" # ,{...} > [ {...} ]
+	iwctl station $wlandev scan
 	exit
 fi
 
