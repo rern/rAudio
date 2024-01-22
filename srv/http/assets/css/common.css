@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1705839327' );
+	src         : url( '/assets/fonts/rern.woff2?v=1705850359' );
 }
 @font-face {
 	font-family : Lato;
@@ -32,7 +32,6 @@ i {
 }
 .i-22 { font-size: 22px !important }
 .i-30 { font-size: 30px !important }
-.i-accesspoint::before     { content: '\F554' }
 .i-add::before             { content: '\F519' }
 .i-addons::before          { content: '\F50D' }
 .i-airplay::before         { content: '\F580' }
