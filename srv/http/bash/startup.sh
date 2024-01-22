@@ -169,10 +169,10 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
-
-if (( $( rfkill | grep -c wlan ) > 1 )) \                           # usb wlan
-	|| ! rfkill | grep -q wlan \                                    # no wlan
-	|| [[ ! -e $dirsystem/ap && ! $( iwgetid -r $wlandev ) ]]; then # not ap and not connected
+# usb wlan || no wlan || not ap + not connected
+if (( $( rfkill | grep -c wlan ) > 1 )) \
+	|| ! rfkill | grep -q wlan \
+	|| [[ ! -e $dirsystem/ap && ! $( iwgetid -r $wlandev ) ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
