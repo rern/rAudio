@@ -382,7 +382,6 @@ function renderPage() {
 		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.ipeth
 								 +'<gr>&ensp;&raquo;&ensp;'+ S.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
-		$( '.lanadd' ).toggleClass( 'hide', S.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
 	$( '#divap' ).toggleClass( 'hide', ! S.ap );
