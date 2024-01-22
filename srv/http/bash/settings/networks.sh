@@ -8,14 +8,11 @@ netctlSwitch() {
 	local active connected ssid wlandev
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
-	connected=$( iwgetid $wlandev -r )
-	# iwctl station $wlandev disconnect
-	# iwctl station $wlandev connect "$ssid"
+	connected=$( iwgetid -r $wlandev )
 	ip link set $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
-		# if [[ $( iwgetid $wlandev -r ) == $connected ]]; then
 		if netctl is-active "$ssid" &> /dev/null; then
 			[[ $connected ]] && netctl disable "$connected"
 			netctl enable "$ssid"
@@ -27,7 +24,6 @@ netctlSwitch() {
 		$dirsettings/networks-data.sh pushwl
 	else
 		echo -1
-		# [[ $connected ]] && iwctl station $wlandev connect "$connected"
 		[[ $connected ]] && netctl switch-to "$connected"
 	fi
 }
@@ -102,15 +98,44 @@ Hidden=yes'
 	else
 		pushRefresh
 	fi
+	
+#	wlandev=$( < $dirshm/wlan )
+#	iwctl station wlan0 scan "$SSID"
+#	[[ $HIDDEN ]] && connect=connect-hidden || connect=connect
+#	if [[ $ADDRESS ]]; then # static
+#		file="/var/lib/iwd/$SSID."
+#		if [[ $KEY ]]; then
+#			file+=psk
+#			data='[Security]
+#Passphrase="'$KEY'"'
+#		else
+#			file+=open
+#		fi
+#		data+="\
+#[IPv4]
+#Address=$ADRESS
+#Gateway=$GATEWAY
+#" > "$file"
+#		iwctl station $wlandev $connect "$SSID"
+#	elif [[ $KEY ]]; then
+#		iwctl station $wlandev $connect "$SSID" --passphrase $KEY
+#	else # open
+#		iwctl station $wlandev $connect "$SSID"
+#	fi
+#	avahi-daemon --kill # flush cache and restart
+#	pushRefresh
 	;;
 disconnect )
 	wlandev=$( < $dirshm/wlan )
-	connected=$( iwgetid $wlandev -r )
+	connected=$( iwgetid -r $wlandev )
 	netctl stop "$connected"
 	netctl disable "$connected"
 	systemctl stop wpa_supplicant
 	ip link set $wlandev up
 	$dirsettings/networks-data.sh pushwl
+	
+#	iwctl station $wlandev disconnect
+#	$dirsettings/networks-data.sh pushwl
 	;;
 lanedit )
 	if [[ $IP ]]; then
@@ -144,9 +169,24 @@ profileconnect )
 		sleep 2
 	fi
 	netctlSwitch "$SSID"
+	
+#	wlandev=$( < $dirshm/wlan )
+#	[[ -e $dirsystem/ap ]] && rm -f $dirsystem/{ap,ap.conf} && systemctl restart iwd
+#	file=$( ls "/var/lib/iwd/$SSID".* )
+#	grep -q ^Hidden "$file" && connect=connect-hidden || connect=connect
+#	iwctl station $wlandev $connect "$SSID"
 	;;
 profileget )
 	conf2json "/etc/netctl/$SSID"
+	
+#	file=$( ls "/var/lib/iwd/$SSID".* )
+#	. <( grep -E '^Add|^Hid|^Pas' "$file" )
+#	echo '{
+#		  "Address"    : "'$Address'"
+#		, "Hidden"     : "'$Hidden'"
+#		, "type"       : "'${file/*.}'"
+#		, "Passphrase" : "'$Passphrase'"
+#}'
 	;;
 profileremove )
 	netctl is-enabled "$SSID" && netctl disable "$SSID"
@@ -158,6 +198,9 @@ profileremove )
 	fi
 	rm "/etc/netctl/$SSID"
 	$dirsettings/networks-data.sh pushwl
+	
+#	iwctl known-networks "$SSID" forget
+#	$dirsettings/networks-data.sh pushwl
 	;;
 scankill ) 
 	killProcess networksscan
