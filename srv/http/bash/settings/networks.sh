@@ -36,16 +36,9 @@ $info"
 	;;
 connect )
 	wlandev=$( < $dirshm/wlan )
-	killall iwctl &> /dev/null # fix - connecting complications
-	if ! iwctl station $wlandev get-networks | grep -q "$SSID"; then
-		iwctl station $wlandev "$SSID"
-		sleep 3
-	fi
-	if [[ $HIDDEN == true ]]; then
-		hidden=-hidden
-		iwctl station $wlandev scan "$SSID"
-		sleep 3
-	fi
+	iwctl station $wlandev scan "$SSID"
+	sleep 3
+	[[ $HIDDEN == true ]] && hidden=-hidden
 	if [[ $ADDRESS ]]; then # static
 		if [[ $PASSPHRASE ]]; then
 			data+='
