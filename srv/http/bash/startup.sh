@@ -48,22 +48,16 @@ if [[ -e /boot/backup.gz ]]; then
 	fi
 fi
 
-if [[ -e /boot/wifi && $wlandev ]]; then
-	wifi=$( sed 's/\r//; s/\$/\\$/g' /boot/wifi ) # remove windows \r and escape $
-	grep -q ^ESSID <<< $wifi && wifi=$( sed 's/^ESSID/SSID/; s/^Key/Passphrase/' <<< $wifi ) # previous release format
-	ssid=$( sed -n '/^SSID=/ {s/.*=//; p}' <<< $wifi )
-	if ! grep -q ^Passphrase <<< $wifi || grep -Eq 'Passphrase=""|Passphrase=$' <<< $wifi; then
-		wifi=$( grep -Ev '\[Security]|^Passphrase' <<< $wifi )
-		type=open
-	else
-		type=psk
-	fi
-	grep -Ev '^#|^SSID|^$' <<< $wifi > "/var/lib/iwd/$ssid.$type"
-	grep -q ^Hidden=true <<< $wifi && hidden=-hidden
+filewifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
+if [[ $filewifi && $wlandev ]]; then
+	filename=${filewifi/*\/}
+	ssid=${filename%.*}
+	cp "$filewifi" /var/lib/iwd
+	grep -q ^Hidden=true "$filewifi" && hidden=-hidden
 	iwctl station $wlandev scan "$ssid" # get ssid list ($ssid - force to include hidden ssid)
 	sleep 3
 	iwctl station $wlandev connect$hidden "$ssid" --passphrase $passphrase
-	[[ $( iwgetid -r $wlandev ) ]] && rm -f /boot/wifi || mv /boot/wifi{,X}
+	[[ $( iwgetid -r $wlandev ) ]] && rm -f "$filewifi" || mv "$filewifi"{,X}
 fi
 # ----------------------------------------------------------------------------
 
