@@ -127,8 +127,8 @@ $( '.disconnect' ).on( 'click', function() {
 	var icon = 'wifi';
 	info( {
 		  icon    : icon
-		, title   : ssid
-		, message : ( S.listeth ? '' : iconwarning +'No network connections after this.<br>' ) +'Disconnect?'
+		, title   : 'Wi-Fi'
+		, message : '<wh>'+ ssid +'</wh>'+ ( S.listeth ? '' : '<br>'+ iconwarning +'No network connections after this.' ) +'<br>Disconnect?'
 		, okcolor : orange
 		, ok      : () => {
 			notify( icon, ssid, 'Disconnect ...' );
@@ -149,8 +149,8 @@ $( '.forget' ).on( 'click', function() {
 	var icon = 'wifi';
 	info( {
 		  icon    : icon
-		, title   : ssid
-		, message : S.ipeth || S.ipwl ? '' : iconwarning +'Current Web interface will be dropped.'
+		, title   : 'Wi-Fi'
+		, message : '<wh>'+ ssid +'</wh>'+ ( S.ipeth || S.ipwl ? '' : '<br>'+ iconwarning +'No network connections after this.' )
 		, oklabel : ico( 'remove' ) +'Forget'
 		, okcolor : red
 		, ok      : () => {

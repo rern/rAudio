@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '../../assets/fonts/rern.woff2?v=1705937605' );
+	src         : url( '../../assets/fonts/rern.woff2?v=1705996589' );
 }
 @font-face {
 	font-family : Lato;
@@ -805,6 +805,7 @@ hr {
 }
 .infomessage {
 	padding-top: 5px;
+	line-height: 24px;
 }
 .infoprompt {
 	padding: 15px 5px;

@@ -50,13 +50,19 @@ fi
 
 filewifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
 if [[ $filewifi && $wlandev ]]; then
+	ip link set wlan0 up
 	filename=${filewifi/*\/}
 	ssid=${filename%.*}
-	cp "$filewifi" /var/lib/iwd
 	grep -q ^Hidden=true "$filewifi" && hidden=-hidden
 	iwctl station $wlandev scan "$ssid" # get ssid list ($ssid - force to include hidden ssid)
 	sleep 3
-	iwctl station $wlandev connect$hidden "$ssid" --passphrase $passphrase
+	if grep -q ^Address "$filewifi"; then
+		cp "$filewifi" /var/lib/iwd
+		iwctl station $wlandev connect$hidden "$ssid"
+	else
+		passphrase=$( getVar Passphrase "$filewifi" )
+		iwctl station $wlandev connect$hidden "$ssid" --passphrase $passphrase
+	fi
 	[[ $( iwgetid -r $wlandev ) ]] && rm -f "$filewifi" || mv "$filewifi"{,X}
 fi
 # ----------------------------------------------------------------------------
