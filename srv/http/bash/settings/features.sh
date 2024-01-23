@@ -26,7 +26,7 @@ iwctlAP() {
 , "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
 , "ssid"       : "'$hostname'"
 }' > $dirsystem/ap.conf
-		touch $dirsystem/ap
+		[[ ! -e $dirshm/apstartup ]] && touch $dirsystem/ap
 		iw $wlandev set power_save off
 	else
 		rm -f $dirsystem/{ap,ap.conf}

@@ -8,7 +8,6 @@ echo $$ > $dirshm/pidnetworksscan
 if [[ $1 == wlan ]]; then
 	wlandev=$( < $dirshm/wlan )
 	ip link set $wlandev up
-
 	# ESSID:"NAME"
 	# Encryption key:on
 	# Quality=37/70  Signal level=-73 dBm --- Quality=0/100  Signal level=25/100
@@ -40,7 +39,6 @@ if [[ $1 == wlan ]]; then
 		done
 	fi
 	echo "[ ${scan:1} ]" # ,{...} > [ {...} ]
-	iwctl station $wlandev scan
 	exit
 fi
 

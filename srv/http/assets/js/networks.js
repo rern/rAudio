@@ -15,7 +15,6 @@ $( 'body' ).on( 'click', function() {
 } );
 $( '.close, .back' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
-	bash( [ 'scankill' ] );
 } );
 $( '.back' ).on( 'click', function() {
 	$( '#help, #divinterface' ).removeClass( 'hide' );
@@ -331,7 +330,6 @@ function infoWiFiTab( values ) {
 function psOnClose() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
 	
-	bash( [ 'scankill' ] );
 	clearTimeout( V.timeoutscan );
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );

@@ -11,7 +11,6 @@ else
 fi
 
 playerActive upnp && $dirbash/cmd.sh playerstop
-[[ -e $dirshm/apstartup ]] && rm -f $dirsystem/{ap,ap.conf}
 
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )
