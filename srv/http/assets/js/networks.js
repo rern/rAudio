@@ -45,7 +45,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 			, list    : [ 'Password', 'password' ]
 			, focus   : 0
 			, oklabel : 'Connect'
-			, ok      : () => connectWiFi( { SSID: ssid, KEY: infoVal() } )
+			, ok      : () => connectWiFi( { SSID: ssid, PASSPHRASE: infoVal() } )
 		} );
 	} else {
 		connectWiFi( { SSID: ssid } );
