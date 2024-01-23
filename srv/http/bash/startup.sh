@@ -51,11 +51,12 @@ filewifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
 if [[ $filewifi && $wlandev ]]; then
 	filename=${filewifi/*\/}
 	ssid=${filename%.*}
+	grep -q ^Address "$filewifi" && static=1
 	grep -q ^Hidden=true "$filewifi" && hidden=-hidden
-	systemctl restart iwd
+	killall iwctl &> /dev/null # fix - connecting complications
 	iwctl station wlan0 scan "$ssid"
 	sleep 3
-	if grep -q ^Address "$filewifi"; then
+	if [[ $static ]]; then
 		cp "$filewifi" /var/lib/iwd
 		iwctl station $wlandev connect$hidden "$ssid"
 	else
