@@ -25,9 +25,9 @@ Hidden=true'
 [IPv4]
 Address='${Address:0:-3}'
 Gateway='$Gateway
-		awk NF <<< "$data" > /boot/wifi
+		awk NF <<< "$data" > "/boot/$ESSID.$type"
 		netctl disable "$ESSID" &> /dev/null
-		rm -f "/etc/netctl/$ESSID"
+		rm -f "/etc/netctl/$ESSID" /boot/wifi0
 	done
 fi
 
