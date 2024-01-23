@@ -55,7 +55,7 @@ if [[ $filewifi && $wlandev ]]; then
 	grep -q ^Hidden=true "$filewifi" && hidden=-hidden
 	killall iwctl &> /dev/null # fix - connecting complications
 	iwctl station $wlandev scan "$ssid"
-	sleep 1
+	sleep 3
 	if [[ $static ]]; then
 		cp "$filewifi" /var/lib/iwd
 		iwctl station $wlandev connect$hidden "$ssid"

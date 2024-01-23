@@ -7,13 +7,14 @@ args2var "$1"
 iwctlAP() {
 	wlanDisable # on-board wlan - force rmmod for ap to start
 	wlandev=$( < $dirshm/wlan )
+	systemctl stop iwd
 	if ! rfkill | grep -q wlan; then
 		modprobe brcmfmac
 	else
 		ip link set $wlandev down
 	fi
 	ip link set $wlandev up
-	systemctl restart iwd
+	systemctl start iwd
 	sleep 1
 	hostname=$( hostname )
 	iwctl device $wlandev set-property Mode ap
