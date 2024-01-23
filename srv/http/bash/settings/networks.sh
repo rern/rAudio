@@ -10,6 +10,7 @@ wlanDevice() {
 	if [[ ! $iplinkw ]]; then
 		if [[ -e $dirshm/onboardwlan ]]; then
 			modprobe brcmfmac
+			sleep 1
 			ip link set wlan0 up
 			iplinkw=$( ip -br link | grep ^w )
 		fi
