@@ -50,7 +50,6 @@ if [[ $filewifi && $wlandev ]]; then
 	ssid=${filename%.*}
 	passphrase=$( getVar Passphrase "$filewifi" )
 	hidden=$( getVar Hidden "$filewifi" )
-	grep -q ^PreSharedKey "$filewifi" && presharedkey=1
 	if [[ $passphrase ]] && ! grep -q ^PreSharedKey "$filewifi"; then
 		presharedkey=$( wpa_passphrase "$ssid" "$passphrase" | grep '\spsk=' | cut -d= -f2 )
 		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" "$filewifi"
