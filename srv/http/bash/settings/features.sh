@@ -5,6 +5,7 @@
 args2var "$1"
 
 iwctlAP() {
+	local hostname wlandev
 	wlanDisable # on-board wlan - force rmmod for ap to start
 	wlandev=$( < $dirshm/wlan )
 	hostname=$( hostname )

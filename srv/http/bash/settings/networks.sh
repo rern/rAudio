@@ -5,6 +5,7 @@
 args2var "$1"
 
 iwctlConnect() { # wlandev ssid hidden passphrase
+	local hidden wlandev
 	wlandev=$( < $dirshm/wlan )
 	iwctl station $wlandev scan "$SSID"
 	for (( i=0; i < 10; i++ )); do

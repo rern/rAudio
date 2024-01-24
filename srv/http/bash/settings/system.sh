@@ -6,7 +6,7 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 args2var "$1"
 
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
-	local chip i2clcdchar i2cmpdoled list module name spimpdoled tft
+	local chip config i2clcdchar i2cmpdoled label list module name rebooti2c spimpdoled tft
 	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison: cmdline.txt, config.txt, raspberrypi.conf
 		cp /boot/cmdline.txt /tmp
 		grep -Ev '^#|^\s*$' /boot/config.txt | sort -u > /tmp/config.txt
@@ -56,6 +56,7 @@ $CMD"
 	[[ $list ]] && awk NF <<< $list > $dirshm/reboot || rm -f $dirshm/reboot
 }
 sharedDataSet() {
+	local rescan
 	mv /mnt/MPD/{SD,USB} /mnt
 	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
