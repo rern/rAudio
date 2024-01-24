@@ -620,8 +620,7 @@ wlan )
 		fi
 		systemctl start iwd
 	else
-		rmmod brcmfmac_wcc &> /dev/null
-		rmmod brcmfmac &> /dev/null
+		rmmod brcmfmac_wcc brcmfmac &> /dev/null
 		! rfkill | grep -q wlan && systemctl stop iwd
 	fi
 	pushRefresh
