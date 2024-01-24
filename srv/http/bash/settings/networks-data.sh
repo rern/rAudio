@@ -34,11 +34,13 @@ fi
 
 wlandev=$( < $dirshm/wlan )
 listWlan() {
-	local dbm notconnected profiles profile
+	local connected dbm ipr ipwl notconnected profiles profile ssid
 	readarray -t profiles <<< $( ls -1 /var/lib/iwd/*.* 2> /dev/null | sed -E 's|.*/||; s/.psk|.open//' )
 	if [[ $profiles ]]; then
 		for ssid in "${profiles[@]}"; do
-			if [[ $( iwgetid -r $wlandev ) == $ssid ]]; then
+			[[ $( iwgetid -r $wlandev ) == $ssid ]] && connected=1 || connected=
+			ssid=$( stringEscape $ssid )
+			if [[ $connected ]]; then
 				for i in {1..10}; do
 					ipr=$( ip r |  grep -m1 $wlandev )
 					[[ $ipr ]] && break || sleep 1
@@ -48,15 +50,15 @@ listWlan() {
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
-	  "dbm"     : '$dbm'
-	, "gateway" : "'$gatewaywl'"
-	, "ip"      : "'$ipwl'"
-	, "ssid"    : "'$( stringEscape $ssid )'"
-	}'
+  "dbm"     : '$dbm'
+, "gateway" : "'$gatewaywl'"
+, "ip"      : "'$ipwl'"
+, "ssid"    : "'$ssid'"
+}'
 			else
 				notconnected+=',{
-	  "ssid"    : "'$ssid'"
-	}'
+  "ssid"    : "'$ssid'"
+}'
 			fi
 		done
 	fi
