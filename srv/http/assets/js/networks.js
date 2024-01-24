@@ -188,13 +188,15 @@ function connectWiFi( data ) {
 	var title = 'Connect Wi-Fi'
 	clearTimeout( V.timeoutscan );
 	if ( 'ADDRESS' in data ) { // static
+		var cmd = 'connectstatic';
 		S.listeth ? notify( icon, title, 'Change ...' ) : reconnect( icon, data.ADDRESS, 5 );
 	} else {
+		var cmd = 'connect';
 		notify( icon, title, S.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
-	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
+	bash( [ cmd, ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );

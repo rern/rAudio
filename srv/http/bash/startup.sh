@@ -48,19 +48,17 @@ filewifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
 if [[ $filewifi && $wlandev ]]; then
 	filename=${filewifi/*\/}
 	ssid=${filename%.*}
-	grep -q ^Hidden=true "$filewifi" && hidden=-hidden
+	hidden=$( getVar Hidden "$filewifi" )
 	passphrase=$( getVar Passphrase "$filewifi" )
 	if [[ $passphrase ]]; then
 		presharedkey=$( wpa_passphrase "$ssid" "$passphrase" | grep '\spsk=' | cut -d= -f2 )
-		sed -i "/^\[Security/ a\PreSharedKey=$presharedkey" "$filewifi"
+		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" "$filewifi"
 	fi
 	cp "$filewifi" /var/lib/iwd
-	iwctl station $wlandev scan "$ssid" # force include hidden ssid
-	sleep 3
-	for (( i=0; i < 10; i++ )); do
-		iwctl station $wlandev get-networks | grep -q "$ssid" && break || sleep 1
-	done
-	iwctl station $wlandev connect$hidden "$ssid"
+	$dirsettings/networks.sh "iwctlconnect
+$ssid
+$hidden
+CMD SSID HIDDEN"
 	[[ $( iwgetid -r $wlandev ) ]] && rm -f "$filewifi" || mv "$filewifi"{,X}
 fi
 # ----------------------------------------------------------------------------

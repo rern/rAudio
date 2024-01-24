@@ -4,6 +4,22 @@
 
 args2var "$1"
 
+iwctlConnect() { # wlandev ssid hidden passphrase
+	wlandev=$( < $dirshm/wlan )
+	iwctl station $wlandev scan "$SSID"
+	for (( i=0; i < 10; i++ )); do
+		iwctl station $wlandev get-networks | grep -q "$SSID" && break || sleep 1
+	done
+	[[ $HIDDEN == true ]] && hidden=-hidden
+	if [[ $PASSPHRASE ]]; then
+		iwctl station $wlandev connect$hidden "$SSID" --passphrase "$PASSPHRASE"
+	else
+		iwctl station $wlandev connect$hidden "$SSID"
+	fi
+	[[ ! $( iwgetid -r $wlandev ) ]] && rm -f "/var/lib/iwd/$SSID".*
+	avahi-daemon --kill # flush cache and restart
+	pushRefresh
+}
 wlanDevice() {
 	local iplinkw wlandev
 	iplinkw=$( ip -br link | grep -m1 ^w )
@@ -36,37 +52,35 @@ $info"
 	;;
 connect )
 	killProcess networksscan
-	killall iwctl &> /dev/null # fix - connecting complications
-	wlandev=$( < $dirshm/wlan )
-	iwctl station $wlandev scan "$SSID"
-	sleep 3
+	iwctlConnect
+	;;
+connectstatic )	
 	if [[ $PASSPHRASE ]]; then
-		data+='
+		presharedkey=$( wpa_passphrase "$SSID" "$PASSPHRASE" | grep '\spsk=' | cut -d= -f2 )
+		data='
 [Security]
+PreSharedKey='$presharedkey'
 Passphrase="'$PASSPHRASE'"'
-		type=psk
+		profile="/var/lib/iwd/$SSID.psk"
 	else
-		type=open
+		profile="/var/lib/iwd/$SSID.open"
 	fi
-	if [[ $HIDDEN == true ]]; then
-		data+='
-[Settings]
-Hidden=true'
-		hidden=-hidden
-	fi
-	[[ $ADDRESS ]] && data+='
+	data+='
 [IPv4]
 Address='$ADDRESS'
 Gateway='$GATEWAY
-	echo "$data" > "/var/lib/iwd/$SSID.$type"
-	iwctl station $wlandev connect$hidden "$SSID"
-	[[ ! $( iwgetid -r $wlandev ) ]] && rm -f "/var/lib/iwd/$SSID.$type"
-	avahi-daemon --kill # flush cache and restart
-	pushRefresh
+	[[ $HIDDEN == true ]] && data+='
+[Settings]
+Hidden=true'
+	echo "$data" > "$profile"
+	iwctlConnect
 	;;
 disconnect )
 	iwctl station $( < $dirshm/wlan ) disconnect
 	$dirsettings/networks-data.sh pushwl
+	;;
+iwctlconnect )
+	iwctlConnect
 	;;
 lanedit )
 	if [[ $IP ]]; then
@@ -89,7 +103,7 @@ Gateway='$GATEWAY $file
 		sed -i '/^DNSSEC/ i\DHCP=yes' $file
 	fi
 	systemctl restart systemd-networkd
-	avahi-daemon --kill # flush cache and restart
+	avahi-daemon --kill
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )
