@@ -2,13 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-connectedCheck() {
-	for (( i=0; i < $1; i++ )); do
-		ipaddress=$( ipAddress )
-		[[ ! $ipaddress ]] && sleep 1 || break
-	done
-}
-
 revision=$( grep ^Revision /proc/cpuinfo )
 echo "\
 BB=${revision: -3:2}
@@ -84,14 +77,12 @@ echo mpd > $dirshm/player
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 # wait for connection
-connectedCheck 5 # lan
-if [[ ! $ipaddress && $wlandev ]]; then # if lan not connected and wlan exists
-	if [[ $iwdprofiles ]]; then
-		profiles=$( wc -l <<< "$iwdprofiles" )
-		manual=$( grep -c AutoConnect=false /var/lib/iwd/*.* )
-		(( $profile > $manual )) && connectedCheck 30 # wlan
-	fi
-fi
+[[ $iwdprofiles ]] && sec=15 || sec=5
+for (( i=0; i < $sec; i++ )); do
+	ipaddress=$( ipAddress )
+	[[ $ipaddress ]] && break || sleep 1
+done
+
 
 [[ -e $dirsystem/ap ]] && ap=1
 if [[ $ipaddress ]]; then
