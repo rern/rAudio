@@ -49,7 +49,7 @@ if [[ $filewifi && $wlandev ]]; then
 	filename=${filewifi/*\/}
 	ssid=${filename%.*}
 	hidden=$( getVar Hidden "$filewifi" )
-	if (( $( grep -E '^Passphrase|^PreSharedKey' $filewifi | wc -l ) < 2 )); then
+	if (( $( grep -Ec '^Passphrase|^PreSharedKey' $filewifi ) < 2 )); then
 		passphrase=$( getVar Passphrase "$filewifi" )
 		presharedkey=$( wpa_passphrase "$ssid" "$passphrase" | grep '\spsk=' | cut -d= -f2 )
 		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" "$filewifi"
