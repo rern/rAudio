@@ -3,25 +3,25 @@ $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 $id_data      = [
-	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                   'status' => true, 'exist' => 'iwctl' ]
+	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                'status' => true, 'exist' => 'iwctl' ]
 	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
-	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false,    'status' => true, 'exist' => 'camilladsp' ]
-	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true, 'exist' => 'mediamtx' ]
+	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false, 'status' => true, 'exist' => 'camilladsp' ]
+	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false, 'status' => true, 'exist' => 'mediamtx' ]
 	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
 	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
-	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'localbrowser',                          'status' => true, 'exist' => 'firefox' ]
+	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',                            'status' => true, 'exist' => 'firefox' ]
 	, 'login'          => [ 'label' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
 	, 'lyrics'         => [ 'label' => 'Lyrics' ]
 	, 'multiraudio'    => [ 'label' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
-	, 'nfsserver'      => [ 'label' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false,    'status' => true ]
+	, 'nfsserver'      => [ 'label' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false, 'status' => true ]
 	, 'scrobble'       => [ 'label' => 'Scrobbler',        'sub' => 'Last.fm' ]
-	, 'shairport-sync' => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true, 'exist' => 'shairport-sync' ]
-	, 'smb'            => [ 'label' => 'File Sharing',     'sub' => 'samba',                                 'status' => true, 'exist' => 'smbd' ]
-	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',                            'status' => true, 'exist' => 'snapclient' ]
-	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'setting' => false,    'status' => true, 'exist' => 'snapclient' ]
-	, 'spotifyd'       => [ 'label' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true, 'exist' => 'spotifyd' ]
+	, 'shairport-sync' => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false, 'status' => true, 'exist' => 'shairport-sync' ]
+	, 'smb'            => [ 'label' => 'File Sharing',     'sub' => 'samba',                              'status' => true, 'exist' => 'smbd' ]
+	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',                         'status' => true, 'exist' => 'snapclient' ]
+	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'setting' => false, 'status' => true, 'exist' => 'snapclient' ]
+	, 'spotifyd'       => [ 'label' => 'Spotify',          'sub' => 'spotifyd',                           'status' => true, 'exist' => 'spotifyd' ]
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
-	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
+	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false, 'status' => true, 'exist' => 'spotifyd' ]
 ];
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ]; //////////////////////////////////
