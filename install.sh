@@ -30,7 +30,7 @@ Gateway='$Gateway
 		awk NF <<< "$data" > "$file"
 		if [[ $( netctl is-enabled "$p" ) == enabled ]]; then
 			netctl disable "$ESSID" &> /dev/null
-			cp "$file" /boot
+			mv "$file" /boot
 		fi
 	done
 	rm -f /etc/netctl/* /boot/wifi0 &> /dev/null
