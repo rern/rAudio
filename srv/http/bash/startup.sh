@@ -166,7 +166,9 @@ elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
 
-if (( $( rfkill | grep -c wlan ) > 1 )) || ! rfkill | grep -q wlan || [[ ! -e $dirsystem/ap && ! $( iwgetid -r $wlandev ) ]]; then
+if (( $( rfkill | grep -c wlan ) > 1 )) \
+		|| ! rfkill | grep -q wlan \
+		|| [[ ! $iwdprofiles && ! -e $dirsystem/ap ]]; then
 	systemctl stop iwd
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
