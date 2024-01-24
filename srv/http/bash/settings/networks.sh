@@ -35,35 +35,32 @@ bluetoothinfo )
 $info"
 	;;
 connect )
-	wlandev=$( < $dirshm/wlan )
+	killProcess networksscan
 	killall iwctl &> /dev/null # fix - connecting complications
+	wlandev=$( < $dirshm/wlan )
 	iwctl station $wlandev scan "$SSID"
 	sleep 3
-	[[ $HIDDEN == true ]] && hidden=-hidden
-	if [[ $ADDRESS ]]; then # static
-		if [[ $PASSPHRASE ]]; then
-			data+='
+	if [[ $PASSPHRASE ]]; then
+		data+='
 [Security]
 Passphrase="'$PASSPHRASE'"'
-			type=psk
-		else
-			type=open
-		fi
-		[[ $hidden ]] && data+='
+		type=psk
+	else
+		type=open
+	fi
+	if [[ $HIDDEN == true ]]; then
+		data+='
 [Settings]
 Hidden=true'
-		data+='
+		hidden=-hidden
+	fi
+	[[ $ADDRESS ]] && data+='
 [IPv4]
 Address='$ADDRESS'
 Gateway='$GATEWAY
-		awk NF <<< $data > "/var/lib/iwd/$SSID.$type"
-		iwctl station $wlandev connect$hidden "$SSID"
-		[[ ! $( iwgetid -r $wlandev ) ]] && rm -f "/var/lib/iwd/$SSID.$type"
-	elif [[ $PASSPHRASE ]]; then
-		iwctl station $wlandev connect$hidden "$SSID" --passphrase "$PASSPHRASE"
-	else # open
-		iwctl station $wlandev connect$hidden "$SSID"
-	fi
+	echo "$data" > "/var/lib/iwd/$SSID.$type"
+	iwctl station $wlandev connect$hidden "$SSID"
+	[[ ! $( iwgetid -r $wlandev ) ]] && rm -f "/var/lib/iwd/$SSID.$type"
 	avahi-daemon --kill # flush cache and restart
 	pushRefresh
 	;;

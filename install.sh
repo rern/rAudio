@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240129
+sed -i -E 's/^(EnableNetworkConfiguration=)true/\1false/' /etc/iwd/main.conf
+
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 if [[ $profiles ]]; then
 	for p in "${profiles[@]}"; do
@@ -40,7 +42,7 @@ if [[ ! -e /usr/bin/iwctl ]]; then
 	mkdir -p /etc/iwd /var/lib/iwd/ap
 	echo "\
 [General]
-EnableNetworkConfiguration=true
+EnableNetworkConfiguration=false
 
 [Scan]
 DisablePeriodicScan=true

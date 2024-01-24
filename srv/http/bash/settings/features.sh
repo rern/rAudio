@@ -7,6 +7,7 @@ args2var "$1"
 iwctlAP() {
 	wlanDisable # on-board wlan - force rmmod for ap to start
 	wlandev=$( < $dirshm/wlan )
+	hostname=$( hostname )
 	systemctl stop iwd
 	if ! rfkill | grep -q wlan; then
 		modprobe brcmfmac
@@ -16,7 +17,6 @@ iwctlAP() {
 	ip link set $wlandev up
 	systemctl start iwd
 	sleep 1
-	hostname=$( hostname )
 	iwctl device $wlandev set-property Mode ap
 	iwctl ap $wlandev start-profile $hostname
 	if iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then
@@ -75,8 +75,10 @@ ap )
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
 ' -e 's/(Address=).*/\1'$IP'/
 ' /var/lib/iwd/ap/$( hostname ).ap
+		sed -i -E 's/^(EnableNetworkConfiguration=)false/\1true/' /etc/iwd/main.conf
 		iwctlAP
 	else
+		sed -i -E 's/^(EnableNetworkConfiguration=)true/\1false/' /etc/iwd/main.conf
 		rm -f $dirsystem/{ap,ap.conf}
 		wlanDisable
 	fi

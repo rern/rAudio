@@ -16,10 +16,7 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
-if [[ -e $dirshm/wlan ]]; then
-	systemctl start iwd
-	iwdprofiles=$( ls -p /var/lib/iwd | grep -v / )
-fi
+[[ -e $dirshm/wlan ]] && iwdprofiles=$( ls -p /var/lib/iwd | grep -v / )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -51,18 +48,13 @@ filewifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
 if [[ $filewifi && $wlandev ]]; then
 	filename=${filewifi/*\/}
 	ssid=${filename%.*}
-	grep -q ^Address "$filewifi" && static=1
-	grep -q ^Hidden=true "$filewifi" && hidden=-hidden
-	killall iwctl &> /dev/null # fix - connecting complications
-	iwctl station $wlandev scan "$ssid"
-	sleep 3
-	if [[ $static ]]; then
-		cp "$filewifi" /var/lib/iwd
-		iwctl station $wlandev connect$hidden "$ssid"
-	else
-		passphrase=$( getVar Passphrase "$filewifi" )
-		iwctl station $wlandev connect "$ssid" --passphrase "$passphrase"
+	if grep -q ^Hidden=true "$filewifi"; then
+		hidden=-hidden
+		iwctl station $wlandev scan "$ssid"
+		sleep 3
 	fi
+	cp "$filewifi" /var/lib/iwd
+	iwctl station $wlandev connect$hidden "$ssid"
 	[[ $( iwgetid -r $wlandev ) ]] && rm -f "$filewifi" || mv "$filewifi"{,X}
 fi
 # ----------------------------------------------------------------------------
@@ -180,6 +172,7 @@ elif [[ -e $dirmpd/listing ]]; then
 fi
 
 if (( $( rfkill | grep -c wlan ) > 1 )) || ! rfkill | grep -q wlan || [[ ! -e $dirsystem/ap && ! $( iwgetid -r $wlandev ) ]]; then
+	systemctl stop iwd
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 ! rfkill | grep -q wlan && systemctl stop iwd
