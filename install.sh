@@ -45,7 +45,7 @@ if [[ ! -e /usr/bin/iwctl ]]; then
 	mkdir -p /etc/iwd /var/lib/iwd/ap
 	echo "\
 [General]
-EnableNetworkConfiguration=false
+EnableNetworkConfiguration=true
 
 [Scan]
 DisablePeriodicScan=true
