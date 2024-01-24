@@ -38,7 +38,7 @@ fi
 
 # 20240122
 file=$dirshm/avahihostname
-[[ ! -e $file ]] && avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $file
+[[ ! -e $file ]] && avahi-resolve -a4 $( ipAddress ) | awk '{print $NF}' > $file
 
 if [[ ! -e /usr/bin/iwctl ]]; then
 	pacman -Sy --noconfirm iwd
