@@ -16,9 +16,9 @@ if [[ $profiles ]]; then
 			data+='
 [Security]
 Passphrase="'$Key'"'
-			type=psk
+			file="/var/lib/iwd/$ESSID.psk"
 		else
-			type=open
+			file="/var/lib/iwd/$ESSID.open"
 		fi
 		[[ $Hidden ]] && data+='
 [Settings]
@@ -27,10 +27,13 @@ Hidden=true'
 [IPv4]
 Address='${Address:0:-3}'
 Gateway='$Gateway
-		awk NF <<< "$data" > "/boot/$ESSID.$type"
-		netctl disable "$ESSID" &> /dev/null
-		rm -f "/etc/netctl/$ESSID" /boot/wifi0
+		awk NF <<< "$data" > "$file"
+		if [[ $( netctl is-enabled "$p" ) == enabled ]]; then
+			netctl disable "$ESSID" &> /dev/null
+			cp "$file" /boot
+		fi
 	done
+	rm -f /etc/netctl/* /boot/wifi0 &> /dev/null
 fi
 
 # 20240122
