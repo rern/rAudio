@@ -76,10 +76,8 @@ ap )
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
 ' -e 's/(Address=).*/\1'$IP'/
 ' /var/lib/iwd/ap/$( hostname ).ap
-		sed -i -E 's/^(EnableNetworkConfiguration=)false/\1true/' /etc/iwd/main.conf
 		iwctlAP
 	else
-		sed -i -E 's/^(EnableNetworkConfiguration=)true/\1false/' /etc/iwd/main.conf
 		rm -f $dirsystem/{ap,ap.conf}
 		wlanDisable
 	fi
