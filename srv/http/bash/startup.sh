@@ -9,7 +9,7 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
-[[ $wlandev ]] && wifiprofile=$( netctl list )
+[[ $wlandev ]] && wifiprofile=$( ls -1p /etc/netctl | grep -v /$ )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -167,9 +167,7 @@ elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
 # usb wlan || no wlan || not ap + not connected
-if (( $( rfkill | grep -c wlan ) > 1 )) \
-	|| ! rfkill | grep -q wlan \
-	|| [[ ! $wifiprofile || ! -e $dirsystem/ap ]]; then
+if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wifiprofile || ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
