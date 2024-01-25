@@ -439,7 +439,7 @@ function info( json ) {
 	} else {
 		htmls.list = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
-		I.checkboxonly = ! I.list.some( l => l[ 1 ] !== 'checkbox' );
+		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
 		var td0   = I.checkboxonly ? '<tr><td>' : '<tr><td></td><td colspan="2">'; // no label <td></td>
 		var label, type;
 		var i     = 0; // for radio name
@@ -536,7 +536,7 @@ function info( json ) {
 					htmls.list += '<textarea></textarea></td></tr>';
 					break;
 				default: // generic string
-					htmls.list += l[ 2 ];
+					htmls.list += l[ 2 ] || '';
 					htmls.list += l[ 3 ] === 'td' ? '</td>' : '</td></tr>';
 			}
 		} );

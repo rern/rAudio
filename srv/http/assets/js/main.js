@@ -66,7 +66,7 @@ var vumeter = '<img class="imgicon" src="'+ V.covervu +'"> ';
 var chkdisplay = {
 	  library       : {
 		  album          : ico( 'album' ) +'<gr>Album</gr>'
-			, nas        : ico( 'networks' ) +'<gr>Network</gr>'
+			, nas        : ico( 'networks' ) +'<gr>NAS</gr>'
 		, albumartist    : ico( 'albumartist' ) +'<gr>Album Artist</gr>'
 			, sd         : ico( 'microsd' ) +'<gr>SD</gr>'
 		, artist         : ico( 'artist' ) +'<gr>Artist</gr>'

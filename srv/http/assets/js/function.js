@@ -627,7 +627,9 @@ function infoDisplayKeyValue( type ) {
 	keys.forEach( k => { values[ k ] = D[ k ] } );
 	var list   = [];
 	Object.values( json ).forEach( ( l, i ) => {
-		if ( [ 'library', 'playback' ].includes( type ) ) {
+		if ( ! l ) {
+			list.push( [ '', '' ] );
+		} else if ( [ 'library', 'playback' ].includes( type ) ) {
 			list.push( i % 2 ? [ l, 'checkbox' ] : [ l, 'checkbox', 'td' ] );
 		} else {
 			list.push( [ l, 'checkbox' ] );
