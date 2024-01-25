@@ -15,7 +15,6 @@ $( 'body' ).on( 'click', function() {
 } );
 $( '.close, .back' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
-	bash( [ 'scankill' ] );
 } );
 $( '.back' ).on( 'click', function() {
 	$( '#help, #divinterface' ).removeClass( 'hide' );
@@ -132,8 +131,8 @@ $( '.disconnect' ).on( 'click', function() {
 	} else {
 		info( {
 			  icon    : icon
-			, title   : ssid
-			, message : ( S.listeth ? '' : iconwarning +'No network connections after this.<br>' ) +'Disconnect?'
+			, title   : 'Wi-Fi'
+			, message : '<wh>'+ ssid +'</wh>'+ ( S.listeth ? '' : '<br>'+ iconwarning +'No network connections after this.' ) +'<br>Disconnect?'
 			, okcolor : orange
 			, ok      : () => {
 				notify( icon, ssid, 'Disconnect ...' );
@@ -155,8 +154,8 @@ $( '.forget' ).on( 'click', function() {
 	var icon = 'wifi';
 	info( {
 		  icon    : icon
-		, title   : ssid
-		, message : S.ipeth || S.ipwl ? '' : iconwarning +'Current Web interface will be dropped.'
+		, title   : 'Wi-Fi'
+		, message : '<wh>'+ ssid +'</wh>'+ ( S.ipeth || S.ipwl ? '' : '<br>'+ iconwarning +'No network connections after this.' )
 		, oklabel : ico( 'remove' ) +'Forget'
 		, okcolor : red
 		, ok      : () => {
@@ -341,7 +340,6 @@ function infoWiFiTab( values ) {
 function psOnClose() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
 	
-	bash( [ 'scankill' ] );
 	clearTimeout( V.timeoutscan );
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
@@ -392,7 +390,6 @@ function renderPage() {
 		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.ipeth
 								 +'<gr>&ensp;&raquo;&ensp;'+ S.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
-		$( '.lanadd' ).toggleClass( 'hide', S.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
 	$( '#divap' ).toggleClass( 'hide', ! S.ap );

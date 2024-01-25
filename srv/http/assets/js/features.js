@@ -5,14 +5,6 @@ var default_v      = {
 		, CD        : true
 		, STARTUP   : true
 	  }
-	, localbrowser : {
-		  ROTATE      : 0
-		, ZOOM        : 100
-		, SCREENOFF   : 0
-		, ONWHILEPLAY : false
-		, CURSOR      : false
-		, RUNXINITRCD : false
-	}
 	, lyrics       : {
 		  URL      : 'https://'
 		, START    : '<'
@@ -197,7 +189,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		]
 		, footer       : '<br>'+ brightness + button
 		, boxwidth     : 110
-		, values       : S.localbrowserconf || default_v.localbrowser
+		, values       : S.localbrowserconf
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
 			var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );

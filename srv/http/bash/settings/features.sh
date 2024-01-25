@@ -18,20 +18,22 @@ iwctlAP() {
 	hostname=$( hostname )
 	iwctl device $wlandev set-property Mode ap
 	iwctl ap $wlandev start-profile $hostname
-	if iwctl ap list | grep -q "$( < $dirshm/wlan ).*yes"; then
-		. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
-		echo '{
+	if iwctl ap list | grep -q "$wlandev.*yes"; then
+		if [[ ! -e $dirshm/apstartup ]]; then
+			. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
+			echo '{
   "ip"         : "'$Address'"
 , "passphrase" : "'$Passphrase'"
 , "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
 , "ssid"       : "'$hostname'"
 }' > $dirsystem/ap.conf
-		touch $dirsystem/ap
+			touch $dirsystem/ap
+		fi
+		iw $wlandev set power_save off
 	else
 		rm -f $dirsystem/{ap,ap.conf}
 		systemctl stop iwd
 	fi
-	iw $wlandev set power_save off
 }
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png

@@ -19,7 +19,10 @@ $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 		fileconf=/var/lib/iwd/ap/$( hostname ).ap
 		conf="\
 <bll># cat $fileconf</bll>
-$( awk NF $fileconf )"
+$( awk NF $fileconf )
+
+<bll># iwctl ap list</bll>
+$( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
 		;;
 	bluez )
 		fileconf=/etc/bluetooth/main.conf

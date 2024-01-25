@@ -85,7 +85,7 @@ calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
 }
 conf2json() {
-	local file lines l json v
+	local file json k keys only l lines v
 	[[ $1 == '-nocap' ]] && nocap=1 && shift
 	file=$1
 	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
@@ -129,6 +129,7 @@ confNotString() {
 	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
 coverFileGet() {
+	local path coverfile
 	path=$1
 	coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
@@ -204,6 +205,7 @@ ipOnline() {
 	ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 json2var() {
+	local regex
 	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
 	[[ -f $1 ]] && sed -E "$regex" "$1" || sed -E "$regex" <<< $1
 }
@@ -222,7 +224,7 @@ mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
 notify() { # icon title message delayms
-	local blink data delay icon json message title
+	local blink data delay icon ip json message title
 	[[ $1 == '-ip' ]] && ip=$2 && shift 2
 	if [[ $4 ]]; then
 		delay=$4
@@ -299,6 +301,7 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 radioStatusFile() {
+	local status
 	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^state|^Title' $dirshm/status )
 	status+='
 Artist="'$artist'"
@@ -383,7 +386,7 @@ $card
 $control"
 }
 volumeGet() {
-	local amixer card control data mixersoftware val_db
+	local amixer card control data db mixer mixersoftware val val_db
 	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )

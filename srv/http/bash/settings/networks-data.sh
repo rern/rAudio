@@ -34,7 +34,7 @@ fi
 
 wlandev=$( < $dirshm/wlan )
 listWlan() {
-	local dbm notconnected profiles profile
+	local connected dbm ipr ipwl notconnected profiles profile ssid
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
@@ -50,15 +50,15 @@ listWlan() {
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
-	  "dbm"     : '$dbm'
-	, "gateway" : "'$gatewaywl'"
-	, "ip"      : "'$ipwl'"
-	, "ssid"    : "'$ssid'"
-	}'
+  "dbm"     : '$dbm'
+, "gateway" : "'$gatewaywl'"
+, "ip"      : "'$ipwl'"
+, "ssid"    : "'$ssid'"
+}'
 			else
 				notconnected+=',{
-	  "ssid"    : "'$ssid'"
-	}'
+  "ssid"    : "'$ssid'"
+}'
 			fi
 		done
 	fi
