@@ -34,7 +34,7 @@ fi
 
 wlandev=$( < $dirshm/wlan )
 listWlan() {
-	local connected dbm ipr ipwl notconnected profiles profile ssid
+	local dbm notconnected profiles profile
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
@@ -66,7 +66,6 @@ listWlan() {
 	[[ $listwl ]] && listwl='[ '${listwl:1}' ]' || listwl=false
 }
 if [[ $1 == pushwl ]]; then
-	pushwl=1
 	listWlan
 	pushData wlan '{ "listwl": '$listwl', "ipwl": "'$ipwl'", "gatewaywl": "'$gatewaywl'" }'
 	exit
