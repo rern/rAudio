@@ -9,7 +9,7 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
-[[ $wlandev ]] && wifiprofile=$( ls -1p /etc/netctl | grep -v /$ )
+[[ $wlandev ]] && wlanprofile=$( ls -1p /etc/netctl | grep -v /$ )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -75,7 +75,7 @@ echo mpd > $dirshm/player
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 # wait for connection
-[[ $wifiprofile ]] && sec=30 || sec=5 # wlan || lan
+[[ $wlanprofile ]] && sec=30 || sec=5 # wlan || lan
 for (( i=0; i < $sec; i++ )); do
 	ipaddress=$( ipAddress )
 	[[ ! $ipaddress ]] && sleep 1 || break
@@ -112,7 +112,7 @@ if [[ $ipaddress ]]; then
 else
 	[[ -e $filebootwifi ]] && mv /boot/wifi{,X}
 	if [[ $wlandev && ! $ap ]]; then
-		if [[ $wifiprofile ]]; then
+		if [[ $wlanprofile ]]; then
 			[[ ! -e $dirsystem/wlannoap ]] && ap=1
 		else
 			ap=1
@@ -167,7 +167,7 @@ elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
 # usb wlan || no wlan || not ap + not connected
-if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wifiprofile && ! $ap ]]; then
+if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
