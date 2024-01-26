@@ -1,16 +1,3 @@
-var default_v = {
-	  dhcp   : { ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
-	, static : { ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
-	, list   : [
-		  [ 'SSID',         'text' ]
-		, [ 'Password',     'password' ]
-		, [ 'IP',           'text' ]
-		, [ 'Gateway',      'text' ]
-		, [ 'WEP Protocol', 'checkbox' ]
-		, [ 'Hidden SSID',  'checkbox' ]
-	]
-}
-
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( 'body' ).on( 'click', function() {
@@ -133,24 +120,43 @@ $( '.disconnect' ).on( 'click', function() {
 	
 	var ssid = V.li.data( 'ssid' );
 	var icon = 'wifi';
-	if ( S.ipeth ) {
-		notify( icon, ssid, 'Disconnect ...' );
-		bash( [ 'disconnect' ] )
-	} else {
-		info( {
-			  icon    : icon
-			, title   : 'Wi-Fi'
-			, message : '<wh>'+ ssid +'</wh>'+ ( S.listeth ? '' : '<br>'+ iconwarning +'No network connections after this.' ) +'<br>Disconnect?'
-			, okcolor : orange
-			, ok      : () => {
-				notify( icon, ssid, 'Disconnect ...' );
-				bash( [ 'disconnect' ] )
-			}
-		} );
-	}
+	info( {
+		  icon       : icon
+		, title      : 'Wi-Fi'
+		, list       : [
+			  [ 'SSID',       'text' ]
+			, [ 'Disconnect', 'checkbox' ]
+			, [ 'Disable',    'checkbox' ]
+		]
+		, footer     : S.ipeth ? '' : iconwarning +'Disconnect <wh>current connection</wh>'
+		, boxwidth   : 200
+		, values     : [ ssid, true, true ]
+		, beforeshow : () => {
+			$( '#infoList input' ).eq( 0 ).prop( 'disabled', true );
+			$( '#infoList input:checkbox' ).on( 'input', function() {
+				var $this = $( this );
+				var v     = infoVal();
+				$( '.infofooter' ).toggleClass( 'hide', ! v[ 1 ] );
+				$( '#infoOk' ).toggleClass( 'disabled', ! v[ 1 ] && ! v[ 2 ] )
+			} );
+		}
+		, okcolor    : orange
+		, ok         : () => {
+			var val = infoVal( 'array' );
+			notify( icon, ssid, 'Disconnect ...' );
+			bash( [ 'disconnect', ...val, 'CMD SSID DISCONNECT DISABLE' ] )
+		}
+	} );
 } );
 $( '.edit' ).on( 'click', function() {
-	V.listid === 'listwl' ? infoWiFiGet() : infoLan();
+	if ( V.listid === 'listwl' ) {
+		bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD SSID' ], v => {
+			V.profileget = v;
+			infoWiFi( v );
+		}, 'json' );
+	} else {
+		infoLan();
+	}
 } );
 $( '.forget' ).on( 'click', function() {
 	if ( V.listid === 'listbt' ) {
@@ -218,7 +224,6 @@ function connectWiFi( data ) {
 					  icon    : icon
 					, title   : title
 					, message : error
-					, ok      : infoWiFiGet
 				} );
 			}
 		}
@@ -275,65 +280,59 @@ function infoLanSet( v ) {
 	} );
 }
 function infoWiFi( v ) {
-	if ( v ) {
-		var values = {};
-		Object.keys( default_v.dhcp ).forEach( k => values[ k ] = v[ k ] );
-	} else {
-		var values = default_v.dhcp;
+	var list = [
+		  [ '',             'hidden' ]
+		, [ 'SSID',         'text' ]
+		, [ 'Password',     'password' ]
+		, [ 'IP',           'text' ]
+		, [ 'Gateway',      'text' ]
+		, [ 'WEP Protocol', 'checkbox' ]
+		, [ 'Hidden SSID',  'checkbox' ]
+	];
+	var default_v = {
+		  dhcp   : { IP: 'dhcp',   ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
+		, static : { IP: 'static', ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
 	}
-	var list = default_v.list.slice( 0 );
-	list.splice( 2, 2 );
+	if ( v ) {
+		var dhcp   = v.IP === 'dhcp';
+		v.SECURITY = v.SECURITY === 'wep';
+		v.HIDDEN   = V.HIDDEN === 'yes';
+		var values = {};
+		Object.keys( default_v[ v.IP ] ).forEach( k => values[ k ] = v[ k ] );
+	} else {
+		var values = default_v[ 'dhcp' ];
+		var dhcp   = true;
+	}
+	if ( dhcp ) {
+		var tabfn = () => {
+			var val = infoVal();
+			val.IP  = 'static';
+			infoWiFi( val );
+		}
+		list.splice( 3, 2 );
+	} else {
+		var tabfn = () => {
+			var val = infoVal();
+			val.IP  = 'dhcp';
+			infoWiFi( val );
+		}
+		values.ADDRESS = S.ipwl || S.ipsub;
+		values.GATEWAY = S.gateway || S.ipsub;
+	}
+	var checkchanged = V.profileget && Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' )
 	info( {
 		  icon         : 'wifi'
 		, title        : v ? 'Saved Connection' : 'Add Connection'
 		, tablabel     : [ 'DHCP', 'Static IP' ]
-		, tab          : [ '', () => infoWiFiTab( infoVal() ) ]
+		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
 		, values       : values
+		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
-		, checkchanged : ! V.wifistatic
+		, checkip      : dhcp ? '' : [ 2, 3 ]
 		, ok           : () => connectWiFi( infoVal() )
 	} );
-}
-function infoWiFiGet() {
-	bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD SSID' ], v => {
-		V.wifistatic = v.IP === 'static'
-		v.SECURITY = v.SECURITY === 'wep';
-		v.HIDDEN   = 'HIDDEN' in v;
-		[ 'INTERFACE', 'CONNECTION', 'IP' ].forEach( k => delete v[ k ] );
-		V.wifistatic ? infoWiFiStatic( v ) : infoWiFi( v );
-	}, 'json' );
-}
-function infoWiFiStatic( v ) {
-	if ( v ) {
-		var values = {};
-		Object.keys( default_v.static ).forEach( k => values[ k ] = v[ k ] );
-	} else {
-		var values = default_v.static;
-	}
-	values.ADDRESS = S.ipwl || S.ipsub;
-	values.GATEWAY = S.gateway || S.ipsub;
-	info( {
-		  icon          : 'wifi'
-		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
-		, tablabel      : [ 'DHCP', 'Static IP' ]
-		, tab           : [ () => infoWiFiTab( infoVal() ), '' ]
-		, boxwidth      : 180
-		, list          : default_v.list
-		, values        : values
-		, checkblank    : [ 0 ]
-		, checkchanged  : V.wifistatic
-		, checkip       : [ 2, 3 ]
-		, ok            : () => connectWiFi( infoVal() )
-	} );
-}
-function infoWiFiTab( values ) {
-	var target = 'ADDRESS' in values ? 'dhcp' : 'static';
-	var keys   = Object.keys( default_v[ target ] );
-	var v      = {}
-	keys.forEach( k => v[ k ] = values[ k ] );
-	target === 'dhcp' ? infoWiFi( v ) : infoWiFiStatic( v );
 }
 function psOnClose() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return

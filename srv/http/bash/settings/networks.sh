@@ -69,7 +69,7 @@ connect )
 	
 	data='Interface='$( < $dirshm/wlan )'
 Connection=wireless
-IP='$ip'
+IP='$IP'
 ESSID="'$ESSID'"'
 	if [[ $KEY ]]; then
 		[[ $SECURITY ]] && security=wep || security=wpa
@@ -100,13 +100,13 @@ Hidden=yes'
 	fi
 	;;
 disconnect )
-	wlandev=$( < $dirshm/wlan )
-	connected=$( iwgetid -r $wlandev )
-	netctl stop "$connected"
-	netctl disable "$connected"
-	systemctl stop wpa_supplicant
-	ip link set $wlandev up
-	$dirsettings/networks-data.sh pushwl
+	if [[ $DISCONNECT ]]; then
+		netctl stop "$SSID"
+		systemctl stop wpa_supplicant
+		ip link set $( < $dirshm/wlan ) up
+		$dirsettings/networks-data.sh pushwl
+	fi
+	[[ $DISABLE ]] && netctl disable "$SSID"
 	;;
 lanedit )
 	if [[ $IP ]]; then
@@ -142,7 +142,8 @@ profileconnect )
 	netctlSwitch "$SSID"
 	;;
 profileget )
-	conf2json "/etc/netctl/$SSID"
+	profile=$( conf2json "/etc/netctl/$SSID" )
+	echo ${profile/INT*IP/IP}
 	;;
 profileremove )
 	netctl is-enabled "$SSID" && netctl disable "$SSID"
