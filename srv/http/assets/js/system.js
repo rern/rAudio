@@ -284,7 +284,7 @@ $( '#setting-hddsleep' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : 'Timer:'
-		, list         : [ '', 'radio', { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }, 'tr' ]
+		, list         : [ '', 'radio', { kv: { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }, sameline: false } ]
 		, values       : { APM: S.hddsleep } || default_v.hddsleep
 		, checkchanged : S.hddsleep
 		, cancel       : switchCancel
@@ -379,10 +379,10 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 		, title        : SW.title
 		, message      : gpiosvg
 		, list         : [
-			  [ 'CLK', 'select', board2bcm ]
-			, [ 'DT',  'select', board2bcm ]
-			, [ 'SW',  'select', board2bcm ]
-			, [ 'Step', 'radio', { '1%': 1, '2%': 2 } ]
+			  [ 'CLK',  'select', board2bcm ]
+			, [ 'DT',   'select', board2bcm ]
+			, [ 'SW',   'select', board2bcm ]
+			, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
 		]
 		, boxwidth     : 70
 		, values       : S.rotaryencoderconf || default_v.rotaryencoder
@@ -407,7 +407,7 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 		, title        : SW.title
 		, list         : [
 			  [ 'Controller', 'select', chip ]
-			, [ 'Refresh',    'select', [ 800000, 1000000, 1200000 ], 'baud' ]
+			, [ 'Refresh',    'select', { kv: [ 800000, 1000000, 1200000 ], suffix: 'baud' } ]
 		]
 		, values       : S.mpdoledconf
 		, checkchanged : S.mpdoled
@@ -427,18 +427,18 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-tft' ).on( 'click', function() {
+	var type = {
+		  'Generic'               : 'tft35a'
+		, 'Waveshare (A)'         : 'waveshare35a'
+		, 'Waveshare (B)'         : 'waveshare35b'
+		, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
+		, 'Waveshare (C)'         : 'waveshare35c'
+	}
 	var buttoncalibrate = S.tft && ! S.tftreboot;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ 'Type', 'select', {
-				  'Generic'               : 'tft35a'
-				, 'Waveshare (A)'         : 'waveshare35a'
-				, 'Waveshare (B)'         : 'waveshare35b'
-				, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
-				, 'Waveshare (C)'         : 'waveshare35c'
-			}
-		]
+		, list         : [ 'Type', 'select', type ]
 		, values       : { MODEL: S.tftconf || 'tft35a' }
 		, checkchanged : S.tft
 		, boxwidth     : 190
@@ -549,7 +549,7 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 		, title        : SW.title
 		, list         : [ 
 			  [ 'Swappiness',            'number' ]
-			, [ 'Max Transmission Unit', 'number', 'byte' ]
+			, [ 'Max Transmission Unit', 'number', { suffix: 'byte' } ]
 			, [ 'Transmit Queue Length', 'number' ]
 		]
 		, boxwidth     : 70
@@ -953,16 +953,16 @@ function infoRelays() {
 	$.each( name, ( k, v ) => names[ v ] = k );
 	var step   = { step: 1, min: 0, max: 10 }
 	var list   = [
-		  [ '', '', ico( 'power grn' ) +' On <gr>(s)</gr>',  'td' ]
-		, [ '', '', ico( 'power red' ) +' Off <gr>(s)</gr>' ]
+		  [ '', '', { suffix: ico( 'power grn' ) +' On <gr>(s)</gr>', sameline: true, colspan: 2 } ]
+		, [ '', '', { suffix: ico( 'power red' ) +' Off <gr>(s)</gr>', colspan: 2 } ]
 	];
 	for ( i = 0; i < 4; i++ ) list.push(
-		  [ '', 'select', names, 'td' ]
-		, [ '', 'select', names, '' ]
-		, [ '', 'number', step, 'td' ]
-		, [ '', 'number', step ]
+		  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
+		, [ '', 'select', { kv: names, colspan: 2 } ]
+		, [ '', 'number', { updn: step, sameline: true } ]
+		, [ '', 'number', { updn: step } ]
 	);
-	list[ 16 ] = [ '', '', ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', 'td' ];
+	list[ 16 ] = [ '', '', { suffix: ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', sameline: true, colspan: 2 } ];
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -974,10 +974,7 @@ function infoRelays() {
 		, checkchanged : S.relays
 		, beforeshow   : () => {
 			infoRelaysCss( 180, 70 );
-			$( '#infoList tr:odd td' ).prop( 'colspan', 2 );
-			$( '#infoList tr' ).last().find( 'td' ).eq( 0 )
-				.prop( 'colspan', 2 )
-				.css( 'text-align', 'right' );
+			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
@@ -1000,10 +997,10 @@ function infoRelaysName() {
 	var values = [];
 	pin.forEach( p => values.push( p, name[ p ] ) );
 	var list   = [
-		  [ '', '', ico( 'gpiopins bl' ) +'Pin', 'td' ]
-		, [ '', '', ico( 'tag bl' ) +' Name' ]
+		  [ '', '', { suffix: ico( 'gpiopins bl' ) +'Pin', sameline: true } ]
+		, [ '', '', { suffix: ico( 'tag bl' ) +' Name' } ]
 	]
-	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', board2bcm, 'td' ], [ '', 'text',   '' ] );
+	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', { kv: board2bcm, sameline: true } ], [ '', 'text' ] );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title

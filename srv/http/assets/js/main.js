@@ -260,7 +260,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				info( {
 					  icon       : 'multiraudio'
 					, title      : 'Switch rAudio'
-					, list       : [ '', 'radio', data.list, 'tr' ]
+					, list       : [ '', 'radio', { kv: data.list, sameline: false } ]
 					, values     : currentip
 					, beforeshow : () => {
 						$( '#infoList input' ).each( ( i, el ) => {
