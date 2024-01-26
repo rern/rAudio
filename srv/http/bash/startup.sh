@@ -167,7 +167,7 @@ elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
 # usb wlan || no wlan || not ap + not connected
-if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wifiprofile || ! $ap ]]; then
+if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wifiprofile && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
