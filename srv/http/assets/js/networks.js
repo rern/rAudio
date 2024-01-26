@@ -41,7 +41,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 			, list    : [ 'Password', 'password' ]
 			, focus   : 0
 			, oklabel : 'Connect'
-			, ok      : () => connectWiFi( { ESSID: ssid, KEY: infoVal(), SECURITY: security } )
+			, ok      : () => connectWiFi( { IP: 'dhcp', ESSID: ssid, KEY: infoVal(), SECURITY: security } )
 		} );
 	} else {
 		connectWiFi( { ESSID: ssid } );

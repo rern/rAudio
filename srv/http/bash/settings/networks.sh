@@ -14,18 +14,14 @@ netctlSwitch() {
 	for i in {1..10}; do
 		sleep 1
 		if netctl is-active "$ssid" &> /dev/null; then
-			[[ $connected ]] && netctl disable "$connected"
 			netctl enable "$ssid"
-			active=1
-			break
+			$dirsettings/networks-data.sh pushwl
+			exit
 		fi
 	done
-	if [[ $active ]]; then
-		$dirsettings/networks-data.sh pushwl
-	else
-		echo -1
-		[[ $connected ]] && netctl switch-to "$connected"
-	fi
+	
+	echo -1
+	[[ $connected ]] && netctl switch-to "$connected"
 }
 wlanDevice() {
 	local iplinkw wlandev
@@ -58,7 +54,6 @@ bluetoothinfo )
 $info"
 	;;
 connect )
-	[[ $ADDRESS ]] && ip=static || ip=dhcp
 	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
 		if ipOnline $ADDRESS; then
 			rm "$file"
