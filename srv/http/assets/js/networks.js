@@ -29,6 +29,18 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	notify( 'bluetooth', name, 'Pair ...' );
 	bash( [ 'bluetoothcommand.sh', 'pair', mac ] );
 } );
+$( '.wladd' ).on( 'click', function() {
+	infoWiFi();
+} );
+$( '.wlscan' ).on( 'click', function() {
+	if ( S.ap ) {
+		infoAccesspoint();
+	} else {
+		$( '#help, #divinterface, #divwebui' ).addClass( 'hide' );
+		$( '#divwifi' ).removeClass( 'hide' );
+		scanWlan();
+	}
+} );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this    = $( this );
 	var ssid     = $this.data( 'ssid' );
@@ -45,18 +57,6 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 		} );
 	} else {
 		connectWiFi( { ESSID: ssid } );
-	}
-} );
-$( '.wladd' ).on( 'click', function() {
-	infoWiFi();
-} );
-$( '.wlscan' ).on( 'click', function() {
-	if ( S.ap ) {
-		infoAccesspoint();
-	} else {
-		$( '#help, #divinterface, #divwebui' ).addClass( 'hide' );
-		$( '#divwifi' ).removeClass( 'hide' );
-		scanWlan();
 	}
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
