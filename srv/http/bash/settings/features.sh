@@ -179,19 +179,6 @@ localbrowser )
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-		if [[ $HDMI ]]; then
-			if ! grep -q hdmi_force_hotplug=1 /boot/config.txt; then
-				echo hdmi_force_hotplug=1 >> /boot/config.txt
-				if ! grep -q hdmi_force_hotplug=1 /tmp/config.txt; then
-					echo HDMI Hotplug >> $dirshm/reboot
-					notify hdmi 'HDMI Hotplug' 'Reboot required.' 5000
-				fi
-			fi
-			pushData refresh '{ "page": "system", "hdmi": true }'
-		else
-			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
-			pushData refresh '{ "page": "system", "hdmi": false }'
-		fi
 		if [[ -e /tmp/localbrowser.conf ]]; then
 			diff=$( grep -Fxvf $dirsystem/localbrowser.conf /tmp/localbrowser.conf )
 			if [[ $diff ]]; then
