@@ -1,6 +1,14 @@
 var default_v = {
 	  dhcp   : { ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
 	, static : { ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
+	, list   : [
+		  [ 'SSID',         'text' ]
+		, [ 'Password',     'password' ]
+		, [ 'IP',           'text' ]
+		, [ 'Gateway',      'text' ]
+		, [ 'WEP Protocol', 'checkbox' ]
+		, [ 'Hidden SSID',  'checkbox' ]
+	]
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -273,18 +281,15 @@ function infoWiFi( v ) {
 	} else {
 		var values = default_v.dhcp;
 	}
+	var list = default_v.list.slice( 0 );
+	list.splice( 2, 2 );
 	info( {
 		  icon         : 'wifi'
 		, title        : v ? 'Saved Connection' : 'Add Connection'
 		, tablabel     : [ 'DHCP', 'Static IP' ]
 		, tab          : [ '', () => infoWiFiTab( infoVal() ) ]
 		, boxwidth     : 180
-		, list         : [
-			  [ 'SSID',        'text' ]
-			, [ 'Password',    'password' ]
-			, [ 'WEP',         'checkbox' ]
-			, [ 'Hidden SSID', 'checkbox' ]
-		]
+		, list         : list
 		, values       : values
 		, checkblank   : [ 0 ]
 		, checkchanged : ! V.wifistatic
@@ -315,14 +320,7 @@ function infoWiFiStatic( v ) {
 		, tablabel      : [ 'DHCP', 'Static IP' ]
 		, tab           : [ () => infoWiFiTab( infoVal() ), '' ]
 		, boxwidth      : 180
-		, list          : [
-			  [ 'SSID',        'text' ]
-			, [ 'Password',    'password' ]
-			, [ 'IP',          'text' ]
-			, [ 'Gateway',     'text' ]
-			, [ 'WEP',         'checkbox' ]
-			, [ 'Hidden SSID', 'checkbox' ]
-		]
+		, list          : default_v.list
 		, values        : values
 		, checkblank    : [ 0 ]
 		, checkchanged  : V.wifistatic
