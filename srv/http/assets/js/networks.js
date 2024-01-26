@@ -167,12 +167,15 @@ $( '.forget' ).on( 'click', function() {
 	var ssid = V.li.data( 'ssid' );
 	var icon = 'wifi';
 	info( {
-		  icon    : icon
-		, title   : 'Wi-Fi'
-		, message : '<wh>'+ ssid +'</wh>'+ ( S.ipeth || S.ipwl ? '' : '<br>'+ iconwarning +'No network connections after this.' )
-		, oklabel : ico( 'remove' ) +'Forget'
-		, okcolor : red
-		, ok      : () => {
+		  icon       : icon
+		, title      : 'Wi-Fi'
+		, list       : [ 'SSID', 'text' ]
+		, footer     : S.ipeth ? '' : iconwarning +'Forget <wh>current connection</wh>'
+		, values     : [ ssid ]
+		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
+		, oklabel    : ico( 'remove' ) +'Forget'
+		, okcolor    : red
+		, ok         : () => {
 			notify( icon, ssid, 'Forget ...' );
 			bash( [ 'profileremove', ssid, 'CMD SSID', ] );
 		}
