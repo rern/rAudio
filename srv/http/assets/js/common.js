@@ -886,7 +886,7 @@ function infoSetValues() {
 		type  = $this.prop( 'type' );
 		val   = I.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
-			if ( val || val == 0 ) {
+			if ( val !== 'undefined' ) {
 				$( '#infoList input:radio[name='+ el.name +']' ).val( [ val ] );
 			} else {
 				$( '#infoList input:radio' ).eq( 0 ).prop( 'checked', true );
@@ -894,7 +894,7 @@ function infoSetValues() {
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
 		} else if ( $this.is( 'select' ) ) {
-			val || val == 0 ? $this.val( val ) : el.selectedIndex = 0;
+			val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
 		} else {
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
