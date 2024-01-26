@@ -112,40 +112,6 @@ for k in albumyear composername conductorname; do
 done
 
 [[ ! -e /usr/bin/websocat ]] && pacman -Sy --noconfirm websocat
-
-# 20231125
-grep -q connect $dirbash/websocket-server.py && websocketrestart=1
-
-file=$dirmpdconf/conf/camilladsp.conf
-if [[ -e /usr/bin/camilladsp && ! -e $file ]]; then
-	echo 'audio_output {
-	name           "CamillaDSP"
-	device         "hw:Loopback,1"
-	type           "alsa"
-	auto_resample  "no"
-	mixer_type     "none"
-}' > $file
-	echo 'include_optional    "camilladsp.conf"' >> $dirmpdconf/mpd.conf
-	[[ -e $dirsystem/camilladsp ]] && mpdrestart=1
-fi
-
-file=/etc/systemd/system/cava.service
-if [[ ! -e $file ]]; then
-	echo '[Unit]
-Description=VU level for VU LED and VU meter
-
-[Service]
-ExecStart=/srv/http/bash/cava.sh
-ExecStop=/srv/http/bash/cava.sh stop' > $file
-	systemctl daemon-reload
-	[[ -e $dirsystem/vuled ]] && killall -9 cava &> /dev/null && rm $dirsystem/vuled
-fi
-
-if [[ ! -e /lib/libfdt.so ]]; then
-	pacman -Sy --noconfirm dtc
-	systemctl try-restart rotaryencoder
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -159,7 +125,3 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
-
-# 20231125
-[[ $websocketrestart ]] && systemctl restart websocket
-[[ $mpdrestart ]] && $dirsettings/player-conf.sh
