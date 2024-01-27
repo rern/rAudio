@@ -903,6 +903,7 @@ function infoNtp() {
 	info( json );
 }
 function infoPowerbutton() {
+	var values = S.powerbuttonconf || default_v.powerbutton;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -916,14 +917,13 @@ function infoPowerbutton() {
 			, [ 'Reserved', 'select', board2bcm ]
 		]
 		, boxwidth     : 70
-		, values       : S.powerbuttonconf || default_v.powerbutton
+		, values       : values
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			$( '#infoList td' ).css( 'width', '70px' );
-			$( '#infoList td:last-child' ).css( 'width', '110px' );
+			$( '#infoList td:first-child' ).css( 'width', '70px' );
 			$( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
 			var $trreserved = $( '#infoList tr' ).last();
-			$trreserved.toggleClass( 'hide', S.powerbuttonconf.SW == 3 );
+			$trreserved.toggleClass( 'hide', values.SW == 3 );
 			$( '#infoList select' ).eq( 1 ).on( 'input', function() {
 				$trreserved.toggleClass( 'hide', $( this ).val() == 3 );
 			} );
