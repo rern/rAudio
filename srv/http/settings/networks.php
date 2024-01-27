@@ -54,7 +54,6 @@ Note:
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
 	, 'status' => 'lan'
-	, 'button' => [ 'add wh lanadd' ]
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>

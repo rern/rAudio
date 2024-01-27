@@ -2,13 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-connectedCheck() {
-	for (( i=0; i < $1; i++ )); do
-		ipaddress=$( ipAddress )
-		[[ ! $ipaddress ]] && sleep 1 || break
-	done
-}
-
 revision=$( grep ^Revision /proc/cpuinfo )
 echo "\
 BB=${revision: -3:2}
@@ -16,6 +9,7 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
+[[ $wlandev ]] && wlanprofile=$( ls -1p /etc/netctl | grep -v /$ )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -81,10 +75,11 @@ echo mpd > $dirshm/player
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 # wait for connection
-connectedCheck 5 # lan
-if [[ ! $ipaddress && $wlandev ]]; then # if lan not connected and wlan exists
-	ls -d /etc/systemd/system/netctl* &> /dev/null && connectedCheck 30 # wlan
-fi
+[[ $wlanprofile ]] && sec=30 || sec=5 # wlan || lan
+for (( i=0; i < $sec; i++ )); do
+	ipaddress=$( ipAddress )
+	[[ ! $ipaddress ]] && sleep 1 || break
+done
 
 [[ -e $dirsystem/ap ]] && ap=1
 if [[ $ipaddress ]]; then
@@ -113,16 +108,18 @@ if [[ $ipaddress ]]; then
 	fi
 	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
 	$dirsettings/addons-data.sh &> /dev/null &
+	rm -f /boot/wifi
 else
 	[[ -e $filebootwifi ]] && mv /boot/wifi{,X}
 	if [[ $wlandev && ! $ap ]]; then
-		if [[ $( netctl list ) ]]; then
+		if [[ $wlanprofile ]]; then
 			[[ ! -e $dirsystem/wlannoap ]] && ap=1
 		else
 			ap=1
 		fi
 		[[ $ap ]] && touch $dirshm/apstartup
 	fi
+	[[ -e /boot/wifi ]] && mv /boot/wifi{,-NOT_CONECTED}
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
 
@@ -170,9 +167,7 @@ elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
 # usb wlan || no wlan || not ap + not connected
-if (( $( rfkill | grep -c wlan ) > 1 )) \
-	|| ! rfkill | grep -q wlan \
-	|| [[ ! -e $dirsystem/ap && ! $( iwgetid -r $wlandev ) ]]; then
+if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 

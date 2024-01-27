@@ -1,6 +1,8 @@
 #!/bin/bash
 
-. /srv/http/data/system/localbrowser.conf
+. /srv/http/bash/common.sh
+
+. $dirsystem/localbrowser.conf
 
 if [[ $runxinitrcd ]]; then
 	for file in /etc/X11/xinit/xinitrc.d/*; do
@@ -8,7 +10,7 @@ if [[ $runxinitrcd ]]; then
 	done
 fi
 
-/srv/http/bash/settings/features.sh localbrowserxset
+$dirsettings/features.sh localbrowserxset
 
 if [[ $( ipAddress ) ]]; then
 	[[ $cursor ]] && cursor=yes || cursor=no

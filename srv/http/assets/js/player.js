@@ -137,7 +137,7 @@ $( '#setting-crossfade' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ 'Seconds', 'number', { step: 1, min: 0, max: 10 } ]
+		, list         : [ 'Seconds', 'number', { updn: { step: 1, min: 0, max: 10 } } ]
 		, focus        : 0
 		, boxwidth     : 70
 		, values       : S.crossfadeconf
@@ -153,7 +153,7 @@ $( '#setting-replaygain' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ '', 'radio', { Auto: 'auto', Album: 'album', Track: 'track' }, 'tr' ]
+		, list         : [ '', 'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' }, sameline: false } ]
 		, footer       : hardware ? '<label><input type="checkbox"><wh>Gain control by Mixer device</wh></label>' : ''
 		, values       : S.replaygainconf
 		, checkchanged : S.replaygain
@@ -179,7 +179,7 @@ $( '#setting-buffer' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : '<c>audio_buffer_size</c>'
-		, list         : [ 'kB', 'number', { step: 1024, min: 1024, max: 8192 } ]
+		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 1024, max: 8192 } } ]
 		, boxwidth     : 110
 		, values       : S.bufferconf
 		, checkchanged : true
@@ -193,7 +193,7 @@ $( '#setting-outputbuffer' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : '<c>max_output_buffer_size</c>'
-		, list         : [ 'kB', 'number', { step: 1024, min: 1024, max: 16384 } ]
+		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 1024, max: 16384 } } ]
 		, focus        : 0
 		, boxwidth     : 110
 		, values       : S.outputbufferconf
@@ -304,19 +304,18 @@ function infoSoxrCustom() {
 		, tab          : [ infoSoxr, '' ]
 		, list         : [
 			  [ 'Type',           'hidden' ]
-			, [ 'Precision',      'select', [ 16, 20, 24, 28, 32 ], 'bit' ]
-			, [ 'Phase Response', 'number', '0-100' ]
-			, [ 'Passband End',   'number', '0-100%' ]
-			, [ 'Stopband Begin', 'number', '100-150%' ]
-			, [ 'Attenuation',    'number', '0-30dB' ]
-			, [ 'Bitmask Flag',   'select', flag ]
+			, [ 'Precision',      'select', { kv: [ 16, 20, 24, 28, 32 ], suffix: 'bit' } ]
+			, [ 'Phase Response', 'number', { suffix: '0-100' } ]
+			, [ 'Passband End',   'number', { suffix: '0-100%' } ]
+			, [ 'Stopband Begin', 'number', { suffix: '100-150%' } ]
+			, [ 'Attenuation',    'number', { suffix: '0-30dB' } ]
+			, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2 } ]
 		]
 		, values       : S.soxrcustomconf
 		, checkblank   : true
 		, checkchanged : S.soxr
 		, boxwidth     : 105
 		, beforeshow   : () => {
-			$( '#infoList td' ).last().prop( 'colspan', 2 );
 			$( '#infoList .select2-container' ).last().attr( 'style', 'width: 100% !important' )
 		}
 		, cancel       : switchCancel

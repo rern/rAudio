@@ -5,14 +5,6 @@ var default_v      = {
 		, CD        : true
 		, STARTUP   : true
 	  }
-	, localbrowser : {
-		  ROTATE      : 0
-		, ZOOM        : 100
-		, SCREENOFF   : 0
-		, ONWHILEPLAY : false
-		, CURSOR      : false
-		, RUNXINITRCD : false
-	}
 	, lyrics       : {
 		  URL      : 'https://'
 		, START    : '<'
@@ -119,7 +111,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 				, [ 'Secret', 'text' ]
 			]
 			, focus       : 0
-			, footer      : '<br><wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
+			, footer      : '<wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
 			, footeralign : 'right'
 			, boxwidth    : 320
 			, checklength : { 0: 32, 1: 32 }
@@ -189,15 +181,15 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, title        : SW.title
 		, list         : [
 			  [ 'Rotation',                  'select', { Normal: 0, '90° CW': 90, '90° CCW': 270, '180°': 180 } ]
-			, [ 'Zoom <gr>(%)</gr>',         'number', { step: 5, min: 50, max: 300 } ]
-			, [ 'Screen off <gr>(min)</gr>', 'number', { step: 1, min: 0, max: 60 } ]
+			, [ 'Zoom <gr>(%)</gr>',         'number', { updn: { step: 5, min: 50, max: 300 } } ]
+			, [ 'Screen off <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 60 } } ]
 			, [ 'On while play',             'checkbox' ]
 			, [ 'Mouse pointer',             'checkbox' ]
 			, [ 'run <c>xinitrc.d</c>',      'checkbox' ]
 		]
 		, footer       : '<br>'+ brightness + button
 		, boxwidth     : 110
-		, values       : S.localbrowserconf || default_v.localbrowser
+		, values       : S.localbrowserconf
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
 			var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
@@ -259,7 +251,7 @@ $( '#setting-lyrics' ).on( 'click', function() {
 		, list         : [
 			  [ 'URL',             'text' ]
 			, [ 'Start tag',       'text' ]
-			, [ '',                '', '<gr>Lyrics content ...</gr>' ]
+			, [ '',                '', { suffix: '<gr>Lyrics content ...</gr>' } ]
 			, [ 'End tag',         'text' ]
 			, [ 'Embedded lyrics', 'checkbox' ]
 		]
@@ -286,10 +278,10 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, list         : [
-			  [ '', '', 'Name', 'td' ]
-			, [ '', '', 'IP / URL' ]
-			, [ '', 'text',     '', 'td' ]
-			, [ '', 'text',     ico( 'remove' ) ]
+			  [ '', '',     { suffix: 'Name', sameline: true } ]
+			, [ '', '',     { suffix: 'IP / URL' } ]
+			, [ '', 'text', { sameline: true } ]
+			, [ '', 'text', { suffix: ico( 'remove' ) } ]
 		]
 		, boxwidth     : 130
 		, values       : values
@@ -379,7 +371,7 @@ $( '#login' ).on( 'click', function() {
 $( '#setting-login' ).on( 'click', function() {
 	var list = [
 		  [ 'Existing', 'password' ]
-		, [ 'New', 'password' ]
+		, [ 'New',      'password' ]
 		, [ 'Password', 'password' ]
 	]
 	info( {
@@ -451,7 +443,7 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, list         : [
-			  [ 'Minutes',           'number', { step: 5, min: 5, max: 120 } ]
+			  [ 'Minutes',           'number', { updn: { step: 5, min: 5, max: 120 } } ]
 			, [ 'Power off on stop', 'checkbox' ]
 		]
 		, boxwidth     : 70
