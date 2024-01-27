@@ -123,6 +123,9 @@ Audio player for
 		- Edit template file - name and password.
 			- Rename `wifi0` in `BOOT` to `wifi`
 			- Edit SSID and Key.
+		- Generate a complex profile - static IP, hidden SSID
+			- With [Wi-Fi Profile Generator](https://rern.github.io/WiFi_profile/index.html)
+			- Save it in `BOOT`
 	- Wi-Fi access point mode
 		- If no wired network and no pre-configured Wi-Fi connections, Wi-Fi access point will be enabled on boot.
 		- On client devices, select `rAudio` from Wi-Fi network list to connect.
