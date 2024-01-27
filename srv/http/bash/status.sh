@@ -339,10 +339,7 @@ elif [[ $stream ]]; then
 		fi
 		if [[ $displaycover ]]; then
 			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
-			if [[ $stationcover ]]; then
-				stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
-				[[ ! $coverart ]] && coverart=$stationcover
-			fi
+			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
 		fi
 ########
 		status=$( grep -E -v '^, "state"|^, "webradio"' <<< $status )
