@@ -50,15 +50,15 @@ listWlan() {
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
-	  "dbm"     : '$dbm'
-	, "gateway" : "'$gatewaywl'"
-	, "ip"      : "'$ipwl'"
-	, "ssid"    : "'$ssid'"
-	}'
+  "dbm"     : '$dbm'
+, "gateway" : "'$gatewaywl'"
+, "ip"      : "'$ipwl'"
+, "ssid"    : "'$ssid'"
+}'
 			else
 				notconnected+=',{
-	  "ssid"    : "'$ssid'"
-	}'
+  "ssid"    : "'$ssid'"
+}'
 			fi
 		done
 	fi
@@ -66,7 +66,6 @@ listWlan() {
 	[[ $listwl ]] && listwl='[ '${listwl:1}' ]' || listwl=false
 }
 if [[ $1 == pushwl ]]; then
-	pushwl=1
 	listWlan
 	pushData wlan '{ "listwl": '$listwl', "ipwl": "'$ipwl'", "gatewaywl": "'$gatewaywl'" }'
 	exit

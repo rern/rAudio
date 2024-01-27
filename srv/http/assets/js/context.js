@@ -547,14 +547,13 @@ function wrDirectoryRename() {
 }
 var listwebradio = {
 	  list   : [
-		  [ 'Name',    'text' ]
-		, [ 'URL',     'text' ]
-		, [ 'Charset', 'text', '', 'td' ]
-		, [ '',        '',     '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-22 gr' ), 'td' ]
-		, [ '',        '',     '<gr>New folder</gr>&ensp;'+ ico( 'folder-plus i-22' ) ]
+		  [ 'Name',    'text', { colspan: 3 } ]
+		, [ 'URL',     'text', { colspan: 3 } ]
+		, [ 'Charset', 'text', { sameline: true } ]
+		, [ '',        '',     { suffix: '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-22 gr' ), sameline: true } ]
+		, [ '',        '',     { suffix: '<gr>New folder</gr>&ensp;'+ ico( 'folder-plus i-22' ) } ]
 	]
 	, button : () => {
-		$( '#infoList tr' ).slice( 0, 2 ).find( 'td:nth-child( 2 )' ).prop( 'colspan', 3 );
 		$( '#infoList tr' ).last().find( 'td' ).eq( 1 ).css( 'width', '190px' );
 		$( '#infoList td' ).last()
 			.css( { 'text-align': 'right', cursor: 'pointer' } )

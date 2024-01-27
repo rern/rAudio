@@ -8,7 +8,7 @@ case "$2" in
 	'Speaker Digital' ) output=speakers_out;;
 esac
 amixer_cset() {
-	amixer -c $CARD cset name="$1" $2
+	amixer -c $CARD cset "$1" $2
 }
 # Switch everything off
 amixer_cset 'AIF Playback Switch'         off

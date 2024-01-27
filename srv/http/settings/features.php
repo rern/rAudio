@@ -9,7 +9,7 @@ $id_data      = [
 	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true, 'exist' => 'mediamtx' ]
 	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
 	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
-	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'localbrowser',                          'status' => true, 'exist' => 'firefox' ]
+	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',                               'status' => true, 'exist' => 'firefox' ]
 	, 'login'          => [ 'label' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
 	, 'lyrics'         => [ 'label' => 'Lyrics' ]
 	, 'multiraudio'    => [ 'label' => 'Multiple rAudios', 'sub' => 'multiraudio' ]

@@ -439,74 +439,70 @@ function info( json ) {
 	} else {
 		htmls.list = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
-		I.checkboxonly = ! I.list.some( l => l[ 1 ] !== 'checkbox' );
+		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
 		var td0   = I.checkboxonly ? '<tr><td>' : '<tr><td></td><td colspan="2">'; // no label <td></td>
-		var label, type;
+		var colspan, kv, label, param, type;
 		var i     = 0; // for radio name
 		I.list.forEach( l => {
-			label = l[ 0 ];
-			type  = l[ 1 ];
-/*			if ( [ 'radio', 'select' ].includes( type ) ) {
-				var option = l[ 2 ];
-				var attr = l[ 3 ] || false;
-			} else {
-				var attr = l[ 2 ] || false;
-			}
-			var col = tdtr = unit = updn = width = '';
-			if ( attr ) {
-				tdtr  = attr.tdtr || '';
-				unit  = attr.unit || '';
-				updn  = attr.updn || '';
-				col   = attr.col ? ' colspan="'+ attr.col +'"' : '';
-				width = attr.width ? ' style="width: '+  +'"' : '';
+			label   = l[ 0 ];
+			type    = l[ 1 ];
+			param   = l[ 2 ] || {};
+			kv      = 'kv' in param ? param.kv : param; // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
+			colspan = param.colspan ? ' colspan="'+ param.colspan +'"' : '';
+/*			param = {
+				  kv       : { k: V, ... }
+				, colspan  : N
+				, disable  : T/F
+				, sameline : T/F
+				, suffix   : UNIT
+				, updn     : { step: N, min: N, max: N }
 			}*/
 			switch ( type ) {
 				case 'checkbox':
-					htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td>';
+					htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td'+ colspan +'>';
 					break;
 				case 'hidden':
 					htmls.list += '<tr class="hide"><td></td><td>';
 					break;
 				case 'radio':
-					htmls.list += '<tr><td>'+ label +'</td><td colspan="2">';
+					colspan     = param.colspan || 2;
+					htmls.list += '<tr><td>'+ label +'</td><td colspan="'+ colspan +'">';
 					break;
 				case 'range':
-					htmls.list += '<tr><td>';
+					htmls.list += '<tr><td'+ colspan +'>';
 					break;
 				default:
 					htmls.list += htmls.list.slice( -3 ) === 'td>' ? '' : '<tr><td>'+ label +'</td>';
-					htmls.list += l[ 4 ] ? '<td colspan="'+ l[ 4 ] +'">' : '<td>';
+					htmls.list += '<td'+ colspan +'>';
 			}
 			switch ( type ) {
 				case 'checkbox':
 					htmls.list += '<label><input type="checkbox">'+ label +'</label></td>';
-					htmls.list += l[ 2 ] === 'td' ? '' : '</tr>'; // same line || 1:1 line
+					htmls.list += param.sameline ? '' : '</tr>'; // default: false
 					break;
 				case 'hidden':
 				case 'number':
 				case 'text':
-					var unit = typeof l[ 2 ] === 'object' ? false : l[ 2 ];
-					var updn = unit ? false : l[ 2 ];
-					htmls.list += '<input type="'+ type +'"'+ ( updn ? ' disabled' : '' ) +'>';
-					if ( unit ) {
-						htmls.list += l[ 3 ] === 'td' ? '' : '<td>&nbsp;<gr>'+ unit +'</gr>';
-					} else if ( updn ) {
-						I.updn.push( updn );
+					htmls.list += '<input type="'+ type +'"'+ ( param.updn ? ' disabled' : '' ) +'>';
+					if ( param.suffix ) {
+						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr>';
+					} else if ( param.updn ) {
+						I.updn.push( param.updn );
 						htmls.list += '<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' );
 					}
-					htmls.list += l[ 3 ] === 'td' ? '</td>' : '</tr>';
+					htmls.list += param.sameline ? '</td>' : '</tr>';
 					break;
 				case 'password':
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
 					break;
 				case 'radio':
-					var isarray = $.isArray( l[ 2 ] );
+					var isarray = $.isArray( kv );
 					var tr      = false;
-					$.each( l[ 2 ], ( k, v ) => {
+					$.each( kv, ( k, v ) => {
 						var k = isarray ? v : k;
-						if ( tr ) htmls.list += '<tr><td></td><td colspan="2">';
+						if ( tr ) htmls.list += '<tr><td></td><td colspan="'+ colspan +'">';
 						htmls.list += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
-						if ( l[ 3 ] === 'tr' ) {
+						if ( param.sameline === false ) { // default: true
 							tr          = true;
 							htmls.list += '</td></tr>'; // 1:1 line
 						} else {
@@ -525,19 +521,19 @@ function info( json ) {
 								+'</div></td></tr>';
 					break
 				case 'select':
-					htmls.list += '<select>'+ htmlOption( l[ 2 ] ) +'</select>';
-					if ( l[ 3 ] ) {
-						htmls.list += l[ 3 ] === 'td' ? '</td>' : '<td>&nbsp;<gr>'+ l[ 3 ] +'</gr></td></tr>'; // unit
+					htmls.list += '<select>'+ htmlOption( kv ) +'</select>';
+					if ( param.suffix ) {
+						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
-						htmls.list += '</tr>';
+						htmls.list += param.sameline ? '</td>' : '</tr>';
 					}
 					break;
 				case 'textarea':
 					htmls.list += '<textarea></textarea></td></tr>';
 					break;
 				default: // generic string
-					htmls.list += l[ 2 ];
-					htmls.list += l[ 3 ] === 'td' ? '</td>' : '</td></tr>';
+					htmls.list += param.suffix || '';
+					htmls.list += param.sameline ? '</td>' : '</td></tr>';
 			}
 		} );
 		if ( type !== 'range' ) htmls.list = '<table>'+ htmls.list +'</table>';
@@ -886,7 +882,7 @@ function infoSetValues() {
 		type  = $this.prop( 'type' );
 		val   = I.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
-			if ( val ) {
+			if ( val !== 'undefined' ) {
 				$( '#infoList input:radio[name='+ el.name +']' ).val( [ val ] );
 			} else {
 				$( '#infoList input:radio' ).eq( 0 ).prop( 'checked', true );
@@ -894,7 +890,7 @@ function infoSetValues() {
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
 		} else if ( $this.is( 'select' ) ) {
-			val ? $this.val( val ) : el.selectedIndex = 0;
+			val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
 		} else {
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
@@ -978,7 +974,7 @@ function infoWidth() {
 	} else {
 		var boxW   = 230;
 	}
-	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).parent().css( 'width', boxW );
+	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).parent().css( 'width', boxW +'px' );
 	if ( $( '#infoList select' ).length ) {
 		selectSet(); // render select to set width
 		$( '#infoList .select2-container' ).attr( 'style', 'width: '+ boxW +'px !important' );
