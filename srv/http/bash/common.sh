@@ -179,7 +179,11 @@ exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
 getContent() {
-	[[ -e "$1" ]] && cat "$1"
+	if [[ -e "$1" ]]; then
+		cat "$1"
+	else
+		[[ $2 ]] && echo $2 || echo false
+	fi
 }
 getVar(){
 	local line

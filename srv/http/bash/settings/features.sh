@@ -439,15 +439,17 @@ spotifykeyremove )
 	pushRefresh
 	;;
 spotifyoutput )
-	file=$dirsystem/spotifyoutput
-	[[ -e $file ]] && current='"'$( < "$file" )'"' || current=false
 	devices='"Default"'
 	readarray -t lines <<< $( aplay -L | grep ^.*:CARD )
 	for l in ${lines[@]}; do
 		devices+=', "'$l'"'
 	done
 	current=$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )
-	[[ ${current:0:3} == hw: ]] && current=Default
+	if [[ ${current:0:3} == hw: ]]; then
+		current=Default
+	else
+		current=$( getContent $dirsystem/spotifyoutput ' ' )
+	fi
 	echo '{
   "current" : "'$current'"
 , "devices" : [ '$devices' ]
