@@ -9,7 +9,7 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
-[[ -e $dirshm/wlan ]] && wlanprofile=$( ls -p /var/lib/iwd | grep -v / )
+[[ $wlandev ]] && wlanprofile=$( ls -1p /var/lib/iwd | grep -v /$ | head -1 )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -52,7 +52,6 @@ if [[ $filewifi && $wlandev ]]; then
 $ssid
 $hidden
 CMD SSID HIDDEN"
-	[[ $( iwgetid -r $wlandev ) ]] && rm -f "$filewifi" || mv "$filewifi"{,X}
 fi
 # ----------------------------------------------------------------------------
 
@@ -77,7 +76,12 @@ echo mpd > $dirshm/player
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 # wait for connection
-[[ $wlanprofile ]] && sec=15 || sec=5
+if [[ $wlanprofile ]]; then
+	sec=30
+	iwctl station $wlandev connect "$$wlanprofile"
+else
+	sec=5
+fi
 for (( i=0; i < $sec; i++ )); do
 	ipaddress=$( ipAddress )
 	[[ $ipaddress ]] && break || sleep 1
@@ -110,7 +114,9 @@ if [[ $ipaddress ]]; then
 	fi
 	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
 	$dirsettings/addons-data.sh &> /dev/null &
+	rm -f "$filewifi"
 else
+	[[ -e $filewifi ]] && mv "$filewifi"{,X}
 	if [[ $wlandev && ! $ap ]]; then
 		if [[ $wlanprofile ]]; then
 			[[ ! -e $dirsystem/wlannoap ]] && ap=1
