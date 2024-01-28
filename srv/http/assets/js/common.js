@@ -449,14 +449,6 @@ function info( json ) {
 			param   = l[ 2 ] || {};
 			kv      = 'kv' in param ? param.kv : param; // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
 			colspan = param.colspan ? ' colspan="'+ param.colspan +'"' : '';
-/*			param = {
-				  kv       : { k: V, ... }
-				, colspan  : N
-				, disable  : T/F
-				, sameline : T/F
-				, suffix   : UNIT
-				, updn     : { step: N, min: N, max: N }
-			}*/
 			switch ( type ) {
 				case 'checkbox':
 					htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td'+ colspan +'>';
@@ -504,9 +496,9 @@ function info( json ) {
 						htmls.list += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
 						if ( param.sameline === false ) { // default: true
 							tr          = true;
-							htmls.list += '</td></tr>'; // 1:1 line
+							htmls.list += '</td></tr>';
 						} else {
-							htmls.list += '&emsp;'; // same line
+							htmls.list += '&emsp;';
 						}
 					} );
 					htmls.list += tr ? '' : '</td></tr>';
