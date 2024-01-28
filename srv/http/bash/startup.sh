@@ -78,7 +78,7 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 # wait for connection
 if [[ $wlanprofile ]]; then
 	sec=30
-	iwctl station $wlandev connect "$$wlanprofile"
+	iwctl station $wlandev connect "$wlanprofile"
 else
 	sec=5
 fi
