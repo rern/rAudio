@@ -2,8 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-dirconfig=$dirdata/config
 backupfile=$dirshm/backup.gz
+dirconfig=$dirdata/config
 rm -f $backupfile
 alsactl store
 files=(
@@ -72,5 +72,5 @@ bsdtar \
 	data \
 	2> /dev/null && echo 1
 
-rm -rf $dirdata/{config,disable,enable}
-rm -f $dirsystem/{crossfade,hostname,timezone}
+rm -rf $dirconfig
+rm -f $dirsystem/{crossfade,disable,enable,hostname,timezone}

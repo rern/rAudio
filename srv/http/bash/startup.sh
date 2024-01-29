@@ -28,12 +28,13 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 fi
 
-if [[ -e /boot/backup.gz ]]; then
-	if bsdtar tf backup.gz | grep -q -m1 ^data/system/$; then
-		mv /boot/backup.gz $dirdata/tmp
+filebackup=$( ls /boot/*.gz 2> /dev/null | head -1 )
+if [[ -e $filebackup ]]; then
+	if bsdtar tf "$filebackup" | grep -q -m1 ^data/system/$; then
+		mv "$filebackup" $dirshm/backup.gz
 		$dirsettings/system.sh datarestore
 	else
-		restorefailed='Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.'
+		notfilebackup=$filebackup
 	fi
 fi
 
@@ -171,11 +172,8 @@ if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
-if [[ $restorefailed ]]; then
-	notify restore "$restorefailed" 10000
-elif [[ $nas && ! $nasonline ]]; then
-	notify nas NAS "NAS @$ip cannot be reached." -1
-fi
+[[ $notfilebackup ]] && notify restore 'Restore Settings' '<code>'$notfilebackup'</code> is not rAudio backup.' 10000
+[[ $nas && ! $nasonline ]] && notify nas NAS "NAS @$ip cannot be reached." -1
 
 touch $dirshm/startup
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
