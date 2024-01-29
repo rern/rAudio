@@ -83,6 +83,7 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 [[ -e $dirsystem/ap ]] && ap=1
 
+ipaddress=$( ipAddress )
 if [[ $wlanprofile && ! $ap ]]; then
 	systemctl start iwd
 	iwctl station $wlandev scan
@@ -93,8 +94,8 @@ if [[ $wlanprofile && ! $ap ]]; then
 		done
 		iwctl station $wlandev connect "$ssid"
 		sleep 1
-		ipaddress=$( ipAddress )
-		[[ $ipaddress ]] && break
+		[[ $( iwgetid -r $wlandev ) ]] && break
+		[[ ! $ipaddress ]] && ipaddress=$( ipAddress )
 	done
 fi
 
