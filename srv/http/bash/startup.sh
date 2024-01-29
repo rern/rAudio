@@ -9,7 +9,6 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
-[[ $wlandev ]] && readarray -t wlanprofile <<< $( ls -1p /var/lib/iwd | sed -n '/\/$/! {s/.psk$\|.open$//; p}' )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -83,26 +82,28 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 [[ -e $dirsystem/ap ]] && ap=1
 
-ipaddress=$( ipAddress )
-if [[ $wlanprofile && ! $ap ]]; then
-	systemctl start iwd
-	iwctl station $wlandev scan
-	for ssid in "${wlanprofile[@]}"; do
-		if [[ -e $dirsystem/ssiddisabled ]]; then
-			grep -q "^$ssid$" $dirsystem/ssiddisabled && continue
-		fi
-		
-		for i in {0..9}; do
+ipaddress=$( ipAddress ) # lan
+if [[ ! $ipaddress ]]; then
+	[[ $wlandev ]] && readarray -t wlanprofile <<< $( ls -1p /var/lib/iwd | sed -n '/\/$/! {s/.psk$\|.open$//; p}' )
+	if [[ $wlanprofile && ! $ap ]]; then
+		systemctl start iwd
+		iwctl station $wlandev scan
+		for ssid in "${wlanprofile[@]}"; do
+			if [[ -e $dirsystem/ssiddisabled ]]; then
+				grep -q "^$ssid$" $dirsystem/ssiddisabled && continue
+			fi
+			
+			for i in {0..9}; do
+				sleep 1
+				iwctl station $wlandev get-networks | sed -e '1,4 d' | grep -q "^.*$ssid" && break
+			done
+			iwctl station $wlandev connect "$ssid"
 			sleep 1
-			iwctl station $wlandev get-networks | sed -e '1,4 d' | grep -q "^.*$ssid" && break
+			[[ $( iwgetid -r $wlandev ) ]] && break
 		done
-		iwctl station $wlandev connect "$ssid"
-		sleep 1
-		[[ $( iwgetid -r $wlandev ) ]] && break
-	done
-	[[ ! $ipaddress ]] && ipaddress=$( ipAddress )
+		[[ ! $ipaddress ]] && ipaddress=$( ipAddress )
+	fi
 fi
-
 if [[ $ipaddress ]]; then
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
