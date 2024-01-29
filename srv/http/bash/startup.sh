@@ -38,8 +38,9 @@ if [[ -e $backupfile ]]; then
 	fi
 fi
 
-if [[ -e /boot/wifi && $wlandev ]]; then
-	wifi=$( sed 's/\r//; s/\$/\\$/g' /boot/wifi ) # remove windows \r and escape $
+filewifi=/boot/wifi
+if [[ -e $filewifi && $wlandev ]]; then
+	wifi=$( sed 's/\r//; s/\$/\\$/g' "$filewifi" ) # remove windows \r and escape $
 	ssid=$( getVar ESSID <<< $wifi )
 	key=$( getVar Key <<< $wifi )
 	profile="\
@@ -107,11 +108,8 @@ if [[ $ipaddress ]]; then
 		fi
 		appendSortUnique $ipaddress $filesharedip
 	fi
-	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
-	$dirsettings/addons-data.sh &> /dev/null &
-	rm -f /boot/wifi
+	[[ -e $filewifi ]] && rm -f "$filewifi"
 else
-	[[ -e $filebootwifi ]] && mv /boot/wifi{,X}
 	if [[ $wlandev && ! $ap ]]; then
 		if [[ $wlanprofile ]]; then
 			[[ ! -e $dirsystem/wlannoap ]] && ap=1
@@ -119,8 +117,8 @@ else
 			ap=1
 		fi
 		[[ $ap ]] && touch $dirshm/apstartup
+		[[ -e $filewifi ]] && mv $filewifi{,X}
 	fi
-	[[ -e /boot/wifi ]] && mv /boot/wifi{,-NOT_CONECTED}
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
 
@@ -177,8 +175,13 @@ if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf
 	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
 fi
 
-if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.service failed
+if [[ -e /boot/startup.sh ]]; then
 	/boot/startup.sh
+fi
+
+if [[ $ipaddress ]]; then
+	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
+	$dirsettings/addons-data.sh &> /dev/null &
 fi
 
 if [[ $notbackupfile ]]; then
