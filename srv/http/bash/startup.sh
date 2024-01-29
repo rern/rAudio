@@ -172,9 +172,6 @@ if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
-[[ $notfilebackup ]] && notify restore 'Restore Settings' '<code>'$notfilebackup'</code> is not rAudio backup.' 10000
-[[ $nas && ! $nasonline ]] && notify nas NAS "NAS @$ip cannot be reached." -1
-
 touch $dirshm/startup
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
 	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
@@ -182,4 +179,12 @@ fi
 
 if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.service failed
 	/boot/startup.sh
+fi
+
+if [[ $notfilebackup ]]; then
+	notify restore 'Restore Settings' '<code>'$notfilebackup'</code> is not rAudio backup.' 10000
+fi
+if [[ $nas && ! $nasonline ]]; then
+	[[ $notfilebackup ]] && sleep 3
+	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
