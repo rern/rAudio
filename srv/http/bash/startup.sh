@@ -9,7 +9,7 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
-[[ $wlandev ]] && wlanprofile=$( ls -1p /var/lib/iwd | grep -v /$ | head -1 )
+[[ $wlandev ]] && readarray -t wlanprofile <<< $( ls -1p /var/lib/iwd | sed -n '/\/$/! {s/.psk$\|.open$//; p}' )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -75,22 +75,22 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-# wait for connection
-if [[ $wlanprofile ]]; then
-	sec=30
-	iwctl station $wlandev scan
-	sleep 3
-	iwctl station $wlandev connect "${wlanprofile%.*}"
-else
-	sec=5
-fi
-for (( i=0; i < $sec; i++ )); do
-	ipaddress=$( ipAddress )
-	[[ $ipaddress ]] && break || sleep 1
-done
-
-
 [[ -e $dirsystem/ap ]] && ap=1
+
+if [[ $wlanprofile && ! $ap ]]; then
+	systemctl start iwd
+	iwctl station $wlandev scan
+	for ssid in "${wlanprofile[@]}"; do
+		for i in {0..9}; do
+			sleep 1
+			iwctl station $wlandev get-networks | sed -e '1,4 d' | grep -q "^.*$ssid" && break
+		done
+		iwctl station $wlandev connect "$ssid"
+		ipaddress=$( ipAddress )
+		[[ $ipaddress ]] && break
+	done
+fi
+
 if [[ $ipaddress ]]; then
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
@@ -116,7 +116,7 @@ if [[ $ipaddress ]]; then
 	fi
 	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
 	$dirsettings/addons-data.sh &> /dev/null &
-	rm -f "$filewifi"
+	[[ -e $filewifi ]] && rm -f $filewifi
 else
 	[[ -e $filewifi ]] && mv "$filewifi"{,X}
 	if [[ $wlandev && ! $ap ]]; then
@@ -126,6 +126,7 @@ else
 			ap=1
 		fi
 		[[ $ap ]] && touch $dirshm/apstartup
+		[[ -e $filewifi ]] && mv $filewifi{,X}
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap

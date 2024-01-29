@@ -8,8 +8,9 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	local hidden wlandev
 	wlandev=$( < $dirshm/wlan )
 	iwctl station $wlandev scan "$SSID"
-	for (( i=0; i < 10; i++ )); do
-		iwctl station $wlandev get-networks | grep -q "$SSID" && break || sleep 1
+	for i in {0..10}; do
+		sleep 1
+		iwctl station $wlandev get-networks | grep -q "$SSID" && break
 	done
 	[[ $HIDDEN == true ]] && hidden=-hidden
 	if [[ $PASSPHRASE ]]; then
