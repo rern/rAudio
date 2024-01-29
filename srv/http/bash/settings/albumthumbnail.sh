@@ -9,7 +9,6 @@ padgr='<a class="cbgr">  </a>'
 . /srv/http/bash/settings/addons.sh
 
 warningWrite() {
-	local error
 	error="
 $warn Unable to create thumbnails.
 Directory:  <a class='cc'>$1</a>"

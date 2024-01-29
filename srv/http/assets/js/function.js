@@ -627,8 +627,10 @@ function infoDisplayKeyValue( type ) {
 	keys.forEach( k => { values[ k ] = D[ k ] } );
 	var list   = [];
 	Object.values( json ).forEach( ( l, i ) => {
-		if ( [ 'library', 'playback' ].includes( type ) ) {
-			list.push( i % 2 ? [ l, 'checkbox' ] : [ l, 'checkbox', 'td' ] );
+		if ( ! l ) {
+			list.push( [ '', '' ] );
+		} else if ( [ 'library', 'playback' ].includes( type ) ) {
+			list.push( i % 2 ? [ l, 'checkbox' ] : [ l, 'checkbox', { sameline: true } ] );
 		} else {
 			list.push( [ l, 'checkbox' ] );
 		}
@@ -777,7 +779,7 @@ function infoUpdate( path ) {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : path ? ico( 'folder' ) +' <wh>'+ path +'</wh>' : ''
-		, list       : path ? '' : [ '', 'radio', { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }, 'tr' ]
+		, list       : path ? '' : [ '', 'radio', { kv: { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }, sameline: false } ]
 		, beforeshow : () => {
 			if ( ! C ) {
 				$( '#infoList input' ).eq( 0 ).prop( 'disabled', true );

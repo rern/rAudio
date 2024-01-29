@@ -1,8 +1,3 @@
-var default_v = {
-	  dhcp   : { SSID: '', PASSPHRASE: '', HIDDEN: false }
-	, static : { SSID: '', PASSPHRASE: '', ADDRESS: '', GATEWAY: '', HIDDEN: false }
-}
-
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( 'body' ).on( 'click', function() {
@@ -34,6 +29,18 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	notify( 'bluetooth', name, 'Pair ...' );
 	bash( [ 'bluetoothcommand.sh', 'pair', mac ] );
 } );
+$( '.wladd' ).on( 'click', function() {
+	infoWiFi();
+} );
+$( '.wlscan' ).on( 'click', function() {
+	if ( S.ap ) {
+		infoAccesspoint();
+	} else {
+		$( '#help, #divinterface, #divwebui' ).addClass( 'hide' );
+		$( '#divwifi' ).removeClass( 'hide' );
+		scanWlan();
+	}
+} );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this    = $( this );
 	var ssid     = $this.data( 'ssid' );
@@ -49,18 +56,6 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 		} );
 	} else {
 		connectWiFi( { SSID: ssid } );
-	}
-} );
-$( '.wladd' ).on( 'click', function() {
-	infoWiFi();
-} );
-$( '.wlscan' ).on( 'click', function() {
-	if ( S.ap ) {
-		infoAccesspoint();
-	} else {
-		$( '#help, #divinterface, #divwebui' ).addClass( 'hide' );
-		$( '#divwifi' ).removeClass( 'hide' );
-		scanWlan();
 	}
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
@@ -125,11 +120,16 @@ $( '.disconnect' ).on( 'click', function() {
 	var ssid = V.li.data( 'ssid' );
 	var icon = 'wifi';
 	info( {
-		  icon    : icon
-		, title   : 'Wi-Fi'
-		, message : '<wh>'+ ssid +'</wh>'+ ( S.listeth ? '' : '<br>'+ iconwarning +'No network connections after this.' ) +'<br>Disconnect?'
-		, okcolor : orange
-		, ok      : () => {
+		  icon       : icon
+		, title      : 'Wi-Fi'
+		, list       : [ 'SSID',       'text' ]
+		, footer     : S.ipeth ? '' : iconwarning +'Disconnect <wh>current connection</wh>'
+		, boxwidth   : 200
+		, values     : [ ssid, true, true ]
+		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
+		, okcolor    : orange
+		, ok         : () => {
+			var val = infoVal( 'array' );
 			notify( icon, ssid, 'Disconnect ...' );
 			bash( [ 'disconnect' ] )
 		}
@@ -147,14 +147,17 @@ $( '.forget' ).on( 'click', function() {
 	var ssid = V.li.data( 'ssid' );
 	var icon = 'wifi';
 	info( {
-		  icon    : icon
-		, title   : 'Wi-Fi'
-		, message : '<wh>'+ ssid +'</wh>'+ ( S.ipeth || S.ipwl ? '' : '<br>'+ iconwarning +'No network connections after this.' )
-		, oklabel : ico( 'remove' ) +'Forget'
-		, okcolor : red
-		, ok      : () => {
+		  icon       : icon
+		, title      : 'Wi-Fi'
+		, list       : [ 'SSID', 'text' ]
+		, footer     : S.ipeth ? '' : iconwarning +'Forget <wh>current connection</wh>'
+		, values     : [ ssid ]
+		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
+		, oklabel    : ico( 'remove' ) +'Forget'
+		, okcolor    : red
+		, ok         : () => {
 			notify( icon, ssid, 'Forget ...' );
-			bash( [ 'profileremove', ssid, 'CMD SSID', ] );
+			bash( [ 'profileremove', ssid, 'CMD SSID' ] );
 		}
 	} );
 } );
@@ -186,6 +189,17 @@ function bluetoothInfo( mac ) {
 function connectWiFi( data ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
+	if ( 'profileget' in V ) {
+		var values  = jsonClone( data );
+		delete values.DISABLE;
+		delete V.profileget.DISABLE;
+		if ( Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' ) ) {
+			notify( icon, title, data.DISABLE ? 'Disable ...' : 'Enable ...' );
+			bash( [ 'profiledisable', data.SSID, data.DISABLE, 'CMD SSID DISABLE' ] );
+			return
+		}
+	}
+	
 	clearTimeout( V.timeoutscan );
 	if ( 'ADDRESS' in data ) { // static
 		var cmd = 'connectstatic';
@@ -263,71 +277,64 @@ function infoLanSet( v ) {
 	} );
 }
 function infoWiFi( v ) {
-	if ( v ) {
-		var values = {};
-		Object.keys( default_v.dhcp ).forEach( k => values[ k ] = v[ k ] );
-	} else {
-		var values = default_v.dhcp;
+	var list = [
+		  [ '',             'hidden' ]
+		, [ 'SSID',         'text' ]
+		, [ 'Password',     'password' ]
+		, [ 'IP',           'text' ]
+		, [ 'Gateway',      'text' ]
+		, [ 'Hidden SSID',  'checkbox' ]
+		, [ 'Disable',      'checkbox' ]
+	];
+	var default_v = {
+		  dhcp   : { IP: 'dhcp',   SSID: '', PASSPHRASE: '',                           HIDDEN: false, DISABLE: false }
+		, static : { IP: 'static', SSID: '', PASSPHRASE: '', ADDRESS: '', GATEWAY: '', HIDDEN: false, DISABLE: false }
 	}
+	if ( v ) {
+		var dhcp   = v.IP === 'dhcp';
+		var values = {};
+		Object.keys( default_v[ v.IP ] ).forEach( k => values[ k ] = v[ k ] );
+	} else {
+		var values = default_v[ 'dhcp' ];
+		var dhcp   = true;
+		delete V.profileget;
+	}
+	if ( dhcp ) {
+		var tabfn = () => {
+			var val = infoVal();
+			val.IP  = 'static';
+			infoWiFi( val );
+		}
+		list.splice( 3, 2 );
+	} else {
+		var tabfn = () => {
+			var val  = infoVal();
+			val.IP = 'dhcp';
+			infoWiFi( val );
+		}
+		values.ADDRESS = S.ipwl || S.ipsub;
+		values.GATEWAY = S.gateway || S.ipsub;
+	}
+	var checkchanged = 'profileget' in V && Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' );
 	info( {
 		  icon         : 'wifi'
 		, title        : v ? 'Saved Connection' : 'Add Connection'
 		, tablabel     : [ 'DHCP', 'Static IP' ]
-		, tab          : [ '', () => infoWiFiTab( infoVal() ) ]
+		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
-		, list         : [
-			  [ 'SSID',        'text' ]
-			, [ 'Password',    'password' ]
-			, [ 'Hidden SSID', 'checkbox' ]
-		]
+		, list         : list
 		, values       : values
+		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
-		, checkchanged : ! V.wifistatic
+		, checkip      : dhcp ? '' : [ 2, 3 ]
 		, ok           : () => connectWiFi( infoVal() )
 	} );
 }
 function infoWiFiGet() {
-	var ssid = V.li.data( 'ssid' );
-	bash( [ 'profileget', ssid, 'CMD SSID' ], v => {
-		v.SSID = ssid;
-		v.ADDRESS ? infoWiFiStatic( v ) : infoWiFi( v );
+	bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD SSID' ], v => {
+		V.profileget = v;
+		infoWiFi( v );
 	}, 'json' );
-}
-function infoWiFiStatic( v ) {
-	if ( v ) {
-		var values = {};
-		Object.keys( default_v.static ).forEach( k => values[ k ] = v[ k ] );
-	} else {
-		var values = default_v.static;
-	}
-	values.ADDRESS = S.ipwl || S.ipsub;
-	values.GATEWAY = S.gateway || S.ipsub;
-	info( {
-		  icon          : 'wifi'
-		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
-		, tablabel      : [ 'DHCP', 'Static IP' ]
-		, tab           : [ () => infoWiFiTab( infoVal() ), '' ]
-		, boxwidth      : 180
-		, list          : [
-			  [ 'SSID',        'text' ]
-			, [ 'Password',    'password' ]
-			, [ 'IP',          'text' ]
-			, [ 'Gateway',     'text' ]
-			, [ 'Hidden SSID', 'checkbox' ]
-		]
-		, values        : values
-		, checkblank    : [ 0 ]
-		, checkchanged  : V.wifistatic
-		, checkip       : [ 2, 3 ]
-		, ok            : () => connectWiFi( infoVal() )
-	} );
-}
-function infoWiFiTab( values ) {
-	var target = 'ADDRESS' in values ? 'dhcp' : 'static';
-	var keys   = Object.keys( default_v[ target ] );
-	var v      = {}
-	keys.forEach( k => v[ k ] = values[ k ] );
-	target === 'dhcp' ? infoWiFi( v ) : infoWiFiStatic( v );
 }
 function psOnClose() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return

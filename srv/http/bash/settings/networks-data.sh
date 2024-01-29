@@ -66,7 +66,6 @@ listWlan() {
 	[[ $listwl ]] && listwl='[ '${listwl:1}' ]' || listwl=false
 }
 if [[ $1 == pushwl ]]; then
-	pushwl=1
 	listWlan
 	pushData wlan '{ "listwl": '$listwl', "ipwl": "'$ipwl'", "gatewaywl": "'$gatewaywl'" }'
 	exit

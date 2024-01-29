@@ -2,8 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-dirconfig=$dirdata/config
 backupfile=$dirshm/backup.gz
+dirconfig=$dirdata/config
 rm -f $backupfile
 alsactl store
 files=(
@@ -25,7 +25,6 @@ files=(
 	/etc/X11/xorg.conf.d/99-calibration.conf
 	/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 	/mnt/MPD/NAS/data
-	/var/lib/alsa/asound.state
 )
 for file in ${files[@]}; do
 	if [[ -e $file ]]; then
@@ -33,13 +32,14 @@ for file in ${files[@]}; do
 		cp {,$dirconfig}$file
 	fi
 done
-cp -r /var/lib/iwd $dirconfig/var/lib
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 [[ $crossfade ]] && echo $crossfade > $dirsystem/crossfade
 hostname > $dirsystem/hostname
 timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 mkdir -p $dirconfig/var/lib
-cp -r /var/lib/bluetooth $dirconfig/var/lib &> /dev/null
+for dir in alsa bluetooth iwd; do
+	cp -r /var/lib/$dir $dirconfig/var/lib &> /dev/null
+done
 xinitrcfiles=$( ls /etc/X11/xinit/xinitrc.d | grep -v 50-systemd-user.sh )
 if [[ $xinitrcfiles ]]; then
 	mkdir -p $dirconfig/etc/X11/xinit
@@ -62,5 +62,5 @@ bsdtar \
 	data \
 	2> /dev/null && echo 1
 
-rm -rf $dirdata/{config,disable,enable}
-rm -f $dirsystem/{crossfade,hostname,timezone}
+rm -rf $dirconfig
+rm -f $dirsystem/{crossfade,disable,enable,hostname,timezone}

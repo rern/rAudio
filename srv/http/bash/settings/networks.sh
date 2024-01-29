@@ -8,7 +8,7 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	local hidden wlandev
 	wlandev=$( < $dirshm/wlan )
 	iwctl station $wlandev scan "$SSID"
-	for i in {0..10}; do
+	for i in {0..9}; do
 		sleep 1
 		iwctl station $wlandev get-networks | grep -q "$SSID" && break
 	done
@@ -18,9 +18,20 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	else
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
-	[[ ! $( iwgetid -r $wlandev ) ]] && rm -f "/var/lib/iwd/$SSID".*
+	if [[ $( iwgetid -r $wlandev ) ]]; then
+		profileDisable
+	else
+		rm -f "/var/lib/iwd/$SSID".*
+	fi
 	avahi-daemon --kill # flush cache and restart
 	pushRefresh
+}
+profileDisable() {
+	if [[ $DISABLE == true ]]; then
+		appendSortUnique "$SSID" $dirsystem/ssiddisabled
+	else
+		sed -i "/^$SSID$/ d" $dirsystem/ssiddisabled
+	fi
 }
 wlanDevice() {
 	local iplinkw wlandev
@@ -28,8 +39,8 @@ wlanDevice() {
 	if [[ ! $iplinkw ]]; then
 		if [[ -e $dirshm/onboardwlan ]]; then
 			modprobe brcmfmac
-			sleep 1
 			ip link set wlan0 up
+			sleep 1
 			iplinkw=$( ip -br link | grep ^w )
 		fi
 	fi
@@ -56,7 +67,7 @@ connect )
 	killProcess networksscan
 	iwctlConnect
 	;;
-connectstatic )	
+connectstatic )
 	if [[ $PASSPHRASE ]]; then
 		presharedkey=$( wpa_passphrase "$SSID" "$PASSPHRASE" | grep '\spsk=' | cut -d= -f2 )
 		data='
@@ -111,23 +122,33 @@ profileconnect )
 	wlandev=$( < $dirshm/wlan )
 	[[ -e $dirsystem/ap ]] && rm -f $dirsystem/{ap,ap.conf} && systemctl restart iwd
 	grep -q ^Hidden=true "/var/lib/iwd/$SSID".* && hidden=-hidden
+	iwctl station $wlandev scan "$SSID"
+	for i in {0..9}; do
+		sleep 1
+		iwctl station $wlandev get-networks | grep -q "$SSID" && break
+	done
 	iwctl station $wlandev connect$hidden "$SSID"
 	$dirsettings/networks-data.sh pushwl
+	;;
+profiledisable )
+	profileDisable
 	;;
 profileget )
 	data=$( cat "/var/lib/iwd/$SSID".* )
 	. <( grep -E '^Address|^Gateway|^Hidden|^Passphrase' <<< $data )
 	[[ ! $Hidden ]] && Hidden=false
+	[[ $Address ]] && ip=static || ip=dhcp
 	echo '{
-		  "ADDRESS"    : "'$Address'"
-		, "GATEWAY"    : "'$Gateway'"
-		, "HIDDEN"     : '$Hidden'
-		, "PASSPHRASE" : "'$Passphrase'"
+  "IP"         : "'$ip'"
+, "SSID"       : "'$SSID'"
+, "PASSPHRASE" : "'$Passphrase'"
+, "ADDRESS"    : "'$Address'"
+, "GATEWAY"    : "'$Gateway'"
+, "HIDDEN"     : '$Hidden'
 }'
 	;;
 profileremove )
 	iwctl known-networks "$SSID" forget
-	killall iwctl &> /dev/null
 	$dirsettings/networks-data.sh pushwl
 	;;
 statuslan )

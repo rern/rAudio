@@ -66,7 +66,7 @@ var vumeter = '<img class="imgicon" src="'+ V.covervu +'"> ';
 var chkdisplay = {
 	  library       : {
 		  album          : ico( 'album' ) +'<gr>Album</gr>'
-			, nas        : ico( 'networks' ) +'<gr>Network</gr>'
+			, nas        : ico( 'networks' ) +'<gr>NAS</gr>'
 		, albumartist    : ico( 'albumartist' ) +'<gr>Album Artist</gr>'
 			, sd         : ico( 'microsd' ) +'<gr>SD</gr>'
 		, artist         : ico( 'artist' ) +'<gr>Artist</gr>'
@@ -260,7 +260,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				info( {
 					  icon       : 'multiraudio'
 					, title      : 'Switch rAudio'
-					, list       : [ '', 'radio', data.list, 'tr' ]
+					, list       : [ '', 'radio', { kv: data.list, sameline: false } ]
 					, values     : currentip
 					, beforeshow : () => {
 						$( '#infoList input' ).each( ( i, el ) => {

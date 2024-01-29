@@ -19,7 +19,6 @@ $1
 <hr>"
 }
 getinstallzip() {
-	local fileurl filelist installfile tmpdir uninstallfile
 	echo "$bar Get files ..."
 	installfile=$branch.tar.gz
 	fileurl=$( jq -r .$alias.installurl $addonsjson | sed "s|raw/main/install.sh|archive/$installfile|" )
@@ -56,7 +55,6 @@ installstart() { # $1-'u'=update
 	[[ $label != Rank || $label != Import ]] && title "$bar $label $title ..." || title "$bar $title ..."
 }
 installfinish() {
-	local version
 	version=$( jq -r .$alias.version $addonsjson )
 	[[ $version != null ]] && echo $version > $diraddons/$alias
 	echo "
@@ -66,7 +64,6 @@ $bar Done.
 	[[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 }
 uninstallstart() {
-	local title
 	title="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
 	if [[ ! -e /usr/local/bin/uninstall_$alias.sh ]]; then
 	  echo $info $title not found.

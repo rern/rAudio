@@ -88,6 +88,10 @@ if [[ $wlanprofile && ! $ap ]]; then
 	systemctl start iwd
 	iwctl station $wlandev scan
 	for ssid in "${wlanprofile[@]}"; do
+		if [[ -e $dirsystem/ssiddisabled ]]; then
+			grep -q "^$ssid$" $dirsystem/ssiddisabled && continue
+		fi
+		
 		for i in {0..9}; do
 			sleep 1
 			iwctl station $wlandev get-networks | sed -e '1,4 d' | grep -q "^.*$ssid" && break
@@ -95,8 +99,8 @@ if [[ $wlanprofile && ! $ap ]]; then
 		iwctl station $wlandev connect "$ssid"
 		sleep 1
 		[[ $( iwgetid -r $wlandev ) ]] && break
-		[[ ! $ipaddress ]] && ipaddress=$( ipAddress )
 	done
+	[[ ! $ipaddress ]] && ipaddress=$( ipAddress )
 fi
 
 if [[ $ipaddress ]]; then
@@ -104,7 +108,7 @@ if [[ $ipaddress ]]; then
 	if [[ $lines ]]; then
 		for line in "${lines[@]}"; do # ping target before mount
 			[[ ${line:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $line ) || ip=$( cut -d: -f1 <<< $line )
-			for i in {1..10}; do
+			for i in {0..9}; do
 				if ipOnline $ip; then
 					mountpoint=$( awk '{print $2}' <<< $line )
 					mount "${mountpoint//\\040/ }" && nasonline=1 && break

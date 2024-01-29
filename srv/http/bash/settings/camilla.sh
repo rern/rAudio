@@ -6,7 +6,6 @@ dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
 
 saveConfig() {
-	local data config configfile
 	data=$( echo '"GetConfigJson"' \
 				| websocat ws://127.0.0.1:1234 \
 				| jq -r .GetConfigJson.value \
