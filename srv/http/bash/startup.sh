@@ -28,12 +28,13 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 fi
 
-if [[ -e /boot/backup.gz ]]; then
-	if bsdtar tf backup.gz | grep -q -m1 ^data/system/$; then
-		mv /boot/backup.gz $dirdata/tmp
-		$dirsettings/system.sh datarestore
-	else
-		restorefailed='Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.'
+backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
+if [[ -e $backupfile ]]; then
+	mv "$backupfile" $dirshm/backup.gz
+	$dirsettings/system-datarestore.sh
+	if [[ $? != 0 ]]; then
+		notbackupfile=1
+		mv $dirshm/backup.gz "${backupfile}X"
 	fi
 fi
 
@@ -42,12 +43,17 @@ if [[ $filewifi && $wlandev ]]; then
 	filename=${filewifi/*\/}
 	ssid=${filename%.*}
 	hidden=$( getVar Hidden "$filewifi" )
-	if (( $( grep -Ec '^Passphrase|^PreSharedKey' $filewifi ) < 2 )); then
-		passphrase=$( getVar Passphrase "$filewifi" )
-		presharedkey=$( wpa_passphrase "$ssid" "$passphrase" | grep '\spsk=' | cut -d= -f2 )
-		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" "$filewifi"
+	passphrase=$( getVar Passphrase "$filewifi" ' ' )
+	if [[ $passphrase ]] && ! grep -q ^PreSharedKey "$filewifi"; then
+		presharedkey=$( wpa_passphrase "$ssid" $passphrase | sed -n '/^\s*psk=/ {s/.*=//; p}' )
+		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" $filewifi
 	fi
-	cp "$filewifi" /var/lib/iwd
+	if grep '^[0-9a-zA-Z _-]*$' <<< $ssid; then
+		filename=$( echo -n "$ssid" | hexdump -ve '/1 "%02X"' )
+		cp "$filewifi" "/var/lib/iwd/=$filename"
+	else
+		cp "$filewifi" /var/lib/iwd
+	fi
 	$dirsettings/networks.sh "iwctlconnect
 $ssid
 $hidden
@@ -86,6 +92,7 @@ if [[ $wlanprofile && ! $ap ]]; then
 			iwctl station $wlandev get-networks | sed -e '1,4 d' | grep -q "^.*$ssid" && break
 		done
 		iwctl station $wlandev connect "$ssid"
+		sleep 1
 		ipaddress=$( ipAddress )
 		[[ $ipaddress ]] && break
 	done
@@ -114,11 +121,8 @@ if [[ $ipaddress ]]; then
 		fi
 		appendSortUnique $ipaddress $filesharedip
 	fi
-	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
-	$dirsettings/addons-data.sh &> /dev/null &
 	[[ -e $filewifi ]] && rm -f $filewifi
 else
-	[[ -e $filewifi ]] && mv "$filewifi"{,X}
 	if [[ $wlandev && ! $ap ]]; then
 		if [[ $wlanprofile ]]; then
 			[[ ! -e $dirsystem/wlannoap ]] && ap=1
@@ -174,17 +178,9 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
-
+# usb wlan || no wlan || not ap + not connected
 if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
-	systemctl stop iwd
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
-fi
-! rfkill | grep -q wlan && systemctl stop iwd
-
-if [[ $restorefailed ]]; then
-	notify restore "$restorefailed" 10000
-elif [[ $nas && ! $nasonline ]]; then
-	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
 
 touch $dirshm/startup
@@ -194,4 +190,17 @@ fi
 
 if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.service failed
 	/boot/startup.sh
+fi
+
+if [[ $ipaddress ]]; then
+	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
+	$dirsettings/addons-data.sh &> /dev/null &
+fi
+
+if [[ $notbackupfile ]]; then
+	notify restore 'Restore Settings' '<code>'$backupfile'</code> is not rAudio backup.' 10000
+fi
+if [[ $nas && ! $nasonline ]]; then
+	[[ $notbackupfile ]] && sleep 3
+	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
