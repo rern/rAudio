@@ -582,7 +582,7 @@ $( '#backup' ).on( 'click', function() {
 		  icon    : SW.icon
 		, title   : SW.title
 		, message : 'Save all data and settings'
-		, list    : [ 'Filename', 'text', '.gz' ]
+		, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
 		, values  : 'rAudio_backup-'+ ymd
 		, ok      : () => {
 			notifyCommon( 'Process ...' );
