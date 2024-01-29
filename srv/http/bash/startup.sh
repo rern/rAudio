@@ -28,13 +28,13 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 fi
 
-filebackup=$( ls /boot/*.gz 2> /dev/null | head -1 )
-if [[ -e $filebackup ]]; then
-	if bsdtar tf "$filebackup" | grep -q -m1 ^data/system/$; then
-		mv "$filebackup" $dirshm/backup.gz
-		$dirsettings/system.sh datarestore
-	else
-		notfilebackup=$filebackup
+backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
+if [[ -e $backupfile ]]; then
+	mv "$backupfile" $dirshm/backup.gz
+	$dirsettings/system-datarestore.sh
+	if [[ $? != 0 ]]; then
+		notbackupfile=1
+		mv $dirshm/backup.gz "${backupfile}X"
 	fi
 fi
 
@@ -181,10 +181,10 @@ if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.ser
 	/boot/startup.sh
 fi
 
-if [[ $notfilebackup ]]; then
-	notify restore 'Restore Settings' '<code>'$notfilebackup'</code> is not rAudio backup.' 10000
+if [[ $notbackupfile ]]; then
+	notify restore 'Restore Settings' '<code>'$backupfile'</code> is not rAudio backup.' 10000
 fi
 if [[ $nas && ! $nasonline ]]; then
-	[[ $notfilebackup ]] && sleep 3
+	[[ $notbackupfile ]] && sleep 3
 	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
