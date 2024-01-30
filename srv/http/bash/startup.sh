@@ -47,7 +47,7 @@ if [[ $filewifi && $wlandev ]]; then
 		presharedkey=$( wpa_passphrase "$ssid" $passphrase | sed -n '/^\s*psk=/ {s/.*=//; p}' )
 		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" $filewifi
 	fi
-	if [[ "$SSID" =~ [^a-zA-Z0-9 _-] ]]; then
+	if [[ $ssid =~ [^a-zA-Z0-9\s_-] ]]; then
 		hexssid=$( ssid2hex "$ssid" )
 		cp "$filewifi" "/var/lib/iwd/=$hexssid.${filename/*.}"
 	else

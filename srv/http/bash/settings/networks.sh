@@ -60,7 +60,7 @@ connect )
 	iwctlConnect
 	;;
 connectstatic )
-	if [[ "$SSID" =~ [^a-zA-Z0-9 _-] ]]; then
+	if [[ $SSID =~ [^a-zA-Z0-9\s_-] ]]; then
 		hexssid=$( ssid2hex "$SSID" )
 		profile="/var/lib/iwd/=$hexssid"
 	else

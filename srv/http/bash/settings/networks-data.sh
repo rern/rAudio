@@ -34,7 +34,7 @@ fi
 
 wlandev=$( < $dirshm/wlan )
 listWlan() {
-	local connected dbm ipr ipwl notconnected profiles profile ssid
+	local connected dbm ipr notconnected profiles profile ssid
 	readarray -t profiles <<< $( ls -1 /var/lib/iwd/*.* 2> /dev/null | sed -E 's|.*/||; s/.psk|.open//' )
 	if [[ $profiles ]]; then
 		for ssid in "${profiles[@]}"; do

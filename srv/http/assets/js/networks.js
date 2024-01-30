@@ -326,6 +326,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
+		, footer       : S.ipeth ? '' : iconwarning +'Edit <wh>current connection</wh>'
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
