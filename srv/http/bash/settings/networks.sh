@@ -60,12 +60,6 @@ connect )
 	iwctlConnect
 	;;
 connectstatic )
-	if [[ $SSID =~ [^a-zA-Z0-9\s_-] ]]; then
-		hexssid=$( ssid2hex "$SSID" )
-		profile="/var/lib/iwd/=$hexssid"
-	else
-		profile="/var/lib/iwd/$SSID"
-	fi
 	if [[ $PASSPHRASE ]]; then
 		presharedkey=$( wpa_passphrase "$SSID" "$PASSPHRASE" \
 							| grep '\spsk=' \
@@ -74,9 +68,9 @@ connectstatic )
 [Security]
 PreSharedKey='$presharedkey'
 Passphrase="'$PASSPHRASE'"'
-		profile+=.psk
+		ext+=psk
 	else
-		profile+=.open
+		ext+=open
 	fi
 	data+='
 [IPv4]
@@ -89,6 +83,7 @@ AutoConnect=true'
 	[[ $settings ]] && data+="
 [Settings]
 $settings"
+	profile=$( ssidProfilePath "$SSID" $ext )
 	echo "$data" > "$profile"
 	iwctlConnect
 	;;

@@ -41,22 +41,14 @@ filewifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
 if [[ $filewifi && $wlandev ]]; then
 	filename=${filewifi/*\/}
 	ssid=${filename%.*}
-	hidden=$( getVar Hidden "$filewifi" )
-	passphrase=$( getVar Passphrase "$filewifi" ' ' )
-	if [[ $passphrase ]] && ! grep -q ^PreSharedKey "$filewifi"; then
+	ext=${filename/*.}
+	profile=$( ssidProfilePath "$ssid" $ext )
+	cp "$filewifi" "$profile"
+	passphrase=$( getVar Passphrase "$profile" ' ' )
+	if [[ $passphrase ]] && ! grep -q ^PreSharedKey "$profile"; then
 		presharedkey=$( wpa_passphrase "$ssid" $passphrase | sed -n '/^\s*psk=/ {s/.*=//; p}' )
-		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" $filewifi
+		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" "$profile"
 	fi
-	if [[ $ssid =~ [^a-zA-Z0-9\s_-] ]]; then
-		hexssid=$( ssid2hex "$ssid" )
-		cp "$filewifi" "/var/lib/iwd/=$hexssid.${filename/*.}"
-	else
-		cp "$filewifi" /var/lib/iwd
-	fi
-	$dirsettings/networks.sh "iwctlconnect
-$ssid
-$hidden
-CMD SSID HIDDEN"
 fi
 # ----------------------------------------------------------------------------
 
