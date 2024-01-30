@@ -95,6 +95,9 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	}
 	contextMenu();
 } );
+$( '.lanadd' ).on( 'click', function() {
+	infoLan();
+} );
 $( '.connect' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
 	if ( V.listid === 'listbt' ) {
@@ -122,7 +125,7 @@ $( '.disconnect' ).on( 'click', function() {
 	info( {
 		  icon       : icon
 		, title      : 'Wi-Fi'
-		, list       : [ 'SSID',       'text' ]
+		, message    : 'SSID: <wh>'+ ssid +'</wh>'
 		, footer     : S.ipeth ? '' : iconwarning +'Disconnect <wh>current connection</wh>'
 		, boxwidth   : 200
 		, values     : [ ssid, true, true ]
@@ -149,7 +152,7 @@ $( '.forget' ).on( 'click', function() {
 	info( {
 		  icon       : icon
 		, title      : 'Wi-Fi'
-		, list       : [ 'SSID', 'text' ]
+		, message    : 'SSID: <wh>'+ ssid +'</wh>'
 		, footer     : S.ipeth ? '' : iconwarning +'Forget <wh>current connection</wh>'
 		, values     : [ ssid ]
 		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
@@ -235,7 +238,7 @@ function infoAccesspoint() {
 }
 function infoLan() {
 	var icon   = 'lan';
-	var title  = 'Edit LAN Connection';
+	var title  = ( S.listeth ? 'Edit' : 'Add' ) +' LAN Connection';
 	var static = S.listeth.static;
 	info( {
 		  icon         : icon
@@ -245,7 +248,7 @@ function infoLan() {
 			, [ 'Gateway', 'text' ]
 		]
 		, focus        : 0
-		, values       : { IP: S.ipeth, GATEWAY: S.listeth.gateway }
+		, values       : S.listeth ? { IP: S.listeth.ip, GATEWAY: S.listeth.gateway } : { IP: S.ipsub, GATEWAY: S.gateway }
 		, checkchanged : true
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
