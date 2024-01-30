@@ -33,7 +33,7 @@ if [[ $1 == wlan ]]; then
 				| sort )
 	
 	# omit saved profile
-	readarray -t profiles <<< $( ls -1p /var/lib/iwd | grep -v /$ | sed -E 's/.psk$|.open$// )
+	readarray -t profiles <<< $( ls -1p /var/lib/iwd | grep -v /$ | sed -E 's/.psk$|.open$//' )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
 			scan=$( grep -v "ssid.*$profile" <<< $scan  )
