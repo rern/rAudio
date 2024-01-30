@@ -4,6 +4,9 @@
 
 args2var "$1"
 
+pushRefreshWlan() {
+	$dirsettings/networks-data.sh pushwl
+}
 iwctlConnect() { # wlandev ssid hidden passphrase
 	local hidden
 	! iwctlScan "$SSID" && echo -1 && exit
@@ -83,7 +86,7 @@ $settings"
 	;;
 disconnect )
 	iwctl station $( < $dirshm/wlan ) disconnect
-	$dirsettings/networks-data.sh pushwl
+	pushRefreshWlan
 	;;
 iwctlconnect )
 	iwctlConnect
@@ -110,6 +113,7 @@ Gateway='$GATEWAY $file
 	fi
 	systemctl restart systemd-networkd
 	avahi-daemon --kill
+	pushRefresh
 	;;
 profileconnect )
 	[[ -e $dirsystem/ap ]] && rm -f $dirsystem/{ap,ap.conf} && systemctl restart iwd
@@ -118,13 +122,33 @@ profileconnect )
 	# wlandev: from iwctlScan
 	grep -q ^Hidden=true "/var/lib/iwd/$SSID".* && hidden=-hidden
 	iwctl station $wlandev connect$hidden "$SSID"
-	$dirsettings/networks-data.sh pushwl
+	pushRefreshWlan
+	;;
+profiledisable )
+	file=$( ls -1 "/var/lib/iwd/$SSID".* | head -1 )
+	if [[ $DISABLE == true ]]; then
+		if grep -q '^\[Settings' "$files"; then
+			sed -i '/^\[Settings/ a\AutoConnect=false' "$file"
+		else
+			echo '
+[Settings]
+AutoConnect=false' >> "$file"
+		fi
+	else
+		data=$( sed '/^AutoConnect=false/ d' "$file" )
+		if ! grep -q ^Hidden "$file"; then
+			data=$( sed '/^\[Settings/ d' <<< $data )
+			data=$( sed ':a;/^[ \n]*$/{$d;N;ba}' <<< $data )
+		fi
+		echo "$data" > "$file"
+	fi
+	pushRefreshWlan
 	;;
 profileget )
 	data=$( cat "/var/lib/iwd/$SSID".* )
 	. <( grep -E '^Address|^AutoConnect|^Gateway|^Hidden|^Passphrase' <<< $data )
 	[[ ! $Hidden ]] && Hidden=false
-	[[ ! $AutoConnect ]] && AutoConnect=false
+	[[ $AutoConnect == false ]] && disable=true || disable=false
 	[[ $Address ]] && ip=static || ip=dhcp
 	echo '{
   "IP"         : "'$ip'"
@@ -133,12 +157,12 @@ profileget )
 , "ADDRESS"    : "'$Address'"
 , "GATEWAY"    : "'$Gateway'"
 , "HIDDEN"     : '$Hidden'
-, "DISABLE"    : '$AutoConnect'
+, "DISABLE"    : '$disable'
 }'
 	;;
 profileremove )
 	iwctl known-networks "$SSID" forget
-	$dirsettings/networks-data.sh pushwl
+	pushRefreshWlan
 	;;
 statuslan )
 	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
