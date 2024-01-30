@@ -374,6 +374,12 @@ sshpassCmd() {
 		root@$1 \
 		"${@:2}"
 }
+ssid2hex() { # in command: $( echo -e $HEX )
+	echo -n "$1" \
+		| tr -d '\n' \
+		| od -A n -t x1 \
+		| sed 's/ /\\x/g'
+}
 statePlay() {
 	grep -q -m1 '^state.*play' $dirshm/status && return 0
 }
