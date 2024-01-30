@@ -5,13 +5,10 @@
 args2var "$1"
 
 iwctlConnect() { # wlandev ssid hidden passphrase
-	local hidden wlandev
-	wlandev=$( < $dirshm/wlan )
-	iwctl station $wlandev scan "$SSID"
-	for i in {0..9}; do
-		sleep 1
-		iwctl station $wlandev get-networks | grep -q "$SSID" && break
-	done
+	local hidden
+	! iwctlScan "$SSID" && echo -1 && exit
+	
+	# wlandev: from iwctlScan
 	[[ $HIDDEN == true ]] && hidden=-hidden
 	if [[ $PASSPHRASE ]]; then
 		iwctl station $wlandev connect$hidden "$SSID" --passphrase "$PASSPHRASE"
@@ -19,19 +16,11 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
 	if [[ $( iwgetid -r $wlandev ) ]]; then
-		profileDisable
+		avahi-daemon --kill # flush cache and restart
 	else
 		rm -f "/var/lib/iwd/$SSID".*
 	fi
-	avahi-daemon --kill # flush cache and restart
 	pushRefresh
-}
-profileDisable() {
-	if [[ $DISABLE == true ]]; then
-		appendSortUnique "$SSID" $dirsystem/ssiddisabled
-	else
-		sed -i "/^$SSID$/ d" $dirsystem/ssiddisabled
-	fi
 }
 wlanDevice() {
 	local iplinkw wlandev
@@ -82,9 +71,13 @@ Passphrase="'$PASSPHRASE'"'
 [IPv4]
 Address='$ADDRESS'
 Gateway='$GATEWAY
-	[[ $HIDDEN == true ]] && data+='
-[Settings]
+	[[ $HIDDEN == true ]] && settings='
 Hidden=true'
+	[[ $DISABLE == true ]] && settings+='
+AutoConnect=true'
+	[[ $settings ]] && data+="
+[Settings]
+$settings"
 	echo "$data" > "$profile"
 	iwctlConnect
 	;;
@@ -119,24 +112,19 @@ Gateway='$GATEWAY $file
 	avahi-daemon --kill
 	;;
 profileconnect )
-	wlandev=$( < $dirshm/wlan )
 	[[ -e $dirsystem/ap ]] && rm -f $dirsystem/{ap,ap.conf} && systemctl restart iwd
+	! iwctlScan "$SSID" && echo -1 && exit
+	
+	# wlandev: from iwctlScan
 	grep -q ^Hidden=true "/var/lib/iwd/$SSID".* && hidden=-hidden
-	iwctl station $wlandev scan "$SSID"
-	for i in {0..9}; do
-		sleep 1
-		iwctl station $wlandev get-networks | grep -q "$SSID" && break
-	done
 	iwctl station $wlandev connect$hidden "$SSID"
 	$dirsettings/networks-data.sh pushwl
 	;;
-profiledisable )
-	profileDisable
-	;;
 profileget )
 	data=$( cat "/var/lib/iwd/$SSID".* )
-	. <( grep -E '^Address|^Gateway|^Hidden|^Passphrase' <<< $data )
+	. <( grep -E '^Address|^AutoConnect|^Gateway|^Hidden|^Passphrase' <<< $data )
 	[[ ! $Hidden ]] && Hidden=false
+	[[ ! $AutoConnect ]] && AutoConnect=false
 	[[ $Address ]] && ip=static || ip=dhcp
 	echo '{
   "IP"         : "'$ip'"
@@ -145,6 +133,7 @@ profileget )
 , "ADDRESS"    : "'$Address'"
 , "GATEWAY"    : "'$Gateway'"
 , "HIDDEN"     : '$Hidden'
+, "DISABLE"    : '$AutoConnect'
 }'
 	;;
 profileremove )

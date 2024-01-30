@@ -70,9 +70,7 @@ mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
 rm -rf $dirdata $dirshareddata \
 		/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 		/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
-if [[ ! $keepnetwork ]]; then
-	rm -f /var.lib/iwd/*.* $dirsystem/ssiddisabled &> /dev/null
-fi
+[[ ! $keepnetwork ]] && rm -f /var.lib/iwd/*.* &> /dev/null
 
 $dirsettings/system-datadefault.sh
 
