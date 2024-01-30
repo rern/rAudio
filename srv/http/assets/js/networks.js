@@ -126,7 +126,7 @@ $( '.disconnect' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : S.ipeth ? '' : iconwarning +'Disconnect <wh>current connection</wh>'
+		, footer     : V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>Disconnect current connection</wh>'
 		, boxwidth   : 200
 		, values     : [ ssid, true, true ]
 		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
@@ -153,7 +153,7 @@ $( '.forget' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : S.ipeth ? '' : iconwarning +'Forget <wh>current connection</wh>'
+		, footer     : V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>Forget current connection</wh>'
 		, values     : [ ssid ]
 		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
 		, oklabel    : ico( 'remove' ) +'Forget'
@@ -326,7 +326,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : S.ipeth ? '' : iconwarning +'Edit <wh>current connection</wh>'
+		, footer       : V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>This is current connection</wh>'
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
