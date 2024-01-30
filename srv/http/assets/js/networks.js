@@ -126,7 +126,7 @@ $( '.disconnect' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>Disconnect current connection</wh>'
+		, footer     : footer( 'Disconnect' )
 		, boxwidth   : 200
 		, values     : [ ssid, true, true ]
 		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
@@ -153,7 +153,7 @@ $( '.forget' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>Forget current connection</wh>'
+		, footer     : footer( 'Forget' )
 		, values     : [ ssid ]
 		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
 		, oklabel    : ico( 'remove' ) +'Forget'
@@ -229,6 +229,9 @@ function connectWiFi( data ) {
 		}
 	} );
 }
+function footer( action ) {
+	return V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>'+ action +' current connection</wh>'
+}
 function infoAccesspoint() {
 	info( {
 		  icon    : 'wifi'
@@ -249,6 +252,7 @@ function infoLan() {
 		]
 		, focus        : 0
 		, values       : S.listeth ? { IP: S.listeth.ip, GATEWAY: S.listeth.gateway } : { IP: S.ipsub, GATEWAY: S.gateway }
+		, footer       : footer( 'This is' )
 		, checkchanged : true
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
@@ -326,7 +330,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>This is current connection</wh>'
+		, footer       : footer( 'This is' )
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
