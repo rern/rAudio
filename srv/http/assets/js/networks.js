@@ -96,6 +96,9 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	}
 	contextMenu();
 } );
+$( '.lanadd' ).on( 'click', function() {
+	infoLan();
+} );
 $( '.connect' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
 	if ( V.listid === 'listbt' ) {
