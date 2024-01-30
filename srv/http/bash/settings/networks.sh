@@ -11,6 +11,7 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	local hidden
 	! iwctlScan "$SSID" && echo -1 && exit
 	
+	[[ $( ls "/var/lib/iwd/$SSID".* 2> /dev/null ) ]] && existing=1
 	# wlandev: from iwctlScan
 	[[ $HIDDEN == true ]] && hidden=-hidden
 	if [[ $PASSPHRASE ]]; then
@@ -21,7 +22,7 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	if [[ $( iwgetid -r $wlandev ) ]]; then
 		avahi-daemon --kill # flush cache and restart
 	else
-		rm -f "/var/lib/iwd/$SSID".*
+		[[ ! $existing ]] && rm -f "/var/lib/iwd/$SSID".*
 	fi
 	pushRefresh
 }
