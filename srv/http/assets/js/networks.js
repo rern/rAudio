@@ -193,7 +193,7 @@ function connectWiFi( data ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
 	if ( 'profileget' in V ) {
-		var values  = jsonClone( data );
+		var values   = jsonClone( data );
 		delete values.DISABLE;
 		delete V.profileget.DISABLE;
 		if ( Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' ) ) {
@@ -211,9 +211,10 @@ function connectWiFi( data ) {
 		var cmd = 'connect';
 		notify( icon, title, S.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
-	var keys   = Object.keys( data );
-	var values = Object.values( data );
-	bash( [ cmd, ...values, 'CMD '+ keys.join( ' ' ) ], error => {
+	var keys    = Object.keys( data );
+	var values  = Object.values( data );
+	var newssid = ! ( 'profileget' in V );
+	bash( [ cmd, newssid, ...values, 'CMD NEW '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
