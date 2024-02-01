@@ -21,7 +21,7 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	if [[ $( iwgetid -r $wlandev ) ]]; then
 		avahi-daemon --kill # flush cache and restart
 	else
-		[[ $NEW ]] && rm -f "/var/lib/iwd/$SSID".*
+		[[ $NEW ]] && rm -f "/var/lib/iwd/$SSID".{psk,open}
 	fi
 	pushRefresh
 }
