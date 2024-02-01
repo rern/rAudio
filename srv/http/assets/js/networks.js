@@ -30,6 +30,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bash( [ 'bluetoothcommand.sh', 'pair', mac ] );
 } );
 $( '.wladd' ).on( 'click', function() {
+	delete V.profileget;
 	infoWiFi();
 } );
 $( '.wlscan' ).on( 'click', function() {
@@ -305,7 +306,6 @@ function infoWiFi( v ) {
 	} else {
 		var values = default_v[ 'dhcp' ];
 		var dhcp   = true;
-		delete V.profileget;
 	}
 	if ( dhcp ) {
 		var tabfn = () => {
