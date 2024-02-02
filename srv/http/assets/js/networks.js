@@ -128,12 +128,8 @@ $( '.disconnect' ).on( 'click', function() {
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
 		, footer     : footer( 'Disconnect' )
-		, boxwidth   : 200
-		, values     : [ ssid, true, true ]
-		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
 		, okcolor    : orange
 		, ok         : () => {
-			var val = infoVal( 'array' );
 			notify( icon, ssid, 'Disconnect ...' );
 			bash( [ 'disconnect' ] )
 		}
@@ -155,8 +151,6 @@ $( '.forget' ).on( 'click', function() {
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
 		, footer     : footer( 'Forget' )
-		, values     : [ ssid ]
-		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
 		, oklabel    : ico( 'remove' ) +'Forget'
 		, okcolor    : red
 		, ok         : () => {
