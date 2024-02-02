@@ -9,8 +9,6 @@ pushRefreshWlan() {
 }
 iwctlConnect() { # wlandev ssid hidden passphrase
 	local hidden
-	! iwctlScan "$SSID" && echo -1 && exit
-	
 	# wlandev: from iwctlScan
 	[[ $HIDDEN == true ]] && hidden=-hidden
 	if [[ $PASSPHRASE ]]; then
@@ -18,10 +16,17 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	else
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
+	iwctlConnectFile
+}
+iwctlConnectFile() {
 	if [[ $( iwgetid -r $wlandev ) ]]; then
 		avahi-daemon --kill # flush cache and restart
+		[[ -e $profile ]] && rm "$profile".backup
 	else
-		[[ $NEW ]] && rm -f "/var/lib/iwd/$SSID".{psk,open}
+		rm -f "/var/lib/iwd/$SSID".*
+		[[ -e "$profile".backup ]] && mv "$profile"{.backup,}
+		iwctl station $wlandev connect$hidden "$SSID"
+		notify wifi Wi-Fi 'Connect failed.<br>Existing restored'
 	fi
 	pushRefresh
 }
@@ -56,10 +61,18 @@ bluetoothinfo )
 $info"
 	;;
 connect )
+	! iwctlScan "$SSID" && echo -1 && exit
+	
+	profile=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
+	[[ $profile ]] && cp "$profile"{,.backup}
 	killProcess networksscan
 	iwctlConnect
 	;;
 connectstatic )
+	! iwctlScan "$SSID" && echo -1 && exit
+	
+	profile=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
+	[[ $profile ]] && cp "$profile"{,.backup}
 	if [[ $PASSPHRASE ]]; then
 		presharedkey=$( wpa_passphrase "$SSID" "$PASSPHRASE" \
 							| grep '\spsk=' \
@@ -68,16 +81,19 @@ connectstatic )
 [Security]
 PreSharedKey='$presharedkey'
 Passphrase="'$PASSPHRASE'"'
-		ext+=psk
+		ext=psk
 	else
-		ext+=open
+		ext=open
 	fi
 	data+='
 [IPv4]
 Address='$ADDRESS'
 Gateway='$GATEWAY
-	[[ $HIDDEN == true ]] && settings='
+	if [[ $HIDDEN == true ]]; then
+		settings='
 Hidden=true'
+		hidden=-hidden
+	fi
 	[[ $DISABLE == true ]] && settings+='
 AutoConnect=true'
 	[[ $settings ]] && data+="
@@ -85,14 +101,12 @@ AutoConnect=true'
 $settings"
 	profile=$( ssidProfilePath "$SSID" $ext )
 	echo "$data" > "$profile"
-	iwctlConnect
+	iwctl station $wlandev connect$hidden "$SSID"
+	iwctlConnectFile
 	;;
 disconnect )
 	iwctl station $( < $dirshm/wlan ) disconnect
 	pushRefreshWlan
-	;;
-iwctlconnect )
-	iwctlConnect
 	;;
 lanedit )
 	if [[ $IP ]]; then
