@@ -76,7 +76,7 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 ipaddress=$( ipAddress ) # lan
 if [[ ! $ipaddress && $wlandev && ! $ap ]]; then
-	wlanprofile=$( grep -L ^AutoConnect=false /var/lib/iwd/*.* 2> /dev/null )
+	readarray -t wlanprofile <<< $( grep -L ^AutoConnect=false /var/lib/iwd/*.* 2> /dev/null )
 	if [[ $wlanprofile ]]; then
 		systemctl start iwd
 		for profile in "${wlanprofile[@]}"; do
@@ -84,7 +84,8 @@ if [[ ! $ipaddress && $wlandev && ! $ap ]]; then
 			ssid=${filename/.*}
 			! iwctlScan "$SSID" && continue
 			
-			iwctl station $wlandev connect "$ssid"
+			grep -q ^Hidden "$profile" && hidden=-hidden
+			iwctl station $wlandev connect$hidden "$ssid"
 			sleep 1
 			[[ $( iwgetid -r $wlandev ) ]] && break
 		done
