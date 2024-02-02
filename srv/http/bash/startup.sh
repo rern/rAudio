@@ -74,8 +74,7 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 [[ -e $dirsystem/ap ]] && ap=1
 
-ipaddress=$( ipAddress ) # lan
-if [[ ! $ipaddress && $wlandev && ! $ap ]]; then
+if [[ $wlandev && ! $ap ]]; then
 	readarray -t wlanprofile <<< $( grep -L ^AutoConnect=false /var/lib/iwd/*.* 2> /dev/null )
 	if [[ $wlanprofile ]]; then
 		systemctl start iwd
@@ -92,6 +91,10 @@ if [[ ! $ipaddress && $wlandev && ! $ap ]]; then
 		[[ ! $ipaddress ]] && ipaddress=$( ipAddress )
 	fi
 fi
+for i in {0..5}; do
+	ipaddress=$( ipAddress )
+	[[ $ipaddress ]] && break || sleep 1
+done
 if [[ $ipaddress ]]; then
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
