@@ -41,18 +41,13 @@ listWlan() {
 			[[ $( iwgetid -r $wlandev ) == $ssid ]] && connected=1 || connected=
 			ssid=$( stringEscape $ssid )
 			if [[ $connected ]]; then
-				for i in {1..10}; do
-					ipr=$( ip r |  grep -m1 $wlandev )
-					[[ $ipr ]] && break || sleep 1
-				done
-				ipwl=$( cut -d' ' -f9 <<< $ipr )
-				gatewaywl=$( cut -d' ' -f3 <<< $ipr )
+				ipr=( $( ip r | grep -m1 ^default.*$wlandev ) )
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
   "dbm"     : '$dbm'
-, "gateway" : "'$gatewaywl'"
-, "ip"      : "'$ipwl'"
+, "gateway" : "'${ipr[2]}'"
+, "ip"      : "'${ipr[8]}'"
 , "ssid"    : "'$ssid'"
 }'
 			else
@@ -80,15 +75,12 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=t
 
 # lan
 lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
-[[ $lan ]] && ipr=$( ip r | grep ^default.*$lan )
+[[ $lan ]] && ipr=( $( ip r | grep -m1 ^default.*$lan ) )
 if [[ $ipr ]]; then
-	ipeth=$( cut -d' ' -f9 <<< $ipr )
-	static=$( [[ $ipr != *"dhcp src "* ]] && echo true )
-	gateway=$( cut -d' ' -f3 <<< $ipr )
 	listeth='{
-  "gateway"  : "'$gateway'"
-, "ip"       : "'$ipeth'"
-, "static"   : '$static'
+  "gateway"  : "'${ipr[2]}'"
+, "ip"       : "'${ipr[8]}'"
+, "static"   : '$( [[ ${ipr[6]} != dhcp ]] && echo true )'
 }'
 fi
 [[ ! $gateway ]] && gateway=$gatewaywl

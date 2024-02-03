@@ -196,7 +196,7 @@ inOutputConf() {
 }
 ipAddress() {
 	local ip
-	ip=$( ip route \
+	ip=$( ip r \
 			| grep ^default \
 			| sort \
 			| head -1 \

@@ -212,19 +212,10 @@ status+='
 , "timestamp" : '$( date +%s%3N )
 if [[ $pllength  == 0 && ! $snapclient ]]; then
 	ip=$( ipAddress )
-	if [[ $ip ]]; then
-		avahifile=$dirshm/avahihostname
-		if grep -q '[^[:space:]]' < "$avahifile" $avahifile; then
-			avahiname=$( getContent $avahifile )
-		else
-			avahiname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
-			[[ $avahiname ]] && echo $avahiname > $avahifile
-		fi
-	fi
 ########
 	status+='
 , "coverart" : ""
-, "hostname" : "'$avahiname'"
+, "hostname" : "'$( getContent $dirshm/avahihostname )'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
 	outputStatus
