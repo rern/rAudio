@@ -12,8 +12,6 @@ if [[ $1 == wlan ]]; then
 	# ESSID:"NAME"
 	# Encryption key:on
 	# Quality=37/70  Signal level=-73 dBm --- Quality=0/100  Signal level=25/100
-	# IE: IEEE 802.11i/WPA2 Version 1
-	# IE: WPA Version 1
 	scan=$( iwlist $wlandev scan )
 	[[ ! $scan ]] && exit
 	
