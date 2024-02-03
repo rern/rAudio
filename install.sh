@@ -9,12 +9,14 @@ sed -i -E 's/^(EnableNetworkConfiguration=)true/\1false/' /etc/iwd/main.conf
 
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 if [[ $profiles ]]; then
-	for p in "${profiles[@]}"; do
+	for ssid in "${profiles[@]}"; do
 		data=
-		. <( grep = "/etc/netctl/$p" )
+		. <( grep = "/etc/netctl/$ssid" )
 		if [[ $Key ]]; then
+			presharedkey=$( wpa_passphrase "$ssid" $passphrase | sed -n '/^\s*psk=/ {s/.*=//; p}' )
 			data+='
 [Security]
+PreSharedKey='$presharedkey'
 Passphrase="'$Key'"'
 			file="/var/lib/iwd/$ESSID.psk"
 		else
@@ -28,7 +30,7 @@ Hidden=true'
 Address='${Address:0:-3}'
 Gateway='$Gateway
 		awk NF <<< "$data" > "$file"
-		if [[ $( netctl is-enabled "$p" ) == enabled ]]; then
+		if [[ $( netctl is-enabled "$ssid" ) == enabled ]]; then
 			netctl disable "$ESSID" &> /dev/null
 			mv "$file" /boot
 		fi
