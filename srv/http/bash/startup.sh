@@ -130,9 +130,8 @@ else
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
-# usb wlan || no wlan || not ap + not connected
 if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
-	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+	rmmod brcmfmac_wcc brcmfmac &> /dev/null # usb wlan || no wlan || not ap + not connected
 fi
 if [[ $ipaddress && ! $wlanprofile && ! $ap ]]; then
 	systemctl stop iwd
