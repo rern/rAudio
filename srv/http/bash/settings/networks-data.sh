@@ -43,12 +43,14 @@ listWlan() {
 			if [[ $connected ]]; then
 				ipr=( $( ip r | grep -m1 ^default.*$wlandev ) )
 				[[ ! $ipr ]] && sleep 1 && ipr=( $( ip r | grep -m1 ^default.*$wlandev ) )
+				ipwl=${ipr[8]}
+				gateway=${ipr[2]}
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
   "dbm"     : '$dbm'
-, "gateway" : "'${ipr[2]}'"
-, "ip"      : "'${ipr[8]}'"
+, "gateway" : "'$gateway'"
+, "ip"      : "'$ipwl'"
 , "ssid"    : "'$ssid'"
 }'
 			else
@@ -78,9 +80,11 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=t
 lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 [[ $lan ]] && ipr=( $( ip r | grep -m1 ^default.*$lan ) )
 if [[ $ipr ]]; then
+	ipeth=${ipr[8]}
+	gateway=${ipr[2]}
 	listeth='{
-  "gateway"  : "'${ipr[2]}'"
-, "ip"       : "'${ipr[8]}'"
+  "gateway"  : "'$gateway'"
+, "ip"       : "'$ipeth'"
 , "static"   : '$( [[ ${ipr[6]} != dhcp ]] && echo true )'
 }'
 fi
