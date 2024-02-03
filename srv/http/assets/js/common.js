@@ -990,7 +990,7 @@ function infoPower() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
-		, message     : ico( 'raudio i-30 gr' ) +'&ensp; r A u d i o'
+		, message     : ico( 'raudio i-30 gr' ) +'<a style="font-weight: 300">&ensp; r A u d i o</a>'
 		, buttonlabel : ico( 'reboot' ) +'Reboot'
 		, buttoncolor : orange
 		, button      : () => infoPowerCommand( 'reboot' )
