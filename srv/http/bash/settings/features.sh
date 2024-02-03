@@ -287,7 +287,7 @@ nfsserver )
 		mv /mnt/MPD/{SD,USB} /mnt/MPD/NAS
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
-		echo "/mnt/MPD/NAS  $( ipSub )0/24(rw,sync,no_subtree_check)" > /etc/exports
+		echo "/mnt/MPD/NAS  $( ipAddress sub )0/24(rw,sync,no_subtree_check)" > /etc/exports
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip

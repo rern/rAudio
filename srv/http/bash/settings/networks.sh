@@ -36,7 +36,6 @@ wlanDevice() {
 	if [[ ! $iplinkw ]]; then
 		if [[ -e $dirshm/onboardwlan ]]; then
 			modprobe brcmfmac
-			ip link set wlan0 up
 			sleep 1
 			iplinkw=$( ip -br link | grep ^w )
 		fi
@@ -44,6 +43,7 @@ wlanDevice() {
 	if [[ $iplinkw ]]; then
 		wlandev=$( tail -1 <<< "$iplinkw" | cut -d' ' -f1 )
 		echo $wlandev | tee $dirshm/wlan
+		ip link set $wlandev up
 		( sleep 1 && iw $wlandev set power_save off ) &
 	else
 		rm -f $dirshm/wlan
@@ -195,8 +195,10 @@ $( avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print $7": "$
 statuswl )
 	wlandev=$( < $dirshm/wlan )
 	echo "\
-<bll># ifconfig $wlandev; iwconfig $wlandev</bll>
+<bll># ifconfig $wlandev</bll>
 $( ifconfig $wlandev | grep -E -v 'RX|TX')
+
+<bll># iwconfig $wlandev</bll>
 $( iwconfig $wlandev | awk NF )"
 	;;
 usbbluetoothon ) # from usbbluetooth.rules

@@ -195,12 +195,13 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	ip route get 1 | awk '{print $(NF-2);exit}'
-}
-ipSub() {
 	local ip
-	ip=$( ipAddress )
-	echo ${ip%.*}.
+	ip=$( ip route \
+			| grep ^default \
+			| sort \
+			| head -1 \
+			| awk '{print $(NF-2); exit}' )
+	[[ $1 ]] && echo ${ip%.*}. || echo $ip
 }
 ipOnline() {
 	ping -c 1 -w 1 $1 &> /dev/null && return 0

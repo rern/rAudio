@@ -7,7 +7,7 @@ echo "\
 BB=${revision: -3:2}
 C=${revision: -4:1}" > $dirshm/cpuinfo
 
-# wifi - on-board or usb
+lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan
 wlandev=$( $dirsettings/networks.sh wlandevice )
 
 # pre-configure --------------------------------------------------------------
@@ -70,10 +70,7 @@ chown -R http:http $dirshm
 echo 'state="stop"' > $dirshm/status
 echo mpd > $dirshm/player
 
-lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
-
 [[ -e $dirsystem/ap ]] && ap=1
-
 if [[ $wlandev && ! $ap ]]; then
 	readarray -t wlanprofile <<< $( grep -L ^AutoConnect=false /var/lib/iwd/*.* 2> /dev/null )
 	if [[ $wlanprofile ]]; then
@@ -91,7 +88,7 @@ if [[ $wlandev && ! $ap ]]; then
 		[[ ! $ipaddress ]] && ipaddress=$( ipAddress )
 	fi
 fi
-for i in {0..5}; do
+for i in {0..5}; do # lan
 	ipaddress=$( ipAddress )
 	[[ $ipaddress ]] && break || sleep 1
 done
@@ -131,6 +128,10 @@ else
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
+# usb wlan || no wlan || not ap + not connected
+if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
+	rmmod brcmfmac_wcc brcmfmac &> /dev/null
+fi
 
 if [[ -e $dirsystem/btconnected ]]; then
 	readarray -t devices < $dirsystem/btconnected
@@ -174,10 +175,6 @@ elif [[ -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
-fi
-# usb wlan || no wlan || not ap + not connected
-if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
-	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
 touch $dirshm/startup

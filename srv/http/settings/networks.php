@@ -52,7 +52,7 @@ Note:
 <div id="divlan" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
-	  'title'  => 'LAN'
+	  'title'  => 'Wired LAN'
 	, 'status' => 'lan'
 	, 'button' => [ 'add lanadd' ]
 ] );
