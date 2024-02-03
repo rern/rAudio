@@ -134,6 +134,9 @@ fi
 if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
+if [[ $ipaddress && ! $wlanprofile && ! $ap ]]; then
+	systemctl stop iwd
+fi
 
 if [[ -e $dirsystem/btconnected ]]; then
 	readarray -t devices < $dirsystem/btconnected

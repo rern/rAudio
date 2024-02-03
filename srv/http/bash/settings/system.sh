@@ -612,6 +612,7 @@ wlan )
 		! lsmod | grep -q -m1 brcmfmac && modprobe brcmfmac
 		ip link set wlan0 up
 		echo wlan0 > $dirshm/wlan
+		systemctl start iwd
 		iw wlan0 set power_save off
 		[[ $APAUTO ]] && rm -f $dirsystem/wlannoap || touch $dirsystem/wlannoap
 		if [[ $REGDOM ]] && ! grep -q $REGDOM /etc/conf.d/wireless-regdom; then
