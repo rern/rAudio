@@ -42,6 +42,7 @@ listWlan() {
 			ssid=$( stringEscape $ssid )
 			if [[ $connected ]]; then
 				ipr=( $( ip r | grep -m1 ^default.*$wlandev ) )
+				[[ ! $ipr ]] && sleep 1 && ipr=( $( ip r | grep -m1 ^default.*$wlandev ) )
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
