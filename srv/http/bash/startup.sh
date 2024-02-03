@@ -115,6 +115,8 @@ if [[ $ipaddress ]]; then
 		fi
 		appendSortUnique $ipaddress $filesharedip
 	fi
+	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
+	$dirsettings/addons-data.sh &> /dev/null &
 	[[ -e $filewifi ]] && rm -f $filewifi
 else
 	if [[ $wlandev && ! $ap ]]; then
@@ -161,13 +163,6 @@ if [[ -e $dirsystem/volumeboot ]]; then
 	fi
 fi
 
-# after all sources connected ........................................................
-if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
-	$dirsettings/system.sh "hddsleep
-$( < $dirsystem/apm )
-CMD APM"
-fi
-
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	echo rescan > $dirmpd/updating
 	$dirbash/cmd.sh mpcupdate
@@ -178,6 +173,7 @@ elif [[ -e $dirmpd/listing ]]; then
 fi
 
 touch $dirshm/startup
+# ready ------------------------------------------------------------------------------
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
 	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
 fi
@@ -186,11 +182,11 @@ if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.ser
 	/boot/startup.sh
 fi
 
-if [[ $ipaddress ]]; then
-	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
-	$dirsettings/addons-data.sh &> /dev/null &
+if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
+	$dirsettings/system.sh "hddsleep
+$( < $dirsystem/apm )
+CMD APM"
 fi
-
 if [[ $notbackupfile ]]; then
 	notify restore 'Restore Settings' '<code>'$backupfile'</code> is not rAudio backup.' 10000
 fi
