@@ -8,13 +8,11 @@ echo $$ > $dirshm/pidnetworksscan
 if [[ $1 == wlan ]]; then
 	wlandev=$( < $dirshm/wlan )
 	ip link set $wlandev up
-
-	# ESSID:"NAME"
-	# Encryption key:on
-	# Quality=37/70  Signal level=-73 dBm --- Quality=0/100  Signal level=25/100
 	scan=$( iwlist $wlandev scan )
 	[[ ! $scan ]] && exit
-	
+	# ESSID:"NAME"
+	# Encryption key:on
+	# Quality=N/70  Signal level=-N dBm
 	scan=$( sed -E 's/^\s*|\s*$//g' <<< $scan \
 				| sed -E -n '/^Cell|^ESSID|^Encryption|^Quality/ {
 						s/^Cell.*/,{/
@@ -28,7 +26,6 @@ if [[ $1 == wlan ]]; then
 				| grep -E -v '^$|"ssid":""' \
 				| sed 's/$/}/' \
 				| sort )
-	
 	# omit saved profile
 	readarray -t profiles <<< $( ls -1p /var/lib/iwd | grep -v /$ | sed -E 's/.psk$|.open$//' )
 	if [[ $profiles ]]; then
