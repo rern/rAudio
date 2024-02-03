@@ -466,7 +466,7 @@ function scanWlan() {
 					var dbm    = '';
 					var signal = '';
 				}
-				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'+ ico( 'wifi'+ signal );
+				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'">'+ ico( 'wifi'+ signal );
 				htmlwl += dbm && dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' '+ ico( 'lock' );
 				if ( list.signal != 0 ) htmlwl += '<gr>'+ list.signal +'</gr>';
