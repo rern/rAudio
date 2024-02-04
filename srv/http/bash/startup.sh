@@ -130,7 +130,7 @@ else
 			ap=1
 		fi
 		[[ $ap ]] && touch $dirshm/apstartup
-		[[ -e $bootwifi ]] && mv $bootwifi{,X}
+		[[ -e $bootwifi ]] && mv "$bootwifi"{,X}
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
