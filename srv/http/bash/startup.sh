@@ -37,16 +37,16 @@ if [[ -e $backupfile ]]; then
 	fi
 fi
 
-filewifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
-if [[ $filewifi && $wlandev ]]; then
-	filename=${filewifi/*\/}
-	ssid=${filename%.*}
+bootwifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
+if [[ $bootwifi && $wlandev ]]; then
+	filename=${bootwifi/*\/}
+	bootwifissid=${filename%.*}
 	ext=${filename/*.}
-	profile=$( ssidProfilePath "$ssid" $ext )
-	cp "$filewifi" "$profile"
+	profile=$( ssidProfilePath "$bootwifissid" $ext )
+	cp "$bootwifi" "$profile"
 	passphrase=$( getVar Passphrase "$profile" ' ' )
 	if [[ $passphrase ]] && ! grep -q ^PreSharedKey "$profile"; then
-		presharedkey=$( wpa_passphrase "$ssid" $passphrase | sed -n '/^\s*psk=/ {s/.*=//; p}' )
+		presharedkey=$( wpa_passphrase "$bootwifissid" $passphrase | sed -n '/^\s*psk=/ {s/.*=//; p}' )
 		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" "$profile"
 	fi
 fi
@@ -75,17 +75,19 @@ if [[ $wlandev && ! $ap ]]; then
 	readarray -t wlanprofile <<< $( grep -L ^AutoConnect=false /var/lib/iwd/*.* 2> /dev/null )
 	if [[ $wlanprofile ]]; then
 		systemctl start iwd
+		sleep 1
 		for profile in "${wlanprofile[@]}"; do
 			filename=${profile/*\/}
 			ssid=${filename/.*}
-			! iwctlScan "$ssid" && continue
-			
-			grep -q ^Hidden "$profile" && hidden=-hidden
-			iwctl station $wlandev connect$hidden "$ssid"
-			sleep 1
-			if [[ $( iwgetid -r $wlandev ) ]]; then
-				[[ -e $filewifi ]] && rm -f "$filewifi"
-				break
+			[[ ${ssid:0:1} == = ]] && ssid=$( ssidHex2string $ssid )
+			if iwctlScan "$ssid"; then
+				grep -q ^Hidden "$profile" && hidden=-hidden
+				iwctl station $wlandev connect$hidden "$ssid"
+				sleep 1
+				if [[ $( iwgetid -r $wlandev ) ]]; then
+					[[ -e $bootwifi && $ssid == $bootwifissid ]] && rm -f "$bootwifi"
+					break
+				fi
 			fi
 		done
 	fi
@@ -127,7 +129,7 @@ else
 			ap=1
 		fi
 		[[ $ap ]] && touch $dirshm/apstartup
-		[[ -e $filewifi ]] && mv $filewifi{,X}
+		[[ -e $bootwifi ]] && mv $bootwifi{,X}
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap

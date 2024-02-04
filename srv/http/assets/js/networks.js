@@ -155,7 +155,7 @@ $( '.forget' ).on( 'click', function() {
 		, okcolor    : red
 		, ok         : () => {
 			notify( icon, ssid, 'Forget ...' );
-			bash( [ 'profileremove', ssid, 'CMD SSID' ] );
+			bash( [ 'profileforget', ssid, 'CMD SSID' ] );
 		}
 	} );
 } );

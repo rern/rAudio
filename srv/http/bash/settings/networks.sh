@@ -161,6 +161,10 @@ AutoConnect=false' >> "$file"
 	fi
 	pushRefreshWlan
 	;;
+profileforget )
+	iwctl known-networks "$SSID" forget
+	pushRefreshWlan
+	;;
 profileget )
 	data=$( cat "/var/lib/iwd/$SSID".* )
 	. <( grep -E '^Address|^AutoConnect|^Gateway|^Hidden|^Passphrase' <<< $data )
@@ -176,10 +180,6 @@ profileget )
 , "HIDDEN"     : '$Hidden'
 , "DISABLE"    : '$disable'
 }'
-	;;
-profileremove )
-	iwctl known-networks "$SSID" forget
-	pushRefreshWlan
 	;;
 statuslan )
 	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )

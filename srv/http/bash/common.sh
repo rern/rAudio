@@ -211,7 +211,7 @@ iwctlScan() {
 	wlandev=$( < $dirshm/wlan ) # global
 	ssid=$1
 	iwctl station $wlandev scan "$ssid"
-	for i in {0..9}; do
+	for i in {0..5}; do
 		list=$( iwctl station $wlandev get-networks | sed -e '1,4 d' | awk NF )
 		if [[ $list ]]; then
 			sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g; s/^\s\+>*\s\+//' <<< $list | grep -q "$ssid " && return 0
@@ -374,6 +374,14 @@ sshpassCmd() {
 		-o StrictHostKeyChecking=no \
 		root@$1 \
 		"${@:2}"
+}
+ssidHex2string() {
+	ssid=${1:1}
+	while (( ${#ssid} > 0 )); do
+		hex+="\x${ssid:0:2}"
+		ssid=${ssid:2}
+	done
+	echo -e $hex
 }
 ssidProfilePath() {
 	local path ext
