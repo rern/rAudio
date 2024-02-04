@@ -106,7 +106,7 @@ data='
 , "gateway"     : "'$gateway'"
 , "hostname"    : "'$( getContent $dirshm/avahihostname )'"
 , "ipeth"       : "'$ipeth'"
-, "ipsub"       : "'$( ipSub )'"
+, "ipsub"       : "'$( ipAddress sub )'"
 , "ipwl"        : "'$ipwl'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'

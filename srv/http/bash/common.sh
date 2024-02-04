@@ -37,6 +37,7 @@ fi
 #	k2=v2
 #	...
 appendSortUnique() {
+	local data file lines
 	data=$1
 	file=$2
 	[[ ! -e $file ]] && echo "$data" > $file && exit
@@ -47,7 +48,7 @@ $data"
 	awk NF <<< $lines | sort -u > $file
 }
 args2var() {
-	local argslast CMD_CFG_OFF CFG i keys kL k v conf
+	local argslast CFG CMD_CFG_OFF conf i k keys kL v
 	readarray -t args <<< $1
 	CMD=${args[0]}
 	argslast=${args[@]: -1}
@@ -198,12 +199,13 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	ip route get 1 | awk '{print $(NF-2);exit}'
-}
-ipSub() {
 	local ip
-	ip=$( ipAddress )
-	echo ${ip%.*}.
+	ip=$( ip r \
+			| grep ^default \
+			| sort \
+			| head -1 \
+			| awk '{print $(NF-2); exit}' )
+	[[ $1 ]] && echo ${ip%.*}. || echo $ip
 }
 ipOnline() {
 	ping -c 1 -w 1 $1 &> /dev/null && return 0
