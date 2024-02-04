@@ -449,6 +449,14 @@ function info( json ) {
 			param   = l[ 2 ] || {};
 			kv      = 'kv' in param ? param.kv : param; // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
 			colspan = param.colspan ? ' colspan="'+ param.colspan +'"' : '';
+/*			param = {
+				  kv       : { k: V, ... }
+				, colspan  : N
+				, disable  : T/F
+				, sameline : T/F
+				, suffix   : UNIT
+				, updn     : { step: N, min: N, max: N }
+			}*/
 			switch ( type ) {
 				case 'checkbox':
 					htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td'+ colspan +'>';
@@ -982,7 +990,7 @@ function infoPower() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
-		, message     : ico( 'raudio i-30 gr' ) +'&ensp; r A u d i o'
+		, message     : ico( 'raudio i-30 gr' ) +'<a style="font-weight: 300">&ensp; r A u d i o</a>'
 		, buttonlabel : ico( 'reboot' ) +'Reboot'
 		, buttoncolor : orange
 		, button      : () => infoPowerCommand( 'reboot' )
