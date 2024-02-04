@@ -78,14 +78,16 @@ if [[ $wlandev && ! $ap ]]; then
 		for profile in "${wlanprofile[@]}"; do
 			filename=${profile/*\/}
 			ssid=${filename/.*}
-			! iwctlScan "$SSID" && continue
+			! iwctlScan "$ssid" && continue
 			
 			grep -q ^Hidden "$profile" && hidden=-hidden
 			iwctl station $wlandev connect$hidden "$ssid"
 			sleep 1
-			[[ $( iwgetid -r $wlandev ) ]] && break
+			if [[ $( iwgetid -r $wlandev ) ]]; then
+				[[ -e $filewifi ]] && rm -f "$filewifi"
+				break
+			fi
 		done
-		[[ ! $ipaddress ]] && ipaddress=$( ipAddress )
 	fi
 fi
 for i in {0..5}; do # lan
@@ -117,7 +119,6 @@ if [[ $ipaddress ]]; then
 	fi
 	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
 	$dirsettings/addons-data.sh &> /dev/null &
-	[[ -e $filewifi ]] && rm -f $filewifi
 else
 	if [[ $wlandev && ! $ap ]]; then
 		if [[ $wlanprofile ]]; then
