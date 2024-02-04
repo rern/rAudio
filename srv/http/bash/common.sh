@@ -378,7 +378,7 @@ sshpassCmd() {
 ssidProfilePath() {
 	local path ext
 	path=/var/liv/iwd/
-	if [[ $1 =~ [^a-zA-Z0-9\ _-] ]]; then # hex encode - in command: $( echo -e $HEX )
+	if [[ $1 =~ [^a-zA-Z0-9\ _-] ]]; then
 		path+==$( echo -n "$1" \
 					| od -A n -t x1 \
 					| tr -d ' ' )
