@@ -72,6 +72,7 @@ echo mpd > $dirshm/player
 
 [[ -e $dirsystem/ap ]] && ap=1
 if [[ $wlandev && ! $ap ]]; then
+	ip link set $wlandev up
 	readarray -t wlanprofile <<< $( grep -L ^AutoConnect=false /var/lib/iwd/*.* 2> /dev/null )
 	if [[ $wlanprofile ]]; then
 		systemctl start iwd
@@ -82,7 +83,6 @@ if [[ $wlandev && ! $ap ]]; then
 			[[ ${ssid:0:1} == = ]] && ssid=$( ssidHex2string $ssid )
 			if iwctlScan "$ssid"; then
 				grep -q ^Hidden "$profile" && hidden=-hidden
-				killall iwctl &> /dev/null
 				iwctl station $wlandev connect$hidden "$ssid"
 				sleep 1
 				if [[ $( iwgetid -r $wlandev ) ]]; then
