@@ -13,14 +13,13 @@ if [[ $1 == wlan ]]; then
 	# ESSID:"NAME"
 	# Encryption key:on
 	# Quality=N/70  Signal level=-N dBm
-	scan=$( sed -E 's/^\s*|\s*$//g' <<< $scan \
+	scan=$( sed -E 's/^\s*|\s*$|\\x00//g' <<< $scan \
 				| sed -E -n '/^Cell|^ESSID|^Encryption|^Quality/ {
 						s/^Cell.*/,{/
 						s/^Quality.*level.(.*)/,"signal":"\1"/
 						s/^Encryption key:(.*)/,"encrypt":"\1"/
 						s/^ESSID:/,"ssid":/
-						s/\\x00//g
-						p}' \
+					p}' \
 				| tr -d '\n' \
 				| sed 's/{,/{/g; s/,{/\n&/g' \
 				| grep -E -v '^$|"ssid":""' \
