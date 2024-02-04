@@ -30,6 +30,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bash( [ 'bluetoothcommand.sh', 'pair', mac ] );
 } );
 $( '.wladd' ).on( 'click', function() {
+	delete V.profileget;
 	infoWiFi();
 } );
 $( '.wlscan' ).on( 'click', function() {
@@ -126,28 +127,12 @@ $( '.disconnect' ).on( 'click', function() {
 	info( {
 		  icon       : icon
 		, title      : 'Wi-Fi'
-		, list       : [
-			  [ 'SSID',       'text' ]
-			, [ 'Disconnect', 'checkbox' ]
-			, [ 'Disable',    'checkbox' ]
-		]
-		, footer     : S.ipeth ? '' : iconwarning +'Disconnect <wh>current connection</wh>'
-		, boxwidth   : 200
-		, values     : [ ssid, true, true ]
-		, beforeshow : () => {
-			$( '#infoList input' ).eq( 0 ).prop( 'disabled', true );
-			$( '#infoList input:checkbox' ).on( 'input', function() {
-				var $this = $( this );
-				var v     = infoVal();
-				$( '.infofooter' ).toggleClass( 'hide', ! v[ 1 ] );
-				$( '#infoOk' ).toggleClass( 'disabled', ! v[ 1 ] && ! v[ 2 ] )
-			} );
-		}
+		, message    : 'SSID: <wh>'+ ssid +'</wh>'
+		, footer     : footer( 'Disconnect' )
 		, okcolor    : orange
 		, ok         : () => {
-			var val = infoVal( 'array' );
 			notify( icon, ssid, 'Disconnect ...' );
-			bash( [ 'disconnect', ...val, 'CMD SSID DISCONNECT DISABLE' ] )
+			bash( [ 'disconnect', ssid, 'CMD SSID' ] )
 		}
 	} );
 } );
@@ -172,15 +157,13 @@ $( '.forget' ).on( 'click', function() {
 	info( {
 		  icon       : icon
 		, title      : 'Wi-Fi'
-		, list       : [ 'SSID', 'text' ]
-		, footer     : S.ipeth ? '' : iconwarning +'Forget <wh>current connection</wh>'
-		, values     : [ ssid ]
-		, beforeshow : () => $( '#infoList input' ).eq( 0 ).prop( 'disabled', true )
+		, message    : 'SSID: <wh>'+ ssid +'</wh>'
+		, footer     : footer( 'Forget' )
 		, oklabel    : ico( 'remove' ) +'Forget'
 		, okcolor    : red
 		, ok         : () => {
 			notify( icon, ssid, 'Forget ...' );
-			bash( [ 'profileremove', ssid, 'CMD SSID', ] );
+			bash( [ 'profileforget', ssid, 'CMD SSID' ] );
 		}
 	} );
 } );
@@ -212,6 +195,17 @@ function bluetoothInfo( mac ) {
 function connectWiFi( data ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
+	if ( 'profileget' in V ) {
+		var values = jsonClone( data );
+		delete values.DISABLE;
+		delete V.profileget.DISABLE;
+		if ( Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' ) ) {
+			notify( icon, title, data.DISABLE ? 'Disable ...' : 'Enable ...' );
+			bash( [ 'profiledisable', data.SSID, data.DISABLE, 'CMD SSID DISABLE' ] );
+			return
+		}
+	}
+	
 	clearTimeout( V.timeoutscan );
 	if ( 'ADDRESS' in data ) { // static
 		S.listeth ? notify( icon, title, 'Change ...' ) : reconnect( icon, data.ADDRESS, 5 );
@@ -235,6 +229,9 @@ function connectWiFi( data ) {
 		}
 	} );
 }
+function footer( action ) {
+	return V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>'+ action +' current connection</wh>'
+}
 function infoAccesspoint() {
 	info( {
 		  icon    : 'wifi'
@@ -244,7 +241,7 @@ function infoAccesspoint() {
 }
 function infoLan() {
 	var icon   = 'lan';
-	var title  = 'Edit LAN Connection';
+	var title  = ( S.listeth ? 'Edit' : 'Add' ) +' LAN Connection';
 	var static = S.listeth.static;
 	info( {
 		  icon         : icon
@@ -253,8 +250,9 @@ function infoLan() {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
+		, footer       : footer( 'This is' )
 		, focus        : 0
-		, values       : { IP: S.ipeth, GATEWAY: S.listeth.gateway }
+		, values       : S.listeth ? { IP: S.listeth.ip, GATEWAY: S.listeth.gateway } : { IP: S.ipsub, GATEWAY: S.gateway }
 		, checkchanged : true
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
@@ -294,6 +292,7 @@ function infoWiFi( v ) {
 		, [ 'Gateway',      'text' ]
 		, [ 'WEP Protocol', 'checkbox' ]
 		, [ 'Hidden SSID',  'checkbox' ]
+		, [ 'Disable',      'checkbox' ]
 	];
 	var default_v = {
 		  dhcp   : { IP: 'dhcp',   ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
@@ -325,7 +324,7 @@ function infoWiFi( v ) {
 		values.ADDRESS = S.ipwl || S.ipsub;
 		values.GATEWAY = S.gateway || S.ipsub;
 	}
-	var checkchanged = V.profileget && Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' )
+	var checkchanged = 'profileget' in V && Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' );
 	info( {
 		  icon         : 'wifi'
 		, title        : v ? 'Saved Connection' : 'Add Connection'
@@ -333,6 +332,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
+		, footer       : footer( 'This is' )
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
@@ -390,8 +390,8 @@ function renderPage() {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
 		var htmlwl = '';
-		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.ipeth
-								 +'<gr>&ensp;&raquo;&ensp;'+ S.listeth.gateway +'</gr></li>';
+		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.ip
+								 +'&ensp;<gr>&raquo;&ensp;'+ S.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
@@ -431,11 +431,10 @@ function renderWlan() {
 		S.listwl.forEach( list => {
 			if ( list.ip ) {
 				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
-				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
-						 + ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
-						 +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
+				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'">'+ ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
+						 +'&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
-				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•&ensp;</gr>'+ list.ssid +'</li>';
+				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•</gr>&ensp;'+ list.ssid +'</li>';
 			}
 		} );
 	}

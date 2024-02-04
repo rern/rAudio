@@ -38,9 +38,9 @@ if [[ -e $backupfile ]]; then
 	fi
 fi
 
-filewifi=/boot/wifi
-if [[ -e $filewifi && $wlandev ]]; then
-	wifi=$( sed 's/\r//; s/\$/\\$/g' "$filewifi" ) # remove windows \r and escape $
+bootwifi=/boot/wifi
+if [[ -e $bootwifi && $wlandev ]]; then
+	wifi=$( sed 's/\r//; s/\$/\\$/g' "$bootwifi" ) # remove windows \r and escape $
 	ssid=$( getVar ESSID <<< $wifi )
 	key=$( getVar Key <<< $wifi )
 	profile="\
@@ -108,7 +108,7 @@ if [[ $ipaddress ]]; then
 		fi
 		appendSortUnique $ipaddress $filesharedip
 	fi
-	[[ -e $filewifi ]] && rm -f "$filewifi"
+	[[ -e $bootwifi ]] && rm -f "$bootwifi"
 else
 	if [[ $wlandev && ! $ap ]]; then
 		if [[ $wlanprofile ]]; then
@@ -117,7 +117,7 @@ else
 			ap=1
 		fi
 		[[ $ap ]] && touch $dirshm/apstartup
-		[[ -e $filewifi ]] && mv $filewifi{,X}
+		[[ -e $bootwifi ]] && mv $bootwifi{,X}
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
