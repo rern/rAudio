@@ -82,6 +82,7 @@ if [[ $wlandev && ! $ap ]]; then
 			[[ ${ssid:0:1} == = ]] && ssid=$( ssidHex2string $ssid )
 			if iwctlScan "$ssid"; then
 				grep -q ^Hidden "$profile" && hidden=-hidden
+				killall iwctl &> /dev/null
 				iwctl station $wlandev connect$hidden "$ssid"
 				sleep 1
 				if [[ $( iwgetid -r $wlandev ) ]]; then
