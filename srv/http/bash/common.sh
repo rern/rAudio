@@ -375,16 +375,13 @@ sshpassCmd() {
 		root@$1 \
 		"${@:2}"
 }
-ssid2hex() {
-	echo -n "$1" \
-		| od -A n -t x1 \
-		| sed 's/ //g'
-}
 ssidProfilePath() {
 	local path ext
 	path=/var/liv/iwd/
 	if [[ $1 =~ [^a-zA-Z0-9\ _-] ]]; then # hex encode - in command: $( echo -e $HEX )
-		path+==$( ssid2hex "$1" )
+		path+==$( echo -n "$1" \
+					| od -A n -t x1 \
+					| tr -d ' ' )
 	else
 		path+=$1
 	fi
