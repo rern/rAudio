@@ -13,6 +13,14 @@ if [[ $1 == wlan ]]; then
 	# ESSID:"NAME"
 	# Encryption key:on
 	# Quality=N/70  Signal level=-N dBm
+	readarray -t lines <<< $( grep '\\x' <<< $scan ) # ssid with hex encode characters
+	if [[ $lines ]]; then
+		for line in "${lines[@]}"; do
+			hex=$( sed -E 's/^.*ESSID:"(.*)"$/\1/' <<< $line )
+			ssid=$( echo -e $hex )
+			scan=$( sed "s/${line//\\/\\\\}/ESSID:\"$ssid\"/" <<< $scan )
+		done
+	fi
 	scan=$( sed -E 's/^\s*|\s*$|\\x00//g' <<< $scan \
 				| sed -E -n '/^Cell|^ESSID|^Encryption|^Quality/ {
 						s/^Cell.*/,{/

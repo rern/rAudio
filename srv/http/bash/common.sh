@@ -375,18 +375,21 @@ sshpassCmd() {
 		root@$1 \
 		"${@:2}"
 }
+ssid2hex() {
+	echo -n "$1" \
+		| od -A n -t x1 \
+		| sed 's/ //g'
+}
 ssidProfilePath() {
-	local path
+	local path ext
 	path=/var/liv/iwd/
-	if [[ "$1" =~ [^a-zA-Z0-9\ _-] ]]; then # hex encode - in command: $( echo -e $HEX )
-		path+=$( echo -n "$1" \
-					| tr -d '\n' \
-					| od -A n -t x1 \
-					| sed 's/ //g; s/^/=/' )
+	if [[ $1 =~ [^a-zA-Z0-9\ _-] ]]; then # hex encode - in command: $( echo -e $HEX )
+		path+==$( ssid2hex "$1" )
 	else
 		path+=$1
 	fi
-	echo "$path.$2"
+	[[ $2 ]] && ext=$2 || ext=psk
+	echo "$path.$ext"
 }
 statePlay() {
 	grep -q -m1 '^state.*play' $dirshm/status && return 0
