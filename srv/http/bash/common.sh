@@ -207,12 +207,12 @@ ipOnline() {
 	ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 iwctlScan() {
-	local list ssid
+	local found list ssid
 	wlandev=$( < $dirshm/wlan ) # global
 	ssid=$1
 	iwctl station $wlandev scan "$ssid"
-	for i in {0..5}; do
-		list=$( iwctl station $wlandev get-networks | sed -e '1,4 d' | awk NF )
+	for i in {0..9}; do
+		list=$( iwctl station $wlandev get-networks 2> /dev/null | sed -e '1,4 d' | awk NF )
 		if [[ $list ]]; then
 			sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g; s/^\s\+>*\s\+//' <<< $list | grep -q "$ssid " && return 0
 		fi
