@@ -188,7 +188,7 @@ function connectWiFi( data ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
 	if ( 'profileget' in V ) {
-		var values   = jsonClone( data );
+		var values = jsonClone( data );
 		delete values.DISABLE;
 		delete V.profileget.DISABLE;
 		if ( Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' ) ) {
@@ -246,9 +246,9 @@ function infoLan() {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
+		, footer       : footer( 'This is' )
 		, focus        : 0
 		, values       : S.listeth ? { IP: S.listeth.ip, GATEWAY: S.listeth.gateway } : { IP: S.ipsub, GATEWAY: S.gateway }
-		, footer       : footer( 'This is' )
 		, checkchanged : true
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
@@ -310,8 +310,8 @@ function infoWiFi( v ) {
 		list.splice( 3, 2 );
 	} else {
 		var tabfn = () => {
-			var val  = infoVal();
-			val.IP = 'dhcp';
+			var val = infoVal();
+			val.IP  = 'dhcp';
 			infoWiFi( val );
 		}
 		values.ADDRESS = S.ipwl || S.ipsub;
@@ -389,7 +389,7 @@ function renderPage() {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
 		var htmlwl = '';
-		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.ipeth
+		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.ip
 								 +'&ensp;<gr>&raquo;&ensp;'+ S.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
 		$( '#divlan' ).removeClass( 'hide' );

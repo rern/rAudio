@@ -974,7 +974,7 @@ function infoWidth() {
 	} else {
 		var boxW   = 230;
 	}
-	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).parent().css( 'width', boxW );
+	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).parent().css( 'width', boxW +'px' );
 	if ( $( '#infoList select' ).length ) {
 		selectSet(); // render select to set width
 		$( '#infoList .select2-container' ).attr( 'style', 'width: '+ boxW +'px !important' );
@@ -1049,7 +1049,6 @@ function jsonChanged( a, b ) {
 				return false
 			}
 		} else {
-			console.log(k, v, b[ k ])
 			if ( v !== b[ k ] ) {
 				changed = true;
 				return false
