@@ -9,7 +9,6 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan
 wlandev=$( $dirsettings/networks.sh wlandevice )
-[[ $wlandev ]] && iwctl station $wlandev scan
 # pre-configure --------------------------------------------------------------
 [[ -e /boot/expand ]] && $dirbash/startup-preconfig.sh expandpartition
 
@@ -42,7 +41,10 @@ for i in {0..5}; do # lan
 	ipaddress=$( ipAddress )
 	[[ $ipaddress ]] && break || sleep 1
 done
+
+iwdprofile=$( ls -1p /var/lib/iwd | grep -v /$ )
 [[ -e $dirsystem/ap ]] && ap=1
+
 if [[ $ipaddress ]]; then
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
@@ -71,7 +73,7 @@ if [[ $ipaddress ]]; then
 	[[ -e $bootwifi ]] && rm "$bootwifi"
 else
 	if [[ $wlandev && ! $ap ]]; then
-		if [[ $wlanprofile ]]; then
+		if [[ $iwdprofile ]]; then
 			[[ ! -e $dirsystem/wlannoap ]] && ap=1
 		else
 			ap=1
@@ -80,7 +82,7 @@ else
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
-if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
+if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $iwdprofile && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null # usb wlan || no wifi || not ap
 fi
 ! rfkill | grep -q wlan && systemctl stop iwd

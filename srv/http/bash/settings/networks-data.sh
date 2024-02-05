@@ -35,7 +35,7 @@ fi
 wlandev=$( < $dirshm/wlan )
 listWlan() {
 	local connected dbm ipr notconnected profiles profile ssid
-	readarray -t profiles <<< $( ls -1 /var/lib/iwd/*.* 2> /dev/null | sed -E 's|.*/||; s/.psk|.open//' )
+	readarray -t profiles <<< $( ls -1p /var/lib/iwd | grep -v /$ | sed -E 's/.psk$|.open$//' )
 	if [[ $profiles ]]; then
 		for ssid in "${profiles[@]}"; do
 			[[ $( iwgetid -r $wlandev ) == $ssid ]] && connected=1 || connected=
