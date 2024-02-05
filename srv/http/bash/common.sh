@@ -375,14 +375,6 @@ sshpassCmd() {
 		root@$1 \
 		"${@:2}"
 }
-ssidHex2string() {
-	ssid=${1:1}
-	while (( ${#ssid} > 0 )); do
-		hex+="\x${ssid:0:2}"
-		ssid=${ssid:2}
-	done
-	echo -e $hex
-}
 ssidProfilePath() {
 	local path ext
 	path=/var/lib/iwd/

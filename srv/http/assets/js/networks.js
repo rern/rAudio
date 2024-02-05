@@ -208,8 +208,7 @@ function connectWiFi( data ) {
 	}
 	var keys    = Object.keys( data );
 	var values  = Object.values( data );
-	var newssid = ! ( 'profileget' in V );
-	bash( [ cmd, newssid, ...values, 'CMD NEW '+ keys.join( ' ' ) ], error => {
+	bash( [ cmd, ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );

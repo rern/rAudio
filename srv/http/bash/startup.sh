@@ -9,47 +9,15 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan
 wlandev=$( $dirsettings/networks.sh wlandevice )
-
+[[ $wlandev ]] && iwctl station $wlandev scan
 # pre-configure --------------------------------------------------------------
-if [[ -e /boot/expand ]]; then # run once
-	id0=$( < /etc/machine-id )
-	rm /etc/machine-id
-	systemd-machine-id-setup
-	id1=$( < /etc/machine-id )
-	mv /var/log/journal/{$id0,$id1}
-	rm /boot/expand
-	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	[[ ${partition:0:7} == /dev/sd ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
-	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
-		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
-		partprobe $dev
-		resize2fs $partition
-	fi
-fi
+[[ -e /boot/expand ]] && $dirbash/startup-preconfig.sh expandpartition
 
-backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
-if [[ -e $backupfile ]]; then
-	mv "$backupfile" $dirshm/backup.gz
-	$dirsettings/system-datarestore.sh
-	if [[ $? != 0 ]]; then
-		notbackupfile=1
-		mv $dirshm/backup.gz "${backupfile}X"
-	fi
-fi
+backupfile=$( ls /boot/*.gz 2> /dev/null )
+[[ $backupfile ]] && $dirbash/startup-preconfig.sh restoresettings
 
-bootwifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
-if [[ $bootwifi && $wlandev ]]; then
-	filename=${bootwifi/*\/}
-	bootwifissid=${filename%.*}
-	ext=${filename/*.}
-	profile=$( ssidProfilePath "$bootwifissid" $ext )
-	cp "$bootwifi" "$profile"
-	passphrase=$( getVar Passphrase "$profile" ' ' )
-	if [[ $passphrase ]] && ! grep -q ^PreSharedKey "$profile"; then
-		presharedkey=$( wpa_passphrase "$bootwifissid" $passphrase | sed -n '/^\s*psk=/ {s/.*=//; p}' )
-		sed -i "/^Passphrase/ i\PreSharedKey=$presharedkey" "$profile"
-	fi
-fi
+bootwifi=$( ls /boot/*.{psk,open} 2> /dev/null )
+[[ $wlandev && $bootwifi ]] && $dirbash/startup-preconfig.sh wificonnect
 # ----------------------------------------------------------------------------
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
@@ -70,33 +38,11 @@ chown -R http:http $dirshm
 echo 'state="stop"' > $dirshm/status
 echo mpd > $dirshm/player
 
-[[ -e $dirsystem/ap ]] && ap=1
-if [[ $wlandev && ! $ap ]]; then
-	ip link set $wlandev up
-	readarray -t wlanprofile <<< $( grep -L ^AutoConnect=false /var/lib/iwd/*.* 2> /dev/null )
-	if [[ $wlanprofile ]]; then
-		systemctl start iwd
-		sleep 1
-		for profile in "${wlanprofile[@]}"; do
-			filename=${profile/*\/}
-			ssid=${filename/.*}
-			[[ ${ssid:0:1} == = ]] && ssid=$( ssidHex2string $ssid )
-			if iwctlScan "$ssid"; then
-				grep -q ^Hidden "$profile" && hidden=-hidden
-				iwctl station $wlandev connect$hidden "$ssid"
-				sleep 1
-				if [[ $( iwgetid -r $wlandev ) ]]; then
-					[[ -e $bootwifi && $ssid == $bootwifissid ]] && rm -f "$bootwifi"
-					break
-				fi
-			fi
-		done
-	fi
-fi
 for i in {0..5}; do # lan
 	ipaddress=$( ipAddress )
 	[[ $ipaddress ]] && break || sleep 1
 done
+[[ -e $dirsystem/ap ]] && ap=1
 if [[ $ipaddress ]]; then
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
@@ -122,6 +68,7 @@ if [[ $ipaddress ]]; then
 	fi
 	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
 	$dirsettings/addons-data.sh &> /dev/null &
+	[[ -e $bootwifi ]] && rm "$bootwifi"
 else
 	if [[ $wlandev && ! $ap ]]; then
 		if [[ $wlanprofile ]]; then
@@ -130,13 +77,13 @@ else
 			ap=1
 		fi
 		[[ $ap ]] && touch $dirshm/apstartup
-		[[ -e $bootwifi ]] && mv "$bootwifi"{,X}
 	fi
 fi
 [[ $ap ]] && $dirsettings/features.sh iwctlap
 if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
-	rmmod brcmfmac_wcc brcmfmac &> /dev/null # usb wlan || no wlan || not ap + not connected
+	rmmod brcmfmac_wcc brcmfmac &> /dev/null # usb wlan || no wifi || not ap
 fi
+! rfkill | grep -q wlan && systemctl stop iwd
 
 if [[ -e $dirsystem/btconnected ]]; then
 	readarray -t devices < $dirsystem/btconnected
