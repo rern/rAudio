@@ -39,6 +39,16 @@ $( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
 <bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		;;
+	iwd )
+		fileconf=/etc/iwd/main.conf
+		wlandev=$( < $dirshm/wlan )
+		conf="\
+<bll># ifconfig $wlandev</bll>
+$( ifconfig $wlandev | grep -E -v 'RX|TX')
+
+<bll># iwconfig $wlandev</bll>
+$( iwconfig $wlandev | awk NF )"
+		;;
 	localbrowser )
 		fileconf=$dirsystem/localbrowser.conf
 		PKG=firefox

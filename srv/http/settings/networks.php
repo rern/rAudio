@@ -36,7 +36,7 @@ echo $html;
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
-	, 'status' => 'wl'
+	, 'status' => 'iwd'
 	, 'button' => [ 'add wladd', 'search wlscan' ]
 ] );
 ?>

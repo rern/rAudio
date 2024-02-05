@@ -192,15 +192,6 @@ statuswebui )
 <bll># avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print \$7\": \"\$8}'</bll>
 $( avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print $7": "$8}' )"
 	;;
-statuswl )
-	wlandev=$( < $dirshm/wlan )
-	echo "\
-<bll># ifconfig $wlandev</bll>
-$( ifconfig $wlandev | grep -E -v 'RX|TX')
-
-<bll># iwconfig $wlandev</bll>
-$( iwconfig $wlandev | awk NF )"
-	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
