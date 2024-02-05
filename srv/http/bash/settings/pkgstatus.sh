@@ -40,7 +40,6 @@ $( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		;;
 	iwd )
-		fileconf=/etc/iwd/main.conf
 		wlandev=$( < $dirshm/wlan )
 		conf="\
 <bll># ifconfig $wlandev</bll>
