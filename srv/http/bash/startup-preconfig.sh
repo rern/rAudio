@@ -56,7 +56,6 @@ $Passphrase
 $Hidden
 CMD SSID PASSPHRASE HIDDEN"
 	fi
-	[[ $( iwgetid -r $wlandev ) ]] && rm "$bootwifi" || mv "$bootwifi"{,X}
 	;;
 	
 esac
