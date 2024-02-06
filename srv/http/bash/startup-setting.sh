@@ -28,7 +28,7 @@ restoresettings )
 		mv $dirshm/backup.gz "${backupfile}X"
 	fi
 	;;
-bootwificonnect )
+wificonnect )
 	. /boot/wifi
 	if grep ^ESSID /boot/wifi; then # previous release
 		if [[ $ESSID ]]; then

@@ -11,12 +11,12 @@ lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan
 wlandev=$( $dirsettings/networks.sh wlandevice )
 
 # pre-configure --------------------------------------------------------------
-[[ -e /boot/expand ]] && $dirbash/startup-preconfig.sh expandpartition
+[[ -e /boot/expand ]] && $dirbash/startup-setting.sh expandpartition
 
 backupfile=$( ls /boot/*.gz 2> /dev/null )
-[[ $backupfile ]] && $dirbash/startup-preconfig.sh restoresettings
+[[ $backupfile ]] && $dirbash/startup-setting.sh restoresettings
 
-[[ $wlandev && -e /boot/wifi ]] && $dirbash/startup-preconfig.sh bootwificonnect
+[[ $wlandev && -e /boot/wifi ]] && $dirbash/startup-setting.sh wificonnect
 # ----------------------------------------------------------------------------
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
