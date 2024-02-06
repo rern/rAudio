@@ -29,20 +29,25 @@ restoresettings )
 	fi
 	;;
 bootwificonnect )
+	. /boot/wifi
 	if grep ^ESSID /boot/wifi; then # previous release
-		data="connect
+		if [[ $ESSID ]]; then
+			SSID=$ESSID
+			data="connect
 $SSID
-$Passphrase
+$Key
 CMD SSID PASSPHRASE"
+		fi
 	else
-		data=$( sed -e '1 i\connect
-' -e '$ a\CMD SSID PASSPHRASE ADDRESS GATEWAY HIDDEN
-' -e '/^#\|^$/ d
-' -e 's/[^=]*=//
-' /boot/wifi )
+		if [[ $SSID ]]; then
+			data=$( echo "connect
+$( sed -n '/^SSID/,/Hidde/ p' /boot/wifi )
+CMD SSID PASSPHRASE ADDRESS GATEWAY HIDDEN" \
+	| sed 's/[^=]*=//' )
+		fi
 	fi
-	$dirsettings/networks.sh "$data"
-	[[ $( iwgetid -r $( < $dirshm/wlan ) ) ]] && rm /boot/wifi || mv /boot/wifi{,X}
+	[[ $data ]] && $dirsettings/networks.sh "$data"
+	[[ $SSID == $( iwgetid -r $( < $dirshm/wlan ) ) ]] && rm /boot/wifi || mv /boot/wifi{,X}
 	;;
 	
 esac
