@@ -200,7 +200,7 @@ function connectWiFi( data ) {
 	
 	clearTimeout( V.timeoutscan );
 	if ( V.profileget && V.li.data( 'ip' ) === location.hostname ) {
-		reconnect( icon, data.ADDRESS, 5 );
+		reconnect( data.ADDRESS || S.hostname );
 	} else {
 		notify( icon, title, V.profileget ? 'Change ...' : 'Connect ...' );
 	}
@@ -252,27 +252,23 @@ function infoLan() {
 		, buttonlabel  : static ? ico( 'undo' ) +'DHCP' : ''
 		, button       : static ? () => {
 			bash( [ 'lanedit' ] );
-			reconnect( icon, S.hostname, 10 );
+			reconnect( S.hostname );
 		} : ''
-		, ok           : () => infoLanSet( infoVal() )
-	} );
-}
-function infoLanSet( v ) {
-	var icon = 'lan';
-	var ip   = v.IP;
-	bash( [ 'lanedit', ...Object.values( v ), 'CMD '+ Object.keys( v ).join( ' ' ) ], avail => {
-		if ( avail == -1 ) {
-			clearInterval( V.interval );
-			clearTimeout( V.timeout );
-			bannerHide();
-			info( {
-				  icon    : icon
-				, title   : 'Duplicate IP'
-				, message : 'IP <wh>'+ ip +'</wh> already in use.'
-				, ok      : infoLan
+		, ok           : () => {
+			var val = infoVal();
+			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], avail => {
+				if ( avail == -1 ) {
+					bannerHide();
+					info( {
+						  icon    : icon
+						, title   : 'Duplicate IP'
+						, message : 'IP <wh>'+ val.ADDRESS +'</wh> already in use.'
+						, ok      : infoLan
+					} );
+				} else {
+					reconnect( val.ADDRESS );
+				}
 			} );
-		} else {
-			reconnect( icon, ip, 3 );
 		}
 	} );
 }
@@ -343,17 +339,11 @@ function psOnClose() {
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
 }
-function reconnect( icon, ip, delay ) {
+function reconnect( ip ) {
 	loader();
-	notify( icon, 'IP Address', 'Change to '+ ip +' in <a>'+ delay +'</a>s ...' );
-	var i      = delay;
-	V.interval = setInterval( () => {
-		i--
-		i > 0 ? $( '#bannerMessage a' ).text( i ) : clearInterval( V.interval );
-	}, 1000 );
-	V.timeout  = setTimeout( () => {
-		location.href = 'http://'+ ip +'/settings.php?p=networks';
-	}, delay * 1000 );
+	notify( 'wifi blink', 'IP Changed', 'http://'+ ip, -1 );
+	ws.close();
+	setTimeout( websocketReconnect, 3000 );
 }
 function renderBluetooth() {
 	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).trigger( 'click' );
