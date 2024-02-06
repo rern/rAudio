@@ -14,7 +14,7 @@ wlandev=$( $dirsettings/networks.sh wlandevice )
 [[ -e /boot/expand ]] && $dirbash/startup-setting.sh expandpartition
 
 backupfile=$( ls /boot/*.gz 2> /dev/null )
-[[ $backupfile ]] && $dirbash/startup-setting.sh restoresettings
+[[ $backupfile ]] && $dirbash/startup-setting.sh restoredata
 
 [[ $wlandev && -e /boot/wifi ]] && $dirbash/startup-setting.sh wificonnect
 # ----------------------------------------------------------------------------

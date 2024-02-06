@@ -19,7 +19,7 @@ expandpartition )
 		resize2fs $partition
 	fi
 	;;
-restoresettings )
+restoredata )
 	backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
 	mv "$backupfile" $dirshm/backup.gz
 	$dirsettings/system-datarestore.sh
