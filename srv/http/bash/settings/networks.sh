@@ -16,14 +16,19 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	else
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
-	existing=$( ls /var/lib/iwd/*.backup 2> /dev/null )
+	profile=$( ls "/var/lib/iwd/$SSID".* )
+	backup=$( ls /var/lib/iwd/*.backup 2> /dev/null )
 	if [[ $( iwgetid -r $wlandev ) ]]; then
 		avahi-daemon --kill # flush cache > auto restart
-		[[ -e $existing ]] && rm "$existing"
+		if [[ $DISABLE == true ]]; then
+			! grep -q '^\[Settings]' "$profile" && echo '[Settings]' >> "$profile"
+			sed -i '/^\[Settings/ a\AutoConnect=false' "$profile"
+		fi
+		[[ -e $backup ]] && rm "$existing"
 	else
-		rm -f "/var/lib/iwd/$SSID".*
-		if [[ -e $existing ]]; then
-			mv "$existing"{.backup,}
+		rm -f "$profile"
+		if [[ -e $backup ]]; then
+			mv "$backup"{.backup,}
 			grep -q ^Hidden "$profile" && hidden=-hidden || hidden=
 			iwctl station $wlandev connect$hidden "$SSID"
 		fi
@@ -64,33 +69,17 @@ $info"
 connect )
 	! iwctlScan "$SSID" && echo -1 && exit
 	
-	profile=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
-	[[ $profile ]] && cp "$profile"{,.backup}
-	killProcess networksscan
-	iwctlConnect
-	;;
-connectstatic )
-	! iwctlScan "$SSID" && echo -1 && exit
-	
 	existing=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
 	[[ -e $existing ]] && cp "$existing"{,.backup}
-	[[ $PASSPHRASE ]] && ext=psk || ext=open
-	profile=$( ssidProfilePath "$SSID" $ext )
-	data+='
+	if [[ $ADDRESS ]]; then # static ip
+		[[ $PASSPHRASE ]] && ext=psk || ext=open
+		profile=$( ssidProfilePath "$SSID" $ext )
+		echo "
 [IPv4]
-Address='$ADDRESS'
-Gateway='$GATEWAY
-	if [[ $HIDDEN == true ]]; then
-		settings='
-Hidden=true'
-		hidden=-hidden
+Address=$ADDRESS
+Gateway=$GATEWAY" > "$profile"
 	fi
-	[[ $DISABLE == true ]] && settings+='
-AutoConnect=false'
-	[[ $settings ]] && data+="
-[Settings]
-$settings"
-	echo "$data" > "$profile"
+	killProcess networksscan
 	iwctlConnect
 	;;
 disconnect )

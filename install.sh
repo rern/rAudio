@@ -4,6 +4,24 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240205
+sed -i -E 's/^(EnableNetworkConfiguration=)true/\1false/' /etc/iwd/main.conf
+
+ssidconnected=$( $( iwgetid -r $( < $dirshm/wlan ) ) )
+if [[ $ssidconnected ]]; then
+	. "/etc/netctl/$ssidconnected"
+	echo "
+SSID=$ssidconnected
+Passphrase=$key
+Address=${Address:0:-3}
+Gateway=$Gateway
+Hidden=$( [[ $Hidden == on ]] && echo true )" > /boot/wifi
+	netctl disable "$ssidconnected"
+fi
+rm -f /etc/netctl/* &> /dev/null
+
+systemctl enable iwd
+
 # 20240122
 file=$dirshm/avahihostname
 [[ ! -e $file ]] && avahi-resolve -a4 $( ipAddress ) | awk '{print $NF}' > $file
@@ -126,42 +144,3 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
-
-# 20240205
-sed -i -E 's/^(EnableNetworkConfiguration=)true/\1false/' /etc/iwd/main.conf
-
-readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
-if [[ $profiles ]]; then
-	for ssid in "${profiles[@]}"; do
-		data=
-		. <( grep = "/etc/netctl/$ssid" )
-		if [[ $Key ]]; then
-			presharedkey=$( wpa_passphrase "$ssid" $passphrase | sed -n '/^\s*psk=/ {s/.*=//; p}' )
-			data+='
-[Security]
-PreSharedKey='$presharedkey'
-Passphrase="'$Key'"'
-			ext=psk
-		else
-			ext=open
-		fi
-		[[ $Hidden ]] && data+='
-[Settings]
-Hidden=true'
-		[[ $Address ]] && data+='
-[IPv4]
-Address='${Address:0:-3}'
-Gateway='$Gateway
-		. $dirbash/common.sh
-		profile=$( ssidProfilePath "$ESSID" $ext )
-		awk NF <<< "$data" > "$profile"
-		if [[ $( netctl is-enabled "$ssid" ) == enabled ]]; then
-			netctl disable "$ESSID" &> /dev/null
-			mv "$profile" /boot
-		fi
-	done
-	rm -f /etc/netctl/* /boot/wifi0 &> /dev/null
-fi
-
-# 20240129
-systemctl enable iwd

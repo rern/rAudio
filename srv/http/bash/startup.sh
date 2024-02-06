@@ -16,8 +16,7 @@ wlandev=$( $dirsettings/networks.sh wlandevice )
 backupfile=$( ls /boot/*.gz 2> /dev/null )
 [[ $backupfile ]] && $dirbash/startup-preconfig.sh restoresettings
 
-bootwifi=$( ls /boot/*.{psk,open} 2> /dev/null )
-[[ $wlandev && $bootwifi ]] && $dirbash/startup-preconfig.sh bootwificonnect
+[[ $wlandev && -e /boot/wifi ]] && $dirbash/startup-preconfig.sh bootwificonnect
 # ----------------------------------------------------------------------------
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo

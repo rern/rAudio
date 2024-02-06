@@ -29,33 +29,19 @@ restoresettings )
 	fi
 	;;
 bootwificonnect )
-	bootwifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
-	filename=${bootwifi/*\/}
-	ssid=${filename%.*}
-	. <( grep -v '^\[' "$bootwifi" )
-	if [[ ${ssid:0:1} == = ]]; then
-		ssid=${ssid:1}
-		while (( ${#ssid} > 0 )); do
-			hex+="\x${ssid:0:2}"
-			ssid=${ssid:2}
-		done
-		ssid=$( echo -e $hex )
-	fi
-	if [[ $Address ]]; then
-		$dirsettings/networks.sh "connectstatic
-$ssid
+	if grep ^ESSID /boot/wifi; then # previous release
+		data="connect
+$SSID
 $Passphrase
-$Address
-$Gateway
-$Hidden
-CMD SSID PASSPHRASE ADDRESS GATEWAY HIDDEN"
+CMD SSID PASSPHRASE"
 	else
-		$dirsettings/networks.sh "connect
-$ssid
-$Passphrase
-$Hidden
-CMD SSID PASSPHRASE HIDDEN"
+		data=$( sed -e '1 i\connect
+' -e '$ a\CMD SSID PASSPHRASE ADDRESS GATEWAY HIDDEN
+' -e '/^#\|^$/ d
+' -e 's/[^=]*=//
+' /boot/wifi )
 	fi
+	$dirsettings/networks.sh "$data"
 	;;
 	
 esac
