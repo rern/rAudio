@@ -26,9 +26,9 @@ backupfile=$( ls /boot/*.gz 2> /dev/null )
 [[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
 
 filebrightness=/sys/class/backlight/rpi_backlight/brightness
-if [[ -e $filebrightness ]]; then
+if [[ -e $filebrightness && -e $dirsystem/brightness ]]; then
 	chmod 666 $filebrightness
-	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $filebrightness
+	cat $dirsystem/brightness > $filebrightness
 fi
 
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
@@ -37,7 +37,7 @@ chown -R http:http $dirshm
 echo 'state="stop"' > $dirshm/status
 echo mpd > $dirshm/player
 
-for i in {0..5}; do # lan
+for i in {0..5}; do
 	ipaddress=$( ipAddress )
 	[[ $ipaddress ]] && break || sleep 1
 done
