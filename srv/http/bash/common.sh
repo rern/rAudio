@@ -209,6 +209,7 @@ ipOnline() {
 iwctlScan() {
 	local found list ssid
 	wlandev=$( < $dirshm/wlan ) # global
+	ip link set $wlandev up
 	ssid=$1
 	iwctl station $wlandev scan "$ssid"
 	for i in {0..9}; do
