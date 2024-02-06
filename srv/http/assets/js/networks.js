@@ -245,7 +245,7 @@ function infoLan() {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
-		, footer       : footer( 'This is' )
+		, footer       : S.listeth ? footer( 'This is' ) : ''
 		, focus        : 0
 		, values       : S.listeth ? { IP: S.listeth.ip, GATEWAY: S.listeth.gateway } : { IP: S.ipsub, GATEWAY: S.gateway }
 		, checkchanged : true
@@ -324,7 +324,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : footer( 'This is' )
+		, footer       : v ? footer( 'This is' ) : ''
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
