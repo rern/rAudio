@@ -46,7 +46,7 @@ CMD SSID PASSPHRASE ADDRESS GATEWAY HIDDEN" \
 	| sed 's/[^=]*=//' )
 		fi
 	fi
-	[[ $data ]] && $dirsettings/networks.sh "$data"
+	[[ $data ]] && iwctlScan "$SSID" && $dirsettings/networks.sh "$data"
 	[[ $SSID == $( iwgetid -r $( < $dirshm/wlan ) ) ]] && rm /boot/wifi || mv /boot/wifi{,X}
 	;;
 	
