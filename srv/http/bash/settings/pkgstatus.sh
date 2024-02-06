@@ -22,7 +22,7 @@ $( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
 $( awk NF $fileconf )
 
 <bll># iwctl ap list</bll>
-$( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
+$( iwctl ap list | sed -e 1d -e $'s/\e\\[[0-9;:]*[a-zA-Z]//g' -e 's|^-\+$|<gr>&</gr>|' )"
 		;;
 	bluez )
 		fileconf=/etc/bluetooth/main.conf
@@ -103,7 +103,7 @@ $sharedip"
 esac
 status=$( systemctl status $SERVICE \
 				| grep -E -v "$skip" \
-				| sed -E -e '1 s|^.* (.*service) |<code>\1</code>|
+				| sed -E  -e '1 s|^.* (.*service) |<code>\1</code>|
 						' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
 											 s|( inactive \(.*\))|<red>\1</red>|
 											 s|(failed)|<red>\1</red>|ig}' )
