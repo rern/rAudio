@@ -319,12 +319,12 @@ function infoWiFi( v ) {
 	var checkchanged = 'profileget' in V && Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' );
 	info( {
 		  icon         : 'wifi'
-		, title        : v ? 'Saved Connection' : 'Add Connection'
+		, title        : V.profileget ? 'Saved Connection' : 'Add Connection'
 		, tablabel     : [ 'DHCP', 'Static IP' ]
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : v ? footer( 'This is' ) : ''
+		, footer       : V.profileget ? footer( 'This is' ) : ''
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
