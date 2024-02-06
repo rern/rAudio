@@ -28,7 +28,7 @@ restoresettings )
 		mv $dirshm/backup.gz "${backupfile}X"
 	fi
 	;;
-wificonnect )
+bootwificonnect )
 	bootwifi=$( ls -1 /boot/*.{psk,open} 2> /dev/null | head -1 )
 	filename=${bootwifi/*\/}
 	ssid=${filename%.*}
