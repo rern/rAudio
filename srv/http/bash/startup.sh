@@ -9,6 +9,7 @@ C=${revision: -4:1}" > $dirshm/cpuinfo
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan
 wlandev=$( $dirsettings/networks.sh wlandevice )
+
 # pre-configure --------------------------------------------------------------
 [[ -e /boot/expand ]] && $dirbash/startup-preconfig.sh expandpartition
 
