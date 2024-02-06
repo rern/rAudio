@@ -67,7 +67,11 @@ bluetoothinfo )
 $info"
 	;;
 connect )
-	! iwctlScan "$SSID" && echo -1 && exit
+	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then
+		ipOnline $ADDRESS && echo 'IP address not available.' && exit
+	fi
+	
+	! iwctlScan "$SSID" && echo 'SSID not found.' && exit
 	
 	existing=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
 	[[ -e $existing ]] && cp "$existing"{,.backup}
@@ -87,8 +91,8 @@ disconnect )
 	pushRefreshWlan
 	;;
 lanedit )
-	if [[ $IP ]]; then
-		ipOnline $IP && echo -1 && exit
+	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then
+		ipOnline $ADDRESS && echo -1 && exit
 	fi
 	
 	file=/etc/systemd/network/en.network
@@ -99,9 +103,9 @@ lanedit )
 		file=/etc/systemd/network/eth0.network
 	fi
 	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
-	if [[ $IP ]]; then # static
+	if [[ $ADDRESS ]]; then # static
 		sed -i '/^DNSSEC/ i\
-Address='$IP'/24\
+Address='$ADDRESS'/24\
 Gateway='$GATEWAY $file
 	else               # dhcp - reset
 		sed -i '/^DNSSEC/ i\DHCP=yes' $file

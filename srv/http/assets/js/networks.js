@@ -30,6 +30,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bash( [ 'bluetoothcommand.sh', 'pair', mac ] );
 } );
 $( '.wladd' ).on( 'click', function() {
+	delete V.li;
 	delete V.profileget;
 	infoWiFi();
 } );
@@ -97,6 +98,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	contextMenu();
 } );
 $( '.lanadd' ).on( 'click', function() {
+	delete V.li;
 	infoLan();
 } );
 $( '.connect' ).on( 'click', function() {
@@ -223,7 +225,7 @@ function connectWiFi( data ) {
 	} );
 }
 function footer( action ) {
-	return V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>'+ action +' current connection</wh>'
+	return 'li' in V && V.li.data( 'ip' ) === location.hostname ? iconwarning +'<wh>'+ action +' current connection</wh>' : ''
 }
 function infoAccesspoint() {
 	info( {
@@ -243,9 +245,9 @@ function infoLan() {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
-		, footer       : S.listeth ? footer( 'This is' ) : ''
+		, footer       : footer( 'This is' )
 		, focus        : 0
-		, values       : S.listeth ? { IP: S.listeth.ip, GATEWAY: S.listeth.gateway } : { IP: S.ipsub, GATEWAY: S.gateway }
+		, values       : S.listeth ? { ADDRESS: S.listeth.ip, GATEWAY: S.listeth.gateway } : { ADDRESS: S.ipsub, GATEWAY: S.gateway }
 		, checkchanged : true
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
@@ -318,7 +320,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : V.profileget ? footer( 'This is' ) : ''
+		, footer       : footer( 'This is' )
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
@@ -417,7 +419,7 @@ function renderWlan() {
 		S.listwl.forEach( list => {
 			if ( list.ip ) {
 				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
-				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'">'+ ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
+				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
 						 +'&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
 				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•</gr>&ensp;'+ list.ssid +'</li>';
