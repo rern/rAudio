@@ -42,6 +42,7 @@ CMD SSID PASSPHRASE"
 ' /boot/wifi )
 	fi
 	$dirsettings/networks.sh "$data"
+	[[ $( iwgetid -r $( < $dirshm/wlan ) ) ]] && rm /boot/wifi || mv /boot/wifi{,X}
 	;;
 	
 esac
