@@ -16,17 +16,18 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	else
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
-	iwctlConnectFile
-}
-iwctlConnectFile() {
+	existing=$( ls /var/lib/iwd/*.backup 2> /dev/null )
 	if [[ $( iwgetid -r $wlandev ) ]]; then
-		avahi-daemon --kill # flush cache and restart
-		[[ -e $profile ]] && rm "$profile".backup
+		avahi-daemon --kill # flush cache > auto restart
+		[[ -e $existing ]] && rm "$existing"
 	else
 		rm -f "/var/lib/iwd/$SSID".*
-		[[ -e "$profile".backup ]] && mv "$profile"{.backup,}
-		iwctl station $wlandev connect$hidden "$SSID"
-		notify wifi Wi-Fi 'Connect failed.<br>Existing restored'
+		if [[ -e $existing ]]; then
+			mv "$existing"{.backup,}
+			grep -q ^Hidden "$profile" && hidden=-hidden || hidden=
+			iwctl station $wlandev connect$hidden "$SSID"
+		fi
+		notify wifi Wi-Fi 'Connect failed.'
 	fi
 	pushRefresh
 }
@@ -71,20 +72,10 @@ connect )
 connectstatic )
 	! iwctlScan "$SSID" && echo -1 && exit
 	
-	profile=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
-	[[ $profile ]] && cp "$profile"{,.backup}
-	if [[ $PASSPHRASE ]]; then
-		presharedkey=$( wpa_passphrase "$SSID" "$PASSPHRASE" \
-							| grep '\spsk=' \
-							| cut -d= -f2 )
-		data='
-[Security]
-PreSharedKey='$presharedkey'
-Passphrase="'$PASSPHRASE'"'
-		ext=psk
-	else
-		ext=open
-	fi
+	existing=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
+	[[ -e $existing ]] && cp "$existing"{,.backup}
+	[[ $PASSPHRASE ]] && ext=psk || ext=open
+	profile=$( ssidProfilePath "$SSID" $ext )
 	data+='
 [IPv4]
 Address='$ADDRESS'
@@ -95,14 +86,12 @@ Hidden=true'
 		hidden=-hidden
 	fi
 	[[ $DISABLE == true ]] && settings+='
-AutoConnect=true'
+AutoConnect=false'
 	[[ $settings ]] && data+="
 [Settings]
 $settings"
-	profile=$( ssidProfilePath "$SSID" $ext )
 	echo "$data" > "$profile"
-	iwctl station $wlandev connect$hidden "$SSID"
-	iwctlConnectFile
+	iwctlConnect
 	;;
 disconnect )
 	iwctl station $( < $dirshm/wlan ) disconnect
@@ -155,7 +144,7 @@ AutoConnect=false' >> "$file"
 		data=$( sed '/^AutoConnect=false/ d' "$file" )
 		if ! grep -q ^Hidden "$file"; then
 			data=$( sed '/^\[Settings/ d' <<< $data )
-			data=$( sed ':a;/^[ \n]*$/{$d;N;ba}' <<< $data )
+			data=$( perl -00pe0 <<< $data )
 		fi
 		echo "$data" > "$file"
 	fi
