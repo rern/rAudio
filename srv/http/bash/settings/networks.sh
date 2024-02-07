@@ -7,7 +7,7 @@ args2var "$1"
 pushRefreshWlan() {
 	$dirsettings/networks-data.sh pushwl
 }
-iwctlConnect() { # wlandev ssid hidden passphrase
+iwctlConnect() {
 	local hidden
 	wlandev=$( < $dirshm/wlan )
 	[[ $HIDDEN == true ]] && hidden=-hidden
@@ -18,13 +18,14 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 	fi
 	profile=$( ls "/var/lib/iwd/$SSID".* )
 	[[ $NEW == true ]] && backup=$( ls /var/lib/iwd/*.backup 2> /dev/null )
+	sleep 1
 	if [[ $( iwgetid -r $wlandev ) ]]; then
 		avahi-daemon --kill # flush cache > auto restart
 		if [[ $DISABLE == true ]]; then
 			! grep -q '^\[Settings]' "$profile" && echo '[Settings]' >> "$profile"
 			sed -i '/^\[Settings/ a\AutoConnect=false' "$profile"
 		fi
-		[[ -e $backup ]] && rm "$backup"
+		[[ -e $backup ]] && rm "$backup" || pushRefresh
 	else
 		rm -f "$profile"
 		if [[ -e $backup ]]; then
@@ -34,7 +35,6 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 		fi
 		notify wifi Wi-Fi 'Connect failed.'
 	fi
-	pushRefresh
 }
 wlanDevice() {
 	local iplinkw wlandev
@@ -122,9 +122,8 @@ profileconnect )
 	[[ -e $dirsystem/ap ]] && rm -f $dirsystem/{ap,ap.conf} && systemctl restart iwd
 	! iwctlScan "$SSID" && echo -1 && exit
 	
-	# wlandev: from iwctlScan
 	grep -q ^Hidden=true "/var/lib/iwd/$SSID".* && hidden=-hidden
-	iwctl station $wlandev connect$hidden "$SSID"
+	iwctl station $( < $dirshm/wlan ) connect$hidden "$SSID"
 	pushRefreshWlan
 	;;
 profiledisable )
