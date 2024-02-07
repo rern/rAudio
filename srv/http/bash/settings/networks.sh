@@ -37,6 +37,22 @@ iwctlConnect() {
 		notify wifi Wi-Fi 'Connect failed.'
 	fi
 }
+iwctlScan() {
+	local ssid
+	ssid=$1
+	wlandev=$( < $dirshm/wlan )
+	iwctl station $wlandev scan "$ssid"
+	for i in {0..9}; do
+		sleep 1
+		iwctl station $wlandev get-networks 2> /dev/null \
+			| sed -e '1,4 d' -e $'s/\e\\[[0-9;:]*[a-zA-Z]//g' \
+			| cut -c 7-40 \
+			| sed 's/ *$//' \
+			| grep -q "^$ssid$" \
+				&& return 0
+	done
+	return 1
+}
 wlanDevice() {
 	local iplinkw wlandev
 	iplinkw=$( ip -br link | grep -m1 ^w )
@@ -82,11 +98,17 @@ connect )
 	fi
 	if [[ $ADDRESS ]]; then # static ip
 		[[ $PASSPHRASE ]] && ext=psk || ext=open
-		profile=$( ssidProfilePath "$SSID" $ext )
-		echo "
+		if [[ $SSID =~ [^a-zA-Z0-9\ _-] ]]; then
+			profile==$( echo -n "$SSID" \
+							| od -A n -t x1 \
+							| tr -d ' ' )
+		else
+			profile=$SSID
+		fi
+		echo "\
 [IPv4]
 Address=$ADDRESS
-Gateway=$GATEWAY" > "$profile"
+Gateway=$GATEWAY" > "/var/lib/iwd/$profile.$ext"
 	fi
 	killProcess networksscan
 	iwctlConnect

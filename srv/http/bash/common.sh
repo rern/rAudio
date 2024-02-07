@@ -206,22 +206,6 @@ ipAddress() {
 ipOnline() {
 	ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
-iwctlScan() {
-	local found list ssid
-	ssid=$1
-	wlandev=$( < $dirshm/wlan )
-	ip link set $wlandev up
-	iwctl station $wlandev scan "$ssid"
-	for i in {0..9}; do
-		sleep 1
-		iwctl station $wlandev get-networks 2> /dev/null \
-			| sed -e '1,4 d' -e $'s/\e\\[[0-9;:]*[a-zA-Z]//g' -e 's/^ \+> \+//' \
-			| awk 'NF{NF-=2};1' \
-			| grep -q "^$ssid$" \
-				&& return 0
-	done
-	return 1
-}
 json2var() {
 	local regex
 	regex='/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/'
@@ -376,19 +360,6 @@ sshpassCmd() {
 		-o StrictHostKeyChecking=no \
 		root@$1 \
 		"${@:2}"
-}
-ssidProfilePath() {
-	local path ext
-	path=/var/lib/iwd/
-	if [[ $1 =~ [^a-zA-Z0-9\ _-] ]]; then
-		path+==$( echo -n "$1" \
-					| od -A n -t x1 \
-					| tr -d ' ' )
-	else
-		path+=$1
-	fi
-	[[ $2 ]] && ext=$2 || ext=psk
-	echo "$path.$ext"
 }
 statePlay() {
 	grep -q -m1 '^state.*play' $dirshm/status && return 0
