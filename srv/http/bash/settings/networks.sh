@@ -16,7 +16,7 @@ iwctlConnect() {
 	else
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
-	profile=$( ls "/var/lib/iwd/$SSID".* )
+	profile=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
 	[[ $NEW == true ]] && backup=$( ls /var/lib/iwd/*.backup 2> /dev/null )
 	sleep 1
 	if [[ $( iwgetid -r $wlandev ) ]]; then
