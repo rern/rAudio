@@ -30,7 +30,8 @@ restoredata )
 	;;
 wificonnect )
 	sed -i 's/^ESSID=/SSID=/; s/^Key=/Passphrase=/; s/^Hidden=yes/Hidden=true/' /boot/wifi # up to 20240127 release
-	if grep -q '^SSID=.\+' /boot/wifi; then
+	ssid=$( sed -n '/^SSID/ {s/^SSID=//; p}' /boot/wifi )
+	if [[ $ssid ]]; then
 		data=connect
 		cmd=CMD
 		readarray -t lines <<< $( grep -E '^SSID=|^Passphrase=|^Address=|^Gateway=|^Hidden=' /boot/wifi )
@@ -44,7 +45,7 @@ $( cut -d= -f2- <<< $l | sed 's/^"\|"$//g' )"
 $cmd"
 		$dirsettings/networks.sh "$data"
 	fi
-	[[ $( getVar SSID /boot/wifi ) == $( iwgetid -r $( < $dirshm/wlan ) ) ]] && rm /boot/wifi || mv /boot/wifi{,X}
+	[[ $ssid == $( iwgetid -r $( < $dirshm/wlan ) ) ]] && rm /boot/wifi || mv /boot/wifi{,X}
 	;;
 	
 esac
