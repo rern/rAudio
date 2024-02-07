@@ -113,7 +113,11 @@ $( '.connect' ).on( 'click', function() {
 	}
 	
 	var ssid = V.li.data( 'ssid' );
-	notify( 'wifi', ssid, 'Connect ...' );
+	if ( location.hostname === V.li.data( 'ip' ) ) {
+		reconnect( ssid, S.hostname );
+	} else {
+		notify( 'wifi', ssid, 'Connect ...' );
+	}
 	bash( [ 'profileconnect', ssid, 'CMD SSID' ] );
 } );
 $( '.disconnect' ).on( 'click', function() {
@@ -426,7 +430,7 @@ function renderWlan() {
 		S.listwl.forEach( list => {
 			if ( list.ip ) {
 				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
-				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'">'+ ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
+				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
 						 +'&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
 				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•</gr>&ensp;'+ list.ssid +'</li>';
