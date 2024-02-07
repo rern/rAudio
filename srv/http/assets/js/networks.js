@@ -114,7 +114,7 @@ $( '.connect' ).on( 'click', function() {
 	}
 	
 	var ssid = V.li.data( 'ssid' );
-	notify( 'wifi', ssid, 'Connect ...' );
+	reconnect( ssid, S.hostname );
 	bash( [ 'profileconnect', ssid, 'CMD SSID' ] );
 } );
 $( '.disconnect' ).on( 'click', function() {
@@ -186,32 +186,26 @@ function bluetoothInfo( mac ) {
 		}
 	} );
 }
-function connectWiFi( data ) {
+function connectWiFi( val ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
 	if ( 'profileget' in V ) {
-		var values = jsonClone( data );
+		var values = jsonClone( val );
 		delete values.DISABLE;
 		delete V.profileget.DISABLE;
 		if ( Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' ) ) {
-			notify( icon, title, data.DISABLE ? 'Disable ...' : 'Enable ...' );
-			bash( [ 'profiledisable', data.SSID, data.DISABLE, 'CMD SSID DISABLE' ] );
+			notify( icon, title, val.DISABLE ? 'Disable ...' : 'Enable ...' );
+			bash( [ 'profiledisable', val.SSID, val.DISABLE, 'CMD SSID DISABLE' ] );
 			return
 		}
 	}
 	
 	clearTimeout( V.timeoutscan );
-	if ( V.profileget && V.li.data( 'ip' ) === location.hostname ) {
-		reconnect( data.ADDRESS || S.hostname );
-	} else {
-		notify( icon, title, V.profileget ? 'Change ...' : 'Connect ...' );
-	}
-	var keys   = Object.keys( data );
-	var values = Object.values( data );
+	notify( icon, title, V.profileget ? 'Change ...' : 'Connect ...' );
+	var keys   = Object.keys( val );
+	var values = Object.values( val );
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
-		if ( error == -1 ) {
-			clearInterval( V.interval );
-			clearTimeout( V.timeout );
+		if ( error ) {
 			bannerHide();
 			if ( error ) {
 				info( {
@@ -221,6 +215,8 @@ function connectWiFi( data ) {
 					, ok      : infoWiFiGet
 				} );
 			}
+		} else {
+			reconnect( val.SSID, val.ADDRESS );
 		}
 	} );
 }
@@ -254,7 +250,7 @@ function infoLan() {
 		, buttonlabel  : static ? ico( 'undo' ) +'DHCP' : ''
 		, button       : static ? () => {
 			bash( [ 'lanedit' ] );
-			reconnect( S.hostname );
+			reconnect( val.SSID, S.hostname );
 		} : ''
 		, ok           : () => {
 			var val = infoVal();
@@ -268,7 +264,7 @@ function infoLan() {
 						, ok      : infoLan
 					} );
 				} else {
-					reconnect( val.ADDRESS );
+					reconnect( val.SSID, val.ADDRESS );
 				}
 			} );
 		}
@@ -341,11 +337,12 @@ function psOnClose() {
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
 }
-function reconnect( ip ) {
+function reconnect( ssid, ip ) {
 	loader();
-	notify( 'wifi blink', 'IP Changed', 'http://'+ ip, -1 );
-	ws.close();
-	setTimeout( websocketReconnect, 3000 );
+	notify( 'wifi', ssid, 'Connect ...' );
+	setTimeout( () => {
+		location.href = 'http://'+ ip +'/settings.php?p=networks';
+	}, 3000 );
 }
 function renderBluetooth() {
 	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).trigger( 'click' );
