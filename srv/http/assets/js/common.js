@@ -496,7 +496,7 @@ function info( json ) {
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
 					break;
 				case 'radio':
-					var isarray = $.isArray( kv );
+					var isarray = Array.isArray( kv );
 					var tr      = false;
 					$.each( kv, ( k, v ) => {
 						var k = isarray ? v : k;

@@ -32,10 +32,6 @@ backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
 if [[ -e $backupfile ]]; then
 	mv "$backupfile" $dirshm/backup.gz
 	$dirsettings/system-datarestore.sh
-	if [[ $? != 0 ]]; then
-		notbackupfile=1
-		mv $dirshm/backup.gz "${backupfile}X"
-	fi
 fi
 
 bootwifi=/boot/wifi
@@ -151,12 +147,6 @@ if [[ -e $dirsystem/volumeboot ]]; then
 fi
 
 # after all sources connected ........................................................
-if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
-	$dirsettings/system.sh "hddsleep
-$( < $dirsystem/apm )
-CMD APM"
-fi
-
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	echo rescan > $dirmpd/updating
 	$dirbash/cmd.sh mpcupdate
@@ -171,6 +161,7 @@ if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
 fi
 
 touch $dirshm/startup
+
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
 	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
 fi
@@ -184,10 +175,8 @@ if [[ $ipaddress ]]; then
 	$dirsettings/addons-data.sh &> /dev/null &
 fi
 
-if [[ $notbackupfile ]]; then
-	notify restore 'Restore Settings' '<code>'$backupfile'</code> is not rAudio backup.' 10000
-fi
-if [[ $nas && ! $nasonline ]]; then
-	[[ $notbackupfile ]] && sleep 3
-	notify nas NAS "NAS @$ip cannot be reached." -1
+if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
+	$dirsettings/system.sh "hddsleep
+$( < $dirsystem/apm )
+CMD APM"
 fi
