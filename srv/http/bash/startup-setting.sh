@@ -22,7 +22,7 @@ expandpartition )
 restoredata )
 	backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
 	mv "$backupfile" $dirshm/backup.gz
-	$dirsettings/system-datarestore.sh
+	$dirsettings/system-datarestore.sh checked
 	if [[ $? != 0 ]]; then
 		notbackupfile=1
 		mv $dirshm/backup.gz "${backupfile}X"

@@ -3,7 +3,9 @@
 . /srv/http/bash/common.sh
 
 backupfile=$dirshm/backup.gz
-! bsdtar tf "$backupfile" 2> /dev/null | grep -q -m1 ^data/system/display.json$ && exit -1
+if [[ $1 != checked ]]; then
+	! bsdtar tf "$backupfile" 2> /dev/null | grep -q -m1 ^data/system/display.json$ && exit -1
+fi
 
 dirconfig=$dirdata/config
 [[ $1 == true ]] && libraryonly=1

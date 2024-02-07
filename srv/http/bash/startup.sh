@@ -14,7 +14,9 @@ wlandev=$( $dirsettings/networks.sh wlandevice )
 [[ -e /boot/expand ]] && $dirbash/startup-setting.sh expandpartition
 
 backupfile=$( ls /boot/*.gz 2> /dev/null )
-[[ $backupfile ]] && $dirbash/startup-setting.sh restoredata
+if [[ $backupfile ]] && bsdtar tf "$backupfile" 2> /dev/null | grep -q -m1 ^data/system/display.json$; then
+	$dirbash/startup-setting.sh restoredata
+fi
 
 [[ $wlandev && -e /boot/wifi ]] && $dirbash/startup-setting.sh wificonnect
 # ----------------------------------------------------------------------------
@@ -138,11 +140,4 @@ if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
 	$dirsettings/system.sh "hddsleep
 $( < $dirsystem/apm )
 CMD APM"
-fi
-if [[ $notbackupfile ]]; then
-	notify restore 'Restore Settings' '<code>'$backupfile'</code> is not rAudio backup.' 10000
-	sleep 3
-fi
-if [[ $nas && ! $nasonline ]]; then
-	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
