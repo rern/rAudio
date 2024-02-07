@@ -29,7 +29,7 @@ restoredata )
 	fi
 	;;
 wificonnect )
-	sed -i 's/^ESSID/SSID/; s/Hidden=yes/Hidden=true/' /boot/wifi # up to 20240127 release
+	sed -i 's/^ESSID=/SSID=/; s/^Key=/Passphrase=/; s/^Hidden=yes/Hidden=true/' /boot/wifi # up to 20240127 release
 	if grep -q '^SSID=.\+' /boot/wifi; then
 		data=connect
 		cmd=CMD
