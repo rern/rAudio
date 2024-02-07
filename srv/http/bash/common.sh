@@ -209,17 +209,16 @@ ipOnline() {
 iwctlScan() {
 	local found list ssid
 	ssid=$1
-	wlandev=$( < $dirshm/wlan ) # global
+	wlandev=$( < $dirshm/wlan )
 	ip link set $wlandev up
+	iwctl station $wlandev scan "$ssid"
 	for i in {0..9}; do
+		sleep 1
 		iwctl station $wlandev get-networks 2> /dev/null \
 			| sed -e '1,4 d' -e $'s/\e\\[[0-9;:]*[a-zA-Z]//g' -e 's/^ \+> \+//' \
 			| awk 'NF{NF-=2};1' \
 			| grep -q "^$ssid$" \
 				&& return 0
-		
-		[[ ! $scan ]] && scan=1 && iwctl station $wlandev scan "$ssid"
-		sleep 1
 	done
 	return 1
 }
