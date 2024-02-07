@@ -114,7 +114,11 @@ $( '.connect' ).on( 'click', function() {
 	}
 	
 	var ssid = V.li.data( 'ssid' );
-	reconnect( ssid, S.hostname );
+	if ( location.hostname === V.li.data( 'ip' ) ) {
+		reconnect( ssid, S.hostname );
+	} else {
+		notify( 'wifi', ssid, 'Connect ...' );
+	}
 	bash( [ 'profileconnect', ssid, 'CMD SSID' ] );
 } );
 $( '.disconnect' ).on( 'click', function() {
