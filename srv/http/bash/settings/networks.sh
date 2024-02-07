@@ -85,33 +85,31 @@ $info"
 	;;
 connect )
 	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then
-		ipOnline $ADDRESS && echo 'IP address not available.' && exit
-	fi
-	
-	! iwctlScan "$SSID" && echo 'SSID not found.' && exit
-	
-	if [[ $NEW == true ]]; then
-		existing=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
-		[[ -e $existing ]] && cp "$existing"{,.backup}
+		ipOnline $ADDRESS && echo 'IP address not available.'
+	elif ! iwctlScan "$SSID"; then
+		echo 'SSID not found.'
 	else
-		iwctl station $( < $dirshm/wlan ) disconnect
-	fi
-	if [[ $ADDRESS ]]; then # static ip
-		[[ $PASSPHRASE ]] && ext=psk || ext=open
-		if [[ $SSID =~ [^a-zA-Z0-9\ _-] ]]; then
-			profile==$( echo -n "$SSID" \
-							| od -A n -t x1 \
-							| tr -d ' ' )
-		else
-			profile=$SSID
+		if [[ $NEW == true ]]; then
+			existing=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
+			[[ -e $existing ]] && cp "$existing"{,.backup}
 		fi
-		echo "\
-[IPv4]
-Address=$ADDRESS
-Gateway=$GATEWAY" > "/var/lib/iwd/$profile.$ext"
+		if [[ $ADDRESS ]]; then # static ip
+			[[ $PASSPHRASE ]] && ext=psk || ext=open
+			if [[ $SSID =~ [^a-zA-Z0-9\ _-] ]]; then
+				profile==$( echo -n "$SSID" \
+								| od -A n -t x1 \
+								| tr -d ' ' )
+			else
+				profile=$SSID
+			fi
+			echo "\
+	[IPv4]
+	Address=$ADDRESS
+	Gateway=$GATEWAY" > "/var/lib/iwd/$profile.$ext"
+		fi
+		killProcess networksscan
+		iwctlConnect
 	fi
-	killProcess networksscan
-	iwctlConnect
 	;;
 disconnect )
 	iwctl station $( < $dirshm/wlan ) disconnect
