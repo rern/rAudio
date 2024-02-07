@@ -24,7 +24,7 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 			! grep -q '^\[Settings]' "$profile" && echo '[Settings]' >> "$profile"
 			sed -i '/^\[Settings/ a\AutoConnect=false' "$profile"
 		fi
-		[[ -e $backup ]] && rm "$existing"
+		[[ -e $backup ]] && rm "$backup"
 	else
 		rm -f "$profile"
 		if [[ -e $backup ]]; then
@@ -73,8 +73,10 @@ connect )
 	
 	! iwctlScan "$SSID" && echo 'SSID not found.' && exit
 	
-	existing=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
-	[[ -e $existing ]] && cp "$existing"{,.backup}
+	if [[ $NEW == true ]]; then
+		existing=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
+		[[ -e $existing ]] && cp "$existing"{,.backup}
+	fi
 	if [[ $ADDRESS ]]; then # static ip
 		[[ $PASSPHRASE ]] && ext=psk || ext=open
 		profile=$( ssidProfilePath "$SSID" $ext )
