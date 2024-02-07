@@ -342,7 +342,7 @@ function reconnect( ssid, ip ) {
 	notify( 'wifi', ssid, 'Connect ...' );
 	setTimeout( () => {
 		location.href = 'http://'+ ip +'/settings.php?p=networks';
-	}, 3000 );
+	}, 5000 );
 }
 function renderBluetooth() {
 	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).trigger( 'click' );
