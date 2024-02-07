@@ -25,7 +25,8 @@ iwctlConnect() {
 			! grep -q '^\[Settings]' "$profile" && echo '[Settings]' >> "$profile"
 			sed -i '/^\[Settings/ a\AutoConnect=false' "$profile"
 		fi
-		[[ -e $backup ]] && rm "$backup" || pushRefresh
+		[[ -e $backup ]] && rm "$backup"
+		pushRefresh
 	else
 		rm -f "$profile"
 		if [[ -e $backup ]]; then
