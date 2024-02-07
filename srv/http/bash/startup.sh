@@ -141,8 +141,8 @@ CMD APM"
 fi
 if [[ $notbackupfile ]]; then
 	notify restore 'Restore Settings' '<code>'$backupfile'</code> is not rAudio backup.' 10000
+	sleep 3
 fi
 if [[ $nas && ! $nasonline ]]; then
-	[[ $notbackupfile ]] && sleep 3
 	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
