@@ -121,10 +121,12 @@ Gateway='$GATEWAY $file
 	;;
 profileconnect )
 	[[ -e $dirsystem/ap ]] && rm -f $dirsystem/{ap,ap.conf} && systemctl restart iwd
+	wlandev=$( < $dirshm/wlan )
+	ip link set $wlandev up
 	! iwctlScan "$SSID" && echo -1 && exit
 	
 	grep -q ^Hidden=true "/var/lib/iwd/$SSID".* && hidden=-hidden
-	iwctl station $( < $dirshm/wlan ) connect$hidden "$SSID"
+	iwctl station $wlandev connect$hidden "$SSID"
 	pushRefreshWlan
 	;;
 profiledisable )
