@@ -9,7 +9,7 @@ pushRefreshWlan() {
 }
 iwctlConnect() { # wlandev ssid hidden passphrase
 	local hidden
-	# wlandev: from iwctlScan
+	wlandev=$( < $dirshm/wlan )
 	[[ $HIDDEN == true ]] && hidden=-hidden
 	if [[ $PASSPHRASE ]]; then
 		iwctl station $wlandev connect$hidden "$SSID" --passphrase "$PASSPHRASE"
@@ -17,7 +17,7 @@ iwctlConnect() { # wlandev ssid hidden passphrase
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
 	profile=$( ls "/var/lib/iwd/$SSID".* )
-	backup=$( ls /var/lib/iwd/*.backup 2> /dev/null )
+	[[ $NEW == true ]] && backup=$( ls /var/lib/iwd/*.backup 2> /dev/null )
 	if [[ $( iwgetid -r $wlandev ) ]]; then
 		avahi-daemon --kill # flush cache > auto restart
 		if [[ $DISABLE == true ]]; then
@@ -76,6 +76,8 @@ connect )
 	if [[ $NEW == true ]]; then
 		existing=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
 		[[ -e $existing ]] && cp "$existing"{,.backup}
+	else
+		iwctl station $( < $dirshm/wlan ) disconnect
 	fi
 	if [[ $ADDRESS ]]; then # static ip
 		[[ $PASSPHRASE ]] && ext=psk || ext=open
