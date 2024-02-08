@@ -214,7 +214,7 @@ if [[ $pllength  == 0 && ! $snapclient ]]; then
 ########
 	status+='
 , "coverart" : ""
-, "hostname" : "'$( getContent $dirshm/avahihostname )'"
+, "hostname" : "'$( avahi-resolve -a4 $ipaddress | awk '{print $NF}' )'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
 	outputStatus

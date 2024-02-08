@@ -35,7 +35,7 @@ if [[ -e $backupfile ]]; then
 fi
 
 bootwifi=/boot/wifi
-if [[ -e $bootwifi && $wlandev ]]; then
+if [[ $wlandev && -e $bootwifi ]]; then
 	wifi=$( sed 's/\r//; s/\$/\\$/g' "$bootwifi" ) # remove windows \r and escape $
 	ssid=$( getVar ESSID <<< $wifi )
 	key=$( getVar Key <<< $wifi )
@@ -168,11 +168,6 @@ fi
 
 if [[ -e /boot/startup.sh ]]; then
 	/boot/startup.sh
-fi
-
-if [[ $ipaddress ]]; then
-	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
-	$dirsettings/addons-data.sh &> /dev/null &
 fi
 
 if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
