@@ -45,9 +45,7 @@ iwctlScan() {
 	for i in {0..9}; do
 		sleep 1
 		iwctl station $wlandev get-networks 2> /dev/null \
-			| sed -e '1,4 d
-				' -e $'s/\e\\[[0-9;]*m//g
-				' -e 's/^  >/   /' \
+			| sed -e '1,4 d' -e $'s/\e\\[[0-9;]*m>*//g' \
 			| awk 'NF{NF-=2}1 && NF' \
 			| grep -q "^$ssid$" \
 				&& return 0
