@@ -34,23 +34,16 @@ if [[ $backupfile ]]; then
 fi
 
 if [[ $wlandev && -e /boot/wifi ]]; then
-	sed -i 's/^ESSID=/SSID=/; s/^Key=/Passphrase=/; s/^Hidden=yes/Hidden=true/' /boot/wifi # up to 20240127 release
-	ssid=$( sed -n '/^SSID/ {s/^SSID=//; p}' /boot/wifi )
-	if [[ $ssid ]]; then
-		data=connect
-		cmd=CMD
-		readarray -t lines <<< $( grep -E '^SSID=|^Passphrase=|^Address=|^Gateway=|^Hidden=' /boot/wifi )
-		for l in "${lines[@]}"; do
-			data+="
-$( cut -d= -f2- <<< $l | sed 's/^"\|"$//g' )"
-			var=${l/=*}
-			cmd+=" ${var^^}"
-		done
-		data+="
-$cmd"
-		$dirsettings/networks.sh "$data"
-	fi
-	[[ $ssid == $( iwgetid -r $( < $dirshm/wlan ) ) ]] && rm /boot/wifi || mv /boot/wifi{,X}
+	sed -i 's/^ESSID=/SSID=/; s/^Key=/PASSPHRASE=/; s/^Hidden=yes/HIDDEN=true/' /boot/wifi # up to 20240127 release
+	data=connect
+	cmd=CMD
+	readarray -t lines <<< $( grep -E '^SSID=|^PASSPHRASE=|^ADDRESS=|^GATEWAY=|^HIDDEN=' /boot/wifi )
+	for l in "${lines[@]}"; do
+		data+=$'\n'"$( cut -d= -f2- <<< $l | sed 's/^"\|"$//g' )"
+		cmd+=" ${l/=*}"
+	done
+	data+=$'\n'"$cmd"
+	$dirsettings/networks.sh "$data"
 fi
 # ----------------------------------------------------------------------------
 

@@ -16,24 +16,11 @@ iwctlConnect() {
 	else
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
-	profile=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
-	[[ $NEW == true ]] && backup=$( ls /var/lib/iwd/*.backup 2> /dev/null )
 	sleep 1
 	if [[ $( iwgetid -r $wlandev ) ]]; then
 		avahi-daemon --kill # flush cache > auto restart
-		if [[ $DISABLE == true ]]; then
-			! grep -q '^\[Settings]' "$profile" && echo '[Settings]' >> "$profile"
-			sed -i '/^\[Settings/ a\AutoConnect=false' "$profile"
-		fi
-		[[ -e $backup ]] && rm "$backup"
-		pushRefresh
+		[[ -e /boot/wifi ]] && rm -f /boot/wifi && pushRefresh
 	else
-		rm -f "$profile"
-		if [[ -e $backup ]]; then
-			mv "$backup"{.backup,}
-			grep -q ^Hidden "$profile" && hidden=-hidden || hidden=
-			iwctl station $wlandev connect$hidden "$SSID"
-		fi
 		notify wifi Wi-Fi 'Connect failed.'
 	fi
 }
