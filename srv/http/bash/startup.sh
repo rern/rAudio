@@ -36,16 +36,11 @@ fi
 
 bootwifi=/boot/wifi
 if [[ $wlandev && -e $bootwifi ]]; then
-	wifi=$( sed 's/\r//; s/\$/\\$/g' "$bootwifi" ) # remove windows \r and escape $
-	ssid=$( getVar ESSID <<< $wifi )
-	key=$( getVar Key <<< $wifi )
-	profile="\
-Interface=$wlandev
-$( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )"
-	profile+='
-ESSID="'$ssid'"
-Key="'$key'"'
-	echo "$profile" > "/etc/netctl/$ssid"
+	data=$( sed -E -e '/^#|^\s*$/ d
+' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
+" $bootwifi )
+	ssid=$( getVar ESSID <<< $data )
+	echo "$data" > "/etc/netctl/$ssid"
 	$dirsettings/networks.sh "profileconnect
 $ssid
 CMD SSID"
@@ -81,7 +76,6 @@ done
 
 [[ -e $dirsystem/ap ]] && ap=1
 if [[ $ipaddress ]]; then
-	[[ -e $filebootwifi ]] && rm -f /boot/wifi
 	readarray -t lines <<< $( grep $dirnas /etc/fstab )
 	if [[ $lines ]]; then
 		for line in "${lines[@]}"; do # ping target before mount
@@ -104,7 +98,7 @@ if [[ $ipaddress ]]; then
 		fi
 		appendSortUnique $ipaddress $filesharedip
 	fi
-	[[ -e $bootwifi ]] && rm -f "$bootwifi"
+	[[ -e $bootwifi ]] && rm -f $bootwifi
 else
 	if [[ $wlandev && ! $ap ]]; then
 		if [[ $wlanprofile ]]; then
@@ -163,7 +157,9 @@ fi
 touch $dirshm/startup
 
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
-	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
+	$dirbash/cmd.sh 'mpcplayback
+play
+CMD ACTION'
 fi
 
 if [[ -e /boot/startup.sh ]]; then
