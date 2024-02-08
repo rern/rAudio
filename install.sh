@@ -5,6 +5,32 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240209
+file=/boot/wifi0
+if [[ -e $file ]] && ! grep -r ^SSID $file; then
+	echo "\
+Fill values:
+--------------------------------------------------------
+Basic:
+	- SSID=Name
+	- PASSPHRASE=Password (blank for none/open)
+
+(optional) Static IP:
+	- Address=NNN.NNN.N.N
+	- Gateway=NNN.NNN.N.N
+
+(optional) Hidden SSID:
+	- Hidden=true
+
+Save this file as: wifi
+--------------------------------------------------------
+
+SSID=
+PASSPHRASE=
+ADDRESS=
+GATEWAY=
+HIDDEN=
+" > $file
+fi
 sed -i -E -e 's/^(EnableNetworkConfiguration=)false/\true/
 ' -e '/^\[Scan/,/^$/ d
 ' /etc/iwd/main.conf
@@ -14,10 +40,10 @@ if [[ $ssidconnected ]]; then
 	. "/etc/netctl/$ssidconnected"
 	echo "
 SSID=$ssidconnected
-Passphrase=$key
-Address=${Address:0:-3}
-Gateway=$Gateway
-Hidden=$( [[ $Hidden == on ]] && echo true )" > /boot/wifi
+PASSPHRASE=$key
+ADDRESS=${Address:0:-3}
+GATEWAY=$Gateway
+HIDDEN=$( [[ $Hidden == on ]] && echo true )" > /boot/wifi
 	netctl disable "$ssidconnected"
 fi
 rm -f /etc/netctl/* &> /dev/null
