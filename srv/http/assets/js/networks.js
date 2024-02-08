@@ -208,7 +208,7 @@ function connectWiFi( val ) {
 	notify( icon, title, V.profileget ? 'Change ...' : 'Connect ...' );
 	var keys   = Object.keys( val );
 	var values = Object.values( val );
-	bash( [ 'connect', 'profileget' in V, ...values, 'CMD NEW '+ keys.join( ' ' ) ], error => {
+	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error ) {
 			bannerHide();
 			if ( error ) {
