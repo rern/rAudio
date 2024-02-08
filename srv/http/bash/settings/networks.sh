@@ -16,6 +16,7 @@ iwctlConnect() {
 	else
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
+	[[ $? == 0 ]] && return 0 || return 1
 }
 iwctlScan() {
 	local ssid
@@ -84,14 +85,12 @@ Address=$ADDRESS
 Gateway=$GATEWAY" > "/var/lib/iwd/$profile.$ext"
 	fi
 	killProcess networksscan
+	sleep 1
 	for i in {0..3}; do
-		sleep 1
-		iwctlConnect && break
+		iwctlConnect && break || sleep 3
 	done
 	sleep 1
-	ssid=$( iwgetid -r $wlandev )
-	if [[ $ssid ]]; then
-		echo $ssid > $dirshm/ssid
+	if [[ $( iwgetid -r $wlandev ) ]]; then
 		avahi-daemon --kill # flush cache > auto restart
 		[[ -e /boot/wifi ]] && rm -f /boot/wifi && pushRefresh
 	else
@@ -129,26 +128,6 @@ profileconnect )
 	iwctl station $( < $dirshm/wlan ) connect$hidden "$SSID"
 	pushRefreshWlan
 	;;
-profiledisable )
-	file=$( ls -1 "/var/lib/iwd/$SSID".* | head -1 )
-	if [[ $DISABLE == true ]]; then
-		if grep -q '^\[Settings' "$files"; then
-			sed -i '/^\[Settings/ a\AutoConnect=false' "$file"
-		else
-			echo '
-[Settings]
-AutoConnect=false' >> "$file"
-		fi
-	else
-		data=$( sed '/^AutoConnect=false/ d' "$file" )
-		if ! grep -q ^Hidden "$file"; then
-			data=$( sed '/^\[Settings/ d' <<< $data )
-			data=$( perl -00pe0 <<< $data )
-		fi
-		echo "$data" > "$file"
-	fi
-	pushRefreshWlan
-	;;
 profileforget )
 	iwctl known-networks "$SSID" forget
 	pushRefreshWlan
@@ -157,7 +136,6 @@ profileget )
 	data=$( cat "/var/lib/iwd/$SSID".* )
 	. <( grep -E '^Address|^AutoConnect|^Gateway|^Hidden|^Passphrase' <<< $data )
 	[[ ! $Hidden ]] && Hidden=false
-	[[ $AutoConnect == false ]] && disable=true || disable=false
 	[[ $Address ]] && ip=static || ip=dhcp
 	echo '{
   "IP"         : "'$ip'"
@@ -166,7 +144,6 @@ profileget )
 , "ADDRESS"    : "'$Address'"
 , "GATEWAY"    : "'$Gateway'"
 , "HIDDEN"     : '$Hidden'
-, "DISABLE"    : '$disable'
 }'
 	;;
 statuslan )

@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240209
-sed -i -E -e 's/^(EnableNetworkConfiguration=)true/\1false/
+sed -i -E -e 's/^(EnableNetworkConfiguration=)false/\true/
 ' -e '/^\[Scan/,/^$/ d
 ' /etc/iwd/main.conf
 

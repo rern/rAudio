@@ -115,14 +115,11 @@ Audio player for
 	- Try with a spare one before moving forward.
 	- Always use backup.gz created by latest update to restore system.
 - Before power on:
-	- Wi-Fi pre-configure - 3 alternatives: (Only if no wired LAN available.)
-		- From `backup.gz`
-		- From existing
-			- Copy an existing profile file from `/var/lib/iwd`
-			- Rename it to `wifi` then copy it to `BOOT` before power on.
-		- Generate a profile:
-			- With [Pre-configure Wi-Fi connection](https://rern.github.io/WiFi_profile/index.html)
-			- Save it in `BOOT`
+	- Wi-Fi pre-configure - 2 alternatives: (Only if no wired LAN available.)
+		- From `This PC > BOOT` or `/boot/wifi0`:
+			- Fill values
+			- Save as `/boot/wifi`
+		- Restore from backup
 	- Wi-Fi access point mode
 		- If no wired network and no pre-configured Wi-Fi connections, Wi-Fi access point will be enabled on boot.
 		- On client devices, select `rAudio` from Wi-Fi network list to connect.

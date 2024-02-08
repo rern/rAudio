@@ -282,11 +282,10 @@ function infoWiFi( v ) {
 		, [ 'IP',           'text' ]
 		, [ 'Gateway',      'text' ]
 		, [ 'Hidden SSID',  'checkbox' ]
-		, [ 'Disable',      'checkbox' ]
 	];
 	var default_v = {
-		  dhcp   : { IP: 'dhcp',   SSID: '', PASSPHRASE: '',                           HIDDEN: false, DISABLE: false }
-		, static : { IP: 'static', SSID: '', PASSPHRASE: '', ADDRESS: '', GATEWAY: '', HIDDEN: false, DISABLE: false }
+		  dhcp   : { IP: 'dhcp',   SSID: '', PASSPHRASE: '',                           HIDDEN: false }
+		, static : { IP: 'static', SSID: '', PASSPHRASE: '', ADDRESS: '', GATEWAY: '', HIDDEN: false }
 	}
 	if ( v ) {
 		var dhcp   = v.IP === 'dhcp';
