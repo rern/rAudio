@@ -16,13 +16,6 @@ iwctlConnect() {
 	else
 		iwctl station $wlandev connect$hidden "$SSID"
 	fi
-	sleep 1
-	if [[ $( iwgetid -r $wlandev ) ]]; then
-		avahi-daemon --kill # flush cache > auto restart
-		[[ -e /boot/wifi ]] && rm -f /boot/wifi && pushRefresh
-	else
-		notify wifi Wi-Fi 'Connect failed.'
-	fi
 }
 iwctlScan() {
 	local ssid
@@ -71,30 +64,38 @@ $info"
 	;;
 connect )
 	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then
-		ipOnline $ADDRESS && echo 'IP address not available.'
-	elif ! iwctlScan "$SSID"; then
-		echo 'SSID not found.'
+		ipOnline $ADDRESS && echo 'IP address not available.' && exit
+	fi
+	
+	! iwctlScan "$SSID" && echo 'SSID not found.' && exit
+	
+	if [[ $ADDRESS ]]; then # static ip
+		[[ $PASSPHRASE ]] && ext=psk || ext=open
+		if [[ $SSID =~ [^a-zA-Z0-9\ _-] ]]; then
+			profile==$( echo -n "$SSID" \
+							| od -A n -t x1 \
+							| tr -d ' ' )
+		else
+			profile=$SSID
+		fi
+		echo "\
+[IPv4]
+Address=$ADDRESS
+Gateway=$GATEWAY" > "/var/lib/iwd/$profile.$ext"
+	fi
+	killProcess networksscan
+	for i in {0..3}; do
+		sleep 1
+		iwctlConnect && break
+	done
+	sleep 1
+	ssid=$( iwgetid -r $wlandev )
+	if [[ $ssid ]]; then
+		echo $ssid > $dirshm/ssid
+		avahi-daemon --kill # flush cache > auto restart
+		[[ -e /boot/wifi ]] && rm -f /boot/wifi && pushRefresh
 	else
-		if [[ $NEW == true ]]; then
-			existing=$( ls "/var/lib/iwd/$SSID".* 2> /dev/null )
-			[[ -e $existing ]] && cp "$existing"{,.backup}
-		fi
-		if [[ $ADDRESS ]]; then # static ip
-			[[ $PASSPHRASE ]] && ext=psk || ext=open
-			if [[ $SSID =~ [^a-zA-Z0-9\ _-] ]]; then
-				profile==$( echo -n "$SSID" \
-								| od -A n -t x1 \
-								| tr -d ' ' )
-			else
-				profile=$SSID
-			fi
-			echo "\
-	[IPv4]
-	Address=$ADDRESS
-	Gateway=$GATEWAY" > "/var/lib/iwd/$profile.$ext"
-		fi
-		killProcess networksscan
-		iwctlConnect
+		notify wifi Wi-Fi 'Connect failed.'
 	fi
 	;;
 disconnect )
