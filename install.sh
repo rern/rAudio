@@ -4,8 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240205
-sed -i -E 's/^(EnableNetworkConfiguration=)true/\1false/' /etc/iwd/main.conf
+# 20240209
+sed -i -E -e 's/^(EnableNetworkConfiguration=)true/\1false/
+' -e '/^\[Scan/,/^$/ d
+' /etc/iwd/main.conf
 
 ssidconnected=$( $( iwgetid -r $( < $dirshm/wlan ) ) )
 if [[ $ssidconnected ]]; then
@@ -32,9 +34,6 @@ if [[ ! -e /usr/bin/iwctl ]]; then
 	echo "\
 [General]
 EnableNetworkConfiguration=true
-
-[Scan]
-DisablePeriodicScan=true
 
 [Network]
 EnableIPv6=false
@@ -144,3 +143,6 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20240209
+systemctl enable iwd

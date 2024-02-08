@@ -258,8 +258,8 @@ function infoLan() {
 		} : ''
 		, ok           : () => {
 			var val = infoVal();
-			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], avail => {
-				if ( avail == -1 ) {
+			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], inuse => {
+				if ( inuse ) {
 					bannerHide();
 					info( {
 						  icon    : icon

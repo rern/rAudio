@@ -101,7 +101,7 @@ data='
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( [[ $( iwgetid -r $wlandev ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
-, "hostname"    : "'$( getContent $dirshm/avahihostname )'"
+, "hostname"    : "'$( avahi-resolve -a4 $( ipAddress ) | awk '{print $NF}' )'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipAddress sub )'"
 , "ipwl"        : "'$ipwl'"
