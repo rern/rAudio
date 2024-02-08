@@ -234,7 +234,7 @@ function connectWiFi( data ) {
 	} );
 }
 function footer( action ) {
-	return V.li.data( 'ip' ) !== location.hostname ? '' : iconwarning +'<wh>'+ action +' current connection</wh>'
+	return 'li' in V && V.li.data( 'ip' ) === location.hostname ? iconwarning +'<wh>'+ action +' current connection</wh>' : ''
 }
 function infoAccesspoint() {
 	info( {
