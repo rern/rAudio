@@ -126,7 +126,7 @@ Audio player for
 			- Rename it to `wifi` then copy it to `BOOT` before power on.
 	- Wi-Fi access point mode
 		- Auto start: No IP address assigned from connected wired/wireless network
-		- Force start: Place blank `accesspoint` file in `BOOT` before power on.
+		- Force enable access point only: Place blank `accesspoint` file in `BOOT` before power on.
 		- On client devices, select `rAudio` from Wi-Fi network list to connect.
 		- On browser, open web user interface with URL `raudio.local`
 		- Settings > Networks > Wi-Fi - search

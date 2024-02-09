@@ -140,11 +140,26 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
-hddinfo )
-	echo -n "\
+deviceinfo )
+	if [[ ${DEV:5:3} == mmc ]]; then
+		dev=/sys/block/${DEV:5:-2}/device
+		cmd="<bll># mmc cid read $dev</bll>"
+		echo "\
+$cmd
+$( mmc cid read $dev )
+
+${cmd/cid/csd}
+$( mmc csd read $dev )
+
+${cmd/cid/src}
+$( mmc scr read $dev )
+"
+	else
+		echo -n "\
 <bll># hdparm -I $DEV</bll>
 $( hdparm -I $DEV | sed '1,3 d' )
 "
+	fi
 	;;
 hddsleep )
 	if [[ $ON ]]; then
