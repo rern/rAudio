@@ -8,7 +8,7 @@ netctlSwitch() {
 	local active connected ssid wlandev
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
-	connected=$( iwgetid -r $wlandev )
+	connected=$( iwgetid -r )
 	ip link set $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
