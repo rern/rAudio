@@ -90,7 +90,7 @@ Gateway=$GATEWAY" > "/var/lib/iwd/$profile.$ext"
 		iwctlConnect && break || sleep 3
 	done
 	sleep 1
-	if [[ $( iwgetid -r $wlandev ) ]]; then
+	if [[ $( iwgetid -r ) ]]; then
 		avahi-daemon --kill # flush cache > auto restart
 		[[ -e /boot/wifi ]] && rm -f /boot/wifi && pushRefresh
 	else

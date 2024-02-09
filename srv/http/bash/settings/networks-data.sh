@@ -38,7 +38,7 @@ listWlan() {
 	readarray -t profiles <<< $( ls -1p /var/lib/iwd | grep -v /$ | sed -E 's/.psk$|.open$//' )
 	if [[ $profiles ]]; then
 		for ssid in "${profiles[@]}"; do
-			[[ $( iwgetid -r $wlandev ) == $ssid ]] && connected=1 || connected=
+			[[ $( iwgetid -r ) == $ssid ]] && connected=1 || connected=
 			ssid=$( stringEscape $ssid )
 			if [[ $connected ]]; then
 				ipr=( $( ip r | grep -m1 ^default.*$wlandev ) )
