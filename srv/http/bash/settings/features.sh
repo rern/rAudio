@@ -19,16 +19,14 @@ iwctlAP() {
 	iwctl device $wlandev set-property Mode ap
 	iwctl ap $wlandev start-profile $hostname
 	if iwctl ap list | grep -q "$wlandev.*yes"; then
-		if [[ ! -e $dirshm/apstartup ]]; then
-			. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
-			echo '{
+		. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
+		echo '{
   "ip"         : "'$Address'"
 , "passphrase" : "'$Passphrase'"
 , "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
 , "ssid"       : "'$hostname'"
 }' > $dirsystem/ap.conf
-			touch $dirsystem/ap
-		fi
+		touch $dirsystem/ap
 		iw $wlandev set power_save off
 	else
 		rm -f $dirsystem/{ap,ap.conf}

@@ -67,49 +67,52 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-# wait for connection
-[[ $wlanprofile ]] && sec=30 || sec=5 # wlan || lan
-for (( i=0; i < $sec; i++ )); do
-	ipaddress=$( ipAddress )
-	[[ ! $ipaddress ]] && sleep 1 || break
-done
-
-[[ -e $dirsystem/ap ]] && ap=1
-if [[ $ipaddress ]]; then
-	readarray -t lines <<< $( grep $dirnas /etc/fstab )
-	if [[ $lines ]]; then
-		for line in "${lines[@]}"; do # ping target before mount
-			[[ ${line:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $line ) || ip=$( cut -d: -f1 <<< $line )
-			for i in {1..10}; do
-				if ipOnline $ip; then
-					mountpoint=$( awk '{print $2}' <<< $line )
-					mount "${mountpoint//\\040/ }" && nasonline=1 && break
-					sleep 2
-				fi
-			done
-		done
-	fi
-	if systemctl -q is-active nfs-server; then
-		if [[ -s $filesharedip ]]; then
-			sharedip=$( < $filesharedip )
-			for ip in $sharedip; do
-				notify -ip $ip networks 'Server rAudio' Online
-			done
-		fi
-		appendSortUnique $ipaddress $filesharedip
-	fi
-	[[ -e $bootwifi ]] && rm -f $bootwifi
+if [[ -e /boot/accesspoint ]]; then
+	ap=1
 else
-	if [[ $wlandev && ! $ap ]]; then
-		if [[ $wlanprofile ]]; then
-			[[ ! -e $dirsystem/wlannoap ]] && ap=1
-		else
-			ap=1
+	[[ $wlanprofile ]] && sec=30 || sec=5 # wlan || lan
+	for (( i=0; i < $sec; i++ )); do # wait for connection
+		ipaddress=$( ipAddress )
+		[[ ! $ipaddress ]] && sleep 1 || break
+	done
+	[[ -e $dirsystem/ap ]] && ap=1
+	if [[ $ipaddress ]]; then
+		readarray -t lines <<< $( grep $dirnas /etc/fstab )
+		if [[ $lines ]]; then
+			for line in "${lines[@]}"; do # ping target before mount
+				[[ ${line:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $line ) || ip=$( cut -d: -f1 <<< $line )
+				for i in {1..10}; do
+					if ipOnline $ip; then
+						mountpoint=$( awk '{print $2}' <<< $line )
+						mount "${mountpoint//\\040/ }" && nasonline=1 && break
+						sleep 2
+					fi
+				done
+			done
 		fi
-		[[ $ap ]] && touch $dirshm/apstartup
-		[[ -e $bootwifi ]] && mv $bootwifi{,X}
+		if systemctl -q is-active nfs-server; then
+			if [[ -s $filesharedip ]]; then
+				sharedip=$( < $filesharedip )
+				for ip in $sharedip; do
+					notify -ip $ip networks 'Server rAudio' Online
+				done
+			fi
+			appendSortUnique $ipaddress $filesharedip
+		fi
+		[[ -e $bootwifi ]] && rm -f $bootwifi
+	else
+		if [[ $wlandev && ! $ap ]]; then
+			if [[ $wlanprofile ]]; then
+				[[ ! -e $dirsystem/wlannoap ]] && ap=1
+			else
+				ap=1
+			fi
+			[[ $ap ]] && touch $dirshm/apstartup
+			[[ -e $bootwifi ]] && mv $bootwifi{,X}
+		fi
 	fi
 fi
+
 [[ $ap ]] && $dirsettings/features.sh iwctlap
 
 if [[ -e $dirsystem/btconnected ]]; then
