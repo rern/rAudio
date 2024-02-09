@@ -199,14 +199,6 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	V.li      = $this;
-	var active = $this.hasClass( 'active' );
-	$( '#codehddinfo' ).addClass( 'hide' );
-	$( 'li' ).removeClass( 'active' );
-	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
-		$( '#menu, #codehddinfo' ).addClass( 'hide' );
-		if ( active ) return
-	}
-	
 	var i    = $this.index()
 	var list = S.list[ i ];
 	if ( S.shareddata && list.mountpoint === '/mnt/MPD/NAS/data' ) {
@@ -1188,7 +1180,4 @@ function renderStorage() {
 	} else {
 		$( '#divhddsleep' ).addClass( 'hide' );
 	}
-	$( '#codehddinfo' )
-		.empty()
-		.addClass( 'hide' );
 }
