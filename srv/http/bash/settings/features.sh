@@ -19,16 +19,14 @@ iwctlAP() {
 	iwctl device $wlandev set-property Mode ap
 	iwctl ap $wlandev start-profile $hostname
 	if iwctl ap list | grep -q "$wlandev.*yes"; then
-		if [[ ! -e $dirshm/apstartup ]]; then
-			. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
-			echo '{
+		. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$hostname.ap )
+		echo '{
   "ip"         : "'$Address'"
 , "passphrase" : "'$Passphrase'"
 , "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
 , "ssid"       : "'$hostname'"
 }' > $dirsystem/ap.conf
-			touch $dirsystem/ap
-		fi
+		touch $dirsystem/ap
 		iw $wlandev set power_save off
 	else
 		rm -f $dirsystem/{ap,ap.conf}
@@ -287,7 +285,7 @@ nfsserver )
 		mv /mnt/MPD/{SD,USB} /mnt/MPD/NAS
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
-		echo "/mnt/MPD/NAS  $( ipSub )0/24(rw,sync,no_subtree_check)" > /etc/exports
+		echo "/mnt/MPD/NAS  $( ipAddress sub )0/24(rw,sync,no_subtree_check)" > /etc/exports
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
@@ -439,15 +437,17 @@ spotifykeyremove )
 	pushRefresh
 	;;
 spotifyoutput )
-	file=$dirsystem/spotifyoutput
-	[[ -e $file ]] && current='"'$( < "$file" )'"' || current=false
 	devices='"Default"'
 	readarray -t lines <<< $( aplay -L | grep ^.*:CARD )
 	for l in ${lines[@]}; do
 		devices+=', "'$l'"'
 	done
 	current=$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )
-	[[ ${current:0:3} == hw: ]] && current=Default
+	if [[ ${current:0:3} == hw: ]]; then
+		current=Default
+	else
+		current=$( getContent $dirsystem/spotifyoutput ' ' )
+	fi
 	echo '{
   "current" : "'$current'"
 , "devices" : [ '$devices' ]

@@ -67,7 +67,6 @@ else
 	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
 		updating_db=true
 	fi
-	[[ -e $dirsystem/volumemute ]] && volumemute=$( < $dirsystem/volumemute ) || volumemute=0
 ########
 	status+='
 , "player"       : "'$player'"
@@ -87,7 +86,7 @@ else
 , "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
 , "volume"       : '$volume'
-, "volumemute"   : '$volumemute'
+, "volumemute"   : '$( getContent $dirsystem/volumemute 0 )'
 , "webradio"     : false'
 	if [[ -e $dirsystem/scrobble ]]; then
 		scrobbleconf=$( conf2json $dirsystem/scrobble.conf )
@@ -106,13 +105,13 @@ if [[ $player != mpd && $player != upnp ]]; then
 
 	airplay )
 		dirairplay=$dirshm/airplay
-		[[ -e $dirairplay/state ]] && state=$( < $dirairplay/state ) || state=stop
+		state=$( getContent $dirairplay/state stop )
 		Time=$( getContent $dirairplay/Time )
 		timestamp=$( date +%s%3N )
 		if [[ $state == pause ]]; then
 			elapsed=$( < $dirairplay/elapsed )
 		else
-			[[ -e $dirairplay/start ]] && start=$( < $dirairplay/start ) || start=0
+			start=$( getContent $dirairplay/start 0 )
 			elapsedms=$(( timestamp - start ))
 			elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
 		fi
@@ -215,7 +214,7 @@ if [[ $pllength  == 0 && ! $snapclient ]]; then
 ########
 	status+='
 , "coverart" : ""
-, "hostname" : "'$( getContent $dirshm/avahihostname )'"
+, "hostname" : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
 	outputStatus

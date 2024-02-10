@@ -3,6 +3,8 @@
 . /srv/http/bash/common.sh
 
 backupfile=$dirshm/backup.gz
+! bsdtar tf "$backupfile" 2> /dev/null | grep -q -m1 ^data/system/display.json$ && exit -1
+
 dirconfig=$dirdata/config
 [[ $1 == true ]] && libraryonly=1
 
@@ -19,29 +21,7 @@ fi
 
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 
-if bsdtar tf $backupfile | grep -q display.json$; then # 20230522
-	bsdtar -xpf $backupfile -C /srv/http
-else
-	echo 'Backup done before version <wh>20230420</wh>:
-These will not be restored:
-<div style="padding-left: 90px; text-align: left">
-• Autoplay
-• Browser on RPi
-• Charater LCD
-• Equalizer
-• Multiple rAudios
-• Relay Module
-• Spectrum OLED</div>'
-	bsdtar -xpf $backupfile \
-		--exclude autoplay* \
-		--exclude localbrowser* \
-		--exclude lcdchar* \
-		--exclude equalizer* \
-		--exclude multiraudio* \
-		--exclude relays* \
-		--exclude vuled* \
-			-C /srv/http
-fi
+bsdtar xpf $backupfile -C /srv/http
 
 dirPermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color

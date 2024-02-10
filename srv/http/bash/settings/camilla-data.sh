@@ -27,7 +27,6 @@ readarray -t vcc <<< $( volumeCardControl )
 volume=${vcc[0]}
 card=${vcc[1]}
 control=${vcc[2]}
-[[ -e $dirsystem/volumemute ]] && volumemute=$( < $dirsystem/volumemute ) || volumemute=0
 . $dirshm/status 
 ########
 data='
@@ -43,7 +42,7 @@ data='
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$state'"
 , "volume"     : '$volume'
-, "volumemute" : '$volumemute
+, "volumemute" : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
 for dir in $dirs; do
 ########

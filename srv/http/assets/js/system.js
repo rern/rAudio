@@ -199,19 +199,8 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	V.li      = $this;
-	var active = $this.hasClass( 'active' );
-	$( '#codehddinfo' ).addClass( 'hide' );
-	$( 'li' ).removeClass( 'active' );
-	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
-		$( '#menu, #codehddinfo' ).addClass( 'hide' );
-		if ( active ) return
-	}
-	
 	var i    = $this.index()
 	var list = S.list[ i ];
-	$( '#menu a' ).addClass( 'hide' );
-	if ( list.icon === 'microsd' ) return
-	
 	if ( S.shareddata && list.mountpoint === '/mnt/MPD/NAS/data' ) {
 		info( {
 			  icon    : 'networks'
@@ -222,10 +211,15 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	}
 	
 	$this.addClass( 'active' );
-	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
-	$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 13 ) !== '/mnt/MPD/NAS/' );
-	$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
-	$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
+	$( '#menu a' ).addClass( 'hide' );
+	if ( list.icon === 'microsd' ) {
+		$( '#menu .info' ).removeClass( 'hide' );
+	} else {
+		$( '#menu .info' ).toggleClass( 'hide', list.icon == 'usbdrive' );
+		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 13 ) !== '/mnt/MPD/NAS/' );
+		$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
+	}
 	contextMenu();
 } );
 $( '#menu a' ).on( 'click', function() {
@@ -249,7 +243,7 @@ $( '#menu a' ).on( 'click', function() {
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( [ 'hddinfo', source, 'CMD DEV' ], data => {
+				bash( [ 'deviceinfo', source, 'CMD DEV' ], data => {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
@@ -582,7 +576,7 @@ $( '#backup' ).on( 'click', function() {
 		  icon    : SW.icon
 		, title   : SW.title
 		, message : 'Save all data and settings'
-		, list    : [ 'Filename', 'text', '.gz' ]
+		, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
 		, values  : 'rAudio_backup-'+ ymd
 		, ok      : () => {
 			notifyCommon( 'Process ...' );
@@ -1186,7 +1180,4 @@ function renderStorage() {
 	} else {
 		$( '#divhddsleep' ).addClass( 'hide' );
 	}
-	$( '#codehddinfo' )
-		.empty()
-		.addClass( 'hide' );
 }

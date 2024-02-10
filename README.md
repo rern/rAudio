@@ -113,21 +113,20 @@ Audio player for
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
-	- Always use backup.gz created by latest update to restore system.
+	- Use only backup made from rAudio with the latest update
 - Before power on:
-	- Wi-Fi pre-configure - 4 alternatives: (Only if no wired LAN available.)
-		- From `backup.gz`
+	- Wired LAN connection is recommended
+	- Wi-Fi pre-configure: (any of)
+		- Edit template file:
+			- Rename `wifi0` in `BOOT` to `wifi`
+			- Edit ESSID and Key.
+		- From rAudio backup
 		- From existing
 			- Copy an existing profile file from `/etc/netctl`
 			- Rename it to `wifi` then copy it to `BOOT` before power on.
-		- Edit template file - name and password.
-			- Rename `wifi0` in `BOOT` to `wifi`
-			- Edit SSID and Key.
-		- Generate a complex profile - static IP, hidden SSID
-			- With [Wi-Fi Profile Generator](https://rern.github.io/WiFi_profile/index.html)
-			- Save it in `BOOT`
 	- Wi-Fi access point mode
-		- If no wired network and no pre-configured Wi-Fi connections, Wi-Fi access point will be enabled on boot.
+		- Auto start: No IP address assigned from connected wired/wireless network
+		- Force enable access point only: Place blank `accesspoint` file in `BOOT` before power on.
 		- On client devices, select `rAudio` from Wi-Fi network list to connect.
 		- On browser, open web user interface with URL `raudio.local`
 		- Settings > Networks > Wi-Fi - search
@@ -136,7 +135,7 @@ Audio player for
 		- Browser refreshes when ready. (Manually refresh if it's too long.)
 	- System pre-configure: (Run once)
 		- Restore database and settings (Wi-Fi connection included.)
-			- Copy `backup.gz` to `BOOT`
+			- Copy rAudio backup file to `BOOT`
 			- Use only backup made from rAudio with the latest update
 		- Expand `root` partition:
 			- By default, `root` partition will be expanded on initial boot.

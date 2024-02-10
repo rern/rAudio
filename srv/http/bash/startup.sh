@@ -28,26 +28,19 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 fi
 
-if [[ -e /boot/backup.gz ]]; then
-	if bsdtar tf backup.gz | grep -q -m1 ^data/system/$; then
-		mv /boot/backup.gz $dirdata/tmp
-		$dirsettings/system.sh datarestore
-	else
-		restorefailed='Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.'
-	fi
+backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
+if [[ -e $backupfile ]]; then
+	mv "$backupfile" $dirshm/backup.gz
+	$dirsettings/system-datarestore.sh
 fi
 
-if [[ -e /boot/wifi && $wlandev ]]; then
-	wifi=$( sed 's/\r//; s/\$/\\$/g' /boot/wifi ) # remove windows \r and escape $
-	ssid=$( getVar ESSID <<< $wifi )
-	key=$( getVar Key <<< $wifi )
-	profile="\
-Interface=$wlandev
-$( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )"
-	profile+='
-ESSID="'$ssid'"
-Key="'$key'"'
-	echo "$profile" > "/etc/netctl/$ssid"
+bootwifi=/boot/wifi
+if [[ $wlandev && -e $bootwifi ]]; then
+	data=$( sed -E -e '/^#|^\s*$/ d
+' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
+" $bootwifi )
+	ssid=$( getVar ESSID <<< $data )
+	echo "$data" > "/etc/netctl/$ssid"
 	$dirsettings/networks.sh "profileconnect
 $ssid
 CMD SSID"
@@ -74,53 +67,52 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-# wait for connection
-[[ $wlanprofile ]] && sec=30 || sec=5 # wlan || lan
-for (( i=0; i < $sec; i++ )); do
-	ipaddress=$( ipAddress )
-	[[ ! $ipaddress ]] && sleep 1 || break
-done
-
-[[ -e $dirsystem/ap ]] && ap=1
-if [[ $ipaddress ]]; then
-	[[ -e $filebootwifi ]] && rm -f /boot/wifi
-	readarray -t lines <<< $( grep $dirnas /etc/fstab )
-	if [[ $lines ]]; then
-		for line in "${lines[@]}"; do # ping target before mount
-			[[ ${line:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $line ) || ip=$( cut -d: -f1 <<< $line )
-			for i in {1..10}; do
-				if ipOnline $ip; then
-					mountpoint=$( awk '{print $2}' <<< $line )
-					mount "${mountpoint//\\040/ }" && nasonline=1 && break
-					sleep 2
-				fi
-			done
-		done
-	fi
-	if systemctl -q is-active nfs-server; then
-		if [[ -s $filesharedip ]]; then
-			sharedip=$( < $filesharedip )
-			for ip in $sharedip; do
-				notify -ip $ip networks 'Server rAudio' Online
-			done
-		fi
-		appendSortUnique $ipaddress $filesharedip
-	fi
-	avahi-resolve -a4 $ipaddress | awk '{print $NF}' > $dirshm/avahihostname
-	$dirsettings/addons-data.sh &> /dev/null &
-	rm -f /boot/wifi
+if [[ -e /boot/accesspoint ]]; then
+	ap=1
 else
-	[[ -e $filebootwifi ]] && mv /boot/wifi{,X}
-	if [[ $wlandev && ! $ap ]]; then
-		if [[ $wlanprofile ]]; then
-			[[ ! -e $dirsystem/wlannoap ]] && ap=1
-		else
-			ap=1
+	[[ $wlanprofile ]] && sec=30 || sec=5 # wlan || lan
+	for (( i=0; i < $sec; i++ )); do # wait for connection
+		ipaddress=$( ipAddress )
+		[[ ! $ipaddress ]] && sleep 1 || break
+	done
+	[[ -e $dirsystem/ap ]] && ap=1
+	if [[ $ipaddress ]]; then
+		readarray -t lines <<< $( grep $dirnas /etc/fstab )
+		if [[ $lines ]]; then
+			for line in "${lines[@]}"; do # ping target before mount
+				[[ ${line:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $line ) || ip=$( cut -d: -f1 <<< $line )
+				for i in {1..10}; do
+					if ipOnline $ip; then
+						mountpoint=$( awk '{print $2}' <<< $line )
+						mount "${mountpoint//\\040/ }" && nasonline=1 && break
+						sleep 2
+					fi
+				done
+			done
 		fi
-		[[ $ap ]] && touch $dirshm/apstartup
+		if systemctl -q is-active nfs-server; then
+			if [[ -s $filesharedip ]]; then
+				sharedip=$( < $filesharedip )
+				for ip in $sharedip; do
+					notify -ip $ip networks 'Server rAudio' Online
+				done
+			fi
+			appendSortUnique $ipaddress $filesharedip
+		fi
+		[[ -e $bootwifi ]] && rm -f $bootwifi
+	else
+		if [[ $wlandev && ! $ap ]]; then
+			if [[ $wlanprofile ]]; then
+				[[ ! -e $dirsystem/wlannoap ]] && ap=1
+			else
+				ap=1
+			fi
+			[[ $ap ]] && touch $dirshm/apstartup
+			[[ -e $bootwifi ]] && mv $bootwifi{,X}
+		fi
 	fi
-	[[ -e /boot/wifi ]] && mv /boot/wifi{,-NOT_CONECTED}
 fi
+
 [[ $ap ]] && $dirsettings/features.sh iwctlap
 
 if [[ -e $dirsystem/btconnected ]]; then
@@ -152,12 +144,6 @@ if [[ -e $dirsystem/volumeboot ]]; then
 fi
 
 # after all sources connected ........................................................
-if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
-	$dirsettings/system.sh "hddsleep
-$( < $dirsystem/apm )
-CMD APM"
-fi
-
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	echo rescan > $dirmpd/updating
 	$dirbash/cmd.sh mpcupdate
@@ -171,17 +157,20 @@ if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
-if [[ $restorefailed ]]; then
-	notify restore "$restorefailed" 10000
-elif [[ $nas && ! $nasonline ]]; then
-	notify nas NAS "NAS @$ip cannot be reached." -1
-fi
-
 touch $dirshm/startup
+
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
-	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
+	$dirbash/cmd.sh 'mpcplayback
+play
+CMD ACTION'
 fi
 
-if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.service failed
+if [[ -e /boot/startup.sh ]]; then
 	/boot/startup.sh
+fi
+
+if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
+	$dirsettings/system.sh "hddsleep
+$( < $dirsystem/apm )
+CMD APM"
 fi

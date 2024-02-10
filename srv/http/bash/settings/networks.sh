@@ -8,7 +8,7 @@ netctlSwitch() {
 	local active connected ssid wlandev
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
-	connected=$( iwgetid -r $wlandev )
+	connected=$( iwgetid -r )
 	ip link set $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
@@ -95,13 +95,10 @@ Hidden=yes'
 	fi
 	;;
 disconnect )
-	if [[ $DISCONNECT ]]; then
-		netctl stop "$SSID"
-		systemctl stop wpa_supplicant
-		ip link set $( < $dirshm/wlan ) up
-		$dirsettings/networks-data.sh pushwl
-	fi
-	[[ $DISABLE ]] && netctl disable "$SSID"
+	netctl stop "$SSID"
+	systemctl stop wpa_supplicant
+	ip link set $( < $dirshm/wlan ) up
+	$dirsettings/networks-data.sh pushwl
 	;;
 lanedit )
 	if [[ $IP ]]; then
@@ -136,11 +133,12 @@ profileconnect )
 	fi
 	netctlSwitch "$SSID"
 	;;
-profileget )
-	profile=$( conf2json "/etc/netctl/$SSID" )
-	echo ${profile/INT*IP/IP}
+profiledisable )
+	[[ $DISABLE == true ]] && toggle=disable || toggle=enable
+	netctl $toggle "$SSID"
+	pushRefreshWlan
 	;;
-profileremove )
+profileforget )
 	netctl is-enabled "$SSID" && netctl disable "$SSID"
 	if netctl is-active "$SSID" &> /dev/null; then
 		netctl stop "$SSID"
@@ -150,6 +148,10 @@ profileremove )
 	fi
 	rm "/etc/netctl/$SSID"
 	$dirsettings/networks-data.sh pushwl
+	;;
+profileget )
+	profile=$( conf2json "/etc/netctl/$SSID" )
+	echo ${profile/INT*IP/IP}
 	;;
 statuslan )
 	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
@@ -165,8 +167,10 @@ $( avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print $7": "$
 statuswl )
 	wlandev=$( < $dirshm/wlan )
 	echo "\
-<bll># ifconfig $wlandev; iwconfig $wlandev</bll>
+<bll># ifconfig $wlandev</bll>
 $( ifconfig $wlandev | grep -E -v 'RX|TX')
+
+<bll># iwconfig $wlandev</bll>
 $( iwconfig $wlandev | awk NF )"
 	;;
 usbbluetoothon ) # from usbbluetooth.rules

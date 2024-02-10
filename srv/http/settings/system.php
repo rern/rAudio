@@ -97,7 +97,7 @@ EOF
 ];
 $body = [
 	'<ul id="list" class="entries"></ul>
-		<div class="helpblock hide">'.i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu'.'</div>
+		<div class="helpblock hide">'.i( 'microsd btn' ).' '.i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu'.'</div>
 		<pre id="codehddinfo" class="hide"></pre>'
 	, [
 		  'id'       => 'hddsleep'
@@ -382,7 +382,6 @@ $uihtml     = '';
 foreach( $listui as $ui ) {
 	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> - '.$ui[ 1 ].'<br>';
 }
-$hdparmhide = ! file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 $indexhtml  = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	$indexhtml.= '<a>'.$i.'</a>';
@@ -435,7 +434,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 </div>
 
 <div id="menu" class="menu hide">
-<a class="info"<?=$hdparmhide?>><?=i( 'info' )?>Info</a>
+<a class="info"><?=i( 'info' )?>Info</a>
 <a class="forget"><?=i( 'remove' )?>Forget</a>
 <a class="remount"><?=i( 'connect' )?>Re-mount</a>
 <a class="unmount"><?=i( 'close' )?>Unmount</a>

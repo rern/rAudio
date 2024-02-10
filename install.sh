@@ -4,10 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240121
-file=$dirshm/avahihostname
-[[ ! -e $file ]] && avahi-resolve -a4 $( ipAddress ) | awk '{print $NF}' > $file
+# 20240210
+[[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils
 
+# 20240121
 if [[ ! -e /usr/bin/iwctl ]]; then
 	pacman -Sy --noconfirm iwd
 	mkdir -p /etc/iwd /var/lib/iwd/ap
@@ -105,13 +105,6 @@ if [[ ! -e /boot/kernel.img && $( pacman -Q python-websockets ) != 'python-webso
 	systemctl restart websocket
 fi
 
-# 202312010
-file=$dirsystem/display.json
-for k in albumyear composername conductorname; do
-	! grep -q $k $file && sed -i '/"artist"/ i\  "'$k'": false,' $file
-done
-
-[[ ! -e /usr/bin/websocat ]] && pacman -Sy --noconfirm websocat
 #-------------------------------------------------------------------------------
 installstart "$1"
 

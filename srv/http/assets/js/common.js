@@ -496,7 +496,7 @@ function info( json ) {
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
 					break;
 				case 'radio':
-					var isarray = $.isArray( kv );
+					var isarray = Array.isArray( kv );
 					var tr      = false;
 					$.each( kv, ( k, v ) => {
 						var k = isarray ? v : k;
@@ -504,9 +504,9 @@ function info( json ) {
 						htmls.list += '<label><input type="radio" name="inforadio'+ i +'" value="'+ v +'">'+ k +'</label>';
 						if ( param.sameline === false ) { // default: true
 							tr          = true;
-							htmls.list += '</td></tr>'; // 1:1 line
+							htmls.list += '</td></tr>';
 						} else {
-							htmls.list += '&emsp;'; // same line
+							htmls.list += '&emsp;';
 						}
 					} );
 					htmls.list += tr ? '' : '</td></tr>';
@@ -990,7 +990,7 @@ function infoPower() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
-		, message     : ico( 'raudio i-30 gr' ) +'&ensp; r A u d i o'
+		, message     : ico( 'raudio i-30 gr' ) +'<a style="font-weight: 300">&ensp; r A u d i o</a>'
 		, buttonlabel : ico( 'reboot' ) +'Reboot'
 		, buttoncolor : orange
 		, button      : () => infoPowerCommand( 'reboot' )

@@ -28,7 +28,7 @@ fi
 rm -f $dirshm/nosound
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
-[[ -e $dirsystem/audio-aplayname ]] && audioaplayname=$( < $dirsystem/audio-aplayname )
+audioaplayname=$( getContent $dirsystem/audio-aplayname )
 
 for line in "${aplay[@]}"; do
 	readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$line" )
@@ -54,8 +54,7 @@ for line in "${aplay[@]}"; do
 		else
 			name=${aplayname/bcm2835/On-board}
 		fi
-		mixertypefile="$dirsystem/mixertype-$aplayname"
-		[[ -e $mixertypefile ]] && mixertype=$( < "$mixertypefile" ) || mixertype=hardware
+		mixertype=$( getContent "$mixertypefile" hardware )
 		amixer=$( amixer -c $card scontents )
 		if [[ $amixer ]]; then
 			amixer=$( grep -A1 ^Simple <<< $amixer \

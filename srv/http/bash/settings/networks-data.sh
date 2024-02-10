@@ -46,12 +46,12 @@ listWlan() {
 					[[ $ipr ]] && break || sleep 1
 				done
 				ipwl=$( cut -d' ' -f9 <<< $ipr )
-				gatewaywl=$( cut -d' ' -f3 <<< $ipr )
+				gateway=$( cut -d' ' -f3 <<< $ipr )
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
   "dbm"     : '$dbm'
-, "gateway" : "'$gatewaywl'"
+, "gateway" : "'$gateway'"
 , "ip"      : "'$ipwl'"
 , "ssid"    : "'$ssid'"
 }'
@@ -91,7 +91,6 @@ if [[ $ipr ]]; then
 , "static"   : '$static'
 }'
 fi
-[[ ! $gateway ]] && gateway=$gatewaywl
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ##########
@@ -102,11 +101,11 @@ data='
 , "ap"          : '$( exists $dirsystem/ap )'
 , "apconf"      : '$apconf'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
-, "connectedwl" : '$( [[ $( iwgetid -r $wlandev ) ]] && echo true )'
+, "connectedwl" : '$( [[ $( iwgetid -r ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
-, "hostname"    : "'$( getContent $dirshm/avahihostname )'"
+, "hostname"    : "'$( avahi-resolve -a4 $( ipAddress ) | awk '{print $NF}' )'"
 , "ipeth"       : "'$ipeth'"
-, "ipsub"       : "'$( ipSub )'"
+, "ipsub"       : "'$( ipAddress sub )'"
 , "ipwl"        : "'$ipwl'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'

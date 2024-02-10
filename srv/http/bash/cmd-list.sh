@@ -118,7 +118,7 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 			done
 		fi
 	fi
-	[[ -e $dirmpd/albumignore ]] && albumignore=$( < $dirmpd/albumignore )
+	albumignore=$( getContent $dirmpd/albumignore ' ' )
 	readarray -t lines <<< $albumlist
 	for line in "${lines[@]}"; do
 		readarray -t tags <<< $( echo -e "${line//^^/\\n}" )

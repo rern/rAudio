@@ -11,7 +11,7 @@ defaults.ctl.card $asoundcard
 else
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/features.sh camilladsp
 fi
-[[ -e $dirshm/btreceiver ]] && bluetooth=$( < $dirshm/btreceiver )
+bluetooth=$( getContent $dirshm/btreceiver ' ' )
 if [[ -e $dirsystem/camilladsp ]]; then
 	camilladsp=1
 	modprobe snd_aloop
@@ -91,8 +91,8 @@ alsactl nrestore &> /dev/null # notify changes to running daemons
 # ----------------------------------------------------------------------------
 wm5102card=$( aplay -l 2> /dev/null | grep snd_rpi_wsp | cut -c 6 )
 if [[ $wm5102card ]]; then
-	[[ -e $dirsystem/hwmixer-wsp ]] && output=$( < $dirsystem/hwmixer-wsp ) || output='HPOUT2 Digital'
-	$dirsettings/player-wm5102.sh $wm5102card $output
+	output=$( getContent $dirsystem/hwmixer-wsp 'HPOUT2 Digital' )
+	$dirsettings/player-wm5102.sh $wm5102card "$output"
 fi
 
 if [[ $camilladsp ]]; then
