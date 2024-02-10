@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240210
+[[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils
+
 # 20240121
 if [[ ! -e /usr/bin/iwctl ]]; then
 	pacman -Sy --noconfirm iwd
