@@ -117,9 +117,9 @@ Audio player for
 - Before power on:
 	- Wired LAN connection is recommended
 	- Wi-Fi pre-configure: (any of)
-		- Edit template file - name and password.
+		- Edit template file:
 			- Rename `wifi0` in `BOOT` to `wifi`
-			- Edit SSID and Key.
+			- Edit ESSID and Key.
 		- From rAudio backup
 		- From existing
 			- Copy an existing profile file from `/etc/netctl`
