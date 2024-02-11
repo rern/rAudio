@@ -140,27 +140,6 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
-deviceinfo )
-	if [[ ${DEV:5:3} == mmc ]]; then
-		dev=/sys/block/${DEV:5:-2}/device
-		cmd="<bll># mmc cid read $dev</bll>"
-		echo "\
-$cmd
-$( mmc cid read $dev )
-
-${cmd/cid/csd}
-$( mmc csd read $dev )
-
-${cmd/cid/src}
-$( mmc scr read $dev )
-"
-	else
-		echo -n "\
-<bll># hdparm -I $DEV</bll>
-$( hdparm -I $DEV | sed '1,3 d' )
-"
-	fi
-	;;
 hddsleep )
 	if [[ $ON ]]; then
 		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
@@ -546,6 +525,27 @@ statuswlan )
 	iw reg get
 	echo '<bll># iw list</bll>'
 	iw list
+	;;
+storageinfo )
+	if [[ ${DEV:0:8} == /dev/mmc ]]; then
+		dev=/sys/block/${DEV:5:-2}/device
+		cmd="<bll># mmc cid read $dev</bll>"
+		echo "\
+$cmd
+$( mmc cid read $dev )
+
+${cmd/cid/csd}
+$( mmc csd read $dev )
+
+${cmd/cid/src}
+$( mmc scr read $dev )
+"
+	else
+		echo -n "\
+<bll># hdparm -I $DEV</bll>
+$( hdparm -I $DEV | sed '1,3 d' )
+"
+	fi
 	;;
 tft )
 	config=$( grep -Ev 'hdmi_force_hotplug|:rotate=' /boot/config.txt )
