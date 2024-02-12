@@ -55,15 +55,17 @@ crossfade )
 	pushRefresh
 	;;
 customget )
+	aplayname=$( getVar aplayname $dirsystem/player-device ) 
 	echo "\
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
-$( getContent "$dirsystem/custom-output-$APLAYNAME" )"
+$( getContent "$dirsystem/custom-output-$aplayname" )"
 	;;
 custom )
 	if [[ $ON ]]; then
 		fileglobal=$dirmpdconf/conf/custom.conf
-		fileoutput=$dirsystem/custom-output-$APLAYNAME
+		aplayname=$( getVar aplayname $dirsystem/player-device )
+		fileoutput="$dirsystem/custom-output-$aplayname"
 		if [[ $GLOBAL ]]; then
 			echo -e "$GLOBAL" > $fileglobal
 			linkConf
@@ -100,30 +102,33 @@ filetype )
 	echo "${list:0:-4}"
 	;;
 hwmixer )
-	echo $HWMIXER > "$dirsystem/hwmixer-$APLAYNAME"
+	aplayname=$( getVar aplayname $dirsystem/player-device )
+	echo $HWMIXER > "$dirsystem/hwmixer-$aplayname"
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
+	. $dirsystem/player-device
 	mpc -q stop
-	filemixertype=$dirsystem/mixertype-$APLAYNAME
+	filemixertype=$dirsystem/mixertype-$aplayname
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
 	if [[ $MIXERTYPE == software ]]; then # [sw] set to current [hw]
 		[[ -e $dirshm/amixercontrol ]] && mpc volume $( volumeGet value )
 	else
 		rm -f $dirsystem/replaygain-hw
 	fi
-	if [[ $HWMIXER ]]; then
+	if [[ $hwmixer ]]; then
 		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB # [hw] set to current [sw] || [sw/none] set 0dB
-		amixer -c $CARD -Mq sset "$HWMIXER" $vol
+		amixer -c $card -Mq sset "$hwmixer" $vol
 	fi
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false
 	pushData display '{ "volumenone": '$volumenone' }'
 	;;
 novolume )
+	. $dirsystem/player-device
 	mpc -q crossfade 0
-	amixer -c $CARD -Mq sset "$HWMIXER" 0dB
-	echo none > "$dirsystem/mixertype-$APLAYNAME"
+	amixer -c $card -Mq sset "$hwmixer" 0dB
+	echo none > "$dirsystem/mixertype-$aplayname"
 	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
 	$dirsettings/player-conf.sh

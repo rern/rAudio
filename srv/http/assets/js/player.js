@@ -21,11 +21,11 @@ $( '#audiooutput' ).on( 'input', function() {
 	var aplayname = $this.val();
 	var output    = $this.find( 'option:selected' ).text()
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
+	bash( [ 'audiooutput', output, aplayname, 'CMD OUTPUT APLAYNAME' ] );
 } );
 $( '#hwmixer' ).on( 'input', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'hwmixer', S.device.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
+	bash( [ 'hwmixer', $( this ).val(), 'CMD HWMIXER' ] );
 } );
 $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	if ( this.id.slice( -1 ) === 'a' ) {
@@ -113,7 +113,7 @@ $( '#novolume' ).on( 'click', function() {
 			, cancel  : switchCancel
 			, ok      : () => {
 				S.novolume = true;
-				bash( [ 'novolume', S.device.card, S.device.hwmixer, S.device.aplayname, 'CMD CARD HWMIXER APLAYNAME' ] );
+				bash( [ 'novolume' ] );
 				notifyCommon( 'Enable ...' );
 			}
 		} );
@@ -227,7 +227,7 @@ audio_output {
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
 </table>`;
-	bash( [ 'customget', S.device.aplayname, 'CMD APLAYNAME' ], val => {
+	bash( [ 'customget' ], val => {
 		var val       = val.split( '^^' );
 		var global = val[ 0 ].trim(); // remove trailing
 		var output = val[ 1 ].trim();
@@ -249,7 +249,7 @@ audio_output {
 				}
 				
 				notifyCommon();
-				bash( [ 'custom', global, output, S.device.aplayname, 'CMD GLOBAL OUTPUT APLAYNAME' ], mpdstart => {
+				bash( [ 'custom', global, output, 'CMD GLOBAL OUTPUT' ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -393,7 +393,7 @@ function renderStatus() {
 }
 function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', S.device.card, mixertype, S.device.hwmixer, S.device.aplayname, 'CMD CARD MIXERTYPE HWMIXER APLAYNAME' ] );
+	bash( [ 'mixertype', mixertype, 'CMD MIXERTYPE' ] );
 }
 function volumeGetPush() {
 	bash( [ 'volumepush' ] );
