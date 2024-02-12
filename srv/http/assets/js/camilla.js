@@ -685,9 +685,9 @@ var render    = {
 		
 		// run once
 		var vugrid  = '<div id="vugrid">';
-		for ( i = 0; i < 7; i++ ) vugrid  += '<a class="g'+ i +'"></>';
+		for ( i = 0; i < 6; i++ ) vugrid  += '<a class="g'+ i +'"></>';
 		var vulabel = '<div id="vulabel">';
-		[ -60, -48, -36, -24, -12, 0, 12 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
+		[ -60, -48, -36, -24, -12, 0, 'dB' ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
 		var vubar   = '<div id="vu">'
 					 + vugrid +'</div>'
 					 +'<div id="in">';
