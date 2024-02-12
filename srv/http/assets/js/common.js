@@ -1129,14 +1129,18 @@ function selectText2Html( pattern ) {
 
 // page visibility -----------------------------------------------------------------
 function pageActive() {
-	if ( V.local || V.off ) return // V.local from select2
+	if ( V.pageactive || V.local || V.off ) return // V.local from select2
 	
+	V.pageactive   = true;
+	V.pageinactive = false;
 	websocketConnect();
 	page ? setTimeout( refreshData, 300 ) : refreshData();
 }
 function pageInactive() {
-	if ( V.local || V.debug ) return // V.local from select2
+	if ( V.pageinactive || V.local || V.debug ) return // V.local from select2
 	
+	V.pageactive   = false;
+	V.pageinactive = true;
 	if ( typeof psOnClose === 'function' ) psOnClose();
 //	ws.send( 'clientremove' ); // 'clientremove' = missing 1st message on pageActive
 }
@@ -1147,7 +1151,8 @@ window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 
 // websocket
-var ws, wsvolume;
+var ws       = null;
+var wsvolume = null;
 function volumeMuteToggle() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
@@ -1195,7 +1200,7 @@ function websocketConnect() {
 	}
 }
 function websocketOk( socket ) {
-	return socket !== null && typeof socket === 'object' && socket.readyState === 1
+	return socket && socket.readyState === 1
 }
 function websocketReady( socket ) {
 	var interval = setTimeout( () => {
@@ -1205,8 +1210,9 @@ function websocketReady( socket ) {
 		}
 	}, 100 );
 }
-function websocketReconnect() {
-	fetch( '/data/shm/startup' )
+function websocketReconnect( ip ) {
+	var url = ip ? 'http://'+ ip :  '';
+	fetch( url +'/data/shm/startup' )
 		.then( response => {
 			response.ok ? websocketConnect() : setTimeout( websocketReconnect, 1000 );
 		} );
@@ -1241,7 +1247,7 @@ function psPower( data ) {
 	V[ data.type ] = true;
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 	ws.close();
-	if ( typeof wsvolume === 'object' ) wsvolume.close();
+	if ( wsvolume ) wsvolume.close();
 	if ( V.off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {
