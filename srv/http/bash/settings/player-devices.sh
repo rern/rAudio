@@ -113,7 +113,10 @@ for line in "${aplay[@]}"; do
 , "mixertype"    : "'$mixertype'"
 , "name"         : "'$name'"
 }'
-		[[ $usbdac != add && $aplayname == $audioaplayname ]] && configFiles
+		if [[ $usbdac != add && $aplayname == $audioaplayname ]]; then
+			name="'$( getContent $dirsystem/audio-output 'On-board Headphones' )'"
+			configFiles
+		fi
 	fi
 	Aaplayname[card]=$aplayname
 	Acard[card]=$card
