@@ -38,7 +38,7 @@ name="'$name'"
 card='$card'
 device='$device'
 hwmixer='$hwmixer'
-mixertype='$mixertype > $dirsystem/player-device.conf
+mixertype='$mixertype > $dirsystem/player-device
 }
 
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )

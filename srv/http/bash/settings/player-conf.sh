@@ -52,8 +52,8 @@ if [[ $asoundcard == -1 ]]; then # no audio devices
 		pushData refresh '{ "page": "features", "nosound": true }'
 		outputswitch='(None)'
 	fi
-elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
-	. $dirsystem/player-device.conf # aplayname name card device hwmixer mixertype
+elif [[ ! $btoutputonly ]]; then
+	. $dirsystem/player-device # aplayname name card device hwmixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
