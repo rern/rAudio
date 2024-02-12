@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240210
+# 20240212
 [[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils
 
 # 20240121

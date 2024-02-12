@@ -354,9 +354,7 @@ function psOnClose() {
 function reconnect( ssid, ip ) {
 	loader();
 	notify( 'wifi', ssid, 'Connect ...' );
-	setTimeout( () => {
-		location.href = 'http://'+ ip +'/settings.php?p=networks';
-	}, 5000 );
+	websocketReconnect( ip );
 }
 function renderBluetooth() {
 	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).trigger( 'click' );

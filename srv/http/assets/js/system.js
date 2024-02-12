@@ -243,7 +243,7 @@ $( '#menu a' ).on( 'click', function() {
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( [ 'deviceinfo', source, 'CMD DEV' ], data => {
+				bash( [ 'storageinfo', source, 'CMD DEV' ], data => {
 					$code
 						.html( data )
 						.removeClass( 'hide' );

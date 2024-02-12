@@ -490,9 +490,6 @@ function renderPage() { // common from settings.js
 	wscamilla && wscamilla.readyState === 1 ? common.wsGetConfig() : common.webSocket();
 }
 function psOnClose() {
-	if ( V.off ) return
-	
-	clearInterval( V.intervalvu );
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
@@ -1795,6 +1792,7 @@ var common    = {
 			websocketReady( wscamilla );
 		}
 		wscamilla.onclose   = () => {
+			wscamilla = null;
 			render.vuClear();
 			clearInterval( V.intervalstatus );
 		}

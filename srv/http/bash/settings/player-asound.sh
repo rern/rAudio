@@ -11,7 +11,7 @@ defaults.ctl.card $asoundcard
 else
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/features.sh camilladsp
 fi
-bluetooth=$( getContent $dirshm/btreceiver ' ' )
+bluetooth=$( getContent $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
 	camilladsp=1
 	modprobe snd_aloop
