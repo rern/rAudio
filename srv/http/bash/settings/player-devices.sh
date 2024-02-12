@@ -32,6 +32,7 @@ rm -f $dirshm/nosound
 
 configFiles() {
 	echo $card > $dirsystem/asoundcard
+	echo $hwmixer > $dirsystem/amixercontrol
 	echo '
 aplayname="'$aplayname'"
 name="'$name'"
@@ -116,12 +117,6 @@ for line in "${aplay[@]}"; do
 			configFiles
 		fi
 	fi
-	Aaplayname[card]=$aplayname
-	Acard[card]=$card
-	Adevice[card]=$device
-	Ahwmixer[card]=$hwmixer
-	Amixers[card]=$mixers
-	Amixertype[card]=$mixertype
 done
 
 if [[ $usbdac == add ]]; then
@@ -131,10 +126,4 @@ elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
 	[[ -e $dirsystem/asoundcard.backup ]] && mv $dirsystem/asoundcard{.backup,} &> /dev/null
 fi
 asoundcard=$( < $dirsystem/asoundcard )
-echo ${Ahwmixer[asoundcard]} > $dirshm/amixercontrol
-
 devices="[ ${devices:1} ]"
-aplayname=${Aaplayname[asoundcard]}
-mixertype=${Amixertype[asoundcard]}
-output=${Aname[asoundcard]}
-

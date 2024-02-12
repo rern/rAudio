@@ -142,7 +142,7 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ ! $Acard && ! $bluetooth ]] && pushStatus && exit # >>>>>>>>>>
+[[ $asoundcard == -1 ]] && pushStatus && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
 [[ $hwmixer && ! $bluetooth && ! $camilladsp && ! $equalizer ]] && mixer=1
