@@ -446,7 +446,7 @@ spotifyoutput )
 	if [[ ${current:0:3} == hw: ]]; then
 		current=Default
 	else
-		current=$( getContent $dirsystem/spotifyoutput ' ' )
+		current=$( getContent $dirsystem/spotifyoutput )
 	fi
 	echo '{
   "current" : "'$current'"

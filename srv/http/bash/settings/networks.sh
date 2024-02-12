@@ -5,10 +5,10 @@
 args2var "$1"
 
 netctlSwitch() {
-	local active connected ssid wlandev
+	local active current ssid wlandev
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
-	connected=$( iwgetid -r )
+	current=$( iwgetid -r )
 	ip link set $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
@@ -21,7 +21,7 @@ netctlSwitch() {
 	done
 	
 	echo -1
-	[[ $connected ]] && netctl switch-to "$connected"
+	[[ $current ]] && netctl switch-to "$current"
 }
 wlanDevice() {
 	local iplinkw wlandev

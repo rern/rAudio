@@ -182,8 +182,8 @@ exists() {
 getContent() {
 	if [[ -e "$1" ]]; then
 		cat "$1"
-	else
-		[[ $2 ]] && echo $2 || echo false
+	elif [[ $2 ]]; then
+		echo $2
 	fi
 }
 getVar(){
