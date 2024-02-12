@@ -38,8 +38,6 @@ fi
 data='
 , "devices"          : '$devices'
 , "asoundcard"       : '$asoundcard'
-, "audioaplayname"   : "'$aplayname'"
-, "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
 , "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
 , "btoutputall"      : '$( exists $dirsystem/btoutputall )'
@@ -53,6 +51,7 @@ data='
 , "crossfadeconf"    : { "SEC": '$crossfadesec' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
+, "deviceconf"       : '$( conf2json -nocap $dirsystem/player-device.conf )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
 , "equalizer"        : '$equalizer'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'

@@ -13,7 +13,9 @@
 
 ### included by player-conf.sh, player-data.sh
 
-readarray -t aplay <<< $( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback.*1/' )
+readarray -t aplay <<< $( aplay -l 2> /dev/null \
+							| awk '/^card/ && !/Loopback.*1/' \
+							| sed '/device 1.*HDMI 1/ {s/HDMI 1/HDMI 2/g}' )
 
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
@@ -28,7 +30,18 @@ fi
 rm -f $dirshm/nosound
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
-audioaplayname=$( getContent $dirsystem/audio-aplayname )
+configFiles() {
+	echo $card > $dirsystem/asoundcard
+	echo '
+aplayname="'$aplayname'"
+name="'$name'"
+card='$card'
+device='$device'
+hwmixer='$hwmixer'
+mixertype='$mixertype > $dirsystem/player-device.conf
+}
+
+audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 
 for line in "${aplay[@]}"; do
 	readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$line" )
@@ -49,11 +62,7 @@ for line in "${aplay[@]}"; do
 }'
 	else
 		[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
-		if [[ $aplayname == $audioaplayname ]]; then
-			name=$( < $dirsystem/audio-output )
-		else
-			name=${aplayname/bcm2835/On-board}
-		fi
+		name=${aplayname/bcm2835/On-board}
 		mixertype=$( getContent "$mixertypefile" hardware )
 		amixer=$( amixer -c $card scontents )
 		if [[ $amixer ]]; then
@@ -104,6 +113,7 @@ for line in "${aplay[@]}"; do
 , "mixertype"    : "'$mixertype'"
 , "name"         : "'$name'"
 }'
+		[[ $usbdac != add && $aplayname == $audioaplayname ]] && configFiles
 	fi
 	Aaplayname[card]=$aplayname
 	Acard[card]=$card
@@ -111,18 +121,13 @@ for line in "${aplay[@]}"; do
 	Ahwmixer[card]=$hwmixer
 	Amixers[card]=$mixers
 	Amixertype[card]=$mixertype
-	Aname[card]=$name
 done
 
 if [[ $usbdac == add ]]; then
-	[[ -e $dirsystem/asoundcard ]] && mv $dirsystem/asoundcard{,.backup}
-	echo $card > $dirsystem/asoundcard
+	mv $dirsystem/asoundcard{,.backup}
+	configFiles
 elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
 	[[ -e $dirsystem/asoundcard.backup ]] && mv $dirsystem/asoundcard{.backup,} &> /dev/null
-elif [[ -e $dirsystem/asoundcard ]]; then # missing card
-	! amixer -c $( < $dirsystem/asoundcard ) &> /dev/null && echo $card > $dirsystem/asoundcard
-else
-	echo $card > $dirsystem/asoundcard
 fi
 asoundcard=$( < $dirsystem/asoundcard )
 echo ${Ahwmixer[asoundcard]} > $dirshm/amixercontrol

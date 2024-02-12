@@ -53,12 +53,7 @@ if [[ $asoundcard == -1 ]]; then # no audio devices
 		outputswitch='(None)'
 	fi
 elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
-	aplayname=${Aaplayname[asoundcard]}
-	card=${Acard[asoundcard]}
-	device=${Adevice[asoundcard]}
-	hwmixer=${Ahwmixer[asoundcard]}
-	mixertype=${Amixertype[asoundcard]}
-	name=${Aname[asoundcard]}
+	. $dirsystem/player-device.conf # aplayname name card device hwmixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop

@@ -11,7 +11,8 @@ linkConf() {
 case $CMD in
 
 audiooutput )
-	echo $CARD > $dirsystem/asoundcard
+	echo $APLAYNAME > $dirsystem/audio-aplayname
+	echo $OUTPUT > $dirsystem/audio-output
 	$dirsettings/player-conf.sh
 	;;
 autoupdate | ffmpeg | normalization )
