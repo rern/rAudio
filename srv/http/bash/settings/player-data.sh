@@ -41,7 +41,7 @@ data='
 , "audioaplayname"   : "'$aplayname'"
 , "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
-, "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
+, "btaplayname"      : "'$( getContent $dirshm/btreceiver ' ' )'"
 , "btoutputall"      : '$( exists $dirsystem/btoutputall )'
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
