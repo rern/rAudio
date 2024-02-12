@@ -10,6 +10,10 @@ crossfadesec=$( mpc crossfade | cut -d' ' -f2 )
 crossfade=$( [[ $crossfadesec != 0 ]] && echo true )
 equalizer=$( exists $dirsystem/equalizer )
 normalization=$( exists $dirmpdconf/normalization.conf )
+[[ $( getVar mixertype $dirsystem/player-device ) == none \
+	&& ! $( ls $dirsystem/{camilladsp,crossfade,equalizer} 2> /dev/null ) \
+	&& ! $( ls $dirmpdconf/{normalization,replaygain,soxr}.conf 2> /dev/null ) ]] \
+		&& novolume=true
 replaygain=$( exists $dirmpdconf/replaygain.conf )
 replaygainconf='{
   "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
@@ -58,7 +62,7 @@ data='
 , "lastupdate"       : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
 , "lists"            : '$lists'
 , "normalization"    : '$normalization'
-, "novolume"         : '$( [[ $mixertype == none && ! $resampled ]] && echo true )'
+, "novolume"         : '$novolume'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
 , "player"           : "'$player'"

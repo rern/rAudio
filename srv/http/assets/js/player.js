@@ -121,10 +121,10 @@ $( '#novolume' ).on( 'click', function() {
 		info( {
 			  icon         : SW.icon
 			, title        : SW.title
-			, message      : `\
-<wh>No volume</wh> will be disabled on:
-&emsp; • Select a Mixer Control
-&emsp; • Enable any Volume options`
+			, message      : '<wh>No volume</wh> will be disabled on:'
+							+'<br>&emsp; • Mixer Device not <c>None / 0dB</c>'
+							+'<br>&emsp; • Enable any Volume options or SoXR'
+							+'<br>&emsp; • Enable Features: DSP or Equalizer'
 			, messagealign : 'left'
 		} );
 		$( this ).prop( 'checked', true );

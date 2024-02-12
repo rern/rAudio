@@ -59,7 +59,6 @@ EOF
 		, 'help'     => <<< EOF
 HDMI audio:
  · Available when connected before boot only
- · Enable plug and play: {$Ftab( 'player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
 EOF
 	]
 	, [
@@ -95,7 +94,7 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · Mixer device volume: <c>0dB</c>
  · Volume Control: <c>None / 0db</c>
  · Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
- · Disable Signal Processors
+ · Disable {$Ftab( 'features' )}{$FlabelIcon( 'DSP', 'camilladsp' )} and {$FlabelIcon( 'Equalizer', 'equalizer' )}
 
 Note: Not for DACs with on-board amplifier.
 EOF

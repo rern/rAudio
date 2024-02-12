@@ -49,12 +49,7 @@ for line in "${aplay[@]}"; do
 	card=${cnd[0]}
 	aplayname=${cnd[1]}
 	device=${cnd[2]}
-	if [[ ${aplayname:0:8} == snd_rpi_ ]]; then
-		aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
-	elif grep -q "aplayname.*$aplayname" <<< $devices; then # rpi4: hdmi1 + hdmi1 > hdmi1 + hdmi2
-		lastchar=${aplayname: -1}
-		[[ $lastchar =~ [0-9] ]] && aplayname=${aplayname:0:-1}$(( $lastchar + 1 ))
-	fi
+	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
 	if [[ $aplayname == Loopback ]]; then
 		device=; hwmixer=; mixers=; mixerdevices=; mixertype=; name=;
 		devices+=',{
@@ -87,7 +82,6 @@ for line in "${aplay[@]}"; do
 			mixerdevices=[${mixerdevices:1}]
 			mixers=${#controls[@]}
 		fi
-		
 		hwmixerfile="$dirsystem/hwmixer-$aplayname"
 		if [[ -e $hwmixerfile ]]; then # manual
 			hwmixer=$( < "$hwmixerfile" )
@@ -97,11 +91,12 @@ for line in "${aplay[@]}"; do
 			mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
 		else
 			hwmixer=${controls[0]}
-			if [[ $mixers == 0 ]]; then
-				mixertype=none
-			else
-				mixertype=$( getContent "$$dirsystem/mixertype-$aplayname" hardware )
-			fi
+		fi
+		mixertypefile="$dirsystem/mixertype-$aplayname"
+		if [[ -e $mixertypefile ]]; then
+			mixertype=$( < "$mixertypefile" )
+		else
+			[[ $mixers == 0 ]] && mixertype=none || mixertype=hardware
 		fi
 		devices+=',{
   "aplayname"    : "'$aplayname'"
