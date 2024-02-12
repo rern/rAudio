@@ -63,7 +63,6 @@ for line in "${aplay[@]}"; do
 	else
 		[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
 		name=${aplayname/bcm2835/On-board}
-		mixertype=$( getContent "$mixertypefile" hardware )
 		amixer=$( amixer -c $card scontents )
 		if [[ $amixer ]]; then
 			amixer=$( grep -A1 ^Simple <<< $amixer \
@@ -96,18 +95,17 @@ for line in "${aplay[@]}"; do
 			hwmixer='HPOUT2 Digital'
 			mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
 		else
+			hwmixer=${controls[0]}
 			if [[ $mixers == 0 ]]; then
-				[[ $mixertype == hardware ]] && mixertype=none
-				hwmixer=''
+				mixertype=none
 			else
-				hwmixer=${controls[0]}
+				mixertype=$( getContent "$$dirsystem/mixertype-$aplayname" hardware )
 			fi
 		fi
 		devices+=',{
   "aplayname"    : "'$aplayname'"
 , "card"         : '$card'
 , "device"       : '$device'
-, "hwmixer"      : "'$hwmixer'"
 , "mixers"       : '$mixers'
 , "mixerdevices" : '$mixerdevices'
 , "mixertype"    : "'$mixertype'"
