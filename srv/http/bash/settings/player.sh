@@ -126,11 +126,14 @@ mixertype )
 	;;
 novolume )
 	. $dirsystem/player-device
-	mpc -q crossfade 0
 	amixer -c $card -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
+	mpc -q crossfade 0
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
+	for feature in camilladsp equalizer; do
+		[[ -e $dirsystem/$feature ]] && $dirsettings/features.sh "$feature
+OFF"
+	done
 	$dirsettings/player-conf.sh
 	pushData display '{ "volumenone": true }'
 	;;
