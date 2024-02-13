@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240216
+[[ ! -e $dirsettings/player-device ]] && restartmpd=1
+
 # 20240212
 [[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils
 
@@ -99,12 +102,6 @@ if [[ -e /usr/bin/camilladsp ]]; then
 	fi
 fi
 
-# 20231216
-if [[ ! -e /boot/kernel.img && $( pacman -Q python-websockets ) != 'python-websockets 12.0-1' ]]; then
-	pacman -Sy --noconfirm python-websockets
-	systemctl restart websocket
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -118,3 +115,6 @@ cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20240216
+[[ $restartmpd ]] && $dirsettings/player-conf.sh

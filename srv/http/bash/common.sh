@@ -392,7 +392,7 @@ $card
 $control"
 }
 volumeGet() {
-	local amixer card control data db mixer mixersoftware val val_db
+	local amixer card control data db mixer val val_db
 	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
@@ -401,12 +401,9 @@ volumeGet() {
 	else
 		[[ -e $dirshm/nosound ]] && echo -1 && return
 		
-		if [[ -e $dirsystem/snapclientserver ]]; then
-			mixersoftware=
-		elif inOutputConf mixer_type.*software; then
-			mixersoftware=1
-		fi
-		if [[ $2 != hw && $mixersoftware ]] && playerActive mpd; then
+		if [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
+				&& grep -q mixertype=software $dirsystem/player-device \
+				&& playerActive mpd; then
 			val=$( mpc status %volume% | tr -dc [0-9] )
 		elif [[ -e $dirshm/amixercontrol ]]; then
 			card=$( < $dirsystem/asoundcard )
