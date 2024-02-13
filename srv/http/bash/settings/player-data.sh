@@ -3,7 +3,6 @@
 ! mpc &> /dev/null && echo notrunning && exit
 
 . /srv/http/bash/common.sh
-. $dirsettings/player-devices.sh
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 [[ $( getVar mixertype $dirsystem/player-device ) == none \
@@ -24,8 +23,7 @@ lists='{
 . $dirshm/status
 ##########
 data='
-, "devices"          : '$devices'
-, "asoundcard"       : '$asoundcard'
+, "asoundcard"       : '$( getContent $dirsystem/asoundcard )'
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
 , "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
 , "btoutputall"      : '$( exists $dirsystem/btoutputall )'
@@ -40,11 +38,13 @@ data='
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
 , "device"           : '$( conf2json -nocap player-device )'
+, "devicelist"       : '$( getContent $dirshm/devicelist )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'
 , "lastupdate"       : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
 , "lists"            : '$lists'
+, "mixerlist"        : '$( getContent $dirshm/mixerlist )'
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
 , "novolume"         : '$novolume'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'

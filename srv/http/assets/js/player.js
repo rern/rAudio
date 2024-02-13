@@ -151,7 +151,7 @@ $( '#setting-crossfade' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-replaygain' ).on( 'click', function() {
-	var hardware = S.device.mixertype === 'software' && D.mixers;
+	var hardware = S.device.mixertype === 'software' && S.mixerlist;
 	if ( ! hardware ) delete S.replaygainconf.HARDWARE;
 	info( {
 		  icon         : SW.icon
@@ -360,29 +360,17 @@ function renderPage() {
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
 	} else {
-		var htmldevices = '';
-		$.each( S.devices, ( i, el ) => {
-			if ( el.aplayname === S.device.aplayname ) D = el;
-			if ( el.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ el.aplayname +'">'+ el.name +'</option>';
-		} );
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#audiooutput' )
-			.html( htmldevices )
+			.html( htmlOption( S.devicelist ) )
 			.val( S.device.aplayname );
-		if ( D.mixerdevices ) {
-			var htmlhwmixer = '';
-			D.mixerdevices.forEach( mixer => htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>' );
-		} else {
-			var htmlhwmixer = '<option value="">( not available )</option>';
-		}
 		$( '#hwmixer' )
-			.html( htmlhwmixer )
+			.html( htmlOption( S.mixerlist || [ '( not available )' ] ) )
 			.val( S.device.hwmixer );
-		var htmlmixertype = '<option value="none">None / 0dB</option>';
-		if ( D.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
-		htmlmixertype    += '<option value="software">MPD software</option>';
+		var mixers = { 'None / 0dB': 'none', 'Mixer device': 'hardware', 'MPD software': 'software' }
+		if ( ! S.mixerlist ) delete mixers[ 'Mixer device' ];
 		$( '#mixertype' )
-			.html( htmlmixertype )
+			.html( htmlOption( mixers ) )
 			.val( S.device.mixertype );
 		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volume' in S ) );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
