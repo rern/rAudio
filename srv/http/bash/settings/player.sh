@@ -55,7 +55,7 @@ crossfade )
 	pushRefresh
 	;;
 customget )
-	aplayname=$( getVar aplayname $dirsystem/player-device ) 
+	aplayname=$( getVar aplayname $dirshm/player-device ) 
 	echo "\
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
@@ -64,7 +64,7 @@ $( getContent "$dirsystem/custom-output-$aplayname" )"
 custom )
 	if [[ $ON ]]; then
 		fileglobal=$dirmpdconf/conf/custom.conf
-		aplayname=$( getVar aplayname $dirsystem/player-device )
+		aplayname=$( getVar aplayname $dirshm/player-device )
 		fileoutput="$dirsystem/custom-output-$aplayname"
 		if [[ $GLOBAL ]]; then
 			echo -e "$GLOBAL" > $fileglobal
@@ -102,12 +102,12 @@ filetype )
 	echo "${list:0:-4}"
 	;;
 hwmixer )
-	aplayname=$( getVar aplayname $dirsystem/player-device )
+	aplayname=$( getVar aplayname $dirshm/player-device )
 	echo $HWMIXER > "$dirsystem/hwmixer-$aplayname"
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
-	. $dirsystem/player-device
+	. $dirshm/player-device
 	mpc -q stop
 	filemixertype=$dirsystem/mixertype-$aplayname
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
@@ -125,7 +125,7 @@ mixertype )
 	pushData display '{ "volumenone": '$volumenone' }'
 	;;
 novolume )
-	. $dirsystem/player-device
+	. $dirshm/player-device
 	amixer -c $card -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
 	mpc -q crossfade 0

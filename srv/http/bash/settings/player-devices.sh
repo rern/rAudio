@@ -12,7 +12,7 @@
 #    - if nothing, set as software
 
 ### included by player-conf.sh, player-data.sh
-rm -f $dirshm/{amixercontrol,nosound} $dirsystem/player-device
+rm -f $dirshm/{amixercontrol,mixerlist,nosound,player-device}
 
 aplayl=$( aplay -l 2> /dev/null \
 							| awk '/^card/ && !/Loopback/' \
@@ -60,25 +60,19 @@ if [[ $amixer ]]; then
 	[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
 	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< $controls )
 fi
-if [[ ! $controls ]]; then
-	mixerdevices=false
-	mixers=0
-else
+if [[ $controls ]]; then
 	readarray -t controls <<< $( sort -u <<< $controls )
-	mixerdevices=
 	for control in "${controls[@]}"; do
-		mixerdevices+=',"'$control'"'
+		mixerdevices+=', "'$control'"'
 	done
-	mixerdevices=[${mixerdevices:1}]
-	mixers=${#controls[@]}
+	mixerdevices="[ ${mixerdevices:1} ]"
 fi
 hwmixerfile="$dirsystem/hwmixer-$aplayname"
 if [[ -e $hwmixerfile ]]; then # manual
 	hwmixer=$( < "$hwmixerfile" )
 elif [[ $aplayname == cirrus-wm5102 ]]; then
-	mixers=4
 	hwmixer='HPOUT2 Digital'
-	mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
+	mixerdevices='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
 else
 	hwmixer=${controls[0]}
 fi
@@ -86,18 +80,18 @@ mixertypefile="$dirsystem/mixertype-$aplayname"
 if [[ -e $mixertypefile ]]; then
 	mixertype=$( < "$mixertypefile" )
 else
-	[[ $mixers == 0 ]] && mixertype=none || mixertype=hardware
+	[[ $mixerdevices ]] && mixertype=hardware || mixertype=none
 fi
 
 ########
 asoundcard=$card # for player-asound.sh and player-conf.sh
 echo $card > $dirsystem/asoundcard
-[[ $hwmixer ]] && echo $hwmixer > $dirshm/amixercontrol
-(( $mixers > 0 )) && echo $mixerdevices > $dirshm/mixerlist
+[[ $hwmixer ]] && echo "$hwmixer" > $dirshm/amixercontrol # quote to includes trailing space (if any)
+[[ $mixerdevices ]] && echo $mixerdevices > $dirshm/mixerlist
 echo '
 aplayname="'$aplayname'"
 name="'$name'"
 card='$card'
 device='$device'
 hwmixer='$hwmixer'
-mixertype='$mixertype > $dirsystem/player-device
+mixertype='$mixertype > $dirshm/player-device

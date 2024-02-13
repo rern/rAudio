@@ -5,7 +5,7 @@
 . /srv/http/bash/common.sh
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
-[[ $( getVar mixertype $dirsystem/player-device ) == none \
+[[ $( getVar mixertype $dirshm/player-device ) == none \
 	&& $crossfade == 0 \
 	&& ! $( ls $dirsystem/{camilladsp,equalizer} 2> /dev/null ) \
 	&& ! $( ls $dirmpdconf/{normalization,replaygain,soxr}.conf 2> /dev/null ) ]] \
