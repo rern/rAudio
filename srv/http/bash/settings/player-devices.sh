@@ -32,7 +32,7 @@ rm -f $dirshm/nosound
 
 configFiles() {
 	echo $card > $dirsystem/asoundcard
-	echo $hwmixer > $dirsystem/amixercontrol
+	echo $hwmixer > $dirshm/amixercontrol
 	echo '
 aplayname="'$aplayname'"
 name="'$name'"
