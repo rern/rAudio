@@ -12,17 +12,16 @@
 #    - if nothing, set as software
 
 ### included by player-conf.sh, player-data.sh
+rm -f $dirshm/amixercontrol
 
 readarray -t aplay <<< $( aplay -l 2> /dev/null \
 							| awk '/^card/ && !/Loopback.*1/' \
 							| sed '/device 1.*HDMI 1/ {s/HDMI 1/HDMI 2/g}' )
-
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
 	echo $asoundcard > $dirsystem/asoundcard
 	devices=false
 	touch $dirshm/nosound
-	rm -f $dirshm/amixercontrol
 	pushData display '{ "volumenone": true }'
 	return
 fi
@@ -32,7 +31,7 @@ rm -f $dirshm/nosound
 
 configFiles() {
 	echo $card > $dirsystem/asoundcard
-	echo $hwmixer > $dirshm/amixercontrol
+	[[ $hwmixer ]] && echo $hwmixer > $dirshm/amixercontrol
 	echo '
 aplayname="'$aplayname'"
 name="'$name'"
