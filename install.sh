@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240216
-[[ ! -e $dirshm/nosound && ! -e $dirsettings/player-device ]] && restartmpd=1
+[[ ! -e $dirshm/nosound && ! -e $dirshm/player-device ]] && restartmpd=1
 
 # 20240212
 [[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils
