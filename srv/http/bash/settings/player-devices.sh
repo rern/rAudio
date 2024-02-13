@@ -29,7 +29,7 @@ fi
 
 readarray -t lines <<< $aplayl
 for line in "${lines[@]}"; do
-	aplayname=$( sed -E 's/.*\[(.*)], device.*/\1/' <<< "$line" )
+	aplayname=$( awk -F'[][]' '{print $2}' <<< "$line" )
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
 	name=${aplayname/bcm2835/On-board}
