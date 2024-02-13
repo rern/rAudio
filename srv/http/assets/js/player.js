@@ -364,9 +364,14 @@ function renderPage() {
 		$( '#audiooutput' )
 			.html( htmlOption( S.devicelist ) )
 			.val( S.device.aplayname );
-		$( '#hwmixer' )
-			.html( htmlOption( S.mixerlist || [ '( not available )' ] ) )
-			.val( S.device.hwmixer );
+		if ( S.mixerlist ) {
+			$( '#hwmixer' )
+				.html( htmlOption( S.mixerlist ) )
+				.val( S.device.hwmixer );
+			$( '#divhwmixer' ).removeClass( 'hide' );
+		} else {
+			$( '#divhwmixer' ).addClass( 'hide' );
+		}
 		var mixers = { 'None / 0dB': 'none', 'Mixer device': 'hardware', 'MPD software': 'software' }
 		if ( ! S.mixerlist ) delete mixers[ 'Mixer device' ];
 		$( '#mixertype' )

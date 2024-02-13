@@ -45,7 +45,7 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		skip+='|FATAL: Module g2d_23 not found'
 		;;
 	mpd )
-		conf=$( grep -v ^i $mpdconf )
+		conf=$( grep -Ev '^i|^#' $mpdconf )
 		for file in autoupdate buffer normalization outputbuffer replaygain custom; do
 			fileconf=$dirmpdconf/$file.conf
 			[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
