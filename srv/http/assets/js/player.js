@@ -106,17 +106,17 @@ $( '#setting-mixertype' ).on( 'click', function() {
 $( '#novolume' ).on( 'click', function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( checked ) {
-		info( {
-			  icon    : SW.icon
-			, title   : SW.title
-			, message : warning
-			, cancel  : switchCancel
-			, ok      : () => {
-				S.novolume = true;
-				bash( [ 'novolume' ] );
-				notifyCommon( 'Enable ...' );
-			}
-		} );
+		if ( S.camilladsp || S.equalizer ) {
+			info( {
+				  icon    : SW.icon
+				, title   : SW.title
+				, message : 'This also disable '+ ( S.camilladsp ? 'DSP '+ ico( 'camilladsp' ) : 'Equalizer '+ ico( 'equalizer' ) )
+				, cancel  : switchCancel
+				, ok      : infoNoVolume
+			} );
+		} else {
+			infoNoVolume();
+		}
 	} else {
 		info( {
 			  icon         : SW.icon
@@ -271,6 +271,19 @@ var warning = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 			+'<gr>Signal will be set to original level at 0dB.</gr><br>'
 			+'Beware of too high volume.</wh>';
 
+function infoNoVolume() {
+	info( {
+		  icon    : SW.icon
+		, title   : SW.title
+		, message : warning
+		, cancel  : switchCancel
+		, ok      : () => {
+			S.novolume = true;
+			bash( [ 'novolume' ] );
+			notifyCommon( 'Enable ...' );
+		}
+	} );
+}
 function infoSoxr( quality ) {
 	delete S.soxrconf.PLUGIN
 	info( {
