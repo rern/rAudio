@@ -25,12 +25,12 @@ if [[ ! $aplayl ]]; then
 	return
 fi
 
-#aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
-
 readarray -t lines <<< $aplayl
 for line in "${lines[@]}"; do
 	aplayname=$( awk -F'[][]' '{print $2}' <<< "$line" )
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
+	#card 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []
+	#card 1: RPiCirrus [RPi-Cirrus],  device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
 	name=${aplayname/bcm2835/On-board}
 	devicelist+=', "'$name'": "'$aplayname'"'
