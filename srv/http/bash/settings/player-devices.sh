@@ -12,7 +12,7 @@
 #    - if nothing, set as software
 
 ### included by player-conf.sh, player-data.sh
-rm -f $dirshm/amixercontrol
+rm -f $dirshm/{amixercontrol,nosound}
 
 readarray -t aplay <<< $( aplay -l 2> /dev/null \
 							| awk '/^card/ && !/Loopback.*1/' \
@@ -26,7 +26,6 @@ if [[ ! $aplay ]]; then
 	return
 fi
 
-rm -f $dirshm/nosound
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
 configFiles() {
