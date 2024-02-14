@@ -37,7 +37,7 @@ data='
 , "crossfadeconf"    : { "SEC": '$crossfade' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
-, "device"           : '$( conf2json -nocap player-device )'
+, "device"           : '$( conf2json -nocap $dirshm/player-device )'
 , "devicelist"       : '$( getContent $dirshm/devicelist )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'

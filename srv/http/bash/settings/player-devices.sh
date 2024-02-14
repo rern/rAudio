@@ -14,10 +14,11 @@
 ### included by player-conf.sh, player-data.sh
 rm -f $dirshm/{amixercontrol,mixerlist,nosound,player-device}
 
-aplayl=$( aplay -l 2> /dev/null \
-							| awk '/^card/ && !/Loopback/' \
-							| sed '/device 1.*HDMI 1/ {s/HDMI 1/HDMI 2/g}' )
-if [[ ! $aplayl ]]; then
+readarray -t lines <<< $( aplay -l 2> /dev/null \
+			| awk '/^card/ && !/Loopback/' \
+			| sed -E 's/^.*\[|]//g' \
+			| sort -u ) # remove duplicated
+if [[ ! $lines ]]; then
 	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
 	echo $asoundcard > $dirsystem/asoundcard
 	touch $dirshm/nosound
@@ -25,7 +26,6 @@ if [[ ! $aplayl ]]; then
 	return
 fi
 
-readarray -t lines <<< $aplayl
 for line in "${lines[@]}"; do
 	aplayname=$( awk -F'[][]' '{print $2}' <<< "$line" )
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
@@ -38,12 +38,16 @@ done
 ########
 echo "{ ${devicelist:1} }" > $dirshm/devicelist
 
-name=$( getContent $dirsystem/audio-output 'On-board Headphones' )
 if [[ $usbdac == add ]]; then
-	line=$( tail -1 <<< $aplayl )
+	line=$( aplay -l \
+				| awk '/^card/ && !/Loopback/' \
+				| tail -1 )
 else
 	audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
-	line=$( grep "$audioaplayname" <<< $aplayl )
+	line=$( aplay -l \
+				| awk '/^card/ && !/Loopback/' \
+				| grep "$audioaplayname" \
+				| head -1 ) # remove duplicated
 fi
 readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$line" )
 card=${cnd[0]}
@@ -82,6 +86,7 @@ if [[ -e $mixertypefile ]]; then
 else
 	[[ $mixerdevices ]] && mixertype=hardware || mixertype=none
 fi
+[[ $usbdac == add ]] && name=$aplayname || name=$( getContent $dirsystem/audio-output 'On-board Headphones' )
 
 ########
 asoundcard=$card # for player-asound.sh and player-conf.sh
