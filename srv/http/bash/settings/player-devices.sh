@@ -41,6 +41,10 @@ echo "{ ${devicelist:1} }" > $dirshm/devicelist
 
 if [[ $usbdac == add ]]; then
 	line=$( tail -1 <<< $aplayl )
+elif [[ $aplayname == cirrus-wm5102 ]]; then
+	line=$( grep wm5102 <<< $aplayl | head -1 )
+	hwmixer='HPOUT2 Digital'
+	mixerdevices='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
 else
 	line=$( grep "$audioaplayname" <<< $aplayl | head -1 ) # remove duplicate control names
 fi
@@ -50,10 +54,7 @@ aplayname=${cnd[1]}
 device=${cnd[2]}
 [[ $usbdac == add ]] && name=$aplayname || name=$audiooutput
 
-if [[ $aplayname == cirrus-wm5102 ]]; then
-	hwmixer='HPOUT2 Digital'
-	mixerdevices='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
-else
+if [[ $aplayname != cirrus-wm5102 ]]; then
 	amixer=$( amixer -c $card scontents )
 	if [[ $amixer ]]; then
 		amixer=$( grep -A1 ^Simple <<< $amixer \
