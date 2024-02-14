@@ -1777,7 +1777,7 @@ var common    = {
 			, GetProcessingLoad : 'load'
 			, GetRateAdjust     : 'rate'
 		}
-		wscamilla           = new WebSocket( 'ws://'+ window.location.host +':1234' );
+		wscamilla           = new WebSocket( 'ws://'+ location.host +':1234' );
 		wscamilla.onready   = () => { // custom
 			common.wsGetState();
 			common.wsGetConfig();

@@ -1176,7 +1176,7 @@ function volumeSetAt( val ) { // drag / press / updn
 	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function websocketConnect( ip ) {
-	var url = 'ws://'+ ( ip || window.location.host ) +':8080';
+	var url = 'ws://'+ ( ip || location.host ) +':8080';
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
 		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( url +'/volume' );
 	}
