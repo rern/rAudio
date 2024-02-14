@@ -6,6 +6,7 @@ $id_data = [
 	, 'buffer'        => [ 'label' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
 	, 'crossfade'     => [ 'label' => 'Cross-Fading',          'sub' => 'crossfade' ]
 	, 'custom'        => [ 'label' => "User's Configurations", 'sub' => 'custom' ]
+	, 'devicewithbt'  => [ 'label' => 'Device + Bluetooth',                                     'setting' => false ]
 	, 'dop'           => [ 'label' => 'DSD over PCM',          'sub' => 'dop',                  'setting' => 'none' ]
 	, 'ffmpeg'        => [ 'label' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
 	, 'hwmixer'       => [ 'label' => 'Mixer Device',                                           'setting' => 'custom' ]
@@ -37,7 +38,6 @@ htmlSection( $head, $body, 'mpd' );
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
 	, 'status' => 'output'
-	, 'button' => [ 'gear btoutputall' ]
 	, 'help'   => <<< EOF
 {$Fi( 'gear btn' )} Other outputs while Bluetooth connected
  · Should be disabled if not used simultaneously
@@ -79,8 +79,12 @@ The later in the signal chain the better sound quality.
 <c>None / 0dB  </c> Best  Amplifier volume - GUI knob hidden
 <c>Mixer device</c> Good  DAC hardware via GUI knob
 <c>MPD software</c> Basic GUI knob
-</pre>Note: <c>None / 0dB</c> Not for devices which still need volume control, e.g., DACs with on-board amplifier
+</pre>
 EOF
+	]
+	, [
+		  'id'       => 'devicewithbt'
+		, 'help'     => 'Keep output device enabled when Bluetooth connected.'
 	]
 ];
 htmlSection( $head, $body, 'output' );

@@ -26,7 +26,7 @@ systemctl stop camilladsp
 # outputs -----------------------------------------------------------------------------
 if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
-	[[ ! -e $dirsystem/btoutputall ]] && btoutputonly=1
+	[[ ! -e $dirsystem/devicewithbt ]] && btoutputonly=1
 	hw=bluealsa
 #---------------< bluetooth
 	audiooutputbt='

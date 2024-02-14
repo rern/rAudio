@@ -1,21 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.btoutputall' ).on( 'click', function() {
-	SW.icon  = 'volume';
-	SW.title = 'Output All';
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, list         : [ 'Enable all while Bluetooth connected', 'checkbox' ]
-		, values       : S.btoutputall
-		, checkchanged : true
-		, ok           : () => {
-			var checked = infoVal();
-			notify( SW.icon, SW.title, ( checked ? 'Enable' : 'Disable' ) +' all while Bluetooth connected' );
-			bash( checked ? [ 'btoutputall' ] : [ 'btoutputall', 'OFF' ] );
-		}
-	} );
-} );
 $( '#audiooutput' ).on( 'input', function() {
 	var $this     = $( this );
 	var aplayname = $this.val();
@@ -350,7 +334,7 @@ function renderPage() {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divbluealsa' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
-		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.btoutputall );
+		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.devicewithbt );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divaudiooutput .col-l' ).html( $( '#divaudiooutput .col-l' ).html() + icondsp );
@@ -358,7 +342,7 @@ function renderPage() {
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {
-		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
+		$( '#divoutput, #divbitperfect, #divvolume, #divdevicewithbt' ).addClass( 'hide' );
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#audiooutput' )
@@ -380,6 +364,7 @@ function renderPage() {
 		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volume' in S ) );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#setting-mixertype' ).toggleClass( 'hide', S.device.mixertype !== 'software' );
+		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#novolume' ).prop( 'checked', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );

@@ -25,8 +25,8 @@ lists='{
 data='
 , "asoundcard"       : '$( getContent $dirsystem/asoundcard )'
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
+, "bluetooth"        : '$( rfkill | grep -q bluetooth && echo true )'
 , "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
-, "btoutputall"      : '$( exists $dirsystem/btoutputall )'
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
@@ -39,6 +39,7 @@ data='
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
 , "device"           : '$( conf2json -nocap $dirshm/player-device )'
 , "devicelist"       : '$( getContent $dirshm/devicelist )'
+, "devicewithbt"     : '$( exists $dirsystem/devicewithbt )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'

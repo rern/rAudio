@@ -20,21 +20,6 @@ autoupdate | ffmpeg | normalization )
 	systemctl restart mpd
 	pushRefresh
 	;;
-btoutputall )
-	enableFlagSet
-	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
-	[[ -e $dirmpdconf/output.conf ]] && output=1
-	if [[ $ON ]]; then
-		[[ $bluetooth && ! $output ]] && restart=1
-	else
-		[[ $bluetooth && $output ]] && restart=1
-	fi
-	if [[ $restart ]]; then
-		$dirsettings/player-conf.sh
-	else
-		pushRefresh
-	fi
-	;;
 buffer | outputbuffer )
 	if [[ $ON ]]; then
 		if [[ $CMD == buffer ]]; then
@@ -83,6 +68,21 @@ custom )
 	else
 		rm -f $dirmpdconf/custom.conf $dirsystem/custom
 		$dirsettings/player-conf.sh
+	fi
+	;;
+devicewithbt )
+	enableFlagSet
+	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
+	[[ -e $dirmpdconf/output.conf ]] && output=1
+	if [[ $ON ]]; then
+		[[ $bluetooth && ! $output ]] && restart=1
+	else
+		[[ $bluetooth && $output ]] && restart=1
+	fi
+	if [[ $restart ]]; then
+		$dirsettings/player-conf.sh
+	else
+		pushRefresh
 	fi
 	;;
 dop )
