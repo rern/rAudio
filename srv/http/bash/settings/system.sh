@@ -188,7 +188,7 @@ i2slist )
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
 	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
-	if [[ $APLAYNAME != onboard ]]; then
+	if [[ $APLAYNAME != none ]]; then
 		config+="
 dtparam=i2s=on
 dtoverlay=$APLAYNAME"

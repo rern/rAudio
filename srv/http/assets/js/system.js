@@ -325,8 +325,6 @@ $( '#i2smodule' ).on( 'input', function() {
 	} else {
 		setTimeout( () => { notify( icon, title, 'Disable ...' ) }, 300 ); // fix - hide banner too soon
 		S.i2smodulesw = false;
-		aplayname = 'onboard';
-		output = '';
 		i2sSelectHide();
 	}
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
