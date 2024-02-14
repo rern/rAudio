@@ -13,12 +13,11 @@
 
 ### included by player-conf.sh, player-data.sh
 rm -f $dirshm/{amixercontrol,mixerlist,nosound,player-device}
+audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
+audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
+aplayl=$( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
 
-readarray -t lines <<< $( aplay -l 2> /dev/null \
-			| awk '/^card/ && !/Loopback/' \
-			| sed -E 's/^.*\[|]//g' \
-			| sort -u ) # remove duplicated
-if [[ ! $lines ]]; then
+if [[ ! $aplayl ]]; then
 	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
 	echo $asoundcard > $dirsystem/asoundcard
 	touch $dirshm/nosound
@@ -26,28 +25,24 @@ if [[ ! $lines ]]; then
 	return
 fi
 
-for line in "${lines[@]}"; do
-	aplayname=$( awk -F'[][]' '{print $2}' <<< "$line" )
+readarray -t lines <<< $( awk '/^card/ && !/Loopback/' <<< $aplayl \
+							| sed -E 's/^.*\[|]//g' \
+							| sort -u ) # remove duplicated
+for aplayname in "${lines[@]}"; do
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
 	#card 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []
 	#card 1: RPiCirrus [RPi-Cirrus],  device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
-	name=${aplayname/bcm2835/On-board}
+	[[ $aplayname == $audioaplayname ]] && name=$audiooutput || name=${aplayname/bcm2835/On-board}
 	devicelist+=', "'$name'": "'$aplayname'"'
 done
 ########
 echo "{ ${devicelist:1} }" > $dirshm/devicelist
 
 if [[ $usbdac == add ]]; then
-	line=$( aplay -l \
-				| awk '/^card/ && !/Loopback/' \
-				| tail -1 )
+	line=$( tail -1 <<< $aplayl )
 else
-	audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
-	line=$( aplay -l \
-				| awk '/^card/ && !/Loopback/' \
-				| grep "$audioaplayname" \
-				| head -1 ) # remove duplicated
+	line=$( grep "$audioaplayname" <<< $aplayl | head -1 ) # remove duplicated
 fi
 readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$line" )
 card=${cnd[0]}
@@ -86,7 +81,7 @@ if [[ -e $mixertypefile ]]; then
 else
 	[[ $mixerdevices ]] && mixertype=hardware || mixertype=none
 fi
-[[ $usbdac == add ]] && name=$aplayname || name=$( getContent $dirsystem/audio-output 'On-board Headphones' )
+[[ $usbdac == add ]] && name=$aplayname || name=$audiooutput
 
 ########
 asoundcard=$card # for player-asound.sh and player-conf.sh
