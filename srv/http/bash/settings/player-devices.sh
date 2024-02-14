@@ -49,32 +49,34 @@ card=${cnd[0]}
 aplayname=${cnd[1]}
 device=${cnd[2]}
 [[ $usbdac == add ]] && name=$aplayname || name=$audiooutput
-amixer=$( amixer -c $card scontents )
-if [[ $amixer ]]; then
-	amixer=$( grep -A1 ^Simple <<< $amixer \
-				| sed 's/^\s*Cap.*: /^/' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' \
-				| grep -v "'Mic'" )
-	controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
-	[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
-	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< $controls )
-fi
-if [[ $controls ]]; then
-	readarray -t controls <<< $( sort -u <<< $controls )
-	for control in "${controls[@]}"; do
-		mixerdevices+=', "'$control'"'
-		[[ $control == Digital ]] && hwmixer=Digital
-	done
-	mixerdevices="[ ${mixerdevices:1} ]"
-	hwmixerfile="$dirsystem/hwmixer-$aplayname"
-	if [[ -e $hwmixerfile ]]; then # manual
-		hwmixer=$( < "$hwmixerfile" )
-	elif [[ $aplayname == cirrus-wm5102 ]]; then
-		hwmixer='HPOUT2 Digital'
-		mixerdevices='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
-	elif [[ ! $hwmixer ]]; then
-		hwmixer=${controls[0]}
+
+if [[ $aplayname == cirrus-wm5102 ]]; then
+	hwmixer='HPOUT2 Digital'
+	mixerdevices='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
+else
+	amixer=$( amixer -c $card scontents )
+	if [[ $amixer ]]; then
+		amixer=$( grep -A1 ^Simple <<< $amixer \
+					| sed 's/^\s*Cap.*: /^/' \
+					| tr -d '\n' \
+					| sed 's/--/\n/g' \
+					| grep -v "'Mic'" )
+		controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
+		[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
+		if [[ $controls ]]; then
+			readarray -t controls <<< $( cut -d"'" -f2 <<< $controls | sort -u )
+			for control in "${controls[@]}"; do
+				mixerdevices+=', "'$control'"'
+				[[ $control == Digital ]] && hwmixer=Digital
+			done
+			mixerdevices="[ ${mixerdevices:1} ]"
+			hwmixerfile="$dirsystem/hwmixer-$aplayname"
+			if [[ -e $hwmixerfile ]]; then # manual
+				hwmixer=$( < "$hwmixerfile" )
+			elif [[ ! $hwmixer ]]; then    # not Digital
+				hwmixer=${controls[0]}
+			fi
+		fi
 	fi
 fi
 mixertypefile="$dirsystem/mixertype-$aplayname"
