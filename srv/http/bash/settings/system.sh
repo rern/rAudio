@@ -516,11 +516,7 @@ $(  i2cdetect -y $dev )"
 statustimezone )
 	echo "\
 <bll># timedatectl</bll>
-$( timedatectl )
-<bll># grep ^NTP /etc/systemd/timesyncd.conf</bll>
-$( grep ^NTP /etc/systemd/timesyncd.conf )
-<bll># grep -m1 ^Server /etc/pacman.d/mirrorlist</bll>
-$( grep -m1 ^Server /etc/pacman.d/mirrorlist )"
+$( timedatectl )"
 	;;
 statuswlan )
 	echo '<bll># iw reg get</bll>'
