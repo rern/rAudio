@@ -1175,13 +1175,14 @@ function volumeSet( vol, type ) { // increment from current to target
 function volumeSetAt( val ) { // drag / press / updn
 	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
-function websocketConnect() {
+function websocketConnect( ip ) {
+	var url = 'ws://'+ ( ip || window.location.host ) +':8080';
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
-		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
+		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( url +'/volume' );
 	}
 	if ( websocketOk( ws ) ) return
 	
-	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
+	ws           = new WebSocket( url );
 	ws.onopen    = () => websocketReady( ws );
 	ws.onclose   = () => ws = null;
 	ws.onmessage = message => psOnMessage( message ); // data pushed from server
@@ -1214,7 +1215,7 @@ function websocketReconnect( ip ) {
 	var url = ip ? 'http://'+ ip :  '';
 	fetch( url +'/data/shm/startup' )
 		.then( response => {
-			response.ok ? websocketConnect() : setTimeout( websocketReconnect, 1000 );
+			response.ok ? websocketConnect( ip ) : setTimeout( () => websocketReconnect( ip ), 1000 );
 		} );
 }
 function wsPush( channel, data ) {

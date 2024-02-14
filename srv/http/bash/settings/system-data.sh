@@ -14,8 +14,12 @@ $load<br>\
 $temp °C<br>\
 $date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
-. $dirshm/cpuinfo
-if [[ ! $degree ]]; then
+if [[ -e $dirshm/cpuinfo ]]; then
+	. $dirshm/cpuinfo
+else
+	revision=$( grep ^Revision /proc/cpuinfo )
+	BB=${revision: -3:2}
+	C=${revision: -4:1}
 	[[ ! $BB =~ ^(09|0c|12)$ ]] && onboardsound=1
 	if [[ $BB == 0d ]]; then
 		rpi3bplus=1
@@ -24,7 +28,10 @@ if [[ ! $degree ]]; then
 	else
 		degree=60
 	fi
-	cpuinfo=degree=$degree
+	cpuinfo="\
+BB=$BB
+C=$C
+degree=$degree"
 	[[ $onboardsound ]] && cpuinfo+=$'\n'onboardsound=true
 	[[ $rpi3bplus ]] && cpuinfo+=$'\n'rpi3bplus=true
 	[[ $softlimit ]] && cpuinfo+=$'\n'softlimit=true
