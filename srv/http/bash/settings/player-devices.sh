@@ -64,6 +64,7 @@ if [[ $controls ]]; then
 	readarray -t controls <<< $( sort -u <<< $controls )
 	for control in "${controls[@]}"; do
 		mixerdevices+=', "'$control'"'
+		[[ $control == Digital ]] && hwmixer=Digital
 	done
 	mixerdevices="[ ${mixerdevices:1} ]"
 	hwmixerfile="$dirsystem/hwmixer-$aplayname"
@@ -72,13 +73,8 @@ if [[ $controls ]]; then
 	elif [[ $aplayname == cirrus-wm5102 ]]; then
 		hwmixer='HPOUT2 Digital'
 		mixerdevices='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
-	elif [[ " ${controls[@]} " =~ ' Digital ' ]]; then
-		hwmixer=Digital
-	else
-		for c in "${controls[@]}"; do # set default to Digital if exists
-			[[ $c == Digital ]] && hwmixer=Digital
-		done
-		[[ ! $hwmixer ]] && hwmixer=${controls[0]}
+	elif [[ ! $hwmixer ]]; then
+		hwmixer=${controls[0]}
 	fi
 fi
 mixertypefile="$dirsystem/mixertype-$aplayname"
