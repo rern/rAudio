@@ -66,15 +66,20 @@ if [[ $controls ]]; then
 		mixerdevices+=', "'$control'"'
 	done
 	mixerdevices="[ ${mixerdevices:1} ]"
-fi
-hwmixerfile="$dirsystem/hwmixer-$aplayname"
-if [[ -e $hwmixerfile ]]; then # manual
-	hwmixer=$( < "$hwmixerfile" )
-elif [[ $aplayname == cirrus-wm5102 ]]; then
-	hwmixer='HPOUT2 Digital'
-	mixerdevices='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
-else
-	hwmixer=${controls[0]}
+	hwmixerfile="$dirsystem/hwmixer-$aplayname"
+	if [[ -e $hwmixerfile ]]; then # manual
+		hwmixer=$( < "$hwmixerfile" )
+	elif [[ $aplayname == cirrus-wm5102 ]]; then
+		hwmixer='HPOUT2 Digital'
+		mixerdevices='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
+	elif [[ " ${controls[@]} " =~ ' Digital ' ]]; then
+		hwmixer=Digital
+	else
+		for c in "${controls[@]}"; do # set default to Digital if exists
+			[[ $c == Digital ]] && hwmixer=Digital
+		done
+		[[ ! $hwmixer ]] && hwmixer=${controls[0]}
+	fi
 fi
 mixertypefile="$dirsystem/mixertype-$aplayname"
 if [[ -e $mixertypefile ]]; then
