@@ -85,6 +85,12 @@ case 'logout':
 	session_destroy();
 	break;
 case 'timezonelist':
+	$file = $dirshm.'timezonelist';
+	if ( file_exists( $file ) ) {
+		echo file_get_contents( $file );
+		exit;
+	}
+	
 	$list   = timezone_identifiers_list();
 	$option = '<option value="auto">Auto</option>';
 	foreach( $list as $key => $zone ) {
@@ -94,6 +100,7 @@ case 'timezonelist':
 		$option  .= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 	}
 	echo $option;
+	file_put_contents( $file, $option );
 	break;
 	
 }
