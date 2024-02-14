@@ -514,11 +514,13 @@ $(  i2cdetect -y $dev )"
 	echo "$config"
 	;;
 statustimezone )
-	echo "<bll># timedatectl</bll>"
-	timedatectl
-	echo "
-<code>NTP server</code>:     $( getVar NTP /etc/systemd/timesyncd.conf )
-<code>Package mirror</code>: $( sed -n '/^Server/ {s/.*= //; p}' /etc/pacman.d/mirrorlist | head -1 )"
+	echo "\
+<bll># timedatectl</bll>
+$( timedatectl )
+<bll># grep ^NTP /etc/systemd/timesyncd.conf</bll>
+$( grep ^NTP /etc/systemd/timesyncd.conf )
+<bll># grep -m1 ^Server /etc/pacman.d/mirrorlist</bll>
+$( grep -m1 ^Server /etc/pacman.d/mirrorlist )"
 	;;
 statuswlan )
 	echo '<bll># iw reg get</bll>'
