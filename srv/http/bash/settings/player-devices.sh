@@ -27,7 +27,7 @@ fi
 
 readarray -t lines <<< $( awk '/^card/ && !/Loopback/' <<< $aplayl \
 							| sed -E 's/^.*\[|]//g' \
-							| sort -u ) # remove duplicated
+							| sort -u ) # remove duplicate control names
 for aplayname in "${lines[@]}"; do
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
 	#card 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []
@@ -42,7 +42,7 @@ echo "{ ${devicelist:1} }" > $dirshm/devicelist
 if [[ $usbdac == add ]]; then
 	line=$( tail -1 <<< $aplayl )
 else
-	line=$( grep "$audioaplayname" <<< $aplayl | head -1 ) # remove duplicated
+	line=$( grep "$audioaplayname" <<< $aplayl | head -1 ) # remove duplicate control names
 fi
 readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$line" )
 card=${cnd[0]}
