@@ -48,6 +48,7 @@ readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3
 card=${cnd[0]}
 aplayname=${cnd[1]}
 device=${cnd[2]}
+[[ $usbdac == add ]] && name=$aplayname || name=$audiooutput
 amixer=$( amixer -c $card scontents )
 if [[ $amixer ]]; then
 	amixer=$( grep -A1 ^Simple <<< $amixer \
@@ -81,7 +82,6 @@ if [[ -e $mixertypefile ]]; then
 else
 	[[ $mixerdevices ]] && mixertype=hardware || mixertype=none
 fi
-[[ $usbdac == add ]] && name=$aplayname || name=$audiooutput
 
 ########
 asoundcard=$card # for player-asound.sh and player-conf.sh
