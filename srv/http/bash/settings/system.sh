@@ -515,17 +515,13 @@ statuswlan )
 storageinfo )
 	if [[ ${DEV:0:8} == /dev/mmc ]]; then
 		dev=/sys/block/${DEV:5:-2}/device
-		cmd="<bll># mmc cid read $dev</bll>"
-		echo "\
-$cmd
-$( mmc cid read $dev )
-
-${cmd/cid/csd}
-$( mmc csd read $dev )
-
-${cmd/cid/src}
-$( mmc scr read $dev )
+		for k in cid csd scr; do
+			data+="
+<bll># mmc $k read $dev</bll>
+$( mmc $k read $dev )
 "
+		done
+		echo "$data"
 	else
 		echo -n "\
 <bll># hdparm -I $DEV</bll>

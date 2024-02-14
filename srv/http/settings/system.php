@@ -98,7 +98,7 @@ EOF
 $body = [
 	'<ul id="list" class="entries"></ul>
 		<div class="helpblock hide">'.i( 'microsd btn' ).' '.i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu'.'</div>
-		<pre id="codehddinfo" class="hide"></pre>'
+		<pre id="codehddinfo" class="status hide"></pre>'
 	, [
 		  'id'       => 'hddsleep'
 		, 'disabled' => 'HDD not support sleep'
