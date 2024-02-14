@@ -16,7 +16,7 @@ $id_data = [
 	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
 	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
 	, 'softlimit'     => [ 'label' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
-	, 'soundprofile'  => [ 'label' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
+	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
 	, 'volumeboot'    => [ 'label' => 'Volume on Boot' ]
 	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]

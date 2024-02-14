@@ -454,18 +454,6 @@ statusbluetooth )
 <bll># bluetoothctl show</bll>
 $( bluetoothctl show )"
 	;;
-statussoundprofile )
-	dirlan=/sys/class/net/$( ip -br link | awk '/^e/ {print $1; exit}' )
-	for f in /proc/sys/vm/swappiness $dirlan/mtu $dirlan/tx_queue_len; do
-		[[ ! -e $f ]] && continue
-		
-		status+="\
-<bll># cat $f</bll>
-$( < $f )
-"
-	done
-	echo "$status"
-	;;
 statusstatus )
 	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
