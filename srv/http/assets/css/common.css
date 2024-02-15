@@ -85,8 +85,6 @@ i {
 .i-file-music::before      { content: '\F549' }
 .i-file-playlist::before   { content: '\F548' }
 .i-filters::before         { content: '\F52A' }
-.i-firefox::before         { content: '\F58C'; position: absolute; }
-.i-firefox::after          { content: '\F58D'; position: relative; color: var( --cg60 ); }
 .i-flash::before           { content: '\F566' }
 .i-flowchart::before       { content: '\F52D' }
 .i-folder::before          { content: '\F540' }

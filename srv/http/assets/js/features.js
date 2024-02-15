@@ -207,7 +207,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			$( '#infoList' ).on( 'click', '.brightness', function() {
 				switchCancel();
 				info( {
-					  icon        : 'firefox'
+					  icon        : 'localbrowser'
 					, title       : 'Browser on RPi'
 					, list        : [ 'Brightness', 'range' ]
 					, values      : S.brightness

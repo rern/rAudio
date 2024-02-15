@@ -157,7 +157,7 @@ function switchIdIconTitle( id ) {
 	if ( page === 'player' ) {
 		SW.icon  =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume';
 	} else {
-		SW.icon  = id === 'localbrowser' ? 'firefox' : id;
+		SW.icon  = id;
 	}
 }
 function switchSet() {
