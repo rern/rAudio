@@ -8,8 +8,9 @@ function i( $icon, $id = '' ) {
 	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
 	return '<i'.$htmlid.' class="i-'.$icon.'"></i>';
 }
-function iLabel( $label, $icon ) {
-	return '<a class="helpmenu label">'.$label.'<i class="i-'.$icon.'"></i></a>';
+function iLabel( $label, $icon = '' ) {
+	$htmlicon = $icon ? '<i class="i-'.$icon.'"></i>' : '&emsp;';
+	return '<a class="helpmenu label">'.$label.$htmlicon.'</a>';
 }
 function iTab( $tab ) {
 	return '<a class="helpmenu tab"><i class="i-'.strtolower( $tab ).'"></i> '.$tab.'</a>';

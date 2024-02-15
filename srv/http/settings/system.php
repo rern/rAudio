@@ -162,7 +162,7 @@ $body = [
 		<span class="helpblock hide"><!--
 -->I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
- · See  if it's already set: {$FiTab( 'Player' )}<a class="helpmenu label">Output · Device </a>
+ · See  if it's already set: {$FiTab( 'Player' )} Output {$FiLabel( 'Device' )}
 {$Fi( 'gear btn' )}
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 		</span>
