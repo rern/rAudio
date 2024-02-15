@@ -84,32 +84,20 @@ $( '#setting-mixertype' ).on( 'click', function() {
 	} );
 } );
 $( '#novolume' ).on( 'click', function() {
-	var checked = $( this ).prop( 'checked' );
-	if ( checked ) {
-		if ( S.camilladsp || S.equalizer ) {
-			info( {
-				  icon    : SW.icon
-				, title   : SW.title
-				, message :  '<wh>No Volume</wh> also disable:<br><br>'
-							+ icoTab( 'Features' )
-							+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
-				, cancel  : switchCancel
-				, ok      : infoNoVolume
-			} );
-		} else {
-			infoNoVolume();
-		}
-	} else {
+	if ( $( this ).hasClass( 'disabled' ) ) return
+	
+	if ( S.camilladsp || S.equalizer ) {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, message      : '<wh>No volume</wh> will be disabled on:'
-							+'<br>&emsp; • Mixer Device not <c>None / 0dB</c>'
-							+'<br>&emsp; • Enable any Volume options or SoXR'
-							+'<br>&emsp; • Enable Features: DSP or Equalizer'
-			, messagealign : 'left'
+			  icon    : SW.icon
+			, title   : SW.title
+			, message :  '<wh>No Volume</wh> also disable:<br><br>'
+						+ icoTab( 'Features' )
+						+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
+			, cancel  : switchCancel
+			, ok      : infoNoVolume
 		} );
-		$( this ).prop( 'checked', true );
+	} else {
+		infoNoVolume();
 	}
 } );
 $( '#dop' ).on( 'click', function() {
@@ -355,7 +343,7 @@ function renderPage() {
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixerlist || ! S.mixertype );
 		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
-		$( '#novolume' ).prop( 'checked', S.novolume );
+		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 	}

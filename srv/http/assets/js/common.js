@@ -227,7 +227,7 @@ function ico( icon, id ) {
 	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"></i>';
 }
 function icoLabel( label, icon ) {
-	return '<a class="helpmenu label">'+ label +'<i class="i-'+ icon +'"></i></a>'
+	return '<a class="helpmenu label">'+ label + ( icon ? '<i class="i-'+ icon +'"></i>' : '&emsp;' ) +'</a>'
 }
 function icoTab( tab ) {
 	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'

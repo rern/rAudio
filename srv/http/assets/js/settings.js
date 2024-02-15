@@ -408,7 +408,7 @@ $( '.switch' ).on( 'click', function() {
 		info( {
 			  icon    : SW.icon
 			, title   : SW.title
-			, message : $this.prev().html()
+			, message : $this.siblings( '.disablemsg' ).html()
 		} );
 		return
 	}

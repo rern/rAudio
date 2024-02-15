@@ -91,15 +91,20 @@ $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
 		  'id'       => 'novolume'
+		, 'disabled' => 'Enable any volume settings'
 		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
  · Mixer device volume: <c>0dB</c>
- · Volume Control: <c>None / 0db</c>
- · Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
- · Disable {$FiTab( 'Features' )}{$FiLabel( 'DSP', 'camilladsp' )} and {$FiLabel( 'Equalizer', 'equalizer' )}
-
-Note: Not for DACs with on-board amplifier.
+ · Disable:
+	· {$FiLabel( 'Volume Control' )}
+	· {$FiLabel( 'Cross-Fading' )}
+	· {$FiLabel( 'Normalization' )}
+	· {$FiLabel( 'ReplayGain' )}
+	· {$FiLabel( 'SoX Resampler' )}
+	· {$FiTab( 'Features' )}{$FiLabel( 'DSP', 'camilladsp' )} and {$FiLabel( 'Equalizer', 'equalizer' )}
+	
+Note: If {$FiLabel( "User's Configurations" )} enabled, any volume settings must be removed manually.
 EOF
 	]
 	, [
