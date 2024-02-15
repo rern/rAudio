@@ -352,8 +352,8 @@ function renderPage() {
 			delete typelist[ 'Mixer device' ];
 		}
 		$( '#setting-hwmixer' ).toggleClass( 'hide', ! S.volume );
-		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp || ! S.mixertype );
-		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixerlist );
+		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
+		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixerlist || ! S.mixertype );
 		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#novolume' ).prop( 'checked', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
