@@ -49,19 +49,14 @@ discid=${cddiscid[0]}
 
 if [[ ! -e $diraudiocd/$discid ]]; then
 	notify 'audiocd blink' 'Audio CD' 'Search CD data ...'
-	server='http://gnudb.org/~cddb/cddb.cgi?cmd=cddb'
+	server='https://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
 	notify 'audiocd blink' 'Audio CD' 'Fetch CD data ...'
 	query=$( curl -sfL "$server+query+$discdata&$options" | head -2 | tr -d '\r' ) # contains \r
 	[[ $? != 0 ]] && notify audiocd 'Audio CD' 'Server not reachable.' && exit
 	
-	code=$( head -c 3 <<< $query )
-	if (( $code == 210 )); then  # exact match
-	  genre_id=$( sed '2q;d' <<< $query | cut -d' ' -f1,2 | tr ' ' + )
-	elif (( $code == 200 )); then
-	  genre_id=$( cut -d' ' -f2,3 <<< $query | tr ' ' + )
-	fi
+	[[ $( head -c 3 <<< $query ) == 210 ]] && genre_id=$( awk 'NR==2 {print $1"+"$2}' <<< $query )
 	if [[ $genre_id ]]; then
 		data=$( curl -sfL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 		readarray -t artist_album <<< $( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |\n|; p}' <<< $data )
