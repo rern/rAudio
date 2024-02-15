@@ -46,6 +46,7 @@ data='
 , "lastupdate"       : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
 , "lists"            : '$lists'
 , "mixerlist"        : '$( getContent $dirshm/mixerlist )'
+, "mixertype"        : '$( [[ $( getVar mixertype $dirshm/player-device ) != none ]] && echo true )'
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
 , "novolume"         : '$novolume'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
@@ -61,8 +62,7 @@ data='
 , "state"            : "'$state'"
 , "updatetime"       : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db"      : '$( [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating && echo true )'
-, "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
-, "volumempd"        : '$( mpc status %volume% | tr -dc [0-9] )
+, "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 [[ -e $dirshm/amixercontrol || -e $dirshm/btreceiver ]] && data+='
 , "volume"           : '$( volumeGet valdb hw )
 

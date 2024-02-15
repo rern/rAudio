@@ -18,18 +18,18 @@ $( '#hwmixer' ).on( 'input', function() {
 } );
 $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	if ( this.id.slice( -1 ) === 'a' ) {
-		var cmd    = 'volumebt';
-		var cmd0db = 'volume0dbbt';
-		S.control  = S.btaplayname;
-		S.card     = '';
+		var cmd     = 'volumebt';
+		var cmd0db  = 'volume0dbbt';
+		var control = S.btaplayname.replace( ' - A2DP', '' );
 	} else {
-		var cmd    = 'volume';
-		var cmd0db = 'volume0db';
+		var cmd     = 'volume';
+		var cmd0db  = 'volume0db';
+		var control = S.device.hwmixer;
 	}
 	info( {
 		  icon       : SW.icon
 		, title      : SW.title
-		, list       : [ S.control.replace( ' - A2DP', '' ), 'range' ]
+		, list       : [ control, 'range' ]
 		, prompt     : '<br>'+ warning
 		, beforeshow : () => {
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
@@ -60,36 +60,27 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		, oknoreset    : true
 	} );
 } );
-$( '#mixertype' ).on( 'input', function() {
-	var mixertype = $( this ).val();
-	if ( mixertype === 'none' ) {
+$( '#mixertype' ).on( 'click', function() {
+	if ( S.mixertype ) {
 		info( {
 			  icon    : 'volume'
 			, title   : 'Volume Control'
 			, message : warning
-			, cancel  : () => $( '#mixertype' ).val( S.device.mixertype )
-			, ok      : () => setMixerType( mixertype )
+			, cancel  : switchCancel
+			, ok      : () => setMixerType( 'none' )
 		} );
 	} else {
-		setMixerType( mixertype );
+		S.mixerlist ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
 	}
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
-	S.control = '';
-	S.card    = '';
 	info( {
-		  icon        : SW.icon
-		, title       : SW.title
-		, list        : [ 'MPD Software', 'range' ]
-		, values      : S.volumempd
-		, beforeshow  : () => {
-			$( '#infoList input' ).on( 'input', function() {
-				volumeSetAt( +$( this ).val() );
-			} ).on( 'touchend mouseup keyup', function() {
-				volumePush( +$( this ).val(), 'mpd' );
-			} );
-		}
-		, okno        : true
+		  icon   : SW.icon
+		, title  : SW.title
+		, list   : [ '', 'radio', { kv: { 'Mixer device <gr>(hardware)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+		, values : S.mixertype ? S.device.mixertype : 'hardware'
+		, cancel  : switchCancel
+		, ok     : () => setMixerType( infoVal() )
 	} );
 } );
 $( '#novolume' ).on( 'click', function() {
@@ -360,12 +351,9 @@ function renderPage() {
 			$( '#divhwmixer' ).addClass( 'hide' );
 			delete typelist[ 'Mixer device' ];
 		}
-		$( '#mixertype' )
-			.html( htmlOption( typelist ) )
-			.val( S.device.mixertype );
 		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volume' in S ) );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
-		$( '#setting-mixertype' ).toggleClass( 'hide', S.device.mixertype !== 'software' );
+		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixerlist );
 		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#novolume' ).prop( 'checked', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );

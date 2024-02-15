@@ -71,7 +71,6 @@ EOF
 	]
 	, [
 		  'id'       => 'mixertype'
-		, 'input'    => '<select id="mixertype"></select>'
 		, 'help'     => <<< EOF
 Volume control for each device.
 The later in the signal chain the better sound quality.

@@ -232,7 +232,7 @@ i {
 .i-wifi2::before           { content: '\F59A'; position: absolute; }
 .i-wifi2::after            { content: '\F59B'; color: var( --cga ); }
 .i-wlan::before            { content: '\F597' }
-#divoutput .i-gear::before { content: '\F516' }
+#divhwmixer .i-gear::before { content: '\F516' }
 
 html {
 	height  : 100%;
