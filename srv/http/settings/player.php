@@ -98,7 +98,7 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · Mixer device volume: <c>0dB</c>
  · Volume Control: <c>None / 0db</c>
  · Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
- · Disable {$Ftab( 'features' )}{$FlabelIcon( 'DSP', 'camilladsp' )} and {$FlabelIcon( 'Equalizer', 'equalizer' )}
+ · Disable {$FiTab( 'Features' )}{$FiLabel( 'DSP', 'camilladsp' )} and {$FiLabel( 'Equalizer', 'equalizer' )}
 
 Note: Not for DACs with on-board amplifier.
 EOF
@@ -166,7 +166,7 @@ EOF
 	]
 	, [
 		  'id'       => 'ffmpeg'
-		, 'disabled' => labelIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
+		, 'disabled' => iLabel( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for more audio filetypes {$Fi( 'help filetype' )}
 <pre id="prefiletype" class="hide"></pre>

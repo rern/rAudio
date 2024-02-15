@@ -1112,7 +1112,7 @@ function renderPage() {
 		if ( 'wlan' in S ) {
 			$( '#wlan' )
 				.toggleClass( 'disabled', S.ap || S.wlanconnected )
-				.prev().html( S.ap ? '<wh>Access Point '+ ico( 'ap' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
+				.prev().html( S.ap ? icoLabel( 'Access Point', 'ap' ) +' is currently enabled.' : icoLabel( 'Wi-Fi', 'wifi' ) +' is currently connected.' );
 			$( '#divwlan .col-l' )
 				.toggleClass( 'single', ! S.wlan )
 				.toggleClass( 'status', S.wlan );

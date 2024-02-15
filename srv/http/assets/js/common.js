@@ -223,21 +223,15 @@ function highlightJSON( json ) {
 	} );
 	return '\n\n'+ json.replace( /: null,/g, ': <red>null</red>,' );
 }
-function ico( icon, id, tablabel ) {
-	if ( tablabel ) {
-		if ( tablabel === 'tab' ) {
-			var html = '<a class="helpmenu tab">'+ id +' <i class="i-'+ icon +'"></i></a>';
-		} else {
-			var html = '<a class="helpmenu label"><i class="i-'+ icon +'"></i> '+ id +'</a>';
-		}
-	} else if ( id ) {
-		var html = '<i id="'+ id +'" class="i-'+ icon +'"></i>';
-	} else {
-		var html = '<i class="i-'+ icon +'"></i>';
-	}
-	return html
+function ico( icon, id ) {
+	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"></i>';
 }
-
+function icoLabel( label, icon ) {
+	return '<a class="helpmenu label">'+ label +'<i class="i-'+ icon +'"></i></a>'
+}
+function icoTab( tab ) {
+	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'
+}
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).press( '#infoIcon', function() { // usage
 	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );

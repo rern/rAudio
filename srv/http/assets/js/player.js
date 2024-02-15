@@ -100,8 +100,8 @@ $( '#novolume' ).on( 'click', function() {
 				  icon    : SW.icon
 				, title   : SW.title
 				, message :  '<wh>No Volume</wh> also disable:<br><br>'
-							+ ico( 'features', 'Features', 'tab' )
-							+ ( S.camilladsp ? ico( 'camilladsp', 'DSP', 'label' ) : ico( 'equalizer', 'Equalizer', 'label' ) )
+							+ icoTab( 'Features' )
+							+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
 				, cancel  : switchCancel
 				, ok      : infoNoVolume
 			} );

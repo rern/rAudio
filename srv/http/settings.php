@@ -6,24 +6,23 @@
 <?php
 function i( $icon, $id = '' ) {
 	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
-	if ( $icon === 'localbrowser' && file_exists( '/usr/bin/firefox' ) ) $icon = 'firefox';
 	return '<i'.$htmlid.' class="i-'.$icon.'"></i>';
 }
-function labelIcon( $name, $icon ) {
-	return '<a class="helpmenu label">'.$name.'<i class="i-'.$icon.'"></i></a>';
+function iLabel( $label, $icon ) {
+	return '<a class="helpmenu label">'.$label.'<i class="i-'.$icon.'"></i></a>';
+}
+function iTab( $tab ) {
+	return '<a class="helpmenu tab"><i class="i-'.strtolower( $tab ).'"></i> '.$tab.'</a>';
 }
 function menu( $icon, $name, $iconsub = '' ) {
 	$submenu = $iconsub ? '<i class="i-'.$iconsub.' sub"></i>' : '';
 	return '<a class="helpmenu"><i class="i-'.$icon.'"></i> '.$name.$submenu.'</a>';
 }
-function tab( $icon ) {
-	return '<a class="helpmenu tab"><i class="i-'.$icon.'"></i> '.ucfirst( $icon ).'</a>';
-}
 // functions for use inside heredoc
-$Fi         = 'i';
-$FlabelIcon = 'labelIcon';
-$Fmenu      = 'menu';
-$Ftab       = 'tab';
+$Fi      = 'i';
+$FiLabel = 'iLabel';
+$FiTab   = 'iTab';
+$Fmenu   = 'menu';
 
 echo '<div class="container '.$page.' hide">';
 

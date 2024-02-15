@@ -124,7 +124,8 @@ i {
 .i-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
 .i-linear::before          { content: '\F52F' }
 .i-link::before            { content: '\F56B' }
-.i-localbrowser::before    { content: '\F584' }
+.i-localbrowser::before    { content: '\F58C'; position: absolute; }
+.i-localbrowser::after     { content: '\F58D'; position: relative; color: var( --cg60 ); }
 .i-lock::before            { content: '\F574' }
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
