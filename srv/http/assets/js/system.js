@@ -618,9 +618,9 @@ $( '#restore' ).on( 'click', function() {
 } );
 $( '#shareddata' ).on( 'click', function() {
 	var $this = $( this );
-	if ( $this.hasClass( 'disabled' ) ) {
-		infoDisabled( $this );
-	} else if ( S.shareddata ) {
+	if ( $this.hasClass( 'disabled' ) ) return
+	
+	if ( S.shareddata ) {
 		info( {
 			  icon    : SW.icon
 			, title   : SW.title

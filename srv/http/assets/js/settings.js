@@ -33,14 +33,6 @@ function currentStatus( id ) {
 		bannerReset();
 	} );
 }
-function infoDisabled( $this ) {
-	$this.prop( 'checked', ! $this.prop( 'checked' ) );
-	info( {
-		  icon    : SW.icon
-		, title   : SW.title
-		, message : $this.prev().html()
-	} );
-}
 function infoPlayerActive( $this ) {
 	var $switch = $this.prev().prev();
 	if ( $switch.hasClass( 'disabled' ) ) {
@@ -410,14 +402,19 @@ $( '.switch' ).on( 'click', function() {
 	if ( V.press ) return
 	
 	var $this   = $( this );
+	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {
-		infoDisabled( $this );
+		$this.prop( 'checked', ! checked );
+		info( {
+			  icon    : SW.icon
+			, title   : SW.title
+			, message : $this.prev().html()
+		} );
 		return
 	}
 	
 	if ( $this.is( '.custom, .none' ) ) return
 	
-	var checked = $this.prop( 'checked' );
 	if ( ! checked ) {
 		$( '#setting-'+ SW.id ).addClass( 'hide' );
 		notifyCommon( 'Disable ...' );
