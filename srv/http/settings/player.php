@@ -102,7 +102,7 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
 	· Options  {$FiLabel( 'SoX Resampler' )}
 	· {$FiTab( 'Features' )}{$FiLabel( 'DSP', 'camilladsp' )} and {$FiLabel( 'Equalizer', 'equalizer' )}
 	
-Note: If {$FiLabel( "User's Configurations" )} enabled, any volume settings must be removed manually.
+Note: If {$FiLabel( "User's Configurations" )} enabled, verify for no volume settings.
 EOF
 	]
 	, [
