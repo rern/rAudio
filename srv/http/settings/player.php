@@ -62,10 +62,13 @@ EOF
 	, [
 		  'id'       => 'mixertype'
 		, 'help'     => <<< EOF
-{$Fi( 'gear btn' )} Mixer type:
- · Disabled: Best - Amplifier volume - GUI knob hidden
+{$Fi( 'gear btn' )} Type:
  · Mixer device: Good - DAC hardware via GUI knob
  · MPD software: Basic - GUI knob
+ 
+Note: Should be disabled for best sound quality
+ - GUI knob hidden
+ - Use amplifier volume
 (The later in the signal chain the better sound quality.)
 EOF
 	]

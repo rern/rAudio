@@ -75,12 +75,13 @@ $( '#mixertype' ).on( 'click', function() {
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
 	info( {
-		  icon   : SW.icon
-		, title  : SW.title
-		, list   : [ '', 'radio', { kv: { 'Mixer device <gr>(hardware)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
-		, values : S.mixertype ? S.device.mixertype : 'hardware'
+		  icon    : SW.icon
+		, title   : SW.title
+		, message : 'Type:'
+		, list    : [ '', 'radio', { kv: { 'Mixer device <gr>(hardware)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+		, values  : S.mixertype ? S.device.mixertype : 'hardware'
 		, cancel  : switchCancel
-		, ok     : () => setMixerType( infoVal() )
+		, ok      : () => setMixerType( infoVal() )
 	} );
 } );
 $( '#novolume' ).on( 'click', function() {
