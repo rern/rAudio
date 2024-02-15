@@ -99,7 +99,9 @@ $( '#novolume' ).on( 'click', function() {
 			info( {
 				  icon    : SW.icon
 				, title   : SW.title
-				, message : 'This also disable '+ ( S.camilladsp ? 'DSP '+ ico( 'camilladsp' ) : 'Equalizer '+ ico( 'equalizer' ) )
+				, message :  '<wh>No Volume</wh> also disable:<br><br>'
+							+ ico( 'features', 'Features', 'tab' )
+							+ ( S.camilladsp ? ico( 'camilladsp', 'DSP', 'label' ) : ico( 'equalizer', 'Equalizer', 'label' ) )
 				, cancel  : switchCancel
 				, ok      : infoNoVolume
 			} );

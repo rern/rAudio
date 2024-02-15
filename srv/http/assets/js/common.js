@@ -223,8 +223,19 @@ function highlightJSON( json ) {
 	} );
 	return '\n\n'+ json.replace( /: null,/g, ': <red>null</red>,' );
 }
-function ico( cls, id ) {
-	return '<i '+ ( id ? 'id="'+ id +'" ' : '' ) +'class="i-'+ cls +'"></i>'
+function ico( icon, id, tablabel ) {
+	if ( tablabel ) {
+		if ( tablabel === 'tab' ) {
+			var html = '<a class="helpmenu tab">'+ id +' <i class="i-'+ icon +'"></i></a>';
+		} else {
+			var html = '<a class="helpmenu label"><i class="i-'+ icon +'"></i> '+ id +'</a>';
+		}
+	} else if ( id ) {
+		var html = '<i id="'+ id +'" class="i-'+ icon +'"></i>';
+	} else {
+		var html = '<i class="i-'+ icon +'"></i>';
+	}
+	return html
 }
 
 // info ----------------------------------------------------------------------
