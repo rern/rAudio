@@ -1,3 +1,8 @@
+var typelist = { 'None / 0dB': 'none', 'Mixer device': 'hardware', 'MPD software': 'software' }
+var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
+			  +'<gr>Signal will be set to original level at 0dB.</gr><br>'
+			  +'Beware of too high volume.</wh>';
+
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#audiooutput' ).on( 'input', function() {
@@ -251,10 +256,6 @@ audio_output {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-var warning = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
-			+'<gr>Signal will be set to original level at 0dB.</gr><br>'
-			+'Beware of too high volume.</wh>';
-
 function infoNoVolume() {
 	info( {
 		  icon    : SW.icon
@@ -355,11 +356,10 @@ function renderPage() {
 			$( '#divhwmixer' ).removeClass( 'hide' );
 		} else {
 			$( '#divhwmixer' ).addClass( 'hide' );
+			delete typelist[ 'Mixer device' ];
 		}
-		var mixers = { 'None / 0dB': 'none', 'Mixer device': 'hardware', 'MPD software': 'software' }
-		if ( ! S.mixerlist ) delete mixers[ 'Mixer device' ];
 		$( '#mixertype' )
-			.html( htmlOption( mixers ) )
+			.html( htmlOption( typelist ) )
 			.val( S.device.mixertype );
 		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volume' in S ) );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );

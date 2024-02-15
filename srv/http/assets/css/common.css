@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1706187307' );
+	src         : url( '/assets/fonts/rern.woff2?v=1707808685' );
 }
 @font-face {
 	font-family : Lato;
@@ -374,6 +374,9 @@ code {
 	background-color: var( --cgd );
 	padding: 0 4px;
 	border-radius: 3px;
+}
+.helpblock c {
+	background-color: var( --cg );
 }
 
 /* banner() */
