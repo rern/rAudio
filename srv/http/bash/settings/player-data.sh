@@ -5,22 +5,25 @@
 . /srv/http/bash/common.sh
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
-[[ $( getVar mixertype $dirshm/player-device ) == none \
-	&& $crossfade == 0 \
-	&& ! $( ls $dirsystem/{camilladsp,equalizer} 2> /dev/null ) \
-	&& ! $( ls $dirmpdconf/{normalization,replaygain,soxr}.conf 2> /dev/null ) ]] \
-		&& novolume=true
-replaygainconf='{
-  "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
-, "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
-}'
 lists='{
   "albumignore" : '$( exists $dirmpd/albumignore )'
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
+if [[ $( getVar mixertype $dirshm/player-device ) == none \
+	&& $crossfade == 0 \
+	&& ! $( ls $dirsystem/{camilladsp,equalizer} 2> /dev/null ) \
+	&& ! $( ls $dirmpdconf/{normalization,replaygain,soxr}.conf 2> /dev/null ) ]]; then
+	novolume=true
+else
+	[[ -e $dirshm/amixercontrol || -e $dirshm/btreceiver ]] && volume=$( volumeGet valdb hw )
+fi
+replaygainconf='{
+  "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
+, "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
+}'
 
-. $dirshm/status
+. <( grep -E '^player|^state' $dirshm/status )
 ##########
 data='
 , "asoundcard"       : '$( getContent $dirsystem/asoundcard )'
@@ -30,8 +33,6 @@ data='
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
-, "card"             : '$card'
-, "control"          : "'$control'"
 , "counts"           : '$( < $dirmpd/counts )'
 , "crossfade"        : '$( [[ $crossfade != 0 ]] && echo true )'
 , "crossfadeconf"    : { "SEC": '$crossfade' }
@@ -62,8 +63,7 @@ data='
 , "state"            : "'$state'"
 , "updatetime"       : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db"      : '$( [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating && echo true )'
-, "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
-[[ -e $dirshm/amixercontrol || -e $dirshm/btreceiver ]] && data+='
-, "volume"           : '$( volumeGet valdb hw )
+, "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
+, "volume"           : '$volume
 
 data2json "$data" $1
