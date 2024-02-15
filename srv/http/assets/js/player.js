@@ -342,7 +342,7 @@ function renderPage() {
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {
-		$( '#divoutput, #divbitperfect, #divvolume, #divdevicewithbt' ).addClass( 'hide' );
+		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#audiooutput' )
