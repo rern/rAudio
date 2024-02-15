@@ -28,7 +28,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	}
 	info( {
 		  icon       : SW.icon
-		, title      : SW.title
+		, title      : 'Volume Control'
 		, list       : [ control, 'range' ]
 		, prompt     : '<br>'+ warning
 		, beforeshow : () => {

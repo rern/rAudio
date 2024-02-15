@@ -38,10 +38,6 @@ htmlSection( $head, $body, 'mpd' );
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
 	, 'status' => 'output'
-	, 'help'   => <<< EOF
-{$Fi( 'gear btn' )} Other outputs while Bluetooth connected
- · Should be disabled if not used simultaneously
-EOF
 ];
 $body = [
 	[
@@ -56,34 +52,29 @@ EOF
 	, [
 		  'id'       => 'audiooutput'
 		, 'input'    => '<select id="audiooutput"></select>'
-		, 'help'     => <<< EOF
-HDMI audio:
- · Available when connected before boot only
-EOF
+		, 'help'     => 'HDMI audio: Available when connected before boot only'
 	]
 	, [
 		  'id'       => 'hwmixer'
 		, 'input'    => '<select id="hwmixer"></select>'
-		, 'help'     => <<< EOF
-{$Fi( 'volume btn' )}
-Mixer device volume control
-EOF
+		, 'help'     => i( 'volume btn' ).' Mixer device volume control'
 	]
 	, [
 		  'id'       => 'mixertype'
 		, 'help'     => <<< EOF
-Volume control for each device.
-The later in the signal chain the better sound quality.
-<pre>
-<c>None / 0dB  </c> Best  Amplifier volume - GUI knob hidden
-<c>Mixer device</c> Good  DAC hardware via GUI knob
-<c>MPD software</c> Basic GUI knob
-</pre>
+{$Fi( 'gear btn' )} Mixer type:
+ · Disabled: Best - Amplifier volume - GUI knob hidden
+ · Mixer device: Good - DAC hardware via GUI knob
+ · MPD software: Basic - GUI knob
+(The later in the signal chain the better sound quality.)
 EOF
 	]
 	, [
 		  'id'       => 'devicewithbt'
-		, 'help'     => 'Keep output device enabled when Bluetooth connected.'
+		, 'help'     => <<< EOF
+ · Keep Output {$FiLabel( 'Device' )} enabled when Bluetooth connected.
+ · Should be disabled if not used simultaneously
+EOF
 	]
 ];
 htmlSection( $head, $body, 'output' );
@@ -108,7 +99,7 @@ EOF
 	, [
 		  'id'       => 'dop'
 		, 'help'     => <<< EOF
-<wh>D</wh>SD <wh>o</wh>ver <wh>P</wh>CM for DSD-capable devices that not support native DSD
+For DSD-capable devices that not support native DSD
  · DoP repacks 16bit DSD stream into 24bit PCM frames. 
  · PCM frames transmitted to DAC and reassembled back to original DSD stream.
  · DoP is bit-perfect by itself. (with expense of double bandwith)
