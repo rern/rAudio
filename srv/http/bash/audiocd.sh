@@ -65,7 +65,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 		readarray -t titles <<< $( tail -n +1 <<< $data | cut -d= -f2 )
 	fi
 	frames=( ${cddiscid[@]:2} )
-	unset 'frames[-1]'
+	unset frames[-1]
 	frames+=( $(( ${cddiscid[@]: -1} * 75 )) )
 	framesL=${#frames[@]}
 	for (( i=1; i < framesL; i++ )); do
