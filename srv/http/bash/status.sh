@@ -225,10 +225,10 @@ fileheader=${file:0:4}
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
-	if [[ -e $dirshm/audiocd && -e $diraudiocd/$discid ]]; then
+	if [[ -e $diraudiocd/$discid ]]; then
 		discid=$( < $dirshm/audiocd )
 		track=${file/*\/}
-		readarray -t audiocd <<< $( sed "$track q:d" $diraudiocd/$discid | tr ^ '\n' )
+		readarray -t audiocd <<< $( sed -n "$track p" $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${audiocd[0]}
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
