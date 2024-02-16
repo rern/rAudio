@@ -24,7 +24,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	} else {
 		var cmd     = 'volume';
 		var cmd0db  = 'volume0db';
-		var control = S.device.hwmixer;
+		var control = S.output.hwmixer;
 	}
 	info( {
 		  icon       : SW.icon
@@ -70,7 +70,7 @@ $( '#mixertype' ).on( 'click', function() {
 			, ok      : () => setMixerType( 'none' )
 		} );
 	} else {
-		S.mixerlist ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
+		S.listmixer ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
 	}
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
@@ -79,7 +79,7 @@ $( '#setting-mixertype' ).on( 'click', function() {
 		, title   : SW.title
 		, message : 'Type:'
 		, list    : [ '', 'radio', { kv: { 'Mixer device <gr>(hardware)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
-		, values  : S.mixertype ? S.device.mixertype : 'hardware'
+		, values  : S.mixertype ? S.output.mixertype : 'hardware'
 		, cancel  : switchCancel
 		, ok      : () => setMixerType( infoVal() )
 	} );
@@ -104,7 +104,7 @@ $( '#novolume' ).on( 'click', function() {
 $( '#dop' ).on( 'click', function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	var cmd = checked ? [ 'dop', S.device.aplayname ] : [ 'dop', S.device.aplayname, 'OFF' ]; // OFF with args - value by index
+	var cmd = checked ? [ 'dop', S.output.aplayname ] : [ 'dop', S.output.aplayname, 'OFF' ]; // OFF with args - value by index
 	bash( cmd );
 } );
 $( '#setting-crossfade' ).on( 'click', function() {
@@ -122,7 +122,7 @@ $( '#setting-crossfade' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-replaygain' ).on( 'click', function() {
-	var hardware = S.device.mixertype === 'software' && S.mixerlist;
+	var hardware = S.output.mixertype === 'software' && S.listmixer;
 	if ( ! hardware ) delete S.replaygainconf.HARDWARE;
 	info( {
 		  icon         : SW.icon
@@ -192,7 +192,7 @@ user                   "mpd"</pre></td></tr>
 ...
 audio_output {
     ...
-    mixer_device   "hw:${ S.device.card }"
+    mixer_device   "hw:${ S.output.card }"
 </pre></td></tr>
 <tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
 <tr><td><pre style="margin-top: -20px">
@@ -329,12 +329,12 @@ function renderPage() {
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#audiooutput' )
-			.html( htmlOption( S.devicelist ) )
-			.val( S.device.aplayname );
-		if ( S.mixerlist ) {
+			.html( htmlOption( S.listdevice ) )
+			.val( S.output.aplayname );
+		if ( S.listmixer ) {
 			$( '#hwmixer' )
-				.html( htmlOption( S.mixerlist ) )
-				.val( S.device.hwmixer );
+				.html( htmlOption( S.listmixer ) )
+				.val( S.output.hwmixer );
 			$( '#divhwmixer' ).removeClass( 'hide' );
 		} else {
 			$( '#divhwmixer' ).addClass( 'hide' );
@@ -342,7 +342,7 @@ function renderPage() {
 		}
 		$( '#setting-hwmixer' ).toggleClass( 'hide', ! S.volume );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
-		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixerlist || ! S.mixertype );
+		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.listmixer || ! S.mixertype );
 		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );

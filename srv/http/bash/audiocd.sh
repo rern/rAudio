@@ -76,7 +76,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	done
 	echo "$tracks" > $diraudiocd/$discid
 fi
-# suppress laybackStatusGet in passive.js
+# suppress playbackStatusGet in passive.js
 if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
 	autoplaycd=1
 	pushData playlist '{ "autoplaycd": 1 }'

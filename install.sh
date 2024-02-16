@@ -7,7 +7,7 @@ alias=r1
 # 20240216
 [[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
 
-[[ ! -e $dirshm/nosound && ! -e $dirshm/player-device ]] && restartmpd=1
+[[ ! -e $dirshm/nosound && ! -e $dirshm/output ]] && restartmpd=1
 
 # 20240212
 [[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils

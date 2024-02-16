@@ -12,7 +12,7 @@
 #    - if nothing, set as software
 
 ### included by player-conf.sh, player-data.sh
-rm -f $dirshm/{amixercontrol,mixerlist,nosound,player-device}
+rm -f $dirshm/{amixercontrol,listdevice,listmixer,nosound,output}
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
 aplayl=$( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
@@ -34,17 +34,17 @@ for aplayname in "${lines[@]}"; do
 	#card 1: RPiCirrus [RPi-Cirrus],  device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
 	[[ $aplayname == $audioaplayname ]] && name=$audiooutput || name=${aplayname/bcm2835/On-board}
-	devicelist+=', "'$name'": "'$aplayname'"'
+	listdevice+=', "'$name'": "'$aplayname'"'
 done
 ########
-echo "{ ${devicelist:1} }" > $dirshm/devicelist
+echo "{ ${listdevice:1} }" > $dirshm/listdevice
 
 if [[ $usbdac == add ]]; then
 	line=$( tail -1 <<< $aplayl )
 elif [[ $aplayname == cirrus-wm5102 ]]; then
 	line=$( grep wm5102 <<< $aplayl | head -1 )
 	hwmixer='HPOUT2 Digital'
-	mixerdevices='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
+	listmixer='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
 else
 	line=$( grep "$audioaplayname" <<< $aplayl | head -1 ) # remove duplicate control names
 fi
@@ -67,10 +67,10 @@ if [[ $aplayname != cirrus-wm5102 ]]; then
 		if [[ $controls ]]; then
 			readarray -t controls <<< $( cut -d"'" -f2 <<< $controls | sort -u )
 			for control in "${controls[@]}"; do
-				mixerdevices+=', "'$control'"'
+				listmixer+=', "'$control'"'
 				[[ $control == Digital ]] && hwmixer=Digital
 			done
-			mixerdevices="[ ${mixerdevices:1} ]"
+			listmixer="[ ${listmixer:1} ]"
 			hwmixerfile="$dirsystem/hwmixer-$aplayname"
 			if [[ -e $hwmixerfile ]]; then # manual
 				hwmixer=$( < "$hwmixerfile" )
@@ -84,18 +84,18 @@ mixertypefile="$dirsystem/mixertype-$aplayname"
 if [[ -e $mixertypefile ]]; then
 	mixertype=$( < "$mixertypefile" )
 else
-	[[ $mixerdevices ]] && mixertype=hardware || mixertype=none
+	[[ $listmixer ]] && mixertype=hardware || mixertype=none
 fi
 
 ########
 asoundcard=$card # for player-asound.sh and player-conf.sh
 echo $card > $dirsystem/asoundcard
 [[ $hwmixer ]] && echo "$hwmixer" > $dirshm/amixercontrol # quote to includes trailing space (if any)
-[[ $mixerdevices ]] && echo $mixerdevices > $dirshm/mixerlist
+[[ $listmixer ]] && echo $listmixer > $dirshm/listmixer
 echo '
 aplayname="'$aplayname'"
 name="'$name'"
 card='$card'
 device='$device'
 hwmixer='$hwmixer'
-mixertype='$mixertype > $dirshm/player-device
+mixertype='$mixertype > $dirshm/output

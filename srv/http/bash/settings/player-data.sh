@@ -38,18 +38,18 @@ data='
 , "crossfadeconf"    : { "SEC": '$crossfade' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
-, "device"           : '$( conf2json -nocap $dirshm/player-device )'
-, "devicelist"       : '$( getContent $dirshm/devicelist )'
 , "devicewithbt"     : '$( exists $dirsystem/devicewithbt )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'
 , "lastupdate"       : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
 , "lists"            : '$lists'
-, "mixerlist"        : '$( getContent $dirshm/mixerlist )'
+, "listdevice"       : '$( getContent $dirshm/listdevice )'
+, "listmixer"        : '$( getContent $dirshm/listmixer )'
 , "mixertype"        : '$( [[ $( getVar mixertype $dirshm/player-device ) != none ]] && echo true )'
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
 , "novolume"         : '$novolume'
+, "output"           : '$( conf2json -nocap $dirshm/output )'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
 , "player"           : "'$player'"
