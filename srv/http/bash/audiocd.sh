@@ -80,12 +80,11 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 fi
 # suppress playbackStatusGet in passive.js
 if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
-	autoplaycd=1
 	pushData playlist '{ "autoplaycd": 1 }'
 fi
 # add tracks to playlist
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
-prevlength=$( mpc status %length% )
+! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
 notify audiocd 'Audio CD' 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
@@ -95,23 +94,24 @@ echo $discid > $dirshm/audiocd
 pushData playlist '{ "refresh": true }'
 eject -x 4
 # coverart
-if [[ -e $diraudiocd/$discid && ! $( ls $diraudiocd/5112bb13.* 2> /dev/null ) ]]; then
+if [[ -e $diraudiocd/$discid ]]; then
 	artist_album=$( head -1 $diraudiocd/$discid )
 	artist=$( cut -d^ -f1 <<< $artist_album )
 	album=$( cut -d^ -f2 <<< $artist_album )
-	$dirbash/status-coverartonline.sh "cmd
+	notify audiocd 'Audio CD' "$artist • $album"
+	if [[ ! $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
+		$dirbash/status-coverartonline.sh "cmd
 $artist
 $album
 $discid
 CMD ARTIST ALBUM DISCID" &> /dev/null &
+	fi
 fi
-if statePlay; then
-	notify audiocd 'Audio CD' "$artist • $album"
-	exit
-else # set 1st track of cd
+# set 1st track of cd
+if [[ $trackcd ]]; then
 	$dirbash/cmd.sh "mpcskip
-$(( prevlength + 1 ))
+$trackcd
 play
 CMD POS ACTION"
-	[[ ! $autoplaycd ]] && mpc -q stop
+	[[ ! -e $dirsystem/autoplay ]] && mpc -q stop
 fi
