@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+[[ -e $dirshm/eject ]] && exit
+
 [[ $1 ]] && notify audiocd 'Audio CD' "USB CD $1"
 
 if [[ $1 == on ]]; then
@@ -30,13 +32,13 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 		$dirsettings/player-data.sh pushrefresh
 	else
 		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
-		( sleep 3 && rm -f $dirshm/{audiocd,ejet} ) &> /dev/null &
+		( sleep 3 && rm -f $dirshm/{audiocd,eject} ) &
 	fi
 	exit
 	
 fi
 
-[[ -e $dirshm/eject || $( mpc -f %file% playlist | grep -m1 ^cdda: ) ]] && exit
+[[ $( mpc -f %file% playlist | grep -m1 ^cdda: ) ]] && exit
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
 if [[ ! $cddiscid ]]; then
@@ -92,11 +94,24 @@ done
 echo $discid > $dirshm/audiocd
 pushData playlist '{ "refresh": true }'
 eject -x 4
-
-statePlay && exit
-
-$dirbash/cmd.sh "mpcskip
+# coverart
+if [[ -e $diraudiocd/$discid && ! $( ls $diraudiocd/5112bb13.* 2> /dev/null ) ]]; then
+	artist_album=$( head -1 $diraudiocd/$discid )
+	artist=$( cut -d^ -f1 <<< $artist_album )
+	album=$( cut -d^ -f2 <<< $artist_album )
+	$dirbash/status-coverartonline.sh "cmd
+$artist
+$album
+$discid
+CMD ARTIST ALBUM DISCID" &> /dev/null &
+fi
+if statePlay; then
+	notify audiocd 'Audio CD' "$artist • $album"
+	exit
+else # set 1st track of cd
+	$dirbash/cmd.sh "mpcskip
 $(( prevlength + 1 ))
 play
 CMD POS ACTION"
-[[ ! $autoplaycd ]] && mpc -q stop
+	[[ ! $autoplaycd ]] && mpc -q stop
+fi
