@@ -53,7 +53,7 @@ if [[ $asoundcard == -1 ]]; then # no audio devices
 		outputswitch='(None)'
 	fi
 elif [[ ! $btoutputonly ]]; then
-	. $dirshm/player-device # aplayname name card device hwmixer mixertype
+	. $dirshm/output # aplayname name card device hwmixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop

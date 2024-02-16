@@ -10,7 +10,7 @@ lists='{
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
-if [[ $( getVar mixertype $dirshm/player-device ) == none \
+if [[ $( getVar mixertype $dirshm/output ) == none \
 	&& $crossfade == 0 \
 	&& ! $( ls $dirsystem/{camilladsp,equalizer} 2> /dev/null ) \
 	&& ! $( ls $dirmpdconf/{normalization,replaygain,soxr}.conf 2> /dev/null ) ]]; then
@@ -46,7 +46,7 @@ data='
 , "lists"            : '$lists'
 , "listdevice"       : '$( getContent $dirshm/listdevice )'
 , "listmixer"        : '$( getContent $dirshm/listmixer )'
-, "mixertype"        : '$( [[ $( getVar mixertype $dirshm/player-device ) != none ]] && echo true )'
+, "mixertype"        : '$( [[ $( getVar mixertype $dirshm/output ) != none ]] && echo true )'
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
 , "novolume"         : '$novolume'
 , "output"           : '$( conf2json -nocap $dirshm/output )'

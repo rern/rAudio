@@ -402,7 +402,7 @@ volumeGet() {
 		[[ -e $dirshm/nosound ]] && echo -1 && return
 		
 		if [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
-				&& grep -q mixertype=software $dirshm/player-device \
+				&& grep -q mixertype=software $dirshm/output \
 				&& playerActive mpd; then
 			val=$( mpc status %volume% | tr -dc [0-9] )
 		elif [[ -e $dirshm/amixercontrol ]]; then
