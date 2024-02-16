@@ -53,28 +53,28 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
 	notify 'audiocd blink' 'Audio CD' 'Fetch CD data ...'
-	query=$( curl -sfL "$server+query+$discdata&$options" | head -2 | tr -d '\r' ) # contains \r
-	[[ $? != 0 ]] && notify audiocd 'Audio CD' 'Server not reachable.' && exit
-	
-	[[ $( head -c 3 <<< $query ) == 210 ]] && genre_id=$( awk 'NR==2 {print $1"+"$2}' <<< $query )
-	if [[ $genre_id ]]; then
-		data=$( curl -sfL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
-		readarray -t artist_album <<< $( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |\n|; p}' <<< $data )
-		artist=${artist_album[0]}
-		album=${artist_album[1]}
-		readarray -t titles <<< $( tail -n +1 <<< $data | cut -d= -f2 )
+	query=$( curl -sfL "$server+query+$discdata&$options" | head -2 | tr -d '\r' ) # remove \r
+	if [[ $? != 0 ]]; then
+		notify audiocd 'Audio CD' 'CD database server not reachable.'
+	else
+		[[ $( head -c 3 <<< $query ) == 210 ]] && genre_id=$( awk 'NR==2 {print $1"+"$2}' <<< $query )
+		[[ $genre_id ]] && data=$( curl -sfL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # remove \r
+		if [[ $data ]]; then
+			artist_album=$( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |^|; p}' <<< $data )
+			readarray -t titles <<< $( tail -n +1 <<< $data | cut -d= -f2 )
+			frames=( ${cddiscid[@]:2} )
+			unset frames[-1]
+			frames+=( $(( ${cddiscid[@]: -1} * 75 )) )
+			framesL=${#frames[@]}
+			for (( i=1; i < framesL; i++ )); do
+				f0=${frames[$(( i - 1 ))]}
+				f1=${frames[i]}
+				time=$(( ( f1 - f0 ) / 75 )) # 75 frame/s
+				tracks+="$artist_album^${titles[i]}^$time"$'\n'
+			done
+			echo "$tracks" > $diraudiocd/$discid
+		fi
 	fi
-	frames=( ${cddiscid[@]:2} )
-	unset frames[-1]
-	frames+=( $(( ${cddiscid[@]: -1} * 75 )) )
-	framesL=${#frames[@]}
-	for (( i=1; i < framesL; i++ )); do
-		f0=${frames[$(( i - 1 ))]}
-		f1=${frames[i]}
-		time=$(( ( f1 - f0 ) / 75 ))$'\n'  # 75 frames/sec
-		tracks+="$artist^$album^${titles[i]}^$time"
-	done
-	echo "$tracks" > $diraudiocd/$discid
 fi
 # suppress playbackStatusGet in passive.js
 if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
@@ -101,13 +101,11 @@ CMD ACTION POS"
 fi
 
 # coverart
-if [[ ! $artist || ! $album ]]; then
-	artist_album=$( head -1 $diraudiocd/$discid )
-	artist=${artist_album/^*}
-	album=${artist_album/*^}
-fi
-[[ ! $artist || ! $album ]] && exit
+[[ ! -e $diraudiocd/$discid ]] && exit
 
+artist_album=$( head -1 $diraudiocd/$discid )
+artist=$( cut -d^ -f1 <<< $artist_album )
+album=$( cut -d^ -f2 <<< $artist_album )
 $dirbash/status-coverartonline.sh "cmd
 $artist
 $album
