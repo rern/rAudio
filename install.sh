@@ -5,7 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240216
-grep -q cdstart $dirbash/mpdidle.sh && restartmpd=1
 [[ ! -e $dirshm/nosound && ! -e $dirshm/output ]] && restartmpd=1
 
 [[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
