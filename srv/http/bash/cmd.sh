@@ -538,9 +538,17 @@ mpcplayback )
 	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
-		[[ $( mpc status %state% ) == paused ]] && pause=1
 		mpc -q $ACTION
-		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify 'audiocd blink' 'Audio CD' 'Start play ...'
+		if [[ $( mpc -f %file% playlist | sed -n "$( mpc status %songpos% ) {s/:.*//; p}" ) == cdda ]]; then
+			touch $dirshm/cdstart
+			( sleep 20 && rm -f $dirshm/cdstart ) &
+			notify 'audiocd blink' 'Audio CD' 'Start play ...'
+			for i in {0..20}; do
+				[[ $( mpc status %currenttime% ) == 0:00 ]] && sleep 1 || break
+			done
+			rm -f $dirshm/cdstart
+			$dirbash/status-push.sh
+		fi
 	else
 		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
 		mpc -q $ACTION

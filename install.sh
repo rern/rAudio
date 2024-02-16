@@ -5,9 +5,10 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240216
-[[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
-
+grep -q cdstart $dirbash/mpdidle.sh && restartmpd=1
 [[ ! -e $dirshm/nosound && ! -e $dirshm/output ]] && restartmpd=1
+
+[[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
 
 # 20240212
 [[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils
