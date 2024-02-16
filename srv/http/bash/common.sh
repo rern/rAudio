@@ -77,6 +77,10 @@ args2var() {
 	done
 	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$CMD.conf
 }
+audioCD() {
+	songpos=$( mpc status %songpos% )
+	[[ $( mpc -f %file% playlist | sed -n "$songpos p" ) == cdda* ]] && return 0
+}
 cacheBust() {
 	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
 	hash=?v=$( date +%s )
@@ -366,7 +370,7 @@ sshpassCmd() {
 		"${@:2}"
 }
 statePlay() {
-	grep -q -m1 '^state.*play' $dirshm/status && return 0
+	[[ $( mpc status %state% ) == playing ]] && return 0
 }
 stringEscape() {
 	echo "${@//\"/\\\"}"

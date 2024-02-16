@@ -507,7 +507,8 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	info( {
 		  icon    : 'audiocd'
 		, title   : 'Audio CD'
-		, oklabel : ico( 'remove' ) +'Eject'
+		, message : 'Eject and clear Audio CD tracks?'
+		, oklabel : ico( 'flash' ) +'Eject'
 		, okcolor : red
 		, ok      : () => bash( [ 'audiocd.sh', 'ejecticonclick' ] )
 	} );

@@ -15,7 +15,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $tracks ]]; then
 		notify audiocd 'Audio CD' 'Removed from Playlist.'
-		[[ $( mpc | head -c 4 ) == cdda ]] && mpc -q stop
+		audioCD && mpc -q stop
 		tracktop=$( head -1 <<< $tracks )
 		mpc -q del $tracks
 		if (( $tracktop > 1 )); then
@@ -29,14 +29,14 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 		systemctl restart mpd
 		$dirsettings/player-data.sh pushrefresh
 	else
-		[[ $1 == ejecticonclick ]] && eject
-		( sleep 3 && rm -f $dirshm/audiocd ) &> /dev/null &
+		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
+		( sleep 3 && rm -f $dirshm/{audiocd,ejet} ) &> /dev/null &
 	fi
 	exit
 	
 fi
 
-[[ $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
+[[ -e $dirshm/eject || $( mpc -f %file% playlist | grep -m1 ^cdda: ) ]] && exit
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
 if [[ ! $cddiscid ]]; then
@@ -83,6 +83,7 @@ if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; the
 fi
 # add tracks to playlist
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
+prevlength=$( mpc status %length% )
 notify audiocd 'Audio CD' 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
@@ -92,22 +93,10 @@ echo $discid > $dirshm/audiocd
 pushData playlist '{ "refresh": true }'
 eject -x 4
 
-if [[ $autoplaycd ]]; then
-	cdtrack1=$(( $( mpc status %length% ) - $trackL + 1 ))
-	$dirbash/cmd.sh "mpcplayback
+statePlay && exit
+
+$dirbash/cmd.sh "mpcskip
+$(( prevlength + 1 ))
 play
-$cdtrack1
-CMD ACTION POS"
-fi
-
-# coverart
-[[ ! -e $diraudiocd/$discid ]] && exit
-
-artist_album=$( head -1 $diraudiocd/$discid )
-artist=$( cut -d^ -f1 <<< $artist_album )
-album=$( cut -d^ -f2 <<< $artist_album )
-$dirbash/status-coverartonline.sh "cmd
-$artist
-$album
-$discid
-CMD ARTIST ALBUM DISCID" &> /dev/null &
+CMD POS ACTION"
+[[ ! $autoplaycd ]] && mpc -q stop

@@ -539,7 +539,7 @@ mpcplayback )
 	radioStop
 	if [[ $ACTION == play ]]; then
 		mpc -q $ACTION
-		if [[ $( mpc -f %file% playlist | sed -n "$( mpc status %songpos% ) p" ) == cdda* ]]; then
+		if audioCD; then
 			touch $dirshm/cdstart
 			( sleep 20 && rm -f $dirshm/cdstart ) &
 			notify 'audiocd blink' 'Audio CD' 'Start play ...'
