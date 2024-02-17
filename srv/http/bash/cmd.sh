@@ -539,7 +539,7 @@ mpcplayback )
 	radioStop
 	if [[ $ACTION == play ]]; then
 		mpc -q $ACTION
-		if audioCD; then
+		if audioCDtrack; then
 			touch $dirshm/cdstart
 			( sleep 20 && rm -f $dirshm/cdstart ) &
 			notify 'audiocd blink' 'Audio CD' 'Start play ...'

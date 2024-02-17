@@ -17,7 +17,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $tracks ]]; then
 		notify audiocd 'Audio CD' 'Removed from Playlist.'
-		audioCD && mpc -q stop
+		audioCDtrack && mpc -q stop
 		tracktop=$( head -1 <<< $tracks )
 		mpc -q del $tracks
 		if (( $tracktop > 1 )); then
@@ -50,20 +50,26 @@ fi
 discid=${cddiscid[0]}
 
 cdData() {
-	offset=( ${cddiscid[@]:2} )
-	unset offset[-1]
-	offset+=( $(( ${cddiscid[@]: -1} * 75 )) )
-	offsetL=${#offset[@]}
-	for (( i=1; i < offsetL; i++ )); do
-		f0=${offset[$(( i - 1 ))]}
-		f1=${offset[i]}
-		time=$(( ( f1 - f0 ) / 75 )) # 75 frames : 1s
-		tracks+="$artist_album^${titles[i]}^$time"$'\n'
+	offset=( ${cddiscid[@]:2} ) # ${offset[0]} - lead-in offset before 1st track
+	offsetL=${#offset[@]}       # offset length
+	ilast=$(( offsetL - 1 ))    # track length - 1 less than offset
+	offset[ilast]=$(( ${offset[ilast]} * 75 )) # last - Nseconds > frames
+	(( $( grep -c / <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
+	for (( i=0; i < ilast; i++ )); do
+		f0=${offset[i]}
+		f1=${offset[i+1]}
+		time=$(( ( f1 - f0 + 37 ) / 75 )) # 75 frames : 1s - (+37 round to nearest)
+		title=${titles[i]}
+		if [[ $va && $title == *' / '* ]]; then
+			artist=${title/ \/ *}
+			title=${title/* \/ }
+		fi
+		tracks+="$artist^$album^$title^$time"$'\n'
 	done
 	echo -n "$tracks" > $diraudiocd/$discid
 }
 
-if [[ ! -e $diraudiocd/$discid ]]; then
+if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
 	notify 'audiocd blink' 'Audio CD' 'Search CD data ...'
 	server='https://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
@@ -87,15 +93,20 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 # TTITLE0=TITLE1
 # TTITLE1=TITLE2
 # ...
-			artist_album=$( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |^|; p}' <<< $data )
+			artist_album=$( sed -n '/^DTITLE/ {s/^DTITLE=//; p}' <<< $data )
+			artist=${artist_album/ \/ *}
+			album=${artist_album/* \/ }
 			readarray -t titles <<< $( grep -v ^D <<< $data | cut -d= -f2 )
 			cdData
 		fi
 	fi
 fi
-if [[ ! -e $diraudiocd/$discid ]]; then
+if [[ ! -e $diraudiocd/$discid ]]; then # cd-info
+	notify 'audiocd blink' 'Audio CD' 'Fetch CD data ...'
 	cdinfo=$( cd-info )
-	if [[ $cdinfo ]]; then
+	if [[ ! $cdinfo ]]; then
+		notify audiocd 'Audio CD' 'CD database not found.'
+	else
 		readarray -t msf <<< $( awk '/^CD-ROM Track List/,/^Media Catalog Number/ {print $2}' <<< $cdinfo \
 									| grep ^[0-9] \
 									| sed -E 's/:0/:/g; s/^0//; s/:/ /g' ) # mm:ss:fr
@@ -119,7 +130,6 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 		discdata=$( sed -n '/^CD-TEXT for Disc/,/^\s*DISC_ID:/ {s/^\s*//; p}' <<< $cdinfo )
 		artist=$( grep ^PERFORMER <<< $discdata | cut -d' ' -f2- )
 		album=$( grep ^TITLE <<< $discdata | cut -d' ' -f2- )
-		artist_album="$artist^$album"
 		readarray -t lines <<< $( sed -n '/^CD-TEXT for Track/,$ {s/^\s*//; p}' <<< $cdinfo | tail +2 )
 		lines+=( CD-TEXT- )
 		for l in "${lines[@]}"; do

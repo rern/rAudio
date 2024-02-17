@@ -77,7 +77,7 @@ args2var() {
 	done
 	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$CMD.conf
 }
-audioCD() {
+audioCDtrack() {
 	songpos=$( mpc status %songpos% )
 	[[ $( mpc -f %file% playlist | sed -n "$songpos p" ) == cdda* ]] && return 0
 }
