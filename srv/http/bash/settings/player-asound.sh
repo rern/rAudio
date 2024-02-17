@@ -2,7 +2,8 @@
 
 ### included by < player-conf.sh
 
-if [[ $asoundcard != -1 ]]; then # from player-devices.sh
+asoundcard=$( < $dirsystem/asoundcard )
+if [[ $asoundcard != -1 ]]; then
 ########
 	asound="\
 defaults.pcm.card $asoundcard

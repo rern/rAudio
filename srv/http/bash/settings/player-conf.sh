@@ -45,7 +45,7 @@ $audiooutputbt
 " > $dirmpdconf/bluetooth.conf
 ########
 fi
-# $asoundcard from player-devices.sh
+asoundcard=$( < $dirsystem/asoundcard )
 if [[ $asoundcard == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
 		pushData display '{ "volumenone": true }'
