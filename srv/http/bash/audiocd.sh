@@ -116,7 +116,9 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	# TITLE: TITLE2
 	# PERFORMER: ARTIST
 #...
-		. <( sed -n '/^CD-TEXT for Disc/,/^\s*DISC_ID:/ {s/^\s*//; p}' <<< $cdinfo | sed -n '/^TITLE:/ {s/^TITLE: /album=/; s/^PERFORMER/artist=/; p}' )
+		discdata=$( sed -n '/^CD-TEXT for Disc/,/^\s*DISC_ID:/ {s/^\s*//; p}' <<< $cdinfo )
+		artist=$( grep ^PERFORMER <<< $discdata | cut -d' ' -f2- )
+		album=$( grep ^TITLE <<< $discdata | cut -d' ' -f2- )
 		artist_album="$artist^$album"
 		readarray -t lines <<< $( sed -n '/^CD-TEXT for Track/,$ {s/^\s*//; p}' <<< $cdinfo | tail +2 )
 		lines+=( CD-TEXT- )
