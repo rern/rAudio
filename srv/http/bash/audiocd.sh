@@ -12,19 +12,12 @@ if [[ $1 == on ]]; then
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh
 	exit
-	
-elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
-	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	if [[ $tracks ]]; then
-		notify audiocd 'Audio CD' 'Removed from Playlist.'
-		audioCDtrack && mpc -q stop
-		tracktop=$( head -1 <<< $tracks )
-		mpc -q del $tracks
-		if (( $tracktop > 1 )); then
-			mpc -q play $(( tracktop - 1 ))
-			mpc -q stop
-		fi
-	fi
+fi
+
+cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+[[ $cdtracks ]] && mpc -q del $cdtracks
+
+if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
 	if [[ $1 == off ]]; then
 		rm -f $dirshm/audiocd $dirmpdconf/cdio.conf
 		systemctl restart mpd
@@ -38,11 +31,9 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 	exit
 fi
 
-[[ $( mpc -f %file% playlist | grep -m1 ^cdda: ) ]] && exit
-
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( discid Ntracks offset1 offset2 ... Nseconds )
 if [[ ! $cddiscid ]]; then
-	notify audiocd 'Audio CD' 'ID of CD not found in database.'
+	notify audiocd 'Audio CD' 'ID of CD not available.'
 	exit
 	
 fi
@@ -153,8 +144,9 @@ grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 notify audiocd 'Audio CD' 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
-  mpc -q add cdda:///$i
+	tracklist+="cdda:///$i "
 done
+mpc -q add $tracklist
 echo $discid > $dirshm/audiocd
 pushData playlist '{ "refresh": true }'
 eject -x 4
@@ -172,7 +164,7 @@ $discid
 CMD ARTIST ALBUM DISCID" &> /dev/null &
 	fi
 fi
-# set 1st track of cd
+# set 1st track of cd as cuuent
 if [[ $trackcd ]]; then
 	$dirbash/cmd.sh "mpcskip
 $trackcd
