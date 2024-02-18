@@ -56,5 +56,5 @@ alsactl store
 echo 1 > /sys/class/backlight/rpi_backlight/bl_power
 [[ -e $dirshm/apstartup || -e /boot/accesspoint ]] && rm $dirsystem/ap
 
-[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
+[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 [[ $reboot ]] && reboot || poweroff

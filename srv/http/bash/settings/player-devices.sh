@@ -11,26 +11,24 @@
 #    - set as hardware if mixer device available
 #    - if nothing, set as software
 
-### included by player-conf.sh, player-data.sh
+### included by player-conf.sh
+
+[[ ! $( type -t args2var ) ]] && . /srv/http/bash/common.sh
+
 rm -f $dirshm/{amixercontrol,listdevice,listmixer,nosound,output}
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
-aplayl=$( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
-if [[ ! $aplayl ]]; then
-	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
-	echo $asoundcard > $dirsystem/asoundcard
+readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards )
+if [[ ! $proccards ]]; then
+	[[ -e $dirshm/btreceiver ]] && card=0 || card=-1
+	echo $card > $dirsystem/asoundcard
 	touch $dirshm/nosound
 	pushData display '{ "volumenone": true }'
 	return
 fi
 
-readarray -t lines <<< $( awk '/^card/ && !/Loopback/' <<< $aplayl \
-							| sed -E 's/^.*\[|]//g' \
-							| sort -u ) # remove duplicate control names
-for aplayname in "${lines[@]}"; do
-	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
-	#card 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []
-	#card 1: RPiCirrus [RPi-Cirrus],  device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
+for aplayname in "${proccards[@]}"; do
+	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # snd_rpi_xxx_yyy > xxx-yyy
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
 	[[ $aplayname == $audioaplayname ]] && name=$audiooutput || name=${aplayname/bcm2835/On-board}
 	listdevice+=', "'$name'": "'$aplayname'"'
@@ -38,16 +36,17 @@ done
 ########
 echo "{ ${listdevice:1} }" > $dirshm/listdevice
 
+aplayl=$( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
 if [[ $usbdac == add ]]; then
-	line=$( tail -1 <<< $aplayl )
+	aplaycard=$( tail -1 <<< $aplayl )
 elif [[ $aplayname == cirrus-wm5102 ]]; then
-	line=$( grep wm5102 <<< $aplayl | head -1 )
+	aplaycard=$( grep -m1 wm5102 <<< $aplayl )
 	hwmixer='HPOUT2 Digital'
 	listmixer='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
 else
-	line=$( grep "$audioaplayname" <<< $aplayl | head -1 ) # remove duplicate control names
+	aplaycard=$( grep -m1 "$audioaplayname" <<< $aplayl ) # avoid duplicate aplayname
 fi
-readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$line" )
+readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$aplaycard" )
 card=${cnd[0]}
 aplayname=${cnd[1]}
 device=${cnd[2]}
