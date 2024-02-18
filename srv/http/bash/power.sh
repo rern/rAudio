@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+audioCDplClear
+
 if [[ $1 == off ]]; then
 	pushData power '{ "type": "off" }'
 else

@@ -81,6 +81,11 @@ audioCDtrack() {
 	songpos=$( mpc status %songpos% )
 	[[ $( mpc -f %file% playlist | sed -n "$songpos p" ) == cdda* ]] && return 0
 }
+audioCDplClear() {
+	local cdtracks
+	cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+	[[ $cdtracks ]] && mpc -q del $cdtracks
+}
 cacheBust() {
 	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
 	hash=?v=$( date +%s )

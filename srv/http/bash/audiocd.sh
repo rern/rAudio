@@ -13,8 +13,7 @@ if [[ $1 == on ]]; then
 	exit
 fi
 
-cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-[[ $cdtracks ]] && mpc -q del $cdtracks
+audioCDplClear
 
 if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
 	if [[ $1 == off ]]; then
