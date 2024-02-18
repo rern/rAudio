@@ -86,10 +86,7 @@ audioCDplClear() {
 	cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $cdtracks ]]; then
 		mpc -q del $cdtracks
-		if [[ $1 == power ]]; then
-			$dirbash/status-push.sh
-			pushData playlist '{ "refresh": true }'
-		fi
+		return 0
 	fi
 }
 cacheBust() {

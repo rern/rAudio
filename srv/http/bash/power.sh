@@ -2,11 +2,11 @@
 
 . /srv/http/bash/common.sh
 
-audioCDplClear power
-
 if [[ $1 == off ]]; then
+	audioCDplClear
 	pushData power '{ "type": "off" }'
 else
+	audioCDplClear && $dirbash/status-push.sh
 	reboot=1
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
 	pushData power '{ "type": "reboot", "startup": '$startup' }'
