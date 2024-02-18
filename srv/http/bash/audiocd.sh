@@ -19,11 +19,12 @@ cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
 	if [[ $1 == off ]]; then
 		notify audiocd 'Audio CD' 'USB CD Off'
-		rm -f $dirshm/audiocd $dirmpdconf/cdio.conf
+		rm -f $dirmpdconf/cdio.conf
 		systemctl restart mpd
+		( sleep 3 && rm -f $dirshm/audiocd ) &
 	else
 		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
-		( sleep 3 && rm -f $dirshm/{audiocd,eject} ) &
+		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
 	$dirbash/status-push.sh
 	pushData playlist '{ "refresh": true }'
@@ -31,24 +32,24 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 	exit
 fi
 
-cddiscid=( $( cd-discid 2> /dev/null ) ) # ( discid Ntracks offset1 offset2 ... Nseconds )
+cddiscid=( $( cd-discid 2> /dev/null ) ) # ( discid total_tracks offset0(lead-in) offset1(track1) ... total_seconds(last track) )
 if [[ ! $cddiscid ]]; then
 	notify audiocd 'Audio CD' 'CD contains no tracks length'
 	exit
 fi
 
 discid=${cddiscid[0]}
-trackL=${cddiscid[1]}
+trackL=${cddiscid[1]} # also = offset last index (offsets: +1 lead-in)
 
 cdData() {
-	offset=( ${cddiscid[@]:2} )
-	offsetL=${#offset[@]}
-	offset[offsetL]=$(( ${offset[offsetL]} * 75 ))    # last - seconds > frames
+	notify audiocd 'Audio CD' "$artist • $album"
+	offset=( ${cddiscid[@]:2} )                           # offset - frame end
+	offset[trackL]=$(( ${offset[trackL]} * 75 ))          # last - seconds > frames 1:75
 	(( $( grep -c ' / ' <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
-	for (( i=0; i < trackL; i++ )); do # ${offset[0]} - lead-in
+	for (( i=0; i < trackL; i++ )); do                    # ${offset[0]} - lead-in
 		f0=${offset[i]}
 		f1=${offset[i+1]}
-		time=$(( ( f1 - f0 + 37 ) / 75 )) # 75 frames : 1s - (+37 round to nearest)
+		time=$(( ( f1 - f0 + 37 ) / 75 ))                 # frames > seconds 75:1 (+37 round to nearest)
 		title=${titles[i]}
 		if [[ $va && $title == *' / '* ]]; then
 			artist=${title/ \/ *}
@@ -145,18 +146,12 @@ echo $discid > $dirshm/audiocd
 pushData playlist '{ "refresh": true }'
 eject -x 4
 # coverart
-if [[ -e $diraudiocd/$discid ]]; then
-	artist_album=$( head -1 $diraudiocd/$discid )
-	artist=$( cut -d^ -f1 <<< $artist_album )
-	album=$( cut -d^ -f2 <<< $artist_album )
-	notify audiocd 'Audio CD' "$artist • $album"
-	if [[ ! $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
-		$dirbash/status-coverartonline.sh "cmd
+if [[ -e $diraudiocd/$discid && ! $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
+	$dirbash/status-coverartonline.sh "cmd
 $artist
 $album
 $discid
 CMD ARTIST ALBUM DISCID" &> /dev/null &
-	fi
 fi
 # set 1st track of cd as cuuent
 if [[ $trackcd ]]; then
