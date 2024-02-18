@@ -1,4 +1,3 @@
-var typelist = { 'None / 0dB': 'none', 'Mixer device': 'hardware', 'MPD software': 'software' }
 var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 			  +'<gr>Signal will be set to original level at 0dB.</gr><br>'
 			  +'Beware of too high volume.</wh>';
@@ -338,7 +337,6 @@ function renderPage() {
 			$( '#divhwmixer' ).removeClass( 'hide' );
 		} else {
 			$( '#divhwmixer' ).addClass( 'hide' );
-			delete typelist[ 'Mixer device' ];
 		}
 		$( '#setting-hwmixer' ).toggleClass( 'hide', ! S.volume );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );

@@ -13,11 +13,13 @@
 
 ### included by player-conf.sh
 
+[[ -e $dirshm/output ]] && rm -f $dirshm/{amixercontrol,listdevice,listmixer,nosound,output}           # in player-conf.sh
+[[ ! $proccards ]] && readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards ) # in player-conf.sh
+
 ! type -t args2va &> /dev/null && . /srv/http/bash/common.sh
 
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
-[[ ! $proccards ]] && readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards )
 for aplayname in "${proccards[@]}"; do
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # snd_rpi_xxx_yyy > xxx-yyy
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
@@ -43,7 +45,7 @@ aplayname=${cnd[1]}
 device=${cnd[2]}
 [[ $usbdac == add ]] && name=$aplayname || name=$audiooutput
 
-if [[ $aplayname != cirrus-wm5102 ]]; then
+if [[ ! $listmixer ]]; then # ! cirrus-wm5102
 	amixer=$( amixer -c $card scontents )
 	if [[ $amixer ]]; then
 		amixer=$( grep -A1 ^Simple <<< $amixer \
