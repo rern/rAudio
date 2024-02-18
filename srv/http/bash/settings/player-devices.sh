@@ -13,20 +13,10 @@
 
 ### included by player-conf.sh
 
-[[ ! $( type -t args2var ) ]] && . /srv/http/bash/common.sh
+! type -t args2va &> /dev/null && . /srv/http/bash/common.sh
 
-rm -f $dirshm/{amixercontrol,listdevice,listmixer,nosound,output}
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
-readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards )
-if [[ ! $proccards ]]; then
-	[[ -e $dirshm/btreceiver ]] && card=0 || card=-1
-	echo $card > $dirsystem/asoundcard
-	touch $dirshm/nosound
-	pushData display '{ "volumenone": true }'
-	return
-fi
-
 for aplayname in "${proccards[@]}"; do
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # snd_rpi_xxx_yyy > xxx-yyy
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102

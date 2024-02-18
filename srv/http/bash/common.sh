@@ -40,7 +40,7 @@ appendSortUnique() {
 	local data file lines
 	data=$1
 	file=$2
-	[[ ! -e $file ]] && echo "$data" > $file && exit
+	[[ ! -e $file ]] && echo "$data" > $file && return
 	
 	lines="\
 $( < $file )
@@ -191,6 +191,8 @@ getContent() {
 	fi
 }
 getVar(){
+	[[ ! -e $2 ]] && echo false && return
+	
 	local line
 	line=$( grep -E "^${1// /|^}" $2 )
 	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )
@@ -246,7 +248,7 @@ notify() { # icon title message delayms
 	message=$( stringEscape $3 )
 	data='{ "channel": "notify", "data": { "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' } }'
 	if [[ $ip ]]; then
-		! ipOnline $ip && exit
+		! ipOnline $ip && return
 		
 	else
 		ip=127.0.0.1
