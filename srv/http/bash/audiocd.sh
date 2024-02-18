@@ -41,7 +41,6 @@ discid=${cddiscid[0]}
 trackL=${cddiscid[1]} # also = offset last index (offsets: +1 lead-in)
 
 cdData() {
-	notify audiocd 'Audio CD' "$artist • $album"
 	offset=( ${cddiscid[@]:2} )                           # offset - frame end
 	offset[trackL]=$(( ${offset[trackL]} * 75 ))          # last - seconds > frames 1:75
 	(( $( grep -c ' / ' <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
@@ -136,7 +135,7 @@ fi
 # add tracks to playlist
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 ! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
-notify audiocd 'Audio CD' 'Add to Playlist ...'
+notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
 for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "
 done
