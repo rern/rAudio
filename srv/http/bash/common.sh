@@ -84,7 +84,13 @@ audioCDtrack() {
 audioCDplClear() {
 	local cdtracks
 	cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	[[ $cdtracks ]] && mpc -q del $cdtracks
+	if [[ $cdtracks ]]; then
+		mpc -q del $cdtracks
+		if [[ $1 == power ]]; then
+			$dirbash/status-push.sh
+			pushData playlist '{ "refresh": true }'
+		fi
+	fi
 }
 cacheBust() {
 	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
