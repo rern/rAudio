@@ -55,7 +55,7 @@ $audiooutputbt
 " > $dirmpdconf/bluetooth.conf
 ########
 fi
-asoundcard=$( < $dirsystem/asoundcard )
+[[ ! $asoundcard ]] && asoundcard=$( < $dirsystem/asoundcard )
 if [[ $asoundcard == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	if [[ $usbdac == remove ]]; then

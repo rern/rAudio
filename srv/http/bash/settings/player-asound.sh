@@ -4,7 +4,7 @@
 
 ! type -t args2va &> /dev/null && . /srv/http/bash/common.sh
 
-asoundcard=$( < $dirsystem/asoundcard )
+[[ ! $asoundcard ]] && asoundcard=$( < $dirsystem/asoundcard )
 [[ ! $asoundcard ]] && asoundcard=0
 if [[ $asoundcard != -1 ]]; then
 ########

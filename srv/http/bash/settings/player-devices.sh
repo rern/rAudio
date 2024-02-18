@@ -17,6 +17,7 @@
 
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
+[[ ! $proccards ]] && readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards )
 for aplayname in "${proccards[@]}"; do
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # snd_rpi_xxx_yyy > xxx-yyy
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
@@ -86,3 +87,4 @@ card='$card'
 device='$device'
 hwmixer='$hwmixer'
 mixertype='$mixertype > $dirshm/output
+asoundcard=$card
