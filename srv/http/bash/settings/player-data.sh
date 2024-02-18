@@ -1,18 +1,8 @@
 #!/bin/bash
 
-. /srv/http/bash/common.sh
-
-if ! head -1 /etc/asound.conf | grep -q [0-9]; then # if card number missing
-	sed '/^defaults.*card *$/ s/$/ 0/' /etc/asound.conf
-	audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
-	card=$( aplay -l \
-				| grep -m1 "$audioaplayname" \
-				| sed -E 's/^card |: .*//g' )
-	sed "/^defaults.*card/ s/$/ $card/" /etc/asound.conf
-	$dirsettings/player-conf.sh
-fi
-
 ! mpc &> /dev/null && echo notrunning && exit
+
+. /srv/http/bash/common.sh
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 lists='{

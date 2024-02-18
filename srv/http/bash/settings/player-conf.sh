@@ -11,7 +11,7 @@
 
 usbdac=$1
 
-. $dirsettings/player-devices.sh # $asoundcard, $A...
+. $dirsettings/player-devices.sh
 . $dirsettings/player-asound.sh  # $bluetooth, $camilladsp, $equalizer
 
 pushStatus() {

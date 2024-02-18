@@ -16,7 +16,6 @@ rm -f $dirshm/{amixercontrol,listdevice,listmixer,nosound,output}
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
 aplayl=$( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
-
 if [[ ! $aplayl ]]; then
 	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
 	echo $asoundcard > $dirsystem/asoundcard
@@ -88,7 +87,6 @@ else
 fi
 
 ########
-asoundcard=$card # for player-asound.sh and player-conf.sh
 echo $card > $dirsystem/asoundcard
 [[ $hwmixer ]] && echo "$hwmixer" > $dirshm/amixercontrol # quote to includes trailing space (if any)
 [[ $listmixer ]] && echo $listmixer > $dirshm/listmixer

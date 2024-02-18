@@ -4,9 +4,8 @@
 
 [[ -e $dirshm/eject ]] && exit
 
-[[ $1 ]] && notify audiocd 'Audio CD' "USB CD $1"
-
 if [[ $1 == on ]]; then
+	notify audiocd 'Audio CD' 'USB CD On'
 	touch $dirshm/audiocd
 	ln -s $dirmpdconf/{conf/,}cdio.conf
 	systemctl restart mpd
@@ -19,6 +18,7 @@ cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 
 if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
 	if [[ $1 == off ]]; then
+		notify audiocd 'Audio CD' 'USB CD Off'
 		rm -f $dirshm/audiocd $dirmpdconf/cdio.conf
 		systemctl restart mpd
 	else
@@ -33,20 +33,19 @@ fi
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( discid Ntracks offset1 offset2 ... Nseconds )
 if [[ ! $cddiscid ]]; then
-	notify audiocd 'Audio CD' 'ID of CD not available.'
+	notify audiocd 'Audio CD' 'CD contains no tracks length'
 	exit
-	
 fi
 
 discid=${cddiscid[0]}
+trackL=${cddiscid[1]}
 
 cdData() {
-	offset=( ${cddiscid[@]:2} ) # ${offset[0]} - lead-in offset before 1st track
-	offsetL=${#offset[@]}       # offset length
-	ilast=$(( offsetL - 1 ))    # track length - 1 less than offset
-	offset[ilast]=$(( ${offset[ilast]} * 75 )) # last - Nseconds > frames
-	(( $( grep -c / <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
-	for (( i=0; i < ilast; i++ )); do
+	offset=( ${cddiscid[@]:2} )
+	offsetL=${#offset[@]}
+	offset[offsetL]=$(( ${offset[offsetL]} * 75 ))    # last - seconds > frames
+	(( $( grep -c ' / ' <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
+	for (( i=0; i < trackL; i++ )); do # ${offset[0]} - lead-in
 		f0=${offset[i]}
 		f1=${offset[i+1]}
 		time=$(( ( f1 - f0 + 37 ) / 75 )) # 75 frames : 1s - (+37 round to nearest)
@@ -61,15 +60,12 @@ cdData() {
 }
 
 if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
-	notify 'audiocd blink' 'Audio CD' 'Search CD data ...'
 	server='https://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
 	notify 'audiocd blink' 'Audio CD' 'Fetch CD data ...'
 	query=$( curl -sfL "$server+query+$discdata&$options" | tr -d '\r' ) # remove \r
-	if [[ $? != 0 ]]; then
-		notify audiocd 'Audio CD' 'CD database server not reachable.'
-	else
+	if [[ $? == 0 ]]; then
 # 210 Found exact matches, list follows (until terminating `.')
 # GENRE0 DISCID ARTIST / ALBUM
 # GENRE1 DISCID ARTIST / ALBUM
@@ -93,10 +89,9 @@ if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
 	fi
 fi
 if [[ ! -e $diraudiocd/$discid ]]; then # cd-info
-	notify 'audiocd blink' 'Audio CD' 'Fetch CD data ...'
 	cdinfo=$( cd-info )
 	if [[ ! $cdinfo ]]; then
-		notify audiocd 'Audio CD' 'CD database not found.'
+		notify audiocd 'Audio CD' 'CD data not found.'
 	else
 		readarray -t msf <<< $( awk '/^CD-ROM Track List/,/^Media Catalog Number/ {print $2}' <<< $cdinfo \
 									| grep ^[0-9] \
@@ -141,8 +136,7 @@ fi
 # add tracks to playlist
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 ! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
-notify audiocd 'Audio CD' 'Add tracks to Playlist ...'
-trackL=${cddiscid[1]}
+notify audiocd 'Audio CD' 'Add to Playlist ...'
 for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "
 done

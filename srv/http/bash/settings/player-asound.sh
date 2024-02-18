@@ -3,6 +3,7 @@
 ### included by < player-conf.sh
 
 asoundcard=$( < $dirsystem/asoundcard )
+[[ ! $asoundcard ]] && asoundcard=0
 if [[ $asoundcard != -1 ]]; then
 ########
 	asound="\
