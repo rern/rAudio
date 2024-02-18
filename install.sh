@@ -89,7 +89,7 @@ fi
 if [[ -e /usr/bin/camilladsp ]]; then
 	rm -f $dirsystem/camilla.conf
 	mkdir -p $dircamilladsp/raw
-	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.1' ]]; then
+	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.2' ]]; then
 		systemctl stop camilladsp
 		rm -f /etc/default/camilladsp /usr/lib/systemd/system/camilladsp.service
 		pacman -Sy --noconfirm camilladsp
