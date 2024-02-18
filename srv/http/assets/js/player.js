@@ -1,43 +1,35 @@
+var typelist = { 'None / 0dB': 'none', 'Mixer device': 'hardware', 'MPD software': 'software' }
+var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
+			  +'<gr>Signal will be set to original level at 0dB.</gr><br>'
+			  +'Beware of too high volume.</wh>';
+
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.btoutputall' ).on( 'click', function() {
-	SW.icon  = 'volume';
-	SW.title = 'Output All';
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, list         : [ 'Enable all while Bluetooth connected', 'checkbox' ]
-		, values       : S.btoutputall
-		, checkchanged : true
-		, ok           : () => {
-			var checked = infoVal();
-			notify( SW.icon, SW.title, ( checked ? 'Enable' : 'Disable' ) +' all while Bluetooth connected' );
-			bash( checked ? [ 'btoutputall' ] : [ 'btoutputall', 'OFF' ] );
-		}
-	} );
-} );
 $( '#audiooutput' ).on( 'input', function() {
+	var $this     = $( this );
+	var aplayname = $this.val();
+	var output    = $this.find( 'option:selected' ).text()
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', $( this ).val(), 'CMD CARD' ] );
+	bash( [ 'audiooutput', output, aplayname, 'CMD OUTPUT APLAYNAME' ] );
 } );
 $( '#hwmixer' ).on( 'input', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
+	bash( [ 'hwmixer', $( this ).val(), 'CMD HWMIXER' ] );
 } );
 $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	if ( this.id.slice( -1 ) === 'a' ) {
-		var cmd    = 'volumebt';
-		var cmd0db = 'volume0dbbt';
-		S.control  = S.btaplayname;
-		S.card     = '';
+		var cmd     = 'volumebt';
+		var cmd0db  = 'volume0dbbt';
+		var control = S.btaplayname.replace( ' - A2DP', '' );
 	} else {
-		var cmd    = 'volume';
-		var cmd0db = 'volume0db';
+		var cmd     = 'volume';
+		var cmd0db  = 'volume0db';
+		var control = S.output.hwmixer;
 	}
 	info( {
 		  icon       : SW.icon
-		, title      : SW.title
-		, list       : [ S.control.replace( ' - A2DP', '' ), 'range' ]
+		, title      : 'Volume Control'
+		, list       : [ control, 'range' ]
 		, prompt     : '<br>'+ warning
 		, beforeshow : () => {
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
@@ -68,69 +60,51 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 		, oknoreset    : true
 	} );
 } );
-$( '#mixertype' ).on( 'input', function() {
-	var mixertype = $( this ).val();
-	if ( mixertype === 'none' ) {
+$( '#mixertype' ).on( 'click', function() {
+	if ( S.mixertype ) {
 		info( {
 			  icon    : 'volume'
 			, title   : 'Volume Control'
 			, message : warning
-			, cancel  : () => $( '#mixertype' ).val( D.mixertype )
-			, ok      : () => setMixerType( mixertype )
+			, cancel  : switchCancel
+			, ok      : () => setMixerType( 'none' )
 		} );
 	} else {
-		setMixerType( mixertype );
+		S.listmixer ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
 	}
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
-	S.control = '';
-	S.card    = '';
 	info( {
-		  icon        : SW.icon
-		, title       : SW.title
-		, list        : [ 'MPD Software', 'range' ]
-		, values      : S.volumempd
-		, beforeshow  : () => {
-			$( '#infoList input' ).on( 'input', function() {
-				volumeSetAt( +$( this ).val() );
-			} ).on( 'touchend mouseup keyup', function() {
-				volumePush( +$( this ).val(), 'mpd' );
-			} );
-		}
-		, okno        : true
+		  icon    : SW.icon
+		, title   : SW.title
+		, message : 'Type:'
+		, list    : [ '', 'radio', { kv: { 'Mixer device <gr>(hardware)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+		, values  : S.mixertype ? S.output.mixertype : 'hardware'
+		, cancel  : switchCancel
+		, ok      : () => setMixerType( infoVal() )
 	} );
 } );
 $( '#novolume' ).on( 'click', function() {
-	var checked = $( this ).prop( 'checked' );
-	if ( checked ) {
+	if ( $( this ).hasClass( 'disabled' ) ) return
+	
+	if ( S.camilladsp || S.equalizer ) {
 		info( {
 			  icon    : SW.icon
 			, title   : SW.title
-			, message : warning
+			, message :  '<wh>No Volume</wh> also disable:<br><br>'
+						+ icoTab( 'Features' )
+						+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
 			, cancel  : switchCancel
-			, ok      : () => {
-				S.novolume = true;
-				bash( [ 'novolume', D.card, D.hwmixer, D.aplayname, 'CMD CARD HWMIXER APLAYNAME' ] );
-				notifyCommon( 'Enable ...' );
-			}
+			, ok      : infoNoVolume
 		} );
 	} else {
-		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, message      : `\
-<wh>No volume</wh> will be disabled on:
-&emsp; • Select a Mixer Control
-&emsp; • Enable any Volume options`
-			, messagealign : 'left'
-		} );
-		$( this ).prop( 'checked', true );
+		infoNoVolume();
 	}
 } );
 $( '#dop' ).on( 'click', function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	var cmd = checked ? [ 'dop', D.aplayname ] : [ 'dop', D.aplayname, 'OFF' ]; // OFF with args - value by index
+	var cmd = checked ? [ 'dop', S.output.aplayname ] : [ 'dop', S.output.aplayname, 'OFF' ]; // OFF with args - value by index
 	bash( cmd );
 } );
 $( '#setting-crossfade' ).on( 'click', function() {
@@ -148,7 +122,7 @@ $( '#setting-crossfade' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-replaygain' ).on( 'click', function() {
-	var hardware = D.mixertype === 'software' && D.mixers;
+	var hardware = S.output.mixertype === 'software' && S.listmixer;
 	if ( ! hardware ) delete S.replaygainconf.HARDWARE;
 	info( {
 		  icon         : SW.icon
@@ -218,13 +192,13 @@ user                   "mpd"</pre></td></tr>
 ...
 audio_output {
     ...
-    mixer_device   "hw:${ S.asoundcard }"
+    mixer_device   "hw:${ S.output.card }"
 </pre></td></tr>
 <tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
 </table>`;
-	bash( [ 'customget', D.aplayname, 'CMD APLAYNAME' ], val => {
+	bash( [ 'customget' ], val => {
 		var val       = val.split( '^^' );
 		var global = val[ 0 ].trim(); // remove trailing
 		var output = val[ 1 ].trim();
@@ -246,7 +220,7 @@ audio_output {
 				}
 				
 				notifyCommon();
-				bash( [ 'custom', global, output, D.aplayname, 'CMD GLOBAL OUTPUT APLAYNAME' ], mpdstart => {
+				bash( [ 'custom', global, output, 'CMD GLOBAL OUTPUT' ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -264,10 +238,19 @@ audio_output {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-var warning = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
-			+'<gr>Signal will be set to original level at 0dB.</gr><br>'
-			+'Beware of too high volume.</wh>';
-
+function infoNoVolume() {
+	info( {
+		  icon    : SW.icon
+		, title   : SW.title
+		, message : warning
+		, cancel  : switchCancel
+		, ok      : () => {
+			S.novolume = true;
+			bash( [ 'novolume' ] );
+			notifyCommon( 'Enable ...' );
+		}
+	} );
+}
 function infoSoxr( quality ) {
 	delete S.soxrconf.PLUGIN
 	info( {
@@ -334,7 +317,7 @@ function renderPage() {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divbluealsa' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
-		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.btoutputall );
+		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.devicewithbt );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divaudiooutput .col-l' ).html( $( '#divaudiooutput .col-l' ).html() + icondsp );
@@ -344,34 +327,24 @@ function renderPage() {
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
 	} else {
-		D               = S.devices[ S.asoundcard ];
-		var htmldevices = '';
-		$.each( S.devices, ( i, el ) => {
-			if ( el.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ el.card +'">'+ el.name +'</option>';
-		} );
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#audiooutput' )
-			.html( htmldevices )
-			.val( S.asoundcard );
-		if ( D.mixerdevices ) {
-			var htmlhwmixer = D.mixermanual ? '<option value="auto">Auto</option>' : '';
-			D.mixerdevices.forEach( mixer => htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>' );
+			.html( htmlOption( S.listdevice ) )
+			.val( S.output.aplayname );
+		if ( S.listmixer ) {
+			$( '#hwmixer' )
+				.html( htmlOption( S.listmixer ) )
+				.val( S.output.hwmixer );
+			$( '#divhwmixer' ).removeClass( 'hide' );
 		} else {
-			var htmlhwmixer = '<option value="">( not available )</option>';
+			$( '#divhwmixer' ).addClass( 'hide' );
+			delete typelist[ 'Mixer device' ];
 		}
-		$( '#hwmixer' )
-			.html( htmlhwmixer )
-			.val( D.hwmixer );
-		var htmlmixertype = '<option value="none">None / 0dB</option>';
-		if ( D.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
-		htmlmixertype    += '<option value="software">MPD software</option>';
-		$( '#mixertype' )
-			.html( htmlmixertype )
-			.val( D.mixertype );
-		$( '#setting-hwmixer' ).toggleClass( 'hide', ! ( 'volume' in S ) );
+		$( '#setting-hwmixer' ).toggleClass( 'hide', ! S.volume );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
-		$( '#setting-mixertype' ).toggleClass( 'hide', D.mixertype !== 'software' );
-		$( '#novolume' ).prop( 'checked', S.novolume );
+		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.listmixer || ! S.mixertype );
+		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
+		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 	}
@@ -389,9 +362,8 @@ function renderStatus() {
 	$( '#divstatus .value' ).html( htmlstatus );
 }
 function setMixerType( mixertype ) {
-	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', D.card, mixertype, hwmixer, D.aplayname, 'CMD CARD MIXERTYPE HWMIXER APLAYNAME' ] );
+	bash( [ 'mixertype', mixertype, 'CMD MIXERTYPE' ] );
 }
 function volumeGetPush() {
 	bash( [ 'volumepush' ] );

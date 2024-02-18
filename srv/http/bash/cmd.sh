@@ -538,9 +538,17 @@ mpcplayback )
 	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
-		[[ $( mpc status %state% ) == paused ]] && pause=1
 		mpc -q $ACTION
-		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify 'audiocd blink' 'Audio CD' 'Start play ...'
+		if audioCDtrack; then
+			touch $dirshm/cdstart
+			( sleep 20 && rm -f $dirshm/cdstart ) &
+			notify 'audiocd blink' 'Audio CD' 'Start play ...'
+			for i in {0..20}; do
+				[[ $( mpc status %currenttime% ) == 0:00 ]] && sleep 1 || break
+			done
+			rm -f $dirshm/cdstart
+			$dirbash/status-push.sh
+		fi
 	else
 		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
 		mpc -q $ACTION
@@ -699,7 +707,7 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	elif [[ $TYPE == add ]]; then
 		[[ $TO == last ]] && echo "$FILE" >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
 	else # move
-		file=$( sed "$FROM q;d" "$plfile" )
+		file=$( sed -n "$FROM p" "$plfile" )
 		[[ $FROM < $TO ]] && (( TO++ ))
 		sed -i -e "$FROM d" -e "$TO i$file" "$plfile"
 	fi
@@ -815,7 +823,7 @@ webradioedit )
 	newfile="$path/$newurlname"
 	prevfile="$path/$urlname"
 	if [[ $NEWURL == $URL ]]; then
-		sampling=$( sed '2q;d' "$prevfile" )
+		sampling=$( sed -n 2p "$prevfile" )
 	else
 		[[ -e $newfile ]] && echo 'URL exists:' && exit
 		

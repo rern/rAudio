@@ -325,8 +325,6 @@ $( '#i2smodule' ).on( 'input', function() {
 	} else {
 		setTimeout( () => { notify( icon, title, 'Disable ...' ) }, 300 ); // fix - hide banner too soon
 		S.i2smodulesw = false;
-		aplayname = 'onboard';
-		output = '';
 		i2sSelectHide();
 	}
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
@@ -620,9 +618,9 @@ $( '#restore' ).on( 'click', function() {
 } );
 $( '#shareddata' ).on( 'click', function() {
 	var $this = $( this );
-	if ( $this.hasClass( 'disabled' ) ) {
-		infoDisabled( $this );
-	} else if ( S.shareddata ) {
+	if ( $this.hasClass( 'disabled' ) ) return
+	
+	if ( S.shareddata ) {
 		info( {
 			  icon    : SW.icon
 			, title   : SW.title
@@ -1114,7 +1112,7 @@ function renderPage() {
 		if ( 'wlan' in S ) {
 			$( '#wlan' )
 				.toggleClass( 'disabled', S.ap || S.wlanconnected )
-				.prev().html( S.ap ? '<wh>Access Point '+ ico( 'ap' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
+				.prev().html( S.ap ? icoLabel( 'Access Point', 'ap' ) +' is currently enabled.' : icoLabel( 'Wi-Fi', 'wifi' ) +' is currently connected.' );
 			$( '#divwlan .col-l' )
 				.toggleClass( 'single', ! S.wlan )
 				.toggleClass( 'status', S.wlan );

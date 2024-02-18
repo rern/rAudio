@@ -45,7 +45,7 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		skip+='|FATAL: Module g2d_23 not found'
 		;;
 	mpd )
-		conf=$( grep -v ^i $mpdconf )
+		conf=$( grep -Ev '^i|^#' $mpdconf )
 		for file in autoupdate buffer normalization outputbuffer replaygain custom; do
 			fileconf=$dirmpdconf/$file.conf
 			[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
@@ -94,7 +94,9 @@ $sharedip"
 esac
 status=$( systemctl status $SERVICE \
 				| grep -E -v "$skip" \
-				| sed -E -e '1 s|^.* (.*service) |<code>\1</code>|
+				| sed -E  -e '1 s|^.* (.*service) |<code>\1</code>|
+						' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
+											 s|(enabled)|<grn>\1</grn>|g}
 						' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
 											 s|( inactive \(.*\))|<red>\1</red>|
 											 s|(failed)|<red>\1</red>|ig}' )

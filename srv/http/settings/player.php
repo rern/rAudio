@@ -6,6 +6,7 @@ $id_data = [
 	, 'buffer'        => [ 'label' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
 	, 'crossfade'     => [ 'label' => 'Cross-Fading',          'sub' => 'crossfade' ]
 	, 'custom'        => [ 'label' => "User's Configurations", 'sub' => 'custom' ]
+	, 'devicewithbt'  => [ 'label' => 'Device + Bluetooth',                                     'setting' => false ]
 	, 'dop'           => [ 'label' => 'DSD over PCM',          'sub' => 'dop',                  'setting' => 'none' ]
 	, 'ffmpeg'        => [ 'label' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
 	, 'hwmixer'       => [ 'label' => 'Mixer Device',                                           'setting' => 'custom' ]
@@ -37,11 +38,6 @@ htmlSection( $head, $body, 'mpd' );
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
 	, 'status' => 'output'
-	, 'button' => [ 'gear btoutputall' ]
-	, 'help'   => <<< EOF
-{$Fi( 'gear btn' )} Other outputs while Bluetooth connected
- · Should be disabled if not used simultaneously
-EOF
 ];
 $body = [
 	[
@@ -56,31 +52,31 @@ EOF
 	, [
 		  'id'       => 'audiooutput'
 		, 'input'    => '<select id="audiooutput"></select>'
-		, 'help'     => <<< EOF
-HDMI audio:
- · Available when connected before boot only
- · Enable plug and play: {$Ftab( 'player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
-EOF
+		, 'help'     => 'HDMI audio: Available when connected before boot only'
 	]
 	, [
 		  'id'       => 'hwmixer'
 		, 'input'    => '<select id="hwmixer"></select>'
-		, 'help'     => <<< EOF
-{$Fi( 'volume btn' )}
-Mixer device volume control
-EOF
+		, 'help'     => i( 'volume btn' ).' Mixer device volume control'
 	]
 	, [
 		  'id'       => 'mixertype'
-		, 'input'    => '<select id="mixertype"></select>'
 		, 'help'     => <<< EOF
-Volume control for each device.
-The later in the signal chain the better sound quality.
-<pre>
-<c>None / 0dB  </c> Best  Amplifier volume - GUI knob hidden
-<c>Mixer device</c> Good  DAC hardware via GUI knob
-<c>MPD software</c> Basic GUI knob
-</pre>Note: <c>None / 0dB</c> Not for devices which still need volume control, e.g., DACs with on-board amplifier
+{$Fi( 'gear btn' )} Type:
+ · Mixer device: Good - DAC hardware via GUI knob
+ · MPD software: Basic - GUI knob
+ 
+Note: Should be disabled for best sound quality
+ - GUI knob hidden
+ - Use amplifier volume
+(The later in the signal chain the better sound quality.)
+EOF
+	]
+	, [
+		  'id'       => 'devicewithbt'
+		, 'help'     => <<< EOF
+ · Keep Output {$FiLabel( 'Device' )} enabled when Bluetooth connected.
+ · Should be disabled if not used simultaneously
 EOF
 	]
 ];
@@ -89,21 +85,24 @@ $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
 		  'id'       => 'novolume'
+		, 'disabled' => 'To disable: Enable any volume settings'
 		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
- · Mixer device volume: <c>0dB</c>
- · Volume Control: <c>None / 0db</c>
- · Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
- · Disable Signal Processors
-
-Note: Not for DACs with on-board amplifier.
+ · Mixer device volume set at <c>0dB</c>
+ · Disable:
+	· Output {$FiLabel( 'Volume Control' )}
+	· Volume {$FiLabel( 'Cross-Fading' )} {$FiLabel( 'Normalization' )} {$FiLabel( 'ReplayGain' )}
+	· Options  {$FiLabel( 'SoX Resampler' )}
+	· {$FiTab( 'Features' )}{$FiLabel( 'DSP', 'camilladsp' )} and {$FiLabel( 'Equalizer', 'equalizer' )}
+	
+Note: If {$FiLabel( "User's Configurations" )} enabled, verify for no volume settings.
 EOF
 	]
 	, [
 		  'id'       => 'dop'
 		, 'help'     => <<< EOF
-<wh>D</wh>SD <wh>o</wh>ver <wh>P</wh>CM for DSD-capable devices that not support native DSD
+For DSD-capable devices that not support native DSD
  · DoP repacks 16bit DSD stream into 24bit PCM frames. 
  · PCM frames transmitted to DAC and reassembled back to original DSD stream.
  · DoP is bit-perfect by itself. (with expense of double bandwith)
@@ -163,7 +162,7 @@ EOF
 	]
 	, [
 		  'id'       => 'ffmpeg'
-		, 'disabled' => labelIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
+		, 'disabled' => iLabel( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for more audio filetypes {$Fi( 'help filetype' )}
 <pre id="prefiletype" class="hide"></pre>

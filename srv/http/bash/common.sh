@@ -40,7 +40,7 @@ appendSortUnique() {
 	local data file lines
 	data=$1
 	file=$2
-	[[ ! -e $file ]] && echo "$data" > $file && exit
+	[[ ! -e $file ]] && echo "$data" > $file && return
 	
 	lines="\
 $( < $file )
@@ -76,6 +76,18 @@ args2var() {
 		fi
 	done
 	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$CMD.conf
+}
+audioCDtrack() {
+	songpos=$( mpc status %songpos% )
+	[[ $( mpc -f %file% playlist | sed -n "$songpos p" ) == cdda* ]] && return 0
+}
+audioCDplClear() {
+	local cdtracks
+	cdtracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+	if [[ $cdtracks ]]; then
+		mpc -q del $cdtracks
+		return 0
+	fi
 }
 cacheBust() {
 	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
@@ -187,6 +199,8 @@ getContent() {
 	fi
 }
 getVar(){
+	[[ ! -e $2 ]] && echo false && return
+	
 	local line
 	line=$( grep -E "^${1// /|^}" $2 )
 	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )
@@ -242,7 +256,7 @@ notify() { # icon title message delayms
 	message=$( stringEscape $3 )
 	data='{ "channel": "notify", "data": { "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' } }'
 	if [[ $ip ]]; then
-		! ipOnline $ip && exit
+		! ipOnline $ip && return
 		
 	else
 		ip=127.0.0.1
@@ -366,7 +380,7 @@ sshpassCmd() {
 		"${@:2}"
 }
 statePlay() {
-	grep -q -m1 '^state.*play' $dirshm/status && return 0
+	[[ $( mpc status %state% ) == playing ]] && return 0
 }
 stringEscape() {
 	echo "${@//\"/\\\"}"
@@ -392,7 +406,7 @@ $card
 $control"
 }
 volumeGet() {
-	local amixer card control data db mixer mixersoftware val val_db
+	local amixer card control data db mixer val val_db
 	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
@@ -401,12 +415,9 @@ volumeGet() {
 	else
 		[[ -e $dirshm/nosound ]] && echo -1 && return
 		
-		if [[ -e $dirsystem/snapclientserver ]]; then
-			mixersoftware=
-		elif inOutputConf mixer_type.*software; then
-			mixersoftware=1
-		fi
-		if [[ $2 != hw && $mixersoftware ]] && playerActive mpd; then
+		if [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
+				&& grep -q mixertype=software $dirshm/output \
+				&& playerActive mpd; then
 			val=$( mpc status %volume% | tr -dc [0-9] )
 		elif [[ -e $dirshm/amixercontrol ]]; then
 			card=$( < $dirsystem/asoundcard )

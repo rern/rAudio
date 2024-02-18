@@ -10,12 +10,12 @@ mpc idleloop | while read changed; do
 		playlist )
 			if [[ $( mpc status %consume% ) == on ]]; then
 				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
-					pushData playlist $( php /srv/http/mpdplaylist.php current )
+					pushData playlist '{ "refresh": true }'
 				) &> /dev/null &
 			fi
 			;;
 		player )
-			if [[ ! -e $dirshm/radio && ! -e $dirshm/skip ]]; then
+			if [[ ! -e $dirshm/radio && ! -e $dirshm/skip && ! -e $dirshm/cdstart ]]; then
 				$dirbash/status-push.sh & # need to run in background for snapcast ssh
 			fi
 			;;

@@ -140,6 +140,10 @@ heading + .helpblock {
 	padding-left: 0;
 	text-align: center;
 }
+.helpblock .helpmenu.label,
+.helpblock .helpmenu.tab {
+	border-top: 1px solid #000;
+}
 #infoList .helpmenu.label {
 	background: var( --cgd );
 }

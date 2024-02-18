@@ -11,28 +11,14 @@ linkConf() {
 case $CMD in
 
 audiooutput )
-	echo $CARD > $dirsystem/asoundcard
+	echo $APLAYNAME > $dirsystem/audio-aplayname
+	echo $OUTPUT > $dirsystem/audio-output
 	$dirsettings/player-conf.sh
 	;;
 autoupdate | ffmpeg | normalization )
 	[[ $ON ]] && linkConf || rm $dirmpdconf/$CMD.conf
 	systemctl restart mpd
 	pushRefresh
-	;;
-btoutputall )
-	enableFlagSet
-	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
-	[[ -e $dirmpdconf/output.conf ]] && output=1
-	if [[ $ON ]]; then
-		[[ $bluetooth && ! $output ]] && restart=1
-	else
-		[[ $bluetooth && $output ]] && restart=1
-	fi
-	if [[ $restart ]]; then
-		$dirsettings/player-conf.sh
-	else
-		pushRefresh
-	fi
 	;;
 buffer | outputbuffer )
 	if [[ $ON ]]; then
@@ -54,15 +40,17 @@ crossfade )
 	pushRefresh
 	;;
 customget )
+	aplayname=$( getVar aplayname $dirshm/output ) 
 	echo "\
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
-$( getContent "$dirsystem/custom-output-$APLAYNAME" )"
+$( getContent "$dirsystem/custom-output-$aplayname" )"
 	;;
 custom )
 	if [[ $ON ]]; then
 		fileglobal=$dirmpdconf/conf/custom.conf
-		fileoutput=$dirsystem/custom-output-$APLAYNAME
+		aplayname=$( getVar aplayname $dirshm/output )
+		fileoutput="$dirsystem/custom-output-$aplayname"
 		if [[ $GLOBAL ]]; then
 			echo -e "$GLOBAL" > $fileglobal
 			linkConf
@@ -82,6 +70,21 @@ custom )
 		$dirsettings/player-conf.sh
 	fi
 	;;
+devicewithbt )
+	enableFlagSet
+	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
+	[[ -e $dirmpdconf/output.conf ]] && output=1
+	if [[ $ON ]]; then
+		[[ $bluetooth && ! $output ]] && restart=1
+	else
+		[[ $bluetooth && $output ]] && restart=1
+	fi
+	if [[ $restart ]]; then
+		$dirsettings/player-conf.sh
+	else
+		pushRefresh
+	fi
+	;;
 dop )
 	filedop=$dirsystem/dop-${args[1]} # OFF with args - value by index
 	[[ $ON ]] && touch "$filedop" || rm -f "$filedop"
@@ -99,32 +102,38 @@ filetype )
 	echo "${list:0:-4}"
 	;;
 hwmixer )
-	echo $HWMIXER > "$dirsystem/hwmixer-$APLAYNAME"
+	aplayname=$( getVar aplayname $dirshm/output )
+	echo $HWMIXER > "$dirsystem/hwmixer-$aplayname"
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
+	. $dirshm/output
 	mpc -q stop
-	filemixertype=$dirsystem/mixertype-$APLAYNAME
+	filemixertype=$dirsystem/mixertype-$aplayname
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
 	if [[ $MIXERTYPE == software ]]; then # [sw] set to current [hw]
 		[[ -e $dirshm/amixercontrol ]] && mpc volume $( volumeGet value )
 	else
 		rm -f $dirsystem/replaygain-hw
 	fi
-	if [[ $HWMIXER ]]; then
+	if [[ $hwmixer ]]; then
 		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB # [hw] set to current [sw] || [sw/none] set 0dB
-		amixer -c $CARD -Mq sset "$HWMIXER" $vol
+		amixer -c $card -Mq sset "$hwmixer" $vol
 	fi
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false
 	pushData display '{ "volumenone": '$volumenone' }'
 	;;
 novolume )
+	. $dirshm/output
+	amixer -c $card -Mq sset "$hwmixer" 0dB
+	echo none > "$dirsystem/mixertype-$aplayname"
 	mpc -q crossfade 0
-	amixer -c $CARD -Mq sset "$HWMIXER" 0dB
-	echo none > "$dirsystem/mixertype-$APLAYNAME"
-	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
+	for feature in camilladsp equalizer; do
+		[[ -e $dirsystem/$feature ]] && $dirsettings/features.sh "$feature
+OFF"
+	done
 	$dirsettings/player-conf.sh
 	pushData display '{ "volumenone": true }'
 	;;

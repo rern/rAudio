@@ -11,7 +11,20 @@
 
 usbdac=$1
 
-. $dirsettings/player-devices.sh # $asoundcard, $A...
+rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
+[[ -e /usr/bin/camilladsp ]] && systemctl stop camilladsp
+rm -f $dirshm/{amixercontrol,listdevice,listmixer,nosound,output}
+
+readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards )
+if [[ $proccards ]]; then
+	. $dirsettings/player-devices.sh
+else
+	[[ -e $dirshm/btreceiver ]] && card=0 || card=-1
+	echo $card > $dirsystem/asoundcard
+	touch $dirshm/nosound
+	pushData display '{ "volumenone": true }'
+fi
+
 . $dirsettings/player-asound.sh  # $bluetooth, $camilladsp, $equalizer
 
 pushStatus() {
@@ -20,13 +33,10 @@ pushStatus() {
 	[[ $usbdac ]] && pushData refresh '{ "page": "system", "audiocards": '$( aplay -l | grep ^card | grep -c -v Loopback )' }'
 }
 
-rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
-systemctl stop camilladsp
-
 # outputs -----------------------------------------------------------------------------
 if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
-	[[ ! -e $dirsystem/btoutputall ]] && btoutputonly=1
+	[[ ! -e $dirsystem/devicewithbt ]] && btoutputonly=1
 	hw=bluealsa
 #---------------< bluetooth
 	audiooutputbt='
@@ -45,20 +55,16 @@ $audiooutputbt
 " > $dirmpdconf/bluetooth.conf
 ########
 fi
-
+asoundcard=$( < $dirsystem/asoundcard )
 if [[ $asoundcard == -1 ]]; then # no audio devices
+	rm -f $dirmpdconf/{output,soxr}.conf
 	if [[ $usbdac == remove ]]; then
 		pushData display '{ "volumenone": true }'
 		pushData refresh '{ "page": "features", "nosound": true }'
 		outputswitch='(None)'
 	fi
-elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
-	aplayname=${Aaplayname[asoundcard]}
-	card=${Acard[asoundcard]}
-	device=${Adevice[asoundcard]}
-	hwmixer=${Ahwmixer[asoundcard]}
-	mixertype=${Amixertype[asoundcard]}
-	name=${Aname[asoundcard]}
+elif [[ ! $btoutputonly ]]; then
+	. $dirshm/output # aplayname name card device hwmixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
@@ -147,7 +153,7 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ ! $Acard && ! $bluetooth ]] && pushStatus && exit # >>>>>>>>>>
+[[ $asoundcard == -1 ]] && pushStatus && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
 [[ $hwmixer && ! $bluetooth && ! $camilladsp && ! $equalizer ]] && mixer=1

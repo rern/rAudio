@@ -157,7 +157,7 @@ function banner( icon, title, message, delay ) {
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
-	if ( $( '#banner' ).hasClass( 'hide' ) ) return
+	if ( V.reboot || $( '#banner' ).hasClass( 'hide' ) ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -223,10 +223,15 @@ function highlightJSON( json ) {
 	} );
 	return '\n\n'+ json.replace( /: null,/g, ': <red>null</red>,' );
 }
-function ico( cls, id ) {
-	return '<i '+ ( id ? 'id="'+ id +'" ' : '' ) +'class="i-'+ cls +'"></i>'
+function ico( icon, id ) {
+	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"></i>';
 }
-
+function icoLabel( label, icon ) {
+	return '<a class="helpmenu label">'+ label + ( icon ? '<i class="i-'+ icon +'"></i>' : '&emsp;' ) +'</a>'
+}
+function icoTab( tab ) {
+	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'
+}
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).press( '#infoIcon', function() { // usage
 	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
@@ -1071,7 +1076,7 @@ function loader() {
 	$( '#loader' ).removeClass( 'hide' );
 }
 function loaderHide() {
-	$( '#loader' ).addClass( 'hide' );
+	if ( ! V.reboot ) $( '#loader' ).addClass( 'hide' );
 }
 
 // ----------------------------------------------------------------------
@@ -1175,13 +1180,14 @@ function volumeSet( vol, type ) { // increment from current to target
 function volumeSetAt( val ) { // drag / press / updn
 	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
-function websocketConnect() {
+function websocketConnect( ip ) {
+	var url = 'ws://'+ ( ip || location.host ) +':8080';
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
-		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( 'ws://'+ window.location.host +':8080/volume' );
+		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( url +'/volume' );
 	}
 	if ( websocketOk( ws ) ) return
 	
-	ws           = new WebSocket( 'ws://'+ window.location.host +':8080' );
+	ws           = new WebSocket( url );
 	ws.onopen    = () => websocketReady( ws );
 	ws.onclose   = () => ws = null;
 	ws.onmessage = message => psOnMessage( message ); // data pushed from server
@@ -1214,7 +1220,7 @@ function websocketReconnect( ip ) {
 	var url = ip ? 'http://'+ ip :  '';
 	fetch( url +'/data/shm/startup' )
 		.then( response => {
-			response.ok ? websocketConnect() : setTimeout( websocketReconnect, 1000 );
+			response.ok ? websocketConnect( ip ) : setTimeout( () => websocketReconnect( ip ), 1000 );
 		} );
 }
 function wsPush( channel, data ) {

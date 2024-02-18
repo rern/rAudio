@@ -3,8 +3,10 @@
 . /srv/http/bash/common.sh
 
 if [[ $1 == off ]]; then
+	audioCDplClear
 	pushData power '{ "type": "off" }'
 else
+	audioCDplClear && $dirbash/status-push.sh
 	reboot=1
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
 	pushData power '{ "type": "reboot", "startup": '$startup' }'
@@ -56,5 +58,5 @@ alsactl store
 echo 1 > /sys/class/backlight/rpi_backlight/bl_power
 [[ -e $dirshm/apstartup || -e /boot/accesspoint ]] && rm $dirsystem/ap
 
-[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
+[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 [[ $reboot ]] && reboot || poweroff

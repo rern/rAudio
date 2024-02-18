@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1706187307' );
+	src         : url( '/assets/fonts/rern.woff2?v=1707808685' );
 }
 @font-face {
 	font-family : Lato;
@@ -85,8 +85,6 @@ i {
 .i-file-music::before      { content: '\F549' }
 .i-file-playlist::before   { content: '\F548' }
 .i-filters::before         { content: '\F52A' }
-.i-firefox::before         { content: '\F58C'; position: absolute; }
-.i-firefox::after          { content: '\F58D'; position: relative; color: var( --cg60 ); }
 .i-flash::before           { content: '\F566' }
 .i-flowchart::before       { content: '\F52D' }
 .i-folder::before          { content: '\F540' }
@@ -124,7 +122,8 @@ i {
 .i-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
 .i-linear::before          { content: '\F52F' }
 .i-link::before            { content: '\F56B' }
-.i-localbrowser::before    { content: '\F584' }
+.i-localbrowser::before    { content: '\F58C'; position: absolute; }
+.i-localbrowser::after     { content: '\F58D'; position: relative; color: var( --cg60 ); }
 .i-lock::before            { content: '\F574' }
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
@@ -233,7 +232,7 @@ i {
 .i-wifi2::before           { content: '\F59A'; position: absolute; }
 .i-wifi2::after            { content: '\F59B'; color: var( --cga ); }
 .i-wlan::before            { content: '\F597' }
-#divoutput .i-gear::before { content: '\F516' }
+#divhwmixer .i-gear::before { content: '\F516' }
 
 html {
 	height  : 100%;
@@ -374,6 +373,9 @@ code {
 	background-color: var( --cgd );
 	padding: 0 4px;
 	border-radius: 3px;
+}
+.helpblock c {
+	background-color: var( --cg );
 }
 
 /* banner() */

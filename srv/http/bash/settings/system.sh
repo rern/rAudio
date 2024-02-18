@@ -188,7 +188,7 @@ i2slist )
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
 	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
-	if [[ $APLAYNAME != onboard ]]; then
+	if [[ $APLAYNAME != none ]]; then
 		config+="
 dtparam=i2s=on
 dtoverlay=$APLAYNAME"
@@ -454,18 +454,6 @@ statusbluetooth )
 <bll># bluetoothctl show</bll>
 $( bluetoothctl show )"
 	;;
-statussoundprofile )
-	dirlan=/sys/class/net/$( ip -br link | awk '/^e/ {print $1; exit}' )
-	for f in /proc/sys/vm/swappiness $dirlan/mtu $dirlan/tx_queue_len; do
-		[[ ! -e $f ]] && continue
-		
-		status+="\
-<bll># cat $f</bll>
-$( < $f )
-"
-	done
-	echo "$status"
-	;;
 statusstatus )
 	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
@@ -514,11 +502,9 @@ $(  i2cdetect -y $dev )"
 	echo "$config"
 	;;
 statustimezone )
-	echo "<bll># timedatectl</bll>"
-	timedatectl
-	echo "
-<code>NTP server</code>:     $( getVar NTP /etc/systemd/timesyncd.conf )
-<code>Package mirror</code>: $( sed -n '/^Server/ {s/.*= //; p}' /etc/pacman.d/mirrorlist | head -1 )"
+	echo "\
+<bll># timedatectl</bll>
+$( timedatectl )"
 	;;
 statuswlan )
 	echo '<bll># iw reg get</bll>'
@@ -529,17 +515,13 @@ statuswlan )
 storageinfo )
 	if [[ ${DEV:0:8} == /dev/mmc ]]; then
 		dev=/sys/block/${DEV:5:-2}/device
-		cmd="<bll># mmc cid read $dev</bll>"
-		echo "\
-$cmd
-$( mmc cid read $dev )
-
-${cmd/cid/csd}
-$( mmc csd read $dev )
-
-${cmd/cid/src}
-$( mmc scr read $dev )
+		for k in cid csd scr; do
+			data+="
+<bll># mmc $k read $dev</bll>
+$( mmc $k read $dev )
 "
+		done
+		echo "$data"
 	else
 		echo -n "\
 <bll># hdparm -I $DEV</bll>

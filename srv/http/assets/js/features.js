@@ -62,7 +62,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 				, title    : SW.title
 				, tablabel : [ 'Output', 'Keys' ]
 				, tab      : [ '', infoSpotifyKeys ]
-				, message  : '<br>Loopback is currently set for <a class="helpmenu label">DSP<i class="i-camilladsp"></i></a><br>&nbsp;'
+				, message  : '<br>Loopback is currently set for '+ icoLabel( 'DSP', 'camilladsp' ) +'<br>&nbsp;'
 			} );
 			return
 		}
@@ -207,7 +207,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			$( '#infoList' ).on( 'click', '.brightness', function() {
 				switchCancel();
 				info( {
-					  icon        : 'firefox'
+					  icon        : 'localbrowser'
 					, title       : 'Browser on RPi'
 					, list        : [ 'Brightness', 'range' ]
 					, values      : S.brightness
@@ -478,7 +478,7 @@ function renderPage() {
 	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {
-		var nfsdisabled = '<a class="helpmenu label">Shared Data'+ ico( 'networks' ) +'</a> is currently enabled.';
+		var nfsdisabled = icoLabel( 'Shared Data', 'networks' ) +' is currently enabled.';
 		$( '#nfsserver' ).addClass( 'disabled' );
 		if ( S.smb ) {
 			nfsdisabled = nfsdisabled.replace( 'Shared Data', 'File Sharing' );

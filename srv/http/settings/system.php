@@ -16,7 +16,7 @@ $id_data = [
 	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
 	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
 	, 'softlimit'     => [ 'label' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
-	, 'soundprofile'  => [ 'label' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
+	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
 	, 'volumeboot'    => [ 'label' => 'Volume on Boot' ]
 	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
@@ -98,7 +98,7 @@ EOF
 $body = [
 	'<ul id="list" class="entries"></ul>
 		<div class="helpblock hide">'.i( 'microsd btn' ).' '.i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu'.'</div>
-		<pre id="codehddinfo" class="hide"></pre>'
+		<pre id="codehddinfo" class="status hide"></pre>'
 	, [
 		  'id'       => 'hddsleep'
 		, 'disabled' => 'HDD not support sleep'
@@ -162,7 +162,7 @@ $body = [
 		<span class="helpblock hide"><!--
 -->I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
- · See  if it's already set: {$Ftab( 'player' )}<a class="helpmenu label">Output · Device </a>
+ · See  if it's already set: {$FiTab( 'Player' )} Output {$FiLabel( 'Device' )}
 {$Fi( 'gear btn' )}
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 		</span>
@@ -292,7 +292,7 @@ EOF
 	]
 	, [
 		  'id'       => 'shareddata'
-		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'disabled' => iLabel( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
  · Library database
@@ -306,8 +306,8 @@ Note:
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$Ftab( 'features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
-	Clients: {$FlabelIcon( 'Shared Data', 'networks' )} Type ● rAudio
+	Server: {$FiTab( 'Features' )}{$FiLabel( 'Server rAudio', 'rserver' )}
+	Clients: {$FiLabel( 'Shared Data', 'networks' )} Type ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
@@ -321,7 +321,7 @@ Note:
 			<btn>Security</btn>
 				Everyone - Full Control
 	Clients:
-	 · {$FlabelIcon( 'Shared Data', 'networks' )} Add the created share
+	 · {$FiLabel( 'Shared Data', 'networks' )} Add the created share
 	 · Data on 1st connected client will be used as initial shared.
 EOF
 	]

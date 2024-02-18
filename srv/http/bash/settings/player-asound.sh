@@ -2,7 +2,11 @@
 
 ### included by < player-conf.sh
 
-if [[ $asoundcard != -1 ]]; then # from player-devices.sh
+! type -t args2va &> /dev/null && . /srv/http/bash/common.sh
+
+asoundcard=$( < $dirsystem/asoundcard )
+[[ ! $asoundcard ]] && asoundcard=0
+if [[ $asoundcard != -1 ]]; then
 ########
 	asound="\
 defaults.pcm.card $asoundcard

@@ -52,49 +52,40 @@ function currentPlaylist() {
 		, $lists ); // avoid json literal issue with escape double quotes
 	if ( ! count( $lists ) ) exit( '-1' );
 	
-	if ( substr( $lists[ 3 ], 0, 4 ) === 'cdda' ) {
-		foreach( $lists as $list ) {
-			$list = explode( '^^', $list );
-				$each         = ( object )[];
-				$file         = $list[ 3 ];
-				$id           = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-				$track        = substr( $file, 8 );
-				$content      = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
-				$data         = $content[ $track - 1 ];
-				$audiocd      = explode( '^', $data );
-				$each->Artist = $audiocd[ 0 ];
-				$each->Album  = $audiocd[ 1 ];
-				$each->Title  = $audiocd[ 2 ];
-				$each->Time   = second2HMS( $audiocd[ 3 ] );
-				$each->file   = $file;
-				$each->Track  = $track;
-				$array[]      = $each;
+	$fL = count( $f );
+	foreach( $lists as $list ) {
+		$list = explode( '^^', $list );
+		$each = ( object )[];
+		for ( $i = 0; $i < $fL; $i++ ) {
+			$key        = $f[ $i ];
+			$val        = $list[ $i ];
+			if ( $key !== 'file' ) $key = ucfirst( $key ); // mpd protocol keys
+			$each->$key = $val;
 		}
-	} else {
-		$fL = count( $f );
-		foreach( $lists as $list ) {
-			$list = explode( '^^', $list );
-			$each = ( object )[];
-			for ( $i = 0; $i < $fL; $i++ ) {
-				$key        = $f[ $i ];
-				$val        = $list[ $i ];
-				if ( $key !== 'file' ) $key = ucfirst( $key ); // mpd protocol keys
-				$each->$key = $val;
+		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
+		if ( in_array( $fileheader, $headers ) ) {
+			$file          = preg_replace( '/#charset=.*/', '', $each->file );
+			$urlname       = str_replace( '/', '|', $file );
+			$radiofile     = '/srv/http/data/webradio/'.$urlname;
+			if ( ! file_exists( $radiofile ) ) {
+				$radiofile = '';
+				$radiofile = exec( 'find /srv/http/data/webradio/ -name "'.$urlname.'"' );
 			}
-			$fileheader = strtolower( substr( $each->file, 0, 4 ) );
-			if ( in_array( $fileheader, $headers ) ) {
-				$file          = preg_replace( '/#charset=.*/', '', $each->file );
-				$urlname       = str_replace( '/', '|', $file );
-				$radiofile     = '/srv/http/data/webradio/'.$urlname;
-				if ( ! file_exists( $radiofile ) ) {
-					$radiofile = '';
-					$radiofile = exec( 'find /srv/http/data/webradio/ -name "'.$urlname.'"' );
-				}
-				$each->Name    = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
-				$each->urlname = $urlname;
-			}
-			$array[] = $each;
+			$each->Name    = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
+			$each->urlname = $urlname;
+		} else if ( $fileheader === 'cdda' ) {
+			$id           = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			if ( ! isset( $cdlist ) ) $cdlist = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
+			$track        = substr( $each->file, 8 );
+			$data         = $cdlist[ $track - 1 ];
+			$audiocd      = explode( '^', $data );
+			$each->Artist = $audiocd[ 0 ];
+			$each->Album  = $audiocd[ 1 ];
+			$each->Title  = $audiocd[ 2 ];
+			$each->Time   = second2HMS( $audiocd[ 3 ] );
+			$each->Track  = $track;
 		}
+		$array[] = $each;
 	}
 	htmlTrack( $array );
 }

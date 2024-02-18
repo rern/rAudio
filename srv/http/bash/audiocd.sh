@@ -2,119 +2,161 @@
 
 . /srv/http/bash/common.sh
 
-[[ $1 ]] && notify audiocd 'Audio CD' "USB CD $1"
+[[ -e $dirshm/eject ]] && exit
 
 if [[ $1 == on ]]; then
+	notify audiocd 'Audio CD' 'USB CD On'
 	touch $dirshm/audiocd
 	ln -s $dirmpdconf/{conf/,}cdio.conf
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh
 	exit
-	
-elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
-	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	if [[ $tracks ]]; then
-		notify audiocd 'Audio CD' 'Removed from Playlist.'
-		[[ $( mpc | head -c 4 ) == cdda ]] && mpc -q stop
-		tracktop=$( head -1 <<< $tracks )
-		mpc -q del $tracks
-		if (( $tracktop > 1 )); then
-			mpc -q play $(( tracktop - 1 ))
-			mpc -q stop
-		fi
-		pushData playlist '{ "refresh": true }'
-	fi
-	if [[ $1 == off ]]; then
-		rm -f $dirshm/audiocd $dirmpdconf/cdio.conf
-		systemctl restart mpd
-		$dirsettings/player-data.sh pushrefresh
-	else
-		[[ $1 == ejecticonclick ]] && eject
-		( sleep 3 && rm -f $dirshm/audiocd ) &> /dev/null &
-	fi
-	exit
-	
 fi
 
-[[ $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
+audioCDplClear
 
-cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
-if [[ ! $cddiscid ]]; then
-	notify audiocd 'Audio CD' 'ID of CD not found in database.'
+if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
+	if [[ $1 == off ]]; then
+		notify audiocd 'Audio CD' 'USB CD Off'
+		rm -f $dirmpdconf/cdio.conf
+		systemctl restart mpd
+		( sleep 3 && rm -f $dirshm/audiocd ) &
+	else
+		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
+		( sleep 3 && rm -f $dirshm/eject ) &
+	fi
+	$dirbash/status-push.sh
+	pushData playlist '{ "refresh": true }'
+	$dirsettings/player-data.sh pushrefresh
 	exit
-	
+fi
+
+cddiscid=( $( cd-discid 2> /dev/null ) ) # ( discid total_tracks offset0(lead-in) offset1(track1) ... total_seconds(last track) )
+if [[ ! $cddiscid ]]; then
+	notify audiocd 'Audio CD' 'CD contains no tracks length'
+	exit
 fi
 
 discid=${cddiscid[0]}
+trackL=${cddiscid[1]} # also = offset last index (offsets: +1 lead-in)
 
-if [[ ! -e $diraudiocd/$discid ]]; then
-	notify 'audiocd blink' 'Audio CD' 'Search CD data ...'
-	server='http://gnudb.org/~cddb/cddb.cgi?cmd=cddb'
+cdData() {
+	notify audiocd 'Audio CD' "$artist • $album"
+	offset=( ${cddiscid[@]:2} )                           # offset - frame end
+	offset[trackL]=$(( ${offset[trackL]} * 75 ))          # last - seconds > frames 1:75
+	(( $( grep -c ' / ' <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
+	for (( i=0; i < trackL; i++ )); do                    # ${offset[0]} - lead-in
+		f0=${offset[i]}
+		f1=${offset[i+1]}
+		time=$(( ( f1 - f0 + 37 ) / 75 ))                 # frames > seconds 75:1 (+37 round to nearest)
+		title=${titles[i]}
+		if [[ $va && $title == *' / '* ]]; then
+			artist=${title/ \/ *}
+			title=${title/* \/ }
+		fi
+		tracks+="$artist^$album^$title^$time"$'\n'
+	done
+	echo -n "$tracks" > $diraudiocd/$discid
+}
+
+if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
+	server='https://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
 	notify 'audiocd blink' 'Audio CD' 'Fetch CD data ...'
-	query=$( curl -sfL "$server+query+$discdata&$options" | head -2 | tr -d '\r' ) # contains \r
-	[[ $? != 0 ]] && notify audiocd 'Audio CD' 'Server not reachable.' && exit
-	
-	code=$( head -c 3 <<< $query )
-	if (( $code == 210 )); then  # exact match
-	  genre_id=$( sed '2q;d' <<< $query | cut -d' ' -f1,2 | tr ' ' + )
-	elif (( $code == 200 )); then
-	  genre_id=$( cut -d' ' -f2,3 <<< $query | tr ' ' + )
+	query=$( curl -sfL "$server+query+$discdata&$options" | tr -d '\r' ) # remove \r
+	if [[ $? == 0 ]]; then
+# 210 Found exact matches, list follows (until terminating `.')
+# GENRE0 DISCID ARTIST / ALBUM
+# GENRE1 DISCID ARTIST / ALBUM
+		#[[ $( head -c 3 <<< $query ) == 210 ]] && genre_id=$( awk 'NR==2 {print $1"+"$2}' <<< $query )
+		#[[ $genre_id ]] && data=$( curl -sfL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # remove \r
+		[[ $( head -c 3 <<< $query ) == 210 ]] && genre_id=$( awk 'NR==2 {print $1"/"$2}' <<< $query )
+		[[ $genre_id ]] && data=$( curl -sfL "https://gnudb.org/gnudb/$genre_id" \
+									| grep '^.TITLE' \
+									| tr -d '\r' ) # remove \r
+		if [[ $data ]]; then
+# DTITLE=ARTIST / ALBUM
+# TTITLE0=TITLE1
+# TTITLE1=TITLE2
+# ...
+			artist_album=$( sed -n '/^DTITLE/ {s/^DTITLE=//; p}' <<< $data )
+			artist=${artist_album/ \/ *}
+			album=${artist_album/* \/ }
+			readarray -t titles <<< $( grep -v ^D <<< $data | cut -d= -f2 )
+			cdData
+		fi
 	fi
-	if [[ $genre_id ]]; then
-		data=$( curl -sfL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
-		readarray -t artist_album <<< $( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |\n|; p}' <<< $data )
-		artist=${artist_album[0]}
-		album=${artist_album[1]}
-		readarray -t titles <<< $( tail -n +1 <<< $data | cut -d= -f2 )
-	fi
-	frames=( ${cddiscid[@]:2} )
-	unset 'frames[-1]'
-	frames+=( $(( ${cddiscid[@]: -1} * 75 )) )
-	framesL=${#frames[@]}
-	for (( i=1; i < framesL; i++ )); do
-		f0=${frames[$(( i - 1 ))]}
-		f1=${frames[i]}
-		time=$(( ( f1 - f0 ) / 75 ))$'\n'  # 75 frames/sec
-		tracks+="$artist^$album^${titles[i]}^$time"
-	done
-	echo "$tracks" > $diraudiocd/$discid
 fi
-# suppress laybackStatusGet in passive.js
+if [[ ! -e $diraudiocd/$discid ]]; then # cd-info
+	cdinfo=$( cd-info )
+	if [[ ! $cdinfo ]]; then
+		notify audiocd 'Audio CD' 'CD data not found.'
+	else
+		readarray -t msf <<< $( awk '/^CD-ROM Track List/,/^Media Catalog Number/ {print $2}' <<< $cdinfo \
+									| grep ^[0-9] \
+									| sed -E 's/:0/:/g; s/^0//; s/:/ /g' ) # mm:ss:fr
+# Disc mode is listed as: CD-DA
+# CD-ROM Track List (1 - 20)
+# #: MSF       LSN    Type   Green? Copy? Channels Premphasis?
+# 1: 00:02:00  000000 audio  false  no    2        no
+# 2: 04:46:46  021346 audio  false  no    2        no
+# ...
+# CD-TEXT for Disc:
+	# TITLE: ALBUM
+	# PERFORMER: ARTIST
+	# DISC_ID: DISCID
+# ...
+# CD-TEXT for Track  1:
+	# TITLE: TITLE1
+# CD-TEXT for Track  2:
+	# TITLE: TITLE2
+	# PERFORMER: ARTIST
+#...
+		discdata=$( sed -n '/^CD-TEXT for Disc/,/^\s*DISC_ID:/ {s/^\s*//; p}' <<< $cdinfo )
+		artist=$( grep ^PERFORMER <<< $discdata | cut -d' ' -f2- )
+		album=$( grep ^TITLE <<< $discdata | cut -d' ' -f2- )
+		readarray -t lines <<< $( sed -n '/^CD-TEXT for Track/,$ {s/^\s*//; p}' <<< $cdinfo | tail +2 )
+		lines+=( CD-TEXT- )
+		for l in "${lines[@]}"; do
+			if [[ $l == TITLE:* ]]; then
+				t=$( sed 's/^TITLE: //' <<< $l )
+			elif [[ $l == CD-TEXT* ]]; then
+				titles+=( "$t" )
+				t=
+			fi
+		done
+		cdData
+	fi
+fi
+# suppress playbackStatusGet in passive.js
 if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
-	autoplaycd=1
 	pushData playlist '{ "autoplaycd": 1 }'
 fi
 # add tracks to playlist
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
-notify audiocd 'Audio CD' 'Add tracks to Playlist ...'
-trackL=${cddiscid[1]}
+! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
+notify audiocd 'Audio CD' 'Add to Playlist ...'
 for i in $( seq 1 $trackL ); do
-  mpc -q add cdda:///$i
+	tracklist+="cdda:///$i "
 done
+mpc -q add $tracklist
 echo $discid > $dirshm/audiocd
 pushData playlist '{ "refresh": true }'
 eject -x 4
-
-if [[ $autoplaycd ]]; then
-	cdtrack1=$(( $( mpc status %length% ) - $trackL + 1 ))
-	$dirbash/cmd.sh "mpcplayback
-play
-$cdtrack1
-CMD ACTION POS"
-fi
-
 # coverart
-if [[ ! $artist || ! $album ]]; then
-	artist_album=$( head -1 $diraudiocd/$discid )
-	artist=${artist_album/^*}
-	album=${artist_album/*^}
-fi
-[[ ! $artist || ! $album ]] && exit
-
-$dirbash/status-coverartonline.sh "cmd
+if [[ -e $diraudiocd/$discid && ! $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
+	$dirbash/status-coverartonline.sh "cmd
 $artist
 $album
 $discid
 CMD ARTIST ALBUM DISCID" &> /dev/null &
+fi
+# set 1st track of cd as cuuent
+if [[ $trackcd ]]; then
+	$dirbash/cmd.sh "mpcskip
+$trackcd
+play
+CMD POS ACTION"
+	[[ ! -e $dirsystem/autoplay ]] && mpc -q stop
+fi
