@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240216
+# 20240218
 [[ ! -e $dirshm/nosound && ! -e $dirshm/output ]] && restartmpd=1
 
 [[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
