@@ -46,8 +46,8 @@ function addToPlaylistCommand() {
 		, replace     : 'Replace Playlist'
 		, replaceplay : 'Replace Playlist and play'
 	}
-	V.title  = cmd_title[ V.action ];
-	V.msg =  '<a class="li1">'+ V.list.name +'</a>';
+	V.title       = cmd_title[ V.action ];
+	V.msg         =  '<a class="li1">'+ V.list.name +'</a>';
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
 	setTimeout( () => {
 		bash( V.mpccmd, () => {
