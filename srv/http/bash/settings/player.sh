@@ -206,8 +206,8 @@ $bluealsa
 
 "
 	devices+="\
-<bll># aplay -l | grep ^card</bll>
-$( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
+<bll># cat /proc/asound/cards | grep ]</bll>
+$( cat /proc/asound/cards | grep ] )
 "
 	if [[ ! -e $dirsystem/camilladsp ]]; then
 		devices+="
