@@ -4,8 +4,7 @@
 ! type -t args2va &> /dev/null && . /srv/http/bash/common.sh   # if run directly
 [[ ! $asoundcard ]] && asoundcard=$( < $dirsystem/asoundcard ) # if run directly
 
-[[ ! $asoundcard ]] && asoundcard=0
-if [[ $asoundcard != -1 ]]; then
+if [[ $asoundcard != -1 ]]; then # <<< player-devices.sh
 ########
 	asound="\
 defaults.pcm.card $asoundcard

@@ -17,7 +17,7 @@
 
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
-for aplayname in "${proccards[@]}"; do
+for aplayname in "${proccards[@]}"; do # <<< player-conf.sh
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # snd_rpi_xxx_yyy > xxx-yyy
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
 	[[ $aplayname == $audioaplayname ]] && name=$audiooutput || name=${aplayname/bcm2835/On-board}
@@ -25,7 +25,7 @@ for aplayname in "${proccards[@]}"; do
 done
 
 aplayl=$( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
-if [[ $usbdac == add ]]; then
+if [[ $usbdac == add ]]; then # <<< player-conf.sh
 	aplaycard=$( tail -1 <<< $aplayl )
 elif [[ $aplayname == cirrus-wm5102 ]]; then
 	aplaycard=$( grep -m1 wm5102 <<< $aplayl )
@@ -80,7 +80,7 @@ aplayname="'$APLAYNAME'"
 name="'$NAME'"
 card='$CARD'
 device='$DEVICE'
-hwmixer='$HWMIXER'
+hwmixer="'$HWMIXER'"
 mixertype='$MIXERTYPE > $dirshm/output
 echo $CARD > $dirsystem/asoundcard
 asoundcard=$CARD
