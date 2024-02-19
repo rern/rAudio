@@ -35,11 +35,15 @@ audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
 while read line; do
 	aplayname=$( cut -d^ -f3 <<< $line )
-	if [[ $aplayname == $audioaplayname ]]; then
-		name=$audiooutput
-	else
-		name=$( cut -d^ -f6 <<< $line )
+	name=$( cut -d^ -f6 <<< $line )
+	if [[ $name ]]; then
 		name=${name/bcm2835/On-board}
+	else
+		if [[ $aplayname == $audioaplayname ]]; then
+			name=$audiooutput
+		else
+			name=$aplayname
+		fi
 	fi
 	name_device=', "'$name'": "'$aplayname'"'
 	! grep -q "$name_device" <<< $LISTDEVICE && LISTDEVICE+=$name_device # suppress duplicate
