@@ -180,17 +180,16 @@ statusalbumignore )
 	cat $dirmpd/albumignore
 	;;
 statusmpdignore )
-	file=$dirmpd/mpdignorelist
-	readarray -t files < $file
+	files=$( < $dirmpd/mpdignorelist )
 	list="\
 <bll># find /mnt/MPD -name .mpdignore</bll>
 "
-	for file in "${files[@]}"; do
+	while read file; do
 		list+="\
 $file
 $( sed 's|^| <grn>•</grn> |' "$file" )
 "
-	done
+	done <<< $files
 	echo "$list"
 	;;
 statusnonutf8 )

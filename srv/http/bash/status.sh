@@ -167,10 +167,10 @@ pos=$( mpc status %songpos% )
 filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength consume random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
-readarray -t lines <<< $( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
-								| telnet 127.0.0.1 6600 2> /dev/null \
-								| grep -E $filter )
-for line in "${lines[@]}"; do
+lines=$( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
+				| telnet 127.0.0.1 6600 2> /dev/null \
+				| grep -E $filter )
+while read line; do
 	key=${line/:*}
 	val=${line#*: }
 	case $key in
@@ -199,7 +199,7 @@ for line in "${lines[@]}"; do
 , "'$key'" : '$val
 			;;
 	esac
-done
+done <<< $lines
 
 [[ $playlistlength ]] && pllength=$playlistlength || pllength=0
 ########

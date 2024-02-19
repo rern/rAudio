@@ -308,10 +308,9 @@ nfsserver )
 		files+=$'\n'$( ls -1 $dirplaylists/* )
 		files=$( awk NF <<< $files )
 		if [[ $files ]]; then
-			readarray -t files <<< $files
-			for file in "${files[@]}"; do
+			while read file; do
 				sed -E -i '/^SD|^USB/ s|^|NAS/|' "$file"
-			done
+			done <<< $files
 		fi
 	else
 		mv /mnt/MPD/NAS/{SD,USB} /mnt/MPD
@@ -438,10 +437,10 @@ spotifykeyremove )
 	;;
 spotifyoutput )
 	devices='"Default"'
-	readarray -t lines <<< $( aplay -L | grep ^.*:CARD )
-	for l in ${lines[@]}; do
-		devices+=', "'$l'"'
-	done
+	lines=$( aplay -L | grep ^.*:CARD )
+	while read line; do
+		devices+=', "'$line'"'
+	done <<< $lines
 	current=$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )
 	if [[ ${current:0:3} == hw: ]]; then
 		current=Default

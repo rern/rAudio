@@ -236,9 +236,9 @@ mirrorlist )
 	else
 		list=$( < $file )
 	fi
-	readarray -t lines <<< $( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' <<< $list )
+	lines=$( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' <<< $list )
 	codelist='"Auto":""'
-	for line in "${lines[@]}"; do
+	while read line; do
 		if [[ ${line:0:4} == '### ' ]];then
 			city=
 			country=${line:4}
@@ -250,7 +250,7 @@ mirrorlist )
 			ccprev=$cc
 			codelist+=',"'$cc'":"'$line'"'
 		fi
-	done
+	done <<< $lines
 	echo '{ '$codelist' }'
 	;;
 mountforget )

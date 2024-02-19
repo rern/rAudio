@@ -312,7 +312,8 @@ heading i.disabled {
 .entries li,
 .entries li span,
 .entries .li1,
-.entries .li2 {
+.entries .li2,
+.select2-results__options li {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

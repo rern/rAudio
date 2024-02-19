@@ -117,18 +117,20 @@ conf2json() {
 	[[ ! $lines ]] && echo false && return
 	
 	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
-	readarray -t lines <<< $lines
-	for l in "${lines[@]}"; do
-			k=${l/=*}
-			v=${l/*=}
-			[[ ! $v ]] && v=false
+	while read line; do
+		k=${line/=*}
+		v=${line/*=}
+		if [[ ${v/\"\"} ]]; then # omit v=""
 			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
 						-e 's/^True$|^yes$/true/
 							s/^False$|^no$/false/' <<< $v )
 			confNotString "$v" || v='"'$( stringEscape "$v" )'"' # quote and escape string
-			[[ ! $nocap ]] && k=${k^^}
-			json+=', "'$k'": '$v
-	done
+		else
+			v=false
+		fi
+		[[ ! $nocap ]] && k=${k^^}
+		json+=', "'$k'": '$v
+	done <<< $lines
 	echo { ${json:1} }
 }
 confNotString() {

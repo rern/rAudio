@@ -116,16 +116,17 @@ if [[ ! -e $diraudiocd/$discid ]]; then # cd-info
 		discdata=$( sed -n '/^CD-TEXT for Disc/,/^\s*DISC_ID:/ {s/^\s*//; p}' <<< $cdinfo )
 		artist=$( grep ^PERFORMER <<< $discdata | cut -d' ' -f2- )
 		album=$( grep ^TITLE <<< $discdata | cut -d' ' -f2- )
-		readarray -t lines <<< $( sed -n '/^CD-TEXT for Track/,$ {s/^\s*//; p}' <<< $cdinfo | tail +2 )
-		lines+=( CD-TEXT- )
-		for l in "${lines[@]}"; do
-			if [[ $l == TITLE:* ]]; then
-				t=$( sed 's/^TITLE: //' <<< $l )
-			elif [[ $l == CD-TEXT* ]]; then
+		lines=$( sed -n '/^CD-TEXT for Track/,$ {s/^\s*//; p}' <<< $cdinfo | tail +2 )
+		lines+='
+CD-TEXT-'
+		while read line; do
+			if [[ $line == TITLE:* ]]; then
+				t=$( sed 's/^TITLE: //' <<< $line )
+			elif [[ $line == CD-TEXT* ]]; then
 				titles+=( "$t" )
 				t=
 			fi
-		done
+		done <<< $lines
 		cdData
 	fi
 fi

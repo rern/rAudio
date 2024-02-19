@@ -492,13 +492,13 @@ mpcaddload )
 	;;
 mpcaddls )
 	pos=$( plAddPosition )
-	readarray -t cuefiles <<< $( mpc ls "$DIR" | grep '\.cue$' | sort -u )
+	cuefiles=$( mpc ls "$DIR" | grep '\.cue$' | sort -u )
 	if [[ ! $cuefiles ]]; then
 		mpc ls "$DIR" | mpc -q add &> /dev/null
 	else
-		for cuefile in "${cuefiles[@]}"; do
+		while read cuefile; do
 			mpc -q load "$cuefile"
-		done
+		done <<< $cuefiles
 	fi
 	plAddPlay $pos
 	;;
@@ -594,27 +594,27 @@ mpcshuffle )
 	pushPlaylist
 	;;
 mpcsimilar )
-	readarray -t lines <<< $( curl -sfG -m 5 \
-								--data-urlencode "artist=$ARTIST" \
-								--data-urlencode "track=$TITLE" \
-								--data "method=track.getsimilar" \
-								--data "api_key=$APIKEY" \
-								--data "format=json" \
-								--data "autocorrect=1" \
-								http://ws.audioscrobbler.com/2.0 \
-									| jq .similartracks.track \
-									| sed -n '/"name": "/ {s/.*": "\|",$//g; p}' )
+	lines=$( curl -sfG -m 5 \
+				--data-urlencode "artist=$ARTIST" \
+				--data-urlencode "track=$TITLE" \
+				--data "method=track.getsimilar" \
+				--data "api_key=$APIKEY" \
+				--data "format=json" \
+				--data "autocorrect=1" \
+				http://ws.audioscrobbler.com/2.0 \
+					| jq .similartracks.track \
+					| sed -n '/"name": "/ {s/.*": "\|",$//g; p}' )
 	[[ ! $lines ]] && echo 'No similar tracks found in database.' && exit
 	
-	for l in "${lines[@]}"; do # title \n artist
+	while read line; do
 		if [[ $title ]]; then
-			file=$( mpc find artist "$l" title "$title" )
+			file=$( mpc find artist "$line" title "$title" )
 			[[ $file ]] && list+="$file"$'\n'
 			title=
 		else
-			title=$l
+			title=$line
 		fi
-	done
+	done <<< $lines
 	[[ ! $list ]] && echo 'No similar tracks found in Library.' 5000 && exit
 	
 	plLprev=$( mpc status %length% )

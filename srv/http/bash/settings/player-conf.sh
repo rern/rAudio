@@ -13,8 +13,7 @@ usbdac=$1
 
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
 
-readarray -t proccards <<< $( grep -v ] /proc/asound/cards | sed 's/^\s*//' )
-if [[ $proccards ]]; then
+if aplay -l | grep -q ^card; then
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $asoundcard
 else

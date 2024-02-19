@@ -33,11 +33,11 @@ if [[ $1 == wlan ]]; then
 				| sort )
 	
 	# omit saved profile
-	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
+	profiles=$( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
-		for profile in "${profiles[@]}"; do
+		while read profile; do
 			scan=$( grep -v "ssid.*$profile" <<< $scan  )
-		done
+		done <<< $profiles
 	fi
 	echo "[ ${scan:1} ]" # ,{...} > [ {...} ]
 	exit
@@ -50,18 +50,17 @@ devices=$( bluetoothctl devices \
 [[ ! $devices ]] && exit
 
 # omit paired devices
-readarray -t paired <<< $( bluetoothctl devices Paired )
+paired=$( bluetoothctl devices Paired )
 if [[ $paired ]]; then
-	for dev in "${paired[@]}"; do
+	while read dev; do
 		devices=$( grep -v "$dev" <<< $devices  )
-	done
+	done <<< $paired
 fi
-readarray -t devices <<< $devices
-for dev in "${devices[@]}"; do
+while read dev; do
 	data+=',{
   "mac"  : "'$( cut -d' ' -f2 <<< $dev )'"
 , "name" : "'$( cut -d' ' -f3- <<< $dev )'"
 }'
-done
+done <<< $devices
 
 echo "[ ${data:1} ]"
