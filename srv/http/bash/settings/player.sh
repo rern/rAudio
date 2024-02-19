@@ -10,11 +10,6 @@ linkConf() {
 
 case $CMD in
 
-audiooutput )
-	echo $APLAYNAME > $dirsystem/audio-aplayname
-	echo $OUTPUT > $dirsystem/audio-output
-	$dirsettings/player-conf.sh
-	;;
 autoupdate | ffmpeg | normalization )
 	[[ $ON ]] && linkConf || rm $dirmpdconf/$CMD.conf
 	systemctl restart mpd
@@ -70,6 +65,11 @@ custom )
 		$dirsettings/player-conf.sh
 	fi
 	;;
+device )
+	echo $APLAYNAME > $dirsystem/audio-aplayname
+	echo $OUTPUT > $dirsystem/audio-output
+	$dirsettings/player-conf.sh
+	;;
 devicewithbt )
 	enableFlagSet
 	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
@@ -101,9 +101,9 @@ filetype )
 	done
 	echo "${list:0:-4}"
 	;;
-hwmixer )
+mixer )
 	aplayname=$( getVar aplayname $dirshm/output )
-	echo $HWMIXER > "$dirsystem/hwmixer-$aplayname"
+	echo $MIXER > "$dirsystem/mixer-$aplayname"
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
@@ -116,9 +116,9 @@ mixertype )
 	else
 		rm -f $dirsystem/replaygain-hw
 	fi
-	if [[ $hwmixer ]]; then
+	if [[ $mixer ]]; then
 		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB # [hw] set to current [sw] || [sw/none] set 0dB
-		amixer -c $card -Mq sset "$hwmixer" $vol
+		amixer -c $card -Mq sset "$mixer" $vol
 	fi
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false
@@ -126,7 +126,7 @@ mixertype )
 	;;
 novolume )
 	. $dirshm/output
-	amixer -c $card -Mq sset "$hwmixer" 0dB
+	amixer -c $card -Mq sset "$mixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
 	mpc -q crossfade 0
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf

@@ -91,10 +91,9 @@ echo "$asound" > /etc/asound.conf
 alsactl nrestore &> /dev/null # notify changes to running daemons
 
 # ----------------------------------------------------------------------------
-wm5102card=$( aplay -l 2> /dev/null | grep snd_rpi_wsp | cut -c 6 )
-if [[ $wm5102card ]]; then
-	output=$( getContent $dirsystem/hwmixer-wsp 'HPOUT2 Digital' )
-	$dirsettings/player-wm5102.sh $wm5102card "$output"
+if [[ $( getContent $dirsystem/audio-aplayname ) == cirrus-wm5102 ]]; then
+	output=$( getContent $dirsystem/mixer-cirrus-wm5102 'HPOUT2 Digital' )
+	$dirsettings/player-wm5102.sh $asoundcard "$output"
 fi
 
 if [[ $camilladsp ]]; then

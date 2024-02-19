@@ -238,7 +238,7 @@ EOF
 	]
 	, [
 		  'id'       => 'timezone'
-		, 'input'    => '<select id="timezone"></select>'
+		, 'input'    => 'timezone'
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 Servers for time sync and package mirror

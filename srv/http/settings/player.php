@@ -1,15 +1,15 @@
 <?php
 $id_data = [
-	  'audiooutput'   => [ 'label' => 'Device',                                                 'setting' => 'none' ]
-	, 'autoupdate'    => [ 'label' => 'Library Auto Update',   'sub' => 'auto_update',          'setting' => false ]
+	  'autoupdate'    => [ 'label' => 'Library Auto Update',   'sub' => 'auto_update',          'setting' => false ]
 	, 'bluealsa'      => [ 'label' => 'Bluetooth',             'sub' => 'bluealsa',             'setting' => 'custom', 'status' => true ]
 	, 'buffer'        => [ 'label' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
 	, 'crossfade'     => [ 'label' => 'Cross-Fading',          'sub' => 'crossfade' ]
 	, 'custom'        => [ 'label' => "User's Configurations", 'sub' => 'custom' ]
+	, 'device'        => [ 'label' => 'Device',                                                 'setting' => 'none' ]
 	, 'devicewithbt'  => [ 'label' => 'Device + Bluetooth',                                     'setting' => false ]
 	, 'dop'           => [ 'label' => 'DSD over PCM',          'sub' => 'dop',                  'setting' => 'none' ]
 	, 'ffmpeg'        => [ 'label' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
-	, 'hwmixer'       => [ 'label' => 'Mixer Device',                                           'setting' => 'custom' ]
+	, 'mixer'         => [ 'label' => 'Mixer Device',                                           'setting' => 'custom' ]
 	, 'mixertype'     => [ 'label' => 'Volume Control',                                         'setting' => 'custom' ]
 	, 'normalization' => [ 'label' => 'Normalization',         'sub' => 'volume_normalization', 'setting' => false ]
 	, 'novolume'      => [ 'label' => 'No Volume',                                              'setting' => 'none' ]
@@ -43,20 +43,20 @@ $body = [
 	[
 		  'id'       => 'bluealsa'
 		, 'icon'     => true
-		, 'input'    => '<select id="btaplayname"></select>'
+		, 'input'    => 'btaplayname'
 		, 'help'     => <<< EOF
 {$Fi( 'volume btn' )} Sender volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
 	, [
-		  'id'       => 'audiooutput'
-		, 'input'    => '<select id="audiooutput"></select>'
+		  'id'       => 'device'
+		, 'input'    => 'device'
 		, 'help'     => 'HDMI audio: Available when connected before boot only'
 	]
 	, [
-		  'id'       => 'hwmixer'
-		, 'input'    => '<select id="hwmixer"></select>'
+		  'id'       => 'mixer'
+		, 'input'    => 'mixer'
 		, 'help'     => i( 'volume btn' ).' Mixer device volume control'
 	]
 	, [

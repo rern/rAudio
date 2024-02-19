@@ -4,8 +4,17 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240218
-[[ ! -e $dirshm/nosound && ! -e $dirshm/output ]] && restartmpd=1
+# 20240219
+readarray -t mixerfiles <<< $( ls $dirsystem/hwmixer-* 2> /dev/null )
+if [[ $mixerfiles ]]; then
+	for f in "${mixerfiles[@]}"; do
+		mv "$f" "${f/hwmixer-/mixer-}"
+	done
+fi
+
+if [[ ! -e $dirshm/nosound ]]; then
+	( [[ ! -e $dirshm/output ]] || grep -q ^hwmixer $dirshm/output ) && restartmpd=1
+fi
 
 [[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
 
@@ -118,5 +127,5 @@ cacheBust
 
 installfinish
 
-# 20240218
+# 20240219
 [[ $restartmpd ]] && $dirsettings/player-conf.sh

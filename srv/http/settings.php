@@ -95,7 +95,7 @@ $body = [
 	 'HTML'                          // for non-switch section
 	, [
 		  'id'       => 'ID'         // REQUIRED
-		, 'input'    => 'HTML'       // alternative - if not switch
+		, 'input'    => 'HTML/ID'    // alternative - if not switch (ID - select)
 		, 'setting'  => TYPE         // default  = $( '#setting-'+ id ).click() before enable
 		                             // false    = no setting
 		                             // 'custom' = custom setting
@@ -195,7 +195,11 @@ function htmlSetting( $data ) {
 		$disabled = isset( $data[ 'disabled' ] ) ? '<span class="hide">'.$data[ 'disabled' ].'</span>' : '';
 		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div></label>';
 	} else {
-		$html    .= $input;
+		if ( $input[ 0 ] == '<' ) {
+			$html.= $input;
+		} else { // select
+			$html.= '<select id="'.$input.'"></select>';
+		}
 	}
 	// setting
 	$html       .= $settingicon ? i( $settingicon.' setting', $id ) : '';

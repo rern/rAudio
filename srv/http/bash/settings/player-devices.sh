@@ -24,12 +24,12 @@ for aplayname in "${proccards[@]}"; do # <<< player-conf.sh
 	LISTDEVICE+=', "'$name'": "'$aplayname'"'
 done
 
-aplayl=$( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
+aplayl=$( aplay -l | awk '/^card/ && !/Loopback/' )
 if [[ $usbdac == add ]]; then # <<< player-conf.sh
 	aplaycard=$( tail -1 <<< $aplayl )
 elif [[ $aplayname == cirrus-wm5102 ]]; then
 	aplaycard=$( grep -m1 wm5102 <<< $aplayl )
-	HWMIXER='HPOUT2 Digital'
+	MIXER='HPOUT2 Digital'
 	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
 else
 	aplaycard=$( grep -m1 "$audioaplayname" <<< $aplayl ) # avoid duplicate aplayname
@@ -54,13 +54,13 @@ if [[ ! $LISTMIXER ]]; then # ! cirrus-wm5102
 			readarray -t controls <<< $( cut -d"'" -f2 <<< $controls | sort -u )
 			for control in "${controls[@]}"; do
 				LISTMIXER+=', "'$control'"'
-				[[ $control == Digital ]] && HWMIXER=Digital
+				[[ $control == Digital ]] && MIXER=Digital
 			done
-			hwmixerfile="$dirsystem/hwmixer-$APLAYNAME"
-			if [[ -e $hwmixerfile ]]; then # manual
-				HWMIXER=$( < "$hwmixerfile" )
-			elif [[ ! $HWMIXER ]]; then    # not Digital
-				HWMIXER=${controls[0]}
+			mixerfile="$dirsystem/mixer-$APLAYNAME"
+			if [[ -e $mixerfile ]]; then # manual
+				MIXER=$( < "$mixerfile" )
+			elif [[ ! $MIXER ]]; then    # not Digital
+				MIXER=${controls[0]}
 			fi
 		fi
 	fi
@@ -72,7 +72,7 @@ else
 	[[ $LISTMIXER ]] && MIXERTYPE=hardware || MIXERTYPE=none
 fi
 
-[[ $HWMIXER ]] && echo "$HWMIXER" > $dirshm/amixercontrol || rm -f $dirshm/amixercontrol
+[[ $MIXER ]] && echo "$MIXER" > $dirshm/amixercontrol || rm -f $dirshm/amixercontrol
 [[ $LISTDEVICE ]] && echo "{ ${LISTDEVICE:1} }" > $dirshm/listdevice || rm -f $dirshm/listdevice
 [[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/listmixer || rm -f $dirshm/listmixer
 echo '
@@ -80,7 +80,7 @@ aplayname="'$APLAYNAME'"
 name="'$NAME'"
 card='$CARD'
 device='$DEVICE'
-hwmixer="'$HWMIXER'"
+mixer="'$MIXER'"
 mixertype='$MIXERTYPE > $dirshm/output
 echo $CARD > $dirsystem/asoundcard
 asoundcard=$CARD
