@@ -1,22 +1,21 @@
-var typelist = { 'None / 0dB': 'none', 'Mixer device': 'hardware', 'MPD software': 'software' }
 var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 			  +'<gr>Signal will be set to original level at 0dB.</gr><br>'
 			  +'Beware of too high volume.</wh>';
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '#audiooutput' ).on( 'input', function() {
+$( '#device' ).on( 'input', function() {
 	var $this     = $( this );
 	var aplayname = $this.val();
 	var output    = $this.find( 'option:selected' ).text()
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', output, aplayname, 'CMD OUTPUT APLAYNAME' ] );
+	bash( [ 'device', output, aplayname, 'CMD OUTPUT APLAYNAME' ] );
 } );
-$( '#hwmixer' ).on( 'input', function() {
+$( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'hwmixer', $( this ).val(), 'CMD HWMIXER' ] );
+	bash( [ 'mixer', $( this ).val(), 'CMD MIXER' ] );
 } );
-$( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
+$( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 	if ( this.id.slice( -1 ) === 'a' ) {
 		var cmd     = 'volumebt';
 		var cmd0db  = 'volume0dbbt';
@@ -24,7 +23,7 @@ $( '#setting-hwmixer, #setting-bluealsa' ).on( 'click', function() {
 	} else {
 		var cmd     = 'volume';
 		var cmd0db  = 'volume0db';
-		var control = S.output.hwmixer;
+		var control = S.output.mixer;
 	}
 	info( {
 		  icon       : SW.icon
@@ -76,9 +75,8 @@ $( '#mixertype' ).on( 'click', function() {
 $( '#setting-mixertype' ).on( 'click', function() {
 	info( {
 		  icon    : SW.icon
-		, title   : SW.title
-		, message : 'Type:'
-		, list    : [ '', 'radio', { kv: { 'Mixer device <gr>(hardware)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+		, title   : 'Volume Type'
+		, list    : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
 		, values  : S.mixertype ? S.output.mixertype : 'hardware'
 		, cancel  : switchCancel
 		, ok      : () => setMixerType( infoVal() )
@@ -317,30 +315,29 @@ function renderPage() {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divbluealsa' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
-		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.devicewithbt );
+		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', ! S.devicewithbt );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
-		$( '#divaudiooutput .col-l' ).html( $( '#divaudiooutput .col-l' ).html() + icondsp );
+		$( '#divdevice .col-l' ).html( $( '#divdevice .col-l' ).html() + icondsp );
 		$( '#divbluealsa' ).addClass( 'hide' );
-		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
+		$( '#divdevice, #divmixer, #divmixertype' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
-		$( '#audiooutput' )
+		$( '#device' )
 			.html( htmlOption( S.listdevice ) )
 			.val( S.output.aplayname );
 		if ( S.listmixer ) {
-			$( '#hwmixer' )
+			$( '#mixer' )
 				.html( htmlOption( S.listmixer ) )
-				.val( S.output.hwmixer );
-			$( '#divhwmixer' ).removeClass( 'hide' );
+				.val( S.output.mixer );
+			$( '#divmixer' ).removeClass( 'hide' );
 		} else {
-			$( '#divhwmixer' ).addClass( 'hide' );
-			delete typelist[ 'Mixer device' ];
+			$( '#divmixer' ).addClass( 'hide' );
 		}
-		$( '#setting-hwmixer' ).toggleClass( 'hide', ! S.volume );
+		$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.listmixer || ! S.mixertype );
 		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
@@ -350,7 +347,7 @@ function renderPage() {
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
-	if ( I.range ) $( '#setting-'+ ( S.btaplayname ? 'bluealsa' : 'hwmixer' ) ).trigger( 'click' );
+	if ( I.range ) $( '#setting-'+ ( S.btaplayname ? 'bluealsa' : 'mixer' ) ).trigger( 'click' );
 	showContent();
 }
 function renderStatus() {

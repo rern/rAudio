@@ -4,9 +4,9 @@
 
 listBluetooth() {
 	local dev devices info listbt mac
-	readarray -t devices <<< $( bluetoothctl devices Paired | sort -k3 -fh  )
+	devices=$( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
-		for dev in "${devices[@]}"; do
+		while read dev; do
 			mac=$( cut -d' ' -f2 <<< $dev )
 			info=$( bluetoothctl info $mac )
 			listbt+=',{
@@ -15,7 +15,7 @@ listBluetooth() {
 , "connected" : '$( grep -q -m1 'Connected: yes' <<< $info && echo true || echo false )'
 , "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< $info | tr -d '\n' )'"
 }'
-		done
+		done <<< $devices
 		echo [ ${listbt:1} ]
 	fi
 }
@@ -35,9 +35,9 @@ fi
 wlandev=$( < $dirshm/wlan )
 listWlan() {
 	local dbm notconnected profiles profile
-	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
+	profiles=$( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
-		for profile in "${profiles[@]}"; do
+		while read profile; do
 			ssid=$( stringEscape $profile )
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if netctl is-active "$profile" &> /dev/null; then
@@ -60,7 +60,7 @@ listWlan() {
   "ssid"    : "'$ssid'"
 }'
 			fi
-		done
+		done <<< $profiles
 	fi
 	[[ $notconnected ]] && listwl+="$notconnected"
 	[[ $listwl ]] && listwl='[ '${listwl:1}' ]' || listwl=false

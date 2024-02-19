@@ -148,14 +148,16 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'html'     => <<< EOF
-<div id="divi2s">
-	<div class="col-l single">Audio - I²S<i class="i-i2smodule"></i></div>
+<div id="divi2smodule">
+	<div class="col-l">
+		<a><span class="label">Audio - I²S</span><gr>HAT</gr></a><i class="i-i2s"></i>
+	</div>
 	<div class="col-r">
-		<div id="divi2smodulesw">
-			<input id="i2smodulesw" type="checkbox">
-			<div class="switchlabel" for="i2smodulesw"></div>
+		<div id="divi2ssw">
+			<input id="i2ssw" type="checkbox">
+			<div class="switchlabel" for="i2ssw"></div>
 		</div>
-		<div id="divi2smodule">
+		<div id="divi2sselect">
 			<select id="i2smodule"></select>
 			<i id="setting-i2smodule" class="i-gear setting"></i>
 		</div>
@@ -238,7 +240,7 @@ EOF
 	]
 	, [
 		  'id'       => 'timezone'
-		, 'input'    => '<select id="timezone"></select>'
+		, 'input'    => 'timezone'
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 Servers for time sync and package mirror

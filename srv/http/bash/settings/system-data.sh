@@ -115,7 +115,7 @@ packageActive bluetooth nfs-server rotaryencoder smb
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )
 	audiooutput=$( < $dirsystem/audio-output )
-	i2smodulesw=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
+	i2ssw=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
 # reboot
 if [[ -e $dirshm/reboot ]]; then
@@ -177,7 +177,7 @@ data='
 , "hddsleep"          : '${hddapm/128/false}'
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
-, "i2smodulesw"       : '$i2smodulesw'
+, "i2ssw"             : '$i2ssw'
 , "ipsub"             : "'$( ipAddress sub )'"
 , "lcdchar"           : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"       : '$lcdcharaddr'

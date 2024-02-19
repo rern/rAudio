@@ -79,21 +79,21 @@ if [[ ! $mpclistall ]]; then # very large database
 		notify 'refresh-library blink' 'Library Database' 'Parse each album for large Library ...' 3000
 		echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
-		readarray -t albums <<< $( mpc list album 2> /dev/null )
+		albums=$( mpc list album 2> /dev/null )
 		if [[ ! $albums ]]; then
 			buffer=8192
 			for (( i=0; i < 10; i++ )); do
 				buffer=$(( buffer + 8192 ))
 				echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
 				systemctl restart mpd
-				readarray -t albums <<< $( mpc list album 2> /dev/null )
+				albums=$( mpc list album 2> /dev/null )
 				[[ $albums ]] && break
 			done
 		fi
 		if [[ $albums ]]; then
-			for a in "${albums[@]}"; do
+			while read a; do
 				albumlist+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$a" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
-			done
+			done <<< albums
 		else
 			notify 'refresh-library blink' 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
 		fi
@@ -102,9 +102,9 @@ fi
 if [[ $albumlist ]]; then # album^^artist^^date^^dir
 	filewav=$( grep \.wav$ <<< $mpclistall )
 	if [[ $filewav ]]; then # mpd not support *.wav albumartist
-		readarray -t dirwav <<< $( sed 's|.*\^||; s|/[^/]*$||' <<< $filewav | sort -u )
+		dirwav=$( sed 's|.*\^||; s|/[^/]*$||' <<< $filewav | sort -u )
 		if [[ $dirwav ]]; then
-			for dir in "${dirwav[@]}"; do
+			while read dir; do
 				dir=${dir//[/\\[/} # escape \[n-n] > not as range in grep
 				file=$( grep -m1 "$dir" <<< $mpclistall )
 				albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/${file/*^}" )
@@ -115,12 +115,11 @@ if [[ $albumlist ]]; then # album^^artist^^date^^dir
 $( grep -v "$dir$" <<< $albumlist )
 ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 				fi
-			done
+			done <<< $dirwav
 		fi
 	fi
 	albumignore=$( getContent $dirmpd/albumignore )
-	readarray -t lines <<< $albumlist
-	for line in "${lines[@]}"; do
+	while read line; do
 		readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
 		tagalbum=${tags[0]}
 		tagartist=${tags[1]}
@@ -131,7 +130,7 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 		album+="$tagalbum^^$tagartist^^$tagdir"$'\n'
 		albumbyartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
 		albumbyartistyear+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
-	done
+	done <<< $albumlist
 	for mode in album albumbyartist albumbyartist-year; do
 		varname=${mode/-}
 		sort -u <<< ${!varname} > $dirmpd/$mode

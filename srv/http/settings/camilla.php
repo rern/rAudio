@@ -121,7 +121,7 @@ $body = [
 	, [
 		  'id'     => 'configuration'
 		, 'status' => true
-		, 'input'  => '<select id="configuration"></select>'
+		, 'input'  => 'configuration'
 		, 'help'   => $help[ 'volume' ]
 	]
 ];

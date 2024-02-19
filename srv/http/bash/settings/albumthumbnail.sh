@@ -39,11 +39,9 @@ unsharp=0x.5
 
 [[ ! $mpdpathlist ]] && echo "$padw No albums found in database." && exit
 
-readarray -t lines <<< $mpdpathlist
-
-count=${#lines[@]}
+count=${#mpdpathlist[@]}
 i=0
-for mpdpath in "${lines[@]}"; do
+while read mpdpath; do
 	(( i++ ))
 	percent=$(( $i * 100 / $count ))
 	if (( $percent > 0 )); then
@@ -74,8 +72,8 @@ for mpdpath in "${lines[@]}"; do
 		coverfile=
 	done
 	if [[ ! $coverfile ]]; then # embedded
-		readarray -t files <<< $( mpc ls "$mpdpath" 2> /dev/null )
-		for file in "${files[@]}"; do
+		files=$( mpc ls "$mpdpath" 2> /dev/null )
+		while read file; do
 			file="/mnt/MPD/$file"
 			if [[ -f "$file" ]]; then
 				coverfile="$dir/cover.jpg"
@@ -83,7 +81,7 @@ for mpdpath in "${lines[@]}"; do
 				[[ ! -e $coverfile ]] && coverfile=
 				break
 			fi
-		done
+		done <<< $files
 	fi
 	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
@@ -102,7 +100,7 @@ for mpdpath in "${lines[@]}"; do
 	else
 		echo "   $padgr No coverart found."
 	fi
-done
+done <<< $mpdpathlist
 
 echo "
 Duration: $( date -d@$SECONDS -u +%H:%M:%S )

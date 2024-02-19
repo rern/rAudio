@@ -38,15 +38,15 @@ crossfade=$( mpc crossfade | cut -d' ' -f2 )
 [[ $crossfade ]] && echo $crossfade > $dirsystem/crossfade
 hostname > $dirsystem/hostname
 timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
-readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+profiles=$( ls -p /etc/netctl | grep -v / )
 if [[ $profiles ]]; then
 	cp -r /etc/netctl $dirconfig/etc
-	for profile in "${profiles[@]}"; do
+	while read profile; do
 		if [[ $( netctl is-enabled "$profile" ) == enabled ]]; then
 			echo $profile > $dirsystem/netctlprofile
 			break
 		fi
-	done
+	done <<< $profiles
 fi
 mkdir -p $dirconfig/var/lib
 cp -r /var/lib/bluetooth $dirconfig/var/lib &> /dev/null

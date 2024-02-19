@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1707808685' );
+	src         : url( '/assets/fonts/rern.woff2?v=1708267847' );
 }
 @font-face {
 	font-family : Lato;
@@ -107,6 +107,7 @@ i {
 .i-hide::before            { content: '\F575' }
 .i-hostname::before        { content: '\F590' }
 .i-httpd::before           { content: '\F55D' }
+.i-i2s::before             { content: '\F571' }
 .i-i2smodule::before       { content: '\F571' }
 .i-info::before            { content: '\F561' }
 .i-input::before           { content: '\F529' }
@@ -232,7 +233,7 @@ i {
 .i-wifi2::before           { content: '\F59A'; position: absolute; }
 .i-wifi2::after            { content: '\F59B'; color: var( --cga ); }
 .i-wlan::before            { content: '\F597' }
-#divhwmixer .i-gear::before { content: '\F516' }
+#divmixer .i-gear::before  { content: '\F516' }
 
 html {
 	height  : 100%;

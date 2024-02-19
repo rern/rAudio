@@ -57,10 +57,12 @@ echo "$config" > /boot/config.txt
 # lcd
 sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf &> /dev/null
 # nas
-readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
-for dir in "${dirs[@]}"; do
-	umount -l "$dir" &> /dev/null
-	rmdir "$dir" &> /dev/null
+dirs=$( find $dirnas -mindepth 1 -maxdepth 1 -type d )
+if [[ $dirs ]]; then
+	while read dir; do
+		umount -l "$dir" &> /dev/null
+		rmdir "$dir" &> /dev/null
+	done <<< $dirs
 done
 sed -i '3,$ d' /etc/fstab
 
@@ -71,12 +73,12 @@ rm -rf $dirdata $dirshareddata \
 		/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 		/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 if [[ ! $keepnetwork ]]; then
-	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+	profiles=$( ls -p /etc/netctl | grep -v / )
 	if [[ $profiles ]]; then
-		for profile in "${profiles[@]}"; do
+		while read profile; do
 			[[ $( netctl is-enabled "$profile" ) == enabled ]] && netctl disable "$profile"
 			rm "/etc/netctl/$profile"
-		done
+		done <<< $profiles
 	fi
 fi
 

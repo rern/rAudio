@@ -3,8 +3,8 @@
 # output:
 # - get devices data - player-devices.sh
 # - set asound.conf  - player-asound.sh
-# - mixer_type    - from file if manually set | hardware if hwmixer | software
-# - mixer_control - from file if manually set | hwmixer | null
+# - mixer_type    - from file if manually set | hardware if mixer | software
+# - mixer_control - from file if manually set | mixer | null
 # - mixer_device  - card index
 
 . /srv/http/bash/common.sh
@@ -12,20 +12,19 @@
 usbdac=$1
 
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
-[[ -e /usr/bin/camilladsp ]] && systemctl stop camilladsp
-rm -f $dirshm/{amixercontrol,listdevice,listmixer,nosound,output}
 
-readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards )
-if [[ $proccards ]]; then
-	. $dirsettings/player-devices.sh
+if aplay -l | grep -q ^card; then
+	rm -f $dirshm/nosound
+	. $dirsettings/player-devices.sh # >>> $asoundcard
 else
-	[[ -e $dirshm/btreceiver ]] && card=0 || card=-1
-	echo $card > $dirsystem/asoundcard
 	touch $dirshm/nosound
+	rm -f $dirshm/{amixercontrol,listdevice,listmixer,output}
+	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
+	echo $asoundcard > $dirsystem/asoundcard
 	pushData display '{ "volumenone": true }'
 fi
 
-. $dirsettings/player-asound.sh  # $bluetooth, $camilladsp, $equalizer
+. $dirsettings/player-asound.sh # >>> $bluetooth, $camilladsp, $equalizer
 
 pushStatus() {
 	$dirbash/status-push.sh
@@ -55,7 +54,6 @@ $audiooutputbt
 " > $dirmpdconf/bluetooth.conf
 ########
 fi
-asoundcard=$( < $dirsystem/asoundcard )
 if [[ $asoundcard == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	if [[ $usbdac == remove ]]; then
@@ -64,7 +62,7 @@ if [[ $asoundcard == -1 ]]; then # no audio devices
 		outputswitch='(None)'
 	fi
 elif [[ ! $btoutputonly ]]; then
-	. $dirshm/output # aplayname name card device hwmixer mixertype
+	. $dirshm/output # aplayname name card device mixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
@@ -74,6 +72,7 @@ elif [[ ! $btoutputonly ]]; then
 		outputswitch=$name
 	fi
 	if [[ $camilladsp ]]; then
+		systemctl stop camilladsp
 		hw=hw:Loopback,1
 		ln -sf $dirmpdconf/{conf/,}camilladsp.conf
 	elif [[ $equalizer ]]; then
@@ -99,7 +98,7 @@ elif [[ ! $btoutputonly ]]; then
 	mixer_type     "'$mixertype'"'
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 			audiooutput+='
-	mixer_control  "'$hwmixer'"
+	mixer_control  "'$mixer'"
 	mixer_device   "hw:'$card'"'
 			[[ -e $dirmpdconf/replaygain.conf && -e $dirsystem/replaygain-hw ]] && \
 				audiooutput+='
@@ -156,7 +155,7 @@ done
 [[ $asoundcard == -1 ]] && pushStatus && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
-[[ $hwmixer && ! $bluetooth && ! $camilladsp && ! $equalizer ]] && mixer=1
+[[ ! $mixer || $bluetooth || $camilladsp || $equalizer ]] && mixerno=1
 
 if [[ -e /usr/bin/shairport-sync ]]; then
 ########
@@ -164,9 +163,9 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 	conf+='
 alsa = {
 	output_device = "'$hw'";
-	mixer_control_name = "'$hwmixer'";
+	mixer_control_name = "'$mixer'";
 }'
-	[[ ! $mixer ]] && conf=$( grep -v mixer_control_name <<< $conf )
+	[[ $mixerno ]] && conf=$( grep -v mixer_control_name <<< $conf )
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
 	systemctl try-restart shairport-sync
@@ -186,8 +185,8 @@ if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
 		conf+='
 device = "'$hw'"
 control = "'$hw'"
-mixer = "'$hwmixer'"'
-	[[ ! $mixer ]] && conf=$( grep -v ^mixer <<< $conf )
+mixer = "'$mixer'"'
+	[[ $mixerno ]] && conf=$( grep -v ^mixer <<< $conf )
 	fi
 #-------
 	echo "$conf" > /etc/spotifyd.conf

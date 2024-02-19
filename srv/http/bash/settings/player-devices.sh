@@ -11,39 +11,67 @@
 #    - set as hardware if mixer device available
 #    - if nothing, set as software
 
-### included by player-conf.sh
-
-! type -t args2va &> /dev/null && . /srv/http/bash/common.sh
-
-audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
-audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
-for aplayname in "${proccards[@]}"; do
-	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # snd_rpi_xxx_yyy > xxx-yyy
-	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
-	[[ $aplayname == $audioaplayname ]] && name=$audiooutput || name=${aplayname/bcm2835/On-board}
-	listdevice+=', "'$name'": "'$aplayname'"'
-done
-########
-echo "{ ${listdevice:1} }" > $dirshm/listdevice
-
-aplayl=$( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
-if [[ $usbdac == add ]]; then
-	aplaycard=$( tail -1 <<< $aplayl )
-elif [[ $aplayname == cirrus-wm5102 ]]; then
-	aplaycard=$( grep -m1 wm5102 <<< $aplayl )
-	hwmixer='HPOUT2 Digital'
-	listmixer='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
-else
-	aplaycard=$( grep -m1 "$audioaplayname" <<< $aplayl ) # avoid duplicate aplayname
+### included by <<< player-conf.sh
+! type -t args2va &> /dev/null && . /srv/http/bash/common.sh         # if run directly
+# snd_rpi_rpi_dac > i2s-dac (rpi-dac obsolete)
+# snd_rpi_wsp     > cirrus-wm5102
+# RPi-Cirrus      > cirrus-wm5102
+# snd_rpi_xxx_yyy > xxx_yyy
+# xxx_yyy         > xxx-yyy
+aplayl=$( aplay -l \
+			| sed -n -E '/^card/ {
+				s/^card //
+				s/: /^/g
+				s/\[snd_rpi_rpi_dac]/[i2s-dac]/
+				s/\[snd_rpi_wsp]|\[RPi-Cirrus]/[cirrus-wm5102]/
+				s/\[snd_rpi_/[/
+				s/ \[/^/g
+				s/, device /^/
+				s/_/-/g
+				s/\]//g
+			p}' )
+# >>> 1card^...^3aplayname^4device^...^6name^
+if [[ -e $dirsystem/output-aplayname ]]; then # device set from player page
+	device=$( < $dirsystem/output-aplayname )
+else                                         # device set from system page
+	device=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
+	outputname=$( getContent $dirsystem/audio-output 'On-board Headphones' )
 fi
-readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$aplaycard" )
-card=${cnd[0]}
-aplayname=${cnd[1]}
-device=${cnd[2]}
-[[ $usbdac == add ]] && name=$aplayname || name=$audiooutput
+while read line; do
+	aplayname=$( cut -d^ -f3 <<< $line )
+	name=$( cut -d^ -f6 <<< $line )
+	if [[ $name ]]; then
+		name=${name/bcm2835/On-board}
+	else
+		[[ $aplayname == $device ]] && name=$outputname || name=$aplayname
+	fi
+	name_device='
+, "'$name'": "'$aplayname'"'
+	LISTDEVICE+=$name_device # suppress duplicate
+done <<< $aplayl
 
-if [[ $aplayname != cirrus-wm5102 ]]; then
-	amixer=$( amixer -c $card scontents )
+if [[ $usbdac == add ]]; then # <<< player-conf.sh
+	aplaycard=$( tail -1 <<< $aplayl )
+elif [[ $device == cirrus-wm5102 ]]; then
+	aplaycard=$( grep -m1 cirrus-wm5102 <<< $aplayl )
+	MIXER='HPOUT2 Digital'
+	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
+else
+	aplaycard=$( grep -m1 "$device" <<< $aplayl ) # avoid duplicate aplayname
+fi
+CARD=$( cut -d^ -f1 <<< $aplaycard )
+APLAYNAME=$( cut -d^ -f3 <<< $aplaycard )
+DEVICE=$( cut -d^ -f4 <<< $aplaycard )
+NAME=$( cut -d^ -f6 <<< $aplaycard )
+if [[ ! $NAME ]]; then
+	if [[ $APLAYNAME == $( getContent $dirsystem/audio-aplayname ) ]]; then
+		NAME=$( getContent $dirsystem/audio-output )
+	else
+		NAME=$APLAYNAME
+	fi
+fi
+if [[ ! $LISTMIXER ]]; then # ! cirrus-wm5102
+	amixer=$( amixer -c $CARD scontents )
 	if [[ $amixer ]]; then
 		amixer=$( grep -A1 ^Simple <<< $amixer \
 					| sed 's/^\s*Cap.*: /^/' \
@@ -53,36 +81,47 @@ if [[ $aplayname != cirrus-wm5102 ]]; then
 		controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
 		[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
 		if [[ $controls ]]; then
-			readarray -t controls <<< $( cut -d"'" -f2 <<< $controls | sort -u )
-			for control in "${controls[@]}"; do
-				listmixer+=', "'$control'"'
-				[[ $control == Digital ]] && hwmixer=Digital
-			done
-			listmixer="[ ${listmixer:1} ]"
-			hwmixerfile="$dirsystem/hwmixer-$aplayname"
-			if [[ -e $hwmixerfile ]]; then # manual
-				hwmixer=$( < "$hwmixerfile" )
-			elif [[ ! $hwmixer ]]; then    # not Digital
-				hwmixer=${controls[0]}
+			controls=$( cut -d"'" -f2 <<< $controls | sort -u )
+			while read control; do
+				LISTMIXER+=', "'$control'"'
+				[[ $control == Digital ]] && MIXER=Digital
+			done <<< $controls
+			mixerfile="$dirsystem/mixer-$APLAYNAME"
+			if [[ -e $mixerfile ]]; then # manual
+				MIXER=$( < "$mixerfile" )
+			elif [[ ! $MIXER ]]; then    # not Digital
+				MIXER=$( head -1 <<< $controls )
 			fi
 		fi
 	fi
 fi
-mixertypefile="$dirsystem/mixertype-$aplayname"
+mixertypefile="$dirsystem/mixertype-$APLAYNAME"
 if [[ -e $mixertypefile ]]; then
-	mixertype=$( < "$mixertypefile" )
+	MIXERTYPE=$( < "$mixertypefile" )
 else
-	[[ $listmixer ]] && mixertype=hardware || mixertype=none
+	[[ $LISTMIXER ]] && MIXERTYPE=hardware || MIXERTYPE=none
 fi
 
-########
-echo $card > $dirsystem/asoundcard
-[[ $hwmixer ]] && echo "$hwmixer" > $dirshm/amixercontrol # quote to includes trailing space (if any)
-[[ $listmixer ]] && echo $listmixer > $dirshm/listmixer
-echo '
-aplayname="'$aplayname'"
-name="'$name'"
-card='$card'
-device='$device'
-hwmixer='$hwmixer'
-mixertype='$mixertype > $dirshm/output
+if [[ $LISTDEVICE ]]; then
+	LISTDEVICE=$( awk NF <<< $LISTDEVICE | sort -u )
+	echo "{ ${LISTDEVICE:1} }" > $dirshm/listdevice
+else
+	rm -f $dirshm/listdevice
+fi
+[[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/listmixer || rm -f $dirshm/listmixer
+if [[ $MIXER ]]; then
+	echo "$MIXER" > $dirshm/amixercontrol
+	output='mixer="'$MIXER'"'
+else
+	rm -f $dirshm/amixercontrol
+	output='mixer=false'
+fi
+output+='
+aplayname="'$APLAYNAME'"
+name="'$NAME'"
+card='$CARD'
+device='$DEVICE'
+mixertype='$MIXERTYPE
+echo "$output" > $dirshm/output
+echo $CARD > $dirsystem/asoundcard
+asoundcard=$CARD

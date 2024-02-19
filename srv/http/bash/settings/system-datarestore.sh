@@ -41,15 +41,17 @@ CMD NAME"
 timedatectl set-timezone $( < $dirsystem/timezone )
 [[ -e $dirsystem/crossfade ]] && mpc crossfade $( < $dirsystem/crossfade )
 rm -rf $backupfile $dirconfig $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
-readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
-for dir in "${dirs[@]}"; do
-	umount -l "$dir" &> /dev/null
-	rmdir "$dir" &> /dev/null
+dirs=$( find $dirnas -mindepth 1 -maxdepth 1 -type d )
+if [[ $dirs ]]; then
+	while read dir; do
+		umount -l "$dir" &> /dev/null
+		rmdir "$dir" &> /dev/null
+	done <<< $dirs
 done
-readarray -t mountpoints <<< $( grep $dirnas /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
+mountpoints=$( grep $dirnas /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 if [[ $mountpoints ]]; then
-	for mountpoint in $mountpoints; do
+	while read mountpoint; do
 		mkdir -p "$mountpoint"
-	done
+	done <<< $mountpoints
 fi
 $dirbash/power.sh reboot

@@ -18,8 +18,8 @@ mkdir -p $dirdabradio/img
 mv $dirshm/img $dirdabradio &> /dev/null
 
 host=$( hostname -f )
-readarray -t services <<< $( sed -E -n '/^Ensemble|^audioservice/ {s/ *;/;/g; p}' $dirshm/dabscan )
-for service in "${services[@]}"; do
+services=$( sed -E -n '/^Ensemble|^audioservice/ {s/ *;/;/g; p}' $dirshm/dabscan )
+while read service; do
 	if [[ ${service:0:8} == Ensemble ]]; then
 		ensemble=$( cut -d' ' -f2- <<< ${service/;*} | sed 's/\s*$//' )
 		mkdir "$dirdabradio/$ensemble"
@@ -42,7 +42,7 @@ $name
     runOnDemandStartTimeout: 15s
     runOnDemandCloseAfter: 3s
 "
-done
+done <<< $services
 
 fileyml=/etc/mediamtx/mediamtx.yml
 sed -i '1,/^paths:/ !d' $fileyml

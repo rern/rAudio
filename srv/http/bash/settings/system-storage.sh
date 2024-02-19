@@ -15,8 +15,7 @@ if [[ ! -e $filesharedip ]]; then
 	fi
 	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 	if [[ $usb ]]; then
-		readarray -t usb <<< $usb
-		for source in "${usb[@]}"; do
+		while read source; do
 			mountpoint=$( df -l --output=target,source | sed -n "\|$source| {s| *$source||; p}" )
 			if [[ $mountpoint ]]; then
 				used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
@@ -35,13 +34,13 @@ if [[ ! -e $filesharedip ]]; then
 			[[ ! $hddapm ]] && hddapm=$( hdparm -B $source \
 											| grep -m1 APM_level \
 											| tr -d -c 0-9 )
-		done
+		done <<< $usb
 	fi
 fi
 nas=$( grep -E '/mnt/MPD/NAS|/srv/http/data' /etc/fstab | tr -s ' ' )
 if [[ $nas ]]; then
-	readarray -t nas <<< $( cut -d' ' -f1-2 <<< $nas | sort )
-	for line in "${nas[@]}"; do
+	nas=$( cut -d' ' -f1-2 <<< $nas | sort )
+	while read line; do
 		source=${line/ *}
 		source=${source//\\040/ }
 		mountpoint=${line/* }
@@ -62,6 +61,6 @@ if [[ $nas ]]; then
 , "source"     : "'$source'"
 }'
 		fi
-	done
+	done <<< $nas
 fi
 echo "[ ${list:1} ]"
