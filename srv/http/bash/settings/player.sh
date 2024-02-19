@@ -66,8 +66,11 @@ custom )
 	fi
 	;;
 device )
-	echo $APLAYNAME > $dirsystem/audio-aplayname
-	echo $OUTPUT > $dirsystem/audio-output
+	if [[ $APLAYNAME == $( getContent $dirsystem/audio-aplayname ) ]]; then
+		rm -f $dirsystem/output-aplayname
+	else
+		echo $APLAYNAME > $dirsystem/output-aplayname
+	fi
 	$dirsettings/player-conf.sh
 	;;
 devicewithbt )

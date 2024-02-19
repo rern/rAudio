@@ -52,7 +52,10 @@ EOF
 	, [
 		  'id'       => 'device'
 		, 'input'    => 'device'
-		, 'help'     => 'HDMI audio: Available when connected before boot only'
+		, 'help'     => <<< EOF
+ · Device name: Retrieved from I²S module
+ · HDMI audio: Available when connected before boot only
+EOF
 	]
 	, [
 		  'id'       => 'mixer'

@@ -31,38 +31,38 @@ aplayl=$( aplay -l \
 				s/\]//g
 			p}' )
 # >>> 1card^...^3aplayname^4device^...^6name^
-audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
-audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
+if [[ -e $dirsystem/output-aplayname ]]; then # device set from player page
+	device=$( < $dirsystem/output-aplayname )
+else                                         # device set from system page
+	device=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
+	outputname=$( getContent $dirsystem/audio-output 'On-board Headphones' )
+fi
 while read line; do
 	aplayname=$( cut -d^ -f3 <<< $line )
 	name=$( cut -d^ -f6 <<< $line )
 	if [[ $name ]]; then
 		name=${name/bcm2835/On-board}
 	else
-		if [[ $aplayname == $audioaplayname ]]; then
-			name=$audiooutput
-		else
-			name=$aplayname
-		fi
+		[[ $aplayname == $device ]] && name=$outputname || name=$aplayname
 	fi
-	name_device=', "'$name'": "'$aplayname'"'
-	! grep -q "$name_device" <<< $LISTDEVICE && LISTDEVICE+=$name_device # suppress duplicate
+	name_device='
+, "'$name'": "'$aplayname'"'
+	LISTDEVICE+=$name_device # suppress duplicate
 done <<< $aplayl
 
 if [[ $usbdac == add ]]; then # <<< player-conf.sh
 	aplaycard=$( tail -1 <<< $aplayl )
-elif [[ $aplayname == cirrus-wm5102 ]]; then
+elif [[ $device == cirrus-wm5102 ]]; then
 	aplaycard=$( grep -m1 cirrus-wm5102 <<< $aplayl )
 	MIXER='HPOUT2 Digital'
 	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
 else
-	aplaycard=$( grep -m1 "$audioaplayname" <<< $aplayl ) # avoid duplicate aplayname
+	aplaycard=$( grep -m1 "$device" <<< $aplayl ) # avoid duplicate aplayname
 fi
-
 CARD=$( cut -d^ -f1 <<< $aplaycard )
 APLAYNAME=$( cut -d^ -f3 <<< $aplaycard )
 DEVICE=$( cut -d^ -f4 <<< $aplaycard )
-[[ $usbdac == add ]] && NAME=$APLAYNAME || NAME=$audiooutput
+NAME=$( cut -d^ -f6 <<< $aplaycard )
 if [[ ! $LISTMIXER ]]; then # ! cirrus-wm5102
 	amixer=$( amixer -c $CARD scontents )
 	if [[ $amixer ]]; then
@@ -95,7 +95,12 @@ else
 	[[ $LISTMIXER ]] && MIXERTYPE=hardware || MIXERTYPE=none
 fi
 
-[[ $LISTDEVICE ]] && echo "{ ${LISTDEVICE:1} }" > $dirshm/listdevice || rm -f $dirshm/listdevice
+if [[ $LISTDEVICE ]]; then
+	LISTDEVICE=$( awk NF <<< $LISTDEVICE | sort -u )
+	echo "{ ${LISTDEVICE:1} }" > $dirshm/listdevice
+else
+	rm -f $dirshm/listdevice
+fi
 [[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/listmixer || rm -f $dirshm/listmixer
 if [[ $MIXER ]]; then
 	echo "$MIXER" > $dirshm/amixercontrol
