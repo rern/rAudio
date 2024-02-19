@@ -107,6 +107,7 @@ i {
 .i-hide::before            { content: '\F575' }
 .i-hostname::before        { content: '\F590' }
 .i-httpd::before           { content: '\F55D' }
+.i-i2s::before             { content: '\F571' }
 .i-i2smodule::before       { content: '\F571' }
 .i-info::before            { content: '\F561' }
 .i-input::before           { content: '\F529' }
