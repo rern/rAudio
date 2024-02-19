@@ -97,6 +97,7 @@ soundProfile() {
 case $CMD in
 
 audio )
+	enableFlagSet
 	config=$( grep -v dtparam=audio=on /boot/config.txt )
 	[[ $ON ]] && config+="
 dtparam=audio=on"
@@ -189,6 +190,8 @@ i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
 	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
 	if [[ $APLAYNAME != none ]]; then
+		[[ -e $dirsystem/audio ]] && config+="
+dtparam=audio=on"
 		config+="
 dtparam=i2s=on
 dtoverlay=$APLAYNAME"
