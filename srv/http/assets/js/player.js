@@ -75,9 +75,8 @@ $( '#mixertype' ).on( 'click', function() {
 $( '#setting-mixertype' ).on( 'click', function() {
 	info( {
 		  icon    : SW.icon
-		, title   : SW.title
-		, message : 'Type:'
-		, list    : [ '', 'radio', { kv: { 'Mixer device <gr>(hardware)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+		, title   : 'Volume Type'
+		, list    : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
 		, values  : S.mixertype ? S.output.mixertype : 'hardware'
 		, cancel  : switchCancel
 		, ok      : () => setMixerType( infoVal() )

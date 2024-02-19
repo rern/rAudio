@@ -1,10 +1,9 @@
 #!/bin/bash
 
-### included by < player-conf.sh
+### included by <<< player-conf.sh
+! type -t args2va &> /dev/null && . /srv/http/bash/common.sh   # if run directly
+[[ ! $asoundcard ]] && asoundcard=$( < $dirsystem/asoundcard ) # if run directly
 
-! type -t args2va &> /dev/null && . /srv/http/bash/common.sh
-
-[[ ! $asoundcard ]] && asoundcard=$( < $dirsystem/asoundcard )
 [[ ! $asoundcard ]] && asoundcard=0
 if [[ $asoundcard != -1 ]]; then
 ########

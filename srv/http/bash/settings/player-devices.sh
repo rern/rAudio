@@ -11,12 +11,9 @@
 #    - set as hardware if mixer device available
 #    - if nothing, set as software
 
-### included by player-conf.sh
-
-[[ -e $dirshm/output ]] && rm -f $dirshm/{amixercontrol,listdevice,listmixer,nosound,output}           # in player-conf.sh
-[[ ! $proccards ]] && readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards ) # in player-conf.sh
-
-! type -t args2va &> /dev/null && . /srv/http/bash/common.sh
+### included by <<< player-conf.sh
+! type -t args2va &> /dev/null && . /srv/http/bash/common.sh                                           # if run directly
+[[ ! $proccards ]] && readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards ) # if run directly
 
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
@@ -24,29 +21,27 @@ for aplayname in "${proccards[@]}"; do
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # snd_rpi_xxx_yyy > xxx-yyy
 	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
 	[[ $aplayname == $audioaplayname ]] && name=$audiooutput || name=${aplayname/bcm2835/On-board}
-	listdevice+=', "'$name'": "'$aplayname'"'
+	LISTDEVICE+=', "'$name'": "'$aplayname'"'
 done
-########
-echo "{ ${listdevice:1} }" > $dirshm/listdevice
 
 aplayl=$( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
 if [[ $usbdac == add ]]; then
 	aplaycard=$( tail -1 <<< $aplayl )
 elif [[ $aplayname == cirrus-wm5102 ]]; then
 	aplaycard=$( grep -m1 wm5102 <<< $aplayl )
-	hwmixer='HPOUT2 Digital'
-	listmixer='[ "HPOUT1 Digital", "HPOUT2 Digital", "SPDIF Out", "Speaker Digital" ]'
+	HWMIXER='HPOUT2 Digital'
+	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
 else
 	aplaycard=$( grep -m1 "$audioaplayname" <<< $aplayl ) # avoid duplicate aplayname
 fi
 readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$aplaycard" )
-card=${cnd[0]}
-aplayname=${cnd[1]}
-device=${cnd[2]}
-[[ $usbdac == add ]] && name=$aplayname || name=$audiooutput
+CARD=${cnd[0]}
+APLAYNAME=${cnd[1]}
+DEVICE=${cnd[2]}
+[[ $usbdac == add ]] && NAME=$APLAYNAME || NAME=$audiooutput
 
-if [[ ! $listmixer ]]; then # ! cirrus-wm5102
-	amixer=$( amixer -c $card scontents )
+if [[ ! $LISTMIXER ]]; then # ! cirrus-wm5102
+	amixer=$( amixer -c $CARD scontents )
 	if [[ $amixer ]]; then
 		amixer=$( grep -A1 ^Simple <<< $amixer \
 					| sed 's/^\s*Cap.*: /^/' \
@@ -58,35 +53,34 @@ if [[ ! $listmixer ]]; then # ! cirrus-wm5102
 		if [[ $controls ]]; then
 			readarray -t controls <<< $( cut -d"'" -f2 <<< $controls | sort -u )
 			for control in "${controls[@]}"; do
-				listmixer+=', "'$control'"'
-				[[ $control == Digital ]] && hwmixer=Digital
+				LISTMIXER+=', "'$control'"'
+				[[ $control == Digital ]] && HWMIXER=Digital
 			done
-			listmixer="[ ${listmixer:1} ]"
-			hwmixerfile="$dirsystem/hwmixer-$aplayname"
+			hwmixerfile="$dirsystem/hwmixer-$APLAYNAME"
 			if [[ -e $hwmixerfile ]]; then # manual
-				hwmixer=$( < "$hwmixerfile" )
-			elif [[ ! $hwmixer ]]; then    # not Digital
-				hwmixer=${controls[0]}
+				HWMIXER=$( < "$hwmixerfile" )
+			elif [[ ! $HWMIXER ]]; then    # not Digital
+				HWMIXER=${controls[0]}
 			fi
 		fi
 	fi
 fi
-mixertypefile="$dirsystem/mixertype-$aplayname"
+mixertypefile="$dirsystem/mixertype-$APLAYNAME"
 if [[ -e $mixertypefile ]]; then
-	mixertype=$( < "$mixertypefile" )
+	MIXERTYPE=$( < "$mixertypefile" )
 else
-	[[ $listmixer ]] && mixertype=hardware || mixertype=none
+	[[ $LISTMIXER ]] && MIXERTYPE=hardware || MIXERTYPE=none
 fi
 
-########
-echo $card > $dirsystem/asoundcard
-[[ $hwmixer ]] && echo "$hwmixer" > $dirshm/amixercontrol # quote to includes trailing space (if any)
-[[ $listmixer ]] && echo $listmixer > $dirshm/listmixer
+[[ $HWMIXER ]] && echo "$HWMIXER" > $dirshm/amixercontrol || rm -f $dirshm/amixercontrol
+[[ $LISTDEVICE ]] && echo "{ ${LISTDEVICE:1} }" > $dirshm/listdevice || rm -f $dirshm/listdevice
+[[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/listmixer || rm -f $dirshm/listmixer
 echo '
-aplayname="'$aplayname'"
-name="'$name'"
-card='$card'
-device='$device'
-hwmixer='$hwmixer'
-mixertype='$mixertype > $dirshm/output
-asoundcard=$card
+aplayname="'$APLAYNAME'"
+name="'$NAME'"
+card='$CARD'
+device='$DEVICE'
+hwmixer='$HWMIXER'
+mixertype='$MIXERTYPE > $dirshm/output
+echo $CARD > $dirsystem/asoundcard
+asoundcard=$CARD

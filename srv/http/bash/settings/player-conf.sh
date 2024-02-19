@@ -12,20 +12,20 @@
 usbdac=$1
 
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
-[[ -e /usr/bin/camilladsp ]] && systemctl stop camilladsp
-rm -f $dirshm/{amixercontrol,listdevice,listmixer,nosound,output}
 
 readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards )
 if [[ $proccards ]]; then
-	. $dirsettings/player-devices.sh
+	rm -f $dirshm/nosound
+	. $dirsettings/player-devices.sh # >>> $asoundcard
 else
-	[[ -e $dirshm/btreceiver ]] && card=0 || card=-1
-	echo $card > $dirsystem/asoundcard
 	touch $dirshm/nosound
+	rm -f $dirshm/{amixercontrol,listdevice,listmixer,output}
+	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
+	echo $asoundcard > $dirsystem/asoundcard
 	pushData display '{ "volumenone": true }'
 fi
 
-. $dirsettings/player-asound.sh  # $bluetooth, $camilladsp, $equalizer
+. $dirsettings/player-asound.sh # >>> $bluetooth, $camilladsp, $equalizer
 
 pushStatus() {
 	$dirbash/status-push.sh
@@ -55,7 +55,6 @@ $audiooutputbt
 " > $dirmpdconf/bluetooth.conf
 ########
 fi
-[[ ! $asoundcard ]] && asoundcard=$( < $dirsystem/asoundcard )
 if [[ $asoundcard == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	if [[ $usbdac == remove ]]; then
@@ -74,6 +73,7 @@ elif [[ ! $btoutputonly ]]; then
 		outputswitch=$name
 	fi
 	if [[ $camilladsp ]]; then
+		systemctl stop camilladsp
 		hw=hw:Loopback,1
 		ln -sf $dirmpdconf/{conf/,}camilladsp.conf
 	elif [[ $equalizer ]]; then

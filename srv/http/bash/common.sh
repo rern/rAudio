@@ -123,10 +123,9 @@ conf2json() {
 			v=${l/*=}
 			[[ ! $v ]] && v=false
 			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
-						-e 's/^True$|^False$/\L&/
-							s/^yes$/true/
-							s/^no$/false/' <<< $v )
-			confNotString "$v" || v='"'$( stringEscape $v )'"' # quote and escape string
+						-e 's/^True$|^yes$/true/
+							s/^False$|^no$/false/' <<< $v )
+			confNotString "$v" || v='"'$( stringEscape "$v" )'"' # quote and escape string
 			[[ ! $nocap ]] && k=${k^^}
 			json+=', "'$k'": '$v
 	done
