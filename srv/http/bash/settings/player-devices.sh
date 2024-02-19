@@ -12,8 +12,8 @@
 #    - if nothing, set as software
 
 ### included by <<< player-conf.sh
-! type -t args2va &> /dev/null && . /srv/http/bash/common.sh                                           # if run directly
-[[ ! $proccards ]] && readarray -t proccards <<< $( sed -n '/]:/ {s/^.* - //; p}' /proc/asound/cards ) # if run directly
+! type -t args2va &> /dev/null && . /srv/http/bash/common.sh                                        # if run directly
+[[ ! $proccards ]] && readarray -t proccards <<< $( grep -v ] /proc/asound/cards | sed 's/^\s*//' ) # if run directly
 
 audioaplayname=$( getContent $dirsystem/audio-aplayname 'bcm2835 Headphones' )
 audiooutput=$( getContent $dirsystem/audio-output 'On-board Headphones' )
