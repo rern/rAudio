@@ -63,6 +63,13 @@ CARD=$( cut -d^ -f1 <<< $aplaycard )
 APLAYNAME=$( cut -d^ -f3 <<< $aplaycard )
 DEVICE=$( cut -d^ -f4 <<< $aplaycard )
 NAME=$( cut -d^ -f6 <<< $aplaycard )
+if [[ ! $NAME ]]; then
+	if [[ $APLAYNAME == $( getContent $dirsystem/audio-aplayname ) ]]; then
+		NAME=$( getContent $dirsystem/audio-output )
+	else
+		NAME=$APLAYNAME
+	fi
+fi
 if [[ ! $LISTMIXER ]]; then # ! cirrus-wm5102
 	amixer=$( amixer -c $CARD scontents )
 	if [[ $amixer ]]; then
