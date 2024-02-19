@@ -206,8 +206,8 @@ $bluealsa
 
 "
 	devices+="\
-<bll># cat /proc/asound/cards | grep ]</bll>
-$( cat /proc/asound/cards | grep ] )
+<bll># cat /proc/asound/cards | grep -v ] | sed 's/^\s*//'</bll>
+$( cat /proc/asound/cards | grep -v ] | sed 's/^\s*//' )
 "
 	if [[ ! -e $dirsystem/camilladsp ]]; then
 		devices+="
