@@ -120,7 +120,7 @@ $( 'body' ).on( 'click', function( e ) {
 	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
 	if ( ! $( e.target ).hasClass( 'select2-search__field' ) 
-		&& ! $( e.target ).parents( '#divi2smodule' ).length 
+		&& ! $( e.target ).parents( '#divi2sselect' ).length 
 		&& $( '#i2smodule' ).val() === 'none'
 	) {
 		i2sSelectHide();
@@ -133,16 +133,17 @@ $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.
 			return
 		}
 		
-		var line = '<wh>Reboot required for:</wh><p>';
-		list.split( '\n' ).forEach( id => line += ico( id ) + $( '#div'+ id +' .label' ).text() +'\n' );
+		var message = '<wh>Reboot required for:</wh>';
+		list.split( '\n' ).forEach( id => message += '<br>'+ ico( id ) + $( '#div'+ id +' .label' ).text() ); // i2smodule
 		info( {
-			  icon    : page
-			, title   : 'System Setting'
-			, message : line +'</p>'
-			, cancel  : () => location.href = '/'
-			, okcolor : orange
-			, oklabel : ico( 'reboot' ) +'Reboot'
-			, ok      : () => infoPowerCommand( 'reboot' )
+			  icon         : page
+			, title        : 'System Setting'
+			, message      : message
+			, messagealign : 'left'
+			, cancel       : () => location.href = '/'
+			, okcolor      : orange
+			, oklabel      : ico( 'reboot' ) +'Reboot'
+			, ok           : () => infoPowerCommand( 'reboot' )
 		} );
 	} );
 } );
@@ -309,10 +310,10 @@ $( '#setting-wlan' ).on( 'click', function() {
 		}, 'json' );
 	}
 } );
-$( '#divi2smodulesw' ).on( 'click', function() {
+$( '#divi2ssw' ).on( 'click', function() {
 	setTimeout( i2sOptionSet, 0 );
 } );
-$( '#divi2s .col-r' ).on( 'click', function( e ) {
+$( '#divi2smodule .col-r' ).on( 'click', function( e ) {
 	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
 } );
 $( '#i2smodule' ).on( 'input', function() {
@@ -324,7 +325,7 @@ $( '#i2smodule' ).on( 'input', function() {
 		notify( icon, title, 'Enable ...' );
 	} else {
 		setTimeout( () => { notify( icon, title, 'Disable ...' ) }, 300 ); // fix - hide banner too soon
-		S.i2smodulesw = false;
+		S.i2ssw = false;
 		i2sSelectHide();
 	}
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
@@ -682,7 +683,7 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 function i2sOptionSet() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
-		if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
+		if ( $( '#divi2sselect' ).hasClass( 'hide' ) ) {
 			i2sSelectShow();
 			$( '#i2smodule' ).select2( 'open' );
 		}
@@ -703,13 +704,13 @@ function i2sOptionSetSelect() {
 	} ).prop( 'selected', true );
 }
 function i2sSelectHide() {
-	$( '#i2smodulesw' ).prop( 'checked', S.i2smodulesw );
-	$( '#divi2smodulesw' ).removeClass( 'hide' );
-	$( '#divi2smodule' ).addClass( 'hide' );
+	$( '#i2ssw' ).prop( 'checked', S.i2ssw );
+	$( '#divi2ssw' ).removeClass( 'hide' );
+	$( '#divi2sselect' ).addClass( 'hide' );
 }
 function i2sSelectShow() {
-	$( '#divi2smodulesw' ).addClass( 'hide' );
-	$( '#divi2smodule, #setting-i2smodule' ).removeClass( 'hide' );
+	$( '#divi2ssw' ).addClass( 'hide' );
+	$( '#divi2sselect, #setting-i2smodule' ).removeClass( 'hide' );
 }
 function htmlOption( values ) {
 	var options = '';
@@ -1127,7 +1128,7 @@ function renderPage() {
 	} else {
 		$( '#divaudio' ).addClass( 'hide' );
 	}
-	if ( S.i2smodulesw ) {
+	if ( S.i2ssw ) {
 		if ( $( '#i2smodule option' ).length ) {
 			i2sOptionSetSelect();
 		} else {
