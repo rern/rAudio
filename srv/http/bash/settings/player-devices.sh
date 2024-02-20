@@ -82,10 +82,10 @@ if [[ ! $LISTMIXER ]]; then # ! cirrus-wm5102
 		[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
 		if [[ $controls ]]; then
 			controls=$( cut -d"'" -f2 <<< $controls | sort -u )
-			while read control; do
-				LISTMIXER+=', "'$control'"'
-				[[ $control == Digital ]] && MIXER=Digital
-			done <<< $controls
+			while read; do # no var name - use default REPLY to preserve trailing/all spaces
+				LISTMIXER+=', "'$REPLY'"'
+				[[ $REPLY == Digital ]] && MIXER=Digital
+			done <<< "$controls"
 			mixerfile="$dirsystem/mixer-$APLAYNAME"
 			if [[ -e $mixerfile ]]; then # manual
 				MIXER=$( < "$mixerfile" )
