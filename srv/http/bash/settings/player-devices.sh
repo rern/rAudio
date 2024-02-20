@@ -79,6 +79,7 @@ else                                       # else
 		done
 	fi
 fi
+[[ ! $aplaycard ]] && aplaycard=$( tail -1 <<< $aplayl ) # last resort
 CARD=$( cut -d^ -f1 <<< $aplaycard )
 APLAYNAME=$( cut -d^ -f3 <<< $aplaycard )
 DEVICE=$( cut -d^ -f4 <<< $aplaycard )
