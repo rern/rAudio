@@ -3,8 +3,8 @@
 ### included by <<< player-conf.sh
 ! type -t args2va &> /dev/null && . /srv/http/bash/common.sh # if run directly
 
-cards=$( awk '/]/ {print $1}' /proc/asound/cards )
-while read i; do
+cardL=$( ls -1d /proc/asound/card[0-9] | wc -l )
+for (( i=0; i < $cardL; i++ )); do
 	line=$( cat /proc/asound/card$i/*/info \
 				| head -6 \
 				| sed -E -n '/^device|^name/ {s/^.*: //; s/bcm2835/On-board/; p}' \
@@ -15,22 +15,28 @@ while read i; do
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && name=$( sed 's/ [^ ]*$//' <<< $name )
 	LISTDEVICE+=', "'$name'"'
 	list+="$i^$device^$name"$'\n'
-done <<< $cards
-list=$( awk NF <<< $list )
-if (( $( wc -l <<< $list ) == 1 )); then # single card
-	cdn=$list
-elif [[ $usbdac == add ]]; then          # usb <<< player-conf.sh
-	cdn=$( tail -1 <<< $list )
+done
+# last card as default
+card=$(( cardL - 1 ))
+CARD=$card
+DEVICE=$device
+NAME=$name
+if [[ $usbdac == add ]]; then # usb <<< player-conf.sh
+	usbname=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' /proc/asound/card$card/usbmixer )
+	if [[ $usbname ]]; then
+		NAME=$usbname
+		LISTDEVICE=$( sed 's/,[^,]*$//' <<< $LISTDEVICE )
+		LISTDEVICE+=', "'$NAME'"'
+	fi
 elif [[ -e $dirsystem/output-device ]]; then
 	outputdevice=$( < $dirsystem/output-device )
 	cdn=$( grep -m1 "$outputdevice" <<< $list )
+	CARD=$( cut -d^ -f1 <<< $cdn )
+	DEVICE=$( cut -d^ -f2 <<< $cdn )
+	NAME=$( cut -d^ -f3 <<< $cdn )
 fi
-[[ ! $cdn ]] && cdn=$( tail -1 <<< $list )
-CARD=$( cut -d^ -f1 <<< $cdn )
-DEVICE=$( cut -d^ -f2 <<< $cdn )
-NAME=$( cut -d^ -f3 <<< $cdn )
 
-if grep -qi wm5102 <<< $cdn; then
+if grep -qi wm5102 <<< $NAME; then
 	MIXER='HPOUT2 Digital'
 	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
 else
