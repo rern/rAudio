@@ -47,20 +47,27 @@ while read line; do
 	fi
 	name_device='
 , "'$name'": "'$aplayname'"'
-	LISTDEVICE+=$name_device # suppress duplicate
+	LISTDEVICE+=$name_device
 done <<< $aplayl
 
-if [[ $usbdac == add ]]; then # <<< player-conf.sh
+if (( $( wc -l <<< $aplayl ) == 1 )); then # single card
+	aplaycard=$aplayl
+elif [[ $usbdac == add ]]; then            # usb <<< player-conf.sh
 	aplaycard=$( tail -1 <<< $aplayl )
-	NAME=$( dmesg \
-				| tail -10 \
-				| sed -n '/New USB device/,/Product:/ {/New USB/ d; s/^.*Product: //; p}' )
-elif [[ $device == cirrus-wm5102 ]]; then
+elif [[ $device == cirrus-wm5102 ]]; then  # cirrus
 	aplaycard=$( grep -m1 cirrus-wm5102 <<< $aplayl )
 	MIXER='HPOUT2 Digital'
 	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
-else
-	aplaycard=$( grep -m1 "$device" <<< $aplayl ) # avoid duplicate aplayname
+else                                      # else
+	# overlayfile : aplayname
+	# xxx-yyy-zzz : xxx_yyy_zzz
+	# xxx-yyy-zzz : xxx_yyy
+	# xxx-yyy-zzz : xxxyyy
+	dev=$( tr _- . <<< $device )    # xxx-yyy-zzz > xxx.yyy.zzz
+	while grep -q '\.' <<< $dev; do # try match: xxx.yyy.zzz > xxx.yyy > xxx
+		aplaycard=$( grep -i -m1 $dev <<< $aplayl )
+		[[ $aplaycard ]] && break || dev=${dev%.*}
+	done
 fi
 CARD=$( cut -d^ -f1 <<< $aplaycard )
 APLAYNAME=$( cut -d^ -f3 <<< $aplaycard )
@@ -73,6 +80,8 @@ if [[ ! $NAME ]]; then
 		NAME=$APLAYNAME
 	fi
 fi
+lastword=$( awk '{print $NF}' <<< $NAME )
+[[ $lastword == *-* && $lastword =~ ^[a-z-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME ) # remove last word
 if [[ ! $LISTMIXER ]]; then # ! cirrus-wm5102
 	amixer=$( amixer -c $CARD scontents )
 	if [[ $amixer ]]; then
@@ -106,7 +115,7 @@ else
 fi
 
 if [[ $LISTDEVICE ]]; then
-	LISTDEVICE=$( awk NF <<< $LISTDEVICE | sort -u )
+	LISTDEVICE=$( awk NF <<< $LISTDEVICE | sort -u ) # suppress duplicate + remove blank line
 	echo "{ ${LISTDEVICE:1} }" > $dirshm/listdevice
 else
 	rm -f $dirshm/listdevice
