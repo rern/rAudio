@@ -17,10 +17,10 @@ if [[ $1 ]]; then
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
 
-if aplay -l | grep -q ^card; then
+if grep -q ]: /proc/asound/cards; then # asound cards exist
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $asoundcard
-else
+else                                   # no sound
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,listdevice,listmixer,output}
 	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1

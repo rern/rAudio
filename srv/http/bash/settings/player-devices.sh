@@ -12,7 +12,14 @@
 #    - if nothing, set as software
 
 ### included by <<< player-conf.sh
-! type -t args2va &> /dev/null && . /srv/http/bash/common.sh         # if run directly
+! type -t args2va &> /dev/null && . /srv/http/bash/common.sh # if run directly
+echo 'defaults.pcm.card 0
+defaults.ctl.card 0' > /etc/asound.conf # reset before probing
+
+nameTrim() { # remove last word
+	lastword=$( awk '{print $NF}' <<< $1 )
+	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && sed 's/ [^ ]*$//' <<< $1 || echo $1
+}
 # snd_rpi_rpi_dac > i2s-dac (rpi-dac obsolete)
 # snd_rpi_wsp     > cirrus-wm5102
 # RPi-Cirrus      > cirrus-wm5102
@@ -41,7 +48,7 @@ while read line; do
 	aplayname=$( cut -d^ -f3 <<< $line )
 	[[ $usbdac == add ]] && name=$aplayname || name=$( cut -d^ -f6 <<< $line )
 	if [[ $name ]]; then
-		name=${name/bcm2835/On-board}
+		name=$( nameTrim "${name/bcm2835/On-board}" )
 	else
 		[[ $aplayname == $device ]] && name=$outputname || name=$aplayname
 	fi
@@ -80,8 +87,7 @@ if [[ ! $NAME ]]; then
 		NAME=$APLAYNAME
 	fi
 fi
-lastword=$( awk '{print $NF}' <<< $NAME )
-[[ $lastword == *-* && $lastword =~ ^[a-z-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME ) # remove last word
+NAME=$( nameTrim "$NAME" )
 if [[ ! $LISTMIXER ]]; then # ! cirrus-wm5102
 	amixer=$( amixer -c $CARD scontents )
 	if [[ $amixer ]]; then

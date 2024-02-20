@@ -66,7 +66,7 @@ EOF
 		  'id'       => 'mixertype'
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )} Type:
- · Mixer device: Good - DAC hardware via GUI knob
+ · Mixer device: Good - DAC hardware via GUI knob (if available)
  · MPD software: Basic - GUI knob
  
 Note: Should be disabled for best sound quality
