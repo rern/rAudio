@@ -5,11 +5,8 @@ var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#device' ).on( 'input', function() {
-	var $this     = $( this );
-	var aplayname = $this.val();
-	var output    = $this.find( 'option:selected' ).text()
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'device', output, aplayname, 'CMD OUTPUT APLAYNAME' ] );
+	bash( [ 'device', $( this ).val(), 'CMD DEVICE' ] );
 } );
 $( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
@@ -328,7 +325,7 @@ function renderPage() {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#device' )
 			.html( htmlOption( S.listdevice ) )
-			.val( S.output.aplayname );
+			.val( S.output.name );
 		if ( S.listmixer ) {
 			$( '#mixer' )
 				.html( htmlOption( S.listmixer ) )

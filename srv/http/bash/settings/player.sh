@@ -66,11 +66,7 @@ custom )
 	fi
 	;;
 device )
-	if [[ $APLAYNAME == $( getContent $dirsystem/audio-aplayname ) ]]; then
-		rm -f $dirsystem/output-aplayname
-	else
-		echo $APLAYNAME > $dirsystem/output-aplayname
-	fi
+	echo $DEVICE > $dirsystem/output-device
 	$dirsettings/player-conf.sh
 	;;
 devicewithbt )
@@ -208,6 +204,9 @@ $bluealsa
 
 "
 	devices+="\
+<bll># cat /proc/asound/cards | grep ]</bll>
+$( cat /proc/asound/cards | grep ] )
+
 <bll># aplay -l | grep ^card</bll>
 $( aplay -l | grep ^card )
 "

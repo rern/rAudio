@@ -67,7 +67,7 @@ if [[ $asoundcard == -1 ]]; then # no audio devices
 		outputswitch='(None)'
 	fi
 elif [[ ! $btoutputonly ]]; then
-	. $dirshm/output # aplayname name card device mixer mixertype
+	. $dirshm/output # name card device mixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
@@ -109,11 +109,11 @@ elif [[ ! $btoutputonly ]]; then
 				audiooutput+='
 	replay_gain_handler "mixer"'
 		fi
-		[[ -e "$dirsystem/dop-$aplayname" ]] && \
+		[[ -e "$dirsystem/dop-$name" ]] && \
 			audiooutput+='
 	dop            "yes"'
 		if [[ $dirsystem/custom ]]; then
-			customfile="$dirsystem/custom-output-$aplayname"
+			customfile="$dirsystem/custom-output-$name"
 			[[ -e "$customfile" ]] && \
 				audiooutput+="
 $( sed 's/^/\t/' "$customfile" )"
