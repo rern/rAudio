@@ -65,16 +65,19 @@ elif [[ $device == cirrus-wm5102 ]]; then  # cirrus
 	aplaycard=$( grep -m1 cirrus-wm5102 <<< $aplayl )
 	MIXER='HPOUT2 Digital'
 	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
-else                                      # else
-	# overlayfile : aplayname
-	# xxx-yyy-zzz : xxx_yyy_zzz
-	# xxx-yyy-zzz : xxx_yyy
-	# xxx-yyy-zzz : xxxyyy
-	dev=$( tr _- . <<< $device )    # xxx-yyy-zzz > xxx.yyy.zzz
-	while grep -q '\.' <<< $dev; do # try match: xxx.yyy.zzz > xxx.yyy > xxx
-		aplaycard=$( grep -i -m1 $dev <<< $aplayl )
-		[[ $aplaycard ]] && break || dev=${dev%.*}
-	done
+else                                       # else
+	aplaycard=$( grep -i -m1 "$device" <<< $aplayl )
+	if [[ ! $aplaycard ]]; then
+		# overlayfile : aplayname
+		# xxx-yyy-zzz : xxx_yyy_zzz
+		# xxx-yyy-zzz : xxx_yyy
+		# xxx-yyy-zzz : xxxyyy
+		dev=$( tr _- . <<< $device )    # xxx-yyy-zzz > xxx.yyy.zzz
+		while grep -q '\.' <<< $dev; do # try match: xxx.yyy.zzz > xxx.yyy > xxx
+			aplaycard=$( grep -i -m1 "$dev" <<< $aplayl )
+			[[ $aplaycard ]] && break || dev=${dev%.*}
+		done
+	fi
 fi
 CARD=$( cut -d^ -f1 <<< $aplaycard )
 APLAYNAME=$( cut -d^ -f3 <<< $aplaycard )
