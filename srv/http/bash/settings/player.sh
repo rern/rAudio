@@ -208,17 +208,19 @@ $bluealsa
 
 "
 	devices+="\
-<bll># cat /proc/asound/cards | grep -v ] | sed 's/^\s*//'</bll>
-$( cat /proc/asound/cards | grep -v ] | sed 's/^\s*//' )
+<bll># aplay -l | grep ^card</bll>
+$( aplay -l | grep ^card )
 "
 	if [[ ! -e $dirsystem/camilladsp ]]; then
 		devices+="
 <bll># amixer scontrols</bll>"
 		card=$( < $dirsystem/asoundcard )
 		aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
+		mixers=$( amixer scontrols )
+		[[ ! $mixers ]] && mixers="<gr>(card $card: no mixers)</gr>"
 		if [[ $aplayname != snd_rpi_wsp ]]; then
 			devices+="
-$( amixer scontrols )
+$mixers
 "
 		else
 			devices+="\
