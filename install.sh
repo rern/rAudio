@@ -57,7 +57,7 @@ on=${j8_bcm[on]}
 sw=${j8_bcm[sw]}
 led=${j8_bcm[led]}
 reserved=${j8_bcm[reserved]}" > $file
-		systemctl -q is-enabled powerbutton && powerbuttonrestart=1
+		systemctl try-restart powerbutton
 	fi
 	
 	file=$dirsystem/relays.conf

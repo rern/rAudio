@@ -217,7 +217,7 @@ $( aplay -l | grep ^card )
 		card=$( < $dirsystem/asoundcard )
 		aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
 		mixers=$( amixer scontrols )
-		[[ ! $mixers ]] && mixers='(no mixers)'
+		[[ ! $mixers ]] && mixers="(no mixers on card $card)"
 		if [[ $aplayname != snd_rpi_wsp ]]; then
 			devices+="
 $mixers
