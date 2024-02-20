@@ -6,11 +6,15 @@
 # - mixer_type    - from file if manually set | hardware if mixer | software
 # - mixer_control - from file if manually set | mixer | null
 # - mixer_device  - card index
+[[ -e /dev/shm/usbdac ]] && exit
 
 . /srv/http/bash/common.sh
 
-usbdac=$1
-
+if [[ $1 ]]; then
+	usbdac=$1
+	touch /dev/shm/usbdac
+	( sleep 3; rm -f /dev/shm/usbdac ) &
+fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
 
 if aplay -l | grep -q ^card; then
@@ -29,7 +33,8 @@ fi
 pushStatus() {
 	$dirbash/status-push.sh
 	$dirsettings/player-data.sh pushrefresh
-	[[ $usbdac ]] && pushData refresh '{ "page": "system", "audiocards": '$( aplay -l | grep ^card | grep -c -v Loopback )' }'
+	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
+	[[ $usbdac ]] && pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 }
 
 # outputs -----------------------------------------------------------------------------

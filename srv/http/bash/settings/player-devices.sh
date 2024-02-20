@@ -39,7 +39,7 @@ else                                         # device set from system page
 fi
 while read line; do
 	aplayname=$( cut -d^ -f3 <<< $line )
-	name=$( cut -d^ -f6 <<< $line )
+	[[ $usbdac == add ]] && name=$aplayname || name=$( cut -d^ -f6 <<< $line )
 	if [[ $name ]]; then
 		name=${name/bcm2835/On-board}
 	else
@@ -52,6 +52,9 @@ done <<< $aplayl
 
 if [[ $usbdac == add ]]; then # <<< player-conf.sh
 	aplaycard=$( tail -1 <<< $aplayl )
+	NAME=$( dmesg \
+				| tail -10 \
+				| sed -n '/New USB device/,/Product:/ {/New USB/ d; s/^.*Product: //; p}' )
 elif [[ $device == cirrus-wm5102 ]]; then
 	aplaycard=$( grep -m1 cirrus-wm5102 <<< $aplayl )
 	MIXER='HPOUT2 Digital'
@@ -62,7 +65,7 @@ fi
 CARD=$( cut -d^ -f1 <<< $aplaycard )
 APLAYNAME=$( cut -d^ -f3 <<< $aplaycard )
 DEVICE=$( cut -d^ -f4 <<< $aplaycard )
-NAME=$( cut -d^ -f6 <<< $aplaycard )
+[[ $usbdac == add ]] && NAME=$APLAYNAME || NAME=$( cut -d^ -f6 <<< $aplaycard )
 if [[ ! $NAME ]]; then
 	if [[ $APLAYNAME == $( getContent $dirsystem/audio-aplayname ) ]]; then
 		NAME=$( getContent $dirsystem/audio-output )
