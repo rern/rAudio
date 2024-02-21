@@ -9,8 +9,8 @@
 bluetooth=$( getContent $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
 	camilladsp=1
+	modprobe snd_aloop
 	fileconfig=$( getVar CONFIG /etc/default/camilladsp )
-	sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' $configfile
 	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $fileconfig )
 	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $fileconfig )
 	rate=$( awk '/^\s*samplerate:/ {print $NF}' $fileconfig )

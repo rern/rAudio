@@ -106,30 +106,28 @@ camilladsp )
 		modprobe snd_aloop
 		card=$( < $dirsystem/asoundcard )
 		configfile=$( getVar CONFIG /etc/default/camilladsp )
-		formatcurrent=$( sed -n '/playback:/,/format:/ p;' $configfile | awk '/format/ {print $NF}' )
-		if [[ $formatcurrent == S16LE ]]; then # try higher
-			formats=( FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE )
-			for (( i=0; i < 6; i++ )); do
-				format=${formats[i]}
-				sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $configfile
-				camilladsp $configfile &> /dev/null &
-				sleep 0.5
-				if pgrep -x camilladsp &> /dev/null; then
-					killall camilladsp
-					break
-				else
-					format=
-				fi
-			done
-			if [[ $format ]]; then
-				notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
-				sed -E 's/ /" "/g; s/^|$/"/g' <<< ${formats[@]:i} > $dirsystem/camilladsp
-				pushRestartMpd camilladsp $TF
+		sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $configfile
+		formats=( FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE )
+		for (( i=0; i < 6; i++ )); do
+			format=${formats[i]}
+			sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $configfile
+			camilladsp $configfile &> /dev/null &
+			sleep 0.5
+			if pgrep -x camilladsp &> /dev/null; then
+				killall camilladsp
+				break
 			else
-				notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
-				rm $dirsystem/camilladsp
-				rmmod snd-aloop &> /dev/null
+				format=
 			fi
+		done
+		if [[ $format ]]; then
+			notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
+			sed -E 's/ /" "/g; s/^|$/"/g' <<< ${formats[@]:i} > $dirsystem/camilladsp
+			pushRestartMpd camilladsp $TF
+		else
+			notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
+			rm $dirsystem/camilladsp
+			rmmod snd-aloop &> /dev/null
 		fi
 	else
 		$dirsettings/camilla.sh saveconfig
