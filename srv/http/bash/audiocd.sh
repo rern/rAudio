@@ -26,7 +26,7 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
 	$dirbash/status-push.sh
-	pushData playlist '{ "refresh": true }'
+	pushData playlist '{ "refresh": true, "type": "audiocd" }'
 	$dirsettings/player-data.sh pushrefresh
 	exit
 fi
@@ -145,7 +145,7 @@ for i in $( seq 1 $trackL ); do
 done
 mpc -q add $tracklist
 echo $discid > $dirshm/audiocd
-pushData playlist '{ "refresh": true }'
+pushData playlist '{ "refresh": true, "type": "audiocd" }'
 eject -x 4
 # coverart
 if [[ -e $diraudiocd/$discid && ! $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
