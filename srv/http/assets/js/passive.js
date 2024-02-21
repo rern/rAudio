@@ -97,9 +97,10 @@ function psAirplay( data ) {
 function psAudioCD( data ) {
 	if ( data.type === 'add' ) {
 		V.audiocdadd = true;
+		setTimeout( () => delete V.audiocdadd, 20000 );
 	} else if ( data.type === 'ready' ) {
 		delete V.audiocdadd;
-		playlistGet();
+		if ( V.playlist ) playlistGet();
 	} else if ( data.type === 'clear' ) {
 		var sec = 0;
 		$( '#pl-list li.audiocd .time' ).each( ( i, el ) => sec += $( el ).data( 'time' ) );

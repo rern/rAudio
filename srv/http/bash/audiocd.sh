@@ -131,11 +131,8 @@ CD-TEXT-'
 		cdData
 	fi
 fi
-# suppress playbackStatusGet in passive.js
-if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
-	pushData audiocd '{ "type": "add" }'
-fi
 # add tracks to playlist
+pushData audiocd '{ "type": "add" }' # suppress playbackStatusGet in passive.js
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 ! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
 notify audiocd 'Audio CD' 'Add to Playlist ...'
@@ -154,11 +151,11 @@ $album
 $discid
 CMD ARTIST ALBUM DISCID" &> /dev/null &
 fi
-# set 1st track of cd as cuuent
+# set 1st track of cd as current
 if [[ $trackcd ]]; then
 	$dirbash/cmd.sh "mpcskip
 $trackcd
 play
 CMD POS ACTION"
-	[[ ! -e $dirsystem/autoplay ]] && mpc -q stop
+	[[ ! -e $dirsystem/autoplay ]] || ! grep -q cd=true $dirsystem/autoplay.conf && mpc -q stop
 fi
