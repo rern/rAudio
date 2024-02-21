@@ -8,7 +8,7 @@ V = {   // var global
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
 	, bioartist     : []
-	, blinkdot      : blinkdot
+	, blinkdot      : '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>'
 	, coverart      : '/assets/img/coverart.svg'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
 	, interval      : {}
@@ -905,7 +905,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			vu();
 			setPlayPauseColor();
 			if ( stateprev === 'stop' ) {
-				S.webradio ? $( '#title, #elapsed' ).html( blinkdot ) : $( '#elapsed' ).empty();
+				S.webradio ? $( '#title, #elapsed' ).html( V.blinkdot ) : $( '#elapsed' ).empty();
 				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 				$( '#total' ).text( V.timehms );
 			}

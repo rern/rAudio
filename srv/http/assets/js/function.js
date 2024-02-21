@@ -1614,9 +1614,9 @@ function setInfo() {
 			$( '#album' ).text( S.Album || url );
 		}
 	} else {
-		$( '#artist' ).text( S.Artist || dots );
+		$( '#artist' ).html( S.Artist || dots );
 		$( '#title' )
-			.text( S.Title || dots )
+			.html( S.Title || dots )
 			.toggleClass( 'gr', S.state === 'pause' );
 		var album = S.Album || S.file;
 		if ( S.booklet ) album += ' '+ ico( 'booklet gr' );
