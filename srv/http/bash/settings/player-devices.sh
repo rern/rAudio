@@ -13,9 +13,9 @@ while read path; do
 	device=$( cut -d^ -f1 <<< $line )
 	name=$( cut -d^ -f2 <<< $line )
 	usbmixerfile=$path/usbmixer
-	if [[ name == 'USB Audio' && -e $usbmixerfile ]]; then
+	if [[ -e $usbmixerfile ]]; then
 		usbname=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $usbmixerfile )
-		[[ $usbmame ]] && name=$usbname
+		[[ $usbname ]] && name=$usbname
 	fi
 	lastword=$( awk '{print $NF}' <<< $name )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && name=$( sed 's/ [^ ]*$//' <<< $name )
