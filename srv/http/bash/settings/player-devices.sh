@@ -54,7 +54,7 @@ else
 				LISTMIXER+=', "'$REPLY'"'
 				[[ $REPLY == Digital ]] && MIXER=Digital
 			done <<< "$controls"
-			mixerfile="$dirsystem/mixer-$APLAYNAME"
+			mixerfile="$dirsystem/mixer-$NAME"
 			if [[ -e $mixerfile ]]; then # manual
 				MIXER=$( < "$mixerfile" )
 			elif [[ ! $MIXER ]]; then    # not Digital
@@ -64,7 +64,7 @@ else
 	fi
 fi
 
-mixertypefile="$dirsystem/mixertype-$APLAYNAME"
+mixertypefile="$dirsystem/mixertype-$NAME"
 if [[ -e $mixertypefile ]]; then
 	MIXERTYPE=$( < "$mixertypefile" )
 else
