@@ -26,10 +26,15 @@ done <<< $cardfiles
 if [[ $usbdac != add && -e $dirsystem/output-device ]]; then
 	outputdevice=$( < $dirsystem/output-device )
 	cdn=$( grep -m1 "$outputdevice" <<< $list )
-	CARD=$( cut -d^ -f1 <<< $cdn )
-	DEVICE=$( cut -d^ -f2 <<< $cdn )
-	NAME=$( cut -d^ -f3 <<< $cdn )
-else # last card - default
+	if [[ $cdn ]]; then
+		CARD=$( cut -d^ -f1 <<< $cdn )
+		DEVICE=$( cut -d^ -f2 <<< $cdn )
+		NAME=$( cut -d^ -f3 <<< $cdn )
+	else
+		rm $dirsystem/output-device # non-exist
+	fi
+fi
+if [[ ! $CARD ]]; then # last card
 	CARD=$card
 	DEVICE=$device
 	NAME=$name
