@@ -36,8 +36,11 @@ if [[ $usbdac != add && -e $dirsystem/output-device ]]; then
 		rm $dirsystem/output-device # remove if not exist
 	fi
 fi
-#card N: RPiCirrus [RPi-Cirrus], device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
-if grep -qiE 'WM5102|Cirrus' <<< $NAME; then
+# aplay -l
+#         id <<< /proc/asound/cardN/id
+# card N: RPiCirrus [RPi-Cirrus], device N: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
+#                                           id:........................name: <<< /proc/asound/cardN/*/info
+if grep -q WM5102 <<< $NAME; then
 	MIXER='HPOUT2 Digital'
 	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
 else
