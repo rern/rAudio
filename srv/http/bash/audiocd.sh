@@ -135,7 +135,7 @@ fi
 pushData audiocd '{ "type": "add" }' # suppress playbackStatusGet in passive.js
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 ! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
-notify audiocd 'Audio CD' 'Add to Playlist ...'
+notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
 for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "
 done
@@ -157,5 +157,5 @@ if [[ $trackcd ]]; then
 $trackcd
 play
 CMD POS ACTION"
-	[[ ! -e $dirsystem/autoplay ]] || ! grep -q cd=true $dirsystem/autoplay.conf && mpc -q stop
+	mpc -q stop
 fi
