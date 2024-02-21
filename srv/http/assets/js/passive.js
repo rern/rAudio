@@ -295,7 +295,20 @@ function psPlaylist( data ) {
 			V.autoplaycd = true;
 			setTimeout( () => delete V.autoplaycd, 5000 );
 		} else if ( 'refresh' in data ) {
-			if ( V.playlist && ( ! V.plhome || data.type === 'audiocd' ) ) playlistGet();
+			if ( V.playlist ) {
+				if ( data.type === 'audiocdclear' ) {
+					var sec = 0;
+					$( '#pl-list li.audiocd .time' ).each( ( i, el ) => sec += $( el ).data( 'time' ) );
+					$( '#pl-list li.audiocd' ).remove();
+					$( '#pl-trackcount' ).text( $( '#pl-list li' ).length );
+					sec = +$( '#pl-time' ).data( 'time' ) - sec;
+					$( '#pl-time' )
+						.text( second2HMS( sec ) )
+						.data( 'time', sec );
+				} else if ( ! V.plhome || data.type === 'audiocdadd' ) {
+					playlistGet();
+				}
+			}
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( V.savedpltrack && data.playlist === name ) renderSavedPlTrack( name );
