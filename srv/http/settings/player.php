@@ -53,7 +53,6 @@ EOF
 		  'id'       => 'device'
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
- · Device name: Retrieved from I²S module (if available)
  · HDMI audio: Available when connected before boot only
 EOF
 	]
