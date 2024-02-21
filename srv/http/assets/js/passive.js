@@ -67,6 +67,7 @@ function psOnMessage( message ) {
 	var data    = json.data;
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
+		case 'audiocd':       psAudioCD( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
 		case 'btreceiver':    psBtReceiver();           break;
 		case 'coverart':      psCoverart( data );       break;
@@ -92,6 +93,23 @@ function psOnMessage( message ) {
 function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
+}
+function psAudioCD( data ) {
+	if ( data.type === 'add' ) {
+		V.audiocdadd = true;
+	} else if ( data.type === 'ready' ) {
+		delete V.audiocdadd;
+		playlistGet();
+	} else if ( data.type === 'clear' ) {
+		var sec = 0;
+		$( '#pl-list li.audiocd .time' ).each( ( i, el ) => sec += $( el ).data( 'time' ) );
+		$( '#pl-list li.audiocd' ).remove();
+		$( '#pl-trackcount' ).text( $( '#pl-list li' ).length );
+		sec = +$( '#pl-time' ).data( 'time' ) - sec;
+		$( '#pl-time' )
+			.text( second2HMS( sec ) )
+			.data( 'time', sec );
+	}
 }
 function psBtReceiver() {
 	setTimeout( () => {
@@ -291,24 +309,8 @@ function psPlaylist( data ) {
 			setPlaybackBlank();
 			renderPlaylist( -1 );
 			bannerHide();
-		} else if ( 'autoplaycd' in data ) {
-			V.autoplaycd = true;
-			setTimeout( () => delete V.autoplaycd, 5000 );
 		} else if ( 'refresh' in data ) {
-			if ( V.playlist ) {
-				if ( data.type === 'audiocdclear' ) {
-					var sec = 0;
-					$( '#pl-list li.audiocd .time' ).each( ( i, el ) => sec += $( el ).data( 'time' ) );
-					$( '#pl-list li.audiocd' ).remove();
-					$( '#pl-trackcount' ).text( $( '#pl-list li' ).length );
-					sec = +$( '#pl-time' ).data( 'time' ) - sec;
-					$( '#pl-time' )
-						.text( second2HMS( sec ) )
-						.data( 'time', sec );
-				} else if ( ! V.plhome || data.type === 'audiocdadd' ) {
-					playlistGet();
-				}
-			}
+			if ( V.playlist && V.plhome ) playlistGet();
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( V.savedpltrack && data.playlist === name ) renderSavedPlTrack( name );

@@ -26,7 +26,7 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
 	$dirbash/status-push.sh
-	pushData playlist '{ "refresh": true, "type": "audiocdclear" }'
+	pushData audiocd '{ "type": "clear" }'
 	$dirsettings/player-data.sh pushrefresh
 	exit
 fi
@@ -134,7 +134,7 @@ CD-TEXT-'
 fi
 # suppress playbackStatusGet in passive.js
 if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
-	pushData playlist '{ "autoplaycd": 1 }'
+	pushData audiocd '{ "type": "add" }'
 fi
 # add tracks to playlist
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
@@ -145,7 +145,7 @@ for i in $( seq 1 $trackL ); do
 done
 mpc -q add $tracklist
 echo $discid > $dirshm/audiocd
-pushData playlist '{ "refresh": true, "type": "audiocdadd" }'
+pushData audiocd '{ "type": "ready" }'
 eject -x 4
 # coverart
 if [[ -e $diraudiocd/$discid && ! $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then

@@ -1856,7 +1856,7 @@ function setProgressAnimate() {
 }
 function setProgressElapsed() {
 	clearInterval( V.interval.elapsed );
-	if ( S.elapsed === false || S.state !== 'play' || 'autoplaycd' in V ) return // wait for cd cache on start
+	if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
 	
 	var elapsedhms;
 	var $elapsed = S.elapsed === false ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
