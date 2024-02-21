@@ -103,6 +103,7 @@ camilladsp )
 		fi
 		
 		notify 'camilladsp blink' CamillaDSP "Set Playback format ..."
+		modprobe snd_aloop
 		card=$( < $dirsystem/asoundcard )
 		configfile=$( getVar CONFIG /etc/default/camilladsp )
 		formatcurrent=$( sed -n '/playback:/,/format:/ p;' $configfile | awk '/format/ {print $NF}' )

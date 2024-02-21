@@ -5,12 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240221
-file=/etc/default/camilladsp
-if grep -q /etc/ $file; then
-	sed -i 's|/etc/|/srv/http/data/|' $file
-	cp /{etc,srv/http/data}/camilladsp/configs/camilladsp.yml
-fi
-
 file=$dirsystem/autoplay.conf
 [[ -e $file ]] && sed -i '/^cd/ d' $file
 
@@ -119,7 +113,6 @@ if [[ -e /usr/bin/camilladsp ]]; then
 				sed -i '/enable_resampling\|resampler_type/ d' "$f"
 			done
 		fi
-		sed -i 's|/etc/|/srv/http/data/|' /etc/default/camilladsp
 		systemctl try-restart camilladsp
 	fi
 fi
