@@ -30,7 +30,7 @@ data='
 , "asoundcard"       : '$( getContent $dirsystem/asoundcard )'
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
 , "bluetooth"        : '$( rfkill | grep -q bluetooth && echo true )'
-, "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
+, "btreceiver"       : "'$( getContent $dirshm/btreceiver )'"
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'

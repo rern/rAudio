@@ -16,7 +16,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 	if ( this.id.slice( -1 ) === 'a' ) {
 		var cmd     = 'volumebt';
 		var cmd0db  = 'volume0dbbt';
-		var control = S.btaplayname.replace( ' - A2DP', '' );
+		var control = S.btreceiver.replace( ' - A2DP', '' );
 	} else {
 		var cmd     = 'volume';
 		var cmd0db  = 'volume0db';
@@ -308,10 +308,10 @@ function renderPage() {
 		if ( S[ k ] ) icondsp = ico( k );
 	} );
 	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
-	if ( S.btaplayname ) {
+	if ( S.btreceiver ) {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divbluealsa' ).removeClass( 'hide' );
-		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
+		$( '#btreceiver' ).html( '<option>'+ S.btreceiver.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', ! S.devicewithbt );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
@@ -344,7 +344,7 @@ function renderPage() {
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
-	if ( I.range ) $( '#setting-'+ ( S.btaplayname ? 'bluealsa' : 'mixer' ) ).trigger( 'click' );
+	if ( I.range ) $( '#setting-'+ ( S.btreceiver ? 'bluealsa' : 'mixer' ) ).trigger( 'click' );
 	showContent();
 }
 function renderStatus() {

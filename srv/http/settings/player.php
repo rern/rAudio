@@ -43,7 +43,7 @@ $body = [
 	[
 		  'id'       => 'bluealsa'
 		, 'icon'     => true
-		, 'input'    => 'btaplayname'
+		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
 {$Fi( 'volume btn' )} Sender volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
