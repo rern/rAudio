@@ -109,7 +109,7 @@ if [[ -e /usr/bin/camilladsp ]]; then
 				sed -i '/enable_resampling\|resampler_type/ d' "$f"
 			done
 		fi
-		[[ -e $dirsystem/camilladsp ]] && systemctl start camilladsp
+		systemctl try-restart camilladsp
 	fi
 fi
 
