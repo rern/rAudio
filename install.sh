@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240221
+file=$dirsystem/autoplay.conf
+[[ -e $file ]] && sed -i '/^cd/ d' $file
+
 # 20240219
 readarray -t mixerfiles <<< $( ls $dirsystem/hwmixer-* 2> /dev/null )
 if [[ $mixerfiles ]]; then

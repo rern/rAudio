@@ -155,7 +155,6 @@ fi
 if [[ $trackcd ]]; then
 	$dirbash/cmd.sh "mpcskip
 $trackcd
-play
+stop
 CMD POS ACTION"
-	mpc -q stop
 fi

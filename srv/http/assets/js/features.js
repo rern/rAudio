@@ -2,7 +2,6 @@ var redirect_uri   = 'https://rern.github.io/raudio/spotify';
 var default_v      = {
 	  autoplay     : {
 		  BLUETOOTH : true
-		, CD        : true
 		, STARTUP   : true
 	  }
 	, lyrics       : {
@@ -163,7 +162,6 @@ $( '#setting-autoplay' ).on( 'click', function() {
 		, title        : SW.title
 		, list         : [
 			  [ 'Bluetooth connected',        'checkbox' ]
-			, [ 'Audio CD inserted',          'checkbox' ]
 			, [ 'Power on <gr>/ Reboot</gr>', 'checkbox' ]
 		]
 		, values       : S.autoplayconf || default_v.autoplay
