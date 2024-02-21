@@ -53,7 +53,7 @@ EOF
 		  'id'       => 'device'
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
- · HDMI audio: Available when connected before boot only
+Note: HDMI may not be available unless connect before boot.
 EOF
 	]
 	, [
