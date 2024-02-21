@@ -184,7 +184,7 @@ force_eeprom_read=0"
 	configTxt
 	;;
 i2slist )
-	sed '1 a\\t"None / Auto detect": "none",' /srv/http/assets/data/system-i2s.json
+	cat  /srv/http/assets/data/system-i2s.json
 	;;
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
@@ -476,8 +476,7 @@ $( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
 statusstorage )
 	echo -n "\
 <bll># cat /etc/fstab</bll>
-$( < /etc/fstab )
-"
+$( < /etc/fstab )"
 	;;
 statussystem )
 	firmware="pacman -Qs 'firmware|bootloader' | grep -Ev '^\s|whence' | cut -d/ -f2"
@@ -521,15 +520,13 @@ storageinfo )
 		for k in cid csd scr; do
 			data+="
 <bll># mmc $k read $dev</bll>
-$( mmc $k read $dev )
-"
+$( mmc $k read $dev )"$'\n'
 		done
 		echo "$data"
 	else
 		echo -n "\
 <bll># hdparm -I $DEV</bll>
-$( hdparm -I $DEV | sed '1,3 d' )
-"
+$( hdparm -I $DEV | sed '1,3 d' )"
 	fi
 	;;
 tft )

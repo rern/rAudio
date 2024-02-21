@@ -35,17 +35,15 @@ crossfade )
 	pushRefresh
 	;;
 customget )
-	aplayname=$( getVar aplayname $dirshm/output ) 
 	echo "\
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
-$( getContent "$dirsystem/custom-output-$aplayname" )"
+$( getContent "$dirsystem/custom-output-$DEVICE" )"
 	;;
 custom )
 	if [[ $ON ]]; then
 		fileglobal=$dirmpdconf/conf/custom.conf
-		aplayname=$( getVar aplayname $dirshm/output )
-		fileoutput="$dirsystem/custom-output-$aplayname"
+		fileoutput="$dirsystem/custom-output-$DEVICE"
 		if [[ $GLOBAL ]]; then
 			echo -e "$GLOBAL" > $fileglobal
 			linkConf
@@ -101,17 +99,17 @@ filetype )
 	echo "${list:0:-4}"
 	;;
 mixer )
-	aplayname=$( getVar aplayname $dirshm/output )
-	echo $MIXER > "$dirsystem/mixer-$aplayname"
+	echo "$MIXER" > "$dirsystem/mixer-$DEVICE"
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
 	. $dirshm/output
 	mpc -q stop
-	filemixertype=$dirsystem/mixertype-$aplayname
+	filemixertype="$dirsystem/mixertype-$name"
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
 	if [[ $MIXERTYPE == software ]]; then # [sw] set to current [hw]
-		[[ -e $dirshm/amixercontrol ]] && mpc volume $( volumeGet value )
+		[[ -e $dirshm/amixercontrol ]] && vol=$( volumeGet value ) || vol=33
+		mpc volume $vol
 	else
 		rm -f $dirsystem/replaygain-hw
 	fi
@@ -126,7 +124,7 @@ mixertype )
 novolume )
 	. $dirshm/output
 	amixer -c $card -Mq sset "$mixer" 0dB
-	echo none > "$dirsystem/mixertype-$aplayname"
+	echo none > "$dirsystem/mixertype-$name"
 	mpc -q crossfade 0
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
 	for feature in camilladsp equalizer; do
@@ -181,13 +179,11 @@ statusalbumignore )
 statusmpdignore )
 	files=$( < $dirmpd/mpdignorelist )
 	list="\
-<bll># find /mnt/MPD -name .mpdignore</bll>
-"
+<bll># find /mnt/MPD -name .mpdignore</bll>"$'\n'
 	while read file; do
 		list+="\
 $file
-$( sed 's|^| <grn>•</grn> |' "$file" )
-"
+$( sed 's|^| <grn>•</grn> |' "$file" )"$'\n'
 	done <<< $files
 	echo "$list"
 	;;
@@ -200,34 +196,24 @@ statusoutput )
 					| head -1 )
 	[[ $bluealsa ]] && devices="\
 <bll># amixer -D bluealsa scontrols</bll>
-$bluealsa
-
-"
+$bluealsa"$'\n'$'\n'
 	devices+="\
 <bll># cat /proc/asound/cards | grep ]</bll>
 $( cat /proc/asound/cards | grep ] )
 
 <bll># aplay -l | grep ^card</bll>
-$( aplay -l | grep ^card )
-"
+$( aplay -l | grep ^card )"$'\n'
 	if [[ ! -e $dirsystem/camilladsp ]]; then
 		devices+="
-<bll># amixer scontrols</bll>"
+<bll># amixer scontrols</bll>"$'\n'
 		card=$( < $dirsystem/asoundcard )
 		aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
-		mixers=$( amixer scontrols )
-		[[ ! $mixers ]] && mixers="<gr>(card $card: no mixers)</gr>"
-		if [[ $aplayname != snd_rpi_wsp ]]; then
-			devices+="
-$mixers
-"
+		if [[ $aplayname != RPi-Cirrus ]]; then
+			mixers=$( amixer scontrols )
+			[[ ! $mixers ]] && mixers="<gr>(card $card: no mixers)</gr>"
+			devices+="$mixers"$'\n'
 		else
-			devices+="\
-Simple mixer control 'HPOUT1 Digital',0
-Simple mixer control 'HPOUT2 Digital',0
-Simple mixer control 'SPDIF Out',0
-Simple mixer control 'Speaker Digital',0
-"
+			devices+='(custom controls)'$'\n'
 		fi
 	fi
 	devices+="

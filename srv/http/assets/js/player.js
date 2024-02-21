@@ -193,7 +193,7 @@ audio_output {
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
 </table>`;
-	bash( [ 'customget' ], val => {
+	bash( [ 'customget', S.output.name, 'CMD DEVICE' ], val => {
 		var val       = val.split( '^^' );
 		var global = val[ 0 ].trim(); // remove trailing
 		var output = val[ 1 ].trim();
@@ -215,7 +215,7 @@ audio_output {
 				}
 				
 				notifyCommon();
-				bash( [ 'custom', global, output, 'CMD GLOBAL OUTPUT' ], mpdstart => {
+				bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -357,7 +357,7 @@ function renderStatus() {
 }
 function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', mixertype, 'CMD MIXERTYPE' ] );
+	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 }
 function volumeGetPush() {
 	bash( [ 'volumepush' ] );

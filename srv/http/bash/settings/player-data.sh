@@ -40,7 +40,7 @@ data='
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
 , "devicewithbt"     : '$( exists $dirsystem/devicewithbt )'
-, "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
+, "dop"              : '$( exists "$dirsystem/dop-$name" )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'
 , "lastupdate"       : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"

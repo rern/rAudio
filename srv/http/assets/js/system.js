@@ -690,6 +690,7 @@ function i2sOptionSet() {
 	} else {
 		$( '#i2smodule' ).select2( 'close' );
 		bash( [ 'i2slist' ], list => {
+			list[ '(None / Auto detect)' ] = 'none';
 			$( '#i2smodule' ).html( htmlOption( list ) );
 			i2sOptionSetSelect();
 			i2sSelectShow();
@@ -711,15 +712,6 @@ function i2sSelectHide() {
 function i2sSelectShow() {
 	$( '#divi2ssw' ).addClass( 'hide' );
 	$( '#divi2sselect, #setting-i2smodule' ).removeClass( 'hide' );
-}
-function htmlOption( values ) {
-	var options = '';
-	if ( Array.isArray( values ) ) {
-		values.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
-	} else {
-		$.each( values, ( k, v ) => options += '<option value="'+ v +'">'+ k +'</option>' );
-	}
-	return options
 }
 function infoLcdChar() {
 	info( {
@@ -1132,10 +1124,7 @@ function renderPage() {
 		if ( $( '#i2smodule option' ).length ) {
 			i2sOptionSetSelect();
 		} else {
-			$( '#i2smodule' ).html( `
-<option></option>
-<option value="${ S.audioaplayname }" selected>${ S.audiooutput }</option>
-` );
+			$( '#i2smodule' ).html( '<option></option><option selected>'+ S.audiooutput +'</option>' );
 		}
 		i2sSelectShow();
 	} else {
