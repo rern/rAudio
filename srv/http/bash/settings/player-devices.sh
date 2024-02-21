@@ -6,12 +6,7 @@
 cardfiles=$( ls -1d /proc/asound/card[0-9] )
 while read path; do
 	CARD=${path: -1}
-	line=$( cat $path/*/info \
-				| head -6 \
-				| sed -E -n '/^device|^name/ {s/^.*: //; s/bcm2835/On-board/; p}' \
-				| tr '\n' ^ )
-	DEVICE=$( cut -d^ -f1 <<< $line )
-	NAME=$( cut -d^ -f2 <<< $line )
+	NAME=$( sed -n '/^name/ {s/^.*: //; s/bcm2835/On-board/; p; q}' $path/*/info )
 	if [[ -e $path/usbmixer ]]; then
 		usbname=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $path/usbmixer )
 		[[ $usbname ]] && NAME=$usbname
@@ -19,18 +14,17 @@ while read path; do
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
 	LISTDEVICE+=', "'$NAME'"'
-	list+="$CARD^$DEVICE^$NAME"$'\n'
+	list+="$NAME"$'\n'
 done <<< $cardfiles
 
-if [[ $usbdac != add && -e $dirsystem/output-device ]]; then
+if [[ $usbdac != add && -e $dirsystem/output-device ]]; then # otherwise last card
 	outputdevice=$( < $dirsystem/output-device )
-	cdn=$( grep -m1 "$outputdevice" <<< $list )
-	if [[ $cdn ]]; then
-		CARD=$( cut -d^ -f1 <<< $cdn )
-		DEVICE=$( cut -d^ -f2 <<< $cdn )
-		NAME=$( cut -d^ -f3 <<< $cdn )
+	line=$( sed -n "/^$outputdevice$/=" <<< $list )
+	if [[ $line ]]; then
+		CARD=$(( line - 1 ))
+		NAME=$outputdevice
 	else
-		rm $dirsystem/output-device # remove if not exist
+		rm $dirsystem/output-device # remove if not exist any more
 	fi
 fi
 echo "\
@@ -80,16 +74,15 @@ fi
 echo "[ ${LISTDEVICE:1} ]" > $dirshm/listdevice
 [[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/listmixer || rm -f $dirshm/listmixer
 if [[ $MIXER ]]; then
-	echo "$MIXER" > $dirshm/amixercontrol
-	output='mixer="'$MIXER'"'
+	echo "$MIXER" > $dirshm/amixercontrol # keep trailing space
 else
 	rm -f $dirshm/amixercontrol
-	output='mixer=false'
+	MIXER=false
 fi
 output+='
 card='$CARD'
-device='$DEVICE'
 name="'$NAME'"
+mixer="'$MIXER'"
 mixertype='$MIXERTYPE
 echo "$output" > $dirshm/output
 echo $CARD > $dirsystem/asoundcard

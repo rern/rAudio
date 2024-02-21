@@ -67,7 +67,7 @@ if [[ $CARD == -1 ]]; then # no audio devices
 		outputswitch='(None)'
 	fi
 elif [[ ! $btoutputonly ]]; then
-	. $dirshm/output # name card device mixer mixertype
+	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
@@ -92,7 +92,7 @@ elif [[ ! $btoutputonly ]]; then
 	mixer_type     "'$mixertype'"'
 #--------------->
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
-		hw=hw:$card,$device
+		hw=hw:$card,0
 #---------------< normal
 		audiooutput='
 	name           "'$name'"
