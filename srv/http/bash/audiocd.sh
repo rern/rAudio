@@ -59,6 +59,8 @@ cdData() {
 	echo -n "$tracks" > $diraudiocd/$discid
 }
 
+grep -qs -m1 '\^^^' $diraudiocd/$discid && rm $diraudiocd/$discid # remove bad data
+
 if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
 	server='https://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
