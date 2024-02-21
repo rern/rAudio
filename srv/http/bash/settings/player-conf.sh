@@ -19,12 +19,12 @@ rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
 
 if grep -q ]: /proc/asound/cards; then # asound cards exist
 	rm -f $dirshm/nosound
-	. $dirsettings/player-devices.sh # >>> $asoundcard
+	. $dirsettings/player-devices.sh # >>> $CARD
 else                                   # no sound
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,listdevice,listmixer,output}
-	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
-	echo $asoundcard > $dirsystem/asoundcard
+	[[ -e $dirshm/btreceiver ]] && CARD=0 || CARD=-1
+	echo $CARD > $dirsystem/asoundcard
 	pushData display '{ "volumenone": true }'
 fi
 
@@ -59,7 +59,7 @@ $audiooutputbt
 " > $dirmpdconf/bluetooth.conf
 ########
 fi
-if [[ $asoundcard == -1 ]]; then # no audio devices
+if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	if [[ $usbdac == remove ]]; then
 		pushData display '{ "volumenone": true }'
@@ -157,7 +157,7 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ $asoundcard == -1 ]] && pushStatus && exit # >>>>>>>>>>
+[[ $CARD == -1 ]] && pushStatus && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
 [[ ! $mixer || $bluetooth || $camilladsp || $equalizer ]] && mixerno=1

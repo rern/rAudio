@@ -1,18 +1,11 @@
 #!/bin/bash
 
 ### included by <<< player-conf.sh
-! type -t args2va &> /dev/null && . /srv/http/bash/common.sh   # if run directly
-[[ ! $asoundcard ]] && asoundcard=$( < $dirsystem/asoundcard ) # if run directly
+[[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
+[[ ! $CARD ]] && CARD=$( < $dirsystem/asoundcard ) # if run directly
 
-if [[ $asoundcard != -1 ]]; then # <<< player-devices.sh
-########
-	asound="\
-defaults.pcm.card $asoundcard
-defaults.ctl.card $asoundcard
-"
-else
-	[[ -e $dirsystem/camilladsp ]] && $dirsettings/features.sh camilladsp
-fi
+[[ -e $dirsystem/camilladsp ]] && $dirsettings/features.sh camilladsp
+
 bluetooth=$( getContent $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
 	camilladsp=1
@@ -64,8 +57,8 @@ pcm.bluealsa {
 	if [[ -e $dirsystem/equalizer ]]; then
 		if [[ $bluetooth ]]; then
 			slavepcm=bluealsa
-		elif [[ $asoundcard != -1 ]]; then
-			slavepcm='"plughw:'$asoundcard',0"'
+		elif [[ $CARD != -1 ]]; then
+			slavepcm='"plughw:'$CARD',0"'
 		fi
 		if [[ $slavepcm ]]; then
 			equalizer=1
@@ -87,13 +80,13 @@ ctl.equal {
 fi
 
 alsactl store &> /dev/null
-echo "$asound" > /etc/asound.conf
+echo "$asound" >> /etc/asound.conf # append after set default by player-devices.sh
 alsactl nrestore &> /dev/null # notify changes to running daemons
 
 # ----------------------------------------------------------------------------
 if [[ $( getContent $dirsystem/audio-aplayname ) == cirrus-wm5102 ]]; then
 	output=$( getContent $dirsystem/mixer-cirrus-wm5102 'HPOUT2 Digital' )
-	$dirsettings/player-wm5102.sh $asoundcard "$output"
+	$dirsettings/player-wm5102.sh $CARD "$output"
 fi
 
 if [[ $camilladsp ]]; then

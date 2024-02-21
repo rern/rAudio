@@ -1,10 +1,7 @@
 #!/bin/bash
 
 ### included by <<< player-conf.sh
-! type -t args2va &> /dev/null && . /srv/http/bash/common.sh # if run directly
-
-echo 'defaults.pcm.card 0
-defaults.ctl.card 0' > /etc/asound.conf # reset in case card number missing
+[[ ! $dirbash ]] && . /srv/http/bash/common.sh # if run directly
 
 cardfiles=$( ls -1d /proc/asound/card[0-9] )
 while read path; do
@@ -36,6 +33,10 @@ if [[ $usbdac != add && -e $dirsystem/output-device ]]; then
 		rm $dirsystem/output-device # remove if not exist
 	fi
 fi
+echo "\
+defaults.pcm.card $CARD
+defaults.ctl.card $CARD
+" > /etc/asound.conf
 # aplay -l
 #         id <<< /proc/asound/cardN/id
 # card N: RPiCirrus [RPi-Cirrus], device N: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
@@ -86,10 +87,9 @@ else
 	output='mixer=false'
 fi
 output+='
-name="'$NAME'"
 card='$CARD'
 device='$DEVICE'
+name="'$NAME'"
 mixertype='$MIXERTYPE
 echo "$output" > $dirshm/output
 echo $CARD > $dirsystem/asoundcard
-asoundcard=$CARD
