@@ -41,7 +41,6 @@ discid=${cddiscid[0]}
 trackL=${cddiscid[1]} # also = offset last index (offsets: +1 lead-in)
 
 cdData() {
-	notify audiocd 'Audio CD' "$artist • $album"
 	offset=( ${cddiscid[@]:2} )                           # offset - frame end
 	offset[trackL]=$(( ${offset[trackL]} * 75 ))          # last - seconds > frames 1:75
 	(( $( grep -c ' / ' <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
