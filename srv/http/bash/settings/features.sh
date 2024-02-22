@@ -99,27 +99,24 @@ camilladsp )
 	if [[ $ON ]]; then
 		modprobe snd_aloop
 		if grep -q configs-bt /etc/default/camilladsp && [[ ! -e $dirshm/btreceiver ]]; then
-			fileconfig=$( ls -1 $dircamilladsp/configs/* | head -1 )
-			sed -i 's|^CONFIG=.*|CONFIG="'$fileconfig'"|' /etc/default/camilladsp
+			fileconf=$( ls -1 $dircamilladsp/configs/* | head -1 )
+			sed -i 's|^CONFIG=.*|CONFIG="'$fileconf'"|' /etc/default/camilladsp
 		else
-			fileconfig=$( getVar CONFIG /etc/default/camilladsp )
+			fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		fi
 		notify 'camilladsp blink' CamillaDSP "Set Playback format ..."
-		formats=$( sed -n '/playback:/,/format:/ {/format/! d; s/.* //; p}' "$fileconfig" )
+		formats=$( sed -n '/playback:/,/format:/ {/format/! d; s/.* //; p}' "$fileconf" )
 		formats+=' FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE'
 		for format in $formats; do
-			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$format'/' "$fileconfig"
-			camilladsp "$fileconfig" &> /dev/null &
+			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$format'/' "$fileconf"
+			systemctl start camilladsp
 			sleep 0.5
-			if pgrep -x camilladsp &> /dev/null; then
-				killall camilladsp
-				break
-			fi
-			format=
+			systemctl -q is-active camilladsp && break || format=
 		done
 		if [[ $format ]]; then
 			notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
 			pushRestartMpd camilladsp $TF
+			systemctl enable camilladsp
 		else
 			notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
 			rmmod snd-aloop &> /dev/null

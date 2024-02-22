@@ -29,7 +29,11 @@ if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
-		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] && volumenone=false || volumenone=true
+		if ! grep -q mixertype=none $dirshm/output || [[ -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]]; then
+			volumenone=false
+		else
+			volumenone=true
+		fi
 	fi
 	systemctl -q is-active mediamtx && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true

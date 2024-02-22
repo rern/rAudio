@@ -77,7 +77,6 @@ elif [[ ! $btoutputonly ]]; then
 		outputswitch=$name
 	fi
 	if [[ $camilladsp ]]; then
-		systemctl stop camilladsp
 		hw=hw:Loopback,1
 		ln -sf $dirmpdconf/{conf/,}camilladsp.conf
 	elif [[ $equalizer ]]; then
@@ -119,7 +118,6 @@ elif [[ ! $btoutputonly ]]; then
 $( sed 's/^/\t/' "$customfile" )"
 		fi
 #--------------->
-		[[ $mixertype == none ]] && touch $dirshm/mixernone || rm -f $dirshm/mixernone
 	fi
 ########
 	if [[ $audiooutput ]]; then
@@ -142,8 +140,6 @@ fi
 ### mpd restart ##########################################################################
 systemctl restart mpd
 
-[[ $camilladsp ]] && systemctl start camilladsp
-
 for pid in $( pgrep mpd ); do # set priority
 	ionice -c 0 -n 0 -p $pid &> /dev/null 
 	renice -n -19 -p $pid &> /dev/null
@@ -162,18 +158,32 @@ done
 # renderers ----------------------------------------------------------------------------
 [[ ! $mixer || $bluetooth || $camilladsp || $equalizer ]] && mixerno=1
 
+if [[ -e /usr/bin/camilladsp ]]; then
+	fileconf=$( getVar CONFIG /etc/default/camilladsp )
+	card=$( sed -n -E '/playback:/,/device:/ {/device/! d; s/.*:(.),.*/\1/g; p}' "$fileconf" )
+	if [[ $card != $CARD ]]; then
+		sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
+		systemctl try-restart camilladsp
+	fi
+fi
+
 if [[ -e /usr/bin/shairport-sync ]]; then
+	fileconf=/etc/shairport-sync.conf
+	hw0=$( sed -E -n '/output_device/ {s/.* = "(.*)";/\1/; p}' $fileconf )
+	mixer0=$( sed -E -n '/mixer_control_name/ {s/.* = "(.*)";/\1/; p}' $fileconf )
+	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
 ########
-	conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
-	conf+='
+		conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
+		conf+='
 alsa = {
 	output_device = "'$hw'";
 	mixer_control_name = "'$mixer'";
 }'
-	[[ $mixerno ]] && conf=$( grep -v mixer_control_name <<< $conf )
+		[[ $mixerno ]] && conf=$( grep -v mixer_control_name <<< $conf )
 #-------
-	echo "$conf" > /etc/shairport-sync.conf
-	systemctl try-restart shairport-sync
+		echo "$conf" > /etc/shairport-sync.conf
+		systemctl try-restart shairport-sync
+	fi
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
@@ -184,18 +194,23 @@ if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
 	elif [[ -e $dirsystem/spotifyoutput ]]; then
 		hw=$( < $dirsystem/spotifyoutput )
 	fi
+	fileconf=/etc/spotifyd.conf
+	hw0=$( sed -E -n '/device/ {s/.* = "(.*)";/\1/; p}' $fileconf )
+	mixer=$( sed -E -n '/mixer/ {s/.* = "(.*)";/\1/; p}' $fileconf )
+	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
 ########
-	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
-	if [[ ! $equalizer ]]; then
-		conf+='
+		conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
+		if [[ ! $equalizer ]]; then
+			conf+='
 device = "'$hw'"
 control = "'$hw'"
 mixer = "'$mixer'"'
-	[[ $mixerno ]] && conf=$( grep -v ^mixer <<< $conf )
-	fi
+		[[ $mixerno ]] && conf=$( grep -v ^mixer <<< $conf )
+		fi
 #-------
-	echo "$conf" > /etc/spotifyd.conf
-	systemctl try-restart spotifyd
+		echo "$conf" > /etc/spotifyd.conf
+		systemctl try-restart spotifyd
+	fi
 fi
 
 pushStatus

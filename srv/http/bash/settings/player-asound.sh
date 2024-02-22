@@ -4,16 +4,14 @@
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
 [[ ! $CARD ]] && CARD=$( < $dirsystem/asoundcard ) # if run directly
 
-[[ -e $dirsystem/camilladsp ]] && $dirsettings/features.sh camilladsp
-
 bluetooth=$( getContent $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
 	camilladsp=1
 	modprobe snd_aloop
-	fileconfig=$( getVar CONFIG /etc/default/camilladsp )
-	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $fileconfig )
-	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $fileconfig )
-	rate=$( awk '/^\s*samplerate:/ {print $NF}' $fileconfig )
+	fileconf=$( getVar CONFIG /etc/default/camilladsp )
+	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' "$fileconf" )
+	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' "$fileconf" )
+	rate=$( awk '/^\s*samplerate:/ {print $NF}' $fileconf )
 ########
 	asound+='
 pcm.!default { 
@@ -94,8 +92,8 @@ if [[ $camilladsp ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
-		systemctl restart camilladsp
 	fi
+	systemctl restart camilladsp
 else
 	if [[ $bluetooth ]]; then
 		if [[ -e "$dirsystem/btvolume-$bluetooth" ]]; then
