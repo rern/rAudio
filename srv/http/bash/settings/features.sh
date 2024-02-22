@@ -124,7 +124,7 @@ camilladsp )
 	else
 		$dirsettings/camilla.sh saveconfig
 		[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
-		systemctl stop camilladsp
+		systemctl disable --now camilladsp
 		rmmod snd-aloop &> /dev/null
 		pushRestartMpd camilladsp $TF
 	fi
