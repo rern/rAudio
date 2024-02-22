@@ -7,6 +7,8 @@ cardfiles=$( ls -1d /proc/asound/card[0-9] )
 while read path; do
 	CARD=${path: -1}
 	NAME=$( sed -n '/^name/ {s/^.*: //; s/bcm2835/On-board/; p; q}' $path/*/info )
+	[[ $NAME == Loopback* ]] && continue
+	
 	if [[ -e $path/usbmixer ]]; then
 		usbname=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $path/usbmixer )
 		[[ $usbname ]] && NAME=$usbname
