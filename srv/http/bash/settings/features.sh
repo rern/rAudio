@@ -98,14 +98,16 @@ camilladsp )
 	enableFlagSet
 	if [[ $ON ]]; then
 		modprobe snd_aloop
+		lsmod | grep -q snd_aloop && loopback=1
 		if grep -q configs-bt /etc/default/camilladsp && [[ ! -e $dirshm/btreceiver ]]; then
 			fileconf=$( ls -1 $dircamilladsp/configs/* | head -1 )
 			sed -i 's|^CONFIG=.*|CONFIG="'$fileconf'"|' /etc/default/camilladsp
 		else
 			fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		fi
-		if [[ ! -s $fileconf ]]; then
-			notify 'camilladsp' CamillaDSP "<c>$fileconf</c> is empty." -1
+		if [[ ! $loopback || ! -s $fileconf ]]; then
+			[[ ! $loopback ]] && error='Error: <c>Loopback</c> not available.' || error="Error: <c>$fileconf</c> is empty."
+			notify 'camilladsp' CamillaDSP "$error" -1
 			rmmod snd-aloop &> /dev/null
 			exit
 		fi
