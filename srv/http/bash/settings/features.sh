@@ -105,10 +105,10 @@ camilladsp )
 			fileconfig=$( getVar CONFIG /etc/default/camilladsp )
 		fi
 		notify 'camilladsp blink' CamillaDSP "Set Playback format ..."
-		formats=$( sed -n '/playback:/,/format:/ {/format/! d; s/.* //; p}' "$configfile" )
+		formats=$( sed -n '/playback:/,/format:/ {/format/! d; s/.* //; p}' "$fileconfig" )
 		formats+=' FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE'
 		for format in $formats; do
-			sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' "$fileconfig"
+			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$format'/' "$fileconfig"
 			camilladsp "$fileconfig" &> /dev/null &
 			sleep 0.5
 			if pgrep -x camilladsp &> /dev/null; then
@@ -122,7 +122,6 @@ camilladsp )
 			pushRestartMpd camilladsp $TF
 		else
 			notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
-			rm $dirsystem/camilladsp "$dirsystem/camilla-$cardname"
 			rmmod snd-aloop &> /dev/null
 		fi
 	else
