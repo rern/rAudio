@@ -104,7 +104,13 @@ camilladsp )
 		else
 			fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		fi
-		notify 'camilladsp blink' CamillaDSP "Set Playback format ..."
+		if [[ ! -s $fileconf ]]; then
+			notify 'camilladsp' CamillaDSP "<c>$fileconf</c> is empty." -1
+			rmmod snd-aloop &> /dev/null
+			exit
+		fi
+		
+		notify 'camilladsp blink' CamillaDSP 'Set Playback format ...'
 		formats=$( sed -n '/playback:/,/format:/ {/format/! d; s/.* //; p}' "$fileconf" )
 		formats+=' FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE'
 		for format in $formats; do
