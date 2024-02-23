@@ -14,7 +14,7 @@ if [[ -e $dirsystem/camilladsp ]]; then
 	fileconf=$( getVar CONFIG /etc/default/camilladsp )
 	! camilladsp -c "$fileconf" &> /dev/null && error+="<c>$fileconf</c> not valid"
 	if [[ $error ]]; then
-		notify 'camilladsp' CamillaDSP "'Error: $error" 10
+		notify 'warning yl' CamillaDSP "Error: $error" -1
 		rm $dirsystem/camilladsp
 		$dirsettings/player-conf.sh
 		exit

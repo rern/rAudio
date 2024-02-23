@@ -156,7 +156,7 @@ function banner( icon, title, message, delay ) {
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
-	if ( V.reboot || $( '#banner' ).hasClass( 'hide' ) ) return
+	if ( V.reboot || $( '#banner' ).hasClass( 'hide' ) || $( '#banner .i-warning' ).length ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
