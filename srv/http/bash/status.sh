@@ -31,8 +31,7 @@ if [[ $1 == withdisplay ]]; then
 	else
 		if ! grep -q mixertype=none $dirshm/output \
 			|| [[ -e $dirshm/btreceiver \
-				|| -e $dirsystem/snapclientserver \
-				|| -e $dirsystem/camilladsp ]]; then
+				|| -e $dirsystem/snapclientserver ]]; then
 			volumenone=false
 		else
 			volumenone=true
