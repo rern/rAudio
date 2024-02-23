@@ -19,17 +19,15 @@ if grep -q configs-bt /etc/default/camilladsp; then
 "bluealsa"'
 	fi
 fi
-readarray -t vcc <<< $( volumeCardControl )
-volume=${vcc[0]}
-card=${vcc[1]}
-control=${vcc[2]}
-. $dirshm/status 
+. $dirshm/output
+[[ $mixer == false ]] && mixer=
+. <( grep -E '^player|^state' $dirshm/status )
 ########
 data='
 , "bluetooth"  : '$bluetooth'
 , "card"       : '$card'
-, "cardname"   : "'$( getVar name $dirshm/output )'"
-, "control"    : "'$control'"
+, "cardname"   : "'$name'"
+, "control"    : "'$mixer'"
 , "devices"    : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : '$( < $dirshm/listdevice )'
@@ -38,7 +36,7 @@ data='
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$state'"
-, "volume"     : '$volume'
+, "volume"     : '$( [[ $mixer ]] && volumeGet value )'
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
 for dir in $dirs; do
