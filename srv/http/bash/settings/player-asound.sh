@@ -6,16 +6,21 @@
 
 bluetooth=$( getContent $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
-	camilladsp=1
 	modprobe snd_aloop
 	if ! aplay -l | grep -q Loopback; then
-		[[ ! $loopback ]] && error='Error: <c>Loopback</c> not available.' || error="Error: <c>$fileconf</c> is empty."
-		notify 'camilladsp' CamillaDSP "$error" -1
+		error='<c>Loopback</c> not available &emsp;'
 		rmmod snd-aloop &> /dev/null
+	fi
+	fileconf=$( getVar CONFIG /etc/default/camilladsp )
+	! camilladsp -c "$fileconf" &> /dev/null && error+="<c>$fileconf</c> not valid"
+	if [[ $error ]]; then
+		notify 'camilladsp' CamillaDSP "'Error: $error" 10
+		rm $dirsystem/camilladsp
+		$dirsettings/player-conf.sh
 		exit
 	fi
 	
-	fileconf=$( getVar CONFIG /etc/default/camilladsp )
+	camilladsp=1
 	channels=$( getVarColon capture channels "$fileconf" )
 	format=$( getVarColon capture format "$fileconf" )
 	samplerate=$( getVarColon samplerate "$fileconf" )
