@@ -8,12 +8,19 @@ bluetooth=$( getContent $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
 	camilladsp=1
 	modprobe snd_aloop
+	if ! aplay -l | grep -q Loopback; then
+		[[ ! $loopback ]] && error='Error: <c>Loopback</c> not available.' || error="Error: <c>$fileconf</c> is empty."
+		notify 'camilladsp' CamillaDSP "$error" -1
+		rmmod snd-aloop &> /dev/null
+		exit
+	fi
+	
 	fileconf=$( getVar CONFIG /etc/default/camilladsp )
-	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' "$fileconf" )
-	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' "$fileconf" )
-	rate=$( awk '/^\s*samplerate:/ {print $NF}' $fileconf )
+	channels=$( getVarColon capture channels "$fileconf" )
+	format=$( getVarColon capture format "$fileconf" )
+	samplerate=$( getVarColon samplerate "$fileconf" )
 ########
-	asound+='
+	ASOUNDCONF+='
 pcm.!default { 
 	type plug 
 	slave.pcm camilladsp
@@ -27,7 +34,7 @@ pcm.camilladsp {
 			device   0
 			channels '$channels'
 			format   '$format'
-			rate     '$rate'
+			rate     '$samplerate'
 		}
 	}
 }
@@ -40,9 +47,11 @@ ctl.camilladsp {
 	card Loopback
 }'
 else
+	systemctl stop camilladsp
+	rmmod snd-aloop &> /dev/null
 	if [[ $bluetooth ]]; then
 ########
-		asound+='
+		ASOUNDCONF+='
 pcm.bluealsa {
 	type plug
 	slave.pcm {
@@ -61,7 +70,7 @@ pcm.bluealsa {
 		if [[ $slavepcm ]]; then
 			equalizer=1
 ########
-			asound+='
+			ASOUNDCONF+='
 pcm.!default {
 	type plug
 	slave.pcm plugequal
@@ -78,7 +87,7 @@ ctl.equal {
 fi
 
 alsactl store &> /dev/null
-echo "$asound" >> /etc/asound.conf # append after set default by player-devices.sh
+echo "$ASOUNDCONF" >> /etc/asound.conf # append after set default by player-devices.sh
 alsactl nrestore &> /dev/null # notify changes to running daemons
 
 # ----------------------------------------------------------------------------
@@ -92,8 +101,25 @@ if [[ $camilladsp ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
+		formats=$( alsacap -C $CARD | sed -n '/formats/ {s/_//g; p; q}' )
+		for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
+			if grep -q $f <<< $formats; then
+				[[ ! $f0 ]] && f0=$f
+				LISTFORMAT+=', "'$f'"'
+			fi
+		done
+		echo "[ ${LISTFORMAT:1} ]" > $dirshm/listformat
+		FORMAT=$( getContent "$dirsystem/camilla-$NAME" )
+		[[ ! $format ]] && FORMAT=$f0
+		format0=$( getVarColon playback format "$fileconf" )
+		if [[ $format0 != $FORMAT ]]; then
+			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"
+			echo $FORMAT > "$dirsystem/camilla-$NAME"
+		fi
+		card0=$( getVarColon playback device "$fileconf" | cut -c4 )
+		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
+		systemctl restart camilladsp
 	fi
-	systemctl restart camilladsp
 else
 	if [[ $bluetooth ]]; then
 		if [[ -e "$dirsystem/btvolume-$bluetooth" ]]; then
@@ -102,7 +128,7 @@ else
 		fi
 	fi
 	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
-		value=$( sed -E -n '/"current":/ {s/.*: "(.*)",/\1/; p}' $dirsystem/equalizer.json )
+		value=$( getVarColon current $dirsystem/equalizer.json )
 		[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
 		$dirbash/cmd.sh "equalizer
 $value

@@ -199,14 +199,24 @@ getContent() {
 		echo $2
 	fi
 }
-getVar(){
+getVar() { # var=value
 	[[ ! -e $2 ]] && echo false && return
 	
 	local line
-	line=$( grep -E "^${1// /|^}" $2 )
-	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )
-	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"']$//g" <<< $line )
+	line=$( grep -E "^${1// /|^}" $2 )                             # var
+	[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" $2 )      #     var
+	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )       # var value > var=value
+	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line ) # var=value || var = value || var="value"; > value
 	stringEscape $line
+}
+getVarColon() { # var: value || var: "value";*
+	[[ ! -e ${@: -1} ]] && echo false && return
+	
+	if [[ $3 ]]; then
+		sed -n -E '/^\s*'$1':/,/^\s*'$2':/ {/'$2'/! d; s/^.*:\s"*|"*$//g; p}' "$3" # /var1/,/var2/ > var2: value > value
+	else
+		sed -n -E '/^\s*'$1':/ {s/^.*:\s"*|"*$//g; p}' "$2"                        # var: value value
+	fi
 }
 inOutputConf() {
 	local file

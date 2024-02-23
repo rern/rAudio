@@ -733,7 +733,7 @@ savedplsave )
 	mpc -q save "$NAME"
 	chmod 777 "$plfile"
 	count=$( ls -1 $dirplaylists | wc -l )
-	sed -E -i 's/(,*)(.*playlists" *: ).*(,)/\1\2'$count'\3/' $dirmpd/counts
+	sed -i -E 's/(,*)(.*playlists" *: ).*(,)/\1\2'$count'\3/' $dirmpd/counts
 	pushSavedPlaylist
 	;;
 screenoff )
@@ -854,7 +854,7 @@ wrdirdelete )
 	
 	rm -rf "$file"
 	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
-	sed -E -i 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
+	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
 	pushRadioList
 	;;
 wrdirnew )

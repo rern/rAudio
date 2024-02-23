@@ -4,10 +4,6 @@
 
 . /srv/http/bash/common.sh
 
-aplay=$( aplay -l | grep ^card )
-playback=$( grep -v Loopback <<< $aplay | sed -E -n '/^card/ { s/^card (.): .*device (.): .*/"hw:\1,\2"/; p}' )
-playback+="
-$( grep 'Loopback.*device 1' <<< $aplay | sed -E -n '/^card/ { s/^.*device (.): .*/"hw:Loopback,\1"/; p}' )"
 arecord=$( arecord -l | grep ^card )
 capture=$( grep -v Loopback <<< $arecord | sed -E -n '/^card/ { s/^card (.): .*device (.): .*/"hw:\1,\2"/; p}' )
 capture+="
@@ -35,9 +31,9 @@ data='
 , "control"    : "'$control'"
 , "devices"    : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
-	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
+	, "playback" : '$( < $dirshm/listdevice )'
 }
-, "format"     : [ '$( getContent $dirsystem/camilladsp | tr ' ' , )' ]
+, "listformat" : '$( < $dirshm/listformat )'
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$state'"

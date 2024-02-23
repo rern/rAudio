@@ -267,7 +267,8 @@ var Dlist     = {
 	, typeP              : [ 'Type',               'select' ] // ^
 	, deviceC            : [ 'Device',             'select' ] // ^
 	, deviceP            : [ 'Device',             'select' ] // ^
-	, format             : [ 'Format',             'select', format ]
+	, formatC            : [ 'Format',             'select', format ]
+	, formatP            : [ 'Format',             'select' ]
 	, filename           : [ 'Filename',           'select', S.lsraw ]
 	, channels           : [ 'Channels',           'number' ]
 	, extra_samples      : [ 'Extra samples',      'number' ]
@@ -279,8 +280,8 @@ var Dlist     = {
 	, change_format      : [ 'Change format',      'checkbox' ]
 }
 var D1        = {
-	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.format, Dlist.channels ]
-	, AlsaP : [ Dlist.typeP, Dlist.deviceP, Dlist.format, Dlist.channels ]
+	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.formatC, Dlist.channels ]
+	, AlsaP : [ Dlist.typeP, Dlist.deviceP, Dlist.formatP, Dlist.channels ]
 	, extra : [ Dlist.extra_samples, Dlist.skip_bytes, Dlist.read_bytes ]
 }
 var D         = {
@@ -977,10 +978,12 @@ var render    = {
 		[ 'playback', 'capture' ].forEach( d => {
 			var dev = DEV[ d ];
 			var data = jsonClone( dev );
+			var device = dev.device;
+			if ( d === 'playback' ) device += ' - '+ S.devices.playback[ device[ 3 ] ];
 			[ 'device', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
 				 +'<div class="li1">'+ common.key2label( d ) +' <gr>·</gr> '+ render.typeReplace( dev.type )
-				 + ( 'device' in dev ? ' <gr>·</gr> '+ dev.device +'</div>' : '' )
+				 + ( 'device' in dev ? ' <gr>·</gr> '+ device +'</div>' : '' )
 				 +'<div class="li2">'+ render.json2string( data ) +'</div>'
 				 +'</li>';
 		} );
@@ -1446,7 +1449,8 @@ var setting   = {
 			, beforeshow   : () => {
 				$( '#infoList input[type=number]' ).css( 'width', '70px' );
 				$( '#infoList td:first-child' ).css( 'width', '128px' );
-				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
+				$( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
+/*				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
 					if ( typenew === 'File' && ! S.lsraw.length ) {
 						info( {
@@ -1458,7 +1462,7 @@ var setting   = {
 					} else {
 						setting.device( dev, typenew );
 					}
-				} );
+				} );*/
 			}
 			, ok           : () => {
 				DEV[ dev ] = infoVal();
@@ -1876,10 +1880,15 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
+					var formatp = {};
+					S.listformat.forEach( k => formatp[ k.replace( 'FLOAT', 'Float' ) ] = k );
+					Dlist.formatP.push( formatp );
 					Dlist.typeC[ 2 ]   = type.capture;
 					Dlist.typeP[ 2 ]   = type.playback;
 					Dlist.deviceC[ 2 ] = S.devices.capture;
-					Dlist.deviceP[ 2 ] = S.devices.playback;
+					var devices        = {};
+					S.devices.playback.forEach( ( d, i ) => devices[ d ] = 'hw:'+ i +',0' );
+					Dlist.deviceP[ 2 ] = devices;
 					$( '#divvolume .col-l gr' ).text( S.control );
 					showContent();
 					break;

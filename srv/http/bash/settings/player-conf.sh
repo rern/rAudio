@@ -43,18 +43,18 @@ if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from pla
 	[[ ! -e $dirsystem/devicewithbt ]] && btoutputonly=1
 	hw=bluealsa
 #---------------< bluetooth
-	audiooutputbt='
+	AUDIOOUTPUTBT='
 	name        "'$bluetooth'"
 	device      "'$hw'"
 	type        "alsa"
 	mixer_type  "hardware"'
-	[[ -e $dirsystem/btformat ]] && audiooutputbt+='
+	[[ -e $dirsystem/btformat ]] && AUDIOOUTPUTBT+='
 	format      "44100:16:2"'
 #--------------->
 ########
 	echo "\
 audio_output {\
-$audiooutputbt
+$AUDIOOUTPUTBT
 }
 " > $dirmpdconf/bluetooth.conf
 ########
@@ -83,7 +83,7 @@ elif [[ ! $btoutputonly ]]; then
 		[[ $bluetooth ]] && mixertype=software
 		hw=plug:plugequal
 #---------------< equalizer
-		audiooutput='
+		AUDIOOUTPUT='
 	name           "ALSAEqual"
 	device         "'$hw'"
 	type           "alsa"
@@ -93,7 +93,7 @@ elif [[ ! $btoutputonly ]]; then
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
 		hw=hw:$card,0
 #---------------< normal
-		audiooutput='
+		AUDIOOUTPUT='
 	name           "'$name'"
 	device         "'$hw'"
 	type           "alsa"
@@ -101,29 +101,29 @@ elif [[ ! $btoutputonly ]]; then
 	auto_format    "no"
 	mixer_type     "'$mixertype'"'
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-			audiooutput+='
+			AUDIOOUTPUT+='
 	mixer_control  "'$mixer'"
 	mixer_device   "hw:'$card'"'
 			[[ -e $dirmpdconf/replaygain.conf && -e $dirsystem/replaygain-hw ]] && \
-				audiooutput+='
+				AUDIOOUTPUT+='
 	replay_gain_handler "mixer"'
 		fi
 		[[ -e "$dirsystem/dop-$name" ]] && \
-			audiooutput+='
+			AUDIOOUTPUT+='
 	dop            "yes"'
 		if [[ $dirsystem/custom ]]; then
 			customfile="$dirsystem/custom-output-$name"
 			[[ -e "$customfile" ]] && \
-				audiooutput+="
+				AUDIOOUTPUT+="
 $( sed 's/^/\t/' "$customfile" )"
 		fi
 #--------------->
 	fi
 ########
-	if [[ $audiooutput ]]; then
+	if [[ $AUDIOOUTPUT ]]; then
 		echo "\
 audio_output {
-$( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
+$( sed 's/  *"/^"/' <<< $AUDIOOUTPUT | column -t -s^ )
 }
 " > $dirmpdconf/output.conf
 	else
@@ -132,7 +132,7 @@ $( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
 ########
 fi
 
-if [[ ( ! $audiooutput && ! $btoutputonly && ! -e $dirsystem/snapclientserver )
+if [[ ( ! $AUDIOOUTPUT && ! $btoutputonly && ! -e $dirsystem/snapclientserver )
 	|| -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
 fi
@@ -158,30 +158,21 @@ done
 # renderers ----------------------------------------------------------------------------
 [[ ! $mixer || $bluetooth || $camilladsp || $equalizer ]] && mixerno=1
 
-if [[ -e /usr/bin/camilladsp ]]; then
-	fileconf=$( getVar CONFIG /etc/default/camilladsp )
-	card=$( sed -n -E '/playback:/,/device:/ {/device/! d; s/.*:(.),.*/\1/g; p}' "$fileconf" )
-	if [[ $card != $CARD ]]; then
-		sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
-		systemctl try-restart camilladsp
-	fi
-fi
-
 if [[ -e /usr/bin/shairport-sync ]]; then
 	fileconf=/etc/shairport-sync.conf
-	hw0=$( sed -E -n '/output_device/ {s/.* = "(.*)";/\1/; p}' $fileconf )
-	mixer0=$( sed -E -n '/mixer_control_name/ {s/.* = "(.*)";/\1/; p}' $fileconf )
+	hw0=$( getVar output_device $fileconf )
+	mixer0=$( getVar mixer_control_name $fileconf )
 	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
 ########
-		conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
-		conf+='
+		CONF=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
+		CONF+='
 alsa = {
 	output_device = "'$hw'";
 	mixer_control_name = "'$mixer'";
 }'
-		[[ $mixerno ]] && conf=$( grep -v mixer_control_name <<< $conf )
+		[[ $mixerno ]] && CONF=$( grep -v mixer_control_name <<< $CONF )
 #-------
-		echo "$conf" > /etc/shairport-sync.conf
+		echo "$CONF" > /etc/shairport-sync.conf
 		systemctl try-restart shairport-sync
 	fi
 fi
@@ -195,20 +186,20 @@ if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
 		hw=$( < $dirsystem/spotifyoutput )
 	fi
 	fileconf=/etc/spotifyd.conf
-	hw0=$( sed -E -n '/device/ {s/.* = "(.*)";/\1/; p}' $fileconf )
-	mixer=$( sed -E -n '/mixer/ {s/.* = "(.*)";/\1/; p}' $fileconf )
+	hw0=$( getVar device $fileconf )
+	mixer=$( getVar mixer $fileconf )
 	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
 ########
-		conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
+		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
 		if [[ ! $equalizer ]]; then
-			conf+='
+			CONF+='
 device = "'$hw'"
 control = "'$hw'"
 mixer = "'$mixer'"'
-		[[ $mixerno ]] && conf=$( grep -v ^mixer <<< $conf )
+		[[ $mixerno ]] && CONF=$( grep -v ^mixer <<< $CONF )
 		fi
 #-------
-		echo "$conf" > /etc/spotifyd.conf
+		echo "$CONF" > /etc/spotifyd.conf
 		systemctl try-restart spotifyd
 	fi
 fi
