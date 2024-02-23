@@ -109,16 +109,17 @@ if [[ $camilladsp ]]; then
 			fi
 		done
 		echo "[ ${LISTFORMAT:1} ]" > $dirshm/listformat
-		FORMAT=$( getContent "$dirsystem/camilla-$NAME" )
-		[[ ! $format ]] && FORMAT=$f0
+		fileformat="$dirsystem/camilla-$NAME"
+		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$f0
 		format0=$( getVarColon playback format "$fileconf" )
 		if [[ $format0 != $FORMAT ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"
-			echo $FORMAT > "$dirsystem/camilla-$NAME"
+			echo $FORMAT > "$fileformat"
 		fi
 		card0=$( getVarColon playback device "$fileconf" | cut -c4 )
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
 		systemctl restart camilladsp
+		echo $FORMAT --- "$fileformat"
 	fi
 else
 	if [[ $bluetooth ]]; then
