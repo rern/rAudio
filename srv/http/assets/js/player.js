@@ -324,7 +324,7 @@ function renderPage() {
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#device' )
-			.html( htmlOption( S.listdevice ) )
+			.html( htmlOption( Object.keys( S.listdevice ) ) )
 			.val( S.output.name );
 		if ( S.listmixer ) {
 			$( '#mixer' )

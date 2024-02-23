@@ -364,7 +364,7 @@ snapclient )
 		fi
 	else
 		systemctl stop snapclient
-		[[ $snapserver ]] && rm $dirsystem/snapclientserver
+		[[ $snapserver ]] && rm -f $dirsystem/snapclientserver
 	fi
 	pushRefresh
 	;;

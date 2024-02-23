@@ -110,10 +110,10 @@ if [[ $camilladsp ]]; then
 		for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 			if grep -q $f <<< $formats; then
 				[[ ! $f0 ]] && f0=$f
-				LISTFORMAT+=', "'$f'"'
+				LISTFORMAT+=', "'${f/FLOAT/Float}'": "'$f'"'
 			fi
 		done
-		echo "[ ${LISTFORMAT:1} ]" > $dirshm/listformat
+		echo "{ ${LISTFORMAT:1} }" > $dirshm/listformat
 		fileformat="$dirsystem/camilla-$NAME"
 		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$f0
 		format0=$( getVarColon playback format "$fileconf" )
@@ -124,7 +124,6 @@ if [[ $camilladsp ]]; then
 		card0=$( getVarColon playback device "$fileconf" | cut -c4 )
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
 		systemctl restart camilladsp
-		echo $FORMAT --- "$fileformat"
 	fi
 else
 	if [[ $bluetooth ]]; then

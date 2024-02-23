@@ -758,6 +758,7 @@ var render    = {
 		delete V.intervalvu;
 		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
 		$( '.peak' ).css( 'left', 0 );
+		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).text( '·' );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -979,7 +980,7 @@ var render    = {
 			var dev = DEV[ d ];
 			var data = jsonClone( dev );
 			var device = dev.device;
-			if ( d === 'playback' ) device += ' - '+ S.devices.playback[ device[ 3 ] ];
+			if ( d === 'playback' ) device += ' - '+ S.cardname;
 			[ 'device', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
 				 +'<div class="li1">'+ common.key2label( d ) +' <gr>·</gr> '+ render.typeReplace( dev.type )
@@ -1880,15 +1881,11 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
-					var formatp = {};
-					S.listformat.forEach( k => formatp[ k.replace( 'FLOAT', 'Float' ) ] = k );
-					Dlist.formatP.push( formatp );
+					Dlist.formatP.push( S.listformat );
 					Dlist.typeC[ 2 ]   = type.capture;
 					Dlist.typeP[ 2 ]   = type.playback;
 					Dlist.deviceC[ 2 ] = S.devices.capture;
-					var devices        = {};
-					S.devices.playback.forEach( ( d, i ) => devices[ d ] = 'hw:'+ i +',0' );
-					Dlist.deviceP[ 2 ] = devices;
+					Dlist.deviceP[ 2 ] = S.devices.playback;
 					$( '#divvolume .col-l gr' ).text( S.control );
 					showContent();
 					break;

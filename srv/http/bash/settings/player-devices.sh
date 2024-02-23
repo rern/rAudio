@@ -15,7 +15,7 @@ while read path; do
 	fi
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
-	LISTDEVICE+=', "'$NAME'"'
+	LISTDEVICE+=', "'$NAME'": "hw:'$CARD',0"'
 	list+="$NAME"$'\n'
 done <<< $cardfiles
 
@@ -73,7 +73,7 @@ else
 	[[ $LISTMIXER ]] && MIXERTYPE=hardware || MIXERTYPE=none
 fi
 
-echo "[ ${LISTDEVICE:1} ]" > $dirshm/listdevice
+echo "{ ${LISTDEVICE:1} }" > $dirshm/listdevice
 [[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/listmixer || rm -f $dirshm/listmixer
 if [[ $MIXER ]]; then
 	echo "$MIXER" > $dirshm/amixercontrol # keep trailing space

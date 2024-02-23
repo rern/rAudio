@@ -28,6 +28,7 @@ control=${vcc[2]}
 data='
 , "bluetooth"  : '$bluetooth'
 , "card"       : '$card'
+, "cardname"   : "'$( getVar name $dirshm/output )'"
 , "control"    : "'$control'"
 , "devices"    : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
