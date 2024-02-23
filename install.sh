@@ -121,7 +121,7 @@ fi
 # up to 202402224
 if [[ $pkgs ]]; then
 	pacman -Sy --noconfirm $pkgs
-	systemctl try-restart $pkgs
+	systemctl try-restart ${pkgs/alsacap}
 fi
 
 #-------------------------------------------------------------------------------
