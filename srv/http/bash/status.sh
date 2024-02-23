@@ -29,9 +29,10 @@ if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
-		if ! grep -q mixertype=none $dirshm/output \
-			|| [[ -e $dirshm/btreceiver \
-				|| -e $dirsystem/snapclientserver ]]; then
+		. <( grep -E '^mixer|^mixertype' $dirshm/output )
+		if [[ $mixertype != none ]] \
+			|| [[ -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] \
+			|| [[ -e $dirsystem/camilladsp && $mixer != false ]]; then
 			volumenone=false
 		else
 			volumenone=true
