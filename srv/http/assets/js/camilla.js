@@ -258,27 +258,27 @@ var format    = {};
 } );
 var D0        = {
 	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
-	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 'Custom' ]
 }
 var Dlist     = {
-	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
-	, profile            : [ 'Profile',            'select', [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ] ]
-	, typeC              : [ 'Type',               'select' ] // option: wait for ws 'GetSupportedDeviceTypes'
-	, typeP              : [ 'Type',               'select' ] // ^
-	, deviceC            : [ 'Device',             'select' ] // ^
-	, deviceP            : [ 'Device',             'select' ] // ^
-	, formatC            : [ 'Format',             'select', format ]
-	, formatP            : [ 'Format',             'select' ]
-	, filename           : [ 'Filename',           'select', S.lsraw ]
-	, channels           : [ 'Channels',           'number' ]
-	, extra_samples      : [ 'Extra samples',      'number' ]
-	, skip_bytes         : [ 'Skip bytes',         'number' ]
-	, read_bytes         : [ 'Read bytes',         'number' ]
-	, capture_samplerate : [ 'Capture samplerate', 'select', D0.samplerate ]
-	, custom             : [ 'Other rate',         'number' ]
-	, exclusive          : [ 'Exclusive',          'checkbox' ]
-	, loopback           : [ 'Loopback',           'checkbox' ]
-	, change_format      : [ 'Change format',      'checkbox' ]
+	  type               : [ 'Type',                 'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
+	, profile            : [ 'Profile',              'select', [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ] ]
+	, typeC              : [ 'Type',                 'select' ] // option: wait for ws 'GetSupportedDeviceTypes'
+	, typeP              : [ 'Type',                 'select' ] // ^
+	, deviceC            : [ 'Device',               'select' ] // ^
+	, deviceP            : [ 'Device',               'select' ] // ^
+	, formatC            : [ 'Format',               'select', format ]
+	, formatP            : [ 'Format',               'select' ]
+	, filename           : [ 'Filename',             'select', S.lsraw ]
+	, channels           : [ 'Channels',             'number' ]
+	, extra_samples      : [ 'Extra samples',        'number' ]
+	, skip_bytes         : [ 'Skip bytes',           'number' ]
+	, read_bytes         : [ 'Read bytes',           'number' ]
+	, capture_samplerate : [ 'Capture sample rate',  'select', D0.samplerate ]
+	, custom             : [ '<gr>Custom rate</gr>', 'number' ]
+	, exclusive          : [ 'Exclusive',            'checkbox' ]
+	, loopback           : [ 'Loopback',             'checkbox' ]
+	, change_format      : [ 'Change format',        'checkbox' ]
 }
 var D1        = {
 	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.formatC, Dlist.channels ]
@@ -287,7 +287,7 @@ var D1        = {
 }
 var D         = {
 	  main      : [
-		  [ 'Sample Rate',       'select', D0.samplerate ]
+		  [ 'Sample rate',       'select', D0.samplerate ]
 		, Dlist.custom
 		, [ 'Chunk size',        'number' ]
 		, [ 'Queue limit',       'number' ]
@@ -1477,9 +1477,9 @@ var setting   = {
 		var values   = {};
 		D0.main.forEach( k => {
 			values[ k ] = DEV[ k ];
-			if ( k === 'samplerate' ) values.other = DEV.samplerate; // force indexed after samplerate
+			if ( k === 'samplerate' ) values.custom = DEV.samplerate; // force indexed after samplerate
 		} );
-		if ( ! D0.samplerate.includes( values.other ) ) values.samplerate = 'Other';
+		if ( ! D0.samplerate.includes( values.custom ) ) values.samplerate = 'Custom';
 		var title    = common.tabTitle();
 		info( {
 			  icon         : V.tab
@@ -1489,11 +1489,11 @@ var setting   = {
 			, values       : values
 			, checkblank   : true
 			, checkchanged : true
-			, beforeshow   : () => setting.otherToggle( 1, values.samplerate )
+			, beforeshow   : () => setting.customToggle( 1, values.samplerate )
 			, ok           : () => {
 				var val = infoVal();
-				if ( val.samplerate === 'Other' ) val.samplerate = val.other;
-				delete val.other;
+				if ( val.samplerate === 'Custom' ) val.samplerate = val.custom;
+				delete val.custom;
 				$.each( val, ( k, v ) => DEV[ k ] = v );
 				setting.save( title, 'Change ...' );
 				render.devices();
@@ -1506,8 +1506,8 @@ var setting   = {
 		if ( profile ) values.profile = profile;
 		if ( S.resampler ) DEV.resample.each( ( k, v ) => values[ k ] = v );
 		values.capture_samplerate = DEV.capture_samplerate || DEV.samplerate;
-		values.other = values.capture_samplerate;
-		if ( ! D0.samplerate.includes( values.other ) ) values.capture_samplerate = 'Other';
+		values.custom = values.capture_samplerate;
+		if ( ! D0.samplerate.includes( values.custom ) ) values.capture_samplerate = 'Custom';
 		info( {
 			  icon         : V.tab
 			, title        : SW.title
@@ -1517,7 +1517,7 @@ var setting   = {
 			, checkblank   : true
 			, checkchanged : S.resampler
 			, beforeshow   : () => {
-				setting.otherToggle( 3, values.capture_samplerate )
+				setting.customToggle( 3, values.capture_samplerate )
 				$( 'select' ).eq( 0 ).on( 'input', function() {
 					setting.resampler( $( this ).val() );
 				} );
@@ -1535,23 +1535,23 @@ var setting   = {
 			, cancel       : switchCancel
 			, ok           : () => {
 				var val = infoVal();
-				if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
+				if ( val.capture_samplerate === 'Custom' ) val.capture_samplerate = val.custom;
 				if ( val.capture_samplerate === DEV.samplerate ) val.capture_samplerate = null;
 				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = false;
-				delete val.other;
+				delete val.custom;
 				DEV.resampler = val;
 				setting.switchSave( 'resampler' );
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
-	, otherToggle   : ( i, samplerate ) => {
+	, customToggle  : ( i, samplerate ) => {
 		var $trcustom = $( '#infoList tr' ).eq( i );
-		$trcustom.toggleClass( 'hide', samplerate !== 'Other' );
+		$trcustom.toggleClass( 'hide', samplerate !== 'Custom' );
 		$( '#infoList select' ).on( 'input', function() {
-			var rate  = $( this ).val();
-			var other = rate === 'Other';
-			$trcustom.toggleClass( 'hide', ! other );
-			if ( ! other ) $trcustom.find( 'input' ).val( rate );
+			var rate   = $( this ).val();
+			var custom = rate === 'Custom';
+			$trcustom.toggleClass( 'hide', ! custom );
+			if ( ! custom ) $trcustom.find( 'input' ).val( rate );
 		} );
 	}
 	, mixerGet      : $this => {
