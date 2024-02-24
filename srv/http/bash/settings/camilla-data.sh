@@ -32,7 +32,10 @@ data='
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : '$( < $dirshm/listdevice )'
 }
-, "listformat" : '$( < $dirshm/listformat )'
+, "listformat" : {
+	  "capture"  : '$( < $dirshm/listformat-c )'
+	, "playback" : '$( < $dirshm/listformat )'
+}
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$state'"

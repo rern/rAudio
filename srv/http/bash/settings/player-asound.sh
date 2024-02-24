@@ -4,6 +4,28 @@
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
 [[ ! $CARD ]] && CARD=$( < $dirsystem/asoundcard ) # if run directly
 
+formatsGet() {
+	local formats
+	file=$dirshm/listformat
+	if [[ $1 ]]; then
+		card=$1
+	else
+		card=$( cat /proc/asound/cards | awk '/\[Loopback/ {print $1}' )
+		file+=-c
+	fi
+	# S16_LE, S16_BE, S24_LE, S24_BE, S32_LE, S32_BE, FLOAT_LE, FLOAT_BE, S24_3LE, S24_3BE
+	formats=$( alsacap -C $card | sed -n '/formats/ {s/3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g; p; q}' ) # depend on /etc/asound.conf
+	[[ ! $formats ]] && formats=S16LE
+	for f in FLOAT32LE S32LE S24LE3 S24LE S16LE; do # FLOAT64LE not for RPi
+		if grep -q $f <<< $formats; then
+			[[ ! $f0 ]] && f0=$f
+			listformat+=', "'${f/FLOAT/Float}'": "'$f'"'
+		fi
+	done
+	echo "{ ${listformat:1} }" > $file
+	[[ $1 ]] && echo $f0
+}
+
 bluetooth=$( getContent $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd_aloop
@@ -106,16 +128,7 @@ if [[ $camilladsp ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
-		# S16_LE, S16_BE, S24_LE, S24_BE, S32_LE, S32_BE, FLOAT_LE, FLOAT_BE, S24_3LE, S24_3BE
-		formats=$( alsacap -C $CARD | sed -n '/formats/ {s/3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g; p; q}' ) # depend on /etc/asound.conf
-		[[ ! $formats ]] && formats=S16LE
-		for f in FLOAT32LE S32LE S24LE3 S24LE S16LE; do # FLOAT64LE not for RPi
-			if grep -q $f <<< $formats; then
-				[[ ! $f0 ]] && f0=$f
-				LISTFORMAT+=', "'${f/FLOAT/Float}'": "'$f'"'
-			fi
-		done
-		echo "{ ${LISTFORMAT:1} }" > $dirshm/listformat
+		f0=$( formatsGet $CARD ) # save to $dirshm/listformat + get f0
 		fileformat="$dirsystem/camilla-$NAME"
 		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$f0
 		format0=$( getVarColon playback format "$fileconf" )
@@ -123,6 +136,7 @@ if [[ $camilladsp ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"
 			echo $FORMAT > "$fileformat"
 		fi
+		formatsGet # loopback
 		card0=$( getVarColon playback device "$fileconf" | cut -c4 )
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
 		systemctl restart camilladsp

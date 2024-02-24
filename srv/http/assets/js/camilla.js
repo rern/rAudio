@@ -56,7 +56,7 @@ var F0        = {
 }
 var F1        = {
 	  pass   : [ F0.name, F0.type, F0.subtype.Biquad, F0.freq, F0.q ]
-	, conv   : [ F0.name, F0.type, F0.subtype.Cov ]
+	, conv   : [ F0.name, F0.type, F0.subtype.Conv ]
 	, fader  : [ F0.name, F0.type, F0.fader ]
 	, combo  : [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' ], F0.freq ]
 }
@@ -250,13 +250,13 @@ var P         = { // processor
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
 var format    = {}; // capture (playback by player-asound.sh)
-[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'TEXT' ].forEach( k => { // FLOAT64LE not for RPi Loopback
+[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
 	var key       = k
 					.replace( 'FLOAT', 'Float' )
 					.replace( 'TEXT',  'Text' );
 	format[ key ] = k;
 } );
-var rate      = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000 ] // 705600, 768000 not for RPi
+var rate      = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000 ] // 705600, 768000 not for RPi Loopback
 var ratelist  = {}
 rate.forEach( v => ratelist[ v.toLocaleString() ] = v );
 ratelist.Custom   = 'Custom';
@@ -272,7 +272,7 @@ var Dlist     = {
 	, typeP              : [ 'Type',                 'select' ] // ^
 	, deviceC            : [ 'Device',               'select' ] // ^
 	, deviceP            : [ 'Device',               'select' ] // ^
-	, formatC            : [ 'Format',               'select', format ]
+	, formatC            : [ 'Format',               'select' ]
 	, formatP            : [ 'Format',               'select' ]
 	, filename           : [ 'Filename',             'select', S.lsraw ]
 	, channels           : [ 'Channels',             'number' ]
@@ -305,8 +305,8 @@ var D         = {
 		, Pulse     : D1.AlsaC
 		, Wasapi    : [ ...D1.AlsaC, Dlist.exclusive, Dlist.loopback ]
 		, Jack      : [ Dlist.typeC, Dlist.channels ]
-		, Stdin     : [ Dlist.typeC, Dlist.format, Dlist.channels, ...D1.extra ]
-		, File      : [ Dlist.typeC, Dlist.filename, Dlist.format, Dlist.channels, ...D1.extra ]
+		, Stdin     : [ Dlist.typeC, Dlist.formatC, Dlist.channels, ...D1.extra ]
+		, File      : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channels, ...D1.extra ]
 	}
 	, playback  : {
 		  Alsa      : D1.AlsaP
@@ -314,8 +314,8 @@ var D         = {
 		, Pulse     : D1.AlsaP
 		, Wasapi    : [ ...D1.AlsaP, Dlist.exclusive, Dlist.loopback ]
 		, Jack      : [ Dlist.typeP, Dlist.channels ]
-		, Stdout    : [ Dlist.typeP, Dlist.format, Dlist.channels ]
-		, File      : [ Dlist.typeP, Dlist.filename, Dlist.format, Dlist.channels ]
+		, Stdout    : [ Dlist.typeP, Dlist.formatP, Dlist.channels ]
+		, File      : [ Dlist.typeP, Dlist.filename, Dlist.formatP, Dlist.channels ]
 	}
 	, values    : {
 		  Alsa      : { type: '', device: '',   format: '', channels: 2 }
@@ -1100,7 +1100,7 @@ var render    = {
 }
 var setting   = {
 	  filter        : ( type, subtype, name ) => {
-		var list  = subtype ? F[ type ][ subtype ] : F[ type ];
+		var list  = subtype in F[ type ] ? F[ type ][ subtype ] : F[ type ];
 		if ( type === 'Biquad' ) {
 			if ( [ 'Hig', 'Low' ].includes( subtype.slice( 0, 3 ) ) ) {
 				var vsubtype = subtype.replace( /High|Low/, '' );
@@ -1113,6 +1113,8 @@ var setting   = {
 			}
 		} else if ( type === 'BiquadCombo' ) {
 			var vsubtype = [ 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ].includes( subtype ) ? subtype : type;
+		} else if ( type === 'Conv' ) {
+			var vsubtype = subtype;
 		} else {
 			var vsubtype = type;
 		}
@@ -1168,6 +1170,7 @@ var setting   = {
 								, message : 'Filter files not available.'
 								, ok      : () => setting.filter( 'Conv', subtype, val.name )
 							} );
+							return
 						} else {
 							setting.filter( val.type, val.subtype, val.name );
 						}
@@ -1893,7 +1896,8 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
-					Dlist.formatP.push( S.listformat );
+					Dlist.formatC.push( S.listformat.capture );
+					Dlist.formatP.push( S.listformat.playback );
 					Dlist.typeC[ 2 ]   = type.capture;
 					Dlist.typeP[ 2 ]   = type.playback;
 					Dlist.deviceC[ 2 ] = S.devices.capture;
