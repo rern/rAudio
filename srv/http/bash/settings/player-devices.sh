@@ -5,10 +5,11 @@
 
 cardfiles=$( ls -1d /proc/asound/card[0-9] )
 while read path; do
-	CARD=${path: -1}
-	NAME=$( sed -n '/^name/ {s/^.*: //; s/bcm2835/On-board/; p; q}' $path/*/info )
-	[[ $NAME == Loopback* ]] && continue
+	name=$( sed -n '/^name/ {s/^.*: //; s/bcm2835/On-board/; p; q}' $path/*/info )
+	[[ $name == Loopback* ]] && continue
 	
+	NAME=$name
+	CARD=${path: -1}
 	if [[ -e $path/usbmixer ]]; then
 		usbname=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $path/usbmixer )
 		[[ $usbname ]] && NAME=$usbname
@@ -16,14 +17,14 @@ while read path; do
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
 	LISTDEVICE+=', "'$NAME'": "hw:'$CARD',0"'
-	list+="$NAME"$'\n'
+	card_name+="$CARD^$NAME"$'\n'
 done <<< $cardfiles
 
 if [[ $usbdac != add && -e $dirsystem/output-device ]]; then # otherwise last card
 	outputdevice=$( < $dirsystem/output-device )
-	line=$( sed -n "/^$outputdevice$/=" <<< $list )
-	if [[ $line ]]; then
-		CARD=$(( line - 1 ))
+	c_n=$( grep "$outputdevice$" <<< $card_name )
+	if [[ $c_n ]]; then
+		CARD=${c_n/^*}
 		NAME=$outputdevice
 	else
 		rm $dirsystem/output-device # remove if not exist any more
