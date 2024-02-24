@@ -3,7 +3,7 @@
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh # if run directly
 
-cardfiles=$( ls -1d /proc/asound/card[0-9] )
+cardfiles=$( ls -1d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
 while read path; do
 	name=$( sed -n '/^name/ {s/^.*: //; s/bcm2835/On-board/; p; q}' $path/*/info )
 	[[ $name == Loopback* ]] && continue

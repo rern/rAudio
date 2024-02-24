@@ -17,7 +17,7 @@ if [[ $1 ]]; then
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
 
-if grep -q ]: /proc/asound/cards; then # asound cards exist
+if grep -q ]: /proc/asound/cards; then # not depend on /etc/asound.conf which might be broken from bad script
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $CARD
 else                                   # no sound
