@@ -126,6 +126,7 @@ if [[ $camilladsp ]]; then
 		card0=$( getVarColon playback device "$fileconf" | cut -c4 )
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
 		systemctl restart camilladsp
+		$dirsettings/camilla-data.sh push
 	fi
 else
 	if [[ $bluetooth ]]; then

@@ -21,6 +21,7 @@ if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which migh
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $CARD
 else                                   # no sound
+	notify output 'Audio Output' '(None)'
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,listdevice,listmixer,output}
 	[[ -e $dirshm/btreceiver ]] && CARD=0 || CARD=-1
@@ -64,7 +65,6 @@ if [[ $CARD == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
 		pushData display '{ "volumenone": true }'
 		pushData refresh '{ "page": "features", "nosound": true }'
-		outputswitch='(None)'
 	fi
 elif [[ ! $btoutputonly ]]; then
 	. $dirshm/output # card name mixer mixertype
@@ -74,7 +74,6 @@ elif [[ ! $btoutputonly ]]; then
 		[[ $mixertype == none ]] && volumenone=true || volumenone=false
 		pushData display '{ "volumenone": '$volumenone' }'
 		pushData refresh '{ "page": "features", "nosound": '$volumenone' }'
-		outputswitch=$name
 	fi
 	if [[ $camilladsp ]]; then
 		hw=hw:Loopback,1
@@ -148,8 +147,6 @@ done
 [[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 
 [[ $bluetooth && -e $dirsystem/autoplay ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
-
-[[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
