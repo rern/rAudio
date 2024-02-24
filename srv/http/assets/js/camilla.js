@@ -274,7 +274,8 @@ var Dlist     = {
 	, extra_samples      : [ 'Extra samples',      'number' ]
 	, skip_bytes         : [ 'Skip bytes',         'number' ]
 	, read_bytes         : [ 'Read bytes',         'number' ]
-	, capture_samplerate : [ 'Capture samplerate', 'number' ]
+	, capture_samplerate : [ 'Capture samplerate', 'select', D0.samplerate ]
+	, custom             : [ 'Other rate',         'number' ]
 	, exclusive          : [ 'Exclusive',          'checkbox' ]
 	, loopback           : [ 'Loopback',           'checkbox' ]
 	, change_format      : [ 'Change format',      'checkbox' ]
@@ -287,7 +288,7 @@ var D1        = {
 var D         = {
 	  main      : [
 		  [ 'Sample Rate',       'select', D0.samplerate ]
-		, [ 'Other',             'number' ]
+		, Dlist.custom
 		, [ 'Chunk size',        'number' ]
 		, [ 'Queue limit',       'number' ]
 		, [ 'Silence Threshold', 'number' ]
@@ -327,6 +328,7 @@ var D         = {
 			  Dlist.type
 			, Dlist.profile
 			, Dlist.capture_samplerate
+			, Dlist.custom
 		]
 		, Custom       : [
 			  Dlist.type
@@ -1472,13 +1474,13 @@ var setting   = {
 		} );
 	}
 	, main          : () => {
-		var values = {};
+		var values   = {};
 		D0.main.forEach( k => {
 			values[ k ] = DEV[ k ];
-			if ( k === 'samplerate' ) values.other = DEV.samplerate;
+			if ( k === 'samplerate' ) values.other = DEV.samplerate; // force indexed after samplerate
 		} );
-		if ( ! D0.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
-		var title = common.tabTitle();
+		if ( ! D0.samplerate.includes( values.other ) ) values.samplerate = 'Other';
+		var title    = common.tabTitle();
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -1487,16 +1489,7 @@ var setting   = {
 			, values       : values
 			, checkblank   : true
 			, checkchanged : true
-			, beforeshow   : () => {
-				var $trother = $( '#infoList tr' ).eq( 1 );
-				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
-				$( '#infoList select' ).on( 'input', function() {
-					var rate  = $( this ).val();
-					var other = rate === 'Other';
-					$trother.toggleClass( 'hide', ! other );
-					if ( ! other ) $trother.find( 'input' ).val( rate );
-				} );
-			}
+			, beforeshow   : () => setting.otherToggle( 1, values.samplerate )
 			, ok           : () => {
 				var val = infoVal();
 				if ( val.samplerate === 'Other' ) val.samplerate = val.other;
@@ -1508,11 +1501,13 @@ var setting   = {
 		} );
 	} //-----------------------------------------------------------------------------------
 	, resampler     : ( type, profile ) => {
-		var Dtype  = D.resampler[ type ];
-		var values = D.resampler.values[ type ];
-		if (profile ) values.profile = profile;
+		var Dtype    = D.resampler[ type ];
+		var values   = D.resampler.values[ type ];
+		if ( profile ) values.profile = profile;
 		if ( S.resampler ) DEV.resample.each( ( k, v ) => values[ k ] = v );
 		values.capture_samplerate = DEV.capture_samplerate || DEV.samplerate;
+		values.other = values.capture_samplerate;
+		if ( ! D0.samplerate.includes( values.other ) ) values.capture_samplerate = 'Other';
 		info( {
 			  icon         : V.tab
 			, title        : SW.title
@@ -1522,6 +1517,7 @@ var setting   = {
 			, checkblank   : true
 			, checkchanged : S.resampler
 			, beforeshow   : () => {
+				setting.otherToggle( 3, values.capture_samplerate )
 				$( 'select' ).eq( 0 ).on( 'input', function() {
 					setting.resampler( $( this ).val() );
 				} );
@@ -1539,14 +1535,25 @@ var setting   = {
 			, cancel       : switchCancel
 			, ok           : () => {
 				var val = infoVal();
-				DEV.capture_samplerate = val.capture_samplerate === DEV.samplerate ? null : val.capture_samplerate;
-				delete val.capture_samplerate;
+				if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
+				if ( val.capture_samplerate === DEV.samplerate ) val.capture_samplerate = null;
 				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = false;
+				delete val.other;
 				DEV.resampler = val;
 				setting.switchSave( 'resampler' );
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
+	, otherToggle   : ( i, samplerate ) => {
+		var $trcustom = $( '#infoList tr' ).eq( i );
+		$trcustom.toggleClass( 'hide', samplerate !== 'Other' );
+		$( '#infoList select' ).on( 'input', function() {
+			var rate  = $( this ).val();
+			var other = rate === 'Other';
+			$trcustom.toggleClass( 'hide', ! other );
+			if ( ! other ) $trcustom.find( 'input' ).val( rate );
+		} );
+	}
 	, mixerGet      : $this => {
 		var $li = $this.parents( 'li' );
 		return {
@@ -2493,6 +2500,9 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	}
 } );
 // devices --------------------------------------------------------------------------------
+$( '#divdevices .i-gear' ).on( 'click', function() {
+	setting.main();
+} );
 $( '#devices' ).on( 'click', 'li', function() {
 	setting.device( $( this ).data( 'type' ) );
 } );

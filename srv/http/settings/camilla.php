@@ -81,10 +81,10 @@ foreach( $tabs as $id ) {
 	$html.= '<ul class="entries main"></ul>';
 	if ( $id === 'devices' ) {
 		$html.= '
-<div id="divdevices" class="section">
+<div id="sampling">
 '.htmlSectionStatus( 'sampling' ).'
 </div>
-<div id="divoptions" class="section">
+<div id="options">
 '.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'resampler',           'returnhtml' => true ] ).'
