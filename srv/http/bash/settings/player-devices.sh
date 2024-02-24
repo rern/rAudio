@@ -34,7 +34,7 @@ echo "\
 defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
-notify output 'Audio Output' "$NAME"
+notify 'output blink' 'Audio Output' "$NAME"
 # aplay -l
 #         id <<< /proc/asound/cardN/id
 # card N: RPiCirrus [RPi-Cirrus], device N: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
