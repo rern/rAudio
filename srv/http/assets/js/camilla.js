@@ -256,9 +256,14 @@ var format    = {}; // capture (playback by player-asound.sh)
 					.replace( 'TEXT',  'Text' );
 	format[ key ] = k;
 } );
+var rate      = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000 ] // 705600, 768000 not for RPi
+var ratelist  = {}
+rate.forEach( v => ratelist[ v.toLocaleString() ] = v );
+ratelist.Custom   = 'Custom';
 var D0        = {
 	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
-	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 'Custom' ] // 705600, 768000 not for RPi
+	, samplerate : rate
+	, samplelist : { kv: ratelist, nosort: true }
 }
 var Dlist     = {
 	  type               : [ 'Type',                 'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
@@ -274,7 +279,7 @@ var Dlist     = {
 	, extra_samples      : [ 'Extra samples',        'number' ]
 	, skip_bytes         : [ 'Skip bytes',           'number' ]
 	, read_bytes         : [ 'Read bytes',           'number' ]
-	, capture_samplerate : [ 'Capture sample rate',  'select', D0.samplerate ]
+	, capture_samplerate : [ 'Capture sample rate',  'select', D0.samplelist ]
 	, custom             : [ '<gr>Custom rate</gr>', 'number' ]
 	, exclusive          : [ 'Exclusive',            'checkbox' ]
 	, loopback           : [ 'Loopback',             'checkbox' ]
@@ -287,7 +292,7 @@ var D1        = {
 }
 var D         = {
 	  main      : [
-		  [ 'Sample rate',       'select', D0.samplerate ]
+		  [ 'Sample rate',       'select', D0.samplelist ]
 		, Dlist.custom
 		, [ 'Chunk size',        'number' ]
 		, [ 'Queue limit',       'number' ]

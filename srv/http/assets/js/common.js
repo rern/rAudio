@@ -457,6 +457,7 @@ function info( json ) {
 				  kv       : { k: V, ... }
 				, colspan  : N
 				, disable  : T/F
+				, nosort   : T/F
 				, sameline : T/F
 				, suffix   : UNIT
 				, updn     : { step: N, min: N, max: N }
@@ -525,7 +526,7 @@ function info( json ) {
 								+'</div></td></tr>';
 					break
 				case 'select':
-					htmls.list += '<select>'+ htmlOption( kv ) +'</select>';
+					htmls.list += '<select>'+ htmlOption( param ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
@@ -1031,13 +1032,15 @@ function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );
 }
 function htmlOption( el ) {
+	var nosort = 'nosort' in el;
+	if ( 'kv' in el ) el = el.kv;
 	if ( typeof el === 'number' ) el = [ ...Array( el ).keys() ];
 	var options = '';
 	if ( Array.isArray( el ) ) { // name = value
-		el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
+		if ( ! nosort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
 		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
 	} else {                     // json
-		el = jsonSort( el );
+		if ( ! nosort ) el = jsonSort( el );
 		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
 	}
 	return options
