@@ -102,7 +102,7 @@ var F         = {
 		, Raw    : [
 			  ...F1.conv
 			, [ 'File',             'select' ]
-			, [ 'Format',           'select', [ 'TEXT' ] ]
+			, [ 'Format',           'select', [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ] ]
 			, [ 'Skip bytes lines', 'number' ]
 			, [ 'Read bytes lines', 'number' ]
 		]
@@ -249,13 +249,6 @@ var P         = { // processor
 	}
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
-var format    = {}; // capture (playback by player-asound.sh)
-[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
-	var key       = k
-					.replace( 'FLOAT', 'Float' )
-					.replace( 'TEXT',  'Text' );
-	format[ key ] = k;
-} );
 var rate      = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000 ] // 705600, 768000 not for RPi Loopback
 var ratelist  = {}
 rate.forEach( v => ratelist[ v.toLocaleString() ] = v );

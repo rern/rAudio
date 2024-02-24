@@ -16,10 +16,10 @@ formatsGet() {
 	# S16_LE, S16_BE, S24_LE, S24_BE, S32_LE, S32_BE, FLOAT_LE, FLOAT_BE, S24_3LE, S24_3BE
 	formats=$( alsacap -C $card | sed -n '/formats/ {s/3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g; p; q}' ) # depend on /etc/asound.conf
 	[[ ! $formats ]] && formats=S16LE
-	for f in FLOAT32LE S32LE S24LE3 S24LE S16LE; do # FLOAT64LE not for RPi
+	for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 		if grep -q $f <<< $formats; then
 			[[ ! $f0 ]] && f0=$f
-			listformat+=', "'${f/FLOAT/Float}'": "'$f'"'
+			listformat+=', "'$f'": "'$f'"'
 		fi
 	done
 	echo "{ ${listformat:1} }" > $file
