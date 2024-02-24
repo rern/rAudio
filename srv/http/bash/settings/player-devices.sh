@@ -3,7 +3,7 @@
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh # if run directly
 
-cardfiles=$( ls -1d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
+proccardn=$( ls -1d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
 while read path; do
 	name=$( sed -n '/^name/ {s/^.*: //; s/bcm2835/On-board/; p; q}' $path/*/info )
 	[[ $name == Loopback* ]] && continue
@@ -18,7 +18,7 @@ while read path; do
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
 	LISTDEVICE+=', "'$NAME'": "hw:'$CARD',0"'
 	card_name+="$CARD^$NAME"$'\n'
-done <<< $cardfiles
+done <<< $proccardn
 
 if [[ $usbdac != add && -e $dirsystem/output-device ]]; then # otherwise last card
 	outputdevice=$( < $dirsystem/output-device )
