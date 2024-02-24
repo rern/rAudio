@@ -249,8 +249,8 @@ var P         = { // processor
 	}
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
-var format    = {};
-[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
+var format    = {}; // capture (playback by player-asound.sh)
+[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'TEXT' ].forEach( k => { // FLOAT64LE not for RPi Loopback
 	var key       = k
 					.replace( 'FLOAT', 'Float' )
 					.replace( 'TEXT',  'Text' );
@@ -258,7 +258,7 @@ var format    = {};
 } );
 var D0        = {
 	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
-	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 'Custom' ]
+	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 'Custom' ] // 705600, 768000 not for RPi
 }
 var Dlist     = {
 	  type               : [ 'Type',                 'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
