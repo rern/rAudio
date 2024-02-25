@@ -5,10 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 202402224
-if [[ -e /usr/bin/camilladsp && ! -e /usr/bin/alsacap ]]; then
-	pkgs+=' alsacap'
-	sed -i 's|/etc/|/srv/http/data/|' /etc/default/camilladsp
-fi
+file=/etc/default/camilladsp
+[[ -e $file ]] && sed -i 's|/etc/|/srv/http/data/|' $file
 
 file=$dirsystem/autoplay.conf
 [[ -e $file ]] && sed -i '/^cd/ d' $file
