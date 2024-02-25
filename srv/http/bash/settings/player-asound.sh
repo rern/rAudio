@@ -111,16 +111,16 @@ if [[ $camilladsp ]]; then
 		file=$dirshm/listformat$type
 		script -c "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" > $file
 		if [[ $c == Loopback ]]; then
-			ratemax=$( awk '/^RATE/ {print $NF}' $file | tr -d ']\r\n' )
+			ratemax=$( awk '/^RATE/ {print $NF}' $file | tr -d ']\r' )
 			for r in 44100 48000 88200 96000 176400 192000 352800,384000 705600 768000; do
 				(( $r > $ratemax )) && break || listsample+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
 			done
 			echo "{ ${listsample:1} }" > $dirshm/listsample
-			awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r\n' > $dirshm/channels-c
+			awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r' > $dirshm/channels-c
 		else
-			awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r\n' > $dirshm/channels-p
+			awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r' > $dirshm/channels-p
 		fi
-		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g; s/ /\n/g; p}' $file )
+		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' $file )
 		for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 			grep -q $f <<< $formats && listformat+=', "'$f'"'
 		done
