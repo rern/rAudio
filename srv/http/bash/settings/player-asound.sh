@@ -4,35 +4,6 @@
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
 [[ ! $CARD ]] && CARD=$( < $dirsystem/asoundcard ) # if run directly
 
-formatsGet() {
-	local formats
-	file=$dirshm/listformat
-	if [[ $1 ]]; then
-		card=$1
-	else
-		card=$( cat /proc/asound/cards | awk '/\[Loopback/ {print $1}' )
-		file+=-c
-	fi
-	# alsacap:
-	#	- depend on /etc/asound.conf
-	#	- formats and channels not available while camilladsp is active
-	formats=$( alsacap -C $card | sed -n '/formats/ {s/3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g; p; q}' )
-	# S16_LE, S16_BE, S24_LE, S24_BE, S32_LE, S32_BE, FLOAT_LE, FLOAT_BE, S24_3LE, S24_3BE
-	[[ ! $formats ]] && formats=S16LE
-	for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
-		if grep -q $f <<< $formats; then
-			[[ ! $f0 ]] && f0=$f
-			listformat+=', "'$f'": "'$f'"'
-		fi
-	done
-	echo "{ ${listformat:1} }" > $file
-	[[ ! $1 ]] && return
-	
-	channels=$( alsacap -C $card | awk '/channels/ {print $1}' )
-	echo ${channels/*.} > $dirshm/channels
-	echo $f0
-}
-
 bluetooth=$( getContent $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd_aloop
@@ -131,25 +102,37 @@ if [[ $( getContent $dirsystem/audio-aplayname ) == cirrus-wm5102 ]]; then
 fi
 
 if [[ $camilladsp ]]; then
-	systemctl stop camilladsp # must be stop for alsacap probing
+	if systemctl -q is-active camilladsp; then
+		active=1
+		systemctl stop camilladsp # must be stop for probing
+	fi
+	for c in $CARD Loopback; do
+		[[ $c == Loopback ]] && type=c || type=p
+		file=$dirshm/listformat$type
+		script -c "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" > $file
+		[[ $c != Loopback ]] && awk '/^CHANNELS/ {print $NF}' $file | tr -d ] > $dirshm/channels
+		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g; p}' $file )
+		for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do # S16_LE S16_BE S24_LE S24_BE S32_LE S32_BE FLOAT_LE FLOAT_BE S24_3LE S24_3BE
+			grep -q $f <<< $formats && listformat+=', "'$f'"'
+		done
+		echo "[ ${listformat:1} ]" > $file
+	done
 	if [[ $bluetooth ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
-		f0=$( formatsGet $CARD ) # save to $dirshm/listformat + get f0
 		fileformat="$dirsystem/camilla-$NAME"
-		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$f0
+		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( cut -d'"' -f2 $dirshm/listformatp )
 		format0=$( getVarColon playback format "$fileconf" )
 		if [[ $format0 != $FORMAT ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"
 			echo $FORMAT > "$fileformat"
 		fi
-		formatsGet # loopback
 		card0=$( getVarColon playback device "$fileconf" | cut -c4 )
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
-		$dirsettings/camilla-data.sh push
 	fi
 	systemctl start camilladsp
+	[[ $active ]] && $dirsettings/camilla-data.sh push
 else
 	if [[ $bluetooth ]]; then
 		if [[ -e "$dirsystem/btvolume-$bluetooth" ]]; then

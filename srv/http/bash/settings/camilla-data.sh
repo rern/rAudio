@@ -34,8 +34,8 @@ data='
 	, "playback" : '$( < $dirshm/listdevice )'
 }
 , "listformat" : {
-	  "capture"  : '$( < $dirshm/listformat-c )'
-	, "playback" : '$( < $dirshm/listformat )'
+	  "capture"  : '$( < $dirshm/listformatc )'
+	, "playback" : '$( < $dirshm/listformatp )'
 }
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
