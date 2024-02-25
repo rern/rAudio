@@ -109,7 +109,7 @@ mixertype )
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
 	if [[ $MIXERTYPE == software ]]; then # [sw] set to current [hw]
 		[[ -e $dirshm/amixercontrol ]] && vol=$( volumeGet value ) || vol=33
-		mpc volume $vol
+		mpc -q volume $vol
 	else
 		rm -f $dirsystem/replaygain-hw
 	fi

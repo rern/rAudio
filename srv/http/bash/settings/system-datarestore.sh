@@ -39,7 +39,7 @@ $( < $dirsystem/hostname )
 CMD NAME"
 [[ -e $dirsystem/netctlprofile ]] && netctl enable "$( < $dirsystem/netctlprofile )"
 timedatectl set-timezone $( < $dirsystem/timezone )
-[[ -e $dirsystem/crossfade ]] && mpc crossfade $( < $dirsystem/crossfade )
+[[ -e $dirsystem/crossfade ]] && mpc -q crossfade $( < $dirsystem/crossfade )
 rm -rf $backupfile $dirconfig $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
 dirs=$( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 if [[ $dirs ]]; then

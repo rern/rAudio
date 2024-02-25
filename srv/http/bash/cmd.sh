@@ -34,7 +34,7 @@ plAddRandom() {
 		file=$( shuf -n 1 <<< $mpcls )
 		grep -q -m1 "$file" $dirsystem/librandom && plAddRandom && return
 		
-		mpc add "$file"
+		mpc -q add "$file"
 	fi
 	diffcount=$(( $( jq .song $dirmpd/counts ) - $( lineCount $dirsystem/librandom ) ))
 	if (( $diffcount > 1 )); then
