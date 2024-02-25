@@ -28,7 +28,8 @@ formatsGet() {
 	echo "{ ${listformat:1} }" > $file
 	[[ ! $1 ]] && return
 	
-	alsacap -C $card | awk '/channels/ {print $1}' > $dirshm/channels
+	channels=$( alsacap -C $card | awk '/channels/ {print $1}' )
+	echo ${channels/*.} > $dirshm/channels
 	echo $f0
 }
 
