@@ -91,7 +91,7 @@ var F         = {
 		  F0.name
 		, F0.type
 		, [ 'ms',        'number' ]
-		, [ '',          'radio', { ms: 'ms', mm: 'mm', Samples: 'samples' } ]
+		, [ '',          'radio', { ms: 'ms', mm: 'mm', Sample: 'samples' } ]
 		, [ 'Subsample', 'checkbox' ]
 	]
 	, Conv        : {
@@ -840,7 +840,7 @@ var render    = {
 		return '<li data-name="'+ k +'"'+ classeq +'>'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
-		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
@@ -1163,7 +1163,6 @@ var setting   = {
 								, message : 'Filter files not available.'
 								, ok      : () => setting.filter( 'Conv', subtype, val.name )
 							} );
-							return
 						} else {
 							setting.filter( val.type, val.subtype, val.name );
 						}

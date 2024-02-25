@@ -27,7 +27,7 @@ EOF
 {$Fi( 'set0 btn' )} Reset clipped count (if any)
 EOF
 	, 'filters'   => <<< EOF
-{$Fi( 'folder-filter btn' )}{$Fi( 'plus btn' )} FIR coefficient files · New
+{$Fi( 'folder-filter btn' )}{$Fi( 'plus btn' )} Finite Impulse Response (FIR) files · New
 {$button[ 'filters' ]} Graph · Edit · Delete
 {$Fi( 'code btn' )} Set 0
 {$button[ 'control' ]} Mute · Invert · Linear (Gain)

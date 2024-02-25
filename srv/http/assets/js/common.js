@@ -427,7 +427,6 @@ function info( json ) {
 		}
 	} );
 	if ( ! I.list ) {
-		local(); // suppress infoCheckSet() on consecutive info
 		I.active = true;
 		$( '#infoList' ).html( Object.values( htmls ).join( '' ) );
 		if ( I.beforeshow ) I.beforeshow();
@@ -732,8 +731,6 @@ function infoCheckLength() {
 	} );
 }
 function infoCheckSet() {
-	if ( V.local ) return
-	
 	if ( I.checkchanged || I.checkblank || I.checkip || I.checklength ) {
 		$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
 			if ( I.checkchanged ) I.nochange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
@@ -741,6 +738,8 @@ function infoCheckSet() {
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
 			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
 			setTimeout( () => {
+				if ( ! $( '#infoList input' ).length ) return // suppress on repeating
+				
 				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short );
 			}, 75 ); // ios: force after infoCheckLength
 		} );
