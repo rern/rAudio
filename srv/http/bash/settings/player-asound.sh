@@ -102,11 +102,13 @@ if [[ $( getContent $dirsystem/audio-aplayname ) == cirrus-wm5102 ]]; then
 fi
 
 if [[ $camilladsp ]]; then
-	mpc -q stop                   # stop for exclusive aplay probing
+	# must stop for exclusive aplay probing
+	[[ $( < $dirshm/player ) == mpd ]] && mpc -q stop || $dirbash/cmd.sh playerstop
 	if systemctl -q is-active camilladsp; then
 		active=1
-		systemctl stop camilladsp # ^^^
+		systemctl stop camilladsp
 	fi
+	
 	for c in $CARD Loopback; do
 		[[ $c == Loopback ]] && type=-c || type=-p
 		file=$dirshm/listformat$type
