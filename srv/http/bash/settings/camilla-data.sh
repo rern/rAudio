@@ -27,16 +27,20 @@ data='
 , "bluetooth"  : '$bluetooth'
 , "card"       : '$card'
 , "cardname"   : "'$name'"
-, "channels"   : '$( < $dirshm/channels )'
+, "channels"   : {
+	  "capture"  : '$( < $dirshm/channels-c )'
+	, "playback" : '$( < $dirshm/channels-p )'
+}
 , "control"    : "'$mixer'"
 , "devices"    : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : '$( < $dirshm/listdevice )'
 }
 , "listformat" : {
-	  "capture"  : '$( < $dirshm/listformatc )'
-	, "playback" : '$( < $dirshm/listformatp )'
+	  "capture"  : '$( < $dirshm/listformat-c )'
+	, "playback" : '$( < $dirshm/listformat-p )'
 }
+, "listsample" : '$( < $dirshm/listsample )'
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$state'"

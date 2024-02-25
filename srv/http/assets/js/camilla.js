@@ -249,31 +249,27 @@ var P         = { // processor
 	}
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
-var rate      = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000 ] // 705600, 768000 not for RPi Loopback
-var ratelist  = {}
-rate.forEach( v => ratelist[ v.toLocaleString() ] = v );
-ratelist.Custom   = 'Custom';
 var D0        = {
 	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
-	, samplerate : rate
-	, samplelist : { kv: ratelist, nosort: true }
+	, listsample : {} // on GetSupportedDeviceTypes
+	, samplerate : [] // ^
 }
 var Dlist     = {
 	  type               : [ 'Type',                 'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
 	, profile            : [ 'Profile',              'select', [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ] ]
-	, typeC              : [ 'Type',                 'select' ] // option: wait for ws 'GetSupportedDeviceTypes'
+	, typeC              : [ 'Type',                 'select' ] // on 'GetSupportedDeviceTypes'
 	, typeP              : [ 'Type',                 'select' ] // ^
 	, deviceC            : [ 'Device',               'select' ] // ^
 	, deviceP            : [ 'Device',               'select' ] // ^
-	, formatC            : [ 'Format',               'select' ]
-	, formatP            : [ 'Format',               'select' ]
+	, formatC            : [ 'Format',               'select' ] // ^
+	, formatP            : [ 'Format',               'select' ] // ^
 	, filename           : [ 'Filename',             'select', S.lsraw ]
-	, channelsC          : [ 'Channels',             'number', { updn: { step: 1, min: 1, max: 32 } } ]
-	, channelsP          : [ 'Channels',             'number', { updn: { step: 1, min: 1, max: 2 } } ]
+	, channelsC          : [ 'Channels',             'number' ] // ^
+	, channelsP          : [ 'Channels',             'number' ] // ^
 	, extra_samples      : [ 'Extra samples',        'number' ]
 	, skip_bytes         : [ 'Skip bytes',           'number' ]
 	, read_bytes         : [ 'Read bytes',           'number' ]
-	, capture_samplerate : [ 'Capture sample rate',  'select', D0.samplelist ]
+	, capture_samplerate : [ 'Capture sample rate',  'select' ] // ^
 	, custom             : [ '<gr>Custom rate</gr>', 'number' ]
 	, exclusive          : [ 'Exclusive',            'checkbox' ]
 	, loopback           : [ 'Loopback',             'checkbox' ]
@@ -286,7 +282,7 @@ var D1        = {
 }
 var D         = {
 	  main      : [
-		  [ 'Sample rate',       'select', D0.samplelist ]
+		  [ 'Sample rate',       'select' ] // on 'GetSupportedDeviceTypes'
 		, Dlist.custom
 		, [ 'Chunk size',        'number' ]
 		, [ 'Queue limit',       'number' ]
@@ -1894,12 +1890,17 @@ var common    = {
 					} );
 					Dlist.formatC.push( S.listformat.capture );
 					Dlist.formatP.push( S.listformat.playback );
-					Dlist.typeC[ 2 ]   = type.capture;
-					Dlist.typeP[ 2 ]   = type.playback;
-					Dlist.deviceC[ 2 ] = S.devices.capture;
-					Dlist.deviceP[ 2 ] = S.devices.playback;
-					Dlist.channelsP[ 2 ].updn.max = S.channels;
+					Dlist.typeC.push( type.capture );
+					Dlist.typeP.push( type.playback );
+					Dlist.deviceC.push( S.devices.capture );
+					Dlist.deviceP.push( S.devices.playback );
+					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.channels.capture } } );
+					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.channels.playback } } );
 					D.values.channels  = S.channels;
+					var listsample     = { kv: S.listsample, nosort: true }
+					Dlist.capture_samplerate.push( listsample );
+					D.main[ 0 ].push( listsample );
+					D0.samplerate      = Object.values( S.listsample )
 					$( '#divvolume .col-l gr' ).text( S.control );
 					showContent();
 					break;

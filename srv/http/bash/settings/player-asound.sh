@@ -107,12 +107,21 @@ if [[ $camilladsp ]]; then
 		systemctl stop camilladsp # must be stop for probing
 	fi
 	for c in $CARD Loopback; do
-		[[ $c == Loopback ]] && type=c || type=p
+		[[ $c == Loopback ]] && type=-c || type=-p
 		file=$dirshm/listformat$type
 		script -c "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" > $file
-		[[ $c != Loopback ]] && awk '/^CHANNELS/ {print $NF}' $file | tr -d ] > $dirshm/channels
-		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g; p}' $file )
-		for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do # S16_LE S16_BE S24_LE S24_BE S32_LE S32_BE FLOAT_LE FLOAT_BE S24_3LE S24_3BE
+		if [[ $c == Loopback ]]; then
+			ratemax=$( awk '/^RATE/ {print $NF}' $file | tr -d ']\r\n' )
+			for r in 44100 48000 88200 96000 176400 192000 352800,384000 705600 768000; do
+				(( $r > $ratemax )) && break || listsample+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
+			done
+			echo "{ ${listsample:1} }" > $dirshm/listsample
+			awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r\n' > $dirshm/channels-c
+		else
+			awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r\n' > $dirshm/channels-p
+		fi
+		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g; s/ /\n/g; p}' $file )
+		for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 			grep -q $f <<< $formats && listformat+=', "'$f'"'
 		done
 		echo "[ ${listformat:1} ]" > $file
