@@ -268,7 +268,8 @@ var Dlist     = {
 	, formatC            : [ 'Format',               'select' ]
 	, formatP            : [ 'Format',               'select' ]
 	, filename           : [ 'Filename',             'select', S.lsraw ]
-	, channels           : [ 'Channels',             'number' ]
+	, channelsC          : [ 'Channels',             'number', { updn: { step: 1, min: 1, max: 32 } } ]
+	, channelsP          : [ 'Channels',             'number', { updn: { step: 1, min: 1, max: 2 } } ]
 	, extra_samples      : [ 'Extra samples',        'number' ]
 	, skip_bytes         : [ 'Skip bytes',           'number' ]
 	, read_bytes         : [ 'Read bytes',           'number' ]
@@ -279,8 +280,8 @@ var Dlist     = {
 	, change_format      : [ 'Change format',        'checkbox' ]
 }
 var D1        = {
-	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.formatC, Dlist.channels ]
-	, AlsaP : [ Dlist.typeP, Dlist.deviceP, Dlist.formatP, Dlist.channels ]
+	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.formatC, Dlist.channelsC ]
+	, AlsaP : [ Dlist.typeP, Dlist.deviceP, Dlist.formatP, Dlist.channelsP ]
 	, extra : [ Dlist.extra_samples, Dlist.skip_bytes, Dlist.read_bytes ]
 }
 var D         = {
@@ -297,18 +298,18 @@ var D         = {
 		, CoreAudio : [ ...D1.AlsaC, Dlist.change_format ]
 		, Pulse     : D1.AlsaC
 		, Wasapi    : [ ...D1.AlsaC, Dlist.exclusive, Dlist.loopback ]
-		, Jack      : [ Dlist.typeC, Dlist.channels ]
-		, Stdin     : [ Dlist.typeC, Dlist.formatC, Dlist.channels, ...D1.extra ]
-		, File      : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channels, ...D1.extra ]
+		, Jack      : [ Dlist.typeC, Dlist.channelsC ]
+		, Stdin     : [ Dlist.typeC, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
+		, File      : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
 	}
 	, playback  : {
 		  Alsa      : D1.AlsaP
 		, CoreAudio : [ ...D1.AlsaP, Dlist.change_format ]
 		, Pulse     : D1.AlsaP
 		, Wasapi    : [ ...D1.AlsaP, Dlist.exclusive, Dlist.loopback ]
-		, Jack      : [ Dlist.typeP, Dlist.channels ]
-		, Stdout    : [ Dlist.typeP, Dlist.formatP, Dlist.channels ]
-		, File      : [ Dlist.typeP, Dlist.filename, Dlist.formatP, Dlist.channels ]
+		, Jack      : [ Dlist.typeP, Dlist.channelsP ]
+		, Stdout    : [ Dlist.typeP, Dlist.formatP, Dlist.channelsP ]
+		, File      : [ Dlist.typeP, Dlist.filename, Dlist.formatP, Dlist.channelsP ]
 	}
 	, values    : {
 		  Alsa      : { type: '', device: '',   format: '', channels: 2 }
@@ -1450,7 +1451,10 @@ var setting   = {
 			, checkblank   : true
 			, checkchanged : true
 			, beforeshow   : () => {
-				$( '#infoList input[type=number]' ).css( 'width', '70px' );
+				var $input = $( '#infoList input[type=number]' );
+				var $td    = $input.parent();
+				$td.append( $td.next().find( 'i' ) );
+				$input.css( 'width', '70px' );
 				$( '#infoList td:first-child' ).css( 'width', '128px' );
 				$( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
 /*				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
@@ -1894,6 +1898,8 @@ var common    = {
 					Dlist.typeP[ 2 ]   = type.playback;
 					Dlist.deviceC[ 2 ] = S.devices.capture;
 					Dlist.deviceP[ 2 ] = S.devices.playback;
+					Dlist.channelsP[ 2 ].updn.max = S.channels;
+					D.values.channels  = S.channels;
 					$( '#divvolume .col-l gr' ).text( S.control );
 					showContent();
 					break;

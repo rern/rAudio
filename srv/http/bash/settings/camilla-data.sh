@@ -27,6 +27,7 @@ data='
 , "bluetooth"  : '$bluetooth'
 , "card"       : '$card'
 , "cardname"   : "'$name'"
+, "channels"   : '$( < $dirshm/channels )'
 , "control"    : "'$mixer'"
 , "devices"    : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]

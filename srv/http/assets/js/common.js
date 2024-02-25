@@ -456,7 +456,6 @@ function info( json ) {
 /*			param = {
 				  kv       : { k: V, ... }
 				, colspan  : N
-				, disable  : T/F
 				, nosort   : T/F
 				, sameline : T/F
 				, suffix   : UNIT

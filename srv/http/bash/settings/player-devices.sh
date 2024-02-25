@@ -3,6 +3,26 @@
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh # if run directly
 
+### aplay -l
+# card 1: Headphones [bcm2835 Headphones], device 0: bcm2835 Headphones [bcm2835 Headphones]
+#
+### cat /proc/asound/cards
+# 1 [Headphones     ]: bcm2835_headpho - bcm2835 Headphones
+#                      bcm2835 Headphones
+#>C [CARD_ID        ]: DEVICE_ID       - DEVICE_NAME
+#>                     DEVICE_LONG_NAME
+#>hwaddress=hw:1,0 # or hw:Headphones:0
+
+### cat /proc/asound/card1/id
+# Headphones
+
+### cat /proc/asound/card1/*/info
+# card: 1
+# ...
+# id: bcm2835 Headphones
+# name: bcm2835 Headphones
+# ...
+
 proccardn=$( ls -1d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
 while read path; do
 	name=$( sed -n '/^name/ {s/^.*: //; s/bcm2835/On-board/; p; q}' $path/*/info )
@@ -34,11 +54,7 @@ echo "\
 defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
-notify 'output blink' 'Audio Output' "$NAME"
-# aplay -l
-#         id <<< /proc/asound/cardN/id
-# card N: RPiCirrus [RPi-Cirrus], device N: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
-#                                           id:........................name: <<< /proc/asound/cardN/*/info
+[[ $( getVar name $dirshm/output ) != $NAME ]] && notify 'output blink' 'Output Device' "$NAME"
 if grep -q WM5102 <<< $NAME; then
 	MIXER='HPOUT2 Digital'
 	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
