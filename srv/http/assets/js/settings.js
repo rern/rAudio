@@ -163,17 +163,18 @@ function switchIdIconTitle( id ) {
 function switchSet() {
 	if ( page === 'networks' ) return
 	
-	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
-	$( '.setting' ).each( ( i, el ) => {
-		var $this = $( el );
-		if ( ! $this.prev().find( '.switchlabel' ).length ) return // not switch
-		
-		var sw = el.id.replace( 'setting-', '' );
-		$this.toggleClass( 'hide', ! S[ sw ] );
-	} );
-	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
-		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
-	} );
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		$( '.switch' ).each( ( i, el ) => {
+			var $this = $( el );
+			var id    = el.id
+			$this.prop( 'checked', S[ id ] );
+			$this.parent().next( '.setting' ).toggleClass( 'hide', ! S[ id ] );
+		} );
+		$( 'pre.status' ).each( ( i, el ) => { // refresh code block
+			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
+		} );
+	}, page === 'camilla' ? 300 : 0 );
 }
 function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );

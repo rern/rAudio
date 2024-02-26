@@ -1015,8 +1015,8 @@ var render    = {
 		}
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
+		$( '#enable_rate_adjust' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
 		switchSet();
-		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
@@ -1087,6 +1087,7 @@ var render    = {
 var setting   = {
 	  filter        : ( type, subtype, name ) => {
 		var list  = subtype in F[ type ] ? F[ type ][ subtype ] : F[ type ];
+		console.log(type, subtype, name, list)
 		if ( type === 'Biquad' ) {
 			if ( [ 'Hig', 'Low' ].includes( subtype.slice( 0, 3 ) ) ) {
 				var vsubtype = subtype.replace( /High|Low/, '' );
@@ -1107,7 +1108,8 @@ var setting   = {
 		var values  = F.values[ vsubtype ];
 		values.type = type;
 		if ( subtype ) values.subtype = subtype;
-		if ( name ) {
+		var current = name in FIL && FIL[ name ].type === values.type && FIL[ name ].parameters.type === values.subtype;
+		if ( current ) {
 			values.name = name;
 			if ( subtype === 'FivePointPeq' ) {
 				Object.keys( F0.FivePointPeq ).forEach( k => {
@@ -1136,9 +1138,8 @@ var setting   = {
 			, boxwidth     : 198
 			, values       : values
 			, checkblank   : true
-			, checkchanged : name in FIL
+			, checkchanged : current
 			, beforeshow   : () => {
-				if ( name ) $( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
 				$( '#infoList td:first-child' ).css( 'min-width', '125px' );
 				var $select = $( '#infoList select' );
 				$select.eq( 0 ).on( 'input', function() {
@@ -1497,9 +1498,10 @@ var setting   = {
 	} //-----------------------------------------------------------------------------------
 	, resampler     : ( type, profile ) => {
 		var list    = D.resampler[ type ];
-		var values   = D.resampler.values[ type ];
+		var values  = D.resampler.values[ type ];
+		var current = S.resampler && DEV.resampler.type === values.type;
 		if ( profile ) values.profile = profile;
-		if ( S.resampler ) DEV.resample.each( ( k, v ) => values[ k ] = v );
+		if ( current ) $.each( DEV.resampler, ( k, v ) => values[ k ] = v );
 		info( {
 			  icon         : V.tab
 			, title        : SW.title
@@ -1507,7 +1509,7 @@ var setting   = {
 			, boxwidth     : 160
 			, values       : values
 			, checkblank   : true
-			, checkchanged : S.resampler
+			, checkchanged : current
 			, beforeshow   : () => {
 				$( '#infoList td:first-child' ).css( 'min-width', '100px' );
 				$( 'select' ).eq( 0 ).on( 'input', function() {
@@ -2472,7 +2474,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	}
 } );
 // devices --------------------------------------------------------------------------------
-$( '#divdevices .i-gear' ).on( 'click', function() {
+$( '#divdevices heading .i-gear' ).on( 'click', function() {
 	setting.main();
 } );
 $( '#devices' ).on( 'click', 'li', function() {
@@ -2498,13 +2500,23 @@ $( '#config' ).on( 'click', '.i-add', function() {
 } );
 // ----------------------------------------------------------------------------------------
 $( '.switch' ).on( 'click', function() {
-	var id = this.id;
+	if ( $( this ).hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : SW.icon
+			, title   : SW.title
+			, message : $( this ).prev().html()
+		} );
+		return
+	}
+	
+	var id       = this.id;
+	var $setting = $( '#setting-'+ id );
 	if ( DEV[ id ] ) {
 		DEV[ id ] = null;
 		setting.save( SW.title, 'Disable ...' );
-		$( '#setting-'+ id ).addClass( 'hide' );
+		$setting.addClass( 'hide' );
 	} else {
-		$( '#setting-'+ id ).trigger( 'click' );
+		$setting.trigger( 'click' );
 	}
 } );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {

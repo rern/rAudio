@@ -86,7 +86,7 @@ foreach( $tabs as $id ) {
 '.htmlSectionStatus( 'sampling' ).'
 </div>
 <div id="options">
-'.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true ] ).'
+'.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true, 'disabled' => '<wh>Resampler</wh> set as <wh>Synchronous</wh>' ] ).'
 '.htmlSetting( [ 'id' => 'capture_samplerate',  'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'resampler',           'returnhtml' => true ] ).'
