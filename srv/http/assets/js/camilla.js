@@ -269,7 +269,7 @@ var Dlist     = {
 	, extra_samples      : [ 'Extra samples',        'number' ]
 	, skip_bytes         : [ 'Skip bytes',           'number' ]
 	, read_bytes         : [ 'Read bytes',           'number' ]
-	, capture_samplerate : [ 'Capture sample rate',  'select' ] // ^
+	, capture_samplerate : [ 'Capture samplerate',   'select' ] // ^
 	, custom             : [ '<gr>Custom rate</gr>', 'number' ]
 	, exclusive          : [ 'Exclusive',            'checkbox' ]
 	, loopback           : [ 'Loopback',             'checkbox' ]
@@ -322,8 +322,6 @@ var D         = {
 		  AsyncSinc    : [
 			  Dlist.type
 			, Dlist.profile
-			, Dlist.capture_samplerate
-			, Dlist.custom
 		]
 		, Custom       : [
 			  Dlist.type
@@ -333,22 +331,19 @@ var D         = {
 			, [ 'F cutoff',            'number' ]
 			, [ 'Interpolation',       'select', [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ] ]
 			, [ 'Window',              'select', [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ] ]
-			, Dlist.capture_samplerate
 		]
 		, AsyncPoly    : [
 			  Dlist.type
 			, [ 'Interpolation',      'select', [ 'Linear', 'Cubic', 'Quintic', 'Septic' ] ]
-			, Dlist.capture_samplerate
 		]
 		, Synchronous : [
 			  Dlist.type
-			, Dlist.capture_samplerate
 		]
 		, values      : {
-			  AsyncSinc   : { type: 'AsyncSinc', profile: 'Balanced', capture_samplerate: '' }
-			, Custom      : { type: 'AsyncSinc', profile: 'Custom', sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9, interpolation: 'Cubic', window: 'Hann2', capture_samplerate: '' }
-			, AsyncPoly   : { type: 'AsyncSinc', interpolation: 'Cubic', capture_samplerate: '' }
-			, Synchronous : { type: 'Synchronous', capture_samplerate: '' }
+			  AsyncSinc   : { type: 'AsyncSinc', profile: 'Balanced' }
+			, Custom      : { type: 'AsyncSinc', profile: 'Custom', sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9, interpolation: 'Cubic', window: 'Hann2' }
+			, AsyncPoly   : { type: 'AsyncPoly', interpolation: 'Cubic' }
+			, Synchronous : { type: 'Synchronous' }
 		}
 	}
 }
@@ -996,13 +991,14 @@ var render    = {
 		} );
 		var keys = [];
 		if ( S.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
+		if ( S.capture_samplerate ) keys.push( 'capture_samplerate' );
 		if ( S.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
 		if ( keys.length ) {
 			labels += '<hr>';
 			values += '<hr>';
 			keys.forEach( k => {
 				labels += common.key2label( k ) +'<br>';
-				values += DEV[ k ] +'<br>';
+				values += DEV[ k ].toLocaleString() +'<br>';
 			} );
 		}
 		if ( S.resampler ) {
@@ -1489,7 +1485,6 @@ var setting   = {
 			, values       : values
 			, checkblank   : true
 			, checkchanged : true
-			, beforeshow   : () => setting.customToggle( 1, values.samplerate )
 			, ok           : () => {
 				var val = infoVal();
 				if ( val.samplerate === 'Custom' ) val.samplerate = val.custom;
@@ -1501,23 +1496,20 @@ var setting   = {
 		} );
 	} //-----------------------------------------------------------------------------------
 	, resampler     : ( type, profile ) => {
-		var Dtype    = D.resampler[ type ];
+		var list    = D.resampler[ type ];
 		var values   = D.resampler.values[ type ];
 		if ( profile ) values.profile = profile;
 		if ( S.resampler ) DEV.resample.each( ( k, v ) => values[ k ] = v );
-		values.capture_samplerate = DEV.capture_samplerate || DEV.samplerate;
-		values.custom = values.capture_samplerate;
-		if ( ! D0.samplerate.includes( values.custom ) ) values.capture_samplerate = 'Custom';
 		info( {
 			  icon         : V.tab
 			, title        : SW.title
-			, list         : Dtype
+			, list         : list
 			, boxwidth     : 160
 			, values       : values
 			, checkblank   : true
 			, checkchanged : S.resampler
 			, beforeshow   : () => {
-				setting.customToggle( 3, values.capture_samplerate )
+				$( '#infoList td:first-child' ).css( 'min-width', '100px' );
 				$( 'select' ).eq( 0 ).on( 'input', function() {
 					setting.resampler( $( this ).val() );
 				} );
@@ -1534,26 +1526,13 @@ var setting   = {
 			}
 			, cancel       : switchCancel
 			, ok           : () => {
-				var val = infoVal();
-				if ( val.capture_samplerate === 'Custom' ) val.capture_samplerate = val.custom;
-				if ( val.capture_samplerate === DEV.samplerate ) val.capture_samplerate = null;
+				var val        = infoVal();
 				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = false;
-				delete val.custom;
 				DEV.resampler = val;
 				setting.switchSave( 'resampler' );
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
-	, customToggle  : ( i, samplerate ) => {
-		var $trcustom = $( '#infoList tr' ).eq( i );
-		$trcustom.toggleClass( 'hide', samplerate !== 'Custom' );
-		$( '#infoList select' ).on( 'input', function() {
-			var rate   = $( this ).val();
-			var custom = rate === 'Custom';
-			$trcustom.toggleClass( 'hide', ! custom );
-			if ( ! custom ) $trcustom.find( 'input' ).val( rate );
-		} );
-	}
 	, mixerGet      : $this => {
 		var $li = $this.parents( 'li' );
 		return {
@@ -1645,7 +1624,7 @@ var setting   = {
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			if ( ! V.press ) {
 				clearTimeout( V.timeoutsave );
-				V.timeoutsave = setTimeout( () => bash( [ 'pushrefresh' ] ), 1000 );
+				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
 			}
 		}, wscamilla ? 0 : 300 );
 		if ( msg ) banner( V.tab, titlle, msg );
@@ -2566,7 +2545,24 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		}
 	} );
 } );
+$( '#setting-capture_samplerate' ).on( 'click', function() {
+	info( {
+		  icon         : V.tab
+		, title        : SW.title
+		, list         : Dlist.capture_samplerate
+		, boxwidth     : 120
+		, values       : [ DEV.capture_samplerate ]
+		, checkchanged : S.capture_samplerate
+		, cancel       : switchCancel
+		, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
+		, ok           : () => {
+			DEV.capture_samplerate = infoVal();
+			setting.save( 'Capture Samplerate', 'Change ...' );
+		}
+	} );
+} );
 $( '#setting-stop_on_rate_change' ).on( 'click', function() {
+	wscamilla.send( '"GetConfigJson"' );
 	info( {
 		  icon         : V.tab
 		, title        : SW.title

@@ -3,6 +3,7 @@ $id_data = [
 	  'volume'              => [ 'label' => 'Master',              'setting' => false,    'sub' => 'hw' ]
 	, 'configuration'       => [ 'label' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
 	, 'enable_rate_adjust'  => [ 'label' => 'Rate Adjust',         'setting' => 'custom' ]
+	, 'capture_samplerate'  => [ 'label' => 'Capture Samplerate',  'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'label' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'resampler'           => [ 'label' => 'Resampler',           'setting' => 'custom' ]
 ];
@@ -86,6 +87,7 @@ foreach( $tabs as $id ) {
 </div>
 <div id="options">
 '.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true ] ).'
+'.htmlSetting( [ 'id' => 'capture_samplerate',  'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'resampler',           'returnhtml' => true ] ).'
 </div>
