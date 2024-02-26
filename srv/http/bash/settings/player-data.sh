@@ -30,7 +30,7 @@ data='
 , "asoundcard"       : '$( getContent $dirsystem/asoundcard )'
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
 , "bluetooth"        : '$( rfkill | grep -q bluetooth && echo true )'
-, "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
+, "btreceiver"       : "'$( getContent $dirshm/btreceiver )'"
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
@@ -39,14 +39,14 @@ data='
 , "crossfadeconf"    : { "SEC": '$crossfade' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
+, "devices"          : '$( getContent $dirshm/devices )'
 , "devicewithbt"     : '$( exists $dirsystem/devicewithbt )'
-, "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
+, "dop"              : '$( exists "$dirsystem/dop-$name" )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'
 , "lastupdate"       : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
 , "lists"            : '$lists'
-, "listdevice"       : '$( getContent $dirshm/listdevice )'
-, "listmixer"        : '$( getContent $dirshm/listmixer )'
+, "mixers"           : '$( getContent $dirshm/mixers )'
 , "mixertype"        : '$( [[ ! $mixernone ]] && echo true )'
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
 , "novolume"         : '$novolume'

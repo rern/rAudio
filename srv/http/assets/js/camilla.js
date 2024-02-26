@@ -56,7 +56,7 @@ var F0        = {
 }
 var F1        = {
 	  pass   : [ F0.name, F0.type, F0.subtype.Biquad, F0.freq, F0.q ]
-	, conv   : [ F0.name, F0.type, F0.subtype.Cov ]
+	, conv   : [ F0.name, F0.type, F0.subtype.Conv ]
 	, fader  : [ F0.name, F0.type, F0.fader ]
 	, combo  : [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' ], F0.freq ]
 }
@@ -91,7 +91,7 @@ var F         = {
 		  F0.name
 		, F0.type
 		, [ 'ms',        'number' ]
-		, [ '',          'radio', { ms: 'ms', mm: 'mm', Samples: 'samples' } ]
+		, [ '',          'radio', { ms: 'ms', mm: 'mm', Sample: 'samples' } ]
 		, [ 'Subsample', 'checkbox' ]
 	]
 	, Conv        : {
@@ -102,7 +102,7 @@ var F         = {
 		, Raw    : [
 			  ...F1.conv
 			, [ 'File',             'select' ]
-			, [ 'Format',           'select', [ 'TEXT' ] ]
+			, [ 'Format',           'select', [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ] ]
 			, [ 'Skip bytes lines', 'number' ]
 			, [ 'Read bytes lines', 'number' ]
 		]
@@ -249,44 +249,41 @@ var P         = { // processor
 	}
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
-var format    = {};
-[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
-	var key       = k
-					.replace( 'FLOAT', 'Float' )
-					.replace( 'TEXT',  'Text' );
-	format[ key ] = k;
-} );
 var D0        = {
 	  main       : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
-	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+	, listsample : {} // on GetSupportedDeviceTypes
+	, samplerate : [] // ^
 }
 var Dlist     = {
-	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
-	, profile            : [ 'Profile',            'select', [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ] ]
-	, typeC              : [ 'Type',               'select' ] // option: wait for ws 'GetSupportedDeviceTypes'
-	, typeP              : [ 'Type',               'select' ] // ^
-	, deviceC            : [ 'Device',             'select' ] // ^
-	, deviceP            : [ 'Device',             'select' ] // ^
-	, format             : [ 'Format',             'select', format ]
-	, filename           : [ 'Filename',           'select', S.lsraw ]
-	, channels           : [ 'Channels',           'number' ]
-	, extra_samples      : [ 'Extra samples',      'number' ]
-	, skip_bytes         : [ 'Skip bytes',         'number' ]
-	, read_bytes         : [ 'Read bytes',         'number' ]
-	, capture_samplerate : [ 'Capture samplerate', 'number' ]
-	, exclusive          : [ 'Exclusive',          'checkbox' ]
-	, loopback           : [ 'Loopback',           'checkbox' ]
-	, change_format      : [ 'Change format',      'checkbox' ]
+	  type               : [ 'Type',                 'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
+	, profile            : [ 'Profile',              'select', [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ] ]
+	, typeC              : [ 'Type',                 'select' ] // on 'GetSupportedDeviceTypes'
+	, typeP              : [ 'Type',                 'select' ] // ^
+	, deviceC            : [ 'Device',               'select' ] // ^
+	, deviceP            : [ 'Device',               'select' ] // ^
+	, formatC            : [ 'Format',               'select' ] // ^
+	, formatP            : [ 'Format',               'select' ] // ^
+	, filename           : [ 'Filename',             'select', S.lsraw ]
+	, channelsC          : [ 'Channels',             'number' ] // ^
+	, channelsP          : [ 'Channels',             'number' ] // ^
+	, extra_samples      : [ 'Extra samples',        'number' ]
+	, skip_bytes         : [ 'Skip bytes',           'number' ]
+	, read_bytes         : [ 'Read bytes',           'number' ]
+	, capture_samplerate : [ 'Capture samplerate',   'select' ] // ^
+	, custom             : [ '<gr>Custom rate</gr>', 'number' ]
+	, exclusive          : [ 'Exclusive',            'checkbox' ]
+	, loopback           : [ 'Loopback',             'checkbox' ]
+	, change_format      : [ 'Change format',        'checkbox' ]
 }
 var D1        = {
-	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.format, Dlist.channels ]
-	, AlsaP : [ Dlist.typeP, Dlist.deviceP, Dlist.format, Dlist.channels ]
+	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.formatC, Dlist.channelsC ]
+	, AlsaP : [ Dlist.typeP, Dlist.deviceP, Dlist.formatP, Dlist.channelsP ]
 	, extra : [ Dlist.extra_samples, Dlist.skip_bytes, Dlist.read_bytes ]
 }
 var D         = {
 	  main      : [
-		  [ 'Sample Rate',       'select', D0.samplerate ]
-		, [ 'Other',             'number' ]
+		  [ 'Sample rate',       'select' ] // on 'GetSupportedDeviceTypes'
+		, Dlist.custom
 		, [ 'Chunk size',        'number' ]
 		, [ 'Queue limit',       'number' ]
 		, [ 'Silence Threshold', 'number' ]
@@ -297,18 +294,18 @@ var D         = {
 		, CoreAudio : [ ...D1.AlsaC, Dlist.change_format ]
 		, Pulse     : D1.AlsaC
 		, Wasapi    : [ ...D1.AlsaC, Dlist.exclusive, Dlist.loopback ]
-		, Jack      : [ Dlist.typeC, Dlist.channels ]
-		, Stdin     : [ Dlist.typeC, Dlist.format, Dlist.channels, ...D1.extra ]
-		, File      : [ Dlist.typeC, Dlist.filename, Dlist.format, Dlist.channels, ...D1.extra ]
+		, Jack      : [ Dlist.typeC, Dlist.channelsC ]
+		, Stdin     : [ Dlist.typeC, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
+		, File      : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
 	}
 	, playback  : {
 		  Alsa      : D1.AlsaP
 		, CoreAudio : [ ...D1.AlsaP, Dlist.change_format ]
 		, Pulse     : D1.AlsaP
 		, Wasapi    : [ ...D1.AlsaP, Dlist.exclusive, Dlist.loopback ]
-		, Jack      : [ Dlist.typeP, Dlist.channels ]
-		, Stdout    : [ Dlist.typeP, Dlist.format, Dlist.channels ]
-		, File      : [ Dlist.typeP, Dlist.filename, Dlist.format, Dlist.channels ]
+		, Jack      : [ Dlist.typeP, Dlist.channelsP ]
+		, Stdout    : [ Dlist.typeP, Dlist.formatP, Dlist.channelsP ]
+		, File      : [ Dlist.typeP, Dlist.filename, Dlist.formatP, Dlist.channelsP ]
 	}
 	, values    : {
 		  Alsa      : { type: '', device: '',   format: '', channels: 2 }
@@ -325,7 +322,6 @@ var D         = {
 		  AsyncSinc    : [
 			  Dlist.type
 			, Dlist.profile
-			, Dlist.capture_samplerate
 		]
 		, Custom       : [
 			  Dlist.type
@@ -335,22 +331,19 @@ var D         = {
 			, [ 'F cutoff',            'number' ]
 			, [ 'Interpolation',       'select', [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ] ]
 			, [ 'Window',              'select', [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ] ]
-			, Dlist.capture_samplerate
 		]
 		, AsyncPoly    : [
 			  Dlist.type
 			, [ 'Interpolation',      'select', [ 'Linear', 'Cubic', 'Quintic', 'Septic' ] ]
-			, Dlist.capture_samplerate
 		]
 		, Synchronous : [
 			  Dlist.type
-			, Dlist.capture_samplerate
 		]
 		, values      : {
-			  AsyncSinc   : { type: 'AsyncSinc', profile: 'Balanced', capture_samplerate: '' }
-			, Custom      : { type: 'AsyncSinc', profile: 'Custom', sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9, interpolation: 'Cubic', window: 'Hann2', capture_samplerate: '' }
-			, AsyncPoly   : { type: 'AsyncSinc', interpolation: 'Cubic', capture_samplerate: '' }
-			, Synchronous : { type: 'Synchronous', capture_samplerate: '' }
+			  AsyncSinc   : { type: 'AsyncSinc', profile: 'Balanced' }
+			, Custom      : { type: 'AsyncSinc', profile: 'Custom', sinc_len: 128, oversampling_factor: 256, f_cutoff: 0.9, interpolation: 'Cubic', window: 'Hann2' }
+			, AsyncPoly   : { type: 'AsyncPoly', interpolation: 'Cubic' }
+			, Synchronous : { type: 'Synchronous' }
 		}
 	}
 }
@@ -757,6 +750,7 @@ var render    = {
 		delete V.intervalvu;
 		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
 		$( '.peak' ).css( 'left', 0 );
+		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).text( '·' );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -838,7 +832,7 @@ var render    = {
 		return '<li data-name="'+ k +'"'+ classeq +'>'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
-		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coefficients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
@@ -977,10 +971,12 @@ var render    = {
 		[ 'playback', 'capture' ].forEach( d => {
 			var dev = DEV[ d ];
 			var data = jsonClone( dev );
+			var device = dev.device;
+			if ( d === 'playback' ) device += ' - '+ S.cardname;
 			[ 'device', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
 				 +'<div class="li1">'+ common.key2label( d ) +' <gr>·</gr> '+ render.typeReplace( dev.type )
-				 + ( 'device' in dev ? ' <gr>·</gr> '+ dev.device +'</div>' : '' )
+				 + ( 'device' in dev ? ' <gr>·</gr> '+ device +'</div>' : '' )
 				 +'<div class="li2">'+ render.json2string( data ) +'</div>'
 				 +'</li>';
 		} );
@@ -995,13 +991,14 @@ var render    = {
 		} );
 		var keys = [];
 		if ( S.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
+		if ( S.capture_samplerate ) keys.push( 'capture_samplerate' );
 		if ( S.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
 		if ( keys.length ) {
 			labels += '<hr>';
 			values += '<hr>';
 			keys.forEach( k => {
 				labels += common.key2label( k ) +'<br>';
-				values += DEV[ k ] +'<br>';
+				values += DEV[ k ].toLocaleString() +'<br>';
 			} );
 		}
 		if ( S.resampler ) {
@@ -1018,8 +1015,8 @@ var render    = {
 		}
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
+		$( '#enable_rate_adjust' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
 		switchSet();
-		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
@@ -1089,7 +1086,8 @@ var render    = {
 }
 var setting   = {
 	  filter        : ( type, subtype, name ) => {
-		var list  = subtype ? F[ type ][ subtype ] : F[ type ];
+		var list  = subtype in F[ type ] ? F[ type ][ subtype ] : F[ type ];
+		console.log(type, subtype, name, list)
 		if ( type === 'Biquad' ) {
 			if ( [ 'Hig', 'Low' ].includes( subtype.slice( 0, 3 ) ) ) {
 				var vsubtype = subtype.replace( /High|Low/, '' );
@@ -1102,13 +1100,16 @@ var setting   = {
 			}
 		} else if ( type === 'BiquadCombo' ) {
 			var vsubtype = [ 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ].includes( subtype ) ? subtype : type;
+		} else if ( type === 'Conv' ) {
+			var vsubtype = subtype;
 		} else {
 			var vsubtype = type;
 		}
 		var values  = F.values[ vsubtype ];
 		values.type = type;
 		if ( subtype ) values.subtype = subtype;
-		if ( name ) {
+		var current = name in FIL && FIL[ name ].type === values.type && FIL[ name ].parameters.type === values.subtype;
+		if ( current ) {
 			values.name = name;
 			if ( subtype === 'FivePointPeq' ) {
 				Object.keys( F0.FivePointPeq ).forEach( k => {
@@ -1137,9 +1138,8 @@ var setting   = {
 			, boxwidth     : 198
 			, values       : values
 			, checkblank   : true
-			, checkchanged : name in FIL
+			, checkchanged : current
 			, beforeshow   : () => {
-				if ( name ) $( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
 				$( '#infoList td:first-child' ).css( 'min-width', '125px' );
 				var $select = $( '#infoList select' );
 				$select.eq( 0 ).on( 'input', function() {
@@ -1444,9 +1444,13 @@ var setting   = {
 			, checkblank   : true
 			, checkchanged : true
 			, beforeshow   : () => {
-				$( '#infoList input[type=number]' ).css( 'width', '70px' );
+				var $input = $( '#infoList input[type=number]' );
+				var $td    = $input.parent();
+				$td.append( $td.next().find( 'i' ) );
+				$input.css( 'width', '70px' );
 				$( '#infoList td:first-child' ).css( 'width', '128px' );
-				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
+				$( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
+/*				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
 					if ( typenew === 'File' && ! S.lsraw.length ) {
 						info( {
@@ -1458,7 +1462,7 @@ var setting   = {
 					} else {
 						setting.device( dev, typenew );
 					}
-				} );
+				} );*/
 			}
 			, ok           : () => {
 				DEV[ dev ] = infoVal();
@@ -1467,13 +1471,13 @@ var setting   = {
 		} );
 	}
 	, main          : () => {
-		var values = {};
+		var values   = {};
 		D0.main.forEach( k => {
 			values[ k ] = DEV[ k ];
-			if ( k === 'samplerate' ) values.other = DEV.samplerate;
+			if ( k === 'samplerate' ) values.custom = DEV.samplerate; // force indexed after samplerate
 		} );
-		if ( ! D0.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
-		var title = common.tabTitle();
+		if ( ! D0.samplerate.includes( values.custom ) ) values.samplerate = 'Custom';
+		var title    = common.tabTitle();
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -1482,20 +1486,10 @@ var setting   = {
 			, values       : values
 			, checkblank   : true
 			, checkchanged : true
-			, beforeshow   : () => {
-				var $trother = $( '#infoList tr' ).eq( 1 );
-				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
-				$( '#infoList select' ).on( 'input', function() {
-					var rate  = $( this ).val();
-					var other = rate === 'Other';
-					$trother.toggleClass( 'hide', ! other );
-					if ( ! other ) $trother.find( 'input' ).val( rate );
-				} );
-			}
 			, ok           : () => {
 				var val = infoVal();
-				if ( val.samplerate === 'Other' ) val.samplerate = val.other;
-				delete val.other;
+				if ( val.samplerate === 'Custom' ) val.samplerate = val.custom;
+				delete val.custom;
 				$.each( val, ( k, v ) => DEV[ k ] = v );
 				setting.save( title, 'Change ...' );
 				render.devices();
@@ -1503,20 +1497,21 @@ var setting   = {
 		} );
 	} //-----------------------------------------------------------------------------------
 	, resampler     : ( type, profile ) => {
-		var Dtype  = D.resampler[ type ];
-		var values = D.resampler.values[ type ];
-		if (profile ) values.profile = profile;
-		if ( S.resampler ) DEV.resample.each( ( k, v ) => values[ k ] = v );
-		values.capture_samplerate = DEV.capture_samplerate || DEV.samplerate;
+		var list    = D.resampler[ type ];
+		var values  = D.resampler.values[ type ];
+		var current = S.resampler && DEV.resampler.type === values.type;
+		if ( profile ) values.profile = profile;
+		if ( current ) $.each( DEV.resampler, ( k, v ) => values[ k ] = v );
 		info( {
 			  icon         : V.tab
 			, title        : SW.title
-			, list         : Dtype
+			, list         : list
 			, boxwidth     : 160
 			, values       : values
 			, checkblank   : true
-			, checkchanged : S.resampler
+			, checkchanged : current
 			, beforeshow   : () => {
+				$( '#infoList td:first-child' ).css( 'min-width', '100px' );
 				$( 'select' ).eq( 0 ).on( 'input', function() {
 					setting.resampler( $( this ).val() );
 				} );
@@ -1533,12 +1528,10 @@ var setting   = {
 			}
 			, cancel       : switchCancel
 			, ok           : () => {
-				var val = infoVal();
-				DEV.capture_samplerate = val.capture_samplerate === DEV.samplerate ? null : val.capture_samplerate;
-				delete val.capture_samplerate;
+				var val        = infoVal();
 				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = false;
 				DEV.resampler = val;
-				setting.switchSave( 'resampler' );
+				setting.save( SW.title, 'Change ...' );
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
@@ -1631,27 +1624,12 @@ var setting   = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			if ( ! V.press ) setting.save2file();
+			if ( ! V.press ) {
+				clearTimeout( V.timeoutsave );
+				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
+			}
 		}, wscamilla ? 0 : 300 );
-		if ( msg ) banner( V.tab, titlle, msg );
-	}
-	, save2file     : () => {
-		clearTimeout( V.timeoutsave );
-		V.timeoutsave = setTimeout( () => {
-			local();
-			bash( [ 'saveconfig' ] );
-		}, 1000 );
-	}
-	, switchSave    : ( id, disable ) => {
-		if ( disable === 'disable' ) {
-			var msg   = 'Disable ...';
-			DEV[ id ] = null;
-		} else {
-			var msg   = DEV[ id ] ? 'Change ...' : 'Enable ...';
-			DEV[ id ] = true;
-		}
-		setting.save( SW.title, msg );
-		render.devices();
+		if ( titlle ) banner( V.tab, titlle, msg );
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
@@ -1876,10 +1854,19 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
-					Dlist.typeC[ 2 ]   = type.capture;
-					Dlist.typeP[ 2 ]   = type.playback;
-					Dlist.deviceC[ 2 ] = S.devices.capture;
-					Dlist.deviceP[ 2 ] = S.devices.playback;
+					Dlist.formatC.push( { kv: S.formats.capture, nosort: true } );
+					Dlist.formatP.push( { kv: S.formats.playback, nosort: true } );
+					Dlist.typeC.push( type.capture );
+					Dlist.typeP.push( type.playback );
+					Dlist.deviceC.push( S.devices.capture );
+					Dlist.deviceP.push( S.devices.playback );
+					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.channels.capture } } );
+					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.channels.playback } } );
+					D.values.channels  = S.channels;
+					var samplings        = { kv: S.samplings, nosort: true }
+					Dlist.capture_samplerate.push( samplings );
+					D.main[ 0 ].push( samplings );
+					D0.samplerate      = Object.values( S.samplings )
 					$( '#divvolume .col-l gr' ).text( S.control );
 					showContent();
 					break;
@@ -2001,7 +1988,7 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 	
 	clearInterval( V.intervalgain );
 	if ( $( this ).parents( 'li' ).find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) graph.gain();
-	setting.save2file();
+	setting.save();
 } ).press( '.i-minus, .i-plus', function( e ) {
 	setting.rangeGet( $( e.currentTarget ), 'press' );
 } );
@@ -2487,6 +2474,9 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	}
 } );
 // devices --------------------------------------------------------------------------------
+$( '#divdevices heading .i-gear' ).on( 'click', function() {
+	setting.main();
+} );
 $( '#devices' ).on( 'click', 'li', function() {
 	setting.device( $( this ).data( 'type' ) );
 } );
@@ -2510,9 +2500,24 @@ $( '#config' ).on( 'click', '.i-add', function() {
 } );
 // ----------------------------------------------------------------------------------------
 $( '.switch' ).on( 'click', function() {
-	var id = this.id;
+	if ( $( this ).hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : SW.icon
+			, title   : SW.title
+			, message : $( this ).prev().html()
+		} );
+		return
+	}
+	
+	var id       = this.id;
 	var $setting = $( '#setting-'+ id );
-	DEV[ id ] ? setting.switchSave( id, 'disable' ) : $setting.trigger( 'click' );
+	if ( DEV[ id ] ) {
+		DEV[ id ] = null;
+		setting.save( SW.title, 'Disable ...' );
+		$setting.addClass( 'hide' );
+	} else {
+		$setting.trigger( 'click' );
+	}
 } );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	var $this = $( this );
@@ -2526,6 +2531,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		return
 	}
 	
+	var enabled = S.enable_rate_adjust;
 	info( {
 		  icon         : V.tab
 		, title        : SW.title
@@ -2538,27 +2544,47 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 			  adjust_period : DEV.adjust_period
 			, target_level  : DEV.target_level
 		}
-		, checkchanged : S.enable_rate_adjust
+		, checkchanged : enabled
 		, cancel       : switchCancel
 		, ok           : () => {
 			var val =  infoVal();
 			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
-			setting.switchSave( 'enable_rate_adjust' );
+			DEV.enable_rate_adjust = true;
+			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+		}
+	} );
+} );
+$( '#setting-capture_samplerate' ).on( 'click', function() {
+	var enabled = S.capture_samplerate;
+	info( {
+		  icon         : V.tab
+		, title        : SW.title
+		, list         : Dlist.capture_samplerate
+		, boxwidth     : 120
+		, values       : [ DEV.capture_samplerate ]
+		, checkchanged : enabled
+		, cancel       : switchCancel
+		, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
+		, ok           : () => {
+			DEV.capture_samplerate = infoVal();
+			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
 $( '#setting-stop_on_rate_change' ).on( 'click', function() {
+	var enabled = S.stop_on_rate_change;
 	info( {
 		  icon         : V.tab
 		, title        : SW.title
 		, list         : [ 'Rate mearsure interval', 'number' ]
 		, boxwidth     : 65
 		, values       : DEV.rate_measure_interval
-		, checkchanged : S.stop_on_rate_change
+		, checkchanged : enabled
 		, cancel       : switchCancel
 		, ok           : () => {
+			DEV.stop_on_rate_change   = true;
 			DEV.rate_measure_interval = infoVal();
-			setting.switchSave( 'stop_on_rate_change' );
+			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );

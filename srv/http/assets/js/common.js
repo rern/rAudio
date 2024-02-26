@@ -13,7 +13,6 @@ var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
-var blinkdot    = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 
 // ----------------------------------------------------------------------
 /*
@@ -157,7 +156,7 @@ function banner( icon, title, message, delay ) {
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
-	if ( V.reboot || $( '#banner' ).hasClass( 'hide' ) ) return
+	if ( V.reboot || $( '#banner' ).hasClass( 'hide' ) || $( '#banner .i-warning' ).length ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -457,7 +456,7 @@ function info( json ) {
 /*			param = {
 				  kv       : { k: V, ... }
 				, colspan  : N
-				, disable  : T/F
+				, nosort   : T/F
 				, sameline : T/F
 				, suffix   : UNIT
 				, updn     : { step: N, min: N, max: N }
@@ -526,7 +525,7 @@ function info( json ) {
 								+'</div></td></tr>';
 					break
 				case 'select':
-					htmls.list += '<select>'+ htmlOption( kv ) +'</select>';
+					htmls.list += '<select>'+ htmlOption( param ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
@@ -738,7 +737,9 @@ function infoCheckSet() {
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
 			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
 			setTimeout( () => {
-				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short )
+				if ( ! $( '#infoList input' ).length ) return // suppress on repeating
+				
+				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short );
 			}, 75 ); // ios: force after infoCheckLength
 		} );
 	}
@@ -979,7 +980,9 @@ function infoWidth() {
 	} else {
 		var boxW   = 230;
 	}
-	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' ).parent().css( 'width', boxW +'px' );
+	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' )
+		.css( 'width', boxW +'px' )
+		.parent().css( 'width', boxW +'px' );
 	if ( $( '#infoList select' ).length ) {
 		selectSet(); // render select to set width
 		$( '#infoList .select2-container' ).attr( 'style', 'width: '+ boxW +'px !important' );
@@ -1032,13 +1035,15 @@ function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );
 }
 function htmlOption( el ) {
+	var nosort = 'nosort' in el;
+	if ( 'kv' in el ) el = el.kv;
 	if ( typeof el === 'number' ) el = [ ...Array( el ).keys() ];
 	var options = '';
 	if ( Array.isArray( el ) ) { // name = value
-		el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
+		if ( ! nosort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
 		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
 	} else {                     // json
-		el = jsonSort( el );
+		if ( ! nosort ) el = jsonSort( el );
 		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
 	}
 	return options

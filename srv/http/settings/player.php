@@ -43,7 +43,7 @@ $body = [
 	[
 		  'id'       => 'bluealsa'
 		, 'icon'     => true
-		, 'input'    => 'btaplayname'
+		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
 {$Fi( 'volume btn' )} Sender volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
@@ -53,8 +53,7 @@ EOF
 		  'id'       => 'device'
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
- · Device name: Retrieved from I²S module (if available)
- · HDMI audio: Available when connected before boot only
+Note: HDMI may not be available unless connect before boot.
 EOF
 	]
 	, [

@@ -1614,9 +1614,9 @@ function setInfo() {
 			$( '#album' ).text( S.Album || url );
 		}
 	} else {
-		$( '#artist' ).text( S.Artist || dots );
+		$( '#artist' ).html( S.Artist || dots );
 		$( '#title' )
-			.text( S.Title || dots )
+			.html( S.Title || dots )
 			.toggleClass( 'gr', S.state === 'pause' );
 		var album = S.Album || S.file;
 		if ( S.booklet ) album += ' '+ ico( 'booklet gr' );
@@ -1856,7 +1856,7 @@ function setProgressAnimate() {
 }
 function setProgressElapsed() {
 	clearInterval( V.interval.elapsed );
-	if ( S.elapsed === false || S.state !== 'play' || 'autoplaycd' in V ) return // wait for cd cache on start
+	if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
 	
 	var elapsedhms;
 	var $elapsed = S.elapsed === false ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );

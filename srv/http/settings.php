@@ -195,7 +195,7 @@ function htmlSetting( $data ) {
 		$disabled = isset( $data[ 'disabled' ] ) ? '<span class="hide">'.$data[ 'disabled' ].'</span>' : '';
 		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div></label>';
 	} else {
-		if ( $input[ 0 ] == '<' ) {
+		if ( ltrim( $input )[ 0 ] == '<' ) {
 			$html.= $input;
 		} else { // select
 			$html.= '<select id="'.$input.'"></select>';

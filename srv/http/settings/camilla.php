@@ -3,6 +3,7 @@ $id_data = [
 	  'volume'              => [ 'label' => 'Master',              'setting' => false,    'sub' => 'hw' ]
 	, 'configuration'       => [ 'label' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
 	, 'enable_rate_adjust'  => [ 'label' => 'Rate Adjust',         'setting' => 'custom' ]
+	, 'capture_samplerate'  => [ 'label' => 'Capture Samplerate',  'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'label' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'resampler'           => [ 'label' => 'Resampler',           'setting' => 'custom' ]
 ];
@@ -27,7 +28,7 @@ EOF
 {$Fi( 'set0 btn' )} Reset clipped count (if any)
 EOF
 	, 'filters'   => <<< EOF
-{$Fi( 'folder-filter btn' )}{$Fi( 'plus btn' )} FIR coefficient files · New
+{$Fi( 'folder-filter btn' )}{$Fi( 'plus btn' )} Finite Impulse Response (FIR) files · New
 {$button[ 'filters' ]} Graph · Edit · Delete
 {$Fi( 'code btn' )} Set 0
 {$button[ 'control' ]} Mute · Invert · Linear (Gain)
@@ -81,11 +82,12 @@ foreach( $tabs as $id ) {
 	$html.= '<ul class="entries main"></ul>';
 	if ( $id === 'devices' ) {
 		$html.= '
-<div id="divdevices" class="section">
+<div id="sampling">
 '.htmlSectionStatus( 'sampling' ).'
 </div>
-<div id="divoptions" class="section">
-'.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true ] ).'
+<div id="options">
+'.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true, 'disabled' => '<wh>Resampler</wh> set as <wh>Synchronous</wh>' ] ).'
+'.htmlSetting( [ 'id' => 'capture_samplerate',  'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'resampler',           'returnhtml' => true ] ).'
 </div>

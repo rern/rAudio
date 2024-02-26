@@ -4,6 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 202402224
+file=/etc/default/camilladsp
+[[ -e $file ]] && sed -i 's|/etc/|/srv/http/data/|' $file
+
+file=$dirsystem/autoplay.conf
+[[ -e $file ]] && sed -i '/^cd/ d' $file
+
 # 20240219
 readarray -t mixerfiles <<< $( ls $dirsystem/hwmixer-* 2> /dev/null )
 if [[ $mixerfiles ]]; then
@@ -19,7 +26,7 @@ fi
 [[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
 
 # 20240212
-[[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils
+[[ ! -e /usr/bin/mmc ]] && pkgs+=' mmc-utils'
 
 # 20240121
 if [[ ! -e /usr/bin/iwctl ]]; then
@@ -47,7 +54,7 @@ Address=$address
 fi
 
 if [[ ! -e /usr/bin/gpioset ]]; then
-	pacman -Sy --noconfirm libgpiod
+	pkgs+=' libgpiod'
 	
 	file=$dirsystem/powerbutton.conf
 	if [[ -e $file ]]; then
@@ -98,10 +105,10 @@ fi
 if [[ -e /usr/bin/camilladsp ]]; then
 	rm -f $dirsystem/camilla.conf
 	mkdir -p $dircamilladsp/raw
-	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.2' ]]; then
+	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.3' ]]; then
 		systemctl stop camilladsp
+		pkgs+=' camilladsp'
 		rm -f /etc/default/camilladsp /usr/lib/systemd/system/camilladsp.service
-		pacman -Sy --noconfirm camilladsp
 		files=$( grep -rl enable_resampling $dircamilladsp )
 		if [[ $files ]]; then
 			readarray -t files <<< $files
@@ -109,8 +116,13 @@ if [[ -e /usr/bin/camilladsp ]]; then
 				sed -i '/enable_resampling\|resampler_type/ d' "$f"
 			done
 		fi
-		[[ -e $dirsystem/camilladsp ]] && systemctl start camilladsp
 	fi
+fi
+
+# up to 20240212
+if [[ $pkgs ]]; then
+	pacman -Sy --noconfirm $pkgs
+	systemctl try-restart $pkgs
 fi
 
 #-------------------------------------------------------------------------------

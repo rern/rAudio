@@ -5,11 +5,8 @@ var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#device' ).on( 'input', function() {
-	var $this     = $( this );
-	var aplayname = $this.val();
-	var output    = $this.find( 'option:selected' ).text()
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'device', output, aplayname, 'CMD OUTPUT APLAYNAME' ] );
+	bash( [ 'device', $( this ).val(), 'CMD DEVICE' ] );
 } );
 $( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
@@ -19,7 +16,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 	if ( this.id.slice( -1 ) === 'a' ) {
 		var cmd     = 'volumebt';
 		var cmd0db  = 'volume0dbbt';
-		var control = S.btaplayname.replace( ' - A2DP', '' );
+		var control = S.btreceiver.replace( ' - A2DP', '' );
 	} else {
 		var cmd     = 'volume';
 		var cmd0db  = 'volume0db';
@@ -69,7 +66,7 @@ $( '#mixertype' ).on( 'click', function() {
 			, ok      : () => setMixerType( 'none' )
 		} );
 	} else {
-		S.listmixer ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
+		S.mixers ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
 	}
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
@@ -120,7 +117,7 @@ $( '#setting-crossfade' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-replaygain' ).on( 'click', function() {
-	var hardware = S.output.mixertype === 'software' && S.listmixer;
+	var hardware = S.output.mixertype === 'software' && S.mixers;
 	if ( ! hardware ) delete S.replaygainconf.HARDWARE;
 	info( {
 		  icon         : SW.icon
@@ -196,7 +193,7 @@ audio_output {
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
 </table>`;
-	bash( [ 'customget' ], val => {
+	bash( [ 'customget', S.output.name, 'CMD DEVICE' ], val => {
 		var val       = val.split( '^^' );
 		var global = val[ 0 ].trim(); // remove trailing
 		var output = val[ 1 ].trim();
@@ -218,7 +215,7 @@ audio_output {
 				}
 				
 				notifyCommon();
-				bash( [ 'custom', global, output, 'CMD GLOBAL OUTPUT' ], mpdstart => {
+				bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -311,10 +308,10 @@ function renderPage() {
 		if ( S[ k ] ) icondsp = ico( k );
 	} );
 	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
-	if ( S.btaplayname ) {
+	if ( S.btreceiver ) {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divbluealsa' ).removeClass( 'hide' );
-		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
+		$( '#btreceiver' ).html( '<option>'+ S.btreceiver.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', ! S.devicewithbt );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
@@ -327,11 +324,11 @@ function renderPage() {
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#device' )
-			.html( htmlOption( S.listdevice ) )
-			.val( S.output.aplayname );
-		if ( S.listmixer ) {
+			.html( htmlOption( Object.keys( S.devices ) ) )
+			.val( S.output.name );
+		if ( S.mixers ) {
 			$( '#mixer' )
-				.html( htmlOption( S.listmixer ) )
+				.html( htmlOption( S.mixers ) )
 				.val( S.output.mixer );
 			$( '#divmixer' ).removeClass( 'hide' );
 		} else {
@@ -339,7 +336,7 @@ function renderPage() {
 		}
 		$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
-		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.listmixer || ! S.mixertype );
+		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers || ! S.mixertype );
 		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
@@ -347,7 +344,7 @@ function renderPage() {
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
-	if ( I.range ) $( '#setting-'+ ( S.btaplayname ? 'bluealsa' : 'mixer' ) ).trigger( 'click' );
+	if ( I.range ) $( '#setting-'+ ( S.btreceiver ? 'bluealsa' : 'mixer' ) ).trigger( 'click' );
 	showContent();
 }
 function renderStatus() {
@@ -360,7 +357,7 @@ function renderStatus() {
 }
 function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', mixertype, 'CMD MIXERTYPE' ] );
+	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 }
 function volumeGetPush() {
 	bash( [ 'volumepush' ] );

@@ -26,7 +26,7 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
 	$dirbash/status-push.sh
-	pushData playlist '{ "refresh": true }'
+	pushData audiocd '{ "type": "clear" }'
 	$dirsettings/player-data.sh pushrefresh
 	exit
 fi
@@ -41,7 +41,6 @@ discid=${cddiscid[0]}
 trackL=${cddiscid[1]} # also = offset last index (offsets: +1 lead-in)
 
 cdData() {
-	notify audiocd 'Audio CD' "$artist • $album"
 	offset=( ${cddiscid[@]:2} )                           # offset - frame end
 	offset[trackL]=$(( ${offset[trackL]} * 75 ))          # last - seconds > frames 1:75
 	(( $( grep -c ' / ' <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
@@ -58,6 +57,8 @@ cdData() {
 	done
 	echo -n "$tracks" > $diraudiocd/$discid
 }
+
+grep -qs -m1 '\^^^' $diraudiocd/$discid && rm $diraudiocd/$discid # remove bad data
 
 if [[ ! -e $diraudiocd/$discid ]]; then # gnudb
 	server='https://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
@@ -130,20 +131,17 @@ CD-TEXT-'
 		cdData
 	fi
 fi
-# suppress playbackStatusGet in passive.js
-if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
-	pushData playlist '{ "autoplaycd": 1 }'
-fi
 # add tracks to playlist
+pushData audiocd '{ "type": "add" }' # suppress playbackStatusGet in passive.js
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 ! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
-notify audiocd 'Audio CD' 'Add to Playlist ...'
+notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
 for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "
 done
 mpc -q add $tracklist
 echo $discid > $dirshm/audiocd
-pushData playlist '{ "refresh": true }'
+pushData audiocd '{ "type": "ready" }'
 eject -x 4
 # coverart
 if [[ -e $diraudiocd/$discid && ! $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
@@ -153,11 +151,10 @@ $album
 $discid
 CMD ARTIST ALBUM DISCID" &> /dev/null &
 fi
-# set 1st track of cd as cuuent
+# set 1st track of cd as current
 if [[ $trackcd ]]; then
 	$dirbash/cmd.sh "mpcskip
 $trackcd
-play
+stop
 CMD POS ACTION"
-	[[ ! -e $dirsystem/autoplay ]] && mpc -q stop
 fi

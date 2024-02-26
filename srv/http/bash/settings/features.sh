@@ -94,50 +94,13 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
-	playerActive mpd && mpc -q stop || $dirbash/cmd.sh playerstop
 	enableFlagSet
-	if [[ $ON ]]; then
-		if grep -q configs-bt /etc/default/camilladsp && [[ ! -e $dirshm/btreceiver ]]; then
-			configfile=$( ls -1 $dircamilladsp/configs/* | head -1 )
-			sed -i 's|^CONFIG=.*|CONFIG="'$configfile'"|' /etc/default/camilladsp
-		fi
-		
-		notify 'camilladsp blink' CamillaDSP "Set Playback format ..."
-		modprobe snd_aloop
-		card=$( < $dirsystem/asoundcard )
-		configfile=$( getVar CONFIG /etc/default/camilladsp )
-		sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $configfile
-		formats=( FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE )
-		for (( i=0; i < 6; i++ )); do
-			format=${formats[i]}
-			sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $configfile
-			camilladsp $configfile &> /dev/null &
-			sleep 0.5
-			if pgrep -x camilladsp &> /dev/null; then
-				killall camilladsp
-				break
-			else
-				format=
-			fi
-		done
-		if [[ $format ]]; then
-			notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
-			sed -E 's/ /" "/g; s/^|$/"/g' <<< ${formats[@]:i} > $dirsystem/camilladsp
-			pushRestartMpd camilladsp $TF
-		else
-			notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
-			rm $dirsystem/camilladsp
-			rmmod snd-aloop &> /dev/null
-		fi
-	else
+	playerActive mpd && mpc -q stop || $dirbash/cmd.sh playerstop
+	if [[ ! $ON ]]; then
 		$dirsettings/camilla.sh saveconfig
 		[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
-		systemctl stop camilladsp
-		pushRestartMpd camilladsp $TF
-		rmmod snd-aloop &> /dev/null
-		camilladspyml=$( getVar CONFIG /etc/default/camilladsp )
-		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1FLOAT64LE/}}' "$camilladspyml"
 	fi
+	pushRestartMpd camilladsp $TF
 	;;
 dabradio )
 	if [[ $ON ]]; then
@@ -401,7 +364,7 @@ snapclient )
 		fi
 	else
 		systemctl stop snapclient
-		[[ $snapserver ]] && rm $dirsystem/snapclientserver
+		[[ $snapserver ]] && rm -f $dirsystem/snapclientserver
 	fi
 	pushRefresh
 	;;

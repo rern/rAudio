@@ -74,16 +74,21 @@ function currentPlaylist() {
 			$each->Name    = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
 			$each->urlname = $urlname;
 		} else if ( $fileheader === 'cdda' ) {
-			$id           = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-			if ( ! isset( $cdlist ) ) $cdlist = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
-			$track        = substr( $each->file, 8 );
-			$data         = $cdlist[ $track - 1 ];
-			$audiocd      = explode( '^', $data );
-			$each->Artist = $audiocd[ 0 ];
-			$each->Album  = $audiocd[ 1 ];
-			$each->Title  = $audiocd[ 2 ];
-			$each->Time   = second2HMS( $audiocd[ 3 ] );
-			$each->Track  = $track;
+			if ( ! isset( $cdlist ) ) {
+				$id     = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+				$cdfile = '/srv/http/data/audiocd/'.$id;
+				$cdlist = file_exists( $cdfile ) ? file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES ) : false;
+			}
+			if ( $cdlist ) {
+				$track        = substr( $each->file, 8 );
+				$data         = $cdlist[ $track - 1 ];
+				$audiocd      = explode( '^', $data );
+				$each->Artist = $audiocd[ 0 ];
+				$each->Album  = $audiocd[ 1 ];
+				$each->Title  = $audiocd[ 2 ];
+				$each->Time   = second2HMS( $audiocd[ 3 ] );
+				$each->Track  = $track;
+			}
 		}
 		$array[] = $each;
 	}

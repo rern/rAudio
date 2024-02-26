@@ -56,5 +56,3 @@ s|(dbus_path: ).*|\1'$dbuspath'|
 }
 ' $configbt
 fi
-
-systemctl restart camilladsp
