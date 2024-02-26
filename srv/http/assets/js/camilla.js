@@ -256,7 +256,7 @@ var D0        = {
 }
 var Dlist     = {
 	  type               : [ 'Type',                 'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
-	, profile            : [ 'Profile',              'select', [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ] ]
+	, profile            : [ 'Profile',              'select', { kv: [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
 	, typeC              : [ 'Type',                 'select' ] // on 'GetSupportedDeviceTypes'
 	, typeP              : [ 'Type',                 'select' ] // ^
 	, deviceC            : [ 'Device',               'select' ] // ^
@@ -270,7 +270,6 @@ var Dlist     = {
 	, skip_bytes         : [ 'Skip bytes',           'number' ]
 	, read_bytes         : [ 'Read bytes',           'number' ]
 	, capture_samplerate : [ 'Capture samplerate',   'select' ] // ^
-	, custom             : [ '<gr>Custom rate</gr>', 'number' ]
 	, exclusive          : [ 'Exclusive',            'checkbox' ]
 	, loopback           : [ 'Loopback',             'checkbox' ]
 	, change_format      : [ 'Change format',        'checkbox' ]
@@ -283,7 +282,6 @@ var D1        = {
 var D         = {
 	  main      : [
 		  [ 'Sample rate',       'select' ] // on 'GetSupportedDeviceTypes'
-		, Dlist.custom
 		, [ 'Chunk size',        'number' ]
 		, [ 'Queue limit',       'number' ]
 		, [ 'Silence Threshold', 'number' ]
@@ -1474,9 +1472,7 @@ var setting   = {
 		var values   = {};
 		D0.main.forEach( k => {
 			values[ k ] = DEV[ k ];
-			if ( k === 'samplerate' ) values.custom = DEV.samplerate; // force indexed after samplerate
 		} );
-		if ( ! D0.samplerate.includes( values.custom ) ) values.samplerate = 'Custom';
 		var title    = common.tabTitle();
 		info( {
 			  icon         : V.tab
@@ -1488,8 +1484,6 @@ var setting   = {
 			, checkchanged : true
 			, ok           : () => {
 				var val = infoVal();
-				if ( val.samplerate === 'Custom' ) val.samplerate = val.custom;
-				delete val.custom;
 				$.each( val, ( k, v ) => DEV[ k ] = v );
 				setting.save( title, 'Change ...' );
 				render.devices();
