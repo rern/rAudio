@@ -23,7 +23,7 @@ if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which migh
 else                                   # no sound
 	notify output 'Audio Output' '(None)'
 	touch $dirshm/nosound
-	rm -f $dirshm/{amixercontrol,listdevice,listmixer,output}
+	rm -f $dirshm/{amixercontrol,devices,mixers,output}
 	[[ -e $dirshm/btreceiver ]] && CARD=0 || CARD=-1
 	echo $CARD > $dirsystem/asoundcard
 	pushData display '{ "volumenone": true }'

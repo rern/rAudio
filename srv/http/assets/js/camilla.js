@@ -1897,10 +1897,10 @@ var common    = {
 					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.channels.capture } } );
 					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.channels.playback } } );
 					D.values.channels  = S.channels;
-					var samples        = { kv: S.samples, nosort: true }
-					Dlist.capture_samplerate.push( samples );
-					D.main[ 0 ].push( samples );
-					D0.samplerate      = Object.values( S.samples )
+					var samplings        = { kv: S.samplings, nosort: true }
+					Dlist.capture_samplerate.push( samplings );
+					D.main[ 0 ].push( samplings );
+					D0.samplerate      = Object.values( S.samplings )
 					$( '#divvolume .col-l gr' ).text( S.control );
 					showContent();
 					break;

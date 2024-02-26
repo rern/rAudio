@@ -66,7 +66,7 @@ $( '#mixertype' ).on( 'click', function() {
 			, ok      : () => setMixerType( 'none' )
 		} );
 	} else {
-		S.listmixer ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
+		S.mixers ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
 	}
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
@@ -117,7 +117,7 @@ $( '#setting-crossfade' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-replaygain' ).on( 'click', function() {
-	var hardware = S.output.mixertype === 'software' && S.listmixer;
+	var hardware = S.output.mixertype === 'software' && S.mixers;
 	if ( ! hardware ) delete S.replaygainconf.HARDWARE;
 	info( {
 		  icon         : SW.icon
@@ -324,11 +324,11 @@ function renderPage() {
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#device' )
-			.html( htmlOption( Object.keys( S.listdevice ) ) )
+			.html( htmlOption( Object.keys( S.devices ) ) )
 			.val( S.output.name );
-		if ( S.listmixer ) {
+		if ( S.mixers ) {
 			$( '#mixer' )
-				.html( htmlOption( S.listmixer ) )
+				.html( htmlOption( S.mixers ) )
 				.val( S.output.mixer );
 			$( '#divmixer' ).removeClass( 'hide' );
 		} else {
@@ -336,7 +336,7 @@ function renderPage() {
 		}
 		$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
-		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.listmixer || ! S.mixertype );
+		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers || ! S.mixertype );
 		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );

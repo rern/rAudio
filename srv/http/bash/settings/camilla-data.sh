@@ -5,7 +5,7 @@
 . /srv/http/bash/common.sh
 
 devicesC='"Loopback": "hw:Loopback,0"'
-devicesP=$( tr -d {} < $dirshm/listdevice )
+devicesP=$( tr -d {} < $dirshm/devices )
 if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
@@ -25,8 +25,8 @@ data='
 	  "capture"  : { '$devicesC' }
 	, "playback" : { '$devicesP' }
 }
-, "formats"    : '$( < $dirshm/listformat )'
-, "samples"    : '$( < $dirshm/listsample )'
+, "formats"    : '$( < $dirshm/formats )'
+, "samplings"  : '$( < $dirshm/samplings )'
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$state'"

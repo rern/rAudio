@@ -90,19 +90,14 @@ if [[ -e $mixertypefile ]]; then
 else
 	[[ $LISTMIXER ]] && MIXERTYPE=hardware || MIXERTYPE=none
 fi
-
-echo "{ ${LISTDEVICE:1} }" > $dirshm/listdevice
-[[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/listmixer || rm -f $dirshm/listmixer
-if [[ $MIXER ]]; then
-	echo "$MIXER" > $dirshm/amixercontrol # keep trailing space
-else
-	rm -f $dirshm/amixercontrol
-	MIXER=false
-fi
-output+='
+########
+echo '
 card='$CARD'
 name="'$NAME'"
 mixer="'$MIXER'"
-mixertype='$MIXERTYPE
-echo "$output" > $dirshm/output
+mixertype='$MIXERTYPE > $dirshm/output
+echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
+[[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/mixers || rm -f $dirshm/mixers
+[[ $MIXER ]] && echo "$MIXER" > $dirshm/amixercontrol || rm -f $dirshm/amixercontrol
 echo $CARD > $dirsystem/asoundcard
+########

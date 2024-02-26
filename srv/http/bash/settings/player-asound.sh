@@ -109,42 +109,42 @@ if [[ $camilladsp ]]; then
 		systemctl stop camilladsp
 	fi
 	
-	for c in $CARD Loopback; do
-		[[ $c == Loopback ]] && type=-c || type=-p
-		file=$dirshm/listformat$type
-		script -c "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" > $file
-		if [[ $c == Loopback ]]; then
-			ratemax=$( awk '/^RATE/ {print $NF}' $file | tr -d ']\r' )
-			for r in 44100 48000 88200 96000 176400 192000 352800,384000 705600 768000; do
-				(( $r > $ratemax )) && break || LISTSAMPLE+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
-			done
-			CHANNELC=$( awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r' )
-		else
-			CHANNELP=$( awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r' )
-		fi
-		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' $file )
+	filedump=$dirshm/aplaydump
+	for c in Loopback $CARD; do
+		script -qc "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" > $filedump
+		lines=$( < $filedump )
+		rm $filedump
+		CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']\r' ) )
+		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' <<< $lines )
 		listformat=
 		for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 			grep -q $f <<< $formats && listformat+=', "'$f'"'
 		done
-		[[ $c == Loopback ]] && FORMATSC="[ ${listformat:1} ]" || FORMATSP="[ ${listformat:1} ]"
+		FORMATS+=( "[ ${listformat:1} ]" )
+		if [[ $c == Loopback ]]; then
+			ratemax=$( awk '/^RATE/ {print $NF}' <<< $lines | tr -d ']\r' )
+			for r in 44100 48000 88200 96000 176400 192000 352800,384000 705600 768000; do
+				(( $r > $ratemax )) && break || SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
+			done
+		fi
 	done
+########
 	echo '{
-	  "capture"  : '$CHANNELC'
-	, "playback" : '$CHANNELP'
+	  "capture"  : '${CHANNELS[0]}'
+	, "playback" : '${CHANNELS[1]}'
 }' > $dirshm/channels
 	echo '{
-	  "capture"  : '$FORMATSC'
-	, "playback" : '$FORMATSP'
-}' > $dirshm/listformat
-	echo "{ ${LISTSAMPLE:1} }" > $dirshm/listsample
-	
+	  "capture"  : '${FORMATS[0]}'
+	, "playback" : '${FORMATS[1]}'
+}' > $dirshm/formats
+	echo "{ ${SAMPLINGS:1} }" > $dirshm/samplings
+########
 	if [[ $bluetooth ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 		fileformat="$dirsystem/camilla-$NAME"
-		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/listformat )
+		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/formats )
 		format0=$( getVarColon playback format "$fileconf" )
 		if [[ $format0 != $FORMAT ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"
