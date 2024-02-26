@@ -12,7 +12,7 @@ if grep -qs /etc/ $file; then
 fi
 
 file=$dirsystem/autoplay.conf
-[[ -e $file ]] && sed -i '/^cd/ d' $file
+grep -qs ^cd $file && sed -i '/^cd/ d' $file
 
 # 20240219
 readarray -t mixerfiles <<< $( ls $dirsystem/hwmixer-* 2> /dev/null )
@@ -125,7 +125,7 @@ fi
 # up to 20240212
 if [[ $pkgs ]]; then
 	pacman -Sy --noconfirm $pkgs
-	systemctl try-restart $pkgs
+	systemctl try-restart camilladsp
 fi
 
 #-------------------------------------------------------------------------------

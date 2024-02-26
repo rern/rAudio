@@ -1436,7 +1436,6 @@ var setting   = {
 			  icon         : V.tab
 			, title        : title
 			, list         : D[ dev ][ type ]
-			, boxwidth     : 198
 			, values       : values
 			, checkblank   : true
 			, checkchanged : true
@@ -1445,7 +1444,6 @@ var setting   = {
 				var $td    = $input.parent();
 				$td.append( $td.next().find( 'i' ) );
 				$input.css( 'width', '70px' );
-				$( '#infoList td:first-child' ).css( 'width', '128px' );
 				$( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
 /*				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
