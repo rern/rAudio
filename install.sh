@@ -120,10 +120,7 @@ if [[ -e /usr/bin/camilladsp ]]; then
 fi
 
 # up to 20240212
-if [[ $pkgs ]]; then
-	pacman -Sy --noconfirm $pkgs
-	systemctl try-restart $pkgs
-fi
+[[ $pkgs ]] && pacman -Sy --noconfirm $pkgs
 
 #-------------------------------------------------------------------------------
 installstart "$1"
