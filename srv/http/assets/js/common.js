@@ -737,7 +737,7 @@ function infoCheckSet() {
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
 			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
 			setTimeout( () => {
-				if ( ! $( '#infoList input' ).length ) return // suppress on repeating
+				if ( ! $( '#infoList' ).find( 'input, select, textarea' ).length ) return // suppress disabled ok on repeating with message only
 				
 				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short );
 			}, 75 ); // ios: force after infoCheckLength

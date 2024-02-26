@@ -256,7 +256,7 @@ var D0        = {
 }
 var Dlist     = {
 	  type               : [ 'Type',                 'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
-	, profile            : [ 'Profile',              'select', { kv: [ 'Accurate ', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
+	, profile            : [ 'Profile',              'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
 	, typeC              : [ 'Type',                 'select' ] // on 'GetSupportedDeviceTypes'
 	, typeP              : [ 'Type',                 'select' ] // ^
 	, deviceC            : [ 'Device',               'select' ] // ^
