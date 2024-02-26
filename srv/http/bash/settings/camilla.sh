@@ -5,17 +5,6 @@
 dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
 
-saveConfig() {
-	data=$( echo '"GetConfigJson"' \
-				| websocat ws://127.0.0.1:1234 \
-				| jq -r .GetConfigJson.value \
-				| sed 's|^{|{"page":"camilla",|' )
-	configfile=$( getVar CONFIG /etc/default/camilladsp )
-	config=$( echo '"GetConfig"' | websocat ws://127.0.0.1:1234 )
-	echo -e "$config " | sed 's/.*GetConfig.*/---/; $d; s/\\"/"/g' > "$configfile"
-	$dirsettings/camilla-data.sh push
-}
-
 args2var "$1"
 
 case $CMD in
@@ -48,14 +37,14 @@ confrename )
 	pushRefresh
 	;;
 confswitch )
-	saveConfig
 	sed -i -E "s|^(CONFIG=).*|\1$PATH|" /etc/default/camilladsp
+	pushRefresh
+	;;
+pushrefresh )
+	pushRefresh
 	;;
 restart )
 	systemctl restart camilladsp
-	;;
-saveconfig )
-	saveConfig
 	;;
 statusconfiguration )
 	[[ ! $FILE ]] && FILE=$( getVar CONFIG /etc/default/camilladsp )

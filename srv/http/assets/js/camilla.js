@@ -1643,16 +1643,12 @@ var setting   = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			if ( ! V.press ) setting.save2file();
+			if ( ! V.press ) {
+				clearTimeout( V.timeoutsave );
+				V.timeoutsave = setTimeout( () => bash( [ 'pushrefresh' ] ), 1000 );
+			}
 		}, wscamilla ? 0 : 300 );
 		if ( msg ) banner( V.tab, titlle, msg );
-	}
-	, save2file     : () => {
-		clearTimeout( V.timeoutsave );
-		V.timeoutsave = setTimeout( () => {
-			local();
-			bash( [ 'saveconfig' ] );
-		}, 1000 );
 	}
 	, switchSave    : ( id, disable ) => {
 		if ( disable === 'disable' ) {
@@ -1663,7 +1659,6 @@ var setting   = {
 			DEV[ id ] = true;
 		}
 		setting.save( SW.title, msg );
-		render.devices();
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
@@ -2022,7 +2017,7 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 	
 	clearInterval( V.intervalgain );
 	if ( $( this ).parents( 'li' ).find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) graph.gain();
-	setting.save2file();
+	setting.save();
 } ).press( '.i-minus, .i-plus', function( e ) {
 	setting.rangeGet( $( e.currentTarget ), 'press' );
 } );
