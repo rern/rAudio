@@ -4,20 +4,12 @@
 
 . /srv/http/bash/common.sh
 
-arecord=$( arecord -l | grep ^card )
-capture=$( grep -v Loopback <<< $arecord | sed -E -n '/^card/ { s/^card (.): .*device (.): .*/"hw:\1,\2"/; p}' )
-capture+="
-$( grep 'Loopback.*device 0' <<< $arecord | sed -E -n '/^card/ { s/^.*device (.): .*/"hw:Loopback,\1"/; p}' )"
+devicesC='"Loopback": "hw:Loopback,0"'
+devicesP=$( tr -d {} < $dirshm/listdevice )
 if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
-	if grep -q dbus_path "$configfile"; then
-		capture+='
-"Bluez"'
-	else
-		playback+='
-"bluealsa"'
-	fi
+	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
 fi
 . $dirshm/output
 [[ $mixer == false ]] && mixer=
@@ -27,20 +19,14 @@ data='
 , "bluetooth"  : '$bluetooth'
 , "card"       : '$card'
 , "cardname"   : "'$name'"
-, "channels"   : {
-	  "capture"  : '$( < $dirshm/channels-c )'
-	, "playback" : '$( < $dirshm/channels-p )'
-}
+, "channels"   : '$( < $dirshm/channels )'
 , "control"    : "'$mixer'"
 , "devices"    : {
-	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
-	, "playback" : '$( < $dirshm/listdevice )'
+	  "capture"  : { '$devicesC' }
+	, "playback" : { '$devicesP' }
 }
-, "listformat" : {
-	  "capture"  : '$( < $dirshm/listformat-c )'
-	, "playback" : '$( < $dirshm/listformat-p )'
-}
-, "listsample" : '$( < $dirshm/listsample )'
+, "formats"    : '$( < $dirshm/listformat )'
+, "samples"    : '$( < $dirshm/listsample )'
 , "player"     : "'$player'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$state'"

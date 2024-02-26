@@ -1888,8 +1888,8 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
-					Dlist.formatC.push( S.listformat.capture );
-					Dlist.formatP.push( S.listformat.playback );
+					Dlist.formatC.push( { kv: S.formats.capture, nosort: true } );
+					Dlist.formatP.push( { kv: S.formats.playback, nosort: true } );
 					Dlist.typeC.push( type.capture );
 					Dlist.typeP.push( type.playback );
 					Dlist.deviceC.push( S.devices.capture );
@@ -1897,10 +1897,10 @@ var common    = {
 					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.channels.capture } } );
 					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.channels.playback } } );
 					D.values.channels  = S.channels;
-					var listsample     = { kv: S.listsample, nosort: true }
-					Dlist.capture_samplerate.push( listsample );
-					D.main[ 0 ].push( listsample );
-					D0.samplerate      = Object.values( S.listsample )
+					var samples        = { kv: S.samples, nosort: true }
+					Dlist.capture_samplerate.push( samples );
+					D.main[ 0 ].push( samples );
+					D0.samplerate      = Object.values( S.samples )
 					$( '#divvolume .col-l gr' ).text( S.control );
 					showContent();
 					break;

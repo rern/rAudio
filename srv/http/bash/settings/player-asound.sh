@@ -102,7 +102,7 @@ if [[ $( getContent $dirsystem/audio-aplayname ) == cirrus-wm5102 ]]; then
 fi
 
 if [[ $camilladsp ]]; then
-	# must stop for exclusive aplay probing
+	# must stop for exclusive device access - aplay probing
 	[[ $( < $dirshm/player ) == mpd ]] && mpc -q stop || $dirbash/cmd.sh playerstop
 	if systemctl -q is-active camilladsp; then
 		active=1
@@ -116,25 +116,35 @@ if [[ $camilladsp ]]; then
 		if [[ $c == Loopback ]]; then
 			ratemax=$( awk '/^RATE/ {print $NF}' $file | tr -d ']\r' )
 			for r in 44100 48000 88200 96000 176400 192000 352800,384000 705600 768000; do
-				(( $r > $ratemax )) && break || listsample+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
+				(( $r > $ratemax )) && break || LISTSAMPLE+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
 			done
-			echo "{ ${listsample:1} }" > $dirshm/listsample
-			awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r' > $dirshm/channels-c
+			CHANNELC=$( awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r' )
 		else
-			awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r' > $dirshm/channels-p
+			CHANNELP=$( awk '/^CHANNELS/ {print $NF}' $file | tr -d ']\r' )
 		fi
 		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' $file )
+		listformat=
 		for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 			grep -q $f <<< $formats && listformat+=', "'$f'"'
 		done
-		echo "[ ${listformat:1} ]" > $file
+		[[ $c == Loopback ]] && FORMATSC="[ ${listformat:1} ]" || FORMATSP="[ ${listformat:1} ]"
 	done
+	echo '{
+	  "capture"  : '$CHANNELC'
+	, "playback" : '$CHANNELP'
+}' > $dirshm/channels
+	echo '{
+	  "capture"  : '$FORMATSC'
+	, "playback" : '$FORMATSP'
+}' > $dirshm/listformat
+	echo "{ ${LISTSAMPLE:1} }" > $dirshm/listsample
+	
 	if [[ $bluetooth ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 		fileformat="$dirsystem/camilla-$NAME"
-		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( cut -d'"' -f2 $dirshm/listformatp )
+		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/listformat )
 		format0=$( getVarColon playback format "$fileconf" )
 		if [[ $format0 != $FORMAT ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"
