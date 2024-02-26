@@ -9,6 +9,7 @@ loader() local()     selectSet()
 var page        = location.search.replace( '?p=', '' );
 var dirbash     = '/srv/http/bash/';
 var dirsettings = '/srv/http/bash/settings/';
+var dots        = '·&ensp;·&ensp;·';
 var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';

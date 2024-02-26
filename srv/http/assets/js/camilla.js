@@ -748,7 +748,7 @@ var render    = {
 		delete V.intervalvu;
 		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
 		$( '.peak' ).css( 'left', 0 );
-		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).text( '·' );
+		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( dots );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {

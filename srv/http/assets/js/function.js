@@ -1600,7 +1600,6 @@ function setInfo() {
 		, Title  : $( '#title' ).text()
 		, Album  : $( '#album' ).text()
 	}
-	var dots = '·&ensp;·&ensp;·';
 	if ( S.webradio ) {
 		var url = S.file.replace( /#charset=.*/, '' );
 		if ( S.state !== 'play' ) {
