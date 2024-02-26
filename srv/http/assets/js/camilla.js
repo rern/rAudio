@@ -1085,7 +1085,6 @@ var render    = {
 var setting   = {
 	  filter        : ( type, subtype, name ) => {
 		var list  = subtype in F[ type ] ? F[ type ][ subtype ] : F[ type ];
-		console.log(type, subtype, name, list)
 		if ( type === 'Biquad' ) {
 			if ( [ 'Hig', 'Low' ].includes( subtype.slice( 0, 3 ) ) ) {
 				var vsubtype = subtype.replace( /High|Low/, '' );

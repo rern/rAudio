@@ -146,14 +146,14 @@ $( '.col-r .switch' ).press( function( e ) {
 	
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
-	clearTimeout( I.timeoutbanner );
+	clearTimeout( V.timeoutbanner );
 	var bottom = $( '#bar-bottom' ).is( '.transparent, :hidden' ) || ! $( '#loader' ).hasClass( 'hide' ) ? '10px' : '';
 	$( '#banner' )
 		.html( '<div id="bannerIcon">'+ ico( icon ) +'</div><div id="bannerTitle">'+ title +'</div>'
 			  +'<div id="bannerMessage">'+ message +'</div>' )
 		.css( 'bottom', bottom )
 		.removeClass( 'hide' );
-	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
+	if ( delay !== -1 ) V.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
 	if ( V.reboot || $( '#banner' ).hasClass( 'hide' ) || $( '#banner .i-warning' ).length ) return
@@ -275,6 +275,7 @@ select:   [U] [D]     - check
 I = { active: false }
 
 function info( json ) {
+	infoClearTimeout( 0, 8 );
 	local(); // flag for consecutive info
 	I = json;
 	if ( 'keyvalue' in I ) $.each( I.keyvalue, ( k, v ) => I[ k ] = v );
@@ -598,7 +599,7 @@ function info( json ) {
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
 		infoCheckSet();
 		if ( I.range ) {
-			var timeout, val;
+			var val;
 			$( '.inforange input' ).on( 'input', function() {
 				var $this = $( this );
 				$this.siblings( '.value' ).text( +$this.val() );
@@ -611,14 +612,14 @@ function info( json ) {
 					.siblings( '.value' ).text( val );
 			}
 			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
-				clearTimeout( timeout );
+				clearTimeout( V.timeout0 );
 				var $this = $( this );
 				if ( ! V.press ) rangeset( $this.siblings( 'input' ), $this.hasClass( 'up' ) );
 			} ).press( function( e ) {
 				var $this  = $( e.target );
 				var $range = $this.siblings( 'input' )
 				var up     = $this.hasClass( 'up' );
-				timeout    = setInterval( () => rangeset( $range, up ), 100 );
+				V.timeout0 = setInterval( () => rangeset( $range, up ), 100 );
 			} );
 		}
 		if ( I.updn.length ) {
@@ -628,14 +629,10 @@ function info( json ) {
 				var $num  = $td.prev().find( 'input' );
 				var step  = el.step;
 				var v     = 0;
-				var interval, timeout;
 				function numberset( up ) {
 					v = +$num.val();
 					v = up ? v + step : v - step;
-					if ( v === el.min || v === el.max ) {
-						clearInterval( interval );
-						clearTimeout( timeout );
-					}
+					if ( v === el.min || v === el.max ) infoClearTimeout( 1, 2 );
 					$num.val( v );
 					if ( I.checkchanged ) $num.trigger( 'input' );
 					updnToggle( v );
@@ -649,17 +646,16 @@ function info( json ) {
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
 				} ).press( function( e ) {
 					var up  = $( e.target ).hasClass( 'up' );
-					interval = setInterval( () => numberset( up ), 100 );
-					timeout  = setTimeout( () => { // @5 after 3s
-						clearInterval( interval );
+					V.timeout1 = setInterval( () => numberset( up ), 100 );
+					V.timeout2  = setTimeout( () => { // @5 after 3s
+						clearInterval( V.timeout1 );
 						step    *= 5;
 						v = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
 						$num.val( v );
-						interval = setInterval( () => numberset( up ), 100 );
+						V.timeout3 = setInterval( () => numberset( up ), 100 );
 					}, 3000 );
 				} ).on( 'touchend mouseup keyup', function() {
-					clearInterval( interval );
-					clearTimeout( timeout );
+					infoClearTimeout( 1, 3 );
 					step = el.step;
 				} );
 			} );
@@ -702,8 +698,6 @@ function infoButtonWidth() {
 	if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
 }
 function infoCheckBlank() {
-	if ( ! I.checkblank ) return // suppress error on repeating
-	
 	I.blank = I.checkblank.some( i => $inputbox.eq( i ).val().trim() === '' );
 }
 function infoCheckIP() {
@@ -733,21 +727,23 @@ function infoCheckSet() {
 	if ( I.checkchanged || I.checkblank || I.checkip || I.checklength ) {
 		$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
 			if ( I.checkchanged ) I.nochange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
-			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
-			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
-			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
-			setTimeout( () => {
-				if ( ! $( '#infoList' ).find( 'input, select, textarea' ).length ) return // suppress disabled ok on repeating with message only
-				
+			if ( I.checkblank )   V.timeout4 = setTimeout( infoCheckBlank, 0 );   // #1
+			if ( I.checklength )  V.timeout5 = setTimeout( infoCheckLength, 25 ); // #2
+			if ( I.checkip )      V.timeout6 = setTimeout( infoCheckIP, 50 );     // #3
+			V.timeout7 = setTimeout( () => {                                      // #4
 				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short );
-			}, 75 ); // ios: force after infoCheckLength
+			}, 75 );
 		} );
 	}
 }
+function infoClearTimeout( from, to ) { // ok for both timeout and interval
+	to++;
+	for ( i= from; i < to; i++ ) clearTimeout( V[ 'timeout'+ i ] );
+}
 function infoFileImage() {
 	delete I.infofilegif;
-	I.timeoutfile = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
-	I.rotate      = 0;
+	V.timeout8 = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
+	I.rotate   = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
 	if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
@@ -768,7 +764,7 @@ function infoFileImage() {
 						var imgH   = img.height;
 						var resize = infoFileImageResize( 'gif', imgW, imgH );
 						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						clearTimeout( I.timeoutfile );
+						clearTimeout( V.timeout8 );
 						bannerHide();
 					}
 				} else {
@@ -805,7 +801,7 @@ function infoFileImageReader() {
 			} else {
 				infoFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
 			}
-			clearTimeout( I.timeoutfile );
+			clearTimeout( V.timeout8 );
 			bannerHide();
 		}
 	}
