@@ -4,9 +4,12 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 202402224
+# 202402226
 file=/etc/default/camilladsp
-[[ -e $file ]] && sed -i 's|/etc/|/srv/http/data/|' $file
+if grep -qs /etc/ $file; then
+	sed -i 's|/etc/|/srv/http/data/|' $file
+	mv -f /{etc,srv/http/data}/camilladsp/configs/*
+fi
 
 file=$dirsystem/autoplay.conf
 [[ -e $file ]] && sed -i '/^cd/ d' $file
