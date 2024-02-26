@@ -119,7 +119,7 @@ if [[ -e /usr/bin/camilladsp ]]; then
 	fi
 fi
 
-# up to 202402224
+# up to 20240212
 if [[ $pkgs ]]; then
 	pacman -Sy --noconfirm $pkgs
 	systemctl try-restart $pkgs
