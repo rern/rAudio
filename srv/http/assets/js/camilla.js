@@ -1529,7 +1529,7 @@ var setting   = {
 				var val        = infoVal();
 				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = false;
 				DEV.resampler = val;
-				setting.switchSave( 'resampler' );
+				setting.save( SW.title, 'Change ...' );
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
@@ -1627,17 +1627,7 @@ var setting   = {
 				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
 			}
 		}, wscamilla ? 0 : 300 );
-		if ( msg ) banner( V.tab, titlle, msg );
-	}
-	, switchSave    : ( id, disable ) => {
-		if ( disable === 'disable' ) {
-			var msg   = 'Disable ...';
-			DEV[ id ] = null;
-		} else {
-			var msg   = DEV[ id ] ? 'Change ...' : 'Enable ...';
-			DEV[ id ] = true;
-		}
-		setting.save( SW.title, msg );
+		if ( titlle ) banner( V.tab, titlle, msg );
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
@@ -2509,8 +2499,13 @@ $( '#config' ).on( 'click', '.i-add', function() {
 // ----------------------------------------------------------------------------------------
 $( '.switch' ).on( 'click', function() {
 	var id = this.id;
-	var $setting = $( '#setting-'+ id );
-	DEV[ id ] ? setting.switchSave( id, 'disable' ) : $setting.trigger( 'click' );
+	if ( DEV[ id ] ) {
+		DEV[ id ] = null;
+		setting.save( SW.title, 'Disable ...' );
+		$( '#setting-'+ id ).addClass( 'hide' );
+	} else {
+		$( '#setting-'+ id ).trigger( 'click' );
+	}
 } );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	var $this = $( this );
@@ -2524,6 +2519,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		return
 	}
 	
+	var enabled = S.enable_rate_adjust;
 	info( {
 		  icon         : V.tab
 		, title        : SW.title
@@ -2536,44 +2532,47 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 			  adjust_period : DEV.adjust_period
 			, target_level  : DEV.target_level
 		}
-		, checkchanged : S.enable_rate_adjust
+		, checkchanged : enabled
 		, cancel       : switchCancel
 		, ok           : () => {
 			var val =  infoVal();
 			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
-			setting.switchSave( 'enable_rate_adjust' );
+			DEV.enable_rate_adjust = true;
+			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
 $( '#setting-capture_samplerate' ).on( 'click', function() {
+	var enabled = S.capture_samplerate;
 	info( {
 		  icon         : V.tab
 		, title        : SW.title
 		, list         : Dlist.capture_samplerate
 		, boxwidth     : 120
 		, values       : [ DEV.capture_samplerate ]
-		, checkchanged : S.capture_samplerate
+		, checkchanged : enabled
 		, cancel       : switchCancel
 		, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
 		, ok           : () => {
 			DEV.capture_samplerate = infoVal();
-			setting.save( 'Capture Samplerate', 'Change ...' );
+			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
 $( '#setting-stop_on_rate_change' ).on( 'click', function() {
-	wscamilla.send( '"GetConfigJson"' );
+	var enabled = S.stop_on_rate_change;
 	info( {
 		  icon         : V.tab
 		, title        : SW.title
 		, list         : [ 'Rate mearsure interval', 'number' ]
 		, boxwidth     : 65
 		, values       : DEV.rate_measure_interval
-		, checkchanged : S.stop_on_rate_change
+		, checkchanged : enabled
 		, cancel       : switchCancel
 		, ok           : () => {
+			DEV.stop_on_rate_change   = true;
 			DEV.rate_measure_interval = infoVal();
-			setting.switchSave( 'stop_on_rate_change' );
+			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
