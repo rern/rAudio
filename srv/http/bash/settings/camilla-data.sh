@@ -12,7 +12,6 @@ if grep -q configs-bt /etc/default/camilladsp; then
 	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
 fi
 . $dirshm/output
-[[ $mixer == false ]] && mixer=
 . <( grep -E '^player|^state' $dirshm/status )
 ########
 data='
