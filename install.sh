@@ -122,7 +122,7 @@ if [[ -e /usr/bin/camilladsp ]]; then
 	fi
 fi
 
-# up to 20240226
+# up to 20240212
 [[ $pkgs ]] && pacman -Sy --noconfirm $pkgs
 
 #-------------------------------------------------------------------------------
