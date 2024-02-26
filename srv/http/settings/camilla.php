@@ -17,6 +17,7 @@ $button     = [
 	, 'config'     => str_replace( 'mixers' , 'config', $btnmixers )
 	, 'control'    => i( 'volume btn' ).i( 'inverted btn' ).i( 'linear btn' )
 ];
+$dots = '·&ensp;·&ensp;·';
 $help       = [
 	  'status'      => <<< EOF
 {$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
@@ -70,8 +71,8 @@ Buffer · Load<span class="divclipped hide"> · Clipped</span>
 <br>Sampling<span class="rateadjust"> · Adjust</span>
 '
 	, 'values' => '
-<a class="buffer">·</a> <gr>·</gr> <a class="load">·</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">·</a></span>
-<br><a class="capture">·</a><span class="rateadjust"> <gr>·</gr> <a class="rate">·</a></span>
+<a class="buffer">'.$dots.'</a> <gr>·</gr> <a class="load">'.$dots.'</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">'.$dots.'</a></span>
+<br><a class="capture">'.$dots.'</a><span class="rateadjust"> <gr>·</gr> <a class="rate">'.$dots.'</a></span>
 '
 ];
 $tabs     = [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ];
