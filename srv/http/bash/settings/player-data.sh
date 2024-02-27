@@ -29,7 +29,7 @@ replaygainconf='{
 data='
 , "asoundcard"       : '$( getContent $dirsystem/asoundcard )'
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
-, "bluetooth"        : '$( rfkill | grep -q bluetooth && echo true )'
+, "bluetooth"        : '$( exists $dirshm/btreceiver )'
 , "btmixer"          : "'$( getContent $dirshm/btmixer )'"
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
