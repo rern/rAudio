@@ -313,12 +313,12 @@ function renderPage() {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
-		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', ! S.devicewithbt );
+		$( '#divdevice' ).toggleClass( 'hide' );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divdevice .col-l' ).html( $( '#divdevice .col-l' ).html() + icondsp );
 		$( '#divbluealsa' ).addClass( 'hide' );
-		$( '#divdevice, #divmixer, #divmixertype' ).removeClass( 'hide' );
+		$( '#divdevice' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
@@ -327,16 +327,15 @@ function renderPage() {
 		$( '#device' )
 			.html( htmlOption( Object.keys( S.devices ) ) )
 			.val( S.output.name );
-		if ( S.mixers && ! S.bluetooth ) {
+		if ( S.mixers && ! S.camilladsp && ! S.bluetooth ) {
 			$( '#mixer' )
 				.html( htmlOption( S.mixers ) )
 				.val( S.output.mixer );
-			$( '#divmixer' ).removeClass( 'hide' );
+			$( '#divmixer, #divmixertype' ).removeClass( 'hide' );
 		} else {
-			$( '#divmixer' ).addClass( 'hide' );
+			$( '#divmixer, #divmixertype' ).addClass( 'hide' );
 		}
 		$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
-		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers || ! S.mixertype );
 		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
