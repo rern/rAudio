@@ -157,7 +157,7 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirsettings/player-conf.sh
 	fi
 	[[ $mac && $name ]] && echo $mac $sink_source $name >> $dirshm/btconnected
-	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type "$name"
+	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type
 #-----
 	msg=Ready
 	refreshPages
