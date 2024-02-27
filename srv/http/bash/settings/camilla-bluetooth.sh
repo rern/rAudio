@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 type=$1
-[[ $2 ]] && name=$2 || name=$( < $dirshm/$type )
+name=$( < $dirshm/$type )
 etcdefault=/etc/default/camilladsp
 fileconfig=$( getVar CONFIG $etcdefault )
 [[ -e "$dircamilladsp/$name" ]] && configbt=$( < "$dircamilladsp/$name" ) || configbt="$dircamilladsp/configs-bt/$name.yml"

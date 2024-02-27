@@ -96,10 +96,7 @@ brightness )
 camilladsp )
 	enableFlagSet
 	$dirbash/cmd.sh playerstop
-	if [[ ! $ON ]]; then
-		$dirsettings/camilla.sh saveconfig
-		[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
-	fi
+	[[ ! $ON ]] && mv -f /etc/default/camilladsp{.backup,}
 	pushRestartMpd camilladsp $TF
 	;;
 dabradio )

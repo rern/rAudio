@@ -145,7 +145,7 @@ if [[ $camilladsp ]]; then
 ########
 	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	if [[ $bluetooth ]]; then
-		$dirsettings/camilla-bluetooth.sh btreceiver "$NAME"
+		$dirsettings/camilla-bluetooth.sh btreceiver
 	else
 		fileformat="$dirsystem/camilla-$NAME"
 		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/formats )
