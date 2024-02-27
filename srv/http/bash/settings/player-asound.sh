@@ -158,7 +158,11 @@ if [[ $camilladsp ]]; then
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
 	fi
 	systemctl start camilladsp
-	[[ $active ]] && $dirsettings/camilla-data.sh pushrefresh
+	if systemctl -q is-active camilladsp; then
+		[[ $active ]] && $dirsettings/camilla-data.sh pushrefresh
+	else
+		$dirsettings/features.sh camilladsp$'\n'OFF
+	fi
 else
 	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
 		value=$( getVarColon current $dirsystem/equalizer.json )
