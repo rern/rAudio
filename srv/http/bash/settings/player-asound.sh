@@ -91,9 +91,7 @@ ctl.equal {
 	fi
 fi
 
-alsactl store &> /dev/null
-echo "$ASOUNDCONF" >> /etc/asound.conf # append after set default by player-devices.sh
-alsactl nrestore &> /dev/null # notify changes to running daemons
+echo "$ASOUNDCONF" >> /etc/asound.conf # append after default lines set by player-devices.sh
 
 # ----------------------------------------------------------------------------
 if [[ $( getContent $dirsystem/audio-aplayname ) == cirrus-wm5102 ]]; then
@@ -156,12 +154,6 @@ if [[ $camilladsp ]]; then
 	systemctl start camilladsp
 	[[ $active ]] && $dirsettings/camilla-data.sh push
 else
-	if [[ $bluetooth ]]; then
-		if [[ -e "$dirsystem/btvolume-$bluetooth" ]]; then
-			btvolume=$( < "$dirsystem/btvolume-$bluetooth" )
-			amixer -MqD bluealsa sset "$bluetooth" $btvolume% 2> /dev/null
-		fi
-	fi
 	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
 		value=$( getVarColon current $dirsystem/equalizer.json )
 		[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
