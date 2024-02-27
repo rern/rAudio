@@ -1014,7 +1014,6 @@ var render    = {
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		$( '#enable_rate_adjust' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
-		switchSet();
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
@@ -1830,6 +1829,7 @@ var common    = {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
 					if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) );
+					switchSet( 'ready' );
 					render.page();
 					render.tab();
 					break;

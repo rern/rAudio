@@ -160,21 +160,18 @@ function switchIdIconTitle( id ) {
 		SW.icon  = id;
 	}
 }
-function switchSet() {
-	if ( page === 'networks' ) return
+function switchSet( ready ) {
+	if ( page === 'camilla' && ! ready ) return // wait for GetConfigJson
 	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		$( '.switch' ).each( ( i, el ) => {
-			var $this = $( el );
-			var id    = el.id
-			$this.prop( 'checked', S[ id ] );
-			$this.parent().next( '.setting' ).toggleClass( 'hide', ! S[ id ] );
-		} );
-		$( 'pre.status' ).each( ( i, el ) => { // refresh code block
-			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
-		} );
-	}, page === 'camilla' ? 300 : 0 );
+	$( '.switch' ).each( ( i, el ) => {
+		var $this = $( el );
+		var id    = el.id
+		$this.prop( 'checked', S[ id ] );
+		$this.parent().next( '.setting' ).toggleClass( 'hide', ! S[ id ] );
+	} );
+	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
+		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
+	} );
 }
 function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
@@ -251,12 +248,14 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
-	if ( V.local && page === 'camilla' ) return
-	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-		page === 'networks' ? $( '.back' ).trigger( 'click' ) : switchSet();
+		if ( page === 'networks' ) {
+			$( '.back' ).trigger( 'click' );
+		} else {
+			switchSet();
+		}
 		renderPage();
 	}, 300 );
 }

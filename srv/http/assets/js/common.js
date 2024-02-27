@@ -276,7 +276,8 @@ select:   [U] [D]     - check
 I = { active: false }
 
 function info( json ) {
-	infoClearTimeout( 0, 8 );
+	infoClearTimeout( 'all' );
+	V.timeout = {}
 	local(); // flag for consecutive info
 	I = json;
 	if ( 'keyvalue' in I ) $.each( I.keyvalue, ( k, v ) => I[ k ] = v );
@@ -613,14 +614,14 @@ function info( json ) {
 					.siblings( '.value' ).text( val );
 			}
 			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
-				clearTimeout( V.timeout0 );
+				clearTimeout( V.timeout.range );
 				var $this = $( this );
 				if ( ! V.press ) rangeset( $this.siblings( 'input' ), $this.hasClass( 'up' ) );
 			} ).press( function( e ) {
 				var $this  = $( e.target );
 				var $range = $this.siblings( 'input' )
 				var up     = $this.hasClass( 'up' );
-				V.timeout0 = setInterval( () => rangeset( $range, up ), 100 );
+				V.timeout.range = setInterval( () => rangeset( $range, up ), 100 );
 			} );
 		}
 		if ( I.updn.length ) {
@@ -633,7 +634,7 @@ function info( json ) {
 				function numberset( up ) {
 					v = +$num.val();
 					v = up ? v + step : v - step;
-					if ( v === el.min || v === el.max ) infoClearTimeout( 1, 2 );
+					if ( v === el.min || v === el.max ) infoClearTimeout();
 					$num.val( v );
 					if ( I.checkchanged ) $num.trigger( 'input' );
 					updnToggle( v );
@@ -647,16 +648,16 @@ function info( json ) {
 					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
 				} ).press( function( e ) {
 					var up  = $( e.target ).hasClass( 'up' );
-					V.timeout1 = setInterval( () => numberset( up ), 100 );
-					V.timeout2  = setTimeout( () => { // @5 after 3s
-						clearInterval( V.timeout1 );
+					V.timeout.updni = setInterval( () => numberset( up ), 100 );
+					V.timeout.updnt = setTimeout( () => { // @5 after 3s
+						clearInterval( V.timeout.updni );
 						step    *= 5;
 						v = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
 						$num.val( v );
-						V.timeout3 = setInterval( () => numberset( up ), 100 );
+						V.timeout.updni = setInterval( () => numberset( up ), 100 );
 					}, 3000 );
 				} ).on( 'touchend mouseup keyup', function() {
-					infoClearTimeout( 1, 3 );
+					infoClearTimeout();
 					step = el.step;
 				} );
 			} );
@@ -728,22 +729,24 @@ function infoCheckSet() {
 	if ( I.checkchanged || I.checkblank || I.checkip || I.checklength ) {
 		$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
 			if ( I.checkchanged ) I.nochange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
-			if ( I.checkblank )   V.timeout4 = setTimeout( infoCheckBlank, 0 );   // #1
-			if ( I.checklength )  V.timeout5 = setTimeout( infoCheckLength, 25 ); // #2
-			if ( I.checkip )      V.timeout6 = setTimeout( infoCheckIP, 50 );     // #3
-			V.timeout7 = setTimeout( () => {                                      // #4
+			if ( I.checkblank )  V.timeout.blank  = setTimeout( infoCheckBlank, 0 );   // #1
+			if ( I.checklength ) V.timeout.length = setTimeout( infoCheckLength, 25 ); // #2
+			if ( I.checkip )     V.timeout.ip     = setTimeout( infoCheckIP, 50 );     // #3
+			V.timeout.check = setTimeout( () => {                                      // #4
 				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short );
 			}, 75 );
 		} );
 	}
 }
-function infoClearTimeout( from, to ) { // ok for both timeout and interval
-	to++;
-	for ( i= from; i < to; i++ ) clearTimeout( V[ 'timeout'+ i ] );
+function infoClearTimeout( all ) { // ok for both timeout and interval
+	if ( ! ( 'timeout' in V ) ) return
+	
+	var timeout = all ? Object.keys( V.timeout ) : [ 'updni', 'updnt' ];
+	timeout.forEach( k => clearTimeout( V.timeout[ k ] ) );
 }
 function infoFileImage() {
 	delete I.infofilegif;
-	V.timeout8 = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
+	V.timeout.file = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
 	I.rotate   = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
@@ -765,7 +768,7 @@ function infoFileImage() {
 						var imgH   = img.height;
 						var resize = infoFileImageResize( 'gif', imgW, imgH );
 						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						clearTimeout( V.timeout8 );
+						clearTimeout( V.timeout.file );
 						bannerHide();
 					}
 				} else {
@@ -802,7 +805,7 @@ function infoFileImageReader() {
 			} else {
 				infoFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
 			}
-			clearTimeout( V.timeout8 );
+			clearTimeout( V.timeout.file );
 			bannerHide();
 		}
 	}
