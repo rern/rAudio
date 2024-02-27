@@ -69,7 +69,6 @@ function psOnMessage( message ) {
 		case 'airplay':       psAirplay( data );        break;
 		case 'audiocd':       psAudioCD( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
-		case 'btreceiver':    psBtReceiver();           break;
 		case 'coverart':      psCoverart( data );       break;
 		case 'display':       psDisplay( data );        break;
 		case 'equalizer':     psEqualizer( data );      break;
@@ -116,12 +115,6 @@ function psAudioCD( data ) {
 			.text( second2HMS( sec ) )
 			.data( 'time', sec );
 	}
-}
-function psBtReceiver() {
-	setTimeout( () => {
-		refreshData();
-		bannerHide();
-	}, 2000 );
 }
 function psBookmark() {
 	V.libraryhtml = '';

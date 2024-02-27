@@ -234,8 +234,8 @@ volume0db )
 	volumeGet push hw
 	;;
 volume0dbbt )
-	btdevice=$( < $dirshm/btreceiver )
-	amixer -MqD bluealsa sset "$btdevice" 0dB 2> /dev/null
+	btmixer=$( < $dirshm/btmixer )
+	amixer -MqD bluealsa sset "$btmixer" 0dB 2> /dev/null
 	volumeGet push hw
 	;;
 volumebt )

@@ -402,7 +402,7 @@ volumeCardControl() {
 		volume=false
 	else
 		if [[ -e $dirshm/btreceiver ]]; then
-			control=$( < $dirshm/btreceiver )
+			control=$( < $dirshm/btmixer )
 		elif inOutputConf mixer_type.*software; then
 			control=
 		else

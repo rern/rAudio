@@ -77,6 +77,9 @@ playerStop() {
 			rm -f $dirshm/bluetoothdest
 			systemctl restart bluetooth
 			;;
+		mpd )
+			mpc -q stop
+			;;
 		snapcast )
 			$dirbash/snapcast.sh stop
 			;;
@@ -90,7 +93,7 @@ playerStop() {
 			$dirbash/status-push.sh
 			;;
 	esac
-	pushData player '{ "player": "'$player'", "active": false }'
+	[[ $player != mpd ]] && pushData player '{ "player": "'$player'", "active": false }'
 }
 plClear() {
 	mpc -q clear

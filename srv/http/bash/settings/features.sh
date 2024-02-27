@@ -95,7 +95,7 @@ brightness )
 	;;
 camilladsp )
 	enableFlagSet
-	playerActive mpd && mpc -q stop || $dirbash/cmd.sh playerstop
+	$dirbash/cmd.sh playerstop
 	if [[ ! $ON ]]; then
 		$dirsettings/camilla.sh saveconfig
 		[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}

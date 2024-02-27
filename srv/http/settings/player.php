@@ -42,7 +42,7 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'id'       => 'bluealsa'
-		, 'icon'     => true
+		, 'icon'     => 'btreceiver'
 		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
 {$Fi( 'volume btn' )} Sender volume control

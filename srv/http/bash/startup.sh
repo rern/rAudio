@@ -120,14 +120,14 @@ if [[ -e $dirsystem/btconnected ]]; then
 fi
 
 if [[ -e $dirshm/btreceiver && -e $dirsystem/camilladsp ]]; then
-	$dirsettings/camilla-bluetooth.sh receiver
+	$dirsettings/camilla-bluetooth.sh btreceiver
 else # start mpd.service if not started by bluetoothcommand.sh
 	$dirsettings/player-conf.sh
 fi
 if [[ -e $dirsystem/volumeboot ]]; then
 	. $dirsystem/volumeboot.conf
 	if [[ -e $dirshm/btreceiver ]]; then
-		control=$( < $dirshm/btreceiver )
+		control=$( < $dirshm/btmixer )
 		amixer -MqD bluealsa sset "$control" $volume
 	elif [[ -e $dirshm/amixercontrol ]]; then
 		card=$( < $dirsystem/asoundcard )
