@@ -2,7 +2,7 @@
 
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
-[[ ! $CARD ]] && CARD=$( < $dirsystem/asoundcard ) # if run directly
+[[ ! $CARD ]] && . <( sed -n -E '/^card|^name/ {s/(^card|^name)/\U\1/;p}' $dirshm/output )
 
 if [[ -e $dirshm/btreceiver ]]; then
 	bluetooth=$( < $dirshm/btreceiver )
@@ -33,7 +33,7 @@ if [[ -e $dirsystem/camilladsp ]]; then
 ########
 	ASOUNDCONF+='
 pcm.!default { 
-	type plug 
+	type plug
 	slave.pcm camilladsp
 }
 pcm.camilladsp {
@@ -143,8 +143,10 @@ if [[ $camilladsp ]]; then
 }' > $dirshm/formats
 	echo "{ ${SAMPLINGS:1} }" > $dirshm/samplings
 ########
-	if [[ ! $bluetooth ]]; then
-		mv -f /etc/default/camilladsp{.backup,}
+	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
+	if [[ $bluetooth ]]; then
+		$dirsettings/camilla-bluetooth.sh btreceiver "$NAME"
+	else
 		fileformat="$dirsystem/camilla-$NAME"
 		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/formats )
 		format0=$( getVarColon playback format "$fileconf" )

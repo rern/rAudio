@@ -9,6 +9,10 @@
 
 . /srv/http/bash/common.sh
 
+# flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
+touch $dirshm/btflag
+( sleep 5; rm $dirshm/btflag ) &> /dev/null &
+
 action=$1
 mac=$2
 [[ ! $mac ]] && udev=1
@@ -93,9 +97,6 @@ if [[ $udev && $action == connect ]]; then
 		bluetoothctl agent NoInputNoOutput
 	fi
 fi
-# flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
-touch $dirshm/btflag
-( sleep 5; rm $dirshm/btflag ) &> /dev/null &
 #-------------------------------------------------------------------------------------------
 # 1. continue from [[ $udev && $action == connect ]], 2. from rAudio networks.js
 if [[ $action == connect || $action == pair ]]; then

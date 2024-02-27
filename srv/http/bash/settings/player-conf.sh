@@ -6,14 +6,29 @@
 # - mixer_type    - from file if manually set | hardware if mixer | software
 # - mixer_control - from file if manually set | mixer | null
 # - mixer_device  - card index
-[[ -e /dev/shm/usbdac ]] && exit
+[[ -e /dev/shm/usbdacflag ]] && exit # $dirshm/usbdacflag
 
 . /srv/http/bash/common.sh
 
+usbDacVolume() { # fix - alsactl not maintain usb dac volume
+	. $dirshm/output # card name mixer mixertype
+	filevolume="$dirsystem/volume-$name"
+	if [[ $1 == remove ]]; then
+		[[ -s $dirshm/usbdac ]] && mv -f $dirshm/usbdac "$filevolume"
+	else
+		touch $dirshm/usbdac
+		[[ -e "$filevolume" ]] && vol=$( < "$filevolume" ) || vol=$( getContent $dirshm/volume )
+		[[ ! $vol ]] && vol=50
+		amixer -c $card -Mq sset "$mixer" $vol%
+		alsactl store
+	fi
+}
+
 if [[ $1 ]]; then
 	usbdac=$1
-	touch /dev/shm/usbdac
-	( sleep 3; rm -f /dev/shm/usbdac ) &
+	[[ $usbdac == remove ]] && usbDacVolume remove
+	touch $dirshm/usbdacflag
+	( sleep 3; rm -f $dirshm/usbdacflag ) &
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
 
@@ -32,10 +47,14 @@ fi
 . $dirsettings/player-asound.sh # >>> $bluetooth, $camilladsp, $equalizer
 
 pushStatus() {
+	[[ $usbdac == add ]] && usbDacVolume
 	$dirbash/status-push.sh
 	$dirsettings/player-data.sh pushrefresh
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
-	[[ $usbdac ]] && pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
+	if [[ $usbdac ]]; then
+		volumeGet push
+		pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
+	fi
 }
 
 # outputs -----------------------------------------------------------------------------

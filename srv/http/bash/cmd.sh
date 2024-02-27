@@ -170,6 +170,7 @@ volumeSetAt() {
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
 	elif [[ $control ]]; then
 		amixer -c $card -Mq sset "$control" $target%
+		[[ -e $dirshm/usbdac ]] && echo $target > $dirshm/usbdac
 	else
 		mpc -q volume $target
 	fi

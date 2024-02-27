@@ -4,6 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240309
+file=/usr/lib/systemd/system/camilladsp.service
+if ! grep -q {CONFIG} $file; then
+	sed -i 's/CONFIG/{CONFIG}/' $file
+	systemctl daemon-reload
+fi
+
 # 202402226
 file=/etc/default/camilladsp
 if grep -qs /etc/ $file; then

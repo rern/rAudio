@@ -8,7 +8,7 @@ etcdefault=/etc/default/camilladsp
 fileconfig=$( getVar CONFIG $etcdefault )
 [[ -e "$dircamilladsp/$name" ]] && configbt=$( < "$dircamilladsp/$name" ) || configbt="$dircamilladsp/configs-bt/$name.yml"
 cp $etcdefault{,.backup}
-sed -i -E 's|^(CONFIG=).*|\1"'$configbt'"|' $etcdefault
+sed -i "s|^CONFIG.*|CONFIG=$configbt|" $etcdefault
 
 if [[ ! -e $configbt ]]; then
 	. <( bluealsa-aplay -L | awk '/channel.*Hz/ {print "format="$3"\nchannels="$4"\nsamplerate="$6}' )
