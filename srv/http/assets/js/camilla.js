@@ -1,6 +1,7 @@
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
+	, dots       : '· · ·'
 	, graph      : { filters: [], pipeline: [] }
 	, prevconfig : {}
 	, sortable   : {}
@@ -748,7 +749,7 @@ var render    = {
 		delete V.intervalvu;
 		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
 		$( '.peak' ).css( 'left', 0 );
-		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( dots );
+		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( V.dots );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {

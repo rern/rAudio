@@ -17,7 +17,7 @@ $button     = [
 	, 'config'     => str_replace( 'mixers' , 'config', $btnmixers )
 	, 'control'    => i( 'volume btn' ).i( 'inverted btn' ).i( 'linear btn' )
 ];
-$dots = '·&ensp;·&ensp;·';
+$dots = '· · ·';
 $help       = [
 	  'status'      => <<< EOF
 {$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
