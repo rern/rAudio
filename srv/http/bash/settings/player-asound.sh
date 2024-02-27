@@ -4,7 +4,13 @@
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
 [[ ! $CARD ]] && CARD=$( < $dirsystem/asoundcard ) # if run directly
 
-bluetooth=$( getContent $dirshm/btreceiver )
+if [[ -e $dirshm/btreceiver ]]; then
+	bluetooth=$( < $dirshm/btreceiver )
+	systemctl -q is-active localbrowser && action=stop || action=start
+	systemctl $action bluetoothbutton
+else
+	systemctl stop bluetoothbutton
+fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd_aloop
 	if ! aplay -l | grep -q Loopback; then
@@ -101,7 +107,7 @@ fi
 
 if [[ $camilladsp ]]; then
 	# must stop for exclusive device access - aplay probing
-	[[ $( < $dirshm/player ) == mpd ]] && mpc -q stop || $dirbash/cmd.sh playerstop
+	$dirbash/cmd.sh playerstop
 	if systemctl -q is-active camilladsp; then
 		active=1
 		systemctl stop camilladsp
@@ -137,10 +143,8 @@ if [[ $camilladsp ]]; then
 }' > $dirshm/formats
 	echo "{ ${SAMPLINGS:1} }" > $dirshm/samplings
 ########
-	if [[ $bluetooth ]]; then
-		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
-	else
-		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
+	if [[ ! $bluetooth ]]; then
+		mv -f /etc/default/camilladsp{.backup,}
 		fileformat="$dirsystem/camilla-$NAME"
 		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/formats )
 		format0=$( getVarColon playback format "$fileconf" )
@@ -152,7 +156,7 @@ if [[ $camilladsp ]]; then
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
 	fi
 	systemctl start camilladsp
-	[[ $active ]] && $dirsettings/camilla-data.sh push
+	[[ $active ]] && $dirsettings/camilla-data.sh pushrefresh
 else
 	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
 		value=$( getVarColon current $dirsystem/equalizer.json )
@@ -162,11 +166,4 @@ $value
 $user
 CMD VALUE USER"
 	fi
-fi
-
-if [[ $bluetooth ]]; then
-	systemctl -q is-active localbrowser && action=stop || action=start
-	systemctl $action bluetoothbutton
-else
-	systemctl stop bluetoothbutton
 fi

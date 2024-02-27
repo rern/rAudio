@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Pair: trust > pair > get device type > disconnect > delay > connect
+# Pair: trust > pair > get sink_source > disconnect > delay > connect
 #   (delay - connect right after paired > mixer not yet ready)
-# Connect: trust > connect > get device type
+# Connect: trust > connect > get sink_source
 # Disconnect / Remove: disconnect
 
 [[ -e /srv/http/data/shm/btflag ]] && exit # flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
@@ -12,23 +12,26 @@
 action=$1
 mac=$2
 [[ ! $mac ]] && udev=1
-icon=bluetooth
+type=btreceiver
 
 disconnectRemove() {
-	[[ ! $name ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
-	[[ ! $type ]] && type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
-	mpc -q stop
-	$dirbash/cmd.sh playerstop
-	if [[ $type == Source ]]; then
-		icon=btsender
-	elif [[ $type == Sink ]]; then
-		rm $dirshm/btreceiver
-		notify "$icon blink" "$name" "${action^} ..."
-		pushData btreceiver 1
-		$dirsettings/player-conf.sh
+	[[ ! $name ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
+	[[ ! $sink_source ]] && sink_source=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
+	if [[ $sink_source == Source ]]; then
+		type=btsender
+		rm $dirshm/btsender
+	else
+		rm $dirshm/{btreceiver,btmixer}
 	fi
+	if [[ -e $dirsystem/camilladsp ]]; then
+		getVar CONFIG /etc/default/camilladsp > "$dircamilladsp/$( < $dirshm/$type )"
+		mv -f /etc/default/camilladsp{.backup,}
+	fi
+	notify "$type blink" "$name" "${action^} ..."
+	$dirbash/cmd.sh playerstop
+	$dirsettings/player-conf.sh
 	refreshPages
 }
 refreshPages() {
@@ -41,14 +44,14 @@ refreshPages() {
 # from bluetooth.rules: disconnect from paired device
 if [[ $udev && $action == disconnect ]]; then
 	sleep 2
-	readarray -t lines < $dirshm/btconnected
-	for line in "${lines[@]}"; do
+	lines=$( < $dirshm/btconnected )
+	while read line; do
 		mac=${line/ *}
 		bluetoothctl info $mac | grep -q -m1 'Connected: yes' && mac= || break
-	done
+	done <<< $lines
 	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 	if [[ $mac ]]; then
-		type=$( cut -d' ' -f2 <<< $line )
+		sink_source=$( cut -d' ' -f2 <<< $line )
 		name=$( cut -d' ' -f3- <<< $line )
 #-----
 		disconnectRemove
@@ -62,11 +65,11 @@ if [[ $udev && $action == connect ]]; then
 	sleep 2
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
 	if [[ $macs ]]; then
-		for mac in ${macs[@]}; do
+		while read mac; do
 			if bluetoothctl info $mac | grep -q -m1 'Connected: yes'; then
-				grep -q -m1 $mac $dirshm/btconnected &> /dev/null && mac= || break
+				grep -q -m1 ^$mac $dirshm/btconnected &> /dev/null && mac= || break
 			fi
-		done
+		done <<< $macs
 	fi
 	[[ $mac ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 	[[ ! $name ]] && name=Bluetooth
@@ -81,7 +84,7 @@ if [[ $udev && $action == connect ]]; then
 		
 	fi
 #-----
-	notify "$icon blink" "$name" "$msg"
+	notify "$type blink" "$name" "$msg"
 	if (( $( bluetoothctl info $mac | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
 		action=connect
 	else
@@ -105,21 +108,21 @@ if [[ $action == connect || $action == pair ]]; then
 			bluetoothctl info $mac | grep -q -m1 'Paired: no' && sleep 1 || break
 		done
 #-----X
-		bluetoothctl info $mac | grep -q -m1 'Paired: no' && notify $icon "$name" 'Pair failed.' && exit
+		bluetoothctl info $mac | grep -q -m1 'Paired: no' && notify $type "$name" 'Pair failed.' && exit
 		
 		bluetoothctl disconnect $mac
 #-----
-		notify $icon "$name" 'Paired successfully.'
+		notify $type "$name" 'Paired successfully.'
 		sleep 3
 #-----
-		notify "$icon blink" "$name" 'Connect ...'
+		notify "$type blink" "$name" 'Connect ...'
 	fi
 	bluetoothctl info $mac | grep -q -m1 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
 		! bluetoothctl info $mac | grep -q -m1 'UUID:' && sleep 1 || break
 	done
-	type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
-	if [[ ! $type ]]; then
+	sink_source=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
+	if [[ ! $sink_source ]]; then
 ##### non-audio
 		[[ $mac && $name ]] && echo $mac Device $name >> $dirshm/btconnected
 #-----X
@@ -134,27 +137,26 @@ if [[ $action == connect || $action == pair ]]; then
 #-----X
 	if [[ ! $btmixer && $action == connect ]]; then
 		bluetoothctl disconnect $mac
-		notify $icon "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
+		notify $type "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
 		exit
 		
 	fi
-	if [[ $type == Source ]]; then
+	if [[ $sink_source == Source ]]; then
 ##### sender
-		icon=btsender
-		[[ $mac && $name ]] && echo $mac Source $name >> $dirshm/btconnected
-		[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh sender
+		type=btsender
+		echo $name > $dirshm/btsender
 	else
+		echo $name > $dirshm/btreceiver
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
 ##### receiver
-		echo $btmixer > $dirshm/btreceiver
-		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
-		notify "$icon blink" "$name" 'Connect ...'
-		pushData btreceiver 1
+		echo $btmixer > $dirshm/btmixer
+		notify "$type blink" "$name" 'Connect ...'
 		$dirbash/cmd.sh playerstop
-		[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh receiver
 		$dirsettings/player-conf.sh
 	fi
+	[[ $mac && $name ]] && echo $mac $sink_source $name >> $dirshm/btconnected
+	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type "$name"
 #-----
 	msg=Ready
 	refreshPages
