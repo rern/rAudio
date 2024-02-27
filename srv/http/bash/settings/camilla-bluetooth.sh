@@ -42,3 +42,5 @@ s/(enable_resampling: )/\1true/
 }' "$fileconfig" > "$configbt"
 	fi
 fi
+
+camillaDSPstart

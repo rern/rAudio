@@ -97,6 +97,14 @@ cacheBust() {
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
 }
+camillaDSPstart() {
+	systemctl start camilladsp
+	if systemctl -q is-active camilladsp; then
+		$dirsettings/camilla-data.sh pushrefresh
+	else
+		$dirsettings/features.sh camilladsp$'\n'OFF
+	fi
+}
 conf2json() {
 	local file json k keys only l lines v
 	[[ $1 == '-nocap' ]] && nocap=1 && shift

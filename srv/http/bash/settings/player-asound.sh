@@ -108,11 +108,7 @@ fi
 if [[ $camilladsp ]]; then
 	# must stop for exclusive device access - aplay probing
 	$dirbash/cmd.sh playerstop
-	if systemctl -q is-active camilladsp; then
-		active=1
-		systemctl stop camilladsp
-	fi
-	
+	systemctl stop camilladsp
 	filedump=$dirshm/aplaydump
 	for c in Loopback $CARD; do
 		script -qc "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" > $filedump
@@ -156,12 +152,7 @@ if [[ $camilladsp ]]; then
 		fi
 		card0=$( getVarColon playback device "$fileconf" | cut -c4 )
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
-	fi
-	systemctl start camilladsp
-	if systemctl -q is-active camilladsp; then
-		[[ $active ]] && $dirsettings/camilla-data.sh pushrefresh
-	else
-		$dirsettings/features.sh camilladsp$'\n'OFF
+		camillaDSPstart
 	fi
 else
 	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
