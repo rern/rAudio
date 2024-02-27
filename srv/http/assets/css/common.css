@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1708267847' );
+	src         : url( '/assets/fonts/rern.woff2?v=1709046679' );
 }
 @font-face {
 	font-family : Lato;
@@ -233,6 +233,7 @@ i {
 .i-wifi2::before           { content: '\F59A'; position: absolute; }
 .i-wifi2::after            { content: '\F59B'; color: var( --cga ); }
 .i-wlan::before            { content: '\F597' }
+#divbluealsa .i-gear::before,
 #divmixer .i-gear::before  { content: '\F516' }
 
 html {

@@ -13,14 +13,15 @@ $( '#mixer' ).on( 'input', function() {
 	bash( [ 'mixer', $( this ).val(), 'CMD MIXER' ] );
 } );
 $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
-	if ( this.id.slice( -1 ) === 'a' ) {
-		var cmd     = 'volumebt';
-		var cmd0db  = 'volume0dbbt';
-		var control = S.btreceiver.replace( ' - A2DP', '' );
+	var bluelasa = this.id.slice( -1 ) === 'a';
+	if ( bluelasa ) {
+		var control = S.btmixer.replace( / *-* A2DP/, '' );
+		var cmd     = [ 'volumebt', S.btmixer ];
+		var cmdlist = 'CMD MIXER VAL';
 	} else {
-		var cmd     = 'volume';
-		var cmd0db  = 'volume0db';
 		var control = S.output.mixer;
+		var cmd     = [ 'volume', S.output.card, S.output.mixer ];
+		var cmdlist = 'CMD CARD MIXER VAL';
 	}
 	info( {
 		  icon       : SW.icon
@@ -31,7 +32,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			$( '#infoList input' ).on( 'input', function() {
-				volumeSetAt( +$( this ).val() );
+				bash( [ ...cmd, +$( this ).val(), cmdlist ] );
 			} ).on( 'touchend mouseup keyup', function() {
 				bash( [ 'volumepush' ] );
 			} );
@@ -47,7 +48,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		, oklabel    : ico( 'set0' ) +'0dB'
 		, ok         : () => {
 			if ( S.volume.db >= 0 ) {
-				bash( [ cmd0db ] );
+				bash( [ bluelasa ? 'volume0dbbt' : 'volume0db' ] );
 			} else {
 				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
 				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
@@ -308,10 +309,10 @@ function renderPage() {
 		if ( S[ k ] ) icondsp = ico( k );
 	} );
 	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
-	if ( S.btreceiver ) {
+	if ( S.bluetooth ) {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
+		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
-		$( '#btreceiver' ).html( '<option>'+ S.btreceiver.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', ! S.devicewithbt );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
@@ -326,7 +327,7 @@ function renderPage() {
 		$( '#device' )
 			.html( htmlOption( Object.keys( S.devices ) ) )
 			.val( S.output.name );
-		if ( S.mixers ) {
+		if ( S.mixers && ! S.bluetooth ) {
 			$( '#mixer' )
 				.html( htmlOption( S.mixers ) )
 				.val( S.output.mixer );
@@ -344,7 +345,7 @@ function renderPage() {
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
-	if ( I.range ) $( '#setting-'+ ( S.btreceiver ? 'bluealsa' : 'mixer' ) ).trigger( 'click' );
+	if ( I.range ) $( '#infoX' ).trigger( 'click' );
 	showContent();
 }
 function renderStatus() {

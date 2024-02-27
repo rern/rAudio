@@ -48,7 +48,8 @@ fi
 
 pushStatus() {
 	[[ $usbdac == add ]] && usbDacVolume
-	$dirbash/status-push.sh
+	status=$( $dirbash/status.sh )
+	pushData mpdplayer "$status"
 	$dirsettings/player-data.sh pushrefresh
 	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 	if [[ $usbdac ]]; then
