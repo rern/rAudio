@@ -59,7 +59,7 @@ btrename )
 	pushRefresh networks pushbt
 	pushRefresh player
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
-	[[ -e "$dircamilladsp/$NAME.yml" ]] && cp "$dircamilladsp/{$NAME,$NEWNAME}.yml"
+	[[ -e "$dircamilladsp/$NAME" ]] && cp "$dircamilladsp/$NAME" "$dircamilladsp/$NEWNAME"
 	;;
 connect )
 	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static

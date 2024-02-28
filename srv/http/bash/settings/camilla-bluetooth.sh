@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 type=$1
-name=$( < $dirshm/$type )
+name=$( sed 's/ *-* A2DP$//' $dirshm/$type )
 etcdefault=/etc/default/camilladsp
 filecurrent=$( getVar CONFIG $etcdefault )
 if [[ -e "$dircamilladsp/$name" ]]; then
