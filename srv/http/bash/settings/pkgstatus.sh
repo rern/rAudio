@@ -11,7 +11,7 @@ case $CMD in
 	bluealsa )
 		conf="\
 <bll># bluealsa-aplay -L</bll>
-$( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
+$( bluealsa-aplay -L )"
 		;;
 	ap )
 		PKG=iwd

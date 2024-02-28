@@ -27,7 +27,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	var name  = $this.data( 'name' );
 	var mac   = $this.data( 'mac' );
 	notify( 'bluetooth', name, 'Pair ...' );
-	bash( [ 'bluetoothcommand.sh', 'pair', mac ] );
+	bash( [ dirsettings +'networks-bluetooth.sh', 'pair', mac ] );
 } );
 $( '.wladd' ).on( 'click', function() {
 	delete V.profileget;
@@ -197,7 +197,8 @@ $( '.info' ).on( 'click', function() {
 function bluetoothCommand( action ) {
 	var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 	notify( icon, V.li.data( 'name' ), action +' ...', -1 );
-	bash( [ 'bluetoothcommand.sh', action.toLowerCase(), V.li.data( 'mac' ) ] );
+	bash( [ dirsettings +'networks-bluetooth.sh', action.toLowerCase(), V.li.data( 'mac' ) ] );
+	console.log( [ dirsettings +'networks-bluetooth.sh', action.toLowerCase(), V.li.data( 'mac' ) ] );
 }
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac, 'CMD MAC' ], data => {

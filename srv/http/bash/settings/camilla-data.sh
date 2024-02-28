@@ -9,7 +9,7 @@ devicesC='"Loopback": "hw:Loopback,0"'
 devicesP=$( tr -d {} < $dirshm/devices )
 if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
-	name=$( < $dirshm/btreceiver )
+	name=$( < $dirshm/btname )
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
 	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
 fi

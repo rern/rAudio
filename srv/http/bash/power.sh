@@ -33,7 +33,7 @@ if [[ -e $dirsystem/camilladsp ]]; then
 	$dirsettings/camilla.sh saveconfig
 	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 fi
-[[ -e $dirshm/btconnected ]] && cp $dirshm/btconnected $dirsystem
+[[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 touch $dirshm/power
 mpc -q stop
 if [[ -e $dirsystem/lcdchar ]]; then

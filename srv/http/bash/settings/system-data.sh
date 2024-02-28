@@ -246,7 +246,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetooth"         : '$bluetoothon'
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
-, "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
+, "btconnected"       : '$( exists $dirshm/btreceiver )
 fi
 
 if [[ $rpi3bplus ]]; then

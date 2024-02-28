@@ -19,8 +19,10 @@ mac=$2
 type=btreceiver
 
 disconnectRemove() {
-	sed -i "/^$mac/ d" $dirshm/btconnected
-	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
+	if [[ -e $dirshm/btconnected ]]; then
+		sed -i "/^$mac/ d" $dirshm/btconnected
+		[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
+	fi
 	[[ ! $name ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 	[[ ! $sink_source ]] && sink_source=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	if [[ $sink_source == Source ]]; then
@@ -71,11 +73,11 @@ if [[ $udev && $action == connect ]]; then
 	if [[ $macs ]]; then
 		while read mac; do
 			if bluetoothctl info $mac | grep -q -m1 'Connected: yes'; then
-				grep -q -m1 ^$mac $dirshm/btconnected &> /dev/null && mac= || break
+				grep -qs -m1 ^$mac $dirshm/btconnected && mac= || break
 			fi
 		done <<< $macs
 	fi
-	[[ $mac ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
+	[[ $mac ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' ) || exit
 	[[ ! $name ]] && name=Bluetooth
 	msg='Connect ...'
 	# fix: rAudio triggered to connect by unpaired sender on boot
@@ -142,12 +144,13 @@ if [[ $action == connect || $action == pair ]]; then
 		exit
 		
 	fi
+	sed 's/ *-* A2DP$//' <<< $name > $dirshm/btname
 	if [[ $sink_source == Source ]]; then
 ##### sender
 		type=btsender
-		echo $name > $dirshm/btsender
+		echo $mac > $dirshm/btsender
 	else
-		echo $name > $dirshm/btreceiver
+		echo $mac > $dirshm/btreceiver
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
 ##### receiver
@@ -156,7 +159,7 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
 	fi
-	[[ $mac && $name ]] && echo $mac $sink_source $name >> $dirshm/btconnected
+	[[ $mac && $name ]] && echo $mac >> $dirshm/btconnected
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type
 #-----
 	msg=Ready

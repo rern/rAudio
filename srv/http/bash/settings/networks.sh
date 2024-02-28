@@ -55,11 +55,10 @@ $info"
 	;;
 btrename )
 	bluetoothctl set-alias "$NEWNAME"
-	amixer -D bluealsa scontrols | cut -d"'" -f2 | tee $dirshm/btmixer > $dirshm/btreceiver
+	amixer -D bluealsa scontrols | cut -d"'" -f2 > $dirshm/btmixer
 	pushRefresh networks pushbt
 	pushRefresh player
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
-	[[ -e "$dircamilladsp/$NAME" ]] && cp "$dircamilladsp/$NAME" "$dircamilladsp/$NEWNAME"
 	;;
 connect )
 	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static

@@ -5,7 +5,7 @@
 [[ ! $CARD ]] && . <( sed -n -E '/^card|^name/ {s/(^card|^name)/\U\1/;p}' $dirshm/output )
 
 if [[ -e $dirshm/btreceiver ]]; then
-	bluetooth=$( < $dirshm/btreceiver )
+	bluetooth=1
 	systemctl -q is-active localbrowser && action=stop || action=start
 	systemctl $action bluetoothbutton
 else

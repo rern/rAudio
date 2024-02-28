@@ -326,7 +326,7 @@ function renderPage() {
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		var $nonbluetooth = $( '#divdevice, #divmixer, #setting-mixer, #divmixertype, #setting-mixertype' );
-		if ( ! S.mixers || S.camilladsp || ( S.bluetooth && ! S.devicewithbt ) ) {
+		if ( ! S.mixers || ( S.bluetooth && ! S.devicewithbt ) ) {
 			$nonbluetooth.addClass( 'hide' );
 		} else {
 			$( '#device' )
@@ -336,9 +336,10 @@ function renderPage() {
 				.html( htmlOption( S.mixers ) )
 				.val( S.output.mixer );
 			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
-			$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers || ! S.mixertype );
+			$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers );
 			$nonbluetooth.removeClass( 'hide' );
 		}
+		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );

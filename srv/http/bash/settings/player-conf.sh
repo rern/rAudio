@@ -39,7 +39,7 @@ else                                   # no sound
 	notify output 'Audio Output' '(None)'
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
-	[[ -e $dirshm/btreceiver ]] && CARD=0 || CARD=-1
+	[[ $bluetooth ]] && CARD=0 || CARD=-1
 	echo $CARD > $dirsystem/asoundcard
 	pushData display '{ "volumenone": true }'
 fi
@@ -65,7 +65,7 @@ if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from pla
 	hw=bluealsa
 #---------------< bluetooth
 	AUDIOOUTPUTBT='
-	name        "'$bluetooth'"
+	name        "'$( < $dirshm/btname )'"
 	device      "'$hw'"
 	type        "alsa"
 	mixer_type  "hardware"'
@@ -151,8 +151,8 @@ $( sed 's/  *"/^"/' <<< $AUDIOOUTPUT | column -t -s^ )
 ########
 fi
 
-if [[ ( ! $AUDIOOUTPUT && ! $btoutputonly && ! -e $dirsystem/snapclientserver )
-	|| -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ]]; then
+if [[ -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ||
+		( ! $AUDIOOUTPUT && ! $btoutputonly && ! S.camilladsp && ! -e $dirsystem/snapclientserver ) ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
 fi
 

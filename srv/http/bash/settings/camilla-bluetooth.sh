@@ -3,14 +3,15 @@
 . /srv/http/bash/common.sh
 
 type=$1
-name=$( sed 's/ *-* A2DP$//' $dirshm/$type )
 etcdefault=/etc/default/camilladsp
 filecurrent=$( getVar CONFIG $etcdefault )
-if [[ -e "$dircamilladsp/$name" ]]; then
-	filedevice=$( < "$dircamilladsp/$name" )
+filemac=$dircamilladsp/$mac
+if [[ -e $filemac ]]; then
+	filedevice=$( < $filemac )
 else
+	[[ $type == btreceiver ]] && name=$( < $dirshm/btname ) || name=$mac
 	filedevice="$dircamilladsp/configs-bt/$name.yml"
-	echo "$filedevice" > "$dircamilladsp/$name"
+	echo "$filedevice" > $filemac
 fi
 
 cp $etcdefault{,.backup}
