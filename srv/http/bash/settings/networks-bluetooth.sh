@@ -19,19 +19,16 @@ type=btreceiver
 
 disconnectRemove() {
 	line=$( grep ^$mac $dirshm/btconnected )
+	type=$( cut -d' ' -f2 <<< $line )
 	name=$( cut -d' ' -f3- <<< $line )
-	if [[ $( cut -d' ' -f2 <<< $line ) == Source ]]; then
-		type=btsender
-		rm $dirshm/btsender
-	else
-		rm $dirshm/{btreceiver,btmixer}
-	fi
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
-	if [[ -e /etc/default/camilladsp.backup ]]; then
-		getVar CONFIG /etc/default/camilladsp > $dircamilladsp/$mac
-		mv -f /etc/default/camilladsp{.backup,}
-	fi
+	rm -f $dirshm/$type
+	[[ $type == btreceiver ]] && rm -f $dirshm/{btmixer,btname}
+	filedefault=/etc/default/camilladsp
+	getVar CONFIG $filedefault > $dircamilladsp/$mac
+	fileconfig=$( < $dircamilladsp/fileconfig )
+	sed -i "s|^CONFIG.*|CONFIG=$fileconfig|" $filedefault
 	notify "$type blink" "$name" "${action^} ..."
 	$dirbash/cmd.sh playerstop
 	$dirsettings/player-conf.sh
@@ -39,9 +36,9 @@ disconnectRemove() {
 }
 refreshPages() {
 	pushRefresh features
-	[[ $dirsystem/camilladsp ]] && pushRefresh camilla
 	sleep 1
 	pushRefresh networks pushbt
+	[[ $dirsystem/camilladsp ]] && pushRefresh camilla
 }
 #-------------------------------------------------------------------------------------------
 # from bluetooth.rules: disconnect from paired device - no mac
@@ -119,7 +116,7 @@ if [[ $action == connect || $action == pair ]]; then
 	sink_source=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	if [[ ! $sink_source ]]; then
 ##### non-audio
-		[[ $mac && $name ]] && echo $mac Device $name >> $dirshm/btconnected
+		echo $mac bluetooth $name >> $dirshm/btconnected
 #-----X
 		refreshPages
 		exit
@@ -151,10 +148,9 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
 	fi
-	[[ $mac && $name ]] && echo $mac $sink_source $name >> $dirshm/btconnected
+	echo $mac $type $name >> $dirshm/btconnected
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type
 #-----
-	msg=Ready
 	refreshPages
 #-------------------------------------------------------------------------------------------
 # from rAudio networks.js - with mac

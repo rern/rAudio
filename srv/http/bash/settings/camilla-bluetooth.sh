@@ -4,8 +4,9 @@
 
 type=$1
 mac=$( < $dirshm/$type )
-etcdefault=/etc/default/camilladsp
-filecurrent=$( getVar CONFIG $etcdefault )
+filedefault=/etc/default/camilladsp
+getVar CONFIG $filedefault > $dircamilladsp/fileconfig
+filecurrent=$( getVar CONFIG $filedefault )
 filemac=$dircamilladsp/$mac
 if [[ -e $filemac ]]; then
 	filedevice=$( < $filemac )
@@ -13,10 +14,7 @@ else
 	filedevice=$dircamilladsp/configs-bt/camilladsp.yml
 	echo $filedevice > $filemac
 fi
-
-cp $etcdefault{,.backup}
-sed -i "s|^CONFIG.*|CONFIG=$filedevice|" $etcdefault
-
+sed -i "s|^CONFIG.*|CONFIG=$filedevice|" $filedefault
 if [[ -e $filedevice ]]; then
 	camillaDSPstart
 	exit
