@@ -426,7 +426,7 @@ $control"
 }
 volumeGet() {
 	local amixer card control data db mixer val val_db
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
 			[[ $amixer ]] && break || sleep 1

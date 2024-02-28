@@ -241,11 +241,9 @@ volume0dbbt )
 volumebt )
 	amixer -MqD bluealsa sset "$MIXER" $VAL%
 	;;
-volumeget )
-	volumeGet valdb
-	;;
 volumepush )
-	volumeGet push hw
+	[[ ! $BT ]] && hw=hw
+	volumeGet push $hw
 	;;
 	
 esac

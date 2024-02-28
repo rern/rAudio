@@ -13,8 +13,8 @@ $( '#mixer' ).on( 'input', function() {
 	bash( [ 'mixer', $( this ).val(), 'CMD MIXER' ] );
 } );
 $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
-	var bluelasa = this.id.slice( -1 ) === 'a';
-	if ( bluelasa ) {
+	var bluealsa = this.id.slice( -1 ) === 'a';
+	if ( bluealsa ) {
 		var control = S.btmixer.replace( / *-* A2DP/, '' );
 		var cmd     = [ 'volumebt', S.btmixer ];
 		var cmdlist = 'CMD MIXER VAL';
@@ -34,9 +34,12 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 			$( '#infoList input' ).on( 'input', function() {
 				bash( [ ...cmd, +$( this ).val(), cmdlist ] );
 			} ).on( 'touchend mouseup keyup', function() {
-				bash( [ 'volumepush' ] );
+				bash( [ 'volumepush', bluealsa, 'CMD BT' ] );
 			} );
-			volumeInfoSet();
+			$( '.inforange i' ).on( 'click', function() {
+				$( '#infoList input' ).trigger( 'input' );
+			} );
+			volumeInfoSet( bluealsa );
 		}
 		, cancel     : () => {
 			if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) {
@@ -48,7 +51,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		, oklabel    : ico( 'set0' ) +'0dB'
 		, ok         : () => {
 			if ( S.volume.db >= 0 ) {
-				bash( [ bluelasa ? 'volume0dbbt' : 'volume0db' ] );
+				bash( [ bluealsa ? 'volume0dbbt' : 'volume0db' ] );
 			} else {
 				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
 				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
@@ -313,31 +316,29 @@ function renderPage() {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
-		$( '#divdevice' ).toggleClass( 'hide' );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divdevice .col-l' ).html( $( '#divdevice .col-l' ).html() + icondsp );
 		$( '#divbluealsa' ).addClass( 'hide' );
-		$( '#divdevice' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
-		$( '#device' )
-			.html( htmlOption( Object.keys( S.devices ) ) )
-			.val( S.output.name );
-		if ( S.mixers && ! S.camilladsp && ! S.bluetooth ) {
+		var $nonbluetooth = $( '#divdevice, #divmixer, #setting-mixer, #divmixertype, #setting-mixertype' );
+		if ( ! S.mixers || S.camilladsp || ( S.bluetooth && ! S.devicewithbt ) ) {
+			$nonbluetooth.addClass( 'hide' );
+		} else {
+			$( '#device' )
+				.html( htmlOption( Object.keys( S.devices ) ) )
+				.val( S.output.name );
 			$( '#mixer' )
 				.html( htmlOption( S.mixers ) )
 				.val( S.output.mixer );
-			$( '#divmixer, #divmixertype' ).removeClass( 'hide' );
-		} else {
-			$( '#divmixer, #divmixertype' ).addClass( 'hide' );
+			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
+			$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers || ! S.mixertype );
+			$nonbluetooth.removeClass( 'hide' );
 		}
-		$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
-		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers || ! S.mixertype );
-		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
 		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
@@ -359,17 +360,14 @@ function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 }
-function volumeGetPush() {
-	bash( [ 'volumepush' ] );
-}
-function volumeInfoSet() {
-	var val = S.volume.val || 0;
-	var db  = S.volume.db;
+function volumeInfoSet( bluealsa ) {
+	var volume = bluealsa ? S.btvolume : S.volume;
+	var val = volume.val;
+	var db  = volume.db;
 	$( '.inforange .value' ).text( val );
 	$( '.inforange input' ).val( val );
 	$( '.inforange .sub' ).text( val ? db +' dB' : 'Mute' );
 	$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
-	V.local = false;
 }
 function psVolume( data ) {
 	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;

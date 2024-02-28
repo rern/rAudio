@@ -30,7 +30,7 @@ if [[ $1 ]]; then
 	touch $dirshm/usbdacflag
 	( sleep 3; rm -f $dirshm/usbdacflag ) &
 fi
-rm -f $dirmpdconf/{bluetooth,camilladsp,fifo}.conf
+rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
 if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which might be broken from bad script
 	rm -f $dirshm/nosound

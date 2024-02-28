@@ -45,7 +45,7 @@ $body = [
 		, 'icon'     => 'btreceiver'
 		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
-{$Fi( 'volume btn' )} Sender volume control
+{$Fi( 'volume btn' )} Mixer device - blueALSA volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]

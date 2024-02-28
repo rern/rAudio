@@ -4,6 +4,11 @@
 
 . /srv/http/bash/common.sh
 
+if [[ -e $dirshm/btreceiver ]]; then
+	bluetooth=true
+	btmixer=$( getContent $dirshm/btmixer )
+	btvolume=$( volumeGet valdb )
+fi
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 lists='{
   "albumignore" : '$( exists $dirmpd/albumignore )'
@@ -17,7 +22,10 @@ if [[ $mixernone \
 	&& ! $( ls $dirmpdconf/{normalization,replaygain,soxr}.conf 2> /dev/null ) ]]; then
 	novolume=true
 else
-	[[ -e $dirshm/amixercontrol || -e $dirshm/btreceiver ]] && volume=$( volumeGet valdb hw )
+	if [[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]]; then
+		output=$( conf2json -nocap $dirshm/output )
+		volume=$( volumeGet valdb hw )
+	fi
 fi
 replaygainconf='{
   "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
@@ -29,8 +37,9 @@ replaygainconf='{
 data='
 , "asoundcard"       : '$( getContent $dirsystem/asoundcard )'
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
-, "bluetooth"        : '$( exists $dirshm/btreceiver )'
-, "btmixer"          : "'$( getContent $dirshm/btmixer )'"
+, "bluetooth"        : '$bluetooth'
+, "btmixer"          : "'$btmixer'"
+, "btvolume"         : '$btvolume'
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
@@ -50,7 +59,7 @@ data='
 , "mixertype"        : '$( [[ ! $mixernone ]] && echo true )'
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
 , "novolume"         : '$novolume'
-, "output"           : '$( conf2json -nocap $dirshm/output )'
+, "output"           : '$output'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
 , "player"           : "'$player'"
