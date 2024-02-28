@@ -32,7 +32,6 @@ replaygainconf='{
 , "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
 }'
 
-. <( grep -E '^player|^state' $dirshm/status )
 ##########
 data='
 , "asoundcard"       : '$( getContent $dirsystem/asoundcard )'
@@ -62,7 +61,7 @@ data='
 , "output"           : '$output'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
-, "player"           : "'$player'"
+, "player"           : "'$( < $dirshm/player )'"
 , "pllength"         : '$( mpc status %length% )'
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
 , "replaygainconf"   : '$replaygainconf'
@@ -70,7 +69,7 @@ data='
 , "soxrconf"         : '$( conf2json $dirmpdconf/conf/soxr.conf )'
 , "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
-, "state"            : "'$state'"
+, "state"            : "'$( stateMPD )'"
 , "updatetime"       : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db"      : '$( [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating && echo true )'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"

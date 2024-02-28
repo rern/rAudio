@@ -398,6 +398,10 @@ sshpassCmd() {
 		root@$1 \
 		"${@:2}"
 }
+stateMPD() {
+	mpc status %state% | sed -E 's/ped$|ing$|d$//g'
+	
+}
 statePlay() {
 	[[ $( mpc status %state% ) == playing ]] && return 0
 }

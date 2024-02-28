@@ -4,7 +4,6 @@
 
 . /srv/http/bash/common.sh
 . $dirshm/output
-. <( grep -E '^player|^state' $dirshm/status )
 
 devicesC='"Loopback": "hw:Loopback,0"'
 devicesP=$( tr -d {} < $dirshm/devices )
@@ -26,9 +25,9 @@ data='
 }
 , "formats"    : '$( < $dirshm/formats )'
 , "samplings"  : '$( < $dirshm/samplings )'
-, "player"     : "'$player'"
+, "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
-, "state"      : "'$state'"
+, "state"      : "'$( stateMPD )'"
 , "volume"     : '$( [[ $mixer ]] && volumeGet value )'
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
