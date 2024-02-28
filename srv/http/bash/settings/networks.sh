@@ -58,6 +58,7 @@ btalias )
 	amixer -D bluealsa scontrols | cut -d"'" -f2 | tee $dirshm/btmixer > $dirshm/btreceiver
 	pushRefresh networks pushbt
 	pushRefresh player
+	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
 	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
