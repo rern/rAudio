@@ -10,9 +10,8 @@ filemac=$dircamilladsp/$mac
 if [[ -e $filemac ]]; then
 	filedevice=$( < $filemac )
 else
-	[[ $type == btreceiver ]] && name=$( < $dirshm/btname ) || name=$mac
-	filedevice="$dircamilladsp/configs-bt/$name.yml"
-	echo "$filedevice" > $filemac
+	filedevice=$dircamilladsp/configs-bt/camilladsp.yml
+	echo $filedevice > $filemac
 fi
 
 cp $etcdefault{,.backup}
