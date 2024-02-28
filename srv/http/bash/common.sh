@@ -100,7 +100,7 @@ calc() { # $1 - decimal precision, $2 - math without spaces
 camillaDSPstart() {
 	systemctl start camilladsp
 	if systemctl -q is-active camilladsp; then
-		$dirsettings/camilla-data.sh pushrefresh
+		pushRefresh camilla
 	else
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi

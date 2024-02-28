@@ -39,10 +39,10 @@ disconnectRemove() {
 	refreshPages
 }
 refreshPages() {
-	$dirsettings/features-data.sh pushrefresh
-	[[ $dirsystem/camilladsp ]] && $dirsettings/camilla-data.sh pushrefresh
+	pushRefresh features
+	[[ $dirsystem/camilladsp ]] && pushRefresh camilla
 	sleep 1
-	$dirsettings/networks-data.sh pushbt
+	pushRefresh networks pushbt
 }
 #-------------------------------------------------------------------------------------------
 # from bluetooth.rules: disconnect from paired device

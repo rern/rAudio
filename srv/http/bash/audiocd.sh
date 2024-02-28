@@ -9,7 +9,7 @@ if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
 	ln -s $dirmpdconf/{conf/,}cdio.conf
 	systemctl restart mpd
-	$dirsettings/player-data.sh pushrefresh
+	pushRefresh player
 	exit
 fi
 
@@ -27,7 +27,7 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 	fi
 	$dirbash/status-push.sh
 	pushData audiocd '{ "type": "clear" }'
-	$dirsettings/player-data.sh pushrefresh
+	pushRefresh player
 	exit
 fi
 

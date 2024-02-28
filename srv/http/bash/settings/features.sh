@@ -58,7 +58,7 @@ localbrowserXset() {
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
-	$dirsettings/features-data.sh pushrefresh
+	pushRefresh
 }
 pushSubmenu() {
 	pushData display '{ "submenu": "'$1'", "value": '$2' }'
@@ -123,7 +123,7 @@ httpd )
 	[[ $ON ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
 	pushRefresh
-	$dirsettings/player-data.sh pushrefresh
+	pushRefresh player
 	;;
 iwctlap )
 	iwctlAP

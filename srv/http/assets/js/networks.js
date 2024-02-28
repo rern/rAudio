@@ -83,7 +83,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
-		$( '#menu .disconnect' ).toggleClass( 'hide', ! connected );
+		$( '#menu' ).find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
 		$( '#menu .info' ).toggleClass( 'hide', V.li.data( 'mac' ) === $( '#codebluetooth' ).data( 'mac' ) );
 	} else if ( V.listid === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
@@ -168,6 +168,23 @@ $( '.forget' ).on( 'click', function() {
 		, ok         : () => {
 			notify( icon, ssid, 'Forget ...' );
 			bash( [ 'profileforget', ssid, 'CMD SSID' ] );
+		}
+	} );
+} );
+$( '.rename' ).on( 'click', function() {
+	var icon  = 'bluetooth';
+	var name = V.li.data( 'name' );
+	info( {
+		  icon         : icon
+		, title        : 'Rename'
+		, message      : '<wh>'+ name +'</wh>'
+		, list         : [ 'As', 'text' ]
+		, checkchanged : true
+		, checkblank   : true
+		, values       : name
+		, ok           : () => {
+			notify( icon, name, 'Change ...' );
+			bash( [ 'btalias', infoVal(), 'CMD ALIAS' ] );
 		}
 	} );
 } );
