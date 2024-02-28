@@ -75,9 +75,10 @@ Audio player for
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (7 LEDs+Rs)
 - Not applicable on Raspberry Pi `1` or `Zero`:
+	- GUI on local screen
+	- DSP
 	- RTL-SDR (for DAB radio)
-	- TFT 3.5" LCD (for GUI on local screen)
-	
+
 ### Default root password
 - `ros`
 - If enable SnapClient, Multiple rAudios or Shared Data, do not change password from default.
