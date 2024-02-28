@@ -360,15 +360,6 @@ function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 }
-function volumeInfoSet( bluealsa ) {
-	var volume = bluealsa ? S.btvolume : S.volume;
-	var val = volume.val;
-	var db  = volume.db;
-	$( '.inforange .value' ).text( val );
-	$( '.inforange input' ).val( val );
-	$( '.inforange .sub' ).text( val ? db +' dB' : 'Mute' );
-	$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
-}
 function psVolume( data ) {
 	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;
 	if ( ! $( '.inforange' ).length ) return
@@ -386,4 +377,14 @@ function psVolume( data ) {
 		$( '.confirm' ).addClass( 'hide' );
 		volumeInfoSet();
 	}, 300 );
+}
+function volumeInfoSet( bluealsa ) {
+	V.local = false; // from psValue()
+	var volume = bluealsa ? S.btvolume : S.volume;
+	var val = volume.val;
+	var db  = volume.db;
+	$( '.inforange .value' ).text( val );
+	$( '.inforange input' ).val( val );
+	$( '.inforange .sub' ).text( val ? db +' dB' : 'Mute' );
+	$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 }
