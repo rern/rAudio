@@ -184,7 +184,7 @@ $( '.rename' ).on( 'click', function() {
 		, values       : name
 		, ok           : () => {
 			notify( icon, name, 'Change ...' );
-			bash( [ 'btalias', infoVal(), 'CMD ALIAS' ] );
+			bash( [ 'btrename', name, infoVal(), 'CMD NAME NEWNAME' ] );
 		}
 	} );
 } );
