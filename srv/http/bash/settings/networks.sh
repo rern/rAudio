@@ -55,7 +55,7 @@ $info"
 	;;
 btalias )
 	bluetoothctl set-alias $ALIAS
-	amixer -D bluealsa scontrols | cut -d"'" -f2 > $dirshm/btmixer
+	amixer -D bluealsa scontrols | cut -d"'" -f2 | tee $dirshm/btmixer > $dirshm/btreceiver
 	pushRefresh networks pushbt
 	pushRefresh player
 	;;

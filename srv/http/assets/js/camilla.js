@@ -971,7 +971,7 @@ var render    = {
 			var dev = DEV[ d ];
 			var data = jsonClone( dev );
 			var device = dev.device;
-			if ( d === 'playback' ) device += ' - '+ S.cardname;
+			if ( d === 'playback' ) device += ' - '+ S.cardname.replace( / *-* A2DP/, '' );
 			[ 'device', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
 				 +'<div class="li1">'+ common.key2label( d ) +' <gr>·</gr> '+ render.typeReplace( dev.type )
