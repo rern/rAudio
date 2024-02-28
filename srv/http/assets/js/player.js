@@ -314,7 +314,7 @@ function renderPage() {
 	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
 	if ( S.bluetooth ) {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
-		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / - A2DP$/, '' ) +'</option>' );
+		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
