@@ -3,6 +3,7 @@
 . /srv/http/bash/common.sh
 
 type=$1
+mac=$( < $dirshm/$type )
 etcdefault=/etc/default/camilladsp
 filecurrent=$( getVar CONFIG $etcdefault )
 filemac=$dircamilladsp/$mac
@@ -17,7 +18,10 @@ fi
 cp $etcdefault{,.backup}
 sed -i "s|^CONFIG.*|CONFIG=$filedevice|" $etcdefault
 
-[[ -e $filedevice ]] && camillaDSPstart && exit
+if [[ -e $filedevice ]]; then
+	camillaDSPstart
+	exit
+fi
 
 . <( bluealsa-aplay -L | awk '/channel.*Hz/ {print "format="$3"\nchannels="$4"\nsamplerate="$6}' )
 format=$( sed 's/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g' <<< $format )
