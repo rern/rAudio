@@ -41,6 +41,7 @@ var $bartop     = $( '#bar-top' );
 var $time       = $( '#time-knob' );
 var $volume     = $( '#volume-knob' );
 var data        = {}
+var dots        = '·&ensp;·&ensp;·';
 var picaOption  = { // pica.js
 	  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
 	, unsharpThreshold : 5    // 0...100 Default = 0 (try 10)
