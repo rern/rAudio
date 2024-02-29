@@ -10,7 +10,7 @@ $( '#device' ).on( 'input', function() {
 } );
 $( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'mixer', $( this ).val(), 'CMD MIXER' ] );
+	bash( [ 'mixer', $( this ).val(), S.output.name, 'CMD MIXER DEVICE' ] );
 } );
 $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 	var bluealsa = this.id.slice( -1 ) === 'a';
