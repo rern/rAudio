@@ -24,7 +24,7 @@ Conversion failed."
 }
 
 title "$bar Update Album Thumbnails ..."
-echo Path: "$fullpath"
+echo Path: '<a class="cc">'$fullpath'</a>'
 echo
 
 [[ ! -w "$fullpath" ]] && warningWrite "$fullpath" && exit
