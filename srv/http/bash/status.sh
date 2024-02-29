@@ -8,14 +8,6 @@
 
 . /srv/http/bash/common.sh
 
-if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
-	for i in {1..10}; do
-		sleep 1
-		[[ -e $dirmpd/counts ]] && mounted=1 && break
-	done
-	[[ ! $mounted ]] && echo -1 && exit # >>>>>>>>>>
-fi
-
 outputStatus() {
 	if [[ $snapclient ]]; then
 		echo "$status" # - no braces
@@ -24,6 +16,60 @@ outputStatus() {
 	fi
 	[[ $1 != noexit ]] && exit # >>>>>>>>>>
 }
+samplingLine() {
+	local bitdepth bitrate ext rate samplerate sampling
+	bitdepth=$1
+	samplerate=$2
+	bitrate=$3
+	ext=$4
+	if [[ $bitrate == 0 || ! $bitrate ]]; then
+		if [[ ${bitdepth//[!0-9]/} ]]; then
+			bitrate=$(( bitdepth * samplerate * 2 ))
+		else
+			bitrate=$( ffprobe \
+							-v quiet \
+							-show_entries format=bit_rate \
+							-of default=noprint_wrappers=1:nokey=1 \
+							"/mnt/MPD/$filenoesc" )
+		fi
+	fi
+	if (( $bitrate < 1000000 )); then
+		rate="$(( bitrate / 1000 )) kbit/s"
+	else
+		[[ $bitdepth == dsd ]] && bitrate=$(( bitrate / 2 ))
+		rate="$( calc 2 $bitrate/1000000 ) Mbit/s"
+	fi
+	
+	if [[ $bitdepth == dsd ]]; then
+		sampling="${samplerate^^} • $rate"
+	else
+		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
+		sample="$( calc 1 $samplerate/1000 ) kHz"
+		if [[ $bitdepth && ! $ext =~ ^(AAC|MP3|OGG|Radio)$ ]]; then
+			sampling="$bitdepth bit $sample $rate"
+		else # lossy has no bitdepth
+			sampling="$sample $rate"
+		fi
+	fi
+	[[ $ext != Radio ]] && sampling+=" • $ext"
+	echo $sampling
+}
+samplingSave() {
+	local file
+	if [[ $sampling && $player != upnp ]]; then
+		echo $sampling > $samplingfile
+		files=$( ls -1t $dirshm/sampling 2> /dev/null )
+		(( $( wc -l <<< $files ) > 20 )) && rm -f "$( tail -1 <<< $files )"
+	fi
+}
+
+if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
+	for i in {1..10}; do
+		sleep 1
+		[[ -e $dirmpd/counts ]] && mounted=1 && break
+	done
+	[[ ! $mounted ]] && echo -1 && exit # >>>>>>>>>>
+fi
 
 if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/nosound ]]; then
@@ -400,69 +446,23 @@ else
 fi
 
 samplingfile=$dirshm/sampling/$( tr -d ' "`?/#&'"'_.\-" <<< $file )
-samplingSave() {
-	if [[ $sampling && $player != upnp ]]; then
-		echo $sampling > $samplingfile
-		files=$( ls -1t $dirshm/sampling 2> /dev/null )
-		(( $( wc -l <<< $files ) > 20 )) && rm -f "$( tail -1 <<< $files )"
-	fi
-}
-samplingLine() {
-	bitdepth=$1
-	samplerate=$2
-	bitrate=$3
-	ext=$4
-	if [[ $bitrate == 0 || ! $bitrate ]]; then
-		if [[ ${bitdepth//[!0-9]/} ]]; then
-			bitrate=$(( bitdepth * samplerate * 2 ))
-		else
-			bitrate=$( ffprobe \
-							-v quiet \
-							-show_entries format=bit_rate \
-							-of default=noprint_wrappers=1:nokey=1 \
-							"/mnt/MPD/$filenoesc" )
-		fi
-	fi
-	if (( $bitrate < 1000000 )); then
-		rate="$(( bitrate / 1000 )) kbit/s"
-	else
-		[[ $bitdepth == dsd ]] && bitrate=$(( bitrate / 2 ))
-		rate="$( calc 2 $bitrate/1000000 ) Mbit/s"
-	fi
-	
-	if [[ $bitdepth == dsd ]]; then
-		sampling="${samplerate^^} • $rate"
-	else
-		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
-		sample="$( calc 1 $samplerate/1000 ) kHz"
-		if [[ $bitdepth && ! $ext =~ ^(AAC|MP3|OGG|Radio)$ ]]; then
-			sampling="$bitdepth bit $sample $rate"
-		else # lossy has no bitdepth
-			sampling="$sample $rate"
-		fi
-	fi
-	[[ $ext != Radio ]] && sampling+=" • $ext"
-}
 
 if [[ $ext == CD ]]; then
 	sampling='16 bit 44.1 kHz 1.41 Mbit/s • CD'
 elif [[ $ext == DAB ]]; then
 	sampling='48 kHz 160 kbit/s • DAB'
 elif [[ $state != stop ]]; then
-	if [[ $ext == DSF || $ext == DFF ]]; then
-		bitdepth=dsd
-		[[ $state == pause ]] && bitrate=$(( ${samplerate/dsd} * 2 * 44100 ))
-	elif [[ $ext == Radio ]]; then
+	[[ $ext == DSF || $ext == DFF ]] && bitdepth=dsd
+	if [[ $ext == Radio ]]; then
 		if [[ $bitrate && $bitrate != 0 ]]; then
-			samplingLine $bitdepth $samplerate $bitrate $ext
+			sampling=$( samplingLine $bitdepth $samplerate $bitrate $ext )
 			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile # update sampling on each play
 		else
 			sampling=$radiosampling
 		fi
 	else
-		samplingLine $bitdepth $samplerate $bitrate $ext
+		sampling=$( samplingLine $bitdepth $samplerate $bitrate $ext )
 	fi
-	samplingSave &
 else
 	if [[ $ext == Radio ]]; then
 		sampling="$radiosampling"
@@ -487,12 +487,12 @@ else
 				samplerate=${data[0]}
 				bitdepth=${data[1]}
 				bitrate=${data[2]}
-				samplingLine $bitdepth $samplerate $bitrate $ext
+				sampling=$( samplingLine $bitdepth $samplerate $bitrate $ext )
 			fi
 		fi
-		samplingSave &
 	fi
 fi
+[[ $ext != Radio ]] && samplingSave &
 
 ########
 status+='
