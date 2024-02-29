@@ -39,8 +39,7 @@ unsharp=0x.5
 
 [[ ! $mpdpathlist ]] && echo "$padw No albums found in database." && exit
 
-count=${#mpdpathlist[@]}
-i=0
+count=$( wc -l <<< $mpdpathlist )
 while read mpdpath; do
 	(( i++ ))
 	percent=$(( $i * 100 / $count ))
