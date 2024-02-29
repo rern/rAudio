@@ -18,9 +18,9 @@ $html = <<< EOF
 	· On rAudio: {$Fi( 'search btn' )} Scan to connect &raquo; Select to pair
  • Connect / Disconnect:
 	· On receiver: Turn on / off
-	· if switched off power supply, not off button, it'll take 20+ seceonds to detect.
- • Play / Pause
-	· Buttons on receiver can be used as well
+ • Playback controls with buttons:
+	· Main - Play / Pause
+	· Up / Down (long-press) - Previous / Next
 
 <wh>rAudio as receiver:</wh>
  • Pair:
