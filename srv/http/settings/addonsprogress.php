@@ -1,35 +1,34 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
-$fileflag = '/srv/http/data/shm/addonsprogress';
+$fileflag    = '/srv/http/data/shm/addonsprogress';
 if ( file_exists( $fileflag ) ) { // close on refresh
 	header( 'Location: settings.php?p=addons' );
 	exit();
 }
 
-$alias        = $_POST[ 'alias' ];
-$sudosettings = '/usr/bin/sudo /srv/http/bash/settings/';
+$dirsettings = '/usr/bin/sudo /srv/http/bash/settings/';
+$alias       = $_POST[ 'alias' ];
 if ( $alias === 'albumthumbnail' ) {
-	$path          = $_POST[ 'path' ];
-	$icon          = '<i class="page-icon i-coverart"></i>';
-	$hrefback      = '/';
-	$title         = 'Album Thumbnails';
-	$label         = 'Update';
+	$label       = 'Update';
+	$title       = 'Album Thumbnails';
+	$icon        = '<i class="page-icon i-coverart"></i>';
+	$hrefback    = '/';
 } else {
-	$branch        = $_POST[ 'branch' ];
-	$installurl    = $_POST[ 'installurl' ];
-	$label         = $_POST[ 'label' ];
-	$postinfo      = $_POST[ 'postinfo' ];
-	$title         = $_POST[ 'title' ];
-	$uninstall     = $_POST[ 'uninstall' ];
-	$opt           = $_POST[ 'opt' ] ?? '';
+	$branch      = $_POST[ 'branch' ];
+	$installurl  = $_POST[ 'installurl' ];
+	$label       = $_POST[ 'label' ];
+	$postinfo    = $_POST[ 'postinfo' ] ?? '';
+	$title       = $_POST[ 'title' ];
+	$uninstall   = $_POST[ 'uninstall' ] ?? '';
+	$opt         = $_POST[ 'opt' ] ?? '';
 
-	$icon          = '<i class="page-icon i-jigsaw"></i>';
-	$hrefback      = 'settings.php?p=addons';
-	$installfile   = basename( $installurl );
-	$options       = $alias."\n".$label."\n".$branch;
+	$icon        = '<i class="page-icon i-jigsaw"></i>';
+	$hrefback    = 'settings.php?p=addons';
+	$installfile = basename( $installurl );
+	$options     = $alias."\n".$label."\n".$branch;
 	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
-	$postmsg       = $label.' done.';
+	$postmsg     = $label.' done.';
 	if ( $postinfo ) $postmsg.= '<br><br><i class="i-addons wh"></i>'.$postinfo;
 	touch( $fileflag );
 }
@@ -112,23 +111,12 @@ chmod 755 $installfile
 EOF;
 
 if ( $alias === 'albumthumbnail' ) {
-	$commandtxt = 'albumthumbnail.sh';
-	if ( $path ) $commandtxt.= ' "'.$path.'"';
-	$command    = $sudosettings.$commandtxt;
+	$command    = $dirsettings.'albumthumbnail.sh';
+	if ( isset( $_POST[ 'path' ] ) ) $command.= ' "'.$_POST[ 'path' ].'"';
+	$commandtxt = $command;
 } else if ( $label === 'Uninstall' ) {
 	$command    = "uninstall_$alias.sh";
 	$commandtxt = $command;
-} else if ( $label === 'Update' && $uninstall ) {
-	$command    = <<< EOF
-$getinstall
-/usr/bin/sudo ./$installfile "$options"
-EOF;
-	$commandtxt = <<< EOF
-curl -sSfLO $installurl
-chmod 755 $installfile
-uninstall_$alias.sh
-./$installfile "$options"
-EOF;
 } else {
 	$command    = <<< EOF
 $getinstall
@@ -139,6 +127,7 @@ curl -sSfLO $installurl
 chmod 755 $installfile
 ./$installfile "$options"
 EOF;
+	if ( $label === 'Update' && $uninstall ) $commandtxt = str_replace( './', "uninstall_$alias.sh\n./", $commandtxt );
 }
 echo $commandtxt.'<br>';
 
@@ -166,7 +155,7 @@ while ( ! feof( $popencmd ) ) {            // get stdout until eof
 	// abort on browser back/close
 	if ( connection_status() !== 0 || connection_aborted() === 1 ) {
 		pclose( $popencmd );
-		exec( $sudosettings.'addons.sh abort '.$installfile.' '.$alias );
+		exec( $dirsettings.'addons.sh abort '.$installfile.' '.$alias );
 		exit;
 	}
 }
