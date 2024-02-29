@@ -16,6 +16,8 @@ function bannerReset() {
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function currentStatus( id ) {
+	if ( id === 'bluetoothlist' ) return
+	
 	var $el = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	var services   = [ 'ap',        'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
