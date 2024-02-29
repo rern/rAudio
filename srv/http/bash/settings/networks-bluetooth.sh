@@ -120,8 +120,8 @@ if [[ $action == connect || $action == pair ]]; then
 #-----X
 		refreshPages
 		exit
-		
 	fi
+	
 	for i in {1..5}; do
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null | grep "$name" )
 		[[ ! $btmixer ]] && sleep 1 || break
@@ -131,20 +131,15 @@ if [[ $action == connect || $action == pair ]]; then
 		bluetoothctl disconnect $mac
 		notify $type "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
 		exit
-		
 	fi
-	sed 's/ *-* A2DP$//' <<< $name > $dirshm/btname
-	if [[ $sink_source == Source ]]; then
-##### sender
-		type=btsender
-		echo $mac > $dirshm/btsender
-	else
-		echo $mac > $dirshm/btreceiver
+	
+	[[ $sink_source == Source ]] && type=btsender
+	echo $mac > $dirshm/$type
+	if [[ $type == btreceiver ]]; then
+		sed 's/ *-* A2DP$//' <<< $name > $dirshm/btname
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
-##### receiver
 		echo $btmixer > $dirshm/btmixer
-		notify "$type blink" "$name" 'Connect ...'
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
 	fi
