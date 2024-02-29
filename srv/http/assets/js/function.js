@@ -1991,11 +1991,12 @@ function switchPage( page ) {
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
-function thumbUpdate( path ) {
+function thumbUpdate( path, overwrite ) {
 	$( 'body' ).append(
 		 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
 		+'<input type="hidden" name="alias" value="albumthumbnail">'
-		+'<input type="hidden" name="path" value="'+ ( path || '' ) +'">'
+		+'<input type="hidden" name="path" value="'+ path +'">'
+		+'<input type="hidden" name="overwrite" value="'+ ( overwrite ? 'overwrite' : '' ) +'">'
 		+'</form>'
 	);
 	$( '#formtemp' ).submit();

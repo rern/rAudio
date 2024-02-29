@@ -1,6 +1,7 @@
 #!/bin/bash
 
 path=$1
+overwrite=$2
 fullpath="/mnt/MPD/$path"
 padw='<a class="cbw">  </a>'
 padg='<a class="cbg">  </a>'
@@ -23,6 +24,8 @@ Conversion failed."
 }
 
 title "$bar Update Album Thumbnails ..."
+echo Path: "$fullpath"
+echo
 
 [[ ! -w "$fullpath" ]] && warningWrite "$fullpath" && exit
 
@@ -56,7 +59,7 @@ while read mpdpath; do
 	echo $i/$count '<a class="cc">'$mpdpath'</a>'
 	
 	dir="/mnt/MPD/$mpdpath"
-	if ls "$dir/coverart".* &> /dev/null; then
+	if [[ ! $overwrite ]] && ls "$dir/coverart".* &> /dev/null; then
 		echo "   $padw Thumbnail already exists."
 		continue
 	fi

@@ -439,7 +439,8 @@ function thumbnailUpdate() {
 		, title   : 'Album Thumbnails'
 		, message : 'Update album thumbnails in:'
 					+'<br>'+ ico( 'folder' ) +' <wh>'+ V.list.path +'</wh>'
-		, ok      : () => thumbUpdate( V.list.path )
+		, list    : [ 'Overwrite existings', 'checkbox' ]
+		, ok      : () => thumbUpdate( V.list.path, infoVal() )
 	} );
 }
 function updateDirectory() {
