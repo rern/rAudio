@@ -115,7 +115,7 @@ mixertype )
 	fi
 	if [[ $mixer ]]; then
 		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB # [hw] set to current [sw] || [sw/none] set 0dB
-		amixer -c $card -Mq sset "$mixer" $vol
+		amixer -c $card -Mq sset "$mixer" $vol%
 	fi
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false

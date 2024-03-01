@@ -8,7 +8,7 @@ case "$2" in
 	'Speaker Digital' ) output=speakers_out;;
 esac
 amixer_cset() {
-	amixer -c $CARD cset "$1" $2
+	amixer -c $CARD -Mq cset "$1" $2%
 }
 # Switch everything off
 amixer_cset 'AIF Playback Switch'         off
@@ -40,22 +40,22 @@ amixer_cset 'SPKOUTR Input 2'             None
 if [[ $output == line_out ]]; then
 	amixer_cset 'HPOUT2L Input 1'        AIF1RX1
 	amixer_cset 'HPOUT2R Input 1'        AIF1RX2
-	amixer_cset 'HPOUT2L Input 1 Volume' 32
-	amixer_cset 'HPOUT2R Input 1 Volume' 32
+	amixer_cset 'HPOUT2L Input 1 Volume' 33
+	amixer_cset 'HPOUT2R Input 1 Volume' 33
 	amixer_cset 'HPOUT2 Digital Switch'  on
 elif [[ $output == speakers_out ]]; then
 	amixer_cset 'SPKOUTL Input 1'        AIF1RX1
 	amixer_cset 'SPKOUTR Input 1'        AIF1RX2
 	amixer_cset 'Speaker Digital Volume' 128
-	amixer_cset 'SPKOUTL Input 1 Volume' 32
-	amixer_cset 'SPKOUTR Input 1 Volume' 32
+	amixer_cset 'SPKOUTL Input 1 Volume' 33
+	amixer_cset 'SPKOUTR Input 1 Volume' 33
 	amixer_cset 'Speaker Digital Switch' on
 elif [[ $output == spdif_out ]]; then
 	amixer_cset 'AIF2TX1 Input 1'        AIF1RX1
 	amixer_cset 'AIF2TX2 Input 1'        AIF1RX2
 	amixer_cset 'Input Source'           AIF
-	amixer_cset 'AIF2TX1 Input 1 Volume' 32
-	amixer_cset 'AIF2TX2 Input 1 Volume' 32
+	amixer_cset 'AIF2TX1 Input 1 Volume' 33
+	amixer_cset 'AIF2TX2 Input 1 Volume' 33
 	amixer_cset 'AIF Playback Switch'    on
 	amixer_cset 'TX Playback Switch'     on
 	amixer_cset 'SPDIF Out Switch'       on
@@ -63,7 +63,7 @@ elif [[ $output == headset_out ]]; then
 	amixer_cset 'HPOUT1L Input 1'        AIF1RX1
 	amixer_cset 'HPOUT1R Input 1'        AIF1RX2
 	amixer_cset 'HPOUT1 Digital Volume'  116 # Set -6dB for safety. ie max 0.5Vrms output level
-	amixer_cset 'HPOUT1L Input 1 Volume' 32
-	amixer_cset 'HPOUT1R Input 1 Volume' 32
+	amixer_cset 'HPOUT1L Input 1 Volume' 33
+	amixer_cset 'HPOUT1R Input 1 Volume' 33
 	amixer_cset 'HPOUT1 Digital Switch'  on
 fi
