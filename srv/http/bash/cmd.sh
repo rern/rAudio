@@ -766,7 +766,7 @@ upnpstart )
 	playerStart
 	;;
 volume )
-	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )
+	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	filevolumemute=$dirsystem/volumemute
 	if (( $TARGET > 0 )); then
 		rm -f $filevolumemute
@@ -774,9 +774,6 @@ volume )
 		(( $CURRENT > 0 )) && echo $CURRENT > $filevolumemute || rm -f $filevolumemute
 	fi
 	volumeSet $CURRENT $TARGET "$CONTROL" $CARD
-	;;
-volumeget )
-	volumeGet value
 	;;
 volumesetat )
 	volumeSetAt $TARGET "$CONTROL" $CARD

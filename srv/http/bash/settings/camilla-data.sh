@@ -28,7 +28,7 @@ data='
 , "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$( stateMPD )'"
-, "volume"     : '$( [[ $mixer ]] && volumeGet value )'
+, "volume"     : '$( [[ $mixer ]] && volumeGet )'
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
 for dir in $dirs; do

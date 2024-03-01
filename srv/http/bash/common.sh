@@ -408,57 +408,40 @@ statePlay() {
 stringEscape() {
 	echo "${@//\"/\\\"}"
 }
-volumeCardControl() {
-	local card control volume
-	if [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
-		volume=false
-	else
-		if [[ -e $dirshm/btreceiver ]]; then
-			control=$( < $dirshm/btmixer )
-		elif inOutputConf mixer_type.*software; then
-			control=
-		else
-			card=$( getContent $dirsystem/asoundcard )
-			control=$( getContent $dirshm/amixercontrol )
-		fi
-		volume=$( volumeGet value )
-	fi
-	echo "\
-$volume
-$card
-$control"
-}
 volumeGet() {
-	local amixer card control data db mixer val val_db
+	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
+	
+	local card control data db mixer val val_db volume
 	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then
-		for i in {1..5}; do # takes some seconds to be ready
-			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
-			[[ $amixer ]] && break || sleep 1
+		for i in {1..5}; do # might not be ready
+			volume=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
+			[[ $volume ]] && break || sleep 1
 		done
-	else
-		[[ -e $dirshm/nosound ]] && echo -1 && return
+		[[ ! $volume ]] && return
 		
-		if [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
+	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
 				&& playerActive mpd; then
-			val=$( mpc status %volume% | tr -dc [0-9] )
-		elif [[ -e $dirshm/amixercontrol ]]; then
-			card=$( < $dirsystem/asoundcard )
-			control=$( < $dirshm/amixercontrol )
-			amixer=$( amixer -c $card -M sget "$control" | grep -m1 % )
-		fi
+		val=$( mpc status %volume% | tr -dc [0-9] )
+	elif [[ -e $dirshm/amixercontrol ]]; then
+		card=$( < $dirsystem/asoundcard )
+		control=$( < $dirshm/amixercontrol )
+		for i in {1..5}; do # some usb might not be ready
+			volume=$( amixer -c $card -M sget "$control" 2> /dev/null | grep -m1 % )
+			[[ $volume ]] && break || sleep 1
+		done
+		[[ ! $volume ]] && return
 	fi
-	if [[ $amixer ]]; then
-		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $amixer )
+	
+	if [[ $volume ]]; then
+		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $volume )
 		val=${val_db/ *}
 		db=${val_db/* }
 	fi
-	[[ ! $val ]] && val=100
-	[[ ! $db ]] && db=0
 	case $1 in
-		value ) echo $val;;
+		push )  pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
 		valdb ) echo '{ "val": '$val', "db": '$db' }';;
-		* )     pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
+		* )     echo $val;;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
 }
@@ -479,7 +462,7 @@ volumeUpDnMpc() {
 }
 volumePush() {
 	sleep 0.5
-	volumeGet updn
+	volumeGet push
 	rm $dirshm/pidvol
 }
 volumePushSet() {

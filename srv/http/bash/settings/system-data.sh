@@ -166,7 +166,7 @@ mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 if [[ -e $dirsystem/volumeboot.conf ]]; then
 	volumebootconf=$( conf2json $dirsystem/volumeboot.conf )
 else
-	volumebootconf='{ "VOLUME": '$( volumeGet value )' }'
+	volumebootconf='{ "VOLUME": '$( volumeGet )' }'
 fi
 ##########
 data='
