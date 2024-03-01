@@ -1,69 +1,63 @@
 #!/bin/bash
 
-CARD=$1
-case "$2" in
-	'HPOUT1 Digital' )  output=headset_out;;
-	'HPOUT2 Digital' )  output=line_out;;
-	'SPDIF Out' )       output=spdif_out;;
-	'Speaker Digital' ) output=speakers_out;;
-esac
-amixer_cset() {
-	amixer -c $CARD -Mq cset "$1" $2%
-}
-# Switch everything off
-amixer_cset 'AIF Playback Switch'         off
-amixer_cset 'DMIC Switch'                 off
-amixer_cset 'Headset Mic Switch'          off
-amixer_cset 'IN3 High Performance Switch' off
-amixer_cset 'RX Playback Switch'          off
-amixer_cset 'SPDIF in Switch'             off
-amixer_cset 'SPDIF out Switch'            off
-amixer_cset 'Speaker Digital Switch'      off
-amixer_cset 'TX Playback Switch'          off
-amixer_cset 'AIF1TX1 Input 1'             None
-amixer_cset 'AIF1TX2 Input 1'             None
-amixer_cset 'AIF2TX1 Input 1'             None
-amixer_cset 'AIF2TX2 Input 1'             None
-amixer_cset 'HPOUT1L Input 1'             None
-amixer_cset 'HPOUT1R Input 1'             None
-amixer_cset 'HPOUT1L Input 2'             None
-amixer_cset 'HPOUT1R Input 2'             None
-amixer_cset 'HPOUT2L Input 1'             None
-amixer_cset 'HPOUT2R Input 1'             None
-amixer_cset 'HPOUT2L Input 2'             None
-amixer_cset 'HPOUT2R Input 2'             None
-amixer_cset 'SPKOUTL Input 1'             None
-amixer_cset 'SPKOUTR Input 1'             None
-amixer_cset 'SPKOUTL Input 2'             None
-amixer_cset 'SPKOUTR Input 2'             None
+card=$1
+output=$2
 
-if [[ $output == line_out ]]; then
-	amixer_cset 'HPOUT2L Input 1'        AIF1RX1
-	amixer_cset 'HPOUT2R Input 1'        AIF1RX2
-	amixer_cset 'HPOUT2L Input 1 Volume' 33
-	amixer_cset 'HPOUT2R Input 1 Volume' 33
-	amixer_cset 'HPOUT2 Digital Switch'  on
-elif [[ $output == speakers_out ]]; then
-	amixer_cset 'SPKOUTL Input 1'        AIF1RX1
-	amixer_cset 'SPKOUTR Input 1'        AIF1RX2
-	amixer_cset 'Speaker Digital Volume' 128
-	amixer_cset 'SPKOUTL Input 1 Volume' 33
-	amixer_cset 'SPKOUTR Input 1 Volume' 33
-	amixer_cset 'Speaker Digital Switch' on
-elif [[ $output == spdif_out ]]; then
-	amixer_cset 'AIF2TX1 Input 1'        AIF1RX1
-	amixer_cset 'AIF2TX2 Input 1'        AIF1RX2
-	amixer_cset 'Input Source'           AIF
-	amixer_cset 'AIF2TX1 Input 1 Volume' 33
-	amixer_cset 'AIF2TX2 Input 1 Volume' 33
-	amixer_cset 'AIF Playback Switch'    on
-	amixer_cset 'TX Playback Switch'     on
-	amixer_cset 'SPDIF Out Switch'       on
-elif [[ $output == headset_out ]]; then
-	amixer_cset 'HPOUT1L Input 1'        AIF1RX1
-	amixer_cset 'HPOUT1R Input 1'        AIF1RX2
-	amixer_cset 'HPOUT1 Digital Volume'  116 # Set -6dB for safety. ie max 0.5Vrms output level
-	amixer_cset 'HPOUT1L Input 1 Volume' 33
-	amixer_cset 'HPOUT1R Input 1 Volume' 33
-	amixer_cset 'HPOUT1 Digital Switch'  on
-fi
+declare -A controls
+controls['HPOUT1 Digital']="\
+HPOUT1L Input 1
+HPOUT1R Input 1
+HPOUT1 Digital Volume
+HPOUT1L Input 1 Volume
+HPOUT1R Input 1 Volume
+HPOUT1 Digital Switch"
+controls['HPOUT2 Digital']="\
+HPOUT2L Input 1
+HPOUT2R Input 1
+HPOUT2L Input 1 Volume
+HPOUT2R Input 1 Volume
+HPOUT2 Digital Switch"
+controls['SPDIF Out']="\
+AIF2TX1 Input 1
+AIF2TX2 Input 1
+Input Source
+AIF2TX1 Input 1 Volume
+AIF2TX2 Input 1 Volume
+AIF Playback Switch
+TX Playback Switch
+SPDIF Out Switch"
+controls['Speaker Digital']="\
+SPKOUTL Input 1
+SPKOUTR Input 1
+Speaker Digital Volume
+SPKOUTL Input 1 Volume
+SPKOUTR Input 1 Volume
+Speaker Digital Switch"
+
+# Switch everything off
+control_all=$( printf "%s\n" "${controls[@]}" )
+while read control; do
+	[[ ${control: -1} =~ [12] ]] && val=None || val=off
+	amixer -c $card -q cset "$control" $val
+done <<< $control_all
+
+control_output=${controls[$output]}
+while read control; do
+	if [[ $control == *' Digital '* ]]; then
+		val=116% # Set -6dB for safety. ie max 0.5Vrms output level
+	else
+		case ${control: -6} in
+			Volume ) val=33%;;
+			Switch ) val=on;;
+			Source ) val=AIF;;
+			* )
+				c0=${control/ *}
+				i=${c0: -1}
+				i=${i/L/1}
+				i=${i/R/2}
+				val=AIF1RX$i
+				;;
+		esac
+	fi
+	amixer -c $card -Mq cset "$control" $val
+done <<< $control_output
