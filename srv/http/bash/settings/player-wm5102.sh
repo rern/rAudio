@@ -41,22 +41,17 @@ while read control; do
 	amixer -c $card -q cset "$control" $val
 done <<< $control_all
 
+volume=$( getContent $dirsystem/volume-wm5102 50 )%
 control_output=${controls[$output]}
 while read control; do
 	if [[ $control == *' Digital '* ]]; then
-		val=116% # Set -6dB for safety. ie max 0.5Vrms output level
+		val=$volume # Set -6dB for safety. ie max 0.5Vrms output level
 	else
 		case ${control: -6} in
-			Volume ) val=33%;;
+			Volume ) val=$volume;;
 			Switch ) val=on;;
 			Source ) val=AIF;;
-			* )
-				c0=${control/ *}
-				i=${c0: -1}
-				i=${i/L/1}
-				i=${i/R/2}
-				val=AIF1RX$i
-				;;
+			* )      val=AIF1RX$( sed -E 's/.*(.)$/\1/; s/L/1/; s/R/2/' <<< ${control/ *} );;
 		esac
 	fi
 	amixer -c $card -Mq cset "$control" $val
