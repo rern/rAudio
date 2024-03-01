@@ -54,8 +54,6 @@ if [[ $mountpoints ]]; then
 		mkdir -p "$mountpoint"
 	done <<< $mountpoints
 fi
-if [[ -e /etc/modprobe.d/cirrus.conf ]]; then
-	echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
-	touch /boot/cirrus
-fi
+[[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus
+
 $dirbash/power.sh reboot

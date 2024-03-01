@@ -41,8 +41,7 @@ $ssid
 CMD SSID"
 fi
 if [[ -e /boot/cirrus ]]; then
-	mixer=$( getContent "$dirsystem/mixer-WM5102 AiFi" 'HPOUT2 Digital' )
-	$dirsettings/player-wm5102.sh "$mixer"
+	$dirsettings/player-wm5102.sh 'HPOUT2 Digital'
 	rm /boot/cirrus
 fi
 # ----------------------------------------------------------------------------

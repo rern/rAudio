@@ -55,8 +55,8 @@ defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
 [[ $( getVar name $dirshm/output ) != $NAME ]] && notify 'output blink' 'Output Device' "$NAME"
-if [[ -e /etc/modprobe.d/cirrus.conf ]]; then
-# aplay -l: card 2: RPiCirrus [RPi-Cirrus], device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
+if aplay -l | grep -q "^card $CARD:.* WM5102"; then
+# card N: RPiCirrus [RPi-Cirrus], device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
 	echo '{
   "Headphones" : "HPOUT1 Digital"
 , "Line out"   : "HPOUT2 Digital"

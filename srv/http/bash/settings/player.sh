@@ -100,6 +100,7 @@ filetype )
 	;;
 mixer )
 	echo "$MIXER" > "$dirsystem/mixer-$DEVICE"
+	aplay -l | grep -q "^card $CARD:.* WM5102" && $dirsettings/player-wm5102.sh "$MIXER"
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
