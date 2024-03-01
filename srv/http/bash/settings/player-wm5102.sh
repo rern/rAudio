@@ -41,7 +41,8 @@ while read control; do
 	amixer -c $card -q cset "$control" $val
 done <<< $control_all
 
-volume=$( getContent $dirsystem/volume-wm5102 50 )%
+file=/srv/http/data/system/volume-wm5102
+[[ -e $file ]] && volume=$( < $file )% || volume=50%
 control_output=${controls[$output]}
 while read control; do
 	if [[ $control == *' Digital '* ]]; then
