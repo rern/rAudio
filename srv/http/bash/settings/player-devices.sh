@@ -55,10 +55,16 @@ defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
 [[ $( getVar name $dirshm/output ) != $NAME ]] && notify 'output blink' 'Output Device' "$NAME"
-if grep -q WM5102 <<< $NAME; then
+if [[ -e /etc/modprobe.d/cirrus.conf ]]; then
 # aplay -l: card 2: RPiCirrus [RPi-Cirrus], device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
-	MIXER='HPOUT2 Digital'
-	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
+	echo '{
+  "Headphones" : "HPOUT1 Digital"
+, "Line out"   : "HPOUT2 Digital"
+, "SPDIF"      : "SPDIF Out"
+, "Speakers"   : "SPKOUT Digital"
+}' > $dirshm/mixers
+	MIXER=$( getContent "$dirsystem/mixer-WM5102 AiFi" 'HPOUT2 Digital' )
+	[[ $MIXER == SPDIF ]] && MIXER=
 else
 	amixer=$( amixer -c $CARD scontents )
 	if [[ $amixer ]]; then
@@ -82,6 +88,9 @@ else
 				MIXER=$( head -1 <<< $controls )
 			fi
 		fi
+		echo "[ ${LISTMIXER:1} ]" > $dirshm/mixers
+	else
+		rm -f $dirshm/mixers
 	fi
 fi
 
@@ -98,7 +107,6 @@ name="'$NAME'"
 mixer="'$MIXER'"
 mixertype='$MIXERTYPE > $dirshm/output
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
-[[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/mixers || rm -f $dirshm/mixers
 [[ $MIXER ]] && echo "$MIXER" > $dirshm/amixercontrol || rm -f $dirshm/amixercontrol
 echo $CARD > $dirsystem/asoundcard
 ########

@@ -40,6 +40,11 @@ if [[ $wlandev && -e $bootwifi ]]; then
 $ssid
 CMD SSID"
 fi
+if [[ -e /boot/cirrus ]]; then
+	mixer=$( getContent "$dirsystem/mixer-WM5102 AiFi" 'HPOUT2 Digital' )
+	$dirsettings/player-wm5102.sh "$mixer"
+	rm /boot/cirrus
+fi
 # ----------------------------------------------------------------------------
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo

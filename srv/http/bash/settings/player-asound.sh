@@ -100,11 +100,6 @@ fi
 echo "$ASOUNDCONF" >> /etc/asound.conf # append after default lines set by player-devices.sh
 
 # ----------------------------------------------------------------------------
-if [[ $( getContent $dirsystem/audio-aplayname ) == cirrus-wm5102 ]]; then
-	output=$( getContent $dirsystem/mixer-cirrus-wm5102 'HPOUT2 Digital' )
-	$dirsettings/player-wm5102.sh $CARD "$output"
-fi
-
 if [[ $camilladsp ]]; then
 	# must stop for exclusive device access - aplay probing
 	$dirbash/cmd.sh playerstop

@@ -16,7 +16,6 @@ usbDacVolume() { # fix - alsactl not maintain usb dac volume
 	if [[ $1 == remove ]]; then
 		[[ -s $dirshm/usbdac ]] && mv -f $dirshm/usbdac "$filevolume"
 	else
-		[[ -e /etc/modprobe.d/cirrus.conf ]] && cp -f $dirshm/volume $dirsystem/volume-wm5102
 		[[ -e "$filevolume" ]] && vol=$( < "$filevolume" ) || vol=$( getContent $dirshm/volume )
 		[[ ! $vol ]] && vol=50
 		amixer -c $card -Mq sset "$mixer" $vol%

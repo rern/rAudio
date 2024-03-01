@@ -166,12 +166,12 @@ volumeSetAt() {
 	target=$1
 	control=$2
 	card=$3
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ -e $dirshm/btreceiver ]]; then            # bluetooth
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
-	elif [[ $control ]]; then
+	elif [[ $control ]]; then                       # hardware
 		amixer -c $card -Mq sset "$control" $target%
 		[[ -e $dirshm/usbdac ]] && echo $target > $dirshm/usbdac
-	else
+	else                                            # software
 		mpc -q volume $target
 	fi
 }

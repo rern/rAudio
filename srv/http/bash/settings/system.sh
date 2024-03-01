@@ -189,6 +189,7 @@ i2slist )
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
 	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
+	rm -f /boot/cirrus /etc/modprobe.d/cirrus.conf
 	if [[ $APLAYNAME != none ]]; then
 		[[ -e $dirsystem/audio ]] && config+="
 dtparam=audio=on"
@@ -197,17 +198,16 @@ dtparam=i2s=on
 dtoverlay=$APLAYNAME"
 		[[ $OUTPUT == 'Pimoroni Audio DAC SHIM' ]] && config+="
 gpio=25=op,dh"
-		if [[ $APLAYNAME == cirrus-wm5102 ]]; then
-			echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
-			cp -f $dirshm/volume > $dirsystem/volume-wm5102
-		fi
 		! grep -q gpio-shutdown /boot/config.txt && systemctl disable --now powerbutton
 		echo $APLAYNAME > $dirsystem/audio-aplayname
 		echo $OUTPUT > $dirsystem/audio-output
+		if [[ $APLAYNAME == cirrus-wm5102 ]]; then
+			echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
+			touch /boot/cirrus
+		fi
 	else
 		config+="
 dtparam=audio=on"
-		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf $dirsystem/volume-wm5102
 	fi
 	configTxt
 	;;

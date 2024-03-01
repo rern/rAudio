@@ -412,14 +412,14 @@ volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
 	
 	local args card db mixer val val_db volume
-	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then
+	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
 		args='-MD bluealsa'
 	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
-				&& playerActive mpd; then
+				&& playerActive mpd; then           # software
 		val=$( mpc status %volume% | tr -dc [0-9] )
 		db=false
-	elif [[ -e $dirshm/amixercontrol ]]; then
+	elif [[ -e $dirshm/amixercontrol ]]; then       # hardware
 		. <( grep -E '^card|^mixer' $dirshm/output )
 		args="-c $card -M sget \"$mixer\""
 	fi

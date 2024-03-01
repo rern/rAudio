@@ -54,8 +54,6 @@ if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
 	sleep 3
 fi
-alsactl store
-[[ -e /etc/modprobe.d/cirrus.conf ]] && cp -f $dirshm/volume $dirsystem/volume-wm5102
 echo 1 > /sys/class/backlight/rpi_backlight/bl_power
 [[ -e $dirshm/apstartup || -e /boot/accesspoint ]] && rm $dirsystem/ap
 

@@ -16,6 +16,7 @@ files=(
 	/etc/upmpdcli.conf
 	/etc/conf.d/wireless-regdom
 	/etc/default/snapclient
+	/etc/modprobe.d/cirrus.conf
 	/etc/modules-load.d/loopback.conf
 	/etc/pacman.d/mirrorlist
 	/etc/samba/smb.conf
