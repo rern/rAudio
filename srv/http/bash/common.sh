@@ -411,25 +411,24 @@ stringEscape() {
 volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
 	
-	local card control data db mixer val val_db volume
+	local args card db mixer val val_db volume
 	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then
-		for i in {1..5}; do # might not be ready
-			volume=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
-			[[ $volume ]] && break || sleep 1
-		done
-		[[ ! $volume ]] && return
-		
+		args='-MD bluealsa'
 	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
 				&& playerActive mpd; then
 		val=$( mpc status %volume% | tr -dc [0-9] )
+		db=false
 	elif [[ -e $dirshm/amixercontrol ]]; then
-		card=$( < $dirsystem/asoundcard )
-		control=$( < $dirshm/amixercontrol )
-		for i in {1..5}; do # some usb might not be ready
-			volume=$( amixer -c $card -M sget "$control" 2> /dev/null | grep -m1 % )
+		. <( grep -E '^card|^mixer' $dirshm/output )
+		args="-c $card -M sget \"$mixer\""
+	fi
+	if [[ $args ]]; then # not mpd software
+		for i in {1..3}; do # some usb might not be ready
+			volume=$( amixer $args 2> /dev/null | grep -m1 % )
 			[[ $volume ]] && break || sleep 1
 		done
+		[[ ! $volume ]] && volume=$( getContent $dirshm/volume )
 		[[ ! $volume ]] && return
 	fi
 	
@@ -437,6 +436,7 @@ volumeGet() {
 		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $volume )
 		val=${val_db/ *}
 		db=${val_db/* }
+		echo $val_db > $dirshm/volume
 	fi
 	case $1 in
 		push )  pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
