@@ -67,7 +67,6 @@ else
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
 	. <( grep -E '^card|^mixer' $dirshm/output )
-	volume=$( volumeGet )
 	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
 		updating_db=true
 	fi
@@ -89,7 +88,7 @@ else
 , "updateaddons" : '$( exists $diraddons/update )'
 , "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
-, "volume"       : '$volume'
+, "volume"       : '$( volumeGet )'
 , "volumemute"   : '$( getContent $dirsystem/volumemute 0 )'
 , "webradio"     : false'
 	if [[ -e $dirsystem/scrobble ]]; then
