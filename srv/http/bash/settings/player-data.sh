@@ -9,21 +9,11 @@ if [[ -e $dirshm/btreceiver ]]; then
 	btmixer=$( getContent $dirshm/btmixer )
 	btvolume=$( volumeGet valdb )
 fi
-crossfade=$( mpc crossfade | cut -d' ' -f2 )
 lists='{
   "albumignore" : '$( exists $dirmpd/albumignore )'
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
-[[ $( getVar mixertype $dirshm/output ) == none ]] && mixernone=true
-if [[ $mixernone \
-	&& $crossfade == 0 \
-	&& $( volumeGet db ) == 0.00 \
-	&& ! $( ls $dirsystem/{camilladsp,equalizer} 2> /dev/null ) \
-	&& ! $( ls $dirmpdconf/{normalization,replaygain,soxr}.conf 2> /dev/null ) ]]; then
-	novolume=true
-fi
-output=$( conf2json -nocap $dirshm/output )
 replaygainconf='{
   "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
 , "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
@@ -41,7 +31,7 @@ data='
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "counts"           : '$( < $dirmpd/counts )'
-, "crossfade"        : '$( [[ $crossfade != 0 ]] && echo true )'
+, "crossfade"        : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "crossfadeconf"    : { "SEC": '$crossfade' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
@@ -53,10 +43,9 @@ data='
 , "lastupdate"       : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
 , "lists"            : '$lists'
 , "mixers"           : '$( getContent $dirshm/mixers )'
-, "mixertype"        : '$( [[ ! $mixernone ]] && echo true )'
+, "mixertype"        : '$( [[ $( getVar mixertype $dirshm/output ) != none ]] && echo true )'
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
-, "novolume"         : '$novolume'
-, "output"           : '$output'
+, "output"           : '$( conf2json -nocap $dirshm/output )'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
 , "player"           : "'$( < $dirshm/player )'"

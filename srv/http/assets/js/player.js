@@ -310,6 +310,18 @@ function infoSoxrCustom() {
 		, ok           : switchEnable
 	} );
 }
+function noVolumeSet() {
+	S.novolume = S.volume.db === 0;
+	[ 'mixertype', 'crossfade', 'camilladsp', 'equalizer', 'normalization', 'replaygain', 'soxr' ].forEach( k => {
+		if ( S[ k ] ) {
+			S.novolume = false
+			return
+		}
+	} );
+	$( '#novolume' )
+		.prop( 'checked', S.novolume )
+		.toggleClass( 'disabled', S.novolume );
+}
 function renderPage() {
 	playbackButton();
 	renderStatus();
@@ -346,7 +358,7 @@ function renderPage() {
 			$nonbluetooth.removeClass( 'hide' );
 		}
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
-		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
+		noVolumeSet();
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 	}
@@ -369,6 +381,7 @@ function setMixerType( mixertype ) {
 }
 function psVolume( data ) {
 	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;
+	noVolumeSet();
 	if ( ! $( '.inforange' ).length ) return
 	
 	if ( data.type === 'mpd' ) { // info software volume
