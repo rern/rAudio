@@ -29,7 +29,7 @@ $( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
 		SERVICE=bluetooth
 		;;
 	camilladsp )
-		fileconf=/etc/default/camilladsp
+		fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		extra=$( < /var/log/camilladsp.log )
 		;;
 	dabradio )
