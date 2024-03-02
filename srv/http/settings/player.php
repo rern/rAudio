@@ -97,8 +97,6 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
 	· Volume {$FiLabel( 'Cross-Fading' )} {$FiLabel( 'Normalization' )} {$FiLabel( 'ReplayGain' )}
 	· Options  {$FiLabel( 'SoX Resampler' )}
 	· {$FiTab( 'Features' )}{$FiLabel( 'DSP', 'camilladsp' )} and {$FiLabel( 'Equalizer', 'equalizer' )}
-	
-Note: If {$FiLabel( "User's Configurations" )} enabled, verify for no volume settings.
 EOF
 	]
 	, [

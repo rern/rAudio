@@ -253,6 +253,14 @@ function infoNoVolume() {
 			S.novolume = true;
 			bash( [ 'novolume' ] );
 			notifyCommon( 'Enable ...' );
+			if ( ! S.custom ) return
+			
+			info( {
+				  icon    : SW.icon
+				, title   : SW.title
+				, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
+							+'<br>Remove any volume related settings.'
+			} );
 		}
 	} );
 }
