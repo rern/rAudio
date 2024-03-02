@@ -18,10 +18,12 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		var control = S.btmixer.replace( / *-* A2DP/, '' );
 		var cmd     = [ 'volumebt', S.btmixer ];
 		var cmdlist = 'CMD MIXER VAL';
+		var cmd0db  = 'volume0dbbt';
 	} else {
 		var control = S.output.mixer;
 		var cmd     = [ 'volume', S.output.card, S.output.mixer ];
 		var cmdlist = 'CMD CARD MIXER VAL';
+		var cmd0db  = 'volume0db';
 	}
 	info( {
 		  icon       : SW.icon
@@ -51,7 +53,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		, oklabel    : ico( 'set0' ) +'0dB'
 		, ok         : () => {
 			if ( S.volume.db >= 0 ) {
-				bash( [ bluealsa ? 'volume0dbbt' : 'volume0db' ] );
+				bash( [ cmd0db ] );
 			} else {
 				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
 				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );

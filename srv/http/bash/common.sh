@@ -441,6 +441,7 @@ volumeGet() {
 	case $1 in
 		push )  pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
 		valdb ) echo '{ "val": '$val', "db": '$db' }';;
+		db )    echo $db;;
 		* )     echo $val;;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute

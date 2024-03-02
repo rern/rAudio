@@ -18,19 +18,17 @@ lists='{
 [[ $( getVar mixertype $dirshm/output ) == none ]] && mixernone=true
 if [[ $mixernone \
 	&& $crossfade == 0 \
+	&& $( volumeGet db ) == 0.00 \
 	&& ! $( ls $dirsystem/{camilladsp,equalizer} 2> /dev/null ) \
 	&& ! $( ls $dirmpdconf/{normalization,replaygain,soxr}.conf 2> /dev/null ) ]]; then
 	novolume=true
-else
-	if [[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]]; then
-		output=$( conf2json -nocap $dirshm/output )
-		volume=$( volumeGet valdb hw )
-	fi
 fi
+output=$( conf2json -nocap $dirshm/output )
 replaygainconf='{
   "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
 , "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
 }'
+[[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=$( volumeGet valdb hw )
 
 ##########
 data='
