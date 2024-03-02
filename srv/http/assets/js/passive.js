@@ -422,7 +422,6 @@ function psVolume( data ) {
 		return
 	}
 	
-	V.volumeprev = S.volume;
 	if ( [ 'mute', 'unmute' ].includes( data.type ) ) V.local = false; // allow beforeValueChange()
 	if ( data.type === 'mute' ) {
 		S.volume = 0;

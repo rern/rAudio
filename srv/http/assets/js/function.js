@@ -1926,6 +1926,8 @@ function setTrackCoverart() {
 	}
 }
 function setVolume() {
+	if ( V.animate ) return
+	
 	$volumeRS.setValue( S.volume );
 	if ( ! S.volume ) $volumehandle.rsRotate( -310 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
