@@ -31,15 +31,19 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		, list       : [ control, 'range' ]
 		, prompt     : '<br>'+ warning
 		, beforeshow : () => {
+			var $inputrange = $( '#infoList input' );
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
-			$( '#infoList input' ).on( 'input', function() {
+			 $inputrange.on( 'input', function() {
 				bash( [ ...cmd, +$( this ).val(), cmdlist ] );
 			} ).on( 'touchend mouseup keyup', function() {
 				bash( [ 'volumepush', bluealsa, 'CMD BT' ] );
 			} );
 			$( '.inforange i' ).on( 'click', function() {
-				$( '#infoList input' ).trigger( 'input' );
+				S.volume.val = +$inputrange.val();
+				 $inputrange
+					.trigger( 'input' )
+					.trigger( 'keyup' );
 			} );
 			volumeInfoSet( bluealsa );
 		}
