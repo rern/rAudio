@@ -250,7 +250,6 @@ function infoNoVolume() {
 		, message : warning
 		, cancel  : switchCancel
 		, ok      : () => {
-			S.novolume = true;
 			bash( [ 'novolume' ] );
 			notifyCommon( 'Enable ...' );
 			if ( ! S.custom ) return
@@ -319,16 +318,11 @@ function infoSoxrCustom() {
 	} );
 }
 function noVolumeSet() {
-	S.novolume = S.volume.db === 0;
-	[ 'mixertype', 'crossfade', 'camilladsp', 'equalizer', 'normalization', 'replaygain', 'soxr' ].forEach( k => {
-		if ( S[ k ] ) {
-			S.novolume = false
-			return
-		}
-	} );
+	var novolume = S.volume.db === 0 && ! [ 'mixertype', 'crossfade', 'normalization', 'replaygain', 'soxr'
+										  , 'camilladsp', 'equalizer' ].some( k => S[ k ] );
 	$( '#novolume' )
-		.prop( 'checked', S.novolume )
-		.toggleClass( 'disabled', S.novolume );
+		.prop( 'checked', novolume )
+		.toggleClass( 'disabled', novolume );
 }
 function renderPage() {
 	playbackButton();
