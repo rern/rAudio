@@ -96,7 +96,7 @@ ctl.equal {
 		fi
 	fi
 fi
-
+######## >
 echo "$ASOUNDCONF" >> /etc/asound.conf # append after default lines set by player-devices.sh
 
 # ----------------------------------------------------------------------------
@@ -123,7 +123,7 @@ if [[ $camilladsp ]]; then
 			done
 		fi
 	done
-########
+######## >
 	echo '{
 	  "capture"  : '${CHANNELS[0]}'
 	, "playback" : '${CHANNELS[1]}'
@@ -133,7 +133,7 @@ if [[ $camilladsp ]]; then
 	, "playback" : '${FORMATS[1]}'
 }' > $dirshm/formats
 	echo "{ ${SAMPLINGS:1} }" > $dirshm/samplings
-########
+######## <
 	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	if [[ $bluetooth ]]; then
 		$dirsettings/camilla-bluetooth.sh btreceiver

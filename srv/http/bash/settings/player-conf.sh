@@ -71,13 +71,13 @@ if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from pla
 	[[ -e $dirsystem/btformat ]] && AUDIOOUTPUTBT+='
 	format      "44100:16:2"'
 #--------------->
-########
+######## >
 	echo "\
 audio_output {\
 $AUDIOOUTPUTBT
 }
 " > $dirmpdconf/bluetooth.conf
-########
+######## >
 fi
 if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
@@ -137,17 +137,17 @@ $( sed 's/^/\t/' "$customfile" )"
 		fi
 #--------------->
 	fi
-########
 	if [[ $AUDIOOUTPUT ]]; then
+######## >
 		echo "\
 audio_output {
 $( sed 's/  *"/^"/' <<< $AUDIOOUTPUT | column -t -s^ )
 }
 " > $dirmpdconf/output.conf
+######## >
 	else
 		rm -f $dirmpdconf/output.conf
 	fi
-########
 fi
 
 if [[ -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ||
@@ -179,7 +179,7 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 	hw0=$( getVar output_device $fileconf )
 	mixer0=$( getVar mixer_control_name $fileconf )
 	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
-########
+#--------------->
 		CONF=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 		CONF+='
 alsa = {
@@ -187,7 +187,8 @@ alsa = {
 	mixer_control_name = "'$mixer'";
 }'
 		[[ $mixerno ]] && CONF=$( grep -v mixer_control_name <<< $CONF )
-#-------
+#---------------<
+######## >
 		echo "$CONF" > /etc/shairport-sync.conf
 		systemctl try-restart shairport-sync
 	fi
@@ -205,7 +206,7 @@ if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
 	hw0=$( getVar device $fileconf )
 	mixer=$( getVar mixer $fileconf )
 	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
-########
+#--------------->
 		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
 		if [[ ! $equalizer ]]; then
 			CONF+='
@@ -214,7 +215,8 @@ control = "'$hw'"
 mixer = "'$mixer'"'
 		[[ $mixerno ]] && CONF=$( grep -v ^mixer <<< $CONF )
 		fi
-#-------
+#---------------<
+######## >
 		echo "$CONF" > /etc/spotifyd.conf
 		systemctl try-restart spotifyd
 	fi

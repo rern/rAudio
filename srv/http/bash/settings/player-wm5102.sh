@@ -2,6 +2,7 @@
 
 card=RPiCirrus
 output=$1
+[[ $2 ]] && volume=$2 || volume=50
 
 HPOUT1="\
 HPOUT1L Input 1
@@ -31,10 +32,10 @@ done <<< $control_all
 
 while read control; do
 	if [[ $control == *' Digital Volume' ]]; then
-		val=50%
+		val=$volume%
 	else
 		case ${control: -6} in
-			Volume ) val=50%;;
+			Volume ) val=$volume%;;
 			Switch ) val=on;;
 			Source ) val=AIF;;
 			* )      val=AIF1RX$( sed -E 's/.*(.)$/\1/; s/L/1/; s/R/2/' <<< ${control/ *} );;
