@@ -153,12 +153,16 @@ case 'ls':
 		if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // not 'mpc ls' to get all root dirs
 			$multiline = implode( "\n", [ 'librarybasedirs', $string, 'CMD DIR' ] );
 			exec( '/srv/http/bash/cmd.sh "'.$multiline.'"', $lists );
+			if ( ! count( $lists ) ) exit;
+			
 			htmlDirectory( $lists );
 			break;
 		}
 		
 		exec( 'mpc ls "'.$string.'"'
 			, $mpcls );
+		if ( ! count( $mpcls ) ) exit;
+		
 		foreach( $mpcls as $mpdpath ) {
 			if ( is_dir( '/mnt/MPD/'.$mpdpath ) ) {
 				$subdirs = 1;
@@ -297,15 +301,15 @@ function htmlDirectory( $lists ) {
 		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
+		$nodata    = '';
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
 			$htmlicon = imgIcon( $thumbsrc, 'folder' );
-			$nodata   = exec( 'mpc listall "'.$path.'" 2> /dev/null' ) ? '' : ' class="nodata"';
+			if ( substr_count( $path, '/' ) === 1 ) $nodata = exec( 'mpc listall "'.$path.'" 2> /dev/null' ) ? '' : ' class="nodata"';
 		} else {
 			$mode     = $gmode;
 			$htmlicon = i( 'music ', 'file' );
-			$nodata   = '';
 		}
 		$html.=
 '<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.$htmlicon.'
