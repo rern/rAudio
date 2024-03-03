@@ -56,7 +56,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		}
 		, oklabel    : ico( 'set0' ) +'0dB'
 		, ok         : () => {
-			if ( S.volume.db >= 0 ) {
+			if ( S.volume.db > -2 ) {
 				bash( [ cmd0db ] );
 			} else {
 				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
@@ -68,13 +68,17 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 } );
 $( '#mixertype' ).on( 'click', function() {
 	if ( S.mixertype ) {
-		info( {
-			  icon    : 'volume'
-			, title   : 'Volume Control'
-			, message : warning
-			, cancel  : switchCancel
-			, ok      : () => setMixerType( 'none' )
-		} );
+		if ( S.volume.db > -2 ) {
+			setMixerType( 'none' );
+		} else {
+			info( {
+				  icon    : 'volume'
+				, title   : 'Volume Control'
+				, message : warning
+				, cancel  : switchCancel
+				, ok      : () => setMixerType( 'none' )
+			} );
+		}
 	} else {
 		S.mixers ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
 	}
@@ -250,23 +254,29 @@ audio_output {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function infoNoVolume() {
-	info( {
-		  icon    : SW.icon
-		, title   : SW.title
-		, message : warning
-		, cancel  : switchCancel
-		, ok      : () => {
-			bash( [ 'novolume' ] );
-			notifyCommon( 'Enable ...' );
-			if ( ! S.custom ) return
-			
-			info( {
-				  icon    : SW.icon
-				, title   : SW.title
-				, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
-							+'<br>Remove any volume related settings.'
-			} );
-		}
+	if ( S.volume.db > -2 ) {
+		infoNoVolumeSet();
+	} else {
+		info( {
+			  icon    : SW.icon
+			, title   : SW.title
+			, message : warning
+			, cancel  : switchCancel
+			, ok      : infoNoVolumeSet
+		} );
+	}
+}
+function infoNoVolumeSet() {
+	notifyCommon( 'Enable ...' );
+	bash( [ 'novolume' ], function() {
+		if ( ! S.custom ) return
+		
+		info( {
+			  icon    : SW.icon
+			, title   : SW.title
+			, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
+						+'<br>Remove any volume related settings.'
+		} );
 	} );
 }
 function infoSoxr( quality ) {
@@ -324,7 +334,7 @@ function infoSoxrCustom() {
 	} );
 }
 function noVolumeSet() {
-	S.novolume = S.volume.db === 0 && ! [ 'mixertype', 'crossfade', 'normalization', 'replaygain', 'soxr'
+	S.novolume = ! S.volume.db && ! [ 'mixertype', 'crossfade', 'normalization', 'replaygain', 'soxr'
 										  , 'camilladsp', 'equalizer' ].some( k => S[ k ] );
 	$( '#novolume' ).prop( 'checked', S.novolume );
 }
