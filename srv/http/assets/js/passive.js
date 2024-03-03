@@ -140,7 +140,6 @@ function psCoverart( data ) {
 	if ( ! V.playback ) refreshData();
 }
 function psDisplay( data ) {
-	bannerHide();
 	if ( 'dir' in data ) {
 		var k = data.dir;
 		var v = data.count;
@@ -149,6 +148,7 @@ function psDisplay( data ) {
 		return
 	}
 	
+	bannerHide();
 	if ( 'submenu' in data ) {
 		D[ data.submenu ] = data.value;
 		displaySubMenu();
