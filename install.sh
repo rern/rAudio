@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240309
+# 20240303
 file=/etc/udev/rules.d/bluetooth.rules
 if grep -q bluetoothcommand $file; then
 	sed -i 's|bluetoothcommand|settings/networks-bluetooth|' $file
