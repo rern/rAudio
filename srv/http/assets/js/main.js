@@ -1450,6 +1450,18 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( V.press ) return
 	
 	var $this   = $( this );
+	if ( $this.hasClass( 'nodata' ) ) {
+		var path = $this.find( '.lipath' ).text();
+		info( {
+			  icon    : 'refresh-library'
+			, title   : 'Library Database'
+			, message : 'No data: <wh>'+ path +'</wh>'
+						+'<br>Update this location?'
+			, ok      : () => bash( [ 'mpcupdate', path, 'CMD DIR' ] )
+		} );
+		return
+	}
+	
 	var $target = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	

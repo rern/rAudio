@@ -52,14 +52,13 @@ else
 	rm /etc/fstab.backup
 fi
 
-if [[ $update == true ]]; then
-	echo ${mountpoint:9} > $dirmpd/updating # /mnt/MPD/NAS/... > NAS/...
-	$dirbash/cmd.sh mpcupdate
-fi
 for i in {1..5}; do
 	sleep 1
 	mount | grep -q -m1 "$mountpoint" && break
 done
+
+pushDataCount nas
+
 if [[ $SHAREDDATA ]]; then
 	$dirsettings/system.sh shareddataset
 else

@@ -53,7 +53,7 @@ fi
 
 for mode in NAS SD USB; do
 	counts+='
-, "'${mode,,}'" : '$( mpc ls $mode 2> /dev/null | wc -l )
+, "'${mode,,}'" : '$( ls -1d /mnt/MPD/$mode/*/ 2> /dev/null | wc -l ) # not 'mpc ls' to get all root dirs
 done
 
 ##### album

@@ -150,6 +150,13 @@ case 'list':
 	break;
 case 'ls':
 	if ( $mode !== 'album' ) {
+		if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // not 'mpc ls' to get all root dirs
+			exec( 'ls -1d /mnt/MPD/'.$string."/*/ | sed -E 's#/mnt/MPD/|/$##g'"
+				, $lists );
+			htmlDirectory( $lists );
+			break;
+		}
+		
 		exec( 'mpc ls "'.$string.'"'
 			, $mpcls );
 		foreach( $mpcls as $mpdpath ) {
@@ -294,12 +301,13 @@ function htmlDirectory( $lists ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
 			$htmlicon = imgIcon( $thumbsrc, 'folder' );
+			$nodata   = exec( 'mpc listall "'.$path.'" 2> /dev/null' ) ? '' : ' class="nodata"';
 		} else {
 			$mode     = $gmode;
 			$htmlicon = i( 'music ', 'file' );
 		}
 		$html.=
-'<li data-mode="'.$mode.'" data-index="'.$index.'">'.$htmlicon.'
+'<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.$htmlicon.'
 <a class="lipath">'.$path.'</a>
 <span class="single name">'.$each->dir.'</span>
 </li>';
