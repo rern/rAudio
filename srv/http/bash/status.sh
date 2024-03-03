@@ -8,14 +8,6 @@
 
 . /srv/http/bash/common.sh
 
-if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
-	for i in {1..10}; do
-		sleep 1
-		[[ -e $dirmpd/counts ]] && mounted=1 && break
-	done
-	[[ ! $mounted ]] && echo -1 && exit # >>>>>>>>>>
-fi
-
 outputStatus() {
 	if [[ $snapclient ]]; then
 		echo "$status" # - no braces
@@ -24,6 +16,14 @@ outputStatus() {
 	fi
 	[[ $1 != noexit ]] && exit # >>>>>>>>>>
 }
+
+if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
+	for i in {1..10}; do
+		sleep 1
+		[[ -e $dirmpd/counts ]] && mounted=1 && break
+	done
+	[[ ! $mounted ]] && echo -1 && exit # >>>>>>>>>>
+fi
 
 if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/nosound ]]; then
@@ -66,11 +66,7 @@ else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
-	
-	readarray -t vcc <<< $( volumeCardControl )
-	volume=${vcc[0]}
-	card=${vcc[1]}
-	control=${vcc[2]}
+	. <( grep -E '^card|^mixer' $dirshm/output )
 	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
 		updating_db=true
 	fi
@@ -79,7 +75,7 @@ else
 , "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
-, "control"      : "'$control'"
+, "control"      : "'$mixer'"
 , "counts"       : '$( getContent $dirmpd/counts )'
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
@@ -92,7 +88,7 @@ else
 , "updateaddons" : '$( exists $diraddons/update )'
 , "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
-, "volume"       : '$volume'
+, "volume"       : '$( volumeGet )'
 , "volumemute"   : '$( getContent $dirsystem/volumemute 0 )'
 , "webradio"     : false'
 	if [[ -e $dirsystem/scrobble ]]; then
@@ -400,18 +396,53 @@ else
 fi
 
 samplingfile=$dirshm/sampling/$( tr -d ' "`?/#&'"'_.\-" <<< $file )
-samplingSave() {
-	if [[ $sampling && $player != upnp ]]; then
-		echo $sampling > $samplingfile
-		files=$( ls -1t $dirshm/sampling 2> /dev/null )
-		(( $( wc -l <<< $files ) > 20 )) && rm -f "$( tail -1 <<< $files )"
+
+if [[ $ext == CD ]]; then
+	sampling='16 bit 44.1 kHz 1.41 Mbit/s • CD'
+elif [[ $ext == DAB ]]; then
+	sampling='48 kHz 160 kbit/s • DAB'
+elif [[ $state != stop ]]; then
+	[[ $ext == DSF || $ext == DFF ]] && bitdepth=dsd
+	if [[ $ext == Radio ]]; then
+		if [[ $bitrate && $bitrate != 0 ]]; then
+			sampling=$( samplingLine $bitdepth $samplerate $bitrate $ext )
+			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile # update sampling on each play
+		else
+			sampling=$radiosampling
+		fi
+	else
+		sampling=$( samplingLine $bitdepth $samplerate $bitrate $ext )
 	fi
-}
-samplingLine() {
-	bitdepth=$1
-	samplerate=$2
-	bitrate=$3
-	ext=$4
+else
+	if [[ $ext == Radio ]]; then
+		sampling="$radiosampling"
+	else
+		if [[ -e $samplingfile ]]; then
+			sampling=$( < $samplingfile )
+		else
+			if [[ $ext == DSF || $ext == DFF ]]; then
+				# DSF: byte# 56+4 ? DSF: byte# 60+4
+				[[ $ext == DSF ]] && byte=56 || byte=60;
+				[[ $cuesrc ]] && file="$( dirname "$mpdpath" )/$cuesrc"
+				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
+				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
+				bitrate=$( calc 2 $dsd*44100/1000000 )
+				sampling="DSD$dsd • $bitrate Mbit/s • $ext"
+			else
+				data=( $( ffprobe -v quiet -select_streams a:0 \
+					-show_entries stream=bits_per_raw_sample,sample_rate \
+					-show_entries format=bit_rate \
+					-of default=noprint_wrappers=1:nokey=1 \
+					"/mnt/MPD/$filenoesc" ) )
+				samplerate=${data[0]}
+				bitdepth=${data[1]}
+				bitrate=${data[2]}
+				sampling=$( samplingLine $bitdepth $samplerate $bitrate $ext )
+			fi
+		fi
+	fi
+fi
+if [[ ! $sampling ]]; then
 	if [[ $bitrate == 0 || ! $bitrate ]]; then
 		if [[ ${bitdepth//[!0-9]/} ]]; then
 			bitrate=$(( bitdepth * samplerate * 2 ))
@@ -442,58 +473,12 @@ samplingLine() {
 		fi
 	fi
 	[[ $ext != Radio ]] && sampling+=" • $ext"
-}
-
-if [[ $ext == CD ]]; then
-	sampling='16 bit 44.1 kHz 1.41 Mbit/s • CD'
-elif [[ $ext == DAB ]]; then
-	sampling='48 kHz 160 kbit/s • DAB'
-elif [[ $state != stop ]]; then
-	if [[ $ext == DSF || $ext == DFF ]]; then
-		bitdepth=dsd
-		[[ $state == pause ]] && bitrate=$(( ${samplerate/dsd} * 2 * 44100 ))
-	elif [[ $ext == Radio ]]; then
-		if [[ $bitrate && $bitrate != 0 ]]; then
-			samplingLine $bitdepth $samplerate $bitrate $ext
-			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile # update sampling on each play
-		else
-			sampling=$radiosampling
-		fi
-	else
-		samplingLine $bitdepth $samplerate $bitrate $ext
-	fi
-	samplingSave &
-else
-	if [[ $ext == Radio ]]; then
-		sampling="$radiosampling"
-	else
-		if [[ -e $samplingfile ]]; then
-			sampling=$( < $samplingfile )
-		else
-			if [[ $ext == DSF || $ext == DFF ]]; then
-				# DSF: byte# 56+4 ? DSF: byte# 60+4
-				[[ $ext == DSF ]] && byte=56 || byte=60;
-				[[ $cuesrc ]] && file="$( dirname "$mpdpath" )/$cuesrc"
-				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
-				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
-				bitrate=$( calc 2 $dsd*44100/1000000 )
-				sampling="DSD$dsd • $bitrate Mbit/s • $ext"
-			else
-				data=( $( ffprobe -v quiet -select_streams a:0 \
-					-show_entries stream=bits_per_raw_sample,sample_rate \
-					-show_entries format=bit_rate \
-					-of default=noprint_wrappers=1:nokey=1 \
-					"/mnt/MPD/$filenoesc" ) )
-				samplerate=${data[0]}
-				bitdepth=${data[1]}
-				bitrate=${data[2]}
-				samplingLine $bitdepth $samplerate $bitrate $ext
-			fi
-		fi
-		samplingSave &
-	fi
 fi
-
+if [[ $sampling && $ext != Radio && $player != upnp ]]; then
+	echo $sampling > $samplingfile
+	files=$( ls -1t $dirshm/sampling 2> /dev/null )
+	(( $( wc -l <<< $files ) > 20 )) && rm -f "$( tail -1 <<< $files )"
+fi
 ########
 status+='
 , "ext"      : "'$ext'"

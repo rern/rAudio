@@ -33,7 +33,7 @@ if [[ -e $dirsystem/camilladsp ]]; then
 	$dirsettings/camilla.sh saveconfig
 	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 fi
-[[ -e $dirshm/btconnected ]] && cp $dirshm/btconnected $dirsystem
+[[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 touch $dirshm/power
 mpc -q stop
 if [[ -e $dirsystem/lcdchar ]]; then
@@ -54,7 +54,6 @@ if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
 	sleep 3
 fi
-alsactl store
 echo 1 > /sys/class/backlight/rpi_backlight/bl_power
 [[ -e $dirshm/apstartup || -e /boot/accesspoint ]] && rm $dirsystem/ap
 

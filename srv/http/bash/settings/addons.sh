@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [[ $1 == abort ]]; then
-	killall $2 wget pacman &> /dev/null
-	rm -f /var/lib/pacman/db.lck /srv/http/*.zip /usr/local/bin/uninstall_$3.sh
-	exit
-fi
-
 . /srv/http/bash/common.sh
 addonsjson=$diraddons/addonslist.json
 bar='<a class="cbm">  </a>'

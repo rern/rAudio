@@ -4,7 +4,7 @@
 
 sleep 3 # wait for eventX added to /dev/input/
 
-control=$( < $dirshm/btreceiver )
+control=$( < $dirshm/btmixer )
 mac=$( bluetoothctl show \
 		| head -1 \
 		| cut -d' ' -f2 )

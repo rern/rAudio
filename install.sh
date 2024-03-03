@@ -4,12 +4,29 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 202402224
+# 20240303
+file=/etc/udev/rules.d/bluetooth.rules
+if grep -q bluetoothcommand $file; then
+	sed -i 's|bluetoothcommand|settings/networks-bluetooth|' $file
+	udevadm control --reload-rules
+	udevadm trigger
+fi
+
+file=/usr/lib/systemd/system/camilladsp.service
+if ! grep -q {CONFIG} $file; then
+	sed -i 's/CONFIG/{CONFIG}/' $file
+	systemctl daemon-reload
+fi
+
+# 202402226
 file=/etc/default/camilladsp
-[[ -e $file ]] && sed -i 's|/etc/|/srv/http/data/|' $file
+if grep -qs /etc/ $file; then
+	sed -i 's|/etc/|/srv/http/data/|' $file
+	mv -f /{etc,srv/http/data}/camilladsp/configs/*
+fi
 
 file=$dirsystem/autoplay.conf
-[[ -e $file ]] && sed -i '/^cd/ d' $file
+grep -qs ^cd $file && sed -i '/^cd/ d' $file
 
 # 20240219
 readarray -t mixerfiles <<< $( ls $dirsystem/hwmixer-* 2> /dev/null )

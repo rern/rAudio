@@ -15,7 +15,7 @@ netctlSwitch() {
 		sleep 1
 		if netctl is-active "$ssid" &> /dev/null; then
 			netctl enable "$ssid"
-			$dirsettings/networks-data.sh pushwl
+			pushRefresh networks pushwl
 			exit
 		fi
 	done
@@ -52,6 +52,13 @@ bluetoothinfo )
 	echo "\
 <bll># bluetoothctl info $MAC</bll>
 $info"
+	;;
+btrename )
+	bluetoothctl set-alias "$NEWNAME"
+	amixer -D bluealsa scontrols | cut -d"'" -f2 > $dirshm/btmixer
+	pushRefresh networks pushbt
+	pushRefresh player
+	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
 	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
@@ -98,7 +105,7 @@ disconnect )
 	netctl stop "$SSID"
 	systemctl stop wpa_supplicant
 	ip link set $( < $dirshm/wlan ) up
-	$dirsettings/networks-data.sh pushwl
+	pushRefresh networks pushwl
 	;;
 lanedit )
 	if [[ $IP ]]; then
@@ -147,7 +154,7 @@ profileforget )
 		ip link set $wlandev up
 	fi
 	rm "/etc/netctl/$SSID"
-	$dirsettings/networks-data.sh pushwl
+	pushRefresh networks pushwl
 	;;
 profileget )
 	profile=$( conf2json "/etc/netctl/$SSID" )

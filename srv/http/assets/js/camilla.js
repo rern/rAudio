@@ -1,6 +1,7 @@
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
+	, dots       : '· · ·'
 	, graph      : { filters: [], pipeline: [] }
 	, prevconfig : {}
 	, sortable   : {}
@@ -748,7 +749,7 @@ var render    = {
 		delete V.intervalvu;
 		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
 		$( '.peak' ).css( 'left', 0 );
-		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( dots );
+		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( V.dots );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -970,7 +971,7 @@ var render    = {
 			var dev = DEV[ d ];
 			var data = jsonClone( dev );
 			var device = dev.device;
-			if ( d === 'playback' ) device += ' - '+ S.cardname;
+			if ( d === 'playback' ) device += ' - '+ S.cardname.replace( / *-* A2DP/, '' );
 			[ 'device', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
 				 +'<div class="li1">'+ common.key2label( d ) +' <gr>·</gr> '+ render.typeReplace( dev.type )
@@ -1014,7 +1015,6 @@ var render    = {
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		$( '#enable_rate_adjust' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
-		switchSet();
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
@@ -1436,7 +1436,6 @@ var setting   = {
 			  icon         : V.tab
 			, title        : title
 			, list         : D[ dev ][ type ]
-			, boxwidth     : 198
 			, values       : values
 			, checkblank   : true
 			, checkchanged : true
@@ -1445,7 +1444,6 @@ var setting   = {
 				var $td    = $input.parent();
 				$td.append( $td.next().find( 'i' ) );
 				$input.css( 'width', '70px' );
-				$( '#infoList td:first-child' ).css( 'width', '128px' );
 				$( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
 /*				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
@@ -1832,6 +1830,7 @@ var common    = {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
 					if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) );
+					switchSet( 'ready' );
 					render.page();
 					render.tab();
 					break;

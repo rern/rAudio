@@ -11,7 +11,7 @@ case $CMD in
 	bluealsa )
 		conf="\
 <bll># bluealsa-aplay -L</bll>
-$( bluealsa-aplay -L | grep -A2 $( cut -d' ' -f1 $dirshm/btconnected ) )"
+$( bluealsa-aplay -L )"
 		;;
 	ap )
 		PKG=iwd
@@ -29,7 +29,7 @@ $( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
 		SERVICE=bluetooth
 		;;
 	camilladsp )
-		fileconf=/etc/default/camilladsp
+		fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		extra=$( < /var/log/camilladsp.log )
 		;;
 	dabradio )

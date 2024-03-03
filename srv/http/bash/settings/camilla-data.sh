@@ -3,20 +3,19 @@
 ! systemctl -q is-active camilladsp && echo notrunning && exit
 
 . /srv/http/bash/common.sh
+. $dirshm/output
 
 devicesC='"Loopback": "hw:Loopback,0"'
 devicesP=$( tr -d {} < $dirshm/devices )
 if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
+	name=$( < $dirshm/btname )
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
 	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
 fi
-. $dirshm/output
-. <( grep -E '^player|^state' $dirshm/status )
 ########
 data='
 , "bluetooth"  : '$bluetooth'
-, "card"       : '$card'
 , "cardname"   : "'$name'"
 , "channels"   : '$( < $dirshm/channels )'
 , "control"    : "'$mixer'"
@@ -26,10 +25,10 @@ data='
 }
 , "formats"    : '$( < $dirshm/formats )'
 , "samplings"  : '$( < $dirshm/samplings )'
-, "player"     : "'$player'"
+, "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
-, "state"      : "'$state'"
-, "volume"     : '$( [[ $mixer ]] && volumeGet value )'
+, "state"      : "'$( stateMPD )'"
+, "volume"     : '$( [[ $mixer ]] && volumeGet )'
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
 for dir in $dirs; do

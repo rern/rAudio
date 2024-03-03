@@ -58,7 +58,7 @@ localbrowserXset() {
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
-	$dirsettings/features-data.sh pushrefresh
+	pushRefresh
 }
 pushSubmenu() {
 	pushData display '{ "submenu": "'$1'", "value": '$2' }'
@@ -95,11 +95,8 @@ brightness )
 	;;
 camilladsp )
 	enableFlagSet
-	playerActive mpd && mpc -q stop || $dirbash/cmd.sh playerstop
-	if [[ ! $ON ]]; then
-		$dirsettings/camilla.sh saveconfig
-		[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
-	fi
+	$dirbash/cmd.sh playerstop
+	[[ ! $ON && -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	pushRestartMpd camilladsp $TF
 	;;
 dabradio )
@@ -126,7 +123,7 @@ httpd )
 	[[ $ON ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
 	pushRefresh
-	$dirsettings/player-data.sh pushrefresh
+	pushRefresh player
 	;;
 iwctlap )
 	iwctlAP

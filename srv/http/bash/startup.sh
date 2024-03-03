@@ -40,6 +40,10 @@ if [[ $wlandev && -e $bootwifi ]]; then
 $ssid
 CMD SSID"
 fi
+if [[ -e /boot/cirrus ]]; then
+	$dirsettings/player-wm5102.sh 'HPOUT2 Digital'
+	rm /boot/cirrus
+fi
 # ----------------------------------------------------------------------------
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
@@ -110,24 +114,21 @@ fi
 
 [[ $ap ]] && $dirsettings/features.sh iwctlap
 
-if [[ -e $dirsystem/btconnected ]]; then
-	readarray -t devices < $dirsystem/btconnected
-	rm $dirsystem/btconnected
-	for dev in "${devices[@]}"; do
-		mac=$( cut -d' ' -f1 <<< $dev )
-		$dirbash/bluetoothcommand.sh connect $mac
-	done
+if [[ -e $dirsystem/btreceiver ]]; then
+	mac=$( < $dirsystem/btreceiver )
+	rm $dirsystem/btreceiver
+	$dirsettings/networks-bluetooth.sh connect $mac
 fi
 
 if [[ -e $dirshm/btreceiver && -e $dirsystem/camilladsp ]]; then
-	$dirsettings/camilla-bluetooth.sh receiver
-else # start mpd.service if not started by bluetoothcommand.sh
+	$dirsettings/camilla-bluetooth.sh btreceiver
+else # start mpd.service if not started by networks-bluetooth.sh
 	$dirsettings/player-conf.sh
 fi
 if [[ -e $dirsystem/volumeboot ]]; then
 	. $dirsystem/volumeboot.conf
 	if [[ -e $dirshm/btreceiver ]]; then
-		control=$( < $dirshm/btreceiver )
+		control=$( < $dirshm/btmixer )
 		amixer -MqD bluealsa sset "$control" $volume
 	elif [[ -e $dirshm/amixercontrol ]]; then
 		card=$( < $dirsystem/asoundcard )

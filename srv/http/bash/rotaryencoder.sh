@@ -16,7 +16,7 @@ dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-perio
 sleep 1
 devinputrotary=$( realpath /dev/input/by-path/*rotary* )
 if [[ -e $dirshm/btreceiver ]]; then
-	control=$( < $dirshm/btreceiver )
+	control=$( < $dirshm/btmixer )
 	evtest $devinputrotary | while read line; do
 		if [[ $line =~ 'value 1'$ ]]; then
 			volumeUpDnBt 1%+ "$control"

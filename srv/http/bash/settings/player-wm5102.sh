@@ -1,69 +1,45 @@
 #!/bin/bash
 
-CARD=$1
-case "$2" in
-	'HPOUT1 Digital' )  output=headset_out;;
-	'HPOUT2 Digital' )  output=line_out;;
-	'SPDIF Out' )       output=spdif_out;;
-	'Speaker Digital' ) output=speakers_out;;
-esac
-amixer_cset() {
-	amixer -c $CARD cset "$1" $2
-}
-# Switch everything off
-amixer_cset 'AIF Playback Switch'         off
-amixer_cset 'DMIC Switch'                 off
-amixer_cset 'Headset Mic Switch'          off
-amixer_cset 'IN3 High Performance Switch' off
-amixer_cset 'RX Playback Switch'          off
-amixer_cset 'SPDIF in Switch'             off
-amixer_cset 'SPDIF out Switch'            off
-amixer_cset 'Speaker Digital Switch'      off
-amixer_cset 'TX Playback Switch'          off
-amixer_cset 'AIF1TX1 Input 1'             None
-amixer_cset 'AIF1TX2 Input 1'             None
-amixer_cset 'AIF2TX1 Input 1'             None
-amixer_cset 'AIF2TX2 Input 1'             None
-amixer_cset 'HPOUT1L Input 1'             None
-amixer_cset 'HPOUT1R Input 1'             None
-amixer_cset 'HPOUT1L Input 2'             None
-amixer_cset 'HPOUT1R Input 2'             None
-amixer_cset 'HPOUT2L Input 1'             None
-amixer_cset 'HPOUT2R Input 1'             None
-amixer_cset 'HPOUT2L Input 2'             None
-amixer_cset 'HPOUT2R Input 2'             None
-amixer_cset 'SPKOUTL Input 1'             None
-amixer_cset 'SPKOUTR Input 1'             None
-amixer_cset 'SPKOUTL Input 2'             None
-amixer_cset 'SPKOUTR Input 2'             None
+card=RPiCirrus
+output=$1
+[[ $2 ]] && volume=$2 || volume=50
 
-if [[ $output == line_out ]]; then
-	amixer_cset 'HPOUT2L Input 1'        AIF1RX1
-	amixer_cset 'HPOUT2R Input 1'        AIF1RX2
-	amixer_cset 'HPOUT2L Input 1 Volume' 32
-	amixer_cset 'HPOUT2R Input 1 Volume' 32
-	amixer_cset 'HPOUT2 Digital Switch'  on
-elif [[ $output == speakers_out ]]; then
-	amixer_cset 'SPKOUTL Input 1'        AIF1RX1
-	amixer_cset 'SPKOUTR Input 1'        AIF1RX2
-	amixer_cset 'Speaker Digital Volume' 128
-	amixer_cset 'SPKOUTL Input 1 Volume' 32
-	amixer_cset 'SPKOUTR Input 1 Volume' 32
-	amixer_cset 'Speaker Digital Switch' on
-elif [[ $output == spdif_out ]]; then
-	amixer_cset 'AIF2TX1 Input 1'        AIF1RX1
-	amixer_cset 'AIF2TX2 Input 1'        AIF1RX2
-	amixer_cset 'Input Source'           AIF
-	amixer_cset 'AIF2TX1 Input 1 Volume' 32
-	amixer_cset 'AIF2TX2 Input 1 Volume' 32
-	amixer_cset 'AIF Playback Switch'    on
-	amixer_cset 'TX Playback Switch'     on
-	amixer_cset 'SPDIF Out Switch'       on
-elif [[ $output == headset_out ]]; then
-	amixer_cset 'HPOUT1L Input 1'        AIF1RX1
-	amixer_cset 'HPOUT1R Input 1'        AIF1RX2
-	amixer_cset 'HPOUT1 Digital Volume'  116 # Set -6dB for safety. ie max 0.5Vrms output level
-	amixer_cset 'HPOUT1L Input 1 Volume' 32
-	amixer_cset 'HPOUT1R Input 1 Volume' 32
-	amixer_cset 'HPOUT1 Digital Switch'  on
-fi
+HPOUT1="\
+HPOUT1L Input 1
+HPOUT1R Input 1
+HPOUT1L Input 1 Volume
+HPOUT1R Input 1 Volume
+HPOUT1 Digital Volume
+HPOUT1 Digital Switch"
+
+declare -A controls
+controls['HPOUT1 Digital']=$HPOUT1
+controls['HPOUT2 Digital']=$( sed 's/1/2/' <<< $HPOUT1 )
+controls['Speaker Digital']=$( sed 's/HPOUT1 /Speaker /; s/HPOUT1/SPKOUT/' <<< $HPOUT1 )
+controls['SPDIF Out']="\
+$( sed -n '/Input/ {s/HPOUT1L/AIF2TX1/; s/HPOUT1R/AIF2TX2/; p}' <<< $HPOUT1 )
+Input Source
+AIF Playback Switch
+TX Playback Switch
+SPDIF Out Switch"
+
+# Switch everything off
+control_all=$( printf "%s\n" "${controls[@]}" )
+while read control; do
+	[[ ${control: -1} =~ [12] ]] && val=None || val=off
+	amixer -c $card -q cset "$control" $val
+done <<< $control_all
+
+while read control; do
+	if [[ $control == *' Digital Volume' ]]; then
+		val=$volume%
+	else
+		case ${control: -6} in
+			Volume ) val=$volume%;;
+			Switch ) val=on;;
+			Source ) val=AIF;;
+			* )      val=AIF1RX$( sed -E 's/.*(.)$/\1/; s/L/1/; s/R/2/' <<< ${control/ *} );;
+		esac
+	fi
+	amixer -c $card -Mq cset "$control" $val
+done <<< ${controls["$output"]}

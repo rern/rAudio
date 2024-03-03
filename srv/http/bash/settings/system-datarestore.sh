@@ -54,4 +54,6 @@ if [[ $mountpoints ]]; then
 		mkdir -p "$mountpoint"
 	done <<< $mountpoints
 fi
+[[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus
+
 $dirbash/power.sh reboot

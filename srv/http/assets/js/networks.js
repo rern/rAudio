@@ -23,11 +23,8 @@ $( '.btscan' ).on( 'click', function() {
 	scanBluetooth();
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
-	var $this = $( this );
-	var name  = $this.data( 'name' );
-	var mac   = $this.data( 'mac' );
-	notify( 'bluetooth', name, 'Pair ...' );
-	bash( [ 'bluetoothcommand.sh', 'pair', mac ] );
+	V.li = $( this );
+	bluetoothCommand( 'pair' );
 } );
 $( '.wladd' ).on( 'click', function() {
 	delete V.profileget;
@@ -83,7 +80,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
-		$( '#menu .disconnect' ).toggleClass( 'hide', ! connected );
+		$( '#menu' ).find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
 		$( '#menu .info' ).toggleClass( 'hide', V.li.data( 'mac' ) === $( '#codebluetooth' ).data( 'mac' ) );
 	} else if ( V.listid === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
@@ -103,7 +100,7 @@ $( '.lanadd' ).on( 'click', function() {
 $( '.connect' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
 	if ( V.listid === 'listbt' ) {
-		bluetoothCommand( 'Connect' );
+		bluetoothCommand( 'connect' );
 		return
 	}
 	
@@ -122,7 +119,7 @@ $( '.connect' ).on( 'click', function() {
 } );
 $( '.disconnect' ).on( 'click', function() {
 	if ( V.listid === 'listbt' ) {
-		bluetoothCommand( 'Disconnect' );
+		bluetoothCommand( 'disconnect' );
 		return
 	}
 	
@@ -152,7 +149,7 @@ $( '.edit' ).on( 'click', function() {
 } );
 $( '.forget' ).on( 'click', function() {
 	if ( V.listid === 'listbt' ) {
-		bluetoothCommand( 'Remove' );
+		bluetoothCommand( 'remove' );
 		return
 	}
 	
@@ -171,6 +168,23 @@ $( '.forget' ).on( 'click', function() {
 		}
 	} );
 } );
+$( '.rename' ).on( 'click', function() {
+	var icon  = 'bluetooth';
+	var name = V.li.data( 'name' );
+	info( {
+		  icon         : icon
+		, title        : 'Rename'
+		, message      : '<wh>'+ name +'</wh>'
+		, list         : [ 'As', 'text' ]
+		, checkchanged : true
+		, checkblank   : true
+		, values       : name
+		, ok           : () => {
+			notify( icon, name, 'Change ...' );
+			bash( [ 'btrename', name, infoVal(), 'CMD NAME NEWNAME' ] );
+		}
+	} );
+} );
 $( '.info' ).on( 'click', function() {
 	bluetoothInfo( V.li.data( 'mac' ) );
 } );
@@ -178,9 +192,10 @@ $( '.info' ).on( 'click', function() {
 } );
 
 function bluetoothCommand( action ) {
-	var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
-	notify( icon, V.li.data( 'name' ), action +' ...', -1 );
-	bash( [ 'bluetoothcommand.sh', action.toLowerCase(), V.li.data( 'mac' ) ] );
+	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
+	var title = action[ 0 ].toUpperCase() + action.slice( 1 );
+	notify( icon, V.li.data( 'name' ), title +' ...', -1 );
+	bash( [ 'settings/networks-bluetooth.sh', action, V.li.data( 'mac' ) ] );
 }
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac, 'CMD MAC' ], data => {

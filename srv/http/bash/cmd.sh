@@ -77,6 +77,9 @@ playerStop() {
 			rm -f $dirshm/bluetoothdest
 			systemctl restart bluetooth
 			;;
+		mpd )
+			mpc -q stop
+			;;
 		snapcast )
 			$dirbash/snapcast.sh stop
 			;;
@@ -90,7 +93,7 @@ playerStop() {
 			$dirbash/status-push.sh
 			;;
 	esac
-	pushData player '{ "player": "'$player'", "active": false }'
+	[[ $player != mpd ]] && pushData player '{ "player": "'$player'", "active": false }'
 }
 plClear() {
 	mpc -q clear
@@ -163,12 +166,12 @@ volumeSetAt() {
 	target=$1
 	control=$2
 	card=$3
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ -e $dirshm/btreceiver ]]; then            # bluetooth
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
-		#echo $target > "$dirsystem/btvolume-$control"
-	elif [[ $control ]]; then
+	elif [[ $control ]]; then                       # hardware
 		amixer -c $card -Mq sset "$control" $target%
-	else
+		[[ -e $dirshm/usbdac ]] && echo $target > $dirshm/usbdac
+	else                                            # software
 		mpc -q volume $target
 	fi
 }
@@ -763,7 +766,7 @@ upnpstart )
 	playerStart
 	;;
 volume )
-	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )
+	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	filevolumemute=$dirsystem/volumemute
 	if (( $TARGET > 0 )); then
 		rm -f $filevolumemute
@@ -771,9 +774,6 @@ volume )
 		(( $CURRENT > 0 )) && echo $CURRENT > $filevolumemute || rm -f $filevolumemute
 	fi
 	volumeSet $CURRENT $TARGET "$CONTROL" $CARD
-	;;
-volumeget )
-	volumeGet value
 	;;
 volumesetat )
 	volumeSetAt $TARGET "$CONTROL" $CARD

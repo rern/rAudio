@@ -2,9 +2,15 @@
 
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
-[[ ! $CARD ]] && CARD=$( < $dirsystem/asoundcard ) # if run directly
+[[ ! $CARD ]] && . <( sed -n -E '/^card|^name/ {s/(^card|^name)/\U\1/;p}' $dirshm/output )
 
-bluetooth=$( getContent $dirshm/btreceiver )
+if [[ -e $dirshm/btreceiver ]]; then
+	bluetooth=1
+	systemctl -q is-active localbrowser && action=stop || action=start
+	systemctl $action bluetoothbutton
+else
+	systemctl stop bluetoothbutton
+fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd_aloop
 	if ! aplay -l | grep -q Loopback; then
@@ -27,7 +33,7 @@ if [[ -e $dirsystem/camilladsp ]]; then
 ########
 	ASOUNDCONF+='
 pcm.!default { 
-	type plug 
+	type plug
 	slave.pcm camilladsp
 }
 pcm.camilladsp {
@@ -90,25 +96,14 @@ ctl.equal {
 		fi
 	fi
 fi
-
-alsactl store &> /dev/null
-echo "$ASOUNDCONF" >> /etc/asound.conf # append after set default by player-devices.sh
-alsactl nrestore &> /dev/null # notify changes to running daemons
+######## >
+echo "$ASOUNDCONF" >> /etc/asound.conf # append after default lines set by player-devices.sh
 
 # ----------------------------------------------------------------------------
-if [[ $( getContent $dirsystem/audio-aplayname ) == cirrus-wm5102 ]]; then
-	output=$( getContent $dirsystem/mixer-cirrus-wm5102 'HPOUT2 Digital' )
-	$dirsettings/player-wm5102.sh $CARD "$output"
-fi
-
 if [[ $camilladsp ]]; then
 	# must stop for exclusive device access - aplay probing
-	[[ $( < $dirshm/player ) == mpd ]] && mpc -q stop || $dirbash/cmd.sh playerstop
-	if systemctl -q is-active camilladsp; then
-		active=1
-		systemctl stop camilladsp
-	fi
-	
+	$dirbash/cmd.sh playerstop
+	systemctl stop camilladsp
 	filedump=$dirshm/aplaydump
 	for c in Loopback $CARD; do
 		script -qc "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" > $filedump
@@ -128,7 +123,7 @@ if [[ $camilladsp ]]; then
 			done
 		fi
 	done
-########
+######## >
 	echo '{
 	  "capture"  : '${CHANNELS[0]}'
 	, "playback" : '${CHANNELS[1]}'
@@ -138,11 +133,11 @@ if [[ $camilladsp ]]; then
 	, "playback" : '${FORMATS[1]}'
 }' > $dirshm/formats
 	echo "{ ${SAMPLINGS:1} }" > $dirshm/samplings
-########
+######## <
+	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	if [[ $bluetooth ]]; then
-		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
+		$dirsettings/camilla-bluetooth.sh btreceiver
 	else
-		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 		fileformat="$dirsystem/camilla-$NAME"
 		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/formats )
 		format0=$( getVarColon playback format "$fileconf" )
@@ -152,16 +147,9 @@ if [[ $camilladsp ]]; then
 		fi
 		card0=$( getVarColon playback device "$fileconf" | cut -c4 )
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
+		camillaDSPstart
 	fi
-	systemctl start camilladsp
-	[[ $active ]] && $dirsettings/camilla-data.sh push
 else
-	if [[ $bluetooth ]]; then
-		if [[ -e "$dirsystem/btvolume-$bluetooth" ]]; then
-			btvolume=$( < "$dirsystem/btvolume-$bluetooth" )
-			amixer -MqD bluealsa sset "$bluetooth" $btvolume% 2> /dev/null
-		fi
-	fi
 	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
 		value=$( getVarColon current $dirsystem/equalizer.json )
 		[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
@@ -170,11 +158,4 @@ $value
 $user
 CMD VALUE USER"
 	fi
-fi
-
-if [[ $bluetooth ]]; then
-	systemctl -q is-active localbrowser && action=stop || action=start
-	systemctl $action bluetoothbutton
-else
-	systemctl stop bluetoothbutton
 fi

@@ -97,6 +97,14 @@ cacheBust() {
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
 }
+camillaDSPstart() {
+	systemctl start camilladsp
+	if systemctl -q is-active camilladsp; then
+		pushRefresh camilla
+	else
+		$dirsettings/features.sh camilladsp$'\n'OFF
+	fi
+}
 conf2json() {
 	local file json k keys only l lines v
 	[[ $1 == '-nocap' ]] && nocap=1 && shift
@@ -390,63 +398,51 @@ sshpassCmd() {
 		root@$1 \
 		"${@:2}"
 }
+stateMPD() {
+	mpc status %state% | sed -E 's/ped$|ing$|d$//g'
+	
+}
 statePlay() {
 	[[ $( mpc status %state% ) == playing ]] && return 0
 }
 stringEscape() {
 	echo "${@//\"/\\\"}"
 }
-volumeCardControl() {
-	local card control volume
-	if [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
-		volume=false
-	else
-		if [[ -e $dirshm/btreceiver ]]; then
-			control=$( < $dirshm/btreceiver )
-		elif inOutputConf mixer_type.*software; then
-			control=
-		else
-			card=$( getContent $dirsystem/asoundcard )
-			control=$( getContent $dirshm/amixercontrol )
-		fi
-		volume=$( volumeGet value )
-	fi
-	echo "\
-$volume
-$card
-$control"
-}
 volumeGet() {
-	local amixer card control data db mixer val val_db
-	if [[ -e $dirshm/btreceiver ]]; then
-		for i in {1..5}; do # takes some seconds to be ready
-			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
-			[[ $amixer ]] && break || sleep 1
-		done
-	else
-		[[ -e $dirshm/nosound ]] && echo -1 && return
-		
-		if [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
+	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
+	
+	local args card db mixer val val_db volume
+	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
+		args='-MD bluealsa'
+	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
-				&& playerActive mpd; then
-			val=$( mpc status %volume% | tr -dc [0-9] )
-		elif [[ -e $dirshm/amixercontrol ]]; then
-			card=$( < $dirsystem/asoundcard )
-			control=$( < $dirshm/amixercontrol )
-			amixer=$( amixer -c $card -M sget "$control" | grep -m1 % )
-		fi
+				&& playerActive mpd; then           # software
+		val=$( mpc status %volume% | tr -dc [0-9] )
+		db=false
+	elif [[ -e $dirshm/amixercontrol ]]; then       # hardware
+		. <( grep -E '^card|^mixer' $dirshm/output )
+		args="-c $card -M sget \"$mixer\""
 	fi
-	if [[ $amixer ]]; then
-		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $amixer )
+	if [[ $args ]]; then # not mpd software
+		for i in {1..3}; do # some usb might not be ready
+			volume=$( amixer $args 2> /dev/null | grep -m1 % )
+			[[ $volume ]] && break || sleep 1
+		done
+		[[ ! $volume ]] && volume=$( getContent $dirshm/volume )
+		[[ ! $volume ]] && return
+	fi
+	
+	if [[ $volume ]]; then
+		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $volume )
 		val=${val_db/ *}
 		db=${val_db/* }
+		echo $val > $dirshm/volume
 	fi
-	[[ ! $val ]] && val=100
-	[[ ! $db ]] && db=0
 	case $1 in
-		value ) echo $val;;
+		push )  pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
 		valdb ) echo '{ "val": '$val', "db": '$db' }';;
-		* )     pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
+		db )    echo $db;;
+		* )     echo $val;;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
 }
@@ -467,7 +463,7 @@ volumeUpDnMpc() {
 }
 volumePush() {
 	sleep 0.5
-	volumeGet updn
+	volumeGet push
 	rm $dirshm/pidvol
 }
 volumePushSet() {

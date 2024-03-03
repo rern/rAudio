@@ -10,17 +10,20 @@ $( '#device' ).on( 'input', function() {
 } );
 $( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'mixer', $( this ).val(), 'CMD MIXER' ] );
+	bash( [ 'mixer', $( this ).val(), S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
 } );
 $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
-	if ( this.id.slice( -1 ) === 'a' ) {
-		var cmd     = 'volumebt';
+	var bluealsa = this.id.slice( -1 ) === 'a';
+	if ( bluealsa ) {
+		var control = S.btmixer.replace( / *-* A2DP/, '' );
+		var cmd     = [ 'volumebt', S.btmixer ];
+		var cmdlist = 'CMD MIXER VAL';
 		var cmd0db  = 'volume0dbbt';
-		var control = S.btreceiver.replace( ' - A2DP', '' );
 	} else {
-		var cmd     = 'volume';
-		var cmd0db  = 'volume0db';
 		var control = S.output.mixer;
+		var cmd     = [ 'volume', S.output.card, S.output.mixer ];
+		var cmdlist = 'CMD CARD MIXER VAL';
+		var cmd0db  = 'volume0db';
 	}
 	info( {
 		  icon       : SW.icon
@@ -28,14 +31,21 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		, list       : [ control, 'range' ]
 		, prompt     : '<br>'+ warning
 		, beforeshow : () => {
+			var $inputrange = $( '#infoList input' );
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
-			$( '#infoList input' ).on( 'input', function() {
-				volumeSetAt( +$( this ).val() );
+			 $inputrange.on( 'input', function() {
+				bash( [ ...cmd, +$( this ).val(), cmdlist ] );
 			} ).on( 'touchend mouseup keyup', function() {
-				bash( [ 'volumepush' ] );
+				bash( [ 'volumepush', bluealsa, 'CMD BT' ] );
 			} );
-			volumeInfoSet();
+			$( '.inforange i' ).on( 'click', function() {
+				S.volume.val = +$inputrange.val();
+				 $inputrange
+					.trigger( 'input' )
+					.trigger( 'keyup' );
+			} );
+			volumeInfoSet( bluealsa );
 		}
 		, cancel     : () => {
 			if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) {
@@ -46,7 +56,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		}
 		, oklabel    : ico( 'set0' ) +'0dB'
 		, ok         : () => {
-			if ( S.volume.db >= 0 ) {
+			if ( S.volume.db > -2 ) {
 				bash( [ cmd0db ] );
 			} else {
 				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
@@ -58,13 +68,17 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 } );
 $( '#mixertype' ).on( 'click', function() {
 	if ( S.mixertype ) {
-		info( {
-			  icon    : 'volume'
-			, title   : 'Volume Control'
-			, message : warning
-			, cancel  : switchCancel
-			, ok      : () => setMixerType( 'none' )
-		} );
+		if ( S.volume.db > -2 ) {
+			setMixerType( 'none' );
+		} else {
+			info( {
+				  icon    : 'volume'
+				, title   : 'Volume Control'
+				, message : warning
+				, cancel  : switchCancel
+				, ok      : () => setMixerType( 'none' )
+			} );
+		}
 	} else {
 		S.mixers ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
 	}
@@ -79,10 +93,16 @@ $( '#setting-mixertype' ).on( 'click', function() {
 		, ok      : () => setMixerType( infoVal() )
 	} );
 } );
-$( '#novolume' ).on( 'click', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) return
-	
-	if ( S.camilladsp || S.equalizer ) {
+$( '#novolume' ).on( 'click', function( e ) {
+	e.stopImmediatePropagation();
+	if ( S.novolume ) {
+		switchCancel();
+		info( {
+			  icon    : 'set0'
+			, title   : 'No Volume'
+			, message : 'To disable: Enable any volume related settings'
+		} );
+	} else if ( S.camilladsp || S.equalizer ) {
 		info( {
 			  icon    : SW.icon
 			, title   : SW.title
@@ -234,16 +254,29 @@ audio_output {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function infoNoVolume() {
-	info( {
-		  icon    : SW.icon
-		, title   : SW.title
-		, message : warning
-		, cancel  : switchCancel
-		, ok      : () => {
-			S.novolume = true;
-			bash( [ 'novolume' ] );
-			notifyCommon( 'Enable ...' );
-		}
+	if ( S.volume.db > -2 ) {
+		infoNoVolumeSet();
+	} else {
+		info( {
+			  icon    : SW.icon
+			, title   : SW.title
+			, message : warning
+			, cancel  : switchCancel
+			, ok      : infoNoVolumeSet
+		} );
+	}
+}
+function infoNoVolumeSet() {
+	notifyCommon( 'Enable ...' );
+	bash( [ 'novolume' ], function() {
+		if ( ! S.custom ) return
+		
+		info( {
+			  icon    : SW.icon
+			, title   : SW.title
+			, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
+						+'<br>Remove any volume related settings.'
+		} );
 	} );
 }
 function infoSoxr( quality ) {
@@ -300,6 +333,11 @@ function infoSoxrCustom() {
 		, ok           : switchEnable
 	} );
 }
+function noVolumeSet() {
+	S.novolume = ! S.volume.db && ! [ 'mixertype', 'crossfade', 'normalization', 'replaygain', 'soxr'
+										  , 'camilladsp', 'equalizer' ].some( k => S[ k ] );
+	$( '#novolume' ).prop( 'checked', S.novolume );
+}
 function renderPage() {
 	playbackButton();
 	renderStatus();
@@ -308,43 +346,41 @@ function renderPage() {
 		if ( S[ k ] ) icondsp = ico( k );
 	} );
 	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
-	if ( S.btreceiver ) {
+	if ( S.bluetooth ) {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
+		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
-		$( '#btreceiver' ).html( '<option>'+ S.btreceiver.replace( / - A2DP$/, '' ) +'</option>' );
-		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', ! S.devicewithbt );
 	} else {
 		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#divdevice .col-l' ).html( $( '#divdevice .col-l' ).html() + icondsp );
 		$( '#divbluealsa' ).addClass( 'hide' );
-		$( '#divdevice, #divmixer, #divmixertype' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
 	} else {
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
-		$( '#device' )
-			.html( htmlOption( Object.keys( S.devices ) ) )
-			.val( S.output.name );
-		if ( S.mixers ) {
+		var $nonbluetooth = $( '#divdevice, #divmixer, #setting-mixer, #divmixertype, #setting-mixertype' );
+		if ( ! S.mixers || ( S.bluetooth && ! S.devicewithbt ) ) {
+			$nonbluetooth.addClass( 'hide' );
+		} else {
+			$( '#device' )
+				.html( htmlOption( Object.keys( S.devices ) ) )
+				.val( S.output.name );
 			$( '#mixer' )
 				.html( htmlOption( S.mixers ) )
 				.val( S.output.mixer );
-			$( '#divmixer' ).removeClass( 'hide' );
-		} else {
-			$( '#divmixer' ).addClass( 'hide' );
+			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
+			$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers );
+			$nonbluetooth.removeClass( 'hide' );
 		}
-		$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
-		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers || ! S.mixertype );
-		$( '#divdevicewithbt' ).toggleClass( 'hide', ! S.bluetooth );
-		$( '#novolume' ).toggleClass( 'disabled', S.novolume );
+		noVolumeSet();
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
-	if ( I.range ) $( '#setting-'+ ( S.btreceiver ? 'bluealsa' : 'mixer' ) ).trigger( 'click' );
+	if ( I.range ) $( '#infoX' ).trigger( 'click' );
 	showContent();
 }
 function renderStatus() {
@@ -359,20 +395,9 @@ function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 }
-function volumeGetPush() {
-	bash( [ 'volumepush' ] );
-}
-function volumeInfoSet() {
-	var val = S.volume.val || 0;
-	var db  = S.volume.db;
-	$( '.inforange .value' ).text( val );
-	$( '.inforange input' ).val( val );
-	$( '.inforange .sub' ).text( val ? db +' dB' : 'Mute' );
-	$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
-	V.local = false;
-}
 function psVolume( data ) {
 	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;
+	noVolumeSet();
 	if ( ! $( '.inforange' ).length ) return
 	
 	if ( data.type === 'mpd' ) { // info software volume
@@ -388,4 +413,14 @@ function psVolume( data ) {
 		$( '.confirm' ).addClass( 'hide' );
 		volumeInfoSet();
 	}, 300 );
+}
+function volumeInfoSet( bluealsa ) {
+	V.local = false; // from psValue()
+	var volume = bluealsa ? S.btvolume : S.volume;
+	var val = volume.val;
+	var db  = volume.db;
+	$( '.inforange .value' ).text( val );
+	$( '.inforange input' ).val( val );
+	$( '.inforange .sub' ).text( val ? db +' dB' : 'Mute' );
+	$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
 }

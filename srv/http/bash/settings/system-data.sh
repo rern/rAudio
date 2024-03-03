@@ -166,7 +166,7 @@ mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 if [[ -e $dirsystem/volumeboot.conf ]]; then
 	volumebootconf=$( conf2json $dirsystem/volumeboot.conf )
 else
-	volumebootconf='{ "VOLUME": '$( volumeGet value )' }'
+	volumebootconf='{ "VOLUME": '$( volumeGet )' }'
 fi
 ##########
 data='
@@ -246,7 +246,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetooth"         : '$bluetoothon'
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
-, "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
+, "btconnected"       : '$( exists $dirshm/btreceiver )
 fi
 
 if [[ $rpi3bplus ]]; then

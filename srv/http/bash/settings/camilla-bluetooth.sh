@@ -3,56 +3,52 @@
 . /srv/http/bash/common.sh
 
 type=$1
-
-etcdefault=/etc/default/camilladsp
-configfile=$( getVar CONFIG $etcdefault )
-
-if [[ -e $dirsystem/camilla-bt$type ]]; then
-	configbt=$( < $dirsystem/camilla-bt$type )
-else                                         # create yml file if not exist
-	configbt=$dircamilladsp/configs-bt/$type.yml
-	echo $configbt > $dirsystem/camilla-bt$type
-	if [[ $type == receiver ]]; then
-		sed -E '/playback:$/,/filters:$/ s/(device: ).*/\1bluealsa/' "$configfile" > "$configbt"
-	else
-		sed -E -e 's/(chunksize: ).*/\14096/
-s/(enable_rate_adjust: )/\1true/
-s/(target_level: )/\18000/
-s/(adjust_period: )/\13/
-s/(enable_resampling: )/\1true/
-' -e '/capture:$/,/playback:$/ s/(type: ).*/\1Bluez/; /device: .*/ d
-' -e '/playback:$/ i\
-dbus_path: /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
-' "$configfile" > "$configbt"
-	fi
+mac=$( < $dirshm/$type )
+filedefault=/etc/default/camilladsp
+getVar CONFIG $filedefault > $dircamilladsp/fileconfig
+filecurrent=$( getVar CONFIG $filedefault )
+filemac=$dircamilladsp/$mac
+if [[ -e $filemac ]]; then
+	filedevice=$( < $filemac )
+else
+	filedevice=$dircamilladsp/configs-bt/camilladsp.yml
+	echo $filedevice > $filemac
+fi
+sed -i "s|^CONFIG.*|CONFIG=$filedevice|" $filedefault
+if [[ -e $filedevice ]]; then
+	camillaDSPstart
+	exit
 fi
 
-cp $etcdefault{,.backup}
-sed -i -E 's|^(CONFIG=).*|\1"'$configbt'"|' $etcdefault
+. <( bluealsa-aplay -L | awk '/channel.*Hz/ {print "format="$3"\nchannels="$4"\nsamplerate="$6}' )
+format=$( sed 's/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g' <<< $format )
 
-fch=( $( bluealsa-aplay -L | awk '/channel.*Hz/ {print $3" "$4" "$6}' ) )
-format=${fch[0]/_} # remove underscore
-channels=${fch[1]}
-samplerate=${fch[2]}
-
-if [[ $type == receiver ]]; then
-	sed -i -E -e '/playback:$/,/filters:$/ {
+if [[ $type == btreceiver ]]; then
+	sed -E -e '/playback:$/,/format:/ {
+s/(device: ).*/\1bluealsa/
 s/(channels: ).*/\1'$channels'/
 s/(format: ).*/\1'$format'/
-}
-' $configbt
-else
+}' "$filecurrent" > "$filedevice"
+else # btsender
 	dbuspath=$( gdbus introspect \
 					--recurse \
 					--system \
 					--dest org.bluealsa \
 					--object-path /org/bluealsa \
-						| awk '/node.*source {$/ {print $2}' )
-	sed -i -E -e 's/(samplerate: ).*/\1'$samplerate'/
-' -e '/capture:$/,/playback:$/ {
+						| awk '/node.*source {$/ {print $2}' ) # /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
+	sed -E -e 's/(samplerate: ).*/\1'$samplerate'/
+s/(chunksize: ).*/\14096/
+s/(enable_rate_adjust: )/\1true/
+s/(target_level: )/\18000/
+s/(adjust_period: )/\13/
+s/(enable_resampling: )/\1true/
+' -e '/capture:$/,/format:/ {
+/device: .*/ d
+/format:/ a\	dbus_path: '$dbuspath'
+s/(type: ).*/\1Bluez/
 s/(channels: ).*/\1'$channels'/
 s/(format: ).*/\1'$format'/
-s|(dbus_path: ).*|\1'$dbuspath'|
-}
-' $configbt
+}' "$filecurrent" > "$filedevice"
 fi
+
+camillaDSPstart

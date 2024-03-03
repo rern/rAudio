@@ -1,38 +1,37 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
-$fileflag = '/srv/http/data/shm/addonsprogress';
+$fileflag    = '/srv/http/data/shm/addonsprogress';
 if ( file_exists( $fileflag ) ) { // close on refresh
 	header( 'Location: settings.php?p=addons' );
 	exit();
 }
 
-$alias        = $_POST[ 'alias' ];
-$sudosettings = '/usr/bin/sudo /srv/http/bash/settings/';
+$dirsettings = '/usr/bin/sudo /srv/http/bash/settings/';
+$alias       = $_POST[ 'alias' ];
 if ( $alias === 'albumthumbnail' ) {
-	$path          = $_POST[ 'path' ];
-	$icon          = '<i class="page-icon i-coverart"></i>';
-	$hrefback      = '/';
-	$title         = 'Album Thumbnails';
-	$label         = 'Update';
+	$label       = 'Update';
+	$title       = 'Album Thumbnails';
+	$icon        = '<i class="page-icon i-coverart"></i>';
+	$hrefback    = '/';
 } else {
-	$branch        = $_POST[ 'branch' ];
-	$installurl    = $_POST[ 'installurl' ];
-	$label         = $_POST[ 'label' ];
-	$postinfo      = $_POST[ 'postinfo' ];
-	$title         = $_POST[ 'title' ];
-	$uninstall     = $_POST[ 'uninstall' ];
-	$opt           = $_POST[ 'opt' ] ?? '';
+	$branch      = $_POST[ 'branch' ];
+	$installurl  = $_POST[ 'installurl' ];
+	$label       = $_POST[ 'label' ];
+	$postinfo    = $_POST[ 'postinfo' ] ?? '';
+	$title       = $_POST[ 'title' ];
+	$uninstall   = $_POST[ 'uninstall' ] ?? '';
+	$opt         = $_POST[ 'opt' ] ?? '';
 
-	$icon          = '<i class="page-icon i-jigsaw"></i>';
-	$hrefback      = 'settings.php?p=addons';
-	$installfile   = basename( $installurl );
-	$options       = $alias."\n".$label."\n".$branch;
+	$icon        = '<i class="page-icon i-jigsaw"></i>';
+	$hrefback    = 'settings.php?p=addons';
+	$installfile = basename( $installurl );
+	$options     = $alias."\n".$label."\n".$branch;
 	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
-	$postmsg       = $label.' done.';
-	if ( $postinfo ) $postmsg.= '<br><br><i class="i-addons wh"></i>'.$postinfo;
 	touch( $fileflag );
 }
+$postmsg     = $label.' done.';
+if ( $postinfo ) $postmsg.= '<br><br><i class="i-addons wh"></i>'.$postinfo;
 ?>
 
 <style>
@@ -112,23 +111,11 @@ chmod 755 $installfile
 EOF;
 
 if ( $alias === 'albumthumbnail' ) {
-	$commandtxt = 'albumthumbnail.sh';
-	if ( $path ) $commandtxt.= ' "'.$path.'"';
-	$command    = $sudosettings.$commandtxt;
+	$command    = $dirsettings.'albumthumbnail.sh "'.$_POST[ 'path' ].'" '.$_POST[ 'overwrite' ];
+	$commandtxt = $command;
 } else if ( $label === 'Uninstall' ) {
 	$command    = "uninstall_$alias.sh";
 	$commandtxt = $command;
-} else if ( $label === 'Update' && $uninstall ) {
-	$command    = <<< EOF
-$getinstall
-/usr/bin/sudo ./$installfile "$options"
-EOF;
-	$commandtxt = <<< EOF
-curl -sSfLO $installurl
-chmod 755 $installfile
-uninstall_$alias.sh
-./$installfile "$options"
-EOF;
 } else {
 	$command    = <<< EOF
 $getinstall
@@ -139,39 +126,44 @@ curl -sSfLO $installurl
 chmod 755 $installfile
 ./$installfile "$options"
 EOF;
+	if ( $label === 'Update' && $uninstall ) $commandtxt = str_replace( './', "uninstall_$alias.sh\n./", $commandtxt );
 }
 echo $commandtxt.'<br>';
 
 $skip       = ['warning:', 'permissions differ', 'filesystem:', 'uninstall:', 'y/n' ];
 $skippacman = [ 'downloading core.db', 'downloading extra.db', 'downloading alarm.db', 'downloading aur.db' ];
 $fillbuffer = '<p class="hide">'.str_repeat( '.', 40960 ).'</p>';
-ob_implicit_flush( true ); // start flush: bypass buffer - output to screen
-ob_end_flush();            // force flush: current buffer (run after flush started)
+ob_implicit_flush( true ); // flush each stdout
+ob_end_flush();            // turn off buffer
 
 echo $fillbuffer;          // fill buffer to force start output
 if ( $label === 'Uninstall' ) sleep( 1 );
+
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-$popencmd = popen( "$command 2>&1", 'r' ); // start bash
-while ( ! feof( $popencmd ) ) {            // get stdout until eof
-	$std = fgets( $popencmd );             // get each line
-	foreach( $skip as $find ) {            // skip line
-		if ( stripos( $std, $find ) !== false ) continue 2;
+$proc = proc_open( $command, [ [ 'pipe','r' ], [ 'pipe', 'w' ], [ 'pipe', 'w' ] ], $pipes );
+$ppid = proc_get_status( $proc )[ 'pid ' ];
+foreach( [ 0, 1, 2 ] as $i ) {
+	if ( $i > 0 ) {
+		while ( ! feof( $pipes[ $i ] ) ) {
+			$std = fgets( $pipes[ $i ] );
+			foreach( $skip as $find ) {            // skip line
+				if ( stripos( $std, $find ) !== false ) continue 2;
+			}
+			foreach( $skippacman as $findp ) {     // skip pacman line after output once
+				if ( stripos( $std, $findp ) !== false ) $skip[] = $findp; // add skip string to $skip array
+			}
+			echo $std;                             // output to screen
+			echo $fillbuffer;                      // fill buffer after each line
+			if ( connection_status() !== 0 || connection_aborted() === 1 ) {
+				exec( "ps -o pid --no-heading --ppid $ppid | tr -d ' '", $pids );
+				foreach( $pids as $pid ) posix_kill( $pid, 9 );
+				proc_terminate( $proc );
+			}
+		}
 	}
-	foreach( $skippacman as $findp ) {     // skip pacman line after output once
-		if ( stripos( $std, $findp ) !== false ) $skip[] = $findp; // add skip string to $skip array
-	}
-	echo $std;                             // output to screen
-	echo $fillbuffer;                      // fill buffer after each line
-	
-	// abort on browser back/close
-	if ( connection_status() !== 0 || connection_aborted() === 1 ) {
-		pclose( $popencmd );
-		exec( $sudosettings.'addons.sh abort '.$installfile.' '.$alias );
-		exit;
-	}
+	fclose( $pipes[ $i ] );
 }
-sleep( 1 );
-pclose( $popencmd );
+proc_close( $proc );
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 ?>
 </pre>

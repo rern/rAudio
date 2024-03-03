@@ -100,6 +100,7 @@ filetype )
 	;;
 mixer )
 	echo "$MIXER" > "$dirsystem/mixer-$DEVICE"
+	aplay -l | grep -q "^card $CARD: RPiCirrus" && $dirsettings/player-wm5102.sh "$MIXER" $( volumeGet )
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
@@ -108,14 +109,14 @@ mixertype )
 	filemixertype="$dirsystem/mixertype-$name"
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
 	if [[ $MIXERTYPE == software ]]; then # [sw] set to current [hw]
-		[[ -e $dirshm/amixercontrol ]] && vol=$( volumeGet value ) || vol=33
+		[[ -e $dirshm/amixercontrol ]] && vol=$( volumeGet ) || vol=33
 		mpc -q volume $vol
 	else
 		rm -f $dirsystem/replaygain-hw
 	fi
 	if [[ $mixer ]]; then
 		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB # [hw] set to current [sw] || [sw/none] set 0dB
-		amixer -c $card -Mq sset "$mixer" $vol
+		amixer -c $card -Mq sset "$mixer" $vol%
 	fi
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false
@@ -234,18 +235,16 @@ volume0db )
 	volumeGet push hw
 	;;
 volume0dbbt )
-	btdevice=$( < $dirshm/btreceiver )
-	amixer -MqD bluealsa sset "$btdevice" 0dB 2> /dev/null
+	btmixer=$( < $dirshm/btmixer )
+	amixer -MqD bluealsa sset "$btmixer" 0dB 2> /dev/null
 	volumeGet push hw
 	;;
 volumebt )
 	amixer -MqD bluealsa sset "$MIXER" $VAL%
 	;;
-volumeget )
-	volumeGet valdb
-	;;
 volumepush )
-	volumeGet push hw
+	[[ ! $BT ]] && hw=hw
+	volumeGet push $hw
 	;;
 	
 esac

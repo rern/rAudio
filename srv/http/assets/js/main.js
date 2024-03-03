@@ -41,6 +41,7 @@ var $bartop     = $( '#bar-top' );
 var $time       = $( '#time-knob' );
 var $volume     = $( '#volume-knob' );
 var data        = {}
+var dots        = '·&ensp;·&ensp;·';
 var picaOption  = { // pica.js
 	  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
 	, unsharpThreshold : 5    // 0...100 Default = 0 (try 10)
@@ -598,9 +599,9 @@ $( '#volume' ).roundSlider( {
 		if ( V.press ) {
 			var diff  = 3;
 		} else {
-			if ( ! V.volumeprev ) V.volumeprev = S.volume; // V.volumeprev from psVolume()
 			var diff  = Math.abs( e.value - V.volumeprev || S.volume - S.volumemute ); // change || mute/unmute
 		}
+		V.animate = true;
 		var speed = diff * 40; // 1% : 40ms
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
@@ -608,6 +609,7 @@ $( '#volume' ).roundSlider( {
 			$( '#volume-knob, #button-volume i' ).removeClass( 'noclick' );
 			$( '#voldn' ).toggleClass( 'disabled', e.value === 0 );
 			$( '#volup' ).toggleClass( 'disabled', e.value === 100 );
+			V.animate = false;
 		}, speed );
 	}
 	, drag              : function( e ) {
@@ -626,7 +628,7 @@ $( '#volume' ).roundSlider( {
 		if ( V.drag || ! V.create ) return // ! V.create - suppress fire before 'create'
 		
 		S.volume     = e.value;
-		V.volumeprev = false;
+		V.volumeprev = S.volume;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, stop              : () => {
@@ -1026,18 +1028,18 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
 	if ( $( this ).find( 'img' ).length ) {
-		var message = 'Update thumbnails and directory icons?'
+		var message ='Update thumbnails and directory icons?';
 	} else {
 		var message = 'With existing album coverarts:'
-					 +'<br>  • Create thumbnails'
-					 +'<br>  • Create directory icons'
+				+'<p>&emsp; • Create thumbnails'
+				+'<br>&emsp; • Create directory icons</p>';
 	}
 	info( {
-		  icon         : $( '.button-coverart' )[ 0 ].outerHTML
-		, title        : 'Album Thumbnails'
-		, message      : message
-		, messagealign : 'left'
-		, ok           : thumbUpdate
+		  icon    : $( '.button-coverart' )[ 0 ].outerHTML
+		, title   : 'Album Thumbnails'
+		, message : message
+		, list    : [ 'Overwrite existings', 'checkbox' ]
+		, ok      : () => thumbUpdate( '', infoVal() )
 	} );
 } );
 $( '#button-lib-search' ).on( 'click', function() { // icon

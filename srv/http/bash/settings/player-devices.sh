@@ -3,7 +3,7 @@
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh # if run directly
 
-### aplay -l
+### aplay -l # depend on /etc/asound.conf
 # card 1: Headphones [bcm2835 Headphones], device 0: bcm2835 Headphones [bcm2835 Headphones]
 #
 ### cat /proc/asound/cards
@@ -55,9 +55,17 @@ defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
 [[ $( getVar name $dirshm/output ) != $NAME ]] && notify 'output blink' 'Output Device' "$NAME"
-if grep -q WM5102 <<< $NAME; then
-	MIXER='HPOUT2 Digital'
-	LISTMIXER=", 'HPOUT1 Digital', 'HPOUT2 Digital', 'SPDIF Out', 'Speaker Digital'"
+if aplay -l | grep -q "^card $CARD: RPiCirrus"; then
+# card N: RPiCirrus [RPi-Cirrus], device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
+######## >
+	echo '{
+  "Headphones" : "HPOUT1 Digital"
+, "Line out"   : "HPOUT2 Digital"
+, "SPDIF"      : "SPDIF Out"
+, "Speakers"   : "SPKOUT Digital"
+}' > $dirshm/mixers
+	MIXER=$( getContent "$dirsystem/mixer-$NAME" 'HPOUT2 Digital' )
+	[[ $MIXER == SPDIF ]] && MIXER=
 else
 	amixer=$( amixer -c $CARD scontents )
 	if [[ $amixer ]]; then
@@ -81,6 +89,10 @@ else
 				MIXER=$( head -1 <<< $controls )
 			fi
 		fi
+######## >
+		echo "[ ${LISTMIXER:1} ]" > $dirshm/mixers
+	else
+		rm -f $dirshm/mixers
 	fi
 fi
 
@@ -90,14 +102,13 @@ if [[ -e $mixertypefile ]]; then
 else
 	[[ $LISTMIXER ]] && MIXERTYPE=hardware || MIXERTYPE=none
 fi
-########
+######## >
 echo '
 card='$CARD'
 name="'$NAME'"
 mixer="'$MIXER'"
 mixertype='$MIXERTYPE > $dirshm/output
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
-[[ $LISTMIXER ]] && echo "[ ${LISTMIXER:1} ]" > $dirshm/mixers || rm -f $dirshm/mixers
 [[ $MIXER ]] && echo "$MIXER" > $dirshm/amixercontrol || rm -f $dirshm/amixercontrol
 echo $CARD > $dirsystem/asoundcard
-########
+######## >

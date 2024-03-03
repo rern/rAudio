@@ -42,10 +42,10 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'id'       => 'bluealsa'
-		, 'icon'     => true
+		, 'icon'     => 'btreceiver'
 		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
-{$Fi( 'volume btn' )} Sender volume control
+{$Fi( 'volume btn' )} Mixer device - blueALSA volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
@@ -87,7 +87,6 @@ $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
 		  'id'       => 'novolume'
-		, 'disabled' => 'To disable: Enable any volume settings'
 		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
@@ -97,8 +96,6 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
 	· Volume {$FiLabel( 'Cross-Fading' )} {$FiLabel( 'Normalization' )} {$FiLabel( 'ReplayGain' )}
 	· Options  {$FiLabel( 'SoX Resampler' )}
 	· {$FiTab( 'Features' )}{$FiLabel( 'DSP', 'camilladsp' )} and {$FiLabel( 'Equalizer', 'equalizer' )}
-	
-Note: If {$FiLabel( "User's Configurations" )} enabled, verify for no volume settings.
 EOF
 	]
 	, [

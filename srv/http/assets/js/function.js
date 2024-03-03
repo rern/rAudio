@@ -1926,6 +1926,8 @@ function setTrackCoverart() {
 	}
 }
 function setVolume() {
+	if ( V.animate ) return
+	
 	$volumeRS.setValue( S.volume );
 	if ( ! S.volume ) $volumehandle.rsRotate( -310 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
@@ -1991,14 +1993,12 @@ function switchPage( page ) {
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
-function thumbUpdate( path ) {
-	var htmlform = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
-				  +'<input type="hidden" name="alias" value="albumthumbnail">'
-				  +'<input type="hidden" name="path" value="'+ ( path || '' ) +'">';
+function thumbUpdate( path, overwrite ) {
 	$( 'body' ).append(
 		 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
 		+'<input type="hidden" name="alias" value="albumthumbnail">'
-		+'<input type="hidden" name="path" value="'+ ( path || '' ) +'">'
+		+'<input type="hidden" name="path" value="'+ path +'">'
+		+'<input type="hidden" name="overwrite" value="'+ ( overwrite ? 'overwrite' : '' ) +'">'
 		+'</form>'
 	);
 	$( '#formtemp' ).submit();
