@@ -328,12 +328,12 @@ pushData() {
 	done
 }
 pushDataCount() {
-	local type
-	type=$1
-	count=$( ls -1d /mnt/MPD/${type^^}/*/ 2> /dev/null | wc -l )
+	local count dir
+	dir=$1
+	count=$( ls -1d /mnt/MPD/${dir^^}/*/ 2> /dev/null | wc -l )
 	echo $count > $dirshm/x
-	sed -i -E 's/("'$type'": ).*/\1'$count',/' $dirmpd/counts
-	pushData display '{ "type": "'$type'", "count": '$count' }'
+	sed -i -E 's/("'$dir'": ).*/\1'$count',/' $dirmpd/counts
+	pushData display '{ "dir": "'$dir'", "count": '$count' }'
 }
 pushDataCoverart() {
 	pushData coverart '{ "url": "'$1'", "radioalbum" : "'$2'" }'

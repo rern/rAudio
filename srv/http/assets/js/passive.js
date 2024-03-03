@@ -141,8 +141,8 @@ function psCoverart( data ) {
 }
 function psDisplay( data ) {
 	bannerHide();
-	if ( 'count' in data ) {
-		var k = data.type;
+	if ( 'dir' in data ) {
+		var k = data.dir;
 		var v = data.count;
 		C[ k ] = v;
 		$( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
