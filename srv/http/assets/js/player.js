@@ -94,8 +94,8 @@ $( '#novolume' ).on( 'click', function( e ) {
 	if ( S.novolume ) {
 		switchCancel();
 		info( {
-			  icon    : SW.icon
-			, title   : SW.title
+			  icon    : 'set0'
+			, title   : 'No Volume'
 			, message : 'To disable: Enable any volume related settings'
 		} );
 	} else if ( S.camilladsp || S.equalizer ) {
