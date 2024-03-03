@@ -89,10 +89,16 @@ $( '#setting-mixertype' ).on( 'click', function() {
 		, ok      : () => setMixerType( infoVal() )
 	} );
 } );
-$( '#novolume' ).on( 'click', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) return
-	
-	if ( S.camilladsp || S.equalizer ) {
+$( '#novolume' ).on( 'click', function( e ) {
+	e.stopImmediatePropagation();
+	if ( S.novolume ) {
+		switchCancel();
+		info( {
+			  icon    : SW.icon
+			, title   : SW.title
+			, message : 'To disable: Enable any volume related settings'
+		} );
+	} else if ( S.camilladsp || S.equalizer ) {
 		info( {
 			  icon    : SW.icon
 			, title   : SW.title
@@ -318,11 +324,9 @@ function infoSoxrCustom() {
 	} );
 }
 function noVolumeSet() {
-	var novolume = S.volume.db === 0 && ! [ 'mixertype', 'crossfade', 'normalization', 'replaygain', 'soxr'
+	S.novolume = S.volume.db === 0 && ! [ 'mixertype', 'crossfade', 'normalization', 'replaygain', 'soxr'
 										  , 'camilladsp', 'equalizer' ].some( k => S[ k ] );
-	$( '#novolume' )
-		.prop( 'checked', novolume )
-		.toggleClass( 'disabled', novolume );
+	$( '#novolume' ).prop( 'checked', S.novolume );
 }
 function renderPage() {
 	playbackButton();

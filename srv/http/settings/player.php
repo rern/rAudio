@@ -87,7 +87,6 @@ $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
 		  'id'       => 'novolume'
-		, 'disabled' => 'To disable: Enable any volume settings'
 		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
