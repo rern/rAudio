@@ -292,14 +292,19 @@ function contextmenuLibrary( $li, $target ) {
 		$li.addClass( 'active' );
 		return
 	}
-	var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
-	$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', ! S.pllength );
-	$menu.find( '.refresh-library' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
-	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
-	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
-	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
-	$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
-	$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
+	if ( V.list.li.hasClass( 'nodata' ) ) {
+		$menu.find( 'a, .submenu' ).addClass( 'hide' );
+		$menu.find( '.exclude, .update' ).removeClass( 'hide' );
+	} else {
+		var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
+		$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', ! S.pllength );
+		$menu.find( '.update' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
+		$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
+		$menu.find( '.directory' ).toggleClass( 'hide', filemode );
+		$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
+		$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
+		$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
+	}
 	$li.addClass( 'active' );
 	if ( V.list.licover ) {
 		var menutop = $bartop.is( ':visible' ) ? 310 : 270;

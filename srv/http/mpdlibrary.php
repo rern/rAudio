@@ -151,8 +151,8 @@ case 'list':
 case 'ls':
 	if ( $mode !== 'album' ) {
 		if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // not 'mpc ls' to get all root dirs
-			exec( 'ls -1d /mnt/MPD/'.$string."/*/ | sed -E 's#/mnt/MPD/|/$##g'"
-				, $lists );
+			$multiline = implode( "\n", [ 'librarybasedirs', $string, 'CMD DIR' ] );
+			exec( '/srv/http/bash/cmd.sh "'.$multiline.'"', $lists );
 			htmlDirectory( $lists );
 			break;
 		}
@@ -305,11 +305,12 @@ function htmlDirectory( $lists ) {
 		} else {
 			$mode     = $gmode;
 			$htmlicon = i( 'music ', 'file' );
+			$nodata   = '';
 		}
 		$html.=
 '<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.$htmlicon.'
 <a class="lipath">'.$path.'</a>
-<span class="single name">'.$each->dir.'</span>
+<span class="single name">'.$path.'</span>
 </li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );

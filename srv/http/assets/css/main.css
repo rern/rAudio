@@ -1776,6 +1776,9 @@ li.active .iconthumb {
 w {
 	color: var( --cw );
 }
+#lib-list li.nodata span {
+	color: var( --cgl );
+}
 li.active .li1 bl {
 	color: var( --cga ) !important;
 }

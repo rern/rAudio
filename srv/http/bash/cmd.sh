@@ -440,6 +440,15 @@ librandom )
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;
+librarybasedirs )
+	dirs=$( ls -1d /mnt/MPD/$DIR/*/ )
+	while read dir; do
+		if [[ ! -e $dir/.mpdignore ]]; then
+			lists+=$( sed -E 's#/mnt/MPD/|/$##g' <<< $dir )$'\n'
+		fi
+	done <<< $dirs
+	awk NF <<< $lists
+	;;
 lyrics )
 	name="$ARTIST - $TITLE"
 	name=${name//\/}
