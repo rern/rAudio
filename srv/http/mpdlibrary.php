@@ -296,7 +296,7 @@ function htmlDirectory( $lists ) {
 		$html.=
 '<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.$htmlicon.'
 <a class="lipath">'.$path.'</a>
-<span class="single name">'.preg_replace( '#^[^/]+/#', '', $path ).'</span>
+<span class="single name">'.basename( $path ).'</span>
 </li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
