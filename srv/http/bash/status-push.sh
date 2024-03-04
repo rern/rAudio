@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+[[ -e $dirshm/usbdacadd ]] && exit
+
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
