@@ -145,6 +145,7 @@ function psDisplay( data ) {
 		var v = data.count;
 		C[ k ] = v;
 		$( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
+		if ( V.librarylist && V.mode === k ) $( '#library' ).trigger( 'click' );
 		return
 	}
 	

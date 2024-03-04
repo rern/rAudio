@@ -1154,27 +1154,23 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( V.mode === 'bookmark' ) return
 	
 	if ( ! C[ V.mode ] && V.mode.slice( -5 ) !== 'radio' ) {
-		var dir, mode, message;
-		if ( V.mode === 'playlists' ) {
-			message = 'No saved playlists available.';
+		var message, mode;
+		if ( [ 'nas', 'sd', 'usb' ].includes( V.mode ) ) {
+			message = 'Empty: '+ ico( V.mode ) +' '+ V.mode.toUpperCase();
+		} else if ( V.mode === 'playlists' ) {
+			message = 'No saved playlists.';
 		} else if ( V.mode === 'latest' ) {
 			message = 'No new albums added since last update.';
 		} else {
-			if ( [ 'nas', 'sd', 'usb' ].includes( V.mode ) ) {
-				dir  = V.mode.toUpperCase();
-				mode = dir;
-			} else {
-				dir  = '';
-				mode = V.mode[ 0 ].toUpperCase() + V.mode.slice( 1 );
-			}
-			message = 'Database not found in '+ ico( V.mode ) +' '+ mode
+			mode    = true;
+			message = 'Not found: '+ ico( V.mode ) +' '+ V.mode[ 0 ].toUpperCase() + V.mode.slice( 1 )
 		}
 		info( {
 			  icon    : 'library'
 			, title   : 'Library Database'
 			, message : message
 			, oklabel : mode ? ico( 'refresh-library' ) + 'Update' : ''
-			, ok      : mode ? () => bash( [ 'mpcupdate', dir, 'CMD DIR' ] ) : ''
+			, ok      : mode ? () => bash( [ 'mpcupdate', '', 'CMD DIR' ] ) : ''
 		} );
 		return
 	}

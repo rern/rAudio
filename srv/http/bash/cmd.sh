@@ -441,7 +441,7 @@ librandom )
 	pushData option '{ "librandom": '$TF' }'
 	;;
 librarylistdirs )
-	mpcls=$( mpc ls "$DIR" )
+	mpcls=$( mpc ls "$DIR" 2> /dev/null )
 	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null )
 	if [[ $sysls ]]; then
 		while read dir; do
@@ -451,6 +451,7 @@ librarylistdirs )
 			fi
 		done <<< $sysls
 	fi
+	mpcls=$( awk NF <<< $mpcls )
 	while read path; do
 		[[ -d "/mnt/MPD/$path" ]] && subdirs=1 && break
 	done <<< $mpcls

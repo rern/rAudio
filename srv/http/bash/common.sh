@@ -331,7 +331,6 @@ pushDataCount() {
 	local count dir
 	dir=$1
 	count=$( ls -1d /mnt/MPD/${dir^^}/*/ 2> /dev/null | wc -l )
-	echo $count > $dirshm/x
 	sed -i -E 's/("'$dir'": ).*/\1'$count',/' $dirmpd/counts
 	pushData display '{ "dir": "'$dir'", "count": '$count' }'
 }

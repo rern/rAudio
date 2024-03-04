@@ -280,15 +280,18 @@ function htmlDirectory( $lists ) {
 		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
+		$nodata   = '';
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
 			$htmlicon = imgIcon( $thumbsrc, 'folder' );
-			$nodata   = substr( $path, -1 ) === '/' ? ' class="nodata"': '';
+			if ( substr( $path, -1 ) === '/' ) {
+				$nodata = ' class="nodata"';
+				$path   = rtrim( $path, '/' );
+			}
 		} else {
 			$mode     = $gmode;
 			$htmlicon = i( 'music ', 'file' );
-			$nodata   = '';
 		}
 		$html.=
 '<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.$htmlicon.'
