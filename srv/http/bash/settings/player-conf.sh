@@ -43,7 +43,7 @@ if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which migh
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $CARD
 else                                   # no sound
-	notify output 'Audio Output' '(None)'
+	notify output 'Output Device' '(None)'
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
 	[[ $bluetooth ]] && CARD=0 || CARD=-1

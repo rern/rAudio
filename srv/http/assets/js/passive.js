@@ -149,7 +149,6 @@ function psDisplay( data ) {
 		return
 	}
 	
-	bannerHide();
 	if ( 'submenu' in data ) {
 		D[ data.submenu ] = data.value;
 		displaySubMenu();
