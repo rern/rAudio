@@ -1456,20 +1456,13 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
 	menuHide();
-	if ( ( menushow && V.mode !== 'webradio' ) || $target.is( '.li-icon, .licoverimg' ) ) {
+	if ( ( menushow && V.mode !== 'webradio' && $target.is( '.li-icon' ) ) || $target.is( '.li-icon, .licoverimg' ) ) {
 		if ( ! active ) contextmenuLibrary( $this, $target );
 		return
 	}
 	
 	if ( $this.hasClass( 'nodata' ) ) {
-		var path = $this.find( '.lipath' ).text();
-		info( {
-			  icon    : 'refresh-library'
-			, title   : 'Library Database'
-			, message : 'No data: <wh>'+ path +'</wh>'
-						+'<br>Update this location?'
-			, ok      : () => bash( [ 'mpcupdate', path, 'CMD DIR' ] )
-		} );
+		$this.find( '.li-icon' ).trigger( 'click' );
 		return
 	}
 

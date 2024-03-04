@@ -1779,6 +1779,9 @@ w {
 #lib-list li.nodata span {
 	color: var( --cgl );
 }
+#lib-list li.active.nodata span {
+	color: var( --cg );
+}
 li.active .li1 bl {
 	color: var( --cga ) !important;
 }

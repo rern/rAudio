@@ -150,63 +150,42 @@ case 'list':
 	break;
 case 'ls':
 	if ( $mode !== 'album' ) {
-		if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // not 'mpc ls' to get all root dirs
-			$multiline = implode( "\n", [ 'librarybasedirs', $string, 'CMD DIR' ] );
-			exec( '/srv/http/bash/cmd.sh "'.$multiline.'"', $lists );
-			if ( ! count( $lists ) ) exit;
-			
+		$multiline = implode( "\n", [ 'librarylistdirs', $string, 'CMD DIR' ] );
+		exec( '/srv/http/bash/cmd.sh "'.$multiline.'"', $lists );
+		if ( $lists[ 0 ] ) {
 			htmlDirectory( $lists );
 			break;
 		}
-		
-		exec( 'mpc ls "'.$string.'"'
-			, $mpcls );
-		if ( ! count( $mpcls ) ) exit;
-		
-		foreach( $mpcls as $mpdpath ) {
-			if ( is_dir( '/mnt/MPD/'.$mpdpath ) ) {
-				$subdirs = 1;
-				break;
-			}
-		}
 	}
-	if ( isset( $subdirs ) ) {
-		exec( 'mpc ls -f %file% "'.$string.'" 2> /dev/null'
-			, $lists );
-		if ( ! count( $lists ) ) exit;
-		
-		htmlDirectory( $lists );
-	} else {
-		$f      = $formatall; // set format for directory with files only - track list
-		$format = '%'.implode( '%^^%', $f ).'%';
-		// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
-		exec( 'mpc ls "'.$string.'" '
-				.'| grep -E ".cue$|.m3u$|.m3u8$|.pls$" '
-				.'| sort -u'
-			, $plfiles );
-		if ( count( $plfiles ) ) {
-			asort( $plfiles );
-			$path  = explode( '.', $plfiles[ 0 ] );
-			$ext   = end( $path );
-			$lists = [];
-			foreach( $plfiles as $file ) {
-				$type = $ext === 'cue' ? 'ls' : 'playlist';
-				exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'"'
-					, $lists ); // exec appends to existing array
-			}
-			htmlTrack( $lists, $f, $ext, $file );
-		} else {
-			exec( 'mpc ls -f "'.$format.'" "'.$string.'" 2> /dev/null'
-				, $lists );
-			if ( strpos( $lists[ 0 ],  '.wav^^' ) ) { // MPD not sort *.wav
-				$lists = '';
-				exec( 'mpc ls -f "%track%__'.$format.'" "'.$string.'" 2> /dev/null '
-						.'| sort -h '
-						.'| sed "s/^.*__//"'
-					, $lists );
-			}
-			htmlTrack( $lists, $f, $mode !== 'album' ? 'file' : '' );
+	$f      = $formatall; // set format for directory with files only - track list
+	$format = '%'.implode( '%^^%', $f ).'%';
+	// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
+	exec( 'mpc ls "'.$string.'" '
+			.'| grep -E ".cue$|.m3u$|.m3u8$|.pls$" '
+			.'| sort -u'
+		, $plfiles );
+	if ( count( $plfiles ) ) {
+		asort( $plfiles );
+		$path  = explode( '.', $plfiles[ 0 ] );
+		$ext   = end( $path );
+		$lists = [];
+		foreach( $plfiles as $file ) {
+			$type = $ext === 'cue' ? 'ls' : 'playlist';
+			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'"'
+				, $lists ); // exec appends to existing array
 		}
+		htmlTrack( $lists, $f, $ext, $file );
+	} else {
+		exec( 'mpc ls -f "'.$format.'" "'.$string.'" 2> /dev/null'
+			, $lists );
+		if ( strpos( $lists[ 0 ],  '.wav^^' ) ) { // MPD not sort *.wav
+			$lists = '';
+			exec( 'mpc ls -f "%track%__'.$format.'" "'.$string.'" 2> /dev/null '
+					.'| sort -h '
+					.'| sed "s/^.*__//"'
+				, $lists );
+		}
+		htmlTrack( $lists, $f, $mode !== 'album' ? 'file' : '' );
 	}
 	break;
 case 'radio':
@@ -301,15 +280,15 @@ function htmlDirectory( $lists ) {
 		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$nodata    = '';
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
 			$htmlicon = imgIcon( $thumbsrc, 'folder' );
-			if ( substr_count( $path, '/' ) === 1 ) $nodata = exec( 'mpc listall "'.$path.'" 2> /dev/null' ) ? '' : ' class="nodata"';
+			$nodata   = substr( $path, -1 ) === '/' ? ' class="nodata"': '';
 		} else {
 			$mode     = $gmode;
 			$htmlicon = i( 'music ', 'file' );
+			$nodata   = '';
 		}
 		$html.=
 '<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.$htmlicon.'

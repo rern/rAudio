@@ -440,14 +440,21 @@ librandom )
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;
-librarybasedirs )
-	dirs=$( ls -1d /mnt/MPD/$DIR/*/ )
-	while read dir; do
-		if [[ ! -e $dir/.mpdignore ]]; then
-			lists+=$( sed -E 's#/mnt/MPD/|/$##g' <<< $dir )$'\n'
-		fi
-	done <<< $dirs
-	awk NF <<< $lists
+librarylistdirs )
+	mpcls=$( mpc ls "$DIR" )
+	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null )
+	if [[ $sysls ]]; then
+		while read dir; do
+			dirmpc=${dir:9}
+			if [[ ! -e "$dir.mpdignore" ]] && ! grep -q "^${dirmpc:0:-1}" <<< $mpcls; then
+				mpcls+=$'\n'"$dirmpc"
+			fi
+		done <<< $sysls
+	fi
+	while read path; do
+		[[ -d "/mnt/MPD/$path" ]] && subdirs=1 && break
+	done <<< $mpcls
+	[[ $subdirs ]] && echo "$mpcls"
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
