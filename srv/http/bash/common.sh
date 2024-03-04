@@ -327,13 +327,6 @@ pushData() {
 		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 	done
 }
-pushDataCount() {
-	local count dir
-	dir=$1
-	count=$( ls -1d /mnt/MPD/${dir^^}/*/ 2> /dev/null | wc -l )
-	sed -i -E 's/("'$dir'": ).*/\1'$count',/' $dirmpd/counts
-	pushData display '{ "dir": "'$dir'", "count": '$count' }'
-}
 pushDataCoverart() {
 	pushData coverart '{ "url": "'$1'", "radioalbum" : "'$2'" }'
 	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status

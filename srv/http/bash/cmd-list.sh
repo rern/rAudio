@@ -51,11 +51,6 @@ if [[ $song == 0 ]]; then
 	exit
 fi
 
-for mode in NAS SD USB; do
-	counts+='
-, "'${mode,,}'" : '$( ls -1d /mnt/MPD/$mode/*/ 2> /dev/null | wc -l ) # not 'mpc ls' to get all root dirs
-done
-
 ##### album
 albumList() {
 	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag

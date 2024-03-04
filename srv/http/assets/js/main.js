@@ -1153,17 +1153,15 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	$( '#lib-search-close' ).trigger( 'click' );
 	if ( V.mode === 'bookmark' ) return
 	
-	if ( ! C[ V.mode ] && V.mode.slice( -5 ) !== 'radio' ) {
+	if ( ! C[ V.mode ] && ! [ 'dabradio', 'nas', 'sd', 'usb', 'webradio' ].includes( V.mode ) ) {
 		var message, mode;
-		if ( [ 'nas', 'sd', 'usb' ].includes( V.mode ) ) {
-			message = 'Empty: '+ ico( V.mode ) +' '+ V.mode.toUpperCase();
-		} else if ( V.mode === 'playlists' ) {
-			message = 'No saved playlists.';
+		if ( V.mode === 'playlists' ) {
+			message = 'Not available: '+ ico( 'playlist' ) +' Saved Playlist';
 		} else if ( V.mode === 'latest' ) {
 			message = 'No new albums added since last update.';
 		} else {
 			mode    = true;
-			message = 'Not found: '+ ico( V.mode ) +' '+ V.mode[ 0 ].toUpperCase() + V.mode.slice( 1 )
+			message = 'Not available: '+ ico( V.mode ) +' '+ V.mode[ 0 ].toUpperCase() + V.mode.slice( 1 )
 		}
 		info( {
 			  icon    : 'library'
@@ -1213,6 +1211,15 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	}
 	query.gmode = V.mode;
 	list( query, function( html ) {
+		if ( ! html ) {
+			info( {
+				  icon    : 'library'
+				, title   : 'Library Database'
+				, message : 'Empty: '+ ico( V.mode ) +' '+ V.mode.toUpperCase()
+			} );
+			return
+		}
+		
 		var data = {
 			  html      : html
 			, modetitle : path

@@ -57,8 +57,6 @@ for i in {1..5}; do
 	mount | grep -q -m1 "$mountpoint" && break
 done
 
-pushDataCount nas
-
 if [[ $SHAREDDATA ]]; then
 	$dirsettings/system.sh shareddataset
 else
