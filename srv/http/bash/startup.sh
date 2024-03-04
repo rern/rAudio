@@ -170,3 +170,6 @@ if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
 $( < $dirsystem/apm )
 CMD APM"
 fi
+
+udevil clean
+pushDataCount usb
