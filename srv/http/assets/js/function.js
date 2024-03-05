@@ -780,18 +780,36 @@ function infoUpdate( path ) {
 		return
 	}
 	
+	var list = [ '',    'radio',    { kv: { 'All files in folder': 'rescan', 'Changed files only': 'update' }, sameline: false } ];
+	if ( ! path ) list = [
+		  list
+		, [ ico( 'nas' ) +'NAS', 'checkbox' ]
+		, [ ico( 'sd' ) +'SD',   'checkbox' ]
+		, [ ico( 'usb' ) +'USB', 'checkbox' ]
+	];
 	info( {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
-		, message    : path ? ico( 'folder' ) +' <wh>'+ path +'</wh>' : ''
-		, list       : path ? '' : [ '', 'radio', { kv: { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }, sameline: false } ]
+		, message    : ico( 'folder' ) +' <wh>/mnt/MPD/'+ ( path || '' ) +'</wh>'
+		, list       : list
+		, values     : { TYPE: 'update', NAS: true, SD: true, USB: true }
 		, beforeshow : () => {
-			if ( ! C ) {
-				$( '#infoList input' ).eq( 0 ).prop( 'disabled', true );
-				$( '#infoList input' ).eq( 1 ).prop( 'checked', true );
-			}
+			$( '#infoList input:checkbox' ).prop( 'checked', true );
+			$( '#infoList tr' ).slice( 2 ).find( 'td:nth-child( 2 )' ).css( 'padding-left', '55px' );
 		}
-		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD DIR' ] )
+		, ok         : () => {
+			var val = infoVal();
+			if ( ! path ) {
+				var root = true;
+				path = '';
+				[ 'NAS', 'SD', 'USB' ].forEach( k => {
+					val[ k ] ? path += '"'+ k +'" ' : root=false;
+				} );
+				if ( root ) path = '';
+			}
+			bash( [ 'mpcupdate', val.TYPE, path, 'CMD TYPE PATHMPD' ] )
+			console.log( [ 'mpcupdate', val.TYPE, path, 'CMD TYPE PATHMPD' ] )
+		}
 	} );
 }
 function infoUpdating() {
@@ -1127,9 +1145,9 @@ function refreshData() {
 		if ( ! V.librarylist ) { // home
 			libraryHome();
 		} else {
-			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) {
-				$( '#lib-breadcrumbs a' ).last().trigger( 'click' );
-			} else if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
+			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) return
+			
+			if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 				$( '#mode-album' ).trigger( 'click' );
 			} else if ( V.query.length ) {
 				var query = V.query.slice( -1 )[ 0 ];
@@ -1203,9 +1221,15 @@ function renderLibrary() { // library home
 	}
 }
 function renderLibraryCounts() {
-	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
+	var songs    = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' ) );
+	$.each( C, ( k, v ) => {
+		if ( v ) {
+			if ( ! [ 'nas', 'sd', 'usb' ].includes( k ) ) $( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
+		} else {
+			$( '#mode-'+ k ).toggleClass( 'nodata', v === 0 );
+		}
+	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
 }
 function renderLibraryList( data ) { // V.librarylist

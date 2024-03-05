@@ -178,6 +178,8 @@ case 'ls':
 	} else {
 		exec( 'mpc ls -f "'.$format.'" "'.$string.'" 2> /dev/null'
 			, $lists );
+		if ( ! count( $lists ) ) exit();
+		
 		if ( strpos( $lists[ 0 ],  '.wav^^' ) ) { // MPD not sort *.wav
 			$lists = '';
 			exec( 'mpc ls -f "%track%__'.$format.'" "'.$string.'" 2> /dev/null '
@@ -276,31 +278,33 @@ function htmlDirectory( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
+	$htmlfile = '';
 	foreach( $array as $each ) {
 		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$nodata   = '';
+		$nodata    = '';
+		$suffix    = substr( $path, -1 );
+		if ( $suffix === '/' ) {
+			$path   = rtrim( $path, '/' );
+			$nodata = ' class="nodata"';
+		} else if ( $suffix === '-' ) {
+			$path   = rtrim( $path, '-' );
+			$nodata = ' class="nodata nofile"';
+		}
+		$htmlpath  = '<a class="lipath">'.$path.'</a>
+<span class="single name">'.basename( $path ).'</span>
+</li>';
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
-			$htmlicon = imgIcon( $thumbsrc, 'folder' );
-			if ( substr( $path, -1 ) === '/' ) {
-				$nodata = ' class="nodata"';
-				$path   = rtrim( $path, '/' );
-			}
+			$html .='<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.imgIcon( $thumbsrc, 'folder' ).$htmlpath;
 		} else {
-			$mode     = $gmode;
-			$htmlicon = i( 'music ', 'file' );
+			$htmlfile.='<li data-mode="'.$gmode.'" data-index="'.$index.'">'.i( 'music ', 'file' ).$htmlpath;
 		}
-		$html.=
-'<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.$htmlicon.'
-<a class="lipath">'.$path.'</a>
-<span class="single name">'.basename( $path ).'</span>
-</li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$html    .=
+	$html    .= $htmlfile.
 '</ul>
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';

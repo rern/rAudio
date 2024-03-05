@@ -62,3 +62,5 @@ if [[ $SHAREDDATA ]]; then
 else
 	pushRefresh system
 fi
+
+pushDataCount nas

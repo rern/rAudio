@@ -585,6 +585,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action
+	pushDataCount usb
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	;;
 volumeboot )

@@ -1776,11 +1776,20 @@ li.active .iconthumb {
 w {
 	color: var( --cw );
 }
+#lib-mode-list .mode.nodata i {
+	color: var( --cg ) !important;
+}
 #lib-list li.nodata * {
 	color: var( --cgl ) !important;
 }
 #lib-list li.active.nodata * {
 	color: var( --cga ) !important;
+}
+#lib-list li.nofile {
+	cursor: not-allowed;
+}
+#lib-list li.nofile .i-folder::before {
+	content: '\F54F';
 }
 li.active .li1 bl {
 	color: var( --cga ) !important;

@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1709089963' );
+	src         : url( '/assets/fonts/rern.woff2?v=1709614130' );
 }
 @font-face {
 	font-family : Lato;
@@ -88,6 +88,7 @@ i {
 .i-flash::before           { content: '\F566' }
 .i-flowchart::before       { content: '\F52D' }
 .i-folder::before          { content: '\F540' }
+.i-folder-blank::before    { content: '\F54F' }
 .i-folder-cascade::before  { content: '\F54A' }
 .i-folder-filter::before   { content: '\F53F' }
 .i-folder-forbid::before   { content: '\F537' }

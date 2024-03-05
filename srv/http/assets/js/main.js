@@ -243,7 +243,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			V.screenoff = true;
 			break;
 		case 'update':
-			if ( ! $( '#update' ).hasClass( 'on' ) ) infoUpdate( '' );
+			if ( ! $( '#update' ).hasClass( 'on' ) ) infoUpdate();
 			break;
 		case 'displaycolor':
 			V.color = true;
@@ -1151,7 +1151,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	var $this = $( this );
 	V.mode    = $this.data( 'mode' );
 	$( '#lib-search-close' ).trigger( 'click' );
-	if ( V.mode === 'bookmark' ) return
+	if ( V.mode === 'bookmark' || $this.hasClass( 'nodata' ) ) return
 	
 	if ( ! C[ V.mode ] && ! [ 'dabradio', 'nas', 'sd', 'usb', 'webradio' ].includes( V.mode ) ) {
 		var message, mode;
@@ -1170,11 +1170,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 			, oklabel : mode ? ico( 'refresh-library' ) + 'Update' : ''
 			, ok      : mode ? () => bash( [ 'mpcupdate', '', 'CMD DIR' ] ) : ''
 		} );
-		return
-	}
-	
-	if ( ! V.color && ! C[ V.mode ] && S.updating_db ) {
-		infoUpdate();
 		return
 	}
 	
@@ -1211,15 +1206,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	}
 	query.gmode = V.mode;
 	list( query, function( html ) {
-		if ( ! html ) {
-			info( {
-				  icon    : 'library'
-				, title   : 'Library Database'
-				, message : 'Empty: '+ ico( V.mode ) +' '+ V.mode.toUpperCase()
-			} );
-			return
-		}
-		
 		var data = {
 			  html      : html
 			, modetitle : path
@@ -1460,12 +1446,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var active   = $this.hasClass( 'active' );
 	menuHide();
 	if ( ( menushow && V.mode !== 'webradio' && $target.is( '.li-icon' ) ) || $target.is( '.li-icon, .licoverimg' ) ) {
-		if ( ! active ) contextmenuLibrary( $this, $target );
+		if ( ! active && ! $this.hasClass( 'nofile' ) ) contextmenuLibrary( $this, $target );
 		return
 	}
 	
 	if ( $this.hasClass( 'nodata' ) ) {
-		$this.find( '.li-icon' ).trigger( 'click' );
+		if ( ! $this.hasClass( 'nofile' ) ) $this.find( '.li-icon' ).trigger( 'click' );
 		return
 	}
 

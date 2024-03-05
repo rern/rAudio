@@ -443,19 +443,26 @@ librandom )
 librarylistdirs )
 	mpcls=$( mpc ls "$DIR" 2> /dev/null )
 	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null )
-	if [[ $sysls ]]; then
-		while read dir; do
-			dirmpc=${dir:9}
-			if [[ ! -e "$dir.mpdignore" ]] && ! grep -q "^${dirmpc:0:-1}" <<< $mpcls; then
-				mpcls+=$'\n'"$dirmpc"
-			fi
-		done <<< $sysls
+	if [[ ! $mpcls ]]; then
+		[[ $sysls ]] && echo "$sysls"
+		exit
 	fi
+	
+	while read dir; do
+		dirmpc=${dir:9:-1}
+		if [[ ! -e "$dir.mpdignore" ]] && ! grep -q "^${dirmpc:0:-1}" <<< $mpcls; then
+			mpcls+=$'\n'"$dirmpc/"
+		fi
+		grep -q "$dirmpc" <<< $mpcls && [[ ! $( mpc ls "$dirmpc" 2> /dev/null ) ]] && nofile+=$'\n'"$dirmpc"
+	done <<< $sysls
 	mpcls=$( awk NF <<< $mpcls )
-	while read path; do
-		[[ -d "/mnt/MPD/$path" ]] && subdirs=1 && break
-	done <<< $mpcls
-	[[ $subdirs ]] && echo "$mpcls"
+	nofile=$( awk NF <<< $nofile )
+	if [[ $nofile ]]; then
+		while read path; do
+			mpcls=$( sed "s|^$path$|&-|" <<< $mpcls )
+		done <<< $nofile
+	fi
+	echo "$mpcls"
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
@@ -671,14 +678,10 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
-	date +%s > $dirmpd/updatestart
-	if [[ $DIR ]]; then
-		echo $DIR > $dirmpd/updating
-	elif [[ -e $dirmpd/updating ]]; then
-		DIR=$( < $dirmpd/updating )
-	fi
+	/usr/bin/date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
+	echo "$PATHMPD" > $dirmpd/updating
 	pushData mpdupdate '{ "type": "mpd" }'
-	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
+	mpc -q $TYPE "$PATHMPD"
 	;;
 mpcupdatestop )
 	pushData mpdupdate '{ "stop": true }'
