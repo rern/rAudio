@@ -5,7 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20230309
-sed -i -E '/nas|sd|usb/ d' $dirmpd/counts
 
 # 20240303
 file=/etc/udev/rules.d/bluetooth.rules
