@@ -450,7 +450,6 @@ librarylistdirs )
 	
 	while read dir; do
 		dirmpc=${dir:9:-1}
-		grep -q "^$dirmpc$" <<< $mpcls && exist=1 || exist=
 		if grep -q "^$dirmpc$" <<< $mpcls; then
 			[[ ! $( mpc ls "$dirmpc" 2> /dev/null ) ]] && nofile+=$'\n'"$dirmpc"
 		else
