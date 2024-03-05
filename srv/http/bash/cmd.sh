@@ -444,24 +444,24 @@ librarylistdirs )
 	mpcls=$( mpc ls "$DIR" 2> /dev/null )
 	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null )
 	if [[ ! $mpcls ]]; then           # no mpd data
-		[[ $sysls ]] && echo "$sysls" # subdirs
-		exit                          # no subdirs
+		[[ $sysls ]] && echo "$sysls" # subdirs    >>>
+		exit                          # no subdirs >>>
 	fi
-	[[ ! $sysls ]] && exit              # no subsirs
+	[[ ! $sysls ]] && exit            # no subsirs >>>
 	
 	while read dir; do
 		dirmpc=${dir:9:-1}
 		if grep -q "^$dirmpc$" <<< $mpcls; then
 			[[ ! $( mpc ls "$dirmpc" 2> /dev/null ) ]] && nofile+=$'\n'"$dirmpc"
 		else
-			[[ ! -e "$dir.mpdignore" ]] && mpcls+=$'\n'"$dirmpc^d"
+			[[ ! -e "$dir.mpdignore" ]] && mpcls+=$'\n'"$dirmpc^d" # ^d - no data
 		fi
 	done <<< $sysls
 	mpcls=$( awk NF <<< $mpcls )
 	nofile=$( awk NF <<< $nofile )
 	if [[ $nofile ]]; then
 		while read path; do
-			mpcls=$( sed "s|^$path$|&^f|" <<< $mpcls )
+			mpcls=$( sed "s|^$path$|&^f|" <<< $mpcls )            # ^f - no files
 		done <<< $nofile
 	fi
 	echo "$mpcls"
