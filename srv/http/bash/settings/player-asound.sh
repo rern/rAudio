@@ -156,6 +156,6 @@ else
 		$dirbash/cmd.sh "equalizer
 $value
 $user
-CMD VALUE USER"
+CMD VALUE USR"
 	fi
 fi

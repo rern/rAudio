@@ -807,8 +807,7 @@ function infoUpdate( path ) {
 				} );
 				if ( root ) path = '';
 			}
-			bash( [ 'mpcupdate', val.TYPE, path, 'CMD TYPE PATHMPD' ] )
-			console.log( [ 'mpcupdate', val.TYPE, path, 'CMD TYPE PATHMPD' ] )
+			bash( [ 'mpcupdate', val.TYPE, path, 'CMD ACTION PATHMPD' ] )
 		}
 	} );
 }
@@ -1026,7 +1025,7 @@ function playlistGet() {
 function playlistInsert( pos ) {
 	var plname = $( '#savedpl-path .lipath' ).text();
 	banner( 'file-playlist', V.pladd.name, 'Add ...' );
-	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME TYPE TO FILE' ], () => {
+	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME ACTION TO FILE' ], () => {
 		renderSavedPlTrack( plname );
 		if ( pos === 'last' ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
@@ -1975,7 +1974,7 @@ function sortPlaylist( pl, iold, inew ) {
 	if ( pl === 'pl-list' ) {
 		bash( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
 	} else {
-		bash( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME TYPE FROM TO' ] );
+		bash( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME ACTION FROM TO' ] );
 	}
 	var i    = Math.min( iold, inew );
 	var imax = Math.max( iold, inew ) + 1;

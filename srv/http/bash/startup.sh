@@ -144,7 +144,7 @@ if [[ ! -e $dirmpd/mpd.db ]]; then
 	echo rescan > $dirmpd/updating
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/updating ]]; then
-	$dirbash/cmd.sh mpcupdate "$( < $dirmpd/updating )"
+	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi

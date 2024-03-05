@@ -23,10 +23,10 @@ share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 if [[ $PROTOCOL == cifs ]]; then
 	source="//$IP/$share"
 	options=noauto
-	if [[ ! $USER ]]; then
+	if [[ ! $USR ]]; then
 		options+=,username=guest
 	else
-		options+=",username=$USER,password=$PASSWORD"
+		options+=",username=$USR,password=$PASSWORD"
 	fi
 	options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
 else

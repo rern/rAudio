@@ -321,7 +321,7 @@ $ARTIST
 $ALBUM
 audiocd
 $discid
-CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
+CMD ARTIST ALBUM MODE DISCID" &> /dev/null &
 		exit
 	fi
 	
@@ -383,7 +383,7 @@ equalizer )
 		for (( i=0; i < 10; i++ )); do
 			(( i < 5 )) && unit=Hz || unit=kHz
 			band=( "0$i. ${freq[i]} $unit" )
-			sudo -u $USER amixer -MqD equal sset "$band" ${v[i]}
+			sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
 		done
 	fi
 	pushData equalizer $( < $dirsystem/equalizer.json )
@@ -401,7 +401,7 @@ equalizerget )
 	fi
 	;;
 equalizerset ) # slide
-	sudo -u $USER amixer -MqD equal sset "$BAND" $VAL
+	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
 	;;
 ignoredir )
 	touch $dirmpd/updating
@@ -680,10 +680,10 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
-	/usr/bin/date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
-	echo "$PATHMPD" > $dirmpd/updating
+	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
+	[[ $PATHMPD ]] && echo "$PATHMPD" > $dirmpd/updating || PATHMPD=$( < $dirmpd/updating )
 	pushData mpdupdate '{ "type": "mpd" }'
-	mpc -q $TYPE "$PATHMPD"
+	mpc -q $ACTION "$PATHMPD"
 	;;
 mpcupdatestop )
 	pushData mpdupdate '{ "stop": true }'
@@ -727,9 +727,9 @@ savedpldelete )
 	;;
 savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	plfile="$dirplaylists/$NAME.m3u"
-	if [[ $TYPE == remove ]]; then
+	if [[ $ACTION == remove ]]; then
 		sed -i "$POS d" "$plfile"
-	elif [[ $TYPE == add ]]; then
+	elif [[ $ACTION == add ]]; then
 		[[ $TO == last ]] && echo "$FILE" >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
 	else # move
 		file=$( sed -n "$FROM p" "$plfile" )

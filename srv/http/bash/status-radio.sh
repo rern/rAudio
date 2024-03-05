@@ -152,7 +152,7 @@ $( jq -r .albumTitle <<< $track )"
 $artist
 $album
 webradio
-CMD ARTIST ALBUM TYPE" &> /dev/null &
+CMD ARTIST ALBUM MODE" &> /dev/null &
 	fi
 	pushData mpdradio "{ $data }"
 	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}

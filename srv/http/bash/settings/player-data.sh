@@ -15,7 +15,7 @@ lists='{
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
 replaygainconf='{
-  "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
+  "MODE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
 , "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
 }'
 [[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=$( volumeGet valdb hw )

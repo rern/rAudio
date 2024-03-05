@@ -567,4 +567,4 @@ fi
 
 $dirbash/status-coverartonline.sh "cmd
 $args
-CMD ARTIST ALBUM TYPE" &> /dev/null &
+CMD ARTIST ALBUM MODE" &> /dev/null &

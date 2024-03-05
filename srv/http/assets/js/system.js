@@ -32,7 +32,7 @@ var default_v     = {
 		, NAME     : ''
 		, IP       : ''
 		, SHARE    : ''
-		, USER     : ''
+		, USR      : ''
 		, PASSWORD : ''
 		, OPTIONS  : '' 
 	}
