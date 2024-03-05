@@ -424,23 +424,7 @@ latestclear )
 	fi
 	sed -i -E 's/("latest": ).*/\1'$count',/' $dirmpd/counts
 	;;
-librandom )
-	if [[ $ON ]]; then
-		mpc -q random 0
-		tail=$( plTail )
-		if [[ $PLAY ]]; then
-			playnext=$(( total + 1 ))
-			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
-		fi
-		touch $dirsystem/librandom
-		plAddRandom
-		[[ $PLAY ]] && mpc -q play $playnext
-	else
-		rm -f $dirsystem/librandom
-	fi
-	pushData option '{ "librandom": '$TF' }'
-	;;
-librarylistdirs )
+libdirfile )
 	mpcls=$( mpc ls "$DIR" 2> /dev/null )
 	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null )
 	if [[ ! $mpcls ]]; then           # no mpd data
@@ -465,6 +449,22 @@ librarylistdirs )
 		done <<< $nofile
 	fi
 	echo "$mpcls"
+	;;
+librandom )
+	if [[ $ON ]]; then
+		mpc -q random 0
+		tail=$( plTail )
+		if [[ $PLAY ]]; then
+			playnext=$(( total + 1 ))
+			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
+		fi
+		touch $dirsystem/librandom
+		plAddRandom
+		[[ $PLAY ]] && mpc -q play $playnext
+	else
+		rm -f $dirsystem/librandom
+	fi
+	pushData option '{ "librandom": '$TF' }'
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"

@@ -150,8 +150,9 @@ case 'list':
 	break;
 case 'ls':
 	if ( $mode !== 'album' ) {
-		$multiline = implode( "\n", [ 'librarylistdirs', $string, 'CMD DIR' ] );
-		exec( '/srv/http/bash/cmd.sh "'.$multiline.'"', $lists );
+		exec( "/srv/http/bash/cmd.sh \"libdirfile
+$string
+CMD DIR\"", $lists );
 		if ( $lists[ 0 ] ) {
 			htmlDirectory( $lists );
 			break;
