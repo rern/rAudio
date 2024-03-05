@@ -443,10 +443,11 @@ librandom )
 librarylistdirs )
 	mpcls=$( mpc ls "$DIR" 2> /dev/null )
 	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null )
-	if [[ ! $mpcls ]]; then
-		[[ $sysls ]] && echo "$sysls"
-		exit
+	if [[ ! $mpcls ]]; then           # no mpd data
+		[[ $sysls ]] && echo "$sysls" # subdirs
+		exit                          # no subdirs
 	fi
+	[[ ! $sysls ]] && exit              # no subsirs
 	
 	while read dir; do
 		dirmpc=${dir:9:-1}
