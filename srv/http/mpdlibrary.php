@@ -284,12 +284,12 @@ function htmlDirectory( $lists ) {
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$nodata    = '';
-		$suffix    = substr( $path, -1 );
-		if ( $suffix === '/' ) {
-			$path   = rtrim( $path, '/' );
+		$suffix    = substr( $path, -2 );
+		if ( $suffix === '^d' ) {
+			$path   = rtrim( $path, '^d' );
 			$nodata = ' class="nodata"';
-		} else if ( $suffix === '-' ) {
-			$path   = rtrim( $path, '-' );
+		} else if ( $suffix === '^f' ) {
+			$path   = rtrim( $path, '^f' );
 			$nodata = ' class="nodata nofile"';
 		}
 		$htmlpath  = '<a class="lipath">'.$path.'</a>

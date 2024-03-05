@@ -450,16 +450,18 @@ librarylistdirs )
 	
 	while read dir; do
 		dirmpc=${dir:9:-1}
-		if [[ ! -e "$dir.mpdignore" ]] && ! grep -q "^${dirmpc:0:-1}" <<< $mpcls; then
-			mpcls+=$'\n'"$dirmpc/"
+		grep -q "^$dirmpc$" <<< $mpcls && exist=1 || exist=
+		if grep -q "^$dirmpc$" <<< $mpcls; then
+			[[ ! $( mpc ls "$dirmpc" 2> /dev/null ) ]] && nofile+=$'\n'"$dirmpc"
+		else
+			[[ ! -e "$dir.mpdignore" ]] && mpcls+=$'\n'"$dirmpc^d"
 		fi
-		grep -q "$dirmpc" <<< $mpcls && [[ ! $( mpc ls "$dirmpc" 2> /dev/null ) ]] && nofile+=$'\n'"$dirmpc"
 	done <<< $sysls
 	mpcls=$( awk NF <<< $mpcls )
 	nofile=$( awk NF <<< $nofile )
 	if [[ $nofile ]]; then
 		while read path; do
-			mpcls=$( sed "s|^$path$|&-|" <<< $mpcls )
+			mpcls=$( sed "s|^$path$|&^f|" <<< $mpcls )
 		done <<< $nofile
 	fi
 	echo "$mpcls"
