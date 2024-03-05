@@ -99,8 +99,8 @@ case 'home':
 		$htmlmode.=
 '<div class="lib-mode">
 	<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
-	<a class="lipath">'.$modeLC.'</a>
-	<i class="i-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
+		<a class="lipath">'.$modeLC.'</a>
+		<i class="i-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
 	</div>
 </div>';
 	}
@@ -123,9 +123,9 @@ case 'home':
 			$htmlmode.=
 '<div class="lib-mode bookmark">
 	<div class="mode mode-bookmark '.$bkradio.'" data-mode="bookmark">
-	<a class="lipath li2">'.$bkpath.'</a>
-	<a class="bkname name hide">'.$name.'</a>
-	<img class="bkcoverart" src="'.$src.'^^^">
+		<a class="lipath li2">'.$bkpath.'</a>
+		<a class="bkname name hide">'.$name.'</a>
+		<img class="bkcoverart" src="'.$src.'^^^">
 	</div>
 </div>';
 		}
@@ -152,10 +152,10 @@ case 'ls':
 	if ( $mode !== 'album' ) {
 		$multiline = implode( "\n", [ 'librarylistdirs', $string, 'CMD DIR' ] );
 		exec( '/srv/http/bash/cmd.sh "'.$multiline.'"', $lists );
-		if ( ! $lists[ 0 ] ) exit;
-		
-		htmlDirectory( $lists );
-		break;
+		if ( $lists[ 0 ] ) {
+			htmlDirectory( $lists );
+			break;
+		}
 	}
 	$f      = $formatall; // set format for directory with files only - track list
 	$format = '%'.implode( '%^^%', $f ).'%';
