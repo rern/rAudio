@@ -221,6 +221,7 @@ audio_output {
 			  icon         : SW.icon
 			, title        : SW.title
 			, list         : htmllist
+			, boxwidth     : 370
 			, values       : [ global, output ]
 			, checkchanged : S.custom
 			, cancel       : switchCancel

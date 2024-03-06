@@ -440,7 +440,14 @@ function thumbnailUpdate() {
 }
 function updateDirectory() {
 	if ( V.list.path.slice( -3 ) === 'cue' ) V.list.path = dirName( V.list.path );
-	infoUpdate( V.list.path );
+	info( {
+		  icon       : 'refresh-library'
+		, title      : 'Library Database'
+		, message    : ico( 'folder' ) +' /mnt/MPD/<wh>'+ V.list.path +'</wh>'
+		, list       : [ '', 'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
+		, values     : 'update'
+		, ok         : () => bash( [ 'mpcupdate', infoVal(), V.list.path, 'CMD ACTION PATHMPD' ] )
+	} );
 }
 function webRadioCoverart() {
 	if ( V.playback ) {

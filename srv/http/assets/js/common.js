@@ -981,8 +981,8 @@ function infoWidth() {
 		var boxW   = 230;
 	}
 	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' )
+		.parent().addBack()
 		.css( 'width', boxW +'px' )
-		.parent().css( 'width', boxW +'px' );
 	if ( $( '#infoList select' ).length ) {
 		selectSet(); // render select to set width
 		$( '#infoList .select2-container' ).attr( 'style', 'width: '+ boxW +'px !important' );

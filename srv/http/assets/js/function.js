@@ -775,54 +775,6 @@ function infoTitle() {
 		, okno        : true
 	} );
 }
-function infoUpdate( path ) {
-	var kv   = {
-		  'Update changed files' : 'update'
-		, 'Update all files'     : 'rescan'
-		, 'Recount modes only'   : 'recount'
-	}
-	var radio = [ '', 'radio', { kv: kv, sameline: false } ];
-	if ( path ) {
-		var message = ico( 'folder' ) +' /mnt/MPD/<wh>'+ ( path || '' ) +'</wh>';
-		delete kv[ 'Recount modes only' ];
-		var list    = radio;
-		var values  = { ACTION: 'update' };
-	} else {
-		var message = false;
-		var list    = [];
-		[ 'nas', 'sd', 'usb' ].forEach( k => list.push( [ ico( k ) + k.toUpperCase(), 'checkbox' ] ) );
-		list.push( radio );
-		var values  = { NAS: true, SD: true, USB: true, ACTION: 'update' }
-	}
-	info( {
-		  icon       : 'refresh-library'
-		, title      : 'Library Database'
-		, message    : message
-		, list       : list
-		, values     : values
-		, beforeshow : () => {
-			var $checkbox = $( '#infoList input:checkbox' );
-			$checkbox.prop( 'checked', true );
-			$checkbox.eq( 2 ).parents( 'td' ).css( 'border-bottom', '1px solid var( --cgl )' );
-			$checkbox.parents( 'td' ).css( 'padding-left', '30px' );
-			$( '#infoList input:radio' ).on( 'input', function() {
-				$checkbox.parents( 'tr' ).toggleClass( 'hide', $( this ).val() === 'recount' );
-			} );
-		}
-		, ok         : () => {
-			var val = infoVal();
-			if ( ! path ) {
-				var all   = true;
-				var modes = '';
-				[ 'NAS', 'SD', 'USB' ].forEach( k => {
-					val[ k ] ? modes += '"'+ k +'" ' : all = false;
-				} );
-				path = all ? '' : modes;
-			}
-			bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] )
-		}
-	} );
-}
 function intervalClear() {
 	$.each( V.interval, ( k, v ) => clearInterval( v ) );
 	setProgress( S.webradio ? 0 : '' ); // stop progress animation

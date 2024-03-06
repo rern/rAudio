@@ -243,7 +243,52 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			V.screenoff = true;
 			break;
 		case 'update':
-			if ( ! $( '#update' ).hasClass( 'on' ) ) infoUpdate();
+			if ( ! $( '#update' ).hasClass( 'on' ) ) {
+				var list    = [];
+				[ 'nas', 'sd', 'usb' ].forEach( k => list.push( [ ico( k ) + k.toUpperCase(), 'checkbox' ] ) );
+				var kv   = {
+					  'Update changed files' : 'update'
+					, 'Update all files'     : 'rescan'
+					, 'Recount modes only'   : 'recount'
+				}
+				list.push( [ '', 'radio', { kv: kv, sameline: false } ] );
+				info( {
+					  icon       : 'refresh-library'
+					, title      : 'Library Database'
+					, list       : list
+					, values     : { NAS: true, SD: true, USB: true, ACTION: 'update' }
+					, beforeshow : () => {
+						var $checkbox   = $( '#infoList input:checkbox' );
+						var $trcheckbox = $checkbox.parents( 'tr' );
+						$checkbox.prop( 'checked', true );
+						$checkbox.eq( 2 ).parents( 'td' ).css( 'border-bottom', '1px solid var( --cgl )' );
+						$checkbox.parents( 'td' ).css( 'padding-left', '30px' );
+						$checkbox.on( 'input', function() {
+							var v = infoVal();
+							$( '#infoOk' ).toggleClass( 'disabled', ! v.NAS && ! v.SD && ! v.USB );
+						} );
+						$( '#infoList input:radio' ).on( 'input', function() {
+							var v = infoVal();
+							if ( v.ACTION === 'recount' ) {
+								$trcheckbox.addClass( 'hide' );
+								$( '#infoOk' ).removeClass( 'disabled' );
+							} else {
+								$trcheckbox.removeClass( 'hide' );
+								$( '#infoOk' ).toggleClass( 'disabled', ! v.NAS && ! v.SD && ! v.USB );
+							}
+						} );
+					}
+					, ok         : () => {
+						var val = infoVal();
+						var modes = [];
+						[ 'NAS', 'SD', 'USB' ].forEach( k => {
+							if ( val[ k ] ) modes.push( k );
+						} );
+						path = modes.length < 3 ? '"'+ modes.join( '" "' ) +'"' : '';
+						bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] );
+					}
+				} );
+			}
 			break;
 		case 'displaycolor':
 			V.color = true;
