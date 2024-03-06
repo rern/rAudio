@@ -6,14 +6,14 @@ alias=r1
 
 # 20240303
 file=/etc/udev/rules.d/bluetooth.rules
-if grep -q bluetoothcommand $file; then
+if [[ -e $file ]] && grep -q bluetoothcommand $file; then
 	sed -i 's|bluetoothcommand|settings/networks-bluetooth|' $file
 	udevadm control --reload-rules
 	udevadm trigger
 fi
 
 file=/usr/lib/systemd/system/camilladsp.service
-if ! grep -q {CONFIG} $file; then
+if [[ -e $file ]] && ! grep -q {CONFIG} $file; then
 	sed -i 's/CONFIG/{CONFIG}/' $file
 	systemctl daemon-reload
 fi
