@@ -15,14 +15,14 @@ if grep -q bluetoothcommand $file; then
 fi
 
 file=/usr/lib/systemd/system/camilladsp.service
-if ! grep -q {CONFIG} $file; then
+if [[ -e $file ]] && ! grep -q {CONFIG} $file; then
 	sed -i 's/CONFIG/{CONFIG}/' $file
 	systemctl daemon-reload
 fi
 
 # 202402226
 file=/etc/default/camilladsp
-if grep -qs /etc/ $file; then
+if [[ -e $file ]] && grep -qs /etc/ $file; then
 	sed -i 's|/etc/|/srv/http/data/|' $file
 	mv -f /{etc,srv/http/data}/camilladsp/configs/*
 fi
