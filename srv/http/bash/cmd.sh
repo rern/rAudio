@@ -425,30 +425,32 @@ latestclear )
 	sed -i -E 's/("latest": ).*/\1'$count',/' $dirmpd/counts
 	;;
 libdirfile )
-	mpcls=$( mpc ls "$DIR" 2> /dev/null )
-	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null )
-	if [[ ! $mpcls ]]; then           # no mpd data
-		[[ $sysls ]] && echo "$sysls" # subdirs    >>>
-		exit                          # no subdirs >>>
+	mpcls=$( mpc ls "$DIR" 2> /dev/null )                                          # database
+	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null | sed -E 's#/mnt/MPD/|/$##g' ) # all dirs: /mnt/MPD/path/to/ > path/to
+	if [[ ! $mpcls ]]; then               # not in database
+		if [[ $sysls ]]; then
+			while read path; do
+				[[ $( ls "/mnt/MPD/$path" 2> /dev/null ) ]] && df=d || df=f
+				nodatals+=$'\n'"$path^$df"
+			done <<< $sysls
+			nodatals=${nodatals:1}
+			[[ $nodatals ]] && echo "$nodatals" # not yet scan
+		fi
+		exit                          # empty   >>>
 	fi
-	[[ ! $sysls ]] && exit            # no subsirs >>>
 	
-	while read dir; do
-		dirmpc=${dir:9:-1}
-		if grep -q "^$dirmpc$" <<< $mpcls; then
-			[[ ! $( mpc ls "$dirmpc" 2> /dev/null ) ]] && nofile+=$'\n'"$dirmpc"
-		else
-			[[ ! -e "$dir.mpdignore" ]] && mpcls+=$'\n'"$dirmpc^d" # ^d - no data
+	[[ ! $sysls ]] && exit            # empty   >>>
+	
+	while read mpcpath; do # check: music files | scanned | empty
+		if grep -q "^$mpcpath$" <<< $mpcls; then # in database
+			[[ ! $( mpc ls "$mpcpath" 2> /dev/null ) ]] && mpcls=$( sed "s|^$mpcpath$|&^f|" <<< $mpcls ) # ^f - no music files
+		elif [[ ! -e "/mnt/MPD/$mpcpath/.mpdignore" ]]; then
+			[[ $( ls "/mnt/MPD/$mpcpath" 2> /dev/null ) ]] && df=d || df=f # ^f - empty; ^d - not in database
+			nodatals+=$'\n'"$mpcpath^$df"
 		fi
 	done <<< $sysls
-	mpcls=$( awk NF <<< $mpcls )
-	nofile=$( awk NF <<< $nofile )
-	if [[ $nofile ]]; then
-		while read path; do
-			mpcls=$( sed "s|^$path$|&^f|" <<< $mpcls )            # ^f - no files
-		done <<< $nofile
-	fi
-	echo "$mpcls"
+	echo "$mpcls\
+$nodatals"
 	;;
 librandom )
 	if [[ $ON ]]; then
@@ -680,6 +682,8 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
+	[[ $ACTION == recount ]] && $dirbash/cmd-list.sh && exit
+	
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
 	[[ $PATHMPD ]] && echo "$PATHMPD" > $dirmpd/updating || PATHMPD=$( < $dirmpd/updating )
 	pushData mpdupdate '{ "type": "mpd" }'

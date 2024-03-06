@@ -780,22 +780,37 @@ function infoUpdate( path ) {
 		return
 	}
 	
-	var list = [ '',    'radio',    { kv: { 'All files in folder': 'rescan', 'Changed files only': 'update' }, sameline: false } ];
-	if ( ! path ) list = [
-		  list
-		, [ ico( 'nas' ) +'NAS', 'checkbox' ]
-		, [ ico( 'sd' ) +'SD',   'checkbox' ]
-		, [ ico( 'usb' ) +'USB', 'checkbox' ]
-	];
+	var kv   = {
+		  'Changed files only': 'update'
+		, 'Update all files'  : 'rescan'
+		, 'Recount only'      : 'recount'
+	}
+	var list = [ '', 'radio', { kv: kv, sameline: false } ];
+	if ( path ) {
+		delete kv[ 'Recount only' ];
+		var message = ico( 'folder' ) +' /mnt/MPD/<wh>'+ ( path || '' ) +'</wh>';
+	} else {
+		var message = false;
+		list = [
+			  list
+			, [ ico( 'nas' ) +'NAS', 'checkbox' ]
+			, [ ico( 'sd' ) +'SD',   'checkbox' ]
+			, [ ico( 'usb' ) +'USB', 'checkbox' ]
+		];
+	}
 	info( {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
-		, message    : ico( 'folder' ) +' /mnt/MPD/<wh>'+ ( path || '' ) +'</wh>'
+		, message    : message
 		, list       : list
-		, values     : { TYPE: 'update', NAS: true, SD: true, USB: true }
+		, values     : { ACTION: 'update', NAS: true, SD: true, USB: true }
 		, beforeshow : () => {
-			$( '#infoList input:checkbox' ).prop( 'checked', true );
-			$( '#infoList tr' ).slice( 2 ).find( 'td:nth-child( 2 )' ).css( 'padding-left', '55px' );
+			var $checkbox = $( '#infoList input:checkbox' );
+			$checkbox.prop( 'checked', true );
+			$checkbox.parents( 'td' ).css( 'padding-left', '30px' );
+			$( '#infoList input:radio' ).on( 'input', function() {
+				$checkbox.parents( 'tr' ).toggleClass( 'hide', $( this ).val() === 'recount' );
+			} );
 		}
 		, ok         : () => {
 			var val = infoVal();
@@ -807,7 +822,7 @@ function infoUpdate( path ) {
 				} );
 				if ( root ) path = '';
 			}
-			bash( [ 'mpcupdate', val.TYPE, path, 'CMD ACTION PATHMPD' ] )
+			bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] )
 		}
 	} );
 }

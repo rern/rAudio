@@ -114,7 +114,7 @@ else
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
 , "control"      : "'$mixer'"
-, "counts"       : '$( getContent $dirmpd/counts )'
+, "counts"       : '$( < $dirmpd/counts )'
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
