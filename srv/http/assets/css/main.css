@@ -149,6 +149,9 @@ i.map.disabled, .map.disabled i {
 	color: var( --cw );
 	text-shadow: var( --shadow-text );
 }
+.menu a.disabled i {
+	color: var( --cg60 );
+}
 .menu i.gr {
 	color: var( --cg60 ) !important;
 }

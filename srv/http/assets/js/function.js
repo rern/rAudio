@@ -304,6 +304,7 @@ function contextmenuLibrary( $li, $target ) {
 		$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
 		$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
 		$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
+		$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating_db );
 	}
 	$li.addClass( 'active' );
 	if ( V.list.licover ) {
@@ -775,28 +776,18 @@ function infoTitle() {
 	} );
 }
 function infoUpdate( path ) {
-	if ( S.updating_db ) {
-		infoUpdating();
-		return
-	}
-	
 	var kv   = {
 		  'Changed files only': 'update'
 		, 'Update all files'  : 'rescan'
 		, 'Recount only'      : 'recount'
 	}
-	var list = [ '', 'radio', { kv: kv, sameline: false } ];
+	var list = [ [ '', 'radio', { kv: kv, sameline: false } ] ];
 	if ( path ) {
 		delete kv[ 'Recount only' ];
 		var message = ico( 'folder' ) +' /mnt/MPD/<wh>'+ ( path || '' ) +'</wh>';
 	} else {
 		var message = false;
-		list = [
-			  list
-			, [ ico( 'nas' ) +'NAS', 'checkbox' ]
-			, [ ico( 'sd' ) +'SD',   'checkbox' ]
-			, [ ico( 'usb' ) +'USB', 'checkbox' ]
-		];
+		[ 'nas', 'sd', 'usb' ].forEach( k => list.push( [ ico( k ) + k.toUpperCase(), 'checkbox' ] ) );
 	}
 	info( {
 		  icon       : 'refresh-library'
@@ -824,16 +815,6 @@ function infoUpdate( path ) {
 			}
 			bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] )
 		}
-	} );
-}
-function infoUpdating() {
-	info( {
-		  icon        : 'refresh-library'
-		, title       : 'Library Database'
-		, message     : 'Update in progress ...<br>&nbsp;'
-		, buttonlabel : 'Stop'
-		, buttoncolor : orange
-		, button      : () => bash( [ 'mpcupdatestop' ] )
 	} );
 }
 function intervalClear() {

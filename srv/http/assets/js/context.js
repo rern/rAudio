@@ -299,11 +299,6 @@ function similarAdd() {
 	}
 }
 function tagEditor() {
-	if ( S.updating_db ) {
-		infoUpdating();
-		return
-	}
-	
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
 	var file   = V.list.path;
