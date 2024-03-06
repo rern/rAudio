@@ -790,7 +790,7 @@ function infoUpdate( path ) {
 	info( {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
-		, message    : ico( 'folder' ) +' <wh>/mnt/MPD/'+ ( path || '' ) +'</wh>'
+		, message    : ico( 'folder' ) +' /mnt/MPD/<wh>'+ ( path || '' ) +'</wh>'
 		, list       : list
 		, values     : { TYPE: 'update', NAS: true, SD: true, USB: true }
 		, beforeshow : () => {
