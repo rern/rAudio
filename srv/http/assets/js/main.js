@@ -192,7 +192,6 @@ $( '#button-settings' ).on( 'click', function( e ) {
 			.css( 'top', ( $bartop.is( ':visible' ) ? 40 : 0 ) )
 			.css( 'pointer-events', 'none' ) // suppress coverTR tap on show
 			.removeClass( 'hide' );
-		$( '#update' ).toggleClass( 'on', S.updating_db )
 		setTimeout( () => $( '#settings' ).css( 'pointer-events', '' ), 300 );
 	} else {
 		$( '#settings' ).addClass( 'hide' );
