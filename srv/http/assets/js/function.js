@@ -777,27 +777,33 @@ function infoTitle() {
 }
 function infoUpdate( path ) {
 	var kv   = {
-		  'Changed files only': 'update'
-		, 'Update all files'  : 'rescan'
-		, 'Recount only'      : 'recount'
+		  'Update changed files' : 'update'
+		, 'Update all files'     : 'rescan'
+		, 'Recount modes only'   : 'recount'
 	}
-	var list = [ [ '', 'radio', { kv: kv, sameline: false } ] ];
+	var radio = [ '', 'radio', { kv: kv, sameline: false } ];
 	if ( path ) {
-		delete kv[ 'Recount only' ];
 		var message = ico( 'folder' ) +' /mnt/MPD/<wh>'+ ( path || '' ) +'</wh>';
+		delete kv[ 'Recount modes only' ];
+		var list    = radio;
+		var values  = { ACTION: 'update' };
 	} else {
 		var message = false;
+		var list    = [];
 		[ 'nas', 'sd', 'usb' ].forEach( k => list.push( [ ico( k ) + k.toUpperCase(), 'checkbox' ] ) );
+		list.push( radio );
+		var values  = { NAS: true, SD: true, USB: true, ACTION: 'update' }
 	}
 	info( {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : message
 		, list       : list
-		, values     : { ACTION: 'update', NAS: true, SD: true, USB: true }
+		, values     : values
 		, beforeshow : () => {
 			var $checkbox = $( '#infoList input:checkbox' );
 			$checkbox.prop( 'checked', true );
+			$checkbox.eq( 2 ).parents( 'td' ).css( 'border-bottom', '1px solid var( --cgl )' );
 			$checkbox.parents( 'td' ).css( 'padding-left', '30px' );
 			$( '#infoList input:radio' ).on( 'input', function() {
 				$checkbox.parents( 'tr' ).toggleClass( 'hide', $( this ).val() === 'recount' );
@@ -806,12 +812,12 @@ function infoUpdate( path ) {
 		, ok         : () => {
 			var val = infoVal();
 			if ( ! path ) {
-				var root = true;
-				path = '';
+				var all   = true;
+				var modes = '';
 				[ 'NAS', 'SD', 'USB' ].forEach( k => {
-					val[ k ] ? path += '"'+ k +'" ' : root=false;
+					val[ k ] ? modes += '"'+ k +'" ' : all = false;
 				} );
-				if ( root ) path = '';
+				path = all ? '' : modes;
 			}
 			bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] )
 		}

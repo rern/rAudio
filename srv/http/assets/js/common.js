@@ -462,7 +462,11 @@ function info( json ) {
 			}*/
 			switch ( type ) {
 				case 'checkbox':
-					htmls.list += htmls.list.slice( -3 ) === 'tr>' ? td0 : '<td'+ colspan +'>';
+					if ( htmls.list.slice( -3 ) === 'tr>' ) {
+						htmls.list += td0;
+					} else {
+						htmls.list += I.checkboxonly ? '<td'+ colspan +'>' : '<td></td><td'+ colspan +'>';
+					}
 					break;
 				case 'hidden':
 					htmls.list += '<tr class="hide"><td></td><td>';
