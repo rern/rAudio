@@ -1153,28 +1153,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	$( '#lib-search-close' ).trigger( 'click' );
 	if ( V.mode === 'bookmark' || $this.hasClass( 'nodata' ) ) return
 	
-	if ( ! C[ V.mode ] && ! [ 'dabradio', 'nas', 'sd', 'usb', 'webradio' ].includes( V.mode ) ) {
-		var message, mode;
-		if ( V.mode === 'playlists' ) {
-			message = 'Not available: '+ ico( 'playlist' ) +' Saved Playlist';
-		} else if ( V.mode === 'latest' ) {
-			message = 'No new albums added since last update.';
-		} else {
-			mode    = true;
-			message = 'Not available: '+ ico( V.mode ) +' '+ V.mode[ 0 ].toUpperCase() + V.mode.slice( 1 )
-		}
-		info( {
-			  icon    : 'library'
-			, title   : 'Library Database'
-			, message : message
-			, oklabel : mode ? ico( 'refresh-library' ) + 'Update' : ''
-			, ok      : mode ? () => bash( [ 'mpcupdate', '', 'CMD DIR' ] ) : ''
-		} );
-		return
-	}
-	
 	V.modescrolltop = $( window ).scrollTop();
-	
 	if ( V.mode === 'playlists' ) {
 		if ( $( this ).find( 'gr' ).text() ) {
 			$( '#button-pl-playlists' ).trigger( 'click' );
