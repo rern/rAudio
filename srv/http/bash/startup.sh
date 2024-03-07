@@ -140,10 +140,7 @@ if [[ -e $dirsystem/volumeboot ]]; then
 fi
 
 # after all sources connected ........................................................
-if [[ ! -e $dirmpd/mpd.db ]]; then
-	echo rescan > $dirmpd/updating
-	$dirbash/cmd.sh mpcupdate
-elif [[ -e $dirmpd/updating ]]; then
+if [[ ! -e $dirmpd/mpd.db || -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh mpcupdate
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &

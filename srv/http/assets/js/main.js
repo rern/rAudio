@@ -243,34 +243,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			V.screenoff = true;
 			break;
 		case 'update':
-			if ( ! $( '#update' ).hasClass( 'on' ) ) {
-				var message = '';
-				[ 'nas', 'sd', 'usb' ].forEach( k => message += ' &emsp; <label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
-				var kv   = {
-					  'Update changed files' : 'update'
-					, 'Update all files'     : 'rescan'
-					, 'Refresh folder list'  : 'refresh'
-				}
-				info( {
-					  icon       : 'refresh-library'
-					, title      : 'Library Database'
-					, message    : message +'&ensp;<hr>'
-					, list       : [ '', 'radio', { kv: kv, sameline: false } ]
-					, values     : { NAS: true, SD: true, USB: true, ACTION: 'update' }
-					, ok         : () => {
-						var val = infoVal();
-						var path = '';
-						if ( val.ACTION !== 'refresh' ) {
-							var modes = [];
-							[ 'NAS', 'SD', 'USB' ].forEach( k => {
-								if ( val[ k ] ) modes.push( k );
-							} );
-							if ( modes.length < 3 ) path = modes.join( ' ' );
-						}
-						bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] );
-					}
-				} );
-			}
+			$( '#button-lib-update' ).trigger( 'click' );
 			break;
 		case 'displaycolor':
 			V.color = true;
@@ -1067,6 +1040,46 @@ $( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
 		, message : message
 		, list    : [ 'Overwrite existings', 'checkbox' ]
 		, ok      : () => thumbUpdate( '', infoVal() )
+	} );
+} );
+$( '#button-lib-update' ).on( 'click', function() {
+	if ( S.updating_db ) {
+		info( {
+			  icon    : 'refresh-library'
+			, title   : 'Library Database'
+			, message : 'Currently updating ...'
+			, oklabel : ico( 'flash' ) +'Stop'
+			, okcolor : orange
+			, ok      : () => bash( [ 'mpcupdatestop' ] )
+		} );
+		return
+	}
+	
+	var message = '';
+	[ 'nas', 'sd', 'usb' ].forEach( k => message += ' &emsp; <label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
+	var kv   = {
+		  'Update changed files' : 'update'
+		, 'Update all files'     : 'rescan'
+		, 'Refresh folder list'  : 'refresh'
+	}
+	info( {
+		  icon       : 'refresh-library'
+		, title      : 'Library Database'
+		, message    : message +'&ensp;<hr>'
+		, list       : [ '', 'radio', { kv: kv, sameline: false } ]
+		, values     : { NAS: true, SD: true, USB: true, ACTION: 'update' }
+		, ok         : () => {
+			var val = infoVal();
+			var path = '';
+			if ( val.ACTION !== 'refresh' ) {
+				var modes = [];
+				[ 'NAS', 'SD', 'USB' ].forEach( k => {
+					if ( val[ k ] ) modes.push( k );
+				} );
+				if ( modes.length < 3 ) path = modes.join( ' ' );
+			}
+			bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] );
+		}
 	} );
 } );
 $( '#button-lib-search' ).on( 'click', function() { // icon

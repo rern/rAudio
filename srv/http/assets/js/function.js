@@ -787,8 +787,9 @@ function intervalElapsedClear() {
 }
 function libraryHome() {
 	list( { query: 'home' }, function( data ) {
-		C        = data.counts;
-		O        = data.order;
+		C             = data.counts;
+		O             = data.order;
+		S.updating_db = data.updating;
 		var html = data.html;
 		if ( html !== V.libraryhtml ) {
 			V.libraryhtml = html;
@@ -809,6 +810,8 @@ function libraryHome() {
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
 		if ( V.color ) $( '#mode-webradio' ).trigger( 'click' );
+		$( '#library, #button-library, #button-lib-update' ).toggleClass( 'blink', S.updating_db );
+		$( '#update' ).toggleClass( 'on', S.updating_db );
 	}, 'json' );
 }
 function lyricsGet( artist, title, file ) {
@@ -1140,7 +1143,7 @@ function renderLibrary() { // library home
 	V.librarytrack = false;
 	V.query        = [];
 	$( '#lib-path' ).css( 'max-width', '' );
-	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
+	$( '#lib-title, #lib-path>i, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).empty()
 	$( '#lib-breadcrumbs, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
@@ -1192,7 +1195,7 @@ function renderLibraryList( data ) { // V.librarylist
 	}
 	
 	V.librarylist = true;
-	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
+	$( '#lib-title, #lib-mode-list, .menu, #button-lib-update' ).addClass( 'hide' );
 	$( '#button-lib-back' )
 		.toggleClass( 'back-left', D.backonleft )
 		.toggleClass( 'hide', data.modetitle === 'search' );
@@ -1541,12 +1544,12 @@ function setButtonUpdating() {
 			var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
 		} else {
-			$( '#library, #button-library' ).addClass( 'blink' );
+			$( '#library, #button-library, #button-lib-update' ).addClass( 'blink' );
 		}
 		if ( localhost ) blinkUpdate();
 		$( '#update' ).addClass( 'on' );
 	} else {
-		$( '#library, #button-library' ).removeClass( 'blink' );
+		$( '#library, #button-library, #button-lib-update' ).removeClass( 'blink' );
 		$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}

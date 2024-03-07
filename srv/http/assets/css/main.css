@@ -1332,6 +1332,7 @@ i.map.disabled, .map.disabled i {
 .button-webradio-new {
 	margin-left: 10px;
 }
+#button-lib-update,
 #button-lib-search,
 #button-pl-search {
 	float: right;

@@ -163,6 +163,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<?=i( 'button-library',    'library active page-icon' )
+		  .i( 'button-lib-update', 'refresh-library' )
 		  .i( 'button-lib-search', 'search' )?>
 		<div id="lib-search" class="hide">
 			<div class="input-group">

@@ -259,10 +259,7 @@ nfsserver )
 		chmod -R 777 $dirshareddata
 		sharedDataBackupLink
 		systemctl restart mpd
-		if [[ $rescan ]]; then
-			echo rescan > $dirmpd/updating
-			$dirbash/cmd.sh mpcupdate
-		fi
+		[[ $rescan ]] && $dirbash/cmd.sh mpcupdate
 		# prepend path
 		files=$( ls -1 $dirbookmarks/* )
 		files+=$'\n'$( ls -1 $dirplaylists/* )

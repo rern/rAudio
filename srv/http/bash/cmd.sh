@@ -404,11 +404,11 @@ equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
 	;;
 ignoredir )
-	touch $dirmpd/updating
 	dir=$( basename "$DIR" )
 	mpdpath=$( dirname "$DIR" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
 	pushData mpdupdate '{ "type": "mpd" }'
+	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
@@ -685,8 +685,8 @@ mpcupdate )
 	[[ $ACTION == refresh ]] && pushDirCount && exit
 	
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
-	[[ $PATHMPD ]] && echo "$PATHMPD" > $dirmpd/updating || PATHMPD=$( < $dirmpd/updating )
 	pushData mpdupdate '{ "type": "mpd" }'
+	[[ $PATHMPD ]] && echo "$PATHMPD" > $dirmpd/updating || PATHMPD=$( getContent $dirmpd/updating )
 	mpc -q $ACTION "$PATHMPD"
 	;;
 mpcupdatestop )

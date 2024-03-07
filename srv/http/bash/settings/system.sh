@@ -68,10 +68,7 @@ sharedDataSet() {
 	appendSortUnique $( ipAddress ) $filesharedip
 	mpc -q clear
 	systemctl restart mpd
-	if [[ $rescan ]]; then
-		echo rescan > $dirmpd/updating
-		$dirbash/cmd.sh mpcupdate
-	fi
+	[[ $rescan ]] && $dirbash/cmd.sh mpcupdate
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": true }'
 }
