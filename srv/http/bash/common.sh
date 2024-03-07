@@ -336,7 +336,7 @@ pushDirCount() {
 	local c counts dir n
 	for dir in NAS SD USB;do
 		n=$( ls -1d /mnt/MPD/$dir/*/ 2> /dev/null | wc -l )
-		c+=( n )
+		c+=( $n )
 		counts+=', "'${dir,,}'": '$n
 	done
 	sed -i -E 's/("nas": ).*/\1'${c[0]}',/
