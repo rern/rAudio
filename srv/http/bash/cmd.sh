@@ -686,8 +686,14 @@ mpcupdate )
 	
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
 	pushData mpdupdate '{ "type": "mpd" }'
-	[[ $PATHMPD ]] && echo "$PATHMPD" > $dirmpd/updating || PATHMPD=$( getContent $dirmpd/updating )
-	mpc -q $ACTION "$PATHMPD"
+	if [[ $ACTION ]]; then
+		echo "\
+ACTION=$ACTION
+PATHMPD=\"$PATHMPD\"" > $dirmpd/updating
+	else
+		. <( $dirmpd/updating )
+	fi
+	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )
 	pushData mpdupdate '{ "stop": true }'

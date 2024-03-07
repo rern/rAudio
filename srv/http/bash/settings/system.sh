@@ -68,7 +68,10 @@ sharedDataSet() {
 	appendSortUnique $( ipAddress ) $filesharedip
 	mpc -q clear
 	systemctl restart mpd
-	[[ $rescan ]] && $dirbash/cmd.sh mpcupdate
+	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
+rescan
+
+CMD ACTION PATHMPD"
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": true }'
 }
@@ -262,8 +265,10 @@ mountforget )
 	fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
-	echo NAS > $dirmpd/updating
-	$dirbash/cmd.sh mpcupdate
+	$dirbash/cmd.sh "mpcupdate
+update
+NAS
+CMD ACTION PATHMPD"
 	pushRefresh
 	;;
 mountremount )

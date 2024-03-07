@@ -44,5 +44,7 @@ $( sed -E '/^TITLE|^PERFORMER|^REM/ d; s/^(\s+PERFORMER ).*/\1'$ARTIST'/' "$path
 fi
 
 touch $dirshm/tageditor
-echo "$dirupdate" > $dirmpd/updating
-$dirbash/cmd.sh mpcupdate
+$dirbash/cmd.sh "mpcupdate
+update
+$dirupdate
+CMD ACTION PATHMPD"
