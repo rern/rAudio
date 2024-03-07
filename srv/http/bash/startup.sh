@@ -172,4 +172,4 @@ CMD APM"
 fi
 
 udevil clean
-pushDataCount usb
+pushDirCount

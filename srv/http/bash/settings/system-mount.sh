@@ -63,4 +63,4 @@ else
 	pushRefresh system
 fi
 
-pushDataCount nas
+pushDirCount

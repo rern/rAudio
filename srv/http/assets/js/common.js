@@ -438,20 +438,20 @@ function info( json ) {
 	
 	[ 'range', 'updn' ].forEach( k => I[ k ] = [] );
 	if ( typeof I.list === 'string' ) {
-		htmls.list = I.list;
+		htmls.list     = I.list;
 	} else {
-		htmls.list = '';
+		htmls.list     = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
-		var td0   = I.checkboxonly ? '<tr><td>' : '<tr><td></td><td colspan="2">'; // no label <td></td>
 		var colspan, kv, label, param, type;
-		var i     = 0; // for radio name
+		var i          = 0; // for radio name
 		I.list.forEach( l => {
 			label   = l[ 0 ];
 			type    = l[ 1 ];
 			param   = l[ 2 ] || {};
 			kv      = 'kv' in param ? param.kv : param; // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
-			colspan = param.colspan ? ' colspan="'+ param.colspan +'"' : '';
+			if ( [ 'checkbox', 'radio' ].includes( type ) && ! ( 'colspan' in param ) ) param.colspan = 2;
+			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
 /*			param = {
 				  kv       : { k: V, ... }
 				, colspan  : N
@@ -462,11 +462,8 @@ function info( json ) {
 			}*/
 			switch ( type ) {
 				case 'checkbox':
-					if ( htmls.list.slice( -3 ) === 'tr>' ) {
-						htmls.list += td0;
-					} else {
-						htmls.list += I.checkboxonly ? '<td'+ colspan +'>' : '<td></td><td'+ colspan +'>';
-					}
+					if ( htmls.list.slice( -3 ) === 'tr>' ) htmls.list += '<tr>'
+					htmls.list += I.checkboxonly ? '<td>' : '<td></td><td'+ colspan +'>';
 					break;
 				case 'hidden':
 					htmls.list += '<tr class="hide"><td></td><td>';

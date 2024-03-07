@@ -327,17 +327,25 @@ pushData() {
 		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 	done
 }
-pushDataCount() {
-	local count dir
-	dir=$1
-	count=$( ls -1d /mnt/MPD/${dir^^}/*/ 2> /dev/null | wc -l )
-	sed -i -E 's/("'$dir'": ).*/\1'$count',/' $dirmpd/counts
-	pushData display '{ "dir": "'$dir'", "count": '$count' }'
-}
 pushDataCoverart() {
 	pushData coverart '{ "url": "'$1'", "radioalbum" : "'$2'" }'
 	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status
 	$dirbash/cmd.sh coverfileslimit
+}
+pushDirCount() {
+	local c dir
+	for dir in NAS SD USB;do
+		c+=( $( ls -1d /mnt/MPD/$dir/*/ 2> /dev/null | wc -l ) )
+	done
+	sed -i -E 's/("nas": ).*/\1'${c[0]}',/
+			   s/("sd": ).*/\1'${c[1]}',/
+			   s/("usb": ).*/\1'${c[2]}',/
+' $dirmpd/counts
+	pushData display '{ "dircount": {
+  "nas" : '${c[0]}'
+, "sd"  : '${c[1]}'
+, "usb" : '${c[2]}'
+}'
 }
 pushRefresh() {
 	local page push
