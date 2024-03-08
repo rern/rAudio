@@ -430,23 +430,24 @@ libdirfile )
 	if [[ ! $mpcls ]]; then               # not in database
 		if [[ $sysls ]]; then
 			while read path; do
-				[[ $( ls "/mnt/MPD/$path" 2> /dev/null ) ]] && df=d || df=f
+				[[ $( ls "/mnt/MPD/$path" ) ]] && df=d || df=f
 				nodatals+=$'\n'"$path^$df"
 			done <<< $sysls
-			nodatals=${nodatals:1}
-			[[ $nodatals ]] && echo "$nodatals" # not yet scan
+			[[ $nodatals ]] && echo "=${nodatals:1}" # not yet scan
 		fi
 		exit                          # empty   >>>
 	fi
 	
 	[[ ! $sysls ]] && exit            # empty   >>>
 	
-	while read mpcpath; do # check: music files | scanned | empty
-		if grep -q "^$mpcpath$" <<< $mpcls; then # in database
-			[[ ! $( mpc ls "$mpcpath" 2> /dev/null ) ]] && mpcls=$( sed "s|^$mpcpath$|&^f|" <<< $mpcls ) # ^f - no music files
-		elif [[ ! -e "/mnt/MPD/$mpcpath/.mpdignore" ]]; then
-			[[ $( ls "/mnt/MPD/$mpcpath" 2> /dev/null ) ]] && df=d || df=f # ^f - empty; ^d - not in database
-			nodatals+=$'\n'"$mpcpath^$df"
+	while read path; do # check: music files | scanned | empty
+		[[ -e "/mnt/MPD/$path/.mpdignore" ]] && continue
+		
+		if [[ ! $( ls "/mnt/MPD/$path" ) ]]; then
+			mpcls=$( grep -v "^$path$" <<< $mpcls )
+			mpcls+=$'\n'"$path^f"                                                # ^f - no dirs/files
+		else
+			[[ ! $( mpc ls "$path" 2> /dev/null ) ]] && nodatals+=$'\n'"$path^d" # ^d - files but not in database
 		fi
 	done <<< $sysls
 	echo "$mpcls\
