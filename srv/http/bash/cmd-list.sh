@@ -10,7 +10,7 @@
 . /srv/http/bash/common.sh
 
 touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
-[[ -s $dirmpd/album && $( getContent $dirmpd/updating ) != rescan ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
+[[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
 rm -f $dirmpd/updating
 
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
@@ -53,7 +53,7 @@ fi
 
 for mode in NAS SD USB; do
 	counts+='
-, "'${mode,,}'" : '$( mpc ls $mode 2> /dev/null | wc -l )
+, "'${mode,,}'" : '$( ls -1d /mnt/MPD/$mode/*/ 2> /dev/null | wc -l ) # not 'mpc ls' to get all root dirs
 done
 
 ##### album

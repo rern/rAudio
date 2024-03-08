@@ -23,10 +23,10 @@ share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 if [[ $PROTOCOL == cifs ]]; then
 	source="//$IP/$share"
 	options=noauto
-	if [[ ! $USER ]]; then
+	if [[ ! $USR ]]; then
 		options+=,username=guest
 	else
-		options+=",username=$USER,password=$PASSWORD"
+		options+=",username=$USR,password=$PASSWORD"
 	fi
 	options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
 else
@@ -52,16 +52,15 @@ else
 	rm /etc/fstab.backup
 fi
 
-if [[ $update == true ]]; then
-	echo ${mountpoint:9} > $dirmpd/updating # /mnt/MPD/NAS/... > NAS/...
-	$dirbash/cmd.sh mpcupdate
-fi
 for i in {1..5}; do
 	sleep 1
 	mount | grep -q -m1 "$mountpoint" && break
 done
+
 if [[ $SHAREDDATA ]]; then
 	$dirsettings/system.sh shareddataset
 else
 	pushRefresh system
 fi
+
+pushDirCount

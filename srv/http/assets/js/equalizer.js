@@ -71,7 +71,7 @@ function equalizer() {
 function eqPreset( v ) {
 	E.preset.Flat = flat;
 	E.current = v;
-	bash( { cmd: [ 'equalizer', v, equser, 'CMD VALUES USER' ], json: E } );
+	bash( { cmd: [ 'equalizer', v, equser, 'CMD VALUES USR' ], json: E } );
 }
 function eqOptionPreset() {
 	var eqnames   = Object.keys( E.preset ).sort();
@@ -87,7 +87,7 @@ function eqOptionPreset() {
 	infoSetValues();
 }
 function eqSlide( band, v ) {
-	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USER' ] );
+	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
 	if ( E.active === 'Flat' ) {
 		for ( i = 1; i < 10; i++ ) {
 			var name = 'New '+ i;

@@ -243,7 +243,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			V.screenoff = true;
 			break;
 		case 'update':
-			if ( ! $( '#update' ).hasClass( 'on' ) ) infoUpdate( '' );
+			$( '#button-lib-update' ).trigger( 'click' );
 			break;
 		case 'displaycolor':
 			V.color = true;
@@ -1042,6 +1042,46 @@ $( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
 		, ok      : () => thumbUpdate( '', infoVal() )
 	} );
 } );
+$( '#button-lib-update' ).on( 'click', function() {
+	if ( S.updating_db ) {
+		info( {
+			  icon    : 'refresh-library'
+			, title   : 'Library Database'
+			, message : 'Currently updating ...'
+			, oklabel : ico( 'flash' ) +'Stop'
+			, okcolor : orange
+			, ok      : () => bash( [ 'mpcupdatestop' ] )
+		} );
+		return
+	}
+	
+	var message = '';
+	[ 'nas', 'sd', 'usb' ].forEach( k => message += ' &emsp; <label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
+	var kv   = {
+		  'Update changed files' : 'update'
+		, 'Update all files'     : 'rescan'
+		, 'Refresh folder list'  : 'refresh'
+	}
+	info( {
+		  icon       : 'refresh-library'
+		, title      : 'Library Database'
+		, message    : message +'&ensp;<hr>'
+		, list       : [ '', 'radio', { kv: kv, sameline: false } ]
+		, values     : { NAS: true, SD: true, USB: true, ACTION: 'update' }
+		, ok         : () => {
+			var val = infoVal();
+			var path = '';
+			if ( val.ACTION !== 'refresh' ) {
+				var modes = [];
+				[ 'NAS', 'SD', 'USB' ].forEach( k => {
+					if ( val[ k ] ) modes.push( k );
+				} );
+				if ( modes.length < 3 ) path = modes.join( ' ' );
+			}
+			bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] );
+		}
+	} );
+} );
 $( '#button-lib-search' ).on( 'click', function() { // icon
 	$( '#lib-path span, #button-lib-back, #button-lib-search' ).addClass( 'hide' );
 	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
@@ -1151,41 +1191,9 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	var $this = $( this );
 	V.mode    = $this.data( 'mode' );
 	$( '#lib-search-close' ).trigger( 'click' );
-	if ( V.mode === 'bookmark' ) return
-	
-	if ( ! C[ V.mode ] && V.mode.slice( -5 ) !== 'radio' ) {
-		var dir, mode, message;
-		if ( V.mode === 'playlists' ) {
-			message = 'No saved playlists available.';
-		} else if ( V.mode === 'latest' ) {
-			message = 'No new albums added since last update.';
-		} else {
-			if ( [ 'nas', 'sd', 'usb' ].includes( V.mode ) ) {
-				dir  = V.mode.toUpperCase();
-				mode = dir;
-			} else {
-				dir  = '';
-				mode = V.mode[ 0 ].toUpperCase() + V.mode.slice( 1 );
-			}
-			message = 'Database not found in '+ ico( V.mode ) +' '+ mode
-		}
-		info( {
-			  icon    : 'library'
-			, title   : 'Library Database'
-			, message : message
-			, oklabel : mode ? ico( 'refresh-library' ) + 'Update' : ''
-			, ok      : mode ? () => bash( [ 'mpcupdate', dir, 'CMD DIR' ] ) : ''
-		} );
-		return
-	}
-	
-	if ( ! V.color && ! C[ V.mode ] && S.updating_db ) {
-		infoUpdate();
-		return
-	}
+	if ( V.mode === 'bookmark' || $this.hasClass( 'nodata' ) ) return
 	
 	V.modescrolltop = $( window ).scrollTop();
-	
 	if ( V.mode === 'playlists' ) {
 		if ( $( this ).find( 'gr' ).text() ) {
 			$( '#button-pl-playlists' ).trigger( 'click' );
@@ -1456,11 +1464,16 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
 	menuHide();
-	if ( ( menushow && V.mode !== 'webradio' ) || $target.is( '.li-icon, .licoverimg' ) ) {
-		if ( ! active ) contextmenuLibrary( $this, $target );
+	if ( ( menushow && V.mode !== 'webradio' && $target.is( '.li-icon' ) ) || $target.is( '.li-icon, .licoverimg' ) ) {
+		if ( ! active && ! $this.hasClass( 'nofile' ) ) contextmenuLibrary( $this, $target );
 		return
 	}
 	
+	if ( $this.hasClass( 'nodata' ) ) {
+		if ( ! $this.hasClass( 'nofile' ) ) $this.find( '.li-icon' ).trigger( 'click' );
+		return
+	}
+
 	if ( $this.hasClass( 'licover' ) ) {
 		if ( $target.is( '.liartist, .i-artist, .i-albumartist, .licomposer, .i-composer' ) ) {
 			var name = ( $target.is( '.licomposer, .i-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();

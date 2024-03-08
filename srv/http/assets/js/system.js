@@ -32,7 +32,7 @@ var default_v     = {
 		, NAME     : ''
 		, IP       : ''
 		, SHARE    : ''
-		, USER     : ''
+		, USR      : ''
 		, PASSWORD : ''
 		, OPTIONS  : '' 
 	}
@@ -969,7 +969,7 @@ function infoRelaysCss( sW, iW ) {
 	$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 	$( '#infoList td:first-child' ).remove();
 	$( '#infoList .select2-container' ).attr( 'style', 'width: '+ sW +'px !important' );
-	$( '#infoList input' ).parent().css( 'width', iW +'px' );
+	$( '#infoList input' ).parent().addBack().css( 'width', iW +'px' );
 }
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;

@@ -10,6 +10,15 @@
 
 . /srv/http/bash/common.sh
 
+pushStatus() {
+	[[ $usbdac == add ]] && usbDacVolume
+	status=$( $dirbash/status.sh )
+	pushData mpdplayer "$status"
+	pushRefresh player
+	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
+	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
+}
+
 usbDacVolume() { # fix - alsactl not maintain usb dac volume
 	. $dirshm/output # card name mixer mixertype
 	filevolume="$dirsystem/volume-$name"
@@ -19,15 +28,14 @@ usbDacVolume() { # fix - alsactl not maintain usb dac volume
 		[[ -e "$filevolume" ]] && vol=$( < "$filevolume" ) || vol=$( getContent $dirshm/volume )
 		[[ ! $vol ]] && vol=50
 		amixer -c $card -Mq sset "$mixer" $vol%
-		alsactl store
 	fi
 }
 
 if [[ $1 ]]; then
 	usbdac=$1
-	[[ $usbdac == remove ]] && usbDacVolume remove
+	[[ $usbdac == remove ]] && usbDacVolume remove || touch $dirshm/{usbdac,usbdacadd}
 	touch $dirshm/usbdacflag
-	( sleep 3; rm -f $dirshm/usbdacflag ) &
+	( sleep 3; rm -f $dirshm/{usbdacadd,usbdacflag} ) &
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
@@ -35,7 +43,7 @@ if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which migh
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $CARD
 else                                   # no sound
-	notify output 'Audio Output' '(None)'
+	notify output 'Output Device' '(None)'
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
 	[[ $bluetooth ]] && CARD=0 || CARD=-1
@@ -44,18 +52,6 @@ else                                   # no sound
 fi
 
 . $dirsettings/player-asound.sh # >>> $bluetooth, $camilladsp, $equalizer
-
-pushStatus() {
-	[[ $usbdac == add ]] && usbDacVolume
-	status=$( $dirbash/status.sh )
-	pushData mpdplayer "$status"
-	pushRefresh player
-	audiocards=$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
-	if [[ $usbdac ]]; then
-		volumeGet push
-		pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
-	fi
-}
 
 # outputs -----------------------------------------------------------------------------
 if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)

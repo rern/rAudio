@@ -149,6 +149,9 @@ i.map.disabled, .map.disabled i {
 	color: var( --cw );
 	text-shadow: var( --shadow-text );
 }
+.menu a.disabled i {
+	color: var( --cg60 );
+}
 .menu i.gr {
 	color: var( --cg60 ) !important;
 }
@@ -1329,8 +1332,10 @@ i.map.disabled, .map.disabled i {
 .button-webradio-new {
 	margin-left: 10px;
 }
+#button-lib-update,
 #button-lib-search,
-#button-pl-search {
+#button-pl-search,
+#button-pl-playlists {
 	float: right;
 }
 #lib-search-btn,
@@ -1775,6 +1780,21 @@ li.active .iconthumb {
 .li1 a,
 w {
 	color: var( --cw );
+}
+#lib-mode-list .mode.nodata i {
+	color: var( --cg ) !important;
+}
+#lib-list li.nodata * {
+	color: var( --cgl ) !important;
+}
+#lib-list li.active.nodata * {
+	color: var( --cga ) !important;
+}
+#lib-list li.nofile {
+	cursor: not-allowed;
+}
+#lib-list li.nofile .i-folder::before {
+	content: '\F54F';
 }
 li.active .li1 bl {
 	color: var( --cga ) !important;

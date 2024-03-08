@@ -163,6 +163,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<?=i( 'button-library',    'library active page-icon' )
+		  .i( 'button-lib-update', 'refresh-library' )
 		  .i( 'button-lib-search', 'search' )?>
 		<div id="lib-search" class="hide">
 			<div class="input-group">
@@ -271,15 +272,15 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
 		<?=i( 'button-playlist', 'playlist active page-icon' )
-		  .i( 'button-pl-back',  'back hide' )?>
+		  .i( 'button-pl-back',  'back hide' )
+		  .i( 'button-pl-playlists', 'playlists' )?>
 		<div id="pl-manage" class="playlist">
-			<?=i( 'button-pl-playlists', 'playlists' )
-			  .i( 'button-pl-save',      'save-plus pllength' )
-			  .i( 'button-pl-consume',   'flash' )
+			<?=i( 'button-pl-consume',   'flash' )
 			  .i( 'button-pl-librandom', 'librandom' )
 			  .i( 'button-pl-shuffle',   'shuffle pllength' )
-			  .i( 'button-pl-clear',     'remove pllength' )
-			  .i( 'button-pl-search',    'search pllength' )?>
+			  .i( 'button-pl-clear',     'minus-circle pllength' )
+			  .i( 'button-pl-search',    'search pllength' )
+			  .i( 'button-pl-save',      'save-plus pllength' )?>
 		</div>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
 			<div class="input-group">

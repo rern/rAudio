@@ -49,7 +49,7 @@ confrename )
 	;;
 confswitch )
 	saveConfig
-	sed -i -E "s|^(CONFIG=).*|\1$PATH|" /etc/default/camilladsp
+	sed -i -E "s|^(CONFIG=).*|\1$CONFIG|" /etc/default/camilladsp
 	;;
 restart )
 	systemctl restart camilladsp

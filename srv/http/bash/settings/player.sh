@@ -137,7 +137,7 @@ OFF"
 	;;
 replaygain )
 	if [[ $ON ]]; then
-		echo 'replaygain  "'$TYPE'"' > $dirmpdconf/conf/replaygain.conf
+		echo 'replaygain  "'$MODE'"' > $dirmpdconf/conf/replaygain.conf
 		[[ $HARDWARE ]] && touch $dirsystem/replaygain-hw || rm -f $dirsystem/replaygain-hw
 		linkConf
 	else

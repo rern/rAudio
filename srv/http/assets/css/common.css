@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1709089963' );
+	src         : url( '/assets/fonts/rern.woff2?v=1709614131' );
 }
 @font-face {
 	font-family : Lato;
@@ -88,6 +88,7 @@ i {
 .i-flash::before           { content: '\F566' }
 .i-flowchart::before       { content: '\F52D' }
 .i-folder::before          { content: '\F540' }
+.i-folder-blank::before    { content: '\F54F' }
 .i-folder-cascade::before  { content: '\F54A' }
 .i-folder-filter::before   { content: '\F53F' }
 .i-folder-forbid::before   { content: '\F537' }
@@ -130,6 +131,7 @@ i {
 .i-lyrics::before          { content: '\F54B' }
 .i-microsd::before         { content: '\F543' }
 .i-minus::before           { content: '\F518' }
+.i-minus-circle::before    { content: '\F51F' }
 .i-mixers::before          { content: '\F50C' }
 .i-mpd::before             { content: '\F582' }
 .i-mpdoled::before         { content: '\F57A' }
@@ -589,6 +591,7 @@ input[ type=checkbox ].disabled {
 }
 
 hr {
+	margin: 10px 0 0 0;
 	border: none;
 	border-bottom: 1px solid var( --cg );
 }

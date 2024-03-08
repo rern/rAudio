@@ -321,7 +321,7 @@ $ARTIST
 $ALBUM
 audiocd
 $discid
-CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
+CMD ARTIST ALBUM MODE DISCID" &> /dev/null &
 		exit
 	fi
 	
@@ -383,7 +383,7 @@ equalizer )
 		for (( i=0; i < 10; i++ )); do
 			(( i < 5 )) && unit=Hz || unit=kHz
 			band=( "0$i. ${freq[i]} $unit" )
-			sudo -u $USER amixer -MqD equal sset "$band" ${v[i]}
+			sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
 		done
 	fi
 	pushData equalizer $( < $dirsystem/equalizer.json )
@@ -401,14 +401,14 @@ equalizerget )
 	fi
 	;;
 equalizerset ) # slide
-	sudo -u $USER amixer -MqD equal sset "$BAND" $VAL
+	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
 	;;
 ignoredir )
-	touch $dirmpd/updating
 	dir=$( basename "$DIR" )
 	mpdpath=$( dirname "$DIR" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
 	pushData mpdupdate '{ "type": "mpd" }'
+	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
@@ -423,6 +423,35 @@ latestclear )
 		notify latest Latest Cleared
 	fi
 	sed -i -E 's/("latest": ).*/\1'$count',/' $dirmpd/counts
+	;;
+libdirfile )
+	mpcls=$( mpc ls "$DIR" 2> /dev/null )                                          # database
+	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null | sed -E 's#/mnt/MPD/|/$##g' ) # all dirs: /mnt/MPD/path/to/ > path/to
+	if [[ ! $mpcls ]]; then               # not in database
+		if [[ $sysls ]]; then
+			while read path; do
+				[[ $( ls "/mnt/MPD/$path" ) ]] && df=d || df=f
+				nodatals+=$'\n'"$path^$df"
+			done <<< $sysls
+			[[ $nodatals ]] && echo "=${nodatals:1}" # not yet scan
+		fi
+		exit                          # empty   >>>
+	fi
+	
+	[[ ! $sysls ]] && exit            # empty   >>>
+	
+	while read path; do # check: music files | scanned | empty
+		[[ -e "/mnt/MPD/$path/.mpdignore" ]] && continue
+		
+		if [[ ! $( ls "/mnt/MPD/$path" ) ]]; then
+			mpcls=$( grep -v "^$path$" <<< $mpcls )
+			mpcls+=$'\n'"$path^f"                                                # ^f - no dirs/files
+		else
+			[[ ! $( mpc ls "$path" 2> /dev/null ) ]] && nodatals+=$'\n'"$path^d" # ^d - files but not in database
+		fi
+	done <<< $sysls
+	echo "$mpcls\
+$nodatals"
 	;;
 librandom )
 	if [[ $ON ]]; then
@@ -654,14 +683,18 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
-	date +%s > $dirmpd/updatestart
-	if [[ $DIR ]]; then
-		echo $DIR > $dirmpd/updating
-	elif [[ -e $dirmpd/updating ]]; then
-		DIR=$( < $dirmpd/updating )
-	fi
+	[[ $ACTION == refresh ]] && pushDirCount && exit
+	
+	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
 	pushData mpdupdate '{ "type": "mpd" }'
-	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
+	if [[ $ACTION ]]; then
+		echo "\
+ACTION=$ACTION
+PATHMPD=\"$PATHMPD\"" > $dirmpd/updating
+	else
+		. <( $dirmpd/updating )
+	fi
+	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )
 	pushData mpdupdate '{ "stop": true }'
@@ -705,9 +738,9 @@ savedpldelete )
 	;;
 savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	plfile="$dirplaylists/$NAME.m3u"
-	if [[ $TYPE == remove ]]; then
+	if [[ $ACTION == remove ]]; then
 		sed -i "$POS d" "$plfile"
-	elif [[ $TYPE == add ]]; then
+	elif [[ $ACTION == add ]]; then
 		[[ $TO == last ]] && echo "$FILE" >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
 	else # move
 		file=$( sed -n "$FROM p" "$plfile" )

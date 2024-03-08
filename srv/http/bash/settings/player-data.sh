@@ -9,13 +9,14 @@ if [[ -e $dirshm/btreceiver ]]; then
 	btmixer=$( getContent $dirshm/btmixer )
 	btvolume=$( volumeGet valdb )
 fi
+crossfade=$( mpc crossfade | cut -d' ' -f2 )
 lists='{
   "albumignore" : '$( exists $dirmpd/albumignore )'
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
 replaygainconf='{
-  "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
+  "MODE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
 , "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
 }'
 [[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=$( volumeGet valdb hw )
@@ -31,7 +32,7 @@ data='
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "counts"           : '$( < $dirmpd/counts )'
-, "crossfade"        : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
+, "crossfade"        : '$( [[ $crossfade != 0 ]] && echo true )'
 , "crossfadeconf"    : { "SEC": '$crossfade' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'

@@ -99,8 +99,8 @@ case 'home':
 		$htmlmode.=
 '<div class="lib-mode">
 	<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
-	<a class="lipath">'.$modeLC.'</a>
-	<i class="i-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
+		<a class="lipath">'.$modeLC.'</a>
+		<i class="i-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
 	</div>
 </div>';
 	}
@@ -123,19 +123,21 @@ case 'home':
 			$htmlmode.=
 '<div class="lib-mode bookmark">
 	<div class="mode mode-bookmark '.$bkradio.'" data-mode="bookmark">
-	<a class="lipath li2">'.$bkpath.'</a>
-	<a class="bkname name hide">'.$name.'</a>
-	<img class="bkcoverart" src="'.$src.'^^^">
+		<a class="lipath li2">'.$bkpath.'</a>
+		<a class="bkname name hide">'.$name.'</a>
+		<img class="bkcoverart" src="'.$src.'^^^">
 	</div>
 </div>';
 		}
 	}
-	$counts = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
-	$order  = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
+	$counts   = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
+	$order    = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
+	$updating = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
-		  'html'   => $htmlmode
-		, 'counts' => $counts
-		, 'order'  => $order
+		  'html'     => $htmlmode
+		, 'counts'   => $counts
+		, 'order'    => $order
+		, 'updating' => $updating
 	] );
 	break;
 case 'list':
@@ -150,52 +152,45 @@ case 'list':
 	break;
 case 'ls':
 	if ( $mode !== 'album' ) {
-		exec( 'mpc ls "'.$string.'"'
-			, $mpcls );
-		foreach( $mpcls as $mpdpath ) {
-			if ( is_dir( '/mnt/MPD/'.$mpdpath ) ) {
-				$subdirs = 1;
-				break;
-			}
+		exec( "/srv/http/bash/cmd.sh \"libdirfile
+$string
+CMD DIR\"", $lists );
+		if ( $lists[ 0 ] ) {
+			htmlDirectory( $lists );
+			break;
 		}
 	}
-	if ( isset( $subdirs ) ) {
-		exec( 'mpc ls -f %file% "'.$string.'" 2> /dev/null'
-			, $lists );
-		if ( ! count( $lists ) ) exit;
-		
-		htmlDirectory( $lists );
-	} else {
-		$f      = $formatall; // set format for directory with files only - track list
-		$format = '%'.implode( '%^^%', $f ).'%';
-		// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
-		exec( 'mpc ls "'.$string.'" '
-				.'| grep -E ".cue$|.m3u$|.m3u8$|.pls$" '
-				.'| sort -u'
-			, $plfiles );
-		if ( count( $plfiles ) ) {
-			asort( $plfiles );
-			$path  = explode( '.', $plfiles[ 0 ] );
-			$ext   = end( $path );
-			$lists = [];
-			foreach( $plfiles as $file ) {
-				$type = $ext === 'cue' ? 'ls' : 'playlist';
-				exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'"'
-					, $lists ); // exec appends to existing array
-			}
-			htmlTrack( $lists, $f, $ext, $file );
-		} else {
-			exec( 'mpc ls -f "'.$format.'" "'.$string.'" 2> /dev/null'
-				, $lists );
-			if ( strpos( $lists[ 0 ],  '.wav^^' ) ) { // MPD not sort *.wav
-				$lists = '';
-				exec( 'mpc ls -f "%track%__'.$format.'" "'.$string.'" 2> /dev/null '
-						.'| sort -h '
-						.'| sed "s/^.*__//"'
-					, $lists );
-			}
-			htmlTrack( $lists, $f, $mode !== 'album' ? 'file' : '' );
+	$f      = $formatall; // set format for directory with files only - track list
+	$format = '%'.implode( '%^^%', $f ).'%';
+	// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
+	exec( 'mpc ls "'.$string.'" '
+			.'| grep -E ".cue$|.m3u$|.m3u8$|.pls$" '
+			.'| sort -u'
+		, $plfiles );
+	if ( count( $plfiles ) ) {
+		asort( $plfiles );
+		$path  = explode( '.', $plfiles[ 0 ] );
+		$ext   = end( $path );
+		$lists = [];
+		foreach( $plfiles as $file ) {
+			$type = $ext === 'cue' ? 'ls' : 'playlist';
+			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'"'
+				, $lists ); // exec appends to existing array
 		}
+		htmlTrack( $lists, $f, $ext, $file );
+	} else {
+		exec( 'mpc ls -f "'.$format.'" "'.$string.'" 2> /dev/null'
+			, $lists );
+		if ( ! count( $lists ) ) exit();
+		
+		if ( strpos( $lists[ 0 ],  '.wav^^' ) ) { // MPD not sort *.wav
+			$lists = '';
+			exec( 'mpc ls -f "%track%__'.$format.'" "'.$string.'" 2> /dev/null '
+					.'| sort -h '
+					.'| sed "s/^.*__//"'
+				, $lists );
+		}
+		htmlTrack( $lists, $f, $mode !== 'album' ? 'file' : '' );
 	}
 	break;
 case 'radio':
@@ -286,26 +281,33 @@ function htmlDirectory( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
+	$htmlfile = '';
 	foreach( $array as $each ) {
 		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
+		$nodata    = '';
+		$suffix    = substr( $path, -2 );
+		if ( $suffix === '^d' ) {
+			$path   = rtrim( $path, '^d' );
+			$nodata = ' class="nodata"';
+		} else if ( $suffix === '^f' ) {
+			$path   = rtrim( $path, '^f' );
+			$nodata = ' class="nodata nofile"';
+		}
+		$htmlpath  = '<a class="lipath">'.$path.'</a>
+<span class="single name">'.basename( $path ).'</span>
+</li>';
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
-			$htmlicon = imgIcon( $thumbsrc, 'folder' );
+			$html .='<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.imgIcon( $thumbsrc, 'folder' ).$htmlpath;
 		} else {
-			$mode     = $gmode;
-			$htmlicon = i( 'music ', 'file' );
+			$htmlfile.='<li data-mode="'.$gmode.'" data-index="'.$index.'">'.i( 'music ', 'file' ).$htmlpath;
 		}
-		$html.=
-'<li data-mode="'.$mode.'" data-index="'.$index.'">'.$htmlicon.'
-<a class="lipath">'.$path.'</a>
-<span class="single name">'.$each->dir.'</span>
-</li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$html    .=
+	$html    .= $htmlfile.
 '</ul>
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';

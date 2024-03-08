@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20230309
+
 # 20240303
 file=/etc/udev/rules.d/bluetooth.rules
 if [[ -e $file ]] && grep -q bluetoothcommand $file; then
@@ -20,7 +22,7 @@ fi
 
 # 202402226
 file=/etc/default/camilladsp
-if grep -qs /etc/ $file; then
+if [[ -e $file ]] && grep -qs /etc/ $file; then
 	sed -i 's|/etc/|/srv/http/data/|' $file
 	mv -f /{etc,srv/http/data}/camilladsp/configs/*
 fi
@@ -116,24 +118,6 @@ file=/etc/security/pam_env.conf
 if [[ -e /usr/bin/firefox ]] && ! grep -q MOZ_USE_XINPUT2 $file; then
 	echo MOZ_USE_XINPUT2 DEFAULT=1 >> $file
 	systemctl try-restart localbrowser
-fi
-
-# 20240109
-if [[ -e /usr/bin/camilladsp ]]; then
-	rm -f $dirsystem/camilla.conf
-	mkdir -p $dircamilladsp/raw
-	if [[ $( camilladsp -V ) != 'CamillaDSP 2.0.3' ]]; then
-		systemctl stop camilladsp
-		pkgs+=' camilladsp'
-		rm -f /etc/default/camilladsp /usr/lib/systemd/system/camilladsp.service
-		files=$( grep -rl enable_resampling $dircamilladsp )
-		if [[ $files ]]; then
-			readarray -t files <<< $files
-			for f in "${files[@]}"; do
-				sed -i '/enable_resampling\|resampler_type/ d' "$f"
-			done
-		fi
-	fi
 fi
 
 # up to 20240212

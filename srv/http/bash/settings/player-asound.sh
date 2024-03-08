@@ -106,7 +106,7 @@ if [[ $camilladsp ]]; then
 	systemctl stop camilladsp
 	filedump=$dirshm/aplaydump
 	for c in Loopback $CARD; do
-		script -qc "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" > $filedump
+		script -qc "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" $filedump &> /dev/null
 		lines=$( < $filedump )
 		rm $filedump
 		CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']\r' ) )
@@ -156,6 +156,6 @@ else
 		$dirbash/cmd.sh "equalizer
 $value
 $user
-CMD VALUE USER"
+CMD VALUE USR"
 	fi
 fi

@@ -281,7 +281,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 			, [ '', 'text', { sameline: true } ]
 			, [ '', 'text', { suffix: ico( 'remove' ) } ]
 		]
-		, boxwidth     : 130
+		, boxwidth     : 160
 		, values       : values
 		, checkchanged : S.multiraudio && values.length > 2
 		, checkblank   : I.checkblank

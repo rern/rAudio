@@ -292,14 +292,20 @@ function contextmenuLibrary( $li, $target ) {
 		$li.addClass( 'active' );
 		return
 	}
-	var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
-	$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', ! S.pllength );
-	$menu.find( '.refresh-library' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
-	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
-	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
-	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
-	$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
-	$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
+	if ( V.list.li.hasClass( 'nodata' ) ) {
+		$menu.find( 'a, .submenu' ).addClass( 'hide' );
+		$menu.find( '.exclude, .update' ).removeClass( 'hide' );
+	} else {
+		var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
+		$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', ! S.pllength );
+		$menu.find( '.update' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
+		$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
+		$menu.find( '.directory' ).toggleClass( 'hide', filemode );
+		$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
+		$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
+		$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
+		$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating_db );
+	}
 	$li.addClass( 'active' );
 	if ( V.list.licover ) {
 		var menutop = $bartop.is( ':visible' ) ? 310 : 270;
@@ -769,36 +775,6 @@ function infoTitle() {
 		, okno        : true
 	} );
 }
-function infoUpdate( path ) {
-	if ( S.updating_db ) {
-		infoUpdating();
-		return
-	}
-	
-	info( {
-		  icon       : 'refresh-library'
-		, title      : 'Library Database'
-		, message    : path ? ico( 'folder' ) +' <wh>'+ path +'</wh>' : ''
-		, list       : path ? '' : [ '', 'radio', { kv: { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }, sameline: false } ]
-		, beforeshow : () => {
-			if ( ! C ) {
-				$( '#infoList input' ).eq( 0 ).prop( 'disabled', true );
-				$( '#infoList input' ).eq( 1 ).prop( 'checked', true );
-			}
-		}
-		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD DIR' ] )
-	} );
-}
-function infoUpdating() {
-	info( {
-		  icon        : 'refresh-library'
-		, title       : 'Library Database'
-		, message     : 'Update in progress ...<br>&nbsp;'
-		, buttonlabel : 'Stop'
-		, buttoncolor : orange
-		, button      : () => bash( [ 'mpcupdatestop' ] )
-	} );
-}
 function intervalClear() {
 	$.each( V.interval, ( k, v ) => clearInterval( v ) );
 	setProgress( S.webradio ? 0 : '' ); // stop progress animation
@@ -811,8 +787,9 @@ function intervalElapsedClear() {
 }
 function libraryHome() {
 	list( { query: 'home' }, function( data ) {
-		C        = data.counts;
-		O        = data.order;
+		C             = data.counts;
+		O             = data.order;
+		S.updating_db = data.updating;
 		var html = data.html;
 		if ( html !== V.libraryhtml ) {
 			V.libraryhtml = html;
@@ -833,6 +810,8 @@ function libraryHome() {
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
 		if ( V.color ) $( '#mode-webradio' ).trigger( 'click' );
+		$( '#library, #button-library, #button-lib-update' ).toggleClass( 'blink', S.updating_db );
+		$( '#update' ).toggleClass( 'on', S.updating_db );
 	}, 'json' );
 }
 function lyricsGet( artist, title, file ) {
@@ -1003,7 +982,7 @@ function playlistGet() {
 function playlistInsert( pos ) {
 	var plname = $( '#savedpl-path .lipath' ).text();
 	banner( 'file-playlist', V.pladd.name, 'Add ...' );
-	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME TYPE TO FILE' ], () => {
+	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME ACTION TO FILE' ], () => {
 		renderSavedPlTrack( plname );
 		if ( pos === 'last' ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
@@ -1122,9 +1101,9 @@ function refreshData() {
 		if ( ! V.librarylist ) { // home
 			libraryHome();
 		} else {
-			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) {
-				$( '#lib-breadcrumbs a' ).last().trigger( 'click' );
-			} else if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
+			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) return
+			
+			if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 				$( '#mode-album' ).trigger( 'click' );
 			} else if ( V.query.length ) {
 				var query = V.query.slice( -1 )[ 0 ];
@@ -1164,7 +1143,7 @@ function renderLibrary() { // library home
 	V.librarytrack = false;
 	V.query        = [];
 	$( '#lib-path' ).css( 'max-width', '' );
-	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
+	$( '#lib-title, #lib-path>i, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).empty()
 	$( '#lib-breadcrumbs, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
@@ -1198,9 +1177,15 @@ function renderLibrary() { // library home
 	}
 }
 function renderLibraryCounts() {
-	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
+	var songs    = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' ) );
+	$.each( C, ( k, v ) => {
+		if ( v ) {
+			if ( ! [ 'nas', 'sd', 'usb' ].includes( k ) ) $( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
+		} else {
+			$( '#mode-'+ k ).toggleClass( 'nodata', v === 0 );
+		}
+	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
 }
 function renderLibraryList( data ) { // V.librarylist
@@ -1210,7 +1195,7 @@ function renderLibraryList( data ) { // V.librarylist
 	}
 	
 	V.librarylist = true;
-	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
+	$( '#lib-title, #lib-mode-list, .menu, #button-lib-update' ).addClass( 'hide' );
 	$( '#button-lib-back' )
 		.toggleClass( 'back-left', D.backonleft )
 		.toggleClass( 'hide', data.modetitle === 'search' );
@@ -1413,11 +1398,11 @@ function renderPlaylistSet() {
 	if ( V.plhome ) {
 		$( '#pl-index, #pl-index1' ).addClass( 'hide' );
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).addClass( 'hide' );
-		$( '#pl-list, #pl-path, #pl-manage' ).removeClass( 'hide' );
+		$( '#pl-list, #pl-path, #pl-manage, #button-pl-playlists' ).removeClass( 'hide' );
 	} else {
 		$( '#pl-index, #pl-index1' ).toggleClass( 'hide', V.savedpltrack );
 		$( '#pl-savedlist' ).css( 'width', V.savedpl ? '' : '100%' );
-		$( '#pl-list, #pl-path, #pl-manage' ).addClass( 'hide' );
+		$( '#pl-list, #pl-path, #pl-manage, #pl-search, #button-pl-playlists' ).addClass( 'hide' );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).removeClass( 'hide' );
 	}
@@ -1559,12 +1544,12 @@ function setButtonUpdating() {
 			var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
 		} else {
-			$( '#library, #button-library' ).addClass( 'blink' );
+			$( '#library, #button-library, #button-lib-update' ).addClass( 'blink' );
 		}
 		if ( localhost ) blinkUpdate();
 		$( '#update' ).addClass( 'on' );
 	} else {
-		$( '#library, #button-library' ).removeClass( 'blink' );
+		$( '#library, #button-library, #button-lib-update' ).removeClass( 'blink' );
 		$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}
@@ -1637,8 +1622,10 @@ function setInfo() {
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 	if ( changed ) setInfoScroll();
-	var sampling = [ 'mpd', 'upnp' ].includes( S.player ) ? S.song + 1 +'/'+ S.pllength : '';
-	if ( S.sampling ) sampling += ' • '+ S.sampling;
+	var sonpos   = [ 'mpd', 'upnp' ].includes( S.player ) && S.pllength > 1 ? S.song + 1 +'/'+ S.pllength : '';
+	var sampling = sonpos;
+	sampling += sonpos && S.sampling ? ' • ' : '';
+	if ( S.sampling ) sampling += S.sampling;
 	if ( S.webradio ) {
 		if ( S.icon === 'dabradio' ) {
 			sampling += ' • DAB';
@@ -1946,7 +1933,7 @@ function sortPlaylist( pl, iold, inew ) {
 	if ( pl === 'pl-list' ) {
 		bash( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
 	} else {
-		bash( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME TYPE FROM TO' ] );
+		bash( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME ACTION FROM TO' ] );
 	}
 	var i    = Math.min( iold, inew );
 	var imax = Math.max( iold, inew ) + 1;

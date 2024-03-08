@@ -5,11 +5,11 @@ var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#device' ).on( 'input', function() {
-	notify( 'volume', 'Audio Output Device', 'Change ...' );
+	notify( 'volume', 'Output Device', 'Change ...' );
 	bash( [ 'device', $( this ).val(), 'CMD DEVICE' ] );
 } );
 $( '#mixer' ).on( 'input', function() {
-	notify( 'volume', 'Hardware Mixer', 'Change ...' );
+	notify( 'volume', 'Mixer Device', 'Change ...' );
 	bash( [ 'mixer', $( this ).val(), S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
 } );
 $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
@@ -221,6 +221,7 @@ audio_output {
 			  icon         : SW.icon
 			, title        : SW.title
 			, list         : htmllist
+			, boxwidth     : 370
 			, values       : [ global, output ]
 			, checkchanged : S.custom
 			, cancel       : switchCancel
