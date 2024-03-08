@@ -1534,11 +1534,11 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 	} else if ( mode !== 'album' ) { // non-album
 		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
-			var format = [ 'artist', 'album', 'file' ];
+			var format = [ 'artist', 'album' ];
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
-			var format = [ 'album', 'artist', 'file' ];
+			var format = [ 'album', 'artist' ];
 		} else {
-			var format = [ 'album', 'file' ]; // artist, albumartist
+			var format = [ 'album' ]; // artist, albumartist
 		}
 		var query = {
 			  query  : 'find'
@@ -1552,7 +1552,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			if ( name ) { // albums with the same names
 				var query = {
 					  query  : 'find'
-					, mode   : [ 'album', 'artist' ]
+					, mode   : [ 'album', 'artist', 'file' ]
 					, string : [ name, path ]
 				}
 				var modetitle = name;

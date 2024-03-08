@@ -569,8 +569,7 @@ function imageLoad( list ) {
 			} );
 		} else if ( [ 'artist', 'albumartist', 'composer', 'conductor', 'date', 'genre' ].includes( V.mode ) ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
-				var $this = $( this );
-				$this.replaceWith( '<i class="i-album li-icon" data="album"></i>' );
+				$( this ).replaceWith( '<i class="i-folder li-icon" data="album"></i>' );
 			} );
 		} else {
 			$lazyload.off( 'error' ).on( 'error', function() {

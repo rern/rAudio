@@ -77,6 +77,10 @@ case 'find':
 					, $lists );
 			}
 		}
+	} else if ( $mode !== 'album' ) {
+		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null '
+				."| awk 'NF && !a[$0]++'"
+			, $lists );
 	} else {
 		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null '
 				."| sed 's:[^/]*$::'"
@@ -295,15 +299,19 @@ function htmlDirectory( $lists ) {
 			$path   = rtrim( $path, '^f' );
 			$nodata = ' class="nodata nofile"';
 		}
-		$htmlpath  = '<a class="lipath">'.$path.'</a>
-<span class="single name">'.basename( $path ).'</span>
-</li>';
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
-			$html .='<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.imgIcon( $thumbsrc, 'folder' ).$htmlpath;
+			$name      = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
+			$html .='<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.imgIcon( $thumbsrc, 'folder' ).
+'<a class="lipath">'.$path.'</a>
+<span class="single name">'.$name.'</span>
+</li>';
 		} else {
-			$htmlfile.='<li data-mode="'.$gmode.'" data-index="'.$index.'">'.i( 'music ', 'file' ).$htmlpath;
+			$htmlfile.='<li data-mode="'.$gmode.'" data-index="'.$index.'">'.i( 'music ', 'file' ).
+'<a class="lipath">'.$path.'</a>
+<span class="single name">'.$path.'</span>
+</li>';
 		}
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
@@ -342,7 +350,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		$val0       = $each->$key0;
 		if ( ! $val0 ) continue;
 		
-		$icon = '<img class="iconthumb li-icon lazyload" data-src="/mnt/MPD/'.$each->file.'thumb.jpg^^^" data-menu="album">';
+		$icon = '<i class="li-icon i-album" data-menu="'.$gmode.'"></i>';
 		$name = '<a class="name">'.$val0.'</a>';
 		if ( ! $modeartist && $key1 ) {
 			$val1 = $each->$key1;
