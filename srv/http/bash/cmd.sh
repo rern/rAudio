@@ -430,10 +430,12 @@ libdirfile )
 	if [[ ! $mpcls ]]; then               # not in database
 		if [[ $sysls ]]; then
 			while read path; do
+				[[ -e "/mnt/MPD/$path/.mpdignore" ]] && continue
+				
 				[[ $( ls "/mnt/MPD/$path" ) ]] && df=d || df=f
 				nodatals+=$'\n'"$path^$df"
 			done <<< $sysls
-			[[ $nodatals ]] && echo "=${nodatals:1}" # not yet scan
+			[[ $nodatals ]] && echo "${nodatals:1}" # not yet scan
 		fi
 		exit                          # empty   >>>
 	fi
