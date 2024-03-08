@@ -1398,11 +1398,11 @@ function renderPlaylistSet() {
 	if ( V.plhome ) {
 		$( '#pl-index, #pl-index1' ).addClass( 'hide' );
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).addClass( 'hide' );
-		$( '#pl-list, #pl-path, #pl-manage' ).removeClass( 'hide' );
+		$( '#pl-list, #pl-path, #pl-manage, #button-pl-playlists' ).removeClass( 'hide' );
 	} else {
 		$( '#pl-index, #pl-index1' ).toggleClass( 'hide', V.savedpltrack );
 		$( '#pl-savedlist' ).css( 'width', V.savedpl ? '' : '100%' );
-		$( '#pl-list, #pl-path, #pl-manage' ).addClass( 'hide' );
+		$( '#pl-list, #pl-path, #pl-manage, #pl-search, #button-pl-playlists' ).addClass( 'hide' );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).removeClass( 'hide' );
 	}
@@ -1622,8 +1622,10 @@ function setInfo() {
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', S.Album === '' );
 	if ( changed ) setInfoScroll();
-	var sampling = [ 'mpd', 'upnp' ].includes( S.player ) ? S.song + 1 +'/'+ S.pllength : '';
-	if ( S.sampling ) sampling += ' • '+ S.sampling;
+	var sonpos   = [ 'mpd', 'upnp' ].includes( S.player ) && S.pllength > 1 ? S.song + 1 +'/'+ S.pllength : '';
+	var sampling = sonpos;
+	sampling += sonpos && S.sampling ? ' • ' : '';
+	if ( S.sampling ) sampling += S.sampling;
 	if ( S.webradio ) {
 		if ( S.icon === 'dabradio' ) {
 			sampling += ' • DAB';

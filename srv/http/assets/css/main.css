@@ -1334,7 +1334,8 @@ i.map.disabled, .map.disabled i {
 }
 #button-lib-update,
 #button-lib-search,
-#button-pl-search {
+#button-pl-search,
+#button-pl-playlists {
 	float: right;
 }
 #lib-search-btn,

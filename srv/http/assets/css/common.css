@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1709614130' );
+	src         : url( '/assets/fonts/rern.woff2?v=1709614131' );
 }
 @font-face {
 	font-family : Lato;
@@ -131,6 +131,7 @@ i {
 .i-lyrics::before          { content: '\F54B' }
 .i-microsd::before         { content: '\F543' }
 .i-minus::before           { content: '\F518' }
+.i-minus-circle::before    { content: '\F51F' }
 .i-mixers::before          { content: '\F50C' }
 .i-mpd::before             { content: '\F582' }
 .i-mpdoled::before         { content: '\F57A' }
