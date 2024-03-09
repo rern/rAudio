@@ -2,22 +2,23 @@
 // <!DOCTYPE html> ---------------------------------------------
 include 'common.php';
 
-function i( $id = '', $class ) {
-	$htmlid = $id ? ' id="'.$id.'"' : '';
-	return '<i'.$htmlid.' class="i-'.$class.'"></i>';
+function i( $class, $id = '', $cmd = '' ) {
+	$htmlid  = $id ? ' id="'.$id.'"' : '';
+	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
+	return '<i'.$htmlid.' class="i-'.$class.'"'.$htmlcmd.'></i>';
 }
 // context menus
 function menucommon( $add, $replace ) {
-	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( '', 'plus-o' ).'Add</a><i class="i-play-plus submenu" data-cmd="'.$add.'play"></i>';
-	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( '', 'add' ).'Play next</a>';
-	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( '', 'replace' ).'Replace</a><i class="i-play-replace submenu" data-cmd="'.$replace.'play"></i>';
+	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( 'plus-o' ).'Add</a>'.i( 'play-plus submenu', '', $add.'play' );
+	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( 'add' ).'Play next</a>';
+	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( 'replace' ).'Replace</a>'.i( 'play-replace submenu', '', $replace.'play' );
 	return $htmlcommon;
 }
 function menuli( $list ) {
 	$command = $list[ 0 ];
 	$icon = $list[ 1 ];
 	$label = $list[ 2 ];
-	$icon = i( '', $icon );
+	$icon = i( $icon );
 	return '<a data-cmd="'.$command.'" class="'.$command.'">'.$icon.$label.'</a>';
 }
 function menudiv( $id, $html ) {
@@ -120,7 +121,7 @@ $ids = [ 'random',   'repeat',    'single',    'repeat1', 'consume', 'librandom'
 	   , 'btsender', 'libupdate', 'dabupdate', 'addons',  'relays',  'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) {
-	$modeicon.= i( 'mi-'.$id, $id.' hide' );
+	$modeicon.= i( $id.' hide', 'mi-'.$id );
 }
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
@@ -138,11 +139,11 @@ $settinglist = [
 ];
 $htmlsettings     = '';
 foreach( $settinglist as $l ) {
-	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( '', $l[ 2 ] ).$l[ 3 ].'</a>'.i( $l[ 4 ], $l[ 5 ].' submenu' );
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $l[ 2 ] ).$l[ 3 ].'</a>'.i( $l[ 5 ].' submenu', $l[ 4 ] );
 }
 $htmlcontrols     = '';
 foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
-	$htmlcontrols.= i( $l, $l.' btn btn-default btn-cmd' );
+	$htmlcontrols.= i( $l.' btn btn-default btn-cmd', $l );
 }
 if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '<div id="vu" class="hide">'.file_get_contents( '/srv/http/assets/img/vu.svg' ).'</div>';
@@ -154,7 +155,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 <div id="refresh" class="page-icon"></div>
 
 <div id="bar-top" class="hide">
-	<?=i( 'logo', 'raudio-nobg page-icon' )?><div id="playback-controls"><?=$htmlcontrols?></div><?=i( 'button-settings', 'gear' )?>
+	<?=i( 'raudio-nobg page-icon', 'logo' )?><div id="playback-controls"><?=$htmlcontrols?></div><?=i( 'gear', 'button-settings' )?>
 </div>
 <div id="settings" class="menu hide">
 	<?=$htmlsettings?>
@@ -162,18 +163,18 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 
 <div id="page-library" class="page hide">
 	<div class="content-top">
-		<?=i( 'button-library',    'library active page-icon' )
-		  .i( 'button-lib-update', 'refresh-library' )
-		  .i( 'button-lib-search', 'search' )?>
+		<?=i( 'library active page-icon', 'button-library' )
+		  .i( 'refresh-library',          'button-lib-update' )
+		  .i( 'search',                   'button-lib-search' )?>
 		<div id="lib-search" class="hide">
 			<div class="input-group">
 				<input id="lib-search-input" type="text">
-				<?=i( 'lib-search-btn', 'search btn btn-default input-group-btn' )?>
+				<?=i( 'search btn btn-default input-group-btn', 'lib-search-btn' )?>
 			</div>
 		</div>
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
-			<?=i( 'button-lib-back', 'back' )?>
+			<?=i( 'back', 'button-lib-back' )?>
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
 			<span class="lipath"></span>
@@ -183,10 +184,10 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 </div>
 
 <div id="page-playback" class="page">
-	<?=i( '', 'plus-o emptyadd hide' )?>
-	<?=i( 'guide-bio',    'bio map guide hide' )
-	  .i( 'guide-lyrics', 'lyrics map guide hide' )
-	  .i( 'guide-booklet',  'booklet map guide hide' )?>
+	<?=i( 'plus-o emptyadd hide' )?>
+	<?=i( 'bio map guide hide',     'guide-bio' )
+	  .i( 'lyrics map guide hide',  'guide-lyrics' )
+	  .i( 'booklet map guide hide', 'guide-booklet' )?>
 	<div id="info">
 		<div id="divartist"><span id="artist" class="info"></span></div>
 		<div id="divtitle"><span id="title" class="info"></i></span></div>
@@ -208,19 +209,19 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 			<span id="total" class="controls1"></span>
 			<div id="map-time">
 				<i id="timeTL" class="map maptime"></i>
-				<?=i( 'timeT',  'guide map maptime' )
-				  .i( 'timeTR', 'gear map maptime' )
-				  .i( 'timeL',  'previous map maptime' )?>
-				<div id="timeM" class="map maptime"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
-				<?=i( 'timeR',  'next map maptime' )
-				  .i( 'timeBL', 'random map maptime' )
-				  .i( 'timeB',  'stop map maptime' )
-				  .i( 'timeBR', 'repeat map maptime' )?>
+				<?=i( 'guide map maptime',    'timeT' )
+				  .i( 'gear map maptime',     'timeTR' )
+				  .i( 'previous map maptime', 'timeL' )?>
+				<div id="timeM" class="map maptime"><?=i( 'play' ).'&emsp;'.i( 'pause' )?></div>
+				<?=i( 'next map maptime',     'timeR' )
+				  .i( 'random map maptime',   'timeBL' )
+				  .i( 'stop map maptime',     'timeB' )
+				  .i( 'repeat map maptime',   'timeBR' )?>
 			</div>
 			<div id="button-time" class="btn-group">
-				<?=i( 'random', 'random btn btn-default btn-cmd btn-toggle' )
-				  .i( 'single', 'single btn btn-default btn-cmd btn-toggle' )
-				  .i( 'repeat', 'repeat btn btn-default btn-cmd btn-toggle' )?>
+				<?=i( 'random btn btn-default btn-cmd btn-toggle', 'random' )
+				  .i( 'single btn btn-default btn-cmd btn-toggle', 'single' )
+				  .i( 'repeat btn btn-default btn-cmd btn-toggle', 'repeat' )?>
 			</div>
 		</div>
 		<div id="coverart-block" class="hide">
@@ -231,61 +232,61 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 				<?=$htmlvumeter?>
 				<div id="qr"></div>
 				<div id="map-cover">
-					<?=i( 'coverTL', 'scale-dn map mapcover r1 c1 ws hs' )
-					  .i( 'coverT',  'guide map mapcover r1 c2 wl hs' )
-					  .i( 'coverTR', 'gear map mapcover r1 c3 ws hs' )
-					  .i( 'coverL',  'previous map mapcover r2 c1 ws hl' )?>
-					<div id="coverM" class="map mapcover r2 c2 wl hl"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
-					<?=i( 'coverR',  'next map mapcover r2 c3 ws hl' )
-					  .i( 'coverBL', 'random map mapcover r3 c1 ws hs' )
-					  .i( 'coverB',  'stop map mapcover r3 c2 wl hs' )
-					  .i( 'coverBR', 'repeat map mapcover r3 c3 ws hs' )?>
+					<?=i( 'scale-dn map mapcover r1 c1 ws hs', 'coverTL' )
+					  .i( 'guide map mapcover r1 c2 wl hs',    'coverT' )
+					  .i( 'gear map mapcover r1 c3 ws hs',     'coverTR' )
+					  .i( 'previous map mapcover r2 c1 ws hl', 'coverL' )?>
+					<div id="coverM" class="map mapcover r2 c2 wl hl"><?=i( 'play' ).'&emsp;'.i( 'pause' )?></div>
+					<?=i( 'next map mapcover r2 c3 ws hl',     'coverR' )
+					  .i( 'random map mapcover r3 c1 ws hs',   'coverBL' )
+					  .i( 'stop map mapcover r3 c2 wl hs',     'coverB' )
+					  .i( 'repeat map mapcover r3 c3 ws hs',   'coverBR' )?>
 				</div>
 				<div id="volume-bar" class="hide"></div>
-				<?=i( 'volume-band',    'volume transparent volumeband band' )
-				  .i( 'volume-band-dn', 'minus transparent volumeband band dn' )
-				  .i( 'volume-band-up', 'plus transparent volumeband band up' )?>
+				<?=i( 'volume transparent volumeband band',   'volume-band' )
+				  .i( 'minus transparent volumeband band dn', 'volume-band-dn' )
+				  .i( 'plus transparent volumeband band up',  'volume-band-up' )?>
 				<div id="volume-text" class="hide"></div>
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
 			<div id="volume"></div>
 			<div id="map-volume">
-				<?=i( 'volT', 'plus map mapvolume up' )
-				  .i( 'volL', 'minus map mapvolume dn' )
-				  .i( 'volM', 'volume map mapvolume' )
-				  .i( 'volR', 'plus map mapvolume up' )
-				  .i( 'volB', 'minus map mapvolume dn' )?>
+				<?=i( 'plus map mapvolume up',  'volT' )
+				  .i( 'minus map mapvolume dn', 'volL' )
+				  .i( 'volume map mapvolume',   'volM' )
+				  .i( 'plus map mapvolume up',  'volR' )
+				  .i( 'minus map mapvolume dn', 'volB' )?>
 			</div>
 			<div id="button-volume" class="btn-group">
-				<?=i( 'voldn',   'minus btn btn-default dn' )
-				  .i( 'volmute', 'volume btn btn-default' )
-				  .i( 'volup',   'plus btn btn-default up' )?>
+				<?=i( 'minus btn btn-default dn', 'voldn' )
+				  .i( 'volume btn btn-default',   'volmute' )
+				  .i( 'plus btn btn-default up',  'volup' )?>
 			</div>
 		</div>
 	</div>
 </div>
 
 <div id="page-playlist" class="page hide">
-	<?=i( '', 'plus-o emptyadd hide' )?>
+	<?=i( 'plus-o emptyadd hide' )?>
 	<div class="content-top">
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
-		<?=i( 'button-playlist', 'playlist active page-icon' )
-		  .i( 'button-pl-back',  'back hide' )
-		  .i( 'button-pl-playlists', 'playlists' )?>
+		<?=i( 'playlist active page-icon', 'button-playlist' )
+		  .i( 'back hide',                 'button-pl-back' )
+		  .i( 'playlists',                 'button-pl-playlists' )?>
 		<div id="pl-manage" class="playlist">
-			<?=i( 'button-pl-consume',   'flash' )
-			  .i( 'button-pl-librandom', 'librandom' )
-			  .i( 'button-pl-shuffle',   'shuffle pllength' )
-			  .i( 'button-pl-clear',     'minus-circle pllength' )
-			  .i( 'button-pl-search',    'search pllength' )
-			  .i( 'button-pl-save',      'save-plus pllength' )?>
+			<?=i( 'flash',                 'button-pl-consume' )
+			  .i( 'librandom',             'button-pl-librandom' )
+			  .i( 'shuffle pllength',      'button-pl-shuffle' )
+			  .i( 'minus-circle pllength', 'button-pl-clear' )
+			  .i( 'search pllength',       'button-pl-search' )
+			  .i( 'save-plus pllength',    'button-pl-save' )?>
 		</div>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
 			<div class="input-group">
 				<input id="pl-search-input" type="text">
-				<?=i( 'pl-search-btn', 'search btn btn-default input-group-btn' )?>
+				<?=i( 'search btn btn-default input-group-btn', 'pl-search-btn' )?>
 			</div>
 		</form>
 		<div id="pl-search-close" class="hide"></div>
@@ -300,15 +301,15 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
-		<img src=""><span id="lyricstitle"></span><?=i( 'lyricsclose', 'close' )?>
+		<img src=""><span id="lyricstitle"></span><?=i( 'close', 'lyricsclose' )?>
 	</div>
 	<div id="divlyricsartist">
-		<span id="lyricsartist"></span><?=i( 'lyricsrefresh', 'refresh' ),i( 'lyricsedit', 'edit' )?>
+		<span id="lyricsartist"></span><?=i( 'refresh', 'lyricsrefresh' ).i( 'edit', 'lyricsedit' )?>
 		<div id="lyricseditbtngroup" class="hide">
-			<?=i( 'lyricsundo',   'undo hide' )
-			  .i( 'lyricssave',   'save hide' )
-			  .i( 'lyricsdelete', 'remove' )
-			  .i( 'lyricsback',   'back bl' )?>
+			<?=i( 'undo hide', 'lyricsundo',    )
+			  .i( 'save hide', 'lyricssave' )
+			  .i( 'remove',    'lyricsdelete' )
+			  .i( 'back bl',   'lyricsback' )?>
 		</div>
 	</div>
 	<div id="lyricstext" class="lyricstext"></div>
