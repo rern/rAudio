@@ -6,7 +6,7 @@ info()   infoPower() infoPowerCommand() infoWarning()
 loader() local()     selectSet()
 */
 
-var page        = location.search.replace( '?p=', '' );
+var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
 var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
@@ -1265,4 +1265,51 @@ function psPower( data ) {
 	} else { // reconnect after reboot
 		setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
 	}
+}
+function pageSwipe() {
+	if ( ! navigator.maxTouchPoints ) return
+	
+	var playback = $( '#page-playback' ).length;
+	var pages    = playback
+					? [ 'library', 'playback',  'playlist' ]
+					: [ 'features', 'player', 'networks', 'system', 'addons' ];
+	var xstart;
+	window.addEventListener( 'touchstart', function( e ) {
+		var $target = $( e.target );
+		if ( playback ) {
+			if ( [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
+				|| $target.parents( '#time-knob' ).length
+				|| $target.parents( '#volume-knob' ).length
+				|| ! $( '#bio' ).hasClass( 'hide' )
+				|| I.active
+				|| ! $( '#data' ).hasClass( 'hide' )
+			) return
+		}
+		
+		xstart = e.changedTouches[ 0 ].pageX;
+	} );
+	window.addEventListener( 'touchend', function( e ) {
+		if ( ! xstart ) return
+		
+		var diff  = xstart - e.changedTouches[ 0 ].pageX;
+		xstart = false;
+		if ( Math.abs( diff ) < 100 ) return
+		
+		var current = playback ? V.page : page;
+		var i       = pages.indexOf( current );
+		var ilast   = pages.length - 1;
+		if ( diff > 0 ) {
+			var inext = i < ilast ? i + 1 : 0;
+		} else {
+			var inext = i > 0 ? i - 1 : ilast;
+		}
+		$( '#'+ pages[ inext ] ).trigger( 'click' );
+	} );
+	$( '.page, .container' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+		return false
+	} );
+	$( '#hovercursor, #shortcut' ).remove();
 }

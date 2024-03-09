@@ -51,11 +51,6 @@ var picaOption  = { // pica.js
 };
 // color icon
 colorIcon( '.submenu.i-color' );
-var pagenext    = {
-	  playback : [ 'library',  'playlist' ]
-	, playlist : [ 'playback', 'library' ]
-	, library  : [ 'playlist', 'playback' ]
-}
 var icon_player = {
   airplay    : 'AirPlay'
 , bluetooth  : 'Bluetooth'
@@ -117,38 +112,8 @@ var chkdisplay = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-if ( navigator.maxTouchPoints ) { // swipeleft / right ////////////////////////////////
-	if ( ! D.noswipe ) {
-		var xstart;
-		window.addEventListener( 'touchstart', function( e ) {
-			var $target = $( e.target );
-			if ( [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
-				|| $target.parents( '#time-knob' ).length
-				|| $target.parents( '#volume-knob' ).length
-				|| ! $( '#bio' ).hasClass( 'hide' )
-				|| I.active
-				|| ! $( '#data' ).hasClass( 'hide' )
-			) return
-			
-			xstart = e.changedTouches[ 0 ].pageX;
-		} );
-		window.addEventListener( 'touchend', function( e ) {
-			if ( ! xstart ) return
-			
-			var diff = xstart - e.changedTouches[ 0 ].pageX;
-			if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ V.page ][ diff > 0 ? 1 : 0 ] ).trigger( 'click' );
-			xstart = false;
-		} );
-	}
-	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
-		e.preventDefault();
-		e.stopPropagation();
-		e.stopImmediatePropagation();
-		return false
-	} );
-	$( '#hovercursor, #shortcut' ).remove();
-}
-	
+pageSwipe();
+
 $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.colorpicker ) return
 	
