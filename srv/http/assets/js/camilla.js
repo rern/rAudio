@@ -524,13 +524,17 @@ var graph     = {
 		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 	}
 	, plot     : $li => {
-		if ( ! $li ) $li = V.li;
-		$li.addClass( 'disabled' );
 		if ( typeof Plotly !== 'object' ) {
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
 			return
 		}
 		
+		if ( V.plot ) return
+		
+		V.plot = true;
+		setTimeout( () => V.plot = false, 2000 );
+		if ( ! $li ) $li = V.li;
+		$li.addClass( 'disabled' );
 		var filters = V.tab === 'filters';
 		var val     = $li.data( filters ? 'name' : 'index' );
 		V.graph[ V.tab ].push( val );
