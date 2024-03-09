@@ -1269,14 +1269,18 @@ function psPower( data ) {
 function pageSwipe() {
 	if ( ! navigator.maxTouchPoints ) return
 	
-	var playback = $( '#page-playback' ).length;
-	var pages    = playback
-					? [ 'library', 'playback',  'playlist' ]
-					: [ 'features', 'player', 'networks', 'system', 'addons' ];
+	if ( page ) {
+		var camilla = page === 'camilla';
+		var pages   = camilla
+						? [ 'filters',  'mixers', 'processors', 'pipeline', 'devices' ]
+						: [ 'features', 'player', 'networks', 'system', 'addons' ];
+	} else {
+		var pages   = [ 'library', 'playback',  'playlist' ];
+	}
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
 		var $target = $( e.target );
-		if ( playback ) {
+		if ( ! page ) {
 			if ( [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
 				|| $target.parents( '#time-knob' ).length
 				|| $target.parents( '#volume-knob' ).length
@@ -1295,7 +1299,11 @@ function pageSwipe() {
 		xstart = false;
 		if ( Math.abs( diff ) < 100 ) return
 		
-		var current = playback ? V.page : page;
+		if ( page ) {
+			var current = camilla ? V.tab : page;
+		} else {
+			var current = V.page;
+		}
 		var i       = pages.indexOf( current );
 		var ilast   = pages.length - 1;
 		if ( diff > 0 ) {
@@ -1303,7 +1311,8 @@ function pageSwipe() {
 		} else {
 			var inext = i > 0 ? i - 1 : ilast;
 		}
-		$( '#'+ pages[ inext ] ).trigger( 'click' );
+		var prefix = camilla ? 'tab' : '';
+		$( '#'+ prefix + pages[ inext ] ).trigger( 'click' );
 	} );
 	$( '.page, .container' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
 		e.preventDefault();
