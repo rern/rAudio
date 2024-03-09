@@ -39,12 +39,10 @@ if [[ ! -e $filesharedip ]]; then
 fi
 nas=$( grep -E '/mnt/MPD/NAS|/srv/http/data' /etc/fstab )
 if [[ $nas ]]; then
-	nas=$( awk '{print $1" "$2}' <<< $nas | sort )
+	nas=$( awk '{print $1"^"$2}' <<< $nas | sed 's/\\040/ /g' | sort )
 	while read line; do
-		source=${line/ *}
-		source=${source//\040/ }
-		mountpoint=${line/* }
-		mountpoint=${mountpoint//\040/ }
+		source=${line/^*}
+		mountpoint=${line/*^}
 		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
 		list+=',{
   "icon"       : "networks"
