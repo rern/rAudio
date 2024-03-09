@@ -451,7 +451,7 @@ input[ type=range ] {
 	--trackborder : 1px solid var( --cgd ) !important;
 	height: 40px;
 	width: 300px;
-	margin: 0;
+	margin: 2px 0 0 0;
 	max-width: 70%;
 	background: transparent;
 	-webkit-appearance: none;
