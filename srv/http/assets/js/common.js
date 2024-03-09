@@ -1086,18 +1086,6 @@ function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
 }
-function pageNext( pages ) {
-	var iprev, inext;
-	var ilast    = pages.length - 1;
-	var pagenext = {};
-	pages.forEach( ( p, i ) => {
-		iprev = i > 0 ? i - 1 : ilast;
-		inext = i < ilast ? i + 1 : 0;
-		pagenext[ p ] = [ pages[ iprev ], pages[ inext ] ];
-	} );
-	return pagenext
-}
-
 function qrCode( msg ) {
 	var qr = QRCode( {
 		  msg : msg
