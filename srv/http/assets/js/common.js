@@ -1288,6 +1288,10 @@ function pageSwipe() {
 				|| I.active
 				|| ! $( '#data' ).hasClass( 'hide' )
 			) return
+			
+		} else if ( camilla ) {
+			if ( $target.is ( 'input:range' ) || $target.parents( '.divgraph' ).length ) return
+			
 		}
 		
 		xstart = e.changedTouches[ 0 ].pageX;
