@@ -289,11 +289,20 @@ function psWlan( data ) {
 //---------------------------------------------------------------------------------------
 var dirsystem  = '/srv/http/data/system';
 var page       = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var pagenext   = {
-	  features : [ 'system', 'player' ]
-	, player   : [ 'features', 'networks' ]
-	, networks : [ 'player', 'system' ]
-	, system   : [ 'networks', 'features' ]
+if ( navigator.maxTouchPoints ) {
+	var pagenext = pageNext( [ 'features', 'player', 'networks', 'system', 'addons' ] );
+	var xstart;
+	window.addEventListener( 'touchstart', function( e ) {
+		var $target = $( e.target );
+		xstart = e.changedTouches[ 0 ].pageX;
+	} );
+	window.addEventListener( 'touchend', function( e ) {
+		if ( ! xstart ) return
+		
+		var diff = xstart - e.changedTouches[ 0 ].pageX;
+		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ page ][ diff > 0 ? 1 : 0 ] ).trigger( 'click' );
+		xstart = false;
+	} );
 }
 
 $( '#'+ page ).addClass( 'active' );
