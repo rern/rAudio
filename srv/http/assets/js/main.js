@@ -51,11 +51,6 @@ var picaOption  = { // pica.js
 };
 // color icon
 colorIcon( '.submenu.i-color' );
-var pagenext    = {
-	  playback : [ 'library',  'playlist' ]
-	, playlist : [ 'playback', 'library' ]
-	, library  : [ 'playlist', 'playback' ]
-}
 var icon_player = {
   airplay    : 'AirPlay'
 , bluetooth  : 'Bluetooth'
@@ -117,29 +112,38 @@ var chkdisplay = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-if ( navigator.maxTouchPoints ) { // swipeleft / right ////////////////////////////////
-	if ( ! D.noswipe ) {
-		var xstart;
-		window.addEventListener( 'touchstart', function( e ) {
-			var $target = $( e.target );
-			if ( [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
-				|| $target.parents( '#time-knob' ).length
-				|| $target.parents( '#volume-knob' ).length
-				|| ! $( '#bio' ).hasClass( 'hide' )
-				|| I.active
-				|| ! $( '#data' ).hasClass( 'hide' )
-			) return
-			
-			xstart = e.changedTouches[ 0 ].pageX;
-		} );
-		window.addEventListener( 'touchend', function( e ) {
-			if ( ! xstart ) return
-			
-			var diff = xstart - e.changedTouches[ 0 ].pageX;
-			if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ V.page ][ diff > 0 ? 1 : 0 ] ).trigger( 'click' );
-			xstart = false;
-		} );
-	}
+if ( navigator.maxTouchPoints ) { // swipe
+	var xstart;
+	window.addEventListener( 'touchstart', function( e ) {
+		var $target = $( e.target );
+		if ( I.active
+			|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
+			|| $target.parents( '#time-knob' ).length
+			|| $target.parents( '#volume-knob' ).length
+			|| ! $( '#bio' ).hasClass( 'hide' )
+			|| ! $( '#data' ).hasClass( 'hide' )
+		) return
+		
+		xstart      = e.changedTouches[ 0 ].pageX;
+	} );
+	window.addEventListener( 'touchend', function( e ) {
+		if ( ! xstart ) return
+		
+		var diff  = xstart - e.changedTouches[ 0 ].pageX;
+		xstart = false;
+		if ( Math.abs( diff ) < 100 ) return
+		
+		var pages = [ 'library', 'playback',  'playlist' ];
+		var i     = pages.indexOf( V.page );
+		var ilast = pages.length - 1;
+		diff > 0 ? i++ : i--;
+		if ( i < 0 ) {
+			i = ilast;
+		} else if ( i > ilast ) {
+			i = 0;
+		}
+		$( '#'+ pages[ i ] ).trigger( 'click' );
+	} );
 	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
 		e.preventDefault();
 		e.stopPropagation();
@@ -148,7 +152,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	} );
 	$( '#hovercursor, #shortcut' ).remove();
 }
-	
+
 $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.colorpicker ) return
 	
@@ -1534,11 +1538,11 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 	} else if ( mode !== 'album' ) { // non-album
 		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
-			var format = [ 'artist', 'album', 'file' ];
+			var format = [ 'artist', 'album' ];
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
-			var format = [ 'album', 'artist', 'file' ];
+			var format = [ 'album', 'artist' ];
 		} else {
-			var format = [ 'album', 'file' ]; // artist, albumartist
+			var format = [ 'album' ]; // artist, albumartist
 		}
 		var query = {
 			  query  : 'find'
@@ -1552,7 +1556,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			if ( name ) { // albums with the same names
 				var query = {
 					  query  : 'find'
-					, mode   : [ 'album', 'artist' ]
+					, mode   : [ 'album', 'artist', 'file' ]
 					, string : [ name, path ]
 				}
 				var modetitle = name;

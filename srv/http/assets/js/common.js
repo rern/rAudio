@@ -6,7 +6,7 @@ info()   infoPower() infoPowerCommand() infoWarning()
 loader() local()     selectSet()
 */
 
-var page        = location.search.replace( '?p=', '' );
+var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
 var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';

@@ -287,20 +287,9 @@ function psWlan( data ) {
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
-var dirsystem  = '/srv/http/data/system';
-var page       = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var pagenext   = {
-	  features : [ 'system', 'player' ]
-	, player   : [ 'features', 'networks' ]
-	, networks : [ 'player', 'system' ]
-	, system   : [ 'networks', 'features' ]
-}
-
-$( '#'+ page ).addClass( 'active' );
-
 document.title = page === 'camilla' ? 'Camilla DSP' : page[ 0 ].toUpperCase() + page.slice( 1 );
-
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
+$( '#'+ page ).addClass( 'active' );
 
 $( document ).on( 'keyup', function( e ) {
 	if ( I.active || page === 'camilla' ) return

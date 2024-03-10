@@ -524,13 +524,17 @@ var graph     = {
 		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 	}
 	, plot     : $li => {
-		if ( ! $li ) $li = V.li;
-		$li.addClass( 'disabled' );
 		if ( typeof Plotly !== 'object' ) {
+			notify( 'graph', common.tabTitle(), 'Plot ...' );
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
 			return
 		}
 		
+		if ( V.plot ) return
+		
+		V.plot = true;
+		setTimeout( () => V.plot = false, 2000 );
+		if ( ! $li ) $li = V.li;
 		var filters = V.tab === 'filters';
 		var val     = $li.data( filters ? 'name' : 'index' );
 		V.graph[ V.tab ].push( val );
@@ -547,7 +551,6 @@ var graph     = {
 				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
 			} );
 		}
-		notify( V.tab, common.tabTitle(), 'Plot ...' );
 		var cmd = filters ? " '"+ JSON.stringify( FIL[ val ] ) +"'" : " '"+ JSON.stringify( S.config ) +"' "+ val;
 		bash( [ 'settings/camilla.py', V.tab + cmd ], data => { // groupdelay = delay, magnitude = gain
 			var impulse   = 'impulse' in data;
@@ -628,7 +631,8 @@ var graph     = {
 			var $divgraph = $li.find( '.divgraph' );
 			var options   = {
 				  displayModeBar : false
-				, scrollZoom     : true
+//				, scrollZoom     : true
+				, staticPlot     : true // disable zoom
 			}
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, options );
 			$svg = $divgraph.find( 'svg' );
@@ -638,7 +642,6 @@ var graph     = {
 			$divgraph
 				.append( '<i class="i-close graphclose"></i>' )
 				.removeClass( 'hide' );
-			$li.removeClass( 'disabled' );
 		}, 'json' );
 	}
 }

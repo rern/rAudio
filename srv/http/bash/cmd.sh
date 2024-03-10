@@ -430,17 +430,19 @@ libdirfile )
 	if [[ ! $mpcls ]]; then               # not in database
 		if [[ $sysls ]]; then
 			while read path; do
+				[[ -e "/mnt/MPD/$path/.mpdignore" ]] && continue
+				
 				[[ $( ls "/mnt/MPD/$path" ) ]] && df=d || df=f
 				nodatals+=$'\n'"$path^$df"
 			done <<< $sysls
-			[[ $nodatals ]] && echo "=${nodatals:1}" # not yet scan
+			[[ $nodatals ]] && echo "${nodatals:1}"
 		fi
-		exit                          # empty   >>>
+		exit
 	fi
 	
-	[[ ! $sysls ]] && exit            # empty   >>>
+	[[ ! $sysls ]] && exit
 	
-	while read path; do # check: music files | scanned | empty
+	while read path; do
 		[[ -e "/mnt/MPD/$path/.mpdignore" ]] && continue
 		
 		if [[ ! $( ls "/mnt/MPD/$path" ) ]]; then
