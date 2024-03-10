@@ -2105,6 +2105,7 @@ li.active .li2 bl {
 	}
 	@media ( max-width: 895px ) {
 		#playback-row { align-items: flex-start }
+		#qr { margin-top: 70px }
 	}
 	@media ( max-width: 749px ) {
 		#playback-row { align-items: center }

@@ -333,17 +333,21 @@ pushDataCoverart() {
 	$dirbash/cmd.sh coverfileslimit
 }
 pushDirCount() {
-	local c counts dir n
+	local c counts0 counts dir n
 	for dir in NAS SD USB;do
 		n=$( ls -1d /mnt/MPD/$dir/*/ 2> /dev/null | wc -l )
 		c+=( $n )
 		counts+=', "'${dir,,}'": '$n
 	done
-	sed -i -E 's/("nas": ).*/\1'${c[0]}',/
-			   s/("sd": ).*/\1'${c[1]}',/
-			   s/("usb": ).*/\1'${c[2]}',/
-' $dirmpd/counts
 	pushData display '{ "dircount": { '${counts:1}' } }'
+	if grep -q '"nas"' $dirmpd/counts; then
+		sed -i -E 's/("nas": ).*/\1'${c[0]}',/
+				   s/("sd": ).*/\1'${c[1]}',/
+				   s/("usb": ).*/\1'${c[2]}',/' $dirmpd/counts
+	else
+		count0=$( head -n -1 $dirmpd/counts )
+		echo $count0$counts } | jq -S > $dirmpd/counts
+	fi
 }
 pushRefresh() {
 	local page push
