@@ -34,7 +34,7 @@ if [[ $wlandev && -e $bootwifi ]]; then
 	data=$( sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " $bootwifi )
-	ssid=$( getVar ESSID <<< $data )
+	ssid=$( sed -n -E '/^ESSID/ {s/.*="(.*)"/\1/; p}' <<< $data )
 	echo "$data" > "/etc/netctl/$ssid"
 	$dirsettings/networks.sh "profileconnect
 $ssid
