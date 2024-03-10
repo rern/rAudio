@@ -287,7 +287,6 @@ function psWlan( data ) {
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
-pageSwipe();
 document.title = page === 'camilla' ? 'Camilla DSP' : page[ 0 ].toUpperCase() + page.slice( 1 );
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 $( '#'+ page ).addClass( 'active' );

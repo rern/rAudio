@@ -525,7 +525,7 @@ var graph     = {
 	}
 	, plot     : $li => {
 		if ( typeof Plotly !== 'object' ) {
-			notify( V.tab, common.tabTitle(), 'Plot ...' );
+			notify( 'graph', common.tabTitle(), 'Plot ...' );
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
 			return
 		}
@@ -535,7 +535,6 @@ var graph     = {
 		V.plot = true;
 		setTimeout( () => V.plot = false, 2000 );
 		if ( ! $li ) $li = V.li;
-		$li.addClass( 'disabled' );
 		var filters = V.tab === 'filters';
 		var val     = $li.data( filters ? 'name' : 'index' );
 		V.graph[ V.tab ].push( val );
@@ -632,7 +631,8 @@ var graph     = {
 			var $divgraph = $li.find( '.divgraph' );
 			var options   = {
 				  displayModeBar : false
-				, scrollZoom     : true
+//				, scrollZoom     : true
+				, staticPlot     : true // disable zoom
 			}
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, options );
 			$svg = $divgraph.find( 'svg' );
@@ -642,7 +642,6 @@ var graph     = {
 			$divgraph
 				.append( '<i class="i-close graphclose"></i>' )
 				.removeClass( 'hide' );
-			$li.removeClass( 'disabled' );
 		}, 'json' );
 	}
 }
