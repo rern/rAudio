@@ -156,7 +156,7 @@ case 'list':
 	break;
 case 'ls':
 	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) {
-		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | cut -c 10-', $mpcls );
+		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | cut -c 10-', $mpcls ); // files not applicable at modes root
 	} else {
 		exec( 'mpc ls "'.$string.'" 2> /dev/null'
 			, $mpcls );
