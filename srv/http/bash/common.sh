@@ -327,27 +327,19 @@ pushData() {
 		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 	done
 }
+pushDataCounts() {
+	local counts dir
+	for dir in NAS SD USB;do
+		counts+=', "'${dir,,}'": '$( ls -1d /mnt/MPD/$dir/*/ 2> /dev/null | wc -l )
+	done
+	pushData mpdupdate '{ "counts": { '${counts:1}' } }'
+	counts=$( grep -Ev '{|"nas"|"sd"|"usb"|}' < $dirmpd/counts )$counts
+	jq -S <<< "{ $counts }" > $dirmpd/counts
+}
 pushDataCoverart() {
 	pushData coverart '{ "url": "'$1'", "radioalbum" : "'$2'" }'
 	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status
 	$dirbash/cmd.sh coverfileslimit
-}
-pushDirCount() {
-	local c counts0 counts dir n
-	for dir in NAS SD USB;do
-		n=$( ls -1d /mnt/MPD/$dir/*/ 2> /dev/null | wc -l )
-		c+=( $n )
-		counts+=', "'${dir,,}'": '$n
-	done
-	pushData display '{ "dircount": { '${counts:1}' } }'
-	if grep -q '"nas"' $dirmpd/counts; then
-		sed -i -E 's/("nas": ).*/\1'${c[0]}',/
-				   s/("sd": ).*/\1'${c[1]}',/
-				   s/("usb": ).*/\1'${c[2]}',/' $dirmpd/counts
-	else
-		count0=$( head -n -1 $dirmpd/counts )
-		echo $count0$counts } | jq -S > $dirmpd/counts
-	fi
 }
 pushRefresh() {
 	local page push

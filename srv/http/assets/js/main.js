@@ -1062,9 +1062,9 @@ $( '#button-lib-update' ).on( 'click', function() {
 	var message = '';
 	[ 'nas', 'sd', 'usb' ].forEach( k => message += ' &emsp; <label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
 	var kv   = {
-		  'Update changed files' : 'update'
-		, 'Update all files'     : 'rescan'
-		, 'Refresh folder list'  : 'refresh'
+		  'Update changed files'    : 'update'
+		, 'Update all files'        : 'rescan'
+		, 'Refresh file modes list' : 'refresh'
 	}
 	info( {
 		  icon       : 'refresh-library'

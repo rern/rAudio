@@ -63,7 +63,7 @@ if [[ ! -e /tmp/webradio ]]; then # system-datareset.sh - keep existing
 	echo '{
   "playlists" : 0
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
-}' | jq -S > $dirmpd/counts
+}' > $dirmpd/counts
 fi
 
 dirPermissions

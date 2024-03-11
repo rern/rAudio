@@ -1178,11 +1178,15 @@ function renderLibrary() { // library home
 function renderLibraryCounts() {
 	var songs    = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$.each( C, ( k, v ) => {
+	$( '.lib-mode .mode' ).each( ( i, el ) => {
+		var $this = $( el );
+		var mode  = $this.data( 'mode' );
+		var v     = C[ mode ];
 		if ( v ) {
-			if ( ! [ 'nas', 'sd', 'usb' ].includes( k ) ) $( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
+			$this.removeClass( 'nodata' );
+			if ( ! [ 'nas', 'sd', 'usb' ].includes( mode ) ) $( '#mode-'+ mode ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
 		} else {
-			$( '#mode-'+ k ).toggleClass( 'nodata', v === 0 );
+			$this.addClass( 'nodata' );
 		}
 	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
