@@ -273,7 +273,7 @@ function escape( $string ) { // for passing bash arguments
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
 }
 function htmlDirectory( $lists ) {
-	global $gmode, $html;
+	global $gmode, $html, $htmlf;
 	foreach( $lists as $list ) {
 		$dir        = basename( $list );
 		$each       = ( object )[];
@@ -285,33 +285,33 @@ function htmlDirectory( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$htmlfile = '';
 	foreach( $array as $each ) {
 		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$name      = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
-			$mode     = strtolower( explode( '/', $path )[ 0 ] );
-			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
-			$nodata   = exec( 'mpc ls "'.$path.'" &> /dev/null || echo class="nodata"' );
-			$html    .='<li data-mode="'.$mode.'" data-index="'.$index.'" '.$nodata.'>'.imgIcon( $thumbsrc, 'folder' ).
-'<a class="lipath">'.$path.'</a>
-<span class="single name">'.$name.'</span>
-</li>';
+			$mode   = strtolower( explode( '/', $path )[ 0 ] );
+			$nodata = exec( 'mpc ls "'.$path.'" &> /dev/null || echo class="nodata"' );
+			$icon   = imgIcon( rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' ), 'folder' );
+			$html  .= htmlDirectoryLi( $mode, $index, $nodata, $icon, $path, $name );
 		} else {
-			$htmlfile.='<li data-mode="'.$gmode.'" data-index="'.$index.'">'.i( 'music ', 'file' ).
-'<a class="lipath">'.$path.'</a>
-<span class="single name">'.$name.'</span>
-</li>';
+			$htmlf .= htmlDirectoryLi( $gmode, $index, '', i( 'music ', 'file' ), $path, $name );
 		}
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$html    .= $htmlfile.
+	$html    .= $htmlf.
 '</ul>
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
+}
+function htmlDirectoryLi( $mode, $index, $nodata, $icon, $path, $name ) {
+	return
+'<li data-mode="'.$mode.'" data-index="'.$index.'" '.$nodata.'>'.$icon.
+'<a class="lipath">'.$path.'</a>
+<span class="single name">'.$name.'</span>
+</li>';
 }
 function htmlFind( $lists, $f ) { // non-file 'find' command
 	if ( ! count( $lists ) ) exit;
