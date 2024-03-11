@@ -165,7 +165,7 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ $CARD == -1 ]] && pushStatus && exit # >>>>>>>>>>
+[[ $CARD == -1 && ! $bluetooth ]] && pushStatus && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
 [[ ! $mixer || $bluetooth || $camilladsp || $equalizer ]] && mixerno=1
