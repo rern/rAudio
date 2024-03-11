@@ -25,7 +25,9 @@
 
 proccardn=$( ls -1d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
 while read path; do
-	name=$( sed -n '/^name/ {s/^.*: //; s/bcm2835/On-board/; p; q}' $path/*/info )
+	info=$( sed 's/bcm2835/On-board/' $path/*/info )
+	name=$( grep -m1 ^name <<< $info | cut -d' ' -f2- )
+	[[ ! $name ]] && name=$( grep -m1 ^id <<< $info | cut -d' ' -f2- )
 	[[ $name == Loopback* ]] && continue
 	
 	NAME=$name
@@ -50,10 +52,12 @@ if [[ $usbdac != add && -e $dirsystem/output-device ]]; then # otherwise last ca
 		rm $dirsystem/output-device # remove if not exist any more
 	fi
 fi
+######## >
 echo "\
 defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
+
 [[ $( getVar name $dirshm/output ) != $NAME ]] && notify 'output blink' 'Output Device' "$NAME"
 if aplay -l | grep -q "^card $CARD: RPiCirrus"; then
 # card N: RPiCirrus [RPi-Cirrus], device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
@@ -64,6 +68,7 @@ if aplay -l | grep -q "^card $CARD: RPiCirrus"; then
 , "SPDIF"      : "SPDIF Out"
 , "Speakers"   : "SPKOUT Digital"
 }' > $dirshm/mixers
+
 	MIXER=$( getContent "$dirsystem/mixer-$NAME" 'HPOUT2 Digital' )
 	[[ $MIXER == SPDIF ]] && MIXER=
 else
@@ -111,4 +116,3 @@ mixertype='$MIXERTYPE > $dirshm/output
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
 [[ $MIXER ]] && echo "$MIXER" > $dirshm/amixercontrol || rm -f $dirshm/amixercontrol
 echo $CARD > $dirsystem/asoundcard
-######## >
