@@ -156,7 +156,7 @@ case 'list':
 	break;
 case 'ls':
 	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) {
-		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | cut -c 10-', $mpcls ); // files not applicable at modes root
+		exec( 'ls -1d /mnt/MPD/'.$string.'/* | cut -c 10-', $mpcls ); // show all in root of file modes
 	} else {
 		exec( 'mpc ls "'.$string.'" 2> /dev/null'
 			, $mpcls );
@@ -290,11 +290,10 @@ function htmlDirectory( $lists ) {
 		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
+		$name      = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
-			$path     = rtrim( $path, '/' );
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
-			$name     = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
 			$nodata   = exec( 'mpc ls "'.$path.'" &> /dev/null || echo class="nodata"' );
 			$html    .='<li data-mode="'.$mode.'" data-index="'.$index.'" '.$nodata.'>'.imgIcon( $thumbsrc, 'folder' ).
 '<a class="lipath">'.$path.'</a>
@@ -303,7 +302,7 @@ function htmlDirectory( $lists ) {
 		} else {
 			$htmlfile.='<li data-mode="'.$gmode.'" data-index="'.$index.'">'.i( 'music ', 'file' ).
 '<a class="lipath">'.$path.'</a>
-<span class="single name">'.$path.'</span>
+<span class="single name">'.$name.'</span>
 </li>';
 		}
 	}
