@@ -156,7 +156,7 @@ case 'list':
 	break;
 case 'ls':
 	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) {
-		exec( 'ls -1d /mnt/MPD/'.$string.'/* | cut -c 10-', $mpcls ); // show all in root of file modes
+		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | cut -c 10-', $mpcls ); // file modes - show all dirs in root
 	} else {
 		exec( 'mpc ls "'.$string.'" 2> /dev/null'
 			, $mpcls );
@@ -286,7 +286,7 @@ function htmlDirectory( $lists ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
 	foreach( $array as $each ) {
-		$path      = $each->path;
+		$path      = rtrim( $each->path, '/' );
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$name      = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
