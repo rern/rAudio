@@ -156,7 +156,7 @@ case 'list':
 	break;
 case 'ls':
 	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
-		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | cut -c 10- | perl -ple chop', $ls );
+		exec( 'ls -1d /mnt/MPD/'.$string."/*/ | sed -E 's#^/mnt/MPD/|/$##g'", $ls );
 		htmlDirectory( $ls );
 		exit;
 	}
