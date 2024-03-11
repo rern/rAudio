@@ -200,7 +200,7 @@ if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
 	fi
 	fileconf=/etc/spotifyd.conf
 	hw0=$( getVar device $fileconf )
-	mixer=$( getVar mixer $fileconf )
+	mixer0=$( getVar mixer $fileconf )
 	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
 #--------------->
 		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
