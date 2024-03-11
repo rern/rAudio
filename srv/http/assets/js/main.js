@@ -984,7 +984,6 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 		var query = {
 			  query  : 'ls'
 			, string : path
-			, format : [ 'file' ]
 		}
 	}
 	query.gmode = V.mode;
@@ -1213,7 +1212,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		var query = {
 			  query  : 'ls'
 			, string : path
-			, format : [ 'file' ]
 		}
 	} else if ( V.mode.slice( -5 ) === 'radio' ) {
 		var query = {
@@ -1301,7 +1299,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		var query = {
 			  query  : 'ls'
 			, string : path
-			, format : [ 'file' ]
 			, gmode  : mode
 		}
 	} else {
@@ -1404,7 +1401,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var path  = $this.find( '.lipath' ).text();
 	var query = {
 		  query  : 'ls'
-		, format : [ 'file' ]
 		, gmode  : path.replace( /\/.*/, '' ).toLowerCase()
 		, mode   : 'album'
 		, string : path
@@ -1489,7 +1485,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			var query   = {
 				  query  : 'ls'
 				, string : path
-				, format : [ 'file' ]
 			}
 			query.gmode = V.mode;
 			list( query, function( html ) {
@@ -1522,7 +1517,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var query = {
 			  query  : 'ls'
 			, string : path
-			, format : [ 'file' ]
 		}
 		var modetitle = modefile ? path : $( '#mode-title' ).text();
 	} else if ( V.mode.slice( -5 ) === 'radio' ) { // dabradio, webradio
