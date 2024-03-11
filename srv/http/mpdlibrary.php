@@ -155,12 +155,14 @@ case 'list':
 	if ( count( $lists ) ) htmlList( $lists );
 	break;
 case 'ls':
-	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) {
-		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | cut -c 10-', $mpcls ); // file modes - show all dirs in root
-	} else {
-		exec( 'mpc ls "'.$string.'" 2> /dev/null'
-			, $mpcls );
+	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
+		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | cut -c 10- | perl -ple chop', $ls );
+		htmlDirectory( $ls );
+		exit;
 	}
+	
+	exec( 'mpc ls "'.$string.'" 2> /dev/null'
+		, $mpcls );
 	if ( ! count( $mpcls ) ) exit;
 	
 	if ( $mode !== 'album' ) {
@@ -286,7 +288,7 @@ function htmlDirectory( $lists ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
 	foreach( $array as $each ) {
-		$path      = rtrim( $each->path, '/' );
+		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$name      = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
