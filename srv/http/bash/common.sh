@@ -327,15 +327,6 @@ pushData() {
 		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 	done
 }
-pushDataCounts() {
-	local counts dir
-	for dir in NAS SD USB;do
-		counts+=', "'${dir,,}'": '$( ls -1d /mnt/MPD/$dir/*/ 2> /dev/null | wc -l )
-	done
-	pushData mpdupdate '{ "counts": { '${counts:1}' } }'
-	counts=$( grep -Ev '{|"nas"|"sd"|"usb"|}' < $dirmpd/counts )$counts
-	jq -S <<< "{ $counts }" > $dirmpd/counts
-}
 pushDataCoverart() {
 	pushData coverart '{ "url": "'$1'", "radioalbum" : "'$2'" }'
 	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status

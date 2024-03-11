@@ -1063,7 +1063,6 @@ $( '#button-lib-update' ).on( 'click', function() {
 	var kv   = {
 		  'Update changed files'    : 'update'
 		, 'Update all files'        : 'rescan'
-		, 'Refresh file modes list' : 'refresh'
 	}
 	info( {
 		  icon       : 'refresh-library'
