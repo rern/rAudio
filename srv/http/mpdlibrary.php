@@ -155,8 +155,12 @@ case 'list':
 	if ( count( $lists ) ) htmlList( $lists );
 	break;
 case 'ls':
-	exec( 'mpc ls "'.$string.'" 2> /dev/null'
-		, $mpcls );
+	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) {
+		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | cut -c 10-', $mpcls );
+	} else {
+		exec( 'mpc ls "'.$string.'" 2> /dev/null'
+			, $mpcls );
+	}
 	if ( ! count( $mpcls ) ) exit;
 	
 	if ( $mode !== 'album' ) {
@@ -286,19 +290,11 @@ function htmlDirectory( $lists ) {
 		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$nodata    = '';
-		$suffix    = substr( $path, -2 );
-		if ( $suffix === '^d' ) {
-			$path   = rtrim( $path, '^d' );
-			$nodata = ' class="nodata"';
-		} else if ( $suffix === '^f' ) {
-			$path   = rtrim( $path, '^f' );
-			$nodata = ' class="nodata nofile"';
-		}
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
-			$name      = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
+			$name     = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
+			$nodata   = exec( 'mpc ls "'.$path.'"' ) ? '' : ' class="nodata"';
 			$html .='<li data-mode="'.$mode.'" data-index="'.$index.'"'.$nodata.'>'.imgIcon( $thumbsrc, 'folder' ).
 '<a class="lipath">'.$path.'</a>
 <span class="single name">'.$name.'</span>

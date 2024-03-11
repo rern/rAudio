@@ -1464,12 +1464,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var active   = $this.hasClass( 'active' );
 	menuHide();
 	if ( ( menushow && V.mode !== 'webradio' && $target.is( '.li-icon' ) ) || $target.is( '.li-icon, .licoverimg' ) ) {
-		if ( ! active && ! $this.hasClass( 'nofile' ) ) contextmenuLibrary( $this, $target );
+		if ( ! active ) contextmenuLibrary( $this, $target );
 		return
 	}
 	
 	if ( $this.hasClass( 'nodata' ) ) {
-		if ( ! $this.hasClass( 'nofile' ) ) $this.find( '.li-icon' ).trigger( 'click' );
+		$this.find( '.li-icon' ).trigger( 'click' );
 		return
 	}
 
