@@ -191,8 +191,6 @@ i2smodule )
 	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
 	rm -f /boot/cirrus /etc/modprobe.d/cirrus.conf
 	if [[ $APLAYNAME != none ]]; then
-		[[ -e $dirsystem/audio ]] && config+="
-dtparam=audio=on"
 		config+="
 dtparam=i2s=on
 dtoverlay=$APLAYNAME"
