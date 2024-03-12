@@ -428,7 +428,6 @@ volumeGet() {
 			volume=$( amixer $args 2> /dev/null | grep -m1 % )
 			[[ $volume ]] && break || sleep 1
 		done
-		[[ ! $volume ]] && volume=$( getContent $dirshm/volume )
 		[[ ! $volume ]] && return
 	fi
 	
@@ -436,7 +435,6 @@ volumeGet() {
 		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $volume )
 		val=${val_db/ *}
 		db=${val_db/* }
-		echo $val > $dirshm/volume
 	fi
 	case $1 in
 		push )  pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;

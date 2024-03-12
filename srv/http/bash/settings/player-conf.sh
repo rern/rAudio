@@ -11,7 +11,6 @@
 . /srv/http/bash/common.sh
 
 pushStatus() {
-	[[ $usbdac == add ]] && usbDacVolume
 	status=$( $dirbash/status.sh )
 	pushData mpdplayer "$status"
 	pushRefresh player
@@ -19,21 +18,12 @@ pushStatus() {
 	pushData refresh '{ "page": "system", "audiocards": '$audiocards' }'
 }
 
-usbDacVolume() { # fix - alsactl not maintain usb dac volume
-	. $dirshm/output # card name mixer mixertype
-	filevolume="$dirsystem/volume-$name"
-	if [[ $1 == remove ]]; then
-		[[ -s $dirshm/usbdac ]] && mv -f $dirshm/usbdac "$filevolume"
-	else
-		[[ -e "$filevolume" ]] && vol=$( < "$filevolume" ) || vol=$( getContent $dirshm/volume )
-		[[ ! $vol ]] && vol=50
-		amixer -c $card -Mq sset "$mixer" $vol%
-	fi
-}
-
 if [[ $1 ]]; then
 	usbdac=$1
-	[[ $usbdac == remove ]] && usbDacVolume remove || touch $dirshm/{usbdac,usbdacadd}
+	if [[ $usbdac == add ]]; then
+		touch $dirshm/{usbdac,usbdacadd}
+		alsactl restore # store - saved by cmd.sh volumeSetAt()
+	fi
 	touch $dirshm/usbdacflag
 	( sleep 3; rm -f $dirshm/{usbdacadd,usbdacflag} ) &
 fi

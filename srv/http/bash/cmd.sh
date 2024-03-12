@@ -170,7 +170,7 @@ volumeSetAt() {
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
 	elif [[ $control ]]; then                       # hardware
 		amixer -c $card -Mq sset "$control" $target%
-		[[ -e $dirshm/usbdac ]] && echo $target > $dirshm/usbdac
+		[[ -e $dirshm/usbdac ]] && alsactl store    # fix: not saved on off / disconnect
 	else                                            # software
 		mpc -q volume $target
 	fi
