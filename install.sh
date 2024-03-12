@@ -36,10 +36,6 @@ if [[ $mixerfiles ]]; then
 	done
 fi
 
-if [[ ! -e $dirshm/nosound ]]; then
-	( [[ ! -e $dirshm/output ]] || grep -q ^hwmixer $dirshm/output ) && restartmpd=1
-fi
-
 [[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
 
 # 20240212
@@ -128,5 +124,5 @@ cacheBust
 
 installfinish
 
-# 20240219
+# 20240312
 [[ $restartmpd ]] && $dirsettings/player-conf.sh
