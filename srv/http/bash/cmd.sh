@@ -7,7 +7,7 @@ args2var "$1"
 
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
-		! playerActive mpd && playerStop
+		playerActive mpd && radioStop || playerStop
 		mpc -q play $1
 	fi
 	pushPlaylist
