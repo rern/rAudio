@@ -562,7 +562,7 @@ mpcoption )
 	;;
 mpcplayback )
 	if [[ ! $ACTION ]]; then
-		! playerActive mpd && $dirbash/cmd.sh playerstop && exit
+		! playerActive mpd && playerstop && exit
 		
 		if statePlay; then
 			grep -q -m1 webradio=true $dirshm/status && ACTION=stop || ACTION=pause
