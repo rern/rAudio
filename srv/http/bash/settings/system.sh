@@ -208,6 +208,7 @@ gpio=25=op,dh"
 	else
 		config+="
 dtparam=audio=on"
+	rm -f $dirsystem/audio-{aplayname,output}
 	fi
 	configTxt
 	;;
