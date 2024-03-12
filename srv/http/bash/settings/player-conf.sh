@@ -165,7 +165,7 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ $CARD == -1 ]] && pushStatus && exit # >>>>>>>>>>
+[[ $CARD == -1 && ! $bluetooth ]] && pushStatus && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
 [[ ! $mixer || $bluetooth || $camilladsp || $equalizer ]] && mixerno=1
@@ -200,7 +200,7 @@ if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
 	fi
 	fileconf=/etc/spotifyd.conf
 	hw0=$( getVar device $fileconf )
-	mixer=$( getVar mixer $fileconf )
+	mixer0=$( getVar mixer $fileconf )
 	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
 #--------------->
 		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )

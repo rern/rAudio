@@ -36,10 +36,6 @@ if [[ $mixerfiles ]]; then
 	done
 fi
 
-if [[ ! -e $dirshm/nosound ]]; then
-	( [[ ! -e $dirshm/output ]] || grep -q ^hwmixer $dirshm/output ) && restartmpd=1
-fi
-
 [[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
 
 # 20240212
@@ -111,13 +107,6 @@ fi
 
 [[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/$arch/$repo' > /etc/pacman.d/mirrorlist
 
-# 20240113
-file=/etc/security/pam_env.conf
-if [[ -e /usr/bin/firefox ]] && ! grep -q MOZ_USE_XINPUT2 $file; then
-	echo MOZ_USE_XINPUT2 DEFAULT=1 >> $file
-	systemctl try-restart localbrowser
-fi
-
 # up to 20240212
 [[ $pkgs ]] && pacman -Sy --noconfirm $pkgs
 
@@ -135,5 +124,5 @@ cacheBust
 
 installfinish
 
-# 20240219
+# 20240312
 [[ $restartmpd ]] && $dirsettings/player-conf.sh

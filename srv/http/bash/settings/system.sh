@@ -587,7 +587,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action
-	pushDirCount
+	pushData mpdupdate '{ "counts": { "usb": '$( ls -1d /mnt/MPD/USB/*/ 2> /dev/null | wc -l )' } }'
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	;;
 volumeboot )

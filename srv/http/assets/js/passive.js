@@ -140,17 +140,6 @@ function psCoverart( data ) {
 	if ( ! V.playback ) refreshData();
 }
 function psDisplay( data ) {
-	if ( 'dircount' in data ) {
-		var k = data.dir;
-		var v = data.count;
-		$.each( data.dircount, ( k, v ) => {
-			C[ k ] = v;
-			$( '#mode-'+ k ).toggleClass( 'nodata', v === 0 );
-		} );
-		if ( V.librarylist && V.mode === k ) $( '#library' ).trigger( 'click' );
-		return
-	}
-	
 	if ( 'submenu' in data ) {
 		D[ data.submenu ] = data.value;
 		displaySubMenu();
@@ -248,6 +237,15 @@ function psMpdRadio( data ) {
 	if ( V.playlist ) setPlaylistScroll();
 }	
 function psMpdUpdate( data ) {
+	if ( 'counts' in data ) {
+		$.each( data.counts, ( k, v ) => {
+			C[ k ] = v;
+			$( '#mode-'+ k ).toggleClass( 'nodata', v === 0 );
+			if ( V.mode === k ) $( '#library' ).trigger( 'click' );
+		} );
+		return
+	}
+	
 	if ( 'type' in data ) {
 		data.type === 'mpd' ? S.updating_db = true : S.updatingdab = true;
 	} else if ( 'stop' in data ) {

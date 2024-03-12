@@ -169,4 +169,3 @@ CMD APM"
 fi
 
 udevil clean
-pushDirCount

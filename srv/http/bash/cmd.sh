@@ -685,8 +685,6 @@ mpcskip )
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
 mpcupdate )
-	[[ $ACTION == refresh ]] && pushDirCount && exit
-	
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
 	pushData mpdupdate '{ "type": "mpd" }'
 	if [[ $ACTION ]]; then
