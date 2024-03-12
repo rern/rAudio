@@ -155,8 +155,8 @@ case 'list':
 	if ( count( $lists ) ) htmlList( $lists );
 	break;
 case 'ls':
-	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
-		exec( 'ls -1d /mnt/MPD/'.$string."/*/ | sed -E 's#^/mnt/MPD/|/$##g'", $ls );
+	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root except shared dir
+		exec( 'ls -1d /mnt/MPD/'.$string."/*/ | sed -E -e 's#^/mnt/MPD/|/$##g' -e '/^NAS.data$/ d'", $ls );
 		htmlDirectory( $ls );
 		exit;
 	}
