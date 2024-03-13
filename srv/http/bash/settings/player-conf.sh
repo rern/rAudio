@@ -22,7 +22,7 @@ if [[ $1 ]]; then
 	usbdac=$1
 	if [[ $usbdac == add ]]; then
 		touch $dirshm/{usbdac,usbdacadd}
-		alsactl restore # store - saved by cmd.sh volumeSetAt()
+		alsactl restore # store - saved by cmd.sh - volumeGet push
 	fi
 	touch $dirshm/usbdacflag
 	( sleep 3; rm -f $dirshm/{usbdacadd,usbdacflag} ) &

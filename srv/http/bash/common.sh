@@ -416,10 +416,10 @@ volumeGet() {
 		args='-MD bluealsa'
 	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
-				&& playerActive mpd; then           # software
+				&& playerActive mpd; then            # software
 		val=$( mpc status %volume% | tr -dc [0-9] )
 		db=false
-	elif [[ -e $dirshm/amixercontrol ]]; then       # hardware
+	elif [[ -e $dirshm/amixercontrol ]]; then        # hardware
 		. <( grep -E '^card|^mixer' $dirshm/output )
 		args="-c $card -M sget \"$mixer\""
 	fi
@@ -437,7 +437,10 @@ volumeGet() {
 		db=${val_db/* }
 	fi
 	case $1 in
-		push )  pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
+		push )
+			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
+			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
+			;;
 		valdb ) echo '{ "val": '$val', "db": '$db' }';;
 		db )    echo $db;;
 		* )     echo $val;;
@@ -447,25 +450,22 @@ volumeGet() {
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 	killProcess vol
 	amixer -c $3 -Mq sset "$2" $1
-	volumePushSet
+	volumeUpDnPush
 }
 volumeUpDnBt() {
 	killProcess vol
 	amixer -MqD bluealsa sset "$2" $1
-	volumePushSet
+	volumeUpDnPush
 }
 volumeUpDnMpc() {
 	killProcess vol
 	mpc -q volume $1
-	volumePushSet
+	volumeUpDnPush
 }
-volumePush() {
-	sleep 0.5
-	volumeGet push
-	rm $dirshm/pidvol
-}
-volumePushSet() {
+volumeUpDnPush() {
 	rm -rf $dirsystem/volumemute
-	volumePush &> /dev/null &
 	echo $! > $dirshm/pidvol
+	( sleep 0.5
+		volumeGet push
+		rm -f $dirshm/pidvol ) &> /dev/null &
 }

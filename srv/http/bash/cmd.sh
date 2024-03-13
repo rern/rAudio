@@ -170,7 +170,6 @@ volumeSetAt() {
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
 	elif [[ $control ]]; then                       # hardware
 		amixer -c $card -Mq sset "$control" $target%
-		[[ -e $dirshm/usbdac ]] && alsactl store    # fix: not saved on off / disconnect
 	else                                            # software
 		mpc -q volume $target
 	fi
@@ -423,37 +422,6 @@ latestclear )
 		notify latest Latest Cleared
 	fi
 	sed -i -E 's/("latest": ).*/\1'$count',/' $dirmpd/counts
-	;;
-libdirfile )
-	mpcls=$( mpc ls "$DIR" 2> /dev/null )                                          # database
-	sysls=$( ls -1d "/mnt/MPD/$DIR"/*/ 2> /dev/null | sed -E 's#/mnt/MPD/|/$##g' ) # all dirs: /mnt/MPD/path/to/ > path/to
-	if [[ ! $mpcls ]]; then               # not in database
-		if [[ $sysls ]]; then
-			while read path; do
-				[[ -e "/mnt/MPD/$path/.mpdignore" ]] && continue
-				
-				[[ $( ls "/mnt/MPD/$path" ) ]] && df=d || df=f
-				nodatals+=$'\n'"$path^$df"
-			done <<< $sysls
-			[[ $nodatals ]] && echo "${nodatals:1}"
-		fi
-		exit
-	fi
-	
-	[[ ! $sysls ]] && exit
-	
-	while read path; do
-		[[ -e "/mnt/MPD/$path/.mpdignore" ]] && continue
-		
-		if [[ ! $( ls "/mnt/MPD/$path" ) ]]; then
-			mpcls=$( grep -v "^$path$" <<< $mpcls )
-			mpcls+=$'\n'"$path^f"                                                # ^f - no dirs/files
-		else
-			[[ ! $( mpc ls "$path" 2> /dev/null ) ]] && nodatals+=$'\n'"$path^d" # ^d - files but not in database
-		fi
-	done <<< $sysls
-	echo "$mpcls\
-$nodatals"
 	;;
 librandom )
 	if [[ $ON ]]; then

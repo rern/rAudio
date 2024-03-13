@@ -294,11 +294,10 @@ function htmlDirectory( $lists ) {
 		$name      = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode   = strtolower( explode( '/', $path )[ 0 ] );
-			$nodata = exec( 'mpc ls "'.$path.'" &> /dev/null || echo class="nodata"' );
 			$icon   = imgIcon( rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' ), 'folder' );
-			$html  .= htmlDirectoryLi( $mode, $index, $nodata, $icon, $path, $name );
+			$html  .= htmlDirectoryLi( $mode, $index, $icon, $path, $name );
 		} else {
-			$htmlf .= htmlDirectoryLi( $gmode, $index, '', i( 'music ', 'file' ), $path, $name );
+			$htmlf .= htmlDirectoryLi( $gmode, $index, i( 'music ', 'file' ), $path, $name );
 		}
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
@@ -308,9 +307,9 @@ function htmlDirectory( $lists ) {
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
 }
-function htmlDirectoryLi( $mode, $index, $nodata, $icon, $path, $name ) {
+function htmlDirectoryLi( $mode, $index, $icon, $path, $name ) {
 	return
-'<li data-mode="'.$mode.'" data-index="'.$index.'" '.$nodata.'>'.$icon.
+'<li data-mode="'.$mode.'" data-index="'.$index.'">'.$icon.
 '<a class="lipath">'.$path.'</a>
 <span class="single name">'.$name.'</span>
 </li>';
