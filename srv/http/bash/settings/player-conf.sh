@@ -48,6 +48,7 @@ if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from pla
 	# no mac address needed - bluealsa already includes mac of latest connected device
 	[[ ! -e $dirsystem/devicewithbt ]] && btoutputonly=1
 	hw=bluealsa
+	hwspotifyd=$( bluealsa-aplay -L | head -1 ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 #---------------< bluetooth
 	AUDIOOUTPUTBT='
 	name        "'$( < $dirshm/btname )'"
@@ -82,6 +83,7 @@ elif [[ ! $btoutputonly ]]; then
 	fi
 	if [[ $camilladsp ]]; then
 		hw=hw:Loopback,1
+		hwspotifyd=plughw:Loopback,1
 		ln -sf $dirmpdconf/{conf/,}camilladsp.conf
 	elif [[ $equalizer ]]; then
 		[[ $bluetooth ]] && mixertype=software
@@ -180,24 +182,22 @@ alsa = {
 	fi
 fi
 
-if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
-	if [[ $camilladsp ]]; then
-		hw=plughw:Loopback,1
-	elif [[ $bluetooth ]]; then
-		hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
-	elif [[ -e $dirsystem/spotifyoutput ]]; then
-		hw=$( < $dirsystem/spotifyoutput )
+if [[ -e /usr/bin/spotifyd ]]; then
+	if [[ -e $dirsystem/spotifyoutput ]]; then
+		hwspotifyd=$( < $dirsystem/spotifyoutput ) # hw=default:CARD=xxxx (from aplay -L)
+	else
+		hwspotifyd=hw:$card                        # hw=hw:N
 	fi
 	fileconf=/etc/spotifyd.conf
 	hw0=$( getVar device $fileconf )
 	mixer0=$( getVar mixer $fileconf )
-	if [[ $hw0 != $hw || $mixer0 != $mixer ]]; then
+	if [[ $hw0 != $hwspotifyd || $mixer0 != $mixer ]]; then
 #--------------->
 		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
 		if [[ ! $equalizer ]]; then
 			CONF+='
-device = "'$hw'"
-control = "'$hw'"
+device = "'$hwspotifyd'"
+control = "'$hwspotifyd'"
 mixer = "'$mixer'"'
 		[[ $mixerno ]] && CONF=$( grep -v ^mixer <<< $CONF )
 		fi
