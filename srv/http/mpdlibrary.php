@@ -134,7 +134,11 @@ case 'home':
 		}
 	}
 	$counts   = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
-	foreach( [ 'nas', 'sd', 'usb' ] as $dir ) $counts->$dir = count( glob( '/mnt/MPD/'.strtoupper( $dir ).'/*/' ) );
+	foreach( [ 'nas', 'sd', 'usb' ] as $dir ) {
+		$dirs = glob( '/mnt/MPD/'.strtoupper( $dir ).'/*/' );
+		if ( $dir === 'nas' ) $dirs = array_diff( $dirs, [ '/mnt/MPD/NAS/data/' ] );
+		$counts->$dir = count( $dirs );
+	}
 	$order    = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
 	$updating = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
