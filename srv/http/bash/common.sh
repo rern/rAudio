@@ -332,6 +332,12 @@ pushDataCoverart() {
 	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status
 	$dirbash/cmd.sh coverfileslimit
 }
+pushDirCounts() {
+	dir=$1
+	dirs=$( ls -1d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
+	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
+	pushData mpdupdate '{ "counts": { "'$dir'": '$( awk NF <<< $dirs | wc -l )' } }'
+}
 pushRefresh() {
 	local page push
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
