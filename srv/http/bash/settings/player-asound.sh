@@ -58,7 +58,7 @@ ctl.camilladsp {
 	card Loopback
 }'
 else
-	systemctl stop camilladsp
+	systemctl stop camilladsp &> /dev/null
 	rmmod snd-aloop &> /dev/null
 	if [[ $bluetooth ]]; then
 ########
