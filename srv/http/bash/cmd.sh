@@ -168,9 +168,9 @@ volumeSetAt() {
 	control=$2
 	card=$3
 	if [[ -e $dirshm/btreceiver ]]; then            # bluetooth
-		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
+		volumeBlueAlsa $target% "$control"
 	elif [[ $control ]]; then                       # hardware
-		amixer -c $card -Mq sset "$control" $target%
+		volumeAmixer $target% "$control" $card
 	else                                            # software
 		mpc -q volume $target
 	fi
@@ -780,15 +780,6 @@ volume )
 	;;
 volumesetat )
 	volumeSetAt $TARGET "$CONTROL" $CARD
-	;;
-volumeupdn )
-	volumeUpDn 1%$UPDN "$CONTROL" $CARD
-	;;
-volumeupdnbt )
-	volumeUpDnBt 1%$UPDN "$CONTROL"
-	;;
-volumeupdnmpc )
-	volumeUpDnMpc ${updn}1
 	;;
 webradioadd )
 	url=$( urldecode $URL )

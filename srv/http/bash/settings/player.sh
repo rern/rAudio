@@ -116,7 +116,7 @@ mixertype )
 	fi
 	if [[ $mixer ]]; then
 		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB # [hw] set to current [sw] || [sw/none] set 0dB
-		amixer -c $card -Mq sset "$mixer" $vol%
+		volumeAmixer $vol "$mixer" $card
 	fi
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false
@@ -124,7 +124,7 @@ mixertype )
 	;;
 novolume )
 	. $dirshm/output
-	amixer -c $card -Mq sset "$mixer" 0dB
+	volumeAmixer 0dB "$mixer" $card
 	echo none > "$dirsystem/mixertype-$name"
 	mpc -q crossfade 0
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
@@ -223,7 +223,7 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	amixer -c $CARD -Mq sset "$MIXER" $VAL%
+	volumeAmixer $VAL% "$MIXER" $CARD
 	[[ $VAL > 0 ]] && rm -f $dirsystem/volumemute
 	;;
 volume0db )
@@ -231,16 +231,16 @@ volume0db )
 	
 	card=$( < $dirsystem/asoundcard )
 	control=$( < $dirshm/amixercontrol )
-	amixer -c $card -Mq sset "$control" 0dB
+	volumeAmixer 0dB "$control" $card
 	volumeGet push hw
 	;;
 volume0dbbt )
 	btmixer=$( < $dirshm/btmixer )
-	amixer -MqD bluealsa sset "$btmixer" 0dB 2> /dev/null
+	volumeBlueAlsa 0dB "$btmixer"
 	volumeGet push hw
 	;;
 volumebt )
-	amixer -MqD bluealsa sset "$MIXER" $VAL%
+	volumeBlueAlsa $VAL% "$MIXER"
 	;;
 volumepush )
 	[[ ! $BT ]] && hw=hw

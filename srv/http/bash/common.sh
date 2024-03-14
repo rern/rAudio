@@ -414,6 +414,13 @@ statePlay() {
 stringEscape() {
 	echo "${@//\"/\\\"}"
 }
+volumeAmixer() { # value control card
+	amixer -c $3 -Mq sset "$2" $1
+	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
+}
+volumeBlueAlsa() { # value control
+	amixer -MqD bluealsa sset "$2" $1
+}
 volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
 	
@@ -455,12 +462,12 @@ volumeGet() {
 }
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 	killProcess vol
-	amixer -c $3 -Mq sset "$2" $1
+	volumeAmixer $1 "$2" $3
 	volumeUpDnPush
 }
 volumeUpDnBt() {
 	killProcess vol
-	amixer -MqD bluealsa sset "$2" $1
+	volumeBlueAlsa $1 "$2"
 	volumeUpDnPush
 }
 volumeUpDnMpc() {
