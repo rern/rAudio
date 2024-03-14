@@ -115,4 +115,4 @@ $( awk NF <<< $config )
 
 <bll># systemctl status $SERVICE</bll>
 $status
-$extra<br>"
+$extra"

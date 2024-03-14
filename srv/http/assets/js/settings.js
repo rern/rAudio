@@ -25,7 +25,7 @@ function currentStatus( id ) {
 	var command = services.includes( id ) ? [ 'settings/pkgstatus.sh', id ] : [ 'status'+ id ];
 	bash( command, status => {
 		clearTimeout( timeoutGet );
-		$el.html( status ).promise().done( () => {
+		$el.html( status + '<br>&nbsp;' ).promise().done( () => {
 			$el.removeClass( 'hide' );
 			if ( id === 'mpdconf' ) {
 				setTimeout( () => $( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() ), 100 );
