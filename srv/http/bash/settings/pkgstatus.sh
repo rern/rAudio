@@ -19,8 +19,8 @@ $( bluealsa-aplay -L )"
 		fileconf=/var/lib/iwd/ap/$( hostname ).ap
 		conf="\
 <bll># cat $fileconf</bll>
-$( awk NF $fileconf )
-
+$fileconf"
+		systemctl -q is-active iwd && config+="
 <bll># iwctl ap list</bll>
 $( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
 		;;
@@ -57,7 +57,7 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		done
 		conf="\
 <bll># $mpdconf</bll>
-$( awk NF <<< $conf )"
+$conf"
 		skip+='|configuration file does not exist|wildmidi'
 		;;
 	nfsserver )
@@ -111,7 +111,7 @@ $( grep -Ev '^#|^$' $fileconf )"
 fi
 
 echo "\
-$config
+$( awk NF <<< $config )
 
 <bll># systemctl status $SERVICE</bll>
 $status
