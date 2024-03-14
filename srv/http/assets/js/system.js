@@ -134,7 +134,7 @@ $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.
 		}
 		
 		var message = '<wh>Reboot required for:</wh>';
-		list.split( '\n' ).forEach( id => message += '<br>'+ ico( id ) + $( '#div'+ id +' .label' ).text() ); // i2smodule
+		list.split( '\n' ).forEach( id => message += '<br>'+ ico( id ) + $( '#div'+ id +' .label' ).eq( 0 ).text() );
 		info( {
 			  icon         : page
 			, title        : 'System Setting'

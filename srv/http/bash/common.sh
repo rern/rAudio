@@ -332,6 +332,12 @@ pushDataCoverart() {
 	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status
 	$dirbash/cmd.sh coverfileslimit
 }
+pushDirCounts() {
+	dir=$1
+	dirs=$( ls -1d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
+	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
+	pushData mpdupdate '{ "counts": { "'$dir'": '$( awk NF <<< $dirs | wc -l )' } }'
+}
 pushRefresh() {
 	local page push
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
@@ -416,10 +422,10 @@ volumeGet() {
 		args='-MD bluealsa'
 	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
-				&& playerActive mpd; then           # software
+				&& playerActive mpd; then            # software
 		val=$( mpc status %volume% | tr -dc [0-9] )
 		db=false
-	elif [[ -e $dirshm/amixercontrol ]]; then       # hardware
+	elif [[ -e $dirshm/amixercontrol ]]; then        # hardware
 		. <( grep -E '^card|^mixer' $dirshm/output )
 		args="-c $card -M sget \"$mixer\""
 	fi
@@ -428,7 +434,6 @@ volumeGet() {
 			volume=$( amixer $args 2> /dev/null | grep -m1 % )
 			[[ $volume ]] && break || sleep 1
 		done
-		[[ ! $volume ]] && volume=$( getContent $dirshm/volume )
 		[[ ! $volume ]] && return
 	fi
 	
@@ -436,10 +441,12 @@ volumeGet() {
 		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $volume )
 		val=${val_db/ *}
 		db=${val_db/* }
-		echo $val > $dirshm/volume
 	fi
 	case $1 in
-		push )  pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
+		push )
+			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
+			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
+			;;
 		valdb ) echo '{ "val": '$val', "db": '$db' }';;
 		db )    echo $db;;
 		* )     echo $val;;
@@ -449,25 +456,22 @@ volumeGet() {
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 	killProcess vol
 	amixer -c $3 -Mq sset "$2" $1
-	volumePushSet
+	volumeUpDnPush
 }
 volumeUpDnBt() {
 	killProcess vol
 	amixer -MqD bluealsa sset "$2" $1
-	volumePushSet
+	volumeUpDnPush
 }
 volumeUpDnMpc() {
 	killProcess vol
 	mpc -q volume $1
-	volumePushSet
+	volumeUpDnPush
 }
-volumePush() {
-	sleep 0.5
-	volumeGet push
-	rm $dirshm/pidvol
-}
-volumePushSet() {
+volumeUpDnPush() {
 	rm -rf $dirsystem/volumemute
-	volumePush &> /dev/null &
 	echo $! > $dirshm/pidvol
+	( sleep 0.5
+		volumeGet push
+		rm -f $dirshm/pidvol ) &> /dev/null &
 }

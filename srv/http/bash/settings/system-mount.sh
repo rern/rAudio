@@ -63,4 +63,4 @@ else
 	pushRefresh system
 fi
 
-pushData mpdupdate '{ "counts": { "nas": '$( ls -1d /mnt/MPD/NAS/*/ 2> /dev/null | wc -l )' } }'
+pushDirCounts nas

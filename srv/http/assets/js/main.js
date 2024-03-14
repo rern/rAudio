@@ -1574,6 +1574,14 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	V.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode            = V.mode;
 	list( query, function( html ) {
+		if ( ! html ) {
+			$this
+				.addClass( 'nodata' )
+				.removeClass( 'active' )
+				.find( '.li-icon' ).trigger( 'click' );
+			return
+		}
+		
 		var data = {
 			  html      : html
 			, modetitle : modetitle

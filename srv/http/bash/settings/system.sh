@@ -191,8 +191,6 @@ i2smodule )
 	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
 	rm -f /boot/cirrus /etc/modprobe.d/cirrus.conf
 	if [[ $APLAYNAME != none ]]; then
-		[[ -e $dirsystem/audio ]] && config+="
-dtparam=audio=on"
 		config+="
 dtparam=i2s=on
 dtoverlay=$APLAYNAME"
@@ -208,6 +206,7 @@ gpio=25=op,dh"
 	else
 		config+="
 dtparam=audio=on"
+	rm -f $dirsystem/audio-{aplayname,output}
 	fi
 	configTxt
 	;;
@@ -587,8 +586,8 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action
-	pushData mpdupdate '{ "counts": { "usb": '$( ls -1d /mnt/MPD/USB/*/ 2> /dev/null | wc -l )' } }'
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
+	pushDirCounts usb
 	;;
 volumeboot )
 	enableFlagSet

@@ -285,6 +285,7 @@ CMD ACTION PATHMPD"
 	fi
 	pushRefresh
 	pushData refresh '{ "page": "system", "nfsserver": '$TF' }'
+	pushDirCounts nas
 	;;
 screenofftoggle )
 #	[[ $( vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1

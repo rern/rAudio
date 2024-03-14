@@ -19,8 +19,8 @@ $( bluealsa-aplay -L )"
 		fileconf=/var/lib/iwd/ap/$( hostname ).ap
 		conf="\
 <bll># cat $fileconf</bll>
-$( awk NF $fileconf )
-
+$fileconf"
+		systemctl -q is-active iwd && config+="
 <bll># iwctl ap list</bll>
 $( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
 		;;
@@ -57,7 +57,7 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		done
 		conf="\
 <bll># $mpdconf</bll>
-$( awk NF <<< $conf )"
+$conf"
 		skip+='|configuration file does not exist|wildmidi'
 		;;
 	nfsserver )
@@ -93,13 +93,12 @@ $sharedip"
 		;;
 esac
 status=$( systemctl status $SERVICE \
-				| grep -E -v "$skip" \
-				| sed -E  -e '1 s|^.* (.*service) |<code>\1</code>|
-						' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
-											 s|(enabled)|<grn>\1</grn>|g}
-						' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
-											 s|( inactive \(.*\))|<red>\1</red>|
-											 s|(failed)|<red>\1</red>|ig}' )
+			| grep -E -v "$skip" \
+			| sed -E  -e 's|●|<grn>*</grn>|; s|○|*|
+					' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
+										 s|(enabled)|<grn>\1</grn>|g}
+					' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
+										 s|(failed)|<red>\1</red>|ig}' )
 config="<code>$( pacman -Q $PKG )</code>"
 if [[ $conf ]]; then
 	config+="
@@ -112,7 +111,8 @@ $( grep -Ev '^#|^$' $fileconf )"
 fi
 
 echo "\
-$config
+$( awk NF <<< $config )
 
+<bll># systemctl status $SERVICE</bll>
 $status
-$extra"
+$extra<br>"
