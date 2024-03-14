@@ -122,7 +122,8 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-installfinish
-
 # 20240315
+echo "$bar Restart MPD ..."
 $dirsettings/player-conf.sh
+
+installfinish

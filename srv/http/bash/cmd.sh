@@ -47,8 +47,8 @@ plAddRandom() {
 playerStart() {
 	local player service
 	player=$( < $dirshm/player )
-	mpc -q stop
 	radioStop
+	mpc -q stop
 	case $player in
 		airplay )   service=shairport-sync;;
 		bluetooth ) service=bluetoothhd;;
@@ -78,6 +78,7 @@ playerStop() {
 			systemctl restart bluetooth
 			;;
 		mpd )
+			radioStop
 			mpc -q stop
 			;;
 		snapcast )
@@ -508,6 +509,7 @@ mpccrop )
 	if statePlay; then
 		mpc -q crop
 	else
+		radioStop
 		mpc -q play
 		mpc -q crop
 		mpc -q stop
@@ -626,6 +628,7 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
+	radioStop
 	if [[ $ACTION ]]; then # playlist
 		mpc -q play $POS
 		Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
@@ -641,7 +644,6 @@ mpcskip )
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
-		radioStop
 		rm -f $dirshm/skip
 		mpc -q play $POS
 		[[ $consume == on ]] && mpc -q del $current
