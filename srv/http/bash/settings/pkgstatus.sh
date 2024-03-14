@@ -94,7 +94,8 @@ $sharedip"
 esac
 status=$( systemctl status $SERVICE \
 				| grep -E -v "$skip" \
-				| sed -E  -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
+				| sed -E  -e 's|●|<grn>*</grn>|
+						' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
 											 s|(enabled)|<grn>\1</grn>|g}
 						' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
 											 s|( inactive \(.*\))|<red>\1</red>|
