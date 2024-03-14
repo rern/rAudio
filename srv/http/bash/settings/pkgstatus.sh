@@ -107,7 +107,7 @@ else
 	[[ ! $fileconf ]] && fileconf=/etc/$PKG.conf
 	config+="
 <bll># cat $fileconf</bll>
-$( grep -Ev '^#|^$' $fileconf )"
+$( grep -Ev '^#|=$|^$' $fileconf )"
 fi
 
 echo "\

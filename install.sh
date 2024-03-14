@@ -124,5 +124,5 @@ cacheBust
 
 installfinish
 
-# 20240312
-[[ $restartmpd ]] && $dirsettings/player-conf.sh
+# 20240315
+$dirsettings/player-conf.sh
