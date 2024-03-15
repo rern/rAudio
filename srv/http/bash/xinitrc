@@ -2,9 +2,9 @@
 
 . /srv/http/bash/common.sh
 
-while read file; do
+for file in /etc/X11/xinit/xinitrc.d/*; do
 	. "$file"
-done <<< $( ls -1 /etc/X11/xinit/xinitrc.d/* )
+done
 
 $dirsettings/features.sh localbrowserxset
 
