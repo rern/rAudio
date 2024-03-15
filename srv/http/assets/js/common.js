@@ -1098,7 +1098,7 @@ function selectSet( $select ) {
 	var options = { minimumResultsForSearch: 10 }
 	if ( ! $select ) {
 		$select = $( '#infoList select' );
-		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
+		if ( $( '#infoList #eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	$select
 		.select2( options )

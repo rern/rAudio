@@ -28,10 +28,11 @@ function equalizer() {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
 			, list       : htmleq.replace( 'PRESETS', htmlOption( Object.keys( E.preset ) ) )
-			, values     : [ '', E.active, ...E.preset[ E.active ] ]
+			, values     : [ E.active, E.active, ...E.preset[ E.active ] ]
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 550 );
 				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
+				$( '#eq .select2-container' ).removeAttr( 'style' );
 				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
 					var $this, ystart, val, prevval;
 					var yH   = $( '.inforange input' ).width() - 40;
@@ -76,9 +77,11 @@ function eqPreset( v ) {
 function eqOptionPreset() {
 	local(); // suppress input event
 	$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
-	selectSet( $( '#eqpreset' ) );
-	I.values = [ '', E.active, ...E.preset[ E.active ] ];
+	I.values = [ E.active, E.active, ...E.preset[ E.active ] ];
 	infoSetValues();
+	selectSet();
+	$( '#eq .select2-container' ).removeAttr( 'style' );
+	if ( ! $( '#eqname' ).hasClass( 'hide' ) ) $( '#eq .select2-container' ).addClass( 'hide' );
 }
 function eqSlide( band, v ) {
 	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
@@ -104,9 +107,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	$( '#eqrename, #eq .select2-container, #eqnew' ).addClass( 'hide' );
 	$( '#eqdelete, #eqsave, #eqname, #eqback' ).removeClass( 'hide' );
 	$( '#eqname' ).css( 'display', 'inline-block' );
-	$( '#eqname' ).val( E.active );
 } ).on( 'click', '#eqnew', function() {
-	$( '#eqname' ).val( E.active );
 	$( '#eqrename, #eqdelete, #eq .select2-container, #eqnew' ).addClass( 'hide' );
 	$( '#eqsave, #eqname, #eqback' ).removeClass( 'hide' );
 	$( '#eqname' ).css( 'display', 'inline-block' );
@@ -124,7 +125,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	
 	var name = $( this ).val();
 	E.active = name;
-	I.values = [ '', E.active, ...E.preset[ E.active ] ];
+	I.values = [ E.active, E.active, ...E.preset[ E.active ] ];
 	infoSetValues();
 	$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
 	eqPreset( E.preset[ name ].join( ' ' ) );
