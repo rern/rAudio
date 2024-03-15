@@ -207,7 +207,7 @@ $( '.settings' ).on( 'click', function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
-			$( this ).hasClass( 'i-camilladsp' ) ? location.href = 'settings.php?p=camilla' :equalizer();
+			$( this ).hasClass( 'i-camilladsp' ) ? location.href = 'settings.php?p=camilla' : equalizer();
 			break;
 		case 'logout':
 			$.post( 'cmd.php', { cmd: 'logout' }, () => location.reload() );
