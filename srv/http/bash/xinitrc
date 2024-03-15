@@ -2,12 +2,11 @@
 
 . /srv/http/bash/common.sh
 
-. $dirsystem/localbrowser.conf
-
-if [[ $runxinitrcd ]]; then
-	for file in /etc/X11/xinit/xinitrc.d/*; do
+files=$( ls -1 /etc/X11/xinit/xinitrc.d/*.sh 2> /dev/null )
+if [[ $files ]]; then
+	while read file; do
 		. "$file"
-	done
+	done <<< $files
 fi
 
 $dirsettings/features.sh localbrowserxset
