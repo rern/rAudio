@@ -32,7 +32,7 @@ function equalizer() {
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 550 );
 				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
-				$( '#eq .select2-container' ).removeAttr( 'style' );
+				$( '#eq .select2-container' ).css( 'width', '' );
 				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
 					var $this, ystart, val, prevval;
 					var yH   = $( '.inforange input' ).width() - 40;
