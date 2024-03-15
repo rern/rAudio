@@ -5,8 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240315
-grep -q runxinitrcd=$ $dirsystem/localbrowser.conf && mv /etc/X11/xinit/xinitrc.d/50-systemd-user.sh{,.backup}
-
 ! grep -q netdev /etc/group && groupadd netdev
 
 # 20240303
