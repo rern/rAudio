@@ -313,6 +313,14 @@ function contextmenuLibrary( $li, $target ) {
 		var menutop = $li.offset().top + 48;
 	}
 	contextmenuScroll( $menu, menutop );
+	if ( $li.hasClass( 'nodata' ) ) return
+	
+	bash( [ 'mpcls', V.list.path, 'CMD DIR' ], function( data ) {
+		if ( ! data ) {
+			$li.addClass( 'nodata' );
+			contextmenuLibrary( $li, $target );
+		}
+	}, 'json' );
 }
 function contextmenuScroll( $menu, menutop ) {
 	var fixedmenu = V.library && ( V.list.licover && V.wH > 767 ) && D.fixedcover ? true : false;

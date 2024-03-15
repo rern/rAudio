@@ -1458,6 +1458,11 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	
 	var $this   = $( this );
 	var $target = $( e.target );
+	if ( $this.hasClass( 'nodata' ) ) {
+		contextmenuLibrary( $this, $target );
+		return
+	}
+	
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
@@ -1468,11 +1473,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		return
 	}
 	
-	if ( $this.hasClass( 'nodata' ) ) {
-		$this.find( '.li-icon' ).trigger( 'click' );
-		return
-	}
-
 	if ( $this.hasClass( 'licover' ) ) {
 		if ( $target.is( '.liartist, .i-artist, .i-albumartist, .licomposer, .i-composer' ) ) {
 			var name = ( $target.is( '.licomposer, .i-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();
@@ -1575,10 +1575,8 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	query.gmode            = V.mode;
 	list( query, function( html ) {
 		if ( ! html ) {
-			$this
-				.addClass( 'nodata' )
-				.removeClass( 'active' )
-				.find( '.li-icon' ).trigger( 'click' );
+			$this.addClass( 'nodata' );
+			contextmenuLibrary( $this, $target );
 			return
 		}
 		
