@@ -7,7 +7,6 @@ if ( file_exists( $fileflag ) ) { // close on refresh
 	exit();
 }
 
-$dirsettings = '/usr/bin/sudo /srv/http/bash/settings/';
 $alias       = $_POST[ 'alias' ];
 if ( $alias === 'albumthumbnail' ) {
 	$label       = 'Update';
@@ -111,7 +110,7 @@ chmod 755 $installfile
 EOF;
 
 if ( $alias === 'albumthumbnail' ) {
-	$command    = $dirsettings.'albumthumbnail.sh "'.$_POST[ 'path' ].'" '.$_POST[ 'overwrite' ];
+	$command    = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$_POST[ 'path' ].'" '.$_POST[ 'overwrite' ];
 	$commandtxt = $command;
 } else if ( $label === 'Uninstall' ) {
 	$command    = "uninstall_$alias.sh";

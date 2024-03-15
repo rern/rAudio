@@ -22,7 +22,6 @@ else
 	delay=( $offd )
 	order="<gr>$orderoff"
 	color=gr
-	alsactl store
 fi
 dL=${#delay[@]}
 i=0

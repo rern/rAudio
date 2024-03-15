@@ -47,8 +47,8 @@ plAddRandom() {
 playerStart() {
 	local player service
 	player=$( < $dirshm/player )
-	mpc -q stop
 	radioStop
+	mpc -q stop
 	case $player in
 		airplay )   service=shairport-sync;;
 		bluetooth ) service=bluetoothhd;;
@@ -78,6 +78,7 @@ playerStop() {
 			systemctl restart bluetooth
 			;;
 		mpd )
+			radioStop
 			mpc -q stop
 			;;
 		snapcast )
@@ -167,9 +168,9 @@ volumeSetAt() {
 	control=$2
 	card=$3
 	if [[ -e $dirshm/btreceiver ]]; then            # bluetooth
-		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
+		volumeBlueAlsa $target% "$control"
 	elif [[ $control ]]; then                       # hardware
-		amixer -c $card -Mq sset "$control" $target%
+		volumeAmixer $target% "$control" $card
 	else                                            # software
 		mpc -q volume $target
 	fi
@@ -508,6 +509,7 @@ mpccrop )
 	if statePlay; then
 		mpc -q crop
 	else
+		radioStop
 		mpc -q play
 		mpc -q crop
 		mpc -q stop
@@ -518,6 +520,9 @@ mpccrop )
 	;;
 mpclibrandom )
 	plAddRandom
+	;;
+mpcls )
+	mpc ls "$DIR" 2> /dev/null | wc -l
 	;;
 mpcmove )
 	mpc -q move $FROM $TO
@@ -626,6 +631,7 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
+	radioStop
 	if [[ $ACTION ]]; then # playlist
 		mpc -q play $POS
 		Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
@@ -641,7 +647,6 @@ mpcskip )
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
-		radioStop
 		rm -f $dirshm/skip
 		mpc -q play $POS
 		[[ $consume == on ]] && mpc -q del $current
@@ -778,15 +783,6 @@ volume )
 	;;
 volumesetat )
 	volumeSetAt $TARGET "$CONTROL" $CARD
-	;;
-volumeupdn )
-	volumeUpDn 1%$UPDN "$CONTROL" $CARD
-	;;
-volumeupdnbt )
-	volumeUpDnBt 1%$UPDN "$CONTROL"
-	;;
-volumeupdnmpc )
-	volumeUpDnMpc ${updn}1
 	;;
 webradioadd )
 	url=$( urldecode $URL )

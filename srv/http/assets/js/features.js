@@ -183,7 +183,6 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			, [ 'Screen off <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 60 } } ]
 			, [ 'On while play',             'checkbox' ]
 			, [ 'Mouse pointer',             'checkbox' ]
-			, [ 'run <c>xinitrc.d</c>',      'checkbox' ]
 		]
 		, footer       : '<br>'+ brightness + button
 		, boxwidth     : 110

@@ -38,6 +38,11 @@ else                                   # no sound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
 	[[ $bluetooth ]] && CARD=0 || CARD=-1
 	echo $CARD > $dirsystem/asoundcard
+	echo '
+card='$CARD'
+name=
+mixer=
+mixertype=' > $dirshm/output
 	pushData display '{ "volumenone": true }'
 fi
 
@@ -72,7 +77,7 @@ if [[ $CARD == -1 ]]; then # no audio devices
 		pushData display '{ "volumenone": true }'
 		pushData refresh '{ "page": "features", "nosound": true }'
 	fi
-elif [[ ! $btoutputonly ]]; then
+elif [[ ! $btoutputonly && ! -e $dirshm/nosound ]]; then
 	. $dirshm/output # card name mixer mixertype
 	# usbdac.rules
 	if [[ $usbdac ]]; then

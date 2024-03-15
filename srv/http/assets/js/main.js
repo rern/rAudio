@@ -207,7 +207,7 @@ $( '.settings' ).on( 'click', function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
-			$( this ).hasClass( 'i-camilladsp' ) ? location.href = 'settings.php?p=camilla' :equalizer();
+			$( this ).hasClass( 'i-camilladsp' ) ? location.href = 'settings.php?p=camilla' : equalizer();
 			break;
 		case 'logout':
 			$.post( 'cmd.php', { cmd: 'logout' }, () => location.reload() );
@@ -1468,11 +1468,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		return
 	}
 	
-	if ( $this.hasClass( 'nodata' ) ) {
-		$this.find( '.li-icon' ).trigger( 'click' );
-		return
-	}
-
 	if ( $this.hasClass( 'licover' ) ) {
 		if ( $target.is( '.liartist, .i-artist, .i-albumartist, .licomposer, .i-composer' ) ) {
 			var name = ( $target.is( '.licomposer, .i-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();
@@ -1575,10 +1570,8 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	query.gmode            = V.mode;
 	list( query, function( html ) {
 		if ( ! html ) {
-			$this
-				.addClass( 'nodata' )
-				.removeClass( 'active' )
-				.find( '.li-icon' ).trigger( 'click' );
+			$this.addClass( 'nodata' );
+			contextmenuLibrary( $this, $target );
 			return
 		}
 		

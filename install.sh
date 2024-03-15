@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240315
+! grep -q netdev /etc/group && groupadd netdev
+
 # 20240303
 file=/etc/udev/rules.d/bluetooth.rules
 if [[ -e $file ]] && grep -q bluetoothcommand $file; then
@@ -129,7 +132,8 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-installfinish
+# 20240315
+echo "$bar Restart MPD ..."
+$dirsettings/player-conf.sh
 
-# 20240312
-[[ $restartmpd ]] && $dirsettings/player-conf.sh
+installfinish
