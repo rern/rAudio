@@ -973,17 +973,14 @@ function infoWidth() {
 		}
 		var allW   = $( '#infoList' ).width();
 		var labelW = Math.round( $( '#infoList td:first-child' ).width() ) || 0;
-		var boxW   = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+		I.boxW   = ( widthmax ? allW - labelW - 20 : I.boxwidth );
 	} else {
-		var boxW   = 230;
+		I.boxW   = 230;
 	}
 	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' )
 		.parent().addBack()
-		.css( 'width', boxW +'px' )
-	if ( $( '#infoList select' ).length ) {
-		selectSet(); // render select to set width
-		$( '#infoList .select2-container' ).attr( 'style', 'width: '+ boxW +'px !important' );
-	}
+		.css( 'width', I.boxW +'px' )
+	if ( $( '#infoList select' ).length ) selectSet();
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
 		$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
 	}
@@ -1118,6 +1115,7 @@ function selectSet( $select ) {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
 		} );
+	$( '#infoList .select2-container' ).attr( 'style', 'width: '+ I.boxW +'px !important' );
 }
 function selectText2Html( pattern ) {
 	function htmlSet( $el ) {
