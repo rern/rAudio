@@ -1458,11 +1458,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	
 	var $this   = $( this );
 	var $target = $( e.target );
-	if ( $this.hasClass( 'nodata' ) ) {
-		contextmenuLibrary( $this, $target );
-		return
-	}
-	
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
 	var menushow = $( '.contextmenu:not( .hide )' ).length;

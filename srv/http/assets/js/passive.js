@@ -69,7 +69,6 @@ function psOnMessage( message ) {
 		case 'airplay':       psAirplay( data );        break;
 		case 'audiocd':       psAudioCD( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
-		case 'count':         psCounrt( data );         break;
 		case 'coverart':      psCoverart( data );       break;
 		case 'display':       psDisplay( data );        break;
 		case 'equalizer':     psEqualizer( data );      break;
