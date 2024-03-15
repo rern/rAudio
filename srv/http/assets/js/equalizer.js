@@ -106,7 +106,7 @@ function eqSlideEnd() {
 }
 
 $( '#infoOverlay' ).on( 'click', '#eqrename, #eqnew', function() {
-	this.id === 'eqrename' ? $( '#eqdelete' ).addClass( 'hide' ) : $( '#eqdelete' ).removeClass( 'hide' );
+	this.id === 'eqrename' ? $( '#eqdelete' ).removeClass( 'hide' ) : $( '#eqdelete' ).addClass( 'hide' );
 	$( '#eqrename, #eq .select2-container, #eqnew' ).addClass( 'hide' );
 	$( '#eqsave, #eqname, #eqback' ).removeClass( 'hide' );
 	$( '#eqname' )
