@@ -76,12 +76,14 @@ function eqPreset( v ) {
 }
 function eqOptionPreset() {
 	local(); // suppress input event
+	var name   = ! $( '#eqname' ).hasClass( 'hide' );
+	var eqname = name ? $( '#eqname' ).val() : E.active;
 	$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
-	I.values = [ E.active, E.active, ...E.preset[ E.active ] ];
+	I.values = [ eqname, E.active, ...E.preset[ E.active ] ];
 	infoSetValues();
 	selectSet();
 	$( '#eq .select2-container' ).removeAttr( 'style' );
-	if ( ! $( '#eqname' ).hasClass( 'hide' ) ) $( '#eq .select2-container' ).addClass( 'hide' );
+	if ( name ) $( '#eq .select2-container' ).addClass( 'hide' );
 }
 function eqSlide( band, v ) {
 	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
@@ -103,14 +105,13 @@ function eqSlideEnd() {
 	eqOptionPreset();
 }
 
-$( '#infoOverlay' ).on( 'click', '#eqrename', function() {
+$( '#infoOverlay' ).on( 'click', '#eqrename, #eqnew', function() {
+	this.id === 'eqrename' ? $( '#eqdelete' ).addClass( 'hide' ) : $( '#eqdelete' ).removeClass( 'hide' );
 	$( '#eqrename, #eq .select2-container, #eqnew' ).addClass( 'hide' );
-	$( '#eqdelete, #eqsave, #eqname, #eqback' ).removeClass( 'hide' );
-	$( '#eqname' ).css( 'display', 'inline-block' );
-} ).on( 'click', '#eqnew', function() {
-	$( '#eqrename, #eqdelete, #eq .select2-container, #eqnew' ).addClass( 'hide' );
 	$( '#eqsave, #eqname, #eqback' ).removeClass( 'hide' );
-	$( '#eqname' ).css( 'display', 'inline-block' );
+	$( '#eqname' )
+		.css( 'display', 'inline-block' )
+		.val( E.active );
 } ).on( 'click', '#eqback', function() {
 	$( '#eqrename, #eq .select2-container, #eqnew' ).removeClass( 'hide' );
 	$( '#eqdelete, #eqsave, #eqname, #eqback' ).addClass( 'hide' );
