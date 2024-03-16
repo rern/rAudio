@@ -5,8 +5,9 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240315
-! grep -q netdev /etc/group && groupadd netdev
-
+if [[ -e /usr/bin/iwctl ]]; then
+	! grep -q netdev /etc/group && groupadd netdev
+fi
 # 20240303
 file=/etc/udev/rules.d/bluetooth.rules
 if grep -q bluetoothcommand $file; then
@@ -40,72 +41,6 @@ if [[ $mixerfiles ]]; then
 fi
 
 [[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
-
-# 20240121
-if [[ ! -e /usr/bin/iwctl ]]; then
-	pacman -Sy --noconfirm iwd
-	mkdir -p /etc/iwd /var/lib/iwd/ap
-	echo "\
-[General]
-EnableNetworkConfiguration=true
-
-[Scan]
-DisablePeriodicScan=true
-
-[Network]
-EnableIPv6=false
-" >/etc/iwd/main.conf
-	passphrase=$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )
-	address=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
-	echo "\
-[Security]
-Passphrase=$passphrase
-
-[IPv4]
-Address=$address
-" > /var/lib/iwd/ap/rAudio.ap
-fi
-
-if [[ ! -e /usr/bin/gpioset ]]; then
-	pkgs+=' libgpiod'
-	
-	file=$dirsystem/powerbutton.conf
-	if [[ -e $file ]]; then
-	. $file
-	echo "\
-on=${j8_bcm[on]}
-sw=${j8_bcm[sw]}
-led=${j8_bcm[led]}
-reserved=${j8_bcm[reserved]}" > $file
-		systemctl try-restart powerbutton
-	fi
-	
-	file=$dirsystem/relays.conf
-	if [[ -e $file ]]; then
-		. $file
-		for i in $on; do
-			onnew+=" ${j8_bcm[i]}"
-		done
-		for i in $off; do
-			offnew+=" ${j8_bcm[i]}"
-		done
-		new=$( grep -Ev '^on=|^off=' $file )
-		conf="\
-on='${onnew:1}'
-off='${offnew:1}'
-$( grep -Ev '^on=|^off=' $file )"
-		echo "$conf" > $file
-		
-		file=$dirsystem/relays.json
-		pins=$( jq keys < $file | tr -d '"[],\n' )
-		for p in $pins; do
-			json+=', "'${j8_bcm[p]}'": '$( jq '.["'$p'"]' < $file )
-		done
-		jq <<< "{ ${json:1} }" > $file
-	fi
-fi
-
-[[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/$arch/$repo' > /etc/pacman.d/mirrorlist
 
 # 20240212
 [[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils
