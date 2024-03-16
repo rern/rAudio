@@ -565,6 +565,8 @@ tftcalibrate )
 	;;
 timezone )
 	if [[ $TIMEZONE == auto ]]; then
+		! ipOnline 8.8.8.8 && notify timezone 'Timezone - Auto' 'No internet connection.' && exit
+		
 		tz=$( curl -s https://ipapi.co/timezone )
 		[[ ! $tz ]] && tz=$( curl -s http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
 		[[ ! $tz ]] && tz=$( curl -s https://worldtimeapi.org/api/ip | jq -r .timezone )
