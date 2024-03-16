@@ -185,6 +185,7 @@ dirPermissions() {
 	if [[ ! -e /usr/bin/camilladsp ]]; then
 		rm -f /srv/http/assets/css/camilla.css \
 			/srv/http/assets/js/{camilla,pipelineplotter}.js \
+			/srv/http/assets/js/plugin/{d3,plotly}*.min.js
 			/srv/http/settings/camilla.php \
 			$dirsettings/camilla*
 	fi
