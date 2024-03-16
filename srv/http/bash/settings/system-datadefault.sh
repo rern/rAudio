@@ -42,6 +42,8 @@ screenoff=0
 onwhileplay=
 cursor=
 runxinitrcd=" > $dirsystem/localbrowser.conf
+else
+	rm -f /srv/http/assets/img/splah.png $dirbash/xinitrc
 fi
 
 # mirror
