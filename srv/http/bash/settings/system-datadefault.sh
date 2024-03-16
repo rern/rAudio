@@ -3,8 +3,8 @@
 . /srv/http/bash/common.sh
 
 # data directories
-mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
-mkdir -p $dircamilladsp/{coeffs,configs,configs-bt,raw}
+mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img}
+mkdir -p $dircamilladsp/{coeffs,configs,configs-bt,raw} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
@@ -19,9 +19,9 @@ done
 
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
-	label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
-false='albumbyartist albumyear audiocdplclear backonleft barsalways composername conductorname covervu hidecover
-	multiraudio progress radioelapsed tapaddplay tapreplaceplay vumeter'
+	  label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
+false='albumbyartist albumyear audiocdplclear backonleft barsalways composername conductorname covervu
+	   hidecover multiraudio progress radioelapsed tapaddplay tapreplaceplay vumeter'
 for i in $true; do
 	lines+='
 , "'$i'": true'
