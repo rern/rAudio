@@ -99,6 +99,9 @@ else
 			appendSortUnique $ipaddress $filesharedip
 		fi
 		[[ -e $bootwifi ]] && rm -f $bootwifi
+		[[ $partition ]] && $dirsettings/system.sh 'timezone
+auto
+CMD TIMEZONE'
 	else
 		if [[ $wlandev && ! $ap ]]; then
 			if [[ $wlanprofile ]]; then
