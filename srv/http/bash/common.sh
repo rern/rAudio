@@ -181,14 +181,14 @@ data2json() {
 }
 dirPermissions() {
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
-	[[ ! -e /usr/bin/firefox ]] && rm -f /srv/http/assets/img/splash.png $dirbash/xinitrc
 	if [[ ! -e /usr/bin/camilladsp ]]; then
 		rm -f /srv/http/assets/css/camilla.css \
-			/srv/http/assets/js/{camilla,pipelineplotter}.js \
-			/srv/http/assets/js/plugin/{d3,plotly}*.min.js
-			/srv/http/settings/camilla.php \
-			$dirsettings/camilla*
+			  /srv/http/assets/js/{camilla,pipelineplotter}.js \
+			  /srv/http/assets/js/plugin/{d3,plotly}*.min.js
+			  /srv/http/settings/camilla.php \
+			  $dirsettings/camilla*
 	fi
+	[[ ! -e /usr/bin/firefox ]] && rm -f /srv/http/assets/img/splash.png $dirbash/xinitrc
 	chown -R http:http /srv
 	chown mpd:audio $dirmpd $dirplaylists
  	[[ -e $dirmpd/mpd.db ]] && chown mpd:audio $dirmpd/mpd.db
