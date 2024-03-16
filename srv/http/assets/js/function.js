@@ -313,7 +313,7 @@ function contextmenuLibrary( $li, $target ) {
 		var menutop = $li.offset().top + 48;
 	}
 	contextmenuScroll( $menu, menutop );
-	if ( $li.hasClass( 'nodata' ) ) return
+	if ( ! [ 'sd', 'nas', 'usb' ].includes( V.mode ) || $li.hasClass( 'nodata' ) ) return
 	
 	bash( [ 'mpcls', V.list.path, 'CMD DIR' ], function( data ) {
 		if ( ! data ) {

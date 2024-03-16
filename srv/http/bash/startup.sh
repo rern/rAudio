@@ -99,6 +99,11 @@ else
 			appendSortUnique $ipaddress $filesharedip
 		fi
 		[[ -e $bootwifi ]] && rm -f $bootwifi
+		if [[ $partition ]] && ipOnline 8.8.8.8; then
+			$dirsettings/system.sh 'timezone
+auto
+CMD TIMEZONE'
+		fi
 	else
 		if [[ $wlandev && ! $ap ]]; then
 			if [[ $wlanprofile ]]; then
