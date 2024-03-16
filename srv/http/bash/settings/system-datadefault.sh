@@ -51,7 +51,7 @@ fi
 sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
 
 # snapclient
-echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient
+[[ -e /usr/bin/snapclient ]] && echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient
 
 # system
 hostnamectl set-hostname rAudio
