@@ -417,7 +417,7 @@ stringEscape() {
 }
 volumeAmixer() { # value control card
 	amixer -c $3 -Mq sset "$2" $1
-	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
+	[[ -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
