@@ -937,7 +937,12 @@ $( '.btn-cmd' ).on( 'click', function() {
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 			
-			V.prevnext = cmd;
+			cmd == 'next' ? S.song++ : S.song--;
+			if ( S.song < 0 ) {
+				S.song = S.pllength - 1;
+			} else if ( S.song === S.pllength ) {
+				S.song = 0;
+			}
 			playlistSkip();
 		}
 	}
