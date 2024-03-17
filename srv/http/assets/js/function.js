@@ -1719,14 +1719,13 @@ function setPlaybackBlankQR() {
 		
 	var htmlqr = '';
 	if ( ! S.ip && D.ap ) {
-		htmlqr += '<div class="qr gr">Access Point: <wh>'+ D.apconf.ssid +'</wh>'
-				 +'<br>Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
+		htmlqr += '<gr>Access Point:</gr> <wh>'+ D.apconf.ssid +'</wh>'
+				 +'<br><gr>Password:</gr> <wh>'+ D.apconf.passphrase +'</wh>'
 				 +'<div class="code">'+ qrCode( D.apconf.qr ) +'</div>';
 	}
-	htmlqr   +=  '<div class="code">'+ qrCode( 'http://'+ ip ) +'</div>'
-				+'<div class="text"><gr>http://</gr>'+ ip
+	htmlqr   +=  '<gr>http://</gr>'+ ip
 				+ ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-				+'</div>';
+				+'<div class="code">'+ qrCode( 'http://'+ ip ) +'</div>';
 	$( '#map-cover' ).before( '<div id="qr">'+ htmlqr +'</div>' );
 }
 function setPlaybackStop() {

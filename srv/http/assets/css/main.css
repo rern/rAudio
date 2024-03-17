@@ -584,13 +584,9 @@ i.map.disabled, .map.disabled i {
 #qr {
 	width: 230px;
 	height: 230px;
-	padding-top: 57px;
 }
 #qr .code {
-	margin: 0 auto;
-}
-#qr .text {
-	margin-top: 10px;
+	margin: 21px auto;
 }
 #coverart svg .text {
 	fill: var( --cw ) !important;
