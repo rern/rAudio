@@ -297,7 +297,7 @@ function contextmenuLibrary( $li, $target ) {
 		$menu.find( '.exclude, .update' ).removeClass( 'hide' );
 	} else {
 		var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
-		$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', ! S.pllength );
+		$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 		$menu.find( '.update' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
 		$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
 		$menu.find( '.directory' ).toggleClass( 'hide', filemode );
@@ -488,7 +488,7 @@ function displayBars() {
 	
 	var mpd_upnp = [ 'mpd', 'upnp' ].includes( S.player );
 	var noprevnext = S.pllength < 2 || ! mpd_upnp;
-	$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 && mpd_upnp );
+	$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 );
 	$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 	$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
@@ -523,7 +523,7 @@ function displayPlayback() {
 	}
 	if ( ! hidetime ) $( '#time' ).roundSlider( S.webradio || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
-	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.webradio || S.player !== 'mpd' );
+	$( '#time-band' ).toggleClass( 'disabled', S.pllength === 0 || S.webradio || S.player !== 'mpd' );
 	$( '#time, #coverBL, #coverBR' ).toggleClass( 'disabled', S.webradio || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || $volume.is( ':visible' ) );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
@@ -552,7 +552,7 @@ function guideHide() {
 	if ( V.guide ) {
 		V.guide        = false;
 		var barvisible = $bartop.is( ':visible' );
-		$( '#coverTR' ).toggleClass( 'empty', ! S.pllength && ! barvisible && S.player === 'mpd' );
+		$( '#coverTR' ).toggleClass( 'empty', S.pllength === 0 && ! barvisible && S.player === 'mpd' );
 		$( '.map' ).removeClass( 'mapshow' );
 		$( '#bar-bottom' ).removeClass( 'translucent' );
 		if ( ! barvisible ) $( '#bar-bottom' ).addClass( 'transparent' );

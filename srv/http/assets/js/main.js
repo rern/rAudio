@@ -790,7 +790,7 @@ $( '.map' ).on( 'click', function( e ) {
 		$( '#guide-bio' ).toggleClass( 'hide', S.Artist === '' );
 		$( '#guide-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
 		$( '#guide-booklet' ).toggleClass( 'hide', S.Album === '' );
-		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', ! S.pllength );
+		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', S.pllength === 0 );
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $bartop.is( ':hidden' ) );
@@ -1275,7 +1275,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, list       : htmllist
 		, values     : 'addplay'
 		, beforeshow : () => {
-			$( '#infoList .pllength' ).toggleClass( 'hide', ! S.pllength );
+			$( '#infoList .pllength' ).toggleClass( 'hide', S.pllength === 0 );
 			$( '#infoList' ).on( 'click', '.cmd', function() {
 				V.list.li = $( '.infomessage' );
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];
@@ -1873,7 +1873,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				V.list.name   = $this.find( '.name' ).text().trim();
 				V.list.path   = $this.find( '.lipath' ).text().trim() || V.list.name;
 				V.list.track  = $this.data( 'track' );
-				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', ! S.pllength );
+				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', S.pllength === 0 );
 				$( '.remove' ).removeClass( 'hide' );
 				$( '.tag' ).addClass( 'hide' );
 				if ( ( D.tapaddplay || D.tapreplaceplay )
@@ -1885,11 +1885,11 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 					return
 				}
 				
-				$menu.find( '.replace' ).toggleClass( 'hide', ! S.pllength );
 				$menu.find( '.similar' ).toggleClass( 'hide', S.webradio );
 				$menu.find( '.wrsave' ).toggleClass( 'hide', ! $this.hasClass( 'notsaved' ) );
 			}
 			$this.addClass( 'active' );
+			$menu.find( '.replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', S.player !== 'mpd' );
 			contextmenuScroll( $menu, $this.position().top + 48 );
 		}

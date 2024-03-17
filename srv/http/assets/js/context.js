@@ -173,7 +173,6 @@ function playlistDelete() {
 	} );
 }
 function playlistLoad( name, play, replace ) {
-	V.local = true;
 	banner( 'file-playlist', name, 'Load ...' );
 	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], function() {
 		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
@@ -711,9 +710,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 				var play = cmd.slice( -1 ) === 'y';
 				var replace = cmd.slice( 0, 1 ) === 'r';
 				if ( replace ) {
-					infoReplace( () => playlistLoad( path, play, replace ) );
+					infoReplace( () => playlistLoad( V.list.path, play, replace ) );
 				} else {
-					playlistLoad( path, play, replace );
+					playlistLoad( V.list.path, play, replace );
 				}
 				return
 			}

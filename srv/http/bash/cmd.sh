@@ -122,6 +122,12 @@ radioStop() {
 		[[ ! -e $dirshm/skip ]] && $dirbash/status-push.sh
 	fi
 }
+savedPlCount() {
+	playlists=$( ls -1 $dirplaylists | wc -l )
+	grep -q '"playlists".*,' $dirmpd/counts && playlists+=,
+	sed -i -E 's/("playlists" *: ).*/\1'$playlists'/' $dirmpd/counts
+	pushSavedPlaylist
+}
 shairportStop() {
 	systemctl stop shairport
 	systemctl restart shairport-sync
@@ -705,9 +711,7 @@ relaystimerreset )
 	;;
 savedpldelete )
 	rm "$dirplaylists/$NAME.m3u"
-	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	pushSavedPlaylist
+	savedPlCount
 	;;
 savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	plfile="$dirplaylists/$NAME.m3u"
@@ -741,9 +745,7 @@ savedplsave )
 	
 	mpc -q save "$NAME"
 	chmod 777 "$plfile"
-	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i -E 's/(,*)(.*playlists" *: ).*(,)/\1\2'$count'\3/' $dirmpd/counts
-	pushSavedPlaylist
+	savedPlCount
 	;;
 screenoff )
 	DISPLAY=:0 xset dpms force off
