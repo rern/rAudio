@@ -1098,8 +1098,18 @@ function playlistSkip() {
 	}
 }
 function playlistSkipSet() {
-	var file = $( '#pl-list li' ).eq( S.song ).find( '.lipath' ).text();
-	bash( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
+	if ( S.random ) {
+		bash( [ 'mpcskip' ] );
+	} else {
+		V.prevnext === 'next' ? S.song++ : S.song--;
+		if ( S.song < 0 ) {
+			S.song = S.pllength - 1;
+		} else if ( S.song === S.pllength ) {
+			S.song = 0;
+		}
+		var file = $( '#pl-list li' ).eq( S.song ).find( '.lipath' ).text();
+		bash( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
+	}
 }
 function refreshData() {
 	if ( V.library ) {

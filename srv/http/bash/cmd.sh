@@ -648,14 +648,18 @@ mpcskip )
 	fi
 	
 	touch $dirshm/skip
-	. <( mpc status 'state=%state%; consume=%consume%' )
-	$dirbash/cmd-skipdata.sh "$FILE" &
+	. <( mpc status 'state=%state%; consume=%consume%; random=%random%; current=%songpos%; length=%length%' )
+	if [[ $random == on ]]; then
+		POS=$( shuf -n 1 <( seq $length | grep -v $current ) )
+	else
+		$dirbash/cmd-skipdata.sh "$FILE" &
+	fi
+	[[ $consume == on ]] && mpc -q del $current
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 		rm -f $dirshm/skip
 		mpc -q play $POS
-		[[ $consume == on ]] && mpc -q del $current
 	else
 		mpc -q play $POS
 		rm -f $dirshm/skip
