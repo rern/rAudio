@@ -581,8 +581,16 @@ i.map.disabled, .map.disabled i {
 #controls-cover.notime.novolume {
 	width: 50vh;
 }
-.qr.container {
-	margin: 10px auto;
+#qr {
+	width: 230px;
+	height: 230px;
+	padding-top: 57px;
+}
+#qr .code {
+	margin: 0 auto;
+}
+#qr .text {
+	margin-top: 10px;
 }
 #coverart svg .text {
 	fill: var( --cw ) !important;
@@ -2102,7 +2110,6 @@ li.active .li2 bl {
 	}
 	@media ( max-width: 895px ) {
 		#playback-row { align-items: flex-start }
-		#qr { margin-top: 70px }
 	}
 	@media ( max-width: 749px ) {
 		#playback-row { align-items: center }

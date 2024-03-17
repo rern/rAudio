@@ -150,15 +150,10 @@ function banner( icon, title, message, delay ) {
 			  +'<div id="bannerMessage">'+ message +'</div>' )
 		.css( 'bottom', bottom )
 		.removeClass( 'hide' );
-	V.bannerdelay = delay !== -1;
-	if ( V.bannerdelay ) V.timeoutbanner = setTimeout( () => {
-		$( '#banner' )
-			.addClass( 'hide' )
-			.empty();
-	}, delay || 3000 );
+	if ( delay !== -1 ) V.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
-	if ( V.bannerdelay || V.reboot || $( '#banner .i-warning' ).length ) return
+	if ( V.reboot || $( '#banner' ).hasClass( 'hide' ) || $( '#banner .i-warning' ).length ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )

@@ -1303,6 +1303,7 @@ function renderPlayback() {
 	if ( S.state === 'stop' ) setProgress( 0 );
 	setVolume();
 	clearInterval( V.interval.blinkdot );
+	$( '#qr' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
 		setPlaybackBlank();
 		return
@@ -1310,7 +1311,6 @@ function renderPlayback() {
 	
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#coverTR' ).removeClass( 'empty' );
-	$( '#qr' ).empty();
 	setInfo();
 	setCoverart();
 	setButtonOptions();
@@ -1698,11 +1698,7 @@ function setPlaybackBlank() {
 	setProgress( 0 );
 	$( '#sampling' ).empty();
 	if ( S.ip || D.ap ) {
-		if ( typeof QRCode === 'function' ) {
-			setPlaybackBlankQR();
-		} else {
-			$.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
-		}
+		setPlaybackBlankQR();
 		$( '#coverTR' ).toggleClass( 'empty', $bartop.is( ':hidden' ) );
 		$( '#coverart' ).addClass( 'hide' );
 	} else {
@@ -1716,17 +1712,22 @@ function setPlaybackBlankQR() {
 	var ip = S.ip || D.apconf.ip;
 	if ( ! ip ) return
 	
+	if ( typeof QRCode !== 'function' ) {
+		$.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
+		return
+	}
+		
 	var htmlqr = '';
 	if ( ! S.ip && D.ap ) {
 		htmlqr += '<div class="qr gr">Access Point: <wh>'+ D.apconf.ssid +'</wh>'
 				 +'<br>Password: <wh>'+ D.apconf.passphrase +'</wh></div>'
-				 +'<div class="qr container">'+ qrCode( D.apconf.qr ) +'</div>';
+				 +'<div class="code">'+ qrCode( D.apconf.qr ) +'</div>';
 	}
-	htmlqr   +=  '<div class="qr container">'+ qrCode( 'http://'+ ip ) +'</div>'
-				+'<div class="qr"><gr>http://</gr>'+ ip
+	htmlqr   +=  '<div class="code">'+ qrCode( 'http://'+ ip ) +'</div>'
+				+'<div class="text"><gr>http://</gr>'+ ip
 				+ ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
 				+'</div>';
-	$( '#qr' ).html( htmlqr );
+	$( '#map-cover' ).before( '<div id="qr">'+ htmlqr +'</div>' );
 }
 function setPlaybackStop() {
 	setProgress( 0 );
