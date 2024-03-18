@@ -5,9 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240315
-if [[ -e /usr/bin/iwctl ]]; then
-	! grep -q netdev /etc/group && groupadd netdev
-fi
+[[ -e /usr/bin/iwctl ]] && groupadd -f netdev
+
 # 20240303
 file=/etc/udev/rules.d/bluetooth.rules
 if grep -q bluetoothcommand $file; then

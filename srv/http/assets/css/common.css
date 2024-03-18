@@ -1050,9 +1050,6 @@ input:focus {
 	#infoX:active {
 		color: var( --cma );
 	}
-	input {
-		color-scheme: dark;
-	}
 	input[ type=text ]:focus-visible,
 	input[ type=number ]:focus-visible,
 	input[ type=tel ]:focus-visible,

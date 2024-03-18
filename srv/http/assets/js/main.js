@@ -940,7 +940,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( S.random && cmd === 'next' ) { // previous in random = repeat
 				var current = S.song;
 				S.song = Math.floor( Math.random() * S.pllength ); // S.song: index from 0 to ( S.pllength - 1 )
-				if ( S.song === current ) S.song < S.pllength - 1 ? S.song++ : S.song --;
+				if ( S.song === current ) S.song = current < S.pllength - 1 ? current + 1 : 0;
 			} else {
 				cmd == 'next' ? S.song++ : S.song--;
 				if ( S.song < 0 ) {
