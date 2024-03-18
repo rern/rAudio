@@ -298,6 +298,7 @@ function contextmenuLibrary( $li, $target ) {
 	} else {
 		var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
 		$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
+		$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 		$menu.find( '.update' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
 		$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
 		$menu.find( '.directory' ).toggleClass( 'hide', filemode );

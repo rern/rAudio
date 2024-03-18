@@ -1268,10 +1268,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 </div>
 <div class="menu">
 <a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
-<div class="pllength">
-<a data-cmd="playnext" class="cmd"><i class="i-add"></i>Play next</a>
-<a data-cmd="replace" class="sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
-</div>
+<a data-cmd="playnext" class="playnext cmd"><i class="i-add"></i>Play next</a>
+<a data-cmd="replace" class="replace sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
 </div>`;
 	info( {
 		  icon       : 'playlist'
@@ -1279,7 +1277,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, list       : htmllist
 		, values     : 'addplay'
 		, beforeshow : () => {
-			$( '#infoList .pllength' ).toggleClass( 'hide', S.pllength === 0 );
+			$( '#infoList' ).find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
+			$( '#infoList' ).find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 			$( '#infoList' ).on( 'click', '.cmd', function() {
 				V.list.li = $( '.infomessage' );
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];
@@ -1893,7 +1892,8 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				$menu.find( '.wrsave' ).toggleClass( 'hide', ! $this.hasClass( 'notsaved' ) );
 			}
 			$this.addClass( 'active' );
-			$menu.find( '.replace, .i-play-replace, .playnext' ).toggleClass( 'hide', S.pllength === 0 );
+			$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
+			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', S.player !== 'mpd' );
 			contextmenuScroll( $menu, $this.position().top + 48 );
 		}
