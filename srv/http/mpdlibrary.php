@@ -300,6 +300,7 @@ function htmlDirectory( $lists ) {
 			$mode   = strtolower( explode( '/', $path )[ 0 ] );
 			$icon   = imgIcon( rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' ), 'folder' );
 			$html  .= htmlDirectoryLi( $mode, $index, $icon, $path, $name );
+			$dirs[] = $path;
 		} else {
 			$htmlf .= htmlDirectoryLi( $gmode, $index, i( 'music ', 'file' ), $path, $name );
 		}
@@ -310,6 +311,9 @@ function htmlDirectory( $lists ) {
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
+	$nodata = [];
+	foreach( $dirs as $dir ) $nodata[] = exec( 'mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;
+	exec( 'echo -n \'{ "channel": "nodata", "data": '.json_encode( $nodata ).'\' } | websocat ws://127.0.0.1:8080' );
 }
 function htmlDirectoryLi( $mode, $index, $icon, $path, $name ) {
 	return

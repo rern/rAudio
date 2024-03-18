@@ -1280,6 +1280,11 @@ function renderLibraryList( data ) { // V.librarylist
 		renderLibraryPadding();
 		$( '#lib-list' ).removeClass( 'hide' );
 		pageScroll( V.scrolltop[ data.path ] || 0 );
+		if ( V.nodata ) {
+			var $li = $( '#lib-list li' );
+			V.nodata.forEach( ( v, i ) => $li.eq( i ).toggleClass( 'nodata', v ) );
+			delete V.nodata;
+		}
 	} );
 }
 function renderLibraryPadding() {

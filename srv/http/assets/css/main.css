@@ -1791,6 +1791,9 @@ w {
 #lib-list li.nodata * {
 	color: var( --cgl ) !important;
 }
+#lib-list li.nodata img {
+	opacity: 0.5;
+}
 #lib-list li.active.nodata * {
 	color: var( --cga ) !important;
 }

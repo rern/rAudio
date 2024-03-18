@@ -75,6 +75,7 @@ function psOnMessage( message ) {
 		case 'mpdplayer':     psMpdPlayer( data );      break;
 		case 'mpdradio':      psMpdRadio( data );       break;
 		case 'mpdupdate':     psMpdUpdate( data );      break;
+		case 'nodata':        V.nodata = data;          break;
 		case 'notify':        psNotify( data );         break; // in common.js
 		case 'option':        psOption( data );         break;
 		case 'order':         psOrder( data );          break;
