@@ -1084,20 +1084,18 @@ function playlistRemove( $li ) {
 	}
 }
 function playlistSkip() {
+	if ( ! $( '#pl-list li' ).length ) {
+		list( { playlist: 'current' }, data => {
+			$( '#pl-list' ).html( data.html ).promise().done( playlistSkip );
+		}, 'json' );
+		return
+	}
+	
 	intervalClear();
 	if ( S.state !== 'stop' ) {
 		setProgress( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 	}
-	if ( $( '#pl-list li' ).length ) {
-		playlistSkipSet();
-	} else {
-		list( { playlist: 'current' }, data => {
-			$( '#pl-list' ).html( data.html ).promise().done( playlistSkipSet );
-		}, 'json' );
-	}
-}
-function playlistSkipSet() {
 	var file = $( '#pl-list li' ).eq( S.song ).find( '.lipath' ).text();
 	bash( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
 }
