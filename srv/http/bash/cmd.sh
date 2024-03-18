@@ -650,7 +650,7 @@ mpcskip )
 	else
 		mpc -q play $POS
 		rm -f $dirshm/skip
-		[[ ! $PLAY ]] && mpc -q stop
+		mpc -q stop
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
 	;;
