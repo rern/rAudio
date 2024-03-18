@@ -661,7 +661,7 @@ mpcskippl )
 	[[ $Time == 0 ]] && Time=false
 	[[ $ACTION == stop ]] && mpc -q stop
 	pushData playlist '{ "song": '$(( POS - 1 ))', "elapsed": 0, "Time": '$Time', "state": "'$ACTION'" }'
-}
+	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
 	pushData mpdupdate '{ "type": "mpd" }'
