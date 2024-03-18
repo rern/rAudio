@@ -1788,7 +1788,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		intervalClear();
 		$( '.elapsed' ).empty();
-		bash( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
+		bash( [ 'mpcskippl', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
