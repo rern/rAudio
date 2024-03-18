@@ -937,8 +937,10 @@ $( '.btn-cmd' ).on( 'click', function() {
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 			
-			if ( S.random && cmd === 'next' ) {
+			if ( S.random && cmd === 'next' ) { // previous in random = repeat
+				var current = S.song;
 				S.song = Math.floor( Math.random() * ( S.pllength + 1 ) );
+				if ( S.song === current ) S.song + 1 < S.pllength ? S.song++ : S.song --;
 			} else {
 				cmd == 'next' ? S.song++ : S.song--;
 				if ( S.song < 0 ) {
