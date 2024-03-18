@@ -1893,7 +1893,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				$menu.find( '.wrsave' ).toggleClass( 'hide', ! $this.hasClass( 'notsaved' ) );
 			}
 			$this.addClass( 'active' );
-			$menu.find( '.replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
+			$menu.find( '.replace, .i-play-replace, .playnext' ).toggleClass( 'hide', S.pllength === 0 );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', S.player !== 'mpd' );
 			contextmenuScroll( $menu, $this.position().top + 48 );
 		}
