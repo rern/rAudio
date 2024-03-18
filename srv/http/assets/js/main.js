@@ -941,7 +941,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 				var current = S.song;
 				S.song = Math.floor( Math.random() * S.pllength ); // S.song: index from 0 to ( S.pllength - 1 )
 				if ( S.song === current ) S.song < S.pllength - 1 ? S.song++ : S.song --;
-				console.log(S.song)
 			} else {
 				cmd == 'next' ? S.song++ : S.song--;
 				if ( S.song < 0 ) {
