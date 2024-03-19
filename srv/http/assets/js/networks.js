@@ -304,8 +304,7 @@ function infoLanSet( v ) {
 }
 function infoWiFi( v ) {
 	var list = [
-		  [ '',             'hidden' ]
-		, [ 'SSID',         'text' ]
+		  [ 'SSID',         'text' ]
 		, [ 'Password',     'password' ]
 		, [ 'IP',           'text' ]
 		, [ 'Gateway',      'text' ]
@@ -314,15 +313,15 @@ function infoWiFi( v ) {
 		, [ 'Disable',      'checkbox' ]
 	];
 	var default_v = {
-		  dhcp   : { IP: 'dhcp',   ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
-		, static : { IP: 'static', ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
+		  dhcp   : { ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
+		, static : { ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
 	}
 	if ( v ) {
-		var dhcp   = v.IP === 'dhcp';
+		var dhcp   = 'ADDRESS' in v; // from static tab
 		v.SECURITY = v.SECURITY === 'wep';
 		v.HIDDEN   = V.HIDDEN === 'yes';
 		var values = {};
-		Object.keys( default_v[ v.IP ] ).forEach( k => values[ k ] = v[ k ] );
+		Object.keys( default_v[ dhcp ? 'dhcp' : 'static' ] ).forEach( k => values[ k ] = v[ k ] );
 	} else {
 		var values = default_v[ 'dhcp' ];
 		var dhcp   = true;
@@ -330,14 +329,12 @@ function infoWiFi( v ) {
 	if ( dhcp ) {
 		var tabfn = () => {
 			var val = infoVal();
-			val.IP  = 'static';
 			infoWiFi( val );
 		}
-		list.splice( 3, 2 );
+		list.splice( 2, 2 );
 	} else {
 		var tabfn = () => {
 			var val = infoVal();
-			val.IP  = 'dhcp';
 			infoWiFi( val );
 		}
 		values.ADDRESS = S.ipwl || S.ipsub;
@@ -355,8 +352,8 @@ function infoWiFi( v ) {
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
+		, checklength  : { 1: [ 8, 'min' ] }
 		, checkip      : dhcp ? '' : [ 2, 3 ]
-		, checklength  : { 2: [ 8, 'min' ] }
 		, ok           : () => connectWiFi( infoVal() )
 	} );
 }
