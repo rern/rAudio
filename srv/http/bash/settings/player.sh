@@ -182,11 +182,9 @@ statusmpdignore )
 	list="\
 <bll># find /mnt/MPD -name .mpdignore</bll>"$'\n'
 	while read file; do
-		pathL=$( dirname "$file" | sed 's|.| |g' )
-		dirs=$( sed "s|^|${pathL:3}<red>-</red> ./|; s|$|/|" "$file" )
-		list+="\
-$file
-$dirs"$'\n'
+		list+=$file
+		path=$( dirname "$file" )
+		list+=$'\n'$( sed "s|^|<g>$path/</g>|" "$file" )
 	done <<< $files
 	echo "$list"
 	;;
