@@ -17,9 +17,9 @@ netctlSwitch() {
 			netctl enable "$ssid"
 			pushRefresh networks pushwl
 			exit
+# --------------------------------------------------------------------
 		fi
 	done
-	
 	echo -1
 	[[ $current ]] && netctl switch-to "$current"
 }
@@ -48,7 +48,7 @@ case $CMD in
 bluetoothinfo )
 	info=$( bluetoothctl info $MAC )
 	grep -q -m1 'not available' <<< $info && exit
-	
+# --------------------------------------------------------------------
 	echo "\
 <bll># bluetoothctl info $MAC</bll>
 $info"
@@ -61,17 +61,19 @@ btrename )
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
-	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
-		if ipOnline $ADDRESS; then
-			rm "$file"
+	if [[ $ADDRESS ]]; then
+		if [[ $ADDRESS != $( ipAddress ) ]] && ipOnline $ADDRESS; then
 			echo 'IP <wh>'$ADDRESS'</wh> already in use.'
 			exit
+# --------------------------------------------------------------------
 		fi
+		ip=static
+	else
+		ip=dhcp
 	fi
-	
 	data='Interface='$( < $dirshm/wlan )'
 Connection=wireless
-IP='$IP'
+IP='$ip'
 ESSID="'$ESSID'"'
 	if [[ $KEY ]]; then
 		[[ $SECURITY ]] && security=wep || security=wpa
@@ -92,8 +94,8 @@ Hidden=yes'
 	if [[ -e $dirsystem/ap ]]; then
 		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
+# --------------------------------------------------------------------
 	fi
-	
 	if ! netctl is-active "$ESSID" &> /dev/null; then
 		netctlSwitch "$ESSID"
 		avahi-daemon --kill # flush cache and restart
@@ -110,8 +112,8 @@ disconnect )
 lanedit )
 	if [[ $IP ]]; then
 		ipOnline $IP && echo -1 && exit
+# --------------------------------------------------------------------
 	fi
-	
 	file=/etc/systemd/network/en.network
 	if [[ -e $file ]]; then
 		lan=en*
@@ -183,7 +185,7 @@ $( iwconfig $wlandev | awk NF )"
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
-	
+# --------------------------------------------------------------------
 	sleep 3
 	pushRefresh features
 	pushRefresh networks pushbt
@@ -198,7 +200,7 @@ usbbluetoothoff ) # from usbbluetooth.rules
 usbwifion )
 	wlanDevice
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
-	
+# --------------------------------------------------------------------
 	notify wifi 'USB Wi-Fi' Ready
 	pushRefresh
 	;;

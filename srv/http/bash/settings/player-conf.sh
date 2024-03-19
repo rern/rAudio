@@ -7,7 +7,7 @@
 # - mixer_control - from file if manually set | mixer | null
 # - mixer_device  - card index
 [[ -e /dev/shm/usbdacflag ]] && exit # $dirshm/usbdacflag
-
+# --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
 pushStatus() {
@@ -162,9 +162,9 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ $CARD == -1 && ! $bluetooth ]] && pushStatus && exit # >>>>>>>>>>
-
-# renderers ----------------------------------------------------------------------------
+[[ $CARD == -1 && ! $bluetooth ]] && pushStatus && exit
+# --------------------------------------------------------------------
+# renderers
 [[ ! $mixer || $bluetooth || $camilladsp || $equalizer ]] && mixerno=1
 
 if [[ -e /usr/bin/shairport-sync ]]; then

@@ -158,7 +158,7 @@ localbrowser )
 				echo Rotate GPIO LCD screen >> $dirshm/reboot
 				notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
 				exit
-				
+# --------------------------------------------------------------------
 			fi
 		else # hdmi
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
@@ -376,8 +376,8 @@ snapserver )
 , "message" : "Already running on: '$( cut -d';' -f8 <<< $avahi )'"
 }'
 			exit
+# --------------------------------------------------------------------
 		fi
-		
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
 		serviceRestartEnable
 	else
@@ -430,8 +430,8 @@ spotifytoken )
 	if grep -q -m1 error <<< $tokens; then
 		notify 'spotify blink' 'Spotify' "Error: $( jq -r .error <<< $tokens )"
 		exit
+# --------------------------------------------------------------------
 	fi
-	
 	tokens=( $( jq -r .refresh_token,.access_token <<< $tokens ) )
 	echo "refreshtoken=${tokens[0]}" >> $dirsystem/spotifykey
 	echo ${tokens[1]} > $dirshm/spotify/token

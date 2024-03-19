@@ -228,7 +228,7 @@ volume )
 	;;
 volume0db )
 	[[ ! -e $dirshm/amixercontrol ]] && exit
-	
+# --------------------------------------------------------------------
 	card=$( < $dirsystem/asoundcard )
 	control=$( < $dirshm/amixercontrol )
 	volumeAmixer 0dB "$control" $card

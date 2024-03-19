@@ -5,7 +5,7 @@
 # Connect: trust > connect > get sink_source
 # Disconnect / Remove: disconnect
 [[ -e /srv/http/data/shm/btflag ]] && exit # flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
-
+# --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
 # flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
@@ -40,7 +40,7 @@ refreshPages() {
 	pushRefresh networks pushbt
 	[[ $dirsystem/camilladsp ]] && pushRefresh camilla
 }
-#-------------------------------------------------------------------------------------------
+########################################################################################################
 # from bluetooth.rules: disconnect from paired device - no mac
 if [[ $udev && $action == disconnect ]]; then
 	sleep 2
@@ -52,9 +52,9 @@ if [[ $udev && $action == disconnect ]]; then
 	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 	[[ $mac ]] && disconnectRemove
 	exit
+# --------------------------------------------------------------------
 fi
-
-#-------------------------------------------------------------------------------------------
+########################################################################################################
 # from bluetooth.rules: 1. connect from paired device, 2. pair from sender
 if [[ $udev && $action == connect ]]; then
 	sleep 2
@@ -76,7 +76,7 @@ if [[ $udev && $action == connect ]]; then
 			! bluetoothctl info $mac | grep -q -m1 'UUID:' && sleep 1 || break
 		done
 		bluetoothctl info $mac | grep -q -m1 'UUID: Audio Source' && msg='Pair ...' || exit
-		
+# --------------------------------------------------------------------
 	fi
 #-----
 	notify "$type blink" "$name" "$msg"
@@ -88,7 +88,7 @@ if [[ $udev && $action == connect ]]; then
 		bluetoothctl agent NoInputNoOutput
 	fi
 fi
-#-------------------------------------------------------------------------------------------
+########################################################################################################
 # 1. continue from [[ $udev && $action == connect ]], 2. from rAudio networks.js
 if [[ $action == connect || $action == pair ]]; then
 	bluetoothctl trust $mac # always trusr + pair to ensure proper connecting process
@@ -99,9 +99,8 @@ if [[ $action == connect || $action == pair ]]; then
 		for i in {1..5}; do
 			bluetoothctl info $mac | grep -q -m1 'Paired: no' && sleep 1 || break
 		done
-#-----X
 		bluetoothctl info $mac | grep -q -m1 'Paired: no' && notify $type "$name" 'Pair failed.' && exit
-		
+# --------------------------------------------------------------------
 		bluetoothctl disconnect $mac
 #-----
 		notify $type "$name" 'Paired successfully.'
@@ -117,22 +116,20 @@ if [[ $action == connect || $action == pair ]]; then
 	if [[ ! $sink_source ]]; then
 ##### non-audio
 		echo $mac bluetooth $name >> $dirshm/btconnected
-#-----X
 		refreshPages
 		exit
+# --------------------------------------------------------------------
 	fi
-	
 	for i in {1..5}; do
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null | grep "$name" )
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
-#-----X
 	if [[ ! $btmixer && $action == connect ]]; then
 		bluetoothctl disconnect $mac
 		notify $type "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
 		exit
+# --------------------------------------------------------------------
 	fi
-	
 	[[ $sink_source == Source ]] && type=btsender
 	echo $mac > $dirshm/$type
 	if [[ $type == btreceiver ]]; then
@@ -147,7 +144,7 @@ if [[ $action == connect || $action == pair ]]; then
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type
 #-----
 	refreshPages
-#-------------------------------------------------------------------------------------------
+########################################################################################################
 # from rAudio networks.js - with mac
 elif [[ $action == disconnect || $action == remove ]]; then
 	bluetoothctl disconnect $mac &> /dev/null

@@ -4,7 +4,7 @@
 
 backupfile=$dirshm/backup.gz
 ! bsdtar tf "$backupfile" 2> /dev/null | grep -q -m1 ^data/system/display.json$ && exit -1
-
+# --------------------------------------------------------------------
 dirconfig=$dirdata/config
 [[ $1 == true ]] && libraryonly=1
 
@@ -17,8 +17,8 @@ if [[ $libraryonly ]]; then
 	bsdtar -xpf $backupfile -C /srv/http data/{mpd,playlists,webradio}
 	systemctl restart mpd
 	exit
+# --------------------------------------------------------------------
 fi
-
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 
 bsdtar xpf $backupfile -C /srv/http

@@ -18,8 +18,8 @@ sed -i "s|^CONFIG.*|CONFIG=$filedevice|" $filedefault
 if [[ -e $filedevice ]]; then
 	camillaDSPstart
 	exit
+# --------------------------------------------------------------------
 fi
-
 . <( bluealsa-aplay -L | awk '/channel.*Hz/ {print "format="$3"\nchannels="$4"\nsamplerate="$6}' )
 format=$( sed 's/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/_//g' <<< $format )
 

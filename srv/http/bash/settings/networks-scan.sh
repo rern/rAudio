@@ -16,7 +16,7 @@ if [[ $1 == wlan ]]; then
 	# IE: WPA Version 1
 	scan=$( iwlist $wlandev scan )
 	[[ ! $scan ]] && exit
-	
+# --------------------------------------------------------------------
 	scan=$( sed -E 's/^\s*|\s*$//g' <<< $scan \
 				| sed -E -n '/^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality/ {
 						s/^Cell.*/,{/
@@ -41,14 +41,14 @@ if [[ $1 == wlan ]]; then
 	fi
 	echo "[ ${scan:1} ]" # ,{...} > [ {...} ]
 	exit
+# --------------------------------------------------------------------
 fi
-
 bluetoothctl --timeout=10 scan on &> /dev/null
 devices=$( bluetoothctl devices \
 			| grep -v ' ..-..-..-..-..-..$' \
 			| sort -k3 -fh )
 [[ ! $devices ]] && exit
-
+# --------------------------------------------------------------------
 # omit paired devices
 paired=$( bluetoothctl devices Paired )
 if [[ $paired ]]; then

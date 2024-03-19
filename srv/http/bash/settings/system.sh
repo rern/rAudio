@@ -464,7 +464,7 @@ $( bluetoothctl show )"
 statusstatus )
 	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
-	
+# --------------------------------------------------------------------
 	startupfinished=$( systemd-analyze )
 	if grep -q 'Startup finished' <<< $startupfinished; then
 		echo "\
@@ -566,7 +566,7 @@ tftcalibrate )
 timezone )
 	if [[ $TIMEZONE == auto ]]; then
 		! ipOnline 8.8.8.8 && notify timezone 'Timezone - Auto' 'No internet connection.' && exit
-		
+# --------------------------------------------------------------------
 		tz=$( curl -s -m 2 https://worldtimeapi.org/api/ip | jq -r .timezone )
 		[[ ! $tz ]] && tz=$( curl -s -m 2 http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
 		[[ ! $tz ]] && tz=$( curl -s -m 2 https://ipapi.co/timezone )
@@ -579,7 +579,7 @@ timezone )
 	;;
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
-	
+# --------------------------------------------------------------------
 	if [[ $CMD == usbconnect ]]; then
 		action=Ready
 		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
