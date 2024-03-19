@@ -141,10 +141,6 @@ profileconnect )
 	fi
 	netctlSwitch "$SSID"
 	;;
-profiledisable )
-	netctl disable "$SSID"
-	pushRefresh networks pushwl
-	;;
 profileforget )
 	netctl is-enabled "$SSID" && netctl disable "$SSID"
 	if netctl is-active "$SSID" &> /dev/null; then

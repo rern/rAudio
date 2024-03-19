@@ -89,7 +89,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		var notconnected = V.li.hasClass( 'notconnected' );
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', ! notconnected );
-		$( '#menu' ).find( '.disconnect, .disable' ).toggleClass( 'hide', notconnected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
 		$( '#menu .info' ).addClass( 'hide' );
 	}
 	contextMenu();
@@ -136,28 +136,6 @@ $( '.disconnect' ).on( 'click', function() {
 			bash( [ 'disconnect', ssid, 'CMD SSID' ] )
 		}
 	} );
-} );
-$( '.disable' ).on( 'click', function() {
-	var ssid = V.li.data( 'ssid' );
-	var icon = 'wifi';
-	if ( V.li.data( 'ip' ) !== location.hostname ) {
-		notify( icon, ssid, 'Disable ...' );
-		bash( [ 'profiledisable', ssid, 'CMD SSID' ] );
-	} else {
-		info( {
-			  icon       : icon
-			, title      : 'Wi-Fi'
-			, message    : 'SSID: <wh>'+ ssid +'</wh>'
-			, footer     : iconwarning +'<wh>Disable current connection</wh>'
-						  +'<br><br>(No reconnect on next reboot.)'
-			, oklabel    : ico( 'flash' ) +'Disable'
-			, okcolor    : orange
-			, ok         : () => {
-				notify( icon, ssid, 'Disable ...' );
-				bash( [ 'profiledisable', ssid, 'CMD SSID' ] );
-			}
-		} );
-	}
 } );
 $( '.edit' ).on( 'click', function() {
 	if ( V.listid === 'listwl' ) {
