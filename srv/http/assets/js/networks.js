@@ -336,7 +336,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : footer( 'This is' )
+		, footer       : v ? footer( 'This is' ) : ''
 		, values       : values
 		, checkchanged : 'profileget' in V && V.profileget.ADDRESS === values.ADDRESS
 		, checkblank   : [ 0 ]
