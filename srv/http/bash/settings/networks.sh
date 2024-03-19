@@ -159,8 +159,7 @@ profileforget )
 	pushRefresh networks pushwl
 	;;
 profileget )
-	profile=$( conf2json "/etc/netctl/$SSID" )
-	echo ${profile/INT*IP/IP}
+	conf2json "/etc/netctl/$SSID" | sed -E 's/INT.*(SECURITY)/\1/'
 	;;
 statuslan )
 	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
