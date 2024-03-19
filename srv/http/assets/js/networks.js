@@ -356,6 +356,7 @@ function infoWiFi( v ) {
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
 		, checkip      : dhcp ? '' : [ 2, 3 ]
+		, checklength  : { 2: [ 8, 'min' ] }
 		, ok           : () => connectWiFi( infoVal() )
 	} );
 }
