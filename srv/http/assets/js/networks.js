@@ -89,7 +89,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		var notconnected = V.li.hasClass( 'notconnected' );
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', ! notconnected );
-		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
+		$( '#menu' ).find( '.disconnect, .disable' ).toggleClass( 'hide', notconnected );
 		$( '#menu .info' ).addClass( 'hide' );
 	}
 	contextMenu();
@@ -136,6 +136,28 @@ $( '.disconnect' ).on( 'click', function() {
 			bash( [ 'disconnect', ssid, 'CMD SSID' ] )
 		}
 	} );
+} );
+$( '.disable' ).on( 'click', function() {
+	var ssid = V.li.data( 'ssid' );
+	var icon = 'wifi';
+	if ( V.li.data( 'ip' ) !== location.hostname ) {
+		notify( icon, ssid, 'Disable ...' );
+		bash( [ 'profiledisable', ssid, 'CMD SSID' ] );
+	} else {
+		info( {
+			  icon       : icon
+			, title      : 'Wi-Fi'
+			, message    : 'SSID: <wh>'+ ssid +'</wh>'
+			, footer     : iconwarning +'<wh>Disable current connection</wh>'
+						  +'<br><br>(No reconnect on next reboot.)'
+			, oklabel    : ico( 'flash' ) +'Disable'
+			, okcolor    : orange
+			, ok         : () => {
+				notify( icon, ssid, 'Disable ...' );
+				bash( [ 'profiledisable', ssid, 'CMD SSID' ] );
+			}
+		} );
+	}
 } );
 $( '.edit' ).on( 'click', function() {
 	if ( V.listid === 'listwl' ) {
@@ -214,17 +236,6 @@ function bluetoothInfo( mac ) {
 function connectWiFi( data ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
-	if ( 'profileget' in V ) {
-		var values = jsonClone( data );
-		delete values.DISABLE;
-		delete V.profileget.DISABLE;
-		if ( Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' ) ) {
-			notify( icon, title, data.DISABLE ? 'Disable ...' : 'Enable ...' );
-			bash( [ 'profiledisable', data.SSID, data.DISABLE, 'CMD SSID DISABLE' ] );
-			return
-		}
-	}
-	
 	clearTimeout( V.timeoutscan );
 	if ( 'ADDRESS' in data ) { // static
 		S.listeth ? notify( icon, title, 'Change ...' ) : reconnect( data.SSID, data.ADDRESS );
@@ -233,6 +244,7 @@ function connectWiFi( data ) {
 	}
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
+	return
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
@@ -310,7 +322,6 @@ function infoWiFi( v ) {
 		, [ 'Gateway',      'text' ]
 		, [ 'WEP Protocol', 'checkbox' ]
 		, [ 'Hidden SSID',  'checkbox' ]
-		, [ 'Disable',      'checkbox' ]
 	];
 	var default_v = {
 		  dhcp   : { ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
@@ -319,7 +330,7 @@ function infoWiFi( v ) {
 	if ( v ) {
 		var dhcp   = 'ADDRESS' in v; // from static tab
 		v.SECURITY = v.SECURITY === 'wep';
-		v.HIDDEN   = V.HIDDEN === 'yes';
+		v.HIDDEN   = v.HIDDEN === 'yes';
 		var values = {};
 		Object.keys( default_v[ dhcp ? 'dhcp' : 'static' ] ).forEach( k => values[ k ] = v[ k ] );
 	} else {
@@ -340,7 +351,6 @@ function infoWiFi( v ) {
 		values.ADDRESS = S.ipwl || S.ipsub;
 		values.GATEWAY = S.gateway || S.ipsub;
 	}
-	var checkchanged = 'profileget' in V && Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' );
 	info( {
 		  icon         : 'wifi'
 		, title        : v ? 'Saved Connection' : 'Add Connection'
@@ -350,7 +360,7 @@ function infoWiFi( v ) {
 		, list         : list
 		, footer       : footer( 'This is' )
 		, values       : values
-		, checkchanged : checkchanged
+		, checkchanged : 'profileget' in V && V.profileget.ADDRESS === values.ADDRESS
 		, checkblank   : [ 0 ]
 		, checklength  : { 1: [ 8, 'min' ] }
 		, checkip      : dhcp ? '' : [ 2, 3 ]

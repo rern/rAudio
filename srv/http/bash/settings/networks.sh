@@ -99,9 +99,8 @@ Hidden=yes'
 	if ! netctl is-active "$ESSID" &> /dev/null; then
 		netctlSwitch "$ESSID"
 		avahi-daemon --kill # flush cache and restart
-	else
-		pushRefresh
 	fi
+	pushRefresh networks pushwl
 	;;
 disconnect )
 	netctl stop "$SSID"
@@ -143,9 +142,8 @@ profileconnect )
 	netctlSwitch "$SSID"
 	;;
 profiledisable )
-	[[ $DISABLE == true ]] && toggle=disable || toggle=enable
-	netctl $toggle "$SSID"
-	pushRefreshWlan
+	netctl disable "$SSID"
+	pushRefresh networks pushwl
 	;;
 profileforget )
 	netctl is-enabled "$SSID" && netctl disable "$SSID"
@@ -159,6 +157,7 @@ profileforget )
 	pushRefresh networks pushwl
 	;;
 profileget )
+	[[ $( netctl is-enabled "$SSID" ) == enabled ]] && disable=false || disable=true
 	conf2json "/etc/netctl/$SSID" | sed -E 's/INT.*(SECURITY)/\1/'
 	;;
 statuslan )
