@@ -129,7 +129,7 @@ $( '.disconnect' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : footer( 'Disconnect' )
+		, footer     : warning( 'Disconnect' )
 		, okcolor    : orange
 		, ok         : () => {
 			notify( icon, ssid, 'Disconnect ...' );
@@ -159,7 +159,7 @@ $( '.forget' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : footer( 'Forget' )
+		, footer     : warning( 'Forget' )
 		, oklabel    : ico( 'remove' ) +'Forget'
 		, okcolor    : red
 		, ok         : () => {
@@ -238,9 +238,6 @@ function connectWiFi( data ) {
 		}
 	} );
 }
-function footer( action ) {
-	return 'li' in V && V.li.data( 'ip' ) === location.hostname ? iconwarning +'<wh>'+ action +' current connection</wh>' : ''
-}
 function infoAccesspoint() {
 	info( {
 		  icon    : 'wifi'
@@ -259,7 +256,7 @@ function infoLan() {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
-		, footer       : footer( 'This is' )
+		, footer       : S.listeth ? warning( 'This is' ) : ''
 		, focus        : 0
 		, values       : S.listeth ? { IP: S.listeth.ip, GATEWAY: S.listeth.gateway } : { IP: S.ipsub, GATEWAY: S.gateway }
 		, checkchanged : true
@@ -336,7 +333,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : v ? footer( 'This is' ) : ''
+		, footer       : v ? warning( 'This is' ) : ''
 		, values       : values
 		, checkchanged : 'profileget' in V && V.profileget.ADDRESS === values.ADDRESS
 		, checkblank   : [ 0 ]
@@ -476,4 +473,7 @@ function scanWlan() {
 		$( '#listwlscan' ).html( htmlwl );
 		V.timeoutscan = setTimeout( scanWlan, 12000 );
 	}, 'json' );
+}
+function warning( action ) {
+	return 'li' in V && V.li.data( 'ip' ) === location.hostname ? iconwarning +'<wh>'+ action +' current connection</wh>' : ''
 }
