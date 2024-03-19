@@ -60,7 +60,8 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
-	<div class="helpblock hide"><?=i( 'lan btn' )?> Context menu</div>
+	<div class="helpblock hide"><?=i( 'add btn' )?> Manual connect
+<?=i( 'lan btn' )?> Context menu</div>
 </div>
 </div>
 <?php
