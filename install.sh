@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240322
+[[ -e /boot/kernel7.img ]] && sed -i -E 's/^#(IgnorePkg   =)/\1 libunwind/' /etc/pacman.conf
+
 # 20240315
 [[ -e /usr/bin/iwctl ]] && groupadd -f netdev
 
