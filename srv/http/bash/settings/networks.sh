@@ -4,6 +4,12 @@
 
 args2var "$1"
 
+ipAvailable() {
+	if [[ $1 != $( ipAddress ) ]] && ipOnline $1; then
+		echo 'IP <wh>'$1'</wh> already in use.'
+		rexit
+	fi
+}
 netctlSwitch() {
 	local active ssid wlandev
 	ssid=$1
@@ -65,20 +71,16 @@ btrename )
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
+	if [[ $ADDRESS ]]; then
+		ipAvailable $ADDRESS
+		ip=static
+	else
+		ip=dhcp
+	fi
 	current=$( iwgetid -r )
 	if [[ $current == $ESSID ]]; then
 		filecurrent="$dirshm/$current"
 		cp "/etc/netctl/$current" $dirshm
-	fi
-	if [[ $ADDRESS ]]; then
-		if [[ $ADDRESS != $( ipAddress ) ]] && ipOnline $ADDRESS; then
-			echo 'IP <wh>'$ADDRESS'</wh> already in use.'
-			exit
-# --------------------------------------------------------------------
-		fi
-		ip=static
-	else
-		ip=dhcp
 	fi
 	data='Interface='$( < $dirshm/wlan )'
 Connection=wireless
@@ -115,24 +117,16 @@ disconnect )
 	pushRefresh networks pushwl
 	;;
 lanedit )
-	if [[ $IP ]]; then
-		ipOnline $IP && echo -1 && exit
-# --------------------------------------------------------------------
-	fi
-	file=/etc/systemd/network/en.network
-	if [[ -e $file ]]; then
-		lan=en*
-	else
-		lan=eth0
-		file=/etc/systemd/network/eth0.network
-	fi
-	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
-	if [[ $IP ]]; then # static
-		sed -i '/^DNSSEC/ i\
-Address='$IP'/24\
+	[[ $ADDRESS ]] && ipAvailable $ADDRESS
+	file=$( ls -1 /etc/systemd/network/e* | head -1 )
+	if [[ $ADDRESS ]]; then # static
+		sed -i -E -e '/^DHCP|^Address|^Gateway/ d
+' -e '/^DNSSEC/ i\
+Address='$ADDRESS'/24\
 Gateway='$GATEWAY $file
-	else               # dhcp - reset
-		sed -i '/^DNSSEC/ i\DHCP=yes' $file
+	else                    # dhcp - reset
+		sed -i -E -e '/^DHCP|^Address|^Gateway/ d
+' -e '/^DNSSEC/ i\DHCP=yes' $file
 	fi
 	systemctl restart systemd-networkd
 	avahi-daemon --kill # flush cache and restart

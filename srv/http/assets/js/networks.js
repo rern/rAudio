@@ -250,8 +250,7 @@ function infoAccesspoint() {
 function infoLan( v ) {
 	var icon   = 'lan';
 	var title  = ( v ? 'Edit' : 'Add' ) +' LAN Connection';
-	var values = v || { IP: S.ipsub, GATEWAY: S.gateway }
-	var static = values.STATIC;
+	var values = v || { ADDRESS: S.ipsub, GATEWAY: S.gateway }
 	info( {
 		  icon         : icon
 		, title        : title
@@ -265,11 +264,11 @@ function infoLan( v ) {
 		, checkchanged : true
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
-		, buttonlabel  : static ? ico( 'undo' ) +'DHCP' : ''
-		, button       : static ? () => {
+		, buttonlabel  : ico( 'undo' ) +'DHCP'
+		, button       : ! values.STATIC ? '' : () => {
 			bash( [ 'lanedit' ] );
 			reconnect( 'Wired LAN', S.hostname );
-		} : ''
+		}
 		, ok           : () => infoLanSet( infoVal() )
 	} );
 }

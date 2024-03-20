@@ -86,9 +86,9 @@ if [[ $ipr ]]; then
 	static=$( [[ $ipr != *"dhcp src "* ]] && echo true )
 	gateway=$( cut -d' ' -f3 <<< $ipr )
 	listeth='{
-  "IP"       : "'$ipeth'"
-, "GATEWAY"  : "'$gateway'"
-, "STATIC"   : '$static'
+  "ADDRESS" : "'$ipeth'"
+, "GATEWAY" : "'$gateway'"
+, "STATIC"  : '$static'
 }'
 fi
 
