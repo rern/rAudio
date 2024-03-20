@@ -27,6 +27,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bluetoothCommand( 'pair' );
 } );
 $( '.wladd' ).on( 'click', function() {
+	delete V.li;
 	delete V.profileget;
 	infoWiFi();
 } );
@@ -95,6 +96,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	contextMenu();
 } );
 $( '.lanadd' ).on( 'click', function() {
+	delete V.li;
 	infoLan();
 } );
 $( '.connect' ).on( 'click', function() {
@@ -129,7 +131,7 @@ $( '.disconnect' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : warning( 'Disconnect' )
+		, footer     : iconwarning +'<wh>Disconnect current connection</wh>'
 		, okcolor    : orange
 		, ok         : () => {
 			notify( icon, ssid, 'Disconnect ...' );
@@ -144,7 +146,7 @@ $( '.edit' ).on( 'click', function() {
 			infoWiFi( v );
 		}, 'json' );
 	} else {
-		infoLan();
+		infoLan( S.listeth );
 	}
 } );
 $( '.forget' ).on( 'click', function() {
@@ -159,7 +161,7 @@ $( '.forget' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : warning( 'Forget' )
+		, footer     : iconwarning +'<wh>Forget current connection</wh>'
 		, oklabel    : ico( 'remove' ) +'Forget'
 		, okcolor    : red
 		, ok         : () => {
@@ -245,10 +247,11 @@ function infoAccesspoint() {
 		, message : 'Access Point is currently active.'
 	} );
 }
-function infoLan() {
+function infoLan( v ) {
 	var icon   = 'lan';
-	var title  = ( S.listeth ? 'Edit' : 'Add' ) +' LAN Connection';
-	var static = S.listeth.static;
+	var title  = ( v ? 'Edit' : 'Add' ) +' LAN Connection';
+	var values = v || { IP: S.ipsub, GATEWAY: S.gateway }
+	var static = values.STATIC;
 	info( {
 		  icon         : icon
 		, title        : title
@@ -256,9 +259,9 @@ function infoLan() {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
-		, footer       : S.listeth ? warning( 'This is' ) : ''
+		, footer       : warning()
 		, focus        : 0
-		, values       : S.listeth ? { IP: S.listeth.ip, GATEWAY: S.listeth.gateway } : { IP: S.ipsub, GATEWAY: S.gateway }
+		, values       : values
 		, checkchanged : true
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
@@ -282,7 +285,7 @@ function infoLanSet( v ) {
 				  icon    : icon
 				, title   : 'Duplicate IP'
 				, message : 'IP <wh>'+ ip +'</wh> already in use.'
-				, ok      : infoLan
+				, ok      : () => infoLan( v )
 			} );
 		} else {
 			reconnect( 'Wired LAN', ip );
@@ -333,7 +336,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : v ? warning( 'This is' ) : ''
+		, footer       : warning()
 		, values       : values
 		, checkchanged : 'profileget' in V && V.profileget.ADDRESS === values.ADDRESS
 		, checkblank   : [ 0 ]
@@ -370,24 +373,24 @@ function renderBluetooth() {
 	$( '#divbt' ).removeClass( 'hide' );
 }
 function renderPage() {
-	if ( ! S.activebt ) {
+	if ( ! S.devicebt ) {
 		$( '#divbt' ).addClass( 'hide' );
 	} else {
 		renderBluetooth();
 	}
-	if ( ! S.activewl ) {
+	if ( ! S.devicewl ) {
 		$( '#divwl' ).addClass( 'hide' );
 	} else {
 		renderWlan();
+		$( '.wladd' ).toggleClass( 'hide', S.ap );
 	}
-	$( '.wladd' ).toggleClass( 'hide', S.ap );
-	if ( ! S.activeeth ) {
+	if ( ! S.deviceeth ) {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
-		var htmlwl = '';
-		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.ip
-								 +'&ensp;<gr>&raquo;&ensp;'+ S.listeth.gateway +'</gr></li>';
-		$( '#listlan' ).html( htmlwl );
+		var htmllan = '';
+		if ( S.listeth ) htmllan = '<li>'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.IP
+								 +'&ensp;<gr>&raquo;&ensp;'+ S.listeth.GATEWAY +'</gr></li>';
+		$( '#listlan' ).html( htmllan );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
 	$( '#divap' ).toggleClass( 'hide', ! S.ap );
@@ -395,7 +398,7 @@ function renderPage() {
 	showContent();
 }
 function renderQR() {
-	var ip = S.ipeth || S.ipwl || S.apconf.ip;
+	var ip = S.listeth ? S.listeth.IP : S.ipwl || S.apconf.ip;
 	if ( ! ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return
@@ -474,6 +477,6 @@ function scanWlan() {
 		V.timeoutscan = setTimeout( scanWlan, 12000 );
 	}, 'json' );
 }
-function warning( action ) {
-	return 'li' in V && V.li.data( 'ip' ) === location.hostname ? iconwarning +'<wh>'+ action +' current connection</wh>' : ''
+function warning() {
+	if ( V.li && V.li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>This is current connection</wh>'
 }

@@ -72,39 +72,38 @@ if [[ $1 == pushwl ]]; then
 fi
 
 # bluetooth
-rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=true
-[[ $activebt ]] && listbt=$( listBluetooth )
+rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=true
+[[ $devicebt ]] && listbt=$( listBluetooth )
 
 # wlan
 [[ -e $dirshm/wlan ]] && listWlan
 
 # lan
-lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
-[[ $lan ]] && ipr=$( ip r | grep ^default.*$lan )
+eth=$( ip -br link | awk '/^e/ {print $1; exit}' )
+[[ $eth ]] && ipr=$( ip r | grep ^default.*$eth )
 if [[ $ipr ]]; then
 	ipeth=$( cut -d' ' -f9 <<< $ipr )
 	static=$( [[ $ipr != *"dhcp src "* ]] && echo true )
 	gateway=$( cut -d' ' -f3 <<< $ipr )
 	listeth='{
-  "gateway"  : "'$gateway'"
-, "ip"       : "'$ipeth'"
-, "static"   : '$static'
+  "IP"       : "'$ipeth'"
+, "GATEWAY"  : "'$gateway'"
+, "STATIC"   : '$static'
 }'
 fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ##########
 data='
-, "activebt"    : '$activebt'
-, "activeeth"   : '$( ip -br link | grep -q -m1 ^e && echo true )'
-, "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
+, "devicebt"    : '$devicebt'
+, "deviceeth"   : '$( [[ $eth ]] && echo true )'
+, "devicewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "ap"          : '$( exists $dirsystem/ap )'
 , "apconf"      : '$apconf'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( [[ $( iwgetid -r ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
 , "hostname"    : "'$( avahi-resolve -a4 $( ipAddress ) | awk '{print $NF}' )'"
-, "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipAddress sub )'"
 , "ipwl"        : "'$ipwl'"
 , "listbt"      : '$listbt'
