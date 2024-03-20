@@ -5,23 +5,27 @@
 args2var "$1"
 
 netctlSwitch() {
-	local active current ssid wlandev
+	local active ssid wlandev
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
-	current=$( iwgetid -r )
 	ip link set $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
 		if netctl is-active "$ssid" &> /dev/null; then
 			netctl enable "$ssid"
+			avahi-daemon --kill # flush cache and restart
 			pushRefresh networks pushwl
+			rm -f "$filecurrent"
 			exit
 # --------------------------------------------------------------------
 		fi
 	done
 	echo -1
-	[[ $current ]] && netctl switch-to "$current"
+	if [[ -e "$filecurrent" ]]; then
+		mv -f "$filecurrent" /etc/netctl
+		netctl switch-to "$current"
+	fi
 }
 wlanDevice() {
 	local iplinkw wlandev
@@ -61,6 +65,11 @@ btrename )
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
+	current=$( iwgetid -r )
+	if [[ $current == $ESSID ]]; then
+		filecurrent="$dirshm/$current"
+		cp "/etc/netctl/$current" $dirshm
+	fi
 	if [[ $ADDRESS ]]; then
 		if [[ $ADDRESS != $( ipAddress ) ]] && ipOnline $ADDRESS; then
 			echo 'IP <wh>'$ADDRESS'</wh> already in use.'
@@ -96,11 +105,8 @@ Hidden=yes'
 		exit
 # --------------------------------------------------------------------
 	fi
-	if ! netctl is-active "$ESSID" &> /dev/null; then
-		netctlSwitch "$ESSID"
-		avahi-daemon --kill # flush cache and restart
-	fi
-	pushRefresh networks pushwl
+	netctl stop "$ESSID"
+	netctlSwitch "$ESSID"
 	;;
 disconnect )
 	netctl stop "$SSID"
