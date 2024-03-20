@@ -36,9 +36,8 @@ if [[ $wlandev && -e $bootwifi ]]; then
 " $bootwifi )
 	ssid=$( sed -n -E '/^ESSID/ {s/.*="(.*)"/\1/; p}' <<< $data )
 	echo "$data" > "/etc/netctl/$ssid"
-	$dirsettings/networks.sh "profileconnect
-$ssid
-CMD SSID"
+	ip link set $( < $dirshm/wlan ) down
+	netctl start "$ssid"
 fi
 if [[ -e /boot/cirrus ]]; then
 	$dirsettings/player-wm5102.sh 'HPOUT2 Digital'
@@ -98,7 +97,10 @@ else
 			fi
 			appendSortUnique $ipaddress $filesharedip
 		fi
-		[[ -e $bootwifi ]] && rm -f $bootwifi
+		if [[ -e $bootwifi ]]; then
+			netctl enable "$ssid"
+			rm -f $bootwifi
+		fi
 		if [[ $partition ]] && ipOnline 8.8.8.8; then
 			$dirsettings/system.sh 'timezone
 auto

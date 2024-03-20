@@ -11,10 +11,9 @@ ipAvailable() {
 	fi
 }
 netctlSwitch() {
-	local active ssid wlandev
+	local ssid
 	ssid=$1
-	wlandev=$( < $dirshm/wlan )
-	ip link set $wlandev down
+	ip link set $( < $dirshm/wlan ) down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
