@@ -305,28 +305,43 @@ function infoWiFi( v ) {
 		, static : { ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
 	}
 	if ( v ) {
-		var dhcp   = 'ADDRESS' in v; // from static tab
-		v.SECURITY = v.SECURITY === 'wep';
-		v.HIDDEN   = v.HIDDEN === 'yes';
-		var values = {};
-		Object.keys( default_v[ dhcp ? 'dhcp' : 'static' ] ).forEach( k => values[ k ] = v[ k ] );
+		var dhcp   = ! ( 'ADDRESS' in v );
+		var values = v;
 	} else {
 		var values = default_v[ 'dhcp' ];
 		var dhcp   = true;
 	}
+	var profile       = 'profileget' in V;
+	var profilestatic = profile && V.profileget.ADDRESS;
 	if ( dhcp ) {
 		var tabfn = () => {
-			var val = infoVal();
-			infoWiFi( val );
+			if ( profilestatic ) {
+				infoWiFi( V.profileget );
+			} else {
+				var val = infoVal();
+				val.ADDRESS = S.ipsub;
+				val.GATEWAY = S.gateway;
+				var v       = {}
+				Object.keys( default_v.static ).forEach( k => v[ k ] = val[ k ] );
+				infoWiFi( v );
+			}
 		}
 		list.splice( 2, 2 );
 	} else {
 		var tabfn = () => {
-			var val = infoVal();
-			infoWiFi( val );
+			if ( ! profilestatic ) {
+				infoWiFi( V.profileget );
+			} else {
+				var val = infoVal();
+				[ 'ADDRESS', 'GATEWAY' ].forEach( k => delete val[ k ] );
+				infoWiFi( val );
+			}
 		}
-		values.ADDRESS = S.ipwl || S.ipsub;
-		values.GATEWAY = S.gateway || S.ipsub;
+	}
+	if ( profile ) {
+		var checkchanged = ( values.ADDRESS && profilestatic ) || ( ! values.ADDRESS && ! profilestatic );
+	} else {
+		var checkchanged = false;
 	}
 	info( {
 		  icon         : 'wifi'
@@ -337,7 +352,7 @@ function infoWiFi( v ) {
 		, list         : list
 		, footer       : warning()
 		, values       : values
-		, checkchanged : 'profileget' in V && V.profileget.ADDRESS === values.ADDRESS
+		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
 		, checklength  : { 1: [ 8, 'min' ] }
 		, checkip      : dhcp ? '' : [ 2, 3 ]
