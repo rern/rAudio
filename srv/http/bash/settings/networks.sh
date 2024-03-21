@@ -152,7 +152,6 @@ profileforget )
 	pushRefresh networks pushwl
 	;;
 profileget )
-	[[ $( netctl is-enabled "$SSID" ) == enabled ]] && disable=false || disable=true
 	conf2json "/etc/netctl/$SSID" | sed -E 's/INT.*(SECURITY)/\1/'
 	;;
 statuslan )
