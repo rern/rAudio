@@ -152,7 +152,18 @@ profileforget )
 	pushRefresh networks pushwl
 	;;
 profileget )
-	conf2json "/etc/netctl/$SSID" | sed -E 's/INT.*(SECURITY)/\1/'
+	. "/etc/netctl/$SSID"
+	data='{
+  "ESSID"    : "'$( stringEscape $ESSID )'"
+, "KEY"      : "'$Key'"'
+	[[ $Address ]] && data+='
+, "ADDRESS"  : "'$Address'"
+, "GATEWAY"  : "'$Gateway'"'
+	data+='
+, "SECURITY" : '$( [[ $Security == wep ]] && echo true || echo false )'
+, "HIDDEN"   : '$( [[ $Hidden == yes ]] && echo true || echo false )'
+}'
+	echo "$data"
 	;;
 statuslan )
 	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
