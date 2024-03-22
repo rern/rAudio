@@ -128,7 +128,7 @@ Audio player for
 	- Wi-Fi access point mode
 		- Auto start: No IP address assigned from connected wired/wireless network
 		- Force enable access point only: Place blank `accesspoint` file in `BOOT` before power on.
-		- On client devices, select `rAudio` from Wi-Fi network list to connect.
+		- On client devices, select `rAudio` from Wi-Fi network list to connect with password `raudioap`.
 		- On browser, open web user interface with URL `raudio.local`
 		- Settings > Networks > Wi-Fi - search
 		- Select access point to connect

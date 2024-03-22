@@ -208,7 +208,7 @@ echo '
 <div id="divlists" class="section">
 	<heading><span class="headtitle">Lists</span></heading>';
 htmlHead( [
-	  'title'   => 'Excluded Album'
+	  'title'   => 'Excluded Albums'
 	, 'subhead' => true
 	, 'status'  => 'albumignore'
 	, 'help'    => <<< EOF
@@ -220,7 +220,7 @@ To restore:
 EOF
 ] );
 htmlHead( [
-	  'title'   => 'Excluded Directory'
+	  'title'   => 'Excluded Directories'
 	, 'subhead' => true
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< EOF
