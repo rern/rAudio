@@ -177,5 +177,11 @@ updateDone
 	fi
 	
 	list=$( find -L /mnt/MPD -name .mpdignore )
-	[[ $list ]] && sort -V <<< $list > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
+	if [[ $list ]]; then
+		if [[ $list == /mnt/MPD/NAS/.mpdignore && $( < /mnt/MPD/NAS/.mpdignore ) == data ]]; then
+			rm -f $dirmpd/mpdignorelist
+		else
+			sort -V <<< $list > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
+		fi
+	fi
 ) &
