@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240322
+# 20240323
 [[ -e /boot/kernel7.img ]] && sed -i -E 's/^#(IgnorePkg   =)/\1 libunwind/' /etc/pacman.conf
 
 # 20240315

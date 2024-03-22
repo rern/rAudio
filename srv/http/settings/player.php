@@ -93,9 +93,9 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · Mixer device volume set at <c>0dB</c>
  · Disable:
 	· Output {$FiLabel( 'Volume Control' )}
-	· Volume {$FiLabel( 'Cross-Fading' )} {$FiLabel( 'Normalization' )} {$FiLabel( 'ReplayGain' )}
+	· Volume - All options
 	· Options  {$FiLabel( 'SoX Resampler' )}
-	· {$FiTab( 'Features' )}{$FiLabel( 'DSP', 'camilladsp' )} and {$FiLabel( 'Equalizer', 'equalizer' )}
+	· {$FiTab( 'Features' )} Signal Processors
 EOF
 	]
 	, [
@@ -208,11 +208,11 @@ echo '
 <div id="divlists" class="section">
 	<heading><span class="headtitle">Lists</span></heading>';
 htmlHead( [
-	  'title'   => 'Ignored Album'
+	  'title'   => 'Excluded Album'
 	, 'subhead' => true
 	, 'status'  => 'albumignore'
 	, 'help'    => <<< EOF
-List of albums excluded from Album page.
+List of albums excluded from Library Album list.
 To restore:
  · Edit <c>/srv/http/data/mpd/albumignore</c>
  · Remove albums to restore
@@ -220,11 +220,11 @@ To restore:
 EOF
 ] );
 htmlHead( [
-	  'title'   => 'Ignored Directory'
+	  'title'   => 'Excluded Directory'
 	, 'subhead' => true
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< EOF
-List of <c>.mpdignore</c> files contain directories excluded from database.
+List of <c>.mpdignore</c> files contain directories/folders excluded from database.
 To restore:
 • Edit <c>.../.mpdignore</c>
 • Remove directories to restore
