@@ -206,7 +206,7 @@ htmlSection( $head, $body, 'options' );
 
 echo '
 <div id="divlists" class="section">
-	<heading><span class="headtitle">Lists</span>'.i( 'help help' ).'</heading>';
+	<heading><span class="headtitle">Lists</span></heading>';
 htmlHead( [
 	  'title'   => 'Excluded Album'
 	, 'subhead' => true

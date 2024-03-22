@@ -371,7 +371,10 @@ $( '.helphead' ).on( 'click', function() {
 		$( '.helpblock' ).addClass( 'hide' );
 	} else {
 		$( '.help' ).addClass( 'bl' );
-		$( '.helpblock' ).removeClass( 'hide' );
+		$( '.helpblock:not(.sub)' ).removeClass( 'hide' );
+		$( '.helpblock.sub' ).each( ( i, el ) => {
+			if ( ! $( el ).prev().hasClass( 'hide' ) ) $( el ).removeClass( 'hide' );
+		} );
 	}
 } );
 $( '.close' ).on( 'click', function() {
@@ -380,7 +383,8 @@ $( '.close' ).on( 'click', function() {
 $( '.help' ).on( 'click', function() {
 	var $this  = $( this );
 	$this.toggleClass( 'bl' );
-	$this.parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
+	var $helpblock = $this.parent().hasClass( 'subhead' ) ? $this.parent().next() : $this.parents( '.section' ).find( '.helpblock' );
+	$helpblock.toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.help' ).hasClass( 'bl' ) );
 } );
 $( '.setting, .switch' ).on( 'click', function() {

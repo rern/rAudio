@@ -124,10 +124,10 @@ function htmlHead( $data ) {
 	$html   .= $class ? ' class="'.$class.'">' : '>';
 	$html   .= '<span class="headtitle">'.$title.'</span>';
 	if ( $button ) foreach( $button as $icon ) $html.= i( $icon );
-	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
+	$html   .= isset( $data[ 'nohelp' ] ) ? '' : i( 'help help' );
 	$html   .= isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
 	$html   .= '</heading>';
-	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
+	$html   .= $help ? '<span class="helpblock hide'.( $subhead ? ' sub' : '' ).'">'.$help.'</span>' : '';
 	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echo str_replace( '|', '<g>|</g>', $html );
 }
