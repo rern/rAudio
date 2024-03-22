@@ -1282,7 +1282,9 @@ function renderLibraryList( data ) { // V.librarylist
 		pageScroll( V.scrolltop[ data.path ] || 0 );
 		if ( V.nodata ) {
 			var $li = $( '#lib-list li' );
-			V.nodata.forEach( ( v, i ) => $li.eq( i ).toggleClass( 'nodata', v ) );
+			V.nodata.forEach( ( v, i ) => {
+				v === -1 ? $li.eq( i ).remove() : $li.eq( i ).toggleClass( 'nodata', v )
+			} );
 			delete V.nodata;
 		}
 	} );

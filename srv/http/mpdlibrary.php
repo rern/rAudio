@@ -159,8 +159,8 @@ case 'list':
 	if ( count( $lists ) ) htmlList( $lists );
 	break;
 case 'ls':
-	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root except shared dir
-		exec( 'ls -1d /mnt/MPD/'.$string."/*/ | sed -E -e 's#^/mnt/MPD/|/$##g' -e '/^NAS.data$/ d'", $ls );
+	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
+		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | sed -E "s|^/mnt/MPD/(.*)/$|\1|"', $ls );
 		htmlDirectory( $ls );
 		exit;
 	}
@@ -311,8 +311,16 @@ function htmlDirectory( $lists ) {
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
+	$mpdignore = file( '/mnt/MPD/'.dirname( $dirs[ 0 ] ).'/.mpdignore', FILE_IGNORE_NEW_LINES );
 	$nodata = [];
-	foreach( $dirs as $dir ) $nodata[] = exec( 'mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;
+	foreach( $dirs as $dir ) {
+		$basename = basename( $dir );
+		if ( in_Array( $basename, $mpdignore ) ) { // fix - partial update library
+			$nodata[] = -1;
+		} else {
+			$nodata[] = exec( 'mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;
+		}
+	}
 	exec( 'echo -n \'{ "channel": "nodata", "data": '.json_encode( $nodata ).'\' } | websocat ws://127.0.0.1:8080' );
 }
 function htmlDirectoryLi( $mode, $index, $icon, $path, $name ) {
