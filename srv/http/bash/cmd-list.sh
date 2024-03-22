@@ -176,6 +176,6 @@ updateDone
 		rm -f $dirmpd/nonutf8
 	fi
 	
-	list=$( find -L /mnt/MPD -name .mpdignore | grep -v /mnt/MPD/NAS/.mpdignore  )
+	list=$( find -L /mnt/MPD -name .mpdignore )
 	[[ $list ]] && sort -V <<< $list > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
 ) &

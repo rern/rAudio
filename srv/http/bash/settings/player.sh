@@ -180,11 +180,20 @@ statusalbumignore )
 statusmpdignore )
 	files=$( < $dirmpd/mpdignorelist )
 	list="\
-<bll># find /mnt/MPD -name .mpdignore</bll>"$'\n'
+<bll># find /mnt/MPD -name .mpdignore</bll>"
 	while read file; do
-		list+=$file
 		path=$( dirname "$file" )
-		list+=$'\n'$( sed "s|^|<g>$path/</g>|" "$file" )
+		if [[ $path == /mnt/MPD/NAS ]]; then
+			[[ $( < $file ) == data ]] && continue
+			
+			list+="
+$file
+$( grep -v ^data$ "$file" | sed "s|^|<g>$path/</g>|" )"
+		else
+			list+="
+$file
+$( sed "s|^|<g>$path/</g>|" "$file" )"
+		fi
 	done <<< $files
 	echo "$list"
 	;;

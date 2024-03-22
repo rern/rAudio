@@ -10,9 +10,14 @@ if [[ -e $dirshm/btreceiver ]]; then
 	btvolume=$( volumeGet valdb )
 fi
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
+if [[ -e $dirmpd/mpdignorelist ]]; then
+	[[ $( < $dirmpd/mpdignorelist ) == /mnt/MPD/NAS/.mpdignore && $( < /mnt/MPD/NAS/.mpdignore ) == data ]] && mpdignore=false || mpdignore=true
+else
+	mpdignore=false
+fi
 lists='{
   "albumignore" : '$( exists $dirmpd/albumignore )'
-, "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
+, "mpdignore"   : '$mpdignore'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }'
 replaygainconf='{
