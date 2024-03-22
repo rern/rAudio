@@ -5,6 +5,10 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240323
+if [[ -e $dirmpd/mpdignorelist ]]; then
+	[[ $( < $dirmpd/mpdignorelist ) == /mnt/MPD/NAS/.mpdignore && $( < /mnt/MPD/NAS/.mpdignore ) == data ]] && rm -f $dirmpd/mpdignorelist
+fi
+
 [[ -e /boot/kernel7.img ]] && sed -i -E 's/^#(IgnorePkg   =)/\1 libunwind/' /etc/pacman.conf
 
 # 20240315

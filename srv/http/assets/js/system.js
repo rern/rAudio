@@ -838,6 +838,7 @@ function infoMount( nfs ) {
 		, cancel     : switchCancel
 		, ok         : () => {
 			var infoval = infoVal();
+			if ( infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
 			infoval.SHAREDDATA = shareddata;
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
