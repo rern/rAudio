@@ -21,7 +21,7 @@ $id_data = [
 $head = [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
-	, 'button' => [ 'play playback' ]
+	, 'button' => 'play playback'
 	, 'help'   => <<< EOF
 {$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
 

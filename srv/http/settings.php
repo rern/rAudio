@@ -122,7 +122,13 @@ function htmlHead( $data ) {
 	$html    = '<heading '.( $id ? ' id="'.$id.'"' : '' ).( $status ? ' data-status="'.$status.'"' : '' );
 	$html   .= $class ? ' class="'.$class.'">' : '>';
 	$html   .= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) foreach( $button as $icon ) $html.= i( $icon );
+	if ( $button ) {
+		if ( is_Array( $button ) ) {
+			foreach( $button as $icon ) $html.= i( $icon );
+		} else {
+			$html.= i( $button );
+		}
+	}
 	$html   .= isset( $data[ 'nohelp' ] ) ? '' : i( 'help help' );
 	$html   .= isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
 	$html   .= '</heading>';

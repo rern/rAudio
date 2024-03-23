@@ -27,7 +27,7 @@ $id_data = [
 $head = [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
-	, 'button' => [ 'power power' ]
+	, 'button' => 'power power'
 	, 'help'   => i( 'power btn' ).' Power'
 ];
 $labels = 'Version
@@ -41,7 +41,7 @@ htmlSection( $head, $body, 'system' );
 $head = [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'status' => 'status'
-	, 'button' => [ 'refresh refresh' ]
+	, 'button' => 'refresh refresh'
 	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
 ];
 $labels = 'CPU Load
@@ -76,7 +76,7 @@ $gid = exec( 'id -g mpd' );
 $head = [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
-	, 'button' => [ 'add addnas' ]
+	, 'button' => 'add addnas'
 	, 'help'   => <<< EOF
 {$Fi( 'add btn' )} Add network storage
 
