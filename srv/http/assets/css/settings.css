@@ -191,7 +191,7 @@ heading {
 	letter-spacing: 5px;
 }
 heading.subhead {
-	margin: 20px 0 10px 0;
+	margin: 0;
 	padding-bottom: 0;
 	line-height: 28px;
 	font-size: 18px;
