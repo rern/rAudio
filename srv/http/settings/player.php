@@ -204,12 +204,9 @@ EOF
 ];
 htmlSection( $head, $body, 'options' );
 
-echo '
-<div id="divlists" class="section">
-	<heading><span class="headtitle">Lists</span></heading>';
 htmlHead( [
 	  'title'   => 'Excluded Albums'
-	, 'subhead' => true
+	, 'id'      => 'albumignore'
 	, 'status'  => 'albumignore'
 	, 'help'    => <<< EOF
 List of albums excluded from Library Album list.
@@ -221,7 +218,7 @@ EOF
 ] );
 htmlHead( [
 	  'title'   => 'Excluded Directories'
-	, 'subhead' => true
+	, 'id'      => 'mpdignore'
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< EOF
 List of <c>.mpdignore</c> files contain directories/folders excluded from database.
@@ -233,9 +230,7 @@ EOF
 ] );
 htmlHead( [
 	  'title'   => 'Non UTF-8 Files'
-	, 'subhead' => true
+	, 'id'      => 'nonutf8'
 	, 'status'  => 'nonutf8'
 	, 'help'    => 'List of files with metadata is not UTF-8 encoding which must be corrected.'
 ] );
-echo '
-</div>';
