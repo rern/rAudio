@@ -396,6 +396,7 @@ input[type=image] {
 }
 .listtitle {
 	margin-top: 10px;
+	font-weight: 300;
 	letter-spacing: 5px;
 }
 .listtitle a {
