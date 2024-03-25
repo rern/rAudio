@@ -1203,10 +1203,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	
 	V.modescrolltop = $( window ).scrollTop();
 	if ( V.mode === 'playlists' ) {
-		if ( $( this ).find( 'gr' ).text() ) {
-			$( '#button-pl-playlists' ).trigger( 'click' );
-			$( '#playlist' ).trigger( 'click' );
-		}
+		$( '#button-pl-playlists' ).trigger( 'click' );
+		setTimeout( () => $( '#playlist' ).trigger( 'click' ), 100 );
 		return
 	}
 	
