@@ -424,7 +424,7 @@ $verjquery  = preg_replace( '/^.*-|.min.js$/', '', glob( '/srv/http/assets/js/pl
 		<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies<br>
 		<a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts<br>
 		<a href="https://radioparadise.com">Radio Paradise</a> <a href="https://www.fip.fr/">Fip</a> <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for their own stations<br>
-		<a href="http://gnudb.gnudb.org">GnuDB</a> - A database of user-submitted compact disc track listings<br>
+		<a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD track list<br>
 	</div>
 </div>
 
