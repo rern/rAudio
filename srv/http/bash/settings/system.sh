@@ -464,10 +464,10 @@ statusstatus )
 	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
 # --------------------------------------------------------------------
-	startupfinished=$( systemd-analyze )
+	startupfinished=$( systemd-analyze | head -1 )
 	if grep -q 'Startup finished' <<< $startupfinished; then
 		echo "\
-<bll># systemd-analyze</bll>
+<bll># systemd-analyze | head -1</bll>
 $startupfinished
 
 <bll># journalctl -b</bll>
