@@ -642,6 +642,8 @@ $( '.listtitle' ).on( 'click', function( e ) {
 	var $chevron = $this.find( 'i' );
 	var $list    = $this.next();
 	var $target  = $( e.target );
+	if ( $target.hasClass( 'i-refresh' ) ) return
+	
 	if ( ! $this.hasClass( 'backend' ) ) { // js
 		$list.toggleClass( 'hide' )
 		$chevron.toggleClass( 'i-chevron-down i-chevron-up' );
@@ -654,7 +656,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 			return
 		}
 		
-		bash( [ 'packagelist', $target.text().toLowerCase(), 'CMD PKG' ], list => {
+		bash( [ 'packagelist', $target.text(), 'CMD INI' ], list => {
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
@@ -663,6 +665,14 @@ $( '.listtitle' ).on( 'click', function( e ) {
 		$list.add( $chevron ).addClass( 'hide' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
+} );
+$( '.backend .i-refresh' ).click( function() {
+	var $active = $( '.backend a.wh' );
+	if ( ! $active.length ) return
+	
+	bash( [ 'packagelist', $active.text(), 'refresh', 'CMD INI REFRESH' ], list => {
+		$( this ).parent().next().html( list );
+	} );
 } );
 $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css for dropdown width
 	$( 'head' ).append( `

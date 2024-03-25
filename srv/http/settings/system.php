@@ -403,7 +403,7 @@ $verjquery  = preg_replace( '/^.*-|.min.js$/', '', glob( '/srv/http/assets/js/pl
 		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
 		<p>Arch Linux for ARM processors which aims for simplicity and full control to the end user.</p>
 	</div>
-	<div class="listtitle backend">Packages:</i>
+	<div class="listtitle backend">Packages: <?=i( 'refresh gr')?>
 	<br><?=$indexhtml?></div>
 	<div class="list"></div>
 	

@@ -316,8 +316,9 @@ NTP=$NTP" > $file
 	pushRefresh
 	;;
 packagelist )
+	INI=${INI,}
 	filepackages=/tmp/packages
-	if [[ ! -e $filepackages ]]; then
+	if [[ ! -e $filepackages || $REFRESH ]]; then
 		notify system Backend 'Package list ...'
 		pacmanqi=$( pacman -Qi | grep -E '^Name|^Vers|^Desc|^URL' )
 		while read line; do
@@ -341,7 +342,7 @@ $description
 				s|^Desc.*: (.*)| - \1<br>|' <<< $lines \
 				> /tmp/packages
 	fi
-	grep -B1 -A2 --no-group-separator ^$PKG $filepackages
+	grep -B1 -A2 --no-group-separator ^$INI $filepackages
 	;;
 powerbutton )
 	enableFlagSet
