@@ -666,14 +666,6 @@ $( '.listtitle' ).on( 'click', function( e ) {
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
-$( '.backend .i-refresh' ).click( function() {
-	var $active = $( '.backend a.wh' );
-	if ( ! $active.length ) return
-	
-	bash( [ 'packagelist', $active.text(), 'refresh', 'CMD INI REFRESH' ], list => {
-		$( this ).parent().next().html( list );
-	} );
-} );
 $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css for dropdown width
 	$( 'head' ).append( `
 <style class="tmp">
