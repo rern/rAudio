@@ -322,7 +322,7 @@ function htmlDirectory( $lists ) {
 			$nodata[] = exec( 'mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;
 		}
 	}
-	exec( 'echo -n \'{ "channel": "nodata", "data": '.json_encode( $nodata ).'\' } | websocat ws://127.0.0.1:8080' );
+	exec( 'echo -n \'{ "channel": "nodata", "data": '.json_encode( $nodata ).' }\' | websocat ws://127.0.0.1:8080' );
 }
 function htmlDirectoryLi( $mode, $index, $icon, $path, $name ) {
 	return
