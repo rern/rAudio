@@ -656,10 +656,13 @@ $( '.listtitle' ).on( 'click', function( e ) {
 			return
 		}
 		
+		var timeout = setTimeout( () => banner( 'system blink', 'Backend', 'List ...', -1 ), 1000 );
 		bash( [ 'packagelist', $target.text(), 'CMD INI' ], list => {
+			clearTimeout( timeout );
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
+			bannerHide();
 		} );
 	} else {
 		$list.add( $chevron ).addClass( 'hide' );
