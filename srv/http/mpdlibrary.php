@@ -311,11 +311,12 @@ function htmlDirectory( $lists ) {
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
-	$mpdignore = file( '/mnt/MPD/'.dirname( $dirs[ 0 ] ).'/.mpdignore', FILE_IGNORE_NEW_LINES );
+	$fileignore = '/mnt/MPD/'.dirname( $dirs[ 0 ] ).'/.mpdignore';
+	$mpdignore = file_exists( $fileignore ) ? file( $fileignore, FILE_IGNORE_NEW_LINES ) : '';
 	$nodata = [];
 	foreach( $dirs as $dir ) {
 		$basename = basename( $dir );
-		if ( in_Array( $basename, $mpdignore ) ) { // fix - partial update library
+		if ( $mpdignore && in_Array( $basename, $mpdignore ) ) { // fix - partial update library
 			$nodata[] = -1;
 		} else {
 			$nodata[] = exec( 'mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;

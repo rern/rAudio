@@ -382,16 +382,13 @@ $listui = [
 ];
 $uihtml     = '';
 foreach( $listui as $ui ) {
-	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> - '.$ui[ 1 ].'<br>';
+	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> · '.$ui[ 1 ].'<br>';
 }
 $indexhtml  = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	$indexhtml.= '<a>'.$i.'</a>';
 	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
 }
-$vernginx   = exec( 'pacman -Q nginx | cut -d" " -f2' );
-$verphp     = phpversion();
-$verjquery  = preg_replace( '/^.*-|.min.js$/', '', glob( '/srv/http/assets/js/plugin/jquery-*' )[ 0 ] );
 ?>
 <div id="divabout" class="section">
 	<a href="https://github.com/rern/rAudio/discussions"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
@@ -400,31 +397,29 @@ $verjquery  = preg_replace( '/^.*-|.min.js$/', '', glob( '/srv/http/assets/js/pl
 	
 	<heading class="subhead">Back End</heading>
 	<div class="list">
-		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
-		<p>Arch Linux for ARM processors which aims for simplicity and full control to the end user.</p>
+		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a> · Arch Linux for ARM processors
 	</div>
-	<div class="listtitle backend">Packages:
-	<br><?=$indexhtml?></div>
+	<div class="listtitle backend">Packages: <?=$indexhtml?></div>
 	<div class="list"></div>
 	
 	<heading class="subhead">Front End</heading>
 	<div class="list">
-		<a href="https://nginx.org/en/">nginx</a> <gr><?=$vernginx?></gr> - HTTP and reverse proxy, a mail proxy, and a generic TCP/UDP proxy server<br>
-		<a href="https://www.php.net">PHP</a> <gr><?=$verphp?></gr> - PHP: Hypertext Preprocessor - A scripting language for web server side<br>
-		<a href="https://jquery.com/">jQuery</a> <gr><?=$verjquery?></gr> - A JavaScript library for simplifying HTML DOM tree traversal and manipulation<br>
-		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> - A scripting language for working with HTML Document Object Model on client side<br>
-		<a href="https://www.w3.org/TR/CSS">CSS</a> - Cascading Style Sheets for describing the presentation of HTMLs<br>
-		<a href="https://whatwg.org">HTML</a> - Hypertext Markup Language for displaying documents in web browsers
+		<a href="https://www.w3.org/TR/CSS">CSS</a> · Cascading Style Sheets for describing the presentation of HTMLs<br>
+		<a href="https://whatwg.org">HTML</a> · Hypertext Markup Language for displaying documents in web browsers<br>
+		<a href="https://nginx.org/en/">nginx</a> · HTTP and reverse proxy, a mail proxy, and a generic TCP/UDP proxy server<br>
+		<a href="https://www.php.net">PHP</a> · PHP: Hypertext Preprocessor - A scripting language for web server side<br>
+		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> · A scripting language for working with HTML Document Object Model on client side<br>
+		<a href="https://jquery.com/">jQuery</a> · A JavaScript library for simplifying HTML DOM tree traversal and manipulation
 	</div>
 	<div class="listtitle">Javascript Plugins: <?=i( 'chevron-down bl' )?></div>
 	<div class="list hide"><?=$uihtml?></div>
 	
 	<heading class="subhead">Data</heading>
 	<div class="list">
-		<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies<br>
-		<a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts<br>
-		<a href="https://radioparadise.com">Radio Paradise</a> <a href="https://www.fip.fr/">Fip</a> <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for their own stations<br>
-		<a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD track list<br>
+		<a href="https://www.last.fm">last.fm</a> · Coverarts and artist biographies<br>
+		<a href="https://webservice.fanart.tv">fanart.tv</a> · Artist images and fallback coverarts<br>
+		<a href="https://radioparadise.com">Radio Paradise</a> <a href="https://www.fip.fr/">Fip</a> <a href="https://www.francemusique.fr/">France Musique</a> · Coverarts for their own stations<br>
+		<a href="http://gnudb.gnudb.org">GnuDB</a> · Audio CD track list<br>
 	</div>
 </div>
 

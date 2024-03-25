@@ -401,10 +401,11 @@ input[type=image] {
 }
 .listtitle a {
 	display: inline-block;
-	width: calc( 100% / 26 );
+	width: calc( ( 100% - 120px ) / 26 );
 	min-width: 16px;
 	text-align: center;
 	color: var( --cml );
+	font-weight: normal;
 }
 .brindex {
 	display: none;
