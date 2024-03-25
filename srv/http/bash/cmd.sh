@@ -17,7 +17,8 @@ plAddPosition() {
 }
 plAddRandom() {
 	local cuefile diffcount dir file mpcls plL range tail
-	tail=$( plTail )
+	pos_len=( $( mpc status '%songpos% %length%' ) )
+	tail=$(( ${pos_len[1]} - ${pos_len[0]} ))
 	(( $tail > 1 )) && pushPlaylist add && return
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
@@ -99,11 +100,6 @@ playerStop() {
 plClear() {
 	mpc -q clear
 	radioStop
-}
-plTail() {
-	local pos_len
-	pos_len=( $( mpc status '%songpos% %length%' ) )
-	echo $(( ${pos_len[1]} - ${pos_len[0]} ))
 }
 pushPlaylist() {
 	pushData playlist '{ "refresh": true }'
@@ -433,14 +429,10 @@ latestclear )
 librandom )
 	if [[ $ON ]]; then
 		mpc -q random 0
-		tail=$( plTail )
-		if [[ $PLAY ]]; then
-			playnext=$(( total + 1 ))
-			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
-		fi
 		touch $dirsystem/librandom
+		[[ $ACTION == play ]] && pos=$(( $( mpc status %length% ) + 1 ))
 		plAddRandom
-		[[ $PLAY ]] && mpc -q play $playnext
+		plAddPlay $pos
 	else
 		rm -f $dirsystem/librandom
 	fi

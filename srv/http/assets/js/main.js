@@ -1669,7 +1669,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 				S.librandom = true;
 				$this.addClass( 'bl' );
 				banner( icon, title, 'On ...' );
-				bash( [ 'librandom', infoVal(), 'CMD PLAY' ] );
+				bash( [ 'librandom', infoVal() ? 'play' : '', 'CMD ACTION' ] );
 			}
 		} );
 	}

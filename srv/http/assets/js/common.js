@@ -454,7 +454,7 @@ function info( json ) {
 			label   = l[ 0 ];
 			type    = l[ 1 ];
 			param   = l[ 2 ] || {};
-			kv      = 'kv' in param ? param.kv : param; // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
+			kv      = 'kv' in param ? param.kv : jsonClone( param ); // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
 			if ( [ 'checkbox', 'radio' ].includes( type ) && ! ( 'colspan' in param ) ) param.colspan = 2;
 			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
 /*			param = {
