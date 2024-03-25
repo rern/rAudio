@@ -411,10 +411,10 @@ $verjquery  = preg_replace( '/^.*-|.min.js$/', '', glob( '/srv/http/assets/js/pl
 	<div class="list">
 		<a href="https://nginx.org/en/">nginx</a> <gr><?=$vernginx?></gr> - HTTP and reverse proxy, a mail proxy, and a generic TCP/UDP proxy server<br>
 		<a href="https://www.php.net">PHP</a> <gr><?=$verphp?></gr> - PHP: Hypertext Preprocessor - A scripting language for web server side<br>
-		<a href="https://whatwg.org">HTML</a> - Hypertext Markup Language for displaying documents in web browsers<br>
-		<a href="https://www.w3.org/TR/CSS">CSS</a> - Cascading Style Sheets for describing the presentation of HTMLs<br>
+		<a href="https://jquery.com/">jQuery</a> <gr><?=$verjquery?></gr> - A JavaScript library for simplifying HTML DOM tree traversal and manipulation<br>
 		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> - A scripting language for working with HTML Document Object Model on client side<br>
-		<a href="https://jquery.com/">jQuery</a> <gr><?=$verjquery?></gr> - A JavaScript library for simplifying HTML DOM tree traversal and manipulation
+		<a href="https://www.w3.org/TR/CSS">CSS</a> - Cascading Style Sheets for describing the presentation of HTMLs<br>
+		<a href="https://whatwg.org">HTML</a> - Hypertext Markup Language for displaying documents in web browsers
 	</div>
 	<div class="listtitle">Javascript Plugins: <?=i( 'chevron-down bl' )?></div>
 	<div class="list hide"><?=$uihtml?></div>
