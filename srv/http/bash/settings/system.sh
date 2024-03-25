@@ -338,7 +338,7 @@ $description
 		sed -E 's|^URL.*: (.*)|<a href="\1" target="_blank">|
 				s|^Name.*: (.*)|\1</a> |
 				s|^Vers.*: (.*)|<gr>\1</gr>|
-				s|^Desc.*: (.*)|<p>\1</p>|' <<< $lines \
+				s|^Desc.*: (.*)| - \1<br>|' <<< $lines \
 				> /tmp/packages
 	fi
 	grep -B1 -A2 --no-group-separator ^$PKG $filepackages
