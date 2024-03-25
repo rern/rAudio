@@ -50,21 +50,6 @@ fi
 # mirror
 sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
 
-# pacman
-echo "\
-[Trigger]
-Type = Path
-Operation = Install
-Operation = Upgrade
-Operation = Remove
-Target = usr/
-
-[Action]
-Description = Remove package list cache ...
-When = PostTransaction
-Exec = /usr/bin/rm -f /tmp/packages
-" > /etc/pacman.d/hooks/90-systemd-update.hook
-
 # snapclient
 [[ -e /usr/bin/snapclient ]] && echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient
 
