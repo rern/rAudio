@@ -19,26 +19,35 @@ plAddRandom() {
 	local cuefile diffcount dir file mpcls plL pos_len range tail
 	pos_len=( $( mpc status '%songpos% %length%' ) )
 	tail=$(( ${pos_len[1]} - ${pos_len[0]} ))
-	(( $tail > 1 )) && plAddPlay && return
+	(( $tail > 1 )) && plAddPlay $pos && return
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
-	mpcls=$( mpc ls "$dir" )
-	cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
-	if [[ $cuefile ]]; then
-		plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
-		range=$( shuf -i 0-$plL -n 1 )
-		file="$range $cuefile"
-		grep -q -m1 "$file" $dirsystem/librandom && plAddRandom && return
+	filerandom=$dirsystem/librandom
+	if [[ -e $dirsystem/librandomalbum ]]; then
+		grep -q -m1 "$file" $filerandom && plAddRandom && return
 		
-		mpc --range=$range load "$cuefile"
+		mpc -q add "$dir"
+		diffcount=$(( $( jq .album $dirmpd/counts ) - $( lineCount $filerandom ) ))
+		(( $diffcount > 1 )) && echo $dir >> $filerandom || > $filerandom
 	else
-		file=$( shuf -n 1 <<< $mpcls )
-		grep -q -m1 "$file" $dirsystem/librandom && plAddRandom && return
-		
-		mpc -q add "$file"
+		mpcls=$( mpc ls "$dir" )
+		cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
+		if [[ $cuefile ]]; then
+			plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
+			range=$( shuf -i 0-$plL -n 1 )
+			file="$range $cuefile"
+			grep -q -m1 "$file" $filerandom && plAddRandom && return
+			
+			mpc --range=$range load "$cuefile"
+		else
+			file=$( shuf -n 1 <<< $mpcls )
+			grep -q -m1 "$file" $filerandom && plAddRandom && return
+			
+			mpc -q add "$file"
+		fi
+		diffcount=$(( $( jq .song $dirmpd/counts ) - $( lineCount $filerandom ) ))
+		(( $diffcount > 1 )) && echo $file >> $filerandom || > $filerandom
 	fi
-	diffcount=$(( $( jq .song $dirmpd/counts ) - $( lineCount $dirsystem/librandom ) ))
-	(( $diffcount > 1 )) && echo $file >> $dirsystem/librandom || > $dirsystem/librandom
 	plAddRandom
 }
 playerStart() {
@@ -426,10 +435,11 @@ librandom )
 	if [[ $ON ]]; then
 		mpc -q random 0
 		touch $dirsystem/librandom
+		[[ $ALBUM ]] && touch $dirsystem/librandomalbum
 		[[ $ACTION == play ]] && pos=$(( $( mpc status %length% ) + 1 ))
 		plAddRandom
 	else
-		rm -f $dirsystem/librandom
+		rm -f $dirsystem/librandom*
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;

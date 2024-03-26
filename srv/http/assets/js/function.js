@@ -1371,8 +1371,7 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	V.plhome       = true;
 	V.savedpl      = false;
 	V.savedpltrack = false;
-	S.elapsed      = data.elapsed;
-	S.song         = data.song;
+	[ 'consume', 'elapsed', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
 	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 	if ( data == -1 ) {
@@ -1997,7 +1996,7 @@ function switchPage( page ) {
 	} else {
 		if ( ! V.plhome ) pageScroll( V.plscrolltop );
 	}
-	$( '.page, .menu' ).addClass( 'hide' );
+	$( '.page' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
 function thumbUpdate( path, overwrite ) {

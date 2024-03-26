@@ -1661,18 +1661,21 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 		info( {
 			  icon       : icon
 			, title      : title
-			, message    : 'Randomly add songs and play continuously.'
+			, message    : 'Randomly add and play continuously.'
 			, list       : '<div class="menu">'
-						  +'<a class="sub cmd"><i class="i-plus-o"></i>Add</a>'
-						  +'<i class="i-play-plus submenu cmd"></i></div>'
+						  +'<a class="sub cmd"><i class="i-music"></i>Songs</a><i class="i-play-plus submenu cmd play"></i>'
+						  +'<a class="sub cmd album"><i class="i-album"></i>Abums</a><i class="i-play-plus submenu cmd album"></i>'
+						  +'</div>'
 			, values     : [ true ]
 			, beforeshow : () => {
 				$( '#infoList' ).on( 'click', '.cmd', function() {
 					$( '#infoX' ).trigger( 'click' );
 					S.librandom = true;
 					$this.addClass( 'bl' );
+					var action  = $( this ).hasClass( 'submenu' ) ? 'play' : '';
+					var album   = $( this ).hasClass( 'album' );
 					banner( icon, title, 'On ...' );
-					bash( [ 'librandom', $( this ).hasClass( 'submenu' ) ? 'play' : '', 'CMD ACTION' ] );
+					bash( [ 'librandom', action, album, 'CMD ACTION ALBUM' ] );
 				} );
 			}
 			, okno      : true
