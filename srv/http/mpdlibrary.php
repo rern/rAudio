@@ -311,9 +311,10 @@ function htmlDirectory( $lists ) {
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
-	$fileignore = '/mnt/MPD/'.dirname( $dirs[ 0 ] ).'/.mpdignore';
-	$mpdignore = file_exists( $fileignore ) ? file( $fileignore, FILE_IGNORE_NEW_LINES ) : '';
-	$nodata = [];
+	$dirs0      = dirname( $dirs[ 0 ] );
+	$fileignore = '/mnt/MPD/'.$dirs0.'/.mpdignore';
+	$mpdignore  = file_exists( $fileignore ) ? file( $fileignore, FILE_IGNORE_NEW_LINES ) : '';
+	$nodata     = [];
 	foreach( $dirs as $dir ) {
 		$basename = basename( $dir );
 		if ( $mpdignore && in_Array( $basename, $mpdignore ) ) { // fix - partial update library
@@ -322,7 +323,7 @@ function htmlDirectory( $lists ) {
 			$nodata[] = exec( 'mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;
 		}
 	}
-	exec( 'echo -n \'{ "channel": "nodata", "data": '.json_encode( $nodata ).' }\' | websocat ws://127.0.0.1:8080' );
+	exec( 'echo -n \'{ "channel": "nodata", "data": { "dir": "'.$dirs0.'", "list": '.json_encode( $nodata ).' } }\' | websocat ws://127.0.0.1:8080' );
 }
 function htmlDirectoryLi( $mode, $index, $icon, $path, $name ) {
 	return
