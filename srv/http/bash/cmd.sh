@@ -38,11 +38,7 @@ plAddRandom() {
 		mpc -q add "$file"
 	fi
 	diffcount=$(( $( jq .song $dirmpd/counts ) - $( lineCount $dirsystem/librandom ) ))
-	if (( $diffcount > 1 )); then
-		echo $file >> $dirsystem/librandom
-	else
-		> $dirsystem/librandom
-	fi
+	(( $diffcount > 1 )) && echo $file >> $dirsystem/librandom || > $dirsystem/librandom
 	plAddRandom
 }
 playerStart() {
@@ -432,7 +428,6 @@ librandom )
 		touch $dirsystem/librandom
 		[[ $ACTION == play ]] && pos=$(( $( mpc status %length% ) + 1 ))
 		plAddRandom
-		plAddPlay $pos
 	else
 		rm -f $dirsystem/librandom
 	fi
