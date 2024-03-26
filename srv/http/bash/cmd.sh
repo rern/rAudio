@@ -16,10 +16,10 @@ plAddPosition() {
 	[[ ${ACTION:0:7} == replace ]] && plClear || echo $(( $( mpc status %length% ) + 1 ))
 }
 plAddRandom() {
-	local cuefile diffcount dir file mpcls plL range tail
+	local cuefile diffcount dir file mpcls plL pos_len range tail
 	pos_len=( $( mpc status '%songpos% %length%' ) )
 	tail=$(( ${pos_len[1]} - ${pos_len[0]} ))
-	(( $tail > 1 )) && pushPlaylist add && return
+	(( $tail > 1 )) && plAddPlay && return
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
@@ -43,7 +43,7 @@ plAddRandom() {
 	else
 		> $dirsystem/librandom
 	fi
-	(( $tail > 1 )) || plAddRandom
+	plAddRandom
 }
 playerStart() {
 	local player service

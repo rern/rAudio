@@ -1662,15 +1662,20 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 			  icon       : icon
 			, title      : title
 			, message    : 'Randomly add songs and play continuously.'
-			, list       : [ 'Start playing the random songs', 'checkbox' ]
+			, list       : '<div class="menu">'
+						  +'<a class="sub cmd"><i class="i-plus-o"></i>Add</a>'
+						  +'<i class="i-play-plus submenu cmd"></i></div>'
 			, values     : [ true ]
-			, beforeshow : () => $( '#infoList table' ).toggleClass( 'hide', S.song + 1 === S.pllength )
-			, ok         : () => {
-				S.librandom = true;
-				$this.addClass( 'bl' );
-				banner( icon, title, 'On ...' );
-				bash( [ 'librandom', infoVal() ? 'play' : '', 'CMD ACTION' ] );
+			, beforeshow : () => {
+				$( '#infoList' ).on( 'click', '.cmd', function() {
+					$( '#infoX' ).trigger( 'click' );
+					S.librandom = true;
+					$this.addClass( 'bl' );
+					banner( icon, title, 'On ...' );
+					bash( [ 'librandom', $( this ).hasClass( 'submenu' ) ? 'play' : '', 'CMD ACTION' ] );
+				} );
 			}
+			, okno      : true
 		} );
 	}
 } );
