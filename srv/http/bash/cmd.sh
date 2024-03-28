@@ -16,10 +16,9 @@ plAddPosition() {
 	[[ ${ACTION:0:7} == replace ]] && plClear || echo $(( $( mpc status %length% ) + 1 ))
 }
 plAddRandom() {
-	local cuefile diffcount dir mpcls plL pos_len range tail
-	pos_len=( $( mpc status '%songpos% %length%' ) )
-	tail=$(( ${pos_len[1]} - ${pos_len[0]} ))
-	(( $tail > 1 )) && plAddPlay $pos && return
+	local ab cuefile dir dirlast len_pos mpcls plL range
+	len_pos=( $( mpc status '%length% %songpos%' ) )
+	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 1 )) && plAddPlay $pos && return # $pos from librandom
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
@@ -27,7 +26,7 @@ plAddRandom() {
 		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
 		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -1 | cut -d^ -f7 )
 	fi
-	if [[ -e $dirsystem/librandomalbum ]]; then
+	if [[ -s $dirsystem/librandom ]]; then # album
 		mpc -q add "$dir"
 	else
 		mpcls=$( mpc ls "$dir" )
@@ -426,12 +425,11 @@ latestclear )
 librandom )
 	if [[ $ON ]]; then
 		mpc -q random 0
-		touch $dirsystem/librandom
-		[[ $ALBUM ]] && touch $dirsystem/librandomalbum
+		[[ $ALBUM ]] && echo album > $dirsystem/librandom || touch $dirsystem/librandom
 		[[ $ACTION == play ]] && pos=$(( $( mpc status %length% ) + 1 ))
 		plAddRandom
 	else
-		rm -f $dirsystem/librandom*
+		rm -f $dirsystem/librandom
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;
