@@ -10,17 +10,7 @@ padgr='<a class="cbgr">  </a>'
 . /srv/http/bash/settings/addons.sh
 
 warningWrite() {
-	error="
-$warn Unable to create thumbnails.
-Directory:  <a class='cc'>$1</a>"
-	if (( $( stat -c %a "$1" ) < 755 )); then
-		error+="
-No write permission: $( stat -c '%A (%a)' "$1" )"
-	else
-		error+="
-Conversion failed."
-	fi
-	echo "$error"
+	echo "   $warn No write permission: <a class='cc'>$1</a> $( stat -c '%A (%a)' "$1" )"
 }
 
 title "$bar Update Album Thumbnails ..."
@@ -86,23 +76,41 @@ while read mpdpath; do
 		done <<< $files
 	fi
 	if [[ $coverfile ]]; then
+		error=
 		ext=${coverfile: -3}
 		if [[ $ext == gif ]]; then
 			[[ $( gifsicle -I "$coverfile" | awk 'NR==1 {print $NF}' ) == images ]] && echo "     Resize aninated GIF ..."
 			gifsicle -O3 --resize-fit 200x200 "$coverfile" > "$dir/coverart.gif"
-			gifsicle -O3 --resize-fit 80x80 "$coverfile" > "$dir/thumb.gif"
+			[[ $? == 0 ]] && gifsicle -O3 --resize-fit 80x80 "$coverfile" > "$dir/thumb.gif" || error=1
 		else
 			convert "$coverfile" -thumbnail 200x200\> -unsharp $unsharp "$dir/coverart.jpg"
-			convert "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg"
+			[[ $? == 0 ]] && convert "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg" || error=1
 		fi
-		[[ ! -e "$dir/coverart.jpg" ]] && warningWrite "$dir" && exit
-		
-		(( thumb++ ))
-		echo "   $padg #$thumb - Thumbnail created."
+		if [[ $error ]]; then
+			if [[ ! -w "$dir" ]]; then
+				warningWrite "$dir"
+				errorwrite+="
+$dir"
+			else
+				echo "   $warn Coversion failed: <a class='cc'>$coverfile</a>"
+				errorconvert+="
+$coverfile"
+			fi
+		else
+			(( thumb++ ))
+			echo "   $padg #$thumb - Thumbnail created."
+		fi
 	else
 		echo "   $padgr No coverart found."
 	fi
 done <<< $mpdpathlist
+
+[[ $errorwrite ]] && echo "
+$warn No write permission:
+$errorwrite"
+[[ $errorconvert ]] && echo "
+$warn Coversion failed:
+$errorconvert"
 
 echo "
 Duration: $( date -d@$SECONDS -u +%H:%M:%S )

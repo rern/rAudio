@@ -134,11 +134,17 @@ case 'home':
 		}
 	}
 	$counts   = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
-	foreach( [ 'nas', 'sd', 'usb' ] as $dir ) {
-		$dirs = glob( '/mnt/MPD/'.strtoupper( $dir ).'/*/' );
-		if ( $dir === 'nas' ) $dirs = array_diff( $dirs, [ '/mnt/MPD/NAS/data/' ] );
-		$counts->$dir = count( $dirs );
+	$nas      = false;
+	exec( "awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab | grep -v /mnt/MPD/NAS/data", $mountpoints );
+	foreach( $mountpoints as $m ) {
+		if ( exec( 'timeout 0.1 test -e "${m//\\040/ }" && echo 1' ) ) {
+			$nas = true;
+			break;
+		}
 	}
+	$counts->nas = $nas;
+	$counts->sd  = glob( '/mnt/MPD/SD/*/' ) ? true : false;
+	$counts->usb = glob( '/mnt/MPD/USB/*/' ) ? true : false;
 	$order    = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
 	$updating = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
