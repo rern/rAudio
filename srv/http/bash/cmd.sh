@@ -22,14 +22,13 @@ plAddRandom() {
 	(( $tail > 1 )) && plAddPlay $pos && return
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
-	filerandom=$dirsystem/librandom
+	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
+	if [[ $dir == $dirlast ]]; then
+		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
+		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -1 | cut -d^ -f7 )
+	fi
 	if [[ -e $dirsystem/librandomalbum ]]; then
-		dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
-		grep -q -m1 "$dir" $filerandom && plAddRandom && return
-		
 		mpc -q add "$dir"
-		diffcount=$(( $( jq .album $dirmpd/counts ) - $( lineCount $filerandom ) ))
-		(( $diffcount > 1 )) && echo $dir >> $filerandom || > $filerandom
 	else
 		mpcls=$( mpc ls "$dir" )
 		cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
