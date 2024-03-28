@@ -9,7 +9,10 @@ if [[ -e $dirmpd/mpdignorelist ]]; then
 	[[ $( < $dirmpd/mpdignorelist ) == /mnt/MPD/NAS/.mpdignore && $( < /mnt/MPD/NAS/.mpdignore ) == data ]] && rm -f $dirmpd/mpdignorelist
 fi
 
-[[ -e /boot/kernel7.img ]] && sed -i -E 's/^#(IgnorePkg   =)/\1 libunwind raspberrypi-bootloader/' /etc/pacman.conf
+if [[ -e /boot/kernel7.img ]]
+	file=/etc/pacman.conf
+	! grep -q libunwind $file && sed -i -E 's/^#(IgnorePkg   =)/\1 libunwind raspberrypi-bootloader/' $file
+fi
 
 # 20240315
 [[ -e /usr/bin/iwctl ]] && groupadd -f netdev
