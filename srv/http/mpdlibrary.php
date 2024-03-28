@@ -135,9 +135,9 @@ case 'home':
 	}
 	$counts   = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
 	$nas      = false;
-	exec( "awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab | grep -v /mnt/MPD/NAS/data", $mountpoints );
+	exec( "awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab | grep -v /mnt/MPD/NAS/data | sed 's/\\040/ /g'", $mountpoints );
 	foreach( $mountpoints as $m ) {
-		if ( exec( 'timeout 0.1 test -e "${m//\\040/ }" && echo 1' ) ) {
+		if ( exec( 'timeout 0.1 test -e "'.$m.'" && echo 1' ) ) {
 			$nas = true;
 			break;
 		}
