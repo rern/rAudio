@@ -16,7 +16,7 @@ plAddPosition() {
 	[[ ${ACTION:0:7} == replace ]] && plClear || echo $(( $( mpc status %length% ) + 1 ))
 }
 plAddRandom() {
-	local cuefile diffcount dir file mpcls plL pos_len range tail
+	local cuefile diffcount dir mpcls plL pos_len range tail
 	pos_len=( $( mpc status '%songpos% %length%' ) )
 	tail=$(( ${pos_len[1]} - ${pos_len[0]} ))
 	(( $tail > 1 )) && plAddPlay $pos && return
@@ -24,7 +24,8 @@ plAddRandom() {
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	filerandom=$dirsystem/librandom
 	if [[ -e $dirsystem/librandomalbum ]]; then
-		grep -q -m1 "$file" $filerandom && plAddRandom && return
+		dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
+		grep -q -m1 "$dir" $filerandom && plAddRandom && return
 		
 		mpc -q add "$dir"
 		diffcount=$(( $( jq .album $dirmpd/counts ) - $( lineCount $filerandom ) ))
@@ -35,18 +36,10 @@ plAddRandom() {
 		if [[ $cuefile ]]; then
 			plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
 			range=$( shuf -i 0-$plL -n 1 )
-			file="$range $cuefile"
-			grep -q -m1 "$file" $filerandom && plAddRandom && return
-			
 			mpc --range=$range load "$cuefile"
 		else
-			file=$( shuf -n 1 <<< $mpcls )
-			grep -q -m1 "$file" $filerandom && plAddRandom && return
-			
-			mpc -q add "$file"
+			mpc -q add "$( shuf -n 1 <<< $mpcls )"
 		fi
-		diffcount=$(( $( jq .song $dirmpd/counts ) - $( lineCount $filerandom ) ))
-		(( $diffcount > 1 )) && echo $file >> $filerandom || > $filerandom
 	fi
 	plAddRandom
 }
@@ -687,6 +680,9 @@ multiraudiolist )
 	;;
 order )
 	pushData order "$( < $dirsystem/order.json )" # quoted - keep double spaces
+	;;
+pladdrandom )
+	plAddRandom
 	;;
 playerstart )
 	playerStart

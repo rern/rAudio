@@ -1668,6 +1668,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 						  +'</div>'
 			, values     : [ true ]
 			, beforeshow : () => {
+				$( '#infoList .album' ).toggleClass( 'hide', C.album < 2 );
 				$( '#infoList' ).on( 'click', '.cmd', function() {
 					$( '#infoX' ).trigger( 'click' );
 					S.librandom = true;
