@@ -22,7 +22,7 @@ plAddRandom() {
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
-	if [[ $dir == $dirlast ]]; then
+	if [[ $dir == $dirlast ]]; then # force different album
 		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
 		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -1 | cut -d^ -f7 )
 	fi
