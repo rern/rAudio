@@ -371,7 +371,7 @@ sharedDataBackupLink() {
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
-	echo data > $dirnas/.mpdignore
+	echo data >> $dirnas/.mpdignore
 }
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
