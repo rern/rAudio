@@ -182,10 +182,11 @@ statusmpdignore )
 	list="\
 <bll># find /mnt/MPD -name .mpdignore</bll>"
 	while read file; do
+		[[ $file == /mnt/MPD/NAS/.mpdignore ]] && lines=$( grep -v ^data$ "$file" ) || lines=$( < "$file" )
 		path="<g>$( dirname "$file" )/</g>"
 		list+="
 $file
-$( sed "s|^|$path|" "$file" )"
+$( sed "s|^|$path|" <<< $lines )"
 	done <<< $files
 	echo "$list"
 	;;

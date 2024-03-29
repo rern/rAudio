@@ -226,6 +226,8 @@ To restore:
 • Edit <c>.../.mpdignore</c>
 • Remove directories to restore
 • Update Library
+
+Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for {$FiTab( 'System' )}{$FiLabel( 'Shared Data', 'networks' )}
 EOF
 ] );
 htmlHead( [
