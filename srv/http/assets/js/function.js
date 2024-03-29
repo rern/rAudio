@@ -1167,7 +1167,7 @@ function renderLibrary() { // library home
 		$( '#lib-mode-list a.label' ).hide();
 		$( '#lib-mode-list' ).addClass( 'nolabel' );
 	}
-	$( '#lib-list' ).addClass( 'hide' );
+	$( '#lib-list, #page-library .index' ).addClass( 'hide' );
 	$( '#lib-mode-list' )
 		.css( 'padding-top', $bartop.is( ':visible' ) ? '' : 50 )
 		.removeClass( 'hide' );
