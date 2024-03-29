@@ -401,15 +401,6 @@ equalizerget )
 equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
 	;;
-ignoredir )
-	dir=$( basename "$DIR" )
-	mpdpath=$( dirname "$DIR" )
-	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
-	pushData mpdupdate '{ "type": "mpd" }'
-	echo "$mpdpath" > $dirmpd/updating
-	mpc -q update "$mpdpath" #1 get .mpdignore into database
-	mpc -q update "$mpdpath" #2 after .mpdignore was in database
-	;;
 latestclear )
 	if [[ $DIR ]]; then
 		sed -i "\|\^$DIR$| d" $dirmpd/latest
@@ -432,6 +423,17 @@ librandom )
 		rm -f $dirsystem/librandom
 	fi
 	pushData option '{ "librandom": '$TF' }'
+	;;
+librarynas )
+	mountpoints=$( awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab \
+				| grep -v /mnt/MPD/NAS/data \
+				| sed 's/\\040/ /g' )
+	for m in "${mountpoints[@]}"; do
+		if ! grep -qs "$( basename "$m" )" /mnt/MPD/NAS/.mpdignore && timeout 0.1 test -e "$m"; then
+			echo 1
+			exit
+		fi
+	done
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
@@ -668,6 +670,15 @@ mpcupdatestop )
 		killall cmd-list.sh
 		rm -f $dirmpd/{listing,updating} $dirshm/{listing,tageditor}
 	fi
+	;;
+mpdignore )
+	dir=$( basename "$DIR" )
+	mpdpath=$( dirname "$DIR" )
+	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
+	pushData mpdupdate '{ "type": "mpd" }'
+	echo "$mpdpath" > $dirmpd/updating
+	mpc -q update "$mpdpath" #1 get .mpdignore into database
+	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 multiraudiolist )
 	echo '{

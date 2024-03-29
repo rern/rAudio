@@ -148,7 +148,7 @@ function excludeDirectory() {
 		, message : 'Exclude from Library:'
 					+'<br>'+ ico( 'folder' ) +'&ensp;<wh>'+ V.list.path +'</wh>'
 		, ok      : () => {
-			bash( [ 'ignoredir', V.list.path, 'CMD DIR' ], () => V.list.li.remove() );
+			bash( [ 'mpdignore', V.list.path, 'CMD DIR' ], () => V.list.li.remove() );
 			var dir = V.list.path.split( '/' ).pop();
 		}
 	} );

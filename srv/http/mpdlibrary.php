@@ -93,9 +93,9 @@ case 'find':
 	}
 	break;
 case 'home':
-	$modes    = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest'
+	$modes       = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest'
 				, 'NAS', 'SD', 'USB', 'Playlists', 'Web Radio', 'DAB Radio' ];
-	$htmlmode = '';
+	$htmlmode    = '';
 	foreach( $modes as $mode ) {
 		$lipath   = str_replace( ' ', '', $mode );
 		$modeLC   = strtolower( $lipath );
@@ -108,8 +108,8 @@ case 'home':
 </div>';
 	}
 	// bookmarks
-	$dir   = '/srv/http/data/bookmarks';
-	$files = array_slice( scandir( $dir ), 2 ); // remove ., ..
+	$dir         = '/srv/http/data/bookmarks';
+	$files       = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
 			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
@@ -133,20 +133,12 @@ case 'home':
 </div>';
 		}
 	}
-	$counts   = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
-	$nas      = false;
-	exec( "awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab | grep -v /mnt/MPD/NAS/data | sed 's/\\040/ /g'", $mountpoints );
-	foreach( $mountpoints as $m ) {
-		if ( exec( 'timeout 0.1 test -e "'.$m.'" && echo 1' ) ) {
-			$nas = true;
-			break;
-		}
-	}
-	$counts->nas = $nas;
+	$counts      = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
+	$counts->nas = exec( '/srv/http/bash/cmd.sh librarynas' ) ? true : false;
 	$counts->sd  = glob( '/mnt/MPD/SD/*/' ) ? true : false;
 	$counts->usb = glob( '/mnt/MPD/USB/*/' ) ? true : false;
-	$order    = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
-	$updating = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
+	$order       = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
+	$updating    = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
 		  'html'     => $htmlmode
 		, 'counts'   => $counts
@@ -166,7 +158,7 @@ case 'list':
 	break;
 case 'ls':
 	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
-		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | sed -E "s|^/mnt/MPD/(.*)/$|\1|"', $ls );
+		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | sed -E -e "s|^/mnt/MPD/(.*)/$|\1|" -e "/NAS.data$/ d"', $ls );
 		htmlDirectory( $ls );
 		exit;
 	}
