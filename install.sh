@@ -4,11 +4,6 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240323
-if [[ -e $dirmpd/mpdignorelist ]]; then
-	[[ $( < $dirmpd/mpdignorelist ) == /mnt/MPD/NAS/.mpdignore && $( < /mnt/MPD/NAS/.mpdignore ) == data ]] && rm -f $dirmpd/mpdignorelist
-fi
-
 # 20240315
 [[ -e /usr/bin/iwctl ]] && groupadd -f netdev
 
