@@ -4,24 +4,33 @@
 
 args2var "$1"
 
+ipAvailable() {
+	if [[ $1 != $( ipAddress ) ]] && ipOnline $1; then
+		echo 'IP <wh>'$1'</wh> already in use.'
+		rexit
+	fi
+}
 netctlSwitch() {
-	local active current ssid wlandev
+	local ssid
 	ssid=$1
-	wlandev=$( < $dirshm/wlan )
-	current=$( iwgetid -r )
-	ip link set $wlandev down
+	ip link set $( < $dirshm/wlan ) down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
 		if netctl is-active "$ssid" &> /dev/null; then
 			netctl enable "$ssid"
+			avahi-daemon --kill # flush cache and restart
 			pushRefresh networks pushwl
+			rm -f "$filecurrent"
 			exit
+# --------------------------------------------------------------------
 		fi
 	done
-	
 	echo -1
-	[[ $current ]] && netctl switch-to "$current"
+	if [[ -e "$filecurrent" ]]; then
+		mv -f "$filecurrent" /etc/netctl
+		netctl switch-to "$current"
+	fi
 }
 wlanDevice() {
 	local iplinkw wlandev
@@ -48,7 +57,7 @@ case $CMD in
 bluetoothinfo )
 	info=$( bluetoothctl info $MAC )
 	grep -q -m1 'not available' <<< $info && exit
-	
+# --------------------------------------------------------------------
 	echo "\
 <bll># bluetoothctl info $MAC</bll>
 $info"
@@ -61,17 +70,20 @@ btrename )
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
-	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
-		if ipOnline $ADDRESS; then
-			rm "$file"
-			echo 'IP <wh>'$ADDRESS'</wh> already in use.'
-			exit
-		fi
+	if [[ $ADDRESS ]]; then
+		ipAvailable $ADDRESS
+		ip=static
+	else
+		ip=dhcp
 	fi
-	
+	current=$( iwgetid -r )
+	if [[ $current == $ESSID ]]; then
+		filecurrent="$dirshm/$current"
+		cp "/etc/netctl/$current" $dirshm
+	fi
 	data='Interface='$( < $dirshm/wlan )'
 Connection=wireless
-IP='$IP'
+IP='$ip'
 ESSID="'$ESSID'"'
 	if [[ $KEY ]]; then
 		[[ $SECURITY ]] && security=wep || security=wpa
@@ -92,14 +104,10 @@ Hidden=yes'
 	if [[ -e $dirsystem/ap ]]; then
 		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
+# --------------------------------------------------------------------
 	fi
-	
-	if ! netctl is-active "$ESSID" &> /dev/null; then
-		netctlSwitch "$ESSID"
-		avahi-daemon --kill # flush cache and restart
-	else
-		pushRefresh
-	fi
+	netctl stop "$ESSID"
+	netctlSwitch "$ESSID"
 	;;
 disconnect )
 	netctl stop "$SSID"
@@ -108,24 +116,16 @@ disconnect )
 	pushRefresh networks pushwl
 	;;
 lanedit )
-	if [[ $IP ]]; then
-		ipOnline $IP && echo -1 && exit
-	fi
-	
-	file=/etc/systemd/network/en.network
-	if [[ -e $file ]]; then
-		lan=en*
-	else
-		lan=eth0
-		file=/etc/systemd/network/eth0.network
-	fi
-	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
-	if [[ $IP ]]; then # static
-		sed -i '/^DNSSEC/ i\
-Address='$IP'/24\
+	[[ $ADDRESS ]] && ipAvailable $ADDRESS
+	file=$( ls -1 /etc/systemd/network/e* | head -1 )
+	if [[ $ADDRESS ]]; then # static
+		sed -i -E -e '/^DHCP|^Address|^Gateway/ d
+' -e '/^DNSSEC/ i\
+Address='$ADDRESS'/24\
 Gateway='$GATEWAY $file
-	else               # dhcp - reset
-		sed -i '/^DNSSEC/ i\DHCP=yes' $file
+	else                    # dhcp - reset
+		sed -i -E -e '/^DHCP|^Address|^Gateway/ d
+' -e '/^DNSSEC/ i\DHCP=yes' $file
 	fi
 	systemctl restart systemd-networkd
 	avahi-daemon --kill # flush cache and restart
@@ -140,11 +140,6 @@ profileconnect )
 	fi
 	netctlSwitch "$SSID"
 	;;
-profiledisable )
-	[[ $DISABLE == true ]] && toggle=disable || toggle=enable
-	netctl $toggle "$SSID"
-	pushRefreshWlan
-	;;
 profileforget )
 	netctl is-enabled "$SSID" && netctl disable "$SSID"
 	if netctl is-active "$SSID" &> /dev/null; then
@@ -157,8 +152,18 @@ profileforget )
 	pushRefresh networks pushwl
 	;;
 profileget )
-	profile=$( conf2json "/etc/netctl/$SSID" )
-	echo ${profile/INT*IP/IP}
+	. "/etc/netctl/$SSID"
+	data='{
+  "ESSID"    : "'$( stringEscape $ESSID )'"
+, "KEY"      : "'$Key'"'
+	[[ $Address ]] && data+='
+, "ADDRESS"  : "'$Address'"
+, "GATEWAY"  : "'$Gateway'"'
+	data+='
+, "SECURITY" : '$( [[ $Security == wep ]] && echo true || echo false )'
+, "HIDDEN"   : '$( [[ $Hidden == yes ]] && echo true || echo false )'
+}'
+	echo "$data"
 	;;
 statuslan )
 	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
@@ -183,7 +188,7 @@ $( iwconfig $wlandev | awk NF )"
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
-	
+# --------------------------------------------------------------------
 	sleep 3
 	pushRefresh features
 	pushRefresh networks pushbt
@@ -198,7 +203,7 @@ usbbluetoothoff ) # from usbbluetooth.rules
 usbwifion )
 	wlanDevice
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
-	
+# --------------------------------------------------------------------
 	notify wifi 'USB Wi-Fi' Ready
 	pushRefresh
 	;;

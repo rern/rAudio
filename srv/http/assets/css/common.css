@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1709614131' );
+	src         : url( '/assets/fonts/rern.woff2?v=1710720937' );
 }
 @font-face {
 	font-family : Lato;
@@ -1055,7 +1055,7 @@ input:focus {
 	input[ type=tel ]:focus-visible,
 	input[ type=password ]:focus-visible,
 	#infoList textarea:focus-visible {
-		outline: 1px solid var( --cgl ) !important;
+		outline: none;
 	}
 	input[ type=radio ]:focus-visible,
 	input[ type=checkbox ]:focus-visible,

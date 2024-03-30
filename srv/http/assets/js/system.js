@@ -212,15 +212,14 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	}
 	
 	$this.addClass( 'active' );
-	$( '#menu a' ).addClass( 'hide' );
 	if ( list.icon === 'microsd' ) {
-		$( '#menu .info' ).removeClass( 'hide' );
+		$( '#menu a' ).addClass( 'hide' );
 	} else {
-		$( '#menu .info' ).toggleClass( 'hide', list.icon == 'usbdrive' );
 		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 13 ) !== '/mnt/MPD/NAS/' );
 		$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
 	}
+	$( '#menu .info' ).toggleClass( 'hide', list.icon === 'networks' );
 	contextMenu();
 } );
 $( '#menu a' ).on( 'click', function() {
@@ -643,6 +642,8 @@ $( '.listtitle' ).on( 'click', function( e ) {
 	var $chevron = $this.find( 'i' );
 	var $list    = $this.next();
 	var $target  = $( e.target );
+	if ( $target.hasClass( 'i-refresh' ) ) return
+	
 	if ( ! $this.hasClass( 'backend' ) ) { // js
 		$list.toggleClass( 'hide' )
 		$chevron.toggleClass( 'i-chevron-down i-chevron-up' );
@@ -655,10 +656,13 @@ $( '.listtitle' ).on( 'click', function( e ) {
 			return
 		}
 		
-		bash( [ 'packagelist', $target.text().toLowerCase(), 'CMD PKG' ], list => {
+		var timeout = setTimeout( () => banner( 'system blink', 'Backend', 'List ...', -1 ), 1000 );
+		bash( [ 'packagelist', $target.text(), 'CMD INI' ], list => {
+			clearTimeout( timeout );
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
+			bannerHide();
 		} );
 	} else {
 		$list.add( $chevron ).addClass( 'hide' );
@@ -799,11 +803,12 @@ function infoMount( nfs ) {
 	if ( shareddata ) tab.push( infoMountRserver );
 	var icon       = 'networks';
 	var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+	var suffix     = { suffix: '<wh>*</wh>' }
 	var list       = [
 		  [ 'Type',      'hidden' ]
-		, [ 'Name',      'text' ]
-		, [ 'Server IP', 'text' ]
-		, [ 'Share',     'text' ]
+		, [ 'Name',      'text', shareddata ? '' : suffix ]
+		, [ 'Server IP', 'text', suffix ]
+		, [ 'Share',     'text', suffix ]
 		, [ 'User',      'text']
 		, [ 'Password',  'password' ]
 		, [ 'Options',   'text' ]
@@ -820,13 +825,16 @@ function infoMount( nfs ) {
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			var $mountpoint = $( '#infoList input' ).eq( 1 );
-			$mountpoint.prop( 'placeholder', 'Name to display in Library' );
-			$( '#infoList input' ).eq( 3 ).prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
+			var $input      = $( '#infoList input' );
+			var $mountpoint = $input.eq( 1 );
+			$input.eq( 3 ).prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
+			$input.slice( 4 ).prop( 'placeholder', '(optional)' );
 			if ( shareddata ) {
-				$mountpoint.val( 'data' ).prop( 'disabled', true );
-				$mountpoint.next().remove();
+				$mountpoint
+					.val( 'data' )
+					.prop( 'disabled', true );
 			} else {
+				$mountpoint.prop( 'placeholder', 'Name to display in Library' );
 				$mountpoint.on( 'input', function() {
 					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 				} );
@@ -835,6 +843,7 @@ function infoMount( nfs ) {
 		, cancel     : switchCancel
 		, ok         : () => {
 			var infoval = infoVal();
+			if ( infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
 			infoval.SHAREDDATA = shareddata;
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );

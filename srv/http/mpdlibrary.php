@@ -93,9 +93,9 @@ case 'find':
 	}
 	break;
 case 'home':
-	$modes    = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest'
+	$modes       = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest'
 				, 'NAS', 'SD', 'USB', 'Playlists', 'Web Radio', 'DAB Radio' ];
-	$htmlmode = '';
+	$htmlmode    = '';
 	foreach( $modes as $mode ) {
 		$lipath   = str_replace( ' ', '', $mode );
 		$modeLC   = strtolower( $lipath );
@@ -108,8 +108,8 @@ case 'home':
 </div>';
 	}
 	// bookmarks
-	$dir   = '/srv/http/data/bookmarks';
-	$files = array_slice( scandir( $dir ), 2 ); // remove ., ..
+	$dir         = '/srv/http/data/bookmarks';
+	$files       = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
 			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
@@ -133,14 +133,12 @@ case 'home':
 </div>';
 		}
 	}
-	$counts   = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
-	foreach( [ 'nas', 'sd', 'usb' ] as $dir ) {
-		$dirs = glob( '/mnt/MPD/'.strtoupper( $dir ).'/*/' );
-		if ( $dir === 'nas' ) $dirs = array_diff( $dirs, [ '/mnt/MPD/NAS/data/' ] );
-		$counts->$dir = count( $dirs );
-	}
-	$order    = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
-	$updating = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
+	$counts      = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
+	$counts->nas = exec( '/srv/http/bash/cmd.sh librarynas' ) ? true : false;
+	$counts->sd  = glob( '/mnt/MPD/SD/*/' ) ? true : false;
+	$counts->usb = glob( '/mnt/MPD/USB/*/' ) ? true : false;
+	$order       = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
+	$updating    = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
 		  'html'     => $htmlmode
 		, 'counts'   => $counts
@@ -159,8 +157,8 @@ case 'list':
 	if ( count( $lists ) ) htmlList( $lists );
 	break;
 case 'ls':
-	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root except shared dir
-		exec( 'ls -1d /mnt/MPD/'.$string."/*/ | sed -E -e 's#^/mnt/MPD/|/$##g' -e '/^NAS.data$/ d'", $ls );
+	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
+		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | sed -E -e "s|^/mnt/MPD/(.*)/$|\1|" -e "/NAS.data$/ d"', $ls );
 		htmlDirectory( $ls );
 		exit;
 	}
@@ -300,6 +298,7 @@ function htmlDirectory( $lists ) {
 			$mode   = strtolower( explode( '/', $path )[ 0 ] );
 			$icon   = imgIcon( rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' ), 'folder' );
 			$html  .= htmlDirectoryLi( $mode, $index, $icon, $path, $name );
+			$dirs[] = $path;
 		} else {
 			$htmlf .= htmlDirectoryLi( $gmode, $index, i( 'music ', 'file' ), $path, $name );
 		}
@@ -310,6 +309,19 @@ function htmlDirectory( $lists ) {
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
+	$dirs0      = dirname( $dirs[ 0 ] );
+	$fileignore = '/mnt/MPD/'.$dirs0.'/.mpdignore';
+	$mpdignore  = file_exists( $fileignore ) ? file( $fileignore, FILE_IGNORE_NEW_LINES ) : '';
+	$nodata     = [];
+	foreach( $dirs as $dir ) {
+		$basename = basename( $dir );
+		if ( $mpdignore && in_Array( $basename, $mpdignore ) ) { // fix - partial update library
+			$nodata[] = -1;
+		} else {
+			$nodata[] = exec( 'mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;
+		}
+	}
+	exec( 'echo -n \'{ "channel": "nodata", "data": { "dir": "'.$dirs0.'", "list": '.json_encode( $nodata ).' } }\' | websocat ws://127.0.0.1:8080' );
 }
 function htmlDirectoryLi( $mode, $index, $icon, $path, $name ) {
 	return

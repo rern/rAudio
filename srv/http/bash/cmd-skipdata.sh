@@ -2,7 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-. <( mpc -f 'album="%album%"; artist="%artist%"; composer="%composer%"; conductor="%conductor%"; file="%file%"; time=%time%; title="%title%"' ls "$1" )
+file=$1
+. <( mpc -f 'album="%album%"; artist="%artist%"; composer="%composer%"; conductor="%conductor%"; time=%time%; title="%title%"' ls "$file" )
 
 fileheader=${file:0:4}
 if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then

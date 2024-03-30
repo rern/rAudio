@@ -46,3 +46,6 @@ wh,  .wh  { color : var( --cw ) !important }
 .bgr60    { background-color : var( --cg60 ) !important }
 
 i.bl      { color : var( --cml ) !important }
+input {
+	color-scheme: dark;
+}

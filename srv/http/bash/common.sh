@@ -181,13 +181,14 @@ data2json() {
 }
 dirPermissions() {
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
-	[[ ! -e /usr/bin/firefox ]] && rm -f /srv/http/assets/img/splash.png $dirbash/xinitrc
 	if [[ ! -e /usr/bin/camilladsp ]]; then
 		rm -f /srv/http/assets/css/camilla.css \
-			/srv/http/assets/js/{camilla,pipelineplotter}.js \
-			/srv/http/settings/camilla.php \
-			$dirsettings/camilla*
+			  /srv/http/assets/js/{camilla,pipelineplotter}.js \
+			  /srv/http/assets/js/plugin/{d3,plotly}*.min.js
+			  /srv/http/settings/camilla.php \
+			  $dirsettings/camilla*
 	fi
+	[[ ! -e /usr/bin/firefox ]] && rm -f /srv/http/assets/img/splash.png $dirbash/xinitrc
 	chown -R http:http /srv
 	chown mpd:audio $dirmpd $dirplaylists
  	[[ -e $dirmpd/mpd.db ]] && chown mpd:audio $dirmpd/mpd.db
@@ -370,7 +371,7 @@ sharedDataBackupLink() {
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
-	echo data > $dirnas/.mpdignore
+	echo data >> $dirnas/.mpdignore
 }
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
@@ -416,7 +417,7 @@ stringEscape() {
 }
 volumeAmixer() { # value control card
 	amixer -c $3 -Mq sset "$2" $1
-	[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
+	[[ -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1

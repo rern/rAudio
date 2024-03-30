@@ -581,8 +581,12 @@ i.map.disabled, .map.disabled i {
 #controls-cover.notime.novolume {
 	width: 50vh;
 }
-.qr.container {
-	margin: 10px auto;
+#qr {
+	width: 230px;
+	height: 230px;
+}
+#qr .code {
+	margin: 21px auto;
 }
 #coverart svg .text {
 	fill: var( --cw ) !important;
@@ -1787,6 +1791,9 @@ w {
 #lib-list li.nodata * {
 	color: var( --cgl ) !important;
 }
+#lib-list li.nodata img {
+	opacity: 0.5;
+}
 #lib-list li.active.nodata * {
 	color: var( --cga ) !important;
 }
@@ -2102,7 +2109,6 @@ li.active .li2 bl {
 	}
 	@media ( max-width: 895px ) {
 		#playback-row { align-items: flex-start }
-		#qr { margin-top: 70px }
 	}
 	@media ( max-width: 749px ) {
 		#playback-row { align-items: center }

@@ -113,7 +113,7 @@ function currentSet() {
 	S.song = V.list.index;
 	setPlaylistScroll();
 	local();
-	bash( [ 'mpcskip', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
+	bash( [ 'mpcskippl', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
 }
 function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
@@ -148,7 +148,7 @@ function excludeDirectory() {
 		, message : 'Exclude from Library:'
 					+'<br>'+ ico( 'folder' ) +'&ensp;<wh>'+ V.list.path +'</wh>'
 		, ok      : () => {
-			bash( [ 'ignoredir', V.list.path, 'CMD DIR' ], () => V.list.li.remove() );
+			bash( [ 'mpdignore', V.list.path, 'CMD DIR' ], () => V.list.li.remove() );
 			var dir = V.list.path.split( '/' ).pop();
 		}
 	} );
@@ -173,7 +173,6 @@ function playlistDelete() {
 	} );
 }
 function playlistLoad( name, play, replace ) {
-	V.local = true;
 	banner( 'file-playlist', name, 'Load ...' );
 	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], function() {
 		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
@@ -711,9 +710,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 				var play = cmd.slice( -1 ) === 'y';
 				var replace = cmd.slice( 0, 1 ) === 'r';
 				if ( replace ) {
-					infoReplace( () => playlistLoad( path, play, replace ) );
+					infoReplace( () => playlistLoad( V.list.path, play, replace ) );
 				} else {
-					playlistLoad( path, play, replace );
+					playlistLoad( V.list.path, play, replace );
 				}
 				return
 			}

@@ -18,7 +18,7 @@ getinstallzip() {
 	fileurl=$( jq -r .$alias.installurl $addonsjson | sed "s|raw/main/install.sh|archive/$installfile|" )
 	curl -sfLO $fileurl
 	[[ $? != 0 ]] && echo -e "$warn Get files failed." && exit
-	
+# --------------------------------------------------------------------
 	echo
 	echo "$bar Install new files ..."
 	filelist=$( bsdtar tf $installfile \
@@ -63,8 +63,8 @@ uninstallstart() {
 	  echo $info $title not found.
 	  rm $diraddons/$alias &> /dev/null
 	  exit 1
+# --------------------------------------------------------------------
 	fi
-	
 	rm $0
 	[[ $label != Update ]] && title "$bar Uninstall $title ..."
 }

@@ -24,8 +24,8 @@ if [[ -e $dirsystem/camilladsp ]]; then
 		rm $dirsystem/camilladsp
 		$dirsettings/player-conf.sh
 		exit
+# --------------------------------------------------------------------
 	fi
-	
 	camilladsp=1
 	channels=$( getVarColon capture channels "$fileconf" )
 	format=$( getVarColon capture format "$fileconf" )

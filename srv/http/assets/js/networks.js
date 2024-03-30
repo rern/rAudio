@@ -27,6 +27,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bluetoothCommand( 'pair' );
 } );
 $( '.wladd' ).on( 'click', function() {
+	delete V.li;
 	delete V.profileget;
 	infoWiFi();
 } );
@@ -95,6 +96,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	contextMenu();
 } );
 $( '.lanadd' ).on( 'click', function() {
+	delete V.li;
 	infoLan();
 } );
 $( '.connect' ).on( 'click', function() {
@@ -129,7 +131,7 @@ $( '.disconnect' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : footer( 'Disconnect' )
+		, footer     : iconwarning +'<wh>Disconnect current connection</wh>'
 		, okcolor    : orange
 		, ok         : () => {
 			notify( icon, ssid, 'Disconnect ...' );
@@ -144,7 +146,7 @@ $( '.edit' ).on( 'click', function() {
 			infoWiFi( v );
 		}, 'json' );
 	} else {
-		infoLan();
+		infoLan( S.listeth );
 	}
 } );
 $( '.forget' ).on( 'click', function() {
@@ -159,7 +161,7 @@ $( '.forget' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : footer( 'Forget' )
+		, footer     : iconwarning +'<wh>Forget current connection</wh>'
 		, oklabel    : ico( 'remove' ) +'Forget'
 		, okcolor    : red
 		, ok         : () => {
@@ -214,17 +216,6 @@ function bluetoothInfo( mac ) {
 function connectWiFi( data ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
-	if ( 'profileget' in V ) {
-		var values = jsonClone( data );
-		delete values.DISABLE;
-		delete V.profileget.DISABLE;
-		if ( Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' ) ) {
-			notify( icon, title, data.DISABLE ? 'Disable ...' : 'Enable ...' );
-			bash( [ 'profiledisable', data.SSID, data.DISABLE, 'CMD SSID DISABLE' ] );
-			return
-		}
-	}
-	
 	clearTimeout( V.timeoutscan );
 	if ( 'ADDRESS' in data ) { // static
 		S.listeth ? notify( icon, title, 'Change ...' ) : reconnect( data.SSID, data.ADDRESS );
@@ -233,6 +224,7 @@ function connectWiFi( data ) {
 	}
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
+	return
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
@@ -248,9 +240,6 @@ function connectWiFi( data ) {
 		}
 	} );
 }
-function footer( action ) {
-	return 'li' in V && V.li.data( 'ip' ) === location.hostname ? iconwarning +'<wh>'+ action +' current connection</wh>' : ''
-}
 function infoAccesspoint() {
 	info( {
 		  icon    : 'wifi'
@@ -258,10 +247,10 @@ function infoAccesspoint() {
 		, message : 'Access Point is currently active.'
 	} );
 }
-function infoLan() {
+function infoLan( v ) {
 	var icon   = 'lan';
-	var title  = ( S.listeth ? 'Edit' : 'Add' ) +' LAN Connection';
-	var static = S.listeth.static;
+	var title  = ( v ? 'Edit' : 'Add' ) +' LAN Connection';
+	var values = v || { ADDRESS: S.ipsub, GATEWAY: S.gateway }
 	info( {
 		  icon         : icon
 		, title        : title
@@ -269,17 +258,17 @@ function infoLan() {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
-		, footer       : footer( 'This is' )
+		, footer       : warning()
 		, focus        : 0
-		, values       : S.listeth ? { IP: S.listeth.ip, GATEWAY: S.listeth.gateway } : { IP: S.ipsub, GATEWAY: S.gateway }
+		, values       : values
 		, checkchanged : true
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
-		, buttonlabel  : static ? ico( 'undo' ) +'DHCP' : ''
-		, button       : static ? () => {
+		, buttonlabel  : ico( 'undo' ) +'DHCP'
+		, button       : ! values.STATIC ? '' : () => {
 			bash( [ 'lanedit' ] );
 			reconnect( 'Wired LAN', S.hostname );
-		} : ''
+		}
 		, ok           : () => infoLanSet( infoVal() )
 	} );
 }
@@ -295,7 +284,7 @@ function infoLanSet( v ) {
 				  icon    : icon
 				, title   : 'Duplicate IP'
 				, message : 'IP <wh>'+ ip +'</wh> already in use.'
-				, ok      : infoLan
+				, ok      : () => infoLan( v )
 			} );
 		} else {
 			reconnect( 'Wired LAN', ip );
@@ -304,46 +293,56 @@ function infoLanSet( v ) {
 }
 function infoWiFi( v ) {
 	var list = [
-		  [ '',             'hidden' ]
-		, [ 'SSID',         'text' ]
+		  [ 'SSID',         'text' ]
 		, [ 'Password',     'password' ]
 		, [ 'IP',           'text' ]
 		, [ 'Gateway',      'text' ]
 		, [ 'WEP Protocol', 'checkbox' ]
 		, [ 'Hidden SSID',  'checkbox' ]
-		, [ 'Disable',      'checkbox' ]
 	];
 	var default_v = {
-		  dhcp   : { IP: 'dhcp',   ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
-		, static : { IP: 'static', ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
+		  dhcp   : { ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
+		, static : { ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
 	}
 	if ( v ) {
-		var dhcp   = v.IP === 'dhcp';
-		v.SECURITY = v.SECURITY === 'wep';
-		v.HIDDEN   = V.HIDDEN === 'yes';
-		var values = {};
-		Object.keys( default_v[ v.IP ] ).forEach( k => values[ k ] = v[ k ] );
+		var dhcp   = ! ( 'ADDRESS' in v );
+		var values = v;
 	} else {
 		var values = default_v[ 'dhcp' ];
 		var dhcp   = true;
 	}
+	var profile       = 'profileget' in V;
+	var profilestatic = profile && V.profileget.ADDRESS;
 	if ( dhcp ) {
 		var tabfn = () => {
-			var val = infoVal();
-			val.IP  = 'static';
-			infoWiFi( val );
+			if ( profilestatic ) {
+				infoWiFi( V.profileget );
+			} else {
+				var val = infoVal();
+				val.ADDRESS = S.ipsub;
+				val.GATEWAY = S.gateway;
+				var v       = {}
+				Object.keys( default_v.static ).forEach( k => v[ k ] = val[ k ] );
+				infoWiFi( v );
+			}
 		}
-		list.splice( 3, 2 );
+		list.splice( 2, 2 );
 	} else {
 		var tabfn = () => {
-			var val = infoVal();
-			val.IP  = 'dhcp';
-			infoWiFi( val );
+			if ( ! profilestatic ) {
+				infoWiFi( V.profileget );
+			} else {
+				var val = infoVal();
+				[ 'ADDRESS', 'GATEWAY' ].forEach( k => delete val[ k ] );
+				infoWiFi( val );
+			}
 		}
-		values.ADDRESS = S.ipwl || S.ipsub;
-		values.GATEWAY = S.gateway || S.ipsub;
 	}
-	var checkchanged = 'profileget' in V && Object.values( V.profileget ).join( '' ) === Object.values( values ).join( '' );
+	if ( profile ) {
+		var checkchanged = ( values.ADDRESS && profilestatic ) || ( ! values.ADDRESS && ! profilestatic );
+	} else {
+		var checkchanged = false;
+	}
 	info( {
 		  icon         : 'wifi'
 		, title        : v ? 'Saved Connection' : 'Add Connection'
@@ -351,10 +350,11 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : footer( 'This is' )
+		, footer       : warning()
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
+		, checklength  : { 1: [ 8, 'min' ] }
 		, checkip      : dhcp ? '' : [ 2, 3 ]
 		, ok           : () => connectWiFi( infoVal() )
 	} );
@@ -387,24 +387,24 @@ function renderBluetooth() {
 	$( '#divbt' ).removeClass( 'hide' );
 }
 function renderPage() {
-	if ( ! S.activebt ) {
+	if ( ! S.devicebt ) {
 		$( '#divbt' ).addClass( 'hide' );
 	} else {
 		renderBluetooth();
 	}
-	if ( ! S.activewl ) {
+	if ( ! S.devicewl ) {
 		$( '#divwl' ).addClass( 'hide' );
 	} else {
 		renderWlan();
+		$( '.wladd' ).toggleClass( 'hide', S.ap );
 	}
-	$( '.wladd' ).toggleClass( 'hide', S.ap );
-	if ( ! S.activeeth ) {
+	if ( ! S.deviceeth ) {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
-		var htmlwl = '';
-		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.ip
-								 +'&ensp;<gr>&raquo;&ensp;'+ S.listeth.gateway +'</gr></li>';
-		$( '#listlan' ).html( htmlwl );
+		var htmllan = '';
+		if ( S.listeth ) htmllan = '<li>'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.IP
+								 +'&ensp;<gr>&raquo;&ensp;'+ S.listeth.GATEWAY +'</gr></li>';
+		$( '#listlan' ).html( htmllan );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
 	$( '#divap' ).toggleClass( 'hide', ! S.ap );
@@ -412,7 +412,7 @@ function renderPage() {
 	showContent();
 }
 function renderQR() {
-	var ip = S.ipeth || S.ipwl || S.apconf.ip;
+	var ip = S.listeth ? S.listeth.IP : S.ipwl || S.apconf.ip;
 	if ( ! ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return
@@ -490,4 +490,7 @@ function scanWlan() {
 		$( '#listwlscan' ).html( htmlwl );
 		V.timeoutscan = setTimeout( scanWlan, 12000 );
 	}, 'json' );
+}
+function warning() {
+	if ( V.li && V.li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>This is current connection</wh>'
 }

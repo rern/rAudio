@@ -29,8 +29,7 @@ $( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
 		SERVICE=bluetooth
 		;;
 	camilladsp )
-		fileconf=$( getVar CONFIG /etc/default/camilladsp )
-		extra=$( < /var/log/camilladsp.log )
+		fileconf=/etc/default/camilladsp
 		;;
 	dabradio )
 		PKG=mediamtx
@@ -114,5 +113,4 @@ echo "\
 $( awk NF <<< $config )
 
 <bll># systemctl status $SERVICE</bll>
-$status
-$extra"
+$status"

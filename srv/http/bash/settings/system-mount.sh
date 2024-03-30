@@ -5,13 +5,13 @@
 args2var "$1"
 
 ! ipOnline $IP && echo "IP address not found: <wh>$IP</wh>" && exit
-
+# --------------------------------------------------------------------
 if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
 else # server rAudio client
 	path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
 	! grep -q $dirnas <<< $path && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
-	
+# --------------------------------------------------------------------
 	PROTOCOL=nfs
 	mountpoint=$dirnas
 	SHARE=$dirnas
@@ -47,7 +47,7 @@ if [[ $? != 0 ]]; then
 	systemctl daemon-reload
 	sed -n '1 {s/.*: //; p}' <<< $std
 	exit
-	
+# --------------------------------------------------------------------
 else
 	rm /etc/fstab.backup
 fi

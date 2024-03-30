@@ -113,18 +113,23 @@ function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
 	$title   = $data[ 'title' ];
-	$subhead = $data[ 'subhead' ] ?? false;
+	$id      = $data[ 'id' ] ?? false;
 	$status  = $data[ 'status' ] ?? false;
 	$button  = $data[ 'button' ] ?? false;
 	$help    = $data[ 'help' ] ?? false;
 	$class   = $status ? 'status' : '';
-	$class  .= $subhead ? ' subhead' : '';
 	
-	$html    = '<heading '.( $status ? ' data-status="'.$status.'"' : '' );
+	$html    = '<heading '.( $id ? ' id="'.$id.'"' : '' ).( $status ? ' data-status="'.$status.'"' : '' );
 	$html   .= $class ? ' class="'.$class.'">' : '>';
 	$html   .= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) foreach( $button as $icon ) $html.= i( $icon );
-	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
+	if ( $button ) {
+		if ( is_Array( $button ) ) {
+			foreach( $button as $icon ) $html.= i( $icon );
+		} else {
+			$html.= i( $button );
+		}
+	}
+	$html   .= isset( $data[ 'nohelp' ] ) ? '' : i( 'help help' );
 	$html   .= isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
 	$html   .= '</heading>';
 	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';

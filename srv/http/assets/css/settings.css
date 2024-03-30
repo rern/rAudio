@@ -68,7 +68,8 @@ ul {
 	display: block;
 	clear: both;
 }
-.section pre {
+.section pre,
+pre.status {
 	margin-top: 0;
 	padding: 5px;
 	width: 100%;
@@ -191,7 +192,7 @@ heading {
 	letter-spacing: 5px;
 }
 heading.subhead {
-	margin: 20px 0 10px 0;
+	margin: 20px 0 0;
 	padding-bottom: 0;
 	line-height: 28px;
 	font-size: 18px;
@@ -395,14 +396,16 @@ input[type=image] {
 }
 .listtitle {
 	margin-top: 10px;
+	font-weight: 300;
 	letter-spacing: 5px;
 }
 .listtitle a {
 	display: inline-block;
-	width: calc( 100% / 26 );
+	width: calc( ( 100% - 120px ) / 26 );
 	min-width: 16px;
 	text-align: center;
 	color: var( --cml );
+	font-weight: normal;
 }
 .brindex {
 	display: none;

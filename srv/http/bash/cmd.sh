@@ -16,33 +16,30 @@ plAddPosition() {
 	[[ ${ACTION:0:7} == replace ]] && plClear || echo $(( $( mpc status %length% ) + 1 ))
 }
 plAddRandom() {
-	local cuefile diffcount dir file mpcls plL range tail
-	tail=$( plTail )
-	(( $tail > 1 )) && pushPlaylist add && return
+	local ab cuefile dir dirlast len_pos mpcls plL range
+	len_pos=( $( mpc status '%length% %songpos%' ) )
+	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 1 )) && plAddPlay $pos && return # $pos from librandom
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
-	mpcls=$( mpc ls "$dir" )
-	cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
-	if [[ $cuefile ]]; then
-		plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
-		range=$( shuf -i 0-$plL -n 1 )
-		file="$range $cuefile"
-		grep -q -m1 "$file" $dirsystem/librandom && plAddRandom && return
-		
-		mpc --range=$range load "$cuefile"
-	else
-		file=$( shuf -n 1 <<< $mpcls )
-		grep -q -m1 "$file" $dirsystem/librandom && plAddRandom && return
-		
-		mpc -q add "$file"
+	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
+	if [[ $dir == $dirlast ]]; then # force different album
+		[[ $( sed -n '$p' $dirmpd/album ) == $dir ]] && ab=B1 || ab=A1
+		dir=$( grep -$ab "\^$dir$" $dirmpd/album | head -1 | cut -d^ -f7 )
 	fi
-	diffcount=$(( $( jq .song $dirmpd/counts ) - $( lineCount $dirsystem/librandom ) ))
-	if (( $diffcount > 1 )); then
-		echo $file >> $dirsystem/librandom
+	if [[ -s $dirsystem/librandom ]]; then # album
+		mpc -q add "$dir"
 	else
-		> $dirsystem/librandom
+		mpcls=$( mpc ls "$dir" )
+		cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
+		if [[ $cuefile ]]; then
+			plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
+			range=$( shuf -i 0-$plL -n 1 )
+			mpc --range=$range load "$cuefile"
+		else
+			mpc -q add "$( shuf -n 1 <<< $mpcls )"
+		fi
 	fi
-	(( $tail > 1 )) || plAddRandom
+	plAddRandom
 }
 playerStart() {
 	local player service
@@ -100,11 +97,6 @@ plClear() {
 	mpc -q clear
 	radioStop
 }
-plTail() {
-	local pos_len
-	pos_len=( $( mpc status '%songpos% %length%' ) )
-	echo $(( ${pos_len[1]} - ${pos_len[0]} ))
-}
 pushPlaylist() {
 	pushData playlist '{ "refresh": true }'
 }
@@ -121,6 +113,12 @@ radioStop() {
 		rm -f $dirshm/radio
 		[[ ! -e $dirshm/skip ]] && $dirbash/status-push.sh
 	fi
+}
+savedPlCount() {
+	playlists=$( ls -1 $dirplaylists | wc -l )
+	grep -q '"playlists".*,' $dirmpd/counts && playlists+=,
+	sed -i -E 's/("playlists" *: ).*/\1'$playlists'/' $dirmpd/counts
+	pushSavedPlaylist
 }
 shairportStop() {
 	systemctl stop shairport
@@ -403,15 +401,6 @@ equalizerget )
 equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
 	;;
-ignoredir )
-	dir=$( basename "$DIR" )
-	mpdpath=$( dirname "$DIR" )
-	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
-	pushData mpdupdate '{ "type": "mpd" }'
-	echo "$mpdpath" > $dirmpd/updating
-	mpc -q update "$mpdpath" #1 get .mpdignore into database
-	mpc -q update "$mpdpath" #2 after .mpdignore was in database
-	;;
 latestclear )
 	if [[ $DIR ]]; then
 		sed -i "\|\^$DIR$| d" $dirmpd/latest
@@ -427,18 +416,24 @@ latestclear )
 librandom )
 	if [[ $ON ]]; then
 		mpc -q random 0
-		tail=$( plTail )
-		if [[ $PLAY ]]; then
-			playnext=$(( total + 1 ))
-			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
-		fi
-		touch $dirsystem/librandom
+		[[ $ALBUM ]] && echo album > $dirsystem/librandom || touch $dirsystem/librandom
+		[[ $ACTION == play ]] && pos=$(( $( mpc status %length% ) + 1 ))
 		plAddRandom
-		[[ $PLAY ]] && mpc -q play $playnext
 	else
 		rm -f $dirsystem/librandom
 	fi
 	pushData option '{ "librandom": '$TF' }'
+	;;
+librarynas )
+	mountpoints=$( awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab \
+				| grep -v /mnt/MPD/NAS/data \
+				| sed 's/\\040/ /g' )
+	for m in "${mountpoints[@]}"; do
+		if ! grep -qs "$( basename "$m" )" /mnt/MPD/NAS/.mpdignore && timeout 0.1 test -e "$m"; then
+			echo 1
+			exit
+		fi
+	done
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
@@ -631,31 +626,30 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
-	radioStop
-	if [[ $ACTION ]]; then # playlist
-		mpc -q play $POS
-		Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
-		[[ $Time == 0 ]] && Time=false
-		[[ $ACTION == stop ]] && mpc -q stop
-		pushData playlist '{ "song": '$(( POS - 1 ))', "elapsed": 0, "Time": '$Time', "state": "'$ACTION'" }'
-		exit
-	fi
-	
-	touch $dirshm/skip
-	. <( mpc status 'state=%state%; consume=%consume%' )
 	$dirbash/cmd-skipdata.sh "$FILE" &
+	radioStop
+	touch $dirshm/skip
+	. <( mpc status 'state=%state%; consume=%consume%; songpos=%songpos%' )
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 		rm -f $dirshm/skip
 		mpc -q play $POS
-		[[ $consume == on ]] && mpc -q del $current
+		[[ $consume == on ]] && mpc -q del $songpos
 	else
 		mpc -q play $POS
 		rm -f $dirshm/skip
-		[[ ! $PLAY ]] && mpc -q stop
+		mpc -q stop
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
+	;;
+mpcskippl )
+	radioStop
+	mpc -q play $POS
+	Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
+	[[ $Time == 0 ]] && Time=false
+	[[ $ACTION == stop ]] && mpc -q stop
+	pushData playlist '{ "song": '$(( POS - 1 ))', "elapsed": 0, "Time": '$Time', "state": "'$ACTION'" }'
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
@@ -677,6 +671,15 @@ mpcupdatestop )
 		rm -f $dirmpd/{listing,updating} $dirshm/{listing,tageditor}
 	fi
 	;;
+mpdignore )
+	dir=$( basename "$DIR" )
+	mpdpath=$( dirname "$DIR" )
+	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
+	pushData mpdupdate '{ "type": "mpd" }'
+	echo "$mpdpath" > $dirmpd/updating
+	mpc -q update "$mpdpath" #1 get .mpdignore into database
+	mpc -q update "$mpdpath" #2 after .mpdignore was in database
+	;;
 multiraudiolist )
 	echo '{
   "current" : "'$( ipAddress )'"
@@ -685,6 +688,9 @@ multiraudiolist )
 	;;
 order )
 	pushData order "$( < $dirsystem/order.json )" # quoted - keep double spaces
+	;;
+pladdrandom )
+	plAddRandom
 	;;
 playerstart )
 	playerStart
@@ -705,9 +711,7 @@ relaystimerreset )
 	;;
 savedpldelete )
 	rm "$dirplaylists/$NAME.m3u"
-	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	pushSavedPlaylist
+	savedPlCount
 	;;
 savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 	plfile="$dirplaylists/$NAME.m3u"
@@ -741,9 +745,7 @@ savedplsave )
 	
 	mpc -q save "$NAME"
 	chmod 777 "$plfile"
-	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i -E 's/(,*)(.*playlists" *: ).*(,)/\1\2'$count'\3/' $dirmpd/counts
-	pushSavedPlaylist
+	savedPlCount
 	;;
 screenoff )
 	DISPLAY=:0 xset dpms force off

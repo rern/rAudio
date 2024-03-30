@@ -318,7 +318,6 @@ NTP=$NTP" > $file
 packagelist )
 	filepackages=/tmp/packages
 	if [[ ! -e $filepackages ]]; then
-		notify system Backend 'Package list ...'
 		pacmanqi=$( pacman -Qi | grep -E '^Name|^Vers|^Desc|^URL' )
 		while read line; do
 			case ${line:0:3} in
@@ -338,10 +337,10 @@ $description
 		sed -E 's|^URL.*: (.*)|<a href="\1" target="_blank">|
 				s|^Name.*: (.*)|\1</a> |
 				s|^Vers.*: (.*)|<gr>\1</gr>|
-				s|^Desc.*: (.*)|<p>\1</p>|' <<< $lines \
+				s|^Desc.*: (.*)| - \1<br>|' <<< $lines \
 				> /tmp/packages
 	fi
-	grep -B1 -A2 --no-group-separator ^$PKG $filepackages
+	grep -B1 -A2 --no-group-separator ^${INI,} $filepackages
 	;;
 powerbutton )
 	enableFlagSet
@@ -464,11 +463,11 @@ $( bluetoothctl show )"
 statusstatus )
 	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
-	
-	startupfinished=$( systemd-analyze )
+# --------------------------------------------------------------------
+	startupfinished=$( systemd-analyze | head -1 )
 	if grep -q 'Startup finished' <<< $startupfinished; then
 		echo "\
-<bll># systemd-analyze</bll>
+<bll># systemd-analyze | head -1</bll>
 $startupfinished
 
 <bll># journalctl -b</bll>
@@ -566,10 +565,10 @@ tftcalibrate )
 timezone )
 	if [[ $TIMEZONE == auto ]]; then
 		! ipOnline 8.8.8.8 && notify timezone 'Timezone - Auto' 'No internet connection.' && exit
-		
-		tz=$( curl -s https://ipapi.co/timezone )
-		[[ ! $tz ]] && tz=$( curl -s http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
-		[[ ! $tz ]] && tz=$( curl -s https://worldtimeapi.org/api/ip | jq -r .timezone )
+# --------------------------------------------------------------------
+		tz=$( curl -s -m 2 https://worldtimeapi.org/api/ip | jq -r .timezone )
+		[[ ! $tz ]] && tz=$( curl -s -m 2 http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
+		[[ ! $tz ]] && tz=$( curl -s -m 2 https://ipapi.co/timezone )
 		[[ ! $tz ]] && tz=UTC
 		timedatectl set-timezone $tz
 	else
@@ -579,7 +578,7 @@ timezone )
 	;;
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
-	
+# --------------------------------------------------------------------
 	if [[ $CMD == usbconnect ]]; then
 		action=Ready
 		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )

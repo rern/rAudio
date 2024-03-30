@@ -790,7 +790,7 @@ $( '.map' ).on( 'click', function( e ) {
 		$( '#guide-bio' ).toggleClass( 'hide', S.Artist === '' );
 		$( '#guide-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
 		$( '#guide-booklet' ).toggleClass( 'hide', S.Album === '' );
-		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', ! S.pllength );
+		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', S.pllength === 0 );
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $bartop.is( ':hidden' ) );
@@ -937,11 +937,17 @@ $( '.btn-cmd' ).on( 'click', function() {
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 			
-			cmd == 'next' ? S.song++ : S.song--;
-			if ( S.song < 0 ) {
-				S.song = S.pllength - 1;
-			} else if ( S.song === S.pllength ) {
-				S.song = 0;
+			if ( S.random && cmd === 'next' ) { // previous in random = repeat
+				var current = S.song;
+				S.song = Math.floor( Math.random() * S.pllength ); // S.song: index from 0 to ( S.pllength - 1 )
+				if ( S.song === current ) S.song = current === S.pllength - 1 ? 0 : current + 1; // last track: 0, else: +1
+			} else {
+				cmd == 'next' ? S.song++ : S.song--;
+				if ( S.song < 0 ) {
+					S.song = S.pllength - 1;
+				} else if ( S.song === S.pllength ) {
+					S.song = 0;
+				}
 			}
 			playlistSkip();
 		}
@@ -1197,10 +1203,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	
 	V.modescrolltop = $( window ).scrollTop();
 	if ( V.mode === 'playlists' ) {
-		if ( $( this ).find( 'gr' ).text() ) {
-			$( '#button-pl-playlists' ).trigger( 'click' );
-			$( '#playlist' ).trigger( 'click' );
-		}
+		$( '#button-pl-playlists' ).trigger( 'click' );
+		setTimeout( () => $( '#playlist' ).trigger( 'click' ), 100 );
 		return
 	}
 	
@@ -1264,10 +1268,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 </div>
 <div class="menu">
 <a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
-<div class="pllength">
-<a data-cmd="playnext" class="cmd"><i class="i-add"></i>Play next</a>
-<a data-cmd="replace" class="sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
-</div>
+<a data-cmd="playnext" class="playnext cmd"><i class="i-add"></i>Play next</a>
+<a data-cmd="replace" class="replace sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
 </div>`;
 	info( {
 		  icon       : 'playlist'
@@ -1275,7 +1277,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, list       : htmllist
 		, values     : 'addplay'
 		, beforeshow : () => {
-			$( '#infoList .pllength' ).toggleClass( 'hide', ! S.pllength );
+			$( '#infoList' ).find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
+			$( '#infoList' ).find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 			$( '#infoList' ).on( 'click', '.cmd', function() {
 				V.list.li = $( '.infomessage' );
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];
@@ -1658,16 +1661,25 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 		info( {
 			  icon       : icon
 			, title      : title
-			, message    : 'Randomly add songs and play continuously.'
-			, list       : [ 'Start playing the random songs', 'checkbox' ]
+			, message    : 'Randomly add and play continuously.'
+			, list       : '<div class="menu">'
+						  +'<a class="sub cmd"><i class="i-music"></i>Songs</a><i class="i-play-plus submenu cmd play"></i>'
+						  +'<a class="sub cmd album"><i class="i-album"></i>Abums</a><i class="i-play-plus submenu cmd album"></i>'
+						  +'</div>'
 			, values     : [ true ]
-			, beforeshow : () => $( '#infoList table' ).toggleClass( 'hide', S.song + 1 === S.pllength )
-			, ok         : () => {
-				S.librandom = true;
-				$this.addClass( 'bl' );
-				banner( icon, title, 'On ...' );
-				bash( [ 'librandom', infoVal(), 'CMD PLAY' ] );
+			, beforeshow : () => {
+				$( '#infoList .album' ).toggleClass( 'hide', C.album < 2 );
+				$( '#infoList' ).on( 'click', '.cmd', function() {
+					$( '#infoX' ).trigger( 'click' );
+					S.librandom = true;
+					$this.addClass( 'bl' );
+					var action  = $( this ).hasClass( 'submenu' ) ? 'play' : '';
+					var album   = $( this ).hasClass( 'album' );
+					banner( icon, title, 'On ...' );
+					bash( [ 'librandom', action, album, 'CMD ACTION ALBUM' ] );
+				} );
 			}
+			, okno      : true
 		} );
 	}
 } );
@@ -1784,7 +1796,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		intervalClear();
 		$( '.elapsed' ).empty();
-		bash( [ 'mpcskip', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
+		bash( [ 'mpcskippl', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
@@ -1873,7 +1885,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				V.list.name   = $this.find( '.name' ).text().trim();
 				V.list.path   = $this.find( '.lipath' ).text().trim() || V.list.name;
 				V.list.track  = $this.data( 'track' );
-				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', ! S.pllength );
+				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', S.pllength === 0 );
 				$( '.remove' ).removeClass( 'hide' );
 				$( '.tag' ).addClass( 'hide' );
 				if ( ( D.tapaddplay || D.tapreplaceplay )
@@ -1885,11 +1897,12 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 					return
 				}
 				
-				$menu.find( '.replace' ).toggleClass( 'hide', ! S.pllength );
 				$menu.find( '.similar' ).toggleClass( 'hide', S.webradio );
 				$menu.find( '.wrsave' ).toggleClass( 'hide', ! $this.hasClass( 'notsaved' ) );
 			}
 			$this.addClass( 'active' );
+			$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
+			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', S.player !== 'mpd' );
 			contextmenuScroll( $menu, $this.position().top + 48 );
 		}

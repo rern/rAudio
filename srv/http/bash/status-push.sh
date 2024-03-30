@@ -73,7 +73,7 @@ else
 	[[ -e $dirsystem/vumeter ]] && pushData vumeter '{ "val": 0 }'
 fi
 
-[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom
+[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
 
 [[ ! -e $dirsystem/scrobble ]] && exit
 

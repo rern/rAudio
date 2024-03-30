@@ -4,7 +4,7 @@
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
-	, 'button' => [ 'search btscan' ]
+	, 'button' => 'search btscan'
 	, 'help'   => i( 'search btn' ).' Available devices'
 ] );
 $html = <<< EOF
@@ -56,11 +56,12 @@ Note:
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wired LAN'
 	, 'status' => 'lan'
-	, 'button' => [ 'add lanadd' ]
+	, 'button' => 'add lanadd'
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
-	<div class="helpblock hide"><?=i( 'lan btn' )?> Context menu</div>
+	<div class="helpblock hide"><?=i( 'add btn' )?> Manual connect
+<?=i( 'lan btn' )?> Context menu</div>
 </div>
 </div>
 <?php
@@ -89,7 +90,7 @@ htmlSection( $head, $body, 'webui' );
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'button' => [ 'bluetooth blink scanning-bt' ]
+	, 'button' => 'bluetooth blink scanning-bt'
 	, 'back'   => true
 	, 'nohelp' => true
 ] );
@@ -100,7 +101,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
-	, 'button' => [ 'wifi blink scanning-wifi' ]
+	, 'button' => 'wifi blink scanning-wifi'
 	, 'back'   => true
 	, 'nohelp' => true
 ] );

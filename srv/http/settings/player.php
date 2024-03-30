@@ -21,7 +21,7 @@ $id_data = [
 $head = [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
-	, 'button' => [ 'play playback' ]
+	, 'button' => 'play playback'
 	, 'help'   => <<< EOF
 {$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
 
@@ -93,9 +93,9 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · Mixer device volume set at <c>0dB</c>
  · Disable:
 	· Output {$FiLabel( 'Volume Control' )}
-	· Volume {$FiLabel( 'Cross-Fading' )} {$FiLabel( 'Normalization' )} {$FiLabel( 'ReplayGain' )}
+	· Volume - All options
 	· Options  {$FiLabel( 'SoX Resampler' )}
-	· {$FiTab( 'Features' )}{$FiLabel( 'DSP', 'camilladsp' )} and {$FiLabel( 'Equalizer', 'equalizer' )}
+	· {$FiTab( 'Features' )} Signal Processors
 EOF
 	]
 	, [
@@ -204,15 +204,12 @@ EOF
 ];
 htmlSection( $head, $body, 'options' );
 
-echo '
-<div id="divlists" class="section">
-	<heading><span class="headtitle">Lists</span></heading>';
 htmlHead( [
-	  'title'   => 'Ignored Album'
-	, 'subhead' => true
+	  'title'   => 'Excluded Albums'
+	, 'id'      => 'albumignore'
 	, 'status'  => 'albumignore'
 	, 'help'    => <<< EOF
-List of albums excluded from Album page.
+List of albums excluded from Library Album list.
 To restore:
  · Edit <c>/srv/http/data/mpd/albumignore</c>
  · Remove albums to restore
@@ -220,22 +217,22 @@ To restore:
 EOF
 ] );
 htmlHead( [
-	  'title'   => 'Ignored Directory'
-	, 'subhead' => true
+	  'title'   => 'Excluded Directories'
+	, 'id'      => 'mpdignore'
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< EOF
-List of <c>.mpdignore</c> files contain directories excluded from database.
+List of <c>.mpdignore</c> files contain directories/folders excluded from database.
 To restore:
 • Edit <c>.../.mpdignore</c>
 • Remove directories to restore
 • Update Library
+
+Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for {$FiTab( 'System' )}{$FiLabel( 'Shared Data', 'networks' )}
 EOF
 ] );
 htmlHead( [
 	  'title'   => 'Non UTF-8 Files'
-	, 'subhead' => true
+	, 'id'      => 'nonutf8'
 	, 'status'  => 'nonutf8'
 	, 'help'    => 'List of files with metadata is not UTF-8 encoding which must be corrected.'
 ] );
-echo '
-</div>';
