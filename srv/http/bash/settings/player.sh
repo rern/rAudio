@@ -182,7 +182,8 @@ statusmpdignore )
 	list="\
 <bll># find /mnt/MPD -name .mpdignore</bll>"
 	while read file; do
-		[[ $file == /mnt/MPD/NAS/.mpdignore ]] && lines=$( grep -v ^data$ "$file" ) || lines=$( < "$file" )
+		lines=$( < "$file" )
+		[[ $file == /mnt/MPD/NAS/.mpdignore ]] && lines=$( sed 's|^data$|& <yl>(rAudio Shared Data)</yl>|' <<< $lines )
 		path="<g>$( dirname "$file" )/</g>"
 		list+="
 $file
