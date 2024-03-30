@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 [[ -e $dirshm/eject ]] && exit
-
+# --------------------------------------------------------------------
 if [[ $1 == on ]]; then
 	notify audiocd 'Audio CD' 'USB CD On'
 	touch $dirshm/audiocd
@@ -11,8 +11,8 @@ if [[ $1 == on ]]; then
 	systemctl restart mpd
 	pushRefresh player
 	exit
+# --------------------------------------------------------------------
 fi
-
 audioCDplClear
 
 if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
@@ -29,14 +29,14 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 	pushData audiocd '{ "type": "clear" }'
 	pushRefresh player
 	exit
+# --------------------------------------------------------------------
 fi
-
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( discid total_tracks offset0(lead-in) offset1(track1) ... total_seconds(last track) )
 if [[ ! $cddiscid ]]; then
 	notify audiocd 'Audio CD' 'CD contains no tracks length'
 	exit
+# --------------------------------------------------------------------
 fi
-
 discid=${cddiscid[0]}
 trackL=${cddiscid[1]} # also = offset last index (offsets: +1 lead-in)
 

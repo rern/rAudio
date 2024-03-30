@@ -10,8 +10,8 @@ if ! grep -q ^audioservice $dirshm/dabscan; then
 	notify dabradio 'DAB Radio' 'No stations found.'
 	rm $dirshm/{dabscan,updatingdab}
 	exit
+# --------------------------------------------------------------------
 fi
-
 mv $dirdabradio/img $dirshm &> /dev/null
 rm -rf $dirdabradio
 mkdir -p $dirdabradio/img

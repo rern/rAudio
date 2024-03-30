@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 [[ -e $dirshm/usbdacadd ]] && exit
-
+# --------------------------------------------------------------------
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
@@ -20,13 +20,13 @@ else
 	. <( echo "$statusnew" )
 	[[ $state == play ]] && playing=1
 	if [[ $webradio == true ]]; then
-		[[ ! $trackchanged && $playing ]] && exit # >>>>>>>>>>
-		
+		[[ ! $trackchanged && $playing ]] && exit
+# --------------------------------------------------------------------
 	else
 		compare='^state|^elapsed'
 		[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && statuschanged=1
-		[[ ! $trackchanged && ! $statuschanged ]] && exit # >>>>>>>>>>
-		
+		[[ ! $trackchanged && ! $statuschanged ]] && exit
+# --------------------------------------------------------------------
 	fi
 ########
 	pushData mpdplayer "$status"
@@ -76,15 +76,15 @@ fi
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
 
 [[ ! -e $dirsystem/scrobble ]] && exit
-
+# --------------------------------------------------------------------
 [[ ! $trackchanged && ! -e $dirshm/elapsed ]] && exit # track changed || prev/next/stop
-
+# --------------------------------------------------------------------
 . $dirshm/statusprev
 [[ $state == stop || $webradio == true || ! $Artist || ! $Title || $Time -lt 30 ]] && exit
-
+# --------------------------------------------------------------------
 if [[ $player != mpd ]]; then
 	! grep -q $player=true $dirsystem/scrobble.conf && exit
-	
+# --------------------------------------------------------------------
 	if [[ $state =~ ^(play|pause)$ ]]; then # renderers prev/next
 		elapsed=$(( ( timestampnew - timestamp ) / 1000 ))
 		(( $elapsed < $Time )) && echo $elapsed > $dirshm/elapsed
@@ -94,7 +94,7 @@ if [[ -e $dirshm/elapsed ]];then
 	elapsed=$( < $dirshm/elapsed )
 	rm $dirshm/elapsed
 	(( $elapsed < 240 && $elapsed < $(( Time / 2 )) )) && exit
-	
+# --------------------------------------------------------------------
 fi
 $dirbash/scrobble.sh "cmd
 $Artist

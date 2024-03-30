@@ -18,7 +18,7 @@ echo Path: '<a class="cc">'$fullpath'</a>'
 echo
 
 [[ ! -w "$fullpath" ]] && warningWrite "$fullpath" && exit
-
+# --------------------------------------------------------------------
 SECONDS=0
 
 albumfile=/srv/http/data/mpd/album
@@ -31,7 +31,7 @@ fi
 unsharp=0x.5
 
 [[ ! $mpdpathlist ]] && echo "$padw No albums found in database." && exit
-
+# --------------------------------------------------------------------
 count=$( wc -l <<< $mpdpathlist )
 while read mpdpath; do
 	(( i++ ))

@@ -17,8 +17,8 @@ if ! playerActive spotify; then
 	echo spotify > $dirshm/player
 	$dirbash/cmd.sh playerstart
 	exit
+# --------------------------------------------------------------------
 fi
-
 [[ $PLAYER_EVENT == volumeset ]] && volumeGet push
 
 dirspotify=$dirshm/spotify
@@ -39,8 +39,8 @@ else
 	if [[ ! $token ]]; then
 		notify spotify Spotify 'Access token renewal failed.'
 		exit
+# --------------------------------------------------------------------
 	fi
-	
 	echo $token > $filetoken
 	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
 fi

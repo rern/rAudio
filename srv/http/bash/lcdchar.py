@@ -108,7 +108,7 @@ if argvL == 2: # 1 argument
         lcd.write_string( val.replace( '\n', RN ) )
     lcd.close()
     sys.exit()
-    
+# --------------------------------------------------------------------
 import math
 import time
 
@@ -117,7 +117,7 @@ def backlightOff():
     lcd.backlight_enabled = False
     lcd.close()
     sys.exit()
-    
+# --------------------------------------------------------------------
 def second2hhmmss( sec ):
     hh = math.floor( sec / 3600 )
     mm = math.floor( ( sec % 3600 ) / 60 )
@@ -198,7 +198,7 @@ lcd.write_string( lines + RN + ICON[ state ] + progress + RA )
 if backlight and state != 'play': backlightOff()
 
 if state != 'play': sys.exit()
-
+# --------------------------------------------------------------------
 row = rows - 1
 starttime = time.time()
 elapsed += round( starttime - timestamp / 1000 )

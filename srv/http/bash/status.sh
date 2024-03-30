@@ -14,7 +14,8 @@ outputStatus() {
 	else
 		data2json "$status"
 	fi
-	[[ $1 != noexit ]] && exit # >>>>>>>>>>
+	[[ $1 != noexit ]] && exit
+# --------------------------------------------------------------------
 }
 samplingLine() {
 	local bitdepth bitrate ext rate samplerate sampling
@@ -60,9 +61,9 @@ if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
 		sleep 1
 		[[ -e $dirmpd/counts ]] && mounted=1 && break
 	done
-	[[ ! $mounted ]] && echo -1 && exit # >>>>>>>>>>
+	[[ ! $mounted ]] && echo -1 && exit
+# --------------------------------------------------------------------
 fi
-
 if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
@@ -551,8 +552,8 @@ elapsed=$( mpcElapsed )
 # >>>>>>>>>> not cd && not stream
 outputStatus $( [[ ! $getcover && $Artist ]] && echo noexit )
 
-[[ $getcover || ! $Artist ]] && exit # >>>>>>>>>>
-
+[[ $getcover || ! $Artist ]] && exit
+# --------------------------------------------------------------------
 if [[ $stream && $state == play && $Title ]]; then
 	args="\
 $Artist
@@ -564,7 +565,7 @@ $Artist
 $Album"
 fi
 [[ ! $args ]] && exit
-
+# --------------------------------------------------------------------
 $dirbash/status-coverartonline.sh "cmd
 $args
 CMD ARTIST ALBUM MODE" &> /dev/null &

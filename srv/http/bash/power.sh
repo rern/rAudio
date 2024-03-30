@@ -19,7 +19,7 @@ if systemctl -q is-active nfs-server; then # server rAudio
 	ipclients=$( grep -v $ipserver $filesharedip )
 	if [[ $ipclients ]]; then
 		[[ ! $2 ]] && echo -1 && exit # $2 confirm proceed
-		
+# --------------------------------------------------------------------
 		[[ $reboot ]] && msg='Reboot ...' || msg='Power off ...'
 		for ip in $ipclients; do
 			notify -ip $ip 'networks blink' 'Server rAudio' "$msg"
