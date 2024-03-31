@@ -31,14 +31,15 @@ fi
 
 bootwifi=/boot/wifi
 if [[ $wlandev && -e $bootwifi ]]; then
-	data=$( sed -E -e '/^#|^\s*$/ d
+	ssid=$( getVar ESSID $bootwifi )
+	sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
-" $bootwifi )
-	ssid=$( sed -n -E '/^ESSID/ {s/.*="(.*)"/\1/; p}' <<< $data )
-	echo "$data" > "/etc/netctl/$ssid"
-	ip link set $( < $dirshm/wlan ) down
-	netctl start "$ssid"
+" $bootwifi > "/etc/netctl/$ssid"
+	$dirsettings/networks.sh "profileconnect
+$ssid
+CMD SSID"
 fi
+
 if [[ -e /boot/cirrus ]]; then
 	$dirsettings/player-wm5102.sh 'HPOUT2 Digital'
 	rm /boot/cirrus
