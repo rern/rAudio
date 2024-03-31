@@ -425,17 +425,20 @@ librandom )
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;
-librarynas )
-	mountpoints=$( awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab \
+lsmntmpd )
+	readarray -t mountpoints <<< $( awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab \
 				| grep -v /mnt/MPD/NAS/data \
 				| sed 's/\\040/ /g' )
+	dirs=false
 	for m in "${mountpoints[@]}"; do
-		if ! grep -qs "$( basename "$m" )" /mnt/MPD/NAS/.mpdignore && timeout 0.1 test -e "$m"; then
-			echo 1
-			exit
+		grep -qs "$( basename "$m" )" /mnt/MPD/NAS/.mpdignore && continue
+		
+		timeout 0.1 ls "$m" &> /dev/null && dirs=true && break
 # --------------------------------------------------------------------
-		fi
 	done
+	[[ $( ls -1d /mnt/MPD/SD/*/ 2> /dev/null ) ]] && dirs+=', true' || dirs+=', false'
+	[[ $( ls -1d /mnt/MPD/USB/*/ 2> /dev/null ) ]] && dirs+=', true' || dirs+=', false'
+	echo [ $dirs ]
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
