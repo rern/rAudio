@@ -10,7 +10,7 @@ if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
 	urlname=${file//\//|}
 	path=$( find $dirwebradio -name $urlname )
 	[[ ! $path ]] && exit
-	
+# --------------------------------------------------------------------
 	readarray -t station_sampling < "$path"
 	station=${station_sampling[0]}
 	sampling=${station_sampling[1]}

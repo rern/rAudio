@@ -49,8 +49,8 @@ if [[ $song == 0 ]]; then
 	done
 	updateDone
 	exit
+# --------------------------------------------------------------------
 fi
-
 ##### album
 albumList() {
 	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag

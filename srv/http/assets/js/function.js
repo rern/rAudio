@@ -1189,12 +1189,8 @@ function renderLibraryCounts() {
 		var $this = $( el );
 		var mode  = $this.data( 'mode' );
 		var v     = C[ mode ];
-		if ( v ) {
-			$this.removeClass( 'nodata' );
-			if ( ! [ 'nas', 'sd', 'usb' ].includes( mode ) ) $( '#mode-'+ mode ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
-		} else {
-			$this.addClass( 'nodata' );
-		}
+		$this.toggleClass( 'nodata', ! v );
+		if ( typeof v !== 'boolean' ) $( '#mode-'+ mode ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
 	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
 }

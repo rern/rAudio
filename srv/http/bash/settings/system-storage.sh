@@ -49,7 +49,7 @@ if [[ $nas ]]; then
 , "mountpoint" : "'$( stringEscape $mountpoint )'"'
 		if [[ $used_size ]]; then
 			list+='
-, "mounted"    : true
+, "mounted"    : '$( grep -q " ${mountpoint// /\\\\040} " /proc/mounts && echo true || echo false )'
 , "source"     : "'$source'"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
 }'

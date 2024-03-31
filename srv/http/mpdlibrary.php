@@ -134,9 +134,8 @@ case 'home':
 		}
 	}
 	$counts      = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
-	$counts->nas = exec( '/srv/http/bash/cmd.sh librarynas' ) ? true : false;
-	$counts->sd  = glob( '/mnt/MPD/SD/*/' ) ? true : false;
-	$counts->usb = glob( '/mnt/MPD/USB/*/' ) ? true : false;
+	$dirs        = json_decode( exec( '/srv/http/bash/cmd.sh lsmntmpd' ) );
+	foreach( [ 'nas', 'sd', 'usb' ] as $i => $dir ) $counts->$dir  = $dirs[ $i ];
 	$order       = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
 	$updating    = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
@@ -318,7 +317,7 @@ function htmlDirectory( $lists ) {
 		if ( $mpdignore && in_Array( $basename, $mpdignore ) ) { // fix - partial update library
 			$nodata[] = -1;
 		} else {
-			$nodata[] = exec( 'mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;
+			$nodata[] = exec( 'timeout 0.1 mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;
 		}
 	}
 	exec( 'echo -n \'{ "channel": "nodata", "data": { "dir": "'.$dirs0.'", "list": '.json_encode( $nodata ).' } }\' | websocat ws://127.0.0.1:8080' );

@@ -70,8 +70,8 @@ metadataGet() {
 			notify $icon Metadata 'Not available'
 			systemctl stop radio
 			exit
+# --------------------------------------------------------------------
 		fi
-		
 		sleep 1
 		metadataGet
 		return

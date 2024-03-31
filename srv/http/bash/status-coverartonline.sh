@@ -38,7 +38,7 @@ if [[ ! $url ]]; then
 	if [[ $mbid ]]; then
 		imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
 		[[ $? != 0 ]] && pushDataCoverart && exit
-		
+# --------------------------------------------------------------------
 		url=$( jq -r '.images[0].image // empty' <<< $imgdata )
 	fi
 fi
@@ -46,10 +46,10 @@ if [[ $DEBUG ]]; then
 	[[ ! $url ]] && url="(Not found: $ARTIST - $ALBUM)"
 	echo coverart: $url
 	exit
+# --------------------------------------------------------------------
 fi
-
 [[ ! $url ]] && pushDataCoverart && exit
-
+# --------------------------------------------------------------------
 ext=${url/*.}
 if [[ $DISCID ]]; then
 	coverfile=$diraudiocd/$DISCID.$ext
@@ -59,7 +59,7 @@ else
 fi
 curl -sfL $url -o $coverfile
 [[ $? != 0 ]] && pushDataCoverart && exit
-
+# --------------------------------------------------------------------
 coverurl=${coverfile:9}
 [[ $MODE == webradio && ! -e $dirshm/radio ]] && radioalbum=$( jq -r '.title // empty' <<< $album ) # radioparadise / radiofrance - already got album name
 pushDataCoverart "$coverurl" "$radioalbum"

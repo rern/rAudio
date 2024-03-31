@@ -193,6 +193,7 @@ webradioM3uPlsVerify() {
 		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
 	[[ ! $url ]] && echo 'No valid URL found in:'$url && exit
+# --------------------------------------------------------------------
 }
 webRadioSampling() {
 	local bitrate data file kb rate sample samplerate url
@@ -200,14 +201,14 @@ webRadioSampling() {
 	file=$2
 	timeout 3 curl -sL $url -o /tmp/webradio
 	[[ ! $( awk NF /tmp/webradio ) ]] && echo 'Cannot be streamed:' && exit
-	
+# --------------------------------------------------------------------
 	data=( $( ffprobe -v quiet -select_streams a:0 \
 				-show_entries stream=sample_rate \
 				-show_entries format=bit_rate \
 				-of default=noprint_wrappers=1:nokey=1 \
 				/tmp/webradio ) )
 	[[ ! $data ]] && 'No stream data found:' && exit
-	
+# --------------------------------------------------------------------
 	samplerate=${data[0]}
 	bitrate=${data[1]}
 	sample="$( calc 1 $samplerate/1000 ) kHz"
@@ -228,7 +229,7 @@ albumignore )
 bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
 	[[ -e $bkfile ]] && echo -1 && exit
-	
+# --------------------------------------------------------------------
 	echo "$DIR" > "$bkfile"
 	if [[ -e $dirsystem/order.json ]]; then
 		order=$( jq '. + ["'$DIR'"]' $dirsystem/order.json )
@@ -321,8 +322,8 @@ audiocd
 $discid
 CMD ARTIST ALBUM MODE DISCID" &> /dev/null &
 		exit
+# --------------------------------------------------------------------
 	fi
-	
 	rm -f "$COVERFILE" "$dir/{coverart,thumb}".* $dirshm/{embedded,local}/*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
@@ -367,7 +368,7 @@ display )
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	grep -q -m1 vumeter.*true $dirsystem/display.json && touch $dirsystem/vumeter && vumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
-	
+# --------------------------------------------------------------------
 	if [[ $vumeter ]]; then
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	else
@@ -424,16 +425,20 @@ librandom )
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;
-librarynas )
-	mountpoints=$( awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab \
+lsmntmpd )
+	readarray -t mountpoints <<< $( awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab \
 				| grep -v /mnt/MPD/NAS/data \
 				| sed 's/\\040/ /g' )
+	dirs=false
 	for m in "${mountpoints[@]}"; do
-		if ! grep -qs "$( basename "$m" )" /mnt/MPD/NAS/.mpdignore && timeout 0.1 test -e "$m"; then
-			echo 1
-			exit
-		fi
+		grep -qs "$( basename "$m" )" /mnt/MPD/NAS/.mpdignore && continue
+		
+		timeout 0.1 ls "$m" &> /dev/null && dirs=true && break
+# --------------------------------------------------------------------
 	done
+	[[ $( ls -1d /mnt/MPD/SD/*/ 2> /dev/null ) ]] && dirs+=', true' || dirs+=', false'
+	[[ $( ls -1d /mnt/MPD/USB/*/ 2> /dev/null ) ]] && dirs+=', true' || dirs+=', false'
+	echo [ $dirs ]
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
@@ -453,9 +458,9 @@ lyrics )
 				file="/mnt/MPD/$file"
 				lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
 				[[ $lyrics ]] && echo "$lyrics" && exit
+# --------------------------------------------------------------------
 			fi
 		fi
-		
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
 		title=${TITLE//\/}
 		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
@@ -531,7 +536,7 @@ mpcoption )
 mpcplayback )
 	if [[ ! $ACTION ]]; then
 		! playerActive mpd && playerstop && exit
-		
+# --------------------------------------------------------------------
 		if statePlay; then
 			grep -q -m1 webradio=true $dirshm/status && ACTION=stop || ACTION=pause
 		else
@@ -556,6 +561,7 @@ mpcplayback )
 		mpc -q $ACTION
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
+# --------------------------------------------------------------------
 	# snapclient
 	if [[ $ACTION == play ]]; then
 		sleep 2 # fix stutter
@@ -607,7 +613,7 @@ mpcsimilar )
 					| jq .similartracks.track \
 					| sed -n '/"name": "/ {s/.*": "\|",$//g; p}' )
 	[[ ! $lines ]] && echo 'No similar tracks found in database.' && exit
-	
+# --------------------------------------------------------------------
 	while read line; do
 		if [[ $title ]]; then
 			file=$( mpc find artist "$line" title "$title" )
@@ -618,7 +624,7 @@ mpcsimilar )
 		fi
 	done <<< $lines
 	[[ ! $list ]] && echo 'No similar tracks found in Library.' 5000 && exit
-	
+# --------------------------------------------------------------------
 	plLprev=$( mpc status %length% )
 	awk NF <<< $list | mpc -q add
 	pushPlaylist
@@ -675,6 +681,8 @@ mpdignore )
 	dir=$( basename "$DIR" )
 	mpdpath=$( dirname "$DIR" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
+	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
+# --------------------------------------------------------------------
 	pushData mpdupdate '{ "type": "mpd" }'
 	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
@@ -729,8 +737,8 @@ savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
 savedplrename )
 	if [[ ! $REPLACE ]]; then
 		mpc lsplaylists | grep -q "$NEWNAME" && echo -1 && exit
+# --------------------------------------------------------------------
 	fi
-	
 	mpc renplaylist "$NAME" "$NEWNAME"
 	pushSavedPlaylist
 	;;
@@ -741,8 +749,8 @@ savedplsave )
 	elif [[ -e "$plfile" ]]; then
 		echo -1
 		exit
+# --------------------------------------------------------------------
 	fi
-	
 	mpc -q save "$NAME"
 	chmod 777 "$plfile"
 	savedPlCount
@@ -794,6 +802,7 @@ webradioadd )
 	[[ $DIR ]] && file+="/$DIR"
 	file+="/$urlname"
 	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
+# --------------------------------------------------------------------
 	echo "\
 $NAME
 
@@ -825,7 +834,7 @@ webradioedit )
 		sampling=$( sed -n 2p "$prevfile" )
 	else
 		[[ -e $newfile ]] && echo 'URL exists:' && exit
-		
+# --------------------------------------------------------------------
 		webradioM3uPlsVerify $NEWURL
 		rm "$prevfile"
 		# stationcover
@@ -850,7 +859,7 @@ $CHARSET" > "$newfile"
 wrdirdelete )
 	file="$dirdata/$MODE/$NAME"
 	[[ ! $CONFIRM && $( ls -A "$file" ) ]] && echo -1 && exit
-	
+# --------------------------------------------------------------------
 	rm -rf "$file"
 	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
