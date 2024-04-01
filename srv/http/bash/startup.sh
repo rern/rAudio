@@ -31,15 +31,17 @@ fi
 
 [[ -e /boot/accesspoint ]] && touch $dirsystem/ap && rm /boot/accesspoint
 
-bootwifi=/boot/wifi
 if [[ $wlandev ]]; then
-	if [[ -e $bootwifi ]]; then
-		ssid=$( getVar ESSID $bootwifi )
+	if [[ -e /boot/wifi ]]; then
+		ssid=$( getVar ESSID /boot/wifi )
 		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
-" $bootwifi > "/etc/netctl/$ssid"
-		rm -f $dirsystem/ap /boot/accesspoint
-		netctl start "$ssid"
+" /boot/wifi > "/etc/netctl/$ssid"
+		netctl enable "$ssid"
+		rm -f $dirsystem/ap /boot/{accesspoint,wifi}
+		reboot
+		exit
+# ----------------------------------------------------------------------------
 	elif [[ -e $dirsystem/ap ]]; then
 		ap=1
 	fi
@@ -78,7 +80,6 @@ if [[ ! $ap ]]; then
 		[[ ! $ipaddress ]] && sleep 1 || break
 	done
 	if [[ $ipaddress ]]; then
-		[[ -e $bootwifi ]] && rm -f $bootwifi && netctl enable "$ssid"
 		readarray -t lines <<< $( grep $dirnas /etc/fstab )
 		if [[ $lines ]]; then
 			for line in "${lines[@]}"; do # ping target before mount
@@ -107,7 +108,6 @@ auto
 CMD TIMEZONE'
 		fi
 	else
-		[[ -e $bootwifi ]] && mv $bootwifi{,.failed}
 		if [[ $wlandev && ! $ap ]]; then
 			if [[ $wlanprofile ]]; then
 				[[ ! -e $dirsystem/wlannoap ]] && ap=1
