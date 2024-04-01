@@ -11,25 +11,26 @@ ipAvailable() {
 	fi
 }
 netctlSwitch() {
-	local ssid
+	local ssid wlandev
 	ssid=$1
-	ip link set $( < $dirshm/wlan ) down
-	netctl switch-to "$ssid"
+	wlandev=$( < $dirshm/wlan )
+	ip link set $wlandev down
+	[[ $( iwgetid -r ) ]] && netctl switch-to "$ssid" || netctl start "$ssid"
 	for i in {1..10}; do
 		sleep 1
-		if netctl is-active "$ssid" &> /dev/null; then
+		if [[ $( iwgetid -r ) == $ssid ]]; then
 			netctl enable "$ssid"
 			avahi-daemon --kill # flush cache and restart
 			pushRefresh networks pushwl
-			rm -f "$filecurrent"
 			exit
 # --------------------------------------------------------------------
 		fi
 	done
 	echo -1
-	if [[ -e "$filecurrent" ]]; then
-		mv -f "$filecurrent" /etc/netctl
-		netctl switch-to "$current"
+	if [[ $currentssid ]]; then
+		mv -f "$dirshm/$currentssid" /etc/netctl
+		ip link set $wlandev down
+		netctl start "$currentssid"
 	fi
 }
 wlanDevice() {
@@ -76,11 +77,8 @@ connect )
 	else
 		ip=dhcp
 	fi
-	current=$( iwgetid -r )
-	if [[ $current == $ESSID ]]; then
-		filecurrent="$dirshm/$current"
-		cp "/etc/netctl/$current" $dirshm
-	fi
+	currentssid=$( iwgetid -r )
+	[[ $currentssid == $ESSID ]] && cp "/etc/netctl/$currentssid" $dirshm
 	data='Interface='$( < $dirshm/wlan )'
 Connection=wireless
 IP='$ip'
