@@ -100,6 +100,7 @@ data='
 , "devicewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "ap"          : '$( exists $dirsystem/ap )'
 , "apconf"      : '$apconf'
+, "apstartup"   : '$( exists $dirshm/apstartup )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( [[ $( iwgetid -r ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
