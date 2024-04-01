@@ -29,15 +29,20 @@ if [[ -e $backupfile ]]; then
 	$dirsettings/system-datarestore.sh
 fi
 
+[[ -e /boot/accesspoint ]] && touch $dirsystem/ap && rm /boot/accesspoint
+
 bootwifi=/boot/wifi
-if [[ $wlandev && -e $bootwifi ]]; then
-	ssid=$( getVar ESSID $bootwifi )
-	sed -E -e '/^#|^\s*$/ d
+if [[ $wlandev ]]; then
+	if [[ -e $bootwifi ]]; then
+		ssid=$( getVar ESSID $bootwifi )
+		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " $bootwifi > "/etc/netctl/$ssid"
-	$dirsettings/networks.sh "profileconnect
-$ssid
-CMD SSID"
+		rm -f $dirsystem/ap /boot/accesspoint
+		netctl start "$ssid"
+	elif [[ -e $dirsystem/ap ]]; then
+		ap=1
+	fi
 fi
 
 if [[ -e /boot/cirrus ]]; then
@@ -66,16 +71,14 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-if [[ -e /boot/accesspoint ]]; then
-	ap=1
-else
+if [[ ! $ap ]]; then
 	[[ $wlanprofile ]] && sec=30 || sec=5 # wlan || lan
 	for (( i=0; i < $sec; i++ )); do # wait for connection
 		ipaddress=$( ipAddress )
 		[[ ! $ipaddress ]] && sleep 1 || break
 	done
-	[[ -e $dirsystem/ap ]] && ap=1
 	if [[ $ipaddress ]]; then
+		[[ -e $bootwifi ]] && rm -f $bootwifi && netctl enable "$ssid"
 		readarray -t lines <<< $( grep $dirnas /etc/fstab )
 		if [[ $lines ]]; then
 			for line in "${lines[@]}"; do # ping target before mount
@@ -98,16 +101,13 @@ else
 			fi
 			appendSortUnique $ipaddress $filesharedip
 		fi
-		if [[ -e $bootwifi ]]; then
-			netctl enable "$ssid"
-			rm -f $bootwifi
-		fi
 		if [[ $partition ]] && ipOnline 8.8.8.8; then
 			$dirsettings/system.sh 'timezone
 auto
 CMD TIMEZONE'
 		fi
 	else
+		[[ -e $bootwifi ]] && mv $bootwifi{,.failed}
 		if [[ $wlandev && ! $ap ]]; then
 			if [[ $wlanprofile ]]; then
 				[[ ! -e $dirsystem/wlannoap ]] && ap=1
@@ -115,7 +115,6 @@ CMD TIMEZONE'
 				ap=1
 			fi
 			[[ $ap ]] && touch $dirshm/apstartup
-			[[ -e $bootwifi ]] && mv $bootwifi{,X}
 		fi
 	fi
 fi
