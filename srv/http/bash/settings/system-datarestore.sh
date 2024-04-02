@@ -25,7 +25,7 @@ bsdtar xpf $backupfile -C /srv/http
 
 dirPermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
-partuuid=$( head -1 /etc/fstab | cut -d- -f1 )
+partuuid=$( grep -m1 ^PARTUUID /etc/fstab | cut -d- -f1 )
 for file in boot/cmdline.txt etc/fstab; do
 	sed -i "s/PARTUUID=.*-/$partuuid-/" $dirconfig/$file
 done
