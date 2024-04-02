@@ -48,10 +48,10 @@ if [[ $dirs ]]; then
 		rmdir "$dir" &> /dev/null
 	done <<< $dirs
 done
-mountpoints=$( grep $dirnas /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
+mountpoints=$( grep $dirnas /etc/fstab | awk '{print $2}' )
 if [[ $mountpoints ]]; then
 	while read mountpoint; do
-		mkdir -p "$mountpoint"
+		mkdir -p "${mountpoint//\040/ }"
 	done <<< $mountpoints
 fi
 [[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus
