@@ -21,6 +21,7 @@ if [[ $libraryonly ]]; then
 fi
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 
+
 bsdtar xpf $backupfile -C /srv/http
 
 dirPermissions
@@ -40,7 +41,8 @@ CMD NAME"
 timedatectl set-timezone $( < $dirsystem/timezone )
 [[ -e $dirsystem/crossfade ]] && mpc -q crossfade $( < $dirsystem/crossfade )
 rm -rf $backupfile $dirconfig $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
-dirs=$( find $dirnas -mindepth 1 -maxdepth 1 -type d )
+
+dirs=$( ls -1d $dirnas/*/ 2> /dev/null )
 if [[ $dirs ]]; then
 	while read dir; do
 		umount -l "$dir" &> /dev/null
