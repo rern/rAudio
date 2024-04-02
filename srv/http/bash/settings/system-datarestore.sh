@@ -25,11 +25,10 @@ bsdtar xpf $backupfile -C /srv/http
 
 dirPermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
-uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
-uuid2=${uuid1:0:-1}2
-sed -i "s/root=.* rw/root=$uuid2 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
-sed -i "s/^PARTUUID=.*-01  /$uuid1  /; s/^PARTUUID=.*-02  /$uuid2  /" $dirconfig/etc/fstab
-
+partuuid=$( head -1 /etc/fstab | cut -d- -f1 )
+for file in boot/cmdline.txt etc/fstab; do
+	sed -i "s/PARTUUID=.*-/$partuuid-/" $dirconfig/$file
+done
 cp -rf $dirconfig/* /
 [[ -e $dirsystem/enable ]] && systemctl -q enable $( < $dirsystem/enable )
 [[ -e $dirsystem/disable ]] && systemctl -q disable $( < $dirsystem/disable )
