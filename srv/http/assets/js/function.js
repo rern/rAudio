@@ -1274,17 +1274,7 @@ function renderLibraryList( data ) { // V.librarylist
 		renderLibraryPadding();
 		$( '#lib-list' ).removeClass( 'hide' );
 		pageScroll( V.scrolltop[ data.path ] || 0 );
-		renderLibraryNoData();
 	} );
-}
-function renderLibraryNoData() {
-	if ( ! V.nodata || V.nodata.dir !== $( '#lib-path .lipath' ).text() ) return
-	
-	var $li = $( '#lib-list li' );
-	V.nodata.list.forEach( ( v, i ) => {
-		v === -1 ? $li.eq( i ).remove() : $li.eq( i ).toggleClass( 'nodata', v )
-	} );
-	delete V.nodata;
 }
 function renderLibraryPadding() {
 	var padding = D.bars ? 129 : 89;

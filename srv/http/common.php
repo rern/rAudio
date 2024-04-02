@@ -26,9 +26,9 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 	if ( ! isset( $_SESSION[ 'login' ] ) ) {
 		$page ? header( 'Location: /' ) : include 'login.php';
 		exit;
+//----------------------------------------------------------------------------------
 	}
 }
-
 $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 

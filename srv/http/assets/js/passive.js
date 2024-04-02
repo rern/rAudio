@@ -75,7 +75,6 @@ function psOnMessage( message ) {
 		case 'mpdplayer':     psMpdPlayer( data );      break;
 		case 'mpdradio':      psMpdRadio( data );       break;
 		case 'mpdupdate':     psMpdUpdate( data );      break;
-		case 'nodata':        psNoData( data );         break;
 		case 'notify':        psNotify( data );         break; // in common.js
 		case 'option':        psOption( data );         break;
 		case 'order':         psOrder( data );          break;
@@ -276,10 +275,6 @@ function psMpdUpdate( data ) {
 		}
 	}
 	setButtonUpdating();
-}
-function psNoData( data ) {
-	V.nodata = data;
-	renderLibraryNoData();
 }
 function psOnClose() {
 	if ( D.progress || V.off ) return

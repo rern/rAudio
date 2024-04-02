@@ -42,8 +42,6 @@ case 'list':
 	
 }
 
-//-------------------------------------------------------------------------------------
-
 function currentPlaylist() {
 	global $headers;
 	$f      = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
@@ -51,7 +49,7 @@ function currentPlaylist() {
 	exec( 'mpc playlist -f '.$format
 		, $lists ); // avoid json literal issue with escape double quotes
 	if ( ! count( $lists ) ) exit( '-1' );
-	
+//----------------------------------------------------------------------------------
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		$list = explode( '^^', $list );
@@ -101,8 +99,8 @@ function htmlSavedPlaylist() {
 	if ( ! $count ) {
 		echo json_encode( [ 'count' => 0 ] );
 		exit;
-	}
-	
+//----------------------------------------------------------------------------------
+	}	
 	foreach( $lists as $list ) {
 		$each       = ( object )[];
 		$each->name = $list;
@@ -142,7 +140,7 @@ function htmlTrack( $lists, $plname = '' ) {
 	global $headers, $add;
 	$count      = count( $lists );
 	if ( ! $count ) exit( '-1' );
-	
+//----------------------------------------------------------------------------------
 	$countradio = 0;
 	$countsong  = 0;
 	$counttime  = 0;
