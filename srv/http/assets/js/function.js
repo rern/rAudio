@@ -818,8 +818,6 @@ function libraryHome() {
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
 		if ( V.color ) $( '#mode-webradio' ).trigger( 'click' );
-		$( '#library, #button-library, #button-lib-update' ).toggleClass( 'blink', S.updating_db );
-		$( '#update' ).toggleClass( 'on', S.updating_db );
 	}, 'json' );
 }
 function lyricsGet( artist, title, file ) {
@@ -1559,12 +1557,14 @@ function setButtonUpdating() {
 			var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
 		} else {
-			$( '#library, #button-library, #button-lib-update' ).addClass( 'blink' );
+			$( '#library, #button-library' ).addClass( 'blink' );
 		}
+		$( '#button-lib-update' ).addClass( 'bl' );
 		if ( localhost ) blinkUpdate();
 		$( '#update' ).addClass( 'on' );
 	} else {
-		$( '#library, #button-library, #button-lib-update' ).removeClass( 'blink' );
+		$( '#library, #button-library' ).removeClass( 'blink' );
+		$( '#button-lib-update' ).removeClass( 'bl' );
 		$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}
