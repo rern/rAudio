@@ -49,12 +49,9 @@ function addToPlaylistCommand() {
 	V.title       = cmd_title[ V.action ];
 	V.msg         =  '<a class="li1">'+ V.list.name +'</a>';
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
-	setTimeout( () => {
-		bash( V.mpccmd, () => {
-			if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
-		} );
-	}, S.webradio ? 1000 : 0 );
 	banner( 'playlist', V.title, V.msg );
+	bash( V.mpccmd );
+	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
