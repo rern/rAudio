@@ -41,8 +41,7 @@ rotate=0
 zoom=100
 screenoff=0
 onwhileplay=
-cursor=
-runxinitrcd=" > $dirsystem/localbrowser.conf
+cursor=" > $dirsystem/localbrowser.conf
 else
 	rm -f /srv/http/assets/img/splah.png $dirbash/xinitrc
 fi
