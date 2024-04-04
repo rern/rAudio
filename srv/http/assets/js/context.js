@@ -554,6 +554,7 @@ var listwebradio = {
 	]
 	, button : () => {
 		$( '#infoList tr' ).last().find( 'td' ).eq( 1 ).css( 'width', '190px' );
+		$( '#infoList input' ).last().css( 'width', '' );
 		$( '#infoList td' ).last()
 			.css( { 'text-align': 'right', cursor: 'pointer' } )
 			.on( 'click', function() {
