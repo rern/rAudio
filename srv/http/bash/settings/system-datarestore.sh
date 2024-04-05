@@ -2,11 +2,12 @@
 
 . /srv/http/bash/common.sh
 
+[[ $1 == true ]] && libraryonly=1
+
 backupfile=$dirshm/backup.gz
 ! bsdtar tf "$backupfile" 2> /dev/null | grep -q -m1 ^data/system/display.json$ && exit -1
 # --------------------------------------------------------------------
 dirconfig=$dirdata/config
-[[ $1 == true ]] && libraryonly=1
 
 statePlay && $dirbash/cmd.sh playerstop
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
@@ -14,7 +15,8 @@ mpc | grep -q ^Updating && systemctl restart mpd
 rm -f $dirmpd/{listing,updating}
 
 if [[ $libraryonly ]]; then
-	bsdtar -xpf $backupfile -C /srv/http data/{mpd,playlists,webradio}
+	rm -rf $dirdata/{mpd,playlists,webradio}
+	bsdtar xpf $backupfile -C /srv/http data/{mpd,playlists,webradio}
 	systemctl restart mpd
 	exit
 # --------------------------------------------------------------------

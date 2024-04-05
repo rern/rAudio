@@ -31,8 +31,9 @@ case 'camilla':
 	break;
 case 'datarestore':
 	fileUploadSave( $dirshm.'backup.gz' );
-	exec( $sudosettings.'system-datarestore.sh', $output, $result );
-	if ( $result != 0 ) echo '-2';
+	$libraryonly = $_POST[ 'libraryonly' ] ?? '';
+	exec( $sudosettings.'system-datarestore.sh '.$libraryonly, $output, $result );
+	if ( $result != 0 ) echo 'Restore failed';
 	break;
 case 'giftype':
 	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];

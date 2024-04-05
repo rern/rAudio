@@ -2,8 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-keeplibrary=$1
-keepnetwork=$2
+[[ $1 == true ]] && keeplibrary=1
+[[ $2 == true ]] && keepnetwork=1
 
 ! playerActive mpd && $dirbash/cmd.sh playerstop
 # iwd

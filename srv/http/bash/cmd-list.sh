@@ -44,7 +44,7 @@ counts='
 , "dabradio"  : '$dabradio'
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 if [[ $song == 0 ]]; then
-	for mode in "$modes albumbyartist"; do
+	for mode in $modes albumbyartist; do
 		rm -f $dirmpd/$mode
 	done
 	updateDone
