@@ -33,24 +33,27 @@ for file in boot/cmdline.txt etc/fstab; do
 	sed -i "s/PARTUUID=.*-/$partuuid-/" $dirconfig/$file
 done
 cp -rf $dirconfig/* /
-[[ -e $dirsystem/enable ]] && systemctl -q enable $( < $dirsystem/enable )
-[[ -e $dirsystem/disable ]] && systemctl -q disable $( < $dirsystem/disable )
+[[ -e $dirsystem/enable ]] && systemctl -q enable $( < $dirsystem/enable ) &> /dev/null
+[[ -e $dirsystem/disable ]] && systemctl -q disable $( < $dirsystem/disable ) &> /dev/null
 grep -q nfs-server $dirsystem/enable && $dirsettings/features.sh nfsserver
-$dirsettings/system.sh "hostname
-$( < $dirsystem/hostname )
-CMD NAME"
-[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( < $dirsystem/netctlprofile )"
+name=$( < $dirsystem/hostname )
+hostnamectl set-hostname $name
+sed -i -E 's/(name = ").*/\1'$name'"/' /etc/shairport-sync.conf
+sed -i -E 's/^(friendlyname = ).*/\1'$name'/' /etc/upmpdcli.conf
+if [[ -e $dirsystem/netctlprofile ]]; then
+	profile=$( < $dirsystem/netctlprofile )
+	[[ $( netctl is-enabled "$profile" ) != enabled ]] && netctl enable "$profile"
+fi
 timedatectl set-timezone $( < $dirsystem/timezone )
 [[ -e $dirsystem/crossfade ]] && mpc -q crossfade $( < $dirsystem/crossfade )
 rm -rf $backupfile $dirconfig $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
-
 dirs=$( ls -1d $dirnas/*/ 2> /dev/null )
 if [[ $dirs ]]; then
 	while read dir; do
 		umount -l "$dir" &> /dev/null
 		rmdir "$dir" &> /dev/null
 	done <<< $dirs
-done
+fi
 mountpoints=$( grep $dirnas /etc/fstab | awk '{print $2}' )
 if [[ $mountpoints ]]; then
 	while read mountpoint; do
