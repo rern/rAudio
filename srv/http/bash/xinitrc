@@ -8,10 +8,10 @@ done
 
 $dirsettings/features.sh localbrowserxset
 
-if [[ $( ipAddress ) ]]; then
-	[[ $cursor ]] && cursor=yes || cursor=no
-else
+if [[ ! $( ipAddress ) ]] || grep -q cursor=true /srv/http/data/system/localbrowser.conf; then
 	cursor=yes
+else
+	cursor=no
 fi
 matchbox-window-manager -use_cursor $cursor &
 firefox -kiosk -private http://localhost

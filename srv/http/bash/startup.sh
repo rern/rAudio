@@ -29,16 +29,24 @@ if [[ -e $backupfile ]]; then
 	$dirsettings/system-datarestore.sh
 fi
 
-bootwifi=/boot/wifi
-if [[ $wlandev && -e $bootwifi ]]; then
-	data=$( sed -E -e '/^#|^\s*$/ d
+[[ -e /boot/accesspoint ]] && touch $dirsystem/ap && rm /boot/accesspoint
+
+if [[ $wlandev ]]; then
+	if [[ -e /boot/wifi ]]; then
+		ssid=$( getVar ESSID /boot/wifi )
+		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
-" $bootwifi )
-	ssid=$( sed -n -E '/^ESSID/ {s/.*="(.*)"/\1/; p}' <<< $data )
-	echo "$data" > "/etc/netctl/$ssid"
-	ip link set $( < $dirshm/wlan ) down
-	netctl start "$ssid"
+" /boot/wifi > "/etc/netctl/$ssid"
+		netctl enable "$ssid"
+		rm -f $dirsystem/ap /boot/{accesspoint,wifi}
+		reboot
+		exit
+# ----------------------------------------------------------------------------
+	elif [[ -e $dirsystem/ap ]]; then
+		ap=1
+	fi
 fi
+
 if [[ -e /boot/cirrus ]]; then
 	$dirsettings/player-wm5102.sh 'HPOUT2 Digital'
 	rm /boot/cirrus
@@ -65,15 +73,12 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-if [[ -e /boot/accesspoint ]]; then
-	ap=1
-else
+if [[ ! $ap ]]; then
 	[[ $wlanprofile ]] && sec=30 || sec=5 # wlan || lan
 	for (( i=0; i < $sec; i++ )); do # wait for connection
 		ipaddress=$( ipAddress )
 		[[ ! $ipaddress ]] && sleep 1 || break
 	done
-	[[ -e $dirsystem/ap ]] && ap=1
 	if [[ $ipaddress ]]; then
 		readarray -t lines <<< $( grep $dirnas /etc/fstab )
 		if [[ $lines ]]; then
@@ -97,10 +102,6 @@ else
 			fi
 			appendSortUnique $ipaddress $filesharedip
 		fi
-		if [[ -e $bootwifi ]]; then
-			netctl enable "$ssid"
-			rm -f $bootwifi
-		fi
 		if [[ $partition ]] && ipOnline 8.8.8.8; then
 			$dirsettings/system.sh 'timezone
 auto
@@ -114,7 +115,6 @@ CMD TIMEZONE'
 				ap=1
 			fi
 			[[ $ap ]] && touch $dirshm/apstartup
-			[[ -e $bootwifi ]] && mv $bootwifi{,X}
 		fi
 	fi
 fi

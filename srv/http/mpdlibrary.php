@@ -59,8 +59,8 @@ case 'find':
 		if ( count( $dirs ) > 1 ) {
 			htmlDirectory( $dirs );
 			exit;
+//----------------------------------------------------------------------------------
 		}
-		
 		$file = $dirs[ 0 ];
 		if ( substr( $file, -14, 4 ) !== '.cue' ) {
 			exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null '
@@ -160,17 +160,18 @@ case 'ls':
 		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | sed -E -e "s|^/mnt/MPD/(.*)/$|\1|" -e "/NAS.data$/ d"', $ls );
 		htmlDirectory( $ls );
 		exit;
+//----------------------------------------------------------------------------------
 	}
-	
 	exec( 'mpc ls "'.$string.'" 2> /dev/null'
 		, $mpcls );
 	if ( ! count( $mpcls ) ) exit;
-	
+//----------------------------------------------------------------------------------
 	if ( $mode !== 'album' ) {
 		foreach( $mpcls as $mpdpath ) {
 			if ( is_dir( '/mnt/MPD/'.$mpdpath ) ) {
 				htmlDirectory( $mpcls );
 				exit;
+//----------------------------------------------------------------------------------
 			}
 		}
 	}
@@ -213,7 +214,7 @@ case 'radio':
 		exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
 			, $lists );
 		if ( ! count( $lists ) ) exit();
-		
+//----------------------------------------------------------------------------------
 		foreach( $lists as $list ) {
 			if ( is_dir( $dir.'/'.$list ) ) {
 				$subdirs[] = $list;
@@ -271,7 +272,6 @@ case 'track': // for tag editor
 	break;
 }
 
-//-------------------------------------------------------------------------------------
 function escape( $string ) { // for passing bash arguments
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
 }
@@ -308,19 +308,6 @@ function htmlDirectory( $lists ) {
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
-	$dirs0      = dirname( $dirs[ 0 ] );
-	$fileignore = '/mnt/MPD/'.$dirs0.'/.mpdignore';
-	$mpdignore  = file_exists( $fileignore ) ? file( $fileignore, FILE_IGNORE_NEW_LINES ) : '';
-	$nodata     = [];
-	foreach( $dirs as $dir ) {
-		$basename = basename( $dir );
-		if ( $mpdignore && in_Array( $basename, $mpdignore ) ) { // fix - partial update library
-			$nodata[] = -1;
-		} else {
-			$nodata[] = exec( 'timeout 0.1 mpc ls "'.$dir.'" 2> /dev/null | wc -l' ) == 0;
-		}
-	}
-	exec( 'echo -n \'{ "channel": "nodata", "data": { "dir": "'.$dirs0.'", "list": '.json_encode( $nodata ).' } }\' | websocat ws://127.0.0.1:8080' );
 }
 function htmlDirectoryLi( $mode, $index, $icon, $path, $name ) {
 	return
@@ -331,7 +318,7 @@ function htmlDirectoryLi( $mode, $index, $icon, $path, $name ) {
 }
 function htmlFind( $lists, $f ) { // non-file 'find' command
 	if ( ! count( $lists ) ) exit;
-	
+//----------------------------------------------------------------------------------
 	global $mode, $gmode, $html;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
@@ -516,7 +503,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 }
 function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( ! count( $lists ) ) exit;
-	
+//----------------------------------------------------------------------------------
 	global $mode, $gmode, $html;
 	$searchmode = $filemode === 'search';
 	if ( ! $searchmode ) $html = str_replace( '">', ' track">' , $html );

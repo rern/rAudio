@@ -1053,7 +1053,7 @@ function infoRestore( reset ) {
 		, title    : SW.title
 		, tablabel : [ 'From Backup', 'Reset To Default' ]
 		, tab      : reset ? [ infoRestore, '' ] : [ '', () => infoRestore( 'reset' ) ]
-		, list     : reset ? list : list[ 0 ]
+		, list     : reset ? list : [ 'Library database only', 'checkbox' ]
 		, file     : reset ? '' : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
 		, oklabel  : ico( 'restore' ) +'Restore'
 		, okcolor  : orange
@@ -1066,10 +1066,11 @@ function infoRestore( reset ) {
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'datarestore' );
 				formdata.append( 'file', I.infofile );
-				formdata.append( 'dataonly', infoVal() );
+				formdata.append( 'libraryonly', infoVal() );
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
 					.then( message => {
+						loaderHide();
 						if ( message ) {
 							bannerHide();
 							infoWarning(  SW.icon,  SW.title, message );

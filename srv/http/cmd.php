@@ -31,8 +31,9 @@ case 'camilla':
 	break;
 case 'datarestore':
 	fileUploadSave( $dirshm.'backup.gz' );
-	exec( $sudosettings.'system-datarestore.sh', $output, $result );
-	if ( $result != 0 ) exit( '-2' );
+	$libraryonly = $_POST[ 'libraryonly' ] ?? '';
+	exec( $sudosettings.'system-datarestore.sh '.$libraryonly, $output, $result );
+	if ( $result != 0 ) echo 'Restore failed';
 	break;
 case 'giftype':
 	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];
@@ -44,7 +45,7 @@ case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
 	$type      = $_POST[ 'type' ];
 	if ( $type === 'coverart' && ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
-	
+//----------------------------------------------------------------------------------
 	$bookmarkname = $_POST[ 'bookmarkname' ] ?? '';
 	$imagedata    = $_POST[ 'imagedata' ];
 	$jpg          = substr( $imagedata, 0, 4 ) === 'data'; // animated gif passed as already uploaded tmp/file
@@ -63,13 +64,13 @@ case 'imagereplace':
 case 'login':
 	$file = $dirsystem.'login';
 	if ( file_exists( $file )  && ! password_verify( $_POST[ 'password' ], file_get_contents( $file ) ) ) exit( '-1' );
-	
+//----------------------------------------------------------------------------------
 	if ( isset( $_POST[ 'disable' ] ) ) {
 		unlink( $file );
 		exec( $sudosettings.'features.sh logindisable' );
 		exit;
+//----------------------------------------------------------------------------------
 	}
-	
 	$pwdnew = $_POST[ 'pwdnew' ] ?? '';
 	if ( $pwdnew ) {
 		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
@@ -103,6 +104,6 @@ function escape( $string ) {
 }
 function fileUploadSave( $filepath ) {
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
-	
+//----------------------------------------------------------------------------------
 	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $filepath );
 }

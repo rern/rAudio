@@ -32,7 +32,7 @@ $( '.wladd' ).on( 'click', function() {
 	infoWiFi();
 } );
 $( '.wlscan' ).on( 'click', function() {
-	if ( S.ap ) {
+	if ( S.ap && ! S.apstartup ) {
 		infoAccesspoint();
 	} else {
 		$( '#help, #divinterface, #divwebui' ).addClass( 'hide' );

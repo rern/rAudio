@@ -818,8 +818,6 @@ function libraryHome() {
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
 		if ( V.color ) $( '#mode-webradio' ).trigger( 'click' );
-		$( '#library, #button-library, #button-lib-update' ).toggleClass( 'blink', S.updating_db );
-		$( '#update' ).toggleClass( 'on', S.updating_db );
 	}, 'json' );
 }
 function lyricsGet( artist, title, file ) {
@@ -1276,17 +1274,7 @@ function renderLibraryList( data ) { // V.librarylist
 		renderLibraryPadding();
 		$( '#lib-list' ).removeClass( 'hide' );
 		pageScroll( V.scrolltop[ data.path ] || 0 );
-		renderLibraryNoData();
 	} );
-}
-function renderLibraryNoData() {
-	if ( ! V.nodata || V.nodata.dir !== $( '#lib-path .lipath' ).text() ) return
-	
-	var $li = $( '#lib-list li' );
-	V.nodata.list.forEach( ( v, i ) => {
-		v === -1 ? $li.eq( i ).remove() : $li.eq( i ).toggleClass( 'nodata', v )
-	} );
-	delete V.nodata;
 }
 function renderLibraryPadding() {
 	var padding = D.bars ? 129 : 89;
@@ -1559,12 +1547,14 @@ function setButtonUpdating() {
 			var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
 		} else {
-			$( '#library, #button-library, #button-lib-update' ).addClass( 'blink' );
+			$( '#library, #button-library' ).addClass( 'blink' );
 		}
+		$( '#button-lib-update' ).addClass( 'bl' );
 		if ( localhost ) blinkUpdate();
 		$( '#update' ).addClass( 'on' );
 	} else {
-		$( '#library, #button-library, #button-lib-update' ).removeClass( 'blink' );
+		$( '#library, #button-library' ).removeClass( 'blink' );
+		$( '#button-lib-update' ).removeClass( 'bl' );
 		$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}

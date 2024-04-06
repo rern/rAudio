@@ -429,15 +429,17 @@ lsmntmpd )
 	readarray -t mountpoints <<< $( awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab \
 				| grep -v /mnt/MPD/NAS/data \
 				| sed 's/\\040/ /g' )
+	mpdignore=$( getContent /mnt/MPD/NAS/.mpdignore )
 	dirs=false
 	for m in "${mountpoints[@]}"; do
-		grep -qs "$( basename "$m" )" /mnt/MPD/NAS/.mpdignore && continue
+		[[ $mpdignore ]] && grep -q "$( basename "$m" )" <<< $mpdignore && continue
 		
-		timeout 0.1 ls "$m" &> /dev/null && dirs=true && break
+		timeout 0.1 ls -d "$m" &> /dev/null && dirs=true && break
 # --------------------------------------------------------------------
 	done
-	[[ $( ls -1d /mnt/MPD/SD/*/ 2> /dev/null ) ]] && dirs+=', true' || dirs+=', false'
-	[[ $( ls -1d /mnt/MPD/USB/*/ 2> /dev/null ) ]] && dirs+=', true' || dirs+=', false'
+	for dir in SD USB; do
+		ls -d /mnt/MPD/$dir/*/ &> /dev/null && dirs+=', true' || dirs+=', false'
+	done
 	echo [ $dirs ]
 	;;
 lyrics )
@@ -858,7 +860,7 @@ $CHARSET" > "$newfile"
 	;;
 wrdirdelete )
 	file="$dirdata/$MODE/$NAME"
-	[[ ! $CONFIRM && $( ls -A "$file" ) ]] && echo -1 && exit
+	[[ ! $CONFIRM && $( ls "$file" ) ]] && echo -1 && exit
 # --------------------------------------------------------------------
 	rm -rf "$file"
 	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
