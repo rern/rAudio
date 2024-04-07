@@ -59,41 +59,14 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 			info( {
 				  icon     : SW.icon
 				, title    : SW.title
-				, tablabel : [ 'Output', 'Keys' ]
-				, tab      : [ '', infoSpotifyKeys ]
-				, message  : '<br>Loopback is currently set for '+ icoLabel( 'DSP', 'camilladsp' ) +'<br>&nbsp;'
+				, message  : icoLabel( 'DSP', 'camilladsp' ) +' is currently set as output device'
 			} );
 			return
 		}
 		
-		bash( [ 'spotifyoutput' ], ( list ) => {
-			info( {
-				  icon         : SW.icon
-				, title        : SW.title
-				, list         : [ 'Device', 'select', list.devices ]
-				, boxwidth     : 300
-				, values       : list.current
-				, checkchanged : true
-				, buttonlabel  : ico( 'remove' ) +'Keys'
-				, buttoncolor  : red
-				, button       : () => {
-					info( {
-						  icon    : SW.icon
-						, title   : SW.title
-						, message : 'Remove client <wh>ID</wh> and <wh>Secret</wh>?'
-						, oklabel : ico( 'remove' ) +'Remove'
-						, okcolor : red
-						, ok      : () => {
-							bash( [ 'spotifykeyremove' ] );
-							notifyCommon( 'Remove keys ...' );
-						}
-					} );
-				}
-				, ok           : () => {
-					bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
-					notifyCommon();
-				}
-			} );
+		bash( [ 'spotifyoutput' ], list => {
+			V.listspotify = list;
+			infoSpotify();
 		}, 'json' );
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
@@ -458,6 +431,37 @@ function infoCheckEvenOdd( length ) {
 	I.checkblank = [];
 	I.checkip    = [];
 	for ( i = 0; i < length; i++ ) i % 2 ? I.checkip.push( i ) : I.checkblank.push( i );
+}
+function infoSpotify() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Output', 'Client Keys' ]
+		, tab          : [ '', infoSpotifyKeys ]
+		, list         : [ 'Device', 'select', V.listspotify.devices ]
+		, boxwidth     : 300
+		, values       : V.listspotify.current
+		, checkchanged : true
+		, ok           : () => {
+			bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
+			notifyCommon();
+		}
+	} );
+}
+function infoSpotifyKeys() {
+	info( {
+		  icon     : SW.icon
+		, title    : SW.title
+		, tablabel : [ 'Output', 'Client Keys' ]
+		, tab      : [ infoSpotify, '' ]
+		, message  : 'Remove client <wh>ID</wh> and <wh>Secret</wh> ?'
+		, oklabel  : ico( 'remove' ) +'Remove'
+		, okcolor  : red
+		, ok       : () => {
+			bash( [ 'spotifykeyremove' ] );
+			notifyCommon( 'Remove keys ...' );
+		}
+	} );
 }
 function passwordWrong() {
 	bannerHide();
