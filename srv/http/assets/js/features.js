@@ -56,11 +56,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		notifyCommon( 'Enable ...' );
 	} else if ( S.spotifytoken ) {
 		if ( S.camilladsp ) {
-			info( {
-				  icon     : SW.icon
-				, title    : SW.title
-				, message  : icoLabel( 'DSP', 'camilladsp' ) +' is currently set as output device'
-			} );
+			infoSpotifyKeys();
 			return
 		}
 		
@@ -433,6 +429,15 @@ function infoCheckEvenOdd( length ) {
 	for ( i = 0; i < length; i++ ) i % 2 ? I.checkip.push( i ) : I.checkblank.push( i );
 }
 function infoSpotify() {
+	if ( S.camilladsp ) {
+		info( {
+			  icon     : SW.icon
+			, title    : SW.title
+			, message  : icoLabel( 'DSP', 'camilladsp' ) +' is currently set as output device'
+		} );
+		return
+	}
+	
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
