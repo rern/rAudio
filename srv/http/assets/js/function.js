@@ -1103,6 +1103,7 @@ function refreshData() {
 		
 		if ( ! V.librarylist ) { // home
 			libraryHome();
+			setButtonUpdate();
 		} else {
 			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) return
 			
@@ -1343,7 +1344,6 @@ function renderPlaybackAll() {
 	displayBars();
 	displayPlayback();
 	renderPlayback();
-	setButtonUpdating();
 	bannerHide();
 }
 function renderPlaylist( data ) { // V.plhome - current playlist
@@ -1519,16 +1519,9 @@ function setButtonOptions() {
 		} );
 	}
 	setButtonUpdateAddons();
+	setButtonUpdate();
 	setButtonUpdating();
 	if ( $volume.is( ':hidden' ) ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
-	if ( 'nas' in C ) return
-	
-	bash( [ 'lsmntmpd' ], counts => {
-		$.each( counts, ( k, v ) => {
-			C[ k ] = v;
-		} );
-		$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
-	}, 'json' );
 }
 function setButtonUpdateAddons() {
 	if ( S.updateaddons ) {
@@ -1542,6 +1535,14 @@ function setButtonUpdateAddons() {
 		$( '#button-settings, #addons i' ).removeClass( 'bl' );
 		$( '#mi-addons, #ti-addons' ).addClass( 'hide' );
 	}
+}
+function setButtonUpdate() {
+	bash( [ 'lsmntmpd' ], counts => {
+		$.each( counts, ( k, v ) => {
+			C[ k ] = v;
+		} );
+		$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
+	}, 'json' );
 }
 function setButtonUpdating() {
 	clearInterval( V.interval.blinkupdate );
