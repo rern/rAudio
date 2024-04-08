@@ -1075,7 +1075,10 @@ $( '#button-lib-update' ).on( 'click', function() {
 		, title      : 'Library Database'
 		, message    : message +'&ensp;<hr>'
 		, list       : [ '', 'radio', { kv: kv, sameline: false } ]
-		, values     : { NAS: true, SD: true, USB: true, ACTION: 'update' }
+		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update' }
+		, beforeshow : () => {
+			[ 'nas', 'sd', 'usb' ].forEach( ( k, i ) => $( '#infoList input' ).eq( i ).prop( 'disabled', ! C[ k ] ) );
+		}
 		, ok         : () => {
 			var val = infoVal();
 			var path = '';

@@ -131,7 +131,7 @@ $( '.disconnect' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : iconwarning +'<wh>Disconnect current connection</wh>'
+		, footer     : warning( 'Disconnect' )
 		, okcolor    : orange
 		, ok         : () => {
 			notify( icon, ssid, 'Disconnect ...' );
@@ -161,7 +161,7 @@ $( '.forget' ).on( 'click', function() {
 		  icon       : icon
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : iconwarning +'<wh>Forget current connection</wh>'
+		, footer     : warning( 'Forget' )
 		, oklabel    : ico( 'remove' ) +'Forget'
 		, okcolor    : red
 		, ok         : () => {
@@ -224,7 +224,6 @@ function connectWiFi( data ) {
 	}
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
-	return
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
@@ -402,7 +401,7 @@ function renderPage() {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
 		var htmllan = '';
-		if ( S.listeth ) htmllan = '<li>'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.IP
+		if ( S.listeth ) htmllan = '<li>'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.ADDRESS
 								 +'&ensp;<gr>&raquo;&ensp;'+ S.listeth.GATEWAY +'</gr></li>';
 		$( '#listlan' ).html( htmllan );
 		$( '#divlan' ).removeClass( 'hide' );
@@ -491,6 +490,6 @@ function scanWlan() {
 		V.timeoutscan = setTimeout( scanWlan, 12000 );
 	}, 'json' );
 }
-function warning() {
-	if ( V.li && V.li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>This is current connection</wh>'
+function warning( action ) {
+	if ( V.li && V.li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>'+ action +' current connection</wh>'
 }

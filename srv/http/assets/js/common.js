@@ -890,15 +890,11 @@ function infoSetValues() {
 		type  = $this.prop( 'type' );
 		val   = I.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
-			if ( val !== 'undefined' ) {
-				$( '#infoList input:radio[name='+ el.name +']' ).val( [ val ] );
-			} else {
-				$( '#infoList input:radio' ).eq( 0 ).prop( 'checked', true );
-			}
+			val ? $this.val( [ val ] ) : $this.eq( 0 ).prop( 'checked', true );
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
 		} else if ( $this.is( 'select' ) ) {
-			val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
+			val ? $this.val( val ) : el.selectedIndex = 0;
 		} else {
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );

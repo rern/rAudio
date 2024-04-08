@@ -93,9 +93,9 @@ case 'find':
 	}
 	break;
 case 'home':
-	$modes       = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest'
+	$modes    = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest'
 				, 'NAS', 'SD', 'USB', 'Playlists', 'Web Radio', 'DAB Radio' ];
-	$htmlmode    = '';
+	$htmlmode = '';
 	foreach( $modes as $mode ) {
 		$lipath   = str_replace( ' ', '', $mode );
 		$modeLC   = strtolower( $lipath );
@@ -108,8 +108,8 @@ case 'home':
 </div>';
 	}
 	// bookmarks
-	$dir         = '/srv/http/data/bookmarks';
-	$files       = array_slice( scandir( $dir ), 2 ); // remove ., ..
+	$dir      = '/srv/http/data/bookmarks';
+	$files    = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
 			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
@@ -133,14 +133,10 @@ case 'home':
 </div>';
 		}
 	}
-	$counts      = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
-	$dirs        = json_decode( exec( '/srv/http/bash/cmd.sh lsmntmpd' ) );
-	foreach( [ 'nas', 'sd', 'usb' ] as $i => $dir ) $counts->$dir  = $dirs[ $i ];
-	$order       = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
-	$updating    = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
+	$order    = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
+	$updating = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
 		  'html'     => $htmlmode
-		, 'counts'   => $counts
 		, 'order'    => $order
 		, 'updating' => $updating
 	] );

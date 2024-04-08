@@ -430,17 +430,16 @@ lsmntmpd )
 				| grep -v /mnt/MPD/NAS/data \
 				| sed 's/\\040/ /g' )
 	mpdignore=$( getContent /mnt/MPD/NAS/.mpdignore )
-	dirs=false
+	nas=false
 	for m in "${mountpoints[@]}"; do
 		[[ $mpdignore ]] && grep -q "$( basename "$m" )" <<< $mpdignore && continue
 		
-		timeout 0.1 ls -d "$m" &> /dev/null && dirs=true && break
+		timeout 0.1 ls -d "$m" &> /dev/null && nas=true && break
 # --------------------------------------------------------------------
 	done
-	for dir in SD USB; do
-		ls -d /mnt/MPD/$dir/*/ &> /dev/null && dirs+=', true' || dirs+=', false'
-	done
-	echo [ $dirs ]
+	[[ $( ls /mnt/MPD/SD ) ]] && sd=true || sd=false
+	ls -d /mnt/MPD/USB/*/ &> /dev/null && usb=true || usb=false
+	echo '{ "nas" : '$nas', "sd"  : '$sd', "usb" : '$usb' }'
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"

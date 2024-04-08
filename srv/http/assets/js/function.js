@@ -795,7 +795,6 @@ function intervalElapsedClear() {
 }
 function libraryHome() {
 	list( { query: 'home' }, function( data ) {
-		C             = data.counts;
 		O             = data.order;
 		S.updating_db = data.updating;
 		var html = data.html;
@@ -1104,6 +1103,7 @@ function refreshData() {
 		
 		if ( ! V.librarylist ) { // home
 			libraryHome();
+			setButtonUpdate();
 		} else {
 			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) return
 			
@@ -1173,12 +1173,7 @@ function renderLibrary() { // library home
 	pageScroll( V.modescrolltop );
 	$( '.bkedit' ).remove();
 	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
-	if ( D.count ) {
-		renderLibraryCounts();
-		$( '.mode gr' ).removeClass( 'hide' );
-	} else {
-		$( '.mode gr' ).addClass( 'hide' );
-	}
+	renderLibraryCounts();
 }
 function renderLibraryCounts() {
 	var songs    = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
@@ -1191,6 +1186,7 @@ function renderLibraryCounts() {
 		if ( typeof v !== 'boolean' ) $( '#mode-'+ mode ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
 	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
+	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( V.librarylist && data.html === V.librarylisthtml ) {
@@ -1295,6 +1291,7 @@ function renderPlayback() {
 	local();
 	if ( S.state === 'stop' ) setProgress( 0 );
 	setVolume();
+	setButtonOptions();
 	clearInterval( V.interval.blinkdot );
 	$( '#qr' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
@@ -1306,7 +1303,6 @@ function renderPlayback() {
 	$( '#coverTR' ).removeClass( 'empty' );
 	setInfo();
 	setCoverart();
-	setButtonOptions();
 	V.timehms = S.Time ? second2HMS( S.Time ) : '';
 	if ( S.elapsed === false || S.webradio ) {
 		setBlinkDot();
@@ -1348,7 +1344,6 @@ function renderPlaybackAll() {
 	displayBars();
 	displayPlayback();
 	renderPlayback();
-	setButtonUpdating();
 	bannerHide();
 }
 function renderPlaylist( data ) { // V.plhome - current playlist
@@ -1524,6 +1519,7 @@ function setButtonOptions() {
 		} );
 	}
 	setButtonUpdateAddons();
+	setButtonUpdate();
 	setButtonUpdating();
 	if ( $volume.is( ':hidden' ) ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
 }
@@ -1539,6 +1535,14 @@ function setButtonUpdateAddons() {
 		$( '#button-settings, #addons i' ).removeClass( 'bl' );
 		$( '#mi-addons, #ti-addons' ).addClass( 'hide' );
 	}
+}
+function setButtonUpdate() {
+	bash( [ 'lsmntmpd' ], counts => {
+		$.each( counts, ( k, v ) => {
+			C[ k ] = v;
+		} );
+		$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
+	}, 'json' );
 }
 function setButtonUpdating() {
 	clearInterval( V.interval.blinkupdate );
