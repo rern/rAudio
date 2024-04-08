@@ -1186,7 +1186,6 @@ function renderLibraryCounts() {
 	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
-	$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( V.librarylist && data.html === V.librarylisthtml ) {
@@ -1528,7 +1527,7 @@ function setButtonOptions() {
 		$.each( counts, ( k, v ) => {
 			C[ k ] = v;
 		} );
-		$( '#update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
+		$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
 	}, 'json' );
 }
 function setButtonUpdateAddons() {
