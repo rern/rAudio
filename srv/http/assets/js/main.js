@@ -200,6 +200,12 @@ $( '#button-settings' ).on( 'click', function( e ) {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
+	if ( ! ( 'sd' in C ) ) {
+		bash( [ 'lsmntmpd' ], counts => {
+			$.each( counts, ( k, v ) => C[ k ] = v );
+			$( '#update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
+		}, 'json' );
+	}
 } )
 $( '.settings' ).on( 'click', function() {
 	location.href = 'settings.php?p='+ this.id;

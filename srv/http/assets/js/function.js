@@ -797,7 +797,9 @@ function libraryHome() {
 	list( { query: 'home' }, function( data ) {
 		O             = data.order;
 		S.updating_db = data.updating;
-		$.each( data.counts, ( k, v ) => C[ k ] = v );
+		$.each( data.counts, ( k, v ) => {
+			C[ k ] = v;
+		} );
 		var html = data.html;
 		if ( html !== V.libraryhtml ) {
 			V.libraryhtml = html;
@@ -1173,12 +1175,7 @@ function renderLibrary() { // library home
 	pageScroll( V.modescrolltop );
 	$( '.bkedit' ).remove();
 	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
-	if ( D.count ) {
-		renderLibraryCounts();
-		$( '.mode gr' ).removeClass( 'hide' );
-	} else {
-		$( '.mode gr' ).addClass( 'hide' );
-	}
+	renderLibraryCounts();
 }
 function renderLibraryCounts() {
 	var songs    = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
@@ -1191,6 +1188,8 @@ function renderLibraryCounts() {
 		if ( typeof v !== 'boolean' ) $( '#mode-'+ mode ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
 	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
+	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
+	$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( V.librarylist && data.html === V.librarylisthtml ) {

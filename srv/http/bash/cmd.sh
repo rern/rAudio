@@ -439,11 +439,7 @@ lsmntmpd )
 	done
 	[[ $( ls /mnt/MPD/SD ) ]] && sd=true || sd=false
 	ls -d /mnt/MPD/USB/*/ &> /dev/null && usb=true || usb=false
-	echo '{
-  "nas" : '$nas'
-, "sd"  : '$sd'
-, "usb" : '$usb'
-}'
+	echo '{ "nas" : '$nas', "sd"  : '$sd', "usb" : '$usb' }'
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
