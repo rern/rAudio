@@ -797,9 +797,6 @@ function libraryHome() {
 	list( { query: 'home' }, function( data ) {
 		O             = data.order;
 		S.updating_db = data.updating;
-		$.each( data.counts, ( k, v ) => {
-			C[ k ] = v;
-		} );
 		var html = data.html;
 		if ( html !== V.libraryhtml ) {
 			V.libraryhtml = html;
@@ -1525,6 +1522,14 @@ function setButtonOptions() {
 	setButtonUpdateAddons();
 	setButtonUpdating();
 	if ( $volume.is( ':hidden' ) ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
+	if ( 'nas' in C ) return
+	
+	bash( [ 'lsmntmpd' ], counts => {
+		$.each( counts, ( k, v ) => {
+			C[ k ] = v;
+		} );
+		$( '#update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
+	}, 'json' );
 }
 function setButtonUpdateAddons() {
 	if ( S.updateaddons ) {

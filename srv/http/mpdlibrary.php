@@ -133,12 +133,10 @@ case 'home':
 </div>';
 		}
 	}
-	$counts   = json_decode( exec( '/srv/http/bash/cmd.sh lsmntmpd' ) );
 	$order    = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
 	$updating = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
 		  'html'     => $htmlmode
-		, 'counts'   => $counts
 		, 'order'    => $order
 		, 'updating' => $updating
 	] );
