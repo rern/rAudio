@@ -224,7 +224,6 @@ function connectWiFi( data ) {
 	}
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
-	return
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
@@ -402,7 +401,7 @@ function renderPage() {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
 		var htmllan = '';
-		if ( S.listeth ) htmllan = '<li>'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.IP
+		if ( S.listeth ) htmllan = '<li>'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.ADDRESS
 								 +'&ensp;<gr>&raquo;&ensp;'+ S.listeth.GATEWAY +'</gr></li>';
 		$( '#listlan' ).html( htmllan );
 		$( '#divlan' ).removeClass( 'hide' );
