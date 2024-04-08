@@ -40,7 +40,7 @@ listWlan() {
 		while read profile; do
 			ssid=$( stringEscape $profile )
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
-			if netctl is-active "$profile" &> /dev/null; then
+			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do
 					ipr=$( ip r |  grep -m1 $wlandev )
 					[[ $ipr ]] && break || sleep 1
