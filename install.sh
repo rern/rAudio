@@ -41,9 +41,6 @@ fi
 
 [[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
 
-# 20240212
-[[ ! -e /usr/bin/mmc ]] && pacman -Sy --noconfirm mmc-utils
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 

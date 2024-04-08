@@ -91,7 +91,7 @@ a {
 	background-color: var( --cd );
 }
 .submenu.disabled {
-	color: var( --cgl ) !important;
+	color: var( --cg60 ) !important;
 }
 i.map.disabled, .map.disabled i {
 	color: var( --cgl );

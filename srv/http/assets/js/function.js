@@ -795,9 +795,9 @@ function intervalElapsedClear() {
 }
 function libraryHome() {
 	list( { query: 'home' }, function( data ) {
-		C             = data.counts;
 		O             = data.order;
 		S.updating_db = data.updating;
+		$.each( data.counts, ( k, v ) => C[ k ] = v );
 		var html = data.html;
 		if ( html !== V.libraryhtml ) {
 			V.libraryhtml = html;
@@ -1295,6 +1295,7 @@ function renderPlayback() {
 	local();
 	if ( S.state === 'stop' ) setProgress( 0 );
 	setVolume();
+	setButtonOptions();
 	clearInterval( V.interval.blinkdot );
 	$( '#qr' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
@@ -1306,7 +1307,6 @@ function renderPlayback() {
 	$( '#coverTR' ).removeClass( 'empty' );
 	setInfo();
 	setCoverart();
-	setButtonOptions();
 	V.timehms = S.Time ? second2HMS( S.Time ) : '';
 	if ( S.elapsed === false || S.webradio ) {
 		setBlinkDot();
