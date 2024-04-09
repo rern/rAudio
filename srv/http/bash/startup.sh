@@ -29,21 +29,18 @@ if [[ -e $backupfile ]]; then
 	$dirsettings/system-datarestore.sh
 fi
 
-[[ -e /boot/accesspoint ]] && touch $dirsystem/ap && rm /boot/accesspoint
-
 if [[ $wlandev ]]; then
 	if [[ -e /boot/wifi ]]; then
 		ssid=$( getVar ESSID /boot/wifi )
 		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " /boot/wifi > "/etc/netctl/$ssid"
-		netctl enable "$ssid"
-		rm -f $dirsystem/ap /boot/{accesspoint,wifi}
-		reboot
-		exit
-# ----------------------------------------------------------------------------
-	elif [[ -e $dirsystem/ap ]]; then
-		ap=1
+		$dirsettings/networks.sh "profileconnect
+$ssid
+CMD SSID"
+		rm -f /boot/{accesspoint,wifi}
+	elif [[ -e /boot/accesspoint ]]; then
+		mv -f /boot/accesspoint $dirsystem/ap
 	fi
 fi
 
@@ -51,7 +48,7 @@ if [[ -e /boot/cirrus ]]; then
 	$dirsettings/player-wm5102.sh 'HPOUT2 Digital'
 	rm /boot/cirrus
 fi
-# ----------------------------------------------------------------------------
+# pre-configure --------------------------------------------------------------
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 
@@ -73,7 +70,9 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-if [[ ! $ap ]]; then
+if [[ -e $dirsystem/ap ]]; then
+	ap=1
+else # if no connections, start accesspoint
 	[[ $netctllist ]] && sec=30 || sec=5 # wlan || lan
 	for (( i=0; i < $sec; i++ )); do # wait for connection
 		ipaddress=$( ipAddress )

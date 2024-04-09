@@ -15,22 +15,24 @@ netctlSwitch() {
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
 	ip link set $wlandev down
-	[[ $( iwgetid -r ) ]] && netctl switch-to "$ssid" || netctl start "$ssid"
-	for i in {1..10}; do
+	[[ $currentssid ]] && netctl switch-to "$ssid" || netctl start "$ssid"
+	for i in {0..20}; do
 		sleep 1
-		if [[ $( iwgetid -r ) == $ssid ]]; then
-			netctl enable "$ssid"
+		[[ $( iwgetid -r ) == $ssid ]] && connected=1 && break
+	done
+	if [[ $connected ]]; then
+		netctl enable "$ssid"
+		if [[ -e $dirshm/startup ]]; then
 			avahi-daemon --kill # flush cache and restart
 			pushRefresh networks pushwl
-			exit
-# --------------------------------------------------------------------
 		fi
-	done
-	echo -1
-	if [[ $currentssid ]]; then
-		mv -f "$dirshm/$currentssid" /etc/netctl
-		ip link set $wlandev down
-		netctl start "$currentssid"
+	else
+		echo -1
+		if [[ $currentssid ]]; then
+			mv -f "$dirshm/$currentssid" /etc/netctl
+			ip link set $wlandev down
+			netctl start "$currentssid"
+		fi
 	fi
 }
 wlanDevice() {
@@ -129,11 +131,10 @@ Gateway='$GATEWAY $file
 	avahi-daemon --kill # flush cache and restart
 	;;
 profileconnect )
-	wlandev=$( < $dirshm/wlan )
 	if [[ -e $dirsystem/ap ]]; then
 		rm -f $dirsystem/{ap,ap.conf}
 		systemctl stop iwd
-		ifconfig $wlandev 0.0.0.0
+		ifconfig $( < $dirshm/wlan ) 0.0.0.0
 		sleep 2
 	fi
 	netctlSwitch "$SSID"
@@ -143,8 +144,7 @@ profileforget )
 	if netctl is-active "$SSID" &> /dev/null; then
 		netctl stop "$SSID"
 		systemctl stop wpa_supplicant
-		wlandev=$( < $dirshm/wlan )
-		ip link set $wlandev up
+		ip link set $( < $dirshm/wlan ) up
 	fi
 	rm "/etc/netctl/$SSID"
 	pushRefresh networks pushwl
