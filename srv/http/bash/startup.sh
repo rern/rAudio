@@ -36,7 +36,7 @@ if [[ $wlandev ]]; then
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " /boot/wifi > "/etc/netctl/$ssid"
 		netctl enable "$ssid"
-		rm -f /boot/{accesspoint,wifi}
+		rm -f /boot/{accesspoint,wifi} $dirsystem/ap
 		reboot
 		exit
 # --------------------------------------------------------------------------------
