@@ -35,10 +35,11 @@ if [[ $wlandev ]]; then
 		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " /boot/wifi > "/etc/netctl/$ssid"
-		$dirsettings/networks.sh "profileconnect
-$ssid
-CMD SSID"
+		netctl enable "$ssid"
 		rm -f /boot/{accesspoint,wifi}
+		reboot
+		exit
+# --------------------------------------------------------------------------------
 	elif [[ -e /boot/accesspoint ]]; then
 		mv -f /boot/accesspoint $dirsystem/ap
 	fi

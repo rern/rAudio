@@ -22,10 +22,8 @@ netctlSwitch() {
 	done
 	if [[ $connected ]]; then
 		netctl enable "$ssid"
-		if [[ -e $dirshm/startup ]]; then
-			avahi-daemon --kill # flush cache and restart
-			pushRefresh networks pushwl
-		fi
+		avahi-daemon --kill # flush cache and restart
+		pushRefresh networks pushwl
 	else
 		echo -1
 		if [[ $currentssid ]]; then
