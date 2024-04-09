@@ -4,7 +4,6 @@
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
-[[ $wlandev ]] && netctllist=$( netctl list )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -35,11 +34,10 @@ if [[ $wlandev ]]; then
 		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " /boot/wifi > "/etc/netctl/$ssid"
-		netctl enable "$ssid"
 		rm -f /boot/{accesspoint,wifi} $dirsystem/ap
-		reboot
-		exit
-# --------------------------------------------------------------------------------
+		$dirsettings/networks.sh "profileconnect
+$ssid
+CMD ESSID"
 	elif [[ -e /boot/accesspoint ]]; then
 		mv -f /boot/accesspoint $dirsystem/ap
 	fi
@@ -71,6 +69,7 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
+netctllist=$( netctl list )
 if [[ -e $dirsystem/ap ]]; then
 	ap=1
 else # if no connections, start accesspoint

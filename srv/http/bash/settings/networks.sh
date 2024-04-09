@@ -11,17 +11,14 @@ ipAvailable() {
 	fi
 }
 netctlSwitch() {
-	local ssid wlandev
-	ssid=$1
-	wlandev=$( < $dirshm/wlan )
 	ip link set $wlandev down
-	[[ $currentssid ]] && netctl switch-to "$ssid" || netctl start "$ssid"
+	[[ $currentssid ]] && netctl switch-to "$ESSID" || netctl start "$ESSID"
 	for i in {0..20}; do
 		sleep 1
-		[[ $( iwgetid -r ) == $ssid ]] && connected=1 && break
+		[[ $( iwgetid -r ) == $ESSID ]] && connected=1 && break
 	done
 	if [[ $connected ]]; then
-		netctl enable "$ssid"
+		netctl enable "$ESSID"
 		avahi-daemon --kill # flush cache and restart
 		pushRefresh networks pushwl
 	else
@@ -71,6 +68,7 @@ btrename )
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
+	wlandev=$( < $dirshm/wlan )
 	if [[ $ADDRESS ]]; then
 		ipAvailable $ADDRESS
 		ip=static
@@ -79,7 +77,7 @@ connect )
 	fi
 	currentssid=$( iwgetid -r )
 	[[ $currentssid == $ESSID ]] && cp "/etc/netctl/$currentssid" $dirshm
-	data='Interface='$( < $dirshm/wlan )'
+	data='Interface='$wlandev'
 Connection=wireless
 IP='$ip'
 ESSID="'$ESSID'"'
@@ -105,7 +103,7 @@ Hidden=yes'
 # --------------------------------------------------------------------
 	fi
 	netctl stop "$ESSID"
-	netctlSwitch "$ESSID"
+	netctlSwitch
 	;;
 disconnect )
 	netctl stop "$SSID"
@@ -129,13 +127,14 @@ Gateway='$GATEWAY $file
 	avahi-daemon --kill # flush cache and restart
 	;;
 profileconnect )
+	wlandev=$( < $dirshm/wlan )
 	if [[ -e $dirsystem/ap ]]; then
 		rm -f $dirsystem/{ap,ap.conf}
 		systemctl stop iwd
-		ifconfig $( < $dirshm/wlan ) 0.0.0.0
+		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi
-	netctlSwitch "$SSID"
+	netctlSwitch
 	;;
 profileforget )
 	netctl is-enabled "$SSID" && netctl disable "$SSID"

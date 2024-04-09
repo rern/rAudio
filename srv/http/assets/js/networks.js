@@ -117,7 +117,7 @@ $( '.connect' ).on( 'click', function() {
 	} else {
 		notify( 'wifi', ssid, 'Connect ...' );
 	}
-	bash( [ 'profileconnect', ssid, 'CMD SSID' ] );
+	bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
 } );
 $( '.disconnect' ).on( 'click', function() {
 	if ( V.listid === 'listbt' ) {
