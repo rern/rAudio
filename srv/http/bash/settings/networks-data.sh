@@ -32,9 +32,9 @@ if [[ $1 == pushbt ]]; then
 	exit
 fi
 
-wlandev=$( < $dirshm/wlan )
 listWlan() {
-	local dbm notconnected profiles profile
+	local dbm notconnected profiles profile wlandev
+	wlandev=$( < $dirshm/wlan )
 	profiles=$( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		while read profile; do
