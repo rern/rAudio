@@ -9,15 +9,6 @@
 
 . /srv/http/bash/common.sh
 
-touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
-[[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
-rm -f $dirmpd/updating
-
-[[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-rm -f $dirmpd/updatestart
-
-modes='album albumbyartist-year latest albumartist artist composer conductor genre date'
-
 timeFormat() {
 	date -d@$1 -u '+%-Hh %-Mm %-Ss' | sed -E 's/0h 0m |0h //'
 }
@@ -31,6 +22,15 @@ updateDone() {
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &
 }
+
+touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
+[[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
+rm -f $dirmpd/updating
+
+[[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
+rm -f $dirmpd/updatestart
+
+modes='album albumbyartist-year latest albumartist artist composer conductor genre date'
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 if [[ -e $dirdabradio ]]; then

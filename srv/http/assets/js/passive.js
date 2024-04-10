@@ -274,6 +274,7 @@ function psMpdUpdate( data ) {
 			C = data.done;
 			renderLibraryCounts();
 		}
+		$( '#lib-list li' ).removeClass( 'nodata' );
 	}
 	setButtonUpdating();
 }

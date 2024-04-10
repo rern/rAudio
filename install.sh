@@ -31,16 +31,6 @@ fi
 file=$dirsystem/autoplay.conf
 grep -qs ^cd $file && sed -i '/^cd/ d' $file
 
-# 20240219
-readarray -t mixerfiles <<< $( ls $dirsystem/hwmixer-* 2> /dev/null )
-if [[ $mixerfiles ]]; then
-	for f in "${mixerfiles[@]}"; do
-		mv "$f" "${f/hwmixer-/mixer-}"
-	done
-fi
-
-[[ -e $dirsystem/btoutputall ]] && mv $dirsystem/{btoutputall,devicewithbt}
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
