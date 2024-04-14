@@ -1350,7 +1350,6 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	V.plhome       = true;
 	V.savedpl      = false;
 	V.savedpltrack = false;
-	[ 'consume', 'elapsed', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
 	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 	if ( data == -1 ) {
@@ -1366,6 +1365,7 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 		return
 	}
 	
+	[ 'consume', 'elapsed', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
 	$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
 	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disabled' );
 	$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );

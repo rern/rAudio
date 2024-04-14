@@ -1638,17 +1638,9 @@ $( '#button-pl-save' ).on( 'click', function() {
 	}
 } );
 $( '#button-pl-consume' ).on( 'click', function() {
-	var $this = $( this );
-	var icon  = 'playlist';
-	var title = 'Consume Mode';
-	if ( S.consume ) {
-		$this.removeClass( 'bl' );
-		banner( icon, title, 'Off' );
-	} else {
-		$this.addClass( 'bl' );
-		banner( icon, title, 'On - Remove each song after played.' );
-	}
 	S.consume = ! S.consume;
+	$( this ).toggleClass( 'bl', S.consume );
+	banner( 'playlist', 'Consume Mode', S.consume ? 'On - Remove each song after played.' : 'Off' );
 	bash( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION ONOFF' ] );
 } );
 $( '#button-pl-librandom' ).on( 'click', function() {
