@@ -62,7 +62,7 @@ if [[ ! $mpclistall ]]; then # very large database
 	notify 'refresh-library blink' 'Library Database' 'Increase buffer for large Library ...' 3000
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
-	for (( i=0; i < 10; i++ )); do # increase buffer
+	for (( i=0; i < 20; i++ )); do # increase buffer
 		buffer=$(( buffer + 8192 ))
 		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
@@ -90,6 +90,8 @@ if [[ ! $mpclistall ]]; then # very large database
 				albumlist+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$a" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
 			done <<< albums
 		else
+			echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
+			systemctl restart mpd
 			notify 'refresh-library blink' 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
 		fi
 	fi
