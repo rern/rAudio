@@ -1354,9 +1354,11 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 	if ( data == -1 ) {
 		V.playlisthtml = '';
+		S.consume      = false;
 		$( '#playback-controls, #pl-index, #pl-index1' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
 		$( '.pllength' ).addClass( 'disabled' );
+		$( '#button-pl-consume' ).removeClass( 'bl' );
 		$( '#pl-search-close' ).trigger( 'click' );
 		$( '#pl-list' ).empty();
 		$( '.playlist, #page-playlist .emptyadd' ).removeClass( 'hide' );
