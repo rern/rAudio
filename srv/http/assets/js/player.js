@@ -168,7 +168,7 @@ $( '#setting-buffer' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : '<c>audio_buffer_size</c>'
-		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 8192 } } ]
+		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 40960 } } ]
 		, boxwidth     : 110
 		, values       : S.bufferconf
 		, checkchanged : true
