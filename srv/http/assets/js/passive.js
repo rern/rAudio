@@ -319,7 +319,17 @@ function psPlaylist( data ) {
 			renderPlaylist( -1 );
 			bannerHide();
 		} else if ( 'refresh' in data ) {
-			if ( V.playlist && V.plhome ) playlistGet();
+			if ( V.playlist && V.plhome ) {
+				var i = data.refresh;
+				if ( i == -1 ) {
+					renderPlaylist( -1 );
+				} else if ( typeof i === 'number' ) {
+					local();
+					playlistRemove( $( '#pl-list li' ).eq( i - 1 ) );
+				} else {
+					playlistGet();
+				}
+			}
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( V.savedpltrack && data.playlist === name ) renderSavedPlTrack( name );

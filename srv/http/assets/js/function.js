@@ -1073,7 +1073,7 @@ function playlistRemove( $li ) {
 				$li.prev().addClass( 'active' );
 			}
 		}
-		bash( [ 'mpcremove', pos, poscurent, 'CMD POS CURRENT' ] );
+		if ( ! V.local ) bash( [ 'mpcremove', pos, poscurent, 'CMD POS CURRENT' ] );
 		$( '#pl-list li .pos' ).slice( pos ).each( ( i, el ) => {
 			$( el ).text( pos );
 			pos++

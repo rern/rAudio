@@ -96,6 +96,7 @@ playerStop() {
 plClear() {
 	mpc -q clear
 	radioStop
+	pushData playlist '{ "refresh": -1 }'
 }
 pushPlaylist() {
 	pushData playlist '{ "refresh": true }'
@@ -582,12 +583,14 @@ mpcremove )
 	if [[ $POS ]]; then
 		[[ $( mpc status %songpos% ) == $POS ]] && radioStop
 		mpc -q del $POS
-		[[ $CURRENT ]] && mpc -q play $CURRENT && mpc -q stop
+		pushData playlist '{ "refresh": '$POS' }'
+		if [[ $CURRENT ]]; then
+			mpc -q play $CURRENT
+			mpc -q stop
+		fi
 	else
 		plClear
 	fi
-	$dirbash/status-push.sh
-	pushPlaylist
 	;;
 mpcseek )
 	if [[ $STATE == stop ]]; then
