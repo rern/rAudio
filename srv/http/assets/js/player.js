@@ -168,7 +168,7 @@ $( '#setting-buffer' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : '<c>audio_buffer_size</c>'
-		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 1024, max: 8192 } } ]
+		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 8192 } } ]
 		, boxwidth     : 110
 		, values       : S.bufferconf
 		, checkchanged : true
@@ -182,7 +182,7 @@ $( '#setting-outputbuffer' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : '<c>max_output_buffer_size</c>'
-		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 1024, max: 16384 } } ]
+		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 8192, max: 81920 } } ]
 		, focus        : 0
 		, boxwidth     : 110
 		, values       : S.outputbufferconf
