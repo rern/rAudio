@@ -9,6 +9,13 @@
 
 . /srv/http/bash/common.sh
 
+albumList() {
+	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
+	[[ $mpclistall ]] && albumlist=$( awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}'<<< $mpclistall ) # exclude no album tag, strip filename, sort unique
+}
+notifyError() {
+	notify 'refresh-library blink' 'Library Database' "$1" 3000
+}
 timeFormat() {
 	date -d@$1 -u '+%-Hh %-Mm %-Ss' | sed -E 's/0h 0m |0h //'
 }
@@ -52,14 +59,6 @@ if [[ $song == 0 ]]; then
 # --------------------------------------------------------------------
 fi
 ##### album
-albumList() {
-	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
-	[[ $mpclistall ]] && albumlist=$( awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}'<<< $mpclistall ) # exclude no album tag, strip filename, sort unique
-}
-notifyError() {
-	notify 'refresh-library blink' 'Library Database' "$1" 3000
-}
-
 albumList
 if [[ ! $mpclistall ]]; then # very large database
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
@@ -107,7 +106,7 @@ if [[ $albumlist ]]; then # album^^artist^^date^^dir
 			while read dir; do
 				dir=${dir//[/\\[/} # escape n-n to not as range in grep
 				file=$( grep -m1 "$dir" <<< $mpclistall )
-				albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/${file/*^}" )
+				albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/${file/*^}" 2> /dev/null )
 				if [[ $albumartist ]]; then
 					line=$( grep -m1 "$dir$" <<< $albumlist )
 					readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
