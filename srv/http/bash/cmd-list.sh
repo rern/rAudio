@@ -56,14 +56,17 @@ albumList() {
 	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
 	[[ $mpclistall ]] && albumlist=$( awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}'<<< $mpclistall ) # exclude no album tag, strip filename, sort unique
 }
+notifyError() {
+	notify 'refresh-library blink' 'Library Database' "$1" 3000
+}
 
 albumList
 if [[ ! $mpclistall ]]; then # very large database
-	notify 'refresh-library blink' 'Library Database' 'Increase buffer for large Library ...' 3000
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
 	for (( i=0; i < 20; i++ )); do # increase buffer
 		buffer=$(( buffer + 8192 ))
+		notifyError "Large Library: Increase buffer to $buffer k ..."
 		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
 		albumList
@@ -71,7 +74,6 @@ if [[ ! $mpclistall ]]; then # very large database
 	done
 	
 	if [[ ! $mpclistall ]]; then # too large - get by album list instead
-		notify 'refresh-library blink' 'Library Database' 'Parse each album for large Library ...' 3000
 		echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
 		albums=$( mpc list album 2> /dev/null )
@@ -79,6 +81,7 @@ if [[ ! $mpclistall ]]; then # very large database
 			buffer=8192
 			for (( i=0; i < 10; i++ )); do
 				buffer=$(( buffer + 8192 ))
+				notifyError "Large Library - Album mode: Increase buffer to $buffer k ..."
 				echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
 				systemctl restart mpd
 				albums=$( mpc list album 2> /dev/null )
@@ -88,13 +91,13 @@ if [[ ! $mpclistall ]]; then # very large database
 		if [[ $albums ]]; then
 			while read a; do
 				albumlist+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$a" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
-			done <<< albums
+			done <<< $albums
 		else
-			echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
-			systemctl restart mpd
-			notify 'refresh-library blink' 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
+			notifyError 'Library is too large.<br>Album list will not be available.'
 		fi
 	fi
+	echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
+	systemctl restart mpd
 fi
 if [[ $albumlist ]]; then # album^^artist^^date^^dir
 	filewav=$( grep \.wav$ <<< $mpclistall )
@@ -173,7 +176,7 @@ updateDone
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )
 	if [[ $nonutf8 ]]; then
 		echo "$nonutf8" > $dirmpd/nonutf8
-		notify 'library blink' 'Metadata Encoding' 'UTF-8 conversion needed: Player > Non UTF-8 Files'
+		notifyError 'UTF-8 conversion needed: See Player > Non UTF-8 Files'
 	else
 		rm -f $dirmpd/nonutf8
 	fi
