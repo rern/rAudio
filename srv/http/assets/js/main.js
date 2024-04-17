@@ -787,9 +787,13 @@ $( '.map' ).on( 'click', function( e ) {
 		var volume = $volume.is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.mapcover, .guide' ).addClass( 'mapshow' );
-		$( '#guide-bio' ).toggleClass( 'hide', S.Artist === '' );
-		$( '#guide-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
-		$( '#guide-booklet' ).toggleClass( 'hide', S.Album === '' );
+		if ( S.pllength ) {
+			$( '#guide-bio' ).toggleClass( 'hide', S.Artist === '' );
+			$( '#guide-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
+			$( '#guide-booklet' ).toggleClass( 'hide', S.Album === '' );
+		} else {
+			$( '#guide-bio, #guide-lyrics, #guide-booklet' ).addClass( 'hide' );
+		}
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', S.pllength === 0 );
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
