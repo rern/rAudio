@@ -6,7 +6,7 @@ dirimg=/srv/http/assets/img
 args2var "$1"
 
 plAddPlay() {
-	if [[ ${ACTION: -4} == play ]]; then
+	if [[ $PLAY ]]; then
 		playerActive mpd && radioStop || playerStop
 		mpc -q play $1
 	fi
@@ -481,7 +481,7 @@ mpcaddplaynext )
 	pushPlaylist
 	;;
 mpcaddfind )
-	pos=$( plAddPosition )
+	[[ $REPLACE ]] && plClear || pos=$( plAddPosition )
 	if [[ $MODE3 ]]; then
 		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2" $MODE3 "$STRING3"
 	elif [[ $MODE2 ]]; then

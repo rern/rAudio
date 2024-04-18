@@ -1254,14 +1254,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	V.list.name = V.list.li.find( '.bkname' ).text();
 	V.list.path = V.list.li.find( '.lipath' ).text();
 	V.mpccmd  = [ 'mpcadd', V.list.path ];
-	if ( D.tapaddplay ) {
-		V.action = 'addplay';
-		addToPlaylistCommand();
-		return
-	}
-	
-	if ( D.tapreplaceplay ) {
-		V.action = 'replaceplay';
+	if ( D.tapaddplay || D.tapreplaceplay ) {
+		V.action = D.tapaddplay ? 'addplay' : 'replaceplay';
 		addToPlaylistCommand();
 		return
 	}
