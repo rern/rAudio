@@ -45,7 +45,7 @@ function addToPlaylistCommand() {
 	V.msg         =  '<a class="li1">'+ V.list.name +'</a>';
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
 	banner( 'playlist', V.title, V.msg );
-	bash.log( V.mpccmd );
+	bash( V.mpccmd );
 	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
 }
 function bookmarkNew() {
