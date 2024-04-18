@@ -31,9 +31,7 @@ function addToPlaylistCommand() {
 		if ( V.mpccmd.length > 3 ) keys += ' MODE2 STRING2';
 		if ( V.mpccmd.length > 5 ) keys += ' MODE3 STRING3';
 	}
-	V.mpccmd.push( V.action.slice( 0, 7 ) === 'replace' );
-	V.mpccmd.push( V.action.slice( -4 ) === 'play' );
-	V.mpccmd.push( 'CMD '+ keys +' REPLACE PLAY' );
+	V.mpccmd.push( V.action, 'CMD '+ keys +' ACTION' );
 	var cmd_title = {
 		  add         : 'Add to Playlist'
 		, playnext    : 'Add to Playlist to play next'

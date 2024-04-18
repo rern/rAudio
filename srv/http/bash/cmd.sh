@@ -6,14 +6,15 @@ dirimg=/srv/http/assets/img
 args2var "$1"
 
 plAddPlay() {
-	if [[ $PLAY ]]; then
+	if [[ ${ACTION: -4} == play ]]; then
 		playerActive mpd && radioStop || playerStop
 		mpc -q play $1
 	fi
 	pushPlaylist
 }
 plAddPosition() {
-	[[ ${ACTION:0:7} == replace ]] && plClear || echo $(( $( mpc status %length% ) + 1 ))
+	[[ ${ACTION:0:7} == replace ]] && plClear
+	echo $(( $( mpc status %length% ) + 1 ))
 }
 plAddRandom() {
 	local ab cuefile dir dirlast len_pos mpcls plL range
@@ -481,7 +482,7 @@ mpcaddplaynext )
 	pushPlaylist
 	;;
 mpcaddfind )
-	[[ $REPLACE ]] && plClear || pos=$( plAddPosition )
+	pos=$( plAddPosition )
 	if [[ $MODE3 ]]; then
 		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2" $MODE3 "$STRING3"
 	elif [[ $MODE2 ]]; then
