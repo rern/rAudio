@@ -117,7 +117,7 @@ $( '.connect' ).on( 'click', function() {
 	} else {
 		notify( 'wifi', ssid, 'Connect ...' );
 	}
-	bash( [ 'profileconnect', ssid, 'CMD SSID' ] );
+	bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
 } );
 $( '.disconnect' ).on( 'click', function() {
 	if ( V.listid === 'listbt' ) {
@@ -125,18 +125,18 @@ $( '.disconnect' ).on( 'click', function() {
 		return
 	}
 	
-	var ssid = V.li.data( 'ssid' );
-	var icon = 'wifi';
+	if ( V.li.data( 'ip' ) !== location.hostname ) {
+		wifiDisconnect();
+		return
+	}
+	
 	info( {
-		  icon       : icon
+		  icon       : 'wifi'
 		, title      : 'Wi-Fi'
 		, message    : 'SSID: <wh>'+ ssid +'</wh>'
 		, footer     : warning( 'Disconnect' )
 		, okcolor    : orange
-		, ok         : () => {
-			notify( icon, ssid, 'Disconnect ...' );
-			bash( [ 'disconnect', ssid, 'CMD SSID' ] )
-		}
+		, ok         : wifiDisconnect
 	} );
 } );
 $( '.edit' ).on( 'click', function() {
@@ -257,7 +257,7 @@ function infoLan( v ) {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
-		, footer       : warning()
+		, footer       : V ? warning( 'This is' ) : ''
 		, focus        : 0
 		, values       : values
 		, checkchanged : true
@@ -349,7 +349,7 @@ function infoWiFi( v ) {
 		, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 		, boxwidth     : 180
 		, list         : list
-		, footer       : warning()
+		, footer       : v ? warning( 'This is' ) : ''
 		, values       : values
 		, checkchanged : checkchanged
 		, checkblank   : [ 0 ]
@@ -492,4 +492,9 @@ function scanWlan() {
 }
 function warning( action ) {
 	if ( V.li && V.li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>'+ action +' current connection</wh>'
+}
+function wifiDisconnect() {
+	var ssid = V.li.data( 'ssid' );
+	notify( 'wifi', ssid, 'Disconnect ...' );
+	bash( [ 'disconnect', ssid, 'CMD SSID' ] );
 }

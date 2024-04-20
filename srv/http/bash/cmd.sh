@@ -13,12 +13,13 @@ plAddPlay() {
 	pushPlaylist
 }
 plAddPosition() {
-	[[ ${ACTION:0:7} == replace ]] && plClear || echo $(( $( mpc status %length% ) + 1 ))
+	[[ ${ACTION:0:7} == replace ]] && plClear
+	echo $(( $( mpc status %length% ) + 1 ))
 }
 plAddRandom() {
 	local ab cuefile dir dirlast len_pos mpcls plL range
 	len_pos=( $( mpc status '%length% %songpos%' ) )
-	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 1 )) && plAddPlay $pos && return # $pos from librandom
+	(( $(( ${len_pos[0]} - ${len_pos[1]} )) > 2 )) && plAddPlay $pos && return # $pos from librandom
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	dirlast=$( dirname "$( mpc -f %file% playlist | tail -1 )" )
@@ -96,6 +97,8 @@ playerStop() {
 plClear() {
 	mpc -q clear
 	radioStop
+	rm -f $dirsystem/librandom
+	pushData playlist '{ "refresh": -1 }'
 }
 pushPlaylist() {
 	pushData playlist '{ "refresh": true }'
@@ -582,12 +585,14 @@ mpcremove )
 	if [[ $POS ]]; then
 		[[ $( mpc status %songpos% ) == $POS ]] && radioStop
 		mpc -q del $POS
-		[[ $CURRENT ]] && mpc -q play $CURRENT && mpc -q stop
+		pushData playlist '{ "refresh": '$POS' }'
+		if [[ $CURRENT ]]; then
+			mpc -q play $CURRENT
+			mpc -q stop
+		fi
 	else
 		plClear
 	fi
-	$dirbash/status-push.sh
-	pushPlaylist
 	;;
 mpcseek )
 	if [[ $STATE == stop ]]; then

@@ -32,15 +32,15 @@ if [[ $1 == pushbt ]]; then
 	exit
 fi
 
-wlandev=$( < $dirshm/wlan )
 listWlan() {
-	local dbm notconnected profiles profile
+	local dbm notconnected profiles profile wlandev
+	wlandev=$( < $dirshm/wlan )
 	profiles=$( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		while read profile; do
 			ssid=$( stringEscape $profile )
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
-			if netctl is-active "$profile" &> /dev/null; then
+			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do
 					ipr=$( ip r |  grep -m1 $wlandev )
 					[[ $ipr ]] && break || sleep 1

@@ -21,24 +21,17 @@ function addToPlaylist() {
 	}
 }
 function addToPlaylistCommand() {
-	var varaction = '';
-	if ( [ 'addplay', 'replace', 'replaceplay' ].includes( V.action ) ) {
-		varaction = ' ACTION';
-		V.mpccmd.push( V.action );
-	}
 	var mpccmd0   = V.mpccmd[ 0 ];
 	if ( mpccmd0 === 'mpcaddls' ) {
-		V.mpccmd.push( 'CMD DIR'+ varaction );
-	} else if ( [ 'mpcadd', 'mpcaddload' ].includes( mpccmd0 ) ) {
-		V.mpccmd.push( 'CMD FILE'+ varaction );
+		var keys = 'DIR';
+	} else if ( [ 'mpcadd', 'mpcaddload', 'mpcaddplaynext' ].includes( mpccmd0 ) ) {
+		var keys = 'FILE';
 	} else if ( mpccmd0 === 'mpcaddfind' ) {
-		var varlist = 'CMD MODE STRING';
-		if ( V.mpccmd.length > 3 ) varlist += ' MODE2 STRING2';
-		if ( V.mpccmd.length > 5 ) varlist += ' MODE3 STRING3';
-		V.mpccmd.push( varlist + varaction );
-	} else if ( mpccmd0 === 'mpcaddplaynext' ) {
-		V.mpccmd.push( 'CMD FILE' );
+		var keys = 'MODE STRING';
+		if ( V.mpccmd.length > 3 ) keys += ' MODE2 STRING2';
+		if ( V.mpccmd.length > 5 ) keys += ' MODE3 STRING3';
 	}
+	V.mpccmd.push( V.action, 'CMD '+ keys +' ACTION' );
 	var cmd_title = {
 		  add         : 'Add to Playlist'
 		, playnext    : 'Add to Playlist to play next'

@@ -787,9 +787,13 @@ $( '.map' ).on( 'click', function( e ) {
 		var volume = $volume.is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.mapcover, .guide' ).addClass( 'mapshow' );
-		$( '#guide-bio' ).toggleClass( 'hide', S.Artist === '' );
-		$( '#guide-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
-		$( '#guide-booklet' ).toggleClass( 'hide', S.Album === '' );
+		if ( S.pllength ) {
+			$( '#guide-bio' ).toggleClass( 'hide', S.Artist === '' );
+			$( '#guide-lyrics' ).toggleClass( 'hide', S.Artist === '' || S.Title === '' );
+			$( '#guide-booklet' ).toggleClass( 'hide', S.Album === '' );
+		} else {
+			$( '#guide-bio, #guide-lyrics, #guide-booklet' ).addClass( 'hide' );
+		}
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', S.pllength === 0 );
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
@@ -1250,14 +1254,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	V.list.name = V.list.li.find( '.bkname' ).text();
 	V.list.path = V.list.li.find( '.lipath' ).text();
 	V.mpccmd  = [ 'mpcadd', V.list.path ];
-	if ( D.tapaddplay ) {
-		V.action = 'addplay';
-		addToPlaylistCommand();
-		return
-	}
-	
-	if ( D.tapreplaceplay ) {
-		V.action = 'replaceplay';
+	if ( D.tapaddplay || D.tapreplaceplay ) {
+		V.action = D.tapaddplay ? 'addplay' : 'replaceplay';
 		addToPlaylistCommand();
 		return
 	}
@@ -1638,17 +1636,9 @@ $( '#button-pl-save' ).on( 'click', function() {
 	}
 } );
 $( '#button-pl-consume' ).on( 'click', function() {
-	var $this = $( this );
-	var icon  = 'playlist';
-	var title = 'Consume Mode';
-	if ( S.consume ) {
-		$this.removeClass( 'bl' );
-		banner( icon, title, 'Off' );
-	} else {
-		$this.addClass( 'bl' );
-		banner( icon, title, 'On - Remove each song after played.' );
-	}
 	S.consume = ! S.consume;
+	$( this ).toggleClass( 'bl', S.consume );
+	banner( 'playlist', 'Consume Mode', S.consume ? 'On - Remove each song after played.' : 'Off' );
 	bash( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION ONOFF' ] );
 } );
 $( '#button-pl-librandom' ).on( 'click', function() {

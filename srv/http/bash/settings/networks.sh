@@ -11,26 +11,23 @@ ipAvailable() {
 	fi
 }
 netctlSwitch() {
-	local ssid wlandev
-	ssid=$1
-	wlandev=$( < $dirshm/wlan )
 	ip link set $wlandev down
-	[[ $( iwgetid -r ) ]] && netctl switch-to "$ssid" || netctl start "$ssid"
-	for i in {1..10}; do
+	[[ $currentssid ]] && netctl switch-to "$ESSID" || netctl start "$ESSID"
+	for i in {0..20}; do
 		sleep 1
-		if [[ $( iwgetid -r ) == $ssid ]]; then
-			netctl enable "$ssid"
-			avahi-daemon --kill # flush cache and restart
-			pushRefresh networks pushwl
-			exit
-# --------------------------------------------------------------------
-		fi
+		[[ $( iwgetid -r ) == $ESSID ]] && connected=1 && break
 	done
-	echo -1
-	if [[ $currentssid ]]; then
-		mv -f "$dirshm/$currentssid" /etc/netctl
-		ip link set $wlandev down
-		netctl start "$currentssid"
+	if [[ $connected ]]; then
+		netctl enable "$ESSID"
+		avahi-daemon --kill # flush cache and restart
+		pushRefresh networks pushwl
+	else
+		echo -1
+		if [[ $currentssid ]]; then
+			mv -f "$dirshm/$currentssid" /etc/netctl
+			ip link set $wlandev down
+			netctl start "$currentssid"
+		fi
 	fi
 }
 wlanDevice() {
@@ -71,6 +68,7 @@ btrename )
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
+	wlandev=$( < $dirshm/wlan )
 	if [[ $ADDRESS ]]; then
 		ipAvailable $ADDRESS
 		ip=static
@@ -79,7 +77,7 @@ connect )
 	fi
 	currentssid=$( iwgetid -r )
 	[[ $currentssid == $ESSID ]] && cp "/etc/netctl/$currentssid" $dirshm
-	data='Interface='$( < $dirshm/wlan )'
+	data='Interface='$wlandev'
 Connection=wireless
 IP='$ip'
 ESSID="'$ESSID'"'
@@ -105,7 +103,7 @@ Hidden=yes'
 # --------------------------------------------------------------------
 	fi
 	netctl stop "$ESSID"
-	netctlSwitch "$ESSID"
+	netctlSwitch
 	;;
 disconnect )
 	netctl stop "$SSID"
@@ -136,15 +134,14 @@ profileconnect )
 		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi
-	netctlSwitch "$SSID"
+	netctlSwitch
 	;;
 profileforget )
 	netctl is-enabled "$SSID" && netctl disable "$SSID"
 	if netctl is-active "$SSID" &> /dev/null; then
 		netctl stop "$SSID"
 		systemctl stop wpa_supplicant
-		wlandev=$( < $dirshm/wlan )
-		ip link set $wlandev up
+		ip link set $( < $dirshm/wlan ) up
 	fi
 	rm "/etc/netctl/$SSID"
 	pushRefresh networks pushwl

@@ -4,7 +4,6 @@
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
-[[ $wlandev ]] && wlanprofile=$( ls -1p /etc/netctl | grep -v /$ )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -29,21 +28,18 @@ if [[ -e $backupfile ]]; then
 	$dirsettings/system-datarestore.sh
 fi
 
-[[ -e /boot/accesspoint ]] && touch $dirsystem/ap && rm /boot/accesspoint
-
 if [[ $wlandev ]]; then
 	if [[ -e /boot/wifi ]]; then
 		ssid=$( getVar ESSID /boot/wifi )
 		sed -E -e '/^#|^\s*$/ d
 ' -e "s/\r//; s/^(Interface=).*/\1$wlandev/
 " /boot/wifi > "/etc/netctl/$ssid"
-		netctl enable "$ssid"
-		rm -f $dirsystem/ap /boot/{accesspoint,wifi}
-		reboot
-		exit
-# ----------------------------------------------------------------------------
-	elif [[ -e $dirsystem/ap ]]; then
-		ap=1
+		rm -f /boot/{accesspoint,wifi} $dirsystem/ap
+		$dirsettings/networks.sh "profileconnect
+$ssid
+CMD ESSID"
+	elif [[ -e /boot/accesspoint ]]; then
+		mv -f /boot/accesspoint $dirsystem/ap
 	fi
 fi
 
@@ -51,7 +47,7 @@ if [[ -e /boot/cirrus ]]; then
 	$dirsettings/player-wm5102.sh 'HPOUT2 Digital'
 	rm /boot/cirrus
 fi
-# ----------------------------------------------------------------------------
+# pre-configure --------------------------------------------------------------
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 
@@ -73,11 +69,14 @@ echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
-if [[ ! $ap ]]; then
-	[[ $wlanprofile ]] && sec=30 || sec=5 # wlan || lan
+netctllist=$( netctl list )
+if [[ -e $dirsystem/ap ]]; then
+	ap=1
+else # if no connections, start accesspoint
+	[[ $netctllist ]] && sec=30 || sec=5 # wlan || lan
 	for (( i=0; i < $sec; i++ )); do # wait for connection
 		ipaddress=$( ipAddress )
-		[[ ! $ipaddress ]] && sleep 1 || break
+		[[ $ipaddress ]] && break || sleep 1
 	done
 	if [[ $ipaddress ]]; then
 		readarray -t lines <<< $( grep $dirnas /etc/fstab )
@@ -87,8 +86,7 @@ if [[ ! $ap ]]; then
 				for i in {1..10}; do
 					if ipOnline $ip; then
 						mountpoint=$( awk '{print $2}' <<< $line )
-						mount "${mountpoint//\\040/ }" && nasonline=1 && break
-						sleep 2
+						mount "${mountpoint//\\040/ }" && break || sleep 2
 					fi
 				done
 			done
@@ -109,7 +107,7 @@ CMD TIMEZONE'
 		fi
 	else
 		if [[ $wlandev && ! $ap ]]; then
-			if [[ $wlanprofile ]]; then
+			if [[ $netctllist ]]; then
 				[[ ! -e $dirsystem/wlannoap ]] && ap=1
 			else
 				ap=1
@@ -132,6 +130,7 @@ if [[ -e $dirshm/btreceiver && -e $dirsystem/camilladsp ]]; then
 else # start mpd.service if not started by networks-bluetooth.sh
 	$dirsettings/player-conf.sh
 fi
+
 if [[ -e $dirsystem/volumeboot ]]; then
 	. $dirsystem/volumeboot.conf
 	if [[ -e $dirshm/btreceiver ]]; then
@@ -153,7 +152,7 @@ elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
 # usb wlan || no wlan || not ap + not connected
-if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $wlanprofile && ! $ap ]]; then
+if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $netctllist && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null
 fi
 
@@ -165,9 +164,7 @@ play
 CMD ACTION'
 fi
 
-if [[ -e /boot/startup.sh ]]; then
-	/boot/startup.sh
-fi
+[[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
 	$dirsettings/system.sh "hddsleep
