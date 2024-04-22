@@ -44,7 +44,12 @@ plAddRandom() {
 }
 playerStart() {
 	local player service
-	player=$( < $dirshm/player )
+	if [[ -e $dirshm/bluetoothsink ]]; then
+		player=bluetooth
+		echo bluetooth > $dirshm/player
+	else
+		player=$( < $dirshm/player )
+	fi
 	radioStop
 	mpc -q stop
 	case $player in
@@ -72,7 +77,7 @@ playerStop() {
 			shairportStop
 			;;
 		bluetooth )
-			rm -f $dirshm/bluetoothdest
+			rm -f $dirshm/{bluetoothdest,bluetoothsink}
 			systemctl restart bluetooth
 			;;
 		mpd )
