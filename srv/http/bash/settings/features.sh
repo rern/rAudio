@@ -361,7 +361,7 @@ snapclient )
 			statePlay && systemctl start snapclient
 		fi
 	else
-		systemctl stop snapclient
+		$dirbash/snapcast.sh stop
 		[[ $snapserver ]] && rm -f $dirsystem/snapclientserver
 	fi
 	pushRefresh
