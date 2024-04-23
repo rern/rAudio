@@ -82,7 +82,7 @@ $sharedip"
 		;;
 	snapserver )
 		PKG=snapcast
-		fileconf=/etc/default/snapserver
+		fileconf=/etc/snapserver.conf
 		;;
 	spotifyd )
 		skip+='|No.*specified|no usable credentials'
