@@ -15,8 +15,7 @@ fileclientip=$dirshm/clientip
 
 if [[ $1 == start ]]; then
 	systemctl start snapclient
-	[[ -e /boot/kernel.img ]] && sec=1 || sec=0.2
-	serverip=$( timeout $sec snapclient | awk '/Connected to/ {print $NF}' )
+	serverip=$( timeout 1 snapclient | awk '/Connected to/ {print $NF}' )
 	if [[ $serverip ]]; then
 		echo $serverip > $dirshm/serverip
 		echo snapcast > $dirshm/player
