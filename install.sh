@@ -21,16 +21,6 @@ if [[ -e $file ]] && ! grep -q {CONFIG} $file; then
 	systemctl daemon-reload
 fi
 
-# 202402226
-file=/etc/default/camilladsp
-if [[ -e $file ]] && grep -qs /etc/ $file; then
-	sed -i 's|/etc/|/srv/http/data/|' $file
-	mv -f /{etc,srv/http/data}/camilladsp/configs/*
-fi
-
-file=$dirsystem/autoplay.conf
-grep -qs ^cd $file && sed -i '/^cd/ d' $file
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 

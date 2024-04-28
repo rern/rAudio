@@ -136,10 +136,10 @@ $( $dirbash/status-bluetooth.sh )"
 		serverip=$( < $dirshm/serverip )
 		serverstatus=$( sshCommand $serverip $dirbash/status.sh snapclient )
 ########
-		status+=$( sed -E  -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+		status+=$'\n'$( sed -E  -e '1,3d; $d
+						 ' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
 						 ' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
 						 ' -e 's|^, *"icon".*|, "icon" : "snapcast"|
-						 ' -e '1d; $d
 						 ' <<< $serverstatus )
 		;;
 	spotify )
@@ -451,7 +451,7 @@ if [[ ! $sampling ]]; then
 	fi
 	if [[ $bitdepth == dsd ]]; then
 		sampling="${samplerate^^} •"
-	else
+	elif [[ $samplerate ]]; then
 		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
 		sample="$( calc 1 $samplerate/1000 ) kHz"
 		if [[ $bitdepth && ! $ext =~ ^(AAC|MP3|OGG|Radio)$ ]]; then

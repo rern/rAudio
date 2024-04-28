@@ -49,7 +49,7 @@ if [[ -e $dirshm/clientip ]]; then
 	[[ ! $status ]] && status=$( $dirbash/status.sh ) # $statusradio
 	status=$( sed -E -e '1,/^, "single" *:/ d;/^, "icon" *:/ d; /^, "login" *:/ d; /^}/ d
 					' -e '/^, "stationcover"|^, "coverart"/ s|(" *: *")|\1http://'$serverip'|' <<< $status )
-	data='{ "channel": "mpdplayer", "data": { ${status:1} }'
+	data='{ "channel": "mpdplayer", "data": { '${status:1}' } }'
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
 		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )

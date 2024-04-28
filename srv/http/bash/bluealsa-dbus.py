@@ -15,6 +15,8 @@ import os
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
 path = '/test/autoagent'
+filesink = '/srv/http/data/shm/bluetoothsink'
+statuspush = '/srv/http/bash/status-push.sh'
 
 def property_changed( interface, changed, invalidated, path ):
     for name, value in changed.items():
@@ -28,13 +30,12 @@ def property_changed( interface, changed, invalidated, path ):
         if name == 'Player':
             with open( '/srv/http/data/shm/bluetoothdest', 'w' ) as f: f.write( value )
         elif name == 'Position' or name == 'Track':
-            os.system( '/srv/http/bash/status-push.sh' )
+            os.system( statuspush )
         elif name == 'Status':
-            with open( '/srv/http/data/shm/player' ) as f: player = f.read().rstrip()
-            if value == 'playing' and player != 'bluetooth':
-                f.write( 'bluetooth' )
-                os.system( "/srv/http/bash/cmd.sh playerstart" )
-            os.system( '/srv/http/bash/status-push.sh' )
+            if value == 'playing' and not os.path.isfile( filesink ):
+                open( filesink, 'a' )
+                os.system( '/srv/http/bash/cmd.sh playerstart' )
+            os.system( statuspush )
 
 if __name__ == '__main__':
     dbus.mainloop.glib.DBusGMainLoop( set_as_default=True )
