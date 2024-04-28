@@ -1657,7 +1657,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 			, message    : 'Randomly add and play continuously.'
 			, list       : '<div class="menu">'
 						  +'<a class="sub cmd"><i class="i-music"></i>Songs</a><i class="i-play-plus submenu cmd play"></i>'
-						  +'<a class="sub cmd album"><i class="i-album"></i>Abums</a><i class="i-play-plus submenu cmd album"></i>'
+						  +'<a class="sub cmd album"><i class="i-album"></i>Albums</a><i class="i-play-plus submenu cmd album"></i>'
 						  +'</div>'
 			, values     : [ true ]
 			, beforeshow : () => {
