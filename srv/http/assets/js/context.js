@@ -47,7 +47,7 @@ function addToPlaylistCommand() {
 	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) {
 		V.playbackswitch = true;
 		setTimeout( () => delete V.playbackswitch, 1000 );
-		$( '#playback' ).trigger( 'click' );
+		switchPage( 'playback' );
 	}
 }
 function bookmarkNew() {
