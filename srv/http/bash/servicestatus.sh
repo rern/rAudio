@@ -103,12 +103,21 @@ if [[ $conf ]]; then
 	config+="
 $conf"
 else
-	[[ ! $fileconf ]] && fileconf=/etc/$PKG.conf
 	config+="
-<bll># cat $fileconf</bll>
-$( grep -Ev '^#|=$|^$' $fileconf )"
+<bll># cat $fileconf</bll>"
+	[[ ! $fileconf ]] && fileconf=/etc/$PKG.conf
+	readarray -t lines <<< $( grep -Ev '^#|=$|^$' $fileconf )
+	linesL=${#lines[@]}
+	for (( i=0; i < $linesL; i++ )); do
+		l=${lines[i]}
+		next=${lines[i + 1]}
+		if [[ ${l:0:1} == [ ]]; then
+			[[ $next && ${next:0:1} != [ ]] && config+=$'\n'$l
+		else
+			config+=$'\n'$l
+		fi
+	done
 fi
-
 echo "\
 $( awk NF <<< $config )
 
