@@ -479,7 +479,7 @@ function passwordWrong() {
 }
 function renderPage() {
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
-	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! S.snapclientactive );
+	$( '#divsnapclient .col-l' ).toggleClass( 'single', ! S.snapclientactive );
 	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {
