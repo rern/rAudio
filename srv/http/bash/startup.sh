@@ -20,6 +20,12 @@ if [[ -e /boot/expand ]]; then # run once
 		partprobe $dev
 		resize2fs $partition
 	fi
+	revision=$( grep ^Revision /proc/cpuinfo )
+	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
+		systemctl disable --now localbrowser
+		pacman -R --noconfirm firefox matchbox-window-manager plymouth-lite-rbp-git upower xf86-video-fbturbo
+		rm -f /etc/systemd/system/localbrowser.service /srv/http/assets/img/splash.png $dirbash/xinitrc
+	fi
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
