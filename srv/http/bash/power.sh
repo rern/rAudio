@@ -40,6 +40,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl stop lcdchar
 	$dirbash/lcdchar.py logo
 fi
+[[ -e $dirsystem/snapclient ]] && $dirbash/snapcast.sh stop
 if [[ -e $dirshm/clientip ]]; then
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
