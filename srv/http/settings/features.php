@@ -104,7 +104,6 @@ EOF
 	]
 	, [
 		  'id'       => 'snapserver'
-		, 'disabled' => iLabel( 'SnapClient', 'snapcast' ).' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
 

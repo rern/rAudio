@@ -368,20 +368,15 @@ snapclient )
 	;;
 snapserver )
 	if [[ $ON ]]; then
-		avahi=$( timeout 0.2 avahi-browse -rp _snapcast._tcp 2> /dev/null | grep snapcast.*1704 )
-		if [[ $avahi ]]; then
-			echo '{
-  "icon"    : "snapcast"
-, "title"   : "SnapServer"
-, "message" : "Already running on: '$( cut -d';' -f8 <<< $avahi )'"
-}'
-			exit
-# --------------------------------------------------------------------
-		fi
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
 		serviceRestartEnable
 	else
-		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
+		if [[ -e $dirshm/clientip ]]; then
+			while read ip; do
+				sshCommand $ip $dirbash/cmd.sh playerstop
+			done < $dirshm/clientip
+		fi
+		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver $dirshm/clientip
 		systemctl disable --now snapserver
 	fi
 	$dirsettings/player-conf.sh
