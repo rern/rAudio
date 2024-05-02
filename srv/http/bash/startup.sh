@@ -24,10 +24,11 @@ if [[ -e /boot/expand ]]; then # run once
 	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
 		systemctl enable getty@tty1
 		systemctl disable --now bootsplash localbrowser
-		pacman -R --noconfirm firefox matchbox-window-manager plymouth-lite-rbp-git upower xf86-video-fbturbo
+		pacman -R --noconfirm firefox matchbox-window-manager plymouth-lite-rbp-git upower \
+			xf86-video-fbturbo xf86-input-evdev xf86-video-fbdev xf86-video-vesa xinput_calibrator xorg-server xorg-xinit
 		rm -f /etc/systemd/system/{bootsplash,localbrowser}* \
 			  /etc/X11/* \
-			  /etc/X11/xinit/rotateconf
+			  /etc/X11/xinit/rotateconf &> /dev/null
 		sed -i 's/tty3 .*/tty1/' /boot/cmdline.txt
 	fi
 fi
