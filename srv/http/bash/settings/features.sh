@@ -353,7 +353,7 @@ snapclient )
 	enableFlagSet
 	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
 	if [[ $ON ]]; then
-		echo 'SNAPCLIENT_OPTS="--latency='$LATENCY'"' > /etc/default/snapclient
+		sed -i -E 's/(latency=).*"/\1'$LATENCY'"/' /etc/default/snapclient
 		[[ -e $dirsystem/snapclient ]] && systemctl try-restart snapclient
 		
 		if [[ $snapserver ]]; then

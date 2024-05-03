@@ -187,6 +187,16 @@ alsa = {
 	fi
 fi
 
+if [[ -e /usr/bin/snapclient ]]; then
+	if grep -q latency /etc/default/snapclient; then
+		latency=$( sed -n -E '/SNAPCLIENT_OPTS/ {s/.*="|--latency=|"$| --sound.*//g; p}' /etc/default/snapclient )
+	else
+		latency=800
+	fi
+	pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
+	echo 'SNAPCLIENT_OPTS="--soundcard='$pcm' --latency='$latency'"' > /etc/default/snapclient
+fi
+
 if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ -e $dirsystem/spotifyoutput ]]; then
 		hwspotifyd=$( < $dirsystem/spotifyoutput ) # hw=default:CARD=xxxx (from aplay -L)
