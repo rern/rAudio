@@ -215,25 +215,20 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 		case 'snapclient':
 			var active = $( this ).hasClass( 'on' );
 			if ( active ) {
-				if ( S.snapclient ) {
-					bash( [ 'snapcast.sh', 'stop' ] );
-				} else {
-					$( '#stop' ).trigger( 'click' );
-				}
-			} else {
 				$( '#stop' ).trigger( 'click' );
+			} else {
 				bash( [ 'snapcast.sh', 'start' ], data => {
 					bannerHide();
 					if ( data == -1 ) {
 						info( {
 							  icon    : 'snapcast'
-							, title   : 'Snapcast'
-							, message : 'Snapcast server not available'
+							, title   : 'SnapClient'
+							, message : 'SnapServer not available'
 						} );
 					}
 				} );
 			}
-			banner( 'snapcast blink', 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ) );
+			banner( 'snapcast blink', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ) );
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );

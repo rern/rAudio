@@ -14,9 +14,12 @@
 fileclientip=$dirshm/clientip
 
 if [[ $1 == start ]]; then
-	systemctl start snapclient
-	serverip=$( timeout 1 snapclient | awk '/Connected to/ {print $NF}' )
-	if [[ $serverip ]]; then
+	service=$( avahi-browse -prt _snapcast._tcp | tail -1 )
+	if [[ $service ]]; then
+		server=$( cut -d';' -f7 <<< $service )
+		serverip=$( cut -d';' -f8 <<< $service | cut -d';' -f8 )
+		notify snapcast SnapServer "Connect ${server/.local} ..."
+		systemctl start snapclient
 		echo $serverip > $dirshm/serverip
 		echo snapcast > $dirshm/player
 		$dirbash/cmd.sh playerstart
