@@ -1788,7 +1788,7 @@ function setPlaylistScroll() {
 	var $stationname = $this.find( '.li2 .stationname' );
 	var webradio     = $this.hasClass( 'webradio' )
 	$stationname.addClass( 'hide' );
-	if ( S.state === 'stop' ) {
+	if ( S.state === 'stop' || S.player === 'snapcast' ) {
 		if ( webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
