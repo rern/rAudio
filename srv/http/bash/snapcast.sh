@@ -28,7 +28,6 @@ if [[ $1 == start ]]; then
 		sshCommand $serverip $dirbash/snapcast.sh $clientip
 		touch $dirshm/snapclient
 	else
-		systemctl stop snapclient
 		echo -1
 	fi
 elif [[ $1 == stop ]]; then
