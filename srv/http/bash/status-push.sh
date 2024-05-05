@@ -46,14 +46,15 @@ fi
 
 if [[ -e $dirshm/clientip ]]; then
 	serverip=$( ipAddress )
-	[[ ! $status ]] && status=$( $dirbash/status.sh ) # $statusradio
-	status=$( sed -E -e '1,/^, "single" *:/ d;/^, "icon" *:/ d; /^, "login" *:/ d; /^}/ d
-					' -e '/^, "stationcover"|^, "coverart"/ s|(" *: *")|\1http://'$serverip'|' <<< $status )
-	data='{ "channel": "mpdplayer", "data": { '${status:1}' } }'
-	clientip=$( < $dirshm/clientip )
-	for ip in $clientip; do
-		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
+	[[ ! $status ]] && status=$( $dirbash/status.sh snapclient ) # $statusradio
+	for k in Album Artist coverart file state station stationcover Time Title; do
+		filter+='|^, "'$k'"'
 	done
+	status=$( grep -E "${filter:1}" <<< $status | sed -E 's| : "/data/| : "http://'$serverip/data/'|' )
+	data='{ "channel": "mpdplayer", "data": { '${status:1}' } }'
+	while read ip; do
+		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
+	done < $dirshm/clientip
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
