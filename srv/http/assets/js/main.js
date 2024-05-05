@@ -1808,7 +1808,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var updn = $thisli.hasClass( 'updn' );
 	menuHide();
 	$( '.pl-remove' ).remove();
-	if ( menushow && updn) return
+	if ( menushow && updn ) return
 	
 	var state     = S.state;
 	var play      = state === 'play';
