@@ -162,8 +162,8 @@ fi
 
 pos=$( mpc status %songpos% )
 (( $pos > 0 )) && song=$(( pos - 1 )) || song=0 # mpd song    : start at 0
-filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file state Time Title'
-[[ ! $snapclient ]] && filter+=' playlistlength consume random repeat single'
+filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file playlistlength state Time Title'
+[[ ! $snapclient ]] && filter+=' consume random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
 lines=$( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
