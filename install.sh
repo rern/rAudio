@@ -4,9 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240505
+# 20240510
 file=/srv/http/data/mpdconf/conf/snapserver.conf
 if grep -q snapcast $file; then
+	[[ -e $dirsystem/snapclient ]] && restartmpd=1
 	echo 'audio_output {
 	name    "SnapServer"
 	type    "fifo"
@@ -16,7 +17,7 @@ if grep -q snapcast $file; then
 fi
 
 # 20240315
-[[ -e /usr/bin/iwctl ]] && groupadd -f netdev
+! grep -q netdev /etc/group && groupadd -f netdev
 
 #-------------------------------------------------------------------------------
 installstart "$1"
@@ -30,8 +31,10 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20240315
-echo "$bar Restart MPD ..."
-$dirsettings/player-conf.sh
+# 20240510
+if [[ $restartmpd ]]; then
+	echo "$bar Restart MPD ..."
+	$dirsettings/player-conf.sh
+fi
 
 installfinish
