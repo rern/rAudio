@@ -893,7 +893,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 	if ( V.press || ws.readyState !== 1 ) return // fix - missing elapsed if ws closed > reconnect
 	
 	var cmd   = this.id;
-	if ( S.state === cmd ) return
+	if ( S.player === 'mpd' && S.state === cmd ) return
 	
 	if ( $( this ).hasClass( 'btn-toggle' ) ) {
 		var onoff = ! S[ cmd ];
