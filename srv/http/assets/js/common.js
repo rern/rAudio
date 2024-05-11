@@ -890,7 +890,12 @@ function infoSetValues() {
 		type  = $this.prop( 'type' );
 		val   = I.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
-			val ? $this.val( [ val ] ) : $this.eq( 0 ).prop( 'checked', true );
+			if ( val ) {
+				var name = $this.prop( 'name' );
+				$( 'input[name='+ name +']' ).val( [ val ] );
+			} else {
+				$this.eq( 0 ).prop( 'checked', true );
+			}
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
 		} else if ( $this.is( 'select' ) ) {

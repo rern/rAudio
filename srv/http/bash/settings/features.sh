@@ -219,15 +219,11 @@ logindisable )
 multiraudio )
 	enableFlagSet
 	if [[ $ON ]]; then
-		fileconf=$dirsystem/multiraudio.json
-		conf=$( < $fileconf )
-		iplist=$( grep -Ev "$( ipAddress )|{|}" <<< $conf | awk '{print $NF}' | tr -d '",' )
+		ip=$( ipAddress )
+		iplist=$( grep -Ev "$ip|{|}" $dirsystem/multiraudio.json | awk '{print $NF}' | tr -d '",' )
 		for ip in $iplist; do
-			sshCommand $ip << EOF
-echo "$conf" > $fileconf
-touch $dirsystem/multiraudio
-pushData display '{ "submenu": "multiraudio", "value": true }'
-EOF
+			sshpass -p ros scp -o StrictHostKeyChecking=no $dirsystem/multiraudio* root@$ip:$dirsystem
+			websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": true }'
 		done
 	fi
 	pushRefresh
