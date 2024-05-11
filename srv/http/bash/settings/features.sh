@@ -357,7 +357,6 @@ snapclient )
 		pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
 		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm' --latency='$LATENCY'"' > /etc/default/snapclient
 		systemctl try-restart snapclient
-		
 		if [[ $snapserver ]]; then
 			touch $dirsystem/snapclientserver
 			statePlay && systemctl start snapclient
@@ -373,12 +372,8 @@ snapserver )
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
 		serviceRestartEnable
 	else
-		if [[ -e $dirshm/clientip ]]; then
-			while read ip; do
-				sshCommand $ip $dirbash/cmd.sh playerstop
-			done < $dirshm/clientip
-		fi
-		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver $dirshm/clientip
+		snapclientIP playerstop
+		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 		systemctl disable --now snapserver
 	fi
 	$dirsettings/player-conf.sh

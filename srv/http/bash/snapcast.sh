@@ -11,7 +11,6 @@
 
 
 . /srv/http/bash/common.sh
-fileclientip=$dirshm/clientip
 
 if [[ $1 == start ]]; then
 	service=$( avahi-browse -prt _snapcast._tcp | tail -1 )
@@ -24,8 +23,6 @@ if [[ $1 == start ]]; then
 		echo snapcast > $dirshm/player
 		$dirbash/cmd.sh playerstart
 		$dirbash/status-push.sh
-		clientip=$( ipAddress )
-		sshCommand $serverip $dirbash/snapcast.sh $clientip
 		touch $dirshm/snapclient
 	else
 		echo -1
@@ -34,15 +31,5 @@ elif [[ $1 == stop ]]; then
 	systemctl stop snapclient
 	$dirbash/cmd.sh playerstop
 	$dirbash/status-push.sh
-	serverip=$( < $dirshm/serverip )
-	clientip=$( ipAddress )
-	sshCommand $serverip $dirbash/snapcast.sh remove $clientip
 	rm $dirshm/{serverip,snapclient}
-elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
-	clientip=$2
-	sed -i "/$clientip/ d" $fileclientip
-	[[ ! $( awk NF $fileclientip ) ]] && rm -f $fileclientip
-else # sshpass add clientip from connected client
-	clientip=$1
-	appendSortUnique $clientip $fileclientip
 fi

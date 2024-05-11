@@ -388,6 +388,24 @@ sharedDataReset() {
 	rm -rf $dirbackup
 	dirPermissions
 }
+snapclientIP() {
+	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
+	
+	local clientip connected line 
+	lines=$( jq .Groups < /var/lib/snapserver/server.json \
+				| grep -E '"connected":|"ip":' \
+				| tr -d ' ",' )
+	while read l; do
+		if [[ ${l/:*} == connected ]]; then
+			[[ ${l/*:} == true ]] && connected=1 || connected=
+		else
+			[[ ! $connected ]] && continue
+			
+			[[ $1 ]] && sshCommand $ip $dirbash/cmd.sh playerstop || clientip+=" ${l/*:}"
+		fi
+	done <<< $lines
+	[[ $clientip ]] && echo $clientip
+}
 sshCommand() {
 	! ipOnline $1 && return
 	
