@@ -50,6 +50,7 @@ EOF
  · SnapClient and SnapServer can be enabled on the same device.
 	· Enable SnapServer before SnapClient
 	· SnapClient auto connect/disconnect on play/stop (no connect icon)
+ · Web interface: <c>http://SNAPSERVER_IP:1780</c>
 EOF
 	]
 	, [
@@ -106,8 +107,8 @@ EOF
 		  'id'       => 'snapserver'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
-
-Note: SSH passwords must be default. (For metadata update)
+ · SSH passwords must be default.
+ · Web interface: <c>http://$ip:1780</c>
 EOF
 	]
 ];
