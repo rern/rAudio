@@ -1184,7 +1184,7 @@ function volumeSetAt( val ) { // drag / press / updn
 function websocketConnect( ip ) {
 	var url = 'ws://'+ ( ip || location.host ) +':8080';
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
-		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( url +'/volume' );
+		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( url +'/cmdsh' );
 	}
 	if ( websocketOk( ws ) ) return
 	

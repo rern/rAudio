@@ -4,7 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240510
+# 20240517
+! grep -q cmdsh /srv/http/bash/websocket-server.py && restartws=1
+
 file=/srv/http/data/mpdconf/conf/snapserver.conf
 if grep -q snapcast $file; then
 	[[ -e $dirsystem/snapclient ]] && restartmpd=1
@@ -15,9 +17,6 @@ if grep -q snapcast $file; then
 	format  "48000:16:2"
 }' > $file
 fi
-
-# 20240315
-! grep -q netdev /etc/group && groupadd -f netdev
 
 #-------------------------------------------------------------------------------
 installstart "$1"
@@ -31,7 +30,8 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20240510
+# 20240517
+[[ $restartws ]] && systemctl restart websocket
 if [[ $restartmpd ]]; then
 	echo "$bar Restart MPD ..."
 	$dirsettings/player-conf.sh
