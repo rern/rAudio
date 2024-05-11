@@ -192,6 +192,7 @@ if [[ -e /usr/bin/snapclient ]]; then
 	[[ ! $latency ]] && latency=800
 	pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
 	echo 'SNAPCLIENT_OPTS="--soundcard='$pcm' --latency='$latency'"' > /etc/default/snapclient
+	systemctl try-restart snapclient
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
