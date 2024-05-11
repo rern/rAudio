@@ -353,8 +353,10 @@ snapclient )
 	enableFlagSet
 	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
 	if [[ $ON ]]; then
-		sed -i -E 's/(latency=).*"/\1'$LATENCY'"/' /etc/default/snapclient
-		[[ -e $dirsystem/snapclient ]] && systemctl try-restart snapclient
+		card=$( getVar card $dirshm/output )
+		pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
+		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm' --latency='$LATENCY'"' > /etc/default/snapclient
+		systemctl try-restart snapclient
 		
 		if [[ $snapserver ]]; then
 			touch $dirsystem/snapclientserver
