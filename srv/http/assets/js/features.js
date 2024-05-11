@@ -231,24 +231,29 @@ $( '#setting-lyrics' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-multiraudio' ).on( 'click', function() {
+	var list = [
+		  [ '', '',     { suffix: 'Name', sameline: true } ]
+		, [ '', '',     { suffix: 'IP / URL' } ]
+	];
+	var listname = [ '', 'text', { sameline: true } ];
+	var listip   = [ '', 'text', { suffix: ico( 'remove' ) } ];
 	if ( S.multiraudioconf ) {
-		var keys = Object.keys( S.multiraudioconf ).sort();
+		var keys   = Object.keys( S.multiraudioconf ).sort();
 		var values = [];
-		keys.forEach( k => values.push( k, S.multiraudioconf[ k ] ) );
+		keys.forEach( k => {
+			list.push( listname, listip );
+			values.push( k, S.multiraudioconf[ k ] );
+		} );
 		var iL     = values.length / 2 - 1;
 	} else {
-		values = [ S.hostname, S.hostip ];
+		list.push( listname, listip );
+		values    = [ S.hostname, S.hostip ];
 	}
 	var check = infoCheckEvenOdd( values.length );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [
-			  [ '', '',     { suffix: 'Name', sameline: true } ]
-			, [ '', '',     { suffix: 'IP / URL' } ]
-			, [ '', 'text', { sameline: true } ]
-			, [ '', 'text', { suffix: ico( 'remove' ) } ]
-		]
+		, list         : list
 		, boxwidth     : 160
 		, values       : values
 		, checkchanged : S.multiraudio && values.length > 2
