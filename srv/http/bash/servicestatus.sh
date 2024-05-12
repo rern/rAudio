@@ -7,29 +7,46 @@ PKG=$1
 SERVICE=$1
 skip='register IPv6'
 
+configText() {
+	local config l lines linesL next
+	config="<code>$( pacman -Q $PKG )</code>"
+	readarray -t lines <<< $( grep -Ev '^#|=$|^$' $1 | awk NF )
+	[[ ! $lines ]] && echo $config && return
+	
+	config+=$'\n'"<bll># cat $1</bll>"
+	linesL=${#lines[@]}
+	for (( i=0; i < $linesL; i++ )); do # remove empty sections
+		l=${lines[i]}
+		next=${lines[i + 1]}
+		if [[ ${l:0:1} == [ ]]; then
+			[[ $next && ${next:0:1} != [ ]] && config+=$'\n'$l
+		else
+			config+=$'\n'$l
+		fi
+	done
+	echo "$config"
+}
+
 case $CMD in
+	ap )
+		PKG=iwd
+		SERVICE=iwd
+		conf=$( configText /var/lib/iwd/ap/$( hostname ).ap )
+		systemctl -q is-active iwd && conf+="
+<bll># iwctl ap list</bll>
+$( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
+		;;
 	bluealsa )
 		conf="\
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L )"
 		;;
-	ap )
-		PKG=iwd
-		SERVICE=iwd
-		fileconf=/var/lib/iwd/ap/$( hostname ).ap
-		conf="\
-<bll># cat $fileconf</bll>
-$fileconf"
-		systemctl -q is-active iwd && config+="
-<bll># iwctl ap list</bll>
-$( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
-		;;
 	bluez )
-		fileconf=/etc/bluetooth/main.conf
+		conf=$( configText /etc/bluetooth/main.conf )
 		SERVICE=bluetooth
 		;;
 	camilladsp )
-		fileconf=/etc/default/camilladsp
+		conf=$( configText /etc/default/camilladsp )
 		;;
 	dabradio )
 		PKG=mediamtx
@@ -39,8 +56,8 @@ $( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		;;
 	localbrowser )
-		fileconf=$dirsystem/localbrowser.conf
 		PKG=firefox
+		conf=$( configText $dirsystem/localbrowser.conf )
 		skip+='|FATAL: Module g2d_23 not found'
 		;;
 	mpd )
@@ -64,9 +81,8 @@ $conf"
 		SERVICE=nfs-server
 		sharedip=$( grep -v $( ipAddress ) $filesharedip )
 		[[ ! $sharedip ]] && sharedip='(none)'
-		systemctl -q is-active nfs-server && conf="\
-<bll># cat /etc/exports</bll>
-$( cat /etc/exports )
+		conf=$( configText /etc/exports )
+		systemctl -q is-active nfs-server && conf+="
 
 <bll># Active clients:</bll>
 $sharedip"
@@ -74,15 +90,25 @@ $sharedip"
 		;;
 	smb )
 		PKG=samba
-		fileconf=/etc/samba/smb.conf
+		conf=$( configText /etc/samba/smb.conf )
 		;;
 	snapclient )
 		PKG=snapcast
-		fileconf=/etc/default/snapclient
+		conf="\
+$( configText /etc/default/snapclient )
+
+<bll># SnapServer</bll>
+"
+		service=$( avahi-browse -prt _snapcast._tcp | tail -1 )
+		if [[ $service ]]; then
+			conf+="$( cut -d';' -f7 <<< $service ) @$( cut -d';' -f8 <<< $service | cut -d';' -f8 )"
+		else
+			conf+='<gr>(Not available)</gr>'
+		fi
 		;;
 	snapserver )
 		PKG=snapcast
-		fileconf=/etc/snapserver.conf
+		conf=$( configText /etc/snapserver.conf )
 		;;
 	spotifyd )
 		skip+='|No.*specified|no usable credentials'
@@ -91,6 +117,7 @@ $sharedip"
 		skip+='|not creating entry for'
 		;;
 esac
+[[ ! $conf ]] && conf=$( configText /etc/$PKG.conf )
 status=$( systemctl status $SERVICE \
 			| grep -E -v "$skip" \
 			| sed -E  -e 's|●|<grn>*</grn>|; s|○|*|
@@ -98,28 +125,9 @@ status=$( systemctl status $SERVICE \
 										 s|(enabled)|<grn>\1</grn>|g}
 					' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
 										 s|(failed)|<red>\1</red>|ig}' )
-config="<code>$( pacman -Q $PKG )</code>"
-if [[ $conf ]]; then
-	config+="
-$conf"
-else
-	config+="
-<bll># cat $fileconf</bll>"
-	[[ ! $fileconf ]] && fileconf=/etc/$PKG.conf
-	readarray -t lines <<< $( grep -Ev '^#|=$|^$' $fileconf )
-	linesL=${#lines[@]}
-	for (( i=0; i < $linesL; i++ )); do
-		l=${lines[i]}
-		next=${lines[i + 1]}
-		if [[ ${l:0:1} == [ ]]; then
-			[[ $next && ${next:0:1} != [ ]] && config+=$'\n'$l
-		else
-			config+=$'\n'$l
-		fi
-	done
-fi
+
 echo "\
-$( awk NF <<< $config )
+$conf
 
 <bll># systemctl status $SERVICE</bll>
 $status"
