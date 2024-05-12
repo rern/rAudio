@@ -218,8 +218,9 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				$( '#stop' ).trigger( 'click' );
 			} else {
 				bash( [ 'snapcast.sh', 'start' ], data => {
-					bannerHide();
 					if ( data == -1 ) {
+						delete V.bannerdelay;
+						bannerHide();
 						info( {
 							  icon    : 'snapcast'
 							, title   : 'SnapClient'
