@@ -97,7 +97,7 @@ $sharedip"
 		conf="\
 $( configText /etc/default/snapclient )
 
-<bll># SnapServer</bll> <gr>(avahi-browse -ckpr _snapcast._tcp)</gr>
+<bll># SnapServer</bll> <gr>(avahi-browse -kprt _snapcast._tcp)</gr>
 "
 		service=$( avahi-browse -ckpr _snapcast._tcp | tail -1 )
 		if [[ $service ]]; then
