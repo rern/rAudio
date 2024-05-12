@@ -97,11 +97,13 @@ $sharedip"
 		conf="\
 $( configText /etc/default/snapclient )
 
-<bll># SnapServer</bll>
+<bll># SnapServer</bll> <gr>(avahi-browse -ckpr _snapcast._tcp)</gr>
 "
-		service=$( avahi-browse -prt _snapcast._tcp | tail -1 )
+		service=$( avahi-browse -ckpr _snapcast._tcp | tail -1 )
 		if [[ $service ]]; then
-			conf+="$( cut -d';' -f7 <<< $service ) @$( cut -d';' -f8 <<< $service | cut -d';' -f8 )"
+			server=$( cut -d';' -f7 <<< $service | sed 's/\.local$//' )
+			serverip=$( cut -d';' -f8 <<< $service | sed 's/^127.0.0.1$/localhost/' )
+			conf+="$server @$serverip"
 		else
 			conf+='<gr>(Not available)</gr>'
 		fi

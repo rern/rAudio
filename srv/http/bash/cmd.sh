@@ -85,7 +85,7 @@ playerStop() {
 			mpc -q stop
 			;;
 		snapcast )
-			$dirbash/snapcast.sh stop
+			$dirbash/snapclient.sh stop
 			;;
 		spotify )
 			rm -f $dirshm/spotify/start
