@@ -352,7 +352,7 @@ smb )
 	;;
 snapclient )
 	enableFlagSet
-	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
+	systemctl -q is-active snapserver && snapserver=1
 	if [[ $ON ]]; then
 		card=$( getVar card $dirshm/output )
 		pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
@@ -360,11 +360,12 @@ snapclient )
 		systemctl try-restart snapclient
 		if [[ $snapserver ]]; then
 			touch $dirsystem/snapclientserver
-			statePlay && systemctl start snapclient
+			$dirsettings/player-conf.sh
 		fi
 	else
 		$dirbash/snapclient.sh stop
-		[[ $snapserver ]] && rm -f $dirsystem/snapclientserver
+		rm -f $dirsystem/snapclient*
+		[[ $snapserver ]] && $dirsettings/player-conf.sh
 	fi
 	pushRefresh
 	;;
