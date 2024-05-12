@@ -224,7 +224,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 						info( {
 							  icon    : 'snapcast'
 							, title   : 'SnapClient'
-							, message : 'SnapServer not available'
+							, message : 'SnapServer not available.'
 						} );
 					}
 				} );
