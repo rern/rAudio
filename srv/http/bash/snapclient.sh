@@ -18,7 +18,7 @@ if [[ $1 == stop ]]; then
 	$dirbash/status-push.sh
 	rm $dirshm/{serverip,snapclient}
 else
-	service=$( avahi-browse -kprt _snapcast._tcp | tail -1 )
+	service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )
 	[[ ! $service ]] && echo -1 && exit
 	
 	server=$( cut -d';' -f7 <<< $service | sed 's/\.local$//' )

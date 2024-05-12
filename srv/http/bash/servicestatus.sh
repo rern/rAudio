@@ -99,7 +99,7 @@ $( configText /etc/default/snapclient )
 
 <bll># SnapServer</bll> <gr>(avahi-browse -kprt _snapcast._tcp)</gr>
 "
-		service=$( avahi-browse -ckpr _snapcast._tcp | tail -1 )
+		service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )
 		if [[ $service ]]; then
 			server=$( cut -d';' -f7 <<< $service | sed 's/\.local$//' )
 			serverip=$( cut -d';' -f8 <<< $service | sed 's/^127.0.0.1$/localhost/' )
