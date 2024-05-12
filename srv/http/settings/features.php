@@ -100,7 +100,7 @@ $body = [
 	[
 		  'id'       => 'httpd'
 		, 'help'     => <<< EOF
-<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
+<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <a href="http://$ip:8000">http://$ip:8000</a> (Latency - several seconds)
 EOF
 	]
 	, [
@@ -108,7 +108,7 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · SSH passwords must be default.
- · Web interface: <c>http://$ip:1780</c> (Can be used as synchronous streaming for browsers)
+ · Web interface: <a href="http://$ip:1780">http://$ip:1780</a> (Can be used as synchronous streaming for browsers)
 EOF
 	]
 ];
