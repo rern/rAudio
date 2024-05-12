@@ -45,7 +45,7 @@ if [[ $1 == withdisplay ]]; then
 , "multiraudio" : '$( exists $dirsystem/multiraudio )'
 , "relays"      : '$( exists $dirsystem/relays )'
 , "screenoff"   : '$screenoff'
-, "snapclient"  : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
+, "snapclient"  : '$( exists $dirsystem/snapclient )'
 , "volumenone"  : '$volumenone'
 }'
 fi
@@ -74,7 +74,7 @@ else
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "shareddata"   : '$( exists $filesharedip )'
-, "snapclient"   : '$( exists $dirshm/snapclient )'
+, "snapclient"   : '$( exists $dirshm/snapserverip )'
 , "stoptimer"    : '$( exists $dirshm/pidstoptimer )'
 , "updateaddons" : '$( exists $diraddons/update )'
 , "updating_db"  : '$updating_db'
@@ -133,7 +133,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
-		serverip=$( < $dirshm/serverip )
+		serverip=$( < $dirshm/snapserverip )
 		serverstatus=$( sshCommand $serverip $dirbash/status.sh snapclient )
 ########
 		status+=$'\n'$( sed -E  -e '1,3d; $d

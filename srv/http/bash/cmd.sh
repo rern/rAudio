@@ -575,16 +575,10 @@ mpcplayback )
 	if [[ $ACTION == play ]]; then
 		sleep 2 # fix stutter
 		action=start
-		active=true
-		touch $dirshm/snapclient
+		systemctl start snapclient
 	else
-		action=stop
-		active=false
-		rm $dirshm/snapclient
+		systemctl stop snapclient
 	fi
-	systemctl $action snapclient
-	pushData option '{ "snapclient": '$active' }'
-	pushData refresh '{ "page": "features", "snapclientactive": '$active' }'
 	;;
 mpcremove )
 	if [[ $POS ]]; then

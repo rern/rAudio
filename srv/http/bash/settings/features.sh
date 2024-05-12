@@ -359,6 +359,7 @@ snapclient )
 		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm' --latency='$LATENCY'"' > /etc/default/snapclient
 		systemctl try-restart snapclient
 		if [[ $snapserver ]]; then
+			rm -f $dirsystem/snapclient
 			touch $dirsystem/snapclientserver
 			$dirsettings/player-conf.sh
 		fi
@@ -375,7 +376,7 @@ snapserver )
 		serviceRestartEnable
 	else
 		snapclientIP playerstop
-		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
+		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclient*
 		systemctl disable --now snapserver
 	fi
 	$dirsettings/player-conf.sh

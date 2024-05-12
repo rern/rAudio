@@ -15,19 +15,14 @@
 if [[ $1 == stop ]]; then
 	systemctl stop snapclient
 	$dirbash/cmd.sh playerstop
-	$dirbash/status-push.sh
-	rm $dirshm/{serverip,snapclient}
+	rm -f $dirshm/snapserverip
 else
-	service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )
-	[[ ! $service ]] && echo -1 && exit
+	readarray -t name_ip <<< $( snapserverList )
+	[[ ! $name_ip ]] && echo -1 && exit
 	
-	server=$( cut -d';' -f7 <<< $service | sed 's/\.local$//' )
-	serverip=$( cut -d';' -f8 <<< $service | cut -d';' -f8 )
-	notify snapcast SnapServer "Connect $server ..."
-	systemctl start snapclient
-	echo $serverip > $dirshm/serverip
+	notify snapcast SnapServer "Connect ${name_ip[0]} ..."
+	[[ ! -e $dirsystem/snapclientserver ]] && echo ${name_ip[1]} > $dirshm/snapserverip
 	echo snapcast > $dirshm/player
-	$dirbash/cmd.sh playerstart
-	$dirbash/status-push.sh
-	touch $dirshm/snapclient
+	systemctl start snapclient
 fi
+$dirbash/status-push.sh

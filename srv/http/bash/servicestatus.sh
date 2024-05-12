@@ -99,11 +99,9 @@ $( configText /etc/default/snapclient )
 
 <bll># SnapServer</bll> <gr>(avahi-browse -kprt _snapcast._tcp)</gr>
 "
-		service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )
-		if [[ $service ]]; then
-			server=$( cut -d';' -f7 <<< $service | sed 's/\.local$//' )
-			serverip=$( cut -d';' -f8 <<< $service | sed 's/^127.0.0.1$/localhost/' )
-			conf+="$server @$serverip"
+		readarray -t name_ip <<< $( snapserverList )
+		if [[ $name_ip ]]; then
+			conf+="${name_ip[0]} @${name_ip[1]}"
 		else
 			conf+='<gr>(Not available)</gr>'
 		fi

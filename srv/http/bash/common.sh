@@ -406,6 +406,13 @@ snapclientIP() {
 	done <<< $lines
 	[[ $clientip ]] && echo $clientip
 }
+snapserverList() {
+	local service
+	service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )
+	[[ ! $service ]] && return
+	
+	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
+}
 sshCommand() {
 	! ipOnline $1 && return
 	

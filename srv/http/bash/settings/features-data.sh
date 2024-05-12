@@ -8,7 +8,7 @@
 
 . /srv/http/bash/common.sh
 
-packageActive camilladsp localbrowser mediamtx nfs-server shairport-sync smb snapclient snapserver spotifyd upmpdcli
+packageActive camilladsp localbrowser mediamtx nfs-server shairport-sync smb snapserver spotifyd upmpdcli
 ##########
 data='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
@@ -78,10 +78,9 @@ fi
 
 ##########
 [[ -e /usr/bin/snapserver ]] && data+='
-, "snapclientactive" : '$snapclient'
 , "snapserver"       : '$snapserver'
 , "snapserveractive" : '$( [[ $( snapclientIP ) ]] && echo true )'
-, "snapclient"       : '$( exists $dirsystem/snapclient )'
+, "snapclient"       : '$( [[ -e $dirsystem/snapclient || -e $dirsystem/snapclientserver ]] && echo true )'
 , "snapclientconf"   : { "LATENCY": '$( grep latency /etc/default/snapclient | tr -d -c 0-9 )' }'
 
 ##########
