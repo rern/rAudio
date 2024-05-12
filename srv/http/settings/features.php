@@ -44,7 +44,7 @@ EOF
 	, [
 		  'id'       => 'snapclient'
 		, 'help'     => <<< EOF
-<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
+<a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · SSH passwords must be default.
  · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
  · SnapClient and SnapServer can be enabled on the same device.
@@ -106,9 +106,9 @@ EOF
 	, [
 		  'id'       => 'snapserver'
 		, 'help'     => <<< EOF
-<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
+<a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · SSH passwords must be default.
- · Web interface: <c>http://$ip:1780</c>
+ · Web interface: <c>http://$ip:1780</c> (Can be used as synchronous streaming for browsers)
 EOF
 	]
 ];
