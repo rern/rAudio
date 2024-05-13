@@ -376,7 +376,8 @@ snapserver )
 		serviceRestartEnable
 	else
 		snapclientIP playerstop
-		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclient*
+		rm -f $dirmpdconf/snapserver.conf
+		mv -f $dirsystem/snapclient{server,} &> /dev/null
 		systemctl disable --now snapserver
 	fi
 	$dirsettings/player-conf.sh
