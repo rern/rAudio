@@ -106,7 +106,7 @@ EOF
 	, [
 		  'id'       => 'snapserver'
 		, 'help'     => <<< EOF
-{$Fi( 'sliders btn' )} Controls and settings with synchronous streaming for browsers
+{$Fi( 'sliders btn' )} Snapweb: Controls with synchronous streaming for browsers
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · SSH passwords must be default.
 EOF
