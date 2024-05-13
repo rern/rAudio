@@ -373,6 +373,7 @@ snapclient )
 snapserver )
 	if [[ $ON ]]; then
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
+		mv -f $dirsystem/snapclient{,server} &> /dev/null
 		serviceRestartEnable
 	else
 		snapclientIP playerstop
