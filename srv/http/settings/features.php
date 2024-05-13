@@ -106,7 +106,7 @@ EOF
 	, [
 		  'id'       => 'snapserver'
 		, 'help'     => <<< EOF
-{$Fi( 'gear btn' )} Web interface (Can be used as synchronous streaming for browsers)
+{$Fi( 'sliders btn' )} Web interface: Settings and synchronous streaming for browsers
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · SSH passwords must be default.
 EOF
