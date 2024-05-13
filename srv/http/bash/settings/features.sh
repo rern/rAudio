@@ -364,7 +364,7 @@ snapclient )
 		fi
 	else
 		$dirbash/snapclient.sh stop
-		rm -f $dirsystem/snapclient*
+		rm -f $dirsystem/snapclientserver
 		[[ $snapserver ]] && $dirsettings/player-conf.sh
 	fi
 	pushRefresh
