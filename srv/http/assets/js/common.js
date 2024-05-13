@@ -492,7 +492,7 @@ function info( json ) {
 				case 'hidden':
 				case 'number':
 				case 'text':
-					htmls.list += '<input type="'+ type +'"'+ ( param.updn ? ' disabled' : '' ) +'>';
+					htmls.list += '<input type="'+ type +'"'+ ( param.updn && ! param.updn.enable ? ' disabled' : '' ) +'>';
 					if ( param.suffix ) {
 						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr>';
 					} else if ( param.updn ) {
