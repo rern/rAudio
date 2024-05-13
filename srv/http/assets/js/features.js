@@ -107,6 +107,9 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		} );
 	}
 } );
+$( '#setting-snapserver' ).on( 'click', function() {
+	window.open( 'http://'+ S.hostip +':1780', '_blank' );
+} );
 $( '#setting-ap' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
