@@ -359,8 +359,7 @@ snapclient )
 		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm' --latency='$LATENCY'"' > /etc/default/snapclient
 		systemctl try-restart snapclient
 		if [[ $snapserver ]]; then
-			rm -f $dirsystem/snapclient
-			touch $dirsystem/snapclientserver
+			mv -f $dirsystem/snapclient{,server} &> /dev/null
 			$dirsettings/player-conf.sh
 		fi
 	else
