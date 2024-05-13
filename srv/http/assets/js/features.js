@@ -36,7 +36,7 @@ $( '#setting-snapclient' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, message      : 'Sync SnapClient with SnapServer:'
+		, message      : 'Sync with SnapServer:'
 		, list         : [ 'Latency <gr>(ms)</gr>', 'number', { updn: { step: 10, min: 0, max: 2000, enable: true } } ]
 		, focus        : 0
 		, checkblank   : true
