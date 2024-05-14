@@ -16,7 +16,7 @@ if grep -q snapcast $file; then
 	path    "/tmp/snapfifo"
 	format  "48000:16:2"
 }' > $file
-	systemctl -q is-active snapclient && restartsnapclient=1
+	$dirbash/snapcast.sh stop
 fi
 
 #-------------------------------------------------------------------------------
@@ -36,10 +36,6 @@ cacheBust
 if [[ $restartmpd ]]; then
 	echo "$bar Restart MPD ..."
 	$dirsettings/player-conf.sh
-fi
-if [[ $restartsnapclient ]]; then
-	$dirbash/snapclient.sh stop
-	$dirbash/snapclient.sh
 fi
 
 installfinish

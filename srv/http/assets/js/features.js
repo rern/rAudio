@@ -33,18 +33,22 @@ $( '.screenshot' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-snapclient' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, message      : 'Sync with SnapServer:'
-		, list         : [ 'Latency <gr>(ms)</gr>', 'number', { updn: { step: 10, min: 0, max: 2000, enable: true } } ]
-		, focus        : 0
-		, checkblank   : true
-		, values       : S.snapclientconf
-		, boxwidth     : 100
-		, checkchanged : S.snapclient
-		, cancel       : switchCancel
-		, ok           : switchEnable
+	if ( S.snapserver ) {
+		$( '#setting-snapserver' ).trigger( 'click' );
+		return
+	}
+	
+	notify( SW.icon, SW.title, 'Search for SnapServer ...' );
+	bash( [ 'snapserverip' ], ip => {
+		if ( ip ) {
+			window.open( 'http://'+ ip +':1780', '_blank' );
+		} else {
+			info( {
+				  icon    : SW.icon
+				, title   : SW.title
+				, message : 'SnapServer not available.'
+			} );
+		}
 	} );
 } );
 $( '#setting-spotifyd' ).on( 'click', function() {

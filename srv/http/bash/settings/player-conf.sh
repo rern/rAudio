@@ -188,10 +188,8 @@ alsa = {
 fi
 
 if [[ -e /usr/bin/snapclient ]]; then
-	latency=$( sed -E 's/.*latency=(.*)"/\1/g' /etc/default/snapclient )
-	[[ ! $latency ]] && latency=800
 	pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
-	echo 'SNAPCLIENT_OPTS="--soundcard='$pcm' --latency='$latency'"' > /etc/default/snapclient
+	echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
 	systemctl try-restart snapclient
 fi
 

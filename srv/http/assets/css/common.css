@@ -236,7 +236,6 @@ i {
 .i-wlan::before            { content: '\F597' }
 #divbluealsa .i-gear::before,
 #divmixer .i-gear::before  { content: '\F516' }
-#setting-snapserver::before { content: '\F50B' }
 
 html {
 	height  : 100%;

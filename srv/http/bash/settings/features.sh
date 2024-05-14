@@ -356,7 +356,7 @@ snapclient )
 	if [[ $ON ]]; then
 		card=$( getVar card $dirshm/output )
 		pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
-		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm' --latency='$LATENCY'"' > /etc/default/snapclient
+		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
 		systemctl try-restart snapclient
 		if [[ $snapserver ]]; then
 			mv -f $dirsystem/snapclient{,server} &> /dev/null
@@ -382,6 +382,9 @@ snapserver )
 	fi
 	$dirsettings/player-conf.sh
 	pushRefresh
+	;;
+snapserverip )
+	snapserverList | tail -1
 	;;
 spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey
