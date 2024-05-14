@@ -498,7 +498,6 @@ $( '#ledcalc' ).on( 'click', function() {
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
-	SW.id     = 'hostname';
 	SW.icon  = 'system';
 	SW.title = 'Player Name';
 	info( {
@@ -506,7 +505,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, title        : SW.title
 		, list         : [ 'Name', 'text' ]
 		, focus        : 0
-		, values       : { NAME: S.hostname }
+		, values       : S.hostname
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {
@@ -514,7 +513,12 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}
-		, ok           : switchEnable
+		, ok           : () => {
+			var val = infoVal();
+			$( '#hostname' ).val( val );
+			banner( SW.icon +' blink', SW.title, 'Change ...', -1 );
+			bash( [ 'hostname', val, 'CMD NAME' ] );
+		}
 	} );
 } );
 $( '#timezone' ).on( 'input', function( e ) {
