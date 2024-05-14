@@ -9,14 +9,14 @@ alias=r1
 
 file=/srv/http/data/mpdconf/conf/snapserver.conf
 if grep -q snapcast $file; then
-	[[ -e $dirsystem/snapclient ]] && restartmpd=1
 	echo 'audio_output {
 	name    "SnapServer"
 	type    "fifo"
 	path    "/tmp/snapfifo"
 	format  "48000:16:2"
 }' > $file
-	$dirbash/snapcast.sh stop
+	[[ -e $dirmpdconf/snapserver.conf ]] && restart=snapserver
+	[[ -e $dirsystem/snapclient ]] && restart+=' snapclient'
 fi
 
 #-------------------------------------------------------------------------------
@@ -33,9 +33,12 @@ cacheBust
 
 # 20240517
 [[ $restartws ]] && systemctl restart websocket
-if [[ $restartmpd ]]; then
-	echo "$bar Restart MPD ..."
-	$dirsettings/player-conf.sh
-fi
+
+for snap in $restart; do
+	$dirsettings/features.sh $snap
+	$dirsettings/features.sh "$snap
+true
+CMD ON"
+done
 
 installfinish
