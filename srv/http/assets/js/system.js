@@ -151,15 +151,15 @@ $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
 	var gnd              = '<br><c>GND:(any black pin)</c>';
-	var vcc1             = htmlCode( 'ora', 'VCC:1' );
+	var vcc1             = htmlC( 'ora', 'VCC:1' );
 	var i2c              = '<br><wh>I²C:</wh>';
-	var scasdl           = htmlCode( 'bll', 'SDA:3' ) +' '+ htmlCode( 'bll', 'SCL:5' );
+	var scasdl           = htmlC( 'bll', 'SDA:3' ) +' '+ htmlC( 'bll', 'SCL:5' );
 	var txtlcdchar       = gnd
-						 + i2c + vcc1 + scasdl + htmlCode( 'red', '5V:4' )
-						 + '<br><wh>GPIO:</wh> '+ htmlCode( 'red', 'VCC:4' ) + htmlCode( 'grn', [ 'RS:15', 'RW:18', 'E:16', 'D4-7:21-24' ] );
+						 + i2c + vcc1 + scasdl + htmlC( 'red', '5V:4' )
+						 + '<br><wh>GPIO:</wh> '+ htmlC( 'red', 'VCC:4' ) + htmlC( 'grn', [ 'RS:15', 'RW:18', 'E:16', 'D4-7:21-24' ] );
 	var txtmpdoled       = gnd + vcc1
 						 + i2c + scasdl
-						 + '<br><wh>SPI:</wh>'+ htmlCode( 'grn', [ 'CLK:23', 'MOS:19', 'RES:22', 'DC:18', 'CS:24' ] );
+						 + '<br><wh>SPI:</wh>'+ htmlC( 'grn', [ 'CLK:23', 'MOS:19', 'RES:22', 'DC:18', 'CS:24' ] );
 	var txtrotaryencoder = gnd +' &emsp; <c>+: not use</c>';
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
@@ -690,7 +690,7 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-function htmlCode( color, txt ) {
+function htmlC( color, txt ) {
 	if ( typeof txt === 'string' ) txt = [ txt ];
 	var html = '';
 	txt.forEach( t => html += ' <c class="'+ color +'">'+ t +'</c>' );
