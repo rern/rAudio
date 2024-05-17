@@ -2,6 +2,7 @@
 <style type="text/css">
 	text {font-family:'Inconsolata';font-size:15px;}
 	path, circle {stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
+	.bl {fill:#33bbff;}
 	.gr {fill:#808080;}
 	.grd {fill:#706E6E;}
 	.grl {fill:#B5B3B3;}
@@ -29,10 +30,10 @@
 <circle class="grn" cx="273.2" cy="42.5" r="6.7"/>
 <circle class="blk" cx="291.7" cy="42.5" r="6.7"/>
 <circle class="grn" cx="310.2" cy="42.5" r="6.7"/>
-<circle class="grn" cx="329.2" cy="42.5" r="6.7"/>
+<circle class="bl" cx="329.2" cy="42.5" r="6.7"/>
+<circle class="bl" cx="347.2" cy="42.5" r="6.7"/>
 <path class="ora" d="M359.1,47.5v-10c0-1,0.8-1.6,1.6-1.6h10.1c1,0,1.6,0.8,1.6,1.6v10.1c0,1-0.8,1.6-1.6,1.6h-10.1 C359.8,49.3,359.1,48.5,359.1,47.5z"/>
 
-<circle class="grn" cx="347.2" cy="42.5" r="6.7"/>
 <circle class="grn" cx="14.2" cy="61" r="6.7"/>
 <circle class="grn" cx="32.7" cy="61" r="6.7"/>
 <circle class="grn" cx="51.2" cy="61" r="6.7"/>
