@@ -151,20 +151,16 @@ $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
 	var gnd              = '<br><c>GND:(any black pin)</c>';
-	var vcc1             = '<c class="ora">VCC:1</c>';
+	var vcc1             = htmlCode( 'ora', 'VCC:1' );
 	var i2c              = '<br><wh>I²C:</wh>';
-	var gpio             = '';
-	var scasdl           = '<c class="bll">SDA:3</c> <c class="bll">SCL:5</c>';
-	var txtlcdchar       = `
-${ gnd }
-${ i2c } ${ vcc1 } ${ scasdl } <c class="red">5V:4</c>
-<br><wh>GPIO:</wh> <c class="red">VCC:4</c> <c>RS:15</c> <c>RW:18</c> <c>E:16</c> <c>D4-7:21-24</c>`;
-	var txtmpdoled       = `
-${ gnd } ${ vcc1 }
-${ i2c } ${ scasdl }
-<br><wh>SPI:</wh> <c>CLK:23</c> <c>MOS:19</c> <c>RES:22</c> <c>DC:18</c> <c>CS:24</c>`;
-	var txtrotaryencoder = `
-${ gnd } &emsp; <c>+: not use</c>`
+	var scasdl           = htmlCode( 'bll', 'SDA:3' ) +' '+ htmlCode( 'bll', 'SCL:5' );
+	var txtlcdchar       = gnd
+						 + i2c + vcc1 + scasdl + htmlCode( 'red', '5V:4' )
+						 + '<br><wh>GPIO:</wh> '+ htmlCode( 'red', 'VCC:4' ) + htmlCode( 'grn', [ 'RS:15', 'RW:18', 'E:16', 'D4-7:21-24' ] );
+	var txtmpdoled       = gnd + vcc1
+						 + i2c + scasdl
+						 + '<br><wh>SPI:</wh>'+ htmlCode( 'grn', [ 'CLK:23', 'MOS:19', 'RES:22', 'DC:18', 'CS:24' ] );
+	var txtrotaryencoder = gnd +' &emsp; <c>+: not use</c>';
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
@@ -694,6 +690,12 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+function htmlCode( color, txt ) {
+	if ( typeof txt === 'string' ) txt = [ txt ];
+	var html = '';
+	txt.forEach( t => html += ' <c class="'+ color +'">'+ t +'</c>' );
+	return html
+}
 function i2sOptionSet() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
 		if ( $( '#divi2sselect' ).hasClass( 'hide' ) ) {
