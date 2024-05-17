@@ -150,16 +150,21 @@ $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
+	var gnd              = '<br><c>GND:(any black pin)</c>';
+	var vcc1             = '<c class="ora">VCC:1</c>';
+	var i2c              = '<br><wh>I²C:</wh>';
+	var gpio             = '';
+	var scasdl           = '<c class="bll">SDA:3</c> <c class="bll">SCL:5</c>';
 	var txtlcdchar       = `
-<br><c>GND:(any black pin)</c>
-<br><wh>I²C:</wh> <c>VCC:1</c> <c>SDA:3</c> <c>SCL:5</c> <c>5V:4</c>
-<br><wh>GPIO:</wh> <c>VCC:4</c> <c>RS:15</c> <c>RW:18</c> <c>E:16</c> <c>D4-7:21-24</c>`;
+${ gnd }
+${ i2c } ${ vcc1 } ${ scasdl } <c class="red">5V:4</c>
+<br><wh>GPIO:</wh> <c class="red">VCC:4</c> <c>RS:15</c> <c>RW:18</c> <c>E:16</c> <c>D4-7:21-24</c>`;
 	var txtmpdoled       = `
-<br><c>GND:(any black pin)</c> <c>VCC:1</c>
-<br><wh>I²C:</wh> <c>SCL:5</c> <c>SDA:3</c>
+${ gnd } ${ vcc1 }
+${ i2c } ${ scasdl }
 <br><wh>SPI:</wh> <c>CLK:23</c> <c>MOS:19</c> <c>RES:22</c> <c>DC:18</c> <c>CS:24</c>`;
 	var txtrotaryencoder = `
-<br><c>GND: (any black pin)</c> &emsp; <c>+: not use</c>`
+${ gnd } &emsp; <c>+: not use</c>`
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
