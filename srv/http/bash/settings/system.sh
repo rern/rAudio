@@ -169,13 +169,13 @@ hddsleep )
 	;;
 hostname )
 	nameprev=$( hostname )
-	hostnamectl set-hostname $NAME
+	hostnamectl hostname $NAME
 	sed -i -E 's/(name = ").*/\1'$NAME'"/' /etc/shairport-sync.conf
 	sed -i -E 's/^(friendlyname = ).*/\1'$NAME'/' /etc/upmpdcli.conf
 	systemctl try-restart avahi-daemon bluetooth localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	mv /var/lib/iwd/ap/{$nameprev,$NAME}.ap
 	[[ -e $dirsystem/ap ]] && $dirsettings/features.sh iwctlap
-	pushRefresh
+	pushData refresh '{ "page": "system", "hostname": "'$NAME'" }'
 	;;
 i2seeprom )
 	config=$( grep -v force_eeprom_read /boot/config.txt )

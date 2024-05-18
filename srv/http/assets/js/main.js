@@ -215,25 +215,21 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 		case 'snapclient':
 			var active = $( this ).hasClass( 'on' );
 			if ( active ) {
-				if ( S.snapclient ) {
-					bash( [ 'snapcast.sh', 'stop' ] );
-				} else {
-					$( '#stop' ).trigger( 'click' );
-				}
-			} else {
 				$( '#stop' ).trigger( 'click' );
-				bash( [ 'snapcast.sh', 'start' ], data => {
-					bannerHide();
+			} else {
+				bash( [ 'snapclient.sh' ], data => {
 					if ( data == -1 ) {
+						delete V.bannerdelay;
+						bannerHide();
 						info( {
 							  icon    : 'snapcast'
-							, title   : 'Snapcast'
-							, message : 'Snapcast server not available'
+							, title   : 'SnapClient'
+							, message : 'SnapServer not available.'
 						} );
 					}
 				} );
 			}
-			banner( 'snapcast blink', 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ) );
+			banner( 'snapcast blink', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ) );
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
@@ -898,7 +894,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 	if ( V.press || ws.readyState !== 1 ) return // fix - missing elapsed if ws closed > reconnect
 	
 	var cmd   = this.id;
-	if ( S.state === cmd ) return
+	if ( S.player === 'mpd' && S.state === cmd ) return
 	
 	if ( $( this ).hasClass( 'btn-toggle' ) ) {
 		var onoff = ! S[ cmd ];
@@ -1808,7 +1804,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var updn = $thisli.hasClass( 'updn' );
 	menuHide();
 	$( '.pl-remove' ).remove();
-	if ( menushow && updn) return
+	if ( menushow && updn ) return
 	
 	var state     = S.state;
 	var play      = state === 'play';

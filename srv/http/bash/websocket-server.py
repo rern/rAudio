@@ -8,7 +8,7 @@ CLIENTS = set()
 
 async def cmd( websocket, path ):
     async for args in websocket:
-        if path == '/volume':
+        if path == '/cmdsh':
             subprocess.call( [ '/srv/http/bash/cmd.sh', args ] )
         elif args == 'clientadd':
             if websocket not in CLIENTS:

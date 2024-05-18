@@ -44,7 +44,11 @@ function addToPlaylistCommand() {
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
 	banner( 'playlist', V.title, V.msg );
 	bash( V.mpccmd );
-	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
+	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) {
+		V.playbackswitch = true;
+		setTimeout( () => delete V.playbackswitch, 1000 );
+		switchPage( 'playback' );
+	}
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
@@ -658,7 +662,12 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	}
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
 		$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
-		$( '#'+ cmd ).trigger( 'click' );
+		if ( S.player === 'mpd' || cmd !== 'play' ) {
+			$( '#'+ cmd ).trigger( 'click' );
+		} else {
+			$( '#stop' ).trigger( 'click' );
+			setTimeout( () => $( '#'+ cmd ).trigger( 'click' ), 2000 );
+		}
 		return
 	}
 	

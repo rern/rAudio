@@ -150,16 +150,17 @@ $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
-	var txtlcdchar       = `\
-<c>GND:(any black pin)</c>
-<wh>I²C:</wh> <c>VCC:1</c> <c>SDA:3</c> <c>SCL:5</c> <c>5V:4</c>
-<wh>GPIO:</wh> <c>VCC:4</c> <c>RS:15</c> <c>RW:18</c> <c>E:16</c> <c>D4-7:21-24</c>`;
-	var txtmpdoled       = `\
-<c>GND:(any black pin)</c> <c>VCC:1</c>
-<wh>I²C:</wh> <c>SCL:5</c> <c>SDA:3</c>
-<wh>SPI:</wh> <c>CLK:23</c> <c>MOS:19</c> <c>RES:22</c> <c>DC:18</c> <c>CS:24</c>`;
-	var txtrotaryencoder = `
-<c>GND: (any black pin)</c> &emsp; <c>+: not use</c>`
+	var gnd              = '<br><c>GND:(any black pin)</c>';
+	var vcc1             = htmlC( 'ora', 'VCC:1' );
+	var i2c              = '<br><wh>I²C:</wh>';
+	var scasdl           = htmlC( 'bll', 'SDA:3' ) +' '+ htmlC( 'bll', 'SCL:5' );
+	var txtlcdchar       = gnd
+						 + i2c + vcc1 + scasdl + htmlC( 'red', '5V:4' )
+						 + '<br><wh>GPIO:</wh> '+ htmlC( 'red', 'VCC:4' ) + htmlC( 'grn', [ 'RS:15', 'RW:18', 'E:16', 'D4-7:21-24' ] );
+	var txtmpdoled       = gnd + vcc1
+						 + i2c + scasdl
+						 + '<br><wh>SPI:</wh>'+ htmlC( 'grn', [ 'CLK:23', 'MOS:19', 'RES:22', 'DC:18', 'CS:24' ] );
+	var txtrotaryencoder = gnd +' &emsp; <c>+: not use</c>';
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
@@ -498,7 +499,6 @@ $( '#ledcalc' ).on( 'click', function() {
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
-	SW.id     = 'hostname';
 	SW.icon  = 'system';
 	SW.title = 'Player Name';
 	info( {
@@ -506,7 +506,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, title        : SW.title
 		, list         : [ 'Name', 'text' ]
 		, focus        : 0
-		, values       : { NAME: S.hostname }
+		, values       : S.hostname
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {
@@ -514,7 +514,12 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}
-		, ok           : switchEnable
+		, ok           : () => {
+			var val = infoVal();
+			$( '#hostname' ).val( val );
+			banner( SW.icon +' blink', SW.title, 'Change ...', -1 );
+			bash( [ 'hostname', val, 'CMD NAME' ] );
+		}
 	} );
 } );
 $( '#timezone' ).on( 'input', function( e ) {
@@ -685,6 +690,12 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+function htmlC( color, txt ) {
+	if ( typeof txt === 'string' ) txt = [ txt ];
+	var html = '';
+	txt.forEach( t => html += ' <c class="'+ color +'">'+ t +'</c>' );
+	return html
+}
 function i2sOptionSet() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
 		if ( $( '#divi2sselect' ).hasClass( 'hide' ) ) {

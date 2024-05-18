@@ -22,7 +22,7 @@ function currentStatus( id ) {
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	var services   = [ 'ap',        'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
 					 , 'nfsserver', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
-	var command = services.includes( id ) ? [ 'settings/pkgstatus.sh', id ] : [ 'status'+ id ];
+	var command = services.includes( id ) ? [ 'servicestatus.sh', id ] : [ 'status'+ id ];
 	bash( command, status => {
 		clearTimeout( timeoutGet );
 		$el.html( status + '<br>&nbsp;' ).promise().done( () => {
@@ -56,7 +56,7 @@ function json2array( keys, json ) {
 function list2JSON( list ) {
 	if ( list.trim() === 'notrunning' ) {
 		var pkg = page === 'player' ? 'mpd' : 'camilladsp';
-		bash( [ 'settings/pkgstatus.sh', pkg ], status => {
+		bash( [ 'servicestatus.sh', pkg ], status => {
 			var error =  iconwarning +'<c>'+ pkg +'</c> is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'

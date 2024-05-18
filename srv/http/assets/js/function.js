@@ -463,7 +463,7 @@ function dirName( path ) {
 	return path.substring( 0, path.lastIndexOf( '/' ) )
 }	
 function displayBars() {
-	if ( ! $( '#bio' ).hasClass( 'hide' ) ) return
+	if ( V.playbackswitch || ! $( '#bio' ).hasClass( 'hide' ) ) return
 	
 	var smallscreen = V.wH < 590 || V.wW < 500;
 	var lcd         = ( V.wH <= 320 && V.wW <= 480 ) || ( V.wH <= 480 && V.wW <= 320 );
@@ -1286,7 +1286,7 @@ function renderLibraryPadding() {
 	} )
 }
 function renderPlayback() {
-	if ( ! S.state ) return // suppress on reboot
+	if ( ! S.state || V.playbackswitch ) return // suppress on reboot
 	
 	local();
 	if ( S.state === 'stop' ) setProgress( 0 );
@@ -1788,7 +1788,7 @@ function setPlaylistScroll() {
 	var $stationname = $this.find( '.li2 .stationname' );
 	var webradio     = $this.hasClass( 'webradio' )
 	$stationname.addClass( 'hide' );
-	if ( S.state === 'stop' ) {
+	if ( S.state === 'stop' || S.player === 'snapcast' ) {
 		if ( webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {

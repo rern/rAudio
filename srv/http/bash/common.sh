@@ -388,6 +388,31 @@ sharedDataReset() {
 	rm -rf $dirbackup
 	dirPermissions
 }
+snapclientIP() {
+	[[ ! -e $dirmpdconf/snapserver.conf ]] && return
+	
+	local clientip connected line 
+	lines=$( jq .Groups < /var/lib/snapserver/server.json \
+				| grep -E '"connected":|"ip":' \
+				| tr -d ' ",' )
+	while read l; do
+		if [[ ${l/:*} == connected ]]; then
+			[[ ${l/*:} == true ]] && connected=1 || connected=
+		else
+			[[ ! $connected ]] && continue
+			
+			[[ $1 ]] && sshCommand $ip $dirbash/cmd.sh playerstop || clientip+=" ${l/*:}"
+		fi
+	done <<< $lines
+	[[ $clientip ]] && echo $clientip
+}
+snapserverList() {
+	local service
+	service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )
+	[[ ! $service ]] && return
+	
+	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
+}
 sshCommand() {
 	! ipOnline $1 && return
 	

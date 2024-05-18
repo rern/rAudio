@@ -218,16 +218,17 @@ logindisable )
 	;;
 multiraudio )
 	enableFlagSet
+	ip=$( ipAddress )
+	iplist=$( grep -Ev "$ip|{|}" $dirsystem/multiraudio.json | awk '{print $NF}' | tr -d '",' )
 	if [[ $ON ]]; then
-		fileconf=$dirsystem/multiraudio.json
-		conf=$( < $fileconf )
-		iplist=$( grep -Ev "$( ipAddress )|{|}" <<< $conf | awk '{print $NF}' | tr -d '",' )
 		for ip in $iplist; do
-			sshCommand $ip << EOF
-echo "$conf" > $fileconf
-touch $dirsystem/multiraudio
-pushData display '{ "submenu": "multiraudio", "value": true }'
-EOF
+			sshpass -p ros scp -o StrictHostKeyChecking=no $dirsystem/multiraudio* root@$ip:$dirsystem
+			websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": true }'
+		done
+	else
+		for ip in $iplist; do
+			sshCommand $ip rm -f $dirsystem/multiraudio
+			websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": false }'
 		done
 	fi
 	pushRefresh
@@ -351,41 +352,33 @@ smb )
 	;;
 snapclient )
 	enableFlagSet
-	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
 	if [[ $ON ]]; then
-		echo 'SNAPCLIENT_OPTS="--latency='$LATENCY'"' > /etc/default/snapclient
-		[[ -e $dirsystem/snapclient ]] && systemctl try-restart snapclient
-		
-		if [[ $snapserver ]]; then
-			touch $dirsystem/snapclientserver
-			statePlay && systemctl start snapclient
-		fi
+		card=$( getVar card $dirshm/output )
+		pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
+		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
+		systemctl -q is-active snapserver && mv $dirsystem/snapclient{,server}
 	else
-		$dirbash/snapcast.sh stop
-		[[ $snapserver ]] && rm -f $dirsystem/snapclientserver
+		$dirbash/snapclient.sh stop
+		rm -f $dirsystem/snapclient*
 	fi
 	pushRefresh
 	;;
 snapserver )
 	if [[ $ON ]]; then
-		avahi=$( timeout 0.2 avahi-browse -rp _snapcast._tcp 2> /dev/null | grep snapcast.*1704 )
-		if [[ $avahi ]]; then
-			echo '{
-  "icon"    : "snapcast"
-, "title"   : "SnapServer"
-, "message" : "Already running on: '$( cut -d';' -f8 <<< $avahi )'"
-}'
-			exit
-# --------------------------------------------------------------------
-		fi
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
+		mv -f $dirsystem/snapclient{,server} &> /dev/null
 		serviceRestartEnable
 	else
-		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
+		snapclientIP playerstop
+		rm -f $dirmpdconf/snapserver.conf
+		mv -f $dirsystem/snapclient{server,} &> /dev/null
 		systemctl disable --now snapserver
 	fi
 	$dirsettings/player-conf.sh
 	pushRefresh
+	;;
+snapserverip )
+	snapserverList | tail -1
 	;;
 spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey

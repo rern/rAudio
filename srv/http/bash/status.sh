@@ -45,7 +45,7 @@ if [[ $1 == withdisplay ]]; then
 , "multiraudio" : '$( exists $dirsystem/multiraudio )'
 , "relays"      : '$( exists $dirsystem/relays )'
 , "screenoff"   : '$screenoff'
-, "snapclient"  : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
+, "snapclient"  : '$( exists $dirsystem/snapclient )'
 , "volumenone"  : '$volumenone'
 }'
 fi
@@ -74,7 +74,7 @@ else
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "shareddata"   : '$( exists $filesharedip )'
-, "snapclient"   : '$( exists $dirshm/snapclient )'
+, "snapclient"   : '$( exists $dirshm/snapserverip )'
 , "stoptimer"    : '$( exists $dirshm/pidstoptimer )'
 , "updateaddons" : '$( exists $diraddons/update )'
 , "updating_db"  : '$updating_db'
@@ -133,7 +133,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
-		serverip=$( < $dirshm/serverip )
+		serverip=$( < $dirshm/snapserverip )
 		serverstatus=$( sshCommand $serverip $dirbash/status.sh snapclient )
 ########
 		status+=$'\n'$( sed -E  -e '1,3d; $d
@@ -162,8 +162,8 @@ fi
 
 pos=$( mpc status %songpos% )
 (( $pos > 0 )) && song=$(( pos - 1 )) || song=0 # mpd song    : start at 0
-filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file state Time Title'
-[[ ! $snapclient ]] && filter+=' playlistlength consume random repeat single'
+filter='Album AlbumArtist Artist Composer Conductor audio bitrate duration file playlistlength state Time Title'
+[[ ! $snapclient ]] && filter+=' consume random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
 lines=$( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \

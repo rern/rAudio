@@ -28,6 +28,7 @@ files=(
 	/mnt/MPD/NAS/data
 	/var/lib/alsa/asound.state
 	/var/lib/iwd/ap/$( hostname ).ap
+	/var/lib/snapserver/server.json
 )
 for file in ${files[@]}; do
 	if [[ -e $file ]]; then

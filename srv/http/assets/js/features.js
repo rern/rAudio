@@ -33,18 +33,23 @@ $( '.screenshot' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-snapclient' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, message      : 'Sync SnapClient with SnapServer:'
-		, list         : [ 'Latency <gr>(ms)</gr>', 'number' ]
-		, focus        : 0
-		, checkblank   : true
-		, values       : S.snapclientconf
-		, boxwidth     : 100
-		, checkchanged : S.snapclient
-		, cancel       : switchCancel
-		, ok           : switchEnable
+	if ( S.snapserver ) {
+		$( '#setting-snapserver' ).trigger( 'click' );
+		return
+	}
+	
+	notify( SW.icon, SW.title, 'Search for SnapServer ...' );
+	bash( [ 'snapserverip' ], ip => {
+		if ( ip ) {
+			window.open( 'http://'+ ip +':1780', '_blank' );
+		} else {
+			delete V.bannerdelay;
+			info( {
+				  icon    : SW.icon
+				, title   : SW.title
+				, message : '<a class="helpmenu label">SnapServer<i class="i-snapcast"></i></a> not available.'
+			} );
+		}
 	} );
 } );
 $( '#setting-spotifyd' ).on( 'click', function() {
@@ -106,6 +111,9 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 			}
 		} );
 	}
+} );
+$( '#setting-snapserver' ).on( 'click', function() {
+	window.open( 'http://'+ S.hostip +':1780', '_blank' );
 } );
 $( '#setting-ap' ).on( 'click', function() {
 	info( {
@@ -231,24 +239,29 @@ $( '#setting-lyrics' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-multiraudio' ).on( 'click', function() {
+	var list = [
+		  [ '', '',     { suffix: 'Name', sameline: true } ]
+		, [ '', '',     { suffix: 'IP / URL' } ]
+	];
+	var listname = [ '', 'text', { sameline: true } ];
+	var listip   = [ '', 'text', { suffix: ico( 'remove' ) } ];
 	if ( S.multiraudioconf ) {
-		var keys = Object.keys( S.multiraudioconf ).sort();
+		var keys   = Object.keys( S.multiraudioconf ).sort();
 		var values = [];
-		keys.forEach( k => values.push( k, S.multiraudioconf[ k ] ) );
+		keys.forEach( k => {
+			list.push( listname, listip );
+			values.push( k, S.multiraudioconf[ k ] );
+		} );
 		var iL     = values.length / 2 - 1;
 	} else {
-		values = [ S.hostname, S.hostip ];
+		list.push( listname, listip );
+		values    = [ S.hostname, S.hostip ];
 	}
 	var check = infoCheckEvenOdd( values.length );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [
-			  [ '', '',     { suffix: 'Name', sameline: true } ]
-			, [ '', '',     { suffix: 'IP / URL' } ]
-			, [ '', 'text', { sameline: true } ]
-			, [ '', 'text', { suffix: ico( 'remove' ) } ]
-		]
+		, list         : list
 		, boxwidth     : 160
 		, values       : values
 		, checkchanged : S.multiraudio && values.length > 2
@@ -479,8 +492,6 @@ function passwordWrong() {
 }
 function renderPage() {
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
-	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! S.snapclientactive );
-	$( '#snapserver' ).toggleClass( 'disabled', S.snapserveractive );
 	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {

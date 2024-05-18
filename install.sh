@@ -4,21 +4,19 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240315
-[[ -e /usr/bin/iwctl ]] && groupadd -f netdev
+# 20240517
+! grep -q cmdsh /srv/http/bash/websocket-server.py && restartws=1
 
-# 20240303
-file=/etc/udev/rules.d/bluetooth.rules
-if [[ -e $file ]] && grep -q bluetoothcommand $file; then
-	sed -i 's|bluetoothcommand|settings/networks-bluetooth|' $file
-	udevadm control --reload-rules
-	udevadm trigger
-fi
-
-file=/usr/lib/systemd/system/camilladsp.service
-if [[ -e $file ]] && ! grep -q {CONFIG} $file; then
-	sed -i 's/CONFIG/{CONFIG}/' $file
-	systemctl daemon-reload
+file=/srv/http/data/mpdconf/conf/snapserver.conf
+if grep -q snapcast $file; then
+	echo 'audio_output {
+	name    "SnapServer"
+	type    "fifo"
+	path    "/tmp/snapfifo"
+	format  "48000:16:2"
+}' > $file
+	[[ -e $dirmpdconf/snapserver.conf ]] && restart=snapserver
+	[[ -e $dirsystem/snapclient ]] && restart+=' snapclient'
 fi
 
 #-------------------------------------------------------------------------------
@@ -33,8 +31,14 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20240315
-echo "$bar Restart MPD ..."
-$dirsettings/player-conf.sh
+# 20240517
+[[ $restartws ]] && systemctl restart websocket
+
+for snap in $restart; do
+	$dirsettings/features.sh $snap
+	$dirsettings/features.sh "$snap
+true
+CMD ON"
+done
 
 installfinish

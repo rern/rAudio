@@ -40,12 +40,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	systemctl stop lcdchar
 	$dirbash/lcdchar.py logo
 fi
-if [[ -e $dirshm/clientip ]]; then
-	clientip=$( < $dirshm/clientip )
-	for ip in $clientip; do
-		sshCommand $ip $dirbash/cmd.sh playerstop
-	done
-fi
+snapclientIP playerstop
 cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 [[ $cdda ]] && mpc -q del $cdda
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off && sleep 2

@@ -44,13 +44,15 @@ if systemctl -q is-active localbrowser; then
 	fi
 fi
 
-if [[ -e $dirshm/clientip ]]; then
+clientip=$( snapclientIP )
+if [[ $clientip ]]; then
 	serverip=$( ipAddress )
-	[[ ! $status ]] && status=$( $dirbash/status.sh ) # $statusradio
-	status=$( sed -E -e '1,/^, "single" *:/ d;/^, "icon" *:/ d; /^, "login" *:/ d; /^}/ d
-					' -e '/^, "stationcover"|^, "coverart"/ s|(" *: *")|\1http://'$serverip'|' <<< $status )
+	[[ ! $status ]] && status=$( $dirbash/status.sh snapclient ) # $statusradio
+	for k in Album Artist coverart file state station stationcover Time Title; do
+		filter+='|^, "'$k'"'
+	done
+	status=$( grep -E "${filter:1}" <<< $status | sed -E 's| : "/data/| : "http://'$serverip/data/'|' )
 	data='{ "channel": "mpdplayer", "data": { '${status:1}' } }'
-	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
 		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
 	done

@@ -17,12 +17,13 @@ $id_data      = [
 	, 'scrobble'       => [ 'label' => 'Scrobbler',        'sub' => 'Last.fm' ]
 	, 'shairport-sync' => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true, 'exist' => 'shairport-sync' ]
 	, 'smb'            => [ 'label' => 'File Sharing',     'sub' => 'samba',                                 'status' => true, 'exist' => 'smbd' ]
-	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',                            'status' => true, 'exist' => 'snapclient' ]
-	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'setting' => false,    'status' => true, 'exist' => 'snapclient' ]
+	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',     'setting' => true,     'status' => true, 'exist' => 'snapclient' ]
+	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'setting' => true,    'status' => true, 'exist' => 'snapclient' ]
 	, 'spotifyd'       => [ 'label' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true, 'exist' => 'spotifyd' ]
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
 	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
 ];
+$snapweb = i( 'gear btn' ).'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ]; //////////////////////////////////
 $body         = [
@@ -44,12 +45,14 @@ EOF
 	, [
 		  'id'       => 'snapclient'
 		, 'help'     => <<< EOF
-<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
+{$snapweb}
+<a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · SSH passwords must be default.
  · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
  · SnapClient and SnapServer can be enabled on the same device.
 	· Enable SnapServer before SnapClient
 	· SnapClient auto connect/disconnect on play/stop (no connect icon)
+ · Web interface: <c>http://SNAPSERVER_IP:1780</c>
 EOF
 	]
 	, [
@@ -104,11 +107,10 @@ EOF
 	]
 	, [
 		  'id'       => 'snapserver'
-		, 'disabled' => iLabel( 'SnapClient', 'snapcast' ).' is currently connected.'
 		, 'help'     => <<< EOF
-<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
-
-Note: SSH passwords must be default. (For metadata update)
+{$snapweb}
+<a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player
+ · SSH passwords must be default.
 EOF
 	]
 ];

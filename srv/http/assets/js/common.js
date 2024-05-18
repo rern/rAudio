@@ -492,7 +492,7 @@ function info( json ) {
 				case 'hidden':
 				case 'number':
 				case 'text':
-					htmls.list += '<input type="'+ type +'"'+ ( param.updn ? ' disabled' : '' ) +'>';
+					htmls.list += '<input type="'+ type +'"'+ ( param.updn && ! param.updn.enable ? ' disabled' : '' ) +'>';
 					if ( param.suffix ) {
 						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr>';
 					} else if ( param.updn ) {
@@ -890,7 +890,12 @@ function infoSetValues() {
 		type  = $this.prop( 'type' );
 		val   = I.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
-			val ? $this.val( [ val ] ) : $this.eq( 0 ).prop( 'checked', true );
+			if ( val ) {
+				var name = $this.prop( 'name' );
+				$( 'input[name='+ name +']' ).val( [ val ] );
+			} else {
+				$this.eq( 0 ).prop( 'checked', true );
+			}
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
 		} else if ( $this.is( 'select' ) ) {
@@ -1184,7 +1189,7 @@ function volumeSetAt( val ) { // drag / press / updn
 function websocketConnect( ip ) {
 	var url = 'ws://'+ ( ip || location.host ) +':8080';
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
-		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( url +'/volume' );
+		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( url +'/cmdsh' );
 	}
 	if ( websocketOk( ws ) ) return
 	
