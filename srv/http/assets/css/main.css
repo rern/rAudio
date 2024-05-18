@@ -294,6 +294,9 @@ i.map.disabled, .map.disabled i {
 	right: 20px;
 	font-size: 30px;
 }
+.submenu.disabled {
+	pointer-events: auto;
+}
 /* ---------------------- bar-bottom ----------------------*/
 #bar-bottom {
 	font-size: 28px;

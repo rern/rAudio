@@ -155,7 +155,7 @@ $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.colorpicker ) return
 	
 	var $target = $( e.target );
-	if ( ! $target.is( '.bkcoverart, .bkradio, .savedlist' ) ) menuHide();
+	if ( ! $target.is( '.bkcoverart, .bkradio, .disabled, .savedlist' ) ) menuHide();
 	if ( ! V.local && $( '.pl-remove' ).length && ! $target.hasClass( 'pl-remove' ) ) $( '.pl-remove' ).remove();
 	if ( V.guide ) guideHide();
 } );
@@ -213,19 +213,21 @@ $( '#button-settings' ).on( 'click', function( e ) {
 		$( '#settings' ).addClass( 'hide' );
 	}
 } )
-$( '.settings' ).on( 'click', function() {
+$( '#settings' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ this.id;
-} );
-$( '#settings' ).on( 'click', '.submenu', function() {
+} ).on( 'click', '.submenu', function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) return
+	
 	switch ( this.id ) {
 		case 'dsp':
-			$( this ).hasClass( 'i-camilladsp' ) ? location.href = 'settings.php?p=camilla' : equalizer();
+			$this.hasClass( 'i-camilladsp' ) ? location.href = 'settings.php?p=camilla' : equalizer();
 			break;
 		case 'logout':
 			$.post( 'cmd.php', { cmd: 'logout' }, () => location.reload() );
 			break;
 		case 'snapclient':
-			var active = $( this ).hasClass( 'on' );
+			var active = $this.hasClass( 'on' );
 			if ( active ) {
 				$( '#stop' ).trigger( 'click' );
 			} else {
@@ -464,9 +466,6 @@ $( '#playlist, #button-playlist' ).on( 'click', function() {
 } );
 $( '#bar-top' ).on( 'click', function( e ) {
 	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide ' );
-} );
-$( '#settings' ).on( 'click', function() {
-	$( this ).addClass( 'hide' );
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
 $( '#info' ).on( 'click', function() {
