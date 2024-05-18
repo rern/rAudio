@@ -189,8 +189,11 @@ fi
 
 if [[ -e /usr/bin/snapclient ]]; then
 	pcm=$( aplay -l | grep -m1 "^card $card" | sed -E 's/^card .: | \[.*//g' )
-	echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
-	systemctl try-restart snapclient
+	pcm0=$( cut -d= -f3 /etc/default/snapclient | tr -d '"' )
+	if [[ $pcm0 != $pcm ]]; then
+		echo 'SNAPCLIENT_OPTS="--soundcard='$pcm'"' > /etc/default/snapclient
+		systemctl try-restart snapclient
+	fi
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then

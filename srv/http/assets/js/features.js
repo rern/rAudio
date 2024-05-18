@@ -43,10 +43,11 @@ $( '#setting-snapclient' ).on( 'click', function() {
 		if ( ip ) {
 			window.open( 'http://'+ ip +':1780', '_blank' );
 		} else {
+			delete V.bannerdelay;
 			info( {
 				  icon    : SW.icon
 				, title   : SW.title
-				, message : 'SnapServer not available.'
+				, message : '<a class="helpmenu label">SnapServer<i class="i-snapcast"></i></a> not available.'
 			} );
 		}
 	} );

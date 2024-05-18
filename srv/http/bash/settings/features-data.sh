@@ -77,11 +77,10 @@ if [[ -e /usr/bin/smbd ]]; then
 fi
 
 ##########
-[[ -e /usr/bin/snapserver ]] && data+='
+[[ -e /usr/bin/snapclient ]] && data+='
+, "snapclient"       : '$( ls $dirsystem/snapclient* &> /dev/null && echo true )'
 , "snapserver"       : '$snapserver'
-, "snapserveractive" : '$( [[ $( snapclientIP ) ]] && echo true )'
-, "snapclient"       : '$( [[ -e $dirsystem/snapclient || -e $dirsystem/snapclientserver ]] && echo true )'
-, "snapclientconf"   : { "LATENCY": '$( grep latency /etc/default/snapclient | tr -d -c 0-9 )' }'
+, "snapserveractive" : '$( [[ $( snapclientIP ) ]] && echo true )
 
 ##########
 [[ -e /usr/bin/spotifyd ]] && data+='
