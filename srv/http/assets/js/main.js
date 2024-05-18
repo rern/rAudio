@@ -177,10 +177,10 @@ $( '#coverart' ).on( 'load', function() {
 } ).on( 'error', coverartDefault );
 // color icon
 $( '#displaycolor' ).html( '<canvas></canvas>' );
-var canvas      = $( '#displaycolor canvas' )[ 0 ];
-var ctx         = canvas.getContext( '2d' );
-var cw          = canvas.width / 2;
-var ch          = canvas.height / 2;
+var canvas = $( '#displaycolor canvas' )[ 0 ];
+var ctx    = canvas.getContext( '2d' );
+var cw     = canvas.width / 2;
+var ch     = canvas.height / 2;
 for( i = 0; i < 360; i += 0.25 ) {
 	var rad         = i * Math.PI / 180;
 	ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
