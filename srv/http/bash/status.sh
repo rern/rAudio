@@ -341,8 +341,6 @@ elif [[ $stream ]]; then
 			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
 		fi
 ########
-		status=$( grep -E -v '^, "state"|^, "webradio"' <<< $status )
-########
 		status+='
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
