@@ -49,8 +49,6 @@ var picaOption  = { // pica.js
 //	, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
 //	, alpha            : true // Default = false (black crop background)
 };
-// color icon
-colorIcon( '.submenu.i-color' );
 var icon_player = {
   airplay    : 'AirPlay'
 , bluetooth  : 'Bluetooth'
@@ -58,8 +56,8 @@ var icon_player = {
 , spotify    : 'Spotify'
 , upnp       : 'UPnP'
 }
-var vumeter = '<img class="imgicon" src="'+ V.covervu +'"> ';
-var chkdisplay = {
+var vumeter     = '<img class="imgicon" src="'+ V.covervu +'"> ';
+var chkdisplay  = {
 	  library       : {
 		  album          : ico( 'album' ) +'<gr>Album</gr>'
 			, nas        : ico( 'networks' ) +'<gr>NAS</gr>'
@@ -177,6 +175,20 @@ $( '#coverart' ).on( 'load', function() {
 	}
 	loaderHide();
 } ).on( 'error', coverartDefault );
+// color icon
+$( '#displaycolor' ).html( '<canvas></canvas>' );
+var canvas      = $( '#displaycolor canvas' )[ 0 ];
+var ctx         = canvas.getContext( '2d' );
+var cw          = canvas.width / 2;
+var ch          = canvas.height / 2;
+for( i = 0; i < 360; i += 0.25 ) {
+	var rad         = i * Math.PI / 180;
+	ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
+	ctx.beginPath();
+	ctx.moveTo( cw, ch );
+	ctx.lineTo( cw + cw * Math.cos( rad ), ch + ch * Math.sin( rad ) );
+	ctx.stroke();
+}
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#logo, #refresh' ).on( 'click', function() {
@@ -406,7 +418,11 @@ $( 'body' ).on( 'click', '#colorok', function() {
 		  icon       : 'color'
 		, title      : 'Colors'
 		, message    : 'Reset colors to default?'
-		, beforeshow : () => colorIcon( '#infoIcon' )
+		, beforeshow : () => {
+			$( '#infoIcon' ).html( '<canvas></canvas>' );
+			var ctx = $( '#infoIcon canvas' )[ 0 ].getContext( '2d' );
+			ctx.drawImage( $( '#displaycolor canvas' )[ 0 ], 0, 0 );
+		}
 		, ok         : () => {
 			bash( [ 'color', 'reset', 'CMD HSL' ] );
 			loader();
