@@ -288,7 +288,7 @@ color )
 	hs="$h,$s%,"
 	hsg="$h,3%,"
 	hsl="${hs}$l%"
-
+	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	sed -i -E "
  s|(--cml *: *hsl).*;|\1(${hs}$(( l + 5 ))%);|
   s|(--cm *: *hsl).*;|\1($hsl);|
