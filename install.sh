@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240517
+# 20240519
 ! grep -q cmdsh /srv/http/bash/websocket-server.py && restartws=1
 
 file=/srv/http/data/mpdconf/conf/snapserver.conf
