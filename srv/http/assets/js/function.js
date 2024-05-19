@@ -1573,30 +1573,7 @@ function setCoverart() {
 		} else {
 			coverartDefault();
 		}
-		var img    = new Image();
-		img.src    = coverart;
-		img.onload = function() {
-			var imgW      = img.width;
-			var imgH      = img.height;
-			var canvas    = document.createElement( 'canvas' );
-			var ctx       = canvas.getContext( '2d', { willReadFrequently: true } );
-			canvas.width  = imgW;
-			canvas.height = imgH;
-			ctx.drawImage( img, 0, 0 );
-			var bT        = setCoverartBorder( 0, 0, imgW, 1, ctx );
-			var bR        = setCoverartBorder( imgW - 1, 0, 1, imgH, ctx );
-			var bB        = setCoverartBorder( 0, imgH - 1, imgW, 1, ctx );
-			var bL        = setCoverartBorder( 0, 0, 1, imgH, ctx );
-			console.log( bT, bR, bB, bL )
-		}
 	}
-}
-function setCoverartBorder( x, y, w, h, ctx ) {
-	var rgba  = ctx.getImageData( x, y, w, h ).data;
-	var l     = rgba.length;
-	var level = 0;
-	for( i = 0; i < l; i += 4 ) level += Math.floor( rgba[ i ] + rgba[ i + 1 ] + rgba[ i + 2 ] / 3 );
-	return Math.floor( level / l * 4 );
 }
 function setInfo() {
 	var prev = {
