@@ -288,7 +288,6 @@ color )
 	hs="$h,$s%,"
 	hsg="$h,3%,"
 	hsl="${hs}$l%"
-	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	sed -i -E "
  s|(--cml *: *hsl).*;|\1(${hs}$(( l + 5 ))%);|
   s|(--cm *: *hsl).*;|\1($hsl);|
@@ -308,6 +307,7 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
+	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	pushData reload 1
 	;;
 coverartonline )
