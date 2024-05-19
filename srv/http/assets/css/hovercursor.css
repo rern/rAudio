@@ -33,7 +33,7 @@
 	background: var( --cga );
 }
 .menu a:hover,
-.submenu:hover,
+.submenu:not( .disabled ):hover,
 #bar-bottom i:hover,
 #button-settings:hover,
 #divlyricsartist i:hover,
@@ -61,7 +61,7 @@
 	background-color: var( --cma ) !important;
 }
 .menu a:active:hover,
-.submenu:active:hover,
+.submenu:not( .disabled ):active:hover,
 #button-lib-search:active:hover,
 #button-settings:active:hover,
 #lib-list li:active:hover,
@@ -120,7 +120,7 @@ li:not( .licover ),
 .mode,
 .rs-container,
 .savedlist,
-.submenu,
+.submenu:not( .disabled ),
 #album:not( .albumgray ),
 #artist,
 #bar-bottom,

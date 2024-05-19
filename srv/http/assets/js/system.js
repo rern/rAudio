@@ -150,17 +150,29 @@ $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
-	var gnd              = '<br><c>GND:(any black pin)</c>';
-	var vcc1             = htmlC( 'ora', 'VCC:1' );
+	var gnd              = '<br><c>GND:(any black pin)</c> &emsp; ';
+	var vcc1             = htmlC( 'ora', 'VCC', 1 );
 	var i2c              = '<br><wh>I²C:</wh>';
-	var scasdl           = htmlC( 'bll', 'SDA:3' ) +' '+ htmlC( 'bll', 'SCL:5' );
+	var scasdl           = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
 	var txtlcdchar       = gnd
-						 + i2c + vcc1 + scasdl + htmlC( 'red', '5V:4' )
-						 + '<br><wh>GPIO:</wh> '+ htmlC( 'red', 'VCC:4' ) + htmlC( 'grn', [ 'RS:15', 'RW:18', 'E:16', 'D4-7:21-24' ] );
+						 + i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
+						 + '<br><wh>GPIO:</wh> '+ htmlC( [ 
+								  [ 'red', 'VCC',   4 ]
+								, [ 'grn', 'RS',   15 ]
+								, [ 'grn', 'RW',   18 ]
+								, [ 'grn', 'E',    16 ]
+								, [ 'grn', 'D4-7', '21-24' ]
+							] );
 	var txtmpdoled       = gnd + vcc1
 						 + i2c + scasdl
-						 + '<br><wh>SPI:</wh>'+ htmlC( 'grn', [ 'CLK:23', 'MOS:19', 'RES:22', 'DC:18', 'CS:24' ] );
-	var txtrotaryencoder = gnd +' &emsp; <c>+: not use</c>';
+						 + '<br><wh>SPI:</wh>'+ htmlC( [
+								  [ 'grn', 'CLK', 23 ]
+								, [ 'grn', 'MOS', 19 ]
+								, [ 'grn', 'RES', 22 ]
+								, [ 'grn', 'DC',  18 ]
+								, [ 'grn', 'CS',  24 ]
+							] );
+	var txtrotaryencoder = gnd +'<c>+: not use</c>';
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
@@ -690,10 +702,12 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-function htmlC( color, txt ) {
-	if ( typeof txt === 'string' ) txt = [ txt ];
+function htmlC( data, key, val ) {
+	if ( typeof data !== 'object' ) data = [ [ data, key, val ] ];
 	var html = '';
-	txt.forEach( t => html += ' <c class="'+ color +'">'+ t +'</c>' );
+	data.forEach( el => {
+		html += '<c>'+ el[ 1 ] +':<a class="'+ el[ 0 ] +'">'+ el[ 2 ] +'</a></c> ';
+	} );
 	return html
 }
 function i2sOptionSet() {
