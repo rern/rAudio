@@ -175,20 +175,6 @@ $( '#coverart' ).on( 'load', function() {
 	}
 	loaderHide();
 } ).on( 'error', coverartDefault );
-// color icon
-$( '#displaycolor' ).html( '<canvas></canvas>' );
-var canvas = $( '#displaycolor canvas' )[ 0 ];
-var ctx    = canvas.getContext( '2d' );
-var cw     = canvas.width / 2;
-var ch     = canvas.height / 2;
-for( i = 0; i < 360; i += 0.25 ) {
-	var rad         = i * Math.PI / 180;
-	ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
-	ctx.beginPath();
-	ctx.moveTo( cw, ch );
-	ctx.lineTo( cw + cw * Math.cos( rad ), ch + ch * Math.sin( rad ) );
-	ctx.stroke();
-}
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#logo, #refresh' ).on( 'click', function() {
@@ -203,6 +189,21 @@ $( '#button-data' ).on( 'click', function() {
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
+		if ( ! $( '#displaycolor canvas' ).length ) { // color icon
+			$( '#displaycolor' ).html( '<canvas></canvas>' );
+			var canvas = $( '#displaycolor canvas' )[ 0 ];
+			var ctx    = canvas.getContext( '2d' );
+			var cw     = canvas.width / 2;
+			var ch     = canvas.height / 2;
+			for( i = 0; i < 360; i += 0.25 ) {
+				var rad         = i * Math.PI / 180;
+				ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
+				ctx.beginPath();
+				ctx.moveTo( cw, ch );
+				ctx.lineTo( cw + cw * Math.cos( rad ), ch + ch * Math.sin( rad ) );
+				ctx.stroke();
+			}
+		}
 		menuHide();
 		$( '#settings' )
 			.css( 'top', ( $bartop.is( ':visible' ) ? 40 : 0 ) )
