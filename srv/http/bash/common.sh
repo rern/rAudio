@@ -105,6 +105,9 @@ camillaDSPstart() {
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi
 }
+cmdshWebsocket )
+	ipOnline $1 && websocat ws://$1:8080 <<< $2
+	;;
 conf2json() {
 	local file json k keys only l lines v
 	[[ $1 == '-nocap' ]] && nocap=1 && shift
@@ -317,7 +320,7 @@ pushData() {
 		if [[ $json == *done* ]]; then
 			sharedip=$( grep -v $( ipAddress ) $filesharedip )
 			for ip in $sharedip; do
-				sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
+				cmdshWebsocket $ip shareddatampdupdate
 			done
 			return
 		fi
@@ -401,7 +404,7 @@ snapclientIP() {
 		else
 			[[ ! $connected ]] && continue
 			
-			[[ $1 ]] && sshCommand $ip $dirbash/cmd.sh playerstop || clientip+=" ${l/*:}"
+			[[ $1 ]] && cmdshWebsocket $ip playerstop || clientip+=" ${l/*:}"
 		fi
 	done <<< $lines
 	[[ $clientip ]] && echo $clientip
@@ -412,23 +415,6 @@ snapserverList() {
 	[[ ! $service ]] && return
 	
 	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
-}
-sshCommand() {
-	! ipOnline $1 && return
-	
-	if [[ ${@: -1} == snapclient ]]; then
-		sshpassCmd $@
-	else
-		sshpassCmd $@ &> /dev/null &
-	fi
-}
-sshpassCmd() {
-	sshpass -p ros ssh -q \
-		-o ConnectTimeout=1 \
-		-o UserKnownHostsFile=/dev/null \
-		-o StrictHostKeyChecking=no \
-		root@$1 \
-		"${@:2}"
 }
 stateMPD() {
 	mpc status %state% | sed -E 's/ped$|ing$|d$//g'
