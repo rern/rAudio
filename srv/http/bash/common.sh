@@ -105,9 +105,9 @@ camillaDSPstart() {
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi
 }
-cmdshWebsocket )
+cmdshWebsocket() {
 	ipOnline $1 && websocat ws://$1:8080 <<< $2
-	;;
+}
 conf2json() {
 	local file json k keys only l lines v
 	[[ $1 == '-nocap' ]] && nocap=1 && shift
