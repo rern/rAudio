@@ -95,7 +95,7 @@ var default_v     = {
 		, APAUTO : true
 	}
 }
-var gpiosvg       = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
+var gpiosvg       = $( '#gpiosvg' ).html();
 var board2bcm     = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
@@ -150,7 +150,7 @@ $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
-	var gnd              = '<br><c>GND:(any black pin)</c> &emsp; ';
+	var gnd              = '<p><c>GND:(any black pin)</c> &emsp; ';
 	var vcc1             = htmlC( 'ora', 'VCC', 1 );
 	var i2c              = '<br><wh>I²C:</wh>';
 	var scasdl           = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
@@ -162,7 +162,7 @@ $( '.img' ).on( 'click', function() {
 								, [ 'grn', 'RW',   18 ]
 								, [ 'grn', 'E',    16 ]
 								, [ 'grn', 'D4-7', '21-24' ]
-							] );
+							] ) +'</p>';
 	var txtmpdoled       = gnd + vcc1
 						 + i2c + scasdl
 						 + '<br><wh>SPI:</wh>'+ htmlC( [
@@ -171,8 +171,8 @@ $( '.img' ).on( 'click', function() {
 								, [ 'grn', 'RES', 22 ]
 								, [ 'grn', 'DC',  18 ]
 								, [ 'grn', 'CS',  24 ]
-							] );
-	var txtrotaryencoder = gnd +'<c>+: not use</c>';
+							] ) +'</p>';
+	var txtrotaryencoder = gnd +'<c>+: not use</c></p>';
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
@@ -189,8 +189,7 @@ $( '.img' ).on( 'click', function() {
 		, title       : d[ 0 ]
 		, message     : '<img src="/assets/img/'+ name +'.'+ ( d[ 4 ] || 'jpg' )
 						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
-		, footer      : [ 'lcdchar', 'rotaryencoder', 'mpdoled' ].includes( name ) ? gpiosvg + d[ 1 ] : ''
-		, footeralign : 'left'
+						+ ( [ 'lcdchar', 'rotaryencoder', 'mpdoled' ].includes( name ) ? '<br>'+ gpiosvg + d[ 1 ] : '' )
 		, beforeshow  : () => $( '.'+ name +'-no' ).addClass( 'hide' )
 		, okno        : true
 	} );
