@@ -150,7 +150,7 @@ $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
-	var gnd              = '<p><c>GND:(any black pin)</c> &emsp; ';
+	var gnd              = '<p style="line-height: 19px"><c>GND:(any &cir; pin)</c> &emsp; ';
 	var vcc1             = htmlC( 'ora', 'VCC', 1 );
 	var i2c              = '<br><wh>I²C:</wh>';
 	var scasdl           = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
@@ -163,7 +163,8 @@ $( '.img' ).on( 'click', function() {
 								, [ 'grn', 'E',    16 ]
 								, [ 'grn', 'D4-7', '21-24' ]
 							] ) +'</p>';
-	var txtmpdoled       = gnd + vcc1
+	var txtmpdoled       = gnd
+						 + '<br>'+ vcc1
 						 + i2c + scasdl
 						 + '<br><wh>SPI:</wh>'+ htmlC( [
 								  [ 'grn', 'CLK', 23 ]
@@ -172,7 +173,9 @@ $( '.img' ).on( 'click', function() {
 								, [ 'grn', 'DC',  18 ]
 								, [ 'grn', 'CS',  24 ]
 							] ) +'</p>';
-	var txtrotaryencoder = gnd +'<c>+: not use</c></p>';
+	var txtrotaryencoder = gnd
+						 +'<br><c>CLK, DT, SW: (any <grn>●</grn> pins)</c>'
+						 +'<br><c>+: not use</c></p>';
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
