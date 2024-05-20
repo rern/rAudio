@@ -155,14 +155,16 @@ $( '.img' ).on( 'click', function() {
 	var i2c              = '<br><wh>I²C:</wh>';
 	var scasdl           = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
 	var txtlcdchar       = gnd
-						 + i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
 						 + '<br><wh>GPIO:</wh> '+ htmlC( [ 
 								  [ 'red', 'VCC',   4 ]
 								, [ 'grn', 'RS',   15 ]
 								, [ 'grn', 'RW',   18 ]
 								, [ 'grn', 'E',    16 ]
 								, [ 'grn', 'D4-7', '21-24' ]
-							] ) +'</p>';
+							] )
+						 + i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
+						 +'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
+						 +'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">';
 	var txtmpdoled       = gnd
 						 + '<br>'+ vcc1
 						 + i2c + scasdl

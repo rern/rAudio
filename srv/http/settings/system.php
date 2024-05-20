@@ -175,9 +175,7 @@ EOF
 	, [
 		  'id'       => 'lcdchar'
 		, 'help'     => <<< EOF
-<a class="img" data-name="lcdchar">LCD module</a> (HD44780) - display playback data
- · Support 16x2 and 20x4 LCD modules.
- · {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+<a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
 EOF
 	]
 	, [
