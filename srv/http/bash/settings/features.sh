@@ -220,17 +220,14 @@ multiraudio )
 	enableFlagSet
 	ip=$( ipAddress )
 	iplist=$( grep -Ev "$ip|{|}" $dirsystem/multiraudio.json | awk '{print $NF}' | tr -d '",' )
-	if [[ $ON ]]; then
-		for ip in $iplist; do
+	for ip in $iplist; do
+		if [[ $ON ]]; then
 			sshpass -p ros scp -o StrictHostKeyChecking=no $dirsystem/multiraudio* root@$ip:$dirsystem
-			websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": true }'
-		done
-	else
-		for ip in $iplist; do
+		else
 			sshCommand $ip rm -f $dirsystem/multiraudio
-			websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": false }'
-		done
-	fi
+		fi
+		websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": '$TF' }'
+	done
 	pushRefresh
 	pushSubmenu multiraudio $TF
 	;;
