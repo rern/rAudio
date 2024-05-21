@@ -134,11 +134,7 @@ $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
 		serverip=$( < $dirshm/snapserverip )
-		serverstatus=$( sshpass -p ros ssh -q \
-							-o ConnectTimeout=1 \
-							-o UserKnownHostsFile=/dev/null \
-							-o StrictHostKeyChecking=no \
-								root@$serverip "$dirbash/status.sh snapclient" )
+		serverstatus=$( sshCommand $serverip $dirbash/status.sh snapclient )
 ########
 		status+=$'\n'$( sed -E  -e '1,3d; $d
 						 ' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|

@@ -224,7 +224,7 @@ multiraudio )
 		if [[ $ON ]]; then
 			sshpass -p ros scp -o StrictHostKeyChecking=no $dirsystem/multiraudio* root@$ip:$dirsystem
 		else
-			cmdshWebsocket $ip multiraudioreset
+			sshCommand $ip rm -f $dirsystem/multiraudio
 		fi
 		websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": '$TF' }'
 	done
