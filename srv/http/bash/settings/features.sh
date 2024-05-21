@@ -221,6 +221,8 @@ multiraudio )
 	ip=$( ipAddress )
 	iplist=$( grep -Ev "$ip|{|}" $dirsystem/multiraudio.json | awk '{print $NF}' | tr -d '",' )
 	for ip in $iplist; do
+		! ipOnline $ip && continue
+		
 		if [[ $ON ]]; then
 			sshpass -p ros scp -o StrictHostKeyChecking=no $dirsystem/multiraudio* root@$ip:$dirsystem
 		else
