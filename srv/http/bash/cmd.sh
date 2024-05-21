@@ -13,6 +13,10 @@ plAddPlay() {
 	pushPlaylist
 }
 plAddPosition() {
+	if [[ $ACTION == replaceplay ]]; then
+		touch $dirshm/skip
+		( sleep 1 && rm $dirshm/skip ) &> /dev/null &
+	fi
 	[[ ${ACTION:0:7} == replace ]] && plClear
 	echo $(( $( mpc status %length% ) + 1 ))
 }
