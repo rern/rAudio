@@ -52,9 +52,9 @@ if [[ $clientip ]]; then
 		filter+='|^, "'$k'"'
 	done
 	status=$( grep -E "${filter:1}" <<< $status | sed -E 's| : "/data/| : "http://'$serverip/data/'|' )
-	data='{ "channel": "mpdplayer", "data": { '${status:1}' } }'
+	data=${status:1}
 	for ip in $clientip; do
-		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
+		pushWebsocket $ip mpdplayer $data
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then

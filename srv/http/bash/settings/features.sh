@@ -221,14 +221,12 @@ multiraudio )
 	ip=$( ipAddress )
 	iplist=$( grep -Ev "$ip|{|}" $dirsystem/multiraudio.json | awk '{print $NF}' | tr -d '",' )
 	for ip in $iplist; do
-		! ipOnline $ip && continue
-		
 		if [[ $ON ]]; then
-			sshpass -p ros scp -o StrictHostKeyChecking=no $dirsystem/multiraudio* root@$ip:$dirsystem
+			sshCommand $ip $dirsystem/multiraudio* $dirsystem scp
 		else
 			sshCommand $ip rm -f $dirsystem/multiraudio
 		fi
-		websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": '$TF' }'
+		pushWebsocket $ip display '{ "submenu": "multiraudio", "value": '$TF' }'
 	done
 	pushRefresh
 	pushSubmenu multiraudio $TF

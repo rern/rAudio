@@ -105,9 +105,6 @@ camillaDSPstart() {
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi
 }
-cmdshWebsocket() {
-	ipOnline $1 && websocat ws://$1:8080 <<< $2
-}
 conf2json() {
 	local file json k keys only l lines v
 	[[ $1 == '-nocap' ]] && nocap=1 && shift
@@ -277,14 +274,8 @@ notify() { # icon title message delayms
 	icon=$1
 	title=$( stringEscape $2 )
 	message=$( stringEscape $3 )
-	data='{ "channel": "notify", "data": { "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' } }'
-	if [[ $ip ]]; then
-		! ipOnline $ip && return
-		
-	else
-		ip=127.0.0.1
-	fi
-	websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
+	[[ ! $ip ]] && ip=127.0.0.1
+	pushWebsocket $ip notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
 packageActive() {
 	local active pkg pkgs status
@@ -303,10 +294,8 @@ playerActive() {
 pushData() {
 	local channel data ip json path sharedip updatedone webradiocopy
 	channel=$1
-	json=${@:2} # $2 ...
-	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
-	data='{ "channel": "'$channel'", "data": '$json' }'
-	websocat ws://127.0.0.1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
+	pushWebsocket 127.0.0.1 $channel $data
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
@@ -317,7 +306,7 @@ pushData() {
 	fi
 	
 	if [[ $channel == mpdupdate ]]; then
-		if [[ $json == *done* ]]; then
+		if [[ $data == *done* ]]; then
 			sharedip=$( grep -v $( ipAddress ) $filesharedip )
 			for ip in $sharedip; do
 				sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
@@ -328,7 +317,7 @@ pushData() {
 	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
+		pushWebsocket $ip $channel $data
 	done
 }
 pushDataCoverart() {
@@ -348,6 +337,12 @@ pushRefresh() {
 	[[ $2 ]] && push=$2 || push=push
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
+}
+pushWebsocket() {
+	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
+		data='{ "channel": "'$2'", "data": { '${@:3}' } }'
+		websocat ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+	fi
 }
 radioStatusFile() {
 	local status
@@ -419,19 +414,19 @@ snapserverList() {
 sshCommand() {
 	! ipOnline $1 && return
 	
-	if [[ ${@: -1} == snapclient ]]; then
-		sshpassCmd $@
+	arglast=${@: -1}
+	if [[ $arglast == scp ]]; then
+		cmd="$2 root@$1:$3"
 	else
-		sshpassCmd $@ &> /dev/null &
+		cmd="root@$1 ${@:2}"
+		[[ $arglast != snapclient ]] && cmd+=' &> /dev/null &'
 	fi
-}
-sshpassCmd() {
-	sshpass -p ros ssh -q \
+	[[ ${cmd:0:4} == root ]] && type=ssh || type=scp
+	sshpass -p ros $type -q \
 		-o ConnectTimeout=1 \
 		-o UserKnownHostsFile=/dev/null \
 		-o StrictHostKeyChecking=no \
-		root@$1 \
-		"${@:2}"
+		$cmd
 }
 stateMPD() {
 	mpc status %state% | sed -E 's/ped$|ing$|d$//g'
