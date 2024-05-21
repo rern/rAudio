@@ -340,7 +340,7 @@ pushRefresh() {
 }
 pushWebsocket() {
 	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
-		data='{ "channel": "'$2'", "data": { '${@:3}' } }'
+		data='{ "channel": "'$2'", "data": '${@:3}' }'
 		websocat ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	fi
 }
