@@ -10,7 +10,7 @@ $id_data = [
 	, 'i2smodule'     => [ 'label' => 'Audio - I²S' ]
 	, 'lcdchar'       => [ 'label' => 'Character LCD',     'sub' => 'RPLCD' ]
 	, 'mpdoled'       => [ 'label' => 'Spectrum OLED',     'sub' => 'mpd_oled' ]
-	, 'ping'          => [ 'label' => 'Find Server',       'sub' => 'before connect', 'setting' => false ]
+	, 'ping'          => [ 'label' => 'Ping Server',       'sub' => 'on connect',  'setting' => false ]
 	, 'powerbutton'   => [ 'label' => 'Power Button',      'sub' => 'Wiring Pi' ]
 	, 'relays'        => [ 'label' => 'Relay Module',      'sub' => 'Wiring Pi' ]
 	, 'restore'       => [ 'label' => 'Restore',                                   'setting' => 'none' ]
