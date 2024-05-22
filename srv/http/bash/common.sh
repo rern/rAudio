@@ -196,7 +196,8 @@ dirPermissions() {
 	chmod -R +x $dirbash
 }
 enableFlagSet() {
-	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
+	file=$dirsystem/$CMD
+	[[ $ON ]] && touch $file || rm -f $file
 }
 exists() {
 	[[ -e $1 ]] && echo true || echo false

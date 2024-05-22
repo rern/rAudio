@@ -94,7 +94,7 @@ else # if no connections, start accesspoint
 			for line in "${lines[@]}"; do # ping target before mount
 				[[ ${line:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $line ) || ip=$( cut -d: -f1 <<< $line )
 				for i in {1..10}; do
-					if ipOnline $ip; then
+					if [[ -e $dirsystem/pingno ]] || ipOnline $ip; then
 						mountpoint=$( awk '{print $2}' <<< $line )
 						mount "${mountpoint//\\040/ }" && break || sleep 2
 					fi
