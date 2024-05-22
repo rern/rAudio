@@ -10,7 +10,6 @@ $id_data = [
 	, 'i2smodule'     => [ 'label' => 'Audio - I²S' ]
 	, 'lcdchar'       => [ 'label' => 'Character LCD',     'sub' => 'RPLCD' ]
 	, 'mpdoled'       => [ 'label' => 'Spectrum OLED',     'sub' => 'mpd_oled' ]
-	, 'ping'          => [ 'label' => 'Ping on Mount',                             'setting' => false ]
 	, 'powerbutton'   => [ 'label' => 'Power Button',      'sub' => 'Wiring Pi' ]
 	, 'relays'        => [ 'label' => 'Relay Module',      'sub' => 'Wiring Pi' ]
 	, 'restore'       => [ 'label' => 'Restore',                                   'setting' => 'none' ]
@@ -100,10 +99,6 @@ $body = [
 	'<ul id="list" class="entries"></ul>
 		<div class="helpblock hide">'.i( 'microsd btn' ).' '.i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu'.'</div>
 		<pre id="codehddinfo" class="status hide"></pre>'
-	, [
-		  'id'       => 'ping'
-		, 'help'     => 'Verify file server reachabiblity before mount/connect.'
-	]
 	, [
 		  'id'       => 'hddsleep'
 		, 'disabled' => 'HDD not support sleep'

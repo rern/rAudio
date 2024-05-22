@@ -91,10 +91,10 @@ else # if no connections, start accesspoint
 	if [[ $ipaddress ]]; then
 		readarray -t lines <<< $( grep $dirnas /etc/fstab )
 		if [[ $lines ]]; then
-			for line in "${lines[@]}"; do # ping target before mount
+			for line in "${lines[@]}"; do # check server before mount
 				[[ ${line:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $line ) || ip=$( cut -d: -f1 <<< $line )
 				for i in {1..10}; do
-					if [[ -e $dirsystem/pingno ]] || ipOnline $ip; then
+					if ipOnline $ip; then
 						mountpoint=$( awk '{print $2}' <<< $line )
 						mount "${mountpoint//\\040/ }" && break || sleep 2
 					fi

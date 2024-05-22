@@ -144,7 +144,6 @@ i {
 .i-off::before             { content: '\F520' }
 .i-output::before          { content: '\F528' }
 .i-pause::before           { content: '\F504' }
-.i-ping::before            { content: '\F56A' }
 .i-pipeline::before        { content: '\F52B' }
 .i-play::before            { content: '\F503' }
 .i-playback::before        { content: '\F507' }

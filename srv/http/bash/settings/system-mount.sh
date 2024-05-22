@@ -4,10 +4,8 @@
 
 args2var "$1"
 
-if [[ ! -e $dirsystem/pingno ]]; then
-	! ipOnline $IP && echo "IP address not found: <wh>$IP</wh>" && exit
+! ipOnline $IP && echo "IP address not found: <wh>$IP</wh>" && exit
 # --------------------------------------------------------------------
-fi
 if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
 else # server rAudio client

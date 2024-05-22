@@ -342,11 +342,6 @@ $description
 	fi
 	grep -B1 -A2 --no-group-separator ^${INI,} $filepackages
 	;;
-ping )
-	file=$dirsystem/pingno
-	[[ $ON ]] && rm -f $file || touch $file
-	pushRefresh
-	;;
 powerbutton )
 	enableFlagSet
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
