@@ -91,14 +91,12 @@ else # if no connections, start accesspoint
 	if [[ $ipaddress ]]; then
 		readarray -t lines <<< $( grep $dirnas /etc/fstab )
 		if [[ $lines ]]; then
-			for line in "${lines[@]}"; do # check server before mount
-				[[ ${line:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $line ) || ip=$( cut -d: -f1 <<< $line )
+			for line in "${lines[@]}"; do
+				mp=$( awk '{print $2}' <<< $line )
 				for i in {1..10}; do
-					if ipOnline $ip; then
-						mountpoint=$( awk '{print $2}' <<< $line )
-						mount "${mountpoint//\\040/ }" && break || sleep 2
-					fi
+					mount "${mp//\\040/ }" && break || sleep 2
 				done
+				! mountpoint -q "$mp" && notify networks NAS "Mount failed: <wh>$mp</wh>" 10000
 			done
 		fi
 		if systemctl -q is-active nfs-server; then
