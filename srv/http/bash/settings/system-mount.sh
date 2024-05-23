@@ -4,8 +4,6 @@
 
 args2var "$1"
 
-! ipOnline $IP && echo "IP address not found: <wh>$IP</wh>" && exit
-# --------------------------------------------------------------------
 if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
 else # server rAudio client
@@ -54,7 +52,7 @@ fi
 
 for i in {1..5}; do
 	sleep 1
-	mount | grep -q -m1 "$mountpoint" && break
+	mountpoint -q "$mountpoint" && break
 done
 
 if [[ $SHAREDDATA ]]; then
