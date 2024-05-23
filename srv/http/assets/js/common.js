@@ -1163,7 +1163,7 @@ window.onpageshow = pageActive;
 
 // websocket
 var ws       = null;
-var wsvolume = null;
+var wscmd = null;
 function volumeMuteToggle() {
 	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
 	volumeSet( S.volumemute, 'toggle' );
@@ -1181,15 +1181,15 @@ function volumePush( vol, type ) {
 }
 function volumeSet( vol, type ) { // increment from current to target
 	if ( ! type ) volumePush( vol );
-	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
+	wscmd.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function volumeSetAt( val ) { // drag / press / updn
-	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+	wscmd.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
 }
 function websocketConnect( ip ) {
 	var url = 'ws://'+ ( ip || location.host ) +':8080';
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
-		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( url +'/cmdsh' );
+		if ( ! websocketOk( wscmd ) ) wscmd = new WebSocket( url +'/cmdsh' );
 	}
 	if ( websocketOk( ws ) ) return
 	
@@ -1259,7 +1259,7 @@ function psPower( data ) {
 	V[ data.type ] = true;
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 	ws.close();
-	if ( wsvolume ) wsvolume.close();
+	if ( wscmd ) wscmd.close();
 	if ( V.off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {
