@@ -641,10 +641,10 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
+	. <( mpc status 'state=%state%; consume=%consume%; songpos=%songpos%' )
 	$dirbash/cmd-skipdata.sh "$FILE" &
 	radioStop
 	touch $dirshm/skip
-	. <( mpc status 'state=%state%; consume=%consume%; songpos=%songpos%' )
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
