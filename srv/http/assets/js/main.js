@@ -239,7 +239,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 						info( {
 							  icon    : 'snapcast'
 							, title   : 'SnapClient'
-							, message : 'SnapServer not available.'
+							, message : 'No SnapServers found.'
 						} );
 					}
 				} );
