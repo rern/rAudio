@@ -17,7 +17,6 @@ function statusUpdate( data ) {
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
 	displayBars();
-	if ( D.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( S ) ] );
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
@@ -373,10 +372,10 @@ function psRelays( response ) {
 						   +'<div class="msg-r wh">60</div>'
 			, buttonlabel : ico( 'relays' ) +'Off'
 			, buttoncolor : red
-			, button      : () => bash( [ 'relays' ] )
+			, button      : () => wscmdSend( [ 'relays' ] )
 			, oklabel     : ico( 'set0' ) +'Reset'
 			, ok          : () => {
-				bash( [ 'relaystimerreset' ] );
+				wscmdSend( [ 'relaystimerreset' ] );
 				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m' );
 			}
 		} );

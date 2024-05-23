@@ -365,7 +365,7 @@ function coverartChange() {
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
-			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, 'CMD COVERFILE MPDPATH ARTIST ALBUM' ] );
+			wscmdSend( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, 'CMD COVERFILE MPDPATH ARTIST ALBUM' ] );
 		}
 		, ok          : () => {
 			imageReplace( type, imagefilenoext );
@@ -510,7 +510,7 @@ function displayPlayback() {
 	if ( ! hidetime ) $( '#time' ).roundSlider( S.webradio || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', S.pllength === 0 || S.webradio || S.player !== 'mpd' );
-	$( '#time, #coverBL, #coverBR' ).toggleClass( 'disabled', S.webradio || ! [ 'mpd', 'upnp' ].includes( S.player ) );
+	$( '#time' ).toggleClass( 'disabled', S.webradio || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || $volume.is( ':visible' ) );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
@@ -759,7 +759,7 @@ function infoTitle() {
 				} else if ( $this.hasClass( 'similar' ) ) {
 					addSimilar();
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...values, 'CMD ARTIST TITLE' ] );
+					wscmdSend( [ 'scrobble', ...values, 'CMD ARTIST TITLE' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
 				$( '#infoX' ).trigger( 'click' );
@@ -862,7 +862,7 @@ function mpcSeek( elapsed ) {
 		$( '#pause' ).addClass( 'active' );
 		$( '#title' ).addClass( 'gr' );
 	}
-	bash( [ 'mpcseek', elapsed, S.state, 'CMD ELAPSED STATE' ] );
+	wscmdSend( [ 'mpcseek', elapsed, S.state, 'CMD ELAPSED STATE' ] );
 }
 function mpcSeekBar( pageX ) {
 	var $timeband  = $( '#time-band' );
@@ -1028,7 +1028,7 @@ function playlistInsertTarget() {
 }
 function playlistRemove( $li ) {
 	if ( $( '#pl-list li' ).length === 1 ) {
-		bash( [ 'mpcremove' ] );
+		wscmdSend( [ 'mpcremove' ] );
 	} else {
 		var total  = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
 		var file   = $li.hasClass( 'file' );
@@ -1058,7 +1058,7 @@ function playlistRemove( $li ) {
 				$li.prev().addClass( 'active' );
 			}
 		}
-		if ( ! V.local ) bash( [ 'mpcremove', pos, poscurent, 'CMD POS CURRENT' ] );
+		if ( ! V.local ) wscmdSend( [ 'mpcremove', pos, poscurent, 'CMD POS CURRENT' ] );
 		$( '#pl-list li .pos' ).slice( pos ).each( ( i, el ) => {
 			$( el ).text( pos );
 			pos++
@@ -1080,7 +1080,7 @@ function playlistSkip() {
 		$( '#elapsed, #total, #progress' ).empty();
 	}
 	var file = $( '#pl-list li' ).eq( S.song ).find( '.lipath' ).text();
-	bash( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
+	wscmdSend( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
 }
 function refreshData() {
 	if ( V.library ) {
@@ -1927,9 +1927,9 @@ function sortPlaylist( pl, iold, inew ) {
 	V.sortable = true;
 	setTimeout( () => V.sortable = false, 500 );
 	if ( pl === 'pl-list' ) {
-		bash( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
+		wscmdSend( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
 	} else {
-		bash( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME ACTION FROM TO' ] );
+		wscmdSend( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME ACTION FROM TO' ] );
 	}
 	var i    = Math.min( iold, inew );
 	var imax = Math.max( iold, inew ) + 1;

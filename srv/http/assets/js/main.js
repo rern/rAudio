@@ -254,7 +254,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			location.href = 'settings.php?p=guide';
 			break;
 		case 'screenoff':
-			bash( [ 'screenoff' ] );
+			wscmdSend( [ 'screenoff' ] );
 			V.screenoff = true;
 			break;
 		case 'update':
@@ -414,7 +414,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 		var s = 0;
 		var l = L * 100;
 	}
-	bash( [ 'color', h +' '+ s +' '+ l, 'CMD HSL' ] );
+	wscmdSend( [ 'color', h +' '+ s +' '+ l, 'CMD HSL' ] );
 	loader();
 } ).on( 'click', '#colorreset', function() {
 	info( {
@@ -427,7 +427,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 			ctx.drawImage( $( '#displaycolor canvas' )[ 0 ], 0, 0 );
 		}
 		, ok         : () => {
-			bash( [ 'color', 'reset', 'CMD HSL' ] );
+			wscmdSend( [ 'color', 'reset', 'CMD HSL' ] );
 			loader();
 		}
 	} );
@@ -892,8 +892,8 @@ $( '.map' ).on( 'click', function( e ) {
 					S.single = false;
 					setButtonOptions();
 					local( 600 );
-					bash( [ 'mpcoption', 'repeat', false, 'CMD OPTION ONOFF' ] );
-					bash( [ 'mpcoption', 'single', false, 'CMD OPTION ONOFF' ] );
+					wscmdSend( [ 'mpcoption', 'repeat', false, 'CMD OPTION ONOFF' ] );
+					wscmdSend( [ 'mpcoption', 'single', false, 'CMD OPTION ONOFF' ] );
 				} else {
 					$( '#single' ).trigger( 'click' );
 				}
@@ -915,7 +915,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 	if ( $( this ).hasClass( 'btn-toggle' ) ) {
 		var onoff = ! S[ cmd ];
 		S[ cmd ] = onoff;
-		bash( [ 'mpcoption', cmd, onoff, 'CMD OPTION ONOFF' ] );
+		wscmdSend( [ 'mpcoption', cmd, onoff, 'CMD OPTION ONOFF' ] );
 		setButtonOptions();
 		local( 600 );
 	} else {
@@ -931,25 +931,25 @@ $( '.btn-cmd' ).on( 'click', function() {
 				$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 				$( '#total' ).text( V.timehms );
 			}
-			bash( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
+			wscmdSend( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
 			intervalElapsedClear();
 			setPlaybackStop();
 			if ( S.player !== 'mpd' ) {
-				bash( [ 'playerstop', S.elapsed, 'CMD ELAPSED' ] );
+				wscmdSend( [ 'playerstop', S.elapsed, 'CMD ELAPSED' ] );
 				banner( S.player, icon_player[ S.player ], 'Stop ...' );
 				return
 			}
 			
-			if ( S.pllength ) bash( [ 'mpcplayback', 'stop', 'CMD ACTION' ] );
+			if ( S.pllength ) wscmdSend( [ 'mpcplayback', 'stop', 'CMD ACTION' ] );
 		} else if ( cmd === 'pause' ) {
 			if ( S.state === 'stop' ) return
 			
 			S.state = cmd;
 			intervalElapsedClear();
 			setPlayPauseColor();
-			bash( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
+			wscmdSend( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			if ( S.pllength < 2 ) return
 			
@@ -968,7 +968,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			playlistSkip();
 		}
 	}
-	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );
+	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) wscmdSend( [ 'relaystimerreset' ] );
 } );
 $( '#previous, #next, #coverR, #coverL' ).press( function( e ) {
 	var next = [ 'next', 'coverR' ].includes( e.target.id );
@@ -1028,7 +1028,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 		  icon     : 'dabradio'
 		, title    : 'DAB Radio'
 		, message  : ( $( '#lib-list li' ).length ? 'Rescan' : 'Scan' ) +' digital radio stations?'
-		, ok       : () => bash( [ 'dabscan' ] )
+		, ok       : () => wscmdSend( [ 'dabscan' ] )
 	} );
 } ).on( 'click', '.button-latest-clear', function() {
 	if ( V.librarytrack ) {
@@ -1045,9 +1045,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 			  icon         : 'latest'
 			, title        : 'Latest'
 			, message      : 'Clear Latest albums list?'
-			, ok           : () => {
-				bash( [ 'latestclear' ], () => $( '#library' ).trigger( 'click' ) );
-			}
+			, ok           : () => bash( [ 'latestclear' ], () => $( '#library' ).trigger( 'click' ) )
 		} );
 	}
 } );
@@ -1075,7 +1073,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 			, message : 'Currently updating ...'
 			, oklabel : ico( 'flash' ) +'Stop'
 			, okcolor : orange
-			, ok      : () => bash( [ 'mpcupdatestop' ] )
+			, ok      : () => wscmdSend( [ 'mpcupdatestop' ] )
 		} );
 		return
 	}
@@ -1105,7 +1103,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 				} );
 				if ( modes.length < 3 ) path = modes.join( ' ' );
 			}
-			bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] );
+			wscmdSend( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] );
 		}
 	} );
 } );
@@ -1352,7 +1350,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, message : icon
 		, oklabel : ico( 'remove' ) +'Remove'
 		, okcolor : red
-		, ok      : () => bash( [ 'bookmarkremove', name, 'CMD NAME' ] )
+		, ok      : () => wscmdSend( [ 'bookmarkremove', name, 'CMD NAME' ] )
 	} );
 } ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
@@ -1367,7 +1365,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, checkblank   : true
 		, checkchanged : true
 		, oklabel      : ico( 'flash' ) +'Rename'
-		, ok           : () => bash( [ 'bookmarkrename', name, infoVal(), 'CMD NAME NEWNAME' ] )
+		, ok           : () => wscmdSend( [ 'bookmarkrename', name, infoVal(), 'CMD NAME NEWNAME' ] )
 	} );
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent().parent();
@@ -1390,7 +1388,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
-		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
+		, button      : ! thumbnail ? '' : () => wscmdSend( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
 		, ok          : () => imageReplace( 'bookmark', imagefilenoext, name ) // no ext
 	} );
 } ).press( '.mode-bookmark', setBookmarkEdit );
@@ -1446,7 +1444,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		, okcolor : orange
 		, oklabel : ico( 'remove' ) +'Exclude'
 		, ok      : () => {
-			bash( [ 'albumignore', album, artist, 'CMD ALBUM ARTIST' ] );
+			wscmdSend( [ 'albumignore', album, artist, 'CMD ALBUM ARTIST' ] );
 			$this.remove();
 		}
 	} );
@@ -1651,7 +1649,7 @@ $( '#button-pl-consume' ).on( 'click', function() {
 	S.consume = ! S.consume;
 	$( this ).toggleClass( 'bl', S.consume );
 	banner( 'playlist', 'Consume Mode', S.consume ? 'On - Remove each song after played.' : 'Off' );
-	bash( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION ONOFF' ] );
+	wscmdSend( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION ONOFF' ] );
 } );
 $( '#button-pl-librandom' ).on( 'click', function() {
 	var $this = $( this );
@@ -1661,7 +1659,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 		S.librandom = false;
 		$this.removeClass( 'bl' );
 		banner( icon, title, 'Off ...' );
-		bash( [ 'librandom', 'OFF' ] );
+		wscmdSend( [ 'librandom', 'OFF' ] );
 	} else {
 		info( {
 			  icon       : icon
@@ -1681,7 +1679,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 					var action  = $( this ).hasClass( 'submenu' ) ? 'play' : '';
 					var album   = $( this ).hasClass( 'album' );
 					banner( icon, title, 'On ...' );
-					bash( [ 'librandom', action, album, 'CMD ACTION ALBUM' ] );
+					wscmdSend( [ 'librandom', action, album, 'CMD ACTION ALBUM' ] );
 				} );
 			}
 			, okno      : true
@@ -1693,12 +1691,12 @@ $( '#button-pl-shuffle' ).on( 'click', function() {
 		  icon    : 'shuffle'
 		, title   : 'Shuffle Playlist'
 		, message : 'Shuffle all tracks in playlist?'
-		, ok      : () => bash( [ 'mpcshuffle' ] )
+		, ok      : () => wscmdSend( [ 'mpcshuffle' ] )
 	} );
 } );
 $( '#button-pl-clear' ).on( 'click', function() {
 	if ( S.pllength === 1 ) {
-		bash( [ 'mpcremove' ] );
+		wscmdSend( [ 'mpcremove' ] );
 		renderPlaylist( -1 );
 	} else if ( $( '.pl-remove' ).length ) {
 		$( '.pl-remove' ).remove();
@@ -1717,14 +1715,14 @@ $( '#button-pl-clear' ).on( 'click', function() {
 					local();
 				}
 				, () => {
-					bash( [ 'mpccrop' ] );
+					wscmdSend( [ 'mpccrop' ] );
 					$( '#pl-list li:not( .active )' ).remove();
 				}
 			]
 			, oklabel     : ico( 'remove' ) +'All'
 			, okcolor     : red
 			, ok          : () => {
-				bash( [ 'mpcremove' ] );
+				wscmdSend( [ 'mpcremove' ] );
 				setPlaybackBlank();
 				renderPlaylist( -1 );
 			}
@@ -1801,7 +1799,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		intervalClear();
 		$( '.elapsed' ).empty();
-		bash( [ 'mpcskippl', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
+		wscmdSend( [ 'mpcskippl', $this.index() + 1, 'play', 'CMD POS ACTION' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
@@ -1978,7 +1976,7 @@ $( '#lyricssave' ).on( 'click', function() {
 			V.lyrics   = $( '#lyricstextarea' ).val();
 			var artist = $( '#lyricsartist' ).text();
 			var title  = $( '#lyricstitle' ).text();
-			bash( [ 'lyrics', artist, title, 'save', V.lyrics.replace( /\n/g, '\\n' ), 'CMD ARTIST TITLE ACTION DATA' ] );
+			wscmdSend( [ 'lyrics', artist, title, 'save', V.lyrics.replace( /\n/g, '\\n' ), 'CMD ARTIST TITLE ACTION DATA' ] );
 			lyricstop  = $( '#lyricstextarea' ).scrollTop();
 			lyricsShow( V.lyrics );
 			$( '#lyricseditbtngroup' ).addClass( 'hide' );
@@ -1996,7 +1994,7 @@ $( '#lyricsdelete' ).on( 'click', function() {
 		, ok      : () => {
 			var artist = $( '#lyricsartist' ).text();
 			var title  = $( '#lyricstitle' ).text();
-			bash( [ 'lyrics', artist, title, 'delete', 'CMD ARTIST TITLE ACTION' ] );
+			wscmdSend( [ 'lyrics', artist, title, 'delete', 'CMD ARTIST TITLE ACTION' ] );
 			V.lyrics   = '';
 			lyricsHide();
 		}

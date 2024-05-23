@@ -1189,7 +1189,7 @@ function volumeSetAt( val ) { // drag / press / updn
 function websocketConnect( ip ) {
 	var url = 'ws://'+ ( ip || location.host ) +':8080';
 	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
-		if ( ! websocketOk( wscmd ) ) wscmd = new WebSocket( url +'/cmdsh' );
+		if ( ! websocketOk( wscmd ) ) wscmd = new WebSocket( url +'/cmd' );
 	}
 	if ( websocketOk( ws ) ) return
 	
@@ -1228,6 +1228,9 @@ function websocketReconnect( ip ) {
 		.then( response => {
 			response.ok ? websocketConnect( ip ) : setTimeout( () => websocketReconnect( ip ), 1000 );
 		} );
+}
+function wscmdSend( data ) {
+	wscmd.send( data.join( '\n' ) );
 }
 function wsPush( channel, data ) {
 	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
