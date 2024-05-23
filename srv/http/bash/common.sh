@@ -243,7 +243,7 @@ ipAddress() {
 	[[ $1 ]] && echo ${ip%.*}. || echo $ip
 }
 ipOnline() {
-	arping -fq -c 1 -w 1 $1 && return 0
+	ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 json2var() {
 	local regex
