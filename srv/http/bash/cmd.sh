@@ -3,6 +3,7 @@
 . /srv/http/bash/common.sh
 dirimg=/srv/http/assets/img
 
+echo "$1" > $dirshm/z
 args2var "$1"
 
 plAddPlay() {
@@ -159,18 +160,15 @@ volumeSet() {
 	target=$2
 	control=$3
 	card=$4
-	diff=$(( $target - $current ))
-	if (( ${diff#-} < 5 )); then
-		volumeSetAt $target "$control" $card
-	else # increment
-		(( $diff > 0 )) && incr=5 || incr=-5
-		values=( $( seq $(( current + incr )) $incr $target ) )
-		(( $diff % 5 )) && values+=( $target )
-		for i in "${values[@]}"; do
-			volumeSetAt $i "$control" $card
-			sleep 0.2
-		done
-	fi
+	diff=$5
+	# increment
+	(( $diff > 0 )) && incr=5 || incr=-5
+	values=( $( seq $(( current + incr )) $incr $target ) )
+	(( $diff % 5 )) && values+=( $target )
+	for i in "${values[@]}"; do
+		volumeSetAt $i "$control" $card
+		sleep 0.2
+	done
 }
 volumeSetAt() {
 	local card control target
@@ -270,7 +268,9 @@ bookmarkrename )
 	pushData bookmark 1
 	;;
 cachebust )
-	cacheBust
+	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
+	hash=?v=$( date +%s )
+	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
 	;;
 color )
 	file=$dirsystem/color
@@ -388,16 +388,13 @@ display )
 	fi
 	;;
 equalizer )
-	if [[ $VALUES ]]; then # preset ( delete, rename, new - save json only )
-		freq=( 31 63 125 250 500 1 2 4 8 16 )
-		v=( $VALUES )
-		for (( i=0; i < 10; i++ )); do
-			(( i < 5 )) && unit=Hz || unit=kHz
-			band=( "0$i. ${freq[i]} $unit" )
-			sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
-		done
-	fi
-	pushData equalizer $( < $dirsystem/equalizer.json )
+	freq=( 31 63 125 250 500 1 2 4 8 16 )
+	v=( $VALUES )
+	for (( i=0; i < 10; i++ )); do
+		(( i < 5 )) && unit=Hz || unit=kHz
+		band=( "0$i. ${freq[i]} $unit" )
+		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
+	done
 	;;
 equalizerget )
 	if [[ -e $dirsystem/equalizer.json ]]; then
@@ -793,15 +790,18 @@ upnpstart )
 volume )
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	filevolumemute=$dirsystem/volumemute
-	if (( $TARGET > 0 )); then
+	if [[ $TYPE == mute ]]; then
+		echo $CURRENT > $filevolumemute
+	elif [[ $TYPE == unmute ]]; then
 		rm -f $filevolumemute
-	else
-		(( $CURRENT > 0 )) && echo $CURRENT > $filevolumemute || rm -f $filevolumemute
 	fi
-	volumeSet $CURRENT $TARGET "$CONTROL" $CARD
-	;;
-volumesetat )
-	volumeSetAt $TARGET "$CONTROL" $CARD
+	diff=$(( TARGET - CURRENT ))
+	diff=${diff#-}
+	if (( $diff < 5 )); then
+		volumeSetAt $TARGET "$CONTROL" $CARD
+	else
+		volumeSet $CURRENT $TARGET "$CONTROL" $CARD $diff
+	fi
 	;;
 webradioadd )
 	url=$( urldecode $URL )

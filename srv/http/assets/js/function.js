@@ -524,7 +524,7 @@ function displaySave() {
 		} );
 	} );
 	if ( values.tapreplaceplay ) values.plclear = false;
-	bash( { cmd: [ 'display' ], json: values } );
+	wsJsonSave( 'display', values );
 }
 function displaySubMenu() {
 	$( '#dsp' )
@@ -925,6 +925,7 @@ function playbackStatusGet( withdisplay ) {
 			bannerHide();
 		}
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		V.volumecurrent = S.volume;
 		var dataerror = $( '#data .copy' ).length;
 		if ( $( '#data' ).hasClass( 'hide' ) || dataerror ) {
 			if ( dataerror ) {
@@ -2045,8 +2046,7 @@ function volumeUpDown( up ) {
 	
 	up ? S.volume++ : S.volume--;
 	setVolume();
-	volumePush( S.volume );
-	volumeSetAt();
+	volumeSet();
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {

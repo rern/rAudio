@@ -72,7 +72,8 @@ function equalizer() {
 function eqPreset( v ) {
 	E.preset.Flat = flat;
 	E.current     = v;
-	bash( { cmd: [ 'equalizer', v, equser, 'CMD VALUES USR' ], json: E } );
+	wsJsonSave( 'equalizer', E );
+	wscmdSend( [ 'equalizer', v, equser, 'CMD VALUES USR' ] );
 }
 function eqOptionPreset() {
 	local(); // suppress input event
@@ -86,7 +87,7 @@ function eqOptionPreset() {
 	if ( name ) $( '#eq .select2-container' ).addClass( 'hide' );
 }
 function eqSlide( band, v ) {
-	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
+	wscmdSend( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
 	if ( E.active === 'Flat' ) {
 		for ( i = 1; i < 10; i++ ) {
 			var name = 'New '+ i;
@@ -100,7 +101,7 @@ function eqSlideEnd() {
 	E.preset[ E.active ] = infoVal().slice( 2 );
 	E.preset.Flat        = flat;
 	E.current            = E.preset[ E.active ].join( ' ' );
-	bash( { cmd: [ 'equalizer' ], json: E } );
+	wsJsonSave( 'equalizer', E );
 	$( '#eqrename' ).removeClass( 'disabled' );
 	eqOptionPreset();
 }
@@ -150,7 +151,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename, #eqnew', function() {
 	$( '#eqback' ).trigger( 'click' );
 	E.preset.Flat = flat;
 	E.current     = E.preset[ name ].join( ' ' );
-	bash( { cmd: [ 'equalizer' ], json: E } );
+	wsJsonSave( 'equalizer', E );
 } ).on( 'click', '.up, .dn', function( e ) {
 	clearTimeout( eqtimeout )
 	var $this  = $( this );

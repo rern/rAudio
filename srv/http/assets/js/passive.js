@@ -447,15 +447,11 @@ function psVolume( data ) {
 		S.volumemute = data.val;
 		setVolume();
 	} else {
-		V.drag = data.type === 'updn'; // multiples - handle like drag
-		if ( data.type === 'drag' ) {
-			V.press = true;
-			setTimeout( () => V.press = false, 300 );
-		}
 		S.volume = data.val;
 		S.volumemute = 0;
 		setVolume();
 	}
+	V.volumecurrent = V.volume;
 }
 function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree

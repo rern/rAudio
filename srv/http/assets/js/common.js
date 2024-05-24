@@ -4,6 +4,7 @@ $.fn.press
 banner() copy        errorDisplay() 
 info()   infoPower() infoPowerCommand() infoWarning()
 loader() local()     selectSet()
+websocket
 */
 
 var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
@@ -54,7 +55,6 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
 	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
 	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
-	- { cmd: [ CMD, ... ], json: JSON }     -        ^^^                     and save {"K1":"v1", ... } to $dirsystem/$CMD.json
 
 - js > php   >> common.js - bash()
 	- string : 
@@ -63,8 +63,6 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 	- json   : json.sringify( JSON )
 - php > bash >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
 	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
-	- json  : decode > reencode > save to $dirsystem/$CMD.json ($_POST[ 'json' ])
-		- js cannot escape " as \\" double backslash which disappeared in bash
 - bash       >> common.sh - args2var
 	- convert to array > assign values
 		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
@@ -75,10 +73,6 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 */
 function bash( args, callback, json ) {
 	var data = { cmd: 'bash' }
-	if ( 'json' in args ) {
-		data.json = JSON.stringify( args.json );
-		args = args.cmd;
-	}
 	var args0 = args[ 0 ];
 	if (  [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) { // CMD.sh / CMD.py
 		data.filesh = args.join( ' ' );
@@ -123,7 +117,7 @@ $( '.page-icon' ).press( () => location.reload() );
 $( '#debug' ).press( function() {
 	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
-	bash( [ 'cmd.sh', 'cachebust' ] );
+	ws.send( '^^cmd.sh cachebust' );
 } );
 $( '#infoOverlay' ).press( '#infoOk', function() {
 	V.consoleonly = true;
@@ -138,7 +132,7 @@ $( '.col-r .switch' ).press( function( e ) {
 	V.consoleonly = true;
 	switchIdIconTitle( e.target.id );
 	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
-	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
+	wscmdSend( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
 } );
 	
 // ----------------------------------------------------------------------
@@ -1024,7 +1018,7 @@ function infoPowerCommand( action ) {
 			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
 			, okcolor : off ? red : orange
 			, ok      : () => {
-				bash( [ 'power.sh', action, 'confirm' ] );
+				ws.send( '^^power.sh^^'+ action +' confirm' );
 				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
 			}
 		} );
@@ -1162,11 +1156,9 @@ window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 
 // websocket
-var ws       = null;
-var wscmd = null;
+var ws            = null;
+var wscmd         = null;
 function volumeMuteToggle() {
-	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
-	volumeSet( S.volumemute, 'toggle' );
 	if ( S.volumemute ) {
 		S.volume     = S.volumemute;
 		S.volumemute = 0;
@@ -1174,23 +1166,22 @@ function volumeMuteToggle() {
 		S.volumemute = S.volume;
 		S.volume     = 0;
 	}
+	volumeSet( S.volumemute ? 'mute' : 'unmute' );
 }
-function volumePush( vol, type ) {
+function volumePush() {
 	V.local = true; // suppress local refresh
-	wsPush( 'volume', '{ "type": "'+ ( type || 'push' ) +'", "val": '+ ( vol || S.volume ) +' }' );
+	setTimeout( () => {
+		ws.send( '{ "channel": "volume", "data": { "val": '+ S.volume +' } }' );
+	}, 300 );
 }
-function volumeSet( vol, type ) { // increment from current to target
-	if ( ! type ) volumePush( vol );
-	wscmd.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
-}
-function volumeSetAt( val ) { // drag / press / updn
-	wscmd.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+function volumeSet( type ) { // type: mute / unmute
+	if ( ! type ) type = V.drag || V.press ? '' : 'push';
+	wscmd.send( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ].join( '\n' ) );
+	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {
-	var url = 'ws://'+ ( ip || location.host ) +':8080';
-	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
-		if ( ! websocketOk( wscmd ) ) wscmd = new WebSocket( url +'/cmd' );
-	}
+	var url      = 'ws://'+ ( ip || location.host ) +':8080';
+	if ( ! websocketOk( wscmd ) ) wscmd = new WebSocket( url +'/'+ ( page || 'cmd' ) );
 	if ( websocketOk( ws ) ) return
 	
 	ws           = new WebSocket( url );
@@ -1232,8 +1223,9 @@ function websocketReconnect( ip ) {
 function wscmdSend( data ) {
 	wscmd.send( data.join( '\n' ) );
 }
-function wsPush( channel, data ) {
-	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
+function wsJsonSave( name, json ) {
+	if ( typeof json === 'object' ) json = JSON.stringify( json );
+	ws.send( '^^json^^'+ name +'^^'+ json );
 }
 // push status
 function psNotify( data ) {

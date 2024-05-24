@@ -117,7 +117,7 @@ $( '.connect' ).on( 'click', function() {
 	} else {
 		notify( 'wifi', ssid, 'Connect ...' );
 	}
-	bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
+	wscmdSend( [ 'profileconnect', ssid, 'CMD ESSID' ] );
 } );
 $( '.disconnect' ).on( 'click', function() {
 	if ( V.listid === 'listbt' ) {
@@ -166,7 +166,7 @@ $( '.forget' ).on( 'click', function() {
 		, okcolor    : red
 		, ok         : () => {
 			notify( icon, ssid, 'Forget ...' );
-			bash( [ 'profileforget', ssid, 'CMD SSID' ] );
+			wscmdSend( [ 'profileforget', ssid, 'CMD SSID' ] );
 		}
 	} );
 } );
@@ -183,7 +183,7 @@ $( '.rename' ).on( 'click', function() {
 		, values       : name
 		, ok           : () => {
 			notify( icon, name, 'Change ...' );
-			bash( [ 'btrename', name, infoVal(), 'CMD NAME NEWNAME' ] );
+			wscmdSend( [ 'btrename', name, infoVal(), 'CMD NAME NEWNAME' ] );
 		}
 	} );
 } );
@@ -265,7 +265,7 @@ function infoLan( v ) {
 		, checkip      : [ 0, 1 ]
 		, buttonlabel  : ico( 'undo' ) +'DHCP'
 		, button       : ! values.STATIC ? '' : () => {
-			bash( [ 'lanedit' ] );
+			wscmdSend( [ 'lanedit' ] );
 			reconnect( 'Wired LAN', S.hostname );
 		}
 		, ok           : () => infoLanSet( infoVal() )
@@ -496,5 +496,5 @@ function warning( action ) {
 function wifiDisconnect() {
 	var ssid = V.li.data( 'ssid' );
 	notify( 'wifi', ssid, 'Disconnect ...' );
-	bash( [ 'disconnect', ssid, 'CMD SSID' ] );
+	wscmdSend( [ 'disconnect', ssid, 'CMD SSID' ] );
 }

@@ -148,7 +148,7 @@ function switchEnable() {
 	var values  = Object.values( infoval );
 	var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
 	notifyCommon();
-	bash( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
+	wscmdSend( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
 	S[ SW.id ] = true;
 	SWreset();
 }
@@ -278,7 +278,7 @@ function psWlan( data ) {
 			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
 			, oklabel : ico( 'reboot' ) +'Reboot'
 			, okcolor : orange
-			, ok      : () => bash( [ 'reboot' ] )
+			, ok      : () => ws.send( '^^power.sh reboot' )
 		} );
 		return
 	}
@@ -417,7 +417,7 @@ $( '.switch' ).on( 'click', function() {
 	if ( ! checked ) {
 		$( '#setting-'+ SW.id ).addClass( 'hide' );
 		notifyCommon( 'Disable ...' );
-		bash( [ SW.id, 'OFF' ] );
+		wscmdSend( [ SW.id, 'OFF' ] );
 		S[ SW.id ] = false;
 		return
 	}

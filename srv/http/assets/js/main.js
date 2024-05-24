@@ -248,7 +248,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
-			bash( S.relayson ? [ 'relays.sh', 'OFF' ] : [ 'relays.sh' ] );
+			ws.send( S.relayson ? '^^relays.sh OFF' : '^^relays.sh' );
 			break;
 		case 'guide':
 			location.href = 'settings.php?p=guide';
@@ -527,7 +527,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 		, message : 'Eject and clear Audio CD tracks?'
 		, oklabel : ico( 'flash' ) +'Eject'
 		, okcolor : red
-		, ok      : () => bash( [ 'audiocd.sh', 'ejecticonclick' ] )
+		, ok      : () => ws.send( '^^audiocd.sh ejecticonclick' )
 	} );
 } );
 $( '#elapsed' ).on( 'click', function() {
@@ -631,13 +631,14 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
-		volumeSetAt();
+		volumeSet();
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
+		S.volume = e.value;
 		$( '#volume-knob, #button-volume i' ).addClass( 'noclick' );
-		volumeSet( e.value );
+		volumeSet();
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, valueChange       : function( e ) {
@@ -648,8 +649,8 @@ $( '#volume' ).roundSlider( {
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, stop              : () => {
-		volumePush( S.volume, V.drag ? 'drag' : 'push' );
 		V.drag = false;
+		volumePush();
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
@@ -670,7 +671,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	V.drag = true;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	$( '#volume-bar' ).css( 'width', V.volume.x );
-	volumeSetAt();
+	volumeSet();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		volumeBarShow();
@@ -678,12 +679,11 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	}
 	
 	if ( V.drag ) {
-		volumePush( S.volume, 'drag' );
+		volumePush();
 	} else { // click
 		volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 		volumeAnimate( S.volume, V.volume.current );
-		volumeSetAt();
-		volumePush();
+		volumeSet();
 	}
 	$volumeRS.setValue( S.volume );
 	V.volume = V.drag = false;
@@ -716,7 +716,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 		clearTimeout( V.volumebar );
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	}
-	if ( V.press ) volumePush();
+	volumePush();
 } ).press( function( e ) {
 	clearTimeout( V.volumebar );
 	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
@@ -1403,7 +1403,7 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	, onUpdate      : function () {
 		var order = [];
 		$( '.mode' ).each( ( i, el ) => order.push( $( el ).find( '.lipath' ).text() ) );
-		bash( { cmd: [ 'order' ], json: order } );
+		wsJsonSave( 'order', order );
 	}
 } );
 $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {

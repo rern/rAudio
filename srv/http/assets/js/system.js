@@ -208,7 +208,7 @@ $( '.refresh' ).on( 'click', function() {
 	}
 	
 	$this.addClass( 'blink wh' )
-	V.intstatus = setInterval( () => bash( [ 'settings/system-data.sh', 'status' ] ), 10000 );
+	V.intstatus = setInterval( () => wscmdSend( [ 'settings/system-data.sh', 'status' ] ), 10000 );
 } );
 $( '.addnas' ).on( 'click', function() {
 	infoMount();
@@ -255,7 +255,7 @@ $( '#menu a' ).on( 'click', function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
-			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
+			wscmdSend( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break;
 		case 'info':
 			var $code = $( '#codehddinfo' );
@@ -271,11 +271,11 @@ $( '#menu a' ).on( 'click', function() {
 			break;
 		case 'remount':
 			notify( icon, title, 'Remount ...' );
-			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
+			wscmdSend( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
-			bash( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
+			wscmdSend( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break;
 	}
 } );
@@ -344,7 +344,7 @@ $( '#i2smodule' ).on( 'input', function() {
 		S.i2ssw = false;
 		i2sSelectHide();
 	}
-	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
+	wscmdSend( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 } );
 $( '#setting-i2smodule' ).on( 'click', function() {
 	info( {
@@ -353,7 +353,7 @@ $( '#setting-i2smodule' ).on( 'click', function() {
 		, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
 		, values       : S.i2seeprom
 		, checkchanged : S.i2seeprom
-		, ok           : () => bash( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
+		, ok           : () => wscmdSend( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
 	} );
 } );
 $( '#gpioimgtxt' ).on( 'click', function() {
@@ -431,7 +431,7 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 		}
 		, cancel       : switchCancel
 		, buttonlabel  : buttonlogo ? ico( 'raudio' ) +'Logo' : ''
-		, button       : buttonlogo ? () => bash( [ 'mpdoledlogo' ] ) : ''
+		, button       : buttonlogo ? () => wscmdSend( [ 'mpdoledlogo' ] ) : ''
 		, ok           : switchEnable
 	} );
 } );
@@ -460,7 +460,7 @@ $( '#setting-tft' ).on( 'click', function() {
 							+'<br>(Get stylus ready.)'
 				, ok      : () => {
 					notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
-					bash( [ 'tftcalibrate' ] );
+					wscmdSend( [ 'tftcalibrate' ] );
 				}
 			} );
 		}
@@ -534,13 +534,13 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 			var val = infoVal();
 			$( '#hostname' ).val( val );
 			banner( SW.icon +' blink', SW.title, 'Change ...', -1 );
-			bash( [ 'hostname', val, 'CMD NAME' ] );
+			wscmdSend( [ 'hostname', val, 'CMD NAME' ] );
 		}
 	} );
 } );
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
-	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
+	wscmdSend( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
 } );
 $( '#divtimezone .col-r' ).on( 'click', function( e ) {
 	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
@@ -650,7 +650,7 @@ $( '#shareddata' ).on( 'click', function() {
 			, okcolor : orange
 			, ok      : () => {
 				notifyCommon( 'Disable ...' );
-				bash( [ 'shareddatadisable', 'OFF' ] );
+				wscmdSend( [ 'shareddatadisable', 'OFF' ] );
 			}
 		} );
 	} else {
@@ -792,7 +792,7 @@ function infoLcdcharButton() {
 		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-22 wh' ) +'&ensp;Logo</gr>&ensp;' )
 		.after( '&emsp;<gr id="lcdoff">'+ ico( 'screenoff i-22 wh' ) +'&ensp;Sleep</gr>' );
 	$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
-		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] )
+		wscmdSend( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] );
 	} );
 }
 function infoMirror() {
@@ -1070,7 +1070,8 @@ function infoRelaysOk() {
 	keys.push( 'TIMER' );
 	values.push( pin.TIMER );
 	notifyCommon();
-	bash( { cmd: [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ], json: name } );
+	wsJsonSave( 'relays', name );
+	wscmdSend( [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ] );
 }
 function infoRestore( reset ) {
 	var list = [
@@ -1088,7 +1089,7 @@ function infoRestore( reset ) {
 		, okcolor  : orange
 		, ok       : reset ? () => {
 				notifyCommon( 'Reset to default ...' );
-				bash( [ 'settings/system-datareset.sh '+ infoVal().join( ' ' ) ] );
+				ws.send( [ '^^settings/system-datareset.sh '+ infoVal().join( ' ' ) ] );
 				loader();
 			} : () => {
 				notifyCommon( 'Restore ...' );
