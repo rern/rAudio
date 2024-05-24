@@ -319,6 +319,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 			keys.forEach( k => data[ k ] = val[ k ] );
 			notifyCommon();
 			wsJsonSave( 'multiraudio', data );
+			wscmdSend( [ 'multiraudio' ] );
 		}
 	} );
 } );
