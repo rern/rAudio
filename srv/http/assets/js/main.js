@@ -1402,7 +1402,7 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	, onUpdate      : function () {
 		var order = [];
 		$( '.mode' ).each( ( i, el ) => order.push( $( el ).find( '.lipath' ).text() ) );
-		wsJsonSave( 'order', order );
+		jsonSave( 'order', order );
 	}
 } );
 $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {

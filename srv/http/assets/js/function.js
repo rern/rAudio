@@ -524,7 +524,7 @@ function displaySave() {
 		} );
 	} );
 	if ( values.tapreplaceplay ) values.plclear = false;
-	wsJsonSave( 'display', values );
+	jsonSave( 'display', values );
 }
 function displaySubMenu() {
 	$( '#dsp' )

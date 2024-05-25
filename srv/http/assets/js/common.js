@@ -1075,6 +1075,10 @@ function jsonChanged( a, b ) {
 function jsonClone( json ) {
 	return JSON.parse( JSON.stringify( json ) )
 }
+function jsonSave( name, json ) {
+	if ( typeof json === 'object' ) json = JSON.stringify( json );
+	ws.send( '{ "json": '+ json +', "name": "'+ name +'" }' );
+}
 function jsonSort( json ) {
 	return Object.keys( json ).sort().reduce( function ( result, key ) {
 		result[ key ] = json[ key ];
@@ -1231,10 +1235,6 @@ function websocketReconnect( ip ) {
 		.then( response => {
 			response.ok ? websocketConnect( ip ) : setTimeout( () => websocketReconnect( ip ), 1000 );
 		} );
-}
-function wsJsonSave( name, json ) {
-	if ( typeof json === 'object' ) json = JSON.stringify( json );
-	ws.send( '{ "json": '+ json +', "name": "'+ name +'" }' );
 }
 // push status
 function psNotify( data ) {

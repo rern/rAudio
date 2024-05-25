@@ -1075,7 +1075,7 @@ function infoRelaysOk() {
 	keys.push( 'TIMER' );
 	values.push( pin.TIMER );
 	notifyCommon();
-	wsJsonSave( 'relays', name );
+	jsonSave( 'relays', name );
 	bash( [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ] );
 }
 function infoRestore( reset ) {

@@ -72,7 +72,7 @@ function equalizer() {
 function eqPreset( v ) {
 	E.preset.Flat = flat;
 	E.current     = v;
-	wsJsonSave( 'equalizer', E );
+	jsonSave( 'equalizer', E );
 	bash( [ 'equalizer', v, equser, 'CMD VALUES USR' ] );
 }
 function eqOptionPreset() {
@@ -101,7 +101,7 @@ function eqSlideEnd() {
 	E.preset[ E.active ] = infoVal().slice( 2 );
 	E.preset.Flat        = flat;
 	E.current            = E.preset[ E.active ].join( ' ' );
-	wsJsonSave( 'equalizer', E );
+	jsonSave( 'equalizer', E );
 	$( '#eqrename' ).removeClass( 'disabled' );
 	eqOptionPreset();
 }
@@ -151,7 +151,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename, #eqnew', function() {
 	$( '#eqback' ).trigger( 'click' );
 	E.preset.Flat = flat;
 	E.current     = E.preset[ name ].join( ' ' );
-	wsJsonSave( 'equalizer', E );
+	jsonSave( 'equalizer', E );
 } ).on( 'click', '.up, .dn', function( e ) {
 	clearTimeout( eqtimeout )
 	var $this  = $( this );
