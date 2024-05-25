@@ -76,7 +76,7 @@ function bash( args, callback, json ) {
 	var args0sh = [ '.sh', '.py' ].includes( args0.slice( -3 ) );
 	if ( ! callback ) {
 		if ( args0sh ) {
-			ws.send( '^^'+ args.join( ' ' ) );
+			ws.send( '{ "bash": "'+ args.join( ' ' ) +'" }' );
 		} else {
 			wscmd.send( args.join( '\n' ) );
 		}
@@ -1232,12 +1232,9 @@ function websocketReconnect( ip ) {
 			response.ok ? websocketConnect( ip ) : setTimeout( () => websocketReconnect( ip ), 1000 );
 		} );
 }
-function wscmdSend( data ) {
-	wscmd.send( data.join( '\n' ) );
-}
 function wsJsonSave( name, json ) {
 	if ( typeof json === 'object' ) json = JSON.stringify( json );
-	ws.send( '^^json^^'+ name +'^^'+ json );
+	ws.send( '{ "json": '+ json +', "name": "'+ name +'" }' );
 }
 // push status
 function psNotify( data ) {
