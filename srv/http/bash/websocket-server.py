@@ -6,8 +6,8 @@ import os
 import subprocess
 import websockets
 
-CLIENTS     = set()
-dirbash     = '/srv/http/bash/'
+CLIENTS   = set()
+dirbash   = '/srv/http/bash/'
 
 async def cmd( websocket, path ):
     async for args in websocket:
@@ -32,10 +32,18 @@ async def cmd( websocket, path ):
                 argname = args[ 'name' ]
                 data = '{ "channel": "'+ argname +'", "data": '+ argjson +' }'
                 websockets.broadcast( CLIENTS, data )
-                with open( '/srv/http/data/system/'+ argname +'.json', 'w' ) as f:
+                pathfile = '/srv/http/data/system/'+ argname
+                with open( pathfile +'.json', 'w' ) as f:
                     json.dump( args[ 'json' ], f, indent=2 )
-            else:
+                if 'enable' in args and not os.path.isfile( pathfile ):
+                    os.mknod( pathfile )
+            if 'bash' in args:
                 os.system( dirbash + args[ 'bash' ] )
+            if 'push' in args:
+                websockets.broadcast( CLIENTS, args[ 'push' ] )
+            if 'statussnapclient' in args:
+                status = subprocess.getoutput( [ '/srv/http/bash/status.sh', 'snapclient' ] ).replace( '\n', '' )
+                await websocket.send( status )
         else: # ws - ARG
             if args == 'clientadd':
                 if websocket not in CLIENTS:

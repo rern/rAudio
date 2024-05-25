@@ -220,16 +220,20 @@ multiraudio )
 	enableFlagSet
 	ip=$( ipAddress )
 	iplist=$( grep -Ev "$ip|{|}" $dirsystem/multiraudio.json | awk '{print $NF}' | tr -d '",' )
-	for ip in $iplist; do
-		if [[ $ON ]]; then
-			sshCommand $ip $dirsystem/'multiraudio*' $dirsystem scp
-		else
-			sshCommand $ip rm -f $dirsystem/multiraudio
-		fi
-		pushWebsocket $ip display '{ "submenu": "multiraudio", "value": '$TF' }'
-	done
+	if [[ $ON ]]; then
+		data='{ "json": '$( tr -d '\n' < $dirsystem/multiraudio.json )', "name": "multiraudio", "enable": True'
+	else
+		data='{ "bash": "settings/features.sh multiraudiodisable"'
+	fi
+	data+=', "push": { "channel": "display", "data": { "submenu": "multiraudio", "value": '$TF' } } }'
+	while read ip; do
+		websocat ws://$ip:8080 <<< $data
+	done <<< $iplist
 	pushRefresh
 	pushSubmenu multiraudio $TF
+	;;
+multiraudiodisable )
+	rm -f $dirsystem/multiraudio
 	;;
 multiraudioreset )
 	rm -f $dirsystem/multiraudio*

@@ -305,7 +305,7 @@ pushData() {
 		if [[ $data == *done* ]]; then
 			sharedip=$( grep -v $( ipAddress ) $filesharedip )
 			for ip in $sharedip; do
-				sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
+				websocat ws://$ip:8080/cmd <<< shareddatampdupdate
 			done
 			return
 		fi
@@ -395,7 +395,7 @@ snapclientIP() {
 		else
 			[[ ! $connected ]] && continue
 			
-			[[ $1 ]] && sshCommand $ip $dirbash/cmd.sh playerstop || clientip+=" ${l/*:}"
+			[[ $1 ]] && websocat ws://$ip:8080/cmd <<< playerstop || clientip+=" ${l/*:}"
 		fi
 	done <<< $lines
 	[[ $clientip ]] && echo $clientip
@@ -406,23 +406,6 @@ snapserverList() {
 	[[ ! $service ]] && return
 	
 	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
-}
-sshCommand() {
-	! ipOnline $1 && return
-	
-	arglast=${@: -1}
-	if [[ $arglast == scp ]]; then
-		cmd="$2 root@$1:$3"
-	else
-		cmd="root@$1 ${@:2}"
-		[[ $arglast != snapclient ]] && cmd+=' &> /dev/null &'
-	fi
-	[[ ${cmd:0:4} == root ]] && type=ssh || type=scp
-	sshpass -p ros $type -q \
-		-o ConnectTimeout=1 \
-		-o UserKnownHostsFile=/dev/null \
-		-o StrictHostKeyChecking=no \
-		$cmd
 }
 stateMPD() {
 	mpc status %state% | sed -E 's/ped$|ing$|d$//g'
