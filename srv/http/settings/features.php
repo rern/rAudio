@@ -47,7 +47,6 @@ EOF
 		, 'help'     => <<< EOF
 {$snapweb}
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
- · SSH passwords must be default.
  · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
  · SnapClient and SnapServer can be enabled on the same device.
 	· Enable SnapServer before SnapClient
@@ -110,7 +109,6 @@ EOF
 		, 'help'     => <<< EOF
 {$snapweb}
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player
- · SSH passwords must be default.
 EOF
 	]
 ];
@@ -196,8 +194,6 @@ EOF
 		, 'help'     => <<< EOF
 Switch between multiple rAudio devices.
 Switch: {$Fmenu( 'playlist', 'Playlist', 'multiraudio' )}
-
-Note: SSH password must be default.
 EOF
 	]
 	, [
