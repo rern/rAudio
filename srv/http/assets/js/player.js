@@ -6,11 +6,11 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#device' ).on( 'input', function() {
 	notify( 'volume', 'Output Device', 'Change ...' );
-	wscmdSend( [ 'device', $( this ).val(), 'CMD DEVICE' ] );
+	bash( [ 'device', $( this ).val(), 'CMD DEVICE' ] );
 } );
 $( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Mixer Device', 'Change ...' );
-	wscmdSend( [ 'mixer', $( this ).val(), S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
+	bash( [ 'mixer', $( this ).val(), S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
 } );
 $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 	var bluealsa = this.id.slice( -1 ) === 'a';
@@ -35,9 +35,9 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			 $inputrange.on( 'input', function() {
-				wscmdSend( [ ...cmd, +$( this ).val(), cmdlist ] );
+				bash( [ ...cmd, +$( this ).val(), cmdlist ] );
 			} ).on( 'touchend mouseup keyup', function() {
-				wscmdSend( [ 'volumepush', bluealsa, 'CMD BT' ] );
+				bash( [ 'volumepush', bluealsa, 'CMD BT' ] );
 			} );
 			$( '.inforange i' ).on( 'click', function() {
 				S.volume.val = +$inputrange.val();
@@ -57,9 +57,9 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		, oklabel    : ico( 'set0' ) +'0dB'
 		, ok         : () => {
 			if ( S.volume.db > -2 ) {
-				wscmdSend( [ cmd0db ] );
+				bash( [ cmd0db ] );
 			} else {
-				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) wscmdSend( [ cmd0db ] );
+				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
 				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
 			}
 		}
@@ -121,7 +121,7 @@ $( '#dop' ).on( 'click', function() {
 	notify( 'mpd', 'DSP over PCM', checked );
 	var cmd = [ 'dop', S.output.aplayname ];
 	if ( ! checked ) cmd.push( 'OFF' ); // OFF with args - value by index
-	wscmdSend( cmd );
+	bash( cmd );
 } );
 $( '#setting-crossfade' ).on( 'click', function() {
 	info( {
@@ -232,7 +232,7 @@ audio_output {
 				output      = infoval[ 1 ];
 				if ( ! global && ! output ) {
 					notify( SW.icon, SW.title, 'Disable ...', 3000 );
-					wscmdSend( [ 'custom', 'OFF' ] );
+					bash( [ 'custom', 'OFF' ] );
 					return
 				}
 				
@@ -394,7 +394,7 @@ function renderStatus() {
 }
 function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	wscmdSend( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
+	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 }
 function psVolume( data ) {
 	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;

@@ -372,10 +372,10 @@ function psRelays( response ) {
 						   +'<div class="msg-r wh">60</div>'
 			, buttonlabel : ico( 'relays' ) +'Off'
 			, buttoncolor : red
-			, button      : () => wscmdSend( [ 'relays' ] )
+			, button      : () => bash( [ 'relays' ] )
 			, oklabel     : ico( 'set0' ) +'Reset'
 			, ok          : () => {
-				wscmdSend( [ 'relaystimerreset' ] );
+				bash( [ 'relaystimerreset' ] );
 				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m' );
 			}
 		} );

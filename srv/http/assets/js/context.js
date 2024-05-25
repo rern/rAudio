@@ -43,7 +43,7 @@ function addToPlaylistCommand() {
 	V.msg         =  '<a class="li1">'+ V.list.name +'</a>';
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
 	banner( 'playlist', V.title, V.msg );
-	wscmdSend( V.mpccmd );
+	bash( V.mpccmd );
 	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) switchPage( 'playback' );
 }
 function bookmarkNew() {
@@ -103,7 +103,7 @@ function currentSet() {
 	S.song = V.list.index;
 	setPlaylistScroll();
 	local();
-	wscmdSend( [ 'mpcskippl', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
+	bash( [ 'mpcskippl', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
 }
 function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
@@ -159,7 +159,7 @@ function playlistDelete() {
 				   +'<br><wh>'+ V.list.name +'</wh>'
 		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
-		, ok      : () => wscmdSend( [ 'savedpldelete', V.list.name, 'CMD NAME' ] )
+		, ok      : () => bash( [ 'savedpldelete', V.list.name, 'CMD NAME' ] )
 	} );
 }
 function playlistLoad( name, play, replace ) {
@@ -272,7 +272,7 @@ function savedPlaylistAdd() {
 function savedPlaylistRemove() {
 	local();
 	var plname = $( '#savedpl-path .lipath' ).text();
-	wscmdSend( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1, 'CMD NAME ACTION POS' ] );
+	bash( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1, 'CMD NAME ACTION POS' ] );
 	V.list.li.remove();
 }
 function similarAdd() {
@@ -402,7 +402,7 @@ function tagEditor() {
 				} );
 				infoval.FILE = file;
 				banner( 'tag blink', 'Tag Editor', 'Change ...', -1 );
-				wscmdSend( [ 'tageditor', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
+				bash( [ 'tageditor', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
 			}
 		} );
 	}, 'json' );
@@ -435,7 +435,7 @@ function updateDirectory() {
 		, message    : ico( 'folder' ) +' /mnt/MPD/<wh>'+ V.list.path +'</wh>'
 		, list       : [ '', 'radio', { kv: { 'Update changed files': 'update', 'Update all files': 'rescan' }, sameline: false } ]
 		, values     : 'update'
-		, ok         : () => wscmdSend( [ 'mpcupdate', infoVal(), V.list.path, 'CMD ACTION PATHMPD' ] )
+		, ok         : () => bash( [ 'mpcupdate', infoVal(), V.list.path, 'CMD ACTION PATHMPD' ] )
 	} );
 }
 function webRadioCoverart() {
@@ -467,7 +467,7 @@ function webRadioCoverart() {
 		}
 		, buttonlabel : ico( mode ) +'Default'
 		, buttoncolor : orange
-		, button      : () => wscmdSend( [ 'webradiocoverreset', imagefilenoext, 'CMD FILENOEXT' ] )
+		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, 'CMD FILENOEXT' ] )
 		, ok          : () => imageReplace( mode, imagefilenoext )
 	} );
 }
@@ -487,7 +487,7 @@ function webRadioDelete() {
 		, ok      : () => {
 			V.list.li.remove();
 			var dir = $( '#lib-path .lipath' ).text();
-			wscmdSend( ['webradiodelete', dir, url, V.mode, 'CMD DIR URL MODE' ] );
+			bash( ['webradiodelete', dir, url, V.mode, 'CMD DIR URL MODE' ] );
 		}
 	} );
 }
@@ -514,7 +514,7 @@ function wrDirectoryDelete() {
 									+'<br>Confirm delete?'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
-						, ok      : () => wscmdSend( [ 'wrdirdelete', path, V.mode, true, 'CMD NAME MODE CONFIRM' ] )
+						, ok      : () => bash( [ 'wrdirdelete', path, V.mode, true, 'CMD NAME MODE CONFIRM' ] )
 					} );
 				}
 			} );
@@ -534,7 +534,7 @@ function wrDirectoryRename() {
 		, checkblank   : true
 		, checkchanged : true
 		, oklabel      : 'Rename'
-		, ok           : () => wscmdSend( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal(), 'CMD MODE NAME NEWNAME' ] )
+		, ok           : () => bash( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal(), 'CMD MODE NAME NEWNAME' ] )
 	} );
 }
 var listwebradio = {
@@ -557,7 +557,7 @@ var listwebradio = {
 					, list       : [ 'Name', 'text' ]
 					, checkblank : true
 					, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
-					, ok         : () => wscmdSend( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal(), 'CMD DIR SUB' ] )
+					, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal(), 'CMD DIR SUB' ] )
 				} );
 			} );
 	}

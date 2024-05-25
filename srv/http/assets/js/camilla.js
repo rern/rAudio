@@ -1620,7 +1620,7 @@ var setting   = {
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			if ( ! V.press ) {
 				clearTimeout( V.timeoutsave );
-				V.timeoutsave = setTimeout( () => wscmdSend( [ 'saveconfig' ] ), 1000 );
+				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
 			}
 		}, wscamilla ? 0 : 300 );
 		if ( titlle ) banner( V.tab, titlle, msg );
@@ -2106,7 +2106,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							, checkchanged : true
 							, ok           : () => { // in filters Conv
 								var newname    = infoVal();
-								wscmdSend( [ 'coefrename', name, newname, 'CMD NAME NEWNAME' ] );
+								bash( [ 'coefrename', name, newname, 'CMD NAME NEWNAME' ] );
 								$.each( FIL, ( k, v ) => {
 									if ( v.type === 'Conv' && v.parameters.filename === name ) FIL[ name ].parameters.filename = newname;
 								} );
@@ -2129,7 +2129,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
-							file ? wscmdSend( [ 'coefdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
+							file ? bash( [ 'coefdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
 							setting.save( title, 'Delete ...' );
 							V.li.remove();
 						}
@@ -2250,7 +2250,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, checkchanged : true
 						, ok           : () => {
 							var newname = infoVal();
-							wscmdSend( [ 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
+							bash( [ 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
 							notify( V.tab, SW.title, 'Copy ...' );
 						}
 					} );
@@ -2265,7 +2265,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, checkchanged : true
 						, ok           : () => {
 							var newname = infoVal();
-							wscmdSend( [ 'confrename', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
+							bash( [ 'confrename', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
 							notify( V.tab, SW.title, 'Rename ...' );
 						}
 					} );
@@ -2278,7 +2278,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
-							wscmdSend( [ 'confdelete', name, S.bluetooth, 'CMD NAME BT' ] );
+							bash( [ 'confdelete', name, S.bluetooth, 'CMD NAME BT' ] );
 							notify( V.tab, SW.title, 'Delete ...' );
 						}
 					} );

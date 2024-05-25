@@ -57,7 +57,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 	if ( active ) return
 	
 	if ( ! S.spotifyd && S.spotifytoken ) {
-		wscmdSend( [ 'spotifyd' ] );
+		bash( [ 'spotifyd' ] );
 		notifyCommon( 'Enable ...' );
 	} else if ( S.spotifytoken ) {
 		if ( S.camilladsp ) {
@@ -99,7 +99,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 				var infoval = infoVal();
 				var id      = infoval[ 0 ];
 				var secret  = infoval[ 1 ];
-				wscmdSend( [ 'spotifykey', btoa( id +':'+ secret ), 'CMD BTOA' ] );
+				bash( [ 'spotifykey', btoa( id +':'+ secret ), 'CMD BTOA' ] );
 				var data    = {
 					  response_type : 'code'
 					, client_id     : id
@@ -187,15 +187,15 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 					, values      : S.brightness
 					, beforeshow  : () => {
 						$( '#infoList input' ).on( 'input', function() {
-							wscmdSend( [ 'brightness', val, 'CMD VAL' ] )
+							bash( [ 'brightness', val, 'CMD VAL' ] )
 						} );
 					}
 					, okno        : true
 				} );
 			} ).on( 'click', '.reload', function() {
-				wscmdSend( [ 'localbrowserreload' ] );
+				bash( [ 'localbrowserreload' ] );
 			} ).on( 'click', '.screenoff', function() {
-				wscmdSend( [ 'screenofftoggle' ] );
+				bash( [ 'screenofftoggle' ] );
 			} );
 		}
 		, cancel       : switchCancel
@@ -308,7 +308,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 			var infoval = infoVal();
 			if ( infoval.length < 3 ) {
 				notifyCommon( 'Disable ...' );
-				wscmdSend( [ 'multiraudioreset' ] );
+				bash( [ 'multiraudioreset' ] );
 				return
 			}
 			
@@ -319,7 +319,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 			keys.forEach( k => data[ k ] = val[ k ] );
 			notifyCommon();
 			wsJsonSave( 'multiraudio', data );
-			wscmdSend( [ 'multiraudio' ] );
+			bash( [ 'multiraudio' ] );
 		}
 	} );
 } );
@@ -397,7 +397,7 @@ $( '#setting-scrobble' ).on( 'click', function() {
 					  icon    : 'scrobble'
 					, title   : 'Scrobbler'
 					, message : 'Remove authorization?'
-					, ok      : () => wscmdSend( [ 'scrobblekeyremove' ] )
+					, ok      : () => bash( [ 'scrobblekeyremove' ] )
 				} );
 			}
 			, cancel       : switchCancel
@@ -462,7 +462,7 @@ function infoSpotify() {
 		, values       : V.listspotify.current
 		, checkchanged : true
 		, ok           : () => {
-			wscmdSend( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
+			bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
 			notifyCommon();
 		}
 	} );
@@ -477,7 +477,7 @@ function infoSpotifyKeys() {
 		, oklabel  : ico( 'remove' ) +'Remove'
 		, okcolor  : red
 		, ok       : () => {
-			wscmdSend( [ 'spotifykeyremove' ] );
+			bash( [ 'spotifykeyremove' ] );
 			notifyCommon( 'Remove keys ...' );
 		}
 	} );

@@ -72,9 +72,19 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
 */
 function bash( args, callback, json ) {
+	var args0   = args[ 0 ];
+	var args0sh = [ '.sh', '.py' ].includes( args0.slice( -3 ) );
+	if ( ! callback ) {
+		if ( args0sh ) {
+			ws.send( '^^'+ args.join( ' ' ) );
+		} else {
+			wscmd.send( args.join( '\n' ) );
+		}
+		return
+	}
+	
 	var data = { cmd: 'bash' }
-	var args0 = args[ 0 ];
-	if (  [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) { // CMD.sh / CMD.py
+	if ( args0sh ) { // CMD.sh / CMD.py
 		data.filesh = args.join( ' ' );
 		args = false;
 	} else if ( page ) {                 // CMD - settings
@@ -105,6 +115,7 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 			return
 		}
 	}
+	
 	$.post( 
 		 'cmd.php'
 		, data
@@ -117,7 +128,7 @@ $( '.page-icon' ).press( () => location.reload() );
 $( '#debug' ).press( function() {
 	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
-	ws.send( '^^cmd.sh cachebust' );
+	bash( [ 'cmd.sh', 'cachebust' ] );
 } );
 $( '#infoOverlay' ).press( '#infoOk', function() {
 	V.consoleonly = true;
@@ -132,7 +143,7 @@ $( '.col-r .switch' ).press( function( e ) {
 	V.consoleonly = true;
 	switchIdIconTitle( e.target.id );
 	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
-	wscmdSend( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
+	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
 } );
 	
 // ----------------------------------------------------------------------
@@ -1018,7 +1029,7 @@ function infoPowerCommand( action ) {
 			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
 			, okcolor : off ? red : orange
 			, ok      : () => {
-				ws.send( '^^power.sh^^'+ action +' confirm' );
+				bash( [ 'power.sh', action, 'confirm' ] );
 				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
 			}
 		} );
@@ -1147,6 +1158,7 @@ function pageInactive() {
 	V.pageactive   = false;
 	V.pageinactive = true;
 	if ( typeof psOnClose === 'function' ) psOnClose();
+	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
 //	ws.send( 'clientremove' ); // 'clientremove' = missing 1st message on pageActive
 }
 document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();

@@ -202,13 +202,18 @@ $( '.img' ).on( 'click', function() {
 $( '.refresh' ).on( 'click', function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( V.intstatus );
-		$this.removeClass( 'blink wh' )
+		intervalStatus( 'clear' );
 		return
 	}
 	
 	$this.addClass( 'blink wh' )
-	V.intstatus = setInterval( () => wscmdSend( [ 'settings/system-data.sh', 'status' ] ), 10000 );
+	V.intstatus = setInterval( () => {
+		bash( [ 'settings/system-data.sh', 'status' ], data => {
+			intervalStatus( 'icon' );
+			$( '#divstatus .value' ).html( data.status + data.warning );
+			$( '#warning' ).toggleClass( 'hide', data.warning === '' );
+		}, 'json' );
+	}, 10000 );
 } );
 $( '.addnas' ).on( 'click', function() {
 	infoMount();
@@ -255,7 +260,7 @@ $( '#menu a' ).on( 'click', function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
-			wscmdSend( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
+			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break;
 		case 'info':
 			var $code = $( '#codehddinfo' );
@@ -271,11 +276,11 @@ $( '#menu a' ).on( 'click', function() {
 			break;
 		case 'remount':
 			notify( icon, title, 'Remount ...' );
-			wscmdSend( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
+			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
-			wscmdSend( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
+			bash( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break;
 	}
 } );
@@ -344,7 +349,7 @@ $( '#i2smodule' ).on( 'input', function() {
 		S.i2ssw = false;
 		i2sSelectHide();
 	}
-	wscmdSend( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
+	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 } );
 $( '#setting-i2smodule' ).on( 'click', function() {
 	info( {
@@ -353,7 +358,7 @@ $( '#setting-i2smodule' ).on( 'click', function() {
 		, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
 		, values       : S.i2seeprom
 		, checkchanged : S.i2seeprom
-		, ok           : () => wscmdSend( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
+		, ok           : () => bash( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
 	} );
 } );
 $( '#gpioimgtxt' ).on( 'click', function() {
@@ -431,7 +436,7 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 		}
 		, cancel       : switchCancel
 		, buttonlabel  : buttonlogo ? ico( 'raudio' ) +'Logo' : ''
-		, button       : buttonlogo ? () => wscmdSend( [ 'mpdoledlogo' ] ) : ''
+		, button       : buttonlogo ? () => bash( [ 'mpdoledlogo' ] ) : ''
 		, ok           : switchEnable
 	} );
 } );
@@ -460,7 +465,7 @@ $( '#setting-tft' ).on( 'click', function() {
 							+'<br>(Get stylus ready.)'
 				, ok      : () => {
 					notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
-					wscmdSend( [ 'tftcalibrate' ] );
+					bash( [ 'tftcalibrate' ] );
 				}
 			} );
 		}
@@ -534,13 +539,13 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 			var val = infoVal();
 			$( '#hostname' ).val( val );
 			banner( SW.icon +' blink', SW.title, 'Change ...', -1 );
-			wscmdSend( [ 'hostname', val, 'CMD NAME' ] );
+			bash( [ 'hostname', val, 'CMD NAME' ] );
 		}
 	} );
 } );
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
-	wscmdSend( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
+	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
 } );
 $( '#divtimezone .col-r' ).on( 'click', function( e ) {
 	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
@@ -650,7 +655,7 @@ $( '#shareddata' ).on( 'click', function() {
 			, okcolor : orange
 			, ok      : () => {
 				notifyCommon( 'Disable ...' );
-				wscmdSend( [ 'shareddatadisable', 'OFF' ] );
+				bash( [ 'shareddatadisable', 'OFF' ] );
 			}
 		} );
 	} else {
@@ -792,7 +797,7 @@ function infoLcdcharButton() {
 		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-22 wh' ) +'&ensp;Logo</gr>&ensp;' )
 		.after( '&emsp;<gr id="lcdoff">'+ ico( 'screenoff i-22 wh' ) +'&ensp;Sleep</gr>' );
 	$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
-		wscmdSend( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] );
+		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] );
 	} );
 }
 function infoMirror() {
@@ -1071,7 +1076,7 @@ function infoRelaysOk() {
 	values.push( pin.TIMER );
 	notifyCommon();
 	wsJsonSave( 'relays', name );
-	wscmdSend( [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ] );
+	bash( [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ] );
 }
 function infoRestore( reset ) {
 	var list = [
@@ -1089,7 +1094,7 @@ function infoRestore( reset ) {
 		, okcolor  : orange
 		, ok       : reset ? () => {
 				notifyCommon( 'Reset to default ...' );
-				ws.send( [ '^^settings/system-datareset.sh '+ infoVal().join( ' ' ) ] );
+				bash( [ 'settings/system-datareset.sh', ...infoVal() ] );
 				loader();
 			} : () => {
 				notifyCommon( 'Restore ...' );
@@ -1127,6 +1132,16 @@ function infoWlan() {
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
+}
+function intervalStatus( type ) {
+	var $icon = $( '#divstatus .refresh' );
+	if ( type === 'icon' ) {
+		$icon.toggleClass( 'i-refresh blink i-flash' );
+		setTimeout( () => $icon.toggleClass( 'i-refresh blink i-flash' ), 900 );
+	} else { // clear
+		clearInterval( V.intstatus );
+		$icon.removeClass( 'blink wh' );
+	}
 }
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );

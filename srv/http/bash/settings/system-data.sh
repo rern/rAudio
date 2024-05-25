@@ -56,7 +56,7 @@ if [[ $throttled != 0x0 ]]; then
 	done
 fi
 # for interval refresh
-[[ $1 == status ]] && pushData refresh '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
+[[ $1 == status ]] && echo '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
 
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )

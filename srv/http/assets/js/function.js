@@ -365,7 +365,7 @@ function coverartChange() {
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
-			wscmdSend( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, 'CMD COVERFILE MPDPATH ARTIST ALBUM' ] );
+			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, 'CMD COVERFILE MPDPATH ARTIST ALBUM' ] );
 		}
 		, ok          : () => {
 			imageReplace( type, imagefilenoext );
@@ -759,7 +759,7 @@ function infoTitle() {
 				} else if ( $this.hasClass( 'similar' ) ) {
 					addSimilar();
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					wscmdSend( [ 'scrobble', ...values, 'CMD ARTIST TITLE' ] );
+					bash( [ 'scrobble', ...values, 'CMD ARTIST TITLE' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
 				$( '#infoX' ).trigger( 'click' );
@@ -862,7 +862,7 @@ function mpcSeek( elapsed ) {
 		$( '#pause' ).addClass( 'active' );
 		$( '#title' ).addClass( 'gr' );
 	}
-	wscmdSend( [ 'mpcseek', elapsed, S.state, 'CMD ELAPSED STATE' ] );
+	bash( [ 'mpcseek', elapsed, S.state, 'CMD ELAPSED STATE' ] );
 }
 function mpcSeekBar( pageX ) {
 	var $timeband  = $( '#time-band' );
@@ -1029,7 +1029,7 @@ function playlistInsertTarget() {
 }
 function playlistRemove( $li ) {
 	if ( $( '#pl-list li' ).length === 1 ) {
-		wscmdSend( [ 'mpcremove' ] );
+		bash( [ 'mpcremove' ] );
 	} else {
 		var total  = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
 		var file   = $li.hasClass( 'file' );
@@ -1059,7 +1059,7 @@ function playlistRemove( $li ) {
 				$li.prev().addClass( 'active' );
 			}
 		}
-		if ( ! V.local ) wscmdSend( [ 'mpcremove', pos, poscurent, 'CMD POS CURRENT' ] );
+		if ( ! V.local ) bash( [ 'mpcremove', pos, poscurent, 'CMD POS CURRENT' ] );
 		$( '#pl-list li .pos' ).slice( pos ).each( ( i, el ) => {
 			$( el ).text( pos );
 			pos++
@@ -1081,7 +1081,7 @@ function playlistSkip() {
 		$( '#elapsed, #total, #progress' ).empty();
 	}
 	var file = $( '#pl-list li' ).eq( S.song ).find( '.lipath' ).text();
-	wscmdSend( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
+	bash( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
 }
 function refreshData() {
 	if ( V.library ) {
@@ -1928,9 +1928,9 @@ function sortPlaylist( pl, iold, inew ) {
 	V.sortable = true;
 	setTimeout( () => V.sortable = false, 500 );
 	if ( pl === 'pl-list' ) {
-		wscmdSend( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
+		bash( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
 	} else {
-		wscmdSend( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME ACTION FROM TO' ] );
+		bash( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME ACTION FROM TO' ] );
 	}
 	var i    = Math.min( iold, inew );
 	var imax = Math.max( iold, inew ) + 1;

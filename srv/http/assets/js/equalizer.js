@@ -73,7 +73,7 @@ function eqPreset( v ) {
 	E.preset.Flat = flat;
 	E.current     = v;
 	wsJsonSave( 'equalizer', E );
-	wscmdSend( [ 'equalizer', v, equser, 'CMD VALUES USR' ] );
+	bash( [ 'equalizer', v, equser, 'CMD VALUES USR' ] );
 }
 function eqOptionPreset() {
 	local(); // suppress input event
@@ -87,7 +87,7 @@ function eqOptionPreset() {
 	if ( name ) $( '#eq .select2-container' ).addClass( 'hide' );
 }
 function eqSlide( band, v ) {
-	wscmdSend( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
+	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
 	if ( E.active === 'Flat' ) {
 		for ( i = 1; i < 10; i++ ) {
 			var name = 'New '+ i;
