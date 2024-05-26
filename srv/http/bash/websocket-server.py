@@ -9,28 +9,27 @@ import websockets
 CLIENTS   = set()
 
 async def cmd( websocket, path ):
-    async for args in websocket: # param: string
-#        with open( '/dev/shm/args', 'w' ) as f: f.write( args )
-        param = json.loads( args ) # param: string > list
-        if 'channel' in param:
-            websockets.broadcast( CLIENTS, args )
-        elif 'bash' in param:   # { "bash": "FILE.sh a b c ..." }
-            os.system( param[ 'bash' ] )
-        elif 'filesh' in param: # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
-            subprocess.Popen( param[ 'filesh' ] )
-        elif 'json' in param:
-            argjson  = json.dumps( param[ 'json' ] ) # json: list > string
-            argname  = param[ 'name' ]
-            data     = '{ "channel": "'+ argname +'", "data": '+ argjson +' }'
+    async for args in websocket: # jargs: string
+        jargs = json.loads( args ) # jargs: string > list
+        if 'channel' in jargs:  # broadcast
+            websockets.broadcast( CLIENTS, args ) # { "channel": "CAHNNEL", "data": { ... } }
+        elif 'bash' in jargs:   # FILE.sh a b c
+            os.system( jargs[ 'bash' ] )          # { "bash": "FILE.sh a b c ..." }
+        elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
+            subprocess.Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
+        elif 'json' in jargs:   # save to NAME.json and broadcast
+            jargsjson = jargs[ 'json' ]           # { "json": { ... }, "name": "NAME" }
+            jargsname = jargs[ 'name' ]
+            data      = '{ "channel": "'+ jargsname +'", "data": '+ json.dumps( jargsjson ) +' }'
             websockets.broadcast( CLIENTS, data )
-            pathfile = '/srv/http/data/system/'+ argname
+            pathfile  = '/srv/http/data/system/'+ jargsname
             with open( pathfile +'.json', 'w' ) as f:
-                json.dump( param[ 'json' ], f, indent=2 )
-        elif 'status' in param: # full / snapclient
-            status = subprocess.getoutput( [ '/srv/http/bash/status.sh '+ param[ 'status' ] ] ).replace( '\n', '' )
+                json.dump( jargsjson, f, indent=2 )
+        elif 'status' in jargs:                   # { "status": "[snapclient/withdisplay/ ]" }
+            status = subprocess.getoutput( [ '/srv/http/bash/status.sh '+ jargs[ 'status' ] ] ).replace( '\n', '' )
             await websocket.send( status )
-        elif 'client' in param:
-            if param[ 'client' ] == 'add':
+        elif 'client' in jargs:                   # { "client": "[add/remove]" }
+            if jargs[ 'client' ] == 'add':
                 if websocket not in CLIENTS:
                     CLIENTS.add( websocket )
             else:
