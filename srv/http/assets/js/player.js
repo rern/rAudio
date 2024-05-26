@@ -270,7 +270,7 @@ function infoNoVolume() {
 }
 function infoNoVolumeSet() {
 	notifyCommon( 'Enable ...' );
-	bash( [ 'novolume' ], function() {
+	bash( [ 'novolume' ], () => {
 		if ( ! S.custom ) return
 		
 		info( {
