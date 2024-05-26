@@ -234,8 +234,6 @@ EOF
  • <wh>Windows NFS clients:</wh>
 	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
 	· $fileexplorer
-	
-Note: SSH password must be default.
 EOF
 	]
 	, [
