@@ -88,7 +88,7 @@ function bash( args, callback, json ) {
 		return
 	}
 	// php
-	var data = { cmd: 'bash', filesh: file, args: args || '' }
+	var data = { cmd: 'bash', filesh: args0, args: args || '' }
 	if ( V.debug ) {
 		var bashcmd = file.split( '/' ).pop();
 		if ( args ) bashcmd += ' "\\\n'+ args.join( '\n' ).replace( /"/g, '\\"' ) +'"';

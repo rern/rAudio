@@ -891,7 +891,7 @@ function pageScroll( top ) {
 	setTimeout( () => $( 'html, body' ).scrollTop( top ), 0 );
 }
 function playbackStatusGet( withdisplay ) {
-	$.post( 'cmd.php', { cmd: 'bash', filesh: 'status.sh', args: [ withdisplay || '' ] }, list => {
+	bash( [ 'status.sh', withdisplay ], list => {
 		if ( list == -1 ) {
 			loaderHide();
 			info( {
