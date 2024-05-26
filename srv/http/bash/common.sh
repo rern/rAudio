@@ -100,6 +100,9 @@ camillaDSPstart() {
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi
 }
+cmdshWebsocket() {
+	websocat ws://$1:8080 <<< '{ "filesh": [ "'$dirbash'/cmd.sh", "'$2'" ] }'
+}
 conf2json() {
 	local file json k keys only l lines v
 	[[ $1 == '-nocap' ]] && nocap=1 && shift
@@ -305,7 +308,7 @@ pushData() {
 		if [[ $data == *done* ]]; then
 			sharedip=$( grep -v $( ipAddress ) $filesharedip )
 			for ip in $sharedip; do
-				websocat ws://$ip:8080/cmd <<< shareddatampdupdate
+				cmdshWebsocket $ip shareddatampdupdate
 			done
 			return
 		fi
@@ -395,7 +398,7 @@ snapclientIP() {
 		else
 			[[ ! $connected ]] && continue
 			
-			[[ $1 ]] && websocat ws://$ip:8080/cmd <<< playerstop || clientip+=" ${l/*:}"
+			[[ $1 ]] && cmdshWebsocket $ip playerstop || clientip+=" ${l/*:}"
 		fi
 	done <<< $lines
 	[[ $clientip ]] && echo $clientip

@@ -73,41 +73,29 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
 */
 function bash( args, callback, json ) {
-	var args0   = args[ 0 ];
-	var args0sh = [ '.sh', '.py' ].includes( args0.slice( -3 ) );
+	var args0 = args[ 0 ];
+	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) {
+		var file = dirbash + args0;
+		args.shift();
+	} else {
+		var file = filesh;
+	}
 	// websocket
 	if ( ! callback ) {
-		if ( args0sh ) {
-			var data = '{ "bash": "'+ dirbash + args.join( ' ' ) +'" }';
-		} else {
-			var data = '{ "filesh": [ "'+ filesh +'", "'+ args.join( '\\n' ) +'" ] }';
-		}
-		if ( V.debug ) {
-			console.log( data );
-			return
-		}
-		
+//		var get  = typeof callback === 'function' ? ', "get": true' : '';
+//		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ) +'" ]'+ get +' }';
+		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ) +'" ] }';
+		if ( V.debug ) console.log( data );
 		ws.send( data );
 		return
 	}
 	// php
-	var file;
-	if ( args0sh ) { // CMD.sh / CMD.py
-		file = args.join( ' ' );
-		args = false;
-	} else if ( page ) {                 // CMD - settings
-		file = 'settings/'+ page +'.sh';
-		if ( args0 === 'mount' ) file = file.replace( 'system', 'system-mount' );
-	} else {                             // CMD - playback
-		file = [ 'scrobble', 'tageditor' ].includes( args0 ) ? args0 +'.sh' : 'cmd.sh';
-	}
 	var data = { cmd: 'bash', filesh: file, args: args || '' }
 	if ( V.debug ) {
 		var bashcmd = file.split( '/' ).pop();
 		if ( args ) bashcmd += ' "\\\n'+ args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
 		console.log( data );
 		console.log( bashcmd );
-		return
 	}
 	
 	$.post( 
@@ -119,9 +107,9 @@ function bash( args, callback, json ) {
 }
 // debug
 $( '#debug' ).press( function() {
-	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
 	bash( [ 'cmd.sh', 'cachebust' ] );
+	V.debug = true;
 } );
 
 $( '.page-icon' ).press( () => location.reload() );

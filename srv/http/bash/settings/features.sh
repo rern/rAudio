@@ -221,18 +221,17 @@ multiraudio )
 	ip=$( ipAddress )
 	iplist=$( jq -r .[]  $dirsystem/multiraudio.json | grep -v $ip )
 	display='{ "submenu": "multiraudio", "value": '$TF' }'
-	enable='{ "bash": "touch '$dirsystem'multiraudio"' }
+	flagset='{ "filesh": [ "rm", "-f", "'$dirsystem'/multiraudio" ] }'
 	if [[ $ON ]]; then
 		json='{ "json": '$( tr -d '\n' < $dirsystem/multiraudio.json )', "name": "multiraudio" }'
-	else
-		enable=${enable/touch/rm -f}
+		flagset=${enable/rm*-f/touch}
 	fi
 	while read ip; do
 		! ipOnline $ip && continue
 		
 		[[ $json ]] && websocat ws://$ip:8080 <<< $json
 		pushWebsocket $ip display $display
-		websocat ws://$ip:8080 <<< $enable
+		websocat ws://$ip:8080 <<< $flagset
 	done <<< $iplist
 	pushRefresh
 	pushSubmenu multiraudio $TF

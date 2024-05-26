@@ -16,7 +16,11 @@ async def cmd( websocket, path ):
         elif 'bash' in jargs:   # FILE.sh a b c
             os.system( jargs[ 'bash' ] )          # { "bash": "FILE.sh a b c ..." }
         elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
-            subprocess.Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
+            if 'get' in jargs:
+                status = subprocess.check_output( jargs[ 'filesh' ] )
+                await websocket.send( status )
+            else:
+                subprocess.Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
         elif 'json' in jargs:   # save to NAME.json and broadcast
             jargsjson = jargs[ 'json' ]           # { "json": { ... }, "name": "NAME" }
             jargsname = jargs[ 'name' ]
@@ -25,9 +29,6 @@ async def cmd( websocket, path ):
             pathfile  = '/srv/http/data/system/'+ jargsname
             with open( pathfile +'.json', 'w' ) as f:
                 json.dump( jargsjson, f, indent=2 )
-        elif 'status' in jargs:                   # { "status": "[snapclient/withdisplay/ ]" }
-            status = subprocess.getoutput( [ '/srv/http/bash/status.sh '+ jargs[ 'status' ] ] ).replace( '\n', '' )
-            await websocket.send( status )
         elif 'client' in jargs:                   # { "client": "[add/remove]" }
             if jargs[ 'client' ] == 'add':
                 if websocket not in CLIENTS:

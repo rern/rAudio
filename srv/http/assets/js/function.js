@@ -759,7 +759,7 @@ function infoTitle() {
 				} else if ( $this.hasClass( 'similar' ) ) {
 					addSimilar();
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...values, 'CMD ARTIST TITLE' ] );
+					bash( [ 'scrobble.sh', ...values, 'CMD ARTIST TITLE' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
 				$( '#infoX' ).trigger( 'click' );
@@ -891,7 +891,7 @@ function pageScroll( top ) {
 	setTimeout( () => $( 'html, body' ).scrollTop( top ), 0 );
 }
 function playbackStatusGet( withdisplay ) {
-	bash( [ 'status.sh', withdisplay ], list => {
+	$.post( 'cmd.php', { cmd: 'bash', filesh: 'status.sh', args: [ withdisplay || '' ] }, list => {
 		if ( list == -1 ) {
 			loaderHide();
 			info( {

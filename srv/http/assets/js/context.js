@@ -402,7 +402,7 @@ function tagEditor() {
 				} );
 				infoval.FILE = file;
 				banner( 'tag blink', 'Tag Editor', 'Change ...', -1 );
-				bash( [ 'tageditor', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
+				bash( [ 'tageditor.sh', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
 			}
 		} );
 	}, 'json' );
