@@ -82,8 +82,6 @@ function bash( args, callback, json ) {
 	}
 	// websocket
 	if ( ! callback ) {
-//		var get  = typeof callback === 'function' ? ', "get": true' : '';
-//		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ) +'" ]'+ get +' }';
 		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ) +'" ] }';
 		if ( V.debug ) console.log( data );
 		ws.send( data );

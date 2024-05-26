@@ -9,18 +9,14 @@ import websockets
 CLIENTS   = set()
 
 async def cmd( websocket, path ):
-    async for args in websocket: # jargs: string
-        jargs = json.loads( args ) # jargs: string > list
+    async for args in websocket:
+        jargs = json.loads( args )
         if 'channel' in jargs:  # broadcast
             websockets.broadcast( CLIENTS, args ) # { "channel": "CAHNNEL", "data": { ... } }
         elif 'bash' in jargs:   # FILE.sh a b c
             os.system( jargs[ 'bash' ] )          # { "bash": "FILE.sh a b c ..." }
         elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
-            if 'get' in jargs:
-                status = subprocess.check_output( jargs[ 'filesh' ] )
-                await websocket.send( status )
-            else:
-                subprocess.Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
+            subprocess.Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
         elif 'json' in jargs:   # save to NAME.json and broadcast
             jargsjson = jargs[ 'json' ]           # { "json": { ... }, "name": "NAME" }
             jargsname = jargs[ 'name' ]
@@ -36,6 +32,9 @@ async def cmd( websocket, path ):
             else:
                 if websocket in CLIENTS:
                     CLIENTS.remove( websocket )
+        elif 'status' in jargs:
+            status = subprocess.run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True ).stdout
+            await websocket.send( status )
 
 async def main():
     async with websockets.serve( cmd, '0.0.0.0', 8080, ping_interval=None, ping_timeout=None ):
