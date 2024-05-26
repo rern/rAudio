@@ -219,15 +219,20 @@ logindisable )
 multiraudio )
 	enableFlagSet
 	ip=$( ipAddress )
-	iplist=$( grep -Ev "$ip|{|}" $dirsystem/multiraudio.json | awk '{print $NF}' | tr -d '",' )
+	iplist=$( jq -r .[]  $dirsystem/multiraudio.json | grep -v $ip )
+	display='{ "submenu": "multiraudio", "value": '$TF' }'
+	enable='{ "bash": "touch '$dirsystem'multiraudio"' }
 	if [[ $ON ]]; then
-		data='{ "json": '$( tr -d '\n' < $dirsystem/multiraudio.json )', "name": "multiraudio", "enable": True'
+		json='{ "json": '$( tr -d '\n' < $dirsystem/multiraudio.json )', "name": "multiraudio" }'
 	else
-		data='{ "bash": "settings/features.sh multiraudiodisable"'
+		enable=${enable/touch/rm -f}
 	fi
-	data+=', "push": { "channel": "display", "data": { "submenu": "multiraudio", "value": '$TF' } } }'
 	while read ip; do
-		websocat ws://$ip:8080 <<< $data
+		! ipOnline $ip && continue
+		
+		[[ $json ]] && websocat ws://$ip:8080 <<< $json
+		pushWebsocket $ip display $display
+		websocat ws://$ip:8080 <<< $enable
 	done <<< $iplist
 	pushRefresh
 	pushSubmenu multiraudio $TF

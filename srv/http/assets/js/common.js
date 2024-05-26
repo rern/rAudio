@@ -8,6 +8,8 @@ websocket
 */
 
 var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
+var dirbash     = '/srv/http/bash/';
+var filesh      = dirbash + ( page ? 'settings/'+ page : 'cmd' ) +'.sh';
 var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
@@ -60,7 +62,6 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 	- string : 
 		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
 		- multiline      : 'l1\\nl2\\nl3...'
-	- json   : json.sringify( JSON )
 - php > bash >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
 	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
 - bash       >> common.sh - args2var
@@ -74,46 +75,39 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 function bash( args, callback, json ) {
 	var args0   = args[ 0 ];
 	var args0sh = [ '.sh', '.py' ].includes( args0.slice( -3 ) );
+	// websocket
 	if ( ! callback ) {
 		if ( args0sh ) {
-			ws.send( '{ "bash": "'+ args.join( ' ' ) +'" }' );
+			var data = '{ "bash": "'+ dirbash + args.join( ' ' ) +'" }';
 		} else {
-			wscmd.send( args.join( '\n' ) );
+			var data = '{ "filesh": [ "'+ filesh +'", "'+ args.join( '\\n' ) +'" ] }';
 		}
-		return
-	}
-	
-	var data = { cmd: 'bash' }
-	if ( args0sh ) { // CMD.sh / CMD.py
-		data.filesh = args.join( ' ' );
-		args = false;
-	} else if ( page ) {                 // CMD - settings
-		data.filesh = 'settings/'+ page +'.sh';                            // default
-		if ( args0 === 'mount' ) data.filesh = 'settings/system-mount.sh'; // not default
-	} else {                             // CMD - playback
-		data.filesh = 'cmd.sh';
-		if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) data.filesh = args0 +'.sh';
-	}
-	if ( args ) data.args = args;
-/*
-V.debug - press: $( '#debug' )
-	- all
-	- console.log commands
-	- active push status (no pageInactive)
-V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
-	- each
-	- console.log commands only (NOT run)
-*/
-	if ( V.debug || V.consoleonly ) {
-		var bashcmd = data.filesh.replace( 'settings/', '' );
-		if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
-		console.log( data );
-		console.log( bashcmd );
-		if ( V.consoleonly ) {
-			V.consoleonly = false;
-			setTimeout( () => page ? switchCancel() : bannerHide(), 5000 );
+		if ( V.debug ) {
+			console.log( data );
 			return
 		}
+		
+		ws.send( data );
+		return
+	}
+	// php
+	var file;
+	if ( args0sh ) { // CMD.sh / CMD.py
+		file = args.join( ' ' );
+		args = false;
+	} else if ( page ) {                 // CMD - settings
+		file = 'settings/'+ page +'.sh';
+		if ( args0 === 'mount' ) file = file.replace( 'system', 'system-mount' );
+	} else {                             // CMD - playback
+		file = [ 'scrobble', 'tageditor' ].includes( args0 ) ? args0 +'.sh' : 'cmd.sh';
+	}
+	var data = { cmd: 'bash', filesh: file, args: args || '' }
+	if ( V.debug ) {
+		var bashcmd = file.split( '/' ).pop();
+		if ( args ) bashcmd += ' "\\\n'+ args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
+		console.log( data );
+		console.log( bashcmd );
+		return
 	}
 	
 	$.post( 
@@ -124,23 +118,19 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 	);
 }
 // debug
-$( '.page-icon' ).press( () => location.reload() );
 $( '#debug' ).press( function() {
 	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
 	bash( [ 'cmd.sh', 'cachebust' ] );
 } );
-$( '#infoOverlay' ).press( '#infoOk', function() {
-	V.consoleonly = true;
-	I.ok();
-} );
+
+$( '.page-icon' ).press( () => location.reload() );
 $( '.col-r .switch' ).press( function( e ) {
 	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
 		$( '#setting-'+ e.target.id ).trigger( 'click' );
 		return
 	}
 	
-	V.consoleonly = true;
 	switchIdIconTitle( e.target.id );
 	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
 	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
@@ -1163,7 +1153,7 @@ function pageInactive() {
 	V.pageinactive = true;
 	if ( typeof psOnClose === 'function' ) psOnClose();
 	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
-//	ws.send( 'clientremove' ); // 'clientremove' = missing 1st message on pageActive
+//	ws.send( '{ "client": "remove" }' ); // 'remove' = missing 1st message on pageActive
 }
 document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
@@ -1173,7 +1163,6 @@ window.onpageshow = pageActive;
 
 // websocket
 var ws            = null;
-var wscmd         = null;
 function volumeMuteToggle() {
 	if ( S.volumemute ) {
 		S.volume     = S.volumemute;
@@ -1184,20 +1173,18 @@ function volumeMuteToggle() {
 	}
 	volumeSet( S.volumemute ? 'mute' : 'unmute' );
 }
-function volumePush() {
-	V.local = true; // suppress local refresh
-	setTimeout( () => {
-		ws.send( '{ "channel": "volume", "data": { "val": '+ S.volume +' } }' );
-	}, 300 );
+function volumePush( type, val ) {
+	V.local = true;
+	val = typeof val !== 'undefined' ? val : S.volume;
+	ws.send( '{ "channel": "volume", "data": { "type": "'+ type +'", "val": '+ val +' } }' );
 }
 function volumeSet( type ) { // type: mute / unmute
-	if ( ! type ) type = V.drag || V.press ? '' : 'push';
-	wscmd.send( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ].join( '\n' ) );
+	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
+	if ( ! V.drag && ! V.press ) volumePush( type, type === 'mute' ? V.volumecurrent : S.volume );
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {
 	var url      = 'ws://'+ ( ip || location.host ) +':8080';
-	if ( ! websocketOk( wscmd ) ) wscmd = new WebSocket( url +'/'+ ( page || 'cmd' ) );
 	if ( websocketOk( ws ) ) return
 	
 	ws           = new WebSocket( url );
@@ -1205,7 +1192,7 @@ function websocketConnect( ip ) {
 	ws.onclose   = () => ws = null;
 	ws.onmessage = message => psOnMessage( message ); // data pushed from server
 	ws.onready   = () => { // custom
-		ws.send( 'clientadd' );
+		ws.send( '{ "client": "add" }' );
 		if ( V.reboot ) {
 			delete V.reboot
 			if ( S.login ) {
@@ -1263,7 +1250,6 @@ function psPower( data ) {
 	V[ data.type ] = true;
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 	ws.close();
-	if ( wscmd ) wscmd.close();
 	if ( V.off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {

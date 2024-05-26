@@ -672,7 +672,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	$( '#volume-bar' ).css( 'width', V.volume.x );
 	volumeSet();
-} ).on( 'touchend mouseup', function( e ) {
+} ).on( 'touchend mouseup mouseleave', function( e ) {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		volumeBarShow();
 		return
