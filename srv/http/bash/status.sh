@@ -134,7 +134,7 @@ $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
 		serverip=$( < $dirshm/snapserverip )
-		serverstatus=$( websocat ws://$serverip:8080 <<< '{ "filesh": [ "/srv/http/bash/status.sh", "snapclient" ], "get": True }' )
+		serverstatus=$( websocat ws://$serverip:8080 <<< '{ "filesh": [ "/srv/http/bash/status.sh", "snapclient" ], "get": true }' )
 ########
 		status+="
 $( sed -E  -e '1,3d; $d
