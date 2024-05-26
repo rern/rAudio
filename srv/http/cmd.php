@@ -11,11 +11,6 @@ switch( $_POST[ 'cmd' ] ) {
 case 'bash':
 	$filesh    = $_POST[ 'filesh' ];
 	$args      = $_POST[ 'args' ] ?? '';
-	$json      = $_POST[ 'json' ] ?? '';
-	if ( $json ) {
-		$jsonstring = json_encode( json_decode( $json ), JSON_PRETTY_PRINT );
-		file_put_contents( $dirsystem.$args[ 0 ].'.json', $jsonstring );   // save json
-	}
 	if ( $args ) {
 		$multiline = implode( "\n", $args );                               // array to multiline
 		$multiline = escape( $multiline );                                 // escape multiline
@@ -25,23 +20,23 @@ case 'bash':
 	}
 	echo rtrim( $result );
 	break;
-case 'camilla':
+case 'camilla': // from camilla.js (formdata)
 	fileUploadSave( '/srv/http/data/camilladsp/'.$_POST[ 'dir' ].'/'.$_FILES[ 'file' ][ 'name' ] );
 	exec( $sudosettings.'camilla-data.sh pushrefresh', $output, $result );
 	break;
-case 'datarestore':
+case 'datarestore': // from system.js (formdata)
 	fileUploadSave( $dirshm.'backup.gz' );
 	$libraryonly = $_POST[ 'libraryonly' ] ?? '';
 	exec( $sudosettings.'system-datarestore.sh '.$libraryonly, $output, $result );
 	if ( $result != 0 ) echo 'Restore failed';
 	break;
-case 'giftype':
+case 'giftype': // from common.js (formdata)
 	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];
 	$animated = exec( $sudobin.'gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
 	echo $animated;
 	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
-case 'imagereplace':
+case 'imagereplace': // from function.js - imageReplace()
 	$imagefile = $_POST[ 'imagefile' ];
 	$type      = $_POST[ 'type' ];
 	if ( $type === 'coverart' && ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
@@ -61,7 +56,7 @@ case 'imagereplace':
 	$multiline    = escape( $multiline );
 	shell_exec( $sudobash.'cmd-coverartsave.sh "'.$multiline.'"' );
 	break;
-case 'login':
+case 'login': // from features.js - imageReplace()
 	$file = $dirsystem.'login';
 	if ( file_exists( $file )  && ! password_verify( $_POST[ 'password' ], file_get_contents( $file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
