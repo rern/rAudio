@@ -95,7 +95,6 @@ function bash( args, callback, json ) {
 		console.log( data );
 		console.log( bashcmd );
 	}
-	
 	$.post( 
 		 'cmd.php'
 		, data
