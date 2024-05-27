@@ -2,11 +2,10 @@
 
 import asyncio
 import json
-import os
 import subprocess
 import websockets
 
-CLIENTS   = set()
+CLIENTS = set()
 
 async def cmd( websocket, path ):
     async for args in websocket:
