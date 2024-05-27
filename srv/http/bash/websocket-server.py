@@ -21,7 +21,7 @@ async def cmd( websocket, path ):
             websockets.broadcast( CLIENTS, data )
             pathfile  = '/srv/http/data/system/'+ jargsname
             with open( pathfile +'.json', 'w' ) as f:
-                json.dump( jargsjson, f, indent=2 )
+                json.dump( jargsjson, f, indent='\t' )
         elif 'client' in jargs:                   # { "client": "[add/remove]" }
             if jargs[ 'client' ] == 'add':
                 if websocket not in CLIENTS:
