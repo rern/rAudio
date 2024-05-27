@@ -81,7 +81,7 @@ function bash( args, callback, json ) {
 		var file = filesh;
 	}
 	// websocket
-	if ( ! callback ) {
+	if ( ! callback && ws.readyState ) {
 		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
 		if ( V.debug ) console.log( data );
 		ws.send( data );
