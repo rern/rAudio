@@ -1,38 +1,31 @@
 <?php
-$sudo         = '/usr/bin/sudo ';
-$sudobin      = $sudo.'/usr/bin/';
-$sudosettings = $sudo.'/srv/http/bash/settings/';
-$sudobash     = $sudo.'/srv/http/bash/';
-$dirshm       = '/srv/http/data/shm/';
-$dirsystem    = '/srv/http/data/system/';
+$sudo        = '/usr/bin/sudo ';
+$dirsettings = '/srv/http/bash/settings/';
+$dirshm      = '/srv/http/data/shm/';
 
 switch( $_POST[ 'cmd' ] ) {
 
 case 'bash':
 	$filesh    = $_POST[ 'filesh' ];
 	$args      = $_POST[ 'args' ] ?? '';
-	if ( $args ) {
-		$multiline = implode( "\n", $args );                               // array to multiline
-		$multiline = escape( $multiline );                                 // escape multiline
-		$result    = shell_exec( $sudobash.$filesh.' "'.$multiline.'"' );  // multiline > bash
-	} else {
-		$result    = shell_exec( $sudobash.$filesh );
-	}
+	$cmd  = $sudo.$filesh;
+	if ( $args ) $cmd .= ' "'.escape( implode( "\n", $args ) ).'"';
+	$result    = shell_exec( $cmd );
 	echo rtrim( $result );
 	break;
 case 'camilla': // from camilla.js (formdata)
 	fileUploadSave( '/srv/http/data/camilladsp/'.$_POST[ 'dir' ].'/'.$_FILES[ 'file' ][ 'name' ] );
-	exec( $sudosettings.'camilla-data.sh pushrefresh', $output, $result );
+	exec( $sudo.$dirsettings.'camilla-data.sh pushrefresh', $output, $result );
 	break;
 case 'datarestore': // from system.js (formdata)
 	fileUploadSave( $dirshm.'backup.gz' );
 	$libraryonly = $_POST[ 'libraryonly' ] ?? '';
-	exec( $sudosettings.'system-datarestore.sh '.$libraryonly, $output, $result );
+	exec( $sudo.$dirsettings.'system-datarestore.sh '.$libraryonly, $output, $result );
 	if ( $result != 0 ) echo 'Restore failed';
 	break;
 case 'giftype': // from common.js (formdata)
 	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];
-	$animated = exec( $sudobin.'gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
+	$animated = exec( $sudo.'/usr/bin/gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
 	echo $animated;
 	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
@@ -54,15 +47,15 @@ case 'imagereplace': // from function.js - imageReplace()
 	$sh           = [ $type, $tmpfile, $imagefile, $bookmarkname ];
 	$multiline    = implode( "\n", $sh );
 	$multiline    = escape( $multiline );
-	shell_exec( $sudobash.'cmd-coverartsave.sh "'.$multiline.'"' );
+	shell_exec( $sudo.'/srv/http/bash/cmd-coverartsave.sh "'.$multiline.'"' );
 	break;
 case 'login': // from features.js - imageReplace()
-	$file = $dirsystem.'login';
+	$file = '/srv/http/data/system/login';
 	if ( file_exists( $file )  && ! password_verify( $_POST[ 'password' ], file_get_contents( $file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	if ( isset( $_POST[ 'disable' ] ) ) {
 		unlink( $file );
-		exec( $sudosettings.'features.sh logindisable' );
+		exec( $sudo.$dirsettings.'features.sh logindisable' );
 		exit;
 //----------------------------------------------------------------------------------
 	}
@@ -70,7 +63,7 @@ case 'login': // from features.js - imageReplace()
 	if ( $pwdnew ) {
 		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		file_put_contents( $file, $hash );
-		exec( $sudosettings.'features.sh login' );
+		exec( $sudo.$dirsettings.'features.sh login' );
 	} else {
 		session_start();
 		$_SESSION[ 'login' ] = 1;
