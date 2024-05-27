@@ -1153,7 +1153,7 @@ function volumePush( type, val ) {
 }
 function volumeSet( type ) { // type: mute / unmute
 	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
-	if ( ! V.drag && ! V.press ) volumePush( type, type === 'mute' ? V.volumecurrent : S.volume );
+	if ( ! V.drag && ! V.press ) volumePush( type, type === 'mute' ? S.volumemute : S.volume );
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {

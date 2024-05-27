@@ -430,7 +430,6 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
-	console.log(data)
 	if ( V.local ) {
 		V.local = false;
 		return
