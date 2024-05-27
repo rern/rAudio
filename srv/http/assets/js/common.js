@@ -1126,7 +1126,8 @@ function pageInactive() {
 	V.pageinactive = true;
 	if ( typeof psOnClose === 'function' ) psOnClose();
 	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
-//	ws.send( '{ "client": "remove" }' ); // 'remove' = missing 1st message on pageActive
+	ws.send( '{ "client": "remove" }' ); // 'remove' = missing 1st message on pageActive
+	ws.close();
 }
 document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
