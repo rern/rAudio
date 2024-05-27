@@ -20,7 +20,7 @@ timeFormat() {
 	date -d@$1 -u '+%-Hh %-Mm %-Ss' | sed -E 's/0h 0m |0h //'
 }
 updateDone() {
-	[[ $counts ]] && jq -S --tab <<< "{ $counts }" > $dirmpd/counts
+	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	[[ -e $dirshm/tageditor ]] && counts='"tageditor"' || counts=$( < $dirmpd/counts )
 	updatetime="(MPD: $( timeFormat $mpdtime ) + Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime

@@ -31,7 +31,7 @@ for i in $false; do
 	lines+='
 , "'$i'": false'
 done
-jq -S --tab <<< {${lines:2}} > $dirsystem/display.json
+jq -S <<< {${lines:2}} > $dirsystem/display.json
 
 # localbrowser
 if [[ -e /usr/bin/firefox ]]; then
