@@ -1,7 +1,7 @@
 /*
 bash()
 $.fn.press
-banner() copy        errorDisplay() 
+banner() errorDisplay() 
 info()   infoPower() infoPowerCommand() infoWarning()
 loader() local()     selectSet()
 websocket
@@ -108,7 +108,6 @@ $( '#debug' ).press( function() {
 	bash( [ 'cmd.sh', 'cachebust' ] );
 	V.debug = true;
 } );
-
 $( '.page-icon' ).press( () => location.reload() );
 $( '.col-r .switch' ).press( function( e ) {
 	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
@@ -120,7 +119,15 @@ $( '.col-r .switch' ).press( function( e ) {
 	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
 	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
 } );
-	
+$( '#data' ).on( 'click', '.copy', function() {
+	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
+	// copy2clipboard - for non https which cannot use clipboard API
+	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
+	$( '#error' ).focus().select();
+	document.execCommand( 'copy' );
+	$( '#error' ).remove();
+} );
+$( '#banner' ).on( 'click', bannerHide );
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( V.timeoutbanner );
@@ -144,26 +151,11 @@ function bannerHide() {
 		.addClass( 'hide' )
 		.empty();
 }
-$( '#banner' ).on( 'click', bannerHide );
-
-// ----------------------------------------------------------------------
-$( '#data' ).on( 'click', '.copy', function() {
-	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
-	// copy2clipboard - for non https which cannot use clipboard API
-	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-	$( '#error' ).focus().select();
-	document.execCommand( 'copy' );
-	$( '#error' ).remove();
-} );
-
 // ----------------------------------------------------------------------
 function errorDisplay( msg, list ) {
 	var pos = msg.replace( /.* position /, '' );
-	if ( msg.includes( 'position' ) ) {
-		pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
-	} else if ( msg.includes( 'column' ) ) {
-		pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
-	}
+	if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
+	else if ( msg.includes( 'column' ) ) pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
 	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
 	var error =  '<div class="error"><codered>Errors:</codered> '+ msg
 				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
@@ -180,29 +172,25 @@ function errorDisplay( msg, list ) {
 
 // ----------------------------------------------------------------------
 function highlightJSON( json ) {
-	var json = Object.keys( json )
+	var color = ( text, color ) => '<'+ color +'>'+ text +'</'+ color +'>';
+	var json  = Object.keys( json )
 					.sort()
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
-	json = JSON.stringify( json, null, '\t' )
-			.replace( /</g, '&lt;' )
-			.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) { // source: https://stackoverflow.com/a/7220510
-		if ( /^"/.test( match ) ) {              // string
-			if ( /:$/.test( match ) ) { // key
-				return match
-			} else {                    // value
-				return '<gr>'+ match +'</gr>'
-			}
-		} else if ( /true/.test( match ) ) {     // true
-			return '<grn>'+ match +'</grn>'
-		} else if ( /false/.test( match ) ) {    // false
-			return '<red>'+ match +'</red>'
-		} else if ( /[0-9]/.test( match ) ) {    // number
-			return '<ora>'+ match +'</ora>'
-		} else if ( /[{}\[\]]/.test( match ) ) { // braces
-			return '<pur>'+ match +'</pur>'
-		}
+	return JSON.stringify( json, null, '\t' )
+					.replace( /</g, '&lt;' )
+					.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) { // source: https://stackoverflow.com/a/7220510
+		if ( /^"/.test( match ) )
+			if ( /:$/.test( match ) ) return match                // key
+			else                      return color( match, 'gr' ) // value
+		else if ( /true/.test( match ) )       return color( match, 'grn' )
+		else if ( /false|null/.test( match ) ) return color( match, 'red' )
+		else if ( /[0-9]/.test( match ) )      return color( match, 'ora' )
+		else if ( /[{}]/.test( match ) )       return color( match, 'bll' )
+		else if ( /[\[\]]/.test( match ) )     return color( match, 'pur' )
 	} );
-	return '\n\n'+ json.replace( /: null,/g, ': <red>null</red>,' );
+}
+function textColor( text, color ) {
+
 }
 function ico( icon, id ) {
 	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"></i>';
