@@ -430,6 +430,7 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
+	console.log(data)
 	if ( V.local ) {
 		V.local = false;
 		return
@@ -451,7 +452,7 @@ function psVolume( data ) {
 		S.volumemute = 0;
 		setVolume();
 	}
-	V.volumecurrent = V.volume;
+	V.volumecurrent = S.volume;
 }
 function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
