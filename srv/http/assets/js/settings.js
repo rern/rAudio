@@ -254,7 +254,7 @@ function psRefresh( data ) {
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 		if ( page === 'networks' ) {
-			$( '.back' ).trigger( 'click' );
+			if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
 		} else {
 			switchSet();
 		}

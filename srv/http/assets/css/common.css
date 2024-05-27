@@ -305,14 +305,13 @@ body {
 	background  : #000;
 }
 #data .error {
-	position: fixed;
-	top: 0;
-	width: 100%;
-	padding-top: 10px;
-	background: #000;
-}
-#data .data {
-	margin-top: 50px;
+	position      : fixed;
+	top           : 0;
+	left          : 0;
+	width         : 100%;
+	padding       : 5px 20px;
+	background    : #000;
+	border-bottom : 1px solid var( --cg );
 }
 
 #debug {
@@ -325,10 +324,10 @@ body {
 	z-index: 110;
 }
 codered  {
-	padding       : 0px 5px 3px 5px;
+	padding : 0px 5px 3px 5px;
 	border-radius : 3px;
-	color         : var( --cw );
-	background    : #f00;
+	color : var( --cw );
+	background : #f00;
 }
 
 .head {
