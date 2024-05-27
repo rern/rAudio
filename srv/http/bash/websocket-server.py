@@ -13,8 +13,6 @@ async def cmd( websocket, path ):
         jargs = json.loads( args )
         if 'channel' in jargs:  # broadcast
             websockets.broadcast( CLIENTS, args ) # { "channel": "CAHNNEL", "data": { ... } }
-        elif 'bash' in jargs:   # FILE.sh a b c
-            os.system( jargs[ 'bash' ] )          # { "bash": "FILE.sh a b c ..." }
         elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
             subprocess.Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
         elif 'json' in jargs:   # save to NAME.json and broadcast
@@ -32,7 +30,7 @@ async def cmd( websocket, path ):
             else:
                 if websocket in CLIENTS:
                     CLIENTS.remove( websocket )
-        elif 'status' in jargs:
+        elif 'status' in jargs:                   # { "status": "snapclient" } - from status.sh
             status = subprocess.run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True ).stdout
             await websocket.send( status )
 
