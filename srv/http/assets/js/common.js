@@ -82,7 +82,7 @@ function bash( args, callback, json ) {
 	}
 	// websocket
 	if ( ! callback ) {
-		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ) +'" ] }';
+		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
 		if ( V.debug ) console.log( data );
 		ws.send( data );
 		return
