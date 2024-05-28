@@ -138,11 +138,12 @@ $( $dirbash/status-bluetooth.sh )"
 ########
 		status+="
 $( jq <<< $serverstatus \
-	| sed 's/^\s*/, /g; s/,$//g' \
 	| sed -E  -e '1,3d; $d
-		 ' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-		 ' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
-		 ' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"
+		  ' -e 's|^(  "stationcover": ")(.+")|\1http://'$serverip'\2|
+				s|^(  "coverart": ")(.+")|\1http://'$serverip'\2|
+				s|^(  "icon": ").*|\1snapcast"|
+				s|^|,|
+				s|,$||' )"
 		;;
 	spotify )
 		. $dirshm/spotify/state
