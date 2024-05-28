@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LIBGL_ALWAYS_INDIRECT=1 # fix: MESA: error: ZINK: vkCreateInstance failed
+[[ -e /boot/kernel7.img ]] && export LIBGL_ALWAYS_INDIRECT=1 # fix: MESA: error: ZINK: vkCreateInstance failed
 
 . /srv/http/bash/common.sh
 
