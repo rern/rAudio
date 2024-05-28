@@ -38,7 +38,6 @@ localbrowserDisable() {
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
-	grep -q fbcon /boot/cmdline/txt && $dirsettings/system.sh tft$'\n'OFF
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 }
 localbrowserXset() {
@@ -225,7 +224,7 @@ multiraudio )
 	flagset='{ "filesh": [ "rm", "-f", "'$dirsystem'/multiraudio" ] }'
 	if [[ $ON ]]; then
 		json='{ "json": '$( tr -d '\n' < $dirsystem/multiraudio.json )', "name": "multiraudio" }'
-		flagset=${enable/rm*-f/touch}
+		flagset=${flagset/rm*-f/touch}
 	fi
 	while read ip; do
 		! ipOnline $ip && continue
