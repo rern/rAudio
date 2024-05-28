@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240601
+file=/etc/pacman.conf
+grep -q linunwind $file && sed -i 's/linunwind/libunwind/' $file
+
 # 20240519
 file=/srv/http/data/mpdconf/conf/snapserver.conf
 if grep -q snapcast $file; then
