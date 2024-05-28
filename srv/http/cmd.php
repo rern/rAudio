@@ -13,23 +13,23 @@ case 'bash':
 	$result    = shell_exec( $cmd );
 	echo rtrim( $result );
 	break;
-case 'camilla': // from camilla.js (formdata)
+case 'camilla': // formdata from camilla.js
 	fileUploadSave( '/srv/http/data/camilladsp/'.$_POST[ 'dir' ].'/'.$_FILES[ 'file' ][ 'name' ] );
 	exec( $sudo.$dirsettings.'camilla-data.sh pushrefresh', $output, $result );
 	break;
-case 'datarestore': // from system.js (formdata)
+case 'datarestore': // formdata from system.js
 	fileUploadSave( $dirshm.'backup.gz' );
 	$libraryonly = $_POST[ 'libraryonly' ] ?? '';
 	exec( $sudo.$dirsettings.'system-datarestore.sh '.$libraryonly, $output, $result );
 	if ( $result != 0 ) echo 'Restore failed';
 	break;
-case 'giftype': // from common.js (formdata)
+case 'giftype': // formdata from common.js
 	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];
 	$animated = exec( $sudo.'/usr/bin/gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
 	echo $animated;
 	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
-case 'imagereplace': // from function.js - imageReplace()
+case 'imagereplace': // $.post from function.js
 	$imagefile = $_POST[ 'imagefile' ];
 	$type      = $_POST[ 'type' ];
 	if ( $type === 'coverart' && ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
@@ -49,7 +49,7 @@ case 'imagereplace': // from function.js - imageReplace()
 	$multiline    = escape( $multiline );
 	shell_exec( $sudo.'/srv/http/bash/cmd-coverartsave.sh "'.$multiline.'"' );
 	break;
-case 'login': // from features.js - imageReplace()
+case 'login': // $.post from features.js
 	$file = '/srv/http/data/system/login';
 	if ( file_exists( $file )  && ! password_verify( $_POST[ 'password' ], file_get_contents( $file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
@@ -69,11 +69,11 @@ case 'login': // from features.js - imageReplace()
 		$_SESSION[ 'login' ] = 1;
 	}
 	break;
-case 'logout':
+case 'logout': // $.post from main.js
 	session_start();
 	session_destroy();
 	break;
-case 'timezonelist':
+case 'timezonelist': // $.post from system.js
 	$list   = timezone_identifiers_list();
 	$option = '<option value="auto">Auto</option>';
 	foreach( $list as $key => $zone ) {
