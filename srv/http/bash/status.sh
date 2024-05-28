@@ -137,11 +137,12 @@ $( $dirbash/status-bluetooth.sh )"
 		serverstatus=$( websocat ws://$serverip:8080 <<< '{ "status": "snapclient" }' )
 ########
 		status+="
-$( sed -E  -e '1,3d; $d
-	 ' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-	 ' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
-	 ' -e 's|^, *"icon".*|, "icon" : "snapcast"|
-	 ' <<< $serverstatus )"
+$( jq <<< $serverstatus \
+	| sed 's/^\s*/, /g; s/,$//g' \
+	| sed -E  -e '1,3d; $d
+		 ' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+		 ' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
+		 ' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"
 		;;
 	spotify )
 		. $dirshm/spotify/state
