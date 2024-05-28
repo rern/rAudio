@@ -38,7 +38,7 @@ localbrowserDisable() {
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
-	sed -i '/hdmi_force_hotplug/ d' /boot/config.txt
+	grep -q fbcon /boot/cmdline/txt && $dirsettings/system.sh tft$'\n'OFF
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 }
 localbrowserXset() {
