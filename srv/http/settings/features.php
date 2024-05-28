@@ -219,7 +219,8 @@ EOF
 		, 'help'        => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FiLabel( 'Shared Data', 'networks' )}
  • <wh>rAudio Shared Data server:</wh>
-	· Must be set to <wh>static IP address</wh> which should be set on router.
+	· IP address - This rAudio must be set to static / fixed to prevent change on reboot.
+	· Password - if changed, must be the same on all clients.
 	· In {$FiTab( 'Library' )} Library
 		· {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden.
 		· {$Fi( 'usb btn' )} USB items will be displayed in {$Fi( 'networks btn' )} NAS instead.
