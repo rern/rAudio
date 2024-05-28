@@ -6,7 +6,7 @@ alias=r1
 
 # 20240601
 file=/etc/pacman.conf
-grep -q linunwind $file && sed -i 's/linunwind/libunwind/' $file
+grep -q bootloader $file && sed -i 's/li.*bootloader/libunwind/' $file
 
 # 20240519
 file=/srv/http/data/mpdconf/conf/snapserver.conf
