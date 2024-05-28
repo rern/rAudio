@@ -2,7 +2,7 @@
 
 import asyncio
 import json
-import subprocess
+from subprocess import Popen, run
 import websockets
 
 CLIENTS = set()
@@ -13,7 +13,7 @@ async def cmd( websocket, path ):
         if 'channel' in jargs:  # broadcast
             websockets.broadcast( CLIENTS, args ) # { "channel": "CAHNNEL", "data": { ... } }
         elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
-            subprocess.Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
+            Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
         elif 'json' in jargs:   # save to NAME.json and broadcast
             jargsjson = jargs[ 'json' ]           # { "json": { ... }, "name": "NAME" }
             jargsname = jargs[ 'name' ]
@@ -30,7 +30,7 @@ async def cmd( websocket, path ):
                 if websocket in CLIENTS:
                     CLIENTS.remove( websocket )
         elif 'status' in jargs:                   # { "status": "snapclient" } - from status.sh
-            status = subprocess.run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True ).stdout
+            status = run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True ).stdout
             await websocket.send( status )
 
 async def main():

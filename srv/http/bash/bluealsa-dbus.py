@@ -11,12 +11,14 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
-import os
+from subprocess import Popen
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
 path = '/test/autoagent'
 filesink = '/srv/http/data/shm/bluetoothsink'
-statuspush = '/srv/http/bash/status-push.sh'
+
+def statusPush():
+    Popen( [ '/srv/http/bash/status-push.sh' ] )
 
 def property_changed( interface, changed, invalidated, path ):
     for name, value in changed.items():
@@ -30,12 +32,12 @@ def property_changed( interface, changed, invalidated, path ):
         if name == 'Player':
             with open( '/srv/http/data/shm/bluetoothdest', 'w' ) as f: f.write( value )
         elif name == 'Position' or name == 'Track':
-            os.system( statuspush )
+            statusPush()
         elif name == 'Status':
             if value == 'playing' and not os.path.isfile( filesink ):
                 open( filesink, 'a' )
-                os.system( '/srv/http/bash/cmd.sh playerstart' )
-            os.system( statuspush )
+                Popen( [ '/srv/http/bash/cmd.sh', 'playerstart' ] )
+            statusPush()
 
 if __name__ == '__main__':
     dbus.mainloop.glib.DBusGMainLoop( set_as_default=True )
