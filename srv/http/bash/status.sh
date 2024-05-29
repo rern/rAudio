@@ -139,7 +139,7 @@ $( $dirbash/status-bluetooth.sh )"
 		status+="
 $( echo -e "$serverstatus" | sed -E -e '/"page" *: |"login" *: / d
 								  ' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-										s|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
+										s|^(, "coverart" *: ")(.+")|\1http://'$serverip/'\2|
 										s|^(, "icon" *: ").*|\1snapcast"|' )"
 		;;
 	spotify )
