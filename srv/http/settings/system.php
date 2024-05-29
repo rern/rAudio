@@ -300,7 +300,6 @@ Connect shared data as client for:
  · Display order of Library home
 
 Note:
- · SSH password must be default.
  · Enabled - {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB:
 	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
 	 · Not availble in Library home

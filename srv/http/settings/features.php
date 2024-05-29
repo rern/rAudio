@@ -235,6 +235,8 @@ EOF
  • <wh>Windows NFS clients:</wh>
 	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
 	· $fileexplorer
+	 
+{$Fi( 'warning' )} Everyone will have read and write permissions for <c>/mnt/MPD/NAS</c>
 EOF
 	]
 	, [
