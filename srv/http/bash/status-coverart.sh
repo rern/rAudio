@@ -34,7 +34,7 @@ onlinefile=$( ls -1X $dirshm/online/${covername,,}.{jpg,png} 2> /dev/null | head
 [[ $upnp ]] && coverfile=$( $dirbash/status-coverartupnp.py ) || coverfile=$( coverFileGet "$path" )
 if [[ $coverfile ]]; then
 	[[ ! $upnp ]] && coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" ) # rawurlencode - preserve spaces and special characters
-	echo "$coverfile" | tee $localfile
+	echo "${coverfile//%2F/\/}" | tee $localfile
 	$dirbash/cmd.sh coverfileslimit
 	exit
 # --------------------------------------------------------------------
