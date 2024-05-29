@@ -9,7 +9,7 @@
 . /srv/http/bash/common.sh
 
 statusData() {
-	[[ $snapclient ]] && data2jsonPatch "$status" || data2json "$status"
+	[[ $snapclient ]] && data2jsonPatch "$status" || data2json "$status" # :1 remove leading blank line
 }
 
 if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data

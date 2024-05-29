@@ -51,7 +51,7 @@ if [[ $clientip ]]; then
 	status=$( sed -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
 					  s|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' <<< $status )
 	for ip in $clientip; do
-		pushWebsocket $ip mpdplayer "{ ${status:1} }" # remove leading comma , "file" : ...
+		pushWebsocket $ip mpdplayer "{ ${status:2} }" # remove leading \n, "file" : ...
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
