@@ -1069,9 +1069,9 @@ function volumeMuteToggle() {
 	volumeSet( S.volumemute ? 'mute' : 'unmute' );
 }
 function volumePush( type, val ) {
-	V.local  = true;
-	val      = typeof val !== 'undefined' ? val : S.volume;
-	var data = '{ "type": "'+ type +'", "val": '+ val +' }';
+	V.local = true;
+	if ( typeof val === 'undefined' ) val = S.volume;
+	var data = '{ "type": "'+ ( type || '' ) +'", "val": '+ val +' }';
 	if ( V.wsready ) {
 		ws.send( '{ "channel": "volume", "data": '+ data +' }' );
 	} else {
@@ -1079,6 +1079,9 @@ function volumePush( type, val ) {
 	}
 }
 function volumeSet( type ) { // type: mute / unmute
+	V.local        = true;
+	V.volumeactive = true;
+	setTimeout( () => V.volumeactive = false, 300 );
 	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	var val = type === 'mute' ? S.volumemute : S.volume;
 	if ( ! V.drag && ! V.press ) volumePush( type || '', val );
