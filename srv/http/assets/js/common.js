@@ -1,10 +1,10 @@
 /*
-bash()
 $.fn.press
 banner() errorDisplay() 
 info()   infoPower() infoPowerCommand() infoWarning()
 loader() local()     selectSet()
 websocket
+bash()
 */
 
 var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
@@ -47,87 +47,6 @@ $.fn.press = function( arg1, arg2 ) {
 	} );
 	return this // allow chain
 }
-
-// ----------------------------------------------------------------------
-/*
-Simple spaced arguments
-	- [ 'CMD.sh', v1, v2, ... ] - CMD.sh $1 $2 ...
-Multiline arguments - no escape \" \` in js values > escape in php instead
-	- [ CMD, v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
-	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
-	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
-	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
-
-- js > php   >> common.js - bash()
-	- string : 
-		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
-		- multiline      : 'l1\\nl2\\nl3...'
-- php > bash >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
-	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
-- bash       >> common.sh - args2var
-	- convert to array > assign values
-		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
-		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
-		- With 'CFG' : 
-			- the same as 'CMD'
-			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
-*/
-function bash( args, callback, json ) {
-	var args0 = args[ 0 ];
-	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) {
-		var file = dirbash + args0;
-		args.shift();
-	} else {
-		var file = filesh;
-	}
-	// websocket
-	if ( ! callback && ws.readyState ) {
-		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
-		if ( V.debug ) console.log( data );
-		ws.send( data );
-		return
-	}
-	// php
-	var data = { cmd: 'bash', filesh: file, args: args || '' }
-	if ( V.debug ) {
-		var bashcmd = file.split( '/' ).pop();
-		if ( args ) bashcmd += ' "\\\n'+ args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
-		console.log( data );
-		console.log( bashcmd );
-	}
-	$.post( 
-		 'cmd.php'
-		, data
-		, callback || null
-		, json || null
-	);
-}
-// debug
-$( '#debug' ).press( function() {
-	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
-	bash( [ 'cmd.sh', 'cachebust' ] );
-	V.debug = true;
-} );
-$( '.page-icon' ).press( () => location.reload() );
-$( '.col-r .switch' ).press( function( e ) {
-	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
-		$( '#setting-'+ e.target.id ).trigger( 'click' );
-		return
-	}
-	
-	switchIdIconTitle( e.target.id );
-	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
-	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
-} );
-$( '#data' ).on( 'click', '.copy', function() {
-	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
-	// copy2clipboard - for non https which cannot use clipboard API
-	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-	$( '#error' ).focus().select();
-	document.execCommand( 'copy' );
-	$( '#error' ).remove();
-} );
-$( '#banner' ).on( 'click', bannerHide );
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( V.timeoutbanner );
@@ -1126,8 +1045,10 @@ function pageInactive() {
 	V.pageinactive = true;
 	if ( typeof psOnClose === 'function' ) psOnClose();
 	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
-	ws.send( '{ "client": "remove" }' ); // 'remove' = missing 1st message on pageActive
-	ws.close();
+	if ( V.wsready ) {
+		ws.send( '{ "client": "remove" }' );
+		ws.close();
+	}
 }
 document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
@@ -1148,24 +1069,34 @@ function volumeMuteToggle() {
 	volumeSet( S.volumemute ? 'mute' : 'unmute' );
 }
 function volumePush( type, val ) {
-	V.local = true;
-	val = typeof val !== 'undefined' ? val : S.volume;
-	ws.send( '{ "channel": "volume", "data": { "type": "'+ type +'", "val": '+ val +' } }' );
+	V.local  = true;
+	val      = typeof val !== 'undefined' ? val : S.volume;
+	var data = '{ "type": "'+ type +'", "val": '+ val +' }';
+	if ( V.wsready ) {
+		ws.send( '{ "channel": "volume", "data": '+ data +' }' );
+	} else {
+		bash( [ 'volumepush', data, 'CMD DATA' ] );
+	}
 }
 function volumeSet( type ) { // type: mute / unmute
 	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
-	if ( ! V.drag && ! V.press ) volumePush( type, type === 'mute' ? S.volumemute : S.volume );
+	var val = type === 'mute' ? S.volumemute : S.volume;
+	if ( ! V.drag && ! V.press ) volumePush( type || '', val );
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {
 	var url      = 'ws://'+ ( ip || location.host ) +':8080';
-	if ( websocketOk( ws ) ) return
+	if ( V.wsready ) return
 	
 	ws           = new WebSocket( url );
 	ws.onopen    = () => websocketReady( ws );
-	ws.onclose   = () => ws = null;
+	ws.onclose   = () => {
+		ws = null;
+		V.wsready = false;
+	}
 	ws.onmessage = message => psOnMessage( message ); // data pushed from server
 	ws.onready   = () => { // custom
+		V.wsready = true;
 		ws.send( '{ "client": "add" }' );
 		if ( V.reboot ) {
 			delete V.reboot
@@ -1178,9 +1109,6 @@ function websocketConnect( ip ) {
 			}
 		}
 	}
-}
-function websocketOk( socket ) {
-	return socket && socket.readyState === 1
 }
 function websocketReady( socket ) {
 	var interval = setTimeout( () => {
@@ -1196,6 +1124,58 @@ function websocketReconnect( ip ) {
 		.then( response => {
 			response.ok ? websocketConnect( ip ) : setTimeout( () => websocketReconnect( ip ), 1000 );
 		} );
+}
+/* bash
+Multiline arguments - no escape \" \` in js values > escape in php instead
+	- [ CMD, v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
+	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
+	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
+	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
+
+- js > php   >> common.js - bash()
+	- string : 
+		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
+		- multiline      : 'l1\\nl2\\nl3...'
+- php > bash >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
+	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
+- bash       >> common.sh - args2var
+	- string : convert to array > assign values
+		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
+		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
+		- With 'CFG' : 
+			- the same as 'CMD'
+			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
+		- [ CMD, 'OFF' ] : disable
+*/
+function bash( args, callback, json ) {
+	var args0 = args[ 0 ];
+	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) {
+		var file = dirbash + args0;
+		args.shift();
+	} else {
+		var file = filesh;
+	}
+	// websocket
+	if ( ! callback && V.wsready ) {
+		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
+		if ( V.debug ) console.log( data );
+		ws.send( data );
+		return
+	}
+	// php
+	var data = { cmd: 'bash', filesh: file, args: args || '' }
+	if ( V.debug ) {
+		var bashcmd = file.split( '/' ).pop();
+		if ( args ) bashcmd += ' "\\\n'+ args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
+		console.log( data );
+		console.log( bashcmd );
+	}
+	$.post( 
+		 'cmd.php'
+		, data
+		, callback || null
+		, json || null
+	);
 }
 // push status
 function psNotify( data ) {
@@ -1234,3 +1214,29 @@ function psPower( data ) {
 		setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
 	}
 }
+// debug
+$( '#debug' ).press( function() {
+	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
+	bash( [ 'cmd.sh', 'cachebust' ] );
+	V.debug = true;
+} );
+$( '.page-icon' ).press( () => location.reload() );
+$( '.col-r .switch' ).press( function( e ) {
+	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
+		$( '#setting-'+ e.target.id ).trigger( 'click' );
+		return
+	}
+	
+	switchIdIconTitle( e.target.id );
+	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
+	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
+} );
+$( '#data' ).on( 'click', '.copy', function() {
+	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
+	// copy2clipboard - for non https which cannot use clipboard API
+	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
+	$( '#error' ).focus().select();
+	document.execCommand( 'copy' );
+	$( '#error' ).remove();
+} );
+$( '#banner' ).on( 'click', bannerHide );

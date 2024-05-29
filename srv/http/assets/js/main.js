@@ -576,7 +576,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	
 	V.drag = true;
 	mpcSeekBar( e.pageX || e.changedTouches[ 0 ].pageX );
-} ).on( 'touchend mouseup', function( e ) {
+} ).on( 'touchend mouseup mouseleave', function( e ) {
 	if ( ! V.start ) return
 	
 	V.start = V.drag = false;
@@ -685,10 +685,6 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		volumeAnimate( S.volume, V.volume.current );
 		volumeSet();
 	}
-	$volumeRS.setValue( S.volume );
-	V.volume = V.drag = false;
-	V.volumebar = setTimeout( volumeBarHide, 3000 );
-} ).on( 'mouseleave', function() {
 	$volumeRS.setValue( S.volume );
 	V.volume = V.drag = false;
 	V.volumebar = setTimeout( volumeBarHide, 3000 );

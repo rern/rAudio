@@ -924,6 +924,7 @@ function playbackStatusGet( withdisplay ) {
 			displaySubMenu();
 			bannerHide();
 		}
+		if ( V.volumeactive ) delete status.volume; // immediately change volume when pageInactive > pageActive
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		V.volumecurrent = S.volume;
 		var dataerror = $( '#data .copy' ).length;
@@ -1276,7 +1277,7 @@ function renderPlayback() {
 	
 	local();
 	if ( S.state === 'stop' ) setProgress( 0 );
-	setVolume();
+	if ( ! V.volumeactive ) setVolume(); // immediately change volume when pageInactive > pageActive
 	setButtonOptions();
 	clearInterval( V.interval.blinkdot );
 	$( '#qr' ).remove();

@@ -803,6 +803,9 @@ volume )
 		volumeSet $CURRENT $TARGET "$CONTROL" $CARD $diff
 	fi
 	;;
+volumepush )
+	pushWebsocket 127.0.0.1 volume $DATA
+	;;
 webradioadd )
 	url=$( urldecode $URL )
 	urlname=${url//\//|}
