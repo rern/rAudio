@@ -406,6 +406,11 @@ snapclientIP() {
 	done <<< $lines
 	[[ $clientip ]] && echo $clientip
 }
+snapclientCoverart() {
+	serverip=$( ipAddress )
+	sed -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+			s|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' <<< $1
+}
 snapserverList() {
 	local service
 	service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )

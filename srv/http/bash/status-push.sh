@@ -47,14 +47,9 @@ fi
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
 	serverip=$( ipAddress )
-	[[ ! $status ]] && status=$( $dirbash/status.sh snapclient ) # $statusradio
-	for k in Album Artist coverart file state station stationcover Time Title; do
-		filter+='|^, "'$k'"'
-	done
-	status=$( grep -E "${filter:1}" <<< $status | sed -E 's| : "/data/| : "http://'$serverip/data/'|' )
-	data=${status:1}
+	status=$( snapclientCoverart "$( $dirbash/status.sh snapclient )" )
 	for ip in $clientip; do
-		pushWebsocket $ip mpdplayer $data
+		pushWebsocket $ip mpdplayer "{ ${status:1} }" # remove leading comma , "file" : ...
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
