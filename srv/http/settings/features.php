@@ -1,6 +1,7 @@
 <?php
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
+$ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 $id_data      = [
 	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                   'status' => true, 'exist' => 'iwctl' ]
@@ -236,7 +237,8 @@ EOF
 	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
 	· $fileexplorer
 	 
-{$Fi( 'warning' )} Everyone will have read and write permissions for <c>/mnt/MPD/NAS</c>
+{$Fi( 'warning' )} Permissions for <c>/mnt/MPD/NAS</c>:
+	· Read and write for everyone on <c>$ipsub.*</c>
 EOF
 	]
 	, [
