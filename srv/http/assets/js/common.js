@@ -1071,20 +1071,14 @@ function volumeMuteToggle() {
 function volumePush( type, val ) {
 	V.local = true;
 	if ( typeof val === 'undefined' ) val = S.volume;
-	var data = '{ "type": "'+ ( type || '' ) +'", "val": '+ val +' }';
-	if ( V.wsready ) {
-		ws.send( '{ "channel": "volume", "data": '+ data +' }' );
-	} else {
-		bash( [ 'volumepush', data, 'CMD DATA' ] );
-	}
+	ws.send( '{ "channel": "volume", "data": { "type": "'+ ( type || '' ) +'", "val": '+ val +' } }' );
 }
 function volumeSet( type ) { // type: mute / unmute
 	V.local        = true;
 	V.volumeactive = true;
 	setTimeout( () => V.volumeactive = false, 300 );
+	if ( V.drag || V.press ) type = 'dragpress';
 	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
-	var val = type === 'mute' ? S.volumemute : S.volume;
-	if ( ! V.drag && ! V.press ) volumePush( type || '', val );
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {

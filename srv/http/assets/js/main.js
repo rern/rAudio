@@ -576,11 +576,13 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	
 	V.drag = true;
 	mpcSeekBar( e.pageX || e.changedTouches[ 0 ].pageX );
-} ).on( 'touchend mouseup mouseleave', function( e ) {
+} ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.start ) return
 	
 	V.start = V.drag = false;
 	mpcSeekBar( e.pageX || e.changedTouches[ 0 ].pageX );
+} ).on( 'mouseleave', function() {
+	V.start = V.drag = false;
 } );
 $( '#volume' ).roundSlider( {
 	// init     : valueChange > create > beforeValueChange > valueChange
@@ -672,7 +674,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	$( '#volume-bar' ).css( 'width', V.volume.x );
 	volumeSet();
-} ).on( 'touchend mouseup mouseleave', function( e ) {
+} ).on( 'touchend mouseup', function( e ) {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		volumeBarShow();
 		return
@@ -688,6 +690,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	$volumeRS.setValue( S.volume );
 	V.volume = V.drag = false;
 	V.volumebar = setTimeout( volumeBarHide, 3000 );
+} ).on( 'mouseleave', function() {
+	V.volume = V.drag = false;
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
 	volumeMuteToggle();

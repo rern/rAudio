@@ -789,6 +789,10 @@ upnpstart )
 	;;
 volume )
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
+	if [[ $TYPE != dragpress ]]; then
+		[[ $TYPE == mute ]] && val=$CURRENT || val=$TARGET
+		pushData volume '{ "type": "'$TYPE'", "val": '$val' }'
+	fi
 	filevolumemute=$dirsystem/volumemute
 	if [[ $TYPE == mute ]]; then
 		echo $CURRENT > $filevolumemute
@@ -802,9 +806,6 @@ volume )
 	else
 		volumeSet $CURRENT $TARGET "$CONTROL" $CARD $diff
 	fi
-	;;
-volumepush )
-	pushWebsocket 127.0.0.1 volume $DATA
 	;;
 webradioadd )
 	url=$( urldecode $URL )
