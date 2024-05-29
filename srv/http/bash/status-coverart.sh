@@ -16,18 +16,8 @@ else
 fi
 # found cover file
 if [[ -f $localfile ]]; then
-	localpath=$( cat $localfile )
-	if [[ $upnp ]]; then
-		echo $localpath
-		exit
-# --------------------------------------------------------------------
-	elif [[ -e $localpath ]]; then
-		php -r "echo rawurlencode( '${localpath//\'/\\\'}' );"
-		exit
-# --------------------------------------------------------------------
-	else
-		rm $localfile
-	fi
+	cat $localfile
+	exit
 fi
 
 # found embedded
@@ -43,8 +33,8 @@ onlinefile=$( ls -1X $dirshm/online/${covername,,}.{jpg,png} 2> /dev/null | head
 ##### cover file
 [[ $upnp ]] && coverfile=$( $dirbash/status-coverartupnp.py ) || coverfile=$( coverFileGet "$path" )
 if [[ $coverfile ]]; then
-	echo "$coverfile" > $localfile
-	[[ $upnp ]] && echo "$coverfile" || php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # rawurlencode - preserve spaces
+	[[ ! $upnp ]] && coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" ) # rawurlencode - preserve spaces and special characters
+	echo "$coverfile" | tee $localfile
 	$dirbash/cmd.sh coverfileslimit
 	exit
 # --------------------------------------------------------------------
