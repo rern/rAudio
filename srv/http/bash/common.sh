@@ -165,17 +165,20 @@ data2json() {
 	json+="$1
 }"
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
-	json=$( sed 's/:\s*$/: false/
-				s/:\s*}$/: false }/
-				s/^,\s*$/, false/
-				s/\[\s*,/[ false,/g
-				s/,\s*,/, false,/g
-				s/,\s*]/, false ]/g' <<< $json )
+	json=$( data2jsonPatch "$json" )
 	if [[ $2 ]]; then
 		pushData refresh "$json"
 	else
 		echo "$json"
 	fi
+}
+data2jsonPatch() { # "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
+	sed 's/:\s*$/: false/
+		s/:\s*}$/: false }/
+		s/^,\s*$/, false/
+		s/\[\s*,/[ false,/g
+		s/,\s*,/, false,/g
+		s/,\s*]/, false ]/g' <<< $1
 }
 dirPermissions() {
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}

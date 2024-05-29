@@ -8,6 +8,10 @@
 
 . /srv/http/bash/common.sh
 
+statusData() {
+	[[ $snapclient ]] && data2jsonPatch "$status" || data2json "$status"
+}
+
 if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
 	for i in {1..10}; do
 		sleep 1
@@ -53,6 +57,7 @@ fi
 if [[ $1 == snapclient ]]; then
 	snapclient=1
 	player=mpd
+	icon=snapcast
 else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
@@ -137,10 +142,7 @@ $( $dirbash/status-bluetooth.sh )"
 		serverstatus=$( websocat ws://$serverip:8080 <<< '{ "status": "snapclient" }' )
 ########
 		status+="
-$( echo -e "$serverstatus" | sed -E -e '/"page" *: |"login" *: / d
-								  ' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-										s|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
-										s|^(, "icon" *: ").*|\1snapcast"|' )"
+$( echo -e "$serverstatus" | sed -E 's|^(, "stationcover" *: ")(.+")\|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' )"
 		;;
 	spotify )
 		. $dirshm/spotify/state
@@ -155,7 +157,7 @@ $( < $dirshm/spotify/status )"
 		
 	esac
 # >>>>>>>>>> spotify
-	data2json "$status"
+	statusData
 	exit
 # --------------------------------------------------------------------
 fi
@@ -215,7 +217,7 @@ if [[ $pllength  == 0 && ! $snapclient ]]; then
 , "hostname" : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
-	data2json "$status"
+	statusData
 	exit
 # --------------------------------------------------------------------
 fi
@@ -361,7 +363,7 @@ elif [[ $stream ]]; then
 , "sampling"     : "'$sampling'"
 , "song"         : '$song
 # >>>>>>>>>>
-			data2json "$status"
+			statusData
 			exit
 # --------------------------------------------------------------------
 		fi
@@ -486,7 +488,7 @@ if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 ########
 	status+='
 , "elapsed"  : '$elapsed
-	data2json "$status"
+	statusData
 	exit
 # --------------------------------------------------------------------
 fi
@@ -506,7 +508,7 @@ elapsed=$( mpcElapsed )
 , "elapsed"  : '$elapsed'
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>> not cd && not stream
-data2json "$status"
+statusData
 [[ $getcover || ! $Artist ]] && exit
 # --------------------------------------------------------------------
 if [[ $stream && $state == play && $Title ]]; then

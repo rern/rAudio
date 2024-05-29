@@ -31,7 +31,7 @@ async def cmd( websocket, path ):
                     CLIENTS.remove( websocket )
         elif 'status' in jargs:                   # { "status": "snapclient" } - from status.sh
             status = run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True, text=True )
-            status = status.stdout[ 2:-3 ].replace( '\n', '\\n' ) # remove leading and trailing {\n ... \n}\n
+            status = status.stdout.replace( '\n', '\\n' )
             await websocket.send( status )
 
 async def main():
