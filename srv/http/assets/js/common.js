@@ -1046,6 +1046,7 @@ function pageInactive() {
 	if ( typeof psOnClose === 'function' ) psOnClose();
 	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
 	if ( V.wsready ) {
+		V.wsready = false;
 		ws.send( '{ "client": "remove" }' );
 		ws.close();
 	}
