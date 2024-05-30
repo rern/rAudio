@@ -1108,9 +1108,9 @@ function websocketConnect( ip ) {
 	}
 }
 function websocketReady( socket ) {
-	var interval = setTimeout( () => {
+	var interval = setInterval( () => {
 		if ( socket.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
-			clearTimeout( interval );
+			clearInterval( interval );
 			socket.onready();
 		}
 	}, 100 );
