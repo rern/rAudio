@@ -46,12 +46,10 @@ fi
 
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
-	serverip=$( ipAddress )
 	status=$( $dirbash/status.sh snapclient )
-	status=$( sed -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-					  s|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' <<< $status )
+	status='{ '${status/,}' }'
 	for ip in $clientip; do
-		pushWebsocket $ip mpdplayer "{ ${status:2} }" # remove leading \n, "file" : ...
+		pushWebsocket $ip mpdplayer $status
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then

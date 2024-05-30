@@ -8,8 +8,16 @@
 
 . /srv/http/bash/common.sh
 
+ip=$( ipAddress )
+
 statusData() {
-	[[ $snapclient ]] && data2jsonPatch "$status" || data2json "$status" # :1 remove leading blank line
+	if [[ $snapclient ]]; then
+		status=$( sed -E 's|^(, "stationcover" *: ")(.+")|\1http://'$ip'\2|
+						  s|^(, "coverart" *: ")(.+")|\1http://'$ip'\2|' <<< ${status:1} )
+		data2jsonPatch "$status"
+	else
+		data2json "$status"
+	fi
 }
 
 if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
@@ -141,9 +149,8 @@ $( $dirbash/status-bluetooth.sh )"
 		serverip=$( < $dirshm/snapserverip )
 		serverstatus=$( websocat ws://$serverip:8080 <<< '{ "status": "snapclient" }' )
 ########
-		status+=$( echo -e "$serverstatus" \
-					| sed -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-							  s|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' )
+		status+="
+$( echo -e "$serverstatus" )"
 		;;
 	spotify )
 		. $dirshm/spotify/state
@@ -211,7 +218,6 @@ status+='
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
 if [[ $pllength  == 0 && ! $snapclient ]]; then
-	ip=$( ipAddress )
 ########
 	status+='
 , "coverart" : ""
