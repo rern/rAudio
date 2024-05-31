@@ -2,7 +2,7 @@
 
 import asyncio
 import json
-from subprocess import Popen, run
+import subprocess
 import websockets
 
 CLIENTS   = set()
@@ -14,7 +14,7 @@ async def cmd( websocket, path ):
         if 'channel' in jargs:  # broadcast
             websockets.broadcast( CLIENTS, args ) # { "channel": "CAHNNEL", "data": { ... } }
         elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
-            Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
+            subprocess.Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
         elif 'json' in jargs:   # save to NAME.json and broadcast
             jargsjson = jargs[ 'json' ]           # { "json": { ... }, "name": "NAME" }
             jargsname = jargs[ 'name' ]
@@ -36,8 +36,13 @@ async def cmd( websocket, path ):
                 IP_CLIENT.pop( ip, None )
             else:
                 await websocket.send( str( IP_CLIENT ) )
+            # refresh CLIENTS
+            for ip in IP_CLIENT:
+                if subprocess.call( [ 'ping', '-c', '1', '-w','1', ip ] ) != 0:
+                    CLIENTS.discard( IP_CLIENT[ ip ] )
+                    IP_CLIENT.pop( ip, None )
         elif 'status' in jargs:                   # { "status": "snapclient" } - from status.sh
-            status = run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True, text=True )
+            status = subprocess.run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True, text=True )
             status = status.stdout.replace( '\n', '\\n' )
             await websocket.send( status )
         elif 'ping' in jargs:
