@@ -481,7 +481,7 @@ var axes      = {
 function renderPage() { // common from settings.js
 	wscamilla && wscamilla.readyState === 1 ? common.wsGetConfig() : common.webSocket();
 }
-function psOnClose() {
+function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {

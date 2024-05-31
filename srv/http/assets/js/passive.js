@@ -277,7 +277,7 @@ function psMpdUpdate( data ) {
 	}
 	setButtonUpdating();
 }
-function psOnClose() {
+function onPageInactive() {
 	if ( D.progress || V.off ) return
 	
 	intervalClear();

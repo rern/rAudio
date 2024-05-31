@@ -358,7 +358,7 @@ function infoWiFi( v ) {
 		, ok           : () => connectWiFi( infoVal() )
 	} );
 }
-function psOnClose() {
+function onPageInactive() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
 	
 	clearTimeout( V.timeoutscan );
