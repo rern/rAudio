@@ -1081,8 +1081,7 @@ function playlistSkip() {
 		setProgress( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 	}
-	var file = $( '#pl-list li' ).eq( S.song ).find( '.lipath' ).text();
-	bash( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
+	bash( [ 'mpcskippl', S.song + 1, S.state, 'CMD POS ACTION' ] );
 }
 function refreshData() {
 	if ( V.library ) {

@@ -639,7 +639,6 @@ mpcsimilar )
 	;;
 mpcskip )
 	. <( mpc status 'state=%state%; consume=%consume%; songpos=%songpos%' )
-	$dirbash/cmd-skipdata.sh "$FILE" &
 	radioStop
 	touch $dirshm/skip
 	if [[ $state == playing ]]; then
