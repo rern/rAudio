@@ -1526,11 +1526,17 @@ function setButtonUpdateAddons() {
 	}
 }
 function setButtonUpdate() {
-	bash( [ 'lsmntmpd' ], counts => {
-		$.each( counts, ( k, v ) => {
-			C[ k ] = v;
-		} );
+	var toggle = () => {
 		$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
+	}
+	if ( 'nas' in C ) {
+		toggle();
+		return
+	}
+	
+	bash( [ 'lsmntmpd' ], counts => {
+		$.each( counts, ( k, v ) => { C[ k ] = v } );
+		toggle();
 	}, 'json' );
 }
 function setButtonUpdating() {

@@ -179,10 +179,7 @@ function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
 }
 
-function psOnMessage( message ) {
-	var json    = JSON.parse( message.data );
-	var channel = json.channel;
-	var data    = json.data;
+function psOnMessage( channel, data ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'camilla':   psCamilla( data );   break;

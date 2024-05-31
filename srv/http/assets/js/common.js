@@ -1031,25 +1031,29 @@ function selectText2Html( pattern ) {
 
 // page visibility -----------------------------------------------------------------
 function pageActive() {
-	if ( V.pageactive || V.local || V.off ) return // V.local from select2
+	if ( V.off ) return
 	
-	V.pageactive   = true;
-	V.pageinactive = false;
-	websocketConnect();
-	page ? setTimeout( refreshData, 300 ) : refreshData();
+	if ( ws ) {
+		V.timeoutreload = true;
+		setTimeout( () => { // reload if ws not response
+			if ( V.timeoutreload ) location.reload();
+		}, 300 );
+		ws.send( '"ping"' );
+	} else {
+		websocketConnect();
+	}
+	if ( V.pageactive ) return
+	
+	V.pageactive = true;
+	setTimeout( refreshData, page ? 300 : 0 );
 }
 function pageInactive() {
-	if ( V.pageinactive || V.local || V.debug ) return // V.local from select2
+	if ( V.local || V.debug ) return // V.local from select2
 	
-	V.pageactive   = false;
-	V.pageinactive = true;
-	if ( typeof psOnClose === 'function' ) psOnClose();
+	V.pageactive = false;
+	V.wsready    = false;
+	if ( typeof onPageInactive === 'function' ) onPageInactive();
 	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
-	if ( V.wsready ) {
-		V.wsready = false;
-		ws.send( '{ "client": "remove" }' );
-		ws.close();
-	}
 }
 document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
@@ -1087,34 +1091,36 @@ function websocketConnect( ip ) {
 	if ( V.wsready ) return
 	
 	ws           = new WebSocket( url );
-	ws.onopen    = () => websocketReady( ws );
-	ws.onclose   = () => {
-		ws = null;
-		V.wsready = false;
-	}
-	ws.onmessage = message => psOnMessage( message ); // data pushed from server
-	ws.onready   = () => { // custom
-		V.wsready = true;
-		ws.send( '{ "client": "add" }' );
-		if ( V.reboot ) {
-			delete V.reboot
-			if ( S.login ) {
-				location.href = '/';
-			} else {
-				refreshData();
-				loaderHide();
-				bannerHide();
+	ws.onopen    = () => {
+		var interval = setInterval( () => {
+			if ( ws.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+				clearInterval( interval );
+				V.wsready = true;
+				ws.send( '{ "client": "add" }' );
+				if ( V.reboot ) {
+					delete V.reboot
+					if ( S.login ) {
+						location.href = '/';
+					} else {
+						refreshData();
+						loaderHide();
+						bannerHide();
+					}
+				}
 			}
+		}, 100 );
+	}
+	ws.onmessage = message => {
+		var data = message.data;
+		if ( data === 'pong' ) { // on pageActive - reload if ws not response
+			V.timeoutreload = false;
+		} else if ( data === 'ping' ) {
+			ws.send( '"pong"' );
+		} else {
+			var json = JSON.parse( data );
+			psOnMessage( json.channel, json.data );
 		}
 	}
-}
-function websocketReady( socket ) {
-	var interval = setInterval( () => {
-		if ( socket.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
-			clearInterval( interval );
-			socket.onready();
-		}
-	}, 100 );
 }
 function websocketReconnect( ip ) {
 	var url = ip ? 'http://'+ ip :  '';

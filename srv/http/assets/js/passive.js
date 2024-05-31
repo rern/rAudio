@@ -60,10 +60,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 } );
 
 // push status
-function psOnMessage( message ) {
-	var json    = JSON.parse( message.data );
-	var channel = json.channel;
-	var data    = json.data;
+function psOnMessage( channel, data ) {
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
 		case 'audiocd':       psAudioCD( data );        break;
