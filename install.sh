@@ -33,7 +33,7 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20240526
+# 20240601
 systemctl restart websocket
 
 for snap in $restart; do

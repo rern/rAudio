@@ -6,9 +6,9 @@ import subprocess
 import websockets
 
 CLIENTS   = set()
-IP_CLIENT = {}
+IP_CLIENT = dict()
 
-async def cmd( websocket, path ):
+async def cmd( websocket ):
     async for args in websocket:
         jargs = json.loads( args )
         if 'channel' in jargs:  # broadcast
