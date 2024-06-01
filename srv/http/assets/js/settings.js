@@ -179,10 +179,7 @@ function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
 }
 
-function psOnMessage( message ) {
-	var json    = JSON.parse( message.data );
-	var channel = json.channel;
-	var data    = json.data;
+function psOnMessage( channel, data ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'camilla':   psCamilla( data );   break;
@@ -254,7 +251,7 @@ function psRefresh( data ) {
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 		if ( page === 'networks' ) {
-			$( '.back' ).trigger( 'click' );
+			if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
 		} else {
 			switchSet();
 		}
@@ -278,7 +275,7 @@ function psWlan( data ) {
 			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
 			, oklabel : ico( 'reboot' ) +'Reboot'
 			, okcolor : orange
-			, ok      : () => bash( [ 'reboot' ] )
+			, ok      : () => bash( [ 'power.sh', 'reboot' ] )
 		} );
 		return
 	}

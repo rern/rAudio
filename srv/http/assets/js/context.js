@@ -44,11 +44,7 @@ function addToPlaylistCommand() {
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
 	banner( 'playlist', V.title, V.msg );
 	bash( V.mpccmd );
-	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) {
-		V.playbackswitch = true;
-		setTimeout( () => delete V.playbackswitch, 1000 );
-		switchPage( 'playback' );
-	}
+	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) switchPage( 'playback' );
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
@@ -168,7 +164,7 @@ function playlistDelete() {
 }
 function playlistLoad( name, play, replace ) {
 	banner( 'file-playlist', name, 'Load ...' );
-	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], function() {
+	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], () => {
 		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
 	} );
 }
@@ -406,7 +402,7 @@ function tagEditor() {
 				} );
 				infoval.FILE = file;
 				banner( 'tag blink', 'Tag Editor', 'Change ...', -1 );
-				bash( [ 'tageditor', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
+				bash( [ 'tageditor.sh', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
 			}
 		} );
 	}, 'json' );

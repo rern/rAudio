@@ -14,6 +14,7 @@
 #pwd {
 	width          : 230px;
 	margin         : 30px 10px 10px 25px;
+	border         : 1px solid var( --cg );
 	text-align     : center;
 }
 #toggle {

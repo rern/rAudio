@@ -3,6 +3,7 @@
 . /srv/http/bash/common.sh
 dirimg=/srv/http/assets/img
 
+echo "$1" > $dirshm/z
 args2var "$1"
 
 plAddPlay() {
@@ -13,7 +14,11 @@ plAddPlay() {
 	pushPlaylist
 }
 plAddPosition() {
-	[[ ${ACTION:0:7} == replace ]] && plClear
+	[[ $ACTION == replaceplay ]] && touch $dirshm/skip
+	if [[ ${ACTION:0:7} == replace ]]; then
+		plClear
+		rm $dirshm/skip
+	fi
 	echo $(( $( mpc status %length% ) + 1 ))
 }
 plAddRandom() {
@@ -155,18 +160,15 @@ volumeSet() {
 	target=$2
 	control=$3
 	card=$4
-	diff=$(( $target - $current ))
-	if (( ${diff#-} < 5 )); then
-		volumeSetAt $target "$control" $card
-	else # increment
-		(( $diff > 0 )) && incr=5 || incr=-5
-		values=( $( seq $(( current + incr )) $incr $target ) )
-		(( $diff % 5 )) && values+=( $target )
-		for i in "${values[@]}"; do
-			volumeSetAt $i "$control" $card
-			sleep 0.2
-		done
-	fi
+	diff=$5
+	# increment
+	(( $diff > 0 )) && incr=5 || incr=-5
+	values=( $( seq $(( current + incr )) $incr $target ) )
+	(( $diff % 5 )) && values+=( $target )
+	for i in "${values[@]}"; do
+		volumeSetAt $i "$control" $card
+		sleep 0.2
+	done
 }
 volumeSetAt() {
 	local card control target
@@ -266,7 +268,9 @@ bookmarkrename )
 	pushData bookmark 1
 	;;
 cachebust )
-	cacheBust
+	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
+	hash=?v=$( date +%s )
+	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
 	;;
 color )
 	file=$dirsystem/color
@@ -288,7 +292,6 @@ color )
 	hs="$h,$s%,"
 	hsg="$h,3%,"
 	hsl="${hs}$l%"
-
 	sed -i -E "
  s|(--cml *: *hsl).*;|\1(${hs}$(( l + 5 ))%);|
   s|(--cm *: *hsl).*;|\1($hsl);|
@@ -308,6 +311,7 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
+	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	pushData reload 1
 	;;
 coverartonline )
@@ -384,16 +388,13 @@ display )
 	fi
 	;;
 equalizer )
-	if [[ $VALUES ]]; then # preset ( delete, rename, new - save json only )
-		freq=( 31 63 125 250 500 1 2 4 8 16 )
-		v=( $VALUES )
-		for (( i=0; i < 10; i++ )); do
-			(( i < 5 )) && unit=Hz || unit=kHz
-			band=( "0$i. ${freq[i]} $unit" )
-			sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
-		done
-	fi
-	pushData equalizer $( < $dirsystem/equalizer.json )
+	freq=( 31 63 125 250 500 1 2 4 8 16 )
+	v=( $VALUES )
+	for (( i=0; i < 10; i++ )); do
+		(( i < 5 )) && unit=Hz || unit=kHz
+		band=( "0$i. ${freq[i]} $unit" )
+		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
+	done
 	;;
 equalizerget )
 	if [[ -e $dirsystem/equalizer.json ]]; then
@@ -637,10 +638,9 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
-	$dirbash/cmd-skipdata.sh "$FILE" &
+	. <( mpc status 'state=%state%; consume=%consume%; songpos=%songpos%' )
 	radioStop
 	touch $dirshm/skip
-	. <( mpc status 'state=%state%; consume=%consume%; songpos=%songpos%' )
 	if [[ $state == playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
@@ -788,16 +788,23 @@ upnpstart )
 	;;
 volume )
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
-	filevolumemute=$dirsystem/volumemute
-	if (( $TARGET > 0 )); then
-		rm -f $filevolumemute
-	else
-		(( $CURRENT > 0 )) && echo $CURRENT > $filevolumemute || rm -f $filevolumemute
+	if [[ $TYPE != dragpress ]]; then
+		[[ $TYPE == mute ]] && val=$CURRENT || val=$TARGET
+		pushData volume '{ "type": "'$TYPE'", "val": '$val' }'
 	fi
-	volumeSet $CURRENT $TARGET "$CONTROL" $CARD
-	;;
-volumesetat )
-	volumeSetAt $TARGET "$CONTROL" $CARD
+	filevolumemute=$dirsystem/volumemute
+	if [[ $TYPE == mute ]]; then
+		echo $CURRENT > $filevolumemute
+	elif [[ $TYPE == unmute ]]; then
+		rm -f $filevolumemute
+	fi
+	diff=$(( TARGET - CURRENT ))
+	diff=${diff#-}
+	if (( $diff < 5 )); then
+		volumeSetAt $TARGET "$CONTROL" $CARD
+	else
+		volumeSet $CURRENT $TARGET "$CONTROL" $CARD $diff
+	fi
 	;;
 webradioadd )
 	url=$( urldecode $URL )

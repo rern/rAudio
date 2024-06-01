@@ -89,11 +89,6 @@ audioCDplClear() {
 		return 0
 	fi
 }
-cacheBust() {
-	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
-	hash=?v=$( date +%s )
-	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
-}
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
 }
@@ -104,6 +99,9 @@ camillaDSPstart() {
 	else
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi
+}
+cmdshWebsocket() {
+	websocat ws://$1:8080 <<< '{ "filesh": [ "'$dirbash'/cmd.sh", "'$2'" ] }'
 }
 conf2json() {
 	local file json k keys only l lines v
@@ -167,17 +165,20 @@ data2json() {
 	json+="$1
 }"
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
-	json=$( sed 's/:\s*$/: false/
-				s/:\s*}$/: false }/
-				s/^,\s*$/, false/
-				s/\[\s*,/[ false,/g
-				s/,\s*,/, false,/g
-				s/,\s*]/, false ]/g' <<< $json )
+	json=$( data2jsonPatch "$json" )
 	if [[ $2 ]]; then
 		pushData refresh "$json"
 	else
 		echo "$json"
 	fi
+}
+data2jsonPatch() { # "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
+	sed 's/:\s*$/: false/
+		s/:\s*}$/: false }/
+		s/^,\s*$/, false/
+		s/\[\s*,/[ false,/g
+		s/,\s*,/, false,/g
+		s/,\s*]/, false ]/g' <<< $1
 }
 dirPermissions() {
 	[[ -e /boot/kernel.img ]] && rm -f $dirbash/{dab*,status-dab.sh}
@@ -196,7 +197,8 @@ dirPermissions() {
 	chmod -R +x $dirbash
 }
 enableFlagSet() {
-	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
+	file=$dirsystem/$CMD
+	[[ $ON ]] && touch $file || rm -f $file
 }
 exists() {
 	[[ -e $1 ]] && echo true || echo false
@@ -274,14 +276,8 @@ notify() { # icon title message delayms
 	icon=$1
 	title=$( stringEscape $2 )
 	message=$( stringEscape $3 )
-	data='{ "channel": "notify", "data": { "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' } }'
-	if [[ $ip ]]; then
-		! ipOnline $ip && return
-		
-	else
-		ip=127.0.0.1
-	fi
-	websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
+	[[ ! $ip ]] && ip=127.0.0.1
+	pushWebsocket $ip notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
 packageActive() {
 	local active pkg pkgs status
@@ -300,10 +296,8 @@ playerActive() {
 pushData() {
 	local channel data ip json path sharedip updatedone webradiocopy
 	channel=$1
-	json=${@:2} # $2 ...
-	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
-	data='{ "channel": "'$channel'", "data": '$json' }'
-	websocat ws://127.0.0.1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
+	pushWebsocket 127.0.0.1 $channel $data
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
@@ -314,10 +308,10 @@ pushData() {
 	fi
 	
 	if [[ $channel == mpdupdate ]]; then
-		if [[ $json == *done* ]]; then
+		if [[ $data == *done* ]]; then
 			sharedip=$( grep -v $( ipAddress ) $filesharedip )
 			for ip in $sharedip; do
-				sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
+				cmdshWebsocket $ip shareddatampdupdate
 			done
 			return
 		fi
@@ -325,7 +319,7 @@ pushData() {
 	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
+		pushWebsocket $ip $channel $data
 	done
 }
 pushDataCoverart() {
@@ -345,6 +339,12 @@ pushRefresh() {
 	[[ $2 ]] && push=$2 || push=push
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
+}
+pushWebsocket() {
+	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
+		data='{ "channel": "'$2'", "data": '${@:3}' }'
+		websocat ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+	fi
 }
 radioStatusFile() {
 	local status
@@ -401,7 +401,7 @@ snapclientIP() {
 		else
 			[[ ! $connected ]] && continue
 			
-			[[ $1 ]] && sshCommand $ip $dirbash/cmd.sh playerstop || clientip+=" ${l/*:}"
+			[[ $1 ]] && cmdshWebsocket $ip playerstop || clientip+=" ${l/*:}"
 		fi
 	done <<< $lines
 	[[ $clientip ]] && echo $clientip
@@ -412,23 +412,6 @@ snapserverList() {
 	[[ ! $service ]] && return
 	
 	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
-}
-sshCommand() {
-	! ipOnline $1 && return
-	
-	if [[ ${@: -1} == snapclient ]]; then
-		sshpassCmd $@
-	else
-		sshpassCmd $@ &> /dev/null &
-	fi
-}
-sshpassCmd() {
-	sshpass -p ros ssh -q \
-		-o ConnectTimeout=1 \
-		-o UserKnownHostsFile=/dev/null \
-		-o StrictHostKeyChecking=no \
-		root@$1 \
-		"${@:2}"
 }
 stateMPD() {
 	mpc status %state% | sed -E 's/ped$|ing$|d$//g'

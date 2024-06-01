@@ -4,9 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240519
-! grep -q cmdsh /srv/http/bash/websocket-server.py && restartws=1
+# 20240601
+file=/etc/pacman.conf
+grep -q bootloader $file && sed -i 's/li.*bootloader/libunwind/' $file
 
+# 20240519
 file=/srv/http/data/mpdconf/conf/snapserver.conf
 if grep -q snapcast $file; then
 	echo 'audio_output {
@@ -31,8 +33,8 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20240517
-[[ $restartws ]] && systemctl restart websocket
+# 20240601
+systemctl restart websocket
 
 for snap in $restart; do
 	$dirsettings/features.sh $snap

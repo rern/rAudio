@@ -175,20 +175,6 @@ $( '#coverart' ).on( 'load', function() {
 	}
 	loaderHide();
 } ).on( 'error', coverartDefault );
-// color icon
-$( '#displaycolor' ).html( '<canvas></canvas>' );
-var canvas = $( '#displaycolor canvas' )[ 0 ];
-var ctx    = canvas.getContext( '2d' );
-var cw     = canvas.width / 2;
-var ch     = canvas.height / 2;
-for( i = 0; i < 360; i += 0.25 ) {
-	var rad         = i * Math.PI / 180;
-	ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
-	ctx.beginPath();
-	ctx.moveTo( cw, ch );
-	ctx.lineTo( cw + cw * Math.cos( rad ), ch + ch * Math.sin( rad ) );
-	ctx.stroke();
-}
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#logo, #refresh' ).on( 'click', function() {
@@ -203,6 +189,21 @@ $( '#button-data' ).on( 'click', function() {
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
+		if ( ! $( '#displaycolor canvas' ).length ) { // color icon
+			$( '#displaycolor' ).html( '<canvas></canvas>' );
+			var canvas = $( '#displaycolor canvas' )[ 0 ];
+			var ctx    = canvas.getContext( '2d' );
+			var cw     = canvas.width / 2;
+			var ch     = canvas.height / 2;
+			for( i = 0; i < 360; i += 0.25 ) {
+				var rad         = i * Math.PI / 180;
+				ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
+				ctx.beginPath();
+				ctx.moveTo( cw, ch );
+				ctx.lineTo( cw + cw * Math.cos( rad ), ch + ch * Math.sin( rad ) );
+				ctx.stroke();
+			}
+		}
 		menuHide();
 		$( '#settings' )
 			.css( 'top', ( $bartop.is( ':visible' ) ? 40 : 0 ) )
@@ -238,7 +239,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 						info( {
 							  icon    : 'snapcast'
 							, title   : 'SnapClient'
-							, message : 'SnapServer not available.'
+							, message : 'No SnapServers found.'
 						} );
 					}
 				} );
@@ -247,7 +248,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
-			bash( S.relayson ? [ 'relays.sh', 'OFF' ] : [ 'relays.sh' ] );
+			bash( S.relayson ? [ 'relays.sh',  'OFF' ] : [ 'relays.sh' ] );
 			break;
 		case 'guide':
 			location.href = 'settings.php?p=guide';
@@ -580,6 +581,8 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	
 	V.start = V.drag = false;
 	mpcSeekBar( e.pageX || e.changedTouches[ 0 ].pageX );
+} ).on( 'mouseleave', function() {
+	V.start = V.drag = false;
 } );
 $( '#volume' ).roundSlider( {
 	// init     : valueChange > create > beforeValueChange > valueChange
@@ -630,13 +633,14 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
-		volumeSetAt();
+		volumeSet();
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
+		S.volume = e.value;
 		$( '#volume-knob, #button-volume i' ).addClass( 'noclick' );
-		volumeSet( e.value );
+		volumeSet();
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, valueChange       : function( e ) {
@@ -647,8 +651,8 @@ $( '#volume' ).roundSlider( {
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, stop              : () => {
-		volumePush( S.volume, V.drag ? 'drag' : 'push' );
 		V.drag = false;
+		volumePush();
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
@@ -669,7 +673,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	V.drag = true;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	$( '#volume-bar' ).css( 'width', V.volume.x );
-	volumeSetAt();
+	volumeSet();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		volumeBarShow();
@@ -677,20 +681,17 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	}
 	
 	if ( V.drag ) {
-		volumePush( S.volume, 'drag' );
+		volumePush();
 	} else { // click
 		volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 		volumeAnimate( S.volume, V.volume.current );
-		volumeSetAt();
-		volumePush();
+		volumeSet();
 	}
 	$volumeRS.setValue( S.volume );
 	V.volume = V.drag = false;
 	V.volumebar = setTimeout( volumeBarHide, 3000 );
 } ).on( 'mouseleave', function() {
-	$volumeRS.setValue( S.volume );
 	V.volume = V.drag = false;
-	V.volumebar = setTimeout( volumeBarHide, 3000 );
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
 	volumeMuteToggle();
@@ -715,7 +716,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 		clearTimeout( V.volumebar );
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	}
-	if ( V.press ) volumePush();
+	volumePush();
 } ).press( function( e ) {
 	clearTimeout( V.volumebar );
 	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
@@ -891,8 +892,7 @@ $( '.map' ).on( 'click', function( e ) {
 					S.single = false;
 					setButtonOptions();
 					local( 600 );
-					bash( [ 'mpcoption', 'repeat', false, 'CMD OPTION ONOFF' ] );
-					bash( [ 'mpcoption', 'single', false, 'CMD OPTION ONOFF' ] );
+					[ 'repeat', 'single' ].forEach( option => bash( [ 'mpcoption', option, false, 'CMD OPTION ONOFF' ] ) );
 				} else {
 					$( '#single' ).trigger( 'click' );
 				}
@@ -1044,9 +1044,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 			  icon         : 'latest'
 			, title        : 'Latest'
 			, message      : 'Clear Latest albums list?'
-			, ok           : () => {
-				bash( [ 'latestclear' ], () => $( '#library' ).trigger( 'click' ) );
-			}
+			, ok           : () => bash( [ 'latestclear' ], () => $( '#library' ).trigger( 'click' ) )
 		} );
 	}
 } );
@@ -1404,7 +1402,7 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	, onUpdate      : function () {
 		var order = [];
 		$( '.mode' ).each( ( i, el ) => order.push( $( el ).find( '.lipath' ).text() ) );
-		bash( { cmd: [ 'order' ], json: order } );
+		jsonSave( 'order', order );
 	}
 } );
 $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {

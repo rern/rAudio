@@ -95,7 +95,7 @@ var default_v     = {
 		, APAUTO : true
 	}
 }
-var gpiosvg       = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
+var gpiosvg       = $( '#gpiosvg' ).html();
 var board2bcm     = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
@@ -150,20 +150,23 @@ $( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
-	var gnd              = '<br><c>GND:(any black pin)</c> &emsp; ';
+	var gnd              = '<p style="line-height: 19px"><c>GND:(any &cir; pin)</c> &emsp; ';
 	var vcc1             = htmlC( 'ora', 'VCC', 1 );
 	var i2c              = '<br><wh>I²C:</wh>';
 	var scasdl           = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
 	var txtlcdchar       = gnd
-						 + i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
 						 + '<br><wh>GPIO:</wh> '+ htmlC( [ 
 								  [ 'red', 'VCC',   4 ]
 								, [ 'grn', 'RS',   15 ]
 								, [ 'grn', 'RW',   18 ]
 								, [ 'grn', 'E',    16 ]
 								, [ 'grn', 'D4-7', '21-24' ]
-							] );
-	var txtmpdoled       = gnd + vcc1
+							] )
+						 + i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
+						 +'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
+						 +'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">';
+	var txtmpdoled       = gnd
+						 + '<br>'+ vcc1
 						 + i2c + scasdl
 						 + '<br><wh>SPI:</wh>'+ htmlC( [
 								  [ 'grn', 'CLK', 23 ]
@@ -171,8 +174,10 @@ $( '.img' ).on( 'click', function() {
 								, [ 'grn', 'RES', 22 ]
 								, [ 'grn', 'DC',  18 ]
 								, [ 'grn', 'CS',  24 ]
-							] );
-	var txtrotaryencoder = gnd +'<c>+: not use</c>';
+							] ) +'</p>';
+	var txtrotaryencoder = gnd
+						 +'<br><c>CLK, DT, SW: (any <grn>●</grn> pins)</c>'
+						 +'<br><c>+: not use</c></p>';
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
@@ -189,8 +194,7 @@ $( '.img' ).on( 'click', function() {
 		, title       : d[ 0 ]
 		, message     : '<img src="/assets/img/'+ name +'.'+ ( d[ 4 ] || 'jpg' )
 						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
-		, footer      : [ 'lcdchar', 'rotaryencoder', 'mpdoled' ].includes( name ) ? gpiosvg + d[ 1 ] : ''
-		, footeralign : 'left'
+						+ ( [ 'lcdchar', 'rotaryencoder', 'mpdoled' ].includes( name ) ? '<br>'+ gpiosvg + d[ 1 ] : '' )
 		, beforeshow  : () => $( '.'+ name +'-no' ).addClass( 'hide' )
 		, okno        : true
 	} );
@@ -198,13 +202,18 @@ $( '.img' ).on( 'click', function() {
 $( '.refresh' ).on( 'click', function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( V.intstatus );
-		$this.removeClass( 'blink wh' )
+		intervalStatus( 'clear' );
 		return
 	}
 	
 	$this.addClass( 'blink wh' )
-	V.intstatus = setInterval( () => bash( [ 'settings/system-data.sh', 'status' ] ), 10000 );
+	V.intstatus = setInterval( () => {
+		bash( [ 'settings/system-data.sh', 'status' ], data => {
+			intervalStatus( 'icon' );
+			$( '#divstatus .value' ).html( data.status + data.warning );
+			$( '#warning' ).toggleClass( 'hide', data.warning === '' );
+		}, 'json' );
+	}, 10000 );
 } );
 $( '.addnas' ).on( 'click', function() {
 	infoMount();
@@ -788,7 +797,7 @@ function infoLcdcharButton() {
 		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-22 wh' ) +'&ensp;Logo</gr>&ensp;' )
 		.after( '&emsp;<gr id="lcdoff">'+ ico( 'screenoff i-22 wh' ) +'&ensp;Sleep</gr>' );
 	$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
-		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] )
+		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] );
 	} );
 }
 function infoMirror() {
@@ -873,7 +882,7 @@ function infoMount( nfs ) {
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
-			bash( [ 'mount', ...vals, 'CMD '+ keys.join( ' ' ) ], error => infoMountSet( error ) );
+			bash( [ 'settings/system-mount.sh', ...vals, 'CMD '+ keys.join( ' ' ) ], error => infoMountSet( error ) );
 		}
 	} );
 }
@@ -890,7 +899,7 @@ function infoMountRserver() {
 		, cancel   : switchCancel
 		, ok       : () => {
 			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-			bash( [ 'mount', infoVal().IP, 'CMD IP' ], error => infoMountSet( error ) );
+			bash( [ 'settings/system-mount.sh', infoVal().IP, 'CMD IP' ], error => infoMountSet( error ) );
 		}
 	} );
 }
@@ -1066,7 +1075,8 @@ function infoRelaysOk() {
 	keys.push( 'TIMER' );
 	values.push( pin.TIMER );
 	notifyCommon();
-	bash( { cmd: [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ], json: name } );
+	jsonSave( 'relays', name );
+	bash( [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ] );
 }
 function infoRestore( reset ) {
 	var list = [
@@ -1084,7 +1094,7 @@ function infoRestore( reset ) {
 		, okcolor  : orange
 		, ok       : reset ? () => {
 				notifyCommon( 'Reset to default ...' );
-				bash( [ 'settings/system-datareset.sh '+ infoVal().join( ' ' ) ] );
+				bash( [ 'settings/system-datareset.sh', ...infoVal() ] );
 				loader();
 			} : () => {
 				notifyCommon( 'Restore ...' );
@@ -1122,6 +1132,16 @@ function infoWlan() {
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
+}
+function intervalStatus( type ) {
+	var $icon = $( '#divstatus .refresh' );
+	if ( type === 'icon' ) {
+		$icon.toggleClass( 'i-refresh blink i-flash' );
+		setTimeout( () => $icon.toggleClass( 'i-refresh blink i-flash' ), 900 );
+	} else { // clear
+		clearInterval( V.intstatus );
+		$icon.removeClass( 'blink wh' );
+	}
 }
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );

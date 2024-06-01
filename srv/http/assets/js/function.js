@@ -448,7 +448,7 @@ function dirName( path ) {
 	return path.substring( 0, path.lastIndexOf( '/' ) )
 }	
 function displayBars() {
-	if ( V.playbackswitch || ! $( '#bio' ).hasClass( 'hide' ) ) return
+	if ( ! $( '#bio' ).hasClass( 'hide' ) ) return
 	
 	var smallscreen = V.wH < 590 || V.wW < 500;
 	var lcd         = ( V.wH <= 320 && V.wW <= 480 ) || ( V.wH <= 480 && V.wW <= 320 );
@@ -510,7 +510,7 @@ function displayPlayback() {
 	if ( ! hidetime ) $( '#time' ).roundSlider( S.webradio || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', S.pllength === 0 || S.webradio || S.player !== 'mpd' );
-	$( '#time, #coverBL, #coverBR' ).toggleClass( 'disabled', S.webradio || ! [ 'mpd', 'upnp' ].includes( S.player ) );
+	$( '#time' ).toggleClass( 'disabled', S.webradio || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || $volume.is( ':visible' ) );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
@@ -524,7 +524,7 @@ function displaySave() {
 		} );
 	} );
 	if ( values.tapreplaceplay ) values.plclear = false;
-	bash( { cmd: [ 'display' ], json: values } );
+	jsonSave( 'display', values );
 }
 function displaySubMenu() {
 	$( '#dsp' )
@@ -759,7 +759,7 @@ function infoTitle() {
 				} else if ( $this.hasClass( 'similar' ) ) {
 					addSimilar();
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...values, 'CMD ARTIST TITLE' ] );
+					bash( [ 'scrobble.sh', ...values, 'CMD ARTIST TITLE' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
 				$( '#infoX' ).trigger( 'click' );
@@ -924,7 +924,9 @@ function playbackStatusGet( withdisplay ) {
 			displaySubMenu();
 			bannerHide();
 		}
+		if ( V.volumeactive ) delete status.volume; // immediately change volume when pageInactive > pageActive
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		V.volumecurrent = S.volume;
 		var dataerror = $( '#data .copy' ).length;
 		if ( $( '#data' ).hasClass( 'hide' ) || dataerror ) {
 			if ( dataerror ) {
@@ -1079,8 +1081,7 @@ function playlistSkip() {
 		setProgress( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 	}
-	var file = $( '#pl-list li' ).eq( S.song ).find( '.lipath' ).text();
-	bash( [ 'mpcskip', S.song + 1, file, 'CMD POS FILE' ] );
+	bash( [ 'mpcskippl', S.song + 1, S.state, 'CMD POS ACTION' ] );
 }
 function refreshData() {
 	if ( V.library ) {
@@ -1271,11 +1272,11 @@ function renderLibraryPadding() {
 	} )
 }
 function renderPlayback() {
-	if ( ! S.state || V.playbackswitch ) return // suppress on reboot
+	if ( ! S.state ) return // suppress on reboot
 	
 	local();
 	if ( S.state === 'stop' ) setProgress( 0 );
-	setVolume();
+	if ( ! V.volumeactive ) setVolume(); // immediately change volume when pageInactive > pageActive
 	setButtonOptions();
 	clearInterval( V.interval.blinkdot );
 	$( '#qr' ).remove();
@@ -1524,11 +1525,17 @@ function setButtonUpdateAddons() {
 	}
 }
 function setButtonUpdate() {
-	bash( [ 'lsmntmpd' ], counts => {
-		$.each( counts, ( k, v ) => {
-			C[ k ] = v;
-		} );
+	var toggle = () => {
 		$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
+	}
+	if ( 'nas' in C ) {
+		toggle();
+		return
+	}
+	
+	bash( [ 'lsmntmpd' ], counts => {
+		$.each( counts, ( k, v ) => { C[ k ] = v } );
+		toggle();
 	}, 'json' );
 }
 function setButtonUpdating() {
@@ -2045,8 +2052,7 @@ function volumeUpDown( up ) {
 	
 	up ? S.volume++ : S.volume--;
 	setVolume();
-	volumePush( S.volume );
-	volumeSetAt();
+	volumeSet();
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {

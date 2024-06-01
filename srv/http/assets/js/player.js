@@ -119,7 +119,8 @@ $( '#novolume' ).on( 'click', function( e ) {
 $( '#dop' ).on( 'click', function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	var cmd = checked ? [ 'dop', S.output.aplayname ] : [ 'dop', S.output.aplayname, 'OFF' ]; // OFF with args - value by index
+	var cmd = [ 'dop', S.output.aplayname ];
+	if ( ! checked ) cmd.push( 'OFF' ); // OFF with args - value by index
 	bash( cmd );
 } );
 $( '#setting-crossfade' ).on( 'click', function() {
@@ -269,7 +270,7 @@ function infoNoVolume() {
 }
 function infoNoVolumeSet() {
 	notifyCommon( 'Enable ...' );
-	bash( [ 'novolume' ], function() {
+	bash( [ 'novolume' ], () => {
 		if ( ! S.custom ) return
 		
 		info( {

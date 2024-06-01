@@ -1,12 +1,15 @@
 /*
-bash()
 $.fn.press
-banner() copy        errorDisplay() 
+banner() errorDisplay() 
 info()   infoPower() infoPowerCommand() infoWarning()
 loader() local()     selectSet()
+websocket
+bash()
 */
 
 var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
+var dirbash     = '/srv/http/bash/';
+var filesh      = dirbash + ( page ? 'settings/'+ page : 'cmd' ) +'.sh';
 var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
@@ -44,103 +47,6 @@ $.fn.press = function( arg1, arg2 ) {
 	} );
 	return this // allow chain
 }
-
-// ----------------------------------------------------------------------
-/*
-Simple spaced arguments
-	- [ 'CMD.sh', v1, v2, ... ] - CMD.sh $1 $2 ...
-Multiline arguments - no escape \" \` in js values > escape in php instead
-	- [ CMD, v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
-	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
-	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
-	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
-	- { cmd: [ CMD, ... ], json: JSON }     -        ^^^                     and save {"K1":"v1", ... } to $dirsystem/$CMD.json
-
-- js > php   >> common.js - bash()
-	- string : 
-		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
-		- multiline      : 'l1\\nl2\\nl3...'
-	- json   : json.sringify( JSON )
-- php > bash >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
-	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
-	- json  : decode > reencode > save to $dirsystem/$CMD.json ($_POST[ 'json' ])
-		- js cannot escape " as \\" double backslash which disappeared in bash
-- bash       >> common.sh - args2var
-	- convert to array > assign values
-		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
-		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
-		- With 'CFG' : 
-			- the same as 'CMD'
-			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
-*/
-function bash( args, callback, json ) {
-	var data = { cmd: 'bash' }
-	if ( 'json' in args ) {
-		data.json = JSON.stringify( args.json );
-		args = args.cmd;
-	}
-	var args0 = args[ 0 ];
-	if (  [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) { // CMD.sh / CMD.py
-		data.filesh = args.join( ' ' );
-		args = false;
-	} else if ( page ) {                 // CMD - settings
-		data.filesh = 'settings/'+ page +'.sh';                            // default
-		if ( args0 === 'mount' ) data.filesh = 'settings/system-mount.sh'; // not default
-	} else {                             // CMD - playback
-		data.filesh = 'cmd.sh';
-		if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) data.filesh = args0 +'.sh';
-	}
-	if ( args ) data.args = args;
-/*
-V.debug - press: $( '#debug' )
-	- all
-	- console.log commands
-	- active push status (no pageInactive)
-V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
-	- each
-	- console.log commands only (NOT run)
-*/
-	if ( V.debug || V.consoleonly ) {
-		var bashcmd = data.filesh.replace( 'settings/', '' );
-		if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
-		console.log( data );
-		console.log( bashcmd );
-		if ( V.consoleonly ) {
-			V.consoleonly = false;
-			setTimeout( () => page ? switchCancel() : bannerHide(), 5000 );
-			return
-		}
-	}
-	$.post( 
-		 'cmd.php'
-		, data
-		, callback || null
-		, json || null
-	);
-}
-// debug
-$( '.page-icon' ).press( () => location.reload() );
-$( '#debug' ).press( function() {
-	V.debug = true;
-	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
-	bash( [ 'cmd.sh', 'cachebust' ] );
-} );
-$( '#infoOverlay' ).press( '#infoOk', function() {
-	V.consoleonly = true;
-	I.ok();
-} );
-$( '.col-r .switch' ).press( function( e ) {
-	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
-		$( '#setting-'+ e.target.id ).trigger( 'click' );
-		return
-	}
-	
-	V.consoleonly = true;
-	switchIdIconTitle( e.target.id );
-	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
-	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
-} );
-	
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( V.timeoutbanner );
@@ -164,32 +70,17 @@ function bannerHide() {
 		.addClass( 'hide' )
 		.empty();
 }
-$( '#banner' ).on( 'click', bannerHide );
-
-// ----------------------------------------------------------------------
-$( '#data' ).on( 'click', '.copy', function() {
-	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
-	// copy2clipboard - for non https which cannot use clipboard API
-	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-	$( '#error' ).focus().select();
-	document.execCommand( 'copy' );
-	$( '#error' ).remove();
-} );
-
 // ----------------------------------------------------------------------
 function errorDisplay( msg, list ) {
 	var pos = msg.replace( /.* position /, '' );
-	if ( msg.includes( 'position' ) ) {
-		pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
-	} else if ( msg.includes( 'column' ) ) {
-		pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
-	}
+	if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
+	else if ( msg.includes( 'column' ) ) pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
 	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
 	var error =  '<div class="error"><codered>Errors:</codered> '+ msg
 				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
-				+'<hr>'
-				+'</div><div class="data">'
-				+ list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&lt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
+				+'</div>'
+				+'<div class="data">'
+				+ list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&gt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
 				+ '</div>'
 	$( '#data' )
 		.html( error )
@@ -200,29 +91,25 @@ function errorDisplay( msg, list ) {
 
 // ----------------------------------------------------------------------
 function highlightJSON( json ) {
-	var json = Object.keys( json )
+	var color = ( text, color ) => '<'+ color +'>'+ text +'</'+ color +'>';
+	var json  = Object.keys( json )
 					.sort()
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
-	json = JSON.stringify( json, null, '\t' )
-			.replace( /</g, '&lt;' )
-			.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) { // source: https://stackoverflow.com/a/7220510
-		if ( /^"/.test( match ) ) {              // string
-			if ( /:$/.test( match ) ) { // key
-				return match
-			} else {                    // value
-				return '<gr>'+ match +'</gr>'
-			}
-		} else if ( /true/.test( match ) ) {     // true
-			return '<grn>'+ match +'</grn>'
-		} else if ( /false/.test( match ) ) {    // false
-			return '<red>'+ match +'</red>'
-		} else if ( /[0-9]/.test( match ) ) {    // number
-			return '<ora>'+ match +'</ora>'
-		} else if ( /[{}\[\]]/.test( match ) ) { // braces
-			return '<pur>'+ match +'</pur>'
-		}
+	return JSON.stringify( json, null, '\t' )
+					.replace( /</g, '&lt;' )
+					.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) { // source: https://stackoverflow.com/a/7220510
+		if ( /^"/.test( match ) )
+			if ( /:$/.test( match ) ) return match                // key
+			else                      return color( match, 'gr' ) // value
+		else if ( /true/.test( match ) )       return color( match, 'grn' )
+		else if ( /false|null/.test( match ) ) return color( match, 'red' )
+		else if ( /[0-9]/.test( match ) )      return color( match, 'ora' )
+		else if ( /[{}]/.test( match ) )       return color( match, 'bll' )
+		else if ( /[\[\]]/.test( match ) )     return color( match, 'pur' )
 	} );
-	return '\n\n'+ json.replace( /: null,/g, ': <red>null</red>,' );
+}
+function textColor( text, color ) {
+
 }
 function ico( icon, id ) {
 	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"></i>';
@@ -899,7 +786,7 @@ function infoSetValues() {
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
 		} else if ( $this.is( 'select' ) ) {
-			val ? $this.val( val ) : el.selectedIndex = 0;
+			typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
 		} else {
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
@@ -1070,6 +957,10 @@ function jsonChanged( a, b ) {
 function jsonClone( json ) {
 	return JSON.parse( JSON.stringify( json ) )
 }
+function jsonSave( name, json ) {
+	if ( typeof json === 'object' ) json = JSON.stringify( json );
+	ws.send( '{ "json": '+ json +', "name": "'+ name +'" }' );
+}
 function jsonSort( json ) {
 	return Object.keys( json ).sort().reduce( function ( result, key ) {
 		result[ key ] = json[ key ];
@@ -1140,20 +1031,29 @@ function selectText2Html( pattern ) {
 
 // page visibility -----------------------------------------------------------------
 function pageActive() {
-	if ( V.pageactive || V.local || V.off ) return // V.local from select2
+	if ( V.off ) return
 	
-	V.pageactive   = true;
-	V.pageinactive = false;
-	websocketConnect();
-	page ? setTimeout( refreshData, 300 ) : refreshData();
+	if ( ws ) {
+		V.timeoutreload = true;
+		setTimeout( () => { // reload if ws not response
+			if ( V.timeoutreload ) location.reload();
+		}, 300 );
+		ws.send( '"ping"' );
+	} else {
+		websocketConnect();
+	}
+	if ( V.pageactive ) return
+	
+	V.pageactive = true;
+	setTimeout( refreshData, page ? 300 : 0 );
 }
 function pageInactive() {
-	if ( V.pageinactive || V.local || V.debug ) return // V.local from select2
+	if ( V.local || V.debug ) return // V.local from select2
 	
-	V.pageactive   = false;
-	V.pageinactive = true;
-	if ( typeof psOnClose === 'function' ) psOnClose();
-//	ws.send( 'clientremove' ); // 'clientremove' = missing 1st message on pageActive
+	V.pageactive = false;
+	V.wsready    = false;
+	if ( typeof onPageInactive === 'function' ) onPageInactive();
+	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
 }
 document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
@@ -1162,11 +1062,8 @@ window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 
 // websocket
-var ws       = null;
-var wsvolume = null;
+var ws            = null;
 function volumeMuteToggle() {
-	S.volumemute ? volumePush( S.volumemute, 'unmute' ) : volumePush( S.volume, 'mute' );
-	volumeSet( S.volumemute, 'toggle' );
 	if ( S.volumemute ) {
 		S.volume     = S.volumemute;
 		S.volumemute = 0;
@@ -1174,53 +1071,56 @@ function volumeMuteToggle() {
 		S.volumemute = S.volume;
 		S.volume     = 0;
 	}
+	volumeSet( S.volumemute ? 'mute' : 'unmute' );
 }
-function volumePush( vol, type ) {
-	V.local = true; // suppress local refresh
-	wsPush( 'volume', '{ "type": "'+ ( type || 'push' ) +'", "val": '+ ( vol || S.volume ) +' }' );
+function volumePush( type, val ) {
+	V.local = true;
+	if ( typeof val === 'undefined' ) val = S.volume;
+	ws.send( '{ "channel": "volume", "data": { "type": "'+ ( type || '' ) +'", "val": '+ val +' } }' );
 }
-function volumeSet( vol, type ) { // increment from current to target
-	if ( ! type ) volumePush( vol );
-	wsvolume.send( [ 'volume', S.volume, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ].join( '\n' ) );
-}
-function volumeSetAt( val ) { // drag / press / updn
-	wsvolume.send( [ 'volumesetat', val || S.volume, S.control, S.card, 'CMD TARGET CONTROL CARD' ].join( '\n' ) );
+function volumeSet( type ) { // type: mute / unmute
+	V.local        = true;
+	V.volumeactive = true;
+	setTimeout( () => V.volumeactive = false, 300 );
+	if ( V.drag || V.press ) type = 'dragpress';
+	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
+	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {
-	var url = 'ws://'+ ( ip || location.host ) +':8080';
-	if ( [ '', 'camilla', 'player' ].includes( page ) ) {
-		if ( ! websocketOk( wsvolume ) ) wsvolume = new WebSocket( url +'/cmdsh' );
-	}
-	if ( websocketOk( ws ) ) return
+	var url      = 'ws://'+ ( ip || location.host ) +':8080';
+	if ( V.wsready ) return
 	
 	ws           = new WebSocket( url );
-	ws.onopen    = () => websocketReady( ws );
-	ws.onclose   = () => ws = null;
-	ws.onmessage = message => psOnMessage( message ); // data pushed from server
-	ws.onready   = () => { // custom
-		ws.send( 'clientadd' );
-		if ( V.reboot ) {
-			delete V.reboot
-			if ( S.login ) {
-				location.href = '/';
-			} else {
-				refreshData();
-				loaderHide();
-				bannerHide();
+	ws.onopen    = () => {
+		var interval = setInterval( () => {
+			if ( ws.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+				clearInterval( interval );
+				V.wsready = true;
+				ws.send( '{ "client": "add" }' );
+				if ( V.reboot ) {
+					delete V.reboot
+					if ( S.login ) {
+						location.href = '/';
+					} else {
+						refreshData();
+						loaderHide();
+						bannerHide();
+					}
+				}
 			}
+		}, 100 );
+	}
+	ws.onmessage = message => {
+		var data = message.data;
+		if ( data === 'pong' ) { // on pageActive - reload if ws not response
+			V.timeoutreload = false;
+		} else if ( data === 'ping' ) {
+			ws.send( '"pong"' );
+		} else {
+			var json = JSON.parse( data );
+			psOnMessage( json.channel, json.data );
 		}
 	}
-}
-function websocketOk( socket ) {
-	return socket && socket.readyState === 1
-}
-function websocketReady( socket ) {
-	var interval = setTimeout( () => {
-		if ( socket.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
-			clearTimeout( interval );
-			socket.onready();
-		}
-	}, 100 );
 }
 function websocketReconnect( ip ) {
 	var url = ip ? 'http://'+ ip :  '';
@@ -1229,8 +1129,57 @@ function websocketReconnect( ip ) {
 			response.ok ? websocketConnect( ip ) : setTimeout( () => websocketReconnect( ip ), 1000 );
 		} );
 }
-function wsPush( channel, data ) {
-	ws.send( '{ "channel": "'+ channel +'", "data": '+ data +' }' );
+/* bash
+Multiline arguments - no escape \" \` in js values > escape in php instead
+	- [ CMD, v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
+	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
+	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
+	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
+
+- js > php   >> common.js - bash()
+	- string : 
+		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
+		- multiline      : 'l1\\nl2\\nl3...'
+- php > bash >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
+	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
+- bash       >> common.sh - args2var
+	- string : convert to array > assign values
+		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
+		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
+		- With 'CFG' : 
+			- the same as 'CMD'
+			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
+		- [ CMD, 'OFF' ] : disable
+*/
+function bash( args, callback, json ) {
+	var args0 = args[ 0 ];
+	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) {
+		var file = dirbash + args0;
+		args.shift();
+	} else {
+		var file = filesh;
+	}
+	// websocket
+	if ( ! callback && V.wsready ) {
+		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
+		if ( V.debug ) console.log( data );
+		ws.send( data );
+		return
+	}
+	// php
+	var data = { cmd: 'bash', filesh: file, args: args || '' }
+	if ( V.debug ) {
+		var bashcmd = file.split( '/' ).pop();
+		if ( args ) bashcmd += ' "\\\n'+ args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
+		console.log( data );
+		console.log( bashcmd );
+	}
+	$.post( 
+		 'cmd.php'
+		, data
+		, callback || null
+		, json || null
+	);
 }
 // push status
 function psNotify( data ) {
@@ -1259,7 +1208,6 @@ function psPower( data ) {
 	V[ data.type ] = true;
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 	ws.close();
-	if ( wsvolume ) wsvolume.close();
 	if ( V.off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {
@@ -1270,3 +1218,29 @@ function psPower( data ) {
 		setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
 	}
 }
+// debug
+$( '#debug' ).press( function() {
+	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
+	bash( [ 'cmd.sh', 'cachebust' ] );
+	V.debug = true;
+} );
+$( '.page-icon' ).press( () => location.reload() );
+$( '.col-r .switch' ).press( function( e ) {
+	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
+		$( '#setting-'+ e.target.id ).trigger( 'click' );
+		return
+	}
+	
+	switchIdIconTitle( e.target.id );
+	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
+	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
+} );
+$( '#data' ).on( 'click', '.copy', function() {
+	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
+	// copy2clipboard - for non https which cannot use clipboard API
+	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
+	$( '#error' ).focus().select();
+	document.execCommand( 'copy' );
+	$( '#error' ).remove();
+} );
+$( '#banner' ).on( 'click', bannerHide );

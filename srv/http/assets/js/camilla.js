@@ -481,7 +481,7 @@ var axes      = {
 function renderPage() { // common from settings.js
 	wscamilla && wscamilla.readyState === 1 ? common.wsGetConfig() : common.webSocket();
 }
-function psOnClose() {
+function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
@@ -1910,7 +1910,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	
 	S.volume = Math.round( ( x - 20 - V.volume.min ) / V.volume.width * 100 );
 	render.volume();
-	volumeSetAt();
+	volumeSet();
 } ).on( 'touchend mouseup', function( e ) {
 	if ( ! V.volume ) return
 	
@@ -1928,8 +1928,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 		}
 		$( '#divvolume .level' ).text( S.volume );
 		common.volumeAnimate( S.volume, current );
-		volumeSetAt();
-		volumePush();
+		volumeSet();
 	}
 	V.volume = V.drag = false;
 } ).on( 'mouseleave', function() {
@@ -1940,8 +1939,7 @@ $( '#volume-0, #volume-100' ).on( 'click', function() {
 	S.volume    = this.id === 'volume-0' ? 0 : 100;
 	$( '#divvolume .level' ).text( S.volume );
 	common.volumeAnimate( S.volume, current );
-	volumeSetAt();
-	volumePush();
+	volumeSet();
 } );
 $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
@@ -1949,8 +1947,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	
 	up ? S.volume++ : S.volume--;
 	render.volume();
-	volumePush();
-	volumeSetAt();
+	volumeSet();
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( ! V.press )  return
 	
@@ -1960,13 +1957,10 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	var up           = $( e.target ).hasClass( 'i-plus' );
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
-		volumeSetAt();
+		volumeSet();
 		$( '#volume .thumb' ).css( 'margin-left', V.volume.x );
 		$( '#divvolume .level' ).text( S.volume );
-		if ( S.volume === 0 || S.volume === 100 ) {
-			clearInterval( V.intervalvolume );
-			volumePush();
-		}
+		if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
 	}, 100 );
 } ).on( 'click', '.i-volume, .level', function() {
 	common.volumeAnimate( S.volumemute, S.volume );

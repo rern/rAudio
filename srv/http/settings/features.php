@@ -1,6 +1,7 @@
 <?php
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
+$ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 $id_data      = [
 	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                   'status' => true, 'exist' => 'iwctl' ]
@@ -47,7 +48,6 @@ EOF
 		, 'help'     => <<< EOF
 {$snapweb}
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
- · SSH passwords must be default.
  · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
  · SnapClient and SnapServer can be enabled on the same device.
 	· Enable SnapServer before SnapClient
@@ -110,7 +110,6 @@ EOF
 		, 'help'     => <<< EOF
 {$snapweb}
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player
- · SSH passwords must be default.
 EOF
 	]
 ];
@@ -196,8 +195,6 @@ EOF
 		, 'help'     => <<< EOF
 Switch between multiple rAudio devices.
 Switch: {$Fmenu( 'playlist', 'Playlist', 'multiraudio' )}
-
-Note: SSH password must be default.
 EOF
 	]
 	, [
@@ -223,7 +220,8 @@ EOF
 		, 'help'        => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FiLabel( 'Shared Data', 'networks' )}
  • <wh>rAudio Shared Data server:</wh>
-	· Must be set to <wh>static IP address</wh> which should be set on router.
+	· IP address - This rAudio must be set to static / fixed to prevent change on reboot.
+	· Password - if changed, must be the same on all clients.
 	· In {$FiTab( 'Library' )} Library
 		· {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden.
 		· {$Fi( 'usb btn' )} USB items will be displayed in {$Fi( 'networks btn' )} NAS instead.
@@ -238,8 +236,9 @@ EOF
  • <wh>Windows NFS clients:</wh>
 	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
 	· $fileexplorer
-	
-Note: SSH password must be default.
+	 
+{$Fi( 'warning' )} Permissions for <c>/mnt/MPD/NAS</c>:
+	· Read and write for everyone on <c>$ipsub.*</c>
 EOF
 	]
 	, [

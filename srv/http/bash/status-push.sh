@@ -46,15 +46,10 @@ fi
 
 clientip=$( snapclientIP )
 if [[ $clientip ]]; then
-	serverip=$( ipAddress )
-	[[ ! $status ]] && status=$( $dirbash/status.sh snapclient ) # $statusradio
-	for k in Album Artist coverart file state station stationcover Time Title; do
-		filter+='|^, "'$k'"'
-	done
-	status=$( grep -E "${filter:1}" <<< $status | sed -E 's| : "/data/| : "http://'$serverip/data/'|' )
-	data='{ "channel": "mpdplayer", "data": { '${status:1}' } }'
+	status=$( $dirbash/status.sh snapclient )
+	status='{ '${status/,}' }'
 	for ip in $clientip; do
-		ipOnline $ip && websocat ws://$ip:8080 <<< $( tr -d '\n' <<< $data )
+		pushWebsocket $ip mpdplayer $status
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then

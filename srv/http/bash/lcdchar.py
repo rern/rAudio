@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
 import sys
-import os
-sys.path.append( '/srv/http/data/system' )
+sys.path.insert( 1, '/srv/http/data/system' )
 from lcdcharconf import *
 
 rows = cols == 16 and 2 or 4

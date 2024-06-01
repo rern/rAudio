@@ -17,7 +17,6 @@ function statusUpdate( data ) {
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
 	displayBars();
-	if ( D.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( S ) ] );
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
@@ -61,10 +60,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 } );
 
 // push status
-function psOnMessage( message ) {
-	var json    = JSON.parse( message.data );
-	var channel = json.channel;
-	var data    = json.data;
+function psOnMessage( channel, data ) {
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
 		case 'audiocd':       psAudioCD( data );        break;
@@ -278,7 +274,7 @@ function psMpdUpdate( data ) {
 	}
 	setButtonUpdating();
 }
-function psOnClose() {
+function onPageInactive() {
 	if ( D.progress || V.off ) return
 	
 	intervalClear();
@@ -448,15 +444,11 @@ function psVolume( data ) {
 		S.volumemute = data.val;
 		setVolume();
 	} else {
-		V.drag = data.type === 'updn'; // multiples - handle like drag
-		if ( data.type === 'drag' ) {
-			V.press = true;
-			setTimeout( () => V.press = false, 300 );
-		}
 		S.volume = data.val;
 		S.volumemute = 0;
 		setVolume();
 	}
+	V.volumecurrent = S.volume;
 }
 function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree

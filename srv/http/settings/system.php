@@ -15,7 +15,7 @@ $id_data = [
 	, 'restore'       => [ 'label' => 'Restore',                                   'setting' => 'none' ]
 	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
 	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
-	, 'softlimit'     => [ 'label' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
+	, 'softlimit'     => [ 'label' => 'Custom Soft Limit', 'sub' => 'temp_soft_limit' ]
 	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
 	, 'volumeboot'    => [ 'label' => 'Volume on Boot' ]
 	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
@@ -175,9 +175,7 @@ EOF
 	, [
 		  'id'       => 'lcdchar'
 		, 'help'     => <<< EOF
-<a class="img" data-name="lcdchar">LCD module</a> (HD44780) - display playback data
- · Support 16x2 and 20x4 LCD modules.
- · {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+<a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
 EOF
 	]
 	, [
@@ -302,7 +300,6 @@ Connect shared data as client for:
  · Display order of Library home
 
 Note:
- · SSH password must be default.
  · Enabled - {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB:
 	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
 	 · Not availble in Library home

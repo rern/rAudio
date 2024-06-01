@@ -219,20 +219,25 @@ logindisable )
 multiraudio )
 	enableFlagSet
 	ip=$( ipAddress )
-	iplist=$( grep -Ev "$ip|{|}" $dirsystem/multiraudio.json | awk '{print $NF}' | tr -d '",' )
+	iplist=$( jq -r .[]  $dirsystem/multiraudio.json | grep -v $ip )
+	display='{ "submenu": "multiraudio", "value": '$TF' }'
+	flagset='{ "filesh": [ "rm", "-f", "'$dirsystem'/multiraudio" ] }'
 	if [[ $ON ]]; then
-		for ip in $iplist; do
-			sshpass -p ros scp -o StrictHostKeyChecking=no $dirsystem/multiraudio* root@$ip:$dirsystem
-			websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": true }'
-		done
-	else
-		for ip in $iplist; do
-			sshCommand $ip rm -f $dirsystem/multiraudio
-			websocat ws://$ip:8080 <<< '{ "submenu": "multiraudio", "value": false }'
-		done
+		json='{ "json": '$( tr -d '\n' < $dirsystem/multiraudio.json )', "name": "multiraudio" }'
+		flagset=${flagset/rm*-f/touch}
 	fi
+	while read ip; do
+		! ipOnline $ip && continue
+		
+		[[ $json ]] && websocat ws://$ip:8080 <<< $json
+		pushWebsocket $ip display $display
+		websocat ws://$ip:8080 <<< $flagset
+	done <<< $iplist
 	pushRefresh
 	pushSubmenu multiraudio $TF
+	;;
+multiraudiodisable )
+	rm -f $dirsystem/multiraudio
 	;;
 multiraudioreset )
 	rm -f $dirsystem/multiraudio*

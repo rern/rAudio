@@ -8,6 +8,18 @@
 
 . /srv/http/bash/common.sh
 
+ip=$( ipAddress )
+
+statusData() {
+	if [[ $snapclient ]]; then
+		status=$( sed -E 's|^(, "stationcover" *: ")(.+")|\1http://'$ip'\2|
+						  s|^(, "coverart" *: ")(.+")|\1http://'$ip'\2|' <<< ${status:1} )
+		data2jsonPatch "$status"
+	else
+		data2json "$status"
+	fi
+}
+
 if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
 	for i in {1..10}; do
 		sleep 1
@@ -53,6 +65,7 @@ fi
 if [[ $1 == snapclient ]]; then
 	snapclient=1
 	player=mpd
+	icon=snapcast
 else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
@@ -134,13 +147,10 @@ $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
 		serverip=$( < $dirshm/snapserverip )
-		serverstatus=$( sshCommand $serverip $dirbash/status.sh snapclient )
+		serverstatus=$( websocat ws://$serverip:8080 <<< '{ "status": "snapclient" }' )
 ########
-		status+=$'\n'$( sed -E  -e '1,3d; $d
-						 ' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-						 ' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
-						 ' -e 's|^, *"icon".*|, "icon" : "snapcast"|
-						 ' <<< $serverstatus )
+		status+="
+$( echo -e "$serverstatus" )"
 		;;
 	spotify )
 		. $dirshm/spotify/state
@@ -155,7 +165,7 @@ $( < $dirshm/spotify/status )"
 		
 	esac
 # >>>>>>>>>> spotify
-	data2json "$status"
+	statusData
 	exit
 # --------------------------------------------------------------------
 fi
@@ -208,14 +218,13 @@ status+='
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
 if [[ $pllength  == 0 && ! $snapclient ]]; then
-	ip=$( ipAddress )
 ########
 	status+='
 , "coverart" : ""
 , "hostname" : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
-	data2json "$status"
+	statusData
 	exit
 # --------------------------------------------------------------------
 fi
@@ -361,7 +370,7 @@ elif [[ $stream ]]; then
 , "sampling"     : "'$sampling'"
 , "song"         : '$song
 # >>>>>>>>>>
-			data2json "$status"
+			statusData
 			exit
 # --------------------------------------------------------------------
 		fi
@@ -486,7 +495,7 @@ if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 ########
 	status+='
 , "elapsed"  : '$elapsed
-	data2json "$status"
+	statusData
 	exit
 # --------------------------------------------------------------------
 fi
@@ -499,7 +508,6 @@ $AlbumArtist
 $Album
 $filenoesc
 CMD ARTIST ALBUM FILE" )
-	[[ $coverart ]] && coverart="$coverart"
 fi
 elapsed=$( mpcElapsed )
 ########
@@ -507,7 +515,7 @@ elapsed=$( mpcElapsed )
 , "elapsed"  : '$elapsed'
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>> not cd && not stream
-data2json "$status"
+statusData
 [[ $getcover || ! $Artist ]] && exit
 # --------------------------------------------------------------------
 if [[ $stream && $state == play && $Title ]]; then
