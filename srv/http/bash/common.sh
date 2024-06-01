@@ -89,6 +89,11 @@ audioCDplClear() {
 		return 0
 	fi
 }
+cacheBust() { # for install.sh
+	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
+	hash=?v=$( date +%s )
+	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+}
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
 }
