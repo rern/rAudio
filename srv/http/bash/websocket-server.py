@@ -29,7 +29,6 @@ async def cmd( websocket ):
                 CLIENTS.add( websocket )
                 if ip in IP_CLIENT:
                     CLIENTS.discard( IP_CLIENT[ ip ] )
-                    IP_CLIENT.pop( ip, None )
                 IP_CLIENT[ ip ] = websocket
             elif jargs[ 'client' ] == 'remove':
                 CLIENTS.discard( websocket )
@@ -37,10 +36,12 @@ async def cmd( websocket ):
             else:
                 await websocket.send( str( IP_CLIENT ) )
             # refresh CLIENTS
-            for ip in IP_CLIENT:
-                if subprocess.call( [ 'ping', '-c', '1', '-w','1', ip ] ) != 0:
-                    CLIENTS.discard( IP_CLIENT[ ip ] )
-                    IP_CLIENT.pop( ip, None )
+            for IP in IP_CLIENT:
+                if IP == ip: continue
+                
+                if subprocess.call( [ 'ping', '-c', '1', '-w','1', IP ] ) != 0:
+                    CLIENTS.discard( IP_CLIENT[ IP ] )
+                    IP_CLIENT.pop( IP, None )
         elif 'status' in jargs:                   # { "status": "snapclient" } - from status.sh
             status = subprocess.run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True, text=True )
             status = status.stdout.replace( '\n', '\\n' )
