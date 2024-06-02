@@ -6,6 +6,7 @@ import subprocess
 import websockets
 
 CLIENTS   = set()
+IP_CLIENT = dict()
 
 async def cmd( websocket ):
     async for args in websocket:
@@ -22,21 +23,25 @@ async def cmd( websocket ):
             pathfile  = '/srv/http/data/system/'+ jargsname
             with open( pathfile +'.json', 'w' ) as f:
                 json.dump( jargsjson, f, indent=2 )
-        elif 'client' in jargs:                   # { "client": "[add/remove/list]" }
-            if jargs[ 'client' ] == 'add':
+        elif 'client' in jargs:
+            ip = websocket.remote_address[ 0 ]
+            if jargs[ 'client' ] == 'add':        # { "client": "add" }
                 CLIENTS.add( websocket )
-            else:
-                await websocket.send( repr( CLIENTS ) )
-            for ws in CLIENTS: # remove inactive clients
-                try:
-                    await ws.ping()
-                except:
-                    await CLIENTS.discard( ws )
+                if ip in IP_CLIENT:
+                    CLIENTS.discard( IP_CLIENT[ ip ] )
+                IP_CLIENT[ ip ] = websocket
+            else:                                 # { "client": "" }
+                await websocket.send( str( IP_CLIENT ) )
+            # refresh CLIENTS
+            for IP in IP_CLIENT:
+                if IP != ip and subprocess.call( [ 'ping', '-c', '1', '-w','1', IP ] ) != 0:
+                    CLIENTS.discard( IP_CLIENT[ IP ] )
+                    IP_CLIENT.pop( IP, None )
         elif 'status' in jargs:                   # { "status": "snapclient" } - from status.sh
             status = subprocess.run( [ '/srv/http/bash/status.sh', jargs[ 'status' ] ], capture_output=True, text=True )
             status = status.stdout.replace( '\n', '\\n' )
             await websocket.send( status )
-        elif 'ping' in jargs:                     # for client - if ping not reach server, refresh browser
+        elif 'ping' in jargs:
             await websocket.send( 'pong' )
 
 async def main():
