@@ -882,7 +882,7 @@ function infoMount( nfs ) {
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
-			bash( [ 'settings/system-mount.sh', 'mount', ...vals, 'CMD '+ keys.join( ' ' ) ], error => infoMountSet( error ) );
+			bash( [ 'settings/system-mount.sh', 'cmd', ...vals, 'CMD '+ keys.join( ' ' ) ], error => infoMountSet( error ) );
 		}
 	} );
 }
@@ -899,7 +899,7 @@ function infoMountRserver() {
 		, cancel   : switchCancel
 		, ok       : () => {
 			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-			bash( [ 'settings/system-mount.sh', 'mount', infoVal().IP, 'CMD IP' ], error => infoMountSet( error ) );
+			bash( [ 'settings/system-mount.sh', 'cmd', infoVal().IP, 'CMD IP' ], error => infoMountSet( error ) );
 		}
 	} );
 }
@@ -1094,7 +1094,7 @@ function infoRestore( reset ) {
 		, okcolor  : orange
 		, ok       : reset ? () => {
 				notifyCommon( 'Reset to default ...' );
-				bash( [ 'settings/system-datareset.sh', ...infoVal() ] );
+				bash( [ 'settings/system-datareset.sh', 'cmd', ...infoVal(), 'CMD KEEPLIBRARY KEEPNETWORK' ] );
 				loader();
 			} : () => {
 				notifyCommon( 'Restore ...' );

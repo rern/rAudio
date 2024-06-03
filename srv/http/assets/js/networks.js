@@ -197,7 +197,7 @@ function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 	var title = action[ 0 ].toUpperCase() + action.slice( 1 );
 	notify( icon, V.li.data( 'name' ), title +' ...', -1 );
-	bash( [ 'settings/networks-bluetooth.sh', action, V.li.data( 'mac' ) ] );
+	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, V.li.data( 'mac' ), 'CMD ACTION MAC' ] );
 }
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac, 'CMD MAC' ], data => {

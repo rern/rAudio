@@ -8,13 +8,18 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
+if [[ $1 == connect || $1 == disconnect ]]; then
+	udev=1
+	action=$1
+else
+	args2var "$1"
+	action=$ACTION
+	mac=$MAC
+fi
 # flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
 touch $dirshm/btflag
 ( sleep 5; rm $dirshm/btflag ) &> /dev/null &
 
-action=$1
-mac=$2
-[[ ! $mac ]] && udev=1
 type=btreceiver
 
 disconnectRemove() {

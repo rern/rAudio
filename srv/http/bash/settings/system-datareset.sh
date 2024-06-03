@@ -2,8 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-[[ $1 == true ]] && keeplibrary=1
-[[ $2 == true ]] && keepnetwork=1
+args2var "$1"
 
 ! playerActive mpd && $dirbash/cmd.sh playerstop
 # iwd
@@ -68,11 +67,11 @@ sed -i '3,$ d' /etc/fstab
 
 systemctl -q disable bluetooth camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
 mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
-[[ $keeplibrary ]] && mv $dirdata/{mpd,playlists,webradio} /tmp
+[[ $KEEPLIBRARY ]] && mv $dirdata/{mpd,playlists,webradio} /tmp
 rm -rf $dirdata $dirshareddata \
 		/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 		/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
-if [[ ! $keepnetwork ]]; then
+if [[ ! $KEEPNETWORK ]]; then
 	profiles=$( ls -p /etc/netctl | grep -v / )
 	if [[ $profiles ]]; then
 		while read profile; do
@@ -85,6 +84,6 @@ fi
 $dirsettings/system-datadefault.sh
 
 mv /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
-[[ $keeplibrary ]] && mv -f /tmp/{mpd,playlists,webradio} $dirdata
+[[ $KEEPLIBRARY ]] && mv -f /tmp/{mpd,playlists,webradio} $dirdata
 
 $dirbash/power.sh reboot
