@@ -95,9 +95,9 @@ function highlightJSON( json ) {
 	var json  = Object.keys( json )
 					.sort()
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
+	var regex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g;
 	return JSON.stringify( json, null, '\t' )
-					.replace( /</g, '&lt;' )
-					.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) { // source: https://stackoverflow.com/a/7220510
+					.replace( regex, function( match ) { // source: https://stackoverflow.com/a/7220510
 		if ( /^"/.test( match ) )
 			if ( /:$/.test( match ) )          return match                // key (wh)
 			else                               return color( match, 'gr' ) // value
