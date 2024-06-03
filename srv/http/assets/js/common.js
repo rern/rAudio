@@ -108,9 +108,6 @@ function highlightJSON( json ) {
 		else if ( /[\[\]]/.test( match ) ) return color( match, 'pur' )
 	} );
 }
-function textColor( text, color ) {
-
-}
 function ico( icon, id ) {
 	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"></i>';
 }
