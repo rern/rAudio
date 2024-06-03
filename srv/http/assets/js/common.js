@@ -99,10 +99,10 @@ function highlightJSON( json ) {
 					.replace( /</g, '&lt;' )
 					.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) { // source: https://stackoverflow.com/a/7220510
 		if ( /^"/.test( match ) )
-			if ( /:$/.test( match ) ) return match                // key
-			else                      return color( match, 'gr' ) // value
+			if ( /:$/.test( match ) )          return match                // key (wh)
+			else                               return color( match, 'gr' ) // value
 		else if ( /true/.test( match ) )       return color( match, 'grn' )
-		else if ( /false|null/.test( match ) ) return color( match, 'red' )
+		else if ( /false/.test( match ) )      return color( match, 'red' )
 		else if ( /[0-9]/.test( match ) )      return color( match, 'ora' )
 		else if ( /[{}]/.test( match ) )       return color( match, 'bll' )
 		else if ( /[\[\]]/.test( match ) )     return color( match, 'pur' )
