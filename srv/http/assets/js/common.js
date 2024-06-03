@@ -99,13 +99,13 @@ function highlightJSON( json ) {
 	return JSON.stringify( json, null, '\t' )
 				.replace( regex, function( match ) {                      // from: https://stackoverflow.com/a/7220510
 		if ( /^"/.test( match ) )
-			if ( /:$/.test( match ) )          return match                // key (wh)
-			else                               return color( match, 'gr' ) // value
-		else if ( /true/.test( match ) )       return color( match, 'grn' )
-		else if ( /false/.test( match ) )      return color( match, 'red' )
-		else if ( /[0-9]/.test( match ) )      return color( match, 'ora' )
-		else if ( /[{}]/.test( match ) )       return color( match, 'bll' )
-		else if ( /[\[\]]/.test( match ) )     return color( match, 'pur' )
+			if ( /:$/.test( match ) )      return match                // key (wh)
+			else                           return color( match, 'gr' ) // value
+		else if ( /true/.test( match ) )   return color( match, 'grn' )
+		else if ( /false/.test( match ) )  return color( match, 'red' )
+		else if ( /[0-9]/.test( match ) )  return color( match, 'ora' )
+		else if ( /[{}]/.test( match ) )   return color( match, 'bll' )
+		else if ( /[\[\]]/.test( match ) ) return color( match, 'pur' )
 	} );
 }
 function textColor( text, color ) {
