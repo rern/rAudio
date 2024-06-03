@@ -882,7 +882,7 @@ function infoMount( nfs ) {
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
-			bash( [ 'settings/system-mount.sh', ...vals, 'CMD '+ keys.join( ' ' ) ], error => infoMountSet( error ) );
+			bash( [ 'settings/system-mount.sh', 'mount', ...vals, 'CMD '+ keys.join( ' ' ) ], error => infoMountSet( error ) );
 		}
 	} );
 }
@@ -899,7 +899,7 @@ function infoMountRserver() {
 		, cancel   : switchCancel
 		, ok       : () => {
 			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-			bash( [ 'settings/system-mount.sh', infoVal().IP, 'CMD IP' ], error => infoMountSet( error ) );
+			bash( [ 'settings/system-mount.sh', 'mount', infoVal().IP, 'CMD IP' ], error => infoMountSet( error ) );
 		}
 	} );
 }
