@@ -1025,6 +1025,43 @@ function selectText2Html( pattern ) {
 		htmlSet( $rendered );
 	} );
 }
+// push status
+function psNotify( data ) {
+	if ( data === false ) {
+		bannerHide();
+		return
+	}
+	
+	var icon    = data.icon;
+	var title   = data.title;
+	var message = data.message;
+	var delay   = data.delay;
+	if ( ! page ) {
+		if ( message === 'Change track ...' ) { // audiocd
+			intervalClear();
+		} else if ( title === 'Latest' ) {
+			C.latest = 0;
+			$( '#mode-latest gr' ).empty();
+			if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
+		}
+	}
+	banner( icon, title, message, delay );
+}
+function psPower( data ) {
+	loader();
+	V[ data.type ] = true;
+	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
+	ws.close();
+	if ( V.off ) {
+		$( '#loader' ).css( 'background', '#000000' );
+		setTimeout( () => {
+			$( '#loader svg' ).css( 'animation', 'none' );
+			bannerHide();
+		}, 10000 );
+	} else { // reconnect after reboot
+		setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
+	}
+}
 
 // page visibility -----------------------------------------------------------------
 function pageActive() {
@@ -1133,13 +1170,13 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
 	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
 
-- js > php   >> common.js - bash()
+- js > php/ws >> common.js - bash()
 	- string : 
 		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
 		- multiline      : 'l1\\nl2\\nl3...'
-- php > bash >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
+- php > bash  >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
 	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
-- bash       >> common.sh - args2var
+- bash        >> common.sh - args2var
 	- string : convert to array > assign values
 		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
 		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
@@ -1178,44 +1215,7 @@ function bash( args, callback, json ) {
 		, json || null
 	);
 }
-// push status
-function psNotify( data ) {
-	if ( data === false ) {
-		bannerHide();
-		return
-	}
-	
-	var icon    = data.icon;
-	var title   = data.title;
-	var message = data.message;
-	var delay   = data.delay;
-	if ( ! page ) {
-		if ( message === 'Change track ...' ) { // audiocd
-			intervalClear();
-		} else if ( title === 'Latest' ) {
-			C.latest = 0;
-			$( '#mode-latest gr' ).empty();
-			if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-		}
-	}
-	banner( icon, title, message, delay );
-}
-function psPower( data ) {
-	loader();
-	V[ data.type ] = true;
-	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
-	ws.close();
-	if ( V.off ) {
-		$( '#loader' ).css( 'background', '#000000' );
-		setTimeout( () => {
-			$( '#loader svg' ).css( 'animation', 'none' );
-			bannerHide();
-		}, 10000 );
-	} else { // reconnect after reboot
-		setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
-	}
-}
-// debug
+
 $( '#debug' ).press( function() {
 	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
 	bash( [ 'cmd.sh', 'cachebust' ] );
