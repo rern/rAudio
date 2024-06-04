@@ -647,6 +647,8 @@ $( '#volume' ).roundSlider( {
 		S.volume     = e.value;
 		V.volumeprev = S.volume;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
+		setVolumeUpDn();
+		if ( S.volumemute ) volumeColorUnmute();
 	}
 	, stop              : () => {
 		V.drag = false;

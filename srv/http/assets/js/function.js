@@ -2055,9 +2055,8 @@ function volumeColorUnmute() {
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeUpDown( up ) {
-	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
-	
 	up ? S.volume++ : S.volume--;
+	S.volumemute = 0;
 	setVolume();
 	volumeSet();
 }

@@ -162,6 +162,7 @@ volumeSetAt() {
 		volumeBlueAlsa $target% "$control"
 	elif [[ $control ]]; then          # hardware
 		volumeAmixer $target% "$control" $card
+		echo volumeAmixer $target% "$control" $card > $dirshm/x
 	else                               # software
 		mpc -q volume $target
 	fi
@@ -770,21 +771,32 @@ upnpstart )
 	playerStart
 	;;
 volume )
+	filevolumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	if [[ $TYPE != dragpress ]]; then
-		[[ $TYPE == mute ]] && val=$CURRENT || val=$TARGET
-		pushData volume '{ "type": "'$TYPE'", "val": '$val' }'
+		if [[ $TYPE == mute ]]; then
+			val=$CURRENT
+			type=mute
+		else
+			val=$TARGET
+			[[ -e $filevolumemute ]] && type=unmute
+		fi
+		pushData volume '{ "type": "'$type'", "val": '$val' }'
 	fi
-	filevolumemute=$dirsystem/volumemute
 	if [[ $TYPE == mute ]]; then
 		echo $CURRENT > $filevolumemute
-	elif [[ $TYPE == unmute ]]; then
+	else
 		rm -f $filevolumemute
 	fi
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
 		volumeSetAt $TARGET "$CONTROL" $CARD
+		if [[ $TARGET == 1 && $( volumeGet ) == 0 ]]; then # fix - some mixers cannot set at 1%
+			[[ $CURRENT == 0 ]] && val=2 || val=0
+			volumeSetAt $val "$CONTROL" $CARD
+			pushData volume '{ "val": '$val' }'
+		fi
 	else
 		volumeSet $CURRENT $TARGET "$CONTROL" $CARD $diff
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
