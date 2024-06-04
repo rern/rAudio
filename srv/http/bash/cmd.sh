@@ -3,7 +3,6 @@
 . /srv/http/bash/common.sh
 dirimg=/srv/http/assets/img
 
-echo "$1" > $dirshm/z
 args2var "$1"
 
 plAddPlay() {
