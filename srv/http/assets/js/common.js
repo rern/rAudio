@@ -1149,8 +1149,6 @@ function websocketConnect( ip ) {
 		var data = message.data;
 		if ( data === 'pong' ) { // on pageActive - reload if ws not response
 			V.timeoutreload = false;
-		} else if ( data === 'ping' ) {
-			ws.send( '"pong"' );
 		} else {
 			var json = JSON.parse( data );
 			psOnMessage( json.channel, json.data );
