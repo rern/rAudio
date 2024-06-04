@@ -625,8 +625,6 @@ $( '#volume' ).roundSlider( {
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );
 			$( '#volume-knob, #button-volume i' ).removeClass( 'noclick' );
-			$( '#voldn' ).toggleClass( 'disabled', e.value === 0 );
-			$( '#volup' ).toggleClass( 'disabled', e.value === 100 );
 			V.animate = false;
 		}, speed );
 	}
@@ -653,6 +651,7 @@ $( '#volume' ).roundSlider( {
 	, stop              : () => {
 		V.drag = false;
 		volumePush();
+		setVolumeUpDn()
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {

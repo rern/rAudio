@@ -1117,7 +1117,8 @@ function volumeSet( type ) { // type: mute / unmute
 	V.volumeactive = true;
 	setTimeout( () => V.volumeactive = false, 300 );
 	if ( V.drag || V.press ) type = 'dragpress';
-	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
+	var card = S.btreceiver ? 'btreceiver' : S.card;
+	bash( [ 'volume', V.volumecurrent, S.volume, S.control, card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {

@@ -153,32 +153,16 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
-volumeSet() {
-	local card control current diff target values
-	current=$1
-	target=$2
-	control=$3
-	card=$4
-	diff=$5
-	# increment
-	(( $diff > 0 )) && incr=5 || incr=-5
-	values=( $( seq $(( current + incr )) $incr $target ) )
-	(( $diff % 5 )) && values+=( $target )
-	for i in "${values[@]}"; do
-		volumeSetAt $i "$control" $card
-		sleep 0.2
-	done
-}
 volumeSetAt() {
 	local card control target
 	target=$1
 	control=$2
 	card=$3
-	if [[ -e $dirshm/btreceiver ]]; then            # bluetooth
+	if [[ $card == btreceiver ]]; then # bluetooth
 		volumeBlueAlsa $target% "$control"
-	elif [[ $control ]]; then                       # hardware
+	elif [[ $control ]]; then          # hardware
 		volumeAmixer $target% "$control" $card
-	else                                            # software
+	else                               # software
 		mpc -q volume $target
 	fi
 }
@@ -803,6 +787,13 @@ volume )
 		volumeSetAt $TARGET "$CONTROL" $CARD
 	else
 		volumeSet $CURRENT $TARGET "$CONTROL" $CARD $diff
+		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
+		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
+		(( $diff % 5 )) && values+=( $TARGET )
+		for i in "${values[@]}"; do
+			volumeSetAt $i "$CONTROL" $CARD
+			sleep 0.2
+		done
 	fi
 	;;
 webradioadd )

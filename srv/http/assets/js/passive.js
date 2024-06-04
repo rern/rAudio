@@ -442,12 +442,11 @@ function psVolume( data ) {
 	if ( data.type === 'mute' ) {
 		S.volume = 0;
 		S.volumemute = data.val;
-		setVolume();
 	} else {
 		S.volume = data.val;
 		S.volumemute = 0;
-		setVolume();
 	}
+	setVolume();
 	V.volumecurrent = S.volume;
 }
 function psVUmeter( data ) {

@@ -1919,6 +1919,7 @@ function setVolume() {
 	if ( V.animate ) return
 	
 	$volumeRS.setValue( S.volume );
+	setVolumeUpDn();
 	if ( ! S.volume ) $volumehandle.rsRotate( -310 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
@@ -1929,6 +1930,12 @@ function setVolume() {
 		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! S.volumemute );
 	}
 	S.volumemute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
+}
+function setVolumeUpDn() {
+	if ( D.volume ) {
+		$( '#voldn' ).toggleClass( 'disabled', S.volume === 0 );
+		$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
+	}
 }
 function sortPlaylist( pl, iold, inew ) {
 	V.sortable = true;
