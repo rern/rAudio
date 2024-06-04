@@ -223,8 +223,8 @@ htmlHead( [
 	, 'help'    => <<< EOF
 List of <c>.mpdignore</c> files contain directories/folders excluded from database.
 To restore:
-• Edit <c>.../.mpdignore</c>
-• Remove directories to restore
+• Edit file <c>.../.mpdignore</c> in parent directory
+• Remove lines contain directory to restore
 • Update Library
 
 Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for {$FiTab( 'System' )}{$FiLabel( 'Shared Data', 'networks' )}
