@@ -474,6 +474,9 @@ volumeGet() {
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
 }
+volumeMpd() {
+	mpc -q volume $1
+}
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 	killProcess vol
 	volumeAmixer $1 "$2" $3

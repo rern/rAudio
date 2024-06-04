@@ -153,19 +153,6 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
-volumeSetAt() {
-	local card control target
-	target=$1
-	control=$2
-	card=$3
-	if [[ $card == btreceiver ]]; then # bluetooth
-		volumeBlueAlsa $target% "$control"
-	elif [[ $control ]]; then          # hardware
-		volumeAmixer $target% "$control" $card
-	else                               # software
-		mpc -q volume $target
-	fi
-}
 webradioCount() {
 	local count type
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
@@ -787,21 +774,28 @@ volume )
 	else
 		rm -f $filevolumemute
 	fi
+	if [[ $card == btreceiver ]]; then # bluetooth
+		fn_volume=volumeBlueAlsa
+	elif [[ $control ]]; then          # hardware
+		fn_volume=volumeAmixer
+	else                               # software
+		fn_volume=volumeMpd
+	fi
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
-		volumeSetAt $TARGET "$CONTROL" $CARD
+		$fn_volume $TARGET "$CONTROL" $CARD
 		if [[ $TARGET == 1 && $( volumeGet ) == 0 ]]; then # fix - some mixers cannot set at 1%
 			[[ $CURRENT == 0 ]] && val=2 || val=0
-			volumeSetAt $val "$CONTROL" $CARD
+			$fn_volume $val "$CONTROL" $CARD
 			pushData volume '{ "val": '$val' }'
 		fi
 	else
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
-		for i in "${values[@]}"; do
-			volumeSetAt $i "$CONTROL" $CARD
+		for val in "${values[@]}"; do
+			$fn_volume $val "$CONTROL" $CARD
 			sleep 0.2
 		done
 	fi
