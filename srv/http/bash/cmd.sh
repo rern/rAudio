@@ -162,7 +162,6 @@ volumeSetAt() {
 		volumeBlueAlsa $target% "$control"
 	elif [[ $control ]]; then          # hardware
 		volumeAmixer $target% "$control" $card
-		echo volumeAmixer $target% "$control" $card > $dirshm/x
 	else                               # software
 		mpc -q volume $target
 	fi
@@ -798,7 +797,6 @@ volume )
 			pushData volume '{ "val": '$val' }'
 		fi
 	else
-		volumeSet $CURRENT $TARGET "$CONTROL" $CARD $diff
 		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
