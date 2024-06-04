@@ -218,7 +218,7 @@ albumignore )
 	sed -i "/\^$ALBUM^^$ARTIST^/ d" $dirmpd/album
 	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
 	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/albumbyartist-year
-	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
+	appendSortUnique "$ALBUM^^$ARTIST" $dirmpd/albumignore
 	;;
 bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
@@ -669,7 +669,7 @@ mpcupdatestop )
 mpdignore )
 	dir=$( basename "$DIR" )
 	mpdpath=$( dirname "$DIR" )
-	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
+	appendSortUnique "$dir" "/mnt/MPD/$mpdpath/.mpdignore"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
 	pushData mpdupdate '{ "type": "mpd" }'

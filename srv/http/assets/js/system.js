@@ -126,27 +126,6 @@ $( 'body' ).on( 'click', function( e ) {
 		i2sSelectHide();
 	}
 } );
-$( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.js
-	bash( [ 'rebootlist' ], list => {
-		if ( ! list ) {
-			location.href = '/';
-			return
-		}
-		
-		var message = '<wh>Reboot required for:</wh>';
-		list.split( '\n' ).forEach( id => message += '<br>'+ ico( id ) + $( '#div'+ id +' .label' ).eq( 0 ).text() );
-		info( {
-			  icon         : page
-			, title        : 'System Setting'
-			, message      : message
-			, messagealign : 'left'
-			, cancel       : () => location.href = '/'
-			, okcolor      : orange
-			, oklabel      : ico( 'reboot' ) +'Reboot'
-			, ok           : () => infoPowerCommand( 'reboot' )
-		} );
-	} );
-} );
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );

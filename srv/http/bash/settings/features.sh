@@ -155,8 +155,8 @@ localbrowser )
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
 			if [[ ! -e /tmp/localbrowser.conf || $diffrotate ]]; then
-				echo Rotate GPIO LCD screen >> $dirshm/reboot
-				notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
+				appendSortUnique localbrowser $dirshm/reboot
+				notify localbrowser 'Rotate Browser on RPi' 'Reboot required.' 5000
 				exit
 # --------------------------------------------------------------------
 			fi

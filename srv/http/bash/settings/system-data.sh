@@ -119,7 +119,7 @@ if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 fi
 # reboot
 if [[ -e $dirshm/reboot ]]; then
-	reboot=$( cat $dirshm/reboot )
+	reboot=$( < $dirshm/reboot )
 	grep -q TFT <<< $reboot && tftreboot=true
 	grep -q Character <<< $reboot && lcdcharreboot=true
 	grep -q Spectrum <<< $reboot && mpdoledreboot=true
