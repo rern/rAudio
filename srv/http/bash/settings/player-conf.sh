@@ -159,7 +159,9 @@ done
 
 [[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 
-[[ $bluetooth && -e $dirsystem/autoplay ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
+if [[ $bluetooth && -e $dirsystem/autoplay ]]; then
+	grep -q bluetooth=true $dirsystem/autoplay.conf && $dirbash/cmd.sh mpcplayback
+fi
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
