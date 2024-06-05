@@ -249,7 +249,7 @@ ipAddress() {
 	[[ $1 ]] && echo ${ip%.*}. || echo $ip
 }
 ipOnline() {
-	ping -c 1 -w 1 $1 &> /dev/null && return 0
+	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 json2var() {
 	local regex

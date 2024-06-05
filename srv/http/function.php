@@ -1,4 +1,13 @@
 <?php
+function HMS2second( $time ) {
+	$HMS   = explode( ':', $time );
+	$count = count( $HMS );
+	switch( $count ) {
+		case 1: return $HMS[ 0 ]; break;
+		case 2: return $HMS[ 0 ] * 60 + $HMS[ 1 ]; break;
+		case 3: return $HMS[ 0 ] * 60 * 60 + $HMS[ 1 ] * 60 + $HMS[ 0 ]; break;
+	}
+}
 function i( $class, $menu = '' ) {
 	$icon = '<i class="i-'.$class;
 	$icon.= $menu ? ' li-icon" data-menu="'.$menu.'"></i>' : '"></i>';
@@ -43,15 +52,6 @@ function indexbar( $indexes ) {
 		$i++;
 	}
 	return [ $indexbar, $indexbar1 ];
-}
-function HMS2second( $time ) {
-	$HMS   = explode( ':', $time );
-	$count = count( $HMS );
-	switch( $count ) {
-		case 1: return $HMS[ 0 ]; break;
-		case 2: return $HMS[ 0 ] * 60 + $HMS[ 1 ]; break;
-		case 3: return $HMS[ 0 ] * 60 * 60 + $HMS[ 1 ] * 60 + $HMS[ 0 ]; break;
-	}
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );

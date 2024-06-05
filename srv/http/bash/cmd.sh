@@ -5,10 +5,27 @@ dirimg=/srv/http/assets/img
 
 args2var "$1"
 
+mpcPlay() {
+	[[ $1 ]] && songpos=$1 || songpos=$( mpc status %songpos% )
+	file=$( mpc -f %file% playlist | sed -n "$songpos p" )
+	if [[ ${file:0:4} != http ]] || ipOnline $file; then
+		mpc -q play $songpos
+	else
+		state=$( mpc status %state% | sed -E 's/ing|ped|d$//' )
+		elapsed=$( mpcElapsed )
+		pushData mpdplayer '{ "state": "'$state'", "elapsed": '$elapsed' }'
+		station=$( head -1 $dirwebradio/${file//\//|} )
+		[[ ! $station ]] && station=$file
+		notify warning 'Web Radio' "Station not reachable: <wh>$station</wh>" 5000
+		rm -f $dirshm/skip
+		exit
+# --------------------------------------------------------------------
+	fi
+}
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		playerActive mpd && radioStop || playerStop
-		mpc -q play $1
+		mpcPlay $1
 	fi
 	pushPlaylist
 }
@@ -490,7 +507,7 @@ mpccrop )
 		mpc -q crop
 	else
 		radioStop
-		mpc -q play
+		mpcPlay
 		mpc -q crop
 		mpc -q stop
 	fi
@@ -525,7 +542,7 @@ mpcplayback )
 	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
-		mpc -q $ACTION
+		mpcPlay
 		if audioCDtrack; then
 			touch $dirshm/cdstart
 			( sleep 20 && rm -f $dirshm/cdstart ) &
@@ -557,7 +574,7 @@ mpcremove )
 		mpc -q del $POS
 		pushData playlist '{ "refresh": '$POS' }'
 		if [[ $CURRENT ]]; then
-			mpc -q play $CURRENT
+			mpcPlay $CURRENT
 			mpc -q stop
 		fi
 	else
@@ -567,7 +584,7 @@ mpcremove )
 mpcseek )
 	if [[ $STATE == stop ]]; then
 		touch $dirshm/skip
-		mpc -q play
+		mpcPlay
 		mpc -q pause
 		rm $dirshm/skip
 	fi
@@ -615,10 +632,10 @@ mpcskip )
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 		rm -f $dirshm/skip
-		mpc -q play $POS
+		mpcPlay $POS
 		[[ $consume == on ]] && mpc -q del $songpos
 	else
-		mpc -q play $POS
+		mpcPlay $POS
 		rm -f $dirshm/skip
 		mpc -q stop
 	fi
@@ -626,7 +643,7 @@ mpcskip )
 	;;
 mpcskippl )
 	radioStop
-	mpc -q play $POS
+	mpcPlay $POS
 	Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
 	[[ $Time == 0 ]] && Time=false
 	[[ $ACTION == stop ]] && mpc -q stop
@@ -684,7 +701,7 @@ playerstop )
 playlist )
 	[[ $REPLACE ]] && plClear
 	mpc -q load "$NAME"
-	[[ $PLAY ]] && mpc -q play
+	[[ $PLAY ]] && mpcPlay
 	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
 	pushPlaylist
 	;;
