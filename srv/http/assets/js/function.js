@@ -476,11 +476,11 @@ function displayBars() {
 	var noprevnext = S.pllength < 2 || ! mpd_upnp;
 	$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 );
 	$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
-	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-	$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 	$( '#pause' ).toggleClass( 'hide', S.webradio );
 	$( '#playback-controls i' ).removeClass( 'active' );
 	$( '#'+ S.state ).addClass( 'active' ); // suppress on reboot
+	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
+	$( '#coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 }
 function displayBottom() {
 	$( '#playback' )
