@@ -153,7 +153,7 @@ function htmlTrack( $lists, $plname = '' ) {
 		$file       = $list->file;
 		$fileheader = strtolower( substr( $file, 0, 4 ) );
 		if ( ! in_array( $fileheader, $headers ) ) {
-			$sec       = HMS2Second( $list->Time );
+			$sec       = HMS2second( $list->Time );
 			$track     = preg_replace( '/^#*0*/', '', $list->Track );
 			$li2       = '';
 			if ( $track ) $li2.= '<a class="track">'.$track.'</a> - ';
@@ -191,7 +191,7 @@ function htmlTrack( $lists, $plname = '' ) {
 	<div class="li2"><a class="pos">'.$i.'</a> • <span class="name">'.$li2.'</span></div>
 </li>';
 			$countsong++;
-			$counttime += $sec;
+			if ( is_int( $sec ) ) $counttime += $sec;
 		} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
 			$li2    = '';
 			$artist = $list->Artist;

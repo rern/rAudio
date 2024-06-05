@@ -546,12 +546,6 @@ function guideHide() {
 		$( '.guide, #volume-bar, #volume-text' ).addClass( 'hide' );
 	}
 }
-function HMS2Second( HMS ) {
-	var hhmmss = HMS.split( ':' ).reverse();
-	if ( ! hhmmss[ 1 ] ) return +hhmmss[ 0 ];
-	if ( ! hhmmss[ 2 ] ) return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60;
-	return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60 + hhmmss[ 2 ] * 3600;
-}
 function imageLoad( list ) {
 	var $lazyload = $( '#'+ list +' .lazyload' );
 	if ( ! $lazyload.length ) return
