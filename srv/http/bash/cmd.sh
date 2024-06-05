@@ -8,7 +8,7 @@ args2var "$1"
 mpcPlay() {
 	[[ $1 ]] && songpos=$1 || songpos=$( mpc status %songpos% )
 	file=$( mpc -f %file% playlist | sed -n "$songpos p" )
-	if [[ ${file:0:4} != http ]] || ipOnline $file; then
+	if [[ ${file:0:4} != http ]] || ipOnline $( cut -d/ -f3 <<< $file ); then
 		mpc -q play $songpos
 	else
 		pushData mpdplayer '{ "state": "'$( mpcState )'", "elapsed": '$( mpcElapsed )' }'
