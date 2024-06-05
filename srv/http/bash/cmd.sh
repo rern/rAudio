@@ -11,9 +11,7 @@ mpcPlay() {
 	if [[ ${file:0:4} != http ]] || ipOnline $file; then
 		mpc -q play $songpos
 	else
-		state=$( mpc status %state% | sed -E 's/ing|ped|d$//' )
-		elapsed=$( mpcElapsed )
-		pushData mpdplayer '{ "state": "'$state'", "elapsed": '$elapsed' }'
+		pushData mpdplayer '{ "state": "'$( mpcState )'", "elapsed": '$( mpcElapsed )' }'
 		station=$( head -1 $dirwebradio/${file//\//|} )
 		[[ ! $station ]] && station=$file
 		notify warning 'Web Radio' "Station not reachable: <wh>$station</wh>" 5000
@@ -503,7 +501,7 @@ mpcaddls )
 	plAddPlay $pos
 	;;
 mpccrop )
-	if statePlay; then
+	if [[ $( mpcState ) == play ]]; then
 		mpc -q crop
 	else
 		radioStop
@@ -534,7 +532,7 @@ mpcplayback )
 	if [[ ! $ACTION ]]; then
 		! playerActive mpd && playerstop && exit
 # --------------------------------------------------------------------
-		if statePlay; then
+		if [[ $( mpcState ) == play ]]; then
 			grep -q -m1 webradio=true $dirshm/status && ACTION=stop || ACTION=pause
 		else
 			ACTION=play
@@ -625,14 +623,14 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
-	. <( mpc status 'state=%state%; consume=%consume%; songpos=%songpos%' )
 	radioStop
 	touch $dirshm/skip
-	if [[ $state == playing ]]; then
+	if [[ $( mpcState ) == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 		rm -f $dirshm/skip
 		mpcPlay $POS
+		. <( mpc status 'consume=%consume%; songpos=%songpos%' )
 		[[ $consume == on ]] && mpc -q del $songpos
 	else
 		mpcPlay $POS

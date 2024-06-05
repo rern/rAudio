@@ -2,12 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-if [[ ! -e $dirshm/radio ]]; then
-	$dirbash/cmd.sh playerstop
-	notify webradio WebRadio "Station offline."
-	exit
-fi
-
 . $dirshm/radio
 id=$( basename ${file/-*} )
 [[ ${id:0:13} == francemusique ]] && id=${id:13}

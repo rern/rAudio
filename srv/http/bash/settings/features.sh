@@ -50,7 +50,7 @@ localbrowserXset() {
 	if [[ $off == 0 ]]; then
 		xset -dpms
 	elif [[ $onwhileplay ]]; then
-		statePlay && xset -dpms || xset +dpms
+		[[ $( mpcState ) == play ]] && xset -dpms || xset +dpms
 	else
 		xset +dpms
 	fi

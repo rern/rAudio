@@ -270,6 +270,9 @@ lineCount() {
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
+mpcState() {
+	mpc status %state% | sed -E 's/ing|ped|d$//'
+}
 notify() { # icon title message delayms
 	local data delay icon ip json message title
 	[[ $1 == '-ip' ]] && ip=$2 && shift 2
@@ -417,13 +420,6 @@ snapserverList() {
 	[[ ! $service ]] && return
 	
 	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
-}
-stateMPD() {
-	mpc status %state% | sed -E 's/ped$|ing$|d$//g'
-	
-}
-statePlay() {
-	[[ $( mpc status %state% ) == playing ]] && return 0
 }
 stringEscape() {
 	echo "${@//\"/\\\"}"

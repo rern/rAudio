@@ -134,7 +134,7 @@ fi
 # add tracks to playlist
 pushData audiocd '{ "type": "add" }' # suppress playbackStatusGet in passive.js
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
-! statePlay && trackcd=$(( $( mpc status %length% ) + 1 ))
+[[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
 notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
 for i in $( seq 1 $trackL ); do
 	tracklist+="cdda:///$i "
