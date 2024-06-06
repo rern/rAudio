@@ -1888,7 +1888,7 @@ function setStatusData() {
 		, count   : C
 	}
 	var html = '';
-	$.each( list, ( k, v ) => html += '<br><br>"'+ k +'":'+ highlightJSON( v ) );
+	$.each( list, ( k, v ) => html += '"'+ k +'": '+ highlightJSON( v ) +'<br>' );
 	$( '#data' ).html( html );
 	$( '#button-data, #data' ).removeClass( 'hide' );
 }
