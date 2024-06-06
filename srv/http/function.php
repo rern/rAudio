@@ -1,5 +1,7 @@
 <?php
 function HMS2second( $time ) {
+	if ( ! $time ) return 0;
+	
 	$HMS   = explode( ':', $time );
 	$count = count( $HMS );
 	switch( $count ) {

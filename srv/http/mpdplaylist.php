@@ -191,7 +191,7 @@ function htmlTrack( $lists, $plname = '' ) {
 	<div class="li2"><a class="pos">'.$i.'</a> • <span class="name">'.$li2.'</span></div>
 </li>';
 			$countsong++;
-			if ( is_int( $sec ) ) $counttime += $sec;
+			$counttime += $sec;
 		} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
 			$li2    = '';
 			$artist = $list->Artist;

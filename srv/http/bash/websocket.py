@@ -34,7 +34,9 @@ async def cmd( websocket ):
                 await websocket.send( str( IP_CLIENT ) )
             # refresh CLIENTS
             for IP in IP_CLIENT:
-                if IP != ip and subprocess.call( [ 'ping', '-c', '1', '-w','1', IP ] ) != 0:
+                if IP == ip: continue
+                
+                if subprocess.call( [ 'ping', '-c', '1', '-w','1', IP ] ) != 0:
                     CLIENTS.discard( IP_CLIENT[ IP ] )
                     IP_CLIENT.pop( IP, None )
         elif 'status' in jargs:                   # { "status": "snapclient" } - from status.sh

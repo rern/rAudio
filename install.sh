@@ -4,6 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240608
+file=/etc/systemd/system/websocket.service
+if grep -q '-server' $file; then
+	sed -i 's/-server//' $file
+	systemctl daemon-reload
+fi
+
 # 20240601
 file=/etc/pacman.conf
 grep -q bootloader $file && sed -i 's/li.*bootloader/libunwind/' $file
@@ -33,9 +40,10 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20240601
+# 20240608
 systemctl restart websocket
 
+# 20240601
 for snap in $restart; do
 	$dirsettings/features.sh $snap
 	$dirsettings/features.sh "$snap
