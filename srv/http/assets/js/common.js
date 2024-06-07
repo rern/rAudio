@@ -907,10 +907,7 @@ function infoPowerCommand( action ) {
 						+'<br><br>Continue?'
 			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
 			, okcolor : off ? red : orange
-			, ok      : () => {
-				bash( [ 'power.sh', action, 'confirm' ] );
-				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
-			}
+			, ok      : () => bash( [ 'power.sh', action, 'confirm' ] )
 		} );
 	} );
 }
@@ -1049,9 +1046,10 @@ function psNotify( data ) {
 }
 function psPower( data ) {
 	loader();
+	ws        = null;
+	V.wsready = false;
 	V[ data.type ] = true;
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
-	ws.close();
 	if ( V.off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {
@@ -1155,12 +1153,10 @@ function websocketConnect( ip ) {
 		}
 	}
 }
-function websocketReconnect( ip ) {
-	var url = ip ? 'http://'+ ip :  '';
-	fetch( url +'/data/shm/startup' )
-		.then( response => {
-			response.ok ? websocketConnect( ip ) : setTimeout( () => websocketReconnect( ip ), 1000 );
-		} );
+function websocketReconnect() {
+	$.post( 'cmd.php', { cmd: 'startupready' }, ready => {
+		ready ? websocketConnect() : setTimeout( () => websocketReconnect(), 1000 );
+	} );
 }
 /* bash
 Multiline arguments - no escape \" \` in js values > escape in php instead
