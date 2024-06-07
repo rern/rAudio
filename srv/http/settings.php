@@ -1,9 +1,6 @@
-<?php include 'common.php';?>
-
-<div class="head">
-	<i class="page-icon i-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'close close' ).i( 'help helphead' ) )?>
-</div>
 <?php
+include 'common.php';
+
 function i( $icon, $id = '' ) {
 	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
 	return '<i'.$htmlid.' class="i-'.$icon.'"></i>';
@@ -25,12 +22,13 @@ $FiLabel = 'iLabel';
 $FiTab   = 'iTab';
 $Fmenu   = 'menu';
 
-echo '<div class="container '.$page.' hide">';
-
+echo '
+<div class="head">
+	<i class="page-icon i-'.$icon.'"></i><span class="title">'.$title.'</span>'.i( 'close close' ).i( 'help helphead' ).'
+</div>
+<div class="container '.$page.' hide">';
 if ( $page !== 'addons' ) include 'settings/'.$page.'.php';
-
 echo '</div>';
-
 if ( $addonsprogress || $guide ) {
 	echo '
 </body>

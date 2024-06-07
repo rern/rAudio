@@ -8,7 +8,7 @@ if ( isset( $argv[ 1 ] ) ) {
 $add      = $playlist === 'add' ? true : false;
 $headers  = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
-include '/srv/http/function.php';
+include 'function.php';
 
 // current playlist
 // saved playlists: delete, edit, get, list, load, rename, save

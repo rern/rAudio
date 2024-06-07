@@ -36,7 +36,7 @@ File
 search
 			track list: mpc search -f %*% any $keyword
 */
-include '/srv/http/function.php';
+include 'function.php';
 
 $gmode     = $_POST[ 'gmode' ] ?? null;
 $mode      = $_POST[ 'mode' ] ?? null;
