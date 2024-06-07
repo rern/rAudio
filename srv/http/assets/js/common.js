@@ -1067,7 +1067,7 @@ function pageActive() {
 	
 	if ( ws ) {
 		V.timeoutreload = true;
-		setTimeout( () => { // reload if ws not response
+		setTimeout( () => { // reconnect if ws not response on wakeup
 			if ( V.timeoutreload ) location.reload();
 		}, 300 );
 		ws.send( '"ping"' );
