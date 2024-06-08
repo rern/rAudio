@@ -1,5 +1,4 @@
 <?php
-// <!DOCTYPE html> ---------------------------------------------
 include 'common.php';
 
 function i( $class, $id = '', $cmd = '' ) {

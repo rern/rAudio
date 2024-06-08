@@ -96,14 +96,13 @@ $links = '';
 foreach( $cssp as $c ) $links.= '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
 foreach( $css as $c )  $links.= '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 if ( ! $page )         $links.= '<link id="hovercursor" rel="stylesheet" href="/assets/css/hovercursor.css'.$hash.'">';
-echo $links;
-?>
+echo $links.'
 </head>
 <body>
-<div id="infoOverlay" class="hide" tabindex="-1"></div>
-	<?php if ( ! $addonsprogress && ! $guide ) { ?>
+<div id="infoOverlay" class="hide" tabindex="-1"></div>';
+if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="loader"><?=$logosvg?></div>
 <div id="banner" class="hide"></div>
 <div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
-	<?php } ?>
+<?php } ?>
