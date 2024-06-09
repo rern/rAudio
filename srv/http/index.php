@@ -1,24 +1,6 @@
 <?php
 include 'common.php';
 
-// context menus
-function menucommon( $add, $replace ) {
-	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( 'plus-o' ).'Add</a>'.i( 'play-plus submenu', '', $add.'play' );
-	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( 'add' ).'Play next</a>';
-	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( 'replace' ).'Replace</a>'.i( 'play-replace submenu', '', $replace.'play' );
-	return $htmlcommon;
-}
-function menuli( $list ) {
-	$command = $list[ 0 ];
-	$icon = $list[ 1 ];
-	$label = $list[ 2 ];
-	$icon = i( $icon );
-	return '<a data-cmd="'.$command.'" class="'.$command.'">'.$icon.$label.'</a>';
-}
-function menudiv( $id, $html ) {
-	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
-}
-$kid3 = file_exists( '/usr/bin/kid3-cli' );
 function htmlmenu( $menulist, $mode ) {
 	global $html;
 	global $kid3;
@@ -32,8 +14,25 @@ function i( $class, $id = '', $cmd = '' ) {
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
 	return '<i'.$htmlid.' class="i-'.$class.'"'.$htmlcmd.'></i>';
 }
-
-$menu = '';
+// context menus
+function menucommon( $add, $replace ) {
+	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( 'plus-o' ).'Add</a>'.i( 'play-plus submenu', '', $add.'play' );
+	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( 'add' ).'Play next</a>';
+	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( 'replace' ).'Replace</a>'.i( 'play-replace submenu', '', $replace.'play' );
+	return $htmlcommon;
+}
+function menudiv( $id, $html ) {
+	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
+}
+function menuli( $list ) {
+	$command = $list[ 0 ];
+	$icon    = $list[ 1 ];
+	$label   = $list[ 2 ];
+	$icon    = i( $icon );
+	return '<a data-cmd="'.$command.'" class="'.$command.'">'.$icon.$label.'</a>';
+}
+$kid3       = file_exists( '/usr/bin/kid3-cli' );
+$menu       = '';
 $htmlcommon = menucommon( 'add', 'replace' );
 // file
 $html = $htmlcommon;
@@ -57,7 +56,7 @@ $menulist = [
 ];
 htmlmenu( $menulist, 'filesavedpl' );
 // folder
-$html = $htmlcommon;
+$html     = $htmlcommon;
 $menulist = [
 	  [ 'bookmark',  'star',            'Bookmark' ]
 	, [ 'exclude',   'folder-forbid',   'Exclude directory' ]
@@ -68,7 +67,7 @@ $menulist = [
 ];
 htmlmenu( $menulist, 'folder' );
 // plaction
-$html = '';
+$html     = '';
 $menulist = [
 	  [ 'play',       'play',          'Play' ]
 	, [ 'pause',      'pause',         'Pause' ]
@@ -82,17 +81,17 @@ $menulist = [
 ];
 htmlmenu( $menulist, 'plaction' );
 // playlist
-$html = menucommon( 'pladd', 'plreplace' );
+$html     = menucommon( 'pladd', 'plreplace' );
 $menulist = [
 	  [ 'plrename', 'edit',   'Rename' ]
 	, [ 'pldelete', 'remove', 'Delete' ]
 ];
 htmlmenu( $menulist, 'playlist' );
 // radio bookmark
-$html = menucommon( 'wradd', 'wrreplace' );
-$menu.= menudiv( 'bkradio', $html );
+$html     = menucommon( 'wradd', 'wrreplace' );
+$menu    .= menudiv( 'bkradio', $html );
 // webradio
-$html = menucommon( 'wradd', 'wrreplace' );
+$html     = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'bookmark',   'star',          'Bookmark' ]
 	, [ 'wredit',     'edit',          'Edit' ]
@@ -102,7 +101,7 @@ $menulist = [
 ];
 htmlmenu( $menulist, 'webradio' );
 // wrdir
-$html = '';
+$html     = '';
 $menulist = [
 	  [ 'bookmark',    'star',   'Bookmark' ]
 	, [ 'wrdirdelete', 'remove', 'Delete' ]
@@ -115,16 +114,14 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 	$menu.= menudiv( $mode, $html );
 }
 
-$menu = '<div id="contextmenu">'.$menu.'</div>';
-$ids = [ 'random',   'repeat',    'single',    'repeat1', 'consume', 'librandom', 'mute'
-	   , 'btsender', 'libupdate', 'dabupdate', 'addons',  'relays',  'stoptimer' ];
+$menu     = '<div id="contextmenu">'.$menu.'</div>';
+$ids      = [ 'random',   'repeat',    'single',    'repeat1', 'consume', 'librandom', 'mute'
+			, 'btsender', 'libupdate', 'dabupdate', 'addons',  'relays',  'stoptimer' ];
 $modeicon = '';
-foreach( $ids as $id ) {
-	$modeicon.= i( $id.' hide', 'mi-'.$id );
-}
+foreach( $ids as $id ) $modeicon.= i( $id.' hide', 'mi-'.$id );
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
-$dsp = $equalizer ? 'equalizer' : 'camilladsp';
+$dsp      = $equalizer ? 'equalizer' : 'camilladsp';
 $settinglist = [
 	  [ 'features',        'settings',     'features', 'Features', 'dsp',          'equalizer' ]
 	, [ 'player',          'settings',     'player',   'Player',   'logout',       'lock' ]
@@ -136,14 +133,10 @@ $settinglist = [
 	, [ 'displayplayback', 'sub',          'playback', 'Playback', 'displaycolor', 'color' ]
 	, [ 'displayplaylist', '',             'playlist', 'Playlist', 'multiraudio',  'multiraudio' ]
 ];
-$htmlsettings     = '';
-foreach( $settinglist as $l ) {
-	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $l[ 2 ] ).$l[ 3 ].'</a>'.i( $l[ 5 ].' submenu', $l[ 4 ] );
-}
-$htmlcontrols     = '';
-foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
-	$htmlcontrols.= i( $l.' btn btn-default btn-cmd', $l );
-}
+$htmlsettings = '';
+foreach( $settinglist as $l ) $htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $l[ 2 ] ).$l[ 3 ].'</a>'.i( $l[ 5 ].' submenu', $l[ 4 ] );
+$htmlcontrols = '';
+foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) $htmlcontrols.= i( $l.' btn btn-default btn-cmd', $l );
 if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '<div id="vu" class="hide">'.file_get_contents( '/srv/http/assets/img/vu.svg' ).'</div>';
 } else {
@@ -207,8 +200,8 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 			<span id="elapsed" class="controls1"></span>
 			<span id="total" class="controls1"></span>
 			<div id="map-time">
-				<i id="timeTL" class="map maptime"></i>
-				<?=i( 'guide map maptime',    'timeT' )
+				<?=i( 'map maptime',          'timeTL' )
+				  .i( 'guide map maptime',    'timeT' )
 				  .i( 'gear map maptime',     'timeTR' )
 				  .i( 'previous map maptime', 'timeL' )?>
 				<div id="timeM" class="map maptime"><?=i( 'play' ).'&emsp;'.i( 'pause' )?></div>
@@ -328,11 +321,11 @@ $script = '';
 foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
 foreach( $js as $j )  $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
 if ( ! $page )        $script.= '<script id="shortcut" src="/assets/js/shortcut.js'.$hash.'"></script>';
-echo $script;
-?>
+echo $script.'
 <script>
-var jfiles = <?=json_encode( $jfiles )?>;
+var jfiles = '.json_encode( $jfiles ).'
 </script>
 
 </body>
 </html>
+';

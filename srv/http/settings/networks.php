@@ -5,17 +5,17 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
 	, 'button' => 'search btscan'
-	, 'help'   => i( 'search btn' ).' Available devices'
+	, 'help'   => $b_search.' Available devices'
 ] );
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetoothlist" class="status hide"></pre>
-	<div class="helpblock hide">{$Fi( 'bluetooth btn' )} {$Fi( 'btsender btn' )} Context menu
+	<div class="helpblock hide">$b_bluetooth $b_btsender Context menu
 	
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: {$Fi( 'search btn' )} Scan to connect &raquo; Select to pair
+	· On rAudio: $b_search Scan to connect &raquo; Select to pair
  • Connect / Disconnect:
 	· On receiver: Turn on / off
  • Playback controls with buttons:
@@ -43,9 +43,9 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="helpblock hide"><?=i( 'add btn' )?> Manual connect
-<?=i( 'search btn' )?> Available networks
-<?=i( 'wifi btn' )?> Context menu
+	<div class="helpblock hide"><?=$b_add?> Manual connect
+<?=$b_search?> Available networks
+<?=$b_wifi?> Context menu
 
 Note:
  · Avoid double quotes <c>"</c> in Wi-Fi name and password.
@@ -60,8 +60,8 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
-	<div class="helpblock hide"><?=i( 'add btn' )?> Manual connect
-<?=i( 'lan btn' )?> Context menu</div>
+	<div class="helpblock hide"><?=$b_add?> Manual connect
+<?=$b_lan?> Context menu</div>
 </div>
 </div>
 <?php

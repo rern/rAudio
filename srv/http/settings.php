@@ -6,16 +6,25 @@ function i( $icon, $id = '' ) {
 	return '<i'.$htmlid.' class="i-'.$icon.'"></i>';
 }
 function iLabel( $label, $icon = '' ) {
-	$htmlicon = $icon ? '<i class="i-'.$icon.'"></i>' : '&emsp;';
+	$htmlicon = $icon ? i( $icon ) : '&emsp;';
 	return '<a class="helpmenu label">'.$label.$htmlicon.'</a>';
 }
 function iTab( $tab ) {
-	return '<a class="helpmenu tab"><i class="i-'.strtolower( $tab ).'"></i> '.$tab.'</a>';
+	return '<a class="helpmenu tab">'.i( strtolower( $tab ) ).' '.$tab.'</a>';
 }
 function menu( $icon, $name, $iconsub = '' ) {
-	$submenu = $iconsub ? '<i class="i-'.$iconsub.' sub"></i>' : '';
-	return '<a class="helpmenu"><i class="i-'.$icon.'"></i> '.$name.$submenu.'</a>';
+	$submenu = $iconsub ? i( $iconsub.' sub' ) : '';
+	return '<a class="helpmenu">'.i( $icon ).' '.$name.$submenu.'</a>';
 }
+$btn = [ 'add',   'bluetooth', 'btsender', 'code',    'gear',   'lan',  'lastfm',   'microsd', 'networks'
+		,'pause', 'play',      'power',    'refresh', 'search', 'stop', 'usbdrive', 'volume',  'wifi' ];
+		
+if ( $page === 'camilla' ) array_merge( $btn, $btn = [ 'filters', 'flowchart', 'graph', 'input', 'inverted', 'linear', 'mixers', 'output', 'set0' ] );
+foreach( $btn as $b ) {
+	$name  = 'b_'.$b;
+	$$name = i( $b.' btn' );
+}
+
 // functions for use inside heredoc
 $Fi      = 'i';
 $FiLabel = 'iLabel';
@@ -24,7 +33,7 @@ $Fmenu   = 'menu';
 
 echo '
 <div class="head">
-	<i class="page-icon i-'.$icon.'"></i><span class="title">'.$title.'</span>'.i( 'close close' ).i( 'help helphead' ).'
+	'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close' ).i( 'help helphead' ).'
 </div>
 <div class="container '.$page.' hide">';
 if ( $page !== 'addons' ) include 'settings/'.$page.'.php';

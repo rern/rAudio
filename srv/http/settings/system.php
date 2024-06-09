@@ -28,7 +28,7 @@ $head = [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => 'power power'
-	, 'help'   => i( 'power btn' ).' Power'
+	, 'help'   => $b_power.' Power'
 ];
 $labels = 'Version
 	<br>Kernel
@@ -42,7 +42,7 @@ $head = [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'status' => 'status'
 	, 'button' => 'refresh refresh'
-	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
+	, 'help'   => $b_refresh.' Refresh every 10 seconds'
 ];
 $labels = 'CPU Load
 	<br>CPU Temp<wide>erature</wide></span>
@@ -78,10 +78,10 @@ $head = [ //////////////////////////////////
 	, 'status' => 'storage'
 	, 'button' => 'add addnas'
 	, 'help'   => <<< EOF
-{$Fi( 'add btn' )} Add network storage
+$b_add Add network storage
 
  · USB drives  Will be found and mounted automatically.
- · Commands used by {$Fi( 'add btn' )} Add network storage:
+ · Commands used by $b_add Add network storage:
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
@@ -97,7 +97,7 @@ EOF
 ];
 $body = [
 	'<ul id="list" class="entries"></ul>
-		<div class="helpblock hide">'.i( 'microsd btn' ).' '.i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu'.'</div>
+		<div class="helpblock hide">'.$b_microsd.' '.$b_usbdrive.' '.$b_networks.' Context menu'.'</div>
 		<pre id="codehddinfo" class="status hide"></pre>'
 	, [
 		  'id'       => 'hddsleep'
@@ -123,7 +123,7 @@ EOF
 	, [
 		  'id'       => 'bluetooth'
 		, 'help'     => <<< EOF
-{$Fi( 'gear btn' )}
+$b_gear
 ■ Sampling 16bit - Bluetooth receivers with fixed sampling
 EOF
 	]
@@ -131,7 +131,7 @@ EOF
 		  'id'       => 'wlan'
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
-{$Fi( 'gear btn' )}
+$b_gear
 Country of Wi-Fi regulatory domain:
 	· <c>00</c> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
@@ -150,7 +150,7 @@ $body = [
 		  'html'     => <<< EOF
 <div id="divi2smodule">
 	<div class="col-l">
-		<a><span class="label">Audio - I²S</span><gr>HAT</gr></a><i class="i-i2s"></i>
+		<a><span class="label">Audio - I²S</span><gr>HAT</gr></a>{$Fi( 'i2s' )}
 	</div>
 	<div class="col-r">
 		<div id="divi2ssw">
@@ -159,13 +159,13 @@ $body = [
 		</div>
 		<div id="divi2sselect">
 			<select id="i2smodule"></select>
-			<i id="setting-i2smodule" class="i-gear setting"></i>
+			{$Fi( 'gear setting', 'i2smodule' )}
 		</div>
 		<span class="helpblock hide"><!--
 -->I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
  · See  if it's already set: {$FiTab( 'Player' )} Output {$FiLabel( 'Device' )}
-{$Fi( 'gear btn' )}
+$b_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 		</span>
 	</div>
@@ -182,7 +182,7 @@ EOF
 		  'id'       => 'powerbutton'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
-{$Fi( 'gear btn' )}
+$b_gear
  · On - Fixed to pin <c>5</c>
  · Off - Default: pin <c>5</c> (single pin on+off)
  · If pin <c>5</c> is used by DAC or LCD, set 2 unused pins for:
@@ -240,7 +240,7 @@ EOF
 		  'id'       => 'timezone'
 		, 'input'    => 'timezone'
 		, 'help'     => <<< EOF
-{$Fi( 'gear btn' )}
+$b_gear
 Servers for time sync and package mirror
 EOF
 	]
@@ -248,7 +248,7 @@ EOF
 		  'id'       => 'soundprofile'
 		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
-{$Fi( 'gear btn' )}
+$b_gear
 Swapiness (default: <c>60</c>)
 	· Balance between swap disk vs system memory cache
 	· Low - less swap
@@ -300,7 +300,7 @@ Connect shared data as client for:
  · Display order of Library home
 
 Note:
- · Enabled - {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB:
+ · Enabled - $b_microsd SD and $b_usbdrive USB:
 	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
 	 · Not availble in Library home
 

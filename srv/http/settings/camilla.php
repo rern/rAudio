@@ -7,52 +7,59 @@ $id_data = [
 	, 'stop_on_rate_change' => [ 'label' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'resampler'           => [ 'label' => 'Resampler',           'setting' => 'custom' ]
 ];
-$btnfilters = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
-$btnmixers  = i( 'mixers btn' ).' Context menu: '.i( 'edit btn' ).i( 'remove btn' );
+$btnfilters = $b_filters.' Context menu: '.$b_graph.$b_edit.' '.$b_remove;
+$btnmixers  = $b_mixers.' Context menu: '.$b_edit.' '.$b_remove;
 $button     = [
-	  'filters'    => i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' )
+	  'filters'    => $b_filters.' Context menu: '.$b_graph.' '.$b_edit.' '.$b_remove
 	, 'mixers'     => $btnmixers
 	, 'processors' => str_replace( 'mixers' , 'processors', $btnmixers )
 	, 'pipeline'   => str_replace( 'filters' , 'pipeline', $btnfilters )
 	, 'config'     => str_replace( 'mixers' , 'config', $btnmixers )
-	, 'control'    => i( 'volume btn' ).i( 'inverted btn' ).i( 'linear btn' )
+	, 'control'    => $b_volume.' '.$b_inverted.' '.$b_linear
 ];
+$bset_filters    = $b_filters.' Context menu: '.$b_graph.' '.$b_edit.' '.$b_remove;
+$bset_mixers     = $btnmixers;
+$bset_processors = str_replace( 'mixers' , 'processors', $btnmixers );
+$bset_pipeline   = str_replace( 'filters' , 'pipeline', $btnfilters );
+$bset_config     = str_replace( 'mixers' , 'config', $btnmixers );
+$bset_control    = $b_volume.' '.$b_inverted.' '.$b_linear;
+
 $dots = '· · ·';
 $help       = [
 	  'status'      => <<< EOF
-{$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
+$b_play $b_pause $b_stop Playback control
 
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
 	, 'volume'    => <<< EOF
-{$Fi( 'gear btn' )} Configuration files
-{$Fi( 'set0 btn' )} Reset clipped count (if any)
+$b_gear Configuration files
+$b_set0 Reset clipped count (if any)
 EOF
 	, 'filters'   => <<< EOF
-{$Fi( 'folder-filter btn' )}{$Fi( 'plus btn' )} Finite Impulse Response (FIR) files · New
-{$button[ 'filters' ]} Graph · Edit · Delete
-{$Fi( 'code btn' )} Set 0
-{$button[ 'control' ]} Mute · Invert · Linear (Gain)
+{$Fi( 'folder-filter btn' )} $b_plus Finite Impulse Response (FIR) files · New
+$bset_filters Graph · Edit · Delete
+$b_code Set 0
+$bset_control Mute · Invert · Linear (Gain)
 EOF
 	, 'mixers'   => <<< EOF
-{$Fi( 'plus btn' )} New
-{$button[ 'mixers' ]} Edit · Delete
-{$Fi( 'code btn' )}{$button[ 'control' ]} Set 0 · Mute · Invert · Linear
+$b_plus New
+$bset_mixers Edit · Delete
+$b_code $bset_control Set 0 · Mute · Invert · Linear
 EOF
 	, 'processors'   => <<< EOF
-{$Fi( 'plus btn' )} New
-{$button[ 'processors' ]} Edit · Delete
+$b_plus New
+$bset_processors Edit · Delete
 EOF
 	, 'pipeline' => <<< EOF
-{$Fi( 'flowchart btn' )}{$Fi( 'plus btn' )} Step flowchart · New
-{$button[ 'pipeline' ]} Graph · Edit · Delete
+$b_flowchart $b_plus Step flowchart · New
+$bset_pipeline Graph · Edit · Delete
 EOF
 	, 'devices'  => <<< EOF
-{$Fi( 'gear btn' )} Capture sampling
-{$Fi( 'input btn' )}{$Fi( 'output btn' )} Device settings
+$b_gear Capture sampling
+$b_input $b_output Device settings
 EOF
 	, 'config'   => <<< EOF
-{$$button[ 'config' ]}
+$bset_config
 EOF
 ];
 $htmls = [
@@ -62,10 +69,9 @@ $htmls = [
 	<div class="thumb"></div>
 	<div id="volume-band"></div>
 </div>
-<i class="i-plus"></i>
+'.i( 'plus' ).'
 <c class="level">0</c>
-<i class="i-volume"></i>
-'
+'.i( 'volume' )
 	, 'labels' => '
 Buffer · Load<span class="divclipped hide"> · Clipped</span>
 <br>Sampling<span class="rateadjust"> · Adjust</span>
@@ -141,9 +147,9 @@ foreach( $tabs as $id ) {
 }
 ?>
 <div id="menu" class="menu hide">
-<a class="graph"><i class="i-graph"></i>Graph</a>
-<a class="edit"><i class="i-edit"></i>Edit</a>
-<a class="copy"><i class="i-copy"></i>Copy</a>
-<a class="rename"><i class="i-edit"></i>Rename</a>
-<a class="delete"><i class="i-remove"></i>Delete</a>
+<a class="graph"><?=i( 'graph' )?>Graph</a>
+<a class="edit"><?=i( 'edit' )?>Edit</a>
+<a class="copy"><?=i( 'copy' )?>Copy</a>
+<a class="rename"><?=i( 'edit' )?>Rename</a>
+<a class="delete"><?=i( 'remove' )?>Delete</a>
 </div>
