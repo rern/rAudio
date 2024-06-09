@@ -1750,18 +1750,20 @@ var common    = {
 			, GetRateAdjust     : 'rate'
 		}
 		wscamilla           = new WebSocket( 'ws://'+ location.host +':1234' );
-		wscamilla.onready   = () => { // custom
-			common.wsGetState();
-			common.wsGetConfig();
-			V.intervalstatus = setInterval( () => {
-				if ( V.local ) return
-				
-				common.wsGetState();
-				if ( S.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
-			}, 1000 );
-		}
 		wscamilla.onopen    = () => {
-			websocketReady( wscamilla );
+			var interval = setTimeout( () => {
+				if ( wscamilla.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+					clearTimeout( interval );
+					common.wsGetState();
+					common.wsGetConfig();
+					V.intervalstatus = setInterval( () => {
+						if ( V.local ) return
+						
+						common.wsGetState();
+						if ( S.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
+					}, 1000 );
+				}
+			}, 100 );
 		}
 		wscamilla.onclose   = () => {
 			wscamilla = null;

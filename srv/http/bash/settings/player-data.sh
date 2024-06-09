@@ -57,7 +57,7 @@ data='
 , "soxrconf"         : '$( conf2json $dirmpdconf/conf/soxr.conf )'
 , "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
-, "state"            : "'$( stateMPD )'"
+, "state"            : "'$( mpcState )'"
 , "updatetime"       : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db"      : '$( [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating && echo true )'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"

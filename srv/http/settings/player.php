@@ -23,7 +23,7 @@ $head = [ //////////////////////////////////
 	, 'status' => 'mpd'
 	, 'button' => 'play playback'
 	, 'help'   => <<< EOF
-{$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
+$b_play $b_pause $b_stop Playback control
 
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
@@ -45,7 +45,7 @@ $body = [
 		, 'icon'     => 'btreceiver'
 		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
-{$Fi( 'volume btn' )} Mixer device - blueALSA volume control
+$b_volume Mixer device - blueALSA volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
@@ -59,12 +59,12 @@ EOF
 	, [
 		  'id'       => 'mixer'
 		, 'input'    => 'mixer'
-		, 'help'     => i( 'volume btn' ).' Mixer device volume control'
+		, 'help'     => $b_volume.' Mixer device volume control'
 	]
 	, [
 		  'id'       => 'mixertype'
 		, 'help'     => <<< EOF
-{$Fi( 'gear btn' )} Type:
+$b_gear Type:
  · Mixer device: Good - DAC hardware via GUI knob (if available)
  · MPD software: Basic - GUI knob
  
@@ -133,7 +133,7 @@ EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 
-{$Fi( 'gear btn' )}
+$b_gear
 ■ Gain control - Mixer device:
  • <c>replay_gain_handler "mixer"</c>
  • Available when Volume Control = MPD software
@@ -176,7 +176,7 @@ EOF
 		 'id'        => 'soxr'
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
-{$Fi( 'gear btn' )}
+$b_gear
  • Presets:
 	(default: Quality <c>Very high</c>  Threads <c>Single</c>)
 	
@@ -223,8 +223,8 @@ htmlHead( [
 	, 'help'    => <<< EOF
 List of <c>.mpdignore</c> files contain directories/folders excluded from database.
 To restore:
-• Edit <c>.../.mpdignore</c>
-• Remove directories to restore
+• Edit file <c>.../.mpdignore</c> in parent directory
+• Remove lines contain directory to restore
 • Update Library
 
 Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for {$FiTab( 'System' )}{$FiLabel( 'Shared Data', 'networks' )}

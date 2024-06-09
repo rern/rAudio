@@ -64,6 +64,9 @@ statusconfiguration )
 statusoutput )
 	$dirsettings/player.sh statusoutput
 	;;
+volume )
+	volume
+	;;
 	
 esac
 

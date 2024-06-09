@@ -9,7 +9,6 @@ echo $$ > $dirshm/pidstatuspush
 
 if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
-	playing=1
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( sed -E -n '/^, "Artist|^, "Album|^, "Composer|^, "elapsed|^, "file| *"player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {s/^,* *"//; s/" *: */=/; p}' <<< $status )
@@ -18,9 +17,8 @@ else
 	compare='^Artist|^Title|^Album'
 	[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
 	. <( echo "$statusnew" )
-	[[ $state == play ]] && playing=1
 	if [[ $webradio == true ]]; then
-		[[ ! $trackchanged && $playing ]] && exit
+		[[ ! $trackchanged && $state == play ]] && exit
 # --------------------------------------------------------------------
 	else
 		compare='^state|^elapsed'
@@ -40,7 +38,7 @@ fi
 if systemctl -q is-active localbrowser; then
 	if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
 		export DISPLAY=:0
-		[[ $playing ]] && sudo xset -dpms || sudo xset +dpms
+		[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
 	fi
 fi
 
@@ -58,12 +56,12 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 
 if [[ -e $dirsystem/mpdoled ]]; then
-	[[ $playing ]] && start_stop=start || start_stop=stop
+	[[ $state == play ]] && start_stop=start || start_stop=stop
 	systemctl $start_stop mpd_oled
 fi
 
 [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && cava=1
-if [[ $playing ]]; then
+if [[ $state == play ]]; then
 	[[ $cava ]] && systemctl start cava
 else
 	[[ $cava ]] && systemctl stop cava

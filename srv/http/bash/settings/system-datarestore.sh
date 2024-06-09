@@ -9,7 +9,7 @@ backupfile=$dirshm/backup.gz
 # --------------------------------------------------------------------
 dirconfig=$dirdata/config
 
-statePlay && $dirbash/cmd.sh playerstop
+[[ $( mpcState ) == play ]] && $dirbash/cmd.sh playerstop
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
 mpc | grep -q ^Updating && systemctl restart mpd
 rm -f $dirmpd/{listing,updating}

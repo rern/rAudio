@@ -907,10 +907,7 @@ function infoPowerCommand( action ) {
 						+'<br><br>Continue?'
 			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
 			, okcolor : off ? red : orange
-			, ok      : () => {
-				bash( [ 'power.sh', action, 'confirm' ] );
-				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
-			}
+			, ok      : () => bash( [ 'power.sh', action, 'confirm' ] )
 		} );
 	} );
 }
@@ -1049,9 +1046,10 @@ function psNotify( data ) {
 }
 function psPower( data ) {
 	loader();
+	ws        = null;
+	V.wsready = false;
 	V[ data.type ] = true;
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
-	ws.close();
 	if ( V.off ) {
 		$( '#loader' ).css( 'background', '#000000' );
 		setTimeout( () => {
@@ -1069,8 +1067,8 @@ function pageActive() {
 	
 	if ( ws ) {
 		V.timeoutreload = true;
-		setTimeout( () => { // reload if ws not response
-			if ( V.timeoutreload ) location.reload();
+		setTimeout( () => { // reconnect if ws not response on wakeup
+			if ( V.timeoutreload ) websocketReconnect();
 		}, 300 );
 		ws.send( '"ping"' );
 	} else {
@@ -1117,7 +1115,8 @@ function volumeSet( type ) { // type: mute / unmute
 	V.volumeactive = true;
 	setTimeout( () => V.volumeactive = false, 300 );
 	if ( V.drag || V.press ) type = 'dragpress';
-	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
+	var card = S.btreceiver ? 'btreceiver' : S.card;
+	bash( [ 'volume', V.volumecurrent, S.volume, S.control, card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {
@@ -1148,20 +1147,20 @@ function websocketConnect( ip ) {
 		var data = message.data;
 		if ( data === 'pong' ) { // on pageActive - reload if ws not response
 			V.timeoutreload = false;
-		} else if ( data === 'ping' ) {
-			ws.send( '"pong"' );
 		} else {
 			var json = JSON.parse( data );
 			psOnMessage( json.channel, json.data );
 		}
 	}
 }
-function websocketReconnect( ip ) {
-	var url = ip ? 'http://'+ ip :  '';
-	fetch( url +'/data/shm/startup' )
-		.then( response => {
-			response.ok ? websocketConnect( ip ) : setTimeout( () => websocketReconnect( ip ), 1000 );
-		} );
+function websocketReconnect() {
+	$.post( 'cmd.php', { cmd: 'startupready' }, ready => {
+		if ( ready ) {
+			V.timeoutreload ? location.reload() : websocketConnect();
+		} else {
+			setTimeout( () => websocketReconnect(), 1000 );
+		}
+	} );
 }
 /* bash
 Multiline arguments - no escape \" \` in js values > escape in php instead

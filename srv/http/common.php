@@ -46,7 +46,7 @@ foreach( $jsfiles as $file ) {
 if ( ! $page ) { // main
 	$cssp[] = 'roundslider';
 	$css[]  = 'main';
-	$jsp    = [ 'jquery', 'lazysizes', 'roundslider', 'Sortable' ]; // dynamically loaded with $.getScript: html5colorpicker, pica, qrcode, plotly
+	$jsp    = [ 'jquery', 'lazysizes', 'roundslider', 'Sortable' ]; // dynamically loaded with $.getScript: html5colorpicker, pica, qrcode
 	$js     = [ 'common', 'context', 'function', 'main', 'passive' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
@@ -67,7 +67,7 @@ if ( ! $page ) { // main
 	$$page = true; // $$ - variable value as variable name
 	$cssp  = [];
 	$css[] = 'settings';
-	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ];
+	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ]; // dynamically loaded with $.getScript: d3, plotly
 	$js    = [ 'common', 'settings', $page ];
 	if ( ! $guide && ! $networks && ! $addonsprogress ) {
 		$cssp[] = 'select2';
@@ -96,14 +96,14 @@ $links = '';
 foreach( $cssp as $c ) $links.= '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
 foreach( $css as $c )  $links.= '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 if ( ! $page )         $links.= '<link id="hovercursor" rel="stylesheet" href="/assets/css/hovercursor.css'.$hash.'">';
-echo $links;
-?>
+echo $links.'
 </head>
 <body>
-<div id="infoOverlay" class="hide" tabindex="-1"></div>
-	<?php if ( ! $addonsprogress && ! $guide ) { ?>
+<div id="infoOverlay" class="hide" tabindex="-1"></div>';
+if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="loader"><?=$logosvg?></div>
 <div id="banner" class="hide"></div>
 <div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
-	<?php } ?>
+<?php
+}

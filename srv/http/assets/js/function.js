@@ -476,11 +476,11 @@ function displayBars() {
 	var noprevnext = S.pllength < 2 || ! mpd_upnp;
 	$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 );
 	$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
-	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-	$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 	$( '#pause' ).toggleClass( 'hide', S.webradio );
 	$( '#playback-controls i' ).removeClass( 'active' );
 	$( '#'+ S.state ).addClass( 'active' ); // suppress on reboot
+	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
+	$( '#coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 }
 function displayBottom() {
 	$( '#playback' )
@@ -545,12 +545,6 @@ function guideHide() {
 		$( '.band, #volbar' ).addClass( 'transparent' );
 		$( '.guide, #volume-bar, #volume-text' ).addClass( 'hide' );
 	}
-}
-function HMS2Second( HMS ) {
-	var hhmmss = HMS.split( ':' ).reverse();
-	if ( ! hhmmss[ 1 ] ) return +hhmmss[ 0 ];
-	if ( ! hhmmss[ 2 ] ) return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60;
-	return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60 + hhmmss[ 2 ] * 3600;
 }
 function imageLoad( list ) {
 	var $lazyload = $( '#'+ list +' .lazyload' );
@@ -1894,7 +1888,7 @@ function setStatusData() {
 		, count   : C
 	}
 	var html = '';
-	$.each( list, ( k, v ) => html += '<br><br>"'+ k +'":'+ highlightJSON( v ) );
+	$.each( list, ( k, v ) => html += '"'+ k +'": '+ highlightJSON( v ) +'<br>' );
 	$( '#data' ).html( html );
 	$( '#button-data, #data' ).removeClass( 'hide' );
 }
@@ -1919,6 +1913,7 @@ function setVolume() {
 	if ( V.animate ) return
 	
 	$volumeRS.setValue( S.volume );
+	setVolumeUpDn();
 	if ( ! S.volume ) $volumehandle.rsRotate( -310 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
@@ -1929,6 +1924,12 @@ function setVolume() {
 		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! S.volumemute );
 	}
 	S.volumemute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
+}
+function setVolumeUpDn() {
+	if ( D.volume ) {
+		$( '#voldn' ).toggleClass( 'disabled', S.volume === 0 );
+		$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
+	}
 }
 function sortPlaylist( pl, iold, inew ) {
 	V.sortable = true;
@@ -2048,9 +2049,8 @@ function volumeColorUnmute() {
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeUpDown( up ) {
-	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
-	
 	up ? S.volume++ : S.volume--;
+	S.volumemute = 0;
 	setVolume();
 	volumeSet();
 }

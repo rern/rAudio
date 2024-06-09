@@ -3,13 +3,27 @@
 . /srv/http/bash/common.sh
 dirimg=/srv/http/assets/img
 
-echo "$1" > $dirshm/z
 args2var "$1"
 
+mpcPlay() {
+	[[ $1 ]] && songpos=$1 || songpos=$( mpc status %songpos% )
+	file=$( mpc -f %file% playlist | sed -n "$songpos p" )
+	if [[ ${file:0:4} != http ]] || ipOnline $( cut -d/ -f3 <<< $file ); then
+		mpc -q play $songpos
+	else
+		pushData mpdplayer '{ "state": "'$( mpcState )'", "elapsed": '$( mpcElapsed )' }'
+		station=$( head -1 $dirwebradio/${file//\//|} )
+		[[ ! $station ]] && station=$file
+		notify warning 'Web Radio' "Station not reachable: <wh>$station</wh>" 5000
+		rm -f $dirshm/skip
+		exit
+# --------------------------------------------------------------------
+	fi
+}
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		playerActive mpd && radioStop || playerStop
-		mpc -q play $1
+		mpcPlay $1
 	fi
 	pushPlaylist
 }
@@ -154,35 +168,6 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
-volumeSet() {
-	local card control current diff target values
-	current=$1
-	target=$2
-	control=$3
-	card=$4
-	diff=$5
-	# increment
-	(( $diff > 0 )) && incr=5 || incr=-5
-	values=( $( seq $(( current + incr )) $incr $target ) )
-	(( $diff % 5 )) && values+=( $target )
-	for i in "${values[@]}"; do
-		volumeSetAt $i "$control" $card
-		sleep 0.2
-	done
-}
-volumeSetAt() {
-	local card control target
-	target=$1
-	control=$2
-	card=$3
-	if [[ -e $dirshm/btreceiver ]]; then            # bluetooth
-		volumeBlueAlsa $target% "$control"
-	elif [[ $control ]]; then                       # hardware
-		volumeAmixer $target% "$control" $card
-	else                                            # software
-		mpc -q volume $target
-	fi
-}
 webradioCount() {
 	local count type
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
@@ -234,7 +219,7 @@ albumignore )
 	sed -i "/\^$ALBUM^^$ARTIST^/ d" $dirmpd/album
 	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
 	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/albumbyartist-year
-	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
+	appendSortUnique "$ALBUM^^$ARTIST" $dirmpd/albumignore
 	;;
 bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
@@ -516,11 +501,11 @@ mpcaddls )
 	plAddPlay $pos
 	;;
 mpccrop )
-	if statePlay; then
+	if [[ $( mpcState ) == play ]]; then
 		mpc -q crop
 	else
 		radioStop
-		mpc -q play
+		mpcPlay
 		mpc -q crop
 		mpc -q stop
 	fi
@@ -547,7 +532,7 @@ mpcplayback )
 	if [[ ! $ACTION ]]; then
 		! playerActive mpd && playerstop && exit
 # --------------------------------------------------------------------
-		if statePlay; then
+		if [[ $( mpcState ) == play ]]; then
 			grep -q -m1 webradio=true $dirshm/status && ACTION=stop || ACTION=pause
 		else
 			ACTION=play
@@ -555,7 +540,7 @@ mpcplayback )
 	fi
 	radioStop
 	if [[ $ACTION == play ]]; then
-		mpc -q $ACTION
+		mpcPlay
 		if audioCDtrack; then
 			touch $dirshm/cdstart
 			( sleep 20 && rm -f $dirshm/cdstart ) &
@@ -587,7 +572,7 @@ mpcremove )
 		mpc -q del $POS
 		pushData playlist '{ "refresh": '$POS' }'
 		if [[ $CURRENT ]]; then
-			mpc -q play $CURRENT
+			mpcPlay $CURRENT
 			mpc -q stop
 		fi
 	else
@@ -597,7 +582,7 @@ mpcremove )
 mpcseek )
 	if [[ $STATE == stop ]]; then
 		touch $dirshm/skip
-		mpc -q play
+		mpcPlay
 		mpc -q pause
 		rm $dirshm/skip
 	fi
@@ -638,17 +623,17 @@ mpcsimilar )
 	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcskip )
-	. <( mpc status 'state=%state%; consume=%consume%; songpos=%songpos%' )
 	radioStop
 	touch $dirshm/skip
-	if [[ $state == playing ]]; then
+	if [[ $( mpcState ) == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify 'audiocd blink' 'Audio CD' 'Change track ...'
 		[[ -e $dirsystem/scrobble ]] && mpcElapsed > $dirshm/elapsed
 		rm -f $dirshm/skip
-		mpc -q play $POS
+		mpcPlay $POS
+		. <( mpc status 'consume=%consume%; songpos=%songpos%' )
 		[[ $consume == on ]] && mpc -q del $songpos
 	else
-		mpc -q play $POS
+		mpcPlay $POS
 		rm -f $dirshm/skip
 		mpc -q stop
 	fi
@@ -656,7 +641,7 @@ mpcskip )
 	;;
 mpcskippl )
 	radioStop
-	mpc -q play $POS
+	mpcPlay $POS
 	Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
 	[[ $Time == 0 ]] && Time=false
 	[[ $ACTION == stop ]] && mpc -q stop
@@ -685,7 +670,7 @@ mpcupdatestop )
 mpdignore )
 	dir=$( basename "$DIR" )
 	mpdpath=$( dirname "$DIR" )
-	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
+	appendSortUnique "$dir" "/mnt/MPD/$mpdpath/.mpdignore"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
 	pushData mpdupdate '{ "type": "mpd" }'
@@ -714,7 +699,7 @@ playerstop )
 playlist )
 	[[ $REPLACE ]] && plClear
 	mpc -q load "$NAME"
-	[[ $PLAY ]] && mpc -q play
+	[[ $PLAY ]] && mpcPlay
 	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
 	pushPlaylist
 	;;
@@ -787,24 +772,7 @@ upnpstart )
 	playerStart
 	;;
 volume )
-	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
-	if [[ $TYPE != dragpress ]]; then
-		[[ $TYPE == mute ]] && val=$CURRENT || val=$TARGET
-		pushData volume '{ "type": "'$TYPE'", "val": '$val' }'
-	fi
-	filevolumemute=$dirsystem/volumemute
-	if [[ $TYPE == mute ]]; then
-		echo $CURRENT > $filevolumemute
-	elif [[ $TYPE == unmute ]]; then
-		rm -f $filevolumemute
-	fi
-	diff=$(( TARGET - CURRENT ))
-	diff=${diff#-}
-	if (( $diff < 5 )); then
-		volumeSetAt $TARGET "$CONTROL" $CARD
-	else
-		volumeSet $CURRENT $TARGET "$CONTROL" $CARD $diff
-	fi
+	volume
 	;;
 webradioadd )
 	url=$( urldecode $URL )

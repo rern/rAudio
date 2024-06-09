@@ -44,16 +44,13 @@ i2c-dev"
 	pushRefresh
 	[[ $CMD == powerbutton ]] && return
 	
-	list=$( grep -v "$CMD" $dirshm/reboot 2> /dev/null )
 	if [[ $rebooti2c ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
 		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
 		label=$( sed -n "/.*'$CMD' *=>/ {s/.*'label' => '//; s/'.*//; p}" /srv/http/settings/system.php )
 		notify $CMD "$label" 'Reboot required.' 5000
-		list+="
-$CMD"
+		appendSortUnique $CMD $dirshm/reboot
 	fi
-	[[ $list ]] && awk NF <<< $list > $dirshm/reboot || rm -f $dirshm/reboot
 }
 sharedDataSet() {
 	mv /mnt/MPD/{SD,USB} /mnt
@@ -367,7 +364,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	configTxt
 	;;
 rebootlist )
-	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot
+	getContent $dirshm/reboot
 	rm -f $dirshm/{reboot,backup.gz}
 	;;
 regdomlist )

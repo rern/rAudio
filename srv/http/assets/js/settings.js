@@ -379,7 +379,28 @@ $( '.helphead' ).on( 'click', function() {
 	}
 } );
 $( '.close' ).on( 'click', function() {
-	location.href = '/';
+	bash( [ 'settings/system.sh', 'rebootlist' ], list => {
+		if ( ! list ) {
+			location.href = '/';
+			return
+		}
+		
+		var message = '<wh>Reboot required for:</wh>';
+		list.split( '\n' ).forEach( id => {
+			var label = id === 'localbrowser' ? 'Rotate Browser on RPi' : $( '#div'+ id +' .label' ).eq( 0 ).text();
+			message += '<br>'+ ico( id ) +' '+ label;
+		} );
+		info( {
+			  icon         : page
+			, title        : 'System Setting'
+			, message      : message
+			, messagealign : 'left'
+			, cancel       : () => location.href = '/'
+			, okcolor      : orange
+			, oklabel      : ico( 'reboot' ) +'Reboot'
+			, ok           : () => infoPowerCommand( 'reboot' )
+		} );
+	} );
 } );
 $( '.help' ).on( 'click', function() {
 	var $this  = $( this );

@@ -249,7 +249,7 @@ ipAddress() {
 	[[ $1 ]] && echo ${ip%.*}. || echo $ip
 }
 ipOnline() {
-	ping -c 1 -w 1 $1 &> /dev/null && return 0
+	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 json2var() {
 	local regex
@@ -269,6 +269,9 @@ lineCount() {
 }
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
+}
+mpcState() {
+	mpc status %state% | sed -E 's/ing|ped|d$//'
 }
 notify() { # icon title message delayms
 	local data delay icon ip json message title
@@ -376,7 +379,7 @@ sharedDataBackupLink() {
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
-	echo data >> $dirnas/.mpdignore
+	appendSortUnique data $dirnas/.mpdignore
 }
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
@@ -418,22 +421,59 @@ snapserverList() {
 	
 	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
 }
-stateMPD() {
-	mpc status %state% | sed -E 's/ped$|ing$|d$//g'
-	
-}
-statePlay() {
-	[[ $( mpc status %state% ) == playing ]] && return 0
-}
 stringEscape() {
 	echo "${@//\"/\\\"}"
 }
+volume() {
+	filevolumemute=$dirsystem/volumemute
+	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
+	if [[ $TYPE != dragpress ]]; then
+		if [[ $TYPE == mute ]]; then
+			val=$CURRENT
+			type=mute
+		else
+			val=$TARGET
+			[[ -e $filevolumemute ]] && type=unmute
+		fi
+		pushData volume '{ "type": "'$type'", "val": '$val' }'
+	fi
+	if [[ $TYPE == mute ]]; then
+		echo $CURRENT > $filevolumemute
+	else
+		rm -f $filevolumemute
+	fi
+	if [[ $CARD == btreceiver ]]; then # bluetooth
+		fn_volume=volumeBlueAlsa
+	elif [[ $CONTROL ]]; then          # hardware
+		fn_volume=volumeAmixer
+	else                               # software
+		fn_volume=volumeMpd
+	fi
+	diff=$(( TARGET - CURRENT ))
+	diff=${diff#-}
+	if (( $diff < 5 )); then
+		$fn_volume $TARGET "$CONTROL" $CARD
+		if [[ $TARGET == 1 && $( volumeGet ) == 0 ]]; then # fix - some mixers cannot set at 1%
+			[[ $CURRENT == 0 ]] && val=2 || val=0
+			$fn_volume $val "$CONTROL" $CARD
+			pushData volume '{ "val": '$val' }'
+		fi
+	else
+		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
+		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
+		(( $diff % 5 )) && values+=( $TARGET )
+		for val in "${values[@]}"; do
+			$fn_volume $val "$CONTROL" $CARD
+			sleep 0.2
+		done
+	fi
+}
 volumeAmixer() { # value control card
-	amixer -c $3 -Mq sset "$2" $1
+	amixer -c $3 -Mq sset "$2" $1%
 	[[ -e $dirshm/usbdac ]] && alsactl store & # fix: not saved on off / disconnect
 }
 volumeBlueAlsa() { # value control
-	amixer -MqD bluealsa sset "$2" $1
+	amixer -MqD bluealsa sset "$2" $1%
 }
 volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
@@ -473,6 +513,9 @@ volumeGet() {
 		* )     echo $val;;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
+}
+volumeMpd() {
+	mpc -q volume $1
 }
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 	killProcess vol

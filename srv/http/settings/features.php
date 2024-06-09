@@ -24,7 +24,7 @@ $id_data      = [
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
 	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
 ];
-$snapweb = i( 'gear btn' ).'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
+$snapweb = $b_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ]; //////////////////////////////////
 $body         = [
@@ -46,7 +46,7 @@ EOF
 	, [
 		  'id'       => 'snapclient'
 		, 'help'     => <<< EOF
-{$snapweb}
+$snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
  · SnapClient and SnapServer can be enabled on the same device.
@@ -108,7 +108,7 @@ EOF
 	, [
 		  'id'       => 'snapserver'
 		, 'help'     => <<< EOF
-{$snapweb}
+$snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player
 EOF
 	]
@@ -210,7 +210,7 @@ EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.
- · Web Radio must be manually scrobbled: Playing title &raquo; {$Fi( 'lastfm btn' )} Scrobble
+ · Web Radio must be manually scrobbled: Playing title &raquo; $b_lastfm Scrobble
  · Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &raquo; User icon &raquo; Library &raquo; Scrobbles
 EOF
 	]
@@ -223,8 +223,8 @@ EOF
 	· IP address - This rAudio must be set to static / fixed to prevent change on reboot.
 	· Password - if changed, must be the same on all clients.
 	· In {$FiTab( 'Library' )} Library
-		· {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden.
-		· {$Fi( 'usb btn' )} USB items will be displayed in {$Fi( 'networks btn' )} NAS instead.
+		· $b_microsd SD and $b_usbdrive USB will be hidden.
+		· $b_usbdrive USB items will be displayed in $b_networks NAS instead.
 	· On reboot / power off:
 		· Shared Data on clients will be temporarily disabled
 		· Re-enabled by itself once the server is back online.

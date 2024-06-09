@@ -8,7 +8,7 @@ if ( isset( $argv[ 1 ] ) ) {
 $add      = $playlist === 'add' ? true : false;
 $headers  = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
-include '/srv/http/function.php';
+include 'function.php';
 
 // current playlist
 // saved playlists: delete, edit, get, list, load, rename, save
@@ -123,7 +123,7 @@ function htmlSavedPlaylist() {
 	<span class="plname">'.$name.'</span>
 </li>';
 	}
-	$indexbar  = indexbar( array_keys( array_flip( $indexes ) ) );
+	$indexbar  = indexBar( array_keys( array_flip( $indexes ) ) );
 	$counthtml = '
 &emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
 <wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
@@ -153,7 +153,7 @@ function htmlTrack( $lists, $plname = '' ) {
 		$file       = $list->file;
 		$fileheader = strtolower( substr( $file, 0, 4 ) );
 		if ( ! in_array( $fileheader, $headers ) ) {
-			$sec       = HMS2Second( $list->Time );
+			$sec       = HMS2second( $list->Time );
 			$track     = preg_replace( '/^#*0*/', '', $list->Track );
 			$li2       = '';
 			if ( $track ) $li2.= '<a class="track">'.$track.'</a> - ';

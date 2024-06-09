@@ -625,8 +625,6 @@ $( '#volume' ).roundSlider( {
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );
 			$( '#volume-knob, #button-volume i' ).removeClass( 'noclick' );
-			$( '#voldn' ).toggleClass( 'disabled', e.value === 0 );
-			$( '#volup' ).toggleClass( 'disabled', e.value === 100 );
 			V.animate = false;
 		}, speed );
 	}
@@ -649,10 +647,13 @@ $( '#volume' ).roundSlider( {
 		S.volume     = e.value;
 		V.volumeprev = S.volume;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
+		setVolumeUpDn();
+		if ( S.volumemute ) volumeColorUnmute();
 	}
 	, stop              : () => {
 		V.drag = false;
 		volumePush();
+		setVolumeUpDn()
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {

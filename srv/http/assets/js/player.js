@@ -374,9 +374,8 @@ function renderPage() {
 		} else {
 			$( '#divmixer' ).addClass( 'hide' );
 		}
-		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
-		$( '#setting-mixertype' ).toggleClass( 'hide', ! S.mixers );
 		noVolumeSet();
+		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 	}

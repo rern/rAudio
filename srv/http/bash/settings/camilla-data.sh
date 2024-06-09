@@ -16,6 +16,8 @@ fi
 ########
 data='
 , "bluetooth"  : '$bluetooth'
+, "btreceiver" : '$( exists $dirshm/btreceiver )'
+, "card"       : '$card'
 , "cardname"   : "'$name'"
 , "channels"   : '$( < $dirshm/channels )'
 , "control"    : "'$mixer'"
@@ -27,7 +29,7 @@ data='
 , "samplings"  : '$( < $dirshm/samplings )'
 , "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
-, "state"      : "'$( stateMPD )'"
+, "state"      : "'$( mpcState )'"
 , "volume"     : '$( [[ $mixer ]] && volumeGet )'
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
