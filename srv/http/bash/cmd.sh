@@ -772,48 +772,7 @@ upnpstart )
 	playerStart
 	;;
 volume )
-	filevolumemute=$dirsystem/volumemute
-	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
-	if [[ $TYPE != dragpress ]]; then
-		if [[ $TYPE == mute ]]; then
-			val=$CURRENT
-			type=mute
-		else
-			val=$TARGET
-			[[ -e $filevolumemute ]] && type=unmute
-		fi
-		pushData volume '{ "type": "'$type'", "val": '$val' }'
-	fi
-	if [[ $TYPE == mute ]]; then
-		echo $CURRENT > $filevolumemute
-	else
-		rm -f $filevolumemute
-	fi
-	if [[ $CARD == btreceiver ]]; then # bluetooth
-		fn_volume=volumeBlueAlsa
-	elif [[ $CONTROL ]]; then          # hardware
-		fn_volume=volumeAmixer
-	else                               # software
-		fn_volume=volumeMpd
-	fi
-	diff=$(( TARGET - CURRENT ))
-	diff=${diff#-}
-	if (( $diff < 5 )); then
-		$fn_volume $TARGET "$CONTROL" $CARD
-		if [[ $TARGET == 1 && $( volumeGet ) == 0 ]]; then # fix - some mixers cannot set at 1%
-			[[ $CURRENT == 0 ]] && val=2 || val=0
-			$fn_volume $val "$CONTROL" $CARD
-			pushData volume '{ "val": '$val' }'
-		fi
-	else
-		(( $CURRENT < $TARGET )) && incr=5 || incr=-5
-		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
-		(( $diff % 5 )) && values+=( $TARGET )
-		for val in "${values[@]}"; do
-			$fn_volume $val "$CONTROL" $CARD
-			sleep 0.2
-		done
-	fi
+	volume
 	;;
 webradioadd )
 	url=$( urldecode $URL )

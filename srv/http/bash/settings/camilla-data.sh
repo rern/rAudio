@@ -16,6 +16,8 @@ fi
 ########
 data='
 , "bluetooth"  : '$bluetooth'
+, "btreceiver" : '$( exists $dirshm/btreceiver )'
+, "card"       : '$card'
 , "cardname"   : "'$name'"
 , "channels"   : '$( < $dirshm/channels )'
 , "control"    : "'$mixer'"
