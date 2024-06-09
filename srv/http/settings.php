@@ -16,10 +16,10 @@ function menu( $icon, $name, $iconsub = '' ) {
 	$submenu = $iconsub ? i( $iconsub.' sub' ) : '';
 	return '<a class="helpmenu">'.i( $icon ).' '.$name.$submenu.'</a>';
 }
-$btn = [ 'add',   'bluetooth', 'btsender', 'code',    'gear',   'lan',  'lastfm',   'microsd', 'networks'
-		,'pause', 'play',      'power',    'refresh', 'search', 'stop', 'usbdrive', 'volume',  'wifi' ];
-		
-if ( $page === 'camilla' ) array_merge( $btn, [ 'filters', 'flowchart', 'graph', 'input', 'inverted', 'linear', 'mixers', 'output', 'set0' ] );
+$btn  = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'
+		 ,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
+$btnc = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
+if ( $page === 'camilla' ) $btn = array_merge( $btn, $btnc );
 foreach( $btn as $b ) {
 	$name  = 'b_'.$b;
 	$$name = i( $b.' btn' );
