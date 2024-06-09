@@ -105,4 +105,5 @@ if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="banner" class="hide"></div>
 <div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
-<?php } ?>
+<?php
+}

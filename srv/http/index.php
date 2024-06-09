@@ -1,11 +1,6 @@
 <?php
 include 'common.php';
 
-function i( $class, $id = '', $cmd = '' ) {
-	$htmlid  = $id ? ' id="'.$id.'"' : '';
-	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
-	return '<i'.$htmlid.' class="i-'.$class.'"'.$htmlcmd.'></i>';
-}
 // context menus
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( 'plus-o' ).'Add</a>'.i( 'play-plus submenu', '', $add.'play' );
@@ -31,6 +26,11 @@ function htmlmenu( $menulist, $mode ) {
 	if ( ! $kid3 ) array_pop( $menulist );
 	foreach( $menulist as $list ) $html.= menuli( $list );
 	$menu.= menudiv( $mode, $html );
+}
+function i( $class, $id = '', $cmd = '' ) {
+	$htmlid  = $id ? ' id="'.$id.'"' : '';
+	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
+	return '<i'.$htmlid.' class="i-'.$class.'"'.$htmlcmd.'></i>';
 }
 
 $menu = '';

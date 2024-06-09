@@ -298,7 +298,7 @@ function htmlDirectory( $lists ) {
 			$htmlf .= htmlDirectoryLi( $gmode, $index, i( 'music ', 'file' ), $path, $name );
 		}
 	}
-	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
+	$indexbar = indexBar( array_keys( array_flip( $indexes ) ) );
 	$html    .= $htmlf.
 '</ul>
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
@@ -358,7 +358,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	'.$icon.'<span class="single">'.$name.'</span>
 </li>';
 	}
-	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
+	$indexbar = indexBar( array_keys( array_flip( $indexes ) ) );
 	$html    .=
 '</ul>
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
@@ -408,7 +408,7 @@ function htmlList( $lists ) { // non-file 'list' command
 </div>';
 		}
 	}
-	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) ); // faster than array_unique
+	$indexbar = indexBar( array_keys( array_flip( $indexes ) ) ); // faster than array_unique
 	$html    .=
 '</ul>
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
@@ -490,7 +490,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 	$html.=
 '</ul>';
 	if ( $mode !== 'search' ) {
-		$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
+		$indexbar = indexBar( array_keys( array_flip( $indexes ) ) );
 		$html.=
 '<div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';

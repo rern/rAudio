@@ -1,4 +1,4 @@
-<?php
+<?php // for mpdlibrary.php, mpdplaylist.php
 function HMS2second( $time ) {
 	if ( ! $time ) return 0;
 	
@@ -10,18 +10,15 @@ function HMS2second( $time ) {
 		case 3: return $HMS[ 0 ] * 60 * 60 + $HMS[ 1 ] * 60 + $HMS[ 0 ]; break;
 	}
 }
-function i( $class, $menu = '' ) {
-	$icon = '<i class="i-'.$class;
-	$icon.= $menu ? ' li-icon" data-menu="'.$menu.'"></i>' : '"></i>';
-	return $icon;
+function i( $icon, $menu = '' ) {
+	$htmlmenu = $menu ? ' li-icon" data-menu="'.$menu.'"' : '';
+	return '<i class="i-'.$icon.'"'.$htmlmenu.'></i>';
 }
 function imgIcon( $thumbsrc, $menu, $icon = '' ) {
-	$img = '<img class="lazyload iconthumb li-icon '.$icon.'"';
-	$img.= $icon ? ' data-icon="'.$icon.'"' : '';
-	$img.= ' data-src="'.$thumbsrc.'^^^" data-menu="'.$menu.'">';
-	return $img;
+	$htmlicon = $icon ? ' data-icon="'.$icon.'"' : '';
+	return '<img class="lazyload iconthumb li-icon '.$icon.'"'.$htmlicon.' data-src="'.$thumbsrc.'^^^" data-menu="'.$menu.'">';
 }
-function indexbar( $indexes ) {
+function indexBar( $indexes ) {
 	$indexbar = '<a class="indexed"><wh>#</wh></a>';
 	$chars    = range( 'A', 'Z' );
 	for ( $i = 0; $i < 26; $i++ ) {

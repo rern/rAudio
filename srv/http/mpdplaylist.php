@@ -123,7 +123,7 @@ function htmlSavedPlaylist() {
 	<span class="plname">'.$name.'</span>
 </li>';
 	}
-	$indexbar  = indexbar( array_keys( array_flip( $indexes ) ) );
+	$indexbar  = indexBar( array_keys( array_flip( $indexes ) ) );
 	$counthtml = '
 &emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
 <wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
