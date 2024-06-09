@@ -19,7 +19,7 @@ function menu( $icon, $name, $iconsub = '' ) {
 $btn = [ 'add',   'bluetooth', 'btsender', 'code',    'gear',   'lan',  'lastfm',   'microsd', 'networks'
 		,'pause', 'play',      'power',    'refresh', 'search', 'stop', 'usbdrive', 'volume',  'wifi' ];
 		
-if ( $page === 'camilla' ) array_merge( $btn, $btn = [ 'filters', 'flowchart', 'graph', 'input', 'inverted', 'linear', 'mixers', 'output', 'set0' ] );
+if ( $page === 'camilla' ) array_merge( $btn, [ 'filters', 'flowchart', 'graph', 'input', 'inverted', 'linear', 'mixers', 'output', 'set0' ] );
 foreach( $btn as $b ) {
 	$name  = 'b_'.$b;
 	$$name = i( $b.' btn' );
