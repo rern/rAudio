@@ -226,7 +226,7 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	volumeAmixer $VAL% "$MIXER" $CARD
+	volumeAmixer $VAL "$MIXER" $CARD
 	[[ $VAL > 0 ]] && rm -f $dirsystem/volumemute
 	;;
 volume0db )
