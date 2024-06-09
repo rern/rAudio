@@ -789,9 +789,9 @@ volume )
 	else
 		rm -f $filevolumemute
 	fi
-	if [[ $card == btreceiver ]]; then # bluetooth
+	if [[ $CARD == btreceiver ]]; then # bluetooth
 		fn_volume=volumeBlueAlsa
-	elif [[ $control ]]; then          # hardware
+	elif [[ $CONTROL ]]; then          # hardware
 		fn_volume=volumeAmixer
 	else                               # software
 		fn_volume=volumeMpd
