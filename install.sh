@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240608
+# 20240609
 file=/etc/systemd/system/websocket.service
 if grep -q '-server' $file; then
 	sed -i 's/-server//' $file
