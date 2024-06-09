@@ -1068,7 +1068,7 @@ function pageActive() {
 	if ( ws ) {
 		V.timeoutreload = true;
 		setTimeout( () => { // reconnect if ws not response on wakeup
-			if ( V.timeoutreload ) location.reload();
+			if ( V.timeoutreload ) websocketReconnect();
 		}, 300 );
 		ws.send( '"ping"' );
 	} else {
@@ -1155,7 +1155,11 @@ function websocketConnect( ip ) {
 }
 function websocketReconnect() {
 	$.post( 'cmd.php', { cmd: 'startupready' }, ready => {
-		ready ? websocketConnect() : setTimeout( () => websocketReconnect(), 1000 );
+		if ( ready ) {
+			V.timeoutreload ? location.reload() : websocketConnect();
+		} else {
+			setTimeout( () => websocketReconnect(), 1000 );
+		}
 	} );
 }
 /* bash
