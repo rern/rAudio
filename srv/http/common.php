@@ -55,12 +55,6 @@ if ( ! $page ) { // main
 		$jsp[]  = 'select2';
 		$js[]   = 'equalizer';
 	}
-	if ( $localhost ) {
-		$cssp[] = 'simplekeyboard';
-		$css[]  = 'simplekeyboard';
-		$jsp[]  = 'simplekeyboard';
-		$js[]   = 'simplekeyboard';
-	}
 	// hovercursor.css and shortcut.js - appended last
 	$title = 'STATUS';
 } else {         // settings
@@ -91,6 +85,14 @@ if ( ! $page ) { // main
 	}
 	$title = $pagetitle;
 }
+$notaddon_guide = ! $guide && ! $addonsprogress;
+$keyboard       = $localhost && $notaddon_guide;
+if ( $keyboard ) {
+	$cssp[] = 'simplekeyboard';
+	$css[]  = 'simplekeyboard';
+	$jsp[]  = 'simplekeyboard';
+	$js[]   = 'simplekeyboard';
+}
 // <style> -----------------------------------------------------
 $links = '';
 foreach( $cssp as $c ) $links.= '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
@@ -100,10 +102,12 @@ echo $links.'
 </head>
 <body>
 <div id="infoOverlay" class="hide" tabindex="-1"></div>';
-if ( ! $addonsprogress && ! $guide ) { ?>
+if ( $notaddon_guide ) { ?>
 <div id="loader"><?=$logosvg?></div>
 <div id="banner" class="hide"></div>
 <div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
+<div id="debug"></div>
 <?php
+if ( $keyboard ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 }

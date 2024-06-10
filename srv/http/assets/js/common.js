@@ -1235,8 +1235,9 @@ function bashConsoleLog( data ) {
 }
 
 $( '#debug' ).press( function() {
-	V.debug = true;
-	console.log( '- Debug mode -' );
+	V.debug = ! V.debug;
+	$( '#debug' ).toggleClass( 'bgm' );
+	console.log( 'Debug mode - '+ ( V.debug ? 'Send no commands.' : 'Disabled.' ) );
 } );
 $( '.page-icon' ).press( () => location.reload() );
 $( '.col-r .switch' ).press( function( e ) {

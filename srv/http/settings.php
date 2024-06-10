@@ -61,22 +61,21 @@ foreach ( $tabs as $tab ) {
 	$id      = strtolower( $tab );
 	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).'<a> '.$tab.'</a></div>';
 }
-$htmlbar.= '</div>
-<div id="debug"></div>';
+$htmlbar.= '</div>';
 echo $htmlbar;
-if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 
 // <script> -----------------------------------------------------
-foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+$script = '';
+foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )  $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
 if ( $camilla ) {
-	echo '
+	$script.= '
 <script>
-var jfiles = '.json_encode( $jfiles ).';
+var jfiles = '.json_encode( $jfiles ).'
 </script>
 ';
 }
-echo '
+echo $script.'
 </body>
 </html>
 ';
