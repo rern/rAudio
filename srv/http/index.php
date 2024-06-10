@@ -314,15 +314,4 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 
 <?php
 // <script> -----------------------------------------------------
-$script = '';
-foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )  $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-if ( ! $page )        $script.= '<script id="shortcut" src="/assets/js/shortcut.js'.$hash.'"></script>';
-echo $script.'
-<script>
-var jfiles = '.json_encode( $jfiles ).'
-</script>
-
-</body>
-</html>
-';
+echo $script;

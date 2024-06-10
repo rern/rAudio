@@ -65,21 +65,7 @@ $htmlbar.= '</div>';
 echo $htmlbar;
 
 // <script> -----------------------------------------------------
-$script = '';
-foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )  $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-if ( $camilla ) {
-	$script.= '
-<script>
-var jfiles = '.json_encode( $jfiles ).'
-</script>
-';
-}
-echo $script.'
-</body>
-</html>
-';
-
+echo $script;
 if ( $addons ) exit;
 //----------------------------------------------------------------------------------
 /*
