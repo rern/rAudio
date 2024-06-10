@@ -19,7 +19,7 @@ function menu( $icon, $name, $iconsub = '' ) {
 $btn  = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'
 		 ,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
 $btnc = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
-if ( $page === 'camilla' ) $btn = array_merge( $btn, $btnc );
+if ( $camilla ) $btn = array_merge( $btn, $btnc );
 foreach( $btn as $b ) {
 	$name  = 'b_'.$b;
 	$$name = i( $b.' btn' );
@@ -32,12 +32,15 @@ $FiTab   = 'iTab';
 $Fmenu   = 'menu';
 
 echo '
-<div class="head">
-	'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close' ).i( 'help helphead' ).'
-</div>
-<div class="container '.$page.' hide">';
-if ( $page !== 'addons' ) include 'settings/'.$page.'.php';
-echo '</div>';
+	<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close' ).i( 'help helphead' ).'</div>
+	<div class="container '.$page.' hide">
+';
+
+if ( ! $addons ) include 'settings/'.$page.'.php';
+
+echo '
+	</div>
+';
 if ( $addonsprogress || $guide ) {
 	echo '
 </body>
@@ -61,26 +64,11 @@ foreach ( $tabs as $tab ) {
 	$id      = strtolower( $tab );
 	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).'<a> '.$tab.'</a></div>';
 }
-$htmlbar.= '</div>
-<div id="debug"></div>';
+$htmlbar.= '</div>';
 echo $htmlbar;
-if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 
 // <script> -----------------------------------------------------
-foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-if ( $camilla ) {
-	echo '
-<script>
-var jfiles = '.json_encode( $jfiles ).';
-</script>
-';
-}
-echo '
-</body>
-</html>
-';
-
+echo $scripts;
 if ( $addons ) exit;
 //----------------------------------------------------------------------------------
 /*
@@ -192,7 +180,7 @@ function htmlSetting( $data ) {
 	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
-	if ( $page === 'features' || $page === 'system' ) $icon = $id;
+	if ( $features || $system ) $icon = $id;
 	
 	$html        = '<div id="div'.$id.'" class="row">';
 	// col-l

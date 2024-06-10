@@ -416,8 +416,6 @@ $( '.setting, .switch' ).on( 'click', function() {
 	switchIdIconTitle( this.id );
 } );
 $( '.switch' ).on( 'click', function() {
-	if ( V.press ) return
-	
 	var $this   = $( this );
 	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {

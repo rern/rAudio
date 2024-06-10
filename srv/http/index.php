@@ -311,21 +311,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	<?=i( 'library', 'library' ).i( 'playback', 'playback' ).i( 'playlist', 'playlist' )?>
 </div>
 <div id="bio" class="hide"></div>
-<div id="debug"></div>
 
 <?php
-if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
-
 // <script> -----------------------------------------------------
-$script = '';
-foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )  $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-if ( ! $page )        $script.= '<script id="shortcut" src="/assets/js/shortcut.js'.$hash.'"></script>';
-echo $script.'
-<script>
-var jfiles = '.json_encode( $jfiles ).'
-</script>
-
-</body>
-</html>
-';
+echo $scripts;
