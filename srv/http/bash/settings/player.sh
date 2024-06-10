@@ -7,6 +7,13 @@ args2var "$1"
 linkConf() {
 	ln -sf $dirmpdconf/{conf/,}$CMD.conf
 }
+amixer0dB() {
+	if [[ -e $dirshm/amixercontrol ]]; then
+		. $dirshm/output
+		amixer -c $card -Mq sset "$mixer" 0dB
+		volumeGet push hw
+	fi
+}
 
 case $CMD in
 
@@ -114,17 +121,20 @@ mixertype )
 	else
 		rm -f $dirsystem/replaygain-hw
 	fi
-	if [[ $mixer ]]; then
-		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB # [hw] set to current [sw] || [sw/none] set 0dB
-		volumeAmixer $vol "$mixer" $card
+	if [[ $mixer ]]; then # [hw] set to current [sw] || [sw/none] set 0dB
+		if [[ $MIXERTYPE == hardware ]]; then
+			vol=$( mpc status %volume% )
+			volumeAmixer $vol "$mixer" $card
+		else
+			amixer0dB
+		fi
 	fi
 	$dirsettings/player-conf.sh
 	[[ $MIXERTYPE == none ]] && volumenone=true || volumenone=false
 	pushData display '{ "volumenone": '$volumenone' }'
 	;;
 novolume )
-	. $dirshm/output
-	volumeAmixer 0dB "$mixer" $card
+	amixer0dB
 	echo none > "$dirsystem/mixertype-$name"
 	mpc -q crossfade 0
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
@@ -230,20 +240,15 @@ volume )
 	[[ $VAL > 0 ]] && rm -f $dirsystem/volumemute
 	;;
 volume0db )
-	[[ ! -e $dirshm/amixercontrol ]] && exit
-# --------------------------------------------------------------------
-	card=$( < $dirsystem/asoundcard )
-	control=$( < $dirshm/amixercontrol )
-	volumeAmixer 0dB "$control" $card
-	volumeGet push hw
+	amixer0dB
 	;;
 volume0dbbt )
 	btmixer=$( < $dirshm/btmixer )
-	volumeBlueAlsa 0dB "$btmixer"
+	amixer -MqD bluealsa sset "$btmixer" 0dB
 	volumeGet push hw
 	;;
 volumebt )
-	volumeBlueAlsa $VAL% "$MIXER"
+	volumeBlueAlsa $VAL "$MIXER"
 	;;
 volumepush )
 	[[ ! $BT ]] && hw=hw

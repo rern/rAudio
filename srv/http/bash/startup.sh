@@ -143,11 +143,10 @@ if [[ -e $dirsystem/volumeboot ]]; then
 	. $dirsystem/volumeboot.conf
 	if [[ -e $dirshm/btreceiver ]]; then
 		control=$( < $dirshm/btmixer )
-		volumeBlueAlsa $volume% "$control"
+		volumeBlueAlsa $volume "$control"
 	elif [[ -e $dirshm/amixercontrol ]]; then
-		card=$( < $dirsystem/asoundcard )
-		control=$( < $dirshm/amixercontrol )
-		volumeAmixer $volume% "$control" $card
+		. $dirshm/output
+		volumeAmixer $volume "$mixer" $card
 	else
 		mpc -q volume $volume
 	fi
