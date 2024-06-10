@@ -314,4 +314,4 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 
 <?php
 // <script> -----------------------------------------------------
-echo $script;
+echo $scripts;

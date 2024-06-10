@@ -111,12 +111,12 @@ if ( $notaddon_guide ) { ?>
 <?php
 if ( $keyboard ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 }
-$script = '';
-foreach( $jsp as $j )      $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )       $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-if ( ! $page )             $script.= '<script id="shortcut" src="/assets/js/shortcut.js'.$hash.'"></script>';
-if ( ! $page || $camilla ) $script.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
-$script.='
+$scripts = '';
+foreach( $jsp as $j )      $scripts.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )       $scripts.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+if ( ! $page )             $scripts.= '<script id="shortcut" src="/assets/js/shortcut.js'.$hash.'"></script>';
+if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
+$scripts.='
 </body>
 </html>
 ';
