@@ -1238,6 +1238,7 @@ $( '#debug' ).press( function() {
 	V.debug = ! V.debug;
 	$( '#debug' ).toggleClass( 'bgm' );
 	console.log( 'Debug mode - '+ ( V.debug ? 'Send no commands.' : 'Disabled.' ) );
+	if ( ! V.debug ) refreshData();
 } );
 $( '.page-icon' ).press( () => location.reload() );
 $( '.col-r .switch' ).press( function( e ) {
