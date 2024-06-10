@@ -32,12 +32,15 @@ $FiTab   = 'iTab';
 $Fmenu   = 'menu';
 
 echo '
-<div class="head">
-	'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close' ).i( 'help helphead' ).'
-</div>
-<div class="container '.$page.' hide">';
+	<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close' ).i( 'help helphead' ).'</div>
+	<div class="container '.$page.' hide">
+';
+
 if ( ! $addons ) include 'settings/'.$page.'.php';
-echo '</div>';
+
+echo '
+	</div>
+';
 if ( $addonsprogress || $guide ) {
 	echo '
 </body>
