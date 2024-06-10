@@ -8,8 +8,6 @@ bash()
 */
 
 var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
-var dirbash     = '/srv/http/bash/';
-var filesh      = dirbash + ( page ? 'settings/'+ page : 'cmd' ) +'.sh';
 var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
@@ -953,7 +951,13 @@ function jsonClone( json ) {
 }
 function jsonSave( name, json ) {
 	if ( typeof json === 'object' ) json = JSON.stringify( json );
-	ws.send( '{ "json": '+ json +', "name": "'+ name +'" }' );
+	var data = '{ "json": '+ json +', "name": "'+ name +'" }';
+	if ( V.debug ) {
+		bashConsoleLog( data );
+		return
+	}
+	
+	ws.send( data );
 }
 function jsonSort( json ) {
 	return Object.keys( json ).sort().reduce( function ( result, key ) {
@@ -1185,28 +1189,32 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 		- [ CMD, 'OFF' ] : disable
 */
 function bash( args, callback, json ) {
-	var args0 = args[ 0 ];
+	var args0  = args[ 0 ];
+	var filesh = '/srv/http/bash/';
 	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) {
-		var file = dirbash + args0;
+		filesh += args0;
 		args.shift();
 	} else {
-		var file = filesh;
+		filesh += page ? 'settings/'+ page +'.sh': 'cmd.sh';
 	}
 	// websocket
 	if ( ! callback && V.wsready ) {
-		var data = '{ "filesh": [ "'+ file +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
-		if ( V.debug ) console.log( data );
+		var data = '{ "filesh": [ "'+ filesh +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
+		if ( V.debug ) {
+			bashConsoleLog( data );
+			return
+		}
+		
 		ws.send( data );
 		return
 	}
 	// php
-	var data = { cmd: 'bash', filesh: file, args: args || '' }
+	var data = { cmd: 'bash', filesh: filesh, args: args || '' }
 	if ( V.debug ) {
-		var bashcmd = file.split( '/' ).pop();
-		if ( args ) bashcmd += ' "\\\n'+ args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
-		console.log( data );
-		console.log( bashcmd );
+		bashConsoleLog( data );
+		return
 	}
+	
 	$.post( 
 		 'cmd.php'
 		, data
@@ -1214,11 +1222,21 @@ function bash( args, callback, json ) {
 		, json || null
 	);
 }
+function bashConsoleLog( data ) {
+	if ( typeof data === 'string' ) {
+		console.log( JSON.parse( data ) );
+		console.log( "websocat ws://127.0.0.1:8080 <<< '"+ data +"'" );
+	} else {
+		var bashcmd = data.filesh.split( '/' ).pop();
+		if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
+		console.log( data );
+		console.log( bashcmd );
+	}
+}
 
 $( '#debug' ).press( function() {
-	banner( 'gear', 'Debug', 'Console.log + Push status', 5000 );
-	bash( [ 'cmd.sh', 'cachebust' ] );
 	V.debug = true;
+	console.log( '- Debug mode -' );
 } );
 $( '.page-icon' ).press( () => location.reload() );
 $( '.col-r .switch' ).press( function( e ) {
