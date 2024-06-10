@@ -19,7 +19,7 @@ function menu( $icon, $name, $iconsub = '' ) {
 $btn  = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'
 		 ,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
 $btnc = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
-if ( $page === 'camilla' ) $btn = array_merge( $btn, $btnc );
+if ( $camilla ) $btn = array_merge( $btn, $btnc );
 foreach( $btn as $b ) {
 	$name  = 'b_'.$b;
 	$$name = i( $b.' btn' );
@@ -36,7 +36,7 @@ echo '
 	'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close' ).i( 'help helphead' ).'
 </div>
 <div class="container '.$page.' hide">';
-if ( $page !== 'addons' ) include 'settings/'.$page.'.php';
+if ( ! $addons ) include 'settings/'.$page.'.php';
 echo '</div>';
 if ( $addonsprogress || $guide ) {
 	echo '
@@ -177,7 +177,7 @@ function htmlSetting( $data ) {
 	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
-	if ( $page === 'features' || $page === 'system' ) $icon = $id;
+	if ( $features || $system ) $icon = $id;
 	
 	$html        = '<div id="div'.$id.'" class="row">';
 	// col-l
