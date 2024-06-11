@@ -22,6 +22,8 @@
 	vertical-align : -3px;
 }
 </style>
+</head>
+<body>
 
 <div id="infoOverlay" class="hide">
 	<div id="infoBox">
