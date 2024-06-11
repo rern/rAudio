@@ -11,8 +11,8 @@ function HMS2second( $time ) {
 	}
 }
 function i( $icon, $menu = '' ) {
-	$htmlmenu = $menu ? ' li-icon" data-menu="'.$menu.'"' : '';
-	return '<i class="i-'.$icon.'"'.$htmlmenu.'></i>';
+	$htmlmenu = $menu ? ' li-icon" data-menu="'.$menu : '';
+	return '<i class="i-'.$icon.$htmlmenu.'"></i>';
 }
 function imgIcon( $thumbsrc, $menu, $icon = '' ) {
 	$htmlicon = $icon ? ' data-icon="'.$icon.'"' : '';
