@@ -40,7 +40,7 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20240608
+# 20240610
 systemctl restart websocket
 
 # 20240601

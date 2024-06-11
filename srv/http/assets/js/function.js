@@ -22,7 +22,7 @@ function bio( artist, getsimilar ) {
 			 +'&method=artist.getinfo'
 			 +'&api_key='+ V.apikeylastfm
 			 +'&artist='+ encodeURI( artist.replace( '&', 'and' ) );
-	$.post( url, function( data ) {
+	$.post( url, ( data ) => {
 		if ( 'error' in data || ( ! data.artist.bio.content ) ) {
 			info( {
 				  icon    : 'bio'
@@ -607,7 +607,7 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 		, bookmarkname : bookmarkname || ''
 		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 	}
-	$.post( 'cmd.php', data, function( std ) {
+	$.post( 'cmd.php', data, ( std ) => {
 		if ( std == -1 ) infoWarning( I.icon, I.title, 'Target directory not writable.' )
 	} );
 	banner( 'coverart', I.title, 'Change ...', -1 );

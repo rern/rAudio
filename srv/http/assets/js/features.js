@@ -341,7 +341,7 @@ $( '#login' ).on( 'click', function() {
 					  cmd      : 'login'
 					, disable  : 1
 					, password : infoVal()
-				}, function( verified ) {
+				}, ( verified ) => {
 					if ( verified == -1 ) passwordWrong();
 				}, 'json' );
 			}
@@ -369,7 +369,7 @@ $( '#setting-login' ).on( 'click', function() {
 				  cmd      : 'login'
 				, password : infoval[ 0 ]
 				, pwdnew   : S.login ? infoval[ 1 ] : infoval
-			}, function( verified ) {
+			}, ( verified ) => {
 				if ( verified == -1 ) passwordWrong();
 			}, 'json' );
 		}
