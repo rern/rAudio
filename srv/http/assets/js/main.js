@@ -148,7 +148,9 @@ if ( navigator.maxTouchPoints ) { // swipe
 		e.stopImmediatePropagation();
 		return false
 	} );
-	$( '#hovercursor, #shortcut' ).remove();
+} else {
+	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/hovercursor.css'+ versionHash() +'">' );
+	$.getScript( '/assets/js/shortcut.js' );
 }
 
 $( 'body' ).on( 'click', function( e ) {

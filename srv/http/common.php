@@ -42,18 +42,16 @@ foreach( $jsfiles as $file ) {
 	$jfiles[ $name ] = $file;
 }
 if ( ! $page ) { // main
-	$cssp[] = 'roundslider';
-	$css[]  = 'main';
-	$jsp    = [ 'jquery', 'lazysizes', 'roundslider', 'Sortable' ]; // dynamically loaded with $.getScript: html5colorpicker, pica, qrcode
-	$js     = [ 'common', 'context', 'function', 'main', 'passive' ];
+	$cssp  = [ 'roundslider' ];
+	$css[] = 'main';                                               // appended with js: hovercursor
+	$jsp   = [ 'jquery', 'lazysizes', 'roundslider', 'Sortable' ]; // loaded with $.getScript: html5colorpicker, pica, qrcode
+	$js    = [ 'common', 'context', 'function', 'main', 'passive' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
-		$css[]  = 'select2';
-		$css[]  = 'equalizer';
+		$css    = [ ...$css, 'select2','equalizer' ];
 		$jsp[]  = 'select2';
-		$js[]   = 'equalizer';
+		$js[]   = 'equalizer';                                     // loaded with $.getScript: shortcut
 	}
-	// hovercursor.css and shortcut.js - appended last
 	$title = 'STATUS';
 } else {         // settings
 	$pages = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
@@ -61,7 +59,7 @@ if ( ! $page ) { // main
 	$$page = true;
 	$cssp  = [];
 	$css[] = 'settings';
-	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ]; // dynamically loaded with $.getScript: d3, plotly
+	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ];       // loaded with $.getScript: d3, pipelineplotter, plotly, qrcode
 	$js    = [ 'common', 'settings', $page ];
 	if ( ! $guide && ! $networks && ! $addonsprogress ) {
 		$cssp[] = 'select2';
@@ -76,8 +74,7 @@ if ( ! $page ) { // main
 	} else if ( $camilla ) {
 		$icon      = 'camilladsp';
 		$pagetitle = 'Camilla DSP';
-		$css[]     = 'camilla';
-		$css[]     = 'equalizer';
+		$css       = [ ...$css, 'camilla','equalizer' ];
 		$jsp[]     = 'Sortable';
 	} else if ( $guide ) {
 		$icon      = 'help';
@@ -87,18 +84,12 @@ if ( ! $page ) { // main
 }
 $addon_guide = $guide || $addonsprogress;
 $keyboard    = $localhost && ! $addon_guide;
-if ( $keyboard ) {
-	$cssp[] = 'simplekeyboard';
-	$css[]  = 'simplekeyboard';
-	$jsp[]  = 'simplekeyboard';
-	$js[]   = 'simplekeyboard';
-}
+if ( $keyboard ) foreach( [ 'cssp', 'css', 'jsp', 'js' ] as $ea ) $$ea[] = 'simplekeyboard';
 
 $html = '';
 foreach( $cssp as $c ) $html.= '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
 foreach( $css as $c )  $html.= '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
-if ( ! $page )         $html.= '<link id="hovercursor" rel="stylesheet" href="/assets/css/hovercursor.css'.$hash.'">';
-echo $html.'
+$html.= '
 </head>
 <body>
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>';
@@ -109,13 +100,14 @@ if ( ! $addon_guide )  $html.= '
 	<pre id="data" class="hide"></pre>
 	<div id="debug"></div>
 ';
-if ( $keyboard )       $html.= '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
+if ( $keyboard )       $html.= '
+	<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
+';
 echo $html;
 
 $scripts = '';
 foreach( $jsp as $j )      $scripts.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
 foreach( $js as $j )       $scripts.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-if ( ! $page )             $scripts.= '<script id="shortcut" src="/assets/js/shortcut.js'.$hash.'"></script>';
 if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
 $scripts.='
 </body>

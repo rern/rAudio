@@ -530,7 +530,7 @@ $( '#divtimezone .col-r' ).on( 'click', function( e ) {
 	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
 	
 	$( '#timezone' ).select2( 'close' )
-	$.post( 'cmd.php', { cmd: 'timezonelist' }, function( data ) {
+	$.post( 'cmd.php', { cmd: 'timezonelist' }, ( data ) => {
 		$( '#timezone' )
 			.html( data )
 			.val( S.timezone )
