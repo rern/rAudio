@@ -99,10 +99,10 @@ function notify( icon, title, message, delay ) {
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function notifyCommon( message ) {
-	if ( ! message ) {
-		message = S[ SW.id ] ? 'Change ...' : 'Enable ...';
-	} else if ( typeof message === 'boolean' ) {
+	if ( typeof message === 'boolean' ) {
 		message = message ? 'Enable ...' : 'Disable ...';
+	} else if ( ! message ) {
+		message = S[ SW.id ] ? 'Change ...' : 'Enable ...';
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }

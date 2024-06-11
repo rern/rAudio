@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240610
+# 20240611
 file=/etc/systemd/system/websocket.service
 if grep -q '-server' $file; then
 	sed -i 's/-server//' $file
@@ -40,7 +40,7 @@ dirPermissions
 cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20240610
+# 20240611
 systemctl restart websocket
 
 # 20240601

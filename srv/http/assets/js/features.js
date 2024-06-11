@@ -336,7 +336,7 @@ $( '#login' ).on( 'click', function() {
 			, checkblank : true
 			, cancel     : switchCancel
 			, ok         : () => {
-				notifyCommon();
+				notifyCommon( false );
 				$.post( 'cmd.php', {
 					  cmd      : 'login'
 					, disable  : 1
