@@ -1061,8 +1061,9 @@ function playlistRemove( $li ) {
 			$( el ).text( pos );
 			pos++
 		} );
-		$li.remove();
 	}
+	$li.remove();
+	if ( $( '#pl-list li' ).length === 1 ) $( '#previous, #next' ).addClass( 'hide' );
 }
 function playlistSkip() {
 	if ( ! $( '#pl-list li' ).length ) {
