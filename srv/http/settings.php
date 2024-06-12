@@ -1,10 +1,6 @@
 <?php
 include 'common.php';
 
-function i( $icon, $id = '' ) {
-	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
-	return '<i'.$htmlid.' class="i-'.$icon.'"></i>';
-}
 function iLabel( $label, $icon = '' ) {
 	$htmlicon = $icon ? i( $icon ) : '&emsp;';
 	return '<a class="helpmenu label">'.$label.$htmlicon.'</a>';
@@ -207,7 +203,7 @@ function htmlSetting( $data ) {
 		}
 	}
 	// setting
-	$html       .= $settingicon ? i( $settingicon.' setting', $id ) : '';
+	$html       .= $settingicon ? i( $settingicon.' setting', 'setting-'.$id ) : '';
 	// help
 	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html       .= '</div>

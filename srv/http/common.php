@@ -113,3 +113,10 @@ $scripts.='
 </body>
 </html>
 ';
+
+function i( $icon, $id = '', $cmd = '' ) {
+	$htmlid  = $id ? ' id="'.$id.'"' : '';
+	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
+	return '<i'.$htmlid.' class="i-'.$icon.'"'.$htmlcmd.'></i>';
+}
+
