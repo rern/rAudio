@@ -168,7 +168,7 @@ function htmlSetting( $data ) {
 		return;
 	}
 	
-	global $page;
+	global $features, $system;
 	$id          = $data[ 'id' ];
 	$iddata      = $id_data[ $id ];
 	$label       = $iddata[ 'label' ];
@@ -180,7 +180,7 @@ function htmlSetting( $data ) {
 	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
-	if ( $page === 'features' || $page === 'system' ) {
+	if ( $features || $system ) {
 		$icon = $id;
 	} else {
 		$icon = $data[ 'icon' ] ?? false;
