@@ -1,6 +1,6 @@
 function list( args, callback, json ) {
 	$.post(
-		  'playlist' in args  ? 'mpdplaylist.php' : 'mpdlibrary.php'
+		  'playlist' in args  ? 'playlist.php' : 'library.php'
 		, args
 		, callback || null
 		, json || null

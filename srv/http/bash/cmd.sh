@@ -116,7 +116,7 @@ pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
 }
 pushSavedPlaylist() {
-	pushData savedplaylist $( php /srv/http/mpdplaylist.php list )
+	pushData savedplaylist $( php /srv/http/playlist.php list )
 }
 radioStop() {
 	if [[ -e $dirshm/radio ]]; then
