@@ -9,10 +9,10 @@ function htmlmenu( $menulist, $mode ) {
 	foreach( $menulist as $list ) $html.= menuli( $list );
 	$menu.= menudiv( $mode, $html );
 }
-function i( $class, $id = '', $cmd = '' ) {
+function i( $icon, $id = '', $cmd = '' ) {
 	$htmlid  = $id ? ' id="'.$id.'"' : '';
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
-	return '<i'.$htmlid.' class="i-'.$class.'"'.$htmlcmd.'></i>';
+	return '<i'.$htmlid.' class="i-'.$icon.'"'.$htmlcmd.'></i>';
 }
 // context menus
 function menucommon( $add, $replace ) {

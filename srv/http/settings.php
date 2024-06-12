@@ -180,7 +180,11 @@ function htmlSetting( $data ) {
 	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
 	$help        = $data[ 'help' ] ?? false;
 	$icon        = $data[ 'icon' ] ?? false;
-	if ( $features || $system ) $icon = $id;
+	if ( $page === 'features' || $page === 'system' ) {
+		$icon = $id;
+	} else {
+		$icon = $data[ 'icon' ] ?? false;
+	}
 	
 	$html        = '<div id="div'.$id.'" class="row">';
 	// col-l
