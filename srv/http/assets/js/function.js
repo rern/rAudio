@@ -546,6 +546,10 @@ function guideHide() {
 		$( '.guide, #volume-bar, #volume-text' ).addClass( 'hide' );
 	}
 }
+function htmlHash( html ) {
+	var hash = versionHash();
+	return html.replace( /\^\^\^/g, hash )
+}
 function imageLoad( list ) {
 	var $lazyload = $( '#'+ list +' .lazyload' );
 	if ( ! $lazyload.length ) return
@@ -776,11 +780,9 @@ function libraryHome() {
 	list( { query: 'home' }, function( data ) {
 		O             = data.order;
 		S.updating_db = data.updating;
-		var html = data.html;
-		if ( html !== V.libraryhtml ) {
-			V.libraryhtml = html;
-			var hash      = versionHash();
-			var html      = html.replace( /\^\^\^/g, hash );
+		if ( data.html !== V.libraryhtml ) {
+			V.libraryhtml = data.html;
+			var html      = htmlHash( data.html );
 			$( '#lib-mode-list' ).html( html );
 		}
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -1222,8 +1224,7 @@ function renderLibraryList( data ) { // V.librarylist
 	$( '#lib-list, #lib-index, #lib-index1' ).remove();
 	if ( ! data.html ) return // empty radio
 	
-	var hash = versionHash();
-	var html = data.html.replace( /\^\^\^/g, hash );
+	var html = htmlHash( data.html );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
 		if ( $( '#lib-list' ).hasClass( 'track' ) ) {
 			V.librarytrack = true;
@@ -1357,8 +1358,7 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 		.toggleClass( 'disabled', C.song === 0 );
 	if ( data.html !== V.playlisthtml ) {
 		V.playlisthtml = data.html;
-		var hash = versionHash();
-		var html = data.html.replace( /\^\^\^/g, hash );
+		var html = htmlHash( data.html );
 		$( '#pl-list' ).html( html ).promise().done( () => {
 			renderPlaylistSet();
 			setPlaylistScroll();
@@ -1394,8 +1394,7 @@ function renderSavedPl( data ) { // V.savedpl - list of saved playlists
 	V.savedpltrack = false;
 	$( '#savedpl-path' ).html( data.counthtml );
 	var barvisible = $bartop.is( ':visible' );
-	var hash = versionHash();
-	var html = data.html.replace( /\^\^\^/g, hash );
+	var html       = htmlHash( data.html );
 	$( '#pl-savedlist' ).html( html ).promise().done( () => {
 		$( '#pl-index' ).html( data.index[ 0 ] );
 		$( '#pl-index1' ).html( data.index[ 1 ] );
@@ -1409,8 +1408,7 @@ function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
 	menuHide();
 	list( { playlist: 'get', name: name }, function( data ) {
 		$( '#savedpl-path' ).html( data.counthtml );
-		var hash = versionHash();
-		var html = data.html.replace( /\^\^\^/g, hash );
+		var html = htmlHash( data.html );
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
 			renderPlaylistSet();
