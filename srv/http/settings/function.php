@@ -1,5 +1,28 @@
 <?php
-//----------------------------------------------------------------------------------
+$btn     = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'
+			,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
+$btnc    = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
+if ( $camilla ) $btn = array_merge( $btn, $btnc );
+foreach( $btn as $b ) {
+	$name  = 'b_'.$b;
+	$$name = i( $b.' btn' );
+}
+function iLabel( $label, $icon = '' ) {
+	$htmlicon = $icon ? i( $icon ) : '&emsp;';
+	return '<a class="helpmenu label">'.$label.$htmlicon.'</a>';
+}
+function iTab( $tab ) {
+	return '<a class="helpmenu tab">'.i( strtolower( $tab ) ).' '.$tab.'</a>';
+}
+function menu( $icon, $name, $iconsub = '' ) {
+	$submenu = $iconsub ? i( $iconsub.' sub' ) : '';
+	return '<a class="helpmenu">'.i( $icon ).' '.$name.$submenu.'</a>';
+}
+// functions for use inside heredoc
+$Fi      = 'i';
+$FiLabel = 'iLabel';
+$FiTab   = 'iTab';
+$Fmenu   = 'menu';
 /*
 $id_data = [ 'ID' => [               // REQUIRED
 	  'label'   => 'LABEL'
