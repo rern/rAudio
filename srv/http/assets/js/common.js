@@ -1190,12 +1190,11 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 */
 function bash( args, callback, json ) {
 	var args0  = args[ 0 ];
-	var filesh = '/srv/http/bash/';
 	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) {
-		filesh += args0;
+		var filesh = args0;
 		args.shift();
 	} else {
-		filesh += page ? 'settings/'+ page +'.sh': 'cmd.sh';
+		var filesh = page ? 'settings/'+ page +'.sh': 'cmd.sh';
 	}
 	// websocket
 	if ( ! callback && V.wsready ) {

@@ -8,7 +8,7 @@ switch( $_POST[ 'cmd' ] ) {
 case 'bash':
 	$filesh    = $_POST[ 'filesh' ];
 	$args      = $_POST[ 'args' ] ?? '';
-	$cmd  = $sudo.$filesh;
+	$cmd       = $sudo.'/srv/http/bash/'.$filesh;
 	if ( $args ) $cmd .= ' "'.escape( implode( "\n", $args ) ).'"';
 	$result    = shell_exec( $cmd );
 	echo rtrim( $result );

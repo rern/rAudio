@@ -14,6 +14,8 @@ async def cmd( websocket ):
         if 'channel' in jargs:  # broadcast
             websockets.broadcast( CLIENTS, args ) # { "channel": "CAHNNEL", "data": { ... } }
         elif 'filesh' in jargs: # FILE.sh "a\nb\nc"
+            filesh = '/srv/http/bash/'+ jargs[ 'filesh' ][ 0 ]
+            jargs[ 'filesh' ][ 0 ] = filesh
             subprocess.Popen( jargs[ 'filesh' ] ) # { "filesh": [ "FILE.sh", "a\nb\nc..." ] }
         elif 'json' in jargs:   # save to NAME.json and broadcast
             jargsjson = jargs[ 'json' ]           # { "json": { ... }, "name": "NAME" }
