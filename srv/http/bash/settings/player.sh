@@ -124,7 +124,7 @@ mixertype )
 	if [[ $mixer ]]; then # [hw] set to current [sw] || [sw/none] set 0dB
 		if [[ $MIXERTYPE == hardware ]]; then
 			vol=$( mpc status %volume% )
-			volumeAmixer $vol "$mixer" $card
+			volumeAmixer $vol% "$mixer" $card
 		else
 			amixer0dB
 		fi
@@ -236,7 +236,7 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	volumeAmixer $VAL "$MIXER" $CARD
+	volumeAmixer $VAL% "$MIXER" $CARD
 	[[ $VAL > 0 ]] && rm -f $dirsystem/volumemute
 	;;
 volume0db )
@@ -248,7 +248,7 @@ volume0dbbt )
 	volumeGet push hw
 	;;
 volumebt )
-	volumeBlueAlsa $VAL "$MIXER"
+	volumeBlueAlsa $VAL% "$MIXER"
 	;;
 volumepush )
 	[[ ! $BT ]] && hw=hw
