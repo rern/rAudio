@@ -21,6 +21,7 @@ evtest $devinputrotary | while read line; do
 	case ${line: -2} in
 		' 1' ) val=1%+;;
 		'-1' ) val=1%-;;
+		* )    continue
 	esac
 	$fn_volume $val "$mixer" $card
 done
