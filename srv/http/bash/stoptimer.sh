@@ -30,7 +30,7 @@ $card
 CMD TARGET CONTROL CARD"
 
 if [[ $poweroff ]]; then
-	$dirbash/power.sh off
+	$dirbash/power.sh
 elif [[ -e $dirshm/relayson ]]; then
 	$dirbash/relays.sh off
 fi
