@@ -15,7 +15,7 @@ case 'bash':
 	break;
 case 'camilla': // formdata from camilla.js
 	fileUploadSave( $dirdata.'camilladsp/'.$_POST[ 'dir' ].'/'.$_FILES[ 'file' ][ 'name' ] );
-	exec( $dirsettings.'camilla-data.sh pushrefresh', $output, $result );
+	exec( $dirsettings.'camilla-data.sh pushrefresh' );
 	break;
 case 'datarestore': // formdata from system.js
 	fileUploadSave( $dirshm.'backup.gz' );
@@ -44,10 +44,8 @@ case 'imagereplace': // $.post from function.js
 	} else {
 		$tmpfile = $imagedata;
 	}
-	$sh           = [ $type, $tmpfile, $imagefile, $bookmarkname ];
-	$multiline    = implode( "\n", $sh );
-	$multiline    = escape( $multiline );
-	shell_exec( $dirbash.'cmd-coverartsave.sh "'.$multiline.'"' );
+	$args         = escape( implode( "\n", [ $type, $tmpfile, $imagefile, $bookmarkname ] ) );
+	shell_exec( $dirbash.'cmd-coverartsave.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js
 	$file = $dirdata.'system/login';
