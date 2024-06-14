@@ -10,7 +10,7 @@ linkConf() {
 amixer0dB() {
 	if [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output
-		amixer -c $card -Mq sset "$mixer" 0dB
+		volumeAmixer 0dB "$mixer" $card
 		volumeGet push hw
 	fi
 }
@@ -244,7 +244,7 @@ volume0db )
 	;;
 volume0dbbt )
 	btmixer=$( < $dirshm/btmixer )
-	amixer -MqD bluealsa sset "$btmixer" 0dB
+	volumeBlueAlsa 0dB "$btmixer"
 	volumeGet push hw
 	;;
 volumebt )

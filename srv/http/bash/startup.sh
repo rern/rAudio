@@ -142,7 +142,7 @@ fi
 if [[ -e $dirsystem/volumeboot ]]; then
 	. $dirsystem/volumeboot.conf
 	volumeFunctionSet
-	$fn_volume $val "$mixer" $card
+	$fn_volume $val% "$mixer" $card
 fi
 
 # after all sources connected ........................................................

@@ -452,10 +452,10 @@ volume() {
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
-		$fn_volume $TARGET "$CONTROL" $CARD
+		$fn_volume $TARGET% "$CONTROL" $CARD
 		if [[ $TARGET == 1 && $( volumeGet ) == 0 ]]; then # fix - some mixers cannot set at 1%
 			[[ $CURRENT == 0 ]] && val=2 || val=0
-			$fn_volume $val "$CONTROL" $CARD
+			$fn_volume $val% "$CONTROL" $CARD
 			pushData volume '{ "val": '$val' }'
 		fi
 	else
@@ -463,7 +463,7 @@ volume() {
 		values=( $( seq $(( CURRENT + incr )) $incr $TARGET ) )
 		(( $diff % 5 )) && values+=( $TARGET )
 		for val in "${values[@]}"; do
-			$fn_volume $val "$CONTROL" $CARD
+			$fn_volume $val% "$CONTROL" $CARD
 			sleep 0.2
 		done
 	fi
@@ -477,13 +477,13 @@ volumeBlueAlsa() { # value control
 }
 volumeFunctionSet() { # global var: fn_volume, card, mixer
 	if [[ -e $dirshm/btreceiver ]]; then
-		fn_volume=volumeUpDnBt
+		fn_volume=volumeBlueAlsa
 		mixer=$( < $dirshm/btmixer )
 	elif [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output 
-		fn_volume=volumeUpDn
+		fn_volume=volumeAmixer
 	else
-		fn_volume=volumeUpDnMpc
+		fn_volume=volumeMpd
 	fi
 }
 volumeGet() {
@@ -527,27 +527,4 @@ volumeGet() {
 }
 volumeMpd() {
 	mpc -q volume ${1/\%}
-}
-volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
-	killProcess vol
-	volumeAmixer $1 "$2" $3
-	volumeUpDnPush
-}
-volumeUpDnBt() {
-	killProcess vol
-	volumeBlueAlsa $1 "$2"
-	volumeUpDnPush
-}
-volumeUpDnMpc() {
-	killProcess vol
-	[[ $1 == 1%+ ]] && val=+1 || val=-1
-	mpc -q volume $val
-	volumeUpDnPush
-}
-volumeUpDnPush() {
-	rm -rf $dirsystem/volumemute
-	echo $! > $dirshm/pidvol
-	( sleep 0.5
-		volumeGet push
-		rm -f $dirshm/pidvol ) &> /dev/null &
 }

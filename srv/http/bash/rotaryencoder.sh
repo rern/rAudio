@@ -13,15 +13,22 @@ evtest $devinputbutton | while read line; do
 done &
 
 volumeFunctionSet
-
+if [[ $fn_volume != volumeMpd ]]; then
+	dn=1%-
+	up=1%+
+else
+	dn=-1
+	up=+1
+fi
 dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
 sleep 1
 devinputrotary=$( realpath /dev/input/by-path/*rotary* )
 evtest $devinputrotary | while read line; do
 	case ${line: -2} in
-		' 1' ) val=1%+;;
-		'-1' ) val=1%-;;
-		* )    continue
+		' 1' ) updn=$up;;
+		'-1' ) updn=$dn;;
+		* )    continue;;
 	esac
-	$fn_volume $val "$mixer" $card
+	$fn_volume $updn "$mixer" $card
+	volumeGet push
 done
