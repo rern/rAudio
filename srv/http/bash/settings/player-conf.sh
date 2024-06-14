@@ -34,10 +34,10 @@ if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which migh
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $CARD
 else                                   # no sound
-	NAME='(None)'
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
-	[[ $bluetooth ]] && CARD=0 || CARD=-1
+	CARD=-1
+	NAME='(None)'
 	echo $CARD > $dirsystem/asoundcard
 	echo '
 card='$CARD'
@@ -46,9 +46,12 @@ mixer=
 mixertype=' > $dirshm/output
 	pushData display '{ "volumenone": true }'
 fi
-[[ -e $dirshm/startup && $name0 != $NAME ]] && notify output 'Output Device' "$NAME"
 
 . $dirsettings/player-asound.sh # >>> $bluetooth, $camilladsp, $equalizer
+
+if [[ -e $dirshm/startup && ! $bluetooth ]]; then
+	[[ $name0 != $NAME ]] && notify output 'Output Device' "$NAME"
+fi
 
 # outputs -----------------------------------------------------------------------------
 if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)
