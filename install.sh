@@ -42,6 +42,7 @@ cacheBust
 
 # 20240615
 systemctl restart websocket
+systemctl try-restart rotaryencoder
 
 # 20240601
 for snap in $restart; do
