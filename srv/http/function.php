@@ -1,4 +1,4 @@
-<?php // for mpdlibrary.php, mpdplaylist.php
+<?php // for library.php, playlist.php
 function HMS2second( $time ) {
 	if ( ! $time ) return 0;
 	

@@ -29,14 +29,15 @@ if [[ $1 ]]; then
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
+name0=$( getVar name $dirshm/output )
 if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which might be broken from bad script
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $CARD
 else                                   # no sound
-	notify output 'Output Device' '(None)'
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
-	[[ $bluetooth ]] && CARD=0 || CARD=-1
+	CARD=-1
+	NAME='(None)'
 	echo $CARD > $dirsystem/asoundcard
 	echo '
 card='$CARD'
@@ -47,6 +48,10 @@ mixertype=' > $dirshm/output
 fi
 
 . $dirsettings/player-asound.sh # >>> $bluetooth, $camilladsp, $equalizer
+
+if [[ -e $dirshm/startup && ! $bluetooth ]]; then
+	[[ $name0 != $NAME ]] && notify output 'Output Device' "$NAME"
+fi
 
 # outputs -----------------------------------------------------------------------------
 if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)

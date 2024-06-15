@@ -267,6 +267,9 @@ function psStorage( data ) {
 		renderStorage();
 	}
 }
+function psVolume() {
+	return
+}
 function psWlan( data ) {
 	if ( data && 'reboot' in data ) {
 		info( {

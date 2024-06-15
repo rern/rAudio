@@ -13,4 +13,4 @@ else
 	gpiomon -q -b pull-up -e falling -c0 -n1 $sw # -q(quiet) -b bias -e edge -c chip -n nEvent pin
 fi
 
-/srv/http/bash/power.sh off
+/srv/http/bash/power.sh

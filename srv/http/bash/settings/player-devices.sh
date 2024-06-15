@@ -58,7 +58,6 @@ defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
 
-[[ $( getVar name $dirshm/output ) != $NAME ]] && notify output 'Output Device' "$NAME"
 if aplay -l | grep -q "^card $CARD: RPiCirrus"; then
 # card N: RPiCirrus [RPi-Cirrus], device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
 ######## >

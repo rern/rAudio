@@ -886,16 +886,16 @@ function infoPower() {
 		, button      : () => infoPowerCommand( 'reboot' )
 		, oklabel     : ico( 'power' ) +'Off'
 		, okcolor     : red
-		, ok          : () => infoPowerCommand( 'off' )
+		, ok          : infoPowerCommand
 	} );
 }
 function infoPowerCommand( action ) {
+	if( ! action ) action = '';
 	loader();
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
 		loaderHide();
-		var off = action === 'off';
 		info( {
 			  icon    : 'power'
 			, title   : 'Power'
@@ -903,8 +903,8 @@ function infoPowerCommand( action ) {
 						+'<br><wh>Shared Data</wh> on clients will stop.'
 						+'<br>(Resume when server online again)'
 						+'<br><br>Continue?'
-			, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
-			, okcolor : off ? red : orange
+			, oklabel : action ? ico( 'reboot' ) +'Reboot' : ico( 'power' ) +'Off'
+			, okcolor : action ? orange : red
 			, ok      : () => bash( [ 'power.sh', action, 'confirm' ] )
 		} );
 	} );
@@ -1190,12 +1190,11 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 */
 function bash( args, callback, json ) {
 	var args0  = args[ 0 ];
-	var filesh = '/srv/http/bash/';
 	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) {
-		filesh += args0;
+		var filesh = args0;
 		args.shift();
 	} else {
-		filesh += page ? 'settings/'+ page +'.sh': 'cmd.sh';
+		var filesh = page ? 'settings/'+ page +'.sh': 'cmd.sh';
 	}
 	// websocket
 	if ( ! callback && V.wsready ) {

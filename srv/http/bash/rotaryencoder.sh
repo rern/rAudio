@@ -12,34 +12,23 @@ evtest $devinputbutton | while read line; do
 	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && $dirbash/cmd.sh mpcplayback
 done &
 
+volumeFunctionSet
+if [[ $fn_volume != volumeMpd ]]; then
+	dn=1%-
+	up=1%+
+else
+	dn=-1
+	up=+1
+fi
 dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
 sleep 1
 devinputrotary=$( realpath /dev/input/by-path/*rotary* )
-if [[ -e $dirshm/btreceiver ]]; then
-	control=$( < $dirshm/btmixer )
-	evtest $devinputrotary | while read line; do
-		if [[ $line =~ 'value 1'$ ]]; then
-			volumeUpDnBt 1%+ "$control"
-		elif [[ $line =~ 'value -1'$ ]]; then
-			volumeUpDnBt 1%- "$control"
-		fi
-	done
-elif [[ -e $dirshm/amixercontrol ]]; then
-	card=$( < $dirsystem/asoundcard )
-	control=$( < $dirshm/amixercontrol )
-	evtest $devinputrotary | while read line; do
-		if [[ $line =~ 'value 1'$ ]]; then
-			volumeUpDn 1%+ "$control" $card
-		elif [[ $line =~ 'value -1'$ ]]; then
-			volumeUpDn 1%- "$control" $card
-		fi
-	done
-else
-	evtest $devinputrotary | while read line; do
-		if [[ $line =~ 'value 1'$ ]]; then
-			volumeUpDnMpc +1
-		elif [[ $line =~ 'value -1'$ ]]; then
-			volumeUpDnMpc -1
-		fi
-	done
-fi
+evtest $devinputrotary | while read line; do
+	case ${line: -2} in
+		' 1' ) updn=$up;;
+		'-1' ) updn=$dn;;
+		* )    continue;;
+	esac
+	$fn_volume $updn "$mixer" $card
+	volumeGet push
+done

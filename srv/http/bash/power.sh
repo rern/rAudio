@@ -2,14 +2,14 @@
 
 . /srv/http/bash/common.sh
 
-if [[ $1 == off ]]; then
-	audioCDplClear
-	pushData power '{ "type": "off" }'
-else
-	audioCDplClear && $dirbash/status-push.sh
+if [[ $1 == reboot ]]; then
 	reboot=1
+	audioCDplClear && $dirbash/status-push.sh
 	startup=$( systemd-analyze | sed -n '/^Startup/ {s/.*= //; s/[^0-9]//g; p}' )
 	pushData power '{ "type": "reboot", "startup": '$startup' }'
+else
+	audioCDplClear
+	pushData power '{ "type": "off" }'
 fi
 
 playerActive upnp && $dirbash/cmd.sh playerstop

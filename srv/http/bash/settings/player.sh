@@ -10,7 +10,7 @@ linkConf() {
 amixer0dB() {
 	if [[ -e $dirshm/amixercontrol ]]; then
 		. $dirshm/output
-		amixer -c $card -Mq sset "$mixer" 0dB
+		volumeAmixer 0dB "$mixer" $card
 		volumeGet push hw
 	fi
 }
@@ -124,7 +124,7 @@ mixertype )
 	if [[ $mixer ]]; then # [hw] set to current [sw] || [sw/none] set 0dB
 		if [[ $MIXERTYPE == hardware ]]; then
 			vol=$( mpc status %volume% )
-			volumeAmixer $vol "$mixer" $card
+			volumeAmixer $vol% "$mixer" $card
 		else
 			amixer0dB
 		fi
@@ -236,7 +236,7 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	volumeAmixer $VAL "$MIXER" $CARD
+	volumeAmixer $VAL% "$MIXER" $CARD
 	[[ $VAL > 0 ]] && rm -f $dirsystem/volumemute
 	;;
 volume0db )
@@ -244,11 +244,11 @@ volume0db )
 	;;
 volume0dbbt )
 	btmixer=$( < $dirshm/btmixer )
-	amixer -MqD bluealsa sset "$btmixer" 0dB
+	volumeBlueAlsa 0dB "$btmixer"
 	volumeGet push hw
 	;;
 volumebt )
-	volumeBlueAlsa $VAL "$MIXER"
+	volumeBlueAlsa $VAL% "$MIXER"
 	;;
 volumepush )
 	[[ ! $BT ]] && hw=hw

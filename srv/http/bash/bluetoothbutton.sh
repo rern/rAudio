@@ -28,7 +28,8 @@ evtest /dev/input/$event | while read line; do
 			;;
 		play|pause ) $dirbash/cmd.sh mpcplayback;;
 		stop )       $dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION';;
-		volumedown ) volumeUpDnBt 1%- "$control";;
-		volumeup )   volumeUpDnBt 1%+ "$control";;
+		volumedown ) volumeBlueAlsa 1%- "$control";;
+		volumeup )   volumeBlueAlsa 1%+ "$control";;
 	esac
+	[[ ${key:0:1} == v ]] && volumeGet push
 done

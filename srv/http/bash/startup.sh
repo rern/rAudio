@@ -141,15 +141,8 @@ fi
 
 if [[ -e $dirsystem/volumeboot ]]; then
 	. $dirsystem/volumeboot.conf
-	if [[ -e $dirshm/btreceiver ]]; then
-		control=$( < $dirshm/btmixer )
-		volumeBlueAlsa $volume "$control"
-	elif [[ -e $dirshm/amixercontrol ]]; then
-		. $dirshm/output
-		volumeAmixer $volume "$mixer" $card
-	else
-		mpc -q volume $volume
-	fi
+	volumeFunctionSet
+	$fn_volume $val% "$mixer" $card
 fi
 
 # after all sources connected ........................................................

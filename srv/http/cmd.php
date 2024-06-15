@@ -1,26 +1,26 @@
 <?php
 $sudo        = '/usr/bin/sudo ';
-$dirsettings = '/srv/http/bash/settings/';
-$dirshm      = '/srv/http/data/shm/';
+$dirbash     = $sudo.'/srv/http/bash/';
+$dirsettings = $dirbash.'settings/';
+$dirdata     = '/srv/http/data/';
+$dirshm      = $dirdata.'shm/';
 
 switch( $_POST[ 'cmd' ] ) {
 
 case 'bash':
-	$filesh    = $_POST[ 'filesh' ];
-	$args      = $_POST[ 'args' ] ?? '';
-	$cmd  = $sudo.$filesh;
-	if ( $args ) $cmd .= ' "'.escape( implode( "\n", $args ) ).'"';
-	$result    = shell_exec( $cmd );
+	$cmd    = $dirbash.$_POST[ 'filesh' ];
+	$cmd   .= isset( $_POST[ 'args' ] ) ? ' "'.escape( implode( "\n", $_POST[ 'args' ] ) ).'"' : '';
+	$result = shell_exec( $cmd );
 	echo rtrim( $result );
 	break;
 case 'camilla': // formdata from camilla.js
-	fileUploadSave( '/srv/http/data/camilladsp/'.$_POST[ 'dir' ].'/'.$_FILES[ 'file' ][ 'name' ] );
-	exec( $sudo.$dirsettings.'camilla-data.sh pushrefresh', $output, $result );
+	fileUploadSave( $dirdata.'camilladsp/'.$_POST[ 'dir' ].'/'.$_FILES[ 'file' ][ 'name' ] );
+	exec( $dirsettings.'camilla-data.sh pushrefresh' );
 	break;
 case 'datarestore': // formdata from system.js
 	fileUploadSave( $dirshm.'backup.gz' );
 	$libraryonly = $_POST[ 'libraryonly' ] ?? '';
-	exec( $sudo.$dirsettings.'system-datarestore.sh '.$libraryonly, $output, $result );
+	exec( $dirsettings.'system-datarestore.sh '.$libraryonly, $output, $result );
 	if ( $result != 0 ) echo 'Restore failed';
 	break;
 case 'giftype': // formdata from common.js
@@ -44,18 +44,16 @@ case 'imagereplace': // $.post from function.js
 	} else {
 		$tmpfile = $imagedata;
 	}
-	$sh           = [ $type, $tmpfile, $imagefile, $bookmarkname ];
-	$multiline    = implode( "\n", $sh );
-	$multiline    = escape( $multiline );
-	shell_exec( $sudo.'/srv/http/bash/cmd-coverartsave.sh "'.$multiline.'"' );
+	$args         = escape( implode( "\n", [ $type, $tmpfile, $imagefile, $bookmarkname ] ) );
+	shell_exec( $dirbash.'cmd-coverartsave.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js
-	$file = '/srv/http/data/system/login';
+	$file = $dirdata.'system/login';
 	if ( file_exists( $file )  && ! password_verify( $_POST[ 'password' ], file_get_contents( $file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	if ( isset( $_POST[ 'disable' ] ) ) {
 		unlink( $file );
-		exec( $sudo.$dirsettings.'features.sh logindisable' );
+		exec( $dirsettings.'features.sh logindisable' );
 		exit;
 //----------------------------------------------------------------------------------
 	}
@@ -63,7 +61,7 @@ case 'login': // $.post from features.js
 	if ( $pwdnew ) {
 		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		file_put_contents( $file, $hash );
-		exec( $sudo.$dirsettings.'features.sh login' );
+		exec( $dirsettings.'features.sh login' );
 	} else {
 		session_start();
 		$_SESSION[ 'login' ] = 1;
@@ -74,7 +72,7 @@ case 'logout': // $.post from main.js
 	session_destroy();
 	break;
 case 'startupready':
-	if ( file_exists( '/srv/http/data/shm/startup' ) ) echo 1;
+	if ( file_exists( $dirshm.'startup' ) ) echo 1;
 	break;
 case 'timezonelist': // $.post from system.js
 	$list   = timezone_identifiers_list();
