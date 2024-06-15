@@ -27,7 +27,9 @@ else
 fi
 ########
 [[ ! $data ]] && data=$( < $diraddons/addonslist.json )
-addons=$( grep ', .*: {$' <<< $data | grep -v option | tr -d '\t, ":{' )
+addons=$( grep ': {$' <<< $data \
+			| tr -d '\t, ":{' \
+			| grep -Ev 'option|push' )
 for addon in $addons; do
 	addondata=$( sed -n "/$addon/,/}/ p" <<< $data )
 	evalData hide && hidden+=',"'$addon'"'
