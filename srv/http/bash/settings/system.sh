@@ -349,7 +349,7 @@ powerbutton )
 				config+='
 dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
 			fi
-		else
+		else # audiophonic
 			config+="
 dtoverlay=gpio-poweroff,gpiopin=22
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
