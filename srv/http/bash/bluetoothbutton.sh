@@ -3,14 +3,11 @@
 . /srv/http/bash/common.sh
 
 control=$( < $dirshm/btmixer )
-mac=$( bluetoothctl show \
-		| head -1 \
-		| cut -d' ' -f2 )
-mac=${mac,,}
+mac=$( bluetoothctl show | sed -E -n '1 {s/.* (.*) .*/\L\1/; p}' )
 for i in {0..5}; do
 	grep -q $mac /proc/bus/input/devices && break || sleep 1
 done
-event=$( sed -n "/$mac/,/^H:/ {/^H:/ p}" /proc/bus/input/devices | awk '{print $NF}' )
+event=$( sed -E -n "/$mac/,/^H:/ {/^H:/ {s/.* (.*) /\1/; p}}" /proc/bus/input/devices ) # event - with trailing space
 
 # line='Event: time nnnnnnnnnn.nnnnnn, type 1 (EV_KEY), code NNN (KEY_XXXXXX), value N'
 evtest /dev/input/$event | while read line; do
