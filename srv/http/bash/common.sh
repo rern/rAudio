@@ -270,6 +270,9 @@ lineCount() {
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
+mpcPlayback() {
+	$dirbash/cmd.sh mpcplayback$'\n'$1$'\nCMD ACTION'
+}
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'
 }

@@ -143,7 +143,7 @@ if [[ $ACTION == connect || $ACTION == pair ]]; then
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
 		if [[ -e $dirsystem/autoplay ]] && grep -q bluetooth=true $dirsystem/autoplay.conf; then
-			$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
+			mpcPlayback play
 		fi
 	fi
 	echo $MAC $type $name >> $dirshm/btconnected

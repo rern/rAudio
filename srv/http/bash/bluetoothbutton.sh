@@ -21,10 +21,10 @@ evtest /dev/input/$event | while read line; do
 	key=$( sed -E 's/.*KEY_|\).*//g; s/CD|SONG//; s/.*/\L&/' <<< $line )
 	case $key in
 		play | pause )
-			$dirbash/cmd.sh mpcplayback
+			mpcPlayback
 			;;
 		stop )
-			$dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION'
+			mpcPlayback stop
 			;;
 		next | previous )
 			. <( mpc status 'current=%songpos%; length=%length% random=%random%' )
