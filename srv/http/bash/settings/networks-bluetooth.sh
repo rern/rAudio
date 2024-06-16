@@ -142,6 +142,9 @@ if [[ $ACTION == connect || $ACTION == pair ]]; then
 		echo $btmixer > $dirshm/btmixer
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
+		if [[ -e $dirsystem/autoplay ]] && grep -q bluetooth=true $dirsystem/autoplay.conf; then
+			$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
+		fi
 	fi
 	echo $MAC $type $name >> $dirshm/btconnected
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type

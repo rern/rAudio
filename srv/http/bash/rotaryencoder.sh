@@ -12,7 +12,7 @@ evtest $devinputbutton | while read line; do
 	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && $dirbash/cmd.sh mpcplayback
 done &
 
-volumeFunctionSet
+volumeFunctionSet # $fn_volume, $mixer
 if [[ $fn_volume != volumeMpd ]]; then
 	dn=1%-
 	up=1%+
