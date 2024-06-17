@@ -355,6 +355,7 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var id    = $this.hasClass( 'col-l' ) ? $this.data( 'status' ) : $this.parent().data( 'status' );
 	var $code = $( '#code'+ id );
 	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
+	$this.toggleClass( 'active' );
 } );
 $( '.playback' ).on( 'click', function() { // for player and camilla
 	S.state = S.state === 'play' ? 'pause' : 'play';

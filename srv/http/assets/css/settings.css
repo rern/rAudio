@@ -206,10 +206,14 @@ heading.status .headtitle::after,
 	font-family: rern;
 	font-style: normal;
 	font-size: 22px;
-	content: "\f561";
+	content: "\f605";
 	text-align: center;
 	color: var( --cg60 );
 	letter-spacing: normal;
+}
+heading.status .headtitle.active::after,
+.col-l.status.active gr::after {
+	content: "\f604" !important;
 }
 .col-l.status gr::after {
 	width: 17px;
