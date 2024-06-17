@@ -2185,9 +2185,11 @@ li.active .li2 bl {
 	@media ( max-width: 400px ) {
 		#button-settings { right: 10px }
 		.content-top { padding-right: 0 }
+		#li-count { margin-left: 10px }
 		#pl-manage i { width: 37px }
 	}
 	@media ( max-width: 360px ) {
+		#li-count { display: none }
 		#playback-controls i { margin: 0 3px }
 		#pl-manage i { width: 36px }
 	}
