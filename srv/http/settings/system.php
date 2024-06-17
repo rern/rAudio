@@ -408,7 +408,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> · A scripting language for working with HTML Document Object Model on client side<br>
 		<a href="https://jquery.com/">jQuery</a> · A JavaScript library for simplifying HTML DOM tree traversal and manipulation
 	</div>
-	<div class="listtitle">Javascript Plugins: <?=i( 'chevron-down bl' )?></div>
+	<div class="listtitle jsplugins">Javascript Plugins:</div>
 	<div class="list hide"><?=$uihtml?></div>
 	
 	<heading class="subhead">Data</heading>

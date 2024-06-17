@@ -151,7 +151,7 @@ $( '#setting-replaygain' ).on( 'click', function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '.filetype' ).on( 'click', function() {
+$( '#ffmpegfiletype' ).on( 'click', function() {
 	var $pre = $( '#prefiletype' );
 	if ( $pre.is( ':empty' ) ) {
 		bash( [ 'filetype' ], data => {
@@ -162,7 +162,7 @@ $( '.filetype' ).on( 'click', function() {
 	} else {
 		$pre.toggleClass( 'hide' );
 	}
-	$( this ).toggleClass( 'i-chevron-down i-chevron-up' );
+	$( this ).toggleClass( 'active' );
 } );
 $( '#setting-buffer' ).on( 'click', function() {
 	info( {

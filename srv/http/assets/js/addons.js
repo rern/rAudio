@@ -15,6 +15,7 @@ $( '.container' ).on( 'click', '.revision', function() {
 	var hidden = $revisiontext.hasClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
+	$this.toggleClass( 'active' );
 } ).on( 'click', '#list li', function() {
 	alias = $( this ).data( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
@@ -101,7 +102,7 @@ function renderPage() {
 	$.each( S, ( alias, addon ) => {
 		if ( alias === 'status' || ( S.status.hidden.includes( alias ) ) ) return
 		var notverified = S.status.notverified.includes( alias );
-		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +' <i class="i-help"></i></a>' : '';
+		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +'</a>' : '';
 		if ( 'revision' in addon ) {
 			var revision = '<p class="revisiontext hide">';
 			addon.revision.forEach( el => revision += '<gr>•</gr> '+ el +'<br>' );

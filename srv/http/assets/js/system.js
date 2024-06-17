@@ -340,19 +340,6 @@ $( '#setting-i2smodule' ).on( 'click', function() {
 		, ok           : () => bash( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
 	} );
 } );
-$( '#gpioimgtxt' ).on( 'click', function() {
-	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
-		$( '#gpiopin' ).slideToggle();
-		$( '#fliptxt, #close-img' ).toggle();
-	} else {
-		$( '#gpiopin, #gpiopin1' ).css( 'display', 'none' );
-		$( '#fliptxt' ).hide();
-	}
-	$( this ).find( 'i' ).toggleClass( 'i-chevron-down i-chevron-up' );
-} );
-$( '#gpiopin, #gpiopin1' ).on( 'click', function() {
-	$( '#gpiopin, #gpiopin1' ).toggle();
-} );
 $( '#setting-lcdchar' ).on( 'click', function() {
 	if ( S.lcdcharconf ) {
 		S.lcdcharconf.INF === 'i2c' ? infoLcdChar() : infoLcdCharGpio();
@@ -644,16 +631,15 @@ $( '#shareddata' ).on( 'click', function() {
 } );
 $( '.listtitle' ).on( 'click', function( e ) {
 	var $this    = $( this );
-	var $chevron = $this.find( 'i' );
 	var $list    = $this.next();
 	var $target  = $( e.target );
 	if ( $target.hasClass( 'i-refresh' ) ) return
 	
 	if ( ! $this.hasClass( 'backend' ) ) { // js
+		$this.toggleClass( 'active' );
 		$list.toggleClass( 'hide' )
-		$chevron.toggleClass( 'i-chevron-down i-chevron-up' );
 		if ( localhost ) $( '.list a' ).remove();
-	} else if ( $target.is( 'a' ) ) { // package
+	} else if ( $target.is( 'a' ) ) {      // package
 		var active = $target.hasClass( 'wh' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 		if ( active ) {
@@ -670,7 +656,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 			bannerHide();
 		} );
 	} else {
-		$list.add( $chevron ).addClass( 'hide' );
+		$list.addClass( 'hide' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );

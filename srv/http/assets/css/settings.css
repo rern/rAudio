@@ -200,7 +200,10 @@ heading.subhead {
 	border-bottom-color: var( --cga );
 }
 heading.status .headtitle::after,
-.col-l.status gr::after {
+.col-l.status gr::after,
+#ffmpegfiletype::after,
+.listtitle.jsplugins::after,
+.divaddon .revision::after {
 	display: inline-block;
 	width: 40px;
 	font-family: rern;
@@ -212,10 +215,16 @@ heading.status .headtitle::after,
 	letter-spacing: normal;
 }
 heading.status .headtitle.active::after,
-.col-l.status.active gr::after {
+.col-l.status.active gr::after,
+#ffmpegfiletype.active::after,
+.listtitle.jsplugins.active::after,
+.divaddon .revision.active::after {
 	content: "\f604" !important;
 }
-.col-l.status gr::after {
+.col-l.status gr::after,
+#ffmpegfiletype::after,
+.listtitle.jsplugins::after,
+.divaddon .revision::after {
 	width: 17px;
 	font-size: 14px;
 	text-align: right;
@@ -571,14 +580,6 @@ input.disabled + .switchlabel:after {
 .gpio svg {
 	max-width: 100%;
 }
-#gpiopin,
-#gpiopin1 {
-	display: none;
-	margin: 10px 0;
-	width: 100%;
-	border-radius: 6px;
-	background: var( --cw );
-}
 #infoList .gpio tr td:nth-child( odd ) {
 	width: 35px !important;
 	padding-right: 2px !important;
@@ -686,7 +687,6 @@ input.disabled + .switchlabel:after {
 	.divgain i,
 	.edit,
 	.entries li,
-	.filetype,
 	.helphead,
 	.helpblock bl,
 	.i-mute,
@@ -708,7 +708,7 @@ input.disabled + .switchlabel:after {
 	.wiring,
 	#backend,
 	#button-data,
-	#gpioimgtxt,
+	#ffmpegfiletype,
 	#menu {
 		cursor: pointer
 	}
