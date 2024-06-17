@@ -29,6 +29,7 @@ sed -i -E -e 's/^(friendlyname = ).*/\1rAudio/
 # cmdline.txt
 cmdline=$( sed -E 's/^(.*repair=yes) .*/\1/' /boot/cmdline.txt )
 if systemctl -q is-enabled localbrowser; then
+	localbrowser=1
 	cmdline+=' isolcpus=3 console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
 else
 	cmdline+=' console=tty1'
@@ -40,7 +41,7 @@ initramfs initramfs-linux.img followkernel
 disable_overscan=1
 disable_splash=1
 dtparam=audio=on"
-[[ -e /usr/bin/firefox ]] && config+="
+[[ $localbrowser ]] && config+="
 hdmi_force_hotplug=1"
 [[ -e /boot/kernel.img ]] && config+="
 gpu_mem=32
