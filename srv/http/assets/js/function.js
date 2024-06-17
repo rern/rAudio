@@ -454,7 +454,7 @@ function displayBars() {
 	var lcd         = ( V.wH <= 320 && V.wW <= 480 ) || ( V.wH <= 480 && V.wW <= 320 );
 	if ( ! D.bars || ( smallscreen && ! D.barsalways ) || lcd ) {
 		$( '#bar-top' ).addClass( 'hide' );
-		$( '#bar-bottom' ).addClass( 'transparent' );
+		$( '#bar-bottom' ).addClass( navigator.maxTouchPoints ? 'hide' : 'transparent' );
 		$( '.page' ).addClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
