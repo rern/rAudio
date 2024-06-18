@@ -37,6 +37,9 @@ getinstallzip
 
 . $dirbash/common.sh
 dirPermissions
+hash=?v=$( date +%s )
+sed -E -i "0,/rern.woff2/ s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+sed -i "0,/?v=.*/ s/?v=.*/$hash';/" /srv/http/common.php
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 # 20240615
