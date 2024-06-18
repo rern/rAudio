@@ -1,5 +1,5 @@
 // keyboard controls
-$( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() page scroll
+$( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() - Tab, page scroll
 	if ( V.local || I.active ) return
 	
 	var key = e.key;
