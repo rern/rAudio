@@ -238,9 +238,9 @@ bookmarkrename )
 	pushData bookmark 1
 	;;
 cachebust )
-	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
 	hash=?v=$( date +%s )
-	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+	sed -E -i "0,/rern.woff2/ s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+	! grep -q "?v='.time()" /srv/http/common.php && sed -i "0,/?v=.*/ s/?v=.*/?v='.time();/" /srv/http/common.php
 	;;
 color )
 	file=$dirsystem/color

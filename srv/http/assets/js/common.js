@@ -1221,6 +1221,7 @@ function bash( args, callback, json ) {
 	);
 }
 function bashConsoleLog( data ) {
+	console.log( '%cDebug:', "color:red" );
 	if ( typeof data === 'string' ) {
 		console.log( JSON.parse( data ) );
 		console.log( "websocat ws://127.0.0.1:8080 <<< '"+ data +"'" );
@@ -1233,10 +1234,12 @@ function bashConsoleLog( data ) {
 }
 
 $( '#debug' ).press( function() {
+	if ( ! V.debug ) bash( [ 'cmd.sh', 'cachebust' ] );
 	V.debug = ! V.debug;
-	$( '#debug' ).toggleClass( 'bgm' );
-	console.log( 'Debug mode - '+ ( V.debug ? 'Send no commands.' : 'Disabled.' ) );
 	if ( ! V.debug ) refreshData();
+	$( '#debug' ).toggleClass( 'bgm' );
+	console.log( '%cDebug:', "color:red" );
+	console.log( V.debug ? 'Cache busted. No commands to server.' : 'Disabled.' );
 } );
 $( '.page-icon' ).press( () => location.reload() );
 $( '.col-r .switch' ).press( function( e ) {

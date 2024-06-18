@@ -89,11 +89,6 @@ audioCDplClear() {
 		return 0
 	fi
 }
-cacheBust() { # for install.sh
-	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
-	hash=?v=$( date +%s )
-	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
-}
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
 }
@@ -200,6 +195,9 @@ dirPermissions() {
  	[[ -e $dirmpd/mpd.db ]] && chown mpd:audio $dirmpd/mpd.db
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
+	hash=?v=$( date +%s )
+	sed -E -i "0,/rern.woff2/ s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+	sed -i "0,/?v=.*/ s/?v=.*/$hash';/" /srv/http/common.php
 }
 enableFlagSet() {
 	file=$dirsystem/$CMD

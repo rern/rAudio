@@ -1,13 +1,3 @@
-function list( args, callback, json ) {
-	$.post(
-		  'playlist' in args  ? 'playlist.php' : 'library.php'
-		, args
-		, callback || null
-		, json || null
-	);
-}
-
-//----------------------------------------------------------------------
 function bio( artist, getsimilar ) {
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
@@ -799,6 +789,14 @@ function libraryHome() {
 		$( '#lib-path span' ).removeClass( 'hide' );
 		if ( V.color ) $( '#mode-webradio' ).trigger( 'click' );
 	}, 'json' );
+}
+function list( args, callback, json ) {
+	$.post(
+		  'playlist' in args  ? 'playlist.php' : 'library.php'
+		, args
+		, callback || null
+		, json || null
+	);
 }
 function lyricsGet( artist, title, file ) {
 	V.lyricsartist = artist || S.Artist;
