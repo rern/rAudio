@@ -214,8 +214,8 @@ $( '#button-settings' ).on( 'click', function( e ) {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
-} ).press( function( e ) {
-	bash( [ 'cachebust', true, 'CMD TOGGLE' ], type => {
+} ).press( function() {
+	bash( [ 'cachebust' ], type => {
 		console.log( '%cCache Bust:', "color:red" );
 		console.log( type || 'Fixed' );
 	} );

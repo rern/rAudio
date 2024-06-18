@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 dirimg=/srv/http/assets/img
 
-args2var "$1"
+args2var "$1" # $2 $3 ... if any, still valid
 
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
@@ -240,7 +240,7 @@ bookmarkrename )
 cachebust )
 	hash="?v=$( date +%s )'"
 	sed -E -i "0,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
-	if [[ $TOGGLE ]]; then
+	if [[ ! $2 ]]; then # not from install.sh
 		hashtime="?v='.time()"
 		if ! grep -q $hashtime /srv/http/common.php; then
 			hash=$hashtime

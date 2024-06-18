@@ -37,7 +37,7 @@ getinstallzip
 
 . $dirbash/common.sh
 dirPermissions
-$dirbash/cmd.sh cachebust
+$dirbash/cmd.sh cachebust fixed
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 # 20240615

@@ -47,7 +47,7 @@ $( < $file )
 $data"
 	awk NF <<< $lines | sort -u > $file
 }
-args2var() {
+args2var() { # $2 $3 ... if any, still valid
 	local argslast CFG CMD_CFG_OFF conf i k keys kL v
 	readarray -t args <<< $1
 	CMD=${args[0]}
