@@ -187,6 +187,8 @@ $( '#button-data' ).on( 'click', function() {
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
+	if ( V.press ) return
+	
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		if ( ! $( '#displaycolor canvas' ).length ) { // color icon
 			$( '#displaycolor' ).html( '<canvas></canvas>' );
@@ -212,7 +214,12 @@ $( '#button-settings' ).on( 'click', function( e ) {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
-} )
+} ).press( function( e ) {
+	bash( [ 'cachebust', true, 'CMD TOGGLE' ], type => {
+		console.log( '%cCache Bust:', "color:red" );
+		console.log( type || 'Fixed' );
+	} );
+} );
 $( '#settings' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ this.id;
 } ).on( 'click', '.submenu', function() {

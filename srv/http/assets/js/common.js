@@ -1234,12 +1234,11 @@ function bashConsoleLog( data ) {
 }
 
 $( '#debug' ).press( function() {
-	if ( ! V.debug ) bash( [ 'cmd.sh', 'cachebust' ] );
 	V.debug = ! V.debug;
 	if ( ! V.debug ) refreshData();
 	$( '#debug' ).toggleClass( 'bgm' );
 	console.log( '%cDebug:', "color:red" );
-	console.log( V.debug ? 'Cache busted. No commands to server.' : 'Disabled.' );
+	console.log( V.debug ? 'No commands to server.' : 'Disabled.' );
 } );
 $( '.page-icon' ).press( () => location.reload() );
 $( '.col-r .switch' ).press( function( e ) {
