@@ -195,9 +195,12 @@ dirPermissions() {
  	[[ -e $dirmpd/mpd.db ]] && chown mpd:audio $dirmpd/mpd.db
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
-	hash=?v=$( date +%s )
-	sed -E -i "0,/rern.woff2/ s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
-	sed -i "0,/?v=.*/ s/?v=.*/$hash';/" /srv/http/common.php
+	# cache bust
+	if [[ $0 == install.sh ]]; then
+		hash=?v=$( date +%s )
+		sed -E -i "0,/rern.woff2/ s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+		sed -i "0,/?v=.*/ s/?v=.*/$hash';/" /srv/http/common.php
+	fi
 }
 enableFlagSet() {
 	file=$dirsystem/$CMD
