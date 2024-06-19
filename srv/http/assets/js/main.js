@@ -187,8 +187,6 @@ $( '#button-data' ).on( 'click', function() {
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
-	if ( V.press ) return
-	
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		if ( ! $( '#displaycolor canvas' ).length ) { // color icon
 			$( '#displaycolor' ).html( '<canvas></canvas>' );
