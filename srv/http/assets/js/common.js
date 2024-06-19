@@ -1234,11 +1234,37 @@ function bashConsoleLog( data ) {
 }
 
 $( '#debug' ).press( function() {
-	V.debug = ! V.debug;
-	if ( ! V.debug ) refreshData();
-	$( '#debug' ).toggleClass( 'bgm' );
-	console.log( '%cDebug:', "color:red" );
-	console.log( V.debug ? 'No commands to server.' : 'Disabled.' );
+	bash( [ 'cmd.sh', 'cachetype' ], dynamic => {
+		var cache = 'Cache bust - ';
+		cache    += dynamic ? 'Static' : '<c>time()</c>';
+		info( {
+			  icon  : 'flash'
+			, title : 'Code'
+			, list  : [
+				  [ 'Debug', 'checkbox' ]
+				, [ cache,   'checkbox' ]
+			]
+			, okno  : true
+			, beforeshow : () => {
+				$( '#infoList input' ).on( 'click', function() {
+					var type = $( this ).parent().text();
+					if ( type === 'Debug' ) {
+						V.debug = ! V.debug;
+						if ( ! V.debug ) refreshData();
+						$( '#debug' ).toggleClass( 'bgm' );
+						console.log( '%cDebug:', "color:red" );
+						console.log( V.debug ? 'No commands to server.' : 'Disabled.' );
+					} else {
+						var time = type.slice( -1 ) !== 'c';
+						bash( [ 'cmd.sh', 'cachebust', time, 'CMD TIME' ] );
+						console.log( '%cCache Bust', "color:yellow" );
+						console.log( time ? 'time()' : 'Static' );
+					}
+					$( '#infoX' ).trigger( 'click' );
+				} );
+			}
+		} );
+	} );
 } );
 $( '.page-icon' ).press( () => location.reload() );
 $( '.col-r .switch' ).press( function( e ) {

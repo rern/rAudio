@@ -214,11 +214,6 @@ $( '#button-settings' ).on( 'click', function( e ) {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
-} ).press( function() {
-	bash( [ 'cachebust' ], type => {
-		console.log( '%cCache Bust:', "color:red" );
-		console.log( type || 'Fixed' );
-	} );
 } );
 $( '#settings' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ this.id;

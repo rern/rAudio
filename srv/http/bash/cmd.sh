@@ -240,14 +240,14 @@ bookmarkrename )
 cachebust )
 	hash="?v=$( date +%s )'"
 	sed -E -i "0,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
-	if [[ ! $2 ]]; then # not from install.sh
+	if [[ $TIME ]]; then
 		hashtime="?v='.time()"
-		if ! grep -q $hashtime /srv/http/common.php; then
-			hash=$hashtime
-			echo Dynamic
-		fi
+		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
 	fi
 	sed -i "0,/?v=.*/ s/?v=.*/$hash;/" /srv/http/common.php
+	;;
+cachetype )
+	grep -q "?v='.time()" /srv/http/common.php && echo dynamic
 	;;
 color )
 	file=$dirsystem/color
