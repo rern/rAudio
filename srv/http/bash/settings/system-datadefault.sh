@@ -58,6 +58,7 @@ sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
 sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
+rm -f /root/.bash_history
 
 # webradio
 if [[ ! -e /tmp/webradio ]]; then # system-datareset.sh - keep existing
