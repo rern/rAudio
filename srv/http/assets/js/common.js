@@ -1240,8 +1240,8 @@ $( '#debug' ).press( function() {
 			, title : 'Debug / Cache'
 			, list  : [ '', 'radio', { kv: {
 				  'Debug'               : 'debug'
-				, 'Cache <c>time()</c>' : 'time'
 				, 'Cache - static'      : 'static'
+				, 'Cache <c>time()</c>' : 'time'
 			}, sameline: false } ]
 			, okno  : true
 			, beforeshow : () => {
