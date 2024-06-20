@@ -1234,6 +1234,14 @@ function bashConsoleLog( data ) {
 }
 
 $( '#debug' ).press( function() {
+	if ( V.debug ) {
+		V.debug = false;
+		refreshData();
+		$( '#debug' ).removeClass( 'bgm' );
+		console.log( '\x1B[36mDebug:\x1B[0m Disabled' );
+		return
+	}
+	
 	bash( [ 'cmd.sh', 'cachetype' ], type => {
 		info( {
 			  icon  : 'flash'
@@ -1245,15 +1253,13 @@ $( '#debug' ).press( function() {
 			}, sameline: false } ]
 			, okno  : true
 			, beforeshow : () => {
-				$( '#infoList input[value='+ type +']' ).prop( 'checked', true );
+				$( '#infoList input[value='+ type +']' ).prop( { checked: true, disabled: true } );
 				$( '#infoList input' ).on( 'click', function() {
 					type = $( this ).val();
 					if ( type === 'debug' ) {
-						V.debug = ! V.debug;
-						if ( ! V.debug ) refreshData();
-						$( '#debug' ).toggleClass( 'bgm' );
-						console.log( '%cDebug:', "color:red" );
-						console.log( V.debug ? 'No commands to server.' : 'Disabled.' );
+						V.debug = true;
+						$( '#debug' ).addClass( 'bgm' );
+						console.log( '\x1B[36mDebug:\x1B[0m Data to server blocked' );
 						$( '#infoX' ).trigger( 'click' );
 					} else {
 						bash( [ 'cmd.sh', 'cachebust', type === 'time', 'CMD TIME' ], location.reload() );
