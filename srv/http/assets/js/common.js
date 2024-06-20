@@ -1247,9 +1247,9 @@ $( '#debug' ).press( function() {
 			  icon  : 'flash'
 			, title : 'Debug / Cache'
 			, list  : [ '', 'radio', { kv: {
-				  'Debug'               : 'debug'
-				, 'Cache - static'      : 'static'
-				, 'Cache <c>time()</c>' : 'time'
+				  'Debug'                  : 'debug'
+				, 'Cache static'           : 'static'
+				, 'Cache <c>?v=time()</c>' : 'time'
 			}, sameline: false } ]
 			, okno  : true
 			, beforeshow : () => {
