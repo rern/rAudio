@@ -247,7 +247,7 @@ cachebust )
 	sed -i "0,/?v=.*/ s/?v=.*/$hash;/" /srv/http/common.php
 	;;
 cachetype )
-	grep -q "?v='.time()" /srv/http/common.php && echo dynamic
+	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
 	;;
 color )
 	file=$dirsystem/color

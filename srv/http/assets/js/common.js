@@ -1234,33 +1234,30 @@ function bashConsoleLog( data ) {
 }
 
 $( '#debug' ).press( function() {
-	bash( [ 'cmd.sh', 'cachetype' ], dynamic => {
-		var cache = 'Cache bust - ';
-		cache    += dynamic ? 'Static' : '<c>time()</c>';
+	bash( [ 'cmd.sh', 'cachetype' ], type => {
 		info( {
 			  icon  : 'flash'
-			, title : 'Code'
-			, list  : [
-				  [ 'Debug', 'checkbox' ]
-				, [ cache,   'checkbox' ]
-			]
+			, title : 'Debug / Cache'
+			, list  : [ '', 'radio', { kv: {
+				  'Debug'               : 'debug'
+				, 'Cache <c>time()</c>' : 'time'
+				, 'Cache - static'      : 'static'
+			}, sameline: false } ]
 			, okno  : true
 			, beforeshow : () => {
+				$( '#infoList input[value='+ type +']' ).prop( 'checked', true );
 				$( '#infoList input' ).on( 'click', function() {
-					var type = $( this ).parent().text();
-					if ( type === 'Debug' ) {
+					type = $( this ).val();
+					if ( type === 'debug' ) {
 						V.debug = ! V.debug;
 						if ( ! V.debug ) refreshData();
 						$( '#debug' ).toggleClass( 'bgm' );
 						console.log( '%cDebug:', "color:red" );
 						console.log( V.debug ? 'No commands to server.' : 'Disabled.' );
+						$( '#infoX' ).trigger( 'click' );
 					} else {
-						var time = type.slice( -1 ) !== 'c';
-						bash( [ 'cmd.sh', 'cachebust', time, 'CMD TIME' ] );
-						console.log( '%cCache Bust', "color:yellow" );
-						console.log( time ? 'time()' : 'Static' );
+						bash( [ 'cmd.sh', 'cachebust', type === 'time', 'CMD TIME' ], location.reload() );
 					}
-					$( '#infoX' ).trigger( 'click' );
 				} );
 			}
 		} );
