@@ -1159,12 +1159,12 @@ function renderLibrary() { // library home
 function renderLibraryCounts() {
 	var songs    = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$( '.lib-mode .mode' ).each( ( i, el ) => {
+	$( '.lib-mode' ).each( ( i, el ) => {
 		var $this = $( el );
-		var mode  = $this.data( 'mode' );
-		var v     = C[ mode ];
-		$this.parent().addBack().toggleClass( 'nodata', ! v );
-		if ( typeof v !== 'boolean' ) $( '#mode-'+ mode ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
+		var $mode  = $this.find( '.mode' );
+		var v     = C[ $mode.data( 'mode' ) ];
+		$this.toggleClass( 'nodata', ! v );
+		if ( typeof v !== 'boolean' ) $mode.find( 'gr' ).html( v ? v.toLocaleString() : '' );
 	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );

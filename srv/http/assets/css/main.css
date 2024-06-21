@@ -1789,7 +1789,7 @@ li.active .iconthumb {
 w {
 	color: var( --cw );
 }
-#lib-mode-list .mode.nodata i {
+.lib-mode.nodata i {
 	color: var( --cg ) !important;
 }
 #lib-list li.nodata * {

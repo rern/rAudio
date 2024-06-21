@@ -1211,9 +1211,9 @@ $( '#button-lib-back' ).on( 'click', function() {
 } );
 $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
-} ).on( 'click', '.mode', function() {
+} ).on( 'click', '.lib-mode', function() {
 	var $this = $( this );
-	V.mode    = $this.data( 'mode' );
+	V.mode    = $this.find( '.mode' ).data( 'mode' );
 	$( '#lib-search-close' ).trigger( 'click' );
 	if ( V.mode === 'bookmark' || $this.hasClass( 'nodata' ) ) return
 	
