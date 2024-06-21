@@ -1163,7 +1163,7 @@ function renderLibraryCounts() {
 		var $this = $( el );
 		var mode  = $this.data( 'mode' );
 		var v     = C[ mode ];
-		$this.toggleClass( 'nodata', ! v );
+		$this.parent().addBack().toggleClass( 'nodata', ! v );
 		if ( typeof v !== 'boolean' ) $( '#mode-'+ mode ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
 	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );

@@ -35,11 +35,16 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 			}
 			return
 		case 'Enter':
-			if ( $( '#settings' ).hasClass( 'hide' ) ) return
+			if ( ! $( '#settings' ).hasClass( 'hide' ) ) {
 				var $menu = $( '#settings' ).find( 'a.active' );
 				if ( ! $menu.length ) $menu = $( '#settings' ).find( '.submenu.active' );
 				var href = $menu.prop( 'href' );
 				href ? location.href = href : $menu.trigger( 'click' );
+			} else if ( ! V.librarylist ) {
+				$( '.lib-mode.updn div' ).trigger( 'click' );
+			} else if ( V.librarylist ) {
+				$( '#lib-list li.active' ).trigger( 'click' );
+			}
 			return
 		case 'Escape':
 			if ( $( '.menu:not(.hide)' ).length ) {
@@ -199,27 +204,36 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 		
 		// home /////////////////////////////////////////
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
-			var $blupdn = $( '.lib-mode.updn' );
-			if ( ! $blupdn.length ) {
-				$( '.lib-mode:not( .hide )' ).eq( 0 ).addClass( 'updn' );
+			var $libmode = $( '.lib-mode:not( .hide ):not( .nodata )' );
+			var $updn    = $( '.lib-mode.updn' );
+			if ( ! $updn.length ) {
+				$libmode.eq( 0 ).addClass( 'updn' );
 				return
 			}
 			
+			if ( $libmode.length < 2 ) return
+			
+			var index = 0;
+			$.each( $libmode, ( i, el ) => {
+				if ( $( el ).hasClass( 'updn' ) ) {
+					index = i;
+					return false
+				}
+			} );
 			switch ( key ) {
 				case 'ArrowLeft':
-					var $div = $( '.lib-mode.updn' ).prevAll( ':not( .hide )' ).eq( 0 );
-					$( '.lib-mode' ).removeClass( 'updn' );
-					if ( ! $div.length ) $div = $( '.lib-mode:not( .hide )' ).last();
-					$div.addClass( 'updn' );
-					break;
 				case 'ArrowRight':
-					var $div = $( '.lib-mode.updn' ).nextAll( ':not( .hide )' ).eq( 0 );
-					$( '.lib-mode' ).removeClass( 'updn' );
-					if ( ! $div.length ) $div = $( '.lib-mode:not( .hide )' ).eq( 0 );
-					$div.addClass( 'updn' );
+					var iLast = $libmode.length - 1;
+					if ( key === 'ArrowLeft' ) {
+						var i = index > 0 ? index - 1 : iLast;
+					} else {
+						var i = index < iLast ? index + 1 : 0;
+					}
+					$updn.removeClass( 'updn' );
+					$libmode.eq( i ).addClass( 'updn' );
 					break;
 				case 'Enter':
-					$( '.lib-mode.updn .mode' ).trigger( 'click' );
+					$updn.trigger( 'click' );
 					break;
 			}
 			return
@@ -274,7 +288,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 			case 'ArrowUp':
 			case 'ArrowDown':
 				scrollUpDown( e, $( '#lib-list' ), key );
-				break;
+				return;
 			case 'Enter':
 				var $liactive = $( '#lib-list li.active' );
 				if ( $( '.licover' ).length || $( '#lib-list li.mode-webradio' ).length ) {
@@ -327,13 +341,11 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 	}
 } );
 function scrollUpDown( e, $list, key ) {
-	if ( $( '.contextmenu' ).not( '.hide' ).length ) return
-	
 	e.preventDefault();
 	var $li       = $list.find( 'li' );
 	var $liactive = $list.find( 'li.active' );
 	if ( ! $liactive.length ) {
-		$li.first().addClass( 'active' );
+		$li.eq( 0 ).addClass( 'active' );
 		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 300 );
 		return
 	}

@@ -1474,10 +1474,9 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
-	var active   = $this.hasClass( 'active' );
 	menuHide();
 	if ( ( menushow && V.mode !== 'webradio' && $target.is( '.li-icon' ) ) || $target.is( '.li-icon, .licoverimg' ) ) {
-		if ( ! active ) contextmenuLibrary( $this, $target );
+		contextmenuLibrary( $this, $target );
 		return
 	}
 	
