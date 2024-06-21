@@ -206,7 +206,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
 			var $libmode = $( '.lib-mode:not( .hide ):not( .nodata )' );
 			var $updn    = $( '.lib-mode.updn' );
-			if ( ! $updn.length ) {
+			if ( ! $updn.length && key in keyarrow ) {
 				$libmode.eq( 0 ).addClass( 'updn' );
 				return
 			}
