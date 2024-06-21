@@ -1248,7 +1248,7 @@ $( '#debug' ).press( function() {
 			, title : 'Debug / Cache'
 			, list  : [ '', 'radio', { kv: {
 				  'Debug'                  : 'debug'
-				, 'Cache static'           : 'static'
+				, 'Cache - static'         : 'static'
 				, 'Cache <c>?v=time()</c>' : 'time'
 			}, sameline: false } ]
 			, okno  : true
