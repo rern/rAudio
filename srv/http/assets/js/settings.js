@@ -290,6 +290,29 @@ document.title = page === 'camilla' ? 'Camilla DSP' : page[ 0 ].toUpperCase() + 
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 $( '#'+ page ).addClass( 'active' );
 
+$( document ).on( 'keydown', function( e ) {
+	if ( I.active || page === 'camilla' ) return
+	
+	var key = e.key;
+	switch ( key ) {
+		case 'ArrowUp':
+		case 'ArrowDown':
+			e.preventDefault();
+			var $base = $( '.row' ).filter( ( i, el ) => {
+				return ! $( el ).hasClass( 'hide' ) &&  $( el ).find( 'input, select:not( [disabled] )' ).length
+			} );
+			if ( ! $( '.row.focus' ).length ) {
+				$base.eq( 0 ).addClass( 'focus' );
+				return
+			}
+			
+			focusNext( $base, 'focus', key );
+			break;
+		case 'Enter':
+			$( '.row.focus .switch' ).trigger( 'click' );
+			break;
+	}
+} );
 $( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return
 	

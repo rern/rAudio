@@ -213,24 +213,10 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 			
 			if ( $libmode.length < 2 ) return
 			
-			var index = 0;
-			$.each( $libmode, ( i, el ) => {
-				if ( $( el ).hasClass( 'updn' ) ) {
-					index = i;
-					return false
-				}
-			} );
 			switch ( key ) {
 				case 'ArrowLeft':
 				case 'ArrowRight':
-					var iLast = $libmode.length - 1;
-					if ( key === 'ArrowLeft' ) {
-						var i = index > 0 ? index - 1 : iLast;
-					} else {
-						var i = index < iLast ? index + 1 : 0;
-					}
-					$updn.removeClass( 'updn' );
-					$libmode.eq( i ).addClass( 'updn' );
+					focusNext( $libmode, 'updn', key )
 					break;
 				case 'Enter':
 					$updn.trigger( 'click' );

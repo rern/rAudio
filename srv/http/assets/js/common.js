@@ -115,6 +115,24 @@ function icoLabel( label, icon ) {
 function icoTab( tab ) {
 	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'
 }
+function focusNext( $base, target, key ) {
+	var index = 0;
+	$.each( $base, ( i, el ) => {
+		if ( $( el ).hasClass( target ) ) {
+			index = i;
+			return false
+		}
+	} );
+	var iLast = $base.length - 1;
+	if ( [ 'ArrowLeft', 'ArrowUp' ].includes( key ) ) {
+		var i = index > 0 ? index - 1 : iLast;
+	} else {
+		var i = index < iLast ? index + 1 : 0;
+	}
+	$base.removeClass( target );
+	$base.eq( i ).addClass( target );
+	$base.eq( i )[ 0 ].scrollIntoView( { block: 'center' } );
+}
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).press( '#infoIcon', function() { // usage
 	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
