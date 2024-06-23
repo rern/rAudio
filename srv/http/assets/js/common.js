@@ -115,7 +115,14 @@ function icoLabel( label, icon ) {
 function icoTab( tab ) {
 	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'
 }
-function focusNext( $base, target, key ) {
+function focusNext( $parent, $base, target, key ) {
+	if ( ! $parent.find( '.'+ target ).length ) {
+		$focus = $base.eq( 0 );
+		$focus.addClass( target );
+		if ( ! I.active ) $focus[ 0 ].scrollIntoView( { block: 'center' } );
+		return
+	}
+	
 	var index = 0;
 	$.each( $base, ( i, el ) => {
 		if ( $( el ).hasClass( target ) ) {
@@ -135,12 +142,11 @@ function focusNext( $base, target, key ) {
 	$next.addClass( target );
 	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
-function tabNext( e ) {
-	e.preventDefault();
+function tabNext( shift ) {
 	var $current = $( '#bar-bottom' ).find( '.active' );
-	var $next    = e.shiftKey ? $current.prev() : $current.next();
+	var $next    = shift ? $current.prev() : $current.next();
 	var $tabs    = $( '#bar-bottom' ).children();
-	if ( ! $next.length ) $next = e.shiftKey ? $tabs.last() : $tabs.first();
+	if ( ! $next.length ) $next =shift ? $tabs.last() : $tabs.first();
 	if ( page ) {
 		location.href = 'settings.php?p='+ $next[ 0 ].id;
 	} else {
@@ -164,10 +170,10 @@ select:   [U] [D]     - check
 */
 	if ( ! I.active ) return
 	
+	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', ' ' ].includes( e.key ) || arrow || media ) e.preventDefault();
 	switch ( e.key ) {
 		case 'ArrowLeft':
 		case 'ArrowRight':
-			e.preventDefault();
 			var activeinput = $( document.activeElement ).attr( 'type' );
 			if ( [ 'text', 'number', 'password', 'range', 'textarea' ].includes( activeinput ) ) return
 			
@@ -180,16 +186,10 @@ select:   [U] [D]     - check
 			break
 		case 'ArrowUp':
 		case 'ArrowDown':
-			e.preventDefault();
 			var $base    = $( '#infoList' ).find( 'input, select' );
-			if ( ! $( '#infoList .focus' ).length ) {
-				$base.eq( 0 ).addClass( 'focus' );
-			} else {
-				focusNext( $base, 'focus', e.key );
-			}
+			focusNext( $( '#infoList' ), $base, 'focus', e.key );
 			break
 		case ' ':
-			e.preventDefault();
 			$( '#infoList .focus' ).trigger( 'click' );
 			break
 		case 'Enter':

@@ -293,29 +293,25 @@ $( '#'+ page ).addClass( 'active' );
 $( document ).on( 'keydown', function( e ) {
 	if ( I.active || page === 'camilla' ) return
 	
+	if ( [ 'ArrowDown', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( e.key ) ) e.preventDefault();
 	switch ( e.key ) {
 		case 'ArrowUp':
 		case 'ArrowDown':
-			e.preventDefault();
 			var $base = $( '.row' ).filter( ( i, el ) => {
 				return ! $( el ).hasClass( 'hide' ) &&  $( el ).find( 'input, select:not( [disabled] )' ).length
 			} );
-			if ( ! $( '.row.focus' ).length ) {
-				$base.eq( 0 ).addClass( 'focus' )[ 0 ].scrollIntoView( { block: 'center' } );
-				return
-			}
-			
-			focusNext( $base, 'focus', e.key );
-			break
+			focusNext( $( '.container' ), $base, 'focus', e.key );
+			return
 		case 'Enter':
+		case ' ':
 			$( '.row.focus .switch' ).trigger( 'click' );
-			break
+			return
 		case 'Escape':
 			$( '.close' ).trigger( 'click' );
-			break
+			return
 		case 'Tab':
-			tabNext( e );
-			break
+			tabNext( e.shiftKey );
+			return
 	}
 } );
 $( '.page-icon' ).on( 'click', function() {

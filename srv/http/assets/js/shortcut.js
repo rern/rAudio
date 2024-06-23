@@ -22,13 +22,16 @@ if ( localhost ) {
 	keymedia.AudioVolumeUp   = 'volup';
 }
 
-$( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() - Tab, page scroll
+$( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
 	
-	var key = e.key;
+	var key   = e.key;
+	var arrow = key in keyarrow;
+	var media = key in keymedia;
+	if ( [ 'Backspace', 'Enter', 'Escape', 'Home', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
 	switch ( key ) {
 		case 'Tab':
-			tabNext( e );
+			tabNext( e.shiftKey );
 			return
 // settings -----------------------------------------------------------
 		case 'Escape':
@@ -41,8 +44,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 			return
 	}
 // media key ----------------------------------------------------------
-	if ( key in keymedia ) {
-		e.preventDefault();
+	if ( media ) {
 		var cmd = keymedia[ key ];
 		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
 		$( '#'+ cmd ).trigger( 'click' );
@@ -87,7 +89,6 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 				break
 			case 'ArrowUp':
 			case 'ArrowDown':
-				e.preventDefault();
 				if ( $( '.submenu.active' ).length ) {
 					$menuactive = $( '.submenu.active' );
 					if ( key === 'ArrowDown' ) {
@@ -189,7 +190,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 	}
 // arrow key -------------------------------------------------------
 	if ( V.playback ) {
-		if ( key in keyarrow ) {
+		if ( arrow ) {
 			$( '#'+ keyarrow[ key ] ).trigger( 'click' );
 			return
 		}
@@ -199,22 +200,12 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 		// home /////////////////////////////////////////
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
 			var $libmode = $( '.lib-mode:not( .hide ):not( .nodata )' );
-			var $updn    = $( '.lib-mode.updn' );
-			if ( ! $updn.length && key in keyarrow ) {
-				$libmode.eq( 0 ).addClass( 'updn' );
-				return
-			}
-			
 			if ( $libmode.length < 2 ) return
 			
-			switch ( key ) {
-				case 'ArrowLeft':
-				case 'ArrowRight':
-					focusNext( $libmode, 'updn', key )
-					break;
-				case 'Enter':
-					$updn.trigger( 'click' );
-					break;
+			if ( arrow ) {
+				focusNext( $( '#lib-mode-list' ), $libmode, 'updn', key )
+			} else if ( key === 'Enter' ) {
+				$( '.lib-mode.updn' ).trigger( 'click' );
 			}
 			return
 		}
@@ -321,7 +312,6 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 	}
 } );
 function scrollUpDown( e, $list, key ) {
-	e.preventDefault();
 	var $li       = $list.find( 'li' );
 	var $liactive = $list.find( 'li.active' );
 	if ( ! $liactive.length ) {
