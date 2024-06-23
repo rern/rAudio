@@ -301,7 +301,7 @@ $( document ).on( 'keydown', function( e ) {
 				return ! $( el ).hasClass( 'hide' ) &&  $( el ).find( 'input, select:not( [disabled] )' ).length
 			} );
 			if ( ! $( '.row.focus' ).length ) {
-				$base.eq( 0 ).addClass( 'focus' );
+				$base.eq( 0 ).addClass( 'focus' )[ 0 ].scrollIntoView( { block: 'center' } );
 				return
 			}
 			

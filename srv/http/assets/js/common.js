@@ -131,8 +131,9 @@ function focusNext( $base, target, key ) {
 		i = 0;
 	}
 	$base.removeClass( target );
-	$base.eq( i ).addClass( target );
-	$base.eq( i )[ 0 ].scrollIntoView( { block: 'center' } );
+	var $next = $base.eq( i );
+	$next.addClass( target );
+	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
 function tabNext( e ) {
 	e.preventDefault();
@@ -153,7 +154,7 @@ $( '#infoOverlay' ).press( '#infoIcon', function() { // usage
 $( '#infoOverlay' ).on( 'click', '#infoList', function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
-$( '#infoOverlay' ).on( 'keydown', function( e ) {
+$( 'body' ).on( 'keydown', function( e ) {
 /*
 all:      [Tab]       - focus / next input
 		  [Shift+Tab] - previous input
@@ -163,27 +164,40 @@ select:   [U] [D]     - check
 */
 	if ( ! I.active ) return
 	
-	var key = e.key;
-	switch ( key ) {
-		case 'Enter':
-			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).trigger( 'click' );
-			break;
-		case 'Escape':
-			$( '#infoX' ).trigger( 'click' );
-			break;
+	switch ( e.key ) {
 		case 'ArrowLeft':
 		case 'ArrowRight':
-			e.stopPropagation();
+			e.preventDefault();
 			var activeinput = $( document.activeElement ).attr( 'type' );
 			if ( [ 'text', 'number', 'password', 'range', 'textarea' ].includes( activeinput ) ) return
 			
 			var $tabactive = $( '#infoTab a.active' );
-			if ( key === 'ArrowLeft' ) {
+			if ( e.key === 'ArrowLeft' ) {
 				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).trigger( 'click' ) : $tabactive.prev().trigger( 'click' );
 			} else {
 				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).trigger( 'click' ) : $tabactive.next().trigger( 'click' );
 			}
-			break;
+			break
+		case 'ArrowUp':
+		case 'ArrowDown':
+			e.preventDefault();
+			var $base    = $( '#infoList' ).find( 'input, select' );
+			if ( ! $( '#infoList .focus' ).length ) {
+				$base.eq( 0 ).addClass( 'focus' );
+			} else {
+				focusNext( $base, 'focus', e.key );
+			}
+			break
+		case ' ':
+			e.preventDefault();
+			$( '#infoList .focus' ).trigger( 'click' );
+			break
+		case 'Enter':
+			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).trigger( 'click' );
+			break
+		case 'Escape':
+			$( '#infoX' ).trigger( 'click' );
+			break
 	}
 } );
 	
