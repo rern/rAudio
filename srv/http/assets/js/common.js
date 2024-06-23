@@ -123,15 +123,28 @@ function focusNext( $base, target, key ) {
 			return false
 		}
 	} );
+	var i     = [ 'ArrowLeft', 'ArrowUp' ].includes( key ) ? index - 1 : index + 1;
 	var iLast = $base.length - 1;
-	if ( [ 'ArrowLeft', 'ArrowUp' ].includes( key ) ) {
-		var i = index > 0 ? index - 1 : iLast;
-	} else {
-		var i = index < iLast ? index + 1 : 0;
+	if ( i < 0 ) {
+		i = iLast;
+	} else if ( i > iLast ) {
+		i = 0;
 	}
 	$base.removeClass( target );
 	$base.eq( i ).addClass( target );
 	$base.eq( i )[ 0 ].scrollIntoView( { block: 'center' } );
+}
+function tabNext( e ) {
+	e.preventDefault();
+	var $current = $( '#bar-bottom' ).find( '.active' );
+	var $next    = e.shiftKey ? $current.prev() : $current.next();
+	var $tabs    = $( '#bar-bottom' ).children();
+	if ( ! $next.length ) $next = e.shiftKey ? $tabs.last() : $tabs.first();
+	if ( page ) {
+		location.href = 'settings.php?p='+ $next[ 0 ].id;
+	} else {
+		$next.trigger( 'click' );
+	}
 }
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).press( '#infoIcon', function() { // usage
@@ -150,7 +163,6 @@ select:   [U] [D]     - check
 */
 	if ( ! I.active ) return
 	
-	e.stopPropagation(); // suppress others
 	var key = e.key;
 	switch ( key ) {
 		case 'Enter':
@@ -161,6 +173,7 @@ select:   [U] [D]     - check
 			break;
 		case 'ArrowLeft':
 		case 'ArrowRight':
+			e.stopPropagation();
 			var activeinput = $( document.activeElement ).attr( 'type' );
 			if ( [ 'text', 'number', 'password', 'range', 'textarea' ].includes( activeinput ) ) return
 			
@@ -178,6 +191,7 @@ I = { active: false }
 
 function info( json ) {
 	infoClearTimeout( 'all' );
+	$( '.menu' ).addClass( 'hide' );
 	V.timeout = {}
 	local(); // flag for consecutive info
 	I = json;
@@ -585,7 +599,6 @@ function infoButtonCommand( fn, cancel ) {
 	if ( cancel ) delete I.oknoreset;
 	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
-	I = { active: false }
 	infoReset();
 }
 function infoButtonWidth() {
@@ -782,6 +795,7 @@ function infoReset() {
 		.removeAttr( 'style' )
 		.empty();
 	$( 'body' ).css( 'overflow-y', '' );
+	setTimeout( () => I = { active: false }, 0 );
 }
 function infoSetValues() {
 	var $this, type, val;

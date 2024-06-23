@@ -5,19 +5,21 @@ var keyarrow = {
 	, ArrowUp    : 'volup'
 	, ArrowDown  : 'voldn'
 }
-var keyevent = {
+var keymedia = {
 	  MediaNextTrack     : 'next'
 	, MediaPause         : 'pause'
 	, MediaPlay          : 'play'
+	, MediaPlayPause     : 'toggle'
 	, MediaPreviousTrack : 'previous'
 	, MediaStop          : 'stop'
 	, MediaTrackPrevious : 'previous'
 	, MediaTrackNext     : 'next'
+	, ' '                : 'toggle'
 }
 if ( localhost ) {
-	keyevent.AudioVolumeDown = 'voldn';
-	keyevent.AudioVolumeMute = 'volmute';
-	keyevent.AudioVolumeUp   = 'volup';
+	keymedia.AudioVolumeDown = 'voldn';
+	keymedia.AudioVolumeMute = 'volmute';
+	keymedia.AudioVolumeUp   = 'volup';
 }
 
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() - Tab, page scroll
@@ -25,27 +27,10 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 	
 	var key = e.key;
 	switch ( key ) {
-		case 'Backspace':
-			if ( $( 'input:focus, textarea:focus' ).length ) return
-			
-			if ( V.library ) {
-				$( '#button-lib-back' ).trigger( 'click' );
-			} else if ( V.playlist ) {
-				$( '#button-pl-back' ).trigger( 'click' );
-			}
+		case 'Tab':
+			tabNext( e );
 			return
-		case 'Enter':
-			if ( ! $( '#settings' ).hasClass( 'hide' ) ) {
-				var $menu = $( '#settings' ).find( 'a.active' );
-				if ( ! $menu.length ) $menu = $( '#settings' ).find( '.submenu.active' );
-				var href = $menu.prop( 'href' );
-				href ? location.href = href : $menu.trigger( 'click' );
-			} else if ( ! V.librarylist ) {
-				$( '.lib-mode.updn div' ).trigger( 'click' );
-			} else if ( V.librarylist ) {
-				$( '#lib-list li.active' ).trigger( 'click' );
-			}
-			return
+// settings -----------------------------------------------------------
 		case 'Escape':
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
@@ -54,66 +39,16 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 				$( '#button-settings' ).trigger( 'click' );
 			}
 			return
-		case 'Home':
-			if ( V.library ) {
-				$( '#library' ).trigger( 'click' );
-			} else if ( V.playlist ) {
-				$( '#playlist' ).trigger( 'click' );
-			}
-			return
-		case ' ':
-		case 'MediaPlayPause':
-			e.preventDefault();
-			var btn = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
-			$( '#'+ btn ).trigger( 'click' );
-			return
-		case 'Tab':
-			e.preventDefault();
-			if ( V.library ) {
-				$( '#playback' ).trigger( 'click' );
-			} else if ( V.playback ) {
-				$( '#playlist' ).trigger( 'click' );
-			} else {
-				$( '#library' ).trigger( 'click' );
-			}
-			return
-		case '#': // index bar
-		case 'a':
-		case 'z':
-			key = key.toUpperCase();
-			if ( V.library && ! $( '#lib-list .index' ).hasClass( 'hide' ) ) {
-				$( '#lib-index' ).find( 'wh:contains('+ key +')' ).trigger( 'click' );
-				if ( V.albumlist ) {
-					$( '#lib-list .coverart.active' ).removeClass( 'active' );
-					if ( key !== '#' ) {
-						$( '#lib-list .coverart[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
-					} else {
-						$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
-					}
-				} else {
-					$( '#lib-list li.active' ).removeClass( 'active' );
-					if ( key !== '#' ) {
-						$( '#lib-list li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
-					} else {
-						$( '#lib-list li' ).eq( 0 ).addClass( 'active' );
-					}
-				}
-			} else if ( V.playlist && ! $( '#pl-list .index' ).hasClass( 'hide' ) ) {
-				$( '#pl-savedlist li.active' ).removeClass( 'active' );
-				if ( key !== '#' ) {
-					$( '#pl-savedlist li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
-				} else {
-					$( '#pl-savedlist li' ).eq( 0 ).addClass( 'active' );
-				}
-			}
-			return
 	}
-	
-	if ( key in keyevent ) {
-		$( '#'+ keyevent[ key ] ).trigger( 'click' );
+// media key ----------------------------------------------------------
+	if ( key in keymedia ) {
+		e.preventDefault();
+		var cmd = keymedia[ key ];
+		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
+		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
-	// context menu
+// context menu -------------------------------------------------------
 	var $contextmenu = $( '.contextmenu:not( .hide )' );
 	if ( ! $contextmenu.length ) $contextmenu = $( '#settings:not( .hide )' );
 	if ( $contextmenu.length ) {
@@ -142,14 +77,14 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 					$( '.submenu' ).removeClass( 'active' );
 					if ( V.playlist ) $( '#pl-list li' ).removeClass( 'lifocus' );
 				}
-				break;
+				break
 			case 'ArrowRight':
 				var $next = $menuactive.next();
 				if ( $next.hasClass( 'submenu' ) ) {
 					$menuactive.removeClass( 'active' );
 					$next.addClass( 'active' );
 				}
-				break;
+				break
 			case 'ArrowUp':
 			case 'ArrowDown':
 				e.preventDefault();
@@ -186,14 +121,73 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 						}
 					}
 				}
-				break;
+				break
 			case 'Enter':  // context menu
 				if ( $( '.menu:not(.hide)' ).length ) $contextmenu.find( '.active' ).trigger( 'click' );
-				break;
+				break
 		}
 		return
 	}
-	
+// common key -------------------------------------------------------
+	switch ( key ) {
+		case 'Backspace':
+			if ( V.library ) {
+				$( '#button-lib-back' ).trigger( 'click' );
+			} else if ( V.playlist ) {
+				$( '#button-pl-back' ).trigger( 'click' );
+			}
+			return
+		case 'Enter':
+			if ( ! $( '#settings' ).hasClass( 'hide' ) ) {
+				var $menu = $( '#settings' ).find( 'a.active' );
+				if ( ! $menu.length ) $menu = $( '#settings' ).find( '.submenu.active' );
+				var href = $menu.prop( 'href' );
+				href ? location.href = href : $menu.trigger( 'click' );
+			} else if ( ! V.librarylist ) {
+				$( '.lib-mode.updn div' ).trigger( 'click' );
+			} else if ( V.librarylist ) {
+				$( '#lib-list li.active' ).trigger( 'click' );
+			}
+			return
+		case 'Home':
+			if ( V.library ) {
+				$( '#library' ).trigger( 'click' );
+			} else if ( V.playlist ) {
+				$( '#playlist' ).trigger( 'click' );
+			}
+			return
+		case '#': // index bar
+		case 'a':
+		case 'z':
+			key = key.toUpperCase();
+			if ( V.library && ! $( '#lib-list .index' ).hasClass( 'hide' ) ) {
+				$( '#lib-index' ).find( 'wh:contains('+ key +')' ).trigger( 'click' );
+				if ( V.albumlist ) {
+					$( '#lib-list .coverart.active' ).removeClass( 'active' );
+					if ( key !== '#' ) {
+						$( '#lib-list .coverart[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
+					} else {
+						$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
+					}
+				} else {
+					$( '#lib-list li.active' ).removeClass( 'active' );
+					if ( key !== '#' ) {
+						$( '#lib-list li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
+					} else {
+						$( '#lib-list li' ).eq( 0 ).addClass( 'active' );
+					}
+				}
+			} else if ( V.playlist && ! $( '#pl-list .index' ).hasClass( 'hide' ) ) {
+				$( '#pl-savedlist li.active' ).removeClass( 'active' );
+				if ( key !== '#' ) {
+					$( '#pl-savedlist li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
+				} else {
+					$( '#pl-savedlist li' ).eq( 0 ).addClass( 'active' );
+				}
+			}
+			return
+	}
+// arrow key -------------------------------------------------------
 	if ( V.playback ) {
 		if ( key in keyarrow ) {
 			$( '#'+ keyarrow[ key ] ).trigger( 'click' );
@@ -347,16 +341,5 @@ function scrollUpDown( e, $list, key ) {
 	if ( ! $linext.length ) $linext = key === 'ArrowUp' ? $li.last() : $li.first();
 	$liactive.removeClass( classactive );
 	$linext.addClass( classactive );
-	var litop       = $linext[ 0 ].getBoundingClientRect().top;
-	var libottom    = $linext[ 0 ].getBoundingClientRect().bottom;
-	var licount     = Math.round( ( V.wH - 120 - ( barH * 2 ) ) / 49 );
-	if ( $linext.is( ':first-child' ) ) {
-		$( 'html, body' ).scrollTop( 0 );
-	} else if ( $linext.is( ':last-of-type' ) && libottom > V.wH - 40 - barH ) {
-		$( 'html, body' ).scrollTop( litop - 80 - barH - ( licount - 2 ) * 49 );
-	} else if ( litop < 80 - barH ) {
-		$( 'html, body' ).scrollTop( $( window ).scrollTop() - 120 - V.wH % 49 - barH - ( licount - 3 ) * 49 );
-	} else if ( libottom > V.wH - 40 - barH ) {
-		$( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
-	}
+	$linext[ 0 ].scrollIntoView( { block: 'center' } );
 }

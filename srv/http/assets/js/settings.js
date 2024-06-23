@@ -293,8 +293,7 @@ $( '#'+ page ).addClass( 'active' );
 $( document ).on( 'keydown', function( e ) {
 	if ( I.active || page === 'camilla' ) return
 	
-	var key = e.key;
-	switch ( key ) {
+	switch ( e.key ) {
 		case 'ArrowUp':
 		case 'ArrowDown':
 			e.preventDefault();
@@ -306,11 +305,17 @@ $( document ).on( 'keydown', function( e ) {
 				return
 			}
 			
-			focusNext( $base, 'focus', key );
-			break;
+			focusNext( $base, 'focus', e.key );
+			break
 		case 'Enter':
 			$( '.row.focus .switch' ).trigger( 'click' );
-			break;
+			break
+		case 'Escape':
+			$( '.close' ).trigger( 'click' );
+			break
+		case 'Tab':
+			tabNext( e );
+			break
 	}
 } );
 $( '.page-icon' ).on( 'click', function() {
