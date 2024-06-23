@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1716733328' );
+	src         : url( '/assets/fonts/rern.woff2?v=1718950827' );
 }
 @font-face {
 	font-family : Lato;
@@ -755,6 +755,11 @@ hr {
 #infoList td:last-child { /* chekbox only which has no label */
 	text-align: left;
 }
+#infoList input.focus,
+#infoList select.focus {
+	outline: 2px solid var(--cgl );
+	outline-offset: 1px;
+}
 #infoList label i {
 	text-align: center;
 	width: 22px;
@@ -1018,6 +1023,10 @@ input[ type=radio ]:disabled {
 }
 input:focus {
 	outline: none;
+}
+.select2-container.focus {
+	outline: 2px solid var(--cgl );
+	outline-offset: 1px;
 }
 @media ( hover:hover ) {
 	#debug { display: block }

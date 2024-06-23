@@ -119,6 +119,7 @@ function focusNext( $parent, $base, target, key ) {
 	if ( ! $parent.find( '.'+ target ).length ) {
 		$focus = $base.eq( 0 );
 		$focus.addClass( target );
+		if ( $focus.is( 'select' ) ) $focus.next().addClass( target );
 		if ( ! I.active ) $focus[ 0 ].scrollIntoView( { block: 'center' } );
 		return
 	}
@@ -137,8 +138,9 @@ function focusNext( $parent, $base, target, key ) {
 	} else if ( i > iLast ) {
 		i = 0;
 	}
-	$base.removeClass( target );
+	$parent.find( '.'+ target ).removeClass( target );
 	var $next = $base.eq( i );
+	if ( $next.is( 'select' ) ) $next.next().addClass( target );
 	$next.addClass( target );
 	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
@@ -170,10 +172,9 @@ select:   [U] [D]     - check
 */
 	if ( ! I.active ) return
 	
-	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', ' ' ].includes( e.key ) || arrow || media ) e.preventDefault();
+	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', ' ' ].includes( e.key ) ) e.preventDefault();
 	switch ( e.key ) {
-		case 'ArrowLeft':
-		case 'ArrowRight':
+		case 'Tab':
 			var activeinput = $( document.activeElement ).attr( 'type' );
 			if ( [ 'text', 'number', 'password', 'range', 'textarea' ].includes( activeinput ) ) return
 			
@@ -190,7 +191,8 @@ select:   [U] [D]     - check
 			focusNext( $( '#infoList' ), $base, 'focus', e.key );
 			break
 		case ' ':
-			$( '#infoList .focus' ).trigger( 'click' );
+			var $focus = $( '#infoList' ).find( 'input.focus, select.focus' );
+			$focus.is( 'select' ) ? $focus.select2( 'open' ) : $focus.trigger( 'click' );
 			break
 		case 'Enter':
 			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).trigger( 'click' );
