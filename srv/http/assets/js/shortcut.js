@@ -211,54 +211,24 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		}
 		
 		if ( V.albumlist ) { // album
-			if ( ! $( '#lib-list .coverart.active' ).length ) {
-				$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
-				return
-			}
-			
-			var $active = $( '#lib-list .coverart.active' );
-			switch ( key ) {
-				case 'ArrowLeft':
-				case 'ArrowRight':
-					if ( arrowL && $active.index() === 0 ) return
-					if ( arrowR && $active.index() === $( '#lib-list .coverart' ).length + 1 ) return
-					
-					var $next = arrowR ? $active.next() : $active.prev();
-					$active.removeClass( 'active' );
-					$next.addClass( 'active' );
-					var rect  = $next[ 0 ].getBoundingClientRect();
-					var wH    = $( window ).height();
-					var eH    = $next.height();
-					var top   = $next.offset().top;
-					if ( rect.bottom > 0 && rect.bottom < ( wH - eH ) ) {
-						var scroll = top - ( V.bars ? 80 : 40 );
-					} else if ( rect.top > 0 && rect.top < ( wH - eH ) ) {
-						var scroll = top - eH;
-					}
-					$( 'html, body' ).scrollTop( scroll );
-					break;
-				case 'ArrowUp':
-					$( '#button-lib-back' ).trigger( 'click' );
-					break;
-				case 'Enter':
-					V.iactive = $( '#lib-list .coverart.active' ).index();
-					$active.trigger( 'click' );
-					break;
+			if ( arrow ) {
+				focusNext( $( '#lib-list' ), $( '#lib-list .coverart' ), 'active', key )
+			} else if ( key === 'Enter' ) {
+				var $active = $( '#lib-list .coverart.active' );
+				V.iactive   = $active.index();
+				$active.trigger( 'click' );
 			}
 			return
 		}
 		
 		switch ( key ) {
-			case 'ArrowLeft': // back button
-				$( '#button-lib-back' ).trigger( 'click' );
-				return
 			case 'ArrowRight': // show context menu
 				$( '#lib-list li.active .li-icon' ).trigger( 'click' );
 				return
 			// list ///////////////////////////////////////
 			case 'ArrowUp':
 			case 'ArrowDown':
-				scrollUpDown( e, $( '#lib-list' ), key );
+				focusNext( $( '#lib-list' ), $( '#lib-list li' ), 'active', key );
 				return;
 			case 'Enter':
 				var $liactive = $( '#lib-list li.active' );
@@ -278,7 +248,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					scrollUpDown( e, $( '#pl-savedlist' ), key );
+					focusNext( $( '#pl-savedlist' ), $( '#pl-savedlist li' ), 'active', key );
 					break;
 				case 'ArrowRight':
 					$( '#pl-savedlist li.active .li-icon' ).trigger( 'click' );
@@ -294,9 +264,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					var $liactive = $( '#pl-list li.updn' );
-					if ( ! $liactive.length ) $( '#pl-list li.active' ).addClass( 'updn' );
-					scrollUpDown( e, $( '#pl-list' ), key );
+					focusNext( $( '#pl-list' ), $( '#pl-list li' ), 'updn', key );
 					break;
 				case 'ArrowRight':
 					$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .li-icon' ).trigger( 'click' ) : $( '#pl-list li.active .li-icon' ).trigger( 'click' );
@@ -311,25 +279,3 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		}
 	}
 } );
-function scrollUpDown( e, $list, key ) {
-	var $li       = $list.find( 'li' );
-	var $liactive = $list.find( 'li.active' );
-	if ( ! $liactive.length ) {
-		$li.eq( 0 ).addClass( 'active' );
-		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 300 );
-		return
-	}
-	
-	var classactive = 'active';
-	if ( $list.prop( 'id' ) === 'pl-list' ) {
-		$liactive   = $list.find( 'li.updn' );
-		classactive = 'updn';
-	}
-	var $linext     = key === 'ArrowUp' ? $liactive.prev( 'li' ) : $liactive.next( 'li' );
-	var barH        = D.bars ? 0 : 40;
-	if ( V.library && $( '.licover' ).length && ! D.hidecover && D.fixedcover ) barH += 230;
-	if ( ! $linext.length ) $linext = key === 'ArrowUp' ? $li.last() : $li.first();
-	$liactive.removeClass( classactive );
-	$linext.addClass( classactive );
-	$linext[ 0 ].scrollIntoView( { block: 'center' } );
-}
