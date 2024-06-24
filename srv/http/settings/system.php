@@ -383,12 +383,12 @@ foreach( $listui as $ui ) {
 }
 $indexhtml  = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) {
-	$indexhtml.= '<a tabindex="0">'.$i.'</a>';
+	$indexhtml.= '<a>'.$i.'</a>';
 	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
 }
 ?>
 <div id="divabout" class="section">
-	<a href="https://github.com/rern/rAudio/discussions"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
+	<a href="https://github.com/rern/rAudio/discussions" tabindex="-1"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
 	<div id="logotext">rAudio
 	<br><gr>b y&emsp;r e r n</gr></div>
 	
