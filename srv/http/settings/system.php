@@ -148,12 +148,12 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'html'     => <<< EOF
-<div id="divi2smodule">
+<div id="divi2smodule" class="row">
 	<div class="col-l">
 		<a><span class="label">Audio - I²S</span><gr>HAT</gr></a>{$Fi( 'i2s' )}
 	</div>
 	<div class="col-r">
-		<div id="divi2ssw">
+		<div id="divi2ssw" class="switch">
 			<input id="i2ssw" type="checkbox">
 			<div class="switchlabel" for="i2ssw"></div>
 		</div>

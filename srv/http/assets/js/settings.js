@@ -133,6 +133,7 @@ function refreshData() {
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
+	$( '.container' ).find( '.switchlabel, .setting, input:text' ).prop( 'tabindex', 0 );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -291,28 +292,7 @@ localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_bla
 $( '#'+ page ).addClass( 'active' );
 
 $( document ).on( 'keydown', function( e ) {
-	if ( I.active || page === 'camilla' ) return
-	
-	if ( [ 'ArrowDown', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( e.key ) ) e.preventDefault();
-	switch ( e.key ) {
-		case 'ArrowUp':
-		case 'ArrowDown':
-			var $base = $( '.row' ).filter( ( i, el ) => {
-				return ! $( el ).hasClass( 'hide' ) &&  $( el ).find( 'input, select:not( [disabled] )' ).length
-			} );
-			focusNext( $( '.container' ), $base, 'focus', e.key );
-			return
-		case 'Enter':
-		case ' ':
-			$( '.row.focus .switch' ).trigger( 'click' );
-			return
-		case 'Escape':
-			$( '.close' ).trigger( 'click' );
-			return
-		case 'Tab':
-			tabNext( e.shiftKey );
-			return
-	}
+	if ( e.key === 'Tab' ) document.activeElement.scrollIntoView( { block: 'center' } );
 } );
 $( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return

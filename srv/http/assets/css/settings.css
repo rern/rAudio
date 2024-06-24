@@ -50,7 +50,7 @@ a[href^="http"] {
 	color: var( --cml );
 	text-decoration: none !important;
 }
-.container input[type="text"] {
+.container input[type=text] {
 	max-width: 230px;
 	margin-bottom: 10px;
 }
@@ -479,6 +479,7 @@ input.disabled + .switchlabel:after {
 .settingedit {
 	width: 40px !important;
 	margin-left: 5px;
+	border-radius: 50%;
 	font-size: 26px;
 	line-height: 40px;
 	text-align: center;
@@ -652,7 +653,7 @@ input.disabled + .switchlabel:after {
 	.hideW { display: none }
 }
 @media (max-width: 450px) {
-	input[type="text"] { padding: 0 7px }
+	input[type=text] { padding: 0 7px }
 	.listtitle a { width: calc( 100% / 13 ) }
 	.brindex { display: block }
 }
@@ -712,8 +713,10 @@ input.disabled + .switchlabel:after {
 	#menu {
 		cursor: pointer
 	}
-	.row.focus .switchlabel,
-	.row.focus .select2-container {
+	.switchlabel:focus-visible,
+	.select2-selection:focus-visible,
+	.setting:focus-visible,
+	input[type=text]:focus-visible {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;
 	}

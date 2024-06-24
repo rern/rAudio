@@ -9,8 +9,8 @@
 	box-shadow    : var( --shadow-select );
 	text-align    : left;
 }
-.select2-selection:focus-visible {
-	outline: none;
+.select2-selection {
+	height: 40px !important;
 }
 .select2-selection--single {
 	height        : 40px;
