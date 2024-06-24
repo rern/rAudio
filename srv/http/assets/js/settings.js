@@ -292,7 +292,19 @@ localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_bla
 $( '#'+ page ).addClass( 'active' );
 
 $( document ).on( 'keydown', function( e ) {
-	if ( e.key === 'Tab' ) document.activeElement.scrollIntoView( { block: 'center' } );
+	if ( I.active ) return
+	
+	switch ( e.key ) {
+		case 'Tab':
+			document.activeElement.scrollIntoView( { block: 'center' } );
+			break
+		case ' ':
+			e.preventDefault();
+			var $active = $( document.activeElement );
+			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
+			$active.trigger( 'click' );
+			break
+	}
 } );
 $( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return

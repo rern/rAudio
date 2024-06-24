@@ -383,7 +383,7 @@ foreach( $listui as $ui ) {
 }
 $indexhtml  = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) {
-	$indexhtml.= '<a>'.$i.'</a>';
+	$indexhtml.= '<a tabindex="0">'.$i.'</a>';
 	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
 }
 ?>

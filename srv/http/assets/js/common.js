@@ -521,6 +521,7 @@ function info( json ) {
 		// set at current scroll position
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		I.active = true;
+		V.focus  = $( document.activeElement ); // store current focused
 		'focus' in I ? $inputbox.eq( I.focus ).focus() : $( '#infoOverlay' ).focus();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoButtonWidth();
@@ -825,6 +826,7 @@ function infoReset() {
 		.empty();
 	$( 'body' ).css( 'overflow-y', '' );
 	setTimeout( () => I = { active: false }, 0 );
+	V.focus.focus(); // restore previous focused
 }
 function infoSetValues() {
 	var $this, type, val;
@@ -1061,8 +1063,8 @@ function selectSet( $select ) {
 		.on( 'select2:open',  () => { // fix: scroll on info - set current value 3rd from top
 			local(); // fix: onblur / onpagehide
 			setTimeout( () => {
-				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
-				if ( ! navigator.maxTouchPoints ) scroll -= 12;
+				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 62;
+				if ( navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
 		} )
