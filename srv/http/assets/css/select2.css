@@ -91,11 +91,6 @@
 .select2 i {
 	vertical-align: 0 !important;
 }
-@media ( hover:hover ) {
-	.select2-container--focus .select2-selection__rendered {
-		outline: 1px solid var( --cgl );
-	}
-}
 @media ( max-height: 768px ) {
 	.select2-results__options {
 		max-height: calc( ( 100vh - 100px ) / 2 ) !important;

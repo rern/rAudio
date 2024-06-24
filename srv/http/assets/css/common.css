@@ -756,7 +756,7 @@ hr {
 	text-align: left;
 }
 #infoList input.focus,
-#infoList select.focus {
+.select2-container.active {
 	outline: 2px solid var(--cgl );
 	outline-offset: 1px;
 }

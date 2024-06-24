@@ -140,7 +140,6 @@ function focusNext( $parent, $base, target, key ) {
 	}
 	$parent.find( '.'+ target ).removeClass( target );
 	var $next = $base.eq( i );
-	if ( $next.is( 'select' ) ) $next.next().addClass( target );
 	$next.addClass( target );
 	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
@@ -172,30 +171,44 @@ select:   [U] [D]     - check
 */
 	if ( ! I.active ) return
 	
-	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', ' ' ].includes( e.key ) ) e.preventDefault();
+	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( e.key ) ) e.preventDefault();
 	switch ( e.key ) {
 		case 'Tab':
-			var activeinput = $( document.activeElement ).attr( 'type' );
-			if ( [ 'text', 'number', 'password', 'range', 'textarea' ].includes( activeinput ) ) return
-			
-			var $tabactive = $( '#infoTab a.active' );
-			if ( e.key === 'ArrowLeft' ) {
-				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).trigger( 'click' ) : $tabactive.prev().trigger( 'click' );
-			} else {
-				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).trigger( 'click' ) : $tabactive.next().trigger( 'click' );
-			}
+			var $next    = $( '#infoTab a.active' ).next();
+			if ( ! $next.length ) $next = $( '#infoTab a' ).eq( 0 );
+			$next.trigger( 'click' );
 			break
 		case 'ArrowUp':
 		case 'ArrowDown':
-			var $base    = $( '#infoList' ).find( 'input, select' );
+			if ( $( '.select2-container--open' ).length ) return
+			
+			var $base    = $( '#infoList' ).find( 'input:not( :hidden ), select' );
 			focusNext( $( '#infoList' ), $base, 'focus', e.key );
+			$( '#infoList .select2-container.active' ).removeClass( 'active' );
+			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().addClass( 'active' );
+			break
+		case 'ArrowLeft':
+		case 'ArrowRight':
+			var $select = $( '#infoList select.focus' );
+			var active  = $( '.select2-container--open' ).length;
+			if ( e.key === 'ArrowRight' ) {
+				if ( active ) return
+				
+				$select
+					.select2( 'open' )
+					.select2( 'close' )
+					.select2( 'open' ); // fix: not focused
+			} else {
+				if ( active ) $select.select2( 'close' );
+			}
 			break
 		case ' ':
-			var $focus = $( '#infoList' ).find( 'input.focus, select.focus' );
-			$focus.is( 'select' ) ? $focus.select2( 'open' ) : $focus.trigger( 'click' );
+			$( '#infoList input.focus' ).trigger( 'click' );
 			break
 		case 'Enter':
-			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).trigger( 'click' );
+			if ( $( '#infoOk' ).hasClass( 'disabled' ) || $( 'textarea' ).is( ':focus' ) ) return
+			
+			$( '#infoOk' ).trigger( 'click' );
 			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );
