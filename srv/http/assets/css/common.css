@@ -1065,6 +1065,7 @@ input:focus {
 	#infoList textarea:focus-visible {
 		outline: none;
 	}
+	.infobtn:focus-visible,
 	input[ type=radio ]:focus-visible,
 	input[ type=checkbox ]:focus-visible,
 	input[ type=range ]:focus-visible::-webkit-slider-thumb {

@@ -720,7 +720,7 @@ input.disabled + .switchlabel:after {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;
 	}
-	a:focus-visible {
+	a:not(.infobtn):focus-visible {
 		outline: none;
 		border-bottom: 1px solid;
 	}

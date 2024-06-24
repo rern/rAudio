@@ -304,6 +304,9 @@ $( document ).on( 'keydown', function( e ) {
 			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
 			$active.trigger( 'click' );
 			break
+		case 'x':
+			if ( e.ctrlKey ) $( '.close' ).trigger( 'click' );
+			break
 	}
 } );
 $( '.page-icon' ).on( 'click', function() {
