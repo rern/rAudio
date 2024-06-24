@@ -184,23 +184,8 @@ select:   [U] [D]     - check
 			
 			var $base    = $( '#infoList' ).find( 'input:not( :hidden ), select' );
 			focusNext( $( '#infoList' ), $base, 'focus', e.key );
-			$( '#infoList .select2-container.active' ).removeClass( 'active' );
-			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().addClass( 'active' );
-			break
-		case 'ArrowLeft':
-		case 'ArrowRight':
-			var $select = $( '#infoList select.focus' );
-			var active  = $( '.select2-container--open' ).length;
-			if ( e.key === 'ArrowRight' ) {
-				if ( active ) return
-				
-				$select
-					.select2( 'open' )
-					.select2( 'close' )
-					.select2( 'open' ); // fix: not focused
-			} else {
-				if ( active ) $select.select2( 'close' );
-			}
+			$( '.select2-selection' ).blur();
+			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).focus();
 			break
 		case ' ':
 			$( '#infoList input.focus' ).trigger( 'click' );
