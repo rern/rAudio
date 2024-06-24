@@ -1084,7 +1084,7 @@ function infoRestoreReset() {
 			  [ 'Keep Library data',     'checkbox' ]
 			, [ 'Keep Network settings', 'checkbox' ]
 		]
-		, oklabel  : ico( 'restore' ) +'Restore'
+		, oklabel  : ico( 'set0' ) +'Reset'
 		, okcolor  : orange
 		, ok       : () => {
 			notifyCommon( 'Reset to default ...' );
