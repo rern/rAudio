@@ -485,7 +485,7 @@ $( '#ledcalc' ).on( 'click', function() {
 		, okno       : true
 	} );
 } );
-$( '#hostname' ).on( 'mousedown touchdown', function() {
+$( '#hostname' ).on( 'click', function() {
 	SW.icon  = 'system';
 	SW.title = 'Player Name';
 	info( {
@@ -512,9 +512,8 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
-} );
-$( '#divtimezone .col-r' ).on( 'click', function( e ) {
-	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
+} ).on( 'select2:open', function( e ) {
+	if ( $( '#timezone option' ).length > 2 ) return
 	
 	$( '#timezone' ).select2( 'close' )
 	$.post( 'cmd.php', { cmd: 'timezonelist' }, ( data ) => {
@@ -717,15 +716,16 @@ function i2sSelectShow() {
 	$( '#divi2sselect, #setting-i2smodule' ).removeClass( 'hide' );
 }
 function infoLcdChar() {
+	var confi2c = 'ADDRESS' in S.lcdcharconf;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, tablabel     : [ 'I&#178;C', 'GPIO' ]
 		, tab          : [ '', infoLcdCharGpio ]
-		, list         : lcdcharlist
+		, list         : jsonClone( lcdcharlist )
 		, boxwidth     : 180
-		, values       : S.lcdcharconf || default_v.lcdchar_i2c
-		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'i2c'
+		, values       : S.lcdcharconf && confi2c ? S.lcdcharconf : default_v.lcdchar_i2c
+		, checkchanged : S.lcdchar && confi2c
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -733,9 +733,10 @@ function infoLcdChar() {
 	} );
 }
 function infoLcdCharGpio() {
-	var list = lcdcharlist.slice( 0, 3 );
+	var list0 = jsonClone( lcdcharlist );
+	var list  = list0.slice( 0, 3 );
 	[ 'RS', 'RW', 'E', 'D4', 'D5', 'D6', 'D7' ].forEach( k => list.push( [ k, 'select', board2bcm ] ) );
-	list.push( lcdcharlist.slice( -1 )[ 0 ] );
+	list.push( list0.slice( -1 )[ 0 ] );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -743,7 +744,7 @@ function infoLcdCharGpio() {
 		, tab          : [ infoLcdChar, '' ]
 		, list         : list
 		, boxwidth     : 70
-		, values       : S.lcdcharconf || default_v.lcdchar_gpio
+		, values       : S.lcdcharconf && 'PIN_RS' in S.lcdcharconf ? S.lcdcharconf : default_v.lcdchar_gpio
 		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
 		, beforeshow   : () => { 
 			infoLcdcharButton();
@@ -1043,41 +1044,53 @@ function infoRelaysOk() {
 	jsonSave( 'relays', name );
 	bash( [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ] );
 }
-function infoRestore( reset ) {
-	var list = [
-		  [ 'Keep Library data',     'checkbox' ]
-		, [ 'Keep Network settings', 'checkbox' ]
-	];
+function infoRestore() {
 	info( {
 		  icon     : SW.icon
 		, title    : SW.title
 		, tablabel : [ 'From Backup', 'Reset To Default' ]
-		, tab      : reset ? [ infoRestore, '' ] : [ '', () => infoRestore( 'reset' ) ]
-		, list     : reset ? list : [ 'Library database only', 'checkbox' ]
-		, file     : reset ? '' : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
+		, tab      : [ '', infoRestoreReset ]
+		, list     : [ 'Library database only', 'checkbox' ]
+		, file     : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
 		, oklabel  : ico( 'restore' ) +'Restore'
 		, okcolor  : orange
-		, ok       : reset ? () => {
-				notifyCommon( 'Reset to default ...' );
-				bash( [ 'settings/system-datareset.sh', 'cmd', ...infoVal(), 'CMD KEEPLIBRARY KEEPNETWORK' ] );
-				loader();
-			} : () => {
-				notifyCommon( 'Restore ...' );
-				var formdata = new FormData();
-				formdata.append( 'cmd', 'datarestore' );
-				formdata.append( 'file', I.infofile );
-				formdata.append( 'libraryonly', infoVal() );
-				fetch( 'cmd.php', { method: 'POST', body: formdata } )
-					.then( response => response.text() )
-					.then( message => {
-						loaderHide();
-						if ( message ) {
-							bannerHide();
-							infoWarning(  SW.icon,  SW.title, message );
-						}
-					} );
-				loader();
-			}
+		, ok       : () => {
+			notifyCommon( 'Restore ...' );
+			var formdata = new FormData();
+			formdata.append( 'cmd', 'datarestore' );
+			formdata.append( 'file', I.infofile );
+			formdata.append( 'libraryonly', infoVal() );
+			fetch( 'cmd.php', { method: 'POST', body: formdata } )
+				.then( response => response.text() )
+				.then( message => {
+					loaderHide();
+					if ( message ) {
+						bannerHide();
+						infoWarning(  SW.icon,  SW.title, message );
+					}
+				} );
+			loader();
+		}
+	} );
+	$( '#restore' ).prop( 'checked', 0 );
+}
+function infoRestoreReset() {
+	info( {
+		  icon     : SW.icon
+		, title    : SW.title
+		, tablabel : [ 'From Backup', 'Reset To Default' ]
+		, tab      : [ infoRestore, '' ]
+		, list     : [
+			  [ 'Keep Library data',     'checkbox' ]
+			, [ 'Keep Network settings', 'checkbox' ]
+		]
+		, oklabel  : ico( 'restore' ) +'Restore'
+		, okcolor  : orange
+		, ok       : () => {
+			notifyCommon( 'Reset to default ...' );
+			bash( [ 'settings/system-datareset.sh', 'cmd', ...infoVal(), 'CMD KEEPLIBRARY KEEPNETWORK' ] );
+			loader();
+		}
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 }
