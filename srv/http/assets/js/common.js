@@ -119,8 +119,9 @@ function focusNext( $parent, $base, target, key ) {
 	if ( ! $parent.find( '.'+ target ).length ) {
 		$focus = $base.eq( 0 );
 		if ( $focus.is( 'input:radio:checked' ) ) $focus = $base.eq( 1 );
+		if ( $focus.is( 'select' ) ) $focus = $focus.next();
 		$focus.addClass( target );
-		if ( $focus.is( 'select' ) ) $focus.next().addClass( target );
+		if ( ! $focus.is( 'input:checkbox, input:radio, select' ) ) $focus.select();
 		if ( ! I.active ) $focus[ 0 ].scrollIntoView( { block: 'center' } );
 		return
 	}
@@ -146,6 +147,7 @@ function focusNext( $parent, $base, target, key ) {
 	if ( $next.is( 'input:radio:checked' ) ) i = key === 'ArrowUp' ? i - 1 : i + 1;
 	$next = $base.eq( i );
 	$next.addClass( target );
+	if ( ! $next.is( 'input:checkbox, input:radio, select' ) ) $next.select();
 	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
 function tabNext( shift ) {
@@ -176,7 +178,7 @@ select:   [U] [D]     - check
 */
 	if ( ! I.active ) return
 	
-	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( e.key ) ) e.preventDefault();
+	if ( [ 'ArrowDown', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( e.key ) ) e.preventDefault();
 	switch ( e.key ) {
 		case 'Tab':
 			var $next    = $( '#infoTab a.active' ).next();
@@ -193,8 +195,11 @@ select:   [U] [D]     - check
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).focus();
 			break
 		case ' ':
-			$( '#infoList' ).find( 'input:checkbox.focus, input:radio.focus' ).trigger( 'click' );
-			$( '#infoList select.focus' ).next().trigger( 'click' );
+			var $focus = $( '#infoList .focus' )
+			if ( ! $focus.is( 'input:checkbox, input:radio, select' ) ) return
+			
+			if ( $focus.is( 'select' ) ) $focus = $focus.next();
+			$focus.trigger( 'click' );
 			break
 		case 'Enter':
 			if ( V.local || $( '#infoOk' ).hasClass( 'disabled' ) || $( 'textarea' ).is( ':focus' ) ) return

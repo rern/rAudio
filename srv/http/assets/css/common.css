@@ -755,7 +755,7 @@ hr {
 #infoList td:last-child { /* chekbox only which has no label */
 	text-align: left;
 }
-#infoList input.focus,
+#infoList input:not( [ type=range ] ).focus,
 .select2-container.active {
 	outline: 2px solid var(--cgl );
 	outline-offset: 1px;
