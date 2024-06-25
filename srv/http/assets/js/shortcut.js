@@ -188,7 +188,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			return
 		}
 		
-		if ( V.albumlist && $( '#lib-list' ).hasClass( 'hide' ) ) { // album
+		if ( V.albumlist && ! V.librarytrack ) { // album
 			if ( arrow ) {
 				focusNext( $( '#lib-list' ), $( '#lib-list .coverart' ), 'active', key )
 			} else if ( key === 'Enter' ) {

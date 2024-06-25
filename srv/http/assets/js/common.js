@@ -169,13 +169,6 @@ $( '#infoOverlay' ).on( 'click', '#infoList', function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
 $( 'body' ).on( 'keydown', function( e ) {
-/*
-all:      [Tab]       - focus / next input
-		  [Shift+Tab] - previous input
-radio:    [L] [R]     - check
-checkbox: [space]     - check
-select:   [U] [D]     - check
-*/
 	if ( ! I.active ) return
 	
 	if ( [ 'ArrowDown', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( e.key ) ) e.preventDefault();
