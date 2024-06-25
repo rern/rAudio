@@ -295,14 +295,15 @@ $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return
 	
 	switch ( e.key ) {
-		case 'Tab':
-			document.activeElement.scrollIntoView( { block: 'center' } );
-			break
 		case ' ':
+		case 'Enter':
 			e.preventDefault();
 			var $active = $( document.activeElement );
 			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
 			$active.trigger( 'click' );
+			break
+		case 'Tab':
+			document.activeElement.scrollIntoView( { block: 'center' } );
 			break
 		case 'x':
 			if ( e.ctrlKey ) $( '.close' ).trigger( 'click' );
