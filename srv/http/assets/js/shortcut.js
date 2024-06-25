@@ -180,8 +180,6 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		// home /////////////////////////////////////////
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
 			var $libmode = $( '.lib-mode:not( .hide ):not( .nodata )' );
-			if ( $libmode.length < 2 ) return
-			
 			if ( arrow ) {
 				focusNext( $( '#lib-mode-list' ), $libmode, 'updn', key );
 			} else if ( key === 'Enter' ) {

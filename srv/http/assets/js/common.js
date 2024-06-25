@@ -125,6 +125,8 @@ function focusNext( $parent, $base, target, key ) {
 		return
 	}
 	
+	if ( $base.length < 2 ) return
+	
 	var index = 0;
 	$.each( $base, ( i, el ) => {
 		if ( $( el ).hasClass( target ) ) {
