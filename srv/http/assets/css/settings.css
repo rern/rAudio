@@ -720,8 +720,11 @@ input.disabled + .switchlabel:after {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;
 	}
-	a:not(.infobtn):focus-visible {
+	#bar-bottom div:focus-visible {
 		outline: none;
-		border-bottom: 1px solid;
+		background: var( --cg );
+	}
+	#bar-bottom div.active:focus-visible {
+		background: var( --cml );
 	}
 }

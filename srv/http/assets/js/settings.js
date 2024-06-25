@@ -134,6 +134,7 @@ function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
 	$( '.container' ).find( '.switchlabel, .setting, input:text' ).prop( 'tabindex', 0 );
+	$( '#bar-bottom div' ).prop( 'tabindex', 0 );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
