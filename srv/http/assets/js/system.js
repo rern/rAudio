@@ -485,7 +485,8 @@ $( '#ledcalc' ).on( 'click', function() {
 		, okno       : true
 	} );
 } );
-$( '#hostname' ).on( 'click', function() {
+$( '#hostname' ).on( 'click', function( e ) {
+	if ( e.hasOwnProperty( 'originalEvent' ) ) $( this ).blur();
 	SW.icon  = 'system';
 	SW.title = 'Player Name';
 	info( {
