@@ -28,7 +28,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	var key   = e.key;
 	var arrow = key in keyarrow;
 	var media = key in keymedia;
-	if ( [ 'Backspace', 'Enter', 'Escape', 'Home', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
+	if ( [ 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
 	switch ( key ) {
 		case 'Tab':
 			tabNext( e.shiftKey );
@@ -43,16 +43,8 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			}
 			return
 	}
-// media key ----------------------------------------------------------
-	if ( media ) {
-		var cmd = keymedia[ key ];
-		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
-		$( '#'+ cmd ).trigger( 'click' );
-		return
-	}
 // context menu -------------------------------------------------------
-	var $contextmenu = $( '.contextmenu:not( .hide )' );
-	if ( ! $contextmenu.length ) $contextmenu = $( '#settings:not( .hide )' );
+	var $contextmenu = $( '.menu:not( .hide )' );
 	if ( $contextmenu.length ) {
 		if ( V.library ) {
 			var $liactive = $( '#lib-list li.active' );
@@ -79,14 +71,14 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 					$( '.submenu' ).removeClass( 'active' );
 					if ( V.playlist ) $( '#pl-list li' ).removeClass( 'lifocus' );
 				}
-				break
+				return
 			case 'ArrowRight':
 				var $next = $menuactive.next();
 				if ( $next.hasClass( 'submenu' ) ) {
 					$menuactive.removeClass( 'active' );
 					$next.addClass( 'active' );
 				}
-				break
+				return
 			case 'ArrowUp':
 			case 'ArrowDown':
 				if ( $( '.submenu.active' ).length ) {
@@ -122,11 +114,18 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 						}
 					}
 				}
-				break
-			case 'Enter':  // context menu
+				return
+			case ' ':
+			case 'Enter':
 				if ( $( '.menu:not(.hide)' ).length ) $contextmenu.find( '.active' ).trigger( 'click' );
-				break
+				return
 		}
+	}
+// media key ----------------------------------------------------------
+	if ( media ) {
+		var cmd = keymedia[ key ];
+		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
+		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
 // common key -------------------------------------------------------
@@ -136,25 +135,6 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 				$( '#button-lib-back' ).trigger( 'click' );
 			} else if ( V.playlist ) {
 				$( '#button-pl-back' ).trigger( 'click' );
-			}
-			return
-		case 'Enter':
-			if ( ! $( '#settings' ).hasClass( 'hide' ) ) {
-				var $menu = $( '#settings' ).find( 'a.active' );
-				if ( ! $menu.length ) $menu = $( '#settings' ).find( '.submenu.active' );
-				var href = $menu.prop( 'href' );
-				href ? location.href = href : $menu.trigger( 'click' );
-			} else if ( ! V.librarylist ) {
-				$( '.lib-mode.updn div' ).trigger( 'click' );
-			} else if ( V.librarylist ) {
-				$( '#lib-list li.active' ).trigger( 'click' );
-			}
-			return
-		case 'Home':
-			if ( V.library ) {
-				$( '#library' ).trigger( 'click' );
-			} else if ( V.playlist ) {
-				$( '#playlist' ).trigger( 'click' );
 			}
 			return
 		case '#': // index bar
@@ -203,7 +183,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			if ( $libmode.length < 2 ) return
 			
 			if ( arrow ) {
-				focusNext( $( '#lib-mode-list' ), $libmode, 'updn', key )
+				focusNext( $( '#lib-mode-list' ), $libmode, 'updn', key );
 			} else if ( key === 'Enter' ) {
 				$( '.lib-mode.updn' ).trigger( 'click' );
 			}
@@ -240,7 +220,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 				} else {
 					$liactive.trigger( 'click' );
 				}
-				break;
+				return
 		}
 		menuHide();
 	} else if ( V.playlist ) {
@@ -249,32 +229,32 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 				case 'ArrowUp':
 				case 'ArrowDown':
 					focusNext( $( '#pl-savedlist' ), $( '#pl-savedlist li' ), 'active', key );
-					break;
+					return
 				case 'ArrowRight':
 					$( '#pl-savedlist li.active .li-icon' ).trigger( 'click' );
-					break;
+					return
 				case 'Enter':
 					$( '#pl-savedlist li.active' ).trigger( 'click' );
-					break;
+					return
 				case 'ArrowLeft':
 					if ( ! $( '.contextmenu:not( .hide )' ).length ) $( '#button-pl-back' ).trigger( 'click' );
-					break;
+					return
 			}
 		} else {
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
 					focusNext( $( '#pl-list' ), $( '#pl-list li' ), 'updn', key );
-					break;
+					return
 				case 'ArrowRight':
 					$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .li-icon' ).trigger( 'click' ) : $( '#pl-list li.active .li-icon' ).trigger( 'click' );
-					break;
+					return
 				case 'Enter':
 					$( '#pl-list li.updn' ).trigger( 'click' );
-					break;
+					return
 				case 'Delete':
 					$( '#button-pl-clear' ).trigger( 'click' );
-					break;
+					return
 			}
 		}
 	}

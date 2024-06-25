@@ -118,6 +118,7 @@ function icoTab( tab ) {
 function focusNext( $parent, $base, target, key ) {
 	if ( ! $parent.find( '.'+ target ).length ) {
 		$focus = $base.eq( 0 );
+		if ( $focus.is( 'input:radio:checked' ) ) $focus = $base.eq( 1 );
 		$focus.addClass( target );
 		if ( $focus.is( 'select' ) ) $focus.next().addClass( target );
 		if ( ! I.active ) $focus[ 0 ].scrollIntoView( { block: 'center' } );
@@ -140,6 +141,8 @@ function focusNext( $parent, $base, target, key ) {
 	}
 	$parent.find( '.'+ target ).removeClass( target );
 	var $next = $base.eq( i );
+	if ( $next.is( 'input:radio:checked' ) ) i = key === 'ArrowUp' ? i - 1 : i + 1;
+	$next = $base.eq( i );
 	$next.addClass( target );
 	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
@@ -182,16 +185,17 @@ select:   [U] [D]     - check
 		case 'ArrowDown':
 			if ( $( '.select2-container--open' ).length ) return
 			
-			var $base    = $( '#infoList' ).find( 'input:not( :hidden ), select' );
+			var $base = $( '#infoList' ).find( 'input:not( :hidden ), select' );
 			focusNext( $( '#infoList' ), $base, 'focus', e.key );
 			$( '.select2-selection' ).blur();
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).focus();
 			break
 		case ' ':
-			$( '#infoList input.focus' ).trigger( 'click' );
+			$( '#infoList' ).find( 'input:checkbox.focus, input:radio.focus' ).trigger( 'click' );
+			$( '#infoList select.focus' ).next().trigger( 'click' );
 			break
 		case 'Enter':
-			if ( $( '#infoOk' ).hasClass( 'disabled' ) || $( 'textarea' ).is( ':focus' ) ) return
+			if ( V.local || $( '#infoOk' ).hasClass( 'disabled' ) || $( 'textarea' ).is( ':focus' ) ) return
 			
 			$( '#infoOk' ).trigger( 'click' );
 			break
@@ -811,6 +815,7 @@ function infoReset() {
 		.empty();
 	$( 'body' ).css( 'overflow-y', '' );
 	setTimeout( () => I = { active: false }, 0 );
+	if ( ! V.focus ) V.focus = $( 'body' );
 	V.focus.focus(); // restore previous focused
 }
 function infoSetValues() {
@@ -1053,7 +1058,7 @@ function selectSet( $select ) {
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
 		} )
-		.on( 'select2:closing', local ) // fix: onblur / onpagehide
+		.on( 'select2:closing', local ) // fix: onblur / onpagehide / Enter
 		.each( ( i, el ) => {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );

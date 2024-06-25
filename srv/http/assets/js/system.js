@@ -1176,6 +1176,7 @@ function renderPage() {
 	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
+	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
 }
 function renderStorage() {
