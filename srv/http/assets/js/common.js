@@ -116,40 +116,29 @@ function icoTab( tab ) {
 	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'
 }
 function focusNext( $parent, $base, target, key ) {
-	var cr_skip = 'input:radio:checked, input:checkbox:disabled';
-	var crs     = 'input:checkbox, input:radio, select';
-	if ( ! $parent.find( '.'+ target ).length ) {
-		$focus = $base.eq( 0 );
-		if ( $focus.is( cr_skip ) ) $focus = $base.eq( 1 );
-		if ( $focus.is( 'select' ) ) $focus = $focus.next();
-		$focus.addClass( target );
-		if ( ! $focus.is( crs ) ) $focus.select();
-		if ( ! I.active ) $focus[ 0 ].scrollIntoView( { block: 'center' } );
-		return
-	}
-	
-	if ( $base.length < 2 ) return
-	
+	var back  = [ 'ArrowLeft', 'ArrowUp' ].includes( key );
+	var bL    = $base.length;
 	var index = 0;
 	$.each( $base, ( i, el ) => {
 		if ( $( el ).hasClass( target ) ) {
-			index = i;
+			index = back ? i - 1 : i + 1; // eq( -N ) = N from last
+			if ( index === bL ) index = 0;
 			return false
 		}
 	} );
-	var i     = [ 'ArrowLeft', 'ArrowUp' ].includes( key ) ? index - 1 : index + 1;
-	var iLast = $base.length - 1;
-	if ( i < 0 ) {
-		i = iLast;
-	} else if ( i > iLast ) {
-		i = 0;
+	if ( I.active ) { // info
+		for( i = index; i < bL; i++ ) {
+			if ( $base.eq( index ).is( 'input:radio:checked, input:checkbox:disabled' ) ) {
+				index = back ? i - 1 : i + 1;
+				if ( index === bL ) index = 0;
+				break
+			}
+		}
 	}
+	var $next = $base.eq( index );
 	$parent.find( '.'+ target ).removeClass( target );
-	var $next = $base.eq( i );
-	if ( $next.is( cr_skip ) ) i = key === 'ArrowUp' ? i - 1 : i + 1;
-	$next = $base.eq( i );
 	$next.addClass( target );
-	if ( ! $next.is( crs ) ) $next.select();
+	if ( ! $next.is( 'input:checkbox, input:radio, select' ) ) $next.select();
 	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
 function tabNext( shift ) {
@@ -188,7 +177,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			
 			var $base = $( '#infoList' ).find( 'input:not( :hidden ), select' );
 			focusNext( $( '#infoList' ), $base, 'focus', key );
-			$( '.select2-selection' ).blur();
+			$( '#infoList .focus' ).focus();
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).focus();
 			break
 		case ' ':

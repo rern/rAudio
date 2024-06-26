@@ -304,10 +304,11 @@ $( document ).on( 'keydown', function( e ) {
 			$base.push( ...$( '#bar-bottom div' ) );
 			$.each( $base, ( i, el ) => {
 				if ( $( el ).is( ':focus' ) ) {
-					index = e.key === 'ArrowUp' ? i - 1 : i + 1;
+					index = e.key === 'ArrowUp' ? i - 1 : i + 1; // eq( -N ) = N from last
 					return false
 				}
 			} );
+			if ( index === $base.length ) index = 0;
 			$base.eq( index ).focus();
 			document.activeElement.scrollIntoView( { block: 'center' } );
 			break

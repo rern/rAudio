@@ -179,9 +179,8 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		
 		// home /////////////////////////////////////////
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
-			var $libmode = $( '.lib-mode:not( .hide ):not( .nodata )' );
 			if ( arrow ) {
-				focusNext( $( '#lib-mode-list' ), $libmode, 'updn', key );
+				focusNext( $( '#lib-mode-list' ), $( '.lib-mode:not( .hide ):not( .nodata )' ), 'updn', key );
 			} else if ( key === 'Enter' ) {
 				$( '.lib-mode.updn' ).trigger( 'click' );
 			}
