@@ -298,7 +298,7 @@ $( document ).on( 'keydown', function( e ) {
 	switch ( e.key ) {
 		case ' ':
 		case 'Enter':
-			e.preventDefault()
+			e.preventDefault();
 			var $active = $( document.activeElement );
 			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
 			$active.trigger( 'click' );

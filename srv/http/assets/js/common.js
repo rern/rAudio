@@ -116,12 +116,14 @@ function icoTab( tab ) {
 	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'
 }
 function focusNext( $parent, $base, target, key ) {
+	var cr_skip = 'input:radio:checked, input:checkbox:disabled';
+	var crs     = 'input:checkbox, input:radio, select';
 	if ( ! $parent.find( '.'+ target ).length ) {
 		$focus = $base.eq( 0 );
-		if ( $focus.is( 'input:radio:checked' ) ) $focus = $base.eq( 1 );
+		if ( $focus.is( cr_skip ) ) $focus = $base.eq( 1 );
 		if ( $focus.is( 'select' ) ) $focus = $focus.next();
 		$focus.addClass( target );
-		if ( ! $focus.is( 'input:checkbox, input:radio, select' ) ) $focus.select();
+		if ( ! $focus.is( crs ) ) $focus.select();
 		if ( ! I.active ) $focus[ 0 ].scrollIntoView( { block: 'center' } );
 		return
 	}
@@ -144,10 +146,10 @@ function focusNext( $parent, $base, target, key ) {
 	}
 	$parent.find( '.'+ target ).removeClass( target );
 	var $next = $base.eq( i );
-	if ( $next.is( 'input:radio:checked' ) ) i = key === 'ArrowUp' ? i - 1 : i + 1;
+	if ( $next.is( cr_skip ) ) i = key === 'ArrowUp' ? i - 1 : i + 1;
 	$next = $base.eq( i );
 	$next.addClass( target );
-	if ( ! $next.is( 'input:checkbox, input:radio, select' ) ) $next.select();
+	if ( ! $next.is( crs ) ) $next.select();
 	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
 function tabNext( shift ) {
@@ -162,28 +164,30 @@ function tabNext( shift ) {
 	}
 }
 // info ----------------------------------------------------------------------
-$( '#infoOverlay' ).press( '#infoIcon', function() { // usage
-	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
-} );
-$( '#infoOverlay' ).on( 'click', '#infoList', function() {
-	$( '.infobtn, .filebtn' ).removeClass( 'active' );
-} );
-$( 'body' ).on( 'keydown', function( e ) {
+$( '#infoOverlay' ).on( 'keydown', function( e ) {
 	if ( ! I.active ) return
 	
-	if ( [ 'ArrowDown', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( e.key ) ) e.preventDefault();
-	switch ( e.key ) {
-		case 'Tab':
-			var $next    = $( '#infoTab a.active' ).next();
-			if ( ! $next.length ) $next = $( '#infoTab a' ).eq( 0 );
+	var key = e.key;
+	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( key ) ) e.preventDefault();
+	if ( key === 'Tab' && e.shiftKey ) key = 'ArrowUp';
+	switch ( key ) {
+		case 'ArrowLeft':
+			var $next = $( '#infoTab a.active' ).prev();
+			if ( ! $next.length ) $next = $( '#infoTab a' ).last();
+			$next.trigger( 'click' );
+			break
+		case 'ArrowRight':
+			var $next = $( '#infoTab a.active' ).next();
+			if ( ! $next.length ) $next = $( '#infoTab a' ).first();
 			$next.trigger( 'click' );
 			break
 		case 'ArrowUp':
 		case 'ArrowDown':
+		case 'Tab':
 			if ( $( '.select2-container--open' ).length ) return
 			
 			var $base = $( '#infoList' ).find( 'input:not( :hidden ), select' );
-			focusNext( $( '#infoList' ), $base, 'focus', e.key );
+			focusNext( $( '#infoList' ), $base, 'focus', key );
 			$( '.select2-selection' ).blur();
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).focus();
 			break
@@ -203,6 +207,10 @@ $( 'body' ).on( 'keydown', function( e ) {
 			$( '#infoX' ).trigger( 'click' );
 			break
 	}
+} ).on( 'click', '#infoList', function() {
+	$( '.infobtn, .filebtn' ).removeClass( 'active' );
+} ).press( '#infoIcon', function() { // usage
+	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
 } );
 	
 I = { active: false }
@@ -511,7 +519,7 @@ function info( json ) {
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		I.active = true;
 		V.focus  = $( document.activeElement ); // store current focused
-		if ( 'focus' in I ) $inputbox.eq( I.focus ).select();
+		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).focus();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoButtonWidth();
 		// set width: text / password / textarea
