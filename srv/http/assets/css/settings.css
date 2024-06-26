@@ -364,9 +364,6 @@ heading i.disabled {
 .entries li .i-info {
     font-size: 22px !important;
 }
-.entries li.active {
-	background: var( --cga );
-}
 .remove {
 	float: right;
 	margin-right: 0 !important;

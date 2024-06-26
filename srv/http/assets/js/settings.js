@@ -294,7 +294,7 @@ $( '#'+ page ).addClass( 'active' );
 $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return
 	
-	var menu = ! $( '.menu' ).length && $( '.menu' ).hasClass( 'hide' );
+	var menu = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
 	switch ( e.key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
@@ -320,12 +320,19 @@ $( document ).on( 'keydown', function( e ) {
 			if ( index === $base.length ) index = 0;
 			$base.eq( index ).focus();
 			document.activeElement.scrollIntoView( { block: 'center' } );
-			$( 'pre.status' ).addClass( 'hide' );
 			break
 		case 'ArrowLeft':
 		case 'ArrowRight':
-			var $focus = $( '#bar-bottom div:focus' );
-			if ( $focus.length ) e.key === 'ArrowLeft' ? $focus.prev().focus() : $focus.next().focus();
+			if ( menu ) {
+				$( '.menu' ).addClass( 'hide' );
+			} else if ( $( 'pre.status:not( .hide )' ).length ) {
+				$( 'pre.status' ).addClass( 'hide' );
+			} else if ( $( '.entries li:focus' ).length ) {
+				$( '.entries li:focus' ).trigger( 'click' );
+			} else {
+				var $focus = $( '#bar-bottom div:focus' );
+				if ( $focus.length ) e.key === 'ArrowLeft' ? $focus.prev().focus() : $focus.next().focus();
+			}
 			break
 		case ' ':
 		case 'Enter':
