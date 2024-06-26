@@ -122,22 +122,13 @@ function focusNext( $parent, $base, target, key ) {
 	$.each( $base, ( i, el ) => {
 		if ( $( el ).hasClass( target ) ) {
 			index = back ? i - 1 : i + 1; // eq( -N ) = N from last
-			if ( index === bL ) index = 0;
 			return false
 		}
 	} );
-	if ( I.active ) { // info
-		for( i = index; i < bL; i++ ) {
-			if ( $base.eq( index ).is( 'input:radio:checked, input:checkbox:disabled' ) ) {
-				index = back ? i - 1 : i + 1;
-				if ( index === bL ) index = 0;
-				break
-			}
-		}
-	}
+	if ( index === bL ) index = 0;
 	var $next = $base.eq( index );
 	$parent.find( '.'+ target ).removeClass( target );
-	$next.addClass( target );
+	$next.addClass( target ).focus();
 	if ( ! $next.is( 'input:checkbox, input:radio, select' ) ) $next.select();
 	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
@@ -175,9 +166,10 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'Tab':
 			if ( $( '.select2-container--open' ).length ) return
 			
-			var $base = $( '#infoList' ).find( 'input:not( :hidden ), select' );
+			var $base = $( '#infoList' ).find( 'input, select' ).filter( ( i, el ) => {
+				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled' ) ) return $( el )
+			} );
 			focusNext( $( '#infoList' ), $base, 'focus', key );
-			$( '#infoList .focus' ).focus();
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).focus();
 			break
 		case ' ':
