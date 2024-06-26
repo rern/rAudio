@@ -296,6 +296,22 @@ $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return
 	
 	switch ( e.key ) {
+		case 'ArrowDown':
+		case 'ArrowUp':
+			e.preventDefault();
+			var index = 0;
+			var $base = $( '.row:not( .hide )' ).find( '.switchlabel, .setting:not( .hide ), .select2-selection, input:text' );
+			if ( ! $( document.activeElement ).is( 'body' ) ) {
+				$.each( $base, ( i, el ) => {
+					if ( $( el ).is( ':focus' ) ) {
+						index = e.key === 'ArrowUp' ? i - 1 : i + 1;
+						return false
+					}
+				} );
+			}
+			$base.eq( index ).focus();
+			document.activeElement.scrollIntoView( { block: 'center' } );
+			break
 		case ' ':
 		case 'Enter':
 			e.preventDefault();

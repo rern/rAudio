@@ -487,9 +487,6 @@ input.disabled + .switchlabel:after {
 .setting {
 	position: absolute;
 }
-.setting.focus {
-	color: var( --cm );
-}
 .cg {
 	background: var( --cg );
 }
@@ -716,7 +713,7 @@ input.disabled + .switchlabel:after {
 	.switchlabel:focus-visible,
 	.select2-selection:focus-visible,
 	.setting:focus-visible,
-	input[type=text]:focus-visible {
+	input[ type=text ]:focus-visible {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;
 	}

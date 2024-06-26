@@ -120,7 +120,7 @@ $( 'body' ).on( 'click', function( e ) {
 	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
 	if ( ! $( e.target ).hasClass( 'select2-search__field' ) 
-		&& ! $( e.target ).parents( '#divi2sselect' ).length 
+		&& ! $( e.target ).parents( '#divi2smodule' ).length 
 		&& $( '#i2smodule' ).val() === 'none'
 	) {
 		i2sSelectHide();
@@ -310,7 +310,7 @@ $( '#setting-wlan' ).on( 'click', function() {
 		}, 'json' );
 	}
 } );
-$( '#divi2ssw' ).on( 'click', function() {
+$( '#i2s' ).on( 'click', function() {
 	setTimeout( i2sOptionSet, 0 );
 } );
 $( '#divi2smodule .col-r' ).on( 'click', function( e ) {
@@ -325,7 +325,7 @@ $( '#i2smodule' ).on( 'input', function() {
 		notify( icon, title, 'Enable ...' );
 	} else {
 		setTimeout( () => { notify( icon, title, 'Disable ...' ) }, 300 ); // fix - hide banner too soon
-		S.i2ssw = false;
+		S.i2saudio = false;
 		i2sSelectHide();
 	}
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
@@ -686,7 +686,7 @@ function htmlC( data, key, val ) {
 }
 function i2sOptionSet() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
-		if ( $( '#divi2sselect' ).hasClass( 'hide' ) ) {
+		if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
 			i2sSelectShow();
 			$( '#i2smodule' ).select2( 'open' );
 		}
@@ -708,13 +708,14 @@ function i2sOptionSetSelect() {
 	} ).prop( 'selected', true );
 }
 function i2sSelectHide() {
-	$( '#i2ssw' ).prop( 'checked', S.i2ssw );
-	$( '#divi2ssw' ).removeClass( 'hide' );
-	$( '#divi2sselect' ).addClass( 'hide' );
+	$( '#i2s' ).prop( 'checked', S.i2saudio );
+	$( '#divi2s' ).removeClass( 'hide' );
+	$( '#divi2smodule' ).addClass( 'hide' );
 }
 function i2sSelectShow() {
-	$( '#divi2ssw' ).addClass( 'hide' );
-	$( '#divi2sselect, #setting-i2smodule' ).removeClass( 'hide' );
+	$( '#divi2s' ).addClass( 'hide' );
+	$( '#divi2smodule' ).removeClass( 'hide' );
+	$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2saudio );
 }
 function infoLcdChar() {
 	var confi2c = 'ADDRESS' in S.lcdcharconf;
@@ -1154,7 +1155,7 @@ function renderPage() {
 	} else {
 		$( '#divaudio' ).addClass( 'hide' );
 	}
-	if ( S.i2ssw ) {
+	if ( S.i2saudio ) {
 		if ( $( '#i2smodule option' ).length ) {
 			i2sOptionSetSelect();
 		} else {

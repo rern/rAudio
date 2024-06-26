@@ -47,7 +47,7 @@ i2c-dev"
 	if [[ $rebooti2c ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
 		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
-		label=$( sed -n "/.*'$CMD' *=>/ {s/.*'label' => '//; s/'.*//; p}" /srv/http/settings/system.php )
+		label=$( sed -E -n "/$CMD.*=>/ {s/.*'label' => '|',.*//g; p}" /srv/http/settings/system.php )
 		notify $CMD "$label" 'Reboot required.' 5000
 		appendSortUnique $CMD $dirshm/reboot
 	fi
