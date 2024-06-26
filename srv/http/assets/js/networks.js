@@ -91,7 +91,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', ! notconnected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
-		$( '#menu .info' ).addClass( 'hide' );
+		$( '#menu' ).find( '.info, .rename' ).addClass( 'hide' );
 	}
 	contextMenu();
 } );

@@ -133,8 +133,7 @@ function refreshData() {
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
-	$( '.container' ).find( '.switchlabel, .setting, input:text' ).prop( 'tabindex', 0 );
-	$( '#bar-bottom div' ).prop( 'tabindex', 0 );
+	$( 'heading i:not( .help ), .switchlabel, .setting, input:text, #bar-bottom div, .entries li' ).prop( 'tabindex', 0 );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -295,13 +294,23 @@ $( '#'+ page ).addClass( 'active' );
 $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return
 	
+	var menu = ! $( '.menu' ).hasClass( 'hide' );
 	switch ( e.key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
 			e.preventDefault();
+			if ( menu ) {
+				focusNext( $( '.menu' ), $( '.menu a' ), 'active', e.key );
+				return
+			}
+			
 			var index = 0;
-			var $base = $( '.row:not( .hide )' ).find( '.switchlabel, .setting:not( .hide ), .select2-selection, input:text' );
-			$base.push( ...$( '#bar-bottom div' ) );
+			var $base = $( '[ tabindex=0 ]' ).filter( ( i, el ) => {
+				var sectionhide = $( el ).parents( '.section' ).hasClass( 'hide' );
+				var rowhide     = $( el ).parents( '.row' ).hasClass( 'hide' );
+				var settinghide = $( el ).is( '.setting.hide' );
+				if ( ! sectionhide && ! rowhide && ! settinghide ) return $( el )
+			} );
 			$.each( $base, ( i, el ) => {
 				if ( $( el ).is( ':focus' ) ) {
 					index = e.key === 'ArrowUp' ? i - 1 : i + 1; // eq( -N ) = N from last
@@ -312,15 +321,29 @@ $( document ).on( 'keydown', function( e ) {
 			$base.eq( index ).focus();
 			document.activeElement.scrollIntoView( { block: 'center' } );
 			break
+		case 'ArrowRight':
 		case ' ':
 		case 'Enter':
 			e.preventDefault();
+			if ( menu ) {
+				V.li = $( '.entries li.active' );
+				$( '.menu a.active' ).trigger( 'click' );
+				return
+			}
+			
 			var $active = $( document.activeElement );
 			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
 			$active.trigger( 'click' );
 			break
+		case 'ArrowLeft':
+		case 'Escape':
+			$( 'pre.status' ).addClass( 'hide' );
+			break
 		case 'Tab':
 			document.activeElement.scrollIntoView( { block: 'center' } );
+			break
+		case 'Backspace':
+			$( '.back' ).trigger( 'click' );
 			break
 		case 'x':
 			if ( e.ctrlKey ) $( '.close' ).trigger( 'click' );

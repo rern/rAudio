@@ -518,9 +518,10 @@ storageinfo )
 	if [[ ${DEV:0:8} == /dev/mmc ]]; then
 		dev=/sys/block/${DEV:5:-2}/device
 		for k in cid csd scr; do
-			data+="
+			data+="\
 <bll># mmc $k read $dev</bll>
-$( mmc $k read $dev )"$'\n'
+$( mmc $k read $dev )
+"
 		done
 		echo "$data"
 	else

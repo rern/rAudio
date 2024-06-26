@@ -225,7 +225,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 } );
 $( '#menu a' ).on( 'click', function() {
 	var $this      = $( this );
-	var cmd        = $this.prop( 'class' );
+	var cmd        = $this.prop( 'class' ).replace( ' active', '' );
 	var list       = S.list[ V.li.index() ];
 	var mountpoint = list.mountpoint;
 	var source     = list.source;
