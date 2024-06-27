@@ -132,16 +132,12 @@ function focusNext( $parent, $base, target, key ) {
 	if ( ! $next.is( 'input:checkbox, input:radio, select' ) ) $next.select();
 	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
 }
-function tabNext( shift ) {
-	var $current = $( '#bar-bottom' ).find( '.active' );
-	var $next    = shift ? $current.prev() : $current.next();
+function tabNext( back ) {
+	var $current = $( '#bar-bottom' ).find( page ? ':focus' : '.active' );
+	var $next    = back ? $current.prev() : $current.next();
 	var $tabs    = $( '#bar-bottom' ).children();
-	if ( ! $next.length ) $next =shift ? $tabs.last() : $tabs.first();
-	if ( page ) {
-		location.href = 'settings.php?p='+ $next[ 0 ].id;
-	} else {
-		$next.trigger( 'click' );
-	}
+	if ( ! $next.length ) $next = back ? $tabs.last() : $tabs.first();
+	page ? $next.focus() : $next.trigger( 'click' );
 }
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).on( 'keydown', function( e ) {

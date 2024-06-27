@@ -332,7 +332,7 @@ $( document ).on( 'keydown', function( e ) {
 				$( '.entries li:focus' ).trigger( 'click' );
 			} else {
 				var $focus = $( '#bar-bottom div:focus' );
-				if ( $focus.length ) key === 'ArrowLeft' ? $focus.prev().focus() : $focus.next().focus();
+				if ( $focus.length ) tabNext( key === 'ArrowLeft' );
 			}
 			break
 		case ' ':
