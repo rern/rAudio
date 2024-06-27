@@ -22,7 +22,7 @@ if ( ! $addons ) {
 }
 $htmlbar = '';
 if ( $camilla ) {
-	$tabs   = [ 'Filters', 'Mixers', 'Processors', 'Pipeline', 'Devices', 'Config' ];
+	$tabs   = [ 'Filters', 'Mixers', 'Processors', 'Pipeline', 'Devices' ];
 	$prefix = 'tab';
 	$fader  = '';
 } else {

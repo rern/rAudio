@@ -2005,7 +2005,8 @@ $( '#configuration' ).on( 'input', function() {
 $( '#setting-configuration' ).on( 'click', function() {
 	if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
 		V.tabprev = V.tab;
-		$( '#tabconfig' ).trigger( 'click' );
+		V.tab     = 'config';
+		render.tab();
 	} else {
 		$( '#tab'+ V.tabprev ).trigger( 'click' );
 	}

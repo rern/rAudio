@@ -296,13 +296,14 @@ $( '#'+ page ).addClass( 'active' );
 $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return
 	
+	var camilla = page === 'camilla';
 	var menu = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
 	var key  = e.key;
 	switch ( key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
 			e.preventDefault();
-			if ( ! $( '#fader' ).hasClass( 'hide' ) ) return
+			if ( ! camilla && ! $( '#fader' ).hasClass( 'hide' ) ) return
 			
 			if ( menu ) {
 				focusNext( $( '.menu' ), $( '.menu a:not( .hide )' ), 'active', key );
@@ -334,7 +335,7 @@ $( document ).on( 'keydown', function( e ) {
 				$( 'pre.status' ).addClass( 'hide' );
 			} else if ( $( '.entries li:focus' ).length ) {
 				var $target = $( '.entries li:focus' );
-				if ( page === 'camilla' ) $target = $target.find( '.liicon' );
+				if ( camilla ) $target = $target.find( '.liicon' );
 				$target.trigger( 'click' );
 			} else {
 				var $focus = $( '#bar-bottom div:focus' );
@@ -361,7 +362,9 @@ $( document ).on( 'keydown', function( e ) {
 			} else {
 				$( '#fader' ).removeClass( 'hide' );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
-				$( '#bar-bottom div.active' ).focus();
+				var $focus = $( '#bar-bottom div.active' );
+				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );
+				$focus.focus();
 			}
 			$( '.menu' ).addClass( 'hide' );
 			break
