@@ -172,6 +172,8 @@ function switchSet( ready ) {
 		$this.parent().next( '.setting' ).toggleClass( 'hide', ! S[ id ] );
 	} );
 	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
+		if ( el.id === 'codehddinfo' ) return
+		
 		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
 	} );
 }
