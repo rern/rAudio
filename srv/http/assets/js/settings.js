@@ -302,6 +302,8 @@ $( document ).on( 'keydown', function( e ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
 			e.preventDefault();
+			if ( ! $( '#fader' ).hasClass( 'hide' ) ) return
+			
 			if ( menu ) {
 				focusNext( $( '.menu' ), $( '.menu a:not( .hide )' ), 'active', key );
 				return
