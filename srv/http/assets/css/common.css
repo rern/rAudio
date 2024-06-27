@@ -267,7 +267,8 @@ body {
 .hidden { visibility: hidden }
 @keyframes blinkopaque { 50% { opacity: 0 } }
 .blink { animation: blinkopaque 1.5s linear infinite }
-#loader {
+#loader,
+#fader {
 	position   : fixed;
 	top        : 0;
 	width      : 100%;

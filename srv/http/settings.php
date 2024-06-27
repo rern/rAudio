@@ -34,9 +34,8 @@ foreach ( $tabs as $tab ) {
 }
 echo '
 	</div>
-	<div id="bar-bottom">
-		'.$htmlbar.'
-	</div>
+	<div id="fader" class="hide"></div>
+	<div id="bar-bottom">'.$htmlbar.'</div>
 ';
 // <script> -----------------------------------------------------
 echo $scripts;

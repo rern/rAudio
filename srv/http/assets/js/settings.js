@@ -349,13 +349,11 @@ $( document ).on( 'keydown', function( e ) {
 			$active.trigger( 'click' );
 			break
 		case 'Escape':
-			var $focus = $( '#bar-bottom div:focus' );
-			if ( $focus.length ) {
-				$focus.blur();
-				$( '#bar-bottom' ).css( 'background', '' );
+			if ( $( '#bar-bottom div:focus' ).length ) {
+				$( '#fader' ).addClass( 'hide' );
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
 			} else {
-				$( '#bar-bottom' ).css( 'background', 'var( --cgd )' );
+				$( '#fader' ).removeClass( 'hide' );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
 				$( '#bar-bottom div.active' ).focus();
 			}

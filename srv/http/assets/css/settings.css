@@ -725,7 +725,7 @@ input.disabled + .switchlabel:after {
 	}
 	#bar-bottom div:focus-visible {
 		outline: none;
-		background: var( --cga );
+		background: var( --cg );
 	}
 	#bar-bottom div.active:focus-visible {
 		background: var( --cml );
