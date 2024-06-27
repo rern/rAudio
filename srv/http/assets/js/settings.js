@@ -295,12 +295,13 @@ $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return
 	
 	var menu = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
-	switch ( e.key ) {
+	var key  = e.key;
+	switch ( key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
 			e.preventDefault();
 			if ( menu ) {
-				focusNext( $( '.menu' ), $( '.menu a' ), 'active', e.key );
+				focusNext( $( '.menu' ), $( '.menu a:not( .hide )' ), 'active', key );
 				return
 			}
 			
@@ -313,7 +314,7 @@ $( document ).on( 'keydown', function( e ) {
 			} );
 			$.each( $base, ( i, el ) => {
 				if ( $( el ).is( ':focus' ) ) {
-					index = e.key === 'ArrowUp' ? i - 1 : i + 1; // eq( -N ) = N from last
+					index = key === 'ArrowUp' ? i - 1 : i + 1; // eq( -N ) = N from last
 					return false
 				}
 			} );
@@ -324,14 +325,14 @@ $( document ).on( 'keydown', function( e ) {
 		case 'ArrowLeft':
 		case 'ArrowRight':
 			if ( menu ) {
-				$( '.menu' ).addClass( 'hide' );
+				if ( key === 'ArrowLeft' ) $( '.menu' ).addClass( 'hide' );
 			} else if ( $( 'pre.status:not( .hide )' ).length ) {
 				$( 'pre.status' ).addClass( 'hide' );
 			} else if ( $( '.entries li:focus' ).length ) {
 				$( '.entries li:focus' ).trigger( 'click' );
 			} else {
 				var $focus = $( '#bar-bottom div:focus' );
-				if ( $focus.length ) e.key === 'ArrowLeft' ? $focus.prev().focus() : $focus.next().focus();
+				if ( $focus.length ) key === 'ArrowLeft' ? $focus.prev().focus() : $focus.next().focus();
 			}
 			break
 		case ' ':
@@ -356,6 +357,7 @@ $( document ).on( 'keydown', function( e ) {
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
 				$( '#bar-bottom div.active' ).focus();
 			}
+			$( '.menu' ).addClass( 'hide' );
 			break
 		case 'Tab':
 			document.activeElement.scrollIntoView( { block: 'center' } );
