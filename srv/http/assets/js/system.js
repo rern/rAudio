@@ -111,6 +111,14 @@ var lcdcharlist   = [
 	, [ 'I&#178;C Chip',   'select', [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
 	, [ 'Sleep <gr>(60s)', 'checkbox' ]
 ];
+var lcdcharjson   = {
+	  icon         : 'lcdchar'
+	, title        : 'Character LCD'
+	, tablabel     : [ 'I&#178;C', 'GPIO' ]
+	, cancel       : switchCancel
+	, ok           : switchEnable
+	, fileconf     : true
+}
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -718,43 +726,34 @@ function i2sSelectShow() {
 	$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2saudio );
 }
 function infoLcdChar() {
-	var confi2c = 'ADDRESS' in S.lcdcharconf;
+	var confi2c = S.lcdcharconf && S.lcdcharconf.INF === 'i2c';
 	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'I&#178;C', 'GPIO' ]
+		  ...lcdcharjson
 		, tab          : [ '', infoLcdCharGpio ]
 		, list         : jsonClone( lcdcharlist )
 		, boxwidth     : 180
-		, values       : S.lcdcharconf && confi2c ? S.lcdcharconf : default_v.lcdchar_i2c
+		, values       : confi2c ? S.lcdcharconf : default_v.lcdchar_i2c
 		, checkchanged : S.lcdchar && confi2c
 		, beforeshow   : infoLcdcharButton
-		, cancel       : switchCancel
-		, ok           : switchEnable
-		, fileconf     : true
 	} );
 }
 function infoLcdCharGpio() {
-	var list0 = jsonClone( lcdcharlist );
-	var list  = list0.slice( 0, 3 );
+	var confgpio = S.lcdcharconf && S.lcdcharconf.INF === 'gpio';
+	var list0    = jsonClone( lcdcharlist );
+	var list     = list0.slice( 0, 3 );
 	[ 'RS', 'RW', 'E', 'D4', 'D5', 'D6', 'D7' ].forEach( k => list.push( [ k, 'select', board2bcm ] ) );
 	list.push( list0.slice( -1 )[ 0 ] );
 	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'I&#178;C', 'GPIO' ]
+		  ...lcdcharjson
 		, tab          : [ infoLcdChar, '' ]
 		, list         : list
 		, boxwidth     : 70
-		, values       : S.lcdcharconf && 'PIN_RS' in S.lcdcharconf ? S.lcdcharconf : default_v.lcdchar_gpio
-		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
+		, values       : confgpio ? S.lcdcharconf : default_v.lcdchar_gpio
+		, checkchanged : S.lcdchar && confgpio
 		, beforeshow   : () => { 
 			infoLcdcharButton();
 			$( '#infoList tr' ).eq( 2 ).after( '<tr><td colspan="3">'+ gpiosvg +'</td></tr>' )
 		}
-		, cancel       : switchCancel
-		, ok           : switchEnable
-		, fileconf     : true
 	} );
 }
 function infoLcdcharButton() {
