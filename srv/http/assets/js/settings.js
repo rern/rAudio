@@ -333,7 +333,9 @@ $( document ).on( 'keydown', function( e ) {
 			} else if ( $( 'pre.status:not( .hide )' ).length ) {
 				$( 'pre.status' ).addClass( 'hide' );
 			} else if ( $( '.entries li:focus' ).length ) {
-				$( '.entries li:focus' ).trigger( 'click' );
+				var $target = $( '.entries li:focus' );
+				if ( page === 'camilla' ) $target = $target.find( '.liicon' );
+				$target.trigger( 'click' );
 			} else {
 				var $focus = $( '#bar-bottom div:focus' );
 				if ( $focus.length ) tabNext( key === 'ArrowLeft' );

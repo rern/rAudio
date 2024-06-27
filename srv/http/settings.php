@@ -24,9 +24,11 @@ $htmlbar = '';
 if ( $camilla ) {
 	$tabs   = [ 'Filters', 'Mixers', 'Processors', 'Pipeline', 'Devices', 'Config' ];
 	$prefix = 'tab';
+	$fader  = '';
 } else {
 	$tabs   = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];
 	$prefix = '';
+	$fader  = '<div id="fader" class="hide"></div>';
 }
 foreach ( $tabs as $tab ) {
 	$id      = strtolower( $tab );
@@ -34,7 +36,7 @@ foreach ( $tabs as $tab ) {
 }
 echo '
 	</div>
-	<div id="fader" class="hide"></div>
+	'.$fader.'
 	<div id="bar-bottom">'.$htmlbar.'</div>
 ';
 // <script> -----------------------------------------------------

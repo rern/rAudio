@@ -138,6 +138,7 @@ function tabNext( back ) {
 	var $tabs    = $( '#bar-bottom' ).children();
 	if ( ! $next.length ) $next = back ? $tabs.last() : $tabs.first();
 	page ? $next.focus() : $next.trigger( 'click' );
+	if ( page === 'camilla' ) $next.addClass( 'active' ).trigger( 'click' );
 }
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).on( 'keydown', function( e ) {

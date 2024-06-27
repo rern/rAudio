@@ -1078,6 +1078,7 @@ var render    = {
 				if ( V.graph[ V.tab ].includes( $el.data( val ) ) ) graph.plot( $el );
 			} );
 		}
+		$( '.entries li' ).prop( 'tabindex', 0 );
 	}
 	, typeReplace : str => {
 		return str
@@ -2084,7 +2085,7 @@ $( 'body' ).on( 'click', function( e ) {
 } );
 $( '#menu a' ).on( 'click', function( e ) {
 	var $this = $( this );
-	var cmd   = $this.prop( 'class' );
+	var cmd   = $this.prop( 'class' ).replace( ' active', '' );
 	if ( cmd === 'graph' ) {
 		graph.plot();
 		return
