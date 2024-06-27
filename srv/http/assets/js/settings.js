@@ -352,8 +352,10 @@ $( document ).on( 'keydown', function( e ) {
 			var $focus = $( '#bar-bottom div:focus' );
 			if ( $focus.length ) {
 				$focus.blur();
+				$( '#bar-bottom' ).css( 'background', '' );
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
 			} else {
+				$( '#bar-bottom' ).css( 'background', 'var( --cgd )' );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
 				$( '#bar-bottom div.active' ).focus();
 			}

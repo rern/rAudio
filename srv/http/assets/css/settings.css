@@ -725,10 +725,10 @@ input.disabled + .switchlabel:after {
 	}
 	#bar-bottom div:focus-visible {
 		outline: none;
-		background: var( --cgd );
+		background: var( --cga );
 	}
 	#bar-bottom div.active:focus-visible {
-		background: var( --cma );
+		background: var( --cml );
 	}
 	.menu a.active {
 		background: var( --cgl );
