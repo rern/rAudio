@@ -1038,8 +1038,7 @@ function selectSet( $select ) {
 		if ( $( '#infoList #eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	$select
-		.select2( options )
-		.on( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
+		.select2( options ).on( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
 			local(); // fix: onblur / onpagehide
 			V.select2 = true;
 			setTimeout( () => {
@@ -1047,11 +1046,12 @@ function selectSet( $select ) {
 				if ( navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
-		} )
-		.on( 'select2:closing', () => {
-			console.log('closing')
+		} ).on( 'select2:closing', function() {
 			local(); // fix: onblur / onpagehide / Enter
-			setTimeout( () => V.select2 = false, V.select2 ? 1000 : 0 );
+			setTimeout( () => {
+				V.select2 = false;
+				$( this ).focus();
+			}, V.select2 ? 1000 : 0 );
 		} ).each( ( i, el ) => {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );

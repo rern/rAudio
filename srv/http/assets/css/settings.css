@@ -718,6 +718,7 @@ input.disabled + .switchlabel:after {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;
 	}
+	i.focus,
 	heading i:focus-visible,
 	.setting:focus-visible,
 	.lihead i:focus-visible,
