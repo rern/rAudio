@@ -133,7 +133,7 @@ function refreshData() {
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
-	$( 'heading i:not( .help ), .switchlabel, .setting, input:text, .entries li' ).prop( 'tabindex', 0 );
+	$( 'heading i:not( .help ), .switchlabel, .setting, input:text, .entries li, .slider .thumb' ).prop( 'tabindex', 0 );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -331,15 +331,16 @@ $( document ).on( 'keydown', function( e ) {
 		case 'ArrowRight':
 			if ( menu ) {
 				if ( key === 'ArrowLeft' ) $( '.menu' ).addClass( 'hide' );
-			} else if ( $( 'pre.status:not( .hide )' ).length ) {
-				$( 'pre.status' ).addClass( 'hide' );
 			} else if ( $( '.entries li:focus' ).length ) {
 				var $target = $( '.entries li:focus' );
 				if ( camilla ) $target = $target.find( '.liicon' );
 				$target.trigger( 'click' );
-			} else {
+			} else if ( ! $( '#fader' ).hasClass( 'hide' ) ) {
 				var $focus = $( '#bar-bottom div:focus' );
 				if ( $focus.length ) tabNext( key === 'ArrowLeft' );
+				if ( page === 'camilla' ) $( '#bar-bottom div:focus' ).addClass( 'active' ).trigger( 'click' );
+			} else {
+				$( 'pre.status, .divgraph' ).addClass( 'hide' );
 			}
 			break
 		case ' ':
@@ -354,6 +355,8 @@ $( document ).on( 'keydown', function( e ) {
 			var $active = $( document.activeElement );
 			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
 			$active.trigger( 'click' );
+			$( '#fader' ).addClass( 'hide' );
+			$( '#bar-bottom div' ).blur();
 			break
 		case 'Escape':
 			if ( $( '#bar-bottom div:focus' ).length ) {

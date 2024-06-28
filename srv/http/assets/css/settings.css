@@ -707,16 +707,19 @@ input.disabled + .switchlabel:after {
 	#menu {
 		cursor: pointer
 	}
+	.slider .thumb:focus-visible,
 	.switchlabel:focus-visible,
 	.select2-selection:focus-visible,
 	heading i:focus-visible,
 	.setting:focus-visible,
+	.graphclose:focus-visible,
 	input[ type=text ]:focus-visible {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;
 	}
 	heading i:focus-visible,
-	.setting:focus-visible {
+	.setting:focus-visible,
+	.graphclose:focus-visible {
 		border-radius: 50%;
 	}
 	.entries li:focus-visible {

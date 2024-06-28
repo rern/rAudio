@@ -331,9 +331,8 @@ i.disabled {
 .graphclose {
 	position: absolute;
 	color: var( --cm ) !important;
-	text-align: right !important;
 	top: -10px;
-	right: 0;
+	right: 3px;
 }
 .overplot .lines path {
 	stroke-opacity: 0.75 !important;

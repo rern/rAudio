@@ -551,8 +551,9 @@ var graph     = {
 				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
 			} );
 		}
-		var cmd = filters ? " '"+ JSON.stringify( FIL[ val ] ) +"'" : " '"+ JSON.stringify( S.config ) +"' "+ val;
-		bash( [ 'settings/camilla.py', V.tab + cmd ], data => { // groupdelay = delay, magnitude = gain
+		var args = jsonClone( filters ? FIL[ val ] : S.config );
+		if ( ! filters ) args.index = val;
+		bash( [ 'settings/camilla.py', JSON.stringify( args ) ], data => {
 			var impulse   = 'impulse' in data;
 			if ( filterdelay ) {
 				plots.magnitude.y   = 0;
@@ -640,7 +641,7 @@ var graph     = {
 			elementScroll( $divgraph.parent() );
 			bannerHide();
 			$divgraph
-				.append( '<i class="i-close graphclose"></i>' )
+				.append( '<i class="i-close graphclose" tabindex="0"></i>' )
 				.removeClass( 'hide' );
 		}, 'json' );
 	}
@@ -1079,6 +1080,10 @@ var render    = {
 			} );
 		}
 		$( '.entries li' ).prop( 'tabindex', 0 );
+		if ( V.focused !== 'undefined' ) {
+			$( '.entries li' ).eq( V.focused ).focus();
+			delete V.focused;
+		}
 	}
 	, typeReplace : str => {
 		return str
@@ -1893,6 +1898,21 @@ var common    = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
+$( '#divvolume' ).on( 'keydown', function( e ) {
+	if ( ! [ '-', '+' ].includes( e.key ) ) return
+	
+	$( this ).find( e.key === '-' ? '.i-minus' : '.i-plus' ).trigger( 'click' );
+} );
+$( '.entries' ).on( 'keydown', 'li:focus', function( e ) {
+	var $this = $( this );
+	if ( ! [ '-', '+' ].includes( e.key ) ) return
+	
+	var $updn = $this.find( e.key === '-' ? '.i-minus' : '.i-plus' );
+	if ( ! $updn.length ) return
+	
+	V.focused = $this.index();
+	$updn.trigger( 'click' );
+} );
 $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	var $this = $( this );
 	var left  = $this.offset().left;
