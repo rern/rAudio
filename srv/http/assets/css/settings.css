@@ -707,7 +707,7 @@ input.disabled + .switchlabel:after {
 	#menu {
 		cursor: pointer
 	}
-	.focus,
+	i.focus,
 	.slider .thumb:focus-visible,
 	.switchlabel:focus-visible,
 	.select2-selection:focus-visible,
