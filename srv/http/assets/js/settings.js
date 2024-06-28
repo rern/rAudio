@@ -133,7 +133,7 @@ function refreshData() {
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
-	$( 'heading i:not( .help ), .switchlabel, .setting, input:text, .entries li, .slider .thumb' ).prop( 'tabindex', 0 );
+	$( 'heading i:not( .help ), .switchlabel, .setting, input:text, .entries li' ).prop( 'tabindex', 0 );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -375,7 +375,7 @@ $( document ).on( 'keydown', function( e ) {
 			document.activeElement.scrollIntoView( { block: 'center' } );
 			break
 		case 'Backspace':
-			$( '.back' ).trigger( 'click' );
+			$( '.section:not( .hide ) .i-back' ).trigger( 'click' );
 			break
 		case 'x':
 			if ( e.ctrlKey ) $( '.close' ).trigger( 'click' );

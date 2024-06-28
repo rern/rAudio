@@ -1079,7 +1079,7 @@ var render    = {
 				if ( V.graph[ V.tab ].includes( $el.data( val ) ) ) graph.plot( $el );
 			} );
 		}
-		$( '.entries li' ).prop( 'tabindex', 0 );
+		$( '.entries:not( .hide ) li:not( .lihead ), .slider .thumb, .i-back' ).prop( 'tabindex', 0 );
 		if ( V.focused !== 'undefined' ) {
 			$( '.entries li' ).eq( V.focused ).focus();
 			delete V.focused;
