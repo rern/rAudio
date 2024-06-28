@@ -301,6 +301,10 @@ tr .i-remove {
 	margin: 2px 0 0 0;
 	max-width: 230px;
 }
+li:focus input[ type=range ] {
+	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
+	--trackborder : 1px solid var( --cgd ) !important;
+}
 i.disabled {
 	pointer-events: none;
 	color: var( --cg ) !important;
