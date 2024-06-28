@@ -297,11 +297,13 @@ $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return
 	
 	var camilla = page === 'camilla';
-	var menu = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
+	var menu    = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
 	var key  = e.key;
 	switch ( key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
+			if ( $( '.select2-container--open' ).length ) return
+			
 			e.preventDefault();
 			if ( ! camilla && ! $( '#fader' ).hasClass( 'hide' ) ) return
 			
@@ -336,6 +338,7 @@ $( document ).on( 'keydown', function( e ) {
 				if ( $focus.length ) tabNext( key === 'ArrowLeft' );
 				if ( page === 'camilla' ) $( '#bar-bottom div:focus' ).addClass( 'active' ).trigger( 'click' );
 			}
+			$( '.select2-hidden-accessible' ).select2( 'close' );
 			break
 		case ' ':
 		case 'Enter':
