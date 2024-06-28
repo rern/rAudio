@@ -1039,16 +1039,19 @@ function selectSet( $select ) {
 	}
 	$select
 		.select2( options )
-		.on( 'select2:open',  () => { // fix: scroll on info - set current value 3rd from top
+		.on( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
 			local(); // fix: onblur / onpagehide
+			V.select2 = true;
 			setTimeout( () => {
 				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 62;
 				if ( navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
 		} )
-		.on( 'select2:closing', local ) // fix: onblur / onpagehide / Enter
-		.each( ( i, el ) => {
+		.on( 'select2:closing', () => {
+			local(); // fix: onblur / onpagehide / Enter
+			setTimeout( () => V.select2 = false, V.select2 ? 1000 : 0 );
+		} ).each( ( i, el ) => {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
 		} );

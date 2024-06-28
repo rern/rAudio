@@ -302,7 +302,7 @@ $( document ).on( 'keydown', function( e ) {
 	switch ( key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
-			if ( $( '.select2-container--open' ).length ) return
+			if ( V.select2 ) return
 			
 			e.preventDefault();
 			if ( ! camilla && ! $( '#fader' ).hasClass( 'hide' ) ) return
@@ -338,7 +338,6 @@ $( document ).on( 'keydown', function( e ) {
 				if ( $focus.length ) tabNext( key === 'ArrowLeft' );
 				if ( page === 'camilla' ) $( '#bar-bottom div:focus' ).addClass( 'active' ).trigger( 'click' );
 			}
-			$( '.select2-hidden-accessible' ).select2( 'close' );
 			break
 		case ' ':
 		case 'Enter':
@@ -356,7 +355,11 @@ $( document ).on( 'keydown', function( e ) {
 			$( '#bar-bottom div' ).blur();
 			break
 		case 'Escape':
-			if ( $( '#bar-bottom div:focus' ).length ) {
+			if ( menu ) {
+				$( '.menu' ).addClass( 'hide' );
+			} else if ( V.select2 ) {
+				$( '.select2-hidden-accessible' ).select2( 'close' );
+			} else if ( $( '#bar-bottom div:focus' ).length ) {
 				$( '#fader' ).addClass( 'hide' );
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
 			} else {
@@ -366,7 +369,6 @@ $( document ).on( 'keydown', function( e ) {
 				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );
 				$focus.focus();
 			}
-			$( '.menu' ).addClass( 'hide' );
 			break
 		case 'Tab':
 			document.activeElement.scrollIntoView( { block: 'center' } );
