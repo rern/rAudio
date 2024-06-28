@@ -312,25 +312,21 @@ $( document ).on( 'keydown', function( e ) {
 			
 			var index = 0;
 			var $base = $( '[ tabindex=0 ]' ).filter( ( i, el ) => {
-				var sectionhide = $( el ).parents( '.section' ).hasClass( 'hide' );
-				var rowhide     = $( el ).parents( '.row' ).hasClass( 'hide' );
-				var settinghide = $( el ).is( '.setting.hide' );
-				if ( ! sectionhide && ! rowhide && ! settinghide ) return $( el )
+				if ( $( el ).parents( '.section' ).hasClass( 'hide' )
+					|| $( el ).parents( '.row' ).hasClass( 'hide' )
+					|| $( el ).is( '.setting.hide' )
+				) return
+					
+				return $( el )
 			} );
-			$.each( $base, ( i, el ) => {
-				if ( $( el ).is( ':focus' ) ) {
-					index = key === 'ArrowUp' ? i - 1 : i + 1; // eq( -N ) = N from last
-					return false
-				}
-			} );
-			if ( index === $base.length ) index = 0;
-			$base.eq( index ).focus();
-			document.activeElement.scrollIntoView( { block: 'center' } );
+			focusNext( $( '.container' ), $base, 'focus', key );
 			break
 		case 'ArrowLeft':
 		case 'ArrowRight':
 			if ( menu ) {
 				if ( key === 'ArrowLeft' ) $( '.menu' ).addClass( 'hide' );
+			} else if ( $( 'pre.status:not( .hide )' ).length ) {
+				$( 'pre.status' ).addClass( 'hide' );
 			} else if ( $( '.entries li:focus' ).length ) {
 				var $target = $( '.entries li:focus' );
 				if ( camilla ) $target = $target.find( '.liicon' );
@@ -339,8 +335,6 @@ $( document ).on( 'keydown', function( e ) {
 				var $focus = $( '#bar-bottom div:focus' );
 				if ( $focus.length ) tabNext( key === 'ArrowLeft' );
 				if ( page === 'camilla' ) $( '#bar-bottom div:focus' ).addClass( 'active' ).trigger( 'click' );
-			} else {
-				$( 'pre.status, .divgraph' ).addClass( 'hide' );
 			}
 			break
 		case ' ':

@@ -120,7 +120,7 @@ function focusNext( $parent, $base, target, key ) {
 	var bL    = $base.length;
 	var index = 0;
 	$.each( $base, ( i, el ) => {
-		if ( $( el ).hasClass( target ) ) {
+		if ( $( el ).hasClass( target ) || $( el ).is( ':focus' ) ) {
 			index = back ? i - 1 : i + 1; // eq( -N ) = N from last
 			return false
 		}
@@ -129,8 +129,11 @@ function focusNext( $parent, $base, target, key ) {
 	var $next = $base.eq( index );
 	$parent.find( '.'+ target ).removeClass( target );
 	$next.addClass( target ).focus();
-	if ( ! $next.is( 'input:checkbox, input:radio, select' ) ) $next.select();
-	if ( ! I.active ) $next[ 0 ].scrollIntoView( { block: 'center' } );
+	if ( I.active ) {
+		if ( $next.is( 'input:text, input[type=number], input:password, textarea' ) ) $next.select();
+	} else {
+		$next[ 0 ].scrollIntoView( { block: 'center' } );
+	}
 }
 function tabNext( back ) {
 	var $current = $( '#bar-bottom' ).find( page ? ':focus' : '.active' );
@@ -185,6 +188,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			break
 	}
 } ).on( 'click', '#infoList', function() {
+	$( '#infoList input' ).removeClass( 'focus' );
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } ).press( '#infoIcon', function() { // usage
 	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );

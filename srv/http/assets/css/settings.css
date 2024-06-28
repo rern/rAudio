@@ -707,13 +707,14 @@ input.disabled + .switchlabel:after {
 	#menu {
 		cursor: pointer
 	}
+	.focus,
 	.slider .thumb:focus-visible,
 	.switchlabel:focus-visible,
 	.select2-selection:focus-visible,
 	heading i:focus-visible,
 	.setting:focus-visible,
 	.graphclose:focus-visible,
-	input[ type=text ]:focus-visible {
+	#hostname:focus-visible {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;
 	}
