@@ -230,7 +230,7 @@
 	color: var( --cw ) !important;
 }
 .lihead.main {
-	background: var( --cga );
+	background: var( --cgd );
 }
 .lihead .select2 {
 	float: none;
@@ -239,6 +239,10 @@
 }
 .lihead .i-back {
 	float: right !important;
+	margin-right: 3px !important;
+}
+.lihead i {
+	letter-spacing: 0;
 }
 .tab li .i-add {
 	color: var( --cw );

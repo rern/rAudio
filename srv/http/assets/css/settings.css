@@ -720,6 +720,7 @@ input.disabled + .switchlabel:after {
 	}
 	heading i:focus-visible,
 	.setting:focus-visible,
+	.lihead i:focus-visible,
 	.graphclose:focus-visible {
 		border-radius: 50%;
 	}

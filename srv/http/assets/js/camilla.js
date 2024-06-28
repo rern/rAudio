@@ -1079,7 +1079,8 @@ var render    = {
 				if ( V.graph[ V.tab ].includes( $el.data( val ) ) ) graph.plot( $el );
 			} );
 		}
-		$( '.entries:not( .hide ) li:not( .lihead ), .slider .thumb, .i-back' ).prop( 'tabindex', 0 );
+		$( '.entries:not( .hide ) li, .slider .thumb, .lihead .i-add, .lihead .i-back' ).prop( 'tabindex', 0 );
+		setTimeout( () => $( '.entries.hide li, .lihead' ).removeAttr( 'tabindex' ), 300 );
 		if ( V.focused !== 'undefined' ) {
 			$( '.entries li' ).eq( V.focused ).focus();
 			delete V.focused;
