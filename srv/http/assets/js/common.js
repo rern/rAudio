@@ -1043,12 +1043,13 @@ function selectSet( $select ) {
 			local(); // fix: onblur / onpagehide
 			V.select2 = true;
 			setTimeout( () => {
-				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 62;
+				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
 				if ( navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
 		} )
 		.on( 'select2:closing', () => {
+			console.log('closing')
 			local(); // fix: onblur / onpagehide / Enter
 			setTimeout( () => V.select2 = false, V.select2 ? 1000 : 0 );
 		} ).each( ( i, el ) => {
