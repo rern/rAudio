@@ -2,22 +2,28 @@
 
 . /srv/http/bash/common.sh
 
-sleep 3 # wait for eventX added to /dev/input/
-
 control=$( < $dirshm/btmixer )
-mac=$( bluetoothctl show \
-		| head -1 \
-		| cut -d' ' -f2 )
-event=$( sed -n "/Phys=${mac,,}/,/Handlers=/ {/Handlers=/ {s/^.*=//; p}}" /proc/bus/input/devices | awk '{print $NF}' ) # /proc/... contains trailing space
+mac=$( bluetoothctl show | sed -E -n '1 {s/.* (.*) .*/\L\1/; p}' )
+for i in {0..5}; do
+	grep -q $mac /proc/bus/input/devices && break || sleep 1
+done
+event=$( sed -E -n "/$mac/,/^H:/ {/^H:/ {s/.* (.*) /\1/; p}}" /proc/bus/input/devices ) # event - with trailing space
 
-# line='Event: time 1678155098.191722, type 1 (EV_KEY), code 200 (KEY_XXXXXX), value 1'
+# line='Event: time nnnnnnnnnn.nnnnnn, type 1 (EV_KEY), code NNN (KEY_XXXXXX), value N'
 evtest /dev/input/$event | while read line; do
-	! grep -Eq '^E.*(CD\)|SONG\)|VOLUME).*1$' <<< $line && continue # PLAYCD PAUSECD STOPCD NEXTSONG PREVIOUSSONG VOLUMEUP VOLUMEDOWN
+	! grep -q 1$ <<< $line && continue                     # 1st of multiple 'value N'
 	
-	key=$( sed -E 's/.*KEY_(.*)\).*/\1/; s/CD|IOUSSONG|SONG//' <<< $line )
-	key=${key,,}
+	! grep -Eq 'KEY_.*CD|KEY_.*SONG' <<< $line && continue # PLAYCD PAUSECD STOPCD NEXTSONG PREVIOUSSONG
+	
+	key=$( sed -E 's/.*KEY_|\).*//g; s/CD|SONG//; s/.*/\L&/' <<< $line )
 	case $key in
-		next|prev )
+		play | pause )
+			mpcPlayback
+			;;
+		stop )
+			mpcPlayback stop
+			;;
+		next | previous )
 			. <( mpc status 'current=%songpos%; length=%length% random=%random%' )
 			if [[ $key == next ]]; then
 				(( $current == $length )) && pos=1 || pos=$(( current + 1 ))
@@ -26,10 +32,5 @@ evtest /dev/input/$event | while read line; do
 			fi
 			$dirbash/cmd.sh mpcskip$'\n'$pos$'\nCMD POS'
 			;;
-		play|pause ) $dirbash/cmd.sh mpcplayback;;
-		stop )       $dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION';;
-		volumedown ) volumeBlueAlsa 1%- "$control";;
-		volumeup )   volumeBlueAlsa 1%+ "$control";;
 	esac
-	[[ ${key:0:1} == v ]] && volumeGet push
 done

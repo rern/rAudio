@@ -163,7 +163,7 @@ EOF
 		  'id'       => 'ffmpeg'
 		, 'disabled' => iLabel( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
-<a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for more audio filetypes {$Fi( 'help filetype' )}
+<a href="https://ffmpeg.org/about.html">FFmpeg</a> - <a id="ffmpegfiletype">Decoder for more audio filetypes</a>
 <pre id="prefiletype" class="hide"></pre>
 Note: Should be disabled for faster Library update if not used.
 EOF

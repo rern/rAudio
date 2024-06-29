@@ -235,7 +235,7 @@ function psMpdUpdate( data ) {
 	if ( 'counts' in data ) {
 		$.each( data.counts, ( k, v ) => {
 			C[ k ] = v;
-			$( '#mode-'+ k ).toggleClass( 'nodata', ! v || v === 0 );
+			$( '#mode-'+ k ).parent().toggleClass( 'nodata', ! v || v === 0 );
 			if ( V.mode === k ) $( '#library' ).trigger( 'click' );
 			$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
 		} );

@@ -50,7 +50,7 @@ a[href^="http"] {
 	color: var( --cml );
 	text-decoration: none !important;
 }
-.container input[type="text"] {
+.container input[type=text] {
 	max-width: 230px;
 	margin-bottom: 10px;
 }
@@ -200,24 +200,38 @@ heading.subhead {
 	border-bottom-color: var( --cga );
 }
 heading.status .headtitle::after,
-.col-l.status gr::after {
+.col-l.status gr::after,
+#ffmpegfiletype::after,
+.listtitle.jsplugins::after,
+.divaddon .revision::after {
 	display: inline-block;
 	width: 40px;
 	font-family: rern;
 	font-style: normal;
 	font-size: 22px;
-	content: "\f561";
+	content: "\f605";
 	text-align: center;
 	color: var( --cg60 );
 	letter-spacing: normal;
 }
-.col-l.status gr::after {
+heading.status .headtitle.active::after,
+.col-l.status.active gr::after,
+#ffmpegfiletype.active::after,
+.listtitle.jsplugins.active::after,
+.divaddon .revision.active::after {
+	content: "\f604" !important;
+}
+.col-l.status gr::after,
+#ffmpegfiletype::after,
+.listtitle.jsplugins::after,
+.divaddon .revision::after {
 	width: 17px;
 	font-size: 14px;
 	text-align: right;
 }
 heading i {
-	width: 40px;
+	width: 35px;
+	height: 35px;
 	font-size: 22px;
 	text-align: center;
 	color: var( --cg60 );
@@ -350,9 +364,6 @@ heading i.disabled {
 .entries li .i-info {
     font-size: 22px !important;
 }
-.entries li.active {
-	background: var( --cga );
-}
 .remove {
 	float: right;
 	margin-right: 0 !important;
@@ -473,9 +484,6 @@ input.disabled + .switchlabel:after {
 .setting {
 	position: absolute;
 }
-.setting.focus {
-	color: var( --cm );
-}
 .cg {
 	background: var( --cg );
 }
@@ -567,14 +575,6 @@ input.disabled + .switchlabel:after {
 .gpio svg {
 	max-width: 100%;
 }
-#gpiopin,
-#gpiopin1 {
-	display: none;
-	margin: 10px 0;
-	width: 100%;
-	border-radius: 6px;
-	background: var( --cw );
-}
 #infoList .gpio tr td:nth-child( odd ) {
 	width: 35px !important;
 	padding-right: 2px !important;
@@ -647,7 +647,7 @@ input.disabled + .switchlabel:after {
 	.hideW { display: none }
 }
 @media (max-width: 450px) {
-	input[type="text"] { padding: 0 7px }
+	input[type=text] { padding: 0 7px }
 	.listtitle a { width: calc( 100% / 13 ) }
 	.brindex { display: block }
 }
@@ -682,7 +682,6 @@ input.disabled + .switchlabel:after {
 	.divgain i,
 	.edit,
 	.entries li,
-	.filetype,
 	.helphead,
 	.helpblock bl,
 	.i-mute,
@@ -704,12 +703,40 @@ input.disabled + .switchlabel:after {
 	.wiring,
 	#backend,
 	#button-data,
-	#gpioimgtxt,
+	#ffmpegfiletype,
 	#menu {
 		cursor: pointer
 	}
-	.switchlabel.focus {
+	i.focus,
+	.slider .thumb:focus-visible,
+	.switchlabel:focus-visible,
+	.select2-selection:focus-visible,
+	heading i:focus-visible,
+	.setting:focus-visible,
+	.graphclose:focus-visible,
+	#hostname:focus-visible {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;
+	}
+	i.focus,
+	heading i:focus-visible,
+	.setting:focus-visible,
+	.lihead i:focus-visible,
+	.graphclose:focus-visible {
+		border-radius: 50%;
+	}
+	.entries li:focus-visible {
+		outline: none;
+		background: var( --cga );
+	}
+	#bar-bottom div:focus-visible {
+		outline: none;
+		background: var( --cg );
+	}
+	#bar-bottom div.active:focus-visible {
+		background: var( --cml );
+	}
+	.menu a.active {
+		background: var( --cgl );
 	}
 }

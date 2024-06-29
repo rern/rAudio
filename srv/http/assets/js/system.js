@@ -111,6 +111,14 @@ var lcdcharlist   = [
 	, [ 'I&#178;C Chip',   'select', [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
 	, [ 'Sleep <gr>(60s)', 'checkbox' ]
 ];
+var lcdcharjson   = {
+	  icon         : 'lcdchar'
+	, title        : 'Character LCD'
+	, tablabel     : [ 'I&#178;C', 'GPIO' ]
+	, cancel       : switchCancel
+	, ok           : switchEnable
+	, fileconf     : true
+}
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -120,7 +128,7 @@ $( 'body' ).on( 'click', function( e ) {
 	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
 	if ( ! $( e.target ).hasClass( 'select2-search__field' ) 
-		&& ! $( e.target ).parents( '#divi2sselect' ).length 
+		&& ! $( e.target ).parents( '#divi2smodule' ).length 
 		&& $( '#i2smodule' ).val() === 'none'
 	) {
 		i2sSelectHide();
@@ -225,7 +233,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 } );
 $( '#menu a' ).on( 'click', function() {
 	var $this      = $( this );
-	var cmd        = $this.prop( 'class' );
+	var cmd        = $this.prop( 'class' ).replace( ' active', '' );
 	var list       = S.list[ V.li.index() ];
 	var mountpoint = list.mountpoint;
 	var source     = list.source;
@@ -310,7 +318,7 @@ $( '#setting-wlan' ).on( 'click', function() {
 		}, 'json' );
 	}
 } );
-$( '#divi2ssw' ).on( 'click', function() {
+$( '#i2s' ).on( 'click', function() {
 	setTimeout( i2sOptionSet, 0 );
 } );
 $( '#divi2smodule .col-r' ).on( 'click', function( e ) {
@@ -325,7 +333,7 @@ $( '#i2smodule' ).on( 'input', function() {
 		notify( icon, title, 'Enable ...' );
 	} else {
 		setTimeout( () => { notify( icon, title, 'Disable ...' ) }, 300 ); // fix - hide banner too soon
-		S.i2ssw = false;
+		S.i2saudio = false;
 		i2sSelectHide();
 	}
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
@@ -339,19 +347,6 @@ $( '#setting-i2smodule' ).on( 'click', function() {
 		, checkchanged : S.i2seeprom
 		, ok           : () => bash( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
 	} );
-} );
-$( '#gpioimgtxt' ).on( 'click', function() {
-	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
-		$( '#gpiopin' ).slideToggle();
-		$( '#fliptxt, #close-img' ).toggle();
-	} else {
-		$( '#gpiopin, #gpiopin1' ).css( 'display', 'none' );
-		$( '#fliptxt' ).hide();
-	}
-	$( this ).find( 'i' ).toggleClass( 'i-chevron-down i-chevron-up' );
-} );
-$( '#gpiopin, #gpiopin1' ).on( 'click', function() {
-	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 $( '#setting-lcdchar' ).on( 'click', function() {
 	if ( S.lcdcharconf ) {
@@ -498,7 +493,8 @@ $( '#ledcalc' ).on( 'click', function() {
 		, okno       : true
 	} );
 } );
-$( '#hostname' ).on( 'mousedown touchdown', function() {
+$( '#hostname' ).on( 'click', function( e ) {
+	if ( e.hasOwnProperty( 'originalEvent' ) ) $( this ).blur();
 	SW.icon  = 'system';
 	SW.title = 'Player Name';
 	info( {
@@ -525,9 +521,8 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
-} );
-$( '#divtimezone .col-r' ).on( 'click', function( e ) {
-	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
+} ).on( 'select2:open', function( e ) {
+	if ( $( '#timezone option' ).length > 2 ) return
 	
 	$( '#timezone' ).select2( 'close' )
 	$.post( 'cmd.php', { cmd: 'timezonelist' }, ( data ) => {
@@ -644,16 +639,15 @@ $( '#shareddata' ).on( 'click', function() {
 } );
 $( '.listtitle' ).on( 'click', function( e ) {
 	var $this    = $( this );
-	var $chevron = $this.find( 'i' );
 	var $list    = $this.next();
 	var $target  = $( e.target );
 	if ( $target.hasClass( 'i-refresh' ) ) return
 	
 	if ( ! $this.hasClass( 'backend' ) ) { // js
+		$this.toggleClass( 'active' );
 		$list.toggleClass( 'hide' )
-		$chevron.toggleClass( 'i-chevron-down i-chevron-up' );
 		if ( localhost ) $( '.list a' ).remove();
-	} else if ( $target.is( 'a' ) ) { // package
+	} else if ( $target.is( 'a' ) ) {      // package
 		var active = $target.hasClass( 'wh' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 		if ( active ) {
@@ -670,7 +664,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 			bannerHide();
 		} );
 	} else {
-		$list.add( $chevron ).addClass( 'hide' );
+		$list.addClass( 'hide' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
@@ -700,7 +694,7 @@ function htmlC( data, key, val ) {
 }
 function i2sOptionSet() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
-		if ( $( '#divi2sselect' ).hasClass( 'hide' ) ) {
+		if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
 			i2sSelectShow();
 			$( '#i2smodule' ).select2( 'open' );
 		}
@@ -722,50 +716,44 @@ function i2sOptionSetSelect() {
 	} ).prop( 'selected', true );
 }
 function i2sSelectHide() {
-	$( '#i2ssw' ).prop( 'checked', S.i2ssw );
-	$( '#divi2ssw' ).removeClass( 'hide' );
-	$( '#divi2sselect' ).addClass( 'hide' );
+	$( '#i2s' ).prop( 'checked', S.i2saudio );
+	$( '#divi2s' ).removeClass( 'hide' );
+	$( '#divi2smodule' ).addClass( 'hide' );
 }
 function i2sSelectShow() {
-	$( '#divi2ssw' ).addClass( 'hide' );
-	$( '#divi2sselect, #setting-i2smodule' ).removeClass( 'hide' );
+	$( '#divi2s' ).addClass( 'hide' );
+	$( '#divi2smodule' ).removeClass( 'hide' );
+	$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2saudio );
 }
 function infoLcdChar() {
+	var confi2c = S.lcdcharconf && S.lcdcharconf.INF === 'i2c';
 	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'I&#178;C', 'GPIO' ]
+		  ...lcdcharjson
 		, tab          : [ '', infoLcdCharGpio ]
-		, list         : lcdcharlist
+		, list         : jsonClone( lcdcharlist )
 		, boxwidth     : 180
-		, values       : S.lcdcharconf || default_v.lcdchar_i2c
-		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'i2c'
+		, values       : confi2c ? S.lcdcharconf : default_v.lcdchar_i2c
+		, checkchanged : S.lcdchar && confi2c
 		, beforeshow   : infoLcdcharButton
-		, cancel       : switchCancel
-		, ok           : switchEnable
-		, fileconf     : true
 	} );
 }
 function infoLcdCharGpio() {
-	var list = lcdcharlist.slice( 0, 3 );
+	var confgpio = S.lcdcharconf && S.lcdcharconf.INF === 'gpio';
+	var list0    = jsonClone( lcdcharlist );
+	var list     = list0.slice( 0, 3 );
 	[ 'RS', 'RW', 'E', 'D4', 'D5', 'D6', 'D7' ].forEach( k => list.push( [ k, 'select', board2bcm ] ) );
-	list.push( lcdcharlist.slice( -1 )[ 0 ] );
+	list.push( list0.slice( -1 )[ 0 ] );
 	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'I&#178;C', 'GPIO' ]
+		  ...lcdcharjson
 		, tab          : [ infoLcdChar, '' ]
 		, list         : list
 		, boxwidth     : 70
-		, values       : S.lcdcharconf || default_v.lcdchar_gpio
-		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
+		, values       : confgpio ? S.lcdcharconf : default_v.lcdchar_gpio
+		, checkchanged : S.lcdchar && confgpio
 		, beforeshow   : () => { 
 			infoLcdcharButton();
 			$( '#infoList tr' ).eq( 2 ).after( '<tr><td colspan="3">'+ gpiosvg +'</td></tr>' )
 		}
-		, cancel       : switchCancel
-		, ok           : switchEnable
-		, fileconf     : true
 	} );
 }
 function infoLcdcharButton() {
@@ -1057,41 +1045,53 @@ function infoRelaysOk() {
 	jsonSave( 'relays', name );
 	bash( [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ] );
 }
-function infoRestore( reset ) {
-	var list = [
-		  [ 'Keep Library data',     'checkbox' ]
-		, [ 'Keep Network settings', 'checkbox' ]
-	];
+function infoRestore() {
 	info( {
 		  icon     : SW.icon
 		, title    : SW.title
 		, tablabel : [ 'From Backup', 'Reset To Default' ]
-		, tab      : reset ? [ infoRestore, '' ] : [ '', () => infoRestore( 'reset' ) ]
-		, list     : reset ? list : [ 'Library database only', 'checkbox' ]
-		, file     : reset ? '' : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
+		, tab      : [ '', infoRestoreReset ]
+		, list     : [ 'Library database only', 'checkbox' ]
+		, file     : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
 		, oklabel  : ico( 'restore' ) +'Restore'
 		, okcolor  : orange
-		, ok       : reset ? () => {
-				notifyCommon( 'Reset to default ...' );
-				bash( [ 'settings/system-datareset.sh', 'cmd', ...infoVal(), 'CMD KEEPLIBRARY KEEPNETWORK' ] );
-				loader();
-			} : () => {
-				notifyCommon( 'Restore ...' );
-				var formdata = new FormData();
-				formdata.append( 'cmd', 'datarestore' );
-				formdata.append( 'file', I.infofile );
-				formdata.append( 'libraryonly', infoVal() );
-				fetch( 'cmd.php', { method: 'POST', body: formdata } )
-					.then( response => response.text() )
-					.then( message => {
-						loaderHide();
-						if ( message ) {
-							bannerHide();
-							infoWarning(  SW.icon,  SW.title, message );
-						}
-					} );
-				loader();
-			}
+		, ok       : () => {
+			notifyCommon( 'Restore ...' );
+			var formdata = new FormData();
+			formdata.append( 'cmd', 'datarestore' );
+			formdata.append( 'file', I.infofile );
+			formdata.append( 'libraryonly', infoVal() );
+			fetch( 'cmd.php', { method: 'POST', body: formdata } )
+				.then( response => response.text() )
+				.then( message => {
+					loaderHide();
+					if ( message ) {
+						bannerHide();
+						infoWarning(  SW.icon,  SW.title, message );
+					}
+				} );
+			loader();
+		}
+	} );
+	$( '#restore' ).prop( 'checked', 0 );
+}
+function infoRestoreReset() {
+	info( {
+		  icon     : SW.icon
+		, title    : SW.title
+		, tablabel : [ 'From Backup', 'Reset To Default' ]
+		, tab      : [ infoRestore, '' ]
+		, list     : [
+			  [ 'Keep Library data',     'checkbox' ]
+			, [ 'Keep Network settings', 'checkbox' ]
+		]
+		, oklabel  : ico( 'set0' ) +'Reset'
+		, okcolor  : orange
+		, ok       : () => {
+			notifyCommon( 'Reset to default ...' );
+			bash( [ 'settings/system-datareset.sh', 'cmd', ...infoVal(), 'CMD KEEPLIBRARY KEEPNETWORK' ] );
+			loader();
+		}
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 }
@@ -1154,7 +1154,7 @@ function renderPage() {
 	} else {
 		$( '#divaudio' ).addClass( 'hide' );
 	}
-	if ( S.i2ssw ) {
+	if ( S.i2saudio ) {
 		if ( $( '#i2smodule option' ).length ) {
 			i2sOptionSetSelect();
 		} else {
@@ -1177,6 +1177,7 @@ function renderPage() {
 	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
+	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
 }
 function renderStorage() {

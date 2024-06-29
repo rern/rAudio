@@ -47,7 +47,7 @@ $( < $file )
 $data"
 	awk NF <<< $lines | sort -u > $file
 }
-args2var() {
+args2var() { # $2 $3 ... if any, still valid
 	local argslast CFG CMD_CFG_OFF conf i k keys kL v
 	readarray -t args <<< $1
 	CMD=${args[0]}
@@ -88,11 +88,6 @@ audioCDplClear() {
 		mpc -q del $cdtracks
 		return 0
 	fi
-}
-cacheBust() { # for install.sh
-	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
-	hash=?v=$( date +%s )
-	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
@@ -269,6 +264,11 @@ lineCount() {
 }
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
+}
+mpcPlayback() {
+	$dirbash/cmd.sh "mpcplayback
+$1
+CMD ACTION"
 }
 mpcState() {
 	mpc status %state% | sed -E 's/ing|ped|d$//'

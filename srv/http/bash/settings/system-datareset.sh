@@ -40,8 +40,6 @@ initramfs initramfs-linux.img followkernel
 disable_overscan=1
 disable_splash=1
 dtparam=audio=on"
-[[ -e /usr/bin/firefox ]] && config+="
-hdmi_force_hotplug=1"
 [[ -e /boot/kernel.img ]] && config+="
 gpu_mem=32
 force_turbo=1

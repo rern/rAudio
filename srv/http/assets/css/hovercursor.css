@@ -158,8 +158,8 @@ li:not( .licover ),
 #volume-text {
 	cursor: pointer;
 }
-#lib-mode-list .mode.nodata i,
-#lib-path a:last-of-type:hover {
+#lib-path a:last-of-type:hover,
+.lib-mode.nodata * {
 	cursor: default;
 }
 #lib-path a:last-of-type:hover {

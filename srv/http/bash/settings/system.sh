@@ -47,7 +47,7 @@ i2c-dev"
 	if [[ $rebooti2c ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
 		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
-		label=$( sed -n "/.*'$CMD' *=>/ {s/.*'label' => '//; s/'.*//; p}" /srv/http/settings/system.php )
+		label=$( sed -E -n "/$CMD.*=>/ {s/.*'label' => '|',.*//g; p}" /srv/http/settings/system.php )
 		notify $CMD "$label" 'Reboot required.' 5000
 		appendSortUnique $CMD $dirshm/reboot
 	fi
@@ -349,7 +349,7 @@ powerbutton )
 				config+='
 dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
 			fi
-		else
+		else # audiophonic
 			config+="
 dtoverlay=gpio-poweroff,gpiopin=22
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
@@ -518,9 +518,10 @@ storageinfo )
 	if [[ ${DEV:0:8} == /dev/mmc ]]; then
 		dev=/sys/block/${DEV:5:-2}/device
 		for k in cid csd scr; do
-			data+="
+			data+="\
 <bll># mmc $k read $dev</bll>
-$( mmc $k read $dev )"$'\n'
+$( mmc $k read $dev )
+"
 		done
 		echo "$data"
 	else

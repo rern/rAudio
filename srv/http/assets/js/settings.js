@@ -18,12 +18,11 @@ function bannerReset() {
 function currentStatus( id ) {
 	if ( id === 'bluetoothlist' ) return
 	
-	var $el = $( '#code'+ id );
+	var $el      = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
-	var services   = [ 'ap',        'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
+	var services = [ 'ap',        'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
 					 , 'nfsserver', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
-	var command = services.includes( id ) ? [ 'servicestatus.sh', id ] : [ 'status'+ id ];
-	bash( command, status => {
+	bash( services.includes( id ) ? [ 'servicestatus.sh', id ] : [ 'status'+ id ], status => {
 		clearTimeout( timeoutGet );
 		$el.html( status + '<br>&nbsp;' ).promise().done( () => {
 			$el.removeClass( 'hide' );
@@ -134,6 +133,7 @@ function refreshData() {
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
+	$( 'heading i:not( .help ), .switchlabel, .setting, input:text, .entries li' ).prop( 'tabindex', 0 );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -172,6 +172,8 @@ function switchSet( ready ) {
 		$this.parent().next( '.setting' ).toggleClass( 'hide', ! S[ id ] );
 	} );
 	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
+		if ( el.id === 'codehddinfo' ) return
+		
 		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
 	} );
 }
@@ -291,50 +293,92 @@ document.title = page === 'camilla' ? 'Camilla DSP' : page[ 0 ].toUpperCase() + 
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 $( '#'+ page ).addClass( 'active' );
 
-$( document ).on( 'keyup', function( e ) {
-	if ( I.active || page === 'camilla' ) return
+$( document ).on( 'keydown', function( e ) {
+	if ( I.active ) return
 	
-	var $focus;
-	var key = e.key;
+	var camilla = page === 'camilla';
+	var menu    = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
+	var key  = e.key;
 	switch ( key ) {
-		case 'Tab':
-			$( '#bar-bottom div' ).removeClass( 'bgr' );
-			$( '.switchlabel, .setting' ).removeClass( 'focus' );
-			setTimeout( () => {
-				$focus = $( 'input:checkbox:focus' );
-				if ( $focus.length ) {
-					$focus.next().addClass( 'focus' );
-				}
-			}, 0 );
-			break;
-		case 'Escape':
-			$focus = $( '.switchlabel.focus' );
-			setTimeout( () => { if ( $focus.length ) $focus.prev().focus() }, 300 );
-			if ( $( '.setting.focus' ).length ) {
-				$( '.setting' ).removeClass( 'focus' );
+		case 'ArrowDown':
+		case 'ArrowUp':
+			if ( V.select2 ) return
+			
+			e.preventDefault();
+			if ( ! camilla && ! $( '#fader' ).hasClass( 'hide' ) ) return
+			
+			if ( menu ) {
+				focusNext( $( '.menu' ), $( '.menu a:not( .hide )' ), 'active', key );
 				return
 			}
 			
-			if ( $focus.length && $focus.prev().prop( 'checked' ) && $focus.next().hasClass( 'setting' ) ) {
-				$( '.switchlabel.focus' ).next().addClass( 'focus' );
-			}
-			break;
+			var index = 0;
+			var $base = $( '[ tabindex=0 ]' ).filter( ( i, el ) => {
+				if ( $( el ).parents( '.section' ).hasClass( 'hide' )
+					|| $( el ).parents( '.row' ).hasClass( 'hide' )
+					|| $( el ).is( '.setting.hide' )
+				) return
+					
+				return $( el )
+			} );
+			focusNext( $( '.container' ), $base, 'focus', key );
+			break
 		case 'ArrowLeft':
 		case 'ArrowRight':
-			var $current = $( '#bar-bottom .bgr' ).length ? $( '#bar-bottom .bgr' ) : $( '#bar-bottom .active' );
-			var id       = $current[ 0 ].id;
-			var $next    = key === 'ArrowLeft' ? $( '#'+ pagenext[ id ][ 0 ] ) : $( '#'+ pagenext[ id ][ 1 ] );
-			$( '#bar-bottom div' ).removeClass( 'bgr' );
-			if ( ! $next.hasClass( 'active' ) ) $next.addClass( 'bgr' );
-			break;
-		case 'Enter':
-			if ( $( '#bar-bottom .bgr' ).length ) {
-				$( '#bar-bottom .bgr' ).trigger( 'click' );
-			} else {
-				$focus = $( '.setting.focus' );
-				if ( $focus.length ) $focus.trigger( 'click' );
+			if ( menu ) {
+				if ( key === 'ArrowLeft' ) $( '.menu' ).addClass( 'hide' );
+			} else if ( $( 'pre.status:not( .hide )' ).length ) {
+				$( 'pre.status' ).addClass( 'hide' );
+			} else if ( $( '.entries li:focus' ).length ) {
+				var $target = $( '.entries li:focus' );
+				if ( camilla ) $target = $target.find( '.liicon' );
+				$target.trigger( 'click' );
+			} else if ( ! $( '#fader' ).hasClass( 'hide' ) ) {
+				var $focus = $( '#bar-bottom div:focus' );
+				if ( $focus.length ) tabNext( key === 'ArrowLeft' );
+				if ( page === 'camilla' ) $( '#bar-bottom div:focus' ).addClass( 'active' ).trigger( 'click' );
 			}
-			break;
+			break
+		case ' ':
+		case 'Enter':
+			e.preventDefault();
+			if ( menu ) {
+				V.li = $( '.entries li.active' );
+				$( '.menu a.active' ).trigger( 'click' );
+				return
+			}
+			
+			var $active = $( document.activeElement );
+			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
+			$active.trigger( 'click' );
+			$( '#fader' ).addClass( 'hide' );
+			$( '#bar-bottom div' ).blur();
+			break
+		case 'Escape':
+			if ( menu ) {
+				$( '.menu' ).addClass( 'hide' );
+			} else if ( V.select2 ) {
+				$( '.select2-hidden-accessible' ).select2( 'close' );
+			} else if ( $( '#bar-bottom div:focus' ).length ) {
+				$( '#fader' ).addClass( 'hide' );
+				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
+			} else {
+				$( '#fader' ).removeClass( 'hide' );
+				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
+				var $focus = $( '#bar-bottom div.active' );
+				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );
+				$focus.trigger( 'focus' );
+			}
+			break
+		case 'Tab':
+			document.activeElement.scrollIntoView( { block: 'center' } );
+			break
+		case 'Backspace':
+			$( '.section:not( .hide ) .i-back' ).trigger( 'click' );
+			break
+		case 'x':
+			if ( e.ctrlKey ) $( '.close' ).trigger( 'click' );
+			break
 	}
 } );
 $( '.page-icon' ).on( 'click', function() {
@@ -355,6 +399,7 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var id    = $this.hasClass( 'col-l' ) ? $this.data( 'status' ) : $this.parent().data( 'status' );
 	var $code = $( '#code'+ id );
 	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
+	$this.toggleClass( 'active' );
 } );
 $( '.playback' ).on( 'click', function() { // for player and camilla
 	S.state = S.state === 'play' ? 'pause' : 'play';

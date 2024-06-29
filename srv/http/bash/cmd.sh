@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 dirimg=/srv/http/assets/img
 
-args2var "$1"
+args2var "$1" # $2 $3 ... if any, still valid
 
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
@@ -238,9 +238,16 @@ bookmarkrename )
 	pushData bookmark 1
 	;;
 cachebust )
-	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
-	hash=?v=$( date +%s )
-	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+	hash="?v=$( date +%s )'"
+	sed -E -i "0,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
+	if [[ $TIME ]]; then
+		hashtime="?v='.time()"
+		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
+	fi
+	sed -i "0,/?v=.*/ s/?v=.*/$hash;/" /srv/http/common.php
+	;;
+cachetype )
+	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
 	;;
 color )
 	file=$dirsystem/color

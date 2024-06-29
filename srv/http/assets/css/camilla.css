@@ -230,7 +230,7 @@
 	color: var( --cw ) !important;
 }
 .lihead.main {
-	background: var( --cga );
+	background: var( --cgd );
 }
 .lihead .select2 {
 	float: none;
@@ -239,6 +239,10 @@
 }
 .lihead .i-back {
 	float: right !important;
+	margin-right: 3px !important;
+}
+.lihead i {
+	letter-spacing: 0;
 }
 .tab li .i-add {
 	color: var( --cw );
@@ -301,6 +305,10 @@ tr .i-remove {
 	margin: 2px 0 0 0;
 	max-width: 230px;
 }
+li:focus input[ type=range ] {
+	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
+	--trackborder : 1px solid var( --cgd ) !important;
+}
 i.disabled {
 	pointer-events: none;
 	color: var( --cg ) !important;
@@ -331,9 +339,8 @@ i.disabled {
 .graphclose {
 	position: absolute;
 	color: var( --cm ) !important;
-	text-align: right !important;
 	top: -10px;
-	right: 0;
+	right: 3px;
 }
 .overplot .lines path {
 	stroke-opacity: 0.75 !important;

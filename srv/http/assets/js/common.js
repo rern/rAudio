@@ -115,51 +115,95 @@ function icoLabel( label, icon ) {
 function icoTab( tab ) {
 	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'
 }
+function focusNext( $parent, $base, target, key ) {
+	var back  = [ 'ArrowLeft', 'ArrowUp' ].includes( key );
+	var bL    = $base.length;
+	var index = 0;
+	$.each( $base, ( i, el ) => {
+		if ( $( el ).hasClass( target ) || $( el ).is( ':focus' ) ) {
+			index = back ? i - 1 : i + 1; // eq( -N ) = N from last
+			return false
+		}
+	} );
+	if ( index === bL ) index = 0;
+	if ( $base.eq( index ).hasClass( 'disabled' ) ) {
+		index = back ? index - 1 : index + 1;
+		if ( index === bL ) index = 0;
+	}
+	var $next = $base.eq( index );
+	$parent.find( '.'+ target ).removeClass( target );
+	$next.addClass( target ).trigger( 'focus' );
+	if ( I.active ) {
+		if ( $next.is( 'input:text, input[type=number], input:password, textarea' ) ) $next.select();
+	} else {
+		$next[ 0 ].scrollIntoView( { block: 'center' } );
+	}
+}
+function tabNext( back ) {
+	var $current = $( '#bar-bottom' ).find( page ? ':focus' : '.active' );
+	var $next    = back ? $current.prev() : $current.next();
+	var $tabs    = $( '#bar-bottom' ).children();
+	if ( ! $next.length ) $next = back ? $tabs.last() : $tabs.first();
+	page ? $next.trigger( 'focus' ) : $next.trigger( 'click' );
+}
 // info ----------------------------------------------------------------------
-$( '#infoOverlay' ).press( '#infoIcon', function() { // usage
-	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
-} );
-$( '#infoOverlay' ).on( 'click', '#infoList', function() {
-	$( '.infobtn, .filebtn' ).removeClass( 'active' );
-} );
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
-/*
-all:      [Tab]       - focus / next input
-		  [Shift+Tab] - previous input
-radio:    [L] [R]     - check
-checkbox: [space]     - check
-select:   [U] [D]     - check
-*/
 	if ( ! I.active ) return
 	
-	e.stopPropagation(); // suppress others
 	var key = e.key;
+	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( key ) ) e.preventDefault();
+	if ( key === 'Tab' && e.shiftKey ) key = 'ArrowUp';
 	switch ( key ) {
+		case 'ArrowLeft':
+			var $next = $( '#infoTab a.active' ).prev();
+			if ( ! $next.length ) $next = $( '#infoTab a' ).last();
+			$next.trigger( 'click' );
+			break
+		case 'ArrowRight':
+			var $next = $( '#infoTab a.active' ).next();
+			if ( ! $next.length ) $next = $( '#infoTab a' ).first();
+			$next.trigger( 'click' );
+			break
+		case 'ArrowUp':
+		case 'ArrowDown':
+		case 'Tab':
+			if ( $( '.select2-container--open' ).length ) return
+			
+			var $base = $( '#infoList' ).find( 'input, select, infobtn' ).filter( ( i, el ) => {
+				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled' ) ) return $( el )
+			} );
+			$base.push( ...$( '#infoButton .infobtn' ) );
+			focusNext( $( '#infoOverlay' ), $base, 'focus', key );
+			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
+			break
+		case ' ':
+			var $focus = $( '#infoOverlay' ).find( ':focus' );
+			if ( ! $focus.is( 'input:checkbox, input:radio, select, .infobtn' ) ) return
+			
+			if ( $focus.is( 'select' ) ) $focus = $focus.next();
+			$focus.trigger( 'click' );
+			break
 		case 'Enter':
-			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).trigger( 'click' );
-			break;
+			if ( V.local || $( 'textarea' ).is( ':focus' ) ) return
+			
+			$( '#infoButton' ).find( ':focus' ).trigger( 'click' );
+			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );
-			break;
-		case 'ArrowLeft':
-		case 'ArrowRight':
-			var activeinput = $( document.activeElement ).attr( 'type' );
-			if ( [ 'text', 'number', 'password', 'range', 'textarea' ].includes( activeinput ) ) return
-			
-			var $tabactive = $( '#infoTab a.active' );
-			if ( key === 'ArrowLeft' ) {
-				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).trigger( 'click' ) : $tabactive.prev().trigger( 'click' );
-			} else {
-				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).trigger( 'click' ) : $tabactive.next().trigger( 'click' );
-			}
-			break;
+			break
 	}
+} ).on( 'click', '#infoList', function() {
+	$( '#infoList input' ).removeClass( 'focus' );
+	$( '.infobtn, .filebtn' ).removeClass( 'active' );
+} ).press( '#infoIcon', function() { // usage
+	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
 } );
 	
 I = { active: false }
 
 function info( json ) {
 	infoClearTimeout( 'all' );
+	$( '.menu' ).addClass( 'hide' );
 	V.timeout = {}
 	local(); // flag for consecutive info
 	I = json;
@@ -218,6 +262,7 @@ function info( json ) {
 	if ( htmlbutton ) {
 		$( '#infoButton' )
 			.html( htmlbutton )
+			.find( '.infobtn' ).prop( 'tabindex', 0 )
 			.removeClass( 'hide' );
 	} else {
 		$( '#infoButton' ).remove();
@@ -319,7 +364,7 @@ function info( json ) {
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		infoButtonWidth();
-		$( '#infoOverlay' ).focus();
+		$( '#infoOverlay' ).trigger( 'focus' );
 		return
 	}
 	
@@ -460,7 +505,8 @@ function info( json ) {
 		// set at current scroll position
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		I.active = true;
-		'focus' in I ? $inputbox.eq( I.focus ).focus() : $( '#infoOverlay' ).focus();
+		V.focus  = $( document.activeElement ); // store current focused
+		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoButtonWidth();
 		// set width: text / password / textarea
@@ -567,7 +613,6 @@ function infoButtonCommand( fn, cancel ) {
 	if ( cancel ) delete I.oknoreset;
 	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
-	I = { active: false }
 	infoReset();
 }
 function infoButtonWidth() {
@@ -764,6 +809,9 @@ function infoReset() {
 		.removeAttr( 'style' )
 		.empty();
 	$( 'body' ).css( 'overflow-y', '' );
+	setTimeout( () => I = { active: false }, 0 );
+	if ( ! V.focus ) V.focus = $( 'body' );
+	V.focus.trigger( 'focus' ); // restore previous focused
 }
 function infoSetValues() {
 	var $this, type, val;
@@ -996,17 +1044,21 @@ function selectSet( $select ) {
 		if ( $( '#infoList #eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	$select
-		.select2( options )
-		.on( 'select2:open',  () => { // fix: scroll on info - set current value 3rd from top
+		.select2( options ).on( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
 			local(); // fix: onblur / onpagehide
+			V.select2 = true;
 			setTimeout( () => {
 				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
-				if ( ! navigator.maxTouchPoints ) scroll -= 12;
+				if ( navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
-		} )
-		.on( 'select2:closing', local ) // fix: onblur / onpagehide
-		.each( ( i, el ) => {
+		} ).on( 'select2:closing', function() {
+			local(); // fix: onblur / onpagehide / Enter
+			setTimeout( () => {
+				V.select2 = false;
+				$( this ).trigger( 'focus' );
+			}, V.select2 ? 1200 : 0 );
+		} ).each( ( i, el ) => {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
 		} );
@@ -1119,8 +1171,7 @@ function volumeSet( type ) { // type: mute / unmute
 	V.volumeactive = true;
 	setTimeout( () => V.volumeactive = false, 300 );
 	if ( V.drag || V.press ) type = 'dragpress';
-	var card = S.btreceiver ? 'btreceiver' : S.card;
-	bash( [ 'volume', V.volumecurrent, S.volume, S.control, card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
+	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {
@@ -1222,6 +1273,7 @@ function bash( args, callback, json ) {
 	);
 }
 function bashConsoleLog( data ) {
+	console.log( '%cDebug:', "color:red" );
 	if ( typeof data === 'string' ) {
 		console.log( JSON.parse( data ) );
 		console.log( "websocat ws://127.0.0.1:8080 <<< '"+ data +"'" );
@@ -1234,10 +1286,40 @@ function bashConsoleLog( data ) {
 }
 
 $( '#debug' ).press( function() {
-	V.debug = ! V.debug;
-	$( '#debug' ).toggleClass( 'bgm' );
-	console.log( 'Debug mode - '+ ( V.debug ? 'Send no commands.' : 'Disabled.' ) );
-	if ( ! V.debug ) refreshData();
+	if ( V.debug ) {
+		V.debug = false;
+		refreshData();
+		$( '#debug' ).removeClass( 'bgm' );
+		console.log( '\x1B[36mDebug:\x1B[0m Disabled' );
+		return
+	}
+	
+	bash( [ 'cmd.sh', 'cachetype' ], type => {
+		info( {
+			  icon  : 'flash'
+			, title : 'Debug / Cache'
+			, list  : [ '', 'radio', { kv: {
+				  'Debug'                  : 'debug'
+				, 'Cache - static'         : 'static'
+				, 'Cache <c>?v=time()</c>' : 'time'
+			}, sameline: false } ]
+			, okno  : true
+			, beforeshow : () => {
+				$( '#infoList input[value='+ type +']' ).prop( { checked: true, disabled: true } );
+				$( '#infoList input' ).on( 'click', function() {
+					type = $( this ).val();
+					if ( type === 'debug' ) {
+						V.debug = true;
+						$( '#debug' ).addClass( 'bgm' );
+						console.log( '\x1B[36mDebug:\x1B[0m Data to server blocked' );
+						$( '#infoX' ).trigger( 'click' );
+					} else {
+						bash( [ 'cmd.sh', 'cachebust', type === 'time', 'CMD TIME' ], location.reload() );
+					}
+				} );
+			}
+		} );
+	} );
 } );
 $( '.page-icon' ).press( () => location.reload() );
 $( '.col-r .switch' ).press( function( e ) {
@@ -1254,7 +1336,7 @@ $( '#data' ).on( 'click', '.copy', function() {
 	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
 	// copy2clipboard - for non https which cannot use clipboard API
 	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-	$( '#error' ).focus().select();
+	$( '#error' ).trigger( 'focus' ).select();
 	document.execCommand( 'copy' );
 	$( '#error' ).remove();
 } );

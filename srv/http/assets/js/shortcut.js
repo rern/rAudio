@@ -1,117 +1,50 @@
 // keyboard controls
-$( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() page scroll
-	if ( V.local || I.active ) return
-	
-	var key = e.key;
-	if ( key === 'Backspace' && ! $( 'input:focus, textarea:focus' ).length ) {
-		if ( V.library ) {
-			$( '#button-lib-back' ).trigger( 'click' );
-		} else if ( V.playlist ) {
-			$( '#button-pl-back' ).trigger( 'click' );
-		}
-		return
-	}
-	
-	if ( key === 'Enter' ) {
-		if ( ! $( '#settings' ).hasClass( 'hide' ) ) {
-			var $menu = $( '#settings' ).find( 'a.active' );
-			if ( ! $menu.length ) $menu = $( '#settings' ).find( '.submenu.active' );
-			var href = $menu.prop( 'href' );
-			href ? location.href = href : $menu.trigger( 'click' );
-			return
-		}
-	}
-	
-	if ( key === 'Escape' ) {
-		if ( $( '.menu:not(.hide)' ).length ) {
-			$( '.menu' ).addClass( 'hide' );
-			if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
-		} else {
-			$( '#button-settings' ).trigger( 'click' );
-		}
-		return
-	}
-		
-	if ( key === 'Home' ) {
-		if ( V.library ) {
-			$( '#library' ).trigger( 'click' );
-		} else if ( V.playlist ) {
-			$( '#playlist' ).trigger( 'click' );
-		}
-		return
-	}
-	
-	if ( key === '#' || key >= 'a' && key <= 'z' ) { // index bar
-		key = key.toUpperCase();
-		if ( V.library && ! $( '#lib-list .index' ).hasClass( 'hide' ) ) {
-			$( '#lib-index' ).find( 'wh:contains('+ key +')' ).trigger( 'click' );
-			if ( V.albumlist ) {
-				$( '#lib-list .coverart.active' ).removeClass( 'active' );
-				if ( key !== '#' ) {
-					$( '#lib-list .coverart[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
-				} else {
-					$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
-				}
-			} else {
-				$( '#lib-list li.active' ).removeClass( 'active' );
-				if ( key !== '#' ) {
-					$( '#lib-list li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
-				} else {
-					$( '#lib-list li' ).eq( 0 ).addClass( 'active' );
-				}
-			}
-		} else if ( V.playlist && ! $( '#pl-list .index' ).hasClass( 'hide' ) ) {
-			$( '#pl-savedlist li.active' ).removeClass( 'active' );
-			if ( key !== '#' ) {
-				$( '#pl-savedlist li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
-			} else {
-				$( '#pl-savedlist li' ).eq( 0 ).addClass( 'active' );
-			}
-		}
-		return
-	}
-	
-	if ( V.colorpicker ) return
+var keyarrow = {
+	  ArrowLeft  : 'previous'
+	, ArrowRight : 'next'
+	, ArrowUp    : 'volup'
+	, ArrowDown  : 'voldn'
+}
+var keymedia = {
+	  MediaNextTrack     : 'next'
+	, MediaPause         : 'pause'
+	, MediaPlay          : 'play'
+	, MediaPlayPause     : 'toggle'
+	, MediaPreviousTrack : 'previous'
+	, MediaStop          : 'stop'
+	, MediaTrackPrevious : 'previous'
+	, MediaTrackNext     : 'next'
+	, ' '                : 'toggle'
+}
+if ( localhost ) {
+	keymedia.AudioVolumeDown = 'voldn';
+	keymedia.AudioVolumeMute = 'volmute';
+	keymedia.AudioVolumeUp   = 'volup';
+}
 
-	var keyevent = {
-		  MediaNextTrack     : 'next'
-		, MediaPause         : 'pause'
-		, MediaPlay          : 'play'
-		, MediaPreviousTrack : 'previous'
-		, MediaStop          : 'stop'
-		, MediaTrackPrevious : 'previous'
-		, MediaTrackNext     : 'next'
+$( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
+	if ( V.local || I.active || V.colorpicker ) return
+	
+	var key   = e.key;
+	var arrow = key in keyarrow;
+	var media = key in keymedia;
+	if ( [ 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
+	switch ( key ) {
+		case 'Tab':
+			tabNext( e.shiftKey );
+			return
+// settings -----------------------------------------------------------
+		case 'Escape':
+			if ( $( '.menu:not(.hide)' ).length ) {
+				$( '.menu' ).addClass( 'hide' );
+				if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
+			} else {
+				$( '#button-settings' ).trigger( 'click' );
+			}
+			return
 	}
-	if ( localhost ) {
-		keyevent.AudioVolumeDown = 'voldn';
-		keyevent.AudioVolumeMute = 'volmute';
-		keyevent.AudioVolumeUp   = 'volup';
-	}
-	if ( ( key === ' ' && ! [ 'input', 'password', 'textarea' ].includes( e.target.localName ) ) || key === 'MediaPlayPause' ) {
-		var btn = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
-		$( '#'+ btn ).trigger( 'click' );
-		e.preventDefault();
-		return
-		
-	} else if ( key === 'Tab' ) {
-		e.preventDefault();
-		if ( V.library ) {
-			$( '#playback' ).trigger( 'click' );
-		} else if ( V.playback ) {
-			$( '#playlist' ).trigger( 'click' );
-		} else {
-			$( '#library' ).trigger( 'click' );
-		}
-		return
-		
-	} else {
-		$( '#'+ keyevent[ key ] ).trigger( 'click' );
-		if ( key.slice( 5 ) === 'Media' ) return
-		
-	}
-	// context menu
-	var $contextmenu = $( '.contextmenu:not( .hide )' );
-	if ( ! $contextmenu.length ) $contextmenu = $( '#settings:not( .hide )' );
+// context menu -------------------------------------------------------
+	var $contextmenu = $( '.menu:not( .hide )' );
 	if ( $contextmenu.length ) {
 		if ( V.library ) {
 			var $liactive = $( '#lib-list li.active' );
@@ -138,17 +71,16 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 					$( '.submenu' ).removeClass( 'active' );
 					if ( V.playlist ) $( '#pl-list li' ).removeClass( 'lifocus' );
 				}
-				break;
+				return
 			case 'ArrowRight':
 				var $next = $menuactive.next();
 				if ( $next.hasClass( 'submenu' ) ) {
 					$menuactive.removeClass( 'active' );
 					$next.addClass( 'active' );
 				}
-				break;
+				return
 			case 'ArrowUp':
 			case 'ArrowDown':
-				e.preventDefault();
 				if ( $( '.submenu.active' ).length ) {
 					$menuactive = $( '.submenu.active' );
 					if ( key === 'ArrowDown' ) {
@@ -182,103 +114,99 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 						}
 					}
 				}
-				break;
-			case 'Enter':  // context menu
+				return
+			case ' ':
+			case 'Enter':
 				if ( $( '.menu:not(.hide)' ).length ) $contextmenu.find( '.active' ).trigger( 'click' );
-				break;
+				return
 		}
+	}
+// media key ----------------------------------------------------------
+	if ( media ) {
+		var cmd = keymedia[ key ];
+		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
+		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
-	
+// common key -------------------------------------------------------
+	switch ( key ) {
+		case 'Backspace':
+			if ( V.library ) {
+				$( '#button-lib-back' ).trigger( 'click' );
+			} else if ( V.playlist ) {
+				$( '#button-pl-back' ).trigger( 'click' );
+			}
+			return
+		case '#': // index bar
+		case 'a':
+		case 'z':
+			key = key.toUpperCase();
+			if ( V.library && ! $( '#lib-list .index' ).hasClass( 'hide' ) ) {
+				$( '#lib-index' ).find( 'wh:contains('+ key +')' ).trigger( 'click' );
+				if ( V.albumlist ) {
+					$( '#lib-list .coverart.active' ).removeClass( 'active' );
+					if ( key !== '#' ) {
+						$( '#lib-list .coverart[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
+					} else {
+						$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
+					}
+				} else {
+					$( '#lib-list li.active' ).removeClass( 'active' );
+					if ( key !== '#' ) {
+						$( '#lib-list li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
+					} else {
+						$( '#lib-list li' ).eq( 0 ).addClass( 'active' );
+					}
+				}
+			} else if ( V.playlist && ! $( '#pl-list .index' ).hasClass( 'hide' ) ) {
+				$( '#pl-savedlist li.active' ).removeClass( 'active' );
+				if ( key !== '#' ) {
+					$( '#pl-savedlist li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
+				} else {
+					$( '#pl-savedlist li' ).eq( 0 ).addClass( 'active' );
+				}
+			}
+			return
+	}
+// arrow key -------------------------------------------------------
 	if ( V.playback ) {
-		var key_btn = {
-			  ArrowLeft  : 'previous'
-			, ArrowRight : 'next'
-			, ArrowUp    : 'volup'
-			, ArrowDown  : 'voldn'
+		if ( arrow ) {
+			$( '#'+ keyarrow[ key ] ).trigger( 'click' );
+			return
 		}
-		$( '#'+ key_btn[ key ] ).trigger( 'click' );
 	} else if ( V.library ) {
 		if ( ! $( '#lib-search' ).hasClass( 'hide' ) ) return
 		
 		// home /////////////////////////////////////////
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
-			var $blupdn = $( '.lib-mode.updn' );
-			if ( ! $blupdn.length ) {
-				$( '.lib-mode:not( .hide )' ).eq( 0 ).addClass( 'updn' );
-				return
-			}
-			
-			switch ( key ) {
-				case 'ArrowLeft':
-					var $div = $( '.lib-mode.updn' ).prevAll( ':not( .hide )' ).eq( 0 );
-					$( '.lib-mode' ).removeClass( 'updn' );
-					if ( ! $div.length ) $div = $( '.lib-mode:not( .hide )' ).last();
-					$div.addClass( 'updn' );
-					break;
-				case 'ArrowRight':
-					var $div = $( '.lib-mode.updn' ).nextAll( ':not( .hide )' ).eq( 0 );
-					$( '.lib-mode' ).removeClass( 'updn' );
-					if ( ! $div.length ) $div = $( '.lib-mode:not( .hide )' ).eq( 0 );
-					$div.addClass( 'updn' );
-					break;
-				case 'Enter':
-					$( '.lib-mode.updn .mode' ).trigger( 'click' );
-					break;
+			if ( arrow ) {
+				focusNext( $( '#lib-mode-list' ), $( '.lib-mode:not( .hide ):not( .nodata )' ), 'updn', key );
+			} else if ( key === 'Enter' ) {
+				$( '.lib-mode.updn' ).trigger( 'click' );
 			}
 			return
 		}
 		
-		if ( V.albumlist ) { // album
-			if ( ! $( '#lib-list .coverart.active' ).length ) {
-				$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
-				return
-			}
-			
-			var $active = $( '#lib-list .coverart.active' );
-			switch ( key ) {
-				case 'ArrowLeft':
-				case 'ArrowRight':
-					if ( arrowL && $active.index() === 0 ) return
-					if ( arrowR && $active.index() === $( '#lib-list .coverart' ).length + 1 ) return
-					
-					var $next = arrowR ? $active.next() : $active.prev();
-					$active.removeClass( 'active' );
-					$next.addClass( 'active' );
-					var rect  = $next[ 0 ].getBoundingClientRect();
-					var wH    = $( window ).height();
-					var eH    = $next.height();
-					var top   = $next.offset().top;
-					if ( rect.bottom > 0 && rect.bottom < ( wH - eH ) ) {
-						var scroll = top - ( V.bars ? 80 : 40 );
-					} else if ( rect.top > 0 && rect.top < ( wH - eH ) ) {
-						var scroll = top - eH;
-					}
-					$( 'html, body' ).scrollTop( scroll );
-					break;
-				case 'ArrowUp':
-					$( '#button-lib-back' ).trigger( 'click' );
-					break;
-				case 'Enter':
-					V.iactive = $( '#lib-list .coverart.active' ).index();
-					$active.trigger( 'click' );
-					break;
+		if ( V.albumlist && ! V.librarytrack ) { // album
+			if ( arrow ) {
+				focusNext( $( '#lib-list' ), $( '#lib-list .coverart' ), 'active', key )
+			} else if ( key === 'Enter' ) {
+				var $active = $( '#lib-list .coverart.active' );
+				V.iactive   = $active.index();
+				$active.trigger( 'click' );
 			}
 			return
 		}
 		
 		switch ( key ) {
-			case 'ArrowLeft': // back button
-				$( '#button-lib-back' ).trigger( 'click' );
-				return
 			case 'ArrowRight': // show context menu
 				$( '#lib-list li.active .li-icon' ).trigger( 'click' );
 				return
 			// list ///////////////////////////////////////
 			case 'ArrowUp':
 			case 'ArrowDown':
-				scrollUpDown( e, $( '#lib-list' ), key );
-				break;
+				focusNext( $( '#lib-list' ), $( '#lib-list li' ), 'active', key );
+				return;
 			case 'Enter':
 				var $liactive = $( '#lib-list li.active' );
 				if ( $( '.licover' ).length || $( '#lib-list li.mode-webradio' ).length ) {
@@ -289,7 +217,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 				} else {
 					$liactive.trigger( 'click' );
 				}
-				break;
+				return
 		}
 		menuHide();
 	} else if ( V.playlist ) {
@@ -297,72 +225,34 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					scrollUpDown( e, $( '#pl-savedlist' ), key );
-					break;
+					focusNext( $( '#pl-savedlist' ), $( '#pl-savedlist li' ), 'active', key );
+					return
 				case 'ArrowRight':
 					$( '#pl-savedlist li.active .li-icon' ).trigger( 'click' );
-					break;
+					return
 				case 'Enter':
 					$( '#pl-savedlist li.active' ).trigger( 'click' );
-					break;
+					return
 				case 'ArrowLeft':
 					if ( ! $( '.contextmenu:not( .hide )' ).length ) $( '#button-pl-back' ).trigger( 'click' );
-					break;
+					return
 			}
 		} else {
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					var $liactive = $( '#pl-list li.updn' );
-					if ( ! $liactive.length ) $( '#pl-list li.active' ).addClass( 'updn' );
-					scrollUpDown( e, $( '#pl-list' ), key );
-					break;
+					focusNext( $( '#pl-list' ), $( '#pl-list li' ), 'updn', key );
+					return
 				case 'ArrowRight':
 					$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .li-icon' ).trigger( 'click' ) : $( '#pl-list li.active .li-icon' ).trigger( 'click' );
-					break;
+					return
 				case 'Enter':
 					$( '#pl-list li.updn' ).trigger( 'click' );
-					break;
+					return
 				case 'Delete':
 					$( '#button-pl-clear' ).trigger( 'click' );
-					break;
+					return
 			}
 		}
 	}
 } );
-function scrollUpDown( e, $list, key ) {
-	if ( $( '.contextmenu' ).not( '.hide' ).length ) return
-	
-	e.preventDefault();
-	var $li       = $list.find( 'li' );
-	var $liactive = $list.find( 'li.active' );
-	if ( ! $liactive.length ) {
-		$li.first().addClass( 'active' );
-		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 300 );
-		return
-	}
-	
-	var classactive = 'active';
-	if ( $list.prop( 'id' ) === 'pl-list' ) {
-		$liactive   = $list.find( 'li.updn' );
-		classactive = 'updn';
-	}
-	var $linext     = key === 'ArrowUp' ? $liactive.prev( 'li' ) : $liactive.next( 'li' );
-	var barH        = D.bars ? 0 : 40;
-	if ( V.library && $( '.licover' ).length && ! D.hidecover && D.fixedcover ) barH += 230;
-	if ( ! $linext.length ) $linext = key === 'ArrowUp' ? $li.last() : $li.first();
-	$liactive.removeClass( classactive );
-	$linext.addClass( classactive );
-	var litop       = $linext[ 0 ].getBoundingClientRect().top;
-	var libottom    = $linext[ 0 ].getBoundingClientRect().bottom;
-	var licount     = Math.round( ( V.wH - 120 - ( barH * 2 ) ) / 49 );
-	if ( $linext.is( ':first-child' ) ) {
-		$( 'html, body' ).scrollTop( 0 );
-	} else if ( $linext.is( ':last-of-type' ) && libottom > V.wH - 40 - barH ) {
-		$( 'html, body' ).scrollTop( litop - 80 - barH - ( licount - 2 ) * 49 );
-	} else if ( litop < 80 - barH ) {
-		$( 'html, body' ).scrollTop( $( window ).scrollTop() - 120 - V.wH % 49 - barH - ( licount - 3 ) * 49 );
-	} else if ( libottom > V.wH - 40 - barH ) {
-		$( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
-	}
-}

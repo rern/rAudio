@@ -44,7 +44,7 @@
 var E = {};
 [ 'infoOk', 'infoOverlay', 'login', 'pwd', 'toggle' ].forEach( ( el ) => E[ el ] = document.getElementById( el ) );
 
-E.pwd.focus();
+E.pwd.trigger( 'focus' );
 document.body.addEventListener( 'keyup', ( e ) => {
 	if ( e.key === 'Enter' ) E.infoOverlay.classList.contains( 'hide' ) ? E.login.click() : E.infoOk.click();
 } );

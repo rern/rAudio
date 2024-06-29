@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1716733328' );
+	src         : url( '/assets/fonts/rern.woff2?v=1718950827' );
 }
 @font-face {
 	font-family : Lato;
@@ -267,7 +267,8 @@ body {
 .hidden { visibility: hidden }
 @keyframes blinkopaque { 50% { opacity: 0 } }
 .blink { animation: blinkopaque 1.5s linear infinite }
-#loader {
+#loader,
+#fader {
 	position   : fixed;
 	top        : 0;
 	width      : 100%;
@@ -755,6 +756,11 @@ hr {
 #infoList td:last-child { /* chekbox only which has no label */
 	text-align: left;
 }
+#infoList input:not( [ type=range ] ).focus,
+.select2-container.active {
+	outline: 2px solid var(--cgl );
+	outline-offset: 1px;
+}
 #infoList label i {
 	text-align: center;
 	width: 22px;
@@ -1019,6 +1025,10 @@ input[ type=radio ]:disabled {
 input:focus {
 	outline: none;
 }
+.select2-container.focus {
+	outline: 2px solid var(--cgl );
+	outline-offset: 1px;
+}
 @media ( hover:hover ) {
 	#debug { display: block }
 	/* :hover *********************************************************/
@@ -1056,6 +1066,7 @@ input:focus {
 	#infoList textarea:focus-visible {
 		outline: none;
 	}
+	.infobtn:focus-visible,
 	input[ type=radio ]:focus-visible,
 	input[ type=checkbox ]:focus-visible,
 	input[ type=range ]:focus-visible::-webkit-slider-thumb {

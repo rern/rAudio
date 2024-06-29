@@ -43,14 +43,14 @@ foreach( $jsfiles as $file ) {
 }
 if ( ! $page ) { // main
 	$cssp  = [ 'roundslider' ];
-	$css[] = 'main';                                               // appended with js: hovercursor
+	$css   = [ ...$css, 'main', 'hovercursor' ];
 	$jsp   = [ 'jquery', 'lazysizes', 'roundslider', 'Sortable' ]; // loaded with $.getScript: html5colorpicker, pica, qrcode
-	$js    = [ 'common', 'context', 'function', 'main', 'passive' ];
+	$js    = [ 'common', 'context', 'function', 'main', 'passive', 'shortcut' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
-		$css    = [ ...$css, 'select2','equalizer' ];
+		$css    = [ ...$css, 'select2', 'equalizer' ];
 		$jsp[]  = 'select2';
-		$js[]   = 'equalizer';                                     // loaded with $.getScript: shortcut
+		$js[]   = 'equalizer';
 	}
 	$title = 'STATUS';
 } else {         // settings

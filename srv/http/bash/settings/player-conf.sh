@@ -33,7 +33,7 @@ name0=$( getVar name $dirshm/output )
 if [[ -e /proc/asound/card0 ]]; then # not depend on /etc/asound.conf which might be broken from bad script
 	rm -f $dirshm/nosound
 	. $dirsettings/player-devices.sh # >>> $CARD
-else                                   # no sound
+else
 	touch $dirshm/nosound
 	rm -f $dirshm/{amixercontrol,devices,mixers,output}
 	CARD=-1
@@ -164,11 +164,7 @@ done
 
 [[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 
-if [[ $bluetooth && -e $dirsystem/autoplay ]]; then
-	grep -q bluetooth=true $dirsystem/autoplay.conf && $dirbash/cmd.sh mpcplayback
-fi
-
-( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
+( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
 [[ $CARD == -1 && ! $bluetooth ]] && pushStatus && exit
 # --------------------------------------------------------------------

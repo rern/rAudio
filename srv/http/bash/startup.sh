@@ -159,7 +159,7 @@ fi
 touch $dirshm/startup
 
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
-	$dirbash/cmd.sh mpcplayback
+	mpcPlayback play
 fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh

@@ -70,7 +70,12 @@ else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
-	. <( grep -E '^card|^mixer' $dirshm/output )
+	if [[ -e $dirshm/btreceiver ]]; then
+		card='"btreceiver"'
+		mixer=$( < $dirshm/btmixer )
+	else
+		. <( grep -E '^card|^mixer' $dirshm/output )
+	fi
 	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
 		updating_db=true
 	fi

@@ -1,13 +1,3 @@
-function list( args, callback, json ) {
-	$.post(
-		  'playlist' in args  ? 'playlist.php' : 'library.php'
-		, args
-		, callback || null
-		, json || null
-	);
-}
-
-//----------------------------------------------------------------------
 function bio( artist, getsimilar ) {
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
@@ -454,7 +444,7 @@ function displayBars() {
 	var lcd         = ( V.wH <= 320 && V.wW <= 480 ) || ( V.wH <= 480 && V.wW <= 320 );
 	if ( ! D.bars || ( smallscreen && ! D.barsalways ) || lcd ) {
 		$( '#bar-top' ).addClass( 'hide' );
-		$( '#bar-bottom' ).addClass( 'transparent' );
+		$( '#bar-bottom' ).addClass( navigator.maxTouchPoints ? 'hide' : 'transparent' );
 		$( '.page' ).addClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
@@ -799,6 +789,14 @@ function libraryHome() {
 		$( '#lib-path span' ).removeClass( 'hide' );
 		if ( V.color ) $( '#mode-webradio' ).trigger( 'click' );
 	}, 'json' );
+}
+function list( args, callback, json ) {
+	$.post(
+		  'playlist' in args  ? 'playlist.php' : 'library.php'
+		, args
+		, callback || null
+		, json || null
+	);
 }
 function lyricsGet( artist, title, file ) {
 	V.lyricsartist = artist || S.Artist;
@@ -1161,12 +1159,12 @@ function renderLibrary() { // library home
 function renderLibraryCounts() {
 	var songs    = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$( '.lib-mode .mode' ).each( ( i, el ) => {
+	$( '.lib-mode' ).each( ( i, el ) => {
 		var $this = $( el );
-		var mode  = $this.data( 'mode' );
-		var v     = C[ mode ];
+		var $mode  = $this.find( '.mode' );
+		var v     = C[ $mode.data( 'mode' ) ];
 		$this.toggleClass( 'nodata', ! v );
-		if ( typeof v !== 'boolean' ) $( '#mode-'+ mode ).find( 'gr' ).html( v ? v.toLocaleString() : '' );
+		if ( typeof v !== 'boolean' ) $mode.find( 'gr' ).html( v ? v.toLocaleString() : '' );
 	} );
 	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );

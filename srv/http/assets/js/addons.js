@@ -15,6 +15,7 @@ $( '.container' ).on( 'click', '.revision', function() {
 	var hidden = $revisiontext.hasClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
+	$this.toggleClass( 'active' );
 } ).on( 'click', '#list li', function() {
 	alias = $( this ).data( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
@@ -101,7 +102,7 @@ function renderPage() {
 	$.each( S, ( alias, addon ) => {
 		if ( alias === 'status' || ( S.status.hidden.includes( alias ) ) ) return
 		var notverified = S.status.notverified.includes( alias );
-		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +' <i class="i-help"></i></a>' : '';
+		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +'</a>' : '';
 		if ( 'revision' in addon ) {
 			var revision = '<p class="revisiontext hide">';
 			addon.revision.forEach( el => revision += '<gr>•</gr> '+ el +'<br>' );
@@ -132,7 +133,7 @@ function renderPage() {
 		<legend><span class="title${ installed + update }">${ addon.title }</span>${ version }</legend>
 		${ revision }
 		<form class="form-horizontal" data-alias="${ alias }">
-			<p class="detailtext">${ addon.description }<br><a href="${ addon.sourcecode }" class="source" target="_blank">source <i class="i-github"></i></a></p>
+			<p class="detailtext">${ addon.description }<br><a href="${ addon.sourcecode }" class="source" target="_blank" tabindex="-1">source <i class="i-github"></i></a></p>
 			${ button }
 		</form>
 	</div>
@@ -148,5 +149,7 @@ function renderPage() {
 		$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
 		if ( ! S.status.online ) $( '.infobtn' ).addClass( 'disabled' );
 		loaderHide();
+		$( 'a[ href ]' ).prop( 'tabindex', -1 );
+		$( '.infobtn:not(.disabled)' ).prop( 'tabindex', 0 );
 	} );
 }

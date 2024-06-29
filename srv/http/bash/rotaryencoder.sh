@@ -9,10 +9,10 @@ dtoverlay gpio-key gpio=$pins label=PLAYCD keycode=200
 sleep 1
 devinputbutton=$( realpath /dev/input/by-path/*button* )
 evtest $devinputbutton | while read line; do
-	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && $dirbash/cmd.sh mpcplayback
+	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && mpcPlayback
 done &
 
-volumeFunctionSet
+volumeFunctionSet # $fn_volume, $mixer
 if [[ $fn_volume != volumeMpd ]]; then
 	dn=1%-
 	up=1%+

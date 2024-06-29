@@ -1,13 +1,15 @@
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 'x';
-$id_data = [
+$i2s         = [ 'label' => 'Audio - I²S', 'sub' => 'HAT' ];
+$id_data     = [
 	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
 	, 'hddsleep'      => [ 'label' => 'Hard Drive Sleep' ]
 	, 'hostname'      => [ 'label' => 'Player Name',                               'setting' => 'none' ]
-	, 'i2smodule'     => [ 'label' => 'Audio - I²S' ]
+	, 'i2smodule'     => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
+	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
 	, 'lcdchar'       => [ 'label' => 'Character LCD',     'sub' => 'RPLCD' ]
 	, 'mpdoled'       => [ 'label' => 'Spectrum OLED',     'sub' => 'mpd_oled' ]
 	, 'powerbutton'   => [ 'label' => 'Power Button',      'sub' => 'Wiring Pi' ]
@@ -142,35 +144,25 @@ EOF
 htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
 
-$head = [ //////////////////////////////////
-	  'title' => 'GPIO Devices'
-];
-$body = [
-	[
-		  'html'     => <<< EOF
-<div id="divi2smodule">
-	<div class="col-l">
-		<a><span class="label">Audio - I²S</span><gr>HAT</gr></a>{$Fi( 'i2s' )}
-	</div>
-	<div class="col-r">
-		<div id="divi2ssw">
-			<input id="i2ssw" type="checkbox">
-			<div class="switchlabel" for="i2ssw"></div>
-		</div>
-		<div id="divi2sselect">
-			<select id="i2smodule"></select>
-			{$Fi( 'gear setting', 'i2smodule' )}
-		</div>
-		<span class="helpblock hide"><!--
--->I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+$helpi2s = <<< EOF
+I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
  · See  if it's already set: {$FiTab( 'Player' )} Output {$FiLabel( 'Device' )}
 $b_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
-		</span>
-	</div>
-</div>
-EOF
+EOF;
+$head = [ //////////////////////////////////
+	  'title' => 'GPIO Devices'
+];
+$body = [
+	  [
+		  'id'       => 'i2s'
+		, 'help'     => $helpi2s
+	]
+	, [
+		  'id'       => 'i2smodule'
+		, 'input'    => '<select id="i2smodule"></select>'
+		, 'help'     => $helpi2s
 	]
 	, [
 		  'id'       => 'lcdchar'
@@ -388,7 +380,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 }
 ?>
 <div id="divabout" class="section">
-	<a href="https://github.com/rern/rAudio/discussions"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
+	<a href="https://github.com/rern/rAudio/discussions" tabindex="-1"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
 	<div id="logotext">rAudio
 	<br><gr>b y&emsp;r e r n</gr></div>
 	
@@ -408,7 +400,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> · A scripting language for working with HTML Document Object Model on client side<br>
 		<a href="https://jquery.com/">jQuery</a> · A JavaScript library for simplifying HTML DOM tree traversal and manipulation
 	</div>
-	<div class="listtitle">Javascript Plugins: <?=i( 'chevron-down bl' )?></div>
+	<div class="listtitle jsplugins">Javascript Plugins:</div>
 	<div class="list hide"><?=$uihtml?></div>
 	
 	<heading class="subhead">Data</heading>

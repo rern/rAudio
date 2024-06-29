@@ -148,9 +148,6 @@ if ( navigator.maxTouchPoints ) { // swipe
 		e.stopImmediatePropagation();
 		return false
 	} );
-} else {
-	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/hovercursor.css'+ versionHash() +'">' );
-	$.getScript( '/assets/js/shortcut.js' );
 }
 
 $( 'body' ).on( 'click', function( e ) {
@@ -215,7 +212,7 @@ $( '#button-settings' ).on( 'click', function( e ) {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
-} )
+} );
 $( '#settings' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ this.id;
 } ).on( 'click', '.submenu', function() {
@@ -1114,7 +1111,7 @@ $( '#button-lib-search' ).on( 'click', function() { // icon
 	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path' ).css( 'max-width', 40 );
-	$( '#lib-search-input' ).focus();
+	$( '#lib-search-input' ).trigger( 'focus' );
 } );
 $( '#lib-search-btn' ).on( 'click', function() { // search
 	var keyword = $( '#lib-search-input' ).val();
@@ -1214,9 +1211,9 @@ $( '#button-lib-back' ).on( 'click', function() {
 } );
 $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
-} ).on( 'click', '.mode', function() {
+} ).on( 'click', '.lib-mode', function() {
 	var $this = $( this );
-	V.mode    = $this.data( 'mode' );
+	V.mode    = $this.find( '.mode' ).data( 'mode' );
 	$( '#lib-search-close' ).trigger( 'click' );
 	if ( V.mode === 'bookmark' || $this.hasClass( 'nodata' ) ) return
 	
@@ -1477,10 +1474,9 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
-	var active   = $this.hasClass( 'active' );
 	menuHide();
 	if ( ( menushow && V.mode !== 'webradio' && $target.is( '.li-icon' ) ) || $target.is( '.li-icon, .licoverimg' ) ) {
-		if ( ! active ) contextmenuLibrary( $this, $target );
+		contextmenuLibrary( $this, $target );
 		return
 	}
 	
@@ -1744,7 +1740,7 @@ $( '#pl-search-close, #pl-search-btn' ).on( 'click', function() {
 $( '#button-pl-search' ).on( 'click', function() {
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).removeClass( 'hide' );
 	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
-	$( '#pl-search-input' ).focus();
+	$( '#pl-search-input' ).trigger( 'focus' );
 } );
 new Sortable( document.getElementById( 'pl-list' ), {
 	  ghostClass    : 'pl-sortable-ghost'
