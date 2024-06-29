@@ -184,9 +184,9 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			$focus.trigger( 'click' );
 			break
 		case 'Enter':
-			if ( V.local || $( '#infoOk' ).hasClass( 'disabled' ) || $( 'textarea' ).is( ':focus' ) ) return
+			if ( V.local || $( 'textarea' ).is( ':focus' ) ) return
 			
-			$( '#infoOk' ).trigger( 'click' );
+			$( '#infoButton' ).find( ':focus' ).trigger( 'click' );
 			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );
