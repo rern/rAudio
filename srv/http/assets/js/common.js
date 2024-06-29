@@ -126,6 +126,10 @@ function focusNext( $parent, $base, target, key ) {
 		}
 	} );
 	if ( index === bL ) index = 0;
+	if ( $base.eq( index ).hasClass( 'disabled' ) ) {
+		index = back ? index - 1 : index + 1;
+		if ( index === bL ) index = 0;
+	}
 	var $next = $base.eq( index );
 	$parent.find( '.'+ target ).removeClass( target );
 	$next.addClass( target ).trigger( 'focus' );
@@ -165,15 +169,16 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'Tab':
 			if ( $( '.select2-container--open' ).length ) return
 			
-			var $base = $( '#infoList' ).find( 'input, select' ).filter( ( i, el ) => {
+			var $base = $( '#infoList' ).find( 'input, select, infobtn' ).filter( ( i, el ) => {
 				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled' ) ) return $( el )
 			} );
-			focusNext( $( '#infoList' ), $base, 'focus', key );
+			$base.push( ...$( '#infoButton .infobtn' ) );
+			focusNext( $( '#infoOverlay' ), $base, 'focus', key );
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
 		case ' ':
-			var $focus = $( '#infoList .focus' )
-			if ( ! $focus.is( 'input:checkbox, input:radio, select' ) ) return
+			var $focus = $( '#infoOverlay' ).find( ':focus' );
+			if ( ! $focus.is( 'input:checkbox, input:radio, select, .infobtn' ) ) return
 			
 			if ( $focus.is( 'select' ) ) $focus = $focus.next();
 			$focus.trigger( 'click' );
@@ -257,6 +262,7 @@ function info( json ) {
 	if ( htmlbutton ) {
 		$( '#infoButton' )
 			.html( htmlbutton )
+			.find( '.infobtn' ).prop( 'tabindex', 0 )
 			.removeClass( 'hide' );
 	} else {
 		$( '#infoButton' ).remove();
