@@ -336,7 +336,6 @@ $( document ).on( 'keydown', function( e ) {
 			} else if ( ! $( '#fader' ).hasClass( 'hide' ) ) {
 				var $focus = $( '#bar-bottom div:focus' );
 				if ( $focus.length ) tabNext( key === 'ArrowLeft' );
-				if ( page === 'camilla' ) $( '#bar-bottom div:focus' ).addClass( 'active' ).trigger( 'click' );
 			}
 			break
 		case ' ':
