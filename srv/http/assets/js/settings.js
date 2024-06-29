@@ -378,6 +378,11 @@ $( document ).on( 'keydown', function( e ) {
 		case 'x':
 			if ( e.ctrlKey ) $( '.close' ).trigger( 'click' );
 			break
+		case 'MediaPause':
+		case 'MediaPlay':
+		case 'MediaPlayPause':
+			if ( [ 'camilla', 'player' ].includes( page ) ) $( '.playback' ).trigger( 'click' );
+			break
 	}
 } );
 $( '.page-icon' ).on( 'click', function() {
