@@ -734,7 +734,7 @@ input.disabled + .switchlabel:after {
 		background: var( --cg );
 	}
 	#bar-bottom div.active:focus-visible {
-		background: var( --cm );
+		background: var( --cml );
 	}
 	.menu a.active {
 		background: var( --cgl );
