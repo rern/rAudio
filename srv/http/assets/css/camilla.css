@@ -261,11 +261,11 @@ tr .i-remove {
 .tab li i {
 	margin: 0 !important;
 }
-.tab li.active {
-	background: var( --cgd );
+.tab li:focus {
+	background: var( --cga );
 }
-.tab li:not(.active, .main):hover {
-	background: unset !important;
+.tab li:not( :focus, .main ):hover {
+	background: var( --cgd );
 }
 .tab .divdest {
 	padding-bottom: 20px;

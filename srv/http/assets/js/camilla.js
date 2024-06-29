@@ -2072,12 +2072,11 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
 	var $this  = $( this );
 	V.li       = $this.parent();
-	var active = V.li.hasClass( 'active' );
 	$( '#menu' ).addClass( 'hide' );
-	$( '#'+ V.tab +' li' ).removeClass( 'active' );
-	if ( active ) return
+	$( '#'+ V.tab +' li' ).removeClass( 'focus' );
+	if ( V.li.hasClass( 'focus' ) ) return
 	
-	V.li.addClass( 'active' );
+	V.li.addClass( 'focus' );
 	contextMenu();
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
