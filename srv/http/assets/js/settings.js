@@ -367,7 +367,7 @@ $( document ).on( 'keydown', function( e ) {
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
 				var $focus = $( '#bar-bottom div.active' );
 				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );
-				$focus.focus();
+				$focus.trigger( 'focus' );
 			}
 			break
 		case 'Tab':

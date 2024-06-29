@@ -1111,7 +1111,7 @@ $( '#button-lib-search' ).on( 'click', function() { // icon
 	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path' ).css( 'max-width', 40 );
-	$( '#lib-search-input' ).focus();
+	$( '#lib-search-input' ).trigger( 'focus' );
 } );
 $( '#lib-search-btn' ).on( 'click', function() { // search
 	var keyword = $( '#lib-search-input' ).val();
@@ -1740,7 +1740,7 @@ $( '#pl-search-close, #pl-search-btn' ).on( 'click', function() {
 $( '#button-pl-search' ).on( 'click', function() {
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).removeClass( 'hide' );
 	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
-	$( '#pl-search-input' ).focus();
+	$( '#pl-search-input' ).trigger( 'focus' );
 } );
 new Sortable( document.getElementById( 'pl-list' ), {
 	  ghostClass    : 'pl-sortable-ghost'

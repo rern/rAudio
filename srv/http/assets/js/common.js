@@ -128,7 +128,7 @@ function focusNext( $parent, $base, target, key ) {
 	if ( index === bL ) index = 0;
 	var $next = $base.eq( index );
 	$parent.find( '.'+ target ).removeClass( target );
-	$next.addClass( target ).focus();
+	$next.addClass( target ).trigger( 'focus' );
 	if ( I.active ) {
 		if ( $next.is( 'input:text, input[type=number], input:password, textarea' ) ) $next.select();
 	} else {
@@ -140,7 +140,7 @@ function tabNext( back ) {
 	var $next    = back ? $current.prev() : $current.next();
 	var $tabs    = $( '#bar-bottom' ).children();
 	if ( ! $next.length ) $next = back ? $tabs.last() : $tabs.first();
-	page ? $next.focus() : $next.trigger( 'click' );
+	page ? $next.trigger( 'focus' ) : $next.trigger( 'click' );
 }
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
@@ -169,7 +169,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled' ) ) return $( el )
 			} );
 			focusNext( $( '#infoList' ), $base, 'focus', key );
-			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).focus();
+			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
 		case ' ':
 			var $focus = $( '#infoList .focus' )
@@ -358,7 +358,7 @@ function info( json ) {
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		infoButtonWidth();
-		$( '#infoOverlay' ).focus();
+		$( '#infoOverlay' ).trigger( 'focus' );
 		return
 	}
 	
@@ -500,7 +500,7 @@ function info( json ) {
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		I.active = true;
 		V.focus  = $( document.activeElement ); // store current focused
-		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).focus();
+		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoButtonWidth();
 		// set width: text / password / textarea
@@ -805,7 +805,7 @@ function infoReset() {
 	$( 'body' ).css( 'overflow-y', '' );
 	setTimeout( () => I = { active: false }, 0 );
 	if ( ! V.focus ) V.focus = $( 'body' );
-	V.focus.focus(); // restore previous focused
+	V.focus.trigger( 'focus' ); // restore previous focused
 }
 function infoSetValues() {
 	var $this, type, val;
@@ -1050,8 +1050,8 @@ function selectSet( $select ) {
 			local(); // fix: onblur / onpagehide / Enter
 			setTimeout( () => {
 				V.select2 = false;
-				$( this ).focus();
-			}, V.select2 ? 1000 : 0 );
+				$( this ).trigger( 'focus' );
+			}, V.select2 ? 1200 : 0 );
 		} ).each( ( i, el ) => {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
@@ -1330,7 +1330,7 @@ $( '#data' ).on( 'click', '.copy', function() {
 	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
 	// copy2clipboard - for non https which cannot use clipboard API
 	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-	$( '#error' ).focus().select();
+	$( '#error' ).trigger( 'focus' ).select();
 	document.execCommand( 'copy' );
 	$( '#error' ).remove();
 } );

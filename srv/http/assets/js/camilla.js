@@ -1082,7 +1082,7 @@ var render    = {
 		$( '.entries:not( .hide ) li, .slider .thumb, .lihead .i-add, .lihead .i-back' ).prop( 'tabindex', 0 );
 		setTimeout( () => $( '.entries.hide li, .lihead' ).removeAttr( 'tabindex' ), 300 );
 		if ( V.focused !== 'undefined' ) {
-			$( '.entries li' ).eq( V.focused ).focus();
+			$( '.entries li' ).eq( V.focused ).trigger( 'focus' );
 			delete V.focused;
 		}
 	}
