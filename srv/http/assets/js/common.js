@@ -140,7 +140,12 @@ function tabNext( back ) {
 	var $next    = back ? $current.prev() : $current.next();
 	var $tabs    = $( '#bar-bottom' ).children();
 	if ( ! $next.length ) $next = back ? $tabs.last() : $tabs.first();
-	page ? $next.trigger( 'focus' ) : $next.trigger( 'click' );
+	if ( page ) {
+		if ( $next.hasClass( 'active' ) ) $next = back ? $next.prev() : $next.next();
+		$next.trigger( 'focus' );
+	} else {
+		$next.trigger( 'click' );
+	}
 }
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
