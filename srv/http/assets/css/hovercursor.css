@@ -165,3 +165,13 @@ li:not( .licover ),
 #lib-path a:last-of-type:hover {
 	color: var( --cw );
 }
+.content-top > i:focus-visible,
+#pl-manage i:focus-visible {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	margin: 5px;
+	border-radius: 50%;
+	outline: 2px solid var(--cgl );
+	outline-offset: 1px;
+}

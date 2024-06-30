@@ -151,8 +151,9 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<?=i( 'library active page-icon', 'button-library' )
-		  .i( 'refresh-library',          'button-lib-update' )
-		  .i( 'search',                   'button-lib-search' )?>
+		  .i( 'search',                   'button-lib-search' )
+		  .i( 'back',                     'button-lib-back' )
+		  .i( 'refresh-library',          'button-lib-update' )?>
 		<div id="lib-search" class="hide">
 			<div class="input-group">
 				<input id="lib-search-input" type="text">
@@ -161,7 +162,6 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		</div>
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
-			<?=i( 'back', 'button-lib-back' )?>
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
 			<span class="lipath"></span>
@@ -259,15 +259,15 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
 		<?=i( 'playlist active page-icon', 'button-playlist' )
-		  .i( 'back hide',                 'button-pl-back' )
-		  .i( 'playlists',                 'button-pl-playlists' )?>
+		  .i( 'back hide',                 'button-pl-back' )?>
 		<div id="pl-manage" class="playlist">
 			<?=i( 'flash',                 'button-pl-consume' )
 			  .i( 'librandom',             'button-pl-librandom' )
 			  .i( 'shuffle pllength',      'button-pl-shuffle' )
 			  .i( 'minus-circle pllength', 'button-pl-clear' )
+			  .i( 'save-plus pllength',    'button-pl-save' )
 			  .i( 'search pllength',       'button-pl-search' )
-			  .i( 'save-plus pllength',    'button-pl-save' )?>
+			  .i( 'playlists',             'button-pl-playlists' )?>
 		</div>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
 			<div class="input-group">
@@ -302,6 +302,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	<textarea id="lyricstextarea" class="lyricstext"></textarea>
 	<div id="lyricsfade"></div>
 </div>
+<div id="fader" class="hide"></div>
 <div id="bar-bottom">
 	<?=i( 'library', 'library' ).i( 'playback', 'playback' ).i( 'playlist', 'playlist' )?>
 </div>

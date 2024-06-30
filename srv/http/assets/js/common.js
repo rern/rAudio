@@ -145,6 +145,8 @@ function focusNext( $tabs, target, key ) {
 	} else if ( $parent.is( '#bar-bottom' ) ) {
 		if ( ! page ) $next.trigger( 'click' );
 	} else {
+		if ( $parent.is( '.content-top' ) ) return
+		
 		$next[ 0 ].scrollIntoView( { block: 'center' } );
 	}
 }

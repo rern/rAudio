@@ -30,11 +30,26 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	var media = key in keymedia;
 	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
 	switch ( key ) {
+/*		case 'Alt':
+			var $fader = $( '#fader' );
+			var $tabs = V.library ? $( '#button-lib-update, #button-lib-search' ) : $( '#pl-manage i' );
+			if ( $fader.hasClass( 'hide' ) ) {
+				$fader.removeClass( 'hide' );
+				var $focus = $tabs.find( '.focus' );
+				$tabs.prop( 'tabindex', 0 );
+				focusNext( $tabs, 'focus', key );
+			} else {
+				$( document.activeElement ).trigger( 'blur' );
+				$tabs.removeClass( 'focus' );
+				$fader.addClass( 'hide' );
+			}
+			return*/
 		case 'Tab':
+			if ( ! $( '#fader' ).hasClass( 'hide' ) ) return
+			
 			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
 			return
 // settings -----------------------------------------------------------
-		case 'Alt':
 		case 'Escape':
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
@@ -44,13 +59,29 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			}
 			return
 	}
+/*	if ( ! $( '#fader' ).hasClass( 'hide' ) ) {
+		var $tabs = V.library ? $( '#page-library .content-top > i:not( .page-icon )' ) : $( '#pl-manage i' );
+		switch ( key ) {
+			case 'ArrowLeft':
+			case 'ArrowRight':
+				focusNext( $tabs, 'focus', key );
+				break
+			case ' ':
+			case 'Enter':
+				$( document.activeElement ).trigger( 'click' )
+				$tabs.removeClass( 'focus' );
+				$( '#fader' ).addClass( 'hide' );
+				break
+		}
+		return
+	}*/
 // context menu -------------------------------------------------------
-	var $contextmenu = $( '.menu:not( .hide )' );
-	if ( $contextmenu.length ) {
+	var $menu = $( '.menu:not( .hide )' );
+	if ( $menu.length ) {
 		if ( arrow ) {
-			focusNext( $contextmenu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
+			focusNext( $menu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
 		} else if ( [ ' ', 'Enter' ].includes( key ) ) {
-			$contextmenu.find( '.active' ).trigger( 'click' );
+			$menu.find( '.active' ).trigger( 'click' );
 		}
 		return
 	}

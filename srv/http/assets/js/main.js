@@ -1107,7 +1107,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 	} );
 } );
 $( '#button-lib-search' ).on( 'click', function() { // icon
-	$( '#lib-path span, #button-lib-back, #button-lib-search' ).addClass( 'hide' );
+	$( '#lib-path span, #button-lib-back, #button-lib-search, #button-lib-update' ).addClass( 'hide' );
 	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path' ).css( 'max-width', 40 );
@@ -1157,7 +1157,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	$( '#lib-search, #lib-search-btn' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
-	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
+	$( '#lib-path span, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-search-close' ).empty();
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
