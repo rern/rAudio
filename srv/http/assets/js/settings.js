@@ -313,7 +313,7 @@ $( document ).on( 'keydown', function( e ) {
 			}
 			
 			var index = 0;
-			var $base = $( '[ tabindex=0 ]' ).filter( ( i, el ) => {
+			var $tabs = $( '[ tabindex=0 ]' ).filter( ( i, el ) => {
 				if ( $( el ).parents( '.section' ).hasClass( 'hide' )
 					|| $( el ).parents( '.row' ).hasClass( 'hide' )
 					|| $( el ).is( '.setting.hide' )
@@ -321,7 +321,7 @@ $( document ).on( 'keydown', function( e ) {
 					
 				return $( el )
 			} );
-			focusNext( $base, 'focus', key, '.container' );
+			focusNext( $tabs, 'focus', key );
 			break
 		case 'ArrowLeft':
 		case 'ArrowRight':
@@ -352,7 +352,9 @@ $( document ).on( 'keydown', function( e ) {
 			$( '#fader' ).addClass( 'hide' );
 			$( '#bar-bottom div' ).removeClass( 'focus' ).blur();
 			break
+		case 'Alt':
 		case 'Escape':
+			e.preventDefault();
 			if ( menu ) {
 				$( '.menu' ).addClass( 'hide' );
 			} else if ( V.select2 ) {

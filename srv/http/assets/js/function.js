@@ -521,7 +521,12 @@ function displaySubMenu() {
 		.toggleClass( 'i-camilladsp', D.camilladsp )
 		.toggleClass( 'i-equalizer', D.equalizer );
 	D.dsp = D.camilladsp || D.equalizer;
-	[ 'dsp', 'logout', 'relays', 'snapclient', 'multiraudio' ].forEach( el => $( '#'+ el ).prev().toggleClass( 'sub', D[ el ] ) ); // submenu toggled by css .settings + .submenu
+	[ 'dsp', 'logout', 'multiraudio', 'relays', 'screenoff', 'snapclient' ].forEach( el => {
+		var enabled = D[ el ];
+		$( '#'+ el )
+			.toggleClass( 'hide', ! enabled )
+			.prev().toggleClass( 'sub', enabled );
+	} ); // submenu toggled by css .settings + .submenu
 	if ( localhost ) $( '#power' ).addClass( 'sub' );
 }
 function guideHide() {

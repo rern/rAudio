@@ -28,12 +28,13 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	var key   = e.key;
 	var arrow = key in keyarrow;
 	var media = key in keymedia;
-	if ( [ 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
+	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
 	switch ( key ) {
 		case 'Tab':
 			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
 			return
 // settings -----------------------------------------------------------
+		case 'Alt':
 		case 'Escape':
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
@@ -46,80 +47,12 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // context menu -------------------------------------------------------
 	var $contextmenu = $( '.menu:not( .hide )' );
 	if ( $contextmenu.length ) {
-		if ( V.library ) {
-			var $liactive = $( '#lib-list li.active' );
-		} else if ( V.playlist ) {
-			if ( ! V.savedpl ) {
-				var $liactive = $( '#pl-list li.updn' );
-				if ( ! $liactive.length ) $liactive = $( '#pl-list li.active' );
-			} else {
-				var $liactive = $( '#pl-savedlist li.active' );
-			}
+		if ( arrow ) {
+			focusNext( $contextmenu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
+		} else if ( [ ' ', 'Enter' ].includes( key ) ) {
+			$contextmenu.find( '.active' ).trigger( 'click' );
 		}
-		var $menuactive = $contextmenu.find( 'a.active' );
-		var $menufirst  = $contextmenu.find( 'a:not( .hide )' ).eq( 0 );
-		var $menulast   = $contextmenu.find( 'a:not( .hide )' ).last();
-		switch ( key ) {
-			case 'ArrowLeft':
-				if ( $( '.submenu.active' ).length ) {
-					$( '.submenu.active' )
-						.removeClass( 'active' )
-						.prev().addClass( 'active' );
-				} else {
-					$( '.menu' ).addClass( 'hide' )
-					$menuactive.removeClass( 'active' );
-					$( '.submenu' ).removeClass( 'active' );
-					if ( V.playlist ) $( '#pl-list li' ).removeClass( 'lifocus' );
-				}
-				return
-			case 'ArrowRight':
-				var $next = $menuactive.next();
-				if ( $next.hasClass( 'submenu' ) ) {
-					$menuactive.removeClass( 'active' );
-					$next.addClass( 'active' );
-				}
-				return
-			case 'ArrowUp':
-			case 'ArrowDown':
-				if ( $( '.submenu.active' ).length ) {
-					$menuactive = $( '.submenu.active' );
-					if ( key === 'ArrowDown' ) {
-						$next = $menuactive.nextAll( 'a:not( .hide )' ).eq( 0 );
-						if ( ! $next.length ) $next = $menuactive.prevAll( 'a:not( .hide )' ).last();
-					} else {
-						$next = $menuactive.prevAll( 'a:not( .hide )' ).eq( 1 );
-						if ( ! $next.length ) $next = $menuactive.nextAll( 'a:not( .hide )' ).last();
-					}
-					$next.addClass( 'active' );
-					$menuactive.removeClass( 'active' );
-					return
-				}
-				
-				if ( ! $menuactive.length ) {
-					$menufirst.addClass( 'active' );
-				} else {
-					$menuactive.removeClass( 'active' );
-					$( '.submenu' ).removeClass( 'active' );
-					if ( key === 'ArrowDown' ) {
-						if ( $menuactive.is( $menulast ) ) {
-							$menufirst.addClass( 'active' );
-						} else {
-							$menuactive.nextAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
-						}
-					} else {
-						if ( $menuactive.is( $menufirst ) ) {
-							$menulast.addClass( 'active' );
-						} else {
-							$menuactive.prevAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
-						}
-					}
-				}
-				return
-			case ' ':
-			case 'Enter':
-				if ( $( '.menu:not(.hide)' ).length ) $contextmenu.find( '.active' ).trigger( 'click' );
-				return
-		}
+		return
 	}
 // media key ----------------------------------------------------------
 	if ( media ) {
