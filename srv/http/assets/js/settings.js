@@ -350,7 +350,7 @@ $( document ).on( 'keydown', function( e ) {
 			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
 			$active.trigger( 'click' );
 			$( '#fader' ).addClass( 'hide' );
-			$( '#bar-bottom div' ).blur();
+			$( '#bar-bottom div' ).removeClass( 'focus' ).blur();
 			break
 		case 'Escape':
 			if ( menu ) {
