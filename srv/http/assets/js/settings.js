@@ -308,7 +308,7 @@ $( document ).on( 'keydown', function( e ) {
 			if ( ! camilla && ! $( '#fader' ).hasClass( 'hide' ) ) return
 			
 			if ( menu ) {
-				focusNext( $( '.menu' ), $( '.menu a:not( .hide )' ), 'active', key );
+				focusNext( $( '.menu a:not( .hide )' ), 'active', key );
 				return
 			}
 			
@@ -321,7 +321,7 @@ $( document ).on( 'keydown', function( e ) {
 					
 				return $( el )
 			} );
-			focusNext( $( '.container' ), $base, 'focus', key );
+			focusNext( $base, 'focus', key, '.container' );
 			break
 		case 'ArrowLeft':
 		case 'ArrowRight':
@@ -334,8 +334,7 @@ $( document ).on( 'keydown', function( e ) {
 				if ( camilla ) $target = $target.find( '.liicon' );
 				$target.trigger( 'click' );
 			} else if ( ! $( '#fader' ).hasClass( 'hide' ) ) {
-				var $focus = $( '#bar-bottom div:focus' );
-				if ( $focus.length ) tabNext( key === 'ArrowLeft' );
+				focusNext( $( '#bar-bottom div' ), 'focus', key );
 			}
 			break
 		case ' ':
@@ -361,6 +360,7 @@ $( document ).on( 'keydown', function( e ) {
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
 				$( '#fader' ).addClass( 'hide' );
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
+				$( '.focus' ).trigger( 'focus' );
 			} else {
 				$( '#fader' ).removeClass( 'hide' );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );

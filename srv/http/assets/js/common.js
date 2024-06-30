@@ -115,7 +115,7 @@ function icoLabel( label, icon ) {
 function icoTab( tab ) {
 	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'
 }
-function focusNext( $parent, $base, target, key ) {
+function focusNext( $base, target, key, parent ) {
 	var back  = [ 'ArrowLeft', 'ArrowUp' ].includes( key );
 	var bL    = $base.length;
 	var index = 0;
@@ -130,21 +130,17 @@ function focusNext( $parent, $base, target, key ) {
 		index = back ? index - 1 : index + 1;
 		if ( index === bL ) index = 0;
 	}
-	var $next = $base.eq( index );
+	var $next   = $base.eq( index );
+	var $parent = parent ? $( parent ) : $next.parent();
 	$parent.find( '.'+ target ).removeClass( target );
 	$next.addClass( target ).trigger( 'focus' );
 	if ( I.active ) {
 		if ( $next.is( 'input:text, input[type=number], input:password, textarea' ) ) $next.select();
+	} else if ( $parent.is( '#bar-bottom' ) ) {
+		if ( ! page ) $next.trigger( 'click' );
 	} else {
 		$next[ 0 ].scrollIntoView( { block: 'center' } );
 	}
-}
-function tabNext( back ) {
-	var $current = $( '#bar-bottom' ).find( page ? ':focus' : '.active' );
-	var $next    = back ? $current.prev() : $current.next();
-	var $tabs    = $( '#bar-bottom' ).children();
-	if ( ! $next.length ) $next = back ? $tabs.last() : $tabs.first();
-	page ? $next.trigger( 'focus' ) : $next.trigger( 'click' );
 }
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).on( 'keydown', function( e ) {

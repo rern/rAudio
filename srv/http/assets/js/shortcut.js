@@ -31,7 +31,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( [ 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
 	switch ( key ) {
 		case 'Tab':
-			tabNext( e.shiftKey );
+			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
 			return
 // settings -----------------------------------------------------------
 		case 'Escape':
@@ -180,7 +180,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		// home /////////////////////////////////////////
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
 			if ( arrow ) {
-				focusNext( $( '#lib-mode-list' ), $( '.lib-mode:not( .hide ):not( .nodata )' ), 'updn', key );
+				focusNext( $( '.lib-mode:not( .hide ):not( .nodata )' ), 'updn', key );
 			} else if ( key === 'Enter' ) {
 				$( '.lib-mode.updn' ).trigger( 'click' );
 			}
@@ -189,7 +189,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		
 		if ( V.albumlist && ! V.librarytrack ) { // album
 			if ( arrow ) {
-				focusNext( $( '#lib-list' ), $( '#lib-list .coverart' ), 'active', key )
+				focusNext( $( '#lib-list .coverart' ), 'active', key )
 			} else if ( key === 'Enter' ) {
 				var $active = $( '#lib-list .coverart.active' );
 				V.iactive   = $active.index();
@@ -205,7 +205,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			// list ///////////////////////////////////////
 			case 'ArrowUp':
 			case 'ArrowDown':
-				focusNext( $( '#lib-list' ), $( '#lib-list li' ), 'active', key );
+				focusNext( $( '#lib-list li' ), 'active', key );
 				return;
 			case 'Enter':
 				var $liactive = $( '#lib-list li.active' );
@@ -225,7 +225,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					focusNext( $( '#pl-savedlist' ), $( '#pl-savedlist li' ), 'active', key );
+					focusNext( $( '#pl-savedlist li' ), 'active', key );
 					return
 				case 'ArrowRight':
 					$( '#pl-savedlist li.active .li-icon' ).trigger( 'click' );
@@ -241,7 +241,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					focusNext( $( '#pl-list' ), $( '#pl-list li' ), 'updn', key );
+					focusNext( $( '#pl-list li' ), 'updn', key );
 					return
 				case 'ArrowRight':
 					$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .li-icon' ).trigger( 'click' ) : $( '#pl-list li.active .li-icon' ).trigger( 'click' );
