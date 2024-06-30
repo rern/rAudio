@@ -115,36 +115,38 @@ function icoLabel( label, icon ) {
 function icoTab( tab ) {
 	return '<a class="helpmenu tab"><i class="i-'+ tab.toLowerCase() +'"></i> '+ tab +'</a>'
 }
-function focusNext( $parent, $base, target, key ) {
+function focusNext( $tabs, target, key ) {
 	var back  = [ 'ArrowLeft', 'ArrowUp' ].includes( key );
-	var bL    = $base.length;
+	var bL    = $tabs.length;
 	var index = 0;
-	$.each( $base, ( i, el ) => {
+	$.each( $tabs, ( i, el ) => {
 		if ( $( el ).hasClass( target ) || $( el ).is( ':focus' ) ) {
 			index = back ? i - 1 : i + 1; // eq( -N ) = N from last
 			return false
 		}
 	} );
 	if ( index === bL ) index = 0;
-	if ( $base.eq( index ).hasClass( 'disabled' ) ) {
+	if ( $tabs.eq( index ).hasClass( 'disabled' ) ) {
 		index = back ? index - 1 : index + 1;
 		if ( index === bL ) index = 0;
 	}
-	var $next = $base.eq( index );
+	var $next   = $tabs.eq( index );
+	if ( I.active ) {
+		var $parent = $( '#infoOverlay' );
+	} else if ( ! page || $next.parent().is( '#bar-bottom, .menu' ) ) {
+		var $parent = $next.parent();
+	} else {
+		var $parent = $( '.container' );
+	}
 	$parent.find( '.'+ target ).removeClass( target );
 	$next.addClass( target ).trigger( 'focus' );
 	if ( I.active ) {
 		if ( $next.is( 'input:text, input[type=number], input:password, textarea' ) ) $next.select();
+	} else if ( $parent.is( '#bar-bottom' ) ) {
+		if ( ! page ) $next.trigger( 'click' );
 	} else {
 		$next[ 0 ].scrollIntoView( { block: 'center' } );
 	}
-}
-function tabNext( back ) {
-	var $current = $( '#bar-bottom' ).find( page ? ':focus' : '.active' );
-	var $next    = back ? $current.prev() : $current.next();
-	var $tabs    = $( '#bar-bottom' ).children();
-	if ( ! $next.length ) $next = back ? $tabs.last() : $tabs.first();
-	page ? $next.trigger( 'focus' ) : $next.trigger( 'click' );
 }
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
@@ -169,11 +171,10 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'Tab':
 			if ( $( '.select2-container--open' ).length ) return
 			
-			var $base = $( '#infoList' ).find( 'input, select, infobtn' ).filter( ( i, el ) => {
-				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled' ) ) return $( el )
+			var $tabs = $( '#infoOverlay' ).find( 'input, select, .infobtn' ).filter( ( i, el ) => {
+				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled, .disabled' ) ) return $( el )
 			} );
-			$base.push( ...$( '#infoButton .infobtn' ) );
-			focusNext( $( '#infoOverlay' ), $base, 'focus', key );
+			focusNext( $tabs, 'focus', key );
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
 		case ' ':
@@ -505,7 +506,6 @@ function info( json ) {
 		// set at current scroll position
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 		I.active = true;
-		V.focus  = $( document.activeElement ); // store current focused
 		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoButtonWidth();
@@ -810,8 +810,7 @@ function infoReset() {
 		.empty();
 	$( 'body' ).css( 'overflow-y', '' );
 	setTimeout( () => I = { active: false }, 0 );
-	if ( ! V.focus ) V.focus = $( 'body' );
-	V.focus.trigger( 'focus' ); // restore previous focused
+	$( '.focus' ).trigger( 'focus' ); // restore previous focused
 }
 function infoSetValues() {
 	var $this, type, val;

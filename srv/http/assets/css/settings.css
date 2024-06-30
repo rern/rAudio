@@ -248,7 +248,6 @@ heading.status .i-status {
 }
 heading i.help {
 	float: right;
-	text-align: right;
 }
 heading .i-add,
 heading .i-search {

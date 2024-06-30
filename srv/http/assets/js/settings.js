@@ -133,7 +133,7 @@ function refreshData() {
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
-	$( 'heading i:not( .help ), .switchlabel, .setting, input:text, .entries li' ).prop( 'tabindex', 0 );
+	$( 'heading i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -308,12 +308,12 @@ $( document ).on( 'keydown', function( e ) {
 			if ( ! camilla && ! $( '#fader' ).hasClass( 'hide' ) ) return
 			
 			if ( menu ) {
-				focusNext( $( '.menu' ), $( '.menu a:not( .hide )' ), 'active', key );
+				focusNext( $( '.menu a:not( .hide )' ), 'active', key );
 				return
 			}
 			
 			var index = 0;
-			var $base = $( '[ tabindex=0 ]' ).filter( ( i, el ) => {
+			var $tabs = $( '[ tabindex=0 ]' ).filter( ( i, el ) => {
 				if ( $( el ).parents( '.section' ).hasClass( 'hide' )
 					|| $( el ).parents( '.row' ).hasClass( 'hide' )
 					|| $( el ).is( '.setting.hide' )
@@ -321,7 +321,7 @@ $( document ).on( 'keydown', function( e ) {
 					
 				return $( el )
 			} );
-			focusNext( $( '.container' ), $base, 'focus', key );
+			focusNext( $tabs, 'focus', key );
 			break
 		case 'ArrowLeft':
 		case 'ArrowRight':
@@ -334,9 +334,7 @@ $( document ).on( 'keydown', function( e ) {
 				if ( camilla ) $target = $target.find( '.liicon' );
 				$target.trigger( 'click' );
 			} else if ( ! $( '#fader' ).hasClass( 'hide' ) ) {
-				var $focus = $( '#bar-bottom div:focus' );
-				if ( $focus.length ) tabNext( key === 'ArrowLeft' );
-				if ( page === 'camilla' ) $( '#bar-bottom div:focus' ).addClass( 'active' ).trigger( 'click' );
+				focusNext( $( '#bar-bottom div' ), 'focus', key );
 			}
 			break
 		case ' ':
@@ -352,9 +350,11 @@ $( document ).on( 'keydown', function( e ) {
 			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
 			$active.trigger( 'click' );
 			$( '#fader' ).addClass( 'hide' );
-			$( '#bar-bottom div' ).blur();
+			$( '#bar-bottom div' ).removeClass( 'focus' ).blur();
 			break
+		case 'Alt':
 		case 'Escape':
+			e.preventDefault();
 			if ( menu ) {
 				$( '.menu' ).addClass( 'hide' );
 			} else if ( V.select2 ) {
@@ -362,6 +362,7 @@ $( document ).on( 'keydown', function( e ) {
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
 				$( '#fader' ).addClass( 'hide' );
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
+				$( '.focus' ).trigger( 'focus' );
 			} else {
 				$( '#fader' ).removeClass( 'hide' );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
@@ -378,6 +379,11 @@ $( document ).on( 'keydown', function( e ) {
 			break
 		case 'x':
 			if ( e.ctrlKey ) $( '.close' ).trigger( 'click' );
+			break
+		case 'MediaPause':
+		case 'MediaPlay':
+		case 'MediaPlayPause':
+			if ( [ 'camilla', 'player' ].includes( page ) ) $( '.playback' ).trigger( 'click' );
 			break
 	}
 } );

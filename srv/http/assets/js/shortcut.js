@@ -28,12 +28,13 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	var key   = e.key;
 	var arrow = key in keyarrow;
 	var media = key in keymedia;
-	if ( [ 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
+	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
 	switch ( key ) {
 		case 'Tab':
-			tabNext( e.shiftKey );
+			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
 			return
 // settings -----------------------------------------------------------
+		case 'Alt':
 		case 'Escape':
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
@@ -46,80 +47,12 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // context menu -------------------------------------------------------
 	var $contextmenu = $( '.menu:not( .hide )' );
 	if ( $contextmenu.length ) {
-		if ( V.library ) {
-			var $liactive = $( '#lib-list li.active' );
-		} else if ( V.playlist ) {
-			if ( ! V.savedpl ) {
-				var $liactive = $( '#pl-list li.updn' );
-				if ( ! $liactive.length ) $liactive = $( '#pl-list li.active' );
-			} else {
-				var $liactive = $( '#pl-savedlist li.active' );
-			}
+		if ( arrow ) {
+			focusNext( $contextmenu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
+		} else if ( [ ' ', 'Enter' ].includes( key ) ) {
+			$contextmenu.find( '.active' ).trigger( 'click' );
 		}
-		var $menuactive = $contextmenu.find( 'a.active' );
-		var $menufirst  = $contextmenu.find( 'a:not( .hide )' ).eq( 0 );
-		var $menulast   = $contextmenu.find( 'a:not( .hide )' ).last();
-		switch ( key ) {
-			case 'ArrowLeft':
-				if ( $( '.submenu.active' ).length ) {
-					$( '.submenu.active' )
-						.removeClass( 'active' )
-						.prev().addClass( 'active' );
-				} else {
-					$( '.menu' ).addClass( 'hide' )
-					$menuactive.removeClass( 'active' );
-					$( '.submenu' ).removeClass( 'active' );
-					if ( V.playlist ) $( '#pl-list li' ).removeClass( 'lifocus' );
-				}
-				return
-			case 'ArrowRight':
-				var $next = $menuactive.next();
-				if ( $next.hasClass( 'submenu' ) ) {
-					$menuactive.removeClass( 'active' );
-					$next.addClass( 'active' );
-				}
-				return
-			case 'ArrowUp':
-			case 'ArrowDown':
-				if ( $( '.submenu.active' ).length ) {
-					$menuactive = $( '.submenu.active' );
-					if ( key === 'ArrowDown' ) {
-						$next = $menuactive.nextAll( 'a:not( .hide )' ).eq( 0 );
-						if ( ! $next.length ) $next = $menuactive.prevAll( 'a:not( .hide )' ).last();
-					} else {
-						$next = $menuactive.prevAll( 'a:not( .hide )' ).eq( 1 );
-						if ( ! $next.length ) $next = $menuactive.nextAll( 'a:not( .hide )' ).last();
-					}
-					$next.addClass( 'active' );
-					$menuactive.removeClass( 'active' );
-					return
-				}
-				
-				if ( ! $menuactive.length ) {
-					$menufirst.addClass( 'active' );
-				} else {
-					$menuactive.removeClass( 'active' );
-					$( '.submenu' ).removeClass( 'active' );
-					if ( key === 'ArrowDown' ) {
-						if ( $menuactive.is( $menulast ) ) {
-							$menufirst.addClass( 'active' );
-						} else {
-							$menuactive.nextAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
-						}
-					} else {
-						if ( $menuactive.is( $menufirst ) ) {
-							$menulast.addClass( 'active' );
-						} else {
-							$menuactive.prevAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
-						}
-					}
-				}
-				return
-			case ' ':
-			case 'Enter':
-				if ( $( '.menu:not(.hide)' ).length ) $contextmenu.find( '.active' ).trigger( 'click' );
-				return
-		}
+		return
 	}
 // media key ----------------------------------------------------------
 	if ( media ) {
@@ -180,7 +113,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		// home /////////////////////////////////////////
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
 			if ( arrow ) {
-				focusNext( $( '#lib-mode-list' ), $( '.lib-mode:not( .hide ):not( .nodata )' ), 'updn', key );
+				focusNext( $( '.lib-mode:not( .hide ):not( .nodata )' ), 'updn', key );
 			} else if ( key === 'Enter' ) {
 				$( '.lib-mode.updn' ).trigger( 'click' );
 			}
@@ -189,7 +122,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		
 		if ( V.albumlist && ! V.librarytrack ) { // album
 			if ( arrow ) {
-				focusNext( $( '#lib-list' ), $( '#lib-list .coverart' ), 'active', key )
+				focusNext( $( '#lib-list .coverart' ), 'active', key )
 			} else if ( key === 'Enter' ) {
 				var $active = $( '#lib-list .coverart.active' );
 				V.iactive   = $active.index();
@@ -205,7 +138,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			// list ///////////////////////////////////////
 			case 'ArrowUp':
 			case 'ArrowDown':
-				focusNext( $( '#lib-list' ), $( '#lib-list li' ), 'active', key );
+				focusNext( $( '#lib-list li' ), 'active', key );
 				return;
 			case 'Enter':
 				var $liactive = $( '#lib-list li.active' );
@@ -225,7 +158,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					focusNext( $( '#pl-savedlist' ), $( '#pl-savedlist li' ), 'active', key );
+					focusNext( $( '#pl-savedlist li' ), 'active', key );
 					return
 				case 'ArrowRight':
 					$( '#pl-savedlist li.active .li-icon' ).trigger( 'click' );
@@ -241,7 +174,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					focusNext( $( '#pl-list' ), $( '#pl-list li' ), 'updn', key );
+					focusNext( $( '#pl-list li' ), 'updn', key );
 					return
 				case 'ArrowRight':
 					$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .li-icon' ).trigger( 'click' ) : $( '#pl-list li.active .li-icon' ).trigger( 'click' );
