@@ -1067,9 +1067,11 @@ var render    = {
 		if ( sub || $main.hasClass( 'hide' ) ) {
 			$main.addClass( 'hide' );
 			$sub.removeClass( 'hide' );
+			var $entries = $sub;
 		} else {
 			$main.removeClass( 'hide' );
 			$sub.addClass( 'hide' );
+			var $entries = $main;
 		}
 		$( '#menu' ).addClass( 'hide' );
 		if ( [ 'filters', 'pipeline' ].includes( V.tab ) && V.graph[ V.tab ].length ) {
@@ -1079,10 +1081,12 @@ var render    = {
 				if ( V.graph[ V.tab ].includes( $el.data( val ) ) ) graph.plot( $el );
 			} );
 		}
-		$( '.entries:not( .hide ) li, .slider .thumb, .lihead .i-add, .lihead .i-back' ).prop( 'tabindex', 0 );
-		setTimeout( () => $( '.entries.hide li, .lihead' ).removeAttr( 'tabindex' ), 300 );
-		if ( V.focused !== 'undefined' ) {
-			$( '.entries li' ).eq( V.focused ).trigger( 'focus' );
+		$( '.entries' ).children().removeAttr( 'tabindex' );
+		$entries.find( '.lihead .i-add, .lihead .i-back' ).prop( 'tabindex', 0 );
+		var $li = $entries.find( 'li:not( .lihead )' );
+		$li.prop( 'tabindex', 0 );
+		if ( 'focused' in V ) {
+			$li.eq( V.focused ).trigger( 'focus' );
 			delete V.focused;
 		}
 	}
@@ -1900,19 +1904,19 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // volume ---------------------------------------------------------------------------------
 $( '#divvolume' ).on( 'keydown', function( e ) {
-	if ( ! [ '-', '+' ].includes( e.key ) ) return
-	
-	$( this ).find( e.key === '-' ? '.i-minus' : '.i-plus' ).trigger( 'click' );
+	var key = e.key;
+	if ( [ '-', '+' ].includes( key ) ) $( this ).find( key === '-' ? '.i-minus' : '.i-plus' ).trigger( 'click' );
 } );
 $( '.entries' ).on( 'keydown', 'li:focus', function( e ) {
-	var $this = $( this );
-	if ( ! [ '-', '+' ].includes( e.key ) ) return
-	
-	var $updn = $this.find( e.key === '-' ? '.i-minus' : '.i-plus' );
-	if ( ! $updn.length ) return
-	
-	V.focused = $this.index();
-	$updn.trigger( 'click' );
+	var key = e.key;
+	if ( [ '-', '+' ].includes( key ) ) {
+		var $this = $( this );
+		var $updn = $this.find( key === '-' ? '.i-minus' : '.i-plus' );
+		if ( ! $updn.length ) return
+		
+		V.focused = $this.index();
+		$updn.trigger( 'click' );
+	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	var $this = $( this );

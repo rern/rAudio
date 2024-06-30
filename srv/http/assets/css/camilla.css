@@ -242,12 +242,16 @@
 	margin-right: 3px !important;
 }
 .lihead i {
+	width: 35px;
+	min-width: 35px !important;
+	line-height: 35px;
 	letter-spacing: 0;
 }
 .tab li .i-add {
 	color: var( --cw );
 }
 .tab li .i-back {
+	margin-top: 3px !important;
 	color: var( --cm );
 }
 .tab .i-add {
