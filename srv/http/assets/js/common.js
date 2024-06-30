@@ -169,10 +169,9 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'Tab':
 			if ( $( '.select2-container--open' ).length ) return
 			
-			var $base = $( '#infoList' ).find( 'input, select, infobtn' ).filter( ( i, el ) => {
-				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled' ) ) return $( el )
+			var $base = $( '#infoOverlay' ).find( 'input, select, .infobtn' ).filter( ( i, el ) => {
+				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled, .disabled' ) ) return $( el )
 			} );
-			$base.push( ...$( '#infoButton .infobtn' ) );
 			focusNext( $( '#infoOverlay' ), $base, 'focus', key );
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
