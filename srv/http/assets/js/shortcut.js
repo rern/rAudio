@@ -40,7 +40,9 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 				focusNext( $tabs, 'focus', key );
 			} else {
 				$( document.activeElement ).trigger( 'blur' );
-				$tabs.removeClass( 'focus' );
+				$tabs
+					.removeClass( 'focus' )
+					.trigger( 'blur' );
 				$fader.addClass( 'hide' );
 			}
 			return*/

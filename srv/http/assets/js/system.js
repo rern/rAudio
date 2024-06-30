@@ -494,7 +494,7 @@ $( '#ledcalc' ).on( 'click', function() {
 	} );
 } );
 $( '#hostname' ).on( 'click', function( e ) {
-	if ( e.hasOwnProperty( 'originalEvent' ) ) $( this ).blur();
+	if ( e.hasOwnProperty( 'originalEvent' ) ) $( this ).trigger( 'blur' );;
 	SW.icon  = 'system';
 	SW.title = 'Player Name';
 	info( {
