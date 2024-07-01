@@ -154,13 +154,13 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		  .i( 'search',                   'button-lib-search' )
 		  .i( 'back',                     'button-lib-back' )
 		  .i( 'refresh-library',          'button-lib-update' )?>
-		<div id="lib-search" class="hide">
+		<div id="lib-search" class="search hide">
 			<div class="input-group">
 				<input id="lib-search-input" type="text">
 				<?=i( 'search btn btn-default input-group-btn', 'lib-search-btn' )?>
 			</div>
 		</div>
-		<div id="lib-search-close"></div>
+		<div id="lib-search-close" class="searchclose"></div>
 		<div id="lib-path">
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
@@ -269,13 +269,13 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 			  .i( 'search pllength',       'button-pl-search' )
 			  .i( 'playlists',             'button-pl-playlists' )?>
 		</div>
-		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
+		<form id="pl-search" class="search hide" method="post" onSubmit="return false;">
 			<div class="input-group">
 				<input id="pl-search-input" type="text">
 				<?=i( 'search btn btn-default input-group-btn', 'pl-search-btn' )?>
 			</div>
 		</form>
-		<div id="pl-search-close" class="hide"></div>
+		<div id="pl-search-close" class="searchclose hide"></div>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list hide"></ul>

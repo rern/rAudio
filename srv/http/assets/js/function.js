@@ -847,6 +847,13 @@ function menuHide() {
 	$( '#lib-list li, #pl-savedlist li' ).removeClass( 'active' );
 	$( '#pl-list li' ).removeClass( 'updn' );
 }
+function menuLibraryPlaylist( $tabs, click ) {
+	V.liplmenu = false;
+	$( document.activeElement ).trigger( click || 'blur' );
+	$tabs.removeClass( 'focus' );
+	$( '#fader' ).addClass( 'hide' );
+	$( '#bar-top, #bar-bottom' ).css( 'z-index', '' );
+}
 function mpcSeek( elapsed ) {
 	S.elapsed = elapsed;
 	local();

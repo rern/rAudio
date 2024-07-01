@@ -28,26 +28,46 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	var key   = e.key;
 	var arrow = key in keyarrow;
 	var media = key in keymedia;
-	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
-	switch ( key ) {
-/*		case 'Alt':
-			var $fader = $( '#fader' );
-			var $tabs = V.library ? $( '#button-lib-update, #button-lib-search' ) : $( '#pl-manage i' );
-			if ( $fader.hasClass( 'hide' ) ) {
-				$fader.removeClass( 'hide' );
-				var $focus = $tabs.find( '.focus' );
-				$tabs.prop( 'tabindex', 0 );
+	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab' ].includes( key ) || arrow || media ) e.preventDefault();
+	if ( V.liplmenu ) {
+		var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
+		switch ( key ) {
+			case 'Alt':
+			case 'Escape':
+				menuLibraryPlaylist( $tabs );
+				return
+			case 'ArrowLeft':
+			case 'ArrowRight':
 				focusNext( $tabs, 'focus', key );
-			} else {
-				$( document.activeElement ).trigger( 'blur' );
-				$tabs
-					.removeClass( 'focus' )
-					.trigger( 'blur' );
-				$fader.addClass( 'hide' );
-			}
-			return*/
+				return
+			case ' ':
+			case 'Enter':
+				menuLibraryPlaylist( $tabs, 'click' );
+				return
+			default:
+				return
+		}
+	} else if ( $( '.search.hide' ).length < 2 ) {
+		if ( key === 'Escape' ) {
+			$( '.searchclose:not( .hide )' ).trigger( 'click' );
+		} else if ( key === 'Enter' ) {
+			$( '.search:not( .hide ) i' ).trigger( 'click' );
+		}
+		return
+	}
+	
+	switch ( key ) {
+		case 'Alt':
+			V.liplmenu   = true;
+			var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
+			$( '#fader' ).removeClass( 'hide' );
+			$( '.content-top i' ).removeAttr( 'tabindex' );
+			$tabs.prop( 'tabindex', 0 );
+			focusNext( $tabs, 'focus', key );
+			$( '#bar-top, #bar-bottom' ).css( 'z-index', 19 );
+			return
 		case 'Tab':
-			if ( ! $( '#fader' ).hasClass( 'hide' ) ) return
+			if ( V.liplmenu ) return
 			
 			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
 			return
@@ -61,22 +81,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			}
 			return
 	}
-/*	if ( ! $( '#fader' ).hasClass( 'hide' ) ) {
-		var $tabs = V.library ? $( '#page-library .content-top > i:not( .page-icon )' ) : $( '#pl-manage i' );
-		switch ( key ) {
-			case 'ArrowLeft':
-			case 'ArrowRight':
-				focusNext( $tabs, 'focus', key );
-				break
-			case ' ':
-			case 'Enter':
-				$( document.activeElement ).trigger( 'click' )
-				$tabs.removeClass( 'focus' );
-				$( '#fader' ).addClass( 'hide' );
-				break
-		}
-		return
-	}*/
+	
 // context menu -------------------------------------------------------
 	var $menu = $( '.menu:not( .hide )' );
 	if ( $menu.length ) {
@@ -106,6 +111,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		case '#': // index bar
 		case 'a':
 		case 'z':
+			if ( $( '.search.hide' ).length ) return
 			key = key.toUpperCase();
 			if ( V.library && ! $( '#lib-list .index' ).hasClass( 'hide' ) ) {
 				$( '#lib-index' ).find( 'wh:contains('+ key +')' ).trigger( 'click' );
