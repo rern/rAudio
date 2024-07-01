@@ -24,8 +24,9 @@ if ( localhost ) {
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
 	
-	var key   = e.key;
-	if ( $( '.search:not( .hide )' ).length ) {
+	var key      = e.key;
+	var search   = $( '.search:not( .hide )' ).length;
+	if ( search ) {
 		if ( key === 'Escape' ) {
 			$( '.searchclose:not( .hide )' ).trigger( 'click' );
 		} else if ( key === 'Enter' ) {
@@ -34,10 +35,11 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		return
 	}
 	
-	var arrow = key in keyarrow;
-	var media = key in keymedia;
-	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab' ].includes( key ) || arrow || media ) e.preventDefault();
-	if ( V.liplmenu ) {
+	var arrow    = key in keyarrow;
+	var media    = key in keymedia;
+	var liplmenu = ! $( '#fader' ).hasClass( 'hide' );
+	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab', ' ' ].includes( key ) || arrow || media ) e.preventDefault();
+	if ( liplmenu ) {
 		var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
 		switch ( key ) {
 			case 'ArrowLeft':
@@ -68,7 +70,6 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		case 'Alt':
 			if ( V.playback ) return
 			
-			V.liplmenu   = true;
 			var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
 			$( '#fader' ).removeClass( 'hide' );
 			$( '.content-top i' ).removeAttr( 'tabindex' );
@@ -77,7 +78,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			$( '#bar-top, #bar-bottom' ).css( 'z-index', 19 );
 			return
 		case 'Tab':
-			if ( V.liplmenu ) return
+			if ( liplmenu ) return
 			
 			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
 			return
@@ -105,11 +106,9 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // common key -------------------------------------------------------
 	switch ( key ) {
 		case 'Backspace':
-			if ( V.library ) {
-				if ( ! $( '.search:not( .hide )' ).length ) $( '#button-lib-back' ).trigger( 'click' );
-			} else if ( V.playlist ) {
-				$( '#button-pl-back' ).trigger( 'click' );
-			}
+			if ( V.playback || search ) return
+			
+			$( '#button-'+ ( V.library ? 'lib' : 'pl' ) +'-back:not( .hide )' ).trigger( 'click' );
 			return
 		case '#': // index bar
 		case 'a':
