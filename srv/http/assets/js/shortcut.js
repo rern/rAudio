@@ -14,7 +14,6 @@ var keymedia = {
 	, MediaStop          : 'stop'
 	, MediaTrackPrevious : 'previous'
 	, MediaTrackNext     : 'next'
-	, ' '                : 'toggle'
 }
 if ( localhost ) {
 	keymedia.AudioVolumeDown = 'voldn';
@@ -26,28 +25,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
 	
 	var key   = e.key;
-	var arrow = key in keyarrow;
-	var media = key in keymedia;
-	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab' ].includes( key ) || arrow || media ) e.preventDefault();
-	if ( V.liplmenu ) {
-		var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
-		switch ( key ) {
-			case 'Alt':
-			case 'Escape':
-				menuLibraryPlaylist( $tabs );
-				return
-			case 'ArrowLeft':
-			case 'ArrowRight':
-				focusNext( $tabs, 'focus', key );
-				return
-			case ' ':
-			case 'Enter':
-				menuLibraryPlaylist( $tabs, 'click' );
-				return
-			default:
-				return
-		}
-	} else if ( $( '.search.hide' ).length < 2 ) {
+	if ( $( '.search:not( .hide )' ).length ) {
 		if ( key === 'Escape' ) {
 			$( '.searchclose:not( .hide )' ).trigger( 'click' );
 		} else if ( key === 'Enter' ) {
@@ -56,8 +34,40 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		return
 	}
 	
+	var arrow = key in keyarrow;
+	var media = key in keymedia;
+	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab' ].includes( key ) || arrow || media ) e.preventDefault();
+	if ( V.liplmenu ) {
+		var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
+		switch ( key ) {
+			case 'ArrowLeft':
+			case 'ArrowRight':
+				focusNext( $tabs, 'focus', key );
+				return
+			case 'Alt':
+			case 'Escape':
+				menuLibraryPlaylist( $tabs );
+				return
+			case ' ':
+			case 'Enter':
+				menuLibraryPlaylist( $tabs, 'click' );
+				return
+			default:
+				return
+		}
+	}
+// media key ----------------------------------------------------------
+	if ( media || key === ' ' ) {
+		var cmd = key === ' ' ? 'toggle' : keymedia[ key ];
+		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
+		$( '#'+ cmd ).trigger( 'click' );
+		return
+	}
+	
 	switch ( key ) {
 		case 'Alt':
+			if ( V.playback ) return
+			
 			V.liplmenu   = true;
 			var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
 			$( '#fader' ).removeClass( 'hide' );
@@ -92,18 +102,11 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		}
 		return
 	}
-// media key ----------------------------------------------------------
-	if ( media ) {
-		var cmd = keymedia[ key ];
-		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
-		$( '#'+ cmd ).trigger( 'click' );
-		return
-	}
 // common key -------------------------------------------------------
 	switch ( key ) {
 		case 'Backspace':
 			if ( V.library ) {
-				$( '#button-lib-back' ).trigger( 'click' );
+				if ( ! $( '.search:not( .hide )' ).length ) $( '#button-lib-back' ).trigger( 'click' );
 			} else if ( V.playlist ) {
 				$( '#button-pl-back' ).trigger( 'click' );
 			}

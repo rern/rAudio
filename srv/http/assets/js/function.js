@@ -849,8 +849,10 @@ function menuHide() {
 }
 function menuLibraryPlaylist( $tabs, click ) {
 	V.liplmenu = false;
-	$( document.activeElement ).trigger( click || 'blur' );
-	$tabs.removeClass( 'focus' );
+	if ( click ) $( document.activeElement ).trigger( 'click' );
+	$tabs
+		.removeClass( 'focus' )
+		.trigger( 'blur' );
 	$( '#fader' ).addClass( 'hide' );
 	$( '#bar-top, #bar-bottom' ).css( 'z-index', '' );
 }
