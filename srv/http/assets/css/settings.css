@@ -662,6 +662,7 @@ input.disabled + .switchlabel:after {
 	#divmpd .help { display: none }
 }
 @media (hover: hover) {
+	#fader { z-index: 5 }
 	#bar-bottom div:hover { background-color: var( --cgd ) }
 	#bar-bottom div.active:hover { background-color: var( --cma ) }
 	a:hover { text-decoration: none }
@@ -706,7 +707,7 @@ input.disabled + .switchlabel:after {
 	#menu {
 		cursor: pointer
 	}
-	i.focus,
+	i:focus-visible,
 	.slider .thumb:focus-visible,
 	.switchlabel:focus-visible,
 	.select2-selection:focus-visible,
@@ -717,8 +718,7 @@ input.disabled + .switchlabel:after {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;
 	}
-	i.focus,
-	heading i:focus-visible,
+	i:focus-visible,
 	.setting:focus-visible,
 	.lihead i:focus-visible,
 	.graphclose:focus-visible {
