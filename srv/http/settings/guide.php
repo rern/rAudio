@@ -105,11 +105,18 @@ E.prev.addEventListener( 'click', function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
-document.body.addEventListener( 'keyup', ( e ) => {
-	if ( e.key === 'ArrowLeft' ) {
-		E.prev.click();
-	} else if ( e.key === 'ArrowRight' ) {
-		E.next.click();
+
+document.body.addEventListener( 'keydown', ( e ) => {
+	switch ( e.key ) {
+		case 'ArrowLeft':
+			E.prev.click();
+			break
+		case 'ArrowRight':
+			E.next.click();
+			break
+		case 'x':
+			if ( e.ctrlKey ) location.href = '/';
+			break
 	}
 } );
 

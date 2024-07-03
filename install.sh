@@ -4,6 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240704
+dir=/srv/http/assets/img/guide
+if [[ -e $dir/59.jpg ]]; then
+	rm -f $dir/*
+	curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
+fi
+
 # 20240612
 file=/etc/systemd/system/websocket.service
 if grep -q '-server' $file; then
