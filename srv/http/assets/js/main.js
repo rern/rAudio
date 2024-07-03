@@ -1157,7 +1157,8 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	$( '#lib-search, #lib-search-btn' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
-	$( '#lib-path span, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
+	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
+	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-search-close' ).empty();
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
