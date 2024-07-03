@@ -189,7 +189,9 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'Enter':
 			if ( V.local || $( 'textarea' ).is( ':focus' ) ) return
 			
-			$( '#infoButton' ).find( ':focus' ).trigger( 'click' );
+			var $target = $( '#infoButton' ).find( ':focus' );
+			if ( ! $target.length ) $target = $( '#infoOk' );
+			$target.trigger( 'click' );
 			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );
