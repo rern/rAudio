@@ -380,7 +380,7 @@ $( document ).on( 'keydown', function( e ) {
 			$( '.section:not( .hide ) .i-back' ).trigger( 'click' );
 			break
 		case 'x':
-			if ( e.ctrlKey ) $( '.close' ).trigger( 'click' );
+			if ( e.ctrlKey ) $( '#close' ).trigger( 'click' );
 			break
 		case 'MediaPause':
 		case 'MediaPlay':
@@ -434,7 +434,7 @@ $( '.helphead' ).on( 'click', function() {
 		} );
 	}
 } );
-$( '.close' ).on( 'click', function() {
+$( '#close' ).on( 'click', function() {
 	bash( [ 'settings/system.sh', 'rebootlist' ], list => {
 		if ( ! list ) {
 			location.href = '/';
