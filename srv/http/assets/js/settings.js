@@ -298,14 +298,15 @@ $( document ).on( 'keydown', function( e ) {
 	
 	var camilla = page === 'camilla';
 	var menu    = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
-	var key  = e.key;
+	var tabs    = ! $( '#fader' ).hasClass( 'hide' );
+	var key     = e.key;
 	switch ( key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
 			if ( V.select2 ) return
 			
 			e.preventDefault();
-			if ( ! camilla && ! $( '#fader' ).hasClass( 'hide' ) ) return
+			if ( ! camilla && tabs ) return
 			
 			if ( menu ) {
 				focusNext( $( '.menu a:not( .hide )' ), 'active', key );
@@ -333,7 +334,7 @@ $( document ).on( 'keydown', function( e ) {
 				var $target = $( '.entries li:focus' );
 				if ( camilla ) $target = $target.find( '.liicon' );
 				$target.trigger( 'click' );
-			} else if ( ! $( '#fader' ).hasClass( 'hide' ) ) {
+			} else if ( tabs ) {
 				focusNext( $( '#bar-bottom div' ), 'focus', key );
 			}
 			break
