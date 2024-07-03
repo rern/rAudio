@@ -155,7 +155,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 	if ( ! I.active ) return
 	
 	var key = e.key;
-	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( key ) ) e.preventDefault();
+	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Tab' ].includes( key ) ) e.preventDefault();
 	if ( key === 'Tab' && e.shiftKey ) key = 'ArrowUp';
 	switch ( key ) {
 		case 'ArrowLeft':
@@ -183,6 +183,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			var $focus = $( '#infoOverlay' ).find( ':focus' );
 			if ( ! $focus.is( 'input:checkbox, input:radio, select, .infobtn' ) ) return
 			
+			e.preventDefault();
 			if ( $focus.is( 'select' ) ) $focus = $focus.next();
 			$focus.trigger( 'click' );
 			break

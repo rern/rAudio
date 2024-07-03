@@ -37,8 +37,9 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	
 	var arrow    = key in keyarrow;
 	var media    = key in keymedia;
+	var menu     = $( '.menu:not( .hide )' ).length ;
 	var liplmenu = ! $( '#fader' ).hasClass( 'hide' );
-	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab', ' ' ].includes( key ) || arrow || media ) e.preventDefault();
+	if ( [ 'Alt', 'Backspace', 'Tab', ' ' ].includes( key ) || arrow || media ) e.preventDefault();
 	if ( liplmenu ) {
 		var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
 		switch ( key ) {
@@ -59,7 +60,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		}
 	}
 // media key ----------------------------------------------------------
-	if ( media || key === ' ' ) {
+	if ( ! menu && ( media || key === ' ' ) ) {
 		var cmd = key === ' ' ? 'toggle' : keymedia[ key ];
 		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
 		$( '#'+ cmd ).trigger( 'click' );
@@ -97,8 +98,8 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	}
 	
 // context menu -------------------------------------------------------
-	var $menu = $( '.menu:not( .hide )' );
-	if ( $menu.length ) {
+	if ( menu ) {
+		var $menu = $( '.menu:not( .hide )' );
 		if ( arrow ) {
 			focusNext( $menu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
 		} else if ( [ ' ', 'Enter' ].includes( key ) ) {
