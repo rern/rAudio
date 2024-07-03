@@ -68,7 +68,10 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	
 	switch ( key ) {
 		case 'Alt':
-			if ( V.playback ) return
+			if ( V.playback ) {
+				$( '#button-settings' ).trigger( 'click' );
+				return
+			}
 			
 			var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
 			$( '#fader' ).removeClass( 'hide' );

@@ -59,10 +59,10 @@ echo $html;
 ?>
 </div>
 <script>
-nlibrary  = 23;
-nplaylist = 40;
-nsettings = 48;
-ntotal    = 59;
+nlibrary  = 22;
+nplaylist = 39;
+nsettings = 47;
+ntotal    = 58;
 n         = 1;
 E         = {};
 [ 'close', 'container', 'count', 'helpblock', 'helphead', 'image', 'next', 'prev' ].forEach( ( el ) => {
