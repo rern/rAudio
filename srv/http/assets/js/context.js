@@ -316,7 +316,7 @@ function tagEditor() {
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 					  +'<div>'+ ico( 'folder' ) +' '+ dir;
 		message += V.list.licover ? '</div>' : '<br>'+ ico( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
-		var footer   = '<div id="taglabel"><i class="i-help i-22" tabindex="0"></i>&emsp;Label</div>';
+		var footer   = '<div><i class="i-help i-22" tabindex="0"></i>&emsp;Label</div>';
 		if ( V.list.licover ) footer += '<div><c> * </c>&ensp;Various values in tracks</div>';
 		info( {
 			  icon         : V.playlist ? 'info' : 'tag'
@@ -337,12 +337,13 @@ function tagEditor() {
 				$( '#infoList .infofooter' ).addClass( 'tagfooter' );
 				$( '#infoList td i' ).css( 'cursor', 'pointer' );
 				if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
-				var tableW = $( '#infoList table' ).width();
-				$( '#infoList' ).on( 'click', '#taglabel', function() {
+				var inputW = parseInt( $( '#infoList input' ).css( 'width' ) );
+				$( '.infofooter div' ).eq( 0 ).on( 'click', function() {
 					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
+						$( '#infoList input' ).css( 'width', ( inputW - 92 ) +'px' );
 						$( '.taglabel' ).removeClass( 'hide' );
-						$( '#infoList table' ).width( tableW );
 					} else {
+						$( '#infoList input' ).css( 'width', inputW +'px' );
 						$( '.taglabel' ).addClass( 'hide' );
 					}
 				} ).on( 'click', 'table i', function() {
