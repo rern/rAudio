@@ -316,7 +316,7 @@ function tagEditor() {
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 					  +'<div>'+ ico( 'folder' ) +' '+ dir;
 		message += V.list.licover ? '</div>' : '<br>'+ ico( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
-		var footer   = '<div><i class="i-help i-22" tabindex="0"></i>&emsp;Label</div>';
+		var footer   = '<div><i class="i-help" tabindex="0"></i>Label</div>';
 		if ( V.list.licover ) footer += '<div><c> * </c>&ensp;Various values in tracks</div>';
 		info( {
 			  icon         : V.playlist ? 'info' : 'tag'
@@ -543,8 +543,8 @@ var listwebradio = {
 		  [ 'Name',    'text', { colspan: 3 } ]
 		, [ 'URL',     'text', { colspan: 3 } ]
 		, [ 'Charset', 'text', { sameline: true } ]
-		, [ '',        '',     { suffix: '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-22 gr' ), sameline: true } ]
-		, [ '',        '',     { suffix: '<gr>New folder</gr>&ensp;<i class="i-folder-plus i-22" tabindex="0"></i>' } ]
+		, [ '',        '',     { suffix: '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help gr' ), sameline: true } ]
+		, [ '',        '',     { suffix: '<gr>New folder</gr> <i class="i-folder-plus" tabindex="0"></i>' } ]
 	]
 	, button : () => {
 		$( '#infoList tr' ).last().find( 'td' ).eq( 1 ).css( 'width', '190px' );

@@ -164,7 +164,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			if ( $( '.select2-container--open' ).length ) return
 			
 			var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
-				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled, .disabled, .hide' ) ) return $( el )
+				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide, .select2-selection' ) ) return $( el )
 			} );
 			focusNext( $tabs, 'focus', key );
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
@@ -468,7 +468,7 @@ function info( json ) {
 	var content = '';
 	[ 'header', 'message', 'list', 'footer' ].forEach( k => content += htmls[ k ] );
 	$( '#infoList' ).html( content ).promise().done( function() {
-		$( '#infoTab a:not( .active ), #infoButton .infobtn' ).prop( 'tabindex', 0 );
+		$( '#infoTab a:not( .active ), .updn, .i-eye, #infoButton .infobtn' ).prop( 'tabindex', 0 );
 		$( '#infoList input:text' ).prop( 'spellcheck', false );
 		// get all input fields
 		$inputbox = $( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' );

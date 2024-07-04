@@ -150,7 +150,7 @@ $( '#setting-autoplay' ).on( 'click', function() {
 } );
 $( '#setting-localbrowser' ).on( 'click', function() {
 	var brightness = S.brightness ? '<span class="brightness">'+ ico( 'gear' ) +' Brightness</span>&emsp;' : '';
-	var button	   = '<span class="reload">'+ ico( 'redo' ) +' Reload</span>&emsp;<span class="screenoff">'+ ico( 'screenoff' ) +' On/Off</span>';
+	var button	   = '<span class="reload">'+ ico( 'redo' ) +'Reload</span>&emsp;<span class="screenoff">'+ ico( 'screenoff' ) +'On/Off</span>';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -169,6 +169,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
 			$onwhileplay.prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
 			$( '.infofooter' ).toggleClass( 'hide', ! S.localbrowser );
+			$( '.infofooter i' ).prop( 'tabindex', 0 );
 			$( '#infoList tr:eq( 2 )' ).on( 'click', '.updn', function() {
 				if ( $( this ).parents( 'td' ).prev().find( 'input' ).val() != 0 ) {
 					$onwhileplay.prop( 'disabled', false );
