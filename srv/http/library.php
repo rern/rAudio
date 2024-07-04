@@ -76,13 +76,12 @@ case 'find':
 			exec( 'mpc -f "'.$format.'" playlist "'.dirname( $file ).'"'
 				, $lists );
 		}
-	} else if ( $mode !== 'album' ) {
-		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null '
+	} else if ( $mode === 'album' ) {
+		exec( 'mpc find -f "'.$format.'" album "'.$string.'" 2> /dev/null '
 				."| awk 'NF && !a[$0]++'"
 			, $lists );
 	} else {
 		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null '
-				."| sed 's:[^/]*$::'"
 				."| awk 'NF && !a[$0]++'"
 			, $lists );
 	}

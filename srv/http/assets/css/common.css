@@ -772,6 +772,7 @@ hr {
 }
 #infoList i {
 	width: 24px;
+	line-height: 24px;
 	font-size: 20px;
 	text-align: center;
     color: var( --cw );

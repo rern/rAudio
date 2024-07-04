@@ -161,7 +161,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			, [ 'On while play',             'checkbox' ]
 			, [ 'Mouse pointer',             'checkbox' ]
 		]
-		, footer       : '<br>'+ brightness + button
+		, footer       : brightness + button
 		, boxwidth     : 110
 		, values       : S.localbrowserconf
 		, checkchanged : S.localbrowser

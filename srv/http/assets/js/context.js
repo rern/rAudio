@@ -301,9 +301,9 @@ function tagEditor() {
 	}
 	list( query, function( values ) {
 		name[ 1 ]    = 'Album Artist';
-		var list     = [];
+		var listinfo = [];
 		format.forEach( ( el, i ) => {
-			list.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>', 'text' ] );
+			listinfo.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
 		} );
 		if ( V.library ) {
 			var $img = V.librarytrack ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
@@ -323,7 +323,7 @@ function tagEditor() {
 			, title        : V.playlist ? 'Track Info' : 'Tag Editor'
 			, message      : message
 			, messagealign : 'left'
-			, list         : list
+			, list         : listinfo
 			, footer       : footer
 			, footeralign  : 'left'
 			, boxwidth     : 'max'
@@ -335,7 +335,7 @@ function tagEditor() {
 				} );
 				$( '#infoList .infomessage' ).addClass( 'tagmessage' );
 				$( '#infoList .infofooter' ).addClass( 'tagfooter' );
-				$( '#infoList td i' ).css( 'cursor', 'pointer' );
+				$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
 				if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
 				var inputW = parseInt( $( '#infoList input' ).css( 'width' ) );
 				$( '.infofooter div' ).eq( 0 ).on( 'click', function() {
@@ -346,10 +346,11 @@ function tagEditor() {
 						$( '#infoList input' ).css( 'width', inputW +'px' );
 						$( '.taglabel' ).addClass( 'hide' );
 					}
-				} ).on( 'click', 'table i', function() {
+				} );
+				$( '#infoList' ).on( 'click', 'table i', function() {
 					var $this  = $( this );
-					var mode   = $this.data( 'mode' );
-					if ( [ 'title', 'track' ].includes( mode ) ) return
+					var mode   = $this.prop( 'class' ).replace( 'i-', '' );
+					if ( [ 'track', 'title' ].includes( mode ) ) return
 					
 					var string = $this.parent().next().find( 'input' ).val();
 					if ( ! string ) return

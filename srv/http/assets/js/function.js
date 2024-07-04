@@ -795,10 +795,10 @@ function libraryHome() {
 		if ( V.color ) $( '#mode-webradio' ).trigger( 'click' );
 	}, 'json' );
 }
-function list( args, callback, json ) {
+function list( query, callback, json ) {
 	$.post(
-		  'playlist' in args  ? 'playlist.php' : 'library.php'
-		, args
+		  'playlist' in query  ? 'playlist.php' : 'library.php'
+		, query
 		, callback || null
 		, json || null
 	);
