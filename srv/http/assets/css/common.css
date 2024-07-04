@@ -1062,6 +1062,10 @@ input:focus {
 	#infoX:active {
 		color: var( --cma );
 	}
+	#infoTab a:focus-visible {
+		outline: none;
+		background: var( --cg );
+	}
 	input[ type=text ]:focus-visible,
 	input[ type=number ]:focus-visible,
 	input[ type=tel ]:focus-visible,

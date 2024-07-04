@@ -155,33 +155,23 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 	if ( ! I.active ) return
 	
 	var key = e.key;
-	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Tab' ].includes( key ) ) e.preventDefault();
+	if ( [ 'ArrowDown', 'ArrowUp', 'Tab' ].includes( key ) ) e.preventDefault();
 	if ( key === 'Tab' && e.shiftKey ) key = 'ArrowUp';
 	switch ( key ) {
-		case 'ArrowLeft':
-			var $next = $( '#infoTab a.active' ).prev();
-			if ( ! $next.length ) $next = $( '#infoTab a' ).last();
-			$next.trigger( 'click' );
-			break
-		case 'ArrowRight':
-			var $next = $( '#infoTab a.active' ).next();
-			if ( ! $next.length ) $next = $( '#infoTab a' ).first();
-			$next.trigger( 'click' );
-			break
 		case 'ArrowUp':
 		case 'ArrowDown':
 		case 'Tab':
 			if ( $( '.select2-container--open' ).length ) return
 			
-			var $tabs = $( '#infoOverlay' ).find( 'input, select, .infobtn' ).filter( ( i, el ) => {
-				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled, .disabled' ) ) return $( el )
+			var $tabs = $( '#infoOverlay' ).find( '#infoTab a:not( .active ), .infobtn, input, select, textarea' ).filter( ( i, el ) => {
+				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled, .disabled, .hide' ) ) return $( el )
 			} );
 			focusNext( $tabs, 'focus', key );
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
 		case ' ':
 			var $focus = $( '#infoOverlay' ).find( ':focus' );
-			if ( ! $focus.is( 'input:checkbox, input:radio, select, .infobtn' ) ) return
+			if ( ! $focus.is( '#infoTab a, input:checkbox, input:radio, select, .infobtn' ) ) return
 			
 			e.preventDefault();
 			if ( $focus.is( 'select' ) ) $focus = $focus.next();
@@ -190,7 +180,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'Enter':
 			if ( V.local || $( 'textarea' ).is( ':focus' ) ) return
 			
-			var $target = $( '#infoButton' ).find( ':focus' );
+			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
 			if ( ! $target.length ) $target = $( '#infoOk' );
 			$target.trigger( 'click' );
 			break
@@ -265,14 +255,7 @@ function info( json ) {
 		var color = I.okcolor ? ' style="background-color:'+ I.okcolor +'"' : '';
 		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( I.oklabel || 'OK' ) +'</a>';
 	}
-	if ( htmlbutton ) {
-		$( '#infoButton' )
-			.html( htmlbutton )
-			.find( '.infobtn' ).prop( 'tabindex', 0 )
-			.removeClass( 'hide' );
-	} else {
-		$( '#infoButton' ).remove();
-	}
+	htmlbutton ? $( '#infoButton' ).html( htmlbutton ) : $( '#infoButton' ).remove();
 	if ( I.button ) {
 		$( '#infoButton' ).on( 'click', '.extrabtn', function() {
 			var buttonfn = I.button[ $( this ).index( '.extrabtn' ) ];
@@ -485,6 +468,7 @@ function info( json ) {
 	var content = '';
 	[ 'header', 'message', 'list', 'footer' ].forEach( k => content += htmls[ k ] );
 	$( '#infoList' ).html( content ).promise().done( function() {
+		$( '#infoTab a:not( .active ), #infoButton .infobtn' ).prop( 'tabindex', 0 );
 		$( '#infoList input:text' ).prop( 'spellcheck', false );
 		// get all input fields
 		$inputbox = $( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' );
