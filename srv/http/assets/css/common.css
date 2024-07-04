@@ -1074,6 +1074,7 @@ input:focus {
 		outline: none;
 	}
 	.infobtn:focus-visible,
+	#infoOverlay i:focus-visible,
 	input[ type=radio ]:focus-visible,
 	input[ type=checkbox ]:focus-visible,
 	input[ type=range ]:focus-visible::-webkit-slider-thumb {
@@ -1086,6 +1087,11 @@ input:focus {
 	}
 	.infobtn.active {
 		box-shadow: 0 0 2px 1px var( --cgl ) !important;
+	}
+	#infoOverlay i:focus-visible {
+		height: 24px;
+		line-height: 24px;
+		border-radius: 3px;
 	}
 }
 

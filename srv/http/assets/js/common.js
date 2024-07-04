@@ -163,7 +163,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 		case 'Tab':
 			if ( $( '.select2-container--open' ).length ) return
 			
-			var $tabs = $( '#infoOverlay' ).find( '#infoTab a:not( .active ), .infobtn, input, select, textarea' ).filter( ( i, el ) => {
+			var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
 				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled, .disabled, .hide' ) ) return $( el )
 			} );
 			focusNext( $tabs, 'focus', key );
@@ -171,7 +171,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			break
 		case ' ':
 			var $focus = $( '#infoOverlay' ).find( ':focus' );
-			if ( ! $focus.is( '#infoTab a, input:checkbox, input:radio, select, .infobtn' ) ) return
+			if ( ! $focus.is( '#infoTab a, input:checkbox, input:radio, select, .infobtn, i' ) ) return
 			
 			e.preventDefault();
 			if ( $focus.is( 'select' ) ) $focus = $focus.next();
