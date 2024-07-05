@@ -169,7 +169,6 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
 			$onwhileplay.prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
 			$( '.infofooter' ).toggleClass( 'hide', ! S.localbrowser );
-			$( '.infofooter i' ).prop( 'tabindex', 0 );
 			$( '#infoList tr:eq( 2 )' ).on( 'click', '.updn', function() {
 				if ( $( this ).parents( 'td' ).prev().find( 'input' ).val() != 0 ) {
 					$onwhileplay.prop( 'disabled', false );
