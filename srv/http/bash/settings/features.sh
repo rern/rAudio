@@ -299,7 +299,7 @@ screentoggle )
 	export DISPLAY=:0
 	xset q | grep -q 'Monitor is On' && onoff=off || onoff=on
 	xset dpms force $onoff
-	xset q
+	xset q | grep 'Monitor is'
 	;;
 scrobblekey )
 	keys=( $( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )

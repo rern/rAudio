@@ -194,9 +194,9 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 					, okno        : true
 				} );
 			} ).on( 'click', '#reload', function() {
-				bash( [ 'localbrowserreload' ] );
+				bash( [ 'localbrowserreload' ], () => banner( SW.icon, SW.title, 'Reloaded.' ) );
 			} ).on( 'click', '#screenoff', function() {
-				bash( [ 'screentoggle' ] );
+				bash( [ 'screentoggle' ], onoff => banner( SW.icon, SW.title, onoff ) );
 			} );
 		}
 		, cancel       : switchCancel
