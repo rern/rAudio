@@ -171,7 +171,7 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			break
 		case ' ':
 			var $focus = $( '#infoOverlay' ).find( ':focus' );
-			if ( ! $focus.is( '#infoTab a, input:checkbox, input:radio, select, .infobtn, i' ) ) return
+			if ( ! $focus.length || ! $focus.is( '#infoTab a, input:checkbox, input:radio, select, .infobtn, i' ) ) return
 			
 			e.preventDefault();
 			if ( $focus.is( 'select' ) ) $focus = $focus.next();

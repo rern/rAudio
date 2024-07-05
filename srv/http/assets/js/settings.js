@@ -340,16 +340,18 @@ $( document ).on( 'keydown', function( e ) {
 			break
 		case ' ':
 		case 'Enter':
+			var $focus = $( document.activeElement );
+			if ( ! $focus.length ) return
+			
 			e.preventDefault();
 			if ( menu ) {
 				V.li = $( '.entries li.active' );
-				$( '.menu a.active' ).trigger( 'click' );
+				$focus.trigger( 'click' );
 				return
 			}
 			
-			var $active = $( document.activeElement );
-			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
-			$active.trigger( 'click' );
+			if ( $focus.hasClass( 'switchlabel' ) ) $focus = $focus.prev();
+			$focus.trigger( 'click' );
 			$( '#fader' ).addClass( 'hide' );
 			$( '#bar-bottom div' )
 				.removeClass( 'focus' )
