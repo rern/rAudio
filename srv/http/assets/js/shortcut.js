@@ -91,6 +91,8 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
 				if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
+			} else if ( ! $( '#bio' ).hasClass( 'hide' ) ) {
+				$( '.closebio' ).trigger( 'click' );
 			} else {
 				$( '#button-settings' ).trigger( 'click' );
 			}
@@ -110,11 +112,6 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // common key -------------------------------------------------------
 	switch ( key ) {
 		case 'Backspace':
-			if ( ! $( '#bio' ).hasClass( 'hide' ) ) {
-				$( '.closebio' ).trigger( 'click' );
-				return
-			}
-			
 			if ( V.playback || search ) return
 			
 			$( '#button-'+ ( V.library ? 'lib' : 'pl' ) +'-back:not( .hide )' ).trigger( 'click' );
