@@ -711,7 +711,6 @@ input.disabled + .switchlabel:after {
 	.slider .thumb:focus-visible,
 	.switchlabel:focus-visible,
 	.select2-selection:focus-visible,
-	heading i:focus-visible,
 	.setting:focus-visible,
 	.graphclose:focus-visible,
 	#hostname:focus-visible {
@@ -723,6 +722,7 @@ input.disabled + .switchlabel:after {
 	.lihead i:focus-visible,
 	.graphclose:focus-visible {
 		border-radius: 50%;
+		outline-offset: -3px;
 	}
 	.entries li:focus-visible {
 		outline: none;

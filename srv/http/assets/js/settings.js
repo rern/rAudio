@@ -133,7 +133,7 @@ function refreshData() {
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
-	$( 'heading i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
+	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -314,7 +314,7 @@ $( document ).on( 'keydown', function( e ) {
 			}
 			
 			var index = 0;
-			var $tabs = $( '[ tabindex=0 ]' ).filter( ( i, el ) => {
+			var $tabs = $( '[ tabindex=0 ]:not( .menu a )' ).filter( ( i, el ) => {
 				if ( $( el ).parents( '.section' ).hasClass( 'hide' )
 					|| $( el ).parents( '.row' ).hasClass( 'hide' )
 					|| $( el ).is( '.setting.hide' )
