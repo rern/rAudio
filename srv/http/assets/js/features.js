@@ -149,8 +149,8 @@ $( '#setting-autoplay' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-localbrowser' ).on( 'click', function() {
-	var brightness = S.brightness ? '<span class="brightness">'+ ico( 'gear' ) +' Brightness</span>&emsp;' : '';
-	var button	   = '<span class="reload">'+ ico( 'redo' ) +'Reload</span>&emsp;<span class="screenoff">'+ ico( 'screenoff' ) +'On/Off</span>';
+	var footer = S.brightness ? ico( 'gear', 'brightness', 'tabindex' ) +'Brightness&emsp;' : '';
+	footer    += ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -161,7 +161,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			, [ 'On while play',             'checkbox' ]
 			, [ 'Mouse pointer',             'checkbox' ]
 		]
-		, footer       : brightness + button
+		, footer       : footer
 		, boxwidth     : 110
 		, values       : S.localbrowserconf
 		, checkchanged : S.localbrowser
@@ -179,11 +179,11 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 						.prop( 'checked', false );
 				}
 			} );
-			$( '#infoList' ).on( 'click', '.brightness', function() {
+			$( '#infoList' ).on( 'click', '#brightness', function() {
 				switchCancel();
 				info( {
-					  icon        : 'localbrowser'
-					, title       : 'Browser on RPi'
+					  icon         : SW.icon
+					, title        : SW.title
 					, list        : [ 'Brightness', 'range' ]
 					, values      : S.brightness
 					, beforeshow  : () => {
@@ -193,10 +193,10 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 					}
 					, okno        : true
 				} );
-			} ).on( 'click', '.reload', function() {
+			} ).on( 'click', '#reload', function() {
 				bash( [ 'localbrowserreload' ] );
-			} ).on( 'click', '.screenoff', function() {
-				bash( [ 'screenofftoggle' ] );
+			} ).on( 'click', '#screenoff', function() {
+				bash( [ 'screentoggle' ] );
 			} );
 		}
 		, cancel       : switchCancel

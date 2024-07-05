@@ -735,7 +735,8 @@ input.disabled + .switchlabel:after {
 	#bar-bottom div.active:focus-visible {
 		background: var( --cml );
 	}
-	.menu a.active {
+	.menu a:focus-visible {
 		background: var( --cgl );
+		outline: none;
 	}
 }

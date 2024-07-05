@@ -109,11 +109,16 @@ htmlHead( [ //////////////////////////////////
 <ul id="listwlscan" class="entries scan"></ul>
 </div>
 
-<div id="menu" class="menu hide">
-<a class="connect"><?=i( 'connect' )?>Connect</a>
-<a class="disconnect"><?=i( 'close' )?>Disconnect</a>
-<a class="edit"><?=i( 'edit' )?>Edit</a>
-<a class="forget"><?=i( 'remove' )?>Forget</a>
-<a class="rename"><?=i( 'edit' )?>Rename</gr></a>
-<a class="info"><?=i( 'info' )?>Info</a>
-</div>
+<?php
+$menu       = [
+	  'connect'    => 'connect'
+	, 'disconnect' => 'close'
+	, 'edit'       => 'edit'
+	, 'forget'     => 'remove'
+	, 'rename'     => 'edit'
+	, 'info'       => 'info'
+];
+$menuhtml   = '';
+foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
+?>
+<div id="menu" class="menu hide"><?=$menuhtml?></div>

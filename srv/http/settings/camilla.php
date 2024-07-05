@@ -66,7 +66,7 @@ $htmls = [
 	  'volume' => '
 <div id="volume" class="slider">
 	<div class="track"></div>
-	<div class="thumb"></div>
+	<div class="thumb" tabindex="0"></div>
 	<div id="volume-band"></div>
 </div>
 '.i( 'plus' ).'

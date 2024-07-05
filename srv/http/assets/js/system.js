@@ -119,6 +119,7 @@ var lcdcharjson   = {
 	, ok           : switchEnable
 	, fileconf     : true
 }
+var lcdcharfooter = ico( 'raudio', 'lcdlogo', 'tabindex' ) +'Logo&emsp;'+ ico( 'screenoff', 'lcdoff', 'tabindex' ) +'Sleep';
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -731,6 +732,7 @@ function infoLcdChar() {
 		  ...lcdcharjson
 		, tab          : [ '', infoLcdCharGpio ]
 		, list         : jsonClone( lcdcharlist )
+		, footer       : lcdcharfooter
 		, boxwidth     : 180
 		, values       : confi2c ? S.lcdcharconf : default_v.lcdchar_i2c
 		, checkchanged : S.lcdchar && confi2c
@@ -747,6 +749,7 @@ function infoLcdCharGpio() {
 		  ...lcdcharjson
 		, tab          : [ infoLcdChar, '' ]
 		, list         : list
+		, footer       : lcdcharfooter
 		, boxwidth     : 70
 		, values       : confgpio ? S.lcdcharconf : default_v.lcdchar_gpio
 		, checkchanged : S.lcdchar && confgpio
@@ -760,9 +763,6 @@ function infoLcdcharButton() {
 	$( '#infoList svg .power' ).remove();
 	if ( ! S.lcdchar || S.lcdcharreboot ) return
 	
-	$( '#infoOk' )
-		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-22 wh' ) +'&ensp;Logo</gr>&ensp;' )
-		.after( '&emsp;<gr id="lcdoff">'+ ico( 'screenoff i-22 wh' ) +'&ensp;Sleep</gr>' );
 	$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
 		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] );
 	} );

@@ -8,7 +8,7 @@ bash()
 */
 
 var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
-var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
+var iconwarning = ico( 'warning yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
@@ -106,8 +106,8 @@ function highlightJSON( json ) {
 		else if ( /[\[\]]/.test( match ) ) return color( match, 'pur' )
 	} );
 }
-function ico( icon, id ) {
-	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"></i>';
+function ico( icon, id, tabindex ) {
+	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"'+ ( tabindex ? ' tabindex="0"' : '' ) +'></i>';
 }
 function icoLabel( label, icon ) {
 	return '<a class="helpmenu label">'+ label + ( icon ? '<i class="i-'+ icon +'"></i>' : '&emsp;' ) +'</a>'
