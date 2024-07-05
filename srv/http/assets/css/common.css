@@ -586,7 +586,6 @@ input[ type=checkbox ].disabled {
 	color: var( --cw );
 }
 #infoList .updn {
-	width: 36px !important;
 	line-height: 40px;
 }
 
@@ -1090,12 +1089,9 @@ input:focus {
 	.infobtn.active {
 		box-shadow: 0 0 2px 1px var( --cgl ) !important;
 	}
-	#infoOverlay i:focus-visible {
-		width: 24px !important;
-		height: 24px;
-		margin: 0 6px;
-		line-height: 24px;
+	#infoOverlay td i:focus-visible {
 		border-radius: 50%;
+		outline-offset: -6px;
 	}
 }
 
