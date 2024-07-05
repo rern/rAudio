@@ -985,7 +985,7 @@ $( '#bio' ).on( 'click', '.bioback', function() {
 	var getsimilar = V.bioartist.length > 1 ? 'getsimilar' : '';
 	bio( V.bioartist.pop(), getsimilar );
 } );
-$( '#bio' ).on( 'click', '.closebio', function() {
+$( '#bio' ).on( 'click', '.bioclose', function() {
 	V.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
 	if ( 'observer' in V ) V.observer.disconnect();

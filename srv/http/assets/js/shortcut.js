@@ -91,8 +91,10 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
 				if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
+			} else if ( ! $( '#lyrics' ).hasClass( 'hide' ) ) {
+				$( '.lyricsclose' ).trigger( 'click' );
 			} else if ( ! $( '#bio' ).hasClass( 'hide' ) ) {
-				$( '.closebio' ).trigger( 'click' );
+				$( '.bioclose' ).trigger( 'click' );
 			} else {
 				$( '#button-settings' ).trigger( 'click' );
 			}
