@@ -31,7 +31,7 @@ function bio( artist, getsimilar ) {
 		var backhtml = getsimilar ? ico( 'back bioback' ) : '';
 		var similar  =  data.similar.artist;
 		if ( similar ) {
-			var similarhtml  = '<p>'+ ico( 'artist i-22' ) +'&ensp;Similar Artists:<p><span>';
+			var similarhtml  = '<p>'+ ico( 'artist' ) +'&ensp;Similar Artists:<p><span>';
 			similar.forEach( a => similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;' );
 			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
 		}
@@ -39,7 +39,7 @@ function bio( artist, getsimilar ) {
 <div class="container">
 <div id="biocontent">
 	<p class="artist">${ ico( 'close close-root closebio' ) + name }</p>
-	<p class="genre">${ backhtml + ico( 'genre i-22' ) +'&ensp;'+ genre }</p>
+	<p class="genre">${ backhtml + ico( 'genre' ) +'&ensp;'+ genre }</p>
 	${ similarhtml }
 	<p>${ content }</p>
 	<div style="clear: both;"></div>
@@ -1700,7 +1700,7 @@ function setPlaybackBlank() {
 		$( '#coverart' ).addClass( 'hide' );
 	} else {
 		$( '#coverart' ).removeClass( 'hide' );
-		$( '#sampling' ).html( 'Network not connected:&emsp; <a href="settings.php?p=networks">'+ ico( 'networks i-22 wh' ) +'&ensp;Setup</a>' );
+		$( '#sampling' ).html( 'Network not connected:&emsp; <a href="settings.php?p=networks">'+ ico( 'networks' ) +'&ensp;Setup</a>' );
 	}
 	vu();
 	loaderHide();

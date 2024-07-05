@@ -30,8 +30,6 @@ i {
 	font-family : rern;
 	font-style  : normal;
 }
-.i-22 { font-size: 22px !important }
-.i-30 { font-size: 30px !important }
 .i-add::before             { content: '\F519' }
 .i-addons::before          { content: '\F50D' }
 .i-airplay::before         { content: '\F580' }

@@ -110,6 +110,11 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // common key -------------------------------------------------------
 	switch ( key ) {
 		case 'Backspace':
+			if ( ! $( '#bio' ).hasClass( 'hide' ) ) {
+				$( '.closebio' ).trigger( 'click' );
+				return
+			}
+			
 			if ( V.playback || search ) return
 			
 			$( '#button-'+ ( V.library ? 'lib' : 'pl' ) +'-back:not( .hide )' ).trigger( 'click' );
