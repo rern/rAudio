@@ -92,7 +92,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 				$( '.menu' ).addClass( 'hide' );
 				if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
 			} else if ( ! $( '#lyrics' ).hasClass( 'hide' ) ) {
-				$( '.lyricsclose' ).trigger( 'click' );
+				$( '#lyricsclose' ).trigger( 'click' );
 			} else if ( ! $( '#bio' ).hasClass( 'hide' ) ) {
 				$( '.bioclose' ).trigger( 'click' );
 			} else {
