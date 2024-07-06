@@ -104,7 +104,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			}
 			return
 		case 'x':
-			if ( e.ctrlKey ) escCtrlX( key );
+			if ( e.ctrlKey ) escCtrlX();
 			return
 	}
 	
