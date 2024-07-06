@@ -99,6 +99,9 @@ E.container.classList.remove( 'hide' );
 E.close.addEventListener( 'click', () => location.href = '<?=$hrefback?>' );
 [ E.infobtn, E.infox ].forEach( el => el.addEventListener( 'click', () => E.info.remove() ) );
 scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
+document.body.addEventListener( 'keyup', ( e ) => {
+	if ( e.key === 'x' && e.ctrlKey ) E.close.click();
+} );
 </script>
 <?php
 // ......................................................................................
@@ -171,6 +174,9 @@ proc_close( $proc );
 setTimeout( () => clearInterval( scroll ), 1000 );
 E.titleicon.classList.remove( 'blink' );
 E.info.classList.remove( 'hide' );
+E.info.addEventListener( 'keyup', ( e ) => {
+	if ( [ 'Enter', 'Escape' ].includes( e.key ) ) E.info.classList.add( 'hide' );
+} );
 </script>
 
 </body>
