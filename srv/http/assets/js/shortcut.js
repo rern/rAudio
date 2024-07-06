@@ -20,26 +20,24 @@ if ( localhost ) {
 	keymedia.AudioVolumeMute = 'volmute';
 	keymedia.AudioVolumeUp   = 'volup';
 }
-function escCtrlX( key ) {
-	var $target = $( '#bio:not( .hide ), #lyrics:not( .hide )' );
-	if ( $target.length ) {
-		$target.find( '.i-close' ).trigger( 'click' );
-	} else if ( key === 'Escape' ) {
-		$( '#button-settings' ).trigger( 'click' );
-	}
-}
 
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
 	
-	var key      = e.key;
-	var search   = $( '.search:not( .hide )' ).length;
-	if ( search ) {
+	var key     = e.key;
+	var $search = $( '.search:not( .hide )' );
+	if ( $search.length ) {
 		if ( key === 'Escape' ) {
 			$( '.searchclose:not( .hide )' ).trigger( 'click' );
 		} else if ( key === 'Enter' ) {
-			$( '.search:not( .hide ) i' ).trigger( 'click' );
+			$search.trigger( 'click' );
 		}
+		return
+	}
+	
+	var $bio_lyrics = $( '#bio:not( .hide ), #lyrics:not( .hide )' );
+	if ( $bio_lyrics.length ) {
+		if ( key === 'Escape' || ( key === 'x' && e.ctrlKey ) ) $bio_lyrics.find( '.i-close' ).trigger( 'click' );
 		return
 	}
 	
@@ -47,7 +45,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	var media    = key in keymedia;
 	var menu     = $( '.menu:not( .hide )' ).length ;
 	var liplmenu = ! $( '#fader' ).hasClass( 'hide' );
-	if ( [ 'Alt', 'Backspace', 'Tab', ' ' ].includes( key ) || arrow || media ) e.preventDefault();
+	if ( [ 'Alt', 'Backspace', 'Tab' ].includes( key ) || arrow || media ) e.preventDefault();
 	if ( liplmenu ) {
 		var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
 		switch ( key ) {
@@ -61,6 +59,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 				return
 			case ' ':
 			case 'Enter':
+				e.preventDefault();
 				menuLibraryPlaylist( $tabs, 'click' );
 				return
 			default:
@@ -69,6 +68,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	}
 // media key ----------------------------------------------------------
 	if ( ! menu && ( media || key === ' ' ) ) {
+		e.preventDefault();
 		var cmd = key === ' ' ? 'toggle' : keymedia[ key ];
 		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
 		$( '#'+ cmd ).trigger( 'click' );
@@ -100,11 +100,8 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 				$( '.menu' ).addClass( 'hide' );
 				if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
 			} else {
-				escCtrlX( key );
+				$( '#button-settings' ).trigger( 'click' );
 			}
-			return
-		case 'x':
-			if ( e.ctrlKey ) escCtrlX();
 			return
 	}
 	

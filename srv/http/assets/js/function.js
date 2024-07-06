@@ -36,7 +36,7 @@ function bio( artist, getsimilar ) {
 			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
 		}
 		var biohtml = `
-<div class="container">
+<div class="container" tabindex="0">
 <div id="biocontent">
 	<p class="artist">${ ico( 'close close-root' ) + name }</p>
 	<p class="genre">${ backhtml + ico( 'genre' ) +'&ensp;'+ genre }</p>
@@ -70,6 +70,7 @@ function bio( artist, getsimilar ) {
 			} ).fail( function() { // 404 not found
 				bioImageSet();
 			} );
+			$( '#bio .container' ).trigger( 'focus' );
 		} );
 	} );
 }
@@ -808,7 +809,9 @@ function lyricsGet( artist, title, file ) {
 	V.lyricstitle  = title || S.Title;
 	if ( $( '#lyricstitle' ).text() === V.lyricstitle && $( '#lyricsartist' ).text() === V.lyricsartist ) {
 		$( '#lyrics' ).removeClass( 'hide' );
-		$( '#lyricstext' ).scrollTop( 0 );
+		$( '#lyricstext' )
+			.scrollTop( 0 )
+			.trigger( 'focus' );
 		return
 	}
 	

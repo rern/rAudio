@@ -298,7 +298,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 			  .i( 'back bl',   'lyricsback' )?>
 		</div>
 	</div>
-	<div id="lyricstext" class="lyricstext"></div>
+	<div id="lyricstext" class="lyricstext" tabindex="0"></div>
 	<textarea id="lyricstextarea" class="lyricstext"></textarea>
 	<div id="lyricsfade"></div>
 </div>

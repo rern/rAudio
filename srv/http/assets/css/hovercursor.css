@@ -165,6 +165,10 @@ li:not( .licover ),
 #lib-path a:last-of-type:hover {
 	color: var( --cw );
 }
+#bio .container:focus-visible,
+#lyricstext {
+	outline: none;
+}
 .content-top > i:focus-visible,
 #pl-manage i:focus-visible {
 	border-radius: 50%;
