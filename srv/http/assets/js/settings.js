@@ -133,7 +133,7 @@ function refreshData() {
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
-	$( 'heading i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
+	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -298,14 +298,15 @@ $( document ).on( 'keydown', function( e ) {
 	
 	var camilla = page === 'camilla';
 	var menu    = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
-	var key  = e.key;
+	var tabs    = ! $( '#fader' ).hasClass( 'hide' );
+	var key     = e.key;
 	switch ( key ) {
 		case 'ArrowDown':
 		case 'ArrowUp':
 			if ( V.select2 ) return
 			
 			e.preventDefault();
-			if ( ! camilla && ! $( '#fader' ).hasClass( 'hide' ) ) return
+			if ( ! camilla && tabs ) return
 			
 			if ( menu ) {
 				focusNext( $( '.menu a:not( .hide )' ), 'active', key );
@@ -313,7 +314,7 @@ $( document ).on( 'keydown', function( e ) {
 			}
 			
 			var index = 0;
-			var $tabs = $( '[ tabindex=0 ]' ).filter( ( i, el ) => {
+			var $tabs = $( '[ tabindex=0 ]:not( .menu a )' ).filter( ( i, el ) => {
 				if ( $( el ).parents( '.section' ).hasClass( 'hide' )
 					|| $( el ).parents( '.row' ).hasClass( 'hide' )
 					|| $( el ).is( '.setting.hide' )
@@ -333,24 +334,28 @@ $( document ).on( 'keydown', function( e ) {
 				var $target = $( '.entries li:focus' );
 				if ( camilla ) $target = $target.find( '.liicon' );
 				$target.trigger( 'click' );
-			} else if ( ! $( '#fader' ).hasClass( 'hide' ) ) {
+			} else if ( tabs ) {
 				focusNext( $( '#bar-bottom div' ), 'focus', key );
 			}
 			break
 		case ' ':
 		case 'Enter':
+			var $focus = $( document.activeElement );
+			if ( ! $focus.length ) return
+			
 			e.preventDefault();
 			if ( menu ) {
 				V.li = $( '.entries li.active' );
-				$( '.menu a.active' ).trigger( 'click' );
+				$focus.trigger( 'click' );
 				return
 			}
 			
-			var $active = $( document.activeElement );
-			if ( $active.hasClass( 'switchlabel' ) ) $active = $active.prev();
-			$active.trigger( 'click' );
+			if ( $focus.hasClass( 'switchlabel' ) ) $focus = $focus.prev();
+			$focus.trigger( 'click' );
 			$( '#fader' ).addClass( 'hide' );
-			$( '#bar-bottom div' ).removeClass( 'focus' ).blur();
+			$( '#bar-bottom div' )
+				.removeClass( 'focus' )
+				.trigger( 'blur' );
 			break
 		case 'Alt':
 		case 'Escape':
@@ -378,7 +383,7 @@ $( document ).on( 'keydown', function( e ) {
 			$( '.section:not( .hide ) .i-back' ).trigger( 'click' );
 			break
 		case 'x':
-			if ( e.ctrlKey ) $( '.close' ).trigger( 'click' );
+			if ( e.ctrlKey ) $( '#close' ).trigger( 'click' );
 			break
 		case 'MediaPause':
 		case 'MediaPlay':
@@ -432,7 +437,7 @@ $( '.helphead' ).on( 'click', function() {
 		} );
 	}
 } );
-$( '.close' ).on( 'click', function() {
+$( '#close' ).on( 'click', function() {
 	bash( [ 'settings/system.sh', 'rebootlist' ], list => {
 		if ( ! list ) {
 			location.href = '/';

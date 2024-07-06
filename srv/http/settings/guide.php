@@ -59,10 +59,10 @@ echo $html;
 ?>
 </div>
 <script>
-nlibrary  = 23;
-nplaylist = 40;
-nsettings = 48;
-ntotal    = 59;
+nlibrary  = 22;
+nplaylist = 39;
+nsettings = 47;
+ntotal    = 58;
 n         = 1;
 E         = {};
 [ 'close', 'container', 'count', 'helpblock', 'helphead', 'image', 'next', 'prev' ].forEach( ( el ) => {
@@ -105,11 +105,18 @@ E.prev.addEventListener( 'click', function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
-document.body.addEventListener( 'keyup', ( e ) => {
-	if ( e.key === 'ArrowLeft' ) {
-		E.prev.click();
-	} else if ( e.key === 'ArrowRight' ) {
-		E.next.click();
+
+document.body.addEventListener( 'keydown', ( e ) => {
+	switch ( e.key ) {
+		case 'ArrowLeft':
+			E.prev.click();
+			break
+		case 'ArrowRight':
+			E.next.click();
+			break
+		case 'x':
+			if ( e.ctrlKey ) location.href = '/';
+			break
 	}
 } );
 

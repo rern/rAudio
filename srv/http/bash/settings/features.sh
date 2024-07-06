@@ -293,11 +293,13 @@ CMD ACTION PATHMPD"
 	pushData refresh '{ "page": "system", "nfsserver": '$TF' }'
 	pushDirCounts nas
 	;;
-screenofftoggle )
+screentoggle )
 #	[[ $( vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
-	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
+	xset q | grep -q 'Monitor is On' && onoff=off || onoff=on
+	xset dpms force $onoff
+	xset q | grep 'Monitor is'
 	;;
 scrobblekey )
 	keys=( $( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )

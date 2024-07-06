@@ -265,10 +265,10 @@ tr .i-remove {
 .tab li i {
 	margin: 0 !important;
 }
-.tab li:focus {
+.tab li:focus-visible {
 	background: var( --cga );
 }
-.tab li:not( :focus, .main ):hover {
+.tab li:not( :focus-visible, .main ):hover {
 	background: var( --cgd );
 }
 .tab .divdest {
@@ -309,7 +309,7 @@ tr .i-remove {
 	margin: 2px 0 0 0;
 	max-width: 230px;
 }
-li:focus input[ type=range ] {
+li:focus-visible input[ type=range ] {
 	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
 	--trackborder : 1px solid var( --cgd ) !important;
 }

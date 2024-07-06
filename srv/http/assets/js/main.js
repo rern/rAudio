@@ -985,7 +985,7 @@ $( '#bio' ).on( 'click', '.bioback', function() {
 	var getsimilar = V.bioartist.length > 1 ? 'getsimilar' : '';
 	bio( V.bioartist.pop(), getsimilar );
 } );
-$( '#bio' ).on( 'click', '.closebio', function() {
+$( '#bio' ).on( 'click', '.bioclose', function() {
 	V.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
 	if ( 'observer' in V ) V.observer.disconnect();
@@ -1107,7 +1107,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 	} );
 } );
 $( '#button-lib-search' ).on( 'click', function() { // icon
-	$( '#lib-path span, #button-lib-back, #button-lib-search' ).addClass( 'hide' );
+	$( '#lib-path span, #button-lib-back, #button-lib-search, #button-lib-update' ).addClass( 'hide' );
 	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path' ).css( 'max-width', 40 );
@@ -1158,6 +1158,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	$( '#lib-search, #lib-search-btn' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
+	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-search-close' ).empty();
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export $( dbus-launch)
 [[ -e /boot/kernel7.img ]] && export LIBGL_ALWAYS_INDIRECT=1 # fix: MESA: error: ZINK: vkCreateInstance failed
 
 . /srv/http/bash/common.sh

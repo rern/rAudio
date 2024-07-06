@@ -8,7 +8,7 @@ bash()
 */
 
 var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
-var iconwarning = ico( 'warning i-22 yl' ) +'&ensp;';
+var iconwarning = ico( 'warning yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
@@ -106,8 +106,8 @@ function highlightJSON( json ) {
 		else if ( /[\[\]]/.test( match ) ) return color( match, 'pur' )
 	} );
 }
-function ico( icon, id ) {
-	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"></i>';
+function ico( icon, id, tabindex ) {
+	return '<i'+ ( id ? ' id="'+ id +'"' : '' ) +' class="i-'+ icon +'"'+ ( tabindex ? ' tabindex="0"' : '' ) +'></i>';
 }
 function icoLabel( label, icon ) {
 	return '<a class="helpmenu label">'+ label + ( icon ? '<i class="i-'+ icon +'"></i>' : '&emsp;' ) +'</a>'
@@ -145,6 +145,8 @@ function focusNext( $tabs, target, key ) {
 	} else if ( $parent.is( '#bar-bottom' ) ) {
 		if ( ! page ) $next.trigger( 'click' );
 	} else {
+		if ( $parent.is( '.content-top' ) ) return
+		
 		$next[ 0 ].scrollIntoView( { block: 'center' } );
 	}
 }
@@ -153,41 +155,34 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 	if ( ! I.active ) return
 	
 	var key = e.key;
-	if ( [ 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Enter', 'Escape', 'Tab', ' ' ].includes( key ) ) e.preventDefault();
+	if ( [ 'ArrowDown', 'ArrowUp', 'Tab' ].includes( key ) ) e.preventDefault();
 	if ( key === 'Tab' && e.shiftKey ) key = 'ArrowUp';
 	switch ( key ) {
-		case 'ArrowLeft':
-			var $next = $( '#infoTab a.active' ).prev();
-			if ( ! $next.length ) $next = $( '#infoTab a' ).last();
-			$next.trigger( 'click' );
-			break
-		case 'ArrowRight':
-			var $next = $( '#infoTab a.active' ).next();
-			if ( ! $next.length ) $next = $( '#infoTab a' ).first();
-			$next.trigger( 'click' );
-			break
 		case 'ArrowUp':
 		case 'ArrowDown':
 		case 'Tab':
 			if ( $( '.select2-container--open' ).length ) return
 			
-			var $tabs = $( '#infoOverlay' ).find( 'input, select, .infobtn' ).filter( ( i, el ) => {
-				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:checkbox:disabled, .disabled' ) ) return $( el )
+			var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
+				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide, .select2-selection' ) ) return $( el )
 			} );
 			focusNext( $tabs, 'focus', key );
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
 		case ' ':
 			var $focus = $( '#infoOverlay' ).find( ':focus' );
-			if ( ! $focus.is( 'input:checkbox, input:radio, select, .infobtn' ) ) return
+			if ( ! $focus.length || ! $focus.is( '#infoTab a, input:checkbox, input:radio, select, .infobtn, i' ) ) return
 			
+			e.preventDefault();
 			if ( $focus.is( 'select' ) ) $focus = $focus.next();
 			$focus.trigger( 'click' );
 			break
 		case 'Enter':
 			if ( V.local || $( 'textarea' ).is( ':focus' ) ) return
 			
-			$( '#infoButton' ).find( ':focus' ).trigger( 'click' );
+			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
+			if ( ! $target.length ) $target = $( '#infoOk' );
+			$target.trigger( 'click' );
 			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );
@@ -260,14 +255,7 @@ function info( json ) {
 		var color = I.okcolor ? ' style="background-color:'+ I.okcolor +'"' : '';
 		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( I.oklabel || 'OK' ) +'</a>';
 	}
-	if ( htmlbutton ) {
-		$( '#infoButton' )
-			.html( htmlbutton )
-			.find( '.infobtn' ).prop( 'tabindex', 0 )
-			.removeClass( 'hide' );
-	} else {
-		$( '#infoButton' ).remove();
-	}
+	htmlbutton ? $( '#infoButton' ).html( htmlbutton ) : $( '#infoButton' ).remove();
 	if ( I.button ) {
 		$( '#infoButton' ).on( 'click', '.extrabtn', function() {
 			var buttonfn = I.button[ $( this ).index( '.extrabtn' ) ];
@@ -361,6 +349,7 @@ function info( json ) {
 	if ( ! I.list ) {
 		I.active = true;
 		$( '#infoList' ).html( Object.values( htmls ).join( '' ) );
+		$( '.infobtn' ).prop( 'tabindex', 0 );
 		if ( I.beforeshow ) I.beforeshow();
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
@@ -480,6 +469,7 @@ function info( json ) {
 	var content = '';
 	[ 'header', 'message', 'list', 'footer' ].forEach( k => content += htmls[ k ] );
 	$( '#infoList' ).html( content ).promise().done( function() {
+		$( '#infoTab a:not( .active ), .updn, .i-eye, #infoButton .infobtn' ).prop( 'tabindex', 0 );
 		$( '#infoList input:text' ).prop( 'spellcheck', false );
 		// get all input fields
 		$inputbox = $( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' );
@@ -927,7 +917,7 @@ function infoPower() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
-		, message     : ico( 'raudio i-30 gr' ) +'<a style="font-weight: 300">&ensp; r A u d i o</a>'
+		, message     : ico( 'raudio gr' ) +'&ensp;<a style="font-weight: 300">r A u d i o</a>'
 		, buttonlabel : ico( 'reboot' ) +'Reboot'
 		, buttoncolor : orange
 		, button      : () => infoPowerCommand( 'reboot' )

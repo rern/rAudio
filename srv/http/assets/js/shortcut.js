@@ -14,7 +14,6 @@ var keymedia = {
 	, MediaStop          : 'stop'
 	, MediaTrackPrevious : 'previous'
 	, MediaTrackNext     : 'next'
-	, ' '                : 'toggle'
 }
 if ( localhost ) {
 	keymedia.AudioVolumeDown = 'voldn';
@@ -25,54 +24,104 @@ if ( localhost ) {
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
 	
-	var key   = e.key;
-	var arrow = key in keyarrow;
-	var media = key in keymedia;
-	if ( [ 'Alt', 'Backspace', 'Enter', 'Escape', 'Tab', '#', 'a', 'z' ].includes( key ) || arrow || media ) e.preventDefault();
+	var key      = e.key;
+	var search   = $( '.search:not( .hide )' ).length;
+	if ( search ) {
+		if ( key === 'Escape' ) {
+			$( '.searchclose:not( .hide )' ).trigger( 'click' );
+		} else if ( key === 'Enter' ) {
+			$( '.search:not( .hide ) i' ).trigger( 'click' );
+		}
+		return
+	}
+	
+	var arrow    = key in keyarrow;
+	var media    = key in keymedia;
+	var menu     = $( '.menu:not( .hide )' ).length ;
+	var liplmenu = ! $( '#fader' ).hasClass( 'hide' );
+	if ( [ 'Alt', 'Backspace', 'Tab', ' ' ].includes( key ) || arrow || media ) e.preventDefault();
+	if ( liplmenu ) {
+		var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
+		switch ( key ) {
+			case 'ArrowLeft':
+			case 'ArrowRight':
+				focusNext( $tabs, 'focus', key );
+				return
+			case 'Alt':
+			case 'Escape':
+				menuLibraryPlaylist( $tabs );
+				return
+			case ' ':
+			case 'Enter':
+				menuLibraryPlaylist( $tabs, 'click' );
+				return
+			default:
+				return
+		}
+	}
+// media key ----------------------------------------------------------
+	if ( ! menu && ( media || key === ' ' ) ) {
+		var cmd = key === ' ' ? 'toggle' : keymedia[ key ];
+		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
+		$( '#'+ cmd ).trigger( 'click' );
+		return
+	}
+	
 	switch ( key ) {
+		case 'Alt':
+			if ( V.playback ) {
+				$( '#button-settings' ).trigger( 'click' );
+				return
+			}
+			
+			var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
+			$( '#fader' ).removeClass( 'hide' );
+			$( '.content-top i' ).removeAttr( 'tabindex' );
+			$tabs.prop( 'tabindex', 0 );
+			focusNext( $tabs, 'focus', key );
+			$( '#bar-top, #bar-bottom' ).css( 'z-index', 19 );
+			return
 		case 'Tab':
+			if ( liplmenu ) return
+			
 			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
 			return
 // settings -----------------------------------------------------------
-		case 'Alt':
 		case 'Escape':
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
 				if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
+			} else if ( ! $( '#lyrics' ).hasClass( 'hide' ) ) {
+				$( '#lyricsclose' ).trigger( 'click' );
+			} else if ( ! $( '#bio' ).hasClass( 'hide' ) ) {
+				$( '.bioclose' ).trigger( 'click' );
 			} else {
 				$( '#button-settings' ).trigger( 'click' );
 			}
 			return
 	}
+	
 // context menu -------------------------------------------------------
-	var $contextmenu = $( '.menu:not( .hide )' );
-	if ( $contextmenu.length ) {
+	if ( menu ) {
+		var $menu = $( '.menu:not( .hide )' );
 		if ( arrow ) {
-			focusNext( $contextmenu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
+			focusNext( $menu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
 		} else if ( [ ' ', 'Enter' ].includes( key ) ) {
-			$contextmenu.find( '.active' ).trigger( 'click' );
+			$menu.find( '.active' ).trigger( 'click' );
 		}
-		return
-	}
-// media key ----------------------------------------------------------
-	if ( media ) {
-		var cmd = keymedia[ key ];
-		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
-		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
 // common key -------------------------------------------------------
 	switch ( key ) {
 		case 'Backspace':
-			if ( V.library ) {
-				$( '#button-lib-back' ).trigger( 'click' );
-			} else if ( V.playlist ) {
-				$( '#button-pl-back' ).trigger( 'click' );
-			}
+			if ( V.playback || search ) return
+			
+			$( '#button-'+ ( V.library ? 'lib' : 'pl' ) +'-back:not( .hide )' ).trigger( 'click' );
 			return
 		case '#': // index bar
 		case 'a':
 		case 'z':
+			if ( $( '.search.hide' ).length ) return
 			key = key.toUpperCase();
 			if ( V.library && ! $( '#lib-list .index' ).hasClass( 'hide' ) ) {
 				$( '#lib-index' ).find( 'wh:contains('+ key +')' ).trigger( 'click' );

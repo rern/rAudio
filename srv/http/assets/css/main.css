@@ -989,6 +989,9 @@ i.map.disabled, .map.disabled i {
 	margin: 0 auto;
 	padding : 0 30px;
 }
+#bio i {
+	font-size: 22px;
+}
 #biobanner {
 	width: 100%;
 }

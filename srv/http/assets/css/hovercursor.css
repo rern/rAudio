@@ -108,6 +108,7 @@ li:not( .licover ),
 .bkedit,
 .emptyadd,
 .i-search,
+.infofooter i,
 .infomessage img,
 .infomessage .tagpath,
 .index a,
@@ -149,7 +150,6 @@ li:not( .licover ),
 #refresh,
 #sampling i,
 #status,
-#taglabel,
 #time-band,
 #title,
 #volume-band,
@@ -164,4 +164,10 @@ li:not( .licover ),
 }
 #lib-path a:last-of-type:hover {
 	color: var( --cw );
+}
+.content-top > i:focus-visible,
+#pl-manage i:focus-visible {
+	border-radius: 50%;
+	outline: 2px solid var(--cgl );
+	outline-offset: -5px;
 }

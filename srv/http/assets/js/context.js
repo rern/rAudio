@@ -301,9 +301,9 @@ function tagEditor() {
 	}
 	list( query, function( values ) {
 		name[ 1 ]    = 'Album Artist';
-		var list     = [];
+		var listinfo = [];
 		format.forEach( ( el, i ) => {
-			list.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>', 'text' ] );
+			listinfo.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
 		} );
 		if ( V.library ) {
 			var $img = V.librarytrack ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
@@ -316,14 +316,14 @@ function tagEditor() {
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 					  +'<div>'+ ico( 'folder' ) +' '+ dir;
 		message += V.list.licover ? '</div>' : '<br>'+ ico( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
-		var footer   = '<div id="taglabel">'+ ico( 'help i-22 gr' ) +'&emsp;Label</div>';
-		if ( V.list.licover ) footer += '<div><c> * </c>&ensp;Various values in tracks</div>';
+		var footer   = ico( 'help', '', 'tabindex' ) +'Label';
+		if ( V.list.licover ) footer += '<a style="float: right"><c> * </c>&ensp;Various values in tracks</a>';
 		info( {
 			  icon         : V.playlist ? 'info' : 'tag'
 			, title        : V.playlist ? 'Track Info' : 'Tag Editor'
 			, message      : message
 			, messagealign : 'left'
-			, list         : list
+			, list         : listinfo
 			, footer       : footer
 			, footeralign  : 'left'
 			, boxwidth     : 'max'
@@ -335,20 +335,22 @@ function tagEditor() {
 				} );
 				$( '#infoList .infomessage' ).addClass( 'tagmessage' );
 				$( '#infoList .infofooter' ).addClass( 'tagfooter' );
-				$( '#infoList td i' ).css( 'cursor', 'pointer' );
+				$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
 				if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
-				var tableW = $( '#infoList table' ).width();
-				$( '#infoList' ).on( 'click', '#taglabel', function() {
+				var inputW = parseInt( $( '#infoList input' ).css( 'width' ) );
+				$( '.infofooter i' ).on( 'click', function( e ) {
 					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
+						$( '#infoList input' ).css( 'width', ( inputW - 92 ) +'px' );
 						$( '.taglabel' ).removeClass( 'hide' );
-						$( '#infoList table' ).width( tableW );
 					} else {
+						$( '#infoList input' ).css( 'width', inputW +'px' );
 						$( '.taglabel' ).addClass( 'hide' );
 					}
-				} ).on( 'click', 'table i', function() {
+				} );
+				$( '#infoList' ).on( 'click', 'table i', function() {
 					var $this  = $( this );
-					var mode   = $this.data( 'mode' );
-					if ( [ 'title', 'track' ].includes( mode ) ) return
+					var mode   = $this.prop( 'class' ).replace( 'i-', '' );
+					if ( [ 'track', 'title' ].includes( mode ) ) return
 					
 					var string = $this.parent().next().find( 'input' ).val();
 					if ( ! string ) return
@@ -542,8 +544,8 @@ var listwebradio = {
 		  [ 'Name',    'text', { colspan: 3 } ]
 		, [ 'URL',     'text', { colspan: 3 } ]
 		, [ 'Charset', 'text', { sameline: true } ]
-		, [ '',        '',     { suffix: '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help i-22 gr' ), sameline: true } ]
-		, [ '',        '',     { suffix: '<gr>New folder</gr>&ensp;'+ ico( 'folder-plus i-22' ) } ]
+		, [ '',        '',     { suffix: '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help gr' ), sameline: true } ]
+		, [ '',        '',     { suffix: '<gr>New folder</gr> <i class="i-folder-plus" tabindex="0"></i>' } ]
 	]
 	, button : () => {
 		$( '#infoList tr' ).last().find( 'td' ).eq( 1 ).css( 'width', '190px' );

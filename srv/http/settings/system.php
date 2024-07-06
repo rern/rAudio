@@ -378,6 +378,14 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	$indexhtml.= '<a>'.$i.'</a>';
 	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
 }
+$menu       = [
+	  'info'    => 'info'
+	, 'forget'  => 'remove'
+	, 'remount' => 'connect'
+	, 'unmount' => 'close'
+];
+$menuhtml   = '';
+foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
 ?>
 <div id="divabout" class="section">
 	<a href="https://github.com/rern/rAudio/discussions" tabindex="-1"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
@@ -412,9 +420,4 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	</div>
 </div>
 
-<div id="menu" class="menu hide">
-<a class="info"><?=i( 'info' )?>Info</a>
-<a class="forget"><?=i( 'remove' )?>Forget</a>
-<a class="remount"><?=i( 'connect' )?>Re-mount</a>
-<a class="unmount"><?=i( 'close' )?>Unmount</a>
-</div>
+<div id="menu" class="menu hide"><?=$menuhtml?></div>
