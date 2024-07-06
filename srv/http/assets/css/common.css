@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1719652658' );
+	src         : url( '/assets/fonts/rern.woff2?v=1720230351' );
 }
 @font-face {
 	font-family : Lato;
@@ -890,6 +890,9 @@ input[ type=password ] {
 	border: none;
 	font-size: 16px;
 	font-family: Lato;
+}
+input[ type=password ]::-ms-reveal {
+	display: none;
 }
 .col-r input[ type=text ],
 input[ type=text ]:disabled,
