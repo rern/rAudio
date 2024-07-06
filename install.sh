@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240704
+# 20240707
 dir=/srv/http/assets/img/guide
 if [[ -e $dir/59.jpg ]]; then
 	rm -f $dir/*

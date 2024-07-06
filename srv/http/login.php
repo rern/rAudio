@@ -17,6 +17,9 @@
 	border         : 1px solid var( --cg );
 	text-align     : center;
 }
+#pwd::-ms-reveal {
+	display: none;
+}
 #toggle {
 	font-size      : 20px;
 	vertical-align : -3px;
@@ -44,8 +47,8 @@
 var E = {};
 [ 'infoOk', 'infoOverlay', 'login', 'pwd', 'toggle' ].forEach( ( el ) => E[ el ] = document.getElementById( el ) );
 
-E.pwd.trigger( 'focus' );
-document.body.addEventListener( 'keyup', ( e ) => {
+E.pwd.focus();
+document.body.addEventListener( 'keydown', e => {
 	if ( e.key === 'Enter' ) E.infoOverlay.classList.contains( 'hide' ) ? E.login.click() : E.infoOk.click();
 } );
 E.toggle.addEventListener( 'click', () => {

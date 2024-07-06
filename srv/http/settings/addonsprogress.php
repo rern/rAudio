@@ -99,6 +99,17 @@ E.container.classList.remove( 'hide' );
 E.close.addEventListener( 'click', () => location.href = '<?=$hrefback?>' );
 [ E.infobtn, E.infox ].forEach( el => el.addEventListener( 'click', () => E.info.remove() ) );
 scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
+document.body.addEventListener( 'keydown', e => {
+	switch( e.key ) {
+		case 'Enter':
+		case 'Escape':
+			E.info.classList.add( 'hide' );
+			break
+		case 'x':
+			if ( e.ctrlKey ) E.close.click();
+			break
+	}
+} );
 </script>
 <?php
 // ......................................................................................
