@@ -20,6 +20,14 @@ if ( localhost ) {
 	keymedia.AudioVolumeMute = 'volmute';
 	keymedia.AudioVolumeUp   = 'volup';
 }
+function escCtrlX( key ) {
+	var $target = $( '#bio:not( .hide ), #lyrics:not( .hide )' );
+	if ( $target.length ) {
+		$target.find( '.i-close' ).trigger( 'click' );
+	} else if ( key === 'Escape' ) {
+		$( '#button-settings' ).trigger( 'click' );
+	}
+}
 
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
@@ -91,13 +99,12 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			if ( $( '.menu:not(.hide)' ).length ) {
 				$( '.menu' ).addClass( 'hide' );
 				if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
-			} else if ( ! $( '#lyrics' ).hasClass( 'hide' ) ) {
-				$( '#lyricsclose' ).trigger( 'click' );
-			} else if ( ! $( '#bio' ).hasClass( 'hide' ) ) {
-				$( '.bioclose' ).trigger( 'click' );
 			} else {
-				$( '#button-settings' ).trigger( 'click' );
+				escCtrlX( key );
 			}
+			return
+		case 'x':
+			if ( e.ctrlKey ) escCtrlX( key );
 			return
 	}
 	

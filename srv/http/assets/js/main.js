@@ -985,7 +985,7 @@ $( '#bio' ).on( 'click', '.bioback', function() {
 	var getsimilar = V.bioartist.length > 1 ? 'getsimilar' : '';
 	bio( V.bioartist.pop(), getsimilar );
 } );
-$( '#bio' ).on( 'click', '.bioclose', function() {
+$( '#bio' ).on( 'click', '.i-close', function() {
 	V.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
 	if ( 'observer' in V ) V.observer.disconnect();
@@ -1938,7 +1938,7 @@ $( '#lyricsedit' ).on( 'click', function() {
 $( '#lyricsrefresh' ).on( 'click', function() {
 	lyricsGet();
 } );
-$( '#lyricsclose' ).on( 'click', function() {
+$( '#lyrics' ).on( 'click', '.i-close',  function() {
 	if ( $( '#lyricstextarea' ).val() === V.lyrics || ! $( '#lyricstextarea' ).val() ) {
 		lyricsHide();
 	} else {
