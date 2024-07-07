@@ -1110,14 +1110,14 @@ function psPower( data ) {
 function pageActive() {
 	if ( V.off ) return
 	
-	if ( ws ) {
+	if ( ws && ws.readyState === 1 ) {
 		V.timeoutreload = true;
 		setTimeout( () => { // reconnect if ws not response on wakeup
 			if ( V.timeoutreload ) websocketReconnect();
 		}, 300 );
 		ws.send( '"ping"' );
 	} else {
-		websocketConnect();
+		websocketReconnect();
 	}
 	if ( V.pageactive ) return
 	
@@ -1194,11 +1194,10 @@ function websocketConnect( ip ) {
 }
 function websocketReconnect() {
 	$.post( 'cmd.php', { cmd: 'startupready' }, ready => {
-		if ( ready ) {
-			V.timeoutreload ? location.reload() : websocketConnect();
-		} else {
-			setTimeout( () => websocketReconnect(), 1000 );
-		}
+		if ( ready ) V.timeoutreload ? location.reload() : websocketConnect();
+	} ).fail( () => {
+		V.timeoutreload = true;
+		setTimeout( websocketReconnect, 1000 );
 	} );
 }
 /* bash
