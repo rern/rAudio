@@ -43,22 +43,22 @@ if [[ $nas ]]; then
 	while read line; do
 		source=${line/^*}
 		mountpoint=${line/*^}
-		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
+		mounted=$( grep -q " ${mountpoint// /\\\\040} " /proc/mounts && echo true || echo false )
+		if [[ $mounted == true ]]; then
+			mounted=true
+			used_size=( $( timeout 1 df -h --output=used,size,source | grep "$source" ) )
+			size=${used_size[0]}B/${used_size[1]}B
+		else
+			mounted=false
+			size=
+		fi
 		list+=',{
   "icon"       : "networks"
-, "mountpoint" : "'$( stringEscape $mountpoint )'"'
-		if [[ $used_size ]]; then
-			list+='
-, "mounted"    : '$( grep -q " ${mountpoint// /\\\\040} " /proc/mounts && echo true || echo false )'
+, "mountpoint" : "'$( stringEscape $mountpoint )'"
+, "mounted"    : '$mounted'
 , "source"     : "'$source'"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
 }'
-		else
-			list+='
-, "mounted"    : false
-, "source"     : "'$source'"
-}'
-		fi
 	done <<< $nas
 fi
 echo "[ ${list:1} ]"
