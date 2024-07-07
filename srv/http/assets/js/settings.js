@@ -364,6 +364,8 @@ $( document ).on( 'keydown', function( e ) {
 				$( '.menu' ).addClass( 'hide' );
 			} else if ( V.select2 ) {
 				$( '.select2-hidden-accessible' ).select2( 'close' );
+			} else if ( ! $( '#data' ).hasClass( 'hide' ) ) {
+				$( '#button-data' ).trigger( 'click' );
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
 				$( '#fader' ).addClass( 'hide' );
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
