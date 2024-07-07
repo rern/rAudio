@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240713
+if [[ -e $dirsystem/lcdcharconf.py ]]; then
+	mv $dirsystem/lcdchar{conf.py,.conf}
+	sed -i -E 's/False|"//g' $dirsystem/lcdchar.conf
+fi
 # 20240707
 dir=/srv/http/assets/img/guide
 if [[ -e $dir/59.jpg ]]; then

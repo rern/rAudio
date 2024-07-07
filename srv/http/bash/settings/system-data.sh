@@ -181,7 +181,7 @@ data='
 , "ipsub"             : "'$( ipAddress sub )'"
 , "lcdchar"           : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"       : '$lcdcharaddr'
-, "lcdcharconf"       : '$( conf2json lcdcharconf.py )'
+, "lcdcharconf"       : '$( conf2json lcdchar.conf )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$( $dirsettings/system-storage.sh )'
 , "mirror"            : "'$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )'"
