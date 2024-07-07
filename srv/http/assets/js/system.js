@@ -210,13 +210,13 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	V.li      = $this;
-	var i    = $this.index()
-	var list = S.list[ i ];
-	if ( S.shareddata && list.mountpoint === '/mnt/MPD/NAS/data' ) {
+	var i     = $this.index()
+	var list  = S.list[ i ];
+	if ( list.mountpoint === '/mnt/MPD/NAS/data' ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
-			, message : '<wh>Shared Data '+ ico( 'networks' ) +'</wh> is currently enabled.'
+			, message : 'Used by <wh>Shared Data '+ ico( 'networks' ) +'</wh>'
 		} );
 		return
 	}
@@ -1190,11 +1190,15 @@ function renderStorage() {
 			var dataunmounted = ' data-unmounted="1"';
 			var dot = '<red>&ensp;•&ensp;</red>';
 		}
-		html += '<li '+ dataunmounted;
-		html += '>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
-		html += '<gr class="source">'+ val.source +'</gr>&ensp;';
-		html +=  val.size ? val.size : '';
-		html += '</li>';
+		if ( val.mountpoint === '/mnt/MPD/NAS/data' ) {
+			var wg   = 'gr';
+			var size = '<gr>(Shared Data)</gr>';
+		} else {
+			var wg   = 'wh';
+			var size = val.size || '';
+		}
+		html += '<li '+ dataunmounted +'>'+ ico( val.icon ) +'<'+ wg +' class="mountpoint">'+ val.mountpoint +'</'+ wg +'>'
+				+ dot +'<gr class="source">'+ val.source +'</gr>&ensp;'+ size +'</li>';
 	} );
 	$( '#list' ).html( html );
 	if ( $( '#list .i-usbdrive' ).length ) {
