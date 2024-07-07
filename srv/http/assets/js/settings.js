@@ -378,11 +378,15 @@ $( document ).on( 'keydown', function( e ) {
 				$focus.trigger( 'focus' );
 			}
 			break
-		case 'Tab':
-			document.activeElement.scrollIntoView( { block: 'center' } );
-			break
 		case 'Backspace':
 			$( '.section:not( .hide ) .i-back' ).trigger( 'click' );
+			break
+		case 'F1':
+			e.preventDefault();
+			$( '.helphead' ).trigger( 'click' );
+			break
+		case 'Tab':
+			document.activeElement.scrollIntoView( { block: 'center' } );
 			break
 		case 'x':
 			if ( e.ctrlKey ) $( '#close' ).trigger( 'click' );

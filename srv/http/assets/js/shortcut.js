@@ -89,11 +89,6 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			focusNext( $tabs, 'focus', key );
 			$( '#bar-top, #bar-bottom' ).css( 'z-index', 19 );
 			return
-		case 'Tab':
-			if ( liplmenu ) return
-			
-			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
-			return
 // settings -----------------------------------------------------------
 		case 'Escape':
 			if ( $( '.menu:not(.hide)' ).length ) {
@@ -102,6 +97,15 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			} else {
 				$( '#button-settings' ).trigger( 'click' );
 			}
+			return
+		case 'F1':
+			e.preventDefault();
+			$( '#guide' ).trigger( 'click' );
+			return
+		case 'Tab':
+			if ( liplmenu ) return
+			
+			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
 			return
 	}
 	
