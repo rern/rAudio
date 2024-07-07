@@ -826,25 +826,25 @@ function infoMount( nfs ) {
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			var $input      = $( '#infoList input' );
-			var $mountpoint = $input.eq( 1 );
+			var $input = $( '#infoList input' );
+			var $name  = $input.eq( 1 );
 			$input.eq( 3 ).prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
 			$input.slice( 4 ).prop( 'placeholder', '(optional)' );
 			if ( shareddata ) {
-				$mountpoint
+				$name
 					.val( 'data' )
 					.prop( 'disabled', true );
 			} else {
-				$mountpoint.prop( 'placeholder', 'Name to display in Library' );
-				$mountpoint.on( 'input', function() {
-					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
+				$name.prop( 'placeholder', 'Name to display in Library' );
+				$name.on( 'input', function() {
+					setTimeout( () => $name.val( $name.val().replace( /\//g, '' ) ), 0 );
 				} );
 			}
 		}
 		, cancel     : switchCancel
 		, ok         : () => {
 			var infoval = infoVal();
-			if ( infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
+			if ( ! shareddata && infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
 			infoval.SHAREDDATA = shareddata;
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );

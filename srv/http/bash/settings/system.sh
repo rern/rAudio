@@ -402,7 +402,6 @@ shareddatadisable )  # server rAudio / other server
 	systemctl restart devmon@http
 	if grep -q $dirshareddata /etc/fstab; then # other server
 		umount -l $dirshareddata &> /dev/null
-		rm -rf $dirshareddata $dirnas/.mpdignore
 		fstab=$( grep -v $dirshareddata /etc/fstab )
 		rm -rf $dirshareddata $dirnas/.mpdignore
 	else                                       # server rAudio
