@@ -1197,6 +1197,7 @@ function websocketReconnect() {
 		if ( ready ) V.timeoutreload ? location.reload() : websocketConnect();
 	} ).fail( () => {
 		V.timeoutreload = true;
+		loader();
 		setTimeout( websocketReconnect, 1000 );
 	} );
 }
