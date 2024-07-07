@@ -12,6 +12,7 @@ var iconwarning = ico( 'warning yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
+var ws;
 
 // ----------------------------------------------------------------------
 /*
@@ -1092,7 +1093,6 @@ function psNotify( data ) {
 function psPower( data ) {
 	loader();
 	ws        = null;
-	V.wsready = false;
 	V[ data.type ] = true;
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 	if ( V.off ) {
@@ -1128,7 +1128,6 @@ function pageInactive() {
 	if ( V.local || V.debug ) return // V.local from select2
 	
 	V.pageactive = false;
-	V.wsready    = false;
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
 }
@@ -1138,8 +1137,6 @@ window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 
-// websocket
-var ws            = null;
 function volumeMuteToggle() {
 	if ( S.volumemute ) {
 		S.volume     = S.volumemute;
@@ -1164,15 +1161,13 @@ function volumeSet( type ) { // type: mute / unmute
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {
-	var url      = 'ws://'+ ( ip || location.host ) +':8080';
-	if ( V.wsready ) return
+	if ( ws && ws.readyState === 1 ) return
 	
-	ws           = new WebSocket( url );
+	ws           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' );
 	ws.onopen    = () => {
 		var interval = setInterval( () => {
 			if ( ws.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
 				clearInterval( interval );
-				V.wsready = true;
 				ws.send( '{ "client": "add" }' );
 				if ( V.reboot ) {
 					delete V.reboot
@@ -1237,7 +1232,7 @@ function bash( args, callback, json ) {
 		var filesh = page ? 'settings/'+ page +'.sh': 'cmd.sh';
 	}
 	// websocket
-	if ( ! callback && V.wsready ) {
+	if ( ! callback && ws.readyState === 1 ) {
 		var data = '{ "filesh": [ "'+ filesh +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
 		if ( V.debug ) {
 			bashConsoleLog( data );
