@@ -21,19 +21,19 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 			[[ $chip == 1 || $chip == 7 ]] && spimpdoled=1 || i2cmpdoled=1
 		fi
 		config=$( grep -Ev 'dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate' <<< $config )
-		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+="
-dtparam=i2c_arm=on"
+		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+='
+dtparam=i2c_arm=on'
 		[[ $i2cmpdoled ]] && config+="
 dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
-		[[ $tft || $spimpdoled ]] && config+="
-dtparam=spi=on"
+		[[ $tft || $spimpdoled ]] && config+='
+dtparam=spi=on'
 		
 		module=$( grep -Ev 'i2c-bcm2708|i2c-dev|^#|^\s*$' $filemodule 2> /dev/null )
-		[[ $tft || $i2clcdchar ]] && module+="
-i2c-bcm2708"
+		[[ $tft || $i2clcdchar ]] && module+='
+i2c-bcm2708'
 		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then
-			module+="
-i2c-dev"
+			module+='
+i2c-dev'
 			! ls /dev/i2c* &> /dev/null && rebooti2c=1
 		fi
 		grep -Ev '^#|^\s*$' <<< $module | sort -u > $filemodule
