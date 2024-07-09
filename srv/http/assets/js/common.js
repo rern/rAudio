@@ -495,9 +495,6 @@ function info( json ) {
 			var $this = $( el );
 			if ( $this.find( 'input:checkbox, input:radio' ).length ) $this.css( 'height', '36px' );
 		} );
-		// fix: jumping
-		$( '.container' ).css( 'margin-top', '0' );
-		setTimeout( () => $( '.container' ).css( 'margin-top', '' ), 0 );
 		// show
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		// set at current scroll position

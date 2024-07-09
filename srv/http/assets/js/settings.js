@@ -425,6 +425,11 @@ $( '.playback' ).on( 'click', function() { // for player and camilla
 	bash( [ 'cmd.sh', 'mpcplayback' ] );
 } );
 $( '.helphead' ).on( 'click', function() {
+	if ( window.innerHeight < 571 ) {
+		$( '#bar-bottom' ).toggle();
+		return
+	}
+	
 	var $this  = $( this );
 	var active = $this.hasClass( 'bl' );
 	$this.toggleClass( 'bl' );
