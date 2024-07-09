@@ -497,7 +497,7 @@ function info( json ) {
 		} );
 		// fix: jumping
 		$( '.container' ).css( 'margin-top', '0' );
-		setTimeout( () => $( '.container' ).css( 'margin-top', '40px' ), 0 );
+		setTimeout( () => $( '.container' ).css( 'margin-top', '' ), 0 );
 		// show
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		// set at current scroll position
