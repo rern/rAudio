@@ -347,6 +347,7 @@ codered  {
 	line-height: 38px;
 	text-align: center;
 	font-size: 24px;
+	color: var( --cg60 );
 	text-shadow: var( --shadow-text );
 }
 .head .i-close {

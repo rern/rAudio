@@ -260,15 +260,11 @@ heading .i-search {
 heading i.disabled {
 	color: var( --cg ) !important;
 }
-.page-icon {
-	background: var( --cm );
-}
-.helphead,
-.close {
+.head i:not( .page-icon ) {
 	float: right;
 }
-.helphead {
-	color: var( --cg60 )
+.page-icon {
+	background: var( --cm );
 }
 #divsoftlimit {
 	margin-top: 20px;
@@ -497,7 +493,6 @@ input.disabled + .switchlabel:after {
 	margin: 5px 0 10px 0;
 }
 .container {
-	position: fixed;
 	height: calc( 100% - 80px );
 	margin: 40px 0;
 	padding: 0 calc( ( 100% - 650px ) / 2 ) 80px;
@@ -601,13 +596,13 @@ input.disabled + .switchlabel:after {
 	float: left;
 	width: 170px;
 }
+.head .i-gear {
+	display: none;
+}
 
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
-	.helphead::before {
-		content: '\f509';
-		color: var( --cg60 );
-	}
+	.head .i-gear { display: inline-block }
 	.container { height: calc( 100% - 40px ) }
 	#bar-bottom { display: none }
 }

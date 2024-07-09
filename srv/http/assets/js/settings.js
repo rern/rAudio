@@ -424,12 +424,10 @@ $( '.playback' ).on( 'click', function() { // for player and camilla
 	playbackButton();
 	bash( [ 'cmd.sh', 'mpcplayback' ] );
 } );
+$( '.head .i-gear' ).on( 'click', function() {
+	$( '#bar-bottom' ).toggle();
+} );
 $( '.helphead' ).on( 'click', function() {
-	if ( window.innerHeight < 571 ) {
-		$( '#bar-bottom' ).toggle();
-		return
-	}
-	
 	var $this  = $( this );
 	var active = $this.hasClass( 'bl' );
 	$this.toggleClass( 'bl' );
