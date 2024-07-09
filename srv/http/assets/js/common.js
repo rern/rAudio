@@ -151,23 +151,26 @@ function focusNext( $tabs, target, key ) {
 		$next[ 0 ].scrollIntoView( { block: 'center' } );
 	}
 }
+function focusNextTabs() {
+	var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
+		if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide, .select2-selection' ) ) return $( el )
+	} );
+	return $tabs
+}
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
 	if ( ! I.active ) return
 	
 	var key = e.key;
-	if ( [ 'ArrowDown', 'ArrowUp', 'Tab' ].includes( key ) ) e.preventDefault();
-	if ( key === 'Tab' && e.shiftKey ) key = 'ArrowUp';
+	if ( key === 'Tab' ) key = e.shiftKey ? 'ArrowUp' : 'ArrowDown';
 	switch ( key ) {
 		case 'ArrowUp':
 		case 'ArrowDown':
 		case 'Tab':
-			if ( $( '.select2-container--open' ).length ) return
+			e.preventDefault();
+			if ( V.select2 ) return
 			
-			var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
-				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide, .select2-selection' ) ) return $( el )
-			} );
-			focusNext( $tabs, 'focus', key );
+			focusNext( focusNextTabs(), 'focus', key );
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
 		case ' ':
@@ -179,11 +182,14 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			$focus.trigger( 'click' );
 			break
 		case 'Enter':
-			if ( V.local || $( 'textarea' ).is( ':focus' ) ) return
+			if ( V.select2 || $( 'textarea' ).is( ':focus' ) ) return
 			
 			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
-			if ( ! $target.length ) $target = $( '#infoOk' );
-			$target.trigger( 'click' );
+			if ( $target.length ) {
+				$target.trigger( 'click' );
+			} else {
+				$( '#infoOk' ).trigger( 'focus' ).trigger( 'click' );
+			}
 			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );
@@ -1046,8 +1052,16 @@ function selectSet( $select ) {
 			local(); // fix: onblur / onpagehide / Enter
 			setTimeout( () => {
 				V.select2 = false;
-				$( this ).trigger( 'focus' );
-			}, V.select2 ? 1200 : 0 );
+				var $tabs = focusNextTabs();
+				$tabs
+					.removeClass( 'focus' )
+					.each( ( i, el ) => {
+						if ( this === el ) {
+							$tabs.eq( i + 1 ).trigger( 'focus' );
+							return false
+						}
+				} );
+			}, 300 );
 		} ).each( ( i, el ) => {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
