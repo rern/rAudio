@@ -313,7 +313,7 @@ Note:
 				Everyone - Full Control
 	Clients:
 	 · {$FiLabel( 'Shared Data', 'networks' )} Add the created share
-	 · Data on 1st connected client will be used as initial shared.
+	 · Data and storage on 1st client will be used as initial shares.
 EOF
 	]
 ];
