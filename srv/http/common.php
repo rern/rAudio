@@ -93,13 +93,16 @@ $html.= '
 </head>
 <body>
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>';
-if ( ! $addon_guide )  $html.= '
+if ( ! $addon_guide )  {
+	$pageicon = $page ? i( $page.' page-icon' ) : '';
+	$html    .= '
 	<div id="loader">'.$logosvg.'</div>
 	<div id="banner" class="hide"></div>
-	<div id="button-data" class="head hide"><i class="i-close"></i><span class="title">'.$title.'-DATA</span></div>
+	<div id="button-data" class="head hide">'.$pageicon.i( 'close' ).'<span class="title">'.$title.'-DATA</span></div>
 	<pre id="data" class="hide"></pre>
 	<div id="debug"></div>
 ';
+}
 if ( $keyboard )       $html.= '
 	<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
 ';
