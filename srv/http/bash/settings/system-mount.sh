@@ -56,7 +56,24 @@ for i in {1..5}; do
 done
 
 if [[ $SHAREDDATA ]]; then
-	$dirsettings/system.sh shareddataset
+	mv /mnt/MPD/{SD,USB} /mnt
+	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
+	mkdir -p $dirbackup
+	if [[ ! -e $dirshareddata/mpd ]]; then
+		rescan=1
+		sharedDataCopy
+	fi
+	sharedDataBackupLink
+	appendSortUnique $( ipAddress ) $filesharedip
+	mpc -q clear
+	systemctl restart mpd
+	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
+rescan
+
+CMD ACTION PATHMPD"
+	pushRefresh
+	pushData refresh '{ "page": "features", "shareddata": true }'
 else
 	pushRefresh system
 fi

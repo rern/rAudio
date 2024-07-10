@@ -28,13 +28,17 @@ dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
 		[[ $tft || $spimpdoled ]] && config+='
 dtparam=spi=on'
 		
-		module=$( grep -Ev 'i2c-bcm2708|i2c-dev|^#|^\s*$' $filemodule 2> /dev/null )
+		module=$( grep -Ev 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $filemodule 2> /dev/null )
 		[[ $tft || $i2clcdchar ]] && module+='
 i2c-bcm2708'
 		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then
 			module+='
 i2c-dev'
 			! ls /dev/i2c* &> /dev/null && rebooti2c=1
+		elif grep -q wm8960-soundcard <<< $config; then
+			module+='
+i2c-dev
+snd-soc-wm8960'
 		fi
 		grep -Ev '^#|^\s*$' <<< $module | sort -u > $filemodule
 		[[ ! $rebooti2c ]] && ! cmp -s /tmp/raspberrypi.conf $filemodule && rebooti2c=1
@@ -51,26 +55,6 @@ i2c-dev'
 		notify $CMD "$label" 'Reboot required.' 5000
 		appendSortUnique $CMD $dirshm/reboot
 	fi
-}
-sharedDataSet() {
-	mv /mnt/MPD/{SD,USB} /mnt
-	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
-	systemctl restart devmon@http
-	mkdir -p $dirbackup
-	if [[ ! -e $dirshareddata/mpd ]]; then
-		rescan=1
-		sharedDataCopy
-	fi
-	sharedDataBackupLink
-	appendSortUnique $( ipAddress ) $filesharedip
-	mpc -q clear
-	systemctl restart mpd
-	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
-rescan
-
-CMD ACTION PATHMPD"
-	pushRefresh
-	pushData refresh '{ "page": "features", "shareddata": true }'
 }
 soundProfile() {
 	local lan mtu swappiness txqueuelen
@@ -199,6 +183,8 @@ gpio=25=op,dh"
 		if [[ $APLAYNAME == cirrus-wm5102 ]]; then
 			echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 			touch /boot/cirrus
+		elif [[ $APLAYNAME == wm8960-soundcard ]]; then
+			i2cset=1
 		fi
 	else
 		config+="
@@ -414,9 +400,6 @@ shareddatadisable )  # server rAudio / other server
 	systemctl restart mpd
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": false }'
-	;;
-shareddataset )
-	sharedDataSet
 	;;
 softlimit )
 	config=$( grep -v temp_soft_limit /boot/config.txt )

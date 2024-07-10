@@ -385,6 +385,7 @@ sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
 	cp $dirsystem/{display,order}.json $dirshareddata
+	awk '/mnt.MPD.NAS/ && !/mnt.MPD.NAS.data/' /etc/fstab > $dirshareddata/source
 	touch $dirshareddata/order.json
 }
 sharedDataReset() {
