@@ -387,8 +387,15 @@ shareddatadisable )  # server rAudio / other server
 	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
 	if grep -q $dirshareddata /etc/fstab; then # other server
-		umount -l $dirshareddata &> /dev/null
 		fstab=$( grep -v $dirshareddata /etc/fstab )
+		readarray -t source <<< $( awk '{print $2}' $dirshareddata/source )
+		for s in "${source[@]}"; do
+			mp=${s//\040/ }
+			umount -l "$mp"
+			rmdir "$mp" &> /dev/null
+			fstab=$( grep -v ${mp// /\\\\040} <<< $fstab )
+		done
+		umount -l $dirshareddata &> /dev/null
 		rm -rf $dirshareddata $dirnas/.mpdignore
 	else                                       # server rAudio
 		umount -l $dirnas &> /dev/null

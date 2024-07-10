@@ -185,11 +185,8 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			if ( V.select2 || $( 'textarea' ).is( ':focus' ) ) return
 			
 			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
-			if ( $target.length ) {
-				$target.trigger( 'click' );
-			} else {
-				$( '#infoOk' ).trigger( 'focus' ).trigger( 'click' );
-			}
+			if ( ! $target.length ) $target = $( '#infoOk' );
+			$target.trigger( 'focus' ).trigger( 'click' );
 			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );
@@ -608,6 +605,7 @@ function info( json ) {
 function infoButtonCommand( fn, cancel ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( cancel ) delete I.oknoreset;
+	if ( I.prompt ) $( '#infoOverlay' ).addClass( 'hide' );
 	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
 	infoReset();

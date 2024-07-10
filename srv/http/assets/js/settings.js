@@ -84,7 +84,7 @@ function list2JSON( list ) {
 function contextMenu() {
 	$( '#menu' )
 		.removeClass( 'hide' )
-		.css( 'top', V.li.offset().top + 48 );
+		.css( 'top', V.li.offset().top + 8 );
 	elementScroll( $( '#menu' ) );
 }
 function elementScroll( $el ) {

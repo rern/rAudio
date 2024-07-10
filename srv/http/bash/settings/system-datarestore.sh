@@ -57,7 +57,9 @@ fi
 mountpoints=$( grep $dirnas /etc/fstab | awk '{print $2}' )
 if [[ $mountpoints ]]; then
 	while read mountpoint; do
-		mkdir -p "${mountpoint//\040/ }"
+		mp=${mountpoint//\040/ }
+		mkdir -p "$mp"
+		chown mpd:audio "$mp"
 	done <<< $mountpoints
 fi
 [[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus

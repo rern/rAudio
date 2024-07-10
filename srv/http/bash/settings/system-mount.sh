@@ -14,9 +14,6 @@ else # server rAudio client
 	mountpoint=$dirnas
 	SHARE=$dirnas
 fi
-umount -ql "$mountpoint"
-mkdir -p "$mountpoint"
-chown mpd:audio "$mountpoint"
 share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 if [[ $PROTOCOL == cifs ]]; then
 	source="//$IP/$share"
@@ -32,28 +29,7 @@ else
 	options=defaults,noauto,bg,soft,timeo=5
 fi
 [[ $OPTIONS ]] && options+=,$OPTIONS
-fstab="\
-$( < /etc/fstab )
-${source// /\\040}  ${mountpoint// /\\040}  $PROTOCOL  ${options// /\\040}  0  0"
-mv /etc/fstab{,.backup}
-column -t <<< $fstab > /etc/fstab
-systemctl daemon-reload
-std=$( mount "$mountpoint" 2>&1 )
-if [[ $? != 0 ]]; then
-	mv -f /etc/fstab{.backup,}
-	rmdir "$mountpoint"
-	systemctl daemon-reload
-	sed -n '1 {s/.*: //; p}' <<< $std
-	exit
-# --------------------------------------------------------------------
-else
-	rm /etc/fstab.backup
-fi
-
-for i in {1..5}; do
-	sleep 1
-	mountpoint -q "$mountpoint" && break
-done
+mountpointSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
 
 if [[ $SHAREDDATA ]]; then
 	mv /mnt/MPD/{SD,USB} /mnt
@@ -72,10 +48,7 @@ if [[ $SHAREDDATA ]]; then
 rescan
 
 CMD ACTION PATHMPD"
-	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": true }'
-else
-	pushRefresh system
 fi
-
+pushRefresh system
 pushDirCounts nas

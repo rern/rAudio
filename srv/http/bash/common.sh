@@ -262,6 +262,30 @@ killProcess() {
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
+mountpointSet() {
+	umount -ql "$1"
+	mkdir -p "$1"
+	chown mpd:audio "$1"
+	cp -f /etc/fstab /tmp
+	fstab="\
+$( < /etc/fstab )
+$2"
+	column -t <<< $fstab > /etc/fstab
+	systemctl daemon-reload
+	std=$( mount "$1" 2>&1 )
+	if [[ $? != 0 ]]; then
+		mv -f /tmp/fstab /etc
+		rmdir "$1"
+		systemctl daemon-reload
+		sed -n '1 {s/.*: //; p}' <<< $std
+		exit
+	# --------------------------------------------------------------------
+	fi
+	for i in {1..10}; do
+		sleep 1
+		mountpoint -q "$1" && break
+	done
+}
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
@@ -385,19 +409,15 @@ sharedDataBackupLink() {
 		readarray -t source <<< $( < $dirshareddata/source )
 		for s in "${source[@]}"; do
 			ip_share=$( sed 's/ .*//; s/\\040/ /g' <<< $s )
-			if ! grep -q "^$ip_share" <<< $fstab; then
-				echo "$s" >> /etc/fstab
-				reload=1
-			fi
+			! grep -q "^$ip_share" <<< $fstab && mountpointSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
 		done
-		[[ $reload ]] && systemctl daemon-reload
 	fi
 }
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
 	cp $dirsystem/{display,order}.json $dirshareddata
-	grep /mnt/MPD/NAS/ /etc/fstab | grep -v '/mnt/MPD/NAS/data ' > $dirshareddata/source
+	grep $dirnas /etc/fstab | grep -v "$dirnas/data " > $dirshareddata/source
 	touch $dirshareddata/order.json
 }
 sharedDataReset() {
