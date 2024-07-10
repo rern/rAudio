@@ -380,12 +380,24 @@ sharedDataBackupLink() {
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
 	appendSortUnique data $dirnas/.mpdignore
+	if [[ -e $dirshareddata/source ]]; then
+		fstab=$( sed 's/\\040/ /g' /etc/fstab )
+		readarray -t source <<< $( < $dirshareddata/source )
+		for s in "${source[@]}"; do
+			ip_share=$( sed 's/ .*//; s/\\040/ /g' <<< $s )
+			if ! grep -q "^$ip_share" <<< $fstab; then
+				echo "$s" >> /etc/fstab
+				reload=1
+			fi
+		done
+		[[ $reload ]] && systemctl daemon-reload
+	fi
 }
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
 	cp $dirsystem/{display,order}.json $dirshareddata
-	awk '/mnt.MPD.NAS/ && !/mnt.MPD.NAS.data/' /etc/fstab > $dirshareddata/source
+	grep /mnt/MPD/NAS/ /etc/fstab | grep -v '/mnt/MPD/NAS/data ' > $dirshareddata/source
 	touch $dirshareddata/order.json
 }
 sharedDataReset() {
