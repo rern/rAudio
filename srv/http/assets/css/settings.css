@@ -264,6 +264,7 @@ heading i.disabled {
 	float: right;
 }
 .page-icon {
+	color: var( --cw ) !important;
 	background: var( --cm );
 }
 #divsoftlimit {
