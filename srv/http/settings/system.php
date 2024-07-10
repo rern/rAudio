@@ -85,7 +85,7 @@ $b_add Add network storage
  · USB drives  Will be found and mounted automatically.
  · Commands used by $b_add Add network storage:
 <pre class="gr">
-mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
+mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>" <g># NAME "data": reserved for Shared Data</g>
 
 <g># CIFS: no user - username=guest, no password - password=""</g>
 mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
