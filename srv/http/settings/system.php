@@ -292,7 +292,7 @@ Connect shared data as client for:
  · Display order of Library home
 
 Note:
- · Enabled - $b_microsd SD and $b_usbdrive USB:
+ • Enabled - $b_microsd SD and $b_usbdrive USB:
 	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
 	 · Not availble in Library home
 
@@ -301,7 +301,7 @@ Note:
 	Clients: {$FiLabel( 'Shared Data', 'networks' )} Type ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
-	Server: Create a share for data with full permissions
+	Server: Create a share for <c>data</c> with full permissions
 	 · Linux:
 		NFS: <c>777</c>
 		CIFS (SMB): <c>read only = no</c>
@@ -312,8 +312,11 @@ Note:
 			<btn>Security</btn>
 				Everyone - Full Control
 	Clients:
-	 · {$FiLabel( 'Shared Data', 'networks' )} Add the created share
-	 · Data and storage on 1st client will be used as initial shares.
+	 · 1st client:
+		- Add network storage and update Libary database
+		- Data and storage will be used as initial shares.
+	 · All clients:
+		- {$FiLabel( 'Shared Data', 'networks' )} Add the created share <c>data</c>
 EOF
 	]
 ];
