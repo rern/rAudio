@@ -314,9 +314,11 @@ Note:
 	Clients:
 	 · 1st client:
 		- Add network storage and update Libary database
-		- Data and storage will be used as initial shares.
-	 · All clients:
 		- {$FiLabel( 'Shared Data', 'networks' )} Add the created share <c>data</c>
+		- Data and storage will be used as initial shares.
+	 · Other clients:
+		- {$FiLabel( 'Shared Data', 'networks' )} Add the created share <c>data</c>
+		- Network storage for shared data added automatically
 EOF
 	]
 ];
