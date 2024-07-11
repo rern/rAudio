@@ -10,6 +10,7 @@ else # server rAudio client
 	path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
 	! grep -q $dirnas <<< $path && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
+	rserver=rserver
 	PROTOCOL=nfs
 	mountpoint=$dirnas
 	SHARE=$dirnas
@@ -35,12 +36,12 @@ if [[ $SHAREDDATA ]]; then
 	mv /mnt/MPD/{SD,USB} /mnt
 	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
-	mkdir -p $dirbackup
+	mkdir -p $dirbackup $dirshareddata
 	if [[ ! -e $dirshareddata/mpd ]]; then
 		rescan=1
-		sharedDataCopy
+		sharedDataCopy $rserver
 	fi
-	sharedDataBackupLink
+	sharedDataLink $rserver
 	appendSortUnique $( ipAddress ) $filesharedip
 	mpc -q clear
 	systemctl restart mpd
