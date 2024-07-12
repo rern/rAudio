@@ -420,7 +420,7 @@ lsmntmpd )
 		else
 			mpdignore=$( getContent /mnt/MPD/NAS/.mpdignore )
 			while read m; do
-				[[ $mpdignore ]] && grep -q "$m" <<< $mpdignore && continue
+				[[ $mpdignore ]] && grep -q "^$m$" <<< $mpdignore && continue
 				
 				timeout 0.1 ls -d "$m" &> /dev/null && nas=true && break
 		# --------------------------------------------------------------------
