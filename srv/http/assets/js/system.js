@@ -210,13 +210,13 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	V.li      = $this;
-	var i    = $this.index()
-	var list = S.list[ i ];
-	if ( S.shareddata && list.mountpoint === '/mnt/MPD/NAS/data' ) {
+	var i     = $this.index()
+	var list  = S.list[ i ];
+	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
-			, message : '<wh>Shared Data '+ ico( 'networks' ) +'</wh> is currently enabled.'
+			, message : 'Used by <wh>Shared Data '+ ico( 'networks' ) +'</wh>'
 		} );
 		return
 	}
@@ -225,7 +225,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	if ( list.icon === 'microsd' ) {
 		$( '#menu a' ).addClass( 'hide' );
 	} else {
-		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 13 ) !== '/mnt/MPD/NAS/' );
+		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
 		$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
 	}
@@ -826,25 +826,25 @@ function infoMount( nfs ) {
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			var $input      = $( '#infoList input' );
-			var $mountpoint = $input.eq( 1 );
+			var $input = $( '#infoList input' );
+			var $name  = $input.eq( 1 );
 			$input.eq( 3 ).prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
 			$input.slice( 4 ).prop( 'placeholder', '(optional)' );
 			if ( shareddata ) {
-				$mountpoint
+				$name
 					.val( 'data' )
 					.prop( 'disabled', true );
 			} else {
-				$mountpoint.prop( 'placeholder', 'Name to display in Library' );
-				$mountpoint.on( 'input', function() {
-					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
+				$name.prop( 'placeholder', 'Name to display in Library' );
+				$name.on( 'input', function() {
+					setTimeout( () => $name.val( $name.val().replace( /\//g, '' ) ), 0 );
 				} );
 			}
 		}
 		, cancel     : switchCancel
 		, ok         : () => {
 			var infoval = infoVal();
-			if ( infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
+			if ( ! shareddata && infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
 			infoval.SHAREDDATA = shareddata;
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
@@ -866,7 +866,7 @@ function infoMountRserver() {
 		, cancel   : switchCancel
 		, ok       : () => {
 			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-			bash( [ 'settings/system-mount.sh', 'cmd', infoVal().IP, 'CMD IP' ], error => infoMountSet( error ) );
+			bash( [ 'settings/system-mount.sh', 'cmd', infoVal().IP, true, 'CMD IP SHAREDDATA' ], error => infoMountSet( error ) );
 		}
 	} );
 }
@@ -1190,11 +1190,15 @@ function renderStorage() {
 			var dataunmounted = ' data-unmounted="1"';
 			var dot = '<red>&ensp;•&ensp;</red>';
 		}
-		html += '<li '+ dataunmounted;
-		html += '>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
-		html += '<gr class="source">'+ val.source +'</gr>&ensp;';
-		html +=  val.size ? val.size : '';
-		html += '</li>';
+		if ( val.mountpoint === '/mnt/MPD/NAS/data' ) {
+			var wg   = 'gr';
+			var size = '<gr>(Shared Data)</gr>';
+		} else {
+			var wg   = 'wh';
+			var size = val.size || '';
+		}
+		html += '<li '+ dataunmounted +'>'+ ico( val.icon ) +'<'+ wg +' class="mountpoint">'+ val.mountpoint +'</'+ wg +'>'
+				+ dot +'<gr class="source">'+ val.source +'</gr>&ensp;'+ size +'</li>';
 	} );
 	$( '#list' ).html( html );
 	if ( $( '#list .i-usbdrive' ).length ) {

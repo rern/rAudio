@@ -1,8 +1,16 @@
 #!/usr/bin/python
 
 import sys
-sys.path.insert( 1, '/srv/http/data/system' )
-from lcdcharconf import *
+
+with open( '/srv/http/data/system/lcdchar.conf', 'r' ) as f:
+    conf = {}
+    for line in f:
+        kv        = line.split( '=' )
+        k         = kv[ 0 ]
+        v         = kv[ 1 ].rstrip()
+        if k == 'backlight': v = bool( v )
+        conf[ k ] = v
+locals().update( conf ) # inf, cols, charmap, address, chip, backlight
 
 rows = cols == 16 and 2 or 4
 

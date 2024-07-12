@@ -1,3 +1,7 @@
+body {
+	height: 100%;
+	overflow: hidden;
+}
 .menu { z-index: 11 }
 #bar-bottom { z-index: 5 }
 .container input[type=checkbox] { z-index: 1 }
@@ -256,15 +260,12 @@ heading .i-search {
 heading i.disabled {
 	color: var( --cg ) !important;
 }
-.page-icon {
-	background: var( --cm );
-}
-.helphead,
-.close {
+.head i:not( .page-icon ) {
 	float: right;
 }
-.helphead {
-	color: var( --cg60 )
+.page-icon {
+	color: var( --cw ) !important;
+	background: var( --cm );
 }
 #divsoftlimit {
 	margin-top: 20px;
@@ -417,9 +418,6 @@ input[type=image] {
 	color: var( --cml );
 	font-weight: normal;
 }
-.brindex {
-	display: none;
-}
 /* switch: https://codepen.io/mburnette/pen/LxNxNg */
 .container input[type=checkbox]:has( + .switchlabel ) {
 	position: absolute;
@@ -493,10 +491,10 @@ input.disabled + .switchlabel:after {
 	margin: 5px 0 10px 0;
 }
 .container {
-	max-width: 658px;
-	height: 100%;
-	margin: 0 auto;
-	padding: 30px 0 155px 0;
+	height: calc( 100% - 80px );
+	margin: 40px 0;
+	padding: 0 calc( ( 100% - 650px ) / 2 ) 80px;
+	overflow: auto;
 }
 .col-l,
 .col-r {
@@ -596,13 +594,14 @@ input.disabled + .switchlabel:after {
 	float: left;
 	width: 170px;
 }
+.head .i-gear {
+	display: none;
+}
 
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
-	.helphead::before {
-		content: '\f509';
-		color: var( --cg60 );
-	}
+	.head .i-gear { display: inline-block }
+	.container { height: calc( 100% - 40px ) }
 	#bar-bottom { display: none }
 }
 @media (max-width: 800px) {
@@ -648,7 +647,6 @@ input.disabled + .switchlabel:after {
 @media (max-width: 450px) {
 	input[type=text] { padding: 0 7px }
 	.listtitle a { width: calc( 100% / 13 ) }
-	.brindex { display: block }
 }
 @media (max-width: 615px) {
 	#bar-bottom a { display: none }

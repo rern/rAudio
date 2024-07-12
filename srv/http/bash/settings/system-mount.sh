@@ -8,15 +8,13 @@ if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
 else # server rAudio client
 	path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
-	! grep -q $dirnas <<< $path && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
+	[[ ${path/ *} != $dirnas ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
-	PROTOCOL=nfs
+	rserver=rserver
 	mountpoint=$dirnas
+	PROTOCOL=nfs
 	SHARE=$dirnas
 fi
-umount -ql "$mountpoint"
-mkdir -p "$mountpoint"
-chown mpd:audio "$mountpoint"
 share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 if [[ $PROTOCOL == cifs ]]; then
 	source="//$IP/$share"
@@ -32,33 +30,26 @@ else
 	options=defaults,noauto,bg,soft,timeo=5
 fi
 [[ $OPTIONS ]] && options+=,$OPTIONS
-fstab="\
-$( < /etc/fstab )
-${source// /\\040}  ${mountpoint// /\\040}  $PROTOCOL  ${options// /\\040}  0  0"
-mv /etc/fstab{,.backup}
-column -t <<< $fstab > /etc/fstab
-systemctl daemon-reload
-std=$( mount "$mountpoint" 2>&1 )
-if [[ $? != 0 ]]; then
-	mv -f /etc/fstab{.backup,}
-	rmdir "$mountpoint"
-	systemctl daemon-reload
-	sed -n '1 {s/.*: //; p}' <<< $std
-	exit
-# --------------------------------------------------------------------
-else
-	rm /etc/fstab.backup
-fi
-
-for i in {1..5}; do
-	sleep 1
-	mountpoint -q "$mountpoint" && break
-done
+mountpointSet "$mountpoint" "${source// /\\040} ${mountpoint// /\\040} $PROTOCOL ${options// /\\040} 0 0"
 
 if [[ $SHAREDDATA ]]; then
-	$dirsettings/system.sh shareddataset
-else
-	pushRefresh system
-fi
+	mv /mnt/MPD/{SD,USB} /mnt
+	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
+	mkdir -p $dirbackup $dirshareddata
+	if [[ ! -e $dirshareddata/mpd ]]; then
+		rescan=1
+		sharedDataCopy $rserver
+	fi
+	sharedDataLink $rserver
+	appendSortUnique $( ipAddress ) $filesharedip
+	mpc -q clear
+	systemctl restart mpd
+	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
+rescan
 
+CMD ACTION PATHMPD"
+	pushData refresh '{ "page": "features", "shareddata": true }'
+fi
+pushRefresh system
 pushDirCounts nas

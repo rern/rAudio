@@ -2,7 +2,7 @@
 include 'common.php';
 
 echo '
-	<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close', 'close' ).i( 'help helphead' ).'</div>
+	<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close', 'close' ).i( 'help helphead' ).i( 'gear' ).'</div>
 	<div class="container '.$page.' hide">
 ';
 if ( $addonsprogress || $guide ) {

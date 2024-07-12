@@ -355,6 +355,7 @@ function tagEditor() {
 					var string = $this.parent().next().find( 'input' ).val();
 					if ( ! string ) return
 					
+					if ( V.playlist ) switchPage( 'library' );
 					var query  = {
 						  query  : 'find'
 						, mode   : mode
@@ -378,10 +379,12 @@ function tagEditor() {
 				$( '.infomessage' ).on( 'click', function() {
 					if ( V.library ) return
 					
+					switchPage( 'library' );
+					V.mode    = dir.split( '/' )[ 0 ].toLowerCase();
 					var query = {
 						  query  : 'ls'
-						, string : V.library ? file : dir
-						, format : [ 'file' ]
+						, string : dir
+						, gmode  : V.mode
 					}
 					list( query, function( html ) {
 						var data = {
@@ -389,7 +392,6 @@ function tagEditor() {
 							, modetitle : dir
 							, path      : dir
 						}
-						V.mode = file.split( '/' )[ 0 ].toLowerCase();
 						tagModeSwitch();
 						renderLibraryList( data );
 						switchPage( 'library' );

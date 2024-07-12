@@ -21,20 +21,24 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 			[[ $chip == 1 || $chip == 7 ]] && spimpdoled=1 || i2cmpdoled=1
 		fi
 		config=$( grep -Ev 'dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate' <<< $config )
-		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+="
-dtparam=i2c_arm=on"
+		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+='
+dtparam=i2c_arm=on'
 		[[ $i2cmpdoled ]] && config+="
 dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
-		[[ $tft || $spimpdoled ]] && config+="
-dtparam=spi=on"
+		[[ $tft || $spimpdoled ]] && config+='
+dtparam=spi=on'
 		
-		module=$( grep -Ev 'i2c-bcm2708|i2c-dev|^#|^\s*$' $filemodule 2> /dev/null )
-		[[ $tft || $i2clcdchar ]] && module+="
-i2c-bcm2708"
+		module=$( grep -Ev 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $filemodule 2> /dev/null )
+		[[ $tft || $i2clcdchar ]] && module+='
+i2c-bcm2708'
 		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then
-			module+="
-i2c-dev"
+			module+='
+i2c-dev'
 			! ls /dev/i2c* &> /dev/null && rebooti2c=1
+		elif grep -q wm8960-soundcard <<< $config; then
+			module+='
+i2c-dev
+snd-soc-wm8960'
 		fi
 		grep -Ev '^#|^\s*$' <<< $module | sort -u > $filemodule
 		[[ ! $rebooti2c ]] && ! cmp -s /tmp/raspberrypi.conf $filemodule && rebooti2c=1
@@ -51,26 +55,6 @@ i2c-dev"
 		notify $CMD "$label" 'Reboot required.' 5000
 		appendSortUnique $CMD $dirshm/reboot
 	fi
-}
-sharedDataSet() {
-	mv /mnt/MPD/{SD,USB} /mnt
-	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
-	systemctl restart devmon@http
-	mkdir -p $dirbackup
-	if [[ ! -e $dirshareddata/mpd ]]; then
-		rescan=1
-		sharedDataCopy
-	fi
-	sharedDataBackupLink
-	appendSortUnique $( ipAddress ) $filesharedip
-	mpc -q clear
-	systemctl restart mpd
-	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
-rescan
-
-CMD ACTION PATHMPD"
-	pushRefresh
-	pushData refresh '{ "page": "features", "shareddata": true }'
 }
 soundProfile() {
 	local lan mtu swappiness txqueuelen
@@ -199,6 +183,8 @@ gpio=25=op,dh"
 		if [[ $APLAYNAME == cirrus-wm5102 ]]; then
 			echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 			touch /boot/cirrus
+		elif [[ $APLAYNAME == wm8960-soundcard ]]; then
+			i2cset=1
 		fi
 	else
 		config+="
@@ -209,11 +195,6 @@ dtparam=audio=on"
 	;;
 lcdchar )
 	enableFlagSet
-	sed -E -e 's/(true)$/\u\1/
-' -e 's/=$/=False/
-' -e '/^inf|^charmap|^chip/ {s/=/="/; s/$/"/}
-' $dirsystem/lcdchar.conf > $dirsystem/lcdcharconf.py
-	rm -f $dirsystem/lcdchar.conf
 	i2cset=1
 	configTxt
 	;;
@@ -406,9 +387,15 @@ shareddatadisable )  # server rAudio / other server
 	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
 	if grep -q $dirshareddata /etc/fstab; then # other server
-		umount -l $dirshareddata &> /dev/null
-		rm -rf $dirshareddata $dirnas/.mpdignore
 		fstab=$( grep -v $dirshareddata /etc/fstab )
+		readarray -t source <<< $( awk '{print $2}' $dirshareddata/source )
+		for s in "${source[@]}"; do
+			mp=${s//\040/ }
+			umount -l "$mp"
+			rmdir "$mp" &> /dev/null
+			fstab=$( grep -v ${mp// /\\\\040} <<< $fstab )
+		done
+		umount -l $dirshareddata &> /dev/null
 		rm -rf $dirshareddata $dirnas/.mpdignore
 	else                                       # server rAudio
 		umount -l $dirnas &> /dev/null
@@ -420,9 +407,6 @@ shareddatadisable )  # server rAudio / other server
 	systemctl restart mpd
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": false }'
-	;;
-shareddataset )
-	sharedDataSet
 	;;
 softlimit )
 	config=$( grep -v temp_soft_limit /boot/config.txt )

@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1720268263' );
+	src         : url( '/assets/fonts/rern.woff2?v=1720326357' );
 }
 @font-face {
 	font-family : Lato;
@@ -293,7 +293,7 @@ body {
 	fill: var( --cg75 );
 }
 #data {
-	position    : absolute;
+	position    : fixed;
 	top         : 0;
 	width       : 100%;
 	min-height  : 100%;
@@ -334,6 +334,7 @@ codered  {
 
 .head {
 	position: fixed;
+	top: 0;
 	width: 100%;
 	height: 40px;
 	padding-right: 10px;
@@ -346,6 +347,7 @@ codered  {
 	line-height: 38px;
 	text-align: center;
 	font-size: 24px;
+	color: var( --cg60 );
 	text-shadow: var( --shadow-text );
 }
 .head .i-close {
@@ -595,11 +597,10 @@ hr {
 	border-bottom: 1px solid var( --cg );
 }
 #infoOverlay {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 100%;
 	min-height: calc( 100% + 50vh );
 	background: rgba(0, 0, 0, 0.85);
 	text-align: center;
@@ -1069,6 +1070,7 @@ input:focus {
 		outline: none;
 		background: var( --cg );
 	}
+	#infoOverlay:focus-visible,
 	input[ type=text ]:focus-visible,
 	input[ type=number ]:focus-visible,
 	input[ type=tel ]:focus-visible,

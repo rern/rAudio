@@ -114,6 +114,10 @@ document.body.addEventListener( 'keydown', ( e ) => {
 		case 'ArrowRight':
 			E.next.click();
 			break
+		case 'F1':
+			e.preventDefault();
+			E.helphead.click();
+			return
 		case 'x':
 			if ( e.ctrlKey ) location.href = '/';
 			break

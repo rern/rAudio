@@ -84,7 +84,7 @@ function list2JSON( list ) {
 function contextMenu() {
 	$( '#menu' )
 		.removeClass( 'hide' )
-		.css( 'top', V.li.offset().top + 48 );
+		.css( 'top', V.li.offset().top + 8 );
 	elementScroll( $( '#menu' ) );
 }
 function elementScroll( $el ) {
@@ -364,6 +364,8 @@ $( document ).on( 'keydown', function( e ) {
 				$( '.menu' ).addClass( 'hide' );
 			} else if ( V.select2 ) {
 				$( '.select2-hidden-accessible' ).select2( 'close' );
+			} else if ( ! $( '#data' ).hasClass( 'hide' ) ) {
+				$( '#button-data' ).trigger( 'click' );
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
 				$( '#fader' ).addClass( 'hide' );
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
@@ -376,11 +378,15 @@ $( document ).on( 'keydown', function( e ) {
 				$focus.trigger( 'focus' );
 			}
 			break
-		case 'Tab':
-			document.activeElement.scrollIntoView( { block: 'center' } );
-			break
 		case 'Backspace':
 			$( '.section:not( .hide ) .i-back' ).trigger( 'click' );
+			break
+		case 'F1':
+			e.preventDefault();
+			$( '.helphead' ).trigger( 'click' );
+			break
+		case 'Tab':
+			document.activeElement.scrollIntoView( { block: 'center' } );
 			break
 		case 'x':
 			if ( e.ctrlKey ) $( '#close' ).trigger( 'click' );
@@ -417,6 +423,9 @@ $( '.playback' ).on( 'click', function() { // for player and camilla
 	if ( page === 'camilla' && S.state === 'pause' ) render.vuClear();
 	playbackButton();
 	bash( [ 'cmd.sh', 'mpcplayback' ] );
+} );
+$( '.head .i-gear' ).on( 'click', function() {
+	$( '#bar-bottom' ).toggle();
 } );
 $( '.helphead' ).on( 'click', function() {
 	var $this  = $( this );

@@ -12,6 +12,7 @@ var iconwarning = ico( 'warning yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
+var ws;
 
 // ----------------------------------------------------------------------
 /*
@@ -150,23 +151,26 @@ function focusNext( $tabs, target, key ) {
 		$next[ 0 ].scrollIntoView( { block: 'center' } );
 	}
 }
+function focusNextTabs() {
+	var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
+		if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide, .select2-selection' ) ) return $( el )
+	} );
+	return $tabs
+}
 // info ----------------------------------------------------------------------
 $( '#infoOverlay' ).on( 'keydown', function( e ) {
 	if ( ! I.active ) return
 	
 	var key = e.key;
-	if ( [ 'ArrowDown', 'ArrowUp', 'Tab' ].includes( key ) ) e.preventDefault();
-	if ( key === 'Tab' && e.shiftKey ) key = 'ArrowUp';
+	if ( key === 'Tab' ) key = e.shiftKey ? 'ArrowUp' : 'ArrowDown';
 	switch ( key ) {
 		case 'ArrowUp':
 		case 'ArrowDown':
 		case 'Tab':
-			if ( $( '.select2-container--open' ).length ) return
+			e.preventDefault();
+			if ( V.select2 ) return
 			
-			var $tabs = $( '#infoOverlay' ).find( '[ tabindex=0 ], .infobtn, input, select, textarea' ).filter( ( i, el ) => {
-				if ( ! $( el ).is( 'input:hidden, input:radio:checked, input:disabled, .disabled, .hide, .select2-selection' ) ) return $( el )
-			} );
-			focusNext( $tabs, 'focus', key );
+			focusNext( focusNextTabs(), 'focus', key );
 			if ( $( '#infoList .focus' ).is( 'select' ) ) $( '#infoList .focus' ).next().find( '.select2-selection' ).trigger( 'focus' );
 			break
 		case ' ':
@@ -178,11 +182,11 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 			$focus.trigger( 'click' );
 			break
 		case 'Enter':
-			if ( V.local || $( 'textarea' ).is( ':focus' ) ) return
+			if ( V.select2 || $( 'textarea' ).is( ':focus' ) ) return
 			
 			var $target = $( '#infoTab, #infoButton' ).find( ':focus' );
 			if ( ! $target.length ) $target = $( '#infoOk' );
-			$target.trigger( 'click' );
+			$target.trigger( 'focus' ).trigger( 'click' );
 			break
 		case 'Escape':
 			$( '#infoX' ).trigger( 'click' );
@@ -216,9 +220,6 @@ function info( json ) {
 	} else {
 		I.values = false;
 	}
-	// fix: narrow screen scroll
-	if ( V.wW < 768 ) $( 'body' ).css( 'overflow-y', 'auto' );
-	
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
@@ -491,6 +492,9 @@ function info( json ) {
 			var $this = $( el );
 			if ( $this.find( 'input:checkbox, input:radio' ).length ) $this.css( 'height', '36px' );
 		} );
+		// fix: jumping
+		$( '.container' ).css( 'margin-top', '0' );
+		setTimeout( () => $( '.container' ).css( 'margin-top', '' ), 0 );
 		// show
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		// set at current scroll position
@@ -601,6 +605,7 @@ function info( json ) {
 function infoButtonCommand( fn, cancel ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( cancel ) delete I.oknoreset;
+	if ( I.prompt ) $( '#infoOverlay' ).addClass( 'hide' );
 	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
 	infoReset();
@@ -788,6 +793,9 @@ function infoPrompt( message ) {
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
 	$( '.infoprompt' ).html( message );
 	$toggle.toggleClass( 'hide' );
+	$( '#infoOverlay' )
+		.removeClass( 'hide' )
+		.trigger( 'focus' );
 	$( '#infoOk' ).off( 'click' ).on( 'click', function() {
 		$toggle.toggleClass( 'hide' );
 		$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
@@ -798,7 +806,6 @@ function infoReset() {
 		.addClass( 'hide' )
 		.removeAttr( 'style' )
 		.empty();
-	$( 'body' ).css( 'overflow-y', '' );
 	setTimeout( () => I = { active: false }, 0 );
 	$( '.focus' ).trigger( 'focus' ); // restore previous focused
 }
@@ -1045,8 +1052,16 @@ function selectSet( $select ) {
 			local(); // fix: onblur / onpagehide / Enter
 			setTimeout( () => {
 				V.select2 = false;
-				$( this ).trigger( 'focus' );
-			}, V.select2 ? 1200 : 0 );
+				var $tabs = focusNextTabs();
+				$tabs
+					.removeClass( 'focus' )
+					.each( ( i, el ) => {
+						if ( this === el ) {
+							$tabs.eq( i + 1 ).trigger( 'focus' );
+							return false
+						}
+				} );
+			}, 300 );
 		} ).each( ( i, el ) => {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
@@ -1092,7 +1107,6 @@ function psNotify( data ) {
 function psPower( data ) {
 	loader();
 	ws        = null;
-	V.wsready = false;
 	V[ data.type ] = true;
 	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 	if ( V.off ) {
@@ -1110,14 +1124,14 @@ function psPower( data ) {
 function pageActive() {
 	if ( V.off ) return
 	
-	if ( ws ) {
+	if ( ws && ws.readyState === 1 ) {
 		V.timeoutreload = true;
 		setTimeout( () => { // reconnect if ws not response on wakeup
 			if ( V.timeoutreload ) websocketReconnect();
 		}, 300 );
 		ws.send( '"ping"' );
 	} else {
-		websocketConnect();
+		websocketReconnect();
 	}
 	if ( V.pageactive ) return
 	
@@ -1128,7 +1142,6 @@ function pageInactive() {
 	if ( V.local || V.debug ) return // V.local from select2
 	
 	V.pageactive = false;
-	V.wsready    = false;
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
 }
@@ -1138,8 +1151,6 @@ window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 
-// websocket
-var ws            = null;
 function volumeMuteToggle() {
 	if ( S.volumemute ) {
 		S.volume     = S.volumemute;
@@ -1164,15 +1175,13 @@ function volumeSet( type ) { // type: mute / unmute
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {
-	var url      = 'ws://'+ ( ip || location.host ) +':8080';
-	if ( V.wsready ) return
+	if ( ws && ws.readyState === 1 ) return
 	
-	ws           = new WebSocket( url );
+	ws           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' );
 	ws.onopen    = () => {
 		var interval = setInterval( () => {
 			if ( ws.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
 				clearInterval( interval );
-				V.wsready = true;
 				ws.send( '{ "client": "add" }' );
 				if ( V.reboot ) {
 					delete V.reboot
@@ -1202,8 +1211,12 @@ function websocketReconnect() {
 		if ( ready ) {
 			V.timeoutreload ? location.reload() : websocketConnect();
 		} else {
-			setTimeout( () => websocketReconnect(), 1000 );
+			setTimeout( websocketReconnect, 1000 );
 		}
+	} ).fail( () => {
+		V.timeoutreload = true;
+		loader();
+		setTimeout( websocketReconnect, 1000 );
 	} );
 }
 /* bash
@@ -1237,7 +1250,7 @@ function bash( args, callback, json ) {
 		var filesh = page ? 'settings/'+ page +'.sh': 'cmd.sh';
 	}
 	// websocket
-	if ( ! callback && V.wsready ) {
+	if ( ! callback && ws.readyState === 1 ) {
 		var data = '{ "filesh": [ "'+ filesh +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
 		if ( V.debug ) {
 			bashConsoleLog( data );

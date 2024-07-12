@@ -262,6 +262,30 @@ killProcess() {
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
+mountpointSet() {
+	umount -ql "$1"
+	mkdir -p "$1"
+	chown mpd:audio "$1"
+	cp -f /etc/fstab /tmp
+	fstab="\
+$( < /etc/fstab )
+$2"
+	column -t <<< $fstab > /etc/fstab
+	systemctl daemon-reload
+	std=$( mount "$1" 2>&1 )
+	if [[ $? != 0 ]]; then
+		mv -f /tmp/fstab /etc
+		rmdir "$1"
+		systemctl daemon-reload
+		sed -n '1 {s/.*: //; p}' <<< $std
+		exit
+	# --------------------------------------------------------------------
+	fi
+	for i in {1..10}; do
+		sleep 1
+		mountpoint -q "$1" && break
+	done
+}
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
@@ -372,7 +396,15 @@ serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD
 }
-sharedDataBackupLink() {
+sharedDataCopy() {
+	rm -f $dirmpd/{listing,updating}
+	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
+	cp -f $dirsystem/{display,order}.json $dirshareddata &> /dev/null
+	touch $dirshareddata/order.json # if not exist
+	[[ $1 != rserver ]] && grep $dirnas /etc/fstab | grep -v "$dirnas/data " > $dirshareddata/source
+}
+sharedDataLink() {
+	local ip_share s
 	mv -f $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirbackup
 	mv -f $dirsystem/{display,order}.json $dirbackup
 	ln -s $dirshareddata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirdata
@@ -380,12 +412,15 @@ sharedDataBackupLink() {
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
 	appendSortUnique data $dirnas/.mpdignore
-}
-sharedDataCopy() {
-	rm -f $dirmpd/{listing,updating}
-	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
-	cp $dirsystem/{display,order}.json $dirshareddata
-	touch $dirshareddata/order.json
+	[[ $1 == rserver && -e $dirshareddata/source ]] && return
+	
+	readarray -t source <<< $( < $dirshareddata/source )
+	for s in "${source[@]}"; do
+		ip_share=${s/ *}
+		grep -q "${ip_share//\\/\\\\}" /etc/fstab && continue
+		
+		mountpointSet "$( awk '{print $2}' <<< $s | sed 's/\\040/ /g' )" "$s"
+	done
 }
 sharedDataReset() {
 	mpc -q clear

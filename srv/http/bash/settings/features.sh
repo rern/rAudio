@@ -257,13 +257,13 @@ nfsserver )
 		ipAddress > $filesharedip
 		if [[ ! -e $dirshareddata/mpd ]]; then
 			rescan=1
-			sharedDataCopy
+			sharedDataCopy rserver
 			chown -R http:http $dirshareddata
 			chown -R mpd:audio $dirshareddata/{mpd,playlists}
 		fi
 		chmod 777 $dirnas $dirnas/{SD,USB}
 		chmod -R 777 $dirshareddata
-		sharedDataBackupLink
+		sharedDataLink rserver
 		systemctl restart mpd
 		[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
 rescan
