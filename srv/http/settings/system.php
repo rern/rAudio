@@ -2,6 +2,7 @@
 <?php
 $onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 'x';
 $i2s         = [ 'label' => 'Audio - I²S', 'sub' => 'HAT' ];
+$shareddata  = iLabel( 'Shared Data', 'networks' );
 $id_data     = [
 	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
@@ -288,8 +289,8 @@ EOF
 		, 'help'     => <<< EOF
 Connect shared data as client for:
  · Library database
- · Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
- · Display order of Library home
+ · Data: Audio CD, bookmarks, lyrics, saved playlists and Web Radio
+ · Display: Item toggles and order of Library home
 
 Note:
  • Enabled - $b_microsd SD and $b_usbdrive USB:
@@ -298,27 +299,26 @@ Note:
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: {$FiTab( 'Features' )}{$FiLabel( 'Server rAudio', 'rserver' )}
-	Clients: {$FiLabel( 'Shared Data', 'networks' )} Type ● rAudio
+	Clients: $shareddata &raquo; <btn>rAudio</btn>
 	
  • <wh>Other servers:</wh> (Alternative 2)
-	Server: Create a share for <c>data</c> with full permissions
-	 · Linux:
+	Server: Create shares for <c>data</c> and <c>source</c> for Library
+	 · Linux: <c>rwx</c>
 		NFS: <c>777</c>
 		CIFS (SMB): <c>read only = no</c>
 	 · Windows:
 		Right-click Folder &raquo; Properties &raquo; 
-			<btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo; <btn>Permissions</btn>
-				Everyone - Full Control
-			<btn>Security</btn>
-				Everyone - Full Control
+		- <btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo; <btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
+		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- Add network storage and update Libary database
-		- {$FiLabel( 'Shared Data', 'networks' )} Add the created share <c>data</c>
-		- Data and storage will be used as initial shares.
+		- {$FiLabel( 'Storage' )} $b_add Add network storage for shared <c>source</c>
+		- {$Fmenu( 'library', 'Library', 'refresh-library' )} Update database
+		- $shareddata Setup shared <c>data</c>
+		- <c>data</c> will be shared for all clients
 	 · Other clients:
-		- {$FiLabel( 'Shared Data', 'networks' )} Add the created share <c>data</c>
-		- Network storage for shared data added automatically
+		- $shareddata &raquo; Connect shared <c>data</c>
+		- <c>source</c> will be set the same as 1st client
 EOF
 	]
 ];
