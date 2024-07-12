@@ -13,7 +13,7 @@ size() {
 
 if mount | grep -q -m1 'mmcblk0p2 on /'; then
 	list+=',{
-"icon"       : "microsd"
+  "icon"       : "microsd"
 , "mountpoint" : "/<g>mnt/MPD/SD</g>"
 , "mounted"    : true
 , "source"     : "/dev/mmcblk0p2"
@@ -26,7 +26,7 @@ if [[ $usb ]]; then
 		mountpoint=$( df -l --output=target,source | sed -n "\|$source| {s| *$source||; p}" )
 		if [[ $mountpoint ]]; then
 			list+=',{
-"icon"       : "usbdrive"
+  "icon"       : "usbdrive"
 , "mountpoint" : "'$( stringEscape $mountpoint )'"
 , "mounted"    : true
 , "source"     : "'$source'"
@@ -36,7 +36,7 @@ if [[ $usb ]]; then
 			label=$( e2label $source )
 			[[ ! $label ]] && label=?
 			list+=',{
-"icon"      : "usbdrive"
+  "icon"      : "usbdrive"
 ,"mountpoint" : "'$dirusb/$label'"
 ,"mounted"    : false
 ,"source"     : "'$source'"
