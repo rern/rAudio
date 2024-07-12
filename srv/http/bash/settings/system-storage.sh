@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-if [[ ! -e $filesharedip ]]; then
+if [[ ! -e $filesharedip ]] || systemctl -q is-active nfs-server; then
 	if mount | grep -q -m1 'mmcblk0p2 on /'; then
 		used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 		[[ $used_size ]] && size=${used_size[0]}B/${used_size[1]}B || size=
@@ -31,7 +31,12 @@ if [[ ! -e $filesharedip ]]; then
 			else
 				label=$( e2label $source )
 				[[ ! $label ]] && label=?
-				list+=',{"icon":"usbdrive","mountpoint":"'$dirusb/$label'","mounted":false,"source":"'$source'"}'
+				list+=',{
+  "icon"      : "usbdrive"
+,"mountpoint" : "'$dirusb/$label'"
+,"mounted"    : false
+,"source"     : "'$source'"
+}'
 			fi
 			[[ ! $hddapm ]] && hddapm=$( hdparm -B $source \
 											| grep -m1 APM_level \
