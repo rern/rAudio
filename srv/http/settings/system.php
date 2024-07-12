@@ -379,10 +379,7 @@ foreach( $listui as $ui ) {
 	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> · '.$ui[ 1 ].'<br>';
 }
 $indexhtml  = '';
-for( $i = 'A'; $i !== 'AA'; $i++ ) {
-	$indexhtml.= '<a>'.$i.'</a>';
-	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
-}
+for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 $menu       = [
 	  'info'    => 'info'
 	, 'forget'  => 'remove'

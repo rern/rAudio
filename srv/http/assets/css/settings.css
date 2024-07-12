@@ -418,9 +418,6 @@ input[type=image] {
 	color: var( --cml );
 	font-weight: normal;
 }
-.brindex {
-	display: none;
-}
 /* switch: https://codepen.io/mburnette/pen/LxNxNg */
 .container input[type=checkbox]:has( + .switchlabel ) {
 	position: absolute;
@@ -650,7 +647,6 @@ input.disabled + .switchlabel:after {
 @media (max-width: 450px) {
 	input[type=text] { padding: 0 7px }
 	.listtitle a { width: calc( 100% / 13 ) }
-	.brindex { display: block }
 }
 @media (max-width: 615px) {
 	#bar-bottom a { display: none }
