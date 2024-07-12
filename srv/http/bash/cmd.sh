@@ -412,24 +412,23 @@ librandom )
 	pushData option '{ "librandom": '$TF' }'
 	;;
 lsmntmpd )
-	lsnas=$( ls -1 /mnt/MPD/NAS )
-	nas=false
-	if [[ $lsnas ]]; then
-		if [[ ! $mpdignore ]]; then
-			nas=true
-		else
-			mpdignore=$( getContent /mnt/MPD/NAS/.mpdignore )
-			while read m; do
-				[[ $mpdignore ]] && grep -q "^$m$" <<< $mpdignore && continue
-				
-				timeout 0.1 ls -d "$m" &> /dev/null && nas=true && break
-		# --------------------------------------------------------------------
-			done <<< $lsnas
+	for dir in NAS SD USB; do
+		lsdir=$( ls -1 /mnt/MPD/$dir 2> /dev/null )
+		list=false
+		if [[ $lsdir ]]; then
+			mpdignore=/mnt/MPD/$dir/.mpdignore
+			if [[ ! -e $mpdignore ]]; then
+				list=true
+			else
+				ignore=$( < $mpdignore )
+				while read d; do
+					! grep -q "^$d$" <<< $ignore && list=true && break
+				done <<< $lsdir
+			fi
 		fi
-	fi
-	[[ $( ls /mnt/MPD/SD ) ]] && sd=true || sd=false
-	ls -d /mnt/MPD/USB/*/ &> /dev/null && usb=true || usb=false
-	echo '{ "nas": '$nas', "sd": '$sd', "usb": '$usb' }'
+		printf -v $dir '%s' $list
+	done
+	echo '{ "nas": '$NAS', "sd": '$SD', "usb": '$USB' }'
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
