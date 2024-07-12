@@ -225,7 +225,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	if ( list.icon === 'microsd' ) {
 		$( '#menu a' ).addClass( 'hide' );
 	} else {
-		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 13 ) !== '/mnt/MPD/NAS/' );
+		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
 		$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
 	}
