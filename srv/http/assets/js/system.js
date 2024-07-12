@@ -866,7 +866,7 @@ function infoMountRserver() {
 		, cancel   : switchCancel
 		, ok       : () => {
 			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-			bash( [ 'settings/system-mount.sh', 'cmd', infoVal().IP, 'CMD IP' ], error => infoMountSet( error ) );
+			bash( [ 'settings/system-mount.sh', 'cmd', infoVal().IP, true, 'CMD IP SHAREDDATA' ], error => infoMountSet( error ) );
 		}
 	} );
 }

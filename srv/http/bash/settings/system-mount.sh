@@ -11,8 +11,8 @@ else # server rAudio client
 	! grep -q $dirnas <<< $path && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
 	rserver=rserver
-	PROTOCOL=nfs
 	mountpoint=$dirnas
+	PROTOCOL=nfs
 	SHARE=$dirnas
 fi
 share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
