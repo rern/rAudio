@@ -8,7 +8,7 @@ if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
 else # server rAudio client
 	path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
-	! grep -q $dirnas <<< $path && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
+	[[ ${path/ *} != $dirnas ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 # --------------------------------------------------------------------
 	rserver=rserver
 	mountpoint=$dirnas

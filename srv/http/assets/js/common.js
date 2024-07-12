@@ -793,6 +793,9 @@ function infoPrompt( message ) {
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
 	$( '.infoprompt' ).html( message );
 	$toggle.toggleClass( 'hide' );
+	$( '#infoOverlay' )
+		.removeClass( 'hide' )
+		.trigger( 'focus' );
 	$( '#infoOk' ).off( 'click' ).on( 'click', function() {
 		$toggle.toggleClass( 'hide' );
 		$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
@@ -1205,11 +1208,7 @@ function websocketConnect( ip ) {
 }
 function websocketReconnect() {
 	$.post( 'cmd.php', { cmd: 'startupready' }, ready => {
-		if ( ready ) {
-			V.timeoutreload ? location.reload() : websocketConnect();
-		} else {
-			setTimeout( websocketReconnect, 1000 );
-		}
+		if ( ready ) V.timeoutreload ? location.reload() : websocketConnect();
 	} ).fail( () => {
 		V.timeoutreload = true;
 		loader();
