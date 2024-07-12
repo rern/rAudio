@@ -212,7 +212,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	V.li      = $this;
 	var i     = $this.index()
 	var list  = S.list[ i ];
-	if ( list.mountpoint === '/mnt/MPD/NAS/data' ) {
+	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
