@@ -411,7 +411,7 @@ librandom )
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;
-lsmntmpd )
+lsmnt )
 	for dir in NAS SD USB; do
 		lsdir=$( ls -1 /mnt/MPD/$dir 2> /dev/null )
 		list=false

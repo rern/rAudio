@@ -1541,7 +1541,7 @@ function setButtonUpdate() {
 		return
 	}
 	
-	bash( [ 'lsmntmpd' ], counts => {
+	bash( [ 'lsmnt' ], counts => {
 		$.each( counts, ( k, v ) => { C[ k ] = v } );
 		toggle();
 	}, 'json' );
