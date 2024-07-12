@@ -3,7 +3,7 @@ include 'common.php';
 
 echo '
 	<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close', 'close' ).i( 'help helphead' ).i( 'gear' ).'</div>
-	<div class="container '.$page.' hide">
+	<div class="container '.$page.' hide" tabindex="-1">
 ';
 if ( $addonsprogress || $guide ) {
 	include 'settings/'.$page.'.php';

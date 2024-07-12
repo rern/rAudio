@@ -134,7 +134,9 @@ function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
-	$( '.container' ).removeClass( 'hide' );
+	$( '.container' )
+		.removeClass( 'hide' )
+		.trigger( 'focus' );
 	loaderHide();
 }
 function switchCancel() {

@@ -314,10 +314,10 @@ Note:
 	 · 1st client:
 		- {$FiLabel( 'Storage' )} $b_add Add network storage for shared <c>source</c>
 		- {$Fmenu( 'library', 'Library', 'refresh-library' )} Update database
-		- $shareddata Setup shared <c>data</c>
+		- $shareddata Connect the shared <c>data</c>
 		- <c>data</c> will be shared for all clients
 	 · Other clients:
-		- $shareddata &raquo; Connect shared <c>data</c>
+		- $shareddata Connect the shared <c>data</c>
 		- <c>source</c> will be set the same as 1st client
 EOF
 	]
