@@ -1208,7 +1208,11 @@ function websocketConnect( ip ) {
 }
 function websocketReconnect() {
 	$.post( 'cmd.php', { cmd: 'startupready' }, ready => {
-		if ( ready ) V.timeoutreload ? location.reload() : websocketConnect();
+		if ( ready ) {
+			V.timeoutreload ? location.reload() : websocketConnect();
+		} else {
+			setTimeout( websocketReconnect, 1000 );
+		}
 	} ).fail( () => {
 		V.timeoutreload = true;
 		loader();
