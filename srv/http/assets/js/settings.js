@@ -391,7 +391,10 @@ $( document ).on( 'keydown', function( e ) {
 			document.activeElement.scrollIntoView( { block: 'center' } );
 			break
 		case 'x':
-			if ( e.ctrlKey ) $( '#close' ).trigger( 'click' );
+			if ( ! e.ctrlKey ) return
+			
+			var close = $( '#data' ).hasClass( 'hide' ) ? '#close' : '#button-data .i-close';
+			$( close ).trigger( 'click' );
 			break
 		case 'MediaPause':
 		case 'MediaPlay':
