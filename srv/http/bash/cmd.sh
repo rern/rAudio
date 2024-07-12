@@ -412,17 +412,21 @@ librandom )
 	pushData option '{ "librandom": '$TF' }'
 	;;
 lsmntmpd )
-	readarray -t mountpoints <<< $( awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab \
-				| grep -v /mnt/MPD/NAS/data \
-				| sed 's/\\040/ /g' )
-	mpdignore=$( getContent /mnt/MPD/NAS/.mpdignore )
+	lsnas=$( ls -1 /mnt/MPD/NAS )
 	nas=false
-	for m in "${mountpoints[@]}"; do
-		[[ $mpdignore ]] && grep -q "$( basename "$m" )" <<< $mpdignore && continue
-		
-		timeout 0.1 ls -d "$m" &> /dev/null && nas=true && break
-# --------------------------------------------------------------------
-	done
+	if [[ $lsnas ]]; then
+		if [[ ! $mpdignore ]]; then
+			nas=true
+		else
+			mpdignore=$( getContent /mnt/MPD/NAS/.mpdignore )
+			while read m; do
+				[[ $mpdignore ]] && grep -q "$m" <<< $mpdignore && continue
+				
+				timeout 0.1 ls -d "$m" &> /dev/null && nas=true && break
+		# --------------------------------------------------------------------
+			done <<< $lsnas
+		fi
+	fi
 	[[ $( ls /mnt/MPD/SD ) ]] && sd=true || sd=false
 	ls -d /mnt/MPD/USB/*/ &> /dev/null && usb=true || usb=false
 	echo '{ "nas" : '$nas', "sd"  : '$sd', "usb" : '$usb' }'
