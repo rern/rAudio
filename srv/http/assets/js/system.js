@@ -1190,15 +1190,9 @@ function renderStorage() {
 			var dataunmounted = ' data-unmounted="1"';
 			var dot = '<red>&ensp;•&ensp;</red>';
 		}
-		if ( val.mountpoint === '/mnt/MPD/NAS/data' ) {
-			var wg   = 'gr';
-			var size = '<gr>(Shared Data)</gr>';
-		} else {
-			var wg   = 'wh';
-			var size = val.size || '';
-		}
-		html += '<li '+ dataunmounted +'>'+ ico( val.icon ) +'<'+ wg +' class="mountpoint">'+ val.mountpoint +'</'+ wg +'>'
-				+ dot +'<gr class="source">'+ val.source +'</gr>&ensp;'+ size +'</li>';
+		if ( val.mountpoint === '/' ) val.mountpoint += '<gr>mnt/MPD/SD</gr>';
+		html += '<li '+ dataunmounted +'>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint +'</wh>'
+				+ dot +'<gr class="source">'+ val.source +'</gr>&ensp;'+ val.size +'</li>';
 	} );
 	$( '#list' ).html( html );
 	if ( $( '#list .i-usbdrive' ).length ) {
