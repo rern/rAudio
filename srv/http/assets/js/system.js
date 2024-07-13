@@ -225,9 +225,10 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	if ( list.icon === 'microsd' ) {
 		$( '#menu a' ).addClass( 'hide' );
 	} else {
+		var mounted = list.size !== '';
 		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
-		$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
-		$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
+		$( '#menu .remount' ).toggleClass( 'hide', mounted );
+		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
 	$( '#menu .info' ).toggleClass( 'hide', list.icon === 'networks' );
 	contextMenu();
@@ -1183,15 +1184,10 @@ function renderPage() {
 function renderStorage() {
 	var html  = '';
 	$.each( S.list, ( i, val ) => {
-		if ( val.mounted ) {
-			var dataunmounted = '';
-			var dot = '<grn>&ensp;•&ensp;</grn>';
-		} else {
-			var dataunmounted = ' data-unmounted="1"';
-			var dot = '<red>&ensp;•&ensp;</red>';
-		}
 		var sd = val.mountpoint === '/' ? '<gr>mnt/MPD/SD</gr>' : '';
-		html += '<li '+ dataunmounted +'>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint + sd +'</wh>'
+		var dot = '<grn>&ensp;•&ensp;</grn>';
+		if ( ! val.size ) dot = dot.replace( /grn/g, 'red' );
+		html += '<li>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint + sd +'</wh>'
 				+ dot +'<gr class="source">'+ val.source +'</gr>&ensp;'+ val.size +'</li>';
 	} );
 	$( '#list' ).html( html );
