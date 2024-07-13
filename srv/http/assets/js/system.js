@@ -1190,8 +1190,8 @@ function renderStorage() {
 			var dataunmounted = ' data-unmounted="1"';
 			var dot = '<red>&ensp;•&ensp;</red>';
 		}
-		if ( val.mountpoint === '/' ) val.mountpoint += '<gr>mnt/MPD/SD</gr>';
-		html += '<li '+ dataunmounted +'>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint +'</wh>'
+		var sd = val.mountpoint === '/' ? '<gr>mnt/MPD/SD</gr>' : '';
+		html += '<li '+ dataunmounted +'>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint + sd +'</wh>'
 				+ dot +'<gr class="source">'+ val.source +'</gr>&ensp;'+ val.size +'</li>';
 	} );
 	$( '#list' ).html( html );
