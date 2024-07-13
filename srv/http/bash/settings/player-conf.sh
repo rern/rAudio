@@ -63,8 +63,7 @@ if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from pla
 	AUDIOOUTPUTBT='
 	name        "'$( < $dirshm/btname )'"
 	device      "'$hw'"
-	type        "alsa"
-	mixer_type  "hardware"'
+	type        "alsa"'
 	[[ -e $dirsystem/btformat ]] && AUDIOOUTPUTBT+='
 	format      "44100:16:2"'
 #--------------->
