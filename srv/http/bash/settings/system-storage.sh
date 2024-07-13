@@ -2,13 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-size() {
-	path=$1
-	[[ $path == / ]] && target_source=target || target_source=source
-	# timeout for network shares
-	timeout 1 df -H --output=used,size,$target_source \
-		| grep "$path$" \
-		| awk '{print $1"B/"$2"B"}'
+size() { # timeout: limit if network shares offline
+	timeout 1 df -H --output=used,size $1 | awk '!/Used/ {print $1"B/"$2"B"}'
 }
 
 if mount | grep -q -m1 'mmcblk0p2 on /'; then
@@ -23,25 +18,22 @@ fi
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 if [[ $usb ]]; then
 	while read source; do
-		mountpoint=$( df -l --output=target,source | sed -n "\|$source| {s| *$source||; p}" )
+		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint ]]; then
+			mountpoint=$( stringEscape $mountpoint )
+			mounted=true
+			size=$( size "$source" )
+		else
+			mounted=false
+			size=
+		fi
 			list+=',{
   "icon"       : "usbdrive"
-, "mountpoint" : "'$( stringEscape $mountpoint )'"
-, "mounted"    : true
+, "mountpoint" : "'$mountpoint'"
+, "mounted"    : '$mounted'
 , "source"     : "'$source'"
-, "size"       : "'$( size "$source" )'"
+, "size"       : "'$size'"
 }'
-		else
-			label=$( e2label $source )
-			[[ ! $label ]] && label=?
-			list+=',{
-  "icon"      : "usbdrive"
-,"mountpoint" : "'$dirusb/$label'"
-,"mounted"    : false
-,"source"     : "'$source'"
-}'
-		fi
 		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source \
 										| grep -m1 APM_level \
 										| tr -d -c 0-9 )
@@ -60,7 +52,7 @@ if [[ $nas ]]; then
 , "mountpoint" : "'$( stringEscape $mountpoint )'"
 , "mounted"    : '$mounted'
 , "source"     : "'$source'"
-, "size"       : "'$( [[ $mounted == true ]] && size "$source" )'"
+, "size"       : "'$( [[ $mounted == true ]] && size "$mountpoint" )'"
 }'
 	done <<< $nas
 fi
