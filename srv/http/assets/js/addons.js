@@ -146,7 +146,7 @@ function renderPage() {
 	html       = '<ul id="list">'+ list +'</ul>'+ addons +'<p class="bottom"></p>';
 	$( '.container' ).html( html ).promise().done( function() {
 		$( '.container' ).removeClass( 'hide' );
-		$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
+		$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 370 );
 		if ( ! S.status.online ) $( '.infobtn' ).addClass( 'disabled' );
 		loaderHide();
 		$( 'a[ href ]' ).prop( 'tabindex', -1 );
