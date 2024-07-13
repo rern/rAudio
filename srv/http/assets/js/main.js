@@ -148,7 +148,7 @@ if ( navigator.maxTouchPoints ) { // swipe
 		e.stopImmediatePropagation();
 		return false
 	} );
-	$( 'link[ href^="/assets/css/hovercursor.css" ]' ).remove();
+	$( 'link[ href*="hovercursor.css" ]' ).remove();
 }
 
 $( 'body' ).on( 'click', function( e ) {
