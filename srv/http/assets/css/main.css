@@ -101,8 +101,7 @@ i.map.disabled, .map.disabled i {
 }
 @keyframes blink { 50% { color: transparent; text-shadow: none; } }
 #library.blink,
-#library.active.blink,
-#button-library.active.blink {
+#button-library.blink {
 	animation: 1.5s infinite linear blink;
 }
 #logo {
