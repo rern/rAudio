@@ -2,44 +2,29 @@
 
 . /srv/http/bash/common.sh
 
-size() { # timeout: limit if network shares offline
-	timeout 1 df -H --output=used,size $1 | awk '!/Used/ {print $1"B/"$2"B"}'
-}
-
-if mount | grep -q -m1 'mmcblk0p2 on /'; then
-	list+=',{
-  "icon"       : "microsd"
-, "mountpoint" : "/<g>mnt/MPD/SD</g>"
-, "mounted"    : true
-, "source"     : "/dev/mmcblk0p2"
-, "size"       : "'$( size / )'"
+listItem() { # $1-icon, $2-mountpoint, $3-mounted, $4-source
+	local used_size                # timeout: limit if network shares offline
+	[[ $3 == true ]] && used_size=$( timeout 1 df -H --output=used,size $2 | awk '!/Used/ {print $1"B/"$2"B"}' )
+	echo ',{
+  "icon"       : "'$1'"
+, "mountpoint" : "'$( stringEscape $2 )'"
+, "mounted"    : '$3'
+, "size"       : "'$used_size'"
+, "source"     : "'$4'"
 }'
-fi
+}
+# sd
+mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd / true /dev/mmcblk0p2 )
+# usb
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 if [[ $usb ]]; then
 	while read source; do
 		mountpoint=$( df -l --output=target $source | tail -1 )
-		if [[ $mountpoint ]]; then
-			mountpoint=$( stringEscape $mountpoint )
-			mounted=true
-			size=$( size "$source" )
-		else
-			mounted=false
-			size=
-		fi
-			list+=',{
-  "icon"       : "usbdrive"
-, "mountpoint" : "'$mountpoint'"
-, "mounted"    : '$mounted'
-, "source"     : "'$source'"
-, "size"       : "'$size'"
-}'
-		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source \
-										| grep -m1 APM_level \
-										| tr -d -c 0-9 )
+		[[ $mountpoint ]] && mounted=true || mounted=false
+		list+=$( listItem usbdrive "$mountpoint" $mounted "$source" )
 	done <<< $usb
 fi
-
+# nas
 nas=$( grep -E '/mnt/MPD/NAS|/srv/http/data' /etc/fstab )
 if [[ $nas ]]; then
 	nas=$( awk '{print $1"^"$2}' <<< $nas | sed 's/\\040/ /g' | sort )
@@ -47,13 +32,7 @@ if [[ $nas ]]; then
 		source=${line/^*}
 		mountpoint=${line/*^}
 		mountpoint -q "$mountpoint" && mounted=true || mounted=false
-		list+=',{
-  "icon"       : "networks"
-, "mountpoint" : "'$( stringEscape $mountpoint )'"
-, "mounted"    : '$mounted'
-, "source"     : "'$source'"
-, "size"       : "'$( [[ $mounted == true ]] && size "$mountpoint" )'"
-}'
+		list+=$( listItem networks "$mountpoint" $mounted "$source" )
 	done <<< $nas
 fi
 echo "[ ${list:1} ]"
