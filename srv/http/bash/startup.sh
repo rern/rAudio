@@ -164,10 +164,5 @@ fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
-if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
-	$dirsettings/system.sh "hddsleep
-$( < $dirsystem/apm )
-CMD APM"
-fi
-
 udevil clean
+lsblk -Sno path,vendor,model > $dirshm/lsblkusb

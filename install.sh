@@ -4,7 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240713
+# 20240715
+lsblk -Sno path,vendor,model > $dirshm/lsblkusb
+
 file=$dirsystem/lcdcharconf.py
 if [[ -e $file ]]; then
 	sed -i -E 's/False|"//g' $file

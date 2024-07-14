@@ -540,16 +540,22 @@ timezone )
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
-	if [[ $CMD == usbconnect ]]; then
-		action=Ready
-		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
-	else
-		action=Removed
-	fi
-	[[ ! $name ]] && name='USB Drive'
-	notify usbdrive "$name" $action
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	pushDirCounts usb
+	if [[ $CMD == usbconnect ]]; then
+		msg=Ready
+		d='>'
+	else
+		msg=Removed
+		d='<'
+	fi
+	list=$( lsblk -Sno path,vendor,model )
+	for i in {0..5}; do
+		name=$( diff $dirshm/lsblkusb <( echo "$list" ) | grep "^$d" | cut -d' ' -f3- )
+		[[ $name ]] && break || sleep 1
+	done
+	echo "$list" > $dirshm/lsblkusb
+	[[ $name ]] && notify usbdrive "$name" $msg
 	;;
 volumeboot )
 	enableFlagSet
