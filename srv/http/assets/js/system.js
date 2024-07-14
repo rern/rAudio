@@ -238,14 +238,15 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	$this.addClass( 'active' );
 	if ( list.icon === 'microsd' ) {
 		$( '#menu a' ).addClass( 'hide' );
+		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
 		var mounted = list.size !== '';
+		$( '#menu .info' ).toggleClass( 'hide', list.apm === false || list.icon === 'networks' );
 		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
 		$( '#menu .sleep' ).toggleClass( 'hide', ! list.apm );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
-	$( '#menu .info' ).toggleClass( 'hide', list.icon === 'networks' );
 	contextMenu();
 } );
 $( '#menu a' ).on( 'click', function() {
