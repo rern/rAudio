@@ -7,7 +7,6 @@ $id_data     = [
 	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
-	, 'hddsleep'      => [ 'label' => 'Hard Drive Sleep' ]
 	, 'hostname'      => [ 'label' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
 	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
@@ -103,11 +102,6 @@ $body = [
 	'<ul id="list" class="entries"></ul>
 		<div class="helpblock hide">'.$b_microsd.' '.$b_usbdrive.' '.$b_networks.' Context menu'.'</div>
 		<pre id="codehddinfo" class="status hide"></pre>'
-	, [
-		  'id'       => 'hddsleep'
-		, 'disabled' => 'HDD not support sleep'
-		, 'help'     => 'Sleep timer for USB hard drives.'
-	]
 ];
 htmlSection( $head, $body, 'storage' );
 
@@ -385,6 +379,7 @@ $menu       = [
 	  'info'    => 'info'
 	, 'forget'  => 'remove'
 	, 'remount' => 'connect'
+	, 'sleep'   => 'screenoff'
 	, 'unmount' => 'close'
 ];
 $menuhtml   = '';

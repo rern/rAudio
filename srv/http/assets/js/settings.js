@@ -269,6 +269,9 @@ function psStorage( data ) {
 	if ( page === 'system' ) {
 		S.list = data.list;
 		renderStorage();
+		$( '#codehddinfo' )
+			.addClass( 'hide' )
+			.empty();
 	}
 }
 function psVolume() {

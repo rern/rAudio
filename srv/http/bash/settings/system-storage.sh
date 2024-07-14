@@ -3,14 +3,16 @@
 . /srv/http/bash/common.sh
 
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
-	local ust                # timeout: limit if network shares offline
+	local apm ust                # timeout: limit if network shares offline
 	[[ $4 == true ]] && ust=$( timeout 1 df -H --output=used,size,fstype $2 | awk '!/Used/ {print $1"B/"$2"B "$3}' )
+	[[ $1 == usbdrive ]] && apm=$( hdparm -B $3 | awk '/APM/ {print $NF}' ) # N / not supported
 	echo ',{
   "icon"       : "'$1'"
 , "fs"         : "'${ust/* }'"
 , "mountpoint" : "'$( stringEscape $2 )'"
 , "size"       : "'${ust/ *}'"
 , "source"     : "'$3'"
+, "apm"        : '${apm/supported}'
 }'
 }
 # sd

@@ -123,29 +123,8 @@ bluetoothstart )
 	bluetoothctl pairable yes &> /dev/null
 	;;
 hddsleep )
-	if [[ $ON ]]; then
-		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
-		for dev in $devs; do
-			! hdparm -B $dev | grep -q -m1 'APM_level' && notsupport+=$dev'<br>' && continue
-
-			hdparm -q -B $APM $dev
-			hdparm -q -S $APM $dev
-			support=1
-		done
-		[[ $notsupport ]] && echo -e "<wh>Devices not support sleep:</wh><br>$notsupport"
-		[[ $support ]] && echo $APM > $dirsystem/apm
-	else
-		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
-		if [[ $devs ]]; then
-			for dev in $devs; do
-				! hdparm -B $dev | grep -q -m1 'APM_level' && continue
-				
-				hdparm -q -B 128 $dev &> /dev/null
-				hdparm -q -S 0 $dev &> /dev/null
-			done
-		fi
-		rm -f $dirsystem/hddsleep
-	fi
+	hdparm -q -B $LEVEL $DEV
+	hdparm -q -S $LEVEL $DEV
 	pushRefresh
 	;;
 hostname )

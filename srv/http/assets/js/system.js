@@ -203,6 +203,17 @@ $( '.refresh' ).on( 'click', function() {
 		}, 'json' );
 	}, 10000 );
 } );
+$( '#setting-softlimit' ).on( 'click', function() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, list         : [ '', 'radio', { '65°C': 65, '70°C': 70, '75°C': 75 } ]
+		, values       : S.softlimitconf || default_v.softlimit
+		, checkchanged : S.softlimit
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
+} );
 $( '.addnas' ).on( 'click', function() {
 	infoMount();
 } );
@@ -228,6 +239,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		var mounted = list.size !== '';
 		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
+		$( '#menu .sleep' ).toggleClass( 'hide', ! list.apm );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
 	$( '#menu .info' ).toggleClass( 'hide', list.icon === 'networks' );
@@ -250,7 +262,7 @@ $( '#menu a' ).on( 'click', function() {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
 			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
-			break;
+			break
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
@@ -262,39 +274,33 @@ $( '#menu a' ).on( 'click', function() {
 			} else {
 				$code.addClass( 'hide' );
 			}
-			break;
+			break
 		case 'remount':
 			notify( icon, title, 'Remount ...' );
 			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
+		case 'sleep':
+			title = 'Sleep Timeout';
+			info( {
+				  icon         : icon
+				, title        : title
+				, list         : [ '&emsp; Minutes', 'number', { updn: { step: 1, min: 0, max: 20 } } ]
+				, boxwidth     : 70
+				, values       : Math.round( list.apm * 5 / 60 )
+				, checkchanged : true
+				, ok           : () => {
+					var val = infoVal();
+					console.log( [ 'hddsleep', list.source, val ? val * 60 / 5 : 255, 'CMD DEV LEVEL' ] );
+					notify( icon, title, 'Change ...' );
+					bash( [ 'hddsleep', list.source, val ? val * 60 / 5 : 255, 'CMD DEV LEVEL' ] );
+				}
+			} );
+			break
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
 			bash( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
-			break;
+			break
 	}
-} );
-$( '#setting-softlimit' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, list         : [ '', 'radio', { '65°C': 65, '70°C': 70, '75°C': 75 } ]
-		, values       : S.softlimitconf || default_v.softlimit
-		, checkchanged : S.softlimit
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-} );
-$( '#setting-hddsleep' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, message      : 'Timer:'
-		, list         : [ '', 'radio', { kv: { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }, sameline: false } ]
-		, values       : { APM: S.hddsleep } || default_v.hddsleep
-		, checkchanged : S.hddsleep
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
 } );
 $( '#setting-bluetooth' ).on( 'click', function() {
 	info( {
@@ -1182,6 +1188,7 @@ function renderPage() {
 	showContent();
 }
 function renderStorage() {
+	delete S.hddapm;
 	var html  = '';
 	$.each( S.list, ( i, v ) => {
 		var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
@@ -1191,10 +1198,4 @@ function renderStorage() {
 				+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +' <gr>'+ v.fs +'</gr></li>';
 	} );
 	$( '#list' ).html( html );
-	if ( $( '#list .i-usbdrive' ).length ) {
-		$( '#divhddsleep' ).removeClass( 'hide' );
-		$( '#hddsleep' ).toggleClass( 'disabled', ! S.hddapm );
-	} else {
-		$( '#divhddsleep' ).addClass( 'hide' );
-	}
 }
