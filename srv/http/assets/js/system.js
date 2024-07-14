@@ -223,6 +223,9 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	V.li      = $this;
 	var i     = $this.index()
 	var list  = S.list[ i ];
+	$( '#codehddinfo' )
+		.addClass( 'hide' )
+		.empty();
 	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
 		info( {
 			  icon    : 'networks'
