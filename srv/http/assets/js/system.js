@@ -281,13 +281,13 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'sleep':
-			title = 'Sleep Timeout';
+			title = 'HDD Sleep';
 			info( {
 				  icon         : icon
 				, title        : title
-				, list         : [ '&emsp; Minutes', 'number', { updn: { step: 1, min: 0, max: 20 } } ]
-				, boxwidth     : 70
-				, footer       : '&emsp; (0 = disabled)'
+				, list         : [ 'Timeout <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 20 } } ]
+				, boxwidth     : 90
+				, footer       : '&emsp; &emsp;(0 = disabled)'
 				, values       : Math.round( list.apm * 5 / 60 )
 				, checkchanged : true
 				, ok           : () => {
