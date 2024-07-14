@@ -24,7 +24,7 @@ if [[ $usb ]]; then
 			mounted=true
 		else
 			mounted=false
-			mountpoint="$dirusb/$( e2label /dev/sda1 2> /dev/null | cut -d"'" -f2 )"
+			mountpoint="$dirusb/$( lsblk -no label /dev/sda1 )"
 		fi
 		list+=$( listItem usbdrive "$mountpoint" "$source" $mounted )
 	done <<< $usb
