@@ -312,13 +312,13 @@ Note:
 		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- {$FiLabel( 'Storage' )} $b_add Connect the shared <c>source</c>
+		- {$FiLabel( 'Storage' )} $b_add Add <c>source</c>
 		- {$Fmenu( 'library', 'Library', 'refresh-library' )} Update database
-		- $shareddata Connect the shared <c>data</c>
-		- Local data will be transfered to shared <c>data</c>
+		- $shareddata Connect <c>data</c>
+		- Local data will be transfered to <c>data</c>
 	 · Other clients:
-		- $shareddata Connect the shared <c>data</c>
-		- The shared <c>source</c> will be connected accordingly
+		- $shareddata Connect <c>data</c>
+		- <c>source</c> will be connected accordingly
 EOF
 	]
 ];
