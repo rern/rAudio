@@ -3,9 +3,6 @@ var default_v     = {
 		  DISCOVERABLE : true
 		, FORMAT       : false 
 	}
-	, hddsleep      : {
-		APM : 60
-	}
 	, lcdchar_gpio  : {
 		  INF       :'gpio'
 		, COLS      : 20
@@ -294,7 +291,6 @@ $( '#menu a' ).on( 'click', function() {
 				, checkchanged : true
 				, ok           : () => {
 					var val = infoVal();
-					console.log( [ 'hddsleep', list.source, val ? val * 60 / 5 : 255, 'CMD DEV LEVEL' ] );
 					notify( icon, title, 'Change ...' );
 					bash( [ 'hddsleep', list.source, val ? val * 60 / 5 : 255, 'CMD DEV LEVEL' ] );
 				}
