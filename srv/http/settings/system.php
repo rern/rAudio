@@ -82,7 +82,6 @@ $head = [ //////////////////////////////////
 	, 'help'   => <<< EOF
 $b_add Add network storage
 
- · Path: <c>/mnt/MPD/...</c>
  · USB drives  Will be found and mounted automatically.
  · Commands used by $b_add Add network storage:
 <pre class="gr">
@@ -98,11 +97,12 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
 </pre> · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
 ];
-$body = [
-	'<ul id="list" class="entries"></ul>
-		<div class="helpblock hide">'.$b_microsd.' '.$b_usbdrive.' '.$b_networks.' Context menu'.'</div>
-		<pre id="codehddinfo" class="status hide"></pre>'
-];
+$body = [ <<< EOF
+<ul id="list" class="entries"></ul>
+<div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
+$b_microsd $b_usbdrive $b_networks Context menu</div>
+<pre id="codehddinfo" class="status hide"></pre>
+EOF ];
 htmlSection( $head, $body, 'storage' );
 
 // ----------------------------------------------------------------------------------
