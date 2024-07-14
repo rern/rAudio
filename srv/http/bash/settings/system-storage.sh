@@ -3,23 +3,29 @@
 . /srv/http/bash/common.sh
 
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
-	local used_size                # timeout: limit if network shares offline
-	[[ $4 == true ]] && used_size=$( timeout 1 df -H --output=used,size $2 | awk '!/Used/ {print $1"B/"$2"B"}' )
+	local ust                # timeout: limit if network shares offline
+	[[ $4 == true ]] && ust=$( timeout 1 df -H --output=used,size,fstype $2 | awk '!/Used/ {print $1"B/"$2"B "$3}' )
 	echo ',{
   "icon"       : "'$1'"
+, "fs"         : "'${ust/* }'"
 , "mountpoint" : "'$( stringEscape $2 )'"
-, "size"       : "'$used_size'"
+, "size"       : "'${ust/ *}'"
 , "source"     : "'$3'"
 }'
 }
 # sd
 mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd / /dev/mmcblk0p2 true )
 # usb
-usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
+usb=$( fdisk -l -o Device | grep ^/dev/sd )
 if [[ $usb ]]; then
 	while read source; do
 		mountpoint=$( df -l --output=target $source | tail -1 )
-		[[ $mountpoint ]] && mounted=true || mounted=false
+		if [[ $mountpoint != /dev ]]; then
+			mounted=true
+		else
+			mounted=false
+			mountpoint="$dirusb/$( e2label /dev/sda1 2> /dev/null | cut -d"'" -f2 )"
+		fi
 		list+=$( listItem usbdrive "$mountpoint" "$source" $mounted )
 	done <<< $usb
 fi

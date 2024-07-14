@@ -83,6 +83,7 @@ $head = [ //////////////////////////////////
 	, 'help'   => <<< EOF
 $b_add Add network storage
 
+ · Path: <c>/mnt/MPD/...</c>
  · USB drives  Will be found and mounted automatically.
  · Commands used by $b_add Add network storage:
 <pre class="gr">

@@ -1183,12 +1183,12 @@ function renderPage() {
 }
 function renderStorage() {
 	var html  = '';
-	$.each( S.list, ( i, val ) => {
-		var sd = val.mountpoint === '/' ? '<gr>mnt/MPD/SD</gr>' : '';
+	$.each( S.list, ( i, v ) => {
+		var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
 		var dot = '<grn>&ensp;•&ensp;</grn>';
-		if ( ! val.size ) dot = dot.replace( /grn/g, 'red' );
-		html += '<li>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint + sd +'</wh>'
-				+ dot +'<gr class="source">'+ val.source +'</gr>&ensp;'+ val.size +'</li>';
+		if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
+		html += '<li>'+ ico( v.icon ) + mountpoint
+				+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +' <gr>'+ v.fs +'</gr></li>';
 	} );
 	$( '#list' ).html( html );
 	if ( $( '#list .i-usbdrive' ).length ) {
