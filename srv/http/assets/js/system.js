@@ -287,6 +287,7 @@ $( '#menu a' ).on( 'click', function() {
 				, title        : title
 				, list         : [ '&emsp; Minutes', 'number', { updn: { step: 1, min: 0, max: 20 } } ]
 				, boxwidth     : 70
+				, footer       : '&emsp; (0 = disabled)'
 				, values       : Math.round( list.apm * 5 / 60 )
 				, checkchanged : true
 				, ok           : () => {
