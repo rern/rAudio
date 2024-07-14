@@ -191,7 +191,7 @@ dirPermissions() {
 	fi
 	[[ ! -e /usr/bin/firefox ]] && rm -f /srv/http/assets/img/splash.png $dirbash/xinitrc
 	chown -R http:http /srv &> /dev/null
-	chown -R mpd:audio $dirmpd $dirplaylists &> /dev/null
+	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash
 }
