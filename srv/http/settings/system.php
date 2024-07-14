@@ -299,11 +299,11 @@ Note:
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: {$FiTab( 'Features' )}{$FiLabel( 'Server rAudio', 'rserver' )}
-	Clients: $shareddata &raquo; <btn>rAudio</btn>
+	Clients: $shareddata <btn>{$Fi( 'rserver' )} rAudio</btn>
 	
  • <wh>Other servers:</wh> (Alternative 2)
-	Server: Create shares for <c>data</c> and <c>source</c> for Library
-	 · Linux: <c>rwx</c>
+	Server: Create shares for music <c>source</c> and <c>data</c>
+	 · Linux permissions:
 		NFS: <c>777</c>
 		CIFS (SMB): <c>read only = no</c>
 	 · Windows:
@@ -312,13 +312,13 @@ Note:
 		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- {$FiLabel( 'Storage' )} $b_add Add network storage for shared <c>source</c>
+		- {$FiLabel( 'Storage' )} $b_add Connect the shared <c>source</c>
 		- {$Fmenu( 'library', 'Library', 'refresh-library' )} Update database
 		- $shareddata Connect the shared <c>data</c>
-		- <c>data</c> will be shared for all clients
+		- Local data will be transfered to shared <c>data</c>
 	 · Other clients:
 		- $shareddata Connect the shared <c>data</c>
-		- <c>source</c> will be set the same as 1st client
+		- The shared <c>source</c> will be connected accordingly
 EOF
 	]
 ];

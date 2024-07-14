@@ -230,7 +230,7 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· {$FiTab( 'System' )}{$FiLabel( 'Shared Data', 'networks' )} Type ● rAudio
+	· {$FiTab( 'System' )}{$FiLabel( 'Shared Data', 'networks' )} <btn>{$Fi( 'rserver' )} rAudio</btn>
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
