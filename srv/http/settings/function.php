@@ -24,10 +24,10 @@ if ( $features ) {
 } else if ( $player ) {
 	$labels = [
 		  [ 'DAB Radio',   'dabradio' ]
-		, 'Device'
+		, [ 'Device' ]
 		, [ 'Shared Data', 'networks' ]
-		, 'SoX Resampler'
-		, 'Volume Control'
+		, [ 'SoX Resampler' ]
+		, [ 'Volume Control' ]
 	];
 	$menus = '';
 } else if ( $networks ) {
@@ -38,11 +38,11 @@ if ( $features ) {
 	$menus = '';
 } else if ( $system ) {
 	$labels = [
-		  'Device'
-		, 'Output'
+		  [ 'Device' ]
+		, [ 'Output' ]
 		, [ 'Server rAudio', 'rserver' ]
 		, [ 'Shared Data',   'networks' ]
-		, 'Storage'
+		, [ 'Storage' ]
 	];
 	$menus = [
 		  [ 'library', 'Library', 'refresh-library' ]
@@ -50,12 +50,8 @@ if ( $features ) {
 	];
 }
 foreach( $labels as $l ) {
-	if ( is_array( $l ) ) {
-		$i = i( $l[ 1 ] );
-		$l = $l[ 0 ];
-	} else {
-		$i = '&emsp;';
-	}
+	$i    = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
+	$l    = $l[ 0 ];
 	$name = strtolower( str_replace( ' ', '', $l ) );
 	${'l_'.$name} = '<a class="helpmenu label">'.$l.$i.'</a>';
 }
