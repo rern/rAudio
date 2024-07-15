@@ -444,14 +444,7 @@ $( '.helphead' ).on( 'click', function() {
 		$( '.helpblock' ).addClass( 'hide' );
 	} else {
 		$( '.help' ).addClass( 'bl' );
-		$( '.helpblock' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.prev().hasClass( 'status' ) ) {
-				$this.toggleClass( 'hide', $this.prev().hasClass( 'hide' ) );
-			} else {
-				$this.removeClass( 'hide' );
-			}
-		} );
+		$( '.helpblock' ).removeClass( 'hide' );
 	}
 } );
 $( '#close' ).on( 'click', function() {

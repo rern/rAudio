@@ -1,8 +1,6 @@
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 'x';
-$i2s         = [ 'label' => 'Audio - I²S', 'sub' => 'HAT' ];
-$shareddata  = iLabel( 'Shared Data', 'networks' );
 $id_data     = [
 	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
@@ -25,7 +23,6 @@ $id_data     = [
 	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
-
 $head = [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
@@ -143,7 +140,7 @@ htmlSection( $head, $body, 'onboard' );
 $helpi2s = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
- · See  if it's already set: {$FiTab( 'Player' )} {$FiLabel( 'Output' )} {$FiLabel( 'Device' )}
+ · See  if it's already set: $t_player$l_device
 $b_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF;
@@ -182,7 +179,7 @@ EOF
 		  'id'       => 'relays'
 		, 'help'     => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
+On/Off: $m_relays
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  · Can be enabled and run as a test without a connected relay module.
 EOF
@@ -280,7 +277,7 @@ EOF
 	]
 	, [
 		  'id'       => 'shareddata'
-		, 'disabled' => iLabel( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'disabled' => $l_serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
  · Library database
@@ -293,8 +290,8 @@ Note:
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$FiTab( 'Features' )}{$FiLabel( 'Server rAudio', 'rserver' )}
-	Clients: $shareddata <btn>{$Fi( 'rserver' )} rAudio</btn>
+	Server: $t_features$l_serverraudio
+	Clients: $l_shareddata <btn>{$Fi( 'rserver' )} rAudio</btn>
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create shares for music <c>source</c> and <c>data</c>
@@ -307,12 +304,12 @@ Note:
 		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- {$FiLabel( 'Storage' )} $b_add Add <c>source</c>
-		- {$Fmenu( 'library', 'Library', 'refresh-library' )} Update database
-		- $shareddata Connect <c>data</c>
+		- $l_storage $b_add Add <c>source</c>
+		- $m_refreshlibrary Update database
+		- $l_shareddata Connect <c>data</c>
 		- Local data will be transfered to <c>data</c>
 	 · Other clients:
-		- $shareddata Connect <c>data</c>
+		- $l_shareddata Connect <c>data</c>
 		- <c>source</c> will be connected accordingly
 EOF
 	]

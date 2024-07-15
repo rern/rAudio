@@ -16,10 +16,6 @@ if ( $addonsprogress || $guide ) {
 //----------------------------------------------------------------------------------
 }
 
-if ( ! $addons ) {
-	include 'settings/function.php';
-	include 'settings/'.$page.'.php'; // addons: by addons.js
-}
 $htmlbar = '';
 if ( $camilla ) {
 	$tabs   = [ 'Filters', 'Mixers', 'Processors', 'Pipeline', 'Devices' ];
@@ -31,6 +27,11 @@ if ( $camilla ) {
 foreach ( $tabs as $tab ) {
 	$id      = strtolower( $tab );
 	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).' <a>'.$tab.'</a></div>';
+	if ( ! $camilla ) ${'t_'.$id} = '<a class="helpmenu tab">'.i( $id ).' '.$tab.'</a>';
+}
+if ( ! $addons ) {
+	include 'settings/function.php';
+	include 'settings/'.$page.'.php'; // addons: by addons.js
 }
 echo '
 	</div>

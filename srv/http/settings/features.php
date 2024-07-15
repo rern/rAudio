@@ -1,8 +1,4 @@
 <?php
-$hostname     = getHostName();
-$ip           = getHostByName( $hostname );
-$ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
-$fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 $id_data      = [
 	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                   'status' => true, 'exist' => 'iwctl' ]
 	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
@@ -24,6 +20,10 @@ $id_data      = [
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
 	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
 ];
+$hostname     = getHostName();
+$ip           = getHostByName( $hostname );
+$ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
+$fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 $snapweb = $b_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ]; //////////////////////////////////
@@ -48,7 +48,7 @@ EOF
 		, 'help'     => <<< EOF
 $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
- · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
+ · Connect: $m_snapcast
  · SnapClient and SnapServer can be enabled on the same device.
 	· Enable SnapServer before SnapClient
 	· SnapClient auto connect/disconnect on play/stop (no connect icon)
@@ -118,18 +118,18 @@ $head = [ 'title' => 'Signal Processors' ]; //////////////////////////////////
 $body = [
 	[
 		  'id'       => 'camilladsp'
-		, 'disabled' => iLabel( 'Equalizer', 'equalizer' ).' is currently enabled.'
+		, 'disabled' => $l_equalizer.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-Settings: {$Fmenu( 'features', 'Features', 'camilladsp' )}
+Settings: $m_camilladsp
 EOF
 	]
 	, [
 		  'id'       => 'equalizer'
-		, 'disabled' => iLabel( 'DSP', 'camilladsp' ).' is currently enabled.'
+		, 'disabled' => $l_camilladsp.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
-Control: {$Fmenu( 'features', 'Features', 'equalizer' )}
+Control: $m_features
 Presets:
  · <c>Flat</c>: All bands at 0dB
  · If distortions occurred, lower all bands collectively and increase volume
@@ -141,7 +141,7 @@ $head = [ 'title' => 'Others' ]; //////////////////////////////////
 $body = [
 	[
 		  'id'       => 'ap'
-		, 'disabled' => iLabel( 'Wi-Fi', 'wifi' ).' is currently connected.'
+		, 'disabled' => $l_wifi.' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://iwd.wiki.kernel.org/ap_mode">iNet Wireless Daemon</a> (iwd) - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
@@ -162,7 +162,7 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
  · Rotate - TFT 3.5" LCD needs reboot.
- · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )} (Backlight still on - no energy saved)
+ · Screen off: $m_screenoff (Backlight still on - no energy saved)
  · run <c>xinitrc.d</c> - execute custom scripts in <c>/etc/X11/xinit/xinitrc.d</c>
 
 Note: HDMI display - Connect before boot
@@ -170,14 +170,14 @@ EOF
 	]
 	, [
 		  'id'       => 'smb'
-		, 'disabled' => iLabel( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'disabled' => $l_serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  · Windows: $fileexplorer
  
-Note: {$FiLabel( 'Server rAudio', 'rserver' )} should yield better performance.
+Note: $l_serverraudio should yield better performance.
 EOF
 	]
 	, [
@@ -194,14 +194,14 @@ EOF
 		  'id'       => 'multiraudio'
 		, 'help'     => <<< EOF
 Switch between multiple rAudio devices.
-Switch: {$Fmenu( 'playlist', 'Playlist', 'multiraudio' )}
+Switch: $m_multiraudio
 EOF
 	]
 	, [
 		  'id'       => 'login'
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
-Lock: {$Fmenu( 'player', 'Player', 'lock' )}
+Lock: $m_lock
 EOF
 	]
 	, [
@@ -218,11 +218,11 @@ EOF
 		  'id'          => 'nfsserver'
 		, 'disabled'    => 'js'
 		, 'help'        => <<< EOF
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FiLabel( 'Shared Data', 'networks' )}
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $l_shareddata
  • <wh>rAudio Shared Data server:</wh>
 	· IP address - This rAudio must be set to static / fixed to prevent change on reboot.
 	· Password - if changed, must be the same on all clients.
-	· In {$FiTab( 'Library' )} Library
+	· In <a class="helpmenu tab">{$Fi( 'library' )} Library</a>
 		· $b_microsd SD and $b_usbdrive USB will be hidden.
 		· $b_usbdrive USB items will be displayed in $b_networks NAS instead.
 	· On reboot / power off:
@@ -230,7 +230,7 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· {$FiTab( 'System' )}{$FiLabel( 'Shared Data', 'networks' )} <btn>{$Fi( 'rserver' )} rAudio</btn>
+	· $t_system$l_shareddata <btn>{$Fi( 'rserver' )} rAudio</btn>
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>

@@ -24,7 +24,7 @@ $html = <<< EOF
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	· On rAudio: {$FiTab( 'System' )}{$FiLabel( 'Bluetooth', 'bluetooth' )} ■ Discoverable by senders
+	· On rAudio: $t_system$l_bluetooth ■ Discoverable by senders
 	· On sender: Search &raquo; Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect / Disconnect:
@@ -73,7 +73,7 @@ $body = [
 		, '<div id="qrap"></div>
 		   <div class="helpblock hide">Access rAudio directly without Wi-Fi router:
  • Connect <wh>Access Point</wh> with the password or scan QR code
- • Access point setting: '.iTab( 'Features' ).iLabel( 'Access Point', 'ap' ).'
+ • Access point setting: '.$t_features.$l_accesspoint.'
 
 Note: No internet connection.</div>'
 	)

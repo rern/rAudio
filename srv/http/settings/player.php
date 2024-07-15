@@ -17,7 +17,6 @@ $id_data = [
 	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
-
 $head = [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
@@ -77,7 +76,7 @@ EOF
 	, [
 		  'id'       => 'devicewithbt'
 		, 'help'     => <<< EOF
- · Keep Output {$FiLabel( 'Device' )} enabled when Bluetooth connected.
+ · Keep Output $l_device enabled when Bluetooth connected.
  · Should be disabled if not used simultaneously
 EOF
 	]
@@ -92,10 +91,10 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
  · Mixer device volume set at <c>0dB</c>
  · Disable:
-	· Output {$FiLabel( 'Volume Control' )}
+	· Output $l_volumecontrol
 	· Volume - All options
-	· Options  {$FiLabel( 'SoX Resampler' )}
-	· {$FiTab( 'Features' )} Signal Processors
+	· Options  $l_soxresampler
+	· $t_features Signal Processors
 EOF
 	]
 	, [
@@ -161,7 +160,7 @@ EOF
 	]
 	, [
 		  'id'       => 'ffmpeg'
-		, 'disabled' => iLabel( 'DAB Radio', 'dabradio' ).' is currently enabled.'
+		, 'disabled' => $l_dabradio.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://ffmpeg.org/about.html">FFmpeg</a> - <a id="ffmpegfiletype">Decoder for more audio filetypes</a>
 <pre id="prefiletype" class="hide"></pre>
@@ -227,7 +226,7 @@ To restore:
 • Remove lines contain directory to restore
 • Update Library
 
-Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for {$FiTab( 'System' )}{$FiLabel( 'Shared Data', 'networks' )}
+Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for $t_system$l_shareddata
 EOF
 ] );
 htmlHead( [

@@ -1,28 +1,68 @@
 <?php
+// <btn>
 $btn     = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'
 			,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
 $btnc    = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
 if ( $camilla ) $btn = array_merge( $btn, $btnc );
-foreach( $btn as $b ) {
-	$name  = 'b_'.$b;
-	$$name = i( $b.' btn' );
+foreach( $btn as $b ) ${'b_'.$b} = i( $b.' btn' );
+// label
+if ( $features ) {
+	$labels = [
+		  [ 'Equalizer',     'equalizer' ]
+		, [ 'DSP',           'camilladsp' ]
+		, [ 'Server rAudio', 'rserver' ]
+		, [ 'Shared Data',   'networks' ]
+		, [ 'Wi-Fi',         'wifi' ]
+	];
+	$menus = [
+		  [ 'features', 'Features', 'camilladsp' ]
+		, [ 'features', 'Features', 'equalizer' ]
+		, [ 'playlist', 'Playlist', 'multiraudio' ]
+		, [ 'player',   'Player',   'lock' ]
+		, [ 'power',    'Power',    'screenoff' ]
+	];
+} else if ( $player ) {
+	$labels = [
+		  [ 'DAB Radio',   'dabradio' ]
+		, 'Device'
+		, [ 'Shared Data', 'networks' ]
+		, 'SoX Resampler'
+		, 'Volume Control'
+	];
+	$menus = '';
+} else if ( $networks ) {
+	$labels = [
+		  [ 'Access Point', 'ap' ]
+		, [ 'Bluetooth', 'bluetooth' ]
+	];
+	$menus = '';
+} else if ( $system ) {
+	$labels = [
+		  'Device'
+		, 'Output'
+		, [ 'Server rAudio', 'rserver' ]
+		, [ 'Shared Data',   'networks' ]
+		, 'Storage'
+	];
+	$menus = [
+		  [ 'library', 'Library', 'refresh-library' ]
+		, [ 'raudio',  'System',  'relays' ]
+	];
 }
-function iLabel( $label, $icon = '' ) {
-	$htmlicon = $icon ? i( $icon ) : '&emsp;';
-	return '<a class="helpmenu label">'.$label.$htmlicon.'</a>';
+foreach( $labels as $l ) {
+	if ( is_array( $l ) ) {
+		$i = i( $l[ 1 ] );
+		$l = $l[ 0 ];
+	} else {
+		$i = '&emsp;';
+	}
+	$name = strtolower( str_replace( ' ', '', $l ) );
+	${'l_'.$name} = '<a class="helpmenu label">'.$l.$i.'</a>';
 }
-function iTab( $tab ) {
-	return '<a class="helpmenu tab">'.i( strtolower( $tab ) ).' '.$tab.'</a>';
+foreach( $menus as $m ) {
+	$name = str_replace( '-', '', $m[ 2 ] );
+	${'m_'.$name} = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
 }
-function menu( $icon, $name, $iconsub = '' ) {
-	$submenu = $iconsub ? i( $iconsub.' sub' ) : '';
-	return '<a class="helpmenu">'.i( $icon ).' '.$name.$submenu.'</a>';
-}
-// functions for use inside heredoc
-$Fi      = 'i';
-$FiLabel = 'iLabel';
-$FiTab   = 'iTab';
-$Fmenu   = 'menu';
 /*
 $id_data = [ 'ID' => [               // REQUIRED
 	  'label'   => 'LABEL'
