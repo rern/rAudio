@@ -1323,8 +1323,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 			, gmode  : mode
 		}
 	}
-	V.mode = mode;
 	list( query, function( html ) {
+		V.mode = mode;
 		var data = {
 			  html      : html
 			, modetitle : path
