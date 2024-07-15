@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240715
+# 20240717
 lsblk -Sno path,vendor,model > $dirshm/lsblkusb
 
 file=$dirsystem/lcdcharconf.py

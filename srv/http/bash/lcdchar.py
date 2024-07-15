@@ -8,7 +8,10 @@ with open( '/srv/http/data/system/lcdchar.conf', 'r' ) as f:
         kv        = line.split( '=' )
         k         = kv[ 0 ]
         v         = kv[ 1 ].rstrip()
-        if k == 'backlight': v = bool( v )
+        if k == 'address' or k == 'cols':
+            v = int( v )
+        elif k == 'backlight':
+            v = bool( v )
         conf[ k ] = v
 locals().update( conf ) # inf, cols, charmap, address, chip, backlight
 
