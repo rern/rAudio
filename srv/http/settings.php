@@ -34,7 +34,7 @@ if ( ! $addons ) {
 				,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
 	$btnc    = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
 	if ( $camilla ) $btn = array_merge( $btn, $btnc );
-	foreach( $btn as $b ) ${'b_'.$b} = i( $b.' btn' ); // btn
+	foreach( $btn as $b ) ${'b_'.$b} = i( $b.' btn' ); // $b_xxx - button
 	if ( $features ) {
 		$labels = [
 			  [ 'Equalizer',     'equalizer' ]
@@ -78,13 +78,13 @@ if ( ! $addons ) {
 			, [ 'raudio',  'System',  'relays' ]
 		];
 	}
-	foreach( $labels as $l ) { // switch label
+	foreach( $labels as $l ) { // $l_xxx - switch label
 		$icon = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
 		$l    = $l[ 0 ];
 		$name = strtolower( preg_replace( '/ |-/', '', $l ) );
 		${'l_'.$name} = '<a class="helpmenu label">'.$l.$icon.'</a>';
 	}
-	foreach( $menus as $m ) { // menu
+	foreach( $menus as $m ) { // $m_xxx - menu
 		$name = str_replace( '-', '', $m[ 2 ] );
 		${'m_'.$name} = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
 	}
