@@ -50,10 +50,10 @@ if ( $features ) {
 	];
 }
 foreach( $labels as $l ) {
-	$i    = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
+	$icon = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
 	$l    = $l[ 0 ];
-	$name = strtolower( str_replace( ' ', '', $l ) );
-	${'l_'.$name} = '<a class="helpmenu label">'.$l.$i.'</a>';
+	$name = strtolower( preg_replace( '/ |-/', '', $l ) );
+	${'l_'.$name} = '<a class="helpmenu label">'.$l.$icon.'</a>';
 }
 foreach( $menus as $m ) {
 	$name = str_replace( '-', '', $m[ 2 ] );
