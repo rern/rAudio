@@ -20,31 +20,28 @@ $id_data      = [
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
 	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
 ];
-$labels = [
+$labels       = [
 	  [ 'Equalizer',     'equalizer' ]
 	, [ 'DSP',           'camilladsp' ]
 	, [ 'Server rAudio', 'rserver' ]
 	, [ 'Shared Data',   'networks' ]
 	, [ 'Wi-Fi',         'wifi' ]
 ];
-$menus = [
+$menus        = [
 	  [ 'features', 'Features', 'camilladsp' ]
 	, [ 'features', 'Features', 'equalizer' ]
 	, [ 'playlist', 'Playlist', 'multiraudio' ]
 	, [ 'player',   'Player',   'lock' ]
 	, [ 'power',    'Power',    'screenoff' ]
 ];
-$l = varLabel( $labels );
-$m = varMenu( $menus );
-extract( $l, EXTR_PREFIX_ALL, 'l' );
-extract( $m, EXTR_PREFIX_ALL, 'm' );
+varLabelMenu( $labels, $menus );
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
-$snapweb = $b_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
+$snapweb      = $b_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
-$head         = [ 'title' => 'Renderers' ]; //////////////////////////////////
+$head         = [ 'title' => 'Renderers' ];
 $body         = [
 	[
 		  'id'       => 'shairport-sync'
@@ -114,8 +111,7 @@ EOF
 ];
 htmlSection( $head, $body, 'renderers' );
 // ----------------------------------------------------------------------------------
-
-$head = [ 'title' => 'Streamers' ]; //////////////////////////////////
+$head = [ 'title' => 'Streamers' ];
 $body = [
 	[
 		  'id'       => 'httpd'
@@ -132,7 +128,8 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'streamers' );
-$head = [ 'title' => 'Signal Processors' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Signal Processors' ];
 $body = [
 	[
 		  'id'       => 'camilladsp'
@@ -155,7 +152,8 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'dsp' );
-$head = [ 'title' => 'Others' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Others' ];
 $body = [
 	[
 		  'id'       => 'ap'

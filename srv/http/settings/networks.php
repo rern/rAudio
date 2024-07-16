@@ -1,14 +1,12 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
 <div id="divbt" class="section">
 <?php
-$labels = [
+varLabelMenu( [
 	  [ 'Access Point', 'ap' ]
-	, [ 'Bluetooth', 'bluetooth' ]
-];
-$l = varLabel( $labels );
-extract( $l, EXTR_PREFIX_ALL, 'l' );
-
-htmlHead( [ //////////////////////////////////
+	, [ 'Bluetooth',    'bluetooth' ]
+] );
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
 	, 'button' => 'search btscan'
@@ -43,7 +41,8 @@ echo $html;
 </div>
 <div id="divwl" class="section">
 <?php
-htmlHead( [ //////////////////////////////////
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Wi-Fi'
 	, 'status' => 'wl'
 	, 'button' => [ 'add wladd', 'search wlscan' ]
@@ -60,7 +59,8 @@ Note:
 </div>
 <div id="divlan" class="section">
 <?php
-htmlHead( [ //////////////////////////////////
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Wired LAN'
 	, 'status' => 'lan'
 	, 'button' => 'add lanadd'
@@ -95,7 +95,8 @@ htmlSection( $head, $body, 'webui' );
 ?>
 <div id="divbluetooth" class="section hide"> <!-- -------------------------------------------------------------- -->
 <?php
-htmlHead( [ //////////////////////////////////
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Bluetooth'
 	, 'button' => 'bluetooth blink scanning-bt'
 	, 'back'   => true
@@ -106,7 +107,8 @@ htmlHead( [ //////////////////////////////////
 </div>
 <div id="divwifi" class="section hide">
 <?php
-htmlHead( [ //////////////////////////////////
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Wi-Fi'
 	, 'button' => 'wifi blink scanning-wifi'
 	, 'back'   => true

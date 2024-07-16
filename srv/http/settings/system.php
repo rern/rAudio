@@ -23,23 +23,20 @@ $id_data     = [
 	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
-$labels = [
+$labels      = [
 	  [ 'Device' ]
 	, [ 'Output' ]
 	, [ 'Server rAudio', 'rserver' ]
 	, [ 'Shared Data',   'networks' ]
 	, [ 'Storage' ]
 ];
-$menus = [
+$menus       = [
 	  [ 'library', 'Library', 'refresh-library' ]
 	, [ 'raudio',  'System',  'relays' ]
 ];
-$l = varLabel( $labels );
-$m = varMenu( $menus );
-extract( $l, EXTR_PREFIX_ALL, 'l' );
-extract( $m, EXTR_PREFIX_ALL, 'm' );
-
-$head = [ //////////////////////////////////
+varLabelMenu( $labels, $menus );
+// ----------------------------------------------------------------------------------
+$head = [
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => 'power power'
@@ -53,7 +50,7 @@ $labels = 'Version
 $body = [ htmlSectionStatus( 'system', $labels ) ];
 htmlSection( $head, $body, 'system' );
 
-$head = [ //////////////////////////////////
+$head = [
 	  'title'  => 'Status'
 	, 'status' => 'status'
 	, 'button' => 'refresh refresh'
@@ -85,10 +82,10 @@ $body = [
 	]
 ];
 htmlSection( $head, $body, 'status' );
-
+// ----------------------------------------------------------------------------------
 $uid = exec( 'id -u mpd' );
 $gid = exec( 'id -g mpd' );
-$head = [ //////////////////////////////////
+$head = [
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
 	, 'button' => 'add addnas'
@@ -117,9 +114,8 @@ $b_microsd $b_usbdrive $b_networks Context menu</div>
 <pre id="codehddinfo" class="status hide"></pre>
 EOF ];
 htmlSection( $head, $body, 'storage' );
-
 // ----------------------------------------------------------------------------------
-$head = [ //////////////////////////////////
+$head = [
 	  'title'  => 'On-board Devices'
 ];
 $body = [
@@ -152,7 +148,6 @@ EOF
 ];
 htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
-
 $helpi2s = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
@@ -160,7 +155,7 @@ I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
 $b_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF;
-$head = [ //////////////////////////////////
+$head = [
 	  'title' => 'GPIO Devices'
 ];
 $body = [
@@ -225,7 +220,8 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'gpio' );
-$head = [ 'title' => 'Environment' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Environment' ];
 $body = [
 	[
 		  'id'       => 'hostname'
@@ -272,7 +268,8 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'environment' );
-$head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Data and Settings' ];
 $body = [
 	[
 		  'id'       => 'backup'
@@ -331,6 +328,7 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'datasetting' );
+// ----------------------------------------------------------------------------------
 $listui = [
 	[
 	    'D3'

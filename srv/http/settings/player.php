@@ -17,17 +17,15 @@ $id_data = [
 	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
-$labels = [
+varLabelMenu( [
 	  [ 'DAB Radio',   'dabradio' ]
 	, [ 'Device' ]
 	, [ 'Shared Data', 'networks' ]
 	, [ 'SoX Resampler' ]
 	, [ 'Volume Control' ]
-];
-$l = varLabel( $labels );
-extract( $l, EXTR_PREFIX_ALL, 'l' );
-
-$head = [ //////////////////////////////////
+] );
+// ----------------------------------------------------------------------------------
+$head = [
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
 	, 'button' => 'play playback'
@@ -44,7 +42,7 @@ $labels = 'Version
 $body = [ htmlSectionStatus( 'status', $labels ) ];
 htmlSection( $head, $body, 'mpd' );
 // ----------------------------------------------------------------------------------
-$head = [ //////////////////////////////////
+$head = [
 	  'title'  => 'Output'
 	, 'status' => 'output'
 ];
@@ -92,7 +90,8 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'output' );
-$head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Bit-Perfect' ];
 $body = [
 	[
 		  'id'       => 'novolume'
@@ -123,7 +122,8 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'bitperfect' );
-$head = [ 'title' => 'Volume' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Volume' ];
 $body = [
 	[	  'id'       => 'crossfade'
 		, 'help'     => <<< EOF
@@ -151,8 +151,7 @@ EOF
 ];
 htmlSection( $head, $body, 'volume' );
 // ----------------------------------------------------------------------------------
-
-$head = [ 'title' => 'Options' ]; //////////////////////////////////
+$head = [ 'title' => 'Options' ];
 $body = [
 	[
 		  'id'       => 'buffer'
@@ -212,7 +211,7 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'options' );
-
+// ----------------------------------------------------------------------------------
 htmlHead( [
 	  'title'   => 'Excluded Albums'
 	, 'id'      => 'albumignore'
