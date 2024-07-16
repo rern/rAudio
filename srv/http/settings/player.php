@@ -84,7 +84,7 @@ EOF
 	, [
 		  'id'       => 'devicewithbt'
 		, 'help'     => <<< EOF
- · Keep Output $l_device enabled when Bluetooth connected.
+ · Keep Output $L_device enabled when Bluetooth connected.
  · Should be disabled if not used simultaneously
 EOF
 	]
@@ -100,10 +100,10 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
  · Mixer device volume set at <c>0dB</c>
  · Disable:
-	· Output $l_volumecontrol
+	· Output $L_volumecontrol
 	· Volume - All options
-	· Options  $l_soxresampler
-	· $t_features Signal Processors
+	· Options  $L_soxresampler
+	· $T_features Signal Processors
 EOF
 	]
 	, [
@@ -169,7 +169,7 @@ EOF
 	]
 	, [
 		  'id'       => 'ffmpeg'
-		, 'disabled' => $l_dabradio.' is currently enabled.'
+		, 'disabled' => $L_dabradio.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://ffmpeg.org/about.html">FFmpeg</a> - <a id="ffmpegfiletype">Decoder for more audio filetypes</a>
 <pre id="prefiletype" class="hide"></pre>
@@ -235,7 +235,7 @@ To restore:
 • Remove lines contain directory to restore
 • Update Library
 
-Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for $t_system$l_shareddata
+Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for $T_system$L_shareddata
 EOF
 ] );
 htmlHead( [

@@ -27,7 +27,7 @@ if ( $camilla ) {
 foreach ( $tabs as $tab ) {
 	$id      = strtolower( $tab );
 	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).' <a>'.$tab.'</a></div>';
-	if ( ! $camilla ) ${'t_'.$id} = '<a class="helpmenu tab">'.i( $id ).' '.$tab.'</a>';
+	if ( ! $camilla ) ${'T_'.$id} = '<a class="helpmenu tab">'.i( $id ).' '.$tab.'</a>';
 }
 if ( ! $addons ) {
 	$btn     = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'

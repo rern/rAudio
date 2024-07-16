@@ -151,7 +151,7 @@ htmlSection( $head, $body, 'onboard' );
 $helpi2s = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
- · See  if it's already set: $t_player$l_device
+ · See  if it's already set: $T_player$L_device
 $b_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF;
@@ -190,7 +190,7 @@ EOF
 		  'id'       => 'relays'
 		, 'help'     => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: $m_relays
+On/Off: $M_relays
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  · Can be enabled and run as a test without a connected relay module.
 EOF
@@ -290,7 +290,7 @@ EOF
 	]
 	, [
 		  'id'       => 'shareddata'
-		, 'disabled' => $l_serverraudio.' is currently active.'
+		, 'disabled' => $L_serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
  · Library database
@@ -303,8 +303,8 @@ Note:
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: $t_features$l_serverraudio
-	Clients: $l_shareddata <btn>{$Fi( 'rserver' )} rAudio</btn>
+	Server: $T_features$L_serverraudio
+	Clients: $L_shareddata <btn>{$Fi( 'rserver' )} rAudio</btn>
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create shares for music <c>source</c> and <c>data</c>
@@ -317,12 +317,12 @@ Note:
 		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- $l_storage $b_add Add <c>source</c>
-		- $m_refreshlibrary Update database
-		- $l_shareddata Connect <c>data</c>
+		- $L_storage $b_add Add <c>source</c>
+		- $M_refreshlibrary Update database
+		- $L_shareddata Connect <c>data</c>
 		- Local data will be transfered to <c>data</c>
 	 · Other clients:
-		- $l_shareddata Connect <c>data</c>
+		- $L_shareddata Connect <c>data</c>
 		- <c>source</c> will be connected accordingly
 EOF
 	]
