@@ -17,6 +17,16 @@ $id_data = [
 	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
+$labels = [
+	  [ 'DAB Radio',   'dabradio' ]
+	, [ 'Device' ]
+	, [ 'Shared Data', 'networks' ]
+	, [ 'SoX Resampler' ]
+	, [ 'Volume Control' ]
+];
+$l = varLabel( $labels );
+extract( $l, EXTR_PREFIX_ALL, 'l' );
+
 $head = [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'

@@ -146,3 +146,21 @@ function htmlSetting( $data ) {
 	
 	echo $html;
 }
+function varLabel( $labels ) {
+	$lbl = [];
+	foreach( $labels as $l ) { // $l_xxx - switch label
+		$icon  = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
+		$l     = $l[ 0 ];
+		$name  = strtolower( preg_replace( '/ |-/', '', $l ) );
+		$lbl[ $name ] = '<a class="helpmenu label">'.$l.$icon.'</a>';
+	}
+	return $lbl;
+}
+function varMenu( $menus ) {
+	$mnu = [];
+	foreach( $menus as $m ) { // $m_xxx - menu
+		$name  = str_replace( '-', '', $m[ 2 ] );
+		$mnu[ $name ] = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
+	}
+	return $mnu;
+}

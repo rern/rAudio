@@ -1,6 +1,13 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
 <div id="divbt" class="section">
 <?php
+$labels = [
+	  [ 'Access Point', 'ap' ]
+	, [ 'Bluetooth', 'bluetooth' ]
+];
+$l = varLabel( $labels );
+extract( $l, EXTR_PREFIX_ALL, 'l' );
+
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'

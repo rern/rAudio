@@ -20,6 +20,24 @@ $id_data      = [
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
 	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
 ];
+$labels = [
+	  [ 'Equalizer',     'equalizer' ]
+	, [ 'DSP',           'camilladsp' ]
+	, [ 'Server rAudio', 'rserver' ]
+	, [ 'Shared Data',   'networks' ]
+	, [ 'Wi-Fi',         'wifi' ]
+];
+$menus = [
+	  [ 'features', 'Features', 'camilladsp' ]
+	, [ 'features', 'Features', 'equalizer' ]
+	, [ 'playlist', 'Playlist', 'multiraudio' ]
+	, [ 'player',   'Player',   'lock' ]
+	, [ 'power',    'Power',    'screenoff' ]
+];
+$l = varLabel( $labels );
+$m = varMenu( $menus );
+extract( $l, EXTR_PREFIX_ALL, 'l' );
+extract( $m, EXTR_PREFIX_ALL, 'm' );
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );

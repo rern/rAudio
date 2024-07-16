@@ -35,59 +35,6 @@ if ( ! $addons ) {
 	$btnc    = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
 	if ( $camilla ) $btn = array_merge( $btn, $btnc );
 	foreach( $btn as $b ) ${'b_'.$b} = i( $b.' btn' ); // $b_xxx - button
-	if ( $features ) {
-		$labels = [
-			  [ 'Equalizer',     'equalizer' ]
-			, [ 'DSP',           'camilladsp' ]
-			, [ 'Server rAudio', 'rserver' ]
-			, [ 'Shared Data',   'networks' ]
-			, [ 'Wi-Fi',         'wifi' ]
-		];
-		$menus = [
-			  [ 'features', 'Features', 'camilladsp' ]
-			, [ 'features', 'Features', 'equalizer' ]
-			, [ 'playlist', 'Playlist', 'multiraudio' ]
-			, [ 'player',   'Player',   'lock' ]
-			, [ 'power',    'Power',    'screenoff' ]
-		];
-	} else if ( $player ) {
-		$labels = [
-			  [ 'DAB Radio',   'dabradio' ]
-			, [ 'Device' ]
-			, [ 'Shared Data', 'networks' ]
-			, [ 'SoX Resampler' ]
-			, [ 'Volume Control' ]
-		];
-		$menus = '';
-	} else if ( $networks ) {
-		$labels = [
-			  [ 'Access Point', 'ap' ]
-			, [ 'Bluetooth', 'bluetooth' ]
-		];
-		$menus = '';
-	} else if ( $system ) {
-		$labels = [
-			  [ 'Device' ]
-			, [ 'Output' ]
-			, [ 'Server rAudio', 'rserver' ]
-			, [ 'Shared Data',   'networks' ]
-			, [ 'Storage' ]
-		];
-		$menus = [
-			  [ 'library', 'Library', 'refresh-library' ]
-			, [ 'raudio',  'System',  'relays' ]
-		];
-	}
-	foreach( $labels as $l ) { // $l_xxx - switch label
-		$icon = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
-		$l    = $l[ 0 ];
-		$name = strtolower( preg_replace( '/ |-/', '', $l ) );
-		${'l_'.$name} = '<a class="helpmenu label">'.$l.$icon.'</a>';
-	}
-	foreach( $menus as $m ) { // $m_xxx - menu
-		$name = str_replace( '-', '', $m[ 2 ] );
-		${'m_'.$name} = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
-	}
 	
 	include 'settings/function.php';
 	include 'settings/'.$page.'.php'; // addons: by addons.js

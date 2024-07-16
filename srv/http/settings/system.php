@@ -23,6 +23,22 @@ $id_data     = [
 	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
+$labels = [
+	  [ 'Device' ]
+	, [ 'Output' ]
+	, [ 'Server rAudio', 'rserver' ]
+	, [ 'Shared Data',   'networks' ]
+	, [ 'Storage' ]
+];
+$menus = [
+	  [ 'library', 'Library', 'refresh-library' ]
+	, [ 'raudio',  'System',  'relays' ]
+];
+$l = varLabel( $labels );
+$m = varMenu( $menus );
+extract( $l, EXTR_PREFIX_ALL, 'l' );
+extract( $m, EXTR_PREFIX_ALL, 'm' );
+
 $head = [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
