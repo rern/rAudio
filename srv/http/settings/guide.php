@@ -1,5 +1,4 @@
 <style>
-.container { padding: 40px 0 0 0 }
 #guide {
 	width: 100%;
 	height: 100%;
