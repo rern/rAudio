@@ -36,6 +36,9 @@
 @media ( max-width: 450px ) {
 	#guide a span { display: none }
 }
+@media (max-width: 700px) {
+    .container { padding: unset }
+}
 </style>
 
 <p class="helpblock" style="display: none">
