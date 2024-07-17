@@ -35,6 +35,7 @@ $menus        = [
 	, [ 'power',    'Power',    'screenoff' ]
 ];
 varLabelMenu( $labels, $menus );
+$T_library    = '<a class="helpmenu tab">'.i( 'library' ).' Library</a>';
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
@@ -238,7 +239,7 @@ EOF
  • <wh>rAudio Shared Data server:</wh>
 	· IP address - This rAudio must be set to static / fixed to prevent change on reboot.
 	· Password - if changed, must be the same on all clients.
-	· In <a class="helpmenu tab">{$Fi( 'library' )} Library</a>
+	· In $T_library
 		· $b_microsd SD and $b_usbdrive USB will be hidden.
 		· $b_usbdrive USB items will be displayed in $b_networks NAS instead.
 	· On reboot / power off:
