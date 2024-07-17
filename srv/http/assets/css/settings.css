@@ -597,6 +597,15 @@ input.disabled + .switchlabel:after {
 .head .i-gear {
 	display: none;
 }
+.guideimg {
+	display: block;
+	margin: 40px auto 0;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+	border: 1px solid hsl(0,0%,15%);
+}
 
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }

@@ -1,18 +1,6 @@
 </div>
-<style>
-.head i:not( .page-icon, .close ) { display: none }
-img {
-	display: block;
-	margin: 40px auto 0;
-	width: auto;
-	height: auto;
-	max-width: 100%;
-	max-height: 100%;
-	border: 1px solid hsl(0,0%,15%);
-}
-</style>
 
-<img class="image" src="/assets/img/guide/1.jpg<?=$hash?>">
+<img class="guideimg" src="/assets/img/guide/1.jpg<?=$hash?>">
 <div id="bar-bottom">
 <?php
 $html     = '';
@@ -24,6 +12,8 @@ echo $html.'</div>';
 ?>
 </div>
 <script>
+[ 'hide', 'container', 'helphead', 'i-gear' ].forEach( cl => document.getElementsByClassName( cl )[ 0 ].remove() );
+
 nlibrary  = 22;
 nplaylist = 39;
 nsettings = 47;
@@ -34,7 +24,6 @@ E         = {};
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 E.btns    = Array.from( document.getElementsByClassName( 'btn' ) );
-
 E.btns[ 1 ].classList.add( 'active' );
 E.close.addEventListener( 'click', function() {
 	location.href = '/';
