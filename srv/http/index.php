@@ -302,11 +302,11 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	<textarea id="lyricstextarea" class="lyricstext"></textarea>
 	<div id="lyricsfade"></div>
 </div>
+<div id="bio" class="hide"></div>
 <div id="fader" class="hide"></div>
 <div id="bar-bottom" class="hide">
 	<?=i( 'library', 'library' ).i( 'playback', 'playback' ).i( 'playlist', 'playlist' )?>
 </div>
-<div id="bio" class="hide"></div>
 
 <?php
 // <script> -----------------------------------------------------
