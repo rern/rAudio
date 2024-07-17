@@ -12,7 +12,7 @@ echo $html.'</div>';
 ?>
 </div>
 <script>
-[ 'hide', 'container', 'helphead', 'i-gear' ].forEach( cl => document.getElementsByClassName( cl )[ 0 ].remove() );
+[ 'helphead', 'i-gear' ].forEach( cl => document.getElementsByClassName( cl )[ 0 ].remove() );
 
 nlibrary  = 22;
 nplaylist = 39;
