@@ -17,12 +17,15 @@ $id_data = [
 	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
-varLabelMenu( [
-	  [ 'DAB Radio',   'dabradio' ]
-	, [ 'Device' ]
-	, [ 'Shared Data', 'networks' ]
-	, [ 'SoX Resampler' ]
-	, [ 'Volume Control' ]
+varLabelMenuTab( [
+	  'labels' => [ 
+		  [ 'DAB Radio',   'dabradio' ]
+		, [ 'Device' ]
+		, [ 'Shared Data', 'networks' ]
+		, [ 'SoX Resampler' ]
+		, [ 'Volume Control' ]
+	]
+	, 'tabs'   => [ 'features', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------
 $head = [
@@ -30,7 +33,7 @@ $head = [
 	, 'status' => 'mpd'
 	, 'button' => 'play playback'
 	, 'help'   => <<< EOF
-$b_play $b_pause $b_stop Playback control
+$B_play $B_pause $B_stop Playback control
 
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
@@ -52,7 +55,7 @@ $body = [
 		, 'icon'     => 'btreceiver'
 		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
-$b_volume Mixer device - blueALSA volume control
+$B_volume Mixer device - blueALSA volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
@@ -66,12 +69,12 @@ EOF
 	, [
 		  'id'       => 'mixer'
 		, 'input'    => 'mixer'
-		, 'help'     => $b_volume.' Mixer device volume control'
+		, 'help'     => $B_volume.' Mixer device volume control'
 	]
 	, [
 		  'id'       => 'mixertype'
 		, 'help'     => <<< EOF
-$b_gear Type:
+$B_gear Type:
  · Mixer device: Good - DAC hardware via GUI knob (if available)
  · MPD software: Basic - GUI knob
  
@@ -142,7 +145,7 @@ EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 
-$b_gear
+$B_gear
 ■ Gain control - Mixer device:
  • <c>replay_gain_handler "mixer"</c>
  • Available when Volume Control = MPD software
@@ -184,7 +187,7 @@ EOF
 		 'id'        => 'soxr'
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
-$b_gear
+$B_gear
  • Presets:
 	(default: Quality <c>Very high</c>  Threads <c>Single</c>)
 	

@@ -20,27 +20,29 @@ $id_data      = [
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
 	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
 ];
-$labels       = [
-	  [ 'Equalizer',     'equalizer' ]
-	, [ 'DSP',           'camilladsp' ]
-	, [ 'Server rAudio', 'rserver' ]
-	, [ 'Shared Data',   'networks' ]
-	, [ 'Wi-Fi',         'wifi' ]
-];
-$menus        = [
+varLabelMenuTab( [
+	  'labels' => [
+		  [ 'Equalizer',     'equalizer' ]
+		, [ 'DSP',           'camilladsp' ]
+		, [ 'Server rAudio', 'rserver' ]
+		, [ 'Shared Data',   'networks' ]
+		, [ 'Wi-Fi',         'wifi' ]
+	]
+	, 'menus'  => [
 	  [ 'features', 'Features', 'camilladsp' ]
 	, [ 'features', 'Features', 'equalizer' ]
 	, [ 'playlist', 'Playlist', 'multiraudio' ]
 	, [ 'player',   'Player',   'lock' ]
 	, [ 'power',    'Power',    'screenoff' ]
-];
-varLabelMenu( $labels, $menus );
+	]
+	, 'tabs'   => [ 'library', 'system' ]
+] );
 $T_library    = '<a class="helpmenu tab">'.i( 'library' ).' Library</a>';
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
-$snapweb      = $b_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
+$snapweb      = $B_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
 $body         = [
@@ -227,7 +229,7 @@ EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.
- · Web Radio must be manually scrobbled: Playing title &raquo; $b_lastfm Scrobble
+ · Web Radio must be manually scrobbled: Playing title &raquo; $B_lastfm Scrobble
  · Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &raquo; User icon &raquo; Library &raquo; Scrobbles
 EOF
 	]
@@ -240,8 +242,8 @@ EOF
 	· IP address - This rAudio must be set to static / fixed to prevent change on reboot.
 	· Password - if changed, must be the same on all clients.
 	· In $T_library
-		· $b_microsd SD and $b_usbdrive USB will be hidden.
-		· $b_usbdrive USB items will be displayed in $b_networks NAS instead.
+		· $B_microsd SD and $B_usbdrive USB will be hidden.
+		· $B_usbdrive USB items will be displayed in $B_networks NAS instead.
 	· On reboot / power off:
 		· Shared Data on clients will be temporarily disabled
 		· Re-enabled by itself once the server is back online.

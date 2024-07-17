@@ -22,14 +22,13 @@ if ( $camilla ) {
 foreach ( $tabs as $tab ) {
 	$id      = strtolower( $tab );
 	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).' <a>'.$tab.'</a></div>';
-	if ( ! $camilla ) ${'T_'.$id} = '<a class="helpmenu tab">'.i( $id ).' '.$tab.'</a>';
 }
 if ( ! $addons ) {
 	$btn     = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'
 				,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
 	$btnc    = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
 	if ( $camilla ) $btn = array_merge( $btn, $btnc );
-	foreach( $btn as $b ) ${'b_'.$b} = i( $b.' btn' ); // $b_xxx - button
+	foreach( $btn as $b ) ${'B_'.$b} = i( $b.' btn' ); // $B_xxx - button
 	
 	include 'settings/function.php';
 	include 'settings/'.$page.'.php'; // addons: by addons.js

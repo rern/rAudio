@@ -23,24 +23,26 @@ $id_data     = [
 	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
-$labels      = [
-	  [ 'Device' ]
-	, [ 'Output' ]
-	, [ 'Server rAudio', 'rserver' ]
-	, [ 'Shared Data',   'networks' ]
-	, [ 'Storage' ]
-];
-$menus       = [
-	  [ 'library', 'Library', 'refresh-library' ]
-	, [ 'raudio',  'System',  'relays' ]
-];
-varLabelMenu( $labels, $menus );
+varLabelMenuTab( [
+	  'labels' => [
+		  [ 'Device' ]
+		, [ 'Output' ]
+		, [ 'Server rAudio', 'rserver' ]
+		, [ 'Shared Data',   'networks' ]
+		, [ 'Storage' ]
+	]
+	, 'menus'  => [
+		  [ 'library', 'Library', 'refresh-library' ]
+		, [ 'raudio',  'System',  'relays' ]
+	]
+	, 'tabs'   => [ 'features', 'player' ]
+] );
 // ----------------------------------------------------------------------------------
 $head = [
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => 'power power'
-	, 'help'   => $b_power.' Power'
+	, 'help'   => $B_power.' Power'
 ];
 $labels = 'Version
 	<br>Kernel
@@ -54,7 +56,7 @@ $head = [
 	  'title'  => 'Status'
 	, 'status' => 'status'
 	, 'button' => 'refresh refresh'
-	, 'help'   => $b_refresh.' Refresh every 10 seconds'
+	, 'help'   => $B_refresh.' Refresh every 10 seconds'
 ];
 $labels = 'CPU Load
 	<br>CPU Temp<wide>erature</wide></span>
@@ -90,10 +92,10 @@ $head = [
 	, 'status' => 'storage'
 	, 'button' => 'add addnas'
 	, 'help'   => <<< EOF
-$b_add Add network storage
+$B_add Add network storage
 
  · USB drives  Will be found and mounted automatically.
- · Commands used by $b_add Add network storage:
+ · Commands used by $B_add Add network storage:
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>" <g># NAME "data": reserved for Shared Data</g>
 
@@ -110,7 +112,7 @@ EOF
 $body = [ <<< EOF
 <ul id="list" class="entries"></ul>
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
-$b_microsd $b_usbdrive $b_networks Context menu</div>
+$B_microsd $B_usbdrive $B_networks Context menu</div>
 <pre id="codehddinfo" class="status hide"></pre>
 EOF ];
 htmlSection( $head, $body, 'storage' );
@@ -130,7 +132,7 @@ EOF
 	, [
 		  'id'       => 'bluetooth'
 		, 'help'     => <<< EOF
-$b_gear
+$B_gear
 ■ Sampling 16bit - Bluetooth receivers with fixed sampling
 EOF
 	]
@@ -138,7 +140,7 @@ EOF
 		  'id'       => 'wlan'
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
-$b_gear
+$B_gear
 Country of Wi-Fi regulatory domain:
 	· <c>00</c> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
@@ -152,7 +154,7 @@ $helpi2s = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
  · See  if it's already set: $T_player$L_device
-$b_gear
+$B_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF;
 $head = [
@@ -178,7 +180,7 @@ EOF
 		  'id'       => 'powerbutton'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
-$b_gear
+$B_gear
  · On - Fixed to pin <c>5</c>
  · Off - Default: pin <c>5</c> (single pin on+off)
  · If pin <c>5</c> is used by DAC or LCD, set 2 unused pins for:
@@ -237,7 +239,7 @@ EOF
 		  'id'       => 'timezone'
 		, 'input'    => 'timezone'
 		, 'help'     => <<< EOF
-$b_gear
+$B_gear
 Servers for time sync and package mirror
 EOF
 	]
@@ -245,7 +247,7 @@ EOF
 		  'id'       => 'soundprofile'
 		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
-$b_gear
+$B_gear
 Swapiness (default: <c>60</c>)
 	· Balance between swap disk vs system memory cache
 	· Low - less swap
@@ -298,7 +300,7 @@ Connect shared data as client for:
  · Display: Item toggles and order of Library home
 
 Note:
- • Enabled - $b_microsd SD and $b_usbdrive USB:
+ • Enabled - $B_microsd SD and $B_usbdrive USB:
 	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
 	 · Not availble in Library home
 
@@ -317,7 +319,7 @@ Note:
 		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- $L_storage $b_add Add <c>source</c>
+		- $L_storage $B_add Add <c>source</c>
 		- $M_refreshlibrary Update database
 		- $L_shareddata Connect <c>data</c>
 		- Local data will be transfered to <c>data</c>
