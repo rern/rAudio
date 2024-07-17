@@ -7,11 +7,6 @@ echo '
 ';
 if ( $addonsprogress || $guide ) {
 	include 'settings/'.$page.'.php';
-	echo '
-	</div>
-</body>
-</html>
-';
 	exit;
 //----------------------------------------------------------------------------------
 }
