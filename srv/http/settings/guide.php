@@ -20,7 +20,7 @@ nsettings = 47;
 ntotal    = 58;
 n         = 1;
 E         = {};
-[ 'close', 'image', 'next', 'prev' ].forEach( ( el ) => {
+[ 'close', 'guideimg', 'next', 'prev' ].forEach( ( el ) => {
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 E.btns    = Array.from( document.getElementsByClassName( 'btn' ) );
@@ -79,7 +79,7 @@ if ( navigator.maxTouchPoints ) { // swipe
 }
 
 function renderPage( n ) {
-	E.image.src = '/assets/img/guide/'+ n +'.jpg<?=$hash?>';
+	E.guideimg.src = '/assets/img/guide/'+ n +'.jpg<?=$hash?>';
 	E.btns.forEach( ( el ) => {
 		el.classList.remove( 'active' );
 	} );
