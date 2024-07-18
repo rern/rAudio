@@ -69,7 +69,7 @@ if ( navigator.maxTouchPoints ) { // swipe
 	window.addEventListener( 'touchend', function( e ) {
 		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
 		if ( Math.abs( xdiff ) > 100 ) {
-			xdiff > 0 ? E.next.click() : E.prev.click();
+			xdiff > 0 ? E.guidenext.click() : E.guideprev.click();
 		}
 	} );
 }
