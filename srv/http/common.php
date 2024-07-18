@@ -79,6 +79,8 @@ if ( ! $page ) { // main
 	} else if ( $guide ) {
 		$icon      = 'help';
 		$pagetitle = 'User Guide';
+		$jsp       = [];
+		$js        = [ 'guide' ];
 	}
 	$title = $pagetitle;
 }
@@ -112,11 +114,24 @@ $scripts = '';
 foreach( $jsp as $j )      $scripts.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
 foreach( $js as $j )       $scripts.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
 if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
-$scripts.='
+
+function htmlBottom() {
+	global $htmlbar, $page, $scripts;
+	$html = $hide = '';
+	if ( $page ) {
+		$html.= '</div>'; // <div class="container">
+	} else {
+		$hide = ' class="hide"';
+	}
+	if ( $htmlbar ) $html.= '
+	<div id="fader" class="hide"></div>
+	<div id="bar-bottom"'.$hide.'>'.$htmlbar.'</div>
+	'.$scripts.'
 </body>
 </html>
 ';
-
+	echo $html;
+}
 function i( $icon, $id = '', $cmd = '' ) {
 	$htmlid  = $id ? ' id="'.$id.'"' : '';
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';

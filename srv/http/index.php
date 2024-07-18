@@ -303,11 +303,6 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	<div id="lyricsfade"></div>
 </div>
 <div id="bio" class="hide"></div>
-<div id="fader" class="hide"></div>
-<div id="bar-bottom" class="hide">
-	<?=i( 'library', 'library' ).i( 'playback', 'playback' ).i( 'playlist', 'playlist' )?>
-</div>
-
 <?php
-// <script> -----------------------------------------------------
-echo $scripts;
+$htmlbar = i( 'library', 'library' ).i( 'playback', 'playback' ).i( 'playlist', 'playlist' );
+htmlBottom();
