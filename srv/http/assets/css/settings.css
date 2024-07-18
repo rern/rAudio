@@ -597,7 +597,7 @@ input.disabled + .switchlabel:after {
 .head .i-gear {
 	display: none;
 }
-.guideimg {
+#guideimg {
 	display: block;
 	margin: 40px auto 0;
 	width: auto;
@@ -605,6 +605,11 @@ input.disabled + .switchlabel:after {
 	max-width: 100%;
 	max-height: 100%;
 	border: 1px solid hsl(0,0%,15%);
+}
+#guideprev,
+#guidenext {
+	width: 40px !important;
+	line-height: 40px;
 }
 
 @media (max-height: 570px) {
@@ -670,7 +675,9 @@ input.disabled + .switchlabel:after {
 }
 @media (hover: hover) {
 	#fader { z-index: 5 }
-	#bar-bottom div:hover { background-color: var( --cgd ) }
+	#bar-bottom div:hover,
+	#guidenext:hover,
+	#guideprev:hover { background-color: var( --cgd ) }
 	#bar-bottom div.active:hover { background-color: var( --cma ) }
 	a:hover { text-decoration: none }
 	.entries li:hover { background: var( --cga ) }
@@ -709,6 +716,7 @@ input.disabled + .switchlabel:after {
 	.undervoltage,
 	.wiring,
 	#backend,
+	#bar-bottom i,
 	#button-data,
 	#ffmpegfiletype,
 	#menu {

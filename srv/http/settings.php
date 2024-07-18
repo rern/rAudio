@@ -1,11 +1,15 @@
 <?php
 include 'common.php';
 
-echo '
-	<div class="head">
-		'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close', 'close' ).i( 'help helphead' ).i( 'gear' ).'
-	</div>
-'.( $guide ? '' : '<div class="container '.$page.' hide" tabindex="-1">' );
+echo '<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close', 'close' );
+if ( $guide ) {
+	echo '</div>';
+} else {
+	echo i( 'help helphead' ).i( 'gear' ).'
+</div>
+<div class="container '.$page.' hide" tabindex="-1">
+';
+}
 if ( $addonsprogress ) {
 	include 'settings/'.$page.'.php';
 	exit;
@@ -27,8 +31,8 @@ foreach ( $tabs as $tab ) {
 	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).' <a>'.$tab.'</a></div>';
 }
 if ( $guide ) {
-	echo '<img class="guideimg" src="/assets/img/guide/1.jpg'.$hash.'">';
-	$htmlbar.= i( 'back', 'prev' ).' '.i( 'arrow-right', 'next' );
+	echo '<img id="guideimg" src="/assets/img/guide/1.jpg'.$hash.'">';
+	$htmlbar.= i( 'back', 'guideprev' ).i( 'arrow-right', 'guidenext' );
 } else if ( ! $addons ) {
 	$btn     = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'
 				,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
