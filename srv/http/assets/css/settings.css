@@ -608,6 +608,7 @@ input.disabled + .switchlabel:after {
 }
 #guideprev,
 #guidenext {
+	display: none;
 	width: 40px !important;
 	line-height: 40px;
 }
@@ -674,6 +675,8 @@ input.disabled + .switchlabel:after {
 	#divmpd .help { display: none }
 }
 @media (hover: hover) {
+	#guideprev,
+	#guidenext { display: inline-block }
 	#fader { z-index: 5 }
 	#bar-bottom div:hover,
 	#guidenext:hover,

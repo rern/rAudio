@@ -32,7 +32,7 @@ for( i = 0; i < tabsL; i++ ) {
 			active = 'library';
 		} else if ( n >= page.playlist && n < page.settings ) {
 			active = 'playlist';
-		} else if ( n >= page.settings && n < page.total ) {
+		} else if ( n >= page.settings && n <= page.total ) {
 			active = 'settings';
 		}
 		tabactive.className = '';
