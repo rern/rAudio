@@ -43,10 +43,8 @@ for( i = 0; i < tabsL; i++ ) {
 //---------------------------------------------------------------------------------------
 document.title = 'Guide';
 E.playback.classList.add( 'active' );
-E.close.addEventListener( 'click', function() {
-	location.href = '/';
-} );
-document.body.addEventListener( 'keydown', ( e ) => {
+E.close.addEventListener( 'click', () => location.href = '/' );
+document.body.addEventListener( 'keydown', e => {
 	switch ( e.key ) {
 		case 'ArrowLeft':
 		case 'ArrowUp':
@@ -63,10 +61,10 @@ document.body.addEventListener( 'keydown', ( e ) => {
 } );
 if ( navigator.maxTouchPoints ) { // swipe
 	var xstart;
-	window.addEventListener( 'touchstart', function( e ) {
+	window.addEventListener( 'touchstart', e => {
 		xstart = e.changedTouches[ 0 ].pageX;
 	} );
-	window.addEventListener( 'touchend', function( e ) {
+	window.addEventListener( 'touchend', e => {
 		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
 		if ( Math.abs( xdiff ) > 100 ) {
 			xdiff > 0 ? E.guidenext.click() : E.guideprev.click();
