@@ -1,12 +1,13 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
 <div id="divbt" class="section">
 <?php
-varLabelMenuTab( [
-	  'labels' => [ 
+commonVariables( [
+	  'buttons' => [ 'add', 'bluetooth', 'btsender', 'lan', 'search', 'wifi' ]
+	, 'labels'  => [ 
 		  [ 'Access Point', 'ap' ]
 		, [ 'Bluetooth',    'bluetooth' ]
 	]
-	, 'tabs'   => [ 'features', 'system' ]
+	, 'tabs'    => [ 'features', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------
 htmlHead( [

@@ -23,19 +23,20 @@ $id_data     = [
 	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
-varLabelMenuTab( [
-	  'labels' => [
+commonVariables( [
+	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'usbdrive' ]
+	, 'labels'  => [
 		  [ 'Device' ]
 		, [ 'Output' ]
 		, [ 'Server rAudio', 'rserver' ]
 		, [ 'Shared Data',   'networks' ]
 		, [ 'Storage' ]
 	]
-	, 'menus'  => [
+	, 'menus'   => [
 		  [ 'library', 'Library', 'refresh-library' ]
 		, [ 'raudio',  'System',  'relays' ]
 	]
-	, 'tabs'   => [ 'features', 'player' ]
+	, 'tabs'    => [ 'features', 'player' ]
 ] );
 // ----------------------------------------------------------------------------------
 $head = [

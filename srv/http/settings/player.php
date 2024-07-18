@@ -17,15 +17,16 @@ $id_data = [
 	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
-varLabelMenuTab( [
-	  'labels' => [ 
+commonVariables( [
+	  'buttons' => [ 'gear', 'pause', 'play', 'stop', 'volume' ]
+	, 'labels'  => [ 
 		  [ 'DAB Radio',   'dabradio' ]
 		, [ 'Device' ]
 		, [ 'Shared Data', 'networks' ]
 		, [ 'SoX Resampler' ]
 		, [ 'Volume Control' ]
 	]
-	, 'tabs'   => [ 'features', 'system' ]
+	, 'tabs'    => [ 'features', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------
 $head = [

@@ -20,22 +20,23 @@ $id_data      = [
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
 	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
 ];
-varLabelMenuTab( [
-	  'labels' => [
+commonVariables( [
+	  'buttons' => [ 'gear', 'lastfm', 'microsd', 'networks', 'usbdrive' ]
+	, 'labels'  => [
 		  [ 'Equalizer',     'equalizer' ]
 		, [ 'DSP',           'camilladsp' ]
 		, [ 'Server rAudio', 'rserver' ]
 		, [ 'Shared Data',   'networks' ]
 		, [ 'Wi-Fi',         'wifi' ]
 	]
-	, 'menus'  => [
+	, 'menus'   => [
 	  [ 'features', 'Features', 'camilladsp' ]
 	, [ 'features', 'Features', 'equalizer' ]
 	, [ 'playlist', 'Playlist', 'multiraudio' ]
 	, [ 'player',   'Player',   'lock' ]
 	, [ 'power',    'Power',    'screenoff' ]
 	]
-	, 'tabs'   => [ 'library', 'system' ]
+	, 'tabs'    => [ 'library', 'system' ]
 ] );
 $T_library    = '<a class="helpmenu tab">'.i( 'library' ).' Library</a>';
 $hostname     = getHostName();

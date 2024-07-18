@@ -34,12 +34,6 @@ if ( $guide ) {
 	echo '<img id="guideimg" src="/assets/img/guide/1.jpg'.$hash.'">';
 	$htmlbar.= i( 'back', 'guideprev' ).i( 'arrow-right', 'guidenext' );
 } else if ( ! $addons ) {
-	$btn     = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'
-				,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
-	$btnc    = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
-	if ( $camilla ) $btn = array_merge( $btn, $btnc );
-	foreach( $btn as $b ) ${'B_'.$b} = i( $b.' btn' ); // $B_xxx - button
-	
 	include 'settings/function.php';
 	include 'settings/'.$page.'.php'; // addons: by addons.js
 }

@@ -146,8 +146,8 @@ function htmlSetting( $data ) {
 	
 	echo $html;
 }
-function varLabelMenuTab( $LMT ) {
-	extract( $LMT );
+function commonVariables( $list ) {
+	extract( $list );
 	foreach( $labels as $l ) { // $L_xxx - switch label
 		$icon  = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
 		$l     = $l[ 0 ];
@@ -164,5 +164,10 @@ function varLabelMenuTab( $LMT ) {
 		$name  = 'T_'.$t;
 		global $$name;
 		$$name = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
+	}
+	foreach( $buttons as $b ) { // $B_xxx - tab
+		$name  = 'B_'.$b;
+		global $$name;
+		$$name = i( $b.' btn' );
 	}
 }

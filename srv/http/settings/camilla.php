@@ -7,6 +7,10 @@ $id_data = [
 	, 'stop_on_rate_change' => [ 'label' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'resampler'           => [ 'label' => 'Resampler',           'setting' => 'custom' ]
 ];
+commonVariables( [
+	'buttons' => [ 'code',   'edit',   'filters', 'flowchart', 'gear', 'graph',  'input', 'inverted', 'linear'
+				 , 'mixers', 'output', 'pause',   'play',      'plus', 'remove', 'set0',  'stop',     'volume' ]
+] );
 $btnfilters = $B_filters.' Context menu: '.$B_graph.$B_edit.' '.$B_remove;
 $btnmixers  = $B_mixers.' Context menu: '.$B_edit.' '.$B_remove;
 $button     = [
