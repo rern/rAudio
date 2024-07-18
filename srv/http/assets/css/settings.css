@@ -602,7 +602,7 @@ input.disabled + .switchlabel:after {
 	margin: 40px auto 0;
 	width: auto;
 	height: auto;
-	max-width: 100%;
+	max-width: 650px;
 	max-height: 100%;
 	border: 1px solid hsl(0,0%,15%);
 }
@@ -625,19 +625,10 @@ input.disabled + .switchlabel:after {
 	}
 }
 @media (max-width: 700px) {
-	.container {
-		padding: 30px 10px 100px 10px;
-	}
+	.container { padding: 0 10px 80px }
 }
-@media (max-width: 658px) {
-	body {
-		height: 100%;
-		overflow: hidden;
-	}
-	.container {
-		overflow-y: auto;
-	}
-	#bar-bottom { padding: 0 }
+@media (max-width: 650px) {
+	#guideimg { max-width: 100% }
 }
 @media ( max-width: 580px ) {
 	.head { padding-right: 0 !important }
@@ -664,6 +655,7 @@ input.disabled + .switchlabel:after {
 	.listtitle a { width: calc( 100% / 13 ) }
 }
 @media (max-width: 615px) {
+	#bar-bottom { padding: 0 }
 	#bar-bottom a { display: none }
 }
 @media (max-width: 375px) {
