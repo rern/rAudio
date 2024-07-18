@@ -137,4 +137,3 @@ function i( $icon, $id = '', $cmd = '' ) {
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
 	return '<i'.$htmlid.' class="i-'.$icon.'"'.$htmlcmd.'></i>';
 }
-$Fi = 'i'; // for i() inside heredoc

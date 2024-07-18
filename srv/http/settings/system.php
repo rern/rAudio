@@ -307,7 +307,7 @@ Note:
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: $T_features$L_serverraudio
-	Clients: $L_shareddata <btn>{$Fi( 'rserver' )} rAudio</btn>
+	Clients: $L_shareddata <btn>{$I( 'rserver' )} rAudio</btn>
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create shares for music <c>source</c> and <c>data</c>

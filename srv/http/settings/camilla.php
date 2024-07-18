@@ -40,7 +40,7 @@ $B_gear Configuration files
 $B_set0 Reset clipped count (if any)
 EOF
 	, 'filters'   => <<< EOF
-{$Fi( 'folder-filter btn' )} $B_plus Finite Impulse Response (FIR) files · New
+{$I( 'folder-filter btn' )} $B_plus Finite Impulse Response (FIR) files · New
 $bset_filters Graph · Edit · Delete
 $B_code Set 0
 $bset_control Mute · Invert · Linear (Gain)

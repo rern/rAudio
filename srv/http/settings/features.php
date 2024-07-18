@@ -250,14 +250,14 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· $T_system$L_shareddata <btn>{$Fi( 'rserver' )} rAudio</btn>
+	· $T_system$L_shareddata <btn>{$I( 'rserver' )} rAudio</btn>
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
 	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
 	· $fileexplorer
 	 
-{$Fi( 'warning' )} Permissions for <c>/mnt/MPD/NAS</c>:
+{$I( 'warning' )} Permissions for <c>/mnt/MPD/NAS</c>:
 	· Read and write for everyone on <c>$ipsub.*</c>
 EOF
 	]

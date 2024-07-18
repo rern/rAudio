@@ -171,3 +171,4 @@ function commonVariables( $list ) {
 		$$name = i( $b.' btn' );
 	}
 }
+$I = 'i'; // for common.php - i() > {$I()} inside heredoc
