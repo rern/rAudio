@@ -94,10 +94,11 @@ foreach( $css as $c )  $html.= '<link rel="stylesheet" href="/assets/css/'.$c.'.
 $html.= '
 </head>
 <body>
-	<div id="infoOverlay" class="hide" tabindex="-1"></div>';
+';
 if ( ! $addon_guide )  {
 	$pageicon = $page ? i( $page.' page-icon' ) : '';
 	$html    .= '
+	<div id="infoOverlay" class="hide" tabindex="-1"></div>
 	<div id="loader">'.$logosvg.'</div>
 	<div id="banner" class="hide"></div>
 	<div id="button-data" class="head hide">'.$pageicon.i( 'close' ).'<span class="title">'.$title.'-DATA</span></div>
