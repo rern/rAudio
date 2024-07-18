@@ -117,16 +117,17 @@ foreach( $js as $j )       $scripts.= '<script src="/assets/js/'.$j.'.js'.$hash.
 if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
 
 function htmlBottom() {
-	global $htmlbar, $page, $scripts;
-	$html = $hide = '';
+	global $guide, $htmlbar, $page, $scripts;
+	$html = '';
 	if ( $page ) {
-		$html.= '</div>'; // <div class="container">
+		$html .= '</div>'; // <div class="container">
+		$class = $guide ? 'guide' : '';
 	} else {
-		$hide = ' class="hide"';
+		$class = 'hide';
 	}
 	if ( $htmlbar ) $html.= '
 	<div id="fader" class="hide"></div>
-	<div id="bar-bottom"'.$hide.'>'.$htmlbar.'</div>
+	<div id="bar-bottom" class="'.$class.'">'.$htmlbar.'</div>
 	'.$scripts.'
 </body>
 </html>

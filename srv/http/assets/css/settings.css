@@ -295,6 +295,9 @@ heading i.disabled {
 	height: 40px;
 	cursor: pointer;
 }
+#bar-bottom.guide div {
+	width: calc( 100% / 4 );
+}
 #bar-bottom div.active a {
 	color: var( --cw ) !important;
 }
@@ -667,6 +670,7 @@ input.disabled + .switchlabel:after {
 	#divmpd .help { display: none }
 }
 @media (hover: hover) {
+	#bar-bottom.guide div { width: calc( 100% / 5 ) }
 	#guideprev,
 	#guidenext { display: inline-block }
 	#fader { z-index: 5 }
