@@ -46,6 +46,7 @@ for( i = 0; i < tabsL; i++ ) {
 document.title = 'Guide';
 E.playback.classList.add( 'active' );
 E.close.addEventListener( 'click', () => location.href = '/' );
+//E.guideimg.addEventListener( 'click', () => E.guidenext.click() );
 document.body.addEventListener( 'keydown', e => {
 	switch ( e.key ) {
 		case 'ArrowLeft':
@@ -54,6 +55,8 @@ document.body.addEventListener( 'keydown', e => {
 			break
 		case 'ArrowRight':
 		case 'ArrowDown':
+		case ' ':
+			e.preventDefault();
 			E.guidenext.click();
 			break
 		case 'x':

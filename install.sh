@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240717
+# 20240719
 lsblk -Sno path,vendor,model > $dirshm/lsblkusb
 
 file=$dirsystem/lcdcharconf.py
@@ -29,19 +29,6 @@ fi
 # 20240601
 file=/etc/pacman.conf
 grep -q bootloader $file && sed -i 's/li.*bootloader/libunwind/' $file
-
-# 20240519
-file=/srv/http/data/mpdconf/conf/snapserver.conf
-if grep -q snapcast $file; then
-	echo 'audio_output {
-	name    "SnapServer"
-	type    "fifo"
-	path    "/tmp/snapfifo"
-	format  "48000:16:2"
-}' > $file
-	[[ -e $dirmpdconf/snapserver.conf ]] && restart=snapserver
-	[[ -e $dirsystem/snapclient ]] && restart+=' snapclient'
-fi
 
 #-------------------------------------------------------------------------------
 installstart "$1"
