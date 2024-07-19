@@ -1213,13 +1213,11 @@ $( '#button-lib-back' ).on( 'click', function() {
 } );
 $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
-} ).on( 'click', '.lib-mode', function() {
-	var $this = $( this );
-	V.mode    = $this.find( '.mode' ).data( 'mode' );
-	$( '#lib-search-close' ).trigger( 'click' );
-	if ( V.mode === 'bookmark' || $this.hasClass( 'nodata' ) ) return
-	
+} ).on( 'click', '.lib-mode:not( .bookmark, .bkradio )', function() {
+	var $this       = $( this );
+	V.mode          = $this.find( '.mode' ).data( 'mode' );
 	V.modescrolltop = $( window ).scrollTop();
+	$( '#lib-search-close' ).trigger( 'click' );
 	if ( V.mode === 'playlists' ) {
 		$( '#button-pl-playlists' ).trigger( 'click' );
 		setTimeout( () => $( '#playlist' ).trigger( 'click' ), 100 );
@@ -1301,30 +1299,18 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 		, okno      : true
 	} );
-} ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
+} ).on( 'click', '.mode-bookmark:not( .bkradio )', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );
-	$( '#lib-search-close' ).trigger( 'click' );
-	if ( V.press || $( '.bkedit' ).length || $this.hasClass( 'bkradio' ) ) return
+	if ( V.press || $( '.bkedit' ).length ) return
 	
 	var path  = $this.find( '.lipath' ).text();
-	var path0 = path.split( '/' )[ 0 ];
-	var mode  = path0.toLowerCase();
-	if ( path0.slice( 3 ) !== 'radio' ) {
-		var query = {
-			  query  : 'ls'
-			, string : path
-			, gmode  : mode
-		}
-	} else {
-		path = path.slice( 9 );
-		var query = {
-			  query  : 'radio'
-			, string : path
-			, gmode  : mode
-		}
+	V.mode    = path.split( '/' )[ 0 ].toLowerCase();
+	var query = {
+		  query  : 'ls'
+		, string : path
+		, gmode  : V.mode
 	}
 	list( query, function( html ) {
-		V.mode = mode;
 		var data = {
 			  html      : html
 			, modetitle : path
