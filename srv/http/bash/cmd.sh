@@ -438,7 +438,7 @@ lyrics )
 		echo -e "$DATA" > "$lyricsfile"
 	elif [[ $ACTION == delete ]]; then
 		rm -f "$lyricsfile"
-	elif [[ -e "$lyricsfile" ]]; then
+	elif [[ $ACTION != refresh && -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
 		. $dirsystem/lyrics.conf

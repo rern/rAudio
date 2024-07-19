@@ -487,11 +487,11 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 				if ( paren === '-1' ) {
 					infoTitle();
 				} else {
-					S.scrobble && S.webradio ? infoTitle() : lyricsGet();
+					S.scrobble && S.webradio ? infoTitle() : lyrics();
 				}
 			} );
 		} else {
-			S.scrobble && S.webradio ? infoTitle() : lyricsGet();
+			S.scrobble && S.webradio ? infoTitle() : lyrics();
 		}
 	} else if ( S.Artist || S.Title ) {
 		infoTitle();
@@ -1923,7 +1923,8 @@ $( '#lyricsedit' ).on( 'click', function() {
 		.scrollTop( $( '#lyricstext' ).scrollTop() );
 } );
 $( '#lyricsrefresh' ).on( 'click', function() {
-	lyricsGet();
+	$( this ).addClass( 'blink' );
+	lyricsGet( 'refresh' );
 } );
 $( '#lyrics' ).on( 'click', '.i-close',  function() {
 	if ( $( '#lyricstextarea' ).val() === V.lyrics || ! $( '#lyricstextarea' ).val() ) {

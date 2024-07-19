@@ -745,9 +745,7 @@ function infoTitle() {
 				if ( $this.hasClass( 'lyrics' ) ) {
 					V.lyricsartist = artist || S.Artist;
 					V.lyricstitle  = title || S.Title;
-					var file       = S.player === 'mpd' ? '/mnt/MPD/'+ S.file : '';
-					bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, file, 'CMD ARTIST TITLE ACTION' ], data => lyricsShow( data ) );
-					banner( 'search blink', 'Lyrics', 'Fetch ...', 20000 );
+					lyricsGet();
 				} else if ( $this.hasClass( 'bio' ) ) {
 					bio( artist );
 				} else if ( $this.hasClass( 'similar' ) ) {
@@ -804,7 +802,15 @@ function list( query, callback, json ) {
 		, json || null
 	);
 }
-function lyricsGet( artist, title, file ) {
+function lyricsGet( refresh ) {
+	banner( 'lyrics blink', 'Lyrics', 'Fetch ...', -1 );
+	bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, refresh || '', 'CMD ARTIST TITLE ACTION' ], data => {
+		lyricsShow( data );
+		bannerHide();
+		$( '#lyricsrefresh' ).removeClass( 'blink' );
+	} );
+}
+function lyrics( artist, title ) {
 	V.lyricsartist = artist || S.Artist;
 	V.lyricstitle  = title || S.Title;
 	if ( $( '#lyricstitle' ).text() === V.lyricstitle && $( '#lyricsartist' ).text() === V.lyricsartist ) {
@@ -815,13 +821,7 @@ function lyricsGet( artist, title, file ) {
 		return
 	}
 	
-	$( '#lyricsrefresh' ).addClass( 'blink' );
-	bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, 'CMD ARTIST TITLE' ], data => {
-		lyricsShow( data );
-		bannerHide();
-		$( '#lyricsrefresh' ).removeClass( 'blink' );
-	} );
-	if ( $( '#lyrics' ).hasClass( 'hide' ) ) banner( 'lyrics blink', 'Lyrics', 'Fetch ...' );
+	lyricsGet();
 }
 function lyricsHide() {
 	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
