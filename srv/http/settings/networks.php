@@ -1,21 +1,30 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
 <div id="divbt" class="section">
 <?php
-htmlHead( [ //////////////////////////////////
+commonVariables( [
+	  'buttons' => [ 'add', 'bluetooth', 'btsender', 'lan', 'search', 'wifi' ]
+	, 'labels'  => [ 
+		  [ 'Access Point', 'ap' ]
+		, [ 'Bluetooth',    'bluetooth' ]
+	]
+	, 'tabs'    => [ 'features', 'system' ]
+] );
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
 	, 'button' => 'search btscan'
-	, 'help'   => $b_search.' Available devices'
+	, 'help'   => $B_search.' Available devices'
 ] );
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetoothlist" class="status hide"></pre>
-	<div class="helpblock hide">$b_bluetooth $b_btsender Context menu
+	<div class="helpblock hide">$B_bluetooth $B_btsender Context menu
 	
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: $b_search Scan to connect &raquo; Select to pair
+	· On rAudio: $B_search Scan to connect &raquo; Select to pair
  • Connect / Disconnect:
 	· On receiver: Turn on / off
  • Playback controls with buttons:
@@ -24,7 +33,7 @@ $html = <<< EOF
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	· On rAudio: {$FiTab( 'System' )}{$FiLabel( 'Bluetooth', 'bluetooth' )} ■ Discoverable by senders
+	· On rAudio: $T_system$L_bluetooth ■ Discoverable by senders
 	· On sender: Search &raquo; Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect / Disconnect:
@@ -36,16 +45,17 @@ echo $html;
 </div>
 <div id="divwl" class="section">
 <?php
-htmlHead( [ //////////////////////////////////
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Wi-Fi'
 	, 'status' => 'wl'
 	, 'button' => [ 'add wladd', 'search wlscan' ]
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="helpblock hide"><?=$b_add?> Manual connect
-<?=$b_search?> Available networks
-<?=$b_wifi?> Context menu
+	<div class="helpblock hide"><?=$B_add?> Manual connect
+<?=$B_search?> Available networks
+<?=$B_wifi?> Context menu
 
 Note:
  · Avoid double quotes <c>"</c> in Wi-Fi name and password.
@@ -53,15 +63,16 @@ Note:
 </div>
 <div id="divlan" class="section">
 <?php
-htmlHead( [ //////////////////////////////////
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Wired LAN'
 	, 'status' => 'lan'
 	, 'button' => 'add lanadd'
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
-	<div class="helpblock hide"><?=$b_add?> Manual connect
-<?=$b_lan?> Context menu</div>
+	<div class="helpblock hide"><?=$B_add?> Manual connect
+<?=$B_lan?> Context menu</div>
 </div>
 </div>
 <?php
@@ -73,7 +84,7 @@ $body = [
 		, '<div id="qrap"></div>
 		   <div class="helpblock hide">Access rAudio directly without Wi-Fi router:
  • Connect <wh>Access Point</wh> with the password or scan QR code
- • Access point setting: '.iTab( 'Features' ).iLabel( 'Access Point', 'ap' ).'
+ • Access point setting: '.$T_features.$L_accesspoint.'
 
 Note: No internet connection.</div>'
 	)
@@ -88,7 +99,8 @@ htmlSection( $head, $body, 'webui' );
 ?>
 <div id="divbluetooth" class="section hide"> <!-- -------------------------------------------------------------- -->
 <?php
-htmlHead( [ //////////////////////////////////
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Bluetooth'
 	, 'button' => 'bluetooth blink scanning-bt'
 	, 'back'   => true
@@ -99,7 +111,8 @@ htmlHead( [ //////////////////////////////////
 </div>
 <div id="divwifi" class="section hide">
 <?php
-htmlHead( [ //////////////////////////////////
+// ----------------------------------------------------------------------------------
+htmlHead( [
 	  'title'  => 'Wi-Fi'
 	, 'button' => 'wifi blink scanning-wifi'
 	, 'back'   => true

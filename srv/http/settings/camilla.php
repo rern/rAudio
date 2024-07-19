@@ -7,56 +7,60 @@ $id_data = [
 	, 'stop_on_rate_change' => [ 'label' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'resampler'           => [ 'label' => 'Resampler',           'setting' => 'custom' ]
 ];
-$btnfilters = $b_filters.' Context menu: '.$b_graph.$b_edit.' '.$b_remove;
-$btnmixers  = $b_mixers.' Context menu: '.$b_edit.' '.$b_remove;
+commonVariables( [
+	'buttons' => [ 'code',   'edit',   'filters', 'flowchart', 'gear', 'graph',  'input', 'inverted', 'linear'
+				 , 'mixers', 'output', 'pause',   'play',      'plus', 'remove', 'set0',  'stop',     'volume' ]
+] );
+$btnfilters = $B_filters.' Context menu: '.$B_graph.$B_edit.' '.$B_remove;
+$btnmixers  = $B_mixers.' Context menu: '.$B_edit.' '.$B_remove;
 $button     = [
-	  'filters'    => $b_filters.' Context menu: '.$b_graph.' '.$b_edit.' '.$b_remove
+	  'filters'    => $B_filters.' Context menu: '.$B_graph.' '.$B_edit.' '.$B_remove
 	, 'mixers'     => $btnmixers
 	, 'processors' => str_replace( 'mixers' , 'processors', $btnmixers )
 	, 'pipeline'   => str_replace( 'filters' , 'pipeline', $btnfilters )
 	, 'config'     => str_replace( 'mixers' , 'config', $btnmixers )
-	, 'control'    => $b_volume.' '.$b_inverted.' '.$b_linear
+	, 'control'    => $B_volume.' '.$B_inverted.' '.$B_linear
 ];
-$bset_filters    = $b_filters.' Context menu: '.$b_graph.' '.$b_edit.' '.$b_remove;
+$bset_filters    = $B_filters.' Context menu: '.$B_graph.' '.$B_edit.' '.$B_remove;
 $bset_mixers     = $btnmixers;
 $bset_processors = str_replace( 'mixers' , 'processors', $btnmixers );
 $bset_pipeline   = str_replace( 'filters' , 'pipeline', $btnfilters );
 $bset_config     = str_replace( 'mixers' , 'config', $btnmixers );
-$bset_control    = $b_volume.' '.$b_inverted.' '.$b_linear;
+$bset_control    = $B_volume.' '.$B_inverted.' '.$B_linear;
 
 $dots = '· · ·';
 $help       = [
 	  'status'      => <<< EOF
-$b_play $b_pause $b_stop Playback control
+$B_play $B_pause $B_stop Playback control
 
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
 	, 'volume'    => <<< EOF
-$b_gear Configuration files
-$b_set0 Reset clipped count (if any)
+$B_gear Configuration files
+$B_set0 Reset clipped count (if any)
 EOF
 	, 'filters'   => <<< EOF
-{$Fi( 'folder-filter btn' )} $b_plus Finite Impulse Response (FIR) files · New
+{$I( 'folder-filter btn' )} $B_plus Finite Impulse Response (FIR) files · New
 $bset_filters Graph · Edit · Delete
-$b_code Set 0
+$B_code Set 0
 $bset_control Mute · Invert · Linear (Gain)
 EOF
 	, 'mixers'   => <<< EOF
-$b_plus New
+$B_plus New
 $bset_mixers Edit · Delete
-$b_code $bset_control Set 0 · Mute · Invert · Linear
+$B_code $bset_control Set 0 · Mute · Invert · Linear
 EOF
 	, 'processors'   => <<< EOF
-$b_plus New
+$B_plus New
 $bset_processors Edit · Delete
 EOF
 	, 'pipeline' => <<< EOF
-$b_flowchart $b_plus Step flowchart · New
+$B_flowchart $B_plus Step flowchart · New
 $bset_pipeline Graph · Edit · Delete
 EOF
 	, 'devices'  => <<< EOF
-$b_gear Capture sampling
-$b_input $b_output Device settings
+$B_gear Capture sampling
+$B_input $B_output Device settings
 EOF
 	, 'config'   => <<< EOF
 $bset_config

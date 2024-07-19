@@ -63,8 +63,7 @@ if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from pla
 	AUDIOOUTPUTBT='
 	name        "'$( < $dirshm/btname )'"
 	device      "'$hw'"
-	type        "alsa"
-	mixer_type  "hardware"'
+	type        "alsa"'
 	[[ -e $dirsystem/btformat ]] && AUDIOOUTPUTBT+='
 	format      "44100:16:2"'
 #--------------->
@@ -150,7 +149,7 @@ $( sed 's/  *"/^"/' <<< $AUDIOOUTPUT | column -t -s^ )
 fi
 
 if [[ -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ||
-		( ! $AUDIOOUTPUT && ! $btoutputonly && ! S.camilladsp && ! -e $dirsystem/snapclientserver ) ]]; then
+		( ! $AUDIOOUTPUT && ! $btoutputonly && ! $camilladsp && ! -e $dirsystem/snapclientserver ) ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
 fi
 

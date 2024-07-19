@@ -143,10 +143,9 @@ function renderPage() {
 `;
 		list           += '<li class="'+ alias + installed + update +'" data-alias="'+ alias +'">'+ addon.title +'</li>';
 	} );
-	html       = '<ul id="list">'+ list +'</ul>'+ addons +'<p class="bottom"></p>';
+	html       = '<ul id="list">'+ list +'</ul>'+ addons;
 	$( '.container' ).html( html ).promise().done( function() {
 		$( '.container' ).removeClass( 'hide' );
-		$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
 		if ( ! S.status.online ) $( '.infobtn' ).addClass( 'disabled' );
 		loaderHide();
 		$( 'a[ href ]' ).prop( 'tabindex', -1 );

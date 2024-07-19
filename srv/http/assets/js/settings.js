@@ -134,7 +134,9 @@ function showContent() {
 	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
-	$( '.container' ).removeClass( 'hide' );
+	$( '.container' )
+		.removeClass( 'hide' )
+		.trigger( 'focus' );
 	loaderHide();
 }
 function switchCancel() {
@@ -267,6 +269,9 @@ function psStorage( data ) {
 	if ( page === 'system' ) {
 		S.list = data.list;
 		renderStorage();
+		$( '#codehddinfo' )
+			.addClass( 'hide' )
+			.empty();
 	}
 }
 function psVolume() {
@@ -389,7 +394,10 @@ $( document ).on( 'keydown', function( e ) {
 			document.activeElement.scrollIntoView( { block: 'center' } );
 			break
 		case 'x':
-			if ( e.ctrlKey ) $( '#close' ).trigger( 'click' );
+			if ( ! e.ctrlKey ) return
+			
+			var close = $( '#data' ).hasClass( 'hide' ) ? '#close' : '#button-data .i-close';
+			$( close ).trigger( 'click' );
 			break
 		case 'MediaPause':
 		case 'MediaPlay':
@@ -436,14 +444,7 @@ $( '.helphead' ).on( 'click', function() {
 		$( '.helpblock' ).addClass( 'hide' );
 	} else {
 		$( '.help' ).addClass( 'bl' );
-		$( '.helpblock' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.prev().hasClass( 'status' ) ) {
-				$this.toggleClass( 'hide', $this.prev().hasClass( 'hide' ) );
-			} else {
-				$this.removeClass( 'hide' );
-			}
-		} );
+		$( '.helpblock' ).removeClass( 'hide' );
 	}
 } );
 $( '#close' ).on( 'click', function() {

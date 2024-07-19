@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1720326357' );
+	src         : url( '/assets/fonts/rern.woff2?v=1720707602' );
 }
 @font-face {
 	font-family : Lato;
@@ -72,7 +72,7 @@ i {
 .i-crop::before            { content: '\F568' }
 .i-current::before         { content: '\F56D' }
 .i-dabradio::before        { content: '\F589' }
-.i-dabupdate::before       { content: '\F589'; animation: blinkopaque 1.5s linear infinite; }
+.i-dabupdate::before       { content: '\F589' }
 .i-date::before            { content: '\F55C' }
 .i-devices::before         { content: '\F571' }
 .i-edit::before            { content: '\F565' }
@@ -118,7 +118,7 @@ i {
 .i-led::before             { content: '\F57C' }
 .i-librandom::before       { content: '\F569' }
 .i-library::before         { content: '\F506' }
-.i-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
+.i-libupdate::before       { content: '\F506' }
 .i-linear::before          { content: '\F52F' }
 .i-link::before            { content: '\F56B' }
 .i-localbrowser::before    { content: '\F58C'; position: absolute; }
@@ -264,7 +264,12 @@ body {
 .hide { display: none !important }
 .hidden { visibility: hidden }
 @keyframes blinkopaque { 50% { opacity: 0 } }
-.blink { animation: blinkopaque 1.5s linear infinite }
+
+.blink,
+.i-dabupdate,
+.i-libupdate {
+	animation: blinkopaque 1.5s linear infinite;
+}
 #loader,
 #fader {
 	position   : fixed;
@@ -296,9 +301,9 @@ body {
 	position    : fixed;
 	top         : 0;
 	width       : 100%;
-	min-height  : 100%;
-	margin      : 0;
-	padding     : 50px 20px;
+	height      : calc( 100% - 40px );
+    margin      : 40px 0;
+	padding     : 10px 20px;
 	tab-size    : 20px;
 	font-family : Inconsolata;
 	line-height : 20px;

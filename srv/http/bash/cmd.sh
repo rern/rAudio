@@ -411,21 +411,24 @@ librandom )
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;
-lsmntmpd )
-	readarray -t mountpoints <<< $( awk '/.mnt.MPD.NAS/ {print $2}' /etc/fstab \
-				| grep -v /mnt/MPD/NAS/data \
-				| sed 's/\\040/ /g' )
-	mpdignore=$( getContent /mnt/MPD/NAS/.mpdignore )
-	nas=false
-	for m in "${mountpoints[@]}"; do
-		[[ $mpdignore ]] && grep -q "$( basename "$m" )" <<< $mpdignore && continue
-		
-		timeout 0.1 ls -d "$m" &> /dev/null && nas=true && break
-# --------------------------------------------------------------------
+lsmnt )
+	for dir in NAS SD USB; do
+		lsdir=$( ls -1 /mnt/MPD/$dir 2> /dev/null )
+		list=false
+		if [[ $lsdir ]]; then
+			mpdignore=/mnt/MPD/$dir/.mpdignore
+			if [[ ! -e $mpdignore ]]; then
+				list=true
+			else
+				ignore=$( < $mpdignore )
+				while read d; do
+					! grep -q "^$d$" <<< $ignore && list=true && break
+				done <<< $lsdir
+			fi
+		fi
+		printf -v $dir '%s' $list
 	done
-	[[ $( ls /mnt/MPD/SD ) ]] && sd=true || sd=false
-	ls -d /mnt/MPD/USB/*/ &> /dev/null && usb=true || usb=false
-	echo '{ "nas" : '$nas', "sd"  : '$sd', "usb" : '$usb' }'
+	echo '{ "nas": '$NAS', "sd": '$SD', "usb": '$USB' }'
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"

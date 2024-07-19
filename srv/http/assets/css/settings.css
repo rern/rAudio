@@ -295,6 +295,9 @@ heading i.disabled {
 	height: 40px;
 	cursor: pointer;
 }
+#bar-bottom.guide div {
+	width: calc( 100% / 4 );
+}
 #bar-bottom div.active a {
 	color: var( --cw ) !important;
 }
@@ -597,6 +600,21 @@ input.disabled + .switchlabel:after {
 .head .i-gear {
 	display: none;
 }
+#guideimg {
+	display: block;
+	margin: 40px auto 0;
+	width: auto;
+	height: auto;
+	max-width: 650px;
+	max-height: 100%;
+	border: 1px solid hsl(0,0%,15%);
+}
+#guideprev,
+#guidenext {
+	display: none;
+	width: 40px !important;
+	line-height: 40px;
+}
 
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
@@ -610,19 +628,10 @@ input.disabled + .switchlabel:after {
 	}
 }
 @media (max-width: 700px) {
-	.container {
-		padding: 30px 10px 100px 10px;
-	}
+	.container { padding: 0 10px 80px }
 }
-@media (max-width: 658px) {
-	body {
-		height: 100%;
-		overflow: hidden;
-	}
-	.container {
-		overflow-y: auto;
-	}
-	#bar-bottom { padding: 0 }
+@media (max-width: 650px) {
+	#guideimg { max-width: 100% }
 }
 @media ( max-width: 580px ) {
 	.head { padding-right: 0 !important }
@@ -649,6 +658,7 @@ input.disabled + .switchlabel:after {
 	.listtitle a { width: calc( 100% / 13 ) }
 }
 @media (max-width: 615px) {
+	#bar-bottom { padding: 0 }
 	#bar-bottom a { display: none }
 }
 @media (max-width: 375px) {
@@ -660,8 +670,13 @@ input.disabled + .switchlabel:after {
 	#divmpd .help { display: none }
 }
 @media (hover: hover) {
+	#bar-bottom.guide div { width: calc( 100% / 5 ) }
+	#guideprev,
+	#guidenext { display: inline-block }
 	#fader { z-index: 5 }
-	#bar-bottom div:hover { background-color: var( --cgd ) }
+	#bar-bottom div:hover,
+	#guidenext:hover,
+	#guideprev:hover { background-color: var( --cgd ) }
 	#bar-bottom div.active:hover { background-color: var( --cma ) }
 	a:hover { text-decoration: none }
 	.entries li:hover { background: var( --cga ) }
@@ -700,6 +715,7 @@ input.disabled + .switchlabel:after {
 	.undervoltage,
 	.wiring,
 	#backend,
+	#bar-bottom i,
 	#button-data,
 	#ffmpegfiletype,
 	#menu {

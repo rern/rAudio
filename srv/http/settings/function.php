@@ -1,28 +1,4 @@
 <?php
-$btn     = [ 'add',     'bluetooth', 'btsender', 'code',    'gear',     'lan',    'lastfm',   'microsd', 'networks'
-			,'pause',   'play',      'power',    'refresh', 'search',   'stop',   'usbdrive', 'volume',  'wifi' ];
-$btnc    = [ 'filters', 'flowchart', 'graph',    'input',   'inverted', 'linear', 'mixers',   'output',  'set0' ];
-if ( $camilla ) $btn = array_merge( $btn, $btnc );
-foreach( $btn as $b ) {
-	$name  = 'b_'.$b;
-	$$name = i( $b.' btn' );
-}
-function iLabel( $label, $icon = '' ) {
-	$htmlicon = $icon ? i( $icon ) : '&emsp;';
-	return '<a class="helpmenu label">'.$label.$htmlicon.'</a>';
-}
-function iTab( $tab ) {
-	return '<a class="helpmenu tab">'.i( strtolower( $tab ) ).' '.$tab.'</a>';
-}
-function menu( $icon, $name, $iconsub = '' ) {
-	$submenu = $iconsub ? i( $iconsub.' sub' ) : '';
-	return '<a class="helpmenu">'.i( $icon ).' '.$name.$submenu.'</a>';
-}
-// functions for use inside heredoc
-$Fi      = 'i';
-$FiLabel = 'iLabel';
-$FiTab   = 'iTab';
-$Fmenu   = 'menu';
 /*
 $id_data = [ 'ID' => [               // REQUIRED
 	  'label'   => 'LABEL'
@@ -170,3 +146,29 @@ function htmlSetting( $data ) {
 	
 	echo $html;
 }
+function commonVariables( $list ) {
+	extract( $list );
+	foreach( $labels as $l ) { // $L_xxx - switch label
+		$icon  = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
+		$l     = $l[ 0 ];
+		$name  = 'L_'.strtolower( preg_replace( '/ |-/', '', $l ) );
+		global $$name;
+		$$name = '<a class="helpmenu label">'.$l.$icon.'</a>';
+	}
+	foreach( $menus as $m ) { // $M_xxx - menu
+		$name  = 'M_'.str_replace( '-', '', $m[ 2 ] );
+		global $$name;
+		$$name = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
+	}
+	foreach( $tabs as $t ) { // $T_xxx - tab
+		$name  = 'T_'.$t;
+		global $$name;
+		$$name = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
+	}
+	foreach( $buttons as $b ) { // $B_xxx - tab
+		$name  = 'B_'.$b;
+		global $$name;
+		$$name = i( $b.' btn' );
+	}
+}
+$I = 'i'; // for common.php - i() > {$I()} inside heredoc

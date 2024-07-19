@@ -611,6 +611,7 @@ function infoButtonCommand( fn, cancel ) {
 	infoReset();
 }
 function infoButtonWidth() {
+	$( '.page, .container' ).addClass( 'disabled' );
 	if ( I.buttonfit ) return
 	
 	var $buttonhide = $( '#infoButton a.hide' );
@@ -806,8 +807,11 @@ function infoReset() {
 		.addClass( 'hide' )
 		.removeAttr( 'style' )
 		.empty();
-	setTimeout( () => I = { active: false }, 0 );
-	$( '.focus' ).trigger( 'focus' ); // restore previous focused
+	setTimeout( () => {
+		I = { active: false }
+		$( '.page, .container' ).removeClass( 'disabled' );
+		$( '.focus' ).trigger( 'focus' ); // restore previous focused
+	}, 0 );
 }
 function infoSetValues() {
 	var $this, type, val;

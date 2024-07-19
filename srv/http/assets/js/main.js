@@ -148,6 +148,7 @@ if ( navigator.maxTouchPoints ) { // swipe
 		e.stopImmediatePropagation();
 		return false
 	} );
+	$( 'link[ href*="hovercursor.css" ]' ).remove();
 }
 
 $( 'body' ).on( 'click', function( e ) {
@@ -1322,8 +1323,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 			, gmode  : mode
 		}
 	}
-	V.mode = mode;
 	list( query, function( html ) {
+		V.mode = mode;
 		var data = {
 			  html      : html
 			, modetitle : path

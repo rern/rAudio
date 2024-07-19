@@ -1,13 +1,10 @@
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 'x';
-$i2s         = [ 'label' => 'Audio - I²S', 'sub' => 'HAT' ];
-$shareddata  = iLabel( 'Shared Data', 'networks' );
 $id_data     = [
 	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
-	, 'hddsleep'      => [ 'label' => 'Hard Drive Sleep' ]
 	, 'hostname'      => [ 'label' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
 	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
@@ -26,12 +23,27 @@ $id_data     = [
 	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
 ];
-
-$head = [ //////////////////////////////////
+commonVariables( [
+	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'usbdrive' ]
+	, 'labels'  => [
+		  [ 'Device' ]
+		, [ 'Output' ]
+		, [ 'Server rAudio', 'rserver' ]
+		, [ 'Shared Data',   'networks' ]
+		, [ 'Storage' ]
+	]
+	, 'menus'   => [
+		  [ 'library', 'Library', 'refresh-library' ]
+		, [ 'raudio',  'System',  'relays' ]
+	]
+	, 'tabs'    => [ 'features', 'player' ]
+] );
+// ----------------------------------------------------------------------------------
+$head = [
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => 'power power'
-	, 'help'   => $b_power.' Power'
+	, 'help'   => $B_power.' Power'
 ];
 $labels = 'Version
 	<br>Kernel
@@ -41,11 +53,11 @@ $labels = 'Version
 $body = [ htmlSectionStatus( 'system', $labels ) ];
 htmlSection( $head, $body, 'system' );
 
-$head = [ //////////////////////////////////
+$head = [
 	  'title'  => 'Status'
 	, 'status' => 'status'
 	, 'button' => 'refresh refresh'
-	, 'help'   => $b_refresh.' Refresh every 10 seconds'
+	, 'help'   => $B_refresh.' Refresh every 10 seconds'
 ];
 $labels = 'CPU Load
 	<br>CPU Temp<wide>erature</wide></span>
@@ -73,18 +85,18 @@ $body = [
 	]
 ];
 htmlSection( $head, $body, 'status' );
-
+// ----------------------------------------------------------------------------------
 $uid = exec( 'id -u mpd' );
 $gid = exec( 'id -g mpd' );
-$head = [ //////////////////////////////////
+$head = [
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
 	, 'button' => 'add addnas'
 	, 'help'   => <<< EOF
-$b_add Add network storage
+$B_add Add network storage
 
  · USB drives  Will be found and mounted automatically.
- · Commands used by $b_add Add network storage:
+ · Commands used by $B_add Add network storage:
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>" <g># NAME "data": reserved for Shared Data</g>
 
@@ -98,20 +110,15 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
 </pre> · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
 ];
-$body = [
-	'<ul id="list" class="entries"></ul>
-		<div class="helpblock hide">'.$b_microsd.' '.$b_usbdrive.' '.$b_networks.' Context menu'.'</div>
-		<pre id="codehddinfo" class="status hide"></pre>'
-	, [
-		  'id'       => 'hddsleep'
-		, 'disabled' => 'HDD not support sleep'
-		, 'help'     => 'Sleep timer for USB hard drives.'
-	]
-];
+$body = [ <<< EOF
+<ul id="list" class="entries"></ul>
+<div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
+$B_microsd $B_usbdrive $B_networks Context menu</div>
+<pre id="codehddinfo" class="status hide"></pre>
+EOF ];
 htmlSection( $head, $body, 'storage' );
-
 // ----------------------------------------------------------------------------------
-$head = [ //////////////////////////////////
+$head = [
 	  'title'  => 'On-board Devices'
 ];
 $body = [
@@ -126,7 +133,7 @@ EOF
 	, [
 		  'id'       => 'bluetooth'
 		, 'help'     => <<< EOF
-$b_gear
+$B_gear
 ■ Sampling 16bit - Bluetooth receivers with fixed sampling
 EOF
 	]
@@ -134,7 +141,7 @@ EOF
 		  'id'       => 'wlan'
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
-$b_gear
+$B_gear
 Country of Wi-Fi regulatory domain:
 	· <c>00</c> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
@@ -144,15 +151,14 @@ EOF
 ];
 htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
-
 $helpi2s = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
- · See  if it's already set: {$FiTab( 'Player' )} Output {$FiLabel( 'Device' )}
-$b_gear
+ · See  if it's already set: $T_player$L_device
+$B_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF;
-$head = [ //////////////////////////////////
+$head = [
 	  'title' => 'GPIO Devices'
 ];
 $body = [
@@ -175,7 +181,7 @@ EOF
 		  'id'       => 'powerbutton'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
-$b_gear
+$B_gear
  · On - Fixed to pin <c>5</c>
  · Off - Default: pin <c>5</c> (single pin on+off)
  · If pin <c>5</c> is used by DAC or LCD, set 2 unused pins for:
@@ -187,7 +193,7 @@ EOF
 		  'id'       => 'relays'
 		, 'help'     => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
+On/Off: $M_relays
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  · Can be enabled and run as a test without a connected relay module.
 EOF
@@ -217,7 +223,8 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'gpio' );
-$head = [ 'title' => 'Environment' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Environment' ];
 $body = [
 	[
 		  'id'       => 'hostname'
@@ -233,7 +240,7 @@ EOF
 		  'id'       => 'timezone'
 		, 'input'    => 'timezone'
 		, 'help'     => <<< EOF
-$b_gear
+$B_gear
 Servers for time sync and package mirror
 EOF
 	]
@@ -241,7 +248,7 @@ EOF
 		  'id'       => 'soundprofile'
 		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
-$b_gear
+$B_gear
 Swapiness (default: <c>60</c>)
 	· Balance between swap disk vs system memory cache
 	· Low - less swap
@@ -264,7 +271,8 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'environment' );
-$head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Data and Settings' ];
 $body = [
 	[
 		  'id'       => 'backup'
@@ -285,7 +293,7 @@ EOF
 	]
 	, [
 		  'id'       => 'shareddata'
-		, 'disabled' => iLabel( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'disabled' => $L_serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
  · Library database
@@ -293,17 +301,17 @@ Connect shared data as client for:
  · Display: Item toggles and order of Library home
 
 Note:
- • Enabled - $b_microsd SD and $b_usbdrive USB:
+ • Enabled - $B_microsd SD and $B_usbdrive USB:
 	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$FiTab( 'Features' )}{$FiLabel( 'Server rAudio', 'rserver' )}
-	Clients: $shareddata &raquo; <btn>rAudio</btn>
+	Server: $T_features$L_serverraudio
+	Clients: $L_shareddata <btn>{$I( 'rserver' )} rAudio</btn>
 	
  • <wh>Other servers:</wh> (Alternative 2)
-	Server: Create shares for <c>data</c> and <c>source</c> for Library
-	 · Linux: <c>rwx</c>
+	Server: Create shares for music <c>source</c> and <c>data</c>
+	 · Linux permissions:
 		NFS: <c>777</c>
 		CIFS (SMB): <c>read only = no</c>
 	 · Windows:
@@ -312,17 +320,18 @@ Note:
 		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- {$FiLabel( 'Storage' )} $b_add Add network storage for shared <c>source</c>
-		- {$Fmenu( 'library', 'Library', 'refresh-library' )} Update database
-		- $shareddata Setup shared <c>data</c>
-		- <c>data</c> will be shared for all clients
+		- $L_storage $B_add Add <c>source</c>
+		- $M_refreshlibrary Update database
+		- $L_shareddata Connect <c>data</c>
+		- Local data will be transfered to <c>data</c>
 	 · Other clients:
-		- $shareddata &raquo; Connect shared <c>data</c>
-		- <c>source</c> will be set the same as 1st client
+		- $L_shareddata Connect <c>data</c>
+		- <c>source</c> will be connected accordingly
 EOF
 	]
 ];
 htmlSection( $head, $body, 'datasetting' );
+// ----------------------------------------------------------------------------------
 $listui = [
 	[
 	    'D3'
@@ -384,6 +393,7 @@ $menu       = [
 	  'info'    => 'info'
 	, 'forget'  => 'remove'
 	, 'remount' => 'connect'
+	, 'sleep'   => 'screenoff'
 	, 'unmount' => 'close'
 ];
 $menuhtml   = '';

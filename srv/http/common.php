@@ -79,6 +79,8 @@ if ( ! $page ) { // main
 	} else if ( $guide ) {
 		$icon      = 'help';
 		$pagetitle = 'User Guide';
+		$jsp       = [];
+		$js        = [ 'guide' ];
 	}
 	$title = $pagetitle;
 }
@@ -92,10 +94,11 @@ foreach( $css as $c )  $html.= '<link rel="stylesheet" href="/assets/css/'.$c.'.
 $html.= '
 </head>
 <body>
-	<div id="infoOverlay" class="hide" tabindex="-1"></div>';
+';
 if ( ! $addon_guide )  {
 	$pageicon = $page ? i( $page.' page-icon' ) : '';
 	$html    .= '
+	<div id="infoOverlay" class="hide" tabindex="-1"></div>
 	<div id="loader">'.$logosvg.'</div>
 	<div id="banner" class="hide"></div>
 	<div id="button-data" class="head hide">'.$pageicon.i( 'close' ).'<span class="title">'.$title.'-DATA</span></div>
@@ -112,14 +115,27 @@ $scripts = '';
 foreach( $jsp as $j )      $scripts.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
 foreach( $js as $j )       $scripts.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
 if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
-$scripts.='
+
+function htmlBottom() {
+	global $guide, $htmlbar, $page, $scripts;
+	$html = '';
+	if ( $page ) {
+		$html .= '</div>'; // <div class="container">
+		$class = $guide ? 'guide' : '';
+	} else {
+		$class = 'hide';
+	}
+	if ( $htmlbar ) $html.= '
+	<div id="fader" class="hide"></div>
+	<div id="bar-bottom" class="'.$class.'">'.$htmlbar.'</div>
+	'.$scripts.'
 </body>
 </html>
 ';
-
+	echo $html;
+}
 function i( $icon, $id = '', $cmd = '' ) {
 	$htmlid  = $id ? ' id="'.$id.'"' : '';
 	$htmlcmd = $cmd ? ' data-cmd="'.$cmd.'"' : '';
 	return '<i'.$htmlid.' class="i-'.$icon.'"'.$htmlcmd.'></i>';
 }
-

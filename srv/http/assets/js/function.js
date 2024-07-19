@@ -1176,7 +1176,7 @@ function renderLibrary() { // library home
 function renderLibraryCounts() {
 	var songs    = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$( '.lib-mode' ).each( ( i, el ) => {
+	$( '.lib-mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
 		var $mode  = $this.find( '.mode' );
 		var v     = C[ $mode.data( 'mode' ) ];
@@ -1541,7 +1541,7 @@ function setButtonUpdate() {
 		return
 	}
 	
-	bash( [ 'lsmntmpd' ], counts => {
+	bash( [ 'lsmnt' ], counts => {
 		$.each( counts, ( k, v ) => { C[ k ] = v } );
 		toggle();
 	}, 'json' );

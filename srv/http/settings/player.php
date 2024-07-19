@@ -17,13 +17,24 @@ $id_data = [
 	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
-
-$head = [ //////////////////////////////////
+commonVariables( [
+	  'buttons' => [ 'gear', 'pause', 'play', 'stop', 'volume' ]
+	, 'labels'  => [ 
+		  [ 'DAB Radio',   'dabradio' ]
+		, [ 'Device' ]
+		, [ 'Shared Data', 'networks' ]
+		, [ 'SoX Resampler' ]
+		, [ 'Volume Control' ]
+	]
+	, 'tabs'    => [ 'features', 'system' ]
+] );
+// ----------------------------------------------------------------------------------
+$head = [
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
 	, 'button' => 'play playback'
 	, 'help'   => <<< EOF
-$b_play $b_pause $b_stop Playback control
+$B_play $B_pause $B_stop Playback control
 
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
@@ -35,7 +46,7 @@ $labels = 'Version
 $body = [ htmlSectionStatus( 'status', $labels ) ];
 htmlSection( $head, $body, 'mpd' );
 // ----------------------------------------------------------------------------------
-$head = [ //////////////////////////////////
+$head = [
 	  'title'  => 'Output'
 	, 'status' => 'output'
 ];
@@ -45,7 +56,7 @@ $body = [
 		, 'icon'     => 'btreceiver'
 		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
-$b_volume Mixer device - blueALSA volume control
+$B_volume Mixer device - blueALSA volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
@@ -59,12 +70,12 @@ EOF
 	, [
 		  'id'       => 'mixer'
 		, 'input'    => 'mixer'
-		, 'help'     => $b_volume.' Mixer device volume control'
+		, 'help'     => $B_volume.' Mixer device volume control'
 	]
 	, [
 		  'id'       => 'mixertype'
 		, 'help'     => <<< EOF
-$b_gear Type:
+$B_gear Type:
  · Mixer device: Good - DAC hardware via GUI knob (if available)
  · MPD software: Basic - GUI knob
  
@@ -77,13 +88,14 @@ EOF
 	, [
 		  'id'       => 'devicewithbt'
 		, 'help'     => <<< EOF
- · Keep Output {$FiLabel( 'Device' )} enabled when Bluetooth connected.
+ · Keep Output $L_device enabled when Bluetooth connected.
  · Should be disabled if not used simultaneously
 EOF
 	]
 ];
 htmlSection( $head, $body, 'output' );
-$head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Bit-Perfect' ];
 $body = [
 	[
 		  'id'       => 'novolume'
@@ -92,10 +104,10 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
  · Mixer device volume set at <c>0dB</c>
  · Disable:
-	· Output {$FiLabel( 'Volume Control' )}
+	· Output $L_volumecontrol
 	· Volume - All options
-	· Options  {$FiLabel( 'SoX Resampler' )}
-	· {$FiTab( 'Features' )} Signal Processors
+	· Options  $L_soxresampler
+	· $T_features Signal Processors
 EOF
 	]
 	, [
@@ -114,7 +126,8 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'bitperfect' );
-$head = [ 'title' => 'Volume' ]; //////////////////////////////////
+// ----------------------------------------------------------------------------------
+$head = [ 'title' => 'Volume' ];
 $body = [
 	[	  'id'       => 'crossfade'
 		, 'help'     => <<< EOF
@@ -133,7 +146,7 @@ EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 
-$b_gear
+$B_gear
 ■ Gain control - Mixer device:
  • <c>replay_gain_handler "mixer"</c>
  • Available when Volume Control = MPD software
@@ -142,8 +155,7 @@ EOF
 ];
 htmlSection( $head, $body, 'volume' );
 // ----------------------------------------------------------------------------------
-
-$head = [ 'title' => 'Options' ]; //////////////////////////////////
+$head = [ 'title' => 'Options' ];
 $body = [
 	[
 		  'id'       => 'buffer'
@@ -161,7 +173,7 @@ EOF
 	]
 	, [
 		  'id'       => 'ffmpeg'
-		, 'disabled' => iLabel( 'DAB Radio', 'dabradio' ).' is currently enabled.'
+		, 'disabled' => $L_dabradio.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://ffmpeg.org/about.html">FFmpeg</a> - <a id="ffmpegfiletype">Decoder for more audio filetypes</a>
 <pre id="prefiletype" class="hide"></pre>
@@ -176,7 +188,7 @@ EOF
 		 'id'        => 'soxr'
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
-$b_gear
+$B_gear
  • Presets:
 	(default: Quality <c>Very high</c>  Threads <c>Single</c>)
 	
@@ -203,7 +215,7 @@ EOF
 	]
 ];
 htmlSection( $head, $body, 'options' );
-
+// ----------------------------------------------------------------------------------
 htmlHead( [
 	  'title'   => 'Excluded Albums'
 	, 'id'      => 'albumignore'
@@ -227,7 +239,7 @@ To restore:
 • Remove lines contain directory to restore
 • Update Library
 
-Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for {$FiTab( 'System' )}{$FiLabel( 'Shared Data', 'networks' )}
+Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for $T_system$L_shareddata
 EOF
 ] );
 htmlHead( [
