@@ -86,7 +86,6 @@ ap )
 	pushRefresh networks
 	;;
 autoplay | lyrics | scrobble )
-	[[ $CMD == lyrics ]] && sed -i '/^url/ s|/$||' $dirsystem/lyrics.conf
 	enableFlagSet
 	pushRefresh
 	;;
