@@ -668,9 +668,9 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		, width   : $this.width()
 	}
 } ).on( 'touchmove mousemove', function( e ) {
-	clearTimeout( V.volumebar );
 	if ( ! V.volume ) return
 	
+	clearTimeout( V.volumebar );
 	V.drag = true;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	$( '#volume-bar' ).css( 'width', V.volume.x );
