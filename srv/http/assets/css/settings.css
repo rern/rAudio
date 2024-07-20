@@ -213,7 +213,7 @@ heading.status .headtitle::after,
 	font-family: rern;
 	font-style: normal;
 	font-size: 22px;
-	content: "\f605";
+	content: '\F605';
 	text-align: center;
 	color: var( --cg60 );
 	letter-spacing: normal;
@@ -223,7 +223,7 @@ heading.status .headtitle.active::after,
 #ffmpegfiletype.active::after,
 .listtitle.jsplugins.active::after,
 .divaddon .revision.active::after {
-	content: "\f604" !important;
+	content: '\F604' !important;
 }
 .col-l.status gr::after,
 #ffmpegfiletype::after,
