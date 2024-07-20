@@ -602,11 +602,12 @@ input.disabled + .switchlabel:after {
 }
 #guideimg {
 	display: block;
-	margin: 40px auto 0;
+	margin: 50vh auto 0;
+	transform: translateY(-50%);
 	width: auto;
 	height: auto;
 	max-width: 650px;
-	max-height: 100%;
+	max-height: calc( 100% - 80px );
 	border: 1px solid hsl(0,0%,15%);
 }
 #prev,
@@ -616,16 +617,21 @@ input.disabled + .switchlabel:after {
 	line-height: 40px;
 }
 
+@media (max-height: 730px) {
+	#guideimg {
+		margin-top: 40px;
+		transform: unset;
+	}
+}
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
 	.head .i-gear { display: inline-block }
 	.container { height: calc( 100% - 40px ) }
+	#guideimg { max-height: calc( 100% - 40px ) }
 	#bar-bottom { display: none }
 }
 @media (max-width: 800px) {
-	#bar-bottom {
-		padding: 0 20px;
-	}
+	#bar-bottom { padding: 0 20px }
 }
 @media (max-width: 700px) {
 	.container { padding: 0 10px 80px }
