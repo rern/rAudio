@@ -1,12 +1,12 @@
 <?php
 include 'common.php';
 
-echo '<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close', 'close' );
-if ( $guide ) {
+echo '
+<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close', 'close' );
+if ( $addon_guide ) {
 	echo '</div>';
 } else {
-	echo i( 'help helphead' ).i( 'gear' ).'
-</div>
+	echo i( 'help helphead' ).i( 'gear' ).'</div>
 <div class="container '.$page.' hide" tabindex="-1">
 ';
 }
