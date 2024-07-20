@@ -1080,10 +1080,12 @@ i.map.disabled, .map.disabled i {
 	box-shadow: 2px -2px 6px var( --cg );
 	-webkit-overflow-scrolling: touch;
 }
+.content-top i,
 #lyrics i {
 	width: 40px;
 	line-height: 40px;
 	text-align: center;
+	font-size: 24px;
 }
 #divlyricstitle,
 #divlyricsartist {
@@ -1124,7 +1126,6 @@ i.map.disabled, .map.disabled i {
 #lyricsedit,
 #lyricseditbtngroup {
 	float: right;
-	font-size: 28px;
 }
 .lyricstext {
 	height: calc(100vh - 100px);
@@ -1334,12 +1335,6 @@ i.map.disabled, .map.disabled i {
 .content-top a {
 	font-size: 18px;
 	color: var( --cw );
-}
-.content-top i {
-	width: 40px;
-	line-height: 40px;
-	font-size: 24px;
-	text-align: center;
 }
 .button-webradio-new {
 	margin-left: 10px;
@@ -1752,12 +1747,6 @@ li.active .iconthumb {
 #pl-manage {
 	float: right;
 	font-size: 0;
-}
-#pl-manage i {
-	width: 40px;
-	line-height: 40px;
-	text-align: center;
-	font-size: 24px;
 }
 #li-count {
 	margin-left: 20px;
