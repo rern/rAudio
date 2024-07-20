@@ -23,10 +23,10 @@ for( i = 0; i < tabsL; i++ ) {
 		
 		var id = this.id;
 		var active;
-		if ( id === 'guidenext' ) {
+		if ( id === 'next' ) {
 			n++;
 			if ( n > page.total ) n = 1;
-		} else if ( id === 'guideprev' ) {
+		} else if ( id === 'prev' ) {
 			n--;
 			if ( n < 1 ) n = page.total;
 		} else {
@@ -48,9 +48,9 @@ for( i = 0; i < tabsL; i++ ) {
 }
 //---------------------------------------------------------------------------------------
 document.title = 'Guide';
+[ '.container', '.helphead' ].forEach( cl => document.querySelector( cl ).remove() );
 E.playback.classList.add( 'active' );
 E.close.addEventListener( 'click', () => location.href = '/' );
-//E.img.addEventListener( 'click', () => E.guidenext.click() );
 E.gear.addEventListener( 'click', () => {
 	var hide = window.getComputedStyle( E.bar ).getPropertyValue( 'display' ) === 'none' ;
 	E.bar.style.display = hide ? 'block' : 'none';
@@ -59,13 +59,13 @@ document.body.addEventListener( 'keydown', e => {
 	switch ( e.key ) {
 		case 'ArrowLeft':
 		case 'ArrowUp':
-			E.guideprev.click();
+			E.prev.click();
 			break
 		case 'ArrowRight':
 		case 'ArrowDown':
 		case ' ':
 			e.preventDefault();
-			E.guidenext.click();
+			E.next.click();
 			break
 		case 'x':
 			if ( e.ctrlKey ) location.href = '/';
@@ -80,7 +80,7 @@ if ( navigator.maxTouchPoints ) { // swipe
 	window.addEventListener( 'touchend', e => {
 		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
 		if ( Math.abs( xdiff ) > 100 ) {
-			xdiff > 0 ? E.guidenext.click() : E.guideprev.click();
+			xdiff > 0 ? E.next.click() : E.prev.click();
 		}
 	} );
 }

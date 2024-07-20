@@ -3,9 +3,10 @@ include 'common.php';
 
 echo '
 <div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>
-'.i( 'close close', 'close' ).( $addon_guide ? '' : i( 'help helphead' ) ).i( 'gear' ).'
+'.i( 'close close', 'close' ).i( 'help helphead' ).i( 'gear' ).'
 </div>
-'.( $guide ? '' : '<div class="container '.$page.' hide" tabindex="-1">' );
+<div class="container '.$page.' hide" tabindex="-1">
+';
 if ( $addonsprogress ) {
 	include 'settings/'.$page.'.php';
 	exit;
@@ -28,9 +29,10 @@ foreach ( $tabs as $tab ) {
 }
 if ( $guide ) {
 	echo '
+</div>
 <img id="guideimg" src="/assets/img/guide/1.jpg'.$hash.'">
 ';
-	$htmlbar.= i( 'back', 'guideprev' ).i( 'arrow-right', 'guidenext' );
+	$htmlbar.= i( 'back', 'prev' ).i( 'arrow-right', 'next' );
 } else if ( ! $addons ) {
 	include 'settings/function.php';
 	include 'settings/'.$page.'.php'; // addons: by addons.js
