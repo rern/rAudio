@@ -6,15 +6,19 @@ var page  = {
 	, settings : 47
 	, total    : 58
 }
-var E     = {};
-[ 'bar-bottom', 'close', 'guideimg' ].forEach( el => E[ el ] = document.getElementById( el ) );
-var hash  = E.guideimg.src.replace( /.*jpg/, '' )
-var tabs  = E[ 'bar-bottom' ].children;
+var E     = {
+	  bar   : document.getElementById( 'bar-bottom' )
+	, close : document.getElementById( 'close' )
+	, gear  : document.querySelector( '.i-gear' )
+	, img   : document.getElementById( 'guideimg' )
+};
+var hash  = E.img.src.replace( /.*jpg/, '' )
+var tabs  = E.bar.children;
 var tabsL = tabs.length;
 for( i = 0; i < tabsL; i++ ) {
 	E[ tabs[ i ].id ] = tabs[ i ];
 	tabs[ i ].addEventListener( 'click', function() {
-		var tabactive = E[ 'bar-bottom' ].querySelector( '.active' );
+		var tabactive = E.bar.querySelector( '.active' );
 		if ( this === tabactive ) return
 		
 		var id = this.id;
@@ -39,14 +43,18 @@ for( i = 0; i < tabsL; i++ ) {
 		}
 		tabactive.className = '';
 		E[ active ].className = 'active'
-		E.guideimg.src = '/assets/img/guide/'+ n +'.jpg'+ hash;
+		E.img.src = '/assets/img/guide/'+ n +'.jpg'+ hash;
 	} );
 }
 //---------------------------------------------------------------------------------------
 document.title = 'Guide';
 E.playback.classList.add( 'active' );
 E.close.addEventListener( 'click', () => location.href = '/' );
-//E.guideimg.addEventListener( 'click', () => E.guidenext.click() );
+//E.img.addEventListener( 'click', () => E.guidenext.click() );
+E.gear.addEventListener( 'click', () => {
+	var hide = window.getComputedStyle( E.bar ).getPropertyValue( 'display' ) === 'none' ;
+	E.bar.style.display = hide ? 'block' : 'none';
+} );
 document.body.addEventListener( 'keydown', e => {
 	switch ( e.key ) {
 		case 'ArrowLeft':

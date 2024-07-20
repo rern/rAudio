@@ -2,15 +2,10 @@
 include 'common.php';
 
 echo '
-<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>'.i( 'close close', 'close' );
-if ( $addon_guide ) {
-	echo '</div>';
-} else {
-	echo i( 'help helphead' ).i( 'gear' ).'</div>';
-}
-if ( ! $guide ) echo '
-<div class="container '.$page.' hide" tabindex="-1">
-';
+<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>
+'.i( 'close close', 'close' ).( $addon_guide ? '' : i( 'help helphead' ) ).i( 'gear' ).'
+</div>
+'.( $guide ? '' : '<div class="container '.$page.' hide" tabindex="-1">' );
 if ( $addonsprogress ) {
 	include 'settings/'.$page.'.php';
 	exit;
