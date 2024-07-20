@@ -6,10 +6,11 @@ echo '
 if ( $addon_guide ) {
 	echo '</div>';
 } else {
-	echo i( 'help helphead' ).i( 'gear' ).'</div>
+	echo i( 'help helphead' ).i( 'gear' ).'</div>';
+}
+if ( ! $guide ) echo '
 <div class="container '.$page.' hide" tabindex="-1">
 ';
-}
 if ( $addonsprogress ) {
 	include 'settings/'.$page.'.php';
 	exit;
@@ -31,7 +32,9 @@ foreach ( $tabs as $tab ) {
 	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).' <a>'.$tab.'</a></div>';
 }
 if ( $guide ) {
-	echo '<img id="guideimg" src="/assets/img/guide/1.jpg'.$hash.'">';
+	echo '
+<img id="guideimg" src="/assets/img/guide/1.jpg'.$hash.'">
+';
 	$htmlbar.= i( 'back', 'guideprev' ).i( 'arrow-right', 'guidenext' );
 } else if ( ! $addons ) {
 	include 'settings/function.php';

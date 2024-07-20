@@ -87,15 +87,12 @@ pre hr.hrlight {
 <p class="addontitle gr"><i class="titleicon i-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<wh><?=$title?></wh> - <?=$label?> ...</p>
 <pre class="progress">
 <script> // js must be here before php flush start
-E        = {};
-[ 'close', 'container', 'helphead', 'info', 'infobtn', 'infox', 'progress', 'titleicon' ].forEach( ( el ) => {
+document.title = 'Addons';
+E      = {};
+[ 'close', 'container', 'info', 'infobtn', 'infox', 'progress', 'titleicon' ].forEach( ( el ) => {
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
-
-document.title = 'Addons';
-E.helphead.remove();
 E.container.classList.remove( 'hide' );
-
 E.close.addEventListener( 'click', () => location.href = '<?=$hrefback?>' );
 [ E.infobtn, E.infox ].forEach( el => el.addEventListener( 'click', () => E.info.remove() ) );
 scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
