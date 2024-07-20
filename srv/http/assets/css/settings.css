@@ -291,7 +291,7 @@ heading i.disabled {
 #bar-bottom div {
 	display: inline-block;
 	width: calc( 100% / 5 );
-	max-width: 165px;
+	max-width: 160px;
 	height: 40px;
 	cursor: pointer;
 }
