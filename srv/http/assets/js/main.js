@@ -444,8 +444,10 @@ $( '#library, #button-library' ).on( 'click', function() {
 	if ( V.library && V.librarylist ) {
 		libraryHome();
 	} else {
-		switchPage( 'library' );
-		refreshData();
+		if ( ! V.library ) {
+			switchPage( 'library' );
+			refreshData();
+		}
 	}
 	if ( S.updating_db ) banner( 'library blink', 'Library Database', 'Update ...' );
 } );
@@ -453,8 +455,10 @@ $( '#playback' ).on( 'click', function() {
 	if ( V.playback && ( V.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
 		$( '#stop' ).trigger( 'click' );
 	} else {
-		playbackStatusGet();
-		switchPage( 'playback' );
+		if ( ! V.playback ) {
+			playbackStatusGet();
+			switchPage( 'playback' );
+		}
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
