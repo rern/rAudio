@@ -1366,7 +1366,7 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	
 	[ 'consume', 'elapsed', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
 	$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
-	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disabled' );
+	$( '.pllength' ).removeClass( 'disabled' );
 	$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', S.consume );
 	$( '#button-pl-librandom' )
