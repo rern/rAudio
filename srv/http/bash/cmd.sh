@@ -107,10 +107,10 @@ plClear() {
 	mpc -q clear
 	radioStop
 	rm -f $dirsystem/librandom
-	pushData playlist '{ "refresh": -1 }'
+	pushData playlist -1
 }
 pushPlaylist() {
-	pushData playlist '{ "refresh": true }'
+	pushData playlist $( php /srv/http/playlist.php current )
 }
 pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
@@ -563,13 +563,15 @@ mpcplayback )
 	;;
 mpcremove )
 	if [[ $POS ]]; then
-		[[ $( mpc status %songpos% ) == $POS ]] && radioStop
+		if [[ $( mpc status %songpos% ) == $POS ]]; then
+			[[ $( mpc status %length% ) == $POS ]] && next=$(( POS -1 )) || next=$POS
+		fi
 		mpc -q del $POS
-		pushData playlist '{ "refresh": '$POS' }'
-		if [[ $CURRENT ]]; then
-			mpc -q play $CURRENT
+		if [[ $next ]]; then
+			mpc -q play $next
 			mpc -q stop
 		fi
+		pushPlaylist
 	else
 		plClear
 	fi
@@ -632,7 +634,7 @@ mpcskip )
 		rm -f $dirshm/skip
 		mpc -q stop
 	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
+	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 	;;
 mpcskippl )
 	radioStop
@@ -640,7 +642,7 @@ mpcskippl )
 	Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
 	[[ $Time == 0 ]] && Time=false
 	[[ $ACTION == stop ]] && mpc -q stop
-	pushData playlist '{ "song": '$(( POS - 1 ))', "elapsed": 0, "Time": '$Time', "state": "'$ACTION'" }'
+	pushPlaylist
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found

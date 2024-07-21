@@ -1040,45 +1040,12 @@ function playlistInsertTarget() {
 	bannerHide();
 }
 function playlistRemove( $li ) {
-	if ( $( '#pl-list li' ).length === 1 ) {
+	if ( S.pllength === 1 ) {
 		bash( [ 'mpcremove' ] );
 	} else {
-		var total  = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
-		var file   = $li.hasClass( 'file' );
-		var $count = file ? $( '#pl-trackcount' ) : $( '#pl-radiocount' );
-		var count  = +$count.text().replace( /,|\./g, '' ) - 1;
-		if ( count ) {
-			$count.text( count.toLocaleString() );
-			if ( file ) $( '#pl-time' )
-							.data( 'time', total )
-							.text( second2HMS( total ) );
-		} else {
-			if ( file ) {
-				$( '#pl-time' ).data( 'time', 0 ).empty();
-				$count.next().addBack().remove()
-			} else {
-				$count.prev().addBack().remove();
-			}
-		}
-		var poscurent = '';
-		var pos = $li.index() + 1;
-		if ( $li.hasClass( 'active' ) ) {
-			if ( $li.next().is( 'li' ) ) {
-				poscurent = pos;
-				$li.next().addClass( 'active' );
-			} else {
-				poscurent = pos - 1;
-				$li.prev().addClass( 'active' );
-			}
-		}
-		if ( ! V.local ) bash( [ 'mpcremove', pos, poscurent, 'CMD POS CURRENT' ] );
-		$( '#pl-list li .pos' ).slice( pos ).each( ( i, el ) => {
-			$( el ).text( pos );
-			pos++
-		} );
+		bash( [ 'mpcremove', $li.index() + 1, 'CMD POS' ] );
 	}
 	$li.remove();
-	if ( $( '#pl-list li' ).length === 1 ) $( '#previous, #next' ).addClass( 'hide' );
 }
 function playlistSkip() {
 	if ( ! $( '#pl-list li' ).length ) {
@@ -1716,7 +1683,7 @@ function setPlaybackBlankQR() {
 		$.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
 		return
 	}
-		
+	
 	var htmlqr = '';
 	if ( ! S.ip && D.ap ) {
 		htmlqr += '<gr>Access Point:</gr> <wh>'+ D.apconf.ssid +'</wh>'
@@ -1726,6 +1693,7 @@ function setPlaybackBlankQR() {
 	htmlqr   +=  '<gr>http://</gr>'+ ip
 				+ ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
 				+'<div class="code">'+ qrCode( 'http://'+ ip ) +'</div>';
+	$( '#qr' ).remove();
 	$( '#map-cover' ).before( '<div id="qr">'+ htmlqr +'</div>' );
 }
 function setPlaybackStop() {
