@@ -334,6 +334,7 @@ i.map.disabled, .map.disabled i {
 }
 /* ---------------------- middle window ----------------------*/
 #page-playback {
+	max-width: 100%;
 	padding: 120px 0 60px;
 }
 .emptyadd {
@@ -577,7 +578,6 @@ i.map.disabled, .map.disabled i {
 	margin: 0 auto;
 	width: fit-content;
 	min-width: 230px;
-	max-width: 100%;
 }
 .cover {
 	width: 100%;
