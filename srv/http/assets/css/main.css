@@ -577,6 +577,7 @@ i.map.disabled, .map.disabled i {
 	margin: 0 auto;
 	width: fit-content;
 	min-width: 230px;
+	max-width: 100%;
 }
 .cover {
 	width: 100%;
