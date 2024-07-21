@@ -374,7 +374,11 @@ pushRefresh() {
 pushWebsocket() {
 	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
 		data='{ "channel": "'$2'", "data": '${@:3}' }'
-		websocat -B 5000000 ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+		buffer=5000000
+		for i in {1..3}; do # for playlist > 5MB
+			websocat -B $(( buffer * i )) ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+			[[ $? == 0 ]] && break
+		done
 	fi
 }
 radioStatusFile() {
