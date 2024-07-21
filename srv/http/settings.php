@@ -16,17 +16,14 @@ if ( $addonsprogress ) {
 $prefix = '';
 $htmlbar = '';
 if ( $camilla ) {
-	$tabs   = [ 'Filters', 'Mixers', 'Processors', 'Pipeline', 'Devices' ];
+	$tabs   = [ 'filters', 'mixers', 'processors', 'pipeline', 'devices' ];
 	$prefix = 'tab';
 } else if ( $guide ) {
-	$tabs   = [ 'Library', 'Playback', 'Playlist', 'Settings' ];
+	$tabs   = [ 'library', 'playback', 'playlist', 'settings' ];
 } else {
-	$tabs   = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];
+	$tabs   = [ 'features', 'player', 'networks', 'system', 'addons' ];
 }
-foreach ( $tabs as $tab ) {
-	$id      = strtolower( $tab );
-	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).' <a>'.$tab.'</a></div>';
-}
+foreach ( $tabs as $tab ) $htmlbar.= '<div id="'.$prefix.$tab.'">'.i( $tab ).' <a>'.ucfirst( $tab ).'</a></div>';
 if ( $guide ) {
 	echo '
 </div>
