@@ -62,7 +62,7 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		;;
 	mpd )
 		conf=$( grep -Ev '^i|^#' $mpdconf )
-		for file in autoupdate buffer normalization outputbuffer replaygain custom; do
+		for file in autoupdate buffer normalization outputbuffer pllength replaygain custom; do
 			fileconf=$dirmpdconf/$file.conf
 			[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
 		done

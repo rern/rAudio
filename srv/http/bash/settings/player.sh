@@ -22,11 +22,14 @@ autoupdate | ffmpeg | normalization )
 	systemctl restart mpd
 	pushRefresh
 	;;
-buffer | outputbuffer )
+buffer | pllength | outputbuffer )
 	if [[ $ON ]]; then
 		if [[ $CMD == buffer ]]; then
 			data='audio_buffer_size  "'$KB'"'
 			[[ $KB != 4096 ]] && link=1
+		elif [[ $CMD == pllength ]]; then
+			data='max_playlist_length  "'$LENGTH'"'
+			[[ $LENGTH != 16384 ]] && link=1
 		else
 			data='max_output_buffer_size  "'$KB'"'
 			[[ $KB != 8192 ]] && link=1
