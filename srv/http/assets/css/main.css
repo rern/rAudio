@@ -255,6 +255,9 @@ i.map.disabled, .map.disabled i {
 	bottom: 0;
 	background: none;
 }
+#bar-bottom.transparent {
+	display: block !important;
+}
 .content-top,
 .licover,
 #bar-top,
@@ -568,9 +571,6 @@ i.map.disabled, .map.disabled i {
 }
 .transparent {
 	opacity: 0 !important;
-}
-.transparent.hide {
-	display: unset !important;
 }
 .translucent {
 	opacity: 0.6 !important;
