@@ -25,11 +25,11 @@ if ( $camilla ) {
 }
 foreach ( $tabs as $tab ) $htmlbar.= '<div id="'.$prefix.$tab.'">'.i( $tab ).' <a>'.ucfirst( $tab ).'</a></div>';
 if ( $guide ) {
+	$htmlbar.= i( 'back', 'prev' ).i( 'arrow-right', 'next' );
 	echo '
 </div>
 <img id="guideimg" src="/assets/img/guide/1.jpg'.$hash.'">
 ';
-	$htmlbar.= i( 'back', 'prev' ).i( 'arrow-right', 'next' );
 } else if ( ! $addons ) {
 	include 'settings/function.php';
 	include 'settings/'.$page.'.php'; // addons: by addons.js
