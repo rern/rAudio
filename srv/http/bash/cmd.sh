@@ -110,7 +110,8 @@ plClear() {
 	pushData playlist -1
 }
 pushPlaylist() {
-	pushData playlist $( php /srv/http/playlist.php current )
+	[[ $( mpc status %length% ) == 0 ]] && data=-1 || data=$( php /srv/http/playlist.php current )
+	pushData playlist $data
 }
 pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'

@@ -980,6 +980,11 @@ function playlistFilter() {
 	}
 }
 function playlistGet() {
+	if ( ! S.pllength ) {
+		renderPlaylist( -1 );
+		return
+	}
+	
 	if ( $( '#pl-list' ).is( ':empty' ) ) {
 		if ( $( '#bar-top' ).hasClass( 'hide' ) ) banner( 'playlist blink', 'Playlist', 'Get ...', -1 )
 	} else {
