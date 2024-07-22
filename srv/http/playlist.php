@@ -13,12 +13,6 @@ include 'function.php';
 if ( $playlist === 'list' ) {
 	exec( 'mpc lsplaylists'
 		, $lists );
-	$count = count( $lists );
-	if ( ! $count ) {
-		echo json_encode( [ 'count' => 0 ] );
-		exit;
-//----------------------------------------------------------------------------------
-	}	
 	foreach( $lists as $list ) {
 		$each       = ( object )[];
 		$each->name = $list;
@@ -42,6 +36,7 @@ if ( $playlist === 'list' ) {
 </li>';
 	}
 	$indexbar  = indexBar( array_keys( array_flip( $indexes ) ) );
+	$count     = count( $lists );
 	$counthtml = '
 &emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
 <wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
@@ -57,8 +52,6 @@ if ( $playlist === 'list' ) {
 //----------------------------------------------------------------------------------
 }
 
-// current playlist
-// saved playlists: delete, edit, get, list, load, rename, save
 $f      = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 $fL     = count( $f );
 $format = '%'.implode( '%^^%', $f ).'%';
