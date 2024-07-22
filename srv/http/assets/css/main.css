@@ -100,8 +100,8 @@ i.map.disabled, .map.disabled i {
 	color: var( --cgl );
 }
 @keyframes blink { 50% { color: transparent } }
-#library.blink,
-#button-library.blink {
+#bar-bottom i.blink,
+.page-icon.blink {
 	animation: 1.5s infinite linear blink;
 	text-shadow: none;
 }
