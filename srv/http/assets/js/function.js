@@ -980,7 +980,9 @@ function playlistFilter() {
 	}
 }
 function playlistGet() {
-	if ( ! $( '#pl-list' ).is( ':empty' ) ) {
+	if ( $( '#pl-list' ).is( ':empty' ) ) {
+		if ( $( '#bar-top' ).hasClass( 'hide' ) ) banner( 'playlist blink', 'Playlist', 'Get ...', -1 )
+	} else {
 		if ( ! V.playlist ) switchPage( 'playlist' );
 		setPlaylistScroll();
 	}
@@ -989,6 +991,7 @@ function playlistGet() {
 	$( '#playlist, #button-playlist' ).addClass( 'blink' );
 	list( { playlist: 'current' }, data => {
 		renderPlaylist( data );
+		bannerHide();
 		$( '#playlist, #button-playlist' ).removeClass( 'blink' );
 	}, 'json' );
 }
