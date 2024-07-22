@@ -151,7 +151,7 @@ case 'list':
 	if ( count( $lists ) ) htmlList( $lists );
 	break;
 case 'ls':
-	if ( in_Array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
+	if ( in_array( $string, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
 		exec( 'ls -1d /mnt/MPD/'.$string.'/*/ | sed -E -e "s|^/mnt/MPD/(.*)/$|\1|" -e "/NAS.data$/ d"', $ls );
 		htmlDirectory( $ls );
 		exit;
@@ -287,7 +287,7 @@ function htmlDirectory( $lists ) {
 		$path      = $each->path;
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$name      = in_Array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
+		$name      = in_array( $gmode, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode   = strtolower( explode( '/', $path )[ 0 ] );
 			$icon   = imgIcon( rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' ), 'folder' );
