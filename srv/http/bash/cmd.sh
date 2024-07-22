@@ -106,10 +106,11 @@ playerStop() {
 plClear() {
 	mpc -q clear
 	radioStop
-	rm -f $dirsystem/librandom
+	rm -f $dirsystem/librandom $dirshm/playlist
 	pushData playlist -1
 }
 pushPlaylist() {
+	rm -f $dirshm/playlist
 	[[ $( mpc status %length% ) == 0 ]] && data=-1 || data=$( php /srv/http/playlist.php current )
 	pushData playlist $data
 }

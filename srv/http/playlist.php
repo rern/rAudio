@@ -1,10 +1,40 @@
 <?php
+function output( $file = '' ) {
+	global $add, $filecurrent, $html, $counthtml;
+	if ( $file ) {
+		$content   = file_get_contents( $filecurrent );
+		$current   = json_decode( $content );
+		$html      = $current->html;
+		$counthtml = $current->counthtml;
+	}
+	$ces  = exec( 'mpc status %currenttime%^^%songpos%^^%consume%' );
+	$ces  = explode( '^^', $ces );
+	$mmss = explode( ':', $ces[ 0 ] );
+	$data      = json_encode( [
+		  'html'      => $html
+		, 'counthtml' => $counthtml
+		, 'elapsed'   => $mmss[ 0 ] * 60 + $mmss[ 1 ]
+		, 'consume'   => $ces[ 2 ] === 'on'
+		, 'librandom' => file_exists( '/srv/http/data/system/librandom' )
+		, 'song'      => $ces[ 1 ] ? $ces[ 1 ] - 1 : 0
+		, 'add'       => $add
+	], JSON_NUMERIC_CHECK );
+	echo $data;
+	if ( ! $file ) file_put_contents( $filecurrent, $data );
+}
+
 if ( isset( $argv[ 1 ] ) ) {
 	$playlist = $argv[ 1 ];
 	unset( $argv );
 } else {
 	$playlist = $_POST[ 'playlist' ];
 }
+$filecurrent = '/srv/http/data/shm/playlist';
+if ( $playlist === 'current' && file_exists( $filecurrent ) ) {
+	output( 'file' );
+	exit;
+}
+
 $add      = $playlist === 'add' ? true : false;
 $headers  = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
@@ -189,19 +219,4 @@ if ( $countsong ) {
 }
 if ( $countradio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$countradio.'</wh>';
 if ( $countupnp )  $counthtml.= '&emsp;'.i( 'upnp' );
-$time_song = exec( 'mpc status %currenttime%^^%songpos%^^%consume%' );
-$time_song = explode( '^^', $time_song );
-$mmss      = $time_song[ 0 ];
-$mmss      = explode( ':', $mmss );
-$elapsed   = $mmss[ 0 ] * 60 + $mmss[ 1 ];
-$song      = $time_song[ 1 ] - 1;
-if ( $song < 0 ) $song = 0;
-echo json_encode( [
-	  'html'      => $html
-	, 'counthtml' => $counthtml
-	, 'elapsed'   => $elapsed
-	, 'consume'   => $time_song[ 2 ] === 'on'
-	, 'librandom' => file_exists( '/srv/http/data/system/librandom' )
-	, 'song'      => $song
-	, 'add'       => $add
-], JSON_NUMERIC_CHECK );
+output();
