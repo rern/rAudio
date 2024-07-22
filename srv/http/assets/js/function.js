@@ -980,7 +980,17 @@ function playlistFilter() {
 	}
 }
 function playlistGet() {
-	list( { playlist: 'current' }, data => renderPlaylist( data ), 'json' );
+	if ( ! $( '#pl-list' ).is( ':empty' ) ) {
+		if ( ! V.playlist ) switchPage( 'playlist' );
+		setPlaylistScroll();
+	}
+	if ( $( '#playlist' ).hasClass( 'blink' ) ) return
+	
+	$( '#playlist, #button-playlist' ).addClass( 'blink' );
+	list( { playlist: 'current' }, data => {
+		renderPlaylist( data );
+		$( '#playlist, #button-playlist' ).removeClass( 'blink' );
+	}, 'json' );
 }
 function playlistInsert( pos ) {
 	var plname = $( '#savedpl-path .lipath' ).text();

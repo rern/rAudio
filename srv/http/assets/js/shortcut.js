@@ -122,7 +122,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // common key -------------------------------------------------------
 	switch ( key ) {
 		case 'Backspace':
-			if ( V.playback || search ) return
+			if ( V.playback || $search.length ) return
 			
 			$( '#button-'+ ( V.library ? 'lib' : 'pl' ) +'-back:not( .hide )' ).trigger( 'click' );
 			return
