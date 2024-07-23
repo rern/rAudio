@@ -38,20 +38,6 @@ search
 */
 include 'function.php';
 
-$modesort  = $argv[ 1 ] ?? ''; // from cmd-list.sh
-if ( $modesort ) {
-	$lines = file( '/srv/http/data/mpd/'.$modesort, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
-	$sort  = [];
-	foreach( $lines as $line ) $data[] = stripSort( $line ).'^x^'.$line;
-	usort( $data, function( $a, $b ) {
-		return strnatcasecmp( $a, $b );
-	} );
-	$list = '';
-	foreach( $data as $line ) $list .= mb_substr( $line, 0, 1, 'UTF-8' ).'^^'.explode( '^x^', $line )[ 1 ]."\n";
-	file_put_contents( '/srv/http/data/mpd/'.$modesort, $list );
-	exit;
-}
-
 $gmode     = $_POST[ 'gmode' ] ?? null;
 $mode      = $_POST[ 'mode' ] ?? null;
 $string    = $_POST[ 'string' ] ?? null;
