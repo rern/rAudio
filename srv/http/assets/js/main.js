@@ -1689,7 +1689,7 @@ $( '#button-pl-shuffle' ).on( 'click', function() {
 $( '#button-pl-clear' ).on( 'click', function() {
 	if ( S.pllength === 1 ) {
 		bash( [ 'mpcremove' ] );
-		renderPlaylist( -1 );
+		renderPlaylist();
 	} else if ( $( '.pl-remove' ).length ) {
 		$( '.pl-remove' ).remove();
 	} else {
@@ -1716,7 +1716,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			, ok          : () => {
 				bash( [ 'mpcremove' ] );
 				setPlaybackBlank();
-				renderPlaylist( -1 );
+				renderPlaylist();
 			}
 		} );
 	}

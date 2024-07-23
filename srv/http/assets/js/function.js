@@ -981,7 +981,7 @@ function playlistFilter() {
 }
 function playlistGet() {
 	if ( ! S.pllength ) {
-		renderPlaylist( -1 );
+		renderPlaylist();
 		return
 	}
 	
@@ -1334,7 +1334,7 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	V.savedpltrack = false;
 	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
-	if ( data == -1 ) {
+	if ( ! data ) {
 		V.playlisthtml = '';
 		S.consume      = false;
 		$( '#playback-controls, #pl-index, #pl-index1' ).addClass( 'hide' );

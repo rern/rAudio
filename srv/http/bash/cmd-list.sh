@@ -133,7 +133,7 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 	for mode in album albumbyartist albumbyartist-year; do
 		varname=${mode/-}
 		sort -u <<< ${!varname} > $dirmpd/$mode
-		php /srv/http/function.php $mode
+		php /srv/http/library.php $mode
 	done
 else
 	rm -f $dirmpd/{album,albumbyartist,albumbyartist-year}
@@ -157,7 +157,7 @@ for mode in $modenonalbum; do
 	data=$( mpc list $mode | awk NF )
 	if [[ $data ]]; then
 		echo "$data" > $dirmpd/$mode
-		php /srv/http/function.php $mode
+		php /srv/http/library.php $mode
 	else
 		rm -f $dirmpd/$mode
 	fi
