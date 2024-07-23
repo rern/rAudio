@@ -85,7 +85,7 @@ else
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
 , "control"      : "'$mixer'"
-, "counts"       : '$( < $dirmpd/counts )'
+, "counts"       : '$( getContent $dirmpd/counts '{}'  )'
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
