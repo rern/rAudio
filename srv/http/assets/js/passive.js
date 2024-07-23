@@ -303,11 +303,11 @@ function psPlaylist( data ) {
 	if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 	
 	if ( 'bl1nk' in data ) {
-		$( '#playlist, #button-playlist' ).addClass( 'blink' );
+		playlistBlink();
 		return
 	}
 	
-	$( '#playlist, #button-playlist' ).removeClass( 'blink' );
+	playlistBlink( 'off' );
 	if ( 'blank' in data ) {
 		setPlaybackBlank();
 		renderPlaylist();

@@ -950,6 +950,14 @@ function playbackStatusGet( withdisplay ) {
 		}
 	} );
 }
+function playlistBlink( off ) {
+	if ( off ) {
+		clearTimeout( V.timeoutpl );
+		$( '#playlist, #button-playlist' ).removeClass( 'blink' );
+	} else {
+		V.timeoutpl = setTimeout( () => $( '#playlist, #button-playlist' ).addClass( 'blink' ), 1000 );
+	}
+}
 function playlistFilter() {
 	var keyword = $( '#pl-search-input' ).val();
 	var regex   = new RegExp( keyword, 'i' );
@@ -991,13 +999,11 @@ function playlistGet() {
 		if ( ! V.playlist ) switchPage( 'playlist' );
 		setPlaylistScroll();
 	}
-	if ( $( '#playlist' ).hasClass( 'blink' ) ) return
-	
-	$( '#playlist, #button-playlist' ).addClass( 'blink' );
+	playlistBlink();
 	list( { playlist: 'current' }, data => {
+		playlistBlink( 'off' );
 		renderPlaylist( data );
 		bannerHide();
-		$( '#playlist, #button-playlist' ).removeClass( 'blink' );
 	}, 'json' );
 }
 function playlistInsert( pos ) {
