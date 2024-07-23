@@ -107,12 +107,12 @@ plClear() {
 	mpc -q clear
 	radioStop
 	rm -f $dirsystem/librandom $dirshm/playlist
-	pushData playlist -1
+	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
 }
 pushPlaylist() {
-	pushData playlist 1
+	pushData playlist '{ "blink": true }'
 	rm -f $dirshm/playlist
-	[[ $( mpc status %length% ) == 0 ]] && data=-1 || data=$( php /srv/http/playlist.php current )
+	[[ $( mpc status %length% ) == 0 ]] && data='{ "blank": true }' || data=$( php /srv/http/playlist.php current )
 	pushData playlist $data
 }
 pushRadioList() {
