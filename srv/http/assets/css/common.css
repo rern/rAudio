@@ -328,8 +328,10 @@ body {
 	right: 0;
 	width: 40px;
 	height: 40px;
-	border-left: 1px solid var( --cg );
 	z-index: 110;
+}
+#debug.active {
+	background : #000;
 }
 codered  {
 	padding : 0px 5px 3px 5px;

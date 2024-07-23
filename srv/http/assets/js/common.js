@@ -1295,7 +1295,7 @@ $( '#debug' ).press( function() {
 	if ( V.debug ) {
 		V.debug = false;
 		refreshData();
-		$( '#debug' ).removeClass( 'bgm' );
+		$( '#debug' ).removeClass( 'active' );
 		console.log( '\x1B[36mDebug:\x1B[0m Disabled' );
 		return
 	}
@@ -1316,7 +1316,7 @@ $( '#debug' ).press( function() {
 					type = $( this ).val();
 					if ( type === 'debug' ) {
 						V.debug = true;
-						$( '#debug' ).addClass( 'bgm' );
+						$( '#debug' ).addClass( 'active' );
 						console.log( '\x1B[36mDebug:\x1B[0m Data to server blocked' );
 						$( '#infoX' ).trigger( 'click' );
 					} else {

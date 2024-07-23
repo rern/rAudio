@@ -87,9 +87,6 @@
 .sub.nohover:hover {
 	background-color: var( --cg ) !important;
 }
-.submenu.bgm:hover {
-	background-color: var( --cml ) !important;
-}
 
 /* cursor *********************************************************/
 button,

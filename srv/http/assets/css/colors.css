@@ -42,7 +42,6 @@ red, .red { color : #f00 !important }
 yl,  .yl  { color : #ff0 !important }
 wh,  .wh  { color : var( --cw ) !important }
 
-.bgm      { background       : var( --cm ) !important }
 .bgr      { background       : var( --cgd ) !important }
 .bgr60    { background-color : var( --cg60 ) !important }
 

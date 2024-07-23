@@ -31,7 +31,7 @@ if ( isset( $argv[ 1 ] ) ) {
 }
 $filecurrent = '/srv/http/data/shm/playlist';
 if ( $playlist === 'current' && file_exists( $filecurrent ) ) {
-	output( 'file' );
+	output( 'filecurrent' );
 	exit;
 }
 
@@ -98,11 +98,11 @@ $countradio = 0;
 $countsong  = 0;
 $counttime  = 0;
 $countupnp  = 0;
-$i          = 0;
+$pos        = 0;
 $sec        = 0;
 $html       = '';
 foreach( $lists as $list ) {
-	$i++;
+	$pos++;
 	$v = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
 	$fileheader = strtolower( substr( $file, 0, 4 ) );
@@ -157,7 +157,7 @@ foreach( $lists as $list ) {
 <a class="lipath">'.$file.'</a>
 '.$icon.'<div class="li1"><span class="name">'.$title.'</span>
 <span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></span></div>
-<div class="li2"><a class="pos">'.$i.'</a> • <span class="name">'.$li2.'</span></div>
+<div class="li2"><a class="pos">'.$pos.'</a> • <span class="name">'.$li2.'</span></div>
 </li>';
 		$countsong++;
 		$counttime += $sec;
@@ -173,7 +173,7 @@ foreach( $lists as $list ) {
 '.i( 'upnp', 'filesavedpl' ).'
 <div class="li1"><span class="name">'.$title.'</span>
 <span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-<div class="li2"><a class="pos">'.$i.'</a> • <span class="name">'.$li2.'</span></div>
+<div class="li2"><a class="pos">'.$pos.'</a> • <span class="name">'.$li2.'</span></div>
 </li>';
 		$countupnp++;
 	} else {
@@ -205,7 +205,7 @@ foreach( $lists as $list ) {
 <a class="lipath">'.$path.'</a>
 '.$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><span class="name">'.( $notsaved ? '. . .' : $stationname ).'</span>
 <span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-<div class="li2"><a class="pos">'.$i.'</a> • <span class="stationname hide">'.$namenotsaved.'</span><span class="name">'.$url.'</span></div>
+<div class="li2"><a class="pos">'.$pos.'</a> • <span class="stationname hide">'.$namenotsaved.'</span><span class="name">'.$url.'</span></div>
 </li>';
 		$countradio++;
 	}
