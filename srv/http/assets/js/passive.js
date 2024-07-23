@@ -267,7 +267,7 @@ function psMpdUpdate( data ) {
 				renderLibraryList( data );
 			} );
 		} else {
-			C = data.done;
+			$.each( data.done, ( k, v ) => C[ k ] = v );
 			renderLibraryCounts();
 		}
 		$( '#lib-list li' ).removeClass( 'nodata' );
