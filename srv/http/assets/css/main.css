@@ -1248,6 +1248,8 @@ i.map.disabled, .map.disabled i {
 	width: 36px;
 }
 #lib-mode-list gr {
+	position: absolute;
+	top: 45px;
 	margin-left: 8px;
 	font-size: 14px;
 }
