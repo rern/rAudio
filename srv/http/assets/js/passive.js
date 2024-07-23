@@ -302,6 +302,12 @@ function psOrder( data ) {
 function psPlaylist( data ) {
 	if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 	
+	if ( data === 1 ) {
+		$( '#playlist, #button-playlist' ).addClass( 'blink' );
+		return
+	}
+	
+	$( '#playlist, #button-playlist' ).removeClass( 'blink' );
 	if ( data == -1 ) {
 		setPlaybackBlank();
 		renderPlaylist( -1 );

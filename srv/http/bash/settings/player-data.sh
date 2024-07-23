@@ -58,7 +58,7 @@ data='
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volume"           : '$volume
 
-for key in buffer outputbuffer pllength; do
+for key in buffer outputbuffer; do
 	data+='
 , "'$key'"          : '$( exists $dirmpdconf/$key.conf )'
 , "'$key'conf"      : '$( cut -d'"' -f2 $dirmpdconf/conf/$key.conf )

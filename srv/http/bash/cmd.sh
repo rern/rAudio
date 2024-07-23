@@ -110,6 +110,7 @@ plClear() {
 	pushData playlist -1
 }
 pushPlaylist() {
+	pushData playlist 1
 	rm -f $dirshm/playlist
 	[[ $( mpc status %length% ) == 0 ]] && data=-1 || data=$( php /srv/http/playlist.php current )
 	pushData playlist $data
@@ -688,6 +689,9 @@ order )
 	;;
 pladdrandom )
 	plAddRandom
+	;;
+plcacheremove )
+	rm -f $dirshm/playlist*
 	;;
 playerstart )
 	playerStart

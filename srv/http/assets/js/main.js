@@ -468,6 +468,8 @@ $( '#playlist, #button-playlist' ).on( 'click', function() {
 	} else {
 		V.plhome ? playlistGet() : switchPage( 'playlist' );
 	}
+} ).press( function() {
+	bash( [ 'plcacheremove' ] );
 } );
 $( '#bar-top' ).on( 'click', function( e ) {
 	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide ' );

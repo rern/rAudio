@@ -191,19 +191,6 @@ $( '#setting-outputbuffer' ).on( 'click', function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-pllength' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, message      : '<c>max_playlist_length</c>'
-		, list         : [ 'Song', 'number', { updn: { step: 1024, min: 16384, max: 32768 } } ]
-		, boxwidth     : 110
-		, values       : { LENGTH: S.pllengthconf }
-		, checkchanged : S.pllength
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-} );
 $( '#setting-soxr' ).on( 'click', function() {
 	S.soxrquality === 'custom' ? infoSoxrCustom() : infoSoxr();
 } );

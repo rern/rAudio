@@ -1,46 +1,40 @@
 <?php
-function output( $file = '' ) {
-	global $add, $filecurrent, $html, $counthtml;
-	if ( $file ) {
-		$content   = file_get_contents( $filecurrent );
-		$current   = json_decode( $content );
-		$html      = $current->html;
-		$counthtml = $current->counthtml;
+$type         = $argv[ 1 ] ?? $_POST[ 'playlist' ];
+$fileplaylist = '/srv/http/data/shm/playlist';
+
+function output( $fromfile = '' ) {
+	global $counthtml, $fileplaylist, $html, $type;
+	if ( $fromfile ) {
+		$html      = file_get_contents( $fileplaylist );
+		$counthtml = file_get_contents( $fileplaylist.'count' );
 	}
 	$ces  = exec( 'mpc status %currenttime%^^%songpos%^^%consume%' );
 	$ces  = explode( '^^', $ces );
 	$mmss = explode( ':', $ces[ 0 ] );
-	$data      = json_encode( [
+	$data = json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml
 		, 'elapsed'   => $mmss[ 0 ] * 60 + $mmss[ 1 ]
 		, 'consume'   => $ces[ 2 ] === 'on'
 		, 'librandom' => file_exists( '/srv/http/data/system/librandom' )
 		, 'song'      => $ces[ 1 ] ? $ces[ 1 ] - 1 : 0
-		, 'add'       => $add
+		, 'add'       => $type === 'add'
 	], JSON_NUMERIC_CHECK );
 	echo $data;
-	if ( ! $file ) file_put_contents( $filecurrent, $data );
+	if ( ! $fromfile ) {
+		file_put_contents( $fileplaylist, $html );
+		file_put_contents( $fileplaylist.'count', $counthtml );
+	}
 }
 
-if ( isset( $argv[ 1 ] ) ) {
-	$playlist = $argv[ 1 ];
-	unset( $argv );
-} else {
-	$playlist = $_POST[ 'playlist' ];
-}
-$filecurrent = '/srv/http/data/shm/playlist';
-if ( $playlist === 'current' && file_exists( $filecurrent ) ) {
-	output( 'filecurrent' );
+if ( $type === 'current' && file_exists( $fileplaylist ) ) {
+	output( 'fromfile' );
 	exit;
 }
 
-$add      = $playlist === 'add' ? true : false;
-$headers  = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
-
 include 'function.php';
 
-if ( $playlist === 'list' ) {
+if ( $type === 'list' ) {
 	exec( 'mpc lsplaylists'
 		, $lists );
 	foreach( $lists as $list ) {
@@ -86,7 +80,7 @@ $f      = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ]
 $fL     = count( $f );
 $format = '%'.implode( '%^^%', $f ).'%';
 $cmd = 'mpc -f '.$format.' playlist';
-if ( $playlist === 'get' ) {
+if ( $type === 'get' ) {
 	$name = $_POST[ 'name' ];
 	$cmd .= ' "'.str_replace( '"', '\"', $name ).'"';
 } else {
@@ -105,12 +99,14 @@ foreach( $lists as $list ) {
 	$pos++;
 	$v = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
-	$fileheader = strtolower( substr( $file, 0, 4 ) );
-	if ( ! in_array( $fileheader, $headers ) ) {
+	$header = strtolower( substr( $file, 0, 4 ) );
+	if ( ! in_array( $header, [ 'http', 'rtmp', 'rtp:', 'rtsp' ] ) ) {
 		$sec       = HMS2second( $time );
-		$track     = preg_replace( '/^#*0*/', '', $list[ 6 ] );
 		$li2       = '';
-		if ( $track ) $li2.= '<a class="track">'.$track.'</a> - ';
+		if ( $track ) {
+			$track = preg_replace( '/^#*0*/', '', $track );
+			$li2  .= '<a class="track">'.$track.'</a> - ';
+		}
 		$artist    = $artist ?: $albumartist;
 		$album     = $album;
 		if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
@@ -130,7 +126,7 @@ foreach( $lists as $list ) {
 				$cdlist = file_exists( $cdfile ) ? file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES ) : false;
 			}
 			if ( $cdlist ) {
-				$track   = substr( $each->file, 8 );
+				$track   = substr( $file, 8 );
 				$data    = $cdlist[ $track - 1 ];
 				$audiocd = explode( '^', $data );
 				$artist  = $audiocd[ 0 ];
@@ -177,7 +173,6 @@ foreach( $lists as $list ) {
 </li>';
 		$countupnp++;
 	} else {
-		$urlname       = str_replace( '/', '|', $value );
 		if ( str_contains( $file, '://' ) ) { // webradio / dabradio
 			$urlname     = str_replace( '/', '|', $file );
 			$type        = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';

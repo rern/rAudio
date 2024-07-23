@@ -14,7 +14,6 @@ $id_data = [
 	, 'normalization' => [ 'label' => 'Normalization',         'sub' => 'volume_normalization', 'setting' => false ]
 	, 'novolume'      => [ 'label' => 'No Volume',                                              'setting' => 'none' ]
 	, 'outputbuffer'  => [ 'label' => 'Buffer - Output',       'sub' => 'max_output_buffer' ]
-	, 'pllength'      => [ 'label' => 'Playlist Length',       'sub' => 'max_playlist_length' ]
 	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
@@ -184,13 +183,6 @@ EOF
 	, [
 		  'id'       => 'autoupdate'
 		, 'help'     => 'Automatic update MPD database when files changed.'
-	]
-	, [
-		  'id'       => 'pllength'
-		, 'help'     => <<< EOF
-Increase to accommodate very large Playlist.
-(default: <c>16384</c> songs)
-EOF
 	]
 	, [
 		 'id'        => 'soxr'
