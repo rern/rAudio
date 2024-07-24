@@ -47,13 +47,13 @@ if ( ! $query ) { // sort - from cmd-list.sh
 		if ( ! file_exists( $file ) ) continue;
 		
 		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
-		$sort  = [];
-		foreach( $lines as $line ) $data[] = stripSort( $line ).'^x^'.$line;
+		$data  = [];
+		foreach( $lines as $l ) $data[] = stripSort( $l ).'^x^'.$l;
 		usort( $data, function( $a, $b ) {
 			return strnatcasecmp( $a, $b );
 		} );
 		$list = '';
-		foreach( $data as $line ) $list .= mb_substr( $line, 0, 1, 'UTF-8' ).'^^'.explode( '^x^', $line )[ 1 ]."\n";
+		foreach( $data as $d ) $list .= mb_substr( $d, 0, 1, 'UTF-8' ).'^^'.explode( '^x^', $d )[ 1 ]."\n";
 		file_put_contents( $file, $list );
 	}
 	exit;
