@@ -96,8 +96,8 @@ case 'find':
 	}
 	break;
 case 'home':
-	$modes    = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest'
-				, 'NAS', 'SD', 'USB', 'Playlists', 'Web Radio', 'DAB Radio' ];
+	$modes    = [ 'Album',  'Artist', 'Album Artist', 'Composer',  'Conductor', 'Date',      'Genre'
+				, 'Latest', 'NAS',    'SD',           'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
 	$htmlmode = '';
 	foreach( $modes as $mode ) {
 		$lipath   = str_replace( ' ', '', $mode );
@@ -116,7 +116,7 @@ case 'home':
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
 			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
-			$prefix = substr( $bkpath, 0, 4 );
+			$prefix   = substr( $bkpath, 0, 4 );
 			if ( in_array( $prefix, [ 'http', 'rtsp' ] ) ) {
 				$bkradio  = 'bkradio';
 				$dirradio = $prefix === 'http' ? 'webradio' : 'dabradio';
@@ -330,8 +330,8 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		$val0       = $each->$key0;
 		if ( ! $val0 ) continue;
 		
-		$icon = '<i class="li-icon i-album" data-menu="'.$GMODE.'"></i>';
-		$name = '<a class="name">'.$val0.'</a>';
+		$icon      = '<i class="li-icon i-album" data-menu="'.$GMODE.'"></i>';
+		$name      = '<a class="name">'.$val0.'</a>';
 		if ( ! $modeartist && $key1 ) {
 			$val1 = $each->$key1;
 			$name.= '<gr> • </gr>'.$val1;
@@ -345,7 +345,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	'.$icon.'<span class="single">'.$name.'</span>
 </li>';
 	}
-	$html    .= indexBar( $indexes );
+	$html          .= indexBar( $indexes );
 	echo $html;
 }
 function htmlList( $lists ) { // non-file 'list' command
@@ -417,7 +417,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 				$html     .=
 '<li class="dir"'.$dataindex.'>';
 			}
-			$html    .=
+			$html.=
 	imgIcon( '/data/'.$GMODE.'/'.$subdir.'/thumb.jpg', 'wrdir' ).'
 	<a class="lipath">'.$path.$subdir.'</a>
 	<span class="single name">'.$subdir.'</span>
@@ -471,7 +471,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	global $GMODE, $html;
 	$searchmode = $filemode === 'search';
 	if ( ! $searchmode ) $html = str_replace( '">', ' track">' , $html );
-	$fL = count( $f );
+	$fL         = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
 		
@@ -507,7 +507,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$artist = $albumartist ?: '';
 		$iconartist   = 'albumartist';
 		if ( ! $artist ) {
-			$artist = $each0->artist;
+			$artist     = $each0->artist;
 			$iconartist = 'artist';
 		}
 		$hidealbum     = $album && $GMODE !== 'album' ? '' : ' hide';
