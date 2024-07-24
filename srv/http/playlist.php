@@ -46,9 +46,9 @@ if ( $TYPE === 'list' ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$html    = '<ul id="pl-savedlist" class="list">';
-	$index0  = '';
-	$indexes = [];
+	$html      = '<ul id="pl-savedlist" class="list">';
+	$index0    = '';
+	$indexes   = [];
 	foreach( $array as $each ) {
 		$dataindex = dataIndex( $each->sort );
 		$name      = $each->name;
@@ -97,7 +97,7 @@ $sec        = 0;
 $html       = '';
 foreach( $lists as $list ) {
 	$pos++;
-	$v = explode( '^^', $list );
+	$v      = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
 	$header = strtolower( substr( $file, 0, 4 ) );
 	if ( ! in_array( $header, [ 'http', 'rtmp', 'rtp:', 'rtsp' ] ) ) {
@@ -147,8 +147,8 @@ foreach( $lists as $list ) {
 			$thumbsrc  = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
 			$icon      = 'music';
 		}
-		$icon = imgIcon( $thumbsrc, 'filesavedpl', $icon );
-		$html    .=
+		$icon      = imgIcon( $thumbsrc, 'filesavedpl', $icon );
+		$html     .=
 '<li class="'.$class.'" '.$datatrack.'>
 <a class="lipath">'.$file.'</a>
 '.$icon.'<div class="li1"><span class="name">'.$title.'</span>
@@ -162,7 +162,7 @@ foreach( $lists as $list ) {
 		$artist = $artist;
 		$album  = $album;
 		if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
-		if ( $album ) $li2.= '<a class="album">'.$album.'</a>';
+		if ( $album )  $li2.= '<a class="album">'.$album.'</a>';
 		if ( ! $artist && ! $album ) $li2.= $file;
 		$html  .=
 '<li class="upnp">
