@@ -60,8 +60,8 @@ function indexBar( $indexes ) {
 		$i++;
 	}
 	return '</ul>
-<div id="lib-index" class="index index0">'.$indexbar.'</div>
-<div id="lib-index1" class="index index1">'.$indexbar1.'</div>';
+<div class="index index0">'.$indexbar.'</div>
+<div class="index index1">'.$indexbar1.'</div>';
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );

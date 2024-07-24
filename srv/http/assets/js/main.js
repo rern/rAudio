@@ -1592,7 +1592,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	query.modetitle = modetitle;
 	if ( query.query !== 'ls' || ! modefile ) V.query.push( query );
 } );
-$( '.page' ).on( 'click', '.index a.indexed', function() {
+$( '.page' ).on( 'click', 'a.indexed', function() {
 	var index = $( this ).text();
 	if ( index === '#' ) {
 		var scrollT = 0;
@@ -1848,7 +1848,7 @@ $( '#savedpl-path' ).on( 'click', '.savedlist', function() {
 	$menu.find( '.plrename, .pldelete' ).addClass( 'hide' );
 	contextmenuScroll( $menu, 88 );
 } );
-$( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
+$( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	e.stopPropagation();
 	var $target  = $( e.target );
 	var $this    = $( this );
@@ -1869,7 +1869,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 			var $menu = $( '#menu-'+ menu );
 			V.list    = {};
 			V.list.li = $this; // for contextmenu
-			$( '#pl-savedlist li' ).removeClass( 'active' );
+			$( '#pl-savedlist li.active' ).removeClass( 'active' );
 			if ( V.savedpl ) {
 				V.list.name = $this.find( '.plname' ).text().trim();
 				V.list.path = V.list.name;

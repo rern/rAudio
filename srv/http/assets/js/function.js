@@ -1155,7 +1155,7 @@ function renderLibrary() { // library home
 		$( '#lib-mode-list a.label' ).hide();
 		$( '#lib-mode-list' ).addClass( 'nolabel' );
 	}
-	$( '#lib-list, #page-library .index' ).addClass( 'hide' );
+	$( '#lib-list, #page-library .index' ).remove();
 	$( '#lib-mode-list' )
 		.css( 'padding-top', $bartop.is( ':visible' ) ? '' : 50 )
 		.removeClass( 'hide' );
@@ -1229,7 +1229,7 @@ function renderLibraryList( data ) { // V.librarylist
 						.html( htmlpath )
 						.removeClass( 'hide' );
 	V.librarylisthtml = data.html;
-	$( '#lib-list, #lib-index, #lib-index1' ).remove();
+	$( '#lib-list, #page-library .index' ).remove();
 	if ( ! data.html ) return // empty radio
 	
 	var html = htmlHash( data.html );
@@ -1344,7 +1344,8 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	if ( ! data ) {
 		V.playlisthtml = '';
 		S.consume      = false;
-		$( '#playback-controls, #pl-index, #pl-index1' ).addClass( 'hide' );
+		$( '#playback-controls' ).addClass( 'hide' );
+		$( '#pl-savedlist, #page-playlist .index' ).remove();
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
 		$( '.pllength' ).addClass( 'disabled' );
 		$( '#button-pl-consume' ).removeClass( 'bl' );
@@ -1384,11 +1385,9 @@ function renderPlaylistPadding() {
 function renderPlaylistSet() {
 	$( '.emptyadd, #menu-plaction' ).addClass( 'hide' );
 	if ( V.plhome ) {
-		$( '#pl-index, #pl-index1' ).addClass( 'hide' );
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).addClass( 'hide' );
 		$( '#pl-list, #pl-path, #pl-manage, #button-pl-playlists' ).removeClass( 'hide' );
 	} else {
-		$( '#pl-index, #pl-index1' ).toggleClass( 'hide', V.savedpltrack );
 		$( '#pl-savedlist' ).css( 'width', V.savedpl ? '' : '100%' );
 		$( '#pl-list, #pl-path, #pl-manage, #pl-search, #button-pl-playlists' ).addClass( 'hide' );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
@@ -1403,7 +1402,7 @@ function renderSavedPl( data ) { // V.savedpl - list of saved playlists
 	$( '#savedpl-path' ).html( data.counthtml );
 	var barvisible = $bartop.is( ':visible' );
 	var html       = htmlHash( data.html );
-	$( '#pl-savedlist, #pl-index, #pl-index1' ).remove();
+	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	$( '#pl-list' ).after( html ).promise().done( renderPlaylistSet );
 }
 function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
@@ -1412,6 +1411,7 @@ function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
 	V.savedpltrack = true;
 	menuHide();
 	list( { playlist: 'get', name: name }, function( data ) {
+		$( '#page-playlist .index' ).remove();
 		$( '#savedpl-path' ).html( data.counthtml );
 		var html = htmlHash( data.html );
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
