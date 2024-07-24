@@ -298,11 +298,7 @@ function htmlDirectory( $lists ) {
 '<a class="lipath">'.$path.'</a>
 <span class="single name">'.$name.'</span>
 </li>';
-		if ( $dir ) {
-			$html .= $htmlli;
-		} else {
-			$htmlf.= $htmlli;
-		}
+		$dir ? $html.= $htmlli : $htmlf.= $htmlli;
 	}
 	$html .= $htmlf.indexBar( $indexes );
 	echo $html;
