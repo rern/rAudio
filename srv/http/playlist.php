@@ -1,9 +1,9 @@
 <?php
-$type         = $_POST[ 'playlist' ] ?? $argv[ 1 ];
+$TYPE         = $_POST[ 'playlist' ] ?? $argv[ 1 ];
 $fileplaylist = '/srv/http/data/shm/playlist';
 
 function output( $fromfile = '' ) {
-	global $counthtml, $fileplaylist, $html, $type;
+	global $counthtml, $fileplaylist, $html, $TYPE;
 	if ( $fromfile ) {
 		$html      = file_get_contents( $fileplaylist );
 		$counthtml = file_get_contents( $fileplaylist.'count' );
@@ -18,23 +18,23 @@ function output( $fromfile = '' ) {
 		, 'consume'   => $ces[ 2 ] === 'on'
 		, 'librandom' => file_exists( '/srv/http/data/system/librandom' )
 		, 'song'      => $ces[ 1 ] ? $ces[ 1 ] - 1 : 0
-		, 'add'       => $type === 'add'
+		, 'add'       => $TYPE === 'add'
 	], JSON_NUMERIC_CHECK );
 	echo $data;
-	if ( ! $fromfile && $type !== 'get' ) {
+	if ( ! $fromfile && $TYPE !== 'get' ) {
 		file_put_contents( $fileplaylist, $html );
 		file_put_contents( $fileplaylist.'count', $counthtml );
 	}
 }
 
-if ( $type === 'current' && file_exists( $fileplaylist ) ) {
+if ( $TYPE === 'current' && file_exists( $fileplaylist ) ) {
 	output( 'fromfile' );
 	exit;
 }
 
 include 'function.php';
 
-if ( $type === 'list' ) {
+if ( $TYPE === 'list' ) {
 	exec( 'mpc lsplaylists'
 		, $lists );
 	foreach( $lists as $list ) {
@@ -80,7 +80,7 @@ $f      = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ]
 $fL     = count( $f );
 $format = '%'.implode( '%^^%', $f ).'%';
 $cmd = 'mpc -f '.$format.' playlist';
-if ( $type === 'get' ) {
+if ( $TYPE === 'get' ) {
 	$name = $_POST[ 'name' ];
 	$cmd .= ' "'.str_replace( '"', '\"', $name ).'"';
 } else {
