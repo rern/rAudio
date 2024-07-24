@@ -1341,11 +1341,11 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	V.savedpltrack = false;
 	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
+	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	if ( ! data ) {
 		V.playlisthtml = '';
 		S.consume      = false;
 		$( '#playback-controls' ).addClass( 'hide' );
-		$( '#pl-savedlist, #page-playlist .index' ).remove();
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
 		$( '.pllength' ).addClass( 'disabled' );
 		$( '#button-pl-consume' ).removeClass( 'bl' );

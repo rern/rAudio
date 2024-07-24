@@ -21,7 +21,7 @@ function output( $fromfile = '' ) {
 		, 'add'       => $type === 'add'
 	], JSON_NUMERIC_CHECK );
 	echo $data;
-	if ( ! $fromfile ) {
+	if ( ! $fromfile && $type !== 'get' ) {
 		file_put_contents( $fileplaylist, $html );
 		file_put_contents( $fileplaylist.'count', $counthtml );
 	}
@@ -175,9 +175,9 @@ foreach( $lists as $list ) {
 	} else {
 		if ( str_contains( $file, '://' ) ) { // webradio / dabradio
 			$urlname     = str_replace( '/', '|', $file );
-			$type        = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
-			$fileradio   = '/srv/http/data/'.$type.'/'.$urlname;
-			if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$type.'/ -name "'.$urlname.'" | head -1' );
+			$radio       = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
+			$fileradio   = '/srv/http/data/'.$radio.'/'.$urlname;
+			if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$radio.'/ -name "'.$urlname.'" | head -1' );
 			$stationname = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 		} else {
 			$urlname     = str_replace( '#', '%23', $urlname );
@@ -185,7 +185,7 @@ foreach( $lists as $list ) {
 		}
 		if ( $stationname !== '' ) {
 			$notsaved    = 0;
-			$thumbsrc    = '/data/'.$type.'/img/'.$urlname.'-thumb.jpg';
+			$thumbsrc    = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
 			$icon        = imgIcon( $thumbsrc, 'filesavedpl', 'webradio' );
 		} else {
 			$notsaved    = 1;
