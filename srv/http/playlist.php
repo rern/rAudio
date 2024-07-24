@@ -1,5 +1,5 @@
 <?php
-$type         = $argv[ 1 ] ?? $_POST[ 'playlist' ];
+$type         = $_POST[ 'playlist' ] ?? $argv[ 1 ];
 $fileplaylist = '/srv/http/data/shm/playlist';
 
 function output( $fromfile = '' ) {

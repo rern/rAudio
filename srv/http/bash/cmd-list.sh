@@ -161,7 +161,7 @@ for mode in $modenonalbum; do
 	fi
 done
 
-php /srv/http/library.php # sort
+php /srv/http/cmd.php sort
 
 for mode in $modes; do
 	[[ $mode == albumbyartist-year ]] && key=albumyear || key=$mode

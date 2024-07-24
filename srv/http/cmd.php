@@ -1,11 +1,12 @@
 <?php
+$cmd         = $_POST[ 'cmd' ] ?? $argv[ 1 ];
 $sudo        = '/usr/bin/sudo ';
 $dirbash     = $sudo.'/srv/http/bash/';
 $dirsettings = $dirbash.'settings/';
 $dirdata     = '/srv/http/data/';
 $dirshm      = $dirdata.'shm/';
 
-switch( $_POST[ 'cmd' ] ) {
+switch( $cmd ) {
 
 case 'bash':
 	$cmd    = $dirbash.$_POST[ 'filesh' ];
@@ -70,6 +71,24 @@ case 'login': // $.post from features.js
 case 'logout': // $.post from main.js
 	session_start();
 	session_destroy();
+	break;
+case 'sort': // from cmd-list.sh
+	include 'function.php';
+	$modes = [ 'album', 'albumartist', 'albumbyartist-year', 'artist', 'composer', 'conductor', 'date', 'genre', 'latest' ];
+	foreach( $modes as $mode ) {
+		$file = '/srv/http/data/mpd/'.$mode;
+		if ( ! file_exists( $file ) ) continue;
+		
+		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+		$data  = [];
+		foreach( $lines as $l ) $data[] = stripSort( $l ).'^x^'.$l;
+		usort( $data, function( $a, $b ) {
+			return strnatcasecmp( $a, $b );
+		} );
+		$list = '';
+		foreach( $data as $d ) $list .= mb_substr( $d, 0, 1, 'UTF-8' ).'^^'.explode( '^x^', $d )[ 1 ]."\n";
+		file_put_contents( $file, $list );
+	}
 	break;
 case 'startupready':
 	if ( file_exists( $dirshm.'startup' ) ) echo 1;

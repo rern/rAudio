@@ -38,27 +38,7 @@ search
 */
 include 'function.php';
 
-$query     = $_POST[ 'query' ] ?? '';
-
-if ( ! $query ) { // sort - from cmd-list.sh
-	$modes = [ 'album', 'albumartist', 'albumbyartist-year', 'artist', 'composer', 'conductor', 'date', 'genre', 'latest' ];
-	foreach( $modes as $mode ) {
-		$file = '/srv/http/data/mpd/'.$mode;
-		if ( ! file_exists( $file ) ) continue;
-		
-		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
-		$data  = [];
-		foreach( $lines as $l ) $data[] = stripSort( $l ).'^x^'.$l;
-		usort( $data, function( $a, $b ) {
-			return strnatcasecmp( $a, $b );
-		} );
-		$list = '';
-		foreach( $data as $d ) $list .= mb_substr( $d, 0, 1, 'UTF-8' ).'^^'.explode( '^x^', $d )[ 1 ]."\n";
-		file_put_contents( $file, $list );
-	}
-	exit;
-}
-
+$query     = $_POST[ 'query' ];
 $gmode     = $_POST[ 'gmode' ] ?? null;
 $mode      = $_POST[ 'mode' ] ?? null;
 $string    = $_POST[ 'string' ] ?? null;
