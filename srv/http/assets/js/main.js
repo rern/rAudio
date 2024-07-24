@@ -1125,19 +1125,10 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 	if ( ! keyword ) {
 		$( '#lib-search-close' ).trigger( 'click' );
 	} else {
-		if ( V.mode.slice( -5 ) === 'radio' ) {
-			var query = {
-				  query  : V.mode
-				, string : keyword
-				, mode   : 'search'
-			}
-		} else {
-			var query = {
-				  query  : 'search'
-				, string : keyword
-				, gmode  : V.mode
-				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
-			}
+		var query = {
+			  query  : 'search'
+			, string : keyword
+			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 		}
 		list( query, function( data ) {
 			if ( data !== -1 ) {

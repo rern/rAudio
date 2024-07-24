@@ -42,7 +42,7 @@ $query     = $_POST[ 'query' ];
 $gmode     = $_POST[ 'gmode' ] ?? null;
 $mode      = $_POST[ 'mode' ] ?? null;
 $string    = $_POST[ 'string' ] ?? null;
-$string    = escape( $string );
+if ( $string ) $string = escape( $string );
 $formatall = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'file', 'genre', 'time', 'title', 'track' ];
 $f         = $_POST[ 'format' ] ?? $formatall;
 $format    = '%'.implode( '%^^%', $f ).'%';
@@ -269,6 +269,7 @@ case 'track': // for tag editor
 	for ( $i = 0; $i < $fL; $i++ ) $tag[ strtoupper( $f[ $i ] ) ] = $array[ $i ];
 	echo json_encode( $tag, JSON_NUMERIC_CHECK );
 	break;
+	
 }
 
 function escape( $string ) { // for passing bash arguments

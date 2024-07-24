@@ -1204,7 +1204,6 @@ function renderLibraryList( data ) { // V.librarylist
 		$( '#lib-path .lipath' ).empty();
 	} else if ( ! [ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( V.mode ) ) {
 		var htmlpath = htmlmodetitle;
-		$( '#button-lib-search' ).addClass( 'hide' );
 	} else if ( data.path ) { // dir breadcrumbs
 		var dir      = data.path.split( '/' );
 		var dir0     = dir[ 0 ];
