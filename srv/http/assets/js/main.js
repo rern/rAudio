@@ -1619,24 +1619,6 @@ $( '#button-pl-back' ).on( 'click', function() {
 		V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 	}
 } );
-$( '#button-pl-playlists' ).on( 'click', function() {
-	pageScroll( 0 );
-	list( { playlist: 'list' }, ( data ) => renderSavedPl( data ), 'json' );
-} );
-$( '#button-pl-save' ).on( 'click', function() {
-	var audiocdL  = $( '#pl-list .i-audiocd' ).length;
-	var upnpL     = $( '#pl-list .i-upnp' ).length;
-	var notsavedL = $( '#pl-list .notsaved' ).length;
-	if ( audiocdL || upnpL ) {
-		message = 'Saved playlist cannot contain:<br>'
-				+ audiocdL ? audiocdL + ico( 'audiocd wh' ) : ''
-				+ upnpL ? upnpL +'&emsp;'+ ico( 'upnp wh' ) : ''
-				+ notsavedL ? notsavedL +'&emsp;'+ ico( 'save wh' ) : ''
-		infoWarning( 'file-playlist', 'Save Playlist', message );
-	} else {
-		playlistNew();
-	}
-} );
 $( '#button-pl-consume' ).on( 'click', function() {
 	S.consume = ! S.consume;
 	$( this ).toggleClass( 'bl', S.consume );
@@ -1720,6 +1702,24 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			}
 		} );
 	}
+} );
+$( '#button-pl-save' ).on( 'click', function() {
+	var audiocdL  = $( '#pl-list .i-audiocd' ).length;
+	var upnpL     = $( '#pl-list .i-upnp' ).length;
+	var notsavedL = $( '#pl-list .notsaved' ).length;
+	if ( audiocdL || upnpL ) {
+		message = 'Saved playlist cannot contain:<br>'
+				+ audiocdL ? audiocdL + ico( 'audiocd wh' ) : ''
+				+ upnpL ? upnpL +'&emsp;'+ ico( 'upnp wh' ) : ''
+				+ notsavedL ? notsavedL +'&emsp;'+ ico( 'save wh' ) : ''
+		infoWarning( 'file-playlist', 'Save Playlist', message );
+	} else {
+		playlistNew();
+	}
+} );
+$( '#button-pl-playlists' ).on( 'click', function() {
+	pageScroll( 0 );
+	list( { playlist: 'list' }, ( data ) => renderSavedPl( data ), 'json' );
 } );
 $( '#pl-search-input' ).on( 'input', playlistFilter );
 $( '#pl-search-close, #pl-search-btn' ).on( 'click', function() {
