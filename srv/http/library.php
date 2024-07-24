@@ -38,6 +38,27 @@ search
 */
 include 'function.php';
 
+$query     = $_POST[ 'query' ] ?? '';
+
+if ( ! $query ) { // sort - from cmd-list.sh
+	$modes = [ 'album', 'albumartist', 'albumbyartist-year', 'artist', 'composer', 'conductor', 'date', 'genre', 'latest' ];
+	foreach( $modes as $mode ) {
+		$file = '/srv/http/data/mpd/'.$mode;
+		if ( ! file_exists( $file ) ) continue;
+		
+		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+		$sort  = [];
+		foreach( $lines as $line ) $data[] = stripSort( $line ).'^x^'.$line;
+		usort( $data, function( $a, $b ) {
+			return strnatcasecmp( $a, $b );
+		} );
+		$list = '';
+		foreach( $data as $line ) $list .= mb_substr( $line, 0, 1, 'UTF-8' ).'^^'.explode( '^x^', $line )[ 1 ]."\n";
+		file_put_contents( $file, $list );
+	}
+	exit;
+}
+
 $gmode     = $_POST[ 'gmode' ] ?? null;
 $mode      = $_POST[ 'mode' ] ?? null;
 $string    = $_POST[ 'string' ] ?? null;
@@ -47,7 +68,7 @@ $f         = $_POST[ 'format' ] ?? $formatall;
 $format    = '%'.implode( '%^^%', $f ).'%';
 $html      = '<ul id="lib-list" class="list">';
 
-switch( $_POST[ 'query' ] ) {
+switch( $query ) {
 
 case 'find':
 	$format = str_replace( '%artist%', '[%albumartist%|%artist%]', $format );
