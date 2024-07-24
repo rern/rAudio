@@ -30,7 +30,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		if ( key === 'Escape' ) {
 			$( '.searchclose:not( .hide )' ).trigger( 'click' );
 		} else if ( key === 'Enter' ) {
-			$search.trigger( 'click' );
+			$search.find( '.btn' ).trigger( 'click' );
 		}
 		return
 	}

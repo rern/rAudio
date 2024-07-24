@@ -1,4 +1,13 @@
 <?php // for library.php, playlist.php
+function dataIndex( $str ) {
+	global $index0, $indexes;
+	$index     = strtoupper( mb_substr( $str, 0, 1, 'UTF-8' ) );
+	if ( $index === $index0 ) return '';
+	
+	$indexes[] = $index;
+	$index0    = $index;
+	return ' data-index="'.$index.'"';
+}
 function HMS2second( $time ) {
 	if ( ! $time ) return 0;
 	

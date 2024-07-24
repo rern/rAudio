@@ -46,20 +46,21 @@ if ( $type === 'list' ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$html = '';
+	$html    = '';
+	$index0  = '';
+	$indexes = [];
 	foreach( $array as $each ) {
-		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
-		$indexes[] = $index;
+		$dataindex = dataIndex( $each->sort );
 		$name      = $each->name;
 		$html     .=
-'<li class="pl-folder" data-index="'.$index.'">
+'<li class="pl-folder"'.$dataindex.'>
 	'.i( 'playlists', 'playlist' ).'
 	<a class="liname">'.$name.'</a></i>
 	<a class="lipath">'.$name.'</a></i>
 	<span class="plname">'.$name.'</span>
 </li>';
 	}
-	$indexbar  = indexBar( array_keys( array_flip( $indexes ) ) );
+	$indexbar  = indexBar( $indexes );
 	$count     = count( $lists );
 	$counthtml = '
 &emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
