@@ -400,7 +400,7 @@ function htmlList( $lists ) { // non-file 'list' command
 	echo $html;
 }
 function htmlRadio( $subdirs, $files, $dir ) {
-	global $mode, $gmode, $html, $index0, $indexes;
+	global $mode, $gmode, $html, $index0, $indexes, $string;
 	$searchmode = $mode === 'search';
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
