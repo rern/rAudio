@@ -300,11 +300,7 @@ function htmlDirectory( $lists ) {
 			$htmlf .= htmlDirectoryLi( $gmode, $dataindex, i( 'music ', 'file' ), $path, $name );
 		}
 	}
-	$indexbar = indexBar( $indexes );
-	$html    .= $htmlf.
-'</ul>
-<div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
-<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
+	$html    .= $htmlf.indexBar( $indexes );
 	echo $html;
 }
 function htmlDirectoryLi( $mode, $dataindex, $icon, $path, $name ) {
@@ -356,11 +352,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	'.$icon.'<span class="single">'.$name.'</span>
 </li>';
 	}
-	$indexbar = indexBar( $indexes );
-	$html    .=
-'</ul>
-<div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
-<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
+	$html    .= indexBar( $indexes );
 	echo $html;
 }
 function htmlList( $lists ) { // non-file 'list' command
@@ -404,11 +396,7 @@ function htmlList( $lists ) { // non-file 'list' command
 </div>';
 		}
 	}
-	$indexbar = indexBar( $indexes );
-	$html    .=
-'</ul>
-<div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
-<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
+	$html    .= indexBar( $indexes );
 	echo $html;
 }
 function htmlRadio( $subdirs, $files, $dir ) {
@@ -481,14 +469,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 '</li>';
 		}
 	}
-	$html.=
-'</ul>';
-	if ( $mode !== 'search' ) {
-		$indexbar = indexBar( $indexes );
-		$html.=
-'<div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
-<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
-	}
+	$html.= $mode === 'search' ? '</ul>' : indexBar( $indexes );
 	echo $html;
 }
 function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)

@@ -1541,7 +1541,8 @@ i.map.disabled, .map.disabled i {
 	height: 100%;
 	color: var( --cgl );
 }
-.index wh {
+.index a.indexed {
+	color: var( --cw );
 	text-shadow: var( --shadow-text );
 }
 .coverart div {

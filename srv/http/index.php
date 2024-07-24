@@ -279,8 +279,6 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list hide"></ul>
-	<div id="pl-index" class="index index0"></div>
-	<div id="pl-index1" class="index index1"></div>
 </div>
 
 <?=$menu?>

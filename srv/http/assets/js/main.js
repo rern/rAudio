@@ -1592,15 +1592,13 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	query.modetitle = modetitle;
 	if ( query.query !== 'ls' || ! modefile ) V.query.push( query );
 } );
-$( '.page' ).on( 'click', '.index a', function() {
-	var index = $( this ).find( 'wh' ).text()[ 0 ];
-	if ( ! index ) return
-	
+$( '.page' ).on( 'click', '.index a.indexed', function() {
+	var index = $( this ).text();
 	if ( index === '#' ) {
 		var scrollT = 0;
 	} else {
 		if ( V.library ) {
-			var el = V.mode === 'album' || V.mode === 'latest' ? '.coverart' : '#lib-list li';
+			var el = '#lib-list '+ ( V.albumlist ? '.coverart' : 'li' );
 		} else {
 			var el = '#pl-savedlist li';
 		}

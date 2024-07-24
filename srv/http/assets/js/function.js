@@ -1132,6 +1132,7 @@ function refreshData() {
 }
 function renderLibrary() { // library home
 	V.mode         = '';
+	V.albumlist    = false;
 	V.librarylist  = false;
 	V.librarytrack = false;
 	V.query        = [];
@@ -1402,11 +1403,8 @@ function renderSavedPl( data ) { // V.savedpl - list of saved playlists
 	$( '#savedpl-path' ).html( data.counthtml );
 	var barvisible = $bartop.is( ':visible' );
 	var html       = htmlHash( data.html );
-	$( '#pl-savedlist' ).html( html ).promise().done( () => {
-		$( '#pl-index' ).html( data.index[ 0 ] );
-		$( '#pl-index1' ).html( data.index[ 1 ] );
-		renderPlaylistSet();
-	} );
+	$( '#pl-savedlist, #pl-index, #pl-index1' ).remove();
+	$( '#pl-list' ).after( html ).promise().done( renderPlaylistSet );
 }
 function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
 	V.plhome       = false;

@@ -28,28 +28,28 @@ function imgIcon( $thumbsrc, $menu, $icon = '' ) {
 	return '<img class="lazyload iconthumb li-icon '.$icon.'"'.$htmlicon.' data-src="'.$thumbsrc.'^^^" data-menu="'.$menu.'">';
 }
 function indexBar( $indexes ) {
-	$indexbar = '<a class="indexed"><wh>#</wh></a>';
+	$indexbar = '<a class="indexed">#</a>';
 	$chars    = range( 'A', 'Z' );
 	for ( $i = 0; $i < 26; $i++ ) {
 		$char = $chars[ $i ];
 		if ( in_array( $char, $indexes ) ) {
-			$indexbar.= '<a class="indexed"><wh>'.$char.'</wh></a>';
+			$indexbar.= '<a class="indexed">'.$char.'</a>';
 		} else {
 			$indexbar.= '<a>'.$char.'</a>';
 		}
 	}
-	$indexbar1 = '<a><wh>#</wh></a>';
+	$indexbar1 = '<a>#</a>';
 	for ( $i = 0; $i < 26; $i++ ) {
 		$char     = $chars[ $i ];
 		$char1    = $chars[ $i + 1 ];
 		$indexed  = 0;
 		$indexed1 = 0;
 		if ( in_array( $char, $indexes ) ) {
-			$char    = '<wh>'.$char.'</wh>';
+			$char    = $char;
 			$indexed = 1;
 		}
 		if ( in_array( $char1, $indexes ) ) {
-			$char1    = '<wh>'.$char1.'</wh>';
+			$char1    = $char1;
 			$indexed1 = 1;
 		}
 		if ( $indexed || $indexed1 ) {
@@ -59,7 +59,9 @@ function indexBar( $indexes ) {
 		}
 		$i++;
 	}
-	return [ $indexbar, $indexbar1 ];
+	return '</ul>
+<div id="lib-index" class="index index0">'.$indexbar.'</div>
+<div id="lib-index1" class="index index1">'.$indexbar1.'</div>';
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );

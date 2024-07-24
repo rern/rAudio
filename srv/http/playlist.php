@@ -46,7 +46,7 @@ if ( $type === 'list' ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$html    = '';
+	$html    = '<ul id="pl-savedlist" class="list">';
 	$index0  = '';
 	$indexes = [];
 	foreach( $array as $each ) {
@@ -60,7 +60,7 @@ if ( $type === 'list' ) {
 	<span class="plname">'.$name.'</span>
 </li>';
 	}
-	$indexbar  = indexBar( $indexes );
+	$html     .= indexBar( $indexes );
 	$count     = count( $lists );
 	$counthtml = '
 &emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
@@ -68,7 +68,6 @@ if ( $type === 'list' ) {
 '.i( 'file-playlist' );
 	echo json_encode( [
 		  'html'      => $html
-		, 'index'     => $indexbar
 		, 'counthtml' => $counthtml
 		, 'indexes'   => $indexes
 		, 'count'     => $count
