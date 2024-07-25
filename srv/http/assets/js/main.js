@@ -1123,13 +1123,16 @@ $( '#button-lib-search' ).on( 'click', function() { // icon
 $( '#lib-search-btn' ).on( 'click', function() { // search
 	var keyword = $( '#lib-search-input' ).val();
 	if ( ! keyword ) {
+		local();
 		$( '#lib-search-close' ).trigger( 'click' );
 	} else {
 		var query = {
 			  query  : 'search'
+			, mode   : V.mode
 			, string : keyword
 			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 		}
+		V.query.push( [ 'search' ] );
 		list( query, function( data ) {
 			if ( data !== -1 ) {
 				var list = {
@@ -1158,12 +1161,8 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
 	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
 	$( '#lib-path' ).css( 'max-width', '' );
-	$( '#lib-search-close' ).empty();
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
-	if ( $( '#lib-search-input' ).val() ) {
-		$( '#lib-search-input' ).val( '' );
-		$( '#lib-breadcrumbs a' ).length ? $( '#lib-breadcrumbs a' ).last().trigger( 'click' ) : $( '#library' ).trigger( 'click' );
-	}
+	if ( ! V.local ) $( '#button-lib-back' ).trigger( 'click' );
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).trigger( 'click' );
@@ -1186,6 +1185,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		if ( query === 'album' ) {
 			$( '#mode-album' ).trigger( 'click' );
 		} else {
+			console.log(query)
 			if ( 'gmode' in query ) V.mode = query.gmode;
 			list( query, function( html ) {
 				if ( html != -1 ) {

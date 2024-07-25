@@ -466,8 +466,11 @@ function htmlRadio( $subdirs, $files, $dir ) {
 	echo $html;
 }
 function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
-	if ( ! count( $lists ) ) exit;
+	if ( ! count( $lists ) ) {
+		echo -1;
+		exit;
 //----------------------------------------------------------------------------------
+	}
 	global $GMODE, $html;
 	$searchmode = $filemode === 'search';
 	if ( ! $searchmode ) $html = str_replace( '">', ' track">' , $html );
