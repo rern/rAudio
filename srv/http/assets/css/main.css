@@ -213,20 +213,7 @@ i.map.disabled, .map.disabled i {
 .tagmessage div,
 #divlyricstitle,
 #lib-breadcrumbs,
-#lib-list li,
-#lib-list span,
-#lib-list .li1,
-#lib-list .li2,
-#lib-path,
-#lyricstitle,
-#lyricsartist,
-#pl-list li,
-#pl-list .li1 span,
-#pl-list .liname,
-#pl-list .li2,
-#pl-savedlist li,
-#pl-savedlist .li1 span,
-#pl-savedlist span {
+.list li * {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1200,6 +1187,7 @@ i.map.disabled, .map.disabled i {
 	height: 50px;
 }
 .list {
+	margin: 0;
 	padding: 80px 0 0 0;
 }
 .bars-off {
@@ -1423,7 +1411,7 @@ i.map.disabled, .map.disabled i {
 }
 #mode-title,
 .pl-title {
-	font-size: 24px;
+	font-size: 24px !important;
 	font-weight: 300;
 	color: var( --cw );
 }
@@ -1584,9 +1572,6 @@ i.map.disabled, .map.disabled i {
 .licover.nofixed {
 	position: relative;
 }
-#lib-list li.track1 {
-	margin-top: 230px;
-}
 .licover.active {
 	background: linear-gradient( #000000 195px, var( --cm ) 0 );
 }
@@ -1618,137 +1603,8 @@ i.map.disabled, .map.disabled i {
 	line-height: 25px !important;
 	color: var( --cg60 ) !important;
 }
-#lib-list,
-#pl-savedlist {
-	width: calc( 100% - 38px );
-}
-#lib-list.album {
-	display: grid;
-	grid-template-columns: repeat( auto-fit, minmax( 160px, auto ) );
-}
-#lib-list.album.max200px { /* number less than windows width - set max at 200px*/
-	grid-template-columns: repeat( auto-fit, minmax( 160px, 200px ) );
-}
-@media ( max-width: 518px ) { #lib-list.album { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
-#lib-list,
-#pl-list,
-#pl-savedlist {
-	margin: 0;
-	list-style: none
-}
-#lib-list li,
-#pl-list li,
-#pl-savedlist li {
-	display: block;
-	height: 49px;
-	line-height: 20px;
-	border-bottom: 1px solid var( --cga );
-	font-size: 15px;
-}
 .lib-mode.updn .mode {
 	background: var( --cga );
-}
-#pl-list li.updn {
-	background: var( --cmd );
-}
-#pl-list li.active.updn {
-	background: var( --cma );
-}
-.li-icon,
-#lib-list li span i {
-	margin-right: 10px;
-}
-#pl-list .liname {
-	max-width: calc( 100% - 190px );
-}
-#lib-list .single {
-	line-height: 48px;
-	vertical-align: 5%;
-}
-#indexcover,
-.lipath,
-.lidir,
-.liname,
-.liindex,
-.lisort,
-.licue,
-.liartist,
-.lithumb,
-.liimg {
-	display: none;
-}
-.licover .liartist {
-	display: block;
-}
-#pl-savedlist span {
-	font-size: 18px;
-}
-#pl-savedlist span.plname {
-	line-height: 48px;
-}
-#lib-list li.active:not(.licover),
-#lib-list .active .coverart1,
-#lib-list .active .coverart2,
-#pl-list .active,
-#pl-savedlist .active {
-	color: var( --cw );
-	background: var( --cm );
-}
-#pl-list .pl-remove {
-	float: right;
-	position: relative;
-	width: 49px;
-	height: 49px;
-	margin: 0;
-	font-size: 24px;
-	line-height: 45px;
-	text-align: center;
-	color: var( --cg60 ) !important;
-}
-#pl-list li.active .pl-remove {
-	color: var( --cga ) !important;
-}
-.li-icon,
-#pl-savedlist span::before,
-#pl-savedlist i,
-#lib-list i {
-	width: 40px;
-	margin-top: 3px;
-	font-size: 24px;
-	line-height: 40px;
-	text-align: center;
-	color: var( --cg60 );
-}
-#lib-list i {
-	background: none !important;
-}
-.li-icon {
-	float: left;
-	display: block;
-	min-height: 20px;
-	text-align: center;
-}
-.iconthumb {
-	margin-top: 4px;
-	outline: 1px solid hsl(0,0%,15%);
-}
-li.active .iconthumb {
-	outline: none;
-}
-.savewr {
-	position: absolute;
-	margin: 27px 0 0 1px !important;
-	width: 20px !important;
-	height: 20px;
-	border-radius: 50%;
-	font-size: 16px !important;
-	line-height: 20px !important;
-	text-align: center;
-	color: #000000 !important;
-	background: var( --cg75 );
-}
-#pl-list li.radio {
-	margin: 0;
 }
 #pl-manage {
 	float: right;
@@ -1774,20 +1630,121 @@ li.active .iconthumb {
 #countradio {
 	vertical-align: 5%;
 }
-#pl-list li::before {
-	margin-top: 9px;
+
+.list {
+	margin: 0;
+	list-style: none
 }
-#lib-list li,
-#pl-list li {
-	font-size: 18px;
+.list li {
+	display: block;
+	height: 49px;
+	line-height: 20px;
+	border-bottom: 1px solid var( --cga );
 	color: var( --cg60 );
 }
-#lib-list li span,
-.li1,
-.li1 a,
-w {
+.list li,
+#pl-savedlist a {
+	font-size: 18px;
+}
+#lib-list.album {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 160px, auto ) );
+}
+#lib-list.album.max200px { /* number less than windows width - set max at 200px*/
+	grid-template-columns: repeat( auto-fit, minmax( 160px, 200px ) );
+}
+@media ( max-width: 518px ) { #lib-list.album { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
+#lib-list li.track1 {
+	margin-top: 230px;
+}
+.list .single {
+	line-height: 48px;
+	vertical-align: 5%;
+}
+.list .name {
 	color: var( --cw );
 }
+.li-icon {
+	float: left;
+	display: block;
+	width: 40px;
+	min-height: 20px;
+	margin-top: 3px;
+	margin-right: 10px;
+	font-size: 24px;
+	line-height: 40px;
+	text-align: center;
+	color: var( --cg60 );
+}
+.iconthumb {
+	margin-top: 4px;
+	outline: 1px solid hsl(0,0%,15%);
+}
+li.active .iconthumb {
+	outline: none;
+}
+#lib-list i {
+	background: none !important;
+}
+#indexcover,
+.lipath,
+.lidir,
+.liname,
+.liindex,
+.lisort,
+.licue,
+.liartist,
+.lithumb,
+.liimg {
+	display: none;
+}
+.licover .liartist {
+	display: block;
+}
+#pl-list li.updn {
+	background: var( --cmd );
+}
+#pl-list li.active.updn {
+	background: var( --cma );
+}
+#pl-savedlist {
+	width: calc( 100% - 38px );
+}
+.list li.active:not(.licover),
+#lib-list .active a {
+	color: var( --cw );
+	background: var( --cm );
+}
+#pl-list .pl-remove {
+	float: right;
+	position: relative;
+	width: 49px;
+	height: 49px;
+	margin: 0;
+	font-size: 24px;
+	line-height: 45px;
+	text-align: center;
+	color: var( --cg60 ) !important;
+}
+#pl-list li.active .pl-remove {
+	color: var( --cga ) !important;
+}
+.savewr {
+	position: absolute;
+	margin: 27px 0 0 1px !important;
+	width: 20px !important;
+	height: 20px;
+	border-radius: 50%;
+	font-size: 16px !important;
+	line-height: 20px !important;
+	text-align: center;
+	color: #000000 !important;
+	background: var( --cg75 );
+}
+#pl-list li.radio {
+	margin: 0;
+}
+
 .lib-mode.nodata {
 	pointer-events: none;
 }
@@ -1806,25 +1763,21 @@ w {
 li.active .li1 bl {
 	color: var( --cga ) !important;
 }
-#lib-list .li1,
-#pl-list .li1,
-#pl-savedlist .li1 {
+.list .li1 {
+	height: 30px;
 	padding: 5px 10px 0 0;
 }
 #pl-list .li1 span,
-#pl-savedlist .li1 span {
+#pl-savedlist .li1 a {
 	display: inline-block;
 	max-width: calc( 100% - 105px );
 }
-.time {
+.list .time {
 	margin-left: 10px;
 	color: var( --cg60 ) !important;
 }
 #pl-list .time {
 	margin-left: 0;
-}
-#pl-list a {
-	color: var( --cw );
 }
 #pl-list .elapsed i {
 	margin: 0 10px 0 5px;
@@ -1833,29 +1786,18 @@ li.active .li1 bl {
 #pl-list .elapsed {
 	margin: 0 3px 0 7px;
 }
-#lib-list .li2,
-#pl-list .li2,
-#pl-savedlist .li2 {
+.list .li2 {
 	display: block;
 	max-width: calc( 100vw - 60px );
-	font-size: 14px;
 	line-height: 14px;
+	font-size: 14px;
 }
-.li2,
-.li2 a,
-.li2 span {
+.list .li2 * {
 	font-size: 14px !important;
-	color: var( --cg60 )
-}
-#lib-list .li2 {
-	line-height: 24px;
+	color: var( --cg60 );
 }
 #pl-savedlist .li2 {
 	max-width: 100%;
-	line-height: 10px;
-}
-#pl-list .li2 a {
-	color: var( --cg60 );
 }
 #pl-list .unsaved {
 	color: var( --cw );
@@ -1882,6 +1824,7 @@ li.active .name bl {
 li.active .li2 bl {
 	color: var( --cw ) !important;
 }
+
 .lib-sortable-ghost .mode::after {
 	position: absolute;
 	content: "\f600";
@@ -2149,24 +2092,21 @@ li.active .li2 bl {
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }
 		#lib-list li span i,
-		#pl-savedlist span::before { display: none }
-		#lib-list li { line-height: 52px }
-		#lib-list .li1,
-		#pl-list .li1,
-		#pl-savedlist span,
+		#pl-savedlist a::before { display: none }
+		.list li {
+			font-size: 16px;
+		}
+		.list .li1,
+		#pl-savedlist a,
 		.time {
 			font-size: 16px;
 			line-height: 19px;
 		}
-		#lib-list span.single,
-		#pl-list span.single { padding-left: 0 }
-		#lib-list .li2,
-		#pl-list .li2,
-		#pl-savedlist .li2	{
+		.list span.single { padding-left: 0 }
+		.list .li2 {
 			font-size: 12px;
-			line-height: 14px;
+			line-height: 20px;
 		}
-		#lib-list .li2 { line-height: 20px }
 		#bioimg {
 			float: none;
 			width: 100%;
