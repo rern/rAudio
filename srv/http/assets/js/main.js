@@ -1126,11 +1126,18 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 		local();
 		$( '#lib-search-close' ).trigger( 'click' );
 	} else {
-		var query = {
-			  query  : 'search'
-			, mode   : V.mode
-			, string : keyword
-			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
+		if ( V.mode.slice( -5 ) === 'radio' ) {
+			var query = {
+				  query  : 'radio'
+				, gmode  : V.mode
+				, search : keyword
+			}
+		} else {
+			var query = {
+				  query  : 'search'
+				, string : keyword
+				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
+			}
 		}
 		V.query.push( [ 'search' ] );
 		list( query, function( data ) {

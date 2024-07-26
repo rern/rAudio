@@ -48,6 +48,7 @@ $format    = '%'.implode( '%^^%', $f ).'%';
 $html      = '<ul id="lib-list" class="list">';
 $index0    = '';
 $indexes   = [];
+foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/';
 
 switch( $QUERY ) {
 
@@ -136,8 +137,8 @@ case 'home':
 </div>';
 		}
 	}
-	$order    = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
-	$updating = exec( '[[ -e /srv/http/data/mpd/listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
+	$order    = file_exists( $dirsystem.'order.json' ) ? json_decode( file_get_contents( $dirsystem.'order.json' ) ) : false;
+	$updating = exec( '[[ -e '.$dirmpd.'listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
 		  'html'     => $htmlmode
 		, 'order'    => $order
@@ -145,9 +146,9 @@ case 'home':
 	] );
 	break;
 case 'list':
-	$filemode = '/srv/http/data/mpd/'.$MODE;
+	$filemode = $dirmpd.$MODE;
 	if ( $MODE === 'album' ) {
-		$display = json_decode( file_get_contents( '/srv/http/data/system/display.json' ) );
+		$display = json_decode( file_get_contents( $dirsystem.'display.json' ) );
 		if ( $display->albumbyartist ) $filemode.= 'byartist';
 		if ( $display->albumyear ) $filemode.= '-year';
 	}
@@ -201,13 +202,22 @@ case 'ls':
 	}
 	break;
 case 'radio':
+	$search  = $_POST[ 'search' ] ?? null;
 	$dir     = '/srv/http/data/'.$GMODE.'/'.$STRING;
 	$subdirs = [];
 	$files   = [];
-	exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
-		, $lists );
-	if ( ! count( $lists ) ) exit();
+	if ( $search ) {
+		exec( "find $dirwebradio -name '*$search*' | grep -E -v '^img|\.jpg$|\.gif$'"
+			, $lists );
+	} else {
+		exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
+			, $lists );
+	}
+	if ( ! count( $lists ) ) {
+		echo -1;
+		exit();
 //----------------------------------------------------------------------------------
+	}
 	foreach( $lists as $list ) {
 		if ( is_dir( $dir.'/'.$list ) ) {
 			$subdirs[] = $list;
@@ -215,7 +225,7 @@ case 'radio':
 			$files[] = $list;
 		}
 	}
-	htmlRadio( $subdirs, $files, $dir );
+	htmlRadio( $subdirs, $files, $dir, $search );
 	break;
 case 'search':
 	exec( 'mpc search -f "'.$format.'" any "'.$STRING.'" | awk NF'
@@ -392,9 +402,8 @@ function htmlList( $lists ) { // non-file 'list' command
 	$html    .= indexBar( $indexes );
 	echo $html;
 }
-function htmlRadio( $subdirs, $files, $dir ) {
+function htmlRadio( $subdirs, $files, $dir, $search = '' ) {
 	global $MODE, $GMODE, $html, $index0, $indexes, $string;
-	$searchmode = $MODE === 'search';
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each         = ( object )[];
@@ -428,10 +437,11 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		unset( $array );
 		foreach( $files as $file ) {
 			$each          = ( object )[];
-			$data          = file( "$dir/$file", FILE_IGNORE_NEW_LINES );
+			$path          = $search ? $file : "$dir/$file";
+			$data          = file( $path, FILE_IGNORE_NEW_LINES );
 			$name          = $data[ 0 ];
 			$each->charset = $data[ 2 ] ?? '';
-			$each->file    = $file;
+			$each->file    = $search ? basename( $file ) :$file;
 			$each->name    = $name;
 			$each->sort    = stripSort( $name );
 			$array[]       = $each;
@@ -439,18 +449,22 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
+		$i = 0;
 		foreach( $array as $each ) {
 			$dataindex   = dataIndex( $each->sort );
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
 			$url         = str_replace( '|', '/', $each->file );
 			$thumbsrc    = '/data/'.$GMODE.'/img/'.$each->file.'-thumb.jpg';
-			$liname      = $each->name;
-			$name        = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
+			$name      = $each->name;
 			$html       .=
 '<li class="file"'.$datacharset.$dataindex.'>
 	'.imgIcon( $thumbsrc, 'webradio' ).'
 	<a class="lipath">'.$url.'</a>
-	<a class="liname">'.$liname.'</a>';
+	<a class="liname">'.$name.'</a>';
+			if ( $search ) {
+				$url  = preg_replace( "/($search)/i", '<bll>$1</bll>', $url );
+				$name = preg_replace( "/($search)/i", '<bll>$1</bll>', $name );
+			}
 			if ( $GMODE === 'webradio' ) {
 				$html.=
 	'<div class="li1 name">'.$name.'</div><div class="li2">'.$url.'</div>';
@@ -458,12 +472,17 @@ function htmlRadio( $subdirs, $files, $dir ) {
 				$html.=
 	'<span class="single name">'.$name.'</span>';
 			}
+			$i++;
 			$html.=
 '</li>';
 		}
 	}
 	$html.= $MODE === 'search' ? '</ul>' : indexBar( $indexes );
-	echo $html;
+	if ( $search ) {
+		echo json_encode( [ 'html' => $html, 'count' => $i, 'librarytrack' => true ] );
+	} else {
+		echo $html;
+	}
 }
 function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( ! count( $lists ) ) {
@@ -490,7 +509,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	$file0      = $each0->file;
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
 	
-	$hidecover  = exec( 'grep "hidecover.*true" /srv/http/data/system/display.json' );
+	$hidecover  = exec( 'grep "hidecover.*true" '.$dirsystem.'display.json' );
 	$cuefile    = preg_replace( "/\.[^.]+$/", '.cue', $file0 );
 	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {
 		$cue       = true;
