@@ -1126,8 +1126,9 @@ function psPower( data ) {
 
 // page visibility -----------------------------------------------------------------
 function pageActive() {
-	if ( V.off ) return
+	if ( V.pageactive || V.off ) return
 	
+	V.pageactive = true;
 	if ( ws && ws.readyState === 1 ) {
 		V.timeoutreload = true;
 		setTimeout( () => { // reconnect if ws not response on wakeup
@@ -1137,9 +1138,6 @@ function pageActive() {
 	} else {
 		websocketReconnect();
 	}
-	if ( V.pageactive ) return
-	
-	V.pageactive = true;
 	setTimeout( refreshData, page ? 300 : 0 );
 }
 function pageInactive() {
