@@ -210,6 +210,8 @@ case 'radio':
 		$html = str_replace( 'lib', 'search', $html );
 		exec( "find $dirwebradio -name '*$search*' | grep -E -v '^img|\.jpg$|\.gif$'"
 			, $lists );
+		exec( "grep -rin '$search' $dirwebradio | sed -n '/:1:/ {s/:1:.*//; p}'"
+			, $lists );
 	} else {
 		exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
 			, $lists );

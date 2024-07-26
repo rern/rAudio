@@ -1188,7 +1188,7 @@ function renderLibraryList( data ) { // V.librarylist
 	$( '#lib-title, #lib-mode-list, .menu, #button-lib-update' ).addClass( 'hide' );
 	$( '#button-lib-back' )
 		.toggleClass( 'back-left', D.backonleft )
-		.toggleClass( 'hide', data.modetitle === 'search' );
+		.removeClass( 'hide' );
 	$( '#lib-path .lipath' ).text( data.path );
 	var root      = data.modetitle.toLowerCase() === V.mode;
 	var modetitle = ! root ? data.modetitle : data.modetitle
