@@ -208,10 +208,11 @@ case 'radio':
 	$files   = [];
 	if ( $search ) {
 		$html = str_replace( 'lib', 'search', $html );
-		exec( "grep -rin '$search' $dirwebradio | sed -n '/:1:/ {s/:1:.*//; p}'"
+		exec( "grep -rIin '$search' $dirwebradio | sed -n '/:1:/ {s/:1:.*//; p}'"
 			, $lists );
-		exec( "find $dirwebradio -name '*$search*' | grep -E -v '^img|\.jpg$|\.gif$'"
-			, $lists );
+//		exec( "find $dirwebradio -name '*$search*' | grep -E -v '^img|\.jpg$|\.gif$'"
+//			, $lists );
+		$lists = array_unique( $lists );
 	} else {
 		exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
 			, $lists );
@@ -464,10 +465,7 @@ function htmlRadio( $subdirs, $files, $dir, $search = '' ) {
 	'.imgIcon( $thumbsrc, 'webradio' ).'
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
-			if ( $search ) {
-				$url  = preg_replace( "/($search)/i", '<bll>$1</bll>', $url );
-				$name = preg_replace( "/($search)/i", '<bll>$1</bll>', $name );
-			}
+			if ( $search ) $name = preg_replace( "/($search)/i", '<bll>$1</bll>', $name );
 			if ( $GMODE === 'webradio' ) {
 				$html.=
 	'<div class="li1 name">'.$name.'</div><div class="li2">'.$url.'</div>';
