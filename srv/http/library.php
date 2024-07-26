@@ -477,10 +477,11 @@ function htmlRadio( $subdirs, $files, $dir, $search = '' ) {
 '</li>';
 		}
 	}
-	$html.= $MODE === 'search' ? '</ul>' : indexBar( $indexes );
 	if ( $search ) {
+		$html.= '</ul>';
 		echo json_encode( [ 'html' => $html, 'count' => $i, 'librarytrack' => true ] );
 	} else {
+		$html.=  indexBar( $indexes );
 		echo $html;
 	}
 }
