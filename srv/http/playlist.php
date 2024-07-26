@@ -55,15 +55,14 @@ if ( $TYPE === 'list' ) {
 		$html     .=
 '<li class="pl-folder"'.$dataindex.'>
 	'.i( 'playlists', 'playlist' ).'
-	<a class="liname">'.$name.'</a></i>
-	<a class="lipath">'.$name.'</a></i>
-	<span class="plname">'.$name.'</span>
+	<a class="lipath">'.$name.'</a>
+	<a class="single">'.$name.'</a>
 </li>';
 	}
 	$html     .= indexBar( $indexes );
 	$count     = count( $lists );
 	$counthtml = '
-&emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
+&emsp;<a class="pl-title spaced">PLAYLISTS</a> &emsp; 
 <wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
 '.i( 'file-playlist' );
 	echo json_encode( [
@@ -151,9 +150,9 @@ foreach( $lists as $list ) {
 		$html     .=
 '<li class="'.$class.'" '.$datatrack.'>
 <a class="lipath">'.$file.'</a>
-'.$icon.'<div class="li1"><span class="name">'.$title.'</span>
-<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></span></div>
-<div class="li2"><a class="pos">'.$pos.'</a> • <span class="name">'.$li2.'</span></div>
+'.$icon.'<div class="li1"><a class="name">'.$title.'</a>
+<a class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></a></div>
+<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>
 </li>';
 		$countsong++;
 		$counttime += $sec;
@@ -167,9 +166,9 @@ foreach( $lists as $list ) {
 		$html  .=
 '<li class="upnp">
 '.i( 'upnp', 'filesavedpl' ).'
-<div class="li1"><span class="name">'.$title.'</span>
-<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-<div class="li2"><a class="pos">'.$pos.'</a> • <span class="name">'.$li2.'</span></div>
+<div class="li1"><a class="name">'.$title.'</a>
+<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>
+<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>
 </li>';
 		$countupnp++;
 	} else {
@@ -198,16 +197,16 @@ foreach( $lists as $list ) {
 		$html         .=
 '<li class="webradio '.$classnotsaved.'">
 <a class="lipath">'.$path.'</a>
-'.$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><span class="name">'.( $notsaved ? '. . .' : $stationname ).'</span>
-<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-<div class="li2"><a class="pos">'.$pos.'</a> • <span class="stationname hide">'.$namenotsaved.'</span><span class="name">'.$url.'</span></div>
+'.$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><a class="name">'.( $notsaved ? '. . .' : $stationname ).'</a>
+<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>
+<div class="li2"><a class="pos">'.$pos.'</a> • <a class="stationname hide">'.$namenotsaved.'</a><a>'.$url.'</a></div>
 </li>';
 		$countradio++;
 	}
 }
 $counthtml = '';
 if ( $name ) {
-	$counthtml.='<a class="lipath">'.$name.'</a><span class="pl-title name">'.i( 'file-playlist savedlist wh' ).$name.'&ensp;<gr> · </gr></span>';
+	$counthtml.='<a class="lipath">'.$name.'</a><a class="pl-title name">'.i( 'file-playlist savedlist wh' ).$name.'&ensp;<gr> · </gr></a>';
 }
 if ( $countsong ) {
 	$counthtml.='<wh id="pl-trackcount">'.number_format( $countsong ).'</wh>'.i( 'music' ).'<gr id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</gr>';

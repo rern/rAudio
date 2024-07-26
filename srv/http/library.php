@@ -207,6 +207,7 @@ case 'radio':
 	$subdirs = [];
 	$files   = [];
 	if ( $search ) {
+		$html = str_replace( 'lib', 'search', $html );
 		exec( "find $dirwebradio -name '*$search*' | grep -E -v '^img|\.jpg$|\.gif$'"
 			, $lists );
 	} else {
@@ -493,7 +494,11 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	}
 	global $GMODE, $html;
 	$searchmode = $filemode === 'search';
-	if ( ! $searchmode ) $html = str_replace( '">', ' track">' , $html );
+	if ( $searchmode ) {
+		$html = str_replace( 'lib', 'search', $html );
+	} else {
+		$html = str_replace( '">', ' track">' , $html );
+	}
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;

@@ -1146,10 +1146,12 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 					  html      : data.html
 					, modetitle : 'search'
 				}
-				renderLibraryList( list );
-				pageScroll( 0 );
+				$( '#lib-breadcrumbs, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
 				$( '#lib-search-close' ).html( ico( 'close' ) +'<span>'+ data.count +' <gr>of</gr> </span>' );
-				$( '#lib-breadcrumbs, #button-lib-back' ).addClass( 'hide' );
+				$( '#page-library' ).append( data.html ).promise().done( () => {
+					renderLibraryPadding();
+					pageScroll( 0 );
+				} );
 			} else {
 				info( {
 					  icon    : 'library'
@@ -1163,13 +1165,14 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
+	$( '#search-list' ).remove();
+	$( V.librarylist ? '#lib-list' : '#lib-mode-list' ).removeClass( 'hide' );
 	$( '#lib-search, #lib-search-btn' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
 	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
 	$( '#lib-path' ).css( 'max-width', '' );
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
-	if ( ! V.local ) $( '#button-lib-back' ).trigger( 'click' );
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).trigger( 'click' );
@@ -1869,7 +1872,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 			V.list.li = $this; // for contextmenu
 			$( '#pl-savedlist li.active' ).removeClass( 'active' );
 			if ( V.savedpl ) {
-				V.list.name = $this.find( '.plname' ).text().trim();
+				V.list.name = $this.find( '.lipath' ).text().trim();
 				V.list.path = V.list.name;
 			} else {
 				V.list.artist = $this.find( '.artist' ).text().trim();
@@ -1898,9 +1901,10 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 			contextmenuScroll( $menu, $this.position().top + 48 );
 		}
 	} else {
-		renderSavedPlTrack( $this.find( '.plname' ).text() );
+		var name = $this.find( '.lipath' ).text();
+		renderSavedPlTrack( name );
 		if ( V.pladd ) {
-			V.pladd.name = $this.find( '.lipath' ).text();
+			V.pladd.name = name;
 			playlistInsertTarget();
 		}
 	}
