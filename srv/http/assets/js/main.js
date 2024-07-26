@@ -1142,6 +1142,7 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 		V.query.push( [ 'search' ] );
 		list( query, function( data ) {
 			if ( data !== -1 ) {
+				V.librarylist = true;
 				var list = {
 					  html      : data.html
 					, modetitle : 'search'
