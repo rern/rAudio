@@ -679,10 +679,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	_replaceplay
 	*/
 	var path = V.list.path;
-	if ( V.mode.slice( -5 ) === 'radio' ) {
-		var pathsplit = path.split( '//' );
-		path = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-	}
+	if ( V.mode.slice( -5 ) === 'radio' ) path = path.replace( /.*\//, '' );
 	// mpccmd:
 	// [ 'mpcadd', path ]
 	// [ 'mpcaddplaynext', path ]
