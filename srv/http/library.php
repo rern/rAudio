@@ -410,9 +410,9 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 		foreach( $subdirs as $subdir ) {
 			$each          = ( object )[];
 			$dirname       = basename( $subdir );
+			$each->dir     = dirname( $subdir );
 			$each->dirname = $dirname;
 			$each->sort    = stripSort( $dirname );
-			$each->dir     = dirname( $subdir );
 			$array[]       = $each;
 		}
 		usort( $array, function( $a, $b ) {
