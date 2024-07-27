@@ -202,21 +202,11 @@ case 'ls':
 	}
 	break;
 case 'radio':
-	$search  = $_POST[ 'search' ] ?? null;
 	$dir     = '/srv/http/data/'.$GMODE.'/'.$STRING;
 	$subdirs = [];
 	$files   = [];
-	if ( $search ) {
-		$html = str_replace( 'lib', 'search', $html );
-		exec( "grep -m1 -rin '$search' $dirwebradio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
-			, $lists );
-//		exec( "find $dirwebradio -name '*$search*' | grep -E -v '^img|\.jpg$|\.gif$'"
-//			, $lists );
-		$lists = array_unique( $lists );
-	} else {
-		exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
-			, $lists );
-	}
+	exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
+		, $lists );
 	if ( ! count( $lists ) ) {
 		echo -1;
 		exit();
@@ -229,12 +219,19 @@ case 'radio':
 			$files[] = $list;
 		}
 	}
-	htmlRadio( $subdirs, $files, $dir, $search );
+	htmlRadio( $files, $subdirs, $dir );
 	break;
 case 'search':
-	exec( 'mpc search -f "'.$format.'" any "'.$STRING.'" | awk NF'
+	$html = str_replace( 'lib', 'search', $html );
+	if ( $GMODE.slice( -5 ) !== 'radio' ) {
+		exec( 'mpc search -f "'.$format.'" any "'.$STRING.'" | awk NF'
 		, $lists );
-	htmlTrack( $lists, $f, 'search', $STRING );
+		htmlTrack( $lists, $f, 'search', $STRING );
+	} else {
+		exec( "grep -m1 -rin '$search' $dirwebradio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
+			, $lists );
+		htmlRadio( $files );
+	}
 	break;
 case 'track': // for tag editor
 	$file  = escape( $_POST[ 'file' ] );
@@ -406,8 +403,9 @@ function htmlList( $lists ) { // non-file 'list' command
 	$html    .= indexBar( $indexes );
 	echo $html;
 }
-function htmlRadio( $subdirs, $files, $dir, $search = '' ) {
-	global $MODE, $GMODE, $html, $index0, $indexes, $string;
+function htmlRadio( $files, $subdirs = [], $dir = '' ) {
+	global $MODE, $GMODE, $html, $index0, $indexes, $STRING;
+	$search = ! $dir;
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each         = ( object )[];
@@ -443,9 +441,9 @@ function htmlRadio( $subdirs, $files, $dir, $search = '' ) {
 			$each          = ( object )[];
 			$path          = $search ? $file : "$dir/$file";
 			$data          = file( $path, FILE_IGNORE_NEW_LINES );
-			$name          = $data[ 0 ];
+			$name          = $data[ 0 ] ?? '';
 			$each->charset = $data[ 2 ] ?? '';
-			$each->file    = $search ? basename( $file ) :$file;
+			$each->file    = $file;
 			$each->name    = $name;
 			$each->sort    = stripSort( $name );
 			$array[]       = $each;
@@ -463,12 +461,13 @@ function htmlRadio( $subdirs, $files, $dir, $search = '' ) {
 			$html       .=
 '<li class="file"'.$datacharset.$dataindex.'>
 	'.imgIcon( $thumbsrc, 'webradio' ).'
-	<a class="lipath">'.$url.'</a>
+	<a class="lipath">'.$each->file.'</a>
 	<a class="liname">'.$name.'</a>';
 			if ( $search ) $name = preg_replace( "/($search)/i", '<bll>$1</bll>', $name );
 			if ( $GMODE === 'webradio' ) {
 				$html.=
-	'<div class="li1 name">'.$name.'</div><div class="li2">'.$url.'</div>';
+	'<div class="li1 name">'.$name.'</div>
+	<div class="li2">'.$url.'</div>';
 			} else {
 				$html.=
 	'<span class="single name">'.$name.'</span>';
