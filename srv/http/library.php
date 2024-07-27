@@ -207,14 +207,9 @@ case 'radio':
 	$files   = [];
 	exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
 		, $lists );
-	if ( ! count( $lists ) ) {
-		echo -1;
-		exit();
-//----------------------------------------------------------------------------------
-	}
 	foreach( $lists as $list ) {
 		if ( is_dir( $dir.'/'.$list ) ) {
-			$subdirs[] = $list;
+			$subdirs[] = $dir.'/'.$list;
 		} else {
 			$files[] = $list;
 		}
@@ -223,14 +218,18 @@ case 'radio':
 	break;
 case 'search':
 	$html = str_replace( 'lib', 'search', $html );
-	if ( $GMODE.slice( -5 ) !== 'radio' ) {
+	if ( substr( $GMODE, -5 ) !== 'radio' ) {
 		exec( 'mpc search -f "'.$format.'" any "'.$STRING.'" | awk NF'
-		, $lists );
+			, $lists );
 		htmlTrack( $lists, $f, 'search', $STRING );
 	} else {
-		exec( "grep -m1 -rin '$search' $dirwebradio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
-			, $lists );
-		htmlRadio( $files );
+		exec( "grep -m1 -rin '$STRING' /srv/http/data/$GMODE --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
+			, $files );
+		if ( count( $files ) ) {
+			htmlRadio( $files );
+		} else {
+			echo -1;
+		}
 	}
 	break;
 case 'track': // for tag editor
@@ -408,18 +407,17 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 	$search = ! $dir;
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
-			$each         = ( object )[];
-			$each->subdir = $subdir;
-			$each->sort   = stripSort( $subdir );
-			$array[]      = $each;
+			$each          = ( object )[];
+			$dirname       = basename( $subdir );
+			$each->dirname = $dirname;
+			$each->sort    = stripSort( $dirname );
+			$each->dir     = dirname( $subdir );
+			$array[]       = $each;
 		}
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
-		$path = str_replace( '/srv/http/data/'.$GMODE.'/', '', $dir ); // /srv/http/data/webradio/path/to > path/to 
-		if ( $path ) $path.= '/';
 		foreach( $array as $each ) {
-			$subdir = $each->subdir;
 			if ( count( $files ) ) {
 				$html     .=
 '<li class="dir">';
@@ -429,9 +427,10 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 '<li class="dir"'.$dataindex.'>';
 			}
 			$html.=
-	imgIcon( '/data/'.$GMODE.'/'.$subdir.'/thumb.jpg', 'wrdir' ).'
-	<a class="lipath">'.$path.$subdir.'</a>
-	<span class="single name">'.$subdir.'</span>
+	imgIcon( str_replace( '/srv/http', '', $each->dir ).'/thumb.jpg', 'wrdir' ).'
+	<a class="lidir">'.$each->dir.'</a>
+	<a class="lipath">'.$each->dirname.'</a>
+	<span class="single name">'.$each->dirname.'</span>
 </li>';
 		}
 	}
@@ -441,9 +440,9 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 			$each          = ( object )[];
 			$path          = $search ? $file : "$dir/$file";
 			$data          = file( $path, FILE_IGNORE_NEW_LINES );
-			$name          = $data[ 0 ] ?? '';
+			$name          = $data[ 0 ];
 			$each->charset = $data[ 2 ] ?? '';
-			$each->file    = $file;
+			$each->file    = $path;
 			$each->name    = $name;
 			$each->sort    = stripSort( $name );
 			$array[]       = $each;
@@ -455,15 +454,17 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 		foreach( $array as $each ) {
 			$dataindex   = dataIndex( $each->sort );
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
-			$url         = str_replace( '|', '/', $each->file );
-			$thumbsrc    = '/data/'.$GMODE.'/img/'.$each->file.'-thumb.jpg';
+			$filename    = basename( $each->file );
+			$url         = str_replace( '|', '/', $filename );
+			$thumbsrc    = '/data/'.$GMODE.'/img/'.$filename.'-thumb.jpg';
 			$name      = $each->name;
 			$html       .=
 '<li class="file"'.$datacharset.$dataindex.'>
 	'.imgIcon( $thumbsrc, 'webradio' ).'
-	<a class="lipath">'.$each->file.'</a>
+	<a class="lidir">'.dirname( $each->file ).'</a>
+	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
-			if ( $search ) $name = preg_replace( "/($search)/i", '<bll>$1</bll>', $name );
+			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
 			if ( $GMODE === 'webradio' ) {
 				$html.=
 	'<div class="li1 name">'.$name.'</div>
@@ -492,8 +493,8 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 //----------------------------------------------------------------------------------
 	}
 	global $GMODE, $html;
-	$searchmode = $filemode === 'search';
-	if ( $searchmode ) {
+	$search = $filemode === 'search';
+	if ( $search ) {
 		$html = str_replace( 'lib', 'search', $html );
 	} else {
 		$html = str_replace( '">', ' track">' , $html );
@@ -524,7 +525,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	} else {
 		$cue = false;
 	}
-	if ( ! $hidecover && ! $searchmode ) {
+	if ( ! $hidecover && ! $search ) {
 		if ( $ext !== 'wav' ) {
 			$albumartist = $each0->albumartist;
 		} else { // fix - mpd cannot read albumartist from *.wav
@@ -589,7 +590,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$album  = $each->album;
 		$artist = $each->artist;
 		$title  = $each->title;
-		if ( $searchmode ) {
+		if ( $search ) {
 			$name      = $artist.' - '.$album;
 			$title     = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
 			$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
@@ -598,7 +599,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 			$trackname.= basename( $path );
 		}
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
-		$li0    = ( $i || $searchmode || $hidecover ) ? '' : ' class="track1"';
+		$li0    = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		$i++;
 		$html  .=
 '<li data-mode="'.$GMODE.'" '.$li0.'>
@@ -609,7 +610,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	}
 	$html.=
 '</ul>';
-	if ( $searchmode ) {
+	if ( $search ) {
 		echo json_encode( [ 'html' => $html, 'count' => $i, 'librarytrack' => true ] );
 	} else {
 		echo $html;

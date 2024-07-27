@@ -1126,20 +1126,15 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 		local();
 		$( '#lib-search-close' ).trigger( 'click' );
 	} else {
-		if ( V.mode.slice( -5 ) === 'radio' ) {
-			var query = {
-				  query  : 'radio'
-				, gmode  : V.mode
-				, search : keyword
-			}
-		} else {
-			var query = {
-				  query  : 'search'
-				, string : keyword
-				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
-			}
+		var query = {
+			  query  : 'search'
+			, string : keyword
 		}
-		V.query.push( [ 'search' ] );
+		if ( V.mode.slice( -5 ) === 'radio' ) {
+			query.gmode   = V.mode;
+		} else {
+			query.format = [ 'album', 'artist', 'file', 'title', 'time', 'track' ];
+		}
 		list( query, function( data ) {
 			$( '#search-list' ).remove();
 			if ( data !== -1 ) {
@@ -1198,7 +1193,6 @@ $( '#button-lib-back' ).on( 'click', function() {
 		if ( query === 'album' ) {
 			$( '#mode-album' ).trigger( 'click' );
 		} else {
-			console.log(query)
 			if ( 'gmode' in query ) V.mode = query.gmode;
 			list( query, function( html ) {
 				if ( html != -1 ) {
@@ -1463,7 +1457,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	$this.parent().removeClass( 'active' );
 	$( '#menu-album' ).addClass( 'hide' );
 	coverartChange();
-} ).on( 'click', '#lib-list li', function( e ) {
+} ).on( 'click', '#lib-list li, #search-list li', function( e ) {
 	e.stopPropagation();
 	if ( V.press ) return
 	

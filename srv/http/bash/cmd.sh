@@ -800,19 +800,16 @@ webradiocoverreset )
 	;;
 webradiodelete )
 	urlname=${URL//\//|}
+	rm -f "$DIR/$urlname"
 	path=$dirdata/$MODE
-	[[ $DIR ]] && path+="/$DIR"
-	rm -f "$path/$urlname"
 	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/$urlname".* "$path/img/$urlname-thumb".*
 	webradioCount $MODE
 	;;
 webradioedit )
 	newurlname=${NEWURL//\//|}
 	urlname=${URL//\//|}
-	path=$dirwebradio/
-	[[ $DIR ]] && path+="/$DIR"
-	newfile="$path/$newurlname"
-	prevfile="$path/$urlname"
+	newfile="$DIR/$newurlname"
+	prevfile="$DIR/$urlname"
 	if [[ $NEWURL == $URL ]]; then
 		sampling=$( sed -n 2p "$prevfile" )
 	else
@@ -840,7 +837,7 @@ $CHARSET" > "$newfile"
 	pushRadioList
 	;;
 wrdirdelete )
-	file="$dirdata/$MODE/$NAME"
+	file="$DIR/$NAME"
 	[[ ! $CONFIRM && $( ls "$file" ) ]] && echo -1 && exit
 # --------------------------------------------------------------------
 	rm -rf "$file"
@@ -856,7 +853,7 @@ wrdirnew )
 	pushRadioList
 	;;
 wrdirrename )
-	mv -f "$dirdata/$MODE/{$NAME,$NEWNAME}"
+	mv -f "$DIR/{$NAME,$NEWNAME}"
 	pushRadioList
 	;;
 	

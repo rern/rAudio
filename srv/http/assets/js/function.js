@@ -250,6 +250,7 @@ function contextmenuLibrary( $li, $target ) {
 	// album mode  - path > tracks
 	// other modes - name > name-album > filtered tracks
 	V.list.path        = $li.find( '.lipath' ).text() || $( '#mode-title' ).text();
+	if ( V.mode.slice( -5 ) === 'radio' ) V.list.dir = $li.find( '.lidir' ).text();
 	if ( V.librarytrack && ! V.list.licover ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 		V.list.artist = $( '.licover .liartist' ).text() || '';

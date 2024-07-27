@@ -490,56 +490,12 @@ function webRadioDelete() {
 		, okcolor : red
 		, ok      : () => {
 			V.list.li.remove();
-			var dir = $( '#lib-path .lipath' ).text();
-			bash( ['webradiodelete', dir, url, V.mode, 'CMD DIR URL MODE' ] );
+			bash( ['webradiodelete', V.list.dir, url, V.mode, 'CMD DIR URL MODE' ] );
 		}
 	} );
 }
 function webRadioSave() {
 	webRadioNew( '', V.list.li.find( '.lipath' ).text() );
-}
-function wrDirectoryDelete() {
-	var path = V.list.li.find( '.lipath' ).text();
-	info( {
-		  icon    : V.mode
-		, title   : 'Delete Folder'
-		, message : 'Folder:'
-					+'<br><wh>'+ path +'</wh>'
-		, oklabel : ico( 'remove' ) +'Delete'
-		, okcolor : red
-		, ok      : () => {
-			bash( [ 'wrdirdelete', path, V.mode, 'CMD NAME MODE' ], std => {
-				if ( std == -1 ) {
-					info( {
-						  icon    : 'webradio'
-						, title   : 'Web Radio Delete'
-						, message : 'Folder not empty:'
-									+'<br><wh>'+ path +'</wh>'
-									+'<br>Confirm delete?'
-						, oklabel : ico( 'remove' ) +'Delete'
-						, okcolor : red
-						, ok      : () => bash( [ 'wrdirdelete', path, V.mode, true, 'CMD NAME MODE CONFIRM' ] )
-					} );
-				}
-			} );
-		}
-	} );
-}
-function wrDirectoryRename() {
-	var path = V.list.li.find( '.lipath' ).text().split( '/' );
-	var name = path.pop();
-	var path = path.join( '/' );
-	info( {
-		  icon         : V.mode
-		, title        : 'Rename Folder'
-		, list         : [ 'Name', 'text' ]
-		, focus        : 0
-		, values       : name
-		, checkblank   : true
-		, checkchanged : true
-		, oklabel      : 'Rename'
-		, ok           : () => bash( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal(), 'CMD MODE NAME NEWNAME' ] )
-	} );
 }
 var listwebradio = {
 	  list   : [
@@ -581,12 +537,11 @@ function webRadioEdit() {
 		, beforeshow   : rprf ? '' : listwebradio.button
 		, oklabel      : ico( 'save' ) +'Save'
 		, ok           : () => {
-			var dir     = $( '#lib-path .lipath' ).text();
 			var values  = infoVal();
 			var name    = values[ 0 ];
 			var newurl  = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
-			bash( [ 'webradioedit', dir, name, newurl, charset, url, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
+			bash( [ 'webradioedit', V.list.dir, name, newurl, charset, url, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
 		}
@@ -611,7 +566,7 @@ function webRadioNew( name, url, charset ) {
 		, checkblank : [ 0, 1 ]
 		, beforeshow : () => {
 			listwebradio.button()
-			if ( $( '#lib-path .lipath' ).text() ) $( '#infoList td' ).last().addClass( 'hide' );
+			if ( $( '#lib-path .li' ).text() ) $( '#infoList td' ).last().addClass( 'hide' );
 			if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
 		}
 		, ok         : () => {
@@ -626,6 +581,45 @@ function webRadioNew( name, url, charset ) {
 				bannerHide();
 			} );
 		}
+	} );
+}
+function wrDirectoryDelete() {
+	info( {
+		  icon    : V.mode
+		, title   : 'Delete Folder'
+		, message : 'Folder:'
+					+'<br><wh>'+ path +'</wh>'
+		, oklabel : ico( 'remove' ) +'Delete'
+		, okcolor : red
+		, ok      : () => {
+			bash( [ 'wrdirdelete', V.list.dir, name, 'CMD DIR NAME' ], std => {
+				if ( std == -1 ) {
+					info( {
+						  icon    : 'webradio'
+						, title   : 'Web Radio Delete'
+						, message : 'Folder not empty:'
+									+'<br><wh>'+ path +'</wh>'
+									+'<br>Confirm delete?'
+						, oklabel : ico( 'remove' ) +'Delete'
+						, okcolor : red
+						, ok      : () => bash( [ 'wrdirdelete', V.list.dir, name, true, 'CMD DIR NAME CONFIRM' ] )
+					} );
+				}
+			} );
+		}
+	} );
+}
+function wrDirectoryRename() {
+	info( {
+		  icon         : V.mode
+		, title        : 'Rename Folder'
+		, list         : [ 'Name', 'text' ]
+		, focus        : 0
+		, values       : name
+		, checkblank   : true
+		, checkchanged : true
+		, oklabel      : 'Rename'
+		, ok           : () => bash( [ 'wrdirrename', V.list.dir, name, infoVal(), 'CMD DIR NAME NEWNAME' ] )
 	} );
 }
 //----------------------------------------------------------------------------------------------
@@ -679,7 +673,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	_replaceplay
 	*/
 	var path = V.list.path;
-	if ( V.mode.slice( -5 ) === 'radio' ) path = path.replace( /.*\//, '' );
 	// mpccmd:
 	// [ 'mpcadd', path ]
 	// [ 'mpcaddplaynext', path ]
