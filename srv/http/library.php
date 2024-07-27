@@ -208,7 +208,7 @@ case 'radio':
 	$files   = [];
 	if ( $search ) {
 		$html = str_replace( 'lib', 'search', $html );
-		exec( "grep -rIin '$search' $dirwebradio | sed -n '/:1:/ {s/:1:.*//; p}'"
+		exec( "grep -m1 -rin '$search' $dirwebradio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
 			, $lists );
 //		exec( "find $dirwebradio -name '*$search*' | grep -E -v '^img|\.jpg$|\.gif$'"
 //			, $lists );
