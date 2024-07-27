@@ -208,10 +208,11 @@ case 'radio':
 	exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
 		, $lists );
 	foreach( $lists as $list ) {
-		if ( is_dir( $dir.'/'.$list ) ) {
-			$subdirs[] = $dir.'/'.$list;
+		$path = $dir.'/'.$list;
+		if ( is_dir( $path ) ) {
+			$subdirs[] = $path;
 		} else {
-			$files[] = $list;
+			$files[] = $path;
 		}
 	}
 	htmlRadio( $files, $subdirs, $dir );
@@ -438,11 +439,10 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 		unset( $array );
 		foreach( $files as $file ) {
 			$each          = ( object )[];
-			$path          = $search ? $file : "$dir/$file";
-			$data          = file( $path, FILE_IGNORE_NEW_LINES );
-			$name          = $data[ 0 ];
+			$data          = file( $file, FILE_IGNORE_NEW_LINES );
+			$name          = $data[ 0 ] ?? '';
 			$each->charset = $data[ 2 ] ?? '';
-			$each->file    = $path;
+			$each->file    = $file;
 			$each->name    = $name;
 			$each->sort    = stripSort( $name );
 			$array[]       = $each;
