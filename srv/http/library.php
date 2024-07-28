@@ -600,10 +600,10 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '' ) { // track list -
 			$trackname.= basename( $path );
 		}
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
-		$li0    = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
+		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		$i++;
 		$html  .=
-'<li data-mode="'.$GMODE.'" '.$li0.'>
+'<li data-mode="'.$GMODE.'" '.$track1.'>
 	<a class="lipath">'.$path.'</a>
 	'.$icon.'<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>
 	<div class="li2">'.$i.' • '.$trackname.'</div>
