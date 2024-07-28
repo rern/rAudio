@@ -218,20 +218,33 @@ case 'radio':
 	htmlRadio( $files, $subdirs, $dir );
 	break;
 case 'search':
-	$html = str_replace( 'lib', 'search', $html );
-	if ( substr( $GMODE, -5 ) !== 'radio' ) {
-		exec( 'mpc search -f "'.$format.'" any "'.$STRING.'" | awk NF'
-			, $lists );
-		htmlTrack( $lists, $f, 'search', $STRING );
-	} else {
-		exec( "grep -m1 -rin '$STRING' /srv/http/data/$GMODE --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
+	$modefile   = in_array( $GMODE, [ 'nas', 'sd', 'usb' ] );
+	$moderadio  = substr( $GMODE, -5 ) === 'radio';
+	$i          = 0;
+	$htmlsearch = '';
+	if ( ! $GMODE || ( ! $modefile && $moderadio ) ) {
+		$mode = $GMODE ? $GMODE : '*radio';
+		exec( "grep -m1 -rin '$STRING' /srv/http/data/".$mode." --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
 			, $files );
-		if ( count( $files ) ) {
-			htmlRadio( $files );
-		} else {
-			echo -1;
-		}
+		$count      = count( $files );
+		$htmlsearch.= $count ? htmlRadio( $files ) : '';
+		$i         += $count;
 	}
+	if ( ! $moderadio ) {
+		$mode = ! $GMODE || $modefile ? 'any' : $GMODE;
+		exec( 'mpc search -f "'.$format.'" '.$mode.' "'.$STRING.'" | awk NF'
+			, $lists );
+		$count      = count( $lists );
+		$htmlsearch.= $count ? htmlTrack( $lists, $f, '', $STRING ) : '';
+		$i         += $count;
+	}
+	if ( ! $i ) {
+		echo -1;
+		exit;
+	}
+	
+	$html = str_replace( 'lib', 'search', $html ).$htmlsearch.'</ul>';
+	echo json_encode( [ 'html' => $html, 'count' => $i ] );
 	break;
 case 'track': // for tag editor
 	$file  = escape( $_POST[ 'file' ] );
@@ -404,8 +417,8 @@ function htmlList( $lists ) { // non-file 'list' command
 	echo $html;
 }
 function htmlRadio( $files, $subdirs = [], $dir = '' ) {
-	global $MODE, $GMODE, $html, $index0, $indexes, $STRING;
-	$search = ! $dir;
+	global $MODE, $GMODE, $html, $index0, $indexes, $QUERY, $STRING;
+	$search = $QUERY === 'search';
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each          = ( object )[];
@@ -456,7 +469,7 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
 			$filename    = basename( $each->file );
 			$url         = str_replace( '|', '/', $filename );
-			$thumbsrc    = '/data/'.$GMODE.'/img/'.$filename.'-thumb.jpg';
+			$thumbsrc    = substr( $each->file, 9, 14 ).'/img/'.$filename.'-thumb.jpg';
 			$name      = $each->name;
 			$html       .=
 '<li class="file"'.$datacharset.$dataindex.'>
@@ -478,27 +491,20 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 '</li>';
 		}
 	}
-	if ( $search ) {
-		$html.= '</ul>';
-		echo json_encode( [ 'html' => $html, 'count' => $i, 'librarytrack' => true ] );
-	} else {
-		$html.=  indexBar( $indexes );
-		echo $html;
-	}
+	if ( $search ) return $html;
+	
+	$html.= '</ul>'.indexBar( $indexes );
+	echo $html;
 }
-function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
+function htmlTrack( $lists, $f, $filemode = '', $string = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( ! count( $lists ) ) {
 		echo -1;
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	global $GMODE, $html;
-	$search = $filemode === 'search';
-	if ( $search ) {
-		$html = str_replace( 'lib', 'search', $html );
-	} else {
-		$html = str_replace( '">', ' track">' , $html );
-	}
+	global $GMODE, $html, $QUERY, $STRING;
+	$search = $QUERY === 'search';
+	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
@@ -544,7 +550,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$hideconductor = $each0->conductor && $GMODE !== 'conductor' ? '' : ' hide';
 		$hidegenre     = $each0->genre && $GMODE !== 'genre' ? '' : ' hide';
 		$hidedate      = $each0->date && $GMODE !== 'date' ? '' : ' hide';
-		$mpdpath       = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
+		$mpdpath       = dirname( $file0 );
 		$plfile        = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep -E ".m3u$|.m3u8$|.pls$"' );
 		if ( $cue || $plfile ) {
 			$plicon = '&emsp;'.i( 'file-playlist' ).'<gr>'
@@ -608,11 +614,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	<div class="li2">'.$i.' • '.$trackname.'</div>
 </li>';
 	}
-	$html.=
-'</ul>';
-	if ( $search ) {
-		echo json_encode( [ 'html' => $html, 'count' => $i, 'librarytrack' => true ] );
-	} else {
-		echo $html;
-	}
+	if ( $search ) return $html;
+	
+	echo $html.'</ul>';
 }

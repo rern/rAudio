@@ -796,6 +796,11 @@ function libraryHome() {
 	}, 'json' );
 }
 function list( query, callback, json ) {
+	if ( V.debug ) {
+		bashConsoleLog( JSON.stringify( query ) );
+		return
+	}
+	
 	$.post(
 		  'playlist' in query  ? 'playlist.php' : 'library.php'
 		, query

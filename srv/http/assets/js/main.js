@@ -441,13 +441,12 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 } );
 $( '#library, #button-library' ).on( 'click', function() {
-	if ( V.library && V.librarylist ) {
-		libraryHome();
+	if ( V.library ) {
+		if ( $( '#search-list' ).length ) $( '#lib-search-close' ).trigger( 'click' );
+		if ( V.librarylist ) libraryHome();
 	} else {
-		if ( ! V.library ) {
-			switchPage( 'library' );
-			refreshData();
-		}
+		switchPage( 'library' );
+		refreshData();
 	}
 	if ( S.updating_db ) banner( 'library blink', 'Library Database', 'Update ...' );
 } );
@@ -1129,16 +1128,12 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 		var query = {
 			  query  : 'search'
 			, string : keyword
-		}
-		if ( V.mode.slice( -5 ) === 'radio' ) {
-			query.gmode   = V.mode;
-		} else {
-			query.format = [ 'album', 'artist', 'file', 'title', 'time', 'track' ];
+			, gmode  : [ 'nas', 'sd', 'usb' ].includes( V.mode ) ? '' : V.mode
+			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 		}
 		list( query, function( data ) {
 			$( '#search-list' ).remove();
 			if ( data !== -1 ) {
-				V.librarylist = true;
 				var html = htmlHash( data.html );
 				$( '#page-library' ).append( html ).promise().done( () => {
 					renderLibraryPadding();
@@ -1160,13 +1155,14 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	$( '#search-list' ).remove();
-	if ( V.librarylist ) {
+	if ( $( '#lib-list' ).length ) {
 		$( '#lib-breadcrumbs, #button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	} else {
 		$( '#lib-mode-list' ).removeClass( 'hide' );
 	}
 	$( '#lib-search, #lib-search-btn' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
+	$( '#lib-search-input' ).val( '' );
 	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
 	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
 	$( '#lib-path' ).css( 'max-width', '' );
