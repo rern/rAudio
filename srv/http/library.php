@@ -589,6 +589,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '' ) { // track list -
 			$name      = $artist.' - '.$album;
 			$title     = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
 			$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
+			$icon      = imgIcon( rawurlencode( '/mnt/MPD/'.dirname( $path ).'/thumb.jpg' ), 'music' );
 		} else {
 			$trackname = $cue ? $cuename.'/' : '';
 			$trackname.= basename( $path );
