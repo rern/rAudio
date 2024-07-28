@@ -350,6 +350,26 @@ dabscan )
 	$dirbash/dab-scan.sh &> /dev/null &
 	pushData mpdupdate '{ "type": "dabradio" }'
 	;;
+dirdelete )
+	[[ ! $CONFIRM && $( ls "$DIR" ) ]] && echo -1 && exit
+# --------------------------------------------------------------------
+	rm -rf "$DIR"
+	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
+	pushRadioList
+	;;
+dirnew )
+	mkdir -p "$DIR"
+	chown -h http:http "$$DIR"
+	chmod 755 "$$DIR"
+	pushRadioList
+	;;
+dirrename )
+	[[ -e "$DIR/$NEWNAME" ]] && echo -1 && exit
+# --------------------------------------------------------------------
+	mv -f "$DIR/$NAME" "$DIR/$NEWNAME"
+	pushRadioList
+	;;
 display )
 	pushData display $( < $dirsystem/display.json )
 	# temp
@@ -834,26 +854,6 @@ webradioedit )
 $NAME
 $sampling
 $CHARSET" > "$newfile"
-	pushRadioList
-	;;
-wrdirdelete )
-	file="$DIR/$NAME"
-	[[ ! $CONFIRM && $( ls "$file" ) ]] && echo -1 && exit
-# --------------------------------------------------------------------
-	rm -rf "$file"
-	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
-	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
-	pushRadioList
-	;;
-wrdirnew )
-	[[ $DIR ]] && path="$dirwebradio/$DIR/$SUB" || path="$dirwebradio/$SUB"
-	mkdir -p "$path"
-	chown -h http:http "$path"
-	chmod 755 "$path"
-	pushRadioList
-	;;
-wrdirrename )
-	mv -f "$DIR/{$NAME,$NEWNAME}"
 	pushRadioList
 	;;
 	

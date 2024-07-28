@@ -105,6 +105,33 @@ function currentSet() {
 	local();
 	bash( [ 'mpcskippl', V.list.index + 1, 'stop', 'CMD POS ACTION' ] );
 }
+function directoryDelete() {
+	var icon  = 'webradio';
+	var title = 'Delete Directory';
+	var dir   = ico( 'folder gr' ) +' <wh>'+ V.list.name +'</wh>';
+	info( {
+		  icon    : icon
+		, title   : title
+		, message : dir
+		, oklabel : ico( 'remove' ) +'Delete'
+		, okcolor : red
+		, ok      : () => {
+			bash( [ 'dirdelete', V.list.dir +'/'+ V.list.name, 'CMD DIR' ], std => {
+				if ( std == -1 ) {
+					info( {
+						  icon    : icon
+						, title   : title
+						, message : dir +' not empty.'
+									+'<br>Confirm delete?'
+						, oklabel : ico( 'remove' ) +'Delete'
+						, okcolor : red
+						, ok      : () => bash( [ 'dirdelete', V.list.dir, true, 'CMD DIR CONFIRM' ] )
+					} );
+				}
+			} );
+		}
+	} );
+}
 function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
 		var path      = V.list.path;
@@ -130,6 +157,33 @@ function directoryList() {
 	} else {
 		$( '#lib-list .liinfopath' ).trigger( 'click' );
 	}
+}
+function directoryRename() {
+	var icon  = 'webradio';
+	var title = 'Rename Directory';
+	info( {
+		  icon         : icon
+		, title        : title
+		, list         : [ 'Name', 'text' ]
+		, focus        : 0
+		, values       : V.list.name
+		, checkblank   : true
+		, checkchanged : true
+		, oklabel      : 'Rename'
+		, ok           : () => {
+			var newname = infoVal();
+			bash( [ 'dirrename', V.list.dir, V.list.name, newname, 'CMD DIR NAME NEWNAME' ], std => {
+				if ( std == -1 ) {
+					info( {
+						  icon    : icon
+						, title   : title
+						, message : 'Exists: '+ ico( 'folder gr' ) +'<wh> '+ newname +'</wh>'
+						, ok      : directoryRename
+					} );
+				}
+			} );
+		}
+	} );
 }
 function excludeDirectory() {
 	info( {
@@ -494,9 +548,6 @@ function webRadioDelete() {
 		}
 	} );
 }
-function webRadioSave() {
-	webRadioNew( '', V.list.li.find( '.lipath' ).text() );
-}
 var listwebradio = {
 	  list   : [
 		  [ 'Name',    'text', { colspan: 3 } ]
@@ -517,7 +568,7 @@ var listwebradio = {
 					, list       : [ 'Name', 'text' ]
 					, checkblank : true
 					, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
-					, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal(), 'CMD DIR SUB' ] )
+					, ok         : () => bash( [ 'dirnew', '/srv/http/data/webradio/'+ $( '#lib-path .lipath' ).text() +'/'+ infoVal(), 'CMD DIR' ] )
 				} );
 			} );
 	}
@@ -583,44 +634,8 @@ function webRadioNew( name, url, charset ) {
 		}
 	} );
 }
-function wrDirectoryDelete() {
-	info( {
-		  icon    : V.mode
-		, title   : 'Delete Folder'
-		, message : 'Folder:'
-					+'<br><wh>'+ path +'</wh>'
-		, oklabel : ico( 'remove' ) +'Delete'
-		, okcolor : red
-		, ok      : () => {
-			bash( [ 'wrdirdelete', V.list.dir, name, 'CMD DIR NAME' ], std => {
-				if ( std == -1 ) {
-					info( {
-						  icon    : 'webradio'
-						, title   : 'Web Radio Delete'
-						, message : 'Folder not empty:'
-									+'<br><wh>'+ path +'</wh>'
-									+'<br>Confirm delete?'
-						, oklabel : ico( 'remove' ) +'Delete'
-						, okcolor : red
-						, ok      : () => bash( [ 'wrdirdelete', V.list.dir, name, true, 'CMD DIR NAME CONFIRM' ] )
-					} );
-				}
-			} );
-		}
-	} );
-}
-function wrDirectoryRename() {
-	info( {
-		  icon         : V.mode
-		, title        : 'Rename Folder'
-		, list         : [ 'Name', 'text' ]
-		, focus        : 0
-		, values       : name
-		, checkblank   : true
-		, checkchanged : true
-		, oklabel      : 'Rename'
-		, ok           : () => bash( [ 'wrdirrename', V.list.dir, name, infoVal(), 'CMD DIR NAME NEWNAME' ] )
-	} );
+function webRadioSave() {
+	webRadioNew( '', V.list.li.find( '.lipath' ).text() );
 }
 //----------------------------------------------------------------------------------------------
 $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
@@ -645,8 +660,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		, update        : updateDirectory
 		, wrcoverart    : webRadioCoverart
 		, wrdelete      : webRadioDelete
-		, wrdirdelete   : wrDirectoryDelete
-		, wrdirrename   : wrDirectoryRename
+		, wrdirdelete   : directoryDelete
+		, wrdirrename   : directoryRename
 		, wredit        : webRadioEdit
 		, wrsave        : webRadioSave
 	}
