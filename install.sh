@@ -35,7 +35,7 @@ grep -q bootloader $file && sed -i 's/li.*bootloader/libunwind/' $file
 #-------------------------------------------------------------------------------
 installstart "$1"
 
-rm -rf /srv/http/assets/{css,js}
+rm -rf /srv/http/assets/{css,js} /srv/http/{bash,settings}
 
 getinstallzip
 
