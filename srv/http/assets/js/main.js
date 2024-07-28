@@ -1132,22 +1132,23 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 		}
 		list( query, function( data ) {
 			$( '#search-list' ).remove();
-			if ( data ) {
-				var html = htmlHash( data.html );
-				$( '#page-library' ).append( html ).promise().done( () => {
-					renderLibraryPadding();
-					pageScroll( 0 );
-				} );
-				$( '#lib-breadcrumbs, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
-				$( '#lib-search-close' ).html( ico( 'close' ) +'<span>'+ data.count +' <gr>of</gr> </span>' );
-			} else {
+			if ( data === -1 ) {
 				info( {
 					  icon    : 'library'
-					, title   : 'Library Database'
+					, title   : 'Library Search'
 					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
 				} );
 				$( '#lib-search-close' ).html( ico( 'close' ) );
+				return
 			}
+			
+			var html = htmlHash( data.html );
+			$( '#page-library' ).append( html ).promise().done( () => {
+				renderLibraryPadding();
+				pageScroll( 0 );
+			} );
+			$( '#lib-breadcrumbs, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
+			$( '#lib-search-close' ).html( ico( 'close' ) +'<span>'+ data.count +' <gr>of</gr> </span>' );
 		}, 'json' );
 	}
 } );

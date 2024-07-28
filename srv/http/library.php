@@ -232,8 +232,11 @@ case 'search':
 	$count      = count( $lists );
 	$htmlsearch.= $count ? htmlTrack( $lists, $f, '', $STRING ) : '';
 	$i         += $count;
-	if ( ! $i ) exit;
+	if ( ! $i ) {
+		echo -1;
+		exit;
 //----------------------------------------------------------------------------------
+	}
 	$html = str_replace( 'lib', 'search', $html ).$htmlsearch.'</ul>';
 	echo json_encode( [ 'html' => $html, 'count' => $i ] );
 	break;
