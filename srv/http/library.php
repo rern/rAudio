@@ -225,8 +225,10 @@ case 'search':
 	$count      = count( $files );
 	$htmlsearch.= $count ? htmlRadio( $files ) : '';
 	$i         += $count;
-	exec( 'mpc search -f "'.$format.'" any "'.$STRING.'" | awk NF'
-		, $lists );
+	foreach( [ 'title', 'albumartist', 'artist', 'album' ] as $tag ) {
+		exec( 'mpc search -f "'.$format.'" '.$tag.' "'.$STRING.'" | awk NF'
+			, $lists );
+	}
 	$count      = count( $lists );
 	$htmlsearch.= $count ? htmlTrack( $lists, $f, '', $STRING ) : '';
 	$i         += $count;
