@@ -1128,12 +1128,11 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 		var query = {
 			  query  : 'search'
 			, string : keyword
-			, gmode  : [ 'nas', 'sd', 'usb' ].includes( V.mode ) ? '' : V.mode
 			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 		}
 		list( query, function( data ) {
 			$( '#search-list' ).remove();
-			if ( data !== -1 ) {
+			if ( data ) {
 				var html = htmlHash( data.html );
 				$( '#page-library' ).append( html ).promise().done( () => {
 					renderLibraryPadding();

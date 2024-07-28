@@ -218,31 +218,20 @@ case 'radio':
 	htmlRadio( $files, $subdirs, $dir );
 	break;
 case 'search':
-	$modefile   = in_array( $GMODE, [ 'nas', 'sd', 'usb' ] );
-	$moderadio  = substr( $GMODE, -5 ) === 'radio';
 	$i          = 0;
 	$htmlsearch = '';
-	if ( ! $GMODE || ( ! $modefile && $moderadio ) ) {
-		$mode = $GMODE ? $GMODE : '*radio';
-		exec( "grep -m1 -rin '$STRING' /srv/http/data/".$mode." --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
-			, $files );
-		$count      = count( $files );
-		$htmlsearch.= $count ? htmlRadio( $files ) : '';
-		$i         += $count;
-	}
-	if ( ! $moderadio ) {
-		$mode = ! $GMODE || $modefile ? 'any' : $GMODE;
-		exec( 'mpc search -f "'.$format.'" '.$mode.' "'.$STRING.'" | awk NF'
-			, $lists );
-		$count      = count( $lists );
-		$htmlsearch.= $count ? htmlTrack( $lists, $f, '', $STRING ) : '';
-		$i         += $count;
-	}
-	if ( ! $i ) {
-		echo -1;
-		exit;
-	}
-	
+	exec( "grep -m1 -rin '$STRING' /srv/http/data/*radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
+		, $files );
+	$count      = count( $files );
+	$htmlsearch.= $count ? htmlRadio( $files ) : '';
+	$i         += $count;
+	exec( 'mpc search -f "'.$format.'" any "'.$STRING.'" | awk NF'
+		, $lists );
+	$count      = count( $lists );
+	$htmlsearch.= $count ? htmlTrack( $lists, $f, '', $STRING ) : '';
+	$i         += $count;
+	if ( ! $i ) exit;
+//----------------------------------------------------------------------------------
 	$html = str_replace( 'lib', 'search', $html ).$htmlsearch.'</ul>';
 	echo json_encode( [ 'html' => $html, 'count' => $i ] );
 	break;
