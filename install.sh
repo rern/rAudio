@@ -28,10 +28,6 @@ if grep -q '-server' $file; then
 	systemctl daemon-reload
 fi
 
-# 20240601
-file=/etc/pacman.conf
-grep -q bootloader $file && sed -i 's/li.*bootloader/libunwind/' $file
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -47,13 +43,5 @@ $dirbash/cmd.sh cachebust
 # 20240615
 systemctl restart websocket
 systemctl try-restart rotaryencoder
-
-# 20240601
-for snap in $restart; do
-	$dirsettings/features.sh $snap
-	$dirsettings/features.sh "$snap
-true
-CMD ON"
-done
 
 installfinish

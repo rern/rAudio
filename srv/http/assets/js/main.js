@@ -1121,10 +1121,7 @@ $( '#button-lib-search' ).on( 'click', function() { // icon
 } );
 $( '#lib-search-btn' ).on( 'click', function() { // search
 	var keyword = $( '#lib-search-input' ).val();
-	if ( ! keyword ) {
-		local();
-		$( '#lib-search-close' ).trigger( 'click' );
-	} else {
+	if ( keyword ) {
 		var query = {
 			  query  : 'search'
 			, string : keyword
@@ -1150,7 +1147,13 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 			$( '#lib-breadcrumbs, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
 			$( '#lib-search-close' ).html( ico( 'close' ) +'<span>'+ data.count +' <gr>of</gr> </span>' );
 		}, 'json' );
+	} else {
+		local();
+		$( '#lib-search-close' ).trigger( 'click' );
 	}
+} );
+$( '#lib-search-input' ).on( 'keyup', function( e ) {
+	if ( $( '#search-list' ).length ) $( '#lib-search-btn' ).trigger( 'click' );
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();

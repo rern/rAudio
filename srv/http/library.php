@@ -187,7 +187,7 @@ case 'ls':
 			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'"'
 				, $lists ); // exec appends to existing array
 		}
-		htmlTrack( $lists, $f, $ext, $file );
+		htmlTrack( $lists, $f, $file );
 	} else {
 		exec( 'mpc ls -f "'.$format.'" "'.$STRING.'" 2> /dev/null'
 			, $lists );
@@ -198,7 +198,7 @@ case 'ls':
 					.'| sed "s/^.*__//"'
 				, $lists );
 		}
-		htmlTrack( $lists, $f, $MODE !== 'album' ? 'file' : '' );
+		htmlTrack( $lists, $f );
 	}
 	break;
 case 'radio':
@@ -230,7 +230,7 @@ case 'search':
 			, $lists );
 	}
 	$count      = count( $lists );
-	$htmlsearch.= $count ? htmlTrack( $lists, $f, '', $STRING ) : '';
+	$htmlsearch.= $count ? htmlTrack( $lists, $f, $STRING ) : '';
 	$i         += $count;
 	if ( ! $i ) {
 		echo -1;
@@ -490,7 +490,7 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 	$html.= '</ul>'.indexBar( $indexes );
 	echo $html;
 }
-function htmlTrack( $lists, $f, $filemode = '', $string = '' ) { // track list - no sort ($string: cuefile or search)
+function htmlTrack( $lists, $f, $string = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( ! count( $lists ) ) {
 		echo -1;
 		exit;
