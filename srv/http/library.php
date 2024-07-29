@@ -463,7 +463,7 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 		} );
 		$i = 0;
 		foreach( $array as $each ) {
-			$dataindex   = dataIndex( $each->sort );
+			$dataindex   = $search ? '' : dataIndex( $each->sort );
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
 			$filename    = basename( $each->file );
 			$url         = str_replace( '|', '/', $filename );
@@ -593,11 +593,13 @@ function htmlTrack( $lists, $f, $string = '' ) { // track list - no sort ($strin
 		$title  = $each->title;
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		if ( $search ) {
+			$datamode  = '';
 			$icon      = i( $tag, 'file' );
 			$$tag      = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $each->$tag );
 			$trackname = $tag === 'albumartist' ? $albumartist : $artist;
 			$trackname.= ' - '.$album;
 		} else {
+			$datamode  = ' data-mode="'.$GMODE.'"';
 			$icon      = i( 'music', 'file' );
 			$trackname = $cue ? $cuename.'/' : '';
 			$trackname.= basename( $path );
@@ -605,7 +607,7 @@ function htmlTrack( $lists, $f, $string = '' ) { // track list - no sort ($strin
 		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		$i++;
 		$html  .=
-'<li data-mode="'.$GMODE.'" '.$track1.'>
+'<li'.$datamode.$track1.'>
 	<a class="lipath">'.$path.'</a>
 	'.$icon.'<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>
 	<div class="li2">'.$i.' • '.$trackname.'</div>
