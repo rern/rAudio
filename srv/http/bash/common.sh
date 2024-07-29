@@ -553,8 +553,13 @@ volumeGet() {
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
 			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 			;;
-		valdb ) echo '{ "val": '$val', "db": '$db' }';;
-		db )    echo $db;;
+		valdb ) 
+			if [[ -z $val]]
+			  val=0
+			fi
+			
+			echo '{ "val": '$val', "db": '$db' }';;
+					db )    echo $db;;
 		* )     echo $val;;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
