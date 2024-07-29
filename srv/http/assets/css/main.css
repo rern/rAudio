@@ -316,7 +316,7 @@ i.map.disabled, .map.disabled i {
 	background: var( --cm );
 }
 #bar-bottom .i-mpd::before {
-	content: "\f507";
+	content: "\F507";
 }
 .renderer {
 	width: 100% !important;
@@ -368,7 +368,7 @@ i.map.disabled, .map.disabled i {
 #composer::before,
 #conductor::before {
 	content: '\F558\20';
-	font-family : rern;
+	font-family: rern;
 	font-size: 18px
 }
 #conductor::before {
@@ -1391,14 +1391,14 @@ i.map.disabled, .map.disabled i {
 .button-coverart::after {
 	position: relative;
 	margin-left: 4px;
-	content: '\f596';
+	content: '\F596';
 	font-family: rern;
 	font-size: 26px;
 	z-index: 2;
 }
 .button-coverart::before {
 	position: absolute;
-	content: '\f595';
+	content: '\F595';
 	color: var( --cg );
 	z-index: 1;
 }
@@ -1476,27 +1476,24 @@ i.map.disabled, .map.disabled i {
 	box-shadow: none !important;
 	outline: none !important;
 }
-#lib-search-close,
-#pl-search-close {
+.searchclose {
 	float: right;
 	margin-right: 5px;
-	font-family: Lato;
-	background-color: transparent;
 }
-#lib-search-close span,
-#pl-search-close span {
-	margin-left: 5px;
-	font-size: 18px;
-}
-#lib-search-close i,
-#pl-search-close i {
-	width: 30px;
-	vertical-align: -2px;
+.searchclose::before {
+	content: "\F56C";
+	font-family: rern;
+	display: inline-block;
+	width: 40px;
+	line-height: 40px;
+	margin-right: 5px;
+	font-size: 26px;
+	text-align: center;
 	color: var( --cm );
 }
-#lib-search-close span a,
-#pl-search-close span a {
-	color: var( --cg60 );
+.searchclose {
+	margin-right: 5px;
+	font-size: 18px;
 }
 #lib-path span i {
 	top: 3px;
@@ -1827,7 +1824,7 @@ li.active .li2 bl {
 
 .lib-sortable-ghost .mode::after {
 	position: absolute;
-	content: "\f600";
+	content: "\F600";
 	font-family: rern;
 	left: 0;
 	top: 0;
@@ -1854,12 +1851,12 @@ li.active .li2 bl {
 }
 .pl-sortable-ghost::before {
 	position: absolute;
-	content: "\f601";
+	content: "\F601";
 	font-family: rern;
 	width: 40px;
+	text-align: center;
 	font-size: 22px;
 	line-height: 30px;
-	text-align: center;
 	color: var( --cw );
 }
 #playlist-empty {

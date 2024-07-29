@@ -1114,45 +1114,42 @@ $( '#button-lib-update' ).on( 'click', function() {
 } );
 $( '#button-lib-search' ).on( 'click', function() { // icon
 	$( '#lib-path span, #button-lib-back, #button-lib-search, #button-lib-update' ).addClass( 'hide' );
-	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
+	$( '#page-library .search' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path' ).css( 'max-width', 40 );
 	$( '#lib-search-input' ).trigger( 'focus' );
 } );
 $( '#lib-search-btn' ).on( 'click', function() { // search
 	var keyword = $( '#lib-search-input' ).val();
-	if ( keyword ) {
-		var query = {
-			  query  : 'search'
-			, string : keyword
-			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
-		}
-		list( query, function( data ) {
-			$( '#search-list' ).remove();
-			if ( data === -1 ) {
-				info( {
-					  icon    : 'library'
-					, title   : 'Library Search'
-					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
-				} );
-				$( '#lib-search-close' ).html( ico( 'close' ) );
-				return
-			}
-			
-			var html = htmlHash( data.html );
-			$( '#page-library' ).append( html ).promise().done( () => {
-				renderLibraryPadding();
-				pageScroll( 0 );
-			} );
-			$( '#lib-breadcrumbs, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
-			$( '#lib-search-close' ).html( ico( 'close' ) +'<span>'+ data.count +' <gr>of</gr> </span>' );
-		}, 'json' );
-	} else {
-		local();
-		$( '#lib-search-close' ).trigger( 'click' );
+	if ( ! keyword ) return
+	
+	$( this ).addClass( 'disabled' );
+	var query = {
+		  query  : 'search'
+		, string : keyword
+		, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 	}
+	list( query, function( data ) {
+		$( '#search-list' ).remove();
+		if ( data === -1 ) {
+			info( {
+				  icon    : 'library'
+				, title   : 'Library Search'
+				, message : 'Nothing found for <wh>'+ keyword +'</wh>'
+			} );
+			return
+		}
+		
+		var html = htmlHash( data.html );
+		$( '#page-library' ).append( html ).promise().done( () => {
+			renderLibraryPadding();
+			pageScroll( 0 );
+		} );
+		$( '#lib-breadcrumbs, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
+		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );
+	}, 'json' );
 } );
-$( '#lib-search-input' ).on( 'keyup', function( e ) {
+$( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( $( '#search-list' ).length ) $( '#lib-search-btn' ).trigger( 'click' );
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
@@ -1163,13 +1160,13 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	} else {
 		$( '#lib-mode-list' ).removeClass( 'hide' );
 	}
-	$( '#lib-search, #lib-search-btn' ).addClass( 'hide' );
+	$( '#lib-search-btn' ).removeClass( 'disabled' );
+	$( '#page-library .search' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
 	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
 	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
 	$( '#lib-path' ).css( 'max-width', '' );
-	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).trigger( 'click' );
@@ -1716,20 +1713,44 @@ $( '#button-pl-playlists' ).on( 'click', function() {
 	pageScroll( 0 );
 	list( { playlist: 'list' }, ( data ) => renderSavedPl( data ), 'json' );
 } );
-$( '#pl-search-input' ).on( 'input', playlistFilter );
-$( '#pl-search-close, #pl-search-btn' ).on( 'click', function() {
-	$( '#pl-search-close' ).empty();
-	$( '#pl-search, #pl-search-btn' ).addClass( 'hide' );
+$( '#button-pl-search' ).on( 'click', function() {
+	$( '#page-playlist .search' ).removeClass( 'hide' );
+	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
+	$( '#pl-search-input' ).trigger( 'focus' );
+} );
+$( '#pl-search-input' ).on( 'input', function() {
+	var keyword = $( '#pl-search-input' ).val();
+	var regex   = new RegExp( keyword, 'i' );
+	var count   = 0;
+	$( '#pl-list li' ).each( ( i, el ) => {
+		var $this = $( el );
+		var name   = $this.find( '.name' ).text();
+		var artist = $this.find( '.artist' ).text();
+		var album  = $this.find( '.album' ).text();
+		var txt    = name + artist + album;
+		var match  = txt.search( regex ) !== -1 ? true : false;
+		count      = match ? ( count + 1 ) : count;
+		$this.toggleClass( 'hide', ! match );
+		if ( match ) {
+			name   = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			artist = artist.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			album  = album.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			$this.find( '.name' ).html( name );
+			$this.find( '.artist' ).html( artist );
+			$this.find( '.album' ).html( album );
+		}
+	} );
+	pageScroll( 0 );
+	$( '#pl-search-close' ).html( keyword ? count +' <gr>of</gr>' : '' );
+} );
+$( '#pl-search-close' ).on( 'click', function() {
+	$( '#page-playlist .search' ).addClass( 'hide' );
 	$( '#pl-manage, #button-pl-search, #pl-list li' ).removeClass( 'hide' );
+	$( '#pl-search-close' ).empty();
 	$( '#pl-search-input' ).val( '' );
 	$( '#pl-list' ).html( function() {
 		return $( this ).html().replace( /<bll>|<\/bll>/g, '' );
 	} )
-} );
-$( '#button-pl-search' ).on( 'click', function() {
-	$( '#pl-search, #pl-search-btn' ).removeClass( 'hide' );
-	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
-	$( '#pl-search-input' ).trigger( 'focus' );
 } );
 new Sortable( document.getElementById( 'pl-list' ), {
 	  ghostClass    : 'pl-sortable-ghost'

@@ -100,7 +100,7 @@ function hideKeyboard() {
 function onChange( value ) {
 	$( 'input.active' ).val( value );
 	if ( $( 'input.active' ).prop( 'id' ) === 'pl-search-input' ) {
-		playlistFilter();
+		$( '#pl-search-input' ).trigger( 'input' );
 	} else {
 		$( '#infoList input' ).trigger( 'keyup' );
 	}
