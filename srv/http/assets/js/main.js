@@ -1135,6 +1135,7 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 				  icon    : 'library'
 				, title   : 'Library Search'
 				, message : 'Nothing found for <wh>'+ keyword +'</wh>'
+				, ok      : () => $( '#lib-search-input' ).trigger( 'focus' )
 			} );
 			return
 		}
