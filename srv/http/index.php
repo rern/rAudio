@@ -137,6 +137,8 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 } else {
 	$htmlvumeter = '';
 }
+$htmlsearchicon = '';
+foreach( [ 'webradio', 'title', 'albumartist', 'artist', 'album' ] as $i ) $htmlsearchicon.= i( $i.' search gr hide' );
 ?>
 
 <div id="refresh" class="page-icon"></div>
@@ -151,6 +153,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<?=i( 'library active page-icon', 'button-library' )
+		  .$htmlsearchicon
 		  .i( 'search',                   'button-lib-search' )
 		  .i( 'back',                     'button-lib-back' )
 		  .i( 'refresh-library',          'button-lib-update' )?>

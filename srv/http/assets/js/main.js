@@ -1145,10 +1145,24 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 		$( '#page-library' ).append( html ).promise().done( () => {
 			renderLibraryPadding();
 			pageScroll( 0 );
+			var icon0 = $( '#search-list i' ).eq( 0 ).prop( 'class' ).replace( / .*/, '' );
+			$( '#page-library .content-top' ).find( '.'+ icon0 ).removeClass( 'gr' );
+			[ 'webradio', 'title', 'albumartist', 'artist', 'album' ].forEach( icon => {
+					$( '#page-library .search.i-'+ icon ).toggleClass( 'disabled', $( '#search-list .i-'+ icon ).length === 0 );
+			} );
 		} );
 		$( '#lib-breadcrumbs, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
 		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );
 	}, 'json' );
+} );
+$( '#page-library i.search' ).on( 'click', function() {
+	var $this   = $( this );
+	var icon    = $this.prop( 'class' ).replace( / .*/, '' );
+	var scrollT = $( '#search-list li' ).find( '.'+ icon ).eq( 0 ).parent().offset().top;
+	pageScroll( scrollT - ( D.bars ? 80 : 40 ) );
+	$( '#page-library i.search' ).addClass( 'gr' );
+	$this.removeClass( 'gr' );
+	
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( $( '#search-list' ).length ) $( '#lib-search-btn' ).trigger( 'click' );

@@ -1476,6 +1476,9 @@ i.map.disabled, .map.disabled i {
 	box-shadow: none !important;
 	outline: none !important;
 }
+.search.disabled {
+	color: var( --cgl ) !important;
+}
 .searchclose {
 	float: right;
 	margin-right: 5px;

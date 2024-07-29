@@ -1120,7 +1120,7 @@ function renderLibrary() { // library home
 	$( '#lib-breadcrumbs, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
-	$( '#page-library .content-top, #lib-list' ).addClass( 'hide' );
+	$( '#page-library .content-top, #page-library .search, #lib-list' ).addClass( 'hide' );
 	$( '#page-library .content-top, #lib-mode-list' ).removeClass( 'hide' );
 	$( '.mode:not( .mode-bookmark )' ).each( ( i, el ) => {
 		var name = el.id.replace( 'mode-', '' );
@@ -1246,7 +1246,8 @@ function renderLibraryPadding() {
 		$( '#lib-list' ).css( 'padding-bottom', '100vh' ); // force scrollbar to get .coverart height
 		padding += $( '.coverart' ).eq( 0 ).height() - 49;
 	}
-	$( '#lib-list' ).css( {
+	var $list = $( '#search-list' ).length ? $( '#search-list' ) : $( '#lib-list' );
+	$list.css( {
 		  'padding-bottom' : 'calc( 100vh - '+ padding +'px )'
 		, 'width'          :  V.librarytrack ? '100%' : ''
 	} )
