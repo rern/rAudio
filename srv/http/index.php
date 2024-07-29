@@ -275,7 +275,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 				<?=i( 'search btn btn-default input-group-btn', 'pl-search-btn' )?>
 			</div>
 		</form>
-		<div id="pl-search-close" class="searchclose hide"></div>
+		<div id="pl-search-close" class="searchclose"></div>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list hide"></ul>

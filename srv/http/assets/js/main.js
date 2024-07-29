@@ -1719,7 +1719,7 @@ $( '#button-pl-playlists' ).on( 'click', function() {
 $( '#pl-search-input' ).on( 'input', playlistFilter );
 $( '#pl-search-close, #pl-search-btn' ).on( 'click', function() {
 	$( '#pl-search-close' ).empty();
-	$( '#pl-search-close, #pl-search, #pl-search-btn' ).addClass( 'hide' );
+	$( '#pl-search, #pl-search-btn' ).addClass( 'hide' );
 	$( '#pl-manage, #button-pl-search, #pl-list li' ).removeClass( 'hide' );
 	$( '#pl-search-input' ).val( '' );
 	$( '#pl-list' ).html( function() {
@@ -1727,7 +1727,7 @@ $( '#pl-search-close, #pl-search-btn' ).on( 'click', function() {
 	} )
 } );
 $( '#button-pl-search' ).on( 'click', function() {
-	$( '#pl-search-close, #pl-search, #pl-search-btn' ).removeClass( 'hide' );
+	$( '#pl-search, #pl-search-btn' ).removeClass( 'hide' );
 	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
 	$( '#pl-search-input' ).trigger( 'focus' );
 } );
