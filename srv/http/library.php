@@ -225,13 +225,17 @@ case 'search':
 	$count      = count( $files );
 	$htmlsearch.= $count ? htmlRadio( $files ) : '';
 	$i         += $count;
+	$GMODE      = 'file';
 	foreach( [ 'title', 'albumartist', 'artist', 'album' ] as $tag ) {
+		unset( $lists );
 		exec( 'mpc search -f "'.$format.'" '.$tag.' "'.$STRING.'" | awk NF'
 			, $lists );
+		$count      = count( $lists );
+		if ( ! $count ) continue;
+		
+		$i         += $count;
+		$htmlsearch.= $count ? htmlTrack( $lists, $f ) : '';
 	}
-	$count      = count( $lists );
-	$htmlsearch.= $count ? htmlTrack( $lists, $f, $STRING ) : '';
-	$i         += $count;
 	if ( ! $i ) {
 		echo -1;
 		exit;
@@ -411,7 +415,7 @@ function htmlList( $lists ) { // non-file 'list' command
 	echo $html;
 }
 function htmlRadio( $files, $subdirs = [], $dir = '' ) {
-	global $MODE, $GMODE, $html, $index0, $indexes, $QUERY, $STRING;
+	global $html, $index0, $indexes, $QUERY, $STRING;
 	$search = $QUERY === 'search';
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
@@ -464,15 +468,16 @@ function htmlRadio( $files, $subdirs = [], $dir = '' ) {
 			$filename    = basename( $each->file );
 			$url         = str_replace( '|', '/', $filename );
 			$thumbsrc    = substr( $each->file, 9, 14 ).'/img/'.$filename.'-thumb.jpg';
-			$name      = $each->name;
+			$icon        = $search ? i( 'webradio', 'webradio' ) : imgIcon( $thumbsrc, 'webradio' );
+			$name        = $each->name;
 			$html       .=
 '<li class="file"'.$datacharset.$dataindex.'>
-	'.imgIcon( $thumbsrc, 'webradio' ).'
+	'.$icon.'
 	<a class="lidir">'.dirname( $each->file ).'</a>
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
 			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
-			if ( $GMODE === 'webradio' ) {
+			if ( substr( $each->file, 15, 8 ) === 'webradio' ) {
 				$html.=
 	'<div class="li1 name">'.$name.'</div>
 	<div class="li2">'.$url.'</div>';
@@ -496,7 +501,7 @@ function htmlTrack( $lists, $f, $string = '' ) { // track list - no sort ($strin
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	global $GMODE, $html, $QUERY, $STRING;
+	global $GMODE, $html, $QUERY, $STRING, $tag;
 	$search = $QUERY === 'search';
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$fL         = count( $f );
@@ -505,10 +510,7 @@ function htmlTrack( $lists, $f, $string = '' ) { // track list - no sort ($strin
 		
 		$list = explode( '^^', $list );
 		$each = ( object )[];
-		for ( $i = 0; $i < $fL; $i++ ) {
-			$key        = $f[ $i ];
-			$each->$key = $list[ $i ];
-		}
+		for ( $i = 0; $i < $fL; $i++ ) $each->{$f[ $i ]} = $list[ $i ];
 		$array[] = $each;
 	}
 	$each0      = $array[ 0 ];
@@ -581,7 +583,6 @@ function htmlTrack( $lists, $f, $string = '' ) { // track list - no sort ($strin
 	</div>
 </li>';
 	}
-	$icon = i( 'music', 'file' );
 	$i    = 0;
 	foreach( $array as $each ) {
 		if ( ! $each->time ) continue;
@@ -590,16 +591,17 @@ function htmlTrack( $lists, $f, $string = '' ) { // track list - no sort ($strin
 		$album  = $each->album;
 		$artist = $each->artist;
 		$title  = $each->title;
+		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		if ( $search ) {
-			$name      = $artist.' - '.$album;
-			$title     = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
-			$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
-			$icon      = imgIcon( rawurlencode( '/mnt/MPD/'.dirname( $path ).'/thumb.jpg' ), 'music' );
+			$icon      = i( $tag, 'file' );
+			$$tag      = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $each->$tag );
+			$trackname = $tag === 'albumartist' ? $albumartist : $artist;
+			$trackname.= ' - '.$album;
 		} else {
+			$icon      = i( 'music', 'file' );
 			$trackname = $cue ? $cuename.'/' : '';
 			$trackname.= basename( $path );
 		}
-		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		$i++;
 		$html  .=

@@ -284,6 +284,7 @@ function contextmenuLibrary( $li, $target ) {
 		$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
 		$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating_db );
 	}
+	$li.siblings( 'li' ).removeClass( 'active' );
 	$li.addClass( 'active' );
 	if ( V.list.licover ) {
 		var menutop = $bartop.is( ':visible' ) ? 310 : 270;
