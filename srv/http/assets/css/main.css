@@ -1477,7 +1477,8 @@ i.map.disabled, .map.disabled i {
 	outline: none !important;
 }
 .search.disabled {
-	color: var( --cgl ) !important;
+	color: var( --cg ) !important;
+	text-shadow: none;
 }
 .searchclose {
 	float: right;

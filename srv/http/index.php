@@ -138,7 +138,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '';
 }
 $htmlsearchicon = '';
-foreach( [ 'webradio', 'title', 'albumartist', 'artist', 'album' ] as $i ) $htmlsearchicon.= i( $i.' search gr hide' );
+foreach( [ 'title', 'albumartist', 'artist', 'album', 'webradio' ] as $i ) $htmlsearchicon.= i( $i.' search gr hide' );
 ?>
 
 <div id="refresh" class="page-icon"></div>

@@ -1114,7 +1114,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 } );
 $( '#button-lib-search' ).on( 'click', function() { // icon
 	$( '#lib-path span, #button-lib-back, #button-lib-search, #button-lib-update' ).addClass( 'hide' );
-	$( '#page-library .search' ).removeClass( 'hide' );
+	$( '#page-library .search:not( i )' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path' ).css( 'max-width', 40 );
 	$( '#lib-search-input' ).trigger( 'focus' );
@@ -1147,9 +1147,11 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 			pageScroll( 0 );
 			var icon0 = $( '#search-list i' ).eq( 0 ).prop( 'class' ).replace( / .*/, '' );
 			$( '#page-library .content-top' ).find( '.'+ icon0 ).removeClass( 'gr' );
-			[ 'webradio', 'title', 'albumartist', 'artist', 'album' ].forEach( icon => {
-					$( '#page-library .search.i-'+ icon ).toggleClass( 'disabled', $( '#search-list .i-'+ icon ).length === 0 );
+			$( '#page-library i.search' ).each( ( i, el ) => {
+				var icon = $( el ).prop( 'class' ).replace( / .*/, '' );
+				$( el ).toggleClass( 'disabled', $( '#search-list .'+ icon ).length === 0 );
 			} );
+			$( '#page-library i.search' ).removeClass( 'hide' );
 		} );
 		$( '#lib-breadcrumbs, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
 		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );

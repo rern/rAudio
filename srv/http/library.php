@@ -220,11 +220,6 @@ case 'radio':
 case 'search':
 	$i          = 0;
 	$htmlsearch = '';
-	exec( "grep -m1 -rin '$STRING' /srv/http/data/*radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
-		, $files );
-	$count      = count( $files );
-	$htmlsearch.= $count ? htmlRadio( $files ) : '';
-	$i         += $count;
 	$GMODE      = 'file';
 	foreach( [ 'title', 'albumartist', 'artist', 'album' ] as $tag ) {
 		unset( $lists );
@@ -236,6 +231,11 @@ case 'search':
 		$i         += $count;
 		$htmlsearch.= $count ? htmlTrack( $lists, $f ) : '';
 	}
+	exec( "grep -m1 -rin '$STRING' /srv/http/data/*radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
+		, $files );
+	$count      = count( $files );
+	$htmlsearch.= $count ? htmlRadio( $files ) : '';
+	$i         += $count;
 	if ( ! $i ) {
 		echo -1;
 		exit;
