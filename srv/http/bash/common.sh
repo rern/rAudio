@@ -554,7 +554,7 @@ volumeGet() {
 			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 			;;
 		valdb ) 
-  			if [[ -z $val]]; then
+  			if [[ -z $val ]]; then
 			  val=0
 			fi			
   			echo '{ "val": '$val', "db": '$db' }';;
