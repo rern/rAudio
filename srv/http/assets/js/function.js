@@ -776,7 +776,7 @@ function intervalElapsedClear() {
 function libraryHome() {
 	V.mode        = '';
 	V.librarylist = false;
-	list( { query: 'home' }, function( data ) {
+	list( { cmd: 'home' }, function( data ) {
 		O             = data.order;
 		S.updating_db = data.updating;
 		if ( data.html !== V.libraryhtml ) {

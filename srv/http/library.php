@@ -38,7 +38,7 @@ search
 */
 include 'function.php';
 
-$QUERY     = $_POST[ 'query' ];
+$QUERY     = $_POST[ 'cmd' ];
 $GMODE     = $_POST[ 'gmode' ] ?? null;
 $MODE      = $_POST[ 'mode' ] ?? null;
 $STRING    = isset( $_POST[ 'string' ] ) ? escape( $_POST[ 'string' ] ) : null;

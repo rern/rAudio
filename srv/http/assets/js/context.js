@@ -136,7 +136,7 @@ function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
 		var path      = V.list.path;
 		var query     = {
-			  query  : 'ls'
+			  cmd    : 'ls'
 			, string : path
 			, format : [ 'file' ]
 		}
@@ -349,7 +349,7 @@ function tagEditor() {
 	var cue    = file.slice( -4 ) === '.cue';
 	if ( V.list.licover ) format = format.slice( 0, -2 );
 	var query = {
-		  query  : 'track'
+		  cmd    : 'track'
 		, file   : file
 		, format : format
 	}
@@ -411,7 +411,7 @@ function tagEditor() {
 					
 					if ( V.playlist ) switchPage( 'library' );
 					var query  = {
-						  query  : 'find'
+						  cmd    : 'find'
 						, mode   : mode
 						, string : string
 						, format : [ 'album', 'artist' ]
@@ -436,7 +436,7 @@ function tagEditor() {
 					switchPage( 'library' );
 					V.mode    = dir.split( '/' )[ 0 ].toLowerCase();
 					var query = {
-						  query  : 'ls'
+						  cmd    : 'ls'
 						, string : dir
 						, gmode  : V.mode
 					}
