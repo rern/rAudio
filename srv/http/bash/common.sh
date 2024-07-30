@@ -548,6 +548,7 @@ volumeGet() {
 		val=${val_db/ *}
 		db=${val_db/* }
 	fi
+	[[ ! $val ]] && val=0
 	case $1 in
 		push )
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
