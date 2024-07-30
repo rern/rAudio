@@ -218,8 +218,8 @@ case 'radio':
 	htmlRadio( $files, $subdirs, $dir );
 	break;
 case 'search':
+	$html = str_replace( 'lib', 'search', $html );
 	$i          = 0;
-	$htmlsearch = '';
 	$GMODE      = 'file';
 	foreach( [ 'title', 'albumartist', 'artist', 'album' ] as $tag ) {
 		unset( $lists );
@@ -229,19 +229,19 @@ case 'search':
 		if ( ! $count ) continue;
 		
 		$i         += $count;
-		$htmlsearch.= $count ? htmlTrack( $lists, $f ) : '';
+		htmlTrack( $lists, $f );
 	}
 	exec( "grep -m1 -rin '$STRING' /srv/http/data/*radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
 		, $files );
 	$count      = count( $files );
-	$htmlsearch.= $count ? htmlRadio( $files ) : '';
+	if ( $count ) htmlRadio( $files );
 	$i         += $count;
 	if ( ! $i ) {
 		echo -1;
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	$html = str_replace( 'lib', 'search', $html ).$htmlsearch.'</ul>';
+	$html.= '</ul>';
 	echo json_encode( [ 'html' => $html, 'count' => $i ] );
 	break;
 case 'track': // for tag editor
