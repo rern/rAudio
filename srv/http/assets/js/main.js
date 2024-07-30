@@ -442,7 +442,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 } );
 $( '#library, #button-library' ).on( 'click', function() {
 	if ( V.library ) {
-		if ( $( '#search-list' ).length ) $( '#lib-search-close' ).trigger( 'click' );
+		if ( V.searchlist ) $( '#lib-search-close' ).trigger( 'click' );
 		if ( V.librarylist ) libraryHome();
 	} else {
 		switchPage( 'library' );
@@ -1140,8 +1140,9 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 			return
 		}
 		
+		V.searchlist  = true;
 		V.librarylist = true;
-		var html = htmlHash( data.html );
+		var html      = htmlHash( data.html );
 		$( '#search-list' ).remove();
 		$( '#page-library' ).append( html ).promise().done( () => {
 			renderLibraryPadding();
@@ -1168,10 +1169,11 @@ $( '#page-library i.search' ).on( 'click', function() {
 	
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( $( '#search-list' ).length ) $( '#lib-search-btn' ).trigger( 'click' );
+	if ( V.searchlist ) $( '#lib-search-btn' ).trigger( 'click' );
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
+	V.searchlist = false;
 	$( '#search-list' ).remove();
 	if ( $( '#lib-list' ).length ) {
 		$( '#lib-breadcrumbs, #button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
