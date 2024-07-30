@@ -258,6 +258,7 @@ function contextmenuLibrary( $li, $target ) {
 		V.list.name   = $li.find( '.name' ).text() || V.list.path;
 	}
 	V.list.track = $li.data( 'track' ) || '';  // cue - in contextmenu
+	if ( $( '#search-list' ).length ) V.mode = $li.find( 'i' ).data( 'menu' );
 	if ( ( D.tapaddplay || D.tapreplaceplay )
 		&& ! V.color
 		&& ! $target.hasClass( 'li-icon' )
@@ -773,6 +774,8 @@ function intervalElapsedClear() {
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
 function libraryHome() {
+	V.mode        = '';
+	V.librarylist = false;
 	list( { query: 'home' }, function( data ) {
 		O             = data.order;
 		S.updating_db = data.updating;

@@ -1140,6 +1140,7 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 			return
 		}
 		
+		V.librarylist = true;
 		var html = htmlHash( data.html );
 		$( '#search-list' ).remove();
 		$( '#page-library' ).append( html ).promise().done( () => {
