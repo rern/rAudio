@@ -536,7 +536,7 @@ volumeGet() {
 		args="-c $card -M sget \"$mixer\""
 	fi
 	if [[ $args ]]; then # not mpd software
-		for i in {1..3}; do # some usb might not be ready
+		for i in {1..5}; do # some usb might not be ready
 			volume=$( amixer $args 2> /dev/null | grep -m1 % )
 			[[ $volume ]] && break || sleep 1
 		done
