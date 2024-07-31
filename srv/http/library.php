@@ -223,7 +223,7 @@ case 'search':
 	$search = true;
 	$html   = str_replace( 'lib', 'search', $html );
 	$count  = 0;
-	foreach( [ 'title', 'albumartist', 'artist', 'album' ] as $tag ) {
+	foreach( [ 'title', 'albumartist', 'artist', 'album', 'composer', 'conductor' ] as $tag ) {
 		unset( $lists );
 		if ( $tag === 'title' ) {
 			$f      = [ 'album', 'albumartist', 'artist', 'file', 'title', 'time', 'track' ];

@@ -1438,7 +1438,7 @@ i.map.disabled, .map.disabled i {
 }
 #lib-search,
 #pl-search {
-	display: block;
+	display: inline-block;
 	max-width: 200px;
 	white-space: nowrap;
 	float: right;
@@ -1481,6 +1481,7 @@ i.map.disabled, .map.disabled i {
 	text-shadow: none;
 }
 .searchclose {
+	display: inline-block;
 	float: right;
 	margin-right: 5px;
 }
@@ -2072,6 +2073,9 @@ li.active .li2 bl {
 	}
 	@media ( max-width: 700px ) {
 		.liinfo { display: none }
+	}
+	@media ( max-width: 612px ) {
+		#page-library i.search { display: none }
 	}
 	@media ( max-width: 590px ) {
 		#playback-row { align-items: flex-start }
