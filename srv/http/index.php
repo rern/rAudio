@@ -163,7 +163,7 @@ foreach( [ 'title', 'albumartist', 'artist', 'album', 'composer', 'conductor', '
 				<?=i( 'search btn btn-default input-group-btn', 'lib-search-btn' )?>
 			</div>
 		</div>
-		<a id="lib-search-close" class="search searchclose hide"></a>
+		<div id="lib-search-close" class="search searchclose hide"></div>
 		<div id="lib-path">
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
