@@ -1163,7 +1163,7 @@ $( '#page-library i.search' ).on( 'click', function() {
 	var $this   = $( this );
 	var icon    = $this.prop( 'class' ).replace( / .*/, '' );
 	var scrollT = $( '#search-list li' ).find( '.'+ icon ).eq( 0 ).parent().offset().top;
-	pageScroll( scrollT - ( D.bars ? 80 : 40 ) );
+	pageScroll( scrollT - ( $bartop.is( ':visible' ) ? 80 : 40 ) );
 	$( '#page-library i.search' ).addClass( 'gr' );
 	$this.removeClass( 'gr' );
 	
