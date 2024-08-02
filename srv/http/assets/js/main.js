@@ -1155,7 +1155,7 @@ $( '#lib-search-btn' ).on( 'click', function() { // search
 			} );
 			$( '#page-library i.search' ).removeClass( 'hide' );
 		} );
-		$( '#lib-breadcrumbs, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
+		$( '#lib-path, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
 		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );
 	}, 'json' );
 } );
@@ -1176,7 +1176,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	V.searchlist = false;
 	$( '#search-list' ).remove();
 	if ( $( '#lib-list' ).length ) {
-		$( '#lib-breadcrumbs, #button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
+		$( '#lib-path, #button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	} else {
 		$( '#lib-mode-list' ).removeClass( 'hide' );
 	}

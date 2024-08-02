@@ -1118,7 +1118,7 @@ function renderLibrary() { // library home
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-title, #lib-path>i, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).empty()
-	$( '#lib-breadcrumbs, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
+	$( '#lib-path, #lib-breadcrumbs, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
 	$( '#page-library .content-top, #page-library .search, #lib-list' ).addClass( 'hide' );

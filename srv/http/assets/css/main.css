@@ -1484,6 +1484,7 @@ i.map.disabled, .map.disabled i {
 	display: inline-block;
 	float: right;
 	margin-right: 5px;
+	font-size: 18px;
 }
 .searchclose::before {
 	content: "\F56C";
@@ -1495,10 +1496,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 26px;
 	text-align: center;
 	color: var( --cm );
-}
-.searchclose {
-	margin-right: 5px;
-	font-size: 18px;
 }
 #lib-path span i {
 	top: 3px;
