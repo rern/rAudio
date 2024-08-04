@@ -38,7 +38,7 @@ search
 */
 include 'function.php';
 
-$QUERY     = $_POST[ 'cmd' ];
+$CMD       = $_POST[ 'library' ];
 $GMODE     = $_POST[ 'gmode' ] ?? null;
 $MODE      = $_POST[ 'mode' ] ?? null;
 $STRING    = isset( $_POST[ 'string' ] ) ? escape( $_POST[ 'string' ] ) : null;
@@ -50,7 +50,7 @@ $index0    = '';
 $indexes   = [];
 foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/';
 
-switch( $QUERY ) {
+switch( $CMD ) {
 
 case 'find':
 	$format = str_replace( '%artist%', '[%albumartist%|%artist%]', $format );

@@ -136,9 +136,9 @@ function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
 		var path      = V.list.path;
 		var query     = {
-			  cmd    : 'ls'
-			, string : path
-			, format : [ 'file' ]
+			  library : 'ls'
+			, string  : path
+			, format  : [ 'file' ]
 		}
 		var modetitle = path;
 		query.gmode   = V.mode;
@@ -349,9 +349,9 @@ function tagEditor() {
 	var cue    = file.slice( -4 ) === '.cue';
 	if ( V.list.licover ) format = format.slice( 0, -2 );
 	var query = {
-		  cmd    : 'track'
-		, file   : file
-		, format : format
+		  library : 'track'
+		, file    : file
+		, format  : format
 	}
 	list( query, function( values ) {
 		name[ 1 ]    = 'Album Artist';
@@ -411,10 +411,10 @@ function tagEditor() {
 					
 					if ( V.playlist ) switchPage( 'library' );
 					var query  = {
-						  cmd    : 'find'
-						, mode   : mode
-						, string : string
-						, format : [ 'album', 'artist' ]
+						  library : 'find'
+						, mode    : mode
+						, string  : string
+						, format  : [ 'album', 'artist' ]
 					}
 					list( query, function( html ) {
 						var data = {
@@ -436,9 +436,9 @@ function tagEditor() {
 					switchPage( 'library' );
 					V.mode    = dir.split( '/' )[ 0 ].toLowerCase();
 					var query = {
-						  cmd    : 'ls'
-						, string : dir
-						, gmode  : V.mode
+						  library : 'ls'
+						, string  : dir
+						, gmode   : V.mode
 					}
 					list( query, function( html ) {
 						var data = {
