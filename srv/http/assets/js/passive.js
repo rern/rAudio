@@ -47,7 +47,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			}
 		} else {
 			renderPlaylistPadding();
-			if ( V.plhome ) {
+			if ( V.playlisthome ) {
 				setTimeout( () => {
 					setPlaylistInfoWidth();
 					setPlaylistScroll();
@@ -315,9 +315,8 @@ function psPlaylist( data ) {
 		return
 	}
 	
-	var plhome = V.playlist && V.plhome;
 	if ( 'song' in data ) {
-		if ( plhome ) renderPlaylist( data );
+		if ( V.playlist && V.playlisthome ) renderPlaylist( data );
 		playbackStatusGet();
 		return
 	}
@@ -325,7 +324,7 @@ function psPlaylist( data ) {
 	clearTimeout( V.debouncepl );
 	V.debouncepl = setTimeout( () => {
 		if ( 'refresh' in data ) {
-			if ( plhome ) {
+			if ( V.playlist && V.playlisthome ) {
 				var pos = data.refresh;
 				$( '#pl-list li' ).eq( pos ).remove();
 				$( '#pl-list li .pos' ).slice( pos - 1 ).each( ( i, el ) => {
@@ -340,7 +339,7 @@ function psPlaylist( data ) {
 			}
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
-			if ( V.savedpltrack && data.playlist === name ) renderSavedPlTrack( name );
+			if ( V.playlisttrack && data.playlist === name ) renderSavedPlTrack( name );
 		}
 		playbackStatusGet();
 	}, 300 );
@@ -353,9 +352,9 @@ function psRadioList( data ) {
 	if ( V.library ) {
 		if ( V.librarylist && V.mode === data.type ) radioRefresh();
 	} else if ( V.playlist ) {
-		if ( V.savedpl ) {
+		if ( V.playlistlist ) {
 			$( '#button-pl-playlists' ).trigger( 'click' );
-		} else if ( V.savedpltrack ) {
+		} else if ( V.playlisttrack ) {
 			renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
 		} else {
 			playlistGet();
@@ -430,9 +429,9 @@ function psRestore( data ) {
 function psSavedPlaylists( data ) {
 	var count   = data.count;
 	C.playlists = count;
-	if ( V.savedpl ) {
+	if ( V.playlistlist ) {
 		count ? renderSavedPl( data ) : $( '#playlist' ).trigger( 'click' );
-	} else if ( V.savedpltrack ) {
+	} else if ( V.playlisttrack ) {
 		if ( 'delete' in data && $( '#savedpl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 	}
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );

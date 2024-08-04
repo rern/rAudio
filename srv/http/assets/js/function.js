@@ -174,7 +174,7 @@ function colorSet() {
 			$( '#lib-list .li-icon' ).eq( 0 ).trigger( 'click' );
 		}
 	} else {
-		if ( V.plhome ) {
+		if ( V.playlisthome ) {
 			$( '#pl-list li' ).slice( 0, S.song ).css( 'display', 'none' );
 			$( '#pl-list li.active .li-icon' ).trigger( 'click' );
 		} else {
@@ -208,7 +208,7 @@ function colorSetPicker() {
 		var $bg_cga = D.bars ? $( '.content-top, #playback, #pl-index' ) : $( '.content-top, #pl-index' );
 		var $t_cg   = $( '#colorcancel, #button-pl-back' );
 		var $t_cgl  = $( '#pl-index a' );
-		var $t_cg60 = V.plhome ? $( '#pl-list li' ) : $( '#pl-savedlist li' );
+		var $t_cg60 = V.playlisthome ? $( '#pl-list li' ) : $( '#pl-savedlist li' );
 	}
 	var $menu_a     = $( '.menu a' ).not( '.hide' );
 	V.colorelements = $( 'body' ).add( $bg_cg ).add( $bg_cm ).add( $bg_cga ).add( $t_cg ).add( $t_cgl ).add( $t_cg60 ).add( $menu_a );
@@ -1092,9 +1092,9 @@ function refreshData() {
 	} else if ( V.playback ) {
 		playbackStatusGet( 'withdisplay' );
 	} else {
-		if ( V.savedpl ) {
+		if ( V.playlistlist ) {
 			$( '#button-pl-playlists' ).trigger( 'click' );
-		} else if ( V.savedpltrack ) {
+		} else if ( V.playlisttrack ) {
 			renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
 		} else {
 			playlistGet();
@@ -1313,10 +1313,10 @@ function renderPlaybackAll() {
 	renderPlayback();
 	bannerHide();
 }
-function renderPlaylist( data ) { // V.plhome - current playlist
-	V.plhome       = true;
-	V.savedpl      = false;
-	V.savedpltrack = false;
+function renderPlaylist( data ) { // V.playlisthome - current playlist
+	V.playlisthome  = true;
+	V.playlistlist  = false;
+	V.playlisttrack = false;
 	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
@@ -1362,31 +1362,31 @@ function renderPlaylistPadding() {
 }
 function renderPlaylistSet() {
 	$( '.emptyadd, #menu-plaction' ).addClass( 'hide' );
-	if ( V.plhome ) {
+	if ( V.playlisthome ) {
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).addClass( 'hide' );
 		$( '#pl-list, #pl-path, #pl-manage, #button-pl-playlists' ).removeClass( 'hide' );
 	} else {
-		$( '#pl-savedlist' ).css( 'width', V.savedpl ? '' : '100%' );
+		$( '#pl-savedlist' ).css( 'width', V.playlistlist ? '' : '100%' );
 		$( '#pl-list, #pl-path, #pl-manage, #pl-search, #button-pl-playlists' ).addClass( 'hide' );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).removeClass( 'hide' );
 	}
 	renderPlaylistPadding();
 }
-function renderSavedPl( data ) { // V.savedpl - list of saved playlists
-	V.plhome       = false;
-	V.savedpl      = true;
-	V.savedpltrack = false;
+function renderSavedPl( data ) { // V.playlistlist - list of saved playlists
+	V.playlisthome  = false;
+	V.playlistlist  = true;
+	V.playlisttrack = false;
 	$( '#savedpl-path' ).html( data.counthtml );
-	var barvisible = $bartop.is( ':visible' );
-	var html       = htmlHash( data.html );
+	var barvisible  = $bartop.is( ':visible' );
+	var html        = htmlHash( data.html );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	$( '#pl-list' ).after( html ).promise().done( renderPlaylistSet );
 }
-function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
-	V.plhome       = false;
-	V.savedpl      = false;
-	V.savedpltrack = true;
+function renderSavedPlTrack( name ) { // V.playlisttrack - tracks in a playlist
+	V.playlisthome  = false;
+	V.playlistlist  = false;
+	V.playlisttrack = true;
 	menuHide();
 	list( { playlist: 'get', name: name }, function( data ) {
 		$( '#page-playlist .index' ).remove();
@@ -1948,7 +1948,7 @@ function switchPage( page ) {
 		}
 		if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
 	} else if ( V.playlist ) {
-		if ( ! V.plhome ) V.plscrolltop = $( window ).scrollTop();
+		if ( ! V.playlisthome ) V.plscrolltop = $( window ).scrollTop();
 	}
 	V.library = V.playback = V.playlist = false;
 	V[ page ] = true;
@@ -1961,7 +1961,7 @@ function switchPage( page ) {
 	} else if ( V.library ) {
 		V.librarylist ? pageScroll( V.liscrolltop ) : renderLibrary();
 	} else {
-		if ( ! V.plhome ) pageScroll( V.plscrolltop );
+		if ( ! V.playlisthome ) pageScroll( V.plscrolltop );
 	}
 	$( '.page' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );

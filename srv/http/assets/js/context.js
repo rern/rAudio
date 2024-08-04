@@ -704,7 +704,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			} else if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
 				V.mpccmd = [ 'mpcaddfind', V.mode, path, 'album', V.list.album ];
 			} else { // directory / album / saved playlist track
-				V.mpccmd = V.savedpltrack ? [ 'mpcadd', path ] : [ 'mpcaddls', path ];
+				V.mpccmd = V.playlisttrack ? [ 'mpcadd', path ] : [ 'mpcaddls', path ];
 			}
 			break;
 		case 'pl':

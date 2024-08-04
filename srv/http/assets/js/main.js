@@ -7,36 +7,22 @@ V = {   // var global
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
-	, bioartist     : []
 	, blinkdot      : '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>'
 	, coverart      : '/assets/img/coverart.svg'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
-	, interval      : {}
 	, covervu       : '/assets/img/vu.svg'
-	, guide         : false
-	, library       : false
-	, librarylist   : false
-	, list          : {}
-	, local         : false
-	, lyrics        : ''
-	, lyricsartist  : ''
-	, lyricstitle   : ''
-	, mode          : ''
-	, modescrolltop : 0
 	, page          : 'playback'
-	, pladd         : false
-	, playback      : true
-	, playlist      : false
-	, plhome        : true
-	, query         : []
-	, rotate        : 0
 	, scrollspeed   : 80 // pixel/s
-	, scrolltop     : {}
 	, similarpl     : -1
-	, status        : {}
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
-}
+};
+[ 'bioartist',     'query' ].forEach(                                                     k => V[ k ] = []    );
+[ 'interval',      'list',         'scrolltop',   'status' ].forEach(                     k => V[ k ] = {}    );
+[ 'guide',         'library',      'librarylist', 'local', 'pladd', 'playlist' ].forEach( k => V[ k ] = false );
+[ 'lyrics',        'lyricsartist', 'mode' ].forEach(                                      k => V[ k ] = ''    );
+[ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0     );
+[ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true     );
 var $bartop     = $( '#bar-top' );
 var $time       = $( '#time-knob' );
 var $volume     = $( '#volume-knob' );
@@ -50,11 +36,11 @@ var picaOption  = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 var icon_player = {
-  airplay    : 'AirPlay'
-, bluetooth  : 'Bluetooth'
-, snapcast   : 'Snapcast'
-, spotify    : 'Spotify'
-, upnp       : 'UPnP'
+	  airplay   : 'AirPlay'
+	, bluetooth : 'Bluetooth'
+	, snapcast  : 'Snapcast'
+	, spotify   : 'Spotify'
+	, upnp      : 'UPnP'
 }
 var vumeter     = '<img class="imgicon" src="'+ V.covervu +'"> ';
 var chkdisplay  = {
@@ -437,7 +423,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	V.colorpicker   = false;
 	V.colorelements.removeAttr( 'style' );
 	V.colorelements = '';
-	if ( V.playlist && V.plhome ) setPlaylistScroll();
+	if ( V.playlist && V.playlisthome ) setPlaylistScroll();
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 } );
 $( '#library, #button-library' ).on( 'click', function() {
@@ -463,9 +449,9 @@ $( '#playback' ).on( 'click', function() {
 $( '#playlist, #button-playlist' ).on( 'click', function() {
 	if ( ! V.local ) V.pladd = false;
 	if ( V.playlist ) {
-		if ( ! V.plhome ) playlistGet();
+		if ( ! V.playlisthome ) playlistGet();
 	} else {
-		V.plhome ? playlistGet() : switchPage( 'playlist' );
+		V.playlisthome ? playlistGet() : switchPage( 'playlist' );
 	}
 } ).press( function() {
 	bash( [ 'plcacheremove' ] );
@@ -1628,7 +1614,7 @@ $( '#button-pl-back' ).on( 'click', function() {
 		playlistGet();
 		bannerHide();
 	} else {
-		V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
+		V.playlistlist ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 	}
 } );
 $( '#button-pl-consume' ).on( 'click', function() {
@@ -1896,7 +1882,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	if ( menushow && active ) return
 	
 	var liicon   = $target.hasClass( 'li-icon' );
-	if ( V.savedpltrack || liicon ) {
+	if ( V.playlisttrack || liicon ) {
 		if ( V.pladd ) {
 			V.pladd.index = $this.index();
 			V.pladd.track = $this.find( '.li1 .name' ).text()
@@ -1908,7 +1894,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 			V.list    = {};
 			V.list.li = $this; // for contextmenu
 			$( '#pl-savedlist li.active' ).removeClass( 'active' );
-			if ( V.savedpl ) {
+			if ( V.playlistlist ) {
 				V.list.name = $this.find( '.lipath' ).text().trim();
 				V.list.path = V.list.name;
 			} else {
@@ -1920,7 +1906,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 				$( '.remove' ).removeClass( 'hide' );
 				$( '.tag' ).addClass( 'hide' );
 				if ( ( D.tapaddplay || D.tapreplaceplay )
-					&& V.savedpltrack 
+					&& V.playlisttrack 
 					&& ! liicon
 					&& S.player === 'mpd'
 				) {
