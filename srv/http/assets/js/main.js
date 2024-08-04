@@ -1176,7 +1176,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	V.searchlist = false;
 	$( '#search-list' ).remove();
 	if ( $( '#lib-list' ).length ) {
-		$( '#lib-path, #button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
+		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	} else {
 		$( '#lib-mode-list' ).removeClass( 'hide' );
 	}
@@ -1184,7 +1184,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	$( '#page-library .search' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
-	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
+	$( '#lib-path, #lib-path span, #button-lib-search' ).removeClass( 'hide' );
 	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
 	$( '#lib-path' ).css( 'max-width', '' );
 } );
