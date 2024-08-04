@@ -1175,7 +1175,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	V.searchlist = false;
 	$( '#search-list' ).remove();
-	if ( $( '#lib-list' ).length ) {
+	if ( V.librarylist ) {
 		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	} else {
 		$( '#lib-mode-list' ).removeClass( 'hide' );
