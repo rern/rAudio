@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1720707602' );
+	src         : url( '/assets/fonts/rern.woff2?v=1721449042' );
 }
 @font-face {
 	font-family : Lato;
@@ -329,6 +329,9 @@ body {
 	width: 40px;
 	height: 40px;
 	z-index: 110;
+}
+#debug.active {
+	background : #000;
 }
 codered  {
 	padding : 0px 5px 3px 5px;

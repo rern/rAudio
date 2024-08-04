@@ -374,7 +374,7 @@ pushRefresh() {
 pushWebsocket() {
 	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
 		data='{ "channel": "'$2'", "data": '${@:3}' }'
-		websocat ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+		websocat -B 10485760 ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	fi
 }
 radioStatusFile() {
@@ -536,7 +536,7 @@ volumeGet() {
 		args="-c $card -M sget \"$mixer\""
 	fi
 	if [[ $args ]]; then # not mpd software
-		for i in {1..3}; do # some usb might not be ready
+		for i in {1..5}; do # some usb might not be ready
 			volume=$( amixer $args 2> /dev/null | grep -m1 % )
 			[[ $volume ]] && break || sleep 1
 		done
@@ -548,6 +548,7 @@ volumeGet() {
 		val=${val_db/ *}
 		db=${val_db/* }
 	fi
+	[[ ! $val ]] && val=0
 	case $1 in
 		push )
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'

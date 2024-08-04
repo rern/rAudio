@@ -267,7 +267,7 @@ function psMpdUpdate( data ) {
 				renderLibraryList( data );
 			} );
 		} else {
-			C = data.done;
+			$.each( data.done, ( k, v ) => C[ k ] = v );
 			renderLibraryCounts();
 		}
 		$( '#lib-list li' ).removeClass( 'nodata' );
@@ -302,29 +302,41 @@ function psOrder( data ) {
 function psPlaylist( data ) {
 	if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 	
+	if ( 'bl1nk' in data ) {
+		playlistBlink();
+		return
+	}
+	
+	playlistBlink( 'off' );
+	if ( 'blank' in data ) {
+		setPlaybackBlank();
+		renderPlaylist();
+		bannerHide();
+		return
+	}
+	
+	var plhome = V.playlist && V.plhome;
 	if ( 'song' in data ) {
-		$.each( data, ( k, v ) => S[ k ] = v );
-		if ( V.playlist ) setPlaylistScroll();
+		if ( plhome ) renderPlaylist( data );
+		playbackStatusGet();
 		return
 	}
 	
 	clearTimeout( V.debouncepl );
 	V.debouncepl = setTimeout( () => {
-		if ( data == -1 ) {
-			setPlaybackBlank();
-			renderPlaylist( -1 );
-			bannerHide();
-		} else if ( 'refresh' in data ) {
-			if ( V.playlist && V.plhome ) {
-				var i = data.refresh;
-				if ( i == -1 ) {
-					renderPlaylist( -1 );
-				} else if ( typeof i === 'number' ) {
-					local();
-					playlistRemove( $( '#pl-list li' ).eq( i - 1 ) );
-				} else {
-					playlistGet();
+		if ( 'refresh' in data ) {
+			if ( plhome ) {
+				var pos = data.refresh;
+				$( '#pl-list li' ).eq( pos ).remove();
+				$( '#pl-list li .pos' ).slice( pos - 1 ).each( ( i, el ) => {
+					$( el ).text( pos );
+					pos++
+				} );
+				if ( data.active ) {
+					S.song = data.active;
+					$( '#pl-list li' ).eq( S.song ).addClass( 'active' );
 				}
+				if ( $( '#pl-list li' ).length === 1 ) $( '#previous, #next' ).addClass( 'hide' );
 			}
 		} else {
 			var name = $( '#pl-path .lipath' ).text();

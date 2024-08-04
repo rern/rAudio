@@ -30,7 +30,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		if ( key === 'Escape' ) {
 			$( '.searchclose:not( .hide )' ).trigger( 'click' );
 		} else if ( key === 'Enter' ) {
-			$search.trigger( 'click' );
+			$search.find( '.btn' ).trigger( 'click' );
 		}
 		return
 	}
@@ -120,43 +120,20 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		return
 	}
 // common key -------------------------------------------------------
-	switch ( key ) {
-		case 'Backspace':
-			if ( V.playback || search ) return
-			
-			$( '#button-'+ ( V.library ? 'lib' : 'pl' ) +'-back:not( .hide )' ).trigger( 'click' );
-			return
-		case '#': // index bar
-		case 'a':
-		case 'z':
-			if ( $( '.search.hide' ).length ) return
-			key = key.toUpperCase();
-			if ( V.library && ! $( '#lib-list .index' ).hasClass( 'hide' ) ) {
-				$( '#lib-index' ).find( 'wh:contains('+ key +')' ).trigger( 'click' );
-				if ( V.albumlist ) {
-					$( '#lib-list .coverart.active' ).removeClass( 'active' );
-					if ( key !== '#' ) {
-						$( '#lib-list .coverart[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
-					} else {
-						$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
-					}
-				} else {
-					$( '#lib-list li.active' ).removeClass( 'active' );
-					if ( key !== '#' ) {
-						$( '#lib-list li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
-					} else {
-						$( '#lib-list li' ).eq( 0 ).addClass( 'active' );
-					}
-				}
-			} else if ( V.playlist && ! $( '#pl-list .index' ).hasClass( 'hide' ) ) {
-				$( '#pl-savedlist li.active' ).removeClass( 'active' );
-				if ( key !== '#' ) {
-					$( '#pl-savedlist li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
-				} else {
-					$( '#pl-savedlist li' ).eq( 0 ).addClass( 'active' );
-				}
-			}
-			return
+	if ( ( key >= 'a' && key <= 'z' ) || key === '#' ) {
+		var $page = $( '.page:not( .hide )' );
+		if ( ! $page.find( '.index:not( .hide )' ).length ) return
+		
+		$page.find( '.indexed:contains('+ key.toUpperCase() +')' ).eq( 0 ).trigger( 'click' );
+		$( '#lib-list, #pl-savedlist' ).find( '.active' ).removeClass( 'active' );
+		return
+	}
+	
+	if ( key === 'Backspace' ) {
+		if ( V.playback || $search.length ) return
+		
+		$( '#button-'+ ( V.library ? 'lib' : 'pl' ) +'-back:not( .hide )' ).trigger( 'click' );
+		return
 	}
 // arrow key -------------------------------------------------------
 	if ( V.playback ) {

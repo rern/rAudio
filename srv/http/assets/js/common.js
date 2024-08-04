@@ -1126,8 +1126,9 @@ function psPower( data ) {
 
 // page visibility -----------------------------------------------------------------
 function pageActive() {
-	if ( V.off ) return
+	if ( V.pageactive || V.off ) return
 	
+	V.pageactive = true;
 	if ( ws && ws.readyState === 1 ) {
 		V.timeoutreload = true;
 		setTimeout( () => { // reconnect if ws not response on wakeup
@@ -1137,9 +1138,6 @@ function pageActive() {
 	} else {
 		websocketReconnect();
 	}
-	if ( V.pageactive ) return
-	
-	V.pageactive = true;
 	setTimeout( refreshData, page ? 300 : 0 );
 }
 function pageInactive() {
@@ -1295,7 +1293,7 @@ $( '#debug' ).press( function() {
 	if ( V.debug ) {
 		V.debug = false;
 		refreshData();
-		$( '#debug' ).removeClass( 'bgm' );
+		$( '#debug' ).removeClass( 'active' );
 		console.log( '\x1B[36mDebug:\x1B[0m Disabled' );
 		return
 	}
@@ -1316,7 +1314,7 @@ $( '#debug' ).press( function() {
 					type = $( this ).val();
 					if ( type === 'debug' ) {
 						V.debug = true;
-						$( '#debug' ).addClass( 'bgm' );
+						$( '#debug' ).addClass( 'active' );
 						console.log( '\x1B[36mDebug:\x1B[0m Data to server blocked' );
 						$( '#infoX' ).trigger( 'click' );
 					} else {

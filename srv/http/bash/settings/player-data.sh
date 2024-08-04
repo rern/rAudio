@@ -28,8 +28,6 @@ data='
 , "bluetooth"        : '$bluetooth'
 , "btmixer"          : "'$btmixer'"
 , "btvolume"         : '$btvolume'
-, "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
-, "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "counts"           : '$( < $dirmpd/counts )'
 , "crossfade"        : '$( [[ $crossfade != 0 ]] && echo true )'
@@ -47,10 +45,7 @@ data='
 , "mixertype"        : '$( [[ $( getVar mixertype $dirshm/output ) != none ]] && echo true )'
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
 , "output"           : '$( conf2json -nocap $dirshm/output )'
-, "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
-, "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
 , "player"           : "'$( < $dirshm/player )'"
-, "pllength"         : '$( mpc status %length% )'
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
 , "replaygainconf"   : '$replaygainconf'
 , "soxr"             : '$( exists $dirsystem/soxr )'
@@ -62,5 +57,11 @@ data='
 , "updating_db"      : '$( [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating && echo true )'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volume"           : '$volume
+
+for key in buffer outputbuffer; do
+	data+='
+, "'$key'"          : '$( exists $dirmpdconf/$key.conf )'
+, "'$key'conf"      : '$( cut -d'"' -f2 $dirmpdconf/conf/$key.conf )
+done
 
 data2json "$data" $1

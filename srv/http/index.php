@@ -137,6 +137,8 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 } else {
 	$htmlvumeter = '';
 }
+$htmlsearchicon = '';
+foreach( [ 'title', 'albumartist', 'artist', 'album', 'composer', 'conductor', 'webradio' ] as $i ) $htmlsearchicon.= i( $i.' search gr hide' );
 ?>
 
 <div id="refresh" class="page-icon"></div>
@@ -151,16 +153,17 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<?=i( 'library active page-icon', 'button-library' )
+		  .$htmlsearchicon
 		  .i( 'search',                   'button-lib-search' )
 		  .i( 'back',                     'button-lib-back' )
 		  .i( 'refresh-library',          'button-lib-update' )?>
 		<div id="lib-search" class="search hide">
 			<div class="input-group">
-				<input id="lib-search-input" type="text">
+				<input id="lib-search-input" type="text" spellcheck="false">
 				<?=i( 'search btn btn-default input-group-btn', 'lib-search-btn' )?>
 			</div>
 		</div>
-		<div id="lib-search-close" class="searchclose"></div>
+		<div id="lib-search-close" class="search searchclose hide"></div>
 		<div id="lib-path">
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
@@ -271,16 +274,14 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		</div>
 		<form id="pl-search" class="search hide" method="post" onSubmit="return false;">
 			<div class="input-group">
-				<input id="pl-search-input" type="text">
+				<input id="pl-search-input" type="text" spellcheck="false">
 				<?=i( 'search btn btn-default input-group-btn', 'pl-search-btn' )?>
 			</div>
 		</form>
-		<div id="pl-search-close" class="searchclose hide"></div>
+		<div id="pl-search-close" class="search searchclose hide"></div>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list hide"></ul>
-	<div id="pl-index" class="index index0"></div>
-	<div id="pl-index1" class="index index1"></div>
 </div>
 
 <?=$menu?>

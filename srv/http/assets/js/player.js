@@ -171,9 +171,8 @@ $( '#setting-buffer' ).on( 'click', function() {
 		, message      : '<c>audio_buffer_size</c>'
 		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 40960 } } ]
 		, boxwidth     : 110
-		, values       : S.bufferconf
-		, checkchanged : true
-		, checkblank   : true
+		, values       : { KB: S.bufferconf }
+		, checkchanged : S.buffer
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
@@ -186,9 +185,8 @@ $( '#setting-outputbuffer' ).on( 'click', function() {
 		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 8192, max: 81920 } } ]
 		, focus        : 0
 		, boxwidth     : 110
-		, values       : S.outputbufferconf
-		, checkchanged : true
-		, checkblank   : true
+		, values       : { KB: S.outputbufferconf }
+		, checkchanged : S.outputbuffer
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );

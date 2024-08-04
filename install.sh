@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240719
+rm -f $dirshm/system
+
 lsblk -Sno path,vendor,model > $dirshm/lsblkusb
 
 file=$dirsystem/lcdcharconf.py
@@ -26,14 +28,10 @@ if grep -q '-server' $file; then
 	systemctl daemon-reload
 fi
 
-# 20240601
-file=/etc/pacman.conf
-grep -q bootloader $file && sed -i 's/li.*bootloader/libunwind/' $file
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
-rm -rf /srv/http/assets/{css,js}
+rm -rf /srv/http/assets/{css,js} /srv/http/{bash,settings}
 
 getinstallzip
 
@@ -45,13 +43,5 @@ $dirbash/cmd.sh cachebust
 # 20240615
 systemctl restart websocket
 systemctl try-restart rotaryencoder
-
-# 20240601
-for snap in $restart; do
-	$dirsettings/features.sh $snap
-	$dirsettings/features.sh "$snap
-true
-CMD ON"
-done
 
 installfinish

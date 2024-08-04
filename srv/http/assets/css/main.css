@@ -100,8 +100,8 @@ i.map.disabled, .map.disabled i {
 	color: var( --cgl );
 }
 @keyframes blink { 50% { color: transparent } }
-#library.blink,
-#button-library.blink {
+#bar-bottom i.blink,
+.page-icon.blink {
 	animation: 1.5s infinite linear blink;
 	text-shadow: none;
 }
@@ -213,20 +213,7 @@ i.map.disabled, .map.disabled i {
 .tagmessage div,
 #divlyricstitle,
 #lib-breadcrumbs,
-#lib-list li,
-#lib-list span,
-#lib-list .li1,
-#lib-list .li2,
-#lib-path,
-#lyricstitle,
-#lyricsartist,
-#pl-list li,
-#pl-list .li1 span,
-#pl-list .liname,
-#pl-list .li2,
-#pl-savedlist li,
-#pl-savedlist .li1 span,
-#pl-savedlist span {
+.list li * {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -254,6 +241,9 @@ i.map.disabled, .map.disabled i {
 #bar-bottom {
 	bottom: 0;
 	background: none;
+}
+#bar-bottom.transparent {
+	display: block !important;
 }
 .content-top,
 .licover,
@@ -326,7 +316,7 @@ i.map.disabled, .map.disabled i {
 	background: var( --cm );
 }
 #bar-bottom .i-mpd::before {
-	content: "\f507";
+	content: "\F507";
 }
 .renderer {
 	width: 100% !important;
@@ -378,7 +368,7 @@ i.map.disabled, .map.disabled i {
 #composer::before,
 #conductor::before {
 	content: '\F558\20';
-	font-family : rern;
+	font-family: rern;
 	font-size: 18px
 }
 #conductor::before {
@@ -576,6 +566,7 @@ i.map.disabled, .map.disabled i {
 	margin: 0 auto;
 	width: fit-content;
 	min-width: 230px;
+	max-width: 100%;
 }
 .cover {
 	width: 100%;
@@ -1079,10 +1070,12 @@ i.map.disabled, .map.disabled i {
 	box-shadow: 2px -2px 6px var( --cg );
 	-webkit-overflow-scrolling: touch;
 }
+.content-top i,
 #lyrics i {
 	width: 40px;
 	line-height: 40px;
 	text-align: center;
+	font-size: 24px;
 }
 #divlyricstitle,
 #divlyricsartist {
@@ -1123,7 +1116,6 @@ i.map.disabled, .map.disabled i {
 #lyricsedit,
 #lyricseditbtngroup {
 	float: right;
-	font-size: 28px;
 }
 .lyricstext {
 	height: calc(100vh - 100px);
@@ -1195,6 +1187,7 @@ i.map.disabled, .map.disabled i {
 	height: 50px;
 }
 .list {
+	margin: 0;
 	padding: 80px 0 0 0;
 }
 .bars-off {
@@ -1243,6 +1236,8 @@ i.map.disabled, .map.disabled i {
 	width: 36px;
 }
 #lib-mode-list gr {
+	position: absolute;
+	top: 45px;
 	margin-left: 8px;
 	font-size: 14px;
 }
@@ -1334,12 +1329,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 18px;
 	color: var( --cw );
 }
-.content-top i {
-	width: 40px;
-	line-height: 40px;
-	font-size: 24px;
-	text-align: center;
-}
 .button-webradio-new {
 	margin-left: 10px;
 }
@@ -1402,14 +1391,14 @@ i.map.disabled, .map.disabled i {
 .button-coverart::after {
 	position: relative;
 	margin-left: 4px;
-	content: '\f596';
+	content: '\F596';
 	font-family: rern;
 	font-size: 26px;
 	z-index: 2;
 }
 .button-coverart::before {
 	position: absolute;
-	content: '\f595';
+	content: '\F595';
 	color: var( --cg );
 	z-index: 1;
 }
@@ -1422,7 +1411,7 @@ i.map.disabled, .map.disabled i {
 }
 #mode-title,
 .pl-title {
-	font-size: 24px;
+	font-size: 24px !important;
 	font-weight: 300;
 	color: var( --cw );
 }
@@ -1449,7 +1438,7 @@ i.map.disabled, .map.disabled i {
 }
 #lib-search,
 #pl-search {
-	display: block;
+	display: inline-block;
 	max-width: 200px;
 	white-space: nowrap;
 	float: right;
@@ -1487,27 +1476,26 @@ i.map.disabled, .map.disabled i {
 	box-shadow: none !important;
 	outline: none !important;
 }
-#lib-search-close,
-#pl-search-close {
+.search.disabled {
+	color: var( --cg ) !important;
+	text-shadow: none;
+}
+.searchclose {
+	display: inline-block;
 	float: right;
 	margin-right: 5px;
-	font-family: Lato;
-	background-color: transparent;
-}
-#lib-search-close span,
-#pl-search-close span {
-	margin-left: 5px;
 	font-size: 18px;
 }
-#lib-search-close i,
-#pl-search-close i {
-	width: 30px;
-	vertical-align: -2px;
+.searchclose::before {
+	content: "\F56C";
+	font-family: rern;
+	display: inline-block;
+	width: 40px;
+	line-height: 40px;
+	margin-right: 5px;
+	font-size: 26px;
+	text-align: center;
 	color: var( --cm );
-}
-#lib-search-close span a,
-#pl-search-close span a {
-	color: var( --cg60 );
 }
 #lib-path span i {
 	top: 3px;
@@ -1540,7 +1528,8 @@ i.map.disabled, .map.disabled i {
 	height: 100%;
 	color: var( --cgl );
 }
-.index wh {
+.index a.indexed {
+	color: var( --cw );
 	text-shadow: var( --shadow-text );
 }
 .coverart div {
@@ -1582,9 +1571,6 @@ i.map.disabled, .map.disabled i {
 .licover.nofixed {
 	position: relative;
 }
-#lib-list li.track1 {
-	margin-top: 230px;
-}
 .licover.active {
 	background: linear-gradient( #000000 195px, var( --cm ) 0 );
 }
@@ -1616,147 +1602,12 @@ i.map.disabled, .map.disabled i {
 	line-height: 25px !important;
 	color: var( --cg60 ) !important;
 }
-#lib-list,
-#pl-savedlist {
-	width: calc( 100% - 38px );
-}
-#lib-list.album {
-	display: grid;
-	grid-template-columns: repeat( auto-fit, minmax( 160px, auto ) );
-}
-#lib-list.album.max200px { /* number less than windows width - set max at 200px*/
-	grid-template-columns: repeat( auto-fit, minmax( 160px, 200px ) );
-}
-@media ( max-width: 518px ) { #lib-list.album { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
-#lib-list,
-#pl-list,
-#pl-savedlist {
-	margin: 0;
-	list-style: none
-}
-#lib-list li,
-#pl-list li,
-#pl-savedlist li {
-	display: block;
-	height: 49px;
-	line-height: 20px;
-	border-bottom: 1px solid var( --cga );
-	font-size: 15px;
-}
 .lib-mode.updn .mode {
 	background: var( --cga );
-}
-#pl-list li.updn {
-	background: var( --cmd );
-}
-#pl-list li.active.updn {
-	background: var( --cma );
-}
-.li-icon,
-#lib-list li span i {
-	margin-right: 10px;
-}
-#pl-list .liname {
-	max-width: calc( 100% - 190px );
-}
-#lib-list .single {
-	line-height: 48px;
-	vertical-align: 5%;
-}
-#indexcover,
-.lipath,
-.lidir,
-.liname,
-.liindex,
-.lisort,
-.licue,
-.liartist,
-.lithumb,
-.liimg {
-	display: none;
-}
-.licover .liartist {
-	display: block;
-}
-#pl-savedlist span {
-	font-size: 18px;
-}
-#pl-savedlist span.plname {
-	line-height: 48px;
-}
-#lib-list li.active:not(.licover),
-#lib-list .active .coverart1,
-#lib-list .active .coverart2,
-#pl-list .active,
-#pl-savedlist .active {
-	color: var( --cw );
-	background: var( --cm );
-}
-#pl-list .pl-remove {
-	float: right;
-	position: relative;
-	width: 49px;
-	height: 49px;
-	margin: 0;
-	font-size: 24px;
-	line-height: 45px;
-	text-align: center;
-	color: var( --cg60 ) !important;
-}
-#pl-list li.active .pl-remove {
-	color: var( --cga ) !important;
-}
-.li-icon,
-#pl-savedlist span::before,
-#pl-savedlist i,
-#lib-list i {
-	width: 40px;
-	margin-top: 3px;
-	font-size: 24px;
-	line-height: 40px;
-	text-align: center;
-	color: var( --cg60 );
-}
-#lib-list i {
-	background: none !important;
-}
-.li-icon {
-	float: left;
-	display: block;
-	min-height: 20px;
-	text-align: center;
-}
-.iconthumb {
-	margin-top: 4px;
-	outline: 1px solid hsl(0,0%,15%);
-}
-li.active .iconthumb {
-	outline: none;
-}
-.savewr {
-	position: absolute;
-	margin: 27px 0 0 1px !important;
-	width: 20px !important;
-	height: 20px;
-	border-radius: 50%;
-	font-size: 16px !important;
-	line-height: 20px !important;
-	text-align: center;
-	color: #000000 !important;
-	background: var( --cg75 );
-}
-#pl-list li.radio {
-	margin: 0;
 }
 #pl-manage {
 	float: right;
 	font-size: 0;
-}
-#pl-manage i {
-	width: 40px;
-	line-height: 40px;
-	text-align: center;
-	font-size: 24px;
 }
 #li-count {
 	margin-left: 20px;
@@ -1778,19 +1629,123 @@ li.active .iconthumb {
 #countradio {
 	vertical-align: 5%;
 }
-#pl-list li::before {
-	margin-top: 9px;
+
+.list {
+	margin: 0;
+	list-style: none
 }
-#lib-list li,
-#pl-list li {
-	font-size: 18px;
+.list li {
+	display: block;
+	height: 49px;
+	line-height: 20px;
+	border-bottom: 1px solid var( --cga );
 	color: var( --cg60 );
 }
-#lib-list li span,
-.li1,
-.li1 a,
-w {
+.list li,
+#pl-savedlist a {
+	font-size: 18px;
+}
+#lib-list.album {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 160px, auto ) );
+}
+#lib-list.album.max200px { /* number less than windows width - set max at 200px*/
+	grid-template-columns: repeat( auto-fit, minmax( 160px, 200px ) );
+}
+@media ( max-width: 518px ) { #lib-list.album { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
+#lib-list li.track1 {
+	margin-top: 230px;
+}
+.list .single {
+	line-height: 48px;
+	vertical-align: 5%;
+}
+.list .name {
 	color: var( --cw );
+}
+.li-icon {
+	float: left;
+	display: block;
+	width: 40px;
+	min-height: 20px;
+	margin-top: 3px;
+	margin-right: 10px;
+	font-size: 24px;
+	line-height: 40px;
+	text-align: center;
+	color: var( --cg60 );
+}
+.iconthumb {
+	margin-top: 4px;
+	outline: 1px solid hsl(0,0%,15%);
+}
+li.active .iconthumb {
+	outline: none;
+}
+#lib-list i {
+	background: none !important;
+}
+#indexcover,
+.lipath,
+.lidir,
+.liname,
+.liindex,
+.lisort,
+.licue,
+.liartist,
+.lithumb,
+.liimg {
+	display: none;
+}
+.licover .liartist {
+	display: block;
+}
+#pl-list li.updn {
+	background: var( --cmd );
+}
+#pl-list li.active.updn {
+	background: var( --cma );
+}
+#pl-savedlist {
+	width: calc( 100% - 38px );
+}
+.list li.active:not(.licover),
+#lib-list .active a {
+	color: var( --cw );
+	background: var( --cm );
+}
+#pl-list .pl-remove {
+	float: right;
+	position: relative;
+	width: 49px;
+	height: 49px;
+	margin: 0;
+	font-size: 24px;
+	line-height: 45px;
+	text-align: center;
+	color: var( --cg60 ) !important;
+}
+#pl-list li.active .pl-remove {
+	color: var( --cga ) !important;
+}
+.savewr {
+	position: absolute;
+	margin: 27px 0 0 1px !important;
+	width: 20px !important;
+	height: 20px;
+	border-radius: 50%;
+	font-size: 16px !important;
+	line-height: 20px !important;
+	text-align: center;
+	color: #000000 !important;
+	background: var( --cg75 );
+}
+#pl-list li.radio {
+	margin: 0;
+}
+
+.lib-mode.nodata {
+	pointer-events: none;
 }
 .lib-mode.nodata i {
 	color: var( --cg ) !important;
@@ -1807,25 +1762,21 @@ w {
 li.active .li1 bl {
 	color: var( --cga ) !important;
 }
-#lib-list .li1,
-#pl-list .li1,
-#pl-savedlist .li1 {
+.list .li1 {
+	height: 30px;
 	padding: 5px 10px 0 0;
 }
 #pl-list .li1 span,
-#pl-savedlist .li1 span {
+#pl-savedlist .li1 a {
 	display: inline-block;
 	max-width: calc( 100% - 105px );
 }
-.time {
+.list .time {
 	margin-left: 10px;
 	color: var( --cg60 ) !important;
 }
 #pl-list .time {
 	margin-left: 0;
-}
-#pl-list a {
-	color: var( --cw );
 }
 #pl-list .elapsed i {
 	margin: 0 10px 0 5px;
@@ -1834,29 +1785,18 @@ li.active .li1 bl {
 #pl-list .elapsed {
 	margin: 0 3px 0 7px;
 }
-#lib-list .li2,
-#pl-list .li2,
-#pl-savedlist .li2 {
+.list .li2 {
 	display: block;
 	max-width: calc( 100vw - 60px );
-	font-size: 14px;
 	line-height: 14px;
+	font-size: 14px;
 }
-.li2,
-.li2 a,
-.li2 span {
+.list .li2 * {
 	font-size: 14px !important;
-	color: var( --cg60 )
-}
-#lib-list .li2 {
-	line-height: 24px;
+	color: var( --cg60 );
 }
 #pl-savedlist .li2 {
 	max-width: 100%;
-	line-height: 10px;
-}
-#pl-list .li2 a {
-	color: var( --cg60 );
 }
 #pl-list .unsaved {
 	color: var( --cw );
@@ -1883,9 +1823,10 @@ li.active .name bl {
 li.active .li2 bl {
 	color: var( --cw ) !important;
 }
+
 .lib-sortable-ghost .mode::after {
 	position: absolute;
-	content: "\f600";
+	content: "\F600";
 	font-family: rern;
 	left: 0;
 	top: 0;
@@ -1912,12 +1853,12 @@ li.active .li2 bl {
 }
 .pl-sortable-ghost::before {
 	position: absolute;
-	content: "\f601";
+	content: "\F601";
 	font-family: rern;
 	width: 40px;
+	text-align: center;
 	font-size: 22px;
 	line-height: 30px;
-	text-align: center;
 	color: var( --cw );
 }
 #playlist-empty {
@@ -2130,6 +2071,9 @@ li.active .li2 bl {
 	@media ( max-width: 700px ) {
 		.liinfo { display: none }
 	}
+	@media ( max-width: 612px ) {
+		#page-library i.search { display: none }
+	}
 	@media ( max-width: 590px ) {
 		#playback-row { align-items: flex-start }
 	}
@@ -2150,24 +2094,21 @@ li.active .li2 bl {
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }
 		#lib-list li span i,
-		#pl-savedlist span::before { display: none }
-		#lib-list li { line-height: 52px }
-		#lib-list .li1,
-		#pl-list .li1,
-		#pl-savedlist span,
+		#pl-savedlist a::before { display: none }
+		.list li {
+			font-size: 16px;
+		}
+		.list .li1,
+		#pl-savedlist a,
 		.time {
 			font-size: 16px;
 			line-height: 19px;
 		}
-		#lib-list span.single,
-		#pl-list span.single { padding-left: 0 }
-		#lib-list .li2,
-		#pl-list .li2,
-		#pl-savedlist .li2	{
+		.list span.single { padding-left: 0 }
+		.list .li2 {
 			font-size: 12px;
-			line-height: 14px;
+			line-height: 20px;
 		}
-		#lib-list .li2 { line-height: 20px }
 		#bioimg {
 			float: none;
 			width: 100%;

@@ -5,6 +5,7 @@
 date=$( date +'%F <gr>•</gr> %T' )
 load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )
 temp=$( vcgencmd measure_temp | tr -cd '0-9.' )
+availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
 since=$( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )
@@ -12,6 +13,7 @@ uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minut
 status="\
 $load<br>\
 $temp °C<br>\
+$availmem<br>\
 $date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
 if [[ -e $dirshm/cpuinfo ]]; then

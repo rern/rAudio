@@ -213,7 +213,7 @@ heading.status .headtitle::after,
 	font-family: rern;
 	font-style: normal;
 	font-size: 22px;
-	content: "\f605";
+	content: '\F605';
 	text-align: center;
 	color: var( --cg60 );
 	letter-spacing: normal;
@@ -223,7 +223,7 @@ heading.status .headtitle.active::after,
 #ffmpegfiletype.active::after,
 .listtitle.jsplugins.active::after,
 .divaddon .revision.active::after {
-	content: "\f604" !important;
+	content: '\F604' !important;
 }
 .col-l.status gr::after,
 #ffmpegfiletype::after,
@@ -291,7 +291,7 @@ heading i.disabled {
 #bar-bottom div {
 	display: inline-block;
 	width: calc( 100% / 5 );
-	max-width: 165px;
+	max-width: 160px;
 	height: 40px;
 	cursor: pointer;
 }
@@ -602,30 +602,36 @@ input.disabled + .switchlabel:after {
 }
 #guideimg {
 	display: block;
-	margin: 40px auto 0;
+	margin: 50vh auto 0;
+	transform: translateY(-50%);
 	width: auto;
 	height: auto;
 	max-width: 650px;
-	max-height: 100%;
+	max-height: calc( 100% - 80px );
 	border: 1px solid hsl(0,0%,15%);
 }
-#guideprev,
-#guidenext {
+#prev,
+#next {
 	display: none;
 	width: 40px !important;
 	line-height: 40px;
 }
 
+@media (max-height: 730px) {
+	#guideimg {
+		margin-top: 40px;
+		transform: unset;
+	}
+}
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
 	.head .i-gear { display: inline-block }
 	.container { height: calc( 100% - 40px ) }
+	#guideimg { max-height: calc( 100% - 40px ) }
 	#bar-bottom { display: none }
 }
 @media (max-width: 800px) {
-	#bar-bottom {
-		padding: 0 20px;
-	}
+	#bar-bottom { padding: 0 20px }
 }
 @media (max-width: 700px) {
 	.container { padding: 0 10px 80px }
@@ -671,12 +677,12 @@ input.disabled + .switchlabel:after {
 }
 @media (hover: hover) {
 	#bar-bottom.guide div { width: calc( 100% / 5 ) }
-	#guideprev,
-	#guidenext { display: inline-block }
+	#prev,
+	#next { display: inline-block }
 	#fader { z-index: 5 }
 	#bar-bottom div:hover,
-	#guidenext:hover,
-	#guideprev:hover { background-color: var( --cgd ) }
+	#next:hover,
+	#prev:hover { background-color: var( --cgd ) }
 	#bar-bottom div.active:hover { background-color: var( --cma ) }
 	a:hover { text-decoration: none }
 	.entries li:hover { background: var( --cga ) }

@@ -106,11 +106,14 @@ playerStop() {
 plClear() {
 	mpc -q clear
 	radioStop
-	rm -f $dirsystem/librandom
-	pushData playlist '{ "refresh": -1 }'
+	rm -f $dirsystem/librandom $dirshm/playlist
+	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
 }
 pushPlaylist() {
-	pushData playlist '{ "refresh": true }'
+	pushData playlist '{ "blink": true }'
+	rm -f $dirshm/playlist
+	[[ $( mpc status %length% ) == 0 ]] && data='{ "blank": true }' || data=$( php /srv/http/playlist.php current )
+	pushData playlist $data
 }
 pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
@@ -347,6 +350,26 @@ dabscan )
 	$dirbash/dab-scan.sh &> /dev/null &
 	pushData mpdupdate '{ "type": "dabradio" }'
 	;;
+dirdelete )
+	[[ ! $CONFIRM && $( ls "$DIR" ) ]] && echo -1 && exit
+# --------------------------------------------------------------------
+	rm -rf "$DIR"
+	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
+	pushRadioList
+	;;
+dirnew )
+	mkdir -p "$DIR"
+	chown -h http:http "$$DIR"
+	chmod 755 "$$DIR"
+	pushRadioList
+	;;
+dirrename )
+	[[ -e "$DIR/$NEWNAME" ]] && echo -1 && exit
+# --------------------------------------------------------------------
+	mv -f "$DIR/$NAME" "$DIR/$NEWNAME"
+	pushRadioList
+	;;
 display )
 	pushData display $( < $dirsystem/display.json )
 	# temp
@@ -438,7 +461,7 @@ lyrics )
 		echo -e "$DATA" > "$lyricsfile"
 	elif [[ $ACTION == delete ]]; then
 		rm -f "$lyricsfile"
-	elif [[ -e "$lyricsfile" ]]; then
+	elif [[ $ACTION != refresh && -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
 		. $dirsystem/lyrics.conf
@@ -563,13 +586,15 @@ mpcplayback )
 	;;
 mpcremove )
 	if [[ $POS ]]; then
-		[[ $( mpc status %songpos% ) == $POS ]] && radioStop
+		if [[ $( mpc status %songpos% ) == $POS ]]; then
+			[[ $( mpc status %length% ) == $POS ]] && next=$(( POS -1 )) || next=$POS
+		fi
 		mpc -q del $POS
-		pushData playlist '{ "refresh": '$POS' }'
-		if [[ $CURRENT ]]; then
-			mpc -q play $CURRENT
+		if [[ $next ]]; then
+			mpc -q play $next
 			mpc -q stop
 		fi
+		pushPlaylist
 	else
 		plClear
 	fi
@@ -632,7 +657,7 @@ mpcskip )
 		rm -f $dirshm/skip
 		mpc -q stop
 	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom || pushData playlist '{ "song": '$(( POS - 1 ))' }'
+	[[ -e $dirsystem/librandom ]] && plAddRandom || pushPlaylist
 	;;
 mpcskippl )
 	radioStop
@@ -640,7 +665,7 @@ mpcskippl )
 	Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
 	[[ $Time == 0 ]] && Time=false
 	[[ $ACTION == stop ]] && mpc -q stop
-	pushData playlist '{ "song": '$(( POS - 1 ))', "elapsed": 0, "Time": '$Time', "state": "'$ACTION'" }'
+	pushPlaylist
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
@@ -684,6 +709,9 @@ order )
 	;;
 pladdrandom )
 	plAddRandom
+	;;
+plcacheremove )
+	rm -f $dirshm/playlist*
 	;;
 playerstart )
 	playerStart
@@ -792,19 +820,16 @@ webradiocoverreset )
 	;;
 webradiodelete )
 	urlname=${URL//\//|}
+	rm -f "$DIR/$urlname"
 	path=$dirdata/$MODE
-	[[ $DIR ]] && path+="/$DIR"
-	rm -f "$path/$urlname"
 	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/$urlname".* "$path/img/$urlname-thumb".*
 	webradioCount $MODE
 	;;
 webradioedit )
 	newurlname=${NEWURL//\//|}
 	urlname=${URL//\//|}
-	path=$dirwebradio/
-	[[ $DIR ]] && path+="/$DIR"
-	newfile="$path/$newurlname"
-	prevfile="$path/$urlname"
+	newfile="$DIR/$newurlname"
+	prevfile="$DIR/$urlname"
 	if [[ $NEWURL == $URL ]]; then
 		sampling=$( sed -n 2p "$prevfile" )
 	else
@@ -829,26 +854,6 @@ webradioedit )
 $NAME
 $sampling
 $CHARSET" > "$newfile"
-	pushRadioList
-	;;
-wrdirdelete )
-	file="$dirdata/$MODE/$NAME"
-	[[ ! $CONFIRM && $( ls "$file" ) ]] && echo -1 && exit
-# --------------------------------------------------------------------
-	rm -rf "$file"
-	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
-	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
-	pushRadioList
-	;;
-wrdirnew )
-	[[ $DIR ]] && path="$dirwebradio/$DIR/$SUB" || path="$dirwebradio/$SUB"
-	mkdir -p "$path"
-	chown -h http:http "$path"
-	chmod 755 "$path"
-	pushRadioList
-	;;
-wrdirrename )
-	mv -f "$dirdata/$MODE/{$NAME,$NEWNAME}"
 	pushRadioList
 	;;
 	
