@@ -806,7 +806,7 @@ function list( query, callback, json ) {
 	}
 	
 	$.post(
-		  'playlist' in query  ? 'playlist.php' : 'library.php'
+		  'library' in query  ? 'library.php' : 'playlist.php'
 		, query
 		, callback || null
 		, json || null
