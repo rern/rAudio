@@ -597,7 +597,7 @@ function imageOnError( el, bookmark ) {
 		$this.attr( 'src', V.coverart );
 	} else { // bookmark
 		var icon = ico( 'bookmark bl' );
-		if ( ! V.librarylist ) icon += '<a class="label">'+ bookmark +'</a>';
+		if ( V.libraryhome ) icon += '<a class="label">'+ bookmark +'</a>';
 		$this.replaceWith( icon );
 		$( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
 	}
@@ -769,13 +769,10 @@ function intervalClear() {
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
 function intervalElapsedClear() {
-	clearInterval( V.interval.elapsed );
-	clearInterval( V.interval.elapsedpl );
+	[ 'elapsed', 'elapsedpl' ].forEach( k => clearInterval( V.interval[ k ] ) );
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
 function libraryHome() {
-	V.mode        = '';
-	V.librarylist = false;
 	list( { library: 'home' }, function( data ) {
 		O             = data.order;
 		S.updating_db = data.updating;
@@ -1071,9 +1068,8 @@ function refreshData() {
 	if ( V.library ) {
 		if ( $( '#lib-search-input' ).val() ) return
 		
-		if ( ! V.librarylist ) { // home
+		if ( V.libraryhome ) { // home
 			libraryHome();
-			setButtonUpdate();
 		} else {
 			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) return
 			
@@ -1112,9 +1108,10 @@ function refreshData() {
 	}
 }
 function renderLibrary() { // library home
-	V.mode         = '';
+	V.libraryhome = true;
+	V.mode        = '';
 	[ 'albumlist', 'librarylist', 'librarytrack', 'searchlist' ].forEach( k => V[ k ] = false );
-	V.query        = [];
+	V.query       = [];
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-path .lipath' ).empty()
 	$( '#lib-path, #lib-title, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
@@ -1143,6 +1140,7 @@ function renderLibrary() { // library home
 	$( '.bkedit' ).remove();
 	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
 	renderLibraryCounts();
+	setButtonUpdate();
 }
 function renderLibraryCounts() {
 	var songs    = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
@@ -1158,6 +1156,7 @@ function renderLibraryCounts() {
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 }
 function renderLibraryList( data ) { // V.librarylist
+	V.libraryhome  = false;
 	if ( V.librarylist && data.html === V.librarylisthtml ) {
 		if ( V.color ) colorSet()
 		return

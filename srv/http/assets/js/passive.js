@@ -161,7 +161,7 @@ function psDisplay( data ) {
 		displayPlayback();
 		renderPlayback();
 	} else if ( V.library ) {
-		if ( ! V.librarylist ) {
+		if ( V.libraryhome ) {
 			renderLibrary();
 		} else {
 			$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
