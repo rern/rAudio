@@ -47,7 +47,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			}
 		} else {
 			renderPlaylistPadding();
-			if ( ! V.savedpl && ! V.savedpltrack ) {
+			if ( V.plhome ) {
 				setTimeout( () => {
 					setPlaylistInfoWidth();
 					setPlaylistScroll();

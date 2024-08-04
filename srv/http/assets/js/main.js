@@ -437,7 +437,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	V.colorpicker   = false;
 	V.colorelements.removeAttr( 'style' );
 	V.colorelements = '';
-	if ( V.playlist && ! V.savedpl && ! V.savedpltrack) setPlaylistScroll();
+	if ( V.playlist && V.plhome ) setPlaylistScroll();
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 } );
 $( '#library, #button-library' ).on( 'click', function() {
