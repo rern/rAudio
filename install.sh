@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240815
+file=/etc/pacman.conf
+! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant/}' $file
+
 # 20240719
 rm -f $dirshm/system
 
@@ -21,13 +25,6 @@ if [[ -e $dir/59.jpg ]]; then
 	curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
 fi
 
-# 20240612
-file=/etc/systemd/system/websocket.service
-if grep -q '-server' $file; then
-	sed -i 's/-server//' $file
-	systemctl daemon-reload
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -39,9 +36,5 @@ getinstallzip
 dirPermissions
 $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
-
-# 20240615
-systemctl restart websocket
-systemctl try-restart rotaryencoder
 
 installfinish

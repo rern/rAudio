@@ -328,10 +328,8 @@ function coverartChange() {
 	}
 	if ( 'discid' in S ) {
 		var imagefilenoext = '/srv/http/data/audiocd/'+ S.discid;
-		var type = 'audiocd';
 	} else {
 		var imagefilenoext = '/mnt/MPD/'+ path +'/cover';
-		var type = 'coverart';
 	}
 	if ( V.playback ) {
 		var pbonlinefetched = $( '#divcover .cover-save' ).length;
@@ -362,7 +360,7 @@ function coverartChange() {
 			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, 'CMD COVERFILE MPDPATH ARTIST ALBUM' ] );
 		}
 		, ok          : () => {
-			imageReplace( type, imagefilenoext );
+			imageReplace( 'coverart', imagefilenoext );
 			banner( icon, title, 'Change ...' );
 		}
 	} );

@@ -40,7 +40,7 @@ case $type in
 		fi
 		convert "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		;;
-	dabradio|webradio )
+	dabradio | webradio )
 		rm -f "$targetnoext".* "$targetnoext-thumb".*
 		if [[ ! $gif ]]; then
 			cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
