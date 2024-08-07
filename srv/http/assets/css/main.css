@@ -1094,9 +1094,9 @@ i.map.disabled, .map.disabled i {
 	display: inline-block;
 	margin-left: 10px;
 	width: calc( 100% - 84px );
+	vertical-align: 10px;
 	font-size: 26px;
 	font-weight: 300;
-	line-height: 40px;
 }
 #lyricsartist {
 	display: inline-block;
