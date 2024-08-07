@@ -1161,10 +1161,10 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	V.searchlist = false;
 	$( '#search-list' ).remove();
-	if ( V.librarylist ) {
-		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
-	} else {
+	if ( V.libraryhome ) {
 		$( '#lib-mode-list' ).removeClass( 'hide' );
+	} else {
+		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	}
 	$( '#lib-search-btn' ).removeClass( 'disabled' );
 	$( '#page-library .search' ).addClass( 'hide' );
