@@ -29,7 +29,7 @@ case $Status in
 	stopped ) state=stop;;
 esac
 
-name=$( tr -d ' "`?/#&'"'" <<< $Artist$Album )
+name=$( tr -dc '[:alnum:]' <<< $Artist$Album )
 onlinefile=$( ls $dirshm/online/$name.* 2> /dev/null ) # jpg / png
 if [[ -e $onlinefile ]]; then
 	coverart="${onlinefile:9}"

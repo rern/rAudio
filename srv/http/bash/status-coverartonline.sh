@@ -4,7 +4,7 @@
 
 args2var "$1"
 
-name=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
+name=$( tr -dc '[:alnum:]' <<< $ARTIST$ALBUM )
 name=${name,,}
 
 ### 1 - lastfm ##################################################

@@ -6,13 +6,13 @@ args2var "$1"
 
 if playerActive upnp; then
 	upnp=1
-	name=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
+	name=$( tr -dc '[:alnum:]' <<< $ARTIST$ALBUM )
 	localfile=$dirshm/local/${name,,}
 else
 	filename=$( basename "$FILE" )
 	path="/mnt/MPD/$FILE"
 	[[ -f "$path" ]] && path=$( dirname "$path" )
-	localfile=$dirshm/local/$( tr -d ' "`?/#&'"'" <<< $path )
+	localfile=$dirshm/local/$( tr -dc '[:alnum:]' <<< $path )
 fi
 # found cover file
 if [[ -f $localfile ]]; then
@@ -21,12 +21,12 @@ if [[ -f $localfile ]]; then
 fi
 
 # found embedded
-embeddedname=$( tr -d ' "`?/#&'"'" <<< $filename ).jpg
+embeddedname=$( tr -dc '[:alnum:]' <<< $filename ).jpg
 embeddedfile=$dirshm/embedded/$embeddedname
 [[ -f "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
 # --------------------------------------------------------------------
 # found online
-covername=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
+covername=$( tr -dc '[:alnum:]' <<< $ARTIST$ALBUM )
 onlinefile=$( ls -1X $dirshm/online/${covername,,}.{jpg,png} 2> /dev/null | head -1 )
 [[ -f $onlinefile ]] && echo ${onlinefile:9} && exit
 # --------------------------------------------------------------------

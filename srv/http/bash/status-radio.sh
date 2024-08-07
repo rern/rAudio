@@ -124,12 +124,12 @@ $( jq -r .albumTitle <<< $track )"
 	[[ ! $artist ]] && artist=$( jq -r '.composers // empty' <<< $step )
 	if [[ ! -e $dirsystem/vumeter ]]; then
 		if [[ $coverurl ]]; then
-			name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
+			name=$( tr -dc '[:alnum:]' <<< $artist$title )
 			ext=${coverurl/*.}
 			coverart=/data/shm/webradio/$name.$ext
 			curl -s $coverurl -o $dirshm/webradio/$name.$ext
 		else
-			name=$( tr -d ' "`?/#&'"'" <<< $artist$album )
+			name=$( tr -dc '[:alnum:]' <<< $artist$album )
 			coverfile=$( ls $dirshm/webradio/${name,,}.* )
 			coverart=${coverfile:9}
 		fi
