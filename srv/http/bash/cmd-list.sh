@@ -9,6 +9,8 @@
 
 . /srv/http/bash/common.sh
 
+modes='album albumbyartist-year latest albumartist artist composer conductor genre date'
+
 albumList() {
 	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
 	[[ $mpclistall ]] && albumlist=$( awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}'<<< $mpclistall ) # exclude no album tag, strip filename, sort unique
@@ -36,8 +38,6 @@ rm -f $dirmpd/updating
 
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
 rm -f $dirmpd/updatestart
-
-modes='album albumbyartist-year latest albumartist artist composer conductor genre date'
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 if [[ -e $dirdabradio ]]; then
@@ -150,8 +150,8 @@ if [[ $albumdiff ]]; then
 	fi
 fi
 rm -f $dirshm/{albumprev,deleted}
-##### non-album - albumartist artist composer conductor genre date
-modenonalbum=${modes/*latest }
+
+modenonalbum=${modes/*latest } # albumartist artist composer conductor genre date
 for mode in $modenonalbum; do
 	data=$( mpc list $mode | awk NF )
 	if [[ $data ]]; then
