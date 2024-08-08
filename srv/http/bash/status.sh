@@ -239,14 +239,15 @@ fileheader=${file:0:4}
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
+	audiocd=1
 	if [[ -e $diraudiocd/$discid ]]; then
 		discid=$( < $dirshm/audiocd )
 		track=${file/*\/}
-		readarray -t audiocd <<< $( sed -n "$track p" $diraudiocd/$discid | tr ^ '\n' )
-		Artist=${audiocd[0]}
-		Album=${audiocd[1]}
-		Title=${audiocd[2]}
-		Time=${audiocd[3]}
+		readarray -t disciddata <<< $( sed -n "$track p" $diraudiocd/$discid | tr ^ '\n' )
+		Artist=${disciddata[0]}
+		Album=${disciddata[1]}
+		Title=${disciddata[2]}
+		Time=${disciddata[3]}
 		if [[ $displaycover ]]; then
 			coverfile=$( ls $diraudiocd/$discid.* 2> /dev/null | head -1 )
 			[[ $coverfile ]] && coverart="${coverfile:9}"
@@ -408,7 +409,7 @@ fi
 
 samplingfile=$dirshm/sampling/$( tr -dc '[:alnum:]' <<< $file )
 
-if [[ $ext == CD ]]; then
+if [[ $audiocd ]]; then
 	sampling='16 bit 44.1 kHz 1.41 Mbit/s • CD'
 elif [[ $ext == DAB ]]; then
 	sampling='48 kHz 160 kbit/s • DAB'
@@ -482,7 +483,7 @@ if [[ ! $sampling ]]; then
 	fi
 	[[ $ext != Radio ]] && sampling+=" • $ext"
 fi
-if [[ $sampling && $ext != Radio && $player != upnp ]]; then
+if [[ $sampling && ! $audiocd && $ext != Radio && $player != upnp ]]; then
 	echo $sampling > $samplingfile
 	files=$( ls -1t $dirshm/sampling 2> /dev/null )
 	(( $( wc -l <<< $files ) > 20 )) && rm -f "$( tail -1 <<< $files )"
@@ -505,7 +506,7 @@ if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 # --------------------------------------------------------------------
 fi
 
-if [[ $player == upnp || ( ! $stream && $ext != CD ) ]]; then
+if [[ $player == upnp || ( ! $stream && ! $audiocd ) ]]; then
 	getcover=1
 	[[ ! $AlbumArtist ]] && AlbumArtist=$Artist
 	coverart=$( $dirbash/status-coverart.sh "cmd
