@@ -58,8 +58,7 @@ else
 	coverfile=$dirshm/$prefix/$name.$ext
 fi
 curl -sfL $url -o $coverfile
-[[ $? != 0 ]] && pushDataCoverart && exit
-# --------------------------------------------------------------------
-coverurl=${coverfile:9}
-[[ $MODE == webradio && ! -e $dirshm/radio ]] && radioalbum=$( jq -r '.title // empty' <<< $album ) # radioparadise / radiofrance - already got album name
-pushDataCoverart "$coverurl" "$radioalbum"
+if [[ $? == 0 ]]; then
+	[[ $MODE == webradio && ! -e $dirshm/radio ]] && radioalbum=$( jq -r '.title // empty' <<< $album ) # radioparadise / radiofrance - already got album name
+	pushDataCoverart "${coverfile:9}" "$radioalbum"
+fi
