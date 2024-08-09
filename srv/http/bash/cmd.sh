@@ -663,7 +663,7 @@ mpcskippl )
 	mpc -q play $POS
 	Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
 	[[ $Time == 0 ]] && Time=false
-	[[ $ACTION == stop ]] && mpc -q stop
+	[[ $ACTION != play ]] && mpc -q stop
 	pushPlaylist
 	;;
 mpcupdate )
