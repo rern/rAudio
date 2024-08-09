@@ -4,9 +4,6 @@
 
 args2var "$1"
 
-name=$( tr -dc '[:alnum:]' <<< $ARTIST$ALBUM )
-name=${name,,}
-
 ### 1 - lastfm ##################################################
 if [[ $MODE != webradio || -e $dirshm/radio ]]; then # not webradio || radioparadise / radiofrance
 	param="album=${ALBUM//&/ and }"
@@ -55,7 +52,8 @@ if [[ $DISCID ]]; then
 	coverfile=$diraudiocd/$DISCID.$ext
 else
 	[[ $MODE ]] && prefix=$MODE || prefix=online
-	coverfile=$dirshm/$prefix/$name.$ext
+	name=$( alphaNumeric $ARTIST$ALBUM )
+	coverfile=$dirshm/$prefix/${name,,}.$ext
 fi
 curl -sfL $url -o $coverfile
 if [[ $? == 0 ]]; then

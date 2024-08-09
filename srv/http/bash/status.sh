@@ -273,7 +273,7 @@ elif [[ $stream ]]; then
 , "Time"   : "'$duration'"
 , "Title"  : "'$Title'"'
 		if [[ $displaycover ]]; then # fetched coverart
-			covername=$( tr -dc '[:alnum:]' <<< $Artist$Album )
+			covername=$( alphaNumeric $Artist$Album )
 			covername=${covername,,}
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
 			[[ $onlinefile ]] && coverart="${onlinefile:9}"
@@ -342,7 +342,7 @@ elif [[ $stream ]]; then
 					Artist=$station
 				fi
 				# fetched coverart
-				covername=$( tr -dc '[:alnum:]' <<< "$Artist${Title/ (*}" ) # remove '... (extra tag)'
+				covername=$( alphaNumeric "$Artist${Title/ (*}" ) # remove '... (extra tag)'
 				covername=${covername,,}
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
@@ -407,7 +407,7 @@ else
 , "Title"     : "'$Title'"'
 fi
 
-samplingfile=$dirshm/sampling/$( tr -dc '[:alnum:]' <<< $file )
+samplingfile=$dirshm/sampling/$( alphaNumeric $file )
 
 if [[ $audiocd ]]; then
 	sampling='16 bit 44.1 kHz 1.41 Mbit/s • CD'

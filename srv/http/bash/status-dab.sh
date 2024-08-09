@@ -30,7 +30,7 @@ while true; do
 	# coverart
 	coverart=
 	if [[ $( awk NF $filecover ) ]]; then
-		name=$( tr -dc '[:alnum:]' < $filetitle )
+		name=$( alphaNumeric $title )
 		coverfile=/srv/http/data/shm/webradio/$name.jpg
 		if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
 			cp -f $filecover $coverfile

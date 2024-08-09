@@ -475,8 +475,7 @@ lyrics )
 			fi
 		fi
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
-		title=${TITLE//\/}
-		query=$( tr -dc '[:alnum:]/' <<< "$artist/$title" )
+		query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
 		lyrics=$( curl -sL -A firefox $url/${query,,}.html | sed -n "/$start/,\|$end| p" )
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
