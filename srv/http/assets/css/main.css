@@ -1780,7 +1780,7 @@ li.active .li1 bl {
 }
 #pl-list .elapsed i {
 	margin: 0 10px 0 5px;
-	line-height: 17px; /* for ios */
+	vertical-align: -4px;
 }
 #pl-list .elapsed {
 	margin: 0 3px 0 7px;
