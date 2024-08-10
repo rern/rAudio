@@ -1729,7 +1729,6 @@ function setPlaylistScroll() {
 		|| [ 'airplay', 'spotify' ].includes( S.player )
 		|| ( D.audiocd && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
 	) {
-		$( '#page-playlist' ).css( 'visibility', '' );
 		return
 	}
 	
@@ -1746,7 +1745,6 @@ function setPlaylistScroll() {
 		}
 		pageScroll( top );
 	}
-	$( '#page-playlist' ).css( 'visibility', '' );
 	$( '#pl-list .elapsed' ).empty();
 	var $elapsed     = $liactive.find( '.elapsed' );
 	var $name        = $liactive.find( '.li1 .name' );
