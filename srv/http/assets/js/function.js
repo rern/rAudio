@@ -1748,20 +1748,19 @@ function setPlaylistScroll() {
 	}
 	$( '#page-playlist' ).css( 'visibility', '' );
 	$( '#pl-list .elapsed' ).empty();
-	var $this        = $( '#pl-list li' ).eq( S.song );
-	var $elapsed     = $this.find( '.elapsed' );
-	var $name        = $this.find( '.li1 .name' );
-	var $stationname = $this.find( '.li2 .stationname' );
-	var webradio     = $this.hasClass( 'webradio' )
+	var $elapsed     = $liactive.find( '.elapsed' );
+	var $name        = $liactive.find( '.li1 .name' );
+	var $stationname = $liactive.find( '.li2 .stationname' );
+	var webradio     = $liactive.hasClass( 'webradio' )
 	$stationname.addClass( 'hide' );
 	if ( S.state === 'stop' || S.player === 'snapcast' ) {
-		if ( webradio ) $name.text( $this.find( '.liname' ).text() );
+		if ( webradio ) $name.text( $liactive.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
 		if ( S.elapsed === false ) return
 		
 		var slash = S.Time ? ' <gr>/</gr>' : '';
-		if ( S.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( S.Time ) );
+		if ( S.player === 'upnp' ) $liactive.find( '.time' ).text( second2HMS( S.Time ) );
 		if ( S.state === 'pause' ) {
 			elapsedtxt = second2HMS( S.elapsed );
 			$elapsed.html( ico( 'pause' ) + elapsedtxt + slash );
@@ -1771,6 +1770,14 @@ function setPlaylistScroll() {
 			if ( webradio ) {
 				$stationname.removeClass( 'hide' );
 				$name.html( S.Title || '·&ensp;·&ensp;·' );
+				if ( S.coverart ) {
+					setTimeout( () => {
+						var coverart = S.coverart + versionHash();
+						$liactive.find( 'img' )
+							.data( 'src', coverart )
+							.attr( 'src', coverart );
+						}, 300 );
+				}
 			}
 			var elapsedL0 = 0;
 			var elapsedL  = 0;
