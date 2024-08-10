@@ -1749,11 +1749,12 @@ function setPlaylistScroll() {
 	var $elapsed     = $liactive.find( '.elapsed' );
 	var $name        = $liactive.find( '.li1 .name' );
 	var $stationname = $liactive.find( '.li2 .stationname' );
-	var webradio     = $liactive.hasClass( 'webradio' )
 	$stationname.addClass( 'hide' );
 	if ( S.state === 'stop' || S.player === 'snapcast' ) {
-		if ( webradio ) $name.text( $liactive.find( '.liname' ).text() );
-		$stationname.addClass( 'hide' );
+		if ( S.webradio ) {
+			$name.text( $liactive.find( '.liname' ).text() );
+			setPlaylistWebRadioCoverart();
+		}
 	} else {
 		if ( S.elapsed === false ) return
 		
@@ -1764,17 +1765,12 @@ function setPlaylistScroll() {
 			$elapsed.html( ico( 'pause' ) + elapsedtxt + slash );
 			setPlaylistInfoWidth();
 		} else if ( S.state === 'play' ) {
-			$stationname.removeClass( 'hide' );
-			if ( webradio ) {
+			if ( S.webradio ) {
 				$stationname.removeClass( 'hide' );
 				$name.html( S.Title || '·&ensp;·&ensp;·' );
-				if ( S.coverart ) {
-					setTimeout( () => {
-						var coverart = S.coverart + versionHash();
-						$liactive.find( 'img' )
-							.data( 'src', coverart )
-							.attr( 'src', coverart );
-						}, 300 );
+				if ( S.coverart && S.coverart !== S.stationcover ) {
+					$liactive.find( 'img' ).on( 'lazyloaded', setPlaylistWebRadioCoverart ); // fix - lazysizes load stationcover
+					setPlaylistWebRadioCoverart(); // lazysizes already loaded
 				}
 			}
 			var elapsedL0 = 0;
@@ -1799,6 +1795,12 @@ function setPlaylistScroll() {
 			}, 1000 );
 		}
 	}
+}
+function setPlaylistWebRadioCoverart() {
+	var coverart = S.state === 'play' ? S.coverart + versionHash() : S.stationcover;
+	$( '#pl-list li.active img' )
+		.data( 'src', coverart )
+		.attr( 'src', coverart);
 }
 function setPlayPauseColor() {
 	var pause = S.state === 'pause';
