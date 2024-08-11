@@ -105,9 +105,8 @@ case 'home':
 		$lipath   = str_replace( ' ', '', $mode );
 		$modeLC   = strtolower( $lipath );
 		$htmlmode.=
-'<div class="lib-mode">
-	<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
-		<a class="lipath">'.$modeLC.'</a>
+'<div class="lib-mode '.$modeLC.'" data-mode="'.$modeLC.'">
+	<div class="mode">
 		<i class="i-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
 	</div>
 </div>';
@@ -129,10 +128,10 @@ case 'home':
 				$src     .= $bkpath.'/coverart.jpg';
 			}
 			$htmlmode.=
-'<div class="lib-mode bookmark">
-	<div class="mode mode-bookmark '.$bkradio.'" data-mode="bookmark">
-		<a class="lipath li2">'.$bkpath.'</a>
-		<a class="bkname name hide">'.$name.'</a>
+'<div class="lib-mode bookmark '.$bkradio.'">
+	<a class="lipath">'.$bkpath.'</a>
+	<div class="mode">
+		<a class="bkname hide">'.$name.'</a>
 		<img class="bkcoverart" src="'.$src.'^^^">
 	</div>
 </div>';

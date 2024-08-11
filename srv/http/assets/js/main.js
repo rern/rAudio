@@ -249,7 +249,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 		case 'displaycolor':
 			V.color = true;
 			if ( V.library ) {
-				V.librarylist && V.mode !== 'album' ? colorSet() : $( '#mode-webradio' ).trigger( 'click' );
+				V.librarylist && V.mode !== 'album' ? colorSet() : $( '.lib-mode.webradio' ).trigger( 'click' );
 			} else if ( V.playlist && S.pllength ) {
 				colorSet();
 			} else {
@@ -1193,7 +1193,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		V.query.pop();
 		var query = V.query.slice( -1 )[ 0 ];
 		if ( query === 'album' ) {
-			$( '#mode-album' ).trigger( 'click' );
+			$( '.lib-mode.album' ).trigger( 'click' );
 		} else {
 			if ( 'gmode' in query ) V.mode = query.gmode;
 			list( query, function( html ) {
@@ -1219,9 +1219,8 @@ $( '#button-lib-back' ).on( 'click', function() {
 } );
 $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
-} ).on( 'click', '.lib-mode:not( .bookmark, .bkradio )', function() {
-	var $this       = $( this );
-	V.mode          = $this.find( '.mode' ).data( 'mode' );
+} ).on( 'click', '.lib-mode:not( .bookmark, .bkradio, .nodata )', function() {
+	V.mode          = $( this ).data( 'mode' );
 	V.modescrolltop = $( window ).scrollTop();
 	$( '#lib-search-close' ).trigger( 'click' );
 	if ( V.mode === 'playlists' ) {
@@ -1305,7 +1304,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 		, okno      : true
 	} );
-} ).on( 'click', '.mode-bookmark:not( .bkradio )', function( e ) { // delegate - id changed on renamed
+} ).on( 'click', '.lib-mode.bookmark:not( .bkradio )', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );
 	if ( V.press || $( '.bkedit' ).length ) return
 	
@@ -1384,18 +1383,21 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
 		, ok          : () => imageReplace( 'bookmark', imagefilenoext, name ) // no ext
 	} );
-} ).press( '.mode-bookmark', setBookmarkEdit );
+} ).press( '.lib-mode.bookmark', setBookmarkEdit );
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
 	, onMove       : function() {
 		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
+		$( '.lib-mode.bookmark' ).find( '.mode, img' ).removeAttr( 'style' );
 	}
 	, onUpdate      : function () {
 		var order = [];
-		$( '.mode' ).each( ( i, el ) => order.push( $( el ).find( '.lipath' ).text() ) );
+		$( '.lib-mode' ).each( ( i, el ) => {
+			var $el  = $( el );
+			order.push( $el.hasClass( 'bookmark' ) ? $el.find( '.lipath' ).text() : $( el ).data( 'mode' ) );
+		} );
 		jsonSave( 'order', order );
 	}
 } );

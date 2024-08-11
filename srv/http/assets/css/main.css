@@ -1744,9 +1744,6 @@ li.active .iconthumb {
 	margin: 0;
 }
 
-.lib-mode.nodata {
-	pointer-events: none;
-}
 .lib-mode.nodata i {
 	color: var( --cg ) !important;
 }

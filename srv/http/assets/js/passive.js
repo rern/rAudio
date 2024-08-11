@@ -10,7 +10,7 @@ function radioRefresh() {
 			renderLibraryList( data );
 		} );
 	} else {
-		$( '#mode-'+ V.mode ).trigger( 'click' );
+		$( '.lib-mode.'+ V.mode ).trigger( 'click' );
 	}
 }
 function statusUpdate( data ) {
@@ -189,7 +189,7 @@ function psDisplay( data ) {
 					$( '.licover' ).toggleClass( 'nofixed', ! D.fixedcover );
 				}
 			} else if ( V.mode === 'album' ) {
-				if ( albumlistchanged ) $( '#mode-album' ).trigger( 'click' );
+				if ( albumlistchanged ) $( '.lib-mode.album' ).trigger( 'click' );
 			}
 		}
 	}
@@ -235,7 +235,7 @@ function psMpdUpdate( data ) {
 	if ( 'counts' in data ) {
 		$.each( data.counts, ( k, v ) => {
 			C[ k ] = v;
-			$( '#mode-'+ k ).parent().toggleClass( 'nodata', ! v || v === 0 );
+			$( '.lib-mode.'+ k ).toggleClass( 'nodata', ! v || v === 0 );
 			if ( V.mode === k ) $( '#library' ).trigger( 'click' );
 			$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
 		} );
@@ -347,7 +347,7 @@ function psPlaylist( data ) {
 function psRadioList( data ) {
 	if ( 'count' in data ) {
 		C[ data.type ] = data.count;
-		$( '#mode-'+ data.type +' gr' ).text( data.count );
+		$( '.lib-mode.'+ data.type +' gr' ).text( data.count );
 	}
 	if ( V.library ) {
 		if ( V.librarylist && V.mode === data.type ) radioRefresh();
@@ -435,7 +435,7 @@ function psSavedPlaylists( data ) {
 		if ( 'delete' in data && $( '#savedpl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 	}
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
-	$( '#mode-playlists gr' ).text( count || '' );
+	$( '.lib-mode.playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
 	if ( V.local ) {

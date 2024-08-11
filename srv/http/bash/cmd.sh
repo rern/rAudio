@@ -228,9 +228,9 @@ bookmarkcoverreset )
 	;;
 bookmarkremove )
 	bkfile="$dirbookmarks/${NAME//\//|}"
-	path=$( < "$bkfile" )
-	if grep -q "$path" $dirsystem/order.json 2> /dev/null; then
-		order=$( jq '. - ["'$path'"]' $dirsystem/order.json )
+	if [[ -e $dirsystem/order.json ]]; then
+		path=$( sed 's/"/\\"/g' "$bkfile" )
+		order=$( cat $dirsystem/order.json | jq "del( .. | select( . == \"$path\" ) )" )
 		echo "$order" > $dirsystem/order.json
 	fi
 	rm "$bkfile"
