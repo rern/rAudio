@@ -1253,8 +1253,7 @@ i.map.disabled, .map.disabled i {
 	overflow: hidden;
 }
 .bkcoverart {
-	position: relative;
-	top: 5px;
+	margin-top: 5px;
 	height: 100px;
 	max-width: 100%;
 	border: 1px solid hsl(0,0%,15%);
