@@ -1143,7 +1143,7 @@ function renderLibraryCounts() {
 		$this
 			.toggleClass( 'hide', ! D[ mode ] )
 			.toggleClass( 'nodata', ! count );
-		if ( typeof v !== 'boolean' ) $this.find( 'gr' ).html( count ? count.toLocaleString() : '' );
+		if ( typeof count !== 'boolean' ) $this.find( 'gr' ).html( count ? count.toLocaleString() : '' );
 	} );
 	if ( D.albumyear ) $( '.lib-mode.album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
 	$( '.lib-mode gr' ).toggleClass( 'hide', ! D.count );
