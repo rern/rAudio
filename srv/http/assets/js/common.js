@@ -1102,7 +1102,7 @@ function psNotify( data ) {
 			intervalClear();
 		} else if ( title === 'Latest' ) {
 			C.latest = 0;
-			$( '.lib-mode.latest gr' ).empty();
+			$( '.mode.latest gr' ).empty();
 			if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
 		}
 	}

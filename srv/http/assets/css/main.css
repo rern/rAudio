@@ -1213,6 +1213,14 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 );
 	text-align: center;
 }
+.mode.edit {
+	background: hsl( 0, 0%, 15% );
+}
+.mode.edit .i-bookmark,
+.mode.edit img,
+.mode.edit .label {
+	opacity: 0.33;
+}
 .mode i:not( .bkedit ) {
 	display: inline-block;
 	padding-top: 20px;
@@ -1602,7 +1610,7 @@ i.map.disabled, .map.disabled i {
 	line-height: 25px !important;
 	color: var( --cg60 ) !important;
 }
-.lib-mode.updn .mode {
+.mode.updn {
 	background: var( --cga );
 }
 #pl-manage {
@@ -1744,7 +1752,7 @@ li.active .iconthumb {
 	margin: 0;
 }
 
-.lib-mode.nodata i {
+.mode.nodata i {
 	color: var( --cg ) !important;
 }
 #lib-list li.nodata * {

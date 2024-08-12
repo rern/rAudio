@@ -147,9 +147,9 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		// home /////////////////////////////////////////
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
 			if ( arrow ) {
-				focusNext( $( '.lib-mode:not( .hide ):not( .nodata )' ), 'updn', key );
+				focusNext( $( '.mode:not( .hide ):not( .nodata )' ), 'updn', key );
 			} else if ( key === 'Enter' ) {
-				$( '.lib-mode.updn' ).trigger( 'click' );
+				$( '.mode.updn' ).trigger( 'click' );
 			}
 			return
 		}

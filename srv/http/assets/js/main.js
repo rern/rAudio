@@ -249,7 +249,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 		case 'displaycolor':
 			V.color = true;
 			if ( V.library ) {
-				V.librarylist && V.mode !== 'album' ? colorSet() : $( '.lib-mode.webradio' ).trigger( 'click' );
+				V.librarylist && V.mode !== 'album' ? colorSet() : $( '.mode.webradio' ).trigger( 'click' );
 			} else if ( V.playlist && S.pllength ) {
 				colorSet();
 			} else {
@@ -1193,7 +1193,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		V.query.pop();
 		var query = V.query.slice( -1 )[ 0 ];
 		if ( query === 'album' ) {
-			$( '.lib-mode.album' ).trigger( 'click' );
+			$( '.mode.album' ).trigger( 'click' );
 		} else {
 			if ( 'gmode' in query ) V.mode = query.gmode;
 			list( query, function( html ) {
@@ -1219,7 +1219,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 } );
 $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
-} ).on( 'click', '.lib-mode:not( .bookmark, .bkradio, .nodata )', function() {
+} ).on( 'click', '.mode:not( .bookmark, .bkradio, .nodata )', function() {
 	V.mode          = $( this ).data( 'mode' );
 	V.modescrolltop = $( window ).scrollTop();
 	$( '#lib-search-close' ).trigger( 'click' );
@@ -1304,7 +1304,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 		, okno      : true
 	} );
-} ).on( 'click', '.lib-mode.bookmark:not( .bkradio )', function( e ) { // delegate - id changed on renamed
+} ).on( 'click', '.mode.bookmark:not( .bkradio )', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );
 	if ( V.press || $( '.bkedit' ).length ) return
 	
@@ -1383,20 +1383,20 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
 		, ok          : () => imageReplace( 'bookmark', imagefilenoext, name ) // no ext
 	} );
-} ).press( '.lib-mode.bookmark', setBookmarkEdit );
+} ).press( '.mode.bookmark', setBookmarkEdit );
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
 	, onMove       : function() {
 		$( '.bkedit' ).remove();
-		$( '.lib-mode.bookmark' ).find( '.mode, img' ).removeAttr( 'style' );
+		$( '.mode.edit' ).removeClass( 'edit' );
 	}
 	, onUpdate      : function () {
 		var order = [];
-		$( '.lib-mode' ).each( ( i, el ) => {
+		$( '.mode' ).each( ( i, el ) => {
 			var $el  = $( el );
-			order.push( $el.hasClass( 'bookmark' ) ? $el.find( '.lipath' ).text() : $( el ).data( 'mode' ) );
+			order.push( $el.hasClass( 'bookmark' ) ? $el.find( '.lipath' ).text() : $el.data( 'mode' ) );
 		} );
 		jsonSave( 'order', order );
 	}

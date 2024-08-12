@@ -791,7 +791,7 @@ function libraryHome() {
 			imageOnError( this, $( this ).prev().text() );
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
-		if ( V.color ) $( '.lib-mode.webradio' ).trigger( 'click' );
+		if ( V.color ) $( '.mode.webradio' ).trigger( 'click' );
 	}, 'json' );
 }
 function list( query, callback, json ) {
@@ -899,9 +899,9 @@ function mpcSeekBar( pageX ) {
 function orderLibrary() {
 	O.forEach( mode => {
 		if ( mode.includes( '/' ) ) {
-			var $libmode = $( '.lib-mode.bookmark' ).filter( ( i, el ) => $( el ).find( '.lipath' ).text() === mode );
+			var $libmode = $( '.mode.bookmark' ).filter( ( i, el ) => $( el ).find( '.lipath' ).text() === mode );
 		} else {
-			var $libmode = $( '.lib-mode.'+ mode );
+			var $libmode = $( '.mode.'+ mode );
 		}
 		$libmode.detach();
 		$( '#lib-mode-list' ).append( $libmode );
@@ -1076,7 +1076,7 @@ function refreshData() {
 			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) return
 			
 			if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
-				$( '.lib-mode.album' ).trigger( 'click' );
+				$( '.mode.album' ).trigger( 'click' );
 			} else if ( V.query.length ) {
 				var query = V.query.slice( -1 )[ 0 ];
 				list( query, function( html ) {
@@ -1088,7 +1088,7 @@ function refreshData() {
 					renderLibraryList( data );
 				} );
 			} else {
-				$( '.lib-mode.'+ V.mode ).trigger( 'click' );
+				$( '.mode.'+ V.mode ).trigger( 'click' );
 			}
 		}
 	} else if ( V.playback ) {
@@ -1129,14 +1129,14 @@ function renderLibrary() { // library home
 	if ( O ) orderLibrary();
 	pageScroll( V.modescrolltop );
 	$( '.bkedit' ).remove();
-	$( '.lib-mode.bookmark' ).find( '.mode, img' ).removeAttr( 'style' );
+	$( '.mode.edit' ).removeClass( 'edit' );
 	renderLibraryCounts();
 	setButtonUpdate();
 }
 function renderLibraryCounts() {
 	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$( '.lib-mode:not( .bookmark )' ).each( ( i, el ) => {
+	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
 		var mode  = $this.data( 'mode' );
 		var count = C[ mode ];
@@ -1145,9 +1145,9 @@ function renderLibraryCounts() {
 			.toggleClass( 'nodata', ! count );
 		if ( typeof count !== 'boolean' ) $this.find( 'gr' ).html( count ? count.toLocaleString() : '' );
 	} );
-	if ( D.albumyear ) $( '.lib-mode.album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
-	$( '.lib-mode gr' ).toggleClass( 'hide', ! D.count );
-	$( '.lib-mode .label' ).toggleClass( 'hide', ! D.label );
+	if ( D.albumyear ) $( '.mode.album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
+	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
+	$( '.mode .label' ).toggleClass( 'hide', ! D.label );
 }
 function renderLibraryList( data ) { // V.librarylist
 	V.libraryhome  = false;
@@ -1426,22 +1426,19 @@ function setBlinkDot() {
 function setBookmarkEdit() {
 	if ( $( '.bkedit' ).length ) {
 		$( '.bkedit' ).remove();
-		$( '.lib-mode.bookmark' ).find( '.mode, img' ).removeAttr( 'style' );
+		$( '.mode.edit' ).removeClass( 'edit' );
 		return
 	}
 	
 	V.bklabel = $( this ).find( '.label' );
-	$( '.lib-mode.bookmark' ).each( ( i, el ) => {
+	$( '.mode.bookmark' ).each( ( i, el ) => {
 		var $this      = $( el );
 		var buttonhtml = ico( 'remove bkedit bk-remove' );
 		if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit bkedit bk-rename' );
 		if ( ! S.webradio ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
-		$this.find( '.mode' ).append( buttonhtml );
+		$this.append( buttonhtml );
 	} );
-	$( '.lib-mode.bookmark .mode' )
-		.css( 'background', 'hsl(0,0%,15%)' )
-		.find( '.i-bookmark, .label, img' )
-		.css( 'opacity', 0.33 );
+	$( '.mode.bookmark' ).addClass( 'edit' );
 }
 function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', S.relayson );
