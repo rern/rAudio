@@ -3,19 +3,28 @@
 . /srv/http/bash/common.sh
 
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
-	local apm info ust                # timeout: limit if network shares offline
-	[[ $1 == usbdrive ]] && apm=$( hdparm -B $3 | awk '/APM/ {print $NF}' ) # N / not supported
+	local apm icon info mounted mountpoint size usf
+	icon=$1
+	mountpoint=$2
+	source=$3
+	mounted=$4
+	[[ $icon == usbdrive ]] && apm=$( hdparm -B $source | awk '/APM/ {print $NF}' ) # N / not supported
 	[[ ! $apm || $apm == supported ]] && apm=false
 	info=false
-	[[ $1 != networks ]] && hdparm -I $3 &> /dev/null && info=true
-	[[ $4 == true ]] && size=$( timeout 1 df -H --output=used,size,fstype $2 | awk '!/Used/ {print $1"B/"$2"B <gr>"$3"</gr>"}' )
+	[[ $icon != networks ]] && hdparm -I $source &> /dev/null && info=true
+	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
+		usf=( $( timeout 1 df -H --output=used,size,fstype $mountpoint | awk '!/Used/ {print $1" "$2" "$3}' ) )
+		size=${usf[0]}B/
+		[[ ${usf[2]} == iso9660 ]] && size+=$( lsblk -ndo SIZE $source ) || size+=${usf[1]}
+		size+="B <gr>${usf[2]}</gr>"
+	fi
 	echo ',{
   "apm"        : '$apm'
-, "icon"       : "'$1'"
+, "icon"       : "'$icon'"
 , "info"       : '$info'
-, "mountpoint" : "'$( stringEscape $2 )'"
+, "mountpoint" : "'$( stringEscape $mountpoint )'"
 , "size"       : "'$size'"
-, "source"     : "'$3'"
+, "source"     : "'$source'"
 }'
 }
 # sd
