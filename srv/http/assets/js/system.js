@@ -238,7 +238,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
 		var mounted = list.size !== '';
-		$( '#menu .info' ).toggleClass( 'hide', list.apm === false || list.icon === 'networks' );
+		$( '#menu .info' ).toggleClass( 'hide', ! list.info );
 		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
 		$( '#menu .sleep' ).toggleClass( 'hide', ! list.apm );

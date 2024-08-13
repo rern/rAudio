@@ -3,17 +3,20 @@
 . /srv/http/bash/common.sh
 
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
-	local apm ust                # timeout: limit if network shares offline
-	[[ $4 == true ]] && ust=$( timeout 1 df -H --output=used,size,fstype $2 | awk '!/Used/ {print $1"B/"$2"B "$3}' )
+	local apm info ust                # timeout: limit if network shares offline
 	[[ $1 == usbdrive ]] && apm=$( hdparm -B $3 | awk '/APM/ {print $NF}' ) # N / not supported
 	[[ ! $apm || $apm == supported ]] && apm=false
+	info=false
+	[[ $1 != networks ]] && hdparm -I $3 &> /dev/null && info=true
+	[[ $4 == true ]] && ust=$( timeout 1 df -H --output=used,size,fstype $2 | awk '!/Used/ {print $1"B/"$2"B "$3}' )
 	echo ',{
-  "icon"       : "'$1'"
+  "apm"        : '$apm'
+, "icon"       : "'$1'"
+, "info"       : '$info'
 , "fs"         : "'${ust/* }'"
 , "mountpoint" : "'$( stringEscape $2 )'"
 , "size"       : "'${ust/ *}'"
 , "source"     : "'$3'"
-, "apm"        : '$apm'
 }'
 }
 # sd
