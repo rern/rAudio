@@ -1679,23 +1679,23 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			  icon       : 'playlist'
 			, title      : 'Remove From Playlist'
 			, list       : [
-				  [ '', 'radio', { kv: { '<i class="i-remove"></i>    <gr>Select...</gr>' : 'Select' } } ]
-				, [ '', 'radio', { kv: { '<i class="i-track"></i>     <gr>Range...</gr>'  : 'Range'  } } ]
-				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   <gr>Crop</gr>'      : 'Crop'   } } ]
-				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> <gr>All</gr>'       : 'All'    } } ]
+				  [ '', 'radio', { kv: { '<i class="i-remove"></i>    <gr>Select...</gr>' : 'select' } } ]
+				, [ '', 'radio', { kv: { '<i class="i-track"></i>     <gr>Range...</gr>'  : 'range'  } } ]
+				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   <gr>Crop</gr>'      : 'crop'   } } ]
+				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> <gr>All</gr>'       : 'all'    } } ]
 			]
 			, beforeshow : () => {
 				$( '#infoList input:checked' ).prop( 'checked', false );
 				$( '#infoList input' ).on( 'input', function() {
 					var cmd = $( '#infoList input:checked' ).val();
 					switch ( cmd ) {
-						case 'Select':
+						case 'select':
 							$( '#pl-list .li1' ).before( ico( 'remove pl-remove' ) );
 							$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
 							infoButtonCommand();
 							local();
 							break;
-						case 'Range':
+						case 'range':
 							var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true } }
 							info( {
 								  icon     : 'playlist'
@@ -1706,11 +1706,11 @@ $( '#button-pl-clear' ).on( 'click', function() {
 								, ok       : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
 							} );
 							break;
-						case 'Crop':
+						case 'crop':
 							bash( [ 'mpccrop' ] );
 							$( '#pl-list li:not( .active )' ).remove();
 							break;
-						case 'All':
+						case 'all':
 							bash( [ 'mpcremove' ] );
 							setPlaybackBlank();
 							renderPlaylist();
