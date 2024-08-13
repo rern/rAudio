@@ -1196,7 +1196,7 @@ function renderStorage() {
 		var dot = '<grn>&ensp;•&ensp;</grn>';
 		if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
 		html += '<li>'+ ico( v.icon ) + mountpoint
-				+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +' <gr>'+ v.fs +'</gr></li>';
+				+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +'</li>';
 	} );
 	$( '#list' ).html( html );
 }

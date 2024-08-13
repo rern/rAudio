@@ -8,14 +8,13 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	[[ ! $apm || $apm == supported ]] && apm=false
 	info=false
 	[[ $1 != networks ]] && hdparm -I $3 &> /dev/null && info=true
-	[[ $4 == true ]] && ust=$( timeout 1 df -H --output=used,size,fstype $2 | awk '!/Used/ {print $1"B/"$2"B "$3}' )
+	[[ $4 == true ]] && size=$( timeout 1 df -H --output=used,size,fstype $2 | awk '!/Used/ {print $1"B/"$2"B <gr>"$3"</gr>"}' )
 	echo ',{
   "apm"        : '$apm'
 , "icon"       : "'$1'"
 , "info"       : '$info'
-, "fs"         : "'${ust/* }'"
 , "mountpoint" : "'$( stringEscape $2 )'"
-, "size"       : "'${ust/ *}'"
+, "size"       : "'$size'"
 , "source"     : "'$3'"
 }'
 }
