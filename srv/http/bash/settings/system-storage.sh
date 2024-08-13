@@ -25,7 +25,7 @@ usb=$( ls -1 /dev/sd* 2> /dev/null )
 if [[ $usb ]]; then
 	while read source; do
 		# iso mounted by /dev/sda not /dev/sda1
-		[[ ! ${source: -1} =~ [0-9] ]] && ! fdisk -l -o device,type $source | grep -q ^/.*Hidden && continue
+		[[ ${source: -1} != [0-9] && $( lsblk -ndo FSTYPE $source ) != iso9660 ]] && continue
 		
 		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint != /dev ]]; then
