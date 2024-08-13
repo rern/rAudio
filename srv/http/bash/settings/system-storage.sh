@@ -21,7 +21,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 # sd
 mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd / /dev/mmcblk0p2 true )
 # usb
-usb=$( fdisk -l -o Device | grep ^/dev/sd )
+usb=$( ls -1 /dev/sd* 2> /dev/null )
 if [[ $usb ]]; then
 	while read source; do
 		mountpoint=$( df -l --output=target $source | tail -1 )
@@ -29,8 +29,11 @@ if [[ $usb ]]; then
 			mounted=true
 		else
 			mounted=false
-			mountpoint="$dirusb/$( lsblk -no label /dev/sda1 )"
+			mountpoint="$dirusb/$( lsblk -no label $source )"
 		fi
+		[[ $mountpoint == $mountpointprev ]] && continue # iso mounted by /dev/sda not /dev/sda1
+		
+		mountpointprev=$mountpoint
 		list+=$( listItem usbdrive "$mountpoint" "$source" $mounted )
 	done <<< $usb
 fi
