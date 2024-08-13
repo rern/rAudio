@@ -488,9 +488,13 @@ $( mmc $k read $dev )
 		done
 		echo "$data"
 	else
+		dev=$( tr '[a-z]/' <<< $DEV )
 		echo -n "\
+<bll># lsblk -Sno vendor,model $dev</bll>
+$( lsblk -Sno vendor,model $dev )
+
 <bll># hdparm -I $DEV</bll>
-$( hdparm -I $DEV | sed '1,3 d' )"
+$( hdparm -I $DEV | sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' )"
 	fi
 	;;
 tft )
