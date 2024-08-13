@@ -584,7 +584,12 @@ mpcplayback )
 	fi
 	;;
 mpcremove )
-	if [[ $POS ]]; then
+	if [[ $START ]]; then
+		for (( i=$START; i < $END; i++ )); do
+			mpc -q del $i
+		done
+		pushPlaylist
+	elif [[ $POS ]]; then
 		if [[ $( mpc status %songpos% ) == $POS ]]; then
 			[[ $( mpc status %length% ) == $POS ]] && next=$(( POS -1 )) || next=$POS
 		fi

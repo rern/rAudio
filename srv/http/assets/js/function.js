@@ -1316,6 +1316,7 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	if ( ! data ) {
 		V.playlisthtml = '';
+		S.pllength     = 0;
 		S.consume      = false;
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );

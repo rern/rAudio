@@ -1676,30 +1676,50 @@ $( '#button-pl-clear' ).on( 'click', function() {
 		$( '.pl-remove' ).remove();
 	} else {
 		info( {
-			  icon        : 'playlist'
-			, title       : 'Remove From Playlist'
-			, message     : 'Method:'
-			, buttonlabel : [ ico( 'playlist' ) +'Select', ico( 'crop' ) +'Crop' ]
-			, buttoncolor : [ orange ]
-			, button      : [
-				  () => {
-					$( '#pl-list .li1' ).before( ico( 'remove pl-remove' ) );
-					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
-					infoButtonCommand();
-					local();
-				}
-				, () => {
-					bash( [ 'mpccrop' ] );
-					$( '#pl-list li:not( .active )' ).remove();
-				}
+			  icon       : 'playlist'
+			, title      : 'Remove From Playlist'
+			, list       : [
+				  [ '', 'radio', { kv: { '<i class="i-remove"></i>    <gr>Select...</gr>' : 'Select' } } ]
+				, [ '', 'radio', { kv: { '<i class="i-track"></i>     <gr>Range...</gr>'  : 'Range'  } } ]
+				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   <gr>Crop</gr>'      : 'Crop'   } } ]
+				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> <gr>All</gr>'       : 'All'    } } ]
 			]
-			, oklabel     : ico( 'remove' ) +'All'
-			, okcolor     : red
-			, ok          : () => {
-				bash( [ 'mpcremove' ] );
-				setPlaybackBlank();
-				renderPlaylist();
+			, beforeshow : () => {
+				$( '#infoList input:checked' ).prop( 'checked', false );
+				$( '#infoList input' ).on( 'input', function() {
+					var cmd = $( '#infoList input:checked' ).val();
+					switch ( cmd ) {
+						case 'Select':
+							$( '#pl-list .li1' ).before( ico( 'remove pl-remove' ) );
+							$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
+							infoButtonCommand();
+							local();
+							break;
+						case 'Range':
+							var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true } }
+							info( {
+								  icon     : 'playlist'
+								, title    : 'Remove Range'
+								, list     : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
+								, boxwidth : 80
+								, values   : [ 1, S.pllength ]
+								, ok       : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
+							} );
+							break;
+						case 'Crop':
+							bash( [ 'mpccrop' ] );
+							$( '#pl-list li:not( .active )' ).remove();
+							break;
+						case 'All':
+							bash( [ 'mpcremove' ] );
+							setPlaybackBlank();
+							renderPlaylist();
+							break;
+					}
+					$( '#infoX' ).trigger( 'click' );
+				} );
 			}
+			, okno       : true
 		} );
 	}
 } );
