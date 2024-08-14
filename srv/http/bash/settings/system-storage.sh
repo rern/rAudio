@@ -13,10 +13,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	info=false
 	[[ $icon != networks ]] && hdparm -I $source &> /dev/null && info=true
 	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
-		usf=( $( timeout 1 df -H --output=used,size,fstype $mountpoint | awk '!/Used/ {print $1" "$2" "$3}' ) )
-		size=${usf[0]}B/
-		[[ ${usf[2]} == iso9660 ]] && size+=$( lsblk -ndo SIZE $source ) || size+=${usf[1]}
-		size+="B <gr>${usf[2]}</gr>"
+		size=$( timeout 1 df -H --output=used,size,fstype $mountpoint | awk '!/Used/ {print $1"B/"$2"B <gr>"$3"</gr>"}' )
 	fi
 	echo ',{
   "apm"        : '$apm'
@@ -33,9 +30,6 @@ mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd / /dev/mmcblk0
 usb=$( ls -1 /dev/sd* 2> /dev/null )
 if [[ $usb ]]; then
 	while read source; do
-		# iso mounted by /dev/sda not /dev/sda1
-		[[ ${source: -1} != [0-9] && $( lsblk -ndo FSTYPE $source ) != iso9660 ]] && continue
-		
 		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint != /dev ]]; then
 			mounted=true
