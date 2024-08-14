@@ -1,37 +1,29 @@
 <?php
-include 'function.php';
-
 $CMD          = $_POST[ 'playlist' ] ?? $argv[ 1 ];
 $fileplaylist = '/srv/http/data/shm/playlist';
 
 function output( $fromfile = '' ) {
-	global $count, $counthtml, $fileplaylist, $html, $CMD;
+	global $CMD, $counthtml, $fileplaylist, $html;
 	if ( $fromfile ) {
-		$html  = file_get_contents( $fileplaylist );
-		$count = json_decode( file_get_contents( $fileplaylist.'count' ) );
+		$html      = file_get_contents( $fileplaylist );
+		$counthtml = file_get_contents( $fileplaylist.'count' );
 	}
-	if ( $count->song ) {
-		$counthtml.= '<wh id="pl-trackcount">'.number_format( $count->song ).'</wh>'
-					.i( 'music' ).'<gr id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</gr>';
-	}
-	if ( $count->radio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$count->radio.'</wh>';
-	if ( $count->upnp )  $counthtml.= '&emsp;'.i( 'upnp' );
-	$ces  = exec( 'mpc status %currenttime%^^%songpos%^^%consume%' );
-	$ces  = explode( '^^', $ces );
-	$mmss = explode( ':', $ces[ 0 ] );
+	$csc  = exec( 'mpc status %currenttime%^^%songpos%^^%consume%' );
+	$csc  = explode( '^^', $csc );
+	$mmss = explode( ':', $csc[ 0 ] );
 	$data = json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml
 		, 'elapsed'   => $mmss[ 0 ] * 60 + $mmss[ 1 ]
-		, 'consume'   => $ces[ 2 ] === 'on'
+		, 'consume'   => $csc[ 2 ] === 'on'
 		, 'librandom' => file_exists( '/srv/http/data/system/librandom' )
-		, 'song'      => $ces[ 1 ] ? $ces[ 1 ] - 1 : 0
+		, 'song'      => $csc[ 1 ] ? $csc[ 1 ] - 1 : 0
 		, 'add'       => $CMD === 'add'
 	], JSON_NUMERIC_CHECK );
 	echo $data;
 	if ( ! $fromfile && $CMD !== 'get' ) {
 		file_put_contents( $fileplaylist, $html );
-		file_put_contents( $fileplaylist.'count', json_encode( $count ) );
+		file_put_contents( $fileplaylist.'count', $counthtml );
 	}
 }
 
@@ -39,6 +31,8 @@ if ( $CMD === 'current' && file_exists( $fileplaylist ) ) {
 	output( 'fromfile' );
 	exit;
 }
+
+include 'function.php';
 
 if ( $CMD === 'list' ) {
 	exec( 'mpc lsplaylists'
@@ -214,4 +208,10 @@ $counthtml = '';
 if ( $name ) {
 	$counthtml.='<a class="lipath">'.$name.'</a><a class="pl-title name">'.i( 'file-playlist savedlist wh' ).$name.'&ensp;<gr> · </gr></a>';
 }
+if ( $count->song ) {
+	$counthtml.= '<wh id="pl-trackcount">'.number_format( $count->song ).'</wh>'
+				.i( 'music' ).'<gr id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</gr>';
+}
+if ( $count->radio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$count->radio.'</wh>';
+if ( $count->upnp )  $counthtml.= '&emsp;'.i( 'upnp' );
 output();
