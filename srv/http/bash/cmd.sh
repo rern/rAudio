@@ -110,10 +110,14 @@ plClear() {
 	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
 }
 pushPlaylist() {
+	[[ -e $dirshm/pushplaylist ]] && exit
+# --------------------------------------------------------------------
+	touch $dirshm/pushplaylist
 	pushData playlist '{ "blink": true }'
 	rm -f $dirshm/playlist
 	[[ $( mpc status %length% ) == 0 ]] && data='{ "blank": true }' || data=$( php /srv/http/playlist.php current )
 	pushData playlist $data
+	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }
 pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
@@ -728,6 +732,9 @@ playlist )
 	mpc -q load "$NAME"
 	[[ $PLAY ]] && mpc -q play
 	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
+	pushPlaylist
+	;;
+playlistpush )
 	pushPlaylist
 	;;
 relaystimerreset )

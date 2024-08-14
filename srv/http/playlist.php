@@ -94,9 +94,11 @@ exec( $cmd, $lists );
 //----------------------------------------------------------------------------------
 $count = ( object )[];
 foreach( [ 'radio', 'song', 'time', 'upnp' ] as $c ) $count->$c = 0;
+$pos        = 0;
 $sec        = 0;
 $html       = '';
 foreach( $lists as $list ) {
+	$pos++;
 	$v      = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
 	$header = strtolower( substr( $file, 0, 4 ) );
@@ -153,7 +155,7 @@ foreach( $lists as $list ) {
 	'<a class="lipath">'.$file.'</a>'.
 	$icon.'<div class="li1"><a class="name">'.$title.'</a>'.
 	'<a class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></a></div>'.
-	'<div class="li2"><a class="pos"></a> • <a class="name">'.$li2.'</a></div>'.
+	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>'.
 '</li>
 ';
 		$count->song++;
@@ -170,7 +172,7 @@ foreach( $lists as $list ) {
 	i( 'upnp', 'filesavedpl' ).
 	'<div class="li1"><a class="name">'.$title.'</a>'.
 	'<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>'.
-	'<div class="li2"><a class="pos"></a> • <a class="name">'.$li2.'</a></div>'.
+	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>'.
 '</li>
 ';
 		$count->upnp++;
@@ -202,7 +204,7 @@ foreach( $lists as $list ) {
 	'<a class="lipath">'.$path.'</a>'.
 	$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><a class="name">'.( $notsaved ? '. . .' : $stationname ).'</a>'.
 	'<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>'.
-	'<div class="li2"><a class="pos"></a> • <a class="stationname hide">'.$namenotsaved.'</a><a>'.$url.'</a></div>'.
+	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="stationname hide">'.$namenotsaved.'</a><a>'.$url.'</a></div>'.
 '</li>
 ';
 		$count->radio++;

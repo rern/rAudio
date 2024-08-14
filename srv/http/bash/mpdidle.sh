@@ -8,18 +8,7 @@ mpc idleloop | while read changed; do
 			playerActive upnp && volumeGet push
 			;;
 		playlist )
-			if [[ $( mpc status %consume% ) == on ]]; then
-				if [[ $( mpc status %length% ) == 0 ]]; then
-					data='{ "blank": true }'
-				else
-					sec=$( sed -n '1 {s/.*data-time="//; s/".*//; p}' $dirshm/playlist )
-					. <( sed -E 's/^\{|}$|"//g; s/:/=/g; s/,/\n/g'  $dirshm/playlistcount )
-					echo '{"radio":'$radio',"song":'$(( song - 1 ))',"time":'$(( time - sec ))',"upnp":'$upnp'}' > $dirshm/playlistcount
-					sed -i 1d $dirshm/playlist
-					data=$( php /srv/http/playlist.php current )
-				fi
-				pushData playlist $data
-			fi
+			[[ ! -e $dirshm/pushplaylist && $( mpc status %consume% ) == on ]] && $dirbash/cmd.sh playlistpush
 			;;
 		player )
 			if [[ ! -e $dirshm/radio && ! -e $dirshm/skip && ! -e $dirshm/cdstart ]]; then

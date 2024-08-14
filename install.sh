@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240816
-if ! grep -q sec $dirbash/mpdidle.sh; then
+if ! grep -q playlistpush $dirbash/mpdidle.sh; then
 	rm -f $dirshm/playlist*
 	systemctl restart mpd
 fi
