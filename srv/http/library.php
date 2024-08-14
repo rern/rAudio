@@ -104,9 +104,9 @@ case 'home':
 	foreach( $modes as $mode ) {
 		$lipath   = str_replace( ' ', '', $mode );
 		$modeLC   = strtolower( $lipath );
-		$htmlmode.=
-'<div class="mode '.$modeLC.'" data-mode="'.$modeLC.'">
-		<i class="i-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
+		$htmlmode.= '
+<div class="mode '.$modeLC.'" data-mode="'.$modeLC.'">
+	<i class="i-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
 </div>';
 	}
 	// bookmarks
@@ -125,8 +125,8 @@ case 'home':
 				$src      = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
 				$src     .= $bkpath.'/coverart.jpg';
 			}
-			$htmlmode.=
-'<div class="mode bookmark '.$bkradio.'">
+			$htmlmode.= '
+<div class="mode bookmark '.$bkradio.'">
 	<a class="lipath">'.$bkpath.'</a>
 	<a class="bkname hide">'.$name.'</a>
 	<img class="bkcoverart" src="'.$src.'^^^">
@@ -242,8 +242,8 @@ case 'search':
 				$data = explode( '^^', $list );
 				$name = $data[ 1 ];
 				$path = $tag === 'album' ? end( $data ) : $name;
-				$html.=
-'<li data-mode="'.$MODE.'">
+				$html.= '
+<li data-mode="'.$MODE.'">
 	<a class="lipath">'.$path.'</a>
 	'.i( $tag, $tag ).'<span class="single name">'.preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name ).'</span>
 </li>';
@@ -333,9 +333,10 @@ function htmlDirectory() {
 			$mode = $GMODE;
 			$icon = i( 'music ', 'file' );
 		}
-		$htmlli   = '<li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.
-'<a class="lipath">'.$path.'</a>
-<span class="single name">'.$name.'</span>
+		$htmlli   = '
+<li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.'
+	<a class="lipath">'.$path.'</a>
+	<span class="single name">'.$name.'</span>
 </li>';
 		$dir ? $html.= $htmlli : $htmlf.= $htmlli;
 	}
@@ -378,8 +379,8 @@ function htmlFind() { // non-file 'find' command
 		$dataindex = dataIndex( $each->sort );
 		$datamode  = property_exists( $each, 'path' ) ? $MODE : 'album'; // cue //////////////////////////////////////////////////////////////////
 		$liname    = $modedate_genre ? $val1 : $val0;
-		$html     .=
-'<li data-mode="'.$datamode.'"'.$dataindex.'">
+		$html     .= '
+<li data-mode="'.$datamode.'"'.$dataindex.'">
 	<a class="liname">'.$liname.'</a>
 	'.$icon.'<span class="single">'.$name.'</span>
 </li>';
@@ -394,8 +395,8 @@ function htmlList() { // non-file 'list' command
 			$data      = explode( '^^', $list );
 			$dataindex = dataIndex( $data[ 0 ] );
 			$name      = $data[ 1 ];
-			$html     .=
-'<li data-mode="'.$MODE.'"'.$dataindex.'>
+			$html     .= '
+<li data-mode="'.$MODE.'"'.$dataindex.'>
 	<a class="lipath">'.$name.'</a>
 	'.i( $GMODE, $MODE ).'<span class="single name">'.$name.'</span>
 </li>';
@@ -418,8 +419,8 @@ function htmlList() { // non-file 'list' command
 			} else if ( $display->albumbyartist ) {
 				$name = $l2;
 			}
-			$html     .=
-'<div class="coverart"'.$dataindex.'>
+			$html     .= '
+<div class="coverart"'.$dataindex.'>
 	<a class="lipath">'.$path.'</a>
 	<a class="liname">'.$name.'</a>
 	<div><img class="lazyload" data-src="'.$coverfile.'^^^"></div>
@@ -446,16 +447,10 @@ function htmlRadio() {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
 		foreach( $array as $each ) {
-			if ( count( $files ) ) {
-				$html     .=
-'<li class="dir">';
-			} else {
-				$dataindex = dataIndex( $each->sort );
-				$html     .=
-'<li class="dir"'.$dataindex.'>';
-			}
-			$html.=
-	imgIcon( str_replace( '/srv/http', '', $each->dir ).'/thumb.jpg', 'wrdir' ).'
+			$dataindex = count( $files ) ? '' : dataIndex( $each->sort );
+			$html.= '
+<li class="dir"'.$dataindex.'>
+	'.imgIcon( str_replace( '/srv/http', '', $each->dir ).'/thumb.jpg', 'wrdir' ).'
 	<a class="lidir">'.$each->dir.'</a>
 	<a class="lipath">'.$each->dirname.'</a>
 	<span class="single name">'.$each->dirname.'</span>
@@ -486,8 +481,8 @@ function htmlRadio() {
 			$thumbsrc    = substr( $each->file, 9, 14 ).'/img/'.$filename.'-thumb.jpg';
 			$icon        = $search ? i( 'webradio', 'webradio' ) : imgIcon( $thumbsrc, 'webradio' );
 			$name        = $each->name;
-			$html       .=
-'<li class="file"'.$datacharset.$dataindex.'>
+			$html       .= '
+<li class="file"'.$datacharset.$dataindex.'>
 	'.$icon.'
 	<a class="lidir">'.dirname( $each->file ).'</a>
 	<a class="lipath">'.$url.'</a>
@@ -502,8 +497,8 @@ function htmlRadio() {
 	'<span class="single name">'.$name.'</span>';
 			}
 			$i++;
-			$html.=
-'</li>';
+			$html.= '
+</li>';
 		}
 	}
 	if ( $search ) return $html;
@@ -582,8 +577,8 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$count         = count( $array );
 		$ext           = strtoupper( $ext ).$plicon;
 		$icon          = i( 'music', 'folder' );
-		$html         .=
-'<li data-mode="'.$GMODE.'" class="licover">
+		$html         .= '
+<li data-mode="'.$GMODE.'" class="licover">
 	<a class="lipath">'.$mpdpath.'</a>
 	<div class="licoverimg"><img id="liimg" src="'.$coverart.'^^^"></div>
 	<div class="liinfo '.$GMODE.'">
@@ -622,8 +617,8 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		}
 		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		$i++;
-		$html  .=
-'<li'.$datamode.$track1.'>
+		$html  .= '
+<li'.$datamode.$track1.'>
 	<a class="lipath">'.$path.'</a>
 	'.$icon.'<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>
 	<div class="li2">'.$i.' • '.$trackname.'</div>

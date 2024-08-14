@@ -1,13 +1,21 @@
 <?php
+include 'function.php';
+
 $CMD          = $_POST[ 'playlist' ] ?? $argv[ 1 ];
 $fileplaylist = '/srv/http/data/shm/playlist';
 
 function output( $fromfile = '' ) {
-	global $counthtml, $fileplaylist, $html, $CMD;
+	global $count, $counthtml, $fileplaylist, $html, $CMD;
 	if ( $fromfile ) {
-		$html      = file_get_contents( $fileplaylist );
-		$counthtml = file_get_contents( $fileplaylist.'count' );
+		$html  = file_get_contents( $fileplaylist );
+		$count = json_decode( file_get_contents( $fileplaylist.'count' ) );
 	}
+	if ( $count->song ) {
+		$counthtml.= '<wh id="pl-trackcount">'.number_format( $count->song ).'</wh>'
+					.i( 'music' ).'<gr id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</gr>';
+	}
+	if ( $count->radio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$count->radio.'</wh>';
+	if ( $count->upnp )  $counthtml.= '&emsp;'.i( 'upnp' );
 	$ces  = exec( 'mpc status %currenttime%^^%songpos%^^%consume%' );
 	$ces  = explode( '^^', $ces );
 	$mmss = explode( ':', $ces[ 0 ] );
@@ -23,7 +31,7 @@ function output( $fromfile = '' ) {
 	echo $data;
 	if ( ! $fromfile && $CMD !== 'get' ) {
 		file_put_contents( $fileplaylist, $html );
-		file_put_contents( $fileplaylist.'count', $counthtml );
+		file_put_contents( $fileplaylist.'count', json_encode( $count ) );
 	}
 }
 
@@ -31,8 +39,6 @@ if ( $CMD === 'current' && file_exists( $fileplaylist ) ) {
 	output( 'fromfile' );
 	exit;
 }
-
-include 'function.php';
 
 if ( $CMD === 'list' ) {
 	exec( 'mpc lsplaylists'
@@ -53,11 +59,10 @@ if ( $CMD === 'list' ) {
 		$dataindex = dataIndex( $each->sort );
 		$name      = $each->name;
 		$html     .=
-'<li class="pl-folder"'.$dataindex.'>
-	'.i( 'playlists', 'playlist' ).'
-	<a class="lipath">'.$name.'</a>
-	<a class="single">'.$name.'</a>
-</li>';
+'<li class="pl-folder"'.$dataindex.'>'.
+	i( 'playlists', 'playlist' ).'<a class="lipath">'.$name.'</a><a class="single">'.$name.'</a>'.
+'</li>
+';
 	}
 	$html     .= indexBar( $indexes );
 	$count     = count( $lists );
@@ -87,15 +92,11 @@ if ( $CMD === 'get' ) {
 }
 exec( $cmd, $lists );
 //----------------------------------------------------------------------------------
-$countradio = 0;
-$countsong  = 0;
-$counttime  = 0;
-$countupnp  = 0;
-$pos        = 0;
+$count = ( object )[];
+foreach( [ 'radio', 'song', 'time', 'upnp' ] as $c ) $count->$c = 0;
 $sec        = 0;
 $html       = '';
 foreach( $lists as $list ) {
-	$pos++;
 	$v      = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
 	$header = strtolower( substr( $file, 0, 4 ) );
@@ -148,14 +149,15 @@ foreach( $lists as $list ) {
 		}
 		$icon      = imgIcon( $thumbsrc, 'filesavedpl', $icon );
 		$html     .=
-'<li class="'.$class.'" '.$datatrack.'>
-<a class="lipath">'.$file.'</a>
-'.$icon.'<div class="li1"><a class="name">'.$title.'</a>
-<a class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></a></div>
-<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>
-</li>';
-		$countsong++;
-		$counttime += $sec;
+'<li class="'.$class.'" '.$datatrack.'>'.
+	'<a class="lipath">'.$file.'</a>'.
+	$icon.'<div class="li1"><a class="name">'.$title.'</a>'.
+	'<a class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></a></div>'.
+	'<div class="li2"><a class="pos"></a> • <a class="name">'.$li2.'</a></div>'.
+'</li>
+';
+		$count->song++;
+		$count->time += $sec;
 	} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
 		$li2    = '';
 		$artist = $artist;
@@ -164,13 +166,14 @@ foreach( $lists as $list ) {
 		if ( $album )  $li2.= '<a class="album">'.$album.'</a>';
 		if ( ! $artist && ! $album ) $li2.= $file;
 		$html  .=
-'<li class="upnp">
-'.i( 'upnp', 'filesavedpl' ).'
-<div class="li1"><a class="name">'.$title.'</a>
-<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>
-<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>
-</li>';
-		$countupnp++;
+'<li class="upnp">'.
+	i( 'upnp', 'filesavedpl' ).
+	'<div class="li1"><a class="name">'.$title.'</a>'.
+	'<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>'.
+	'<div class="li2"><a class="pos"></a> • <a class="name">'.$li2.'</a></div>'.
+'</li>
+';
+		$count->upnp++;
 	} else {
 		if ( str_contains( $file, '://' ) ) { // webradio / dabradio
 			$urlname     = str_replace( '/', '|', $file );
@@ -195,22 +198,18 @@ foreach( $lists as $list ) {
 		$url           = preg_replace( '/#charset=.*/', '', $file );
 		$path          = preg_replace( '/\?.*$/', '', $file );
 		$html         .=
-'<li class="webradio '.$classnotsaved.'">
-<a class="lipath">'.$path.'</a>
-'.$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><a class="name">'.( $notsaved ? '. . .' : $stationname ).'</a>
-<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>
-<div class="li2"><a class="pos">'.$pos.'</a> • <a class="stationname hide">'.$namenotsaved.'</a><a>'.$url.'</a></div>
-</li>';
-		$countradio++;
+'<li class="webradio '.$classnotsaved.'">'.
+	'<a class="lipath">'.$path.'</a>'.
+	$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><a class="name">'.( $notsaved ? '. . .' : $stationname ).'</a>'.
+	'<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>'.
+	'<div class="li2"><a class="pos"></a> • <a class="stationname hide">'.$namenotsaved.'</a><a>'.$url.'</a></div>'.
+'</li>
+';
+		$count->radio++;
 	}
 }
 $counthtml = '';
 if ( $name ) {
 	$counthtml.='<a class="lipath">'.$name.'</a><a class="pl-title name">'.i( 'file-playlist savedlist wh' ).$name.'&ensp;<gr> · </gr></a>';
 }
-if ( $countsong ) {
-	$counthtml.='<wh id="pl-trackcount">'.number_format( $countsong ).'</wh>'.i( 'music' ).'<gr id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</gr>';
-}
-if ( $countradio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$countradio.'</wh>';
-if ( $countupnp )  $counthtml.= '&emsp;'.i( 'upnp' );
 output();

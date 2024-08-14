@@ -302,7 +302,7 @@ function psOrder( data ) {
 function psPlaylist( data ) {
 	if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 	
-	if ( 'bl1nk' in data ) {
+	if ( 'blink' in data ) {
 		playlistBlink();
 		return
 	}
@@ -312,37 +312,10 @@ function psPlaylist( data ) {
 		setPlaybackBlank();
 		renderPlaylist();
 		bannerHide();
-		return
-	}
-	
-	if ( 'song' in data ) {
+	} else {
 		if ( V.playlist && V.playlisthome ) renderPlaylist( data );
 		playbackStatusGet();
-		return
 	}
-	
-	clearTimeout( V.debouncepl );
-	V.debouncepl = setTimeout( () => {
-		if ( 'refresh' in data ) {
-			if ( V.playlist && V.playlisthome ) {
-				var pos = data.refresh;
-				$( '#pl-list li' ).eq( pos ).remove();
-				$( '#pl-list li .pos' ).slice( pos - 1 ).each( ( i, el ) => {
-					$( el ).text( pos );
-					pos++
-				} );
-				if ( data.active ) {
-					S.song = data.active;
-					$( '#pl-list li' ).eq( S.song ).addClass( 'active' );
-				}
-				if ( $( '#pl-list li' ).length === 1 ) $( '#previous, #next' ).addClass( 'hide' );
-			}
-		} else {
-			var name = $( '#pl-path .lipath' ).text();
-			if ( V.playlisttrack && data.playlist === name ) renderSavedPlTrack( name );
-		}
-		playbackStatusGet();
-	}, 300 );
 }
 function psRadioList( data ) {
 	if ( 'count' in data ) {

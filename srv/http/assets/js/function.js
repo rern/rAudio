@@ -1345,6 +1345,7 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 			renderPlaylistSet();
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );
+			for( i = 0; i < S.pllength; i++ ) $( '#pl-list li .pos' ).eq( i ).text( i + 1 );
 		} );
 	} else {
 		renderPlaylistSet();

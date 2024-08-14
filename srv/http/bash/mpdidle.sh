@@ -9,9 +9,16 @@ mpc idleloop | while read changed; do
 			;;
 		playlist )
 			if [[ $( mpc status %consume% ) == on ]]; then
-				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
-					pushData playlist '{ "refresh": true }'
-				) &> /dev/null &
+				if [[ $( mpc status %length% ) == 0 ]]; then
+					data='{ "blank": true }'
+				else
+					sec=$( sed -n '1 {s/.*data-time="//; s/".*//; p}' $dirshm/playlist )
+					. <( sed -E 's/^\{|}$|"//g; s/:/=/g; s/,/\n/g'  $dirshm/playlistcount )
+					echo '{"radio":'$radio',"song":'$(( song - 1 ))',"time":'$(( time - sec ))',"upnp":'$upnp'}' > $dirshm/playlistcount
+					sed -i 1d $dirshm/playlist
+					data=$( php /srv/http/playlist.php current )
+				fi
+				pushData playlist $data
 			fi
 			;;
 		player )
