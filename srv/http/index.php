@@ -139,6 +139,8 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 }
 $htmlsearchicon = '';
 foreach( [ 'title', 'albumartist', 'artist', 'album', 'composer', 'conductor', 'webradio' ] as $i ) $htmlsearchicon.= i( $i.' search gr hide' );
+$htmlinfo       = '';
+foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmlinfo.= '<div id="div'.$id.'"><span id="'.$id.'" class="info"></span></div>';
 ?>
 
 <div id="refresh" class="page-icon"></div>
@@ -179,11 +181,7 @@ foreach( [ 'title', 'albumartist', 'artist', 'album', 'composer', 'conductor', '
 	  .i( 'lyrics map guide hide',  'guide-lyrics' )
 	  .i( 'booklet map guide hide', 'guide-booklet' )?>
 	<div id="info">
-		<div id="divartist"><span id="artist" class="info"></span></div>
-		<div id="divtitle"><span id="title" class="info"></i></span></div>
-		<div id="divalbum"><span id="album" class="info"></span></div>
-		<div id="divcomposer"><span id="composer" class="info hide"></span></div>
-		<div id="divconductor"><span id="conductor" class="info hide"></span></div>
+		<?=$htmlinfo?>
 		<div id="infoicon">
 			<i id="playericon"></i>
 			<span id="progress"></span>
