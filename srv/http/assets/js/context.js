@@ -135,20 +135,19 @@ function directoryDelete() {
 function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
 		var path      = V.list.path;
+		var modetitle = path;
 		var query     = {
 			  library : 'ls'
 			, string  : path
-			, format  : [ 'file' ]
+			, gmode   : path.split( '/' )[ 0 ].toLowerCase()
 		}
-		var modetitle = path;
-		query.gmode   = V.mode;
-		V.mode        = path.split( '/' )[ 0 ].toLowerCase();
 		list( query, function( html ) {
 			var data = {
 				  html      : html
 				, modetitle : modetitle
 				, path      : path
 			}
+			V.librarylisthtml = '';
 			renderLibraryList( data );
 		} );
 		query.path      = path;

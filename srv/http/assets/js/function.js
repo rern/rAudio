@@ -274,7 +274,7 @@ function contextmenuLibrary( $li, $target ) {
 		$menu.find( 'a, .submenu' ).addClass( 'hide' );
 		$menu.find( '.exclude, .update' ).removeClass( 'hide' );
 	} else {
-		var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
+		var filemode = [ 'album', 'latest', 'nas', 'sd', 'usb', 'webradio', 'dabradio' ].includes( V.mode );
 		$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 		$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 		$menu.find( '.update' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
@@ -1345,7 +1345,6 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 			renderPlaylistSet();
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );
-			for( i = 0; i < S.pllength; i++ ) $( '#pl-list li .pos' ).eq( i ).text( i + 1 );
 		} );
 	} else {
 		renderPlaylistSet();
