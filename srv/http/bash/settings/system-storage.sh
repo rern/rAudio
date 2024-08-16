@@ -13,7 +13,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	info=false
 	[[ $icon != networks ]] && hdparm -I $source &> /dev/null && info=true
 	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
-		size=$( timeout 1 df -H --output=used,size $source | awk '!/Used/ {print $1"B/"$2"B"}' )
+		size=$( timeout 1 df -H --output=used,size $mountpoint | awk '!/Used/ {print $1"B/"$2"B"}' )
 		[[ ${source:0:4} == /dev ]] && size+=" <gr>$( blkid -o value -s TYPE $source )</gr>"
 	fi
 	echo ',{
