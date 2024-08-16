@@ -5,6 +5,14 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240816
+if [[ -e /boot/kernel.img ]]; then
+	file=/usr/bin/mount.ntfs3
+	if [[ ! -e $file ]]; then
+		ln -s /usr/bin/ntfs-3g $file
+		sed -i '/^allowed_types/ s/$/, ntfs3/' /etc/udevil/udevil.conf
+	fi
+fi
+
 ! grep -q playlistpush $dirbash/mpdidle.sh && systemctl restart mpd
 
 file=/etc/pacman.conf

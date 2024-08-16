@@ -13,7 +13,8 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	info=false
 	[[ $icon != networks ]] && hdparm -I $source &> /dev/null && info=true
 	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
-		size=$( timeout 1 df -H --output=used,size,fstype $mountpoint | awk '!/Used/ {print $1"B/"$2"B <gr>"$3"</gr>"}' )
+		size=$( timeout 1 df -H --output=used,size $source | awk '!/Used/ {print $1"B/"$2"B"}' )
+		[[ ${source:0:4} == /dev ]] && size+=" <gr>$( blkid -o value -s TYPE $source )</gr>"
 	fi
 	echo ',{
   "apm"        : '$apm'
@@ -30,6 +31,9 @@ mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd / /dev/mmcblk0
 usb=$( ls -1 /dev/sd* 2> /dev/null )
 if [[ $usb ]]; then
 	while read source; do
+		type=$( blkid -o value -s TYPE $source )
+		[[ ! $type ]] && continue
+		
 		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint != /dev ]]; then
 			mounted=true
