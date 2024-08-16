@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240816
+[[ $( grep -m1 . $dirmpd/albumbyartist | cut -c 2 ) != ^ ]] && php /srv/http/cmd.php sort albumbyartist
+
 lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
 
 if [[ -e /boot/kernel.img ]]; then

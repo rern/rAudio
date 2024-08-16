@@ -63,7 +63,7 @@ var chkdisplay  = {
 			, label      : 'Label'
 	}
 	, libraryoption : {
-		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artist'
+		  albumbyartist  : ico( 'album' ) +'Sort by artist'
 		, albumyear      : ico( 'album' ) +'Sort by artist > year'
 		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
 		, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'

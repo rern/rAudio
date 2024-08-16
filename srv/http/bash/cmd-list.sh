@@ -9,7 +9,7 @@
 
 . /srv/http/bash/common.sh
 
-modes='album albumbyartist-year latest albumartist artist composer conductor genre date'
+modes='album albumbyartist albumbyartist-year latest albumartist artist composer conductor genre date'
 
 albumList() {
 	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
@@ -51,7 +51,7 @@ counts='
 , "dabradio"  : '$dabradio'
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 if [[ $song == 0 ]]; then
-	for mode in $modes albumbyartist; do
+	for mode in $modes; do
 		rm -f $dirmpd/$mode
 	done
 	updateDone
@@ -161,7 +161,7 @@ for mode in $modenonalbum; do
 	fi
 done
 
-php /srv/http/cmd.php sort
+php /srv/http/cmd.php sort "$modes"
 
 for mode in $modes; do
 	[[ $mode == albumbyartist-year ]] && key=albumyear || key=$mode
