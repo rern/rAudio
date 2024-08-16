@@ -544,28 +544,22 @@ timezone )
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
+	list=$( lsblk -no path,vendor,model | grep -v ' $' )
 	if [[ $CMD == usbconnect ]]; then
 		sdx=$( dmesg \
-						| tail -15 \
-						| grep ' sd.* GiB' \
-						| tail -1 \
-						| sed -E 's/.*\[|].*//g' )
+					| tail -15 \
+					| grep ' sd.* GiB' \
+					| tail -1 \
+					| sed -E 's/.*\[|].*//g' )
 		notify usbdrive "$( lsblk -no vendor,model /dev/$sdx )" Ready
-		lsblk -no path,vendor,model > $dirshm/lsblkusb
 	else
-		list=$( lsblk -no path,vendor,model )
-		if [[ $list ]]; then
-			line=$( diff -N $dirshm/lsblkusb <( echo "$list" ) \
-						| grep '^<'\
-						| tr -s ' ' \
-						| cut -d' ' -f2- )
-			echo "$list" > $dirshm/lsblkusb
-		else
-			line=$( < $dirshm/lsblkusb )
-			rm -f $dirshm/lsblkusb
-		fi
-		notify usbdrive "$( grep '^<'| cut -d' ' -f3- <<< $line )" Removed
+		name=$( diff $dirshm/lsblkusb <( echo "$list" ) \
+					| grep '^<'\
+					| tr -s ' ' \
+					| cut -d' ' -f3- )
+		notify usbdrive "$name" Removed
 	fi
+	echo "$list" > $dirshm/lsblkusb
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	pushDirCounts usb
 	;;

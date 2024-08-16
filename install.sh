@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240816
+lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
+
 if [[ -e /boot/kernel.img ]]; then
 	file=/usr/bin/mount.ntfs3
 	if [[ ! -e $file ]]; then
