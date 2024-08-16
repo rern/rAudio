@@ -555,7 +555,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	else
 		list=$( lsblk -no path,vendor,model )
 		if [[ $list ]]; then
-			line=$( diff $dirshm/lsblkusb <( echo "$list" ) \
+			line=$( diff -N $dirshm/lsblkusb <( echo "$list" ) \
 						| grep '^<'\
 						| tr -s ' ' \
 						| cut -d' ' -f2- )
