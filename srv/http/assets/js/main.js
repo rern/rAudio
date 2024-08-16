@@ -1538,7 +1538,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
 			var format = [ 'album', 'artist' ];
 		} else {
-			var format = [ 'album' ]; // artist, albumartist
+			var format = [ 'album', 'file' ]; // artist, albumartist
 		}
 		var query = {
 			  library : 'find'

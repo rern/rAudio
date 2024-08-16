@@ -56,14 +56,13 @@ case 'find':
 	$format = str_replace( '%artist%', '[%albumartist%|%artist%]', $format );
 	if ( is_array( $MODE ) ) {
 		exec( 'mpc find '.$MODE[ 0 ].' "'.$STRING[ 0 ].'" '.$MODE[ 1 ].' "'.$STRING[ 1 ].'" 2> /dev/null '
-				."| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}'"
-				."| sort -u"
+				."| sed 's|/[^/]*$||' "
+				."| sort -u "
+				."| awk 'NF && !a[$0]++'"
 			, $lists );
-		if ( count( $lists ) > 1 ) {
-			htmlDirectory();
-			exit;
+		htmlDirectory();
+		exit;
 //----------------------------------------------------------------------------------
-		}
 		$file = $lists[ 0 ];
 		unset( $lists );
 		if ( substr( $file, -14, 4 ) !== '.cue' ) {
@@ -84,6 +83,39 @@ case 'find':
 		exec( 'mpc find -f "'.$format.'" album "'.$STRING.'" 2> /dev/null '
 				."| awk 'NF && !a[$0]++'"
 			, $lists );
+	} else if ( substr( $MODE, -6 ) === 'artist' ) { // artist, albumartist
+		exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
+				."| sed 's|/[^/]*$||' "
+				."| sort -u "
+				."| awk 'NF && !a[$0]++'"
+			, $lists );
+		foreach( $lists as $list ) {
+			$list       = explode( '^^', $list ); // album^^artist
+			$each       = ( object )[];
+			$name       = $list[ 0 ];
+			$path       = $list[ 1 ];
+			$each->mode = strtolower( explode( '/', $path )[ 0 ] );
+			$each->name = $name;
+			$each->sort = stripSort( $name );
+			$each->path = $path;
+			$array[]    = $each;
+		}
+		usort( $array, function( $a, $b ) {
+			return strnatcasecmp( $a->sort, $b->sort );
+		} );
+		foreach( $array as $each ) {
+			$dataindex = dataIndex( $each->sort );
+			$icon      = imgIcon( rawurlencode( '/mnt/MPD/'.$each->path.'/thumb.jpg' ), 'folder' );
+			$html     .= '
+<li data-mode="'.$each->mode.'"'.$dataindex.'>'.$icon.'
+	<a class="lipath">'.$each->path.'</a>
+	<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
+</li>';
+		}
+		$html.= indexBar( $indexes );
+		echo $html;
+		exit;
+//----------------------------------------------------------------------------------
 	} else {
 		exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
 				."| awk 'NF && !a[$0]++'"
@@ -349,7 +381,7 @@ function htmlFind() { // non-file 'find' command
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
 		
-		$list = explode( '^^', $list ); // album^^artist 
+		$list = explode( '^^', $list ); // album^^artist
 		$each = ( object )[];
 		for ( $i = 0; $i < $fL; $i++ ) {
 			$key        = $f[ $i ];
