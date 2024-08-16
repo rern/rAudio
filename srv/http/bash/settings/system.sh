@@ -545,18 +545,20 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
 	if [[ $CMD == usbconnect ]]; then
-		dev=/dev/$( dmesg \
+		sdx=$( dmesg \
 						| tail -15 \
 						| grep ' sd.* GiB' \
 						| tail -1 \
 						| sed -E 's/.*\[|].*//g' )
-		name=$( lsblk -no VENDOR,MODEL $dev )
-		notify usbdrive "$name" Ready
-		lsblk -no PATH,VENDOR,MODEL > $dirshm/lsblkusb
+		notify usbdrive "$( lsblk -no vendor,model /dev/$sdx )" Ready
+		lsblk -no path,vendor,model > $dirshm/lsblkusb
 	else
-		list=$( lsblk -no PATH,VENDOR,MODEL )
+		list=$( lsblk -no path,vendor,model )
 		if [[ $list ]]; then
-			line=$( diff $dirshm/lsblkusb <( echo "$list" ) | grep '^<'| cut -d' ' -f3- )
+			line=$( diff $dirshm/lsblkusb <( echo "$list" ) \
+						| grep '^<'\
+						| tr -s ' ' \
+						| cut -d' ' -f2- )
 			echo "$list" > $dirshm/lsblkusb
 		else
 			line=$( < $dirshm/lsblkusb )
