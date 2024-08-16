@@ -488,7 +488,7 @@ $( mmc $k read $dev )
 		done
 		echo "$data"
 	else
-		dev=$( tr '[a-z]/' <<< $DEV )
+		dev=$( tr -d 0-9 <<< $DEV )
 		echo -n "\
 <bll># lsblk -no vendor,model $dev</bll>
 $( lsblk -no vendor,model $dev )
