@@ -93,21 +93,20 @@ case 'find':
 			$list       = explode( '^^', $list ); // album^^artist
 			$each       = ( object )[];
 			$name       = $list[ 0 ];
-			$path       = $list[ 1 ];
-			$each->mode = strtolower( explode( '/', $path )[ 0 ] );
 			$each->name = $name;
 			$each->sort = stripSort( $name );
-			$each->path = $path;
+			$each->path = $list[ 1 ];
 			$array[]    = $each;
 		}
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
 		foreach( $array as $each ) {
+			$mode      = strtolower( explode( '/', $each->path )[ 0 ] );
 			$dataindex = dataIndex( $each->sort );
 			$icon      = imgIcon( rawurlencode( '/mnt/MPD/'.$each->path.'/thumb.jpg' ), 'folder' );
 			$html     .= '
-<li data-mode="'.$each->mode.'"'.$dataindex.'>'.$icon.'
+<li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.'
 	<a class="lipath">'.$each->path.'</a>
 	<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
 </li>';
