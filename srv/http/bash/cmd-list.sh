@@ -9,7 +9,7 @@
 
 . /srv/http/bash/common.sh
 
-modes='album albumbyartist albumbyartist-year latest albumartist artist composer conductor genre date'
+modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre latest'
 
 albumList() {
 	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
@@ -118,6 +118,7 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 		fi
 	fi
 	albumignore=$( getContent $dirmpd/albumignore )
+	declare -A array
 	while read line; do
 		readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
 		tagalbum=${tags[0]}
@@ -126,16 +127,15 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 		
 		tagdate=${tags[2]}
 		tagdir=${tags[3]}
-		album+="$tagalbum^^$tagartist^^$tagdir"$'\n'
-		albumbyartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
-		albumbyartistyear+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
+		array[album]+="$tagalbum^^$tagartist^^$tagdir"$'\n'
+		array[albumbyartist]+="$tagartist^^$tagalbum^^$tagdir"$'\n'
+		array[albumbyartist-year]+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
 	done <<< $albumlist
 	for mode in album albumbyartist albumbyartist-year; do
-		varname=${mode/-}
-		sort -u <<< ${!varname} > $dirmpd/$mode
+		sort -u <<< ${array[$mode]} > $dirmpd/$mode
 	done
 else
-	rm -f $dirmpd/{album,albumbyartist,albumbyartist-year}
+	rm -f $dirmpd/{album,albumbyartist*}
 fi
 ##### latest
 [[ -e $dirmpd/album && -e $dirshm/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
@@ -151,8 +151,7 @@ if [[ $albumdiff ]]; then
 fi
 rm -f $dirshm/{albumprev,deleted}
 
-modenonalbum=${modes/*latest } # albumartist artist composer conductor genre date
-for mode in $modenonalbum; do
+for mode in albumartist artist composer conductor date genre; do
 	data=$( mpc list $mode | awk NF )
 	if [[ $data ]]; then
 		echo "$data" > $dirmpd/$mode
@@ -164,9 +163,10 @@ done
 php /srv/http/cmd.php sort "$modes"
 
 for mode in $modes; do
-	[[ $mode == albumbyartist-year ]] && key=albumyear || key=$mode
+	[[ $mode == albumby* ]] && continue
+	
 	counts+='
-, "'$key'" : '$( lineCount $dirmpd/$mode ) # albumbyartist-year > albumyear
+, "'$mode'" : '$( lineCount $dirmpd/$mode ) # albumbyartist-year > albumyear
 done
 
 updateDone
