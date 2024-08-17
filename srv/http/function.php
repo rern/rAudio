@@ -73,6 +73,11 @@ function second2HMS( $second ) {
 	$ss = $mm ? ( $ss > 9 ? $ss : '0'.$ss ) : $ss;
 	return $hh.$mm.$ss;
 }
+function sortList( &$array ) {
+	usort( $array, function( $a, $b ) {
+		return strnatcasecmp( $a->sort, $b->sort );
+	} );
+}
 function stripSort( $str ) {
 	// usort: <spcae> ! " # $ % & ' ( ) * + , - . / 0 : ; < = > ? @ A [ \ ] ^ _ ` a { | }
 	$string = preg_replace(

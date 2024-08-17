@@ -43,9 +43,7 @@ if ( $CMD === 'list' ) {
 		$each->sort = stripSort( $list );
 		$array[]    = $each;
 	}
-	usort( $array, function( $a, $b ) {
-		return strnatcasecmp( $a->sort, $b->sort );
-	} );
+	sortList( $array );
 	$html      = '<ul id="pl-savedlist" class="list">';
 	$index0    = '';
 	$indexes   = [];

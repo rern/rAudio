@@ -98,9 +98,7 @@ case 'find':
 			$each->path = $list[ 1 ];
 			$array[]    = $each;
 		}
-		usort( $array, function( $a, $b ) {
-			return strnatcasecmp( $a->sort, $b->sort );
-		} );
+		sortList( $array );
 		foreach( $array as $each ) {
 			$mode      = strtolower( explode( '/', $each->path )[ 0 ] );
 			$dataindex = dataIndex( $each->sort );
@@ -348,9 +346,7 @@ function htmlDirectory() {
 		$each->sort = stripSort( $dir );
 		$array[]    = $each;
 	}
-	usort( $array, function( $a, $b ) {
-		return strnatcasecmp( $a->sort, $b->sort );
-	} );
+	sortList( $array );
 	$htmlf = '';
 	foreach( $array as $each ) {
 		$path      = $each->path;
@@ -390,9 +386,7 @@ function htmlFind() { // non-file 'find' command
 		if ( isset( $list[ $fL ] ) ) $each->path = $list[ $fL ];
 		$array[] = $each;
 	}
-	usort( $array, function( $a, $b ) {
-		return strnatcasecmp( $a->sort, $b->sort );
-	} );
+	sortList( $array );
 	$key0           = $f[ 0 ];
 	$key1           = $fL > 1 ? $f[ 1 ] : '';
 	$modeartist     = in_array( $GMODE, [ 'artist', 'albumartist' ] );
@@ -474,9 +468,7 @@ function htmlRadio() {
 			$each->sort    = stripSort( $dirname );
 			$array[]       = $each;
 		}
-		usort( $array, function( $a, $b ) {
-			return strnatcasecmp( $a->sort, $b->sort );
-		} );
+		sortList( $array );
 		foreach( $array as $each ) {
 			$dataindex = count( $files ) ? '' : dataIndex( $each->sort );
 			$html.= '
@@ -500,9 +492,7 @@ function htmlRadio() {
 			$each->sort    = stripSort( $name );
 			$array[]       = $each;
 		}
-		usort( $array, function( $a, $b ) {
-			return strnatcasecmp( $a->sort, $b->sort );
-		} );
+		sortList( $array );
 		$i = 0;
 		foreach( $array as $each ) {
 			$dataindex   = $search ? '' : dataIndex( $each->sort );
