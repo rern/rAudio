@@ -143,14 +143,6 @@ mpc -q add $tracklist
 echo $discid > $dirshm/audiocd
 pushData audiocd '{ "type": "ready" }'
 eject -x 4
-# coverart
-if [[ -e $diraudiocd/$discid && ! $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
-	$dirbash/status-coverartonline.sh "cmd
-$artist
-$album
-$discid
-CMD ARTIST ALBUM DISCID" &> /dev/null &
-fi
 # set 1st track of cd as current
 if [[ $trackcd ]]; then
 	$dirbash/cmd.sh "mpcskip

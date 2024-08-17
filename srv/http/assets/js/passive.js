@@ -10,7 +10,7 @@ function radioRefresh() {
 			renderLibraryList( data );
 		} );
 	} else {
-		$( '#mode-'+ V.mode ).trigger( 'click' );
+		$( '.mode.'+ V.mode ).trigger( 'click' );
 	}
 }
 function statusUpdate( data ) {
@@ -47,7 +47,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			}
 		} else {
 			renderPlaylistPadding();
-			if ( ! V.savedpl && ! V.savedpltrack ) {
+			if ( V.playlisthome ) {
 				setTimeout( () => {
 					setPlaylistInfoWidth();
 					setPlaylistScroll();
@@ -161,7 +161,7 @@ function psDisplay( data ) {
 		displayPlayback();
 		renderPlayback();
 	} else if ( V.library ) {
-		if ( ! V.librarylist ) {
+		if ( V.libraryhome ) {
 			renderLibrary();
 		} else {
 			$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
@@ -189,7 +189,7 @@ function psDisplay( data ) {
 					$( '.licover' ).toggleClass( 'nofixed', ! D.fixedcover );
 				}
 			} else if ( V.mode === 'album' ) {
-				if ( albumlistchanged ) $( '#mode-album' ).trigger( 'click' );
+				if ( albumlistchanged ) $( '.mode.album' ).trigger( 'click' );
 			}
 		}
 	}
@@ -235,7 +235,7 @@ function psMpdUpdate( data ) {
 	if ( 'counts' in data ) {
 		$.each( data.counts, ( k, v ) => {
 			C[ k ] = v;
-			$( '#mode-'+ k ).parent().toggleClass( 'nodata', ! v || v === 0 );
+			$( '.mode.'+ k ).toggleClass( 'nodata', ! v || v === 0 );
 			if ( V.mode === k ) $( '#library' ).trigger( 'click' );
 			$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
 		} );
@@ -302,7 +302,7 @@ function psOrder( data ) {
 function psPlaylist( data ) {
 	if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 	
-	if ( 'bl1nk' in data ) {
+	if ( 'blink' in data ) {
 		playlistBlink();
 		return
 	}
@@ -312,50 +312,22 @@ function psPlaylist( data ) {
 		setPlaybackBlank();
 		renderPlaylist();
 		bannerHide();
-		return
-	}
-	
-	var plhome = V.playlist && V.plhome;
-	if ( 'song' in data ) {
-		if ( plhome ) renderPlaylist( data );
+	} else {
+		if ( V.playlist && V.playlisthome ) renderPlaylist( data );
 		playbackStatusGet();
-		return
 	}
-	
-	clearTimeout( V.debouncepl );
-	V.debouncepl = setTimeout( () => {
-		if ( 'refresh' in data ) {
-			if ( plhome ) {
-				var pos = data.refresh;
-				$( '#pl-list li' ).eq( pos ).remove();
-				$( '#pl-list li .pos' ).slice( pos - 1 ).each( ( i, el ) => {
-					$( el ).text( pos );
-					pos++
-				} );
-				if ( data.active ) {
-					S.song = data.active;
-					$( '#pl-list li' ).eq( S.song ).addClass( 'active' );
-				}
-				if ( $( '#pl-list li' ).length === 1 ) $( '#previous, #next' ).addClass( 'hide' );
-			}
-		} else {
-			var name = $( '#pl-path .lipath' ).text();
-			if ( V.savedpltrack && data.playlist === name ) renderSavedPlTrack( name );
-		}
-		playbackStatusGet();
-	}, 300 );
 }
 function psRadioList( data ) {
 	if ( 'count' in data ) {
 		C[ data.type ] = data.count;
-		$( '#mode-'+ data.type +' gr' ).text( data.count );
+		$( '.mode.'+ data.type +' gr' ).text( data.count );
 	}
 	if ( V.library ) {
 		if ( V.librarylist && V.mode === data.type ) radioRefresh();
 	} else if ( V.playlist ) {
-		if ( V.savedpl ) {
+		if ( V.playlistlist ) {
 			$( '#button-pl-playlists' ).trigger( 'click' );
-		} else if ( V.savedpltrack ) {
+		} else if ( V.playlisttrack ) {
 			renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
 		} else {
 			playlistGet();
@@ -430,13 +402,13 @@ function psRestore( data ) {
 function psSavedPlaylists( data ) {
 	var count   = data.count;
 	C.playlists = count;
-	if ( V.savedpl ) {
+	if ( V.playlistlist ) {
 		count ? renderSavedPl( data ) : $( '#playlist' ).trigger( 'click' );
-	} else if ( V.savedpltrack ) {
+	} else if ( V.playlisttrack ) {
 		if ( 'delete' in data && $( '#savedpl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 	}
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
-	$( '#mode-playlists gr' ).text( count || '' );
+	$( '.mode.playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
 	if ( V.local ) {

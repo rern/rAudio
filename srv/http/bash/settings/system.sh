@@ -231,7 +231,7 @@ mountremount )
 	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
 		mount "$MOUNTPOINT"
 	else
-		udevil mount "$SOURCE"
+		udevil mount $SOURCE
 	fi
 	pushRefresh
 	;;
@@ -488,9 +488,13 @@ $( mmc $k read $dev )
 		done
 		echo "$data"
 	else
+		dev=$( tr -d 0-9 <<< $DEV )
 		echo -n "\
+<bll># lsblk -no vendor,model $dev</bll>
+$( lsblk -no vendor,model $dev )
+
 <bll># hdparm -I $DEV</bll>
-$( hdparm -I $DEV | sed '1,3 d' )"
+$( hdparm -I $DEV | sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' )"
 	fi
 	;;
 tft )
@@ -540,22 +544,24 @@ timezone )
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 # --------------------------------------------------------------------
+	list=$( lsblk -no path,vendor,model | grep -v ' $' )
+	if [[ $CMD == usbconnect ]]; then
+		sdx=$( dmesg \
+					| tail -15 \
+					| grep ' sd.* GiB' \
+					| tail -1 \
+					| sed -E 's/.*\[|].*//g' )
+		notify usbdrive "$( lsblk -no vendor,model /dev/$sdx )" Ready
+	else
+		name=$( diff $dirshm/lsblkusb <( echo "$list" ) \
+					| grep '^<'\
+					| tr -s ' ' \
+					| cut -d' ' -f3- )
+		notify usbdrive "$name" Removed
+	fi
+	echo "$list" > $dirshm/lsblkusb
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	pushDirCounts usb
-	if [[ $CMD == usbconnect ]]; then
-		msg=Ready
-		d='>'
-	else
-		msg=Removed
-		d='<'
-	fi
-	list=$( lsblk -Sno path,vendor,model )
-	for i in {0..5}; do
-		name=$( diff $dirshm/lsblkusb <( echo "$list" ) | grep "^$d" | cut -d' ' -f3- )
-		[[ $name ]] && break || sleep 1
-	done
-	echo "$list" > $dirshm/lsblkusb
-	[[ $name ]] && notify usbdrive "$name" $msg
 	;;
 volumeboot )
 	enableFlagSet

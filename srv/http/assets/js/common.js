@@ -706,7 +706,7 @@ function infoFileImageLoad() {
 	V.pica ? infoFileImageReader() : $.getScript( '/assets/js/plugin/'+ jfiles.pica, infoFileImageReader );
 }
 function infoFileImageReader() {
-	var maxsize   = ( V.library && ! V.librarylist ) ? 200 : 1000;
+	var maxsize   = ( V.library && V.libraryhome ) ? 200 : 1000;
 	var reader    = new FileReader();
 	reader.onload = function( e ) {
 		var img    = new Image();
@@ -776,7 +776,7 @@ function infoFileImageRender( src, original, resize ) {
 	);
 }
 function infoFileImageResize( ext, imgW, imgH ) {
-	var maxsize = ( V.library && ! V.librarylist ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
+	var maxsize = ( V.library && V.libraryhome ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
 	if ( imgW > maxsize || imgH > maxsize ) {
 		var w = imgW > imgH ? maxsize : Math.round( imgW / imgH * maxsize );
 		var h = imgW > imgH ? Math.round( imgH / imgW * maxsize ) : maxsize;
@@ -1102,7 +1102,7 @@ function psNotify( data ) {
 			intervalClear();
 		} else if ( title === 'Latest' ) {
 			C.latest = 0;
-			$( '#mode-latest gr' ).empty();
+			$( '.mode.latest gr' ).empty();
 			if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
 		}
 	}

@@ -7,36 +7,22 @@ V = {   // var global
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
-	, bioartist     : []
 	, blinkdot      : '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>'
 	, coverart      : '/assets/img/coverart.svg'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
-	, interval      : {}
 	, covervu       : '/assets/img/vu.svg'
-	, guide         : false
-	, library       : false
-	, librarylist   : false
-	, list          : {}
-	, local         : false
-	, lyrics        : ''
-	, lyricsartist  : ''
-	, lyricstitle   : ''
-	, mode          : ''
-	, modescrolltop : 0
 	, page          : 'playback'
-	, pladd         : false
-	, playback      : true
-	, playlist      : false
-	, plhome        : true
-	, query         : []
-	, rotate        : 0
 	, scrollspeed   : 80 // pixel/s
-	, scrolltop     : {}
 	, similarpl     : -1
-	, status        : {}
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
-}
+};
+[ 'bioartist',     'query' ].forEach(                                                     k => V[ k ] = []    );
+[ 'interval',      'list',         'scrolltop',   'status' ].forEach(                     k => V[ k ] = {}    );
+[ 'guide',         'library',      'librarylist', 'local', 'pladd', 'playlist' ].forEach( k => V[ k ] = false );
+[ 'lyrics',        'lyricsartist', 'mode' ].forEach(                                      k => V[ k ] = ''    );
+[ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0     );
+[ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true     );
 var $bartop     = $( '#bar-top' );
 var $time       = $( '#time-knob' );
 var $volume     = $( '#volume-knob' );
@@ -50,11 +36,11 @@ var picaOption  = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 var icon_player = {
-  airplay    : 'AirPlay'
-, bluetooth  : 'Bluetooth'
-, snapcast   : 'Snapcast'
-, spotify    : 'Spotify'
-, upnp       : 'UPnP'
+	  airplay   : 'AirPlay'
+	, bluetooth : 'Bluetooth'
+	, snapcast  : 'Snapcast'
+	, spotify   : 'Spotify'
+	, upnp      : 'UPnP'
 }
 var vumeter     = '<img class="imgicon" src="'+ V.covervu +'"> ';
 var chkdisplay  = {
@@ -77,7 +63,7 @@ var chkdisplay  = {
 			, label      : 'Label'
 	}
 	, libraryoption : {
-		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artist'
+		  albumbyartist  : ico( 'album' ) +'Sort by artist'
 		, albumyear      : ico( 'album' ) +'Sort by artist > year'
 		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
 		, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
@@ -263,7 +249,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 		case 'displaycolor':
 			V.color = true;
 			if ( V.library ) {
-				V.librarylist && V.mode !== 'album' ? colorSet() : $( '#mode-webradio' ).trigger( 'click' );
+				V.librarylist && V.mode !== 'album' ? colorSet() : $( '.mode.webradio' ).trigger( 'click' );
 			} else if ( V.playlist && S.pllength ) {
 				colorSet();
 			} else {
@@ -437,7 +423,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	V.colorpicker   = false;
 	V.colorelements.removeAttr( 'style' );
 	V.colorelements = '';
-	if ( V.playlist && ! V.savedpl && ! V.savedpltrack) setPlaylistScroll();
+	if ( V.playlist && V.playlisthome ) setPlaylistScroll();
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 } );
 $( '#library, #button-library' ).on( 'click', function() {
@@ -463,9 +449,9 @@ $( '#playback' ).on( 'click', function() {
 $( '#playlist, #button-playlist' ).on( 'click', function() {
 	if ( ! V.local ) V.pladd = false;
 	if ( V.playlist ) {
-		if ( ! V.plhome ) playlistGet();
+		if ( ! V.playlisthome ) playlistGet();
 	} else {
-		V.plhome ? playlistGet() : switchPage( 'playlist' );
+		V.playlisthome ? playlistGet() : switchPage( 'playlist' );
 	}
 } ).press( function() {
 	bash( [ 'plcacheremove' ] );
@@ -1175,16 +1161,16 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	V.searchlist = false;
 	$( '#search-list' ).remove();
-	if ( $( '#lib-list' ).length ) {
-		$( '#lib-path, #button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
-	} else {
+	if ( V.libraryhome ) {
 		$( '#lib-mode-list' ).removeClass( 'hide' );
+	} else {
+		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	}
 	$( '#lib-search-btn' ).removeClass( 'disabled' );
 	$( '#page-library .search' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
-	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
+	$( '#lib-path, #lib-path span, #button-lib-search' ).removeClass( 'hide' );
 	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
 	$( '#lib-path' ).css( 'max-width', '' );
 } );
@@ -1207,7 +1193,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		V.query.pop();
 		var query = V.query.slice( -1 )[ 0 ];
 		if ( query === 'album' ) {
-			$( '#mode-album' ).trigger( 'click' );
+			$( '.mode.album' ).trigger( 'click' );
 		} else {
 			if ( 'gmode' in query ) V.mode = query.gmode;
 			list( query, function( html ) {
@@ -1233,9 +1219,8 @@ $( '#button-lib-back' ).on( 'click', function() {
 } );
 $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
-} ).on( 'click', '.lib-mode:not( .bookmark, .bkradio )', function() {
-	var $this       = $( this );
-	V.mode          = $this.find( '.mode' ).data( 'mode' );
+} ).on( 'click', '.mode:not( .bookmark, .bkradio, .nodata )', function() {
+	V.mode          = $( this ).data( 'mode' );
 	V.modescrolltop = $( window ).scrollTop();
 	$( '#lib-search-close' ).trigger( 'click' );
 	if ( V.mode === 'playlists' ) {
@@ -1319,7 +1304,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 		, okno      : true
 	} );
-} ).on( 'click', '.mode-bookmark:not( .bkradio )', function( e ) { // delegate - id changed on renamed
+} ).on( 'click', '.mode.bookmark:not( .bkradio )', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );
 	if ( V.press || $( '.bkedit' ).length ) return
 	
@@ -1398,18 +1383,21 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
 		, ok          : () => imageReplace( 'bookmark', imagefilenoext, name ) // no ext
 	} );
-} ).press( '.mode-bookmark', setBookmarkEdit );
+} ).press( '.mode.bookmark', setBookmarkEdit );
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
 	, onMove       : function() {
 		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
+		$( '.mode.edit' ).removeClass( 'edit' );
 	}
 	, onUpdate      : function () {
 		var order = [];
-		$( '.mode' ).each( ( i, el ) => order.push( $( el ).find( '.lipath' ).text() ) );
+		$( '.mode' ).each( ( i, el ) => {
+			var $el  = $( el );
+			order.push( $el.hasClass( 'bookmark' ) ? $el.find( '.lipath' ).text() : $el.data( 'mode' ) );
+		} );
 		jsonSave( 'order', order );
 	}
 } );
@@ -1544,13 +1532,19 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			contextmenuLibrary( $this, $target );
 			return
 		}
+	} else if ( V.mode.slice( -6 ) === 'artist' ) { // dabradio, webradio
+		var query = {
+			  library : 'findartist'
+			, mode    : V.mode
+			, string  : path
+			, format  : [ 'album', 'file' ]
+		}
+		var modetitle = path;
 	} else if ( mode !== 'album' ) { // non-album
 		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
 			var format = [ 'artist', 'album' ];
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
 			var format = [ 'album', 'artist' ];
-		} else {
-			var format = [ 'album' ]; // artist, albumartist
 		}
 		var query = {
 			  library : 'find'
@@ -1628,7 +1622,7 @@ $( '#button-pl-back' ).on( 'click', function() {
 		playlistGet();
 		bannerHide();
 	} else {
-		V.savedpl ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
+		V.playlistlist ? playlistGet() : $( '#button-pl-playlists' ).trigger( 'click' );
 	}
 } );
 $( '#button-pl-consume' ).on( 'click', function() {
@@ -1688,30 +1682,50 @@ $( '#button-pl-clear' ).on( 'click', function() {
 		$( '.pl-remove' ).remove();
 	} else {
 		info( {
-			  icon        : 'playlist'
-			, title       : 'Remove From Playlist'
-			, message     : 'Method:'
-			, buttonlabel : [ ico( 'playlist' ) +'Select', ico( 'crop' ) +'Crop' ]
-			, buttoncolor : [ orange ]
-			, button      : [
-				  () => {
-					$( '#pl-list .li1' ).before( ico( 'remove pl-remove' ) );
-					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
-					infoButtonCommand();
-					local();
-				}
-				, () => {
-					bash( [ 'mpccrop' ] );
-					$( '#pl-list li:not( .active )' ).remove();
-				}
+			  icon       : 'playlist'
+			, title      : 'Remove From Playlist'
+			, list       : [
+				  [ '', 'radio', { kv: { '<i class="i-remove"></i>    <gr>Select...</gr>' : 'select' } } ]
+				, [ '', 'radio', { kv: { '<i class="i-track"></i>     <gr>Range...</gr>'  : 'range'  } } ]
+				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   <gr>Crop</gr>'      : 'crop'   } } ]
+				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> <gr>All</gr>'       : 'all'    } } ]
 			]
-			, oklabel     : ico( 'remove' ) +'All'
-			, okcolor     : red
-			, ok          : () => {
-				bash( [ 'mpcremove' ] );
-				setPlaybackBlank();
-				renderPlaylist();
+			, beforeshow : () => {
+				$( '#infoList input:checked' ).prop( 'checked', false );
+				$( '#infoList input' ).on( 'input', function() {
+					var cmd = $( '#infoList input:checked' ).val();
+					switch ( cmd ) {
+						case 'select':
+							$( '#pl-list .li1' ).before( ico( 'remove pl-remove' ) );
+							$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
+							infoButtonCommand();
+							local();
+							break;
+						case 'range':
+							var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true } }
+							info( {
+								  icon     : 'playlist'
+								, title    : 'Remove Range'
+								, list     : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
+								, boxwidth : 80
+								, values   : [ 1, S.pllength ]
+								, ok       : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
+							} );
+							break;
+						case 'crop':
+							bash( [ 'mpccrop' ] );
+							$( '#pl-list li:not( .active )' ).remove();
+							break;
+						case 'all':
+							bash( [ 'mpcremove' ] );
+							setPlaybackBlank();
+							renderPlaylist();
+							break;
+					}
+					$( '#infoX' ).trigger( 'click' );
+				} );
 			}
+			, okno       : true
 		} );
 	}
 } );
@@ -1896,7 +1910,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	if ( menushow && active ) return
 	
 	var liicon   = $target.hasClass( 'li-icon' );
-	if ( V.savedpltrack || liicon ) {
+	if ( V.playlisttrack || liicon ) {
 		if ( V.pladd ) {
 			V.pladd.index = $this.index();
 			V.pladd.track = $this.find( '.li1 .name' ).text()
@@ -1908,7 +1922,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 			V.list    = {};
 			V.list.li = $this; // for contextmenu
 			$( '#pl-savedlist li.active' ).removeClass( 'active' );
-			if ( V.savedpl ) {
+			if ( V.playlistlist ) {
 				V.list.name = $this.find( '.lipath' ).text().trim();
 				V.list.path = V.list.name;
 			} else {
@@ -1920,7 +1934,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 				$( '.remove' ).removeClass( 'hide' );
 				$( '.tag' ).addClass( 'hide' );
 				if ( ( D.tapaddplay || D.tapreplaceplay )
-					&& V.savedpltrack 
+					&& V.playlisttrack 
 					&& ! liicon
 					&& S.player === 'mpd'
 				) {

@@ -4,9 +4,6 @@
 
 args2var "$1"
 
-name=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
-name=${name,,}
-
 ### 1 - lastfm ##################################################
 if [[ $MODE != webradio || -e $dirshm/radio ]]; then # not webradio || radioparadise / radiofrance
 	param="album=${ALBUM//&/ and }"
@@ -55,11 +52,11 @@ if [[ $DISCID ]]; then
 	coverfile=$diraudiocd/$DISCID.$ext
 else
 	[[ $MODE ]] && prefix=$MODE || prefix=online
-	coverfile=$dirshm/$prefix/$name.$ext
+	name=$( alphaNumeric $ARTIST$ALBUM )
+	coverfile=$dirshm/$prefix/${name,,}.$ext
 fi
 curl -sfL $url -o $coverfile
-[[ $? != 0 ]] && pushDataCoverart && exit
-# --------------------------------------------------------------------
-coverurl=${coverfile:9}
-[[ $MODE == webradio && ! -e $dirshm/radio ]] && radioalbum=$( jq -r '.title // empty' <<< $album ) # radioparadise / radiofrance - already got album name
-pushDataCoverart "$coverurl" "$radioalbum"
+if [[ $? == 0 ]]; then
+	[[ $MODE == webradio && ! -e $dirshm/radio ]] && radioalbum=$( jq -r '.title // empty' <<< $album ) # radioparadise / radiofrance - already got album name
+	pushDataCoverart "${coverfile:9}" "$radioalbum"
+fi

@@ -238,7 +238,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
 		var mounted = list.size !== '';
-		$( '#menu .info' ).toggleClass( 'hide', list.apm === false || list.icon === 'networks' );
+		$( '#menu .info' ).toggleClass( 'hide', ! list.info );
 		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
 		$( '#menu .sleep' ).toggleClass( 'hide', ! list.apm );
@@ -1196,7 +1196,7 @@ function renderStorage() {
 		var dot = '<grn>&ensp;•&ensp;</grn>';
 		if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
 		html += '<li>'+ ico( v.icon ) + mountpoint
-				+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +' <gr>'+ v.fs +'</gr></li>';
+				+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +'</li>';
 	} );
 	$( '#list' ).html( html );
 }

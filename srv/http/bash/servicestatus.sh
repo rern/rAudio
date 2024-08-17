@@ -34,7 +34,7 @@ case $CMD in
 		conf=$( configText /var/lib/iwd/ap/$( hostname ).ap )
 		systemctl -q is-active iwd && conf+="
 <bll># iwctl ap list</bll>
-$( iwctl ap list | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' )"
+$( iwctl ap list | perl -pe 's/\e\[[0-9;]*m//g' )" # remove stdout colors
 		;;
 	bluealsa )
 		conf="\

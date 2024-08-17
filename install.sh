@@ -4,6 +4,23 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240816
+file=$dirmpd/albumbyartist
+[[ -e $file && $( grep -m1 . $file | cut -c 2 ) != ^ ]] && php /srv/http/cmd.php sort albumbyartist
+
+lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
+
+if [[ -e /boot/kernel.img ]]; then
+	file=/usr/bin/mount.ntfs3
+	if [[ ! -e $file ]]; then
+		ln -s /usr/bin/ntfs-3g $file
+		sed -i '/^allowed_types/ s/$/, ntfs3/' /etc/udevil/udevil.conf
+	fi
+fi
+
+file=/etc/pacman.conf
+! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant/}' $file
+
 # 20240719
 rm -f $dirshm/system
 
@@ -21,13 +38,6 @@ if [[ -e $dir/59.jpg ]]; then
 	curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
 fi
 
-# 20240612
-file=/etc/systemd/system/websocket.service
-if grep -q '-server' $file; then
-	sed -i 's/-server//' $file
-	systemctl daemon-reload
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -40,8 +50,7 @@ dirPermissions
 $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-# 20240615
-systemctl restart websocket
-systemctl try-restart rotaryencoder
-
 installfinish
+
+# 20240816
+systemctl restart mpd

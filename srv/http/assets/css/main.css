@@ -1094,9 +1094,9 @@ i.map.disabled, .map.disabled i {
 	display: inline-block;
 	margin-left: 10px;
 	width: calc( 100% - 84px );
+	vertical-align: 10px;
 	font-size: 26px;
 	font-weight: 300;
-	line-height: 40px;
 }
 #lyricsartist {
 	display: inline-block;
@@ -1213,6 +1213,14 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 );
 	text-align: center;
 }
+.mode.edit {
+	background: hsl( 0, 0%, 15% );
+}
+.mode.edit .i-bookmark,
+.mode.edit img,
+.mode.edit .label {
+	opacity: 0.33;
+}
 .mode i:not( .bkedit ) {
 	display: inline-block;
 	padding-top: 20px;
@@ -1245,8 +1253,7 @@ i.map.disabled, .map.disabled i {
 	overflow: hidden;
 }
 .bkcoverart {
-	position: relative;
-	top: 5px;
+	margin-top: 5px;
 	height: 100px;
 	max-width: 100%;
 	border: 1px solid hsl(0,0%,15%);
@@ -1600,9 +1607,10 @@ i.map.disabled, .map.disabled i {
 	width: 28px !important;
 	font-size: 22px !important;
 	line-height: 25px !important;
+	vertical-align: -5px;
 	color: var( --cg60 ) !important;
 }
-.lib-mode.updn .mode {
+.mode.updn {
 	background: var( --cga );
 }
 #pl-manage {
@@ -1744,10 +1752,7 @@ li.active .iconthumb {
 	margin: 0;
 }
 
-.lib-mode.nodata {
-	pointer-events: none;
-}
-.lib-mode.nodata i {
+.mode.nodata i {
 	color: var( --cg ) !important;
 }
 #lib-list li.nodata * {
@@ -1780,7 +1785,7 @@ li.active .li1 bl {
 }
 #pl-list .elapsed i {
 	margin: 0 10px 0 5px;
-	line-height: 17px; /* for ios */
+	vertical-align: -4px;
 }
 #pl-list .elapsed {
 	margin: 0 3px 0 7px;

@@ -36,6 +36,9 @@ fi
 #	k1=v1
 #	k2=v2
 #	...
+alphaNumeric() {
+	tr -dc [:alnum:] <<< $@
+}
 appendSortUnique() {
 	local data file lines
 	data=$1
@@ -529,7 +532,7 @@ volumeGet() {
 	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
 				&& playerActive mpd; then            # software
-		val=$( mpc status %volume% | tr -dc [0-9] )
+		val=$( mpc status %volume% | tr -dc [:digit:] )
 		db=false
 	elif [[ -e $dirshm/amixercontrol ]]; then        # hardware
 		. <( grep -E '^card|^mixer' $dirshm/output )

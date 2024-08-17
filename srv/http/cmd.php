@@ -74,7 +74,7 @@ case 'logout': // $.post from main.js
 	break;
 case 'sort': // from cmd-list.sh
 	include 'function.php';
-	$modes = [ 'album', 'albumartist', 'albumbyartist-year', 'artist', 'composer', 'conductor', 'date', 'genre', 'latest' ];
+	$modes = explode( ' ', $argv[ 2 ] );
 	foreach( $modes as $mode ) {
 		$file = '/srv/http/data/mpd/'.$mode;
 		if ( ! file_exists( $file ) ) continue;

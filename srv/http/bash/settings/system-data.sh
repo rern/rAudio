@@ -4,7 +4,7 @@
 
 date=$( date +'%F <gr>•</gr> %T' )
 load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )
-temp=$( vcgencmd measure_temp | tr -cd '0-9.' )
+temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )

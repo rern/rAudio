@@ -88,10 +88,11 @@ $addon_guide = $guide || $addonsprogress;
 $keyboard    = $localhost && ! $addon_guide;
 if ( $keyboard ) foreach( [ 'cssp', 'css', 'jsp', 'js' ] as $ea ) $$ea[] = 'simplekeyboard';
 
-$html = '';
-foreach( $cssp as $c ) $html.= '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
-foreach( $css as $c )  $html.= '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
-$html.= '
+$html     = '';
+$htmlcss = '<link rel="stylesheet" href="/assets/css/';
+foreach( $cssp as $c ) $html.= $htmlcss.'plugin/'.$cfiles[ $c ].'">';
+foreach( $css as $c )  $html.= $htmlcss.$c.'.css'.$hash.'">';
+$html    .= '
 </head>
 <body>
 ';
@@ -112,8 +113,9 @@ if ( $keyboard )       $html.= '
 echo $html;
 
 $scripts = '';
-foreach( $jsp as $j )      $scripts.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )       $scripts.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+$htmljs  = '<script src="/assets/js/';
+foreach( $jsp as $j )      $scripts.= $htmljs.'plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )       $scripts.= $htmljs.$j.'.js'.$hash.'"></script>';
 if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
 
 function htmlBottom() {

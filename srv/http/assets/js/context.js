@@ -135,20 +135,19 @@ function directoryDelete() {
 function directoryList() {
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
 		var path      = V.list.path;
+		var modetitle = path;
 		var query     = {
 			  library : 'ls'
 			, string  : path
-			, format  : [ 'file' ]
+			, gmode   : path.split( '/' )[ 0 ].toLowerCase()
 		}
-		var modetitle = path;
-		query.gmode   = V.mode;
-		V.mode        = path.split( '/' )[ 0 ].toLowerCase();
 		list( query, function( html ) {
 			var data = {
 				  html      : html
 				, modetitle : modetitle
 				, path      : path
 			}
+			V.librarylisthtml = '';
 			renderLibraryList( data );
 		} );
 		query.path      = path;
@@ -704,7 +703,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			} else if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
 				V.mpccmd = [ 'mpcaddfind', V.mode, path, 'album', V.list.album ];
 			} else { // directory / album / saved playlist track
-				V.mpccmd = V.savedpltrack ? [ 'mpcadd', path ] : [ 'mpcaddls', path ];
+				V.mpccmd = V.playlisttrack ? [ 'mpcadd', path ] : [ 'mpcaddls', path ];
 			}
 			break;
 		case 'pl':

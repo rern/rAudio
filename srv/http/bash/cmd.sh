@@ -110,10 +110,14 @@ plClear() {
 	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
 }
 pushPlaylist() {
+	[[ -e $dirshm/pushplaylist ]] && exit
+# --------------------------------------------------------------------
+	touch $dirshm/pushplaylist
 	pushData playlist '{ "blink": true }'
 	rm -f $dirshm/playlist
 	[[ $( mpc status %length% ) == 0 ]] && data='{ "blank": true }' || data=$( php /srv/http/playlist.php current )
 	pushData playlist $data
+	( sleep 1 && rm -f $dirshm/pushplaylist ) &
 }
 pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
@@ -228,9 +232,9 @@ bookmarkcoverreset )
 	;;
 bookmarkremove )
 	bkfile="$dirbookmarks/${NAME//\//|}"
-	path=$( < "$bkfile" )
-	if grep -q "$path" $dirsystem/order.json 2> /dev/null; then
-		order=$( jq '. - ["'$path'"]' $dirsystem/order.json )
+	if [[ -e $dirsystem/order.json ]]; then
+		path=$( sed 's/"/\\"/g' "$bkfile" )
+		order=$( cat $dirsystem/order.json | jq "del( .. | select( . == \"$path\" ) )" )
 		echo "$order" > $dirsystem/order.json
 	fi
 	rm "$bkfile"
@@ -475,8 +479,7 @@ lyrics )
 			fi
 		fi
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
-		title=${TITLE//\/}
-		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
+		query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
 		lyrics=$( curl -sL -A firefox $url/${query,,}.html | sed -n "/$start/,\|$end| p" )
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
@@ -585,7 +588,12 @@ mpcplayback )
 	fi
 	;;
 mpcremove )
-	if [[ $POS ]]; then
+	if [[ $START ]]; then
+		for (( i=$START; i < $END; i++ )); do
+			mpc -q del $i
+		done
+		pushPlaylist
+	elif [[ $POS ]]; then
 		if [[ $( mpc status %songpos% ) == $POS ]]; then
 			[[ $( mpc status %length% ) == $POS ]] && next=$(( POS -1 )) || next=$POS
 		fi
@@ -664,7 +672,7 @@ mpcskippl )
 	mpc -q play $POS
 	Time=$( mpc status %totaltime% | awk -F: '{print ($1 * 60) + $2}' )
 	[[ $Time == 0 ]] && Time=false
-	[[ $ACTION == stop ]] && mpc -q stop
+	[[ $ACTION != play ]] && mpc -q stop
 	pushPlaylist
 	;;
 mpcupdate )
@@ -724,6 +732,9 @@ playlist )
 	mpc -q load "$NAME"
 	[[ $PLAY ]] && mpc -q play
 	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
+	pushPlaylist
+	;;
+playlistpush )
 	pushPlaylist
 	;;
 relaystimerreset )

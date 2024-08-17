@@ -110,7 +110,6 @@ li:not( .licover ),
 .infomessage .tagpath,
 .index a.indexed,
 .infolabel i,
-.lib-mode,
 .licoverimg,
 .liinfo,
 .map,
@@ -157,7 +156,7 @@ li:not( .licover ),
 	cursor: pointer;
 }
 #lib-path a:last-of-type:hover,
-.lib-mode.nodata * {
+.mode.nodata * {
 	cursor: default;
 }
 #lib-path a:last-of-type:hover {

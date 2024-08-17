@@ -3,32 +3,47 @@
 . /srv/http/bash/common.sh
 
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
-	local apm ust                # timeout: limit if network shares offline
-	[[ $4 == true ]] && ust=$( timeout 1 df -H --output=used,size,fstype $2 | awk '!/Used/ {print $1"B/"$2"B "$3}' )
-	[[ $1 == usbdrive ]] && apm=$( hdparm -B $3 | awk '/APM/ {print $NF}' ) # N / not supported
+	local apm icon info mounted mountpoint size usf
+	icon=$1
+	mountpoint=$2
+	source=$3
+	mounted=$4
+	[[ $icon == usbdrive ]] && apm=$( hdparm -B $source | awk '/APM/ {print $NF}' ) # N / not supported
 	[[ ! $apm || $apm == supported ]] && apm=false
+	info=false
+	[[ $icon != networks ]] && hdparm -I $source &> /dev/null && info=true
+	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
+		size=$( timeout 1 df -H --output=used,size $mountpoint | awk '!/Used/ {print $1"B/"$2"B"}' )
+		[[ ${source:0:4} == /dev ]] && size+=" <gr>$( blkid -o value -s TYPE $source )</gr>"
+	fi
 	echo ',{
-  "icon"       : "'$1'"
-, "fs"         : "'${ust/* }'"
-, "mountpoint" : "'$( stringEscape $2 )'"
-, "size"       : "'${ust/ *}'"
-, "source"     : "'$3'"
-, "apm"        : '$apm'
+  "apm"        : '$apm'
+, "icon"       : "'$icon'"
+, "info"       : '$info'
+, "mountpoint" : "'$( stringEscape $mountpoint )'"
+, "size"       : "'$size'"
+, "source"     : "'$source'"
 }'
 }
 # sd
 mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd / /dev/mmcblk0p2 true )
 # usb
-usb=$( fdisk -l -o Device | grep ^/dev/sd )
+usb=$( ls -1 /dev/sd* 2> /dev/null )
 if [[ $usb ]]; then
 	while read source; do
+		type=$( blkid -o value -s TYPE $source )
+		[[ ! $type ]] && continue
+		
 		mountpoint=$( df -l --output=target $source | tail -1 )
 		if [[ $mountpoint != /dev ]]; then
 			mounted=true
 		else
 			mounted=false
-			mountpoint="$dirusb/$( lsblk -no label /dev/sda1 )"
+			mountpoint="$dirusb/$( lsblk -no label $source )"
 		fi
+		[[ $mountpoint == $mountpointprev ]] && continue
+		
+		mountpointprev=$mountpoint
 		list+=$( listItem usbdrive "$mountpoint" "$source" $mounted )
 	done <<< $usb
 fi

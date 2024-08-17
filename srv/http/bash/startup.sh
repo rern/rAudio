@@ -165,4 +165,4 @@ fi
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 udevil clean
-lsblk -Sno path,vendor,model > $dirshm/lsblkusb
+lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
