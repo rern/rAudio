@@ -1532,13 +1532,19 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			contextmenuLibrary( $this, $target );
 			return
 		}
+	} else if ( V.mode.slice( -6 ) === 'artist' ) { // dabradio, webradio
+		var query = {
+			  library : 'findartist'
+			, mode    : V.mode
+			, string  : path
+			, format  : [ 'album', 'file' ]
+		}
+		var modetitle = path;
 	} else if ( mode !== 'album' ) { // non-album
 		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
 			var format = [ 'artist', 'album' ];
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
 			var format = [ 'album', 'artist' ];
-		} else {
-			var format = [ 'album', 'file' ]; // artist, albumartist
 		}
 		var query = {
 			  library : 'find'

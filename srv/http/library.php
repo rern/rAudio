@@ -83,49 +83,47 @@ case 'find':
 		exec( 'mpc find -f "'.$format.'" album "'.$STRING.'" 2> /dev/null '
 				."| awk 'NF && !a[$0]++'"
 			, $lists );
-	} else if ( substr( $MODE, -6 ) === 'artist' ) { // artist, albumartist
-		exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
-				."| sed 's|/[^/]*$||' "
-				."| sort -u "
-				."| awk 'NF && !a[$0]++'"
-			, $lists );
-		foreach( $lists as $list ) {
-			$list       = explode( '^^', $list ); // album^^artist
-			$each       = ( object )[];
-			$name       = $list[ 0 ];
-			$each->name = $name;
-			$each->sort = stripSort( $name );
-			$each->path = $list[ 1 ];
-			$array[]    = $each;
-		}
-		sortList( $array );
-		foreach( $array as $each ) {
-			$mode      = strtolower( explode( '/', $each->path )[ 0 ] );
-			$dataindex = dataIndex( $each->sort );
-			$icon      = imgIcon( rawurlencode( '/mnt/MPD/'.$each->path.'/thumb.jpg' ), 'folder' );
-			$html     .= '
-<li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.'
-	<a class="lipath">'.$each->path.'</a>
-	<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
-</li>';
-		}
-		$html.= indexBar( $indexes );
-		echo $html;
-		exit;
-//----------------------------------------------------------------------------------
 	} else {
 		exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
 				."| awk 'NF && !a[$0]++'"
 			, $lists );
 	}
-	if ( ! count( $lists ) ) exit;
-//----------------------------------------------------------------------------------
 	if ( count( $f ) > 3 ) {
 		htmlTrack();
 	} else { // modes - album, artist, albumartist, composer, conductor, date, genre
 		htmlFind();
 	}
 	break;
+case 'findartist': // artist, albumartist
+	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
+			."| sed 's|/[^/]*$||' "
+			."| sort -u "
+			."| awk 'NF && !a[$0]++'"
+		, $lists );
+	foreach( $lists as $list ) {
+		$list       = explode( '^^', $list ); // album^^artist
+		$each       = ( object )[];
+		$name       = $list[ 0 ];
+		$each->name = $name;
+		$each->sort = stripSort( $name );
+		$each->path = $list[ 1 ];
+		$array[]    = $each;
+	}
+	sortList( $array );
+	foreach( $array as $each ) {
+		$mode      = strtolower( explode( '/', $each->path )[ 0 ] );
+		$dataindex = dataIndex( $each->sort );
+		$icon      = imgIcon( rawurlencode( '/mnt/MPD/'.$each->path.'/thumb.jpg' ), 'folder' );
+		$html     .= '
+<li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.'
+<a class="lipath">'.$each->path.'</a>
+<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
+</li>';
+	}
+	$html.= indexBar( $indexes );
+	echo $html;
+	exit;
+//----------------------------------------------------------------------------------
 case 'home':
 	$modes    = [ 'Album',  'Artist', 'Album Artist', 'Composer',  'Conductor', 'Date',      'Genre'
 				, 'Latest', 'NAS',    'SD',           'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
