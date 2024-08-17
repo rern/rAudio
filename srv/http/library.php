@@ -90,7 +90,7 @@ case 'find':
 	}
 	if ( count( $f ) > 3 ) {
 		htmlTrack();
-	} else { // modes - album, artist, albumartist, composer, conductor, date, genre
+	} else { // modes - album, composer, conductor, date, genre
 		htmlFind();
 	}
 	break;
