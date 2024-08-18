@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240816
+# 20240818
 file=$dirmpd/albumbyartist
 [[ -e $file && $( grep -m1 . $file | cut -c 2 ) != ^ ]] && php /srv/http/cmd.php sort albumbyartist
 
@@ -16,10 +16,10 @@ if [[ -e /boot/kernel.img ]]; then
 		ln -s /usr/bin/ntfs-3g $file
 		sed -i '/^allowed_types/ s/$/, ntfs3/' /etc/udevil/udevil.conf
 	fi
+else
+	file=/etc/pacman.conf
+	! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant/}' $file
 fi
-
-file=/etc/pacman.conf
-! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant/}' $file
 
 # 20240719
 rm -f $dirshm/system
