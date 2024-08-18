@@ -16,10 +16,10 @@ if [[ -e /boot/kernel.img ]]; then
 		ln -s /usr/bin/ntfs-3g $file
 		sed -i '/^allowed_types/ s/$/, ntfs3/' /etc/udevil/udevil.conf
 	fi
+else
+	file=/etc/pacman.conf
+	! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant/}' $file
 fi
-
-file=/etc/pacman.conf
-! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant/}' $file
 
 # 20240719
 rm -f $dirshm/system

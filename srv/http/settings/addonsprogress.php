@@ -7,30 +7,26 @@ if ( file_exists( $fileflag ) ) { // close on refresh
 	exit();
 }
 
-$alias       = $_POST[ 'alias' ];
-if ( $alias === 'albumthumbnail' ) {
-	$label       = 'Update';
-	$title       = 'Album Thumbnails';
-	$icon        = '<i class="page-icon i-coverart"></i>';
-	$hrefback    = '/';
-} else {
-	$branch      = $_POST[ 'branch' ];
-	$installurl  = $_POST[ 'installurl' ];
-	$label       = $_POST[ 'label' ];
-	$postinfo    = $_POST[ 'postinfo' ] ?? '';
-	$title       = $_POST[ 'title' ];
-	$uninstall   = $_POST[ 'uninstall' ] ?? '';
-	$opt         = $_POST[ 'opt' ] ?? '';
+touch( $fileflag );
 
-	$icon        = '<i class="page-icon i-jigsaw"></i>';
-	$hrefback    = 'settings.php?p=addons';
-	$installfile = basename( $installurl );
-	$options     = $alias."\n".$label."\n".$branch;
-	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
-	touch( $fileflag );
+$alias      = $_POST[ 'alias' ];
+$branch     = $_POST[ 'branch' ] ?? '';
+$installurl = $_POST[ 'installurl' ] ?? '';
+$label      = $_POST[ 'label' ];
+$postinfo   = $_POST[ 'postinfo' ] ?? '';
+$opt        = $_POST[ 'opt' ] ?? '';
+$title      = $_POST[ 'title' ];
+$uninstall  = $_POST[ 'uninstall' ] ?? '';
+$hrefback   = 'settings.php?p=addons';
+$icon       = '<i class="page-icon i-jigsaw"></i>';
+if ( $alias === 'albumthumbnail' ) {
+	$label    = 'Update';
+	$title    = 'Album Thumbnails';
+	$icon     = str_replace( 'jigsaw', 'coverart', $icon );
+	$hrefback = '/';
 }
-$postmsg     = $label.' done.';
-if ( $postinfo ) $postmsg.= '<br><br><i class="i-addons wh"></i>'.$postinfo;
+$postmsg    = $label.' done.';
+$postmsg   .= $postinfo ? '<br><br><i class="i-addons wh"></i>'.$postinfo : '';
 ?>
 
 <style>
@@ -110,22 +106,21 @@ document.body.addEventListener( 'keydown', e => {
 </script>
 <?php
 // ......................................................................................
-$getinstall = <<< EOF
-curl -sSfLO $installurl
-[[ $? != 0 ]] && echo '<a class="cbr"> ! </a> '$label script download failed. && exit
-
-chmod 755 $installfile
-EOF;
-
 if ( $alias === 'albumthumbnail' ) {
 	$command    = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$_POST[ 'path' ].'" '.$_POST[ 'overwrite' ];
 	$commandtxt = $command;
 } else if ( $label === 'Uninstall' ) {
-	$command    = "uninstall_$alias.sh";
+	$command    = 'uninstall_'.$alias.'.sh';
 	$commandtxt = $command;
 } else {
+	$installfile = basename( $installurl );
+	$options     = $alias."\n".$label."\n".$branch;
+	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
 	$command    = <<< EOF
-$getinstall
+curl -sSfLO $installurl
+[[ $? != 0 ]] && echo '<a class="cbr"> ! </a> '$label script download failed. && exit
+
+chmod 755 $installfile
 /usr/bin/sudo ./$installfile "$options"
 EOF;
 	$commandtxt = <<< EOF
@@ -147,8 +142,7 @@ echo $fillbuffer;          // fill buffer to force start output
 if ( $label === 'Uninstall' ) sleep( 1 );
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-$proc = proc_open( $command, [ [ 'pipe','r' ], [ 'pipe', 'w' ], [ 'pipe', 'w' ] ], $pipes );
-$ppid = proc_get_status( $proc )[ 'pid ' ];
+$proc       = proc_open( $command, [ [ 'pipe','r' ], [ 'pipe', 'w' ], [ 'pipe', 'w' ] ], $pipes );
 foreach( [ 0, 1, 2 ] as $i ) {
 	if ( $i > 0 ) {
 		while ( ! feof( $pipes[ $i ] ) ) {
@@ -162,6 +156,8 @@ foreach( [ 0, 1, 2 ] as $i ) {
 			echo $std;                             // output to screen
 			echo $fillbuffer;                      // fill buffer after each line
 			if ( connection_status() !== 0 || connection_aborted() === 1 ) {
+				$pstatus = proc_get_status( $proc );
+				$ppid    = $pstatus[ 'pid ' ];
 				exec( "ps -o pid --no-heading --ppid $ppid | tr -d ' '", $pids );
 				foreach( $pids as $pid ) posix_kill( $pid, 9 );
 				proc_terminate( $proc );
