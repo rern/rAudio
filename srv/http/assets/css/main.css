@@ -1665,6 +1665,8 @@ i.map.disabled, .map.disabled i {
 	margin-top: 230px;
 }
 .list .single {
+	display: inline-block;
+	max-width: calc( 100% - 90px );
 	line-height: 48px;
 	vertical-align: 5%;
 }
