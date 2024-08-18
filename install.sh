@@ -18,7 +18,8 @@ if [[ -e /boot/kernel.img ]]; then
 	fi
 else
 	file=/etc/pacman.conf
-	! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant/}' $file
+	[[ -e /boot/kernel7.img ]] && pkg=' libunwind'
+	! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant'$pkg'/}' $file
 fi
 
 # 20240719
