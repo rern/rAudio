@@ -25,8 +25,6 @@ fi
 # 20240719
 rm -f $dirshm/system
 
-lsblk -Sno path,vendor,model > $dirshm/lsblkusb
-
 file=$dirsystem/lcdcharconf.py
 if [[ -e $file ]]; then
 	sed -i -E 's/False|"//g' $file
