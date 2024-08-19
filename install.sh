@@ -51,5 +51,5 @@ $dirbash/cmd.sh cachebust
 
 installfinish
 
-# 20240816
+# 20240818
 systemctl restart mpd

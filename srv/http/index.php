@@ -137,8 +137,6 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 } else {
 	$htmlvumeter = '';
 }
-$htmlsearchicon = '';
-foreach( [ 'title', 'albumartist', 'artist', 'album', 'composer', 'conductor', 'webradio' ] as $i ) $htmlsearchicon.= i( $i.' search gr hide' );
 $htmlinfo       = '';
 foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmlinfo.= '<div id="div'.$id.'"><span id="'.$id.'" class="info"></span></div>';
 ?>
@@ -146,7 +144,7 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmli
 <div id="refresh" class="page-icon"></div>
 
 <div id="bar-top" class="hide">
-	<?=i( 'raudio-nobg page-icon', 'logo' )?><div id="playback-controls"><?=$htmlcontrols?></div><?=i( 'gear', 'button-settings' )?>
+	<?=i( 'raudio-nobg page-icon', 'logo' ).'<div id="playback-controls">'.$htmlcontrols.'</div>'.i( 'gear', 'button-settings' )?>
 </div>
 <div id="settings" class="menu hide">
 	<?=$htmlsettings?>
@@ -155,7 +153,6 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmli
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<?=i( 'library active page-icon', 'button-library' )
-		  .$htmlsearchicon
 		  .i( 'search',                   'button-lib-search' )
 		  .i( 'back',                     'button-lib-back' )
 		  .i( 'refresh-library',          'button-lib-update' )?>
@@ -176,8 +173,8 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmli
 </div>
 
 <div id="page-playback" class="page">
-	<?=i( 'plus-o emptyadd hide' )?>
-	<?=i( 'bio map guide hide',     'guide-bio' )
+	<?=i( 'plus-o emptyadd hide' )
+	  .i( 'bio map guide hide',     'guide-bio' )
 	  .i( 'lyrics map guide hide',  'guide-lyrics' )
 	  .i( 'booklet map guide hide', 'guide-booklet' )?>
 	<div id="info">
@@ -199,9 +196,9 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmli
 				<?=i( 'map maptime',          'timeTL' )
 				  .i( 'guide map maptime',    'timeT' )
 				  .i( 'gear map maptime',     'timeTR' )
-				  .i( 'previous map maptime', 'timeL' )?>
-				<div id="timeM" class="map maptime"><?=i( 'play' ).'&emsp;'.i( 'pause' )?></div>
-				<?=i( 'next map maptime',     'timeR' )
+				  .i( 'previous map maptime', 'timeL' )
+				  .'<div id="timeM" class="map maptime">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
+				  .i( 'next map maptime',     'timeR' )
 				  .i( 'random map maptime',   'timeBL' )
 				  .i( 'stop map maptime',     'timeB' )
 				  .i( 'repeat map maptime',   'timeBR' )?>
@@ -222,9 +219,9 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmli
 					<?=i( 'scale-dn map mapcover r1 c1 ws hs', 'coverTL' )
 					  .i( 'guide map mapcover r1 c2 wl hs',    'coverT' )
 					  .i( 'gear map mapcover r1 c3 ws hs',     'coverTR' )
-					  .i( 'previous map mapcover r2 c1 ws hl', 'coverL' )?>
-					<div id="coverM" class="map mapcover r2 c2 wl hl"><?=i( 'play' ).'&emsp;'.i( 'pause' )?></div>
-					<?=i( 'next map mapcover r2 c3 ws hl',     'coverR' )
+					  .i( 'previous map mapcover r2 c1 ws hl', 'coverL' )
+					  .'<div id="coverM" class="map mapcover r2 c2 wl hl">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
+					  .i( 'next map mapcover r2 c3 ws hl',     'coverR' )
 					  .i( 'random map mapcover r3 c1 ws hs',   'coverBL' )
 					  .i( 'stop map mapcover r3 c2 wl hs',     'coverB' )
 					  .i( 'repeat map mapcover r3 c3 ws hs',   'coverBR' )?>
