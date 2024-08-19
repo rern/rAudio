@@ -100,8 +100,7 @@ i.map.disabled, .map.disabled i {
 	color: var( --cgl );
 }
 @keyframes blink { 50% { color: transparent } }
-#bar-bottom i.blink,
-.page-icon.blink {
+.blink {
 	animation: 1.5s infinite linear blink;
 	text-shadow: none;
 }
@@ -311,7 +310,7 @@ i.map.disabled, .map.disabled i {
 #playback {
 	background: var( --cga );
 }
-.content-top i.active,
+.content-top .page-icon,
 #bar-bottom i.active {
 	background: var( --cm );
 }

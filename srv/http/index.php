@@ -138,7 +138,12 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '';
 }
 $htmlinfo       = '';
-foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmlinfo.= '<div id="div'.$id.'"><span id="'.$id.'" class="info"></span></div>';
+foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) {
+	$hide     = $id[ 0 ] === 'c' ? ' class="hide"' : '';
+	$htmlinfo.= '<div id="div'.$id.'"'.$hide.'><span id="'.$id.'" class="info"></span></div>';
+}
+$htmlbuttontime = '';
+foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn btn-default btn-cmd btn-toggle', $i );
 ?>
 
 <div id="refresh" class="page-icon"></div>
@@ -152,17 +157,17 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmli
 
 <div id="page-library" class="page hide">
 	<div class="content-top">
-		<?=i( 'library active page-icon', 'button-library' )
-		  .i( 'search',                   'button-lib-search' )
-		  .i( 'back',                     'button-lib-back' )
-		  .i( 'refresh-library',          'button-lib-update' )?>
-		<div id="lib-search" class="search hide">
+		<?=i( 'library page-icon', 'button-library' )
+		  .i( 'search',            'button-lib-search' )
+		  .i( 'back',              'button-lib-back' )
+		  .i( 'refresh-library',   'button-lib-update' )?>
+		<div id="lib-search" class="search">
 			<div class="input-group">
 				<input id="lib-search-input" type="text" spellcheck="false">
 				<?=i( 'search btn btn-default input-group-btn', 'lib-search-btn' )?>
 			</div>
 		</div>
-		<div id="lib-search-close" class="search searchclose hide"></div>
+		<div id="lib-search-close" class="search searchclose"></div>
 		<div id="lib-path">
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
@@ -204,9 +209,7 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmli
 				  .i( 'repeat map maptime',   'timeBR' )?>
 			</div>
 			<div id="button-time" class="btn-group">
-				<?=i( 'random btn btn-default btn-cmd btn-toggle', 'random' )
-				  .i( 'single btn btn-default btn-cmd btn-toggle', 'single' )
-				  .i( 'repeat btn btn-default btn-cmd btn-toggle', 'repeat' )?>
+				<?=$htmlbuttontime?>
 			</div>
 		</div>
 		<div id="coverart-block" class="hide">
@@ -256,8 +259,8 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmli
 	<div class="content-top">
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
-		<?=i( 'playlist active page-icon', 'button-playlist' )
-		  .i( 'back hide',                 'button-pl-back' )?>
+		<?=i( 'playlist page-icon',        'button-playlist' )
+		  .i( 'back',                 'button-pl-back' )?>
 		<div id="pl-manage" class="playlist">
 			<?=i( 'flash',                 'button-pl-consume' )
 			  .i( 'librandom',             'button-pl-librandom' )
@@ -267,16 +270,16 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) $htmli
 			  .i( 'search pllength',       'button-pl-search' )
 			  .i( 'playlists',             'button-pl-playlists' )?>
 		</div>
-		<form id="pl-search" class="search hide" method="post" onSubmit="return false;">
+		<form id="pl-search" class="search" method="post" onSubmit="return false;">
 			<div class="input-group">
 				<input id="pl-search-input" type="text" spellcheck="false">
 				<?=i( 'search btn btn-default input-group-btn', 'pl-search-btn' )?>
 			</div>
 		</form>
-		<div id="pl-search-close" class="search searchclose hide"></div>
+		<div id="pl-search-close" class="search searchclose"></div>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
-	<ul id="pl-savedlist" class="list hide"></ul>
+	<ul id="pl-savedlist" class="list"></ul>
 </div>
 
 <?=$menu?>
