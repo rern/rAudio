@@ -25,12 +25,12 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
 	
 	var key     = e.key;
-	var $search = $( '.search:not( .hide )' );
-	if ( $search.length ) {
+	var $close  = $( '.searchclose:not( .hide )' );
+	if ( $close.length ) {
 		if ( key === 'Escape' ) {
-			$( '.searchclose:not( .hide )' ).trigger( 'click' );
+			$close.trigger( 'click' );
 		} else if ( key === 'Enter' ) {
-			$search.find( '.btn' ).trigger( 'click' );
+			$( 'form.search:not( .hide )' ).find( '.btn' ).trigger( 'click' );
 		}
 		return
 	}

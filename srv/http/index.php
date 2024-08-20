@@ -167,7 +167,7 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 				<?=i( 'search btn btn-default input-group-btn', 'lib-search-btn' )?>
 			</div>
 		</div>
-		<div id="lib-search-close" class="search searchclose"></div>
+		<div id="lib-search-close" class="search searchclose hide"></div>
 		<div id="lib-path">
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
@@ -276,7 +276,7 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 				<?=i( 'search btn btn-default input-group-btn', 'pl-search-btn' )?>
 			</div>
 		</form>
-		<div id="pl-search-close" class="search searchclose"></div>
+		<div id="pl-search-close" class="search searchclose hide"></div>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list"></ul>
