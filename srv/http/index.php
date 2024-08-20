@@ -9,6 +9,21 @@ function htmlmenu( $menulist, $mode ) {
 	foreach( $menulist as $list ) $html.= menuli( $list );
 	$menu.= menudiv( $mode, $html );
 }
+function iconSet( $array, $class = '', $prefix = '' ) {
+	$icons = '';
+	foreach( $array as $a ) {
+		if ( $a[ 0 ] === '<' ) {
+			$icons.= $a;
+		} else if ( is_string( $a ) ) {
+			$icons.= '<i id="'.$prefix.$a.'" class="i-'.$a.' '.$class.'"></i>';
+		} else {
+			$cl    = $a[ 0 ].' '.$class;
+			$id    = $prefix.$a[ 1 ];
+			$icons.= '<i id="'.$id.'" class="i-'.$cl.'"></i>';
+		}
+	}
+	return $icons;
+}
 // context menus
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( 'plus-o' ).'Add</a>'.i( 'play-plus submenu', '', $add.'play' );
@@ -157,10 +172,12 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 
 <div id="page-library" class="page hide">
 	<div class="content-top">
-		<?=i( 'library page-icon', 'button-library' )
-		  .i( 'search',            'button-lib-search' )
-		  .i( 'back',              'button-lib-back' )
-		  .i( 'refresh-library',   'button-lib-update' )?>
+		<?=iconSet( [
+			  i( 'library page-icon', 'button-library' )
+			, [ 'search',             'search' ]
+			, [ 'back',               'back' ]
+			, [ 'refresh-library',    'update' ]
+		], '', 'button-lib-' )?>
 		<div id="lib-search" class="search">
 			<div class="input-group">
 				<input id="lib-search-input" type="text" spellcheck="false">
@@ -179,9 +196,7 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 
 <div id="page-playback" class="page">
 	<?=i( 'plus-o emptyadd hide' )
-	  .i( 'bio map guide hide',     'guide-bio' )
-	  .i( 'lyrics map guide hide',  'guide-lyrics' )
-	  .i( 'booklet map guide hide', 'guide-booklet' )?>
+		.iconset( [ 'bio', 'lyrics', 'booklet' ], 'map guide hide', 'guide-' )?>
 	<div id="info">
 		<?=$htmlinfo?>
 		<div id="infoicon">
@@ -198,15 +213,17 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 			<span id="elapsed" class="controls1"></span>
 			<span id="total" class="controls1"></span>
 			<div id="map-time">
-				<?=i( 'map maptime',          'timeTL' )
-				  .i( 'guide map maptime',    'timeT' )
-				  .i( 'gear map maptime',     'timeTR' )
-				  .i( 'previous map maptime', 'timeL' )
-				  .'<div id="timeM" class="map maptime">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
-				  .i( 'next map maptime',     'timeR' )
-				  .i( 'random map maptime',   'timeBL' )
-				  .i( 'stop map maptime',     'timeB' )
-				  .i( 'repeat map maptime',   'timeBR' )?>
+				<?=iconSet( [
+					  [ 'map',      'TL' ]
+					, [ 'guide',    'T' ]
+					, [ 'gear',     'TR' ]
+					, [ 'previous', 'L' ]
+					, '<div id="timeM" class="map maptime">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
+					, [ 'next',     'R' ]
+					, [ 'random',   'BL' ]
+					, [ 'stop',     'B' ]
+					, [ 'repeat',   'BR' ]
+				], 'map maptime', 'time' )?>
 			</div>
 			<div id="button-time" class="btn-group">
 				<?=$htmlbuttontime?>
@@ -219,36 +236,44 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 				<img id="coverart" src="" class="cover hide">
 				<?=$htmlvumeter?>
 				<div id="map-cover">
-					<?=i( 'scale-dn map mapcover r1 c1 ws hs', 'coverTL' )
-					  .i( 'guide map mapcover r1 c2 wl hs',    'coverT' )
-					  .i( 'gear map mapcover r1 c3 ws hs',     'coverTR' )
-					  .i( 'previous map mapcover r2 c1 ws hl', 'coverL' )
-					  .'<div id="coverM" class="map mapcover r2 c2 wl hl">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
-					  .i( 'next map mapcover r2 c3 ws hl',     'coverR' )
-					  .i( 'random map mapcover r3 c1 ws hs',   'coverBL' )
-					  .i( 'stop map mapcover r3 c2 wl hs',     'coverB' )
-					  .i( 'repeat map mapcover r3 c3 ws hs',   'coverBR' )?>
+					<?=iconSet( [
+						  [ 'scale-dn r1 c1 ws hs', 'TL' ]
+						, [ 'guide r1 c2 wl hs',    'T' ]
+						, [ 'gear r1 c3 ws hs',     'TR' ]
+						, ['previous r2 c1 ws hl',  'L' ]
+						, '<div id="coverM" class="map mapcover r2 c2 wl hl">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
+						, [ 'next r2 c3 ws hl',     'R' ]
+						, [ 'random r3 c1 ws hs',   'BL' ]
+						, [ 'stop r3 c2 wl hs',     'B' ]
+						, [ 'repeat r3 c3 ws hs',   'BR' ]
+					], 'map mapcover', 'cover' )?>
 				</div>
 				<div id="volume-bar" class="hide"></div>
-				<?=i( 'volume transparent volumeband band',   'volume-band' )
-				  .i( 'minus transparent volumeband band dn', 'volume-band-dn' )
-				  .i( 'plus transparent volumeband band up',  'volume-band-up' )?>
+				<?=iconSet( [
+					  [ 'volume',   '' ]
+					, [ 'minus dn', '-dn' ]
+					, [ 'plus up',  '-up' ]
+				], 'transparent volumeband band', 'volume-band' )?>
 				<div id="volume-text" class="hide"></div>
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
 			<div id="volume"></div>
 			<div id="map-volume">
-				<?=i( 'plus map mapvolume up',  'volT' )
-				  .i( 'minus map mapvolume dn', 'volL' )
-				  .i( 'volume map mapvolume',   'volM' )
-				  .i( 'plus map mapvolume up',  'volR' )
-				  .i( 'minus map mapvolume dn', 'volB' )?>
+				<?=iconSet( [
+					  [ 'plus up',  'T' ]
+					, [ 'minus dn', 'L' ]
+					, [ 'volume',   'M' ]
+					, [ 'plus up',  'R' ]
+					, [ 'minus dn', 'B' ]
+				], 'map mapvolume', 'vol' )?>
 			</div>
 			<div id="button-volume" class="btn-group">
-				<?=i( 'minus btn btn-default dn', 'voldn' )
-				  .i( 'volume btn btn-default',   'volmute' )
-				  .i( 'plus btn btn-default up',  'volup' )?>
+				<?=iconSet( [
+					  [ 'minus dn', 'dn' ]
+					, [ 'volume',   'mute' ]
+					, [ 'plus up',  'up' ]
+				], 'btn btn-default', 'vol' )?>
 			</div>
 		</div>
 	</div>
@@ -259,16 +284,18 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 	<div class="content-top">
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
-		<?=i( 'playlist page-icon',        'button-playlist' )
-		  .i( 'back',                 'button-pl-back' )?>
+		<?=i( 'playlist page-icon', 'button-playlist' )
+		  .i( 'back',               'button-pl-back' )?>
 		<div id="pl-manage" class="playlist">
-			<?=i( 'flash',                 'button-pl-consume' )
-			  .i( 'librandom',             'button-pl-librandom' )
-			  .i( 'shuffle pllength',      'button-pl-shuffle' )
-			  .i( 'minus-circle pllength', 'button-pl-clear' )
-			  .i( 'save-plus pllength',    'button-pl-save' )
-			  .i( 'search pllength',       'button-pl-search' )
-			  .i( 'playlists',             'button-pl-playlists' )?>
+			<?=iconSet( [
+				  [ 'flash',                 'consume' ]
+				, [ 'librandom',             'librandom' ]
+				, [ 'shuffle pllength',      'shuffle' ]
+				, [ 'minus-circle pllength', 'clear' ]
+				, [ 'save-plus pllength',    'save' ]
+				, [ 'search pllength',       'search' ]
+				, [ 'playlists',             'playlists' ]
+			], '', 'button-pl-' )?>
 		</div>
 		<form id="pl-search" class="search" method="post" onSubmit="return false;">
 			<div class="input-group">
@@ -289,12 +316,14 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 		<img src=""><span id="lyricstitle"></span><?=i( 'close', 'lyricsclose' )?>
 	</div>
 	<div id="divlyricsartist">
-		<span id="lyricsartist"></span><?=i( 'refresh', 'lyricsrefresh' ).i( 'edit', 'lyricsedit' )?>
+		<span id="lyricsartist"></span><?=iconSet( [ 'refresh', 'edit' ], '', 'lyrics' )?>
 		<div id="lyricseditbtngroup" class="hide">
-			<?=i( 'undo hide', 'lyricsundo',    )
-			  .i( 'save hide', 'lyricssave' )
-			  .i( 'remove',    'lyricsdelete' )
-			  .i( 'back bl',   'lyricsback' )?>
+			<?=iconSet( [
+				  [ 'undo hide', 'undo' ]
+				, [ 'save hide', 'save' ]
+				, [ 'remove',    'delete' ]
+				, [ 'back bl',   'back' ]
+			], '', 'lyrics' )?>
 		</div>
 	</div>
 	<div id="lyricstext" class="lyricstext" tabindex="0"></div>
@@ -303,5 +332,5 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 </div>
 <div id="bio" class="hide"></div>
 <?php
-$htmlbar = i( 'library', 'library' ).i( 'playback', 'playback' ).i( 'playlist', 'playlist' );
+$htmlbar = iconSet( [ 'library', 'playback', 'playlist' ] );
 htmlBottom();
