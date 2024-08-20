@@ -144,27 +144,28 @@ $settinglist = [
 	, [ 'displayplaylist', '',             'playlist', 'Playlist', 'multiraudio',  'multiraudio' ]
 ];
 $htmlsettings = '';
-foreach( $settinglist as $l ) $htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $l[ 2 ] ).$l[ 3 ].'</a>'.i( $l[ 5 ].' submenu', $l[ 4 ] );
-$htmlcontrols = '';
-foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) $htmlcontrols.= i( $l.' btn btn-default btn-cmd', $l );
+foreach( $settinglist as $l ) {
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $l[ 2 ] ).$l[ 3 ].'</a>'.i( $l[ 5 ].' submenu', $l[ 4 ] );
+}
 if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '<div id="vu" class="hide">'.file_get_contents( '/srv/http/assets/img/vu.svg' ).'</div>';
 } else {
 	$htmlvumeter = '';
 }
-$htmlinfo       = '';
+$htmlinfo     = '';
 foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) {
 	$hide     = $id[ 0 ] === 'c' ? ' class="hide"' : '';
 	$htmlinfo.= '<div id="div'.$id.'"'.$hide.'><span id="'.$id.'" class="info"></span></div>';
 }
-$htmlbuttontime = '';
-foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn btn-default btn-cmd btn-toggle', $i );
 ?>
 
 <div id="refresh" class="page-icon"></div>
 
 <div id="bar-top" class="hide">
-	<?=i( 'raudio-nobg page-icon', 'logo' ).'<div id="playback-controls">'.$htmlcontrols.'</div>'.i( 'gear', 'button-settings' )?>
+	<?=i( 'raudio-nobg page-icon', 'logo' )
+	  .'<div id="playback-controls">'
+	  .iconSet( [ 'previous', 'stop', 'play', 'pause', 'next' ], 'btn btn-default btn-cmd' )
+	  .'</div>'.i( 'gear', 'button-settings' )?>
 </div>
 <div id="settings" class="menu hide">
 	<?=$htmlsettings?>
@@ -226,7 +227,7 @@ foreach( [ 'random', 'single', 'repeat' ] as $i ) $htmlbuttontime.= i( $i.' btn 
 				], 'map maptime', 'time' )?>
 			</div>
 			<div id="button-time" class="btn-group">
-				<?=$htmlbuttontime?>
+				<?=iconSet( [ 'random', 'single', 'repeat' ], 'btn btn-default btn-cmd btn-toggle' )?>
 			</div>
 		</div>
 		<div id="coverart-block" class="hide">
