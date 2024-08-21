@@ -1497,8 +1497,9 @@ i.map.disabled, .map.disabled i {
 	font-family: rern;
 	display: inline-block;
 	width: 40px;
-	line-height: 40px;
 	margin-right: 5px;
+	line-height: 40px;
+	vertical-align: -2px;
 	font-size: 26px;
 	text-align: center;
 	color: var( --cm );
