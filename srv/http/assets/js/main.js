@@ -769,7 +769,7 @@ $( '.map' ).on( 'click', function( e ) {
 		return
 	}
 	
-	var cmd = btnctrl[ this.id.replace( /cover|time/, '' ) ];
+	var cmd = btnctrl[ this.id.replace( /[a-z]/g, '' ) ];
 	if ( cmd === 'guide' ) {
 		clearTimeout( V.volumebar );
 		if ( V.guide ) {
