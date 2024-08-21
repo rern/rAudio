@@ -182,8 +182,7 @@ i {
 .i-save::before            { content: '\F542' }
 .i-save-plus::before       { content: '\F545' }
 .i-screenoff::before       { content: '\F547' }
-.i-scale-dn::before        { content: '\F591' }
-.i-scale-up::before        { content: '\F592' }
+.i-scale::before           { content: '\F592' }
 .i-scrobble::before        { content: '\F585' }
 .i-sd::before              { content: '\F543' }
 .i-search::before          { content: '\F56A' }

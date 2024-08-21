@@ -215,7 +215,7 @@ $htmlsearch   = '
 			<span id="total" class="controls1"></span>
 			<div id="map-time">
 				<?=iconSet( [
-					  [ 'map',      'TL' ]
+					  [ 'scale',    'TL' ]
 					, [ 'guide',    'T' ]
 					, [ 'gear',     'TR' ]
 					, [ 'previous', 'L' ]
@@ -238,10 +238,10 @@ $htmlsearch   = '
 				<?=$htmlvumeter?>
 				<div id="map-cover">
 					<?=iconSet( [
-						  [ 'scale-dn r1 c1 ws hs', 'TL' ]
+						  [ 'scale r1 c1 ws hs',    'TL' ]
 						, [ 'guide r1 c2 wl hs',    'T' ]
 						, [ 'gear r1 c3 ws hs',     'TR' ]
-						, ['previous r2 c1 ws hl',  'L' ]
+						, [ 'previous r2 c1 ws hl', 'L' ]
 						, '<div id="coverM" class="map mapcover r2 c2 wl hl">'.i( 'play' ).'&emsp;'.i( 'pause' ).'</div>'
 						, [ 'next r2 c3 ws hl',     'R' ]
 						, [ 'random r3 c1 ws hs',   'BL' ]

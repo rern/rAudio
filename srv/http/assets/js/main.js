@@ -744,24 +744,15 @@ $( '#coverT' ).press( function() {
 	}
 } );
 var btnctrl = {
-	  timeTL  : 'cover'
-	, timeT   : 'guide'
-	, timeTR  : 'settings'
-	, timeL   : 'previous'
-	, timeM   : 'play'
-	, timeR   : 'next'
-	, timeBL  : 'random'
-	, timeB   : 'stop'
-	, timeBR  : 'repeat'
-	, coverTL : 'cover'
-	, coverT  : 'guide'
-	, coverTR : 'settings'
-	, coverL  : 'previous'
-	, coverM  : 'play'
-	, coverR  : 'next'
-	, coverBL : 'random'
-	, coverB  : 'stop'
-	, coverBR : 'repeat'
+	  TL : 'cover'
+	, T  : 'guide'
+	, TR : 'settings'
+	, L  : 'previous'
+	, M  : 'play'
+	, R  : 'next'
+	, BL : 'random'
+	, B  : 'stop'
+	, BR : 'repeat'
 }
 $( '.map' ).on( 'click', function( e ) {
 	e.stopPropagation();
@@ -778,7 +769,7 @@ $( '.map' ).on( 'click', function( e ) {
 		return
 	}
 	
-	var cmd = btnctrl[ this.id ];
+	var cmd = btnctrl[ this.id.replace( /cover|time/, '' ) ];
 	if ( cmd === 'guide' ) {
 		clearTimeout( V.volumebar );
 		if ( V.guide ) {
@@ -802,15 +793,6 @@ $( '.map' ).on( 'click', function( e ) {
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $bartop.is( ':hidden' ) );
-		if ( time || volume ) {
-			$( '#coverTL' )
-				.removeClass( 'i-scale-dn' )
-				.addClass( 'i-scale-up' );
-		} else {
-			$( '#coverTL' )
-				.removeClass( 'i-scale-up' )
-				.addClass( 'i-scale-dn' );
-		}
 		if ( S.player === 'mpd' ) {
 			if ( ! time && ! S.webradio ) {
 				$( '#time-band' )
