@@ -30,7 +30,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		if ( key === 'Escape' ) {
 			$close.trigger( 'click' );
 		} else if ( key === 'Enter' ) {
-			$( 'form.search:not( .hide )' ).find( '.btn' ).trigger( 'click' );
+			$close.prev().find( '.btn' ).trigger( 'click' );
 		}
 		return
 	}

@@ -157,6 +157,12 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) {
 	$hide     = $id[ 0 ] === 'c' ? ' class="hide"' : '';
 	$htmlinfo.= '<div id="div'.$id.'"'.$hide.'><span id="'.$id.'" class="info"></span></div>';
 }
+$htmlsearch   = '
+<div id="lib-search" class="search hide">
+	<div id="lib-search-close" class="searchclose"></div>
+	<input id="lib-search-input" type="text" spellcheck="false">'.i( 'search btn btn-default', 'lib-search-btn' ).'
+</div>
+';
 ?>
 
 <div id="refresh" class="page-icon"></div>
@@ -178,14 +184,8 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) {
 			, [ 'search',             'search' ]
 			, [ 'back',               'back' ]
 			, [ 'refresh-library',    'update' ]
-		], '', 'button-lib-' )?>
-		<div id="lib-search" class="search">
-			<div class="input-group">
-				<input id="lib-search-input" type="text" spellcheck="false">
-				<?=i( 'search btn btn-default input-group-btn', 'lib-search-btn' )?>
-			</div>
-		</div>
-		<div id="lib-search-close" class="search searchclose hide"></div>
+		], '', 'button-lib-' )
+		.$htmlsearch?>
 		<div id="lib-path">
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
@@ -298,13 +298,7 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) {
 				, [ 'playlists',             'playlists' ]
 			], '', 'button-pl-' )?>
 		</div>
-		<form id="pl-search" class="search" method="post" onSubmit="return false;">
-			<div class="input-group">
-				<input id="pl-search-input" type="text" spellcheck="false">
-				<?=i( 'search btn btn-default input-group-btn', 'pl-search-btn' )?>
-			</div>
-		</form>
-		<div id="pl-search-close" class="search searchclose hide"></div>
+		<?=str_replace( 'lib-', 'pl-', $htmlsearch )?>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list"></ul>
