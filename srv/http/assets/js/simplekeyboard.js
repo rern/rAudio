@@ -143,12 +143,6 @@ function onKeyPress( key ) { // input value not yet changed until onChange
 			}
 			break;
 		case '{enter}':
-			if ( I.active ) {
-				$( '#infoOk' ).trigger( 'click' );
-			} else {
-				var button = id === 'lib-search-input' ? '#lib-search-btn' : '#pl-search-btn';
-				$( button ).trigger( 'click' );
-			}
 			hideKeyboard();
 			break;
 		default:
