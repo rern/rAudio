@@ -1346,7 +1346,6 @@ i.map.disabled, .map.disabled i {
 }
 #lib-search-btn,
 #pl-search-btn {
-	vertical-align: -3px;
 	line-height: 32px;
 	border-radius: 0 4px 4px 0;
 }
