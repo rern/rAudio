@@ -1109,7 +1109,7 @@ $( '#button-lib-search' ).on( 'click', function() {
 	}
 	
 	var keyword = $( '#lib-search-input' ).val();
-	if ( ! keyword ) return
+	if ( ! keyword || $( '#search-list' ).length ) return
 	
 	var query = {
 		  library : 'search'
