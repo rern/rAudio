@@ -1098,18 +1098,19 @@ $( '#button-lib-update' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#button-lib-search' ).on( 'click', function() { // icon
-	$( '#lib-path span, #button-lib-back, #button-lib-search, #button-lib-update' ).addClass( 'hide' );
-	$( '#page-library .search:not( i )' ).removeClass( 'hide' );
-	$( '#lib-search-close' ).empty();
-	$( '#lib-path' ).css( 'max-width', 40 );
-	$( '#lib-search-input' ).trigger( 'focus' );
-} );
-$( '#lib-search-btn' ).on( 'click', function() { // search
+$( '#button-lib-search' ).on( 'click', function() {
+	if ( $( '#lib-search' ).hasClass( 'hide' ) ) {
+		$( '#lib-path span, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
+		$( '#page-library .search:not( i )' ).removeClass( 'hide' );
+		$( '#lib-search-close' ).empty();
+		$( '#lib-path' ).css( 'max-width', 40 );
+		$( '#lib-search-input' ).trigger( 'focus' );
+		return
+	}
+	
 	var keyword = $( '#lib-search-input' ).val();
 	if ( ! keyword ) return
 	
-	$( this ).addClass( 'disabled' );
 	var query = {
 		  library : 'search'
 		, string  : keyword
@@ -1155,7 +1156,7 @@ $( '#page-library i.search' ).on( 'click', function() {
 	
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( V.searchlist ) $( '#lib-search-btn' ).trigger( 'click' );
+	if ( V.searchlist ) $( '#button-lib-search' ).trigger( 'click' );
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
@@ -1166,7 +1167,6 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	} else {
 		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	}
-	$( '#lib-search-btn' ).removeClass( 'disabled' );
 	$( '#page-library .search' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
@@ -1175,7 +1175,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	$( '#lib-path' ).css( 'max-width', '' );
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).trigger( 'click' );
+	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
 } );
 $( '#button-lib-back' ).on( 'click', function() {
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
@@ -1748,8 +1748,10 @@ $( '#button-pl-playlists' ).on( 'click', function() {
 	list( { playlist: 'list' }, ( data ) => renderSavedPl( data ), 'json' );
 } );
 $( '#button-pl-search' ).on( 'click', function() {
+	if ( ! $( '#pl-search' ).hasClass( 'hide' ) ) return
+		
 	$( '#page-playlist .search' ).removeClass( 'hide' );
-	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
+	$( '#pl-manage' ).addClass( 'hide' );
 	$( '#pl-search-input' ).trigger( 'focus' );
 } );
 $( '#pl-search-input' ).on( 'input', function() {
@@ -1779,7 +1781,7 @@ $( '#pl-search-input' ).on( 'input', function() {
 } );
 $( '#pl-search-close' ).on( 'click', function() {
 	$( '#page-playlist .search' ).addClass( 'hide' );
-	$( '#pl-manage, #button-pl-search, #pl-list li' ).removeClass( 'hide' );
+	$( '#pl-manage, #pl-list li' ).removeClass( 'hide' );
 	$( '#pl-search-close' ).empty();
 	$( '#pl-search-input' ).val( '' );
 	$( '#pl-list' ).html( function() {

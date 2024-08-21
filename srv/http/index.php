@@ -160,7 +160,7 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) {
 $htmlsearch   = '
 <div id="lib-search" class="search hide">
 	<div id="lib-search-close" class="searchclose"></div>
-	<input id="lib-search-input" type="text" spellcheck="false">'.i( 'search btn btn-default', 'lib-search-btn' ).'
+	<input id="lib-search-input" type="text" spellcheck="false">
 </div>
 ';
 ?>
@@ -285,8 +285,11 @@ $htmlsearch   = '
 	<div class="content-top">
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
-		<?=i( 'playlist page-icon', 'button-playlist' )
-		  .i( 'back',               'button-pl-back' )?>
+		<?=iconSet( [
+			  [ 'playlist page-icon', 'playlist' ]
+			, [ 'back',               'pl-back' ]
+			, [ 'search pllength',    'pl-search' ]
+		], '', 'button-' )?>
 		<div id="pl-manage" class="playlist">
 			<?=iconSet( [
 				  [ 'flash',                 'consume' ]
@@ -294,7 +297,6 @@ $htmlsearch   = '
 				, [ 'shuffle pllength',      'shuffle' ]
 				, [ 'minus-circle pllength', 'clear' ]
 				, [ 'save-plus pllength',    'save' ]
-				, [ 'search pllength',       'search' ]
 				, [ 'playlists',             'playlists' ]
 			], '', 'button-pl-' )?>
 		</div>

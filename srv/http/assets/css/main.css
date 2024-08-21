@@ -1344,11 +1344,6 @@ i.map.disabled, .map.disabled i {
 #button-pl-playlists {
 	float: right;
 }
-#lib-search-btn,
-#pl-search-btn {
-	line-height: 32px;
-	border-radius: 0 4px 4px 0;
-}
 #button-lib-back {
 	position: relative;
 	float: right;
@@ -1453,7 +1448,6 @@ i.map.disabled, .map.disabled i {
 	margin: 0;
 	padding: 5px 5px 2px 5px;
 	border: 1px solid var( --cg );
-	border-radius: 5px 0 0 5px;
 	color: var( --cw );
 	background-color: #000000;
 	font-family: Lato;
