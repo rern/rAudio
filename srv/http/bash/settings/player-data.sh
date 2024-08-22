@@ -46,6 +46,7 @@ data='
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
 , "output"           : '$( conf2json -nocap $dirshm/output )'
 , "player"           : "'$( < $dirshm/player )'"
+, "pllength"         : '$( mpc status %length% )'
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
 , "replaygainconf"   : '$replaygainconf'
 , "soxr"             : '$( exists $dirsystem/soxr )'
