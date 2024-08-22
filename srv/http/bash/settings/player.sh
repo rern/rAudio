@@ -166,7 +166,7 @@ soxr )
 	plugin          "soxr"
 	quality         "custom"
 	precision       "'$PRECISION'"
-	phase_response  '$PHASE_RESPONSE'"
+	phase_response  "'$PHASE_RESPONSE'"
 	passband_end    "'$PASSBAND_END'"
 	stopband_begin  "'$STOPBAND_BEGIN'"
 	attenuation     "'$ATTENUATION'"
