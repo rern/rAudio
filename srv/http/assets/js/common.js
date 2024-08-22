@@ -94,17 +94,17 @@ function highlightJSON( json ) {
 	var json  = Object.keys( json )
 					.sort()
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // from: https://stackoverflow.com/a/29622653
-	var regex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g;
+	var regex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g;
 	return JSON.stringify( json, null, '\t' )
 				.replace( regex, function( match ) {                      // from: https://stackoverflow.com/a/7220510
 		if ( /^"/.test( match ) )
-			if ( /:$/.test( match ) )      return match                // key (wh)
-			else                           return color( match, 'gr' ) // value
-		else if ( /true/.test( match ) )   return color( match, 'grn' )
-		else if ( /false/.test( match ) )  return color( match, 'red' )
-		else if ( /[0-9]/.test( match ) )  return color( match, 'ora' )
-		else if ( /[{}]/.test( match ) )   return color( match, 'bll' )
-		else if ( /[\[\]]/.test( match ) ) return color( match, 'pur' )
+			if ( /:$/.test( match ) )           return match                // key (wh)
+			else                                return color( match, 'gr' ) // value
+		else if ( /true/.test( match ) )        return color( match, 'grn' )
+		else if ( /false/.test( match ) )       return color( match, 'red' )
+		else if ( /[0-9]/.test( match ) )       return color( match, 'ora' )
+		else if ( /[{}]/.test( match ) )        return color( match, 'bll' )
+		else if ( /[\[\]]|null/.test( match ) ) return color( match, 'pur' )
 	} );
 }
 function ico( icon, id, tabindex ) {
