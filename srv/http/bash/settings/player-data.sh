@@ -55,7 +55,7 @@ data='
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
 , "state"            : "'$( mpcState )'"
 , "updatetime"       : "'$( getContent $dirmpd/updatetime )'"
-, "updating_db"      : '$( [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating && echo true )'
+, "updating_db"      : '$( [[ -e $dirmpd/listing || -e $dirmpd/updating ]] && echo true )'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volume"           : '$volume
 
