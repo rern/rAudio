@@ -54,8 +54,8 @@ data='
 
 for key in buffer outputbuffer; do
 	data+='
-, "'$key'"        : '$( exists $dirmpdconf/$key.conf )'
-, "'$key'conf"    : '$( cut -d'"' -f2 $dirmpdconf/conf/$key.conf )
+, "'$key'"         : '$( exists $dirmpdconf/$key.conf )'
+, "'$key'conf"     : '$( cut -d'"' -f2 $dirmpdconf/conf/$key.conf )
 done
 
 data2json "$data" $1
