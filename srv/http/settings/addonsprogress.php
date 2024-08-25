@@ -75,7 +75,7 @@ pre hr.hrlight {
 <p class="addontitle gr"><i class="titleicon i-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<wh><?=$title?></wh> - <?=$label?> ...</p>
 <pre class="progress">
 <script> // js must be here before php flush start
-if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$hrefback?>' );
+if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$hrefback?>' ); // on refresh page
 document.title = 'Addons';
 E      = {};
 [ 'close', 'container', 'info', 'infobtn', 'infox', 'progress', 'titleicon' ].forEach( ( el ) => {
