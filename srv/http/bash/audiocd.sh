@@ -25,10 +25,8 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
 		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
-	rm -f $dirshm/playlist*
+	$dirbash/cmd.sh playlistpush
 	$dirbash/status-push.sh
-	pushData audiocd '{ "type": "clear" }'
-	pushRefresh player
 	exit
 # --------------------------------------------------------------------
 fi
@@ -134,7 +132,7 @@ CD-TEXT-'
 	fi
 fi
 # add tracks to playlist
-pushData audiocd '{ "type": "add" }' # suppress playbackStatusGet in passive.js
+notify audiocd 'Audio CD' 'Add to Playlist'
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
 notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
@@ -143,15 +141,16 @@ for i in $( seq 1 $trackL ); do
 done
 mpc -q add $tracklist
 echo $discid > $dirshm/audiocd
-pushData audiocd '{ "type": "ready" }'
 eject -x 4
 # set 1st track of cd as current
 if [[ $trackcd ]]; then
 	$dirbash/cmd.sh "mpcskip
 $trackcd
 CMD POS"
+else
+	$dirbash/cmd.sh playlistpush
 fi
-
+notify audiocd 'Audio CD' 'Ready'
 if [[ ! $album ]]; then
 	line=$( head -1 $diraudiocd/$discid )
 	artist=${line/^*}

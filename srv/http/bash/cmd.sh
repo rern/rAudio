@@ -114,7 +114,7 @@ pushPlaylist() {
 # --------------------------------------------------------------------
 	touch $dirshm/pushplaylist
 	pushData playlist '{ "blink": true }'
-	rm -f $dirshm/playlist
+	rm -f $dirshm/playlist*
 	[[ $( mpc status %length% ) == 0 ]] && data='{ "blank": true }' || data=$( php /srv/http/playlist.php current )
 	pushData playlist $data
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &

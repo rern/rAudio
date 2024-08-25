@@ -63,7 +63,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 function psOnMessage( channel, data ) {
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
-		case 'audiocd':       psAudioCD( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
 		case 'coverart':      psCoverart( data );       break;
 		case 'display':       psDisplay( data );        break;
@@ -88,29 +87,6 @@ function psOnMessage( channel, data ) {
 function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
-}
-function psAudioCD( data ) {
-	if ( data.type === 'add' ) {
-		V.audiocdadd = true;
-		setTimeout( () => delete V.audiocdadd, 20000 );
-		return
-	}
-	
-	if ( ! V.playlist ) return
-	
-	if ( data.type === 'ready' ) {
-		delete V.audiocdadd;
-		playlistGet();
-	} else if ( data.type === 'clear' ) {
-		var sec = 0;
-		$( '#pl-list li.audiocd .time' ).each( ( i, el ) => sec += $( el ).data( 'time' ) );
-		$( '#pl-list li.audiocd' ).remove();
-		$( '#pl-trackcount' ).text( $( '#pl-list li' ).length );
-		sec = +$( '#pl-time' ).data( 'time' ) - sec;
-		$( '#pl-time' )
-			.text( second2HMS( sec ) )
-			.data( 'time', sec );
-	}
 }
 function psBookmark() {
 	V.libraryhtml = '';
