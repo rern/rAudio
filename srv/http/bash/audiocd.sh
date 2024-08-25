@@ -13,9 +13,8 @@ if [[ $1 == on ]]; then
 	exit
 # --------------------------------------------------------------------
 fi
-audioCDplClear
-
 if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
+	audioCDplClear
 	if [[ $1 == off ]]; then
 		notify audiocd 'Audio CD' 'USB CD Off'
 		rm -f $dirmpdconf/cdio.conf
@@ -30,6 +29,8 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 	exit
 # --------------------------------------------------------------------
 fi
+mpc -q playlist | grep -m1 ^cdda:// && exit # suppress 2nd udev event
+# --------------------------------------------------------------------
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( discid total_tracks offset0(lead-in) offset1(track1) ... total_seconds(last track) )
 if [[ ! $cddiscid ]]; then
 	notify audiocd 'Audio CD' 'CD contains no tracks length'

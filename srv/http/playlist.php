@@ -132,16 +132,17 @@ foreach( $lists as $list ) {
 			$class     = 'audiocd';
 			$discid    = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 			$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
-			$thumbsrc  = '/data/audiocd/'.$discid.'.jpg';
-			$icon      = 'audiocd';
+			$coverfile = glob( '/srv/http/data/audiocd/'.$discid.'.*' );
+			$thumbsrc  = count( $coverfile ) ? substr( $coverfile[ 0 ], 9 ) : '';
+			$icon      = imgIcon( $thumbsrc, 'filesavedpl', 'audiocd' );
+			$li2       = '<a class="track">'.$track.'</a> - <a class="artist">'.$artist.'</a> - <a class="album">'.$album.'</a>';
 		} else {
 			$class     = 'file';
 			$discid    = '';
 			$path      = pathinfo( $file, PATHINFO_DIRNAME );
 			$thumbsrc  = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
-			$icon      = 'music';
+			$icon      = imgIcon( $thumbsrc, 'filesavedpl', 'music' );
 		}
-		$icon      = imgIcon( $thumbsrc, 'filesavedpl', $icon );
 		$html     .=
 '<li class="'.$class.'" '.$datatrack.'>'.
 	'<a class="lipath">'.$file.'</a>'.
