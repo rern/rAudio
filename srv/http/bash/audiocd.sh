@@ -144,12 +144,10 @@ echo $discid > $dirshm/audiocd
 eject -x 4
 # set 1st track of cd as current
 if [[ $trackcd ]]; then
-	$dirbash/cmd.sh "mpcskip
-$trackcd
-CMD POS"
-else
-	$dirbash/cmd.sh playlistpush
+	mpc -q play $trackcd
+	mpc -q stop
 fi
+$dirbash/cmd.sh playlistpush
 notify audiocd 'Audio CD' 'Ready'
 if [[ ! $album ]]; then
 	line=$( head -1 $diraudiocd/$discid )
