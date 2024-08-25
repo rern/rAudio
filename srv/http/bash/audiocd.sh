@@ -25,6 +25,7 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
 		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
+	rm -f $dirshm/playlist*
 	$dirbash/status-push.sh
 	pushData audiocd '{ "type": "clear" }'
 	pushRefresh player
@@ -41,6 +42,7 @@ discid=${cddiscid[0]}
 trackL=${cddiscid[1]} # also = offset last index (offsets: +1 lead-in)
 
 cdData() {
+	local artist f0 f1 offset time title tracks va
 	offset=( ${cddiscid[@]:2} )                           # offset - frame end
 	offset[trackL]=$(( ${offset[trackL]} * 75 ))          # last - seconds > frames 1:75
 	(( $( grep -c ' / ' <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
@@ -149,3 +151,14 @@ if [[ $trackcd ]]; then
 $trackcd
 CMD POS"
 fi
+
+if [[ ! $album ]]; then
+	line=$( head -1 $diraudiocd/$discid )
+	artist=${line/^*}
+	album=$( cut -d^ -f2 <<< $line )
+fi
+$dirbash/status-coverartonline.sh "cmd
+$artist
+$album
+$discid
+CMD ARTIST ALBUM DISCID" &
