@@ -582,7 +582,15 @@ function imageLoad( list ) {
 	} else {
 		$lazyload.off( 'error' ).on( 'error', function() {
 			var $this = $( this );
-			$this.replaceWith( '<i class="i-'+ $this.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
+			var src   = $this.attr( 'src' );
+			var ext   = src.slice( -16, -13 );
+			if ( ext === 'jpg' ) {
+				$this.attr( 'src', src.replace( 'jpg?v=', 'png?v=' ) );
+			} else if ( ext === 'png' ) {
+				$this.attr( 'src', src.replace( 'png?v=', 'gif?v=' ) );
+			} else {
+				$this.replaceWith( '<i class="i-'+ $this.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
+			}
 		} );
 	}
 }
@@ -1967,7 +1975,6 @@ function switchPage( page ) {
 function thumbUpdate( path, overwrite ) {
 	$( 'body' ).append(
 		 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
-		+'<input type="hidden" name="alias" value="albumthumbnail">'
 		+'<input type="hidden" name="path" value="'+ path +'">'
 		+'<input type="hidden" name="overwrite" value="'+ ( overwrite ? 'overwrite' : '' ) +'">'
 		+'</form>'

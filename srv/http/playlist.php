@@ -114,10 +114,10 @@ foreach( $lists as $list ) {
 		$title     = $title ?: pathinfo( $file, PATHINFO_FILENAME );
 		$ext       = '';
 		if ( substr( $file, 0, 4 ) === 'cdda' ) {
+			$discid    = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$cdfile    = '/srv/http/data/audiocd/'.$discid;
 			if ( ! isset( $cdlist ) ) {
-				$id     = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-				$cdfile = '/srv/http/data/audiocd/'.$id;
-				$cdlist = file_exists( $cdfile ) ? file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES ) : false;
+				$cdlist = file_exists( $cdfile ) ? file( $cdfile, FILE_IGNORE_NEW_LINES ) : false;
 			}
 			if ( $cdlist ) {
 				$track   = substr( $file, 8 );
@@ -128,14 +128,12 @@ foreach( $lists as $list ) {
 				$title   = $audiocd[ 2 ];
 				$time    = second2HMS( $audiocd[ 3 ] );
 				$track   = $track;
+				$li2     = '<a class="track">'.$track.'</a> - <a class="artist">'.$artist.'</a> - <a class="album">'.$album.'</a>';
 			}
 			$class     = 'audiocd';
-			$discid    = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 			$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
-			$coverfile = glob( '/srv/http/data/audiocd/'.$discid.'.*' );
-			$thumbsrc  = count( $coverfile ) ? substr( $coverfile[ 0 ], 9 ) : '';
+			$thumbsrc  = '/data/audiocd/'.$discid.'.jpg';
 			$icon      = imgIcon( $thumbsrc, 'filesavedpl', 'audiocd' );
-			$li2       = '<a class="track">'.$track.'</a> - <a class="artist">'.$artist.'</a> - <a class="album">'.$album.'</a>';
 		} else {
 			$class     = 'file';
 			$discid    = '';
