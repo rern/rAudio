@@ -12,10 +12,10 @@ evalData() {
 	fi
 }
 
-online=true
 ########
 data=$( curl -sfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
 if [[ $? == 0 ]]; then
+	online=true
 	echo "$data" > $diraddons/addonslist.json
 else
 	online=false
