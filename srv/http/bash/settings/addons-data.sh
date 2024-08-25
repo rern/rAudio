@@ -13,17 +13,13 @@ evalData() {
 }
 
 online=true
-if [[ -e $dirshm/addonsprogress ]]; then
-	rm $dirshm/addonsprogress
-else
 ########
-	data=$( curl -sfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
-	if [[ $? == 0 ]]; then
-		echo "$data" > $diraddons/addonslist.json
-	else
-		online=false
-		notify addons Addons 'Server not reachable.' -1
-	fi
+data=$( curl -sfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
+if [[ $? == 0 ]]; then
+	echo "$data" > $diraddons/addonslist.json
+else
+	online=false
+	notify addons Addons 'Server not reachable.' -1
 fi
 ########
 [[ ! $data ]] && data=$( < $diraddons/addonslist.json )
