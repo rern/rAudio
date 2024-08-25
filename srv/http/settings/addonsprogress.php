@@ -1,7 +1,7 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
-$alias      = $_POST[ 'alias' ];
+$alias      = $_POST[ 'alias' ] ?? '';
 $branch     = $_POST[ 'branch' ] ?? '';
 $installurl = $_POST[ 'installurl' ] ?? '';
 $label      = $_POST[ 'label' ];
@@ -13,11 +13,13 @@ $icon       = '<i class="page-icon i-jigsaw"></i>';
 $hrefback   = 'settings.php?p=addons';
 $postmsg    = $label.' done.';
 $postmsg   .= $postinfo ? '<br><br><i class="i-addons wh"></i>'.$postinfo : '';
-if ( $alias === 'albumthumbnail' ) {
-	$label    = 'Update';
-	$title    = 'Album Thumbnails';
-	$icon     = str_replace( 'jigsaw', 'coverart', $icon );
-	$hrefback = '/';
+$thumbnail  = false;
+if ( ! $alias ) {
+	$thumbnail = true;
+	$label     = 'Update';
+	$title     = 'Album Thumbnails';
+	$icon      = str_replace( 'jigsaw', 'coverart', $icon );
+	$hrefback  = '/';
 }
 ?>
 
@@ -75,7 +77,7 @@ pre hr.hrlight {
 <p class="addontitle gr"><i class="titleicon i-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<wh><?=$title?></wh> - <?=$label?> ...</p>
 <pre class="progress">
 <script> // js must be here before php flush start
-if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$hrefback?>' ); // on refresh page
+//if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$hrefback?>' ); // on refresh page
 document.title = 'Addons';
 E      = {};
 [ 'close', 'container', 'info', 'infobtn', 'infox', 'progress', 'titleicon' ].forEach( ( el ) => {
@@ -99,7 +101,7 @@ document.body.addEventListener( 'keydown', e => {
 </script>
 <?php
 // ......................................................................................
-if ( $alias === 'albumthumbnail' ) {
+if ( $thumbnail ) {
 	$command    = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$_POST[ 'path' ].'" '.$_POST[ 'overwrite' ];
 	$commandtxt = $command;
 } else if ( $label === 'Uninstall' ) {
