@@ -978,6 +978,14 @@ function infoRelays() {
 		, beforeshow   : () => {
 			infoRelaysCss( 180, 70 );
 			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
+			$( '#infoList select' ).each( ( i, el ) => {
+				var $this = $( el );
+				if ( $this.val() === null ) {
+					var $tr = $this.parents( 'tr' );
+					$tr.addClass( 'hide' );
+					$tr.prev().addClass( 'hide' );
+				}
+			} );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
@@ -1028,6 +1036,11 @@ function infoRelaysOk() {
 		var pin  = S.relaysconf || default_v.relays;
 		var name = {};
 		infoval.forEach( ( el, i ) => i % 2 ? name[ p ] = el : p = el );
+		var pins = Object.keys( name );
+		for ( i = 0; i < 4; i++ ) {
+			pin[ 'ON'+ i ]  = +pins[ i ];
+			pin[ 'OFF'+ i ] = +pins[ i ];
+		}
 	}
 	var v       = {};
 	keys.forEach( k => v[ k ] = [] );

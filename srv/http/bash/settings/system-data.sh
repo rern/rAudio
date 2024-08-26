@@ -133,11 +133,19 @@ if [[ -e $dirsystem/relays.conf ]]; then
 	off=( $off )
 	ond=( $ond )
 	offd=( $offd )
-	pL=${#on[@]}
-	dL=$(( pL - 1 ))
-	for (( i=0; i < $pL; i++ )); do
-						conf+=', "ON'$i'"  : '${on[i]}',  "OFF'$i'"  : '${off[i]}
-		(( i < dL )) && conf+=', "OND'$i'" : '${ond[i]}', "OFFD'$i'" : '${offd[i]}
+	for (( i=0; i < 4; i++ )); do
+		onp=${on[i]}
+		[[ ! $onp ]] && onp=false
+		offp=${off[i]}
+		[[ ! $offp ]] && offp=false
+		conf+=', "ON'$i'"  : '$onp',  "OFF'$i'"  : '$offp
+		if (( $i < 3 )); then
+			ondp=${ond[i]}
+			[[ ! $ondp ]] && ondp=0
+			offdp=${offd[i]}
+			[[ ! $offdp ]] && offdp=0
+			conf+=', "OND'$i'" : '$ondp', "OFFD'$i'" : '$offdp
+		fi
 	done
 	conf+=', "TIMER": '$timer
 	relaysconf='{ '${conf:1}' }'
