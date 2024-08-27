@@ -1019,8 +1019,9 @@ function infoRelaysName() {
 		, tab          : [ infoRelays, '' ]
 		, message      : gpiosvg
 		, list         : list
-		, values       : values
+		, checkblank   : true
 		, checkchanged : S.relays
+		, values       : values
 		, beforeshow   : () => {
 			infoRelaysCss( 70, 160 );
 			$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
@@ -1029,17 +1030,15 @@ function infoRelaysName() {
 				var $tr  = $( '#infoList tr' ).last();
 				$tr.clone().insertAfter( $tr );
 				$( '#infoList input' ).last().val( '' );
-				infoRelaysNameRemove();
+				infoCheckSetChange();
 			} );
-			infoRelaysNameRemove();
+			$( '#infoList' ).off( 'click' ).on( 'click', '.i-remove', function() {
+				if ( $( '#infoList tr' ).length > 2 ) $( this ).parents( 'tr' ).remove();
+				infoCheckSetChange();
+			} );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
-	} );
-}
-function infoRelaysNameRemove() {
-	$( '#infoList' ).off( 'click' ).on( 'click', '.i-remove', function() {
-		if ( $( '#infoList tr' ).length > 2 ) $( this ).parents( 'tr' ).remove();
 	} );
 }
 function infoRelaysOk() {

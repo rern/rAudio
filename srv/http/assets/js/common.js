@@ -663,6 +663,16 @@ function infoCheckSet() {
 		} );
 	}
 }
+function infoCheckSetChange() {
+	$input       = $( '#infoList' ).find( 'input, select' );
+	$inputbox    = $( '#infoList input' );
+	if ( I.checkblank ) {
+		I.checkblank = [ ...Array( $inputbox.length ).keys() ];
+		infoCheckBlank();
+	}
+	infoCheckSet();
+	$( '#infoList input' ).trigger( 'input' );
+}
 function infoClearTimeout( all ) { // ok for both timeout and interval
 	if ( ! ( 'timeout' in V ) ) return
 	
