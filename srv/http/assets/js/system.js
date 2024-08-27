@@ -1050,7 +1050,7 @@ function infoRelaysOk() {
 		v.forEach( ( el, i ) => i % 2 ? name[ p ] = el : p = el );
 		var pins = Object.keys( name );
 		pin.ON   = pins;
-		pin.OFF  = pins.reverse();
+		pin.OFF  = pins.slice().reverse();
 	} else {
 		var name = S.relaysnameconf || default_v.relaysname;
 		var pL   = pin.ON.length;
