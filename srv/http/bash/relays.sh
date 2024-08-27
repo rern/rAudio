@@ -11,8 +11,9 @@ if [[ ! $1 ]]; then # no args = ON
 	pins=$on
 	onoff=1
 	delay=( $ond )
-	order="<wh>$orderon"
+	order=$orderon
 	color=wh
+	done=true
 else
 	killProcess relaystimer
 	rm -f $dirshm/{relayson,relaystimer}
@@ -20,17 +21,18 @@ else
 	pins=$off
 	onoff=0
 	delay=( $offd )
-	order="<gr>$orderoff"
+	order=$orderoff
 	color=gr
+	done=false
 fi
 dL=${#delay[@]}
 i=0
 for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff
 	line=$(( i + 1 ))
-	message=$( sed "$line s|$|</$color>|" <<< $( echo -e $order ) ) # \n      > newline > sed appends color close tag
-	message=$( sed -z 's/\n/\\n/g' <<< $message )                   # newline > \n for json
-	message=$( stringEscape $message )                              # escape " `
+	message=$( sed -e "$line s|$|</$color>|" -e 's/\n/<br>/g' <<< $order )
+	message=$( sed -z 's/\n/<br>/g' <<< $message )
+	message="<$color>$( stringEscape $message )"
 	pushData relays '{ "state": "'$action'", "message": "'$message'" }'
 	[[ $i < $dL ]] && sleep ${delay[i]}
 	(( i++ ))
@@ -42,4 +44,4 @@ fi
 
 $dirbash/status-push.sh
 sleep 1
-pushData relays '{ "done": 1 }'
+pushData relays '{ "done": '$done' }'

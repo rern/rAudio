@@ -314,7 +314,9 @@ function psRadioList( data ) {
 }
 function psRelays( response ) {
 	if ( 'done' in response || ! ( 'state' in response ) ) {
+		S.relayson = response.done;
 		$( '#infoX' ).trigger( 'click' );
+		setButtonOptions();
 		return
 	}
 	

@@ -335,17 +335,21 @@ relays )
 	if [[ $ON ]]; then
 		. $dirsystem/relays.conf
 		json=$( jq < $dirsystem/relays.json )
+		order='
+orderon="\'
 		for p in $on; do
-			name=$( jq -r '.["'$p'"]' <<< $json )
-			[[ $name ]] && neworderon+=$name'\n'
+			order+="
+$( stringEscape $( jq -r '.["'$p'"]' <<< $json ) )"
 		done
+		order+='"
+orderoff="\'
 		for p in $off; do
-			name=$( jq -r '.["'$p'"]' <<< $json )
-			[[ $name ]] && neworderoff+=$name'\n'
+			order+="
+$( stringEscape $( jq -r '.["'$p'"]' <<< $json ) )"
 		done
-		echo '
-orderon="'$( stringEscape ${neworderon:0:-2} )'"
-orderoff="'$( stringEscape ${neworderoff:0:-2} )'"' >> $dirsystem/relays.conf
+order+='
+"'
+		echo "$order" >> $dirsystem/relays.conf
 	fi
 	pushRefresh
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
