@@ -974,7 +974,7 @@ function infoRelays() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, tablabel     : [ 'Sequence', 'Name' ]
+		, tablabel     : [ 'Sequence', 'Pin - Name' ]
 		, tab          : [ '', infoRelaysName ]
 		, list         : list
 		, lableno      : true
@@ -1015,7 +1015,7 @@ function infoRelaysName() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, tablabel     : [ 'Sequence', 'Name' ]
+		, tablabel     : [ 'Sequence', 'Pin - Name' ]
 		, tab          : [ infoRelays, '' ]
 		, message      : gpiosvg
 		, list         : list
