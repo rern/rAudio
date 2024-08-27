@@ -11,7 +11,6 @@ if [[ ! $1 ]]; then # no args = ON
 	pins=$on
 	onoff=1
 	delay=( $ond )
-	order=$orderon
 	color=wh
 	done=true
 else
@@ -21,18 +20,21 @@ else
 	pins=$off
 	onoff=0
 	delay=( $offd )
-	order=$orderoff
 	color=gr
 	done=false
 fi
+json=$( jq < $dirsystem/relays.json )
+for p in $pins; do
+	order+=$( jq -r '.["'$p'"]' <<< $json )$'\n'
+done
 dL=${#delay[@]}
 i=0
 for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff
 	line=$(( i + 1 ))
-	message=$( echo -e ${order//^/\\n} | sed -e "$line s|$|</$color>|" )
+	message=$( sed "$line s|$|</$color>|" <<< $order )
 	message=$( sed -z 's/\n/<br>/g' <<< $message )
-	message="<$color>$( stringEscape $message )"
+	message="<$color>$( stringEscape ${message:0:-4} )"
 	pushData relays '{ "state": "'$action'", "message": "'$message'" }'
 	[[ $i < $dL ]] && sleep ${delay[i]}
 	(( i++ ))

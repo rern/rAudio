@@ -1070,14 +1070,9 @@ function infoRelaysOk() {
 	}
 	var values = [];
 	[ 'ON', 'OFF', 'OND', 'OFFD' ].forEach( k => values.push( pin[ k ].join( ' ' ) ) );
-	var orderon = '';
-	pin.ON.forEach( p => orderon += '^'+ name[ p ] );
-	var orderoff = '';
-	pin.OFF.forEach( p => orderoff += '^'+ name[ p ] );
-	values.push( pin.TIMER, orderon.slice( 1 ), orderoff.slice( 1 ) );
 	notifyCommon();
 	jsonSave( 'relays', name );
-	bash( [ 'relays', ...values, 'CFG ON OFF OND OFFD TIMER ORDERON ORDEROFF' ] );
+	bash( [ 'relays', ...values, pin.TIMER, 'CFG ON OFF OND OFFD TIMER' ] );
 }
 function infoRestore() {
 	info( {
