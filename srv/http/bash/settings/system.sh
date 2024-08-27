@@ -332,25 +332,6 @@ regdomlist )
 	;;
 relays )
 	enableFlagSet
-	if [[ $ON ]]; then
-		. $dirsystem/relays.conf
-		json=$( jq < $dirsystem/relays.json )
-		order='
-orderon="\'
-		for p in $on; do
-			order+="
-$( stringEscape $( jq -r '.["'$p'"]' <<< $json ) )"
-		done
-		order+='"
-orderoff="\'
-		for p in $off; do
-			order+="
-$( stringEscape $( jq -r '.["'$p'"]' <<< $json ) )"
-		done
-order+='
-"'
-		echo "$order" >> $dirsystem/relays.conf
-	fi
 	pushRefresh
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
 	;;

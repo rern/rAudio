@@ -30,7 +30,7 @@ i=0
 for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff
 	line=$(( i + 1 ))
-	message=$( sed -e "$line s|$|</$color>|" -e 's/\n/<br>/g' <<< $order )
+	message=$( echo -e ${order//^/\\n} | sed -e "$line s|$|</$color>|" )
 	message=$( sed -z 's/\n/<br>/g' <<< $message )
 	message="<$color>$( stringEscape $message )"
 	pushData relays '{ "state": "'$action'", "message": "'$message'" }'

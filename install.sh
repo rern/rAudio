@@ -4,10 +4,6 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240830
-file=$dirsystem/relays.conf
-grep -q '\\n' $file && sed -i 's/\\n/\n/g' $file
-
 # 20240818
 file=$dirmpd/albumbyartist
 [[ -e $file && $( grep -m1 . $file | cut -c 2 ) != ^ ]] && php /srv/http/cmd.php sort albumbyartist
