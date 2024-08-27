@@ -129,26 +129,13 @@ fi
 # relays
 if [[ -e $dirsystem/relays.conf ]]; then
 	. $dirsystem/relays.conf
-	on=( $on )
-	off=( $off )
-	ond=( $ond )
-	offd=( $offd )
-	for (( i=0; i < 4; i++ )); do
-		onp=${on[i]}
-		[[ ! $onp ]] && onp=false
-		offp=${off[i]}
-		[[ ! $offp ]] && offp=false
-		conf+=', "ON'$i'"  : '$onp',  "OFF'$i'"  : '$offp
-		if (( $i < 3 )); then
-			ondp=${ond[i]}
-			[[ ! $ondp ]] && ondp=0
-			offdp=${offd[i]}
-			[[ ! $offdp ]] && offdp=0
-			conf+=', "OND'$i'" : '$ondp', "OFFD'$i'" : '$offdp
-		fi
-	done
-	conf+=', "TIMER": '$timer
-	relaysconf='{ '${conf:1}' }'
+	relaysconf='{
+  "ON"    : [ '${on// /,}' ]
+, "OFF"   : [ '${off// /,}' ]
+, "OND"   : [ '${ond// /,}' ]
+, "OFFD"  : [ '${offd// /,}' ]
+, "TIMER" : '$timer'
+}'
 fi
 # tft
 tftmodel=$( getContent $dirsystem/lcdmodel )
