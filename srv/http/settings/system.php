@@ -197,6 +197,7 @@ EOF
 On/Off: $M_relays
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  · Can be enabled and run as a test without a connected relay module.
+ · Test: $B_gear <btn>Sequence</btn> $B_power On / Off
 EOF
 	],
 	[

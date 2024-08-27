@@ -983,6 +983,9 @@ function infoRelays() {
 		, beforeshow   : () => {
 			infoRelaysCss( 180, 70 );
 			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
+			$( '#infoList' ).on( 'click', '.i-power', function() {
+				bash( $( this ).hasClass( 'red' ) ? [ 'relays.sh',  'OFF' ] : [ 'relays.sh' ] );
+			} );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
