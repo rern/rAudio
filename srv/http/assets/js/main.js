@@ -234,7 +234,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
-			bash( S.relayson ? [ 'relays.sh',  'OFF' ] : [ 'relays.sh' ] );
+			bash( [ 'relays.sh', S.relayson ? 'off' : '' ] );
 			break;
 		case 'guide':
 			location.href = 'settings.php?p=guide';

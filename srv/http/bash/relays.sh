@@ -3,9 +3,9 @@
 . /srv/http/bash/common.sh
 . $dirsystem/relays.conf
 
-if [[ ! $1 ]]; then # no args = ON
+if [[ ! $1 ]]; then # no args = on
 	touch $dirshm/relayson
-	action=ON
+	action=on
 	pins=$on
 	onoff=1
 	delay=( $ond )
@@ -14,7 +14,7 @@ if [[ ! $1 ]]; then # no args = ON
 else
 	killProcess relaystimer
 	rm -f $dirshm/{relayson,relaystimer}
-	action=OFF
+	action=off
 	pins=$off
 	onoff=0
 	delay=( $offd )
@@ -31,11 +31,11 @@ for pin in $pins; do
 	message=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
 	message=$( sed -z 's/\n/<br>/g' <<< $message )
 	message=$( quoteEscape $message )
-	pushData relays '{ "state": "'$action'", "message": "'$message'" }'
+	pushData relays '{ "action": "'$action'", "message": "'$message'" }'
 	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done
-if [[ $timer > 0 && $action == ON && ! -e $dirshm/pidstoptimer ]]; then
+if [[ $timer > 0 && $action == on && ! -e $dirshm/pidstoptimer ]]; then
 	echo $timer > $dirshm/relaystimer
 	$dirbash/relays-timer.sh &> /dev/null &
 fi

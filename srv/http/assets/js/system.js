@@ -985,10 +985,10 @@ function infoRelays() {
 			infoRelaysCss( 180, 70 );
 			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
 			$( '#infoList' ).on( 'click', '.i-power', function() {
-				var iconon = $( this ).hasClass( 'grn' );
-				if ( ( S.relayson && iconon ) || ( ! S.relayson && ! iconon ) ) return
+				var on = $( this ).hasClass( 'grn' );
+				if ( ( S.relayson && on ) || ( ! S.relayson && ! on ) ) return
 				
-				bash( iconon ? [ 'relays.sh' ] : [ 'relays.sh', 'OFF' ] );
+				bash( [ 'relays.sh', on ? '' : 'off' ] );
 			} );
 		}
 		, cancel       : switchCancel

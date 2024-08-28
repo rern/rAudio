@@ -312,18 +312,18 @@ function psRadioList( data ) {
 	S.updatingdab = false;
 	$( '#mi-dabupdate' ).addClass( 'hide' );
 }
-function psRelays( response ) {
-	if ( 'done' in response || ! ( 'state' in response ) ) {
-		S.relayson = response.done;
+function psRelays( data ) {
+	if ( 'done' in data ) {
+		S.relayson = data.done;
 		$( '#infoX' ).trigger( 'click' );
 		setButtonOptions();
 		return
 	}
 	
 	clearInterval( V.interval.relays );
-	var state = response.state;
+	var action    = data.action;
 	var stopwatch = '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>';
-	if ( state === 'IDLE' ) {
+	if ( action === 'idle' ) {
 		info( {
 			  icon        : 'relays'
 			, title       : 'Relays Countdown'
@@ -335,7 +335,7 @@ function psRelays( response ) {
 			, oklabel     : ico( 'set0' ) +'Reset'
 			, ok          : () => {
 				bash( [ 'relaystimerreset' ] );
-				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m' );
+				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.timer +'m' );
 			}
 		} );
 		var delay     = 59;
@@ -350,20 +350,20 @@ function psRelays( response ) {
 		}, 1000 );
 	} else {
 		if ( I.active ) {
-			$( '#infoList .msg-r' ).html( response.message );
+			$( '#infoList .msg-r' ).html( data.message );
 			return
 		}
 		
 		info( {
 			  icon       : 'relays'
-			, title      : 'Relays '+ state
+			, title      : 'Relays '+ ( action === 'on' ? 'On' : 'Off' )
 			, message    : stopwatch
-						  +'<div class="msg-r">'+ response.message +'</div>'
+						  +'<div class="msg-r">'+ data.message +'</div>'
 			, okno       : true
 			, oknoreset  : true
 			, beforeshow : () => {
 				$( '#infoX' ).addClass( 'hide' );
-				if ( state === 'OFF' ) $( '#infoList .msg-r' ).addClass( 'wh' );
+				if ( action === 'off' ) $( '#infoList .msg-r' ).addClass( 'wh' );
 			}
 		} );
 	}
