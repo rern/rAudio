@@ -38,7 +38,7 @@ listWlan() {
 	profiles=$( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		while read profile; do
-			ssid=$( stringEscape $profile )
+			ssid=$( quoteEscape $profile )
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do

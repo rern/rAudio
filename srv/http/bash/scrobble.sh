@@ -24,7 +24,7 @@ response=$( curl -sfX POST \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
 if [[ $? == 0 ]]; then
-	[[ $response =~ error ]] && msg="Error: $( jq -r .message <<< $response )" || msg=$( stringEscape $TITLE )
+	[[ $response =~ error ]] && msg="Error: $( jq -r .message <<< $response )" || msg=$( quoteEscape $TITLE )
 else
 	msg='Server not reachable.'
 fi

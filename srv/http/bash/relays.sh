@@ -3,8 +3,6 @@
 . /srv/http/bash/common.sh
 . $dirsystem/relays.conf
 
-timerfile=$dirshm/relaystimer
-
 if [[ ! $1 ]]; then # no args = ON
 	touch $dirshm/relayson
 	action=ON
@@ -24,26 +22,23 @@ else
 	done=false
 fi
 json=$( jq < $dirsystem/relays.json )
-for p in $pins; do
-	order+=$( jq -r '.["'$p'"]' <<< $json )$'\n'
+for pin in $pins; do
+	order+=$( jq -r '.["'$pin'"]' <<< $json )$'\n'
 done
-dL=${#delay[@]}
-i=0
 for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff
 	line=$(( i + 1 ))
-	message=$( sed "$line s|$|</$color>|" <<< $order )
+	message=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
 	message=$( sed -z 's/\n/<br>/g' <<< $message )
-	message="<$color>$( stringEscape ${message:0:-4} )"
+	message=$( quoteEscape $message )
 	pushData relays '{ "state": "'$action'", "message": "'$message'" }'
-	[[ $i < $dL ]] && sleep ${delay[i]}
+	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done
-if [[ $action == ON && ! -e $dirshm/pidstoptimer && $timer > 0 ]]; then
-	echo $timer > $timerfile
+if [[ $timer > 0 && $action == ON && ! -e $dirshm/pidstoptimer ]]; then
+	echo $timer > $dirshm/relaystimer
 	$dirbash/relays-timer.sh &> /dev/null &
 fi
 
-$dirbash/status-push.sh
 sleep 1
 pushData relays '{ "done": '$done' }'

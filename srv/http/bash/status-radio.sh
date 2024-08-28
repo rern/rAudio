@@ -108,9 +108,9 @@ $( jq -r .albumTitle <<< $track )"
 		countdown=$(( end - now ))
 	fi
 	dataprev="$artist $title $album"
-	artist=$( stringEscape ${metadata[0]} )
-	title=$( stringEscape ${metadata[1]} )
-	album=$( stringEscape ${metadata[2]} )
+	artist=$( quoteEscape ${metadata[0]} )
+	title=$( quoteEscape ${metadata[1]} )
+	album=$( quoteEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
 	jq .steps[$item] <<< $json
 	echo "$artist - $title - $album - $coverurl"

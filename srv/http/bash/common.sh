@@ -72,7 +72,7 @@ args2var() { # $2 $3 ... if any, still valid
 		printf -v $k '%s' "$v"
 		if [[ $CFG ]]; then
 			if [[ $v ]]; then
-				v=$( stringEscape $v )
+				v=$( quoteEscape $v )
 				[[ $v =~ \ |\"|\'|\`|\<|\> ]] && v='"'$v'"' # quote if contains space " ' ` <
 			fi
 			conf+=${k,,}'='$v$'\n'
@@ -133,7 +133,7 @@ conf2json() {
 			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
 						-e 's/^True$|^yes$/true/
 							s/^False$|^no$/false/' <<< $v )
-			confNotString "$v" || v='"'$( stringEscape "$v" )'"' # quote and escape string
+			confNotString "$v" || v='"'$( quoteEscape $v )'"' # quote and escape string
 		else
 			v=false
 		fi
@@ -220,7 +220,7 @@ getVar() { # var=value
 	[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" $2 )      #     var
 	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )       # var value > var=value
 	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line ) # var=value || var = value || var="value"; > value
-	stringEscape $line
+	quoteEscape $line
 }
 getVarColon() { # var: value || var: "value";*
 	[[ ! -e ${@: -1} ]] && echo false && return
@@ -308,8 +308,8 @@ notify() { # icon title message delayms
 		[[ ${1: -5} == 'blink' ]] && delay=-1 || delay=3000
 	fi
 	icon=$1
-	title=$( stringEscape $2 )
-	message=$( stringEscape $3 )
+	title=$( quoteEscape $2 )
+	message=$( quoteEscape $3 )
 	[[ ! $ip ]] && ip=127.0.0.1
 	pushWebsocket $ip notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
@@ -379,6 +379,9 @@ pushWebsocket() {
 		data='{ "channel": "'$2'", "data": '${@:3}' }'
 		websocat -B 10485760 ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	fi
+}
+quoteEscape() {
+	echo "${@//\"/\\\"}"
 }
 radioStatusFile() {
 	local status
@@ -457,9 +460,6 @@ snapserverList() {
 	[[ ! $service ]] && return
 	
 	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
-}
-stringEscape() {
-	echo "${@//\"/\\\"}"
 }
 volume() {
 	filevolumemute=$dirsystem/volumemute

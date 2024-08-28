@@ -198,12 +198,12 @@ while read line; do
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
 		Album | AlbumArtist | Artist | Composer | Conductor | Title )
-			printf -v $key '%s' "$( stringEscape $val )"
+			printf -v $key '%s' "$( quoteEscape $val )"
 			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
 			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
-			file=$( stringEscape "$val" )
+			file=$( quoteEscape $val )
 			;;   # escape " for json
 		consume | random | repeat | single )
 			[[ $val == 1 ]] && val=true || val=false
