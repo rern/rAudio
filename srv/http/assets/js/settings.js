@@ -194,6 +194,7 @@ function psOnMessage( channel, data ) {
 		case 'player':    psPlayer( data );    break;
 		case 'power':     psPower( data );     break;
 		case 'refresh':   psRefresh( data );   break;
+		case 'relays':    psRelays( data );    break;
 		case 'reload':    psReload( data );    break;
 		case 'storage':   psStorage( data );   break;
 		case 'volume':    psVolume( data );    break;
@@ -264,6 +265,12 @@ function psRefresh( data ) {
 }
 function psReload( data ) {
 	if ( localhost ) location.reload();
+}
+function psRelays( data ) {
+	if ( 'done' in data ) {
+		S.relayson = data.done;
+		banner( 'relays', 'Relay Module', S.relayson ? 'On' : 'Off' );
+	}
 }
 function psStorage( data ) {
 	if ( page === 'system' ) {
