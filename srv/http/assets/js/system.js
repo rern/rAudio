@@ -108,6 +108,7 @@ var lcdcharjson   = {
 }
 var lcdcharfooter = ico( 'raudio', 'lcdlogo', 'tabindex' ) +'Logo&emsp;'+ ico( 'screenoff', 'lcdoff', 'tabindex' ) +'Sleep';
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
+var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -974,7 +975,7 @@ function infoRelays() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, tablabel     : [ 'Sequence', 'Pin - Name' ]
+		, tablabel     : relaystab
 		, tab          : [ '', infoRelaysName ]
 		, list         : list
 		, lableno      : true
@@ -1018,7 +1019,7 @@ function infoRelaysName() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, tablabel     : [ 'Sequence', 'Pin - Name' ]
+		, tablabel     : relaystab
 		, tab          : [ infoRelays, '' ]
 		, message      : gpiosvg
 		, list         : list
