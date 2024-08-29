@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1724846215' );
+	src         : url( '/assets/fonts/rern.woff2?v=1724931774' );
 }
 @font-face {
 	font-family : Lato;
@@ -239,7 +239,6 @@ html {
 	padding : env( safe-area-inset ); /* disable iPhone X rounded corner padding */
 }
 body {
-	position    : relative;
 	min-height  : 100%;
 	margin      : 0;
 	font-family : Lato;
@@ -605,7 +604,7 @@ hr {
 	border-bottom: 1px solid var( --cg );
 }
 #infoOverlay {
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;

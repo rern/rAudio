@@ -982,7 +982,7 @@ function infoRelays() {
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			infoRelaysCss( 180, 70 );
+			infoRelaysCss( ( $( '#infoBox' ).width() / 2 - 20 ) +'px', '70px' );
 			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
 			$( '#infoList' ).on( 'click', '.i-power', function() {
 				var on = $( this ).hasClass( 'grn' );
@@ -998,8 +998,8 @@ function infoRelays() {
 function infoRelaysCss( sW, iW ) {
 	$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 	$( '#infoList td:first-child' ).remove();
-	$( '#infoList .select2-container' ).attr( 'style', 'width: '+ sW +'px !important' );
-	$( '#infoList input' ).parent().addBack().css( 'width', iW +'px' );
+	$( '#infoList .select2-container' ).attr( 'style', 'width: '+ sW +' !important' );
+	$( '#infoList input' ).parent().addBack().css( 'width', iW );
 }
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;
@@ -1030,7 +1030,7 @@ function infoRelaysName() {
 		, checkchanged : S.relays
 		, values       : values
 		, beforeshow   : () => {
-			infoRelaysCss( 70, 160 );
+			infoRelaysCss( '70px', '160px' );
 			$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
 			$( '#infoList td' ).eq( 2 ).html( ico( 'plus-circle edit' ) );
 			$( '#infoList td' ).on( 'click', '.i-plus-circle', function() {

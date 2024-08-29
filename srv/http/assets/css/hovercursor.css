@@ -1,6 +1,3 @@
-#infoOverlay { /* no on-screen keyboard */
-	min-height: 100%;
-}
 /* :hover *********************************************************/
 #lib-path a:hover {
 	color: var( --cm );
