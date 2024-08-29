@@ -1072,11 +1072,14 @@ function infoRelaysOk() {
 			}
 		}
 	}
-	var values = [];
+	var values = [ pin.TIMER ];
 	[ 'ON', 'OFF', 'OND', 'OFFD' ].forEach( k => values.push( pin[ k ].join( ' ' ) ) );
 	notifyCommon();
-	jsonSave( 'relays', name );
-	bash( [ 'relays', ...values, pin.TIMER, 'CFG ON OFF OND OFFD TIMER' ] );
+	var save = function() {
+		bash( [ 'relays', ...values, 'CFG TIMER ON OFF OND OFFD' ] );
+		jsonSave( 'relays', name );
+	}
+	S.relayson ? bash( [ 'relays.sh', 'off' ], save ) : save();
 }
 function infoRestore() {
 	info( {
