@@ -21,9 +21,10 @@ else
 	color=gr
 	done=false
 fi
-json=$( jq < $dirsystem/relays.json )
+. <( sed -E -e '/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/; s/^/p/' $dirsystem/relays.json ) # faster than jq
 for pin in $pins; do
-	order+=$( jq -r '.["'$pin'"]' <<< $json )$'\n'
+	ppin=p$pin
+	order+=${!ppin}$'\n'
 done
 for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff
