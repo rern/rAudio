@@ -32,7 +32,8 @@ for pin in $pins; do
 	message=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
 	message=$( sed -z 's/\n/<br>/g' <<< $message )
 	message=$( quoteEscape $message )
-	pushData relays '{ "action": "'$action'", "message": "'$message'" }'
+	[[ $action == off ]] && message="<wh>$message</wh>"
+	notify 'relays blink' '' $message
 	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done

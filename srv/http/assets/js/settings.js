@@ -267,15 +267,9 @@ function psReload( data ) {
 	if ( localhost ) location.reload();
 }
 function psRelays( data ) {
-	if ( data.action === 'idle' ) return
-	
 	if ( 'done' in data ) {
 		S.relayson = data.done;
 		bannerHide();
-	} else {
-		var message = data.message;
-		if ( data.action === 'off' ) message = '<wh>'+ data.message +'</wh>';
-		banner( 'relays', '', message, -1 );
 	}
 }
 function psStorage( data ) {

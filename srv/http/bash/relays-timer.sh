@@ -25,6 +25,6 @@ while sleep 60; do
 		echo $i > $timerfile
 		(( $i > 1 )) && continue
 		
-		pushData relays '{ "action": "idle", "timer": '$timer' }'
+		pushData relays '{ "timer": '$timer' }'
 	fi
 done
