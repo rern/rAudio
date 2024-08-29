@@ -1319,6 +1319,7 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	V.playlisthome  = true;
 	V.playlistlist  = false;
 	V.playlisttrack = false;
+	$( '#button-pl-back' ).addClass( 'hide' );
 	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
@@ -1366,7 +1367,7 @@ function renderPlaylistPadding() {
 function renderPlaylistSet() {
 	$( '.emptyadd, #menu-plaction' ).addClass( 'hide' );
 	if ( V.playlisthome ) {
-		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).addClass( 'hide' );
+		$( '#pl-savedlist, #savedpl-path' ).addClass( 'hide' );
 		$( '#pl-list, #pl-path, #pl-manage, #button-pl-search' ).removeClass( 'hide' );
 	} else {
 		$( '#pl-savedlist' ).css( 'width', V.playlistlist ? '' : '100%' );
