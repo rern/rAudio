@@ -266,12 +266,6 @@ function psRefresh( data ) {
 function psReload( data ) {
 	if ( localhost ) location.reload();
 }
-function psRelays( data ) {
-	if ( 'done' in data ) {
-		S.relayson = data.done;
-		bannerHide();
-	}
-}
 function psStorage( data ) {
 	if ( page === 'system' ) {
 		S.list = data.list;

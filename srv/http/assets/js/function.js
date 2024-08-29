@@ -1451,8 +1451,8 @@ function setBookmarkEdit() {
 	$( '.mode.bookmark' ).addClass( 'edit' );
 }
 function setButtonOptions() {
-	$( '#relays' ).toggleClass( 'on', S.relayson );
 	$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
+	$( '#relays' ).toggleClass( 'on', S.relayson );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 	var timevisible = $time.is( ':visible' );
 	var prefix = timevisible ? 'ti' : 'mi';

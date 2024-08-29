@@ -312,41 +312,6 @@ function psRadioList( data ) {
 	S.updatingdab = false;
 	$( '#mi-dabupdate' ).addClass( 'hide' );
 }
-function psRelays( data ) {
-	if ( 'done' in data ) {
-		S.relayson = data.done;
-		$( '#infoX' ).trigger( 'click' );
-		bannerHide();
-		setButtonOptions();
-		return
-	}
-	
-	clearInterval( V.interval.relays );
-	info( {
-		  icon        : 'relays'
-		, title       : 'Relays Countdown'
-		, message     : '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>'
-					   +'<div class="msg-r wh">60</div>'
-		, buttonlabel : ico( 'relays' ) +'Off'
-		, buttoncolor : red
-		, button      : () => bash( [ 'relays.sh', 'off' ] )
-		, oklabel     : ico( 'set0' ) +'Reset'
-		, ok          : () => {
-			bash( [ 'relaystimerreset' ] );
-			banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.timer +'m' );
-		}
-	} );
-	var delay     = 59;
-	V.interval.relays = setInterval( () => {
-		if ( delay ) {
-			$( '.infomessage .wh' ).text( delay-- );
-		} else {
-			clearInterval( V.interval.relays );
-			$( '#relays' ).removeClass( 'on' );
-			$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
-		}
-	}, 1000 );
-}
 function psRestore( data ) {
 	if ( data.restore === 'done' ) {
 		banner( 'restore', 'Restore Settings', 'Done' );

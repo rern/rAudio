@@ -1133,6 +1133,45 @@ function psPower( data ) {
 		setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
 	}
 }
+function psRelays( data ) {
+	if ( 'done' in data ) {
+		S.relayson = data.done;
+		bannerHide();
+		$( '#infoX' ).trigger( 'click' );
+		if ( ! page ) $( '#relays' ).toggleClass( 'on', S.relayson );
+		return
+	}
+	
+	if ( ! ( 'timer' in data ) ) return
+	
+	clearInterval( V.intervalrelays );
+	info( {
+		  icon        : 'relays'
+		, title       : 'Relays Countdown'
+		, message     : '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>'
+					   +'<div class="msg-r wh">60</div>'
+		, buttonlabel : ico( 'relays' ) +'Off'
+		, buttoncolor : red
+		, button      : () => bash( [ 'relays.sh', 'off' ] )
+		, oklabel     : ico( 'set0' ) +'Reset'
+		, ok          : () => {
+			bash( [ 'relaystimerreset' ] );
+			banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.timer +'m' );
+		}
+	} );
+	var delay     = 59;
+	V.intervalrelays = setInterval( () => {
+		if ( delay ) {
+			$( '.infomessage .wh' ).text( delay-- );
+		} else {
+			clearInterval( V.intervalrelays );
+			if ( ! page ) {
+				$( '#relays' ).removeClass( 'on' );
+				$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
+			}
+		}
+	}, 1000 );
+}
 
 // page visibility -----------------------------------------------------------------
 function pageActive() {
