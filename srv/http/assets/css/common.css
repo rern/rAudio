@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1721449042' );
+	src         : url( '/assets/fonts/rern.woff2?v=1724846215' );
 }
 @font-face {
 	font-family : Lato;
@@ -440,6 +440,7 @@ code {
 	color: var( --cg75 );
 }
 #bannerMessage,
+#bannerMessage gr,
 #banner .time,
 #banner .li2 {
 	color: var( --cga ) !important;
