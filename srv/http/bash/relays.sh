@@ -21,7 +21,7 @@ else
 	color=gr
 	done=false
 fi
-. <( sed -E -e '/^\{$|^\}$/d; s/^,* *"//; s/,$//; s/" *: */=/; s/^/p/' $dirsystem/relays.json ) # faster than jq
+. <( sed -E -e '/^\{$|^\}$/d; s/^  "//; s/,$//; s/": /=/; s/^/p/' $dirsystem/relays.json ) # faster than jq
 for pin in $pins; do
 	ppin=p$pin
 	order+=${!ppin}$'\n'
