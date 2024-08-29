@@ -97,37 +97,6 @@ var chkdisplay  = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 if ( navigator.maxTouchPoints ) { // swipe
-	var xstart;
-	window.addEventListener( 'touchstart', function( e ) {
-		var $target = $( e.target );
-		if ( I.active
-			|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
-			|| $target.parents( '#time-knob' ).length
-			|| $target.parents( '#volume-knob' ).length
-			|| ! $( '#bio' ).hasClass( 'hide' )
-			|| ! $( '#data' ).hasClass( 'hide' )
-		) return
-		
-		xstart      = e.changedTouches[ 0 ].pageX;
-	} );
-	window.addEventListener( 'touchend', function( e ) {
-		if ( ! xstart ) return
-		
-		var diff  = xstart - e.changedTouches[ 0 ].pageX;
-		xstart = false;
-		if ( Math.abs( diff ) < 100 ) return
-		
-		var pages = [ 'library', 'playback',  'playlist' ];
-		var i     = pages.indexOf( V.page );
-		var ilast = pages.length - 1;
-		diff > 0 ? i++ : i--;
-		if ( i < 0 ) {
-			i = ilast;
-		} else if ( i > ilast ) {
-			i = 0;
-		}
-		$( '#'+ pages[ i ] ).trigger( 'click' );
-	} );
 	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
 		e.preventDefault();
 		e.stopPropagation();
@@ -136,6 +105,37 @@ if ( navigator.maxTouchPoints ) { // swipe
 	} );
 	$( 'link[ href*="hovercursor.css" ]' ).remove();
 }
+var xstart;
+window.addEventListener( 'touchstart', function( e ) {
+	var $target = $( e.target );
+	if ( I.active
+		|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
+		|| $target.parents( '#time-knob' ).length
+		|| $target.parents( '#volume-knob' ).length
+		|| ! $( '#bio' ).hasClass( 'hide' )
+		|| ! $( '#data' ).hasClass( 'hide' )
+	) return
+	
+	xstart      = e.changedTouches[ 0 ].pageX;
+} );
+window.addEventListener( 'touchend', function( e ) {
+	if ( ! xstart ) return
+	
+	var diff  = xstart - e.changedTouches[ 0 ].pageX;
+	xstart = false;
+	if ( Math.abs( diff ) < 100 ) return
+	
+	var pages = [ 'library', 'playback',  'playlist' ];
+	var i     = pages.indexOf( V.page );
+	var ilast = pages.length - 1;
+	diff > 0 ? i++ : i--;
+	if ( i < 0 ) {
+		i = ilast;
+	} else if ( i > ilast ) {
+		i = 0;
+	}
+	$( '#'+ pages[ i ] ).trigger( 'click' );
+} );
 
 $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.colorpicker ) return
