@@ -216,7 +216,8 @@ getVar() { # var=value
 	[[ ! -e $2 ]] && echo false && return
 	
 	local line
-	line=$( grep -E "^${1// /|^}" $2 )                             # var
+	line=$( grep -E ^$1= $2 )                                      # var=
+	[[ ! $line ]] && line=$( grep -E "^${1// /|^}" $2 )            # var
 	[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" $2 )      #     var
 	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )       # var value > var=value
 	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line ) # var=value || var = value || var="value"; > value
