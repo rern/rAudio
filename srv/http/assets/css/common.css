@@ -847,15 +847,6 @@ hr {
 	height: 100px;
 	margin-bottom: 0;
 }
-.infomessage .msg-l,
-.infomessage .msg-r {
-	display: inline-block;
-	vertical-align: middle;
-}
-.infomessage .msg-r {
-	margin-left: 30px;
-	text-align: left;
-}
 .infoimgnew {
 	margin-left: 10px;
 }

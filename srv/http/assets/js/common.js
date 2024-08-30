@@ -1144,12 +1144,11 @@ function psRelays( data ) {
 	
 	if ( ! ( 'timer' in data ) ) return
 	
-	clearInterval( V.intervalrelays );
 	info( {
 		  icon        : 'relays'
-		, title       : 'Relays Countdown'
-		, message     : '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>'
-					   +'<div class="msg-r wh">60</div>'
+		, title       : 'Equipments'
+		, message     : '<object type="image/svg+xml" data="/assets/img/stopwatch.svg" style="vertical-align: middle"></object>'
+					   +'&emsp;<gr>Off:<gr> <a>60</a>'
 		, buttonlabel : ico( 'relays' ) +'Off'
 		, buttoncolor : red
 		, button      : () => bash( [ 'relays.sh', 'off' ] )
@@ -1159,12 +1158,12 @@ function psRelays( data ) {
 			banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.timer +'m' );
 		}
 	} );
-	var delay     = 59;
-	V.intervalrelays = setInterval( () => {
+	var delay    = 59;
+	var interval = setInterval( () => {
 		if ( delay ) {
-			$( '.infomessage .wh' ).text( delay-- );
+			$( '.infomessage a' ).text( delay-- );
 		} else {
-			clearInterval( V.intervalrelays );
+			clearInterval( interval );
 			if ( ! page ) {
 				$( '#relays' ).removeClass( 'on' );
 				$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
