@@ -267,6 +267,7 @@ body {
 .i-dabupdate,
 .i-libupdate {
 	animation: blinkopaque 1.5s linear infinite;
+	text-shadow: none !important;
 }
 #loader,
 #fader {
