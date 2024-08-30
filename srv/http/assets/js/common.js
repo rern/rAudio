@@ -63,7 +63,7 @@ function banner( icon, title, message, delay ) {
 	}, delay || 3000 );
 }
 function bannerHide() {
-	if ( V.bannerdelay || V.reboot || $( '#banner .i-warning' ).length ) return
+	if ( V.bannerdelay || V.reboot || V.relays || $( '#banner .i-warning' ).length ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -1098,6 +1098,8 @@ function selectText2Html( pattern ) {
 }
 // push status
 function psNotify( data ) {
+	if ( V.relays && data.title ) return
+	
 	if ( data === false ) {
 		bannerHide();
 		return
@@ -1107,6 +1109,7 @@ function psNotify( data ) {
 	var title   = data.title;
 	var message = data.message;
 	var delay   = data.delay;
+	V.relays    = ! title;
 	if ( ! page ) {
 		if ( message === 'Change track ...' ) { // audiocd
 			intervalClear();
@@ -1134,10 +1137,17 @@ function psPower( data ) {
 	}
 }
 function psRelays( data ) {
+	var relaysToggle = function() {
+		if ( ! page ) {
+			$( '#relays' ).toggleClass( 'on', S.relayson );
+			$( '#mi-relays, #ti-relays' ).toggleClass( 'hide', ! S.relayson  );
+		}
+	}
 	if ( 'done' in data ) {
 		S.relayson = data.done;
+		V.relays   = false;
 		bannerHide();
-		if ( ! page ) $( '#relays' ).toggleClass( 'on', S.relayson );
+		relaysToggle();
 		return
 	}
 	
@@ -1163,7 +1173,7 @@ function psRelays( data ) {
 		} else {
 			clearInterval( interval );
 			$( '#infoX' ).trigger( 'click' );
-			if ( ! page ) $( '#mi-relays, #ti-relays' ).addClass( 'hide' );
+			relaysToggle();
 		}
 	}, 1000 );
 }
