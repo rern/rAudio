@@ -497,6 +497,9 @@ input.disabled + .switchlabel:after {
 	padding: 0 calc( ( 100% - 650px ) / 2 ) 80px;
 	overflow: auto;
 }
+.container.addonsprogress {
+	padding-bottom: 0;
+}
 .col-l,
 .col-r {
 	float: left;
