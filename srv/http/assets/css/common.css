@@ -1016,8 +1016,11 @@ input[ type=radio ]:disabled {
 	vertical-align: -40px;
 }
 .msgrelays a {
+	display: inline-block;
+	width: 30px;
 	font-weight: 300;
 	font-size: 18px;
+	text-align: right;
 }
 
 @media ( max-height: 420px ) {
