@@ -93,9 +93,6 @@ function psBookmark() {
 	refreshData();
 }
 function psCoverart( data ) {
-	var audiocd = data.url.slice( 0, 13 ) === '/data/audiocd';
-	if ( audiocd &&  S.icon !== 'audiocd' ) return
-	
 	clearTimeout( V.timeoutCover );
 	bannerHide();
 	$( '#liimg' ).css( 'opacity', '' );
@@ -105,7 +102,7 @@ function psCoverart( data ) {
 		S.Album = data.radioalbum;
 		setInfo();
 	}
-	if ( audiocd && V.library ) return
+	if ( V.library ) return
 	
 	V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 	if ( ! V.playback ) refreshData();
