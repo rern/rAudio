@@ -7,10 +7,7 @@ Naming must be the same for:
 
 S              = {} // status
 SW             = {} // switch
-V              = {  // var global
-	  wH : window.innerHeight
-	, wW : window.innerWidth
-}
+V              = {} // var global
 
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
@@ -186,10 +183,6 @@ function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
 }
 
-window.addEventListener( 'resize', () => { // resize / rotate
-	V.wH = window.innerHeight;
-	V.wW = window.innerWidth;
-} );
 function psOnMessage( channel, data ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;

@@ -911,9 +911,9 @@ function infoWidth() {
 		var widthmax = I.boxwidth === 'max';
 		if ( widthmax ) {
 			if ( I.width ) {
-				var maxW = I.width < V.wW ? I.width : V.wW;
+				var maxW = I.width < window.innerWidth ? I.width : window.innerWidth;
 			} else {
-				var maxW = V.wW > 600 ? 600 : V.wW;
+				var maxW = window.innerWidth > 600 ? 600 : window.innerWidth;
 			}
 			$( '#infoBox' ).css( 'width', maxW +'px' );
 		}
