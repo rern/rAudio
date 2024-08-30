@@ -529,30 +529,25 @@ volumeGet() {
 	
 	local args card db mixer val val_db volume
 	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
-		args='-MD bluealsa'
+		val_db=$( amixer -MD bluealsa 2> /dev/null \
+					| grep -m1 % \
+					| awk -F'[][]' '{print $2" "$4}' )
 	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
 				&& playerActive mpd; then            # software
-		val=$( mpc status %volume% | tr -dc [:digit:] )
-		db=false
+		val_db="$( mpc status %volume% | tr -dc [:digit:] ) false"
 	elif [[ -e $dirshm/amixercontrol ]]; then        # hardware
 		. <( grep -E '^card|^mixer' $dirshm/output )
-		args="-c $card -M sget \"$mixer\""
-	fi
-	if [[ $args ]]; then # not mpd software
 		for i in {1..5}; do # some usb might not be ready
-			volume=$( amixer $args 2> /dev/null | grep -m1 % )
-			[[ $volume ]] && break || sleep 1
+			val_db=$( amixer -c $card -M sget "$mixer" 2> /dev/null \
+						| grep -m1 % \
+						| awk -F'[][]' '{print $2" "$4}' )
+			[[ $val_db ]] && break || sleep 1
 		done
-		[[ ! $volume ]] && return
 	fi
-	
-	if [[ $volume ]]; then
-		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $volume )
-		val=${val_db/ *}
-		db=${val_db/* }
-	fi
-	[[ ! $val ]] && val=0
+	val_db=$( tr -dc '[:digit:]-. ' <<< $val_db )
+	val=${val_db/ *}
+	db=${val_db/* }
 	case $1 in
 		push )
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
