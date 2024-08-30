@@ -1146,8 +1146,7 @@ function psRelays( data ) {
 	info( {
 		  icon        : 'relays'
 		, title       : 'Equipments Off'
-		, message     : '<object type="image/svg+xml" data="/assets/img/stopwatch.svg" style="vertical-align: middle"></object>'
-					   +'&emsp;<wh>60</wh>'
+		, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object>&emsp;<a>60</a></div>'
 		, buttonlabel : ico( 'relays' ) +'Off'
 		, buttoncolor : red
 		, button      : () => bash( [ 'relays.sh', 'off' ] )
@@ -1160,7 +1159,7 @@ function psRelays( data ) {
 	var delay    = 59;
 	var interval = setInterval( () => {
 		if ( delay ) {
-			$( '.infomessage wh' ).text( delay-- );
+			$( '.infomessage a' ).text( delay-- );
 		} else {
 			clearInterval( interval );
 			$( '#infoX' ).trigger( 'click' );

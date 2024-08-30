@@ -1012,6 +1012,13 @@ input[ type=radio ]:disabled {
 .dot3 {
 	animation-delay: 500ms;
 }
+.msgrelays object {
+	vertical-align: -40px;
+}
+.msgrelays a {
+	font-weight: 300;
+	font-size: 18px;
+}
 
 @media ( max-height: 420px ) {
 	#infoList { padding: 10px 5px }
