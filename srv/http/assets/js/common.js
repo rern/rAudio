@@ -1098,10 +1098,15 @@ function selectText2Html( pattern ) {
 }
 // push status
 function psNotify( data ) {
-	if ( V.relays && data.title ) return
-	
 	if ( data === false ) {
 		bannerHide();
+		return
+	}
+	
+	if ( V.relays ) {
+		if ( data.title ) return
+		
+		$( '#bannerMessage' ).html( data.message );
 		return
 	}
 	

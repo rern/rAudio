@@ -33,7 +33,7 @@ for pin in $pins; do
 	message=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $message )
 	message=$( quoteEscape $message )
 	[[ $action == off ]] && message="<wh>$message</wh>"
-	notify 'relays blink' '' $message
+	notify 'relays blink' '' $message -1
 	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done
