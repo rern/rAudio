@@ -1137,7 +1137,6 @@ function psRelays( data ) {
 	if ( 'done' in data ) {
 		S.relayson = data.done;
 		bannerHide();
-		$( '#infoX' ).trigger( 'click' );
 		if ( ! page ) $( '#relays' ).toggleClass( 'on', S.relayson );
 		return
 	}
@@ -1148,7 +1147,7 @@ function psRelays( data ) {
 		  icon        : 'relays'
 		, title       : 'Equipments'
 		, message     : '<object type="image/svg+xml" data="/assets/img/stopwatch.svg" style="vertical-align: middle"></object>'
-					   +'&emsp;<gr>Off:<gr> <a>60</a>'
+					   +'&emsp;<gr>Off:<gr> <wh>60</wh>'
 		, buttonlabel : ico( 'relays' ) +'Off'
 		, buttoncolor : red
 		, button      : () => bash( [ 'relays.sh', 'off' ] )
@@ -1161,13 +1160,11 @@ function psRelays( data ) {
 	var delay    = 59;
 	var interval = setInterval( () => {
 		if ( delay ) {
-			$( '.infomessage a' ).text( delay-- );
+			$( '.infomessage wh' ).text( delay-- );
 		} else {
 			clearInterval( interval );
-			if ( ! page ) {
-				$( '#relays' ).removeClass( 'on' );
-				$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
-			}
+			$( '#infoX' ).trigger( 'click' );
+			if ( ! page ) $( '#mi-relays, #ti-relays' ).addClass( 'hide' );
 		}
 	}, 1000 );
 }

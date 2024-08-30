@@ -255,7 +255,6 @@ function onPageInactive() {
 	
 	intervalClear();
 	guideHide();
-	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
 }
 function psOption( data ) {
 	if ( V.local ) return
