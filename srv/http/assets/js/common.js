@@ -1145,9 +1145,9 @@ function psRelays( data ) {
 	
 	info( {
 		  icon        : 'relays'
-		, title       : 'Equipments'
+		, title       : 'Equipments Off'
 		, message     : '<object type="image/svg+xml" data="/assets/img/stopwatch.svg" style="vertical-align: middle"></object>'
-					   +'&emsp;<gr>Off:<gr> <wh>60</wh>'
+					   +'&emsp;<gr>In<gr> <wh>60</wh>'
 		, buttonlabel : ico( 'relays' ) +'Off'
 		, buttoncolor : red
 		, button      : () => bash( [ 'relays.sh', 'off' ] )

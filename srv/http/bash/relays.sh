@@ -30,7 +30,7 @@ for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff
 	line=$(( i + 1 ))
 	message=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
-	message=$( sed -z 's/\n/<br>/g' <<< $message )
+	message=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $message )
 	message=$( quoteEscape $message )
 	[[ $action == off ]] && message="<wh>$message</wh>"
 	notify 'relays blink' '' $message
