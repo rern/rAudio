@@ -356,7 +356,7 @@ function coverartChange() {
 		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +'Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {
-			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
+			var ext = src.replace( /\?v.*/, '' ).slice( -3 );
 			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, 'CMD COVERFILE MPDPATH ARTIST ALBUM' ] );
 		}
 		, ok          : () => {
