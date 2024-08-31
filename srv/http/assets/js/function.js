@@ -1221,11 +1221,7 @@ function renderLibraryList( data ) { // V.librarylist
 			imageLoad( 'lib-list' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
-		var albumL = $( '#lib-list .coverart' ).length;
-		if ( [ 'album', 'latest' ].includes( V.mode ) && albumL ) {
-			$( '#lib-list' ).addClass( 'album max200px' );
-			$( '#lib-list' ).toggleClass( 'max200px', V.wW / 200 > albumL );
-		}
+		if ( [ 'album', 'latest' ].includes( V.mode ) ) $( '#lib-list' ).addClass( 'album' );
 		if ( V.mode === 'album' ) { // V.albumlist
 			V.albumlist = true;
 			if ( ! $( '.licover' ).length ) $( '#lib-list img' ).eq( 0 ).on( 'load', function() {
