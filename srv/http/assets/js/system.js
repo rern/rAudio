@@ -941,9 +941,9 @@ function infoPowerbuttonAudiophonics() {
 	} );
 }
 function infoRelays() {
+	var pin    = S.relaysconf     || default_v.relays;
 	var name   = S.relaysnameconf || default_v.relaysname;
-	var p      = S.relaysconf || default_v.relays;
-	var names  = {};
+	var names  = {}
 	$.each( name, ( k, v ) => names[ v ] = k );
 	var step   = { step: 1, min: 0, max: 10 }
 	var list   = [
@@ -951,25 +951,25 @@ function infoRelays() {
 		, [ '', '', { suffix: ico( 'power red' ) +' Off <gr>(s)</gr>', colspan: 2 } ]
 	];
 	var values = [];
-	var pL     = p.ON.length;
+	var pL     = pin.ON.length;
 	for ( i = 0; i < pL; i++ ) {
 		list.push(
 			  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
 			, [ '', 'select', { kv: names, colspan: 2 } ]
 		);
-		values.push( p.ON[ i ], p.OFF[ i ] );
+		values.push( pin.ON[ i ], pin.OFF[ i ] );
 		if ( i < pL - 1 ) {
 			list.push(
 				  [ '', 'number', { updn: step, sameline: true } ]
 				, [ '', 'number', { updn: step } ]
 			);
-			values.push( p.OND[ i ], p.OFFD[ i ] );
+			values.push( pin.OND[ i ], pin.OFFD[ i ] );
 		} else {
 			list.push(
 				  [ '', '',       { suffix: ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', sameline: true, colspan: 2 } ]
 				, [ '', 'number', { updn: step } ]
 			);
-			values.push( p.TIMER );
+			values.push( pin.TIMER );
 		}
 	}
 	info( {
@@ -1049,16 +1049,19 @@ function infoRelaysName() {
 	} );
 }
 function infoRelaysOk() {
-	var v    = infoVal();
-	var pin  = S.relaysconf || default_v.relays;
-	if ( typeof I.tab[ 0 ] !== 'string' ) { // name
-		var name = {};
+	if ( ! S.relaysconf ) { // force update values on ok
+		S.relaysconf     = default_v.relays;
+		S.relaysnameconf = default_v.relaysname;
+	}
+	var pin    = S.relaysconf;
+	var name   = S.relaysnameconf;
+	var v      = infoVal();
+	var p_name = I.tab[ 0 ];
+	if ( p_name ) {
 		v.forEach( ( el, i ) => i % 2 ? name[ p ] = el : p = el );
-		var pins = Object.keys( name );
-		pin.ON   = pins;
-		pin.OFF  = pins.slice().reverse();
+		pin.ON   = Object.keys( name );
+		pin.OFF  = pin.ON.slice().reverse();
 	} else {
-		var name = S.relaysnameconf || default_v.relaysname;
 		var pL   = pin.ON.length;
 		for ( i = 0; i < pL; i++ ) {
 			var j         = i * 4;
@@ -1072,12 +1075,13 @@ function infoRelaysOk() {
 			}
 		}
 	}
-	var values = [ pin.TIMER ];
-	[ 'ON', 'OFF', 'OND', 'OFFD' ].forEach( k => values.push( pin[ k ].join( ' ' ) ) );
+	var pins = [];
+	[ 'ON', 'OFF', 'OND', 'OFFD' ].forEach( k => pins.push( pin[ k ].join( ' ' ) ) );
 	notifyCommon();
 	var save = function() {
-		bash( [ 'relays', ...values, 'CFG TIMER ON OFF OND OFFD' ] );
+		bash( [ 'relays', ...pins, pin.TIMER, 'CFG ON OFF OND OFFD TIMER' ] );
 		jsonSave( 'relays', name );
+		if ( p_name ) setTimeout( infoRelays, 900 );
 	}
 	S.relayson ? bash( [ 'relays.sh', 'off' ], save ) : save();
 }
