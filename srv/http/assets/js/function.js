@@ -1221,9 +1221,10 @@ function renderLibraryList( data ) { // V.librarylist
 			imageLoad( 'lib-list' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
-		if ( [ 'album', 'latest' ].includes( V.mode ) && $( '#lib-list .coverart' ).length ) {
-			if ( V.wW / 200 > $( '#lib-list .coverart' ).length ) $( '#lib-list' ).addClass( 'max200px' );
-			$( '#lib-list' ).addClass( 'album' );
+		var albumL = $( '#lib-list .coverart' ).length;
+		if ( [ 'album', 'latest' ].includes( V.mode ) && albumL ) {
+			$( '#lib-list' ).addClass( 'album max200px' );
+			$( '#lib-list' ).toggleClass( 'max200px', V.wW / 200 > albumL );
 		}
 		if ( V.mode === 'album' ) { // V.albumlist
 			V.albumlist = true;

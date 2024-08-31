@@ -42,7 +42,11 @@ $T_library    = '<a class="helpmenu tab">'.i( 'library' ).' Library</a>';
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
-$fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
+$fileexplorer = <<< EOF
+File Explorer &raquo; <btn>This PC</btn> &raquo; <btn>Map network drive...</btn>
+	· <c>\\\\$ip\SD</c>
+	· <c>\\\\$ip\USB</c>
+EOF;
 $snapweb      = $B_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
