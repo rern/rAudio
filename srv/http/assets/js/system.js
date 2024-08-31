@@ -978,11 +978,12 @@ function infoRelays() {
 		, tablabel     : relaystab
 		, tab          : [ '', infoRelaysName ]
 		, list         : list
+		, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
 		, lableno      : true
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			infoRelaysCss( ( $( '#infoBox' ).width() / 2 - 20 ) +'px', '70px' );
+			infoRelaysCss( 70 );
 			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
 			$( '#infoList' ).on( 'click', '.i-power', function() {
 				var on = $( this ).hasClass( 'grn' );
@@ -995,11 +996,10 @@ function infoRelays() {
 		, ok           : infoRelaysOk
 	} );
 }
-function infoRelaysCss( sW, iW ) {
+function infoRelaysCss( iW ) {
 	$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 	$( '#infoList td:first-child' ).remove();
-	$( '#infoList .select2-container' ).attr( 'style', 'width: '+ sW +' !important' );
-	$( '#infoList input' ).parent().addBack().css( 'width', iW );
+	$( '#infoList input' ).parent().addBack().css( 'width', iW +'px' );
 }
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;
@@ -1026,11 +1026,12 @@ function infoRelaysName() {
 		, tab          : [ infoRelays, '' ]
 		, message      : gpiosvg
 		, list         : list
+		, boxwidth     : 70
 		, checkblank   : true
 		, checkchanged : S.relays
 		, values       : values
 		, beforeshow   : () => {
-			infoRelaysCss( '70px', '160px' );
+			infoRelaysCss( 160 );
 			$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
 			$( '#infoList td' ).eq( 2 ).html( ico( 'plus-circle edit' ) );
 			$( '#infoList td' ).on( 'click', '.i-plus-circle', function() {
