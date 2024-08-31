@@ -1082,7 +1082,7 @@ function infoRelaysOk() {
 	var save = function() {
 		bash( [ 'relays', ...pins, pin.TIMER, 'CFG ON OFF OND OFFD TIMER' ] );
 		jsonSave( 'relays', name );
-		if ( p_name ) setTimeout( infoRelays, 900 );
+		if ( p_name ) infoRelays();
 	}
 	S.relayson ? bash( [ 'relays.sh', 'off' ], save ) : save();
 }
