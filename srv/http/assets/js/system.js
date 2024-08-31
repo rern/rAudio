@@ -1054,35 +1054,38 @@ function infoRelaysOk() {
 		S.relaysconf     = default_v.relays;
 		S.relaysnameconf = default_v.relaysname;
 	}
-	var pin    = S.relaysconf;
-	var name   = S.relaysnameconf;
-	var v      = infoVal();
-	var p_name = I.tab[ 0 ];
-	if ( p_name ) {
+	var order   = S.relaysconf;
+	var name    = S.relaysnameconf;
+	var v       = infoVal();
+	var tabname = I.tab[ 0 ];
+	if ( tabname ) {
 		v.forEach( ( el, i ) => i % 2 ? name[ p ] = el : p = el );
-		pin.ON   = Object.keys( name );
-		pin.OFF  = pin.ON.slice().reverse();
+		var on = Object.keys( name );
+		if ( on.sort().join() !== order.ON.slice().sort().join() ) {
+			order.ON  = on;
+			order.OFF = on.slice().reverse();
+		}
 	} else {
-		var pL   = pin.ON.length;
+		var pL   = order.ON.length;
 		for ( i = 0; i < pL; i++ ) {
-			var j         = i * 4;
-			pin.ON[ i ]   = v[ j ];
-			pin.OFF[ i ]  = v[ j + 1 ];
+			var j          = i * 4;
+			order.ON[ i ]  = v[ j ];
+			order.OFF[ i ] = v[ j + 1 ];
 			if ( i < pL - 1 ) {
-				pin.OND[ i ]  = v[ j + 2 ];
-				pin.OFFD[ i ] = v[ j + 3 ];
+				order.OND[ i ]  = v[ j + 2 ];
+				order.OFFD[ i ] = v[ j + 3 ];
 			} else {
-				pin.TIMER = v[ v.length - 1 ];
+				order.TIMER = v[ v.length - 1 ];
 			}
 		}
 	}
 	var pins = [];
-	[ 'ON', 'OFF', 'OND', 'OFFD' ].forEach( k => pins.push( pin[ k ].join( ' ' ) ) );
+	[ 'ON', 'OFF', 'OND', 'OFFD' ].forEach( k => pins.push( order[ k ].join( ' ' ) ) );
 	notifyCommon();
 	var save = function() {
-		bash( [ 'relays', ...pins, pin.TIMER, 'CFG ON OFF OND OFFD TIMER' ] );
+		bash( [ 'relays', ...pins, order.TIMER, 'CFG ON OFF OND OFFD TIMER' ] );
 		jsonSave( 'relays', name );
-		if ( p_name ) infoRelays();
+		if ( tabname ) infoRelays();
 	}
 	S.relayson ? bash( [ 'relays.sh', 'off' ], save ) : save();
 }
