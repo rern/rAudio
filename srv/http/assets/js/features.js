@@ -367,7 +367,6 @@ $( '#setting-login' ).on( 'click', function() {
 			$.post( 'cmd.php', { cmd: 'login', ...infoVal() }, verified => {
 				if ( verified == -1 ) passwordWrong();
 			} );
-			console.log({ cmd: 'login', ...infoVal() })
 		}
 	} );
 } );
