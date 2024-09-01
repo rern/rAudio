@@ -161,11 +161,11 @@ coverFileGet() {
 data2json() {
 	local json page
 	page=$( basename ${0/-*} )
-	[[ $page == status.sh ]] && page=false || page='"'$page'"'
-	json='{
-  "page"  : '$page'
-, "login" : '$( exists $dirsystem/login )
-	json+="$1
+	[[ $page == status.sh ]] && page='"page" : false' || page='"page" : "'$page'"'
+	json="\
+{
+$page
+$1
 }"
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
 	json=$( data2jsonPatch "$json" )

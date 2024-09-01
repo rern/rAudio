@@ -945,7 +945,6 @@ function playbackStatusGet( withdisplay ) {
 		delete status.counts;
 		if ( 'display' in status ) {
 			D              = status.display;
-			D.logout       = status.login;
 			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
 			delete status.display;
 			delete V.coverTL;

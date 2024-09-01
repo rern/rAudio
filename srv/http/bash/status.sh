@@ -46,19 +46,22 @@ if [[ $1 == withdisplay ]]; then
 	display=$( grep -v } $dirsystem/display.json )
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
+	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || logout=$( exists $dirsystem/login )
 	display+='
-, "ap"          : '$( exists $dirsystem/ap )'
-, "apconf"      : '$apconf'
-, "audiocd"     : '$( exists $dirshm/audiocd )'
-, "camilladsp"  : '$( exists $dirsystem/camilladsp )'
-, "color"       : "'$( getContent $dirsystem/color )'"
-, "dabradio"    : '$dabradio'
-, "equalizer"   : '$( exists $dirsystem/equalizer )'
-, "multiraudio" : '$( exists $dirsystem/multiraudio )'
-, "relays"      : '$( exists $dirsystem/relays )'
-, "screenoff"   : '$screenoff'
-, "snapclient"  : '$( exists $dirsystem/snapclient )'
-, "volumenone"  : '$volumenone'
+, "ap"           : '$( exists $dirsystem/ap )'
+, "apconf"       : '$apconf'
+, "audiocd"      : '$( exists $dirshm/audiocd )'
+, "camilladsp"   : '$( exists $dirsystem/camilladsp )'
+, "color"        : "'$( getContent $dirsystem/color )'"
+, "dabradio"     : '$dabradio'
+, "equalizer"    : '$( exists $dirsystem/equalizer )'
+, "loginsetting" : '$loginsetting'
+, "logout"       : '$logout'
+, "multiraudio"  : '$( exists $dirsystem/multiraudio )'
+, "relays"       : '$( exists $dirsystem/relays )'
+, "screenoff"    : '$screenoff'
+, "snapclient"   : '$( exists $dirsystem/snapclient )'
+, "volumenone"   : '$volumenone'
 }'
 fi
 

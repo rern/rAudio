@@ -209,11 +209,7 @@ localbrowserxset )
 	;;
 login )
 	pushRefresh
-	pushSubmenu lock true
-	;;
-logindisable )
-	pushRefresh
-	pushSubmenu lock false
+	pushSubmenu lock $( [[ -e $dirsystem/login ]] && echo true || echo false )
 	;;
 multiraudio )
 	enableFlagSet

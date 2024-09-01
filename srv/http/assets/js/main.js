@@ -174,6 +174,29 @@ $( '#button-data' ).on( 'click', function() {
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
+	if ( D.loginsetting ) {
+		info( {
+			  icon       : 'lock'
+			, title      : 'Settings'
+			, list       : [ '', 'password' ]
+			, focus      : 0
+			, checkblank : true
+			, oklabel    : 'Login'
+			, ok         : () => {
+				loader();
+				$.post( 'cmd.php', { cmd: 'login', pwd: infoVal(), loginsetting: true }, verified => {
+					if ( verified != -1 ) {
+						D.loginsetting = false;
+						loaderHide();
+						setTimeout( () => D.loginsetting = true, 900 );
+					}
+					$( '#button-settings' ).trigger( 'click' );
+				} );
+			}
+		} );
+		return
+	}
+	
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		if ( ! $( '#displaycolor canvas' ).length ) { // color icon
 			$( '#displaycolor' ).html( '<canvas></canvas>' );

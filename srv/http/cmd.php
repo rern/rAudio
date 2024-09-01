@@ -50,22 +50,26 @@ case 'imagereplace': // $.post from function.js
 	break;
 case 'login': // $.post from features.js
 	$file = $dirdata.'system/login';
-	if ( file_exists( $file )  && ! password_verify( $_POST[ 'password' ], file_get_contents( $file ) ) ) exit( '-1' );
+	$pwd  = $_POST[ 'pwd' ];
+	if ( file_exists( $file ) && ! password_verify( $pwd, file_get_contents( $file ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	if ( isset( $_POST[ 'disable' ] ) ) {
-		unlink( $file );
-		exec( $dirsettings.'features.sh logindisable' );
-		exit;
-//----------------------------------------------------------------------------------
-	}
-	$pwdnew = $_POST[ 'pwdnew' ] ?? '';
-	if ( $pwdnew ) {
-		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
-		file_put_contents( $file, $hash );
+		foreach( [ 'login', 'loginsetting' ] as $f ) unlink( $dirdata.'system/'.$f );
 		exec( $dirsettings.'features.sh login' );
-	} else {
+	} else if ( ! isset( $_POST[ 'loginsetting' ] ) ) {
 		session_start();
 		$_SESSION[ 'login' ] = 1;
+	} else {
+		$pwd  = $_POST[ 'pwdnew' ] ?: $pwd;
+		$hash = password_hash( $pwd, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
+		file_put_contents( $file, $hash );
+		$file = $dirdata.'system/loginsetting';
+		if ( $_POST[ 'loginsetting' ] ) {
+			touch( $file );
+		} else {
+			unlink( $file );
+		}
+		exec( $dirsettings.'features.sh login' );
 	}
 	break;
 case 'logout': // $.post from main.js
