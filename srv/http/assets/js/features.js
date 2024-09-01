@@ -338,12 +338,12 @@ $( '#login' ).on( 'click', function() {
 			, ok         : () => {
 				notifyCommon( false );
 				$.post( 'cmd.php', {
-					  cmd      : 'login'
-					, disable  : true
-					, password : infoVal()
+					  cmd     : 'login'
+					, disable : true
+					, pwd     : infoVal()
 				}, verified => {
 					if ( verified == -1 ) passwordWrong();
-				}, 'json' );
+				} );
 			}
 		} );
 	}
@@ -366,7 +366,8 @@ $( '#setting-login' ).on( 'click', function() {
 			notifyCommon();
 			$.post( 'cmd.php', { cmd: 'login', ...infoVal() }, verified => {
 				if ( verified == -1 ) passwordWrong();
-			}, 'json' );
+			} );
+			console.log({ cmd: 'login', ...infoVal() })
 		}
 	} );
 } );
