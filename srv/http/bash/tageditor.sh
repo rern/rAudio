@@ -15,7 +15,7 @@ if [[ $FILE != *.cue ]]; then
 		v=${!K}
 		[[ $v == '*' ]] && continue
 		
-		[[ $v ]] && v=$( stringEscape $v )
+		[[ $v ]] && v=$( quoteEscape $v )
 		[[ ! $istrack ]] && all='/*.*'
 		kid3-cli -c "set $k \"$v\"" "$path"$all
 	done

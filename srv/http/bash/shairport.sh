@@ -78,7 +78,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			$dirbash/status-push.sh
 		else
 			echo $data > $dirairplay/$code
-			pushData airplay '{ "'$code'": "'$( stringEscape $data )'" }'
+			pushData airplay '{ "'$code'": "'$( quoteEscape $data )'" }'
 		fi
 	fi
 	code= # reset after $code + $data were set

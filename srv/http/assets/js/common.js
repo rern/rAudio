@@ -63,7 +63,7 @@ function banner( icon, title, message, delay ) {
 	}, delay || 3000 );
 }
 function bannerHide() {
-	if ( V.bannerdelay || V.reboot || $( '#banner .i-warning' ).length ) return
+	if ( V.bannerdelay || V.reboot || V.relays || $( '#banner .i-warning' ).length ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -94,17 +94,17 @@ function highlightJSON( json ) {
 	var json  = Object.keys( json )
 					.sort()
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // from: https://stackoverflow.com/a/29622653
-	var regex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g;
+	var regex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g;
 	return JSON.stringify( json, null, '\t' )
 				.replace( regex, function( match ) {                      // from: https://stackoverflow.com/a/7220510
 		if ( /^"/.test( match ) )
-			if ( /:$/.test( match ) )      return match                // key (wh)
-			else                           return color( match, 'gr' ) // value
-		else if ( /true/.test( match ) )   return color( match, 'grn' )
-		else if ( /false/.test( match ) )  return color( match, 'red' )
-		else if ( /[0-9]/.test( match ) )  return color( match, 'ora' )
-		else if ( /[{}]/.test( match ) )   return color( match, 'bll' )
-		else if ( /[\[\]]/.test( match ) ) return color( match, 'pur' )
+			if ( /:$/.test( match ) )           return match                // key (wh)
+			else                                return color( match, 'gr' ) // value
+		else if ( /true/.test( match ) )        return color( match, 'grn' )
+		else if ( /false/.test( match ) )       return color( match, 'red' )
+		else if ( /[0-9]/.test( match ) )       return color( match, 'ora' )
+		else if ( /[{}]/.test( match ) )        return color( match, 'bll' )
+		else if ( /[\[\]]|null/.test( match ) ) return color( match, 'pur' )
 	} );
 }
 function ico( icon, id, tabindex ) {
@@ -663,6 +663,16 @@ function infoCheckSet() {
 		} );
 	}
 }
+function infoCheckSetChange() {
+	$input       = $( '#infoList' ).find( 'input, select' );
+	$inputbox    = $( '#infoList input' );
+	if ( I.checkblank ) {
+		I.checkblank = [ ...Array( $inputbox.length ).keys() ];
+		infoCheckBlank();
+	}
+	infoCheckSet();
+	$( '#infoList input' ).trigger( 'input' );
+}
 function infoClearTimeout( all ) { // ok for both timeout and interval
 	if ( ! ( 'timeout' in V ) ) return
 	
@@ -901,9 +911,9 @@ function infoWidth() {
 		var widthmax = I.boxwidth === 'max';
 		if ( widthmax ) {
 			if ( I.width ) {
-				var maxW = I.width < V.wW ? I.width : V.wW;
+				var maxW = I.width < window.innerWidth ? I.width : window.innerWidth;
 			} else {
-				var maxW = V.wW > 600 ? 600 : V.wW;
+				var maxW = window.innerWidth > 600 ? 600 : window.innerWidth;
 			}
 			$( '#infoBox' ).css( 'width', maxW +'px' );
 		}
@@ -1093,10 +1103,18 @@ function psNotify( data ) {
 		return
 	}
 	
+	if ( V.relays ) {
+		if ( data.title ) return
+		
+		$( '#bannerMessage' ).html( data.message );
+		return
+	}
+	
 	var icon    = data.icon;
 	var title   = data.title;
 	var message = data.message;
 	var delay   = data.delay;
+	V.relays    = ! title;
 	if ( ! page ) {
 		if ( message === 'Change track ...' ) { // audiocd
 			intervalClear();
@@ -1122,6 +1140,47 @@ function psPower( data ) {
 	} else { // reconnect after reboot
 		setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
 	}
+}
+function psRelays( data ) {
+	var relaysToggle = function() {
+		if ( ! page ) {
+			$( '#relays' ).toggleClass( 'on', S.relayson );
+			$( '#mi-relays, #ti-relays' ).toggleClass( 'hide', ! S.relayson  );
+		}
+	}
+	if ( 'done' in data ) {
+		S.relayson = data.done;
+		V.relays   = false;
+		bannerHide();
+		relaysToggle();
+		return
+	}
+	
+	if ( ! ( 'timer' in data ) ) return
+	
+	info( {
+		  icon        : 'relays'
+		, title       : 'Equipments Off'
+		, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
+		, buttonlabel : ico( 'relays' ) +'Off'
+		, buttoncolor : red
+		, button      : () => bash( [ 'relays.sh', 'off' ] )
+		, oklabel     : ico( 'set0' ) +'Reset'
+		, ok          : () => {
+			bash( [ 'relaystimerreset' ] );
+			banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.timer +'m' );
+		}
+	} );
+	var delay    = 59;
+	var interval = setInterval( () => {
+		if ( delay ) {
+			$( '.infomessage a' ).text( delay-- );
+		} else {
+			clearInterval( interval );
+			$( '#infoX' ).trigger( 'click' );
+			relaysToggle();
+		}
+	}, 1000 );
 }
 
 // page visibility -----------------------------------------------------------------

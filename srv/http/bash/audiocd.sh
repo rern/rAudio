@@ -13,9 +13,8 @@ if [[ $1 == on ]]; then
 	exit
 # --------------------------------------------------------------------
 fi
-audioCDplClear
-
 if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
+	audioCDplClear
 	if [[ $1 == off ]]; then
 		notify audiocd 'Audio CD' 'USB CD Off'
 		rm -f $dirmpdconf/cdio.conf
@@ -25,12 +24,13 @@ if [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : re
 		[[ $1 == ejecticonclick ]] && eject && touch $dirshm/eject
 		( sleep 3 && rm -f $dirshm/eject ) &
 	fi
+	$dirbash/cmd.sh playlistpush
 	$dirbash/status-push.sh
-	pushData audiocd '{ "type": "clear" }'
-	pushRefresh player
 	exit
 # --------------------------------------------------------------------
 fi
+mpc -q playlist | grep -m1 ^cdda:// && exit # suppress 2nd udev event
+# --------------------------------------------------------------------
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( discid total_tracks offset0(lead-in) offset1(track1) ... total_seconds(last track) )
 if [[ ! $cddiscid ]]; then
 	notify audiocd 'Audio CD' 'CD contains no tracks length'
@@ -41,6 +41,7 @@ discid=${cddiscid[0]}
 trackL=${cddiscid[1]} # also = offset last index (offsets: +1 lead-in)
 
 cdData() {
+	local artist f0 f1 offset time title tracks va
 	offset=( ${cddiscid[@]:2} )                           # offset - frame end
 	offset[trackL]=$(( ${offset[trackL]} * 75 ))          # last - seconds > frames 1:75
 	(( $( grep -c ' / ' <<< ${titles[@]} ) > 1 )) && va=1 # title=ARTIST / TITLE format more than 1 track
@@ -132,7 +133,7 @@ CD-TEXT-'
 	fi
 fi
 # add tracks to playlist
-pushData audiocd '{ "type": "add" }' # suppress playbackStatusGet in passive.js
+notify audiocd 'Audio CD' 'Add to Playlist'
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 [[ $( mpcState ) != play ]] && trackcd=$(( $( mpc status %length% ) + 1 ))
 notify 'audiocd blink' 'Audio CD' 'Add to Playlist ...'
@@ -141,11 +142,21 @@ for i in $( seq 1 $trackL ); do
 done
 mpc -q add $tracklist
 echo $discid > $dirshm/audiocd
-pushData audiocd '{ "type": "ready" }'
 eject -x 4
 # set 1st track of cd as current
 if [[ $trackcd ]]; then
-	$dirbash/cmd.sh "mpcskip
-$trackcd
-CMD POS"
+	mpc -q play $trackcd
+	mpc -q stop
 fi
+$dirbash/cmd.sh playlistpush
+notify audiocd 'Audio CD' 'Ready'
+if [[ ! $album ]]; then
+	line=$( head -1 $diraudiocd/$discid )
+	artist=${line/^*}
+	album=$( cut -d^ -f2 <<< $line )
+fi
+$dirbash/status-coverartonline.sh "cmd
+$artist
+$album
+$discid
+CMD ARTIST ALBUM DISCID" &

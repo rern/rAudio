@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1721449042' );
+	src         : url( '/assets/fonts/rern.woff2?v=1724931774' );
 }
 @font-face {
 	font-family : Lato;
@@ -182,8 +182,7 @@ i {
 .i-save::before            { content: '\F542' }
 .i-save-plus::before       { content: '\F545' }
 .i-screenoff::before       { content: '\F547' }
-.i-scale-dn::before        { content: '\F591' }
-.i-scale-up::before        { content: '\F592' }
+.i-scale::before           { content: '\F592' }
 .i-scrobble::before        { content: '\F585' }
 .i-sd::before              { content: '\F543' }
 .i-search::before          { content: '\F56A' }
@@ -240,7 +239,6 @@ html {
 	padding : env( safe-area-inset ); /* disable iPhone X rounded corner padding */
 }
 body {
-	position    : relative;
 	min-height  : 100%;
 	margin      : 0;
 	font-family : Lato;
@@ -269,6 +267,7 @@ body {
 .i-dabupdate,
 .i-libupdate {
 	animation: blinkopaque 1.5s linear infinite;
+	text-shadow: none !important;
 }
 #loader,
 #fader {
@@ -441,6 +440,7 @@ code {
 	color: var( --cg75 );
 }
 #bannerMessage,
+#bannerMessage gr,
 #banner .time,
 #banner .li2 {
 	color: var( --cga ) !important;
@@ -605,7 +605,7 @@ hr {
 	border-bottom: 1px solid var( --cg );
 }
 #infoOverlay {
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -848,15 +848,6 @@ hr {
 	height: 100px;
 	margin-bottom: 0;
 }
-.infomessage .msg-l,
-.infomessage .msg-r {
-	display: inline-block;
-	vertical-align: middle;
-}
-.infomessage .msg-r {
-	margin-left: 30px;
-	text-align: left;
-}
 .infoimgnew {
 	margin-left: 10px;
 }
@@ -1020,6 +1011,16 @@ input[ type=radio ]:disabled {
 }
 .dot3 {
 	animation-delay: 500ms;
+}
+.msgrelays object {
+	vertical-align: -40px;
+}
+.msgrelays a {
+	display: inline-block;
+	width: 30px;
+	font-weight: 300;
+	font-size: 18px;
+	text-align: right;
 }
 
 @media ( max-height: 420px ) {

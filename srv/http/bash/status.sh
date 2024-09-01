@@ -46,19 +46,22 @@ if [[ $1 == withdisplay ]]; then
 	display=$( grep -v } $dirsystem/display.json )
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
+	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || logout=$( exists $dirsystem/login )
 	display+='
-, "ap"          : '$( exists $dirsystem/ap )'
-, "apconf"      : '$apconf'
-, "audiocd"     : '$( exists $dirshm/audiocd )'
-, "camilladsp"  : '$( exists $dirsystem/camilladsp )'
-, "color"       : "'$( getContent $dirsystem/color )'"
-, "dabradio"    : '$dabradio'
-, "equalizer"   : '$( exists $dirsystem/equalizer )'
-, "multiraudio" : '$( exists $dirsystem/multiraudio )'
-, "relays"      : '$( exists $dirsystem/relays )'
-, "screenoff"   : '$screenoff'
-, "snapclient"  : '$( exists $dirsystem/snapclient )'
-, "volumenone"  : '$volumenone'
+, "ap"           : '$( exists $dirsystem/ap )'
+, "apconf"       : '$apconf'
+, "audiocd"      : '$( exists $dirshm/audiocd )'
+, "camilladsp"   : '$( exists $dirsystem/camilladsp )'
+, "color"        : "'$( getContent $dirsystem/color )'"
+, "dabradio"     : '$dabradio'
+, "equalizer"    : '$( exists $dirsystem/equalizer )'
+, "loginsetting" : '$loginsetting'
+, "logout"       : '$logout'
+, "multiraudio"  : '$( exists $dirsystem/multiraudio )'
+, "relays"       : '$( exists $dirsystem/relays )'
+, "screenoff"    : '$screenoff'
+, "snapclient"   : '$( exists $dirsystem/snapclient )'
+, "volumenone"   : '$volumenone'
 }'
 fi
 
@@ -198,12 +201,12 @@ while read line; do
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
 		Album | AlbumArtist | Artist | Composer | Conductor | Title )
-			printf -v $key '%s' "$( stringEscape $val )"
+			printf -v $key '%s' "$( quoteEscape $val )"
 			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
 			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
-			file=$( stringEscape "$val" )
+			file=$( quoteEscape $val )
 			;;   # escape " for json
 		consume | random | repeat | single )
 			[[ $val == 1 ]] && val=true || val=false

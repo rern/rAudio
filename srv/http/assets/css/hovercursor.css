@@ -1,6 +1,3 @@
-#infoOverlay { /* no on-screen keyboard */
-	min-height: 100%;
-}
 /* :hover *********************************************************/
 #lib-path a:hover {
 	color: var( --cm );
@@ -43,12 +40,10 @@
 }
 .index a:hover,
 #button-lib-search:hover,
-#lib-search-btn:hover,
 #pl-manage i:hover,
 #button-lib-back:hover,
 #button-pl-back:hover,
-#button-pl-search:hover,
-#pl-search-btn:hover {
+#button-pl-search:hover {
 	background-color: var( --cg ) !important;
 }
 /* :active:hover *********************************************************/
@@ -65,7 +60,6 @@
 #button-lib-search:active:hover,
 #button-settings:active:hover,
 #lib-list li:active:hover,
-#lib-search-btn:active:hover,
 #pl-manage i:active:hover,
 #button-pl-search:active:hover,
 #playback-controls button:active:hover,

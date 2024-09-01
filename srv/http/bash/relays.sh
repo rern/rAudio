@@ -3,43 +3,44 @@
 . /srv/http/bash/common.sh
 . $dirsystem/relays.conf
 
-timerfile=$dirshm/relaystimer
-
-if [[ ! $1 ]]; then # no args = ON
+if [[ ! $1 ]]; then # no args = on
 	touch $dirshm/relayson
-	action=ON
+	action=on
 	pins=$on
 	onoff=1
 	delay=( $ond )
-	order="<wh>$orderon"
 	color=wh
+	done=true
 else
 	killProcess relaystimer
 	rm -f $dirshm/{relayson,relaystimer}
-	action=OFF
+	action=off
 	pins=$off
 	onoff=0
 	delay=( $offd )
-	order="<gr>$orderoff"
 	color=gr
+	done=false
 fi
-dL=${#delay[@]}
-i=0
+. <( sed -E -e '/^\{$|^\}$/d; s/^  "//; s/,$//; s/": /=/; s/^/p/' $dirsystem/relays.json ) # faster than jq
+for pin in $pins; do
+	ppin=p$pin
+	order+=${!ppin}$'\n'
+done
 for pin in $pins; do
 	gpioset -t0 -c0 $pin=$onoff
 	line=$(( i + 1 ))
-	message=$( sed "$line s|$|</$color>|" <<< $( echo -e $order ) ) # \n      > newline > sed appends color close tag
-	message=$( sed -z 's/\n/\\n/g' <<< $message )                   # newline > \n for json
-	message=$( stringEscape $message )                              # escape " `
-	pushData relays '{ "state": "'$action'", "message": "'$message'" }'
-	[[ $i < $dL ]] && sleep ${delay[i]}
+	message=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
+	message=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $message )
+	message=$( quoteEscape $message )
+	[[ $action == off ]] && message="<wh>$message</wh>"
+	notify 'relays blink' '' $message -1
+	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done
-if [[ $action == ON && ! -e $dirshm/pidstoptimer && $timer > 0 ]]; then
-	echo $timer > $timerfile
+if [[ $timer > 0 && $action == on && ! -e $dirshm/pidstoptimer ]]; then
+	echo $timer > $dirshm/relaystimer
 	$dirbash/relays-timer.sh &> /dev/null &
 fi
 
-$dirbash/status-push.sh
 sleep 1
-pushData relays '{ "done": 1 }'
+pushData relays '{ "done": '$done' }'

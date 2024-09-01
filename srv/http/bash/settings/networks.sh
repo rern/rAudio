@@ -149,7 +149,7 @@ profileforget )
 profileget )
 	. "/etc/netctl/$SSID"
 	data='{
-  "ESSID"    : "'$( stringEscape $ESSID )'"
+  "ESSID"    : "'$( quoteEscape $ESSID )'"
 , "KEY"      : "'$Key'"'
 	[[ $Address ]] && data+='
 , "ADDRESS"  : "'$Address'"

@@ -20,7 +20,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
   "apm"        : '$apm'
 , "icon"       : "'$icon'"
 , "info"       : '$info'
-, "mountpoint" : "'$( stringEscape $mountpoint )'"
+, "mountpoint" : "'$( quoteEscape $mountpoint )'"
 , "size"       : "'$size'"
 , "source"     : "'$source'"
 }'

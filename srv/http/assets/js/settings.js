@@ -194,6 +194,7 @@ function psOnMessage( channel, data ) {
 		case 'player':    psPlayer( data );    break;
 		case 'power':     psPower( data );     break;
 		case 'refresh':   psRefresh( data );   break;
+		case 'relays':    psRelays( data );    break;
 		case 'reload':    psReload( data );    break;
 		case 'storage':   psStorage( data );   break;
 		case 'volume':    psVolume( data );    break;

@@ -97,37 +97,6 @@ var chkdisplay  = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 if ( navigator.maxTouchPoints ) { // swipe
-	var xstart;
-	window.addEventListener( 'touchstart', function( e ) {
-		var $target = $( e.target );
-		if ( I.active
-			|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
-			|| $target.parents( '#time-knob' ).length
-			|| $target.parents( '#volume-knob' ).length
-			|| ! $( '#bio' ).hasClass( 'hide' )
-			|| ! $( '#data' ).hasClass( 'hide' )
-		) return
-		
-		xstart      = e.changedTouches[ 0 ].pageX;
-	} );
-	window.addEventListener( 'touchend', function( e ) {
-		if ( ! xstart ) return
-		
-		var diff  = xstart - e.changedTouches[ 0 ].pageX;
-		xstart = false;
-		if ( Math.abs( diff ) < 100 ) return
-		
-		var pages = [ 'library', 'playback',  'playlist' ];
-		var i     = pages.indexOf( V.page );
-		var ilast = pages.length - 1;
-		diff > 0 ? i++ : i--;
-		if ( i < 0 ) {
-			i = ilast;
-		} else if ( i > ilast ) {
-			i = 0;
-		}
-		$( '#'+ pages[ i ] ).trigger( 'click' );
-	} );
 	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
 		e.preventDefault();
 		e.stopPropagation();
@@ -136,6 +105,37 @@ if ( navigator.maxTouchPoints ) { // swipe
 	} );
 	$( 'link[ href*="hovercursor.css" ]' ).remove();
 }
+var xstart;
+window.addEventListener( 'touchstart', function( e ) {
+	var $target = $( e.target );
+	if ( I.active
+		|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
+		|| $target.parents( '#time-knob' ).length
+		|| $target.parents( '#volume-knob' ).length
+		|| ! $( '#bio' ).hasClass( 'hide' )
+		|| ! $( '#data' ).hasClass( 'hide' )
+	) return
+	
+	xstart      = e.changedTouches[ 0 ].pageX;
+} );
+window.addEventListener( 'touchend', function( e ) {
+	if ( ! xstart ) return
+	
+	var diff  = xstart - e.changedTouches[ 0 ].pageX;
+	xstart = false;
+	if ( Math.abs( diff ) < 100 ) return
+	
+	var pages = [ 'library', 'playback',  'playlist' ];
+	var i     = pages.indexOf( V.page );
+	var ilast = pages.length - 1;
+	diff > 0 ? i++ : i--;
+	if ( i < 0 ) {
+		i = ilast;
+	} else if ( i > ilast ) {
+		i = 0;
+	}
+	$( '#'+ pages[ i ] ).trigger( 'click' );
+} );
 
 $( 'body' ).on( 'click', function( e ) {
 	if ( I.active || V.colorpicker ) return
@@ -174,6 +174,29 @@ $( '#button-data' ).on( 'click', function() {
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
+	if ( D.loginsetting ) {
+		info( {
+			  icon       : 'lock'
+			, title      : 'Settings'
+			, list       : [ '', 'password' ]
+			, focus      : 0
+			, checkblank : true
+			, oklabel    : 'Login'
+			, ok         : () => {
+				loader();
+				$.post( 'cmd.php', { cmd: 'login', pwd: infoVal(), loginsetting: true }, verified => {
+					if ( verified != -1 ) {
+						D.loginsetting = false;
+						loaderHide();
+						setTimeout( () => D.loginsetting = true, 900 );
+					}
+					$( '#button-settings' ).trigger( 'click' );
+				} );
+			}
+		} );
+		return
+	}
+	
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		if ( ! $( '#displaycolor canvas' ).length ) { // color icon
 			$( '#displaycolor' ).html( '<canvas></canvas>' );
@@ -234,7 +257,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
-			bash( S.relayson ? [ 'relays.sh',  'OFF' ] : [ 'relays.sh' ] );
+			bash( [ 'relays.sh', S.relayson ? 'off' : '' ] );
 			break;
 		case 'guide':
 			location.href = 'settings.php?p=guide';
@@ -744,24 +767,15 @@ $( '#coverT' ).press( function() {
 	}
 } );
 var btnctrl = {
-	  timeTL  : 'cover'
-	, timeT   : 'guide'
-	, timeTR  : 'settings'
-	, timeL   : 'previous'
-	, timeM   : 'play'
-	, timeR   : 'next'
-	, timeBL  : 'random'
-	, timeB   : 'stop'
-	, timeBR  : 'repeat'
-	, coverTL : 'cover'
-	, coverT  : 'guide'
-	, coverTR : 'settings'
-	, coverL  : 'previous'
-	, coverM  : 'play'
-	, coverR  : 'next'
-	, coverBL : 'random'
-	, coverB  : 'stop'
-	, coverBR : 'repeat'
+	  TL : 'cover'
+	, T  : 'guide'
+	, TR : 'settings'
+	, L  : 'previous'
+	, M  : 'play'
+	, R  : 'next'
+	, BL : 'random'
+	, B  : 'stop'
+	, BR : 'repeat'
 }
 $( '.map' ).on( 'click', function( e ) {
 	e.stopPropagation();
@@ -778,7 +792,7 @@ $( '.map' ).on( 'click', function( e ) {
 		return
 	}
 	
-	var cmd = btnctrl[ this.id ];
+	var cmd = btnctrl[ this.id.replace( /[a-z]/g, '' ) ];
 	if ( cmd === 'guide' ) {
 		clearTimeout( V.volumebar );
 		if ( V.guide ) {
@@ -802,15 +816,6 @@ $( '.map' ).on( 'click', function( e ) {
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $bartop.is( ':hidden' ) );
-		if ( time || volume ) {
-			$( '#coverTL' )
-				.removeClass( 'i-scale-dn' )
-				.addClass( 'i-scale-up' );
-		} else {
-			$( '#coverTL' )
-				.removeClass( 'i-scale-up' )
-				.addClass( 'i-scale-dn' );
-		}
 		if ( S.player === 'mpd' ) {
 			if ( ! time && ! S.webradio ) {
 				$( '#time-band' )
@@ -1098,18 +1103,19 @@ $( '#button-lib-update' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#button-lib-search' ).on( 'click', function() { // icon
-	$( '#lib-path span, #button-lib-back, #button-lib-search, #button-lib-update' ).addClass( 'hide' );
-	$( '#page-library .search:not( i )' ).removeClass( 'hide' );
-	$( '#lib-search-close' ).empty();
-	$( '#lib-path' ).css( 'max-width', 40 );
-	$( '#lib-search-input' ).trigger( 'focus' );
-} );
-$( '#lib-search-btn' ).on( 'click', function() { // search
-	var keyword = $( '#lib-search-input' ).val();
-	if ( ! keyword ) return
+$( '#button-lib-search' ).on( 'click', function() {
+	if ( $( '#lib-search' ).hasClass( 'hide' ) ) {
+		$( '#lib-path span, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
+		$( '#page-library .search:not( i )' ).removeClass( 'hide' );
+		$( '#lib-search-close' ).empty();
+		$( '#lib-path' ).css( 'max-width', 40 );
+		$( '#lib-search-input' ).trigger( 'focus' );
+		return
+	}
 	
-	$( this ).addClass( 'disabled' );
+	var keyword = $( '#lib-search-input' ).val();
+	if ( ! keyword || $( '#search-list' ).length ) return
+	
 	var query = {
 		  library : 'search'
 		, string  : keyword
@@ -1155,7 +1161,7 @@ $( '#page-library i.search' ).on( 'click', function() {
 	
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( V.searchlist ) $( '#lib-search-btn' ).trigger( 'click' );
+	if ( V.searchlist ) $( '#button-lib-search' ).trigger( 'click' );
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
@@ -1166,7 +1172,6 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	} else {
 		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	}
-	$( '#lib-search-btn' ).removeClass( 'disabled' );
 	$( '#page-library .search' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
@@ -1175,7 +1180,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	$( '#lib-path' ).css( 'max-width', '' );
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).trigger( 'click' );
+	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
 } );
 $( '#button-lib-back' ).on( 'click', function() {
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
@@ -1748,8 +1753,10 @@ $( '#button-pl-playlists' ).on( 'click', function() {
 	list( { playlist: 'list' }, ( data ) => renderSavedPl( data ), 'json' );
 } );
 $( '#button-pl-search' ).on( 'click', function() {
+	if ( ! $( '#pl-search' ).hasClass( 'hide' ) ) return
+		
 	$( '#page-playlist .search' ).removeClass( 'hide' );
-	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
+	$( '#pl-manage' ).addClass( 'hide' );
 	$( '#pl-search-input' ).trigger( 'focus' );
 } );
 $( '#pl-search-input' ).on( 'input', function() {
@@ -1779,7 +1786,7 @@ $( '#pl-search-input' ).on( 'input', function() {
 } );
 $( '#pl-search-close' ).on( 'click', function() {
 	$( '#page-playlist .search' ).addClass( 'hide' );
-	$( '#pl-manage, #button-pl-search, #pl-list li' ).removeClass( 'hide' );
+	$( '#pl-manage, #pl-list li' ).removeClass( 'hide' );
 	$( '#pl-search-close' ).empty();
 	$( '#pl-search-input' ).val( '' );
 	$( '#pl-list' ).html( function() {

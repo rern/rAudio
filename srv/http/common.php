@@ -18,11 +18,12 @@ $hash      = '?v='.time();
 $page      = $_GET[ 'p' ] ?? '';
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
-if ( file_exists( '/srv/http/data/system/login' ) ) {
-	foreach( $css as $c ) echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
+$filelogin = '/srv/http/data/system/login';
+if ( file_exists( $filelogin ) && ! file_exists( $filelogin.'setting' ) ) {
 	session_start();
 	if ( ! isset( $_SESSION[ 'login' ] ) ) {
-		$page ? header( 'Location: /' ) : include 'login.php';
+		foreach( $css as $c ) echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
+		include 'login.php';
 		exit;
 //----------------------------------------------------------------------------------
 	}

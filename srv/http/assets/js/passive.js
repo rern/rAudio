@@ -63,7 +63,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 function psOnMessage( channel, data ) {
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
-		case 'audiocd':       psAudioCD( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
 		case 'coverart':      psCoverart( data );       break;
 		case 'display':       psDisplay( data );        break;
@@ -89,37 +88,11 @@ function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
 }
-function psAudioCD( data ) {
-	if ( data.type === 'add' ) {
-		V.audiocdadd = true;
-		setTimeout( () => delete V.audiocdadd, 20000 );
-		return
-	}
-	
-	if ( ! V.playlist ) return
-	
-	if ( data.type === 'ready' ) {
-		delete V.audiocdadd;
-		playlistGet();
-	} else if ( data.type === 'clear' ) {
-		var sec = 0;
-		$( '#pl-list li.audiocd .time' ).each( ( i, el ) => sec += $( el ).data( 'time' ) );
-		$( '#pl-list li.audiocd' ).remove();
-		$( '#pl-trackcount' ).text( $( '#pl-list li' ).length );
-		sec = +$( '#pl-time' ).data( 'time' ) - sec;
-		$( '#pl-time' )
-			.text( second2HMS( sec ) )
-			.data( 'time', sec );
-	}
-}
 function psBookmark() {
 	V.libraryhtml = '';
 	refreshData();
 }
 function psCoverart( data ) {
-	var audiocd = data.url.slice( 0, 13 ) === '/data/audiocd';
-	if ( audiocd &&  S.icon !== 'audiocd' ) return
-	
 	clearTimeout( V.timeoutCover );
 	bannerHide();
 	$( '#liimg' ).css( 'opacity', '' );
@@ -129,7 +102,7 @@ function psCoverart( data ) {
 		S.Album = data.radioalbum;
 		setInfo();
 	}
-	if ( audiocd && V.library ) return
+	if ( V.library ) return
 	
 	V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 	if ( ! V.playback ) refreshData();
@@ -279,7 +252,6 @@ function onPageInactive() {
 	
 	intervalClear();
 	guideHide();
-	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
 }
 function psOption( data ) {
 	if ( V.local ) return
@@ -335,60 +307,6 @@ function psRadioList( data ) {
 	}
 	S.updatingdab = false;
 	$( '#mi-dabupdate' ).addClass( 'hide' );
-}
-function psRelays( response ) {
-	if ( 'done' in response || ! ( 'state' in response ) ) {
-		$( '#infoX' ).trigger( 'click' );
-		return
-	}
-	
-	clearInterval( V.interval.relays );
-	var state = response.state;
-	var stopwatch = '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>';
-	if ( state === 'IDLE' ) {
-		info( {
-			  icon        : 'relays'
-			, title       : 'Relays Countdown'
-			, message     : stopwatch
-						   +'<div class="msg-r wh">60</div>'
-			, buttonlabel : ico( 'relays' ) +'Off'
-			, buttoncolor : red
-			, button      : () => bash( [ 'relays' ] )
-			, oklabel     : ico( 'set0' ) +'Reset'
-			, ok          : () => {
-				bash( [ 'relaystimerreset' ] );
-				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m' );
-			}
-		} );
-		var delay     = 59;
-		V.interval.relays = setInterval( () => {
-			if ( delay ) {
-				$( '.infomessage .wh' ).text( delay-- );
-			} else {
-				clearInterval( V.interval.relays );
-				$( '#relays' ).removeClass( 'on' );
-				$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
-			}
-		}, 1000 );
-	} else {
-		if ( I.active ) {
-			$( '#infoList .msg-r' ).html( response.message );
-			return
-		}
-		
-		info( {
-			  icon       : 'relays'
-			, title      : 'Relays '+ state
-			, message    : stopwatch
-						  +'<div class="msg-r">'+ response.message +'</div>'
-			, okno       : true
-			, oknoreset  : true
-			, beforeshow : () => {
-				$( '#infoX' ).addClass( 'hide' );
-				if ( state === 'OFF' ) $( '#infoList .msg-r' ).addClass( 'wh' );
-			}
-		} );
-	}
 }
 function psRestore( data ) {
 	if ( data.restore === 'done' ) {

@@ -72,7 +72,7 @@ args2var() { # $2 $3 ... if any, still valid
 		printf -v $k '%s' "$v"
 		if [[ $CFG ]]; then
 			if [[ $v ]]; then
-				v=$( stringEscape $v )
+				v=$( quoteEscape $v )
 				[[ $v =~ \ |\"|\'|\`|\<|\> ]] && v='"'$v'"' # quote if contains space " ' ` <
 			fi
 			conf+=${k,,}'='$v$'\n'
@@ -133,7 +133,7 @@ conf2json() {
 			v=$( sed -E -e "s/^[\"']|[\"']$//g" \
 						-e 's/^True$|^yes$/true/
 							s/^False$|^no$/false/' <<< $v )
-			confNotString "$v" || v='"'$( stringEscape "$v" )'"' # quote and escape string
+			confNotString "$v" || v='"'$( quoteEscape $v )'"' # quote and escape string
 		else
 			v=false
 		fi
@@ -161,11 +161,11 @@ coverFileGet() {
 data2json() {
 	local json page
 	page=$( basename ${0/-*} )
-	[[ $page == status.sh ]] && page=false || page='"'$page'"'
-	json='{
-  "page"  : '$page'
-, "login" : '$( exists $dirsystem/login )
-	json+="$1
+	[[ $page == status.sh ]] && page='"page" : false' || page='"page" : "'$page'"'
+	json="\
+{
+$page
+$1
 }"
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
 	json=$( data2jsonPatch "$json" )
@@ -216,11 +216,12 @@ getVar() { # var=value
 	[[ ! -e $2 ]] && echo false && return
 	
 	local line
-	line=$( grep -E "^${1// /|^}" $2 )                             # var
+	line=$( grep -E ^$1= $2 )                                      # var=
+	[[ ! $line ]] && line=$( grep -E "^${1// /|^}" $2 )            # var
 	[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" $2 )      #     var
 	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )       # var value > var=value
 	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line ) # var=value || var = value || var="value"; > value
-	stringEscape $line
+	quoteEscape $line
 }
 getVarColon() { # var: value || var: "value";*
 	[[ ! -e ${@: -1} ]] && echo false && return
@@ -308,8 +309,8 @@ notify() { # icon title message delayms
 		[[ ${1: -5} == 'blink' ]] && delay=-1 || delay=3000
 	fi
 	icon=$1
-	title=$( stringEscape $2 )
-	message=$( stringEscape $3 )
+	title=$( quoteEscape $2 )
+	message=$( quoteEscape $3 )
 	[[ ! $ip ]] && ip=127.0.0.1
 	pushWebsocket $ip notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
@@ -379,6 +380,9 @@ pushWebsocket() {
 		data='{ "channel": "'$2'", "data": '${@:3}' }'
 		websocat -B 10485760 ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	fi
+}
+quoteEscape() {
+	echo "${@//\"/\\\"}"
 }
 radioStatusFile() {
 	local status
@@ -458,9 +462,6 @@ snapserverList() {
 	
 	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
 }
-stringEscape() {
-	echo "${@//\"/\\\"}"
-}
 volume() {
 	filevolumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
@@ -528,30 +529,25 @@ volumeGet() {
 	
 	local args card db mixer val val_db volume
 	if [[ $2 != hw && -e $dirshm/btreceiver ]]; then # bluetooth
-		args='-MD bluealsa'
+		val_db=$( amixer -MD bluealsa 2> /dev/null \
+					| grep -m1 % \
+					| awk -F'[][]' '{print $2" "$4}' )
 	elif [[ $2 != hw && ! -e $dirsystem/snapclientserver ]] \
 				&& grep -q mixertype=software $dirshm/output \
 				&& playerActive mpd; then            # software
-		val=$( mpc status %volume% | tr -dc [:digit:] )
-		db=false
+		val_db="$( mpc status %volume% | tr -dc [:digit:] ) false"
 	elif [[ -e $dirshm/amixercontrol ]]; then        # hardware
 		. <( grep -E '^card|^mixer' $dirshm/output )
-		args="-c $card -M sget \"$mixer\""
-	fi
-	if [[ $args ]]; then # not mpd software
 		for i in {1..5}; do # some usb might not be ready
-			volume=$( amixer $args 2> /dev/null | grep -m1 % )
-			[[ $volume ]] && break || sleep 1
+			val_db=$( amixer -c $card -M sget "$mixer" 2> /dev/null \
+						| grep -m1 % \
+						| awk -F'[][]' '{print $2" "$4}' )
+			[[ $val_db ]] && break || sleep 1
 		done
-		[[ ! $volume ]] && return
 	fi
-	
-	if [[ $volume ]]; then
-		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $volume )
-		val=${val_db/ *}
-		db=${val_db/* }
-	fi
-	[[ ! $val ]] && val=0
+	val_db=$( tr -dc '[:digit:]-. ' <<< $val_db )
+	val=${val_db/ *}
+	db=${val_db/* }
 	case $1 in
 		push )
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'

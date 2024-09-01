@@ -1,7 +1,3 @@
-body {
-	height: 100%;
-	overflow: hidden;
-}
 .menu { z-index: 11 }
 #bar-bottom { z-index: 5 }
 .container input[type=checkbox] { z-index: 1 }
@@ -494,10 +490,15 @@ input.disabled + .switchlabel:after {
 	margin: 5px 0 10px 0;
 }
 .container {
+	position: fixed;
+	width: 100%;
 	height: calc( 100% - 80px );
 	margin: 40px 0;
 	padding: 0 calc( ( 100% - 650px ) / 2 ) 80px;
 	overflow: auto;
+}
+.container.addonsprogress {
+	padding-bottom: 0;
 }
 .col-l,
 .col-r {

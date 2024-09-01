@@ -18,7 +18,8 @@ if [[ -e /boot/kernel.img ]]; then
 	fi
 else
 	file=/etc/pacman.conf
-	! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant/}' $file
+	[[ -e /boot/kernel7.img ]] && pkg=' libunwind'
+	! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant'$pkg'/}' $file
 fi
 
 # 20240719
@@ -29,6 +30,7 @@ if [[ -e $file ]]; then
 	sed -i -E 's/False|"//g' $file
 	mv $file $dirsystem/lcdchar.conf
 fi
+
 # 20240707
 dir=/srv/http/assets/img/guide
 if [[ -e $dir/59.jpg ]]; then
@@ -50,5 +52,5 @@ $dirbash/cmd.sh cachebust
 
 installfinish
 
-# 20240816
+# 20240818
 systemctl restart mpd

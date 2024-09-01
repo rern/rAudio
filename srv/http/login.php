@@ -15,7 +15,6 @@
 	width          : 230px;
 	margin         : 30px 10px 10px 25px;
 	border         : 1px solid var( --cg );
-	text-align     : center;
 }
 #pwd::-ms-reveal {
 	display: none;
@@ -32,7 +31,7 @@
 	<div id="infoBox">
 		<div id="infoTopBg"><div id="infoTop"><i class="i-lock"></i><a id="infoTitle">Login</a></div></div>
 		<div id="infoList"><div class="infomessage">Wrong password.</div></div>
-		<div id="infoOk" class="infobtn infobtn-primary">OK</div>
+		<div id="ok" class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
 
@@ -45,7 +44,7 @@
 
 <script>
 var E = {};
-[ 'infoOk', 'infoOverlay', 'login', 'pwd', 'toggle' ].forEach( ( el ) => E[ el ] = document.getElementById( el ) );
+[ 'infoOverlay', 'login', 'ok', 'pwd', 'toggle' ].forEach( ( el ) => E[ el ] = document.getElementById( el ) );
 
 E.pwd.focus();
 document.body.addEventListener( 'keydown', e => {
@@ -64,8 +63,8 @@ E.login.addEventListener( 'click', () => {
 	if ( ! E.pwd.value ) return
 	
 	var formdata = new FormData();
-	formdata.append( 'cmd',      'login' );
-	formdata.append( 'password', pwd.value );
+	formdata.append( 'cmd', 'login' );
+	formdata.append( 'pwd', pwd.value );
 	fetch( 'cmd.php', { method: 'POST', body: formdata } )
 		.then( ( response ) => response.text() ) // set response data as text > verified
 		.then( ( verified ) => {
@@ -77,7 +76,7 @@ E.login.addEventListener( 'click', () => {
 			}
 		} );
 } );
-E.infoOk.addEventListener( 'click', () => {
+E.ok.addEventListener( 'click', () => {
 	E.infoOverlay.classList.add( 'hide' );
 	E.pwd.style[ 'caret-color' ] = '';
 } );

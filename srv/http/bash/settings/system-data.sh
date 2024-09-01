@@ -129,18 +129,13 @@ fi
 # relays
 if [[ -e $dirsystem/relays.conf ]]; then
 	. $dirsystem/relays.conf
-	on=( $on )
-	off=( $off )
-	ond=( $ond )
-	offd=( $offd )
-	pL=${#on[@]}
-	dL=$(( pL - 1 ))
-	for (( i=0; i < $pL; i++ )); do
-						conf+=', "ON'$i'"  : '${on[i]}',  "OFF'$i'"  : '${off[i]}
-		(( i < dL )) && conf+=', "OND'$i'" : '${ond[i]}', "OFFD'$i'" : '${offd[i]}
-	done
-	conf+=', "TIMER": '$timer
-	relaysconf='{ '${conf:1}' }'
+	relaysconf='{
+  "ON"    : [ '${on// /,}' ]
+, "OFF"   : [ '${off// /,}' ]
+, "OND"   : [ '${ond// /,}' ]
+, "OFFD"  : [ '${offd// /,}' ]
+, "TIMER" : '$timer'
+}'
 fi
 # tft
 tftmodel=$( getContent $dirsystem/lcdmodel )
@@ -196,6 +191,7 @@ data='
 , "relays"            : '$( exists $dirsystem/relays )'
 , "relaysconf"        : '$relaysconf'
 , "relaysnameconf"    : '$( getContent $dirsystem/relays.json )'
+, "relayson"          : '$( exists $dirshm/relayson )'
 , "rotaryencoder"     : '$rotaryencoder'
 , "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
 , "rpi01"             : '$( exists /boot/kernel.img )'

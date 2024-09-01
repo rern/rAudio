@@ -47,27 +47,17 @@ var default_v     = {
 		, RESERVED : 5
 	}
 	, relays       : {
-		  ON0   : 17
-		, OFF0  : 23
-		, OND0  : 2
-		, OFFD0 : 2
-		, ON1   : 27
-		, OFF1  : 22
-		, OND1  : 2
-		, OFFD1 : 2
-		, ON2   : 22
-		, OFF2  : 27
-		, OND2  : 2
-		, OFFD2 : 2
-		, ON3   : 23
-		, OFF3  : 17
+		  ON    : [ 17, 27, 22, 23 ]
+		, OFF   : [ 23, 22, 27, 17 ]
+		, OND   : [ 2, 2, 2 ]
+		, OFFD  : [ 2, 2, 2 ]
 		, TIMER : 5
 	}
 	, relaysname    : {
-		  "17" : "DAC"
-		, "27" : "PreAmp"
-		, "22" : "Amp"
-		, "23" : "Subwoofer"
+		  17 : 'DAC'
+		, 27 : 'PreAmp'
+		, 22 : 'Amp'
+		, 23 : 'Subwoofer'
 	}
 	, rotaryencoder : {
 		  PINA : 27
@@ -118,6 +108,7 @@ var lcdcharjson   = {
 }
 var lcdcharfooter = ico( 'raudio', 'lcdlogo', 'tabindex' ) +'Logo&emsp;'+ ico( 'screenoff', 'lcdoff', 'tabindex' ) +'Sleep';
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
+var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -950,43 +941,64 @@ function infoPowerbuttonAudiophonics() {
 	} );
 }
 function infoRelays() {
-	var values = S.relaysconf || default_v.relays;
+	var pin    = S.relaysconf     || default_v.relays;
 	var name   = S.relaysnameconf || default_v.relaysname;
-	var names  = {};
+	var names  = {}
 	$.each( name, ( k, v ) => names[ v ] = k );
 	var step   = { step: 1, min: 0, max: 10 }
 	var list   = [
 		  [ '', '', { suffix: ico( 'power grn' ) +' On <gr>(s)</gr>', sameline: true, colspan: 2 } ]
 		, [ '', '', { suffix: ico( 'power red' ) +' Off <gr>(s)</gr>', colspan: 2 } ]
 	];
-	for ( i = 0; i < 4; i++ ) list.push(
-		  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
-		, [ '', 'select', { kv: names, colspan: 2 } ]
-		, [ '', 'number', { updn: step, sameline: true } ]
-		, [ '', 'number', { updn: step } ]
-	);
-	list[ 16 ] = [ '', '', { suffix: ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', sameline: true, colspan: 2 } ];
+	var values = [];
+	var pL     = pin.ON.length;
+	for ( i = 0; i < pL; i++ ) {
+		list.push(
+			  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
+			, [ '', 'select', { kv: names, colspan: 2 } ]
+		);
+		values.push( pin.ON[ i ], pin.OFF[ i ] );
+		if ( i < pL - 1 ) {
+			list.push(
+				  [ '', 'number', { updn: step, sameline: true } ]
+				, [ '', 'number', { updn: step } ]
+			);
+			values.push( pin.OND[ i ], pin.OFFD[ i ] );
+		} else {
+			list.push(
+				  [ '', '',       { suffix: ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', sameline: true, colspan: 2 } ]
+				, [ '', 'number', { updn: step } ]
+			);
+			values.push( pin.TIMER );
+		}
+	}
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, tablabel     : [ 'Sequence', 'Name' ]
+		, tablabel     : relaystab
 		, tab          : [ '', infoRelaysName ]
 		, list         : list
+		, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
 		, lableno      : true
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			infoRelaysCss( 180, 70 );
+			infoRelaysCss( 70 );
 			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
+			$( '#infoList' ).on( 'click', '.i-power', function() {
+				var on = $( this ).hasClass( 'grn' );
+				if ( ( S.relayson && on ) || ( ! S.relayson && ! on ) ) return
+				
+				bash( [ 'relays.sh', on ? '' : 'off' ] );
+			} );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
 	} );
 }
-function infoRelaysCss( sW, iW ) {
+function infoRelaysCss( iW ) {
 	$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 	$( '#infoList td:first-child' ).remove();
-	$( '#infoList .select2-container' ).attr( 'style', 'width: '+ sW +'px !important' );
 	$( '#infoList input' ).parent().addBack().css( 'width', iW +'px' );
 }
 function infoRelaysName() {
@@ -1003,55 +1015,79 @@ function infoRelaysName() {
 		  [ '', '', { suffix: ico( 'gpiopins bl' ) +'Pin', sameline: true } ]
 		, [ '', '', { suffix: ico( 'tag bl' ) +' Name' } ]
 	]
-	for ( i = 0; i < 4; i++ ) list.push( [ '', 'select', { kv: board2bcm, sameline: true } ], [ '', 'text' ] );
+	var kL     = keys.length;
+	for ( i = 0; i < kL; i++ ) {
+		list.push( [ '', 'select', { kv: board2bcm, sameline: true } ], [ '', 'text' ] );
+	}
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, tablabel     : [ 'Sequence', 'Name' ]
+		, tablabel     : relaystab
 		, tab          : [ infoRelays, '' ]
 		, message      : gpiosvg
 		, list         : list
-		, values       : values
+		, boxwidth     : 70
+		, checkblank   : true
 		, checkchanged : S.relays
-		, beforeshow   : () => infoRelaysCss( 70, 160 )
+		, values       : values
+		, beforeshow   : () => {
+			infoRelaysCss( 160 );
+			$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
+			$( '#infoList td' ).eq( 2 ).html( ico( 'plus-circle edit' ) );
+			$( '#infoList td' ).on( 'click', '.i-plus-circle', function() {
+				var $tr  = $( '#infoList tr' ).last();
+				$tr.clone().insertAfter( $tr );
+				$( '#infoList input' ).last().val( '' );
+				infoCheckSetChange();
+			} );
+			$( '#infoList' ).off( 'click' ).on( 'click', '.i-remove', function() {
+				if ( $( '#infoList tr' ).length > 2 ) $( this ).parents( 'tr' ).remove();
+				infoCheckSetChange();
+			} );
+		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
 	} );
 }
 function infoRelaysOk() {
-	var keys    = [ 'ON', 'OFF', 'OND', 'OFFD' ];
-	var infoval = infoVal();
-	if ( 'ON0' in infoval ) {
-		var pin  = infoval;
-		var name = S.relaysnameconf || default_v.relaysname;
+	if ( ! S.relaysconf ) { // force update values on ok
+		S.relaysconf     = default_v.relays;
+		S.relaysnameconf = default_v.relaysname;
+	}
+	var order   = S.relaysconf;
+	var name    = S.relaysnameconf;
+	var v       = infoVal();
+	var tabname = I.tab[ 0 ];
+	if ( tabname ) {
+		v.forEach( ( el, i ) => i % 2 ? name[ p ] = el : p = el );
+		var on = Object.keys( name );
+		if ( on.sort().join() !== order.ON.slice().sort().join() ) {
+			order.ON  = on;
+			order.OFF = on.slice().reverse();
+		}
 	} else {
-		var pin  = S.relaysconf || default_v.relays;
-		var name = {};
-		infoval.forEach( ( el, i ) => i % 2 ? name[ p ] = el : p = el );
-	}
-	var v       = {};
-	keys.forEach( k => v[ k ] = [] );
-	var pL      = Object.values( name ).filter( Boolean ).length;
-	for ( i = 0; i < pL; i++ ) {
-		var pon    = pin[ 'ON'+ i ];
-		var poff   = pin[ 'OFF'+ i ];
-		var pdelay = i < pL -1;
-		if ( name[ pon ] ) {
-			v.ON.push( pon );
-			if ( pdelay ) v.OND.push( pin[ 'OND'+ i ] );
-		}
-		if ( name[ poff ] ) {
-			v.OFF.push( poff );
-			if ( pdelay ) v.OFFD.push( pin[ 'OFFD'+ i ] );
+		var pL   = order.ON.length;
+		for ( i = 0; i < pL; i++ ) {
+			var j          = i * 4;
+			order.ON[ i ]  = v[ j ];
+			order.OFF[ i ] = v[ j + 1 ];
+			if ( i < pL - 1 ) {
+				order.OND[ i ]  = v[ j + 2 ];
+				order.OFFD[ i ] = v[ j + 3 ];
+			} else {
+				order.TIMER = v[ v.length - 1 ];
+			}
 		}
 	}
-	var values  = [];
-	keys.forEach( k => values.push( v[ k ].join( ' ' ) ) );
-	keys.push( 'TIMER' );
-	values.push( pin.TIMER );
+	var pins = [];
+	[ 'ON', 'OFF', 'OND', 'OFFD' ].forEach( k => pins.push( order[ k ].join( ' ' ) ) );
 	notifyCommon();
-	jsonSave( 'relays', name );
-	bash( [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ] );
+	var save = function() {
+		bash( [ 'relays', ...pins, order.TIMER, 'CFG ON OFF OND OFFD TIMER' ] );
+		jsonSave( 'relays', name );
+		if ( tabname ) infoRelays();
+	}
+	S.relayson ? bash( [ 'relays.sh', 'off' ], save ) : save();
 }
 function infoRestore() {
 	info( {

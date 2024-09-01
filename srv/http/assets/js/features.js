@@ -338,40 +338,35 @@ $( '#login' ).on( 'click', function() {
 			, ok         : () => {
 				notifyCommon( false );
 				$.post( 'cmd.php', {
-					  cmd      : 'login'
-					, disable  : 1
-					, password : infoVal()
-				}, ( verified ) => {
+					  cmd     : 'login'
+					, disable : true
+					, pwd     : infoVal()
+				}, verified => {
 					if ( verified == -1 ) passwordWrong();
-				}, 'json' );
+				} );
 			}
 		} );
 	}
 } );
 $( '#setting-login' ).on( 'click', function() {
-	var list = [
-		  [ 'Existing', 'password' ]
-		, [ 'New',      'password' ]
-		, [ 'Password', 'password' ]
-	]
 	info( {
 		  icon       : SW.icon
 		, title      : SW.title
-		, message    : ( S.login ? 'Change password:' : 'New setup:' )
-		, list       : S.login ? list.slice( 0, 2 ) : list.slice( -1 )
+		, list       : [
+			  [ S.login ? 'Existing' : 'Password', 'password' ]
+			, [ 'New',                             S.login ? 'password' : 'hidden' ]
+			, [ 'Setting pages only',              'checkbox' ]
+		]
+		, footer     : '(Blank <wh>New</wh> - No password change)'
 		, focus      : 0
-		, checkblank : true
+		, checkblank : [ 0 ]
+		, values     : { pwd: '', pwdnew: '', loginsetting: S.loginsetting }
 		, cancel     : switchCancel
 		, ok         : () => {
-			var infoval = infoVal();
 			notifyCommon();
-			$.post( 'cmd.php', {
-				  cmd      : 'login'
-				, password : infoval[ 0 ]
-				, pwdnew   : S.login ? infoval[ 1 ] : infoval
-			}, ( verified ) => {
+			$.post( 'cmd.php', { cmd: 'login', ...infoVal() }, verified => {
 				if ( verified == -1 ) passwordWrong();
-			}, 'json' );
+			} );
 		}
 	} );
 } );

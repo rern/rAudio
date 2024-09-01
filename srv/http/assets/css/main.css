@@ -100,8 +100,7 @@ i.map.disabled, .map.disabled i {
 	color: var( --cgl );
 }
 @keyframes blink { 50% { color: transparent } }
-#bar-bottom i.blink,
-.page-icon.blink {
+.blink {
 	animation: 1.5s infinite linear blink;
 	text-shadow: none;
 }
@@ -311,7 +310,7 @@ i.map.disabled, .map.disabled i {
 #playback {
 	background: var( --cga );
 }
-.content-top i.active,
+.content-top .page-icon,
 #bar-bottom i.active {
 	background: var( --cm );
 }
@@ -1345,12 +1344,6 @@ i.map.disabled, .map.disabled i {
 #button-pl-playlists {
 	float: right;
 }
-#lib-search-btn,
-#pl-search-btn {
-	height: 32px;
-	line-height: 32px;
-	border-radius: 0 4px 4px 0;
-}
 #button-lib-back {
 	position: relative;
 	float: right;
@@ -1446,50 +1439,22 @@ i.map.disabled, .map.disabled i {
 #lib-search,
 #pl-search {
 	display: inline-block;
-	max-width: 200px;
 	white-space: nowrap;
 	float: right;
-	margin-top: 4px;
 }
-.input-group {
-	display: table;
-}
-.input-group input {
-	display: inline-block;
-	float:left;
-	width: calc( 100% + 5px );
-	height: 32px;
+.search input {
+	width: 140px;
+	height: 32px !important;
 	margin: 0;
 	padding: 5px 5px 2px 5px;
 	border: 1px solid var( --cg );
-	border-radius: 5px;
 	color: var( --cw );
 	background-color: #000000;
 	font-family: Lato;
 	font-size: 18px;
 }
-.input-group input,
-.input-group-btn {
-	display:table-cell;
-	position: relative;
-}
-.input-group-btn {
-	vertical-align:middle;
-}
-.input-group input {
-    height: 32px !important;
-}
-.input-group input:focus {
-	box-shadow: none !important;
-	outline: none !important;
-}
-.search.disabled {
-	color: var( --cg ) !important;
-	text-shadow: none;
-}
 .searchclose {
 	display: inline-block;
-	float: right;
 	margin-right: 5px;
 	font-size: 18px;
 }
@@ -1498,8 +1463,9 @@ i.map.disabled, .map.disabled i {
 	font-family: rern;
 	display: inline-block;
 	width: 40px;
-	line-height: 40px;
 	margin-right: 5px;
+	line-height: 40px;
+	vertical-align: -2px;
 	font-size: 26px;
 	text-align: center;
 	color: var( --cm );
@@ -1655,16 +1621,17 @@ i.map.disabled, .map.disabled i {
 }
 #lib-list.album {
 	display: grid;
+	width: calc( 100% - 38px );
 	grid-template-columns: repeat( auto-fit, minmax( 160px, auto ) );
-}
-#lib-list.album.max200px { /* number less than windows width - set max at 200px*/
-	grid-template-columns: repeat( auto-fit, minmax( 160px, 200px ) );
+	justify-content: start;
 }
 @media ( max-width: 518px ) { #lib-list.album { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
 #lib-list li.track1 {
 	margin-top: 230px;
 }
 .list .single {
+	display: inline-block;
+	max-width: calc( 100% - 90px );
 	line-height: 48px;
 	vertical-align: 5%;
 }

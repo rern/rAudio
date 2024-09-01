@@ -114,7 +114,7 @@ pushPlaylist() {
 # --------------------------------------------------------------------
 	touch $dirshm/pushplaylist
 	pushData playlist '{ "blink": true }'
-	rm -f $dirshm/playlist
+	rm -f $dirshm/playlist*
 	[[ $( mpc status %length% ) == 0 ]] && data='{ "blank": true }' || data=$( php /srv/http/playlist.php current )
 	pushData playlist $data
 	( sleep 1 && rm -f $dirshm/pushplaylist ) &
@@ -306,20 +306,26 @@ debug
 CMD ARTIST ALBUM DEBUG"
 	;;
 coverartreset )
-	dir=$( dirname "$COVERFILE" )
-	filename=$( basename "$COVERFILE" )
-	if [[ $( basename "$dir" ) == audiocd ]]; then
-		discid=${filename/.*}
+	if [[ ${COVERFILE:9:13} == /data/audiocd ]]; then
+		discid=$( basename ${COVERFILE/.*} )
 		rm -f "$COVERFILE"
-		$dirbash/status-coverartonline.sh "cmd
+		backupfile=$( ls -1 $diraudiocd/$discid.*.backup 2> /dev/null | head -1 )
+		if [[ $backupfile ]]; then
+			url=${backupfile/.backup}
+			mv -f $backupfile $url
+			pushDataCoverart ${url:9}
+		else
+			$dirbash/status-coverartonline.sh "cmd
 $ARTIST
 $ALBUM
 audiocd
 $discid
 CMD ARTIST ALBUM MODE DISCID" &> /dev/null &
+		fi
 		exit
 # --------------------------------------------------------------------
 	fi
+	dir=$( dirname "$COVERFILE" )
 	rm -f "$COVERFILE" "$dir/{coverart,thumb}".* $dirshm/{embedded,local}/*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
