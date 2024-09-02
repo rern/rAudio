@@ -298,7 +298,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 					$( '#infoList input' ).last().val( S.ipsub );
 				} else {
 					$this.parents( 'tr' ).remove();
-					setTimeout( okToggle, 150 );
+					if ( ! S.multiraudio ) setTimeout( okToggle, 150 );
 				}
 				I.checkip = checkIpList( $( '#infoList input' ).length );
 				infoListChange();
