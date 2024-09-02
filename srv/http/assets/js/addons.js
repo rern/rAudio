@@ -50,11 +50,12 @@ $( '.container' ).on( 'click', '.revision', function() {
 	
 	addonData( $( e.currentTarget ) );
 	info( {
-		  icon   : icon
-		, title  : V.addon.title
-		, list   : [ 'Branch / Release', 'text' ]
-		, values : 'UPDATE'
-		, ok     : () => {
+		  icon     : icon
+		, title    : V.addon.title
+		, list     : [ 'Branch / Release', 'text' ]
+		, boxwidth : 200
+		, values   : 'UPDATE'
+		, ok       : () => {
 			V.branch = infoVal();
 			if ( ! V.branch ) return
 			
