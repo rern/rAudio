@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1724931774' );
+	src         : url( '/assets/fonts/rern.woff2?v=1725189212' );
 }
 @font-face {
 	font-family : Lato;
@@ -628,11 +628,10 @@ hr {
 }
 #infoBox {
 	position: relative;
-	top: 50vh;
 	transform: translateY( -50% ); /* of #infoBox height */
 	width: 400px;
 	max-width: 98%;
-	margin: 0 auto;
+	margin: 50vh auto;
 	padding-bottom: 15px;
 	background: var( --cga );
 	border-radius: 10px;

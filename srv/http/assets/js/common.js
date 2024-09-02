@@ -498,7 +498,11 @@ function info( json ) {
 		// show
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		// set at current scroll position
-		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
+		I.scrolltop = $( window ).scrollTop();
+		I.padding   = $( '.list' ).css( 'padding-bottom' );
+		$( '.page, .list' ).css( 'height', '100%' );
+		$( '.list' ).css( 'padding-bottom', 0 );
+		$( window ).scrollTop( 0 );
 		I.active = true;
 		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
@@ -820,6 +824,9 @@ function infoPrompt( message ) {
 	} );
 }
 function infoReset() {
+	$( '.page, .list' ).css( 'height', '' );
+	$( '.list' ).css( 'padding-bottom', I.padding );
+	$( window ).scrollTop( I.scrolltop );
 	$( '#infoOverlay' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' )
