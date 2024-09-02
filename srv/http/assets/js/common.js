@@ -348,11 +348,10 @@ function info( json ) {
 		}
 	} );
 	if ( ! I.list ) {
-		I.active = true;
 		$( '#infoList' ).html( Object.values( htmls ).join( '' ) );
 		$( '.infobtn' ).prop( 'tabindex', 0 );
 		if ( I.beforeshow ) I.beforeshow();
-		infoPageCss();
+		infoToggle();
 		return
 	}
 	
@@ -490,10 +489,7 @@ function info( json ) {
 			if ( $this.find( 'input:checkbox, input:radio' ).length ) $this.css( 'height', '36px' );
 		} );
 		// show
-		I.active    = true;
-		I.scrolltop = $( window ).scrollTop();
-		I.padding   = page ? '' : $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
-		infoPageCss();
+		infoToggle();
 		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoWidth(); // text / password / textarea
@@ -798,27 +794,6 @@ function infoListChange() {
 	infoCheckSet();
 	$( '#infoList input' ).trigger( 'input' );
 }
-function infoPageCss( reset ) {
-	if ( reset ) {
-		var height    = '';
-		var overflow  = '';
-		var padding   = I.padding;
-		var scrolltop = I.scrolltop;
-	} else {
-		var height    = '150vh';
-		var overflow  = 'hidden';
-		var padding   = 0;
-		var scrolltop = 0;
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		infoButtonWidth();
-		$( '#infoOverlay' ).trigger( 'focus' );
-	}
-	if ( ! page ) {
-		$( '.page, .list' ).css( { height: height, overflow: overflow } );
-		$( '.list' ).css( 'padding-bottom', padding );
-	}
-	$( window ).scrollTop( scrolltop );
-}
 function infoPrompt( message ) {
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
 	$( '.infoprompt' ).html( message );
@@ -832,7 +807,7 @@ function infoPrompt( message ) {
 	} );
 }
 function infoReset() {
-	infoPageCss( 'reset' );
+	infoToggle( 'reset' );
 	$( '#infoOverlay' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' )
@@ -864,6 +839,30 @@ function infoSetValues() {
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
 		}
 	} );
+}
+function infoToggle( reset ) {
+	if ( reset ) {
+		var height    = '';
+		var overflow  = '';
+		var padding   = I.padding;
+		var scrolltop = I.scrolltop;
+	} else {
+		I.active      = true;
+		I.scrolltop   = $( window ).scrollTop();
+		I.padding     = page ? '' : $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
+		var height    = '150vh';
+		var overflow  = 'hidden';
+		var padding   = 0;
+		var scrolltop = 0;
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		infoButtonWidth();
+		$( '#infoOverlay' ).trigger( 'focus' );
+	}
+	if ( ! page ) {
+		$( '.page, .list' ).css( { height: height, overflow: overflow } );
+		$( '.list' ).css( 'padding-bottom', padding );
+	}
+	$( window ).scrollTop( scrolltop );
 }
 function infoVal( array ) {
 	var $this, type, name, val;
