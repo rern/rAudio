@@ -271,7 +271,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		, list         : list
 		, boxwidth     : 160
 		, values       : values
-		, checkchanged : S.multiraudio && values.length > 2
+		, checkchanged : S.multiraudio
 		, checkblank   : true
 		, checkip      : checkip
 		, checkunique  : true
@@ -289,22 +289,19 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 					$tr.find( 'i' ).remove();
 				}
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 );
+			var okToggle = () => $( '#infoOk' ).toggleClass( 'disabled', $( '#infoList input' ).length < 3 );
+			okToggle();
 			$( '#infoList' ).on( 'click', 'i', function() {
 				var $this = $( this );
 				if ( $this.hasClass( 'i-plus' ) ) {
-					$( '#infoList table' ).append( htmltr );
+					$( '#infoList tbody' ).append( htmltr );
 					$( '#infoList input' ).last().val( S.ipsub );
 				} else {
 					$this.parents( 'tr' ).remove();
+					setTimeout( okToggle, 150 );
 				}
 				I.checkip = checkIpList( $( '#infoList input' ).length );
 				infoListChange();
-				if ( S.multiraudio ) {
-					$( '#infoOk' ).text( $inputbox.length < 3 ? 'Disable' : 'OK' );
-				} else {
-					$( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 );
-				}
 			} );
 		}
 		, cancel       : switchCancel

@@ -1042,7 +1042,6 @@ function infoRelaysName() {
 					var $tr = $( '#infoList tr' ).last();
 					$tr.after( $tr.clone() );
 					selectSet();
-					$( '#infoList input' ).last().val( '' );
 				} else {
 					$this.parents( 'tr' ).remove();
 				}
