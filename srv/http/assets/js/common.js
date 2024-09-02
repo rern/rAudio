@@ -520,9 +520,9 @@ function info( json ) {
 		} else {
 			I.notip = false;
 		}
-		I.checklength  ? infoCheckLength() : I.short = false;
-		I.nochange = I.values && I.checkchanged ? true : false;
-		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
+		I.checklength ? infoCheckLength() : I.notlength = false;
+		I.notchange = I.values && I.checkchanged ? true : false;
+		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.notlength || I.notchange ); // initial check
 		infoCheckSet();
 		if ( I.range ) {
 			var val;
@@ -634,7 +634,7 @@ function infoCheckIP() {
 	} );
 }
 function infoCheckLength() {
-	I.short = false;
+	I.notlength = false;
 	$.each( I.checklength, ( k, v ) => {
 		if ( ! Array.isArray( v ) ) {
 			var L    = v
@@ -645,23 +645,30 @@ function infoCheckLength() {
 		}
 		var diff = $input.eq( k ).val().trim().length - L;
 		if ( ( cond === 'equal' && diff !== 0 ) || ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) ) {
-			I.short = true;
+			I.notlength = true;
 			return false
 		}
 	} );
 }
 function infoCheckSet() {
-	if ( I.checkchanged || I.checkblank || I.checkip || I.checklength ) {
-		$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
-			if ( I.checkchanged ) I.nochange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
-			if ( I.checkblank )  V.timeout.blank  = setTimeout( infoCheckBlank, 0 );   // #1
-			if ( I.checklength ) V.timeout.length = setTimeout( infoCheckLength, 25 ); // #2
-			if ( I.checkip )     V.timeout.ip     = setTimeout( infoCheckIP, 50 );     // #3
-			V.timeout.check = setTimeout( () => {                                      // #4
-				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short );
-			}, 75 );
-		} );
-	}
+	var check = [ 'changed', 'blank', 'ip', 'length', 'unique' ].some( k => 'check'+ k in I );
+	if ( ! check ) return
+	
+	$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
+		if ( I.checkchanged ) I.notchange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
+		if ( I.checkblank )  V.timeout.blank  = setTimeout( infoCheckBlank, 0 );   // #1
+		if ( I.checklength ) V.timeout.length = setTimeout( infoCheckLength, 20 ); // #2
+		if ( I.checkip )     V.timeout.ip     = setTimeout( infoCheckIP, 40 );     // #3
+		if ( I.checkunique ) V.timeout.unique = setTimeout( infoCheckUnique, 60 ); // #4
+		V.timeout.check = setTimeout( () => {
+			$( '#infoOk' ).toggleClass( 'disabled', I.notchange || I.blank || I.notlength || I.notip || I.notunique );
+		}, 100 );
+	} );
+}
+function infoCheckUnique() {
+	var infoval = infoVal( 'array' );
+	var vunique = [ ... new Set( infoval ) ];
+	I.notunique = infoval.length !== vunique.length;
 }
 function infoClearTimeout( all ) { // ok for both timeout and interval
 	if ( ! ( 'timeout' in V ) ) return

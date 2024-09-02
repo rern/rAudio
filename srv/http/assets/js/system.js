@@ -1029,6 +1029,7 @@ function infoRelaysName() {
 		, boxwidth     : 70
 		, checkblank   : true
 		, checkchanged : S.relays
+		, checkunique  : true
 		, values       : values
 		, beforeshow   : () => {
 			infoRelaysCss( 160 );
@@ -1037,9 +1038,9 @@ function infoRelaysName() {
 			$( '#infoList' ).on( 'click', 'i:not( .bl )', function() {
 				var $this = $( this );
 				if ( $this.hasClass( 'i-plus' ) ) {
+					$( '#infoList select' ).select2( 'destroy' );
 					var $tr = $( '#infoList tr' ).last();
-					$tr.clone().insertAfter( $tr );
-					$( '#infoList .select2' ).remove();
+					$tr.after( $tr.clone() );
 					selectSet();
 					$( '#infoList input' ).last().val( '' );
 				} else {
