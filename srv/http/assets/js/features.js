@@ -257,7 +257,14 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		list.push( listname, listip );
 		values    = [ S.hostname, S.hostip ];
 	}
-	var check = infoCheckEvenOdd( values.length );
+	function checkIpList( length ) {
+		var list = [];
+		for ( i = 0; i < length; i++ ) {
+			if ( i % 2 ) list.push( i );
+		}
+		return list
+	}
+	var checkip = checkIpList( values.length );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -265,8 +272,8 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		, boxwidth     : 160
 		, values       : values
 		, checkchanged : S.multiraudio && values.length > 2
-		, checkblank   : I.checkblank
-		, checkip      : I.checkip
+		, checkblank   : true
+		, checkip      : checkip
 		, checkunique  : true
 		, beforeshow   : () => {
 			$( '#infoList td:first-child' ).remove();
@@ -285,17 +292,14 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 			$( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 );
 			$( '#infoList' ).on( 'click', 'i', function() {
 				var $this = $( this );
-				var add   = $this.hasClass( 'i-plus' );
-				if ( add ) {
+				if ( $this.hasClass( 'i-plus' ) ) {
 					$( '#infoList table' ).append( htmltr );
 					$( '#infoList input' ).last().val( S.ipsub );
 				} else {
 					$this.parents( 'tr' ).remove();
 				}
-				$inputbox = $( '#infoList input' );
-				$input    = $inputbox;
-				infoCheckEvenOdd( $input.length );
-				infoCheckSet();
+				I.checkip = checkIpList( $( '#infoList input' ).length );
+				infoListChange();
 				if ( S.multiraudio ) {
 					$( '#infoOk' ).text( $inputbox.length < 3 ? 'Disable' : 'OK' );
 				} else {
@@ -432,11 +436,6 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 
 } );
 
-function infoCheckEvenOdd( length ) {
-	I.checkblank = [];
-	I.checkip    = [];
-	for ( i = 0; i < length; i++ ) i % 2 ? I.checkip.push( i ) : I.checkblank.push( i );
-}
 function infoSpotify() {
 	if ( S.camilladsp ) {
 		info( {
@@ -487,6 +486,7 @@ function passwordWrong() {
 	$( '#login' ).prop( 'checked', S.login );
 }
 function renderPage() {
+	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
 	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {
@@ -508,9 +508,6 @@ function renderPage() {
 		$( '#camilladsp' ).toggleClass( 'disabled', S.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
-	bash( [ 'dabdevice' ], exists => { // get after load - get with 1s timeout
-		$( '#dabradio' ).toggleClass( 'disabled', ! exists );
-	}, 'json' );
 	if ( /features$/.test( window.location.href ) ) {
 		showContent();
 		return

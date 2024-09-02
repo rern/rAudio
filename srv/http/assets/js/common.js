@@ -663,16 +663,6 @@ function infoCheckSet() {
 		} );
 	}
 }
-function infoCheckSetChange() {
-	$input       = $( '#infoList' ).find( 'input, select' );
-	$inputbox    = $( '#infoList input' );
-	if ( I.checkblank ) {
-		I.checkblank = [ ...Array( $inputbox.length ).keys() ];
-		infoCheckBlank();
-	}
-	infoCheckSet();
-	$( '#infoList input' ).trigger( 'input' );
-}
 function infoClearTimeout( all ) { // ok for both timeout and interval
 	if ( ! ( 'timeout' in V ) ) return
 	
@@ -799,6 +789,16 @@ function infoFileImageResize( ext, imgW, imgH ) {
 }
 function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
+}
+function infoListChange() {
+	$input    = $( '#infoList' ).find( 'input, select' );
+	$inputbox = $( '#infoList input' );
+	if ( 'checkblank' in I ) {
+		I.checkblank = [ ...Array( $inputbox.length ).keys() ];
+		infoCheckBlank();
+	}
+	infoCheckSet();
+	$( '#infoList input' ).trigger( 'input' );
 }
 function infoPrompt( message ) {
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
