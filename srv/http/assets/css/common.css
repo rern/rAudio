@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1725189212' );
+	src         : url( '/assets/fonts/rern.woff2?v=1725270385' );
 }
 @font-face {
 	font-family : Lato;
@@ -322,7 +322,6 @@ body {
 
 #debug {
 	position: fixed;
-	display: none;
 	bottom: 0;
 	right: 0;
 	width: 40px;
@@ -1045,7 +1044,6 @@ input:focus {
 	outline-offset: 1px;
 }
 @media ( hover:hover ) {
-	#debug { display: block }
 	/* :hover *********************************************************/
 	label,
 	input[ type=checkbox ],

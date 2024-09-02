@@ -1386,6 +1386,7 @@ $( '#debug' ).press( function() {
 			}, sameline: false } ]
 			, okno  : true
 			, beforeshow : () => {
+				if ( navigator.maxTouchPoints ) $( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
 				$( '#infoList input[value='+ type +']' ).prop( { checked: true, disabled: true } );
 				$( '#infoList input' ).on( 'click', function() {
 					type = $( this ).val();

@@ -36,13 +36,6 @@ if [[ -e $file ]]; then
 	mv $file $dirsystem/lcdchar.conf
 fi
 
-# 20240707
-dir=/srv/http/assets/img/guide
-if [[ -e $dir/59.jpg ]]; then
-	rm -f $dir/*
-	curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
