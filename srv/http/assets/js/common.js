@@ -496,7 +496,7 @@ function info( json ) {
 		I.active    = true;
 		I.scrolltop = $( window ).scrollTop();
 		I.padding   = page ? '' : $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
-		infoScrollPageList( '100%', 0, 0 );
+		infoScrollPageList( '150vh', 0, 0 );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
@@ -817,7 +817,7 @@ function infoPrompt( message ) {
 }
 function infoScrollPageList( height, padding, scrolltop ) {
 	if ( ! page ) {
-		$( '.page, .list' ).css( 'height', height );
+		$( '.page, .list' ).css( { height: height, overflow: height ? 'hidden' : '' } );
 		$( '.list' ).css( 'padding-bottom', padding );
 	}
 	$( window ).scrollTop( scrolltop );

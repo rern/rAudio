@@ -609,7 +609,7 @@ hr {
 	top: 0;
 	left: 0;
 	width: 100%;
-	min-height: calc( 100% + 50vh );
+	min-height: 150vh;
 	background: rgba(0, 0, 0, 0.85);
 	text-align: center;
 	overflow: hidden;
