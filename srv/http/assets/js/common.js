@@ -348,14 +348,10 @@ function info( json ) {
 		}
 	} );
 	if ( ! I.list ) {
-		I.active = true;
 		$( '#infoList' ).html( Object.values( htmls ).join( '' ) );
 		$( '.infobtn' ).prop( 'tabindex', 0 );
 		if ( I.beforeshow ) I.beforeshow();
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
-		infoButtonWidth();
-		$( '#infoOverlay' ).trigger( 'focus' );
+		infoToggle();
 		return
 	}
 	
@@ -492,19 +488,11 @@ function info( json ) {
 			var $this = $( el );
 			if ( $this.find( 'input:checkbox, input:radio' ).length ) $this.css( 'height', '36px' );
 		} );
-		// fix: jumping
-		$( '.container' ).css( 'margin-top', '0' );
-		setTimeout( () => $( '.container' ).css( 'margin-top', '' ), 0 );
 		// show
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		// set at current scroll position
-		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
-		I.active = true;
+		infoToggle();
 		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
-		infoButtonWidth();
-		// set width: text / password / textarea
-		infoWidth();
+		infoWidth(); // text / password / textarea
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
 		// check inputs: blank / length / change
 		if ( I.checkblank ) {
@@ -520,9 +508,9 @@ function info( json ) {
 		} else {
 			I.notip = false;
 		}
-		I.checklength  ? infoCheckLength() : I.short = false;
-		I.nochange = I.values && I.checkchanged ? true : false;
-		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
+		I.checklength ? infoCheckLength() : I.notlength = false;
+		I.notchange = I.values && I.checkchanged ? true : false;
+		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.notlength || I.notchange ); // initial check
 		infoCheckSet();
 		if ( I.range ) {
 			var val;
@@ -611,7 +599,6 @@ function infoButtonCommand( fn, cancel ) {
 	infoReset();
 }
 function infoButtonWidth() {
-	$( '.page, .container' ).addClass( 'disabled' );
 	if ( I.buttonfit ) return
 	
 	var $buttonhide = $( '#infoButton a.hide' );
@@ -634,7 +621,7 @@ function infoCheckIP() {
 	} );
 }
 function infoCheckLength() {
-	I.short = false;
+	I.notlength = false;
 	$.each( I.checklength, ( k, v ) => {
 		if ( ! Array.isArray( v ) ) {
 			var L    = v
@@ -645,33 +632,30 @@ function infoCheckLength() {
 		}
 		var diff = $input.eq( k ).val().trim().length - L;
 		if ( ( cond === 'equal' && diff !== 0 ) || ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) ) {
-			I.short = true;
+			I.notlength = true;
 			return false
 		}
 	} );
 }
 function infoCheckSet() {
-	if ( I.checkchanged || I.checkblank || I.checkip || I.checklength ) {
-		$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
-			if ( I.checkchanged ) I.nochange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
-			if ( I.checkblank )  V.timeout.blank  = setTimeout( infoCheckBlank, 0 );   // #1
-			if ( I.checklength ) V.timeout.length = setTimeout( infoCheckLength, 25 ); // #2
-			if ( I.checkip )     V.timeout.ip     = setTimeout( infoCheckIP, 50 );     // #3
-			V.timeout.check = setTimeout( () => {                                      // #4
-				$( '#infoOk' ).toggleClass( 'disabled', I.nochange || I.blank || I.notip || I.short );
-			}, 75 );
-		} );
-	}
+	var check = [ 'changed', 'blank', 'ip', 'length', 'unique' ].some( k => 'check'+ k in I );
+	if ( ! check ) return
+	
+	$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
+		if ( I.checkchanged ) I.notchange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
+		if ( I.checkblank )  V.timeout.blank  = setTimeout( infoCheckBlank, 0 );   // #1
+		if ( I.checklength ) V.timeout.length = setTimeout( infoCheckLength, 20 ); // #2
+		if ( I.checkip )     V.timeout.ip     = setTimeout( infoCheckIP, 40 );     // #3
+		if ( I.checkunique ) V.timeout.unique = setTimeout( infoCheckUnique, 60 ); // #4
+		V.timeout.check = setTimeout( () => {
+			$( '#infoOk' ).toggleClass( 'disabled', I.notchange || I.blank || I.notlength || I.notip || I.notunique );
+		}, 100 );
+	} );
 }
-function infoCheckSetChange() {
-	$input       = $( '#infoList' ).find( 'input, select' );
-	$inputbox    = $( '#infoList input' );
-	if ( I.checkblank ) {
-		I.checkblank = [ ...Array( $inputbox.length ).keys() ];
-		infoCheckBlank();
-	}
-	infoCheckSet();
-	$( '#infoList input' ).trigger( 'input' );
+function infoCheckUnique() {
+	var infoval = infoVal( 'array' );
+	var vunique = [ ... new Set( infoval ) ];
+	I.notunique = infoval.length !== vunique.length;
 }
 function infoClearTimeout( all ) { // ok for both timeout and interval
 	if ( ! ( 'timeout' in V ) ) return
@@ -800,6 +784,16 @@ function infoFileImageResize( ext, imgW, imgH ) {
 function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 }
+function infoListChange() {
+	$input    = $( '#infoList' ).find( 'input, select' );
+	$inputbox = $( '#infoList input' );
+	if ( 'checkblank' in I ) {
+		I.checkblank = [ ...Array( $inputbox.length ).keys() ];
+		infoCheckBlank();
+	}
+	infoCheckSet();
+	$( '#infoList input' ).trigger( 'input' );
+}
 function infoPrompt( message ) {
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
 	$( '.infoprompt' ).html( message );
@@ -813,13 +807,13 @@ function infoPrompt( message ) {
 	} );
 }
 function infoReset() {
+	infoToggle( 'reset' );
 	$( '#infoOverlay' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' )
 		.empty();
 	setTimeout( () => {
 		I = { active: false }
-		$( '.page, .container' ).removeClass( 'disabled' );
 		$( '.focus' ).trigger( 'focus' ); // restore previous focused
 	}, 0 );
 }
@@ -845,6 +839,30 @@ function infoSetValues() {
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
 		}
 	} );
+}
+function infoToggle( reset ) {
+	if ( reset ) {
+		var height    = '';
+		var overflow  = '';
+		var padding   = I.padding;
+		var scrolltop = I.scrolltop;
+	} else {
+		I.active      = true;
+		I.scrolltop   = $( window ).scrollTop();
+		I.padding     = page ? '' : $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
+		var height    = '150vh';
+		var overflow  = 'hidden';
+		var padding   = 0;
+		var scrolltop = 0;
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		infoButtonWidth();
+		$( '#infoOverlay' ).trigger( 'focus' );
+	}
+	if ( ! page ) {
+		$( '.page, .list' ).css( { height: height, overflow: overflow } );
+		$( '.list' ).css( 'padding-bottom', padding );
+	}
+	$( window ).scrollTop( scrolltop );
 }
 function infoVal( array ) {
 	var $this, type, name, val;
@@ -1368,6 +1386,7 @@ $( '#debug' ).press( function() {
 			}, sameline: false } ]
 			, okno  : true
 			, beforeshow : () => {
+				if ( navigator.maxTouchPoints ) $( '#infoList tr' ).eq( 0 ).addClass( 'hide' );
 				$( '#infoList input[value='+ type +']' ).prop( { checked: true, disabled: true } );
 				$( '#infoList input' ).on( 'click', function() {
 					type = $( this ).val();

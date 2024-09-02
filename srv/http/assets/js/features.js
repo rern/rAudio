@@ -257,16 +257,23 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		list.push( listname, listip );
 		values    = [ S.hostname, S.hostip ];
 	}
-	var check = infoCheckEvenOdd( values.length );
+	function checkIpList( length ) {
+		var list = [];
+		for ( i = 0; i < length; i++ ) {
+			if ( i % 2 ) list.push( i );
+		}
+		return list
+	}
+	var checkip = checkIpList( values.length );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, list         : list
 		, boxwidth     : 160
 		, values       : values
-		, checkchanged : S.multiraudio && values.length > 2
-		, checkblank   : I.checkblank
-		, checkip      : I.checkip
+		, checkchanged : S.multiraudio
+		, checkblank   : true
+		, checkip      : checkip
 		, checkunique  : true
 		, beforeshow   : () => {
 			$( '#infoList td:first-child' ).remove();
@@ -282,25 +289,19 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 					$tr.find( 'i' ).remove();
 				}
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 );
+			var okToggle = () => $( '#infoOk' ).toggleClass( 'disabled', $( '#infoList input' ).length < 3 );
+			okToggle();
 			$( '#infoList' ).on( 'click', 'i', function() {
 				var $this = $( this );
-				var add   = $this.hasClass( 'i-plus' );
-				if ( add ) {
-					$( '#infoList table' ).append( htmltr );
+				if ( $this.hasClass( 'i-plus' ) ) {
+					$( '#infoList tbody' ).append( htmltr );
 					$( '#infoList input' ).last().val( S.ipsub );
 				} else {
 					$this.parents( 'tr' ).remove();
+					if ( ! S.multiraudio ) setTimeout( okToggle, 150 );
 				}
-				$inputbox = $( '#infoList input' );
-				$input    = $inputbox;
-				infoCheckEvenOdd( $input.length );
-				infoCheckSet();
-				if ( S.multiraudio ) {
-					$( '#infoOk' ).text( $inputbox.length < 3 ? 'Disable' : 'OK' );
-				} else {
-					$( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 );
-				}
+				I.checkip = checkIpList( $( '#infoList input' ).length );
+				infoListChange();
 			} );
 		}
 		, cancel       : switchCancel
@@ -432,11 +433,6 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 
 } );
 
-function infoCheckEvenOdd( length ) {
-	I.checkblank = [];
-	I.checkip    = [];
-	for ( i = 0; i < length; i++ ) i % 2 ? I.checkip.push( i ) : I.checkblank.push( i );
-}
 function infoSpotify() {
 	if ( S.camilladsp ) {
 		info( {

@@ -14,6 +14,7 @@ data='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
 , "autoplayconf"     : '$( conf2json $dirsystem/autoplay.conf )'
 , "camilladsp"       : '$camilladsp'
+, "dabradio"         : '$mediamtx'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "hostip"           : "'$( ipAddress )'"
@@ -34,8 +35,10 @@ data='
 , "scrobbleconf"     : '$( conf2json scrobble.conf )'
 , "scrobblekey"      : '$( exists $dirsystem/scrobblekey )'
 , "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
+, "shairport-sync"   : '$shairportsync'
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
-, "stoptimerconf"    : '$( conf2json stoptimer.conf )
+, "stoptimerconf"    : '$( conf2json stoptimer.conf )'
+, "upmpdcli"         : '$upmpdcli
 
 if [[ -e /usr/bin/iwctl ]]; then
 	. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$( hostname ).ap )
@@ -53,18 +56,6 @@ if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 , "localbrowser"     : '$localbrowser'
 , "localbrowserconf" : '$( conf2json $dirsystem/localbrowser.conf )
 fi
-
-if [[ -e /usr/bin/mediamtx ]]; then
-	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now mediamtx
-##########
-	data+='
-, "dabdevice"        : '$dabdevice'
-, "dabradio"         : '$mediamtx
-fi
-
-##########
-[[ -e /usr/bin/shairport-sync ]] && data+='
-, "shairport-sync"   : '$shairportsync
 
 if [[ -e /usr/bin/smbd ]]; then
 	file=/etc/samba/smb.conf
@@ -87,10 +78,6 @@ fi
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$spotifyd'
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotifykey 2> /dev/null && echo true )
-
-##########
-[[ -e /usr/bin/upmpdcli ]] && data+='
-, "upmpdcli"         : '$upmpdcli
 
 ##########
 [[ -e $dirshm/wlan ]] && data+='

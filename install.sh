@@ -4,6 +4,12 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240902
+if [[ -e /boot/kernel8.img ]]; then
+	file=/etc/pacman.conf
+	grep -q wpa_supplicant $file && sed -i '/^IgnorePkg/ {s/ wpa_supplicant//; s/^/#/}' $file
+fi
+
 # 20240818
 file=$dirmpd/albumbyartist
 [[ -e $file && $( grep -m1 . $file | cut -c 2 ) != ^ ]] && php /srv/http/cmd.php sort albumbyartist
@@ -16,10 +22,9 @@ if [[ -e /boot/kernel.img ]]; then
 		ln -s /usr/bin/ntfs-3g $file
 		sed -i '/^allowed_types/ s/$/, ntfs3/' /etc/udevil/udevil.conf
 	fi
-else
+elif [[ -e /boot/kernel7.img ]]; then
 	file=/etc/pacman.conf
-	[[ -e /boot/kernel7.img ]] && pkg=' libunwind'
-	! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ wpa_supplicant'$pkg'/}' $file
+	! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ libunwind wpa_supplicant/}' $file
 fi
 
 # 20240719
@@ -29,13 +34,6 @@ file=$dirsystem/lcdcharconf.py
 if [[ -e $file ]]; then
 	sed -i -E 's/False|"//g' $file
 	mv $file $dirsystem/lcdchar.conf
-fi
-
-# 20240707
-dir=/srv/http/assets/img/guide
-if [[ -e $dir/59.jpg ]]; then
-	rm -f $dir/*
-	curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
 fi
 
 #-------------------------------------------------------------------------------

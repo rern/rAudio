@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1724931774' );
+	src         : url( '/assets/fonts/rern.woff2?v=1725270385' );
 }
 @font-face {
 	font-family : Lato;
@@ -322,7 +322,6 @@ body {
 
 #debug {
 	position: fixed;
-	display: none;
 	bottom: 0;
 	right: 0;
 	width: 40px;
@@ -609,7 +608,7 @@ hr {
 	top: 0;
 	left: 0;
 	width: 100%;
-	min-height: calc( 100% + 50vh );
+	min-height: 150vh;
 	background: rgba(0, 0, 0, 0.85);
 	text-align: center;
 	overflow: hidden;
@@ -628,11 +627,10 @@ hr {
 }
 #infoBox {
 	position: relative;
-	top: 50vh;
 	transform: translateY( -50% ); /* of #infoBox height */
 	width: 400px;
 	max-width: 98%;
-	margin: 0 auto;
+	margin: 50vh auto;
 	padding-bottom: 15px;
 	background: var( --cga );
 	border-radius: 10px;
@@ -1046,7 +1044,6 @@ input:focus {
 	outline-offset: 1px;
 }
 @media ( hover:hover ) {
-	#debug { display: block }
 	/* :hover *********************************************************/
 	label,
 	input[ type=checkbox ],

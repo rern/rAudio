@@ -1029,20 +1029,23 @@ function infoRelaysName() {
 		, boxwidth     : 70
 		, checkblank   : true
 		, checkchanged : S.relays
+		, checkunique  : true
 		, values       : values
 		, beforeshow   : () => {
 			infoRelaysCss( 160 );
 			$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
-			$( '#infoList td' ).eq( 2 ).html( ico( 'plus-circle edit' ) );
-			$( '#infoList td' ).on( 'click', '.i-plus-circle', function() {
-				var $tr  = $( '#infoList tr' ).last();
-				$tr.clone().insertAfter( $tr );
-				$( '#infoList input' ).last().val( '' );
-				infoCheckSetChange();
-			} );
-			$( '#infoList' ).off( 'click' ).on( 'click', '.i-remove', function() {
-				if ( $( '#infoList tr' ).length > 2 ) $( this ).parents( 'tr' ).remove();
-				infoCheckSetChange();
+			$( '#infoList td' ).eq( 2 ).html( ico( 'plus edit' ) );
+			$( '#infoList' ).on( 'click', 'i:not( .bl )', function() {
+				var $this = $( this );
+				if ( $this.hasClass( 'i-plus' ) ) {
+					$( '#infoList select' ).select2( 'destroy' );
+					var $tr = $( '#infoList tr' ).last();
+					$tr.after( $tr.clone() );
+					selectSet();
+				} else {
+					$this.parents( 'tr' ).remove();
+				}
+				infoListChange();
 			} );
 		}
 		, cancel       : switchCancel
