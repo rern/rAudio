@@ -498,12 +498,8 @@ function info( json ) {
 		// show
 		I.active    = true;
 		I.scrolltop = $( window ).scrollTop();
-		I.padding   = $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
-		if ( ! page ) {
-			$( '.page, .list' ).css( 'height', '100%' );
-			$( '.list' ).css( 'padding-bottom', 0 );
-		}
-		$( window ).scrollTop( 0 );
+		I.padding   = page ? '' : $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
+		infoScrollPageList( '100%', 0, 0 );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
@@ -823,12 +819,15 @@ function infoPrompt( message ) {
 		$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
 	} );
 }
-function infoReset() {
+function infoScrollPageList( height, padding, scrolltop ) {
 	if ( ! page ) {
-		$( '.page, .list' ).css( 'height', '' );
-		$( '.list' ).css( 'padding-bottom', I.padding );
+		$( '.page, .list' ).css( 'height', height );
+		$( '.list' ).css( 'padding-bottom', padding );
 	}
-	$( window ).scrollTop( I.scrolltop );
+	$( window ).scrollTop( scrolltop );
+}
+function infoReset() {
+	infoScrollPageList( '', I.padding, I.scrolltop );
 	$( '#infoOverlay' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' )
