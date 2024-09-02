@@ -496,19 +496,19 @@ function info( json ) {
 		$( '.container' ).css( 'margin-top', '0' );
 		setTimeout( () => $( '.container' ).css( 'margin-top', '' ), 0 );
 		// show
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		// set at current scroll position
+		I.active    = true;
 		I.scrolltop = $( window ).scrollTop();
-		I.padding   = $( '.list' ).css( 'padding-bottom' );
-		$( '.page, .list' ).css( 'height', '100%' );
-		$( '.list' ).css( 'padding-bottom', 0 );
+		I.padding   = $( '.page:not( .hide ) .list' ).css( 'padding-bottom' );
+		if ( ! page ) {
+			$( '.page, .list' ).css( 'height', '100%' );
+			$( '.list' ).css( 'padding-bottom', 0 );
+		}
 		$( window ).scrollTop( 0 );
-		I.active = true;
+		$( '#infoOverlay' ).removeClass( 'hide' );
 		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoButtonWidth();
-		// set width: text / password / textarea
-		infoWidth();
+		infoWidth(); // text / password / textarea
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
 		// check inputs: blank / length / change
 		if ( I.checkblank ) {
@@ -824,8 +824,10 @@ function infoPrompt( message ) {
 	} );
 }
 function infoReset() {
-	$( '.page, .list' ).css( 'height', '' );
-	$( '.list' ).css( 'padding-bottom', I.padding );
+	if ( ! page ) {
+		$( '.page, .list' ).css( 'height', '' );
+		$( '.list' ).css( 'padding-bottom', I.padding );
+	}
 	$( window ).scrollTop( I.scrolltop );
 	$( '#infoOverlay' )
 		.addClass( 'hide' )
