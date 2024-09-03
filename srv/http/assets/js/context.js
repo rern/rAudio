@@ -478,7 +478,7 @@ function thumbnailUpdate() {
 	var $img = V.list.li.find( 'img' );
 	var icon = $img.length ? '<span class="button-coverart"><img src="'+ $img.attr( 'src' ) +'"></span>' : 'coverart';
 	bash( [ 'coverfileget', V.list.path, 'CMD DIR' ], data => {
-		var message = data.src ? '<img src="'+ data.src + versionHash() +'">' : 'With coverarts in each sub-folder:';
+		var message = data.src ? '<img src="'+ data.src + versionHash() +'">' : 'With coverarts in each folder:';
 		message    += '<br>'+ ico( 'folder gr' ) +' <wh>'+ V.list.path +'</wh>';
 		infoThumbnail( icon, message, V.list.path, data.nosubdir );
 	}, 'json' );
