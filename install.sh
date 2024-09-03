@@ -11,7 +11,10 @@ file=/etc/pacman.conf
 if [[ $BB == 11 || $BB == 17 ]]; then
 	grep -q wpa_supplicant $file && sed -i '/^IgnorePkg/ {s/ wpa_supplicant//; s/^/#/}' $file
 elif [[ ! -e /boot/kernel.img ]] && ! grep -q libunwind $file; then
-	sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ libunwind wpa_supplicant/}' $file
+	sed -i -e '/^#*IgnorePkg/ d
+' -e '/^#IgnoreGroup/ i\
+IgnorePkg   = libunwind wpa_supplicant
+' $file
 fi
 
 # 20240818
