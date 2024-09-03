@@ -699,6 +699,16 @@ function infoLibraryOption() {
 		, ok           : displaySave
 	} );
 }
+function infoThumbnail( icon, message, path, nosubdir ) {
+	var list = [ '', 'radio', { kv: { 'Only added or removed coverarts': false, 'Recreate and replace all': true }, sameline: false } ];
+	info( {
+		  icon    : icon
+		, title   : 'Update Thumbnail'
+		, message : message
+		, list    : nosubdir ? false : list
+		, ok      : () => thumbUpdate( path, nosubdir || infoVal() )
+	} );
+}
 function infoTitle() {
 	var artist = S.Artist;
 	var title  = S.Title;
@@ -1218,9 +1228,9 @@ function renderLibraryList( data ) { // V.librarylist
 		} else {
 			V.librarytrack = false;
 			imageLoad( 'lib-list' );
+			if ( [ 'album', 'latest' ].includes( V.mode ) ) $( '#lib-list' ).addClass( 'album' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
-		if ( [ 'album', 'latest' ].includes( V.mode ) ) $( '#lib-list' ).addClass( 'album' );
 		if ( V.mode === 'album' ) { // V.albumlist
 			V.albumlist = true;
 			if ( ! $( '.licover' ).length ) $( '#lib-list img' ).eq( 0 ).on( 'load', function() {
