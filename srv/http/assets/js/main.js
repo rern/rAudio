@@ -1046,7 +1046,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	}
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
-	infoThumbnail( $( '.button-coverart' )[ 0 ].outerHTML, 'With existing coverart files:', '' );
+	infoThumbnail( $( '.button-coverart' )[ 0 ].outerHTML, 'With coverart file in each folder:', '' );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
 	if ( S.updating_db ) {

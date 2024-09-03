@@ -700,12 +700,13 @@ function infoLibraryOption() {
 	} );
 }
 function infoThumbnail( icon, message, path, nosubdir ) {
-	var list = [ '', 'radio', { kv: { 'Only added or removed coverarts': false, 'Recreate and replace all': true }, sameline: false } ];
+	var list = [ '', 'radio', { kv: { 'Only added or removed': false, 'Recreate and replace all': true }, sameline: false } ];
 	info( {
 		  icon    : icon
-		, title   : 'Update Thumbnail'
+		, title   : 'Update Thumbnails'
 		, message : message
 		, list    : nosubdir ? false : list
+		, footer  : path ? '' : '(Single folder:'+ ico( 'folder gr' ) +'Context menu)'
 		, ok      : () => thumbUpdate( path, nosubdir || infoVal() )
 	} );
 }
