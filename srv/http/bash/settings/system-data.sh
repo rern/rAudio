@@ -16,53 +16,16 @@ $temp °C<br>\
 $availmem<br>\
 $date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
-if [[ -e $dirshm/cpuinfo ]]; then
+if [[ -e $dirshm/system ]]; then
 	. $dirshm/cpuinfo
+	system=$( < $dirshm/system )
 else
+	# cpu
 	revision=$( grep ^Revision /proc/cpuinfo )
 	BB=${revision: -3:2}
 	C=${revision: -4:1}
 	[[ ! $BB =~ ^(09|0c|12)$ ]] && onboardsound=1
-	if [[ $BB == 0d ]]; then
-		rpi3bplus=1
-		degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
-		[[ $degree ]] && softlimit=1 || degree=60
-	else
-		degree=60
-	fi
-	cpuinfo="\
-BB=$BB
-C=$C
-degree=$degree"
-	[[ $onboardsound ]] && cpuinfo+=$'\n'onboardsound=true
-	[[ $rpi3bplus ]] && cpuinfo+=$'\n'rpi3bplus=true
-	[[ $softlimit ]] && cpuinfo+=$'\n'softlimit=true
-	echo "$cpuinfo" >> $dirshm/cpuinfo
-fi
-throttled=$( vcgencmd get_throttled | cut -d= -f2 )  # hex
-if [[ $throttled != 0x0 ]]; then
-	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
-	# 20 bits: occurred > 11110000000000001111 < current
-	declare -A warnings=(
-		[0]="CPU temperature limit - occurred <gr>(>$degree°C)</gr>"
-		[1]='CPU throttling - occurred'
-		[2]='CPU frequency capping - occurred'
-		[3]='<yl>Under-voltage</yl> - occurred <gr>(<4.7V)</gr>'
-		[16]="CPU temperature limit - active <gr>(>$degree°C)</gr>"
-		[17]='CPU throttled'
-		[18]='CPU frequency capped'
-		[19]='<red>Under-voltage</red> - currently <gr>(<4.7V)</gr>'
-	)
-	for i in 19 18 17 16 3 2 1 0; do
-		[[ ${binary:i:1} == 1 ]] && warning+=" · ${warnings[$i]}<br>"
-	done
-fi
-# for interval refresh
-[[ $1 == status ]] && echo '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
-
-if [[ -e $dirshm/system ]]; then
-	system=$( < $dirshm/system )
-else 
+	# system
 	readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 	cpu=${cpu[0]}
 	core=${cpu[1]}
@@ -74,21 +37,33 @@ else
 	if [[ $rpimodel == *BeagleBone* ]]; then
 		soc=AM3358
 	else
-		soc=BCM
-		case $C in
-			0 ) soc+=2835;; # 0, 1
-			1 ) soc+=2836;; # 2
-			2 ) case $BB in
-					04|08 ) soc+=2837;;   # 2 1.2, 3B
-					0d|0e ) soc+=2837B0;; # 3A+, 3B+
-					12 )    soc+=2710A1;; # 0 2W
-				esac;;
-			3 ) soc+=2711;; # 4
-			4 ) soc+=2712;; # 5
-		esac
+		declare -A C_model=( [0]=Zero_1 [1]=2    [204]=2.2  [208]=3B   [20d]=3B+    [20e]=3A+    [212]=Zero2W [3]=4B   [4]=5 )
+		declare -A C_soc=(   [0]=2835   [1]=2836 [204]=2837 [208]=2837 [20d]=2837B0 [20e]=2837B0 [212]=2710A1 [3]=2711 [4]=2712 )
+		[[ $C != 2 ]] && c=$C || c=$C$BB
+		rpi=${C_model[$c]}
+		soc=BCM${C_soc[$c]}
+		if [[ $rpi == 3B+ ]]; then
+			degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
+			[[ $degree ]] && softlimit=1 || degree=60
+		else
+			degree=60
+		fi
+		kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
+		soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
+		
+		cpuinfo="\
+rpi=$rpi
+BB=$BB
+C=$C
+degree=$degree"
+		[[ $onboardsound ]] && cpuinfo+='
+onboardsound=true'
+		[[ $rpi == 3B+ ]] &&   cpuinfo+='
+rpi3bplus=true'
+		[[ $softlimit ]] &&    cpuinfo+='
+softlimit=true'
+		echo "$cpuinfo" > $dirshm/cpuinfo
 	fi
-	kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
-	soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $kernel<br>\
@@ -97,6 +72,26 @@ $soc<br>\
 $soccpu"
 	echo $system > $dirshm/system
 fi
+throttled=$( vcgencmd get_throttled | cut -d= -f2 )  # hex
+if [[ $throttled != 0x0 ]]; then
+	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
+	# 20 bits: occurred > 11110000000000001111 < current
+	declare -A warnings=(
+		 [0]="CPU temperature limit - occurred <gr>(>$degree°C)</gr>"
+		 [1]='CPU throttling - occurred'
+		 [2]='CPU frequency capping - occurred'
+		 [3]='<yl>Under-voltage</yl> - occurred <gr>(<4.7V)</gr>'
+		[16]="CPU temperature limit - active <gr>(>$degree°C)</gr>"
+		[17]='CPU throttled'
+		[18]='CPU frequency capped'
+		[19]='<red>Under-voltage</red> - currently <gr>(<4.7V)</gr>'
+	)
+	for i in 19 18 17 16 3 2 1 0; do
+		[[ ${binary:i:1} == 1 ]] && warning+=" · ${warnings[$i]}<br>"
+	done
+fi
+# for interval refresh
+[[ $1 == status ]] && echo '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
 
 lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 if [[ $lan ]]; then
@@ -245,7 +240,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "btconnected"       : '$( exists $dirshm/btreceiver )
 fi
 
-if [[ $rpi3bplus ]]; then
+if [[ $rpi == 3B+ ]]; then
 ##########
 	data+='
 , "softlimit"         : '$softlimit'
