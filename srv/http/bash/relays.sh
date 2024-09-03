@@ -3,23 +3,18 @@
 . /srv/http/bash/common.sh
 . $dirsystem/relays.conf
 
-if [[ ! $1 ]]; then # no args = on
-	touch $dirshm/relayson
-	action=on
+if [[ ! $1 ]]; then
+	relayson=1
 	pins=$on
 	onoff=1
 	delay=( $ond )
 	color=wh
-	done=true
 else
 	killProcess relaystimer
-	rm -f $dirshm/{relayson,relaystimer}
-	action=off
 	pins=$off
 	onoff=0
 	delay=( $offd )
 	color=gr
-	done=false
 fi
 . <( sed -E -e '/^\{$|^\}$/d; s/^  "//; s/,$//; s/": /=/; s/^/p/' $dirsystem/relays.json ) # faster than jq
 for pin in $pins; do
@@ -32,15 +27,21 @@ for pin in $pins; do
 	message=$( sed "$line s|$|</$color>|" <<< "<$color>$order" )
 	message=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $message )
 	message=$( quoteEscape $message )
-	[[ $action == off ]] && message="<wh>$message</wh>"
+	[[ ! $relayson ]] && message="<wh>$message</wh>"
 	notify 'relays blink' '' $message -1
 	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done
-if [[ $timer > 0 && $action == on && ! -e $dirshm/pidstoptimer ]]; then
-	echo $timer > $dirshm/relaystimer
-	$dirbash/relays-timer.sh &> /dev/null &
+if [[ $relayson ]]; then
+	done=true
+	touch $dirshm/relayson
+	if (( $timer > 0 )); then
+		echo $timer > $dirshm/relayson
+		$dirbash/relays-timer.sh &> /dev/null &
+	fi
+else
+	done=false
+	rm -f $dirshm/relayson
 fi
-
 sleep 1
 pushData relays '{ "done": '$done' }'
