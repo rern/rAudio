@@ -141,12 +141,12 @@ fi
 ##########
 data='
 , "ap"                : '$( exists $dirsystem/ap )'
-, "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
+, "audio"             : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"       : "'$audiooutput'"
 , "hostname"          : "'$( hostname )'"
-, "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
+, "i2seeprom"         : '$( grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2saudio"             : '$i2saudio'
 , "ipsub"             : "'$( ipAddress sub )'"
 , "lcdchar"           : '$( exists $dirsystem/lcdchar )'

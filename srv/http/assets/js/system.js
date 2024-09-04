@@ -1196,7 +1196,7 @@ function renderPage() {
 	} else {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
-	$( '#audio' ).toggleClass( 'disabled', S.audio && ! S.audiocards );
+	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
 	if ( S.i2saudio ) {
 		if ( $( '#i2smodule option' ).length ) {
 			i2sOptionSetSelect();
