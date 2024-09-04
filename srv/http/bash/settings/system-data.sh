@@ -37,8 +37,6 @@ else
 	else
 		declare -A C_soc=( [0]=2835 [1]=2836 [204]=2837 [208]=2837 [20d]=2837B0 [20e]=2837B0 [212]=2710A1 [3]=2711 [4]=2712 )
 		[[ $C != 2 ]] && c=$C || c=$C$BB
-#		declare -A C_model=( [0]=Zero,1 [1]=2 [204]=2v1.2 [208]=3B [20d]=3B+ [20e]=3A+ [212]=Zero2W [3]=4B [4]=5 )
-#		rpi=${C_model[$c]}
 		kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
 		soc=BCM${C_soc[$c]}$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
 	fi
