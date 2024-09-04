@@ -511,6 +511,7 @@ function info( json ) {
 		I.checklength ? infoCheckLength() : I.notlength = false;
 		I.notchange = I.values && I.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.notlength || I.notchange ); // initial check
+		I.notunique = false;
 		infoCheckSet();
 		if ( I.range ) {
 			var val;
@@ -1250,6 +1251,7 @@ function volumeSet( type ) { // type: mute / unmute
 	V.volumeactive = true;
 	setTimeout( () => V.volumeactive = false, 300 );
 	if ( V.drag || V.press ) type = 'dragpress';
+	if ( S.volumelimit && S.volume > S.volumelimit ) S.volume = S.volumelimit;
 	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	V.volumecurrent = S.volume;
 }
