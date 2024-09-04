@@ -17,14 +17,12 @@ $availmem<br>\
 $date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
 if [[ -e $dirshm/system ]]; then
-	. $dirshm/cpuinfo
 	system=$( < $dirshm/system )
 else
 	# cpu
 	revision=$( grep ^Revision /proc/cpuinfo )
 	BB=${revision: -3:2}
 	C=${revision: -4:1}
-	[[ ! $BB =~ ^(09|0c|12)$ ]] && onboardsound=1
 	# system
 	readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 	cpu=${cpu[0]}
@@ -33,47 +31,27 @@ else
 	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
 	(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 	soccpu+=" @ $speed"
-	rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
-	if [[ $rpimodel == *BeagleBone* ]]; then
+	model=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
+	if [[ $model == *BeagleBone* ]]; then
 		soc=AM3358
 	else
-		declare -A C_model=( [0]=Zero_1 [1]=2    [204]=2.2  [208]=3B   [20d]=3B+    [20e]=3A+    [212]=Zero2W [3]=4B   [4]=5 )
-		declare -A C_soc=(   [0]=2835   [1]=2836 [204]=2837 [208]=2837 [20d]=2837B0 [20e]=2837B0 [212]=2710A1 [3]=2711 [4]=2712 )
+		declare -A C_soc=( [0]=2835 [1]=2836 [204]=2837 [208]=2837 [20d]=2837B0 [20e]=2837B0 [212]=2710A1 [3]=2711 [4]=2712 )
 		[[ $C != 2 ]] && c=$C || c=$C$BB
-		rpi=${C_model[$c]}
-		soc=BCM${C_soc[$c]}
-		if [[ $rpi == 3B+ ]]; then
-			degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
-			[[ $degree ]] && softlimit=1 || degree=60
-		else
-			degree=60
-		fi
+#		declare -A C_model=( [0]=Zero,1 [1]=2 [204]=2v1.2 [208]=3B [20d]=3B+ [20e]=3A+ [212]=Zero2W [3]=4B [4]=5 )
+#		rpi=${C_model[$c]}
 		kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
-		soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
-		
-		cpuinfo="\
-rpi=$rpi
-BB=$BB
-C=$C
-degree=$degree"
-		[[ $onboardsound ]] && cpuinfo+='
-onboardsound=true'
-		[[ $rpi == 3B+ ]] &&   cpuinfo+='
-rpi3bplus=true'
-		[[ $softlimit ]] &&    cpuinfo+='
-softlimit=true'
-		echo "$cpuinfo" > $dirshm/cpuinfo
+		soc=BCM${C_soc[$c]}$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
 	fi
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $kernel<br>\
-$rpimodel<br>\
+$model<br>\
 $soc<br>\
 $soccpu"
 	echo $system > $dirshm/system
 fi
-throttled=$( vcgencmd get_throttled | cut -d= -f2 )  # hex
-if [[ $throttled != 0x0 ]]; then
+throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
+if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
 	# 20 bits: occurred > 11110000000000001111 < current
 	declare -A warnings=(
@@ -163,7 +141,9 @@ fi
 ##########
 data='
 , "ap"                : '$( exists $dirsystem/ap )'
+, "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname"    : "'$audioaplayname'"
+, "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"       : "'$audiooutput'"
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
@@ -206,13 +186,6 @@ data='
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'
 
-if [[ $onboardsound ]]; then
-##########
-	data+='
-, "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
-, "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
-fi
-
 if [[ -e $dirshm/onboardwlan ]]; then
 	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
 	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
@@ -241,6 +214,8 @@ if [[ -e $dirshm/onboardwlan ]]; then
 fi
 
 if [[ $rpi == 3B+ ]]; then
+	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
+	[[ $degree ]] && softlimit=true || degree=60
 ##########
 	data+='
 , "softlimit"         : '$softlimit'
