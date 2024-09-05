@@ -36,7 +36,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			$range.on( 'input', function() {
-				bash( [ ...cmd, +$( this ).val(), cmdlist ] );
+				bash( [ ...cmd, +$range.val(), cmdlist ] );
 			} ).on( 'touchend mouseup keyup', function() {
 				bash( [ 'volumepush', bluealsa, 'CMD BT' ] );
 			} );
