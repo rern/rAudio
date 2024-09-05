@@ -1922,8 +1922,8 @@ function setVolume() {
 }
 function setVolumeUpDn() {
 	if ( D.volume ) {
-		$( '#voldn' ).toggleClass( 'disabled', S.volume === 0 );
-		$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
+		$( '#voldn, #volL, #volB, #volume-band-dn' ).toggleClass( 'disabled', S.volume === 0 );
+		$( '#volup, #volR, #volT, #volume-band-up' ).toggleClass( 'disabled', S.volume === 100 );
 	}
 }
 function sortPlaylist( pl, iold, inew ) {
