@@ -29,6 +29,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		  icon       : SW.icon
 		, title      : 'Volume Control'
 		, list       : [ control, 'range' ]
+		, values     : S.volume.val
 		, prompt     : '<br>'+ warning
 		, beforeshow : () => {
 			var $inputrange = $( '#infoList input' );
@@ -41,7 +42,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 			} );
 			$( '.inforange i' ).on( 'click', function() {
 				S.volume.val = +$inputrange.val();
-				 $inputrange
+				$inputrange
 					.trigger( 'input' )
 					.trigger( 'keyup' );
 			} );

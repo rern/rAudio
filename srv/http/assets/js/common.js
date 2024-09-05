@@ -514,27 +514,34 @@ function info( json ) {
 		I.notunique = false;
 		infoCheckSet();
 		if ( I.range ) {
-			var val;
-			$( '.inforange input' ).on( 'input', function() {
+			var $range    = $( '.inforange input' );
+			var $rangeval = $( '.inforange .value' );
+			var $up       = $( '.inforange .up' );
+			var $dn       = $( '.inforange .dn' );
+			var min       = +$( '.inforange input' ).prop( 'min' );
+			var max       = +$( '.inforange input' ).prop( 'max' );
+			$range.on( 'input', function() {
 				var $this = $( this );
-				$this.siblings( '.value' ).text( +$this.val() );
+				var val   = +$this.val();
+				$rangeval.text( val );
+				$up.toggleClass( 'disabled', val === max );
+				$dn.toggleClass( 'disabled', val === min );
 			} );
-			var rangeset = ( $range, up ) => {
-				val = +$range.val();
+			$range.trigger( 'input' );
+			var rangeSet = up => {
+				var val = +$range.val();
+				if ( ( val === 0 && ! up ) || ( val === 100 && up ) ) return
+				
 				up ? val++ : val--;
-				$range
-					.val( val )
-					.siblings( '.value' ).text( val );
+				$range.val( val );
+				$rangeval.text( val );
 			}
 			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
 				clearTimeout( V.timeout.range );
-				var $this = $( this );
-				if ( ! V.press ) rangeset( $this.siblings( 'input' ), $this.hasClass( 'up' ) );
+				if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
 			} ).press( function( e ) {
-				var $this  = $( e.target );
-				var $range = $this.siblings( 'input' )
-				var up     = $this.hasClass( 'up' );
-				V.timeout.range = setInterval( () => rangeset( $range, up ), 100 );
+				var up = $( e.target ).hasClass( 'up' );
+				V.timeout.range = setInterval( () => rangeSet( up ), 100 );
 			} );
 		}
 		if ( I.updn.length ) {
