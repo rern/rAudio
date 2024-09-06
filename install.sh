@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240903
+# 20240906
 revision=$( grep ^Revision /proc/cpuinfo )
 BB=${revision: -3:2}
 file=/etc/pacman.conf
