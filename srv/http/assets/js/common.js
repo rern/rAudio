@@ -601,7 +601,6 @@ function info( json ) {
 function infoButtonCommand( fn, cancel ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( cancel ) delete I.oknoreset;
-	if ( I.prompt ) $( '#infoOverlay' ).addClass( 'hide' );
 	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
 	infoReset();
@@ -1258,7 +1257,6 @@ function volumeSet( type ) { // type: mute / unmute
 	V.volumeactive = true;
 	setTimeout( () => V.volumeactive = false, 300 );
 	if ( V.drag || V.press ) type = 'dragpress';
-	if ( S.volumelimit && S.volume > S.volumelimit ) S.volume = S.volumelimit;
 	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	V.volumecurrent = S.volume;
 }

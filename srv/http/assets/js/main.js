@@ -614,11 +614,11 @@ $( '#volume' ).roundSlider( {
 	, editableTooltip   : false
 	, animation         : false
 	, create            : function () {
-		V.create       = true;
-		$volumeRS      = this;
-		$volumetooltip = $( '#volume .rs-tooltip' );
-		$volumehandle  = $( '#volume .rs-handle' );
-		$volumehandlerotate = $( '#volume .rs-transition, #volume .rs-handle' );
+		V.create         = true;
+		$volumeRS        = this;
+		$volumetooltip   = $( '#volume .rs-tooltip' );
+		$volumehandle    = $( '#volume .rs-handle' );
+		$volumehandle_tr = $( '#volume .rs-handle, #volume .rs-transition' );
 	}
 	, start             : function( e ) {
 		V.drag = true;
@@ -631,16 +631,15 @@ $( '#volume' ).roundSlider( {
 		if ( V.press ) {
 			var diff  = 3;
 		} else {
-			var diff  = Math.abs( e.value - V.volumeprev || S.volume - S.volumemute ); // change || mute/unmute
+			var diff  = Math.abs( e.value - V.volume || S.volume - S.volumemute ); // change || mute/unmute
 		}
-		V.animate = true;
-		var speed = diff * 40; // 1% : 40ms
-		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
+		V.animate = diff * 40; // 1% : 40ms
+		$volumehandle_tr.css( 'transition-duration', V.animate +'ms' );
 		setTimeout( () => {
-			$volumehandlerotate.css( 'transition-duration', '100ms' );
-			$( '#volume-knob, #button-volume i' ).removeClass( 'noclick' );
+			$volumehandle_tr.css( 'transition-duration', '100ms' );
+			$( '#volume-knob' ).css( 'pointer-events', '' );
 			V.animate = false;
-		}, speed );
+		}, V.animate );
 	}
 	, drag              : function( e ) {
 		S.volume = e.value;
@@ -651,7 +650,7 @@ $( '#volume' ).roundSlider( {
 		if ( V.drag ) return
 		
 		S.volume = e.value;
-		$( '#volume-knob, #button-volume i' ).addClass( 'noclick' );
+		$( '#volume-knob' ).css( 'pointer-events', 'none' );
 		volumeSet();
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
@@ -659,7 +658,6 @@ $( '#volume' ).roundSlider( {
 		if ( V.drag || ! V.create ) return // ! V.create - suppress fire before 'create'
 		
 		S.volume     = e.value;
-		V.volumeprev = S.volume;
 		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 		setVolumeUpDn();
 		if ( S.volumemute ) volumeColorUnmute();

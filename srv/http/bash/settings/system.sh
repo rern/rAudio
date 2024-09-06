@@ -548,8 +548,9 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	pushDirCounts usb
 	;;
-volumeboot )
+volumelimit )
 	enableFlagSet
+	volumeLimit max
 	pushRefresh
 	;;
 vuled )

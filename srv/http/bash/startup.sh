@@ -139,10 +139,8 @@ else # start mpd.service if not started by networks-bluetooth.sh
 	$dirsettings/player-conf.sh
 fi
 
-if [[ -e $dirsystem/volumeboot ]]; then
-	. $dirsystem/volumeboot.conf
-	volumeFunctionSet
-	$fn_volume $val% "$mixer" $card
+if [[ -e $dirsystem/volumelimit ]]; then
+	volumeLimit startup
 fi
 
 # after all sources connected ........................................................

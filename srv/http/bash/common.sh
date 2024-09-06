@@ -282,7 +282,7 @@ $2"
 		systemctl daemon-reload
 		sed -n '1 {s/.*: //; p}' <<< $std
 		exit
-	# --------------------------------------------------------------------
+# --------------------------------------------------------------------
 	fi
 	for i in {1..10}; do
 		sleep 1
@@ -463,6 +463,16 @@ snapserverList() {
 	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
 }
 volume() {
+	filevolumelimit=$dirsystem/volumelimit
+	if [[ -e $filevolumelimit ]]; then
+		max=$( getVar max $filevolumelimit.conf )
+		if (( $TARGET > $max )); then
+			TARGET=$max
+			pushData volume '{ "max": '$max' }'
+			(( $CURRENT == $max )) && exit
+# --------------------------------------------------------------------
+		fi
+	fi
 	filevolumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	if [[ $TYPE != dragpress ]]; then
@@ -480,12 +490,12 @@ volume() {
 	else
 		rm -f $filevolumemute
 	fi
-	if [[ $CARD == btreceiver ]]; then # bluetooth
-		fn_volume=volumeBlueAlsa
-	elif [[ $CONTROL ]]; then          # hardware
-		fn_volume=volumeAmixer
-	else                               # software
-		fn_volume=volumeMpd
+	fn_volume=$( < $dirsystem/volumefunction )
+	if [[ $pageplayer ]]; then
+		$fn_volume $TARGET% "$CONTROL" $CARD
+		volumeGet push
+		exit
+# --------------------------------------------------------------------
 	fi
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
@@ -512,17 +522,6 @@ volumeAmixer() { # value control card
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
-}
-volumeFunctionSet() { # global var: fn_volume, card, mixer
-	if [[ -e $dirshm/btreceiver ]]; then
-		fn_volume=volumeBlueAlsa
-		mixer=$( < $dirshm/btmixer )
-	elif [[ -e $dirshm/amixercontrol ]]; then
-		. $dirshm/output 
-		fn_volume=volumeAmixer
-	else
-		fn_volume=volumeMpd
-	fi
 }
 volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
@@ -561,4 +560,14 @@ volumeGet() {
 }
 volumeMpd() {
 	mpc -q volume ${1/\%}
+}
+volumeLimit() {
+	fn_volume=$( < $dirsystem/volumefunction )
+	val=$( getVar $1 $dirsystem/volumelimit.conf )
+	if [[ -e $dirshm/btreceiver ]]; then
+		mixer=$( < $dirshm/btmixer )
+	elif [[ -e $dirshm/amixercontrol ]]; then
+		. $dirshm/output 
+	fi
+	$fn_volume $val% "$mixer" $card
 }

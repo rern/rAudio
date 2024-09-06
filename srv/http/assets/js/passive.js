@@ -329,6 +329,15 @@ function psSavedPlaylists( data ) {
 	$( '.mode.playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
+	if ( 'max' in data ) {
+		S.volume  = data.max;
+		V.animate = false;
+		setVolume();
+		$( '#volume-knob' ).css( 'pointer-events', '' );
+		banner( 'volumelimit', 'Volume Limit', 'Max: '+ data.max );
+		return
+	}
+	
 	if ( V.local ) {
 		V.local = false;
 		return

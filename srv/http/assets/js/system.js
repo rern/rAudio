@@ -68,6 +68,10 @@ var default_v     = {
 	, softlimit     : {
 		SOFTLIMIT : 65
 	}
+	, volumelimit   : {
+		  STARTUP : 50
+		, MAX     : 100
+	}
 	, vuled         : {
 		  P0 : 14
 		, P1 : 15
@@ -553,13 +557,17 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 		, fileconf     : true
 	} );
 } );
-$( '#setting-volumeboot' ).on( 'click', function() {
+$( '#setting-volumelimit' ).on( 'click', function() {
+	var liststartup = [ 'Startup default', 'number', { updn: { step: 1, min: 0, max: 100 } } ];
+	var listlimit   = liststartup.slice();
+	listlimit[ 0 ]  = 'Maximum limit';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ 'Volume', 'range' ]
-		, values       : S.volumebootconf
-		, checkchanged : S.volumeboot
+		, list         : [ liststartup, listlimit ]
+		, boxwidth     : 70
+		, values       : S.volumelimitconf || default_v.volumelimit
+		, checkchanged : S.volumelimit
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true

@@ -50,7 +50,8 @@ data='
 , "updatetime"     : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db"    : '$( [[ -e $dirmpd/listing || -e $dirmpd/updating ]] && echo true )'
 , "version"        : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
-, "volume"         : '$volume
+, "volume"         : '$volume'
+, "volumelimit"    : '$( exists $dirsystem/volumelimit )
 
 for key in buffer outputbuffer; do
 	data+='

@@ -16,13 +16,11 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 	var bluealsa = this.id.slice( -1 ) === 'a';
 	if ( bluealsa ) {
 		var control = S.btmixer.replace( / *-* A2DP/, '' );
-		var cmd     = [ 'volumebt', S.btmixer ];
-		var cmdlist = 'CMD MIXER VAL';
+		var cmd     = [ 'volume', S.btmixer, '', S.volume.val ];
 		var cmd0db  = 'volume0dbbt';
 	} else {
 		var control = S.output.mixer;
-		var cmd     = [ 'volume', S.output.card, S.output.mixer ];
-		var cmdlist = 'CMD CARD MIXER VAL';
+		var cmd     = [ 'volume', S.output.mixer, S.output.card, S.volume.val ];
 		var cmd0db  = 'volume0db';
 	}
 	info( {
@@ -32,13 +30,12 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		, values     : S.volume.val
 		, prompt     : '<br>'+ warning
 		, beforeshow : () => {
+			if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
 			var $range = $( '#infoList input' );
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			$range.on( 'input', function() {
-				bash( [ ...cmd, +$range.val(), cmdlist ] );
-			} ).on( 'touchend mouseup keyup', function() {
-				bash( [ 'volumepush', bluealsa, 'CMD BT' ] );
+				bash( [ ...cmd, +$range.val(), 'CMD CONTROL CARD CURRENT TARGET' ] );
 			} );
 			$( '.inforange i' ).on( 'click', function() {
 				S.volume.val = +$range.val();
@@ -395,16 +392,18 @@ function setMixerType( mixertype ) {
 	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 }
 function psVolume( data ) {
-	data.type === 'mpd' ? S.volumempd = data.val : S.volume = data;
-	noVolumeSet();
-	if ( ! $( '.inforange' ).length ) return
-	
-	if ( data.type === 'mpd' ) { // info software volume
-		$( '.inforange .value' ).text( S.volumempd );
-		$( '#infoList input' ).val( S.volumempd );
+	if ( 'max' in data ) {
+		volumeInfoSet();
+		banner( 'volumelimit', 'Volume Limit', 'Max: '+ data.max );
 		return
 	}
 	
+	if ( ! ( 'db' in data ) ) return
+	 
+	S.volume = data;
+	if ( ! $( '#infoList .inforange' ).length ) return
+	
+	noVolumeSet();
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		V.local = true;

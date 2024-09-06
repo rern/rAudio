@@ -221,7 +221,7 @@ i {
 .i-usbdrive::before        { content: '\F553' }
 .i-volume::before          { content: '\F516' }
 .i-volume.mute::before     { content: '\F517' }
-.i-volumeboot::before      { content: '\F51E' }
+.i-volumelimit::before     { content: '\F51E' }
 .i-vuled::before           { content: '\F57C' }
 .i-warning::before         { content: '\F562' }
 .i-webradio::before        { content: '\F55D' }
@@ -561,9 +561,6 @@ input[ type=checkbox ] {
 }
 .disabled {
 	color: var( --cg60 ) !important;
-	pointer-events: none;
-}
-.noclick {
 	pointer-events: none;
 }
 .infobtn.disabled {

@@ -485,6 +485,14 @@ function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
+	if ( 'max' in data ) {
+		S.volume     = data.max;
+		S.volumemute = 0;
+		render.volume();
+		banner( 'volumelimit', 'Volume Limit', 'Max: '+ data.max );
+		return
+	}
+	
 	if ( V.local ) {
 		V.local = false;
 		return
@@ -1737,14 +1745,14 @@ var common    = {
 	, tabTitle      : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
 	, volumeAnimate : ( target, volume ) => {
 		var bandW = $( '#volume-band' ).width() - 40;
-		$( '#divvolume' ).addClass( 'noclick' );
+		$( '#divvolume' ).css( 'pointer-events', 'none' );
 		$( '#volume .thumb' ).animate(
 			  { 'margin-left': bandW / 100 * target }
 			, {
 				  duration : Math.abs( target - volume ) * 40
 				, easing   : 'linear'
 				, complete : () => {
-					$( '#divvolume' ).removeClass( 'noclick' );
+					$( '#divvolume' ).css( 'pointer-events', '' );
 					render.volume();
 				}
 			}
