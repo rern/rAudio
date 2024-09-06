@@ -1046,20 +1046,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	}
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
-	if ( $( this ).find( 'img' ).length ) {
-		var message ='Update thumbnails and directory icons?';
-	} else {
-		var message = 'With existing album coverarts:'
-				+'<p>&emsp; • Create thumbnails'
-				+'<br>&emsp; • Create directory icons</p>';
-	}
-	info( {
-		  icon    : $( '.button-coverart' )[ 0 ].outerHTML
-		, title   : 'Album Thumbnails'
-		, message : message
-		, list    : [ 'Overwrite existings', 'checkbox' ]
-		, ok      : () => thumbUpdate( '', infoVal() )
-	} );
+	infoThumbnail( $( '.button-coverart' )[ 0 ].outerHTML, 'With coverarts in folder of each album:', '' );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
 	if ( S.updating_db ) {

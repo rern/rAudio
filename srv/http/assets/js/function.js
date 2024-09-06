@@ -699,6 +699,16 @@ function infoLibraryOption() {
 		, ok           : displaySave
 	} );
 }
+function infoThumbnail( icon, message, path, nosubdir ) {
+	var list = [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ];
+	info( {
+		  icon    : icon
+		, title   : 'Update Thumbnails'
+		, message : message
+		, list    : nosubdir ? false : list
+		, ok      : () => thumbUpdate( path, nosubdir || infoVal() )
+	} );
+}
 function infoTitle() {
 	var artist = S.Artist;
 	var title  = S.Title;
@@ -1218,9 +1228,9 @@ function renderLibraryList( data ) { // V.librarylist
 		} else {
 			V.librarytrack = false;
 			imageLoad( 'lib-list' );
+			if ( [ 'album', 'latest' ].includes( V.mode ) ) $( '#lib-list' ).addClass( 'album' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
-		if ( [ 'album', 'latest' ].includes( V.mode ) ) $( '#lib-list' ).addClass( 'album' );
 		if ( V.mode === 'album' ) { // V.albumlist
 			V.albumlist = true;
 			if ( ! $( '.licover' ).length ) $( '#lib-list img' ).eq( 0 ).on( 'load', function() {
@@ -1912,8 +1922,8 @@ function setVolume() {
 }
 function setVolumeUpDn() {
 	if ( D.volume ) {
-		$( '#voldn' ).toggleClass( 'disabled', S.volume === 0 );
-		$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
+		$( '#voldn, #volL, #volB, #volume-band-dn' ).toggleClass( 'disabled', S.volume === 0 );
+		$( '#volup, #volR, #volT, #volume-band-up' ).toggleClass( 'disabled', S.volume === 100 );
 	}
 }
 function sortPlaylist( pl, iold, inew ) {

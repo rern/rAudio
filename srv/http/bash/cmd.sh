@@ -348,6 +348,12 @@ CMD ARTIST ALBUM FILE" )
 		pushDataCoverart "$url"
 	fi
 	;;
+coverfileget )
+	path="/mnt/MPD/$DIR"
+	src=$( coverFileGet "$path" )
+	(( $( ls -d "$path/*/" 2> /dev/null | wc -l ) > 0 )) && nosubdir=false || nosubdir=true
+	echo '{ "src": "'$src'", "nosubdir": '$nosubdir' }'
+	;;
 coverfileslimit )
 	for type in local online webradio; do
 		ls -t $dirshm/$type/* 2> /dev/null \

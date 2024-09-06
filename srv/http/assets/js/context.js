@@ -475,14 +475,13 @@ function tagModeSwitch() {
 	}
 }
 function thumbnailUpdate() {
-	info( {
-		  icon    : 'coverart'
-		, title   : 'Album Thumbnails'
-		, message : 'Update album thumbnails in:'
-					+'<br>'+ ico( 'folder' ) +' <wh>'+ V.list.path +'</wh>'
-		, list    : [ 'Overwrite existings', 'checkbox' ]
-		, ok      : () => thumbUpdate( V.list.path, infoVal() )
-	} );
+	var $img = V.list.li.find( 'img' );
+	var icon = $img.length ? '<span class="button-coverart"><img src="'+ $img.attr( 'src' ) +'"></span>' : 'coverart';
+	bash( [ 'coverfileget', V.list.path, 'CMD DIR' ], data => {
+		var message = data.src ? '<img src="'+ data.src + versionHash() +'">' : 'With coverarts in each folder:';
+		message    += '<br>'+ ico( 'folder gr' ) +' <wh>'+ V.list.path +'</wh>';
+		infoThumbnail( icon, message, V.list.path, data.nosubdir );
+	}, 'json' );
 }
 function updateDirectory() {
 	if ( V.list.path.slice( -3 ) === 'cue' ) V.list.path = dirName( V.list.path );

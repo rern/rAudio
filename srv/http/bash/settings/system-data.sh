@@ -16,38 +16,47 @@ $temp °C<br>\
 $availmem<br>\
 $date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
-if [[ -e $dirshm/cpuinfo ]]; then
-	. $dirshm/cpuinfo
+if [[ -e $dirshm/system ]]; then
+	system=$( < $dirshm/system )
 else
+	# cpu
 	revision=$( grep ^Revision /proc/cpuinfo )
 	BB=${revision: -3:2}
 	C=${revision: -4:1}
-	[[ ! $BB =~ ^(09|0c|12)$ ]] && onboardsound=1
-	if [[ $BB == 0d ]]; then
-		rpi3bplus=1
-		degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
-		[[ $degree ]] && softlimit=1 || degree=60
+	# system
+	readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
+	cpu=${cpu[0]}
+	core=${cpu[1]}
+	speed=${cpu[2]/.*}
+	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
+	(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
+	soccpu+=" @ $speed"
+	model=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
+	if [[ $model == *BeagleBone* ]]; then
+		soc=AM3358
 	else
-		degree=60
+		declare -A C_soc=( [0]=2835 [1]=2836 [204]=2837 [208]=2837 [20d]=2837B0 [20e]=2837B0 [212]=2710A1 [3]=2711 [4]=2712 )
+		[[ $C != 2 ]] && c=$C || c=$C$BB
+		kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
+		soc=BCM${C_soc[$c]}$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
 	fi
-	cpuinfo="\
-BB=$BB
-C=$C
-degree=$degree"
-	[[ $onboardsound ]] && cpuinfo+=$'\n'onboardsound=true
-	[[ $rpi3bplus ]] && cpuinfo+=$'\n'rpi3bplus=true
-	[[ $softlimit ]] && cpuinfo+=$'\n'softlimit=true
-	echo "$cpuinfo" >> $dirshm/cpuinfo
+	system="\
+rAudio $( getContent $diraddons/r1 )<br>\
+$kernel<br>\
+$model<br>\
+$soc<br>\
+$soccpu"
+	echo $system > $dirshm/system
 fi
-throttled=$( vcgencmd get_throttled | cut -d= -f2 )  # hex
-if [[ $throttled != 0x0 ]]; then
+throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
+if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
 	# 20 bits: occurred > 11110000000000001111 < current
 	declare -A warnings=(
-		[0]="CPU temperature limit - occurred <gr>(>$degree°C)</gr>"
-		[1]='CPU throttling - occurred'
-		[2]='CPU frequency capping - occurred'
-		[3]='<yl>Under-voltage</yl> - occurred <gr>(<4.7V)</gr>'
+		 [0]="CPU temperature limit - occurred <gr>(>$degree°C)</gr>"
+		 [1]='CPU throttling - occurred'
+		 [2]='CPU frequency capping - occurred'
+		 [3]='<yl>Under-voltage</yl> - occurred <gr>(<4.7V)</gr>'
 		[16]="CPU temperature limit - active <gr>(>$degree°C)</gr>"
 		[17]='CPU throttled'
 		[18]='CPU frequency capped'
@@ -59,44 +68,6 @@ if [[ $throttled != 0x0 ]]; then
 fi
 # for interval refresh
 [[ $1 == status ]] && echo '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
-
-if [[ -e $dirshm/system ]]; then
-	system=$( < $dirshm/system )
-else 
-	readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
-	cpu=${cpu[0]}
-	core=${cpu[1]}
-	speed=${cpu[2]/.*}
-	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
-	(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
-	soccpu+=" @ $speed"
-	rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
-	if [[ $rpimodel == *BeagleBone* ]]; then
-		soc=AM3358
-	else
-		soc=BCM
-		case $C in
-			0 ) soc+=2835;; # 0, 1
-			1 ) soc+=2836;; # 2
-			2 ) case $BB in
-					04|08 ) soc+=2837;;   # 2 1.2, 3B
-					0d|0e ) soc+=2837B0;; # 3A+, 3B+
-					12 )    soc+=2710A1;; # 0 2W
-				esac;;
-			3 ) soc+=2711;; # 4
-			4 ) soc+=2712;; # 5
-		esac
-	fi
-	kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
-	soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
-	system="\
-rAudio $( getContent $diraddons/r1 )<br>\
-$kernel<br>\
-$rpimodel<br>\
-$soc<br>\
-$soccpu"
-	echo $system > $dirshm/system
-fi
 
 lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 if [[ $lan ]]; then
@@ -168,10 +139,12 @@ fi
 ##########
 data='
 , "ap"                : '$( exists $dirsystem/ap )'
+, "audio"             : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname"    : "'$audioaplayname'"
+, "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"       : "'$audiooutput'"
 , "hostname"          : "'$( hostname )'"
-, "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
+, "i2seeprom"         : '$( grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2saudio"             : '$i2saudio'
 , "ipsub"             : "'$( ipAddress sub )'"
 , "lcdchar"           : '$( exists $dirsystem/lcdchar )'
@@ -211,13 +184,6 @@ data='
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'
 
-if [[ $onboardsound ]]; then
-##########
-	data+='
-, "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
-, "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
-fi
-
 if [[ -e $dirshm/onboardwlan ]]; then
 	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
 	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
@@ -245,7 +211,9 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "btconnected"       : '$( exists $dirshm/btreceiver )
 fi
 
-if [[ $rpi3bplus ]]; then
+if [[ $rpi == 3B+ ]]; then
+	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
+	[[ $degree ]] && softlimit=true || degree=60
 ##########
 	data+='
 , "softlimit"         : '$softlimit'

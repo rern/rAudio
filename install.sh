@@ -4,10 +4,17 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240902
-if [[ -e /boot/kernel8.img ]]; then
-	file=/etc/pacman.conf
+# 20240906
+revision=$( grep ^Revision /proc/cpuinfo )
+BB=${revision: -3:2}
+file=/etc/pacman.conf
+if [[ $BB == 11 || $BB == 17 ]]; then
 	grep -q wpa_supplicant $file && sed -i '/^IgnorePkg/ {s/ wpa_supplicant//; s/^/#/}' $file
+elif [[ ! -e /boot/kernel.img ]] && ! grep -q libunwind $file; then
+	sed -i -e '/^#*IgnorePkg/ d
+' -e '/^#IgnoreGroup/ i\
+IgnorePkg   = libunwind wpa_supplicant
+' $file
 fi
 
 # 20240818
@@ -22,9 +29,6 @@ if [[ -e /boot/kernel.img ]]; then
 		ln -s /usr/bin/ntfs-3g $file
 		sed -i '/^allowed_types/ s/$/, ntfs3/' /etc/udevil/udevil.conf
 	fi
-elif [[ -e /boot/kernel7.img ]]; then
-	file=/etc/pacman.conf
-	! grep -q wpa_supplicant $file && sed -i '/^#*IgnorePkg/ {s/^#//; s/$/ libunwind wpa_supplicant/}' $file
 fi
 
 # 20240719

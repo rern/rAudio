@@ -240,7 +240,7 @@ $( < /etc/asound.conf )"
 	;;
 volume )
 	volumeAmixer $VAL% "$MIXER" $CARD
-	[[ $VAL > 0 ]] && rm -f $dirsystem/volumemute
+	(( $VAL > 0 )) && rm -f $dirsystem/volumemute
 	;;
 volume0db )
 	amixer0dB
@@ -252,6 +252,7 @@ volume0dbbt )
 	;;
 volumebt )
 	volumeBlueAlsa $VAL% "$MIXER"
+	(( $VAL > 0 )) && rm -f $dirsystem/volumemute
 	;;
 volumepush )
 	[[ ! $BT ]] && hw=hw

@@ -398,7 +398,7 @@ soundprofile )
 statusaudio )
 	echo "\
 <bll># aplay -l | grep bcm2835</bll>
-$( aplay -l | grep bcm2835 )"
+$( aplay -l 2> /dev/null | grep bcm2835 || echo '(No audio devices)' )"
 	;;
 statusbluetooth )
 	echo "\

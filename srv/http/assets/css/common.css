@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1725270385' );
+	src         : url( '/assets/fonts/rern.woff2?v=1725496279' );
 }
 @font-face {
 	font-family : Lato;
@@ -518,7 +518,7 @@ input[ type=range ]::-moz-range-track {
 .inforange i {
 	position: relative;
 	width: 40px !important;
-	line-height: 39px;
+	line-height: 39px !important;
 	vertical-align: top !important;
 	color: var( --cg60 ) !important;
 }
@@ -779,7 +779,10 @@ hr {
 	line-height: 24px;
 	font-size: 20px;
 	text-align: center;
-    color: var( --cw );
+	color: var( --cw );
+}
+#infoList i.disabled {
+	color: var( --cgl ) !important;
 }
 #infoList pre {
 	margin: 0;
