@@ -631,7 +631,7 @@ $( '#volume' ).roundSlider( {
 		if ( V.press ) {
 			var diff  = 3;
 		} else {
-			var diff  = Math.abs( e.value - V.volume || S.volume - S.volumemute ); // change || mute/unmute
+			var diff  = Math.abs( e.value - S.volume || S.volume - S.volumemute ); // change || mute/unmute
 		}
 		V.animate = diff * 40; // 1% : 40ms
 		$volumehandle_tr.css( 'transition-duration', V.animate +'ms' );
