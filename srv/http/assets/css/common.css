@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1725496279' );
+	src         : url( '/assets/fonts/rern.woff2?v=1725496281' );
 }
 @font-face {
 	font-family : Lato;
@@ -771,7 +771,7 @@ hr {
 	font-size: 20px;
 	margin-right: 5px;
 }
-#infoList i {
+#infoList i:not( .cmd ) {
 	width: 24px;
 	line-height: 24px;
 	font-size: 20px;
