@@ -774,7 +774,7 @@ hr {
 	font-size: 20px;
 	margin-right: 5px;
 }
-#infoList i {
+#infoList i:not( .cmd ) {
 	width: 24px;
 	line-height: 24px;
 	font-size: 20px;
