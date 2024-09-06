@@ -628,6 +628,16 @@ $( '#volume' ).roundSlider( {
 	, beforeValueChange : function( e ) {
 		if ( V.local || V.drag ) return
 		
+		if ( S.volumemax && e.value > S.volumemax ) {
+			volumeMaxNotify();
+			if ( S.volume === S.volumemax ) return false
+			
+			$volumeRS.setValue( S.volumemax );
+			S.volume = S.volumemax;
+			volumeSet();
+			return false
+		}
+		
 		if ( V.press ) {
 			var diff  = 3;
 		} else {

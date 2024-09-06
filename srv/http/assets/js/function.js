@@ -2015,7 +2015,8 @@ function volumeBarHide() {
 function volumeBarSet( pagex ) {
 	V.volume.x = pagex - V.volume.min;
 	S.volume   = Math.round( V.volume.x / V.volume.width * 100 );
-	$( '#volume-text' ).text( S.volume );
+	volumeMaxSet();
+	setVolume();
 }
 
 function volumeBarShow() {
@@ -2044,6 +2045,7 @@ function volumeColorUnmute() {
 }
 function volumeUpDown( up ) {
 	up ? S.volume++ : S.volume--;
+	volumeMaxSet();
 	S.volumemute = 0;
 	setVolume();
 	volumeSet();

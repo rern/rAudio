@@ -485,14 +485,6 @@ function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
 }
 function psVolume( data ) {
-	if ( 'max' in data ) {
-		S.volume     = data.max;
-		S.volumemute = 0;
-		render.volume();
-		banner( 'volumelimit', 'Volume Limit', 'Max: '+ data.max );
-		return
-	}
-	
 	if ( V.local ) {
 		V.local = false;
 		return
@@ -1945,6 +1937,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( x < V.volume.min + 20 || x > V.volume.max + 20 ) return
 	
 	S.volume = Math.round( ( x - 20 - V.volume.min ) / V.volume.width * 100 );
+	volumeMaxSet();
 	render.volume();
 	volumeSet();
 } ).on( 'touchend mouseup', function( e ) {
@@ -1962,6 +1955,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 		} else {
 			S.volume = Math.round( ( x - V.volume.min - 20 ) / V.volume.width * 100 );
 		}
+		volumeMaxSet();
 		$( '#divvolume .level' ).text( S.volume );
 		common.volumeAnimate( S.volume, current );
 		volumeSet();
@@ -1973,6 +1967,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 $( '#volume-0, #volume-100' ).on( 'click', function() {
 	var current = S.volume;
 	S.volume    = this.id === 'volume-0' ? 0 : 100;
+	volumeMaxSet();
 	$( '#divvolume .level' ).text( S.volume );
 	common.volumeAnimate( S.volume, current );
 	volumeSet();
@@ -1982,6 +1977,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
+	volumeMaxSet();
 	render.volume();
 	volumeSet();
 } ).on( 'touchend mouseup mouseleave', function() {
@@ -1993,6 +1989,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	var up           = $( e.target ).hasClass( 'i-plus' );
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
+		volumeMaxSet();
 		volumeSet();
 		$( '#volume .thumb' ).css( 'margin-left', V.volume.x );
 		$( '#divvolume .level' ).text( S.volume );

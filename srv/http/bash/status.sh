@@ -82,6 +82,7 @@ else
 	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
 		updating_db=true
 	fi
+	[[ -e  $dirsystem/volumelimit ]] && volumemax=$( getVar max $dirsystem/volumelimit.conf )
 ########
 	status+='
 , "player"       : "'$player'"
@@ -101,6 +102,7 @@ else
 , "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
 , "volume"       : '$( volumeGet )'
+, "volumemax"    : '$volumemax'
 , "volumemute"   : '$( getContent $dirsystem/volumemute 0 )'
 , "webradio"     : false'
 	if [[ -e $dirsystem/scrobble ]]; then

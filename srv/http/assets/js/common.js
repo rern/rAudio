@@ -1237,6 +1237,15 @@ window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 
+function volumeMaxNotify() {
+	banner( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
+}
+function volumeMaxSet() {
+	if ( S.volumemax && S.volume > S.volumemax ) {
+		S.volume = S.volumemax;
+		volumeMaxNotify();
+	}
+}
 function volumeMuteToggle() {
 	if ( S.volumemute ) {
 		S.volume     = S.volumemute;

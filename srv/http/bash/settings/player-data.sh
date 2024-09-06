@@ -5,7 +5,8 @@
 . /srv/http/bash/common.sh
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
-[[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=$( volumeGet valdb hw )
+[[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=( $( volumeGet valdb hw ) )
+[[ -e  $dirsystem/volumelimit ]] && volumemax=$( getVar max $dirsystem/volumelimit.conf )
 
 ##########
 data='
@@ -50,8 +51,9 @@ data='
 , "updatetime"     : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db"    : '$( [[ -e $dirmpd/listing || -e $dirmpd/updating ]] && echo true )'
 , "version"        : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
-, "volume"         : '$volume'
-, "volumelimit"    : '$( exists $dirsystem/volumelimit )
+, "volume"         : '${volume[0]}'
+, "volumedb"       : '${volume[1]}'
+, "volumemax"      : '$volumemax
 
 for key in buffer outputbuffer; do
 	data+='

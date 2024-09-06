@@ -16,34 +16,38 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 	var bluealsa = this.id.slice( -1 ) === 'a';
 	if ( bluealsa ) {
 		var control = S.btmixer.replace( / *-* A2DP/, '' );
-		var cmd     = [ 'volume', S.btmixer, '', S.volume.val ];
+		var cmd     = [ 'volume', S.btmixer, '', S.volume ];
 		var cmd0db  = 'volume0dbbt';
 	} else {
 		var control = S.output.mixer;
-		var cmd     = [ 'volume', S.output.mixer, S.output.card, S.volume.val ];
+		var cmd     = [ 'volume', S.output.mixer, S.output.card, S.volume ];
 		var cmd0db  = 'volume0db';
 	}
 	info( {
 		  icon       : SW.icon
 		, title      : 'Volume Control'
 		, list       : [ control, 'range' ]
-		, values     : S.volume.val
+		, values     : S.volume
 		, prompt     : '<br>'+ warning
 		, beforeshow : () => {
-			if ( S.volumelimit ) $( '#infoButton' ).addClass( 'hide' );
+			if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
 			var $range = $( '#infoList input' );
 			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			$range.on( 'input', function() {
-				bash( [ ...cmd, +$range.val(), 'CMD CONTROL CARD CURRENT TARGET' ] );
+				S.volume = +$range.val();
+				volumeMaxSet();
+				volumeInfoSet();
+				bash( [ ...cmd, S.volume, 'CMD CONTROL CARD CURRENT TARGET' ] );
 			} );
 			$( '.inforange i' ).on( 'click', function() {
-				S.volume.val = +$range.val();
+				S.volume = +$range.val();
+				volumeMaxSet();
 				$range
 					.trigger( 'input' )
 					.trigger( 'keyup' );
 			} );
-			volumeInfoSet( bluealsa );
+			volumeInfoSet();
 		}
 		, cancel     : () => {
 			if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) {
@@ -54,7 +58,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		}
 		, oklabel    : ico( 'set0' ) +'0dB'
 		, ok         : () => {
-			if ( S.volume.db > -2 ) {
+			if ( S.volumedb > -2 ) {
 				bash( [ cmd0db ] );
 			} else {
 				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
@@ -66,7 +70,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 } );
 $( '#mixertype' ).on( 'click', function() {
 	if ( S.mixertype ) {
-		if ( S.volume.db > -2 ) {
+		if ( S.volumedb > -2 ) {
 			setMixerType( 'none' );
 		} else {
 			info( {
@@ -252,7 +256,7 @@ audio_output {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function infoNoVolume() {
-	if ( S.volume.db > -2 ) {
+	if ( S.volumedb > -2 ) {
 		infoNoVolumeSet();
 	} else {
 		info( {
@@ -332,7 +336,7 @@ function infoSoxrCustom() {
 	} );
 }
 function noVolumeSet() {
-	S.novolume = ! S.volume.db && ! [ 'mixertype', 'crossfade', 'normalization', 'replaygain', 'soxr'
+	S.novolume = ! S.volumedb && ! [ 'mixertype', 'crossfade', 'normalization', 'replaygain', 'soxr'
 										  , 'camilladsp', 'equalizer' ].some( k => S[ k ] );
 	$( '#novolume' ).prop( 'checked', S.novolume );
 }
@@ -392,15 +396,10 @@ function setMixerType( mixertype ) {
 	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 }
 function psVolume( data ) {
-	if ( 'max' in data ) {
-		volumeInfoSet();
-		banner( 'volumelimit', 'Volume Limit', 'Max: '+ data.max );
-		return
-	}
-	
 	if ( ! ( 'db' in data ) ) return
 	 
-	S.volume = data;
+	S.volume   = data.val;
+	S.volumedb = data.db;
 	if ( ! $( '#infoList .inforange' ).length ) return
 	
 	noVolumeSet();
@@ -412,13 +411,10 @@ function psVolume( data ) {
 		volumeInfoSet();
 	}, 300 );
 }
-function volumeInfoSet( bluealsa ) {
-	V.local = false; // from psValue()
-	var volume = bluealsa ? S.btvolume : S.volume;
-	var val = volume.val;
-	var db  = volume.db;
-	$( '.inforange .value' ).text( val );
-	$( '.inforange input' ).val( val );
-	$( '.inforange .sub' ).text( val ? db +' dB' : 'Mute' );
-	$( '#infoOk' ).toggleClass( 'disabled', db === 0 || db === '' );
+function volumeInfoSet() {
+	V.local = false;
+	$( '.inforange .value' ).text( S.volume );
+	$( '.inforange input' ).val( S.volume );
+	$( '.inforange .sub' ).text( S.volumedb +' dB' );
+	$( '#infoOk' ).toggleClass( 'disabled', S.volumedb === 0 || S.volumedb === '' );
 }

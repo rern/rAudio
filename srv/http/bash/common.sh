@@ -468,7 +468,7 @@ volume() {
 		max=$( getVar max $filevolumelimit.conf )
 		if (( $TARGET > $max )); then
 			TARGET=$max
-			pushData volume '{ "max": '$max' }'
+#			pushData volume '{ "max": '$max' }'
 			(( $CURRENT == $max )) && exit
 # --------------------------------------------------------------------
 		fi
@@ -552,7 +552,7 @@ volumeGet() {
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
 			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 			;;
-		valdb ) echo '{ "val": '$val', "db": '$db' }';;
+		valdb ) echo $val $db;;
 		db )    echo $db;;
 		* )     echo $val;;
 	esac
