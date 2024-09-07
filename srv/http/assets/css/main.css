@@ -1505,6 +1505,9 @@ i.map.disabled, .map.disabled i {
 	color: var( --cw );
 	text-shadow: var( --shadow-text );
 }
+#lib-list .coverart {
+	max-width: 200px;
+}
 .coverart div {
 	position: relative;
 	padding-bottom: 100%;
