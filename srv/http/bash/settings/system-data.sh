@@ -131,6 +131,13 @@ chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baud ]] && baud=800000
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
+if [[ -e $dirsystem/volumelimit ]]; then
+	volumelimit=true
+	volumelimitconf=$( conf2json $dirsystem/volumelimit.conf )
+else
+	volumelimitconf='{ "STARTUP": '$( volumeGet )', "MAX": 100 }'
+fi
+
 ##########
 data='
 , "ap"                : '$( exists $dirsystem/ap )'
@@ -173,9 +180,8 @@ data='
 , "tftreboot"         : '$tftreboot'
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"
-, "volume"            : '$( volumeGet )'
-, "volumelimit"       : '$( exists $dirsystem/volumelimit )'
-, "volumelimitconf"   : '$( conf2json $dirsystem/volumelimit.conf )'
+, "volumelimit"       : '$volumelimit'
+, "volumelimitconf"   : '$volumelimitconf'
 , "vuled"             : '$( exists $dirsystem/vuled )'
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'

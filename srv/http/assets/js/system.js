@@ -68,10 +68,6 @@ var default_v     = {
 	, softlimit     : {
 		SOFTLIMIT : 65
 	}
-	, volumelimit   : {
-		  STARTUP : S.volume
-		, MAX     : 100
-	}
 	, vuled         : {
 		  P0 : 14
 		, P1 : 15
@@ -566,7 +562,7 @@ $( '#setting-volumelimit' ).on( 'click', function() {
 		, title        : SW.title
 		, list         : [ liststartup, listlimit ]
 		, boxwidth     : 70
-		, values       : S.volumelimitconf || default_v.volumelimit
+		, values       : S.volumelimitconf
 		, checkchanged : S.volumelimit
 		, cancel       : switchCancel
 		, ok           : switchEnable
