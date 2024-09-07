@@ -45,5 +45,5 @@ $dirbash/cmd.sh cachebust
 
 installfinish
 
-# 20240818
-systemctl restart mpd
+# 20240913
+$dirsettings/player-conf.sh

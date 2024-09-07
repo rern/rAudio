@@ -120,4 +120,4 @@ if [[ -e $dirshm/btreceiver ]]; then
 else
 	[[ $MIXERTYPE == software ]] && FN=volumeMpd || FN=volumeAmixer
 fi
-echo $FN > $dirsystem/volumefunction
+echo $FN > $dirshm/volumefunction

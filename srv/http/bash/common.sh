@@ -480,7 +480,7 @@ volume() {
 	else
 		rm -f $filevolumemute
 	fi
-	fn_volume=$( < $dirsystem/volumefunction )
+	fn_volume=$( < $dirshm/volumefunction )
 	if [[ $pageplayer ]]; then
 		$fn_volume $TARGET% "$CONTROL" $CARD
 		volumeGet push
@@ -552,7 +552,7 @@ volumeMpd() {
 	mpc -q volume ${1/\%}
 }
 volumeLimit() {
-	fn_volume=$( < $dirsystem/volumefunction )
+	fn_volume=$( < $dirshm/volumefunction )
 	val=$( getVar $1 $dirsystem/volumelimit.conf )
 	if [[ -e $dirshm/btreceiver ]]; then
 		mixer=$( < $dirshm/btmixer )
