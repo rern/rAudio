@@ -463,16 +463,6 @@ snapserverList() {
 	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
 }
 volume() {
-	filevolumelimit=$dirsystem/volumelimit
-	if [[ -e $filevolumelimit ]]; then
-		max=$( getVar max $filevolumelimit.conf )
-		if (( $TARGET > $max )); then
-			TARGET=$max
-#			pushData volume '{ "max": '$max' }'
-			(( $CURRENT == $max )) && exit
-# --------------------------------------------------------------------
-		fi
-	fi
 	filevolumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	if [[ $TYPE != dragpress ]]; then

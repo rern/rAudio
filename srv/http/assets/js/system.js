@@ -69,7 +69,7 @@ var default_v     = {
 		SOFTLIMIT : 65
 	}
 	, volumelimit   : {
-		  STARTUP : 50
+		  STARTUP : S.volume
 		, MAX     : 100
 	}
 	, vuled         : {

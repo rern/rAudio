@@ -31,15 +31,6 @@ if [[ -e /boot/kernel.img ]]; then
 	fi
 fi
 
-# 20240719
-rm -f $dirshm/system
-
-file=$dirsystem/lcdcharconf.py
-if [[ -e $file ]]; then
-	sed -i -E 's/False|"//g' $file
-	mv $file $dirsystem/lcdchar.conf
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 

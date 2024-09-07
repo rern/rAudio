@@ -173,6 +173,7 @@ data='
 , "tftreboot"         : '$tftreboot'
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"
+, "volume"            : '$( volumeGet )'
 , "volumelimit"       : '$( exists $dirsystem/volumelimit )'
 , "volumelimitconf"   : '$( conf2json $dirsystem/volumelimit.conf )'
 , "vuled"             : '$( exists $dirsystem/vuled )'
