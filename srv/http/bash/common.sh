@@ -548,6 +548,16 @@ volumeGet() {
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
 }
+volumeMaxGet() {
+	local volumemax
+	if [[ -e  $dirsystem/volumelimit ]]; then
+		volumemax=$( getVar max $dirsystem/volumelimit.conf )
+		[[ $volumemax == 100 ]] && volumemax=false
+	else
+		volumemax=false
+	fi
+	echo $volumemax
+}
 volumeMpd() {
 	mpc -q volume ${1/\%}
 }

@@ -6,7 +6,6 @@
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 [[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=( $( volumeGet valdb hw ) )
-[[ -e  $dirsystem/volumelimit ]] && volumemax=$( getVar max $dirsystem/volumelimit.conf )
 
 ##########
 data='
@@ -53,7 +52,7 @@ data='
 , "version"        : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volume"         : '${volume[0]}'
 , "volumedb"       : '${volume[1]}'
-, "volumemax"      : '$volumemax
+, "volumemax"      : '$( volumeMaxGet )'
 
 for key in buffer outputbuffer; do
 	data+='

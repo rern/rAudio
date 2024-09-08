@@ -4,6 +4,17 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240913
+file=$dirsystem/volumeboot
+if [[ -e $file ]]; then
+	echo "\
+startup=$( cut -d= -f2 $file.conf )
+max=100
+" > $dirsystem/volumelimit.conf
+	rm -f $file*
+	touch $dirsystem/volumelimit
+fi
+
 # 20240906
 revision=$( grep ^Revision /proc/cpuinfo )
 BB=${revision: -3:2}
