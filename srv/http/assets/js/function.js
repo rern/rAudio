@@ -523,7 +523,7 @@ function displaySubMenu() {
 		.toggleClass( 'i-camilladsp', D.camilladsp )
 		.toggleClass( 'i-equalizer', D.equalizer );
 	D.dsp = D.camilladsp || D.equalizer;
-	[ 'dsp', 'logout', 'multiraudio', 'relays', 'screenoff', 'snapclient' ].forEach( el => {
+	[ 'dsp', 'logout', 'multiraudio', 'relays', 'snapclient' ].forEach( el => {
 		var enabled = D[ el ];
 		$( '#'+ el )
 			.toggleClass( 'hide', ! enabled )
