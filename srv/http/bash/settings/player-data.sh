@@ -52,7 +52,7 @@ data='
 , "version"        : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
 , "volume"         : '${volume[0]}'
 , "volumedb"       : '${volume[1]}'
-, "volumemax"      : '$( volumeMaxGet )'
+, "volumemax"      : '$( volumeMaxGet )
 
 for key in buffer outputbuffer; do
 	data+='
