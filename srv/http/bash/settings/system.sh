@@ -548,11 +548,6 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	pushDirCounts usb
 	;;
-volumelimit )
-	enableFlagSet
-	volumeLimit max
-	pushRefresh
-	;;
 vuled )
 	enableFlagSet
 	pins=$( cut -d= -f2 $dirsystem/vuled.conf )

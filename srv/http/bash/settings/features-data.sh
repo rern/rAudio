@@ -9,6 +9,13 @@
 . /srv/http/bash/common.sh
 
 packageActive camilladsp localbrowser mediamtx nfs-server shairport-sync smb snapserver spotifyd upmpdcli
+if [[ -e $dirsystem/volumelimit ]]; then
+	volumelimit=true
+	volumelimitconf=$( conf2json $dirsystem/volumelimit.conf )
+else
+	volumelimitconf='{ "STARTUP": '$( volumeGet )', "MAX": 100 }'
+fi
+
 ##########
 data='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
@@ -38,7 +45,9 @@ data='
 , "shairport-sync"   : '$shairportsync'
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )'
-, "upmpdcli"         : '$upmpdcli
+, "upmpdcli"         : '$upmpdcli'
+, "volumelimit"       : '$volumelimit'
+, "volumelimitconf"   : '$volumelimitconf
 
 if [[ -e /usr/bin/iwctl ]]; then
 	. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$( hostname ).ap )

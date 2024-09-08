@@ -430,6 +430,22 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 		, fileconf     : true
 	} );
 } );
+$( '#setting-volumelimit' ).on( 'click', function() {
+	var liststartup = [ 'Startup default', 'number', { updn: { step: 1, min: 0, max: 100 } } ];
+	var listlimit   = liststartup.slice();
+	listlimit[ 0 ]  = 'Maximum limit';
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, list         : [ liststartup, listlimit ]
+		, boxwidth     : 70
+		, values       : S.volumelimitconf
+		, checkchanged : S.volumelimit
+		, cancel       : switchCancel
+		, ok           : switchEnable
+		, fileconf     : true
+	} );
+} );
 
 } );
 

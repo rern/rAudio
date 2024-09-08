@@ -19,6 +19,7 @@ $id_data      = [
 	, 'spotifyd'       => [ 'label' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true, 'exist' => 'spotifyd' ]
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
 	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
+	, 'volumelimit'   => [ 'label' => 'Volume Limit' ]
 ];
 commonVariables( [
 	  'buttons' => [ 'gear', 'lastfm', 'microsd', 'networks', 'usbdrive' ]
@@ -269,6 +270,14 @@ Stop timer:
  · Stop player
  · Set volume back as before mute
  · If set, power off.
+EOF
+	]
+	, [
+		  'id'       => 'volumelimit'
+		, 'help'     => <<< EOF
+Set volume level:
+ · Default on startup
+ · Maximum limit
 EOF
 	]
 ];

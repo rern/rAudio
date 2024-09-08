@@ -457,5 +457,10 @@ stoptimer )
 	fi
 	pushRefresh
 	;;
+volumelimit )
+	enableFlagSet
+	volumeLimit max
+	pushRefresh
+	;;
 	
 esac
