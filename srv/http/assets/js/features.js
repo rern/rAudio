@@ -431,16 +431,30 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-volumelimit' ).on( 'click', function() {
-	var liststartup = [ 'Startup default', 'number', { updn: { step: 1, min: 0, max: 100 } } ];
-	var listlimit   = liststartup.slice();
-	listlimit[ 0 ]  = 'Maximum limit';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ liststartup, listlimit ]
+		, list         : [
+			  [ 'Startup default', 'number', { updn: { step: 1, min: 0, max: S.volumelimitconf.MAX } } ]
+			, [ 'Maximum limit',   'number', { updn: { step: 1, min: 0, max: 100 } } ]
+		]
 		, boxwidth     : 70
 		, values       : S.volumelimitconf
 		, checkchanged : S.volumelimit
+		, beforeshow   : () => {
+			var $input = $( '#infoList input' );
+			var $up    = $( '#infoList .up' ).eq( 0 );
+			$( '#infoList tr' ).eq( 1 ).on( 'click', 'i', function() {
+				var $startup = $input.eq( 0 );
+				var max      = $input.eq( 1 ).val();
+				if ( $startup.val() > max ) {
+					$startup.val( max );
+					$up.addClass( 'disabled' );
+				} else {
+					$up.removeClass( 'disabled' );
+				}
+			} );
+		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
