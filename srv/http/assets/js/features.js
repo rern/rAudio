@@ -442,12 +442,13 @@ $( '#setting-volumelimit' ).on( 'click', function() {
 		, values       : S.volumelimitconf
 		, checkchanged : S.volumelimit
 		, beforeshow   : () => {
-			var $input = $( '#infoList input' );
-			var $up    = $( '#infoList .up' ).eq( 0 );
-			$( '#infoList tr' ).eq( 1 ).on( 'click', 'i', function() {
-				var $startup = $input.eq( 0 );
-				var max      = $input.eq( 1 ).val();
-				if ( $startup.val() > max ) {
+			var $input   = $( '#infoList input' );
+			var $startup = $input.eq( 0 );
+			var $max     = $input.eq( 1 );
+			var $up      = $( '#infoList .up' ).eq( 0 );
+			$( '#infoList .up' ).eq( 1 ).on( 'click', function() {
+				var max = +$max.val();
+				if ( +$startup.val() > max ) {
 					$startup.val( max );
 					$up.addClass( 'disabled' );
 				} else {
