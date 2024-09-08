@@ -629,7 +629,7 @@ $( '#volume' ).roundSlider( {
 		if ( V.local || V.drag ) return
 		
 		if ( S.volumemax && e.value > S.volumemax ) {
-			volumeMaxNotify();
+			banner( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
 			if ( S.volume === S.volumemax ) return false
 			
 			$volumeRS.setValue( S.volumemax );

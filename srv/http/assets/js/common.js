@@ -1237,13 +1237,10 @@ window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 
-function volumeMaxNotify() {
-	banner( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
-}
 function volumeMaxSet() {
 	if ( S.volumemax && S.volume > S.volumemax ) {
 		S.volume = S.volumemax;
-		volumeMaxNotify();
+		banner( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
 	}
 }
 function volumeMuteToggle() {
