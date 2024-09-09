@@ -147,7 +147,7 @@ shairportStop() {
 splashRotate() {
 	local rotate
 	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
-	convert \
+	magick \
 		-density 48 \
 		-background none $dirimg/icon.svg \
 		-rotate $rotate \
@@ -293,7 +293,7 @@ s|(rect.*hsl).*;|\1($hsl);|
 s|(path.*hsl).*;|\1(${hsg}75%);|
 " $dirimg/icon.svg
 	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
-		| convert -density 96 -background none - $dirimg/icon.png
+		| magick -density 96 -background none - $dirimg/icon.png
 	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	pushData reload 1
@@ -333,11 +333,11 @@ CMD ARTIST ALBUM MODE DISCID" &> /dev/null &
 		mv "$backupfile" "$restorefile"
 		pushDataCoverart "$restorefile"
 		if [[ ${restorefile: -3} != gif ]]; then
-			convert "$restorefile" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
-			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
+			magick "$restorefile" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
+			magick "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		else
 			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
-			convert "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
+			magick "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		fi
 	else
 		url=$( $dirbash/status-coverart.sh "cmd

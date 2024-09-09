@@ -2,7 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-# convert each line to each args
 readarray -t args <<< $1
 
 type=${args[0]}
@@ -24,7 +23,7 @@ case $type in
 			rm -f $coverfile
 		fi
 		if [[ ! $gif ]]; then
-			cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
+			cp -f $source "$target" || magick $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
 		else
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 		fi
@@ -33,11 +32,11 @@ case $type in
 		name=${args[3]}
 		rm -f "$targetnoext".*
 		if [[ ! $gif ]]; then
-			cp -f $source "$target" || convert $source -thumbnail 200x200\> -unsharp 0x.5 "$target"
+			cp -f $source "$target" || magick $source -thumbnail 200x200\> -unsharp 0x.5 "$target"
 		else
 			gifsicle -O3 --resize-fit 200x200 $source > "$target"
 		fi
-		convert "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
+		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
 		;;
 	coverart )
 		dir=$( dirname "$target" )
@@ -45,22 +44,22 @@ case $type in
 		coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 		[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 		if [[ ! $gif ]]; then
-			cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
-			convert "$target" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
+			cp -f $source "$target" || magick $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
+			magick "$target" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 		else
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 			gifsicle -O3 --resize-fit 200x200 $source > "$dir/coverart.gif"
 		fi
-		convert "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
+		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		;;
 	dabradio | webradio )
 		rm -f "$targetnoext".* "$targetnoext-thumb".*
 		if [[ ! $gif ]]; then
-			cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
+			cp -f $source "$target" || magick $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
 		else
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 		fi
-		convert "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
+		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
 		;;
 esac
 coverart=${target/\/srv\/http}

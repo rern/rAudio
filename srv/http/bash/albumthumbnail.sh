@@ -83,8 +83,8 @@ while read mpdpath; do
 			gifsicle -O3 --resize-fit 200x200 "$coverfile" > "$dir/coverart.gif"
 			[[ $? == 0 ]] && gifsicle -O3 --resize-fit 80x80 "$coverfile" > "$dir/thumb.gif" || error=1
 		else
-			convert "$coverfile" -thumbnail 200x200\> -unsharp $unsharp "$dir/coverart.jpg"
-			[[ $? == 0 ]] && convert "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg" || error=1
+			magick "$coverfile" -thumbnail 200x200\> -unsharp $unsharp "$dir/coverart.jpg"
+			[[ $? == 0 ]] && magick "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg" || error=1
 		fi
 		if [[ $error ]]; then
 			if [[ ! -w "$dir" ]]; then
