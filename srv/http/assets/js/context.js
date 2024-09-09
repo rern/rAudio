@@ -480,7 +480,7 @@ function thumbnailUpdate() {
 	bash( [ 'coverfileget', V.list.path, 'CMD DIR' ], data => {
 		var message = data.src ? '<img src="'+ data.src + versionHash() +'">' : 'With coverarts in each folder:';
 		message    += '<br>'+ ico( 'folder gr' ) +' <wh>'+ V.list.path +'</wh>';
-		infoThumbnail( icon, message, V.list.path, data.nosubdir );
+		infoThumbnail( icon, message, V.list.path, data.subdir );
 	}, 'json' );
 }
 function updateDirectory() {

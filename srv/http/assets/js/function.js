@@ -699,14 +699,22 @@ function infoLibraryOption() {
 		, ok           : displaySave
 	} );
 }
-function infoThumbnail( icon, message, path, nosubdir ) {
+function infoThumbnail( icon, message, path, subdir ) {
 	var list = [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ];
 	info( {
 		  icon    : icon
 		, title   : 'Update Thumbnails'
 		, message : message
-		, list    : nosubdir ? false : list
-		, ok      : () => thumbUpdate( path, nosubdir || infoVal() )
+		, list    : subdir ? list : false
+		, ok      : () => {
+			$( 'body' ).append(
+				 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
+				+'<input type="hidden" name="path" value="'+ path +'">'
+				+'<input type="hidden" name="overwrite" value="'+ ( subdir ? 'overwrite' : '' ) +'">'
+				+'</form>'
+			);
+			$( '#formtemp' ).submit();
+		}
 	} );
 }
 function infoTitle() {
@@ -1977,15 +1985,6 @@ function switchPage( page ) {
 	}
 	$( '.page' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
-}
-function thumbUpdate( path, overwrite ) {
-	$( 'body' ).append(
-		 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
-		+'<input type="hidden" name="path" value="'+ path +'">'
-		+'<input type="hidden" name="overwrite" value="'+ ( overwrite ? 'overwrite' : '' ) +'">'
-		+'</form>'
-	);
-	$( '#formtemp' ).submit();
 }
 function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )

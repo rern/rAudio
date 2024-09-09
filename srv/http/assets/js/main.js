@@ -1054,7 +1054,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	}
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
-	infoThumbnail( $( '.button-coverart' )[ 0 ].outerHTML, 'With coverarts in folder of each album:', '' );
+	infoThumbnail( $( '.button-coverart' )[ 0 ].outerHTML, 'With coverarts in folder of each album:', true );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
 	if ( S.updating_db ) {
