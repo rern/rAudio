@@ -479,16 +479,16 @@ function thumbnailUpdate() {
 	var src  = $img.attr( 'src' );
 	if ( $img.length ) {
 		var icon    = '<span class="button-coverart"><img src="'+ src +'"></span>';
-		var message = '<img class="imgold" src="'+ src +'">';
+		var message = '<img src="'+ src +'" style="opacity: 0.5">';
 	} else {
 		var icon    = 'coverart';
 		var message = '';
 	}
 	bash( [ 'coverfileget', V.list.path, 'CMD DIR' ], data => {
 		if ( data.src ) {
-			message += ' <img class="imgnew" src="'+ data.src + versionHash() +'">';
+			message += ' <img src="'+ data.src + versionHash() +'">';
 		} else {
-			message += '<br>With coverarts in each folder:';
+			message += '<br>With coverarts in each subfolder:';
 		}
 		message    += '<br>'+ ico( 'folder gr' ) +' <wh>'+ V.list.path +'</wh>';
 		infoThumbnail( icon, message, V.list.path, data.subdir );
