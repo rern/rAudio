@@ -156,7 +156,7 @@ coverFileGet() {
 	path=$1
 	coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
-	[[ $coverfile ]] && rawUrlEncode "$coverfile"
+	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" | sed 's|%2F|/|g' # preserve spaces and special characters
 }
 data2json() {
 	local json page
@@ -397,11 +397,6 @@ state="play"
 Title="'$title'"'
 	echo "$status" > $dirshm/status
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
-}
-rawUrlEncode() { # rawurlencode - preserve spaces and special characters
-	coverfile=$1
-	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
-	echo "${coverfile//%2F/\/}"
 }
 serviceRestartEnable() {
 	systemctl restart $CMD
