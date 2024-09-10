@@ -156,7 +156,10 @@ coverFileGet() {
 	path=$1
 	coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
-	[[ $coverfile ]] && echo "$coverfile"
+	if [[ $coverfile ]]; then
+		coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
+		echo "${coverfile//%2F/\/}"
+	fi
 }
 data2json() {
 	local json page

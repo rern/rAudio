@@ -476,9 +476,20 @@ function tagModeSwitch() {
 }
 function thumbnailUpdate() {
 	var $img = V.list.li.find( 'img' );
-	var icon = $img.length ? '<span class="button-coverart"><img src="'+ $img.attr( 'src' ) +'"></span>' : 'coverart';
+	var src  = $img.attr( 'src' );
+	if ( $img.length ) {
+		var icon    = '<span class="button-coverart"><img src="'+ src +'"></span>';
+		var message = '<img class="imgold" src="'+ src +'">';
+	} else {
+		var icon    = 'coverart';
+		var message = '';
+	}
 	bash( [ 'coverfileget', V.list.path, 'CMD DIR' ], data => {
-		var message = data.src ? '<img src="'+ data.src + versionHash() +'">' : 'With coverarts in each folder:';
+		if ( data.src ) {
+			message += ' <img class="imgnew" src="'+ data.src + versionHash() +'">';
+		} else {
+			message += 'With coverarts in each folder:';
+		}
 		message    += '<br>'+ ico( 'folder gr' ) +' <wh>'+ V.list.path +'</wh>';
 		infoThumbnail( icon, message, V.list.path, data.subdir );
 	}, 'json' );

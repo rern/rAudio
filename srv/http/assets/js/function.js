@@ -349,7 +349,7 @@ function coverartChange() {
 		  icon        : icon
 		, title       : title
 		, message     : '<img class="imgold" src="'+ src +'">'
-					   +'<br><p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
+					   +'<p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
