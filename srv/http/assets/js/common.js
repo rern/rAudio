@@ -770,9 +770,9 @@ function infoFileImageRender( src, original, resize ) {
 			+'<img class="infoimgnew" src="'+ src +'">'
 			+'<div class="infoimgwh">'
 			+ ( resize ? resize : '' )
-			+ ( original ? '<br>original: '+ original : '' )
+			+ ( original ? 'original: '+ original : '' )
+			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ico( 'redo rotate' ) +'Tap to rotate' )
 			+'</div>'
-			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ico( 'redo rotate' ) +'&ensp;Tap to rotate' )
 		+'</span>'
 	);
 }
