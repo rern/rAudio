@@ -1322,6 +1322,17 @@ i.map.disabled, .map.disabled i {
 	clear: both;
 	margin: 0;
 }
+.infomessage .thumbnail {
+	display: inline-block;
+	margin-bottom: 10px;
+}
+.infomessage .thumbnail:nth-child( 2 ) {
+	margin-left: 10px;
+}
+.infomessage .thumbnail img {
+	margin-bottom: -5px;
+}
+
 /* ---------------------- breadcrumb and index ---------------------- */
 .content-top {
 	position: fixed;
