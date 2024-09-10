@@ -488,7 +488,7 @@ function thumbnailUpdate() {
 		if ( data.src ) {
 			message += ' <img class="imgnew" src="'+ data.src + versionHash() +'">';
 		} else {
-			message += 'With coverarts in each folder:';
+			message += '<br>With coverarts in each folder:';
 		}
 		message    += '<br>'+ ico( 'folder gr' ) +' <wh>'+ V.list.path +'</wh>';
 		infoThumbnail( icon, message, V.list.path, data.subdir );
