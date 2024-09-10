@@ -866,7 +866,7 @@ function infoToggle( reset ) {
 		$( '#infoOverlay' ).trigger( 'focus' );
 	}
 	if ( ! page ) {
-		$( '.page, .list' ).css( { height: height, overflow: overflow } );
+		$( '.page, .list' ).css( { 'max-height': height, overflow: overflow } );
 		$( '.list' ).css( 'padding-bottom', padding );
 	}
 	$( window ).scrollTop( scrolltop );

@@ -700,7 +700,8 @@ function infoLibraryOption() {
 	} );
 }
 function infoThumbnail( icon, message, path, subdir ) {
-	var list = [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ];
+	if ( ! path ) subdir = true;
+	var list = [ '', 'radio', { kv: { 'Only added or removed': '', 'Rebuild all': 'overwrite' }, sameline: false } ];
 	info( {
 		  icon    : icon
 		, title   : 'Update Thumbnails'
@@ -710,7 +711,7 @@ function infoThumbnail( icon, message, path, subdir ) {
 			$( 'body' ).append(
 				 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
 				+'<input type="hidden" name="path" value="'+ path +'">'
-				+'<input type="hidden" name="overwrite" value="'+ ( subdir ? 'overwrite' : '' ) +'">'
+				+'<input type="hidden" name="overwrite" value="'+ infoVal() +'">'
 				+'</form>'
 			);
 			$( '#formtemp' ).submit();
