@@ -585,25 +585,29 @@ var listwebradio = {
 	}
 }
 function webRadioEdit() {
-	var url  = V.list.path;
-	var rprf = url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' );
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit Web Radio'
 		, message      : '<img src="'+ ( V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
-		, list         : rprf ? listwebradio.list.slice( 0, 2 ) : listwebradio.list
-		, values       : [ V.list.name, url, V.list.li.data( 'charset' ) || 'UTF-8' ]
+		, list         : listwebradio.list
+		, values       : [ V.list.name, V.list.path, V.list.li.data( 'charset' ) || 'UTF-8' ]
 		, checkchanged : true
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
-		, beforeshow   : rprf ? '' : listwebradio.button
+		, beforeshow   : () => {
+			if ( /stream.radioparadise.com|icecast.radiofrance.fr/.test( V.list.path ) ) {
+				$( '#infoList tr' ).eq( 2 ).addClass( 'hide' );
+			} else {
+				listwebradio.button();
+			}
+		}
 		, oklabel      : ico( 'save' ) +'Save'
 		, ok           : () => {
 			var values  = infoVal();
 			var name    = values[ 0 ];
 			var newurl  = values[ 1 ];
-			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
-			bash( [ 'webradioedit', V.list.dir, name, newurl, charset, url, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
+			var charset = values[ 2 ].replace( /UTF-8|iso *-* */, '' );
+			bash( [ 'webradioedit', V.list.dir, name, newurl, charset, V.list.path, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
 		}
@@ -635,12 +639,11 @@ function webRadioNew( name, url, charset ) {
 			var values  = infoVal();
 			var name    = values[ 0 ];
 			var url     = values[ 1 ];
-			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
-			var dir     = $( '#lib-path .lipath' ).text();
-			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Add ...', -1 );
-			bash( [ 'webradioadd', dir, name, url, charset, 'CMD DIR NAME URL CHARSET' ], error => {
-				if ( error ) webRadioExists( error, name, url, charset );
+			var charset = values[ 2 ].replace( /UTF-8|iso *-* */, '' );
+			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Get URL ...', -1 );
+			bash( [ 'webradioadd', $( '#lib-path .lipath' ).text(), name, url, charset, 'CMD DIR NAME URL CHARSET' ], error => {
 				bannerHide();
+				if ( error ) webRadioExists( error, name, url, charset );
 			} );
 		}
 	} );
