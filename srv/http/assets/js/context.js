@@ -606,7 +606,7 @@ function webRadioEdit() {
 			var values  = infoVal();
 			var name    = values[ 0 ];
 			var newurl  = values[ 1 ];
-			var charset = values[ 2 ].replace( /UTF-8|iso *-* */, '' );
+			var charset = values[ 2 ].replace( /UTF-*8|iso *-* */, '' );
 			bash( [ 'webradioedit', V.list.dir, name, newurl, charset, V.list.path, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
@@ -639,7 +639,7 @@ function webRadioNew( name, url, charset ) {
 			var values  = infoVal();
 			var name    = values[ 0 ];
 			var url     = values[ 1 ];
-			var charset = values[ 2 ].replace( /UTF-8|iso *-* */, '' );
+			var charset = values[ 2 ].replace( /UTF-*8|iso *-* */, '' );
 			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Get URL ...', -1 );
 			bash( [ 'webradioadd', $( '#lib-path .lipath' ).text(), name, url, charset, 'CMD DIR NAME URL CHARSET' ], error => {
 				bannerHide();
