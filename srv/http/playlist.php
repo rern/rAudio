@@ -181,7 +181,7 @@ foreach( $lists as $list ) {
 		if ( $stationname !== '' ) {
 			$notsaved    = 0;
 			$thumbsrc    = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
-			$icon        = imgIcon( $thumbsrc, 'filesavedpl', 'webradio' );
+			$icon        = imgIcon( $thumbsrc, 'filesavedpl', $radio );
 		} else {
 			$notsaved    = 1;
 			$icon        = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
