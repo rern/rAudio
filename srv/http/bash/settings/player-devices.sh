@@ -67,9 +67,7 @@ if aplay -l | grep -q "^card $CARD: RPiCirrus"; then
 , "SPDIF"      : "SPDIF Out"
 , "Speakers"   : "SPKOUT Digital"
 }' > $dirshm/mixers
-
 	MIXER=$( getContent "$dirsystem/mixer-$NAME" 'HPOUT2 Digital' )
-	[[ $MIXER == SPDIF ]] && MIXER=
 else
 	amixer=$( amixer -c $CARD scontents )
 	if [[ $amixer ]]; then
@@ -93,6 +91,8 @@ else
 				MIXER=$( head -1 <<< $controls )
 			fi
 		fi
+	fi
+	if [[ $LISTMIXER ]]; then
 ######## >
 		echo "[ ${LISTMIXER:1} ]" > $dirshm/mixers
 	else
