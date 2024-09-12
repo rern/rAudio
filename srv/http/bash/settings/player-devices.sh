@@ -95,16 +95,16 @@ else
 	if [[ $LISTMIXER ]]; then
 ######## >
 		echo "[ ${LISTMIXER:1} ]" > $dirshm/mixers
+		mixertypefile="$dirsystem/mixertype-$NAME"
+		if [[ -e $mixertypefile ]]; then
+			MIXERTYPE=$( < "$mixertypefile" )
+		else
+			[[ $MIXER != SPDIF* ]] && MIXERTYPE=hardware || MIXERTYPE=none
+		fi
 	else
 		rm -f $dirshm/mixers
+		MIXERTYPE=none
 	fi
-fi
-
-mixertypefile="$dirsystem/mixertype-$NAME"
-if [[ -e $mixertypefile ]]; then
-	MIXERTYPE=$( < "$mixertypefile" )
-else
-	[[ $LISTMIXER ]] && MIXERTYPE=hardware || MIXERTYPE=none
 fi
 ######## >
 echo '
