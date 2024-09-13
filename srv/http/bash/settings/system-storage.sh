@@ -9,7 +9,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 	source=$3
 	mounted=$4
 	[[ $icon == usbdrive ]] && apm=$( hdparm -B $source | awk '/APM/ {print $NF}' ) # N / not supported
-	[[ ! $apm || $apm == supported ]] && apm=false
+	[[ ! $apm || $apm == supported ]] && apm=false || apm=true
 	info=false
 	[[ $icon != networks ]] && hdparm -I $source &> /dev/null && info=true
 	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
