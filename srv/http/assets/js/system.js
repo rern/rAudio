@@ -107,8 +107,8 @@ var lcdcharjson   = {
 	, fileconf     : true
 }
 var lcdcharfooter = ico( 'raudio', 'lcdlogo', 'tabindex' ) +'Logo&emsp;'+ ico( 'screenoff', 'lcdoff', 'tabindex' ) +'Sleep';
-var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ];
+var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -329,6 +329,11 @@ $( '#i2smodule' ).on( 'input', function() {
 	var output    = $( this ).find( ':selected' ).text();
 	var icon      = 'i2smodule';
 	var title     = 'Audio - I²S';
+	if ( aplayname === 'cirrus-wm5102' ) {
+		infoCirrusWM5102();
+		return
+	}
+	
 	if ( aplayname !== 'none' ) {
 		notify( icon, title, 'Enable ...' );
 	} else {
@@ -339,6 +344,11 @@ $( '#i2smodule' ).on( 'input', function() {
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 } );
 $( '#setting-i2smodule' ).on( 'click', function() {
+	if ( S.audioaplayname === 'cirrus-wm5102' ) {
+		infoCirrusWM5102();
+		return
+	}
+	
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -712,6 +722,20 @@ function i2sSelectShow() {
 	$( '#divi2s' ).addClass( 'hide' );
 	$( '#divi2smodule' ).removeClass( 'hide' );
 	$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2saudio );
+}
+function infoCirrusWM5102() {
+	info( {
+		  icon     : 'i2s'
+		, title    : 'Wolfson Audio'
+		, list     : [ 'Output', 'select', {
+			  Headphones : 'HPOUT1 Digital'
+			, 'Line out' : 'HPOUT2 Digital'
+			, SPDIF      : 'SPDIF Out'
+			, Speakers   : 'SPKOUT Digital'
+		} ]
+		, boxwidth : 130
+		, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', infoVal(), 'CMD APLAYNAME OUTPUT' ] )
+	} );
 }
 function infoLcdChar() {
 	var confi2c = S.lcdcharconf && S.lcdcharconf.INF === 'i2c';

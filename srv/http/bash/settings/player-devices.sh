@@ -58,54 +58,40 @@ defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
 
-if aplay -l | grep -q "^card $CARD: RPiCirrus"; then
-# card N: RPiCirrus [RPi-Cirrus], device 0: WM5102 AiFi wm5102-aif1-0 [WM5102 AiFi wm5102-aif1-0]
-######## >
-	echo '{
-  "Headphones" : "HPOUT1 Digital"
-, "Line out"   : "HPOUT2 Digital"
-, "SPDIF"      : "SPDIF Out"
-, "Speakers"   : "SPKOUT Digital"
-}' > $dirshm/mixers
-	MIXER=$( getContent "$dirsystem/mixer-$NAME" 'HPOUT2 Digital' )
-else
-	amixer=$( amixer -c $CARD scontents )
-	if [[ $amixer ]]; then
-		amixer=$( grep -A1 ^Simple <<< $amixer \
-					| sed 's/^\s*Cap.*: /^/' \
-					| tr -d '\n' \
-					| sed 's/--/\n/g' \
-					| grep -v "'Mic'" )
-		controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
-		[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
-		if [[ $controls ]]; then
-			controls=$( cut -d"'" -f2 <<< $controls | sort -u )
-			while read; do # no var name - use default REPLY to preserve trailing/all spaces
-				LISTMIXER+=', "'$REPLY'"'
-				[[ $REPLY == Digital ]] && MIXER=Digital
-			done <<< "$controls"
-			mixerfile="$dirsystem/mixer-$NAME"
-			if [[ -e $mixerfile ]]; then # manual
-				MIXER=$( < "$mixerfile" )
-			elif [[ ! $MIXER ]]; then    # not Digital
-				MIXER=$( head -1 <<< $controls )
-			fi
+amixer=$( amixer -c $CARD scontents )
+if [[ $amixer ]]; then
+	amixer=$( grep -A1 ^Simple <<< $amixer \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' \
+				| grep -v "'Mic'" )
+	controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
+	[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
+	if [[ $controls ]]; then
+		controls=$( cut -d"'" -f2 <<< $controls | sort -u )
+		while read; do # no var name - use default REPLY to preserve trailing/all spaces
+			LISTMIXER+=', "'$REPLY'"'
+			[[ $REPLY == Digital ]] && MIXER=Digital
+		done <<< "$controls"
+		mixerfile="$dirsystem/mixer-$NAME"
+		if [[ -e $mixerfile ]]; then # manual
+			MIXER=$( < "$mixerfile" )
+		elif [[ ! $MIXER ]]; then    # not Digital
+			MIXER=$( head -1 <<< $controls )
 		fi
-	fi
-	if [[ $LISTMIXER ]]; then
-######## >
-		echo "[ ${LISTMIXER:1} ]" > $dirshm/mixers
-		mixertypefile="$dirsystem/mixertype-$NAME"
-		if [[ -e $mixertypefile ]]; then
-			MIXERTYPE=$( < "$mixertypefile" )
-		else
-			[[ $MIXER != SPDIF* ]] && MIXERTYPE=hardware || MIXERTYPE=none
-		fi
-	else
-		rm -f $dirshm/mixers
-		MIXERTYPE=none
 	fi
 fi
+if [[ $LISTMIXER ]]; then
+######## >
+	echo "[ ${LISTMIXER:1} ]" > $dirshm/mixers
+	echo "$MIXER" > $dirshm/amixercontrol
+	MIXERTYPE=hardware
+else
+	rm -f $dirshm/{amixercontrol,mixers}
+	MIXERTYPE=none
+fi
+mixertypefile="$dirsystem/mixertype-$NAME"
+[[ -e $mixertypefile ]] && MIXERTYPE=$( < "$mixertypefile" )
 ######## >
 echo '
 card='$CARD'
@@ -113,7 +99,6 @@ name="'$NAME'"
 mixer="'$MIXER'"
 mixertype='$MIXERTYPE > $dirshm/output
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
-[[ $MIXER ]] && echo "$MIXER" > $dirshm/amixercontrol || rm -f $dirshm/amixercontrol
 echo $CARD > $dirsystem/asoundcard
 if [[ -e $dirshm/btreceiver ]]; then
 	FN=volumeBlueAlsa

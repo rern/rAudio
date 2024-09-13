@@ -161,7 +161,7 @@ gpio=25=op,dh"
 		echo $OUTPUT > $dirsystem/audio-output
 		if [[ $APLAYNAME == cirrus-wm5102 ]]; then
 			echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
-			touch /boot/cirrus
+			$dirsettings/player-wm5102.sh "$OUTPUT"
 		elif [[ $APLAYNAME == wm8960-soundcard ]]; then
 			i2cset=1
 		fi

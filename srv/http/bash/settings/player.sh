@@ -110,7 +110,6 @@ filetype )
 	;;
 mixer )
 	echo "$MIXER" > "$dirsystem/mixer-$DEVICE"
-	aplay -l | grep -q "^card $CARD: RPiCirrus" && $dirsettings/player-wm5102.sh "$MIXER" $( volumeGet )
 	$dirsettings/player-conf.sh
 	;;
 mixertype )

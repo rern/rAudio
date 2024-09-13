@@ -81,10 +81,8 @@ $( '#mixertype' ).on( 'click', function() {
 				, ok      : () => setMixerType( 'none' )
 			} );
 		}
-	} else if ( S.mixers && ! /SPDIF/i.test( S.output.mixer ) ) {
-		$( '#setting-mixertype' ).trigger( 'click' )
 	} else {
-		setMixerType( 'software' );
+		S.mixers ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
 	}
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
