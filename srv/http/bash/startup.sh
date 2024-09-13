@@ -5,7 +5,7 @@
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
 
-# pre-configure --------------------------------------------------------------
+# pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	id0=$( < /etc/machine-id )
 	rm /etc/machine-id
@@ -52,13 +52,7 @@ CMD ESSID"
 		mv -f /boot/accesspoint $dirsystem/ap
 	fi
 fi
-
-if [[ -e /boot/cirrus ]]; then
-	$dirsettings/player-wm5102.sh 'HPOUT2 Digital'
-	echo 'HPOUT2 Digital' > $dirsystem/audio-wm5102
-	rm /boot/cirrus
-fi
-# pre-configure --------------------------------------------------------------
+# pre-configure <<<-----------------------------------------------------------
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 
