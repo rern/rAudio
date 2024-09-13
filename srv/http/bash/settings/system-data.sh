@@ -177,7 +177,9 @@ data='
 , "vuled"             : '$( exists $dirsystem/vuled )'
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'
-
+##########
+[[ $audioaplayname == cirrus-wm5102 ]] && data+='
+, "audiowm5102"       : "'$( < $dirsystem/audio-wm5102 )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
 	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
 	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )

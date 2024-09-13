@@ -330,7 +330,7 @@ $( '#i2smodule' ).on( 'input', function() {
 	var icon      = 'i2smodule';
 	var title     = 'Audio - I²S';
 	if ( aplayname === 'cirrus-wm5102' ) {
-		infoCirrusWM5102();
+		infoCirrusWM5102( output );
 		return
 	}
 	
@@ -345,7 +345,7 @@ $( '#i2smodule' ).on( 'input', function() {
 } );
 $( '#setting-i2smodule' ).on( 'click', function() {
 	if ( S.audioaplayname === 'cirrus-wm5102' ) {
-		infoCirrusWM5102();
+		infoCirrusWM5102( $( '#i2smodule' ).find( ':selected' ).text() );
 		return
 	}
 	
@@ -723,10 +723,10 @@ function i2sSelectShow() {
 	$( '#divi2smodule' ).removeClass( 'hide' );
 	$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2saudio );
 }
-function infoCirrusWM5102() {
+function infoCirrusWM5102( output ) {
 	info( {
 		  icon     : 'i2s'
-		, title    : 'Wolfson Audio'
+		, title    : output
 		, list     : [ 'Output', 'select', {
 			  Headphones : 'HPOUT1 Digital'
 			, 'Line out' : 'HPOUT2 Digital'
@@ -734,7 +734,8 @@ function infoCirrusWM5102() {
 			, Speakers   : 'SPKOUT Digital'
 		} ]
 		, boxwidth : 130
-		, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', infoVal(), 'CMD APLAYNAME OUTPUT' ] )
+		, values   : S.audiowm5102
+		, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] )
 	} );
 }
 function infoLcdChar() {
