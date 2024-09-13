@@ -5,6 +5,13 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240913
+if [[ $( bluealsa -V ) != v4.3.1 ]]; then
+	pacman -Sy --noconfirm bluealsa
+ 	sed -i 's/bluealsa /bluealsad /' /etc/systemd/system/bluealsa.service.d/override.conf
+ 	systemctl daemon-reload
+ 	systemctl try-restart bluealsa
+fi
+
 file=$dirsystem/volumeboot
 if [[ -e $file ]]; then
 	echo "\
