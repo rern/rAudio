@@ -3,27 +3,31 @@
 . /srv/http/bash/common.sh
 
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
-	local apm hdapm icon info mounted mountpoint size usf
+	local apm hdapm icon info list mounted mountpoint size usf
 	icon=$1
 	mountpoint=$2
 	source=$3
 	mounted=$4
-	[[ $icon == usbdrive ]] && hdapm=$( hdparm -B $source | awk '/APM/ {print $NF}' ) # N / not supported
-	[[ ! $hdapm || $hdapm == supported ]] && apm=false || apm=true
-	info=false
-	[[ $icon != networks ]] && hdparm -I $source &> /dev/null && info=true
 	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
 		size=$( timeout 1 df -H --output=used,size $mountpoint | awk '!/Used/ {print $1"B/"$2"B"}' )
 		[[ ${source:0:4} == /dev ]] && size+=" <gr>$( blkid -o value -s TYPE $source )</gr>"
 	fi
-	echo ',{
-  "apm"        : '$apm'
-, "icon"       : "'$icon'"
-, "info"       : '$info'
+	list='
+  "icon"       : "'$icon'"
 , "mountpoint" : "'$( quoteEscape $mountpoint )'"
 , "size"       : "'$size'"
-, "source"     : "'$source'"
-}'
+, "source"     : "'$source'"'
+	if [[ $icon == usbdrive ]]; then
+		hdapm=$( hdparm -B $source | awk '/APM/ {print $NF}' ) # N / not supported
+		[[ ! $hdapm || $hdapm == supported ]] && apm=false || apm=true
+		hdparm -I $source &> /dev/null && info=true || info=false
+		list+='
+, "apm"        : '$apm'
+, "info"       : '$info
+	fi
+	echo ", {
+$list
+}"
 }
 # sd
 mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd / /dev/mmcblk0p2 true )
