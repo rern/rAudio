@@ -161,15 +161,16 @@ $( '.img' ).on( 'click', function() {
 		, rotaryencoder : [ 'Rorary Encoder', txtrotaryencoder, 'volume' ]
 		, lcd           : [ 'TFT 3.5" LCD' ]
 		, mpdoled       : [ 'Spectrum OLED',  txtmpdoled ]
-		, powerbutton   : [ 'Power Button',   '',               'power', 'svg' ]
-		, vuled         : [ 'VU LED',         '',               'led',   'svg' ]
+		, powerbutton   : [ 'Power Button',   '',               'power' ]
+		, vuled         : [ 'VU LED',         '',               'led' ]
 	}
 	var d                = title[ name ];
+	var ext              = [ 'powerbutton', 'vuled' ].includes( name ) ? 'svg' : 'jpg';
+	var gpio             = [ 'lcdchar', 'mpdoled', 'rotaryencoder' ].includes( name ) ? '<br>'+ gpiosvg + d[ 1 ] : '';
 	info( {
 		  icon       : d[ 2 ] || name
 		, title      : d[ 0 ]
-		, list       : '<img src="/assets/img/'+ name +'.'+ ( d[ 3 ] || 'jpg' ) +'">'
-					  + ( [ 'lcdchar', 'mpdoled', 'rotaryencoder' ].includes( name ) ? '<br>'+ gpiosvg + d[ 1 ] : '' )
+		, list       : '<img src="/assets/img/'+ name +'.'+ ext +'">'+ gpio
 		, beforeshow : () => $( '.'+ name +'-no' ).addClass( 'hide' )
 		, okno       : true
 	} );
