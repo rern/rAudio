@@ -734,7 +734,7 @@ function infoCirrusWM5102( output ) {
 			, Speakers   : 'SPKOUT Digital'
 		} ]
 		, boxwidth : 130
-		, values   : S.audiowm5102
+		, values   : S.audiowm5102 || 'HPOUT2 Digital'
 		, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] )
 	} );
 }
