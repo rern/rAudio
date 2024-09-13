@@ -2,7 +2,7 @@
 
 card=RPiCirrus
 output=$1
-[[ $2 ]] && volume=$2 || volume=50
+[[ $output == 'SPDIF Out' ]] && volume=100 || volume=50
 
 HPOUT1="\
 HPOUT1L Input 1
