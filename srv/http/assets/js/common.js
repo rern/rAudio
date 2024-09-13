@@ -582,6 +582,7 @@ function info( json ) {
 				} );
 			} );
 		}
+		if ( $( '.infomessage svg' ).length ) $( '.infomessage' ).css( 'width', '100%' ); // fix: svg width on ios
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
 	} );
