@@ -3,13 +3,13 @@
 . /srv/http/bash/common.sh
 
 listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
-	local apm icon info mounted mountpoint size usf
+	local apm hdapm icon info mounted mountpoint size usf
 	icon=$1
 	mountpoint=$2
 	source=$3
 	mounted=$4
-	[[ $icon == usbdrive ]] && apm=$( hdparm -B $source | awk '/APM/ {print $NF}' ) # N / not supported
-	[[ ! $apm || $apm == supported ]] && apm=false || apm=true
+	[[ $icon == usbdrive ]] && hdapm=$( hdparm -B $source | awk '/APM/ {print $NF}' ) # N / not supported
+	[[ ! $hdapm || $hdapm == supported ]] && apm=false || apm=true
 	info=false
 	[[ $icon != networks ]] && hdparm -I $source &> /dev/null && info=true
 	if [[ $mounted == true ]]; then # timeout: limit if network shares offline
