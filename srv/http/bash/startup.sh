@@ -5,7 +5,7 @@
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
 
-# pre-configure --------------------------------------------------------------
+# pre-configure >>>-----------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	id0=$( < /etc/machine-id )
 	rm /etc/machine-id
@@ -52,12 +52,7 @@ CMD ESSID"
 		mv -f /boot/accesspoint $dirsystem/ap
 	fi
 fi
-
-if [[ -e /boot/cirrus ]]; then
-	$dirsettings/player-wm5102.sh 'HPOUT2 Digital'
-	rm /boot/cirrus
-fi
-# pre-configure --------------------------------------------------------------
+# pre-configure <<<-----------------------------------------------------------
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 
@@ -139,10 +134,8 @@ else # start mpd.service if not started by networks-bluetooth.sh
 	$dirsettings/player-conf.sh
 fi
 
-if [[ -e $dirsystem/volumeboot ]]; then
-	. $dirsystem/volumeboot.conf
-	volumeFunctionSet
-	$fn_volume $val% "$mixer" $card
+if [[ -e $dirsystem/volumelimit ]]; then
+	volumeLimit startup
 fi
 
 # after all sources connected ........................................................

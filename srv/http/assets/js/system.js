@@ -107,8 +107,8 @@ var lcdcharjson   = {
 	, fileconf     : true
 }
 var lcdcharfooter = ico( 'raudio', 'lcdlogo', 'tabindex' ) +'Logo&emsp;'+ ico( 'screenoff', 'lcdoff', 'tabindex' ) +'Sleep';
-var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ];
+var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -126,53 +126,47 @@ $( 'body' ).on( 'click', function( e ) {
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
-	var gnd              = '<p style="line-height: 19px"><c>GND:(any &cir; pin)</c> &emsp; ';
 	var vcc1             = htmlC( 'ora', 'VCC', 1 );
 	var i2c              = '<br><wh>I²C:</wh>';
 	var scasdl           = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
-	var txtlcdchar       = gnd
-						 + '<br><wh>GPIO:</wh> '+ htmlC( [ 
+	var txtlcdchar       = '<br><wh>GPIO:</wh> '+ htmlC( [ 
 								  [ 'red', 'VCC',   4 ]
 								, [ 'grn', 'RS',   15 ]
 								, [ 'grn', 'RW',   18 ]
 								, [ 'grn', 'E',    16 ]
 								, [ 'grn', 'D4-7', '21-24' ]
 							] )
-						 + i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
-						 +'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
-						 +'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">';
-	var txtmpdoled       = gnd
-						 + '<br>'+ vcc1
-						 + i2c + scasdl
-						 + '<br><wh>SPI:</wh>'+ htmlC( [
+						  + i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
+						  +'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
+						  +'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">';
+	var txtmpdoled       = '<br>'+ vcc1
+						  + i2c + scasdl
+						  + '<br><wh>SPI:</wh>'+ htmlC( [
 								  [ 'grn', 'CLK', 23 ]
 								, [ 'grn', 'MOS', 19 ]
 								, [ 'grn', 'RES', 22 ]
 								, [ 'grn', 'DC',  18 ]
 								, [ 'grn', 'CS',  24 ]
 							] ) +'</p>';
-	var txtrotaryencoder = gnd
-						 +'<br><c>CLK, DT, SW: (any <grn>●</grn> pins)</c>'
-						 +'<br><c>+: not use</c></p>';
+	var txtrotaryencoder = '<br><c>CLK, DT, SW: (any <grn>●</grn> pins)</c>'
+						  +'<br><c>+: not use</c></p>';
 	var title = {
-		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
+		  lcd           : [ 'TFT 3.5" LCD' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
+		, mpdoled       : [ 'Spectrum OLED',  txtmpdoled ]
+		, powerbutton   : [ 'Power Button',   '',               'power' ]
 		, relays        : [ 'Relays Module' ]
 		, rotaryencoder : [ 'Rorary Encoder', txtrotaryencoder, 'volume' ]
-		, lcd           : [ 'TFT 3.5" LCD' ]
-		, mpdoled       : [ 'Spectrum OLED',  txtmpdoled ]
-		, powerbutton   : [ 'Power Button',   '',               'power', '300px', 'svg' ]
-		, vuled         : [ 'VU LED',         '',               'led',   '300px', 'svg' ]
+		, vuled         : [ 'VU LED',         '',               'led' ]
 	}
 	var d                = title[ name ];
+	var gpio             = d[ 1 ] ? gpiosvg +'<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; ' + d[ 1 ] : '';
 	info( {
-		  icon        : d[ 2 ] || name
-		, title       : d[ 0 ]
-		, message     : '<img src="/assets/img/'+ name +'.'+ ( d[ 4 ] || 'jpg' )
-						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
-						+ ( [ 'lcdchar', 'rotaryencoder', 'mpdoled' ].includes( name ) ? '<br>'+ gpiosvg + d[ 1 ] : '' )
-		, beforeshow  : () => $( '.'+ name +'-no' ).addClass( 'hide' )
-		, okno        : true
+		  icon       : d[ 2 ] || name
+		, title      : d[ 0 ]
+		, list       : '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">'+ gpio
+		, beforeshow : () => $( '.'+ name +'-no' ).addClass( 'hide' )
+		, okno       : true
 	} );
 } );
 $( '.refresh' ).on( 'click', function() {
@@ -329,6 +323,11 @@ $( '#i2smodule' ).on( 'input', function() {
 	var output    = $( this ).find( ':selected' ).text();
 	var icon      = 'i2smodule';
 	var title     = 'Audio - I²S';
+	if ( aplayname === 'cirrus-wm5102' ) {
+		infoCirrusWM5102( output );
+		return
+	}
+	
 	if ( aplayname !== 'none' ) {
 		notify( icon, title, 'Enable ...' );
 	} else {
@@ -339,6 +338,11 @@ $( '#i2smodule' ).on( 'input', function() {
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 } );
 $( '#setting-i2smodule' ).on( 'click', function() {
+	if ( S.audioaplayname === 'cirrus-wm5102' ) {
+		infoCirrusWM5102( $( '#i2smodule' ).find( ':selected' ).text() );
+		return
+	}
+	
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -365,7 +369,6 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, message      : gpiosvg
 		, list         : [
 			  [ 'CLK',  'select', board2bcm ]
 			, [ 'DT',   'select', board2bcm ]
@@ -375,7 +378,10 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 		, boxwidth     : 70
 		, values       : S.rotaryencoderconf || default_v.rotaryencoder
 		, checkchanged : S.rotaryencoder
-		, beforeshow   : () => $( '#infoList svg .power' ).remove()
+		, beforeshow   : () => {
+			$( '#infoList' ).prepend( gpiosvg );
+			$( '#infoList svg .power' ).remove();
+		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -453,11 +459,11 @@ $( '#setting-vuled' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, message      : gpiosvg
 		, list         : list
 		, values       : S.vuledconf || default_v.vuled
 		, checkchanged : S.vuled
 		, boxwidth     : 70
+		, beforeshow   : () => $( '#infoList' ).prepend( gpiosvg )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -548,18 +554,6 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 		, values       : S.soundprofileconf
 		, checkchanged : true
 		, checkblank   : true
-		, cancel       : switchCancel
-		, ok           : switchEnable
-		, fileconf     : true
-	} );
-} );
-$( '#setting-volumeboot' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, list         : [ 'Volume', 'range' ]
-		, values       : S.volumebootconf
-		, checkchanged : S.volumeboot
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -724,6 +718,21 @@ function i2sSelectShow() {
 	$( '#divi2s' ).addClass( 'hide' );
 	$( '#divi2smodule' ).removeClass( 'hide' );
 	$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2saudio );
+}
+function infoCirrusWM5102( output ) {
+	info( {
+		  icon     : 'i2s'
+		, title    : output
+		, list     : [ 'Output', 'select', {
+			  Headphones : 'HPOUT1 Digital'
+			, 'Line out' : 'HPOUT2 Digital'
+			, SPDIF      : 'SPDIF Out'
+			, Speakers   : 'SPKOUT Digital'
+		} ]
+		, boxwidth : 130
+		, values   : S.audiowm5102 || 'HPOUT2 Digital'
+		, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] )
+	} );
 }
 function infoLcdChar() {
 	var confi2c = S.lcdcharconf && S.lcdcharconf.INF === 'i2c';
@@ -903,7 +912,6 @@ function infoPowerbutton() {
 		, title        : SW.title
 		, tablabel     : [ 'Generic', 'Audiophonic' ]
 		, tab          : [ '', infoPowerbuttonAudiophonics ]
-		, message      : gpiosvg
 		, list         : [ 
 			  [ 'On',       'select', board2bcm ]
 			, [ 'Off',      'select', board2bcm ]
@@ -914,6 +922,7 @@ function infoPowerbutton() {
 		, values       : values
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
+			$( '#infoList' ).prepend( gpiosvg );
 			$( '#infoList td:first-child' ).css( 'width', '70px' );
 			$( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
 			var $trreserved = $( '#infoList tr' ).last();
@@ -1024,7 +1033,6 @@ function infoRelaysName() {
 		, title        : SW.title
 		, tablabel     : relaystab
 		, tab          : [ infoRelays, '' ]
-		, message      : gpiosvg
 		, list         : list
 		, boxwidth     : 70
 		, checkblank   : true
@@ -1032,6 +1040,7 @@ function infoRelaysName() {
 		, checkunique  : true
 		, values       : values
 		, beforeshow   : () => {
+			$( '#infoList' ).prepend( gpiosvg );
 			infoRelaysCss( 160 );
 			$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
 			$( '#infoList td' ).eq( 2 ).html( ico( 'plus edit' ) );

@@ -2,6 +2,7 @@
 
 . /srv/http/bash/common.sh
 
+[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 if [[ $1 == reboot ]]; then
 	reboot=1
 	audioCDplClear && $dirbash/status-push.sh
@@ -43,7 +44,6 @@ fi
 snapclientIP playerstop
 cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 [[ $cdda ]] && mpc -q del $cdda
-[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off && sleep 2
 ply-image /srv/http/assets/img/splash.png &> /dev/null
 if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null

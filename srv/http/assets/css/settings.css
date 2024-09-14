@@ -576,6 +576,11 @@ input.disabled + .switchlabel:after {
 .gpio svg {
 	max-width: 100%;
 }
+.gpiopins {
+	margin-top: 0;
+	text-align: left;
+	line-height: 20px;
+}
 #infoList .gpio tr td:nth-child( odd ) {
 	width: 35px !important;
 	padding-right: 2px !important;

@@ -457,5 +457,10 @@ stoptimer )
 	fi
 	pushRefresh
 	;;
+volumelimit )
+	enableFlagSet
+	(( $( volumeGet ) > $MAX )) && volumeLimit max
+	pushRefresh
+	;;
 	
 esac

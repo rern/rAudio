@@ -4,6 +4,17 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240913
+file=$dirsystem/volumeboot
+if [[ -e $file ]]; then
+	echo "\
+startup=$( cut -d= -f2 $file.conf )
+max=100
+" > $dirsystem/volumelimit.conf
+	rm -f $file*
+	touch $dirsystem/volumelimit
+fi
+
 # 20240906
 revision=$( grep ^Revision /proc/cpuinfo )
 BB=${revision: -3:2}
@@ -31,15 +42,6 @@ if [[ -e /boot/kernel.img ]]; then
 	fi
 fi
 
-# 20240719
-rm -f $dirshm/system
-
-file=$dirsystem/lcdcharconf.py
-if [[ -e $file ]]; then
-	sed -i -E 's/False|"//g' $file
-	mv $file $dirsystem/lcdchar.conf
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -54,5 +56,5 @@ $dirbash/cmd.sh cachebust
 
 installfinish
 
-# 20240818
-systemctl restart mpd
+# 20240913
+$dirsettings/player-conf.sh

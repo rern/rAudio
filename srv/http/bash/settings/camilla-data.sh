@@ -13,6 +13,7 @@ if grep -q configs-bt /etc/default/camilladsp; then
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
 	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
 fi
+
 ########
 data='
 , "bluetooth"  : '$bluetooth'
@@ -31,6 +32,7 @@ data='
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$( mpcState )'"
 , "volume"     : '$( [[ $mixer ]] && volumeGet )'
+, "volumemax"  : '$( volumeMaxGet )'
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
 for dir in $dirs; do

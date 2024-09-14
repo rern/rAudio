@@ -270,9 +270,7 @@ function psStorage( data ) {
 	if ( page === 'system' ) {
 		S.list = data.list;
 		renderStorage();
-		$( '#codehddinfo' )
-			.addClass( 'hide' )
-			.empty();
+		if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
 	}
 }
 function psVolume() {

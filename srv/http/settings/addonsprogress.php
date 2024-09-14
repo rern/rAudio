@@ -13,9 +13,8 @@ $icon       = '<i class="page-icon i-jigsaw"></i>';
 $hrefback   = 'settings.php?p=addons';
 $postmsg    = $label.' done.';
 $postmsg   .= $postinfo ? '<br><br><i class="i-addons wh"></i>'.$postinfo : '';
-$thumbnail  = false;
-if ( ! $alias ) {
-	$thumbnail = true;
+$thumbnail  = ! $alias;
+if ( $thumbnail ) {
 	$label     = 'Update';
 	$title     = 'Album Thumbnails';
 	$icon      = str_replace( 'jigsaw', 'coverart', $icon );

@@ -12,11 +12,14 @@ evtest $devinputbutton | while read line; do
 	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && mpcPlayback
 done &
 
-volumeFunctionSet # $fn_volume, $mixer
-if [[ $fn_volume != volumeMpd ]]; then
-	dn=1%-
-	up=1%+
-else
+dn=1%-
+up=1%+
+fn_volume=$( < $dirshm/volumefunction )
+if [[ -e $dirshm/btreceiver ]]; then
+	mixer=$( < $dirshm/btmixer )
+elif [[ -e $dirshm/amixercontrol ]]; then
+	. $dirshm/output 
+else # volumeMpd
 	dn=-1
 	up=+1
 fi

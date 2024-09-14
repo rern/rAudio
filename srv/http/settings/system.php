@@ -17,7 +17,6 @@ $id_data     = [
 	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
 	, 'softlimit'     => [ 'label' => 'Custom Soft Limit', 'sub' => 'temp_soft_limit' ]
 	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
-	, 'volumeboot'    => [ 'label' => 'Volume on Boot' ]
 	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
 	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
@@ -261,14 +260,6 @@ Maximum Transmission Unit (default: <c>1500</c> bytes)
 Transmit Queue Length (default: <c>1000</c>)
 	· Number of packets allowed per kernel transmit queue in a network
 	· High - improve performance under high load
-EOF
-	]
-	, [
-		  'id'       => 'volumeboot'
-		, 'help'     => <<< EOF
-Set volume level on startup:
- · If sound devices not maintain last set value
- · As default level every startup
 EOF
 	]
 ];

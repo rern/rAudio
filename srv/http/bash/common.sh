@@ -156,7 +156,7 @@ coverFileGet() {
 	path=$1
 	coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
-	[[ $coverfile ]] && echo "$coverfile"
+	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" | sed 's|%2F|/|g' # preserve spaces and special characters
 }
 data2json() {
 	local json page
@@ -282,7 +282,7 @@ $2"
 		systemctl daemon-reload
 		sed -n '1 {s/.*: //; p}' <<< $std
 		exit
-	# --------------------------------------------------------------------
+# --------------------------------------------------------------------
 	fi
 	for i in {1..10}; do
 		sleep 1
@@ -480,12 +480,12 @@ volume() {
 	else
 		rm -f $filevolumemute
 	fi
-	if [[ $CARD == btreceiver ]]; then # bluetooth
-		fn_volume=volumeBlueAlsa
-	elif [[ $CONTROL ]]; then          # hardware
-		fn_volume=volumeAmixer
-	else                               # software
-		fn_volume=volumeMpd
+	fn_volume=$( < $dirshm/volumefunction )
+	if [[ $pageplayer ]]; then
+		$fn_volume $TARGET% "$CONTROL" $CARD
+		volumeGet push
+		exit
+# --------------------------------------------------------------------
 	fi
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
@@ -512,17 +512,6 @@ volumeAmixer() { # value control card
 }
 volumeBlueAlsa() { # value control
 	amixer -MqD bluealsa sset "$2" $1
-}
-volumeFunctionSet() { # global var: fn_volume, card, mixer
-	if [[ -e $dirshm/btreceiver ]]; then
-		fn_volume=volumeBlueAlsa
-		mixer=$( < $dirshm/btmixer )
-	elif [[ -e $dirshm/amixercontrol ]]; then
-		. $dirshm/output 
-		fn_volume=volumeAmixer
-	else
-		fn_volume=volumeMpd
-	fi
 }
 volumeGet() {
 	[[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]] && echo -1 && return
@@ -553,12 +542,32 @@ volumeGet() {
 			pushData volume '{ "type": "'$1'", "val": '$val', "db": '$db' }'
 			[[ -e $dirshm/usbdac ]] && alsactl store # fix: not saved on off / disconnect
 			;;
-		valdb ) echo '{ "val": '$val', "db": '$db' }';;
+		valdb ) echo $val $db;;
 		db )    echo $db;;
 		* )     echo $val;;
 	esac
 	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
 }
+volumeMaxGet() {
+	local volumemax
+	if [[ -e  $dirsystem/volumelimit ]]; then
+		volumemax=$( getVar max $dirsystem/volumelimit.conf )
+		[[ $volumemax == 100 ]] && volumemax=false
+	else
+		volumemax=false
+	fi
+	echo $volumemax
+}
 volumeMpd() {
 	mpc -q volume ${1/\%}
+}
+volumeLimit() {
+	fn_volume=$( < $dirshm/volumefunction )
+	val=$( getVar $1 $dirsystem/volumelimit.conf )
+	if [[ -e $dirshm/btreceiver ]]; then
+		mixer=$( < $dirshm/btmixer )
+	elif [[ -e $dirshm/amixercontrol ]]; then
+		. $dirshm/output 
+	fi
+	$fn_volume $val% "$mixer" $card
 }

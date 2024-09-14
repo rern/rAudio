@@ -1737,14 +1737,14 @@ var common    = {
 	, tabTitle      : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
 	, volumeAnimate : ( target, volume ) => {
 		var bandW = $( '#volume-band' ).width() - 40;
-		$( '#divvolume' ).addClass( 'noclick' );
+		$( '#divvolume' ).css( 'pointer-events', 'none' );
 		$( '#volume .thumb' ).animate(
 			  { 'margin-left': bandW / 100 * target }
 			, {
 				  duration : Math.abs( target - volume ) * 40
 				, easing   : 'linear'
 				, complete : () => {
-					$( '#divvolume' ).removeClass( 'noclick' );
+					$( '#divvolume' ).css( 'pointer-events', '' );
 					render.volume();
 				}
 			}
@@ -1937,6 +1937,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( x < V.volume.min + 20 || x > V.volume.max + 20 ) return
 	
 	S.volume = Math.round( ( x - 20 - V.volume.min ) / V.volume.width * 100 );
+	volumeMaxSet();
 	render.volume();
 	volumeSet();
 } ).on( 'touchend mouseup', function( e ) {
@@ -1954,6 +1955,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 		} else {
 			S.volume = Math.round( ( x - V.volume.min - 20 ) / V.volume.width * 100 );
 		}
+		volumeMaxSet();
 		$( '#divvolume .level' ).text( S.volume );
 		common.volumeAnimate( S.volume, current );
 		volumeSet();
@@ -1965,6 +1967,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 $( '#volume-0, #volume-100' ).on( 'click', function() {
 	var current = S.volume;
 	S.volume    = this.id === 'volume-0' ? 0 : 100;
+	volumeMaxSet();
 	$( '#divvolume .level' ).text( S.volume );
 	common.volumeAnimate( S.volume, current );
 	volumeSet();
@@ -1974,6 +1977,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
 	up ? S.volume++ : S.volume--;
+	volumeMaxSet();
 	render.volume();
 	volumeSet();
 } ).on( 'touchend mouseup mouseleave', function() {
@@ -1985,6 +1989,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	var up           = $( e.target ).hasClass( 'i-plus' );
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
+		volumeMaxSet();
 		volumeSet();
 		$( '#volume .thumb' ).css( 'margin-left', V.volume.x );
 		$( '#divvolume .level' ).text( S.volume );

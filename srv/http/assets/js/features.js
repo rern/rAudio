@@ -430,6 +430,37 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 		, fileconf     : true
 	} );
 } );
+$( '#setting-volumelimit' ).on( 'click', function() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, list         : [
+			  [ 'Startup default', 'number', { updn: { step: 1, min: 0, max: S.volumelimitconf.MAX } } ]
+			, [ 'Maximum limit',   'number', { updn: { step: 1, min: 0, max: 100 } } ]
+		]
+		, boxwidth     : 70
+		, values       : S.volumelimitconf
+		, checkchanged : S.volumelimit
+		, beforeshow   : () => {
+			var $input   = $( '#infoList input' );
+			var $startup = $input.eq( 0 );
+			var $max     = $input.eq( 1 );
+			var $up      = $( '#infoList .up' ).eq( 0 );
+			$( '#infoList .up' ).eq( 1 ).on( 'click', function() {
+				var max = +$max.val();
+				if ( +$startup.val() > max ) {
+					$startup.val( max );
+					$up.addClass( 'disabled' );
+				} else {
+					$up.removeClass( 'disabled' );
+				}
+			} );
+		}
+		, cancel       : switchCancel
+		, ok           : switchEnable
+		, fileconf     : true
+	} );
+} );
 
 } );
 

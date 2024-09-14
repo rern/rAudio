@@ -349,7 +349,7 @@ function coverartChange() {
 		  icon        : icon
 		, title       : title
 		, message     : '<img class="imgold" src="'+ src +'">'
-					   +'<br><p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
+					   +'<p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
@@ -523,7 +523,7 @@ function displaySubMenu() {
 		.toggleClass( 'i-camilladsp', D.camilladsp )
 		.toggleClass( 'i-equalizer', D.equalizer );
 	D.dsp = D.camilladsp || D.equalizer;
-	[ 'dsp', 'logout', 'multiraudio', 'relays', 'screenoff', 'snapclient' ].forEach( el => {
+	[ 'dsp', 'logout', 'multiraudio', 'relays', 'snapclient' ].forEach( el => {
 		var enabled = D[ el ];
 		$( '#'+ el )
 			.toggleClass( 'hide', ! enabled )
@@ -699,14 +699,23 @@ function infoLibraryOption() {
 		, ok           : displaySave
 	} );
 }
-function infoThumbnail( icon, message, path, nosubdir ) {
-	var list = [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ];
+function infoThumbnail( icon, message, path, subdir ) {
+	if ( ! path ) subdir = true;
+	var list = [ '', 'radio', { kv: { 'Only added or removed': '', 'Rebuild all': 'overwrite' }, sameline: false } ];
 	info( {
 		  icon    : icon
 		, title   : 'Update Thumbnails'
 		, message : message
-		, list    : nosubdir ? false : list
-		, ok      : () => thumbUpdate( path, nosubdir || infoVal() )
+		, list    : subdir ? list : false
+		, ok      : () => {
+			$( 'body' ).append(
+				 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
+				+'<input type="hidden" name="path" value="'+ path +'">'
+				+'<input type="hidden" name="overwrite" value="'+ infoVal() +'">'
+				+'</form>'
+			);
+			$( '#formtemp' ).submit();
+		}
 	} );
 }
 function infoTitle() {
@@ -1978,15 +1987,6 @@ function switchPage( page ) {
 	$( '.page' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
-function thumbUpdate( path, overwrite ) {
-	$( 'body' ).append(
-		 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
-		+'<input type="hidden" name="path" value="'+ path +'">'
-		+'<input type="hidden" name="overwrite" value="'+ ( overwrite ? 'overwrite' : '' ) +'">'
-		+'</form>'
-	);
-	$( '#formtemp' ).submit();
-}
 function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )
 }
@@ -2014,7 +2014,8 @@ function volumeBarHide() {
 function volumeBarSet( pagex ) {
 	V.volume.x = pagex - V.volume.min;
 	S.volume   = Math.round( V.volume.x / V.volume.width * 100 );
-	$( '#volume-text' ).text( S.volume );
+	volumeMaxSet();
+	setVolume();
 }
 
 function volumeBarShow() {
@@ -2043,6 +2044,7 @@ function volumeColorUnmute() {
 }
 function volumeUpDown( up ) {
 	up ? S.volume++ : S.volume--;
+	volumeMaxSet();
 	S.volumemute = 0;
 	setVolume();
 	volumeSet();

@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1725496279' );
+	src         : url( '/assets/fonts/rern.woff2?v=1725496281' );
 }
 @font-face {
 	font-family : Lato;
@@ -221,7 +221,7 @@ i {
 .i-usbdrive::before        { content: '\F553' }
 .i-volume::before          { content: '\F516' }
 .i-volume.mute::before     { content: '\F517' }
-.i-volumeboot::before      { content: '\F51E' }
+.i-volumelimit::before     { content: '\F51E' }
 .i-vuled::before           { content: '\F57C' }
 .i-warning::before         { content: '\F562' }
 .i-webradio::before        { content: '\F55D' }
@@ -563,9 +563,6 @@ input[ type=checkbox ] {
 	color: var( --cg60 ) !important;
 	pointer-events: none;
 }
-.noclick {
-	pointer-events: none;
-}
 .infobtn.disabled {
 	background-color: var( --cgd ) !important;
 	box-shadow: none;
@@ -774,7 +771,7 @@ hr {
 	font-size: 20px;
 	margin-right: 5px;
 }
-#infoList i:not( .cmd ) {
+#infoList i:not( .submenu ) {
 	width: 24px;
 	line-height: 24px;
 	font-size: 20px;

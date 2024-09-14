@@ -131,11 +131,7 @@ chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baud ]] && baud=800000
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
-if [[ -e $dirsystem/volumeboot.conf ]]; then
-	volumebootconf=$( conf2json $dirsystem/volumeboot.conf )
-else
-	volumebootconf='{ "VOLUME": '$( volumeGet )' }'
-fi
+
 ##########
 data='
 , "ap"                : '$( exists $dirsystem/ap )'
@@ -178,12 +174,12 @@ data='
 , "tftreboot"         : '$tftreboot'
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"
-, "volumeboot"        : '$( exists $dirsystem/volumeboot )'
-, "volumebootconf"    : '$volumebootconf'
 , "vuled"             : '$( exists $dirsystem/vuled )'
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'
-
+##########
+[[ $audioaplayname == cirrus-wm5102 ]] && data+='
+, "audiowm5102"       : "'$( < $dirsystem/audio-wm5102 )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
 	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
 	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )

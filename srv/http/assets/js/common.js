@@ -601,7 +601,6 @@ function info( json ) {
 function infoButtonCommand( fn, cancel ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( cancel ) delete I.oknoreset;
-	if ( I.prompt ) $( '#infoOverlay' ).addClass( 'hide' );
 	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
 	infoReset();
@@ -771,9 +770,9 @@ function infoFileImageRender( src, original, resize ) {
 			+'<img class="infoimgnew" src="'+ src +'">'
 			+'<div class="infoimgwh">'
 			+ ( resize ? resize : '' )
-			+ ( original ? '<br>original: '+ original : '' )
+			+ ( original ? 'original: '+ original : '' )
+			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ico( 'redo rotate' ) +'Tap to rotate' )
 			+'</div>'
-			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ico( 'redo rotate' ) +'&ensp;Tap to rotate' )
 		+'</span>'
 	);
 }
@@ -867,7 +866,7 @@ function infoToggle( reset ) {
 		$( '#infoOverlay' ).trigger( 'focus' );
 	}
 	if ( ! page ) {
-		$( '.page, .list' ).css( { height: height, overflow: overflow } );
+		$( '.page, .list' ).css( { 'max-height': height, overflow: overflow } );
 		$( '.list' ).css( 'padding-bottom', padding );
 	}
 	$( window ).scrollTop( scrolltop );
@@ -1238,6 +1237,12 @@ window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
 window.onpageshow = pageActive;
 
+function volumeMaxSet() {
+	if ( S.volumemax && S.volume > S.volumemax ) {
+		S.volume = S.volumemax;
+		banner( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
+	}
+}
 function volumeMuteToggle() {
 	if ( S.volumemute ) {
 		S.volume     = S.volumemute;
@@ -1258,7 +1263,6 @@ function volumeSet( type ) { // type: mute / unmute
 	V.volumeactive = true;
 	setTimeout( () => V.volumeactive = false, 300 );
 	if ( V.drag || V.press ) type = 'dragpress';
-	if ( S.volumelimit && S.volume > S.volumelimit ) S.volume = S.volumelimit;
 	bash( [ 'volume', V.volumecurrent, S.volume, S.control, S.card, type, 'CMD CURRENT TARGET CONTROL CARD TYPE' ] );
 	V.volumecurrent = S.volume;
 }

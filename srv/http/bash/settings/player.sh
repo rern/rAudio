@@ -110,7 +110,6 @@ filetype )
 	;;
 mixer )
 	echo "$MIXER" > "$dirsystem/mixer-$DEVICE"
-	aplay -l | grep -q "^card $CARD: RPiCirrus" && $dirsettings/player-wm5102.sh "$MIXER" $( volumeGet )
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
@@ -239,8 +238,8 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	volumeAmixer $VAL% "$MIXER" $CARD
-	(( $VAL > 0 )) && rm -f $dirsystem/volumemute
+	pageplayer=1
+	volume
 	;;
 volume0db )
 	amixer0dB
@@ -249,10 +248,6 @@ volume0dbbt )
 	btmixer=$( < $dirshm/btmixer )
 	volumeBlueAlsa 0dB "$btmixer"
 	volumeGet push hw
-	;;
-volumebt )
-	volumeBlueAlsa $VAL% "$MIXER"
-	(( $VAL > 0 )) && rm -f $dirsystem/volumemute
 	;;
 volumepush )
 	[[ ! $BT ]] && hw=hw
