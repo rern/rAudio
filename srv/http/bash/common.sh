@@ -164,11 +164,9 @@ data2json() {
 	[[ $page == status.sh ]] && page='"page" : false' || page='"page" : "'$page'"'
 	json="\
 {
-  $page
-$1
+  $page$1
 }"
-	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
-	json=$( data2jsonPatch "$json" )
+	json=$( data2jsonPatch "$json" ) # "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
 	if [[ $2 ]]; then
 		pushData refresh "$json"
 	else
