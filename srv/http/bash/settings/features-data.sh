@@ -13,7 +13,9 @@ if [[ -e $dirsystem/volumelimit ]]; then
 	volumelimit=true
 	volumelimitconf=$( conf2json $dirsystem/volumelimit.conf )
 else
-	volumelimitconf='{ "STARTUP": '$( volumeGet )', "MAX": 100 }'
+	volume=$( volumeGet )
+	[[ ! $volume ]] && volume=50
+	volumelimitconf='{ "STARTUP": '$volume', "MAX": 100 }'
 fi
 
 ##########
