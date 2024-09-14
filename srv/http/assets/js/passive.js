@@ -121,7 +121,6 @@ function psDisplay( data ) {
 	}
 	
 	var albumlistchanged = D.albumbyartist !== data.albumbyartist || D.albumyear !== data.albumyear;
-	var hidecoverchanged = D.hidecover !== data.hidecover;
 	$.each( data, ( k, v ) => { D[ k ] = v } ); // need braces
 	V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
 	if ( ! D.covervu && ! D.vumeter ) {
@@ -139,28 +138,8 @@ function psDisplay( data ) {
 		} else {
 			$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
 			if ( V.librarytrack ) {
-				if ( hidecoverchanged ) {
-					if ( $( '#lib-list .licover' ).length ) {
-						$( '.licover' ).remove();
-					} else {
-						var path = $( '#lib-path .lipath' ).text()
-						var query   = {
-							  query  : 'ls'
-							, string : path
-							, format : [ 'file' ]
-						}
-						list( query, function( html ) {
-							var data = {
-								  html      : html
-								, modetitle : path
-								, path      : path
-							}
-							renderLibraryList( data );
-						} );
-					}
-				} else {
-					$( '.licover' ).toggleClass( 'nofixed', ! D.fixedcover );
-				}
+				setTrackCoverart();
+				renderLibraryPadding();
 			} else if ( V.mode === 'album' ) {
 				if ( albumlistchanged ) $( '.mode.album' ).trigger( 'click' );
 			}

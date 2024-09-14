@@ -1247,7 +1247,11 @@ function renderLibraryList( data ) { // V.librarylist
 			if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
 		} else {
 			V.albumlist = false;
-			V.color ? colorSet() : setTrackCoverart();
+			if ( V.color ) {
+				colorSet();
+			} else if ( V.librarytrack ) {
+				setTrackCoverart();
+			}
 		}
 		renderLibraryPadding();
 		$( '#lib-list' ).removeClass( 'hide' );
@@ -1896,20 +1900,19 @@ function setStatusData() {
 	$( '#button-data, #data' ).removeClass( 'hide' );
 }
 function setTrackCoverart() {
-	if ( D.hidecover || ! $( '#liimg' ).length ) return
-	
-	$( '#liimg' ).off( 'error' ).on( 'error', function() {
-		$( this ).attr( 'src', V.coverdefault );
-	} );
-	if ( V.mode === 'album' ) {
-		$( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );
-		$( '.liinfo .lialbum' ).addClass( 'hide' );
-	} else {
-		$( '.liinfo .lialbum' ).removeClass( 'hide' );
-	}
-	if ( ! D.fixedcover ) {
-		$( '.licover' ).addClass( 'nofixed' );
+	if ( V.mode === 'album' ) $( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );
+	if ( D.hidecover ) {
+		$( '.licover' ).addClass( 'hide' );
 		$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
+	} else {
+		$( '.licover' )
+			.removeClass( 'hide' )
+			.toggleClass( 'nofixed', ! D.fixedcover );
+		$( '#lib-list li' ).eq( 1 ).toggleClass( 'track1', D.fixedcover );
+		$( '#liimg' ).off( 'error' ).on( 'error', function() {
+			$( this ).attr( 'src', V.coverdefault );
+		} );
+		$( '.liinfo .lialbum' ).toggleClass( 'hide', V.mode === 'album' );
 	}
 }
 function setVolume() {

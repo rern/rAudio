@@ -1547,11 +1547,22 @@ i.map.disabled, .map.disabled i {
 .coverart.active .coverart2 {
 	color: var( --cga ) !important;
 }
+.list {
+	margin: 0;
+	list-style: none
+}
+.list li:not( .licover ) {
+	display: block;
+	height: 49px;
+	line-height: 20px;
+	border-bottom: 1px solid var( --cga );
+	color: var( --cg60 );
+}
 .licover {
 	position: fixed;
-	display: flex !important;
+	display: flex;
 	width: 100%;
-	height: 230px !important;
+	height: 230px;
 	padding-left: 40px;
 	background: #000;
 }
@@ -1618,17 +1629,6 @@ i.map.disabled, .map.disabled i {
 	vertical-align: 5%;
 }
 
-.list {
-	margin: 0;
-	list-style: none
-}
-.list li {
-	display: block;
-	height: 49px;
-	line-height: 20px;
-	border-bottom: 1px solid var( --cga );
-	color: var( --cg60 );
-}
 .list li,
 #pl-savedlist a {
 	font-size: 18px;
