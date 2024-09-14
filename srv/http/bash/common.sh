@@ -164,7 +164,7 @@ data2json() {
 	[[ $page == status.sh ]] && page='"page" : false' || page='"page" : "'$page'"'
 	json="\
 {
-$page
+  $page
 $1
 }"
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
