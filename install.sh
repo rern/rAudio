@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240914
+# 20240915
 file=$dirsystem/volumeboot
 if [[ -e $file ]]; then
 	echo "\
@@ -15,16 +15,13 @@ max=100
 	touch $dirsystem/volumelimit
 fi
 
-# 20240906
-revision=$( grep ^Revision /proc/cpuinfo )
-BB=${revision: -3:2}
 file=/etc/pacman.conf
-if [[ $BB == 11 || $BB == 17 ]]; then
-	grep -q wpa_supplicant $file && sed -i '/^IgnorePkg/ {s/ wpa_supplicant//; s/^/#/}' $file
-elif [[ ! -e /boot/kernel.img ]] && ! grep -q libunwind $file; then
-	sed -i -e '/^#*IgnorePkg/ d
+sed -i 's/wpa_supplicant//' $file
+
+if [[ -e /boot/kernel7.img ]]; then
+	! grep -q libunwind $file && sed -i -e '/^#*IgnorePkg/ d
 ' -e '/^#IgnoreGroup/ i\
-IgnorePkg   = libunwind wpa_supplicant
+IgnorePkg   = libunwind
 ' $file
 fi
 

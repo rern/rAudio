@@ -17,6 +17,7 @@ function addToPlaylist() {
 	if ( D.plclear && V.action.slice( 0, 7 ) === 'replace' ) {
 		infoReplace( addToPlaylistCommand );
 	} else {
+		$( '#infoX' ).trigger( 'click' );
 		addToPlaylistCommand();
 	}
 }

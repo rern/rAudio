@@ -1298,7 +1298,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 				V.list.li = $( '.infomessage' );
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];
 				V.action  = $( this ).data( 'cmd' );
-				$( '#infoX' ).trigger( 'click' );
 				addToPlaylist();
 			} );
 		}
