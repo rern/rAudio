@@ -140,8 +140,8 @@ function psDisplay( data ) {
 			if ( V.librarytrack ) {
 				setTrackCoverart();
 				renderLibraryPadding();
-			} else if ( V.mode === 'album' ) {
-				if ( albumlistchanged ) $( '.mode.album' ).trigger( 'click' );
+			} else if ( [ 'album', 'latest' ].includes( V.mode ) ) {
+				if ( albumlistchanged ) $( '.mode.'+ V.mode ).trigger( 'click' );
 			}
 		}
 	}

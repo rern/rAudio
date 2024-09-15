@@ -170,7 +170,7 @@ case 'home':
 	break;
 case 'list':
 	$filemode = $dirmpd.$MODE;
-	if ( $MODE === 'album' ) {
+	if ( in_array( $MODE, [ 'album', 'latest' ] ) ) {
 		$display = json_decode( file_get_contents( $dirsystem.'display.json' ) );
 		if ( $display->albumbyartist ) $filemode.= 'byartist';
 		if ( $display->albumyear ) $filemode.= '-year';
@@ -413,7 +413,7 @@ function htmlFind() { // non-file 'find' command
 }
 function htmlList() { // non-file 'list' command
 	global $lists, $MODE, $GMODE, $html, $index0, $indexes;
-	if ( $MODE !== 'album' && $MODE !== 'latest' ) {
+	if ( ! in_array( $MODE, [ 'album', 'latest' ] ) ) {
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
 			$dataindex = dataIndex( $data[ 0 ] );
