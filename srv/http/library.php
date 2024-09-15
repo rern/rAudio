@@ -432,20 +432,28 @@ function htmlList() { // non-file 'list' command
 			$path      = end( $data );
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
-			$l1        = $data[ 1 ];
-			$l2        = $data[ 2 ];
-			$name      = $l1;
-			if ( $display->albumyear ) {
-				$name = $data[ 3 ];
-				$l2   = $l2 ? ( strlen( $l2 ) < 5 ? $l2 : date( 'Y', strtotime( $l2 ) ) ) : '...';
-				$l2  .= '<br>'.$name;
-			} else if ( $display->albumbyartist ) {
-				$name = $l2;
+			if ( $display->albumbyartist ) {
+				$artist = $data[ 1 ];
+				$l1     = $artist;
+				if ( $display->albumyear ) {
+					$year  = $data[ 2 ];
+					$album = $data[ 3 ];
+					$l2    = $year ? ( strlen( $year ) < 5 ? $year : date( 'Y', strtotime( $year ) ) ) : '...';
+					$l2   .= '<br>'.$album;
+				} else {
+					$album = $data[ 2 ];
+					$l2    = $album;
+				}
+			} else {
+				$album  = $data[ 1 ];
+				$artist = $data[ 2 ];
+				$l1     = $album;
+				$l2     = $artist;
 			}
 			$html     .= '
 <div class="coverart"'.$dataindex.'>
 	<a class="lipath">'.$path.'</a>
-	<a class="liname">'.$name.'</a>
+	<a class="liname">'.$album.'</a>
 	<div><img class="lazyload" data-src="'.$coverfile.'^^^"></div>
 	<a class="coverart1">'.$l1.'</a>
 	<a class="coverart2">'.$l2.'</a>

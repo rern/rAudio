@@ -5,6 +5,21 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20240915
+if [[ -s $dirmpd/latest && ! -e $dirmpd/latestbyartist ]]; then
+	artist_album_year=$( awk -F'^' '{print $3"^^"$7"^^"$5}' $dirmpd/albumbyartist-year )
+	while read line; do
+		readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
+		tagalbum=${tags[0]}
+		tagartist=${tags[1]}
+		tagdir=${tags[2]}
+		tagdate=$( grep "^$tagartist^^$tagalbum^" <<< $artist_album_year | sed 's/.*^//' )
+		latestbyartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
+		latestbyartistyear+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
+	done <<< $( awk NF $dirmpd/latest )
+	echo "${latestbyartist:0:-1}" > $dirmpd/latestbyartist
+	echo "${latestbyartistyear:0:-1}" > $dirmpd/latestbyartist-year
+fi
+
 file=$dirsystem/volumeboot
 if [[ -e $file ]]; then
 	echo "\
