@@ -204,17 +204,12 @@ function psMpdUpdate( data ) {
 		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		banner( 'refresh-library', 'Library Update', 'Done' );
 		if ( data.done === 'tageditor' ) {
-			var path  = $( '.licover .lipath' ).text()
-			var query = {
-				  query  : 'ls'
-				, string : path
-				, format : [ 'file' ]
-			}
+			var query = V.query[ V.query.length - 1 ];
 			list( query, function( html ) {
 				var data = {
 					  html      : html
-					, modetitle : path
-					, path      : path
+					, modetitle : query.path
+					, path      : query.path
 				}
 				renderLibraryList( data );
 			} );
