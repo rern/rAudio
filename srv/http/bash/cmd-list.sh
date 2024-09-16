@@ -153,9 +153,9 @@ if [[ $albumdiff ]]; then
 			tagalbum=${tags[0]}
 			tagartist=${tags[1]}
 			tagdir=${tags[2]}
-			tagdate=$( grep "^$tagartist^^$tagalbum^" <<< $artist_album_year | sed 's/.*^//' )
 			latestbyartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
-			latestbyartistyear+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
+			linedate=$( grep -m 1 "^$tagartist^^$tagalbum^" <<< $artist_album_year )
+			latestbyartistyear+="$tagartist^^${linedate/*^}^^$tagalbum^^$tagdir"$'\n'
 		done < $dirmpd/latest
 		echo "$latestbyartist" > $dirmpd/latestbyartist
 		echo "$latestbyartistyear" > $dirmpd/latestbyartist-year
