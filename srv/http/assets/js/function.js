@@ -1260,9 +1260,9 @@ function renderLibraryList( data ) { // V.librarylist
 }
 function renderLibraryPadding() {
 	var padding = D.bars ? 129 : 89;
-	if ( V.librarytrack && D.fixedcover && V.wH > 734 ) {
-		padding += 230;
-	} else if ( V.mode === 'album' ) {
+	if ( V.librarytrack ) {
+		if ( D.fixedcover && V.wH > 734 ) padding += 230;
+	} else if ( [ 'album', 'latest' ].includes( V.mode ) ) {
 		$( '#lib-list' ).css( 'padding-bottom', '100vh' ); // force scrollbar to get .coverart height
 		padding += $( '.coverart' ).eq( 0 ).height() - 49;
 	}
