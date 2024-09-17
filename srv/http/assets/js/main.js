@@ -167,7 +167,9 @@ $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
 $( '#debug' ).on( 'click', function() {
-	if ( ! V.press ) setStatusData();
+	if ( V.press ) return
+		
+	$( '#data' ).hasClass( 'hide' ) ? setStatusData() : $( '#button-data, #data' ).addClass( 'hide' );
 } );
 $( '#button-data' ).on( 'click', function() {
 	$( '#button-data, #data' ).addClass( 'hide' );
