@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1725496281' );
+	src         : url( '/assets/fonts/rern.woff2?v=1726553295' );
 }
 @font-face {
 	font-family : Lato;
@@ -323,7 +323,6 @@ body {
 #debug {
 	position: fixed;
 	bottom: 0;
-	right: 0;
 	width: 40px;
 	height: 40px;
 	z-index: 110;
