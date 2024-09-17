@@ -28,8 +28,9 @@ function imgIcon( $thumbsrc, $menu, $icon = '' ) {
 	return '<img class="lazyload iconthumb li-icon '.$icon.'"'.$htmlicon.' data-src="'.$thumbsrc.'^^^" data-menu="'.$menu.'">';
 }
 function indexBar( $indexes ) {
-	$indexbar = '<a class="indexed">#</a>';
-	$chars    = range( 'A', 'Z' );
+	$indexbar  = '<a class="indexed">#</a>';
+	$indexbar1 = $indexbar;
+	$chars     = range( 'A', 'Z' );
 	for ( $i = 0; $i < 26; $i++ ) {
 		$char = $chars[ $i ];
 		if ( in_array( $char, $indexes ) ) {
@@ -38,7 +39,6 @@ function indexBar( $indexes ) {
 			$indexbar.= '<a>'.$char.'</a>';
 		}
 	}
-	$indexbar1 = '<a>#</a>';
 	for ( $i = 0; $i < 26; $i++ ) {
 		$char     = $chars[ $i ];
 		$char1    = $chars[ $i + 1 ];

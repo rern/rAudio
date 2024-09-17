@@ -1600,8 +1600,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( query.query !== 'ls' || ! modefile ) V.query.push( query );
 } );
 $( '.page' ).on( 'click', 'a.indexed', function() {
-	var index = $( this ).text();
-	
+	var $this = $( this );
+	var index = $this.text();
+	if ( index.length > 1 ) {
+		index = $this.hasClass( 'r' ) ? index[ 1 ] : index[ 0 ];
+		$this.toggleClass( 'r' );
+	}
 	if ( index === '#' ) {
 		var scrollT = 0;
 	} else {
@@ -1610,11 +1614,15 @@ $( '.page' ).on( 'click', 'a.indexed', function() {
 		} else {
 			var el = '#pl-savedlist li';
 		}
-		var $el = $( el +'[data-index='+ index[ 0 ] +']' );
-		if ( ! $el.length ) $el = $( el +'[data-index='+ index[ 1 ] +']' );
+		var $el = $( el +'[data-index='+ index +']' );
+		if ( ! $el.length ) {
+			$this.trigger( 'click' );
+			return
+		}
+		
 		var scrollT = $el.offset().top;
 	}
-	pageScroll( scrollT - barHidden( 40, 80 ) );
+	pageScroll( scrollT - barVisible( 80, 40 ) );
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).on( 'click', function() {
