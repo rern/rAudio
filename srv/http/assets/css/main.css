@@ -1083,7 +1083,7 @@ i.map.disabled, .map.disabled i {
 	box-shadow: 0px 2px 10px #000;
 }
 #divlyricsartist {
-	background: var( --cg );
+	background: var( --cga );
 }
 #divlyricstitle img {
 	display: inline-block;
