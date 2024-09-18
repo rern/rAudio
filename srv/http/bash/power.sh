@@ -49,8 +49,10 @@ if mount | grep -q -m1 $dirnas; then
 	umount -l $dirnas/* &> /dev/null
 	sleep 3
 fi
-DISPLAY=:0 xset dpms force off
-echo 1 > /sys/class/backlight/rpi_backlight/bl_power
-
+if [[ -d /sys/class/backlight/rpi_backlight ]]; then
+	echo 1 > /sys/class/backlight/rpi_backlight/bl_power
+else
+	DISPLAY=:0 xset dpms force off
+fi
 [[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 [[ $reboot ]] && reboot || poweroff
