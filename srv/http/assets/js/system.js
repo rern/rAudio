@@ -1100,7 +1100,11 @@ function infoRelaysOk() {
 	}
 	var keys = Object.keys( S.relaysconf );
 	var pins = [];
-	keys.forEach( k => pins.push( order[ k ].join( ' ' ) ) );
+	keys.forEach( k => {
+		var val =  order[ k ];
+		if ( Array.isArray( val ) ) val = val.join( ' ' );
+		pins.push( val );
+	} );
 	notifyCommon();
 	var save = function() {
 		bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
