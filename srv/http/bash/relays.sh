@@ -35,7 +35,7 @@ done
 if [[ $relayson ]]; then
 	done=true
 	touch $dirshm/relayson
-	if (( $timer > 0 )); then
+	if [[ $timeron == true ]]; then
 		echo $timer > $dirshm/relayson
 		$dirbash/relays-timer.sh &> /dev/null &
 	fi
