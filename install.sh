@@ -7,7 +7,7 @@ alias=r1
 # 20240920
 file=$dirsystem/relays.conf
 if ! grep -q timeron $file; then
-	grep -q timer=0 $file && on=false || on=true
+	! grep -q timer=0 $file && on=true
 	sed -i "/^timer=/ i\timeron=$on" $file
 fi
 

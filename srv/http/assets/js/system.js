@@ -51,8 +51,8 @@ var default_v     = {
 		, OFF     : [ 23, 22, 27, 17 ]
 		, OND     : [ 2, 2, 2 ]
 		, OFFD    : [ 2, 2, 2 ]
-		, TIMER   : 5
 		, TIMERON : true
+		, TIMER   : 5
 	}
 	, relaysname    : {
 		  17 : 'DAC'
