@@ -1171,7 +1171,7 @@ function psRelays( data ) {
 	var relaysToggle = function() {
 		if ( ! page ) {
 			$( '#relays' ).toggleClass( 'on', S.relayson );
-			$( ( $time.hasClass( 'hide' ) ? '#mi' : '#ti' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+			$( ( $time.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
 		}
 	}
 	if ( 'done' in data ) {
