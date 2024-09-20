@@ -4,9 +4,16 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240916
+# 20240920
+file=$dirsystem/relays.conf
+if ! grep -q timeron $file; then
+	grep -q timer=0 $file && on=false || on=true
+	sed -i "/^timer=/ i\timeron=$on" $file
+fi
+
 [[ -e $dirmpd/latest && ! -e $dirmpd/latestbyartist ]] && rm -f $dirmpd/latest
 
+# 20240914
 file=$dirsystem/volumeboot
 if [[ -e $file ]]; then
 	echo "\

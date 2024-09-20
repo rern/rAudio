@@ -101,11 +101,12 @@ fi
 if [[ -e $dirsystem/relays.conf ]]; then
 	. $dirsystem/relays.conf
 	relaysconf='{
-  "ON"    : [ '${on// /,}' ]
-, "OFF"   : [ '${off// /,}' ]
-, "OND"   : [ '${ond// /,}' ]
-, "OFFD"  : [ '${offd// /,}' ]
-, "TIMER" : '$timer'
+  "ON"      : [ '${on// /,}' ]
+, "OFF"     : [ '${off// /,}' ]
+, "OND"     : [ '${ond// /,}' ]
+, "OFFD"    : [ '${offd// /,}' ]
+, "TIMERON" : '$timeron'
+, "TIMER"   : '$timer'
 }'
 fi
 # tft
