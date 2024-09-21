@@ -5,8 +5,9 @@
 killProcess relaystimer
 echo $$ > $dirshm/pidrelaystimer
 
+timer=$1
 timerfile=$dirshm/relayson
-timer=$( < $timerfile )
+echo $timer > $timerfile
 i=$timer
 while sleep 60; do
 	playing=

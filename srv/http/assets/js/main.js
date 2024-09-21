@@ -167,7 +167,9 @@ $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
 $( '#debug' ).on( 'click', function() {
-	if ( ! V.press ) setStatusData();
+	if ( V.press ) return
+		
+	$( '#data' ).hasClass( 'hide' ) ? setStatusData() : $( '#button-data, #data' ).addClass( 'hide' );
 } );
 $( '#button-data' ).on( 'click', function() {
 	$( '#button-data, #data' ).addClass( 'hide' );
@@ -215,7 +217,7 @@ $( '#button-settings' ).on( 'click', function( e ) {
 		}
 		menuHide();
 		$( '#settings' )
-			.css( 'top', ( $bartop.is( ':visible' ) ? 40 : 0 ) )
+			.css( 'top', barVisible( 40, 0 ) )
 			.css( 'pointer-events', 'none' ) // suppress coverTR tap on show
 			.removeClass( 'hide' );
 		setTimeout( () => $( '#settings' ).css( 'pointer-events', '' ), 300 );
@@ -823,7 +825,7 @@ $( '.map' ).on( 'click', function( e ) {
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', S.pllength === 0 );
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
-		$( '#bar-bottom' ).toggleClass( 'translucent', $bartop.is( ':hidden' ) );
+		$( '#bar-bottom' ).toggleClass( 'translucent', ! barVisible() );
 		if ( S.player === 'mpd' ) {
 			if ( ! time && ! S.webradio ) {
 				$( '#time-band' )
@@ -1150,7 +1152,7 @@ $( '#page-library i.search' ).on( 'click', function() {
 	var $this   = $( this );
 	var icon    = $this.prop( 'class' ).replace( / .*/, '' );
 	var scrollT = $( '#search-list li' ).find( '.'+ icon ).eq( 0 ).parent().offset().top;
-	pageScroll( scrollT - ( $bartop.is( ':visible' ) ? 80 : 40 ) );
+	pageScroll( scrollT - barVisible( 80, 40 ) );
 	$( '#page-library i.search' ).addClass( 'gr' );
 	$this.removeClass( 'gr' );
 	
@@ -1298,7 +1300,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 				V.list.li = $( '.infomessage' );
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];
 				V.action  = $( this ).data( 'cmd' );
-				$( '#infoX' ).trigger( 'click' );
 				addToPlaylist();
 			} );
 		}
@@ -1601,7 +1602,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( query.query !== 'ls' || ! modefile ) V.query.push( query );
 } );
 $( '.page' ).on( 'click', 'a.indexed', function() {
-	var index = $( this ).text();
+	var $this = $( this );
+	var index = $this.text();
+	if ( index.length > 1 ) {
+		index = $this.hasClass( 'r' ) ? index[ 1 ] : index[ 0 ];
+		$this.toggleClass( 'r' );
+	}
 	if ( index === '#' ) {
 		var scrollT = 0;
 	} else {
@@ -1610,9 +1616,15 @@ $( '.page' ).on( 'click', 'a.indexed', function() {
 		} else {
 			var el = '#pl-savedlist li';
 		}
-		var scrollT = $( el +'[data-index='+ index +']' ).offset().top;
+		var $el = $( el +'[data-index='+ index +']' );
+		if ( ! $el.length ) {
+			$this.trigger( 'click' );
+			return
+		}
+		
+		var scrollT = $el.offset().top;
 	}
-	pageScroll( scrollT - ( $bartop.is( ':visible' ) ? 80 : 40 ) );
+	pageScroll( scrollT - barVisible( 80, 40 ) );
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).on( 'click', function() {

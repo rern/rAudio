@@ -24,6 +24,9 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
 		list+='
 , "apm"        : '$apm'
 , "info"       : '$info
+	elif [[ $icon == sd ]]; then
+		list+='
+, "info"       : true'
 	fi
 	echo ", {
 $list

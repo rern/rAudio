@@ -9,7 +9,8 @@
 
 . /srv/http/bash/common.sh
 
-modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre latest'
+modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
+modelatest='latest latestbyartist latestbyartist-year'
 
 albumList() {
 	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
@@ -27,31 +28,24 @@ updateDone() {
 	updatetime="(MPD: $( timeFormat $mpdtime ) + Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	pushData mpdupdate '{ "done": '$counts', "updatetime": "'$updatetime'" }'
-	rm -f $dirmpd/listing $dirshm/tageditor
+	rm -f $dirmpd/listing $dirshm/{albumprev,deleted,tageditor}
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &
 }
 
 touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
-[[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
-rm -f $dirmpd/updating
-
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-rm -f $dirmpd/updatestart
-
+[[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
+rm -f $dirmpd/{updatestart,updating}
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-if [[ -e $dirdabradio ]]; then
-	dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l )
-else
-	dabradio=0
-fi
+[[ -e $dirdabradio ]] && dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l ) || dabradio=0
 counts='
   "song"      : '$song'
 , "playlists" : '$( ls -1 $dirplaylists | wc -l )'
 , "dabradio"  : '$dabradio'
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 if [[ $song == 0 ]]; then
-	for mode in $modes; do
+	for mode in $modes $modelatest; do
 		rm -f $dirmpd/$mode
 	done
 	updateDone
@@ -118,7 +112,6 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 		fi
 	fi
 	albumignore=$( getContent $dirmpd/albumignore )
-	declare -A array
 	while read line; do
 		readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
 		tagalbum=${tags[0]}
@@ -127,47 +120,56 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 		
 		tagdate=${tags[2]}
 		tagdir=${tags[3]}
-		array[album]+="$tagalbum^^$tagartist^^$tagdir"$'\n'
-		array[albumbyartist]+="$tagartist^^$tagalbum^^$tagdir"$'\n'
-		array[albumbyartist-year]+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
+		album_artist_dir+="$tagalbum^^$tagartist^^$tagdir"$'\n'
+		artist_album_dir+="$tagartist^^$tagalbum^^$tagdir"$'\n'
+		artist_date_album_dir+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
 	done <<< $albumlist
-	for mode in album albumbyartist albumbyartist-year; do
-		sort -u <<< ${array[$mode]} > $dirmpd/$mode
-	done
+	sort -u <<< $album_artist_dir > $dirmpd/album
+	sort -u <<< $artist_album_dir > $dirmpd/albumbyartist
+	sort -u <<< $artist_date_album_dir > $dirmpd/albumbyartist-year
 else
-	rm -f $dirmpd/{album,albumbyartist*}
+	rm -f $dirmpd/{album,albumbyartist}
 fi
+for mode in albumartist artist composer conductor date genre; do
+	data=$( mpc list $mode | awk NF )
+	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
+done
+php /srv/http/cmd.php sort "$modes"
 ##### latest
 [[ -e $dirmpd/album && -e $dirshm/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
 if [[ $albumdiff ]]; then
-	new=$( grep '^<' <<< $albumdiff | cut -c 3- )
-	deleted=$( grep '^>' <<< $albumdiff | cut -c 3- )
-	[[ $new ]] && echo "$new" > $dirmpd/latest
+	new=$( grep '^<' <<< $albumdiff )     # '< I^^ALBUM^^ARTIST^^DIR'
+	deleted=$( grep '^>' <<< $albumdiff ) # '> ...'
+	[[ $new ]] && cut -c 6- <<< $new > $dirmpd/latest
 	if [[ $deleted ]]; then
-		echo "$deleted" > $dirshm/deleted
+		cut -c 6- <<< $deleted > $dirshm/deleted
 		latest=$( grep -Fvx -f $dirshm/deleted $dirmpd/latest )
-		echo "$latest" > $dirmpd/latest
+		[[ $latest ]] && echo "$latest" > $dirmpd/latest
+	fi
+	if [[ -s $dirmpd/latest ]]; then
+		artist_album_year=$( awk -F'^' 'NF {print $3"^^"$7"^^"$5}' $dirmpd/albumbyartist-year )
+		while read line; do
+			readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
+			tagalbum=${tags[0]}
+			tagartist=${tags[1]}
+			tagdir=${tags[2]}
+			latestbyartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
+			linedate=$( grep -m 1 "^$tagartist^^$tagalbum^" <<< $artist_album_year )
+			latestbyartistyear+="$tagartist^^${linedate/*^}^^$tagalbum^^$tagdir"$'\n'
+		done < $dirmpd/latest
+		echo "$latestbyartist" > $dirmpd/latestbyartist
+		echo "$latestbyartistyear" > $dirmpd/latestbyartist-year
+		php /srv/http/cmd.php sort "$modelatest"
+	else
+		rm -f $dirmpd/latest*
 	fi
 fi
+for mode in $modes latest; do
+	file=$dirmpd/$mode
+	[[ $mode != *by* ]] && counts+='
+, "'$mode'" : '$( lineCount $file )
+done
 rm -f $dirshm/{albumprev,deleted}
-
-for mode in albumartist artist composer conductor date genre; do
-	data=$( mpc list $mode | awk NF )
-	if [[ $data ]]; then
-		echo "$data" > $dirmpd/$mode
-	else
-		rm -f $dirmpd/$mode
-	fi
-done
-
-php /srv/http/cmd.php sort "$modes"
-
-for mode in $modes; do
-	[[ $mode == albumby* ]] && continue
-	
-	counts+='
-, "'$mode'" : '$( lineCount $dirmpd/$mode ) # albumbyartist-year > albumyear
-done
 
 updateDone
 

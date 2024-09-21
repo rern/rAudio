@@ -4,6 +4,15 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20240920
+file=$dirsystem/relays.conf
+if ! grep -q timeron $file; then
+	! grep -q timer=0 $file && on=true
+	sed -i "/^timer=/ i\timeron=$on" $file
+fi
+
+[[ -e $dirmpd/latest && ! -e $dirmpd/latestbyartist ]] && rm -f $dirmpd/latest
+
 # 20240914
 file=$dirsystem/volumeboot
 if [[ -e $file ]]; then
@@ -15,16 +24,13 @@ max=100
 	touch $dirsystem/volumelimit
 fi
 
-# 20240906
-revision=$( grep ^Revision /proc/cpuinfo )
-BB=${revision: -3:2}
 file=/etc/pacman.conf
-if [[ $BB == 11 || $BB == 17 ]]; then
-	grep -q wpa_supplicant $file && sed -i '/^IgnorePkg/ {s/ wpa_supplicant//; s/^/#/}' $file
-elif [[ ! -e /boot/kernel.img ]] && ! grep -q libunwind $file; then
-	sed -i -e '/^#*IgnorePkg/ d
+sed -i 's/wpa_supplicant//' $file
+
+if [[ -e /boot/kernel7.img ]]; then
+	! grep -q libunwind $file && sed -i -e '/^#*IgnorePkg/ d
 ' -e '/^#IgnoreGroup/ i\
-IgnorePkg   = libunwind wpa_supplicant
+IgnorePkg   = libunwind
 ' $file
 fi
 

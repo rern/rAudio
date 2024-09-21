@@ -601,8 +601,9 @@ mpcplayback )
 	;;
 mpcremove )
 	if [[ $START ]]; then
-		for (( i=$START; i < $END; i++ )); do
-			mpc -q del $i
+		count=$(( END - START + 1 ))
+		for (( i=0; i < $count; i++ )); do
+			mpc -q del $START
 		done
 		pushPlaylist
 	elif [[ $POS ]]; then

@@ -47,11 +47,12 @@ var default_v     = {
 		, RESERVED : 5
 	}
 	, relays       : {
-		  ON    : [ 17, 27, 22, 23 ]
-		, OFF   : [ 23, 22, 27, 17 ]
-		, OND   : [ 2, 2, 2 ]
-		, OFFD  : [ 2, 2, 2 ]
-		, TIMER : 5
+		  ON      : [ 17, 27, 22, 23 ]
+		, OFF     : [ 23, 22, 27, 17 ]
+		, OND     : [ 2, 2, 2 ]
+		, OFFD    : [ 2, 2, 2 ]
+		, TIMERON : true
+		, TIMER   : 5
 	}
 	, relaysname    : {
 		  17 : 'DAC'
@@ -975,9 +976,10 @@ function infoRelays() {
 			values.push( pin.OND[ i ], pin.OFFD[ i ] );
 		} else {
 			list.push(
-				  [ '', '',       { suffix: ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', sameline: true, colspan: 2 } ]
-				, [ '', 'number', { updn: step } ]
+				  [ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', 'checkbox',       { sameline: true, colspan: 2 } ]
+				, [ '', 'number', { updn: { step: 1, min: 2, max: 30 } } ]
 			);
+			values.push( pin.TIMERON );
 			values.push( pin.TIMER );
 		}
 	}
@@ -993,12 +995,16 @@ function infoRelays() {
 		, checkchanged : S.relays
 		, beforeshow   : () => {
 			infoRelaysCss( 70 );
-			$( '#infoList tr' ).last().find( 'td' ).eq( 0 ).css( 'text-align', 'right' );
+			var $trtimer = $( '#infoList tr:last' );
+			$trtimer.find( 'td' ).eq( 0 ).css( { height: '40px','text-align': 'right' } );
 			$( '#infoList' ).on( 'click', '.i-power', function() {
 				var on = $( this ).hasClass( 'grn' );
 				if ( ( S.relayson && on ) || ( ! S.relayson && ! on ) ) return
 				
 				bash( [ 'relays.sh', on ? '' : 'off' ] );
+			} );
+			$trtimer.on( 'input', 'input:checkbox', function() {
+				$trtimer.find( 'input[type=number], .updn' ).toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 			} );
 		}
 		, cancel       : switchCancel
@@ -1008,7 +1014,7 @@ function infoRelays() {
 function infoRelaysCss( iW ) {
 	$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 	$( '#infoList td:first-child' ).remove();
-	$( '#infoList input' ).parent().addBack().css( 'width', iW +'px' );
+	$( '#infoList input[type=number]' ).parent().addBack().css( 'width', iW +'px' );
 }
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;
@@ -1088,14 +1094,20 @@ function infoRelaysOk() {
 				order.OFFD[ i ] = v[ j + 3 ];
 			} else {
 				order.TIMER = v[ v.length - 1 ];
+				order.TIMERON = v[ v.length - 2 ];
 			}
 		}
 	}
+	var keys = Object.keys( S.relaysconf );
 	var pins = [];
-	[ 'ON', 'OFF', 'OND', 'OFFD' ].forEach( k => pins.push( order[ k ].join( ' ' ) ) );
+	keys.forEach( k => {
+		var val =  order[ k ];
+		if ( Array.isArray( val ) ) val = val.join( ' ' );
+		pins.push( val );
+	} );
 	notifyCommon();
 	var save = function() {
-		bash( [ 'relays', ...pins, order.TIMER, 'CFG ON OFF OND OFFD TIMER' ] );
+		bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
 		jsonSave( 'relays', name );
 		if ( tabname ) infoRelays();
 	}

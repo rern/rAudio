@@ -429,7 +429,7 @@ i.map.disabled, .map.disabled i {
 	padding: 0 10px;
 }
 @keyframes scrollleft {
-	0%   { transform : translateX( 100vw ) } /* move to right 100vw */
+	0%   { transform : translateX( 100% ) } /* move to right 100vw */
 	100% { transform : translateX( -100% ) } /* scroll to left 100% text width */
 }
 /* ---------------------- knobs, buttons ----------------------*/
@@ -1035,7 +1035,7 @@ i.map.disabled, .map.disabled i {
 #bioimg {
 	position: relative;
 	float: left;
-	width: 30vw;
+	width: 30%;
 	max-width: 200px;
 	margin: 0 20px 10px 0;
 	line-height: 0;
@@ -1062,9 +1062,9 @@ i.map.disabled, .map.disabled i {
 #lyrics {
 	position: fixed;
 	top: 50px;
-	width: 100vw;
+	width: 100%;
 	max-width: 510px;
-	height: calc(100vh - 50px);
+	height: calc(100% - 50px);
 	background: #000;
 	box-shadow: 2px -2px 6px var( --cg );
 	-webkit-overflow-scrolling: touch;
@@ -1083,7 +1083,7 @@ i.map.disabled, .map.disabled i {
 	box-shadow: 0px 2px 10px #000;
 }
 #divlyricsartist {
-	background: var( --cg );
+	background: var( --cga );
 }
 #divlyricstitle img {
 	display: inline-block;
@@ -1117,7 +1117,7 @@ i.map.disabled, .map.disabled i {
 	float: right;
 }
 .lyricstext {
-	height: calc(100vh - 100px);
+	height: calc(100% - 100px);
 	width: 100%;
 	font-family: Lato;
 	font-size: 17px;
@@ -1143,7 +1143,7 @@ i.map.disabled, .map.disabled i {
 	bottom: 0;
 	left: 0;
 	width: 510px;
-	max-width: 100vw;
+	max-width: 100%;
 	height: 100px;
 	background: -moz-linear-gradient(top,  transparent, #000000);
 	background: -webkit-linear-gradient(top,  transparent,#000000);
@@ -1153,10 +1153,10 @@ i.map.disabled, .map.disabled i {
 @media (max-width: 500px) {
 	#lyrics {
 		top: 0;
-		height: 100vh;
+		height: 100%;
 	}
 	.lyricstext {
-		height: calc(100vh - 150px);
+		height: calc(100% - 150px);
 	}
 }
 /* ---------------------- library and queue ---------------------- */
@@ -1536,7 +1536,7 @@ i.map.disabled, .map.disabled i {
 .coverart2 {
 	display: block;
 	padding-left: 2px;
-	line-height: 15px;
+	line-height: 18px;
 }
 .coverart1 {
 	padding-top: 3px;
@@ -1547,11 +1547,22 @@ i.map.disabled, .map.disabled i {
 .coverart.active .coverart2 {
 	color: var( --cga ) !important;
 }
+.list {
+	margin: 0;
+	list-style: none
+}
+.list li:not( .licover ) {
+	display: block;
+	height: 49px;
+	line-height: 20px;
+	border-bottom: 1px solid var( --cga );
+	color: var( --cg60 );
+}
 .licover {
 	position: fixed;
-	display: flex !important;
+	display: flex;
 	width: 100%;
-	height: 230px !important;
+	height: 230px;
 	padding-left: 40px;
 	background: #000;
 }
@@ -1618,17 +1629,6 @@ i.map.disabled, .map.disabled i {
 	vertical-align: 5%;
 }
 
-.list {
-	margin: 0;
-	list-style: none
-}
-.list li {
-	display: block;
-	height: 49px;
-	line-height: 20px;
-	border-bottom: 1px solid var( --cga );
-	color: var( --cg60 );
-}
 .list li,
 #pl-savedlist a {
 	font-size: 18px;
@@ -1773,7 +1773,7 @@ li.active .li1 bl {
 }
 .list .li2 {
 	display: block;
-	max-width: calc( 100vw - 60px );
+	max-width: calc( 100% - 60px );
 	line-height: 14px;
 	font-size: 14px;
 }
@@ -1873,7 +1873,7 @@ li.active .li2 bl {
 }
 #divcolor {
 	position: relative;
-	top: 50vh;
+	top: 50%;
 	-webkit-transform: translateY( -50% );
 	-ms-transform: translateY( -50% );
 	transform: translateY( -50% );
@@ -1940,7 +1940,7 @@ li.active .li2 bl {
 	.index1 {
 		display: flex;
 		padding-top: 50px;
-		line-height: calc( 100vh / 17 );
+		line-height: calc( 100% / 17 );
 	}
 }
 @media ( max-height: 540px ) {
@@ -2039,7 +2039,7 @@ li.active .li2 bl {
 /************************************************************************************/
 @media ( orientation: portrait ) {
 	@media ( max-width: 900px ) {
-		#coverart-block { max-width: 55vw }
+		#coverart-block { max-width: 55% }
 	}
 	@media ( max-width: 895px ) {
 		#playback-row { align-items: flex-start }
@@ -2064,7 +2064,7 @@ li.active .li2 bl {
 		#playback-row { align-items: flex-start }
 	}
 	@media ( max-width: 560px ) {
-		#coverart-block { max-width: 50vw }
+		#coverart-block { max-width: 50% }
 	}
 	@media ( max-width: 500px ) {
 		#page-playback { padding-top: 60px }
@@ -2075,7 +2075,7 @@ li.active .li2 bl {
 		#coverart-block,
 		#volume-knob { width: auto }
 		#coverart-block,
-		#divcover { max-width: 100vw }
+		#divcover { max-width: 100% }
 	}
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }
@@ -2147,7 +2147,7 @@ li.active .li2 bl {
 }
 @media ( max-width: 480px ) and ( max-height: 320px ) {
 	#page-playback {
-		height: 100vh;
+		height: 100%;
 		--scale: 0.65;
 		padding: 40px 0 0 !important;
 	}

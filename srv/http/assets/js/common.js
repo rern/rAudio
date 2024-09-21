@@ -1129,9 +1129,7 @@ function psNotify( data ) {
 	}
 	
 	if ( V.relays ) {
-		if ( data.title ) return
-		
-		$( '#bannerMessage' ).html( data.message );
+		if ( ! data.title ) $( '#bannerMessage' ).html( data.message );
 		return
 	}
 	
@@ -1139,7 +1137,10 @@ function psNotify( data ) {
 	var title   = data.title;
 	var message = data.message;
 	var delay   = data.delay;
-	V.relays    = ! title;
+	if ( ! title ) {
+		V.relays    = true;
+		$( '#infoX' ).trigger( 'click' )
+	}
 	if ( ! page ) {
 		if ( message === 'Change track ...' ) { // audiocd
 			intervalClear();
@@ -1170,7 +1171,7 @@ function psRelays( data ) {
 	var relaysToggle = function() {
 		if ( ! page ) {
 			$( '#relays' ).toggleClass( 'on', S.relayson );
-			$( '#mi-relays, #ti-relays' ).toggleClass( 'hide', ! S.relayson  );
+			$( ( $time.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
 		}
 	}
 	if ( 'done' in data ) {

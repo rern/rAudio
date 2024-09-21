@@ -17,6 +17,7 @@ function addToPlaylist() {
 	if ( D.plclear && V.action.slice( 0, 7 ) === 'replace' ) {
 		infoReplace( addToPlaylistCommand );
 	} else {
+		$( '#infoX' ).trigger( 'click' );
 		addToPlaylistCommand();
 	}
 }
@@ -459,7 +460,7 @@ function tagEditor() {
 				} );
 				infoval.FILE = file;
 				banner( 'tag blink', 'Tag Editor', 'Change ...', -1 );
-				bash( [ 'tageditor.sh', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
+				bash( [ 'tageditor.sh', 'edit', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
 			}
 		} );
 	}, 'json' );

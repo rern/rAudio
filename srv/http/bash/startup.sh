@@ -60,10 +60,10 @@ fi
 
 [[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
 
-filebrightness=/sys/class/backlight/rpi_backlight/brightness
-if [[ -e $filebrightness ]]; then
-	chmod 666 $filebrightness
-	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $filebrightness
+dirbacklight=/sys/class/backlight/rpi_backlight
+if [[ -d $dirbacklight ]]; then
+	chmod 666 $dirbacklight/{brightness,bl_power}
+	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $dirbacklight/brightness
 fi
 
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
