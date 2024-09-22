@@ -159,5 +159,3 @@ fi
 
 udevil clean
 lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
-
-$dirsettings/addons-data.sh startup &

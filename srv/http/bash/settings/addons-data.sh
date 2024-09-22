@@ -2,8 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-[[ $1 == startup ]] && startup=1
-
 evalData() {
 	local cmd
 	cmd=$( grep '"'$1'"' <<< $addondata | cut -d'"' -f4 )
@@ -20,7 +18,6 @@ if [[ $? == 0 ]]; then
 	online=true
 	echo "$data" > $diraddons/addonslist.json
 else
-	[[ $startup ]] && exit
 	online=false
 	notify addons Addons 'Server not reachable.' -1
 fi
@@ -44,8 +41,6 @@ if [[ $update ]]; then
 else
 	rm -f $diraddons/update
 fi
-[[ $startup ]] && exit
-# --------------------------------------------------------------------
 data=$( head -n -1 <<< $data )
 data+='
 	, "status" : {
