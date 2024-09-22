@@ -41,6 +41,8 @@ if [[ $update ]]; then
 else
 	rm -f $diraddons/update
 fi
+[[ $1 == startup ]] && exit
+# --------------------------------------------------------------------
 data=$( head -n -1 <<< $data )
 data+='
 	, "status" : {
