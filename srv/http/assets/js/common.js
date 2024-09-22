@@ -876,7 +876,9 @@ function infoUpDnToggle() { // playlist - remove by range, features - volume lim
 	var $input0 = $input.eq( 0 );
 	var $input1 = $input.eq( 1 );
 	var $updn   = $( '#infoList .up:eq( 0 ), #infoList .dn:eq( 1 )' );
-	$( '#infoList' ).on( 'touchend mouseup keyup', function() {
+	$( '#infoList' ).on( 'touchend mouseup keyup', function( e ) {
+		if ( ! $( e.target ).hasClass( 'updn' ) ) return
+		
 		setTimeout( () => {
 			var val0 = +$input0.val();
 			if ( val0 >= +$input1.val() ) {
