@@ -871,6 +871,23 @@ function infoToggle( reset ) {
 	}
 	$( window ).scrollTop( scrolltop );
 }
+function infoUpDnToggle() { // playlist - remove by range, features - volume limit
+	var $input  = $( '#infoList input' );
+	var $input0 = $input.eq( 0 );
+	var $input1 = $input.eq( 1 );
+	var $updn   = $( '#infoList .up:eq( 0 ), #infoList .dn:eq( 1 )' );
+	$( '#infoList' ).on( 'touchend mouseup keyup', function() {
+		setTimeout( () => {
+			var val0 = +$input0.val();
+			if ( val0 >= +$input1.val() ) {
+				$input1.val( val0 )
+				$updn.addClass( 'disabled' );
+			} else {
+				$updn.removeClass( 'disabled' );
+			}
+		}, 0 );
+	} );
+}
 function infoVal( array ) {
 	var $this, type, name, val;
 	var values = [];

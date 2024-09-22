@@ -442,21 +442,7 @@ $( '#setting-volumelimit' ).on( 'click', function() {
 		, boxwidth     : 70
 		, values       : S.volumelimitconf
 		, checkchanged : S.volumelimit
-		, beforeshow   : () => {
-			var $input      = $( '#infoList input' );
-			var $startup    = $input.eq( 0 );
-			var $max        = $input.eq( 1 );
-			var $up_startup = $( '#infoList .up' ).eq( 0 );
-			var $dn_max     = $( '#infoList .dn' ).eq( 1 );
-			$up_startup.on( 'click', function() {
-				var startup = +$startup.val();
-				if ( startup > +$max.val() ) $max.val( startup );
-			} );
-			$dn_max.on( 'click', function() {
-				var max     = +$max.val();
-				if ( +$startup.val() > max ) $startup.val( max );
-			} );
-		}
+		, beforeshow   : infoUpDnToggle
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
