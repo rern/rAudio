@@ -1721,6 +1721,16 @@ $( '#button-pl-clear' ).on( 'click', function() {
 								, list     : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
 								, boxwidth : 80
 								, values   : [ 1, S.pllength ]
+								, beforeshow : () => {
+									var $start   = $( '#infoList input' ).eq( 0 );
+									var $end     = $( '#infoList input' ).eq( 1 );
+									var dnToggle = () => $( '#infoList .i-remove:last' ).toggleClass( 'disabled', $end.val() === $start.val() );
+									$( '#infoList' ).on( 'click', '.i-plus-circle:eq( 0 )', function() {
+										if ( $start.val() > $end.val() ) $( '#infoList .i-plus-circle:eq( 1 )' ).trigger( 'click' );
+										dnToggle();
+									} );
+									$( '#infoList' ).on( 'click', '.i-remove', dnToggle );
+								}
 								, ok       : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
 							} );
 							break;

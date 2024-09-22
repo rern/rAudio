@@ -600,15 +600,22 @@ mpcplayback )
 	fi
 	;;
 mpcremove )
+	[[ $START == $END ]] && POS=$START && START=
+	songpos=$( mpc status %songpos% )
+	pllength=$( mpc status %length% )
 	if [[ $START ]]; then
-		count=$(( END - START + 1 ))
-		for (( i=0; i < $count; i++ )); do
-			mpc -q del $START
+		if (( $songpos >= $START && $songpos <= $END )); then
+			[[ $pllength == $END ]] && next=$(( START -1 )) || next=$(( END + 1 ))
+			mpc -q play $next
+			mpc -q stop
+		fi
+		for (( i=$END; i >= $START; i-- )); do
+			mpc -q del $i
 		done
 		pushPlaylist
 	elif [[ $POS ]]; then
-		if [[ $( mpc status %songpos% ) == $POS ]]; then
-			[[ $( mpc status %length% ) == $POS ]] && next=$(( POS -1 )) || next=$POS
+		if [[ $songpos == $POS ]]; then
+			[[ $pllength == $POS ]] && next=$(( POS -1 )) || next=$POS
 		fi
 		mpc -q del $POS
 		if [[ $next ]]; then
