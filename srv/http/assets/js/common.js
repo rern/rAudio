@@ -871,23 +871,29 @@ function infoToggle( reset ) {
 	}
 	$( window ).scrollTop( scrolltop );
 }
-function infoUpDnToggle() { // playlist - remove by range, features - volume limit
+function infoUpDnGroup() { // playlist - remove by range, features - volume limit
 	var $input  = $( '#infoList input' );
 	var $input0 = $input.eq( 0 );
 	var $input1 = $input.eq( 1 );
 	var $updn   = $( '#infoList .up:eq( 0 ), #infoList .dn:eq( 1 )' );
+	var valSet  = () => {
+		var v   = [ +$input0.val(), +$input1.val() ];
+		var min = [ I.updn[ 0 ].min, I.updn[ 1 ].min ];
+		var max = [ I.updn[ 0 ].max, I.updn[ 1 ].max ];
+		if ( v[ 0 ] > v[ 1 ] ) v[ 1 ] = v[ 0 ];
+		for ( i = 0; i < 2; i++ ) {
+			if ( v[ i ] < min[ i ] ) v[ i ] = min[ i ];
+			if ( v[ i ] > max[ i ] ) v[ i ] = max[ i ];
+			$( '#infoList input' ).eq( i ).val( v[ i ] )
+			$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', v[ i ] === min[ i ] );
+			$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', v[ i ] === max[ i ] );
+		}
+	}
 	$( '#infoList' ).on( 'touchend mouseup keyup', function( e ) {
-		if ( ! $( e.target ).hasClass( 'updn' ) ) return
-		
-		setTimeout( () => {
-			var val0 = +$input0.val();
-			if ( val0 >= +$input1.val() ) {
-				$input1.val( val0 )
-				$updn.addClass( 'disabled' );
-			} else {
-				$updn.removeClass( 'disabled' );
-			}
-		}, 0 );
+		if ( ! $( e.target ).is( 'input' ) ) setTimeout( valSet, 0 );
+	} );
+	$input.on( 'blur', function() {
+		valSet();
 	} );
 }
 function infoVal( array ) {

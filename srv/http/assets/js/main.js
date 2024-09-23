@@ -1721,7 +1721,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 								, list       : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
 								, boxwidth   : 80
 								, values     : [ 1, S.pllength ]
-								, beforeshow : infoUpDnToggle
+								, beforeshow : infoUpDnGroup
 								, ok         : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
 							} );
 							break;
