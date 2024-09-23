@@ -98,14 +98,6 @@ camilladsp )
 	[[ ! $ON && -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	pushRestartMpd camilladsp $TF
 	;;
-dabdevice )
-	if timeout 1 rtl_test -t &> /dev/null; then
-		echo true
-	else
-		systemctl disable --now mediamtx
-		echo false
-	fi
-	;;
 dabradio )
 	if [[ $ON ]]; then
 		if timeout 1 rtl_test -t &> /dev/null; then
