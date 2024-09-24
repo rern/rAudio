@@ -871,7 +871,7 @@ function infoToggle( reset ) {
 	}
 	$( window ).scrollTop( scrolltop );
 }
-function infoUpDnGroup() { // playlist - remove by range, features - volume limit
+function infoUpDnLink() { // playlist - remove by range, features - volume limit
 	var valSet  = mincap => {
 		var v   = infoVal();
 		var min = [ I.updn[ 0 ].min, I.updn[ 1 ].min ];

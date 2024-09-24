@@ -442,7 +442,7 @@ $( '#setting-volumelimit' ).on( 'click', function() {
 		, boxwidth     : 70
 		, values       : S.volumelimitconf
 		, checkchanged : S.volumelimit
-		, beforeshow   : infoUpDnGroup
+		, beforeshow   : infoUpDnLink
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true

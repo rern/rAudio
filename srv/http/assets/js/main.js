@@ -17,12 +17,12 @@ V = {   // var global
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
 };
-[ 'bioartist',     'query' ].forEach(                                                     k => V[ k ] = []    );
-[ 'interval',      'list',         'scrolltop',   'status' ].forEach(                     k => V[ k ] = {}    );
+[ 'bioartist',     'query' ].forEach(                                                     k => V[ k ] = [] );
+[ 'interval',      'list',         'scrolltop',   'status' ].forEach(                     k => V[ k ] = {} );
 [ 'guide',         'library',      'librarylist', 'local', 'pladd', 'playlist' ].forEach( k => V[ k ] = false );
-[ 'lyrics',        'lyricsartist', 'mode' ].forEach(                                      k => V[ k ] = ''    );
-[ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0     );
-[ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true     );
+[ 'lyrics',        'lyricsartist', 'mode' ].forEach(                                      k => V[ k ] = '' );
+[ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0 );
+[ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true );
 var $bartop     = $( '#bar-top' );
 var $time       = $( '#time-knob' );
 var $volume     = $( '#volume-knob' );
@@ -1721,7 +1721,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 								, list       : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
 								, boxwidth   : 80
 								, values     : [ 1, S.pllength ]
-								, beforeshow : infoUpDnGroup
+								, beforeshow : infoUpDnLink
 								, ok         : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
 							} );
 							break;
