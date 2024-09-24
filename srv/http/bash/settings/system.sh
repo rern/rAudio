@@ -306,7 +306,7 @@ powerbutton )
 	if [[ $ON ]]; then
 		if [[ $SW ]]; then
 			serviceRestartEnable
-			if [[ $SW != 5 ]]; then
+			if [[ $SW != 3 ]]; then
 				config+='
 dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
 			fi
