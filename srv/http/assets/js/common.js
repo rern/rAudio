@@ -545,8 +545,12 @@ function info( json ) {
 			} );
 		}
 		if ( I.updn.length ) {
-			var min = [ I.updn[ 0 ].min, I.updn[ 1 ].min ];
-			var max = [ I.updn[ 0 ].max, I.updn[ 1 ].max ];
+			var max = [];
+			var min = [];
+			for ( i = 0; i < I.updn.length; i++ ) {
+				min.push( I.updn[ i ].min );
+				max.push( I.updn[ i ].max );
+			}
 			I.updn.forEach( ( el, i ) => {
 				var $td   = $( '#infoList .updn' ).parent().eq( i );
 				var $updn = $td.find( '.updn' );
@@ -570,10 +574,10 @@ function info( json ) {
 						}
 					}
 					if ( I.checkchanged ) $num.trigger( 'input' );
-					[ 0, 1 ].forEach( i => {
+					for ( i = 0; i < I.updn.length; i++ ) {
 						$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', v[ i ] === min[ i ] );
 						$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', v[ i ] === max[ i ] );
-					} );
+					}
 				}
 				updnToggle();
 				$updn.on( 'click', function() {
