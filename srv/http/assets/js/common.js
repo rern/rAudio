@@ -554,40 +554,40 @@ function info( json ) {
 				var step  = el.step;
 				function numberset( $target ) {
 					var up = $target.hasClass( 'up' );
-					var v = +$num.val();
-					v     = up ? v + step : v - step;
+					var v  = +$num.val();
+					v      = up ? v + step : v - step;
 					if ( v === el.min || v === el.max ) infoClearTimeout();
 					$num.val( v );
 					updnToggle( up );
 				}
 				function updnToggle( up ) {
-					var val = infoVal( 'array' );
+					var v = infoVal( 'array' );
 					if ( el.link && typeof up === 'boolean' )  {
-						if ( val[ 0 ] > val[ 1 ] ) {
-							v = up ? val[ 0 ] : val[ 1 ];
-							$input.val( v );
-							val = [ v, v ];
+						if ( v[ 0 ] > v[ 1 ] ) {
+							var vlink = up ? v[ 0 ] : v[ 1 ];
+							v         = [ vlink, vlink ];
+							$input.val( vlink );
 						}
 					}
 					if ( I.checkchanged ) $num.trigger( 'input' );
 					[ 0, 1 ].forEach( i => {
-						$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', val[ i ] === min[ i ] );
-						$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', val[ i ] === max[ i ] );
+						$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', v[ i ] === min[ i ] );
+						$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', v[ i ] === max[ i ] );
 					} );
 				}
 				updnToggle();
 				$updn.on( 'click', function() {
 					if ( ! V.press ) numberset( $( this ) );
 				} ).press( function( e ) {
-					var v       = 0;
 					var $target = $( e.target );
-					V.timeout.updni = setInterval( () => numberset( $target, 100 ) );
+					V.timeout.updni = setInterval( () => numberset( $target ), 100 );
 					V.timeout.updnt = setTimeout( () => { // @5 after 3s
 						clearInterval( V.timeout.updni );
-						step    *= 5;
-						v = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
+						step           *= 5;
+						var v           = +$num.val();
+						v               = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
 						$num.val( v );
-						V.timeout.updni = setInterval( () => numberset( $target, 100 ) );
+						V.timeout.updni = setInterval( () => numberset( $target ), 100 );
 					}, 3000 );
 				} ).on( 'touchend mouseup keyup', function() {
 					infoClearTimeout();
