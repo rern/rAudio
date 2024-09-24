@@ -545,41 +545,67 @@ function info( json ) {
 			} );
 		}
 		if ( I.updn.length ) {
+			var min = [ I.updn[ 0 ].min, I.updn[ 1 ].min ];
+			var max = [ I.updn[ 0 ].max, I.updn[ 1 ].max ];
 			I.updn.forEach( ( el, i ) => {
 				var $td   = $( '#infoList .updn' ).parent().eq( i );
 				var $updn = $td.find( '.updn' );
 				var $num  = $td.prev().find( 'input' );
 				var step  = el.step;
-				var v     = 0;
-				function numberset( up ) {
-					v = +$num.val();
-					v = up ? v + step : v - step;
+				function numberset( $target ) {
+					var up = $target.hasClass( 'up' );
+					var v = +$num.val();
+					v     = up ? v + step : v - step;
 					if ( v === el.min || v === el.max ) infoClearTimeout();
 					$num.val( v );
+					updnToggle( up );
+				}
+				function updnToggle( up ) {
+					var val = infoVal( 'array' );
+					if ( el.link && typeof up === 'boolean' )  {
+						if ( val[ 0 ] > val[ 1 ] ) {
+							v = up ? val[ 0 ] : val[ 1 ];
+							$input.val( v );
+							val = [ v, v ];
+						}
+					}
 					if ( I.checkchanged ) $num.trigger( 'input' );
-					updnToggle( v );
+					[ 0, 1 ].forEach( i => {
+						$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', val[ i ] === min[ i ] );
+						$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', val[ i ] === max[ i ] );
+					} );
 				}
-				function updnToggle( v ) {
-					$updn.eq( 0 ).toggleClass( 'disabled', v === el.min );
-					$updn.eq( 1 ).toggleClass( 'disabled', v === el.max );
-				}
-				updnToggle( +$num.val() );
+				updnToggle();
 				$updn.on( 'click', function() {
-					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
+					if ( ! V.press ) numberset( $( this ) );
 				} ).press( function( e ) {
-					var up  = $( e.target ).hasClass( 'up' );
-					V.timeout.updni = setInterval( () => numberset( up ), 100 );
+					var v       = 0;
+					var $target = $( e.target );
+					V.timeout.updni = setInterval( () => numberset( $target, 100 ) );
 					V.timeout.updnt = setTimeout( () => { // @5 after 3s
 						clearInterval( V.timeout.updni );
 						step    *= 5;
 						v = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
 						$num.val( v );
-						V.timeout.updni = setInterval( () => numberset( up ), 100 );
+						V.timeout.updni = setInterval( () => numberset( $target, 100 ) );
 					}, 3000 );
 				} ).on( 'touchend mouseup keyup', function() {
 					infoClearTimeout();
 					step = el.step;
 				} );
+				if ( el.enable ) {
+					$input.on( 'blur', function() {
+						var $this = $( this );
+						var i     = $this.parents( 'tr' ).index();
+						var v     = { val: +$this.val(), min: min[ i ], max: max[ i ] }
+						if ( v.val < v.min ) {
+							$this.val( v.min );
+						} else if ( v.val > v.max ) {
+							$this.val( v.max );
+						}
+						updnToggle( i === 0 );
+					} );
+				}
 			} );
 		}
 		// custom function before show
@@ -870,27 +896,6 @@ function infoToggle( reset ) {
 		$( '.list' ).css( 'padding-bottom', padding );
 	}
 	$( window ).scrollTop( scrolltop );
-}
-function infoUpDnLink() { // playlist - remove by range, features - volume limit
-	var valSet  = mincap => {
-		var v   = infoVal();
-		var min = [ I.updn[ 0 ].min, I.updn[ 1 ].min ];
-		var max = [ I.updn[ 0 ].max, I.updn[ 1 ].max ];
-		if ( v[ 0 ] > v[ 1 ] ) mincap ? v[ 0 ] = v[ 1 ] : v[ 1 ] = v[ 0 ];
-		[ 0, 1 ].forEach( i => {
-			if ( v[ i ] < min[ i ] ) v[ i ] = min[ i ];
-			if ( v[ i ] > max[ i ] ) v[ i ] = max[ i ];
-			$input.eq( i ).val( v[ i ] )
-			$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', v[ i ] === min[ i ] );
-			$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', v[ i ] === max[ i ] );
-		} );
-	}
-	$( '#infoList' ).on( 'touchend mouseup keyup', '.up:eq( 0 ), .dn:eq( 1 )', function() {
-		setTimeout( () => valSet( $( this ).hasClass( 'dn' ) ), 0 );
-	} );
-	$input.on( 'blur', function() {
-		valSet( $( this ).index( 'input' ) );
-	} );
 }
 function infoVal( array ) {
 	var $this, type, name, val;

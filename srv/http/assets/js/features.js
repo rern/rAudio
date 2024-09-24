@@ -431,18 +431,17 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-volumelimit' ).on( 'click', function() {
-	var updn = { updn: { step: 1, min: 0, max: 100 } }
+	var param = { updn: { step: 1, min: 0, max: 100, enable: true, link: true } }
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, list         : [
-			  [ 'Startup default', 'number', updn ]
-			, [ 'Maximum limit',   'number', updn ]
+			  [ 'Startup default', 'number', param ]
+			, [ 'Maximum limit',   'number', param ]
 		]
 		, boxwidth     : 70
 		, values       : S.volumelimitconf
 		, checkchanged : S.volumelimit
-		, beforeshow   : infoUpDnLink
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true

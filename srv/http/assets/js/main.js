@@ -1714,14 +1714,13 @@ $( '#button-pl-clear' ).on( 'click', function() {
 							local();
 							break;
 						case 'range':
-							var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true } }
+							var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true, link: true } }
 							info( {
 								  icon       : 'playlist'
 								, title      : 'Remove Range'
 								, list       : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
 								, boxwidth   : 80
 								, values     : [ 1, S.pllength ]
-								, beforeshow : infoUpDnLink
 								, ok         : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
 							} );
 							break;
