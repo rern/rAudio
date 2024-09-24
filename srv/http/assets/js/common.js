@@ -872,28 +872,24 @@ function infoToggle( reset ) {
 	$( window ).scrollTop( scrolltop );
 }
 function infoUpDnGroup() { // playlist - remove by range, features - volume limit
-	var $input  = $( '#infoList input' );
-	var $input0 = $input.eq( 0 );
-	var $input1 = $input.eq( 1 );
-	var $updn   = $( '#infoList .up:eq( 0 ), #infoList .dn:eq( 1 )' );
-	var valSet  = () => {
-		var v   = [ +$input0.val(), +$input1.val() ];
+	var valSet  = mincap => {
+		var v   = infoVal();
 		var min = [ I.updn[ 0 ].min, I.updn[ 1 ].min ];
 		var max = [ I.updn[ 0 ].max, I.updn[ 1 ].max ];
-		if ( v[ 0 ] > v[ 1 ] ) v[ 1 ] = v[ 0 ];
-		for ( i = 0; i < 2; i++ ) {
+		if ( v[ 0 ] > v[ 1 ] ) mincap ? v[ 0 ] = v[ 1 ] : v[ 1 ] = v[ 0 ];
+		[ 0, 1 ].forEach( i => {
 			if ( v[ i ] < min[ i ] ) v[ i ] = min[ i ];
 			if ( v[ i ] > max[ i ] ) v[ i ] = max[ i ];
-			$( '#infoList input' ).eq( i ).val( v[ i ] )
+			$input.eq( i ).val( v[ i ] )
 			$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', v[ i ] === min[ i ] );
 			$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', v[ i ] === max[ i ] );
-		}
+		} );
 	}
-	$( '#infoList' ).on( 'touchend mouseup keyup', function( e ) {
-		if ( ! $( e.target ).is( 'input' ) ) setTimeout( valSet, 0 );
+	$( '#infoList' ).on( 'touchend mouseup keyup', '.up:eq( 0 ), .dn:eq( 1 )', function() {
+		setTimeout( () => valSet( $( this ).hasClass( 'dn' ) ), 0 );
 	} );
 	$input.on( 'blur', function() {
-		valSet();
+		valSet( $( this ).index( 'input' ) );
 	} );
 }
 function infoVal( array ) {
