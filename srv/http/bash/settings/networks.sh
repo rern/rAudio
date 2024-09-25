@@ -152,7 +152,7 @@ profileget )
   "ESSID"    : "'$( quoteEscape $ESSID )'"
 , "KEY"      : "'$Key'"'
 	[[ $Address ]] && data+='
-, "ADDRESS"  : "'$Address'"
+, "ADDRESS"  : "'${Address/\/24}'"
 , "GATEWAY"  : "'$Gateway'"'
 	data+='
 , "SECURITY" : '$( [[ $Security == wep ]] && echo true || echo false )'
