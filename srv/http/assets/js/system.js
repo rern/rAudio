@@ -44,7 +44,6 @@ var default_v     = {
 		  ON       : 3
 		, SW       : 3
 		, LED      : 21
-		, RESERVED : 5
 	}
 	, relays       : {
 		  ON      : [ 17, 27, 22, 23 ]
