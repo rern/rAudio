@@ -42,11 +42,11 @@ listWlan() {
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do
-					ipr=$( ip r |  grep -m1 $wlandev )
+					ipr=$( ip r | grep $wlandev )
 					[[ $ipr ]] && break || sleep 1
 				done
-				ipwl=$( cut -d' ' -f9 <<< $ipr )
-				gateway=$( cut -d' ' -f3 <<< $ipr )
+				ipwl=$( grep -v ^default <<< $ipr | cut -d' ' -f9 )
+				gateway=$( grep ^default <<< $ipr | cut -d' ' -f3 )
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{

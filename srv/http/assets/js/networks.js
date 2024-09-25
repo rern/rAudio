@@ -211,7 +211,7 @@ function bluetoothInfo( mac ) {
 }
 function connectWiFi( data ) {
 	var icon  = 'wifi';
-	var title = 'Connect Wi-Fi'
+	var title = 'Wi-Fi'
 	clearTimeout( V.timeoutscan );
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
@@ -299,8 +299,8 @@ function infoWiFi( v ) {
 		var dhcp   = ! ( 'ADDRESS' in v );
 		var values = v;
 	} else {
-		var values = default_v[ 'dhcp' ];
 		var dhcp   = true;
+		var values = default_v[ 'dhcp' ];
 	}
 	var profile       = 'profileget' in V;
 	var profilestatic = profile && V.profileget.ADDRESS;
