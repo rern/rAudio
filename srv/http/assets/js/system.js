@@ -162,11 +162,24 @@ $( '.img' ).on( 'click', function() {
 	}
 	var d                = title[ name ];
 	var gpio             = d[ 1 ] ? gpiosvg +'<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; ' + d[ 1 ] : '';
+	var pinhide = {
+		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
+		, mpdoled : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26, 21,     16, 15, 13, 12, 11, 10, 8, 7 ]
+	}
 	info( {
 		  icon       : d[ 2 ] || name
 		, title      : d[ 0 ]
 		, list       : '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">'+ gpio
-		, beforeshow : () => $( '.'+ name +'-no' ).addClass( 'hide' )
+		, beforeshow : () => {
+			if ( name in pinhide ) {
+				pinhide[ name ].forEach( n => {
+					$( '.board .p'+ n ).addClass( 'hide' );
+					$( '.bcm .p'+ board2bcm[ n ] ).addClass( 'hide' );
+				} );
+			}
+			$( '#infoList svg .power' ).toggleClass( 'hide', [ 'mpdoled', 'rotaryencoder' ].includes( name ) );
+			$( '#infoList svg .mpdoled' ).toggleClass( 'hide', name !== 'mpdoled' );
+		}
 		, okno       : true
 	} );
 } );
@@ -370,6 +383,7 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
+		, message      : gpiosvg
 		, list         : [
 			  [ 'CLK',  'select', board2bcm ]
 			, [ 'DT',   'select', board2bcm ]
@@ -379,10 +393,6 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 		, boxwidth     : 70
 		, values       : S.rotaryencoderconf || default_v.rotaryencoder
 		, checkchanged : S.rotaryencoder
-		, beforeshow   : () => {
-			$( '#infoList' ).prepend( gpiosvg );
-			$( '#infoList svg .power' ).remove();
-		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -460,11 +470,11 @@ $( '#setting-vuled' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
+		, message      : gpiosvg
 		, list         : list
 		, values       : S.vuledconf || default_v.vuled
 		, checkchanged : S.vuled
 		, boxwidth     : 70
-		, beforeshow   : () => $( '#infoList' ).prepend( gpiosvg )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -757,6 +767,7 @@ function infoLcdCharGpio() {
 	info( {
 		  ...lcdcharjson
 		, tab          : [ infoLcdChar, '' ]
+		, message      : gpiosvg
 		, list         : list
 		, footer       : lcdcharfooter
 		, boxwidth     : 70
@@ -764,12 +775,10 @@ function infoLcdCharGpio() {
 		, checkchanged : S.lcdchar && confgpio
 		, beforeshow   : () => { 
 			infoLcdcharButton();
-			$( '#infoList tr' ).eq( 2 ).after( '<tr><td colspan="3">'+ gpiosvg +'</td></tr>' )
 		}
 	} );
 }
 function infoLcdcharButton() {
-	$( '#infoList svg .power' ).remove();
 	if ( ! S.lcdchar || S.lcdcharreboot ) return
 	
 	$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
@@ -913,25 +922,15 @@ function infoPowerbutton() {
 		, title        : SW.title
 		, tablabel     : [ 'Generic', 'Audiophonic' ]
 		, tab          : [ '', infoPowerbuttonAudiophonics ]
+		, message      : gpiosvg
 		, list         : [ 
-			  [ 'On',       'select', board2bcm ]
+			  [ 'On',       'select', { 5: 3 } ]
 			, [ 'Off',      'select', board2bcm ]
 			, [ 'LED',      'select', board2bcm ]
-			, [ 'Reserved', 'select', board2bcm ]
 		]
 		, boxwidth     : 70
 		, values       : values
 		, checkchanged : S.powerbutton
-		, beforeshow   : () => {
-			$( '#infoList' ).prepend( gpiosvg );
-			$( '#infoList td:first-child' ).css( 'width', '70px' );
-			$( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
-			var $trreserved = $( '#infoList tr' ).last();
-			$trreserved.toggleClass( 'hide', values.SW == 3 );
-			$( '#infoList select' ).eq( 1 ).on( 'input', function() {
-				$trreserved.toggleClass( 'hide', $( this ).val() == 3 );
-			} );
-		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -1039,6 +1038,7 @@ function infoRelaysName() {
 		, title        : SW.title
 		, tablabel     : relaystab
 		, tab          : [ infoRelays, '' ]
+		, message      : gpiosvg
 		, list         : list
 		, boxwidth     : 70
 		, checkblank   : true
@@ -1046,7 +1046,6 @@ function infoRelaysName() {
 		, checkunique  : true
 		, values       : values
 		, beforeshow   : () => {
-			$( '#infoList' ).prepend( gpiosvg );
 			infoRelaysCss( 160 );
 			$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
 			$( '#infoList td' ).eq( 2 ).html( ico( 'plus edit' ) );

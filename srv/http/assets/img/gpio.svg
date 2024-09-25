@@ -4,8 +4,8 @@
 	path, circle {stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
 	.bl {fill:#33bbff;}
 	.gr {fill:#808080;}
-	.grd {fill:#706E6E;}
-	.grl {fill:#B5B3B3;}
+	.bcm {fill:#706E6E;}
+	.board, .grl {fill:#B5B3B3;}
 	.grn {fill:#00FF00;}
 	.ora {fill:#FF5F00;}
 	.red {fill:#FF0000;}
@@ -55,68 +55,68 @@
 <circle class="red" cx="347.2" cy="61" r="6.7"/>
 <circle class="red" cx="365.7" cy="61" r="6.7"/>
 
-<text class="grd" transform="matrix(1 0 0 1 1.2269 -14.5)">
-	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="24.7">26</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="24.7">19</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="61.3" y="24.7">13</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="83" y="24.7">6</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="103" y="24.7">5</tspan>
+<text class="bcm" transform="matrix(1 0 0 1 1.2269 -14.5)">
+	<tspan class="p26" x="24.3" y="24.7">26</tspan>
+	<tspan class="p19" x="42.8" y="24.7">19</tspan>
+	<tspan class="p13" x="61.3" y="24.7">13</tspan>
+	<tspan class="p6 x="83" y="24.7">6</tspan>
+	<tspan class="p5" x="103" y="24.7">5</tspan>
 	<tspan x="153.8" y="24.7">11</tspan>
-	<tspan class="mpdoled-no" x="176" y="24.7">9</tspan>
-	<tspan class="lcdchar-no" x="190" y="24.7">10</tspan>
-	<tspan class="mpdoled-no" x="226.5" y="24.7">22</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="245" y="24.7">27</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="265" y="24.7">17</tspan>
-	<tspan class="lcdchar-no gpio-no mpdoled-no" x="304" y="24.7">4</tspan>
-	<tspan class="gpio-no" x="323.9" y="24.7">3</tspan>
-	<tspan class="gpio-no" x="342" y="24.7">2</tspan>
+	<tspan class="p9" x="176" y="24.7">9</tspan>
+	<tspan class="p10" x="190" y="24.7">10</tspan>
+	<tspan class="p22" x="226.5" y="24.7">22</tspan>
+	<tspan class="p27" x="245" y="24.7">27</tspan>
+	<tspan class="p17" x="265" y="24.7">17</tspan>
+	<tspan class="p4" x="304" y="24.7">4</tspan>
+	<tspan x="323.9" y="24.7">3</tspan>
+	<tspan x="342" y="24.7">2</tspan>
 </text>
-<text class="grl" transform="matrix(1 0 0 1 1.2269 0)">
-	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="24.7">37</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="24.7">35</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="61.3" y="24.7">33</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="79.8" y="24.7">31</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="98.3" y="24.7">29</tspan>
+<text class="board" transform="matrix(1 0 0 1 1.2269 0)">
+	<tspan class="p37" x="24.3" y="24.7">37</tspan>
+	<tspan class="p35" x="42.8" y="24.7">35</tspan>
+	<tspan class="p33" x="61.3" y="24.7">33</tspan>
+	<tspan class="p31" x="79.8" y="24.7">31</tspan>
+	<tspan class="p29" x="98.3" y="24.7">29</tspan>
 	<tspan x="153.8" y="24.7">23</tspan>
-	<tspan class="mpdoled-no" x="172.3" y="24.7">21</tspan>
-	<tspan class="lcdchar-no" x="190" y="24.7">19</tspan>
-	<tspan class="mpdoled-no" x="226.5" y="24.7">15</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="245" y="24.7">13</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="265" y="24.7">11</tspan>
-	<tspan class="lcdchar-no gpio-no mpdoled-no" x="304" y="24.7">7</tspan>
-	<tspan class="gpio-no" x="323.9" y="24.7">5</tspan>
-	<tspan class="gpio-no" x="342" y="24.7">3</tspan>
-	<tspan class="gpio-no rotaryencoder-no power" x="360" y="24.7">1</tspan>
-	<tspan class="gpio-no pwr" x="325.8" y="44.5">|</tspan>
+	<tspan class="p21" x="172.3" y="24.7">21</tspan>
+	<tspan class="p19" x="190" y="24.7">19</tspan>
+	<tspan class="p15" x="226.5" y="24.7">15</tspan>
+	<tspan class="p13" x="245" y="24.7">13</tspan>
+	<tspan class="p11" x="265" y="24.7">11</tspan>
+	<tspan class="p7" x="304" y="24.7">7</tspan>
+	<tspan x="323.9" y="24.7">5</tspan>
+	<tspan x="342" y="24.7">3</tspan>
+	<tspan class="mpdoled power hide" x="360" y="24.7">1</tspan>
+	<tspan class="pwr power hide" x="325.8" y="44.5">|</tspan>
 </text>
-<text class="grl" transform="matrix(1 0 0 1 1.2268 64)">
-	<tspan class="lcdchar-no mpdoled-no" x="5.8" y="24.7">40</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="24.7">38</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="24.7">36</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="79.8" y="24.7">32</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="135.3" y="24.7">26</tspan>
+<text class="board" transform="matrix(1 0 0 1 1.2268 64)">
+	<tspan class="p40" x="5.8" y="24.7">40</tspan>
+	<tspan class="p38" x="24.3" y="24.7">38</tspan>
+	<tspan class="p36" x="42.8" y="24.7">36</tspan>
+	<tspan class="p32" x="79.8" y="24.7">32</tspan>
+	<tspan class="p26" x="135.3" y="24.7">26</tspan>
 	<tspan x="153.8" y="24.7">24</tspan>
 	<tspan x="172.3" y="24.7">22</tspan>
 	<tspan x="209.3" y="24.7">18</tspan>
-	<tspan class="mpdoled-no" x="227.8" y="24.7">16</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="264.8" y="24.7">12</tspan>
-	<tspan class="lcdchar-no gpio-no mpdoled-no" x="283" y="24.7">10</tspan>
-	<tspan class="lcdchar-no gpio-no mpdoled-no" x="306" y="24.7">8</tspan>
-	<tspan class="gpio-no mpdoled-no rotaryencoder-no power" x="342.5" y="24.7">4</tspan>
+	<tspan class="p16" x="227.8" y="24.7">16</tspan>
+	<tspan class="p12" x="264.8" y="24.7">12</tspan>
+	<tspan class="p10" x="283" y="24.7">10</tspan>
+	<tspan class="p8" x="306" y="24.7">8</tspan>
+	<tspan class="power hide" x="342.5" y="24.7">4</tspan>
 </text>
-<text class="grd" transform="matrix(1 0 0 1 1.2268 78.5)">
-	<tspan class="lcdchar-no mpdoled-no" x="5.8" y="24.7">21</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="24.3" y="24.7">20</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="42.8" y="24.7">16</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="79.8" y="24.7">12</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="138" y="24.7">7</tspan>
+<text class="bcm" transform="matrix(1 0 0 1 1.2268 78.5)">
+	<tspan class="p21" x="5.8" y="24.7">21</tspan>
+	<tspan class="p20" x="24.3" y="24.7">20</tspan>
+	<tspan class="p16" x="42.8" y="24.7">16</tspan>
+	<tspan class="p12" x="79.8" y="24.7">12</tspan>
+	<tspan class="p7" x="138" y="24.7">7</tspan>
 	<tspan x="158" y="24.7">8</tspan>
 	<tspan x="172.3" y="24.7">25</tspan>
 	<tspan x="209.3" y="24.7">24</tspan>
-	<tspan class="mpdoled-no" x="227.8" y="24.7">23</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="264.8" y="24.7">18</tspan>
-	<tspan class="lcdchar-no gpio-no mpdoled-no" x="283" y="24.7">15</tspan>
-	<tspan class="lcdchar-no gpio-no mpdoled-no" x="301" y="24.7">14</tspan>
+	<tspan class="p23" x="227.8" y="24.7">23</tspan>
+	<tspan class="p18" x="264.8" y="24.7">18</tspan>
+	<tspan class="p15" x="283" y="24.7">15</tspan>
+	<tspan class="p14" x="301" y="24.7">14</tspan>
 	<tspan x="353" y="24.7">BCM</tspan>
 </text>
 </svg>

@@ -186,7 +186,7 @@ $B_gear
  · Off - Default: pin <c>5</c> (single pin on+off)
  · If pin <c>5</c> is used by DAC or LCD, set 2 unused pins for:
 	 · Off - Default: pin <c>7</c>
-	 · Reserved - Default: pin <c>29</c>
+	 · Reserved - Default: pin <c>29</c> (Remap pin for system off)
 EOF
 	]
 	, [
