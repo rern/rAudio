@@ -160,7 +160,9 @@ $( '.img' ).on( 'click', function() {
 		, vuled         : [ 'VU LED',         '',               'led' ]
 	}
 	var d                = title[ name ];
-	var gpio             = d[ 1 ] ? gpiosvg +'<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; ' + d[ 1 ] : '';
+	var list             = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
+	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += gpiosvg;
+	if ( d[ 1 ] ) list += '<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; '+ d[ 1 ];
 	var pinhide = {
 		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
 		, mpdoled : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26, 21,     16, 15, 13, 12, 11, 10, 8, 7 ]
@@ -168,7 +170,7 @@ $( '.img' ).on( 'click', function() {
 	info( {
 		  icon       : d[ 2 ] || name
 		, title      : d[ 0 ]
-		, list       : '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">'+ gpio
+		, list       : list
 		, beforeshow : () => {
 			if ( name in pinhide ) {
 				pinhide[ name ].forEach( n => {
@@ -930,6 +932,7 @@ function infoPowerbutton() {
 		, boxwidth     : 70
 		, values       : values
 		, checkchanged : S.powerbutton
+		, beforeshow   : () => $( '.pwr' ).removeClass( 'hide' )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
