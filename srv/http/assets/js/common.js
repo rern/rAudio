@@ -821,7 +821,23 @@ function infoFileImageResize( ext, imgW, imgH ) {
 function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 }
-function infoListChange() {
+function infoListAddRemove( callback ) {
+	$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
+	$( '#infoList td' ).eq( 2 ).html( ico( 'plus edit' ) );
+	$( '#infoList' ).on( 'click', '.edit', function() {
+		var $this = $( this );
+		if ( $this.hasClass( 'i-plus' ) ) {
+			$( '#infoList select' ).select2( 'destroy' );
+			var $tr = $( '#infoList tr' ).last();
+			$tr.after( $tr.clone() );
+			selectSet();
+		} else {
+			$this.parents( 'tr' ).remove();
+		}
+		infoListChange( callback );
+	} );
+}
+function infoListChange( callback ) {
 	$input    = $( '#infoList' ).find( 'input, select' );
 	$inputbox = $( '#infoList input' );
 	if ( 'checkblank' in I ) {
@@ -830,6 +846,7 @@ function infoListChange() {
 	}
 	infoCheckSet();
 	$( '#infoList input' ).trigger( 'input' );
+	if ( callback ) callback();
 }
 function infoPrompt( message ) {
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );

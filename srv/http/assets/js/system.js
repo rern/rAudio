@@ -466,16 +466,23 @@ $( '#setting-tft' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-vuled' ).on( 'click', function() {
-	var list = [];
-	for ( i = 1; i < 8; i++ ) list.push(  [ i +'<gr>/7</gr>', 'select', board2bcm ] );
+	var values = S.vuledconf || default_v.vuled;
+	var list   = [ [ ico( 'led gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
+	var leds   = Object.keys( values ).length + 1;
+	for ( i = 1; i < leds; i++ ) list.push(  [ i, 'select', board2bcm ] );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, message      : gpiosvg
 		, list         : list
-		, values       : S.vuledconf || default_v.vuled
+		, values       : values
 		, checkchanged : S.vuled
 		, boxwidth     : 70
+		, beforeshow   : () => infoListAddRemove( () => {
+			$( '#infoList tr' ).slice( 1 ).each( ( i, el ) => {
+				$( el ).find( 'td' ).eq( 0 ).text( i + 1 );
+			} );
+		} )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -1028,8 +1035,8 @@ function infoRelaysName() {
 	var values = [];
 	pin.forEach( p => values.push( p, name[ p ] ) );
 	var list   = [
-		  [ '', '', { suffix: ico( 'gpiopins bl' ) +'Pin', sameline: true } ]
-		, [ '', '', { suffix: ico( 'tag bl' ) +' Name' } ]
+		  [ '', '', { suffix: ico( 'gpiopins gr' ) +'Pin', sameline: true } ]
+		, [ '', '', { suffix: ico( 'tag gr' ) +' Name' } ]
 	]
 	var kL     = keys.length;
 	for ( i = 0; i < kL; i++ ) {
@@ -1047,23 +1054,7 @@ function infoRelaysName() {
 		, checkchanged : S.relays
 		, checkunique  : true
 		, values       : values
-		, beforeshow   : () => {
-			infoRelaysCss( 160 );
-			$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
-			$( '#infoList td' ).eq( 2 ).html( ico( 'plus edit' ) );
-			$( '#infoList' ).on( 'click', 'i:not( .bl )', function() {
-				var $this = $( this );
-				if ( $this.hasClass( 'i-plus' ) ) {
-					$( '#infoList select' ).select2( 'destroy' );
-					var $tr = $( '#infoList tr' ).last();
-					$tr.after( $tr.clone() );
-					selectSet();
-				} else {
-					$this.parents( 'tr' ).remove();
-				}
-				infoListChange();
-			} );
-		}
+		, beforeshow   : () => infoListAddRemove( infoRelaysCss( 160 ) )
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
 	} );
