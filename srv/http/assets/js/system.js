@@ -1054,7 +1054,10 @@ function infoRelaysName() {
 		, checkchanged : S.relays
 		, checkunique  : true
 		, values       : values
-		, beforeshow   : () => infoListAddRemove( infoRelaysCss( 160 ) )
+		, beforeshow   : () => {
+			infoRelaysCss( 160 );
+			infoListAddRemove();
+		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
 	} );
