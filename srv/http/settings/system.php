@@ -215,7 +215,7 @@ EOF
 	, [
 		  'id'       => 'vuled'
 		, 'help'     => <<< EOF
-<a class="img" data-name="vuled">7 LEDs</a> - display audio level
+<a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
 EOF
 	]
