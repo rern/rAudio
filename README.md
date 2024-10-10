@@ -73,7 +73,7 @@ Audio player for
 	- [Rotary encoder](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/rotaryencoder.jpg)
 	- [Spectrum OLED](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
-	- VU LED (7 LEDs+Rs)
+	- VU LED (LEDs+Rs)
 - Not applicable on Raspberry Pi `1` or `Zero`:
 	- GUI on local screen
 	- DSP

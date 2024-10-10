@@ -4,8 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20240928
-sed -i '/reserved/ d' $dirsystem/powerbutton.conf
+# 20241011
+file=$dirsystem/powerbutton.conf
+[[ -e $file ]] && sed -i '/reserved/ d' $file
 
 # 20240921
 file=$dirsystem/relays.conf

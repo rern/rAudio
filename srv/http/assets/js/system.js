@@ -481,6 +481,7 @@ $( '#setting-vuled' ).on( 'click', function() {
 		, beforeshow   : () => infoListAddRemove( () => {
 			$( '#infoList tr' ).slice( 1 ).each( ( i, el ) => {
 				$( el ).find( 'td' ).eq( 0 ).text( i + 1 );
+				$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 			} );
 		} )
 		, cancel       : switchCancel

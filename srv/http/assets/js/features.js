@@ -289,7 +289,9 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 					$tr.find( 'i' ).remove();
 				}
 			} );
-			var okToggle = () => $( '#infoOk' ).toggleClass( 'disabled', $( '#infoList input' ).length < 3 );
+			var okToggle = () => {
+				if ( ! S.multiraudio ) $( '#infoOk' ).toggleClass( 'disabled', $( '#infoList input' ).length < 3 );
+			}
 			okToggle();
 			$( '#infoList' ).on( 'click', 'i', function() {
 				var $this = $( this );
@@ -298,10 +300,9 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 					$( '#infoList input' ).last().val( S.ipsub );
 				} else {
 					$this.parents( 'tr' ).remove();
-					if ( ! S.multiraudio ) setTimeout( okToggle, 150 );
 				}
 				I.checkip = checkIpList( $( '#infoList input' ).length );
-				infoListChange();
+				infoListChange( okToggle );
 			} );
 		}
 		, cancel       : switchCancel
