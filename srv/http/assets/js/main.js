@@ -1523,6 +1523,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var modetitle = modefile ? path : $( '#mode-title' ).text();
 	} else if ( V.mode.slice( -5 ) === 'radio' ) { // dabradio, webradio
+		if ( libpath ) path = libpath +'/'+ path;
 		if ( $this.hasClass( 'dir' ) ) {
 			var query = {
 				  library : 'radio'
