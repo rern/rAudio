@@ -565,7 +565,8 @@ function info( json ) {
 					updnToggle( up );
 				}
 				function updnToggle( up ) {
-					var v = infoVal( 'array' );
+					var v = [];
+					$( '.updn' ).parent().prev().find( 'input' ).each( ( i, el ) => v.push( +$( el ).val() ) );
 					if ( el.link && typeof up === 'boolean' )  {
 						if ( v[ 0 ] > v[ 1 ] ) {
 							var vlink = up ? v[ 0 ] : v[ 1 ];
