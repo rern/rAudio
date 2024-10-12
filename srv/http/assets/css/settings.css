@@ -573,8 +573,8 @@ input.disabled + .switchlabel:after {
 	display: none;
 	color: var( --cw );
 }
-.gpio svg {
-	max-width: 100%;
+.infomessage:has( svg ) {
+	width: 100%;
 }
 .gpiopins {
 	margin-top: 0;

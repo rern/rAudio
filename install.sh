@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20241011
+file=$dirsystem/powerbutton.conf
+[[ -e $file ]] && sed -i '/reserved/ d' $file
+
 # 20240921
 file=$dirsystem/relays.conf
 if [[ -e $file ]] && ! grep -q timeron $file; then

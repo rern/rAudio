@@ -159,3 +159,14 @@ fi
 
 udevil clean
 lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
+if [[ ! -e $diraddons/update ]]; then
+	data=$( curl -sfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
+	if [[ $? == 0 ]]; then
+		echo "$data" > $diraddons/addonslist.json
+		rversion=$( sed -n '/"r1"/,/"version"/ {/version/!d; s/"//g; s/.*: //; p}' <<< $data )
+		if [[ $rversion != $( < $diraddons/r1 ) ]]; then
+			touch $diraddons/update
+			pushData option '{ "addons": 1 }'
+		fi
+	fi
+fi

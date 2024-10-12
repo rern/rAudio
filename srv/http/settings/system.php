@@ -184,9 +184,6 @@ EOF
 $B_gear
  · On - Fixed to pin <c>5</c>
  · Off - Default: pin <c>5</c> (single pin on+off)
- · If pin <c>5</c> is used by DAC or LCD, set 2 unused pins for:
-	 · Off - Default: pin <c>7</c>
-	 · Reserved - Default: pin <c>29</c>
 EOF
 	]
 	, [
@@ -218,7 +215,7 @@ EOF
 	, [
 		  'id'       => 'vuled'
 		, 'help'     => <<< EOF
-<a class="img" data-name="vuled">7 LEDs</a> - display audio level
+<a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
 EOF
 	]

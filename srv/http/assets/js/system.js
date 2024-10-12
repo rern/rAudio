@@ -44,7 +44,6 @@ var default_v     = {
 		  ON       : 3
 		, SW       : 3
 		, LED      : 21
-		, RESERVED : 5
 	}
 	, relays       : {
 		  ON      : [ 17, 27, 22, 23 ]
@@ -161,12 +160,27 @@ $( '.img' ).on( 'click', function() {
 		, vuled         : [ 'VU LED',         '',               'led' ]
 	}
 	var d                = title[ name ];
-	var gpio             = d[ 1 ] ? gpiosvg +'<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; ' + d[ 1 ] : '';
+	var list             = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
+	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += gpiosvg;
+	if ( d[ 1 ] ) list += '<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; '+ d[ 1 ];
+	var pinhide = {
+		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
+		, mpdoled : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26, 21,     16, 15, 13, 12, 11, 10, 8, 7 ]
+	}
 	info( {
 		  icon       : d[ 2 ] || name
 		, title      : d[ 0 ]
-		, list       : '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">'+ gpio
-		, beforeshow : () => $( '.'+ name +'-no' ).addClass( 'hide' )
+		, list       : list
+		, beforeshow : () => {
+			if ( name in pinhide ) {
+				pinhide[ name ].forEach( n => {
+					$( '.board .p'+ n ).addClass( 'hide' );
+					$( '.bcm .p'+ board2bcm[ n ] ).addClass( 'hide' );
+				} );
+			}
+			$( '#infoList svg .power' ).toggleClass( 'hide', [ 'mpdoled', 'rotaryencoder' ].includes( name ) );
+			$( '#infoList svg .mpdoled' ).toggleClass( 'hide', name !== 'mpdoled' );
+		}
 		, okno       : true
 	} );
 } );
@@ -370,6 +384,7 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
+		, message      : gpiosvg
 		, list         : [
 			  [ 'CLK',  'select', board2bcm ]
 			, [ 'DT',   'select', board2bcm ]
@@ -379,10 +394,6 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 		, boxwidth     : 70
 		, values       : S.rotaryencoderconf || default_v.rotaryencoder
 		, checkchanged : S.rotaryencoder
-		, beforeshow   : () => {
-			$( '#infoList' ).prepend( gpiosvg );
-			$( '#infoList svg .power' ).remove();
-		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -455,16 +466,24 @@ $( '#setting-tft' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-vuled' ).on( 'click', function() {
-	var list = [];
-	for ( i = 1; i < 8; i++ ) list.push(  [ i +'<gr>/7</gr>', 'select', board2bcm ] );
+	var values = S.vuledconf || default_v.vuled;
+	var list   = [ [ ico( 'led gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
+	var leds   = Object.keys( values ).length + 1;
+	for ( i = 1; i < leds; i++ ) list.push(  [ i, 'select', board2bcm ] );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
+		, message      : gpiosvg
 		, list         : list
-		, values       : S.vuledconf || default_v.vuled
+		, values       : values
 		, checkchanged : S.vuled
 		, boxwidth     : 70
-		, beforeshow   : () => $( '#infoList' ).prepend( gpiosvg )
+		, beforeshow   : () => infoListAddRemove( () => {
+			$( '#infoList tr' ).slice( 1 ).each( ( i, el ) => {
+				$( el ).find( 'td' ).eq( 0 ).text( i + 1 );
+				$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
+			} );
+		} )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -757,6 +776,7 @@ function infoLcdCharGpio() {
 	info( {
 		  ...lcdcharjson
 		, tab          : [ infoLcdChar, '' ]
+		, message      : gpiosvg
 		, list         : list
 		, footer       : lcdcharfooter
 		, boxwidth     : 70
@@ -764,12 +784,10 @@ function infoLcdCharGpio() {
 		, checkchanged : S.lcdchar && confgpio
 		, beforeshow   : () => { 
 			infoLcdcharButton();
-			$( '#infoList tr' ).eq( 2 ).after( '<tr><td colspan="3">'+ gpiosvg +'</td></tr>' )
 		}
 	} );
 }
 function infoLcdcharButton() {
-	$( '#infoList svg .power' ).remove();
 	if ( ! S.lcdchar || S.lcdcharreboot ) return
 	
 	$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
@@ -913,25 +931,16 @@ function infoPowerbutton() {
 		, title        : SW.title
 		, tablabel     : [ 'Generic', 'Audiophonic' ]
 		, tab          : [ '', infoPowerbuttonAudiophonics ]
+		, message      : gpiosvg
 		, list         : [ 
-			  [ 'On',       'select', board2bcm ]
+			  [ 'On',       'select', { 5: 3 } ]
 			, [ 'Off',      'select', board2bcm ]
 			, [ 'LED',      'select', board2bcm ]
-			, [ 'Reserved', 'select', board2bcm ]
 		]
 		, boxwidth     : 70
 		, values       : values
 		, checkchanged : S.powerbutton
-		, beforeshow   : () => {
-			$( '#infoList' ).prepend( gpiosvg );
-			$( '#infoList td:first-child' ).css( 'width', '70px' );
-			$( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
-			var $trreserved = $( '#infoList tr' ).last();
-			$trreserved.toggleClass( 'hide', values.SW == 3 );
-			$( '#infoList select' ).eq( 1 ).on( 'input', function() {
-				$trreserved.toggleClass( 'hide', $( this ).val() == 3 );
-			} );
-		}
+		, beforeshow   : () => $( '.pwr' ).removeClass( 'hide' )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
@@ -1027,8 +1036,8 @@ function infoRelaysName() {
 	var values = [];
 	pin.forEach( p => values.push( p, name[ p ] ) );
 	var list   = [
-		  [ '', '', { suffix: ico( 'gpiopins bl' ) +'Pin', sameline: true } ]
-		, [ '', '', { suffix: ico( 'tag bl' ) +' Name' } ]
+		  [ '', '', { suffix: ico( 'gpiopins gr' ) +'Pin', sameline: true } ]
+		, [ '', '', { suffix: ico( 'tag gr' ) +' Name' } ]
 	]
 	var kL     = keys.length;
 	for ( i = 0; i < kL; i++ ) {
@@ -1039,6 +1048,7 @@ function infoRelaysName() {
 		, title        : SW.title
 		, tablabel     : relaystab
 		, tab          : [ infoRelays, '' ]
+		, message      : gpiosvg
 		, list         : list
 		, boxwidth     : 70
 		, checkblank   : true
@@ -1046,22 +1056,8 @@ function infoRelaysName() {
 		, checkunique  : true
 		, values       : values
 		, beforeshow   : () => {
-			$( '#infoList' ).prepend( gpiosvg );
 			infoRelaysCss( 160 );
-			$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
-			$( '#infoList td' ).eq( 2 ).html( ico( 'plus edit' ) );
-			$( '#infoList' ).on( 'click', 'i:not( .bl )', function() {
-				var $this = $( this );
-				if ( $this.hasClass( 'i-plus' ) ) {
-					$( '#infoList select' ).select2( 'destroy' );
-					var $tr = $( '#infoList tr' ).last();
-					$tr.after( $tr.clone() );
-					selectSet();
-				} else {
-					$this.parents( 'tr' ).remove();
-				}
-				infoListChange();
-			} );
+			infoListAddRemove();
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk

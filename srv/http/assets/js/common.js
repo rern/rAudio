@@ -545,41 +545,71 @@ function info( json ) {
 			} );
 		}
 		if ( I.updn.length ) {
+			var max = [];
+			var min = [];
+			for ( i = 0; i < I.updn.length; i++ ) {
+				min.push( I.updn[ i ].min );
+				max.push( I.updn[ i ].max );
+			}
 			I.updn.forEach( ( el, i ) => {
 				var $td   = $( '#infoList .updn' ).parent().eq( i );
 				var $updn = $td.find( '.updn' );
 				var $num  = $td.prev().find( 'input' );
 				var step  = el.step;
-				var v     = 0;
-				function numberset( up ) {
-					v = +$num.val();
-					v = up ? v + step : v - step;
+				function numberset( $target ) {
+					var up = $target.hasClass( 'up' );
+					var v  = +$num.val();
+					v      = up ? v + step : v - step;
 					if ( v === el.min || v === el.max ) infoClearTimeout();
 					$num.val( v );
+					updnToggle( up );
+				}
+				function updnToggle( up ) {
+					var v = infoVal( 'array' );
+					if ( el.link && typeof up === 'boolean' )  {
+						if ( v[ 0 ] > v[ 1 ] ) {
+							var vlink = up ? v[ 0 ] : v[ 1 ];
+							v         = [ vlink, vlink ];
+							$input.val( vlink );
+						}
+					}
 					if ( I.checkchanged ) $num.trigger( 'input' );
-					updnToggle( v );
+					for ( i = 0; i < I.updn.length; i++ ) {
+						$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', v[ i ] === min[ i ] );
+						$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', v[ i ] === max[ i ] );
+					}
 				}
-				function updnToggle( v ) {
-					$updn.eq( 0 ).toggleClass( 'disabled', v === el.min );
-					$updn.eq( 1 ).toggleClass( 'disabled', v === el.max );
-				}
-				updnToggle( +$num.val() );
+				updnToggle();
 				$updn.on( 'click', function() {
-					if ( ! V.press ) numberset( $( this ).hasClass( 'up' ) );
+					if ( ! V.press ) numberset( $( this ) );
 				} ).press( function( e ) {
-					var up  = $( e.target ).hasClass( 'up' );
-					V.timeout.updni = setInterval( () => numberset( up ), 100 );
+					var $target = $( e.target );
+					V.timeout.updni = setInterval( () => numberset( $target ), 100 );
 					V.timeout.updnt = setTimeout( () => { // @5 after 3s
 						clearInterval( V.timeout.updni );
-						step    *= 5;
-						v = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
+						step           *= 5;
+						var v           = +$num.val();
+						v               = v > 0 ? v + ( step - v % step ) : v - ( step + v % step );
 						$num.val( v );
-						V.timeout.updni = setInterval( () => numberset( up ), 100 );
+						V.timeout.updni = setInterval( () => numberset( $target ), 100 );
 					}, 3000 );
 				} ).on( 'touchend mouseup keyup', function() {
 					infoClearTimeout();
 					step = el.step;
 				} );
+				if ( el.enable ) {
+					$input.on( 'blur', function() {
+						var $this = $( this );
+						var i     = $this.parents( 'tr' ).index();
+						var v     = { val: +$this.val(), min: min[ i ], max: max[ i ] }
+						if ( v.val < v.min ) {
+							$this.val( v.min );
+						} else if ( v.val > v.max ) {
+							$this.val( v.max );
+						}
+						updnToggle( i === 0 );
+					} );
+				}
 			} );
 		}
 		// custom function before show
@@ -791,7 +821,23 @@ function infoFileImageResize( ext, imgW, imgH ) {
 function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 }
-function infoListChange() {
+function infoListAddRemove( callback ) {
+	$( '#infoList tr' ).append( '<td>'+ ico( 'remove edit' ) +'</td>' );
+	$( '#infoList td' ).eq( 2 ).html( ico( 'plus edit' ) );
+	$( '#infoList' ).on( 'click', '.edit', function() {
+		var $this = $( this );
+		if ( $this.hasClass( 'i-plus' ) ) {
+			$( '#infoList select' ).select2( 'destroy' );
+			var $tr = $( '#infoList tr' ).last();
+			$tr.after( $tr.clone() );
+			selectSet();
+		} else {
+			$this.parents( 'tr' ).remove();
+		}
+		infoListChange( callback );
+	} );
+}
+function infoListChange( callback ) {
 	$input    = $( '#infoList' ).find( 'input, select' );
 	$inputbox = $( '#infoList input' );
 	if ( 'checkblank' in I ) {
@@ -800,6 +846,7 @@ function infoListChange() {
 	}
 	infoCheckSet();
 	$( '#infoList input' ).trigger( 'input' );
+	if ( callback ) callback();
 }
 function infoPrompt( message ) {
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );

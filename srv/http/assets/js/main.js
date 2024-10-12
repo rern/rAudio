@@ -17,12 +17,12 @@ V = {   // var global
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
 };
-[ 'bioartist',     'query' ].forEach(                                                     k => V[ k ] = []    );
-[ 'interval',      'list',         'scrolltop',   'status' ].forEach(                     k => V[ k ] = {}    );
+[ 'bioartist',     'query' ].forEach(                                                     k => V[ k ] = [] );
+[ 'interval',      'list',         'scrolltop',   'status' ].forEach(                     k => V[ k ] = {} );
 [ 'guide',         'library',      'librarylist', 'local', 'pladd', 'playlist' ].forEach( k => V[ k ] = false );
-[ 'lyrics',        'lyricsartist', 'mode' ].forEach(                                      k => V[ k ] = ''    );
-[ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0     );
-[ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true     );
+[ 'lyrics',        'lyricsartist', 'mode' ].forEach(                                      k => V[ k ] = '' );
+[ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0 );
+[ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true );
 var $bartop     = $( '#bar-top' );
 var $time       = $( '#time-knob' );
 var $volume     = $( '#volume-knob' );
@@ -1523,6 +1523,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var modetitle = modefile ? path : $( '#mode-title' ).text();
 	} else if ( V.mode.slice( -5 ) === 'radio' ) { // dabradio, webradio
+		if ( libpath ) path = libpath +'/'+ path;
 		if ( $this.hasClass( 'dir' ) ) {
 			var query = {
 				  library : 'radio'
@@ -1714,14 +1715,14 @@ $( '#button-pl-clear' ).on( 'click', function() {
 							local();
 							break;
 						case 'range':
-							var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true } }
+							var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true, link: true } }
 							info( {
-								  icon     : 'playlist'
-								, title    : 'Remove Range'
-								, list     : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
-								, boxwidth : 80
-								, values   : [ 1, S.pllength ]
-								, ok       : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
+								  icon       : 'playlist'
+								, title      : 'Remove Range'
+								, list       : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
+								, boxwidth   : 80
+								, values     : [ 1, S.pllength ]
+								, ok         : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
 							} );
 							break;
 						case 'crop':

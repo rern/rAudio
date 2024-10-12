@@ -306,10 +306,6 @@ powerbutton )
 	if [[ $ON ]]; then
 		if [[ $SW ]]; then
 			serviceRestartEnable
-			if [[ $SW != 5 ]]; then
-				config+='
-dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
-			fi
 		else # audiophonic
 			config+="
 dtoverlay=gpio-poweroff,gpiopin=22
@@ -318,7 +314,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	else
 		if systemctl -q is-active powerbutton; then
 			systemctl disable --now powerbutton
-			. $dirsystem/powerbutton.conf
+			led=$( getVar led $dirsystem/powerbutton.conf )
 			gpioset -t0 -c0 $led=0
 		fi
 	fi

@@ -289,7 +289,9 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 					$tr.find( 'i' ).remove();
 				}
 			} );
-			var okToggle = () => $( '#infoOk' ).toggleClass( 'disabled', $( '#infoList input' ).length < 3 );
+			var okToggle = () => {
+				if ( ! S.multiraudio ) $( '#infoOk' ).toggleClass( 'disabled', $( '#infoList input' ).length < 3 );
+			}
 			okToggle();
 			$( '#infoList' ).on( 'click', 'i', function() {
 				var $this = $( this );
@@ -298,10 +300,9 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 					$( '#infoList input' ).last().val( S.ipsub );
 				} else {
 					$this.parents( 'tr' ).remove();
-					if ( ! S.multiraudio ) setTimeout( okToggle, 150 );
 				}
 				I.checkip = checkIpList( $( '#infoList input' ).length );
-				infoListChange();
+				infoListChange( okToggle );
 			} );
 		}
 		, cancel       : switchCancel
@@ -431,31 +432,17 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-volumelimit' ).on( 'click', function() {
+	var param = { updn: { step: 1, min: 0, max: 100, enable: true, link: true } }
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, list         : [
-			  [ 'Startup default', 'number', { updn: { step: 1, min: 0, max: S.volumelimitconf.MAX } } ]
-			, [ 'Maximum limit',   'number', { updn: { step: 1, min: 0, max: 100 } } ]
+			  [ 'Startup default', 'number', param ]
+			, [ 'Maximum limit',   'number', param ]
 		]
 		, boxwidth     : 70
 		, values       : S.volumelimitconf
 		, checkchanged : S.volumelimit
-		, beforeshow   : () => {
-			var $input   = $( '#infoList input' );
-			var $startup = $input.eq( 0 );
-			var $max     = $input.eq( 1 );
-			var $up      = $( '#infoList .up' ).eq( 0 );
-			$( '#infoList .up' ).eq( 1 ).on( 'click', function() {
-				var max = +$max.val();
-				if ( +$startup.val() > max ) {
-					$startup.val( max );
-					$up.addClass( 'disabled' );
-				} else {
-					$up.removeClass( 'disabled' );
-				}
-			} );
-		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true
