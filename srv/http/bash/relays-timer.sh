@@ -17,15 +17,11 @@ while sleep 60; do
 		playing=1
 	fi
 	if [[ $playing ]]; then
-		(( $i != $timer )) && echo $timer > $timerfile
+		(( $i != $timer )) && i=$timer
 	else
-		i=$( < $timerfile )
 		(( $i == 1 )) && $dirbash/relays.sh off && exit
 # --------------------------------------------------------------------
 		(( i-- ))
-		echo $i > $timerfile
-		(( $i > 1 )) && continue
-		
-		pushData relays '{ "timer": '$timer' }'
+		(( $i == 1 )) && pushData relays '{ "timer": '$timer' }'
 	fi
 done
