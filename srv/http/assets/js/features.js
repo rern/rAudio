@@ -241,7 +241,7 @@ $( '#setting-lyrics' ).on( 'click', function() {
 $( '#setting-multiraudio' ).on( 'click', function() {
 	var list = [
 		  [ '', '',     { suffix: 'Name', sameline: true } ]
-		, [ '', '',     { suffix: 'IP / URL' } ]
+		, [ '', '',     { suffix: 'IP' } ]
 	];
 	var listname = [ '', 'text', { sameline: true } ];
 	var listip   = [ '', 'text' ];
@@ -271,7 +271,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		, checkunique  : true
 		, beforeshow   : () => {
 			$( '#infoList td:first-child' ).remove();
-			$( '#infoList td' ).css( { width: '180px', 'padding-right': 0, 'text-align': 'left' } );
+			$( '#infoList td' ).css( { width: '160px', 'text-align': 'left' } );
 			$( '#infoList td:last-child' ).css( 'width', '40px' );
 			$( '#infoList tr:first-child td' ).css( 'padding-left', '5px' );
 			infoListAddRemove( add => {
