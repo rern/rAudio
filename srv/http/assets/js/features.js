@@ -298,8 +298,12 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		, ok           : () => {
 			var infoval = infoVal();
 			if ( infoval.length < 3 ) {
-				notifyCommon( 'Disable ...' );
-				bash( [ 'multiraudioreset' ] );
+				if ( S.multiraudio ) {
+					notifyCommon( 'Disable ...' );
+					bash( [ 'multiraudioreset' ] );
+				} else {
+					$( '#infoX' ).trigger( 'click' );
+				}
 				return
 			}
 			
