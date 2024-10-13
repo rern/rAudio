@@ -213,14 +213,15 @@ login )
 	;;
 multiraudio )
 	enableFlagSet
-	ip=$( ipAddress )
-	iplist=$( jq -r .[]  $dirsystem/multiraudio.json | grep -v $ip )
 	display='{ "submenu": "multiraudio", "value": '$TF' }'
 	flagset='{ "filesh": [ "rm", "-f", "'$dirsystem'/multiraudio" ] }'
+	list=$( tr -d '\n' < $dirsystem/multiraudio.json )
 	if [[ $ON ]]; then
-		json='{ "json": '$( tr -d '\n' < $dirsystem/multiraudio.json )', "name": "multiraudio" }'
+		json='{ "json": '$list', "name": "multiraudio" }'
 		flagset=${flagset/rm*-f/touch}
 	fi
+	ip=$( ipAddress )
+	iplist=$( jq -r .[] <<< $list | grep -v $ip )
 	while read ip; do
 		! ipOnline $ip && continue
 		
@@ -231,11 +232,10 @@ multiraudio )
 	pushRefresh
 	pushSubmenu multiraudio $TF
 	;;
-multiraudiodisable )
-	rm -f $dirsystem/multiraudio
-	;;
 multiraudioreset )
 	rm -f $dirsystem/multiraudio*
+	pushRefresh
+	pushSubmenu multiraudio false
 	;;
 nfsserver )
 	mpc -q clear
