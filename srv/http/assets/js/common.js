@@ -692,8 +692,7 @@ function infoCheckSet() {
 }
 function infoCheckUnique() {
 	var infoval = infoVal( 'array' );
-	var vunique = [ ... new Set( infoval ) ];
-	I.notunique = infoval.length !== vunique.length;
+	I.notunique = infoval.length !== new Set( infoval ).size;
 }
 function infoClearTimeout( all ) { // ok for both timeout and interval
 	if ( ! ( 'timeout' in V ) ) return
@@ -827,7 +826,8 @@ function infoListAddRemove( callback ) {
 	$( '#infoList td' ).eq( 2 ).html( ico( 'plus edit' ) );
 	$( '#infoList' ).on( 'click', '.edit', function() {
 		var $this = $( this );
-		if ( $this.hasClass( 'i-plus' ) ) {
+		var add   = $this.hasClass( 'i-plus' );
+		if ( add ) {
 			$( '#infoList select' ).select2( 'destroy' );
 			var $tr = $( '#infoList tr' ).last();
 			$tr.after( $tr.clone() );
@@ -835,10 +835,10 @@ function infoListAddRemove( callback ) {
 		} else {
 			$this.parents( 'tr' ).remove();
 		}
-		infoListChange( callback );
+		infoListChange( callback, add );
 	} );
 }
-function infoListChange( callback ) {
+function infoListChange( callback, add ) {
 	$input    = $( '#infoList' ).find( 'input, select' );
 	$inputbox = $( '#infoList input' );
 	if ( 'checkblank' in I ) {
@@ -847,7 +847,7 @@ function infoListChange( callback ) {
 	}
 	infoCheckSet();
 	$( '#infoList input' ).trigger( 'input' );
-	if ( callback ) callback();
+	if ( callback ) callback( add );
 }
 function infoPrompt( message ) {
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );

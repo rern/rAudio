@@ -244,7 +244,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		, [ '', '',     { suffix: 'IP / URL' } ]
 	];
 	var listname = [ '', 'text', { sameline: true } ];
-	var listip   = [ '', 'text', { suffix: ico( 'remove' ) } ];
+	var listip   = [ '', 'text' ];
 	if ( S.multiraudioconf ) {
 		var keys   = Object.keys( S.multiraudioconf ).sort();
 		var values = [];
@@ -254,55 +254,44 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 		} );
 		var iL     = values.length / 2 - 1;
 	} else {
-		list.push( listname, listip );
-		values    = [ S.hostname, S.hostip ];
+		list.push( listname, listip, listname, listip );
+		values     = [ S.hostname, S.hostip, '', S.ipsub ];
 	}
-	function checkIpList( length ) {
-		var list = [];
-		for ( i = 0; i < length; i++ ) {
-			if ( i % 2 ) list.push( i );
-		}
-		return list
+	function checkIpList( ar ) {
+		return [ ...Array( ar.length ).keys() ].filter( ( i, el ) => el % 2 )
 	}
-	var checkip = checkIpList( values.length );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, list         : list
 		, boxwidth     : 160
 		, values       : values
-		, checkchanged : S.multiraudio
 		, checkblank   : true
-		, checkip      : checkip
+		, checkip      : checkIpList( values )
 		, checkunique  : true
 		, beforeshow   : () => {
 			$( '#infoList td:first-child' ).remove();
 			$( '#infoList td' ).css( { width: '180px', 'padding-right': 0, 'text-align': 'left' } );
 			$( '#infoList td:last-child' ).css( 'width', '40px' );
-			$( '#infoList tr' ).first().append( '<td>'+ ico( 'plus' ) +'</td>' );
 			$( '#infoList tr:first-child td' ).css( 'padding-left', '5px' );
-			var htmltr = $( '#infoList tr' ).last()[ 0 ].outerHTML;
-			$( '#infoList input' ).each( ( i, el ) => {
+			infoListAddRemove( add => {
+				if ( add ) {
+					var $last = $( '#infoList tr:last-child input' );
+					$last.eq( 0 ).val( '' );
+					$last.eq( 1 ).val( S.ipsub );
+					$last.removeClass( 'disabled' );
+					$( '.edit' ).last().removeClass( 'hide' );
+				}
+				I.checkip = checkIpList( $( '#infoList input' ) );
+			} );
+			$( '#infoList input' ).filter( ( i, el ) => {
 				if ( $( el ).val() === S.hostip ) {
 					var $tr = $( el ).parents( 'tr' );
 					$tr.find( 'input' ).addClass( 'disabled' );
-					$tr.find( 'i' ).remove();
+					$tr.find( 'i' ).addClass( 'hide' );
+					$tr.insertAfter( $( '#infoList tr' ).first() );
+					return false
 				}
-			} );
-			var okToggle = () => {
-				if ( ! S.multiraudio ) $( '#infoOk' ).toggleClass( 'disabled', $( '#infoList input' ).length < 3 );
-			}
-			okToggle();
-			$( '#infoList' ).on( 'click', 'i', function() {
-				var $this = $( this );
-				if ( $this.hasClass( 'i-plus' ) ) {
-					$( '#infoList tbody' ).append( htmltr );
-					$( '#infoList input' ).last().val( S.ipsub );
-				} else {
-					$this.parents( 'tr' ).remove();
-				}
-				I.checkip = checkIpList( $( '#infoList input' ).length );
-				infoListChange( okToggle );
 			} );
 		}
 		, cancel       : switchCancel
