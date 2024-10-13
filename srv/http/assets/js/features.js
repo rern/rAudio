@@ -276,7 +276,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 			$( '#infoList tr:first-child td' ).css( 'padding-left', '5px' );
 			infoListAddRemove( add => {
 				if ( add ) {
-					var $last = $( '#infoList tr:last-child input' );
+					var $last = $( '#infoList input' ).slice( -2 );
 					$last.eq( 0 ).val( '' );
 					$last.eq( 1 ).val( S.ipsub );
 					$last.removeClass( 'disabled' );
