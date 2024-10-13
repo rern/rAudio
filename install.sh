@@ -38,20 +38,6 @@ IgnorePkg   = libunwind
 ' $file
 fi
 
-# 20240818
-file=$dirmpd/albumbyartist
-[[ -e $file && $( grep -m1 . $file | cut -c 2 ) != ^ ]] && php /srv/http/cmd.php sort albumbyartist
-
-lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
-
-if [[ -e /boot/kernel.img ]]; then
-	file=/usr/bin/mount.ntfs3
-	if [[ ! -e $file ]]; then
-		ln -s /usr/bin/ntfs-3g $file
-		sed -i '/^allowed_types/ s/$/, ntfs3/' /etc/udevil/udevil.conf
-	fi
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
