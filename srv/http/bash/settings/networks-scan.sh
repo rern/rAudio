@@ -18,9 +18,8 @@ if [[ $1 == wlan ]]; then
 	[[ ! $scan ]] && exit
 # --------------------------------------------------------------------
 	scan=$( sed -E 's/^\s*|\s*$//g' <<< $scan \
-				| sed -E -n '/^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality/ {
-						s/^Cell.*/,{/
-						s/^Quality.*level.(.*)/,"signal":"\1"/
+				| sed -E -n '/^ESSID|^Encryption|^IE.*WPA|^Quality/ {
+						s/^Quality.*level.(.*) dBm/,{,"signal":\1/
 						s/^Encryption key:(.*)/,"encrypt":"\1"/
 						s/^ESSID:/,"ssid":/
 						s/^IE.*WPA.*/,"wpa":true/
@@ -29,8 +28,7 @@ if [[ $1 == wlan ]]; then
 				| tr -d '\n' \
 				| sed 's/{,/{/g; s/,{/\n&/g' \
 				| grep -E -v '^$|"ssid":""' \
-				| sed 's/wpa.*wpa/wpa/; s/$/}/' \
-				| sort )
+				| sed 's/"signal":,/"signal":-67,/; s/wpa.*wpa/wpa/; s/$/}/' )
 	
 	# omit saved profile
 	profiles=$( ls -1p /etc/netctl | grep -v /$ )

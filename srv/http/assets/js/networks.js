@@ -454,20 +454,18 @@ function scanBluetooth() {
 function scanWlan() {
 	bash( [ 'settings/networks-scan.sh', 'wlan' ], data => {
 		if ( data ) {
+			data.sort( ( a, b ) => b.signal - a.signal );
 			S.listwlscan = data;
+			var icon, signal;
 			var htmlwl   = '';
 			data.forEach( list => {
-				if ( list.signal.slice( -3 ) === 'dBm' ) {
-					var dbm    = parseInt( list.signal.slice( 0, -4 ) );
-					var signal = dbm > -60 ? '' : ( dbm < -67 ? 1 : 2 );
-				} else {
-					var dbm    = '';
-					var signal = '';
-				}
-				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'+ ico( 'wifi'+ signal );
-				htmlwl += dbm && dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
+				signal  = list.signal;
+				icon    = 'wifi';
+				icon   += signal > -60 ? '' : ( signal < -67 ? 1 : 2 );
+				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'+ ico( icon );
+				htmlwl += signal && signal < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' '+ ico( 'lock' );
-				if ( list.signal != 0 ) htmlwl += '<gr>'+ list.signal +'</gr>';
+				if ( signal != 0 ) htmlwl += '<gr>'+ signal +' dBm</gr>';
 				htmlwl += '</li>';
 			} );
 		} else {
