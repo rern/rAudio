@@ -331,15 +331,7 @@ relays )
 	enableFlagSet
 	pushRefresh
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
-	[[ ! -e $dirshm/relayson ]] && exit
-# --------------------------------------------------------------------
-	if [[ $PINCHANGED ]]; then
-		$dirbash/relays.sh off
-	elif [[ ! $TIMERON ]]; then
-		killProcess relaystimer
-	elif [[ $TIMERCHANGED ]]; then
-		$dirbash/relays-timer.sh &> /dev/null &
-	fi
+	[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 	;;
 rotaryencoder )
 	if [[ $ON ]]; then
