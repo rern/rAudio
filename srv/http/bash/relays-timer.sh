@@ -12,9 +12,10 @@ while sleep 60; do
 	if grep -q -m1 '^state.*play' $dirshm/status || grep -q -m1 RUNNING /proc/asound/card*/pcm*p/sub*/status; then
 		(( $i != $timer )) && echo $timer > $timerfile
 	else
-		$off && $dirbash/relays.sh off && exit
+		[[ $off ]] && $dirbash/relays.sh off && exit
 # --------------------------------------------------------------------
 		i=$(( $( getContent $timerfile 1 ) - 1 ))
+		notify relays Relays $i
 		if (( $i > 1 )); then
 			echo $i > $timerfile
 		else
