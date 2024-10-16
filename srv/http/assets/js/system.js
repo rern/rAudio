@@ -1021,7 +1021,7 @@ function infoRelays() {
 					ar.push( $( el ).val() );
 				} );
 				I.notunique = von.length !== new Set( von ).size || voff.length !== new Set( voff ).size;
-				if ( I.notunique ) banner( SW.icon, SW.title, 'Duplicate devices' )
+				if ( I.notunique ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
 			} );
 			$trtimer.on( 'input', 'input:checkbox', function() {
 				$trtimer.find( 'input[type=number], .updn' ).toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
