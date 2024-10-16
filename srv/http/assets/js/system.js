@@ -1012,6 +1012,17 @@ function infoRelays() {
 				
 				bash( [ 'relays.sh', on ? '' : 'off' ] );
 			} );
+			$( '#infoList' ).on( 'input', 'select', function() {
+				var $select = $( '#infoList select' );
+				var von   = [];
+				var voff  = [];
+				$select.each( ( i, el ) => {
+					var ar = i % 2 ? von : voff;
+					ar.push( $( el ).val() );
+				} );
+				I.notunique = von.length !== new Set( von ).size || voff.length !== new Set( voff ).size;
+				if ( I.notunique ) banner( SW.icon, SW.title, 'Duplicate devices' )
+			} );
 			$trtimer.on( 'input', 'input:checkbox', function() {
 				$trtimer.find( 'input[type=number], .updn' ).toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 			} );
