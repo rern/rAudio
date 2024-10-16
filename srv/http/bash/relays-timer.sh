@@ -15,7 +15,6 @@ while sleep 60; do
 		[[ $off ]] && $dirbash/relays.sh off && exit
 # --------------------------------------------------------------------
 		i=$(( $( getContent $timerfile 1 ) - 1 ))
-		notify relays Relays $i
 		if (( $i > 1 )); then
 			echo $i > $timerfile
 		else
