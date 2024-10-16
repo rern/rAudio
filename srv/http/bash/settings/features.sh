@@ -442,9 +442,7 @@ stoptimer )
 	else
 		rm -f $dirshm/pidstoptimer
 		if [[ -e $dirshm/relayson ]]; then
-			. $dirsystem/relays.conf
-			echo $timer > $timerfile
-			$dirbash/relays-timer.sh &> /dev/null &
+			grep -q timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
 		fi
 	fi
 	pushRefresh

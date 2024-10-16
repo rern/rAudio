@@ -1102,12 +1102,9 @@ function infoRelaysOk() {
 		pins.push( val );
 	} );
 	notifyCommon();
-	var save = function() {
-		bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
-		jsonSave( 'relays', name );
-		if ( tabname ) infoRelays();
-	}
-	S.relayson ? bash( [ 'relays.sh', 'off' ], save ) : save();
+	bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
+	jsonSave( 'relays', name );
+	if ( tabname ) infoRelays();
 }
 function infoRestore() {
 	info( {

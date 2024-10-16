@@ -35,9 +35,10 @@ done
 if [[ $relayson ]]; then
 	done=true
 	touch $dirshm/relayson
-	[[ $timeron == true ]] && $dirbash/relays-timer.sh $timer &> /dev/null &
+	[[ $timeron == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 else
 	done=false
+	killProcess relaystimer
 	rm -f $dirshm/relayson
 fi
 sleep 1

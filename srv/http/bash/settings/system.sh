@@ -331,6 +331,7 @@ relays )
 	enableFlagSet
 	pushRefresh
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
+	[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 	;;
 rotaryencoder )
 	if [[ $ON ]]; then
