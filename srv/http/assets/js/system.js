@@ -1072,6 +1072,8 @@ function infoRelaysOk() {
 	var name    = S.relaysnameconf;
 	var v       = infoVal();
 	var tabname = I.tab[ 0 ];
+	var onoff0  = order.ON.join( '' ) + order.OFF.join( '' );
+	var timer0  = order.TIMER;
 	if ( tabname ) {
 		v.forEach( ( el, i ) => i % 2 ? name[ p ] = el : p = el );
 		var on = Object.keys( name );
@@ -1080,7 +1082,7 @@ function infoRelaysOk() {
 			order.OFF = on.slice().reverse();
 		}
 	} else {
-		var pL   = order.ON.length;
+		var pL = order.ON.length;
 		for ( i = 0; i < pL; i++ ) {
 			var j          = i * 4;
 			order.ON[ i ]  = v[ j ];
@@ -1094,15 +1096,20 @@ function infoRelaysOk() {
 			}
 		}
 	}
-	var keys = Object.keys( S.relaysconf );
-	var pins = [];
+	var keys    = Object.keys( S.relaysconf );
+	var data    = [];
 	keys.forEach( k => {
 		var val =  order[ k ];
 		if ( Array.isArray( val ) ) val = val.join( ' ' );
-		pins.push( val );
+		data.push( val );
 	} );
+	var onoff   = '';
+	var $select = $( '#infoList select' );
+	$select.even().each( ( i, el ) => onoff += $( el ).val() );
+	$select.odd().each( ( i, el ) => onoff += $( el ).val() );
+	data.push( onoff0 !== onoff, order.TIMERON, timer0 !== order.TIMER );
 	notifyCommon();
-	bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
+	bash( [ 'relays', ...data, 'CFG '+ keys.join( ' ' ) +' PINCHANGED TIMERON TIMERCHANGED' ] );
 	jsonSave( 'relays', name );
 	if ( tabname ) infoRelays();
 }
