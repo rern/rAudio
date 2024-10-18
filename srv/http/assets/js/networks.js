@@ -453,6 +453,7 @@ function scanBluetooth() {
 }
 function scanWlan() {
 	bash( [ 'settings/networks-scan.sh', 'wlan' ], data => {
+		console.log(data)
 		if ( data ) {
 			data.sort( ( a, b ) => b.signal - a.signal );
 			S.listwlscan = data;
@@ -462,7 +463,13 @@ function scanWlan() {
 				signal  = list.signal;
 				icon    = 'wifi';
 				icon   += signal > -60 ? '' : ( signal < -67 ? 1 : 2 );
-				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'+ ico( icon );
+				icon    = ico( icon );
+				if ( list.current ) {
+					icon += '<grn>•</grn> ';
+				} else if ( list.profile ) {
+					icon += '<gr>•</gr> ';
+				}
+				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'+ icon;
 				htmlwl += signal && signal < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' '+ ico( 'lock' );
 				if ( signal != 0 ) htmlwl += '<gr>'+ signal +' dBm</gr>';
