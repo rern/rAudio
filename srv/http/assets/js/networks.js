@@ -453,7 +453,6 @@ function scanBluetooth() {
 }
 function scanWlan() {
 	bash( [ 'settings/networks-scan.sh', 'wlan' ], data => {
-		console.log(data)
 		if ( data ) {
 			data.sort( ( a, b ) => b.signal - a.signal );
 			S.listwlscan = data;
