@@ -1034,7 +1034,7 @@ function infoRelays() {
 function infoRelaysCss( iW ) {
 	$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 	$( '#infoList td:first-child' ).remove();
-	$( '#infoList input[type=number]' ).parent().addBack().css( 'width', iW +'px' );
+	$( '#infoList input' ).parent().addBack().css( 'width', iW +'px' );
 }
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;

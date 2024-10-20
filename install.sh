@@ -51,6 +51,3 @@ $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
-
-# 20240913
-$dirsettings/player-conf.sh
