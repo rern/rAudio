@@ -1003,7 +1003,9 @@ function infoRelays() {
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			infoRelaysCss( 70 );
+			$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+			$( '#infoList td:first-child' ).remove();
+			$( '#infoList input[type=number]' ).parent().addBack().css( 'width', '70px' );
 			var $trtimer = $( '#infoList tr:last' );
 			$trtimer.find( 'td' ).eq( 0 ).css( { height: '40px','text-align': 'right' } );
 			$( '#infoList' ).on( 'click', '.i-power', function() {
@@ -1030,11 +1032,6 @@ function infoRelays() {
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
 	} );
-}
-function infoRelaysCss( iW ) {
-	$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
-	$( '#infoList td:first-child' ).remove();
-	$( '#infoList input' ).parent().addBack().css( 'width', iW +'px' );
 }
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;
@@ -1067,7 +1064,9 @@ function infoRelaysName() {
 		, checkunique  : true
 		, values       : values
 		, beforeshow   : () => {
-			infoRelaysCss( 160 );
+			$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+			$( '#infoList td:first-child' ).remove();
+			$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
 			infoListAddRemove();
 		}
 		, cancel       : switchCancel
