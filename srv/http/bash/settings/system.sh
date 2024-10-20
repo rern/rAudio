@@ -333,6 +333,10 @@ relays )
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
 	[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 	;;
+relayspintoggle )
+	[[ $( gpioget -a -c0 --numeric $PIN ) == 0 ]] && onoff=1 || onoff=0
+	gpioset -t0 -c0 $PIN=$onoff
+	;;
 rotaryencoder )
 	if [[ $ON ]]; then
 		serviceRestartEnable

@@ -1068,6 +1068,12 @@ function infoRelaysName() {
 			$( '#infoList td:first-child' ).remove();
 			$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
 			infoListAddRemove();
+			$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
+			$( '#infoList td' ).eq( 0 ).empty();
+			$( '#infoList' ).on( 'click', '.i-power', function() {
+				var pin = $( this ).parents( 'tr' ).find( 'select' ).val();
+				bash( [ 'relayspintoggle', pin, 'CMD PIN' ] );
+			} );
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysOk
