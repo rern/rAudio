@@ -986,13 +986,11 @@ $( '#previous, #next, #coverR, #coverL' ).press( function( e ) {
 } );
 $( '#bio' ).on( 'click', '.biosimilar', function() {
 	bio( $( this ).text(), 'getsimilar' );
-} );
-$( '#bio' ).on( 'click', '.bioback', function() {
+} ).on( 'click', '.bioback', function() {
 	V.bioartist.pop();
 	var getsimilar = V.bioartist.length > 1 ? 'getsimilar' : '';
 	bio( V.bioartist.pop(), getsimilar );
-} );
-$( '#bio' ).on( 'click', '.i-close', function() {
+} ).on( 'click', '.i-close', function() {
 	V.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
 	if ( 'observer' in V ) V.observer.disconnect();
