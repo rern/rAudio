@@ -1037,13 +1037,8 @@ function infoRelays() {
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;
 	var keys   = Object.keys( name );
-	var bcmpin = [ 2, 3, 4, 14, 15, 17, 18, 27, 22, 23, 24, 10, 9, 25, 11, 8, 7, 5, 6, 12, 13, 19, 16, 26, 20, 21 ];
-	var pin    = [];
-	bcmpin.forEach( p => { // fix - numeric keys unsort
-		if ( keys.includes( ''+ p ) ) pin.push( p );
-	} );
 	var values = [];
-	pin.forEach( p => values.push( p, name[ p ] ) );
+	keys.forEach( p => values.push( p, name[ p ] ) );
 	var list   = [
 		  [ '', '', { suffix: ico( 'gpiopins gr' ) +'Pin', sameline: true } ]
 		, [ '', '', { suffix: ico( 'tag gr' ) +' Name' } ]
@@ -1052,40 +1047,40 @@ function infoRelaysName() {
 	for ( i = 0; i < kL; i++ ) {
 		list.push( [ '', 'select', { kv: board2bcm, sameline: true } ], [ '', 'text' ] );
 	}
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : relaystab
-		, tab          : [ infoRelays, '' ]
-		, message      : gpiosvg
-		, list         : list
-		, boxwidth     : 70
-		, checkblank   : true
-		, checkchanged : S.relays
-		, checkunique  : true
-		, values       : values
-		, beforeshow   : () => {
-			$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
-			$( '#infoList td:first-child' ).remove();
-			$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
-			infoListAddRemove();
-			$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
-			$( '#infoList td' ).eq( 0 ).empty();
-			var pins = '';
-			$( '#infoList select' ).each( ( i, el ) => pins += $( el ).val() +' ' );
-			bash( [ 'relaysstatus', pins, 'CMD PINS' ], on => {
+	bash( [ 'relaysstatus', keys.join( ' ' ), 'CMD PINS' ], on => {
+		info( {
+			  icon         : SW.icon
+			, title        : SW.title
+			, tablabel     : relaystab
+			, tab          : [ infoRelays, '' ]
+			, message      : gpiosvg
+			, list         : list
+			, boxwidth     : 70
+			, checkblank   : true
+			, checkchanged : S.relays
+			, checkunique  : true
+			, values       : values
+			, beforeshow   : () => {
+				$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+				$( '#infoList td:first-child' ).remove();
+				$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
+				infoListAddRemove( add => {
+					if ( add ) $( '#infoList .i-power' ).last().removeClass( 'red' );
+				} );
+				$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
+				$( '#infoList td' ).eq( 0 ).empty();
 				$( '#infoList .i-power' ).each( ( i, el ) => $( el ).toggleClass( 'red', on[ i ] ) );
-			}, 'json' );
-			$( '#infoList' ).on( 'click', '.i-power', function() {
-				var $this = $( this );
-				var pin = $this.parents( 'tr' ).find( 'select' ).val();
-				$this.toggleClass( 'red' );
-				bash( [ 'relayspintoggle', pin, 'CMD PIN' ] );
-			} );
-		}
-		, cancel       : switchCancel
-		, ok           : infoRelaysOk
-	} );
+				$( '#infoList' ).on( 'click', '.i-power', function() {
+					var $this = $( this );
+					var pin = $this.parents( 'tr' ).find( 'select' ).val();
+					$this.toggleClass( 'red' );
+					bash( [ 'relayspintoggle', pin, 'CMD PIN' ] );
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : infoRelaysOk
+		} );
+	}, 'json' );
 }
 function infoRelaysOk() {
 	if ( ! S.relaysconf ) { // force update values on ok
