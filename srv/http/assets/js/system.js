@@ -1010,8 +1010,6 @@ function infoRelays() {
 			$trtimer.find( 'td' ).eq( 0 ).css( { height: '40px','text-align': 'right' } );
 			$( '#infoList' ).on( 'click', '.i-power', function() {
 				var on = $( this ).hasClass( 'grn' );
-				if ( ( S.relayson && on ) || ( ! S.relayson && ! on ) ) return
-				
 				bash( [ 'relays.sh', on ? '' : 'off' ] );
 			} );
 			$( '#infoList' ).on( 'input', 'select', function() {
