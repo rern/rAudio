@@ -190,12 +190,12 @@ EOF
 		  'id'       => 'relays'
 		, 'help'     => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: $M_relays
- · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+ · Module with jumper <c>High/Low Level Trigger</c> (set to <c>High</c>)
  · Can be enabled and run as a test without a connected relay module.
-Test: $B_gear
-	· <btn>Sequence</btn> $B_power On / $B_power Off
-	· <btn>Pin - Name</btn> $B_power
+ · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+On/Off:
+ · $M_relays
+ · $B_gear <btn>Sequence</btn> $B_power On / $B_power Off &emsp;<btn>Pin - Name</btn> $B_power
 EOF
 	],
 	[

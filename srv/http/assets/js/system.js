@@ -125,51 +125,54 @@ $( 'body' ).on( 'click', function( e ) {
 } );
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
-	var name             = $( this ).data( 'name' );
-	var vcc1             = htmlC( 'ora', 'VCC', 1 );
-	var i2c              = '<br><wh>I²C:</wh>';
-	var scasdl           = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
-	var txtlcdchar       = '<br><wh>GPIO:</wh> '+ htmlC( [ 
+	var name    = $( this ).data( 'name' );
+	var vcc1    = htmlC( 'ora', 'VCC', 1 );
+	var i2c     = '<br><wh>I²C:</wh>';
+	var scasdl  = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
+	var gnd     = '<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; ';
+	var title   = {
+		  lcd           : [ 'TFT 3.5" LCD' ]
+		, lcdchar       : [ 'Character LCD' ]
+		, mpdoled       : [ 'Spectrum OLED' ]
+		, powerbutton   : [ 'Power Button',   'power' ]
+		, relays        : [ 'Relays Module' ]
+		, rotaryencoder : [ 'Rorary Encoder', 'volume' ]
+		, vuled         : [ 'VU LED',         'led' ]
+	}
+	var txt     = {
+		  lcdchar       : gnd +'<wh>GPIO:</wh> '+ htmlC( [ 
 								  [ 'red', 'VCC',   4 ]
 								, [ 'grn', 'RS',   15 ]
 								, [ 'grn', 'RW',   18 ]
 								, [ 'grn', 'E',    16 ]
 								, [ 'grn', 'D4-7', '21-24' ]
 							] )
-						  + i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
-						  +'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
-						  +'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">';
-	var txtmpdoled       = '<br>'+ vcc1
-						  + i2c + scasdl
-						  + '<br><wh>SPI:</wh>'+ htmlC( [
+						+ i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
+						+'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
+						+'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">'
+		, mpdoled       : gnd + vcc1
+						+ i2c + scasdl
+						+ '<br><wh>SPI:</wh>'+ htmlC( [
 								  [ 'grn', 'CLK', 23 ]
 								, [ 'grn', 'MOS', 19 ]
 								, [ 'grn', 'RES', 22 ]
 								, [ 'grn', 'DC',  18 ]
 								, [ 'grn', 'CS',  24 ]
-							] ) +'</p>';
-	var txtrotaryencoder = '<br><c>CLK, DT, SW: (any <grn>●</grn> pins)</c>'
-						  +'<br><c>+: not use</c></p>';
-	var title = {
-		  lcd           : [ 'TFT 3.5" LCD' ]
-		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
-		, mpdoled       : [ 'Spectrum OLED',  txtmpdoled ]
-		, powerbutton   : [ 'Power Button',   '',               'power' ]
-		, relays        : [ 'Relays Module' ]
-		, rotaryencoder : [ 'Rorary Encoder', txtrotaryencoder, 'volume' ]
-		, vuled         : [ 'VU LED',         '',               'led' ]
+							] ) +'</p>'
+		, relays        : '<br>Jumper <c>High/Low Level Trigger</c>: <c>High</c>'
+		, rotaryencoder : gnd +'<c>CLK, DT, SW: (any <grn>●</grn> pins)</c>'
+						  +'<br><c>+: not use</c></p>'
 	}
-	var d                = title[ name ];
-	var list             = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
+	var list    = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
 	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += gpiosvg;
-	if ( d[ 1 ] ) list += '<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; '+ d[ 1 ];
+	if ( name in txt ) list += '<br>'+ txt[ name ];
 	var pinhide = {
 		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
 		, mpdoled : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26, 21,     16, 15, 13, 12, 11, 10, 8, 7 ]
 	}
 	info( {
-		  icon       : d[ 2 ] || name
-		, title      : d[ 0 ]
+		  icon       : title[ name ][ 1 ] || name
+		, title      : title[ name ][ 0 ]
 		, list       : list
 		, beforeshow : () => {
 			if ( name in pinhide ) {
