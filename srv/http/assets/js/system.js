@@ -1070,8 +1070,15 @@ function infoRelaysName() {
 			infoListAddRemove();
 			$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
 			$( '#infoList td' ).eq( 0 ).empty();
+			var pins = '';
+			$( '#infoList select' ).each( ( i, el ) => pins += $( el ).val() +' ' );
+			bash( [ 'relaysstatus', pins, 'CMD PINS' ], on => {
+				$( '#infoList .i-power' ).each( ( i, el ) => $( el ).toggleClass( 'red', on[ i ] ) );
+			}, 'json' );
 			$( '#infoList' ).on( 'click', '.i-power', function() {
-				var pin = $( this ).parents( 'tr' ).find( 'select' ).val();
+				var $this = $( this );
+				var pin = $this.parents( 'tr' ).find( 'select' ).val();
+				$this.toggleClass( 'red' );
 				bash( [ 'relayspintoggle', pin, 'CMD PIN' ] );
 			} );
 		}

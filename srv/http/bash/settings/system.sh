@@ -337,6 +337,13 @@ relayspintoggle )
 	[[ $( gpioget -a -c0 --numeric $PIN ) == 0 ]] && onoff=1 || onoff=0
 	gpioset -t0 -c0 $PIN=$onoff
 	;;
+relaysstatus ) 
+	for p in $PINS; do
+		[[ $( gpioget -a -c0 --numeric $p ) == 0 ]] && tf=false || tf=true
+		on+=", $tf"
+	done
+	echo '[ '${on:1}' ]'
+	;;
 rotaryencoder )
 	if [[ $ON ]]; then
 		serviceRestartEnable
