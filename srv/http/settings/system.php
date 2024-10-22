@@ -68,9 +68,7 @@ $labels = 'CPU Load
 $help   = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
- · Each one should not be constantly over 0.75 x CPU cores.
- 
-'.i( 'warning yl' ).' <wh>Warnings:</wh> <gr>(if any)</gr> Power supply voltage and throttled state';
+ · Each one should not be constantly over 0.75 x CPU cores.';
 $body   = [ htmlSectionStatus( 'status', $labels, '', $help ) ];
 /*$model  = exec( 'grep ^Model /proc/cpuinfo' );
 if ( strpos( $model, 'Pi 3 Model B Plus' ) ) {
