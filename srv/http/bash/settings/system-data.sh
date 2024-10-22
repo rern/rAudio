@@ -48,6 +48,16 @@ $soc<br>\
 $soccpu"
 	echo $system > $dirshm/system
 fi
+if grep -q 3B+ <<< $system; then
+	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
+	[[ $degree ]] && softlimit=true || degree=60
+##########
+	data+='
+, "softlimit"         : '$softlimit'
+, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
+else
+	degree=80
+fi
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
 if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
@@ -134,7 +144,7 @@ baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 
 ##########
-data='
+data+='
 , "ap"                : '$( exists $dirsystem/ap )'
 , "audio"             : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname"    : "'$audioaplayname'"
@@ -206,15 +216,6 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( exists $dirshm/btreceiver )
-fi
-
-if [[ $rpi == 3B+ ]]; then
-	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
-	[[ $degree ]] && softlimit=true || degree=60
-##########
-	data+='
-, "softlimit"         : '$softlimit'
-, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
 
 data2json "$data" $1
