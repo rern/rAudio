@@ -45,22 +45,31 @@ $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer <btn>Address bar</btn> <c>\\\\'.$ip.'</c>';
 $snapweb      = $B_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
+$files        = ( object )[];
+foreach( [ 'camilladsp', 'firefox', 'iwctl', 'mediamtx', 'smbd', 'snapclient', 'spotifyd', 'upmpdcli' ] as $f ) {
+	$files->$f = file_exists( '/usr/bin/'.$f );
+}
+$files->shairport = file_exists( '/usr/bin/shairport-sync' );
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
-$body         = [
-	[
-		  'id'       => 'shairport-sync'
-		, 'help'     => <<< EOF
+$body         = [];
+if ( $files->shairport ) $body[] = [
+	  'id'   => 'shairport-sync'
+	, 'help' => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
 Note:
  · No sound: Increase volume on sender device (too low)
  · If Camilla DSP is enabled, stop current track before start playing.
  · Playing files directly on rAudio yields better quality.
 EOF
-	]
-	, [
-		  'id'       => 'snapclient'
-		, 'help'     => <<< EOF
+];
+if ( $files->mediamtx ) $body[] = [
+	  'id'   => 'dabradio'
+	, 'help' => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
+];
+if ( $files->snapclient ) $body[] = [
+	  'id'   => 'snapclient'
+	, 'help' => <<< EOF
 $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · Connect: $M_snapcast
@@ -69,10 +78,10 @@ $snapweb
 	· SnapClient auto connect/disconnect on play/stop (no connect icon)
  · Web interface: <c>http://SNAPSERVER_IP:1780</c>
 EOF
-	]
-	, [
-		  'id'       => 'spotifyd'
-		, 'help'     => <<< EOF
+];
+if ( $files->spotifyd ) $body[] = [
+	  'id'   => 'spotifyd'
+	, 'help' => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
  · Premium account
@@ -97,25 +106,17 @@ To create Spotify private app:
 		· <c>Client ID</c>
 		· <c>Client secret</c>
 EOF
-	]
-	, [
-		  'id'       => 'upmpdcli'
-		, 'help'     => <<< EOF
+];
+if ( $files->upmpdcli ) $body[] = [
+	  'id'   => 'upmpdcli'
+	, 'help' => <<< EOF
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device
  · Playlist - replaced by playlist of UPnP / DLNA on start
  · Playback stop button - Clear UPnP / DLNA playlist
 
 Note: Playing files directly on rAudio yields better quality.
 EOF
-	]
 ];
-if ( file_exists( '/usr/bin/mediamtx' ) ) {
-	$dabradio = [
-		  'id'       => 'dabradio'
-		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
-	];
-	array_splice( $body, 1, 0, [ $dabradio ] );
-}
 htmlSection( $head, $body, 'renderers' );
 // ----------------------------------------------------------------------------------
 $head = [ 'title' => 'Streamers' ];
@@ -126,43 +127,42 @@ $body = [
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
 	]
-	, [
+];
+if ( $files->snapclient ) $body[] = [
 		  'id'       => 'snapserver'
 		, 'help'     => <<< EOF
 $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player
 EOF
-	]
 ];
 htmlSection( $head, $body, 'streamers' );
 // ----------------------------------------------------------------------------------
 $head = [ 'title' => 'Signal Processors' ];
-$body = [
-	[
-		  'id'       => 'camilladsp'
-		, 'disabled' => $L_equalizer.' is currently enabled.'
-		, 'help'     => <<< EOF
+$body = [];
+if ( $files->camilladsp ) $body[] = [
+	  'id'       => 'camilladsp'
+	, 'disabled' => $L_equalizer.' is currently enabled.'
+	, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: $M_camilladsp
 EOF
-	]
-	, [
-		  'id'       => 'equalizer'
-		, 'disabled' => $L_camilladsp.' is currently enabled.'
-		, 'help'     => <<< EOF
+];
+$body[] = [
+	  'id'       => 'equalizer'
+	, 'disabled' => $L_camilladsp.' is currently enabled.'
+	, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10-band graphic equalizer with user presets.
 Control: $M_features
 Presets:
  · <c>Flat</c>: All bands at 0dB
  · If distortions occurred, lower all bands collectively and increase volume
 EOF
-	]
 ];
 htmlSection( $head, $body, 'dsp' );
 // ----------------------------------------------------------------------------------
 $head = [ 'title' => 'Others' ];
-$body = [
-	[
+$body = [];
+if ( $files->iwctl ) $body[] = [
 		  'id'       => 'ap'
 		, 'disabled' => $L_wifi.' is currently connected.'
 		, 'help'     => <<< EOF
@@ -170,8 +170,8 @@ $body = [
  · This should be used only when necessary.
  · Avoid double quotes <c>"</c> in password.
 EOF
-	]
-	, [
+];
+$body[] = [
 		  'id'       => 'autoplay'
 		, 'help'     => <<< EOF
 Start playing automatically on:
@@ -179,8 +179,8 @@ Start playing automatically on:
  · Audio CD inserting
  · Power on / Reboot
 EOF
-	]
-	, [
+];
+if ( $files->firefox ) $body[] = [
 		  'id'       => 'localbrowser'
 		, 'help'     => <<< EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
@@ -190,8 +190,8 @@ EOF
 
 Note: HDMI display - Connect before boot
 EOF
-	]
-	, [
+];
+if ( $files->smbd ) $body[] = [
 		  'id'       => 'smb'
 		, 'disabled' => $L_serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
@@ -202,8 +202,9 @@ EOF
  
 Note: $L_serverraudio should yield better performance.
 EOF
-	]
-	, [
+];
+array_push( $body,
+	  [
 		  'id'       => 'lyrics'
 		, 'help'     => <<< EOF
  · Search lyrics from user specified URL and tags.
@@ -275,5 +276,5 @@ Stop timer:
 EOF
 	]
 	, [ 'id' => 'volumelimit' ]
-];
+);
 htmlSection( $head, $body, 'others' );
