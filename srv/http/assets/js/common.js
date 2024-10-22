@@ -1280,7 +1280,7 @@ function pageInactive() {
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
 }
-document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
+document.onvisibilitychange = () => document.visibilityState === 'hidden' ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
 window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
