@@ -159,7 +159,7 @@ coverFileGet() {
 	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" | sed 's|%2F|/|g' # preserve spaces and special characters
 }
 dabDevice() {
-	if ! rtl_test -t &> /dev/null; then
+	if ! timeout 1 rtl_test -t &> /dev/null; then
 		notify dabradio 'DAB Radio' 'No DAB devices found.'
 		return 1
 	fi
