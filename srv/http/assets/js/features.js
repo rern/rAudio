@@ -494,6 +494,7 @@ function passwordWrong() {
 	$( '#login' ).prop( 'checked', S.login );
 }
 function renderPage() {
+	$( '#divdabradio .col-l' ).toggleClass( 'status', S.mediamtx );
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
 	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );

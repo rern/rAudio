@@ -8,7 +8,11 @@
 
 . /srv/http/bash/common.sh
 
-packageActive camilladsp localbrowser mediamtx nfs-server shairport-sync smb snapserver spotifyd upmpdcli
+packageActive camilladsp localbrowser nfs-server shairport-sync smb snapserver spotifyd upmpdcli
+if rtl_test -t &> /dev/null; then
+	dabdevice=true
+	systemctl -q is-active mediamtx && dabradio=true
+fi
 if [[ -e $dirsystem/volumelimit ]]; then
 	volumelimit=true
 	volumelimitconf=$( conf2json $dirsystem/volumelimit.conf )
@@ -23,7 +27,8 @@ data='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
 , "autoplayconf"     : '$( conf2json $dirsystem/autoplay.conf )'
 , "camilladsp"       : '$camilladsp'
-, "dabradio"         : '$mediamtx'
+, "dabdevice"        : '$dabdevice'
+, "dabradio"         : '$dabradio'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "hostip"           : "'$( ipAddress )'"
@@ -35,6 +40,7 @@ data='
 , "loginsetting"     : '$( exists $dirsystem/loginsetting )'
 , "lyrics"           : '$( exists $dirsystem/lyrics )'
 , "lyricsconf"       : '$( conf2json lyrics.conf )'
+, "mediamtx"         : '$( exists /usr/bin/mediamtx )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : '$( getContent $dirsystem/multiraudio.json )'
 , "nfsconnected"     : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
