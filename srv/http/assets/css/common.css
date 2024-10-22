@@ -75,6 +75,7 @@ i {
 .i-dabupdate::before       { content: '\F589' }
 .i-date::before            { content: '\F55C' }
 .i-devices::before         { content: '\F571' }
+.i-dvfs::before            { content: '\F52C' }
 .i-edit::before            { content: '\F565' }
 .i-equalizer::before       { content: '\F50C' }
 .i-eye::before             { content: '\F567' }

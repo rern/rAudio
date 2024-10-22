@@ -215,6 +215,17 @@ $( '#setting-softlimit' ).on( 'click', function() {
 		, ok           : switchEnable
 	} );
 } );
+$( '#setting-dvfs' ).on( 'click', function() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, list         : [ '', 'radio', { kv: { 'Allow undervoltage': 1, 'Scale voltage up on demand': 3 }, sameline: false } ]
+		, values       : S.dvfsconf || 1
+		, checkchanged : S.dvfs
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
+} );
 $( '.addnas' ).on( 'click', function() {
 	infoMount();
 } );
@@ -1207,7 +1218,6 @@ function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status + S.warning );
 	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
-	$( 'softlimit' in S ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
 	renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {

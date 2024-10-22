@@ -48,7 +48,7 @@ $soc<br>\
 $soccpu"
 	echo $system > $dirshm/system
 fi
-if grep -q 3B+ <<< $system; then
+if grep -q 'Pi 3B+' <<< $system; then
 	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
 	[[ $degree ]] && softlimit=true || degree=60
 ##########
@@ -57,6 +57,10 @@ if grep -q 3B+ <<< $system; then
 , "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 else
 	degree=80
+	if grep -q 'Pi 4' <<< $system; then
+		data+='
+, "dvfs"              : '$( sed -n '/^dvfs/ {s/.*=//; p}' /boot/config.txt )
+	fi
 fi
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
 if [[ $throttled && $throttled != 0x0 ]]; then

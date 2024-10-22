@@ -5,6 +5,7 @@ $id_data     = [
 	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
+	, 'dvfs'          => [ 'label' => 'Dynamic V/F' ]
 	, 'hostname'      => [ 'label' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
 	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
@@ -38,7 +39,7 @@ commonVariables( [
 	, 'tabs'    => [ 'features', 'player' ]
 ] );
 // ----------------------------------------------------------------------------------
-$head = [
+$head   = [
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => 'power power'
@@ -49,10 +50,10 @@ $labels = 'Version
 	<br>Hardware
 	<br>SoC
 	<br>CPU';
-$body = [ htmlSectionStatus( 'system', $labels ) ];
+$body   = [ htmlSectionStatus( 'system', $labels ) ];
 htmlSection( $head, $body, 'system' );
 
-$head = [
+$head   = [
 	  'title'  => 'Status'
 	, 'status' => 'status'
 	, 'button' => 'refresh refresh'
@@ -64,31 +65,30 @@ $labels = 'CPU Load
 	<br>Time
 	<br>Up Time
 	<div id="warning">'.i( 'warning yl' ).' <wh>Warning</wh></div>';
-$help = '<wh>• CPU Load:</wh>
+$help   = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.
  
-'.i( 'warning yl' ).' <wh>Warnings:</wh> (if any)
- · Power supply voltage and throttled state (<a href="https://www.raspberrypi.com/documentation/computers/os.html#get_throttled">vcgencmd get_throttled</a>)<!--
---><a class="softlimitno">
-	· 80-84°C: CPU cores throttled.
-	· 85°C: CPU cores and GPU throttled.</a><!--
---><a class="softlimit">
-	· 60°C: Optimized throttling CPU cores and GPU (Soft limit - 3B+ only)</a>
-· RPi 4: Utilize <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/frequency-management.adoc#using-dvfs">Dynamic Voltage and Frequency Scaling</a> (DVFS)';
-$body = [
-	  htmlSectionStatus( 'status', $labels, $help )
-	, [
-		  'id'       => 'softlimit'
-		, 'help'     => 'Temperature level for CPU optimized throttling (default: 60°C)'
-	]
-];
+'.i( 'warning yl' ).' <wh>Warnings:</wh> <gr>(if any)</gr> Power supply voltage and throttled state';
+$body   = [ htmlSectionStatus( 'status', $labels, '', $help ) ];
+$model  = exec( 'grep ^Model /proc/cpuinfo' );
+if ( strpos( $model, 'Pi 3 Model B Plus' ) ) {
+	$body[] = [
+		  'id'   => 'softlimit'
+		, 'help' => 'Max temperature for CPU optimized throttling (default: 60°C)'
+	];
+} else if ( strpos( $model, 'Pi 4' ) ) {
+	$body[] = [
+		  'id'   => 'dvfs'
+		, 'help' => '<a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#use-dvfs">DVFS</a> - Dynamic voltage and frequency scaling - Allows Raspberry Pi 4 devices to run at lower temperatures whilst still providing the same performance.'
+	];
+}
 htmlSection( $head, $body, 'status' );
 // ----------------------------------------------------------------------------------
-$uid = exec( 'id -u mpd' );
-$gid = exec( 'id -g mpd' );
-$head = [
+$uid    = exec( 'id -u mpd' );
+$gid    = exec( 'id -g mpd' );
+$head   = [
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
 	, 'button' => 'add addnas'
@@ -110,7 +110,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
 </pre> · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
 ];
-$body = [ <<< EOF
+$body   = [ <<< EOF
 <ul id="list" class="entries"></ul>
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
 $B_microsd $B_usbdrive $B_networks Context menu</div>
@@ -118,10 +118,10 @@ $B_microsd $B_usbdrive $B_networks Context menu</div>
 EOF ];
 htmlSection( $head, $body, 'storage' );
 // ----------------------------------------------------------------------------------
-$head = [
+$head   = [
 	  'title'  => 'On-board Devices'
 ];
-$body = [
+$body   = [
 	[
 		  'id'       => 'audio'
 		, 'disabled' => 'No other audio devices available.'
@@ -158,10 +158,10 @@ I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
 $B_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF;
-$head = [
+$head   = [
 	  'title' => 'GPIO Devices'
 ];
-$body = [
+$body    = [
 	  [
 		  'id'       => 'i2s'
 		, 'help'     => $helpi2s
@@ -224,8 +224,8 @@ EOF
 ];
 htmlSection( $head, $body, 'gpio' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Environment' ];
-$body = [
+$head   = [ 'title' => 'Environment' ];
+$body   = [
 	[
 		  'id'       => 'hostname'
 		, 'input'    => '<input type="text" id="hostname" readonly>'
@@ -264,8 +264,8 @@ EOF
 ];
 htmlSection( $head, $body, 'environment' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Data and Settings' ];
-$body = [
+$head   = [ 'title' => 'Data and Settings' ];
+$body   = [
 	[
 		  'id'       => 'backup'
 		, 'help'     => <<< EOF
@@ -375,20 +375,20 @@ $listui = [
 	  , 'https://github.com/SortableJS/Sortable'
 	]
 ];
-$uihtml     = '';
+$uihtml    = '';
 foreach( $listui as $ui ) {
 	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> · '.$ui[ 1 ].'<br>';
 }
-$indexhtml  = '';
+$indexhtml = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
-$menu       = [
+$menu      = [
 	  'info'    => 'info'
 	, 'forget'  => 'remove'
 	, 'remount' => 'connect'
 	, 'sleep'   => 'screenoff'
 	, 'unmount' => 'close'
 ];
-$menuhtml   = '';
+$menuhtml  = '';
 foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
 ?>
 <div id="divabout" class="section">
