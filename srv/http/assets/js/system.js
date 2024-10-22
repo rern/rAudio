@@ -65,9 +65,9 @@ var default_v     = {
 		, PINS : 23
 		, STEP : 1
 	}
-	, softlimit     : {
+/*	, softlimit     : {
 		SOFTLIMIT : 65
-	}
+	}*/
 	, vuled         : {
 		  P0 : 14
 		, P1 : 15
@@ -203,7 +203,7 @@ $( '.refresh' ).on( 'click', function() {
 		}, 'json' );
 	}, 10000 );
 } );
-$( '#setting-softlimit' ).on( 'click', function() {
+/*$( '#setting-softlimit' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -225,7 +225,7 @@ $( '#setting-dvfs' ).on( 'click', function() {
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
-} );
+} );*/
 $( '.addnas' ).on( 'click', function() {
 	infoMount();
 } );

@@ -5,7 +5,7 @@ $id_data     = [
 	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
-	, 'dvfs'          => [ 'label' => 'Dynamic V/F' ]
+//	, 'dvfs'          => [ 'label' => 'Dynamic V/F' ]
 	, 'hostname'      => [ 'label' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
 	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
@@ -16,7 +16,7 @@ $id_data     = [
 	, 'restore'       => [ 'label' => 'Restore',                                   'setting' => 'none' ]
 	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
 	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
-	, 'softlimit'     => [ 'label' => 'Temp. Soft Limit' ]
+//	, 'softlimit'     => [ 'label' => 'Temp. Soft Limit' ]
 	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
 	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
@@ -72,7 +72,7 @@ $help   = '<wh>• CPU Load:</wh>
  
 '.i( 'warning yl' ).' <wh>Warnings:</wh> <gr>(if any)</gr> Power supply voltage and throttled state';
 $body   = [ htmlSectionStatus( 'status', $labels, '', $help ) ];
-$model  = exec( 'grep ^Model /proc/cpuinfo' );
+/*$model  = exec( 'grep ^Model /proc/cpuinfo' );
 if ( strpos( $model, 'Pi 3 Model B Plus' ) ) {
 	$body[] = [
 		  'id'   => 'softlimit'
@@ -81,9 +81,10 @@ if ( strpos( $model, 'Pi 3 Model B Plus' ) ) {
 } else if ( strpos( $model, 'Pi 4' ) ) {
 	$body[] = [
 		  'id'   => 'dvfs'
-		, 'help' => '<a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#use-dvfs">DVFS</a> - Dynamic voltage and frequency scaling - Allows Raspberry Pi 4 devices to run at lower temperatures whilst still providing the same performance.'
+		, 'help' => '<a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#use-dvfs">DVFS</a>
+		- Dynamic voltage and frequency scaling - Allows Raspberry Pi 4 devices to run at lower temperatures whilst still providing the same performance.'
 	];
-}
+}*/
 htmlSection( $head, $body, 'status' );
 // ----------------------------------------------------------------------------------
 $uid    = exec( 'id -u mpd' );

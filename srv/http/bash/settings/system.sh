@@ -125,15 +125,15 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
-dvfs )
-	if [[ $ON ]]; then
-		config="
-dvfs=$DVFS"
-	else
-		config=$( grep -v ^dvfs /boot/config.txt )
-	fi
-	configTxt
-	;;
+# dvfs )
+	# if [[ $ON ]]; then
+		# config="
+# dvfs=$DVFS"
+	# else
+		# config=$( grep -v ^dvfs /boot/config.txt )
+	# fi
+	# configTxt
+	# ;;
 hddsleep )
 	hdparm -q -B $LEVEL $DEV
 	hdparm -q -S $LEVEL $DEV
@@ -396,15 +396,15 @@ shareddatadisable )  # server rAudio / other server
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": false }'
 	;;
-softlimit )
-	if [[ $ON ]]; then
-		config='
-temp_soft_limit='$SOFTLIMIT
-	else
-		config=$( grep -v ^temp_soft_limit /boot/config.txt )
-	fi
-	configTxt
-	;;
+# softlimit )
+	# if [[ $ON ]]; then
+		# config='
+# temp_soft_limit='$SOFTLIMIT
+	# else
+		# config=$( grep -v ^temp_soft_limit /boot/config.txt )
+	# fi
+	# configTxt
+	# ;;
 soundprofileset )
 	soundProfile
 	;;
