@@ -158,6 +158,12 @@ coverFileGet() {
 	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" | sed 's|%2F|/|g' # preserve spaces and special characters
 }
+dabDevice() {
+	if ! rtl_test -t &> /dev/null; then
+		notify dabradio 'DAB Radio' 'No DAB devices found.'
+		return 1
+	fi
+}
 data2json() {
 	local json page
 	page=$( basename ${0/-*} )

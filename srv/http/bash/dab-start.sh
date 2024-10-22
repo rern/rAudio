@@ -1,5 +1,7 @@
 #!/bin/bash
 
+! dabDevice && exit
+
 killsubs() {
 	kill $DABPID
 	kill $FFMPID

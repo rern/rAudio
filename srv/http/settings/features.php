@@ -59,11 +59,6 @@ Note:
 EOF
 	]
 	, [
-		  'id'       => 'dabradio'
-		, 'disabled' => 'No DAB devices found.'
-		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
-	]
-	, [
 		  'id'       => 'snapclient'
 		, 'help'     => <<< EOF
 $snapweb
@@ -114,6 +109,13 @@ Note: Playing files directly on rAudio yields better quality.
 EOF
 	]
 ];
+if ( file_exists( '/usr/bin/mediamtx' ) ) {
+	$dabradio = [
+		  'id'       => 'dabradio'
+		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
+	];
+	array_splice( $body, 1, 0, [ $dabradio ] );
+}
 htmlSection( $head, $body, 'renderers' );
 // ----------------------------------------------------------------------------------
 $head = [ 'title' => 'Streamers' ];

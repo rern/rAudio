@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+! dabDevice && exit
+
 killProcess dabscan
 echo $$ > $dirshm/piddabscan
 
