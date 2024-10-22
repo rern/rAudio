@@ -490,9 +490,17 @@ lyrics )
 # --------------------------------------------------------------------
 			fi
 		fi
+		lyricsGet() {
+			query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
+			curl -sL -A firefox $url/${query,,}.html | sed -n "/$start/,\|$end| p"
+		}
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
-		query=$( alphaNumeric $artist )/$( alphaNumeric $TITLE )
-		lyrics=$( curl -sL -A firefox $url/${query,,}.html | sed -n "/$start/,\|$end| p" )
+		[[ ${#artist} == 2 ]] && short=1 && artist+=band
+		lyrics=$( lyricsGet )
+		if [[ ! $lyrics && $short ]]; then
+			artist=${artist/band}
+			lyrics=$( lyricsGet )
+		fi
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
 	;;
