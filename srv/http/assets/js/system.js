@@ -207,7 +207,8 @@ $( '#setting-softlimit' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, list         : [ '', 'radio', { '65°C': 65, '70°C': 70, '75°C': 75 } ]
+		, list         : [ 'Max <gr>(°C)</gr>', 'number', { updn: { step: 1, min: 50, max: 80 } } ]
+		, boxwidth     : 50
 		, values       : S.softlimitconf || default_v.softlimit
 		, checkchanged : S.softlimit
 		, cancel       : switchCancel
