@@ -62,7 +62,7 @@ $labels      = 'CPU Load
 	<br>Available Memory
 	<br>Time
 	<br>Up Time
-	<div id="warning">'.i( 'warning yl' ).' <wh>Warning</wh></div>';
+	<wh id="warning"><br>Warning</wh>';
 $help        = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.

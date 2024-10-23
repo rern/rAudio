@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1729418408' );
+	src         : url( '/assets/fonts/rern.woff2?v=1729647705' );
 }
 @font-face {
 	font-family : Lato;
@@ -199,7 +199,6 @@ i {
 .i-snapcast::before        { content: '\F587' }
 .i-snapclient::before      { content: '\F587' }
 .i-snapserver::before      { content: '\F587' }
-.i-softlimit::before       { content: '\F57D' }
 .i-song::before            { content: '\F54A' }
 .i-soundprofile::before    { content: '\F576' }
 .i-source::before          { content: '\F529' }
@@ -212,6 +211,7 @@ i {
 .i-system::before          { content: '\F590' }
 .i-tag::before             { content: '\F55B' }
 .i-tft::before             { content: '\F577' }
+.i-thermometer::before     { content: '\F57D' }
 .i-timezone::before        { content: '\F575' }
 .i-title::before           { content: '\F54A' }
 .i-track::before           { content: '\F54C' }
@@ -224,6 +224,7 @@ i {
 .i-volume::before          { content: '\F516' }
 .i-volume.mute::before     { content: '\F517' }
 .i-volumelimit::before     { content: '\F51E' }
+.i-voltage::before         { content: '\F57E' }
 .i-vuled::before           { content: '\F57C' }
 .i-warning::before         { content: '\F562' }
 .i-webradio::before        { content: '\F55D' }
