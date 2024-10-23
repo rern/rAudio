@@ -123,7 +123,7 @@ htmlHead( [
 </div>
 
 <?php
-$menu       = [
+$menu = [
 	  'connect'    => 'connect'
 	, 'disconnect' => 'close'
 	, 'edit'       => 'edit'
@@ -131,7 +131,7 @@ $menu       = [
 	, 'rename'     => 'edit'
 	, 'info'       => 'info'
 ];
-$menuhtml   = '';
+$menuhtml = '';
 foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
 ?>
 <div id="menu" class="menu hide"><?=$menuhtml?></div>

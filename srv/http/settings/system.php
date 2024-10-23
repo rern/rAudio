@@ -5,7 +5,6 @@ $id_data     = [
 	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
-//	, 'dvfs'          => [ 'label' => 'Dynamic V/F' ]
 	, 'hostname'      => [ 'label' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
 	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
@@ -16,7 +15,6 @@ $id_data     = [
 	, 'restore'       => [ 'label' => 'Restore',                                   'setting' => 'none' ]
 	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
 	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
-//	, 'softlimit'     => [ 'label' => 'Temp. Soft Limit' ]
 	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
 	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
@@ -39,55 +37,42 @@ commonVariables( [
 	, 'tabs'    => [ 'features', 'player' ]
 ] );
 // ----------------------------------------------------------------------------------
-$head   = [
+$head        = [
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => 'power power'
 	, 'help'   => $B_power.' Power'
 ];
-$labels = 'Version
+$labels      = 'Version
 	<br>Kernel
 	<br>Hardware
 	<br>SoC
 	<br>CPU';
-$body   = [ htmlSectionStatus( 'system', $labels ) ];
+$body        = [ htmlSectionStatus( 'system', $labels ) ];
 htmlSection( $head, $body, 'system' );
 
-$head   = [
+$head        = [
 	  'title'  => 'Status'
 	, 'status' => 'status'
 	, 'button' => 'refresh refresh'
 	, 'help'   => $B_refresh.' Refresh every 10 seconds'
 ];
-$labels = 'CPU Load
+$labels      = 'CPU Load
 	<br>CPU Temp<wide>erature</wide></span>
 	<br>Available Memory
 	<br>Time
 	<br>Up Time
 	<div id="warning">'.i( 'warning yl' ).' <wh>Warning</wh></div>';
-$help   = '<wh>• CPU Load:</wh>
+$help        = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.';
-$body   = [ htmlSectionStatus( 'status', $labels, '', $help ) ];
-/*$model  = exec( 'grep ^Model /proc/cpuinfo' );
-if ( strpos( $model, 'Pi 3 Model B Plus' ) ) {
-	$body[] = [
-		  'id'   => 'softlimit'
-		, 'help' => 'Max temperature for CPU optimized throttling (default: 60°C)'
-	];
-} else if ( strpos( $model, 'Pi 4' ) ) {
-	$body[] = [
-		  'id'   => 'dvfs'
-		, 'help' => '<a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#use-dvfs">DVFS</a>
-		- Dynamic voltage and frequency scaling - Allows Raspberry Pi 4 devices to run at lower temperatures whilst still providing the same performance.'
-	];
-}*/
+$body        = [ htmlSectionStatus( 'status', $labels, '', $help ) ];
 htmlSection( $head, $body, 'status' );
 // ----------------------------------------------------------------------------------
-$uid    = exec( 'id -u mpd' );
-$gid    = exec( 'id -g mpd' );
-$head   = [
+$uid         = exec( 'id -u mpd' );
+$gid         = exec( 'id -g mpd' );
+$head        = [
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
 	, 'button' => 'add addnas'
@@ -109,7 +94,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
 </pre> · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
 ];
-$body   = [ <<< EOF
+$body        = [ <<< EOF
 <ul id="list" class="entries"></ul>
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
 $B_microsd $B_usbdrive $B_networks Context menu</div>
@@ -117,10 +102,8 @@ $B_microsd $B_usbdrive $B_networks Context menu</div>
 EOF ];
 htmlSection( $head, $body, 'storage' );
 // ----------------------------------------------------------------------------------
-$head   = [
-	  'title'  => 'On-board Devices'
-];
-$body   = [
+$head        = [ 'title'  => 'On-board Devices' ];
+$body        = [
 	[
 		  'id'       => 'audio'
 		, 'disabled' => 'No other audio devices available.'
@@ -150,17 +133,15 @@ EOF
 ];
 htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
-$helpi2s = <<< EOF
+$helpi2s     = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
  · See  if it's already set: $T_player$L_device
 $B_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF;
-$head   = [
-	  'title' => 'GPIO Devices'
-];
-$body    = [
+$head        = [ 'title' => 'GPIO Devices' ];
+$body        = [
 	  [
 		  'id'       => 'i2s'
 		, 'help'     => $helpi2s
@@ -223,8 +204,8 @@ EOF
 ];
 htmlSection( $head, $body, 'gpio' );
 // ----------------------------------------------------------------------------------
-$head   = [ 'title' => 'Environment' ];
-$body   = [
+$head        = [ 'title' => 'Environment' ];
+$body        = [
 	[
 		  'id'       => 'hostname'
 		, 'input'    => '<input type="text" id="hostname" readonly>'
@@ -263,8 +244,8 @@ EOF
 ];
 htmlSection( $head, $body, 'environment' );
 // ----------------------------------------------------------------------------------
-$head   = [ 'title' => 'Data and Settings' ];
-$body   = [
+$head        = [ 'title' => 'Data and Settings' ];
+$body        = [
 	[
 		  'id'       => 'backup'
 		, 'help'     => <<< EOF
@@ -323,7 +304,7 @@ EOF
 ];
 htmlSection( $head, $body, 'datasetting' );
 // ----------------------------------------------------------------------------------
-$listui = [
+$listui      = [
 	[
 	    'D3'
 	  , 'Library for bespoke data visualization'
@@ -374,20 +355,20 @@ $listui = [
 	  , 'https://github.com/SortableJS/Sortable'
 	]
 ];
-$uihtml    = '';
+$uihtml      = '';
 foreach( $listui as $ui ) {
 	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> · '.$ui[ 1 ].'<br>';
 }
-$indexhtml = '';
+$indexhtml   = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
-$menu      = [
+$menu        = [
 	  'info'    => 'info'
 	, 'forget'  => 'remove'
 	, 'remount' => 'connect'
 	, 'sleep'   => 'screenoff'
 	, 'unmount' => 'close'
 ];
-$menuhtml  = '';
+$menuhtml    = '';
 foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
 ?>
 <div id="divabout" class="section">

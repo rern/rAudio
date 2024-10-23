@@ -29,7 +29,7 @@ commonVariables( [
 	, 'tabs'    => [ 'features', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------
-$head = [
+$head    = [
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
 	, 'button' => 'play playback'
@@ -40,17 +40,17 @@ $B_play $B_pause $B_stop Playback control
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
 EOF
 ];
-$labels = 'Version
+$labels  = 'Version
 	<br>Database
 	<br>Since';
-$body = [ htmlSectionStatus( 'status', $labels ) ];
+$body    = [ htmlSectionStatus( 'status', $labels ) ];
 htmlSection( $head, $body, 'mpd' );
 // ----------------------------------------------------------------------------------
-$head = [
+$head    = [
 	  'title'  => 'Output'
 	, 'status' => 'output'
 ];
-$body = [
+$body    = [
 	[
 		  'id'       => 'bluealsa'
 		, 'icon'     => 'btreceiver'
@@ -95,8 +95,8 @@ EOF
 ];
 htmlSection( $head, $body, 'output' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Bit-Perfect' ];
-$body = [
+$head    = [ 'title' => 'Bit-Perfect' ];
+$body    = [
 	[
 		  'id'       => 'novolume'
 		, 'help'     => <<< EOF
@@ -127,8 +127,8 @@ EOF
 ];
 htmlSection( $head, $body, 'bitperfect' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Volume' ];
-$body = [
+$head    = [ 'title' => 'Volume' ];
+$body    = [
 	[	  'id'       => 'crossfade'
 		, 'help'     => <<< EOF
 Fade-out to fade-in between playing tracks (same audio format only)
@@ -155,8 +155,8 @@ EOF
 ];
 htmlSection( $head, $body, 'volume' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Options' ];
-$body = [
+$head    = [ 'title' => 'Options' ];
+$body    = [
 	[
 		  'id'       => 'buffer'
 		, 'help'     => <<< EOF

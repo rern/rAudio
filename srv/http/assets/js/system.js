@@ -65,9 +65,6 @@ var default_v     = {
 		, PINS : 23
 		, STEP : 1
 	}
-/*	, softlimit     : {
-		SOFTLIMIT : 65
-	}*/
 	, vuled         : {
 		  P0 : 14
 		, P1 : 15
@@ -203,29 +200,6 @@ $( '.refresh' ).on( 'click', function() {
 		}, 'json' );
 	}, 10000 );
 } );
-/*$( '#setting-softlimit' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, list         : [ 'Max <gr>(°C)</gr>', 'number', { updn: { step: 1, min: 50, max: 80 } } ]
-		, boxwidth     : 50
-		, values       : S.softlimitconf || default_v.softlimit
-		, checkchanged : S.softlimit
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-} );
-$( '#setting-dvfs' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, list         : [ '', 'radio', { kv: { 'Allow undervoltage': 1, 'Scale voltage up on demand': 3 }, sameline: false } ]
-		, values       : S.dvfsconf || 1
-		, checkchanged : S.dvfs
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-} );*/
 $( '.addnas' ).on( 'click', function() {
 	infoMount();
 } );
