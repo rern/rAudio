@@ -45,15 +45,15 @@ $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer <btn>Address bar</btn> <c>\\\\'.$ip.'</c>';
 $snapweb      = $B_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
-$files        = ( object )[];
-foreach( [ 'camilladsp', 'firefox', 'iwctl', 'mediamtx', 'smbd', 'snapclient', 'spotifyd', 'upmpdcli' ] as $f ) {
-	$files->$f = file_exists( '/usr/bin/'.$f );
+$file         = ( object )[];
+foreach( [ 'camilladsp', 'firefox', 'iwctl', 'mediamtx', 'shairport-sync', 'smbd', 'snapclient', 'spotifyd', 'upmpdcli' ] as $f ) {
+	$k = substr( $f, 0, 3 );
+	$file->$k = file_exists( '/usr/bin/'.$f );
 }
-$files->shairport = file_exists( '/usr/bin/shairport-sync' );
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
 $body         = [];
-if ( $files->shairport ) $body[] = [
+if ( $file->sha ) $body[] = [
 	  'id'   => 'shairport-sync'
 	, 'help' => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
@@ -63,11 +63,11 @@ Note:
  · Playing files directly on rAudio yields better quality.
 EOF
 ];
-if ( $files->mediamtx ) $body[] = [
+if ( $file->med ) $body[] = [
 	  'id'   => 'dabradio'
 	, 'help' => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
 ];
-if ( $files->snapclient ) $body[] = [
+if ( $file->sna ) $body[] = [
 	  'id'   => 'snapclient'
 	, 'help' => <<< EOF
 $snapweb
@@ -79,7 +79,7 @@ $snapweb
  · Web interface: <c>http://SNAPSERVER_IP:1780</c>
 EOF
 ];
-if ( $files->spotifyd ) $body[] = [
+if ( $file->spo ) $body[] = [
 	  'id'   => 'spotifyd'
 	, 'help' => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
@@ -107,7 +107,7 @@ To create Spotify private app:
 		· <c>Client secret</c>
 EOF
 ];
-if ( $files->upmpdcli ) $body[] = [
+if ( $file->upm ) $body[] = [
 	  'id'   => 'upmpdcli'
 	, 'help' => <<< EOF
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device
@@ -122,15 +122,15 @@ htmlSection( $head, $body, 'renderers' );
 $head = [ 'title' => 'Streamers' ];
 $body = [
 	[
-		  'id'       => 'httpd'
-		, 'help'     => <<< EOF
+		  'id'   => 'httpd'
+		, 'help' => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
 	]
 ];
-if ( $files->snapclient ) $body[] = [
-		  'id'       => 'snapserver'
-		, 'help'     => <<< EOF
+if ( $file->sna ) $body[] = [
+		  'id'   => 'snapserver'
+		, 'help' => <<< EOF
 $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player
 EOF
@@ -139,7 +139,7 @@ htmlSection( $head, $body, 'streamers' );
 // ----------------------------------------------------------------------------------
 $head = [ 'title' => 'Signal Processors' ];
 $body = [];
-if ( $files->camilladsp ) $body[] = [
+if ( $file->cam ) $body[] = [
 	  'id'       => 'camilladsp'
 	, 'disabled' => $L_equalizer.' is currently enabled.'
 	, 'help'     => <<< EOF
@@ -162,7 +162,7 @@ htmlSection( $head, $body, 'dsp' );
 // ----------------------------------------------------------------------------------
 $head = [ 'title' => 'Others' ];
 $body = [];
-if ( $files->iwctl ) $body[] = [
+if ( $file->iwc ) $body[] = [
 		  'id'       => 'ap'
 		, 'disabled' => $L_wifi.' is currently connected.'
 		, 'help'     => <<< EOF
@@ -180,7 +180,7 @@ Start playing automatically on:
  · Power on / Reboot
 EOF
 ];
-if ( $files->firefox ) $body[] = [
+if ( $file->fir ) $body[] = [
 		  'id'       => 'localbrowser'
 		, 'help'     => <<< EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
@@ -191,7 +191,7 @@ if ( $files->firefox ) $body[] = [
 Note: HDMI display - Connect before boot
 EOF
 ];
-if ( $files->smbd ) $body[] = [
+if ( $file->smb ) $body[] = [
 		  'id'       => 'smb'
 		, 'disabled' => $L_serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
