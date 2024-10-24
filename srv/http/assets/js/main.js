@@ -1998,15 +1998,15 @@ $( '#lyricsrefresh' ).on( 'click', function() {
 	lyricsGet( 'refresh' );
 } );
 $( '#lyrics' ).on( 'click', '.i-close',  function() {
-	if ( ! V.lyrics || $( '#lyricstextarea' ).val() === V.lyrics ) {
-		lyricsHide();
-	} else {
+	if ( $( '#lyricsedit' ).hasClass( 'hide' ) && $( '#lyricstextarea' ).val() !== V.lyrics ) {
 		info( {
 			  icon     : 'lyrics'
 			, title    : 'Lyrics'
 			, message  : 'Discard changes made to this lyrics?'
 			, ok       : lyricsHide
 		} );
+	} else {
+		lyricsHide();
 	}
 } );
 $( '#lyricsback' ).on( 'click', function() {
