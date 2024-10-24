@@ -196,7 +196,7 @@ $( '.refresh' ).on( 'click', function() {
 	V.intstatus = setInterval( () => {
 		bash( [ 'settings/system-data.sh', 'status' ], data => {
 			$.each( data, ( k, v ) => S[ k ] = v );
-			renderStatus();
+			$( '#divstatus .value' ).html( S.status );
 			var $icon = $( '#divstatus .refresh' );
 			$icon.toggleClass( 'i-refresh blink i-flash' );
 			setTimeout( () => $icon.toggleClass( 'i-refresh blink i-flash' ), 900 );
@@ -1183,7 +1183,7 @@ function infoWlan() {
 }
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
-	renderStatus();
+	$( '#divstatus .value' ).html( S.status );
 	renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
@@ -1232,10 +1232,6 @@ function renderPage() {
 	$( '#setting-shareddata' ).remove();
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
-}
-function renderStatus() {
-	$( '#divstatus .value' ).html( S.status );
-	$( '#vf' ).toggleClass( 'hide', ! S.statusvf );
 }
 function renderStorage() {
 	delete S.hddapm;
