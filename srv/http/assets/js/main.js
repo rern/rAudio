@@ -1998,7 +1998,7 @@ $( '#lyricsrefresh' ).on( 'click', function() {
 	lyricsGet( 'refresh' );
 } );
 $( '#lyrics' ).on( 'click', '.i-close',  function() {
-	if ( $( '#lyricstextarea' ).val() === V.lyrics || ! $( '#lyricstextarea' ).val() ) {
+	if ( ! V.lyrics || $( '#lyricstextarea' ).val() === V.lyrics ) {
 		lyricsHide();
 	} else {
 		info( {
