@@ -1097,13 +1097,13 @@ i.map.disabled, .map.disabled i {
 }
 #lyricstitle {
 	margin-left: 10px;
-	vertical-align: 3px;
+	line-height: 40px;
 	font-size: 26px;
 	font-weight: 300;
 }
 #lyricsartist {
 	padding-left: 15px;
-	line-height: 40px;
+	line-height: 42px;
 	font-size: 18px;
 	font-weight: 300;
 }
