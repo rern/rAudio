@@ -33,12 +33,14 @@ if [[ $throttled && $throttled != 0x0 ]]; then
 		[19]="${iv//yl/red}</gr>"
 	)
 	for i in 19 3 18 17 16 2 1 0; do
-		[[ ${binary:i:1} == 1 ]] && warning+="${warnings[$i]}<br>"
+		[[ ${binary:i:1} == 1 ]] && status+="${warnings[$i]}<br>"
 	done
-	
+	statusvf=true
+else
+	statusvf=false
 fi
 # for interval refresh
-[[ $1 == status ]] && echo '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
+[[ $1 == status ]] && echo '{ "status": "'$status'", "statusvf": '$statusvf' }' && exit
 # --------------------------------------------------------------------
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
@@ -172,6 +174,7 @@ data+='
 , "soundprofile"      : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf"  : '$soundprofileconf'
 , "status"            : "'$status'"
+, "statusvf"          : '$statusvf'
 , "system"            : "'$system'"
 , "tft"               : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "tftconf"           : '$tftconf'
@@ -179,8 +182,7 @@ data+='
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"
 , "vuled"             : '$( exists $dirsystem/vuled )'
-, "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
-, "warning"           : "'$warning'"'
+, "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )
 ##########
 [[ $audioaplayname == cirrus-wm5102 ]] && data+='
 , "audiowm5102"       : "'$( < $dirsystem/audio-wm5102 )'"'

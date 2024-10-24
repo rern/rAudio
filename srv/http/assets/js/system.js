@@ -187,16 +187,19 @@ $( '.img' ).on( 'click', function() {
 $( '.refresh' ).on( 'click', function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
-		intervalStatus( 'clear' );
+		clearInterval( V.intstatus );
+		$icon.removeClass( 'blink wh' );
 		return
 	}
 	
 	$this.addClass( 'blink wh' )
 	V.intstatus = setInterval( () => {
 		bash( [ 'settings/system-data.sh', 'status' ], data => {
-			intervalStatus( 'icon' );
-			$( '#divstatus .value' ).html( data.status + data.warning );
-			$( '#warning' ).toggleClass( 'hide', data.warning === '' );
+			$.each( data, ( k, v ) => S[ k ] = v );
+			renderStatus();
+			var $icon = $( '#divstatus .refresh' );
+			$icon.toggleClass( 'i-refresh blink i-flash' );
+			setTimeout( () => $icon.toggleClass( 'i-refresh blink i-flash' ), 900 );
 		}, 'json' );
 	}, 10000 );
 } );
@@ -1178,20 +1181,9 @@ function infoWlan() {
 		, ok           : switchEnable
 	} );
 }
-function intervalStatus( type ) {
-	var $icon = $( '#divstatus .refresh' );
-	if ( type === 'icon' ) {
-		$icon.toggleClass( 'i-refresh blink i-flash' );
-		setTimeout( () => $icon.toggleClass( 'i-refresh blink i-flash' ), 900 );
-	} else { // clear
-		clearInterval( V.intstatus );
-		$icon.removeClass( 'blink wh' );
-	}
-}
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
-	$( '#divstatus .value' ).html( S.status + S.warning );
-	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
+	renderStatus();
 	renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
@@ -1240,6 +1232,10 @@ function renderPage() {
 	$( '#setting-shareddata' ).remove();
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
+}
+function renderStatus() {
+	$( '#divstatus .value' ).html( S.status );
+	$( '#vf' ).toggleClass( 'hide', ! S.statusvf );
 }
 function renderStorage() {
 	delete S.hddapm;
