@@ -1991,6 +1991,7 @@ $( '#lyricsedit' ).on( 'click', function() {
 	$( '#lyricstextarea' )
 		.val( V.lyrics )
 		.scrollTop( $( '#lyricstext' ).scrollTop() );
+	$( '#lyricsartist' ).css( 'width', 'calc( 100% - 124px )' );
 } );
 $( '#lyricsrefresh' ).on( 'click', function() {
 	$( this ).addClass( 'blink' );
@@ -2011,6 +2012,7 @@ $( '#lyrics' ).on( 'click', '.i-close',  function() {
 $( '#lyricsback' ).on( 'click', function() {
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
+	$( '#lyricsartist' ).css( 'width', '' );
 } );
 $( '#lyricsundo' ).on( 'click', function() {
 	info( {
