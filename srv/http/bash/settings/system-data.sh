@@ -33,7 +33,8 @@ if [[ $throttled && $throttled != 0x0 ]]; then
 		[19]="${iv//yl/red}</gr>"
 	)
 	for i in 19 3 18 17 16 2 1 0; do
-		[[ ${binary:i:1} == 1 ]] && status+="${warnings[$i]}<br>"
+		current=$(( i + 16 ))
+		[[ ${binary:current:1} != 1 && ${binary:i:1} == 1 ]] && status+="${warnings[$i]}<br>"
 	done
 	statusvf=true
 else
