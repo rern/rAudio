@@ -16,6 +16,30 @@ $temp °C<br>\
 $availmem<br>\
 $date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
+throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
+if [[ $throttled && $throttled != 0x0 ]]; then
+	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
+	# 20 bits: occurred > 11110000000000001111 < current
+	if="<i class='i-thermometer yl'></i> CPU"
+	iv="<yl class='blink'><i class='i-voltage'></i> Under-voltage</yl>"
+	declare -A warnings=(
+		 [0]="$if temperature limit - occurred"
+		 [1]="$if throttling - occurred"
+		 [2]="$if frequency capping - occurred"
+		 [3]="$iv - occurred</gr>"
+		[16]="$if temperature limit"
+		[17]="$if throttled"
+		[18]="$if frequency capped"
+		[19]="${iv//yl/red}</gr>"
+	)
+	for i in 19 3 18 17 16 2 1 0; do
+		[[ ${binary:i:1} == 1 ]] && warning+="${warnings[$i]}<br>"
+	done
+	
+fi
+# for interval refresh
+[[ $1 == status ]] && echo '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
+# --------------------------------------------------------------------
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
 else
@@ -48,30 +72,6 @@ $soc<br>\
 $soccpu"
 	echo $system > $dirshm/system
 fi
-throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
-if [[ $throttled && $throttled != 0x0 ]]; then
-	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
-	# 20 bits: occurred > 11110000000000001111 < current
-	icpu="<i class='i-thermometer yl'></i> CPU"
-	ivoltage="<yl class='blink'><i class='i-voltage'></i> Under-voltage</yl> <gr>(<4.7V)</gr>"
-	declare -A warnings=(
-		 [0]="$icpu temperature limit - occurred"
-		 [1]="$icpu throttling - occurred"
-		 [2]="$icpu frequency capping - occurred"
-		 [3]="$ivoltage - occurred</gr>"
-		[16]="$icpu temperature limit"
-		[17]="$icpu throttled"
-		[18]="$icpu frequency capped"
-		[19]="${ivoltage//yl/red} - currently</gr>"
-	)
-	for i in 19 3 18 17 16 2 1 0; do
-		[[ ${binary:i:1} == 1 ]] && warning+="${warnings[$i]}<br>"
-	done
-	
-fi
-# for interval refresh
-[[ $1 == status ]] && echo '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
-
 lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 if [[ $lan ]]; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
