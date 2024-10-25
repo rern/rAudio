@@ -398,7 +398,7 @@ function renderPage() {
 	showContent();
 }
 function renderQR() {
-	var ip = S.listeth ? S.listeth.IP : S.ipwl || S.apconf.ip;
+	var ip = S.listeth ? S.listeth.ADDRESS : S.ipwl || S.apconf.ip;
 	if ( ! ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return

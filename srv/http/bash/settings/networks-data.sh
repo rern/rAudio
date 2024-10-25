@@ -45,8 +45,8 @@ listWlan() {
 					ipr=$( ip r | grep $wlandev )
 					[[ $ipr ]] && break || sleep 1
 				done
-				ipwl=$( grep -v ^default <<< $ipr | cut -d' ' -f9 )
-				gateway=$( grep -m 1 ^default <<< $ipr | cut -d' ' -f3 )
+				ipwl=$( grep -m1 -v ^default <<< $ipr | cut -d' ' -f9 )
+				gateway=$( grep -m1 ^default <<< $ipr | cut -d' ' -f3 )
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
@@ -80,7 +80,7 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 
 # lan
 eth=$( ip -br link | awk '/^e/ {print $1; exit}' )
-[[ $eth ]] && ipr=$( ip r | grep -m 1 ^default.*$eth )
+[[ $eth ]] && ipr=$( ip r | grep -m1 ^default.*$eth )
 if [[ $ipr ]]; then
 	ipeth=$( cut -d' ' -f9 <<< $ipr )
 	static=$( [[ $ipr != *"dhcp src "* ]] && echo true )
