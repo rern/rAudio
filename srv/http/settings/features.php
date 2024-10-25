@@ -1,24 +1,24 @@
 <?php
 $id_data      = [
-	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                   'status' => true, 'exist' => 'iwctl' ]
+	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                'status' => true, 'exist' => 'iwctl' ]
 	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
-	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false,    'status' => true, 'exist' => 'camilladsp' ]
-	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true, 'exist' => 'mediamtx' ]
+	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false, 'status' => true, 'exist' => 'camilladsp' ]
+	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false, 'status' => true, 'exist' => 'mediamtx' ]
 	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
 	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
-	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',                               'status' => true, 'exist' => 'firefox' ]
+	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',                            'status' => true, 'exist' => 'firefox' ]
 	, 'login'          => [ 'label' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
 	, 'lyrics'         => [ 'label' => 'Lyrics' ]
 	, 'multiraudio'    => [ 'label' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
-	, 'nfsserver'      => [ 'label' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false,    'status' => true ]
+	, 'nfsserver'      => [ 'label' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false, 'status' => true ]
 	, 'scrobble'       => [ 'label' => 'Scrobbler',        'sub' => 'Last.fm' ]
-	, 'shairport-sync' => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true, 'exist' => 'shairport-sync' ]
-	, 'smb'            => [ 'label' => 'File Sharing',     'sub' => 'samba',                                 'status' => true, 'exist' => 'smbd' ]
-	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',     'setting' => true,     'status' => true, 'exist' => 'snapclient' ]
-	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'setting' => true,    'status' => true, 'exist' => 'snapclient' ]
-	, 'spotifyd'       => [ 'label' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true, 'exist' => 'spotifyd' ]
+	, 'shairport-sync' => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false, 'status' => true, 'exist' => 'shairport-sync' ]
+	, 'smb'            => [ 'label' => 'File Sharing',     'sub' => 'samba',                              'status' => true, 'exist' => 'smbd' ]
+	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',     'setting' => true,  'status' => true, 'exist' => 'snapclient' ]
+	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'setting' => true,  'status' => true, 'exist' => 'snapserver' ]
+	, 'spotifyd'       => [ 'label' => 'Spotify',          'sub' => 'spotifyd',                           'status' => true, 'exist' => 'spotifyd' ]
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
-	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false,    'status' => true, 'exist' => 'spotifyd' ]
+	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false, 'status' => true, 'exist' => 'upmpdcli' ]
 	, 'volumelimit'    => [ 'label' => 'Volume Limit' ]
 ];
 commonVariables( [
@@ -60,7 +60,6 @@ EOF
 	]
 	, [
 		  'id'       => 'dabradio'
-		, 'disabled' => 'No DAB devices found.'
 		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
 	]
 	, [
@@ -116,8 +115,8 @@ EOF
 ];
 htmlSection( $head, $body, 'renderers' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Streamers' ];
-$body = [
+$head         = [ 'title' => 'Streamers' ];
+$body         = [
 	[
 		  'id'       => 'httpd'
 		, 'help'     => <<< EOF
@@ -134,8 +133,8 @@ EOF
 ];
 htmlSection( $head, $body, 'streamers' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Signal Processors' ];
-$body = [
+$head         = [ 'title' => 'Signal Processors' ];
+$body         = [
 	[
 		  'id'       => 'camilladsp'
 		, 'disabled' => $L_equalizer.' is currently enabled.'
@@ -158,8 +157,8 @@ EOF
 ];
 htmlSection( $head, $body, 'dsp' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Others' ];
-$body = [
+$head         = [ 'title' => 'Others' ];
+$body         = [
 	[
 		  'id'       => 'ap'
 		, 'disabled' => $L_wifi.' is currently connected.'

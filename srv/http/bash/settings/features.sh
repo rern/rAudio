@@ -100,13 +100,8 @@ camilladsp )
 	;;
 dabradio )
 	if [[ $ON ]]; then
-		if timeout 1 rtl_test -t &> /dev/null; then
-			systemctl enable --now mediamtx
-			[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg
-		else
-			notify dabradio 'DAB Radio' 'No DAB devices found.' 5000
-		fi
-		
+		systemctl enable --now mediamtx
+		[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg
 	else
 		killProcess dabscan
 		systemctl disable --now mediamtx
@@ -213,14 +208,15 @@ login )
 	;;
 multiraudio )
 	enableFlagSet
-	ip=$( ipAddress )
-	iplist=$( jq -r .[]  $dirsystem/multiraudio.json | grep -v $ip )
 	display='{ "submenu": "multiraudio", "value": '$TF' }'
 	flagset='{ "filesh": [ "rm", "-f", "'$dirsystem'/multiraudio" ] }'
+	list=$( tr -d '\n' < $dirsystem/multiraudio.json )
 	if [[ $ON ]]; then
-		json='{ "json": '$( tr -d '\n' < $dirsystem/multiraudio.json )', "name": "multiraudio" }'
+		json='{ "json": '$list', "name": "multiraudio" }'
 		flagset=${flagset/rm*-f/touch}
 	fi
+	ip=$( ipAddress )
+	iplist=$( jq -r .[] <<< $list | grep -v $ip )
 	while read ip; do
 		! ipOnline $ip && continue
 		
@@ -231,11 +227,10 @@ multiraudio )
 	pushRefresh
 	pushSubmenu multiraudio $TF
 	;;
-multiraudiodisable )
-	rm -f $dirsystem/multiraudio
-	;;
 multiraudioreset )
 	rm -f $dirsystem/multiraudio*
+	pushRefresh
+	pushSubmenu multiraudio false
 	;;
 nfsserver )
 	mpc -q clear
@@ -442,9 +437,7 @@ stoptimer )
 	else
 		rm -f $dirshm/pidstoptimer
 		if [[ -e $dirshm/relayson ]]; then
-			. $dirsystem/relays.conf
-			echo $timer > $timerfile
-			$dirbash/relays-timer.sh &> /dev/null &
+			grep -q timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
 		fi
 	fi
 	pushRefresh

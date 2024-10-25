@@ -202,17 +202,18 @@ i.map.disabled, .map.disabled i {
 #menu-file {
 	right: 50px;
 }
+.biosimilar p,
+.bklabel,
 .coverart1,
 .coverart2,
 .label,
 .liinfo div,
-.biosimilar p,
-.bklabel,
+.list li *,
 .scrollellipse,
 .tagmessage div,
-#divlyricstitle,
 #lib-breadcrumbs,
-.list li * {
+#lyricsartist,
+#lyricstitle {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1089,19 +1090,20 @@ i.map.disabled, .map.disabled i {
 	display: inline-block;
 	height: 40px;
 }
-#lyricstitle {
+#lyricstitle,
+#lyricsartist {
 	display: inline-block;
-	margin-left: 10px;
 	width: calc( 100% - 84px );
-	vertical-align: 10px;
+}
+#lyricstitle {
+	margin-left: 10px;
+	line-height: 40px;
 	font-size: 26px;
 	font-weight: 300;
 }
 #lyricsartist {
-	display: inline-block;
-	max-width: calc( 100% - 40px );
 	padding-left: 15px;
-	line-height: 40px;
+	line-height: 42px;
 	font-size: 18px;
 	font-weight: 300;
 }

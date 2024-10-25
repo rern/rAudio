@@ -986,13 +986,11 @@ $( '#previous, #next, #coverR, #coverL' ).press( function( e ) {
 } );
 $( '#bio' ).on( 'click', '.biosimilar', function() {
 	bio( $( this ).text(), 'getsimilar' );
-} );
-$( '#bio' ).on( 'click', '.bioback', function() {
+} ).on( 'click', '.bioback', function() {
 	V.bioartist.pop();
 	var getsimilar = V.bioartist.length > 1 ? 'getsimilar' : '';
 	bio( V.bioartist.pop(), getsimilar );
-} );
-$( '#bio' ).on( 'click', '.i-close', function() {
+} ).on( 'click', '.i-close', function() {
 	V.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
 	if ( 'observer' in V ) V.observer.disconnect();
@@ -1993,26 +1991,28 @@ $( '#lyricsedit' ).on( 'click', function() {
 	$( '#lyricstextarea' )
 		.val( V.lyrics )
 		.scrollTop( $( '#lyricstext' ).scrollTop() );
+	$( '#lyricsartist' ).css( 'width', 'calc( 100% - 124px )' );
 } );
 $( '#lyricsrefresh' ).on( 'click', function() {
 	$( this ).addClass( 'blink' );
 	lyricsGet( 'refresh' );
 } );
 $( '#lyrics' ).on( 'click', '.i-close',  function() {
-	if ( $( '#lyricstextarea' ).val() === V.lyrics || ! $( '#lyricstextarea' ).val() ) {
-		lyricsHide();
-	} else {
+	if ( $( '#lyricsedit' ).hasClass( 'hide' ) && $( '#lyricstextarea' ).val() !== V.lyrics ) {
 		info( {
 			  icon     : 'lyrics'
 			, title    : 'Lyrics'
 			, message  : 'Discard changes made to this lyrics?'
 			, ok       : lyricsHide
 		} );
+	} else {
+		lyricsHide();
 	}
 } );
 $( '#lyricsback' ).on( 'click', function() {
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
+	$( '#lyricsartist' ).css( 'width', '' );
 } );
 $( '#lyricsundo' ).on( 'click', function() {
 	info( {

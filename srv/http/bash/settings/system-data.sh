@@ -16,6 +16,33 @@ $temp °C<br>\
 $availmem<br>\
 $date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
+throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
+if [[ $throttled && $throttled != 0x0 ]]; then
+	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
+	# 20 bits: occurred > 11110000000000001111 < current
+	if="<i class='i-thermometer yl'></i> CPU"
+	iv="<yl class='blink'><i class='i-voltage'></i> Under-voltage</yl>"
+	declare -A warnings=(
+		 [0]="$if temperature limit - occurred"
+		 [1]="$if throttling - occurred"
+		 [2]="$if frequency capping - occurred"
+		 [3]="$iv - occurred</gr>"
+		[16]="$if temperature limit"
+		[17]="$if throttled"
+		[18]="$if frequency capped"
+		[19]="${iv//yl/red}</gr>"
+	)
+	for i in 19 3 18 17 16 2 1 0; do
+		current=$(( i + 16 ))
+		[[ ${binary:current:1} != 1 && ${binary:i:1} == 1 ]] && status+="${warnings[$i]}<br>"
+	done
+	statusvf=true
+else
+	statusvf=false
+fi
+# for interval refresh
+[[ $1 == status ]] && echo '{ "status": "'$status'", "statusvf": '$statusvf' }' && exit
+# --------------------------------------------------------------------
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
 else
@@ -48,27 +75,6 @@ $soc<br>\
 $soccpu"
 	echo $system > $dirshm/system
 fi
-throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
-if [[ $throttled && $throttled != 0x0 ]]; then
-	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
-	# 20 bits: occurred > 11110000000000001111 < current
-	declare -A warnings=(
-		 [0]="CPU temperature limit - occurred <gr>(>$degree°C)</gr>"
-		 [1]='CPU throttling - occurred'
-		 [2]='CPU frequency capping - occurred'
-		 [3]='<yl>Under-voltage</yl> - occurred <gr>(<4.7V)</gr>'
-		[16]="CPU temperature limit - active <gr>(>$degree°C)</gr>"
-		[17]='CPU throttled'
-		[18]='CPU frequency capped'
-		[19]='<red>Under-voltage</red> - currently <gr>(<4.7V)</gr>'
-	)
-	for i in 19 18 17 16 3 2 1 0; do
-		[[ ${binary:i:1} == 1 ]] && warning+=" · ${warnings[$i]}<br>"
-	done
-fi
-# for interval refresh
-[[ $1 == status ]] && echo '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
-
 lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 if [[ $lan ]]; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
@@ -134,7 +140,7 @@ baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 
 ##########
-data='
+data+='
 , "ap"                : '$( exists $dirsystem/ap )'
 , "audio"             : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname"    : "'$audioaplayname'"
@@ -169,6 +175,7 @@ data='
 , "soundprofile"      : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf"  : '$soundprofileconf'
 , "status"            : "'$status'"
+, "statusvf"          : '$statusvf'
 , "system"            : "'$system'"
 , "tft"               : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "tftconf"           : '$tftconf'
@@ -176,8 +183,7 @@ data='
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"
 , "vuled"             : '$( exists $dirsystem/vuled )'
-, "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
-, "warning"           : "'$warning'"'
+, "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )
 ##########
 [[ $audioaplayname == cirrus-wm5102 ]] && data+='
 , "audiowm5102"       : "'$( < $dirsystem/audio-wm5102 )'"'
@@ -206,15 +212,6 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( exists $dirshm/btreceiver )
-fi
-
-if [[ $rpi == 3B+ ]]; then
-	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
-	[[ $degree ]] && softlimit=true || degree=60
-##########
-	data+='
-, "softlimit"         : '$softlimit'
-, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
 
 data2json "$data" $1

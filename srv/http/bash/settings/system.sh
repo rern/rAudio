@@ -20,7 +20,7 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 			chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 			[[ $chip == 1 || $chip == 7 ]] && spimpdoled=1 || i2cmpdoled=1
 		fi
-		config=$( grep -Ev 'dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate' <<< $config )
+		config=$( grep -Ev '^dtparam=i2c_arm=on|^dtparam=spi=on|^dtparam=i2c_arm_baudrate' <<< $config )
 		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+='
 dtparam=i2c_arm=on'
 		[[ $i2cmpdoled ]] && config+="
@@ -79,15 +79,18 @@ case $CMD in
 
 audio )
 	enableFlagSet
-	config=$( grep -v dtparam=audio=on /boot/config.txt )
-	[[ $ON ]] && config+="
+	if [[ $ON ]] ; then
+		config="
 dtparam=audio=on"
+	else
+		config=$( grep -v ^dtparam=audio=on /boot/config.txt )
+	fi
 	configTxt
 	;;
 bluetooth )
-	config=$( grep -E -v 'disable-bt' /boot/config.txt )
 	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
+		config=$( grep -E -v 'disable-bt' /boot/config.txt )
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
 			touch $dirsystem/btdiscoverable
@@ -105,7 +108,7 @@ bluetooth )
 		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
 		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
-		config+='
+		config='
 dtoverlay=disable-bt'
 		if rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
@@ -138,9 +141,12 @@ hostname )
 	pushData refresh '{ "page": "system", "hostname": "'$NAME'" }'
 	;;
 i2seeprom )
-	config=$( grep -v force_eeprom_read /boot/config.txt )
-	[[ $ON ]] && config+="
+	if [[ $ON ]]; then
+		config="
 force_eeprom_read=0"
+	else
+		config=$( grep -v ^force_eeprom_read /boot/config.txt )
+	fi
 	configTxt
 	;;
 i2slist )
@@ -148,7 +154,7 @@ i2slist )
 	;;
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
-	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
+	config=$( grep -Ev "^dtparam=i2s=on|^dtoverlay=$prevaplayname|gpio=25=op,dh|^dtparam=audio=on" /boot/config.txt )
 	rm -f /boot/cirrus /etc/modprobe.d/cirrus.conf
 	if [[ $APLAYNAME != none ]]; then
 		config+="
@@ -302,16 +308,16 @@ $description
 	;;
 powerbutton )
 	enableFlagSet
-	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 	if [[ $ON ]]; then
 		if [[ $SW ]]; then
 			serviceRestartEnable
 		else # audiophonic
-			config+="
+			config="
 dtoverlay=gpio-poweroff,gpiopin=22
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	else
+		config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 		if systemctl -q is-active powerbutton; then
 			systemctl disable --now powerbutton
 			led=$( getVar led $dirsystem/powerbutton.conf )
@@ -331,6 +337,18 @@ relays )
 	enableFlagSet
 	pushRefresh
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
+	[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
+	;;
+relayspintoggle )
+	[[ $( gpioget -a -c0 --numeric $PIN ) == 0 ]] && onoff=1 || onoff=0
+	gpioset -t0 -c0 $PIN=$onoff
+	;;
+relaysstatus ) 
+	for p in $PINS; do
+		[[ $( gpioget -a -c0 --numeric $p ) == 0 ]] && tf=false || tf=true
+		on+=", $tf"
+	done
+	echo '[ '${on:1}' ]'
 	;;
 rotaryencoder )
 	if [[ $ON ]]; then
@@ -368,12 +386,6 @@ shareddatadisable )  # server rAudio / other server
 	systemctl restart mpd
 	pushRefresh
 	pushData refresh '{ "page": "features", "shareddata": false }'
-	;;
-softlimit )
-	config=$( grep -v temp_soft_limit /boot/config.txt )
-	[[ $ON ]] && config+='
-temp_soft_limit='$SOFTLIMIT
-	configTxt
 	;;
 soundprofileset )
 	soundProfile
@@ -480,7 +492,7 @@ $( hdparm -I $DEV | sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transp
 	fi
 	;;
 tft )
-	config=$( grep -Ev 'hdmi_force_hotplug|:rotate=' /boot/config.txt )
+	config=$( grep -Ev '^hdmi_force_hotplug|:rotate=' /boot/config.txt )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
 	if [[ $ON ]]; then
 		[[ $MODEL != tft35a ]] && echo $MODEL > $dirsystem/lcdmodel || rm $dirsystem/lcdmodel

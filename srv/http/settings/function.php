@@ -77,7 +77,7 @@ function htmlSection( $head, $body, $id = '' ) {
 }
 function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
 	if ( ! $labels ) $labels = '&nbsp;';
-	if ( $help ) $help = '<div class="helpblock hide">'.$help.'</div>';
+	if ( $help ) $help = '<div style="clear: both"></div><div class="helpblock hide"><br>'.$help.'</div>';
 	return '
 <div id="div'.$id.'" class="row">
 <div class="col-l text label gr">'.$labels.'</div>

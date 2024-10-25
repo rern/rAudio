@@ -65,9 +65,6 @@ var default_v     = {
 		, PINS : 23
 		, STEP : 1
 	}
-	, softlimit     : {
-		SOFTLIMIT : 65
-	}
 	, vuled         : {
 		  P0 : 14
 		, P1 : 15
@@ -125,51 +122,54 @@ $( 'body' ).on( 'click', function( e ) {
 } );
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
-	var name             = $( this ).data( 'name' );
-	var vcc1             = htmlC( 'ora', 'VCC', 1 );
-	var i2c              = '<br><wh>I²C:</wh>';
-	var scasdl           = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
-	var txtlcdchar       = '<br><wh>GPIO:</wh> '+ htmlC( [ 
+	var name    = $( this ).data( 'name' );
+	var vcc1    = htmlC( 'ora', 'VCC', 1 );
+	var i2c     = '<br><wh>I²C:</wh>';
+	var scasdl  = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
+	var gnd     = '<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; ';
+	var title   = {
+		  lcd           : [ 'TFT 3.5" LCD' ]
+		, lcdchar       : [ 'Character LCD' ]
+		, mpdoled       : [ 'Spectrum OLED' ]
+		, powerbutton   : [ 'Power Button',   'power' ]
+		, relays        : [ 'Relays Module' ]
+		, rotaryencoder : [ 'Rorary Encoder', 'volume' ]
+		, vuled         : [ 'VU LED',         'led' ]
+	}
+	var txt     = {
+		  lcdchar       : gnd +'<wh>GPIO:</wh> '+ htmlC( [ 
 								  [ 'red', 'VCC',   4 ]
 								, [ 'grn', 'RS',   15 ]
 								, [ 'grn', 'RW',   18 ]
 								, [ 'grn', 'E',    16 ]
 								, [ 'grn', 'D4-7', '21-24' ]
 							] )
-						  + i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
-						  +'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
-						  +'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">';
-	var txtmpdoled       = '<br>'+ vcc1
-						  + i2c + scasdl
-						  + '<br><wh>SPI:</wh>'+ htmlC( [
+						+ i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
+						+'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
+						+'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">'
+		, mpdoled       : gnd + vcc1
+						+ i2c + scasdl
+						+ '<br><wh>SPI:</wh>'+ htmlC( [
 								  [ 'grn', 'CLK', 23 ]
 								, [ 'grn', 'MOS', 19 ]
 								, [ 'grn', 'RES', 22 ]
 								, [ 'grn', 'DC',  18 ]
 								, [ 'grn', 'CS',  24 ]
-							] ) +'</p>';
-	var txtrotaryencoder = '<br><c>CLK, DT, SW: (any <grn>●</grn> pins)</c>'
-						  +'<br><c>+: not use</c></p>';
-	var title = {
-		  lcd           : [ 'TFT 3.5" LCD' ]
-		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
-		, mpdoled       : [ 'Spectrum OLED',  txtmpdoled ]
-		, powerbutton   : [ 'Power Button',   '',               'power' ]
-		, relays        : [ 'Relays Module' ]
-		, rotaryencoder : [ 'Rorary Encoder', txtrotaryencoder, 'volume' ]
-		, vuled         : [ 'VU LED',         '',               'led' ]
+							] ) +'</p>'
+		, relays        : '<br>Jumper <c>High/Low Level Trigger</c>: <c>High</c>'
+		, rotaryencoder : gnd +'<c>CLK, DT, SW: (any <grn>●</grn> pins)</c>'
+						  +'<br><c>+: not use</c></p>'
 	}
-	var d                = title[ name ];
-	var list             = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
+	var list    = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
 	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += gpiosvg;
-	if ( d[ 1 ] ) list += '<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; '+ d[ 1 ];
+	if ( name in txt ) list += '<br>'+ txt[ name ];
 	var pinhide = {
 		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
 		, mpdoled : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26, 21,     16, 15, 13, 12, 11, 10, 8, 7 ]
 	}
 	info( {
-		  icon       : d[ 2 ] || name
-		, title      : d[ 0 ]
+		  icon       : title[ name ][ 1 ] || name
+		, title      : title[ name ][ 0 ]
 		, list       : list
 		, beforeshow : () => {
 			if ( name in pinhide ) {
@@ -187,29 +187,21 @@ $( '.img' ).on( 'click', function() {
 $( '.refresh' ).on( 'click', function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
-		intervalStatus( 'clear' );
+		clearInterval( V.intstatus );
+		$icon.removeClass( 'blink wh' );
 		return
 	}
 	
 	$this.addClass( 'blink wh' )
 	V.intstatus = setInterval( () => {
 		bash( [ 'settings/system-data.sh', 'status' ], data => {
-			intervalStatus( 'icon' );
-			$( '#divstatus .value' ).html( data.status + data.warning );
-			$( '#warning' ).toggleClass( 'hide', data.warning === '' );
+			$.each( data, ( k, v ) => S[ k ] = v );
+			$( '#divstatus .value' ).html( S.status );
+			var $icon = $( '#divstatus .refresh' );
+			$icon.toggleClass( 'i-refresh blink i-flash' );
+			setTimeout( () => $icon.toggleClass( 'i-refresh blink i-flash' ), 900 );
 		}, 'json' );
 	}, 10000 );
-} );
-$( '#setting-softlimit' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, list         : [ '', 'radio', { '65°C': 65, '70°C': 70, '75°C': 75 } ]
-		, values       : S.softlimitconf || default_v.softlimit
-		, checkchanged : S.softlimit
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
 } );
 $( '.addnas' ).on( 'click', function() {
 	infoMount();
@@ -1003,14 +995,25 @@ function infoRelays() {
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			infoRelaysCss( 70 );
+			$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+			$( '#infoList td:first-child' ).remove();
+			$( '#infoList input[type=number]' ).parent().addBack().css( 'width', '70px' );
 			var $trtimer = $( '#infoList tr:last' );
 			$trtimer.find( 'td' ).eq( 0 ).css( { height: '40px','text-align': 'right' } );
 			$( '#infoList' ).on( 'click', '.i-power', function() {
 				var on = $( this ).hasClass( 'grn' );
-				if ( ( S.relayson && on ) || ( ! S.relayson && ! on ) ) return
-				
 				bash( [ 'relays.sh', on ? '' : 'off' ] );
+			} );
+			$( '#infoList' ).on( 'input', 'select', function() {
+				var $select = $( '#infoList select' );
+				var von   = [];
+				var voff  = [];
+				$select.each( ( i, el ) => {
+					var ar = i % 2 ? von : voff;
+					ar.push( $( el ).val() );
+				} );
+				I.notunique = von.length !== new Set( von ).size || voff.length !== new Set( voff ).size;
+				if ( I.notunique ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
 			} );
 			$trtimer.on( 'input', 'input:checkbox', function() {
 				$trtimer.find( 'input[type=number], .updn' ).toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
@@ -1020,21 +1023,11 @@ function infoRelays() {
 		, ok           : infoRelaysOk
 	} );
 }
-function infoRelaysCss( iW ) {
-	$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
-	$( '#infoList td:first-child' ).remove();
-	$( '#infoList input[type=number]' ).parent().addBack().css( 'width', iW +'px' );
-}
 function infoRelaysName() {
 	var name   = S.relaysnameconf || default_v.relaysname;
 	var keys   = Object.keys( name );
-	var bcmpin = [ 2, 3, 4, 14, 15, 17, 18, 27, 22, 23, 24, 10, 9, 25, 11, 8, 7, 5, 6, 12, 13, 19, 16, 26, 20, 21 ];
-	var pin    = [];
-	bcmpin.forEach( p => { // fix - numeric keys unsort
-		if ( keys.includes( ''+ p ) ) pin.push( p );
-	} );
 	var values = [];
-	pin.forEach( p => values.push( p, name[ p ] ) );
+	keys.forEach( p => values.push( p, name[ p ] ) );
 	var list   = [
 		  [ '', '', { suffix: ico( 'gpiopins gr' ) +'Pin', sameline: true } ]
 		, [ '', '', { suffix: ico( 'tag gr' ) +' Name' } ]
@@ -1043,25 +1036,40 @@ function infoRelaysName() {
 	for ( i = 0; i < kL; i++ ) {
 		list.push( [ '', 'select', { kv: board2bcm, sameline: true } ], [ '', 'text' ] );
 	}
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : relaystab
-		, tab          : [ infoRelays, '' ]
-		, message      : gpiosvg
-		, list         : list
-		, boxwidth     : 70
-		, checkblank   : true
-		, checkchanged : S.relays
-		, checkunique  : true
-		, values       : values
-		, beforeshow   : () => {
-			infoRelaysCss( 160 );
-			infoListAddRemove();
-		}
-		, cancel       : switchCancel
-		, ok           : infoRelaysOk
-	} );
+	bash( [ 'relaysstatus', keys.join( ' ' ), 'CMD PINS' ], on => {
+		info( {
+			  icon         : SW.icon
+			, title        : SW.title
+			, tablabel     : relaystab
+			, tab          : [ infoRelays, '' ]
+			, message      : gpiosvg
+			, list         : list
+			, boxwidth     : 70
+			, checkblank   : true
+			, checkchanged : S.relays
+			, checkunique  : true
+			, values       : values
+			, beforeshow   : () => {
+				$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+				$( '#infoList td:first-child' ).remove();
+				$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
+				infoListAddRemove( add => {
+					if ( add ) $( '#infoList .i-power' ).last().removeClass( 'red' );
+				} );
+				$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
+				$( '#infoList td' ).eq( 0 ).empty();
+				$( '#infoList .i-power' ).each( ( i, el ) => $( el ).toggleClass( 'red', on[ i ] ) );
+				$( '#infoList' ).on( 'click', '.i-power', function() {
+					var $this = $( this );
+					var pin = $this.parents( 'tr' ).find( 'select' ).val();
+					$this.toggleClass( 'red' );
+					bash( [ 'relayspintoggle', pin, 'CMD PIN' ] );
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : infoRelaysOk
+		} );
+	}, 'json' );
 }
 function infoRelaysOk() {
 	if ( ! S.relaysconf ) { // force update values on ok
@@ -1080,7 +1088,7 @@ function infoRelaysOk() {
 			order.OFF = on.slice().reverse();
 		}
 	} else {
-		var pL   = order.ON.length;
+		var pL = order.ON.length;
 		for ( i = 0; i < pL; i++ ) {
 			var j          = i * 4;
 			order.ON[ i ]  = v[ j ];
@@ -1094,20 +1102,17 @@ function infoRelaysOk() {
 			}
 		}
 	}
-	var keys = Object.keys( S.relaysconf );
-	var pins = [];
+	var keys    = Object.keys( S.relaysconf );
+	var pins    = [];
 	keys.forEach( k => {
 		var val =  order[ k ];
 		if ( Array.isArray( val ) ) val = val.join( ' ' );
 		pins.push( val );
 	} );
 	notifyCommon();
-	var save = function() {
-		bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
-		jsonSave( 'relays', name );
-		if ( tabname ) infoRelays();
-	}
-	S.relayson ? bash( [ 'relays.sh', 'off' ], save ) : save();
+	bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
+	jsonSave( 'relays', name );
+	if ( tabname ) infoRelays();
 }
 function infoRestore() {
 	info( {
@@ -1176,21 +1181,9 @@ function infoWlan() {
 		, ok           : switchEnable
 	} );
 }
-function intervalStatus( type ) {
-	var $icon = $( '#divstatus .refresh' );
-	if ( type === 'icon' ) {
-		$icon.toggleClass( 'i-refresh blink i-flash' );
-		setTimeout( () => $icon.toggleClass( 'i-refresh blink i-flash' ), 900 );
-	} else { // clear
-		clearInterval( V.intstatus );
-		$icon.removeClass( 'blink wh' );
-	}
-}
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
-	$( '#divstatus .value' ).html( S.status + S.warning );
-	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
-	$( 'softlimit' in S ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
+	$( '#divstatus .value' ).html( S.status );
 	renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {

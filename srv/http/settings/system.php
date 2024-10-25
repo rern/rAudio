@@ -15,7 +15,6 @@ $id_data     = [
 	, 'restore'       => [ 'label' => 'Restore',                                   'setting' => 'none' ]
 	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
 	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
-	, 'softlimit'     => [ 'label' => 'Custom Soft Limit', 'sub' => 'temp_soft_limit' ]
 	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
 	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
 	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
@@ -38,57 +37,41 @@ commonVariables( [
 	, 'tabs'    => [ 'features', 'player' ]
 ] );
 // ----------------------------------------------------------------------------------
-$head = [
+$head        = [
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => 'power power'
 	, 'help'   => $B_power.' Power'
 ];
-$labels = 'Version
+$labels      = 'Version
 	<br>Kernel
 	<br>Hardware
 	<br>SoC
 	<br>CPU';
-$body = [ htmlSectionStatus( 'system', $labels ) ];
+$body        = [ htmlSectionStatus( 'system', $labels ) ];
 htmlSection( $head, $body, 'system' );
 
-$head = [
+$head        = [
 	  'title'  => 'Status'
 	, 'status' => 'status'
 	, 'button' => 'refresh refresh'
 	, 'help'   => $B_refresh.' Refresh every 10 seconds'
 ];
-$labels = 'CPU Load
+$labels      = 'CPU Load
 	<br>CPU Temp<wide>erature</wide></span>
 	<br>Available Memory
 	<br>Time
-	<br>Up Time
-	<div id="warning">'.i( 'warning yl' ).' <wh>Warning</wh></div>';
-$help = '<wh>• CPU Load:</wh>
+	<br>Up Time';
+$help        = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
- · Each one should not be constantly over 0.75 x CPU cores.
- 
-'.i( 'warning yl' ).' <wh>Warnings:</wh> (if any)
- · Power supply voltage and throttled state (<a href="https://www.raspberrypi.com/documentation/computers/os.html#get_throttled">vcgencmd get_throttled</a>)<!--
---><a class="softlimitno">
-	· 80-84°C: CPU cores throttled.
-	· 85°C: CPU cores and GPU throttled.</a><!--
---><a class="softlimit">
-	· 60°C: Optimized throttling CPU cores and GPU (Soft limit - 3B+ only)</a>
-· RPi 4: Utilize <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/frequency-management.adoc#using-dvfs">Dynamic Voltage and Frequency Scaling</a> (DVFS)';
-$body = [
-	  htmlSectionStatus( 'status', $labels, $help )
-	, [
-		  'id'       => 'softlimit'
-		, 'help'     => 'Temperature level for CPU optimized throttling (default: 60°C)'
-	]
-];
+ · Each one should not be constantly over 0.75 x CPU cores.';
+$body        = [ htmlSectionStatus( 'status', $labels, '', $help ) ];
 htmlSection( $head, $body, 'status' );
 // ----------------------------------------------------------------------------------
-$uid = exec( 'id -u mpd' );
-$gid = exec( 'id -g mpd' );
-$head = [
+$uid         = exec( 'id -u mpd' );
+$gid         = exec( 'id -g mpd' );
+$head        = [
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
 	, 'button' => 'add addnas'
@@ -110,7 +93,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
 </pre> · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
 ];
-$body = [ <<< EOF
+$body        = [ <<< EOF
 <ul id="list" class="entries"></ul>
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
 $B_microsd $B_usbdrive $B_networks Context menu</div>
@@ -118,10 +101,8 @@ $B_microsd $B_usbdrive $B_networks Context menu</div>
 EOF ];
 htmlSection( $head, $body, 'storage' );
 // ----------------------------------------------------------------------------------
-$head = [
-	  'title'  => 'On-board Devices'
-];
-$body = [
+$head        = [ 'title'  => 'On-board Devices' ];
+$body        = [
 	[
 		  'id'       => 'audio'
 		, 'disabled' => 'No other audio devices available.'
@@ -151,17 +132,15 @@ EOF
 ];
 htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
-$helpi2s = <<< EOF
+$helpi2s     = <<< EOF
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
  · See  if it's already set: $T_player$L_device
 $B_gear
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF;
-$head = [
-	  'title' => 'GPIO Devices'
-];
-$body = [
+$head        = [ 'title' => 'GPIO Devices' ];
+$body        = [
 	  [
 		  'id'       => 'i2s'
 		, 'help'     => $helpi2s
@@ -190,10 +169,12 @@ EOF
 		  'id'       => 'relays'
 		, 'help'     => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: $M_relays
- · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+ · Module with jumper <c>High/Low Level Trigger</c> (set to <c>High</c>)
  · Can be enabled and run as a test without a connected relay module.
- · Test: $B_gear <btn>Sequence</btn> $B_power On / Off
+ · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+On/Off:
+ · $M_relays
+ · $B_gear <btn>Sequence</btn> $B_power On / $B_power Off &emsp;<btn>Pin - Name</btn> $B_power
 EOF
 	],
 	[
@@ -222,8 +203,8 @@ EOF
 ];
 htmlSection( $head, $body, 'gpio' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Environment' ];
-$body = [
+$head        = [ 'title' => 'Environment' ];
+$body        = [
 	[
 		  'id'       => 'hostname'
 		, 'input'    => '<input type="text" id="hostname" readonly>'
@@ -262,8 +243,8 @@ EOF
 ];
 htmlSection( $head, $body, 'environment' );
 // ----------------------------------------------------------------------------------
-$head = [ 'title' => 'Data and Settings' ];
-$body = [
+$head        = [ 'title' => 'Data and Settings' ];
+$body        = [
 	[
 		  'id'       => 'backup'
 		, 'help'     => <<< EOF
@@ -322,7 +303,7 @@ EOF
 ];
 htmlSection( $head, $body, 'datasetting' );
 // ----------------------------------------------------------------------------------
-$listui = [
+$listui      = [
 	[
 	    'D3'
 	  , 'Library for bespoke data visualization'
@@ -373,20 +354,20 @@ $listui = [
 	  , 'https://github.com/SortableJS/Sortable'
 	]
 ];
-$uihtml     = '';
+$uihtml      = '';
 foreach( $listui as $ui ) {
 	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> · '.$ui[ 1 ].'<br>';
 }
-$indexhtml  = '';
+$indexhtml   = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
-$menu       = [
+$menu        = [
 	  'info'    => 'info'
 	, 'forget'  => 'remove'
 	, 'remount' => 'connect'
 	, 'sleep'   => 'screenoff'
 	, 'unmount' => 'close'
 ];
-$menuhtml   = '';
+$menuhtml    = '';
 foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
 ?>
 <div id="divabout" class="section">

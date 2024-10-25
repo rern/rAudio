@@ -565,7 +565,8 @@ function info( json ) {
 					updnToggle( up );
 				}
 				function updnToggle( up ) {
-					var v = infoVal( 'array' );
+					var v = [];
+					$( '.updn' ).parent().prev().find( 'input' ).each( ( i, el ) => v.push( +$( el ).val() ) );
 					if ( el.link && typeof up === 'boolean' )  {
 						if ( v[ 0 ] > v[ 1 ] ) {
 							var vlink = up ? v[ 0 ] : v[ 1 ];
@@ -691,8 +692,7 @@ function infoCheckSet() {
 }
 function infoCheckUnique() {
 	var infoval = infoVal( 'array' );
-	var vunique = [ ... new Set( infoval ) ];
-	I.notunique = infoval.length !== vunique.length;
+	I.notunique = infoval.length !== new Set( infoval ).size;
 }
 function infoClearTimeout( all ) { // ok for both timeout and interval
 	if ( ! ( 'timeout' in V ) ) return
@@ -826,7 +826,8 @@ function infoListAddRemove( callback ) {
 	$( '#infoList td' ).eq( 2 ).html( ico( 'plus edit' ) );
 	$( '#infoList' ).on( 'click', '.edit', function() {
 		var $this = $( this );
-		if ( $this.hasClass( 'i-plus' ) ) {
+		var add   = $this.hasClass( 'i-plus' );
+		if ( add ) {
 			$( '#infoList select' ).select2( 'destroy' );
 			var $tr = $( '#infoList tr' ).last();
 			$tr.after( $tr.clone() );
@@ -834,10 +835,10 @@ function infoListAddRemove( callback ) {
 		} else {
 			$this.parents( 'tr' ).remove();
 		}
-		infoListChange( callback );
+		infoListChange( callback, add );
 	} );
 }
-function infoListChange( callback ) {
+function infoListChange( callback, add ) {
 	$input    = $( '#infoList' ).find( 'input, select' );
 	$inputbox = $( '#infoList input' );
 	if ( 'checkblank' in I ) {
@@ -846,7 +847,7 @@ function infoListChange( callback ) {
 	}
 	infoCheckSet();
 	$( '#infoList input' ).trigger( 'input' );
-	if ( callback ) callback();
+	if ( callback ) callback( add );
 }
 function infoPrompt( message ) {
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
@@ -1279,7 +1280,7 @@ function pageInactive() {
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
 }
-document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
+document.onvisibilitychange = () => document.visibilityState === 'hidden' ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
 window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
