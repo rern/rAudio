@@ -265,7 +265,7 @@ function infoLan( v ) {
 }
 function infoLanSet( v ) {
 	var icon = 'lan';
-	var ip   = v.IP;
+	var ip   = v.ADDRESS;
 	bash( [ 'lanedit', ...Object.values( v ), 'CMD '+ Object.keys( v ).join( ' ' ) ], avail => {
 		if ( avail == -1 ) {
 			clearInterval( V.interval );
