@@ -241,7 +241,7 @@ function infoAccesspoint() {
 function infoLan( v ) {
 	var icon   = 'lan';
 	var title  = ( v ? 'Edit' : 'Add' ) +' LAN Connection';
-	var values = v || { ADDRESS: S.ipsub, GATEWAY: S.gateway }
+	var values = v || { ADDRESS: S.ip.replace( /\.[^/.]+$/, '.' ), GATEWAY: S.gateway }
 	info( {
 		  icon         : icon
 		, title        : title
@@ -310,7 +310,7 @@ function infoWiFi( v ) {
 				infoWiFi( V.profileget );
 			} else {
 				var val = infoVal();
-				val.ADDRESS = S.ipsub;
+				val.ADDRESS = S.ip.replace( /\.[^/.]+$/, '.' );
 				val.GATEWAY = S.gateway;
 				var v       = {}
 				Object.keys( default_v.static ).forEach( k => v[ k ] = val[ k ] );

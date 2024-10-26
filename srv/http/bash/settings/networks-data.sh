@@ -104,9 +104,8 @@ data='
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( [[ $( iwgetid -r ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
-, "hostname"    : "'$( avahi-resolve -a4 $( ipAddress ) | awk '{print $NF}' )'"
+, "hostname"    : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
 , "ip"          : "'$ip'"
-, "ipsub"       : "'$( ipAddress sub )'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
 , "listwl"      : '$listwl
