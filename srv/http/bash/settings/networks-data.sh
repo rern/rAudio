@@ -33,7 +33,7 @@ if [[ $1 == pushbt ]]; then
 fi
 
 listWlan() {
-	local dbm notconnected profiles profile wlandev
+	local dbm ipr notconnected profiles profile ssid wlandev
 	wlandev=$( < $dirshm/wlan )
 	profiles=$( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
@@ -45,14 +45,14 @@ listWlan() {
 					ipr=$( ip r | grep $wlandev )
 					[[ $ipr ]] && break || sleep 1
 				done
-				ipwl=$( grep -m1 -v ^default <<< $ipr | cut -d' ' -f9 )
+				ip=$( grep -m1 -v ^default <<< $ipr | cut -d' ' -f9 )
 				gateway=$( grep -m1 ^default <<< $ipr | cut -d' ' -f3 )
-				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
+				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
   "dbm"     : '$dbm'
 , "gateway" : "'$gateway'"
-, "ip"      : "'$ipwl'"
+, "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
 }'
 			else
@@ -67,7 +67,7 @@ listWlan() {
 }
 if [[ $1 == pushwl ]]; then
 	listWlan
-	pushData wlan '{ "listwl": '$listwl', "ipwl": "'$ipwl'", "gatewaywl": "'$gatewaywl'" }'
+	pushData wlan '{ "listwl": '$listwl', "ip": "'$ip'", "gateway": "'$gateway'" }'
 	exit
 fi
 
@@ -105,8 +105,8 @@ data='
 , "connectedwl" : '$( [[ $( iwgetid -r ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
 , "hostname"    : "'$( avahi-resolve -a4 $( ipAddress ) | awk '{print $NF}' )'"
+, "ip"          : "'$ip'"
 , "ipsub"       : "'$( ipAddress sub )'"
-, "ipwl"        : "'$ipwl'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
 , "listwl"      : '$listwl
