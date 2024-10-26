@@ -71,15 +71,15 @@ connect )
 	wlandev=$( < $dirshm/wlan )
 	if [[ $ADDRESS ]]; then
 		ipAvailable $ADDRESS
-		ip=static
+		iptype=static
 	else
-		ip=dhcp
+		iptype=dhcp
 	fi
 	currentssid=$( iwgetid -r )
 	[[ $currentssid == $ESSID ]] && cp "/etc/netctl/$currentssid" $dirshm
 	data='Interface='$wlandev'
 Connection=wireless
-IP='$ip'
+IP='$iptype'
 ESSID="'$ESSID'"'
 	if [[ $KEY ]]; then
 		[[ $SECURITY ]] && security=wep || security=wpa
