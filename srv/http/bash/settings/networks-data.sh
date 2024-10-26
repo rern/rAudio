@@ -82,11 +82,11 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 eth=$( ip -br link | awk '/^e/ {print $1; exit}' )
 [[ $eth ]] && ipr=$( ip r | grep -m1 ^default.*$eth )
 if [[ $ipr ]]; then
-	ipeth=$( cut -d' ' -f9 <<< $ipr )
+	ip=$( cut -d' ' -f9 <<< $ipr )
 	static=$( [[ $ipr != *"dhcp src "* ]] && echo true )
 	gateway=$( cut -d' ' -f3 <<< $ipr )
 	listeth='{
-  "ADDRESS" : "'$ipeth'"
+  "ADDRESS" : "'$ip'"
 , "GATEWAY" : "'$gateway'"
 , "STATIC"  : '$static'
 }'
