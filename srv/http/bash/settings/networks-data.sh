@@ -106,6 +106,7 @@ data='
 , "gateway"     : "'$gateway'"
 , "hostname"    : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
 , "ip"          : "'$ip'"
+, "ipsub"       : "'${ip%.*}'."
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
 , "listwl"      : '$listwl
