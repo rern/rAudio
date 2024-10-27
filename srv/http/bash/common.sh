@@ -243,11 +243,7 @@ inOutputConf() {
 }
 ipAddress() {
 	local ip
-	ip=$( ip r \
-			| grep ^default \
-			| sort \
-			| head -1 \
-			| awk '{print $(NF-2); exit}' )
+	ip=$( ip r | awk '/^default/ {print $(NF-2); exit}' )
 	[[ $1 ]] && echo ${ip%.*}. || echo $ip
 }
 ipOnline() {

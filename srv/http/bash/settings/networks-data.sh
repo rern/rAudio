@@ -42,11 +42,11 @@ listWlan() {
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do
-					ipr=$( ip r | grep $wlandev )
+					ipr=( $( ip r | awk '/^default.*'$wlandev'/ {print $3" "$(NF-2); exit}' ) )
 					[[ $ipr ]] && break || sleep 1
 				done
-				ip=$( grep -m1 -v ^default <<< $ipr | cut -d' ' -f9 )
-				gateway=$( grep -m1 ^default <<< $ipr | cut -d' ' -f3 )
+				ip=${ipr[1]}
+				gateway=${ipr[0]}
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
@@ -80,11 +80,11 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 
 # lan
 eth=$( ip -br link | awk '/^e/ {print $1; exit}' )
-[[ $eth ]] && ipr=$( ip r | grep -m1 ^default.*$eth )
+[[ $eth ]] && ipr=( $( ip r | awk '/^default.*'$eth'/ {print $3" "$(NF-2)" "$7; exit}' ) )
 if [[ $ipr ]]; then
-	ip=$( cut -d' ' -f9 <<< $ipr )
-	static=$( [[ $ipr != *"dhcp src "* ]] && echo true )
-	gateway=$( cut -d' ' -f3 <<< $ipr )
+	ip=${ipr[1]}
+	gateway=${ipr[0]}
+	static=$( [[ ${ipr[2]} == dhcp ]] && echo true )
 	listeth='{
   "ADDRESS" : "'$ip'"
 , "GATEWAY" : "'$gateway'"
