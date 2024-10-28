@@ -84,11 +84,10 @@ eth=$( ip -br link | awk '/^e/ {print $1; exit}' )
 if [[ $ipr ]]; then
 	ip=${ipr[1]}
 	gateway=${ipr[0]}
-	static=$( [[ ${ipr[2]} == dhcp ]] && echo true )
 	listeth='{
   "ADDRESS" : "'$ip'"
 , "GATEWAY" : "'$gateway'"
-, "STATIC"  : '$static'
+, "STATIC"  : '$( [[ ${ipr[2]} == dhcp ]] && echo true )'
 }'
 fi
 
