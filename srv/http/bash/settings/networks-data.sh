@@ -45,12 +45,11 @@ listWlan() {
 					ipr=( $( ip r | grep -m1 "^default .* dev $wlandev" ) )
 					[[ $ipr ]] && break || sleep 1
 				done
-				ip=${ipr[2]}
-				gateway=${ipr[8]}
-				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )
+				gateway=${ipr[2]}
+				ip=${ipr[8]}
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
-  "dbm"     : '$dbm'
+  "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )'
 , "gateway" : "'$gateway'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
@@ -83,8 +82,8 @@ if test -e /sys/class/net/e*; then
 	deviceeth=true
 	ipr=( $( ip r | grep -m1 '^default .* dev e' ) )
 	if [[ $ipr ]]; then
-		ip=${ipr[8]}
 		gateway=${ipr[2]}
+		ip=${ipr[8]}
 		listeth='{
 	  "ADDRESS" : "'$ip'"
 	, "GATEWAY" : "'$gateway'"
