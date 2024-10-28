@@ -2,7 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-# wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
 
 # pre-configure >>>-----------------------------------------------------------

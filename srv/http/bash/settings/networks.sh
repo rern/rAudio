@@ -31,18 +31,9 @@ netctlSwitch() {
 	fi
 }
 wlanDevice() {
-	local iplinkw wlandev
-	iplinkw=$( ip -br link | grep -m1 ^w )
-	if [[ ! $iplinkw ]]; then
-		if [[ -e $dirshm/onboardwlan ]]; then
-			modprobe brcmfmac
-			ip link set wlan0 up
-			sleep 1
-			iplinkw=$( ip -br link | grep ^w )
-		fi
-	fi
-	if [[ $iplinkw ]]; then
-		wlandev=$( tail -1 <<< "$iplinkw" | cut -d' ' -f1 )
+	local wlandev
+	if test -e /sys/class/net/w*; then
+		wlandev=$( ls /sys/class/net | grep ^w )
 		echo $wlandev | tee $dirshm/wlan
 		( sleep 1 && iw $wlandev set power_save off ) &
 	else
@@ -203,6 +194,7 @@ usbwifion )
 	pushRefresh
 	;;
 usbwifioff )
+	wlanDevice
 	notify wifi 'USB Wi-Fi' Removed
 	pushRefresh
 	;;

@@ -42,11 +42,11 @@ listWlan() {
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do
-					ipr=( $( ip r | awk '/^default.*'$wlandev'/ {print $3" "$9; exit}' ) )
+					ipr=( $( ip r | grep -m1 "^default .* dev $wlandev" ) )
 					[[ $ipr ]] && break || sleep 1
 				done
-				ip=${ipr[1]}
-				gateway=${ipr[0]}
+				ip=${ipr[2]}
+				gateway=${ipr[8]}
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
@@ -79,23 +79,25 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 [[ -e $dirshm/wlan ]] && listWlan
 
 # lan
-eth=$( ip -br link | awk '/^e/ {print $1; exit}' )
-[[ $eth ]] && ipr=( $( ip r | awk '/^default.*'$eth'/ {print $3" "$9" "$7; exit}' ) )
-if [[ $ipr ]]; then
-	ip=${ipr[1]}
-	gateway=${ipr[0]}
-	listeth='{
-  "ADDRESS" : "'$ip'"
-, "GATEWAY" : "'$gateway'"
-, "DHCP"    : '$( [[ ${ipr[2]} == dhcp ]] && echo true )'
-}'
+if test -e /sys/class/net/e*; then
+	deviceeth=true
+	ipr=( $( ip r | grep -m1 '^default .* dev e' ) )
+	if [[ $ipr ]]; then
+		ip=${ipr[8]}
+		gateway=${ipr[2]}
+		listeth='{
+	  "ADDRESS" : "'$ip'"
+	, "GATEWAY" : "'$gateway'"
+	, "DHCP"    : '$( [[ ${ipr[6]} == dhcp ]] && echo true )'
+	}'
+	fi
 fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ##########
 data='
 , "devicebt"    : '$devicebt'
-, "deviceeth"   : '$( [[ $eth ]] && echo true )'
+, "deviceeth"   : '$deviceeth'
 , "devicewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "ap"          : '$( exists $dirsystem/ap )'
 , "apconf"      : '$apconf'
