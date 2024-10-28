@@ -87,7 +87,7 @@ if [[ $ipr ]]; then
 	listeth='{
   "ADDRESS" : "'$ip'"
 , "GATEWAY" : "'$gateway'"
-, "STATIC"  : '$( [[ ${ipr[2]} == dhcp ]] && echo true )'
+, "STATIC"  : '$( [[ ${ipr[2]} != dhcp ]] && echo true )'
 }'
 fi
 
