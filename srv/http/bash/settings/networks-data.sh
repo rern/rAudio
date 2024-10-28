@@ -42,7 +42,7 @@ listWlan() {
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do
-					ipr=( $( ip r | awk '/^default.*'$wlandev'/ {print $3" "$(NF-2); exit}' ) )
+					ipr=( $( ip r | awk '/^default.*'$wlandev'/ {print $3" "$9; exit}' ) )
 					[[ $ipr ]] && break || sleep 1
 				done
 				ip=${ipr[1]}
@@ -80,14 +80,14 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 
 # lan
 eth=$( ip -br link | awk '/^e/ {print $1; exit}' )
-[[ $eth ]] && ipr=( $( ip r | awk '/^default.*'$eth'/ {print $3" "$(NF-2)" "$7; exit}' ) )
+[[ $eth ]] && ipr=( $( ip r | awk '/^default.*'$eth'/ {print $3" "$9" "$7; exit}' ) )
 if [[ $ipr ]]; then
 	ip=${ipr[1]}
 	gateway=${ipr[0]}
 	listeth='{
   "ADDRESS" : "'$ip'"
 , "GATEWAY" : "'$gateway'"
-, "STATIC"  : '$( [[ ${ipr[2]} != dhcp ]] && echo true )'
+, "DHCP"    : '$( [[ ${ipr[2]} == dhcp ]] && echo true )'
 }'
 fi
 

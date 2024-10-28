@@ -256,7 +256,7 @@ function infoLan( v ) {
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
 		, buttonlabel  : ico( 'undo' ) +'DHCP'
-		, button       : ! values.STATIC ? '' : () => {
+		, button       : values.DHCP ? '' : () => {
 			bash( [ 'lanedit' ] );
 			notify( 'lan', 'Wired LAN', 'Reconnect ...' );
 		}
