@@ -44,6 +44,13 @@ snd-soc-wm8960'
 		[[ ! $rebooti2c ]] && ! cmp -s /tmp/raspberrypi.conf $filemodule && rebooti2c=1
 		[[ ! -s $filemodule ]] && rm -f $filemodule
 	fi
+	if [[ $poweraudiophonic ]]; then
+		config+="
+dtoverlay=gpio-poweroff,gpiopin=22
+dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
+	else
+		config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' <<< $config )
+	fi
 	grep -Ev '^#|^\s*$' <<< $config | sort -u > /boot/config.txt
 	pushRefresh
 	[[ $CMD == powerbutton ]] && return
@@ -311,13 +318,10 @@ powerbutton )
 	if [[ $ON ]]; then
 		if [[ $SW ]]; then
 			serviceRestartEnable
-		else # audiophonic
-			config="
-dtoverlay=gpio-poweroff,gpiopin=22
-dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
+		else
+			poweraudiophonic=1
 		fi
 	else
-		config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 		if systemctl -q is-active powerbutton; then
 			systemctl disable --now powerbutton
 			led=$( getVar led $dirsystem/powerbutton.conf )
