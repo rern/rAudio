@@ -364,7 +364,7 @@ function info( json ) {
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
 		var colspan, kv, label, param, type;
 		var i          = 0; // for radio name
-		I.list.forEach( l => {
+		I.list.forEach( ( l, i ) => {
 			label   = l[ 0 ];
 			type    = l[ 1 ];
 			param   = l[ 2 ] || {};
@@ -448,7 +448,12 @@ function info( json ) {
 					if ( param.suffix ) {
 						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
-						htmls.list += param.sameline ? '</td>' : '</tr>';
+						if ( param.sameline ) {
+							var labelnext = I.list[ i + 1 ][ 0 ];
+							htmls.list += labelnext ? '<td style="padding: 0 5px; text-align: right;">'+ labelnext +'</td>' : '</td>';
+						} else {
+							htmls.list += '</tr>';
+						}
 					}
 					break;
 				case 'textarea':

@@ -4,6 +4,16 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20241101
+file=$dirsystem/lcdchar.conf
+if [[ -e $file && $( sed -n -E '/^charmap/,/^p0/ p' $file | wc -l ) -gt 2 ]]; then
+	. $file
+	for k in inf cols charmap p0 pin_rs p1 pin_rw p2 pin_e p3 backlight; do
+		conf+="$k=${!k}\n"
+	done
+	echo -e $conf > $file
+fi
+
 # 20241011
 file=$dirsystem/powerbutton.conf
 [[ -e $file ]] && sed -i '/reserved/ d' $file

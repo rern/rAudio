@@ -7,13 +7,13 @@ var default_v     = {
 		  INF       :'gpio'
 		, COLS      : 20
 		, CHARMAP   : 'A00'
+		, P0        : 21 // D4
 		, PIN_RS    : 15
+		, P1        : 22 // D5
 		, PIN_RW    : 18
+		, P2        : 23 // D6
 		, PIN_E     : 16
-		, P0        : 21
-		, P1        : 22
-		, P2        : 23
-		, P3        : 24
+		, P3        : 24 // D7
 		, BACKLIGHT : false
 	}
 	, lcdchar_i2c   : {
@@ -86,21 +86,28 @@ var board2bcm     = {
 }
 var lcdcharlist   = [
 	  [ 'Type',            'hidden'  ]
-	, [ 'Size',            'radio',  { '20x4': 20, '16x2': 16 } ]
-	, [ 'Character Map',   'radio',  [ 'A00',     'A02' ] ]
-	, [ 'Address',         'radio',  { '0x27': 39, '0x3f': 63 } ]
+	, [ 'Size',            'radio',  { kv: { '20 x 4': 20, '16 x 2': 16 }, colspan: 4 } ]
+	, [ 'Character Map',   'radio',  { kv: [ 'A00', 'A02' ],               colspan: 4 } ]
+	, [ 'Address',         'radio',  { kv: { '0x27': 39, '0x3f': 63 },     colspan: 4 } ]
 	, [ 'I&#178;C Chip',   'select', [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
 	, [ 'Sleep <gr>(60s)', 'checkbox' ]
 ];
 var lcdcharjson   = {
-	  icon         : 'lcdchar'
-	, title        : 'Character LCD'
-	, tablabel     : [ 'I&#178;C', 'GPIO' ]
-	, cancel       : switchCancel
-	, ok           : switchEnable
-	, fileconf     : true
+	  icon       : 'lcdchar'
+	, title      : 'Character LCD'
+	, tablabel   : [ 'I&#178;C', 'GPIO' ]
+	, footer     : ico( 'raudio', 'lcdlogo', 'tabindex' ) +'Logo&emsp;'+ ico( 'screenoff', 'lcdoff', 'tabindex' ) +'Sleep'
+	, beforeshow : () => {
+		if ( ! S.lcdchar || S.lcdcharreboot ) return
+		
+		$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
+			bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] );
+		} );
+	}
+	, cancel     : switchCancel
+	, ok         : switchEnable
+	, fileconf   : true
 }
-var lcdcharfooter = ico( 'raudio', 'lcdlogo', 'tabindex' ) +'Logo&emsp;'+ ico( 'screenoff', 'lcdoff', 'tabindex' ) +'Sleep';
 var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ];
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
@@ -750,38 +757,25 @@ function infoLcdChar() {
 		  ...lcdcharjson
 		, tab          : [ '', infoLcdCharGpio ]
 		, list         : jsonClone( lcdcharlist )
-		, footer       : lcdcharfooter
 		, boxwidth     : 180
 		, values       : confi2c ? S.lcdcharconf : default_v.lcdchar_i2c
 		, checkchanged : S.lcdchar && confi2c
-		, beforeshow   : infoLcdcharButton
 	} );
 }
 function infoLcdCharGpio() {
 	var confgpio = S.lcdcharconf && S.lcdcharconf.INF === 'gpio';
 	var list0    = jsonClone( lcdcharlist );
 	var list     = list0.slice( 0, 3 );
-	[ 'RS', 'RW', 'E', 'D4', 'D5', 'D6', 'D7' ].forEach( k => list.push( [ k, 'select', board2bcm ] ) );
-	list.push( list0.slice( -1 )[ 0 ] );
+	[ 'D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => list.push( [ k, 'select', { kv: board2bcm, sameline: i % 2 === 0 } ] ) );
+	list.push( [ '', '' ], list0.slice( -1 )[ 0 ] );
 	info( {
 		  ...lcdcharjson
 		, tab          : [ infoLcdChar, '' ]
 		, message      : gpiosvg
 		, list         : list
-		, footer       : lcdcharfooter
 		, boxwidth     : 70
 		, values       : confgpio ? S.lcdcharconf : default_v.lcdchar_gpio
 		, checkchanged : S.lcdchar && confgpio
-		, beforeshow   : () => { 
-			infoLcdcharButton();
-		}
-	} );
-}
-function infoLcdcharButton() {
-	if ( ! S.lcdchar || S.lcdcharreboot ) return
-	
-	$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
-		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] );
 	} );
 }
 function infoMirror() {
