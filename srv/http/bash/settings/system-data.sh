@@ -20,16 +20,19 @@ throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
 if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
 	# 20 bits: occurred > 11110000000000001111 < current
-	if="<i class='i-thermometer yl'></i> CPU"
+	occurred='<gr>occurred</gr>'
+	it="<i class='i-thermometer yl'></i> CPU throttled"
+	ito="${it/yl/gr}"
+	ito="${ito/ed/ing} $occurred"
 	iv="<yl class='blink'><i class='i-voltage'></i> Under-voltage</yl>"
 	declare -A warnings=(
-		 [0]="$if temperature limit - occurred"
-		 [1]="$if throttling - occurred"
-		 [2]="$if frequency capping - occurred"
-		 [3]="$iv - occurred</gr>"
-		[16]="$if temperature limit"
-		[17]="$if throttled"
-		[18]="$if frequency capped"
+		 [0]=$ito
+		 [1]=${ito/throttling/temperature limit}
+		 [2]=${ito/throttling/frequency capping}
+		 [3]="$iv $occurred"
+		[16]=$it
+		[17]=${it/throttled/temperature limit}
+		[18]=${it/throttled/frequency capped}
 		[19]="${iv//yl/red}</gr>"
 	)
 	for i in 19 3 18 17 16 2 1 0; do
