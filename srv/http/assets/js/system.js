@@ -84,14 +84,11 @@ var board2bcm     = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
-var lcdcharaddr   = S.lcdcharaddr || [ 39, 63 ];
-var i2caddress    = {};
-lcdcharaddr.forEach( el => i2caddress[ '0x'+ el.toString( 16 ) ] = el );
 var lcdcharlist   = [
-	  [ 'Type',            'hidden' ]
-	, [ 'Size',            'radio', { '20x4': 20, '16x2': 16 } ]
-	, [ 'Character Map',   'radio', [ 'A00', 'A02' ] ]
-	, [ 'Address',         'radio', i2caddress ]
+	  [ 'Type',            'hidden'  ]
+	, [ 'Size',            'radio',  { '20x4': 20, '16x2': 16 } ]
+	, [ 'Character Map',   'radio',  [ 'A00',     'A02' ] ]
+	, [ 'Address',         'radio',  { '0x27': 39, '0x3f': 63 } ]
 	, [ 'I&#178;C Chip',   'select', [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
 	, [ 'Sleep <gr>(60s)', 'checkbox' ]
 ];
@@ -748,6 +745,7 @@ function infoCirrusWM5102( output ) {
 }
 function infoLcdChar() {
 	var confi2c = S.lcdcharconf && S.lcdcharconf.INF === 'i2c';
+	if ( S.lcdcharaddr ) lcdcharlist[ 3 ][ 2 ] = S.lcdcharaddr;
 	info( {
 		  ...lcdcharjson
 		, tab          : [ '', infoLcdCharGpio ]

@@ -128,9 +128,9 @@ if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 					| grep -E -v '^\s*$|UU' \
 					| sort -u )
 		for h in $hex; do
-			address+=','$(( 16#$h ))
+			address+=', "0x'$h'": '$(( 16#$h ))
 		done
-		lcdcharaddr='[ '${address:1}' ]'
+		lcdcharaddr='{ '${address:1}' }'
 	fi
 fi
 # vuled
