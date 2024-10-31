@@ -77,7 +77,7 @@ fi
 lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 if [[ $lan ]]; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
-		soundprofileconf=$( conf2json $dirsystem/soundprofile.conf )
+		soundprofileconf=$( conf2json soundprofile.conf )
 	else
 		swappiness=$( sysctl vm.swappiness | cut -d' ' -f3 )
 		dirlan=/sys/class/net/$lan
@@ -139,6 +139,7 @@ data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
 data+=$( settingsEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
 			$dirshm relayson )
+data+=$( settingsConf lcdchar powerbutton rotaryencoder vuled )
 
 ##########
 data+='
@@ -151,7 +152,6 @@ data+='
 , "i2saudio"             : '$i2saudio'
 , "ipsub"             : "'$( ipAddress sub )'"
 , "lcdcharaddr"       : '$lcdcharaddr'
-, "lcdcharconf"       : '$( conf2json lcdchar.conf )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$( $dirsettings/system-storage.sh )'
 , "mirror"            : "'$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )'"
@@ -159,11 +159,9 @@ data+='
 , "mpdoledreboot"     : '$mpdoledreboot'
 , "nfsserver"         : '$nfsserver'
 , "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
-, "powerbuttonconf"   : '$( conf2json powerbutton.conf )'
 , "poweraudiophonics" : '$( grep -q 'poweroff,gpiopin=22' /boot/config.txt && echo true )'
 , "relaysconf"        : '$relaysconf'
 , "relaysnameconf"    : '$( getContent $dirsystem/relays.json )'
-, "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
 , "rpi01"             : '$( exists /boot/kernel.img )'
 , "shareddata"        : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
 , "soundprofileconf"  : '$soundprofileconf'
@@ -174,8 +172,7 @@ data+='
 , "tftconf"           : '$tftconf'
 , "tftreboot"         : '$tftreboot'
 , "timezone"          : "'$timezone'"
-, "timezoneoffset"    : "'$timezoneoffset'"
-, "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )
+, "timezoneoffset"    : "'$timezoneoffset'"'
 ##########
 [[ $audioaplayname == cirrus-wm5102 ]] && data+='
 , "audiowm5102"       : "'$( < $dirsystem/audio-wm5102 )'"'

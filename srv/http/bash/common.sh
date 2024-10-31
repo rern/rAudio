@@ -399,6 +399,14 @@ settingsActive() {
 	done
 	echo "$data"
 }
+settingsConf() {
+	local data file
+	for file in $@; do
+		data+='
+, "'$file'conf" : '$( conf2json $file.conf )
+	done
+	echo "$data"
+}
 settingsEnabled() {
 	local data dir file
 	for file in $@; do

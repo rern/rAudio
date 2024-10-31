@@ -13,9 +13,10 @@ data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
 			$dirsystem ap autoplay dabradio equalizer login loginsetting lyrics multiraudio scrobble scrobblekey snapclient volumelimit \
 			$dirshm nosound )
+data+=$( settingsConf autoplay localbrowser lyrics scrobble stoptimer volumelimit )
 
 if [[ -e $dirsystem/volumelimit ]]; then
-	volumelimitconf=$( conf2json $dirsystem/volumelimit.conf )
+	volumelimitconf=$( conf2json volumelimit.conf )
 else
 	volume=$( volumeGet )
 	[[ $volume == 0 || ! $volume ]] && volume=50
@@ -24,18 +25,14 @@ fi
 
 ##########
 data+='
-, "autoplayconf"     : '$( conf2json $dirsystem/autoplay.conf )'
 , "hostname"         : "'$( hostname )'"
 , "hostip"           : "'$( ipAddress )'"
 , "ipsub"            : "'$( ipAddress sub )'"
 , "lcd"              : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
-, "lyricsconf"       : '$( conf2json lyrics.conf )'
 , "multiraudioconf"  : '$( getContent $dirsystem/multiraudio.json )'
 , "nfsconnected"     : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "scrobbleconf"     : '$( conf2json scrobble.conf )'
 , "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
-, "stoptimerconf"    : '$( conf2json stoptimer.conf )'
 , "volumelimitconf"   : '$volumelimitconf
 
 if [[ -e /usr/bin/iwctl ]]; then
@@ -49,8 +46,7 @@ if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 	[[ ! -e /tmp/localbrowser.conf && -e $dirsystem/localbrowser.conf ]] && cp $dirsystem/localbrowser.conf /tmp
 ##########
 	data+='
-, "brightness"       : '$( getContent /sys/class/backlight/rpi_backlight/brightness )'
-, "localbrowserconf" : '$( conf2json $dirsystem/localbrowser.conf )
+, "brightness"       : '$( getContent /sys/class/backlight/rpi_backlight/brightness )
 fi
 
 if [[ -e /usr/bin/smbd ]]; then

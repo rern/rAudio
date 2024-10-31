@@ -96,6 +96,7 @@ function highlightJSON( json ) {
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // from: https://stackoverflow.com/a/29622653
 	var regex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g;
 	return JSON.stringify( json, null, '\t' )
+				.replace( /\x3C/g, '&lt;' )                               // <
 				.replace( regex, function( match ) {                      // from: https://stackoverflow.com/a/7220510
 		if ( /^"/.test( match ) )
 			if ( /:$/.test( match ) )           return match                // key (wh)
