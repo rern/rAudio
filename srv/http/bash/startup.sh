@@ -20,7 +20,7 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
-	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
+	if [[ ${revision: -3:2} == 12 ]]; then # zero, 2
 		systemctl enable getty@tty1
 		systemctl disable --now bootsplash localbrowser
 		pacman -R --noconfirm firefox matchbox-window-manager plymouth-lite-rbp-git upower \

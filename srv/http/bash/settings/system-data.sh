@@ -21,30 +21,26 @@ if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
 	# 20 bits: occurred > 11110000000000001111 < current
 	occurred='<gr>occurred</gr>'
-	it="<i class='i-thermometer yl'></i> CPU throttled"
-	ito="${it/yl/gr}"
-	ito="${ito/ed/ing} $occurred"
-	iv="<yl class='blink'><i class='i-voltage'></i> Under-voltage</yl>"
+	it="<i class='i-thermometer yl'></i> CPU X"
+	ito="${it/yl/gr} $occurred"
+	iv="<red class='blink'><i class='i-voltage'></i> Under-voltage</red>"
 	declare -A warnings=(
-		 [0]=$ito
-		 [1]=${ito/throttling/temperature limit}
-		 [2]=${ito/throttling/frequency capping}
-		 [3]="$iv $occurred"
-		[16]=$it
-		[17]=${it/throttled/temperature limit}
-		[18]=${it/throttled/frequency capped}
-		[19]="${iv//yl/red}</gr>"
+		 [0]=${ito/X/throttling}
+		 [1]=${ito/X/temperature limit}
+		 [2]=${ito/X/frequency capping}
+		 [3]="${iv//red/yl} $occurred"
+		[16]=${it/X/throttled}
+		[17]=${it/X/temperature limit}
+		[18]=${it/X/frequency capped}
+		[19]=$iv
 	)
 	for i in 19 3 18 17 16 2 1 0; do
 		current=$(( i + 16 ))
 		[[ ${binary:current:1} != 1 && ${binary:i:1} == 1 ]] && status+="${warnings[$i]}<br>"
 	done
-	statusvf=true
-else
-	statusvf=false
 fi
 # for interval refresh
-[[ $1 == status ]] && echo '{ "status": "'$status'", "statusvf": '$statusvf' }' && exit
+[[ $1 == status ]] && echo $status && exit
 # --------------------------------------------------------------------
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
@@ -178,7 +174,6 @@ data+='
 , "soundprofile"      : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf"  : '$soundprofileconf'
 , "status"            : "'$status'"
-, "statusvf"          : '$statusvf'
 , "system"            : "'$system'"
 , "tft"               : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "tftconf"           : '$tftconf'

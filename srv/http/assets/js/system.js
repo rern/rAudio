@@ -86,9 +86,9 @@ var board2bcm     = {
 }
 var lcdcharlist   = [
 	  [ 'Type',            'hidden'  ]
-	, [ 'Size',            'radio',  { kv: { '20 x 4': 20, '16 x 2': 16 }, colspan: 4 } ]
-	, [ 'Character Map',   'radio',  { kv: [ 'A00', 'A02' ],               colspan: 4 } ]
-	, [ 'Address',         'radio',  { kv: { '0x27': 39, '0x3f': 63 },     colspan: 4 } ]
+	, [ 'Size',            'radio',  { kv: { '20 x 4': 20, '16 x 2': 16 }, colspan: 3 } ]
+	, [ 'Character Map',   'radio',  { kv: [ 'A00', 'A02' ],               colspan: 3 } ]
+	, [ 'Address',         'radio',  { kv: { '0x27': 39, '0x3f': 63 },     colspan: 3 } ]
 	, [ 'I&#178;C Chip',   'select', [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
 	, [ 'Sleep <gr>(60s)', 'checkbox' ]
 ];
@@ -192,19 +192,19 @@ $( '.refresh' ).on( 'click', function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
 		clearInterval( V.intstatus );
-		$icon.removeClass( 'blink wh' );
+		$this
+			.removeClass( 'i-refresh blink i-flash wh' )
+			.addClass( 'i-refresh' );
 		return
 	}
 	
 	$this.addClass( 'blink wh' )
 	V.intstatus = setInterval( () => {
 		bash( [ 'settings/system-data.sh', 'status' ], data => {
-			$.each( data, ( k, v ) => S[ k ] = v );
-			$( '#divstatus .value' ).html( S.status );
-			var $icon = $( '#divstatus .refresh' );
-			$icon.toggleClass( 'i-refresh blink i-flash' );
-			setTimeout( () => $icon.toggleClass( 'i-refresh blink i-flash' ), 900 );
-		}, 'json' );
+			$( '#divstatus .value' ).html( data );
+			$this.toggleClass( 'i-refresh blink i-flash' );
+			setTimeout( () => $this.toggleClass( 'i-refresh blink i-flash' ), 300 );
+		} );
 	}, 10000 );
 } );
 $( '.addnas' ).on( 'click', function() {
@@ -1172,6 +1172,9 @@ function infoWlan() {
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
+}
+function onPageInactive() {
+	clearInterval( V.intstatus );
 }
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
