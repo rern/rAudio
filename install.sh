@@ -7,7 +7,7 @@ alias=r1
 # 20241101
 dir=/etc/systemd/system
 file=$dir/dab.service
-if [[ -e $file ]]; then
+if [[ -e $file ]] && ! grep -q mediamtx $file; then
 	$dirbash/cmd.sh radiostop
 	systemctl disable --now mediamtx
 	sed -i '/^Description/ a\
