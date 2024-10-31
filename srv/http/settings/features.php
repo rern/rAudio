@@ -3,7 +3,7 @@ $id_data      = [
 	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                'status' => true, 'exist' => 'iwctl' ]
 	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
 	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false, 'status' => true, 'exist' => 'camilladsp' ]
-	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false, 'status' => true, 'exist' => 'mediamtx' ]
+	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'rtl_test',       'setting' => false, 'status' => true, 'exist' => 'mediamtx' ]
 	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
 	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
 	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',                            'status' => true, 'exist' => 'firefox' ]
