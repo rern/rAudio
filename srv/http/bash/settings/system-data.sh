@@ -86,11 +86,6 @@ if [[ $lan ]]; then
 		soundprofileconf='{ "SWAPPINESS": '$swappiness', "MTU": '$mtu', "TXQUEUELEN": '$txqueuelen' }'
 	fi
 fi
-data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
-data+=$( settingsEnabled \
-			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
-			$dirshm relayson )
-
 # i2smodule
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )
@@ -139,6 +134,11 @@ chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baud ]] && baud=800000
 mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
+
+data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
+data+=$( settingsEnabled \
+			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
+			$dirshm relayson )
 
 ##########
 data+='
