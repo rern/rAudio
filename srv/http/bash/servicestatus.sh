@@ -49,11 +49,10 @@ $( bluealsa-aplay -L )"
 		conf=$( configText /etc/default/camilladsp )
 		;;
 	dabradio )
-		PKG=mediamtx
-		SERVICE=mediamtx
-		conf="\
+		echo "\
 <bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
+		exit
 		;;
 	localbrowser )
 		PKG=firefox
