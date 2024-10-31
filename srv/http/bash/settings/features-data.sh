@@ -8,9 +8,13 @@
 
 . /srv/http/bash/common.sh
 
-packageActive camilladsp localbrowser mediamtx nfs-server shairport-sync smb snapserver spotifyd upmpdcli
+data+=$( settingsActive camilladsp localbrowser nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
+data+=$( settingsEnabled \
+			$dirmpdconf httpd.conf \
+			$dirsystem ap autoplay dabradio equalizer login loginsetting lyrics multiraudio scrobble scrobblekey snapclient volumelimit \
+			$dirshm nosound )
+
 if [[ -e $dirsystem/volumelimit ]]; then
-	volumelimit=true
 	volumelimitconf=$( conf2json $dirsystem/volumelimit.conf )
 else
 	volume=$( volumeGet )
@@ -19,43 +23,25 @@ else
 fi
 
 ##########
-data='
-, "autoplay"         : '$( exists $dirsystem/autoplay )'
+data+='
 , "autoplayconf"     : '$( conf2json $dirsystem/autoplay.conf )'
-, "camilladsp"       : '$camilladsp'
-, "dabradio"         : '$mediamtx'
-, "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "hostip"           : "'$( ipAddress )'"
-, "httpd"            : '$( exists $dirmpdconf/httpd.conf )'
 , "ipsub"            : "'$( ipAddress sub )'"
-, "latest"           : '$( exists $dirsystem/latest )'
 , "lcd"              : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
-, "login"            : '$( exists $dirsystem/login )'
-, "loginsetting"     : '$( exists $dirsystem/loginsetting )'
-, "lyrics"           : '$( exists $dirsystem/lyrics )'
 , "lyricsconf"       : '$( conf2json lyrics.conf )'
-, "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : '$( getContent $dirsystem/multiraudio.json )'
 , "nfsconnected"     : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "nfsserver"        : '$nfsserver'
-, "nosound"          : '$( exists $dirshm/nosound )'
-, "scrobble"         : '$( exists $dirsystem/scrobble )'
 , "scrobbleconf"     : '$( conf2json scrobble.conf )'
-, "scrobblekey"      : '$( exists $dirsystem/scrobblekey )'
 , "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
-, "shairport-sync"   : '$shairportsync'
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )'
-, "upmpdcli"         : '$upmpdcli'
-, "volumelimit"       : '$volumelimit'
 , "volumelimitconf"   : '$volumelimitconf
 
 if [[ -e /usr/bin/iwctl ]]; then
 	. <( grep -E '^Pass|^Add' /var/lib/iwd/ap/$( hostname ).ap )
 ##########
 	data+='
-, "ap"               : '$( exists $dirsystem/ap )'
 , "apconf"           : { "IP": "'$Address'", "PASSPHRASE": "'$Passphrase'" }'
 fi
 
@@ -64,7 +50,6 @@ if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 ##########
 	data+='
 , "brightness"       : '$( getContent /sys/class/backlight/rpi_backlight/brightness )'
-, "localbrowser"     : '$localbrowser'
 , "localbrowserconf" : '$( conf2json $dirsystem/localbrowser.conf )
 fi
 
@@ -75,19 +60,15 @@ if [[ -e /usr/bin/smbd ]]; then
 	smbconf='{ "SD": '$sd', "USB": '$usb' }'
 ##########
 	data+='
-, "smb"              : '$smb'
 , "smbconf"          : '$smbconf
 fi
 
 ##########
 [[ -e /usr/bin/snapclient ]] && data+='
-, "snapclient"       : '$( ls $dirsystem/snapclient* &> /dev/null && echo true )'
-, "snapserver"       : '$snapserver'
 , "snapserveractive" : '$( [[ $( snapclientIP ) ]] && echo true )
 
 ##########
 [[ -e /usr/bin/spotifyd ]] && data+='
-, "spotifyd"         : '$spotifyd'
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotifykey 2> /dev/null && echo true )
 
 ##########

@@ -5,6 +5,24 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20241101
+dir=/etc/systemd/system
+file=$dir/dab.service
+if [[ -e $file ]]; then
+	$dirbash/cmd.sh radiostop
+	systemctl disable --now mediamtx
+	sed -i '/^Description/ a\
+Requires=mediamtx.service
+After=mediamtx.service
+' $file
+dir+=/mediamtx.service.d
+mkdir -p $dir
+echo "\
+[Unit]
+BindsTo=dab.service
+" > $dir/override.conf
+	systemctl daemon-reload
+fi
+
 file=$dirsystem/lcdchar.conf
 if [[ -e $file && $( sed -n -E '/^charmap/,/^p0/ p' $file | wc -l ) -gt 2 ]]; then
 	. $file

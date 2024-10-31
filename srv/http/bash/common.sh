@@ -314,17 +314,6 @@ notify() { # icon title message delayms
 	[[ ! $ip ]] && ip=127.0.0.1
 	pushWebsocket $ip notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
-packageActive() {
-	local active pkg pkgs status
-	pkgs=$@
-	status=( $( systemctl is-active $pkgs ) )
-	i=0
-	for pkg in ${pkgs[@]}; do
-		[[ ${status[i]} == active ]] && active=true || active=false
-		printf -v ${pkg//-} '%s' $active
-		(( i++ ))
-	done
-}
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
 }
@@ -401,6 +390,24 @@ Title="'$title'"'
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD
+}
+settingsActive() {
+	local data pkg
+	for pkg in $@; do
+		data+='
+, "'${pkg/-}'" : '$( systemctl -q is-active $pkg && echo true || echo false )
+	done
+	echo "$data"
+}
+settingsEnabled() {
+	local data dir file
+	for file in $@; do
+		[[ ${file:0:1} == / ]] && dir=$file && continue
+		
+		data+='
+, "'${file/.*}'" : '$( [[ -e $dir/$file ]] && echo true || echo false )
+	done
+	echo "$data"
 }
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}

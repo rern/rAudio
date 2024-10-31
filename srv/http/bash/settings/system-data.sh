@@ -86,8 +86,10 @@ if [[ $lan ]]; then
 		soundprofileconf='{ "SWAPPINESS": '$swappiness', "MTU": '$mtu', "TXQUEUELEN": '$txqueuelen' }'
 	fi
 fi
-
-packageActive bluetooth nfs-server rotaryencoder smb
+data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
+data+=$( settingsEnabled \
+			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
+			$dirshm relayson )
 
 # i2smodule
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
@@ -140,7 +142,6 @@ mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 
 ##########
 data+='
-, "ap"                : '$( exists $dirsystem/ap )'
 , "audio"             : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
@@ -149,38 +150,31 @@ data+='
 , "i2seeprom"         : '$( grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2saudio"             : '$i2saudio'
 , "ipsub"             : "'$( ipAddress sub )'"
-, "lcdchar"           : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"       : '$lcdcharaddr'
 , "lcdcharconf"       : '$( conf2json lcdchar.conf )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$( $dirsettings/system-storage.sh )'
 , "mirror"            : "'$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )'"
-, "mpdoled"           : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"       : '$mpdoledconf'
 , "mpdoledreboot"     : '$mpdoledreboot'
 , "nfsserver"         : '$nfsserver'
 , "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
-, "powerbutton"       : '$( exists $dirsystem/powerbutton )'
 , "powerbuttonconf"   : '$( conf2json powerbutton.conf )'
 , "poweraudiophonics" : '$( grep -q 'poweroff,gpiopin=22' /boot/config.txt && echo true )'
-, "relays"            : '$( exists $dirsystem/relays )'
 , "relaysconf"        : '$relaysconf'
 , "relaysnameconf"    : '$( getContent $dirsystem/relays.json )'
-, "relayson"          : '$( exists $dirshm/relayson )'
-, "rotaryencoder"     : '$rotaryencoder'
 , "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
 , "rpi01"             : '$( exists /boot/kernel.img )'
-, "shareddata"        : '$( [[ -L $dirmpd && $nfsserver == false ]] && echo true )'
-, "soundprofile"      : '$( exists $dirsystem/soundprofile )'
+, "shareddata"        : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
 , "soundprofileconf"  : '$soundprofileconf'
 , "status"            : "'$status'"
+, "statusvf"          : '$statusvf'
 , "system"            : "'$system'"
 , "tft"               : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "tftconf"           : '$tftconf'
 , "tftreboot"         : '$tftreboot'
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"
-, "vuled"             : '$( exists $dirsystem/vuled )'
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )
 ##########
 [[ $audioaplayname == cirrus-wm5102 ]] && data+='
@@ -197,19 +191,18 @@ if [[ -e $dirshm/onboardwlan ]]; then
 	discoverable=true
 	if ! grep -q ^dtoverlay=disable-bt /boot/config.txt; then
 		bluetoothon=true
-		bluetoothactive=$bluetooth
-		if [[ $bluetoothactive == true ]]; then
+		if grep -q bluetooth.*true <<< $data; then
+			bluetoothactive=true
 			bluetoothctl show | grep -q -m1 'Discoverable: yes' && discoverable=true || discoverable=false
 		fi
 	fi
-	format=$( exists $dirsystem/btformat )
-	bluetoothconf='{ "DISCOVERABLE": '$discoverable', "FORMAT": '$format' }'
+	bluetoothconf='{ "DISCOVERABLE": '$discoverable', "FORMAT": '$( exists $dirsystem/btformat )' }'
 ##########
 	data+='
 , "bluetooth"         : '$bluetoothon'
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
-, "btconnected"       : '$( exists $dirshm/btreceiver )
+, "btconnected"       : '$( exists $dirshm/btconnected )
 fi
 
 data2json "$data" $1

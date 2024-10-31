@@ -1185,6 +1185,7 @@ function renderPage() {
 			$( '#divbluetooth .col-l' )
 				.toggleClass( 'single', ! S.bluetoothactive )
 				.toggleClass( 'status', S.bluetoothactive );
+			$( '#bluetooth' ).toggleClass( 'disabled', S.btconnected );
 		} else {
 			$( '#divbluetooth' ).addClass( 'hide' );
 		}

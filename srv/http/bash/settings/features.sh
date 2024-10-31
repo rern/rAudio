@@ -99,12 +99,12 @@ camilladsp )
 	pushRestartMpd camilladsp $TF
 	;;
 dabradio )
+	enableFlagSet
 	if [[ $ON ]]; then
-		systemctl enable --now mediamtx
 		[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg
 	else
 		killProcess dabscan
-		systemctl disable --now mediamtx
+		systemctl stop dab
 	fi
 	pushRefresh
 	;;
