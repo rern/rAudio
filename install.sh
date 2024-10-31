@@ -11,7 +11,7 @@ if [[ -e $file ]]; then
 	$dirbash/cmd.sh radiostop
 	systemctl disable --now mediamtx
 	sed -i '/^Description/ a\
-Requires=mediamtx.service
+Requires=mediamtx.service \
 After=mediamtx.service
 ' $file
 dir+=/mediamtx.service.d
