@@ -52,7 +52,10 @@ $( bluealsa-aplay -L )"
 		echo "\
 <bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
-		exit
+		! systemctl -q is-active mediamtx && exit
+# --------------------------------------------------------------------
+		PKG=mediamtx
+		SERVICE=mediamtx
 		;;
 	localbrowser )
 		PKG=firefox
