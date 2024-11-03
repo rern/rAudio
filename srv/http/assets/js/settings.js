@@ -205,7 +205,7 @@ function psBluetooth( data ) { // from networks-data,sh
 	if ( ! data ) {
 		if ( page === 'networks' ) {
 			S.listbt = data;
-			renderBluetooth();
+			render.bluetooth();
 		} else if ( page === 'system' ) {
 			$( '#bluetooth' ).removeClass( 'disabled' );
 		}
@@ -217,7 +217,7 @@ function psBluetooth( data ) { // from networks-data,sh
 		}
 	} else if ( page === 'networks' ) {
 		S.listbt = data;
-		renderBluetooth();
+		render.bluetooth();
 	}
 	bannerHide();
 }
@@ -290,7 +290,7 @@ function psWlan( data ) {
 	}
 	
 	$.each( data, ( k, v ) => { S[ k ] = v } );
-	renderWlan();
+	render.wlan();
 }
 //---------------------------------------------------------------------------------------
 document.title = page === 'camilla' ? 'Camilla DSP' : page[ 0 ].toUpperCase() + page.slice( 1 );

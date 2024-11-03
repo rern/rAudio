@@ -98,6 +98,61 @@ camilladsp )
 	[[ ! $ON && -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	pushRestartMpd camilladsp $TF
 	;;
+confget )
+	case $NAME in
+		ap )
+			file=/var/lib/iwd/ap/$( hostname ).ap
+			echo '{ "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
+			;;
+		autoplay|lyrics|stoptimer )
+			
+			;;
+		localbrowser )
+			brightness=$( getContent /sys/class/backlight/rpi_backlight/brightness false )
+			conf2json localbrowser.conf | sed 's/ }$/, "BRIGHTNESS": '$brightness' }/'
+			;;
+		multiraudioconf )
+			getContent $dirsystem/multiraudio.json
+			;;
+		smb )
+			file=/etc/samba/smb.conf
+			sed -n '/\[SD]/,/^\[/ p' $file | grep -q 'read only = no' && sd=true || sd=false
+			sed -n '/\[USB]/,/^\[/ p' $file | grep -q 'read only = no' && usb=true || usb=false
+			echo '{ "SD": '$sd', "USB": '$usb' }'
+			;;
+		spotify )
+			devices='"Default"'
+			lines=$( aplay -L | grep ^.*:CARD )
+			while read line; do
+				devices+=', "'$line'"'
+			done <<< $lines
+			current=$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )
+			if [[ ${current:0:3} == hw: ]]; then
+				current=Default
+			else
+				current=$( getContent $dirsystem/spotifyoutput )
+			fi
+			echo '{ "current": "'$current'", "devices": [ '$devices' ] }'
+			;;
+		* )
+			if [[ -e $dirsystem/$NAME.conf ]]; then
+				conf2json $dirsystem/$NAME.conf
+			else
+				case $NAME in
+					autoplay )  echo '{ "BLUETOOTH": true, "STARTUP": true }';;
+					lyrics )    echo '{ "URL": "https://", "START": "<", "END": "</div>", "EMBEDDED": false	}';;
+					scrobble )  echo '{ "AIRPLAY": true, "BLUETOOTH": true, "SPOTIFY": true, "UPNP": true }';;
+					stoptimer ) echo '{ "MIN": 30, "POWEROFF": false }';;
+					volumelimit )
+						volume=$( volumeGet )
+						[[ $volume == 0 || ! $volume ]] && volume=50
+						echo '{ "STARTUP": '$volume', "MAX": 100 }';;
+					* )         echo false;;
+				esac
+			if
+			;;
+	esac
+	;;
 dabradio )
 	enableFlagSet
 	if [[ $ON ]]; then
@@ -385,23 +440,6 @@ spotifykeyremove )
 	rm -f $dirsystem/spotifykey $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh
-	;;
-spotifyoutput )
-	devices='"Default"'
-	lines=$( aplay -L | grep ^.*:CARD )
-	while read line; do
-		devices+=', "'$line'"'
-	done <<< $lines
-	current=$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )
-	if [[ ${current:0:3} == hw: ]]; then
-		current=Default
-	else
-		current=$( getContent $dirsystem/spotifyoutput )
-	fi
-	echo '{
-  "current" : "'$current'"
-, "devices" : [ '$devices' ]
-}'
 	;;
 spotifyoutputset )
 	file=$dirsystem/spotifyoutput

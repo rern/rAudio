@@ -17,10 +17,8 @@ data+='
 , "bluetooth"        : '$( exists $dirshm/btreceiver )'
 , "btmixer"          : "'$( getContent $dirshm/btmixer )'"
 , "btvolume"         : '$( [[ -e $dirshm/btreceiver ]] && volumeGet valdb )'
-, "bufferconf"       : '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )'
 , "counts"           : '$( < $dirmpd/counts )'
-, "crossfade"        : '$( [[ $crossfade != 0 ]] && echo true )'
-, "crossfadeconf"    : { "SEC": '$crossfade' }
+, "crossfade"        : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
 , "devices"          : '$( getContent $dirshm/devices )'
 , "dop"              : '$( grep -q dop.*yes $dirmpdconf/output.conf && echo true )'
@@ -33,16 +31,8 @@ data+='
 , "mixers"           : '$( getContent $dirshm/mixers )'
 , "mixertype"        : '$( [[ $( getVar mixertype $dirshm/output ) != none ]] && echo true )'
 , "output"           : '$( conf2json -nocap $dirshm/output )'
-, "outputbufferconf" : '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )'
 , "player"           : "'$( < $dirshm/player )'"
 , "pllength"         : '$( mpc status %length% )'
-, "replaygainconf"   : {
-	  "MODE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
-	, "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
-}
-, "soxrconf"         : '$( conf2json $dirmpdconf/conf/soxr.conf )'
-, "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
-, "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
 , "state"            : "'$( mpcState )'"
 , "updatetime"       : "'$( getContent $dirmpd/updatetime )'"
 , "updating_db"      : '$( [[ -e $dirmpd/listing || -e $dirmpd/updating ]] && echo true )'
@@ -50,5 +40,14 @@ data+='
 , "volume"           : '${volume[0]}'
 , "volumedb"         : '${volume[1]}'
 , "volumemax"        : '$( volumeMaxGet )
+
+filter=$( echo 'camilladsp equalizer crossfade soxr normalization replaygain mixertype ' | sed 's/ /.*true|/g; s/|$//' )
+if [[ ${volume[1]/.00} != 0 ]] || grep -q -m1 -E $filter <<< $data; then
+	novolume=false
+else
+	novolume=true
+fi
+data+='
+, "novolume"         : '$novolume
 
 data2json "$data" $1

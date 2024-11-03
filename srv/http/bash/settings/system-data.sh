@@ -74,18 +74,6 @@ $soc<br>\
 $soccpu"
 	echo $system > $dirshm/system
 fi
-lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
-if [[ $lan ]]; then
-	if [[ -e $dirsystem/soundprofile.conf ]]; then
-		soundprofileconf=$( conf2json soundprofile.conf )
-	else
-		swappiness=$( sysctl vm.swappiness | cut -d' ' -f3 )
-		dirlan=/sys/class/net/$lan
-		mtu=$( cat $dirlan/mtu )
-		txqueuelen=$( cat $dirlan/tx_queue_len )
-		soundprofileconf='{ "SWAPPINESS": '$swappiness', "MTU": '$mtu', "TXQUEUELEN": '$txqueuelen' }'
-	fi
-fi
 # i2smodule
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )
@@ -99,47 +87,11 @@ if [[ -e $dirshm/reboot ]]; then
 	grep -q Character <<< $reboot && lcdcharreboot=true
 	grep -q Spectrum <<< $reboot && mpdoledreboot=true
 fi
-# relays
-if [[ -e $dirsystem/relays.conf ]]; then
-	. $dirsystem/relays.conf
-	relaysconf='{
-  "ON"      : [ '${on// /,}' ]
-, "OFF"     : [ '${off// /,}' ]
-, "OND"     : [ '${ond// /,}' ]
-, "OFFD"    : [ '${offd// /,}' ]
-, "TIMERON" : '$timeron'
-, "TIMER"   : '$timer'
-}'
-fi
-# tft
-tftmodel=$( getContent $dirsystem/lcdmodel )
-[[ $tftmodel ]] && tftconf='{ "MODEL": "'$tftmodel'" }'
-if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
-	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-	lines=$( i2cdetect -y $dev 2> /dev/null )
-	if [[ $lines ]]; then
-		hex=$( grep -v '^\s' <<< $lines \
-					| cut -d' ' -f2- \
-					| tr -d ' \-' \
-					| grep -E -v '^\s*$|UU' \
-					| sort -u )
-		for h in $hex; do
-			address+=', "0x'$h'": '$(( 16#$h ))
-		done
-		lcdcharaddr='{ '${address:1}' }'
-	fi
-fi
-# vuled
-chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
-[[ ! $baud ]] && baud=800000
-mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 
 data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
 data+=$( settingsEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
 			$dirshm relayson )
-data+=$( settingsConf lcdchar powerbutton rotaryencoder vuled )
 
 ##########
 data+='
@@ -151,25 +103,20 @@ data+='
 , "i2seeprom"         : '$( grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2saudio"             : '$i2saudio'
 , "ipsub"             : "'$( ipAddress sub )'"
-, "lcdcharaddr"       : '$lcdcharaddr'
+, "lan"               : '$( ip -br link | grep -q ^e && echo true )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$( $dirsettings/system-storage.sh )'
 , "mirror"            : "'$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )'"
-, "mpdoledconf"       : '$mpdoledconf'
 , "mpdoledreboot"     : '$mpdoledreboot'
 , "nfsserver"         : '$nfsserver'
 , "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
 , "poweraudiophonics" : '$( grep -q 'poweroff,gpiopin=22' /boot/config.txt && echo true )'
-, "relaysconf"        : '$relaysconf'
-, "relaysnameconf"    : '$( getContent $dirsystem/relays.json )'
 , "rpi01"             : '$( exists /boot/kernel.img )'
 , "shareddata"        : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
-, "soundprofileconf"  : '$soundprofileconf'
 , "status"            : "'$status'"
 , "statusvf"          : '$statusvf'
 , "system"            : "'$system'"
 , "tft"               : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
-, "tftconf"           : '$tftconf'
 , "tftreboot"         : '$tftreboot'
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"'
@@ -177,28 +124,12 @@ data+='
 [[ $audioaplayname == cirrus-wm5102 ]] && data+='
 , "audiowm5102"       : "'$( < $dirsystem/audio-wm5102 )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
-	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
-	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
-	wlanconf='{ "REGDOM": "'$regdom'", "APAUTO": '$apauto' }'
 ##########
 	data+='
-, "wlan"              : '$( [[ -e $dirshm/startup ]] && lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconf"          : '$wlanconf'
+, "wlan"              : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"     : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
-	discoverable=true
-	if ! grep -q ^dtoverlay=disable-bt /boot/config.txt; then
-		bluetoothon=true
-		if grep -q bluetooth.*true <<< $data; then
-			bluetoothactive=true
-			bluetoothctl show | grep -q -m1 'Discoverable: yes' && discoverable=true || discoverable=false
-		fi
-	fi
-	bluetoothconf='{ "DISCOVERABLE": '$discoverable', "FORMAT": '$( exists $dirsystem/btformat )' }'
 ##########
 	data+='
-, "bluetooth"         : '$bluetoothon'
-, "bluetoothactive"   : '$bluetoothactive'
-, "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( exists $dirshm/btconnected )
 fi
 
