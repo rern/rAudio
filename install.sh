@@ -4,7 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20241101
+# 20241108
+[[ $( pacman -Q cava ) != 'cava 0.10.2-2' ]] && pacman -Sy --noconfirm cava
+
+rm -f $dirsystem/lcdmodel
+
 dir=/etc/systemd/system
 file=$dir/dab.service
 if [[ -e $file ]] && ! grep -q mediamtx $file; then

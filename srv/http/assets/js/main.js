@@ -713,8 +713,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		volumeSet();
 	}
 	$volumeRS.setValue( S.volume );
-	V.volume = V.drag = false;
-	V.volumebar = setTimeout( volumeBarHide, 3000 );
+	V.volume    = V.drag = false;
+	V.volumebar = volumeBarHide();
 } ).on( 'mouseleave', function() {
 	V.volume = V.drag = false;
 } );
@@ -739,7 +739,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	} else {
 		$volumeRS.setValue( S.volume );
 		clearTimeout( V.volumebar );
-		V.volumebar = setTimeout( volumeBarHide, 3000 );
+		V.volumebar = volumeBarHide();
 	}
 	volumePush();
 } ).press( function( e ) {
@@ -794,7 +794,7 @@ $( '.map' ).on( 'click', function( e ) {
 	if ( $( '#info' ).hasClass( 'hide' ) ) {
 		$( '#info' ).removeClass( 'hide' );
 		clearTimeout( V.volumebar );
-		volumeBarHide();
+		volumeBarHide( 'nodelay' );
 		return
 		
 	} else if ( 'screenoff' in V ) {
@@ -1715,12 +1715,12 @@ $( '#button-pl-clear' ).on( 'click', function() {
 						case 'range':
 							var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true, link: true } }
 							info( {
-								  icon       : 'playlist'
-								, title      : 'Remove Range'
-								, list       : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
-								, boxwidth   : 80
-								, values     : [ 1, S.pllength ]
-								, ok         : () => bash( [ 'mpcremove', ...infoVal(), 'CMD START END' ] )
+								  icon     : 'playlist'
+								, title    : 'Remove Range'
+								, list     : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
+								, boxwidth : 80
+								, values   : [ 1, S.pllength ]
+								, ok       : () => bash( [ 'mpcremove', ...infoVal(), 'CMD POS END' ] )
 							} );
 							break;
 						case 'crop':
