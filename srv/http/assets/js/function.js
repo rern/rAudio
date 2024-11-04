@@ -1084,6 +1084,29 @@ function playlistRemove( $li ) {
 	}
 	$li.remove();
 }
+function playlistRemoveRange( range ) {
+	var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true, link: true } }
+	info( {
+		  icon       : 'playlist'
+		, title      : 'Remove Range'
+		, list       : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
+		, boxwidth   : 80
+		, values     : range || { start: 1, end: S.pllength }
+		, beforeshow : () => {
+			$( '#infoList tr' ).prepend( '<td>'+ ico( 'current' ) +'</td>' );
+			$( '#infoList' ).on( 'click', '.i-current', function() {
+				V.plrange      = infoVal();
+				V.plrange.type = $( this ).parents( 'tr' ).index() === 0 ? 'start' : 'end';
+				$( '#infoOverlay' ).addClass( 'hide' );
+			} );
+		}
+		, cancel     : () => delete V.plrange
+		, ok         : () => {
+			console.log( [ 'mpcremove', ...infoVal( 'array' ), 'CMD POS END' ] );
+			delete V.plrange;
+		}
+	} );
+}
 function playlistSkip() {
 	if ( ! $( '#pl-list li' ).length ) {
 		list( { playlist: 'current' }, data => {

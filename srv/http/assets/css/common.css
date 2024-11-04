@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1730425612' );
+	src         : url( '/assets/fonts/rern.woff2?v=1730724672' );
 }
 @font-face {
 	font-family : Lato;
@@ -1047,6 +1047,7 @@ input:focus {
 	.btnbottom i,
 	.btnbottom span,
 	.divgain,
+	.i-current,
 	.i-eye,
 	.i-volume,
 	.infobtn,

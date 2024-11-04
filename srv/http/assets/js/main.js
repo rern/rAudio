@@ -1696,10 +1696,10 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			  icon       : 'playlist'
 			, title      : 'Remove From Playlist'
 			, list       : [
-				  [ '', 'radio', { kv: { '<i class="i-remove"></i>    <gr>Select...</gr>' : 'select' } } ]
-				, [ '', 'radio', { kv: { '<i class="i-track"></i>     <gr>Range...</gr>'  : 'range'  } } ]
-				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   <gr>Crop</gr>'      : 'crop'   } } ]
-				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> <gr>All</gr>'       : 'all'    } } ]
+				  [ '', 'radio', { kv: { '<i class="i-remove"></i>    <gr>Select ...</gr>' : 'select' } } ]
+				, [ '', 'radio', { kv: { '<i class="i-track"></i>     <gr>Range ...</gr>'  : 'range'  } } ]
+				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   <gr>Crop</gr>'       : 'crop'   } } ]
+				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> <gr>All</gr>'        : 'all'    } } ]
 			]
 			, beforeshow : () => {
 				$( '#infoList input:checked' ).prop( 'checked', false );
@@ -1713,15 +1713,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 							local();
 							break;
 						case 'range':
-							var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true, link: true } }
-							info( {
-								  icon     : 'playlist'
-								, title    : 'Remove Range'
-								, list     : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
-								, boxwidth : 80
-								, values   : [ 1, S.pllength ]
-								, ok       : () => bash( [ 'mpcremove', ...infoVal(), 'CMD POS END' ] )
-							} );
+							playlistRemoveRange();
 							break;
 						case 'crop':
 							bash( [ 'mpccrop' ] );
@@ -1819,6 +1811,26 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 	}
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
+	if ( 'plrange' in V ) {
+		var type          = V.plrange.type;
+		delete V.plrange.type;
+		var pos           = $( this ).index() + 1;
+		V.plrange[ type ] = pos;
+		if ( type === 'start' ) {
+			if ( pos >= V.plrange.end ) {
+				V.plrange.end = pos + 1;
+				if ( V.plrange.end >= S.pllength ) V.plrange = { start: S.pllength - 1, end: S.pllength }
+			}
+		} else {
+			if ( pos <= V.plrange.start ) {
+				V.plrange.start = pos - 1;
+				if ( V.plrange.start <= 1 ) V.plrange = { start: 1, end: 2 }
+			}
+		}
+		playlistRemoveRange( V.plrange );
+		return
+	}
+	
 	e.stopPropagation();
 	$target = $( e.target );
 	if ( $target.is( '.i-save, .li-icon, .pl-remove' ) ) return
@@ -1859,6 +1871,8 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$this.add( '#play' ).addClass( 'active' );
 	}
 } ).on( 'click', '.li-icon, .savewr', function() {
+	if ( 'plrange' in V ) return
+	
 	var $this     = $( this );
 	var $thisli   = $this.parent();
 	var webradio  = $this.hasClass( 'webradio' );
