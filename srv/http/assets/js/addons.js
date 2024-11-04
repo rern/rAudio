@@ -1,6 +1,6 @@
 document.title = 'Addons';
 V              = {} // var global
-var icon       = 'jigsaw';
+var icon       = 'addons';
 var keys       = [ 'installurl', 'postinfo', 'title', 'uninstall', 'version' ];
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
@@ -24,7 +24,7 @@ $( '.container' ).on( 'click', '.revision', function() {
 	if ( $this.hasClass( 'disabled' ) && ! $this.hasClass( 'uninstall' ) ) {
 		if ( ! S.status.online ) {
 			info( {
-				  icon    : 'addons'
+				  icon    : icon
 				, title   : 'Addons'
 				, message : 'Internet connection is offline.'
 			} );

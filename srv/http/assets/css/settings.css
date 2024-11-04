@@ -127,7 +127,6 @@ heading + .helpblock {
 	display: inline-block;
 	width: 125px;
 	height: 25px !important;
-	line-height: 26px;
 	padding-left: 3px;
 	background: var( --cg );
 }
@@ -153,7 +152,7 @@ heading + .helpblock {
 }
 .helpmenu.label i {
 	margin: 0 0 0 8px;
-	vertical-align: -1px !important;
+	vertical-align: 0 !important;
 }
 .helpmenu .sub {
 	float: right;

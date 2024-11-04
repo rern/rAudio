@@ -180,6 +180,7 @@ i {
 .i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
 .i-radioparadise::after    { content: '\F594'; position: relative; }
 .i-random::before          { content: '\F512' }
+.i-raudio-nobg::before     { content: '\F500' }
 .i-reboot::before          { content: '\F521' }
 .i-redo::before            { content: '\F524' }
 .i-refresh::before,

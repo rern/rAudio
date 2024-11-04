@@ -1371,7 +1371,7 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	$( '#button-pl-consume' ).toggleClass( 'bl', S.consume );
 	$( '#button-pl-librandom' )
 		.toggleClass( 'bl', S.librandom )
-		.toggleClass( 'disabled', C.song === 0 );
+		.toggleClass( 'disabled', C.song === 0 || ! ( 'song' in C ) );
 	if ( data.html !== V.playlisthtml ) {
 		V.playlisthtml = data.html;
 		var html = htmlHash( data.html );
