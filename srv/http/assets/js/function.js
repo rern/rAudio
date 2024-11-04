@@ -1347,6 +1347,9 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	$( '#button-pl-back' ).addClass( 'hide' );
 	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
+	$( '#button-pl-librandom' )
+		.toggleClass( 'bl', S.librandom )
+		.toggleClass( 'disabled', C.song === 0 || ! ( 'song' in C ) );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	if ( ! data ) {
 		V.playlisthtml = '';
@@ -1369,9 +1372,6 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	$( '.pllength' ).removeClass( 'disabled' );
 	$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', S.consume );
-	$( '#button-pl-librandom' )
-		.toggleClass( 'bl', S.librandom )
-		.toggleClass( 'disabled', C.song === 0 || ! ( 'song' in C ) );
 	if ( data.html !== V.playlisthtml ) {
 		V.playlisthtml = data.html;
 		var html = htmlHash( data.html );
