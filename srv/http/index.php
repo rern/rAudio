@@ -133,19 +133,21 @@ if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
 $dsp      = $equalizer ? 'equalizer' : 'camilladsp';
 $settinglist = [
-	  [ 'features',        'settings',     'features', 'Features', 'dsp',          'equalizer' ]
-	, [ 'player',          'settings',     'player',   'Player',   'logout',       'lock' ]
-	, [ 'networks',        'settings',     'networks', 'Networks', 'snapclient',   'snapclient' ]
-	, [ 'system',          'settings',     'system',   'System',   'relays',       'relays' ]
-	, [ 'addons',          'settings sub', 'addons',   'Addons',   'guide',        'help' ]
-	, [ 'power',           '',             'power',    'Power',    'screenoff',    'screenoff' ]
-	, [ 'displaylibrary',  'sub',          'library',  'Library',  'update',       'refresh-library' ]
-	, [ 'displayplayback', 'sub',          'playback', 'Playback', 'displaycolor', 'color' ]
-	, [ 'displayplaylist', '',             'playlist', 'Playlist', 'multiraudio',  'multiraudio' ]
+	  [ 'features',        'settings',     'dsp',          'equalizer' ]
+	, [ 'player',          'settings',     'logout',       'lock' ]
+	, [ 'networks',        'settings',     'snapclient',   'snapclient' ]
+	, [ 'system',          'settings',     'relays',       'relays' ]
+	, [ 'addons',          'settings sub', 'guide',        'help' ]
+	, [ 'power',           '',             'screenoff',    'screenoff' ]
+	, [ 'displaylibrary',  'sub',          'update',       'refresh-library' ]
+	, [ 'displayplayback', 'sub',          'displaycolor', 'color' ]
+	, [ 'displayplaylist', '',             'multiraudio',  'multiraudio' ]
 ];
 $htmlsettings = '';
 foreach( $settinglist as $l ) {
-	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $l[ 2 ] ).$l[ 3 ].'</a>'.i( $l[ 5 ].' submenu', $l[ 4 ] );
+	$icon  = str_replace( 'display', '', $l[ 0 ] );
+	$label = ucfirst( $icon );
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $icon ).$label.'</a>'.i( $l[ 3 ].' submenu', $l[ 2 ] );
 }
 if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '<div id="vu" class="hide">'.file_get_contents( '/srv/http/assets/img/vu.svg' ).'</div>';
