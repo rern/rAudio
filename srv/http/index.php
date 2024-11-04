@@ -133,21 +133,21 @@ if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
 $dsp      = $equalizer ? 'equalizer' : 'camilladsp';
 $settinglist = [
-	  [ 'features',        'settings',     'dsp',          'equalizer' ]
-	, [ 'player',          'settings',     'logout',       'lock' ]
-	, [ 'networks',        'settings',     'snapclient',   'snapclient' ]
-	, [ 'system',          'settings',     'relays',       'relays' ]
-	, [ 'addons',          'settings sub', 'guide',        'help' ]
-	, [ 'power',           '',             'screenoff',    'screenoff' ]
-	, [ 'displaylibrary',  'sub',          'update',       'refresh-library' ]
-	, [ 'displayplayback', 'sub',          'displaycolor', 'color' ]
-	, [ 'displayplaylist', '',             'multiraudio',  'multiraudio' ]
+	  [ 'features',        'settings',     'dsp' ]
+	, [ 'player',          'settings',     'lock' ]
+	, [ 'networks',        'settings',     'snapclient' ]
+	, [ 'system',          'settings',     'relays' ]
+	, [ 'addons',          'settings sub', 'help' ]
+	, [ 'power',           '',             'screenoff' ]
+	, [ 'displaylibrary',  'sub',          'refresh-library' ]
+	, [ 'displayplayback', 'sub',          'color' ]
+	, [ 'displayplaylist', '',             'multiraudio' ]
 ];
 $htmlsettings = '';
 foreach( $settinglist as $l ) {
 	$icon  = str_replace( 'display', '', $l[ 0 ] );
 	$label = ucfirst( $icon );
-	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $icon ).$label.'</a>'.i( $l[ 3 ].' submenu', $l[ 2 ] );
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $icon ).$label.'</a>'.i( $l[ 2 ].' submenu', $l[ 2 ] );
 }
 if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '<div id="vu" class="hide">'.file_get_contents( '/srv/http/assets/img/vu.svg' ).'</div>';

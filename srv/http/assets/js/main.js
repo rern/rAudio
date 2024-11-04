@@ -200,9 +200,9 @@ $( '#button-settings' ).on( 'click', function( e ) {
 	}
 	
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
-		if ( ! $( '#displaycolor canvas' ).length ) { // color icon
-			$( '#displaycolor' ).html( '<canvas></canvas>' );
-			var canvas = $( '#displaycolor canvas' )[ 0 ];
+		if ( ! $( '#color canvas' ).length ) { // color icon
+			$( '#color' ).html( '<canvas></canvas>' );
+			var canvas = $( '#color canvas' )[ 0 ];
 			var ctx    = canvas.getContext( '2d' );
 			var cw     = canvas.width / 2;
 			var ch     = canvas.height / 2;
@@ -235,7 +235,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 		case 'dsp':
 			$this.hasClass( 'i-camilladsp' ) ? location.href = 'settings.php?p=camilla' : equalizer();
 			break;
-		case 'logout':
+		case 'lock':
 			$.post( 'cmd.php', { cmd: 'logout' }, () => location.reload() );
 			break;
 		case 'snapclient':
@@ -261,17 +261,17 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			$( '#stop' ).trigger( 'click' );
 			bash( [ 'relays.sh', S.relayson ? 'off' : '' ] );
 			break;
-		case 'guide':
+		case 'help':
 			location.href = 'settings.php?p=guide';
 			break;
 		case 'screenoff':
 			bash( [ 'screenoff' ] );
 			V.screenoff = true;
 			break;
-		case 'update':
+		case 'refresh-library':
 			$( '#button-lib-update' ).trigger( 'click' );
 			break;
-		case 'displaycolor':
+		case 'color':
 			V.color = true;
 			if ( V.library ) {
 				V.librarylist && V.mode !== 'album' ? colorSet() : $( '.mode.webradio' ).trigger( 'click' );
@@ -435,7 +435,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 		, beforeshow : () => {
 			$( '#infoIcon' ).html( '<canvas></canvas>' );
 			var ctx = $( '#infoIcon canvas' )[ 0 ].getContext( '2d' );
-			ctx.drawImage( $( '#displaycolor canvas' )[ 0 ], 0, 0 );
+			ctx.drawImage( $( '#color canvas' )[ 0 ], 0, 0 );
 		}
 		, ok         : () => {
 			bash( [ 'color', 'reset', 'CMD HSL' ] );
