@@ -30,29 +30,38 @@ i {
 	font-family : rern;
 	font-style  : normal;
 }
-.i-add::before             { content: '\F519' }
+.i-add::before,
+.i-plus::before            { content: '\F519' }
 .i-addons::before          { content: '\F50D' }
-.i-airplay::before         { content: '\F580' }
+.i-airplay::before,
+.i-shairport-sync::before  { content: '\F580' }
 .i-album::before           { content: '\F555' }
 .i-albumartist::before     { content: '\F557' }
 .i-ap::before              { content: '\F554' }
 .i-arrow-right::before     { content: '\F603' }
 .i-artist::before          { content: '\F556' }
 .i-audiocd::before         { content: '\F538' }
-.i-audio::before           { content: '\F516' }
-.i-autoplay::before        { content: '\F503' }
+.i-audio::before,
+.i-rotaryencoder::before,
+.i-volume::before,
+#divbluealsa .i-gear::before,
+#divmixer .i-gear::before  { content: '\F516' }
+.i-autoplay::before,
+.i-play::before            { content: '\F503' }
 .i-back::before            { content: '\F602' }
 .i-backspace::before       { content: '\F608' }
-.i-backup::before          { content: '\F543' }
+.i-backup::before,
+.i-microsd::before,
+.i-sd::before              { content: '\F543' }
 .i-bars::before            { content: '\F51C' }
 .i-bio::before             { content: '\F51D' }
 .i-booklet::before         { content: '\F53D' }
-.i-bookmark::before        { content: '\F550' }
-.i-bluealsa::before        { content: '\F51A' }
-.i-bluetooth::before       { content: '\F51A' }
+.i-bookmark::before,
+.i-star::before            { content: '\F550' }
+.i-bluealsa::before,
+.i-bluetooth::before,
 .i-btreceiver::before      { content: '\F51A' }
 .i-btsender::before        { content: '\F51B' }
-.i-brush::before           { content: '\F536' }
 .i-camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .i-camilladsp::after,
@@ -65,113 +74,116 @@ i {
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
 .i-config::before          { content: '\F53E' }
-.i-connect::before         { content: '\F56D' }
-.i-consume::before         { content: '\F566' }
-.i-controls::before        { content: '\F50B' }
+.i-connect::before,
+.i-current::before         { content: '\F56D' }
+.i-consume::before,
+.i-flash::before           { content: '\F566' }
+.i-controls::before,
+.i-features::before,
+.i-sliders::before         { content: '\F50B' }
 .i-copy::before            { content: '\F54E' }
 .i-coverart::before        { content: '\F58A'; position: absolute; }
 .i-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 40%; text-shadow: none; }
 .i-crop::before            { content: '\F568' }
-.i-current::before         { content: '\F56D' }
 .i-dabradio::before        { content: '\F589' }
 .i-dabupdate::before       { content: '\F589' }
 .i-date::before            { content: '\F55C' }
-.i-devices::before         { content: '\F571' }
-.i-dvfs::before            { content: '\F52C' }
+.i-devices::before,
+.i-i2s::before,
+.i-i2smodule::before       { content: '\F571' }
 .i-edit::before            { content: '\F565' }
-.i-equalizer::before       { content: '\F50C' }
+.i-equalizer::before,
+.i-mixers::before          { content: '\F50C' }
 .i-eye::before             { content: '\F567' }
-.i-features::before        { content: '\F50B' }
-.i-file::before            { content: '\F548' }
+.i-file::before,
+.i-file-playlist::before,
+.i-playlists::before       { content: '\F548' }
 .i-file-music::before      { content: '\F549' }
-.i-file-playlist::before   { content: '\F548' }
 .i-filters::before         { content: '\F52A' }
-.i-flash::before           { content: '\F566' }
 .i-flowchart::before       { content: '\F52D' }
 .i-folder::before          { content: '\F540' }
-.i-folder-cascade::before  { content: '\F54A' }
+.i-folder-cascade::before,
+.i-music::before,
+.i-song::before,
+.i-title::before           { content: '\F54A' }
 .i-folder-filter::before   { content: '\F53F' }
 .i-folder-forbid::before   { content: '\F537' }
 .i-folder-open::before     { content: '\F541' }
 .i-folder-plus::before     { content: '\F54D' }
-.i-gear::before            { content: '\F509' }
+.i-gear::before,
+.i-settings::before        { content: '\F509' }
 .i-gears::before           { content: '\F50A' }
 .i-genre::before           { content: '\F55A' }
 .i-github::before          { content: '\F583' }
-.i-globe::before           { content: '\F575' }
 .i-gpiopins::before        { content: '\F572' }
 .i-graph::before           { content: '\F52C' }
 .i-guide::before           { content: '\F579' }
-.i-hddsleep::before        { content: '\F553' }
-.i-hdmi::before            { content: '\F57B' }
+.i-hddsleep::before,
+.i-usb::before,
+.i-usbdrive::before        { content: '\F553' }
 .i-help::before            { content: '\F560' }
-.i-hide::before            { content: '\F575' }
-.i-hostname::before        { content: '\F590' }
-.i-httpd::before           { content: '\F55D' }
-.i-i2s::before             { content: '\F571' }
-.i-i2smodule::before       { content: '\F571' }
+.i-hostname::before,
+.i-raudio::before,
+.i-system::before          { content: '\F590' }
+.i-httpd::before,
+.i-webradio::before        { content: '\F55D' }
 .i-info::before            { content: '\F561' }
-.i-input::before           { content: '\F529' }
+.i-input::before,
+.i-source::before          { content: '\F529' }
 .i-inverted::before        { content: '\F52E' }
-.i-jigsaw::before          { content: '\F50D' }
 .i-lan::before             { content: '\F552' }
-.i-lastfm::before          { content: '\F585' }
+.i-lastfm::before,
+.i-scrobble::before        { content: '\F585' }
 .i-latest::before          { content: '\F55E' }
 .i-lcdchar::before         { content: '\F578' }
-.i-led::before             { content: '\F57C' }
 .i-librandom::before       { content: '\F569' }
-.i-library::before         { content: '\F506' }
+.i-library::before,
 .i-libupdate::before       { content: '\F506' }
 .i-linear::before          { content: '\F52F' }
 .i-link::before            { content: '\F56B' }
 .i-localbrowser::before    { content: '\F58C'; position: absolute; }
 .i-localbrowser::after     { content: '\F58D'; position: relative; color: var( --cg60 ); }
-.i-lock::before            { content: '\F574' }
+.i-lock::before,
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
-.i-microsd::before         { content: '\F543' }
 .i-minus::before           { content: '\F518' }
-.i-minus-circle::before    { content: '\F51F' }
-.i-mixers::before          { content: '\F50C' }
-.i-mpd::before             { content: '\F582' }
+.i-mpd::before,
+.i-player::before          { content: '\F582' }
 .i-mpdoled::before         { content: '\F57A' }
 .i-multiraudio::before     { content: '\F53B' }
-.i-music::before           { content: '\F54A' }
-.i-mute::before            { content: '\F517' }
-.i-nas::before             { content: '\F551' }
-.i-networks::before        { content: '\F551' }
+.i-mute::before,
+.i-volume.mute::before     { content: '\F517' }
+.i-nas::before,
+.i-networks::before,
+.i-shareddata::before      { content: '\F551' }
 .i-next::before            { content: '\F505' }
-.i-nfsserver::before       { content: '\F53C' }
-.i-off::before             { content: '\F520' }
+.i-nfsserver::before,
+.i-rserver::before         { content: '\F53C' }
+.i-off::before,
+.i-power::before,
+.i-powerbutton::before     { content: '\F520' }
 .i-output::before          { content: '\F528' }
 .i-pause::before           { content: '\F504' }
 .i-pipeline::before        { content: '\F52B' }
-.i-play::before            { content: '\F503' }
 .i-playback::before        { content: '\F507' }
 .i-playlist::before        { content: '\F508' }
-.i-playlists::before       { content: '\F548' }
-.i-player::before          { content: '\F582' }
 .i-play-cd::before         { content: '\F539' }
 .i-play-plus::before       { content: '\F532' }
 .i-play-power::before      { content: '\F53A' }
 .i-play-replace::before    { content: '\F533' }
-.i-plus::before            { content: '\F519' }
 .i-plus-circle::before     { content: '\F564' }
 .i-plus-o::before          { content: '\F530' }
-.i-power::before           { content: '\F520' }
-.i-powerbutton::before     { content: '\F520' }
 .i-previous::before        { content: '\F501' }
-.i-processors::before      { content: '\F576' }
+.i-processors::before,
+.i-soundprofile::before    { content: '\F576' }
 .i-radiofrance::before     { content: '\F586' }
 .i-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
 .i-radioparadise::after    { content: '\F594'; position: relative; }
 .i-random::before          { content: '\F512' }
-.i-raudio::before          { content: '\F590' }
-.i-raudio-nobg::before     { content: '\F500' }
-.i-rserver::before         { content: '\F53C' }
 .i-reboot::before          { content: '\F521' }
 .i-redo::before            { content: '\F524' }
-.i-refresh::before         { content: '\F526' }
+.i-refresh::before,
+.i-update::before          { content: '\F526' }
 .i-refresh-library::before { content: '\F536' }
 .i-relays::before          { content: '\F522' }
 .i-reload::before          { content: '\F525' }
@@ -181,63 +193,41 @@ i {
 .i-replace::before         { content: '\F531' }
 .i-reset::before           { content: '\F527' }
 .i-restore::before         { content: '\F544' }
-.i-rotaryencoder::before   { content: '\F516' }
 .i-save::before            { content: '\F542' }
 .i-save-plus::before       { content: '\F545' }
 .i-screenoff::before       { content: '\F547' }
 .i-scale::before           { content: '\F592' }
-.i-scrobble::before        { content: '\F585' }
-.i-sd::before              { content: '\F543' }
 .i-search::before          { content: '\F56A' }
 .i-set0::before            { content: '\F515' }
-.i-settings::before        { content: '\F509' }
-.i-shareddata::before      { content: '\F551' }
-.i-shairport-sync::before  { content: '\F580' }
 .i-shift::before           { content: '\F606' }
 .i-shuffle::before         { content: '\F513' }
 .i-single::before          { content: '\F514' }
-.i-sliders::before         { content: '\F50B' }
 .i-smb::before             { content: '\F56E' }
-.i-snapcast::before        { content: '\F587' }
-.i-snapclient::before      { content: '\F587' }
+.i-snapcast::before,
+.i-snapclient::before,
 .i-snapserver::before      { content: '\F587' }
-.i-song::before            { content: '\F54A' }
-.i-soundprofile::before    { content: '\F576' }
-.i-source::before          { content: '\F529' }
-.i-spotify::before         { content: '\F588' }
+.i-spotify::before,
 .i-spotifyd::before        { content: '\F588' }
-.i-star::before            { content: '\F550' }
-.i-status::before          { content: '\F50A' }
 .i-stop::before            { content: '\F502' }
 .i-stoptimer::before       { content: '\F570' }
-.i-system::before          { content: '\F590' }
 .i-tag::before             { content: '\F55B' }
 .i-tft::before             { content: '\F577' }
 .i-thermometer::before     { content: '\F57D' }
 .i-timezone::before        { content: '\F575' }
-.i-title::before           { content: '\F54A' }
 .i-track::before           { content: '\F54C' }
 .i-undo::before            { content: '\F523' }
-.i-update::before          { content: '\F526' }
-.i-upmpdcli::before        { content: '\F581' }
+.i-upmpdcli::before,
 .i-upnp::before            { content: '\F581' }
-.i-usb::before             { content: '\F553' }
-.i-usbdrive::before        { content: '\F553' }
-.i-volume::before          { content: '\F516' }
-.i-volume.mute::before     { content: '\F517' }
 .i-volumelimit::before     { content: '\F51E' }
 .i-voltage::before         { content: '\F57E' }
 .i-vuled::before           { content: '\F57C' }
 .i-warning::before         { content: '\F562' }
-.i-webradio::before        { content: '\F55D' }
-.i-wifi::before            { content: '\F597' }
+.i-wifi::before,
+.i-wlan::before            { content: '\F597' }
 .i-wifi1::before           { content: '\F598'; position: absolute; }
 .i-wifi1::after            { content: '\F599'; color: var( --cga ); }
 .i-wifi2::before           { content: '\F59A'; position: absolute; }
 .i-wifi2::after            { content: '\F59B'; color: var( --cga ); }
-.i-wlan::before            { content: '\F597' }
-#divbluealsa .i-gear::before,
-#divmixer .i-gear::before  { content: '\F516' }
 
 html {
 	height  : 100%;

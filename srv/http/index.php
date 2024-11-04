@@ -295,7 +295,7 @@ $htmlsearch   = '
 				  [ 'flash',                 'consume' ]
 				, [ 'librandom',             'librandom' ]
 				, [ 'shuffle pllength',      'shuffle' ]
-				, [ 'minus-circle pllength', 'clear' ]
+				, [ 'remove pllength',       'clear' ]
 				, [ 'save-plus pllength',    'save' ]
 				, [ 'playlists',             'playlists' ]
 			], '', 'button-pl-' )?>

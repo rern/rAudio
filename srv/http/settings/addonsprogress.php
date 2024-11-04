@@ -9,7 +9,6 @@ $postinfo   = $_POST[ 'postinfo' ] ?? '';
 $opt        = $_POST[ 'opt' ] ?? '';
 $title      = $_POST[ 'title' ];
 $uninstall  = $_POST[ 'uninstall' ] ?? '';
-$icon       = '<i class="page-icon i-jigsaw"></i>';
 $hrefback   = 'settings.php?p=addons';
 $postmsg    = $label.' done.';
 $postmsg   .= $postinfo ? '<br><br><i class="i-addons wh"></i>'.$postinfo : '';
@@ -17,7 +16,6 @@ $thumbnail  = ! $alias;
 if ( $thumbnail ) {
 	$label     = 'Update';
 	$title     = 'Album Thumbnails';
-	$icon      = str_replace( 'jigsaw', 'coverart', $icon );
 	$hrefback  = '/';
 }
 ?>
@@ -66,14 +64,14 @@ pre hr.hrlight {
 <div id="infoOverlay" class="info hide">
 	<div id="infoBox">
 		<div id="infoTopBg">
-			<div id="infoTop"><i class="i-jigsaw"></i><a id="infoTitle"><?=$title?></a></div><i id="infoX" class="i-close infox"></i>
+			<div id="infoTop"><i class="i-addons"></i><a id="infoTitle"><?=$title?></a></div><i id="infoX" class="i-close infox"></i>
 		</div>
 		<div id="infoList"><div class="infomessage"><?=$postmsg?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
 <br>
-<p class="addontitle gr"><i class="titleicon i-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<wh><?=$title?></wh> - <?=$label?> ...</p>
+<p class="addontitle gr"><i class="titleicon i-gear blink"></i>&ensp;<wh><?=$title?></wh> - <?=$label?> ...</p>
 <pre class="progress">
 <script> // js must be here before php flush start
 //if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$hrefback?>' ); // on refresh page

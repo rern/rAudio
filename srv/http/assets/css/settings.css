@@ -240,12 +240,6 @@ heading i {
 heading i.back {
 	width: 40px;
 }
-heading .i-status {
-	display: none;
-}
-heading.status .i-status {
-	display: inline-block;
-}
 heading i.help {
 	float: right;
 }
@@ -523,16 +517,6 @@ input.disabled + .switchlabel:after {
 	vertical-align: 5px;
 	font-size: 22px;
 	line-height: 18px;
-}
-.settings i,
-.col-l i.status,
-.col-l a .i-status {
-	width: 20px;
-	vertical-align: 0;
-	text-align: center
-}
-.col-l .i-status {
-	font-size: 15px;
 }
 .col-l a {
 	display: inline-block;

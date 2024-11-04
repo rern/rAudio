@@ -607,7 +607,7 @@ $( '.img' ).on( 'click', function() {
 		, powerbutton   : [ 'Power Button',   'power' ]
 		, relays        : [ 'Relays Module' ]
 		, rotaryencoder : [ 'Rorary Encoder', 'volume' ]
-		, vuled         : [ 'VU LED',         'led' ]
+		, vuled         : [ 'VU LED',         'vuled' ]
 	}
 	var txt     = {
 		  lcdchar       : gnd +'<wh>GPIO:</wh> '+ htmlC( [ 
@@ -943,7 +943,7 @@ $( '#setting-tft' ).on( 'click', function() {
 } );
 $( '#setting-vuled' ).on( 'click', function() {
 	bash( [ 'confget', 'vuled', 'CMD NAME' ], values => {
-		var list   = [ [ ico( 'led gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
+		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
 		var leds   = Object.keys( values ).length + 1;
 		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', board2bcm ] );
 		info( {
@@ -970,7 +970,7 @@ $( '#setting-vuled' ).on( 'click', function() {
 } );
 $( '#ledcalc' ).on( 'click', function() {
 	info( {
-		  icon       : 'led'
+		  icon       : 'vuled'
 		, title      : 'LED Resister Calculator'
 		, list       : [
 			  [ 'GPIO <gr>(V)</gr>',                'number' ]
@@ -1021,7 +1021,7 @@ $( '#hostname' ).on( 'click', function( e ) {
 	} );
 } );
 $( '#timezone' ).on( 'input', function( e ) {
-	notify( 'globe', 'Timezone', 'Change ...' );
+	notify( 'timezone', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
 } ).on( 'select2:open', function( e ) {
 	if ( $( '#timezone option' ).length > 2 ) return
