@@ -153,7 +153,7 @@ heading + .helpblock {
 }
 .helpmenu.label i {
 	margin: 0 0 0 8px;
-	text-align: left;
+	vertical-align: -1px !important;
 }
 .helpmenu .sub {
 	float: right;

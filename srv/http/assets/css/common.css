@@ -64,8 +64,8 @@ i {
 .i-btsender::before        { content: '\F51B' }
 .i-camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
-.i-camilladsp::after,
-.i-camilla::after          { content: '\F59C'; position: relative; } /* position: relative - fix order */
+.i-camilla::after,
+.i-camilladsp::after       { content: '\F59C'; position: relative; } /* position: relative - fix order */
 .i-capslock::before        { content: '\F607' }
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }

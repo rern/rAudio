@@ -145,7 +145,7 @@ EOF
 	]
 	, [
 		  'id'       => 'equalizer'
-		, 'disabled' => $L_camilladsp.' is currently enabled.'
+		, 'disabled' => $L_dsp.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10-band graphic equalizer with user presets.
 Control: $M_features
