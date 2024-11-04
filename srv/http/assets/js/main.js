@@ -175,6 +175,8 @@ $( '#button-data' ).on( 'click', function() {
 	$( '#button-data, #data' ).addClass( 'hide' );
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
+	delete V.pladd;
+	delete V.plrange;
 	e.stopPropagation();
 	if ( D.loginsetting ) {
 		info( {
@@ -472,7 +474,7 @@ $( '#playback' ).on( 'click', function() {
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
-	if ( ! V.local ) V.pladd = false;
+	if ( ! V.local ) delete V.pladd;
 	if ( V.playlist ) {
 		if ( ! V.playlisthome ) playlistGet();
 	} else {
@@ -1627,9 +1629,9 @@ $( '.page' ).on( 'click', 'a.indexed', function() {
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).on( 'click', function() {
-	if ( V.pladd ) {
+	if ( 'pladd' in V ) {
 		I.active  = false;
-		V.pladd   = false;
+		delete V.pladd;
 		playlistGet();
 		bannerHide();
 	} else {
@@ -1938,7 +1940,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	
 	var liicon   = $target.hasClass( 'li-icon' );
 	if ( V.playlisttrack || liicon ) {
-		if ( V.pladd ) {
+		if ( 'pladd' in V ) {
 			V.pladd.index = $this.index();
 			V.pladd.track = $this.find( '.li1 .name' ).text()
 							+'<br><gr>'+ $this.find( '.li2 .name' ).text() +'</gr>';
@@ -1981,7 +1983,7 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	} else {
 		var name = $this.find( '.lipath' ).text();
 		renderSavedPlTrack( name );
-		if ( V.pladd ) {
+		if ( 'pladd' in V ) {
 			V.pladd.name = name;
 			playlistInsertTarget();
 		}

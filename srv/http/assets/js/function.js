@@ -1028,7 +1028,7 @@ function playlistInsert( pos ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
 		}
 		bannerHide();
-		V.pladd = false;
+		delete V.pladd;
 	} );
 }
 function playlistInsertSelect() {
@@ -1044,7 +1044,7 @@ function playlistInsertSelect() {
 			banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
 		}
 		, cancel      : () => {
-			V.pladd = false;
+			delete V.pladd;
 			$( '#playlist' ).trigger( 'click' );
 		}
 		, ok          : () => playlistInsert( +infoVal() + V.pladd.index )
@@ -1069,7 +1069,7 @@ function playlistInsertTarget() {
 			} );
 		}
 		, cancel     : () => {
-			V.pladd = false;
+			delete V.pladd;
 			$( '#playlist' ).trigger( 'click' );
 		}
 		, ok         : () => playlistInsert( infoVal() )
@@ -2019,6 +2019,8 @@ function switchPage( page ) {
 	}
 	$( '.page' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
+	if ( ! V.playlist ) delete V.pladd;
+	delete V.plrange;
 }
 function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )
