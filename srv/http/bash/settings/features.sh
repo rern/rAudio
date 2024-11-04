@@ -104,9 +104,6 @@ confget )
 			file=/var/lib/iwd/ap/$( hostname ).ap
 			echo '{ "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
 			;;
-		autoplay|lyrics|stoptimer )
-			
-			;;
 		localbrowser )
 			brightness=$( getContent /sys/class/backlight/rpi_backlight/brightness false )
 			conf2json localbrowser.conf | sed 's/ }$/, "BRIGHTNESS": '$brightness' }/'
@@ -149,7 +146,7 @@ confget )
 						echo '{ "STARTUP": '$volume', "MAX": 100 }';;
 					* )         echo false;;
 				esac
-			if
+			fi
 			;;
 	esac
 	;;
