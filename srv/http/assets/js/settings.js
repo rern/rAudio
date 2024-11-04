@@ -154,16 +154,6 @@ function switchEnable() {
 	S[ SW.id ] = true;
 	SWreset();
 }
-function switchIdIconTitle( id ) {
-	id       = id.replace( 'setting-', '' );
-	SW.id    = id;
-	SW.title = $( '#div'+ id +' .col-l .label' ).text();
-	if ( page === 'player' ) {
-		SW.icon  =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume';
-	} else {
-		SW.icon  = id;
-	}
-}
 function switchSet( ready ) {
 	if ( page === 'camilla' && ! ready ) return // wait for GetConfigJson
 	
@@ -481,7 +471,12 @@ $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();
-	switchIdIconTitle( this.id );
+	id = this.id.replace( 'setting-', '' );
+	SW = {
+		  id    : id
+		, icon  : page === 'player' ? 'mpd' : id
+		, title : $( '#div'+ id +' .col-l .label' ).text()
+	}
 } );
 $( '.switch' ).on( 'click', function() {
 	var $this   = $( this );
@@ -489,8 +484,7 @@ $( '.switch' ).on( 'click', function() {
 	if ( $this.hasClass( 'disabled' ) ) {
 		$this.prop( 'checked', ! checked );
 		info( {
-			  icon    : SW.icon
-			, title   : SW.title
+			  ...SW
 			, message : $this.prev().html()
 		} );
 		return
@@ -517,8 +511,7 @@ $( '.switch' ).on( 'click', function() {
 				$( '#setting-'+ SW.id ).addClass( 'hide' );
 				bannerHide();
 				info( {
-					  icon    : SW.icon
-					, title   : SW.title
+					  ...SW
 					, message : error
 				} );
 			}

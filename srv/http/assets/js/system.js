@@ -79,8 +79,7 @@ var setting       = {
 		SW.id    = 'mirror';
 		SW.title = 'Servers';
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, tablabel     : [ 'Time', 'Package Mirror' ]
 			, tab          : [ setting.ntp, '' ]
 			, list         : [ 'Mirror', 'select', V.htmlmirror ]
@@ -180,8 +179,7 @@ var setting       = {
 	}
 	, mountRserver  : () => {
 		info( {
-			  icon     : SW.icon
-			, title    : SW.title
+			  ...SW
 			, tablabel : tabshareddata
 			, tab      : [ setting.mount, () => setting.mount( 'nfs' ), '' ]
 			, list     : [ 'Server IP', 'text' ]
@@ -207,8 +205,7 @@ var setting       = {
 		SW.id    = 'ntp';
 		SW.title = 'Servers';
 		var json = {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [ 'NTP', 'text' ]
 			, boxwidth     : 240
 			, values       : { NTP: S.ntp }
@@ -225,8 +222,7 @@ var setting       = {
 	, powerButton   : () => {
 		bash( [ 'confget', 'powerbutton', 'CMD NAME' ], values => {
 			info( {
-				  icon         : SW.icon
-				, title        : SW.title
+				  ...SW
 				, tablabel     : [ 'Generic', 'Audiophonic' ]
 				, tab          : [ '', setting.powerButtonAp ]
 				, message      : gpiosvg
@@ -247,8 +243,7 @@ var setting       = {
 	}
 	, powerButtonAp : () => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, tablabel     : [ 'Generic', 'Audiophonic' ]
 			, tab          : [ setting.powerButton, '' ]
 			, list         : [ 'Power management module', 'checkbox' ]
@@ -293,8 +288,7 @@ var setting       = {
 				}
 			}
 			info( {
-				  icon         : SW.icon
-				, title        : SW.title
+				  ...SW
 				, tablabel     : relaystab
 				, tab          : [ '', setting.relaysName ]
 				, list         : list
@@ -347,8 +341,7 @@ var setting       = {
 				list.push( [ '', 'select', { kv: board2bcm, sameline: true } ], [ '', 'text' ] );
 			}
 			info( {
-				  icon         : SW.icon
-				, title        : SW.title
+				  ...SW
 				, tablabel     : relaystab
 				, tab          : [ setting.relays, '' ]
 				, message      : gpiosvg
@@ -415,8 +408,7 @@ var setting       = {
 	}
 	, restore       : () => {
 		info( {
-			  icon     : SW.icon
-			, title    : SW.title
+			  ...SW
 			, tablabel : [ 'From Backup', 'Reset To Default' ]
 			, tab      : [ '', setting.restoreReset ]
 			, list     : [ 'Library database only', 'checkbox' ]
@@ -445,8 +437,7 @@ var setting       = {
 	}
 	, restoreReset() {
 		info( {
-			  icon     : SW.icon
-			, title    : SW.title
+			  ...SW
 			, tablabel : [ 'From Backup', 'Reset To Default' ]
 			, tab      : [ setting.restore, '' ]
 			, list     : [
@@ -509,8 +500,7 @@ function gpioPinToggle() {
 				$this.toggleClass( 'red', onoff == 1 );
 			} else {
 				info( {
-					  icon    : SW.icon
-					, title   : SW.title
+					  ...SW
 					, message : '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON'
 				} );
 			}
@@ -782,8 +772,7 @@ $( '#setting-bluetooth' ).on( 'click', function() {
 	bash( [ 'confget', 'bluetooth', 'CMD NAME' ], values => {
 		console.log(values)
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [
 				  [ 'Discoverable <gr>by senders</gr>',             'checkbox' ]
 				, [ 'Sampling 16bit 44.1kHz <gr>to receivers</gr>', 'checkbox' ]
@@ -800,8 +789,7 @@ $( '#setting-wlan' ).on( 'click', function() {
 		var regdomlist = values.regdomlist;
 		delete values.regdomlist;
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [
 				  [ 'Country'                                                              , 'select', regdomlist ]
 				, [ 'Auto start Access Point<br> &emsp; &emsp; <gr>(if not connected)</gr>', 'checkbox' ]
@@ -847,8 +835,7 @@ $( '#setting-i2smodule' ).on( 'click', function() {
 	}
 	
 	info( {
-		  icon         : SW.icon
-		, title        : SW.title
+		  ...SW
 		, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
 		, values       : S.i2seeprom
 		, checkchanged : S.i2seeprom
@@ -869,8 +856,7 @@ $( '#setting-relays' ).on( 'click', function() {
 $( '#setting-rotaryencoder' ).on( 'click', function() {
 	bash( [ 'confget', 'rotaryencoder', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, message      : gpiosvg
 			, list         : [
 				  [ 'CLK',  'select', board2bcm ]
@@ -898,8 +884,7 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 			, 'SH1106 SPI'  : 7
 		}
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [
 				  [ 'Controller', 'select', chip ]
 				, [ 'Refresh',    'select', { kv: [ 800000, 1000000, 1200000 ], suffix: 'baud' } ]
@@ -934,8 +919,7 @@ $( '#setting-tft' ).on( 'click', function() {
 		}
 		var buttoncalibrate = S.tft && ! S.tftreboot;
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [ 'Type', 'select', type ]
 			, values       : values
 			, checkchanged : S.tft
@@ -943,8 +927,7 @@ $( '#setting-tft' ).on( 'click', function() {
 			, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
 			, button       : ! buttoncalibrate ? '' : () => {
 				info( {
-					  icon    : SW.icon
-					, title   : SW.title
+					  ...SW
 					, message : 'Calibrate touchscreen?'
 								+'<br>(Get stylus ready.)'
 					, ok      : () => {
@@ -964,8 +947,7 @@ $( '#setting-vuled' ).on( 'click', function() {
 		var leds   = Object.keys( values ).length + 1;
 		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', board2bcm ] );
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, message      : gpiosvg
 			, list         : list
 			, values       : values
@@ -1020,8 +1002,7 @@ $( '#hostname' ).on( 'click', function( e ) {
 	SW.icon  = 'system';
 	SW.title = 'Player Name';
 	info( {
-		  icon         : SW.icon
-		, title        : SW.title
+		  ...SW
 		, list         : [ 'Name', 'text' ]
 		, values       : S.hostname
 		, checkblank   : true
@@ -1059,8 +1040,7 @@ $( '#setting-timezone' ).on( 'click', function() {
 $( '#setting-soundprofile' ).on( 'click', function() {
 	bash( [ 'confget', 'soundprofile', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [ 
 				  [ 'Swappiness',            'number' ]
 				, [ 'Max Transmission Unit', 'number', { suffix: 'byte' } ]
@@ -1082,8 +1062,7 @@ $( '#backup' ).on( 'click', function() {
 	var date  = '0'+ d.getDate();
 	var ymd   = d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
 	info( {
-		  icon    : SW.icon
-		, title   : SW.title
+		  ...SW
 		, message : 'Save all data and settings'
 		, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
 		, values  : 'rAudio_backup-'+ ymd
@@ -1113,8 +1092,7 @@ $( '#backup' ).on( 'click', function() {
 						} );
 				} else {
 					info( {
-						  icon    : SW.icon
-						, title   : SW.title
+						  ...SW
 						, message : 'Backup failed.'
 					} );
 					bannerHide();
@@ -1133,8 +1111,7 @@ $( '#shareddata' ).on( 'click', function() {
 	
 	if ( S.shareddata ) {
 		info( {
-			  icon    : SW.icon
-			, title   : SW.title
+			  ...SW
 			, message : 'Disable and restore local data?'
 			, cancel  : () => $this.prop( 'checked', true )
 			, okcolor : orange

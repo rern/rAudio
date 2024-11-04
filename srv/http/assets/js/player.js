@@ -8,8 +8,7 @@ var setting  = {
 			setting.noVolumeSet();
 		} else {
 			info( {
-				  icon    : SW.icon
-				, title   : SW.title
+				  ...SW
 				, message : warning
 				, cancel  : switchCancel
 				, ok      : setting.noVolumeSet
@@ -22,8 +21,7 @@ var setting  = {
 			if ( ! S.custom ) return
 			
 			info( {
-				  icon    : SW.icon
-				, title   : SW.title
+				  ...SW
 				, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
 							+'<br>Remove any volume related settings.'
 			} );
@@ -33,8 +31,7 @@ var setting  = {
 		bash( [ 'confget', 'soxr', 'CMD NAME' ], values => {
 			delete values.PLUGIN;
 			info( {
-				  icon         : SW.icon
-				, title        : SW.title
+				  ...SW
 				, tablabel     : [ 'Presets', 'Custom' ]
 				, tab          : [ '', setting.soxrCustom ]
 				, list         : [
@@ -62,8 +59,7 @@ var setting  = {
 				, 'Variable rate'    : 32
 			}
 			info( {
-				  icon         : SW.icon
-				, title        : SW.title
+				  ...SW
 				, tablabel     : [ 'Presets', 'Custom' ]
 				, tab          : [ setting.soxr, '' ]
 				, list         : [
@@ -190,7 +186,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 	}
 	info( {
 		  icon       : SW.icon
-		, title      : 'Volume Control'
+		, title      : 'Mixer Volume'
 		, list       : [ control, 'range' ]
 		, values     : S.volume
 		, prompt     : '<br>'+ warning
@@ -252,8 +248,7 @@ $( '#mixertype' ).on( 'click', function() {
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
 	info( {
-		  icon    : SW.icon
-		, title   : 'Volume Type'
+		  ...SW
 		, list    : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
 		, values  : S.mixertype ? S.output.mixertype : 'hardware'
 		, cancel  : switchCancel
@@ -271,8 +266,7 @@ $( '#novolume' ).on( 'click', function( e ) {
 		} );
 	} else if ( S.camilladsp || S.equalizer ) {
 		info( {
-			  icon    : SW.icon
-			, title   : SW.title
+			  ...SW
 			, message :  '<wh>No Volume</wh> also disable:<br><br>'
 						+ icoTab( 'Features' )
 						+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
@@ -293,8 +287,7 @@ $( '#dop' ).on( 'click', function() {
 $( '#setting-crossfade' ).on( 'click', function() {
 	bash( [ 'confget', 'crossfade', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [ 'Seconds', 'number', { updn: { step: 1, min: 0, max: 10 } } ]
 			, boxwidth     : 70
 			, values       : values
@@ -309,8 +302,7 @@ $( '#setting-replaygain' ).on( 'click', function() {
 	bash( [ 'confget', 'replaygain', 'CMD NAME' ], values => {
 		if ( S.output.mixertype !== 'software' || ! S.mixers ) delete values.HARDWARE;
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [ '', 'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' }, sameline: false } ]
 			, footer       : values.HARDWARE ? '<label><input type="checkbox"><wh>Gain control by Mixer Device</wh></label>' : ''
 			, values       : values
@@ -336,8 +328,7 @@ $( '#ffmpegfiletype' ).on( 'click', function() {
 $( '#setting-buffer' ).on( 'click', function() {
 	bash( [ 'confget', 'buffer', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, message      : '<c>audio_buffer_size</c>'
 			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 40960 } } ]
 			, boxwidth     : 110
@@ -351,8 +342,7 @@ $( '#setting-buffer' ).on( 'click', function() {
 $( '#setting-outputbuffer' ).on( 'click', function() {
 	bash( [ 'confget', 'outputbuffer', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, message      : '<c>max_output_buffer_size</c>'
 			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 8192, max: 81920 } } ]
 			, boxwidth     : 110
@@ -389,8 +379,7 @@ audio_output {
 		var global = val[ 0 ].trim(); // remove trailing
 		var output = val[ 1 ].trim();
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : htmllist
 			, boxwidth     : 370
 			, values       : [ global, output ]
@@ -411,8 +400,7 @@ audio_output {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
-							  icon    : SW.icon
-							, title   : SW.title
+							  ...SW
 							, message : 'MPD failed with the added lines'
 										+'<br>Restored to previous configurations.'
 						} );

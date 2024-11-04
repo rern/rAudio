@@ -2,8 +2,7 @@ var setting = {
 	spotify : () => {
 		if ( S.camilladsp ) {
 			info( {
-				  icon     : SW.icon
-				, title    : SW.title
+				  ...SW
 				, message  : icoLabel( 'DSP', 'camilladsp' ) +' is currently set as output device'
 			} );
 			return
@@ -11,8 +10,7 @@ var setting = {
 		
 		bash( [ 'confget', 'spotify' ], data => {
 			info( {
-				  icon         : SW.icon
-				, title        : SW.title
+				  ...SW
 				, tablabel     : [ 'Output', 'Client Keys' ]
 				, tab          : [ '', setting.spotifyKeys ]
 				, list         : [ 'Device', 'select', data.devices ]
@@ -29,8 +27,7 @@ var setting = {
 	}
 	, spotifyKeys : () => {
 		info( {
-			  icon     : SW.icon
-			, title    : SW.title
+			  ...SW
 			, tablabel : [ 'Output', 'Client Keys' ]
 			, tab      : [ setting.spotify, '' ]
 			, message  : 'Remove client <wh>ID</wh> and <wh>Secret</wh> ?'
@@ -46,8 +43,7 @@ var setting = {
 function passwordWrong() {
 	bannerHide();
 	info( {
-		  icon    : SW.icon
-		, title   : SW.title
+		  ...SW
 		, message : 'Wrong existing password.'
 	} );
 	$( '#login' ).prop( 'checked', S.login );
@@ -129,8 +125,7 @@ $( '#setting-snapclient' ).on( 'click', function() {
 		} else {
 			delete V.bannerdelay;
 			info( {
-				  icon    : SW.icon
-				, title   : SW.title
+				  ...SW
 				, message : '<a class="helpmenu label">SnapServer<i class="i-snapcast"></i></a> not available.'
 			} );
 		}
@@ -153,8 +148,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		}
 		
 		info( {
-			  icon        : SW.icon
-			, title       : SW.title
+			  ...SW
 			, list        : [
 				  [ 'ID',     'text' ]
 				, [ 'Secret', 'text' ]
@@ -193,8 +187,7 @@ $( '#setting-snapserver' ).on( 'click', function() {
 $( '#setting-ap' ).on( 'click', function() {
 	bash( [ 'confget', 'ap', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, footer       : '(8 characters or more)'
 			, list         : [
 				  [ 'IP',       'text' ]
@@ -213,8 +206,7 @@ $( '#setting-ap' ).on( 'click', function() {
 $( '#setting-autoplay' ).on( 'click', function() {
 	bash( [ 'confget', 'autoplay', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [
 				  [ 'Bluetooth connected',        'checkbox' ]
 				, [ 'Power on <gr>/ Reboot</gr>', 'checkbox' ]
@@ -232,8 +224,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		var footer = values.BRIGHTNESS ? ico( 'gear', 'brightness', 'tabindex' ) +'Brightness&emsp;' : '';
 		footer    += ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [
 				  [ 'Rotation',                  'select', { kv: { Normal: 0, '90° CW': 90, '90° CCW': 270, '180°': 180 }, nosort: true } ]
 				, [ 'Zoom <gr>(%)</gr>',         'number', { updn: { step: 5, min: 50, max: 300 } } ]
@@ -261,8 +252,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 				$( '.infofooter' ).on( 'click', 'input', function() {
 					switchCancel();
 					info( {
-						  icon         : SW.icon
-						, title        : SW.title
+						  ...SW
 						, list        : [ 'Brightness', 'range' ]
 						, values      : S.brightness
 						, beforeshow  : () => {
@@ -287,8 +277,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 $( '#setting-smb' ).on( 'click', function() {
 	bash( [ 'confget', 'smb', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, message      : '<wh>Write</wh> permission:'
 			, list         : [
 				  [ '<gr>/mnt/MPD/</gr>SD',  'checkbox' ]
@@ -304,8 +293,7 @@ $( '#setting-smb' ).on( 'click', function() {
 $( '#setting-lyrics' ).on( 'click', function() {
 	bash( [ 'confget', 'lyrics', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [
 				  [ 'URL',             'text' ]
 				, [ 'Start tag',       'text' ]
@@ -347,8 +335,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 			return [ ...Array( ar.length ).keys() ].filter( ( i, el ) => el % 2 )
 		}
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : list
 			, boxwidth     : 160
 			, values       : values
@@ -410,8 +397,7 @@ $( '#login' ).on( 'click', function() {
 		$( '#setting-login' ).trigger( 'click' );
 	} else {
 		info( {
-			  icon       : SW.icon
-			, title      : SW.title
+			  ...SW
 			, message    : 'Disable:'
 			, list       : [ 'Password', 'password' ]
 			, checkblank : true
@@ -431,8 +417,7 @@ $( '#login' ).on( 'click', function() {
 } );
 $( '#setting-login' ).on( 'click', function() {
 	info( {
-		  icon       : SW.icon
-		, title      : SW.title
+		  ...SW
 		, list       : [
 			  [ S.login ? 'Existing' : 'Password', 'password' ]
 			, [ 'New',                             S.login ? 'password' : 'hidden' ]
@@ -454,8 +439,7 @@ $( '#setting-scrobble' ).on( 'click', function() {
 	if ( S.scrobblekey ) {
 		bash( [ 'confget', 'scrobble', 'CMD NAME' ], values => {
 			info( {
-				  icon         : SW.icon
-				, title        : SW.title
+				  ...SW
 				, list         : [
 					  [ ico( 'airplay' ) +'AirPlay',        'checkbox' ]
 					, [ ico( 'bluetooth' ) +'Bluetooth',    'checkbox' ]
@@ -483,8 +467,7 @@ $( '#setting-scrobble' ).on( 'click', function() {
 		}, 'json' );
 	} else {
 		info( {
-			  icon    : SW.icon
-			, title   : SW.title
+			  ...SW
 			, message : 'Open <wh>Last.fm</wh> for authorization?'
 			, cancel  : switchCancel
 			, ok      : () => { // api account page: https://www.last.fm/api/accounts
@@ -498,8 +481,7 @@ $( '#setting-scrobble' ).on( 'click', function() {
 $( '#setting-stoptimer' ).on( 'click', function() {
 	bash( [ 'confget', 'stoptimer', 'CMD NAME' ], values => {
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [
 				  [ 'Minutes',           'number', { updn: { step: 5, min: 5, max: 120 } } ]
 				, [ 'Power off on stop', 'checkbox' ]
@@ -517,8 +499,7 @@ $( '#setting-volumelimit' ).on( 'click', function() {
 	bash( [ 'confget', 'volumelimit', 'CMD NAME' ], values => {
 		var param = { updn: { step: 1, min: 0, max: 100, enable: true, link: true } }
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : [
 				  [ 'Startup default', 'number', param ]
 				, [ 'Maximum limit',   'number', param ]

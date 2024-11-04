@@ -1471,16 +1471,6 @@ $( '#debug' ).press( function() {
 	} );
 } );
 $( '.page-icon' ).press( () => location.reload() );
-$( '.col-r .switch' ).press( function( e ) {
-	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
-		$( '#setting-'+ e.target.id ).trigger( 'click' );
-		return
-	}
-	
-	switchIdIconTitle( e.target.id );
-	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
-	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
-} );
 $( '#data' ).on( 'click', '.copy', function() {
 	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
 	// copy2clipboard - for non https which cannot use clipboard API
