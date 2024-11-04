@@ -1508,8 +1508,7 @@ var setting   = {
 		if ( profile ) values.profile = profile;
 		if ( current ) $.each( DEV.resampler, ( k, v ) => values[ k ] = v );
 		info( {
-			  icon         : V.tab
-			, title        : SW.title
+			  ...SW
 			, list         : list
 			, boxwidth     : 160
 			, values       : values
@@ -2524,8 +2523,7 @@ $( '#config' ).on( 'click', '.i-add', function() {
 $( '.switch' ).on( 'click', function() {
 	if ( $( this ).hasClass( 'disabled' ) ) {
 		info( {
-			  icon    : SW.icon
-			, title   : SW.title
+			  ...SW
 			, message : $( this ).prev().html()
 		} );
 		return
@@ -2545,8 +2543,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	var $this = $( this );
 	if ( $this.siblings( 'input' ).hasClass( 'disabled' ) ) {
 		info( {
-			  icon    : V.tab
-			, title   : SW.title
+			  ...SW
 			, message : 'Resampler type is <wh>Synchronous</wh>'
 		} );
 		switchCancel();
@@ -2555,8 +2552,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	
 	var enabled = S.enable_rate_adjust;
 	info( {
-		  icon         : V.tab
-		, title        : SW.title
+		  ...SW
 		, list         : [
 			  [ 'Adjust period', 'number' ]
 			, [ 'Target level', 'number' ]
@@ -2579,8 +2575,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 $( '#setting-capture_samplerate' ).on( 'click', function() {
 	var enabled = S.capture_samplerate;
 	info( {
-		  icon         : V.tab
-		, title        : SW.title
+		  ...SW
 		, list         : Dlist.capture_samplerate
 		, boxwidth     : 120
 		, values       : [ DEV.capture_samplerate ]
@@ -2596,8 +2591,7 @@ $( '#setting-capture_samplerate' ).on( 'click', function() {
 $( '#setting-stop_on_rate_change' ).on( 'click', function() {
 	var enabled = S.stop_on_rate_change;
 	info( {
-		  icon         : V.tab
-		, title        : SW.title
+		  ...SW
 		, list         : [ 'Rate mearsure interval', 'number' ]
 		, boxwidth     : 65
 		, values       : DEV.rate_measure_interval

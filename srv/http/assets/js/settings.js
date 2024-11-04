@@ -471,10 +471,16 @@ $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();
-	id = this.id.replace( 'setting-', '' );
+	var id   = this.id.replace( 'setting-', '' );
+	var icon = id;
+	if ( page === 'player' ) {
+		icon = 'mpd';
+	} else if ( page === 'camilla' ) {
+		icon = V.tab || 'camilladsp';
+	}
 	SW = {
 		  id    : id
-		, icon  : page === 'player' ? 'mpd' : id
+		, icon  : icon
 		, title : $( '#div'+ id +' .col-l .label' ).text()
 	}
 } );
