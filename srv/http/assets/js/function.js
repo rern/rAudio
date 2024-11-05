@@ -1097,10 +1097,11 @@ function playlistRemoveRange( range ) {
 			$( '#infoList td:nth-child( 2 )' ).css( { 'padding-right': '5px', 'text-align': 'right' } );
 			$( '#infoList' ).on( 'click', '.i-cursor', function() {
 				V.plrange      = infoVal();
-				V.plrange.type = $( this ).parents( 'tr' ).index() === 0 ? 'from' : 'to';
+				var type       = $( this ).parents( 'tr' ).index() === 0 ? 'from' : 'to';
+				V.plrange.type = type;
 				$( '#infoOverlay' ).addClass( 'hide' );
 				$disabled.addClass( 'disabled' );
-				banner( 'cursor blink', 'Playlist', 'Select Range', -1 );
+				banner( 'cursor blink', 'Playlist', 'Select range '+ type +' ...', -1 );
 			} );
 		}
 		, cancel     : clear
