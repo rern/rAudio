@@ -151,10 +151,6 @@ heading + .helpblock {
 #infoList p i {
 	width: 40px;
 }
-/*.helpmenu.label i {
-	margin: 0 0 0 8px;
-	vertical-align: 0 !important;
-}*/
 .helpmenu .sub {
 	float: right;
 	margin-left: 0 !important;
