@@ -319,7 +319,7 @@ function savedPlaylistAdd() {
 		, ok         : () => {
 			if ( ! V.playlist ) playlistGet();
 			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
-			banner( V.pladd.icon, V.pladd.title, 'Choose target playlist', -1 );
+			banner( 'cursor blink', V.pladd.title, 'Choose target playlist', -1 );
 			$( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
 		}
 	} );

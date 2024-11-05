@@ -1078,9 +1078,11 @@ function playlistRemove( $li ) {
 	$li.remove();
 }
 function playlistRemoveRange( range ) {
+	var $disabled = $( '#bar-top, #bar-bottom, .content-top' );
 	var clear = () => {
 		delete V.plrange;
-		$( '#bar-top, #bar-bottom, .content-top' ).removeClass( 'disabled' );
+		$disabled.removeClass( 'disabled' );
+		bannerHide();
 	}
 	var param = { updn: { step: 1, min: 1, max: S.pllength, link: true } }
 	info( {
@@ -1096,6 +1098,8 @@ function playlistRemoveRange( range ) {
 				V.plrange      = infoVal();
 				V.plrange.type = $( this ).parents( 'tr' ).index() === 0 ? 'from' : 'to';
 				$( '#infoOverlay' ).addClass( 'hide' );
+				$disabled.addClass( 'disabled' );
+				banner( 'cursor blink', 'Playlist', 'Select Range', -1 );
 			} );
 		}
 		, cancel     : clear

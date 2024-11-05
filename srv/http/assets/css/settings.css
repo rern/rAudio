@@ -512,7 +512,7 @@ input.disabled + .switchlabel:after {
 	line-height: 26px;
 }
 .col-l i {
-	width: 30px;
+	margin-left: 8px;
 	vertical-align: 5px;
 	font-size: 22px;
 	line-height: 18px;

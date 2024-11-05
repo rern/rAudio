@@ -19,7 +19,7 @@ V = {   // var global
 };
 [ 'bioartist',     'query' ].forEach(                                                     k => V[ k ] = [] );
 [ 'interval',      'list',         'scrolltop',   'status' ].forEach(                     k => V[ k ] = {} );
-[ 'guide',         'library',      'librarylist', 'local', 'pladd', 'playlist' ].forEach( k => V[ k ] = false );
+[ 'guide',         'library',      'librarylist', 'local', 'playlist' ].forEach( k => V[ k ] = false );
 [ 'lyrics',        'lyricsartist', 'mode' ].forEach(                                      k => V[ k ] = '' );
 [ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0 );
 [ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true );

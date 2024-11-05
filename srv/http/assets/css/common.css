@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1730773876' );
+	src         : url( '/assets/fonts/rern.woff2?v=1730773879' );
 }
 @font-face {
 	font-family : Lato;
@@ -387,7 +387,6 @@ code {
 }
 
 /* banner() */
-#banner .i-firefox::before { color: #000 }
 #banner {
 	position: fixed;
 	min-width: 230px;
