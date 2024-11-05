@@ -227,7 +227,8 @@ i.map.disabled, .map.disabled i {
 }
 #bar-top.disabled,
 #bar-bottom.disabled,
-.content-top.disabled {
+.content-top.disabled,
+#page-playlist .index {
 	opacity: 0.5;
 }
 /* ---------------------- bars ----------------------*/

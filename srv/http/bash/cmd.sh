@@ -123,6 +123,8 @@ pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
 }
 pushSavedPlaylist() {
+	[[ ! $( ls $dirdata/playlist ) ]] && pushData savedplaylist -1 && exit
+# --------------------------------------------------------------------
 	pushData savedplaylist $( php /srv/http/playlist.php list )
 }
 radioStop() {

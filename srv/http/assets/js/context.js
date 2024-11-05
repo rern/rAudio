@@ -213,7 +213,10 @@ function playlistDelete() {
 				   +'<br><wh>'+ V.list.name +'</wh>'
 		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
-		, ok      : () => bash( [ 'savedpldelete', V.list.name, 'CMD NAME' ] )
+		, ok      : () => {
+			bash( [ 'savedpldelete', V.list.name, 'CMD NAME' ] );
+			V.list.li.remove();
+		}
 	} );
 }
 function playlistLoad( name, play, replace ) {

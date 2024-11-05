@@ -293,10 +293,15 @@ function psRestore( data ) {
 }
 function psSavedPlaylists( data ) {
 	savedPlaylistAddClear();
+	if ( V.playlistlist && data == -1 ) {
+		$( '#playlist' ).trigger( 'click' );
+		return
+	}
+	
 	var count   = data.count;
 	C.playlists = count;
 	if ( V.playlistlist ) {
-		count ? renderSavedPl( data ) : $( '#playlist' ).trigger( 'click' );
+		renderSavedPl( data );
 	} else if ( V.playlisttrack ) {
 		if ( 'delete' in data && $( '#savedpl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 	}
