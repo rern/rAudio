@@ -44,7 +44,7 @@ function bio( artist, getsimilar ) {
 		var biohtml = `
 <div class="container" tabindex="0">
 <div id="biocontent">
-	<p class="artist">${ ico( 'close close-root' ) + name }</p>
+	<p class="artist">${ ico( 'close close-root' ) +'<a>'+ name +'</a>' }</p>
 	<p class="genre">${ backhtml + ico( 'genre' ) +'&ensp;'+ genre }</p>
 	${ similarhtml }
 	<p>${ content }</p>
@@ -1606,7 +1606,6 @@ function setCoverart() {
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
 				.attr( 'src', coverart + versionHash() )
-				.css( 'max-height', ( V.wH - $( '#playback-row' ).offset().top ) +'px' )
 				.removeClass( 'hide' );
 		} else {
 			coverartDefault();
