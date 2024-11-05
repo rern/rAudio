@@ -612,13 +612,13 @@ mpcremove )
 # --------------------------------------------------------------------
 	songpos=$( mpc status %songpos% )
 	pllength=$( mpc status %length% )
-	if [[ $END && $END != $POS ]]; then
-		if (( $songpos >= $POS && $songpos <= $END )); then
-			[[ $pllength == $END ]] && next=$(( POS -1 )) || next=$(( END + 1 ))
+	if [[ $TO ]]; then
+		if (( $songpos >= $POS && $songpos <= $TO )); then
+			[[ $pllength == $TO ]] && next=$(( POS -1 )) || next=$(( END + 1 ))
 			mpc -q play $next
 			mpc -q stop
 		fi
-		for (( i=$END; i >= $POS; i-- )); do
+		for (( i=$TO; i >= $POS; i-- )); do
 			mpc -q del $i
 		done
 		pushPlaylist

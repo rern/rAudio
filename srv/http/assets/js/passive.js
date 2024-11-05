@@ -292,6 +292,7 @@ function psRestore( data ) {
 	}
 }
 function psSavedPlaylists( data ) {
+	savedPlaylistAddClear();
 	var count   = data.count;
 	C.playlists = count;
 	if ( V.playlistlist ) {

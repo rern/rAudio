@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1730724672' );
+	src         : url( '/assets/fonts/rern.woff2?v=1730773876' );
 }
 @font-face {
 	font-family : Lato;
@@ -85,6 +85,7 @@ i {
 .i-coverart::before        { content: '\F58A'; position: absolute; }
 .i-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 40%; text-shadow: none; }
 .i-crop::before            { content: '\F568' }
+.i-cursor::before          { content: '\F56E' }
 .i-dabradio::before        { content: '\F589' }
 .i-dabupdate::before       { content: '\F589' }
 .i-date::before            { content: '\F55C' }
@@ -554,7 +555,8 @@ input[ type=checkbox ] {
 .infobtn-default {
 	background-color: var( --cg );
 }
-.disabled {
+.disabled,
+.disabled * {
 	color: var( --cg60 ) !important;
 	pointer-events: none;
 }

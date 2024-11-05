@@ -310,18 +310,23 @@ function savedPlaylistAdd() {
 		, message : message
 	}
 	info( {
-		  keyvalue   : V.pladd
-		, footer     : '<hr><wh>Choose target playlist</wh>'
+		  ...V.pladd
 		, beforeshow : () => {
 			$( '.infofooter' ).css( { width: '100%', 'padding-top': 0 } );
 			playlistInsertSet();
 		}
+		, oklabel    : ico( 'cursor' ) +'Target'
 		, ok         : () => {
 			if ( ! V.playlist ) playlistGet();
 			setTimeout( () => $( '#button-pl-playlists' ).trigger( 'click' ), 100 );
 			banner( V.pladd.icon, V.pladd.title, 'Choose target playlist', -1 );
+			$( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
 		}
 	} );
+}
+function savedPlaylistAddClear() {
+	delete V.pladd;
+	$( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).removeClass( 'disabled' );
 }
 function savedPlaylistRemove() {
 	local();

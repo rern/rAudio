@@ -175,8 +175,6 @@ $( '#button-data' ).on( 'click', function() {
 	$( '#button-data, #data' ).addClass( 'hide' );
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
-	delete V.pladd;
-	delete V.plrange;
 	e.stopPropagation();
 	if ( D.loginsetting ) {
 		info( {
@@ -474,7 +472,6 @@ $( '#playback' ).on( 'click', function() {
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
-	if ( ! V.local ) delete V.pladd;
 	if ( V.playlist ) {
 		if ( ! V.playlisthome ) playlistGet();
 	} else {
@@ -1631,7 +1628,6 @@ $( '.page' ).on( 'click', 'a.indexed', function() {
 $( '#button-pl-back' ).on( 'click', function() {
 	if ( 'pladd' in V ) {
 		I.active  = false;
-		delete V.pladd;
 		playlistGet();
 		bannerHide();
 	} else {
@@ -1698,10 +1694,10 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			  icon       : 'playlist'
 			, title      : 'Remove From Playlist'
 			, list       : [
-				  [ '', 'radio', { kv: { '<i class="i-remove"></i>    <gr>Select ...</gr>' : 'select' } } ]
-				, [ '', 'radio', { kv: { '<i class="i-track"></i>     <gr>Range ...</gr>'  : 'range'  } } ]
-				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   <gr>Crop</gr>'       : 'crop'   } } ]
-				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> <gr>All</gr>'        : 'all'    } } ]
+				  [ '', 'radio', { kv: { '<i class="i-cursor"></i>    Select ...' : 'select' } } ]
+				, [ '', 'radio', { kv: { '<i class="i-track"></i>     Range ...'  : 'range'  } } ]
+				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   Crop'       : 'crop'   } } ]
+				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> All'        : 'all'    } } ]
 			]
 			, beforeshow : () => {
 				$( '#infoList input:checked' ).prop( 'checked', false );
@@ -1818,15 +1814,15 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		delete V.plrange.type;
 		var pos           = $( this ).index() + 1;
 		V.plrange[ type ] = pos;
-		if ( type === 'start' ) {
-			if ( pos >= V.plrange.end ) {
-				V.plrange.end = pos + 1;
-				if ( V.plrange.end >= S.pllength ) V.plrange = { start: S.pllength - 1, end: S.pllength }
+		if ( type === 'from' ) {
+			if ( pos >= V.plrange.to ) {
+				V.plrange.to = pos + 1;
+				if ( V.plrange.to >= S.pllength ) V.plrange = { from: S.pllength - 1, to: S.pllength }
 			}
 		} else {
-			if ( pos <= V.plrange.start ) {
-				V.plrange.start = pos - 1;
-				if ( V.plrange.start <= 1 ) V.plrange = { start: 1, end: 2 }
+			if ( pos <= V.plrange.from ) {
+				V.plrange.from = pos - 1;
+				if ( V.plrange.from <= 1 ) V.plrange = { from: 1, to: 2 }
 			}
 		}
 		playlistRemoveRange( V.plrange );

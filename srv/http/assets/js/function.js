@@ -1028,12 +1028,11 @@ function playlistInsert( pos ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
 		}
 		bannerHide();
-		delete V.pladd;
 	} );
 }
 function playlistInsertSelect() {
 	info( {
-		  keyvalue    : V.pladd
+		  ...V.pladd
 		, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
 		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
 		, beforeshow  : playlistInsertSet
@@ -1043,10 +1042,7 @@ function playlistInsertSelect() {
 			infoReset();
 			banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
 		}
-		, cancel      : () => {
-			delete V.pladd;
-			$( '#playlist' ).trigger( 'click' );
-		}
+		, cancel      : savedPlaylistAddClear
 		, ok          : () => playlistInsert( +infoVal() + V.pladd.index )
 	} );
 	bannerHide();
@@ -1058,7 +1054,7 @@ function playlistInsertSet() {
 function playlistInsertTarget() {
 	V.pladd.title = 'Add to '+ V.pladd.name;
 	info( {
-		  keyvalue   : V.pladd
+		  ...V.pladd
 		, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 		, values     : 'last'
 		, beforeshow : () => {
@@ -1068,10 +1064,7 @@ function playlistInsertTarget() {
 				banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
 			} );
 		}
-		, cancel     : () => {
-			delete V.pladd;
-			$( '#playlist' ).trigger( 'click' );
-		}
+		, cancel     : savedPlaylistAddClear
 		, ok         : () => playlistInsert( infoVal() )
 	} );
 	bannerHide();
@@ -1085,25 +1078,32 @@ function playlistRemove( $li ) {
 	$li.remove();
 }
 function playlistRemoveRange( range ) {
-	var param = { updn: { step: 1, min: 1, max: S.pllength, enable: true, link: true } }
+	var clear = () => {
+		delete V.plrange;
+		$( '#bar-top, #bar-bottom, .content-top' ).removeClass( 'disabled' );
+	}
+	var param = { updn: { step: 1, min: 1, max: S.pllength, link: true } }
 	info( {
 		  icon       : 'playlist'
 		, title      : 'Remove Range'
-		, list       : [ [ 'Start', 'number', param ], [ 'End', 'number', param ] ]
+		, list       : [ [ 'From', 'number', param ], [ 'To', 'number', param ] ]
 		, boxwidth   : 80
-		, values     : range || { start: 1, end: S.pllength }
+		, values     : range || { from: 1, to: S.pllength }
 		, beforeshow : () => {
-			$( '#infoList tr' ).prepend( '<td>'+ ico( 'current' ) +'</td>' );
-			$( '#infoList' ).on( 'click', '.i-current', function() {
+			$( '#infoList tr' ).prepend( '<td>'+ ico( 'cursor' ) +'</td>' );
+			$( '#infoList td:nth-child( 2 )' ).css( { 'padding-right': '5px', 'text-align': 'right' } );
+			$( '#infoList' ).on( 'click', '.i-cursor', function() {
 				V.plrange      = infoVal();
-				V.plrange.type = $( this ).parents( 'tr' ).index() === 0 ? 'start' : 'end';
+				V.plrange.type = $( this ).parents( 'tr' ).index() === 0 ? 'from' : 'to';
 				$( '#infoOverlay' ).addClass( 'hide' );
 			} );
 		}
-		, cancel     : () => delete V.plrange
+		, cancel     : clear
 		, ok         : () => {
-			console.log( [ 'mpcremove', ...infoVal( 'array' ), 'CMD POS END' ] );
-			delete V.plrange;
+			var v = infoVal( 'array' );
+			bash( [ 'mpcremove', ...v, 'CMD POS TO' ] );
+			$( '#pl-list li' ).slice( v[ 0 ] - 1, v[ 1 ] ).remove();
+			clear();
 		}
 	} );
 }
@@ -1424,6 +1424,8 @@ function renderPlaylistSet() {
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).removeClass( 'hide' );
 	}
 	renderPlaylistPadding();
+	if ( 'pladd' in V ) $( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
+
 }
 function renderSavedPl( data ) { // V.playlistlist - list of saved playlists
 	V.playlisthome  = false;
@@ -2019,8 +2021,6 @@ function switchPage( page ) {
 	}
 	$( '.page' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
-	if ( ! V.playlist ) delete V.pladd;
-	delete V.plrange;
 }
 function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )
