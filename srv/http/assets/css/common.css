@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1730773879' );
+	src         : url( '/assets/fonts/rern.woff2?v=1730773880' );
 }
 @font-face {
 	font-family : Lato;
@@ -204,7 +204,7 @@ i {
 .i-shift::before           { content: '\F606' }
 .i-shuffle::before         { content: '\F513' }
 .i-single::before          { content: '\F514' }
-.i-smb::before             { content: '\F56E' }
+.i-smb::before             { content: '\F58E' }
 .i-snapcast::before,
 .i-snapclient::before,
 .i-snapserver::before      { content: '\F587' }
