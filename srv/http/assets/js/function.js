@@ -1078,6 +1078,7 @@ function playlistRemove( $li ) {
 	$li.remove();
 }
 function playlistRemoveRange( range ) {
+	bannerHide();
 	var $disabled = $( '#bar-top, #bar-bottom, .content-top' );
 	var clear = () => {
 		delete V.plrange;

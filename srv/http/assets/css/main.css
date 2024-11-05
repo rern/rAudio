@@ -225,6 +225,11 @@ i.map.disabled, .map.disabled i {
 	-webkit-user-select: none;
 	user-select: none;
 }
+#bar-top.disabled,
+#bar-bottom.disabled,
+.content-top.disabled {
+	opacity: 0.5;
+}
 /* ---------------------- bars ----------------------*/
 #refresh {
 	position: fixed;
@@ -1346,7 +1351,6 @@ i.map.disabled, .map.disabled i {
 }
 .content-top a {
 	font-size: 18px;
-	color: var( --cw );
 }
 .button-webradio-new {
 	margin-left: 10px;
@@ -1382,7 +1386,7 @@ i.map.disabled, .map.disabled i {
 	margin: 0 0 0 15px;
 	font-size: 26px;
 	letter-spacing: 5px;
-	color: var( --cw ) !important;
+	color: var( --cw );
 }
 .lialbum,
 #button-pl-back,
