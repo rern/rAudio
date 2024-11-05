@@ -211,7 +211,6 @@ i.map.disabled, .map.disabled i {
 .list li *,
 .scrollellipse,
 .tagmessage div,
-#biocontent .artist a,
 #lib-breadcrumbs,
 #lyricsartist,
 #lyricstitle {
@@ -1005,10 +1004,6 @@ i.map.disabled, .map.disabled i {
 	line-height: 50px;
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
-}
-#biocontent .artist a {
-	display: inline-block;
-	width: calc( 100% - 33px );
 }
 #biotitleimg {
 	width: 40px;
