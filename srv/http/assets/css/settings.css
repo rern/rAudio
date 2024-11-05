@@ -127,6 +127,7 @@ heading + .helpblock {
 	display: inline-block;
 	width: 125px;
 	height: 25px !important;
+	line-height: 25px;
 	padding-left: 3px;
 	background: var( --cg );
 }
@@ -150,10 +151,10 @@ heading + .helpblock {
 #infoList p i {
 	width: 40px;
 }
-.helpmenu.label i {
+/*.helpmenu.label i {
 	margin: 0 0 0 8px;
 	vertical-align: 0 !important;
-}
+}*/
 .helpmenu .sub {
 	float: right;
 	margin-left: 0 !important;
