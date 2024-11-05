@@ -1000,8 +1000,9 @@ i.map.disabled, .map.disabled i {
 	top: 0;
 	width: 100%;
 	margin-bottom: 10px;
+	padding: 10px 0;
 	font-size: 30px;
-	line-height: 50px;
+	line-height: 30px;
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
 }
@@ -1020,6 +1021,9 @@ i.map.disabled, .map.disabled i {
 	font-size: 24px;
 	text-align: center;
 	color: var( --cm ) !important;
+}
+#biocontent .close-root {
+	margin-top: -5px;
 }
 #biocontent .bioback {
 	margin-top: -10px;
