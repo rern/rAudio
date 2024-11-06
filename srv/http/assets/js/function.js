@@ -1098,10 +1098,10 @@ function playlistRemoveRange( range ) {
 		, beforeshow : () => {
 			$( '#infoList td:first-child' ).on( 'click', function() {
 				V.plrange = infoVal();
-				V.range   = $( this ).text().trim();
+				V.rangei  = $( this ).parent().index();
 				$( '#infoOverlay' ).addClass( 'hide' );
 				$disabled.addClass( 'disabled' );
-				banner( 'cursor blink', 'Remove Range', V.range +': Select ...', -1 );
+				banner( 'cursor blink', 'Remove Range', ( V.rangei ? 'To' : 'From' ) +': Select ...', -1 );
 			} );
 		}
 		, cancel     : clear

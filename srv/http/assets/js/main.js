@@ -1810,14 +1810,11 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( 'plrange' in V ) {
-		var pos = $( this ).index() + 1;
-		if ( V.range === 'From' ) {
-			pos < V.plrange[ 1 ] ? V.plrange[ 0 ] = pos : V.plrange = [ pos, pos ];
-		} else {
-			pos > V.plrange[ 0 ] ? V.plrange[ 1 ] = pos : V.plrange = [ pos, pos ];
-		}
+		var pos     = $( this ).index() + 1;
+		var inrange = V.rangei ? pos > V.plrange[ 0 ] : pos < V.plrange[ 1 ];
+		inrange ? V.plrange[ V.rangei ] = pos : V.plrange = [ pos, pos ];
 		playlistRemoveRange( V.plrange );
-		delete V.range;
+		delete V.rangei;
 		return
 	}
 	
