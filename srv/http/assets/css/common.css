@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1730773880' );
+	src         : url( '/assets/fonts/rern.woff2?v=1730851906' );
 }
 @font-face {
 	font-family : Lato;
@@ -393,10 +393,11 @@ code {
 	max-width: 100%;
 	min-height: 47px;
 	bottom: 50px;
-	padding: 6px 130px 5px 35px;
-	line-height: 18px;
+	padding: 4px 130px 5px 35px;
+	line-height: 20px;
 	background: linear-gradient( to right, var( --cm ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% );
 }
+.ellipsis,
 .infoheader,
 .infomessage,
 .infofooter,
@@ -422,7 +423,7 @@ code {
 	width: 30px;
 	height: 100%;
 	font-size: 20px;
-	line-height: 28px;
+	line-height: 30px;
 	text-align: center;
 	background-color: var( --cg );
 }

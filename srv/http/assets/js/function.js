@@ -1059,8 +1059,8 @@ function playlistInsertTarget() {
 		, values     : 'last'
 		, beforeshow : () => {
 			playlistInsertSet();
-			$( '#infoList' ).on( 'click', 'label:eq( 1 )', function() {
-				infoReset();
+			$( '#infoList label' ).eq( 1 ).on( 'click', function() {
+				$( '#infoX' ).trigger( 'click' );
 				banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
 			} );
 		}
@@ -1095,13 +1095,13 @@ function playlistRemoveRange( range ) {
 		, beforeshow : () => {
 			$( '#infoList tr' ).prepend( '<td>'+ ico( 'cursor' ) +'</td>' );
 			$( '#infoList td:nth-child( 2 )' ).css( { 'padding-right': '5px', 'text-align': 'right' } );
-			$( '#infoList' ).on( 'click', '.i-cursor', function() {
+			$( '#infoList .i-cursor' ).on( 'click', function() {
 				V.plrange      = infoVal();
-				var type       = $( this ).parents( 'tr' ).index() === 0 ? 'from' : 'to';
-				V.plrange.type = type;
+				var type       = $( this ).parents( 'tr' ).index() === 0 ? 'From' : 'To';
+				V.plrange.type = type.toLowerCase();
 				$( '#infoOverlay' ).addClass( 'hide' );
 				$disabled.addClass( 'disabled' );
-				banner( 'cursor blink', 'Playlist', 'Select range '+ type +' ...', -1 );
+				banner( 'cursor blink', 'Remove Range', type +': Select ...', -1 );
 			} );
 		}
 		, cancel     : clear
