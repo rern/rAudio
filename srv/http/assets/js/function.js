@@ -708,19 +708,22 @@ function infoLibraryOption() {
 }
 function infoThumbnail( icon, message, path, subdir ) {
 	if ( ! path ) subdir = true;
-	var list = [ '', 'radio', { kv: { 'Only added or removed': '', 'Rebuild all': 'overwrite' }, sameline: false } ];
+	var list = [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ];
 	info( {
 		  icon    : icon
 		, title   : 'Update Thumbnails'
 		, message : message
 		, list    : subdir ? list : false
 		, ok      : () => {
-			$( 'body' ).append(
-				 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
-				+'<input type="hidden" name="path" value="'+ path +'">'
-				+'<input type="hidden" name="overwrite" value="'+ infoVal() +'">'
-				+'</form>'
-			);
+			var input   = {
+				  alias      : 'thumbnail'
+				, title      : 'Album Thumbnails'
+				, label      : 'Update'
+				, installurl : "/usr/bin/sudo /srv/http/bash/albumthumbnail.sh '"+ path +"' "+ infoVal()
+			}
+			var form    = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
+			$.each( input, ( k, v ) => form += '<input type="hidden" name="'+ [ k ] +'" value="'+ v +'">' );
+			$( 'body' ).append( form +'</form>' );
 			$( '#formtemp' ).submit();
 		}
 	} );

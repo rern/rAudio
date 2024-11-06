@@ -158,8 +158,7 @@ var setting = {
 }
 function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
-	var title = action[ 0 ].toUpperCase() + action.slice( 1 );
-	notify( icon, V.li.data( 'name' ), title +' ...', -1 );
+	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
 	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, V.li.data( 'mac' ), 'CMD ACTION MAC' ] );
 }
 function bluetoothInfo( mac ) {

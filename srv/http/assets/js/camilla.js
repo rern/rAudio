@@ -1733,7 +1733,7 @@ var common    = {
 	, list2array    : list => { // '1, 2, 3' > [ 1, 2, 3 ]
 		return list.replace( /[ \]\[]/g, '' ).split( ',' ).map( Number )
 	}
-	, tabTitle      : () => V.tab[ 0 ].toUpperCase() + V.tab.slice( 1 )
+	, tabTitle      : () => capitalize( V.tab )
 	, volumeAnimate : ( target, volume ) => {
 		var bandW = $( '#volume-band' ).width() - 40;
 		$( '#divvolume' ).css( 'pointer-events', 'none' );

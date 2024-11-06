@@ -5,19 +5,12 @@ $alias      = $_POST[ 'alias' ] ?? '';
 $branch     = $_POST[ 'branch' ] ?? '';
 $installurl = $_POST[ 'installurl' ] ?? '';
 $label      = $_POST[ 'label' ];
-$postinfo   = $_POST[ 'postinfo' ] ?? '';
 $opt        = $_POST[ 'opt' ] ?? '';
 $title      = $_POST[ 'title' ];
 $uninstall  = $_POST[ 'uninstall' ] ?? '';
-$hrefback   = 'settings.php?p=addons';
+$backhref   = $alias === 'thumbnail' ? '/' : 'settings.php?p=addons';
 $postmsg    = $label.' done.';
-$postmsg   .= $postinfo ? '<br><br><i class="i-addons wh"></i>'.$postinfo : '';
-$thumbnail  = ! $alias;
-if ( $thumbnail ) {
-	$label     = 'Update';
-	$title     = 'Album Thumbnails';
-	$hrefback  = '/';
-}
+if ( isset( $_POST[ 'postinfo' ] ) ) $postmsg.= '<br><br><i class="i-addons wh"></i>'.$_POST[ 'postinfo' ];
 ?>
 
 <style>
@@ -74,14 +67,14 @@ pre hr.hrlight {
 <p class="addontitle gr"><i class="titleicon i-gear blink"></i>&ensp;<wh><?=$title?></wh> - <?=$label?> ...</p>
 <pre class="progress">
 <script> // js must be here before php flush start
-//if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$hrefback?>' ); // on refresh page
+//if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$backhref?>' ); // on refresh page
 document.title = 'Addons';
 E      = {};
 [ 'close', 'container', 'info', 'infobtn', 'infox', 'progress', 'titleicon' ].forEach( ( el ) => {
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 E.container.classList.remove( 'hide' );
-E.close.addEventListener( 'click', () => location.href = '<?=$hrefback?>' );
+E.close.addEventListener( 'click', () => location.href = '<?=$backhref?>' );
 [ E.infobtn, E.infox ].forEach( el => el.addEventListener( 'click', () => E.info.remove() ) );
 scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
 document.body.addEventListener( 'keydown', e => {
@@ -98,8 +91,8 @@ document.body.addEventListener( 'keydown', e => {
 </script>
 <?php
 // ......................................................................................
-if ( $thumbnail ) {
-	$command    = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$_POST[ 'path' ].'" '.$_POST[ 'overwrite' ];
+if ( $alias === 'thumbnail' ) {
+	$command    = $installurl;
 	$commandtxt = $command;
 } else if ( $label === 'Uninstall' ) {
 	$command    = 'uninstall_'.$alias.'.sh';
