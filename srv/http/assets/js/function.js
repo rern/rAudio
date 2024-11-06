@@ -1092,15 +1092,13 @@ function playlistRemoveRange( range ) {
 	info( {
 		  icon       : 'playlist'
 		, title      : 'Remove Range'
-		, list       : [ [ 'From', 'number', param ], [ 'To', 'number', param ] ]
+		, list       : [ [ ico( 'cursor' ) +' From', 'number', param ], [ ico( 'cursor' ) + sp( 23 ) +'To', 'number', param ] ]
 		, boxwidth   : 80
 		, values     : range || [ 1, S.pllength ]
 		, beforeshow : () => {
-			$( '#infoList tr' ).prepend( '<td>'+ ico( 'cursor' ) +'</td>' );
-			$( '#infoList td:nth-child( 2 )' ).css( { 'padding-right': '5px', 'text-align': 'right' } );
-			$( '#infoList .i-cursor' ).on( 'click', function() {
+			$( '#infoList td:first-child' ).on( 'click', function() {
 				V.plrange = infoVal();
-				V.fromto  = $( this ).parents( 'tr' ).index() === 0 ? 'From' : 'To';
+				V.fromto  = $( this ).text().trim();
 				$( '#infoOverlay' ).addClass( 'hide' );
 				$disabled.addClass( 'disabled' );
 				banner( 'cursor blink', 'Remove Range', V.fromto +': Select ...', -1 );

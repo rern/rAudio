@@ -1123,6 +1123,9 @@ function qrCode( msg ) {
 	} );
 	return qr.outerHTML
 }
+function sp( px ) {
+	return '<sp style="width: '+ px +'px"></sp>'
+}
 
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
