@@ -703,10 +703,8 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
 		var mounted = list.size !== '';
-		$( '#menu .info' ).toggleClass( 'hide', ! list.info );
 		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
-		$( '#menu .sleep' ).toggleClass( 'hide', ! list.apm );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
 	contextMenu();
@@ -746,21 +744,31 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'sleep':
-			title = 'HDD Sleep';
-			info( {
-				  icon         : icon
-				, title        : title
-				, list         : [ 'Timeout <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 20 } } ]
-				, boxwidth     : 90
-				, footer       : '&emsp; &emsp;(0 = disabled)'
-				, values       : Math.round( list.apm * 5 / 60 )
-				, checkchanged : true
-				, ok           : () => {
-					var val = infoVal();
-					notify( icon, title, 'Change ...' );
-					bash( [ 'hddsleep', list.source, val ? val * 60 / 5 : 255, 'CMD DEV LEVEL' ] );
+			var dev = list.source;
+			title   = 'HDD Sleep';
+			bash( [ 'confget', 'hddapm', dev, 'CMD NAME DEV' ], apm => {
+				if ( ! apm ) {
+					info( {
+						  icon    : icon
+						, title   : title
+						, message : '<c>'+ dev +'</c> not support'
+					} );
+					return
 				}
-			} );
+				
+				info( {
+					  icon         : icon
+					, title        : title
+					, list         : [ 'Timeout <gr>(min)</gr>', 'number', { updn: { step: 1, min: 1, max: 20 } } ]
+					, boxwidth     : 90
+					, values       : apm
+					, checkchanged : true
+					, ok           : () => {
+						notify( icon, title, 'Change ...' );
+						bash( [ 'hddsleep', dev, infoVal() * 60 / 5, 'CMD DEV LEVEL' ] );
+					}
+				} );
+			}, 'json' );
 			break
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
@@ -786,13 +794,14 @@ $( '#setting-bluetooth' ).on( 'click', function() {
 } );
 $( '#setting-wlan' ).on( 'click', function() {
 	bash( [ 'confget', 'wlan', 'CMD NAME' ], values => {
-		var regdomlist = values.regdomlist;
+		var regdomlist  = values.regdomlist;
+		var accesspoint = 'Auto start Access Point<br>'+ sp( 30 ) +'<gr>(if not connected)</gr>';
 		delete values.regdomlist;
 		info( {
 			  ...SW
 			, list         : [
-				  [ 'Country'                                                              , 'select', regdomlist ]
-				, [ 'Auto start Access Point<br> &emsp; &emsp; <gr>(if not connected)</gr>', 'checkbox' ]
+				  [ 'Country',   'select', regdomlist ]
+				, [ accesspoint, 'checkbox' ]
 			]
 			, boxwidth     : 250
 			, values       : values

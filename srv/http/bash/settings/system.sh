@@ -138,6 +138,15 @@ confget )
 			bluetoothctl show | grep -q -m1 'Discoverable: yes' && discoverable=true || discoverable=false
 			echo '{ "DISCOVERABLE": '$discoverable', "FORMAT": '$( exists $dirsystem/btformat )' }'
 			;;
+		hddapm )
+			apm=$( hdparm -B $DEV )
+			if [[ $apm ]]; then
+				awk=$( awk '{print $NF}' <<< $apm )
+				echo $(( awk * 5 / 60 ))
+			else
+				echo false
+			fi
+			;;
 		lcdchar )
 			fileconf=$dirsystem/lcdchar.conf
 			if [[ -e $fileconf ]]; then
@@ -597,12 +606,17 @@ $( mmc $k read $dev )
 		echo "$data"
 	else
 		dev=$( tr -d 0-9 <<< $DEV )
-		echo -n "\
+		data="\
 <bll># lsblk -no vendor,model $dev</bll>
-$( lsblk -no vendor,model $dev )
-
+$( lsblk -no vendor,model $dev )"
+		param=$( hdparm -I $DEV )
+		if [[ $param ]]; then
+			data+="
+			
 <bll># hdparm -I $DEV</bll>
-$( hdparm -I $DEV | sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' )"
+$( sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' <<< $param )"
+		fi
+		echo "$data"
 	fi
 	;;
 tft )
