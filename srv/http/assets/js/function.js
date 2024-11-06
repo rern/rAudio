@@ -1094,17 +1094,16 @@ function playlistRemoveRange( range ) {
 		, title      : 'Remove Range'
 		, list       : [ [ 'From', 'number', param ], [ 'To', 'number', param ] ]
 		, boxwidth   : 80
-		, values     : range || { from: 1, to: S.pllength }
+		, values     : range || [ 1, S.pllength ]
 		, beforeshow : () => {
 			$( '#infoList tr' ).prepend( '<td>'+ ico( 'cursor' ) +'</td>' );
 			$( '#infoList td:nth-child( 2 )' ).css( { 'padding-right': '5px', 'text-align': 'right' } );
 			$( '#infoList .i-cursor' ).on( 'click', function() {
-				V.plrange      = infoVal();
-				var type       = $( this ).parents( 'tr' ).index() === 0 ? 'From' : 'To';
-				V.plrange.type = type.toLowerCase();
+				V.plrange = infoVal();
+				V.fromto  = $( this ).parents( 'tr' ).index() === 0 ? 'From' : 'To';
 				$( '#infoOverlay' ).addClass( 'hide' );
 				$disabled.addClass( 'disabled' );
-				banner( 'cursor blink', 'Remove Range', type +': Select ...', -1 );
+				banner( 'cursor blink', 'Remove Range', V.fromto +': Select ...', -1 );
 			} );
 		}
 		, cancel     : clear

@@ -1810,22 +1810,22 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( 'plrange' in V ) {
-		var type          = V.plrange.type;
-		delete V.plrange.type;
-		var pos           = $( this ).index() + 1;
-		V.plrange[ type ] = pos;
-		if ( type === 'from' ) {
-			if ( pos >= V.plrange.to ) {
-				V.plrange.to = pos + 1;
-				if ( V.plrange.to >= S.pllength ) V.plrange = { from: S.pllength - 1, to: S.pllength }
+		var pos = $( this ).index() + 1;
+		if ( V.fromto === 'From' ) {
+			if ( pos < V.plrange[ 1 ] ) {
+				V.plrange[ 0 ] = pos;
+			} else {
+				V.plrange = pos < S.pllength ? [ pos, pos + 1 ] : [ pos - 1, pos ];
 			}
 		} else {
-			if ( pos <= V.plrange.from ) {
-				V.plrange.from = pos - 1;
-				if ( V.plrange.from <= 1 ) V.plrange = { from: 1, to: 2 }
+			if ( pos > V.plrange[ 0 ] ) {
+				V.plrange[ 1 ] = pos;
+			} else {
+				V.plrange = pos > 1 ? [ pos - 1, pos ] : [ 1, 2 ];
 			}
 		}
 		playlistRemoveRange( V.plrange );
+		delete V.fromto;
 		return
 	}
 	
