@@ -125,8 +125,8 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 }
 
 $menu     = '<div id="contextmenu">'.$menu.'</div>';
-$ids      = [ 'random',   'repeat',    'single',    'repeat1', 'consume', 'librandom', 'mute'
-			, 'btsender', 'libupdate', 'dabupdate', 'addons',  'relays',  'stoptimer' ];
+$ids      = [ 'random', 'repeat',   'single',    'repeat1', 'consume', 'librandom'
+			, 'mute',   'btsender', 'libupdate', 'addons',  'relays',  'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) $modeicon.= i( $id.' hide', 'mi-'.$id );
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );

@@ -87,7 +87,6 @@ i {
 .i-crop::before            { content: '\F568' }
 .i-cursor::before          { content: '\F56E' }
 .i-dabradio::before        { content: '\F589' }
-.i-dabupdate::before       { content: '\F589' }
 .i-date::before            { content: '\F55C' }
 .i-devices::before,
 .i-i2s::before,
@@ -265,7 +264,6 @@ sp {
 @keyframes blinkopaque { 50% { opacity: 0 } }
 
 .blink,
-.i-dabupdate,
 .i-libupdate {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;

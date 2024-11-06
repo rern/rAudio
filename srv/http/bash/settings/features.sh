@@ -160,6 +160,10 @@ dabradio )
 	fi
 	pushRefresh
 	;;
+dabscan )
+	$dirbash/dab-scan.sh &> /dev/null &
+	notify dabradio 'DAB Radio' 'Scan ...'
+	;;
 equalizer )
 	enableFlagSet
 	pushData reload 1

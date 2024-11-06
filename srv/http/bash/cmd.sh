@@ -363,11 +363,6 @@ coverfileslimit )
 			| xargs rm -f --
 	done
 	;;
-dabscan )
-	touch $dirshm/updatingdab
-	$dirbash/dab-scan.sh &> /dev/null &
-	pushData mpdupdate '{ "type": "dabradio" }'
-	;;
 dirdelete )
 	[[ ! $CONFIRM && $( ls "$DIR" ) ]] && echo -1 && exit
 # --------------------------------------------------------------------

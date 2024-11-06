@@ -1026,13 +1026,6 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 } );
 $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
-} ).on( 'click', '.button-dab-refresh', function() {
-	info( {
-		  icon     : 'dabradio'
-		, title    : 'DAB Radio'
-		, message  : ( $( '#lib-list li' ).length ? 'Rescan' : 'Scan' ) +' digital radio stations?'
-		, ok       : () => bash( [ 'dabscan' ] )
-	} );
 } ).on( 'click', '.button-latest-clear', function() {
 	if ( V.librarytrack ) {
 		info( {

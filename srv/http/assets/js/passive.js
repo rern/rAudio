@@ -195,12 +195,11 @@ function psMpdUpdate( data ) {
 	}
 	
 	if ( 'type' in data ) {
-		data.type === 'mpd' ? S.updating_db = true : S.updatingdab = true;
+		if ( data.type === 'mpd' ) S.updating_db = true;
 	} else if ( 'stop' in data ) {
 		S.updating_db = false;
 	} else if ( 'done' in data ) {
 		S.updating_db = false;
-		S.updatingdab = false;
 		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		banner( 'refresh-library', 'Library Update', 'Done' );
 		if ( data.done === 'tageditor' ) {
@@ -279,8 +278,6 @@ function psRadioList( data ) {
 			playlistGet();
 		}
 	}
-	S.updatingdab = false;
-	$( '#mi-dabupdate' ).addClass( 'hide' );
 }
 function psRestore( data ) {
 	if ( data.restore === 'done' ) {

@@ -112,6 +112,17 @@ $( '.screenshot' ).on( 'click', function() {
 		, okno        : true
 	} );
 } );
+$( '#setting-dabradio' ).on( 'click', function() {
+	info( {
+		  icon    : SW.icon
+		, title   : SW.title
+		, message : 'Scan DAB radio stations.'
+		, ok      : () => {
+			bash( [ 'dabscan.sh' ] );
+			notify( SW.icon, SW.title, 'Scan ...', 3000 )
+		}
+	} );
+} );
 $( '#setting-snapclient' ).on( 'click', function() {
 	if ( S.snapserver ) {
 		$( '#setting-snapserver' ).trigger( 'click' );

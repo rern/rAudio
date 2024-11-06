@@ -1254,8 +1254,6 @@ function renderLibraryList( data ) { // V.librarylist
 		htmlpath += ico( 'add btntitle button-webradio-new' );
 	} else if ( V.mode === 'latest' ) {
 		htmlpath += ico( 'flash btntitle button-latest-clear' );
-	} else if ( V.mode === 'dabradio' ) {
-		htmlpath += root ? ico( 'refresh btntitle button-dab-refresh' ) : '';
 	}
 	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
@@ -1586,7 +1584,6 @@ function setButtonUpdating() {
 		$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}
-	$( '#mi-dabupdate' ).toggleClass( 'hide', ! S.updatingdab );
 }
 function setCoverart() {
 	if ( ! D.cover ) {

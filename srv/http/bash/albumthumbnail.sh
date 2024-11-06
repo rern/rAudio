@@ -1,7 +1,7 @@
 #!/bin/bash
 
 path=$1
-overwrite=$2
+[[ $2 == true ]] && overwrite=1
 fullpath="/mnt/MPD/$path"
 padw='<a class="cbw">  </a>'
 padg='<a class="cbg">  </a>'

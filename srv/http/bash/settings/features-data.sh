@@ -26,6 +26,9 @@ data+='
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )
 
 ##########
+[[ -e /usr/bin/mediamtx ]] && data+='
+, "dabradio"         : '$( timeout 1 rtl_test -t &> /dev/null && echo true )
+##########
 [[ -e $dirshm/wlan ]] && data+='
 , "wlan"             : true
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*$( < $dirshm/wlan )" && echo true )
