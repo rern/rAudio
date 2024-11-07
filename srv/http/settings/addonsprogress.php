@@ -7,7 +7,7 @@ $branch     = $_POST[ 'branch' ]     ?? '';
 $installurl = $_POST[ 'installurl' ] ?? '';
 $label      = $_POST[ 'label' ];
 $opt        = $_POST[ 'opt' ]        ?? '';
-$postinfo   = $_POST[ 'postinfo' ] ) ?? $label.' done.';
+$postinfo   = $_POST[ 'postinfo' ]   ?? $label.' done.';
 $title      = $_POST[ 'title' ];
 $uninstall  = $_POST[ 'uninstall' ]  ?? '';
 ?>
