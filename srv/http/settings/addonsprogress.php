@@ -6,10 +6,10 @@ $branch     = $_POST[ 'branch' ] ?? '';
 $installurl = $_POST[ 'installurl' ] ?? '';
 $label      = $_POST[ 'label' ];
 $opt        = $_POST[ 'opt' ] ?? '';
+$postinfo   = $_POST[ 'postinfo' ] ? $_POST[ 'postinfo' ] : $label.' done.';
 $title      = $_POST[ 'title' ];
 $uninstall  = $_POST[ 'uninstall' ] ?? '';
-$backhref   = $alias === 'thumbnail' ? '/' : 'settings.php?p=addons';
-$donemsg    = $_POST[ 'postinfo' ] ?? $label.' done.';
+$backhref   = $_POST[ 'backhref' ] ?? 'settings.php?p=addons';
 ?>
 
 <style>
@@ -58,7 +58,7 @@ pre hr.hrlight {
 		<div id="infoTopBg">
 			<div id="infoTop"><i class="i-addons"></i><a id="infoTitle"><?=$title?></a></div><i id="infoX" class="i-close infox"></i>
 		</div>
-		<div id="infoList"><div class="infomessage"><?=$donemsg?></div></div>
+		<div id="infoList"><div class="infomessage"><?=$postinfo?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
