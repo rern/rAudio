@@ -28,17 +28,17 @@ pre hr.hrlight {
 	border-top: none;
 }
 .progress {
-	display      : block;
-	max-height   : calc(100vh - 160px);
-	width        : 100%;
-	margin       : 10px 0 0 0;
-	padding-left : 10px;
-	tab-size     : 20px;
-	font-family  : Inconsolata;
-	line-height  : 20px;
-	background   : var( --cgd );
-	overflow     : auto;
-	user-select  : text;
+	display     : block;
+	max-height  : calc(100vh - 160px);
+	width       : 100%;
+	margin      : 10px 0 0 0;
+	padding     : 10px;
+	tab-size    : 20px;
+	font-family : Inconsolata;
+	line-height : 20px;
+	background  : var( --cgd );
+	overflow    : auto;
+	user-select : text;
 	-webkit-overflow-scrolling: touch;
 }
 .cbm  { background: var( --cml ); }

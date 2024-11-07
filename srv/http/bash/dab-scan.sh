@@ -2,10 +2,12 @@
 
 . /srv/http/bash/common.sh
 
-script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan &> /dev/null # capture /dev/tty to file
+echo
+script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan # capture /dev/tty to file
 if [[ ! -e $dirshm/dabscan ]] || ! grep -q ^audioservice $dirshm/dabscan; then
 	echo '
-<a class="cbr cw"> ! </a> No stations found.'
+<a class="cbr cw"> ! </a> No stations found.
+'
 	rm $dirshm/dabscan
 	exit
 # --------------------------------------------------------------------
