@@ -2,14 +2,14 @@
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
 $alias      = $_POST[ 'alias' ];
+$backhref   = $_POST[ 'backhref' ] ?? 'settings.php?p=addons';
 $branch     = $_POST[ 'branch' ] ?? '';
 $installurl = $_POST[ 'installurl' ] ?? '';
 $label      = $_POST[ 'label' ];
 $opt        = $_POST[ 'opt' ] ?? '';
-$postinfo   = $_POST[ 'postinfo' ] ? $_POST[ 'postinfo' ] : $label.' done.';
+$postinfo   = empty( $_POST[ 'postinfo' ] ) ? $label.' done.' : $_POST[ 'postinfo' ];
 $title      = $_POST[ 'title' ];
 $uninstall  = $_POST[ 'uninstall' ] ?? '';
-$backhref   = $_POST[ 'backhref' ] ?? 'settings.php?p=addons';
 ?>
 
 <style>
