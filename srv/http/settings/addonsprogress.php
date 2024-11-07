@@ -1,7 +1,7 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
-$alias      = $_POST[ 'alias' ] ?? '';
+$alias      = $_POST[ 'alias' ];
 $branch     = $_POST[ 'branch' ] ?? '';
 $installurl = $_POST[ 'installurl' ] ?? '';
 $label      = $_POST[ 'label' ];
@@ -9,8 +9,7 @@ $opt        = $_POST[ 'opt' ] ?? '';
 $title      = $_POST[ 'title' ];
 $uninstall  = $_POST[ 'uninstall' ] ?? '';
 $backhref   = $alias === 'thumbnail' ? '/' : 'settings.php?p=addons';
-$postmsg    = $label.' done.';
-if ( $_POST[ 'postinfo' ] ) $postmsg.= '<br><br><i class="i-addons wh"></i>'.$_POST[ 'postinfo' ];
+$donemsg    = $_POST[ 'postinfo' ] ?? $label.' done.';
 ?>
 
 <style>
@@ -59,7 +58,7 @@ pre hr.hrlight {
 		<div id="infoTopBg">
 			<div id="infoTop"><i class="i-addons"></i><a id="infoTitle"><?=$title?></a></div><i id="infoX" class="i-close infox"></i>
 		</div>
-		<div id="infoList"><div class="infomessage"><?=$postmsg?></div></div>
+		<div id="infoList"><div class="infomessage"><?=$donemsg?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
