@@ -1,6 +1,9 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+
+[[ $1 == kill && -e $dirshm/ppid ]] && pkill -P $( < $dirshm/ppid ) && exit
+
 addonsjson=$diraddons/addonslist.json
 bar='<a class="cbm">  </a>'
 info='<a class="cby ck"> i </a>'

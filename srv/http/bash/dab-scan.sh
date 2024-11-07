@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo $$ > /srv/http/data/shm/ppid
+
 . /srv/http/bash/common.sh
 
 echo
@@ -12,6 +14,7 @@ if [[ ! -e $dirshm/dabscan ]] || ! grep -q ^audioservice $dirshm/dabscan; then
 	exit
 # --------------------------------------------------------------------
 fi
+
 mv $dirdabradio/img $dirshm &> /dev/null
 rm -rf $dirdabradio
 mkdir -p $dirdabradio/img

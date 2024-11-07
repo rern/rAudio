@@ -73,7 +73,16 @@ E      = {};
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 E.container.classList.remove( 'hide' );
-E.close.addEventListener( 'click', () => location.href = '<?=$backhref?>' );
+E.close.addEventListener( 'click', () => {
+	if ( E.done ) {
+		location.href = '<?=$backhref?>';
+	} else {
+		var formdata = new FormData();
+		formdata.append( 'cmd',    'bash' );
+		formdata.append( 'filesh', 'settings/addons.sh kill' );
+		fetch( 'cmd.php', { method: 'POST', body: formdata } );
+	}
+} );
 [ E.infobtn, E.infox ].forEach( el => el.addEventListener( 'click', () => E.info.remove() ) );
 scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
 document.body.addEventListener( 'keydown', e => {
@@ -139,13 +148,6 @@ foreach( [ 0, 1, 2 ] as $i ) {
 			}
 			echo $std;                             // output to screen
 			echo $fillbuffer;                      // fill buffer after each line
-			if ( connection_status() !== 0 || connection_aborted() === 1 ) {
-				$pstatus = proc_get_status( $proc );
-				$ppid    = $pstatus[ 'pid ' ];
-				exec( "ps -o pid --no-heading --ppid $ppid | tr -d ' '", $pids );
-				foreach( $pids as $pid ) posix_kill( $pid, 9 );
-				proc_terminate( $proc );
-			}
 		}
 	}
 	fclose( $pipes[ $i ] );
@@ -159,6 +161,7 @@ proc_close( $proc );
 setTimeout( () => clearInterval( scroll ), 1000 );
 E.titleicon.classList.remove( 'blink' );
 E.info.classList.remove( 'hide' );
+E.done = true;
 </script>
 
 </body>
