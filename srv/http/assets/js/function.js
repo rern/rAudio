@@ -715,15 +715,13 @@ function infoThumbnail( icon, message, path, subdir ) {
 		, message : message
 		, list    : subdir ? list : false
 		, ok      : () => {
-			var input   = {
+			var input = {
 				  alias      : 'thumbnail'
 				, title      : 'Album Thumbnails'
 				, label      : 'Update'
-				, installurl : "/usr/bin/sudo /srv/http/bash/albumthumbnail.sh '"+ path +"' "+ infoVal()
+				, installurl : "albumthumbnail.sh '"+ path +"' "+ infoVal()
 			}
-			var form    = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
-			$.each( input, ( k, v ) => form += '<input type="hidden" name="'+ [ k ] +'" value="'+ v +'">' );
-			$( 'body' ).append( form +'</form>' );
+			$( 'body' ).append( addonsProgressForm( input ) );
 			$( '#formtemp' ).submit();
 		}
 	} );
