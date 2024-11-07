@@ -70,7 +70,7 @@ function addonData( $this ) {
 	V.addon  = S[ V.alias ];
 	V.branch = 'main';
 	V.label  = $this.find( '.label' ).text();
-	keys.forEach( k => V[ k ] = V.addon[ k ] );
+	keys.forEach( k => V[ k ] = V.addon[ k ] || -1 );
 }
 function buttonLabel( icon, label ) {
 	return ico( icon ) +' <span class="label">'+ label +'</span>';
@@ -85,7 +85,9 @@ function optionGet() {
 function postData( opt ) {
 	var htmlform = '';
 	keys = [ 'alias', 'branch', 'label' ].concat( keys );
-	keys.forEach( k => htmlform += postInput( k, V[ k ] ) );
+	keys.forEach( k => {
+		if ( V[ k ] !== -1 ) htmlform += postInput( k, V[ k ] );
+	} );
 	if ( opt ) {
 		if ( typeof opt !== 'object' ) opt = [ opt ];
 		opt.forEach( v => htmlform += postInput( 'opt[]', v ) );
