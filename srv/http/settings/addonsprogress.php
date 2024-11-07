@@ -10,7 +10,7 @@ $title      = $_POST[ 'title' ];
 $uninstall  = $_POST[ 'uninstall' ] ?? '';
 $backhref   = $alias === 'thumbnail' ? '/' : 'settings.php?p=addons';
 $postmsg    = $label.' done.';
-if ( isset( $_POST[ 'postinfo' ] ) ) $postmsg.= '<br><br><i class="i-addons wh"></i>'.$_POST[ 'postinfo' ];
+if ( $_POST[ 'postinfo' ] ) $postmsg.= '<br><br><i class="i-addons wh"></i>'.$_POST[ 'postinfo' ];
 ?>
 
 <style>

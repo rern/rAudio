@@ -26,8 +26,11 @@ data+='
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )
 
 ##########
-[[ -e /usr/bin/mediamtx ]] && data+='
-, "dabradio"         : '$( timeout 1 rtl_test -t &> /dev/null && echo true )
+if [[ -e /usr/bin/mediamtx ]]; then
+	script -c 'timeout 0.1 rtl_test -t' $dirshm/dabdevice &> /dev/null
+	data+='
+, "dabradio"         : '$( grep -q ^Found $dirshm/dabdevice && echo true )
+fi
 ##########
 [[ -e $dirshm/wlan ]] && data+='
 , "wlan"             : true
