@@ -60,7 +60,12 @@ EOF
 	]
 	, [
 		  'id'       => 'dabradio'
-		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
+		, 'help'     => <<< EOF
+$B_gear Scan for stations
+
+Digital Audio Broadcasting radio for USB RTL-SDR devices.
+(Enabled by installing a device)
+EOF
 	]
 	, [
 		  'id'       => 'snapclient'

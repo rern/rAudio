@@ -49,6 +49,7 @@ function passwordWrong() {
 	$( '#login' ).prop( 'checked', S.login );
 }
 function renderPage() {
+	$( '#dabradio' ).addClass( 'disabled' );
 	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {
@@ -116,11 +117,8 @@ $( '#setting-dabradio' ).on( 'click', function() {
 	info( {
 		  icon    : SW.icon
 		, title   : SW.title
-		, message : 'Scan DAB radio stations.'
-		, ok      : () => {
-			bash( [ 'dabscan.sh' ] );
-			notify( SW.icon, SW.title, 'Scan ...', 3000 )
-		}
+		, message : 'Scan for available stations?'
+		, ok      : () => bash( [ 'dabscan.sh' ] )
 	} );
 } );
 $( '#setting-snapclient' ).on( 'click', function() {

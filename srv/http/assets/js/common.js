@@ -1046,11 +1046,12 @@ function infoPowerCommand( action ) {
 	} );
 }
 
-function addonsProgressForm( input ) {
-	input.installurl = '/usr/bin/sudo /srv/http/bash/'+ input.installurl
+function addonsProgressSubmit( input ) {
+	if ( input.installurl.slice( 0, 4 ) !== 'http' ) input.installurl = '/usr/bin/sudo /srv/http/bash/'+ input.installurl
 	var form  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
 	$.each( input, ( k, v ) => form += '<input type="hidden" name="'+ [ k ] +'" value="'+ v +'">' );
-	return form +'</form>'
+	$( 'body' ).append( form +'</form>' );
+	$( '#formtemp' ).submit();
 }
 function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );

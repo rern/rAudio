@@ -83,20 +83,17 @@ function optionGet() {
 		}, V.addon.option ) );
 }
 function postData( opt ) {
-	var htmlform = '';
+	var input = {}
 	keys = [ 'alias', 'branch', 'label' ].concat( keys );
 	keys.forEach( k => {
-		if ( V[ k ] !== -1 ) htmlform += postInput( k, V[ k ] );
+		if ( V[ k ] !== -1 ) input[ k ] = V[ k ];
 	} );
 	if ( opt ) {
 		if ( typeof opt !== 'object' ) opt = [ opt ];
-		opt.forEach( v => htmlform += postInput( 'opt[]', v ) );
+		opt.forEach( v => input[ 'opt[]' ] = v );
 	}
-	$( 'body' ).append( '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'+ htmlform +'</form>' );
-	$( '#formtemp' ).submit();
-}
-function postInput( name, value ) {
-	return '<input type="hidden" name="'+ name +'" value="'+ ( value || '' ) +'">'
+	if ( opt ) opt.forEach( v => input[ 'opt[]' ] = v );
+	addonsProgressSubmit( input );
 }
 function renderPage() {
 	var list   = '';

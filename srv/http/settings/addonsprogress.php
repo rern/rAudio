@@ -90,7 +90,7 @@ document.body.addEventListener( 'keydown', e => {
 </script>
 <?php
 // ......................................................................................
-if ( $alias === 'thumbnail' ) {
+if ( in_array( $alias, [ 'dabradio', 'thumbnail' ] ) ) {
 	$command    = $installurl;
 	$commandtxt = $command;
 } else if ( $label === 'Uninstall' ) {

@@ -715,14 +715,13 @@ function infoThumbnail( icon, message, path, subdir ) {
 		, message : message
 		, list    : subdir ? list : false
 		, ok      : () => {
-			var input = {
+			addonsProgressSubmit( {
 				  alias      : 'thumbnail'
 				, title      : 'Album Thumbnails'
 				, label      : 'Update'
 				, installurl : "albumthumbnail.sh '"+ path +"' "+ infoVal()
-			}
-			$( 'body' ).append( addonsProgressForm( input ) );
-			$( '#formtemp' ).submit();
+				, backhref   : '/'
+			} );
 		}
 	} );
 }
