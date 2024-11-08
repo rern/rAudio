@@ -467,7 +467,7 @@ input.disabled + .switchlabel:after {
 	width: 40px !important;
 	margin-left: 5px;
 	font-size: 26px;
-	line-height: 40px;
+	line-height: 44px;
 	text-align: center;
 }
 .setting {
