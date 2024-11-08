@@ -26,10 +26,14 @@ function iconSet( $array, $class = '', $prefix = '' ) {
 }
 // context menus
 function menucommon( $add, $replace ) {
-	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( 'plus-o' ).'Add</a>'.i( 'play-plus submenu', '', $add.'play' );
-	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( 'add' ).'Play next</a>';
-	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( 'replace' ).'Replace</a>'.i( 'play-replace submenu', '', $replace.'play' );
-	return $htmlcommon;
+	$list = [
+		  [ $add,       'plus-o',  'Add',     'play-plus',    $add.'play' ]
+		, [ 'playnext', 'add',     'Play next' ]
+		, [ $replace,   'replace', 'Replace', 'play-replace', $replace.'play' ]
+	];
+	$html = '';
+	foreach( $list as $l ) $html.= menuli( $l );
+	return $html;
 }
 function menudiv( $id, $html ) {
 	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
@@ -38,8 +42,14 @@ function menuli( $list ) {
 	$command = $list[ 0 ];
 	$icon    = $list[ 1 ];
 	$label   = $list[ 2 ];
-	$icon    = i( $icon );
-	return '<a data-cmd="'.$command.'" class="'.$command.'">'.$icon.$label.'</a>';
+	if ( isset( $list[ 3 ] ) ) {
+		$sub     = ' sub';
+		$submenu = i( $list[ 3 ].' submenu', '', $list[ 4 ] );
+	} else {
+		$sub     = '';
+		$submenu = '';
+	}
+	return '<a data-cmd="'.$command.'" class="'.$command.$sub.'">'.i( $icon ).$label.'</a>'.$submenu;
 }
 $kid3       = file_exists( '/usr/bin/kid3-cli' );
 $menu       = '';
@@ -83,7 +93,7 @@ $menulist = [
 	, [ 'pause',      'pause',         'Pause' ]
 	, [ 'stop',       'stop',          'Stop' ]
 	, [ 'current',    'current',       'Current' ]
-	, [ 'remove',     'remove',        'Remove' ]
+	, [ 'remove',     'remove',        'Remove', 'track', 'removerange' ]
 	, [ 'wrsave',     'save',          'Save to Library' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
 	, [ 'similar',    'lastfm',        'Add similar' ]

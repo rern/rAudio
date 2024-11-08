@@ -666,6 +666,21 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	var cmd   = $this.data( 'cmd' );
 	menuHide();
 	$( 'li.updn' ).removeClass( 'updn' );
+	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
+		$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
+		if ( S.player === 'mpd' || cmd !== 'play' ) {
+			$( '#'+ cmd ).trigger( 'click' );
+		} else {
+			$( '#stop' ).trigger( 'click' );
+			setTimeout( () => $( '#'+ cmd ).trigger( 'click' ), 2000 );
+		}
+		return
+	}
+	
+	if ( cmd === 'removerange' ) {
+		playlistRemoveRange( [ V.list.li.index() + 1, S.pllength ] );
+		return
+	}
 	
 	var cmd_function = {
 		  bookmark      : bookmarkNew
@@ -690,16 +705,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	}
 	if ( cmd in cmd_function ) {
 		cmd_function[ cmd ]();
-		return
-	}
-	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
-		if ( S.player === 'mpd' || cmd !== 'play' ) {
-			$( '#'+ cmd ).trigger( 'click' );
-		} else {
-			$( '#stop' ).trigger( 'click' );
-			setTimeout( () => $( '#'+ cmd ).trigger( 'click' ), 2000 );
-		}
 		return
 	}
 	
