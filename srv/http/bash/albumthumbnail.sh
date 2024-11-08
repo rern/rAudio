@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo $$ > /srv/http/data/shm/ppid
+
 path=$1
 [[ $2 == true ]] && overwrite=1
 fullpath="/mnt/MPD/$path"

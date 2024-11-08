@@ -2,7 +2,12 @@
 
 . /srv/http/bash/common.sh
 
-[[ $1 == kill && -e $dirshm/ppid ]] && pkill -P $( < $dirshm/ppid ) && exit
+if [[ $1 == kill && -e $dirshm/ppid ]]; then
+	ppid=$( < $dirshm/ppid )
+	rm $dirshm/ppid
+	[[ $ppid =~ ^[0-9]+$ ]] && pkill -P $ppid || pkill $ppid
+	exit
+fi
 
 addonsjson=$diraddons/addonslist.json
 bar='<a class="cbm">  </a>'
