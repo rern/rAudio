@@ -22,7 +22,7 @@ $id_data      = [
 	, 'volumelimit'    => [ 'label' => 'Volume Limit' ]
 ];
 commonVariables( [
-	  'buttons' => [ 'gear', 'lastfm', 'microsd', 'networks', 'usbdrive' ]
+	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'usbdrive' ]
 	, 'labels'  => [
 		  [ 'Equalizer',     'equalizer' ]
 		, [ 'DSP',           'camilladsp' ]
@@ -33,6 +33,7 @@ commonVariables( [
 	, 'menus'   => [
 	  [ 'features', 'Features', 'camilladsp' ]
 	, [ 'features', 'Features', 'equalizer' ]
+	, [ 'networks', 'Networks', 'snapcast' ]
 	, [ 'playlist', 'Playlist', 'multiraudio' ]
 	, [ 'player',   'Player',   'lock' ]
 	, [ 'power',    'Power',    'screenoff' ]
@@ -44,7 +45,7 @@ $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer <btn>Address bar</btn> <c>\\\\'.$ip.'</c>';
-$snapweb      = $B_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
+$snapweb      = $B_gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
 $body         = [
@@ -61,10 +62,9 @@ EOF
 	, [
 		  'id'       => 'dabradio'
 		, 'help'     => <<< EOF
-$B_gear Scan for stations
-
-Digital Audio Broadcasting radio for USB RTL-SDR devices.
-(Enabled by installing a device)
+<a href="https://en.wikipedia.org/wiki/Software-defined_radio">SDR</a> - Software-defined radio / Digital audio broadcasting
+ · Enable: Connect a USB SDR device
+ · Stations: $B_gear <btn>Scan</btn> $T_library $B_dabradio
 EOF
 	]
 	, [
