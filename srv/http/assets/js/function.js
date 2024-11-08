@@ -1206,7 +1206,7 @@ function renderLibraryCounts() {
 	} );
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 	$( '.mode .label' ).toggleClass( 'hide', ! D.label );
-	$( '.mode.dabradio' ).toggleClass( 'hide', D.dabradio === 0 );
+	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 }
 function renderLibraryList( data ) { // V.librarylist
 	V.libraryhome  = false;
