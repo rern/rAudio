@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo $$ > /srv/http/data/shm/ppid
-
 . /srv/http/bash/common.sh
+
+basename $0 .sh > $dirshm/script
 
 echo
 script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan # capture /dev/tty to file

@@ -2,11 +2,11 @@
 
 . /srv/http/bash/common.sh
 
-if [[ $1 == kill && -e $dirshm/ppid ]]; then
-	ppid=$( < $dirshm/ppid )
-	rm $dirshm/ppid
-	[[ $ppid =~ ^[0-9]+$ ]] && pkill -P $ppid || pkill $ppid
+if [[ $1 == kill ]]; then
+	file=$dirshm/script
+	[[ -e $file ]] && pkill $( < $file ) && rm $file
 	exit
+# --------------------------------------------------------------------
 fi
 
 addonsjson=$diraddons/addonslist.json
