@@ -1,4 +1,3 @@
-document.title = 'Addons';
 V              = {} // var global
 var icon       = 'addons';
 var keys       = [ 'installurl', 'postinfo', 'title', 'uninstall', 'version' ];

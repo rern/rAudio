@@ -1,15 +1,15 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
-$alias      = $_POST[ 'alias' ];
-$backhref   = $_POST[ 'backhref' ]   ?? 'settings.php?p=addons';
-$branch     = $_POST[ 'branch' ]     ?? '';
-$installurl = $_POST[ 'installurl' ] ?? '';
-$label      = $_POST[ 'label' ];
-$opt        = $_POST[ 'opt' ]        ?? '';
-$postinfo   = $_POST[ 'postinfo' ]   ?? $label.' done.';
-$title      = $_POST[ 'title' ];
-$uninstall  = $_POST[ 'uninstall' ]  ?? '';
+$alias       = $_POST[ 'alias' ];
+$backhref    = $_POST[ 'backhref' ]    ?? 'settings.php?p=addons';
+$branch      = $_POST[ 'branch' ]      ?? '';
+$installurl  = $_POST[ 'installurl' ]  ?? '';
+$label       = $_POST[ 'label' ];
+$opt         = $_POST[ 'opt' ]         ?? '';
+$postmessage = $_POST[ 'postmessage' ] ?? $label.' done.';
+$title       = $_POST[ 'title' ];
+$uninstall   = $_POST[ 'uninstall' ]   ?? '';
 ?>
 
 <style>
@@ -58,7 +58,7 @@ pre hr.hrlight {
 		<div id="infoTopBg">
 			<div id="infoTop"><i class="i-addons"></i><a id="infoTitle"><?=$title?></a></div><i id="infoX" class="i-close infox"></i>
 		</div>
-		<div id="infoList"><div class="infomessage"><?=$postinfo?></div></div>
+		<div id="infoList"><div class="infomessage"><?=$postmessage?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
@@ -69,7 +69,7 @@ pre hr.hrlight {
 //if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$backhref?>' ); // on refresh page
 document.title = 'Addons';
 E      = {};
-[ 'close', 'container', 'info', 'infobtn', 'infox', 'progress', 'titleicon' ].forEach( ( el ) => {
+[ 'close', 'container', 'info', 'infobtn', 'infomessage', 'infox', 'progress', 'titleicon' ].forEach( ( el ) => {
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 E.container.classList.remove( 'hide' );
@@ -77,6 +77,7 @@ E.close.addEventListener( 'click', () => {
 	if ( E.done ) {
 		location.href = '<?=$backhref?>';
 	} else {
+		E.infomessage.textContent = '<?=$label?> cancelled.';
 		var formdata = new FormData();
 		formdata.append( 'cmd',    'bash' );
 		formdata.append( 'filesh', 'settings/addons.sh kill' );
