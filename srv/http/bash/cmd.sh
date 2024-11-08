@@ -123,6 +123,8 @@ pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
 }
 pushSavedPlaylist() {
+	[[ ! $( ls $dirdata/playlist ) ]] && pushData savedplaylist -1 && exit
+# --------------------------------------------------------------------
 	pushData savedplaylist $( php /srv/http/playlist.php list )
 }
 radioStop() {
@@ -360,11 +362,6 @@ coverfileslimit )
 			| tail -n +10 \
 			| xargs rm -f --
 	done
-	;;
-dabscan )
-	touch $dirshm/updatingdab
-	$dirbash/dab-scan.sh &> /dev/null &
-	pushData mpdupdate '{ "type": "dabradio" }'
 	;;
 dirdelete )
 	[[ ! $CONFIRM && $( ls "$DIR" ) ]] && echo -1 && exit
@@ -608,20 +605,21 @@ mpcplayback )
 	fi
 	;;
 mpcremove )
-	[[ $START == $END ]] && POS=$START && START=
+	[[ ! $POS ]] && plClear && exit
+# --------------------------------------------------------------------
 	songpos=$( mpc status %songpos% )
 	pllength=$( mpc status %length% )
-	if [[ $START ]]; then
-		if (( $songpos >= $START && $songpos <= $END )); then
-			[[ $pllength == $END ]] && next=$(( START -1 )) || next=$(( END + 1 ))
+	if [[ $TO ]]; then
+		if (( $songpos >= $POS && $songpos <= $TO )); then
+			[[ $pllength == $TO ]] && next=$(( POS -1 )) || next=$(( END + 1 ))
 			mpc -q play $next
 			mpc -q stop
 		fi
-		for (( i=$END; i >= $START; i-- )); do
+		for (( i=$TO; i >= $POS; i-- )); do
 			mpc -q del $i
 		done
 		pushPlaylist
-	elif [[ $POS ]]; then
+	else
 		if [[ $songpos == $POS ]]; then
 			[[ $pllength == $POS ]] && next=$(( POS -1 )) || next=$POS
 		fi
@@ -631,8 +629,6 @@ mpcremove )
 			mpc -q stop
 		fi
 		pushPlaylist
-	else
-		plClear
 	fi
 	;;
 mpcseek )

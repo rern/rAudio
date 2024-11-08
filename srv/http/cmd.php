@@ -104,7 +104,7 @@ case 'timezonelist': // $.post from system.js
 	foreach( $list as $key => $zone ) {
 		$datetime = new DateTime( 'now', new DateTimeZone( $zone ) );
 		$offset   = $datetime->format( 'P' );
-		$zonename = preg_replace( [ '/_/', '/\//' ], [ ' ', ' <gr>&middot;</gr> ' ], $zone );
+		$zonename = preg_replace( [ '/_/', '/\//' ], [ ' ', ' &middot; ' ], $zone );
 		$option  .= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 	}
 	echo $option;

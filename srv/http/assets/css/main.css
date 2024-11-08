@@ -225,6 +225,12 @@ i.map.disabled, .map.disabled i {
 	-webkit-user-select: none;
 	user-select: none;
 }
+#bar-top.disabled,
+#bar-bottom.disabled,
+.content-top.disabled,
+#page-playlist .index {
+	opacity: 0.5;
+}
 /* ---------------------- bars ----------------------*/
 #refresh {
 	position: fixed;
@@ -994,8 +1000,9 @@ i.map.disabled, .map.disabled i {
 	top: 0;
 	width: 100%;
 	margin-bottom: 10px;
+	padding: 10px 0;
 	font-size: 30px;
-	line-height: 50px;
+	line-height: 30px;
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
 }
@@ -1014,6 +1021,9 @@ i.map.disabled, .map.disabled i {
 	font-size: 24px;
 	text-align: center;
 	color: var( --cm ) !important;
+}
+#biocontent .close-root {
+	margin-top: -5px;
 }
 #biocontent .bioback {
 	margin-top: -10px;
@@ -1346,7 +1356,6 @@ i.map.disabled, .map.disabled i {
 }
 .content-top a {
 	font-size: 18px;
-	color: var( --cw );
 }
 .button-webradio-new {
 	margin-left: 10px;
@@ -1382,7 +1391,7 @@ i.map.disabled, .map.disabled i {
 	margin: 0 0 0 15px;
 	font-size: 26px;
 	letter-spacing: 5px;
-	color: var( --cw ) !important;
+	color: var( --cw );
 }
 .lialbum,
 #button-pl-back,

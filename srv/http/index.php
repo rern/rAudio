@@ -125,27 +125,29 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 }
 
 $menu     = '<div id="contextmenu">'.$menu.'</div>';
-$ids      = [ 'random',   'repeat',    'single',    'repeat1', 'consume', 'librandom', 'mute'
-			, 'btsender', 'libupdate', 'dabupdate', 'addons',  'relays',  'stoptimer' ];
+$ids      = [ 'random', 'repeat',   'single',    'repeat1', 'consume', 'librandom'
+			, 'mute',   'btsender', 'libupdate', 'addons',  'relays',  'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) $modeicon.= i( $id.' hide', 'mi-'.$id );
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
 $dsp      = $equalizer ? 'equalizer' : 'camilladsp';
 $settinglist = [
-	  [ 'features',        'settings',     'features', 'Features', 'dsp',          'equalizer' ]
-	, [ 'player',          'settings',     'player',   'Player',   'logout',       'lock' ]
-	, [ 'networks',        'settings',     'networks', 'Networks', 'snapclient',   'snapclient' ]
-	, [ 'system',          'settings',     'raudio',   'System',   'relays',       'relays' ]
-	, [ 'addons',          'settings sub', 'jigsaw',   'Addons',   'guide',        'help' ]
-	, [ 'power',           '',             'power',    'Power',    'screenoff',    'screenoff' ]
-	, [ 'displaylibrary',  'sub',          'library',  'Library',  'update',       'refresh-library' ]
-	, [ 'displayplayback', 'sub',          'playback', 'Playback', 'displaycolor', 'color' ]
-	, [ 'displayplaylist', '',             'playlist', 'Playlist', 'multiraudio',  'multiraudio' ]
+	  [ 'features',        'settings',     'dsp' ]
+	, [ 'player',          'settings',     'lock' ]
+	, [ 'networks',        'settings',     'snapclient' ]
+	, [ 'system',          'settings',     'relays' ]
+	, [ 'addons',          'settings sub', 'help' ]
+	, [ 'power',           '',             'screenoff' ]
+	, [ 'displaylibrary',  'sub',          'refresh-library' ]
+	, [ 'displayplayback', 'sub',          'color' ]
+	, [ 'displayplaylist', '',             'multiraudio' ]
 ];
 $htmlsettings = '';
 foreach( $settinglist as $l ) {
-	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $l[ 2 ] ).$l[ 3 ].'</a>'.i( $l[ 5 ].' submenu', $l[ 4 ] );
+	$icon  = str_replace( 'display', '', $l[ 0 ] );
+	$label = ucfirst( $icon );
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( $icon ).$label.'</a>'.i( $l[ 2 ].' submenu', $l[ 2 ] );
 }
 if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	$htmlvumeter = '<div id="vu" class="hide">'.file_get_contents( '/srv/http/assets/img/vu.svg' ).'</div>';
@@ -295,7 +297,7 @@ $htmlsearch   = '
 				  [ 'flash',                 'consume' ]
 				, [ 'librandom',             'librandom' ]
 				, [ 'shuffle pllength',      'shuffle' ]
-				, [ 'minus-circle pllength', 'clear' ]
+				, [ 'remove pllength',       'clear' ]
 				, [ 'save-plus pllength',    'save' ]
 				, [ 'playlists',             'playlists' ]
 			], '', 'button-pl-' )?>

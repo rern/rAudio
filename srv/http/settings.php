@@ -1,9 +1,10 @@
 <?php
 include 'common.php';
 
+$iconhead = $addonsprogress ? '' : i( 'help helphead' ).i( 'gear' );
 echo '
 <div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>
-'.i( 'close close', 'close' ).i( 'help helphead' ).i( 'gear' ).'
+'.i( 'close close', 'close' ).$iconhead.'
 </div>
 <div class="container '.$page.' hide" tabindex="-1">
 ';

@@ -2,6 +2,167 @@ var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 			  +'<gr>Signal will be set to original level at 0dB.</gr><br>'
 			  +'Beware of too high volume.</wh>';
 
+var setting  = {
+	  noVolume      : () => {
+		if ( S.volumedb > -2 ) {
+			setting.noVolumeSet();
+		} else {
+			info( {
+				  ...SW
+				, message : warning
+				, cancel  : switchCancel
+				, ok      : setting.noVolumeSet
+			} );
+		}
+	}
+	, noVolumeSet : () => {
+		notifyCommon( 'Enable ...' );
+		bash( [ 'novolume' ], () => {
+			if ( ! S.custom ) return
+			
+			info( {
+				  ...SW
+				, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
+							+'<br>Remove any volume related settings.'
+			} );
+		} );
+	}
+	, soxr        : () => {
+		bash( [ 'confget', 'soxr', 'CMD NAME' ], values => {
+			delete values.PLUGIN;
+			info( {
+				  ...SW
+				, tablabel     : [ 'Presets', 'Custom' ]
+				, tab          : [ '', setting.soxrCustom ]
+				, list         : [
+					  [ 'Quality', 'select', { 'Very high': 'very high', High: 'high', Medium: 'medium', Low: 'low', Quick: 'quick' } ]
+					, [ 'Threads', 'radio',  { Auto: 0, Single: 1 } ]
+				]
+				, values       : values
+				, checkblank   : true
+				, checkchanged : S.soxr
+				, boxwidth     : 180
+				, cancel       : switchCancel
+				, ok           : switchEnable
+			} );
+		}, 'json' );
+	}
+	, soxrCustom  : () => {
+		bash( [ 'confget', 'soxr-custom', 'CMD NAME' ], values => {
+			delete values.PLUGIN;
+			var flag = {
+				  'Rolloff - Small'  : 0
+				, 'Rolloff - Medium' : 1
+				, 'Rolloff - None'   : 2
+				, 'High precision'   : 8
+				, 'Double precision' : 16
+				, 'Variable rate'    : 32
+			}
+			info( {
+				  ...SW
+				, tablabel     : [ 'Presets', 'Custom' ]
+				, tab          : [ setting.soxr, '' ]
+				, list         : [
+					  [ 'Type',           'hidden' ]
+					, [ 'Precision',      'select', { kv: [ 16, 20, 24, 28, 32 ], suffix: 'bit' } ]
+					, [ 'Phase Response', 'number', { suffix: '0-100' } ]
+					, [ 'Passband End',   'number', { suffix: '0-100%' } ]
+					, [ 'Stopband Begin', 'number', { suffix: '100-150%' } ]
+					, [ 'Attenuation',    'number', { suffix: '0-30dB' } ]
+					, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2 } ]
+				]
+				, values       : values
+				, checkblank   : true
+				, checkchanged : S.soxr
+				, boxwidth     : 105
+				, beforeshow   : () => {
+					$( '#infoList .select2-container' ).last().attr( 'style', 'width: 100% !important' )
+				}
+				, cancel       : switchCancel
+				, ok           : switchEnable
+			} );
+		}, 'json' );
+	}
+}
+function renderPage() {
+	playbackButton();
+	renderStatus();
+	var icondsp = '';
+	[ 'camilladsp', 'equalizer' ].forEach( k => {
+		if ( S[ k ] ) icondsp = ico( k );
+	} );
+	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
+	if ( S.bluetooth ) {
+		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
+		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
+		$( '#divbluealsa' ).removeClass( 'hide' );
+	} else {
+		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
+		$( '#divdevice .col-l' ).html( $( '#divdevice .col-l' ).html() + icondsp );
+		$( '#divbluealsa' ).addClass( 'hide' );
+	}
+	if ( S.asoundcard === -1 ) {
+		$( '#divoutput, #divbitperfect, #divvolume' ).toggleClass( 'hide', ! S.bluetooth );
+	} else {
+		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
+		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', S.bluetooth && ! S.devicewithbt );
+		$( '#device' )
+			.html( htmlOption( Object.keys( S.devices ) ) )
+			.val( S.output.name );
+		if ( S.mixers ) {
+			$( '#mixer' )
+				.html( htmlOption( S.mixers ) )
+				.val( S.output.mixer );
+			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
+			$( '#divmixer' ).removeClass( 'hide' );
+		} else {
+			$( '#divmixer' ).addClass( 'hide' );
+		}
+		$( '#novolume' ).prop( 'checked', S.novolume );
+		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
+		$( '#dop' ).prop( 'checked', S.dop );
+		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
+	}
+	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
+	if ( I.range ) $( '#infoX' ).trigger( 'click' );
+	showContent();
+}
+function renderStatus() {
+	var htmlstatus =  S.version +'<br>';
+	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S.counts[ k ] || 0 ).toLocaleString() +'&emsp;' );
+	if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
+	htmlstatus += '<br>'+ S.lastupdate;
+	if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';
+	$( '#divstatus .value' ).html( htmlstatus );
+}
+function setMixerType( mixertype ) {
+	notify( 'mpd', 'Mixer Control', 'Change ...' );
+	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
+}
+function psVolume( data ) {
+	if ( ! ( 'db' in data ) ) return
+	 
+	S.volume   = data.val;
+	S.volumedb = data.db;
+	if ( ! $( '#infoList .inforange' ).length ) return
+	
+	$( '#novolume' ).prop( 'checked', S.novolume );
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		V.local = true;
+		$( '#infoList' ).removeClass( 'hide' );
+		$( '.confirm' ).addClass( 'hide' );
+		volumeInfoSet();
+	}, 300 );
+}
+function volumeInfoSet() {
+	V.local = false;
+	$( '.inforange .value' ).text( S.volume );
+	$( '.inforange input' ).val( S.volume );
+	$( '.inforange .sub' ).text( S.volumedb +' dB' );
+	$( '#infoOk' ).toggleClass( 'disabled', S.volumedb === 0 || S.volumedb === '' );
+}
+
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#device' ).on( 'input', function() {
@@ -25,7 +186,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 	}
 	info( {
 		  icon       : SW.icon
-		, title      : 'Volume Control'
+		, title      : 'Mixer Volume'
 		, list       : [ control, 'range' ]
 		, values     : S.volume
 		, prompt     : '<br>'+ warning
@@ -87,8 +248,7 @@ $( '#mixertype' ).on( 'click', function() {
 } );
 $( '#setting-mixertype' ).on( 'click', function() {
 	info( {
-		  icon    : SW.icon
-		, title   : 'Volume Type'
+		  ...SW
 		, list    : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
 		, values  : S.mixertype ? S.output.mixertype : 'hardware'
 		, cancel  : switchCancel
@@ -106,16 +266,15 @@ $( '#novolume' ).on( 'click', function( e ) {
 		} );
 	} else if ( S.camilladsp || S.equalizer ) {
 		info( {
-			  icon    : SW.icon
-			, title   : SW.title
+			  ...SW
 			, message :  '<wh>No Volume</wh> also disable:<br><br>'
 						+ icoTab( 'Features' )
 						+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
 			, cancel  : switchCancel
-			, ok      : infoNoVolume
+			, ok      : setting.noVolume
 		} );
 	} else {
-		infoNoVolume();
+		setting.noVolume();
 	}
 } );
 $( '#dop' ).on( 'click', function() {
@@ -126,32 +285,32 @@ $( '#dop' ).on( 'click', function() {
 	bash( cmd );
 } );
 $( '#setting-crossfade' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, list         : [ 'Seconds', 'number', { updn: { step: 1, min: 0, max: 10 } } ]
-		, focus        : 0
-		, boxwidth     : 70
-		, values       : S.crossfadeconf
-		, checkchanged : S.crossfade
-		, checkblank   : true
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
+	bash( [ 'confget', 'crossfade', 'CMD NAME' ], values => {
+		info( {
+			  ...SW
+			, list         : [ 'Seconds', 'number', { updn: { step: 1, min: 0, max: 10 } } ]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.crossfade
+			, checkblank   : true
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}, 'json' );
 } );
 $( '#setting-replaygain' ).on( 'click', function() {
-	var hardware = S.output.mixertype === 'software' && S.mixers;
-	if ( ! hardware ) delete S.replaygainconf.HARDWARE;
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, list         : [ '', 'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' }, sameline: false } ]
-		, footer       : hardware ? '<label><input type="checkbox"><wh>Gain control by Mixer device</wh></label>' : ''
-		, values       : S.replaygainconf
-		, checkchanged : S.replaygain
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
+	bash( [ 'confget', 'replaygain', 'CMD NAME' ], values => {
+		if ( S.output.mixertype !== 'software' || ! S.mixers ) delete values.HARDWARE;
+		info( {
+			  ...SW
+			, list         : [ '', 'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' }, sameline: false } ]
+			, footer       : values.HARDWARE ? '<label><input type="checkbox"><wh>Gain control by Mixer Device</wh></label>' : ''
+			, values       : values
+			, checkchanged : S.replaygain
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}, 'json' );
 } );
 $( '#ffmpegfiletype' ).on( 'click', function() {
 	var $pre = $( '#prefiletype' );
@@ -167,34 +326,35 @@ $( '#ffmpegfiletype' ).on( 'click', function() {
 	$( this ).toggleClass( 'active' );
 } );
 $( '#setting-buffer' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, message      : '<c>audio_buffer_size</c>'
-		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 40960 } } ]
-		, boxwidth     : 110
-		, values       : { KB: S.bufferconf }
-		, checkchanged : S.buffer
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
+	bash( [ 'confget', 'buffer', 'CMD NAME' ], values => {
+		info( {
+			  ...SW
+			, message      : '<c>audio_buffer_size</c>'
+			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 40960 } } ]
+			, boxwidth     : 110
+			, values       : values
+			, checkchanged : S.buffer
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}, 'json' );
 } );
 $( '#setting-outputbuffer' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, message      : '<c>max_output_buffer_size</c>'
-		, list         : [ 'kB', 'number', { updn: { step: 1024, min: 8192, max: 81920 } } ]
-		, focus        : 0
-		, boxwidth     : 110
-		, values       : { KB: S.outputbufferconf }
-		, checkchanged : S.outputbuffer
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
+	bash( [ 'confget', 'outputbuffer', 'CMD NAME' ], values => {
+		info( {
+			  ...SW
+			, message      : '<c>max_output_buffer_size</c>'
+			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 8192, max: 81920 } } ]
+			, boxwidth     : 110
+			, values       : values
+			, checkchanged : S.outputbuffer
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}, 'json' );
 } );
 $( '#setting-soxr' ).on( 'click', function() {
-	S.soxrquality === 'custom' ? infoSoxrCustom() : infoSoxr();
+	S[ 'soxr-custom' ] ? setting.soxrCustom() : setting.soxr();
 } );
 $( '#setting-custom' ).on( 'click', function() {
 	var htmllist = `\
@@ -219,8 +379,7 @@ audio_output {
 		var global = val[ 0 ].trim(); // remove trailing
 		var output = val[ 1 ].trim();
 		info( {
-			  icon         : SW.icon
-			, title        : SW.title
+			  ...SW
 			, list         : htmllist
 			, boxwidth     : 370
 			, values       : [ global, output ]
@@ -241,8 +400,7 @@ audio_output {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
-							  icon    : SW.icon
-							, title   : SW.title
+							  ...SW
 							, message : 'MPD failed with the added lines'
 										+'<br>Restored to previous configurations.'
 						} );
@@ -254,167 +412,3 @@ audio_output {
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-function infoNoVolume() {
-	if ( S.volumedb > -2 ) {
-		infoNoVolumeSet();
-	} else {
-		info( {
-			  icon    : SW.icon
-			, title   : SW.title
-			, message : warning
-			, cancel  : switchCancel
-			, ok      : infoNoVolumeSet
-		} );
-	}
-}
-function infoNoVolumeSet() {
-	notifyCommon( 'Enable ...' );
-	bash( [ 'novolume' ], () => {
-		if ( ! S.custom ) return
-		
-		info( {
-			  icon    : SW.icon
-			, title   : SW.title
-			, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
-						+'<br>Remove any volume related settings.'
-		} );
-	} );
-}
-function infoSoxr( quality ) {
-	delete S.soxrconf.PLUGIN
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Presets', 'Custom' ]
-		, tab          : [ '', infoSoxrCustom ]
-		, list         : [
-			  [ 'Quality', 'select', { 'Very high': 'very high', High: 'high', Medium: 'medium', Low: 'low', Quick: 'quick' } ]
-			, [ 'Threads', 'radio',  { Auto: 0, Single: 1 } ]
-		]
-		, values       : S.soxrconf
-		, checkblank   : true
-		, checkchanged : S.soxr
-		, boxwidth     : 180
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-}
-function infoSoxrCustom() {
-	delete S.soxrcustomconf.PLUGIN
-	var flag = {
-		  'Rolloff - Small'  : 0
-		, 'Rolloff - Medium' : 1
-		, 'Rolloff - None'   : 2
-		, 'High precision'   : 8
-		, 'Double precision' : 16
-		, 'Variable rate'    : 32
-	}
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Presets', 'Custom' ]
-		, tab          : [ infoSoxr, '' ]
-		, list         : [
-			  [ 'Type',           'hidden' ]
-			, [ 'Precision',      'select', { kv: [ 16, 20, 24, 28, 32 ], suffix: 'bit' } ]
-			, [ 'Phase Response', 'number', { suffix: '0-100' } ]
-			, [ 'Passband End',   'number', { suffix: '0-100%' } ]
-			, [ 'Stopband Begin', 'number', { suffix: '100-150%' } ]
-			, [ 'Attenuation',    'number', { suffix: '0-30dB' } ]
-			, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2 } ]
-		]
-		, values       : S.soxrcustomconf
-		, checkblank   : true
-		, checkchanged : S.soxr
-		, boxwidth     : 105
-		, beforeshow   : () => {
-			$( '#infoList .select2-container' ).last().attr( 'style', 'width: 100% !important' )
-		}
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-}
-function noVolumeSet() {
-	S.novolume = ! S.volumedb && ! [ 'mixertype', 'crossfade', 'normalization', 'replaygain', 'soxr'
-										  , 'camilladsp', 'equalizer' ].some( k => S[ k ] );
-	$( '#novolume' ).prop( 'checked', S.novolume );
-}
-function renderPage() {
-	playbackButton();
-	renderStatus();
-	var icondsp = '';
-	[ 'camilladsp', 'equalizer' ].forEach( k => {
-		if ( S[ k ] ) icondsp = ico( k );
-	} );
-	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
-	if ( S.bluetooth ) {
-		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
-		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
-		$( '#divbluealsa' ).removeClass( 'hide' );
-	} else {
-		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
-		$( '#divdevice .col-l' ).html( $( '#divdevice .col-l' ).html() + icondsp );
-		$( '#divbluealsa' ).addClass( 'hide' );
-	}
-	if ( S.asoundcard === -1 ) {
-		$( '#divoutput, #divbitperfect, #divvolume' ).toggleClass( 'hide', ! S.bluetooth );
-	} else {
-		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
-		$( '#divdevice, #divmixer, #divmixertype' ).toggleClass( 'hide', S.bluetooth && ! S.devicewithbt );
-		$( '#device' )
-			.html( htmlOption( Object.keys( S.devices ) ) )
-			.val( S.output.name );
-		if ( S.mixers ) {
-			$( '#mixer' )
-				.html( htmlOption( S.mixers ) )
-				.val( S.output.mixer );
-			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
-			$( '#divmixer' ).removeClass( 'hide' );
-		} else {
-			$( '#divmixer' ).addClass( 'hide' );
-		}
-		noVolumeSet();
-		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
-		$( '#dop' ).prop( 'checked', S.dop );
-		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
-	}
-	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
-	if ( I.range ) $( '#infoX' ).trigger( 'click' );
-	showContent();
-}
-function renderStatus() {
-	var htmlstatus =  S.version +'<br>';
-	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S.counts[ k ] || 0 ).toLocaleString() +'&emsp;' );
-	if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
-	htmlstatus += '<br>'+ S.lastupdate;
-	if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';
-	$( '#divstatus .value' ).html( htmlstatus );
-}
-function setMixerType( mixertype ) {
-	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
-}
-function psVolume( data ) {
-	if ( ! ( 'db' in data ) ) return
-	 
-	S.volume   = data.val;
-	S.volumedb = data.db;
-	if ( ! $( '#infoList .inforange' ).length ) return
-	
-	noVolumeSet();
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		V.local = true;
-		$( '#infoList' ).removeClass( 'hide' );
-		$( '.confirm' ).addClass( 'hide' );
-		volumeInfoSet();
-	}, 300 );
-}
-function volumeInfoSet() {
-	V.local = false;
-	$( '.inforange .value' ).text( S.volume );
-	$( '.inforange input' ).val( S.volume );
-	$( '.inforange .sub' ).text( S.volumedb +' dB' );
-	$( '#infoOk' ).toggleClass( 'disabled', S.volumedb === 0 || S.volumedb === '' );
-}

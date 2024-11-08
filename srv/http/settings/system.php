@@ -24,7 +24,8 @@ $id_data     = [
 commonVariables( [
 	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'usbdrive' ]
 	, 'labels'  => [
-		  [ 'Device' ]
+		  [ 'Bluetooth',     'bluetooth' ]
+		, [ 'Device' ]
 		, [ 'Output' ]
 		, [ 'Server rAudio', 'rserver' ]
 		, [ 'Shared Data',   'networks' ]
@@ -113,6 +114,7 @@ EOF
 	]
 	, [
 		  'id'       => 'bluetooth'
+		, 'disabled' => $L_bluetooth.' is currently connected.'
 		, 'help'     => <<< EOF
 $B_gear
 ■ Sampling 16bit - Bluetooth receivers with fixed sampling
@@ -198,6 +200,7 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
+ · $B_gear $B_power On / Off
 EOF
 	]
 ];

@@ -96,6 +96,7 @@ function highlightJSON( json ) {
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // from: https://stackoverflow.com/a/29622653
 	var regex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g;
 	return JSON.stringify( json, null, '\t' )
+				.replace( /\x3C/g, '&lt;' )                               // <
 				.replace( regex, function( match ) {                      // from: https://stackoverflow.com/a/7220510
 		if ( /^"/.test( match ) )
 			if ( /:$/.test( match ) )           return match                // key (wh)
@@ -207,7 +208,6 @@ function info( json ) {
 	V.timeout = {}
 	local(); // flag for consecutive info
 	I = json;
-	if ( 'keyvalue' in I ) $.each( I.keyvalue, ( k, v ) => I[ k ] = v );
 	if ( 'values' in I ) {
 		if ( ! Array.isArray( I.values ) ) {
 			if ( typeof I.values === 'object' ) { // json
@@ -364,7 +364,7 @@ function info( json ) {
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
 		var colspan, kv, label, param, type;
 		var i          = 0; // for radio name
-		I.list.forEach( l => {
+		I.list.forEach( ( l, i ) => {
 			label   = l[ 0 ];
 			type    = l[ 1 ];
 			param   = l[ 2 ] || {};
@@ -448,7 +448,12 @@ function info( json ) {
 					if ( param.suffix ) {
 						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
-						htmls.list += param.sameline ? '</td>' : '</tr>';
+						if ( param.sameline ) {
+							var labelnext = I.list[ i + 1 ][ 0 ];
+							htmls.list += labelnext ? '<td style="padding: 0 5px; text-align: right;">'+ labelnext +'</td>' : '</td>';
+						} else {
+							htmls.list += '</tr>';
+						}
 					}
 					break;
 				case 'textarea':
@@ -1041,6 +1046,13 @@ function infoPowerCommand( action ) {
 	} );
 }
 
+function addonsProgressSubmit( input ) {
+	if ( input.installurl.slice( 0, 4 ) !== 'http' ) input.installurl = '/usr/bin/sudo /srv/http/bash/'+ input.installurl
+	var form  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
+	$.each( input, ( k, v ) => form += '<input type="hidden" name="'+ [ k ] +'" value="'+ v +'">' );
+	$( 'body' ).append( form +'</form>' );
+	$( '#formtemp' ).submit();
+}
 function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );
 }
@@ -1117,6 +1129,9 @@ function qrCode( msg ) {
 		, pal : [ '#969a9c' ]
 	} );
 	return qr.outerHTML
+}
+function sp( px ) {
+	return '<sp style="width: '+ px +'px"></sp>'
 }
 
 // select2 --------------------------------------------------------------------
@@ -1278,7 +1293,6 @@ function pageInactive() {
 	
 	V.pageactive = false;
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
-	if ( typeof intervalStatus === 'function' ) intervalStatus( 'clear' );
 }
 document.onvisibilitychange = () => document.visibilityState === 'hidden' ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
@@ -1466,16 +1480,6 @@ $( '#debug' ).press( function() {
 	} );
 } );
 $( '.page-icon' ).press( () => location.reload() );
-$( '.col-r .switch' ).press( function( e ) {
-	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
-		$( '#setting-'+ e.target.id ).trigger( 'click' );
-		return
-	}
-	
-	switchIdIconTitle( e.target.id );
-	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
-	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
-} );
 $( '#data' ).on( 'click', '.copy', function() {
 	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
 	// copy2clipboard - for non https which cannot use clipboard API

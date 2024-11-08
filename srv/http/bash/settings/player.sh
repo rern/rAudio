@@ -25,19 +25,35 @@ autoupdate | ffmpeg | normalization )
 buffer | pllength | outputbuffer )
 	if [[ $ON ]]; then
 		if [[ $CMD == buffer ]]; then
-			data='audio_buffer_size  "'$KB'"'
-			[[ $KB != 4096 ]] && link=1
+			data='audio_buffer_size  "'$AUDIO_BUFFER_SIZE'"'
+			[[ $AUDIO_BUFFER_SIZE != 4096 ]] && link=1
 		elif [[ $CMD == pllength ]]; then
 			data='max_playlist_length  "'$LENGTH'"'
 			[[ $LENGTH != 16384 ]] && link=1
 		else
-			data='max_output_buffer_size  "'$KB'"'
-			[[ $KB != 8192 ]] && link=1
+			data='max_output_buffer_size  "'$MAX_OUTPUT_BUFFER_SIZE'"'
+			[[ $MAX_OUTPUT_BUFFER_SIZE != 8192 ]] && link=1
 		fi
 		echo "$data" > $dirmpdconf/conf/$CMD.conf
 	fi
 	[[ $link ]] && linkConf || rm $dirmpdconf/$CMD.conf
 	$dirsettings/player-conf.sh
+	;;
+confget )
+	case $NAME in
+		crossfade )
+			echo '{ "SEC": '$( mpc crossfade | cut -d' ' -f2 )' }'
+			;;
+		replaygain )
+			echo '{
+  "MODE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
+, "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
+}'
+			;;
+		* )
+			conf2json $dirmpdconf/conf/$NAME.conf
+			;;
+	esac
 	;;
 crossfade )
 	[[ $ON ]] && sec=$SEC || sec=0
@@ -181,7 +197,6 @@ resampler {\
 $data
 }" > $dirmpdconf/conf/$CMD.conf
 		linkConf
-		echo $QUALITY > $dirsystem/soxr
 	fi
 	systemctl restart mpd
 	pushRefresh

@@ -33,7 +33,7 @@ if [[ $1 == pushbt ]]; then
 fi
 
 listWlan() {
-	local dbm notconnected profiles profile wlandev
+	local dbm ipr notconnected profiles profile ssid wlandev
 	wlandev=$( < $dirshm/wlan )
 	profiles=$( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
@@ -42,17 +42,16 @@ listWlan() {
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do
-					ipr=$( ip r | grep $wlandev )
+					ipr=( $( ip r | grep -m1 "^default .* dev $wlandev" ) )
 					[[ $ipr ]] && break || sleep 1
 				done
-				ipwl=$( grep -v ^default <<< $ipr | cut -d' ' -f9 )
-				gateway=$( grep -m 1 ^default <<< $ipr | cut -d' ' -f3 )
-				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
+				gateway=${ipr[2]}
+				ip=${ipr[8]}
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
-  "dbm"     : '$dbm'
+  "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )'
 , "gateway" : "'$gateway'"
-, "ip"      : "'$ipwl'"
+, "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
 }'
 			else
@@ -67,7 +66,7 @@ listWlan() {
 }
 if [[ $1 == pushwl ]]; then
 	listWlan
-	pushData wlan '{ "listwl": '$listwl', "ipwl": "'$ipwl'", "gatewaywl": "'$gatewaywl'" }'
+	pushData wlan '{ "listwl": '$listwl', "ip": "'$ip'", "gateway": "'$gateway'" }'
 	exit
 fi
 
@@ -79,24 +78,25 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 [[ -e $dirshm/wlan ]] && listWlan
 
 # lan
-eth=$( ip -br link | awk '/^e/ {print $1; exit}' )
-[[ $eth ]] && ipr=$( ip r | grep -m 1 ^default.*$eth )
-if [[ $ipr ]]; then
-	ipeth=$( cut -d' ' -f9 <<< $ipr )
-	static=$( [[ $ipr != *"dhcp src "* ]] && echo true )
-	gateway=$( cut -d' ' -f3 <<< $ipr )
-	listeth='{
-  "ADDRESS" : "'$ipeth'"
-, "GATEWAY" : "'$gateway'"
-, "STATIC"  : '$static'
-}'
+if test -e /sys/class/net/e*; then
+	deviceeth=true
+	ipr=( $( ip r | grep -m1 '^default .* dev e' ) )
+	if [[ $ipr ]]; then
+		gateway=${ipr[2]}
+		ip=${ipr[8]}
+		listeth='{
+	  "ADDRESS" : "'$ip'"
+	, "GATEWAY" : "'$gateway'"
+	, "DHCP"    : '$( [[ ${ipr[6]} == dhcp ]] && echo true )'
+	}'
+	fi
 fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ##########
 data='
 , "devicebt"    : '$devicebt'
-, "deviceeth"   : '$( [[ $eth ]] && echo true )'
+, "deviceeth"   : '$deviceeth'
 , "devicewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "ap"          : '$( exists $dirsystem/ap )'
 , "apconf"      : '$apconf'
@@ -104,9 +104,9 @@ data='
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( [[ $( iwgetid -r ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
-, "hostname"    : "'$( avahi-resolve -a4 $( ipAddress ) | awk '{print $NF}' )'"
-, "ipsub"       : "'$( ipAddress sub )'"
-, "ipwl"        : "'$ipwl'"
+, "hostname"    : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
+, "ip"          : "'$ip'"
+, "ipsub"       : "'${ip%.*}'."
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
 , "listwl"      : '$listwl

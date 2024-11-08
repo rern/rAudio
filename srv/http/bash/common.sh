@@ -158,12 +158,6 @@ coverFileGet() {
 	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" | sed 's|%2F|/|g' # preserve spaces and special characters
 }
-dabDevice() {
-	if ! timeout 1 rtl_test -t &> /dev/null; then
-		notify dabradio 'DAB Radio' 'No DAB devices found.'
-		return 1
-	fi
-}
 data2json() {
 	local json page
 	page=$( basename ${0/-*} )
@@ -243,11 +237,7 @@ inOutputConf() {
 }
 ipAddress() {
 	local ip
-	ip=$( ip r \
-			| grep ^default \
-			| sort \
-			| head -1 \
-			| awk '{print $(NF-2); exit}' )
+	ip=$( ip r | awk '/^default/ {print $9; exit}' )
 	[[ $1 ]] && echo ${ip%.*}. || echo $ip
 }
 ipOnline() {
@@ -317,17 +307,6 @@ notify() { # icon title message delayms
 	message=$( quoteEscape $3 )
 	[[ ! $ip ]] && ip=127.0.0.1
 	pushWebsocket $ip notify '{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
-}
-packageActive() {
-	local active pkg pkgs status
-	pkgs=$@
-	status=( $( systemctl is-active $pkgs ) )
-	i=0
-	for pkg in ${pkgs[@]}; do
-		[[ ${status[i]} == active ]] && active=true || active=false
-		printf -v ${pkg//-} '%s' $active
-		(( i++ ))
-	done
 }
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
@@ -405,6 +384,32 @@ Title="'$title'"'
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD
+}
+settingsActive() {
+	local data pkg
+	for pkg in $@; do
+		data+='
+, "'${pkg/-}'" : '$( systemctl -q is-active $pkg && echo true || echo false )
+	done
+	echo "$data"
+}
+settingsConf() {
+	local data file
+	for file in $@; do
+		data+='
+, "'$file'conf" : '$( conf2json $file.conf )
+	done
+	echo "$data"
+}
+settingsEnabled() {
+	local data dir file
+	for file in $@; do
+		[[ ${file:0:1} == / ]] && dir=$file && continue
+		
+		data+='
+, "'${file/.*}'" : '$( [[ -e $dir/$file ]] && echo true || echo false )
+	done
+	echo "$data"
 }
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}

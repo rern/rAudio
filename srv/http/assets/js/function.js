@@ -708,20 +708,20 @@ function infoLibraryOption() {
 }
 function infoThumbnail( icon, message, path, subdir ) {
 	if ( ! path ) subdir = true;
-	var list = [ '', 'radio', { kv: { 'Only added or removed': '', 'Rebuild all': 'overwrite' }, sameline: false } ];
+	var list = [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ];
 	info( {
 		  icon    : icon
 		, title   : 'Update Thumbnails'
 		, message : message
 		, list    : subdir ? list : false
 		, ok      : () => {
-			$( 'body' ).append(
-				 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
-				+'<input type="hidden" name="path" value="'+ path +'">'
-				+'<input type="hidden" name="overwrite" value="'+ infoVal() +'">'
-				+'</form>'
-			);
-			$( '#formtemp' ).submit();
+			addonsProgressSubmit( {
+				  alias      : 'thumbnail'
+				, title      : 'Album Thumbnails'
+				, label      : 'Update'
+				, installurl : "albumthumbnail.sh '"+ path +"' "+ infoVal()
+				, backhref   : '/'
+			} );
 		}
 	} );
 }
@@ -1028,12 +1028,11 @@ function playlistInsert( pos ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
 		}
 		bannerHide();
-		V.pladd = false;
 	} );
 }
 function playlistInsertSelect() {
 	info( {
-		  keyvalue    : V.pladd
+		  ...V.pladd
 		, list        : [ 'Position:', 'radio', { Before: 1, After: 2 } ]
 		, footer      : '<wh>'+ ( V.pladd.index + 1 ) +'<gr> • </gr>'+ V.pladd.track +'</wh>'
 		, beforeshow  : playlistInsertSet
@@ -1043,10 +1042,7 @@ function playlistInsertSelect() {
 			infoReset();
 			banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
 		}
-		, cancel      : () => {
-			V.pladd = false;
-			$( '#playlist' ).trigger( 'click' );
-		}
+		, cancel      : savedPlaylistAddClear
 		, ok          : () => playlistInsert( +infoVal() + V.pladd.index )
 	} );
 	bannerHide();
@@ -1058,20 +1054,17 @@ function playlistInsertSet() {
 function playlistInsertTarget() {
 	V.pladd.title = 'Add to '+ V.pladd.name;
 	info( {
-		  keyvalue   : V.pladd
+		  ...V.pladd
 		, list       : [ 'Position:', 'radio', { First : 1, Select: 'select', Last: 'last' } ]
 		, values     : 'last'
 		, beforeshow : () => {
 			playlistInsertSet();
-			$( '#infoList' ).on( 'click', 'label:eq( 1 )', function() {
-				infoReset();
+			$( '#infoList label' ).eq( 1 ).on( 'click', function() {
+				$( '#infoX' ).trigger( 'click' );
 				banner( V.pladd.icon, V.pladd.title, 'Select position to insert', -1 );
 			} );
 		}
-		, cancel     : () => {
-			V.pladd = false;
-			$( '#playlist' ).trigger( 'click' );
-		}
+		, cancel     : savedPlaylistAddClear
 		, ok         : () => playlistInsert( infoVal() )
 	} );
 	bannerHide();
@@ -1083,6 +1076,39 @@ function playlistRemove( $li ) {
 		bash( [ 'mpcremove', $li.index() + 1, 'CMD POS' ] );
 	}
 	$li.remove();
+}
+function playlistRemoveRange( range ) {
+	bannerHide();
+	var $disabled = $( '#bar-top, #bar-bottom, .content-top' );
+	var clear = () => {
+		delete V.plrange;
+		$disabled.removeClass( 'disabled' );
+		bannerHide();
+	}
+	var param = { updn: { step: 1, min: 1, max: S.pllength, link: true } }
+	info( {
+		  icon       : 'playlist'
+		, title      : 'Remove Range'
+		, list       : [ [ ico( 'cursor' ) +' From', 'number', param ], [ ico( 'cursor' ) + sp( 23 ) +'To', 'number', param ] ]
+		, boxwidth   : 80
+		, values     : range || [ 1, S.pllength ]
+		, beforeshow : () => {
+			$( '#infoList td:first-child' ).on( 'click', function() {
+				V.plrange = infoVal();
+				V.rangei  = $( this ).parent().index();
+				$( '#infoOverlay' ).addClass( 'hide' );
+				$disabled.addClass( 'disabled' );
+				banner( 'cursor blink', 'Remove Range', ( V.rangei ? 'To' : 'From' ) +': Select ...', -1 );
+			} );
+		}
+		, cancel     : clear
+		, ok         : () => {
+			var v = infoVal( 'array' );
+			bash( [ 'mpcremove', ...v, 'CMD POS TO' ] );
+			$( '#pl-list li' ).slice( v[ 0 ] - 1, v[ 1 ] ).remove();
+			clear();
+		}
+	} );
 }
 function playlistSkip() {
 	if ( ! $( '#pl-list li' ).length ) {
@@ -1225,8 +1251,6 @@ function renderLibraryList( data ) { // V.librarylist
 		htmlpath += ico( 'add btntitle button-webradio-new' );
 	} else if ( V.mode === 'latest' ) {
 		htmlpath += ico( 'flash btntitle button-latest-clear' );
-	} else if ( V.mode === 'dabradio' ) {
-		htmlpath += root ? ico( 'refresh btntitle button-dab-refresh' ) : '';
 	}
 	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
@@ -1347,6 +1371,9 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	$( '#button-pl-back' ).addClass( 'hide' );
 	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
+	$( '#button-pl-librandom' )
+		.toggleClass( 'bl', S.librandom )
+		.toggleClass( 'disabled', C.song === 0 || ! ( 'song' in C ) );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	if ( ! data ) {
 		V.playlisthtml = '';
@@ -1369,9 +1396,6 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	$( '.pllength' ).removeClass( 'disabled' );
 	$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', S.consume );
-	$( '#button-pl-librandom' )
-		.toggleClass( 'bl', S.librandom )
-		.toggleClass( 'disabled', C.song === 0 );
 	if ( data.html !== V.playlisthtml ) {
 		V.playlisthtml = data.html;
 		var html = htmlHash( data.html );
@@ -1401,6 +1425,8 @@ function renderPlaylistSet() {
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).removeClass( 'hide' );
 	}
 	renderPlaylistPadding();
+	if ( 'pladd' in V ) $( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
+
 }
 function renderSavedPl( data ) { // V.playlistlist - list of saved playlists
 	V.playlisthome  = false;
@@ -1555,7 +1581,6 @@ function setButtonUpdating() {
 		$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}
-	$( '#mi-dabupdate' ).toggleClass( 'hide', ! S.updatingdab );
 }
 function setCoverart() {
 	if ( ! D.cover ) {
@@ -2008,17 +2033,19 @@ function volumeAnimate( target, volume ) {
 			  duration : Math.abs( target - volume ) * 40
 			, easing   : 'linear'
 			, complete : () => {
-				V.volumebar = setTimeout( volumeBarHide, 3000 );
+				V.volumebar = volumeBarHide();
 				$( '.volumeband' ).removeClass( 'disabled' );
 				setVolume();
 			}
 		}
 	);
 }
-function volumeBarHide() {
-	$( '#info' ).removeClass( 'hide' ); // 320 x 480
-	$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-	$( '.volumeband' ).addClass( 'transparent' );
+function volumeBarHide( nodelay ) {
+	setTimeout( () => {
+		$( '#info' ).removeClass( 'hide' ); // 320 x 480
+		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
+		$( '.volumeband' ).addClass( 'transparent' );
+	}, nodelay ? 0 : 3000 );
 }
 function volumeBarSet( pagex ) {
 	V.volume.x = pagex - V.volume.min;
@@ -2030,7 +2057,7 @@ function volumeBarSet( pagex ) {
 function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
-	V.volumebar = setTimeout( volumeBarHide, 3000 );
+	V.volumebar = volumeBarHide();
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 }

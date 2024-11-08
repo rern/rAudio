@@ -127,7 +127,7 @@ heading + .helpblock {
 	display: inline-block;
 	width: 125px;
 	height: 25px !important;
-	line-height: 26px;
+	line-height: 25px;
 	padding-left: 3px;
 	background: var( --cg );
 }
@@ -136,6 +136,9 @@ heading + .helpblock {
 	padding: 0 5px 0 10px;
 	text-align: right;
 	background: var( --cga );
+}
+.helpmenu.label i {
+	margin-left: 4px;
 }
 .helpmenu.tab {
 	padding-left: 0;
@@ -150,10 +153,6 @@ heading + .helpblock {
 }
 #infoList p i {
 	width: 40px;
-}
-.helpmenu.label i {
-	margin: 0 0 0 8px;
-	text-align: left;
 }
 .helpmenu .sub {
 	float: right;
@@ -239,12 +238,6 @@ heading i {
 }
 heading i.back {
 	width: 40px;
-}
-heading .i-status {
-	display: none;
-}
-heading.status .i-status {
-	display: inline-block;
 }
 heading i.help {
 	float: right;
@@ -519,20 +512,10 @@ input.disabled + .switchlabel:after {
 	line-height: 26px;
 }
 .col-l i {
-	width: 30px;
+	margin-left: 8px;
 	vertical-align: 5px;
 	font-size: 22px;
 	line-height: 18px;
-}
-.settings i,
-.col-l i.status,
-.col-l a .i-status {
-	width: 20px;
-	vertical-align: 0;
-	text-align: center
-}
-.col-l .i-status {
-	font-size: 15px;
 }
 .col-l a {
 	display: inline-block;

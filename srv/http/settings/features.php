@@ -3,7 +3,7 @@ $id_data      = [
 	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                'status' => true, 'exist' => 'iwctl' ]
 	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
 	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false, 'status' => true, 'exist' => 'camilladsp' ]
-	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false, 'status' => true, 'exist' => 'mediamtx' ]
+	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',        'status' => true, 'exist' => 'mediamtx' ]
 	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
 	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
 	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',                            'status' => true, 'exist' => 'firefox' ]
@@ -22,7 +22,7 @@ $id_data      = [
 	, 'volumelimit'    => [ 'label' => 'Volume Limit' ]
 ];
 commonVariables( [
-	  'buttons' => [ 'gear', 'lastfm', 'microsd', 'networks', 'usbdrive' ]
+	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'usbdrive' ]
 	, 'labels'  => [
 		  [ 'Equalizer',     'equalizer' ]
 		, [ 'DSP',           'camilladsp' ]
@@ -33,6 +33,7 @@ commonVariables( [
 	, 'menus'   => [
 	  [ 'features', 'Features', 'camilladsp' ]
 	, [ 'features', 'Features', 'equalizer' ]
+	, [ 'networks', 'Networks', 'snapcast' ]
 	, [ 'playlist', 'Playlist', 'multiraudio' ]
 	, [ 'player',   'Player',   'lock' ]
 	, [ 'power',    'Power',    'screenoff' ]
@@ -44,7 +45,7 @@ $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer <btn>Address bar</btn> <c>\\\\'.$ip.'</c>';
-$snapweb      = $B_gear.'<a href="https://github.com/badaix/snapweb">Snapweb</a>: Manage clients with built-in streaming renderer'."\n";
+$snapweb      = $B_gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
 $body         = [
@@ -60,7 +61,11 @@ EOF
 	]
 	, [
 		  'id'       => 'dabradio'
-		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
+		, 'help'     => <<< EOF
+<a href="https://en.wikipedia.org/wiki/Software-defined_radio">SDR</a> - Software-defined radio / Digital audio broadcasting
+ · Enable: Connect a USB SDR device
+ · Stations: $B_gear <btn>Scan</btn> $T_library $B_dabradio
+EOF
 	]
 	, [
 		  'id'       => 'snapclient'
@@ -145,7 +150,7 @@ EOF
 	]
 	, [
 		  'id'       => 'equalizer'
-		, 'disabled' => $L_camilladsp.' is currently enabled.'
+		, 'disabled' => $L_dsp.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10-band graphic equalizer with user presets.
 Control: $M_features

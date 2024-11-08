@@ -154,16 +154,6 @@ function switchEnable() {
 	S[ SW.id ] = true;
 	SWreset();
 }
-function switchIdIconTitle( id ) {
-	id       = id.replace( 'setting-', '' );
-	SW.id    = id;
-	SW.title = $( '#div'+ id +' .col-l .label' ).text();
-	if ( page === 'player' ) {
-		SW.icon  =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume';
-	} else {
-		SW.icon  = id;
-	}
-}
 function switchSet( ready ) {
 	if ( page === 'camilla' && ! ready ) return // wait for GetConfigJson
 	
@@ -205,7 +195,7 @@ function psBluetooth( data ) { // from networks-data,sh
 	if ( ! data ) {
 		if ( page === 'networks' ) {
 			S.listbt = data;
-			renderBluetooth();
+			render.bluetooth();
 		} else if ( page === 'system' ) {
 			$( '#bluetooth' ).removeClass( 'disabled' );
 		}
@@ -217,7 +207,7 @@ function psBluetooth( data ) { // from networks-data,sh
 		}
 	} else if ( page === 'networks' ) {
 		S.listbt = data;
-		renderBluetooth();
+		render.bluetooth();
 	}
 	bannerHide();
 }
@@ -290,10 +280,10 @@ function psWlan( data ) {
 	}
 	
 	$.each( data, ( k, v ) => { S[ k ] = v } );
-	renderWlan();
+	render.wlan();
 }
 //---------------------------------------------------------------------------------------
-document.title = page === 'camilla' ? 'Camilla DSP' : page[ 0 ].toUpperCase() + page.slice( 1 );
+document.title = page === 'camilla' ? 'Camilla DSP' : capitalize( page );
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 $( '#'+ page ).addClass( 'active' );
 
@@ -481,7 +471,18 @@ $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();
-	switchIdIconTitle( this.id );
+	var id   = this.id.replace( 'setting-', '' );
+	var icon = id;
+	if ( page === 'player' ) {
+		icon = 'mpd';
+	} else if ( page === 'camilla' ) {
+		icon = V.tab || 'camilladsp';
+	}
+	SW = {
+		  id    : id
+		, icon  : icon
+		, title : $( '#div'+ id +' .col-l .label' ).text()
+	}
 } );
 $( '.switch' ).on( 'click', function() {
 	var $this   = $( this );
@@ -489,8 +490,7 @@ $( '.switch' ).on( 'click', function() {
 	if ( $this.hasClass( 'disabled' ) ) {
 		$this.prop( 'checked', ! checked );
 		info( {
-			  icon    : SW.icon
-			, title   : SW.title
+			  ...SW
 			, message : $this.prev().html()
 		} );
 		return
@@ -517,8 +517,7 @@ $( '.switch' ).on( 'click', function() {
 				$( '#setting-'+ SW.id ).addClass( 'hide' );
 				bannerHide();
 				info( {
-					  icon    : SW.icon
-					, title   : SW.title
+					  ...SW
 					, message : error
 				} );
 			}

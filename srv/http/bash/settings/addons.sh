@@ -1,6 +1,14 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+
+if [[ $1 == kill ]]; then
+	file=$dirshm/script
+	[[ -e $file ]] && pkill $( < $file ) && rm $file
+	exit
+# --------------------------------------------------------------------
+fi
+
 addonsjson=$diraddons/addonslist.json
 bar='<a class="cbm">  </a>'
 info='<a class="cby ck"> i </a>'

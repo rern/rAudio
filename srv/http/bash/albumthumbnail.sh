@@ -1,24 +1,35 @@
 #!/bin/bash
 
 path=$1
-overwrite=$2
-fullpath="/mnt/MPD/$path"
+[[ $2 == true ]] && overwrite=1
+bar='<a class="cbm">  </a>'
 padw='<a class="cbw">  </a>'
 padg='<a class="cbg">  </a>'
 padgr='<a class="cbgr">  </a>'
+warn='<a class="cbr cw"> ! </a>'
 
-. /srv/http/bash/settings/addons.sh
+. /srv/http/bash/common.sh
 
+basename $0 .sh > $dirshm/script
+
+hhmmss() {
+	local fmt
+	(( $total < 3600 )) && fmt='+%M:%S' || fmt='+%H:%M:%S'
+	date -d@$1 -u $fmt
+}
+tagColor() {
+	echo '<a class="cc">'$@'</a>'
+}
 warningWrite() {
-	echo "   $warn No write permission: <a class='cc'>$1</a> $( stat -c '%A (%a)' "$1" )"
+	echo "   $warn" No write permission: $( tagColor $dir ) $( stat -c '%A (%a)' "$dir" )
 }
 
-title "$bar Update Album Thumbnails ..."
-echo Path: '<a class="cc">'$fullpath'</a>'
-echo
-
-[[ ! -w "$fullpath" ]] && warningWrite "$fullpath" && exit
+dir="/mnt/MPD/$path"
+[[ ! -w "$dir" ]] && warningWrite && exit
 # --------------------------------------------------------------------
+
+echo -e "\nDirectory: $( tagColor $dir )\n"
+
 SECONDS=0
 
 albumfile=/srv/http/data/mpd/album
@@ -26,7 +37,7 @@ albumfile=/srv/http/data/mpd/album
 if [[ ! $path ]]; then
 	mpdpathlist=$( cut -d^ -f7 $albumfile )
 else
-	mpdpathlist=$( find "$fullpath" -type d | cut -c10- )
+	mpdpathlist=$( find "$dir" -type d | cut -c10- )
 fi
 unsharp=0x.5
 
@@ -43,10 +54,8 @@ while read mpdpath; do
 		sec=0
 		total=0
 	fi
-	elapse=$( date -d@$sec -u +%H:%M:%S )
-	total=$( date -d@$total -u +%H:%M:%S )
-	echo $percent% '<a class="cgr">'$elapse/$total'</a>'
-	echo $i/$count '<a class="cc">'$mpdpath'</a>'
+	echo $percent'% <a class="gr">'$( hhmmss $sec )/$( hhmmss $total )'</a>'
+	echo $i/$count $( tagColor $mpdpath )
 	
 	dir="/mnt/MPD/$mpdpath"
 	if [[ ! $overwrite ]] && ls "$dir/coverart".* &> /dev/null; then
@@ -88,11 +97,11 @@ while read mpdpath; do
 		fi
 		if [[ $error ]]; then
 			if [[ ! -w "$dir" ]]; then
-				warningWrite "$dir"
+				warningWrite
 				errorwrite+="
 $dir"
 			else
-				echo "   $warn Coversion failed: <a class='cc'>$coverfile</a>"
+				echo "   $warn Coversion failed: $( tagColor $coverfile )"
 				errorconvert+="
 $coverfile"
 			fi
@@ -113,7 +122,7 @@ $warn Coversion failed:
 $errorconvert"
 
 echo "
-Duration: $( date -d@$SECONDS -u +%H:%M:%S )
+Duration: $( hhmmss $SECONDS )
 
 $bar Done.
 <hr>

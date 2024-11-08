@@ -1,6 +1,13 @@
 #!/bin/bash
 
-! dabDevice && exit
+script -c 'timeout 0.1 rtl_test -t' $dirshm/dabdevice &> /dev/null
+if ! grep -q ^Found $dirshm/dabdevice; then
+	notify dabradio 'DAB Radio' 'No DAB devices found.'
+	exit
+# --------------------------------------------------------------------
+fi
+
+systemctl start dab
 
 killsubs() {
 	kill $DABPID
