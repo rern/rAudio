@@ -9,24 +9,6 @@ alias=r1
 
 rm -f $dirsystem/lcdmodel
 
-dir=/etc/systemd/system
-file=$dir/dab.service
-if [[ -e $file ]] && ! grep -q mediamtx $file; then
-	$dirbash/cmd.sh radiostop
-	systemctl disable --now mediamtx
-	sed -i '/^Description/ a\
-Requires=mediamtx.service \
-After=mediamtx.service
-' $file
-dir+=/mediamtx.service.d
-mkdir -p $dir
-echo "\
-[Unit]
-BindsTo=dab.service
-" > $dir/override.conf
-	systemctl daemon-reload
-fi
-
 file=$dirsystem/lcdchar.conf
 if [[ -e $file && $( sed -n -E '/^charmap/,/^p0/ p' $file | wc -l ) -gt 2 ]]; then
 	. $file
