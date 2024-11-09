@@ -7,6 +7,7 @@ $( '.helphead' ).off( 'click' ).on( 'click', function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
 	$( this ).toggleClass( 'bl', hidden );
 	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
+	Object.keys( S ).forEach( k => V[ k ] = hidden );
 } );
 $( '.container' ).on( 'click', '.revision', function() {
 	$this = $( this );
@@ -15,6 +16,7 @@ $( '.container' ).on( 'click', '.revision', function() {
 	$( '.helphead' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
 	$this.toggleClass( 'active' );
+	V[ $this.data( 'alias' ) ] = hidden;
 } ).on( 'click', '#list li', function() {
 	alias = $( this ).data( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
@@ -101,9 +103,10 @@ function renderPage() {
 	$.each( S, ( alias, addon ) => {
 		if ( alias === 'status' || ( S.status.hidden.includes( alias ) ) ) return
 		var notverified = S.status.notverified.includes( alias );
-		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +'</a>' : '';
+		var version     = 'version' in addon ? '&emsp;<a class="revision" data-alias="'+ alias +'">'+ addon.version +'</a>' : '';
 		if ( 'revision' in addon ) {
-			var revision = '<p class="revisiontext hide">';
+			var hide     = V[ alias ] ? '' : ' hide';
+			var revision = '<p class="revisiontext'+ hide +'">';
 			addon.revision.forEach( el => revision += '<gr>•</gr> '+ el +'<br>' );
 			revision    += '</p>';
 		} else {
