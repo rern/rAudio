@@ -151,12 +151,13 @@ confget )
 	esac
 	;;
 dabradio )
-	enableFlagSet
 	if [[ $ON ]]; then
+		systemctl enable --now mediamtx
 		[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg
 	else
 		killProcess dabscan
 		systemctl stop dab
+		systemctl disable --now mediamtx
 	fi
 	pushRefresh
 	;;

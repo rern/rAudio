@@ -3,7 +3,7 @@ $id_data      = [
 	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                'status' => true, 'exist' => 'iwctl' ]
 	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
 	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false, 'status' => true, 'exist' => 'camilladsp' ]
-	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',        'status' => true, 'exist' => 'mediamtx' ]
+	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => true,  'status' => true, 'exist' => 'mediamtx' ]
 	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
 	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
 	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',                            'status' => true, 'exist' => 'firefox' ]
@@ -63,7 +63,6 @@ EOF
 		  'id'       => 'dabradio'
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Software-defined_radio">SDR</a> - Software-defined radio / Digital audio broadcasting
- · Enable: Connect a USB SDR device
  · Stations: $B_gear <btn>Scan</btn> $T_library $B_dabradio
 EOF
 	]

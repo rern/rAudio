@@ -11,7 +11,7 @@
 data+=$( settingsActive camilladsp localbrowser nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
 data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
-			$dirsystem ap autoplay dabradio equalizer login loginsetting lyrics multiraudio scrobble scrobblekey snapclient spotifykey volumelimit \
+			$dirsystem ap autoplay equalizer login loginsetting lyrics multiraudio scrobble scrobblekey snapclient spotifykey volumelimit \
 			$dirshm nosound )
 
 ##########
@@ -24,13 +24,9 @@ data+='
 , "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
 , "snapserveractive" : '$( [[ $( snapclientIP ) ]] && echo true )'
 , "stoptimer"        : '$( exists $dirshm/pidstoptimer )
-
 ##########
-if [[ -e /usr/bin/mediamtx ]]; then
-	script -c 'timeout 0.1 rtl_test -t' $dirshm/dabdevice &> /dev/null
-	data+='
-, "dabradio"         : '$( grep -q ^Found $dirshm/dabdevice && echo true )
-fi
+[[ -e /usr/bin/mediamtx ]] && data+='
+, "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )
 ##########
 [[ -e $dirshm/wlan ]] && data+='
 , "wlan"             : true
