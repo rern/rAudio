@@ -1195,6 +1195,7 @@ function renderLibrary() { // library home
 function renderLibraryCounts() {
 	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
+	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
 		var mode  = $this.data( 'mode' );
@@ -1206,7 +1207,6 @@ function renderLibraryCounts() {
 	} );
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 	$( '.mode .label' ).toggleClass( 'hide', ! D.label );
-	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 }
 function renderLibraryList( data ) { // V.librarylist
 	V.libraryhome  = false;
