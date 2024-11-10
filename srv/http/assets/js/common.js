@@ -1069,7 +1069,7 @@ function infoDabScan() {
 				, title      : title
 				, label      : 'Scan'
 				, installurl : 'dab-scan.sh'
-				, backhref   : 'settings.php?p=features'
+				, backhref   : page ? 'settings.php?p=features' : '/'
 			} );
 		}
 	} );
