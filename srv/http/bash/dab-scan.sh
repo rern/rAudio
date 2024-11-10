@@ -5,6 +5,7 @@
 basename $0 .sh > $dirshm/script
 
 echo
+# dab-scanner-rtlsdr -C 5A -F $dirshm/dabscan
 script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan # capture /dev/tty to file
 if [[ ! -e $dirshm/dabscan ]] || ! grep -q ^audioservice $dirshm/dabscan; then
 	echo '
