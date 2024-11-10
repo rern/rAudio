@@ -200,6 +200,9 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 $( '#setting-snapserver' ).on( 'click', function() {
 	window.open( 'http://'+ S.ip +':1780', '_blank' );
 } );
+$( '#camilladsp, #equalizer' ).on( 'click', function() {
+	if ( S[ this.id ] ) $( this.id === 'camilladsp' ? '#equalizer' : '#camilladsp' ).addClass( 'disabled' );
+} );
 $( '#setting-ap' ).on( 'click', function() {
 	bash( [ 'confget', 'ap', 'CMD NAME' ], values => {
 		info( {
