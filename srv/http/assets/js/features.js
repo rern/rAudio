@@ -198,7 +198,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 	}
 } );
 $( '#setting-snapserver' ).on( 'click', function() {
-	window.open( 'http://'+ S.hostip +':1780', '_blank' );
+	window.open( 'http://'+ S.ip +':1780', '_blank' );
 } );
 $( '#setting-ap' ).on( 'click', function() {
 	bash( [ 'confget', 'ap', 'CMD NAME' ], values => {
@@ -345,7 +345,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 			var iL     = values.length / 2 - 1;
 		} else {
 			list.push( listname, listip, listname, listip );
-			values     = [ S.hostname, S.hostip, '', ipSub( S.ip ) ];
+			values     = [ S.hostname, S.ip, '', ipSub( S.ip ) ];
 		}
 		function checkIpList( ar ) {
 			return [ ...Array( ar.length ).keys() ].filter( ( i, el ) => el % 2 )
@@ -374,7 +374,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 					I.checkip = checkIpList( $( '#infoList input' ) );
 				} );
 				$( '#infoList input' ).filter( ( i, el ) => {
-					if ( $( el ).val() === S.hostip ) {
+					if ( $( el ).val() === S.ip ) {
 						var $tr = $( el ).parents( 'tr' );
 						$tr.find( 'input' ).addClass( 'disabled' );
 						$tr.find( 'i' ).addClass( 'hide' );
