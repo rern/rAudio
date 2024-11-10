@@ -101,8 +101,8 @@ data+='
 , "audiooutput"       : "'$audiooutput'"
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true )'
-, "i2saudio"             : '$i2saudio'
-, "ipsub"             : "'$( ipAddress sub )'"
+, "i2saudio"          : '$i2saudio'
+, "ip"                : "'$( ipAddress )'"
 , "lan"               : '$( ip -br link | grep -q ^e && echo true )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$( $dirsettings/system-storage.sh )'

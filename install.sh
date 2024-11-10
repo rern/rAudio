@@ -4,7 +4,12 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20241109
+# 20241110
+if [[ ! -e /boot/kernel.img ]]; then
+	revision=$( grep ^Revision /proc/cpuinfo )
+	[[ ${revision: -3:2} < 11 ]] && echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
+fi
+
 file=/etc/systemd/system/dab.service
 if [[ -e $file ]] && grep -q Requires $file; then
 	sed -i '/^Requires\|^After/ d' $file

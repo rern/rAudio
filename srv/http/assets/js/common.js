@@ -1070,6 +1070,9 @@ function htmlOption( el ) {
 	}
 	return options
 }
+function ipSub( ip ) {
+	return ip.replace( /(.*\..*\..*\.).*/, '$1' )
+}
 function jsonChanged( a, b ) {
 	if ( ! a || ! b || ! Object.keys( a ).length || ! Object.keys( b ).length ) return true
 	

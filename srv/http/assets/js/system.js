@@ -109,7 +109,7 @@ var setting       = {
 			  cifs : {
 				  PROTOCOL : 'cifs'
 				, NAME     : ''
-				, IP       : S.ipsub
+				, IP       : ipSub( S.ip )
 				, SHARE    : ''
 				, USR      : ''
 				, PASSWORD : ''
@@ -118,7 +118,7 @@ var setting       = {
 			, nfs  : {
 				  PROTOCOL : 'nfs'
 				, NAME     : ''
-				, IP       : S.ipsub
+				, IP       : ipSub( S.ip )
 				, SHARE    : ''
 				, OPTIONS  : ''
 			}
@@ -184,7 +184,7 @@ var setting       = {
 			, tab      : [ setting.mount, () => setting.mount( 'nfs' ), '' ]
 			, list     : [ 'Server IP', 'text' ]
 			, prompt   : true
-			, values   : { IP: I.active && I.values ? infoVal().IP : S.ipsub }
+			, values   : { IP: I.active && I.values ? infoVal().IP : ipSub( S.ip ) }
 			, checkip  : [ 0 ]
 			, cancel   : switchCancel
 			, ok       : () => {

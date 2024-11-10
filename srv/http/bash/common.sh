@@ -236,9 +236,7 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	local ip
-	ip=$( ip r | awk '/^default/ {print $9; exit}' )
-	[[ $1 ]] && echo ${ip%.*}. || echo $ip
+	ip r | grep "dev $1.*link" | tail -1 | cut -d' ' -f9
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0

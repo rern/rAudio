@@ -28,7 +28,7 @@ var render  = {
 					htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
 							 +'&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
 				} else {
-					htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•</gr>&ensp;'+ list.ssid +'</li>';
+					htmlwl += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•</gr>&ensp;'+ list.ssid +'</li>';
 				}
 			} );
 		}
@@ -48,7 +48,7 @@ var setting = {
 	, lan         : v => {
 		var icon   = 'lan';
 		var title  = ( v ? 'Edit' : 'Add' ) +' LAN Connection';
-		var values = v || { ADDRESS: S.ipsub, GATEWAY: S.gateway }
+		var values = v || { ADDRESS: ipSub( S.ip ), GATEWAY: S.gateway }
 		info( {
 			  icon         : icon
 			, title        : title
@@ -115,7 +115,7 @@ var setting = {
 					setting.wifi( V.profileget );
 				} else {
 					var val = infoVal();
-					val.ADDRESS = S.ipsub;
+					val.ADDRESS = ipSub( S.ip );
 					val.GATEWAY = S.gateway;
 					var v       = {}
 					Object.keys( default_v.static ).forEach( k => v[ k ] = val[ k ] );
@@ -141,7 +141,7 @@ var setting = {
 		}
 		info( {
 			  icon         : 'wifi'
-			, title        : v ? 'Saved Connection' : 'Add Connection'
+			, title        : v ? 'Edit Connection' : 'Add Connection'
 			, tablabel     : [ 'DHCP', 'Static IP' ]
 			, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 			, boxwidth     : 180
@@ -152,7 +152,11 @@ var setting = {
 			, checkblank   : [ 0 ]
 			, checklength  : { 1: [ 8, 'min' ] }
 			, checkip      : dhcp ? '' : [ 2, 3 ]
-			, ok           : () => connectWiFi( infoVal() )
+			, ok           : () => {
+				var val = infoVal();
+				connectWiFi( val );
+				notify( 'wifi', val.ESSID, v ? 'Change ...' : 'Connect ...' );
+			}
 		} );
 	}
 }
@@ -176,8 +180,6 @@ function bluetoothInfo( mac ) {
 	} );
 }
 function connectWiFi( data ) {
-	var icon  = 'wifi';
-	var title = 'Wi-Fi'
 	clearTimeout( V.timeoutscan );
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
@@ -188,14 +190,13 @@ function connectWiFi( data ) {
 			bannerHide();
 			if ( error ) {
 				info( {
-					  icon    : icon
-					, title   : title
+					  icon    : 'wifi'
+					, title   : data.ESSID
 					, message : error
 				} );
 			}
 		}
 	} );
-	notify( icon, title, S.listeth || S.connectedwl ? 'Change ...' : 'Connect ...' );
 }
 function onPageInactive() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
@@ -263,6 +264,7 @@ function scanWlan() {
 		if ( data ) {
 			data.sort( ( a, b ) => b.signal - a.signal );
 			S.listwlscan = data;
+			var cls = 'wlscan';
 			var icon, signal;
 			var htmlwl   = '';
 			data.forEach( list => {
@@ -271,11 +273,12 @@ function scanWlan() {
 				icon   += signal > -60 ? '' : ( signal < -67 ? 1 : 2 );
 				icon    = ico( icon );
 				if ( list.current ) {
+					cls  += ' current';
 					icon += '<grn>•</grn> ';
 				} else if ( list.profile ) {
 					icon += '<gr>•</gr> ';
 				}
-				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'+ icon;
+				htmlwl += '<li class="'+ cls +'" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'+ icon;
 				htmlwl += signal && signal < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' '+ ico( 'lock' );
 				if ( signal != 0 ) htmlwl += '<gr>'+ signal +' dBm</gr>';
@@ -339,7 +342,7 @@ $( '.wlscan' ).on( 'click', function() {
 		scanWlan();
 	}
 } );
-$( '#listwlscan' ).on( 'click', 'li', function() {
+$( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
 	var $this    = $( this );
 	var ssid     = $this.data( 'ssid' );
 	var security = $this.data( 'wpa' ) === 'wep';
@@ -355,6 +358,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 	} else {
 		connectWiFi( { ESSID: ssid } );
 	}
+	notify( 'wifi', ssid, 'Connect ...' );
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
