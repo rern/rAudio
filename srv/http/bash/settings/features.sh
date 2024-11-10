@@ -167,6 +167,14 @@ dabscan )
 	;;
 equalizer )
 	enableFlagSet
+	[[ $ON && ! -e $dirsystem/equalizer.json ]] && echo '{
+  "active" : "Flat"
+, "preset" : {
+		"Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]
+	}
+, "current": "62 62 62 62 62 62 62 62 62 62"
+
+}' | jq > $dirsystem/equalizer.json
 	pushData reload 1
 	pushRestartMpd equalizer $TF
 	;;

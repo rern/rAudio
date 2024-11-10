@@ -410,16 +410,7 @@ equalizer )
 	done
 	;;
 equalizerget )
-	if [[ -e $dirsystem/equalizer.json ]]; then
-		cat $dirsystem/equalizer.json
-	else
-		echo '{
-  "active" : "Flat"
-, "preset" : {
-		"Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]
-	}
-}'
-	fi
+	cat $dirsystem/equalizer.json
 	;;
 equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL

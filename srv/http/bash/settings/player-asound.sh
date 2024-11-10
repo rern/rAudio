@@ -158,7 +158,7 @@ if [[ $camilladsp ]]; then
 		camillaDSPstart
 	fi
 else
-	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
+	if [[ -e $dirsystem/equalizer ]]; then
 		value=$( getVar current $dirsystem/equalizer.json )
 		[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
 		$dirbash/cmd.sh "equalizer
