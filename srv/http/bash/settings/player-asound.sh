@@ -1,12 +1,10 @@
 #!/bin/bash
 
 getVarYml() { # var: value || var: "value";*
-	[[ ! -e ${@: -1} ]] && echo false && return
-	
-	if [[ $3 ]]; then
-		sed -n -E '/^\s*'$1':/,/^\s*'$2':/ {/'$2'/! d; s/^.*:\s"*|"*$//g; p}' "$3" # /var1/,/var2/ > var2: value > value
+	if [[ $2 ]]; then
+		sed -n -E '/^\s*'$1':/,/^\s*'$2':/ {/'$2'/! d; s/^.*:\s"*|"*$//g; p}' "$fileconf" # /var1/,/var2/ > var2: value > value
 	else
-		sed -n -E '/^\s*'$1':/ {s/^.*:\s"*|"*$//g; p}' "$2"                        # var: value value
+		sed -n -E '/^\s*'$1':/ {s/^.*:\s"*|"*$//g; p}' "$fileconf"                        # var: value value
 	fi
 }
 
@@ -37,9 +35,9 @@ if [[ -e $dirsystem/camilladsp ]]; then
 # --------------------------------------------------------------------
 	fi
 	camilladsp=1
-	channels=$( getVarYml capture channels "$fileconf" )
-	format=$( getVarYml capture format "$fileconf" )
-	samplerate=$( getVarYml samplerate "$fileconf" )
+	channels=$( getVarYml capture channels )
+	format=$( getVarYml capture format )
+	samplerate=$( getVarYml samplerate )
 ########
 	ASOUNDCONF+='
 pcm.!default { 
@@ -150,12 +148,12 @@ if [[ $camilladsp ]]; then
 	else
 		fileformat="$dirsystem/camilla-$NAME"
 		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/formats )
-		format0=$( getVarYml playback format "$fileconf" )
+		format0=$( getVarYml playback format )
 		if [[ $format0 != $FORMAT ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"
 			echo $FORMAT > "$fileformat"
 		fi
-		card0=$( getVarYml playback device "$fileconf" | cut -c4 )
+		card0=$( getVarYml playback device | cut -c4 )
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
 		camillaDSPstart
 	fi
