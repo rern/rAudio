@@ -33,7 +33,7 @@ if [[ $1 == pushbt ]]; then
 fi
 
 listWlan() {
-	local dbm ipr notconnected profiles profile ssid wlandev
+	local dbm ip notconnected profiles profile ssid wlandev
 	wlandev=$( < $dirshm/wlan )
 	profiles=$( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
@@ -42,15 +42,13 @@ listWlan() {
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do
-					ipr=( $( ip r | grep -m1 "^default .* dev $wlandev" ) )
-					[[ $ipr ]] && break || sleep 1
+					ip=( $( ip r | grep -m1 "$wlandev .* src" | cut -d' ' -f9 ) )
+					[[ $ip ]] && break || sleep 1
 				done
-				gateway=${ipr[2]}
-				ip=${ipr[8]}
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
   "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )'
-, "gateway" : "'$gateway'"
+, "gateway" : "'$( ip r | grep -m1 "^default .* $wlandev" | cut -d' ' -f3 )'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
 }'
