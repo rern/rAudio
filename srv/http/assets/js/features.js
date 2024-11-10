@@ -113,20 +113,7 @@ $( '.screenshot' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-dabradio' ).on( 'click', function() {
-	info( {
-		  icon    : SW.icon
-		, title   : SW.title
-		, message : 'Scan for available stations?'
-		, ok      : () => {
-			addonsProgressSubmit( {
-				  alias      : SW.icon
-				, title      : SW.title
-				, label      : 'Scan'
-				, installurl : 'dab-scan.sh'
-				, backhref   : 'settings.php?p=features'
-			} );
-		}
-	} );
+	infoDabScan();
 } );
 $( '#setting-snapclient' ).on( 'click', function() {
 	if ( S.snapserver ) {

@@ -1056,6 +1056,24 @@ function addonsProgressSubmit( input ) {
 function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );
 }
+function infoDabScan() {
+	var icon  = 'dabradio';
+	var title = 'DAB Radio';
+	info( {
+		  icon    : icon
+		, title   : title
+		, message : 'Scan for available stations?'
+		, ok      : () => {
+			addonsProgressSubmit( {
+				  alias      : icon
+				, title      : title
+				, label      : 'Scan'
+				, installurl : 'dab-scan.sh'
+				, backhref   : 'settings.php?p=features'
+			} );
+		}
+	} );
+}
 function htmlOption( el ) {
 	var nosort = 'nosort' in el;
 	if ( 'kv' in el ) el = el.kv;
