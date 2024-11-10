@@ -4,6 +4,15 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20241110
+if [[ ! -e /boot/kernel.img ]]; then
+	revision=$( grep ^Revision /proc/cpuinfo )
+	if [[ ${revision: -3:2} < 11 ]]; then
+		file=/etc/modprobe.d/brcmfmac.conf
+		[[ ! -e $file ]] && echo 'options brcmfmac feature_disable=0x82000' > $file
+	fi
+fi
+
 # 20241108
 [[ $( pacman -Q cava ) != 'cava 0.10.2-2' ]] && pacman -Sy --noconfirm cava
 

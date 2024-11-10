@@ -2,6 +2,9 @@
 
 . /srv/http/bash/common.sh
 
+gatwayAddress() {
+	ip r | grep -m1 "^default .* $1" | tail -1 | cut -d' ' -f3
+}
 listBluetooth() {
 	local dev devices info listbt mac
 	devices=$( bluetoothctl devices Paired | sort -k3 -fh  )
@@ -33,7 +36,7 @@ if [[ $1 == pushbt ]]; then
 fi
 
 listWlan() {
-	local dbm ip notconnected profiles profile ssid wlandev
+	local dbm notconnected profiles profile ssid wlandev
 	wlandev=$( < $dirshm/wlan )
 	profiles=$( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
@@ -42,13 +45,14 @@ listWlan() {
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if [[ $( iwgetid -r ) == $profile ]]; then
 				for i in {1..10}; do
-					ip=( $( ip r | grep -m1 "$wlandev .* src" | cut -d' ' -f9 ) )
+					ip=$( ipAddress $wlandev )
 					[[ $ip ]] && break || sleep 1
 				done
+				gateway=$( gatwayAddress $wlandev )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
   "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )'
-, "gateway" : "'$( ip r | grep -m1 "^default .* $wlandev" | cut -d' ' -f3 )'"
+, "gateway" : "'$gateway'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
 }'
@@ -78,10 +82,9 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 # lan
 if test -e /sys/class/net/e*; then
 	deviceeth=true
-	ipr=( $( ip r | grep -m1 '^default .* dev e' ) )
-	if [[ $ipr ]]; then
-		gateway=${ipr[2]}
-		ip=${ipr[8]}
+	ip=$( ipAddress e )
+	if [[ $ip ]]; then
+		gateway=$( gatwayAddress e )
 		listeth='{
 	  "ADDRESS" : "'$ip'"
 	, "GATEWAY" : "'$gateway'"

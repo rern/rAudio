@@ -20,7 +20,11 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
-	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
+	BB=${revision: -3:2}
+	# not legacy kernel && not RPi 5, 4: SAE(WPA3), FWSUP
+	[[ ! -e /boot/kernel.img && $BB < 11 ]] && echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
+	# Zero 2
+	if [[ $BB == 12 ]]; then
 		systemctl enable getty@tty1
 		systemctl disable --now bootsplash localbrowser
 		pacman -R --noconfirm firefox matchbox-window-manager plymouth-lite-rbp-git upower \
