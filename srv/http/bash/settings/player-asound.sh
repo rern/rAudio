@@ -1,5 +1,15 @@
 #!/bin/bash
 
+getVarYml() { # var: value || var: "value";*
+	[[ ! -e ${@: -1} ]] && echo false && return
+	
+	if [[ $3 ]]; then
+		sed -n -E '/^\s*'$1':/,/^\s*'$2':/ {/'$2'/! d; s/^.*:\s"*|"*$//g; p}' "$3" # /var1/,/var2/ > var2: value > value
+	else
+		sed -n -E '/^\s*'$1':/ {s/^.*:\s"*|"*$//g; p}' "$2"                        # var: value value
+	fi
+}
+
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
 [[ ! $CARD ]] && . <( sed -n -E '/^card|^name/ {s/(^card|^name)/\U\1/;p}' $dirshm/output )
@@ -27,9 +37,9 @@ if [[ -e $dirsystem/camilladsp ]]; then
 # --------------------------------------------------------------------
 	fi
 	camilladsp=1
-	channels=$( getVarColon capture channels "$fileconf" )
-	format=$( getVarColon capture format "$fileconf" )
-	samplerate=$( getVarColon samplerate "$fileconf" )
+	channels=$( getVarYml capture channels "$fileconf" )
+	format=$( getVarYml capture format "$fileconf" )
+	samplerate=$( getVarYml samplerate "$fileconf" )
 ########
 	ASOUNDCONF+='
 pcm.!default { 
@@ -140,18 +150,18 @@ if [[ $camilladsp ]]; then
 	else
 		fileformat="$dirsystem/camilla-$NAME"
 		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/formats )
-		format0=$( getVarColon playback format "$fileconf" )
+		format0=$( getVarYml playback format "$fileconf" )
 		if [[ $format0 != $FORMAT ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"
 			echo $FORMAT > "$fileformat"
 		fi
-		card0=$( getVarColon playback device "$fileconf" | cut -c4 )
+		card0=$( getVarYml playback device "$fileconf" | cut -c4 )
 		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
 		camillaDSPstart
 	fi
 else
 	if [[ -e $dirsystem/equalizer && -e $dirsystem/equalizer.json ]]; then
-		value=$( getVarColon current $dirsystem/equalizer.json )
+		value=$( getVar current $dirsystem/equalizer.json )
 		[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
 		$dirbash/cmd.sh "equalizer
 $value

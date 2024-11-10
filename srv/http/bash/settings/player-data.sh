@@ -17,7 +17,7 @@ data+='
 , "bluetooth"        : '$( exists $dirshm/btreceiver )'
 , "btmixer"          : "'$( getContent $dirshm/btmixer )'"
 , "btvolume"         : '$( [[ -e $dirshm/btreceiver ]] && volumeGet valdb )'
-, "counts"           : '$( < $dirmpd/counts )'
+, "counts"           : [ '$( getVar song $dirmpd/counts )', '$( getVar webradio $dirmpd/counts )' ]
 , "crossfade"        : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
 , "devices"          : '$( getContent $dirshm/devices )'
