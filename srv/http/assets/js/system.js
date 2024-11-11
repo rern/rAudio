@@ -305,8 +305,11 @@ var setting       = {
 					$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
 					$timer.toggleClass( 'hide', ! pin.TIMERON );
 					$( '#infoList' ).on( 'click', '.i-power', function() {
-						var on = $( this ).hasClass( 'grn' );
-						bash( [ 'relays.sh', on ? '' : 'off' ] );
+						if ( S.relayson ) {
+							setting.relaysOn();
+						} else {
+							bash( [ 'relays.sh', $( this ).hasClass( 'grn' ) ? '' : 'off' ] );
+						}
 					} );
 					$( '#infoList' ).on( 'input', 'select', function() {
 						var $select = $( '#infoList select' );
@@ -408,6 +411,7 @@ var setting       = {
 		jsonSave( 'relays', name );
 		if ( tabname ) setting.relays();
 	}
+	, relaysOn      : () => banner( 'relays', 'Relay Module', 'Currently ON' )
 	, restore       : () => {
 		info( {
 			  ...SW
@@ -495,6 +499,11 @@ var i2sSelect = {
 
 function gpioPinToggle() {
 	$( '#infoList' ).on( 'click', '.i-power', function() {
+		if ( S.relayson ) {
+			setting.relaysOn();
+			return
+		}
+		
 		var $this = $( this );
 		var pin   = +$this.parents( 'tr' ).find( 'select' ).val();
 		bash( [ 'gpiopintoggle', pin, 'CMD PIN' ], onoff => {
