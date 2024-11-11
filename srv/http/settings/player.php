@@ -18,10 +18,11 @@ $id_data = [
 	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
 commonVariables( [
-	  'buttons' => [ 'gear', 'pause', 'play', 'stop', 'volume' ]
+	  'buttons' => [ 'camilla', 'equalizer', 'gear', 'pause', 'play', 'stop', 'volume' ]
 	, 'labels'  => [ 
 		  [ 'DAB Radio',   'dabradio' ]
 		, [ 'Device' ]
+		, [ 'DSP',         'camilla' ]
 		, [ 'Shared Data', 'networks' ]
 		, [ 'SoX Resampler' ]
 		, [ 'Volume Control' ]
@@ -64,6 +65,8 @@ EOF
 		  'id'       => 'device'
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
+$B_camilla $B_equalizer · $T_features$L_dsp enabled
+
 Note: HDMI may not be available unless connect before boot.
 EOF
 	]

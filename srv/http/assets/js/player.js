@@ -87,20 +87,17 @@ var setting  = {
 function renderPage() {
 	playbackButton();
 	renderStatus();
-	var icondsp = '';
-	[ 'camilladsp', 'equalizer' ].forEach( k => {
-		if ( S[ k ] ) icondsp = ico( k );
-	} );
-	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
 	if ( S.bluetooth ) {
-		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
 	} else {
-		if ( icondsp ) $( '#divbluealsa .col-l' ).append( icondsp );
-		$( '#divdevice .col-l' ).html( $( '#divdevice .col-l' ).html() + icondsp );
 		$( '#divbluealsa' ).addClass( 'hide' );
 	}
+	[ 'camilladsp', 'equalizer' ].forEach( k => {
+		if ( S[ k ] ) V.icondsp = ico( k );
+	} );
+	$( '#divdevice .col-l i' ).remove();
+	if ( V.icondsp ) $( '#divbluealsa .col-l, #divdevice .col-l' ).append( V.icondsp );
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).toggleClass( 'hide', ! S.bluetooth );
 	} else {
