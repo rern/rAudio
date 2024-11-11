@@ -186,6 +186,7 @@ confget )
 		relays )
 			if [[ -e $dirsystem/relays.conf ]]; then
 				. $dirsystem/relays.conf
+				[[ ! $timeron ]] && timeron=false
 			else
 				on="17 27 22 23"
 				off="23 22 27 17"
@@ -464,7 +465,13 @@ relays )
 	enableFlagSet
 	pushRefresh
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
-	[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
+	[[ ! -e $dirshm/relayson ]] && exit
+# --------------------------------------------------------------------
+	if grep -q timeron=true $dirsystem/relays.conf; then
+		$dirbash/relays-timer.sh
+	else
+		killProcess relaystimer
+	fi
 	;;
 relaysstatus ) 
 	for p in $PINS; do

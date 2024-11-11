@@ -6,7 +6,7 @@ killProcess relaystimer
 echo $$ > $dirshm/pidrelaystimer
 
 timerfile=$dirshm/relayson
-timer=$( getVar timer $dirsystem/relays.conf | tee > $timerfile ) 
+timer=$( getVar timer $dirsystem/relays.conf | tee > $timerfile )
 i=$timer
 while sleep 60; do
 	if grep -q -m1 '^state.*play' $dirshm/status || grep -q -m1 RUNNING /proc/asound/card*/pcm*p/sub*/status; then
