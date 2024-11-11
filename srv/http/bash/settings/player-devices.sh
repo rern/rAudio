@@ -54,7 +54,7 @@ if [[ ! -e $dirshm/usbdac && -e $dirsystem/output-device ]]; then # otherwise la
 	fi
 fi
 ######## >
-echo "\
+echo -n "\
 defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
