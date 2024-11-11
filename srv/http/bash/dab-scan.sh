@@ -42,7 +42,7 @@ $name
 " > "$dirdabradio/$ensemble/rtsp:||$host:8554|$channel_id"
 	list+="\
   $channel_id:
-    runOnDemand: /srv/http/bash/dab-start.sh $id $channel \$RTSP_PORT \$MTX_PATH
+    runOnDemand: /srv/http/bash/dab-start.sh $id $channel \$RTSP_PORT \$RTSP_PATH
     runOnDemandRestart: yes
     runOnDemandStartTimeout: 15s
     runOnDemandCloseAfter: 3s
