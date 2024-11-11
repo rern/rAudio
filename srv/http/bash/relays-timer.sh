@@ -13,7 +13,7 @@ while sleep 60; do
 	else
 		(( i-- ))
 		case $i in
-			1 ) pushData relays '{ "timer": '$timer' }';;
+			1 ) pushData relays '{ "countdown": true }';;
 			0 ) $dirbash/relays.sh off && break;;
 		esac
 	fi

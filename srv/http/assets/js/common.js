@@ -1259,6 +1259,9 @@ function psRelays( data ) {
 	}
 	
 	var relaysToggle = function() {
+		clearInterval( V.intervalrelays );
+		bannerHide();
+		$( '#infoX' ).trigger( 'click' );
 		if ( ! page ) {
 			$( '#relays' ).toggleClass( 'on', S.relayson );
 			$( ( $time.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
@@ -1267,12 +1270,11 @@ function psRelays( data ) {
 	if ( 'done' in data ) {
 		S.relayson = data.done;
 		V.relays   = false;
-		bannerHide();
 		relaysToggle();
 		return
 	}
 	
-	if ( ! ( 'timer' in data ) ) return
+	if ( ! ( 'countdown' in data ) ) return
 	
 	info( {
 		  icon        : 'relays'
@@ -1284,15 +1286,9 @@ function psRelays( data ) {
 		, oklabel     : ico( 'set0' ) +'Reset'
 		, ok          : () => bash( [ 'cmd.sh', 'relaystimerreset' ] )
 	} );
-	var delay    = 59;
-	var interval = setInterval( () => {
-		if ( delay ) {
-			$( '.infomessage a' ).text( delay-- );
-		} else {
-			clearInterval( interval );
-			$( '#infoX' ).trigger( 'click' );
-			relaysToggle();
-		}
+	var delay        = 59;
+	V.intervalrelays = setInterval( () => {
+		delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
 	}, 1000 );
 }
 
