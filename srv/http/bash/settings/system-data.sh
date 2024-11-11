@@ -21,7 +21,7 @@ if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
 	# 20 bits: occurred > 11110000000000001111 < current
 	occurred='<gr>occurred</gr>'
-	it="<i class='i-thermometer yl'></i> CPU X"
+	it="<i class='i-thermometer yl'></i>&ensp;CPU X"
 	ito="${it/yl/gr} $occurred"
 	iv="<red class='blink'><i class='i-voltage'></i> Under-voltage</red>"
 	declare -A warnings=(
