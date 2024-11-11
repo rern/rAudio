@@ -1277,7 +1277,7 @@ function psRelays( data ) {
 		, button      : () => bash( [ 'relays.sh', 'off' ] )
 		, oklabel     : ico( 'set0' ) +'Reset'
 		, ok          : () => {
-			bash( [ 'relaystimerreset' ] );
+			bash( [ 'cmd.sh', 'relaystimerreset' ] );
 			banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.timer +'m' );
 		}
 	} );
