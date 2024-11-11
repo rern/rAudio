@@ -335,7 +335,7 @@ function info( json ) {
 	}
 	if ( I.prompt ) {
 		I.oknoreset = true;
-		$( '#infoList' ).after( '<div class="infoprompt gr hide">'+ I.prompt +'</div>' );
+		$( '#infoList' ).after( '<div class="infoprompt gr hide"></div>' );
 	}
 	var htmls = {};
 	[ 'header', 'message', 'footer' ].forEach( k => {

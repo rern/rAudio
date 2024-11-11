@@ -27,6 +27,7 @@ var lcdcharjson   = {
 	, ok         : switchEnable
 	, fileconf   : true
 }
+var relaysprompt  = '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON';
 var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ];
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
@@ -294,6 +295,7 @@ var setting       = {
 				, list         : list
 				, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
 				, lableno      : true
+				, prompt       : true
 				, values       : values
 				, checkchanged : S.relays
 				, beforeshow   : () => {
@@ -306,7 +308,7 @@ var setting       = {
 					$timer.toggleClass( 'hide', ! pin.TIMERON );
 					$( '#infoList' ).on( 'click', '.i-power', function() {
 						if ( S.relayson ) {
-							setting.relaysOn();
+							infoPrompt( relaysprompt );
 						} else {
 							bash( [ 'relays.sh', $( this ).hasClass( 'grn' ) ? '' : 'off' ] );
 						}
@@ -352,6 +354,7 @@ var setting       = {
 				, message      : gpiosvg
 				, list         : list
 				, boxwidth     : 70
+				, propmt       : true
 				, checkblank   : true
 				, checkchanged : S.relays
 				, checkunique  : true
@@ -411,7 +414,6 @@ var setting       = {
 		jsonSave( 'relays', name );
 		if ( tabname ) setting.relays();
 	}
-	, relaysOn      : () => banner( 'relays', 'Relay Module', 'Currently ON' )
 	, restore       : () => {
 		info( {
 			  ...SW
@@ -500,22 +502,12 @@ var i2sSelect = {
 function gpioPinToggle() {
 	$( '#infoList' ).on( 'click', '.i-power', function() {
 		if ( S.relayson ) {
-			setting.relaysOn();
-			return
+			infoPrompt( relaysprompt );
+		} else {
+			var $this = $( this );
+			var pin   = +$this.parents( 'tr' ).find( 'select' ).val();
+			bash( [ 'gpiopintoggle', pin, 'CMD PIN' ], onoff => $this.toggleClass( 'red', onoff == 1 ) );
 		}
-		
-		var $this = $( this );
-		var pin   = +$this.parents( 'tr' ).find( 'select' ).val();
-		bash( [ 'gpiopintoggle', pin, 'CMD PIN' ], onoff => {
-			if ( onoff ) {
-				$this.toggleClass( 'red', onoff == 1 );
-			} else {
-				info( {
-					  ...SW
-					, message : '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON'
-				} );
-			}
-		} );
 	} );
 }
 function htmlC( data, key, val ) {
@@ -970,6 +962,7 @@ $( '#setting-vuled' ).on( 'click', function() {
 			  ...SW
 			, message      : gpiosvg
 			, list         : list
+			, prompt       : true
 			, values       : values
 			, checkchanged : S.vuled
 			, boxwidth     : 70
