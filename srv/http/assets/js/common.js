@@ -1261,6 +1261,7 @@ function psRelays( data ) {
 	if ( 'done' in data ) {
 		S.relayson = data.done;
 		V.relays   = false;
+		$( '#infoX' ).trigger( 'click' );
 		bannerHide();
 		relaysToggle();
 		return
