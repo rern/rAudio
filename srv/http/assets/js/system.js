@@ -300,8 +300,10 @@ var setting       = {
 					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 					$( '#infoList td:first-child' ).remove();
 					$( '#infoList input[type=number]' ).parent().addBack().css( 'width', '70px' );
-					var $trtimer = $( '#infoList tr:last' );
-					$trtimer.find( 'td' ).eq( 0 ).css( { height: '40px','text-align': 'right' } );
+					var $tdtimer = $( '#infoList tr:last td' );
+					var $timer   = $tdtimer.slice( 1 )
+					$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
+					$timer.toggleClass( 'hide', ! pin.TIMERON );
 					$( '#infoList' ).on( 'click', '.i-power', function() {
 						var on = $( this ).hasClass( 'grn' );
 						bash( [ 'relays.sh', on ? '' : 'off' ] );
@@ -317,8 +319,8 @@ var setting       = {
 						I.notunique = von.length !== new Set( von ).size || voff.length !== new Set( voff ).size;
 						if ( I.notunique ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
 					} );
-					$trtimer.on( 'input', 'input:checkbox', function() {
-						$trtimer.find( 'input[type=number], .updn' ).toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
+					$( '#infoList input:checkbox' ).on( 'input', function() {
+						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 					} );
 				}
 				, cancel       : switchCancel
