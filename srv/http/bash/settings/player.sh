@@ -202,7 +202,11 @@ $data
 	pushRefresh
 	;;
 statusalbumignore )
-	cat $dirmpd/albumignore
+	echo "\
+<bll># /srv/http/data/mpd/albumignore</bll>
+
+$( cat $dirmpd/albumignore )
+"
 	;;
 statusmpdignore )
 	files=$( < $dirmpd/mpdignorelist )
