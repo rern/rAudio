@@ -1252,6 +1252,12 @@ function psPower( data ) {
 	}
 }
 function psRelays( data ) {
+	if ( 'reset' in data ) {
+		$( '#infoX' ).trigger( 'click' );
+		banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.reset +'m' );
+		return
+	}
+	
 	var relaysToggle = function() {
 		if ( ! page ) {
 			$( '#relays' ).toggleClass( 'on', S.relayson );
@@ -1268,11 +1274,6 @@ function psRelays( data ) {
 	
 	if ( ! ( 'timer' in data ) ) return
 	
-	if ( data.time === 'reset' ) {
-		$( '#infoX' ).trigger( 'click' );
-		return
-	}
-	
 	info( {
 		  icon        : 'relays'
 		, title       : 'Equipments Off'
@@ -1281,10 +1282,7 @@ function psRelays( data ) {
 		, buttoncolor : red
 		, button      : () => bash( [ 'relays.sh', 'off' ] )
 		, oklabel     : ico( 'set0' ) +'Reset'
-		, ok          : () => {
-			bash( [ 'cmd.sh', 'relaystimerreset' ] );
-			banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.timer +'m' );
-		}
+		, ok          : () => bash( [ 'cmd.sh', 'relaystimerreset' ] )
 	} );
 	var delay    = 59;
 	var interval = setInterval( () => {
