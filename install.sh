@@ -5,9 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20241111
-file=/etc/mediamtx/mediamtx.yml
-[[ -e $file ]] && sed -i 's/RTSP_PATH/MTX_PATH/' $file
-
 if [[ ! -e /boot/kernel.img ]]; then
 	revision=$( grep ^Revision /proc/cpuinfo )
 	[[ ${revision: -3:2} < 11 ]] && echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
