@@ -42,9 +42,10 @@ while read path; do
 	card_name+="$CARD^$NAME"$'\n'
 done <<< $proccardn
 
-if [[ $usbdac != add && -e $dirsystem/output-device ]]; then # otherwise last card
+if [[ ! -e $dirshm/usbdac && -e $dirsystem/output-device ]]; then # otherwise last card
 	outputdevice=$( < $dirsystem/output-device )
 	c_n=$( grep "$outputdevice$" <<< $card_name )
+	echo $c_n --- "$card_name"
 	if [[ $c_n ]]; then
 		CARD=${c_n/^*}
 		NAME=$outputdevice
