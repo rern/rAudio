@@ -464,7 +464,7 @@ function info( json ) {
 					htmls.list += param.sameline ? '</td>' : '</td></tr>';
 			}
 		} );
-		if ( type !== 'range' ) htmls.list = '<table>'+ htmls.list +'</table>';
+		htmls.list = '<table>'+ htmls.list +'</table>';
 	}
 	
 	// populate layout //////////////////////////////////////////////////////////////////////////////

@@ -185,12 +185,13 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 		  icon       : SW.icon
 		, title      : 'Mixer Volume'
 		, list       : [ control, 'range' ]
+		, footer     : '<br>'+ warning
 		, values     : S.volume
-		, prompt     : '<br>'+ warning
 		, beforeshow : () => {
 			if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
-			var $range = $( '#infoList input' );
-			$( '#infoList, .infoprompt' ).css( 'height', '150px' );
+			$( '.infofooter' ).addClass( 'hide' );
+			var $range  = $( '#infoList input' );
+			$( '#infoList' ).css( 'height', '160px' );
 			$( '.inforange' ).append( '<div class="sub gr"></div>' );
 			$range.on( 'input', function() {
 				S.volume = +$range.val();
@@ -208,9 +209,9 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 			volumeInfoSet();
 		}
 		, cancel     : () => {
-			if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) {
+			if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
 				local();
-				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
+				$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 				setTimeout( () => I.oknoreset = true, 300 );
 			}
 		}
@@ -219,8 +220,8 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 			if ( S.volumedb > -2 ) {
 				bash( [ cmd0db ] );
 			} else {
-				if ( ! $( '.infoprompt' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
-				$( '#infoList, .infoprompt' ).toggleClass( 'hide' );
+				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
+				$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 			}
 		}
 		, oknoreset    : true

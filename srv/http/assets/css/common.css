@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1730851906' );
+	src         : url( '/assets/fonts/rern.woff2?v=1731295544' );
 }
 @font-face {
 	font-family : Lato;
@@ -512,6 +512,9 @@ input[ type=range ]::-moz-range-track {
 	line-height: 16px;
 	font-size: 18px;
 	font-weight: 300;
+}
+.inforange .sub {
+	margin-top: 5px;
 }
 .inforange i {
 	position: relative;
