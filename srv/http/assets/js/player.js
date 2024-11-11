@@ -121,7 +121,7 @@ function renderPage() {
 		$( '#novolume' ).prop( 'checked', S.novolume );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#dop' ).prop( 'checked', S.dop );
-		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
+		$( '#ffmpeg' ).toggleClass( 'disabled', S.ffmpeg && S.dabradio );
 	}
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
