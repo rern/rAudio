@@ -16,6 +16,7 @@ if [[ ! -e $dirshm/dabscan ]] || ! grep -q ^audioservice $dirshm/dabscan; then
 # --------------------------------------------------------------------
 fi
 
+dirdabradio=$dirdata/dabradio
 mv $dirdabradio/img $dirshm &> /dev/null
 rm -rf $dirdabradio
 mkdir -p $dirdabradio/img
