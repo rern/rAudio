@@ -1261,13 +1261,17 @@ function psRelays( data ) {
 	if ( 'done' in data ) {
 		S.relayson = data.done;
 		V.relays   = false;
-		$( '#infoX' ).trigger( 'click' );
 		bannerHide();
 		relaysToggle();
 		return
 	}
 	
 	if ( ! ( 'timer' in data ) ) return
+	
+	if ( data.time === 'reset' ) {
+		$( '#infoX' ).trigger( 'click' );
+		return
+	}
 	
 	info( {
 		  icon        : 'relays'

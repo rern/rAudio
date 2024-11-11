@@ -754,7 +754,7 @@ playlistpush )
 	;;
 relaystimerreset )
 	$dirbash/relays-timer.sh &> /dev/null &
-	pushData relays '{ "done": true }'
+	pushData relays '{ "timer": "reset" }'
 	;;
 savedpldelete )
 	rm "$dirplaylists/$NAME.m3u"
