@@ -28,7 +28,7 @@ var setting  = {
 		} );
 	}
 	, soxr        : () => {
-		bash( [ 'confget', 'soxr', 'CMD NAME' ], values => {
+		infoSetting( 'soxr', values => {
 			delete values.PLUGIN;
 			info( {
 				  ...SW
@@ -45,10 +45,10 @@ var setting  = {
 				, cancel       : switchCancel
 				, ok           : switchEnable
 			} );
-		}, 'json' );
+		} );
 	}
 	, soxrCustom  : () => {
-		bash( [ 'confget', 'soxr-custom', 'CMD NAME' ], values => {
+		infoSetting( 'soxr-custom', values => {
 			delete values.PLUGIN;
 			var flag = {
 				  'Rolloff - Small'  : 0
@@ -81,7 +81,7 @@ var setting  = {
 				, cancel       : switchCancel
 				, ok           : switchEnable
 			} );
-		}, 'json' );
+		} );
 	}
 }
 function renderPage() {
@@ -283,7 +283,7 @@ $( '#dop' ).on( 'click', function() {
 	bash( cmd );
 } );
 $( '#setting-crossfade' ).on( 'click', function() {
-	bash( [ 'confget', 'crossfade', 'CMD NAME' ], values => {
+	infoSetting( 'crossfade', values => {
 		info( {
 			  ...SW
 			, list         : [ 'Seconds', 'number', { updn: { step: 1, min: 0, max: 10 } } ]
@@ -294,10 +294,10 @@ $( '#setting-crossfade' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-replaygain' ).on( 'click', function() {
-	bash( [ 'confget', 'replaygain', 'CMD NAME' ], values => {
+	infoSetting( 'replaygain', values => {
 		if ( S.output.mixertype !== 'software' || ! S.mixers ) delete values.HARDWARE;
 		info( {
 			  ...SW
@@ -308,7 +308,7 @@ $( '#setting-replaygain' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#ffmpegfiletype' ).on( 'click', function() {
 	var $pre = $( '#prefiletype' );
@@ -324,7 +324,7 @@ $( '#ffmpegfiletype' ).on( 'click', function() {
 	$( this ).toggleClass( 'active' );
 } );
 $( '#setting-buffer' ).on( 'click', function() {
-	bash( [ 'confget', 'buffer', 'CMD NAME' ], values => {
+	infoSetting( 'buffer', values => {
 		info( {
 			  ...SW
 			, message      : '<c>audio_buffer_size</c>'
@@ -335,10 +335,10 @@ $( '#setting-buffer' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-outputbuffer' ).on( 'click', function() {
-	bash( [ 'confget', 'outputbuffer', 'CMD NAME' ], values => {
+	infoSetting( 'outputbuffer', values => {
 		info( {
 			  ...SW
 			, message      : '<c>max_output_buffer_size</c>'
@@ -349,7 +349,7 @@ $( '#setting-outputbuffer' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-soxr' ).on( 'click', function() {
 	S[ 'soxr-custom' ] ? setting.soxrCustom() : setting.soxr();

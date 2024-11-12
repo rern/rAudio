@@ -118,18 +118,14 @@ confget )
 			echo '{ "SD": '$sd', "USB": '$usb' }'
 			;;
 		spotify )
-			devices='"Default"'
-			lines=$( aplay -L | grep ^.*:CARD )
-			while read line; do
-				devices+=', "'$line'"'
-			done <<< $lines
-			current=$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )
+			current=$( getVar device /etc/spotifyd.conf )
 			if [[ ${current:0:3} == hw: ]]; then
 				current=Default
 			else
 				current=$( getContent $dirsystem/spotifyoutput )
 			fi
-			echo '{ "current": "'$current'", "devices": [ '$devices' ] }'
+			devices=$( aplay -L | sed -n '/^.*:CARD/ {s/^/, "/; s/$/"/p}' )
+			echo '{ "current": "'$current'", "devices": [ "Default"'$devices' ] }'
 			;;
 		* )
 			if [[ -e $dirsystem/$NAME.conf ]]; then
@@ -459,13 +455,12 @@ spotifyoutputset )
 	;;
 spotifytoken )
 	. $dirsystem/spotifykey
-	spotifyredirect=$( grep '^var redirect_uri' /srv/http/assets/js/features.js | cut -d"'" -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
 				-d "code=$CODE" \
 				-d grant_type=authorization_code \
-				--data-urlencode "redirect_uri=$spotifyredirect" )
+				--data-urlencode "redirect_uri=$URI" )
 	if grep -q -m1 error <<< $tokens; then
 		notify 'spotify blink' 'Spotify' "Error: $( jq -r .error <<< $tokens )"
 		exit

@@ -61,7 +61,7 @@ var setting       = {
 		} );
 	}
 	, lcdCharGpio   : values => {
-		var tabFn = () => bash( [ 'confget', 'lcdchar', 'CMD NAME' ], data => setting.lcdChar( data ), 'json' );
+		var tabFn = () => infoSetting( 'lcdchar', data => setting.lcdChar( data ) );
 		var list0 = jsonClone( lcdcharlist );
 		var list  = list0.slice( 0, 3 );
 		[ 'D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => list.push( [ k, 'select', { kv: board2bcm, sameline: i % 2 === 0 } ] ) );
@@ -216,7 +216,7 @@ var setting       = {
 		info( json );
 	}
 	, powerButton   : () => {
-		bash( [ 'confget', 'powerbutton', 'CMD NAME' ], values => {
+		infoSetting( 'powerbutton', values => {
 			info( {
 				  ...SW
 				, tablabel     : [ 'Generic', 'Audiophonic' ]
@@ -235,7 +235,7 @@ var setting       = {
 				, ok           : switchEnable
 				, fileconf     : true
 			} );
-		}, 'json' );
+		} );
 	}
 	, powerButtonAp : () => {
 		info( {
@@ -250,7 +250,7 @@ var setting       = {
 		} );
 	}
 	, relays        : () => {
-		bash( [ 'confget', 'relays', 'CMD NAME' ], data => {
+		infoSetting( 'relays', data => {
 			var pin    = data.relays;
 			var name   = data.relaysname;
 			var names  = {}
@@ -325,10 +325,10 @@ var setting       = {
 				, cancel       : switchCancel
 				, ok           : () => setting.relaysOk( data )
 			} );
-		}, 'json' );
+		} );
 	}
 	, relaysName    : () => {
-		bash( [ 'confget', 'relays', true, 'CMD NAME' ], data => {
+		infoSetting( 'relays', data => {
 			var name   = data.relaysname;
 			var keys   = Object.keys( name );
 			var values = [];
@@ -367,7 +367,7 @@ var setting       = {
 				, cancel       : switchCancel
 				, ok           : () => setting.relaysOk( data )
 			} );
-		}, 'json' );
+		} );
 	}
 	, relaysOk      : data => {
 		var order   = data.relays;
@@ -774,8 +774,7 @@ $( '#menu a' ).on( 'click', function() {
 	}
 } );
 $( '#setting-bluetooth' ).on( 'click', function() {
-	bash( [ 'confget', 'bluetooth', 'CMD NAME' ], values => {
-		console.log(values)
+	infoSetting( 'bluetooth', values => {
 		info( {
 			  ...SW
 			, list         : [
@@ -787,10 +786,10 @@ $( '#setting-bluetooth' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-wlan' ).on( 'click', function() {
-	bash( [ 'confget', 'wlan', 'CMD NAME' ], values => {
+	infoSetting( 'wlan', values => {
 		var regdomlist  = values.regdomlist;
 		var accesspoint = 'Auto start Access Point<br>'+ sp( 30 ) +'<gr>(if not connected)</gr>';
 		delete values.regdomlist;
@@ -807,7 +806,7 @@ $( '#setting-wlan' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#i2s' ).on( 'click', function() {
 	setTimeout( i2sSelect.option, 0 );
@@ -849,9 +848,9 @@ $( '#setting-i2smodule' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-lcdchar' ).on( 'click', function() {
-	bash( [ 'confget', 'lcdchar', 'CMD NAME' ], data => {
+	infoSetting( 'lcdchar', data => {
 		'address' in data ? setting.lcdChar( data ) : setting.lcdCharGpio( data );
-	}, 'json' );
+	} );
 } );
 $( '#setting-powerbutton' ).on( 'click', function() {
 	S.poweraudiophonics ? setting.powerButtonAp() : setting.powerButton();
@@ -860,7 +859,7 @@ $( '#setting-relays' ).on( 'click', function() {
 	S.relays ? setting.relays() : setting.relaysName();
 } );
 $( '#setting-rotaryencoder' ).on( 'click', function() {
-	bash( [ 'confget', 'rotaryencoder', 'CMD NAME' ], values => {
+	infoSetting( 'rotaryencoder', values => {
 		info( {
 			  ...SW
 			, message      : gpiosvg
@@ -877,10 +876,10 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-mpdoled' ).on( 'click', function() {
-	bash( [ 'confget', 'mpdoled', 'CMD NAME' ], values => {
+	infoSetting( 'mpdoled', values => {
 		var buttonlogo = S.mpdoled && ! S.mpdoledreboot;
 		var chip       = {
 			  'SSD130x SP'  : 1
@@ -912,10 +911,10 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 			, button       : buttonlogo ? () => bash( [ 'mpdoledlogo' ] ) : ''
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-tft' ).on( 'click', function() {
-	bash( [ 'confget', 'tft', 'CMD NAME' ], values => {
+	infoSetting( 'tft', values => {
 		var type = {
 			  'Generic'               : 'tft35a'
 			, 'Waveshare (A)'         : 'waveshare35a'
@@ -945,10 +944,10 @@ $( '#setting-tft' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-vuled' ).on( 'click', function() {
-	bash( [ 'confget', 'vuled', 'CMD NAME' ], values => {
+	infoSetting( 'vuled', values => {
 		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
 		var leds   = Object.keys( values ).length + 1;
 		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', board2bcm ] );
@@ -972,7 +971,7 @@ $( '#setting-vuled' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#ledcalc' ).on( 'click', function() {
 	info( {
@@ -1044,7 +1043,7 @@ $( '#setting-timezone' ).on( 'click', function() {
 	setting.ntp();
 } );
 $( '#setting-soundprofile' ).on( 'click', function() {
-	bash( [ 'confget', 'soundprofile', 'CMD NAME' ], values => {
+	infoSetting( 'soundprofile', values => {
 		info( {
 			  ...SW
 			, list         : [ 
@@ -1060,7 +1059,7 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#backup' ).on( 'click', function() {
 	var d     = new Date();

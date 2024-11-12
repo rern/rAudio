@@ -15,6 +15,9 @@ function bannerReset() {
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
+function infoSetting( name, infosetting ) {
+	bash( [ 'confget', name, 'CMD NAME' ], infosetting, 'json' );
+}
 function currentStatus( id ) {
 	if ( id === 'bluetoothlist' ) return
 	

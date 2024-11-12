@@ -1,3 +1,4 @@
+var redirect_uri = 'https://rern.github.io/raudio/spotify';
 var setting = {
 	spotify : () => {
 		if ( S.camilladsp ) {
@@ -7,8 +8,7 @@ var setting = {
 			} );
 			return
 		}
-		
-		bash( [ 'confget', 'spotify' ], data => {
+		infoSetting( 'spotify', data => {
 			info( {
 				  ...SW
 				, tablabel     : [ 'Output', 'Client Keys' ]
@@ -22,7 +22,7 @@ var setting = {
 					notifyCommon();
 				}
 			} );
-		}, 'json' );
+		} );
 		
 	}
 	, spotifyKeys : () => {
@@ -96,7 +96,7 @@ function renderPage() {
 			}
 		} );
 	} else if ( code ) {
-		bash( [ 'spotifytoken', code, 'CMD CODE' ], showContent );
+		bash( [ 'spotifytoken', code, redirect_uri, 'CMD CODE URI' ], showContent );
 	} else if ( error ) {
 		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 	}
@@ -138,10 +138,10 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 	var active = infoPlayerActive( $( this ) );
 	if ( active ) return
 	
-	if ( ! S.spotifyd && S.spotifytoken ) {
+	if ( ! S.spotifyd && S.spotifykey ) {
 		bash( [ 'spotifyd' ] );
 		notifyCommon( 'Enable ...' );
-	} else if ( S.spotifytoken ) {
+	} else if ( S.spotifykey ) {
 		S.camilladsp ? setting.spotifyKeys() : setting.spotify();
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
@@ -176,7 +176,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 					  response_type : 'code'
 					, client_id     : id
 					, scope         : 'user-read-currently-playing user-read-playback-position'
-					, redirect_uri  : 'https://rern.github.io/raudio/spotify'
+					, redirect_uri  : redirect_uri
 					, state         : window.location.hostname
 				}
 				window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
@@ -191,7 +191,7 @@ $( '#camilladsp, #equalizer' ).on( 'click', function() {
 	if ( S[ this.id ] ) $( this.id === 'camilladsp' ? '#equalizer' : '#camilladsp' ).addClass( 'disabled' );
 } );
 $( '#setting-ap' ).on( 'click', function() {
-	bash( [ 'confget', 'ap', 'CMD NAME' ], values => {
+	infoSetting( 'ap', values => {
 		info( {
 			  ...SW
 			, footer       : '(8 characters or more)'
@@ -207,10 +207,10 @@ $( '#setting-ap' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-autoplay' ).on( 'click', function() {
-	bash( [ 'confget', 'autoplay', 'CMD NAME' ], values => {
+	infoSetting( 'autoplay', values => {
 		info( {
 			  ...SW
 			, list         : [
@@ -223,10 +223,10 @@ $( '#setting-autoplay' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-localbrowser' ).on( 'click', function() {
-	bash( [ 'confget', 'localbrowser', 'CMD NAME' ], values => {
+	infoSetting( 'localbrowser', values => {
 		var footer = values.BRIGHTNESS ? ico( 'gear', 'brightness', 'tabindex' ) +'Brightness&emsp;' : '';
 		footer    += ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
 		info( {
@@ -278,10 +278,10 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-smb' ).on( 'click', function() {
-	bash( [ 'confget', 'smb', 'CMD NAME' ], values => {
+	infoSetting( 'smb', values => {
 		info( {
 			  ...SW
 			, message      : '<wh>Write</wh> permission:'
@@ -294,10 +294,10 @@ $( '#setting-smb' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-lyrics' ).on( 'click', function() {
-	bash( [ 'confget', 'lyrics', 'CMD NAME' ], values => {
+	infoSetting( 'lyrics', values => {
 		info( {
 			  ...SW
 			, list         : [
@@ -315,10 +315,10 @@ $( '#setting-lyrics' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-multiraudio' ).on( 'click', function() {
-	bash( [ 'confget', 'multiraudio', 'CMD NAME' ], data => {
+	infoSetting( 'multiraudio', data => {
 		var list = [
 			  [ '', '',     { suffix: 'Name', sameline: true } ]
 			, [ '', '',     { suffix: 'IP' } ]
@@ -396,7 +396,7 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 				bash( [ 'multiraudio' ] );
 			}
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#login' ).on( 'click', function() {
 	if ( $( this ).prop( 'checked' ) ) {
@@ -443,7 +443,7 @@ $( '#setting-login' ).on( 'click', function() {
 } );
 $( '#setting-scrobble' ).on( 'click', function() {
 	if ( S.scrobblekey ) {
-		bash( [ 'confget', 'scrobble', 'CMD NAME' ], values => {
+		infoSetting( 'scrobble', values => {
 			info( {
 				  ...SW
 				, list         : [
@@ -470,7 +470,7 @@ $( '#setting-scrobble' ).on( 'click', function() {
 				, ok           : switchEnable
 				, fileconf     : true
 			} );
-		}, 'json' );
+		} );
 	} else {
 		info( {
 			  ...SW
@@ -485,7 +485,7 @@ $( '#setting-scrobble' ).on( 'click', function() {
 	}
 } );
 $( '#setting-stoptimer' ).on( 'click', function() {
-	bash( [ 'confget', 'stoptimer', 'CMD NAME' ], values => {
+	infoSetting( 'stoptimer', values => {
 		info( {
 			  ...SW
 			, list         : [
@@ -499,10 +499,10 @@ $( '#setting-stoptimer' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#setting-volumelimit' ).on( 'click', function() {
-	bash( [ 'confget', 'volumelimit', 'CMD NAME' ], values => {
+	infoSetting( 'volumelimit', values => {
 		var param = { updn: { step: 1, min: 0, max: 100, enable: true, link: true } }
 		info( {
 			  ...SW
@@ -517,7 +517,7 @@ $( '#setting-volumelimit' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	}, 'json' );
+	} );
 } );
 
 } );
