@@ -146,7 +146,6 @@ var setting       = {
 			, tablabel   : shareddata ? tabshareddata : [ 'CIFS', 'NFS' ]
 			, tab        : tab
 			, list       : list
-			, prompt     : true
 			, values     : values
 			, checkblank : [ 0, 2 ]
 			, checkip    : [ 1 ]
@@ -167,6 +166,7 @@ var setting       = {
 				}
 			}
 			, cancel     : switchCancel
+			, oknoreset  : true
 			, ok         : () => {
 				var infoval = infoVal();
 				if ( ! shareddata && infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
@@ -181,26 +181,21 @@ var setting       = {
 	, mountRserver  : () => {
 		info( {
 			  ...SW
-			, tablabel : tabshareddata
-			, tab      : [ setting.mount, () => setting.mount( 'nfs' ), '' ]
-			, list     : [ 'Server IP', 'text' ]
-			, prompt   : true
-			, values   : { IP: I.active && I.values ? infoVal().IP : ipSub( S.ip ) }
-			, checkip  : [ 0 ]
-			, cancel   : switchCancel
-			, ok       : () => {
+			, tablabel  : tabshareddata
+			, tab       : [ setting.mount, () => setting.mount( 'nfs' ), '' ]
+			, list      : [ 'Server IP', 'text' ]
+			, values    : { IP: I.active && I.values ? infoVal().IP : ipSub( S.ip ) }
+			, checkip   : [ 0 ]
+			, cancel    : switchCancel
+			, oknoreset : true
+			, ok        : () => {
 				notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
 				bash( [ 'settings/system-mount.sh', 'cmd', infoVal().IP, true, 'CMD IP SHAREDDATA' ], error => setting.mountSet( error ) );
 			}
 		} );
 	}
 	, mountSet      : error => {
-		if ( error ) {
-			infoPrompt( '<wh>Mount failed:</wh><br><br>'+ error );
-		} else {
-			$( '#infoX' ).trigger( 'click' );
-		}
-		bannerHide();
+		error ? infoPrompt( '<wh>Mount failed:</wh><br><br>'+ error ) : $( '#infoX' ).trigger( 'click' );
 	}
 	, ntp       : () => {
 		SW.id    = 'ntp';
@@ -295,7 +290,6 @@ var setting       = {
 				, list         : list
 				, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
 				, lableno      : true
-				, prompt       : true
 				, values       : values
 				, checkchanged : S.relays
 				, beforeshow   : () => {
@@ -962,7 +956,6 @@ $( '#setting-vuled' ).on( 'click', function() {
 			  ...SW
 			, message      : gpiosvg
 			, list         : list
-			, prompt       : true
 			, values       : values
 			, checkchanged : S.vuled
 			, boxwidth     : 70

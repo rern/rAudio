@@ -333,10 +333,6 @@ function info( json ) {
 			if ( ! $( this ).hasClass( 'active' ) ) I.tab[ $( this ).index() ]();
 		} );
 	}
-	if ( I.prompt ) {
-		I.oknoreset = true;
-		$( '#infoList' ).after( '<div class="infoprompt gr hide"></div>' );
-	}
 	var htmls = {};
 	[ 'header', 'message', 'footer' ].forEach( k => {
 		if ( I[ k ] ) {
@@ -854,10 +850,13 @@ function infoListChange( callback, add ) {
 	$( '#infoList input' ).trigger( 'input' );
 	if ( callback ) callback( add );
 }
-function infoPrompt( message ) {
+function infoPrompt( message ) { // I.oknoreset - must be set if called after ok()
+	I.oknoreset = true;
+	if ( ! $( '.infoprompt' ).length ) $( '#infoList' ).after( '<div class="infoprompt gr hide">'+ I.prompt +'</div>' );
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
 	$( '.infoprompt' ).html( message );
 	$toggle.toggleClass( 'hide' );
+	bannerHide();
 	$( '#infoOverlay' )
 		.removeClass( 'hide' )
 		.trigger( 'focus' );

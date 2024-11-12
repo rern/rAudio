@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1731295544' );
+	src         : url( '/assets/fonts/rern.woff2?v=1731371734' );
 }
 @font-face {
 	font-family : Lato;
@@ -616,9 +616,6 @@ hr {
 	-webkit-user-select: none;
 	user-select: none;
 }
-#infoOverlay i {
-	vertical-align: -2px;
-}
 #infoOverlay a {
 	height: 40px;
 	text-decoration: none;
@@ -831,7 +828,7 @@ hr {
 	line-height: 24px;
 }
 .infoprompt {
-	padding: 15px 5px;
+	padding: 25px 5px;
 }
 .infomessage i {
 	width: 25px;

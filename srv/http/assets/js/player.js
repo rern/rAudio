@@ -216,6 +216,7 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 			}
 		}
 		, oklabel    : ico( 'set0' ) +'0dB'
+		, oknoreset  : true
 		, ok         : () => {
 			if ( S.volumedb > -2 ) {
 				bash( [ cmd0db ] );
@@ -224,7 +225,6 @@ $( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
 				$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
 			}
 		}
-		, oknoreset    : true
 	} );
 } );
 $( '#mixertype' ).on( 'click', function() {
