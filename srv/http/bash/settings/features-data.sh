@@ -16,19 +16,18 @@ data+=$( settingsEnabled \
 
 ##########
 data+='
-, "hostname"         : "'$( hostname )'"
-, "ip"               : "'$( ipAddress )'"
-, "lcd"              : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
-, "nfsconnected"     : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
-, "snapserveractive" : '$( [[ $( snapclientIP ) ]] && echo true )'
-, "stoptimer"        : '$( exists $dirshm/pidstoptimer )
+, "hostname"      : "'$( hostname )'"
+, "ip"            : "'$( ipAddress )'"
+, "lcd"           : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
+, "nfsconnected"  : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
+, "shareddata"    : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
+, "stoptimer"     : '$( exists $dirshm/pidstoptimer )
 ##########
 [[ -e /usr/bin/mediamtx ]] && data+='
-, "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )
+, "dabradio"      : '$( systemctl -q is-active mediamtx && echo true )
 ##########
 [[ -e $dirshm/wlan ]] && data+='
-, "wlan"             : true
-, "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*$( < $dirshm/wlan )" && echo true )
+, "wlan"          : true
+, "wlanconnected" : '$( ip r | grep -q -m1 "^default.*$( < $dirshm/wlan )" && echo true )
 
 data2json "$data" $1

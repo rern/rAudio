@@ -95,37 +95,37 @@ data+=$( settingsEnabled \
 
 ##########
 data+='
-, "audio"             : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
-, "audioaplayname"    : "'$audioaplayname'"
-, "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
-, "audiooutput"       : "'$audiooutput'"
-, "hostname"          : "'$( hostname )'"
-, "i2saudio"          : '$i2saudio'
-, "ip"                : "'$( ipAddress )'"
-, "lan"               : '$( ip -br link | grep -q ^e && echo true )'
-, "lcdcharreboot"     : '$lcdcharreboot'
-, "list"              : '$( $dirsettings/system-storage.sh )'
-, "mpdoledreboot"     : '$mpdoledreboot'
-, "nfsserver"         : '$nfsserver'
-, "shareddata"        : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
-, "status"            : "'$status'"
-, "statusvf"          : '$statusvf'
-, "system"            : "'$system'"
-, "tft"               : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
-, "tftreboot"         : '$tftreboot'
-, "timezone"          : "'$timezone'"
-, "timezoneoffset"    : "'$timezoneoffset'"'
+, "audio"          : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
+, "audioaplayname" : "'$audioaplayname'"
+, "audiocards"     : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
+, "audiooutput"    : "'$audiooutput'"
+, "hostname"       : "'$( hostname )'"
+, "i2saudio"       : '$i2saudio'
+, "ip"             : "'$( ipAddress )'"
+, "lan"            : '$( ip -br link | grep -q ^e && echo true )'
+, "lcdcharreboot"  : '$lcdcharreboot'
+, "liststorage"    : '$( $dirsettings/system-storage.sh )'
+, "mpdoledreboot"  : '$mpdoledreboot'
+, "nfsserver"      : '$nfsserver'
+, "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
+, "status"         : "'$status'"
+, "statusvf"       : '$statusvf'
+, "system"         : "'$system'"
+, "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
+, "tftreboot"      : '$tftreboot'
+, "timezone"       : "'$timezone'"
+, "timezoneoffset" : "'$timezoneoffset'"'
 ##########
 [[ $audioaplayname == cirrus-wm5102 ]] && data+='
-, "audiowm5102"       : "'$( < $dirsystem/audio-wm5102 )'"'
+, "audiowm5102"    : "'$( < $dirsystem/audio-wm5102 )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
 ##########
 	data+='
-, "wlan"              : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"     : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
+, "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
+, "wlanconnected"  : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 ##########
 	data+='
-, "btconnected"       : '$( exists $dirshm/btconnected )
+, "btconnected"    : '$( exists $dirshm/btconnected )
 fi
 
 data2json "$data" $1

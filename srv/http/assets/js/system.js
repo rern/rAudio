@@ -690,7 +690,7 @@ function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
 	var html  = '';
-	$.each( S.list, ( i, v ) => {
+	$.each( S.liststorage, ( i, v ) => {
 		var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
 		var dot = '<grn>&ensp;•&ensp;</grn>';
 		if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
@@ -852,7 +852,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	V.li      = $this;
 	var i     = $this.index()
-	var list  = S.list[ i ];
+	var list  = S.liststorage[ i ];
 	$( '#codehddinfo' )
 		.addClass( 'hide' )
 		.empty();
@@ -880,7 +880,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 $( '#menu a' ).on( 'click', function() {
 	var $this      = $( this );
 	var cmd        = $this.prop( 'class' ).replace( ' active', '' );
-	var list       = S.list[ V.li.index() ];
+	var list       = S.liststorage[ V.li.index() ];
 	var mountpoint = list.mountpoint;
 	var source     = list.source;
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
