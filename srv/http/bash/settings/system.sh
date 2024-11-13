@@ -308,10 +308,6 @@ powerbutton )
 	fi
 	configTxt
 	;;
-rebootlist )
-	getContent $dirshm/reboot
-	rm -f $dirshm/{reboot,backup.gz}
-	;;
 regdomlist )
 	cat /srv/http/assets/data/regdomcodes.json
 	;;

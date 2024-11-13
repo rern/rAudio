@@ -118,6 +118,10 @@ mpdoled )
 multiraudioconf )
 	getContent $dirsystem/multiraudio.json
 	;;
+reboot )
+	getContent $dirshm/reboot
+	rm -f $dirshm/{reboot,backup.gz}
+	;;
 relays )
 	if [[ -e $dirsystem/relays.conf ]]; then
 		. $dirsystem/relays.conf
