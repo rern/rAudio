@@ -39,22 +39,6 @@ buffer | pllength | outputbuffer )
 	[[ $link ]] && linkConf || rm $dirmpdconf/$CMD.conf
 	$dirsettings/player-conf.sh
 	;;
-confget )
-	case $NAME in
-		crossfade )
-			echo '{ "SEC": '$( mpc crossfade | cut -d' ' -f2 )' }'
-			;;
-		replaygain )
-			echo '{
-  "MODE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
-, "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
-}'
-			;;
-		* )
-			conf2json $dirmpdconf/conf/$NAME.conf
-			;;
-	esac
-	;;
 crossfade )
 	[[ $ON ]] && sec=$SEC || sec=0
 	mpc -q crossfade $sec

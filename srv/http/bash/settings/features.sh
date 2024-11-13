@@ -98,54 +98,6 @@ camilladsp )
 	[[ ! $ON && -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	pushRestartMpd camilladsp $TF
 	;;
-confget )
-	case $NAME in
-		ap )
-			file=/var/lib/iwd/ap/$( hostname ).ap
-			echo '{ "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
-			;;
-		localbrowser )
-			brightness=$( getContent /sys/class/backlight/rpi_backlight/brightness false )
-			conf2json localbrowser.conf | sed 's/ }$/, "BRIGHTNESS": '$brightness' }/'
-			;;
-		multiraudioconf )
-			getContent $dirsystem/multiraudio.json
-			;;
-		smb )
-			file=/etc/samba/smb.conf
-			sed -n '/\[SD]/,/^\[/ p' $file | grep -q 'read only = no' && sd=true || sd=false
-			sed -n '/\[USB]/,/^\[/ p' $file | grep -q 'read only = no' && usb=true || usb=false
-			echo '{ "SD": '$sd', "USB": '$usb' }'
-			;;
-		spotify )
-			current=$( getVar device /etc/spotifyd.conf )
-			if [[ ${current:0:3} == hw: ]]; then
-				current=Default
-			else
-				current=$( getContent $dirsystem/spotifyoutput )
-			fi
-			devices=$( aplay -L | sed -n '/^.*:CARD/ {s/^/, "/; s/$/"/p}' )
-			echo '{ "current": "'$current'", "devices": [ "Default"'$devices' ] }'
-			;;
-		* )
-			if [[ -e $dirsystem/$NAME.conf ]]; then
-				conf2json $dirsystem/$NAME.conf
-			else
-				case $NAME in
-					autoplay )  echo '{ "BLUETOOTH": true, "STARTUP": true }';;
-					lyrics )    echo '{ "URL": "https://", "START": "<", "END": "</div>", "EMBEDDED": false	}';;
-					scrobble )  echo '{ "AIRPLAY": true, "BLUETOOTH": true, "SPOTIFY": true, "UPNP": true }';;
-					stoptimer ) echo '{ "MIN": 30, "POWEROFF": false }';;
-					volumelimit )
-						volume=$( volumeGet )
-						[[ $volume == 0 || ! $volume ]] && volume=50
-						echo '{ "STARTUP": '$volume', "MAX": 100 }';;
-					* )         echo false;;
-				esac
-			fi
-			;;
-	esac
-	;;
 dabradio )
 	if [[ $ON ]]; then
 		systemctl enable --now mediamtx

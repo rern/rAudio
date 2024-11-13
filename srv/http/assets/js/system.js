@@ -48,7 +48,7 @@ var setting       = {
 		} );
 	}
 	, lcdChar       : data => {
-		var tabFn         = () => bash( [ 'confget', 'lcdchar', true, 'CMD NAME GPIO' ], values => setting.lcdCharGpio( values ), 'json' );
+		var tabFn         = () => infoSetting( [ 'confget', 'lcdchar', true, 'CMD NAME GPIO' ], values => setting.lcdCharGpio( values ) );
 		var list          = jsonClone( lcdcharlist );
 		list[ 3 ][ 2 ].kv = data.address;
 		info( {
@@ -743,7 +743,7 @@ $( '#menu a' ).on( 'click', function() {
 		case 'sleep':
 			var dev = list.source;
 			title   = 'HDD Sleep';
-			bash( [ 'confget', 'hddapm', dev, 'CMD NAME DEV' ], apm => {
+			infoSetting( [ 'confget', 'hddapm', dev, 'CMD NAME DEV' ], apm => {
 				if ( ! apm ) {
 					info( {
 						  icon    : icon
@@ -765,7 +765,7 @@ $( '#menu a' ).on( 'click', function() {
 						bash( [ 'hddsleep', dev, infoVal() * 60 / 5, 'CMD DEV LEVEL' ] );
 					}
 				} );
-			}, 'json' );
+			} );
 			break
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )

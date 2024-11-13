@@ -45,9 +45,9 @@ function infoPlayerActive( $this ) {
 		return true
 	}
 }
-function infoSetting( name, infosetting ) {
-	var data = { cmd: 'bash', filesh: 'settings/'+ page +'.sh', args: [ 'confget', name, 'CMD NAME' ] }
-	$.post(  'cmd.php', data, infosetting, 'json' );
+function infoSetting( args, infosetting ) {
+	if ( typeof args === 'string' ) args = [ 'confget', args, 'CMD NAME' ];
+	$.post(  'cmd.php', { cmd: 'bash', filesh: 'settings/infosetting.sh', args: args }, infosetting, 'json' );
 }
 function json2array( keys, json ) {
 	if ( ! json ) return false
