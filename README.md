@@ -63,7 +63,7 @@ Audio player for
 - USB:
 	- Bluetooth
 	- DAC
-	- RTL-SDR (for DAB radio)
+	- SDR (for DAB radio)
 	- Wi-Fi
 - GPIO:
 	- [I²S audio module](https://github.com/rern/rAudio/blob/main/I2S_modules.md)
