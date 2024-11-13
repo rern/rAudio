@@ -100,18 +100,13 @@ data+='
 , "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"       : "'$audiooutput'"
 , "hostname"          : "'$( hostname )'"
-, "i2seeprom"         : '$( grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2saudio"          : '$i2saudio'
 , "ip"                : "'$( ipAddress )'"
 , "lan"               : '$( ip -br link | grep -q ^e && echo true )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$( $dirsettings/system-storage.sh )'
-, "mirror"            : "'$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )'"
 , "mpdoledreboot"     : '$mpdoledreboot'
 , "nfsserver"         : '$nfsserver'
-, "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
-, "poweraudiophonics" : '$( grep -q 'poweroff,gpiopin=22' /boot/config.txt && echo true )'
-, "rpi01"             : '$( exists /boot/kernel.img )'
 , "shareddata"        : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
 , "status"            : "'$status'"
 , "statusvf"          : '$statusvf'

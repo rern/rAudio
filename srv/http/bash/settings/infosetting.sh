@@ -2,29 +2,46 @@
 
 . /srv/http/bash/common.sh
 
-args2var "$1"
+ID=$1
 
-case $NAME in
+case $ID in
 
 ap )
 	file=/var/lib/iwd/ap/$( hostname ).ap
 	echo '{ "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
 	;;
 bluetooth )
-	bluetoothctl show | grep -q -m1 'Discoverable: yes' && discoverable=true || discoverable=false
+	if systemctl -q is-active bluetooth; then
+		bluetoothctl show | grep -q -m1 'Discoverable: yes' && discoverable=true || discoverable=false
+	else
+		discoverable=false
+	fi
 	echo '{ "DISCOVERABLE": '$discoverable', "FORMAT": '$( exists $dirsystem/btformat )' }'
+	;;
+buffer|outputbuffer )
+	conf2json $dirmpdconf/conf/$ID.conf
 	;;
 crossfade )
 	echo '{ "SEC": '$( mpc crossfade | cut -d' ' -f2 )' }'
 	;;
+custom )
+	name=$( getVar name $dirshm/output )
+	echo "\
+$( getContent $dirmpdconf/conf/custom.conf )
+^^
+$( getContent "$dirsystem/custom-output-$DEVICE" )"
+	;;
 hddapm )
-	apm=$( hdparm -B $DEV )
+	apm=$( hdparm -B $2 )
 	if [[ $apm ]]; then
 		awk=$( awk '{print $NF}' <<< $apm )
 		echo $(( awk * 5 / 60 ))
 	else
 		echo false
 	fi
+	;;
+i2seeprom )
+	grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true || echo false
 	;;
 lcdchar )
 	fileconf=$dirsystem/lcdchar.conf
@@ -33,12 +50,16 @@ lcdchar )
 # --------------------------------------------------------------------
 		values=$( conf2json $fileconf )
 	else
-		if [[ $GPIO ]]; then
-			echo '{ "INF": "gpio", "COLS": 20, "CHARMAP": "A00", "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24, "BACKLIGHT": false }'
+		if [[ $2 ]]; then
+			echo '{ "INF": "gpio", "COLS": 20, "CHARMAP": "A00"
+			      , "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24
+				  , "BACKLIGHT": false }'
 			exit
 # --------------------------------------------------------------------
 		fi
-		values='{ "INF": "i2c", "COLS": 20, "CHARMAP": "A00", "ADDRESS": 39, "CHIP": "PCF8574", "BACKLIGHT": false }'
+		values='{ "INF": "i2c", "COLS": 20, "CHARMAP": "A00"
+		        , "ADDRESS": 39, "CHIP": "PCF8574"
+				, "BACKLIGHT": false }'
 	fi
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	[[ $dev ]] && lines=$( i2cdetect -y $dev 2> /dev/null )
@@ -59,6 +80,34 @@ lcdchar )
 localbrowser )
 	brightness=$( getContent /sys/class/backlight/rpi_backlight/brightness false )
 	conf2json localbrowser.conf | sed 's/ }$/, "BRIGHTNESS": '$brightness' }/'
+	;;
+mirrorlist )
+	file=/etc/pacman.d/mirrorlist
+	list=$( curl -sfL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist )
+	if [[ $? == 0 ]]; then
+		mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
+		[[ $mirror ]] && list=$( sed "0,/^Server/ s|//.*mirror|//$mirror.mirror|" <<< $list )
+		echo "$list" > $file
+	else
+		list=$( < $file )
+	fi
+	lines=$( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' <<< $list )
+	codelist='"Auto":""'
+	while read line; do
+		if [[ ${line:0:4} == '### ' ]];then
+			city=
+			country=${line:4}
+		elif [[ ${line:0:3} == '## ' ]];then
+			city=${line:3}
+		else
+			[[ $city ]] && cc="$country - $city" || cc=$country
+			[[ $cc == $ccprev ]] && cc+=" 2"
+			ccprev=$cc
+			codelist+=',"'$cc'":"'$line'"'
+		fi
+	done <<< $lines
+	mirror=$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )
+	echo '{ "list": { '$codelist' }, "mirror": "'$mirror'" }'
 	;;
 mpdoled )
 	chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
@@ -87,22 +136,30 @@ relays )
 		relaysname='{ "17": "DAC", "27": "PreAmp", "22": "Amp", "23": "Subwoofer" }'
 	fi
 	echo '{
-"relays" : {
-  "ON"      : [ '${on// /,}' ]
-, "OFF"     : [ '${off// /,}' ]
-, "OND"     : [ '${ond// /,}' ]
-, "OFFD"    : [ '${offd// /,}' ]
-, "TIMERON" : '$timeron'
-, "TIMER"   : '$timer'
+  "relays" : {
+	  "ON"      : [ '${on// /,}' ]
+	, "OFF"     : [ '${off// /,}' ]
+	, "OND"     : [ '${ond// /,}' ]
+	, "OFFD"    : [ '${offd// /,}' ]
+	, "TIMERON" : '$timeron'
+	, "TIMER"   : '$timer'
 }
 , "relaysname" : '$relaysname'
 }'
 	;;
 replaygain )
 	echo '{
-"MODE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
+  "MODE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
 , "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
 }'
+	;;
+scrobble )
+	if [[ -e $dirsystem/scrobble.conf ]]; then
+		values=$( conf2json $dirsystem/scrobble.conf )
+	else
+		values='{ "AIRPLAY": true, "BLUETOOTH": true, "SPOTIFY": true, "UPNP": true }'
+	fi
+	echo '{ "values": '$values', "key": '$( exists $dirsystem/scrobblekey )' }'
 	;;
 smb )
 	file=/etc/samba/smb.conf
@@ -110,17 +167,17 @@ smb )
 	sed -n '/\[USB]/,/^\[/ p' $file | grep -q 'read only = no' && usb=true || usb=false
 	echo '{ "SD": '$sd', "USB": '$usb' }'
 	;;
-soundprofile )
-	if [[ -e $dirsystem/soundprofile.conf ]]; then
-		conf2json soundprofile.conf
+snapclient )
+	snapserverList | tail -1
+	;;
+soxr )
+	if [[ $2 ]]; then
+		file=$dirmpdconf/conf/$2.conf
 	else
-		dirlan=/sys/class/net/$( ip -br link | awk '/^e/ {print $1; exit}' )
-		echo '{
-"SWAPPINESS" : '$( sysctl vm.swappiness | cut -d' ' -f3 )'
-, "MTU"        : '$( cat $dirlan/mtu )'
-, "TXQUEUELEN" : '$( cat $dirlan/tx_queue_len )'
-}'
+		file=$( ls $dirmpdconf/soxr* 2> /dev/null )
+		[[ ! $file ]] && file=$dirmpdconf/conf/soxr.conf
 	fi
+	conf2json $file | jq | sed '/PLUGIN/ d'
 	;;
 spotify )
 	current=$( getVar device /etc/spotifyd.conf )
@@ -132,34 +189,49 @@ spotify )
 	devices=$( aplay -L | sed -n '/^.*:CARD/ {s/^/, "/; s/$/"/p}' )
 	echo '{ "current": "'$current'", "devices": [ "Default"'$devices' ] }'
 	;;
+spotifyd )
+	exists $dirsystem/spotifykey
+	;;
 tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
 	echo '{ "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }'
 	;;
+timezone )
+	echo '{
+  "values" : { "NTP": "'$( getVar NTP /etc/systemd/timesyncd.conf )'" }
+, "rpi01"  : '$( exists /boot/kernel.img )'
+}'
+	;;
 wlan )
 	echo '{
-"REGDOM"     : "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'"
+  "REGDOM"     : "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'"
 , "APAUTO"     : '$( [[ ! -e $dirsystem/wlannoap ]] && echo true || echo false )'
 , "regdomlist" : '$( cat /srv/http/assets/data/regdomcodes.json )'
 }'
 	;;
 * )
-	if [[ -e $dirsystem/$NAME.conf ]]; then
-		conf2json $dirsystem/$NAME.conf
+	if [[ -e $dirsystem/$ID.conf ]]; then
+		conf2json $dirsystem/$ID.conf
 	else
-		case $NAME in
-			autoplay )  echo '{ "BLUETOOTH": true, "STARTUP": true }';;
-			lyrics )    echo '{ "URL": "https://", "START": "<", "END": "</div>", "EMBEDDED": false	}';;
-			powerbutton )   echo '{ "ON":3, "SW": 3, "LED": 21 }';;
+		case $ID in
+			autoplay )      echo '{ "BLUETOOTH": true, "STARTUP": true }';;
+			lyrics )        echo '{ "URL": "https://", "START": "<", "END": "</div>", "EMBEDDED": false	}';;
+			powerbutton )   grep -q 'poweroff,gpiopin=22' /boot/config.txt && echo true || echo '{ "ON":3, "SW": 3, "LED": 21 }';;
 			rotaryencoder ) echo '{ "PINA": 27, "PINB": 22, "PINS": 23, "STEP": 1 }';;
-			scrobble )  echo '{ "AIRPLAY": true, "BLUETOOTH": true, "SPOTIFY": true, "UPNP": true }';;
-			stoptimer ) echo '{ "MIN": 30, "POWEROFF": false }';;
+			soundprofile )
+				dirlan=/sys/class/net/$( ip -br link | awk '/^e/ {print $1; exit}' )
+				echo '{
+  "SWAPPINESS" : '$( sysctl vm.swappiness | cut -d' ' -f3 )'
+, "MTU"        : '$( cat $dirlan/mtu )'
+, "TXQUEUELEN" : '$( cat $dirlan/tx_queue_len )'
+}';;
+			stoptimer )     echo '{ "MIN": 30, "POWEROFF": false }';;
 			volumelimit )
 				volume=$( volumeGet )
 				[[ $volume == 0 || ! $volume ]] && volume=50
 				echo '{ "STARTUP": '$volume', "MAX": 100 }';;
 			vuled )         echo '{ "P0": 14, "P1": 15, "P2": 18, "P3": 23, "P4": 24, "P5": 25, "P6": 8	}';;
-			* )         echo false;;
+			* )             echo false;;
 		esac
 	fi
 	;;

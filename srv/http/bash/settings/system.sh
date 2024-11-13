@@ -207,33 +207,6 @@ mirror )
 	[[ $server != $( grep -m1 ^Server $file ) ]] && echo $server > $file
 	pushRefresh
 	;;
-mirrorlist )
-	file=/etc/pacman.d/mirrorlist
-	list=$( curl -sfL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist )
-	if [[ $? == 0 ]]; then
-		mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
-		[[ $mirror ]] && list=$( sed "0,/^Server/ s|//.*mirror|//$mirror.mirror|" <<< $list )
-		echo "$list" > $file
-	else
-		list=$( < $file )
-	fi
-	lines=$( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' <<< $list )
-	codelist='"Auto":""'
-	while read line; do
-		if [[ ${line:0:4} == '### ' ]];then
-			city=
-			country=${line:4}
-		elif [[ ${line:0:3} == '## ' ]];then
-			city=${line:3}
-		else
-			[[ $city ]] && cc="$country - $city" || cc=$country
-			[[ $cc == $ccprev ]] && cc+=" 2"
-			ccprev=$cc
-			codelist+=',"'$cc'":"'$line'"'
-		fi
-	done <<< $lines
-	echo '{ '$codelist' }'
-	;;
 mountforget )
 	umount -l "$MOUNTPOINT"
 	rmdir "$MOUNTPOINT" &> /dev/null

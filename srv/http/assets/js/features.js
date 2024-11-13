@@ -1,197 +1,6 @@
 var redirect_uri = 'https://rern.github.io/raudio/spotify';
 var setting = {
-	spotify : () => {
-		if ( S.camilladsp ) {
-			info( {
-				  ...SW
-				, message  : icoLabel( 'DSP', 'camilladsp' ) +' is currently set as output device'
-			} );
-			return
-		}
-		infoSetting( 'spotify', data => {
-			info( {
-				  ...SW
-				, tablabel     : [ 'Output', 'Client Keys' ]
-				, tab          : [ '', setting.spotifyKeys ]
-				, list         : [ 'Device', 'select', data.devices ]
-				, boxwidth     : 300
-				, values       : data.current
-				, checkchanged : true
-				, ok           : () => {
-					bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
-					notifyCommon();
-				}
-			} );
-		} );
-		
-	}
-	, spotifyKeys : () => {
-		info( {
-			  ...SW
-			, tablabel : [ 'Output', 'Client Keys' ]
-			, tab      : [ setting.spotify, '' ]
-			, message  : 'Remove client <wh>ID</wh> and <wh>Secret</wh> ?'
-			, oklabel  : ico( 'remove' ) +'Remove'
-			, okcolor  : red
-			, ok       : () => {
-				bash( [ 'spotifykeyremove' ] );
-				notifyCommon( 'Remove keys ...' );
-			}
-		} );
-	}
-}
-function passwordWrong() {
-	bannerHide();
-	info( {
-		  ...SW
-		, message : 'Wrong existing password.'
-	} );
-	$( '#login' ).prop( 'checked', S.login );
-}
-function renderPage() {
-	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
-	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
-	if ( S.nfsconnected || S.shareddata || S.smb ) {
-		var nfsdisabled = icoLabel( 'Shared Data', 'networks' ) +' is currently enabled.';
-		$( '#nfsserver' ).addClass( 'disabled' );
-		if ( S.smb ) {
-			nfsdisabled = nfsdisabled.replace( 'Shared Data', 'File Sharing' );
-		} else if ( S.nfsserver && S.nfsconnected ) {
-			nfsdisabled = 'Currently connected by clients';
-		}
-		$( '#nfsserver' ).prev().html( nfsdisabled );
-	} else {
-		$( '#nfsserver' ).removeClass( 'disabled' );
-	}
-	if ( S.nosound ) {
-		$( '#divdsp' ).addClass( 'hide' );
-	} else {
-		$( '#divdsp' ).removeClass( 'hide' );
-		$( '#camilladsp' ).toggleClass( 'disabled', S.equalizer );
-		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
-	}
-	if ( /features$/.test( window.location.href ) ) {
-		showContent();
-		return
-	}
-	
-	// spotify / scrobble token
-	var url   = new URL( window.location.href );
-	window.history.replaceState( '', '', '/settings.php?p=features' );
-	var token = url.searchParams.get( 'token' );
-	var code  = url.searchParams.get( 'code' );
-	var error = url.searchParams.get( 'error' );
-	if ( token ) {
-		bash( [ 'scrobblekey', token, 'CMD TOKEN' ], function( error ) {
-			if ( error ) {
-				info( {
-					  icon    : 'scrobble'
-					, title   : 'Scrobbler'
-					, message : error
-				} );
-			} else {
-				S.scrobblekey = true;
-				showContent();
-				$( '#setting-scrobble' ).trigger( 'click' );
-			}
-		} );
-	} else if ( code ) {
-		bash( [ 'spotifytoken', code, redirect_uri, 'CMD CODE URI' ], showContent );
-	} else if ( error ) {
-		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
-	}
-}
-
-$( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-$( '.screenshot' ).on( 'click', function() {
-	info( {
-		  icon        : 'spotify'
-		, title       : 'Spotify for Developers'
-		, message     : '<img src="/assets/img/spotify.gif" style="width: 100%; height: auto; margin-bottom: 0;">'
-		, okno        : true
-	} );
-} );
-$( '#setting-dabradio' ).on( 'click', function() {
-	infoDabScan();
-} );
-$( '#setting-snapclient' ).on( 'click', function() {
-	if ( S.snapserver ) {
-		$( '#setting-snapserver' ).trigger( 'click' );
-		return
-	}
-	
-	notify( SW.icon, SW.title, 'Search for SnapServer ...' );
-	bash( [ 'snapserverip' ], ip => {
-		if ( ip ) {
-			window.open( 'http://'+ ip +':1780', '_blank' );
-		} else {
-			delete V.bannerdelay;
-			info( {
-				  ...SW
-				, message : '<a class="helpmenu label">SnapServer<i class="i-snapcast"></i></a> not available.'
-			} );
-		}
-	} );
-} );
-$( '#setting-spotifyd' ).on( 'click', function() {
-	var active = infoPlayerActive( $( this ) );
-	if ( active ) return
-	
-	if ( ! S.spotifyd && S.spotifykey ) {
-		bash( [ 'spotifyd' ] );
-		notifyCommon( 'Enable ...' );
-	} else if ( S.spotifykey ) {
-		S.camilladsp ? setting.spotifyKeys() : setting.spotify();
-	} else {
-		if ( navigator.userAgent.includes( 'Firefox' ) ) {
-			infoWarning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
-			$( '#spotifyd' ).prop( 'checked', false );
-			return
-		}
-		
-		info( {
-			  ...SW
-			, list        : [
-				  [ 'ID',     'text' ]
-				, [ 'Secret', 'text' ]
-			]
-			, footer      : '<wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
-			, footeralign : 'right'
-			, boxwidth    : 320
-			, checklength : { 0: 32, 1: 32 }
-			, beforeshow  : () => {
-				$( '#infoList .help' ).on( 'click', function() {
-					$( '.container .help' ).eq( 0 ).trigger( 'click' );
-					$( '#infoX' ).trigger( 'click' );
-				} );
-			}
-			, cancel      : switchCancel
-			, ok          : () => {
-				var infoval = infoVal();
-				var id      = infoval[ 0 ];
-				var secret  = infoval[ 1 ];
-				bash( [ 'spotifykey', btoa( id +':'+ secret ), 'CMD BTOA' ] );
-				var data    = {
-					  response_type : 'code'
-					, client_id     : id
-					, scope         : 'user-read-currently-playing user-read-playback-position'
-					, redirect_uri  : redirect_uri
-					, state         : window.location.hostname
-				}
-				window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
-			}
-		} );
-	}
-} );
-$( '#setting-snapserver' ).on( 'click', function() {
-	window.open( 'http://'+ S.ip +':1780', '_blank' );
-} );
-$( '#camilladsp, #equalizer' ).on( 'click', function() {
-	if ( S[ this.id ] ) $( this.id === 'camilladsp' ? '#equalizer' : '#camilladsp' ).addClass( 'disabled' );
-} );
-$( '#setting-ap' ).on( 'click', function() {
-	infoSetting( 'ap', values => {
+	  ap            : values => {
 		info( {
 			  ...SW
 			, footer       : '(8 characters or more)'
@@ -207,10 +16,8 @@ $( '#setting-ap' ).on( 'click', function() {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
-	} );
-} );
-$( '#setting-autoplay' ).on( 'click', function() {
-	infoSetting( 'autoplay', values => {
+	}
+	, autoplay      : values => {
 		info( {
 			  ...SW
 			, list         : [
@@ -223,10 +30,11 @@ $( '#setting-autoplay' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	} );
-} );
-$( '#setting-localbrowser' ).on( 'click', function() {
-	infoSetting( 'localbrowser', values => {
+	}
+	, dabradio      : () => {
+		infoDabScan();
+	}
+	, localbrowser  : values => {
 		var footer = values.BRIGHTNESS ? ico( 'gear', 'brightness', 'tabindex' ) +'Brightness&emsp;' : '';
 		footer    += ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
 		info( {
@@ -278,26 +86,27 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	} );
-} );
-$( '#setting-smb' ).on( 'click', function() {
-	infoSetting( 'smb', values => {
+	}
+	, login         : () => {
 		info( {
 			  ...SW
-			, message      : '<wh>Write</wh> permission:'
-			, list         : [
-				  [ '<gr>/mnt/MPD/</gr>SD',  'checkbox' ]
-				, [ '<gr>/mnt/MPD/</gr>USB', 'checkbox' ]
+			, list       : [
+				  [ 'Existing', 'password' ]
+				, [ 'New',      'password' ]
+				, [ 'Setting pages only', 'checkbox' ]
 			]
-			, values       : values
-			, checkchanged : S.smb
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, footer     : '(Blank <wh>New</wh> - No password change)'
+			, checkblank : [ 0 ]
+			, cancel     : switchCancel
+			, ok         : () => {
+				notifyCommon();
+				$.post( 'cmd.php', { cmd: 'login', ...infoVal() }, verified => {
+					if ( verified == -1 ) passwordWrong();
+				} );
+			}
 		} );
-	} );
-} );
-$( '#setting-lyrics' ).on( 'click', function() {
-	infoSetting( 'lyrics', values => {
+	}
+	, lyrics        : values => {
 		info( {
 			  ...SW
 			, list         : [
@@ -315,10 +124,8 @@ $( '#setting-lyrics' ).on( 'click', function() {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
-	} );
-} );
-$( '#setting-multiraudio' ).on( 'click', function() {
-	infoSetting( 'multiraudio', data => {
+	}
+	, multiraudio   : data => {
 		var list = [
 			  [ '', '',     { suffix: 'Name', sameline: true } ]
 			, [ '', '',     { suffix: 'IP' } ]
@@ -396,10 +203,270 @@ $( '#setting-multiraudio' ).on( 'click', function() {
 				bash( [ 'multiraudio' ] );
 			}
 		} );
+	}
+	, scrobble      : data => {
+		data.key ? setting.scrobbleType( data.values ) : setting.scrobbleKey();
+	}
+	, scrobbleKey   : () => {
+		info( {
+			  ...SW
+			, message : 'Open <wh>Last.fm</wh> for authorization?'
+			, cancel  : switchCancel
+			, ok      : () => { // api account page: https://www.last.fm/api/accounts
+				bash( [ 'lastfmkey' ], function( apikey ) {
+					location.href =  'http://www.last.fm/api/auth/?api_key='+ apikey +'&cb=https://rern.github.io/raudio/scrobbler?ip='+ location.host;
+				} );
+			}
+		} );
+	}
+	, scrobbleType  : values => {
+		info( {
+			  ...SW
+			, list         : [
+				  [ ico( 'airplay' ) +'AirPlay',        'checkbox' ]
+				, [ ico( 'bluetooth' ) +'Bluetooth',    'checkbox' ]
+				, [ ico( 'spotify' ) +'Spotify',        'checkbox' ]
+				, [ ' '+ ico( 'upnp' ) +' UPnP / DLNA', 'checkbox' ]
+			]
+			, boxwidth     : 170
+			, values       : values
+			, checkchanged : S.scrobble
+			, buttonlabel  : ico( 'remove' ) +'Keys'
+			, buttoncolor  : red
+			, button       : () => {
+				switchCancel();
+				info( {
+					  icon    : 'scrobble'
+					, title   : 'Scrobbler'
+					, message : 'Remove authorization?'
+					, ok      : () => bash( [ 'scrobblekeyremove' ] )
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
+	}
+	, smb           : values => {
+		info( {
+			  ...SW
+			, message      : '<wh>Write</wh> permission:'
+			, list         : [
+				  [ '<gr>/mnt/MPD/</gr>SD',  'checkbox' ]
+				, [ '<gr>/mnt/MPD/</gr>USB', 'checkbox' ]
+			]
+			, values       : values
+			, checkchanged : S.smb
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, snapclient    : ip => {
+		if ( ip ) {
+			window.open( 'http://'+ ip +':1780', '_blank' );
+		} else {
+			info( {
+				  ...SW
+				, message : '<a class="helpmenu label">SnapServer<i class="i-snapcast"></i></a> not available.'
+			} );
+		}
+	}
+	, snapserver    : () => window.open( 'http://'+ S.ip +':1780', '_blank' )
+	, spotifyd      : spotifykey => {
+		if ( ! S.spotifyd && spotifykey ) {
+			bash( [ 'spotifyd' ] );
+			notifyCommon( 'Enable ...' );
+		} else if ( spotifykey ) {
+			S.camilladsp ? setting.spotifyKeys() : setting.spotifyOutput();
+		} else {
+			if ( navigator.userAgent.includes( 'Firefox' ) ) {
+				infoWarning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
+				$( '#spotifyd' ).prop( 'checked', false );
+				return
+			}
+			
+			info( {
+				  ...SW
+				, list        : [
+					  [ 'ID',     'text' ]
+					, [ 'Secret', 'text' ]
+				]
+				, footer      : '<wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
+				, footeralign : 'right'
+				, boxwidth    : 320
+				, checklength : { 0: 32, 1: 32 }
+				, beforeshow  : () => {
+					$( '#infoList .help' ).on( 'click', function() {
+						$( '.container .help' ).eq( 0 ).trigger( 'click' );
+						$( '#infoX' ).trigger( 'click' );
+					} );
+				}
+				, cancel      : switchCancel
+				, ok          : () => {
+					var infoval = infoVal();
+					var id      = infoval[ 0 ];
+					var secret  = infoval[ 1 ];
+					bash( [ 'spotifykey', btoa( id +':'+ secret ), 'CMD BTOA' ] );
+					var data    = {
+						  response_type : 'code'
+						, client_id     : id
+						, scope         : 'user-read-currently-playing user-read-playback-position'
+						, redirect_uri  : redirect_uri
+						, state         : window.location.hostname
+					}
+					window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
+				}
+			} );
+		}
+	}
+	, spotifyKeys   : () => {
+		info( {
+			  ...SW
+			, tablabel : [ 'Output', 'Client Keys' ]
+			, tab      : [ setting.spotifyOutput, '' ]
+			, message  : 'Remove client <wh>ID</wh> and <wh>Secret</wh> ?'
+			, oklabel  : ico( 'remove' ) +'Remove'
+			, okcolor  : red
+			, ok       : () => {
+				bash( [ 'spotifykeyremove' ] );
+				notifyCommon( 'Remove keys ...' );
+			}
+		} );
+	}
+	, spotifyOutput : () => {
+		if ( S.camilladsp ) {
+			info( {
+				  ...SW
+				, message  : icoLabel( 'DSP', 'camilladsp' ) +' is currently set as output device'
+			} );
+			return
+		}
+		infoSetting( 'spotify', data => {
+			info( {
+				  ...SW
+				, tablabel     : [ 'Output', 'Client Keys' ]
+				, tab          : [ '', setting.spotifyKeys ]
+				, list         : [ 'Device', 'select', data.devices ]
+				, boxwidth     : 300
+				, values       : data.current
+				, checkchanged : true
+				, ok           : () => {
+					bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
+					notifyCommon();
+				}
+			} );
+		} );
+		
+	}
+	, stoptimer     : values => {
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Minutes',           'number', { updn: { step: 5, min: 5, max: 120 } } ]
+				, [ 'Power off on stop', 'checkbox' ]
+			]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.stoptimer
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
+	}
+	, volumelimit   : values => {
+		var param = { updn: { step: 1, min: 0, max: 100, enable: true, link: true } }
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Startup default', 'number', param ]
+				, [ 'Maximum limit',   'number', param ]
+			]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.volumelimit
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
+	}
+}
+function passwordWrong() {
+	bannerHide();
+	info( {
+		  ...SW
+		, message : 'Wrong existing password.'
+	} );
+	$( '#login' ).prop( 'checked', S.login );
+}
+function renderPage() {
+	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
+	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
+	if ( S.nfsconnected || S.shareddata || S.smb ) {
+		var nfsdisabled = icoLabel( 'Shared Data', 'networks' ) +' is currently enabled.';
+		$( '#nfsserver' ).addClass( 'disabled' );
+		if ( S.smb ) {
+			nfsdisabled = nfsdisabled.replace( 'Shared Data', 'File Sharing' );
+		} else if ( S.nfsserver && S.nfsconnected ) {
+			nfsdisabled = 'Currently connected by clients';
+		}
+		$( '#nfsserver' ).prev().html( nfsdisabled );
+	} else {
+		$( '#nfsserver' ).removeClass( 'disabled' );
+	}
+	if ( S.nosound ) {
+		$( '#divdsp' ).addClass( 'hide' );
+	} else {
+		$( '#divdsp' ).removeClass( 'hide' );
+		$( '#camilladsp' ).toggleClass( 'disabled', S.equalizer );
+		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
+	}
+	if ( /features$/.test( window.location.href ) ) {
+		showContent();
+		return
+	}
+	
+	// spotify / scrobble token
+	var url   = new URL( window.location.href );
+	window.history.replaceState( '', '', '/settings.php?p=features' );
+	var token = url.searchParams.get( 'token' );
+	var code  = url.searchParams.get( 'code' );
+	var error = url.searchParams.get( 'error' );
+	if ( token ) {
+		bash( [ 'scrobblekey', token, 'CMD TOKEN' ], function( error ) {
+			if ( error ) {
+				info( {
+					  icon    : 'scrobble'
+					, title   : 'Scrobbler'
+					, message : error
+				} );
+			} else {
+				S.scrobblekey = true;
+				showContent();
+				$( '#setting-scrobble' ).trigger( 'click' );
+			}
+		} );
+	} else if ( code ) {
+		bash( [ 'spotifytoken', code, redirect_uri, 'CMD CODE URI' ], showContent );
+	} else if ( error ) {
+		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
+	}
+}
+
+$( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+$( '.screenshot' ).on( 'click', function() {
+	info( {
+		  icon        : 'spotify'
+		, title       : 'Spotify for Developers'
+		, message     : '<img src="/assets/img/spotify.gif" style="width: 100%; height: auto; margin-bottom: 0;">'
+		, okno        : true
 	} );
 } );
+$( '#camilladsp, #equalizer' ).on( 'click', function() {
+	if ( S[ this.id ] ) $( this.id === 'camilladsp' ? '#equalizer' : '#camilladsp' ).addClass( 'disabled' );
+} );
 $( '#login' ).on( 'click', function() {
-	if ( $( this ).prop( 'checked' ) ) {
+	if ( S.login ) {
 		$( '#setting-login' ).trigger( 'click' );
 	} else {
 		info( {
@@ -420,104 +487,6 @@ $( '#login' ).on( 'click', function() {
 			}
 		} );
 	}
-} );
-$( '#setting-login' ).on( 'click', function() {
-	info( {
-		  ...SW
-		, list       : [
-			  [ S.login ? 'Existing' : 'Password', 'password' ]
-			, [ 'New',                             S.login ? 'password' : 'hidden' ]
-			, [ 'Setting pages only',              'checkbox' ]
-		]
-		, footer     : '(Blank <wh>New</wh> - No password change)'
-		, checkblank : [ 0 ]
-		, values     : { pwd: '', pwdnew: '', loginsetting: S.loginsetting }
-		, cancel     : switchCancel
-		, ok         : () => {
-			notifyCommon();
-			$.post( 'cmd.php', { cmd: 'login', ...infoVal() }, verified => {
-				if ( verified == -1 ) passwordWrong();
-			} );
-		}
-	} );
-} );
-$( '#setting-scrobble' ).on( 'click', function() {
-	if ( S.scrobblekey ) {
-		infoSetting( 'scrobble', values => {
-			info( {
-				  ...SW
-				, list         : [
-					  [ ico( 'airplay' ) +'AirPlay',        'checkbox' ]
-					, [ ico( 'bluetooth' ) +'Bluetooth',    'checkbox' ]
-					, [ ico( 'spotify' ) +'Spotify',        'checkbox' ]
-					, [ ' '+ ico( 'upnp' ) +' UPnP / DLNA', 'checkbox' ]
-				]
-				, boxwidth     : 170
-				, values       : values
-				, checkchanged : S.scrobble
-				, buttonlabel  : ico( 'remove' ) +'Keys'
-				, buttoncolor  : red
-				, button       : () => {
-					switchCancel();
-					info( {
-						  icon    : 'scrobble'
-						, title   : 'Scrobbler'
-						, message : 'Remove authorization?'
-						, ok      : () => bash( [ 'scrobblekeyremove' ] )
-					} );
-				}
-				, cancel       : switchCancel
-				, ok           : switchEnable
-				, fileconf     : true
-			} );
-		} );
-	} else {
-		info( {
-			  ...SW
-			, message : 'Open <wh>Last.fm</wh> for authorization?'
-			, cancel  : switchCancel
-			, ok      : () => { // api account page: https://www.last.fm/api/accounts
-				bash( [ 'lastfmkey' ], function( apikey ) {
-					location.href =  'http://www.last.fm/api/auth/?api_key='+ apikey +'&cb=https://rern.github.io/raudio/scrobbler?ip='+ location.host;
-				} );
-			}
-		} );
-	}
-} );
-$( '#setting-stoptimer' ).on( 'click', function() {
-	infoSetting( 'stoptimer', values => {
-		info( {
-			  ...SW
-			, list         : [
-				  [ 'Minutes',           'number', { updn: { step: 5, min: 5, max: 120 } } ]
-				, [ 'Power off on stop', 'checkbox' ]
-			]
-			, boxwidth     : 70
-			, values       : values
-			, checkchanged : S.stoptimer
-			, cancel       : switchCancel
-			, ok           : switchEnable
-			, fileconf     : true
-		} );
-	} );
-} );
-$( '#setting-volumelimit' ).on( 'click', function() {
-	infoSetting( 'volumelimit', values => {
-		var param = { updn: { step: 1, min: 0, max: 100, enable: true, link: true } }
-		info( {
-			  ...SW
-			, list         : [
-				  [ 'Startup default', 'number', param ]
-				, [ 'Maximum limit',   'number', param ]
-			]
-			, boxwidth     : 70
-			, values       : values
-			, checkchanged : S.volumelimit
-			, cancel       : switchCancel
-			, ok           : switchEnable
-			, fileconf     : true
-		} );
-	} );
 } );
 
 } );

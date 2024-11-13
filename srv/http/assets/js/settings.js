@@ -34,20 +34,12 @@ function currentStatus( id ) {
 		bannerReset();
 	} );
 }
-function infoPlayerActive( $this ) {
-	var $switch = $this.prev().prev();
-	if ( $switch.hasClass( 'disabled' ) ) {
-		info( {
-			  icon    : $switch.data( 'icon' )
-			, title   : $switch.data( 'label' )
-			, message : $switch.data( 'disabled' )
-		} );
-		return true
+function infoSetting( name, infosetting, text ) {
+	if ( infosetting.toString().slice( 0, 2 ) === '()' ) { // no get conf
+		infosetting();
+	} else {
+		$.post(  'cmd.php', { cmd: 'bash', filesh: 'settings/infosetting.sh '+ name }, infosetting, text || 'json' );
 	}
-}
-function infoSetting( args, infosetting ) {
-	if ( typeof args === 'string' ) args = [ 'confget', args, 'CMD NAME' ];
-	$.post(  'cmd.php', { cmd: 'bash', filesh: 'settings/infosetting.sh', args: args }, infosetting, 'json' );
 }
 function json2array( keys, json ) {
 	if ( ! json ) return false
@@ -471,7 +463,7 @@ $( '.help' ).on( 'click', function() {
 	$helpblock.toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.help' ).hasClass( 'bl' ) );
 } );
-$( '.setting, .switch' ).on( 'click', function() {
+$( '.switch, .setting' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();
@@ -487,6 +479,9 @@ $( '.setting, .switch' ).on( 'click', function() {
 		, icon  : icon
 		, title : $( '#div'+ id +' .col-l .label' ).text()
 	}
+} );
+$( '.setting' ).on( 'click', function( e ) {
+	infoSetting( SW.id, setting[ SW.id ] );
 } );
 $( '.switch' ).on( 'click', function() {
 	var $this   = $( this );

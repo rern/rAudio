@@ -3,7 +3,155 @@ var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 			  +'Beware of too high volume.</wh>';
 
 var setting  = {
-	  noVolume      : () => {
+	  bluealsa      : () => {
+		  setting.mixer();
+	  }
+	, buffer        : values => {
+		info( {
+			  ...SW
+			, message      : '<c>audio_buffer_size</c>'
+			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 40960 } } ]
+			, boxwidth     : 110
+			, values       : values
+			, checkchanged : S.buffer
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	  }
+	, crossfade     : values => {
+		info( {
+			  ...SW
+			, list         : [ 'Seconds', 'number', { updn: { step: 1, min: 0, max: 10 } } ]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.crossfade
+			, checkblank   : true
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, custom        : () => {
+		infoSetting( 'custom', values => {
+			var list = `\
+	<table width="100%">
+	<tr><td><c>mpd.conf</c></td></tr>
+	<tr><td><pre>
+	...
+	user                   "mpd"</pre></td></tr>
+		<tr><td><textarea></textarea></td></tr>
+		<tr><td><pre>
+	...
+	audio_output {
+		...
+		mixer_device   "hw:${ S.output.card }"
+	</pre></td></tr>
+	<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
+	<tr><td><pre style="margin-top: -20px">
+	}</pre></td></tr>
+	</table>`;
+			var val    = values.split( '^^' );
+			var global = val[ 0 ].trim(); // remove trailing
+			var output = val[ 1 ].trim();
+			info( {
+				  ...SW
+				, list         : list
+				, boxwidth     : 370
+				, values       : [ global, output ]
+				, checkchanged : S.custom
+				, cancel       : switchCancel
+				, ok           : () => {
+					var infoval = infoVal();
+					global      = infoval[ 0 ];
+					output      = infoval[ 1 ];
+					if ( ! global && ! output ) {
+						notify( SW.icon, SW.title, 'Disable ...', 3000 );
+						bash( [ 'custom', 'OFF' ] );
+						return
+					}
+					
+					notifyCommon();
+					bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
+						if ( ! mpdstart ) {
+							bannerHide();
+							info( {
+								  ...SW
+								, message : 'MPD failed with the added lines'
+											+'<br>Restored to previous configurations.'
+							} );
+						}
+					}, 'json' );
+				}
+			} );
+		}, 'text' );
+	}
+	, mixer         : () => {
+		var bluealsa = SW.id.slice( -1 ) === 'a';
+		if ( bluealsa ) {
+			var control = S.btmixer.replace( / *-* A2DP/, '' );
+			var cmd     = [ 'volume', S.btmixer, '', S.volume ];
+			var cmd0db  = 'volume0dbbt';
+		} else {
+			var title   = 'Mixer Volume'
+			var control = S.output.mixer;
+			var cmd     = [ 'volume', S.output.mixer, S.output.card, S.volume ];
+			var cmd0db  = 'volume0db';
+		}
+		info( {
+			  icon       : SW.icon
+			, title      : SW.title +' Volume'
+			, list       : [ control, 'range' ]
+			, footer     : '<br>'+ warning
+			, values     : S.volume
+			, beforeshow : () => {
+				if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
+				$( '.infofooter' ).addClass( 'hide' );
+				var $range  = $( '#infoList input' );
+				$( '#infoList' ).css( 'height', '160px' );
+				$( '.inforange' ).append( '<div class="sub gr"></div>' );
+				$range.on( 'input', function() {
+					S.volume = +$range.val();
+					volumeMaxSet();
+					volumeInfoSet();
+					bash( [ ...cmd, S.volume, 'CMD CONTROL CARD CURRENT TARGET' ] );
+				} );
+				$( '.inforange i' ).on( 'click', function() {
+					S.volume = +$range.val();
+					volumeMaxSet();
+					$range
+						.trigger( 'input' )
+						.trigger( 'keyup' );
+				} );
+				volumeInfoSet();
+			}
+			, cancel     : () => {
+				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
+					local();
+					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
+					setTimeout( () => I.oknoreset = true, 300 );
+				}
+			}
+			, oklabel    : ico( 'set0' ) +'0dB'
+			, oknoreset  : true
+			, ok         : () => {
+				if ( S.volumedb > -2 ) {
+					bash( [ cmd0db ] );
+				} else {
+					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
+					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
+				}
+			}
+		} );
+	}
+	, mixertype     : () => {
+		info( {
+			  ...SW
+			, list    : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+			, values  : S.mixertype ? S.output.mixertype : 'hardware'
+			, cancel  : switchCancel
+			, ok      : () => setMixerType( infoVal() )
+		} );
+	}
+	, noVolume      : () => {
 		if ( S.volumedb > -2 ) {
 			setting.noVolumeSet();
 		} else {
@@ -15,7 +163,7 @@ var setting  = {
 			} );
 		}
 	}
-	, noVolumeSet : () => {
+	, noVolumeSet   : () => {
 		notifyCommon( 'Enable ...' );
 		bash( [ 'novolume' ], () => {
 			if ( ! S.custom ) return
@@ -27,60 +175,81 @@ var setting  = {
 			} );
 		} );
 	}
-	, soxr        : () => {
-		infoSetting( 'soxr', values => {
-			delete values.PLUGIN;
-			info( {
-				  ...SW
-				, tablabel     : [ 'Presets', 'Custom' ]
-				, tab          : [ '', setting.soxrCustom ]
-				, list         : [
-					  [ 'Quality', 'select', { 'Very high': 'very high', High: 'high', Medium: 'medium', Low: 'low', Quick: 'quick' } ]
-					, [ 'Threads', 'radio',  { Auto: 0, Single: 1 } ]
-				]
-				, values       : values
-				, checkblank   : true
-				, checkchanged : S.soxr
-				, boxwidth     : 180
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
+	, outputbuffer  : values => {
+		info( {
+			  ...SW
+			, message      : '<c>max_output_buffer_size</c>'
+			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 8192, max: 81920 } } ]
+			, boxwidth     : 110
+			, values       : values
+			, checkchanged : S.outputbuffer
+			, cancel       : switchCancel
+			, ok           : switchEnable
 		} );
 	}
-	, soxrCustom  : () => {
-		infoSetting( 'soxr-custom', values => {
-			delete values.PLUGIN;
-			var flag = {
-				  'Rolloff - Small'  : 0
-				, 'Rolloff - Medium' : 1
-				, 'Rolloff - None'   : 2
-				, 'High precision'   : 8
-				, 'Double precision' : 16
-				, 'Variable rate'    : 32
+	, replaygain    : values => {
+		if ( S.output.mixertype !== 'software' || ! S.mixers ) delete values.HARDWARE;
+		info( {
+			  ...SW
+			, list         : [ '', 'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' }, sameline: false } ]
+			, footer       : values.HARDWARE ? '<label><input type="checkbox"><wh>Gain control by Mixer Device</wh></label>' : ''
+			, values       : values
+			, checkchanged : S.replaygain
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, soxr        : values => {
+		values.QUALITY === 'custom' ? setting.soxrCustom( values ) : setting.soxrPreset( values );
+	}
+	, soxrPreset  : values => {
+		info( {
+			  ...SW
+			, tablabel     : [ 'Presets', 'Custom' ]
+			, tab          : [ '', () => infoSetting( 'soxr soxr-custom', setting.soxrCustom ) ]
+			, list         : [
+				  [ 'Quality', 'select', { 'Very high': 'very high', High: 'high', Medium: 'medium', Low: 'low', Quick: 'quick' } ]
+				, [ 'Threads', 'radio',  { Auto: 0, Single: 1 } ]
+			]
+			, values       : values
+			, checkblank   : true
+			, checkchanged : S.soxr
+			, boxwidth     : 180
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, soxrCustom  : values => {
+		var flag = {
+			  'Rolloff - Small'  : 0
+			, 'Rolloff - Medium' : 1
+			, 'Rolloff - None'   : 2
+			, 'High precision'   : 8
+			, 'Double precision' : 16
+			, 'Variable rate'    : 32
+		}
+		info( {
+			  ...SW
+			, tablabel     : [ 'Presets', 'Custom' ]
+			, tab          : [ () => infoSetting( 'soxr soxr', setting.soxrPreset ), '' ]
+			, list         : [
+				  [ 'Type',           'hidden' ]
+				, [ 'Precision',      'select', { kv: [ 16, 20, 24, 28, 32 ], suffix: 'bit' } ]
+				, [ 'Phase Response', 'number', { suffix: '0-100' } ]
+				, [ 'Passband End',   'number', { suffix: '0-100%' } ]
+				, [ 'Stopband Begin', 'number', { suffix: '100-150%' } ]
+				, [ 'Attenuation',    'number', { suffix: '0-30dB' } ]
+				, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2 } ]
+			]
+			, values       : values
+			, checkblank   : true
+			, checkchanged : S.soxr
+			, boxwidth     : 105
+			, beforeshow   : () => {
+				$( '#infoList .select2-container' ).last().attr( 'style', 'width: 100% !important' )
 			}
-			info( {
-				  ...SW
-				, tablabel     : [ 'Presets', 'Custom' ]
-				, tab          : [ setting.soxr, '' ]
-				, list         : [
-					  [ 'Type',           'hidden' ]
-					, [ 'Precision',      'select', { kv: [ 16, 20, 24, 28, 32 ], suffix: 'bit' } ]
-					, [ 'Phase Response', 'number', { suffix: '0-100' } ]
-					, [ 'Passband End',   'number', { suffix: '0-100%' } ]
-					, [ 'Stopband Begin', 'number', { suffix: '100-150%' } ]
-					, [ 'Attenuation',    'number', { suffix: '0-30dB' } ]
-					, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2 } ]
-				]
-				, values       : values
-				, checkblank   : true
-				, checkchanged : S.soxr
-				, boxwidth     : 105
-				, beforeshow   : () => {
-					$( '#infoList .select2-container' ).last().attr( 'style', 'width: 100% !important' )
-				}
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
+			, cancel       : switchCancel
+			, ok           : switchEnable
 		} );
 	}
 }
@@ -170,63 +339,6 @@ $( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Mixer Device', 'Change ...' );
 	bash( [ 'mixer', $( this ).val(), S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
 } );
-$( '#setting-mixer, #setting-bluealsa' ).on( 'click', function() {
-	var bluealsa = this.id.slice( -1 ) === 'a';
-	if ( bluealsa ) {
-		var control = S.btmixer.replace( / *-* A2DP/, '' );
-		var cmd     = [ 'volume', S.btmixer, '', S.volume ];
-		var cmd0db  = 'volume0dbbt';
-	} else {
-		var control = S.output.mixer;
-		var cmd     = [ 'volume', S.output.mixer, S.output.card, S.volume ];
-		var cmd0db  = 'volume0db';
-	}
-	info( {
-		  icon       : SW.icon
-		, title      : 'Mixer Volume'
-		, list       : [ control, 'range' ]
-		, footer     : '<br>'+ warning
-		, values     : S.volume
-		, beforeshow : () => {
-			if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
-			$( '.infofooter' ).addClass( 'hide' );
-			var $range  = $( '#infoList input' );
-			$( '#infoList' ).css( 'height', '160px' );
-			$( '.inforange' ).append( '<div class="sub gr"></div>' );
-			$range.on( 'input', function() {
-				S.volume = +$range.val();
-				volumeMaxSet();
-				volumeInfoSet();
-				bash( [ ...cmd, S.volume, 'CMD CONTROL CARD CURRENT TARGET' ] );
-			} );
-			$( '.inforange i' ).on( 'click', function() {
-				S.volume = +$range.val();
-				volumeMaxSet();
-				$range
-					.trigger( 'input' )
-					.trigger( 'keyup' );
-			} );
-			volumeInfoSet();
-		}
-		, cancel     : () => {
-			if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
-				local();
-				$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
-				setTimeout( () => I.oknoreset = true, 300 );
-			}
-		}
-		, oklabel    : ico( 'set0' ) +'0dB'
-		, oknoreset  : true
-		, ok         : () => {
-			if ( S.volumedb > -2 ) {
-				bash( [ cmd0db ] );
-			} else {
-				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
-				$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
-			}
-		}
-	} );
-} );
 $( '#mixertype' ).on( 'click', function() {
 	if ( S.mixertype ) {
 		if ( S.volumedb > -2 ) {
@@ -243,15 +355,6 @@ $( '#mixertype' ).on( 'click', function() {
 	} else {
 		S.mixers ? $( '#setting-mixertype' ).trigger( 'click' ) : setMixerType( 'software' );
 	}
-} );
-$( '#setting-mixertype' ).on( 'click', function() {
-	info( {
-		  ...SW
-		, list    : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
-		, values  : S.mixertype ? S.output.mixertype : 'hardware'
-		, cancel  : switchCancel
-		, ok      : () => setMixerType( infoVal() )
-	} );
 } );
 $( '#novolume' ).on( 'click', function( e ) {
 	e.stopImmediatePropagation();
@@ -282,34 +385,6 @@ $( '#dop' ).on( 'click', function() {
 	if ( ! checked ) cmd.push( 'OFF' ); // OFF with args - value by index
 	bash( cmd );
 } );
-$( '#setting-crossfade' ).on( 'click', function() {
-	infoSetting( 'crossfade', values => {
-		info( {
-			  ...SW
-			, list         : [ 'Seconds', 'number', { updn: { step: 1, min: 0, max: 10 } } ]
-			, boxwidth     : 70
-			, values       : values
-			, checkchanged : S.crossfade
-			, checkblank   : true
-			, cancel       : switchCancel
-			, ok           : switchEnable
-		} );
-	} );
-} );
-$( '#setting-replaygain' ).on( 'click', function() {
-	infoSetting( 'replaygain', values => {
-		if ( S.output.mixertype !== 'software' || ! S.mixers ) delete values.HARDWARE;
-		info( {
-			  ...SW
-			, list         : [ '', 'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' }, sameline: false } ]
-			, footer       : values.HARDWARE ? '<label><input type="checkbox"><wh>Gain control by Mixer Device</wh></label>' : ''
-			, values       : values
-			, checkchanged : S.replaygain
-			, cancel       : switchCancel
-			, ok           : switchEnable
-		} );
-	} );
-} );
 $( '#ffmpegfiletype' ).on( 'click', function() {
 	var $pre = $( '#prefiletype' );
 	if ( $pre.is( ':empty' ) ) {
@@ -322,91 +397,6 @@ $( '#ffmpegfiletype' ).on( 'click', function() {
 		$pre.toggleClass( 'hide' );
 	}
 	$( this ).toggleClass( 'active' );
-} );
-$( '#setting-buffer' ).on( 'click', function() {
-	infoSetting( 'buffer', values => {
-		info( {
-			  ...SW
-			, message      : '<c>audio_buffer_size</c>'
-			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 40960 } } ]
-			, boxwidth     : 110
-			, values       : values
-			, checkchanged : S.buffer
-			, cancel       : switchCancel
-			, ok           : switchEnable
-		} );
-	} );
-} );
-$( '#setting-outputbuffer' ).on( 'click', function() {
-	infoSetting( 'outputbuffer', values => {
-		info( {
-			  ...SW
-			, message      : '<c>max_output_buffer_size</c>'
-			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 8192, max: 81920 } } ]
-			, boxwidth     : 110
-			, values       : values
-			, checkchanged : S.outputbuffer
-			, cancel       : switchCancel
-			, ok           : switchEnable
-		} );
-	} );
-} );
-$( '#setting-soxr' ).on( 'click', function() {
-	S[ 'soxr-custom' ] ? setting.soxrCustom() : setting.soxr();
-} );
-$( '#setting-custom' ).on( 'click', function() {
-	var htmllist = `\
-<table width="100%">
-<tr><td><c>mpd.conf</c></td></tr>
-<tr><td><pre>
-...
-user                   "mpd"</pre></td></tr>
-	<tr><td><textarea></textarea></td></tr>
-	<tr><td><pre>
-...
-audio_output {
-    ...
-    mixer_device   "hw:${ S.output.card }"
-</pre></td></tr>
-<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
-<tr><td><pre style="margin-top: -20px">
-}</pre></td></tr>
-</table>`;
-	bash( [ 'customget', S.output.name, 'CMD DEVICE' ], val => {
-		var val       = val.split( '^^' );
-		var global = val[ 0 ].trim(); // remove trailing
-		var output = val[ 1 ].trim();
-		info( {
-			  ...SW
-			, list         : htmllist
-			, boxwidth     : 370
-			, values       : [ global, output ]
-			, checkchanged : S.custom
-			, cancel       : switchCancel
-			, ok           : () => {
-				var infoval = infoVal();
-				global      = infoval[ 0 ];
-				output      = infoval[ 1 ];
-				if ( ! global && ! output ) {
-					notify( SW.icon, SW.title, 'Disable ...', 3000 );
-					bash( [ 'custom', 'OFF' ] );
-					return
-				}
-				
-				notifyCommon();
-				bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
-					if ( ! mpdstart ) {
-						bannerHide();
-						info( {
-							  ...SW
-							, message : 'MPD failed with the added lines'
-										+'<br>Restored to previous configurations.'
-						} );
-					}
-				}, 'json' );
-			}
-		} );
-	} );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

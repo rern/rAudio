@@ -80,7 +80,7 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 [[ -e $dirshm/wlan ]] && listWlan
 
 # lan
-if test -e /sys/class/net/e*; then
+if ip r | grep -q 'dev e'; then
 	deviceeth=true
 	ip=$( ipAddress e )
 	if [[ $ip ]]; then

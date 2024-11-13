@@ -32,28 +32,42 @@ var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ]
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 var setting       = {
-	  wm5102        : output => {
+	  bluetooth     : values => {
 		info( {
-			  icon     : 'i2s'
-			, title    : output
-			, list     : [ 'Output', 'select', {
-				  Headphones : 'HPOUT1 Digital'
-				, 'Line out' : 'HPOUT2 Digital'
-				, SPDIF      : 'SPDIF Out'
-				, Speakers   : 'SPKOUT Digital'
-			} ]
-			, boxwidth : 130
-			, values   : S.audiowm5102 || 'HPOUT2 Digital'
-			, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] )
+			  ...SW
+			, list         : [
+				  [ 'Discoverable <gr>by senders</gr>',             'checkbox' ]
+				, [ 'Sampling 16bit 44.1kHz <gr>to receivers</gr>', 'checkbox' ]
+			]
+			, values       : values
+			, checkchanged : S.bluetooth
+			, cancel       : switchCancel
+			, ok           : switchEnable
 		} );
 	}
-	, lcdChar       : data => {
-		var tabFn         = () => infoSetting( [ 'confget', 'lcdchar', true, 'CMD NAME GPIO' ], values => setting.lcdCharGpio( values ) );
+	, i2smodule     : values => {
+		if ( S.audioaplayname === 'cirrus-wm5102' ) {
+			setting.wm5102( $( '#i2smodule' ).find( ':selected' ).text() );
+			return
+		}
+		
+		info( {
+			  ...SW
+			, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
+			, values       : values
+			, checkchanged : values
+			, ok           : () => bash( [ 'i2seeprom', infoVal() ] )
+		} );
+	}
+	, lcdchar       : data => {
+		'address' in data ? setting.lcdCharI2s( data ) : setting.lcdCharGpio( data );
+	}
+	, lcdCharI2s    : data => {
 		var list          = jsonClone( lcdcharlist );
 		list[ 3 ][ 2 ].kv = data.address;
 		info( {
 			  ...lcdcharjson
-			, tab          : [ '', tabFn ]
+			, tab          : [ '', () => infoSetting( 'lcdchar gpio', setting.lcdCharGpio ) ]
 			, list         : list
 			, boxwidth     : 180
 			, values       : data.values
@@ -61,14 +75,13 @@ var setting       = {
 		} );
 	}
 	, lcdCharGpio   : values => {
-		var tabFn = () => infoSetting( 'lcdchar', data => setting.lcdChar( data ) );
 		var list0 = jsonClone( lcdcharlist );
 		var list  = list0.slice( 0, 3 );
 		[ 'D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => list.push( [ k, 'select', { kv: board2bcm, sameline: i % 2 === 0 } ] ) );
 		list.push( [ '', '' ], list0.slice( -1 )[ 0 ] );
 		info( {
 			  ...lcdcharjson
-			, tab          : [ tabFn, '' ]
+			, tab          : [ () => infoSetting( 'lcdchar', setting.lcdCharI2s ), '' ]
 			, message      : gpiosvg
 			, list         : list
 			, boxwidth     : 70
@@ -77,15 +90,14 @@ var setting       = {
 		} );
 	}
 	, mirror        : () => {
-		SW.id    = 'mirror';
-		SW.title = 'Servers';
 		info( {
-			  ...SW
+			  icon         : 'mirror'
+			, title        : 'Servers'
 			, tablabel     : [ 'Time', 'Package Mirror' ]
-			, tab          : [ setting.ntp, '' ]
-			, list         : [ 'Mirror', 'select', V.htmlmirror ]
+			, tab          : [ () => infoSetting( 'timezone', setting.timezone ), '' ]
+			, list         : [ 'Mirror', 'select', V.htmlmirror.list ]
 			, boxwidth     : 240
-			, values       : { MIRROR: S.mirror }
+			, values       : V.htmlmirror.mirror
 			, checkchanged : true
 			, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
 			, ok           : switchEnable
@@ -96,8 +108,8 @@ var setting       = {
 			setting.mirror();
 		} else {
 			notifyCommon( 'Get mirror server list ...' );
-			bash( [ 'mirrorlist' ], list => {
-				V.htmlmirror = list;
+			infoSetting( 'mirrorlist', data => {
+				V.htmlmirror = data;
 				setting.mirror();
 				bannerHide();
 			}, 'json' );
@@ -197,51 +209,67 @@ var setting       = {
 	, mountSet      : error => {
 		error ? infoPrompt( '<wh>Mount failed:</wh><br><br>'+ error ) : $( '#infoX' ).trigger( 'click' );
 	}
-	, ntp       : () => {
-		SW.id    = 'ntp';
-		SW.title = 'Servers';
-		var json = {
+	, mpdoled       : values => {
+		var buttonlogo = S.mpdoled && ! S.mpdoledreboot;
+		var chip       = {
+			  'SSD130x SP'  : 1
+			, 'SSD130x I²C' : 3
+			, 'Seeed I²C'   : 4
+			, 'SH1106 I²C'  : 6
+			, 'SH1106 SPI'  : 7
+		}
+		info( {
 			  ...SW
-			, list         : [ 'NTP', 'text' ]
-			, boxwidth     : 240
-			, values       : { NTP: S.ntp }
-			, checkchanged : true
-			, checkblank   : [ 0 ]
+			, list         : [
+				  [ 'Controller',              'select', chip ]
+				, [ 'Refresh <gr>(baud)</gr>', 'select', { kv: { '800,000': 800000, '1,000,000': 1000000, '1,200,000': 1200000 } } ]
+			]
+			, values       : values
+			, checkchanged : S.mpdoled
+			, boxwidth     : 140
+			, beforeshow   : () => {
+				var $tr   = $( '#infoList tr' );
+				var $baud = $tr.eq( 1 )
+				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
+				$tr.eq( 0 ).on( 'input', function() {
+					var val = $( this ).val();
+					$baud.toggleClass( 'hide', val < 3 || val > 6 );
+				} );
+			}
+			, cancel       : switchCancel
+			, buttonlabel  : buttonlogo ? ico( 'raudio' ) +'Logo' : ''
+			, button       : buttonlogo ? () => bash( [ 'mpdoledlogo' ] ) : ''
 			, ok           : switchEnable
-		}
-		if ( ! S.rpi01 ) {
-			json.tablabel = [ 'Time', 'Package Mirror' ];
-			json.tab      = [ '', setting.mirrorList ];
-		}
-		info( json );
+		} );
 	}
-	, powerButton   : () => {
-		infoSetting( 'powerbutton', values => {
-			info( {
-				  ...SW
-				, tablabel     : [ 'Generic', 'Audiophonic' ]
-				, tab          : [ '', setting.powerButtonAp ]
-				, message      : gpiosvg
-				, list         : [ 
-					  [ 'On',       'select', { 5: 3 } ]
-					, [ 'Off',      'select', board2bcm ]
-					, [ 'LED',      'select', board2bcm ]
-				]
-				, boxwidth     : 70
-				, values       : values
-				, checkchanged : S.powerbutton
-				, beforeshow   : () => $( '.pwr' ).removeClass( 'hide' )
-				, cancel       : switchCancel
-				, ok           : switchEnable
-				, fileconf     : true
-			} );
+	, powerbutton   : values => {
+		values === true ? setting.powerButtonAp() : setting.powerButtonSw( values );
+	}
+	, powerButtonSw : values => {
+		info( {
+			  ...SW
+			, tablabel     : [ 'Generic', 'Audiophonic' ]
+			, tab          : [ '', setting.powerButtonAp ]
+			, message      : gpiosvg
+			, list         : [ 
+				  [ 'On',       'select', { 5: 3 } ]
+				, [ 'Off',      'select', board2bcm ]
+				, [ 'LED',      'select', board2bcm ]
+			]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.powerbutton
+			, beforeshow   : () => $( '.pwr' ).removeClass( 'hide' )
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
 		} );
 	}
 	, powerButtonAp : () => {
 		info( {
 			  ...SW
 			, tablabel     : [ 'Generic', 'Audiophonic' ]
-			, tab          : [ setting.powerButton, '' ]
+			, tab          : [ () => infoSetting( 'powerbutton', setting.powerButtonSw ), '' ]
 			, list         : [ 'Power management module', 'checkbox' ]
 			, checkchanged : S.powerbutton
 			, values       : { ON: true }
@@ -249,124 +277,47 @@ var setting       = {
 			, ok           : switchEnable
 		} );
 	}
-	, relays        : () => {
-		infoSetting( 'relays', data => {
-			var pin    = data.relays;
-			var name   = data.relaysname;
-			var names  = {}
-			$.each( name, ( k, v ) => names[ v ] = k );
-			var step   = { step: 1, min: 0, max: 10 }
-			var list   = [
-				  [ '', '', { suffix: ico( 'power grn' ) +' On <gr>(s)</gr>', sameline: true, colspan: 2 } ]
-				, [ '', '', { suffix: ico( 'power red' ) +' Off <gr>(s)</gr>', colspan: 2 } ]
-			];
-			var values = [];
-			var pL     = pin.ON.length;
-			for ( i = 0; i < pL; i++ ) {
-				list.push(
-					  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
-					, [ '', 'select', { kv: names, colspan: 2 } ]
-				);
-				values.push( pin.ON[ i ], pin.OFF[ i ] );
-				if ( i < pL - 1 ) {
-					list.push(
-						  [ '', 'number', { updn: step, sameline: true } ]
-						, [ '', 'number', { updn: step } ]
-					);
-					values.push( pin.OND[ i ], pin.OFFD[ i ] );
-				} else {
-					list.push(
-						  [ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', 'checkbox',       { sameline: true, colspan: 2 } ]
-						, [ '', 'number', { updn: { step: 1, min: 2, max: 30 } } ]
-					);
-					values.push( pin.TIMERON );
-					values.push( pin.TIMER );
-				}
-			}
-			info( {
-				  ...SW
-				, tablabel     : relaystab
-				, tab          : [ '', setting.relaysName ]
-				, list         : list
-				, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
-				, lableno      : true
-				, values       : values
-				, checkchanged : S.relays
-				, beforeshow   : () => {
-					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
-					$( '#infoList td:first-child' ).remove();
-					$( '#infoList input[type=number]' ).parent().addBack().css( 'width', '70px' );
-					var $tdtimer = $( '#infoList tr:last td' );
-					var $timer   = $tdtimer.slice( 1 )
-					$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
-					$timer.toggleClass( 'hide', ! pin.TIMERON );
-					$( '#infoList' ).on( 'click', '.i-power', function() {
-						if ( S.relayson ) {
-							infoPrompt( relaysprompt );
-						} else {
-							bash( [ 'relays.sh', $( this ).hasClass( 'grn' ) ? '' : 'off' ] );
-						}
-					} );
-					$( '#infoList' ).on( 'input', 'select', function() {
-						var $select = $( '#infoList select' );
-						var von   = [];
-						var voff  = [];
-						$select.each( ( i, el ) => {
-							var ar = i % 2 ? von : voff;
-							ar.push( $( el ).val() );
-						} );
-						I.notunique = von.length !== new Set( von ).size || voff.length !== new Set( voff ).size;
-						if ( I.notunique ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
-					} );
-					$( '#infoList input:checkbox' ).on( 'input', function() {
-						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
-					} );
-				}
-				, cancel       : switchCancel
-				, ok           : () => setting.relaysOk( data )
-			} );
-		} );
+	, relays        : data => {
+		S.relays ? setting.relaysOrder( data ) : setting.relaysName( data );
 	}
-	, relaysName    : () => {
-		infoSetting( 'relays', data => {
-			var name   = data.relaysname;
-			var keys   = Object.keys( name );
-			var values = [];
-			keys.forEach( p => values.push( p, name[ p ] ) );
-			var list   = [
-				  [ '', '', { suffix: ico( 'gpiopins gr' ) +'Pin', sameline: true } ]
-				, [ '', '', { suffix: ico( 'tag gr' ) +' Name' } ]
-			]
-			var kL     = keys.length;
-			for ( i = 0; i < kL; i++ ) {
-				list.push( [ '', 'select', { kv: board2bcm, sameline: true } ], [ '', 'text' ] );
+	, relaysName    : data => {
+		var name   = data.relaysname;
+		var keys   = Object.keys( name );
+		var values = [];
+		keys.forEach( p => values.push( p, name[ p ] ) );
+		var list   = [
+			  [ '', '', { suffix: ico( 'gpiopins gr' ) +'Pin', sameline: true } ]
+			, [ '', '', { suffix: ico( 'tag gr' ) +' Name' } ]
+		]
+		var kL     = keys.length;
+		for ( i = 0; i < kL; i++ ) {
+			list.push( [ '', 'select', { kv: board2bcm, sameline: true } ], [ '', 'text' ] );
+		}
+		info( {
+			  ...SW
+			, tablabel     : relaystab
+			, tab          : [ () => setting.relaysOrder( data ), '' ]
+			, message      : gpiosvg
+			, list         : list
+			, boxwidth     : 70
+			, propmt       : true
+			, checkblank   : true
+			, checkchanged : S.relays
+			, checkunique  : true
+			, values       : values
+			, beforeshow   : () => {
+				$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+				$( '#infoList td:first-child' ).remove();
+				$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
+				infoListAddRemove( add => {
+					if ( add ) $( '#infoList .i-power' ).last().removeClass( 'red' );
+				} );
+				$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
+				$( '#infoList td' ).eq( 0 ).empty();
+				gpioPinToggle();
 			}
-			info( {
-				  ...SW
-				, tablabel     : relaystab
-				, tab          : [ setting.relays, '' ]
-				, message      : gpiosvg
-				, list         : list
-				, boxwidth     : 70
-				, propmt       : true
-				, checkblank   : true
-				, checkchanged : S.relays
-				, checkunique  : true
-				, values       : values
-				, beforeshow   : () => {
-					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
-					$( '#infoList td:first-child' ).remove();
-					$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
-					infoListAddRemove( add => {
-						if ( add ) $( '#infoList .i-power' ).last().removeClass( 'red' );
-					} );
-					$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
-					$( '#infoList td' ).eq( 0 ).empty();
-					gpioPinToggle();
-				}
-				, cancel       : switchCancel
-				, ok           : () => setting.relaysOk( data )
-			} );
+			, cancel       : switchCancel
+			, ok           : () => setting.relaysOk( data )
 		} );
 	}
 	, relaysOk      : data => {
@@ -407,6 +358,82 @@ var setting       = {
 		bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
 		jsonSave( 'relays', name );
 		if ( tabname ) setting.relays();
+	}
+	, relaysOrder        : data => {
+		var pin    = data.relays;
+		var name   = data.relaysname;
+		var names  = {}
+		$.each( name, ( k, v ) => names[ v ] = k );
+		var step   = { step: 1, min: 0, max: 10 }
+		var list   = [
+			  [ '', '', { suffix: ico( 'power grn' ) +' On <gr>(s)</gr>', sameline: true, colspan: 2 } ]
+			, [ '', '', { suffix: ico( 'power red' ) +' Off <gr>(s)</gr>', colspan: 2 } ]
+		];
+		var values = [];
+		var pL     = pin.ON.length;
+		for ( i = 0; i < pL; i++ ) {
+			list.push(
+				  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
+				, [ '', 'select', { kv: names, colspan: 2 } ]
+			);
+			values.push( pin.ON[ i ], pin.OFF[ i ] );
+			if ( i < pL - 1 ) {
+				list.push(
+					  [ '', 'number', { updn: step, sameline: true } ]
+					, [ '', 'number', { updn: step } ]
+				);
+				values.push( pin.OND[ i ], pin.OFFD[ i ] );
+			} else {
+				list.push(
+					  [ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', 'checkbox',       { sameline: true, colspan: 2 } ]
+					, [ '', 'number', { updn: { step: 1, min: 2, max: 30 } } ]
+				);
+				values.push( pin.TIMERON );
+				values.push( pin.TIMER );
+			}
+		}
+		info( {
+			  ...SW
+			, tablabel     : relaystab
+			, tab          : [ '', () => setting.relaysName( data ) ]
+			, list         : list
+			, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
+			, lableno      : true
+			, values       : values
+			, checkchanged : S.relays
+			, beforeshow   : () => {
+				$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
+				$( '#infoList td:first-child' ).remove();
+				$( '#infoList input[type=number]' ).parent().addBack().css( 'width', '70px' );
+				var $tdtimer = $( '#infoList tr:last td' );
+				var $timer   = $tdtimer.slice( 1 )
+				$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
+				$timer.toggleClass( 'hide', ! pin.TIMERON );
+				$( '#infoList' ).on( 'click', '.i-power', function() {
+					if ( S.relayson ) {
+						infoPrompt( relaysprompt );
+					} else {
+						bash( [ 'relays.sh', $( this ).hasClass( 'grn' ) ? '' : 'off' ] );
+					}
+				} );
+				$( '#infoList' ).on( 'input', 'select', function() {
+					var $select = $( '#infoList select' );
+					var von   = [];
+					var voff  = [];
+					$select.each( ( i, el ) => {
+						var ar = i % 2 ? von : voff;
+						ar.push( $( el ).val() );
+					} );
+					I.notunique = von.length !== new Set( von ).size || voff.length !== new Set( voff ).size;
+					if ( I.notunique ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
+				} );
+				$( '#infoList input:checkbox' ).on( 'input', function() {
+					$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : () => setting.relaysOk( data )
+		} );
 	}
 	, restore       : () => {
 		info( {
@@ -455,6 +482,150 @@ var setting       = {
 			}
 		} );
 		$( '#restore' ).prop( 'checked', 0 );
+	}
+	, rotaryencoder : values => {
+		info( {
+			  ...SW
+			, message      : gpiosvg
+			, list         : [
+				  [ 'CLK',  'select', board2bcm ]
+				, [ 'DT',   'select', board2bcm ]
+				, [ 'SW',   'select', board2bcm ]
+				, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
+			]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.rotaryencoder
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
+	}
+	, soundprofile  : values => {
+		info( {
+			  ...SW
+			, list         : [ 
+				  [ 'Swappiness',            'number' ]
+				, [ 'Max Transmission Unit', 'number', { suffix: 'byte' } ]
+				, [ 'Transmit Queue Length', 'number' ]
+			]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : true
+			, checkblank   : true
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
+	}
+	, tft           : values => {
+		var type = {
+			  'Generic'               : 'tft35a'
+			, 'Waveshare (A)'         : 'waveshare35a'
+			, 'Waveshare (B)'         : 'waveshare35b'
+			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
+			, 'Waveshare (C)'         : 'waveshare35c'
+		}
+		var buttoncalibrate = S.tft && ! S.tftreboot;
+		info( {
+			  ...SW
+			, list         : [ 'Type', 'select', type ]
+			, values       : values
+			, checkchanged : S.tft
+			, boxwidth     : 190
+			, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
+			, button       : ! buttoncalibrate ? '' : () => {
+				info( {
+					  ...SW
+					, message : 'Calibrate touchscreen?'
+								+'<br>(Get stylus ready.)'
+					, ok      : () => {
+						notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
+						bash( [ 'tftcalibrate' ] );
+					}
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, timezone      : data => {
+		SW.id     = 'ntp';
+		SW.title  = 'Servers';
+		var json = {
+			  ...SW
+			, tablabel     : [ 'Time', 'Package Mirror' ]
+			, tab          : [ '', setting.mirrorList ]
+			, list         : [ 'NTP', 'text' ]
+			, boxwidth     : 240
+			, values       : data.values
+			, checkchanged : true
+			, checkblank   : [ 0 ]
+			, ok           : switchEnable
+		}
+		if ( data.rpi01 ) {
+			delete json.tab;
+			delete json.tablabel;
+		}
+		info( json );
+	}
+	, vuled         : values => {
+		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
+		var leds   = Object.keys( values ).length + 1;
+		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', board2bcm ] );
+		info( {
+			  ...SW
+			, message      : gpiosvg
+			, list         : list
+			, values       : values
+			, checkchanged : S.vuled
+			, boxwidth     : 70
+			, beforeshow   : () => {
+				infoListAddRemove( () => {
+					$( '#infoList tr' ).slice( 1 ).each( ( i, el ) => {
+						$( el ).find( 'td' ).eq( 0 ).html( ico( 'power' ) +'&emsp;'+ ( i + 1 ) );
+						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
+					} );
+				} );
+				gpioPinToggle();
+			}
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
+	}
+	, wlan          : values => {
+		var regdomlist  = values.regdomlist;
+		var accesspoint = 'Auto start Access Point<br>'+ sp( 30 ) +'<gr>(if not connected)</gr>';
+		delete values.regdomlist;
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Country',   'select', regdomlist ]
+				, [ accesspoint, 'checkbox' ]
+			]
+			, boxwidth     : 250
+			, values       : values
+			, checkchanged : S.wlan
+			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, wm5102        : output => {
+		info( {
+			  icon     : 'i2s'
+			, title    : output
+			, list     : [ 'Output', 'select', {
+				  Headphones : 'HPOUT1 Digital'
+				, 'Line out' : 'HPOUT2 Digital'
+				, SPDIF      : 'SPDIF Out'
+				, Speakers   : 'SPKOUT Digital'
+			} ]
+			, boxwidth : 130
+			, values   : S.audiowm5102 || 'HPOUT2 Digital'
+			, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] )
+		} );
 	}
 }
 var i2sSelect = {
@@ -743,7 +914,7 @@ $( '#menu a' ).on( 'click', function() {
 		case 'sleep':
 			var dev = list.source;
 			title   = 'HDD Sleep';
-			infoSetting( [ 'confget', 'hddapm', dev, 'CMD NAME DEV' ], apm => {
+			infoSetting( 'hddapm '+ dev, apm => {
 				if ( ! apm ) {
 					info( {
 						  icon    : icon
@@ -773,41 +944,6 @@ $( '#menu a' ).on( 'click', function() {
 			break
 	}
 } );
-$( '#setting-bluetooth' ).on( 'click', function() {
-	infoSetting( 'bluetooth', values => {
-		info( {
-			  ...SW
-			, list         : [
-				  [ 'Discoverable <gr>by senders</gr>',             'checkbox' ]
-				, [ 'Sampling 16bit 44.1kHz <gr>to receivers</gr>', 'checkbox' ]
-			]
-			, values       : values
-			, checkchanged : S.bluetooth
-			, cancel       : switchCancel
-			, ok           : switchEnable
-		} );
-	} );
-} );
-$( '#setting-wlan' ).on( 'click', function() {
-	infoSetting( 'wlan', values => {
-		var regdomlist  = values.regdomlist;
-		var accesspoint = 'Auto start Access Point<br>'+ sp( 30 ) +'<gr>(if not connected)</gr>';
-		delete values.regdomlist;
-		info( {
-			  ...SW
-			, list         : [
-				  [ 'Country',   'select', regdomlist ]
-				, [ accesspoint, 'checkbox' ]
-			]
-			, boxwidth     : 250
-			, values       : values
-			, checkchanged : S.wlan
-			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
-			, cancel       : switchCancel
-			, ok           : switchEnable
-		} );
-	} );
-} );
 $( '#i2s' ).on( 'click', function() {
 	setTimeout( i2sSelect.option, 0 );
 } );
@@ -832,146 +968,6 @@ $( '#i2smodule' ).on( 'input', function() {
 		i2sSelect.hide();
 	}
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
-} );
-$( '#setting-i2smodule' ).on( 'click', function() {
-	if ( S.audioaplayname === 'cirrus-wm5102' ) {
-		setting.wm5102( $( '#i2smodule' ).find( ':selected' ).text() );
-		return
-	}
-	
-	info( {
-		  ...SW
-		, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
-		, values       : S.i2seeprom
-		, checkchanged : S.i2seeprom
-		, ok           : () => bash( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
-	} );
-} );
-$( '#setting-lcdchar' ).on( 'click', function() {
-	infoSetting( 'lcdchar', data => {
-		'address' in data ? setting.lcdChar( data ) : setting.lcdCharGpio( data );
-	} );
-} );
-$( '#setting-powerbutton' ).on( 'click', function() {
-	S.poweraudiophonics ? setting.powerButtonAp() : setting.powerButton();
-} );
-$( '#setting-relays' ).on( 'click', function() {
-	S.relays ? setting.relays() : setting.relaysName();
-} );
-$( '#setting-rotaryencoder' ).on( 'click', function() {
-	infoSetting( 'rotaryencoder', values => {
-		info( {
-			  ...SW
-			, message      : gpiosvg
-			, list         : [
-				  [ 'CLK',  'select', board2bcm ]
-				, [ 'DT',   'select', board2bcm ]
-				, [ 'SW',   'select', board2bcm ]
-				, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
-			]
-			, boxwidth     : 70
-			, values       : values
-			, checkchanged : S.rotaryencoder
-			, cancel       : switchCancel
-			, ok           : switchEnable
-			, fileconf     : true
-		} );
-	} );
-} );
-$( '#setting-mpdoled' ).on( 'click', function() {
-	infoSetting( 'mpdoled', values => {
-		var buttonlogo = S.mpdoled && ! S.mpdoledreboot;
-		var chip       = {
-			  'SSD130x SP'  : 1
-			, 'SSD130x I²C' : 3
-			, 'Seeed I²C'   : 4
-			, 'SH1106 I²C'  : 6
-			, 'SH1106 SPI'  : 7
-		}
-		info( {
-			  ...SW
-			, list         : [
-				  [ 'Controller', 'select', chip ]
-				, [ 'Refresh',    'select', { kv: [ 800000, 1000000, 1200000 ], suffix: 'baud' } ]
-			]
-			, values       : values
-			, checkchanged : S.mpdoled
-			, boxwidth     : 140
-			, beforeshow   : () => {
-				var $tr   = $( '#infoList tr' );
-				var $baud = $tr.eq( 1 )
-				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
-				$tr.eq( 0 ).on( 'input', function() {
-					var val = $( this ).val();
-					$baud.toggleClass( 'hide', val < 3 || val > 6 );
-				} );
-			}
-			, cancel       : switchCancel
-			, buttonlabel  : buttonlogo ? ico( 'raudio' ) +'Logo' : ''
-			, button       : buttonlogo ? () => bash( [ 'mpdoledlogo' ] ) : ''
-			, ok           : switchEnable
-		} );
-	} );
-} );
-$( '#setting-tft' ).on( 'click', function() {
-	infoSetting( 'tft', values => {
-		var type = {
-			  'Generic'               : 'tft35a'
-			, 'Waveshare (A)'         : 'waveshare35a'
-			, 'Waveshare (B)'         : 'waveshare35b'
-			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
-			, 'Waveshare (C)'         : 'waveshare35c'
-		}
-		var buttoncalibrate = S.tft && ! S.tftreboot;
-		info( {
-			  ...SW
-			, list         : [ 'Type', 'select', type ]
-			, values       : values
-			, checkchanged : S.tft
-			, boxwidth     : 190
-			, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
-			, button       : ! buttoncalibrate ? '' : () => {
-				info( {
-					  ...SW
-					, message : 'Calibrate touchscreen?'
-								+'<br>(Get stylus ready.)'
-					, ok      : () => {
-						notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
-						bash( [ 'tftcalibrate' ] );
-					}
-				} );
-			}
-			, cancel       : switchCancel
-			, ok           : switchEnable
-		} );
-	} );
-} );
-$( '#setting-vuled' ).on( 'click', function() {
-	infoSetting( 'vuled', values => {
-		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
-		var leds   = Object.keys( values ).length + 1;
-		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', board2bcm ] );
-		info( {
-			  ...SW
-			, message      : gpiosvg
-			, list         : list
-			, values       : values
-			, checkchanged : S.vuled
-			, boxwidth     : 70
-			, beforeshow   : () => {
-				infoListAddRemove( () => {
-					$( '#infoList tr' ).slice( 1 ).each( ( i, el ) => {
-						$( el ).find( 'td' ).eq( 0 ).html( ico( 'power' ) +'&emsp;'+ ( i + 1 ) );
-						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
-					} );
-				} );
-				gpioPinToggle();
-			}
-			, cancel       : switchCancel
-			, ok           : switchEnable
-			, fileconf     : true
-		} );
-	} );
 } );
 $( '#ledcalc' ).on( 'click', function() {
 	info( {
@@ -1037,28 +1033,6 @@ $( '#timezone' ).on( 'input', function( e ) {
 			.html( data )
 			.val( S.timezone )
 			.select2( 'open' );
-	} );
-} );
-$( '#setting-timezone' ).on( 'click', function() {
-	setting.ntp();
-} );
-$( '#setting-soundprofile' ).on( 'click', function() {
-	infoSetting( 'soundprofile', values => {
-		info( {
-			  ...SW
-			, list         : [ 
-				  [ 'Swappiness',            'number' ]
-				, [ 'Max Transmission Unit', 'number', { suffix: 'byte' } ]
-				, [ 'Transmit Queue Length', 'number' ]
-			]
-			, boxwidth     : 70
-			, values       : values
-			, checkchanged : true
-			, checkblank   : true
-			, cancel       : switchCancel
-			, ok           : switchEnable
-			, fileconf     : true
-		} );
 	} );
 } );
 $( '#backup' ).on( 'click', function() {

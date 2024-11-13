@@ -22,14 +22,11 @@ autoupdate | ffmpeg | normalization )
 	systemctl restart mpd
 	pushRefresh
 	;;
-buffer | pllength | outputbuffer )
+buffer | outputbuffer )
 	if [[ $ON ]]; then
 		if [[ $CMD == buffer ]]; then
 			data='audio_buffer_size  "'$AUDIO_BUFFER_SIZE'"'
 			[[ $AUDIO_BUFFER_SIZE != 4096 ]] && link=1
-		elif [[ $CMD == pllength ]]; then
-			data='max_playlist_length  "'$LENGTH'"'
-			[[ $LENGTH != 16384 ]] && link=1
 		else
 			data='max_output_buffer_size  "'$MAX_OUTPUT_BUFFER_SIZE'"'
 			[[ $MAX_OUTPUT_BUFFER_SIZE != 8192 ]] && link=1
@@ -43,12 +40,6 @@ crossfade )
 	[[ $ON ]] && sec=$SEC || sec=0
 	mpc -q crossfade $sec
 	pushRefresh
-	;;
-customget )
-	echo "\
-$( getContent $dirmpdconf/conf/custom.conf )
-^^
-$( getContent "$dirsystem/custom-output-$DEVICE" )"
 	;;
 custom )
 	if [[ $ON ]]; then
