@@ -50,7 +50,7 @@ function infoSetting( name, infosetting, text ) {
 	if ( infosetting.toString().slice( 0, 2 ) === '()' ) { // no get conf
 		infosetting();
 	} else {
-		$.post(  'cmd.php', { cmd: 'bash', filesh: 'settings/infosetting.sh '+ name }, infosetting, text || 'json' );
+		$.post(  'cmd.php', { cmd: 'bash', filesh: 'settings/configdata.sh '+ name }, infosetting, text || 'json' );
 	}
 }
 function json2array( keys, json ) {
