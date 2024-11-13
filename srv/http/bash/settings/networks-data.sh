@@ -80,24 +80,23 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 [[ -e $dirshm/wlan ]] && listWlan
 
 # lan
-if ip r | grep -q 'dev e'; then
-	deviceeth=true
-	ip=$( ipAddress e )
-	if [[ $ip ]]; then
-		gateway=$( gatewayAddress e )
-		listeth='{
-	  "ADDRESS" : "'$ip'"
-	, "GATEWAY" : "'$gateway'"
-	, "DHCP"    : '$( [[ ${ipr[6]} == dhcp ]] && echo true )'
-	}'
-	fi
+ip=$( ipAddress e )
+if [[ $ip ]]; then
+	gateway=$( gatewayAddress e )
+	listeth='{
+  "ADDRESS" : "'$ip'"
+, "GATEWAY" : "'$gateway'"
+, "DHCP"    : '$( [[ ${ipr[6]} == dhcp ]] && echo true )'
+}'
 fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
+ip=$( ipAddress )
+
 ##########
 data='
 , "devicebt"    : '$devicebt'
-, "deviceeth"   : '$deviceeth'
+, "deviceeth"   : '$( ifconfig | grep -q ^e && echo true )'
 , "devicewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "ap"          : '$( exists $dirsystem/ap )'
 , "apconf"      : '$apconf'
