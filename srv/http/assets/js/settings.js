@@ -15,9 +15,6 @@ function bannerReset() {
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
-function infoSetting( name, infosetting ) {
-	bash( [ 'confget', name, 'CMD NAME' ], infosetting, 'json' );
-}
 function currentStatus( id ) {
 	if ( id === 'bluetoothlist' ) return
 	
@@ -47,6 +44,10 @@ function infoPlayerActive( $this ) {
 		} );
 		return true
 	}
+}
+function infoSetting( name, infosetting ) {
+	var data = { cmd: 'bash', filesh: 'settings/'+ page +'.sh', args: [ 'confget', name, 'CMD NAME' ] }
+	$.post(  'cmd.php', data, infosetting, 'json' );
 }
 function json2array( keys, json ) {
 	if ( ! json ) return false
