@@ -4,12 +4,12 @@ var board2bcm     = {
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
 var lcdcharlist   = [
-	  [ 'Type',            'hidden'  ]
-	, [ 'Size',            'radio',  { kv: { '20 x 4': 20, '16 x 2': 16 }, colspan: 3 } ]
-	, [ 'Character Map',   'radio',  { kv: [ 'A00', 'A02' ],               colspan: 3 } ]
-	, [ 'Address',         'radio',  { kv: '',/*'by confget'*/             colspan: 3 } ]
-	, [ 'I&#178;C Chip',   'select', [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
-	, [ 'Sleep <gr>(60s)', 'checkbox' ]
+	  [ 'Type',                 'hidden'  ]
+	, [ 'Size',                 'radio',    { kv: { '20 x 4': 20, '16 x 2': 16 } } ]
+	, [ 'Character Map',        'radio',    { kv: [ 'A00', 'A02' ] } ]
+	, [ 'Address',              'radio',    [ '' ] ] /*'by confget'*/
+	, [ 'Chip',                 'select',   [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
+	, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
 ];
 var lcdcharjson   = {
 	  icon       : 'lcdchar'
@@ -17,6 +17,7 @@ var lcdcharjson   = {
 	, tablabel   : [ 'I&#178;C', 'GPIO' ]
 	, footer     : ico( 'raudio', 'lcdlogo', 'tabindex' ) +'Logo&emsp;'+ ico( 'screenoff', 'lcdoff', 'tabindex' ) +'Sleep'
 	, beforeshow : () => {
+		$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
 		if ( ! S.lcdchar || S.lcdcharreboot ) return
 		
 		$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
@@ -77,7 +78,9 @@ var setting       = {
 	, lcdCharGpio   : values => {
 		var list0 = jsonClone( lcdcharlist );
 		var list  = list0.slice( 0, 3 );
-		[ 'D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => list.push( [ k, 'select', { kv: board2bcm, sameline: i % 2 === 0 } ] ) );
+		[ 'Pins: &emsp; D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => {
+			list.push( [ k, 'select', { kv: board2bcm, sameline: i % 2 === 0 } ] );
+		} );
 		list.push( [ '', '' ], list0.slice( -1 )[ 0 ] );
 		info( {
 			  ...lcdcharjson
