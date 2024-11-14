@@ -84,7 +84,7 @@ if [[ $ip ]]; then
 	listeth='{
   "ADDRESS" : "'$ip'"
 , "GATEWAY" : "'$( gatewayAddress e )'"
-, "DHCP"    : '$( [[ ${ipr[6]} == dhcp ]] && echo true )'
+, "DHCP"    : '$( ip r | grep -q 'dev e.* dhcp' && echo true )'
 }'
 fi
 
