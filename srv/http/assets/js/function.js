@@ -843,8 +843,8 @@ function list( query, callback, json ) {
 }
 function lyricsGet( refresh ) {
 	banner( 'lyrics blink', 'Lyrics', 'Fetch ...', -1 );
-	var artist = noAccent( V.lyricsartist );
-	var title  = noAccent( V.lyricstitle );
+	var artist = accent2plain( V.lyricsartist );
+	var title  = accent2plain( V.lyricstitle );
 	bash( [ 'lyrics', artist, title, refresh || '', 'CMD ARTIST TITLE ACTION' ], data => {
 		lyricsShow( data );
 		bannerHide();

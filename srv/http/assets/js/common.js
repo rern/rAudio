@@ -1063,6 +1063,9 @@ function infoPowerCommand( action ) {
 	} );
 }
 
+function accent2plain( str ) {
+	return  str.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
+}
 function addonsProgressSubmit( input ) {
 	if ( input.installurl.slice( 0, 4 ) !== 'http' ) input.installurl = '/usr/bin/sudo /srv/http/bash/'+ input.installurl
 	var form  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
@@ -1127,9 +1130,6 @@ function jsonSort( json ) {
 		result[ key ] = json[ key ];
 		return result;
 	}, {} );
-}
-function noAccent( str ) {
-	return  str.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
 }
 // ----------------------------------------------------------------------
 function loader() {
