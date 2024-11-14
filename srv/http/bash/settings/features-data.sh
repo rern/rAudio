@@ -18,7 +18,6 @@ data+=$( settingsEnabled \
 data+='
 , "hostname"      : "'$( hostname )'"
 , "ip"            : "'$( ipAddress )'"
-, "lcd"           : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "nfsconnected"  : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
 , "shareddata"    : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
 , "stoptimer"     : '$( exists $dirshm/pidstoptimer )
