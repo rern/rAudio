@@ -48,11 +48,10 @@ listWlan() {
 					ip=$( ipAddress $wlandev )
 					[[ $ip ]] && break || sleep 1
 				done
-				gateway=$( gatewayAddress $wlandev )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
   "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )'
-, "gateway" : "'$gateway'"
+, "gateway" : "'$( gatewayAddress $wlandev )'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
 }'
@@ -82,18 +81,19 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 # lan
 ip=$( ipAddress e )
 if [[ $ip ]]; then
-	gateway=$( gatewayAddress e )
 	listeth='{
   "ADDRESS" : "'$ip'"
-, "GATEWAY" : "'$gateway'"
+, "GATEWAY" : "'$( gatewayAddress e )'"
 , "DHCP"    : '$( [[ ${ipr[6]} == dhcp ]] && echo true )'
 }'
 fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ip=$( ipAddress )
-[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
-
+if [[ $ip ]]; then
+	gateway=$( gatewayAddress )
+	hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
+fi
 ##########
 data='
 , "devicebt"    : '$devicebt'
