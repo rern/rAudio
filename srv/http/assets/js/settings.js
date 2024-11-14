@@ -18,7 +18,7 @@ function bannerReset() {
 function contextMenu() {
 	$( '#menu' )
 		.removeClass( 'hide' )
-		.css( 'top', V.li.offset().top + 8 );
+		.css( 'top', $( '.container' ).scrollTop() + V.li.offset().top + 8 );
 	elementScroll( $( '#menu' ) );
 }
 function currentStatus( id ) {
@@ -36,16 +36,16 @@ function currentStatus( id ) {
 			if ( id === 'mpdconf' ) {
 				setTimeout( () => $( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() ), 100 );
 			}
-			if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
+			if ( id === 'albumignore' || id === 'mpdignore' ) $( '.container' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
 		} );
 		bannerReset();
 	} );
 }
 function elementScroll( $el ) {
-	var menuH = $el.height();
+	var menuH   = $el.height();
 	var targetB = $el.offset().top + menuH;
 	var wH      = window.innerHeight;
-	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( '.container' ).animate( { scrollTop: targetB - wH + 42 } );
 }
 function infoSetting( name, infosetting, text ) {
 	if ( infosetting.toString().slice( 0, 2 ) === '()' ) { // no get conf
@@ -402,7 +402,6 @@ $( '.page-icon' ).on( 'click', function() {
 	$( '#data' ).html( highlightJSON( S ) )
 	$( '.container' ).addClass( 'hide' );
 	$( '#button-data, #data' ).removeClass( 'hide' );
-	$( 'html, body' ).scrollTop( 0 );
 } );
 $( '#button-data' ).on( 'click', function() {
 	switchSet();
