@@ -75,6 +75,22 @@ $( aplay -l | grep ^card )"$'\n'
 $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
+status )
+	filebootlog=/tmp/bootlog
+	[[ -e $filebootlog ]] && cat $filebootlog && exit
+# --------------------------------------------------------------------
+	startupfinished=$( systemd-analyze | head -1 )
+	if grep -q 'Startup finished' <<< $startupfinished; then
+		echo "\
+<bll># systemd-analyze | head -1</bll>
+$startupfinished
+
+<bll># journalctl -b</bll>
+$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
+	else
+		journalctl -b
+	fi
+	;;
 storage )
 	echo -n "\
 <bll># cat /etc/fstab</bll>

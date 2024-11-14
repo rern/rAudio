@@ -226,22 +226,6 @@ spotify )
 spotifyd )
 	exists $dirsystem/spotifykey
 	;;
-status )
-	filebootlog=/tmp/bootlog
-	[[ -e $filebootlog ]] && cat $filebootlog && exit
-# --------------------------------------------------------------------
-	startupfinished=$( systemd-analyze | head -1 )
-	if grep -q 'Startup finished' <<< $startupfinished; then
-		echo "\
-<bll># systemd-analyze | head -1</bll>
-$startupfinished
-
-<bll># journalctl -b</bll>
-$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
-	else
-		journalctl -b
-	fi
-	;;
 storageinfo )
 	DEV=$2
 	if [[ ${DEV:0:8} == /dev/mmc ]]; then
