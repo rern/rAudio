@@ -7,7 +7,7 @@ $id_data     = [
 	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
 	, 'hostname'      => [ 'label' => 'Player Name',                               'setting' => 'none' ]
 	, 'i2smodule'     => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
-	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
+	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT',         'setting' => 'custom' ]
 	, 'lcdchar'       => [ 'label' => 'Character LCD',     'sub' => 'RPLCD' ]
 	, 'mpdoled'       => [ 'label' => 'Spectrum OLED',     'sub' => 'mpd_oled' ]
 	, 'powerbutton'   => [ 'label' => 'Power Button',      'sub' => 'Wiring Pi' ]

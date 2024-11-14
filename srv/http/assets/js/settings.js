@@ -28,7 +28,7 @@ function currentStatus( id ) {
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	var services = [ 'ap',        'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
 				   , 'nfsserver', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
-	bash( services.includes( id ) ? [ 'servicestatus.sh', id ] : [ 'status'+ id ], status => {
+	bash( services.includes( id ) ? [ 'settings/data-status.sh', id ] : [ 'status'+ id ], status => {
 		clearTimeout( timeoutGet );
 		$el.html( status + '<br>&nbsp;' ).promise().done( () => {
 			$el.removeClass( 'hide' );
@@ -50,7 +50,11 @@ function infoSetting( name, infosetting, text ) {
 	if ( infosetting.toString().slice( 0, 2 ) === '()' ) { // no get conf
 		infosetting();
 	} else {
-		$.post(  'cmd.php', { cmd: 'bash', filesh: 'settings/configdata.sh '+ name }, infosetting, text || 'json' );
+		$.post(
+			  'cmd.php'
+			, { cmd: 'bash', filesh: 'settings/data-config.sh '+ name }
+			, infosetting, text || 'json'
+		);
 	}
 }
 function json2array( keys, json ) {
@@ -63,7 +67,7 @@ function json2array( keys, json ) {
 function list2JSON( list ) {
 	if ( list.trim() === 'notrunning' ) {
 		var pkg = page === 'player' ? 'mpd' : 'camilladsp';
-		bash( [ 'servicestatus.sh', pkg ], status => {
+		bash( [ 'settings/data-status.sh', pkg ], status => {
 			var error =  iconwarning +'<c>'+ pkg +'</c> is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
@@ -480,7 +484,7 @@ $( '.switch, .setting' ).on( 'click', function() {
 		, title : $( '#div'+ id +' .col-l .label' ).text()
 	}
 } );
-$( '.setting' ).on( 'click', function( e ) {
+$( '.setting' ).on( 'click', function() {
 	infoSetting( SW.id, setting[ SW.id ] );
 } );
 $( '.switch' ).on( 'click', function() {

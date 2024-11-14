@@ -43,6 +43,9 @@ hddapm )
 i2seeprom )
 	grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true || echo false
 	;;
+i2slist )
+	cat  /srv/http/assets/data/system-i2s.json
+	;;
 lcdchar )
 	fileconf=$dirsystem/lcdchar.conf
 	if [[ -e $fileconf ]]; then
