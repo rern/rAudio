@@ -1128,6 +1128,9 @@ function jsonSort( json ) {
 		return result;
 	}, {} );
 }
+function noAccent( str ) {
+	return  str.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
+}
 // ----------------------------------------------------------------------
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );

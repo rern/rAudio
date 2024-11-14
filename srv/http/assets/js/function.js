@@ -843,7 +843,9 @@ function list( query, callback, json ) {
 }
 function lyricsGet( refresh ) {
 	banner( 'lyrics blink', 'Lyrics', 'Fetch ...', -1 );
-	bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, refresh || '', 'CMD ARTIST TITLE ACTION' ], data => {
+	var artist = noAccent( V.lyricsartist );
+	var title  = noAccent( V.lyricstitle );
+	bash( [ 'lyrics', artist, title, refresh || '', 'CMD ARTIST TITLE ACTION' ], data => {
 		lyricsShow( data );
 		bannerHide();
 		$( '#lyricsrefresh' ).removeClass( 'blink' );
