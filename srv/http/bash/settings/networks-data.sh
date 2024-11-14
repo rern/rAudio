@@ -92,6 +92,7 @@ fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ip=$( ipAddress )
+[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 
 ##########
 data='
@@ -104,7 +105,7 @@ data='
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( [[ $( iwgetid -r ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
-, "hostname"    : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
+, "hostname"    : "'$hostname'"
 , "ip"          : "'$ip'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
