@@ -176,61 +176,6 @@ $data
 	systemctl restart mpd
 	pushRefresh
 	;;
-statusalbumignore )
-	echo "\
-<bll># /srv/http/data/mpd/albumignore</bll>
-
-$( cat $dirmpd/albumignore )
-"
-	;;
-statusmpdignore )
-	files=$( < $dirmpd/mpdignorelist )
-	list="\
-<bll># find /mnt/MPD -name .mpdignore</bll>"
-	while read file; do
-		lines=$( < "$file" )
-		[[ $file == /mnt/MPD/NAS/.mpdignore ]] && lines=$( sed 's|^data$|& <yl>(rAudio Shared Data)</yl>|' <<< $lines )
-		path="<g>$( dirname "$file" )/</g>"
-		list+="
-$file
-$( sed "s|^|$path|" <<< $lines )"
-	done <<< $files
-	echo "$list"
-	;;
-statusnonutf8 )
-	cat $dirmpd/nonutf8
-	;;
-statusoutput )
-	bluealsa=$( amixer -D bluealsa 2> /dev/nulll \
-					| grep -B1 pvolume \
-					| head -1 )
-	[[ $bluealsa ]] && devices="\
-<bll># amixer -D bluealsa scontrols</bll>
-$bluealsa"$'\n'$'\n'
-	devices+="\
-<bll># cat /proc/asound/cards | grep ]</bll>
-$( cat /proc/asound/cards | grep ] )
-
-<bll># aplay -l | grep ^card</bll>
-$( aplay -l | grep ^card )"$'\n'
-	if [[ ! -e $dirsystem/camilladsp ]]; then
-		devices+="
-<bll># amixer scontrols</bll>"$'\n'
-		card=$( < $dirsystem/asoundcard )
-		aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
-		if [[ $aplayname != RPi-Cirrus ]]; then
-			mixers=$( amixer scontrols )
-			[[ ! $mixers ]] && mixers="<gr>(card $card: no mixers)</gr>"
-			devices+="$mixers"$'\n'
-		else
-			devices+='(custom controls)'$'\n'
-		fi
-	fi
-	devices+="
-<bll># cat /etc/asound.conf</bll>
-$( < /etc/asound.conf )"
-	echo "$devices"
-	;;
 volume )
 	pageplayer=1
 	volume

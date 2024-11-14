@@ -28,7 +28,8 @@ function currentStatus( id ) {
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	var services = [ 'ap',        'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
 				   , 'nfsserver', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
-	bash( services.includes( id ) ? [ 'settings/data-service.sh', id ] : [ 'status'+ id ], status => {
+	var filesh   = services.includes( id ) ? 'data-service.sh' : 'data-status.sh';
+	bash( [ 'settings/'+ filesh, id ], status => {
 		clearTimeout( timeoutGet );
 		$el.html( status + '<br>&nbsp;' ).promise().done( () => {
 			$el.removeClass( 'hide' );

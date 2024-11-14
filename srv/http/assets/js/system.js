@@ -630,6 +630,7 @@ var setting       = {
 }
 var i2sSelect = {
 	  option : () => {
+		  console.log(9)
 		if ( $( '#i2smodule option' ).length > 2 ) {
 			if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
 				i2sSelect.show();
@@ -637,13 +638,13 @@ var i2sSelect = {
 			}
 		} else {
 			$( '#i2smodule' ).select2( 'close' );
-			bash( [ 'i2slist' ], list => {
+			infoSetting( 'i2slist', list => {
 				list[ '(None / Auto detect)' ] = 'none';
 				$( '#i2smodule' ).html( htmlOption( list ) );
 				i2sSelect.select();
 				i2sSelect.show();
 				$( '#i2smodule' ).select2( 'open' );
-			}, 'json' );
+			} );
 		}
 	}
 	, select : () => {
@@ -898,11 +899,11 @@ $( '#menu a' ).on( 'click', function() {
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( [ 'storageinfo', source, 'CMD DEV' ], data => {
+				infoSetting( 'storageinfo '+ source, data => {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
-				} );
+				}, 'text' );
 			} else {
 				$code.addClass( 'hide' );
 			}
@@ -1123,13 +1124,13 @@ $( '.listtitle' ).on( 'click', function( e ) {
 		}
 		
 		var timeout = setTimeout( () => banner( 'system blink', 'Backend', 'List ...', -1 ), 1000 );
-		bash( [ 'packagelist', $target.text(), 'CMD INI' ], list => {
+		infoSetting( 'packagelist '+ $target.text(), list => {
 			clearTimeout( timeout );
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
 			bannerHide();
-		} );
+		}, 'text' );
 	} else {
 		$list.addClass( 'hide' );
 		$( '.listtitle a' ).removeAttr( 'class' );

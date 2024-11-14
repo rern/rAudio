@@ -125,6 +125,33 @@ reboot )
 	getContent $dirshm/reboot
 	rm -f $dirshm/{reboot,backup.gz}
 	;;
+packagelist )
+	filepackages=/tmp/packages
+	if [[ ! -e $filepackages ]]; then
+		pacmanqi=$( pacman -Qi | grep -E '^Name|^Vers|^Desc|^URL' )
+		while read line; do
+			case ${line:0:3} in
+			Nam ) name=$line;;
+			Ver ) version=$line;;
+			Des ) description=$line;;
+			URL ) url=$line
+				  lines+="\
+$url
+$name
+$version
+$description
+"
+;;
+			esac
+		done <<< $pacmanqi
+		sed -E 's|^URL.*: (.*)|<a href="\1" target="_blank">|
+				s|^Name.*: (.*)|\1</a> |
+				s|^Vers.*: (.*)|<gr>\1</gr>|
+				s|^Desc.*: (.*)| - \1<br>|' <<< $lines \
+				> /tmp/packages
+	fi
+	grep -B1 -A2 --no-group-separator ^${2,} $filepackages
+	;;
 relays )
 	if [[ -e $dirsystem/relays.conf ]]; then
 		. $dirsystem/relays.conf
@@ -198,6 +225,48 @@ spotify )
 	;;
 spotifyd )
 	exists $dirsystem/spotifykey
+	;;
+status )
+	filebootlog=/tmp/bootlog
+	[[ -e $filebootlog ]] && cat $filebootlog && exit
+# --------------------------------------------------------------------
+	startupfinished=$( systemd-analyze | head -1 )
+	if grep -q 'Startup finished' <<< $startupfinished; then
+		echo "\
+<bll># systemd-analyze | head -1</bll>
+$startupfinished
+
+<bll># journalctl -b</bll>
+$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )" | tee $filebootlog
+	else
+		journalctl -b
+	fi
+	;;
+storageinfo )
+	DEV=$2
+	if [[ ${DEV:0:8} == /dev/mmc ]]; then
+		dev=/sys/block/${DEV:5:-2}/device
+		for k in cid csd scr; do
+			data+="\
+<bll># mmc $k read $dev</bll>
+$( mmc $k read $dev )
+"
+		done
+		echo "$data"
+	else
+		dev=$( tr -d 0-9 <<< $DEV )
+		data="\
+<bll># lsblk -no vendor,model $dev</bll>
+$( lsblk -no vendor,model $dev )"
+		param=$( hdparm -I $DEV )
+		if [[ $param ]]; then
+			data+="
+			
+<bll># hdparm -I $DEV</bll>
+$( sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' <<< $param )"
+		fi
+		echo "$data"
+	fi
 	;;
 tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
