@@ -1419,9 +1419,11 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 		- [ CMD, 'OFF' ] : disable
 */
 function bash( args, callback, json ) {
-	var args0  = args[ 0 ];
-	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) {
-		var filesh = args0;
+	if ( typeof args === 'string' ) {
+		var filesh = args;
+		args       = '';
+	} else if ( [ '.sh', '.py' ].includes( args[ 0 ].slice( -3 ) ) ) {
+		var filesh = args[ 0 ];
 		args.shift();
 	} else {
 		var filesh = page ? 'settings/'+ page +'.sh': 'cmd.sh';
@@ -1444,12 +1446,7 @@ function bash( args, callback, json ) {
 		return
 	}
 	
-	$.post( 
-		 'cmd.php'
-		, data
-		, callback || null
-		, json || null
-	);
+	$.post( 'cmd.php', data, callback || null, json || null );
 }
 function bashConsoleLog( data ) {
 	console.log( '%cDebug:', "color:red" );

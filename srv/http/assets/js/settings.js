@@ -21,15 +21,18 @@ function contextMenu() {
 		.css( 'top', $( '.container' ).scrollTop() + V.li.offset().top + 8 );
 	elementScroll( $( '#menu' ) );
 }
-function currentStatus( id ) {
-	if ( id === 'bluetoothlist' ) return
-	
+function currentStatus( id, arg ) {
 	var $el      = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	var services = [ 'ap',        'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
 				   , 'nfsserver', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
-	var filesh   = services.includes( id ) ? 'service' : 'status';
-	bash( [ 'settings/data-'+ filesh +'.sh', id ], status => {
+	var filesh   = 'settings/data-status.sh '+ id;
+	if ( services.includes( id ) ) {
+		filesh   = filesh.replace( '-status', '-service' );
+	} else if ( arg ) {
+		filesh  += ' '+ arg;
+	}
+	bash( filesh, status => {
 		clearTimeout( timeoutGet );
 		$el.html( status + '<br>&nbsp;' ).promise().done( () => {
 			$el.removeClass( 'hide' );
@@ -165,7 +168,7 @@ function switchSet( ready ) {
 		$this.parent().next( '.setting' ).toggleClass( 'hide', ! S[ id ] );
 	} );
 	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
-		if ( el.id === 'codehddinfo' ) return
+		if ( $( el ).hasClass( 'norefresh' ) ) return
 		
 		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
 	} );

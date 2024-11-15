@@ -98,6 +98,32 @@ $( < /etc/fstab )
 
 $2"
 	;;
+storageinfo )
+	DEV=$2
+	if [[ ${DEV:0:8} == /dev/mmc ]]; then
+		dev=/sys/block/${DEV:5:-2}/device
+		for k in cid csd scr; do
+			data+="\
+<bll># mmc $k read $dev</bll>
+$( mmc $k read $dev )
+"
+		done
+		echo "$data"
+	else
+		dev=$( tr -d 0-9 <<< $DEV )
+		data="\
+<bll># lsblk -no vendor,model $dev</bll>
+$( lsblk -no vendor,model $dev )"
+		param=$( hdparm -I $DEV )
+		if [[ $param ]]; then
+			data+="
+			
+<bll># hdparm -I $DEV</bll>
+$( sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' <<< $param )"
+		fi
+		echo "$data"
+	fi
+	;;
 system )
 	firmware="pacman -Qs 'firmware|bootloader' | grep -Ev '^\s|whence' | cut -d/ -f2"
 	config="\

@@ -10,7 +10,7 @@ switch( $cmd ) {
 
 case 'bash':
 	$cmd    = $dirbash.$_POST[ 'filesh' ];
-	$cmd   .= isset( $_POST[ 'args' ] ) ? ' "'.escape( implode( "\n", $_POST[ 'args' ] ) ).'"' : '';
+	$cmd   .= $_POST[ 'args' ] ? ' "'.escape( implode( "\n", $_POST[ 'args' ] ) ).'"' : '';
 	$result = shell_exec( $cmd );
 	echo rtrim( $result );
 	break;

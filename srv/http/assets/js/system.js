@@ -900,13 +900,9 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			var $code = $( '#codehddinfo' );
+			var $code = $( '#codestorageinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				infoSetting( 'storageinfo '+ source, data => {
-					$code
-						.html( data )
-						.removeClass( 'hide' );
-				}, 'text' );
+				currentStatus( 'storageinfo', source );
 			} else {
 				$code.addClass( 'hide' );
 			}
