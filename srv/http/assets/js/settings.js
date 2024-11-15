@@ -160,11 +160,7 @@ function switchSet( ready ) {
 		$this.prop( 'checked', S[ id ] );
 		$this.parent().next( '.setting' ).toggleClass( 'hide', ! S[ id ] );
 	} );
-	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
-		if ( $( el ).hasClass( 'norefresh' ) ) return
-		
-		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
-	} );
+	$( 'pre.status:not( .norefresh, .hide )' ).each( ( i, el ) => currentStatus( el.id.replace( /^code/, '' ) ) );
 }
 function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
