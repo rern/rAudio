@@ -36,35 +36,29 @@ htmlSection( $head, $body[, $id] );
 function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
-	$title   = $data[ 'title' ];
-	$id      = $data[ 'id' ] ?? false;
-	$status  = $data[ 'status' ] ?? false;
-	$button  = $data[ 'button' ] ?? false;
-	$help    = $data[ 'help' ] ?? false;
-	$class   = $status ? 'status' : '';
+	$id      = isset( $data[ 'id' ] ) ? ' id="'.$data[ 'id' ].'"' : '';
+	$status  = $data[ 'status' ] ?? '';
+	$class   = $status ? ' class="status"' : '';
+	$dstatus = $status ? ' data-status="'.$status.'"' : '';
+	$ihelp   = isset( $data[ 'nohelp' ] ) ? '' : i( 'help help' );
+	$iback   = isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
 	
-	$html    = '<heading '.( $id ? ' id="'.$id.'"' : '' ).( $status ? ' data-status="'.$status.'"' : '' );
-	$html   .= $class ? ' class="'.$class.'">' : '>';
-	$html   .= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) {
+	$html    = '<heading '.$id.$class.'><span class="headtitle"'.$dstatus.'>'.$data[ 'title' ].'</span>';
+	if ( isset( $data[ 'button' ] ) ) {
+		$button = $data[ 'button' ];
 		if ( is_Array( $button ) ) {
 			foreach( $button as $icon ) $html.= i( $icon );
 		} else {
 			$html.= i( $button );
 		}
 	}
-	$html   .= isset( $data[ 'nohelp' ] ) ? '' : i( 'help help' );
-	$html   .= isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
-	$html   .= '</heading>';
-	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
+	$html   .= $ihelp.$iback.'</heading>';
+	$html   .= isset( $data[ 'help' ] ) ? '<span class="helpblock hide">'.$data[ 'help' ].'</span>' : '';
 	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echo str_replace( '|', '<g>|</g>', $html );
 }
 function htmlSection( $head, $body, $id = '' ) {
-	$html = '<div';
-	$html.= $id ? ' id="div'.$id.'"' : '';
-	$html.= ' class="section">';
-	echo $html;
+	echo '<div'.( $id ? ' id="div'.$id.'"' : '' ).' class="section">';
 	if ( $head ) htmlHead( $head );
 	foreach( $body as $data ) {
 		if ( is_array( $data ) ) {
@@ -116,8 +110,7 @@ function htmlSetting( $data ) {
 	
 	$html        = '<div id="div'.$id.'" class="row">';
 	// col-l
-	$html       .= '<div class="col-l';
-	$html       .= $sublabel ? '' : ' single';
+	$html       .= '<div class="col-l'.( $sublabel ? '' : ' single' );
 	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
 	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
 	$html       .= $icon ? i( $icon ) : ''; // icon
@@ -126,7 +119,8 @@ function htmlSetting( $data ) {
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$disabled = isset( $data[ 'disabled' ] ) ? '<span class="hide">'.$data[ 'disabled' ].'</span>' : '';
-		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div></label>';
+		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch '.$setting.'">';
+		$html    .= '<div class="switchlabel"></div></label>';
 	} else {
 		if ( ltrim( $input )[ 0 ] == '<' ) {
 			$html.= $input;
