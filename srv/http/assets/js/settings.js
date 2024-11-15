@@ -26,21 +26,17 @@ function currentStatus( id, arg ) {
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	var services = [ 'ap',        'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
 				   , 'nfsserver', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
-	var filesh   = 'settings/data-status.sh '+ id;
-	if ( services.includes( id ) ) {
-		filesh   = filesh.replace( '-status', '-service' );
-	} else if ( arg ) {
-		filesh  += ' '+ arg;
-	}
+	var filesh   = 'settings/data-'+ ( services.includes( id ) ? 'service' : 'status' ) +'.sh '+ id;
+	if ( arg ) filesh += ' '+ arg;
 	bash( filesh, status => {
 		clearTimeout( timeoutGet );
-		$el.html( status + '<br>&nbsp;' ).promise().done( () => {
-			$el.removeClass( 'hide' );
-			if ( id === 'mpdconf' ) {
-				setTimeout( () => $( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() ), 100 );
-			}
-			if ( id === 'albumignore' || id === 'mpdignore' ) $( '.container' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
-		} );
+		$el.html( status + '<br>&nbsp;' );
+		$el.removeClass( 'hide' );
+		if ( id === 'mpdconf' ) {
+			setTimeout( () => $( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() ), 100 );
+		} else if ( [ 'albumignore', 'mpdignore' ].includes( id ) ) {
+			$( '.container' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
+		}
 		bannerReset();
 	} );
 }
