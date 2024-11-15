@@ -32,7 +32,7 @@ function currentStatus( id, arg ) {
 	bash( filesh, status => {
 		clearTimeout( timeoutGet );
 		$el
-			.html( status + '<br>&nbsp;' )
+			.html( status )
 			.removeClass( 'hide' );
 		if ( id === 'mpdconf' ) {
 			setTimeout( () => $( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() ), 100 );
