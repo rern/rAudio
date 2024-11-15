@@ -148,7 +148,6 @@ function switchEnable() {
 	var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
 	notifyCommon();
 	bash( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
-	S[ SW.id ] = true;
 	SWreset();
 }
 function switchSet( ready ) {

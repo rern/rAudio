@@ -2,17 +2,18 @@
 
 . /srv/http/bash/common.sh
 
-filemodule=/etc/modules-load.d/raspberrypi.conf
 args2var "$1"
 
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
-	local chip i2clcdchar i2cmpdoled list module name spimpdoled tft
+	local chip filemodule i2clcdchar i2cmpdoled list module name spimpdoled tft
+	filemodule=/etc/modules-load.d/raspberrypi.conf
 	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison: cmdline.txt, config.txt, raspberrypi.conf
-		cp /boot/cmdline.txt /tmp
-		grep -Ev '^#|^\s*$' /boot/config.txt | sort -u > /tmp/config.txt
-		grep -Ev '^#|^\s*$' $filemodule 2> /dev/null | sort -u > /tmp/raspberrypi.conf
+		for f in /boot/cmdline.txt /boot/config.txt $filemodule; do
+			[[ -s $f ]] && grep -Ev '^#|^\s*$' $f | sort -u > /tmp/$( basename $f )
+		done
 	fi
-	[[ ! $config ]] && config=$( < /boot/config.txt ) # if no config set from $CMD
+	[[ ! $config ]] && config=$( < /boot/config.txt )
+	config=$( grep -Ev '^#|^\s*$' <<< $config )
 	if [[ $i2cset ]]; then
 		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && tft=1
 		[[ -e $dirsystem/lcdchar ]] && i2clcdchar=1
@@ -28,21 +29,19 @@ dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
 		[[ $tft || $spimpdoled ]] && config+='
 dtparam=spi=on'
 		
-		module=$( grep -Ev 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $filemodule 2> /dev/null )
+		[[ -e $filemodule ]] && module=$( grep -Ev 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $filemodule )
 		[[ $tft || $i2clcdchar ]] && module+='
 i2c-bcm2708'
 		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then
 			module+='
 i2c-dev'
-			! ls /dev/i2c* &> /dev/null && rebooti2c=1
+			! ls /dev/i2c* &> /dev/null && reboot=1
 		elif grep -q wm8960-soundcard <<< $config; then
 			module+='
 i2c-dev
 snd-soc-wm8960'
 		fi
-		grep -Ev '^#|^\s*$' <<< $module | sort -u > $filemodule
-		[[ ! $rebooti2c ]] && ! cmp -s /tmp/raspberrypi.conf $filemodule && rebooti2c=1
-		[[ ! -s $filemodule ]] && rm -f $filemodule
+		[[ -e $module ]] && sort -u <<< $module > $filemodule || rm -f $filemodule
 	fi
 	if [[ $poweraudiophonic ]]; then
 		config+="
@@ -51,16 +50,22 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	else
 		config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' <<< $config )
 	fi
-	grep -Ev '^#|^\s*$' <<< $config | sort -u > /boot/config.txt
+	awk NF <<< $config | sort -u > /boot/config.txt
 	pushRefresh
-	[[ $CMD == powerbutton ]] && return
-	
-	if [[ $rebooti2c ]] \
-		|| ! cmp -s /tmp/config.txt /boot/config.txt \
-		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
+	if [[ ! $reboot ]]; then
+		if ! cmp -s /tmp/config.txt /boot/config.txt || ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
+			reboot=1
+		else
+			count=$( ls $filemodule /tmp/raspberrypi.conf | wc -l )
+			[[ $count == 1 ]] || ( [[ $count == 2 ]] && ! cmp -s /tmp/raspberrypi.conf $filemodule ) && reboot=1
+		fi
+	fi
+	if [[ $reboot ]]; then
 		label=$( sed -E -n "/$CMD.*=>/ {s/.*'label' => '|',.*//g; p}" /srv/http/settings/system.php )
 		notify $CMD "$label" 'Reboot required.' 5000
 		appendSortUnique $CMD $dirshm/reboot
+	else
+		sed -i "/$CMD/ d" $dirshm/reboot
 	fi
 }
 soundProfile() {
@@ -87,7 +92,7 @@ case $CMD in
 audio )
 	enableFlagSet
 	if [[ $ON ]] ; then
-		config="
+		config="$( < /boot/config.txt )
 dtparam=audio=on"
 	else
 		config=$( grep -v ^dtparam=audio=on /boot/config.txt )
@@ -115,8 +120,8 @@ bluetooth )
 		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
 		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
-		config='
-dtoverlay=disable-bt'
+		config="$( < /boot/config.txt )
+dtoverlay=disable-bt"
 		if rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
@@ -154,7 +159,7 @@ hostname )
 	;;
 i2seeprom )
 	if [[ $ON ]]; then
-		config="
+		config="$( < /boot/config.txt )
 force_eeprom_read=0"
 	else
 		config=$( grep -v ^force_eeprom_read /boot/config.txt )

@@ -341,19 +341,20 @@ var setting = {
 			} );
 			return
 		}
-		infoSetting( 'spotify', data => {
+		infoSetting( 'spotifyoutput', data => {
+			SW.id = 'spotifyoutput';
 			info( {
 				  ...SW
 				, tablabel     : [ 'Output', 'Client Keys' ]
 				, tab          : [ '', setting.spotifyKeys ]
-				, list         : [ 'Device', 'select', data.devices ]
+				, list         : [
+					  [ 'Device', 'select', data.devices ]
+					, [ 'Volume', 'radio',  { kv: { Default: 'alsa', Linear: 'alsa_linear', None: 'none' } } ]
+				]
 				, boxwidth     : 300
-				, values       : data.current
+				, values       : data.values
 				, checkchanged : true
-				, ok           : () => {
-					bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] );
-					notifyCommon();
-				}
+				, ok           : switchEnable
 			} );
 		} );
 		

@@ -221,7 +221,8 @@ spotify )
 		current=$( getContent $dirsystem/spotifyoutput )
 	fi
 	devices=$( aplay -L | sed -n '/^.*:CARD/ {s/^/, "/; s/$/"/p}' )
-	echo '{ "current": "'$current'", "devices": [ "Default"'$devices' ] }'
+	volume=$( getVar volume_controller /etc/spotifyd.conf )
+	echo '{ "current": "'$current'", "devices": [ "Default"'$devices' ], "volume": "'$volume'" }'
 	;;
 spotifyd )
 	exists $dirsystem/spotifykey
