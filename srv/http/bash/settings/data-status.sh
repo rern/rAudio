@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ ' ap bluealsa bluez camilladsp dabradio localbrowser mpd nfsserver shairport-sync smb snapclient snapserver spotifyd upmpdcli ' == *" $1 "* ]]; then
+	/srv/http/bash/settings/data-service.sh $1
+	exit
+# --------------------------------------------------------------------
+fi
+
 . /srv/http/bash/common.sh
 
 case $1 in

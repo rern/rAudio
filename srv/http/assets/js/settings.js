@@ -22,14 +22,9 @@ function contextMenu() {
 	elementScroll( $( '#menu' ) );
 }
 function currentStatus( id, arg ) {
-	var $el      = $( '#code'+ id );
+	var $el    = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
-	var services = [ 'ap',        'bluealsa',       'bluez', 'camilladsp', 'dabradio',   'localbrowser', 'mpd'
-				   , 'nfsserver', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd',     'upmpdcli' ];
-	var file     = services.includes( id ) ? 'service' : 'status';
-	var filesh   = 'settings/data-'+ file +'.sh '+ id;
-	if ( arg ) filesh  += ' '+ arg;
-	bash( filesh, status => {
+	bash( 'settings/data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
 		clearTimeout( timeoutGet );
 		$el
 			.html( status )
