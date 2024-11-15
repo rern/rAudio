@@ -536,3 +536,10 @@ $( '#bar-bottom div' ).on( 'click', function() {
 	loader();
 	location.href = 'settings.php?p='+ this.id;
 } );
+if ( $( '#menu' ).length ) {
+	$( 'body' ).on( 'click', function( e ) {
+		$( '#menu' ).addClass( 'hide' );
+		$( 'li' ).removeClass( 'active' );
+		if ( ! $( e.target ).is( 'pre.status' ) ) $( '.entries' ).siblings( 'pre' ).last().addClass( 'hide' );
+	} );
+}

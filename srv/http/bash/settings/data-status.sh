@@ -21,6 +21,11 @@ bluetooth )
 <bll># bluetoothctl show</bll>
 $( bluetoothctl show )"
 	;;
+btinfo )
+	echo "\
+<bll># bluetoothctl info $2</bll>
+$( bluetoothctl info $2 )"
+	;;
 lan )
 	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 	echo "\

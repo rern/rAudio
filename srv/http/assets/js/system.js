@@ -755,9 +755,6 @@ function renderPage() {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( 'body' ).on( 'click', function( e ) {
-	$( '#menu' ).addClass( 'hide' );
-	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
-	$( 'li' ).removeClass( 'active' );
 	if ( ! $( e.target ).hasClass( 'select2-search__field' ) 
 		&& ! $( e.target ).parents( '#divi2smodule' ).length 
 		&& $( '#i2smodule' ).val() === 'none'
@@ -857,7 +854,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	V.li      = $this;
 	var i     = $this.index()
 	var list  = S.liststorage[ i ];
-	$( '#codehddinfo' )
+	$( '#codestorageinfo' )
 		.addClass( 'hide' )
 		.empty();
 	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {

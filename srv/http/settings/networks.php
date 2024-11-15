@@ -18,7 +18,7 @@ htmlHead( [
 ] );
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
-	<pre id="codebluetoothlist" class="status hide"></pre>
+	<pre id="codebtinfo" class="status hide"></pre>
 	<div class="helpblock hide">$B_bluetooth $B_btsender Context menu
 	
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)

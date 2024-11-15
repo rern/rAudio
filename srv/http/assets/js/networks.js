@@ -165,20 +165,6 @@ function bluetoothCommand( action ) {
 	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
 	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, V.li.data( 'mac' ), 'CMD ACTION MAC' ] );
 }
-function bluetoothInfo( mac ) {
-	bash( [ 'bluetoothinfo', mac, 'CMD MAC' ], data => {
-		if ( ! data ) {
-			$( '#codebluetoothlist' )
-				.empty()
-				.addClass( 'hide' );
-		} else {
-			$( '#codebluetoothlist' )
-				.html( data )
-				.data( 'mac', mac )
-				.removeClass( 'hide' );
-		}
-	} );
-}
 function connectWiFi( data ) {
 	clearTimeout( V.timeoutscan );
 	var keys   = Object.keys( data );
@@ -302,14 +288,6 @@ function wifiDisconnect() {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( 'body' ).on( 'click', function() {
-	$( '#menu' ).addClass( 'hide' );
-	$( '#codebluetooth' )
-		.addClass( 'hide' )
-		.data( 'mac', '' )
-		.empty();
-	$( 'li' ).removeClass( 'active' );
-} );
 $( '.close, .back' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
 } );
@@ -363,8 +341,8 @@ $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	V.li = $( this );
-	if ( V.li.hasClass( 'bt' ) && ! $('#codebluetoothlist' ).hasClass( 'hide' ) ) {
-		$('#codebluetoothlist' ).addClass( 'hide' );
+	if ( V.li.hasClass( 'bt' ) && ! $('#codebtinfo' ).hasClass( 'hide' ) ) {
+		$('#codebtinfo' ).addClass( 'hide' );
 		return
 	}
 	
@@ -384,7 +362,6 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
 		$( '#menu' ).find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
-		$( '#menu .info' ).toggleClass( 'hide', V.li.data( 'mac' ) === $( '#codebluetooth' ).data( 'mac' ) );
 	} else if ( V.listid === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
@@ -486,7 +463,7 @@ $( '.rename' ).on( 'click', function() {
 	} );
 } );
 $( '.info' ).on( 'click', function() {
-	bluetoothInfo( V.li.data( 'mac' ) );
+	currentStatus( 'btinfo', V.li.data( 'mac' ) );
 } );
 
 } );

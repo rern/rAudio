@@ -43,14 +43,6 @@ wlanDevice() {
 
 case $CMD in
 
-bluetoothinfo )
-	info=$( bluetoothctl info $MAC )
-	grep -q -m1 'not available' <<< $info && exit
-# --------------------------------------------------------------------
-	echo "\
-<bll># bluetoothctl info $MAC</bll>
-$info"
-	;;
 btrename )
 	bluetoothctl set-alias "$NEWNAME"
 	amixer -D bluealsa scontrols | cut -d"'" -f2 > $dirshm/btmixer
