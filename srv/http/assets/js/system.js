@@ -93,6 +93,7 @@ var setting       = {
 		} );
 	}
 	, mirror        : () => {
+		SW.id = 'mirror';
 		info( {
 			  icon         : 'mirror'
 			, title        : 'Servers'
@@ -100,7 +101,7 @@ var setting       = {
 			, tab          : [ () => infoSetting( 'timezone', setting.timezone ), '' ]
 			, list         : [ 'Mirror', 'select', V.htmlmirror.list ]
 			, boxwidth     : 240
-			, values       : V.htmlmirror.mirror
+			, values       : { MIRROR: V.htmlmirror.mirror }
 			, checkchanged : true
 			, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
 			, ok           : switchEnable

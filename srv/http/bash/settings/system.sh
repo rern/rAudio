@@ -258,12 +258,10 @@ mpdoled )
 	;;
 ntp )
 	file=/etc/systemd/timesyncd.conf
-	if [[ $NTP != $( getVar NTP $file ) ]]; then
-		echo "\
+	echo "\
 [Time]
 NTP=$NTP" > $file
-		timedatectl set-ntp true
-	fi
+	timedatectl set-ntp true
 	pushRefresh
 	;;
 powerbutton )
