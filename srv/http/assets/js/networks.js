@@ -235,7 +235,7 @@ function renderPage() {
 	showContent();
 }
 function scanBluetooth() {
-	bash( [ 'settings/networks-scan.sh' ], data => {
+	bash( 'settings/networks-scan.sh', data => {
 		if ( data ) {
 			S.listbtscan = data;
 			var htmlbt   = '';
@@ -246,7 +246,7 @@ function scanBluetooth() {
 	}, 'json' );
 }
 function scanWlan() {
-	bash( [ 'settings/networks-scan.sh', 'wlan' ], data => {
+	bash( 'settings/networks-scan.sh wlan', data => {
 		if ( data ) {
 			data.sort( ( a, b ) => b.signal - a.signal );
 			S.listwlscan = data;
