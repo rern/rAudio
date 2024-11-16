@@ -107,11 +107,11 @@ function htmlSetting( $data ) {
 	} else {
 		$icon = $data[ 'icon' ] ?? false;
 	}
+	$dstatus     = $status ? ' status" data-status="'.$id : '';
 	
 	$html        = '<div id="div'.$id.'" class="row">';
 	// col-l
-	$html       .= '<div class="col-l'.( $sublabel ? '' : ' single' );
-	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
+	$html       .= '<div class="col-l'.( $sublabel ? '' : ' single' ).$dstatus.'">';
 	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
 	$html       .= $icon ? i( $icon ) : ''; // icon
 	$html       .= '</div>';

@@ -22,12 +22,14 @@ function contextMenu() {
 	elementScroll( $( '#menu' ) );
 }
 function currentStatus( id, arg ) {
-	var $el    = $( '#code'+ id );
+	var $el = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	bash( 'settings/data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
 		clearTimeout( timeoutGet );
 		$el
 			.html( status )
+			.data( 'status', id )
+			.data( 'arg', arg || '' )
 			.removeClass( 'hide' );
 		if ( id === 'mpdconf' ) {
 			setTimeout( () => $( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() ), 100 );
@@ -159,7 +161,7 @@ function switchSet( ready ) {
 		$this.prop( 'checked', S[ id ] );
 		$this.parent().next( '.setting' ).toggleClass( 'hide', ! S[ id ] );
 	} );
-	$( 'pre.status:not( .norefresh, .hide )' ).each( ( i, el ) => currentStatus( el.id.replace( /^code/, '' ) ) );
+	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 }
 function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );

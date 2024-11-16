@@ -98,7 +98,7 @@ $body        = [ <<< EOF
 <ul id="list" class="entries"></ul>
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
 $B_microsd $B_usbdrive $B_networks Context menu</div>
-<pre id="codestorageinfo" class="norefresh status hide"></pre>
+<pre id="codestorageinfo" class="status hide"></pre>
 EOF ];
 htmlSection( $head, $body, 'storage' );
 // ----------------------------------------------------------------------------------
