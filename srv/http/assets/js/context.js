@@ -586,6 +586,7 @@ var listwebradio = {
 					  icon       : 'webradio'
 					, title      : 'Add New Folder'
 					, list       : [ 'Name', 'text' ]
+					, focus      : 0
 					, checkblank : true
 					, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
 					, ok         : () => bash( [ 'dirnew', '/srv/http/data/webradio/'+ $( '#lib-path .lipath' ).text() +'/'+ infoVal(), 'CMD DIR' ] )
@@ -600,6 +601,7 @@ function webRadioEdit() {
 		, message      : '<img src="'+ ( V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
 		, list         : listwebradio.list
 		, values       : [ V.list.name, V.list.path, V.list.li.data( 'charset' ) || 'UTF-8' ]
+		, focus        : 0
 		, checkchanged : true
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
@@ -638,6 +640,7 @@ function webRadioNew( name, url, charset ) {
 		, boxwidth   : 'max'
 		, list       : listwebradio.list
 		, values     : [ name, url, charset || 'UTF-8' ]
+		, focus      : 0
 		, checkblank : [ 0, 1 ]
 		, beforeshow : () => {
 			listwebradio.button()

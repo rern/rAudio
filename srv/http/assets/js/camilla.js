@@ -1241,6 +1241,7 @@ var setting   = {
 			, message      : name ? 'Rename <wh>'+ name +'</wh> to:' : ''
 			, list         : [ 'Name', 'text' ]
 			, values       : name
+			, focus        : 0
 			, checkblank   : true
 			, checkchanged : name
 			, ok           : () => {
@@ -2134,6 +2135,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							, message      : 'Rename <wh>'+ name +'</wh> to:'
 							, list         : [ 'Name', 'text' ]
 							, values       : name
+							, focus        : 0
 							, checkblank   : true
 							, checkchanged : true
 							, ok           : () => { // in filters Conv
@@ -2279,6 +2281,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, message      : 'File: <wh>'+ name +'</wh>'
 						, list         : [ 'Copy as', 'text' ]
 						, values       : [ name ]
+						, focus        : 0
 						, checkchanged : true
 						, ok           : () => {
 							var newname = infoVal();
@@ -2294,6 +2297,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, message      : 'File: '+ name
 						, list         : [ 'Rename to', 'text' ]
 						, values       : [ name ]
+						, focus        : 0
 						, checkchanged : true
 						, ok           : () => {
 							var newname = infoVal();
@@ -2555,7 +2559,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		  ...SW
 		, list         : [
 			  [ 'Adjust period', 'number' ]
-			, [ 'Target level', 'number' ]
+			, [ 'Target level',  'number' ]
 		]
 		, boxwidth     : 100
 		, values       : {
