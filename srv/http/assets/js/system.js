@@ -990,13 +990,14 @@ $( '#ledcalc' ).on( 'click', function() {
 	} );
 } );
 $( '#hostname' ).on( 'click', function( e ) {
-	if ( e.hasOwnProperty( 'originalEvent' ) ) $( this ).trigger( 'blur' );;
+	if ( e.hasOwnProperty( 'originalEvent' ) ) $( this ).trigger( 'blur' );
+	SW.id    = 'hostname';
 	SW.icon  = 'system';
 	SW.title = 'Player Name';
 	info( {
 		  ...SW
 		, list         : [ 'Name', 'text' ]
-		, values       : S.hostname
+		, values       : { NAME: S.hostname }
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {
@@ -1004,12 +1005,7 @@ $( '#hostname' ).on( 'click', function( e ) {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}
-		, ok           : () => {
-			var val = infoVal();
-			$( '#hostname' ).val( val );
-			banner( SW.icon +' blink', SW.title, 'Change ...', -1 );
-			bash( [ 'hostname', val, 'CMD NAME' ] );
-		}
+		, ok           : switchEnable
 	} );
 } );
 $( '#timezone' ).on( 'input', function( e ) {
