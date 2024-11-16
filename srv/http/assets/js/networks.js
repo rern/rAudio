@@ -62,7 +62,7 @@ var setting = {
 			, checkblank   : true
 			, checkip      : [ 0, 1 ]
 			, buttonlabel  : ico( 'undo' ) +'DHCP'
-			, button       : values.DHCP ? '' : () => {
+			, button       : ! v || values.DHCP ? '' : () => {
 				bash( [ 'lanedit' ] );
 				notify( 'lan', 'Wired LAN', 'Reconnect ...' );
 			}
