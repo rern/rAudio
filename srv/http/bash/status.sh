@@ -46,7 +46,7 @@ if [[ $1 == withdisplay ]]; then
 	display=$( grep -v } $dirsystem/display.json )
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
-	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || logout=$( exists $dirsystem/login )
+	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
 	display+='
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
@@ -56,7 +56,7 @@ if [[ $1 == withdisplay ]]; then
 , "dabradio"     : '$dabradio'
 , "equalizer"    : '$( exists $dirsystem/equalizer )'
 , "loginsetting" : '$loginsetting'
-, "logout"       : '$logout'
+, "lock"         : '$lock'
 , "multiraudio"  : '$( exists $dirsystem/multiraudio )'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "screenoff"    : '$screenoff'

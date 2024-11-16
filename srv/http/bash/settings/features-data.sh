@@ -11,7 +11,7 @@
 data+=$( settingsActive camilladsp localbrowser nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
 data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
-			$dirsystem ap autoplay equalizer login lyrics multiraudio scrobble snapclient volumelimit \
+			$dirsystem ap autoplay equalizer login loginsetting lyrics multiraudio scrobble snapclient volumelimit \
 			$dirshm nosound )
 
 ##########

@@ -9,6 +9,7 @@ var setting = {
 				, [ 'Password', 'text' ]
 			]
 			, values       : values
+			, focus        : 0
 			, checkchanged : S.ap
 			, checkblank   : true
 			, checkip      : [ 0 ]
@@ -91,16 +92,38 @@ var setting = {
 		info( {
 			  ...SW
 			, list       : [
-				  [ 'Existing', 'password' ]
-				, [ 'New',      'password' ]
-				, [ 'Setting pages only', 'checkbox' ]
+				  [ S.login ? 'Existing' : 'Password', 'password' ]
+				, [ 'New',                             S.login ? 'password' : 'hidden' ]
+				, [ 'Setting pages only',              'checkbox' ]
 			]
-			, footer     : '(Blank <wh>New</wh> - No password change)'
+			, footer     : S.login ? '(<wh>New</wh> = (blank) - No password change)' : ''
+			, focus      : 0
 			, checkblank : [ 0 ]
+			, values     : { pwd: '', pwdnew: '', loginsetting: S.loginsetting }
 			, cancel     : switchCancel
 			, ok         : () => {
 				notifyCommon();
 				$.post( 'cmd.php', { cmd: 'login', ...infoVal() }, verified => {
+					if ( verified == -1 ) passwordWrong();
+				} );
+			}
+		} );
+	}
+	, loginDisable  : () => {
+		info( {
+			  ...SW
+			, message    : 'Disable:'
+			, list       : [ 'Password', 'password' ]
+			, focus      : 0
+			, checkblank : true
+			, cancel     : switchCancel
+			, ok         : () => {
+				notifyCommon( false );
+				$.post( 'cmd.php', {
+					  cmd     : 'login'
+					, disable : true
+					, pwd     : infoVal()
+				}, verified => {
 					if ( verified == -1 ) passwordWrong();
 				} );
 			}
@@ -118,6 +141,7 @@ var setting = {
 			]
 			, boxwidth     : 300
 			, values       : values
+			, focus        : 0
 			, checkchanged : S.lyrics
 			, checkblank   : true
 			, cancel       : switchCancel
@@ -152,6 +176,7 @@ var setting = {
 			, list         : list
 			, boxwidth     : 160
 			, values       : values
+			, focus        : 0
 			, checkblank   : true
 			, checkip      : checkIpList( values )
 			, checkunique  : true
@@ -294,6 +319,7 @@ var setting = {
 				, footer      : '<wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
 				, footeralign : 'right'
 				, boxwidth    : 320
+				, focus       : 0
 				, checklength : { 0: 32, 1: 32 }
 				, beforeshow  : () => {
 					$( '#infoList .help' ).on( 'click', function() {
@@ -467,27 +493,7 @@ $( '#camilladsp, #equalizer' ).on( 'click', function() {
 	if ( S[ this.id ] ) $( this.id === 'camilladsp' ? '#equalizer' : '#camilladsp' ).addClass( 'disabled' );
 } );
 $( '#login' ).on( 'click', function() {
-	if ( S.login ) {
-		$( '#setting-login' ).trigger( 'click' );
-	} else {
-		info( {
-			  ...SW
-			, message    : 'Disable:'
-			, list       : [ 'Password', 'password' ]
-			, checkblank : true
-			, cancel     : switchCancel
-			, ok         : () => {
-				notifyCommon( false );
-				$.post( 'cmd.php', {
-					  cmd     : 'login'
-					, disable : true
-					, pwd     : infoVal()
-				}, verified => {
-					if ( verified == -1 ) passwordWrong();
-				} );
-			}
-		} );
-	}
+	S.login ? setting.loginDisable() : setting.login();
 } );
 
 } );

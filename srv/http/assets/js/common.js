@@ -491,7 +491,7 @@ function info( json ) {
 		} );
 		// show
 		infoToggle();
-		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
+		'focus' in I ? $inputbox.eq( I.focus ).focus() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoWidth(); // text / password / textarea
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
