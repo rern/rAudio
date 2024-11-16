@@ -1688,14 +1688,16 @@ $( '#button-pl-clear' ).on( 'click', function() {
 		info( {
 			  icon       : 'playlist'
 			, title      : 'Remove From Playlist'
-			, list       : [
-				  [ '', 'radio', { kv: { '<i class="i-cursor"></i>    Select ...' : 'select' } } ]
-				, [ '', 'radio', { kv: { '<i class="i-track"></i>     Range ...'  : 'range'  } } ]
-				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   Crop'       : 'crop'   } } ]
-				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> All'        : 'all'    } } ]
-			]
+			, list       : [ '', 'radio', { 
+				  kv       : {
+					  '<i class="i-flash red"></i> All'        : 'all'
+					, '<i class="i-cursor"></i>    Select ...' : 'select'
+					, '<i class="i-track"></i>     Range ...'  : 'range'
+					, '<i class="i-crop yl"></i>   Crop'       : 'crop'
+				}
+				, sameline : false
+			} ]
 			, beforeshow : () => {
-				$( '#infoList input:checked' ).prop( 'checked', false );
 				$( '#infoList input' ).on( 'input', function() {
 					var cmd = $( '#infoList input:checked' ).val();
 					switch ( cmd ) {
@@ -1712,16 +1714,15 @@ $( '#button-pl-clear' ).on( 'click', function() {
 							bash( [ 'mpccrop' ] );
 							$( '#pl-list li:not( .active )' ).remove();
 							break;
-						case 'all':
-							bash( [ 'mpcremove' ] );
-							setPlaybackBlank();
-							renderPlaylist();
-							break;
 					}
 					$( '#infoX' ).trigger( 'click' );
 				} );
 			}
-			, okno       : true
+			, ok         : () => {
+				bash( [ 'mpcremove' ] );
+				setPlaybackBlank();
+				renderPlaylist();
+			}
 		} );
 	}
 } );

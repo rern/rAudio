@@ -1420,7 +1420,7 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 */
 function bash( args, callback, json ) {
 	if ( typeof args === 'string' ) {
-		var filesh = args;
+		var filesh = 'settings/'+ args
 		args       = '';
 	} else if ( [ '.sh', '.py' ].includes( args[ 0 ].slice( -3 ) ) ) {
 		var filesh = args[ 0 ];

@@ -24,7 +24,7 @@ function contextMenu() {
 function currentStatus( id, arg ) {
 	var $el = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
-	bash( 'settings/data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
+	bash( 'data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
 		clearTimeout( timeoutGet );
 		$el
 			.html( status )
@@ -67,7 +67,7 @@ function json2array( keys, json ) {
 function list2JSON( list ) {
 	if ( list.trim() === 'notrunning' ) {
 		var pkg = page === 'player' ? 'mpd' : 'camilladsp';
-		bash( 'settings/data-service.sh '+ pkg, status => {
+		bash( 'data-service.sh '+ pkg, status => {
 			var error =  iconwarning +'<c>'+ pkg +'</c> is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
@@ -116,7 +116,7 @@ function playbackButton() {
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
-	bash( 'settings/'+ page +'-data.sh', data => {
+	bash( page +'-data.sh', data => {
 		if ( ! list2JSON( data ) ) return // on load, try catching any errors
 		
 		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .infobtn' ).length ) {
