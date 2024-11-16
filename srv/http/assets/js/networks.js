@@ -49,6 +49,13 @@ var setting = {
 		var icon   = 'lan';
 		var title  = ( v ? 'Edit' : 'Add' ) +' LAN Connection';
 		var values = v || { ADDRESS: ipSub( S.ip ), GATEWAY: S.gateway }
+		var button = ! v ? '' : {
+			  buttonlabel : ico( 'undo' ) +'DHCP'
+			, button      : values.DHCP ? '' : () => {
+				bash( [ 'lanedit' ] );
+				notify( icon, title, 'Reconnect ...' );
+			}
+		}
 		info( {
 			  icon         : icon
 			, title        : title
@@ -61,11 +68,7 @@ var setting = {
 			, checkchanged : true
 			, checkblank   : true
 			, checkip      : [ 0, 1 ]
-			, buttonlabel  : ico( 'undo' ) +'DHCP'
-			, button       : ! v || values.DHCP ? '' : () => {
-				bash( [ 'lanedit' ] );
-				notify( 'lan', 'Wired LAN', 'Reconnect ...' );
-			}
+			, ...button
 			, ok           : () => {
 				var v = infoVal();
 				var ip   = v.ADDRESS;
@@ -81,7 +84,7 @@ var setting = {
 							, ok      : () => setting.lan( v )
 						} );
 					} else {
-						notify( 'lan', 'Wired LAN', 'Reconnect ...' );
+						notify( icon, title, v ? 'Reconnect ...' : 'Connect ...' );
 					}
 				} );
 			}
