@@ -52,7 +52,8 @@ function infoSetting( name, infosetting, text ) {
 		$.post(
 			  'cmd.php'
 			, { cmd: 'bash', filesh: 'settings/data-config.sh '+ name }
-			, infosetting, text || 'json'
+			, infosetting
+			, text || 'json'
 		);
 	}
 }
@@ -66,7 +67,7 @@ function json2array( keys, json ) {
 function list2JSON( list ) {
 	if ( list.trim() === 'notrunning' ) {
 		var pkg = page === 'player' ? 'mpd' : 'camilladsp';
-		bash( [ 'settings/data-service.sh', pkg ], status => {
+		bash( 'settings/data-service.sh '+ pkg, status => {
 			var error =  iconwarning +'<c>'+ pkg +'</c> is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
@@ -115,7 +116,7 @@ function playbackButton() {
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
-	bash( [ 'settings/'+ page +'-data.sh' ], data => {
+	bash( 'settings/'+ page +'-data.sh', data => {
 		if ( ! list2JSON( data ) ) return // on load, try catching any errors
 		
 		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .infobtn' ).length ) {

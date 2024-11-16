@@ -838,7 +838,7 @@ $( '.refresh' ).on( 'click', function() {
 	
 	$this.addClass( 'blink wh' )
 	V.intstatus = setInterval( () => {
-		bash( [ 'settings/system-data.sh', 'status' ], data => {
+		bash( 'settings/system-data.sh status', data => {
 			$( '#divstatus .value' ).html( data );
 			$this.toggleClass( 'i-refresh blink i-flash' );
 			setTimeout( () => $this.toggleClass( 'i-refresh blink i-flash' ), 300 );
@@ -1044,7 +1044,7 @@ $( '#backup' ).on( 'click', function() {
 		, values  : 'rAudio_backup-'+ ymd
 		, ok      : () => {
 			notifyCommon( 'Process ...' );
-			bash( [ 'settings/system-databackup.sh' ], data => {
+			bash( 'settings/system-databackup.sh', data => {
 				if ( data == 1 ) {
 					notifyCommon( 'Download ...' );
 					fetch( '/data/shm/backup.gz' )
