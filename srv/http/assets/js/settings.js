@@ -49,6 +49,7 @@ function infoSetting( name, infosetting, text ) {
 	if ( infosetting.toString().slice( 0, 2 ) === '()' ) { // no get conf
 		infosetting();
 	} else {
+		if ( V.debug ) console.log( 'settings/data-config.sh '+ name );
 		$.post(
 			  'cmd.php'
 			, { cmd: 'bash', filesh: 'settings/data-config.sh '+ name }

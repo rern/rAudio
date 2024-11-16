@@ -92,28 +92,6 @@ var setting       = {
 			, checkchanged : S.lcdchar
 		} );
 	}
-	, mirror        : data => {
-		SW.id = 'mirror';
-		info( {
-			  icon         : 'mirror'
-			, title        : 'Servers'
-			, tablabel     : [ 'Time', 'Package Mirror' ]
-			, tab          : [ () => infoSetting( 'timezone', setting.timezone ), '' ]
-			, list         : [ 'Mirror', 'select', data.list ]
-			, boxwidth     : 240
-			, values       : data.values
-			, checkchanged : true
-			, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
-			, ok           : switchEnable
-		} );
-	}
-	, mirrorList    : () => {
-		notifyCommon( 'Get mirror server list ...' );
-		infoSetting( 'mirrorlist', data => {
-			setting.mirror( data );
-			bannerHide();
-		}, 'json' );
-	}
 	, mount         : nfs => {
 		var nfs        = nfs || false;
 		var shareddata = SW.id === 'shareddata';
@@ -500,6 +478,25 @@ var setting       = {
 			, fileconf     : true
 		} );
 	}
+	, serverMirror  : () => {
+		notifyCommon( 'Get mirror server list ...' );
+		infoSetting( 'servermirror', data => {
+			bannerHide();
+			SW.id = 'mirror';
+			info( {
+				  icon         : 'mirror'
+				, title        : 'Servers'
+				, tablabel     : [ 'Time', 'Package Mirror' ]
+				, tab          : [ () => infoSetting( 'serverntp', setting.timezone ), '' ]
+				, list         : [ 'Mirror', 'select', data.list ]
+				, boxwidth     : 240
+				, values       : data.values
+				, checkchanged : true
+				, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
+				, ok           : switchEnable
+			} );
+		} );
+	}
 	, soundprofile  : values => {
 		info( {
 			  ...SW
@@ -548,25 +545,26 @@ var setting       = {
 			, ok           : switchEnable
 		} );
 	}
-	, timezone      : data => {
-		SW.id     = 'ntp';
-		SW.title  = 'Servers';
-		var json = {
-			  ...SW
-			, tablabel     : [ 'Time', 'Package Mirror' ]
-			, tab          : [ '', setting.mirrorList ]
-			, list         : [ 'NTP', 'text' ]
-			, boxwidth     : 240
-			, values       : data.values
-			, checkchanged : true
-			, checkblank   : [ 0 ]
-			, ok           : switchEnable
-		}
-		if ( data.rpi01 ) {
-			delete json.tab;
-			delete json.tablabel;
-		}
-		info( json );
+	, timezone      : () => {
+		infoSetting( 'serverntp', data => {
+			SW.title  = 'Servers';
+			var json = {
+				  ...SW
+				, tablabel     : [ 'Time', 'Package Mirror' ]
+				, tab          : [ '', setting.serverMirror ]
+				, list         : [ 'NTP', 'text' ]
+				, boxwidth     : 240
+				, values       : data.values
+				, checkchanged : true
+				, checkblank   : [ 0 ]
+				, ok           : switchEnable
+			}
+			if ( data.rpi01 ) {
+				delete json.tab;
+				delete json.tablabel;
+			}
+			info( json );
+		} );
 	}
 	, vuled         : values => {
 		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];

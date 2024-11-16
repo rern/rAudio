@@ -84,34 +84,6 @@ localbrowser )
 	brightness=$( getContent /sys/class/backlight/rpi_backlight/brightness false )
 	conf2json localbrowser.conf | sed 's/ }$/, "BRIGHTNESS": '$brightness' }/'
 	;;
-mirrorlist )
-	file=/etc/pacman.d/mirrorlist
-	list=$( curl -sfL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist )
-	if [[ $? == 0 ]]; then
-		mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
-		[[ $mirror ]] && list=$( sed "0,/^Server/ s|//.*mirror|//$mirror.mirror|" <<< $list )
-		echo "$list" > $file
-	else
-		list=$( < $file )
-	fi
-	lines=$( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' <<< $list )
-	codelist='"Auto":""'
-	while read line; do
-		if [[ ${line:0:4} == '### ' ]];then
-			city=
-			country=${line:4}
-		elif [[ ${line:0:3} == '## ' ]];then
-			city=${line:3}
-		else
-			[[ $city ]] && cc="$country - $city" || cc=$country
-			[[ $cc == $ccprev ]] && cc+=" 2"
-			ccprev=$cc
-			codelist+=',"'$cc'":"'$line'"'
-		fi
-	done <<< $lines
-	mirror=$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )
-	echo '{ "list": { '$codelist' }, "values": { "MIRROR": "'$mirror'" } }'
-	;;
 mpdoled )
 	chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
@@ -195,6 +167,40 @@ scrobble )
 	fi
 	echo '{ "values": '$values', "key": '$( exists $dirsystem/scrobblekey )' }'
 	;;
+servermirror )
+	file=/etc/pacman.d/mirrorlist
+	list=$( curl -sfL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist )
+	if [[ $? == 0 ]]; then
+		mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
+		[[ $mirror ]] && list=$( sed "0,/^Server/ s|//.*mirror|//$mirror.mirror|" <<< $list )
+		echo "$list" > $file
+	else
+		list=$( < $file )
+	fi
+	lines=$( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' <<< $list )
+	codelist='"Auto":""'
+	while read line; do
+		if [[ ${line:0:4} == '### ' ]];then
+			city=
+			country=${line:4}
+		elif [[ ${line:0:3} == '## ' ]];then
+			city=${line:3}
+		else
+			[[ $city ]] && cc="$country - $city" || cc=$country
+			[[ $cc == $ccprev ]] && cc+=" 2"
+			ccprev=$cc
+			codelist+=',"'$cc'":"'$line'"'
+		fi
+	done <<< $lines
+	mirror=$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )
+	echo '{ "list": { '$codelist' }, "values": { "MIRROR": "'$mirror'" } }'
+	;;
+serverntp )
+	echo '{
+  "values" : { "NTP": "'$( getVar NTP /etc/systemd/timesyncd.conf )'" }
+, "rpi01"  : '$( exists /boot/kernel.img )'
+}'
+	;;
 smb )
 	file=/etc/samba/smb.conf
 	sed -n '/\[SD]/,/^\[/ p' $file | grep -q 'read only = no' && sd=true || sd=false
@@ -230,12 +236,6 @@ spotifyoutput )
 tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
 	echo '{ "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }'
-	;;
-timezone )
-	echo '{
-  "values" : { "NTP": "'$( getVar NTP /etc/systemd/timesyncd.conf )'" }
-, "rpi01"  : '$( exists /boot/kernel.img )'
-}'
 	;;
 wlan )
 	echo '{
