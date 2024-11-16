@@ -110,7 +110,7 @@ mirrorlist )
 		fi
 	done <<< $lines
 	mirror=$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )
-	echo '{ "list": { '$codelist' }, "mirror": "'$mirror'" }'
+	echo '{ "list": { '$codelist' }, "values": { "MIRROR": "'$mirror'" } }'
 	;;
 mpdoled )
 	chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
@@ -213,7 +213,10 @@ soxr )
 	fi
 	conf2json $file | jq | sed '/PLUGIN/ d'
 	;;
-spotify )
+spotifyd )
+	exists $dirsystem/spotifykey
+	;;
+spotifyoutput )
 	current=$( getVar device /etc/spotifyd.conf )
 	if [[ ${current:0:3} == hw: ]]; then
 		current=Default
@@ -222,10 +225,7 @@ spotify )
 	fi
 	devices=$( aplay -L | sed -n '/^.*:CARD/ {s/^/, "/; s/$/"/p}' )
 	volume=$( getVar volume_controller /etc/spotifyd.conf )
-	echo '{ "current": "'$current'", "devices": [ "Default"'$devices' ], "volume": "'$volume'" }'
-	;;
-spotifyd )
-	exists $dirsystem/spotifykey
+	echo '{ "values": { "OUTPUT": "'$current'", "VOLUME": "'$volume'" }, "devices": [ "Default"'$devices' ] }'
 	;;
 tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )

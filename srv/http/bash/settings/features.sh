@@ -400,12 +400,12 @@ spotifykeyremove )
 	systemctl disable --now spotifyd
 	pushRefresh
 	;;
-spotifyoutputset )
+spotifyoutput )
 	file=$dirsystem/spotifyoutput
 	[[ $OUTPUT == Default ]] && rm -f "$file" || echo $OUTPUT > "$file"
 	sed -i -E 's/(volume_controller = ).*/\1"'$VOLUME'"/' /etc/spotifyd.conf
-	systemctl restart spotifyd
 	$dirsettings/player-conf.sh
+	pushRefresh
 	;;
 spotifytoken )
 	. $dirsystem/spotifykey

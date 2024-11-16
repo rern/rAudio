@@ -92,32 +92,27 @@ var setting       = {
 			, checkchanged : S.lcdchar
 		} );
 	}
-	, mirror        : () => {
+	, mirror        : data => {
 		SW.id = 'mirror';
 		info( {
 			  icon         : 'mirror'
 			, title        : 'Servers'
 			, tablabel     : [ 'Time', 'Package Mirror' ]
 			, tab          : [ () => infoSetting( 'timezone', setting.timezone ), '' ]
-			, list         : [ 'Mirror', 'select', V.htmlmirror.list ]
+			, list         : [ 'Mirror', 'select', data.list ]
 			, boxwidth     : 240
-			, values       : { MIRROR: V.htmlmirror.mirror }
+			, values       : data.values
 			, checkchanged : true
 			, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
 			, ok           : switchEnable
 		} );
 	}
 	, mirrorList    : () => {
-		if ( 'htmlmirror' in V ) {
-			setting.mirror();
-		} else {
-			notifyCommon( 'Get mirror server list ...' );
-			infoSetting( 'mirrorlist', data => {
-				V.htmlmirror = data;
-				setting.mirror();
-				bannerHide();
-			}, 'json' );
-		}
+		notifyCommon( 'Get mirror server list ...' );
+		infoSetting( 'mirrorlist', data => {
+			setting.mirror( data );
+			bannerHide();
+		}, 'json' );
 	}
 	, mount         : nfs => {
 		var nfs        = nfs || false;
