@@ -136,6 +136,7 @@ var setting       = {
 			, tab        : tab
 			, list       : list
 			, values     : values
+			, focus      : 0
 			, checkblank : [ 0, 2 ]
 			, checkip    : [ 1 ]
 			, beforeshow : () => {
@@ -174,6 +175,7 @@ var setting       = {
 			, tab       : [ setting.mount, () => setting.mount( 'nfs' ), '' ]
 			, list      : [ 'Server IP', 'text' ]
 			, values    : { IP: I.active && I.values ? infoVal().IP : ipSub( S.ip ) }
+			, focus     : 0
 			, checkip   : [ 0 ]
 			, cancel    : switchCancel
 			, oknoreset : true
@@ -555,6 +557,7 @@ var setting       = {
 				, list         : [ 'NTP', 'text' ]
 				, boxwidth     : 240
 				, values       : data.values
+				, focus        : 0
 				, checkchanged : true
 				, checkblank   : [ 0 ]
 				, ok           : switchEnable
@@ -998,6 +1001,7 @@ $( '#hostname' ).on( 'click', function( e ) {
 		  ...SW
 		, list         : [ 'Name', 'text' ]
 		, values       : { NAME: S.hostname }
+		, focus        : 0
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {
