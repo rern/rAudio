@@ -282,7 +282,7 @@ var setting       = {
 	, mountSet      : error => {
 		error ? infoPrompt( '<wh>Mount failed:</wh><br><br>'+ error ) : $( '#infoX' ).trigger( 'click' );
 	}
-	, mpdoled       : values => {
+	, mpdoled       : data => {
 		var values     = data.values;
 		var buttonlogo = S.mpdoled && ! data.reboot;
 		var chip       = {
@@ -298,6 +298,7 @@ var setting       = {
 				  [ 'Controller',              'select', chip ]
 				, [ 'Refresh <gr>(baud)</gr>', 'select', { kv: { '800,000': 800000, '1,000,000': 1000000, '1,200,000': 1200000 } } ]
 			]
+			, footer       : ico( 'raudio' ) +'Logo'
 			, values       : values
 			, checkchanged : S.mpdoled
 			, boxwidth     : 140
@@ -305,16 +306,13 @@ var setting       = {
 				var $tr   = $( '#infoList tr' );
 				var $baud = $tr.eq( 1 )
 				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
-				$( '.extrabtn' ).toggleClass( 'disabled', ! buttonlogo )
+				$( '.infofooter i' ).toggleClass( 'disabled', ! S.mpdoled || data.reboot )
 				$tr.eq( 0 ).on( 'input', function() {
 					var val = $( this ).val();
 					$baud.toggleClass( 'hide', val < 3 || val > 6 );
 				} );
 			}
 			, cancel       : switchCancel
-			, buttonlabel  : ico( 'raudio' ) +'Logo'
-			, buttoncolor  : 'var( --gr )'
-			, button       : () => bash( [ 'mpdoledlogo' ] )
 			, ok           : switchEnable
 		} );
 	}

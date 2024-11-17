@@ -90,8 +90,9 @@ pre.status {
 div.helpblock {
 	margin-left: 0;
 }
+#divi2s,
 #divi2smodule {
-	margin-bottom: 4px;
+	height: 54px;
 }
 .helpblock {
 	display: block;

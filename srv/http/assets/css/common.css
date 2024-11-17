@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1731371734' );
+	src         : url( '/assets/fonts/rern.woff2?v=1731648763' );
 }
 @font-face {
 	font-family : Lato;
@@ -822,6 +822,7 @@ hr {
 }
 .infofooter i {
 	margin: 0 6px;
+	vertical-align: -2px;
 }
 .infomessage {
 	padding-top: 5px;
