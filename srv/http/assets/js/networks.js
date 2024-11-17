@@ -46,46 +46,42 @@ var setting = {
 		} );
 	}
 	, lan         : v => {
-		var icon   = 'lan';
-		var title  = ( v ? 'Edit' : 'Add' ) +' LAN Connection';
-		var values = v || { ADDRESS: ipSub( S.ip ), GATEWAY: S.gateway }
-		var button = ! v ? '' : {
-			  buttonlabel : ico( 'undo' ) +'DHCP'
-			, button      : values.DHCP ? '' : () => {
+		SW         = {
+			  icon  : 'lan'
+			, title : ( v ? 'Edit' : 'Add' ) +' LAN Connection'
+		}
+		if ( v && ! v.DHCP ) {
+			SW.buttonlabel = ico( 'undo' ) +'DHCP'
+			SW.button      = () => {
 				bash( [ 'lanedit' ] );
 				notify( icon, title, 'Reconnect ...' );
 			}
 		}
 		info( {
-			  icon         : icon
-			, title        : title
+			  ...SW
 			, list         : [
 				  [ 'IP',      'text' ]
 				, [ 'Gateway', 'text' ]
 			]
 			, footer       : v ? warning( 'This is' ) : ''
-			, values       : values
+			, values       : v || { ADDRESS: ipSub( S.ip ), GATEWAY: S.gateway }
 			, focus        : 0
 			, checkchanged : true
 			, checkblank   : true
 			, checkip      : [ 0, 1 ]
-			, ...button
 			, ok           : () => {
-				var v = infoVal();
-				var ip   = v.ADDRESS;
-				bash( [ 'lanedit', ...Object.values( v ), 'CMD '+ Object.keys( v ).join( ' ' ) ], avail => {
+				var val  = infoVal();
+				bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], avail => {
 					if ( avail == -1 ) {
-						clearInterval( V.interval );
-						clearTimeout( V.timeout );
 						bannerHide();
 						info( {
-							  icon    : icon
+							  icon    : SW.icon
 							, title   : 'Duplicate IP'
-							, message : 'IP <wh>'+ v.ADDRESS +'</wh> already in use.'
-							, ok      : () => setting.lan( v )
+							, message : 'IP <wh>'+ val.ADDRESS +'</wh> already in use.'
+							, ok      : () => setting.lan( val )
 						} );
 					} else {
-						notify( icon, title, v ? 'Reconnect ...' : 'Connect ...' );
+						notify( SW.icon, SW.title, v ? 'Reconnect ...' : 'Connect ...' );
 					}
 				} );
 			}
@@ -174,8 +170,6 @@ function connectWiFi( data ) {
 	var values = Object.values( data );
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
-			clearInterval( V.interval );
-			clearTimeout( V.timeout );
 			bannerHide();
 			if ( error ) {
 				info( {
