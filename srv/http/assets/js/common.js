@@ -615,8 +615,16 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
-		if ( $inputbox.length === 1 || ! $inputbox.eq( 0 ).val() ) I.focus = 0;
-		'focus' in I ? $inputbox.eq( I.focus ).focus() : $( '#infoOverlay' ).trigger( 'focus' );
+		if ( 'focus' in I ) {
+			$inputbox.eq( I.focus ).focus();
+		} else {
+			var iL = $inputbox.length;
+			if ( iL === 1 || ( iL && ! $inputbox.eq( 0 ).val() ) ) {
+				$inputbox.eq( 0 ).focus();
+			} else {
+				$( '#infoOverlay' ).trigger( 'focus' );
+			}
+		}
 	} );
 	$( '#infoList .i-eye' ).on( 'click', function() {
 		var $this = $( this );

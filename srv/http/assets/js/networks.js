@@ -63,7 +63,7 @@ var setting = {
 				  [ 'IP',      'text' ]
 				, [ 'Gateway', 'text' ]
 			]
-			, footer       : V ? warning( 'This is' ) : ''
+			, footer       : v ? warning( 'This is' ) : ''
 			, values       : values
 			, checkchanged : true
 			, checkblank   : true
@@ -144,14 +144,14 @@ var setting = {
 		}
 		info( {
 			  icon         : 'wifi'
-			, title        : v ? 'Edit Connection' : 'Add Connection'
+			, title        : V.profileget ? 'Edit Connection' : 'Add Connection'
 			, tablabel     : [ 'DHCP', 'Static IP' ]
 			, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 			, boxwidth     : 180
 			, list         : list
-			, footer       : v ? warning( 'This is' ) : ''
+			, footer       : V.profileget ? warning( 'This is' ) : ''
 			, values       : values
-			, focus        : dhcp ? 0 : 2
+			, focus        : V.profileget ? ( dhcp ? 0 : 2 ) : 0
 			, checkchanged : checkchanged
 			, checkblank   : [ 0 ]
 			, checklength  : { 1: [ 8, 'min' ] }
