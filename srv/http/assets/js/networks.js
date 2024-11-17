@@ -87,49 +87,35 @@ var setting = {
 			}
 		} );
 	}
-	, wifi        : v => {
+	, wifi        : values => {
+		if ( ! values ) values = { ESSID: '', KEY: '', SECURITY: false, HIDDEN: false }
+		var dhcp = ! ( 'ADDRESS' in values );
 		var list = [
 			  [ 'SSID',         'text' ]
 			, [ 'Password',     'password' ]
-			, [ 'IP',           'text' ]
-			, [ 'Gateway',      'text' ]
+			, [ 'IP',           'text' ]     // static - ADDRESS
+			, [ 'Gateway',      'text' ]     // static - GATEWAY
 			, [ 'WEP Protocol', 'checkbox' ]
 			, [ 'Hidden SSID',  'checkbox' ]
 		];
-		var default_v = {
-			  dhcp   : { ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
-			, static : { ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
-		}
-		if ( v ) {
-			var dhcp   = ! ( 'ADDRESS' in v );
-			var values = v;
-		} else {
-			var dhcp   = true;
-			var values = default_v[ 'dhcp' ];
-		}
 		if ( dhcp ) {
 			var tabfn = () => {
-				if ( dhcp ) {
-					var val = infoVal();
-					val.ADDRESS = ipSub( S.ip );
-					val.GATEWAY = S.gateway;
-					var v       = {}
-					Object.keys( default_v.static ).forEach( k => v[ k ] = val[ k ] );
-					setting.wifi( v );
-				} else {
-					setting.wifi( V.profile );
-				}
+				var v     = infoVal();
+				var keys  = Object.keys( v );
+				keys.splice( 2, 0, 'ADDRESS', 'GATEWAY' );
+				v.ADDRESS = ipSub( S.ip );
+				v.GATEWAY = S.gateway;
+				var val   = {};
+				keys.forEach( k => val[ k ] = v[ k ] );
+				setting.wifi( val );
 			}
 			list.splice( 2, 2 );
 		} else {
 			var tabfn = () => {
-				if ( dhcp ) {
-					setting.wifi( V.profile );
-				} else {
-					var val = infoVal();
-					[ 'ADDRESS', 'GATEWAY' ].forEach( k => delete val[ k ] );
-					setting.wifi( val );
-				}
+				var val = infoVal();
+				delete val.ADDRESS;
+				delete val.GATEWAY;
+				setting.wifi( val );
 			}
 		}
 		if ( V.profile ) {
@@ -154,7 +140,7 @@ var setting = {
 			, ok           : () => {
 				var val = infoVal();
 				connectWiFi( val );
-				notify( 'wifi', val.ESSID, v ? 'Change ...' : 'Connect ...' );
+				notify( 'wifi', val.ESSID, V.profile ? 'Change ...' : 'Connect ...' );
 			}
 		} );
 	}
