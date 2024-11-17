@@ -102,7 +102,7 @@ var setting = {
 			var tabfn = () => {
 				var v     = infoVal();
 				var keys  = Object.keys( v );
-				keys.splice( 2, 0, 'ADDRESS', 'GATEWAY' );
+				keys.splice( 2, 0, 'ADDRESS', 'GATEWAY' ); // insert in order
 				v.ADDRESS = ipSub( S.ip );
 				v.GATEWAY = S.gateway;
 				var val   = {};
@@ -118,21 +118,21 @@ var setting = {
 				setting.wifi( val );
 			}
 		}
-		if ( V.profile ) {
+		if ( V.edit ) {
 			var checkchanged = ( values.ADDRESS && ! dhcp ) || ( ! values.ADDRESS && dhcp );
 		} else {
 			var checkchanged = false;
 		}
 		info( {
 			  icon         : 'wifi'
-			, title        : V.profile ? 'Edit Connection' : 'Add Connection'
+			, title        : V.edit ? 'Edit Connection' : 'Add Connection'
 			, tablabel     : [ 'DHCP', 'Static IP' ]
 			, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 			, boxwidth     : 180
 			, list         : list
-			, footer       : V.profile ? warning( 'This is' ) : ''
+			, footer       : V.edit ? warning( 'This is' ) : ''
 			, values       : values
-			, focus        : V.profile ? ( dhcp ? 0 : 2 ) : 0
+			, focus        : V.edit ? ( dhcp ? 0 : 2 ) : 0
 			, checkchanged : checkchanged
 			, checkblank   : [ 0 ]
 			, checklength  : { 1: [ 8, 'min' ] }
@@ -140,7 +140,7 @@ var setting = {
 			, ok           : () => {
 				var val = infoVal();
 				connectWiFi( val );
-				notify( 'wifi', val.ESSID, V.profile ? 'Change ...' : 'Connect ...' );
+				notify( 'wifi', val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
 			}
 		} );
 	}
@@ -290,7 +290,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bluetoothCommand( 'pair' );
 } );
 $( '.wladd' ).on( 'click', function() {
-	delete V.profile;
+	delete V.edit;
 	setting.wifi();
 } );
 $( '.wlscan' ).on( 'click', function() {
@@ -402,7 +402,7 @@ $( '#menu a' ).on( 'click', function() {
 			break
 		case 'edit':
 			if ( V.listid === 'listwl' ) {
-				V.profile = true;
+				V.edit = true;
 				infoSetting( 'wlanprofile "'+ V.li.data( 'ssid' ) +'"', values => setting.wifi( values ) );
 			} else {
 				setting.lan( S.listeth );
