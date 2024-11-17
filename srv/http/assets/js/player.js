@@ -194,7 +194,7 @@ var setting  = {
 		];
 		if ( S.output.mixertype !== 'software' || ! S.mixers ) {
 			delete values.HARDWARE;
-			list = list.slice( 0, 1 );
+			list = list[ 0 ];
 		}
 		info( {
 			  ...SW
