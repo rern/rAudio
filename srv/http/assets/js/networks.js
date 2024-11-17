@@ -110,12 +110,10 @@ var setting = {
 			var dhcp   = true;
 			var values = default_v[ 'dhcp' ];
 		}
-		var profile       = 'profileget' in V;
-		var profilestatic = profile && V.profileget.ADDRESS;
 		if ( dhcp ) {
 			var tabfn = () => {
-				if ( profilestatic ) {
-					setting.wifi( V.profileget );
+				if ( V.profilestatic ) {
+					setting.wifi( V.profile );
 				} else {
 					var val = infoVal();
 					val.ADDRESS = ipSub( S.ip );
@@ -128,8 +126,8 @@ var setting = {
 			list.splice( 2, 2 );
 		} else {
 			var tabfn = () => {
-				if ( ! profilestatic ) {
-					setting.wifi( V.profileget );
+				if ( ! V.profilestatic ) {
+					setting.wifi( V.profile );
 				} else {
 					var val = infoVal();
 					[ 'ADDRESS', 'GATEWAY' ].forEach( k => delete val[ k ] );
@@ -137,21 +135,21 @@ var setting = {
 				}
 			}
 		}
-		if ( profile ) {
-			var checkchanged = ( values.ADDRESS && profilestatic ) || ( ! values.ADDRESS && ! profilestatic );
+		if ( V.profile ) {
+			var checkchanged = ( values.ADDRESS && V.profilestatic ) || ( ! values.ADDRESS && ! V.profilestatic );
 		} else {
 			var checkchanged = false;
 		}
 		info( {
 			  icon         : 'wifi'
-			, title        : V.profileget ? 'Edit Connection' : 'Add Connection'
+			, title        : V.profile ? 'Edit Connection' : 'Add Connection'
 			, tablabel     : [ 'DHCP', 'Static IP' ]
 			, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
 			, boxwidth     : 180
 			, list         : list
-			, footer       : V.profileget ? warning( 'This is' ) : ''
+			, footer       : V.profile ? warning( 'This is' ) : ''
 			, values       : values
-			, focus        : V.profileget ? ( dhcp ? 0 : 2 ) : 0
+			, focus        : V.profile ? ( dhcp ? 0 : 2 ) : 0
 			, checkchanged : checkchanged
 			, checkblank   : [ 0 ]
 			, checklength  : { 1: [ 8, 'min' ] }
@@ -312,7 +310,8 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 } );
 $( '.wladd' ).on( 'click', function() {
 	delete V.li;
-	delete V.profileget;
+	delete V.profile;
+	delete V.profilestatic;
 	setting.wifi();
 } );
 $( '.wlscan' ).on( 'click', function() {
@@ -421,7 +420,8 @@ $( '.disconnect' ).on( 'click', function() {
 $( '.edit' ).on( 'click', function() {
 	if ( V.listid === 'listwl' ) {
 		bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD SSID' ], v => {
-			V.profileget = v;
+			V.profile       = v;
+			V.profilestatic = 'ADDRESS' in v;
 			setting.wifi( v );
 		}, 'json' );
 	} else {
