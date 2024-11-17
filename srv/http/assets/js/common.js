@@ -1080,6 +1080,13 @@ function addonsProgressSubmit( input ) {
 	var form  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
 	$.each( input, ( k, v ) => form += '<input type="hidden" name="'+ [ k ] +'" value="'+ v +'">' );
 	$( 'body' ).append( form +'</form>' );
+	if ( V.debug ) {
+		var data = {};
+		$( 'form' ).last().serializeArray().forEach( el => data[ el.name ] = el.value );
+		console.log( data );
+		return
+	}
+	
 	$( '#formtemp' ).submit();
 }
 function capitalize( str ) {
