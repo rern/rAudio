@@ -113,21 +113,21 @@ var setting = {
 		}
 		if ( dhcp ) {
 			var tabfn = () => {
-				if ( V.profilestatic ) {
-					setting.wifi( V.profile );
-				} else {
+				if ( dhcp ) {
 					var val = infoVal();
 					val.ADDRESS = ipSub( S.ip );
 					val.GATEWAY = S.gateway;
 					var v       = {}
 					Object.keys( default_v.static ).forEach( k => v[ k ] = val[ k ] );
 					setting.wifi( v );
+				} else {
+					setting.wifi( V.profile );
 				}
 			}
 			list.splice( 2, 2 );
 		} else {
 			var tabfn = () => {
-				if ( ! V.profilestatic ) {
+				if ( dhcp ) {
 					setting.wifi( V.profile );
 				} else {
 					var val = infoVal();
@@ -137,7 +137,7 @@ var setting = {
 			}
 		}
 		if ( V.profile ) {
-			var checkchanged = ( values.ADDRESS && V.profilestatic ) || ( ! values.ADDRESS && ! V.profilestatic );
+			var checkchanged = ( values.ADDRESS && ! dhcp ) || ( ! values.ADDRESS && dhcp );
 		} else {
 			var checkchanged = false;
 		}
@@ -310,9 +310,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bluetoothCommand( 'pair' );
 } );
 $( '.wladd' ).on( 'click', function() {
-	delete V.li;
 	delete V.profile;
-	delete V.profilestatic;
 	setting.wifi();
 } );
 $( '.wlscan' ).on( 'click', function() {
@@ -420,11 +418,8 @@ $( '.disconnect' ).on( 'click', function() {
 } );
 $( '.edit' ).on( 'click', function() {
 	if ( V.listid === 'listwl' ) {
-		bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD SSID' ], v => {
-			V.profile       = v;
-			V.profilestatic = 'ADDRESS' in v;
-			setting.wifi( v );
-		}, 'json' );
+		V.profile = true;
+		infoSetting( 'wlanprofile "'+ V.li.data( 'ssid' ) +'"', values => setting.wifi( values ) );
 	} else {
 		setting.lan( S.listeth );
 	}

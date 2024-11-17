@@ -265,6 +265,20 @@ wlan )
 , "regdomlist" : '$( cat /srv/http/assets/data/regdomcodes.json )'
 }'
 	;;
+wlanprofile )
+	. "/etc/netctl/$2"
+	data='{
+  "ESSID"    : "'$( quoteEscape $ESSID )'"
+, "KEY"      : "'$Key'"'
+	[[ $Address ]] && data+='
+, "ADDRESS"  : "'${Address/\/24}'"
+, "GATEWAY"  : "'$Gateway'"'
+	data+='
+, "SECURITY" : '$( [[ $Security == wep ]] && echo true || echo false )'
+, "HIDDEN"   : '$( [[ $Hidden == yes ]] && echo true || echo false )'
+}'
+	echo "$data"
+	;;
 * )
 	if [[ -e $dirsystem/$ID.conf ]]; then
 		conf2json $dirsystem/$ID.conf
