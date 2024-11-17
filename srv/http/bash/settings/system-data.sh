@@ -80,13 +80,6 @@ if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audiooutput=$( < $dirsystem/audio-output )
 	i2saudio=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
-# reboot
-if [[ -e $dirshm/reboot ]]; then
-	reboot=$( < $dirshm/reboot )
-	grep -q TFT <<< $reboot && tftreboot=true
-	grep -q Character <<< $reboot && lcdcharreboot=true
-	grep -q Spectrum <<< $reboot && mpdoledreboot=true
-fi
 
 data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
 data+=$( settingsEnabled \
@@ -103,16 +96,13 @@ data+='
 , "i2saudio"       : '$i2saudio'
 , "ip"             : "'$( ipAddress )'"
 , "lan"            : '$( ip -br link | grep -q ^e && echo true )'
-, "lcdcharreboot"  : '$lcdcharreboot'
 , "liststorage"    : '$( $dirsettings/system-storage.sh )'
-, "mpdoledreboot"  : '$mpdoledreboot'
 , "nfsserver"      : '$nfsserver'
 , "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
 , "system"         : "'$system'"
 , "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
-, "tftreboot"      : '$tftreboot'
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$timezoneoffset'"'
 ##########

@@ -15,13 +15,13 @@ var lcdcharjson   = {
 	  icon       : 'lcdchar'
 	, title      : 'Character LCD'
 	, tablabel   : [ 'I&#178;C', 'GPIO' ]
-	, footer     : ico( 'raudio', 'lcdlogo', 'tabindex' ) +'Logo&emsp;'+ ico( 'screenoff', 'lcdoff', 'tabindex' ) +'Sleep'
+	, footer     : ico( 'raudio' ) +'Logo&emsp;'+ ico( 'screenoff' ) +'Sleep'
 	, beforeshow : () => {
 		$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
-		if ( ! S.lcdchar || S.lcdcharreboot ) return
-		
-		$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
-			bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] );
+		$( '.infofooter i' )
+			.toggleClass( 'disabled', ! S.lcdchar || data.reboot )
+			.on( 'click', function() {
+				bash( [ 'lcdcharset', $( this ).index() ? 'off' : 'logo', 'CMD ACTION' ] );
 		} );
 	}
 	, cancel     : switchCancel
@@ -283,7 +283,8 @@ var setting       = {
 		error ? infoPrompt( '<wh>Mount failed:</wh><br><br>'+ error ) : $( '#infoX' ).trigger( 'click' );
 	}
 	, mpdoled       : values => {
-		var buttonlogo = S.mpdoled && ! S.mpdoledreboot;
+		var values     = data.values;
+		var buttonlogo = S.mpdoled && ! data.reboot;
 		var chip       = {
 			  'SSD130x SP'  : 1
 			, 'SSD130x I²C' : 3
@@ -304,14 +305,16 @@ var setting       = {
 				var $tr   = $( '#infoList tr' );
 				var $baud = $tr.eq( 1 )
 				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
+				$( '.extrabtn' ).toggleClass( 'disabled', ! buttonlogo )
 				$tr.eq( 0 ).on( 'input', function() {
 					var val = $( this ).val();
 					$baud.toggleClass( 'hide', val < 3 || val > 6 );
 				} );
 			}
 			, cancel       : switchCancel
-			, buttonlabel  : buttonlogo ? ico( 'raudio' ) +'Logo' : ''
-			, button       : buttonlogo ? () => bash( [ 'mpdoledlogo' ] ) : ''
+			, buttonlabel  : ico( 'raudio' ) +'Logo'
+			, buttoncolor  : 'var( --gr )'
+			, button       : () => bash( [ 'mpdoledlogo' ] )
 			, ok           : switchEnable
 		} );
 	}
@@ -596,22 +599,19 @@ var setting       = {
 		infoSetting( 'serverntp', data => {
 			SW.id    = 'ntp';
 			SW.title = 'Servers';
-			var json = {
+			if ( ! data.rpi01 ) {
+				SW.tablabel = [ 'Time', 'Package Mirror' ];
+				SW.tab      = [ '', setting.serverMirror ];
+			}
+			info( {
 				  ...SW
-				, tablabel     : [ 'Time', 'Package Mirror' ]
-				, tab          : [ '', setting.serverMirror ]
 				, list         : [ 'NTP', 'text' ]
 				, boxwidth     : 240
 				, values       : data.values
 				, checkchanged : true
 				, checkblank   : [ 0 ]
 				, ok           : switchEnable
-			}
-			if ( data.rpi01 ) {
-				delete json.tab;
-				delete json.tablabel;
-			}
-			info( json );
+			} );
 		} );
 	}
 	, shareddata    : () => {
@@ -647,7 +647,7 @@ var setting       = {
 			, fileconf     : true
 		} );
 	}
-	, tft           : values => {
+	, tft           : data => {
 		var type = {
 			  'Generic'               : 'tft35a'
 			, 'Waveshare (A)'         : 'waveshare35a'
@@ -655,11 +655,11 @@ var setting       = {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		var buttoncalibrate = S.tft && ! S.tftreboot;
+		var buttoncalibrate = S.tft && ! data.reboot;
 		info( {
 			  ...SW
 			, list         : [ 'Type', 'select', type ]
-			, values       : values
+			, values       : data.values
 			, checkchanged : S.tft
 			, boxwidth     : 190
 			, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'

@@ -2,6 +2,14 @@
 
 . /srv/http/bash/common.sh
 
+toReboot() {
+	if [[ -e $dirshm/reboot ]]; then
+		grep -q $CMD <<< $dirshm/reboot && echo true || echo false
+	else
+		echo false
+	fi
+}
+
 ID=$1
 
 case $ID in
@@ -78,7 +86,11 @@ lcdchar )
 	else
 		address=', "0x27": 39, "0x3f": 63'
 	fi
-	echo '{ "values" : '$values', "address"  : { '${address:1}' } }'
+	echo '{
+  "values"  : '$values'
+, "address" : { '${address:1}' }
+, "reboot"  : '$( toReboot )'
+}'
 	;;
 localbrowser )
 	brightness=$( getContent /sys/class/backlight/rpi_backlight/brightness false )
@@ -88,7 +100,10 @@ mpdoled )
 	chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 	[[ ! $baud ]] && baud=800000
-	echo '{ "CHIP": "'$chip'", "BAUD": '$baud' }'
+	echo '{
+  "values" : { "CHIP": "'$chip'", "BAUD": '$baud' }
+, "reboot" : '$( toReboot )'
+}'
 	;;
 multiraudioconf )
 	getContent $dirsystem/multiraudio.json
@@ -165,7 +180,10 @@ scrobble )
 	else
 		values='{ "AIRPLAY": true, "BLUETOOTH": true, "SPOTIFY": true, "UPNP": true }'
 	fi
-	echo '{ "values": '$values', "key": '$( exists $dirsystem/scrobblekey )' }'
+	echo '{
+  "values" : '$values'
+, "key"    : '$( exists $dirsystem/scrobblekey )'
+}'
 	;;
 servermirror )
 	file=/etc/pacman.d/mirrorlist
@@ -235,7 +253,10 @@ spotifyoutput )
 	;;
 tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
-	echo '{ "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }'
+	echo '{ 
+  "values" : { "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }
+, "reboot" : '$( toReboot )'
+}'
 	;;
 wlan )
 	echo '{
