@@ -188,11 +188,17 @@ var setting  = {
 		} );
 	}
 	, replaygain    : values => {
-		if ( S.output.mixertype !== 'software' || ! S.mixers ) delete values.HARDWARE;
+		var list = [
+			  [ '',                               'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' } } ]
+			, [ 'Gain control with Mixer Device', 'checkbox' ]
+		];
+		if ( S.output.mixertype !== 'software' || ! S.mixers ) {
+			delete values.HARDWARE;
+			list = list.slice( 0, 1 );
+		}
 		info( {
 			  ...SW
-			, list         : [ '', 'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' }, sameline: false } ]
-			, footer       : values.HARDWARE ? '<label><input type="checkbox"><wh>Gain control by Mixer Device</wh></label>' : ''
+			, list         : list
 			, values       : values
 			, checkchanged : S.replaygain
 			, cancel       : switchCancel
