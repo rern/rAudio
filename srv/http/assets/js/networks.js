@@ -98,8 +98,13 @@ var setting = {
 			, [ 'WEP Protocol', 'checkbox' ]
 			, [ 'Hidden SSID',  'checkbox' ]
 		];
+		var I    = {
+			  icon     : 'wifi'
+			, title    : ( V.edit ? 'Edit' : 'Add' ) +' Connection'
+			, tablabel : [ 'DHCP', 'Static IP' ]
+		}
 		if ( dhcp ) {
-			var tabfn = () => {
+			I.tab = [ '', () => {
 				var v     = infoVal();
 				var keys  = Object.keys( v );
 				keys.splice( 2, 0, 'ADDRESS', 'GATEWAY' ); // insert in order
@@ -108,35 +113,32 @@ var setting = {
 				var val   = {};
 				keys.forEach( k => val[ k ] = v[ k ] );
 				setting.wifi( val );
-			}
+			} ];
 			list.splice( 2, 2 );
 		} else {
-			var tabfn = () => {
+			I.tab = [ () => {
 				var val = infoVal();
 				delete val.ADDRESS;
 				delete val.GATEWAY;
 				setting.wifi( val );
-			}
+			}, '' ]
+			I.checkip = [ 2, 3 ];
 		}
 		if ( V.edit ) {
-			var checkchanged = ( values.ADDRESS && ! dhcp ) || ( ! values.ADDRESS && dhcp );
+			if ( ! dhcp ) I.focus = 2
+			I.footer = warning( 'This is' );
+			I.checkchanged = ( values.ADDRESS && ! dhcp ) || ( ! values.ADDRESS && dhcp );
 		} else {
-			var checkchanged = false;
+			I.focus = 0
+			I.checkchanged = false;
 		}
 		info( {
-			  icon         : 'wifi'
-			, title        : V.edit ? 'Edit Connection' : 'Add Connection'
-			, tablabel     : [ 'DHCP', 'Static IP' ]
-			, tab          : dhcp ? [ '', tabfn ] : [ tabfn, '' ]
+				...I
 			, boxwidth     : 180
 			, list         : list
-			, footer       : V.edit ? warning( 'This is' ) : ''
 			, values       : values
-			, focus        : V.edit && ! dhcp ? 2 : 0
-			, checkchanged : checkchanged
 			, checkblank   : [ 0 ]
 			, checklength  : { 1: [ 8, 'min' ] }
-			, checkip      : dhcp ? '' : [ 2, 3 ]
 			, ok           : () => {
 				var val = infoVal();
 				connectWiFi( val );
