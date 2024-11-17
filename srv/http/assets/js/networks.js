@@ -65,6 +65,7 @@ var setting = {
 			]
 			, footer       : v ? warning( 'This is' ) : ''
 			, values       : values
+			, focus        : 0
 			, checkchanged : true
 			, checkblank   : true
 			, checkip      : [ 0, 1 ]
