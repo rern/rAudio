@@ -702,18 +702,16 @@ var setting       = {
 			, fileconf     : true
 		} );
 	}
-	, wlan          : values => {
-		var regdomlist  = values.regdomlist;
+	, wlan          : data => {
 		var accesspoint = 'Auto start Access Point<br>'+ sp( 30 ) +'<gr>(if not connected)</gr>';
-		delete values.regdomlist;
 		info( {
 			  ...SW
 			, list         : [
-				  [ 'Country',   'select', regdomlist ]
+				  [ 'Country',   'select', data.list ]
 				, [ accesspoint, 'checkbox' ]
 			]
 			, boxwidth     : 250
-			, values       : values
+			, values       : data.values
 			, checkchanged : S.wlan
 			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
 			, cancel       : switchCancel
@@ -721,24 +719,25 @@ var setting       = {
 		} );
 	}
 	, wm5102        : output => {
-		info( {
-			  icon     : 'i2s'
-			, title    : output
-			, list     : [ 'Output', 'select', {
-				  Headphones : 'HPOUT1 Digital'
-				, 'Line out' : 'HPOUT2 Digital'
-				, SPDIF      : 'SPDIF Out'
-				, Speakers   : 'SPKOUT Digital'
-			} ]
-			, boxwidth : 130
-			, values   : S.audiowm5102 || 'HPOUT2 Digital'
-			, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] )
-		} );
+		infoSetting( 'wm5102output', values => {
+			info( {
+				  icon     : 'i2s'
+				, title    : output
+				, list     : [ 'Output', 'select', {
+					  Headphones : 'HPOUT1 Digital'
+					, 'Line out' : 'HPOUT2 Digital'
+					, SPDIF      : 'SPDIF Out'
+					, Speakers   : 'SPKOUT Digital'
+				} ]
+				, boxwidth : 130
+				, values   : values
+				, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] )
+			} );
+		}, 'text' );
 	}
 }
 var i2sSelect = {
 	  option : () => {
-		  console.log(9)
 		if ( $( '#i2smodule option' ).length > 2 ) {
 			if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
 				i2sSelect.show();

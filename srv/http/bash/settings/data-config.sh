@@ -255,9 +255,11 @@ tft )
 	;;
 wlan )
 	echo '{
-  "REGDOM"     : "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'"
-, "APAUTO"     : '$( [[ ! -e $dirsystem/wlannoap ]] && echo true || echo false )'
-, "regdomlist" : '$( cat /srv/http/assets/data/regdomcodes.json )'
+	  "values" : {
+	  "REGDOM" : "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'"
+	, "APAUTO" : '$( [[ ! -e $dirsystem/wlannoap ]] && echo true || echo false )'
+	}
+	, "list"   : '$( cat /srv/http/assets/data/regdomcodes.json )'
 }'
 	;;
 wlanprofile )
@@ -299,6 +301,9 @@ wlanprofile )
 			* )             echo false;;
 		esac
 	fi
+	;;
+wm5102output )
+	getContent $dirsystem/audio-wm5102 'HPOUT2 Digital'
 	;;
 	
 esac

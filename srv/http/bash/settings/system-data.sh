@@ -105,9 +105,6 @@ data+='
 , "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$timezoneoffset'"'
-##########
-[[ $audioaplayname == cirrus-wm5102 ]] && data+='
-, "audiowm5102"    : "'$( < $dirsystem/audio-wm5102 )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
 ##########
 	data+='
