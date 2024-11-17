@@ -132,7 +132,7 @@ var setting = {
 			, list         : list
 			, footer       : V.edit ? warning( 'This is' ) : ''
 			, values       : values
-			, focus        : V.edit ? ( dhcp ? 0 : 2 ) : 0
+			, focus        : V.edit && ! dhcp ? 2 : 0
 			, checkchanged : checkchanged
 			, checkblank   : [ 0 ]
 			, checklength  : { 1: [ 8, 'min' ] }
