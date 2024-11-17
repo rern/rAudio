@@ -40,13 +40,8 @@ $( getContent $dirmpdconf/conf/custom.conf )
 $( getContent "$dirsystem/custom-output-$DEVICE" )"
 	;;
 hddapm )
-	apm=$( hdparm -B $2 )
-	if [[ $apm ]]; then
-		awk=$( awk '{print $NF}' <<< $apm )
-		echo $(( awk * 5 / 60 ))
-	else
-		echo false
-	fi
+	apm=$( hdparm -B $2 | sed -n '/APM_level/ {s/.* //; p}' )
+	[[ $apm ]] && echo $apm || echo false
 	;;
 i2seeprom )
 	grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true || echo false

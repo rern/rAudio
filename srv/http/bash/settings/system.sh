@@ -142,7 +142,7 @@ gpiopintoggle )
 	gpioset -t0 -c0 $PIN=$onoff
 	echo $onoff
 	;;
-hddsleep )
+hddapm )
 	hdparm -q -B $LEVEL $DEV
 	hdparm -q -S $LEVEL $DEV
 	pushRefresh

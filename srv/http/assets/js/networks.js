@@ -374,90 +374,96 @@ $( '.lanadd' ).on( 'click', function() {
 	delete V.li;
 	setting.lan();
 } );
-$( '.connect' ).on( 'click', function() {
-	clearTimeout( V.timeoutscan );
-	if ( V.listid === 'listbt' ) {
-		bluetoothCommand( 'connect' );
-		return
+$( '#menu a' ).on( 'click', function() {
+	var $this      = $( this );
+	var cmd        = $this.prop( 'class' ).replace( ' active', '' );
+	switch ( cmd ) {
+		case 'connect':
+			clearTimeout( V.timeoutscan );
+			if ( V.listid === 'listbt' ) {
+				bluetoothCommand( 'connect' );
+				return
+			}
+			
+			if ( S.ap ) {
+				setting.accessPoint();
+				return
+			}
+			
+			var ssid = V.li.data( 'ssid' );
+			notify( 'wifi', ssid, 'Connect ...' );
+			bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
+			break
+		case 'disconnect':
+			if ( V.listid === 'listbt' ) {
+				bluetoothCommand( 'disconnect' );
+				return
+			}
+			
+			if ( V.li.data( 'ip' ) !== location.hostname ) {
+				wifiDisconnect();
+				return
+			}
+			
+			info( {
+				  icon       : 'wifi'
+				, title      : 'Wi-Fi'
+				, message    : 'SSID: <wh>'+ ssid +'</wh>'
+				, footer     : warning( 'Disconnect' )
+				, okcolor    : orange
+				, ok         : wifiDisconnect
+			} );
+			break
+		case 'edit':
+			if ( V.listid === 'listwl' ) {
+				V.profile = true;
+				infoSetting( 'wlanprofile "'+ V.li.data( 'ssid' ) +'"', values => setting.wifi( values ) );
+			} else {
+				setting.lan( S.listeth );
+			}
+			break
+		case 'forget':
+			if ( V.listid === 'listbt' ) {
+				bluetoothCommand( 'remove' );
+				return
+			}
+			
+			var ssid = V.li.data( 'ssid' );
+			var icon = 'wifi';
+			info( {
+				  icon       : icon
+				, title      : 'Wi-Fi'
+				, message    : 'SSID: <wh>'+ ssid +'</wh>'
+				, footer     : warning( 'Forget' )
+				, oklabel    : ico( 'remove' ) +'Forget'
+				, okcolor    : red
+				, ok         : () => {
+					notify( icon, ssid, 'Forget ...' );
+					bash( [ 'profileforget', ssid, 'CMD SSID' ] );
+				}
+			} );
+			break
+		case 'info':
+			currentStatus( 'btinfo', V.li.data( 'mac' ) );
+			break
+		case 'rename':
+			var icon  = 'bluetooth';
+			var name = V.li.data( 'name' );
+			info( {
+				  icon         : icon
+				, title        : 'Rename'
+				, message      : '<wh>'+ name +'</wh>'
+				, list         : [ 'As', 'text' ]
+				, checkchanged : true
+				, checkblank   : true
+				, values       : name
+				, ok           : () => {
+					notify( icon, name, 'Change ...' );
+					bash( [ 'btrename', name, infoVal(), 'CMD NAME NEWNAME' ] );
+				}
+			} );
+			break
 	}
-	
-	if ( S.ap ) {
-		setting.accessPoint();
-		return
-	}
-	
-	var ssid = V.li.data( 'ssid' );
-	notify( 'wifi', ssid, 'Connect ...' );
-	bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
-} );
-$( '.disconnect' ).on( 'click', function() {
-	if ( V.listid === 'listbt' ) {
-		bluetoothCommand( 'disconnect' );
-		return
-	}
-	
-	if ( V.li.data( 'ip' ) !== location.hostname ) {
-		wifiDisconnect();
-		return
-	}
-	
-	info( {
-		  icon       : 'wifi'
-		, title      : 'Wi-Fi'
-		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : warning( 'Disconnect' )
-		, okcolor    : orange
-		, ok         : wifiDisconnect
-	} );
-} );
-$( '.edit' ).on( 'click', function() {
-	if ( V.listid === 'listwl' ) {
-		V.profile = true;
-		infoSetting( 'wlanprofile "'+ V.li.data( 'ssid' ) +'"', values => setting.wifi( values ) );
-	} else {
-		setting.lan( S.listeth );
-	}
-} );
-$( '.forget' ).on( 'click', function() {
-	if ( V.listid === 'listbt' ) {
-		bluetoothCommand( 'remove' );
-		return
-	}
-	
-	var ssid = V.li.data( 'ssid' );
-	var icon = 'wifi';
-	info( {
-		  icon       : icon
-		, title      : 'Wi-Fi'
-		, message    : 'SSID: <wh>'+ ssid +'</wh>'
-		, footer     : warning( 'Forget' )
-		, oklabel    : ico( 'remove' ) +'Forget'
-		, okcolor    : red
-		, ok         : () => {
-			notify( icon, ssid, 'Forget ...' );
-			bash( [ 'profileforget', ssid, 'CMD SSID' ] );
-		}
-	} );
-} );
-$( '.rename' ).on( 'click', function() {
-	var icon  = 'bluetooth';
-	var name = V.li.data( 'name' );
-	info( {
-		  icon         : icon
-		, title        : 'Rename'
-		, message      : '<wh>'+ name +'</wh>'
-		, list         : [ 'As', 'text' ]
-		, checkchanged : true
-		, checkblank   : true
-		, values       : name
-		, ok           : () => {
-			notify( icon, name, 'Change ...' );
-			bash( [ 'btrename', name, infoVal(), 'CMD NAME NEWNAME' ] );
-		}
-	} );
-} );
-$( '.info' ).on( 'click', function() {
-	currentStatus( 'btinfo', V.li.data( 'mac' ) );
 } );
 
 } );

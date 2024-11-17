@@ -988,69 +988,6 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	}
 	contextMenu();
 } );
-$( '#menu a' ).on( 'click', function() {
-	var $this      = $( this );
-	var cmd        = $this.prop( 'class' ).replace( ' active', '' );
-	var list       = S.liststorage[ V.li.index() ];
-	var mountpoint = list.mountpoint;
-	var source     = list.source;
-	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
-		var icon  = 'networks';
-		var title = 'Network Mount';
-	} else {
-		var icon  = 'usbdrive';
-		var title = 'Local Mount';
-	}
-	switch ( cmd ) {
-		case 'forget':
-			notify( icon, title, 'Forget ...' );
-			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
-			break
-		case 'info':
-			var $code = $( '#codestorageinfo' );
-			if ( $code.hasClass( 'hide' ) ) {
-				currentStatus( 'storageinfo', source );
-			} else {
-				$code.addClass( 'hide' );
-			}
-			break
-		case 'remount':
-			notify( icon, title, 'Remount ...' );
-			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
-			break;
-		case 'sleep':
-			var dev = list.source;
-			title   = 'HDD Sleep';
-			infoSetting( 'hddapm '+ dev, apm => {
-				if ( ! apm ) {
-					info( {
-						  icon    : icon
-						, title   : title
-						, message : '<c>'+ dev +'</c> not support'
-					} );
-					return
-				}
-				
-				info( {
-					  icon         : icon
-					, title        : title
-					, list         : [ 'Timeout <gr>(min)</gr>', 'number', { updn: { step: 1, min: 1, max: 20 } } ]
-					, boxwidth     : 90
-					, values       : apm
-					, checkchanged : true
-					, ok           : () => {
-						notify( icon, title, 'Change ...' );
-						bash( [ 'hddsleep', dev, infoVal() * 60 / 5, 'CMD DEV LEVEL' ] );
-					}
-				} );
-			} );
-			break
-		case 'unmount':
-			notify( icon, title, 'Unmount ...' )
-			bash( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
-			break
-	}
-} );
 $( '#i2s' ).on( 'click', function() {
 	setTimeout( i2sSelect.option, 0 );
 } );
@@ -1133,6 +1070,69 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 } ).on( 'select2:close', function ( e ) {
 	$( 'style.tmp' ).remove();
 	if ( this.id === 'i2smodule' && this.value === 'none' ) i2sSelect.hide();
+} );
+$( '#menu a' ).on( 'click', function() {
+	var $this      = $( this );
+	var cmd        = $this.prop( 'class' ).replace( ' active', '' );
+	var list       = S.liststorage[ V.li.index() ];
+	var mountpoint = list.mountpoint;
+	var source     = list.source;
+	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
+		var icon  = 'networks';
+		var title = 'Network Mount';
+	} else {
+		var icon  = 'usbdrive';
+		var title = 'Local Mount';
+	}
+	switch ( cmd ) {
+		case 'forget':
+			notify( icon, title, 'Forget ...' );
+			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
+			break
+		case 'info':
+			var $code = $( '#codestorageinfo' );
+			if ( $code.hasClass( 'hide' ) ) {
+				currentStatus( 'storageinfo', source );
+			} else {
+				$code.addClass( 'hide' );
+			}
+			break
+		case 'remount':
+			notify( icon, title, 'Remount ...' );
+			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
+			break;
+		case 'sleep':
+			var dev = list.source;
+			title   = 'HDD Sleep';
+			infoSetting( 'hddapm '+ dev, values => {
+				if ( ! values ) {
+					info( {
+						  icon    : icon
+						, title   : title
+						, message : '<c>'+ dev +'</c> not support'
+					} );
+					return
+				}
+				
+				info( {
+					  icon         : icon
+					, title        : title
+					, list         : [ 'Timeout <gr>(min)</gr>', 'number', { updn: { step: 1, min: 1, max: 20 } } ]
+					, boxwidth     : 90
+					, values       : Math.round( values * 5 / 60 )
+					, checkchanged : true
+					, ok           : () => {
+						notify( icon, title, 'Change ...' );
+						bash( [ 'hddapm', dev, infoVal() * 60 / 5, 'CMD DEV LEVEL' ] );
+					}
+				} );
+			} );
+			break
+		case 'unmount':
+			notify( icon, title, 'Unmount ...' )
+			bash( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
+			break
+	}
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

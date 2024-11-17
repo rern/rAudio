@@ -33,6 +33,33 @@ $body = [
 ];
 htmlSection( $head, $body[, $id] );
 */
+function commonVariables( $list ) {
+	extract( $list );
+	foreach( $labels as $l ) { // $L_xxx - switch label
+		$icon  = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
+		$l     = $l[ 0 ];
+		$name  = 'L_'.strtolower( preg_replace( '/ |-/', '', $l ) );
+		global $$name;
+		$$name = '<a class="helpmenu label">'.$l.$icon.'</a>';
+	}
+	foreach( $menus as $m ) { // $M_xxx - menu
+		$name  = 'M_'.str_replace( '-', '', $m[ 2 ] );
+		global $$name;
+		$$name = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
+	}
+	foreach( $tabs as $t ) { // $T_xxx - tab
+		$name  = 'T_'.$t;
+		global $$name;
+		$$name = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
+	}
+	foreach( $buttons as $b ) { // $B_xxx - tab
+		$name  = 'B_'.$b;
+		global $$name;
+		$$name = i( $b.' btn' );
+	}
+}
+$I = 'i'; // for common.php - i() > {$I()} inside heredoc
+
 function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
@@ -56,6 +83,11 @@ function htmlHead( $data ) {
 	$html   .= isset( $data[ 'help' ] ) ? '<span class="helpblock hide">'.$data[ 'help' ].'</span>' : '';
 	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echo str_replace( '|', '<g>|</g>', $html );
+}
+function htmlMenu( $menu ) {
+	$menuhtml = '';
+	foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
+	echo '<div id="menu" class="menu hide">'.$menuhtml.'</div>';
 }
 function htmlSection( $head, $body, $id = '' ) {
 	echo '<div'.( $id ? ' id="div'.$id.'"' : '' ).' class="section">';
@@ -140,29 +172,3 @@ function htmlSetting( $data ) {
 	
 	echo $html;
 }
-function commonVariables( $list ) {
-	extract( $list );
-	foreach( $labels as $l ) { // $L_xxx - switch label
-		$icon  = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
-		$l     = $l[ 0 ];
-		$name  = 'L_'.strtolower( preg_replace( '/ |-/', '', $l ) );
-		global $$name;
-		$$name = '<a class="helpmenu label">'.$l.$icon.'</a>';
-	}
-	foreach( $menus as $m ) { // $M_xxx - menu
-		$name  = 'M_'.str_replace( '-', '', $m[ 2 ] );
-		global $$name;
-		$$name = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
-	}
-	foreach( $tabs as $t ) { // $T_xxx - tab
-		$name  = 'T_'.$t;
-		global $$name;
-		$$name = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
-	}
-	foreach( $buttons as $b ) { // $B_xxx - tab
-		$name  = 'B_'.$b;
-		global $$name;
-		$$name = i( $b.' btn' );
-	}
-}
-$I = 'i'; // for common.php - i() > {$I()} inside heredoc

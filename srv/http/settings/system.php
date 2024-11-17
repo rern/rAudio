@@ -363,15 +363,6 @@ foreach( $listui as $ui ) {
 }
 $indexhtml   = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
-$menu        = [
-	  'info'    => 'info'
-	, 'forget'  => 'remove'
-	, 'remount' => 'connect'
-	, 'sleep'   => 'screenoff'
-	, 'unmount' => 'close'
-];
-$menuhtml    = '';
-foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
 ?>
 <div id="divabout" class="section">
 	<a href="https://github.com/rern/rAudio/discussions" tabindex="-1"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
@@ -406,4 +397,11 @@ foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex=
 	</div>
 </div>
 
-<div id="menu" class="menu hide"><?=$menuhtml?></div>
+<?php
+htmlMenu( [
+	  'info'    => 'info'
+	, 'forget'  => 'remove'
+	, 'remount' => 'connect'
+	, 'sleep'   => 'screenoff'
+	, 'unmount' => 'close'
+] );

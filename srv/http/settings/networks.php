@@ -123,15 +123,11 @@ htmlHead( [
 </div>
 
 <?php
-$menu = [
+htmlMenu( [
 	  'connect'    => 'connect'
 	, 'disconnect' => 'close'
 	, 'edit'       => 'edit'
 	, 'forget'     => 'remove'
 	, 'rename'     => 'edit'
 	, 'info'       => 'info'
-];
-$menuhtml = '';
-foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
-?>
-<div id="menu" class="menu hide"><?=$menuhtml?></div>
+] );
