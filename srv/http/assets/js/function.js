@@ -145,7 +145,6 @@ function changeIP() { // for android app
 		, title        : 'IP Address'
 		, message      : 'Switch rAudio:'
 		, list         : [ 'New IP', 'text' ]
-		, focus        : 0
 		, boxwidth     : 170
 		, values       : location.host
 		, checkchanged : true

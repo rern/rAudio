@@ -181,7 +181,6 @@ $( '#button-settings' ).on( 'click', function( e ) {
 			  icon       : 'lock'
 			, title      : 'Settings'
 			, list       : [ '', 'password' ]
-			, focus      : 0
 			, checkblank : true
 			, oklabel    : 'Login'
 			, ok         : () => {
@@ -1345,7 +1344,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 						+'<br><span class="bklabel">'+ name +'</span></div>'
 		, list         : [ 'To:', 'text' ]
 		, values       : name
-		, focus        : 0
 		, checkblank   : true
 		, checkchanged : true
 		, oklabel      : ico( 'flash' ) +'Rename'

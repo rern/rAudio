@@ -74,7 +74,6 @@ function bookmarkNew() {
 		, message    : '<img src="'+ src + versionHash() +'">'
 					  +'<br><wh>'+ msgpath +'</wh>'
 		, list       : [ 'As:', 'text' ]
-		, focus      : 0
 		, values     : name
 		, checkblank : true
 		, beforeshow : () => {
@@ -165,7 +164,6 @@ function directoryRename() {
 		  icon         : icon
 		, title        : title
 		, list         : [ 'Name', 'text' ]
-		, focus        : 0
 		, values       : V.list.name
 		, checkblank   : true
 		, checkchanged : true
@@ -231,7 +229,6 @@ function playlistNew( name ) {
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, list         : [ 'Name', 'text' ]
-		, focus        : 0
 		, values       : name
 		, checkblank   : true
 		, ok           : () => playlistSave( infoVal() )
@@ -244,7 +241,6 @@ function playlistRename() {
 		, title        : 'Rename Playlist'
 		, message      : 'From: <wh>'+ name +'</wh>'
 		, list         : [ 'To', 'text' ]
-		, focus        : 0
 		, values       : name
 		, checkchanged : true
 		, checkblank   : true
@@ -586,7 +582,6 @@ var listwebradio = {
 					  icon       : 'webradio'
 					, title      : 'Add New Folder'
 					, list       : [ 'Name', 'text' ]
-					, focus      : 0
 					, checkblank : true
 					, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
 					, ok         : () => bash( [ 'dirnew', '/srv/http/data/webradio/'+ $( '#lib-path .lipath' ).text() +'/'+ infoVal(), 'CMD DIR' ] )
@@ -601,7 +596,6 @@ function webRadioEdit() {
 		, message      : '<img src="'+ ( V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
 		, list         : listwebradio.list
 		, values       : [ V.list.name, V.list.path, V.list.li.data( 'charset' ) || 'UTF-8' ]
-		, focus        : 0
 		, checkchanged : true
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
@@ -640,7 +634,6 @@ function webRadioNew( name, url, charset ) {
 		, boxwidth   : 'max'
 		, list       : listwebradio.list
 		, values     : [ name, url, charset || 'UTF-8' ]
-		, focus      : 0
 		, checkblank : [ 0, 1 ]
 		, beforeshow : () => {
 			listwebradio.button()
