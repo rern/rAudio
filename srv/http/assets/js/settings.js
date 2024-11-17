@@ -102,7 +102,7 @@ function notifyCommon( message ) {
 	if ( typeof message === 'boolean' ) {
 		message = message ? 'Enable ...' : 'Disable ...';
 	} else if ( ! message ) {
-		message = S[ SW.id ] ? 'Change ...' : 'Enable ...';
+		message = ! ( SW.id in S ) || S[ SW.id ] ? 'Change ...' : 'Enable ...';
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }

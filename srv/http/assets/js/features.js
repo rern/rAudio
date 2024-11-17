@@ -9,7 +9,6 @@ var setting = {
 				, [ 'Password', 'text' ]
 			]
 			, values       : values
-			, focus        : 0
 			, checkchanged : S.ap
 			, checkblank   : true
 			, checkip      : [ 0 ]
@@ -97,7 +96,6 @@ var setting = {
 				, [ 'Setting pages only',              'checkbox' ]
 			]
 			, footer     : S.login ? '(<wh>New</wh> = (blank) - No password change)' : ''
-			, focus      : 0
 			, checkblank : [ 0 ]
 			, values     : { pwd: '', pwdnew: '', loginsetting: S.loginsetting }
 			, cancel     : switchCancel
@@ -114,7 +112,6 @@ var setting = {
 			  ...SW
 			, message    : 'Disable:'
 			, list       : [ 'Password', 'password' ]
-			, focus      : 0
 			, checkblank : true
 			, cancel     : switchCancel
 			, ok         : () => {
@@ -141,7 +138,6 @@ var setting = {
 			]
 			, boxwidth     : 300
 			, values       : values
-			, focus        : 0
 			, checkchanged : S.lyrics
 			, checkblank   : true
 			, cancel       : switchCancel
@@ -176,7 +172,6 @@ var setting = {
 			, list         : list
 			, boxwidth     : 160
 			, values       : values
-			, focus        : 0
 			, checkblank   : true
 			, checkip      : checkIpList( values )
 			, checkunique  : true
@@ -319,7 +314,6 @@ var setting = {
 				, footer      : '<wh>ID</wh> and <wh>Secret</wh> from Spotify private app '+ ico( 'help help' )
 				, footeralign : 'right'
 				, boxwidth    : 320
-				, focus       : 0
 				, checklength : { 0: 32, 1: 32 }
 				, beforeshow  : () => {
 					$( '#infoList .help' ).on( 'click', function() {

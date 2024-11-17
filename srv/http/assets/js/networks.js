@@ -65,7 +65,6 @@ var setting = {
 			]
 			, footer       : V ? warning( 'This is' ) : ''
 			, values       : values
-			, focus        : 0
 			, checkchanged : true
 			, checkblank   : true
 			, checkip      : [ 0, 1 ]
@@ -152,7 +151,7 @@ var setting = {
 			, list         : list
 			, footer       : v ? warning( 'This is' ) : ''
 			, values       : values
-			, focus        : values.ESSID ? ( dhcp ? 0 : 2 ) : 0
+			, focus        : dhcp ? 0 : 2
 			, checkchanged : checkchanged
 			, checkblank   : [ 0 ]
 			, checklength  : { 1: [ 8, 'min' ] }

@@ -33,7 +33,53 @@ var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ]
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 var setting       = {
-	  bluetooth     : values => {
+	  backup        : () => {
+		var d     = new Date();
+		var month = '0'+ ( d.getMonth() + 1 );
+		var date  = '0'+ d.getDate();
+		var ymd   = d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
+		info( {
+			  ...SW
+			, message : 'Save all data and settings'
+			, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
+			, values  : 'rAudio_backup-'+ ymd
+			, ok      : () => {
+				notifyCommon( 'Process ...' );
+				bash( 'system-databackup.sh', data => {
+					if ( data == 1 ) {
+						notifyCommon( 'Download ...' );
+						fetch( '/data/shm/backup.gz' )
+							.then( response => response.blob() )
+							.then( blob => {
+								var url = window.URL.createObjectURL( blob );
+								var a = document.createElement( 'a' );
+								a.style.display = 'none';
+								a.href = url;
+								a.download = infoVal() +'.gz';
+								document.body.appendChild( a );
+								a.click();
+								setTimeout( () => {
+									a.remove();
+									window.URL.revokeObjectURL( url );
+									bannerHide();
+								}, 1000 );
+							} ).catch( () => {
+								infoWarning( SW.icon, SW.title, 'File download failed.' )
+								bannerHide();
+							} );
+					} else {
+						info( {
+							  ...SW
+							, message : 'Backup failed.'
+						} );
+						bannerHide();
+					}
+				} );
+			}
+		} );
+		$( '#backup' ).prop( 'checked', 0 );
+	}
+	, bluetooth     : values => {
 		info( {
 			  ...SW
 			, list         : [
@@ -43,6 +89,26 @@ var setting       = {
 			, values       : values
 			, checkchanged : S.bluetooth
 			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, hostname      : () => {
+		SW = {
+			  id    : 'hostname'
+			, icon  : 'hostname'
+			, title : 'Player Name'
+		}
+		info( {
+			  ...SW
+			, list         : [ 'Name', 'text' ]
+			, values       : { NAME: S.hostname }
+			, checkblank   : true
+			, checkchanged : true
+			, beforeshow   : () => {
+				$( '#infoList input' ).on( 'input', function() {
+					$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
+				} );
+			}
 			, ok           : switchEnable
 		} );
 	}
@@ -90,6 +156,35 @@ var setting       = {
 			, boxwidth     : 70
 			, values       : values
 			, checkchanged : S.lcdchar
+		} );
+	}
+	, ledcalc       : () => {
+		info( {
+			  icon       : 'vuled'
+			, title      : 'LED Resister Calculator'
+			, list       : [
+				  [ 'GPIO <gr>(V)</gr>',                'number' ]
+				, [ 'Current <gr>(mA)</gr>',            'number' ]
+				, [ 'LED forward voltage <gr>(V)</gr>', 'number' ]
+				, [ 'Resister <gr>(&#8486;)</gr>',      'number' ]
+			]
+			, values     : [ 3.3, 5 ]
+			, boxwidth   : 70
+			, beforeshow : () => {
+				$( '#infoList input' ).prop( 'disabled', 1 );
+				$( '#infoList input' ).eq( 2 )
+					.prop( 'disabled', 0 )
+					.on( 'input', function() {
+						var fv = $( this ).val();
+						if ( fv > 3.3 ) {
+							var ohm = '( > 3.3V)';
+						} else {
+							var ohm = fv ? Math.round( ( 3.3 - fv ) / 0.005 ) : '';
+						}
+						$( '#infoList input' ).eq( 3 ).val( ohm );
+					} );
+			}
+			, okno       : true
 		} );
 	}
 	, mount         : nfs => {
@@ -175,7 +270,6 @@ var setting       = {
 			, tab       : [ setting.mount, () => setting.mount( 'nfs' ), '' ]
 			, list      : [ 'Server IP', 'text' ]
 			, values    : { IP: I.active && I.values ? infoVal().IP : ipSub( S.ip ) }
-			, focus     : 0
 			, checkip   : [ 0 ]
 			, cancel    : switchCancel
 			, oknoreset : true
@@ -486,10 +580,9 @@ var setting       = {
 			bannerHide();
 			SW.id = 'mirror';
 			info( {
-				  icon         : 'mirror'
-				, title        : 'Servers'
+				  ...SW
 				, tablabel     : [ 'Time', 'Package Mirror' ]
-				, tab          : [ () => infoSetting( 'serverntp', setting.timezone ), '' ]
+				, tab          : [ () => infoSetting( 'serverntp', setting.serverNtp ), '' ]
 				, list         : [ 'Mirror', 'select', data.list ]
 				, boxwidth     : 240
 				, values       : data.values
@@ -498,6 +591,44 @@ var setting       = {
 				, ok           : switchEnable
 			} );
 		} );
+	}
+	, serverNtp    : () => {
+		infoSetting( 'serverntp', data => {
+			SW.id    = 'ntp';
+			SW.title = 'Servers';
+			var json = {
+				  ...SW
+				, tablabel     : [ 'Time', 'Package Mirror' ]
+				, tab          : [ '', setting.serverMirror ]
+				, list         : [ 'NTP', 'text' ]
+				, boxwidth     : 240
+				, values       : data.values
+				, checkchanged : true
+				, checkblank   : [ 0 ]
+				, ok           : switchEnable
+			}
+			if ( data.rpi01 ) {
+				delete json.tab;
+				delete json.tablabel;
+			}
+			info( json );
+		} );
+	}
+	, shareddata    : () => {
+		if ( S.shareddata ) {
+			info( {
+				  ...SW
+				, message : 'Disable and restore local data?'
+				, cancel  : switchCancel
+				, okcolor : orange
+				, ok      : () => {
+					notifyCommon( 'Disable ...' );
+					bash( [ 'shareddatadisable', 'OFF' ] );
+				}
+			} );
+		} else {
+			setting.mount();
+		}
 	}
 	, soundprofile  : values => {
 		info( {
@@ -547,28 +678,7 @@ var setting       = {
 			, ok           : switchEnable
 		} );
 	}
-	, timezone      : () => {
-		infoSetting( 'serverntp', data => {
-			SW.title  = 'Servers';
-			var json = {
-				  ...SW
-				, tablabel     : [ 'Time', 'Package Mirror' ]
-				, tab          : [ '', setting.serverMirror ]
-				, list         : [ 'NTP', 'text' ]
-				, boxwidth     : 240
-				, values       : data.values
-				, focus        : 0
-				, checkchanged : true
-				, checkblank   : [ 0 ]
-				, ok           : switchEnable
-			}
-			if ( data.rpi01 ) {
-				delete json.tab;
-				delete json.tablabel;
-			}
-			info( json );
-		} );
-	}
+	, timezone      : () => setting.serverNtp()
 	, vuled         : values => {
 		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
 		var leds   = Object.keys( values ).length + 1;
@@ -751,6 +861,9 @@ function renderPage() {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '#backup, #hostname, #ledcalc, #restore, #shareddata' ).on( 'click', function() {
+	setting[ this.id ]();
+} );
 $( 'body' ).on( 'click', function( e ) {
 	if ( ! $( e.target ).hasClass( 'select2-search__field' ) 
 		&& ! $( e.target ).parents( '#divi2smodule' ).length 
@@ -963,55 +1076,6 @@ $( '#i2smodule' ).on( 'input', function() {
 	}
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 } );
-$( '#ledcalc' ).on( 'click', function() {
-	info( {
-		  icon       : 'vuled'
-		, title      : 'LED Resister Calculator'
-		, list       : [
-			  [ 'GPIO <gr>(V)</gr>',                'number' ]
-			, [ 'Current <gr>(mA)</gr>',            'number' ]
-			, [ 'LED forward voltage <gr>(V)</gr>', 'number' ]
-			, [ 'Resister <gr>(&#8486;)</gr>',      'number' ]
-		]
-		, values     : [ 3.3, 5 ]
-		, boxwidth   : 70
-		, beforeshow : () => {
-			$( '#infoList input' ).prop( 'disabled', 1 );
-			$( '#infoList input' ).eq( 2 )
-				.prop( 'disabled', 0 )
-				.on( 'input', function() {
-					var fv = $( this ).val();
-					if ( fv > 3.3 ) {
-						var ohm = '( > 3.3V)';
-					} else {
-						var ohm = fv ? Math.round( ( 3.3 - fv ) / 0.005 ) : '';
-					}
-					$( '#infoList input' ).eq( 3 ).val( ohm );
-				} );
-		}
-		, okno       : true
-	} );
-} );
-$( '#hostname' ).on( 'click', function( e ) {
-	if ( e.hasOwnProperty( 'originalEvent' ) ) $( this ).trigger( 'blur' );
-	SW.id    = 'hostname';
-	SW.icon  = 'system';
-	SW.title = 'Player Name';
-	info( {
-		  ...SW
-		, list         : [ 'Name', 'text' ]
-		, values       : { NAME: S.hostname }
-		, focus        : 0
-		, checkblank   : true
-		, checkchanged : true
-		, beforeshow   : () => {
-			$( '#infoList input' ).on( 'input', function() {
-				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
-			} );
-		}
-		, ok           : switchEnable
-	} );
-} );
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'timezone', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
@@ -1025,75 +1089,6 @@ $( '#timezone' ).on( 'input', function( e ) {
 			.val( S.timezone )
 			.select2( 'open' );
 	} );
-} );
-$( '#backup' ).on( 'click', function() {
-	var d     = new Date();
-	var month = '0'+ ( d.getMonth() + 1 );
-	var date  = '0'+ d.getDate();
-	var ymd   = d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
-	info( {
-		  ...SW
-		, message : 'Save all data and settings'
-		, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
-		, values  : 'rAudio_backup-'+ ymd
-		, ok      : () => {
-			notifyCommon( 'Process ...' );
-			bash( 'system-databackup.sh', data => {
-				if ( data == 1 ) {
-					notifyCommon( 'Download ...' );
-					fetch( '/data/shm/backup.gz' )
-						.then( response => response.blob() )
-						.then( blob => {
-							var url = window.URL.createObjectURL( blob );
-							var a = document.createElement( 'a' );
-							a.style.display = 'none';
-							a.href = url;
-							a.download = infoVal() +'.gz';
-							document.body.appendChild( a );
-							a.click();
-							setTimeout( () => {
-								a.remove();
-								window.URL.revokeObjectURL( url );
-								bannerHide();
-							}, 1000 );
-						} ).catch( () => {
-							infoWarning( SW.icon, SW.title, 'File download failed.' )
-							bannerHide();
-						} );
-				} else {
-					info( {
-						  ...SW
-						, message : 'Backup failed.'
-					} );
-					bannerHide();
-				}
-			} );
-		}
-	} );
-	$( '#backup' ).prop( 'checked', 0 );
-} );
-$( '#restore' ).on( 'click', function() {
-	setting.restore();
-} );
-$( '#shareddata' ).on( 'click', function() {
-	var $this = $( this );
-	if ( $this.hasClass( 'disabled' ) ) return
-	
-	if ( S.shareddata ) {
-		info( {
-			  ...SW
-			, message : 'Disable and restore local data?'
-			, cancel  : () => $this.prop( 'checked', true )
-			, okcolor : orange
-			, ok      : () => {
-				notifyCommon( 'Disable ...' );
-				bash( [ 'shareddatadisable', 'OFF' ] );
-			}
-		} );
-	} else {
-		V.shareddata = true;
-		setting.mount();
-	}
 } );
 $( '.listtitle' ).on( 'click', function( e ) {
 	var $this    = $( this );

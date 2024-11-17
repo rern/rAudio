@@ -491,7 +491,6 @@ function info( json ) {
 		} );
 		// show
 		infoToggle();
-		'focus' in I ? $inputbox.eq( I.focus ).focus() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoWidth(); // text / password / textarea
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
@@ -616,6 +615,8 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
+		if ( $inputbox.length === 1 || ! $inputbox.eq( 0 ).val() ) I.focus = 0;
+		'focus' in I ? $inputbox.eq( I.focus ).focus() : $( '#infoOverlay' ).trigger( 'focus' );
 	} );
 	$( '#infoList .i-eye' ).on( 'click', function() {
 		var $this = $( this );
