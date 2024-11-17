@@ -254,7 +254,7 @@ function psReload( data ) {
 }
 function psStorage( data ) {
 	if ( page === 'system' ) {
-		S.list = data.list;
+		S.liststorage = data.list;
 		renderStorage();
 		if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
 	}
