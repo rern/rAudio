@@ -800,15 +800,7 @@ function onPageInactive() {
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
-	var html  = '';
-	$.each( S.liststorage, ( i, v ) => {
-		var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
-		var dot = '<grn>&ensp;•&ensp;</grn>';
-		if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
-		html += '<li>'+ ico( v.icon ) + mountpoint
-				+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +'</li>';
-	} );
-	$( '#list' ).html( html );
+	renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
 			$( '#divbluetooth .col-l' )
@@ -857,6 +849,17 @@ function renderPage() {
 	$( '#setting-shareddata' ).remove();
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
+}
+function renderStorage() {
+	var html  = '';
+	$.each( S.liststorage, ( i, v ) => {
+		var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
+		var dot = '<grn>&ensp;•&ensp;</grn>';
+		if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
+		html += '<li>'+ ico( v.icon ) + mountpoint
+				+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +'</li>';
+	} );
+	$( '#list' ).html( html );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
