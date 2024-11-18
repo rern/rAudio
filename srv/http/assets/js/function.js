@@ -1820,7 +1820,7 @@ function setPlaylistScroll() {
 		} else if ( S.state === 'play' ) {
 			if ( S.webradio ) {
 				$stationname.removeClass( 'hide' );
-				$name.html( S.Title || '·&ensp;·&ensp;·' );
+				$name.html( S.Title || dots );
 				if ( S.coverart && S.coverart !== S.stationcover ) {
 					$liactive.find( 'img' ).on( 'lazyloaded', setPlaylistWebRadioCoverart ); // fix - lazysizes load stationcover
 					setPlaylistWebRadioCoverart(); // lazysizes already loaded

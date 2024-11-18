@@ -301,7 +301,7 @@ function renderPage() {
 }
 function renderStatus() {
 	var htmlstatus =  S.version +'<br>';
-	[ 'song', 'webradio' ].forEach( ( k, i ) => htmlstatus += ico( k +' gr' ) +' '+ S.counts[ i ].toLocaleString() +' &emsp;' );
+	[ 'song', 'webradio' ].forEach( ( k, i ) => htmlstatus += ico( k +' gr' ) +' '+ S.counts[ i ].toLocaleString() + sp( 15 ) );
 	if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
 	htmlstatus += '<br>'+ S.lastupdate;
 	if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';

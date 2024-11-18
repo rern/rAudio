@@ -213,16 +213,18 @@ getContent() {
 getVar() { # var=value
 	[[ ! -e $2 ]] && echo false && return
 	
-	local data line
+	local data line var
 	data=$( < $2 )
-	[[ $( head -1 <<< $data ) == { ]] && sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' <<< $data && return
-	
-	line=$( grep ^$1= <<< $data )                                    # var=
-	[[ ! $line ]] && line=$( grep -E "^${1// /|^}" <<< $data )       # var
-	[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" <<< $data ) #     var
-	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )         # var value > var=value
-	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )   # var=value || var = value || var="value"; > value
-	quoteEscape $line
+	if [[ $( head -1 <<< $data ) == { ]]; then
+		var=$( sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' <<< $data )
+	else
+		line=$( grep ^$1= <<< $data )                                    # var=
+		[[ ! $line ]] && line=$( grep -E "^${1// /|^}" <<< $data )       # var
+		[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" <<< $data ) #     var
+		[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )         # var value > var=value
+		var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )   # var=value || var = value || var="value"; > value
+	fi
+	[[ $var ]] && quoteEscape $var || echo $3
 }
 inOutputConf() {
 	local file

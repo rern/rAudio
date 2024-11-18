@@ -1061,7 +1061,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 	}
 	
 	var message = '';
-	[ 'nas', 'sd', 'usb' ].forEach( k => message += ' &emsp; <label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
+	[ 'nas', 'sd', 'usb' ].forEach( k => message += sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
 	var kv   = {
 		  'Update changed files'    : 'update'
 		, 'Update all files'        : 'rescan'
