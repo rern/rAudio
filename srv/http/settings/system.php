@@ -1,3 +1,9 @@
+<style>
+.select2-results { width: 330px }
+.select2-dropdown {
+	width: fit-content !important;
+	min-width: 100%;
+</style>
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 'x';

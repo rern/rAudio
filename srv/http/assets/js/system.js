@@ -309,7 +309,7 @@ var setting       = {
 				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
 				$( '.infofooter i' ).toggleClass( 'disabled', ! S.mpdoled || data.reboot )
 				$tr.eq( 0 ).on( 'input', function() {
-					var val = $( this ).val();
+					var val = this.value;
 					$baud.toggleClass( 'hide', val < 3 || val > 6 );
 				} );
 			}
@@ -744,7 +744,8 @@ var setting       = {
 	}
 }
 var i2sSelect = {
-	  option : () => {
+	  hide   : () => i2sSelect.toggle( false )
+	, option : () => {
 		if ( $( '#i2smodule option' ).length > 2 ) {
 			if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
 				i2sSelect.show();
@@ -767,15 +768,11 @@ var i2sSelect = {
 			return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
 		} ).prop( 'selected', true );
 	}
-	, hide   : () => {
-		$( '#i2s' ).prop( 'checked', S.i2saudio );
-		$( '#divi2s' ).removeClass( 'hide' );
-		$( '#divi2smodule' ).addClass( 'hide' );
-	}
-	, show   : () => {
-		$( '#divi2s' ).addClass( 'hide' );
-		$( '#divi2smodule' ).removeClass( 'hide' );
-		$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2saudio );
+	, show   : () => i2sSelect.toggle( true )
+	, toggle : show => {
+		$( '#i2s' ).prop( 'checked', false );
+		$( '#divi2s' ).toggleClass( 'hide', show );
+		$( '#divi2smodule' ).toggleClass( 'hide', ! show );
 	}
 }
 
@@ -994,7 +991,7 @@ $( '#divi2smodule .col-r' ).on( 'click', function( e ) {
 	if ( $( e.target ).parents( '.select2' ).length ) i2sSelect.option();
 } );
 $( '#i2smodule' ).on( 'input', function() {
-	var aplayname = $( this ).val();
+	var aplayname = this.value;
 	var icon      = 'i2smodule';
 	var title     = 'Audio - I²S';
 	if ( aplayname === 'cirrus-wm5102' ) {
@@ -1012,7 +1009,7 @@ $( '#i2smodule' ).on( 'input', function() {
 } );
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'timezone', 'Timezone', 'Change ...' );
-	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
+	bash( [ 'timezone', this.value, 'CMD TIMEZONE' ] );
 } ).on( 'select2:open', function( e ) {
 	if ( $( '#timezone option' ).length > 2 ) return
 	
@@ -1055,18 +1052,8 @@ $( '.listtitle' ).on( 'click', function( e ) {
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
-$( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css for dropdown width
-	$( 'head' ).append( `
-<style class="tmp">
-.select2-results { width: 330px }
-.select2-dropdown {
-	width: fit-content !important;
-	min-width: 100%;
-</style>
-` );
-} ).on( 'select2:close', function () {
-//	$( 'style.tmp' ).remove();
-	if ( this.id === 'i2smodule' && ! this.value ) i2sSelect.hide();
+$( '#i2smodule' ).on( 'select2:close', function () {
+	if ( ! this.value ) i2sSelect.hide();
 } );
 $( '#menu a' ).on( 'click', function() {
 	var $this      = $( this );
