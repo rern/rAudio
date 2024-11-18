@@ -744,7 +744,11 @@ var setting       = {
 	}
 }
 var i2sSelect = {
-	  hide   : () => i2sSelect.toggle( false )
+	  hide   : () => {
+		$( '#i2s' ).prop( 'checked', false );
+		$( '#divi2s' ).removeClass( 'hide' );
+		$( '#divi2smodule' ).addClass( 'hide' );
+	  }
 	, option : () => {
 		if ( $( '#i2smodule option' ).length > 2 ) {
 			if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
@@ -768,11 +772,10 @@ var i2sSelect = {
 			return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
 		} ).prop( 'selected', true );
 	}
-	, show   : () => i2sSelect.toggle( true )
-	, toggle : show => {
-		$( '#i2s' ).prop( 'checked', false );
-		$( '#divi2s' ).toggleClass( 'hide', show );
-		$( '#divi2smodule' ).toggleClass( 'hide', ! show );
+	, show   : () => {
+		$( '#divi2s' ).addClass( 'hide' );
+		$( '#divi2smodule' ).removeClass( 'hide' );
+		$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2saudio );
 	}
 }
 

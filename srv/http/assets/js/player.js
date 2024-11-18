@@ -339,11 +339,11 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#device' ).on( 'input', function() {
 	notify( 'volume', 'Output Device', 'Change ...' );
-	bash( [ 'device', $( this ).val(), 'CMD DEVICE' ] );
+	bash( [ 'device', this.value, 'CMD DEVICE' ] );
 } );
 $( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Mixer Device', 'Change ...' );
-	bash( [ 'mixer', $( this ).val(), S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
+	bash( [ 'mixer', this.value, S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
 } );
 $( '#mixertype' ).on( 'click', function() {
 	if ( S.mixertype ) {
