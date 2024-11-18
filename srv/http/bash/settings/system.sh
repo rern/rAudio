@@ -168,9 +168,9 @@ force_eeprom_read=0"
 	;;
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
+	cirrusconf=/etc/modprobe.d/cirrus.conf
 	config=$( grep -Ev "^dtparam=i2s=on|^dtoverlay=$prevaplayname|gpio=25=op,dh|^dtparam=audio=on" /boot/config.txt )
-	rm -f /boot/cirrus /etc/modprobe.d/cirrus.conf
-	if [[ $APLAYNAME != none ]]; then
+	if [[ $APLAYNAME ]]; then
 		config+="
 dtparam=i2s=on
 dtoverlay=$APLAYNAME"
@@ -180,16 +180,17 @@ gpio=25=op,dh"
 		echo $APLAYNAME > $dirsystem/audio-aplayname
 		echo $OUTPUT > $dirsystem/audio-output
 		if [[ $APLAYNAME == cirrus-wm5102 ]]; then
-			echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
+			[[ ! -e $cirrusconf ]] && echo softdep arizona-spi pre: arizona-ldo1 > $cirrusconf
 			echo $OUTPUTTYPE > $dirsystem/audio-wm5102
-			$dirsettings/player-wm5102.sh "$OUTPUTTYPE"
-		elif [[ $APLAYNAME == wm8960-soundcard ]]; then
-			i2cset=1
+			aplay -l | grep -q wm5102 && $dirsettings/player-wm5102.sh "$OUTPUTTYPE"
+		else
+			rm -f $cirrusconf
+			[[ $APLAYNAME == wm8960-soundcard ]] && i2cset=1
 		fi
 	else
 		config+="
 dtparam=audio=on"
-	rm -f $dirsystem/audio-{aplayname,output}
+		rm -f $dirsystem/audio-{aplayname,output} $cirrusconf
 	fi
 	configTxt
 	;;

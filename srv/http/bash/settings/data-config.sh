@@ -18,6 +18,9 @@ ap )
 	file=/var/lib/iwd/ap/$( hostname ).ap
 	echo '{ "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
 	;;
+audio-wm5102 )
+	getContent $dirsystem/audio-wm5102 'HPOUT2 Digital'
+	;;
 bluetooth )
 	if systemctl -q is-active bluetooth; then
 		bluetoothctl show | grep -q -m1 'Discoverable: yes' && discoverable=true || discoverable=false
@@ -301,9 +304,6 @@ wlanprofile )
 			* )             echo false;;
 		esac
 	fi
-	;;
-wm5102output )
-	getContent $dirsystem/audio-wm5102 'HPOUT2 Digital'
 	;;
 	
 esac

@@ -112,19 +112,20 @@ var setting       = {
 			, ok           : switchEnable
 		} );
 	}
-	, i2smodule     : values => {
+	, i2smodule     : () => {
 		if ( S.audioaplayname === 'cirrus-wm5102' ) {
-			setting.wm5102( $( '#i2smodule' ).find( ':selected' ).text() );
-			return
+			setting.wm5102();
+		} else {
+			infoSetting( 'i2smodule', values => {
+				info( {
+					  ...SW
+					, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
+					, values       : values
+					, checkchanged : true
+					, ok           : () => bash( [ 'i2seeprom', infoVal() ] )
+				} );
+			} );
 		}
-		
-		info( {
-			  ...SW
-			, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
-			, values       : values
-			, checkchanged : values
-			, ok           : () => bash( [ 'i2seeprom', infoVal() ] )
-		} );
 	}
 	, lcdchar       : data => {
 		'address' in data ? setting.lcdCharI2s( data ) : setting.lcdCharGpio( data );
@@ -718,20 +719,26 @@ var setting       = {
 			, ok           : switchEnable
 		} );
 	}
-	, wm5102        : output => {
-		infoSetting( 'wm5102output', values => {
+	, wm5102        : () => {
+		infoSetting( 'audio-wm5102', values => {
+			var icon   = 'i2s';
+			var output = $( '#i2smodule' ).find( ':selected' ).text();
 			info( {
-				  icon     : 'i2s'
-				, title    : output
-				, list     : [ 'Output', 'select', {
+				  icon         : icon
+				, title        : output
+				, list         : [ 'Output', 'select', {
 					  Headphones : 'HPOUT1 Digital'
 					, 'Line out' : 'HPOUT2 Digital'
 					, SPDIF      : 'SPDIF Out'
 					, Speakers   : 'SPKOUT Digital'
 				} ]
-				, boxwidth : 130
-				, values   : values
-				, ok       : () => bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] )
+				, boxwidth     : 130
+				, values       : values
+				, checkchanged : S.i2saudio
+				, ok           : () => {
+					notify( icon, output, 'Change ...' );
+					bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] );
+				}
 			} );
 		}, 'text' );
 	}
@@ -746,7 +753,7 @@ var i2sSelect = {
 		} else {
 			$( '#i2smodule' ).select2( 'close' );
 			infoSetting( 'i2slist', list => {
-				list[ '(None / Auto detect)' ] = 'none';
+				list[ '(None / Auto detect)' ] = '';
 				$( '#i2smodule' ).html( htmlOption( list ) );
 				i2sSelect.select();
 				i2sSelect.show();
@@ -863,14 +870,6 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#backup, #hostname, #ledcalc, #restore, #shareddata' ).on( 'click', function() {
 	setting[ this.id ]();
-} );
-$( 'body' ).on( 'click', function( e ) {
-	if ( ! $( e.target ).hasClass( 'select2-search__field' ) 
-		&& ! $( e.target ).parents( '#divi2smodule' ).length 
-		&& $( '#i2smodule' ).val() === 'none'
-	) {
-		i2sSelect.hide();
-	}
 } );
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
@@ -996,22 +995,20 @@ $( '#divi2smodule .col-r' ).on( 'click', function( e ) {
 } );
 $( '#i2smodule' ).on( 'input', function() {
 	var aplayname = $( this ).val();
-	var output    = $( this ).find( ':selected' ).text();
 	var icon      = 'i2smodule';
 	var title     = 'Audio - I²S';
 	if ( aplayname === 'cirrus-wm5102' ) {
-		setting.wm5102( output );
-		return
-	}
-	
-	if ( aplayname !== 'none' ) {
-		notify( icon, title, 'Enable ...' );
+		setting.wm5102();
 	} else {
-		setTimeout( () => { notify( icon, title, 'Disable ...' ) }, 300 ); // fix - hide banner too soon
-		S.i2saudio = false;
-		i2sSelect.hide();
+		bash( [ 'i2smodule', aplayname, $( this ).find( ':selected' ).text(), 'CMD APLAYNAME OUTPUT' ] );
+		if ( ! aplayname ) {
+			i2sSelect.hide();
+			var msg = 'Disable ...';
+		} else {
+			var msg = S.i2saudio ? 'Change ...' : 'Enable ...';
+		}
+		notify( icon, title, msg );
 	}
-	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 } );
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'timezone', 'Timezone', 'Change ...' );
@@ -1067,9 +1064,9 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 	min-width: 100%;
 </style>
 ` );
-} ).on( 'select2:close', function ( e ) {
-	$( 'style.tmp' ).remove();
-	if ( this.id === 'i2smodule' && this.value === 'none' ) i2sSelect.hide();
+} ).on( 'select2:close', function () {
+//	$( 'style.tmp' ).remove();
+	if ( this.id === 'i2smodule' && ! this.value ) i2sSelect.hide();
 } );
 $( '#menu a' ).on( 'click', function() {
 	var $this      = $( this );
