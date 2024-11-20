@@ -455,6 +455,31 @@ $( '.help' ).on( 'click', function() {
 	$helpblock.toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.help' ).hasClass( 'bl' ) );
 } );
+$( '#bar-bottom div' ).on( 'click', function() {
+	loader();
+	location.href = 'settings.php?p='+ this.id;
+} );
+if ( $( '#menu' ).length ) {
+	$( 'body' ).on( 'click', function( e ) {
+		$( '#menu' ).addClass( 'hide' );
+		$( 'li' ).removeClass( 'active' );
+		if ( ! $( e.target ).is( 'pre.status' ) ) $( '.entries' ).siblings( 'pre' ).last().addClass( 'hide' );
+	} );
+}
+
+/* ### setting - on click .switch / .setting (id of settings only)
+set_enable:
+	setting with infoSetting() > enable    : (default)
+enable_set:
+	enable without config > setting later  : dabradio i2smodule snapclient snapserver
+						  > no setting     : bluealsa dop mixer
+custom_enable:
+	setting with custom config > enable    : login novolume shareddata
+							   > no enable : backup hostname i2s restore
+				   text config > enable    : custom
+disable:
+	warning > disable                      : login mixertype shareddata
+*/
 $( '.switch, .setting, .col-r input' ).on( 'click', function() {
 	if ( V.local ) return
 	
@@ -474,11 +499,6 @@ $( '.switch, .setting, .col-r input' ).on( 'click', function() {
 } );
 $( '.switch' ).on( 'click', function() {
 	var id = SW.id;
-	if ( id in setting.custom_enable ) {
-		setting.custom_enable[ id ]();
-		return
-	}
-	
 	var $this   = $( this );
 	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {
@@ -487,26 +507,25 @@ $( '.switch' ).on( 'click', function() {
 			  ...SW
 			, message : $this.prev().html()
 		} );
-	} else if ( ! checked ) {
+	} else if ( checked ) {
+		$( '#setting-'+ id ).trigger( 'click' );
+	} else {
 		S[ id ] = false;
 		if ( id in setting.disable ) {
-			setting.disable( id );
+			setting.disable[ id ]();
 		} else {
-			$( '#setting-'+ id ).addClass( 'hide' );
 			notifyCommon( 'Disable ...' );
 			bash( [ id, 'OFF' ] );
 		}
-	} else {
-		$( '#setting-'+ id ).trigger( 'click' );
 	}
 } );
 $( '.setting' ).on( 'click', function() {
 	var id = SW.id;
-	if ( id in setting.set_enable ) {                   // setting with data-config.sh > enable
+	if ( id in setting.set_enable ) {
 		infoSetting( id, setting.set_enable[ id ] );
-	} else if ( id in setting.custom_enable ) {         // setting with default config > enable
+	} else if ( id in setting.custom_enable ) {
 		setting.custom_enable[ id ]();
-	} else if ( id in setting.enable_set && S[ id ] ) { // enable without config > setting later
+	} else if ( id in setting.enable_set && S[ id ] ) {
 		setting.enable_set[ id ]();
 	} else {
 		S[ id ] = true;
@@ -524,14 +543,3 @@ $( '.setting' ).on( 'click', function() {
 		}, 'text' );
 	}
 } );
-$( '#bar-bottom div' ).on( 'click', function() {
-	loader();
-	location.href = 'settings.php?p='+ this.id;
-} );
-if ( $( '#menu' ).length ) {
-	$( 'body' ).on( 'click', function( e ) {
-		$( '#menu' ).addClass( 'hide' );
-		$( 'li' ).removeClass( 'active' );
-		if ( ! $( e.target ).is( 'pre.status' ) ) $( '.entries' ).siblings( 'pre' ).last().addClass( 'hide' );
-	} );
-}

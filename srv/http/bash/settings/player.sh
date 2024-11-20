@@ -84,7 +84,8 @@ devicewithbt )
 	fi
 	;;
 dop )
-	filedop=$dirsystem/dop-$NAME # OFF with args - value by index
+	name=$( getVar name $dirshm/output )
+	filedop=$dirsystem/dop-$name # OFF with args - value by index
 	[[ $ON ]] && touch "$filedop" || rm -f "$filedop"
 	$dirsettings/player-conf.sh
 	;;

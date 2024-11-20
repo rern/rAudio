@@ -7,18 +7,6 @@ var relaysprompt  = '<a class="helpmenu label">Relay Module<i class="i-relays"><
 var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ];
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
-/* ### setting - on click .switch / .setting (id of settings only)
-set_enable:
-	setting with data-config.sh > enable    : (default)
-enable_set:
-	enable without config > setting later   : i2smodule
-custom_enable:
-	setting with default config > enable    : shareddata
-					text config > enable    : custom
-								> no enable : backup restore hostname i2s
-disable:
-	warning > disable : shareddata
-*/
 var setting       = {
 	  set_enable    : {
 		  bluetooth     : values => {
@@ -886,7 +874,7 @@ function renderPage() {
 ` );
 	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
-//	$( '#divdatasetting .switch' ).prop( 'checked', true );
+	$( '#setting-shareddata' ).addClass( 'hide' );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
 }

@@ -28,6 +28,15 @@ var setting  = {
 				, ok           : switchEnable
 			} );
 		}
+		, mixertype : () => {
+			info( {
+				  ...SW
+				, list   : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+				, values : S.mixertype ? S.output.mixertype : 'hardware'
+				, cancel : switchCancel
+				, ok     : () => util.mixerSet( infoVal() )
+			} );
+		}
 		, outputbuffer : values => {
 			info( {
 				  ...SW
@@ -64,10 +73,6 @@ var setting  = {
 	}
 	, enable_set    : {
 		  bluealsa : () => setting.enable_set.mixer()
-		, dop      : () => {
-			notify( 'mpd', 'DSP over PCM', ! S.dop );
-			bash( [ 'dop', S.output.name, ! S.dop, 'CMD NAME ON' ] );
-		}
 		, mixer    : () => {
 			var bluealsa = SW.id.slice( -1 ) === 'a';
 			if ( bluealsa ) {
@@ -182,46 +187,30 @@ audio_output {
 				} );
 			} );
 		}
-		, mixertype : () => {
-			info( {
-				  ...SW
-				, list   : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
-				, values : S.mixertype ? S.output.mixertype : 'hardware'
-				, cancel : switchCancel
-				, ok     : () => util.mixerSet( infoVal() )
-			} );
-		}
 		, novolume  : () => {
-			if ( S.novolume ) {
-				switchCancel();
+			if ( S.custom ) {
 				info( {
-					  icon    : 'set0'
-					, title   : 'No Volume'
-					, message : 'To disable: Enable any volume related settings'
+					  ...SW
+					, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
+								+'<br>Remove any volume related settings.'
 				} );
-			} else if ( S.camilladsp || S.equalizer ) {
+			}
+			if ( S.camilladsp || S.equalizer ) {
 				info( {
 					  ...SW
 					, message :  '<wh>No Volume</wh> also disable:<br><br>'
 								+ icoTab( 'Features' )
 								+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
 					, cancel  : switchCancel
-					, ok      : setting.noVolume
+					, ok      : util.novolume.warning
 				} );
-			} else if ( S.volumedb > -2 ) {
-				util.noVolumeSet();
 			} else {
-				info( {
-					  ...SW
-					, message : warning
-					, cancel  : switchCancel
-					, ok      : util.noVolumeSet
-				} );
+				util.novolume.warning();
 			}
 		}
 	}
 	, disable      : {
-		mixertype : () => {
+		  mixertype : () => {
 			if ( S.volumedb > -2 ) {
 				util.mixerSet( 'none' );
 			} else {
@@ -234,6 +223,14 @@ audio_output {
 				} );
 			}
 		}
+		, novolume : () => {
+			info( {
+				  icon    : 'set0'
+				, title   : 'No Volume'
+				, message : 'To disable: Enable any volume related settings'
+			} );
+			$( '#novolume' ).prop( 'checked', true );
+		}
 	}
 }
 var util = {
@@ -241,17 +238,26 @@ var util = {
 		notify( 'mpd', 'Mixer Control', 'Change ...' );
 		bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 	}
-	, noVolumeSet : () => {
-		notifyCommon( 'Enable ...' );
-		bash( [ 'novolume' ], () => {
-			if ( ! S.custom ) return
-			
-			info( {
-				  ...SW
-				, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
-							+'<br>Remove any volume related settings.'
+	, novolume : {
+		  warning : () => {
+			if ( S.volumedb > -2 ) {
+				util.novolume.set();
+			} else {
+				info( {
+					  ...SW
+					, message : warning
+					, cancel  : switchCancel
+					, ok      : util.novolume.set
+				} );
+			}
+		}
+		, set     : () => {
+			notifyCommon( 'Enable ...' );
+			bash( [ 'novolume' ], () => {
+				if ( ! S.custom ) return
+				
 			} );
-		} );
+		}
 	}
 	, soxr        : {
 		  preset : values => {
@@ -334,18 +340,20 @@ function renderPage() {
 			$( '#mixer' )
 				.html( htmlOption( S.mixers ) )
 				.val( S.output.mixer );
-			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume );
+			$( '#setting-mixer' ).toggleClass( 'hide', ! S.volume || S.novolume );
 			$( '#divmixer' ).removeClass( 'hide' );
 		} else {
 			$( '#divmixer' ).addClass( 'hide' );
 		}
 		$( '#novolume' ).prop( 'checked', S.novolume );
+		$( '#setting-novolume' ).addClass( 'hide' );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.ffmpeg && S.dabradio );
 	}
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
+	
 	showContent();
 }
 function renderStatus() {
