@@ -104,7 +104,6 @@ htmlHead( [
 	  'title'  => 'Bluetooth'
 	, 'button' => 'bluetooth blink scanning-bt'
 	, 'back'   => true
-	, 'nohelp' => true
 ] );
 ?>
 <ul id="listbtscan" class="entries scan"></ul>
@@ -116,7 +115,6 @@ htmlHead( [
 	  'title'  => 'Wi-Fi'
 	, 'button' => 'wifi blink scanning-wifi'
 	, 'back'   => true
-	, 'nohelp' => true
 ] );
 ?>
 <ul id="listwlscan" class="entries scan"></ul>

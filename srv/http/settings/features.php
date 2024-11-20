@@ -1,24 +1,24 @@
 <?php
 $id_data      = [
-	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',                                'status' => true, 'exist' => 'iwctl' ]
+	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwd',            'status' => true, 'exist' => 'iwctl' ]
 	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
-	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'setting' => false, 'status' => true, 'exist' => 'camilladsp' ]
-	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => true,  'status' => true, 'exist' => 'mediamtx' ]
-	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
-	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
-	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',                            'status' => true, 'exist' => 'firefox' ]
-	, 'login'          => [ 'label' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
+	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'status' => true, 'exist' => 'camilladsp' ]
+	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'status' => true, 'exist' => 'mediamtx' ]
+	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal' ]
+	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd' ]
+	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',        'status' => true, 'exist' => 'firefox' ]
+	, 'login'          => [ 'label' => 'Password Login',   'sub' => 'password_hash' ]
 	, 'lyrics'         => [ 'label' => 'Lyrics' ]
 	, 'multiraudio'    => [ 'label' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
-	, 'nfsserver'      => [ 'label' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false, 'status' => true ]
+	, 'nfsserver'      => [ 'label' => 'Server rAudio',    'sub' => 'nfs-server',     'status' => true ]
 	, 'scrobble'       => [ 'label' => 'Scrobbler',        'sub' => 'Last.fm' ]
-	, 'shairport-sync' => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false, 'status' => true, 'exist' => 'shairport-sync' ]
-	, 'smb'            => [ 'label' => 'File Sharing',     'sub' => 'samba',                              'status' => true, 'exist' => 'smbd' ]
-	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',     'setting' => true,  'status' => true, 'exist' => 'snapclient' ]
-	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'setting' => true,  'status' => true, 'exist' => 'snapserver' ]
-	, 'spotifyd'       => [ 'label' => 'Spotify',          'sub' => 'spotifyd',                           'status' => true, 'exist' => 'spotifyd' ]
+	, 'shairport-sync' => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'status' => true, 'exist' => 'shairport-sync' ]
+	, 'smb'            => [ 'label' => 'File Sharing',     'sub' => 'samba',          'status' => true, 'exist' => 'smbd' ]
+	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',     'status' => true, 'exist' => 'snapclient' ]
+	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'status' => true, 'exist' => 'snapserver' ]
+	, 'spotifyd'       => [ 'label' => 'Spotify',          'sub' => 'spotifyd',       'status' => true, 'exist' => 'spotifyd' ]
 	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
-	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'setting' => false, 'status' => true, 'exist' => 'upmpdcli' ]
+	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'status' => true, 'exist' => 'upmpdcli' ]
 	, 'volumelimit'    => [ 'label' => 'Volume Limit' ]
 ];
 commonVariables( [
@@ -152,7 +152,7 @@ EOF
 		, 'disabled' => $L_dsp.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10-band graphic equalizer with user presets.
-Control: $M_features
+Control: $M_equalizer
 Presets:
  · <c>Flat</c>: All bands at 0dB
  · If distortions occurred, lower all bands collectively and increase volume

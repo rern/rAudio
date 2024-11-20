@@ -4,10 +4,9 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-
 S              = {} // status
 SW             = {} // switch
-V              = {} // var global
+V              = {}
 
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
@@ -45,18 +44,15 @@ function elementScroll( $el ) {
 	var wH      = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( '.container' ).animate( { scrollTop: targetB - wH + 42 } );
 }
-function infoSetting( name, infosetting, text ) {
-	if ( infosetting.toString().slice( 0, 2 ) === '()' ) { // no get conf
-		infosetting();
-	} else {
-		if ( V.debug ) console.log( 'settings/data-config.sh '+ name );
-		$.post(
-			  'cmd.php'
-			, { cmd: 'bash', filesh: 'settings/data-config.sh '+ name }
-			, infosetting
-			, text || 'json'
-		);
-	}
+function infoSetting( id, callback ) {
+	var filesh = 'settings/data-config.sh '+ id;
+	if ( V.debug ) console.log( filesh );
+	$.post(
+		  'cmd.php'
+		, { cmd: 'bash', filesh: filesh }
+		, callback || setting[ id ]
+		, id === 'custom' ? 'text' : 'json'
+	);
 }
 function json2array( keys, json ) {
 	if ( ! json ) return false
@@ -157,11 +153,11 @@ function switchEnable() {
 function switchSet( ready ) {
 	if ( page === 'camilla' && ! ready ) return // wait for GetConfigJson
 	
-	$( '.switch' ).each( ( i, el ) => {
-		var $this = $( el );
-		var id    = el.id
-		$this.prop( 'checked', S[ id ] );
-		$this.parent().next( '.setting' ).toggleClass( 'hide', ! S[ id ] );
+	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
+	$( '.setting' ).each( ( i, el ) => {
+		var id      = el.id.replace( 'setting-', '' );
+		var issetting = Object.keys( setting ).some( k => id in setting[ k ] );
+		$( el ).toggleClass( 'hide', ! issetting || ! S[ id ] )
 	} );
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 }
@@ -258,9 +254,6 @@ function psStorage( data ) {
 		renderStorage();
 		if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
 	}
-}
-function psVolume() {
-	return
 }
 function psWlan( data ) {
 	if ( data && 'reboot' in data ) {
@@ -439,7 +432,7 @@ $( '#close' ).on( 'click', function() {
 		}
 		
 		var message = '<wh>Reboot required for:</wh>';
-		list.split( '\n' ).forEach( id => {
+		list.forEach( id => {
 			var label = id === 'localbrowser' ? 'Rotate Browser on RPi' : $( '#div'+ id +' .label' ).eq( 0 ).text();
 			message += '<br>'+ ico( id ) +' '+ label;
 		} );
@@ -453,7 +446,7 @@ $( '#close' ).on( 'click', function() {
 			, oklabel      : ico( 'reboot' ) +'Reboot'
 			, ok           : () => infoPowerCommand( 'reboot' )
 		} );
-	}, 'text' );
+	} );
 } );
 $( '.help' ).on( 'click', function() {
 	var $this  = $( this );
@@ -462,7 +455,7 @@ $( '.help' ).on( 'click', function() {
 	$helpblock.toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.help' ).hasClass( 'bl' ) );
 } );
-$( '.switch, .setting' ).on( 'click', function() {
+$( '.switch, .setting, .col-r input' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();
@@ -479,10 +472,13 @@ $( '.switch, .setting' ).on( 'click', function() {
 		, title : $( '#div'+ id +' .col-l .label' ).text()
 	}
 } );
-$( '.setting' ).on( 'click', function() {
-	infoSetting( SW.id, setting[ SW.id ] );
-} );
 $( '.switch' ).on( 'click', function() {
+	var id = SW.id;
+	if ( id in setting.custom_enable ) {
+		setting.custom_enable[ id ]();
+		return
+	}
+	
 	var $this   = $( this );
 	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {
@@ -491,40 +487,44 @@ $( '.switch' ).on( 'click', function() {
 			  ...SW
 			, message : $this.prev().html()
 		} );
-		return
-	}
-	
-	if ( $this.is( '.custom, .none' ) ) return
-	
-	if ( ! checked ) {
-		$( '#setting-'+ SW.id ).addClass( 'hide' );
-		notifyCommon( 'Disable ...' );
-		bash( [ SW.id, 'OFF' ] );
-		S[ SW.id ] = false;
-		return
-	}
-	
-	if ( $this.hasClass( 'common' ) ) {
-		$( '#setting-'+ SW.id ).trigger( 'click' );
+	} else if ( ! checked ) {
+		S[ id ] = false;
+		if ( id in setting.disable ) {
+			setting.disable( id );
+		} else {
+			$( '#setting-'+ id ).addClass( 'hide' );
+			notifyCommon( 'Disable ...' );
+			bash( [ id, 'OFF' ] );
+		}
 	} else {
-		S[ SW.id ]  = true;
-		notifyCommon( checked );
-		bash( [ SW.id ], error => {
+		$( '#setting-'+ id ).trigger( 'click' );
+	}
+} );
+$( '.setting' ).on( 'click', function() {
+	var id = SW.id;
+	if ( id in setting.set_enable ) {                   // setting with data-config.sh > enable
+		infoSetting( id, setting.set_enable[ id ] );
+	} else if ( id in setting.custom_enable ) {         // setting with default config > enable
+		setting.custom_enable[ id ]();
+	} else if ( id in setting.enable_set && S[ id ] ) { // enable without config > setting later
+		setting.enable_set[ id ]();
+	} else {
+		S[ id ] = true;
+		notifyCommon( S[ id ] );
+		bash( [ id ], error => {
 			if ( error ) {
-				S[ SW.id ] = false;
-				$( '#setting-'+ SW.id ).addClass( 'hide' );
+				S[ id ] = false;
+				$( '#setting-'+ id ).addClass( 'hide' );
 				bannerHide();
 				info( {
 					  ...SW
 					, message : error
 				} );
 			}
-		}, 'json' );
+		}, 'text' );
 	}
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
-	if ( page === 'camilla' ) return
-	
 	loader();
 	location.href = 'settings.php?p='+ this.id;
 } );

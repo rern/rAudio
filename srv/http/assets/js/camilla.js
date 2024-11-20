@@ -2607,7 +2607,7 @@ $( '#setting-stop_on_rate_change' ).on( 'click', function() {
 $( '#setting-resampler' ).on( 'click', function() {
 	setting.resampler( S.resampler ? DEV.resampler.type : 'AsyncSinc' );
 } );
-$( '#bar-bottom div' ).on( 'click', function() {
+$( '#bar-bottom div' ).off( 'click' ).on( 'click', function() {
 	V.tab = this.id.slice( 3 );
 	render.tab();
 } );

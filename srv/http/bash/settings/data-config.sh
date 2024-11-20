@@ -19,7 +19,7 @@ ap )
 	echo '{ "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
 	;;
 audio-wm5102 )
-	getContent $dirsystem/audio-wm5102 'HPOUT2 Digital'
+	echo '{ "outputtype" : "'$( getContent $dirsystem/audio-wm5102 'HPOUT2 Digital' )'" }'
 	;;
 bluetooth )
 	if systemctl -q is-active bluetooth; then
@@ -40,7 +40,7 @@ custom )
 	echo "\
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
-$( getContent "$dirsystem/custom-output-$DEVICE" )"
+$( getContent "$dirsystem/custom-output-$name" )"
 	;;
 hddapm )
 	apm=$( hdparm -B $2 | sed -n '/APM_level/ {s/.* //; p}' )
@@ -107,7 +107,7 @@ multiraudioconf )
 	getContent $dirsystem/multiraudio.json
 	;;
 reboot )
-	getContent $dirshm/reboot
+	line2array $dirshm/reboot
 	rm -f $dirshm/{reboot,backup.gz}
 	;;
 packagelist )
@@ -135,7 +135,7 @@ $description
 				s|^Desc.*: (.*)| - \1<br>|' <<< $lines \
 				> /tmp/packages
 	fi
-	grep -B1 -A2 --no-group-separator ^${2,} $filepackages
+	echo '{ "list": "'$( grep -B1 -A2 --no-group-separator ^${2,} $filepackages )'" }'
 	;;
 relays )
 	if [[ -e $dirsystem/relays.conf ]]; then
@@ -185,7 +185,7 @@ scrobble )
 	;;
 servermirror )
 	file=/etc/pacman.d/mirrorlist
-	list=$( curl -sfL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist )
+	list=$( curl --connect-timeout 3 -sfL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist )
 	if [[ $? == 0 ]]; then
 		mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
 		[[ $mirror ]] && list=$( sed "0,/^Server/ s|//.*mirror|//$mirror.mirror|" <<< $list )
@@ -224,7 +224,8 @@ smb )
 	echo '{ "SD": '$sd', "USB": '$usb' }'
 	;;
 snapclient )
-	snapserverList | tail -1
+	ip=$( snapserverList | tail -1 )
+	echo '{ "ip": "'${ip/false}'" }'
 	;;
 soxr )
 	if [[ $2 ]]; then

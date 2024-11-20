@@ -1,18 +1,18 @@
 <?php
 $id_data = [
-	  'autoupdate'    => [ 'label' => 'Library Auto Update',   'sub' => 'auto_update',          'setting' => false ]
-	, 'bluealsa'      => [ 'label' => 'Bluetooth',             'sub' => 'bluealsa',             'setting' => 'custom', 'status' => true ]
+	  'autoupdate'    => [ 'label' => 'Library Auto Update',   'sub' => 'auto_update' ]
+	, 'bluealsa'      => [ 'label' => 'Bluetooth',             'sub' => 'bluealsa', 'status' => true ]
 	, 'buffer'        => [ 'label' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
 	, 'crossfade'     => [ 'label' => 'Cross-Fading',          'sub' => 'crossfade' ]
 	, 'custom'        => [ 'label' => "User's Configurations", 'sub' => 'custom' ]
-	, 'device'        => [ 'label' => 'Device',                                                 'setting' => 'none' ]
-	, 'devicewithbt'  => [ 'label' => 'Device + Bluetooth',                                     'setting' => false ]
-	, 'dop'           => [ 'label' => 'DSD over PCM',          'sub' => 'dop',                  'setting' => 'none' ]
-	, 'ffmpeg'        => [ 'label' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
-	, 'mixer'         => [ 'label' => 'Mixer Device',                                           'setting' => 'custom' ]
-	, 'mixertype'     => [ 'label' => 'Volume Control',                                         'setting' => 'custom' ]
-	, 'normalization' => [ 'label' => 'Normalization',         'sub' => 'volume_normalization', 'setting' => false ]
-	, 'novolume'      => [ 'label' => 'No Volume',                                              'setting' => 'none' ]
+	, 'device'        => [ 'label' => 'Device' ]
+	, 'devicewithbt'  => [ 'label' => 'Device + Bluetooth' ]
+	, 'dop'           => [ 'label' => 'DSD over PCM',          'sub' => 'dop' ]
+	, 'ffmpeg'        => [ 'label' => 'FFmpeg',                'sub' => 'decoder' ]
+	, 'mixer'         => [ 'label' => 'Mixer Device' ]
+	, 'mixertype'     => [ 'label' => 'Volume Control' ]
+	, 'normalization' => [ 'label' => 'Normalization',         'sub' => 'volume_normalization' ]
+	, 'novolume'      => [ 'label' => 'No Volume' ]
 	, 'outputbuffer'  => [ 'label' => 'Buffer - Output',       'sub' => 'max_output_buffer' ]
 	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
@@ -54,7 +54,6 @@ $head    = [
 $body    = [
 	[
 		  'id'       => 'bluealsa'
-		, 'icon'     => 'btreceiver'
 		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
 $B_volume Mixer device - blueALSA volume control

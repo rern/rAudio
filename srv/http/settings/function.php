@@ -12,7 +12,6 @@ $head = [
 	, 'status'  => 'COMMAND'         // include status icon and status box
 	, 'button'  => [ 'ICON', ... ]   // icon button
 	, 'back'    => true/false        // back button
-	, 'nohelp'  => true/false
 	, 'help'    => 'HELP'
 ];
 $body = [
@@ -20,10 +19,6 @@ $body = [
 	, [
 		  'id'       => 'ID'         // REQUIRED
 		, 'input'    => 'HTML/ID'    // alternative - if not switch (ID - select)
-		, 'setting'  => TYPE         // default  = $( '#setting-'+ id ).click() before enable
-		                             // false    = no setting
-		                             // 'custom' = custom setting
-		                             // 'none'   = no setting - custom enable
 		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting
 		                             // 'js'     = set by js condition
 		, 'help'     => 'HELP'
@@ -35,27 +30,35 @@ htmlSection( $head, $body[, $id] );
 */
 function commonVariables( $list ) {
 	extract( $list );
-	foreach( $labels as $l ) { // $L_xxx - switch label
-		$icon  = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
-		$l     = $l[ 0 ];
-		$name  = 'L_'.strtolower( preg_replace( '/ |-/', '', $l ) );
-		global $$name;
-		$$name = '<a class="helpmenu label">'.$l.$icon.'</a>';
+	if ( isset( $labels ) ) {
+		foreach( $labels as $l ) { // $L_xxx - switch label
+			$icon  = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
+			$l     = $l[ 0 ];
+			$name  = 'L_'.strtolower( preg_replace( '/ |-/', '', $l ) );
+			global $$name;
+			$$name = '<a class="helpmenu label">'.$l.$icon.'</a>';
+		}
 	}
-	foreach( $menus as $m ) { // $M_xxx - menu
-		$name  = 'M_'.str_replace( '-', '', $m[ 2 ] );
-		global $$name;
-		$$name = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
+	if ( isset( $menus ) ) {
+		foreach( $menus as $m ) { // $M_xxx - menu
+			$name  = 'M_'.str_replace( '-', '', $m[ 2 ] );
+			global $$name;
+			$$name = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
+		}
 	}
-	foreach( $tabs as $t ) { // $T_xxx - tab
-		$name  = 'T_'.$t;
-		global $$name;
-		$$name = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
+	if ( isset( $tabs ) ) {
+		foreach( $tabs as $t ) { // $T_xxx - tab
+			$name  = 'T_'.$t;
+			global $$name;
+			$$name = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
+		}
 	}
-	foreach( $buttons as $b ) { // $B_xxx - tab
-		$name  = 'B_'.$b;
-		global $$name;
-		$$name = i( $b.' btn' );
+	if ( isset( $buttons ) ) {
+		foreach( $buttons as $b ) { // $B_xxx - tab
+			$name  = 'B_'.$b;
+			global $$name;
+			$$name = i( $b.' btn' );
+		}
 	}
 }
 $I = 'i'; // for common.php - i() > {$I()} inside heredoc
@@ -67,8 +70,8 @@ function htmlHead( $data ) {
 	$status  = $data[ 'status' ] ?? '';
 	$class   = $status ? ' class="status"' : '';
 	$dstatus = $status ? ' data-status="'.$status.'"' : '';
-	$ihelp   = isset( $data[ 'nohelp' ] ) ? '' : i( 'help help' );
 	$iback   = isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
+	$ihelp   = $iback ? '' : i( 'help help' );
 	
 	$html    = '<heading '.$id.$class.'><span class="headtitle"'.$dstatus.'>'.$data[ 'title' ].'</span>';
 	if ( isset( $data[ 'button' ] ) ) {
@@ -128,17 +131,10 @@ function htmlSetting( $data ) {
 	$label       = $iddata[ 'label' ];
 	$sublabel    = $iddata[ 'sub' ] ?? false;
 	$status      = $iddata[ 'status' ] ?? false;
-	$setting     = $iddata[ 'setting' ] ?? 'common';
 	$label       = '<span class="label">'.$label.'</span>';
 	$input       = $data[ 'input' ] ?? false;
-	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
 	$help        = $data[ 'help' ] ?? false;
-	$icon        = $data[ 'icon' ] ?? false;
-	if ( $features || $system ) {
-		$icon = $id;
-	} else {
-		$icon = $data[ 'icon' ] ?? false;
-	}
+	$icon        = $features || $system ? $id : '';
 	$dstatus     = $status ? ' status" data-status="'.$id : '';
 	
 	$html        = '<div id="div'.$id.'" class="row">';
@@ -151,7 +147,7 @@ function htmlSetting( $data ) {
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$disabled = isset( $data[ 'disabled' ] ) ? '<span class="hide">'.$data[ 'disabled' ].'</span>' : '';
-		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch '.$setting.'">';
+		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch">';
 		$html    .= '<div class="switchlabel"></div></label>';
 	} else {
 		if ( ltrim( $input )[ 0 ] == '<' ) {
@@ -160,8 +156,7 @@ function htmlSetting( $data ) {
 			$html.= '<select id="'.$input.'"></select>';
 		}
 	}
-	// setting
-	$html       .= $settingicon ? i( $settingicon.' setting', 'setting-'.$id ) : '';
+	$html       .= i( 'gear setting', 'setting-'.$id );
 	// help
 	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html       .= '</div>

@@ -14,8 +14,11 @@
 	<link rel="icon" href="/assets/img/icon.png">
 
 <?php
-$hash      = '?v='.time();
 $page      = $_GET[ 'p' ] ?? '';
+$pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
+foreach( $pages as $p ) $$p = false;
+$$page     = true;
+$hash      = '?v='.time();
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 $filelogin = '/srv/http/data/system/login';
@@ -55,9 +58,6 @@ if ( ! $page ) { // main
 	}
 	$title = 'STATUS';
 } else {         // settings
-	$pages = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
-	foreach( $pages as $p ) $$p = false;
-	$$page = true;
 	$cssp  = [];
 	$css[] = 'settings';
 	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ];       // loaded with $.getScript: d3, pipelineplotter, plotly, qrcode

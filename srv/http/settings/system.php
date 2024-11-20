@@ -6,26 +6,26 @@
 </style>
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
-$onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 'x';
+$onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 0;
 $id_data     = [
-	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
-	, 'backup'        => [ 'label' => 'Backup',                                    'setting' => 'none' ]
-	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true, 'exist' => $onboardwlan ]
-	, 'hostname'      => [ 'label' => 'Player Name',                               'setting' => 'none' ]
+	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'status' => true ]
+	, 'backup'        => [ 'label' => 'Backup' ]
+	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                  'exist' => $onboardwlan ]
+	, 'hostname'      => [ 'label' => 'Player Name' ]
 	, 'i2smodule'     => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
-	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT',         'setting' => 'custom' ]
+	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
 	, 'lcdchar'       => [ 'label' => 'Character LCD',     'sub' => 'RPLCD' ]
 	, 'mpdoled'       => [ 'label' => 'Spectrum OLED',     'sub' => 'mpd_oled' ]
 	, 'powerbutton'   => [ 'label' => 'Power Button',      'sub' => 'Wiring Pi' ]
 	, 'relays'        => [ 'label' => 'Relay Module',      'sub' => 'Wiring Pi' ]
-	, 'restore'       => [ 'label' => 'Restore',                                   'setting' => 'none' ]
+	, 'restore'       => [ 'label' => 'Restore' ]
 	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
-	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client',      'setting' => 'custom' ]
+	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client' ]
 	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
-	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                                                 'exist' => 'firefox' ]
-	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
+	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                          'exist' => 'firefox' ]
+	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'status' => true ]
 	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
-	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true, 'exist' => $onboardwlan ]
+	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',          'status' => true, 'exist' => $onboardwlan ]
 ];
 commonVariables( [
 	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'usbdrive' ]

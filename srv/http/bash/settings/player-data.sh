@@ -16,7 +16,7 @@ data+='
 , "asoundcard"  : '$( getContent $dirsystem/asoundcard )'
 , "bluetooth"   : '$( exists $dirshm/btreceiver )'
 , "btmixer"     : "'$( getContent $dirshm/btmixer )'"
-, "counts"      : [ '$( getVar song $dirmpd/counts 0 )', '$( getVar webradio $dirmpd/counts 0 )' ]
+, "counts"      : { '$( grep -E 'adbradio|song|webradio' < $dirmpd/counts )' }
 , "crossfade"   : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "dabradio"    : '$( systemctl -q is-active mediamtx && echo true )'
 , "devices"     : '$( getContent $dirshm/devices )'

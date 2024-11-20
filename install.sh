@@ -4,6 +4,12 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20241118
+file=$dirsystem/lcdchar.conf
+[[ -e $file ]] && grep -q -m1 ^0= $file; then
+	rm $dirsystem/lcdchar*
+fi
+
 # 20241111
 if [[ ! -e /boot/kernel.img ]]; then
 	revision=$( grep ^Revision /proc/cpuinfo )

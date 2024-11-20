@@ -78,7 +78,7 @@ fi
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )
 	audiooutput=$( < $dirsystem/audio-output )
-	i2saudio=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
+	i2smodule=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
 
 data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
@@ -92,12 +92,12 @@ data+='
 , "audioaplayname" : "'$audioaplayname'"
 , "audiocards"     : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"    : "'$audiooutput'"
-, "hostname"       : "'$( hostname )'"
-, "i2saudio"       : '$i2saudio'
+, "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"
 , "lan"            : '$( ip -br link | grep -q ^e && echo true )'
 , "liststorage"    : '$( $dirsettings/system-storage.sh )'
 , "nfsserver"      : '$nfsserver'
+, "playername"     : "'$( hostname )'"
 , "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'

@@ -253,6 +253,9 @@ killProcess() {
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
+line2array() {
+	[[ -e $1 ]] && tr '\n' , < $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
+}
 mountpointSet() {
 	umount -ql "$1"
 	mkdir -p "$1"
@@ -461,9 +464,7 @@ snapclientIP() {
 snapserverList() {
 	local service
 	service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )
-	[[ ! $service ]] && echo false && return
-	
-	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
+	[[ $service ]] && awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/' || echo false
 }
 volume() {
 	filevolumemute=$dirsystem/volumemute
