@@ -6,7 +6,7 @@ alias=r1
 
 # 20241118
 file=$dirsystem/lcdchar.conf
-[[ -e $file ]] && grep -q -m1 ^0= $file; then
+if [[ -e $file ]] && grep -q -m1 ^0= $file; then
 	rm $dirsystem/lcdchar*
 fi
 
