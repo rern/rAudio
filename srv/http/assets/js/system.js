@@ -1079,9 +1079,9 @@ $( '.listtitle' ).on( 'click', function( e ) {
 		}
 		
 		var timeout = setTimeout( () => banner( 'system blink', 'Backend', 'List ...', -1 ), 1000 );
-		infoSetting( 'packagelist '+ $target.text(), data => {
+		bash( 'data-config.sh packagelist '+ $target.text(), data => {
 			clearTimeout( timeout );
-			$list.html( data.list );
+			$list.html( data );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
 			bannerHide();

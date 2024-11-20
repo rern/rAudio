@@ -135,7 +135,7 @@ $description
 				s|^Desc.*: (.*)| - \1<br>|' <<< $lines \
 				> /tmp/packages
 	fi
-	echo '{ "list": "'$( grep -B1 -A2 --no-group-separator ^${2,} $filepackages )'" }'
+	grep -B1 -A2 --no-group-separator ^${2,} $filepackages
 	;;
 relays )
 	if [[ -e $dirsystem/relays.conf ]]; then
