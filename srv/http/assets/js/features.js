@@ -1,6 +1,6 @@
 var redirect_uri = 'https://rern.github.io/raudio/spotify';
 var setting = {
-	  set_enable    : {
+	  set_enable : {
 		  ap           : values => {
 			info( {
 				  ...SW
@@ -279,7 +279,7 @@ var setting = {
 			} );
 		}
 	}
-	, enable_set    : {
+	, enable_set : {
 		  dabradio   : infoDabScan
 		, snapclient : () => {
 			infoSetting( 'snapclient', data => {
@@ -295,7 +295,7 @@ var setting = {
 		}
 		, snapserver : () => window.open( 'http://'+ S.ip +':1780', '_blank' )
 	}
-	, custom_enable : {
+	, custom     : {
 		  login         : () => {
 			info( {
 				  ...SW
@@ -317,7 +317,7 @@ var setting = {
 			} );
 		}
 	}
-	, disable       : {
+	, disable    : {
 		login : () => {
 			info( {
 				  ...SW
@@ -340,7 +340,7 @@ var setting = {
 	}
 }
 var util = {
-	  scrobble     : {
+	  scrobble : {
 		  key    : () => {
 			info( {
 				  ...SW
@@ -382,7 +382,7 @@ var util = {
 			} );
 		}
 	}
-	, spotify      : {
+	, spotify  : {
 		  keys   : () => {
 			info( {
 				  ...SW

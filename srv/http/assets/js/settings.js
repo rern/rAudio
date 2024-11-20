@@ -473,7 +473,7 @@ set_enable:
 enable_set:
 	enable without config > setting later  : dabradio i2smodule snapclient snapserver
 						  > no setting     : bluealsa dop mixer
-custom_enable:
+custom:
 	setting with custom config > enable    : login novolume shareddata
 							   > no enable : backup hostname i2s restore
 				   text config > enable    : custom
@@ -523,8 +523,8 @@ $( '.setting' ).on( 'click', function() {
 	var id = SW.id;
 	if ( id in setting.set_enable ) {
 		infoSetting( id, setting.set_enable[ id ] );
-	} else if ( id in setting.custom_enable ) {
-		setting.custom_enable[ id ]();
+	} else if ( id in setting.custom ) {
+		setting.custom[ id ]();
 	} else if ( id in setting.enable_set && S[ id ] ) {
 		setting.enable_set[ id ]();
 	} else {

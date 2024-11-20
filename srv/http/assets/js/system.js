@@ -8,7 +8,7 @@ var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ]
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 var setting       = {
-	  set_enable    : {
+	  set_enable : {
 		  bluetooth     : values => {
 			info( {
 				  ...SW
@@ -173,7 +173,7 @@ var setting       = {
 			} );
 		}
 	}
-	, enable_set    : {
+	, enable_set : {
 		  i2smodule     : () => {
 			if ( S.audioaplayname === 'cirrus-wm5102' ) {
 				util.wm5102();
@@ -190,7 +190,7 @@ var setting       = {
 			}
 		}
 	}
-	, custom_enable : {
+	, custom     : {
 		  backup     : () => {
 			var d     = new Date();
 			var month = '0'+ ( d.getMonth() + 1 );
@@ -290,7 +290,7 @@ var setting       = {
 		, shareddata : () => util.mount.mount()
 		, timezone   : () => util.server.ntp()
 	}
-	, disable       : {
+	, disable    : {
 		  shareddata : () => {
 			info( {
 				  ...SW
@@ -689,7 +689,7 @@ var util      = {
 		info( {
 			  ...SW
 			, tablabel : [ 'From Backup', 'Reset To Default' ]
-			, tab      : [ setting.custom_enable.restore, '' ]
+			, tab      : [ setting.custom.restore, '' ]
 			, list     : [
 				  [ 'Keep Library data',     'checkbox' ]
 				, [ 'Keep Network settings', 'checkbox' ]
@@ -1033,7 +1033,7 @@ $( '#i2smodule' ).on( 'input', function() {
 	if ( ! this.value ) i2sSelect.hide();
 } );
 $( '#hostname' ).on( 'click', function() {
-	setting.custom_enable.hostname();
+	setting.custom.hostname();
 } );
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'timezone', 'Timezone', 'Change ...' );

@@ -3,7 +3,7 @@ var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 			  +'Beware of too high volume.</wh>';
 
 var setting  = {
-	  set_enable    : {
+	  set_enable : {
 		  buffer       : values => {
 			info( {
 				  ...SW
@@ -71,7 +71,7 @@ var setting  = {
 			values.QUALITY === 'custom' ? util.soxr.custom( values ) : util.soxr.preset( values );
 		}
 	}
-	, enable_set    : {
+	, enable_set : {
 		  bluealsa : () => setting.enable_set.mixer()
 		, mixer    : () => {
 			var bluealsa = SW.id.slice( -1 ) === 'a';
@@ -132,7 +132,7 @@ var setting  = {
 			} );
 		}
 	}
-	, custom_enable : {
+	, custom     : {
 		  custom    : () => {
 			bash( 'data-config.sh custom', values => {
 				var list = `\
@@ -209,7 +209,7 @@ audio_output {
 			}
 		}
 	}
-	, disable      : {
+	, disable    : {
 		  mixertype : () => {
 			if ( S.volumedb > -2 ) {
 				util.mixerSet( 'none' );
@@ -234,7 +234,7 @@ audio_output {
 	}
 }
 var util = {
-	  mixerSet    : mixertype => {
+	  mixerSet : mixertype => {
 		notify( 'mpd', 'Mixer Control', 'Change ...' );
 		bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 	}
@@ -253,13 +253,10 @@ var util = {
 		}
 		, set     : () => {
 			notifyCommon( 'Enable ...' );
-			bash( [ 'novolume' ], () => {
-				if ( ! S.custom ) return
-				
-			} );
+			bash( [ 'novolume' ] );
 		}
 	}
-	, soxr        : {
+	, soxr     : {
 		  preset : values => {
 			info( {
 				  ...SW
