@@ -51,7 +51,7 @@ function infoSetting( id, callback ) {
 		  'cmd.php'
 		, { cmd: 'bash', filesh: filesh }
 		, callback || setting[ id ]
-		, id === 'custom' ? 'text' : 'json'
+		, 'json'
 	);
 }
 function json2array( keys, json ) {

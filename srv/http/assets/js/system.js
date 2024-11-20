@@ -14,6 +14,7 @@ enable_set:
 	enable without config > setting later   : i2smodule
 custom_enable:
 	setting with default config > enable    : shareddata
+					text config > enable    : custom
 								> no enable : backup restore hostname i2s
 disable:
 	warning > disable : shareddata

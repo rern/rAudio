@@ -28,58 +28,6 @@ var setting  = {
 				, ok           : switchEnable
 			} );
 		}
-		, custom       : values => {
-			var list = `\
-<table width="100%">
-<tr><td><c>mpd.conf</c></td></tr>
-<tr><td><pre>
-...
-user                   "mpd"</pre></td></tr>
-	<tr><td><textarea></textarea></td></tr>
-	<tr><td><pre>
-...
-audio_output {
-    ...
-    mixer_device   "hw:${ S.output.card }"
-</pre></td></tr>
-<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
-<tr><td><pre style="margin-top: -20px">
-}</pre></td></tr>
-</table>`;
-			var val    = values.split( '^^' );
-			var global = val[ 0 ].trim(); // remove trailing
-			var output = val[ 1 ].trim();
-			info( {
-				  ...SW
-				, list         : list
-				, boxwidth     : 370
-				, values       : [ global, output ]
-				, checkchanged : S.custom
-				, cancel       : switchCancel
-				, ok           : () => {
-					var infoval = infoVal();
-					global      = infoval[ 0 ];
-					output      = infoval[ 1 ];
-					if ( ! global && ! output ) {
-						notify( SW.icon, SW.title, 'Disable ...', 3000 );
-						bash( [ 'custom', 'OFF' ] );
-						return
-					}
-					
-					notifyCommon();
-					bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
-						if ( ! mpdstart ) {
-							bannerHide();
-							info( {
-								  ...SW
-								, message : 'MPD failed with the added lines'
-											+'<br>Restored to previous configurations.'
-							} );
-						}
-					}, 'json' );
-				}
-			} );
-		}
 		, outputbuffer : values => {
 			info( {
 				  ...SW
@@ -180,7 +128,61 @@ audio_output {
 		}
 	}
 	, custom_enable : {
-		  mixertype : () => {
+		  custom    : () => {
+			bash( 'data-config.sh custom', values => {
+				var list = `\
+<table width="100%">
+<tr><td><c>mpd.conf</c></td></tr>
+<tr><td><pre>
+...
+user                   "mpd"</pre></td></tr>
+	<tr><td><textarea></textarea></td></tr>
+	<tr><td><pre>
+...
+audio_output {
+    ...
+    mixer_device   "hw:${ S.output.card }"
+</pre></td></tr>
+<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
+<tr><td><pre style="margin-top: -20px">
+}</pre></td></tr>
+</table>`;
+				var val    = values.split( '^^' );
+				var global = val[ 0 ].trim(); // remove trailing
+				var output = val[ 1 ].trim();
+				info( {
+					  ...SW
+					, list         : list
+					, boxwidth     : 370
+					, values       : [ global, output ]
+					, checkchanged : S.custom
+					, cancel       : switchCancel
+					, ok           : () => {
+						var infoval = infoVal();
+						global      = infoval[ 0 ];
+						output      = infoval[ 1 ];
+						if ( ! global && ! output ) {
+							notify( SW.icon, SW.title, 'Disable ...', 3000 );
+							bash( [ 'custom', 'OFF' ] );
+							return
+						}
+						
+						notifyCommon();
+						bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
+							if ( ! mpdstart ) {
+								bannerHide();
+								info( {
+									  ...SW
+									, message : 'MPD failed with the added lines'
+												+'<br>Restored to previous configurations.'
+								} );
+							}
+						}, 'json' );
+					}
+				} );
+			} );
+		}
+		, mixertype : () => {
 			info( {
 				  ...SW
 				, list   : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
