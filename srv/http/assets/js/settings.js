@@ -432,8 +432,7 @@ $( '#close' ).on( 'click', function() {
 		
 		var message = '<wh>Reboot required for:</wh>';
 		list.split( '\n' ).forEach( id => {
-			var label = id === 'localbrowser' ? 'Rotate Browser on RPi' : $( '#div'+ id +' .label' ).eq( 0 ).text();
-			message += '<br>'+ ico( id ) +' '+ label;
+			message += '<br>'+ ico( id ) +' '+ $( '#div'+ id +' .label' ).eq( 0 ).text();
 		} );
 		info( {
 			  icon         : page
