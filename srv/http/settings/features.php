@@ -12,7 +12,7 @@ $id_data      = [
 	, 'multiraudio'    => [ 'label' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
 	, 'nfsserver'      => [ 'label' => 'Server rAudio',    'sub' => 'nfs-server',     'status' => true ]
 	, 'scrobble'       => [ 'label' => 'Scrobbler',        'sub' => 'Last.fm' ]
-	, 'shairport-sync' => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'status' => true, 'exist' => 'shairport-sync' ]
+	, 'shairportsync'  => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'status' => true, 'exist' => 'shairport-sync' ]
 	, 'smb'            => [ 'label' => 'File Sharing',     'sub' => 'samba',          'status' => true, 'exist' => 'smbd' ]
 	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',     'status' => true, 'exist' => 'snapclient' ]
 	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'status' => true, 'exist' => 'snapserver' ]
@@ -50,7 +50,7 @@ $snapweb      = $B_gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a
 $head         = [ 'title' => 'Renderers' ];
 $body         = [
 	[
-		  'id'       => 'shairport-sync'
+		  'id'       => 'shairportsync'
 		, 'help'     => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
 Note:

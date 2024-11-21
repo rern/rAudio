@@ -2,214 +2,8 @@ var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
 			  +'<gr>Signal will be set to original level at 0dB.</gr><br>'
 			  +'Beware of too high volume.</wh>';
 
-var setting  = {
-	  set_enable : {
-		  buffer       : values => {
-			info( {
-				  ...SW
-				, message      : '<c>audio_buffer_size</c>'
-				, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 40960 } } ]
-				, boxwidth     : 110
-				, values       : values
-				, checkchanged : S.buffer
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
-		  }
-		, crossfade    : values => {
-			info( {
-				  ...SW
-				, list         : [ 'Seconds', 'number', { updn: { step: 1, min: 0, max: 10 } } ]
-				, boxwidth     : 70
-				, values       : values
-				, checkchanged : S.crossfade
-				, checkblank   : true
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
-		}
-		, mixertype : () => {
-			info( {
-				  ...SW
-				, list   : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
-				, values : S.mixertype ? S.output.mixertype : 'hardware'
-				, cancel : switchCancel
-				, ok     : () => util.mixerSet( infoVal() )
-			} );
-		}
-		, outputbuffer : values => {
-			info( {
-				  ...SW
-				, message      : '<c>max_output_buffer_size</c>'
-				, list         : [ 'kB', 'number', { updn: { step: 1024, min: 8192, max: 81920 } } ]
-				, boxwidth     : 110
-				, values       : values
-				, checkchanged : S.outputbuffer
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
-		}
-		, replaygain   : values => {
-			var list = [
-				  [ '',                               'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' } } ]
-				, [ 'Gain control with Mixer Device', 'checkbox' ]
-			];
-			if ( S.output.mixertype !== 'software' || ! S.mixers ) {
-				delete values.HARDWARE;
-				list = list[ 0 ];
-			}
-			info( {
-				  ...SW
-				, list         : list
-				, values       : values
-				, checkchanged : S.replaygain
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
-		}
-		, soxr         : values => {
-			values.QUALITY === 'custom' ? util.soxr.custom( values ) : util.soxr.preset( values );
-		}
-	}
-	, enable_set : {
-		  bluealsa : () => setting.enable_set.mixer()
-		, mixer    : () => {
-			var bluealsa = SW.id.slice( -1 ) === 'a';
-			if ( bluealsa ) {
-				var control = S.btmixer.replace( / *-* A2DP/, '' );
-				var cmd     = [ 'volume', S.btmixer, '', S.volume ];
-				var cmd0db  = 'volume0dbbt';
-			} else {
-				var title   = 'Mixer Volume'
-				var control = S.output.mixer;
-				var cmd     = [ 'volume', S.output.mixer, S.output.card, S.volume ];
-				var cmd0db  = 'volume0db';
-			}
-			info( {
-				  icon       : SW.icon
-				, title      : SW.title +' Volume'
-				, list       : [ control, 'range' ]
-				, footer     : '<br>'+ warning
-				, values     : S.volume
-				, beforeshow : () => {
-					if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
-					$( '.infofooter' ).addClass( 'hide' );
-					var $range  = $( '#infoList input' );
-					$( '#infoList' ).css( 'height', '160px' );
-					$( '.inforange' ).append( '<div class="sub gr"></div>' );
-					$range.on( 'input', function() {
-						S.volume = +$range.val();
-						volumeMaxSet();
-						volumeInfoSet();
-						bash( [ ...cmd, S.volume, 'CMD CONTROL CARD CURRENT TARGET' ] );
-					} );
-					$( '.inforange i' ).on( 'click', function() {
-						S.volume = +$range.val();
-						volumeMaxSet();
-						$range
-							.trigger( 'input' )
-							.trigger( 'keyup' );
-					} );
-					volumeInfoSet();
-				}
-				, cancel     : () => {
-					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
-						local();
-						$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
-						setTimeout( () => I.oknoreset = true, 300 );
-					}
-				}
-				, oklabel    : ico( 'set0' ) +'0dB'
-				, oknoreset  : true
-				, ok         : () => {
-					if ( S.volumedb > -2 ) {
-						bash( [ cmd0db ] );
-					} else {
-						if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
-						$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
-					}
-				}
-			} );
-		}
-	}
-	, custom     : {
-		  custom    : () => {
-			bash( 'data-config.sh custom', values => {
-				var list = `\
-<table width="100%">
-<tr><td><c>mpd.conf</c></td></tr>
-<tr><td><pre>
-...
-user                   "mpd"</pre></td></tr>
-	<tr><td><textarea></textarea></td></tr>
-	<tr><td><pre>
-...
-audio_output {
-    ...
-    mixer_device   "hw:${ S.output.card }"
-</pre></td></tr>
-<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
-<tr><td><pre style="margin-top: -20px">
-}</pre></td></tr>
-</table>`;
-				var val    = values.split( '^^' );
-				var global = val[ 0 ].trim(); // remove trailing
-				var output = val[ 1 ].trim();
-				info( {
-					  ...SW
-					, list         : list
-					, boxwidth     : 370
-					, values       : [ global, output ]
-					, checkchanged : S.custom
-					, cancel       : switchCancel
-					, ok           : () => {
-						var infoval = infoVal();
-						global      = infoval[ 0 ];
-						output      = infoval[ 1 ];
-						if ( ! global && ! output ) {
-							notify( SW.icon, SW.title, 'Disable ...', 3000 );
-							bash( [ 'custom', 'OFF' ] );
-							return
-						}
-						
-						notifyCommon();
-						bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
-							if ( ! mpdstart ) {
-								bannerHide();
-								info( {
-									  ...SW
-									, message : 'MPD failed with the added lines'
-												+'<br>Restored to previous configurations.'
-								} );
-							}
-						}, 'json' );
-					}
-				} );
-			} );
-		}
-		, novolume  : () => {
-			if ( S.custom ) {
-				info( {
-					  ...SW
-					, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
-								+'<br>Remove any volume related settings.'
-				} );
-			}
-			if ( S.camilladsp || S.equalizer ) {
-				info( {
-					  ...SW
-					, message :  '<wh>No Volume</wh> also disable:<br><br>'
-								+ icoTab( 'Features' )
-								+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
-					, cancel  : switchCancel
-					, ok      : util.novolume.warning
-				} );
-			} else {
-				util.novolume.warning();
-			}
-		}
-	}
-	, disable    : {
+var config   = {
+	  _disable     : {
 		  mixertype : () => {
 			if ( S.volumedb > -2 ) {
 				util.mixerSet( 'none' );
@@ -232,8 +26,186 @@ audio_output {
 			$( '#novolume' ).prop( 'checked', true );
 		}
 	}
+	, buffer       : values => {
+		info( {
+			  ...SW
+			, message      : '<c>audio_buffer_size</c>'
+			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 4096, max: 40960 } } ]
+			, boxwidth     : 110
+			, values       : values
+			, checkchanged : S.buffer
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	  }
+	, crossfade    : values => {
+		info( {
+			  ...SW
+			, list         : [ 'Seconds', 'number', { updn: { step: 1, min: 0, max: 10 } } ]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.crossfade
+			, checkblank   : true
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, custom       : () => {
+		bash( 'data-config.sh custom', values => {
+			var list = `\
+<table width="100%">
+<tr><td><c>mpd.conf</c></td></tr>
+<tr><td><pre>
+...
+user                   "mpd"</pre></td></tr>
+	<tr><td><textarea></textarea></td></tr>
+	<tr><td><pre>
+...
+audio_output {
+    ...
+    mixer_device   "hw:${ S.output.card }"
+</pre></td></tr>
+<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
+<tr><td><pre style="margin-top: -20px">
+}</pre></td></tr>
+</table>`;
+			var val    = values.split( '^^' );
+			var global = val[ 0 ].trim(); // remove trailing
+			var output = val[ 1 ].trim();
+			info( {
+				  ...SW
+				, list         : list
+				, boxwidth     : 370
+				, values       : [ global, output ]
+				, checkchanged : S.custom
+				, cancel       : switchCancel
+				, ok           : () => {
+					var infoval = infoVal();
+					global      = infoval[ 0 ];
+					output      = infoval[ 1 ];
+					if ( ! global && ! output ) {
+						notify( SW.icon, SW.title, 'Disable ...', 3000 );
+						bash( [ 'custom', 'OFF' ] );
+						return
+					}
+					
+					notifyCommon();
+					bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
+						if ( ! mpdstart ) {
+							bannerHide();
+							info( {
+								  ...SW
+								, message : 'MPD failed with the added lines'
+											+'<br>Restored to previous configurations.'
+							} );
+						}
+					}, 'json' );
+				}
+			} );
+		} );
+	}
+	, mixer        : () => {
+		var bluealsa = SW.id.slice( -1 ) === 'a';
+		if ( bluealsa ) {
+			var control = S.btmixer.replace( / *-* A2DP/, '' );
+			var cmd     = [ 'volume', S.btmixer, '', S.volume ];
+			var cmd0db  = 'volume0dbbt';
+		} else {
+			var title   = 'Mixer Volume'
+			var control = S.output.mixer;
+			var cmd     = [ 'volume', S.output.mixer, S.output.card, S.volume ];
+			var cmd0db  = 'volume0db';
+		}
+		info( {
+			  icon       : SW.icon
+			, title      : SW.title +' Volume'
+			, list       : [ control, 'range' ]
+			, footer     : '<br>'+ warning
+			, values     : S.volume
+			, beforeshow : () => {
+				if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
+				$( '.infofooter' ).addClass( 'hide' );
+				var $range  = $( '#infoList input' );
+				$( '#infoList' ).css( 'height', '160px' );
+				$( '.inforange' ).append( '<div class="sub gr"></div>' );
+				$range.on( 'input', function() {
+					S.volume = +$range.val();
+					volumeMaxSet();
+					volumeInfoSet();
+					bash( [ ...cmd, S.volume, 'CMD CONTROL CARD CURRENT TARGET' ] );
+				} );
+				$( '.inforange i' ).on( 'click', function() {
+					S.volume = +$range.val();
+					volumeMaxSet();
+					$range
+						.trigger( 'input' )
+						.trigger( 'keyup' );
+				} );
+				volumeInfoSet();
+			}
+			, cancel     : () => {
+				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
+					local();
+					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
+					setTimeout( () => I.oknoreset = true, 300 );
+				}
+			}
+			, oklabel    : ico( 'set0' ) +'0dB'
+			, oknoreset  : true
+			, ok         : () => {
+				if ( S.volumedb > -2 ) {
+					bash( [ cmd0db ] );
+				} else {
+					if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) bash( [ cmd0db ] );
+					$( '#infoList table, .infofooter' ).toggleClass( 'hide' );
+				}
+			}
+		} );
+	}
+	, mixertype    : () => {
+		info( {
+			  ...SW
+			, list   : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+			, values : S.mixertype ? S.output.mixertype : 'hardware'
+			, cancel : switchCancel
+			, ok     : () => util.mixerSet( infoVal() )
+		} );
+	}
+	, outputbuffer : values => {
+		info( {
+			  ...SW
+			, message      : '<c>max_output_buffer_size</c>'
+			, list         : [ 'kB', 'number', { updn: { step: 1024, min: 8192, max: 81920 } } ]
+			, boxwidth     : 110
+			, values       : values
+			, checkchanged : S.outputbuffer
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, replaygain   : values => {
+		var list = [
+			  [ '',                               'radio', { kv: { Auto: 'auto', Album: 'album', Track: 'track' } } ]
+			, [ 'Gain control with Mixer Device', 'checkbox' ]
+		];
+		if ( S.output.mixertype !== 'software' || ! S.mixers ) {
+			delete values.HARDWARE;
+			list = list[ 0 ];
+		}
+		info( {
+			  ...SW
+			, list         : list
+			, values       : values
+			, checkchanged : S.replaygain
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, soxr         : values => {
+		values.QUALITY === 'custom' ? util.soxr.custom( values ) : util.soxr.preset( values );
+	}
 }
-var util = {
+var util     = {
 	  mixerSet : mixertype => {
 		notify( 'mpd', 'Mixer Control', 'Change ...' );
 		bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
@@ -394,6 +366,27 @@ $( '#device' ).on( 'input', function() {
 $( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Mixer Device', 'Change ...' );
 	bash( [ 'mixer', this.value, S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
+} );
+$( '#novolume' ).on( 'click', function() {
+	if ( S.custom ) {
+		info( {
+			  ...SW
+			, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
+						+'<br>Remove any volume related settings.'
+		} );
+	}
+	if ( S.camilladsp || S.equalizer ) {
+		info( {
+			  ...SW
+			, message :  '<wh>No Volume</wh> also disable:<br><br>'
+						+ icoTab( 'Features' )
+						+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
+			, cancel  : switchCancel
+			, ok      : util.novolume.warning
+		} );
+	} else {
+		util.novolume.warning();
+	}
 } );
 $( '#ffmpegfiletype' ).on( 'click', function() {
 	var $pre = $( '#prefiletype' );

@@ -125,7 +125,7 @@ function htmlSetting( $data ) {
 		return;
 	}
 	
-	global $features, $system;
+	global $iconlabel;
 	$id          = $data[ 'id' ];
 	$iddata      = $id_data[ $id ];
 	$label       = $iddata[ 'label' ];
@@ -134,7 +134,7 @@ function htmlSetting( $data ) {
 	$label       = '<span class="label">'.$label.'</span>';
 	$input       = $data[ 'input' ] ?? false;
 	$help        = $data[ 'help' ] ?? false;
-	$icon        = $features || $system ? $id : '';
+	$icon        = $iconlabel ? $id : '';
 	$dstatus     = $status ? ' status" data-status="'.$id : '';
 	
 	$html        = '<div id="div'.$id.'" class="row">';

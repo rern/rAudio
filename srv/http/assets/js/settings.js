@@ -50,7 +50,7 @@ function infoSetting( id, callback ) {
 	$.post(
 		  'cmd.php'
 		, { cmd: 'bash', filesh: filesh }
-		, callback || setting[ id ]
+		, callback || config[ id ]
 		, 'json'
 	);
 }
@@ -150,14 +150,13 @@ function switchEnable() {
 	bash( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
 	SWreset();
 }
-function switchSet( ready ) {
-	if ( page === 'camilla' && ! ready ) return // wait for GetConfigJson
+function switchSet() {
+	if ( page === 'camilla' && V.tab !== 'devices' ) return
 	
 	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
-		var id      = el.id.replace( 'setting-', '' );
-		var issetting = Object.keys( setting ).some( k => id in setting[ k ] );
-		$( el ).toggleClass( 'hide', ! issetting || ! S[ id ] )
+		var id = el.id.slice( 8 ); // setting-id > id
+		$( el ).toggleClass( 'hide', ! S[ id ] || ! ( id in config ) )
 	} );
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 }
@@ -425,14 +424,14 @@ $( '.helphead' ).on( 'click', function() {
 	}
 } );
 $( '#close' ).on( 'click', function() {
-	infoSetting( 'reboot', list => {
+	bash( 'data-config.sh reboot', list => {
 		if ( ! list ) {
 			location.href = '/';
 			return
 		}
 		
 		var message = '<wh>Reboot required for:</wh>';
-		list.forEach( id => {
+		list.split( '/' ).forEach( id => {
 			var label = id === 'localbrowser' ? 'Rotate Browser on RPi' : $( '#div'+ id +' .label' ).eq( 0 ).text();
 			message += '<br>'+ ico( id ) +' '+ label;
 		} );
@@ -446,7 +445,7 @@ $( '#close' ).on( 'click', function() {
 			, oklabel      : ico( 'reboot' ) +'Reboot'
 			, ok           : () => infoPowerCommand( 'reboot' )
 		} );
-	} );
+	}, 'text' );
 } );
 $( '.help' ).on( 'click', function() {
 	var $this  = $( this );
@@ -466,20 +465,6 @@ if ( $( '#menu' ).length ) {
 		if ( ! $( e.target ).is( 'pre.status' ) ) $( '.entries' ).siblings( 'pre' ).last().addClass( 'hide' );
 	} );
 }
-
-/* ### setting - on click .switch / .setting (id of settings only)
-set_enable:
-	setting with infoSetting() > enable    : (default)
-enable_set:
-	enable without config > setting later  : dabradio i2smodule snapclient snapserver
-						  > no setting     : bluealsa dop mixer
-custom:
-	setting with custom config > enable    : login novolume shareddata
-							   > no enable : backup hostname i2s restore
-				   text config > enable    : custom
-disable:
-	warning > disable                      : login mixertype shareddata
-*/
 $( '.switch, .setting, .col-r input' ).on( 'click', function() {
 	if ( V.local ) return
 	
@@ -510,9 +495,12 @@ $( '.switch' ).on( 'click', function() {
 	} else if ( checked ) {
 		$( '#setting-'+ id ).trigger( 'click' );
 	} else {
-		S[ id ] = false;
-		if ( id in setting.disable ) {
-			setting.disable[ id ]();
+		if ( page === 'camilla' ) {
+			DEV[ id ] = null;
+			setting.save( SW.title, 'Disable ...' );
+			$( '#setting-'+ id ).addClass( 'hide' );
+		} else if ( '_disable' in config && id in config._disable ) {
+			config._disable[ id ]();
 		} else {
 			notifyCommon( 'Disable ...' );
 			bash( [ id, 'OFF' ] );
@@ -521,12 +509,13 @@ $( '.switch' ).on( 'click', function() {
 } );
 $( '.setting' ).on( 'click', function() {
 	var id = SW.id;
-	if ( id in setting.set_enable ) {
-		infoSetting( id, setting.set_enable[ id ] );
-	} else if ( id in setting.custom ) {
-		setting.custom[ id ]();
-	} else if ( id in setting.enable_set && S[ id ] ) {
-		setting.enable_set[ id ]();
+	if ( id in config ) {
+		var set_id = config[ id ];
+		if ( set_id.toString()[ 0 ] === '(' ) { // no data to get
+			set_id();
+		} else {
+			infoSetting( id );
+		}
 	} else {
 		S[ id ] = true;
 		notifyCommon( S[ id ] );

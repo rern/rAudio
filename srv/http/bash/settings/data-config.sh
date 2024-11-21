@@ -107,7 +107,7 @@ multiraudioconf )
 	getContent $dirsystem/multiraudio.json
 	;;
 reboot )
-	line2array $dirshm/reboot
+	getContent $dirshm/reboot
 	rm -f $dirshm/{reboot,backup.gz}
 	;;
 packagelist )

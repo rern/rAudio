@@ -7,290 +7,8 @@ var relaysprompt  = '<a class="helpmenu label">Relay Module<i class="i-relays"><
 var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ];
 var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
-var setting       = {
-	  set_enable : {
-		  bluetooth     : values => {
-			info( {
-				  ...SW
-				, list         : [
-					  [ 'Discoverable <gr>by senders</gr>',             'checkbox' ]
-					, [ 'Sampling 16bit 44.1kHz <gr>to receivers</gr>', 'checkbox' ]
-				]
-				, values       : values
-				, checkchanged : S.bluetooth
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
-		}
-		, lcdchar       : data => {
-			'address' in data ? util.lcdchar.i2s( data ) : util.lcdchar.gpio( data );
-		}
-		, mpdoled       : data => {
-			var values     = data.values;
-			var buttonlogo = S.mpdoled && ! data.reboot;
-			var chip       = {
-				  'SSD130x SP'  : 1
-				, 'SSD130x I²C' : 3
-				, 'Seeed I²C'   : 4
-				, 'SH1106 I²C'  : 6
-				, 'SH1106 SPI'  : 7
-			}
-			info( {
-				  ...SW
-				, list         : [
-					  [ 'Controller',              'select', chip ]
-					, [ 'Refresh <gr>(baud)</gr>', 'select', { kv: { '800,000': 800000, '1,000,000': 1000000, '1,200,000': 1200000 } } ]
-				]
-				, footer       : ico( 'raudio' ) +'Logo'
-				, values       : values
-				, checkchanged : S.mpdoled
-				, boxwidth     : 140
-				, beforeshow   : () => {
-					var $tr   = $( '#infoList tr' );
-					var $baud = $tr.eq( 1 )
-					$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
-					$( '.infofooter i' ).toggleClass( 'disabled', ! S.mpdoled || data.reboot )
-					$tr.eq( 0 ).on( 'input', function() {
-						var val = this.value;
-						$baud.toggleClass( 'hide', val < 3 || val > 6 );
-					} );
-				}
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
-		}
-		, powerbutton   : values => {
-			values === true ? util.powerbutton.ap() : util.powerbutton.sw( values );
-		}
-		, relays        : data => {
-			S.relays ? util.relays.order( data ) : util.relays.name( data );
-		}
-		, rotaryencoder : values => {
-			info( {
-				  ...SW
-				, message      : gpiosvg
-				, list         : [
-					  [ 'CLK',  'select', board2bcm ]
-					, [ 'DT',   'select', board2bcm ]
-					, [ 'SW',   'select', board2bcm ]
-					, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
-				]
-				, boxwidth     : 70
-				, values       : values
-				, checkchanged : S.rotaryencoder
-				, cancel       : switchCancel
-				, ok           : switchEnable
-				, fileconf     : true
-			} );
-		}
-		, soundprofile  : values => {
-			info( {
-				  ...SW
-				, list         : [ 
-					  [ 'Swappiness',            'number' ]
-					, [ 'Max Transmission Unit', 'number', { suffix: 'byte' } ]
-					, [ 'Transmit Queue Length', 'number' ]
-				]
-				, boxwidth     : 70
-				, values       : values
-				, checkchanged : true
-				, checkblank   : true
-				, cancel       : switchCancel
-				, ok           : switchEnable
-				, fileconf     : true
-			} );
-		}
-		, tft           : data => {
-			var type = {
-				  'Generic'               : 'tft35a'
-				, 'Waveshare (A)'         : 'waveshare35a'
-				, 'Waveshare (B)'         : 'waveshare35b'
-				, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
-				, 'Waveshare (C)'         : 'waveshare35c'
-			}
-			var buttoncalibrate = S.tft && ! data.reboot;
-			info( {
-				  ...SW
-				, list         : [ 'Type', 'select', type ]
-				, values       : data.values
-				, checkchanged : S.tft
-				, boxwidth     : 190
-				, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
-				, button       : ! buttoncalibrate ? '' : () => {
-					info( {
-						  ...SW
-						, message : 'Calibrate touchscreen?'
-									+'<br>(Get stylus ready.)'
-						, ok      : () => {
-							notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
-							bash( [ 'tftcalibrate' ] );
-						}
-					} );
-				}
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
-		}
-		, vuled         : values => {
-			var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
-			var leds   = Object.keys( values ).length + 1;
-			for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', board2bcm ] );
-			info( {
-				  ...SW
-				, message      : gpiosvg
-				, list         : list
-				, values       : values
-				, checkchanged : S.vuled
-				, boxwidth     : 70
-				, beforeshow   : () => {
-					infoListAddRemove( () => {
-						$( '#infoList tr' ).slice( 1 ).each( ( i, el ) => {
-							$( el ).find( 'td' ).eq( 0 ).html( ico( 'power' ) +'&emsp;'+ ( i + 1 ) );
-							$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
-						} );
-					} );
-					gpioPinToggle();
-				}
-				, cancel       : switchCancel
-				, ok           : switchEnable
-				, fileconf     : true
-			} );
-		}
-		, wlan          : data => {
-			var accesspoint = 'Auto start Access Point<br>'+ sp( 30 ) +'<gr>(if not connected)</gr>';
-			info( {
-				  ...SW
-				, list         : [
-					  [ 'Country',   'select', data.list ]
-					, [ accesspoint, 'checkbox' ]
-				]
-				, boxwidth     : 250
-				, values       : data.values
-				, checkchanged : S.wlan
-				, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
-				, cancel       : switchCancel
-				, ok           : switchEnable
-			} );
-		}
-	}
-	, enable_set : {
-		  i2smodule     : () => {
-			if ( S.audioaplayname === 'cirrus-wm5102' ) {
-				util.wm5102();
-			} else {
-				infoSetting( 'i2smodule', values => {
-					info( {
-						  ...SW
-						, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
-						, values       : values
-						, checkchanged : true
-						, ok           : () => bash( [ 'i2seeprom', infoVal() ] )
-					} );
-				} );
-			}
-		}
-	}
-	, custom     : {
-		  backup     : () => {
-			var d     = new Date();
-			var month = '0'+ ( d.getMonth() + 1 );
-			var date  = '0'+ d.getDate();
-			var ymd   = d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
-			info( {
-				  ...SW
-				, message : 'Save all data and settings'
-				, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
-				, values  : 'rAudio_backup-'+ ymd
-				, ok      : () => {
-					notifyCommon( 'Process ...' );
-					bash( 'system-databackup.sh', data => {
-						if ( data == 1 ) {
-							notifyCommon( 'Download ...' );
-							fetch( '/data/shm/backup.gz' )
-								.then( response => response.blob() )
-								.then( blob => {
-									var url = window.URL.createObjectURL( blob );
-									var a = document.createElement( 'a' );
-									a.style.display = 'none';
-									a.href = url;
-									a.download = infoVal() +'.gz';
-									document.body.appendChild( a );
-									a.click();
-									setTimeout( () => {
-										a.remove();
-										window.URL.revokeObjectURL( url );
-										bannerHide();
-									}, 1000 );
-								} ).catch( () => {
-									infoWarning( SW.icon, SW.title, 'File download failed.' )
-									bannerHide();
-								} );
-						} else {
-							info( {
-								  ...SW
-								, message : 'Backup failed.'
-							} );
-							bannerHide();
-						}
-					} );
-				}
-			} );
-			$( '#backup' ).prop( 'checked', 0 );
-		}
-		, hostname   : () => {
-			SW = {
-				  id    : 'hostname'
-				, icon  : 'hostname'
-				, title : 'Player Name'
-			}
-			info( {
-				  ...SW
-				, list         : [ 'Name', 'text' ]
-				, values       : { NAME: S.playername }
-				, checkblank   : true
-				, checkchanged : true
-				, beforeshow   : () => {
-					$( '#infoList input' ).on( 'input', function() {
-						$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
-					} );
-				}
-				, ok           : switchEnable
-			} );
-		}
-		, i2s        : () => i2sSelect.option()
-		, restore    : () => {
-			info( {
-				  ...SW
-				, tablabel : [ 'From Backup', 'Reset To Default' ]
-				, tab      : [ '', util.restoreReset ]
-				, list     : [ 'Library database only', 'checkbox' ]
-				, file     : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
-				, oklabel  : ico( 'restore' ) +'Restore'
-				, okcolor  : orange
-				, ok       : () => {
-					notifyCommon( 'Restore ...' );
-					var formdata = new FormData();
-					formdata.append( 'cmd', 'datarestore' );
-					formdata.append( 'file', I.infofile );
-					formdata.append( 'libraryonly', infoVal() );
-					fetch( 'cmd.php', { method: 'POST', body: formdata } )
-						.then( response => response.text() )
-						.then( message => {
-							loaderHide();
-							if ( message ) {
-								bannerHide();
-								infoWarning(  SW.icon,  SW.title, message );
-							}
-						} );
-					loader();
-				}
-			} );
-			$( '#restore' ).prop( 'checked', 0 );
-		}
-		, shareddata : () => util.mount.mount()
-		, timezone   : () => util.server.ntp()
-	}
-	, disable    : {
+var config        = {
+	  _disable    : {
 		  shareddata : () => {
 			info( {
 				  ...SW
@@ -304,8 +22,188 @@ var setting       = {
 			} );
 		}
 	}
+	, bluetooth     : values => {
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Discoverable <gr>by senders</gr>',             'checkbox' ]
+				, [ 'Sampling 16bit 44.1kHz <gr>to receivers</gr>', 'checkbox' ]
+			]
+			, values       : values
+			, checkchanged : S.bluetooth
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, i2smodule     : () => {
+		if ( S.audioaplayname === 'cirrus-wm5102' ) {
+			util.wm5102();
+		} else {
+			infoSetting( 'i2smodule', values => {
+				info( {
+					  ...SW
+					, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
+					, values       : values
+					, checkchanged : true
+					, ok           : () => bash( [ 'i2seeprom', infoVal() ] )
+				} );
+			} );
+		}
+	}
+	, lcdchar       : data => {
+		'address' in data ? util.lcdchar.i2s( data ) : util.lcdchar.gpio( data );
+	}
+	, mpdoled       : data => {
+		var values     = data.values;
+		var buttonlogo = S.mpdoled && ! data.reboot;
+		var chip       = {
+			  'SSD130x SP'  : 1
+			, 'SSD130x I²C' : 3
+			, 'Seeed I²C'   : 4
+			, 'SH1106 I²C'  : 6
+			, 'SH1106 SPI'  : 7
+		}
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Controller',              'select', chip ]
+				, [ 'Refresh <gr>(baud)</gr>', 'select', { kv: { '800,000': 800000, '1,000,000': 1000000, '1,200,000': 1200000 } } ]
+			]
+			, footer       : ico( 'raudio' ) +'Logo'
+			, values       : values
+			, checkchanged : S.mpdoled
+			, boxwidth     : 140
+			, beforeshow   : () => {
+				var $tr   = $( '#infoList tr' );
+				var $baud = $tr.eq( 1 )
+				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
+				$( '.infofooter i' ).toggleClass( 'disabled', ! S.mpdoled || data.reboot )
+				$tr.eq( 0 ).on( 'input', function() {
+					var val = this.value;
+					$baud.toggleClass( 'hide', val < 3 || val > 6 );
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, powerbutton   : values => {
+		values === true ? util.powerbutton.ap() : util.powerbutton.sw( values );
+	}
+	, relays        : data => {
+		S.relays ? util.relays.order( data ) : util.relays.name( data );
+	}
+	, rotaryencoder : values => {
+		info( {
+			  ...SW
+			, message      : gpiosvg
+			, list         : [
+				  [ 'CLK',  'select', board2bcm ]
+				, [ 'DT',   'select', board2bcm ]
+				, [ 'SW',   'select', board2bcm ]
+				, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
+			]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.rotaryencoder
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
+	}
+	, shareddata    : () => util.mount.mount()
+	, soundprofile  : values => {
+		info( {
+			  ...SW
+			, list         : [ 
+				  [ 'Swappiness',            'number' ]
+				, [ 'Max Transmission Unit', 'number', { suffix: 'byte' } ]
+				, [ 'Transmit Queue Length', 'number' ]
+			]
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : true
+			, checkblank   : true
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
+	}
+	, timezone      : () => util.server.ntp()
+	, tft           : data => {
+		var type = {
+			  'Generic'               : 'tft35a'
+			, 'Waveshare (A)'         : 'waveshare35a'
+			, 'Waveshare (B)'         : 'waveshare35b'
+			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
+			, 'Waveshare (C)'         : 'waveshare35c'
+		}
+		var buttoncalibrate = S.tft && ! data.reboot;
+		info( {
+			  ...SW
+			, list         : [ 'Type', 'select', type ]
+			, values       : data.values
+			, checkchanged : S.tft
+			, boxwidth     : 190
+			, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
+			, button       : ! buttoncalibrate ? '' : () => {
+				info( {
+					  ...SW
+					, message : 'Calibrate touchscreen?'
+								+'<br>(Get stylus ready.)'
+					, ok      : () => {
+						notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
+						bash( [ 'tftcalibrate' ] );
+					}
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
+	, vuled         : values => {
+		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
+		var leds   = Object.keys( values ).length + 1;
+		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', board2bcm ] );
+		info( {
+			  ...SW
+			, message      : gpiosvg
+			, list         : list
+			, values       : values
+			, checkchanged : S.vuled
+			, boxwidth     : 70
+			, beforeshow   : () => {
+				infoListAddRemove( () => {
+					$( '#infoList tr' ).slice( 1 ).each( ( i, el ) => {
+						$( el ).find( 'td' ).eq( 0 ).html( ico( 'power' ) +'&emsp;'+ ( i + 1 ) );
+						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
+					} );
+				} );
+				gpioPinToggle();
+			}
+			, cancel       : switchCancel
+			, ok           : switchEnable
+			, fileconf     : true
+		} );
+	}
+	, wlan          : data => {
+		var accesspoint = 'Auto start Access Point<br>'+ sp( 30 ) +'<gr>(if not connected)</gr>';
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Country',   'select', data.list ]
+				, [ accesspoint, 'checkbox' ]
+			]
+			, boxwidth     : 250
+			, values       : data.values
+			, checkchanged : S.wlan
+			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
 }
-var util      = {
+var util          = {
 	  lcdchar      : {
 		  gpio : values => {
 			var list0 = jsonClone( util.lcdchar.list );
@@ -682,14 +580,14 @@ var util      = {
 			notifyCommon();
 			bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
 			jsonSave( 'relays', name );
-			if ( tabname ) setting.set_enable.relays();
+			if ( tabname ) util.relays.name( data );
 		}
 	}
 	, restoreReset : () => {
 		info( {
 			  ...SW
 			, tablabel : [ 'From Backup', 'Reset To Default' ]
-			, tab      : [ setting.custom.restore, '' ]
+			, tab      : [ () => $( '#restore' ).triger( 'click' ), '' ]
 			, list     : [
 				  [ 'Keep Library data',     'checkbox' ]
 				, [ 'Keep Network settings', 'checkbox' ]
@@ -767,7 +665,7 @@ var util      = {
 		} );
 	}
 }
-var i2sSelect = {
+var i2sSelect     = {
 	  hide   : () => {
 		$( '#i2s' ).prop( 'checked', false );
 		$( '#divi2s' ).removeClass( 'hide' );
@@ -1008,6 +906,9 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	}
 	contextMenu();
 } );
+$( '#i2s' ).on( 'click', function() {
+	i2sSelect.option();
+} );
 $( '#i2smodule' ).on( 'input', function() {
 	var aplayname = this.value;
 	var icon      = 'i2smodule';
@@ -1033,7 +934,24 @@ $( '#i2smodule' ).on( 'input', function() {
 	if ( ! this.value ) i2sSelect.hide();
 } );
 $( '#hostname' ).on( 'click', function() {
-	setting.custom.hostname();
+	SW = {
+		  id    : 'hostname'
+		, icon  : 'hostname'
+		, title : 'Player Name'
+	}
+	info( {
+		  ...SW
+		, list         : [ 'Name', 'text' ]
+		, values       : { NAME: S.playername }
+		, checkblank   : true
+		, checkchanged : true
+		, beforeshow   : () => {
+			$( '#infoList input' ).on( 'input', function() {
+				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
+			} );
+		}
+		, ok           : switchEnable
+	} );
 } );
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'timezone', 'Timezone', 'Change ...' );
@@ -1047,6 +965,81 @@ $( '#timezone' ).on( 'input', function( e ) {
 			.html( data )
 			.val( S.timezone )
 			.select2( 'open' );
+	} );
+} );
+$( '#backup' ).on( 'click', function() {
+	$( this ).prop( 'checked', false );
+	var d     = new Date();
+	var month = '0'+ ( d.getMonth() + 1 );
+	var date  = '0'+ d.getDate();
+	var ymd   = d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
+	info( {
+		  ...SW
+		, message : 'Save all data and settings'
+		, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
+		, values  : 'rAudio_backup-'+ ymd
+		, ok      : () => {
+			notifyCommon( 'Process ...' );
+			bash( 'system-databackup.sh', data => {
+				if ( data == 1 ) {
+					notifyCommon( 'Download ...' );
+					fetch( '/data/shm/backup.gz' )
+						.then( response => response.blob() )
+						.then( blob => {
+							var url = window.URL.createObjectURL( blob );
+							var a = document.createElement( 'a' );
+							a.style.display = 'none';
+							a.href = url;
+							a.download = infoVal() +'.gz';
+							document.body.appendChild( a );
+							a.click();
+							setTimeout( () => {
+								a.remove();
+								window.URL.revokeObjectURL( url );
+								bannerHide();
+							}, 1000 );
+						} ).catch( () => {
+							infoWarning( SW.icon, SW.title, 'File download failed.' )
+							bannerHide();
+						} );
+				} else {
+					info( {
+						  ...SW
+						, message : 'Backup failed.'
+					} );
+					bannerHide();
+				}
+			} );
+		}
+	} );
+} );
+$( '#restore' ).on( 'click', function() {
+	$( this ).prop( 'checked', false );
+	info( {
+		  ...SW
+		, tablabel : [ 'From Backup', 'Reset To Default' ]
+		, tab      : [ '', util.restoreReset ]
+		, list     : [ 'Library database only', 'checkbox' ]
+		, file     : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
+		, oklabel  : ico( 'restore' ) +'Restore'
+		, okcolor  : orange
+		, ok       : () => {
+			notifyCommon( 'Restore ...' );
+			var formdata = new FormData();
+			formdata.append( 'cmd', 'datarestore' );
+			formdata.append( 'file', I.infofile );
+			formdata.append( 'libraryonly', infoVal() );
+			fetch( 'cmd.php', { method: 'POST', body: formdata } )
+				.then( response => response.text() )
+				.then( message => {
+					loaderHide();
+					if ( message ) {
+						bannerHide();
+						infoWarning(  SW.icon,  SW.title, message );
+					}
+				} );
+			loader();
+		}
 	} );
 } );
 $( '.listtitle' ).on( 'click', function( e ) {

@@ -1,7 +1,7 @@
 <?php
 include 'common.php';
 
-$iconhead = $addonsprogress ? '' : i( 'help helphead' ).i( 'gear' );
+$iconhead  = $addonsprogress ? '' : i( 'help helphead' ).i( 'gear' );
 echo '
 <div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>
 '.i( 'close close', 'close' ).$iconhead.'
@@ -14,8 +14,9 @@ if ( $addonsprogress ) {
 //----------------------------------------------------------------------------------
 }
 
-$prefix = '';
-$htmlbar = '';
+$iconlabel = $camilla || $features || $system;
+$prefix    = '';
+$htmlbar   = '';
 if ( $camilla ) {
 	$tabs   = [ 'filters', 'mixers', 'processors', 'pipeline', 'devices' ];
 	$prefix = 'tab';

@@ -100,7 +100,10 @@
 	float: left;
 }
 #divvolume .col-l a {
-	margin-right: 33px;
+	margin-right: 10px;
+}
+#divvolume .col-l i::before {
+	content: '\F518';
 }
 #divvolume .col-r {
 	white-space: nowrap;
@@ -113,8 +116,7 @@
 	width: 40px;
 	text-align: center;
 }
-#divvolume .i-plus,
-#divvolume .i-volume {
+#divvolume .col-r i {
 	width: 40px;
 	line-height: 39px;
 	vertical-align: 0;

@@ -508,6 +508,82 @@ function psVolume( data ) {
 	}
 }
 
+var config    = {
+	  configuration       : () => {
+		if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
+			V.tabprev = V.tab;
+			V.tab     = 'config';
+			render.tab();
+		} else {
+			$( '#tab'+ V.tabprev ).trigger( 'click' );
+		}
+	}
+	, enable_rate_adjust  : () => {
+		if ( $( '#setting-enable_rate_adjust' ).siblings( 'input' ).hasClass( 'disabled' ) ) {
+			info( {
+				  ...SW
+				, message : 'Resampler type is <wh>Synchronous</wh>'
+			} );
+			switchCancel();
+			return
+		}
+		
+		var enabled = S.enable_rate_adjust;
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Adjust period', 'number' ]
+				, [ 'Target level',  'number' ]
+			]
+			, boxwidth     : 100
+			, values       : {
+				  adjust_period : DEV.adjust_period
+				, target_level  : DEV.target_level
+			}
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, ok           : () => {
+				var val =  infoVal();
+				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
+				DEV.enable_rate_adjust = true;
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, capture_samplerate  : () => {
+		var enabled = S.capture_samplerate;
+		info( {
+			  ...SW
+			, list         : Dlist.capture_samplerate
+			, boxwidth     : 120
+			, values       : [ DEV.capture_samplerate ]
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
+			, ok           : () => {
+				DEV.capture_samplerate = infoVal();
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, resampler           : () => setting.resampler( S.resampler ? DEV.resampler.type : 'AsyncSinc' )
+	, stop_on_rate_change : () => {
+		var enabled = S.stop_on_rate_change;
+		info( {
+			  ...SW
+			, list         : [ 'Rate mearsure interval', 'number' ]
+			, boxwidth     : 65
+			, values       : DEV.rate_measure_interval
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, ok           : () => {
+				DEV.stop_on_rate_change   = true;
+				DEV.rate_measure_interval = infoVal();
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+}
 var graph     = {
 	  gain     : () => {
 		var $divgraph = $( '.divgraph' );
@@ -655,7 +731,7 @@ var render    = {
 		S.lscoeffs.forEach( f => {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
-		$( '.container' ).removeClass( 'hide' );
+		$( '.container, #setting-configuration' ).removeClass( 'hide' );
 		render.status();
 		bannerHide();
 	}
@@ -1019,6 +1095,7 @@ var render    = {
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		$( '#enable_rate_adjust' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
+		switchSet();
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
@@ -1845,7 +1922,6 @@ var common    = {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
 					if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) );
-					switchSet( 'ready' );
 					render.page();
 					render.tab();
 					break;
@@ -1971,7 +2047,7 @@ $( '#volume-0, #volume-100' ).on( 'click', function() {
 	common.volumeAnimate( S.volume, current );
 	volumeSet();
 } );
-$( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
+$( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
@@ -1984,7 +2060,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	
 	clearInterval( V.intervalvolume );
 	volumePush();
-} ).press( '.i-minus, .i-plus', function( e ) {
+} ).press( '.col-l i, .i-plus', function( e ) {
 	var up           = $( e.target ).hasClass( 'i-plus' );
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
@@ -1994,7 +2070,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 		$( '#divvolume .level' ).text( S.volume );
 		if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
 	}, 100 );
-} ).on( 'click', '.i-volume, .level', function() {
+} ).on( 'click', '.col-r .i-volume, .level', function() {
 	common.volumeAnimate( S.volumemute, S.volume );
 	volumeMuteToggle();
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
@@ -2030,15 +2106,6 @@ $( '#configuration' ).on( 'input', function() {
 		setTimeout( () => common.wsGetConfig(), 300 );
 	} );
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
-} );
-$( '#setting-configuration' ).on( 'click', function() {
-	if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
-		V.tabprev = V.tab;
-		V.tab     = 'config';
-		render.tab();
-	} else {
-		$( '#tab'+ V.tabprev ).trigger( 'click' );
-	}
 } );
 $( '.tab' ).on( 'click', '.graphclose', function() {
 	var $this = $( this );
@@ -2520,93 +2587,6 @@ $( '#config' ).on( 'click', '.i-add', function() {
 	}
 } );
 // ----------------------------------------------------------------------------------------
-$( '.switch' ).on( 'click', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) {
-		info( {
-			  ...SW
-			, message : $( this ).prev().html()
-		} );
-		return
-	}
-	
-	var id       = this.id;
-	var $setting = $( '#setting-'+ id );
-	if ( DEV[ id ] ) {
-		DEV[ id ] = null;
-		setting.save( SW.title, 'Disable ...' );
-		$setting.addClass( 'hide' );
-	} else {
-		$setting.trigger( 'click' );
-	}
-} );
-$( '#setting-enable_rate_adjust' ).on( 'click', function() {
-	var $this = $( this );
-	if ( $this.siblings( 'input' ).hasClass( 'disabled' ) ) {
-		info( {
-			  ...SW
-			, message : 'Resampler type is <wh>Synchronous</wh>'
-		} );
-		switchCancel();
-		return
-	}
-	
-	var enabled = S.enable_rate_adjust;
-	info( {
-		  ...SW
-		, list         : [
-			  [ 'Adjust period', 'number' ]
-			, [ 'Target level',  'number' ]
-		]
-		, boxwidth     : 100
-		, values       : {
-			  adjust_period : DEV.adjust_period
-			, target_level  : DEV.target_level
-		}
-		, checkchanged : enabled
-		, cancel       : switchCancel
-		, ok           : () => {
-			var val =  infoVal();
-			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
-			DEV.enable_rate_adjust = true;
-			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-		}
-	} );
-} );
-$( '#setting-capture_samplerate' ).on( 'click', function() {
-	var enabled = S.capture_samplerate;
-	info( {
-		  ...SW
-		, list         : Dlist.capture_samplerate
-		, boxwidth     : 120
-		, values       : [ DEV.capture_samplerate ]
-		, checkchanged : enabled
-		, cancel       : switchCancel
-		, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
-		, ok           : () => {
-			DEV.capture_samplerate = infoVal();
-			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-		}
-	} );
-} );
-$( '#setting-stop_on_rate_change' ).on( 'click', function() {
-	var enabled = S.stop_on_rate_change;
-	info( {
-		  ...SW
-		, list         : [ 'Rate mearsure interval', 'number' ]
-		, boxwidth     : 65
-		, values       : DEV.rate_measure_interval
-		, checkchanged : enabled
-		, cancel       : switchCancel
-		, ok           : () => {
-			DEV.stop_on_rate_change   = true;
-			DEV.rate_measure_interval = infoVal();
-			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-		}
-	} );
-} );
-$( '#setting-resampler' ).on( 'click', function() {
-	setting.resampler( S.resampler ? DEV.resampler.type : 'AsyncSinc' );
-} );
 $( '#bar-bottom div' ).off( 'click' ).on( 'click', function() {
 	V.tab = this.id.slice( 3 );
 	render.tab();

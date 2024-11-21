@@ -4,7 +4,6 @@
 
 CMD=$1
 PKG=$1
-SERVICE=$1
 skip='register IPv6'
 
 configText() {
@@ -30,7 +29,6 @@ configText() {
 case $CMD in
 	ap )
 		PKG=iwd
-		SERVICE=iwd
 		conf=$( configText /var/lib/iwd/ap/$( hostname ).ap )
 		systemctl -q is-active iwd && conf+="
 <bll># iwctl ap list</bll>
@@ -54,7 +52,6 @@ $( bluealsa-aplay -L )"
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		rm -f /srv/http/typescript # from script command
 		PKG=mediamtx
-		SERVICE=mediamtx
 		;;
 	localbrowser )
 		PKG=firefox
@@ -89,6 +86,9 @@ $conf"
 $sharedip"
 		skip+='|Protocol not supported'
 		;;
+	shairportsync )
+		PKG=shairport-sync
+		;;
 	smb )
 		PKG=samba
 		conf=$( configText /etc/samba/smb.conf )
@@ -119,6 +119,7 @@ $( configText /etc/default/snapclient )
 		;;
 esac
 [[ ! $conf ]] && conf=$( configText /etc/$PKG.conf )
+[[ ! $SERVICE ]] && SERVICE=$PKG
 status=$( systemctl status $SERVICE \
 			| grep -E -v "$skip" \
 			| sed -E  -e 's|●|<grn>*</grn>|; s|○|*|
