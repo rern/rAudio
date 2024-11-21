@@ -26,6 +26,29 @@ var config   = {
 			$( '#novolume' ).prop( 'checked', true );
 		}
 	}
+	, _prompt      : {
+		  novolume : () => {
+			if ( S.custom ) {
+				info( {
+					  ...SW
+					, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
+								+'<br>Remove any volume related settings.'
+				} );
+			}
+			if ( S.camilladsp || S.equalizer ) {
+				info( {
+					  ...SW
+					, message :  '<wh>No Volume</wh> also disable:<br><br>'
+								+ icoTab( 'Features' )
+								+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
+					, cancel  : switchCancel
+					, ok      : util.novolume.warning
+				} );
+			} else {
+				util.novolume.warning();
+			}
+		}
+	}
 	, buffer       : values => {
 		info( {
 			  ...SW
@@ -315,7 +338,6 @@ function renderPage() {
 			$( '#divmixer' ).addClass( 'hide' );
 		}
 		$( '#novolume' ).prop( 'checked', S.novolume );
-		$( '#setting-novolume' ).addClass( 'hide' );
 		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.ffmpeg && S.dabradio );
@@ -366,27 +388,6 @@ $( '#device' ).on( 'input', function() {
 $( '#mixer' ).on( 'input', function() {
 	notify( 'volume', 'Mixer Device', 'Change ...' );
 	bash( [ 'mixer', this.value, S.output.name, S.output.card, 'CMD MIXER DEVICE CARD' ] );
-} );
-$( '#novolume' ).on( 'click', function() {
-	if ( S.custom ) {
-		info( {
-			  ...SW
-			, message : icoLabel( "User's Configurations" ) +' is currently enabled.'
-						+'<br>Remove any volume related settings.'
-		} );
-	}
-	if ( S.camilladsp || S.equalizer ) {
-		info( {
-			  ...SW
-			, message :  '<wh>No Volume</wh> also disable:<br><br>'
-						+ icoTab( 'Features' )
-						+ ( S.camilladsp ? icoLabel( 'DSP', 'camilladsp' ) : icoLabel( 'Equalizer', 'equalizer' ) )
-			, cancel  : switchCancel
-			, ok      : util.novolume.warning
-		} );
-	} else {
-		util.novolume.warning();
-	}
 } );
 $( '#ffmpegfiletype' ).on( 'click', function() {
 	var $pre = $( '#prefiletype' );

@@ -22,6 +22,81 @@ var config        = {
 			} );
 		}
 	}
+	, _prompt     : {
+		  backup  : () => {
+			var d     = new Date();
+			var month = '0'+ ( d.getMonth() + 1 );
+			var date  = '0'+ d.getDate();
+			var ymd   = d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
+			info( {
+				  ...SW
+				, message : 'Save all data and settings'
+				, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
+				, values  : 'rAudio_backup-'+ ymd
+				, ok      : () => {
+					notifyCommon( 'Process ...' );
+					bash( 'system-databackup.sh', data => {
+						if ( data == 1 ) {
+							notifyCommon( 'Download ...' );
+							fetch( '/data/shm/backup.gz' )
+								.then( response => response.blob() )
+								.then( blob => {
+									var url = window.URL.createObjectURL( blob );
+									var a = document.createElement( 'a' );
+									a.style.display = 'none';
+									a.href = url;
+									a.download = infoVal() +'.gz';
+									document.body.appendChild( a );
+									a.click();
+									setTimeout( () => {
+										a.remove();
+										window.URL.revokeObjectURL( url );
+										bannerHide();
+									}, 1000 );
+								} ).catch( () => {
+									infoWarning( SW.icon, SW.title, 'File download failed.' )
+									bannerHide();
+								} );
+						} else {
+							info( {
+								  ...SW
+								, message : 'Backup failed.'
+							} );
+							bannerHide();
+						}
+					} );
+				}
+			} );
+		}
+		, restore : () => {
+			info( {
+				  ...SW
+				, tablabel : [ 'From Backup', 'Reset To Default' ]
+				, tab      : [ '', util.restoreReset ]
+				, list     : [ 'Library database only', 'checkbox' ]
+				, file     : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
+				, oklabel  : ico( 'restore' ) +'Restore'
+				, okcolor  : orange
+				, ok       : () => {
+					notifyCommon( 'Restore ...' );
+					var formdata = new FormData();
+					formdata.append( 'cmd', 'datarestore' );
+					formdata.append( 'file', I.infofile );
+					formdata.append( 'libraryonly', infoVal() );
+					fetch( 'cmd.php', { method: 'POST', body: formdata } )
+						.then( response => response.text() )
+						.then( message => {
+							loaderHide();
+							if ( message ) {
+								bannerHide();
+								infoWarning(  SW.icon,  SW.title, message );
+							}
+						} );
+					loader();
+				}
+			} );
+		}
+	}
 	, bluetooth     : values => {
 		info( {
 			  ...SW
@@ -772,7 +847,6 @@ function renderPage() {
 ` );
 	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
-	$( '#setting-shareddata' ).addClass( 'hide' );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
 }
@@ -965,81 +1039,6 @@ $( '#timezone' ).on( 'input', function( e ) {
 			.html( data )
 			.val( S.timezone )
 			.select2( 'open' );
-	} );
-} );
-$( '#backup' ).on( 'click', function() {
-	$( this ).prop( 'checked', false );
-	var d     = new Date();
-	var month = '0'+ ( d.getMonth() + 1 );
-	var date  = '0'+ d.getDate();
-	var ymd   = d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
-	info( {
-		  ...SW
-		, message : 'Save all data and settings'
-		, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
-		, values  : 'rAudio_backup-'+ ymd
-		, ok      : () => {
-			notifyCommon( 'Process ...' );
-			bash( 'system-databackup.sh', data => {
-				if ( data == 1 ) {
-					notifyCommon( 'Download ...' );
-					fetch( '/data/shm/backup.gz' )
-						.then( response => response.blob() )
-						.then( blob => {
-							var url = window.URL.createObjectURL( blob );
-							var a = document.createElement( 'a' );
-							a.style.display = 'none';
-							a.href = url;
-							a.download = infoVal() +'.gz';
-							document.body.appendChild( a );
-							a.click();
-							setTimeout( () => {
-								a.remove();
-								window.URL.revokeObjectURL( url );
-								bannerHide();
-							}, 1000 );
-						} ).catch( () => {
-							infoWarning( SW.icon, SW.title, 'File download failed.' )
-							bannerHide();
-						} );
-				} else {
-					info( {
-						  ...SW
-						, message : 'Backup failed.'
-					} );
-					bannerHide();
-				}
-			} );
-		}
-	} );
-} );
-$( '#restore' ).on( 'click', function() {
-	$( this ).prop( 'checked', false );
-	info( {
-		  ...SW
-		, tablabel : [ 'From Backup', 'Reset To Default' ]
-		, tab      : [ '', util.restoreReset ]
-		, list     : [ 'Library database only', 'checkbox' ]
-		, file     : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
-		, oklabel  : ico( 'restore' ) +'Restore'
-		, okcolor  : orange
-		, ok       : () => {
-			notifyCommon( 'Restore ...' );
-			var formdata = new FormData();
-			formdata.append( 'cmd', 'datarestore' );
-			formdata.append( 'file', I.infofile );
-			formdata.append( 'libraryonly', infoVal() );
-			fetch( 'cmd.php', { method: 'POST', body: formdata } )
-				.then( response => response.text() )
-				.then( message => {
-					loaderHide();
-					if ( message ) {
-						bannerHide();
-						infoWarning(  SW.icon,  SW.title, message );
-					}
-				} );
-			loader();
-		}
 	} );
 } );
 $( '.listtitle' ).on( 'click', function( e ) {

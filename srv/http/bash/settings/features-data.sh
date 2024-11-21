@@ -11,15 +11,15 @@
 data+=$( settingsActive camilladsp localbrowser nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
 data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
-			$dirsystem ap autoplay equalizer login loginsetting lyrics multiraudio scrobble snapclient volumelimit \
+			$dirsystem ap autoplay equalizer login loginsetting lyrics multiraudio scrobble snapclientserver volumelimit \
 			$dirshm nosound )
-
 ##########
 data+='
 , "hostname"      : "'$( hostname )'"
 , "ip"            : "'$( ipAddress )'"
 , "nfsconnected"  : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
 , "shareddata"    : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
+, "snapclient"    : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
 , "stoptimer"     : '$( exists $dirshm/pidstoptimer )
 ##########
 [[ -e /usr/bin/mediamtx ]] && data+='

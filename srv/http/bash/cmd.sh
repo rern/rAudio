@@ -810,6 +810,9 @@ shareddatampdupdate )
 	notify refresh-library 'Library Update' Done
 	$dirbash/status-push.sh
 	;;
+snapserverlist )
+	snapserverList
+	;;
 splashrotate )
 	splashRotate
 	;;

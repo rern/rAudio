@@ -224,8 +224,7 @@ smb )
 	echo '{ "SD": '$sd', "USB": '$usb' }'
 	;;
 snapclient )
-	ip=$( snapserverList | tail -1 )
-	echo '{ "ip": "'${ip/false}'" }'
+	snapserverList
 	;;
 soxr )
 	if [[ $2 ]]; then

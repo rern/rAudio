@@ -95,20 +95,22 @@ $sharedip"
 		;;
 	snapclient )
 		PKG=snapcast
+		SERVICE=$CMD
 		conf="\
 $( configText /etc/default/snapclient )
 
 <bll># SnapServer</bll> <gr>(avahi-browse -kprt _snapcast._tcp)</gr>
 "
-		readarray -t name_ip <<< $( snapserverList )
-		if [[ $name_ip ]]; then
-			conf+="${name_ip[0]} @${name_ip[1]}"
+		if [[ -e $dirsystem/snapclientserver ]]; then
+			conf+='(SnapClient + SnapServer)'
 		else
-			conf+='<gr>(Not available)</gr>'
+			name_ip=$( snapserverList | jq -r .[] )
+			[[ $name_ip ]] && conf+=$name_ip || conf+='<gr>(Not available)</gr>'
 		fi
 		;;
 	snapserver )
 		PKG=snapcast
+		SERVICE=$CMD
 		conf=$( configText /etc/snapserver.conf )
 		;;
 	spotifyd )

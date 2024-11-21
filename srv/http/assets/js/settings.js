@@ -493,7 +493,27 @@ $( '.switch' ).on( 'click', function() {
 			, message : $this.prev().html()
 		} );
 	} else if ( checked ) {
-		$( '#setting-'+ id ).trigger( 'click' );
+		var $setting = $( '#setting-'+ id ); 
+		if ( id in config._prompt ) {
+			$this.prop( 'checked', false );
+			config._prompt[ id ]();
+		} else if ( id in config ) {
+			$setting.trigger( 'click' );
+		} else {
+			S[ id ] = true;
+			notifyCommon( true );
+			bash( [ id ], error => {
+				if ( error ) {
+					S[ id ] = false;
+					$( '#setting-'+ id ).addClass( 'hide' );
+					bannerHide();
+					info( {
+						  ...SW
+						, message : error
+					} );
+				}
+			}, 'text' );
+		}
 	} else {
 		if ( page === 'camilla' ) {
 			DEV[ id ] = null;
@@ -509,26 +529,9 @@ $( '.switch' ).on( 'click', function() {
 } );
 $( '.setting' ).on( 'click', function() {
 	var id = SW.id;
-	if ( id in config ) {
-		var set_id = config[ id ];
-		if ( set_id.toString()[ 0 ] === '(' ) { // no data to get
-			set_id();
-		} else {
-			infoSetting( id );
-		}
+	if ( config[ id ].toString()[ 1 ] === ')' ) { // no data to get
+		config[ id ]();
 	} else {
-		S[ id ] = true;
-		notifyCommon( S[ id ] );
-		bash( [ id ], error => {
-			if ( error ) {
-				S[ id ] = false;
-				$( '#setting-'+ id ).addClass( 'hide' );
-				bannerHide();
-				info( {
-					  ...SW
-					, message : error
-				} );
-			}
-		}, 'text' );
+		infoSetting( id );
 	}
 } );

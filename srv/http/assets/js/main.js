@@ -242,8 +242,8 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			if ( active ) {
 				$( '#stop' ).trigger( 'click' );
 			} else {
-				bash( [ 'snapclient.sh' ], data => {
-					if ( data == -1 ) {
+				bash( [ 'snapserverlist' ], data => {
+					if ( ! data.length ) {
 						delete V.bannerdelay;
 						bannerHide();
 						info( {
@@ -251,8 +251,21 @@ $( '#settings' ).on( 'click', '.settings', function() {
 							, title   : 'SnapClient'
 							, message : 'No SnapServers found.'
 						} );
+						return
 					}
-				} );
+					
+					if ( data.length === 1 ) {
+						bash( [ 'snapclient.sh', data[ 0 ].replace( /.* /, '' ) ] );
+					} else {
+						info( {
+							  icon    : 'snapcast'
+							, title   : 'SnapClient'
+							, message : 'Select server:'
+							, list    : [ '', 'radio', { kv: data } ]
+							, ok      : () => bash( [ 'snapclient.sh', infoVal().replace( /.* /, '' ) ] )
+						} );
+					}
+				}, 'json' );
 			}
 			banner( 'snapcast blink', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ) );
 			break;

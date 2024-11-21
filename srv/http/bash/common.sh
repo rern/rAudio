@@ -462,9 +462,14 @@ snapclientIP() {
 	[[ $clientip ]] && echo $clientip
 }
 snapserverList() {
-	local service
-	service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )
-	[[ $service ]] && awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/' || echo false
+	local name_ip
+	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/1704;$/&&!/^=;l/ {print $7" "$8}' )
+	if [[ $name_ip ]] ; then
+		name_ip=$( sed 's/ / @ /g; s/^/, "/; s/$/"/' <<< $name_ip )
+		echo '[ '${name_ip:1}' ]'
+	else
+		echo '[]'
+	fi
 }
 volume() {
 	filevolumemute=$dirsystem/volumemute

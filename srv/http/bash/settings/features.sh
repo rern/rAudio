@@ -333,7 +333,8 @@ scrobblekeyremove )
 	rm -f $dirsystem/{scrobble,scrobblekey}
 	pushRefresh
 	;;
-shairport-sync | spotifyd | upmpdcli )
+shairportsync | spotifyd | upmpdcli )
+	[[ $CMD == shairportsync ]] && CMD=shairport-sync
 	if [[ $ON ]]; then
 		serviceRestartEnable
 	else
@@ -387,9 +388,6 @@ snapserver )
 	fi
 	$dirsettings/player-conf.sh
 	pushRefresh
-	;;
-snapserverip )
-	snapserverList | tail -1
 	;;
 spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey

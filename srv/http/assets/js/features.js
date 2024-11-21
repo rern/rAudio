@@ -21,6 +21,7 @@ var config       = {
 			} );
 		}
 	}
+	, _prompt      : {}
 	, ap           : values => {
 		info( {
 			  ...SW
@@ -51,6 +52,14 @@ var config       = {
 			, ok           : switchEnable
 			, fileconf     : true
 		} );
+	}
+	, dabradio     : () => {
+		if ( S.dabradio ) {
+			infoDabScan();
+		} else {
+			notifyCommon( true );
+			bash( [ SW.id ] );
+		}
 	}
 	, localbrowser : values => {
 		var footer = values.BRIGHTNESS ? ico( 'gear', 'brightness', 'tabindex' ) +'Brightness&emsp;' : '';
@@ -239,6 +248,46 @@ var config       = {
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
+	}
+	, snapclient   : () => {
+		if ( S.snapclient ) {
+			if ( S.snapclientserver ) {
+				window.open( 'http://'+ S.ip +':1780', '_blank' );
+			} else {
+				infoSetting( 'snapclient', values => {
+					if ( values.length ) {
+						if ( values.length > 1 ) {
+							info( {
+								  ...SW
+								, message : 'Select server:'
+								, list    : [ '', 'radio', { kv: values } ]
+								, ok      : () => {
+									window.open( infoVal().replace( /.* /, 'http://' ) +':1780', '_blank' );
+								}
+							} );
+						} else {
+							window.open( values[ 0 ].replace( /.* /, 'http://' ) +':1780', '_blank' );
+						}
+					} else {
+						info( {
+							  ...SW
+							, message : '<a class="helpmenu label">SnapServer<i class="i-snapcast"></i></a> not available.'
+						} );
+					}
+				} );
+			}
+		} else {
+			notifyCommon( true );
+			bash( [ SW.id ] );
+		}
+	}
+	, snapserver   : () => {
+		if ( S.snapserver ) {
+			window.open( 'http://'+ S.ip +':1780', '_blank' );
+		} else {
+			notifyCommon( true );
+			bash( [ SW.id ] );
+		}
 	}
 	, spotifyd     : spotifykey => {
 		if ( ! S.spotifyd && spotifykey ) {
@@ -475,24 +524,6 @@ $( '.screenshot' ).on( 'click', function() {
 		, message     : '<img src="/assets/img/spotify.gif" style="width: 100%; height: auto; margin-bottom: 0;">'
 		, okno        : true
 	} );
-} );
-$( '#setting-dabradio' ).on( 'click', function() {
-	infoDabScan();
-} );
-$( '#setting-snapclient' ).on( 'click', function() {
-	infoSetting( 'snapclient', data => {
-		if ( data.ip ) {
-			window.open( 'http://'+ ip +':1780', '_blank' );
-		} else {
-			info( {
-				  ...SW
-				, message : '<a class="helpmenu label">SnapServer<i class="i-snapcast"></i></a> not available.'
-			} );
-		}
-	} );
-} );
-$( '#setting-snapserver' ).on( 'click', function() {
-	window.open( 'http://'+ S.ip +':1780', '_blank' );
 } );
 $( '#camilladsp, #equalizer' ).on( 'click', function() {
 	if ( S[ this.id ] ) $( this.id === 'camilladsp' ? '#equalizer' : '#camilladsp' ).addClass( 'disabled' );
