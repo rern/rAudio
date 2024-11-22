@@ -26,6 +26,10 @@ btinfo )
 <bll># bluetoothctl info $2</bll>
 $( bluetoothctl info $2 )"
 	;;
+configuration )
+	file=$( getVar CONFIG /etc/default/camilladsp )
+	cat "$file"
+	;;
 lan )
 	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 	echo "\

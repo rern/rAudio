@@ -2571,20 +2571,6 @@ $( '#devices' ).on( 'click', 'li', function() {
 // config ---------------------------------------------------------------------------------
 $( '#config' ).on( 'click', '.i-add', function() {
 	setting.upload();
-} ).on( 'click', 'li', function( e ) {
-	if ( $( e.target ).hasClass( 'liicon' ) ) return
-	
-	var $this = $( this )
-	var $pre  = $this.find( 'pre' );
-	if ( $pre.length ) {
-		$pre.toggleClass( 'hide' );
-	} else {
-		var dir = '/srv/http/data/camilladsp/configs';
-		if ( S.bluetooth ) dir += '-bt';
-		bash( [ 'statusconfiguration', dir +'/'+ $this.text(), 'CMD FILE' ], config => {
-			$this.append( '<pre class="status">'+ config +'</pre>' );
-		} );
-	}
 } );
 // ----------------------------------------------------------------------------------------
 $( '#bar-bottom div' ).off( 'click' ).on( 'click', function() {

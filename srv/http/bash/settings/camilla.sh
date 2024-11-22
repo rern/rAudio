@@ -57,13 +57,6 @@ restart )
 saveconfig )
 	saveConfig
 	;;
-statusconfiguration )
-	[[ ! $FILE ]] && FILE=$( getVar CONFIG /etc/default/camilladsp )
-	cat "$FILE"
-	;;
-statusoutput )
-	$dirsettings/player.sh statusoutput
-	;;
 volume )
 	volume
 	;;

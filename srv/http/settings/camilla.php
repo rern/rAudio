@@ -1,5 +1,5 @@
 <?php
-$id_data    = [
+$id_data = [
 	  'volume'              => [ 'label' => 'Master',        'sub' => 'hw' ]
 	, 'configuration'       => [ 'label' => 'Configuration', 'sub' => 'current', 'status' => true ]
 	, 'enable_rate_adjust'  => [ 'label' => 'Rate Adjust' ]
@@ -61,7 +61,7 @@ $options    = [
 	  [ 'id' => 'enable_rate_adjust',  'returnhtml' => true, 'disabled' => '<wh>Resampler</wh> set as <wh>Synchronous</wh>' ]
 	, [ 'id' => 'capture_samplerate',  'returnhtml' => true ]
 	, [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ]
-	, [ 'id' => 'resampler',           'returnhtml' => true ] )
+	, [ 'id' => 'resampler',           'returnhtml' => true ]
 ];
 $htmloptions = '';
 foreach( $options as $opt ) $htmloptions.= htmlSetting( $opt );
@@ -71,7 +71,7 @@ $tabs     = [
 	, 'processors' => [ 'add' ]
 	, 'pipeline'   => [ 'flowchart', 'add' ]
 	, 'devices'    => [ 'gear' ]
-	, 'config'     => ''
+	, 'config'     => [ 'add' ]
 ];
 $htmltabs = [];
 foreach( array_keys( $tabs ) as $id ) {
@@ -135,7 +135,6 @@ foreach( $tabs as $id => $button ) {
 	$body = [ $htmltabs[ $id ] ];
 	htmlSection( $head, $body, $id );
 }
-//////////////////////////////////
 $htmlmenu = '<div id="menu" class="menu hide">';
 foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete' ] as $c ) {
 	$htmlmenu.= '<a class="'.$c.'">'.i( $c ).ucfirst( $c ).'</a>';
