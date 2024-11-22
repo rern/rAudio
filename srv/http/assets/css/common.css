@@ -91,7 +91,10 @@ i {
 .i-devices::before,
 .i-i2s::before,
 .i-i2smodule::before       { content: '\F571' }
-.i-edit::before            { content: '\F565' }
+.i-delete::before,
+.i-remove::before          { content: '\F563' }
+.i-edit::before,
+.i-rename::before          { content: '\F565' }
 .i-equalizer::before,
 .i-mixers::before          { content: '\F50C' }
 .i-eye::before             { content: '\F567' }
@@ -106,7 +109,7 @@ i {
 .i-music::before,
 .i-song::before,
 .i-title::before           { content: '\F54A' }
-.i-folder-filter::before   { content: '\F53F' }
+.i-folderfilter::before    { content: '\F53F' }
 .i-folder-forbid::before   { content: '\F537' }
 .i-folder-open::before     { content: '\F541' }
 .i-folder-plus::before     { content: '\F54D' }
@@ -188,7 +191,6 @@ i {
 .i-refresh-library::before { content: '\F536' }
 .i-relays::before          { content: '\F522' }
 .i-reload::before          { content: '\F525' }
-.i-remove::before          { content: '\F563' }
 .i-repeat::before          { content: '\F511' }
 .i-repeat1::before         { content: '\F510' }
 .i-replace::before         { content: '\F531' }
