@@ -142,9 +142,7 @@ function showContent() {
 	loaderHide();
 }
 function switchCancel() {
-	$( '#'+ SW.id )
-		.prop( 'checked', S[ SW.id ] )
-		.removeClass( 'disabled' );
+	$( '#'+ SW.id ).prop( 'checked', S[ SW.id ] );
 	SWreset();
 	bannerHide();
 }
