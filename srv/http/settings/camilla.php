@@ -139,4 +139,4 @@ $htmlmenu        = '<div id="menu" class="menu hide">';
 foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete' ] as $c ) {
 	$htmlmenu.= '<a class="'.$c.'">'.i( $c ).ucfirst( $c ).'</a>';
 }
-echo $html.'</div>';
+echo $htmlmenu.'</div>';
