@@ -14,7 +14,7 @@ Audio player for
 - Control via GUI
 	- Remote with any browsers
 	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
-	- Local screen (not on RPi Zero and 1)
+	- Local screen ${\textsf{\color{gray}(not on RPi Zero and 1)}}$ 
 - Share data and files between multiple rAudios
 	- Server rAudio : clients (Easy setup with server IP address only)
 	- File server : clients
@@ -51,9 +51,9 @@ Audio player for
 	- HTTP (no metadata)
 	- SnapServer - Multiroom audio client
 	- Web Radio
-	- DAB Radio (not on RPi Zero and 1)
+	- DAB Radio ${\textsf{\color{gray}(not on RPi Zero and 1)}}$
 - Digital Signal Processors
-	- CamillaDSP (not on RPi Zero and 1)
+	- CamillaDSP ${\textsf{\color{gray}(not on RPi Zero and 1)}}$
 	- Equalizer
 
 ### Supported devices
