@@ -9,6 +9,8 @@ data+=$( settingsEnabled \
 			$dirmpdconf autoupdate.conf buffer.conf custom.conf ffmpeg.conf normalization.conf outputbuffer.conf replaygain.conf )
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
+mixers=$( getContent $dirshm/mixers )
+[[ $mixers == false ]] && mixer=false || mixer=true
 [[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=( $( volumeGet valdb hw ) )
 
 ##########
@@ -16,7 +18,7 @@ data+='
 , "asoundcard"  : '$( getContent $dirsystem/asoundcard )'
 , "bluetooth"   : '$( exists $dirshm/btreceiver )'
 , "btmixer"     : "'$( getContent $dirshm/btmixer )'"
-, "counts"      : { '$( grep -E 'adbradio|song|webradio' < $dirmpd/counts )' }
+, "counts"      : { '$( grep -E 'dabradio|song|webradio' < $dirmpd/counts )' }
 , "crossfade"   : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "dabradio"    : '$( systemctl -q is-active mediamtx && echo true )'
 , "devices"     : '$( getContent $dirshm/devices )'
@@ -27,7 +29,8 @@ data+='
 	, "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 	, "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }
-, "mixers"      : '$( getContent $dirshm/mixers )'
+, "mixer"       : '$mixer'
+, "mixers"      : '$mixers'
 , "mixertype"   : '$( [[ $( getVar mixertype $dirshm/output ) != none ]] && echo true )'
 , "output"      : '$( conf2json -nocap $dirshm/output )'
 , "player"      : "'$( < $dirshm/player )'"

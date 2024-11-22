@@ -1,12 +1,3 @@
-var gpiosvg       = $( '#gpiosvg' ).html();
-var board2bcm     = {
-	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
-	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
-}
-var relaysprompt  = '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON';
-var relaystab     = [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ];
-var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
-
 var config        = {
 	  _disable    : {
 		  shareddata : () => {
@@ -68,6 +59,7 @@ var config        = {
 				}
 			} );
 		}
+		, i2s     : () => util.i2sSelect.option()
 		, restore : () => {
 			info( {
 				  ...SW
@@ -96,6 +88,7 @@ var config        = {
 				}
 			} );
 		}
+		, shareddata    : () => util.mount.mount()
 	}
 	, bluetooth     : values => {
 		info( {
@@ -171,11 +164,11 @@ var config        = {
 	, rotaryencoder : values => {
 		info( {
 			  ...SW
-			, message      : gpiosvg
+			, message      : util.gpiosvg
 			, list         : [
-				  [ 'CLK',  'select', board2bcm ]
-				, [ 'DT',   'select', board2bcm ]
-				, [ 'SW',   'select', board2bcm ]
+				  [ 'CLK',  'select', util.board2bcm ]
+				, [ 'DT',   'select', util.board2bcm ]
+				, [ 'SW',   'select', util.board2bcm ]
 				, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
 			]
 			, boxwidth     : 70
@@ -186,7 +179,6 @@ var config        = {
 			, fileconf     : true
 		} );
 	}
-	, shareddata    : () => util.mount.mount()
 	, soundprofile  : values => {
 		info( {
 			  ...SW
@@ -239,10 +231,10 @@ var config        = {
 	, vuled         : values => {
 		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
 		var leds   = Object.keys( values ).length + 1;
-		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', board2bcm ] );
+		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', util.board2bcm ] );
 		info( {
 			  ...SW
-			, message      : gpiosvg
+			, message      : util.gpiosvg
 			, list         : list
 			, values       : values
 			, checkchanged : S.vuled
@@ -254,7 +246,7 @@ var config        = {
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );
-				gpioPinToggle();
+				util.relays.toggle();
 			}
 			, cancel       : switchCancel
 			, ok           : switchEnable
@@ -279,18 +271,58 @@ var config        = {
 	}
 }
 var util          = {
-	  lcdchar      : {
+	  board2bcm    : {
+		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
+		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
+	}
+	, gpiosvg      : $( '#gpiosvg' ).html()
+	, i2sSelect    : {
+		  hide   : () => {
+			$( '#i2s' ).prop( 'checked', false );
+			$( '#divi2s' ).removeClass( 'hide' );
+			$( '#divi2smodule' ).addClass( 'hide' );
+		  }
+		, option : () => {
+			if ( $( '#i2smodule option' ).length > 2 ) {
+				if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
+					util.i2sSelect.show();
+					$( '#i2smodule' ).select2( 'open' );
+				}
+			} else {
+				$( '#i2smodule' ).select2( 'close' );
+				infoSetting( 'i2slist', list => {
+					list[ '(None / Auto detect)' ] = '';
+					$( '#i2smodule' ).html( htmlOption( list ) );
+					util.i2sSelect.select();
+					util.i2sSelect.show();
+					$( '#i2smodule' ).select2( 'open' );
+				} );
+			}
+		}
+		, select : () => {
+			$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
+				var $this = $( el );
+				return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
+			} ).prop( 'selected', true );
+		}
+		, show   : () => {
+			$( '#divi2s' ).addClass( 'hide' );
+			$( '#divi2smodule' ).removeClass( 'hide' );
+			$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
+		}
+	}
+	, lcdchar      : {
 		  gpio : values => {
 			var list0 = jsonClone( util.lcdchar.list );
 			var list  = list0.slice( 0, 3 );
 			[ 'Pins: &emsp; D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => {
-				list.push( [ k, 'select', { kv: board2bcm, sameline: i % 2 === 0 } ] );
+				list.push( [ k, 'select', { kv: util.board2bcm, sameline: i % 2 === 0 } ] );
 			} );
 			list.push( [ '', '' ], list0.slice( -1 )[ 0 ] );
 			info( {
 				  ...util.lcdchar.json
 				, tab          : [ () => infoSetting( 'lcdchar', util.lcdchar.i2s ), '' ]
-				, message      : gpiosvg
+				, message      : util.gpiosvg
 				, list         : list
 				, boxwidth     : 70
 				, values       : values
@@ -405,7 +437,7 @@ var util          = {
 			info( {
 				  icon       : icon
 				, title      : title
-				, tablabel   : shareddata ? tabshareddata : [ 'CIFS', 'NFS' ]
+				, tablabel   : shareddata ? util.mount.tab : [ 'CIFS', 'NFS' ]
 				, tab        : tab
 				, list       : list
 				, values     : values
@@ -444,7 +476,7 @@ var util          = {
 		, rServer : () => {
 			info( {
 				  ...SW
-				, tablabel  : tabshareddata
+				, tablabel  : util.mount.tab
 				, tab       : [ util.mount.mount, () => util.mount.mount( 'nfs' ), '' ]
 				, list      : [ 'Server IP', 'text' ]
 				, values    : { IP: I.active && I.values ? infoVal().IP : ipSub( S.ip ) }
@@ -466,6 +498,7 @@ var util          = {
 				}
 			} );
 		}
+		, tab     : [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ]
 	}
 	, powerbutton  : {
 		  sw : values => {
@@ -473,11 +506,11 @@ var util          = {
 				  ...SW
 				, tablabel     : [ 'Generic', 'Audiophonic' ]
 				, tab          : [ '', util.powerbutton.ap ]
-				, message      : gpiosvg
+				, message      : util.gpiosvg
 				, list         : [ 
 					  [ 'On',       'select', { 5: 3 } ]
-					, [ 'Off',      'select', board2bcm ]
-					, [ 'LED',      'select', board2bcm ]
+					, [ 'Off',      'select', util.board2bcm ]
+					, [ 'LED',      'select', util.board2bcm ]
 				]
 				, boxwidth     : 70
 				, values       : values
@@ -502,7 +535,7 @@ var util          = {
 		}
 	}
 	, relays       : {
-		  name  : data => {
+		  name   : data => {
 			var name   = data.relaysname;
 			var keys   = Object.keys( name );
 			var values = [];
@@ -513,13 +546,13 @@ var util          = {
 			]
 			var kL     = keys.length;
 			for ( i = 0; i < kL; i++ ) {
-				list.push( [ '', 'select', { kv: board2bcm, sameline: true } ], [ '', 'text' ] );
+				list.push( [ '', 'select', { kv: util.board2bcm, sameline: true } ], [ '', 'text' ] );
 			}
 			info( {
 				  ...SW
-				, tablabel     : relaystab
+				, tablabel     : util.relays.tab
 				, tab          : [ () => util.relays.order( data ), '' ]
-				, message      : gpiosvg
+				, message      : util.gpiosvg
 				, list         : list
 				, boxwidth     : 70
 				, propmt       : true
@@ -536,13 +569,13 @@ var util          = {
 					} );
 					$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
 					$( '#infoList td' ).eq( 0 ).empty();
-					gpioPinToggle();
+					util.relays.toggle();
 				}
 				, cancel       : switchCancel
 				, ok           : () => util.relays.set( data )
 			} );
 		}
-		, order : data => {
+		, order  : data => {
 			var pin    = data.relays;
 			var name   = data.relaysname;
 			var names  = {}
@@ -577,7 +610,7 @@ var util          = {
 			}
 			info( {
 				  ...SW
-				, tablabel     : relaystab
+				, tablabel     : util.relays.tab
 				, tab          : [ '', () => util.relays.name( data ) ]
 				, list         : list
 				, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
@@ -594,7 +627,7 @@ var util          = {
 					$timer.toggleClass( 'hide', ! pin.TIMERON );
 					$( '#infoList' ).on( 'click', '.i-power', function() {
 						if ( S.relayson ) {
-							infoPrompt( relaysprompt );
+							infoPrompt( util.relays.prompt );
 						} else {
 							bash( [ 'relays.sh', $( this ).hasClass( 'grn' ) ? '' : 'off' ] );
 						}
@@ -618,7 +651,8 @@ var util          = {
 				, ok           : () => util.relays.set( data )
 			} );
 		}
-		, set   : data => {
+		, prompt : '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON'
+		, set    : data => {
 			var order   = data.relays;
 			var name    = data.relaysname;
 			var v       = infoVal();
@@ -657,6 +691,29 @@ var util          = {
 			jsonSave( 'relays', name );
 			if ( tabname ) util.relays.name( data );
 		}
+		, tab    : [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ]
+		, toggle : () => {
+			$( '#infoList' ).on( 'click', '.i-power', function() {
+				if ( S.relayson ) {
+					infoPrompt( util.relays.prompt );
+				} else {
+					var $this = $( this );
+					var pin   = +$this.parents( 'tr' ).find( 'select' ).val();
+					bash( [ 'gpiopintoggle', pin, 'CMD PIN' ], onoff => $this.toggleClass( 'red', onoff == 1 ) );
+				}
+			} );
+		}
+	}
+	, renderSet    : () => {
+		var html  = '';
+		$.each( S.liststorage, ( i, v ) => {
+			var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
+			var dot = '<grn>&ensp;•&ensp;</grn>';
+			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
+			html += '<li>'+ ico( v.icon ) + mountpoint
+					+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +'</li>';
+		} );
+		$( '#list' ).html( html );
 	}
 	, restoreReset : () => {
 		info( {
@@ -740,68 +797,19 @@ var util          = {
 		} );
 	}
 }
-var i2sSelect     = {
-	  hide   : () => {
-		$( '#i2s' ).prop( 'checked', false );
-		$( '#divi2s' ).removeClass( 'hide' );
-		$( '#divi2smodule' ).addClass( 'hide' );
-	  }
-	, option : () => {
-		if ( $( '#i2smodule option' ).length > 2 ) {
-			if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
-				i2sSelect.show();
-				$( '#i2smodule' ).select2( 'open' );
-			}
-		} else {
-			$( '#i2smodule' ).select2( 'close' );
-			infoSetting( 'i2slist', list => {
-				list[ '(None / Auto detect)' ] = '';
-				$( '#i2smodule' ).html( htmlOption( list ) );
-				i2sSelect.select();
-				i2sSelect.show();
-				$( '#i2smodule' ).select2( 'open' );
-			} );
-		}
-	}
-	, select : () => {
-		$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
-			var $this = $( el );
-			return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
-		} ).prop( 'selected', true );
-	}
-	, show   : () => {
-		$( '#divi2s' ).addClass( 'hide' );
-		$( '#divi2smodule' ).removeClass( 'hide' );
-		$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
-	}
-}
 
-function gpioPinToggle() {
-	$( '#infoList' ).on( 'click', '.i-power', function() {
-		if ( S.relayson ) {
-			infoPrompt( relaysprompt );
-		} else {
-			var $this = $( this );
-			var pin   = +$this.parents( 'tr' ).find( 'select' ).val();
-			bash( [ 'gpiopintoggle', pin, 'CMD PIN' ], onoff => $this.toggleClass( 'red', onoff == 1 ) );
-		}
-	} );
-}
-function htmlC( data, key, val ) {
-	if ( typeof data !== 'object' ) data = [ [ data, key, val ] ];
-	var html = '';
-	data.forEach( el => {
-		html += '<c>'+ el[ 1 ] +':<a class="'+ el[ 0 ] +'">'+ el[ 2 ] +'</a></c> ';
-	} );
-	return html
-}
 function onPageInactive() {
 	clearInterval( V.intstatus );
+}
+function psStorage( data ) {
+	S.liststorage = data.list;
+	util.renderSet();
+	if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
 }
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
-	renderStorage();
+	util.renderSet();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
 			$( '#divbluetooth .col-l' )
@@ -827,13 +835,13 @@ function renderPage() {
 	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
 	if ( S.i2smodule ) {
 		if ( $( '#i2smodule option' ).length ) {
-			i2sSelect.select();
+			util.i2sSelect.select();
 		} else {
 			$( '#i2smodule' ).html( '<option></option><option selected>'+ S.audiooutput +'</option>' );
 		}
-		i2sSelect.show();
+		util.i2sSelect.show();
 	} else {
-		i2sSelect.hide();
+		util.i2sSelect.hide();
 	}
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' ).val( S.playername );
@@ -848,28 +856,24 @@ function renderPage() {
 	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
-	showContent();
-}
-function renderStorage() {
-	var html  = '';
-	$.each( S.liststorage, ( i, v ) => {
-		var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
-		var dot = '<grn>&ensp;•&ensp;</grn>';
-		if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
-		html += '<li>'+ ico( v.icon ) + mountpoint
-				+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +'</li>';
-	} );
-	$( '#list' ).html( html );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '.power' ).on( 'click', infoPower );
 $( '.img' ).on( 'click', function() {
+	function htmlLegend( data, key, val ) {
+		if ( typeof data !== 'object' ) data = [ [ data, key, val ] ];
+		var html = '';
+		data.forEach( el => {
+			html += '<c>'+ el[ 1 ] +':<a class="'+ el[ 0 ] +'">'+ el[ 2 ] +'</a></c> ';
+		} );
+		return html
+	}
 	var name    = $( this ).data( 'name' );
-	var vcc1    = htmlC( 'ora', 'VCC', 1 );
+	var vcc1    = htmlLegend( 'ora', 'VCC', 1 );
 	var i2c     = '<br><wh>I²C:</wh>';
-	var scasdl  = htmlC( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
+	var scasdl  = htmlLegend( [ [ 'bll', 'SDA', 3 ], [ 'bll', 'SCL', 5 ] ] );
 	var gnd     = '<p class="gpiopins"><c>GND:(any &cir; pin)</c> &emsp; ';
 	var title   = {
 		  lcd           : [ 'TFT 3.5" LCD' ]
@@ -881,19 +885,19 @@ $( '.img' ).on( 'click', function() {
 		, vuled         : [ 'VU LED',         'vuled' ]
 	}
 	var txt     = {
-		  lcdchar       : gnd +'<wh>GPIO:</wh> '+ htmlC( [ 
+		  lcdchar       : gnd +'<wh>GPIO:</wh> '+ htmlLegend( [ 
 								  [ 'red', 'VCC',   4 ]
 								, [ 'grn', 'RS',   15 ]
 								, [ 'grn', 'RW',   18 ]
 								, [ 'grn', 'E',    16 ]
 								, [ 'grn', 'D4-7', '21-24' ]
 							] )
-						+ i2c + vcc1 + htmlC( 'red', '5V', 4 ) + scasdl
+						+ i2c + vcc1 + htmlLegend( 'red', '5V', 4 ) + scasdl
 						+'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
 						+'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">'
 		, mpdoled       : gnd + vcc1
 						+ i2c + scasdl
-						+ '<br><wh>SPI:</wh>'+ htmlC( [
+						+ '<br><wh>SPI:</wh>'+ htmlLegend( [
 								  [ 'grn', 'CLK', 23 ]
 								, [ 'grn', 'MOS', 19 ]
 								, [ 'grn', 'RES', 22 ]
@@ -905,7 +909,7 @@ $( '.img' ).on( 'click', function() {
 						  +'<br><c>+: not use</c></p>'
 	}
 	var list    = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
-	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += gpiosvg;
+	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += util.gpiosvg;
 	if ( name in txt ) list += '<br>'+ txt[ name ];
 	var pinhide = {
 		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
@@ -919,7 +923,7 @@ $( '.img' ).on( 'click', function() {
 			if ( name in pinhide ) {
 				pinhide[ name ].forEach( n => {
 					$( '.board .p'+ n ).addClass( 'hide' );
-					$( '.bcm .p'+ board2bcm[ n ] ).addClass( 'hide' );
+					$( '.bcm .p'+ util.board2bcm[ n ] ).addClass( 'hide' );
 				} );
 			}
 			$( '#infoList svg .power' ).toggleClass( 'hide', [ 'mpdoled', 'rotaryencoder' ].includes( name ) );
@@ -980,9 +984,6 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	}
 	contextMenu();
 } );
-$( '#i2s' ).on( 'click', function() {
-	i2sSelect.option();
-} );
 $( '#i2smodule' ).on( 'input', function() {
 	var aplayname = this.value;
 	var icon      = 'i2smodule';
@@ -992,7 +993,7 @@ $( '#i2smodule' ).on( 'input', function() {
 	} else {
 		bash( [ 'i2smodule', aplayname, $( this ).find( ':selected' ).text(), 'CMD APLAYNAME OUTPUT' ] );
 		if ( ! aplayname ) {
-			i2sSelect.hide();
+			util.i2sSelect.hide();
 			var msg = 'Disable ...';
 		} else {
 			var msg = S.i2smodule ? 'Change ...' : 'Enable ...';
@@ -1003,9 +1004,9 @@ $( '#i2smodule' ).on( 'input', function() {
 	if ( $( '#i2smodule option' ).length > 2 ) return
 	
 	$( '#i2smodule' ).select2( 'close' );
-	i2sSelect.option();
+	util.i2sSelect.option();
 } ).on( 'select2:close', function () {
-	if ( ! this.value ) i2sSelect.hide();
+	if ( ! this.value ) util.i2sSelect.hide();
 } );
 $( '#hostname' ).on( 'click', function() {
 	SW = {

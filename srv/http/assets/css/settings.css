@@ -482,9 +482,6 @@ input.disabled + .switchlabel:after {
 .setting {
 	position: absolute;
 }
-.setting.disabled {
-	color: var( --cg ) !important;
-}
 .cg {
 	background: var( --cg );
 }

@@ -113,6 +113,11 @@ function playbackButton() {
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
+	if ( page === 'features' && ! /features$/.test( window.location.href ) ) {
+		util.redirect();
+		return
+	}
+	
 	bash( page +'-data.sh', data => {
 		if ( ! list2JSON( data ) ) return // on load, try catching any errors
 		
@@ -137,7 +142,9 @@ function showContent() {
 	loaderHide();
 }
 function switchCancel() {
-	$( '#'+ SW.id ).prop( 'checked', S[ SW.id ] );
+	$( '#'+ SW.id )
+		.prop( 'checked', S[ SW.id ] )
+		.removeClass( 'disabled' );
 	SWreset();
 	bannerHide();
 }
@@ -151,14 +158,18 @@ function switchEnable() {
 	SWreset();
 }
 function switchSet() {
-	if ( page === 'camilla' && V.tab !== 'devices' ) return
+	var $switch = $( '.switch' );
+	$switch.removeClass( 'disabled' );
+	if ( ! $switch.length || ( page === 'camilla' && V.tab !== 'devices' ) ) return
 	
-	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
+	$switch.each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
-		var id = el.id.slice( 8 ); // setting-id > id
-		$( el ).toggleClass( 'hide', ! S[ id ] || ! ( id in config ) )
+		var $this = $( el );
+		var id    = el.id.slice( 8 ); // setting-id > id
+		id in config ? $this.toggleClass( 'hide', ! S[ id ] ) : $this.remove();
 	} );
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
+	showContent();
 }
 function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
@@ -213,12 +224,8 @@ function psMpdPlayer( data ) {
 	[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
 	playbackButton();
 }
-function psMpdUpdate( data ) {
-	if ( page === 'player' && 'done' in data ) {
-		S.counts     = data.done;
-		S.updatetime = data.updatetime
-		renderStatus();
-	}
+function psMpdUpdate() {
+	return
 }
 function psPlayer( data ) {
 	var player_id = {
@@ -247,12 +254,11 @@ function psRefresh( data ) {
 function psReload( data ) {
 	if ( localhost ) location.reload();
 }
-function psStorage( data ) {
-	if ( page === 'system' ) {
-		S.liststorage = data.list;
-		renderStorage();
-		if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
-	}
+function psStorage( data ) { // system.js
+	return
+}
+function psVolume() { // camilla.js, player.js, system.js
+	return
 }
 function psWlan( data ) {
 	if ( data && 'reboot' in data ) {
@@ -485,26 +491,30 @@ $( '.switch' ).on( 'click', function() {
 	var id = SW.id;
 	var $this   = $( this );
 	var checked = $this.prop( 'checked' );
-	if ( $this.hasClass( 'disabled' ) ) {
+	if ( $this.hasClass( 'disabled' ) ) {     // disabled
 		$this.prop( 'checked', ! checked );
 		info( {
 			  ...SW
 			, message : $this.prev().html()
 		} );
-	} else if ( checked ) {
-		var $setting = $( '#setting-'+ id ); 
-		if ( id in config._prompt ) {
+		return
+	}
+	
+	$this.addClass( 'disabled' );
+	var $setting = $( '#setting-'+ id ); 
+	if ( checked ) {                  // enable
+		if ( id in config ) {                //    config
+			$setting.trigger( 'click' );
+		} else if ( id in config._prompt ) { //    prompt
 			$this.prop( 'checked', false );
 			config._prompt[ id ]();
-		} else if ( id in config ) {
-			$setting.trigger( 'click' );
-		} else {
+		} else {                             //    no config
 			S[ id ] = true;
 			notifyCommon( true );
 			bash( [ id ], error => {
 				if ( error ) {
 					S[ id ] = false;
-					$( '#setting-'+ id ).addClass( 'hide' );
+					$setting.addClass( 'hide' );
 					bannerHide();
 					info( {
 						  ...SW
@@ -513,12 +523,12 @@ $( '.switch' ).on( 'click', function() {
 				}
 			}, 'text' );
 		}
-	} else {
+	} else {                                 // disable
 		if ( page === 'camilla' ) {
 			DEV[ id ] = null;
 			setting.save( SW.title, 'Disable ...' );
-			$( '#setting-'+ id ).addClass( 'hide' );
-		} else if ( '_disable' in config && id in config._disable ) {
+			$setting.addClass( 'hide' );
+		} else if ( id in config._disable ) {
 			config._disable[ id ]();
 		} else {
 			notifyCommon( 'Disable ...' );

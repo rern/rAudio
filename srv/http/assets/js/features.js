@@ -1,4 +1,3 @@
-var redirect_uri = 'https://rern.github.io/raudio/spotify';
 var config       = {
 	  _disable     : {
 		login : () => {
@@ -15,7 +14,7 @@ var config       = {
 						, disable : true
 						, pwd     : infoVal()
 					}, verified => {
-						if ( verified == -1 ) passwordWrong();
+						if ( verified == -1 ) util.passwordWrong();
 					} );
 				}
 			} );
@@ -129,7 +128,7 @@ var config       = {
 			, ok         : () => {
 				notifyCommon();
 				$.post( 'cmd.php', { cmd: 'login', ...infoVal() }, verified => {
-					if ( verified == -1 ) passwordWrong();
+					if ( verified == -1 ) util.passwordWrong();
 				} );
 			}
 		} );
@@ -328,7 +327,7 @@ var config       = {
 						  response_type : 'code'
 						, client_id     : id
 						, scope         : 'user-read-currently-playing user-read-playback-position'
-						, redirect_uri  : redirect_uri
+						, redirect_uri  : util.redirect
 						, state         : window.location.hostname
 					}
 					window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
@@ -369,7 +368,41 @@ var config       = {
 	}
 }
 var util        = {
-	  scrobble : {
+	  passwordWrong : () => {
+		bannerHide();
+		info( {
+			  ...SW
+			, message : 'Wrong existing password.'
+		} );
+		$( '#login' ).prop( 'checked', S.login );
+	}
+	, redirect : () => { // spotify / scrobble token - from settings.js -  refreshData()
+		var url   = new URL( window.location.href );
+		window.history.replaceState( '', '', '/settings.php?p=features' );
+		var token = url.searchParams.get( 'token' );
+		var code  = url.searchParams.get( 'code' );
+		var error = url.searchParams.get( 'error' );
+		if ( token ) {
+			bash( [ 'scrobblekey', token, 'CMD TOKEN' ], function( error ) {
+				if ( error ) {
+					info( {
+						  icon    : 'scrobble'
+						, title   : 'Scrobbler'
+						, message : error
+					} );
+				} else {
+					S.scrobblekey = true;
+					showContent();
+					$( '#setting-scrobble' ).trigger( 'click' );
+				}
+			} );
+		} else if ( code ) {
+			bash( [ 'spotifytoken', code, util.redirect, 'CMD CODE REDIRECT' ], showContent );
+		} else if ( error ) {
+			infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
+		}
+	}
+	, scrobble : {
 		  key    : () => {
 			info( {
 				  ...SW
@@ -412,7 +445,7 @@ var util        = {
 		}
 	}
 	, spotify  : {
-		  keys   : () => {
+		  keys     : () => {
 			info( {
 				  ...SW
 				, tablabel : [ 'Output', 'Client Keys' ]
@@ -426,7 +459,7 @@ var util        = {
 				}
 			} );
 		}
-		, output : () => {
+		, output   : () => {
 			if ( S.camilladsp ) {
 				info( {
 					  ...SW
@@ -451,15 +484,8 @@ var util        = {
 			} );
 			
 		}
+		, redirect : 'https://rern.github.io/raudio/spotify'
 	}
-}
-function passwordWrong() {
-	bannerHide();
-	info( {
-		  ...SW
-		, message : 'Wrong existing password.'
-	} );
-	$( '#login' ).prop( 'checked', S.login );
 }
 function renderPage() {
 	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
@@ -483,50 +509,12 @@ function renderPage() {
 		$( '#camilladsp' ).toggleClass( 'disabled', S.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
-	if ( /features$/.test( window.location.href ) ) {
-		showContent();
-		return
-	}
-	
-	// spotify / scrobble token
-	var url   = new URL( window.location.href );
-	window.history.replaceState( '', '', '/settings.php?p=features' );
-	var token = url.searchParams.get( 'token' );
-	var code  = url.searchParams.get( 'code' );
-	var error = url.searchParams.get( 'error' );
-	if ( token ) {
-		bash( [ 'scrobblekey', token, 'CMD TOKEN' ], function( error ) {
-			if ( error ) {
-				info( {
-					  icon    : 'scrobble'
-					, title   : 'Scrobbler'
-					, message : error
-				} );
-			} else {
-				S.scrobblekey = true;
-				showContent();
-				$( '#setting-scrobble' ).trigger( 'click' );
-			}
-		} );
-	} else if ( code ) {
-		bash( [ 'spotifytoken', code, redirect_uri, 'CMD CODE URI' ], showContent );
-	} else if ( error ) {
-		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
-	}
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.screenshot' ).on( 'click', function() {
-	info( {
-		  icon        : 'spotify'
-		, title       : 'Spotify for Developers'
-		, message     : '<img src="/assets/img/spotify.gif" style="width: 100%; height: auto; margin-bottom: 0;">'
-		, okno        : true
-	} );
-} );
-$( '#camilladsp, #equalizer' ).on( 'click', function() {
-	if ( S[ this.id ] ) $( this.id === 'camilladsp' ? '#equalizer' : '#camilladsp' ).addClass( 'disabled' );
+$( '#divdsp .switch' ).on( 'click', function() {
+	$( '#divdsp .switch' ).addClass( 'disabled' );
 } );
 
 } );

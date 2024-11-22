@@ -76,6 +76,7 @@ EOF
 	]
 	, [
 		  'id'       => 'mixertype'
+		, 'disabled' => $L_dsp.' is currently enabled.'
 		, 'help'     => <<< EOF
 $B_gear Type:
  · Mixer device: Good - DAC hardware via GUI knob (if available)

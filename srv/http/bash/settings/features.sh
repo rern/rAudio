@@ -413,7 +413,7 @@ spotifytoken )
 				-H 'Content-Type: application/x-www-form-urlencoded' \
 				-d "code=$CODE" \
 				-d grant_type=authorization_code \
-				--data-urlencode "redirect_uri=$URI" )
+				--data-urlencode "redirect_uri=$REDIRECT" )
 	if grep -q -m1 error <<< $tokens; then
 		notify 'spotify blink' 'Spotify' "Error: $( jq -r .error <<< $tokens )"
 		exit

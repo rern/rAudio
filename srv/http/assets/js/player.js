@@ -1,7 +1,3 @@
-var warning  = iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
-			  +'<gr>Signal will be set to original level at 0dB.</gr><br>'
-			  +'Beware of too high volume.</wh>';
-
 var config   = {
 	  _disable     : {
 		  mixertype : () => {
@@ -11,7 +7,7 @@ var config   = {
 				info( {
 					  icon    : 'volume'
 					, title   : 'Volume Control'
-					, message : warning
+					, message : util.warning
 					, cancel  : switchCancel
 					, ok      : () => util.mixerSet( 'none' )
 				} );
@@ -143,7 +139,7 @@ audio_output {
 			  icon       : SW.icon
 			, title      : SW.title +' Volume'
 			, list       : [ control, 'range' ]
-			, footer     : '<br>'+ warning
+			, footer     : '<br>'+ util.warning
 			, values     : S.volume
 			, beforeshow : () => {
 				if ( S.volumemax ) $( '#infoButton' ).addClass( 'hide' );
@@ -154,7 +150,7 @@ audio_output {
 				$range.on( 'input', function() {
 					S.volume = +$range.val();
 					volumeMaxSet();
-					volumeInfoSet();
+					util.volumeSet();
 					bash( [ ...cmd, S.volume, 'CMD CONTROL CARD CURRENT TARGET' ] );
 				} );
 				$( '.inforange i' ).on( 'click', function() {
@@ -164,7 +160,7 @@ audio_output {
 						.trigger( 'input' )
 						.trigger( 'keyup' );
 				} );
-				volumeInfoSet();
+				util.volumeSet();
 			}
 			, cancel     : () => {
 				if ( ! $( '.infofooter' ).hasClass( 'hide' ) ) {
@@ -229,18 +225,18 @@ audio_output {
 	}
 }
 var util     = {
-	  mixerSet : mixertype => {
+	  mixerSet  : mixertype => {
 		notify( 'mpd', 'Mixer Control', 'Change ...' );
 		bash( [ 'mixertype', mixertype, S.output.name, 'CMD MIXERTYPE DEVICE' ] );
 	}
-	, novolume : {
+	, novolume  : {
 		  warning : () => {
 			if ( S.volumedb > -2 ) {
 				util.novolume.set();
 			} else {
 				info( {
 					  ...SW
-					, message : warning
+					, message : util.warning
 					, cancel  : switchCancel
 					, ok      : util.novolume.set
 				} );
@@ -251,7 +247,7 @@ var util     = {
 			bash( [ 'novolume' ] );
 		}
 	}
-	, soxr     : {
+	, soxr      : {
 		  preset : values => {
 			info( {
 				  ...SW
@@ -303,12 +299,29 @@ var util     = {
 			} );
 		}
 	}
+	, statusSet : () => {
+		var htmlstatus =  S.version +'<br>';
+		[ 'song', 'webradio', 'dabradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&ensp;'+ S.counts[ k ].toLocaleString() + sp( 15 ) );
+		if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
+		htmlstatus    += '<br>'+ S.lastupdate;
+		if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';
+		$( '#divstatus .value' ).html( htmlstatus );
+	}
+	, volumeSet : () => {
+		V.local = false;
+		$( '.inforange .value' ).text( S.volume );
+		$( '.inforange input' ).val( S.volume );
+		$( '.inforange .sub' ).text( S.volumedb +' dB' );
+		$( '#infoOk' ).toggleClass( 'disabled', S.volumedb === 0 || S.volumedb === '' );
+	}
+	, warning   : iconwarning +'<wh>Lower speakers / headphones volume<br><br>'
+				 +'<gr>Signal will be set to original level at 0dB.</gr><br>'
+				 +'Beware of too high volume.</wh>'
 }
 
 function renderPage() {
-	S.mixer = S.mixers !== false; // #mixer is not .switch - #setting-mixer
 	playbackButton();
-	renderStatus();
+	util.statusSet();
 	if ( S.bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
 		$( '#divbluealsa' ).removeClass( 'hide' );
@@ -337,23 +350,21 @@ function renderPage() {
 		} else {
 			$( '#divmixer' ).addClass( 'hide' );
 		}
+		$( '#mixertype, #setting-mixertype' ).toggleClass( 'disabled', S.camilladsp );
 		$( '#novolume' ).prop( 'checked', S.novolume );
-		$( '#divmixertype' ).toggleClass( 'hide', S.camilladsp );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.ffmpeg && S.dabradio );
 	}
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
-	
-	showContent();
 }
-function renderStatus() {
-	var htmlstatus =  S.version +'<br>';
-	$.each( S.counts, ( k, v ) => htmlstatus += ico( k +' gr' ) +' '+ v.toLocaleString() + sp( 15 ) );
-	if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
-	htmlstatus += '<br>'+ S.lastupdate;
-	if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';
-	$( '#divstatus .value' ).html( htmlstatus );
+function psMpdUpdate( data ) {
+	if ( 'done' in data ) {
+		$.each( S.counts, ( k, v ) => S[ k ] = data.done[ k ] );
+		S.updatetime  = data.updatetime
+		S.updating_db = false;
+		util.renderStatus();
+	}
 }
 function psVolume( data ) {
 	if ( ! ( 'db' in data ) ) return
@@ -368,15 +379,8 @@ function psVolume( data ) {
 		V.local = true;
 		$( '#infoList' ).removeClass( 'hide' );
 		$( '.confirm' ).addClass( 'hide' );
-		volumeInfoSet();
+		util.volumeSet();
 	}, 300 );
-}
-function volumeInfoSet() {
-	V.local = false;
-	$( '.inforange .value' ).text( S.volume );
-	$( '.inforange input' ).val( S.volume );
-	$( '.inforange .sub' ).text( S.volumedb +' dB' );
-	$( '#infoOk' ).toggleClass( 'disabled', S.volumedb === 0 || S.volumedb === '' );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
