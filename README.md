@@ -41,20 +41,20 @@ Audio player for
 	- NAS
 	- SD card
 - Renderers / Clients - with metadata and coverarts
-	- AirPlay - `shairport-sync`
+	- AirPlay
 	- Bluetooth audio receiver
-	- SnapClient - `snapcast` Multiroom audio client
-	- Spotify Connect - `spotifyd`
-	- UPnP - `upmpdcli`
+	- SnapClient - Multiroom audio client
+	- Spotify Connect
+	- DLNA / UPnP
 - Streamers
 	- Bluetooth audio sender
 	- HTTP (no metadata)
-	- SnapSever - `MPD snapcast`
+	- SnapServer - Multiroom audio client
 	- Web Radio
 	- DAB Radio (Addon)
 - Digital Signal Processors
-	- DSP - `camilladsp`
-	- Equalizer - `alsaequal`
+	- CamillaDSP
+	- Equalizer
 
 ### Supported devices
 - Bluetooth:
