@@ -63,7 +63,7 @@ Audio player for
 - USB:
 	- Bluetooth
 	- DAC
-	- SDR (for DAB radio)
+	- SDR (for DAB Radio)
 	- Wi-Fi
 - GPIO:
 	- [I²S audio module](https://github.com/rern/rAudio/blob/main/I2S_modules.md)
@@ -77,7 +77,7 @@ Audio player for
 - Not applicable on Raspberry Pi `1` or `Zero`:
 	- GUI on local screen
 	- DSP
-	- RTL-SDR (for DAB radio)
+	- DAB Radio
 
 ### Default root password
 - `ros`
