@@ -5,12 +5,15 @@
 args2var "$1"
 
 ! playerActive mpd && $dirbash/cmd.sh playerstop
-# iwd
-if [[ $( ls /var/lib/iwd/ap ) ]]; then
-	sed -i -E -e 's/(Passphrase=).*/\1raudioap/
+# hostname
+$dirsettings/system.sh 'hostname
+rAudio
+CMD NAME'
+# accesspoint
+sed -i -E -e 's/(Passphrase=).*/\1raudioap/
 ' -e 's/(Address=|Gateway=).*/\1192.168.5.1/
-' /var/lib/iwd/ap/$( hostname ).ap
-fi
+' /var/lib/iwd/ap/rAudio.ap
+
 # localbrowser
 [[ -e /usr/bin/firefox ]] && rm -rf /root/.mozilla
 # mpd
