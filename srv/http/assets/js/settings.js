@@ -470,7 +470,7 @@ if ( $( '#menu' ).length ) {
 		if ( ! $( e.target ).is( 'pre.status' ) ) $( '.entries' ).siblings( 'pre' ).last().addClass( 'hide' );
 	} );
 }
-$( '.switch, .setting, .col-r input' ).on( 'click', function() {
+$( '.switch, .setting' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();

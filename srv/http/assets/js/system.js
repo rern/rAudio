@@ -276,6 +276,29 @@ var util          = {
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 	}
 	, gpiosvg      : $( '#gpiosvg' ).html()
+	, hostname     : () => {
+		SW = {
+			  id    : 'hostname'
+			, icon  : 'hostname'
+			, title : 'Player Name'
+		}
+		info( {
+			  ...SW
+			, list         : [ 'Name', 'text' ]
+			, values       : { NAME: S.hostname }
+			, checkblank   : true
+			, checkchanged : true
+			, beforeshow   : () => {
+				$( '#infoList input' ).on( 'input', function() {
+					$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
+				} );
+			}
+			, ok           : () => {
+				switchEnable();
+				$( '#hostname' ).addClass( 'disabled' );
+			}
+		} );
+	}
 	, i2sSelect    : {
 		  hide   : () => {
 			$( '#i2s' ).prop( 'checked', false );
@@ -534,6 +557,25 @@ var util          = {
 			} );
 		}
 	}
+	, refresh      : () => {
+		var $this = $( '.refresh' );
+		if ( $this.hasClass( 'blink' ) ) {
+			clearInterval( V.intstatus );
+			$this
+				.removeClass( 'i-refresh blink i-flash wh' )
+				.addClass( 'i-refresh' );
+			return
+		}
+		
+		$this.addClass( 'blink wh' )
+		V.intstatus = setInterval( () => {
+			bash( 'system-data.sh status', data => {
+				$( '#divstatus .value' ).html( data );
+				$this.toggleClass( 'i-refresh blink i-flash' );
+				setTimeout( () => $this.toggleClass( 'i-refresh blink i-flash' ), 300 );
+			} );
+		}, 10000 );
+		}
 	, relays       : {
 		  name   : data => {
 			var name   = data.relaysname;
@@ -844,7 +886,9 @@ function renderPage() {
 		util.i2sSelect.hide();
 	}
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
-	$( '#hostname' ).val( S.hostname );
+	$( '#hostname' )
+		.val( S.hostname )
+		.removeClass( 'disabled' );
 	$( '#avahiurl' ).text( S.hostname +'.local' );
 	if ( $( '#timezone option' ).length ) {
 		$( '#timezone' ).val( S.timezone );
@@ -932,28 +976,8 @@ $( '.img' ).on( 'click', function() {
 		, okno       : true
 	} );
 } );
-$( '.refresh' ).on( 'click', function() {
-	var $this = $( this );
-	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( V.intstatus );
-		$this
-			.removeClass( 'i-refresh blink i-flash wh' )
-			.addClass( 'i-refresh' );
-		return
-	}
-	
-	$this.addClass( 'blink wh' )
-	V.intstatus = setInterval( () => {
-		bash( 'system-data.sh status', data => {
-			$( '#divstatus .value' ).html( data );
-			$this.toggleClass( 'i-refresh blink i-flash' );
-			setTimeout( () => $this.toggleClass( 'i-refresh blink i-flash' ), 300 );
-		} );
-	}, 10000 );
-} );
-$( '.addnas' ).on( 'click', function() {
-	util.mount.mount();
-} );
+$( '.refresh' ).on( 'click', util.refresh );
+$( '.addnas' ).on( 'click', util.mount.mount );
 $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
@@ -1008,26 +1032,7 @@ $( '#i2smodule' ).on( 'input', function() {
 } ).on( 'select2:close', function () {
 	if ( ! this.value ) util.i2sSelect.hide();
 } );
-$( '#hostname' ).on( 'click', function() {
-	SW = {
-		  id    : 'hostname'
-		, icon  : 'hostname'
-		, title : 'Player Name'
-	}
-	info( {
-		  ...SW
-		, list         : [ 'Name', 'text' ]
-		, values       : { NAME: S.hostname }
-		, checkblank   : true
-		, checkchanged : true
-		, beforeshow   : () => {
-			$( '#infoList input' ).on( 'input', function() {
-				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
-			} );
-		}
-		, ok           : switchEnable
-	} );
-} );
+$( '#hostname' ).on( 'click', util.hostname );
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'timezone', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', this.value, 'CMD TIMEZONE' ] );
