@@ -66,25 +66,29 @@ EOF
 $bset_config
 EOF
 ];
-$htmls = [
-	  'volume' => '
+$htmls = ( object )[];
+$htmls->volume = ( object )[];
+$htmls->volume->labels = '
+<a><span class="label">Master</span>
+<gr class="control"></gr></a>
+'.i( 'minus' );
+$htmls->volume->values = '
 <div id="volume" class="slider">
 	<div class="track"></div>
 	<div class="thumb" tabindex="0"></div>
 	<div id="volume-band"></div>
 </div>
-'.i( 'plus' ).'
-<c class="level">0</c>
-'.i( 'volume' )
-	, 'labels' => '
+'.i( 'plus' ).'<c class="level"></c>'.i( 'volume' );
+$htmls->state = ( object )[];
+$htmls->state->labels = '
 Buffer · Load<span class="divclipped hide"> · Clipped</span>
 <br>Sampling<span class="rateadjust"> · Adjust</span>
-'
-	, 'values' => '
+';
+$htmls->state->values = '
 <a class="buffer">'.$dots.'</a> <gr>·</gr> <a class="load">'.$dots.'</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">'.$dots.'</a></span>
 <br><a class="capture">'.$dots.'</a><span class="rateadjust"> <gr>·</gr> <a class="rate">'.$dots.'</a></span>
-'
-];
+';
+
 $tabs     = [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ];
 $htmltabs = [];
 foreach( $tabs as $id ) {
@@ -126,11 +130,8 @@ $head = [
 ];
 $body = [
 	  htmlSectionStatus( 'vu' )
-	, [   'id'    => 'volume'
-		, 'icon'  => 'minus'
-		, 'input' => $htmls[ 'volume' ]
-	]
-	, htmlSectionStatus( 'state', $htmls[ 'labels' ], $htmls[ 'values' ] )
+	, htmlSectionStatus( 'volume', $htmls->volume->labels, $htmls->volume->values )
+	, htmlSectionStatus( 'state',  $htmls->state->labels,  $htmls->state->values )
 	, [
 		  'id'     => 'configuration'
 		, 'status' => true

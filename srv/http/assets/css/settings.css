@@ -329,7 +329,8 @@ heading i.disabled {
 .entries li span,
 .entries .li1,
 .entries .li2,
-.select2-results__options li {
+.select2-results__options li,
+#divvolume .control {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

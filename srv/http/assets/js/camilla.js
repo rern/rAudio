@@ -1950,7 +1950,7 @@ var common    = {
 					Dlist.capture_samplerate.push( samplings );
 					D.main[ 0 ].push( samplings );
 					D0.samplerate      = Object.values( S.samplings )
-					$( '#divvolume .col-l gr' ).text( S.control );
+					$( '#divvolume .control' ).text( S.control );
 					showContent();
 					break;
 				case 'Invalid':

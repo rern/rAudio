@@ -14,7 +14,7 @@ if ( $addonsprogress ) {
 //----------------------------------------------------------------------------------
 }
 
-$iconlabel = $camilla || $features || $system;
+$iconlabel = $features || $system;
 $prefix    = '';
 $htmlbar   = '';
 if ( $camilla ) {

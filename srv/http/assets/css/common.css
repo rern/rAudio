@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1731648763' );
+	src         : url( '/assets/fonts/rern.woff2?v=1732266755' );
 }
 @font-face {
 	font-family : Lato;
@@ -404,7 +404,8 @@ code {
 .infomessage,
 .infofooter,
 #bannerTitle,
-#bannerMessage {
+#bannerMessage,
+#infoTitle {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -706,9 +707,6 @@ hr {
 	font-size: 22px;
 	font-weight: 300;
 	line-height: 40px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 	letter-spacing: 2px;
 }
 #infoTab {

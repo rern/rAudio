@@ -100,21 +100,13 @@
 	float: left;
 }
 #divvolume .col-l a {
-	margin-right: 10px;
-}
-#divvolume .col-l i::before {
-	content: '\F518';
+	width: 128px;
 }
 #divvolume .col-r {
 	white-space: nowrap;
 }
 #divvolume .i-minus {
 	line-height: 40px;
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 40px;
-	text-align: center;
 }
 #divvolume .col-r i {
 	width: 40px;
@@ -191,9 +183,6 @@
 }
 .section hr {
 	border-bottom-color: var( --cga );
-}
-.col-l {
-	padding-right: 14px;
 }
 .col-r hr {
 	margin-left: 0;

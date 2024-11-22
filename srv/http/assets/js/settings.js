@@ -5,7 +5,6 @@ Naming must be the same for:
 	bash   - cmd=NAME, save to NAME.conf
 */
 S              = {} // status
-SW             = {} // switch
 V              = {}
 
 function bannerReset() {
@@ -145,7 +144,7 @@ function switchCancel() {
 	$( '#'+ SW.id )
 		.prop( 'checked', S[ SW.id ] )
 		.toggleClass( 'disabled', SW.disabled );
-	SWreset();
+	delete SW;
 	bannerHide();
 }
 function switchEnable() {
@@ -155,7 +154,7 @@ function switchEnable() {
 	var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
 	notifyCommon();
 	bash( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
-	SWreset();
+	delete SW;
 }
 function switchSet() {
 	var $switch = $( '.switch' );
@@ -170,9 +169,6 @@ function switchSet() {
 	} );
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 	showContent();
-}
-function SWreset() {
-	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
 }
 
 function psOnMessage( channel, data ) {
@@ -482,9 +478,10 @@ $( '.switch, .setting' ).on( 'click', function() {
 		icon = V.tab || 'camilladsp';
 	}
 	SW = {
-		  id    : id
-		, icon  : icon
-		, title : $( '#div'+ id +' .col-l .label' ).text()
+		  id       : id
+		, icon     : icon
+		, title    : $( '#div'+ id +' .col-l .label' ).text()
+		, disabled : $( this ).hasClass( 'disabled' )
 	}
 } );
 $( '.switch' ).on( 'click', function() {
@@ -500,7 +497,6 @@ $( '.switch' ).on( 'click', function() {
 		return
 	}
 	
-	SW.disabled  = $this.hasClass( 'disabled' );
 	$this.addClass( 'disabled' );
 	var $setting = $( '#setting-'+ id ); 
 	if ( checked ) {                  // enable
