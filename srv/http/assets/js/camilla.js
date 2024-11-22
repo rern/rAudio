@@ -731,6 +731,7 @@ var render    = {
 		S.lscoeffs.forEach( f => {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
+		S.configuration = true; // force always show
 		$( '.container, #setting-configuration' ).removeClass( 'hide' );
 		render.status();
 		bannerHide();

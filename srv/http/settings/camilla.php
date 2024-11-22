@@ -1,5 +1,5 @@
 <?php
-$id_data = [
+$id_data         = [
 	  'volume'              => [ 'label' => 'Master',        'sub' => 'hw' ]
 	, 'configuration'       => [ 'label' => 'Configuration', 'sub' => 'current', 'status' => true ]
 	, 'enable_rate_adjust'  => [ 'label' => 'Rate Adjust' ]
@@ -12,15 +12,15 @@ commonVariables( [
 				 , 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
 ] );
 
-$btnfilters = $B_filters.' Context menu: '.$B_graph.$B_edit.' '.$B_remove;
-$btnmixers  = $B_mixers.' Context menu: '.$B_edit.' '.$B_remove;
+$btnfilters      = $B_filters.' Context menu: '.$B_graph.$B_edit.' '.$B_remove;
+$btnmixers       = $B_mixers.' Context menu: '.$B_edit.' '.$B_remove;
 $bset_filters    = $B_filters.' Context menu: '.$B_graph.' '.$B_edit.' '.$B_remove;
 $bset_mixers     = $btnmixers;
 $bset_processors = str_replace( 'mixers' , 'processors', $btnmixers );
 $bset_pipeline   = str_replace( 'filters' , 'pipeline', $btnfilters );
 $bset_config     = str_replace( 'mixers' , 'config', $btnmixers );
 $bset_control    = $B_volume.' '.$B_inverted.' '.$B_linear;
-$help       = [
+$help            = [
 	  'status'      => <<< EOF
 $B_play $B_pause $B_stop Playback control
 
@@ -57,15 +57,15 @@ EOF
 $bset_config
 EOF
 ];
-$options    = [
+$options         = [
 	  [ 'id' => 'enable_rate_adjust',  'returnhtml' => true, 'disabled' => '<wh>Resampler</wh> set as <wh>Synchronous</wh>' ]
 	, [ 'id' => 'capture_samplerate',  'returnhtml' => true ]
 	, [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ]
 	, [ 'id' => 'resampler',           'returnhtml' => true ]
 ];
-$htmloptions = '';
+$htmloptions     = '';
 foreach( $options as $opt ) $htmloptions.= htmlSetting( $opt );
-$tabs     = [
+$tabs            = [
 	  'filters'    => [ 'folderfilter', 'add' ]
 	, 'mixers'     => [ 'add' ]
 	, 'processors' => [ 'add' ]
@@ -73,7 +73,7 @@ $tabs     = [
 	, 'devices'    => [ 'gear' ]
 	, 'config'     => [ 'add' ]
 ];
-$htmltabs = [];
+$htmltabs        = [];
 foreach( array_keys( $tabs ) as $id ) {
 	$html = '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$help[ $id ].'</div>';
 	if ( $id === 'pipeline' ) $html.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
@@ -89,31 +89,31 @@ foreach( array_keys( $tabs ) as $id ) {
 	}
 	$htmltabs[ $id ] = $html.'</div>';
 }
-$volume_labels = '
+$volume_labels   = '
 <a><span class="label">Master</span>
 <gr class="control"></gr></a>'.i( 'minus' );
-$volume_values = '
+$volume_values   = '
 <div id="volume" class="slider">
 	<div class="track"></div>
 	<div class="thumb" tabindex="0"></div>
 	<div id="volume-band"></div>
 </div>'.i( 'plus' ).'<c class="level"></c>'.i( 'volume' );
-$state_labels = '
+$state_labels    = '
 Buffer · Load<span class="divclipped hide"> · Clipped</span>
 <br>Sampling<span class="rateadjust"> · Adjust</span>';
-$dots         = '· · ·';
-$state_values = '
+$dots            = '· · ·';
+$state_values    = '
 <a class="buffer">'.$dots.'</a> <gr>·</gr> <a class="load">'.$dots.'</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">'.$dots.'</a></span>
 <br><a class="capture">'.$dots.'</a><span class="rateadjust"> <gr>·</gr> <a class="rate">'.$dots.'</a></span>';
 
 //////////////////////////////////
-$head = [ 
+$head            = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
 	, 'button' => [ 'mpd icon', 'play playback' ]
 	, 'help'   => $help[ 'status' ]
 ];
-$body = [
+$body            = [
 	  htmlSectionStatus( 'vu' )
 	, htmlSectionStatus( 'volume', $volume_labels, $volume_values )
 	, htmlSectionStatus( 'state',  $state_labels,  $state_values )
@@ -135,7 +135,7 @@ foreach( $tabs as $id => $button ) {
 	$body = [ $htmltabs[ $id ] ];
 	htmlSection( $head, $body, $id );
 }
-$htmlmenu = '<div id="menu" class="menu hide">';
+$htmlmenu        = '<div id="menu" class="menu hide">';
 foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete' ] as $c ) {
 	$htmlmenu.= '<a class="'.$c.'">'.i( $c ).ucfirst( $c ).'</a>';
 }
