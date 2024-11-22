@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20241118
+# 20241122
 file=$dirsystem/lcdchar.conf
 if [[ -e $file ]] && grep -q -m1 ^0= $file; then
 	rm $dirsystem/lcdchar*

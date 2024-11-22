@@ -844,8 +844,8 @@ function renderPage() {
 		util.i2sSelect.hide();
 	}
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
-	$( '#hostname' ).val( S.playername );
-	$( '#avahiurl' ).text( S.playername +'.local' );
+	$( '#hostname' ).val( S.hostname );
+	$( '#avahiurl' ).text( S.hostname +'.local' );
 	if ( $( '#timezone option' ).length ) {
 		$( '#timezone' ).val( S.timezone );
 	} else {
@@ -1017,7 +1017,7 @@ $( '#hostname' ).on( 'click', function() {
 	info( {
 		  ...SW
 		, list         : [ 'Name', 'text' ]
-		, values       : { NAME: S.playername }
+		, values       : { NAME: S.hostname }
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {

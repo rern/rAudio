@@ -92,12 +92,12 @@ data+='
 , "audioaplayname" : "'$audioaplayname'"
 , "audiocards"     : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
 , "audiooutput"    : "'$audiooutput'"
+, "hostname"       : "'$( hostname )'"
 , "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"
 , "lan"            : '$( ip -br link | grep -q ^e && echo true )'
 , "liststorage"    : '$( $dirsettings/system-storage.sh )'
 , "nfsserver"      : '$nfsserver'
-, "playername"     : "'$( hostname )'"
 , "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
