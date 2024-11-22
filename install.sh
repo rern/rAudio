@@ -25,7 +25,7 @@ if [[ -e $file ]] && grep -q Requires $file; then
 fi
 
 # 20241108
-[[ $( pacman -Q cava ) != 'cava 0.10.2-2' ]] && pacman -Sy --noconfirm cava
+[[ $( pacman -Q cava ) < 'cava 0.10.2-2' ]] && pacman -Sy --noconfirm cava
 
 rm -f $dirsystem/lcdmodel
 
