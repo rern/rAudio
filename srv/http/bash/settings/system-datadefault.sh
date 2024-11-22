@@ -63,10 +63,7 @@ rm -f /root/.bash_history
 # webradio
 if [[ ! -e /tmp/webradio ]]; then # system-datareset.sh - keep existing
 	curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
-	echo '{
-  "playlists" : 0
-, "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
-}' > $dirmpd/counts
+	$dirbash/cmd-list.sh
 fi
 
 dirPermissions
