@@ -142,7 +142,9 @@ function showContent() {
 	loaderHide();
 }
 function switchCancel() {
-	$( '#'+ SW.id ).prop( 'checked', S[ SW.id ] );
+	$( '#'+ SW.id )
+		.prop( 'checked', S[ SW.id ] )
+		.toggleClass( 'disabled', SW.disabled );
 	SWreset();
 	bannerHide();
 }
@@ -498,6 +500,7 @@ $( '.switch' ).on( 'click', function() {
 		return
 	}
 	
+	SW.disabled  = $this.hasClass( 'disabled' );
 	$this.addClass( 'disabled' );
 	var $setting = $( '#setting-'+ id ); 
 	if ( checked ) {                  // enable
