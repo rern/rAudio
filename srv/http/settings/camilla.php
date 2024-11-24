@@ -66,7 +66,8 @@ EOF
 		, 'help'   => $bset_config
 	]
 ];
-$vubar   = '<div class="vubar"></div><div class="vubar peak X"></div><div class="vubar rms X"></div>';
+$vubar   = '';
+foreach( [ '', 'peak X', 'rms X' ] as $c ) $vubar.= '<div class="vubar '.$c.'"></div>';
 $vugrid  = '';
 $vulabel = '';
 for ( $i = 0; $i < 6; $i++ ) $vugrid.= '<a class="g'.$i.'"></a>';
