@@ -1823,7 +1823,7 @@ var common    = {
 		wscamilla           = new WebSocket( 'ws://'+ location.host +':1234' );
 		wscamilla.onopen    = () => {
 			var interval = setTimeout( () => {
-				if ( wscamilla.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+				if ( wscamilla && wscamilla.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
 					clearTimeout( interval );
 					common.wsGetState();
 					common.wsGetConfig();
