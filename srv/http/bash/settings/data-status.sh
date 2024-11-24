@@ -27,7 +27,7 @@ btinfo )
 $( bluetoothctl info $2 )"
 	;;
 configuration )
-	file=$( getVar CONFIG /etc/default/camilladsp )
+	[[ $2 ]] && file="$dircamilladsp/configs/$2" || file=$( getVar CONFIG /etc/default/camilladsp )
 	cat "$file"
 	;;
 lan )

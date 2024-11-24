@@ -89,7 +89,10 @@ foreach( $id_tab as $id => $data ) {
 		$html.= '
 <div id="sampling">'.htmlSectionStatus( 'sampling' ).'</div>
 <div id="options">'.$htmloptions.'</div>';
-	} else if ( $id !== 'config' ) {
+	} else if ( $id === 'config' ) {
+		$html.= '
+<pre id="codeconfig" class="status hide"></pre>';
+	} else {
 		$html.= '
 <ul class="entries sub"></ul>';
 	}
@@ -112,7 +115,7 @@ $body            = [
 		, ''
 		, '<div id="vu">
 			<div id="vugrid">'.$vugrid.'</div>
-			<div id="in">'.str_replace( 'X', 'c0', $vubar ).str_replace( 'x', 'c1', $vubar ).'</div>
+			<div id="in">'.str_replace( 'X', 'c0', $vubar ).str_replace( 'X', 'c1', $vubar ).'</div>
 			<div id="vulabel">'.$vulabel.'</div>
 			<div id="out">'.str_replace( 'X', 'p0', $vubar ).'</div>
 		   </div>'
@@ -156,7 +159,7 @@ foreach( $id_tab as $id => $data ) {
 	htmlSection( $head, $body, $id );
 }
 $htmlmenu        = '<div id="menu" class="menu hide">';
-foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete' ] as $c ) {
+foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete', 'info' ] as $c ) {
 	$htmlmenu.= '<a class="'.$c.'">'.i( $c ).ucfirst( $c ).'</a>';
 }
 echo $htmlmenu.'</div>';

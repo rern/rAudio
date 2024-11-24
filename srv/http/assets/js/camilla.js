@@ -1832,7 +1832,7 @@ var common    = {
 						
 						common.wsGetState();
 						if ( S.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
-					}, 1000 );
+					}, 3000 );
 				}
 			}, 100 );
 		}
@@ -2142,7 +2142,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	contextMenu();
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
-	$( '#menu' ).find( '.copy, .rename, .view' ).toggleClass( 'hide', V.tab !== 'config' );
+	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
@@ -2341,6 +2341,29 @@ $( '#menu a' ).on( 'click', function( e ) {
 						}
 					} );
 					break;
+				case 'delete':
+					info( {
+						  icon    : V.tab
+						, title   : 'Configuration'
+						, message : 'Delete <wh>'+ name +'</wh> ?'
+						, oklabel : ico( 'remove' ) +'Delete'
+						, okcolor : red
+						, ok      : () => {
+							bash( [ 'confdelete', name, S.bluetooth, 'CMD NAME BT' ] );
+							notify( V.tab, SW.title, 'Delete ...' );
+						}
+					} );
+					break;
+				break;
+				case 'info':
+					var name = V.li.find( '.name' ).text();
+					bash( 'data-status.sh configuration "'+ name +'"', config => {
+						$( '#codeconfig' )
+							.html( config )
+							.removeClass( 'hide' );
+					} );
+					break;
+				break;
 				case 'rename':
 					info( {
 						  icon         : V.tab
@@ -2356,20 +2379,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 						}
 					} );
 					break;
-				case 'delete':
-					info( {
-						  icon    : V.tab
-						, title   : 'Configuration'
-						, message : 'Delete <wh>'+ name +'</wh> ?'
-						, oklabel : ico( 'remove' ) +'Delete'
-						, okcolor : red
-						, ok      : () => {
-							bash( [ 'confdelete', name, S.bluetooth, 'CMD NAME BT' ] );
-							notify( V.tab, SW.title, 'Delete ...' );
-						}
-					} );
-					break;
-				break;
 			}
 	}
 } );
