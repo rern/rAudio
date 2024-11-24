@@ -25,8 +25,7 @@ var F0        = {
 		, Biquad      : [
 		    'Subtype'
 		  , 'select'
-		  , [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
-			, 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform' ]
+		  , [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO', 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass',  'Allpass',   'AllpassFO',  'LinkwitzTransform' ]
 		]
 		, BiquadCombo : [
 			  'Subtype'
@@ -36,8 +35,8 @@ var F0        = {
 		, Dither      : [
 			  'Subtype'
 			, 'select'
-			, [ 'None', 'Flat', 'Highpass', 'Fweighted441', 'FweightedShort441', 'FweightedLong441', 'Gesemann441', 'Gesemann48', 'Lipshitz441', 'LipshitzLong441'
-			  , 'Shibata441', 'ShibataHigh441', 'ShibataLow441', 'Shibata48', 'ShibataHigh48', 'ShibataLow48', 'Shibata882', 'ShibataLow882', 'Shibata96', 'ShibataLow96', 'Shibata192', 'ShibataLow192' ]
+			, [ 'None',           'Flat',          'Highpass',  'Fweighted441',  'FweightedShort441', 'FweightedLong441', 'Gesemann441',   'Gesemann48', 'Lipshitz441',  'LipshitzLong441', 'Shibata441'
+			  , 'ShibataHigh441', 'ShibataLow441', 'Shibata48', 'ShibataHigh48', 'ShibataLow48',      'Shibata882',       'ShibataLow882', 'Shibata96',  'ShibataLow96', 'Shibata192',      'ShibataLow192' ]
 		]
 	}
 	, freq         : [ 'Frequency', 'number' ]
@@ -214,7 +213,7 @@ var F         = {
 		, passFO            : { name: '', type: '', subtype: '', freq: 1000, name: '' }
 		, shelfFO           : { name: '', type: '', subtype: '', freq: 1000, gain: 0 }
 		, notch             : { name: '', type: '', subtype: '', freq: 1000, q: 0, unit: 'q' }
-		, GeneralNotch      : { name: '', type: '', subtype: '', freq_z: 0, freq_p: 0, q_p: 0, normalize_at_dc:false }
+		, GeneralNotch      : { name: '', type: '', subtype: '', freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
 		, Peaking           : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
 		, LinkwitzTransform : { name: '', type: '', subtype: '', q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
 		, Free              : { name: '', type: '', subtype: '', a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
@@ -255,24 +254,24 @@ var D0        = {
 	, samplerate : [] // ^
 }
 var Dlist     = {
-	  type               : [ 'Type',                 'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
-	, profile            : [ 'Profile',              'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
-	, typeC              : [ 'Type',                 'select' ] // on 'GetSupportedDeviceTypes'
-	, typeP              : [ 'Type',                 'select' ] // ^
-	, deviceC            : [ 'Device',               'select' ] // ^
-	, deviceP            : [ 'Device',               'select' ] // ^
-	, formatC            : [ 'Format',               'select' ] // ^
-	, formatP            : [ 'Format',               'select' ] // ^
-	, filename           : [ 'Filename',             'select', S.lsraw ]
-	, channelsC          : [ 'Channels',             'number' ] // ^
-	, channelsP          : [ 'Channels',             'number' ] // ^
-	, extra_samples      : [ 'Extra samples',        'number' ]
-	, skip_bytes         : [ 'Skip bytes',           'number' ]
-	, read_bytes         : [ 'Read bytes',           'number' ]
-	, capture_samplerate : [ 'Capture samplerate',   'select' ] // ^
-	, exclusive          : [ 'Exclusive',            'checkbox' ]
-	, loopback           : [ 'Loopback',             'checkbox' ]
-	, change_format      : [ 'Change format',        'checkbox' ]
+	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
+	, profile            : [ 'Profile',            'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
+	, typeC              : [ 'Type',               'select' ] // on 'GetSupportedDeviceTypes'
+	, typeP              : [ 'Type',               'select' ] // ^
+	, deviceC            : [ 'Device',             'select' ] // ^
+	, deviceP            : [ 'Device',             'select' ] // ^
+	, formatC            : [ 'Format',             'select' ] // ^
+	, formatP            : [ 'Format',             'select' ] // ^
+	, filename           : [ 'Filename',           'select', S.lsraw ]
+	, channelsC          : [ 'Channels',           'number' ] // ^
+	, channelsP          : [ 'Channels',           'number' ] // ^
+	, extra_samples      : [ 'Extra samples',      'number' ]
+	, skip_bytes         : [ 'Skip bytes',         'number' ]
+	, read_bytes         : [ 'Read bytes',         'number' ]
+	, capture_samplerate : [ 'Capture samplerate', 'select' ] // ^
+	, exclusive          : [ 'Exclusive',          'checkbox' ]
+	, loopback           : [ 'Loopback',           'checkbox' ]
+	, change_format      : [ 'Change format',      'checkbox' ]
 }
 var D1        = {
 	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.formatC, Dlist.channelsC ]
@@ -327,12 +326,12 @@ var D         = {
 			, [ 'Sinc length',         'number' ]
 			, [ 'Oversampling factor', 'number' ]
 			, [ 'F cutoff',            'number' ]
-			, [ 'Interpolation',       'select', [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ] ]
-			, [ 'Window',              'select', [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ] ]
+			, [ 'Interpolation',       'select', [ 'Nearest', 'Linear',    'Quadratic',       'Cubic' ] ]
+			, [ 'Window',              'select', [ 'Hann2',   'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ] ]
 		]
 		, AsyncPoly    : [
 			  Dlist.type
-			, [ 'Interpolation',      'select', [ 'Linear', 'Cubic', 'Quintic', 'Septic' ] ]
+			, [ 'Interpolation',       'select', [ 'Linear',  'Cubic',     'Quintic',         'Septic' ] ]
 		]
 		, Synchronous : [
 			  Dlist.type
