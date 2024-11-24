@@ -1,5 +1,5 @@
 <?php
-$id_data         = [
+$id_data  = [
 	  'volume'              => [ 'label' => 'Master',        'sub' => 'hw' ]
 	, 'configuration'       => [ 'label' => 'Configuration', 'sub' => 'current', 'status' => true ]
 	, 'enable_rate_adjust'  => [ 'label' => 'Rate Adjust' ]
@@ -12,38 +12,37 @@ commonVariables( [
 				 , 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
 ] );
 
-$btnfilters      = $B_filters.' Context menu: '.$B_graph.$B_edit.' '.$B_remove;
-$btnmixers       = $B_mixers.' Context menu: '.$B_edit.' '.$B_remove;
-$bset_filters    = $B_filters.' Context menu: '.$B_graph.' '.$B_edit.' '.$B_remove;
-$bset_mixers     = $btnmixers;
-$bset_processors = str_replace( 'mixers' , 'processors', $btnmixers );
-$bset_pipeline   = str_replace( 'filters' , 'pipeline', $btnfilters );
-$bset_config     = str_replace( 'mixers' , 'config', $btnmixers );
-$bset_control    = $B_volume.' '.$B_inverted.' '.$B_linear;
+$bset     = ( object )[];
+$bset->filters    = $B_filters.' Context menu: '.$B_graph.' '.$B_edit.' '.$B_remove;
+$bset->mixers     = $B_mixers.' Context menu: '.$B_edit.' '.$B_remove;
+$bset->processors = str_replace( 'mixers' , 'processors', $bset->mixers );
+$bset->pipeline   = str_replace( 'filters' , 'pipeline', $bset->filters );
+$bset->config     = str_replace( 'mixers' , 'config', $bset->mixers );
+$bset->control    = $B_volume.' '.$B_inverted.' '.$B_linear;
 
-$id_tab          = [
+$id_tab   = [
 	  'filters'    => [
 		  'button' => [ 'folderfilter', 'add' ]
 		, 'help'   => <<< EOF
 $B_folderfilter $B_plus Finite Impulse Response (FIR) files · New
-$bset_filters Graph · Edit · Delete
+$bset->filters Graph · Edit · Delete
 $B_code Set 0
-$bset_control Mute · Invert · Linear (Gain)
+$bset->control Mute · Invert · Linear (Gain)
 EOF
 	]
 	, 'mixers'     => [
 		  'button' => [ 'add' ]
 		, 'help'   => <<< EOF
 $B_plus New
-$bset_mixers Edit · Delete
-$B_code $bset_control Set 0 · Mute · Invert · Linear
+$bset->mixers Edit · Delete
+$B_code $bset->control Set 0 · Mute · Invert · Linear
 EOF
 	]
 	, 'processors' => [
 		  'button' => [ 'add' ]
 		, 'help'   => <<< EOF
 $B_plus New
-$bset_processors Edit · Delete
+$bset->processors Edit · Delete
 EOF
 	]
 		
@@ -51,7 +50,7 @@ EOF
 		  'button' => [ 'flowchart', 'add' ]
 		, 'help'   => <<< EOF
 $B_flowchart $B_plus Step flowchart · New
-$bset_pipeline Graph · Edit · Delete
+$bset->pipeline Graph · Edit · Delete
 EOF
 	]
 	, 'devices'    => [
@@ -63,25 +62,25 @@ EOF
 	]
 	, 'config'     => [
 		  'button' => [ 'add' ]
-		, 'help'   => $bset_config
+		, 'help'   => $bset->config
 	]
 ];
-$vubar   = '';
+$vubar    = '';
 foreach( [ '', 'peak X', 'rms X' ] as $c ) $vubar.= '<div class="vubar '.$c.'"></div>';
-$vugrid  = '';
-$vulabel = '';
+$vugrid   = '';
+$vulabel  = '';
 for ( $i = 0; $i < 6; $i++ ) $vugrid.= '<a class="g'.$i.'"></a>';
 foreach ( [ -60, -48, -36, -24, -12, 0, 'dB' ] as $i => $db ) $vulabel.= '<a class="l'.$i.'">'.$db.'</a>';
 
-$options         = [
+$options  = [
 	  [ 'id' => 'enable_rate_adjust',  'returnhtml' => true, 'disabled' => '<wh>Resampler</wh> set as <wh>Synchronous</wh>' ]
 	, [ 'id' => 'capture_samplerate',  'returnhtml' => true ]
 	, [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ]
 	, [ 'id' => 'resampler',           'returnhtml' => true ]
 ];
-$htmloptions     = '';
-foreach( $options as $opt ) $htmloptions.= htmlSetting( $opt );
-$htmltabs        = [];
+$htmlopt  = '';
+foreach( $options as $opt ) $htmlopt.= htmlSetting( $opt );
+$htmltab  = [];
 foreach( $id_tab as $id => $data ) {
 	$html = '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$data[ 'help' ].'</div>';
 	if ( $id === 'pipeline' ) $html.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
@@ -89,7 +88,7 @@ foreach( $id_tab as $id => $data ) {
 	if ( $id === 'devices' ) {
 		$html.= '
 <div id="sampling">'.htmlSectionStatus( 'sampling' ).'</div>
-<div id="options">'.$htmloptions.'</div>';
+<div id="options">'.$htmlopt.'</div>';
 	} else if ( $id === 'config' ) {
 		$html.= '
 <pre id="codeconfig" class="status hide"></pre>';
@@ -97,10 +96,10 @@ foreach( $id_tab as $id => $data ) {
 		$html.= '
 <ul class="entries sub"></ul>';
 	}
-	$htmltabs[ $id ] = $html.'</div>';
+	$htmltab[ $id ] = $html.'</div>';
 }
 //////////////////////////////////
-$head            = [ 
+$head     = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
 	, 'button' => [ 'mpd icon', 'play playback' ]
@@ -110,7 +109,7 @@ $B_play $B_pause $B_stop Playback control
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
 ];
-$body            = [
+$body     = [
 	  htmlSectionStatus(
 		  'vu'
 		, ''
@@ -156,10 +155,10 @@ foreach( $id_tab as $id => $data ) {
 		, 'button' => $data[ 'button' ]
 		, 'status' => $id === 'devices' ? 'output' : false
 	];
-	$body = [ $htmltabs[ $id ] ];
+	$body = [ $htmltab[ $id ] ];
 	htmlSection( $head, $body, $id );
 }
-$htmlmenu        = '<div id="menu" class="menu hide">';
+$htmlmenu = '<div id="menu" class="menu hide">';
 foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete', 'info' ] as $c ) {
 	$htmlmenu.= '<a class="'.$c.'">'.i( $c ).ucfirst( $c ).'</a>';
 }
