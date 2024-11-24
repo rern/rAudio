@@ -754,33 +754,16 @@ var render    = {
 			.html( htmlOption( S.lsconfigs ) )
 			.val( S.configname );
 		$( '#configuration' ).prop( 'disabled', $( '#configuration option' ).length === 1 );
-		if ( $( '.vubar' ).length ) return
+		if ( V.runonce ) return
 		
 		// run once
-		var vugrid  = '<div id="vugrid">';
-		for ( i = 0; i < 6; i++ ) vugrid  += '<a class="g'+ i +'"></>';
-		var vulabel = '<div id="vulabel">';
-		[ -60, -48, -36, -24, -12, 0, 'dB' ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
-		var vubar   = '<div id="vu">'
-					 + vugrid +'</div>'
-					 +'<div id="in">';
-		[ 'capture', 'playback' ].forEach( k => {
-			var lb = false;
-			var cp = k[ 0 ];
-			if ( ! lb && k === 'playback' ) {
-				lb = true;
-				vubar += '</div>'+ vulabel +'</div><div id="out">';
-			}
-			for ( i = 0; i < DEV[ k ].channels; i++ ) {
-				vubar += '<div class="vubar"></div>'
-						+'<div class="vubar peak '+ cp + i +' "></div>'
-						+'<div class="vubar rms '+ cp + i +' "></div>';
-			}
-		} );
-		$( '#divvu .value' ).html( vubar +'</div></div>' );
-		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
+		V.runonce = true;
+		if ( DEV.playback.channels > 1 ) {
+			var htmlout = $( '#out' ).html();
+			for ( i = 1; i < DEV.playback.channels; i++ ) $( '#out' ).append( htmlout.replace( '0', i +'' ) );
+		}
+		var ch      = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
-		$( '#devices' ).prepend( $( '#codeoutput' ) );
 	}
 	, tab         : () => {
 		$( '.section:not( #divstatus )' ).addClass( 'hide' );
@@ -1908,7 +1891,10 @@ var common    = {
 					}
 					break;
 				case 'GetState':
-					if ( 'intervalvu' in V || S.state !== 'play' ) return
+					if ( 'intervalvu' in V || S.state !== 'play' ) {
+						$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( V.dots );
+						return
+					}
 					
 					V.intervalvu = setInterval( () => wscamilla.send( '"GetSignalLevels"' ), 100 );
 					break;
