@@ -28,7 +28,7 @@ $id_data     = [
 	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',          'status' => true, 'exist' => $onboardwlan ]
 ];
 commonVariables( [
-	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'usbdrive' ]
+	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'rserver', 'usbdrive' ]
 	, 'labels'  => [
 		  [ 'Bluetooth',     'bluetooth' ]
 		, [ 'Device' ]
@@ -287,7 +287,7 @@ Note:
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: $T->features$L->serverraudio
-	Clients: $L->shareddata <btn>{$I( 'rserver' )} rAudio</btn>
+	Clients: $L->shareddata <btn>$B->rserver rAudio</btn>
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create shares for music <c>source</c> and <c>data</c>

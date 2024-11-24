@@ -22,7 +22,7 @@ $id_data      = [
 	, 'volumelimit'    => [ 'label' => 'Volume Limit' ]
 ];
 commonVariables( [
-	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'usbdrive' ]
+	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'rserver', 'usbdrive', 'warning' ]
 	, 'labels'  => [
 		  [ 'Equalizer',     'equalizer' ]
 		, [ 'DSP',           'camilladsp' ]
@@ -254,14 +254,14 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· $T->system$L->shareddata <btn>{$I( 'rserver' )} rAudio</btn>
+	· $T->system$L->shareddata <btn>$B->rserver rAudio</btn>
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
 	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
 	· $fileexplorer
 	 
-{$I( 'warning' )} Permissions for <c>/mnt/MPD/NAS</c>:
+$B->warning Permissions for <c>/mnt/MPD/NAS</c>:
 	· Read and write for everyone on <c>$ipsub.*</c>
 EOF
 	]

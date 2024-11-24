@@ -121,6 +121,9 @@ heading + .helpblock {
 	text-align: center;
 	border-radius: 2px;
 }
+.helpblock btn .btn {
+	border: none;
+}
 .helpblock p {
 	margin: 0 0 0 10px;
 }
