@@ -74,7 +74,7 @@ if ( ! $page ) { // main
 		$pagetitle = 'Addons-Progress';
 	} else if ( $camilla ) {
 		$icon      = 'camilladsp';
-		$pagetitle = 'Camilla DSP';
+		$pagetitle = 'CamillaDSP';
 		$css       = [ ...$css, 'camilla','equalizer' ];
 		$jsp[]     = 'Sortable';
 	} else if ( $guide ) {
