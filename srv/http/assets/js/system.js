@@ -465,7 +465,7 @@ var util          = {
 				, tab        : tab
 				, list       : list
 				, values     : values
-				, focus      : 0
+				, focus      : shareddata ? 1 : 0
 				, checkblank : [ 0, 2 ]
 				, checkip    : [ 1 ]
 				, beforeshow : () => {
@@ -978,7 +978,10 @@ $( '.img' ).on( 'click', function() {
 	} );
 } );
 $( '.refresh' ).on( 'click', util.refresh );
-$( '.addnas' ).on( 'click', util.mount.mount );
+$( '.addnas' ).on( 'click', function() {
+	SW = { icon: 'networks' }
+	util.mount.mount();
+} );
 $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
@@ -1033,9 +1036,7 @@ $( '#i2smodule' ).on( 'input', function() {
 } ).on( 'select2:close', function () {
 	if ( ! this.value ) util.i2sSelect.hide();
 } );
-$( '#ledcalc' ).on( 'click', function() {
-	util.ledcalc();
-} );
+$( '#ledcalc' ).on( 'click', util.ledcalc );
 $( '#hostname' ).on( 'click', util.hostname );
 $( '#timezone' ).on( 'input', function( e ) {
 	notify( 'timezone', 'Timezone', 'Change ...' );
