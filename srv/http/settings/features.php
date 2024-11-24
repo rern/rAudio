@@ -275,6 +275,9 @@ Stop timer:
  · If set, power off.
 EOF
 	]
-	, [ 'id' => 'volumelimit' ]
+	, [
+		  'id'       => 'volumelimit'
+		, 'help'     => 'Startup volume level and maximum volume limit.'
+	]
 ];
 htmlSection( $head, $body, 'others' );

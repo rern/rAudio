@@ -56,7 +56,6 @@ function commonVariables( $list ) {
 		foreach( $tabs as $t ) $T->$t = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
 	}
 }
-$I = 'i'; // for common.php - i() > {$I()} inside heredoc
 
 function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
