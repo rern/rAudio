@@ -1,7 +1,6 @@
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
-	, dots       : '· · ·'
 	, graph      : { filters: [], pipeline: [] }
 	, prevconfig : {}
 	, sortable   : {}
@@ -765,6 +764,7 @@ var render    = {
 		var ch      = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
+	, statusStop  : () => $( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( '· · ·' )
 	, tab         : () => {
 		$( '.section:not( #divstatus )' ).addClass( 'hide' );
 		$( '#div'+ V.tab ).removeClass( 'hide' );
@@ -813,7 +813,7 @@ var render    = {
 		delete V.intervalvu;
 		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
 		$( '.peak' ).css( 'left', 0 );
-		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( V.dots );
+		render.statusStop();
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -1892,7 +1892,7 @@ var common    = {
 					break;
 				case 'GetState':
 					if ( 'intervalvu' in V || S.state !== 'play' ) {
-						$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( V.dots );
+						render.statusStop();
 						return
 					}
 					
