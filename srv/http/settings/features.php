@@ -63,7 +63,7 @@ EOF
 		  'id'       => 'dabradio'
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Software-defined_radio">SDR</a> - Software-defined radio / Digital audio broadcasting
- · Stations: $B->gear <btn>Scan</btn> $T->library $B->dabradio
+ · Stations: $B->gear<btn>Scan</btn> $T->library $B->dabradio
 EOF
 	]
 	, [
@@ -254,7 +254,7 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· $T->system$L->shareddata <btn>$B->rserver rAudio</btn>
+	· $T->system$L->shareddata<btn>$B->rserver rAudio</btn>
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>

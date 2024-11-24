@@ -13,18 +13,18 @@ commonVariables( [
 ] );
 
 $bset     = ( object )[];
-$bset->filters    = $B->filters.' Context menu: '.$B->graph.' '.$B->edit.' '.$B->remove;
-$bset->mixers     = $B->mixers.' Context menu: '.$B->edit.' '.$B->remove;
+$bset->filters    = $B->filters.' Context menu: '.$B->graph.$B->edit.$B->remove;
+$bset->mixers     = $B->mixers.' Context menu: '.$B->edit.$B->remove;
 $bset->processors = str_replace( 'mixers' , 'processors', $bset->mixers );
 $bset->pipeline   = str_replace( 'filters' , 'pipeline', $bset->filters );
 $bset->config     = str_replace( 'mixers' , 'config', $bset->mixers );
-$bset->control    = $B->volume.' '.$B->inverted.' '.$B->linear;
+$bset->control    = $B->volume.$B->inverted.$B->linear;
 
 $id_tab   = [
 	  'filters'    => [
 		  'button' => [ 'folderfilter', 'add' ]
 		, 'help'   => <<< EOF
-$B->folderfilter $B->plus Finite Impulse Response (FIR) files · New
+$B->folderfilter$B->plus Finite Impulse Response (FIR) files · New
 $bset->filters Graph · Edit · Delete
 $B->code Set 0
 $bset->control Mute · Invert · Linear (Gain)
@@ -35,7 +35,7 @@ EOF
 		, 'help'   => <<< EOF
 $B->plus New
 $bset->mixers Edit · Delete
-$B->code $bset->control Set 0 · Mute · Invert · Linear
+$B->code$bset->control Set 0 · Mute · Invert · Linear
 EOF
 	]
 	, 'processors' => [
@@ -49,7 +49,7 @@ EOF
 	, 'pipeline'   => [
 		  'button' => [ 'flowchart', 'add' ]
 		, 'help'   => <<< EOF
-$B->flowchart $B->plus Step flowchart · New
+$B->flowchart$B->plus Step flowchart · New
 $bset->pipeline Graph · Edit · Delete
 EOF
 	]
@@ -57,7 +57,7 @@ EOF
 		  'button' => [ 'gear' ]
 		, 'help'   => <<< EOF
 $B->gear Capture sampling
-$B->input $B->output Device settings
+$B->input$B->output Device settings
 EOF
 	]
 	, 'config'     => [
@@ -104,7 +104,7 @@ $head     = [
 	, 'status' => 'camilladsp'
 	, 'button' => [ 'mpd icon', 'play playback' ]
 	, 'help'   => <<< EOF
-$B->play $B->pause $B->stop Playback control
+$B->play$B->pause$B->stop Playback control
 
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF

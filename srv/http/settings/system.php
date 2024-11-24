@@ -103,7 +103,7 @@ EOF
 $body        = [ <<< EOF
 <ul id="list" class="entries"></ul>
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
-$B->microsd $B->usbdrive $B->networks Context menu</div>
+$B->microsd$B->usbdrive$B->networks Context menu</div>
 <pre id="codestorageinfo" class="status hide"></pre>
 EOF ];
 htmlSection( $head, $body, 'storage' );
@@ -206,7 +206,7 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
- · $B->gear $B->power On / Off
+ · $B->gear$B->power On / Off
 EOF
 	]
 ];

@@ -23,6 +23,7 @@ commonVariables( [
 		  [ 'DAB Radio',   'dabradio' ]
 		, [ 'Device' ]
 		, [ 'DSP',         'camilla' ]
+		, [ 'Equalizer',   'equalizer' ]
 		, [ 'Shared Data', 'networks' ]
 		, [ 'SoX Resampler' ]
 		, [ 'Volume Control' ]
@@ -35,7 +36,7 @@ $head      = [
 	, 'status' => 'mpd'
 	, 'button' => 'play playback'
 	, 'help'   => <<< EOF
-$B->play $B->pause $B->stop Playback control
+$B->play$B->pause$B->stop Playback control
 
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
@@ -64,7 +65,7 @@ EOF
 		  'id'       => 'device'
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
-$B->camilla $B->equalizer · $T->features$L->dsp enabled
+$B->camilla$B->equalizer $T->features Signal Processors enabled
 
 Note: HDMI may not be available unless connect before boot.
 EOF
@@ -110,7 +111,7 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
 	· Output $L->volumecontrol
 	· Volume - All options
 	· Options  $L->soxresampler
-	· $T->features Signal Processors
+	· $T->features$L->dsp $L->equalizer
 EOF
 	]
 	, [
