@@ -29,36 +29,31 @@ $body = [
 htmlSection( $head, $body[, $id] );
 */
 function commonVariables( $list ) {
+	global $B, $L, $M, $T;
 	extract( $list );
+	if ( isset( $buttons ) ) {
+		$B = ( object )[];
+		foreach( $buttons as $b ) $B->$b = i( $b.' btn' );
+	}
 	if ( isset( $labels ) ) {
-		foreach( $labels as $l ) { // $L_xxx - switch label
-			$icon  = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
-			$l     = $l[ 0 ];
-			$name  = 'L_'.strtolower( preg_replace( '/ |-/', '', $l ) );
-			global $$name;
-			$$name = '<a class="helpmenu label">'.$l.$icon.'</a>';
+		$L = ( object )[];
+		foreach( $labels as $l ) {
+			$icon     = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
+			$l        = $l[ 0 ];
+			$name     = strtolower( preg_replace( '/ |-/', '', $l ) );
+			$L->$name = '<a class="helpmenu label">'.$l.$icon.'</a>';
 		}
 	}
 	if ( isset( $menus ) ) {
-		foreach( $menus as $m ) { // $M_xxx - menu
-			$name  = 'M_'.str_replace( '-', '', $m[ 2 ] );
-			global $$name;
-			$$name = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
+		$M = ( object )[];
+		foreach( $menus as $m ) {
+			$name     = $m[ 2 ];
+			$M->$name = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $name.' sub' ).'</a>';
 		}
 	}
 	if ( isset( $tabs ) ) {
-		foreach( $tabs as $t ) { // $T_xxx - tab
-			$name  = 'T_'.$t;
-			global $$name;
-			$$name = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
-		}
-	}
-	if ( isset( $buttons ) ) {
-		foreach( $buttons as $b ) { // $B_xxx - tab
-			$name  = 'B_'.$b;
-			global $$name;
-			$$name = i( $b.' btn' );
-		}
+		$T = ( object )[];
+		foreach( $tabs as $t ) $T->$t = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
 	}
 }
 $I = 'i'; // for common.php - i() > {$I()} inside heredoc

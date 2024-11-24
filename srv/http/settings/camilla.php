@@ -13,35 +13,35 @@ commonVariables( [
 ] );
 
 $bset     = ( object )[];
-$bset->filters    = $B_filters.' Context menu: '.$B_graph.' '.$B_edit.' '.$B_remove;
-$bset->mixers     = $B_mixers.' Context menu: '.$B_edit.' '.$B_remove;
+$bset->filters    = $B->filters.' Context menu: '.$B->graph.' '.$B->edit.' '.$B->remove;
+$bset->mixers     = $B->mixers.' Context menu: '.$B->edit.' '.$B->remove;
 $bset->processors = str_replace( 'mixers' , 'processors', $bset->mixers );
 $bset->pipeline   = str_replace( 'filters' , 'pipeline', $bset->filters );
 $bset->config     = str_replace( 'mixers' , 'config', $bset->mixers );
-$bset->control    = $B_volume.' '.$B_inverted.' '.$B_linear;
+$bset->control    = $B->volume.' '.$B->inverted.' '.$B->linear;
 
 $id_tab   = [
 	  'filters'    => [
 		  'button' => [ 'folderfilter', 'add' ]
 		, 'help'   => <<< EOF
-$B_folderfilter $B_plus Finite Impulse Response (FIR) files · New
+$B->folderfilter $B->plus Finite Impulse Response (FIR) files · New
 $bset->filters Graph · Edit · Delete
-$B_code Set 0
+$B->code Set 0
 $bset->control Mute · Invert · Linear (Gain)
 EOF
 	]
 	, 'mixers'     => [
 		  'button' => [ 'add' ]
 		, 'help'   => <<< EOF
-$B_plus New
+$B->plus New
 $bset->mixers Edit · Delete
-$B_code $bset->control Set 0 · Mute · Invert · Linear
+$B->code $bset->control Set 0 · Mute · Invert · Linear
 EOF
 	]
 	, 'processors' => [
 		  'button' => [ 'add' ]
 		, 'help'   => <<< EOF
-$B_plus New
+$B->plus New
 $bset->processors Edit · Delete
 EOF
 	]
@@ -49,15 +49,15 @@ EOF
 	, 'pipeline'   => [
 		  'button' => [ 'flowchart', 'add' ]
 		, 'help'   => <<< EOF
-$B_flowchart $B_plus Step flowchart · New
+$B->flowchart $B->plus Step flowchart · New
 $bset->pipeline Graph · Edit · Delete
 EOF
 	]
 	, 'devices'    => [
 		  'button' => [ 'gear' ]
 		, 'help'   => <<< EOF
-$B_gear Capture sampling
-$B_input $B_output Device settings
+$B->gear Capture sampling
+$B->input $B->output Device settings
 EOF
 	]
 	, 'config'     => [
@@ -104,7 +104,7 @@ $head     = [
 	, 'status' => 'camilladsp'
 	, 'button' => [ 'mpd icon', 'play playback' ]
 	, 'help'   => <<< EOF
-$B_play $B_pause $B_stop Playback control
+$B->play $B->pause $B->stop Playback control
 
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
@@ -142,8 +142,8 @@ $body     = [
 		, 'status' => true
 		, 'input'  => 'configuration'
 		, 'help'   => <<< EOF
-$B_gear Configuration files
-$B_set0 Reset clipped count (if any)
+$B->gear Configuration files
+$B->set0 Reset clipped count (if any)
 EOF
 	]
 ];

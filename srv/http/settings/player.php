@@ -35,7 +35,7 @@ $head      = [
 	, 'status' => 'mpd'
 	, 'button' => 'play playback'
 	, 'help'   => <<< EOF
-$B_play $B_pause $B_stop Playback control
+$B->play $B->pause $B->stop Playback control
 
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
@@ -56,7 +56,7 @@ $body      = [
 		  'id'       => 'bluealsa'
 		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
-$B_volume Mixer device - blueALSA volume control
+$B->volume Mixer device - blueALSA volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
@@ -64,7 +64,7 @@ EOF
 		  'id'       => 'device'
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
-$B_camilla $B_equalizer · $T_features$L_dsp enabled
+$B->camilla $B->equalizer · $T->features$L->dsp enabled
 
 Note: HDMI may not be available unless connect before boot.
 EOF
@@ -72,13 +72,13 @@ EOF
 	, [
 		  'id'       => 'mixer'
 		, 'input'    => 'mixer'
-		, 'help'     => $B_volume.' Mixer device volume control'
+		, 'help'     => $B->volume.' Mixer device volume control'
 	]
 	, [
 		  'id'       => 'mixertype'
-		, 'disabled' => $L_dsp.' is currently enabled.'
+		, 'disabled' => $L->dsp.' is currently enabled.'
 		, 'help'     => <<< EOF
-$B_gear Type:
+$B->gear Type:
  · Mixer device: Good - DAC hardware via GUI knob (if available)
  · MPD software: Basic - GUI knob
  
@@ -91,7 +91,7 @@ EOF
 	, [
 		  'id'       => 'devicewithbt'
 		, 'help'     => <<< EOF
- · Keep Output $L_device enabled when Bluetooth connected.
+ · Keep Output $L->device enabled when Bluetooth connected.
  · Should be disabled if not used simultaneously
 EOF
 	]
@@ -107,10 +107,10 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
  · Mixer device volume set at <c>0dB</c>
  · Disable:
-	· Output $L_volumecontrol
+	· Output $L->volumecontrol
 	· Volume - All options
-	· Options  $L_soxresampler
-	· $T_features Signal Processors
+	· Options  $L->soxresampler
+	· $T->features Signal Processors
 EOF
 	]
 	, [
@@ -149,7 +149,7 @@ EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 
-$B_gear
+$B->gear
 ■ Gain control - Mixer device:
  • <c>replay_gain_handler "mixer"</c>
  • Available when Volume Control = MPD software
@@ -176,7 +176,7 @@ EOF
 	]
 	, [
 		  'id'       => 'ffmpeg'
-		, 'disabled' => $L_dabradio.' is currently enabled.'
+		, 'disabled' => $L->dabradio.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://ffmpeg.org/about.html">FFmpeg</a> - <a id="ffmpegfiletype">Decoder for more audio filetypes</a>
 <pre id="prefiletype" class="hide"></pre>
@@ -191,7 +191,7 @@ EOF
 		 'id'        => 'soxr'
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
-$B_gear
+$B->gear
  • Presets:
 	(default: Quality <c>Very high</c>  Threads <c>Single</c>)
 	
@@ -242,7 +242,7 @@ To restore:
 • Remove lines contain directory to restore
 • Update Library
 
-Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for $T_system$L_shareddata
+Note: Directory <c>/mnt/MPD/NAS/data</c> reserved for $T->system$L->shareddata
 EOF
 ] );
 htmlHead( [

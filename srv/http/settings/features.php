@@ -40,12 +40,12 @@ commonVariables( [
 	]
 	, 'tabs'    => [ 'library', 'system' ]
 ] );
-$T_library    = '<a class="helpmenu tab">'.i( 'library' ).' Library</a>';
+$T->library    = '<a class="helpmenu tab">'.i( 'library' ).' Library</a>';
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer <btn>Address bar</btn> <c>\\\\'.$ip.'</c>';
-$snapweb      = $B_gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
+$snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
 $body         = [
@@ -63,7 +63,7 @@ EOF
 		  'id'       => 'dabradio'
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Software-defined_radio">SDR</a> - Software-defined radio / Digital audio broadcasting
- · Stations: $B_gear <btn>Scan</btn> $T_library $B_dabradio
+ · Stations: $B->gear <btn>Scan</btn> $T->library $B->dabradio
 EOF
 	]
 	, [
@@ -71,7 +71,7 @@ EOF
 		, 'help'     => <<< EOF
 $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
- · Connect: $M_snapcast
+ · Connect: $M->snapcast
  · SnapClient and SnapServer can be enabled on the same device.
 	· Enable SnapServer before SnapClient
 	· SnapClient auto connect/disconnect on play/stop (no connect icon)
@@ -141,18 +141,18 @@ $head         = [ 'title' => 'Signal Processors' ];
 $body         = [
 	[
 		  'id'       => 'camilladsp'
-		, 'disabled' => $L_equalizer.' is currently enabled.'
+		, 'disabled' => $L->equalizer.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-Settings: $M_camilladsp
+Settings: $M->camilladsp
 EOF
 	]
 	, [
 		  'id'       => 'equalizer'
-		, 'disabled' => $L_dsp.' is currently enabled.'
+		, 'disabled' => $L->dsp.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10-band graphic equalizer with user presets.
-Control: $M_equalizer
+Control: $M->equalizer
 Presets:
  · <c>Flat</c>: All bands at 0dB
  · If distortions occurred, lower all bands collectively and increase volume
@@ -165,7 +165,7 @@ $head         = [ 'title' => 'Others' ];
 $body         = [
 	[
 		  'id'       => 'ap'
-		, 'disabled' => $L_wifi.' is currently connected.'
+		, 'disabled' => $L->wifi.' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://iwd.wiki.kernel.org/ap_mode">iNet Wireless Daemon</a> (iwd) - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
@@ -186,7 +186,7 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
  · Rotate - TFT 3.5" LCD needs reboot.
- · Screen off: $M_screenoff (Backlight still on - no energy saved)
+ · Screen off: $M->screenoff (Backlight still on - no energy saved)
  · run <c>xinitrc.d</c> - execute custom scripts in <c>/etc/X11/xinit/xinitrc.d</c>
 
 Note: HDMI display - Connect before boot
@@ -194,14 +194,14 @@ EOF
 	]
 	, [
 		  'id'       => 'smb'
-		, 'disabled' => $L_serverraudio.' is currently active.'
+		, 'disabled' => $L->serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  · Windows: $fileexplorer
  
-Note: $L_serverraudio should yield better performance.
+Note: $L->serverraudio should yield better performance.
 EOF
 	]
 	, [
@@ -218,14 +218,14 @@ EOF
 		  'id'       => 'multiraudio'
 		, 'help'     => <<< EOF
 Switch between multiple rAudio devices.
-Switch: $M_multiraudio
+Switch: $M->multiraudio
 EOF
 	]
 	, [
 		  'id'       => 'login'
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
-Lock: $M_lock
+Lock: $M->lock
 EOF
 	]
 	, [
@@ -234,7 +234,7 @@ EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.
- · Web Radio must be manually scrobbled: Playing title &raquo; $B_lastfm Scrobble
+ · Web Radio must be manually scrobbled: Playing title &raquo; $B->lastfm Scrobble
  · Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &raquo; User icon &raquo; Library &raquo; Scrobbles
 EOF
 	]
@@ -242,19 +242,19 @@ EOF
 		  'id'       => 'nfsserver'
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $L_shareddata
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $L->shareddata
  • <wh>rAudio Shared Data server:</wh>
 	· IP address - This rAudio must be set to static / fixed to prevent change on reboot.
 	· Password - if changed, must be the same on all clients.
-	· In $T_library
-		· $B_microsd SD and $B_usbdrive USB will be hidden.
-		· $B_usbdrive USB items will be displayed in $B_networks NAS instead.
+	· In $T->library
+		· $B->microsd SD and $B->usbdrive USB will be hidden.
+		· $B->usbdrive USB items will be displayed in $B->networks NAS instead.
 	· On reboot / power off:
 		· Shared Data on clients will be temporarily disabled
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· $T_system$L_shareddata <btn>{$I( 'rserver' )} rAudio</btn>
+	· $T->system$L->shareddata <btn>{$I( 'rserver' )} rAudio</btn>
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
