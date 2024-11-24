@@ -400,8 +400,9 @@ var util          = {
 				, [ 'LED forward voltage <gr>(V)</gr>', 'number' ]
 				, [ 'Resister <gr>(&#8486;)</gr>',      'number' ]
 			]
-			, values     : [ 3.3, 5 ]
 			, boxwidth   : 70
+			, values     : [ 3.3, 5 ]
+			, focus      : 2
 			, beforeshow : () => {
 				$( '#infoList input' ).prop( 'disabled', 1 );
 				$( '#infoList input' ).eq( 2 )
@@ -1031,6 +1032,9 @@ $( '#i2smodule' ).on( 'input', function() {
 	util.i2sSelect.option();
 } ).on( 'select2:close', function () {
 	if ( ! this.value ) util.i2sSelect.hide();
+} );
+$( '#ledcalc' ).on( 'click', function() {
+	util.ledcalc();
 } );
 $( '#hostname' ).on( 'click', util.hostname );
 $( '#timezone' ).on( 'input', function( e ) {
