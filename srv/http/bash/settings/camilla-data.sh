@@ -5,11 +5,11 @@
 . /srv/http/bash/common.sh
 . $dirshm/output
 
-filedefault=/etc/default/camilladsp
-if grep -q configs-bt $filedefault; then
+default=$( < /etc/default/camilladsp )
+configfile=$( sed -n '/^CONFIG/ {s/.*=//; p}' <<< $default )
+if grep -q -m1 configs-bt <<< $default; then
 	bluetooth=true
 	name=$( < $dirshm/btname )
-	configfile=$( getVar CONFIG $filedefault )
 	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
 else
 	devicesC='"Loopback": "hw:Loopback,0"'
@@ -20,6 +20,7 @@ fi
 data='
 , "bluetooth"  : '$bluetooth'
 , "btreceiver" : '$( exists $dirshm/btreceiver )'
+, "buffer"     : '$( sed -n '/chunksize/ {s/.* //; p}' $configfile )'
 , "card"       : '$card'
 , "cardname"   : "'$name'"
 , "channels"   : '$( < $dirshm/channels )'
