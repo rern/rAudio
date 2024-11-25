@@ -155,6 +155,9 @@
 #tabconfig {
 	display: none !important;
 }
+#setting-configuration.hide {
+	display: inline-block !important;
+}
 .tab {
 	margin-top: -16px;
 }
