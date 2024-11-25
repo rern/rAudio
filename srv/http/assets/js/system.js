@@ -901,6 +901,7 @@ function renderPage() {
 	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
+	showContent();
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

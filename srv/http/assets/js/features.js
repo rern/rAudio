@@ -509,6 +509,7 @@ function renderPage() {
 		$( '#camilladsp' ).toggleClass( 'disabled', S.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
+	showContent();
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

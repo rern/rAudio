@@ -357,6 +357,7 @@ function renderPage() {
 	}
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
+	showContent();
 }
 function psMpdUpdate( data ) {
 	if ( 'done' in data ) {

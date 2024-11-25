@@ -168,7 +168,6 @@ function switchSet() {
 		id in config ? $this.toggleClass( 'hide', ! S[ id ] ) : $this.remove();
 	} );
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
-	showContent();
 }
 
 function psOnMessage( channel, data ) {
