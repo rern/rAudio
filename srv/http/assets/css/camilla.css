@@ -98,6 +98,7 @@
 }
 #volume {
 	float: left;
+	width: 230px;
 }
 #divvolume .col-l a {
 	width: 128px;
@@ -455,6 +456,10 @@ i.disabled {
 }
 @media (max-width: 500px) {
 	.helphead { display: none }
+}
+@media (max-width: 375px) {
+	#divstatus .col-l { width: 125px }
+	#divvolume .col-l a { width: 85px }
 }
 
 .db,
