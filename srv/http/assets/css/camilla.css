@@ -133,11 +133,11 @@
 }
 #statusbuffer {
 	position: relative;
-	margin-top: 10px;
+	margin-top: 12px;
 	width: 230px;
 }
 #statusbuffer .bar {
-	margin-bottom: 25px;
+	margin-bottom: 22px;
 }
 #buffer,
 #load {
@@ -147,7 +147,7 @@
 	transition-duration: 1s;
 }
 #statussampling {
-	margin-top: -13px;
+	margin-top: -10px;
 }
 #divconfiguration {
 	margin-top: 10px;

@@ -405,7 +405,7 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 } );
 $( '.playback' ).on( 'click', function() { // for player and camilla
 	S.state = S.state === 'play' ? 'pause' : 'play';
-	if ( page === 'camilla' && S.state === 'pause' ) render.vuClear();
+	if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();
 	playbackButton();
 	bash( [ 'cmd.sh', 'mpcplayback' ] );
 } );
