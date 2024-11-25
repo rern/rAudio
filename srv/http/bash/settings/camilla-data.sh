@@ -7,6 +7,7 @@
 
 default=$( < /etc/default/camilladsp )
 configfile=$( sed -n '/^CONFIG/ {s/.*=//; p}' <<< $default )
+chunksize=$( sed -n '/chunksize/ {s/.* //; p}' $configfile )
 if grep -q -m1 configs-bt <<< $default; then
 	bluetooth=true
 	name=$( < $dirshm/btname )
@@ -20,7 +21,7 @@ fi
 data='
 , "bluetooth"  : '$bluetooth'
 , "btreceiver" : '$( exists $dirshm/btreceiver )'
-, "buffer"     : '$( sed -n '/chunksize/ {s/.* //; p}' $configfile )'
+, "buffer"     : '$( echo $(( $chunksize * 2 )) )'
 , "card"       : '$card'
 , "cardname"   : "'$name'"
 , "channels"   : '$( < $dirshm/channels )'

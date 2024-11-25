@@ -1908,7 +1908,7 @@ var common    = {
 					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
-					S.buffer = DEV.chunksize;
+					S.buffer = DEV.chunksize * 2;
 					if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) );
 					render.page();
 					render.tab();
