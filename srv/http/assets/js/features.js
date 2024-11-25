@@ -327,7 +327,7 @@ var config       = {
 						  response_type : 'code'
 						, client_id     : id
 						, scope         : 'user-read-currently-playing user-read-playback-position'
-						, redirect_uri  : util.redirect
+						, redirect_uri  : util.spotify.redirect
 						, state         : window.location.hostname
 					}
 					window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
@@ -397,7 +397,7 @@ var util        = {
 				}
 			} );
 		} else if ( code ) {
-			bash( [ 'spotifytoken', code, util.redirect, 'CMD CODE REDIRECT' ], showContent );
+			bash( [ 'spotifytoken', code, util.spotify.redirect, 'CMD CODE REDIRECT' ], showContent );
 		} else if ( error ) {
 			infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 		}
