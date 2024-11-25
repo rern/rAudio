@@ -12,7 +12,7 @@ commonVariables( [
 				 , 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
 ] );
 
-$bset     = ( object )[];
+$bset     = ( object ) [];
 $bset->filters    = $B->filters.' Context menu: '.$B->graph.$B->edit.$B->remove;
 $bset->mixers     = $B->mixers.' Context menu: '.$B->edit.$B->remove;
 $bset->processors = str_replace( 'mixers' , 'processors', $bset->mixers );

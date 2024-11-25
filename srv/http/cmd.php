@@ -1,26 +1,28 @@
 <?php
-$cmd         = $_POST[ 'cmd' ] ?? $argv[ 1 ];
+$post        = ( object ) $_POST;
 $sudo        = '/usr/bin/sudo ';
 $dirbash     = $sudo.'/srv/http/bash/';
 $dirsettings = $dirbash.'settings/';
 $dirdata     = '/srv/http/data/';
 $dirshm      = $dirdata.'shm/';
 
+$cmd         = $post->cmd ?? $argv[ 1 ];
+
 switch( $cmd ) {
 
 case 'bash':
-	$cmd    = $dirbash.$_POST[ 'filesh' ];
-	$cmd   .= $_POST[ 'args' ] ? ' "'.escape( implode( "\n", $_POST[ 'args' ] ) ).'"' : '';
-	$result = shell_exec( $cmd );
+	$command = $dirbash.$post->filesh;
+	$command.= $post->args ? ' "'.escape( implode( "\n", $post->args ) ).'"' : '';
+	$result  = shell_exec( $command );
 	echo rtrim( $result );
 	break;
 case 'camilla': // formdata from camilla.js
-	fileUploadSave( $dirdata.'camilladsp/'.$_POST[ 'dir' ].'/'.$_FILES[ 'file' ][ 'name' ] );
+	fileUploadSave( $dirdata.'camilladsp/'.$post->dir.'/'.$_FILES[ 'file' ][ 'name' ] );
 	exec( $dirsettings.'camilla-data.sh pushrefresh' );
 	break;
 case 'datarestore': // formdata from system.js
 	fileUploadSave( $dirshm.'backup.gz' );
-	$libraryonly = $_POST[ 'libraryonly' ] ?? '';
+	$libraryonly = $post->libraryonly ?? '';
 	exec( $dirsettings.'system-datarestore.sh '.$libraryonly, $output, $result );
 	if ( $result != 0 ) echo 'Restore failed';
 	break;
@@ -31,12 +33,12 @@ case 'giftype': // formdata from common.js
 	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
 case 'imagereplace': // $.post from function.js
-	$imagefile = $_POST[ 'imagefile' ];
-	$type      = $_POST[ 'type' ];
+	$imagefile = $post->imagefile;
+	$type      = $post->type;
 	if ( $type === 'coverart' && ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
-	$bookmarkname = $_POST[ 'bookmarkname' ] ?? '';
-	$imagedata    = $_POST[ 'imagedata' ];
+	$bookmarkname = $post->bookmarkname ?? '';
+	$imagedata    = $post->imagedata;
 	$jpg          = substr( $imagedata, 0, 4 ) === 'data'; // animated gif passed as already uploaded tmp/file
 	if ( $jpg ) {
 		$tmpfile = $dirshm.'local/binary';
@@ -51,21 +53,21 @@ case 'imagereplace': // $.post from function.js
 case 'login': // $.post from features.js
 	$filelogin   = $dirdata.'system/login';
 	$filesetting = $filelogin.'setting';
-	$pwd         = $_POST[ 'pwd' ];
+	$pwd         = $post->pwd;
 	if ( file_exists( $filelogin ) && ! password_verify( $pwd, file_get_contents( $filelogin ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
-	if ( isset( $_POST[ 'disable' ] ) ) {
+	if ( isset( $post->disable ) ) {
 		unlink( $filelogin );
 		unlink( $filesetting );
 		exec( $dirsettings.'features.sh login' );
-	} else if ( ! isset( $_POST[ 'loginsetting' ] ) ) {
+	} else if ( ! isset( $post->loginsetting ) ) {
 		session_start();
 		$_SESSION[ 'login' ] = 1;
 	} else {
-		$pwd  = $_POST[ 'pwdnew' ] ?: $pwd;
+		$pwd  = $post->pwdnew ?: $pwd;
 		$hash = password_hash( $pwd, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		file_put_contents( $filelogin, $hash );
-		if ( $_POST[ 'loginsetting' ] === 'true' ) { // no boolean
+		if ( $post->loginsetting === 'true' ) { // no boolean
 			touch( $filesetting );
 		} else {
 			unlink( $filesetting );

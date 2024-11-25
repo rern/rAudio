@@ -1,5 +1,6 @@
 <?php
-$CMD          = $_POST[ 'playlist' ] ?? $argv[ 1 ];
+$post         = ( object ) $_POST;
+$CMD          = $post->playlist ?? $argv[ 1 ];
 $fileplaylist = '/srv/http/data/shm/playlist';
 
 function output( $fromfile = '' ) {
@@ -38,7 +39,7 @@ if ( $CMD === 'list' ) {
 	exec( 'mpc lsplaylists'
 		, $lists );
 	foreach( $lists as $list ) {
-		$each       = ( object )[];
+		$each       = ( object ) [];
 		$each->name = $list;
 		$each->sort = stripSort( $list );
 		$array[]    = $each;
@@ -75,20 +76,20 @@ if ( $CMD === 'list' ) {
 $f      = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 $fL     = count( $f );
 $format = '%'.implode( '%^^%', $f ).'%';
-$cmd = 'mpc -f '.$format.' playlist';
+$cmd    = 'mpc -f '.$format.' playlist';
 if ( $CMD === 'get' ) {
-	$name = $_POST[ 'name' ];
+	$name = $post->name;
 	$cmd .= ' "'.str_replace( '"', '\"', $name ).'"';
 } else {
 	$name = '';
 }
 exec( $cmd, $lists );
 //----------------------------------------------------------------------------------
-$count = ( object )[];
+$count  = ( object ) [];
 foreach( [ 'radio', 'song', 'time', 'upnp' ] as $c ) $count->$c = 0;
-$pos        = 0;
-$sec        = 0;
-$html       = '';
+$pos    = 0;
+$sec    = 0;
+$html   = '';
 foreach( $lists as $list ) {
 	$pos++;
 	$v      = explode( '^^', $list );
