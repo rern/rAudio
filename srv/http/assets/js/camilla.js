@@ -812,6 +812,7 @@ var render    = {
 		delete V.intervalvu;
 		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
 		$( '.peak' ).css( 'left', 0 );
+		$( '#buffer, #load' ).css( 'width', 0 );
 		render.statusStop();
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
@@ -1831,7 +1832,7 @@ var common    = {
 						
 						common.wsGetState();
 						if ( S.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
-					}, 3000 );
+					}, 1000 );
 				}
 			}, 100 );
 		}
@@ -1875,8 +1876,13 @@ var common    = {
 						return
 					}
 					
-					v = cmd === 'GetProcessingLoad' ? value.toLocaleString( undefined, { minimumFractionDigits: 3 } ) : value.toLocaleString();
-					$( '#divstate .'+ cmd_el[ cmd ] ).text( v );
+					if ( cmd === 'GetBufferLevel' ) {
+						$( '#buffer' ).css( 'width', ( value / S.buffer * 100 ) +'%' );
+					} else if ( cmd === 'GetProcessingLoad' ) {
+						$( '#load' ).css( 'width', ( value * 100 ) +'%' );
+					} else {
+						$( '#divstate .'+ cmd_el[ cmd ] ).text( value.toLocaleString() );
+					}
 					break;
 				case 'GetClippedSamples':
 					if ( V.local ) return
@@ -1907,6 +1913,7 @@ var common    = {
 					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
+					S.buffer = DEV.chunksize * 2;
 					if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) );
 					render.page();
 					render.tab();

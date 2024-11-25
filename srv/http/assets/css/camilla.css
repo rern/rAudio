@@ -130,6 +130,22 @@
 .db {
 	float: left;
 }
+#statusbuffer {
+	position: relative;
+	margin-top: 10px;
+	width: 230px;
+}
+#statusbuffer .vubar {
+	margin-bottom: 25px;
+}
+#buffer, #load {
+	position: relative;
+	width: 0;
+	background: var( --cm );
+}
+#statussampling {
+	margin-top: -13px;
+}
 #divconfiguration {
 	margin-top: 10px;
 }

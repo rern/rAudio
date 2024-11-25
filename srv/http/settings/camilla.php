@@ -106,7 +106,7 @@ $head     = [
 	, 'help'   => <<< EOF
 $B->play$B->pause$B->stop Playback control
 
-<a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
+<a href="https://henquist.github.io" target="_blank">CamillaDSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
 ];
 $body     = [
@@ -132,10 +132,20 @@ $body     = [
 	)
 	, htmlSectionStatus(
 		  'state'
-		, 'Buffer · Load<span class="divclipped hide"> · Clipped</span>
-		   <br>Sampling<span class="rateadjust"> · Adjust</span>'
-		, '<a class="buffer"></a> <gr>•</gr> <a class="load"></a><span class="divclipped hide"> <gr>·</gr> <a class="clipped"></a></span>
-		   <br><a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>'
+		, 'Buffer
+		   <br>Load
+		   <br>Sampling<span class="rateadjust"> · Adjust</span>
+		   <span class="divclipped hide"><br>Clipped</span>'
+		, '<div id="statusbuffer">
+			<div class="vubar"></div>
+			<div id="buffer" class="vubar"></div>
+			<div class="vubar"></div>
+			<div id="load" class="vubar"></div>
+		   </div>
+		   <div id="statussampling">
+			<a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>
+			<span class="divclipped hide"><br><a class="clipped"></a></span>
+		   </div>'
 	)
 	, [
 		  'id'     => 'configuration'

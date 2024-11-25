@@ -5,13 +5,15 @@
 . /srv/http/bash/common.sh
 . $dirshm/output
 
-devicesC='"Loopback": "hw:Loopback,0"'
-devicesP=$( tr -d {} < $dirshm/devices )
-if grep -q configs-bt /etc/default/camilladsp; then
+filedefault=/etc/default/camilladsp
+if grep -q configs-bt $filedefault; then
 	bluetooth=true
 	name=$( < $dirshm/btname )
-	configfile=$( getVar CONFIG /etc/default/camilladsp )
+	configfile=$( getVar CONFIG $filedefault )
 	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
+else
+	devicesC='"Loopback": "hw:Loopback,0"'
+	devicesP=$( tr -d {} < $dirshm/devices )
 fi
 
 ########

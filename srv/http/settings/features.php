@@ -55,7 +55,7 @@ $body         = [
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
 Note:
  · No sound: Increase volume on sender device (too low)
- · If Camilla DSP is enabled, stop current track before start playing.
+ · If $L->dsp is enabled, stop current track before start playing.
  · Playing files directly on rAudio yields better quality.
 EOF
 	]
