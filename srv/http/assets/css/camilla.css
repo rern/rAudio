@@ -462,6 +462,7 @@ i.disabled {
 @media (max-width: 375px) {
 	#divstatus .col-l { width: 125px }
 	#divvolume .col-l a { width: 85px }
+	#divstatus .rateadjust { display: none }
 }
 
 .db,
