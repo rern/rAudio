@@ -376,7 +376,7 @@ var util        = {
 		} );
 		$( '#login' ).prop( 'checked', S.login );
 	}
-	, redirect : () => { // spotify / scrobble token - from settings.js -  refreshData()
+	, redirect : () => { // authorization: spotify, scrobble - from settings.js -  refreshData()
 		var url   = new URL( window.location.href );
 		window.history.replaceState( '', '', '/settings.php?p=features' );
 		var token = url.searchParams.get( 'token' );

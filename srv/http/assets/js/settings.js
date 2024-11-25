@@ -112,7 +112,7 @@ function playbackButton() {
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
-	if ( page === 'features' && ! /features$/.test( window.location.href ) ) {
+	if ( page === 'features' && ! /features$/.test( window.location.href ) ) { // authorization: spotify, scrobble
 		util.redirect();
 		return
 	}
