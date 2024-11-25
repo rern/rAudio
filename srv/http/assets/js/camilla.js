@@ -1813,13 +1813,6 @@ var common    = {
 	, webSocket     : () => {
 		if ( wscamilla && wscamilla.readyState < 2 ) return
 		
-		var cmd_el            = {
-			  GetBufferLevel    : 'buffer'
-			, GetCaptureRate    : 'capture'
-			, GetClippedSamples : 'clipped'
-			, GetProcessingLoad : 'load'
-			, GetRateAdjust     : 'rate'
-		}
 		wscamilla           = new WebSocket( 'ws://'+ location.host +':1234' );
 		wscamilla.onopen    = () => {
 			var interval = setTimeout( () => {
@@ -1876,12 +1869,14 @@ var common    = {
 						return
 					}
 					
+					var el = cmd.replace( /Get(.*)[A-Z].*/, '$1' ).toLowerCase();
 					if ( cmd === 'GetBufferLevel' ) {
 						$( '#buffer' ).css( 'width', ( value / S.buffer * 100 ) +'%' );
 					} else if ( cmd === 'GetProcessingLoad' ) {
 						$( '#load' ).css( 'width', ( value * 100 ) +'%' );
 					} else {
-						$( '#divstate .'+ cmd_el[ cmd ] ).text( value.toLocaleString() );
+						var cl = cmd === 'GetRateAdjust' ? 'rate' : 'capture';
+						$( '#divstate .'+ cl ).text( value.toLocaleString() );
 					}
 					break;
 				case 'GetClippedSamples':
