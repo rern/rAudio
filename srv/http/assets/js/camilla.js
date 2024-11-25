@@ -2323,33 +2323,35 @@ $( '#menu a' ).on( 'click', function( e ) {
 			setting.device( V.li.data( 'type' ) );
 			break;
 		case 'config':
-			var name = V.li.find( '.name' ).text();
+			var name  = V.li.find( '.name' ).text();
+			var icon  = V.tab;
+			var title = 'Configuration';
 			switch ( cmd ) {
 				case 'copy':
 					info( {
-						  icon         : V.tab
-						, title        : 'Configuration'
-						, message      : 'File: <wh>'+ name +'</wh>'
+						  icon         : icon
+						, title        : title
+						, message      : 'File: <c>'+ name +'</c>'
 						, list         : [ 'Copy as', 'text' ]
 						, values       : [ name ]
 						, checkchanged : true
 						, ok           : () => {
 							var newname = infoVal();
 							bash( [ 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
-							notify( V.tab, SW.title, 'Copy ...' );
+							notify( icon, title, 'Copy ...' );
 						}
 					} );
 					break;
 				case 'delete':
 					info( {
-						  icon    : V.tab
-						, title   : 'Configuration'
-						, message : 'Delete <wh>'+ name +'</wh> ?'
+						  icon    : icon
+						, title   : title
+						, message : 'Delete <c>'+ name +'</c> ?'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
 							bash( [ 'confdelete', name, S.bluetooth, 'CMD NAME BT' ] );
-							notify( V.tab, SW.title, 'Delete ...' );
+							notify( icon, title, 'Delete ...' );
 						}
 					} );
 					break;
@@ -2365,16 +2367,16 @@ $( '#menu a' ).on( 'click', function( e ) {
 				break;
 				case 'rename':
 					info( {
-						  icon         : V.tab
-						, title        : 'Configuration'
-						, message      : 'File: '+ name
+						  icon         : icon
+						, title        : title
+						, message      : 'File: <c>'+ name +'</c>'
 						, list         : [ 'Rename to', 'text' ]
 						, values       : [ name ]
 						, checkchanged : true
 						, ok           : () => {
 							var newname = infoVal();
 							bash( [ 'confrename', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
-							notify( V.tab, SW.title, 'Rename ...' );
+							notify( icon, title, 'Rename ...' );
 						}
 					} );
 					break;
