@@ -132,15 +132,15 @@ $body     = [
 	)
 	, htmlSectionStatus(
 		  'state'
-		, 'Buffer
-		   <br>Load
+		, 'Load
+		   <span class="rateadjust"><br>Buffer</span>
 		   <br>Sampling<span class="rateadjust"> · Adjust</span>
 		   <span class="divclipped hide"><br>Clipped</span>'
-		, '<div id="statusbuffer">
-			<div class="bar"></div>
-			<div id="buffer" class="bar"></div>
+		, '<div id="statusbar">
 			<div class="bar"></div>
 			<div id="load" class="bar"></div>
+			<div class="bar rateadjust"></div>
+			<div id="buffer" class="bar rateadjust"></div>
 		   </div>
 		   <div id="statussampling">
 			<a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>

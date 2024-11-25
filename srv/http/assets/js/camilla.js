@@ -1870,9 +1870,13 @@ var common    = {
 					
 					var el = cmd.replace( /Get(.*)[A-Z].*/, '$1' ).toLowerCase();
 					if ( cmd === 'GetBufferLevel' ) {
-						$( '#buffer' ).css( 'width', ( value / S.buffer * 100 ) +'%' );
+						v = value / S.targetlevel  * 100;
+						if ( v > 100 ) v = 100;
+						$( '#buffer' ).css( 'width', v +'%' );
 					} else if ( cmd === 'GetProcessingLoad' ) {
-						$( '#load' ).css( 'width', ( value * 100 ) +'%' );
+						v = value * 100;
+						if ( v > 100 ) v = 100;
+						$( '#load' ).css( 'width', v +'%' );
 					} else {
 						var cl = cmd === 'GetRateAdjust' ? 'rate' : 'capture';
 						$( '#divstate .'+ cl ).text( value.toLocaleString() );
@@ -1906,7 +1910,7 @@ var common    = {
 					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
-					S.buffer = DEV.chunksize * 2;
+					S.targetlevel = DEV.target_level;
 					if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) );
 					render.page();
 					render.tab();
@@ -1955,9 +1959,9 @@ var common    = {
 		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 	, wsGetState    : () => {
-		[ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ].forEach( k => {
-			wscamilla.send( '"'+ k +'"' );
-		} );
+		var get = [ 'GetBufferLevel', 'GetRateAdjust', 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ];
+		if ( ! S.enable_rate_adjust ) get.slice( 2 );
+		get.forEach( k => wscamilla.send( '"'+ k +'"' ) );
 	}
 }
 

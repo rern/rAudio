@@ -6,11 +6,10 @@
 . $dirshm/output
 
 default=$( < /etc/default/camilladsp )
-configfile=$( sed -n '/^CONFIG/ {s/.*=//; p}' <<< $default )
-chunksize=$( sed -n '/chunksize/ {s/.* //; p}' $configfile )
 if grep -q -m1 configs-bt <<< $default; then
 	bluetooth=true
 	name=$( < $dirshm/btname )
+	configfile=$( sed -n '/^CONFIG/ {s/.*=//; p}' <<< $default )
 	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
 else
 	devicesC='"Loopback": "hw:Loopback,0"'
@@ -21,7 +20,6 @@ fi
 data='
 , "bluetooth"  : '$bluetooth'
 , "btreceiver" : '$( exists $dirshm/btreceiver )'
-, "buffer"     : '$( echo $(( $chunksize * 2 )) )'
 , "card"       : '$card'
 , "cardname"   : "'$name'"
 , "channels"   : '$( < $dirshm/channels )'

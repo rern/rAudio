@@ -131,12 +131,12 @@
 .db {
 	float: left;
 }
-#statusbuffer {
+#statusbar {
 	position: relative;
 	margin-top: 12px;
 	width: 230px;
 }
-#statusbuffer .bar {
+#statusbar .bar {
 	margin-bottom: 22px;
 }
 #buffer,
