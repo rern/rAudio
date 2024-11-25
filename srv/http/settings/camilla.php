@@ -65,8 +65,8 @@ EOF
 		, 'help'   => $bset->config
 	]
 ];
-$vubar    = '';
-foreach( [ '', 'peak X', 'rms X' ] as $c ) $vubar.= '<div class="vubar '.$c.'"></div>';
+$bar      = '';
+foreach( [ '', 'peak X', 'rms X' ] as $c ) $bar.= '<div class="bar '.$c.'"></div>';
 $vugrid   = '';
 $vulabel  = '';
 for ( $i = 0; $i < 6; $i++ ) $vugrid.= '<a class="g'.$i.'"></a>';
@@ -115,9 +115,9 @@ $body     = [
 		, ''
 		, '<div id="vu">
 			<div id="vugrid">'.$vugrid.'</div>
-			<div id="in">'.str_replace( 'X', 'c0', $vubar ).str_replace( 'X', 'c1', $vubar ).'</div>
+			<div id="in">'.str_replace( 'X', 'c0', $bar ).str_replace( 'X', 'c1', $bar ).'</div>
 			<div id="vulabel">'.$vulabel.'</div>
-			<div id="out">'.str_replace( 'X', 'p0', $vubar ).'</div>
+			<div id="out">'.str_replace( 'X', 'p0', $bar ).'</div>
 		   </div>'
 	)
 	, htmlSectionStatus(
@@ -137,10 +137,10 @@ $body     = [
 		   <br>Sampling<span class="rateadjust"> · Adjust</span>
 		   <span class="divclipped hide"><br>Clipped</span>'
 		, '<div id="statusbuffer">
-			<div class="vubar"></div>
-			<div id="buffer" class="vubar"></div>
-			<div class="vubar"></div>
-			<div id="load" class="vubar"></div>
+			<div class="bar"></div>
+			<div id="buffer" class="bar"></div>
+			<div class="bar"></div>
+			<div id="load" class="bar"></div>
 		   </div>
 		   <div id="statussampling">
 			<a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>

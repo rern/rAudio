@@ -34,22 +34,22 @@
 #out::before {
 	content: 'Out';
 }
-.vubar {
+.bar {
 	position: absolute;
 	width: 100%;
 	height: 3px;
 	background: var( --cga );
 	margin-bottom: 10px;
 }
-.vubar.peak {
+.bar.peak {
 	width: 0;
 	background: var( --cm );
 	transition-duration: 1s;
 }
-.vubar.peak.red {
+.bar.peak.red {
 	background: #f00 !important;
 }
-.vubar.rms {
+.bar.rms {
 	position: relative;
 	width: 0;
 	background: var( --cm );
@@ -136,13 +136,15 @@
 	margin-top: 10px;
 	width: 230px;
 }
-#statusbuffer .vubar {
+#statusbuffer .bar {
 	margin-bottom: 25px;
 }
-#buffer, #load {
+#buffer,
+#load {
 	position: relative;
 	width: 0;
 	background: var( --cm );
+	transition-duration: 1s;
 }
 #statussampling {
 	margin-top: -13px;
