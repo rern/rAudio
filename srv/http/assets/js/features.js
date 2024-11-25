@@ -384,20 +384,10 @@ var util        = {
 		var error = url.searchParams.get( 'error' );
 		if ( token ) {
 			bash( [ 'scrobblekey', token, 'CMD TOKEN' ], function( error ) {
-				if ( error ) {
-					info( {
-						  icon    : 'scrobble'
-						, title   : 'Scrobbler'
-						, message : error
-					} );
-				} else {
-					S.scrobblekey = true;
-					showContent();
-					$( '#setting-scrobble' ).trigger( 'click' );
-				}
+				if ( error ) infoWarning( 'scrobble', 'Scrobbler', 'Authorization failed:<br>'+ error );
 			} );
 		} else if ( code ) {
-			bash( [ 'spotifytoken', code, util.spotify.redirect, 'CMD CODE REDIRECT' ], showContent );
+			bash( [ 'spotifytoken', code, util.spotify.redirect, 'CMD CODE REDIRECT' ] );
 		} else if ( error ) {
 			infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 		}

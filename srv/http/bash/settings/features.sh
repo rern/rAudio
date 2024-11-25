@@ -319,15 +319,14 @@ scrobblekey )
 		--data "api_sig=$apisig" \
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
-	if [[ $response =~ error ]]; then
-		jq -r .message <<< $response
-	else
-		echo "\
+	[[ $response =~ error ]] && jq -r .message <<< $response && exit
+# --------------------------------------------------------------------
+	echo "\
 apikey=$apikey
 sharedsecret=$sharedsecret
 sk=$( jq -r .session.key <<< $response )
 " > $dirsystem/scrobblekey
-	fi
+	pushRefresh
 	;;
 scrobblekeyremove )
 	rm -f $dirsystem/{scrobble,scrobblekey}
