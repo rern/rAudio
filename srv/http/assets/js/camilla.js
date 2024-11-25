@@ -763,7 +763,17 @@ var render    = {
 		var ch      = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
-	, statusStop  : () => $( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( '· · ·' )
+	, statusStop  : () => {
+		if ( ! ( 'intervalvu' in V ) ) return
+		
+		V.signal = false;
+		clearInterval( V.intervalvu );
+		delete V.intervalvu;
+		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
+		$( '.peak' ).css( 'left', 0 );
+		$( '#buffer, #load' ).css( 'width', 0 );
+		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( '· · ·' );
+	}
 	, tab         : () => {
 		$( '.section:not( #divstatus )' ).addClass( 'hide' );
 		$( '#div'+ V.tab ).removeClass( 'hide' );
@@ -803,17 +813,6 @@ var render    = {
 			$( '#divvolume .i-volume' ).removeClass( 'mute' );
 		}
 		$( '#divvolume .level' ).text( S.volumemute || S.volume )
-	}
-	, vuClear     : () => {
-		if ( ! ( 'intervalvu' in V ) ) return
-		
-		V.signal = false;
-		clearInterval( V.intervalvu );
-		delete V.intervalvu;
-		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
-		$( '.peak' ).css( 'left', 0 );
-		$( '#buffer, #load' ).css( 'width', 0 );
-		render.statusStop();
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -1831,7 +1830,7 @@ var common    = {
 		}
 		wscamilla.onclose   = () => {
 			wscamilla = null;
-			render.vuClear();
+			render.statusStop();
 			clearInterval( V.intervalstatus );
 		}
 		wscamilla.onmessage = response => {
@@ -1842,7 +1841,7 @@ var common    = {
 			switch ( cmd ) {
 				case 'GetSignalLevels':
 					if ( S.state !== 'play' ) {
-						render.vuClear();
+						render.statusStop();
 						return
 					}
 					
@@ -1865,7 +1864,7 @@ var common    = {
 				case 'GetProcessingLoad':
 				case 'GetRateAdjust':
 					if ( S.state !== 'play' ) {
-						render.vuClear();
+						render.statusStop();
 						return
 					}
 					
@@ -1891,12 +1890,11 @@ var common    = {
 					}
 					break;
 				case 'GetState':
-					if ( 'intervalvu' in V || S.state !== 'play' ) {
-						render.statusStop();
-						return
+					if ( 'intervalvu' in V ) {
+						if ( S.state !== 'play' ) render.statusStop();
+					} else {
+						V.intervalvu = setInterval( () => wscamilla.send( '"GetSignalLevels"' ), 100 );
 					}
-					
-					V.intervalvu = setInterval( () => wscamilla.send( '"GetSignalLevels"' ), 100 );
 					break;
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
