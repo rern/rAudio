@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1732266755' );
+	src         : url( '/assets/fonts/rern.woff2?v=1732539717' );
 }
 @font-face {
 	font-family : Lato;
@@ -188,6 +188,7 @@ i {
 .i-redo::before            { content: '\F524' }
 .i-refresh::before,
 .i-update::before          { content: '\F526' }
+.i-refreshlibrary::before,
 .i-refresh-library::before { content: '\F536' }
 .i-relays::before          { content: '\F522' }
 .i-reload::before          { content: '\F525' }

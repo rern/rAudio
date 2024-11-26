@@ -31,12 +31,12 @@ commonVariables( [
 		, [ 'Wi-Fi',         'wifi' ]
 	]
 	, 'menus'   => [
-	  [ 'features', 'Features', 'camilladsp' ]
-	, [ 'features', 'Features', 'equalizer' ]
-	, [ 'networks', 'Networks', 'snapcast' ]
-	, [ 'playlist', 'Playlist', 'multiraudio' ]
-	, [ 'player',   'Player',   'lock' ]
-	, [ 'power',    'Power',    'screenoff' ]
+	  [ 'camilladsp',  'features' ]
+	, [ 'equalizer',   'features' ]
+	, [ 'snapcast',    'networks' ]
+	, [ 'multiraudio', 'playlist' ]
+	, [ 'lock',        'player' ]
+	, [ 'screenoff',   'power' ]
 	]
 	, 'tabs'    => [ 'library', 'system' ]
 ] );

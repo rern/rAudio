@@ -38,8 +38,8 @@ commonVariables( [
 		, [ 'Storage' ]
 	]
 	, 'menus'   => [
-		  [ 'library', 'Library', 'refresh-library' ]
-		, [ 'raudio',  'System',  'relays' ]
+		  [ 'refreshlibrary', 'library' ]
+		, [ 'relays',         'system' ]
 	]
 	, 'tabs'    => [ 'features', 'player' ]
 ] );

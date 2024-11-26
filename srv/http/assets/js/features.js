@@ -1,3 +1,11 @@
+/*
+switch - setting icon
+	only (in config) have icon
+(in config)     : info() >> enable          >> disable
+(not in config) :        >> enable          >> disable
+_prompt         : info() >> enable          >> disable (backup i2s novolume restore shareddata)
+_disable        :        >> enable - info() >> disable (login mixertype novolume shareddata)
+*/
 var config       = {
 	  _disable     : {
 		login : () => {

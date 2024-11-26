@@ -46,8 +46,9 @@ function commonVariables( $list ) {
 	if ( isset( $menus ) ) {
 		$M = ( object ) [];
 		foreach( $menus as $m ) {
-			$name     = $m[ 2 ];
-			$M->$name = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $name.' sub' ).'</a>';
+			$name     = $m[ 0 ];
+			$icon     = $m[ 1 ];
+			$M->$name = '<a class="helpmenu">'.i( $icon ).' '.ucfirst( $icon ).i( $name.' sub' ).'</a>';
 		}
 	}
 	if ( isset( $tabs ) ) {
