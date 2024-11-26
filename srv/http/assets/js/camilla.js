@@ -482,7 +482,7 @@ function renderPage() { // common from settings.js - render with 'GetConfigJson'
 function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
 }
-function psVolume( data ) {
+ps.volume = data => {
 	if ( V.local ) {
 		V.local = false;
 		return

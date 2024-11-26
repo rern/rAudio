@@ -170,109 +170,113 @@ function switchSet() {
 
 function psOnMessage( channel, data ) {
 	switch ( channel ) {
-		case 'bluetooth': psBluetooth( data ); break;
-		case 'camilla':   psCamilla( data );   break;
+		case 'bluetooth': ps.bluetooth( data ); break;
+		case 'camilla':   ps.camilla( data );   break;
 		case 'mpdplayer':
-		case 'mpdradio':  psMpdPlayer( data ); break;
-		case 'mpdupdate': psMpdUpdate( data ); break;
-		case 'notify':    psNotify( data );    break; // in common.js
-		case 'player':    psPlayer( data );    break;
-		case 'power':     psPower( data );     break;
-		case 'reboot':    psReboot( data );    break;
-		case 'refresh':   psRefresh( data );   break;
-		case 'relays':    psRelays( data );    break;
-		case 'reload':    psReload( data );    break;
-		case 'storage':   psStorage( data );   break;
-		case 'volume':    psVolume( data );    break;
-		case 'wlan':      psWlan( data );      break;
+		case 'mpdradio':  ps.mpdPlayer( data ); break;
+		case 'mpdupdate': ps.mpdUpdate( data ); break; // in player.js
+		case 'notify':    ps.notify( data );    break; // in common.js
+		case 'player':    ps.player( data );    break;
+		case 'power':     ps.power( data );     break; // in common.js
+		case 'reboot':    ps.reboot( data );    break;
+		case 'refresh':   ps.refresh( data );   break;
+		case 'relays':    ps.relays( data );    break; // in common.js
+		case 'reload':    ps.reload( data );    break;
+		case 'storage':   ps.storage( data );   break; // in system.js
+		case 'volume':    ps.volume( data );    break; // in player.js
+		case 'wlan':      ps.wlan( data );      break;
 	}
 }
-function psBluetooth( data ) { // from networks-data,sh
-	if ( ! data ) {
-		if ( page === 'networks' ) {
+ps = {
+	  ...ps // from settings.js
+	, bluetooth : data => { // from networks-data,sh
+		if ( ! data ) {
+			if ( page === 'networks' ) {
+				S.listbt = data;
+				render.bluetooth();
+			} else if ( page === 'system' ) {
+				$( '#bluetooth' ).removeClass( 'disabled' );
+			}
+		} else if ( 'connected' in data ) {
+			if ( page === 'features' ) {
+				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
+			} else if ( page === 'system' ) {
+				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
+			}
+		} else if ( page === 'networks' ) {
 			S.listbt = data;
 			render.bluetooth();
-		} else if ( page === 'system' ) {
-			$( '#bluetooth' ).removeClass( 'disabled' );
 		}
-	} else if ( 'connected' in data ) {
-		if ( page === 'features' ) {
-			$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
-		} else if ( page === 'system' ) {
-			$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
-		}
-	} else if ( page === 'networks' ) {
-		S.listbt = data;
-		render.bluetooth();
+		bannerHide();
 	}
-	bannerHide();
-}
-function psCamilla( data ) {
-	S.range = data;
-	$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
-	$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
-}
-function psMpdPlayer( data ) {
-	if ( ! [ 'camilla', 'player' ].includes( page ) ) return
-	
-	[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
-	playbackButton();
-}
-function psMpdUpdate() {
-	return
-}
-function psPlayer( data ) {
-	var player_id = {
-		  airplay   : 'shairport-sync'
-		, bluetooth : 'bluetooth'
-		, snapcast  : 'snapserver'
-		, spotify   : 'spotifyd'
-		, upnp      : 'upmpdcli'
+	, camilla   : data => {
+		S.range = data;
+		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
+		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 	}
-	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
-}
-function psReboot( data ) {
-	var title = $( '#div'+ data.id +' .label' ).text()
-	banner( data.id, title, 'Reboot required.', 5000 );
-}
-function psRefresh( data ) {
-	if ( data.page !== page ) return
-	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-		if ( page === 'networks' ) {
-			if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
-		} else {
-			switchSet();
-		}
-		renderPage();
-	}, 300 );
-}
-function psReload( data ) {
-	if ( localhost ) location.reload();
-}
-function psStorage( data ) { // system.js
-	return
-}
-function psVolume() { // camilla.js, player.js, system.js
-	return
-}
-function psWlan( data ) {
-	if ( data && 'reboot' in data ) {
-		info( {
-			  icon    : 'wifi'
-			, title   : 'Wi-Fi'
-			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
-			, oklabel : ico( 'reboot' ) +'Reboot'
-			, okcolor : orange
-			, ok      : () => bash( [ 'power.sh', 'reboot' ] )
-		} );
+	, mpdPlayer : data => {
+		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
+		
+		[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
+		playbackButton();
+	}
+	, mpdUpdate : () => {
 		return
 	}
-	
-	$.each( data, ( k, v ) => { S[ k ] = v } );
-	render.wlan();
+	, player    : data => {
+		var player_id = {
+			  airplay   : 'shairport-sync'
+			, bluetooth : 'bluetooth'
+			, snapcast  : 'snapserver'
+			, spotify   : 'spotifyd'
+			, upnp      : 'upmpdcli'
+		}
+		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
+	}
+	, reboot    : data => {
+		var msg = '';
+		data.id.forEach( id => msg += '<div> • '+ $( '#div'+ id +' .label' ).text() +'</div>' );
+		banner( 'reboot', 'Reboot required', msg, 5000 );
+	}
+	, refresh   : data => {
+		if ( data.page !== page ) return
+		
+		clearTimeout( V.debounce );
+		V.debounce = setTimeout( () => {
+			$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+			if ( page === 'networks' ) {
+				if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
+			} else {
+				switchSet();
+			}
+			renderPage();
+		}, 300 );
+	}
+	, reload    : data => {
+		if ( localhost ) location.reload();
+	}
+	, storage   : data => { // system.js
+		return
+	}
+	, volume    : () => { // camilla.js, player.js, system.js
+		return
+	}
+	, wlan      : data => {
+		if ( data && 'reboot' in data ) {
+			info( {
+				  icon    : 'wifi'
+				, title   : 'Wi-Fi'
+				, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
+				, oklabel : ico( 'reboot' ) +'Reboot'
+				, okcolor : orange
+				, ok      : () => bash( [ 'power.sh', 'reboot' ] )
+			} );
+			return
+		}
+		
+		$.each( data, ( k, v ) => { S[ k ] = v } );
+		render.wlan();
+	}
 }
 //---------------------------------------------------------------------------------------
 document.title = page === 'camilla' ? 'CamillaDSP' : capitalize( page );

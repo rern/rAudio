@@ -67,8 +67,8 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
-		pushData reboot '{ "id": "'$CMD'" }'
 		appendSortUnique $CMD $dirshm/reboot
+		pushData reboot '{ "id": '$( line2array $( < $dirshm/reboot ) )' }'
 	else
 		sed -i "/$CMD/ d" $dirshm/reboot
 	fi

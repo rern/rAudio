@@ -1224,90 +1224,92 @@ function selectText2Html( pattern ) {
 	} );
 }
 // push status
-function psNotify( data ) {
-	if ( data === false ) {
-		bannerHide();
-		return
-	}
-	
-	if ( V.relays ) {
-		if ( ! data.title ) $( '#bannerMessage' ).html( data.message );
-		return
-	}
-	
-	var icon    = data.icon;
-	var title   = data.title;
-	var message = data.message;
-	var delay   = data.delay;
-	if ( ! title ) {
-		V.relays    = true;
-		$( '#infoX' ).trigger( 'click' )
-	}
-	if ( ! page ) {
-		if ( message === 'Change track ...' ) { // audiocd
-			intervalClear();
-		} else if ( title === 'Latest' ) {
-			C.latest = 0;
-			$( '.mode.latest gr' ).empty();
-			if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-		}
-	}
-	banner( icon, title, message, delay );
-}
-function psPower( data ) {
-	loader();
-	ws        = null;
-	V[ data.type ] = true;
-	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
-	if ( V.off ) {
-		$( '#loader' ).css( 'background', '#000000' );
-		setTimeout( () => {
-			$( '#loader svg' ).css( 'animation', 'none' );
+var ps = {
+	  notify : data => {
+		if ( data === false ) {
 			bannerHide();
-		}, 10000 );
-	} else { // reconnect after reboot
-		setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
-	}
-}
-function psRelays( data ) {
-	if ( 'reset' in data ) {
-		$( '#infoX' ).trigger( 'click' );
-		banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.reset +'m' );
-		return
-	}
-	
-	var relaysToggle = function() {
-		clearInterval( V.intervalrelays );
-		bannerHide();
-		$( '#infoX' ).trigger( 'click' );
+			return
+		}
+		
+		if ( V.relays ) {
+			if ( ! data.title ) $( '#bannerMessage' ).html( data.message );
+			return
+		}
+		
+		var icon    = data.icon;
+		var title   = data.title;
+		var message = data.message;
+		var delay   = data.delay;
+		if ( ! title ) {
+			V.relays    = true;
+			$( '#infoX' ).trigger( 'click' )
+		}
 		if ( ! page ) {
-			$( '#relays' ).toggleClass( 'on', S.relayson );
-			$( ( $time.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+			if ( message === 'Change track ...' ) { // audiocd
+				intervalClear();
+			} else if ( title === 'Latest' ) {
+				C.latest = 0;
+				$( '.mode.latest gr' ).empty();
+				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
+			}
+		}
+		banner( icon, title, message, delay );
+	}
+	, power  : data => {
+		loader();
+		ws        = null;
+		V[ data.type ] = true;
+		banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
+		if ( V.off ) {
+			$( '#loader' ).css( 'background', '#000000' );
+			setTimeout( () => {
+				$( '#loader svg' ).css( 'animation', 'none' );
+				bannerHide();
+			}, 10000 );
+		} else { // reconnect after reboot
+			setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
 		}
 	}
-	if ( 'done' in data ) {
-		S.relayson = data.done;
-		V.relays   = false;
-		relaysToggle();
-		return
+	, relays : data => {
+		if ( 'reset' in data ) {
+			$( '#infoX' ).trigger( 'click' );
+			banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.reset +'m' );
+			return
+		}
+		
+		var relaysToggle = function() {
+			clearInterval( V.intervalrelays );
+			bannerHide();
+			$( '#infoX' ).trigger( 'click' );
+			if ( ! page ) {
+				$( '#relays' ).toggleClass( 'on', S.relayson );
+				$( ( $time.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+			}
+		}
+		if ( 'done' in data ) {
+			S.relayson = data.done;
+			V.relays   = false;
+			relaysToggle();
+			return
+		}
+		
+		if ( ! ( 'countdown' in data ) ) return
+		
+		info( {
+			  icon        : 'relays'
+			, title       : 'Equipments Off'
+			, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
+			, buttonlabel : ico( 'relays' ) +'Off'
+			, buttoncolor : red
+			, button      : () => bash( [ 'relays.sh', 'off' ] )
+			, oklabel     : ico( 'set0' ) +'Reset'
+			, ok          : () => bash( [ 'cmd.sh', 'relaystimerreset' ] )
+		} );
+		var delay        = 59;
+		V.intervalrelays = setInterval( () => {
+			delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
+		}, 1000 );
 	}
-	
-	if ( ! ( 'countdown' in data ) ) return
-	
-	info( {
-		  icon        : 'relays'
-		, title       : 'Equipments Off'
-		, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
-		, buttonlabel : ico( 'relays' ) +'Off'
-		, buttoncolor : red
-		, button      : () => bash( [ 'relays.sh', 'off' ] )
-		, oklabel     : ico( 'set0' ) +'Reset'
-		, ok          : () => bash( [ 'cmd.sh', 'relaystimerreset' ] )
-	} );
-	var delay        = 59;
-	V.intervalrelays = setInterval( () => {
-		delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
-	}, 1000 );
 }
 
 // page visibility -----------------------------------------------------------------

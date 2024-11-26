@@ -843,11 +843,6 @@ var util          = {
 function onPageInactive() {
 	clearInterval( V.intstatus );
 }
-function psStorage( data ) {
-	S.liststorage = data.list;
-	util.renderStorage();
-	if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
-}
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
@@ -901,6 +896,11 @@ function renderPage() {
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
+}
+ps.storage = data => {
+	S.liststorage = data.list;
+	util.renderStorage();
+	if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

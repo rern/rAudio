@@ -359,7 +359,7 @@ function renderPage() {
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
 	showContent();
 }
-function psMpdUpdate( data ) {
+ps.mpdUpdate = data => {
 	if ( 'done' in data ) {
 		$.each( S.counts, ( k, v ) => S[ k ] = data.done[ k ] );
 		S.updatetime  = data.updatetime
@@ -367,7 +367,7 @@ function psMpdUpdate( data ) {
 		util.renderStatus();
 	}
 }
-function psVolume( data ) {
+ps.volume    = data > {
 	if ( ! ( 'db' in data ) ) return
 	 
 	S.volume   = data.val;
