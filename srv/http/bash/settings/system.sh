@@ -2,17 +2,23 @@
 
 . /srv/http/bash/common.sh
 
+file_cmdline=/boot/cmdline.txt
+file_config=/boot/config.txt
+file_module=/etc/modules-load.d/raspberrypi.conf
+
 args2var "$1"
 
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
-	local chip filemodule i2clcdchar i2cmpdoled list module name spimpdoled tft
-	filemodule=/etc/modules-load.d/raspberrypi.conf
-	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison: cmdline.txt, config.txt, raspberrypi.conf
-		for f in /boot/cmdline.txt /boot/config.txt $filemodule; do
+	local chip i2clcdchar i2cmpdoled module spimpdoled tft
+	tmp_cmdline=/tmp/cmdline.txt
+	tmp_config=/tmp/config.txt
+	tmp_module=/tmp/raspberrypi.conf
+	if [[ ! -e $tmp_config ]]; then # files at boot for comparison
+		for f in $file_cmdline $file_config $file_module; do
 			[[ -s $f ]] && grep -Ev '^#|^\s*$' $f | sort -u > /tmp/$( basename $f )
 		done
 	fi
-	[[ ! $config ]] && config=$( < /boot/config.txt )
+	[[ ! $config ]] && config=$( < $file_config )
 	config=$( grep -Ev '^#|^\s*$' <<< $config )
 	if [[ $i2cset ]]; then
 		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && tft=1
@@ -29,7 +35,7 @@ dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
 		[[ $tft || $spimpdoled ]] && config+='
 dtparam=spi=on'
 		
-		[[ -e $filemodule ]] && module=$( grep -Ev 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $filemodule )
+		[[ -e $file_module ]] && module=$( grep -Ev 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $file_module )
 		[[ $tft || $i2clcdchar ]] && module+='
 i2c-bcm2708'
 		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then
@@ -41,7 +47,7 @@ i2c-dev'
 i2c-dev
 snd-soc-wm8960'
 		fi
-		[[ -e $module ]] && sort -u <<< $module > $filemodule || rm -f $filemodule
+		[[ -e $module ]] && sort -u <<< $module > $file_module || rm -f $file_module
 	fi
 	if [[ $poweraudiophonic ]]; then
 		config+="
@@ -50,14 +56,14 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	else
 		config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' <<< $config )
 	fi
-	awk NF <<< $config | sort -u > /boot/config.txt
+	awk NF <<< $config | sort -u > $file_config
 	pushRefresh
 	if [[ ! $reboot ]]; then
-		if ! cmp -s /tmp/config.txt /boot/config.txt || ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
+		if ! cmp -s $tmp_config $file_config || ! cmp -s $tmp_cmdline $file_cmdline; then
 			reboot=1
 		else
-			count=$( ls $filemodule /tmp/raspberrypi.conf | wc -l )
-			[[ $count == 1 ]] || ( [[ $count == 2 ]] && ! cmp -s /tmp/raspberrypi.conf $filemodule ) && reboot=1
+			count=$( ls $tmp_module $file_module | wc -l )
+			[[ $count == 1 ]] || ( [[ $count == 2 ]] && ! cmp -s $tmp_module $file_module ) && reboot=1
 		fi
 	fi
 	if [[ $reboot ]]; then
@@ -92,17 +98,17 @@ case $CMD in
 audio )
 	enableFlagSet
 	if [[ $ON ]] ; then
-		config="$( < /boot/config.txt )
+		config="$( < $file_config )
 dtparam=audio=on"
 	else
-		config=$( grep -v ^dtparam=audio=on /boot/config.txt )
+		config=$( grep -v ^dtparam=audio=on $file_config )
 	fi
 	configTxt
 	;;
 bluetooth )
 	inOutputConf device.*bluealsa && bluealsa=1
 	if [[ $ON ]]; then
-		config=$( grep -E -v 'disable-bt' /boot/config.txt )
+		config=$( grep -E -v 'disable-bt' $file_config )
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
 			touch $dirsystem/btdiscoverable
@@ -120,7 +126,7 @@ bluetooth )
 		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
 		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
-		config="$( < /boot/config.txt )
+		config="$( < $file_config )
 dtoverlay=disable-bt"
 		if rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
@@ -159,24 +165,24 @@ hostname )
 	;;
 i2seeprom )
 	if [[ $ON ]]; then
-		config="$( < /boot/config.txt )
+		config="$( < $file_config )
 force_eeprom_read=0"
 	else
-		config=$( grep -v ^force_eeprom_read /boot/config.txt )
+		config=$( grep -v ^force_eeprom_read $file_config )
 	fi
 	configTxt
 	;;
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
 	cirrusconf=/etc/modprobe.d/cirrus.conf
-	config=$( grep -Ev "^dtparam=i2s=on|^dtoverlay=$prevaplayname|gpio=25=op,dh|^dtparam=audio=on" /boot/config.txt )
+	config=$( grep -Ev "^dtparam=i2s=on|^dtoverlay=$prevaplayname|gpio=25=op,dh|^dtparam=audio=on" $file_config )
 	if [[ $APLAYNAME ]]; then
 		config+="
 dtparam=i2s=on
 dtoverlay=$APLAYNAME"
 		[[ $OUTPUT == 'Pimoroni Audio DAC SHIM' ]] && config+="
 gpio=25=op,dh"
-		! grep -q gpio-shutdown /boot/config.txt && systemctl disable --now powerbutton
+		! grep -q gpio-shutdown $file_config && systemctl disable --now powerbutton
 		echo $APLAYNAME > $dirsystem/audio-aplayname
 		echo $OUTPUT > $dirsystem/audio-output
 		if [[ $APLAYNAME == cirrus-wm5102 ]]; then
@@ -356,10 +362,10 @@ soundprofile )
 	pushRefresh
 	;;
 tft )
-	config=$( grep -Ev '^hdmi_force_hotplug|:rotate=' /boot/config.txt )
-	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
+	config=$( grep -Ev '^hdmi_force_hotplug|:rotate=' $file_config )
+	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' $file_cmdline
 	if [[ $ON ]]; then
-		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
+		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' $file_cmdline
 		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
 		config+="
 hdmi_force_hotplug=1
@@ -375,7 +381,7 @@ dtoverlay=$MODEL:rotate=$rotate"
 	configTxt
 	;;
 tftcalibrate )
-	rotate=$( grep rotate /boot/config.txt | cut -d= -f3 )
+	rotate=$( grep rotate $file_config | cut -d= -f3 )
 	cp -f /etc/X11/{lcd$rotate,xorg.conf.d/99-calibration.conf}
 	systemctl stop localbrowser
 	value=$( DISPLAY=:0 xinput_calibrator | grep Calibration | cut -d'"' -f4 )
