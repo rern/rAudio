@@ -20,13 +20,13 @@ $id_data   = [
 commonVariables( [
 	  'buttons' => [ 'camilla', 'equalizer', 'gear', 'pause', 'play', 'stop', 'volume' ]
 	, 'labels'  => [ 
-		  [ 'DAB Radio',   'dabradio' ]
-		, [ 'Device' ]
-		, [ 'DSP',         'camilla' ]
-		, [ 'Equalizer',   'equalizer' ]
-		, [ 'Shared Data', 'networks' ]
-		, [ 'SoX Resampler' ]
-		, [ 'Volume Control' ]
+		  'DAB Radio'      => 'dabradio'
+		, 'Device'         => ''
+		, 'DSP'            => 'camilla'
+		, 'Equalizer'      => 'equalizer'
+		, 'Shared Data'    => 'networks'
+		, 'SoX Resampler'  => ''
+		, 'Volume Control' => ''
 	]
 	, 'tabs'    => [ 'features', 'system' ]
 ] );

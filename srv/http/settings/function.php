@@ -36,18 +36,15 @@ function commonVariables( $list ) {
 	}
 	if ( isset( $labels ) ) {
 		$L = ( object ) [];
-		foreach( $labels as $l ) {
-			$icon     = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
-			$l        = $l[ 0 ];
-			$name     = strtolower( preg_replace( '/ |-/', '', $l ) );
-			$L->$name = '<a class="helpmenu label">'.$l.$icon.'</a>';
+		foreach( $labels as $label => $icon ) {
+			$icon     = $icon ? i( $icon ) : ' &emsp;';
+			$name     = strtolower( preg_replace( '/ |-/', '', $label ) );
+			$L->$name = '<a class="helpmenu label">'.$label.$icon.'</a>';
 		}
 	}
 	if ( isset( $menus ) ) {
 		$M = ( object ) [];
-		foreach( $menus as $m ) {
-			$name     = $m[ 0 ];
-			$icon     = $m[ 1 ];
+		foreach( $menus as $name => $icon ) {
 			$M->$name = '<a class="helpmenu">'.i( $icon ).' '.ucfirst( $icon ).i( $name.' sub' ).'</a>';
 		}
 	}

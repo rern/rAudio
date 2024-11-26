@@ -4,8 +4,8 @@
 commonVariables( [
 	  'buttons' => [ 'add', 'bluetooth', 'btsender', 'lan', 'search', 'wifi' ]
 	, 'labels'  => [ 
-		  [ 'Access Point', 'ap' ]
-		, [ 'Bluetooth',    'bluetooth' ]
+		  'Access Point' => 'ap'
+		, 'Bluetooth'    => 'bluetooth'
 	]
 	, 'tabs'    => [ 'features', 'system' ]
 ] );

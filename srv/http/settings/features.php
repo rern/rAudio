@@ -24,19 +24,19 @@ $id_data      = [
 commonVariables( [
 	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'rserver', 'usbdrive', 'warning' ]
 	, 'labels'  => [
-		  [ 'Equalizer',     'equalizer' ]
-		, [ 'DSP',           'camilladsp' ]
-		, [ 'Server rAudio', 'rserver' ]
-		, [ 'Shared Data',   'networks' ]
-		, [ 'Wi-Fi',         'wifi' ]
+		  'Equalizer'     => 'equalizer'
+		, 'DSP'           => 'camilladsp'
+		, 'Server rAudio' => 'rserver'
+		, 'Shared Data'   => 'networks'
+		, 'Wi-Fi'         => 'wifi'
 	]
 	, 'menus'   => [
-	  [ 'camilladsp',  'features' ]
-	, [ 'equalizer',   'features' ]
-	, [ 'snapcast',    'networks' ]
-	, [ 'multiraudio', 'playlist' ]
-	, [ 'lock',        'player' ]
-	, [ 'screenoff',   'power' ]
+		  'camilladsp'  => 'features'
+		, 'equalizer'   => 'features'
+		, 'lock'        => 'player'
+		, 'multiraudio' => 'playlist'
+		, 'screenoff'   => 'power'
+		, 'snapcast'    => 'networks'
 	]
 	, 'tabs'    => [ 'library', 'system' ]
 ] );

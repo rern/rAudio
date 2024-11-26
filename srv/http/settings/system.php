@@ -30,16 +30,16 @@ $id_data     = [
 commonVariables( [
 	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'rserver', 'usbdrive' ]
 	, 'labels'  => [
-		  [ 'Bluetooth',     'bluetooth' ]
-		, [ 'Device' ]
-		, [ 'Output' ]
-		, [ 'Server rAudio', 'rserver' ]
-		, [ 'Shared Data',   'networks' ]
-		, [ 'Storage' ]
+		  'Bluetooth'     => 'bluetooth'
+		, 'Device'        => ''
+		, 'Output'        => ''
+		, 'Server rAudio' => 'rserver'
+		, 'Shared Data'   => 'networks'
+		, 'Storage'       => ''
 	]
 	, 'menus'   => [
-		  [ 'refreshlibrary', 'library' ]
-		, [ 'relays',         'system' ]
+		  'refreshlibrary' => 'library'
+		, 'relays'       => 'system'
 	]
 	, 'tabs'    => [ 'features', 'player' ]
 ] );
