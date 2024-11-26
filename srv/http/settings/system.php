@@ -6,7 +6,7 @@
 </style>
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
-$onboardwlan = file_exists( '/srv/http/data/shm/onboardwlan' ) ? 'true' : 0;
+$onboardwlan = '/srv/http/data/shm/onboardwlan';
 $id_data     = [
 	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'status' => true ]
 	, 'backup'        => [ 'label' => 'Backup' ]
@@ -22,7 +22,7 @@ $id_data     = [
 	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
 	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client' ]
 	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
-	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                          'exist' => 'firefox' ]
+	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                          'exist' => '/usr/bin/firefox' ]
 	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'status' => true ]
 	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
 	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',          'status' => true, 'exist' => $onboardwlan ]

@@ -1,17 +1,16 @@
 <?php
 /*
-$id_data = [ 'ID' => [               // REQUIRED
+$id_data = [ 'ID' => [
 	  'label'   => 'LABEL'
 	, 'sub'     => 'SUBLABEL'
-	, 'setting' => 'TYPE'
-	, 'status'  => 'SCRIPTCOMMAND'
+	, 'status'  => true
 ];
 $head = [
 	  'title'   => 'TITLE'           // REQUIRED
-	, 'subhead' => true/false        // with no help icon
-	, 'status'  => 'COMMAND'         // include status icon and status box
+	, 'subhead' => true              // with no help icon
+	, 'status'  => true              // include status icon and status box
 	, 'button'  => [ 'ICON', ... ]   // icon button
-	, 'back'    => true/false        // back button
+	, 'back'    => true              // back button
 	, 'help'    => 'HELP'
 ];
 $body = [
@@ -19,10 +18,10 @@ $body = [
 	, [
 		  'id'       => 'ID'         // REQUIRED
 		, 'input'    => 'HTML/ID'    // alternative - if not switch (ID - select)
-		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting
-		                             // 'js'     = set by js condition
+		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting icon
+		                             // 'js' = set by js condition
 		, 'help'     => 'HELP'
-		, 'exist'    => 'COMMAND'    // hide if COMMAND = false
+		, 'exist'    => 'FILE'       // hide if file not exist
 	]
 	, ...
 ];
@@ -111,10 +110,15 @@ function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
 }
 function htmlSetting( $data ) {
 	global $id_data;
-	$data        = ( object ) $data;
-	$id          = $data->id;
-	$iddata      = ( object ) $id_data[ $id ];
-	if ( isset( $iddata->exist ) && ! file_exists( '/usr/bin/'.$iddata->exist ) ) return;
+	$data    = ( object ) $data;
+	$id      = $data->id;
+	$iddata  = ( object ) $id_data[ $id ];
+	$sub     = $iddata->sub ?? false;
+	$exist   = $iddata->exist ?? '';
+	if ( $exist ) {
+		if ( is_bool( $exist ) ) $exist = '/usr/bin/'.$sub;
+		if ( ! file_exists( $exist ) ) return;
+	}
 	
 	if ( isset( $data->html ) ) {
 		echo str_replace( '|', '<g>|</g>', $data->html );
@@ -122,23 +126,22 @@ function htmlSetting( $data ) {
 	}
 	
 	global $iconlabel;
-	$label       = $iddata->label;
-	$sublabel    = $iddata->sub ?? false;
-	$status      = $iddata->status ?? false;
-	$label       = '<span class="label">'.$label.'</span>';
-	$input       = $data->input ?? false;
-	$help        = $data->help ?? false;
-	$icon        = $iconlabel ? $id : '';
-	$dstatus     = $status ? ' status" data-status="'.$id : '';
+	$label   = $iddata->label;
+	$status  = $iddata->status ?? false;
+	$label   = '<span class="label">'.$label.'</span>';
+	$input   = $data->input ?? false;
+	$help    = $data->help ?? false;
+	$icon    = $iconlabel ? $id : '';
+	$dstatus = $status ? ' status" data-status="'.$id : '';
 	
-	$html        = '<div id="div'.$id.'" class="row">';
+	$html    = '<div id="div'.$id.'" class="row">';
 	// col-l
-	$html       .= '<div class="col-l'.( $sublabel ? '' : ' single' ).$dstatus.'">';
-	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
-	$html       .= $icon ? i( $icon ) : ''; // icon
-	$html       .= '</div>';
+	$html   .= '<div class="col-l'.( $sub ? '' : ' single' ).$dstatus.'">';
+	$html   .= $sub ? '<a>'.$label.'<gr>'.$sub.'</gr></a>' : $label;
+	$html   .= $icon ? i( $icon ) : ''; // icon
+	$html   .= '</div>';
 	// col-r
-	$html       .= '<div class="col-r">';
+	$html   .= '<div class="col-r">';
 	if ( ! $input ) {
 		$disabled = isset( $data->disabled ) ? '<span class="hide">'.$data->disabled.'</span>' : '';
 		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch">';
@@ -150,13 +153,13 @@ function htmlSetting( $data ) {
 			$html.= '<select id="'.$input.'"></select>';
 		}
 	}
-	$html       .= i( 'gear setting', 'setting-'.$id );
+	$html   .= i( 'gear setting', 'setting-'.$id );
 	// help
-	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
-	$html       .= '</div>
+	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
+	$html   .= '</div>
 					</div>';
 	// status
-	$html       .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
+	$html   .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
 	if ( isset( $data->returnhtml ) ) return $html;
 	
 	echo $html;
