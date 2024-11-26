@@ -790,7 +790,7 @@ var render    = {
 		}
 	}
 	, volume      : () => {
-		$( '#volume .thumb' ).css( 'margin-left', ( $( '#volume-band' ).width() - 40 ) / 100 * S.volume );
+		$( '#volume .thumb' ).css( 'margin-left', ( $( '#volume' ).width() - 40 ) / 100 * S.volume );
 		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
 		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 		if ( S.volumemute ) {

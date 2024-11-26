@@ -1,10 +1,11 @@
 /*
-switch - setting icon
-	only (in config) have icon
-(in config)     : info() >> enable          >> disable
-(not in config) :        >> enable          >> disable
-_prompt         : info() >> enable          >> disable (backup i2s novolume restore shareddata)
-_disable        :        >> enable - info() >> disable (login mixertype novolume shareddata)
+switch - setting icon: ID in config
+	- hide        : S.ID === false
+	- always show : S.ID !== false                    (configuration mixer timezone)
+ID in config   : info() >> enable          >> disable
+! ID in config :        >> enable          >> disable
+_prompt        : info() >> enable          >> disable (backup i2s novolume restore shareddata)
+_disable       :        >> enable - info() >> disable (login mixertype novolume shareddata)
 */
 var config       = {
 	  _disable     : {

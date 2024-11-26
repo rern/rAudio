@@ -163,7 +163,7 @@ function switchSet() {
 	$( '.setting' ).each( ( i, el ) => {
 		var $this = $( el );
 		var id    = el.id.slice( 8 ); // setting-id > id
-		id in config ? $this.toggleClass( 'hide', ! S[ id ] ) : $this.remove();
+		id in config ? $this.toggleClass( 'hide', S[ id ] === false ) : $this.remove();
 	} );
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 }
