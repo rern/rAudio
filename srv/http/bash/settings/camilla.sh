@@ -54,6 +54,14 @@ confswitch )
 restart )
 	systemctl restart camilladsp
 	;;
+samplings )
+	data='{
+  "channels"   : '$( < $dirshm/channels )'
+, "formats"    : '$( < $dirshm/formats )'
+, "samplings"  : '$( < $dirshm/samplings )'
+}'
+	echo $data
+	;;
 saveconfig )
 	saveConfig
 	;;

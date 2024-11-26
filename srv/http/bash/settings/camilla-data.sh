@@ -22,14 +22,11 @@ data='
 , "btreceiver" : '$( exists $dirshm/btreceiver )'
 , "card"       : '$card'
 , "cardname"   : "'$name'"
-, "channels"   : '$( < $dirshm/channels )'
 , "control"    : "'$mixer'"
 , "devices"    : {
 	  "capture"  : { '$devicesC' }
 	, "playback" : { '$devicesP' }
 }
-, "formats"    : '$( < $dirshm/formats )'
-, "samplings"  : '$( < $dirshm/samplings )'
 , "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$( mpcState )'"

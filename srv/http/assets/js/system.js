@@ -1,5 +1,5 @@
 var config        = {
-	  _disable    : {
+	  _disable      : {
 		  shareddata : () => {
 			info( {
 				  ...SW
@@ -13,7 +13,7 @@ var config        = {
 			} );
 		}
 	}
-	, _prompt     : {
+	, _prompt       : {
 		  backup  : () => {
 			var d     = new Date();
 			var month = '0'+ ( d.getMonth() + 1 );
@@ -271,12 +271,12 @@ var config        = {
 	}
 }
 var util          = {
-	  board2bcm    : {
+	  board2bcm     : {
 		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 	}
-	, gpiosvg      : $( '#gpiosvg' ).html()
-	, hostname     : () => {
+	, gpiosvg       : $( '#gpiosvg' ).html()
+	, hostname      : () => {
 		SW = {
 			  id    : 'hostname'
 			, icon  : 'hostname'
@@ -299,7 +299,7 @@ var util          = {
 			}
 		} );
 	}
-	, i2sSelect    : {
+	, i2sSelect     : {
 		  hide   : () => {
 			$( '#i2s' ).prop( 'checked', false );
 			$( '#divi2s' ).removeClass( 'hide' );
@@ -334,7 +334,7 @@ var util          = {
 			$( '#setting-i2smodule' ).toggleClass( 'hide', ! S.i2smodule );
 		}
 	}
-	, lcdchar      : {
+	, lcdchar       : {
 		  gpio : values => {
 			var list0 = jsonClone( util.lcdchar.list );
 			var list  = list0.slice( 0, 3 );
@@ -390,7 +390,7 @@ var util          = {
 			, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
 		]
 	}
-	, ledcalc      : () => {
+	, ledcalc       : () => {
 		info( {
 			  icon       : 'vuled'
 			, title      : 'LED Resister Calculator'
@@ -420,7 +420,7 @@ var util          = {
 			, okno       : true
 		} );
 	}
-	, mount        : {
+	, mount         : {
 		  mount   : nfs => {
 			var nfs        = nfs || false;
 			var shareddata = SW.id === 'shareddata';
@@ -524,7 +524,7 @@ var util          = {
 		}
 		, tab     : [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ]
 	}
-	, powerbutton  : {
+	, powerbutton   : {
 		  sw : values => {
 			info( {
 				  ...SW
@@ -558,7 +558,7 @@ var util          = {
 			} );
 		}
 	}
-	, refresh      : () => {
+	, refresh       : () => {
 		var $this = $( '.refresh' );
 		if ( $this.hasClass( 'blink' ) ) {
 			clearInterval( V.intstatus );
@@ -577,7 +577,7 @@ var util          = {
 			} );
 		}, 10000 );
 		}
-	, relays       : {
+	, relays        : {
 		  name   : data => {
 			var name   = data.relaysname;
 			var keys   = Object.keys( name );
@@ -747,18 +747,17 @@ var util          = {
 			} );
 		}
 	}
-	, renderSet    : () => {
+	, renderStorage : () => {
 		var html  = '';
 		$.each( S.liststorage, ( i, v ) => {
 			var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
 			var dot = '<grn>&ensp;•&ensp;</grn>';
 			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
-			html += '<li>'+ ico( v.icon ) + mountpoint
-					+ dot +'<gr class="source">'+ v.source +'</gr>&ensp;'+ v.size +'</li>';
+			html += '<li>'+ ico( v.icon ) + mountpoint + dot + v.size +' '+ v.source +'</li>';
 		} );
 		$( '#list' ).html( html );
 	}
-	, restoreReset : () => {
+	, restoreReset  : () => {
 		info( {
 			  ...SW
 			, tablabel : [ 'From Backup', 'Reset To Default' ]
@@ -777,7 +776,7 @@ var util          = {
 		} );
 		$( '#restore' ).prop( 'checked', 0 );
 	}
-	, server       : {
+	, server        : {
 		  mirror : () => {
 			notifyCommon( 'Get mirror server list ...' );
 			infoSetting( 'servermirror', data => {
@@ -816,7 +815,7 @@ var util          = {
 			} );
 		}
 	}
-	, wm5102       : () => {
+	, wm5102        : () => {
 		infoSetting( 'audio-wm5102', data => {
 			var icon   = 'i2s';
 			var output = $( '#i2smodule' ).find( ':selected' ).text();
@@ -846,13 +845,13 @@ function onPageInactive() {
 }
 function psStorage( data ) {
 	S.liststorage = data.list;
-	util.renderSet();
+	util.renderStorage();
 	if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
 }
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
-	util.renderSet();
+	util.renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
 			$( '#divbluetooth .col-l' )

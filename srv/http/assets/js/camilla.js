@@ -737,6 +737,7 @@ var render    = {
 		playbackButton();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
+			$( '#divvolume .control' ).text( S.control );
 			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
@@ -1918,29 +1919,30 @@ var common    = {
 					S.configname = value.split( '/' ).pop();
 					break;
 				case 'GetSupportedDeviceTypes':
-					var type = {};
-					[ 'playback', 'capture' ].forEach( ( k, i ) => {
-						type[ k ] = {};
-						value[ i ].forEach( t => {
-							v = render.typeReplace( t );
-							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
-						} );
-					} );
-					Dlist.formatC.push( { kv: S.formats.capture, nosort: true } );
-					Dlist.formatP.push( { kv: S.formats.playback, nosort: true } );
-					Dlist.typeC.push( type.capture );
-					Dlist.typeP.push( type.playback );
-					Dlist.deviceC.push( S.devices.capture );
-					Dlist.deviceP.push( S.devices.playback );
-					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.channels.capture } } );
-					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.channels.playback } } );
-					D.values.channels  = S.channels;
-					var samplings        = { kv: S.samplings, nosort: true }
-					Dlist.capture_samplerate.push( samplings );
-					D.main[ 0 ].push( samplings );
-					D0.samplerate      = Object.values( S.samplings )
-					$( '#divvolume .control' ).text( S.control );
 					showContent();
+					bash( [ 'samplings' ], data => {
+						var type = {};
+						[ 'playback', 'capture' ].forEach( ( k, i ) => {
+							type[ k ] = {};
+							value[ i ].forEach( t => {
+								v = render.typeReplace( t );
+								type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+							} );
+						} );
+						Dlist.formatC.push( { kv: data.formats.capture, nosort: true } );
+						Dlist.formatP.push( { kv: data.formats.playback, nosort: true } );
+						Dlist.typeC.push( type.capture );
+						Dlist.typeP.push( type.playback );
+						Dlist.deviceC.push( S.devices.capture );
+						Dlist.deviceP.push( S.devices.playback );
+						Dlist.channelsC.push( { updn: { step: 1, min: 1, max: data.channels.capture } } );
+						Dlist.channelsP.push( { updn: { step: 1, min: 1, max: data.channels.playback } } );
+						D.values.channels  = data.channels;
+						var samplings      = { kv: data.samplings, nosort: true }
+						Dlist.capture_samplerate.push( samplings );
+						D.main[ 0 ].push( samplings );
+						D0.samplerate     = Object.values( data.samplings )
+					}, 'json' );
 					break;
 				case 'Invalid':
 					info( {

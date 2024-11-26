@@ -16,7 +16,7 @@ listItem() { # $1-icon, $2-mountpoint, $3-source, $4-mounted
   "icon"       : "'$icon'"
 , "mountpoint" : "'$( quoteEscape $mountpoint )'"
 , "size"       : "'$size'"
-, "source"     : "'$source'"'
+, "source"     : "<c>'$source'</c>"'
 	echo ", {
 $list
 }"

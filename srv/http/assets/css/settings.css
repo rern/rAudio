@@ -618,7 +618,7 @@ input.disabled + .switchlabel:after {
 	line-height: 40px;
 }
 #divstorage c {
-	color: var( --cg60 );
+	color: var( --cg75 );
 	background-color: var( --cga);
 }
 
