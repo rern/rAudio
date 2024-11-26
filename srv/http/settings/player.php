@@ -28,6 +28,7 @@ commonVariables( [
 		, 'SoX Resampler'  => ''
 		, 'Volume Control' => ''
 	]
+	, 'menus'   => []
 	, 'tabs'    => [ 'features', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------

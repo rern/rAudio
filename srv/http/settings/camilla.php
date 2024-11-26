@@ -8,8 +8,12 @@ $id_data  = [
 	, 'resampler'           => [ 'label' => 'Resampler' ]
 ];
 commonVariables( [
-	'buttons' => [ 'code',   'edit',   'filters', 'flowchart', 'folderfilter', 'gear',   'graph', 'input', 'inverted', 'linear'
+	  'buttons' => [ 'code',   'edit',   'filters', 'flowchart', 'folderfilter', 'gear',   'graph', 'input', 'inverted', 'linear'
 				 , 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
+	, 'labels'  => []
+	, 'menus'   => []
+	, 'tabs'    => []
+	
 ] );
 
 $bset     = ( object ) [];

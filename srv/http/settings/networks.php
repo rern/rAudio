@@ -7,6 +7,7 @@ commonVariables( [
 		  'Access Point' => 'ap'
 		, 'Bluetooth'    => 'bluetooth'
 	]
+	, 'menus'   => []
 	, 'tabs'    => [ 'features', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------

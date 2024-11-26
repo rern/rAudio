@@ -28,30 +28,21 @@ $body = [
 htmlSection( $head, $body[, $id] );
 */
 function commonVariables( $list ) {
-	global $B, $L, $M, $T;
-	extract( $list );
-	if ( isset( $buttons ) ) {
-		$B = ( object ) [];
-		foreach( $buttons as $b ) $B->$b = i( $b.' btn' );
+	foreach( [ 'B', 'L', 'M', 'T' ] as $k ) {
+		global $$k;
+		$$k = ( object ) [];
 	}
-	if ( isset( $labels ) ) {
-		$L = ( object ) [];
-		foreach( $labels as $label => $icon ) {
-			$icon     = $icon ? i( $icon ) : ' &emsp;';
-			$name     = strtolower( preg_replace( '/ |-/', '', $label ) );
-			$L->$name = '<a class="helpmenu label">'.$label.$icon.'</a>';
-		}
+	$list = ( object ) $list;
+	foreach( $list->buttons as $b ) $B->$b = i( $b.' btn' );
+	foreach( $list->labels as $label => $icon ) {
+		$icon     = $icon ? i( $icon ) : ' &emsp;';
+		$name     = strtolower( preg_replace( '/ |-/', '', $label ) );
+		$L->$name = '<a class="helpmenu label">'.$label.$icon.'</a>';
 	}
-	if ( isset( $menus ) ) {
-		$M = ( object ) [];
-		foreach( $menus as $name => $icon ) {
-			$M->$name = '<a class="helpmenu">'.i( $icon ).' '.ucfirst( $icon ).i( $name.' sub' ).'</a>';
-		}
+	foreach( $list->menus as $name => $icon ) {
+		$M->$name = '<a class="helpmenu">'.i( $icon ).' '.ucfirst( $icon ).i( $name.' sub' ).'</a>';
 	}
-	if ( isset( $tabs ) ) {
-		$T = ( object ) [];
-		foreach( $tabs as $t ) $T->$t = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
-	}
+	foreach( $list->tabs as $t ) $T->$t = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
 }
 
 function htmlHead( $data ) {
