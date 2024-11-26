@@ -262,7 +262,7 @@ var Dlist     = {
 	, deviceP            : [ 'Device',             'select' ] // ^
 	, formatC            : [ 'Format',             'select' ] // ^
 	, formatP            : [ 'Format',             'select' ] // ^
-	, filename           : [ 'Filename',           'select', S.lsraw ]
+	, filename           : [ 'Filename',           'select' ] // ^
 	, channelsC          : [ 'Channels',           'number' ] // ^
 	, channelsP          : [ 'Channels',           'number' ] // ^
 	, extra_samples      : [ 'Extra samples',      'number' ]
@@ -476,7 +476,7 @@ var axes      = {
 }
 
 // functions //////////////////////////////////////////////////////////////////////////////
-function renderPage() { // common from settings.js
+function renderPage() { // common from settings.js - render with 'GetConfigJson'
 	wscamilla && wscamilla.readyState === 1 ? common.wsGetConfig() : common.webSocket();
 }
 function onPageInactive() {
@@ -721,19 +721,7 @@ var graph     = {
 	}
 }
 var render    = {
-	  page        : () => {
-		if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
-		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
-		S.lscoefraw = [];
-		S.lscoefwav = [];
-		S.lscoeffs.forEach( f => {
-			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
-		} );
-		$( '.container' ).removeClass( 'hide' );
-		render.status();
-		bannerHide();
-	}
-	, status      : () => {
+	  status      : () => {
 		playbackButton();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
@@ -894,7 +882,7 @@ var render    = {
 		return '<li data-name="'+ k +'"'+ classeq +'>'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
-		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
@@ -1911,9 +1899,13 @@ var common    = {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
 					S.targetlevel = DEV.target_level;
-					if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) );
-					render.page();
-					render.tab();
+					if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
+					if ( $( '#data' ).hasClass( 'hide' ) ) {
+						render.status();
+						render.tab();
+					} else {
+						$( '#data' ).html( highlightJSON( S ) );
+					}
 					break;
 				case 'GetConfigFilePath':
 					S.configname = value.split( '/' ).pop();
@@ -1929,6 +1921,7 @@ var common    = {
 								type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 							} );
 						} );
+						Dlist.filename.push( { kv: S.lsraw } );
 						Dlist.formatC.push( { kv: data.formats.capture, nosort: true } );
 						Dlist.formatP.push( { kv: data.formats.playback, nosort: true } );
 						Dlist.typeC.push( type.capture );

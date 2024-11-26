@@ -35,8 +35,10 @@ data='
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
 for dir in $dirs; do
+	dirs=$( ls -1 $dircamilladsp/$dir )
 ########
 	data+='
-, "ls'$dir'" : [ '$( ls -1 $dircamilladsp/$dir | tr '\n' ^ | sed 's/\^$/"/; s/^/"/; s/\^/", "/g' )' ]'
+, "ls'$dir'"   : '$( line2array "$dirs" )
 done
+
 data2json "$data" $1
