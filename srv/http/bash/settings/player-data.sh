@@ -10,7 +10,6 @@ data+=$( settingsEnabled \
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 mixers=$( getContent $dirshm/mixers )
-[[ $mixers == false ]] && mixer=false || mixer=true
 [[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=( $( volumeGet valdb hw ) )
 
 ##########
@@ -29,7 +28,6 @@ data+='
 	, "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 	, "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
 }
-, "mixer"       : '$mixer'
 , "mixers"      : '$mixers'
 , "mixertype"   : '$( [[ $( getVar mixertype $dirshm/output ) != none ]] && echo true )'
 , "output"      : '$( conf2json -nocap $dirshm/output )'
