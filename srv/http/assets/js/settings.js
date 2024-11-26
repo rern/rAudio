@@ -178,6 +178,7 @@ function psOnMessage( channel, data ) {
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'power':     psPower( data );     break;
+		case 'reboot':    psReboot( data );    break;
 		case 'refresh':   psRefresh( data );   break;
 		case 'relays':    psRelays( data );    break;
 		case 'reload':    psReload( data );    break;
@@ -229,6 +230,10 @@ function psPlayer( data ) {
 		, upnp      : 'upmpdcli'
 	}
 	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
+}
+function psReboot( data ) {
+	var title = $( '#div'+ data.id +' .label' ).text()
+	banner( data.id, title, 'Reboot required.', 5000 );
 }
 function psRefresh( data ) {
 	if ( data.page !== page ) return

@@ -63,12 +63,11 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 			reboot=1
 		else
 			count=$( ls $tmp_module $file_module | wc -l )
-			[[ $count == 1 ]] || ( [[ $count == 2 ]] && ! cmp -s $tmp_module $file_module ) && reboot=1
+			(( $count == 1 )) || ( (( $count == 2 )) && ! cmp -s $tmp_module $file_module ) && reboot=1
 		fi
 	fi
 	if [[ $reboot ]]; then
-		label=$( sed -E -n "/$CMD.*=>/ {s/.*'label' => '|',.*//g; p}" /srv/http/settings/system.php )
-		notify $CMD "$label" 'Reboot required.' 5000
+		pushData reboot '{ "id": "'$CMD'" }'
 		appendSortUnique $CMD $dirshm/reboot
 	else
 		sed -i "/$CMD/ d" $dirshm/reboot
