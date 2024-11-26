@@ -103,11 +103,11 @@
 #divvolume .col-l a {
 	width: 128px;
 }
+#divvolume .col-l i {
+	line-height: 40px;
+}
 #divvolume .col-r {
 	white-space: nowrap;
-}
-#divvolume .i-minus {
-	line-height: 40px;
 }
 #divvolume .col-r i {
 	width: 40px;
@@ -176,6 +176,7 @@
 	min-height: 50px;
 }
 .tab li i {
+	margin: 0 !important;
 	min-width: 40px;
 }
 .tab li i:not( .i-add ) {
@@ -275,9 +276,6 @@ tr .i-remove {
 	width: 40px !important;
 	line-height: 46px;
 }
-.tab li i {
-	margin: 0 !important;
-}
 .tab li:focus-visible {
 	background: var( --cga );
 }
@@ -315,6 +313,9 @@ tr .i-remove {
 .liinput .select2-selection__rendered {
 	width: 100% !important;
 	height: 40px !important;
+}
+.liinput i {
+	height: 38px;
 }
 .container input[ type=range ] {
 	--track: linear-gradient( 90deg, transparent 10px, var( --cga ) 10px, var( --cga ) calc( 100% - 10px ), transparent 10px ) !important;
