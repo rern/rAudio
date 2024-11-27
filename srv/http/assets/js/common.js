@@ -1359,7 +1359,7 @@ function volumeMuteToggle() {
 }
 function volumePush() {
 	V.local = true;
-	ws.send( '{ "channel": "volume", "data": { "type": "'+ ( type || '' ) +'", "val": '+ S.volume +' } }' );
+	ws.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );
 }
 function volumeSet( type ) { // type: mute / unmute
 	V.local        = true;
