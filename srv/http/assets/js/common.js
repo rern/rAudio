@@ -1356,10 +1356,9 @@ function volumeMuteToggle() {
 	}
 	volumeSet( S.volumemute ? 'mute' : 'unmute' );
 }
-function volumePush( type, val ) {
+function volumePush() {
 	V.local = true;
-	if ( typeof val === 'undefined' ) val = S.volume;
-	ws.send( '{ "channel": "volume", "data": { "type": "'+ ( type || '' ) +'", "val": '+ val +' } }' );
+	ws.send( '{ "channel": "volume", "data": { "type": "'+ ( type || '' ) +'", "val": '+ S.volume +' } }' );
 }
 function volumeSet( type ) { // type: mute / unmute
 	V.local        = true;
