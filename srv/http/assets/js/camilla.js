@@ -737,7 +737,7 @@ var render    = {
 			$( '#divconfiguration .col-l i' ).remove();
 		}
 		$( '#configuration' )
-			.html( htmlOption( S.lsconfigs ) )
+			.html( htmlOption( S.ls.configs ) )
 			.val( S.configname );
 		$( '#configuration' ).prop( 'disabled', $( '#configuration option' ).length === 1 );
 		if ( V.runonce ) return
@@ -883,7 +883,7 @@ var render    = {
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
-		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
+		if ( S.ls.coeffs ) S.ls.coeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
 	} //-----------------------------------------------------------------------------------
@@ -1070,7 +1070,7 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
-		S.lsconfigs.forEach( f => {
+		S.ls.configs.forEach( f => {
 			li += '<li>'+ ico( 'file liicon' ) +'<a class="name">'+ f +'</a></li>';
 		} );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
@@ -1209,7 +1209,7 @@ var setting   = {
 				if ( subtype ) {
 					$select.eq( 1 ).on( 'input', function() {
 						var val = infoVal();
-						if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.lscoeffs.length ) {
+						if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.ls.coeffs ) {
 							info( {
 								  icon    : V.tab
 								, title   : title
@@ -1509,7 +1509,7 @@ var setting   = {
 				$( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
 /*				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
-					if ( typenew === 'File' && ! S.lsraw.length ) {
+					if ( typenew === 'File' && ! S.ls.raw ) {
 						info( {
 							  icon    : V.tab
 							, title   : title
@@ -1858,7 +1858,7 @@ var common    = {
 					
 					var el = cmd.replace( /Get(.*)[A-Z].*/, '$1' ).toLowerCase();
 					if ( cmd === 'GetBufferLevel' ) {
-						v = value / S.targetlevel  * 100;
+						v = value / DEV.target_level  * 100;
 						if ( v > 100 ) v = 100;
 						$( '#buffer' ).css( 'width', v +'%' );
 					} else if ( cmd === 'GetProcessingLoad' ) {
@@ -1898,17 +1898,12 @@ var common    = {
 					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
-					S.targetlevel = DEV.target_level;
-					if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
 					if ( $( '#data' ).hasClass( 'hide' ) ) {
 						render.status();
 						render.tab();
 					} else {
 						$( '#data' ).html( highlightJSON( S ) );
 					}
-					break;
-				case 'GetConfigFilePath':
-					S.configname = value.split( '/' ).pop();
 					break;
 				case 'GetSupportedDeviceTypes':
 					showContent();
@@ -1921,7 +1916,7 @@ var common    = {
 								type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 							} );
 						} );
-						Dlist.filename.push( { kv: S.lsraw } );
+						Dlist.filename.push( { kv: S.ls.raw } );
 						Dlist.formatC.push( { kv: data.formats.capture, nosort: true } );
 						Dlist.formatP.push( { kv: data.formats.playback, nosort: true } );
 						Dlist.typeC.push( type.capture );
@@ -1949,13 +1944,13 @@ var common    = {
 	}
 	, wsGetConfig   : () => {
 		setTimeout( () => {
-			[ 'GetConfigFilePath', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
+			[ 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
 		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 	, wsGetState    : () => {
-		var get = [ 'GetBufferLevel', 'GetRateAdjust', 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ];
-		if ( ! S.enable_rate_adjust ) get.slice( 2 );
-		get.forEach( k => wscamilla.send( '"'+ k +'"' ) );
+		var getstate = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ];
+		if ( S.enable_rate_adjust ) getstate.push( 'GetBufferLevel', 'GetRateAdjust' );
+		getstate.forEach( k => wscamilla.send( '"'+ k +'"' ) );
 	}
 }
 

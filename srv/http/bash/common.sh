@@ -254,7 +254,7 @@ lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
 line2array() {
-	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo '[]'
+	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
 }
 mountpointSet() {
 	umount -ql "$1"
