@@ -1907,15 +1907,15 @@ var common    = {
 					break;
 				case 'GetSupportedDeviceTypes':
 					showContent();
-					bash( [ 'samplings' ], data => {
-						var type = {};
-						[ 'playback', 'capture' ].forEach( ( k, i ) => {
-							type[ k ] = {};
-							value[ i ].forEach( t => {
-								v = render.typeReplace( t );
-								type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
-							} );
+					var type = {};
+					[ 'playback', 'capture' ].forEach( ( k, i ) => {
+						type[ k ] = {};
+						value[ i ].forEach( t => {
+							v = render.typeReplace( t );
+							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
+					} );
+					bash( [ 'samplings' ], data => {
 						Dlist.filename.push( { kv: S.ls.raw } );
 						Dlist.formatC.push( { kv: data.formats.capture, nosort: true } );
 						Dlist.formatP.push( { kv: data.formats.playback, nosort: true } );
@@ -1944,7 +1944,8 @@ var common    = {
 	}
 	, wsGetConfig   : () => {
 		setTimeout( () => {
-			[ 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
+			wscamilla.send( '"GetConfigJson"' );
+			wscamilla.send( '"GetSupportedDeviceTypes"' );
 		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 	, wsGetState    : () => {
