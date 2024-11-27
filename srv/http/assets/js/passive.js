@@ -80,27 +80,27 @@ function psOnMessage( channel, data ) {
 		case 'option':        ps.option( data );         break;
 		case 'order':         ps.order( data );          break;
 		case 'playlist':      ps.playlist( data );       break;
+		case 'playlists':     ps.playlists( data );      break;
 		case 'power':         ps.power( data );          break; // in common.js
 		case 'radiolist':     ps.radioList( data );      break;
 		case 'relays':        ps.relays( data );         break; // in common.js
 		case 'reload':        location.reload();         break;
 		case 'restore':       ps.restore( data );        break;
-		case 'savedplaylist': ps.savedPlaylists( data ); break;
 		case 'volume':        ps.volume( data );         break;
 		case 'vumeter':       ps.vuMeter( data );        break;
 	}
 }
 ps = {
 	...ps
-	, airplay        : data => {
+	, airplay   : data => {
 		statusUpdate( data );
 		if ( V.playback ) renderPlayback();
 	}
-	, bookmark       : () => {
+	, bookmark  : () => {
 		V.libraryhtml = '';
 		refreshData();
 	}
-	, coverart       : data => {
+	, coverart  : data => {
 		clearTimeout( V.timeoutCover );
 		bannerHide();
 		$( '#liimg' ).css( 'opacity', '' );
@@ -115,7 +115,7 @@ ps = {
 		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		if ( ! V.playback ) refreshData();
 	}
-	, display        : data => {
+	, display   : data => {
 		if ( 'submenu' in data ) {
 			D[ data.submenu ] = data.value;
 			displaySubMenu();
@@ -154,13 +154,13 @@ ps = {
 			}
 		}
 	}
-	, equalizer      : data => {
+	, equalizer : data => {
 		if ( V.local || ! ( 'active' in E ) ) return
 		
 		E = data;
 		eqOptionPreset();
 	}
-	, mpdPlayer      : data => {
+	, mpdPlayer : data => {
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {
 			if ( ! data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
@@ -178,7 +178,7 @@ ps = {
 			setTimeout( bannerHide, 3000 );
 		}, 300 );
 	}
-	, mpdRadio       : data => {
+	, mpdRadio  : data => {
 		statusUpdate( data );
 		setInfo();
 		setCoverart();
@@ -191,7 +191,7 @@ ps = {
 		}
 		if ( V.playlist ) setPlaylistScroll();
 	}	
-	, mpdUpdate      : data => {
+	, mpdUpdate : data => {
 		if ( 'counts' in data ) {
 			$.each( data.counts, ( k, v ) => {
 				C[ k ] = v;
@@ -228,7 +228,7 @@ ps = {
 		}
 		setButtonUpdating();
 	}
-	, option         : data => {
+	, option    : data => {
 		if ( V.local ) return
 		
 		if ( 'addons' in data ) {
@@ -240,13 +240,13 @@ ps = {
 		S[ option ] = Object.values( data )[ 0 ];
 		setButtonOptions();
 	}
-	, order          : data => {
+	, order     : data => {
 		if ( V.local ) return
 		
 		O = data;
 		orderLibrary();
 	}
-	, playlist       : data => {
+	, playlist  : data => {
 		if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 		
 		if ( 'blink' in data ) {
@@ -264,33 +264,7 @@ ps = {
 			playbackStatusGet();
 		}
 	}
-	, radioList      : data => {
-		if ( 'count' in data ) {
-			C[ data.type ] = data.count;
-			$( '.mode.'+ data.type +' gr' ).text( data.count );
-		}
-		if ( V.library ) {
-			if ( V.librarylist && V.mode === data.type ) radioRefresh();
-		} else if ( V.playlist ) {
-			if ( V.playlistlist ) {
-				$( '#button-pl-playlists' ).trigger( 'click' );
-			} else if ( V.playlisttrack ) {
-				renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
-			} else {
-				playlistGet();
-			}
-		}
-	}
-	, restore        : data => {
-		if ( data.restore === 'done' ) {
-			banner( 'restore', 'Restore Settings', 'Done' );
-			setTimeout( () => location.href = '/', 2000 );
-		} else {
-			loader();
-			banner( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
-		}
-	}
-	, savedPlaylists : data => {
+	, playlists : data => {
 		savedPlaylistAddClear();
 		if ( V.playlistlist && data == -1 ) {
 			$( '#playlist' ).trigger( 'click' );
@@ -307,7 +281,33 @@ ps = {
 		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 		$( '.mode.playlists gr' ).text( count || '' );
 	}
-	, volume         : data => {
+	, radioList : data => {
+		if ( 'count' in data ) {
+			C[ data.type ] = data.count;
+			$( '.mode.'+ data.type +' gr' ).text( data.count );
+		}
+		if ( V.library ) {
+			if ( V.librarylist && V.mode === data.type ) radioRefresh();
+		} else if ( V.playlist ) {
+			if ( V.playlistlist ) {
+				$( '#button-pl-playlists' ).trigger( 'click' );
+			} else if ( V.playlisttrack ) {
+				renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
+			} else {
+				playlistGet();
+			}
+		}
+	}
+	, restore   : data => {
+		if ( data.restore === 'done' ) {
+			banner( 'restore', 'Restore Settings', 'Done' );
+			setTimeout( () => location.href = '/', 2000 );
+		} else {
+			loader();
+			banner( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
+		}
+	}
+	, volume    : data => {
 		if ( V.local ) {
 			V.local = false;
 			return
@@ -330,7 +330,7 @@ ps = {
 		setVolume();
 		V.volumecurrent = S.volume;
 	}
-	, vuMeter        : data => {
+	, vuMeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 	}
 }
