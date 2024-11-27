@@ -318,8 +318,12 @@ ps = {
 			$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
 			return
 		}
-		
-		if ( [ 'mute', 'unmute' ].includes( data.type ) ) V.local = false; // allow beforeValueChange()
+		if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
+			V.local = false; // allow beforeValueChange()
+			V.volumediff = Math.abs( S.volume - S.volumemute );
+		} else {
+			V.volumediff = Math.abs( S.volume - data.val );
+		}
 		if ( data.type === 'mute' ) {
 			S.volume = 0;
 			S.volumemute = data.val;

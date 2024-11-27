@@ -1347,6 +1347,7 @@ function volumeMaxSet() {
 	}
 }
 function volumeMuteToggle() {
+	V.volumediff = Math.abs( S.volume - S.volumemute );
 	if ( S.volumemute ) {
 		S.volume     = S.volumemute;
 		S.volumemute = 0;

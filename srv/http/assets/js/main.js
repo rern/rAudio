@@ -653,6 +653,9 @@ $( '#volume' ).roundSlider( {
 		
 		if ( V.press ) {
 			var diff  = 3;
+		} if ( 'volumediff' in V ) {
+			var diff = V.volumediff;
+			delete V.volumediff;
 		} else {
 			var diff  = Math.abs( e.value - S.volume || S.volume - S.volumemute ); // change || mute/unmute
 		}
@@ -798,7 +801,7 @@ var btnctrl = {
 	, B  : 'stop'
 	, BR : 'repeat'
 }
-$( '.map' ).on( 'click', function( e ) {
+$( '#map-cover .map' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	if ( V.press ) return
 	
