@@ -1313,8 +1313,14 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	
 	var path  = $this.find( '.lipath' ).text();
 	V.mode    = path.split( '/' )[ 0 ].toLowerCase();
+	if ( V.mode === 'webradio' ) {
+		path = path.slice( 9 );
+		var library = 'radio';
+	} else {
+		var library = 'ls';
+	}
 	var query = {
-		  library : 'ls'
+		  library : library
 		, string  : path
 		, gmode   : V.mode
 	}
