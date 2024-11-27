@@ -129,22 +129,26 @@ if [[ $camilladsp ]]; then
 		fi
 	done
 ######## >
-	echo '{
+	data='
+  "channels"   : {
 	  "capture"  : '${CHANNELS[0]}'
 	, "playback" : '${CHANNELS[1]}'
-}' > $dirshm/channels
-	echo '{
+}
+, "formats"   : {
 	  "capture"  : '${FORMATS[0]}'
 	, "playback" : '${FORMATS[1]}'
-}' > $dirshm/formats
-	echo "{ ${SAMPLINGS:1} }" > $dirshm/samplings
+}
+, "samplings" : {
+	'${SAMPLINGS:1}'
+}'
+ echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
 	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	if [[ $bluetooth ]]; then
 		$dirsettings/camilla-bluetooth.sh btreceiver
 	else
 		fileformat="$dirsystem/camilla-$NAME"
-		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback[0] $dirshm/formats )
+		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .formats.playback[0] $dirshm/hwparams )
 		format0=$( getVarYml playback format )
 		if [[ $format0 != $FORMAT ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"

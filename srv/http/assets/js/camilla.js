@@ -1915,7 +1915,7 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
-					bash( [ 'samplings' ], data => {
+					bash( [ 'hwparams' ], data => {
 						Dlist.filename.push( { kv: S.ls.raw } );
 						Dlist.formatC.push( { kv: data.formats.capture, nosort: true } );
 						Dlist.formatP.push( { kv: data.formats.playback, nosort: true } );

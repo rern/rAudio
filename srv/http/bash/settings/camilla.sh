@@ -51,16 +51,11 @@ confswitch )
 	saveConfig
 	sed -i -E "s|^(CONFIG=).*|\1$CONFIG|" /etc/default/camilladsp
 	;;
+hwparams )
+	cat $dirshm/hwparams
+	;;
 restart )
 	systemctl restart camilladsp
-	;;
-samplings )
-	data='{
-  "channels"   : '$( < $dirshm/channels )'
-, "formats"    : '$( < $dirshm/formats )'
-, "samplings"  : '$( < $dirshm/samplings )'
-}'
-	echo $data
 	;;
 saveconfig )
 	saveConfig
