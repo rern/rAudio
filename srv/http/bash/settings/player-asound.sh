@@ -122,7 +122,7 @@ if [[ $camilladsp ]]; then
 		done
 		FORMATS+=( "[ ${listformat:1} ]" )
 		if [[ $c != Loopback ]]; then
-			ratemax=$( awk '/^RATE/ {print $NF}' <<< $lines | tr -d ']\r' )
+			ratemax=$( sed -n -E '/^RATE/ {s/.* (.*)].*/\1/; p}' <<< $lines )
 			for r in 44100 48000 88200 96000 176400 192000 352800 384000 705600 768000; do
 				(( $r > $ratemax )) && break || SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
 			done
