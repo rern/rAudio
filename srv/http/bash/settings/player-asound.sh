@@ -113,7 +113,7 @@ if [[ $camilladsp ]]; then
 	$dirbash/cmd.sh playerstop
 	systemctl stop camilladsp
 	for c in Loopback $CARD; do
-		lines=$( captureStdout "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" )
+		lines=$( captureTty "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" )
 		CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']\r' ) )
 		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' <<< $lines )
 		listformat=

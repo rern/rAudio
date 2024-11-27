@@ -34,7 +34,7 @@ $( cat "$file" )"
 	;;
 device )
 	card=$( getVar card $dirshm/output )
-	data=$( captureStdout "timeout 0.1 aplay -D hw:$card /dev/zero --dump-hw-params" \
+	data=$( captureTty "timeout 0.1 aplay -D hw:$card /dev/zero --dump-hw-params" \
 				| sed '1,/^---/ d; /^---/,$ d' \
 				| column -t -l2 -o ' ' )
 	echo "\
