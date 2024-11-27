@@ -32,6 +32,12 @@ configuration )
 <bll># cat $file</bll>
 $( cat "$file" )"
 	;;
+device )
+	card=$( getVar card $dirshm/output )
+	echo "\
+<bll># aplay -D hw:$card /dev/zero --dump-hw-params</bll>
+$( script -qc "timeout 0.1 aplay -D hw:$card /dev/zero --dump-hw-params" | sed '1,/^---/ d; /^---/,$ d' )"
+	;;
 lan )
 	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
 	echo "\

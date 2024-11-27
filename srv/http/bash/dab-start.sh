@@ -2,10 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-script -c 'timeout 0.1 rtl_test -t' $dirshm/dabdevice &> /dev/null
+device=$( script -qc 'timeout 0.1 rtl_test -t' )
 rm -f /srv/http/typescript
-if ! grep -q ^Found $dirshm/dabdevice; then
-	notify dabradio 'DAB Radio' 'No DAB devices found.'
+if [[ $device == 'No supported devices '* ]]; then
+	notify dabradio 'DAB Radio' 'No supported devices.'
 	exit
 # --------------------------------------------------------------------
 fi

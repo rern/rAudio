@@ -49,7 +49,7 @@ $( bluealsa-aplay -L )"
 	dabradio )
 		conf="\
 <bll># rtl_test -t</bll>
-$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
+$( script -qc 'timeout 0.1 rtl_test -t' )"
 		rm -f /srv/http/typescript # from script command
 		PKG=mediamtx
 		;;

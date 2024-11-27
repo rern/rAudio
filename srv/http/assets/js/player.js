@@ -367,7 +367,7 @@ ps.mpdUpdate = data => {
 		util.renderStatus();
 	}
 }
-ps.volume    = data > {
+ps.volume    = data => {
 	if ( ! ( 'db' in data ) ) return
 	 
 	S.volume   = data.val;
