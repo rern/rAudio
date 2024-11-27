@@ -112,11 +112,8 @@ if [[ $camilladsp ]]; then
 	# must stop for exclusive device access - aplay probing
 	$dirbash/cmd.sh playerstop
 	systemctl stop camilladsp
-	filedump=$dirshm/aplaydump
 	for c in Loopback $CARD; do
-		script -qc "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" $filedump &> /dev/null
-		lines=$( < $filedump )
-		rm $filedump
+		lines=$( captureStdout "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" )
 		CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']\r' ) )
 		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' <<< $lines )
 		listformat=
@@ -124,7 +121,7 @@ if [[ $camilladsp ]]; then
 			grep -q $f <<< $formats && listformat+=', "'$f'"'
 		done
 		FORMATS+=( "[ ${listformat:1} ]" )
-		if [[ $c == Loopback ]]; then
+		if [[ $c != Loopback ]]; then
 			ratemax=$( awk '/^RATE/ {print $NF}' <<< $lines | tr -d ']\r' )
 			for r in 44100 48000 88200 96000 176400 192000 352800 384000 705600 768000; do
 				(( $r > $ratemax )) && break || SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r

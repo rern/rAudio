@@ -103,6 +103,9 @@ camillaDSPstart() {
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi
 }
+captureStdout() { # if output is /dev/tty: aplay dab-scanner-rtlsdr rtl_test
+	script /dev/null -qc "$1"
+}
 cmdshWebsocket() {
 	websocat ws://$1:8080 <<< '{ "filesh": [ "'$dirbash'/cmd.sh", "'$2'" ] }'
 }
