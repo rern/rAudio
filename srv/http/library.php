@@ -468,7 +468,7 @@ function htmlRadio() {
 		foreach( $subdirs as $subdir ) {
 			$each          = ( object ) [];
 			$dirname       = basename( $subdir );
-			$each->dir     = dirname( $subdir );
+			$each->dir     = $subdir;
 			$each->dirname = $dirname;
 			$each->sort    = stripSort( $dirname );
 			$array[]       = $each;
