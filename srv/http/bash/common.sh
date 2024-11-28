@@ -275,13 +275,12 @@ $2"
 		rmdir "$1"
 		systemctl daemon-reload
 		sed -n '1 {s/.*: //; p}' <<< $std
-		exit
-# --------------------------------------------------------------------
+	else
+		for i in {1..10}; do
+			sleep 1
+			mountpoint -q "$1" && break
+		done
 	fi
-	for i in {1..10}; do
-		sleep 1
-		mountpoint -q "$1" && break
-	done
 }
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
