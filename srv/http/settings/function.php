@@ -12,6 +12,9 @@ $body = [
 	 'HTML'                          // for non-switch section
 	, [
 		  'id'       => 'ID'         // REQUIRED
+		, 'label'    => 'LABEL'
+		, 'sub'      => 'SUB'
+		, 'status'   => true         // include status icon and status box
 		, 'input'    => 'HTML/ID'    // alternative - if not switch (ID - select)
 		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting icon
 		                             // 'js' = set by js condition
