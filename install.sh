@@ -5,6 +5,10 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20241128
+if [[ -e $dirsystem/camilladsp ]]; then
+	[[ ! -e $dirshm/camilladevices ]] && $dirsettings/player-asound.sh
+fi
+
 systemctl -q is-active mediamtx && touch $dirsystem/dabradio
 
 file=$dirsystem/lcdchar.conf

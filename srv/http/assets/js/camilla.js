@@ -1488,12 +1488,13 @@ var setting   = {
 		render.sortable( k );
 	} //-----------------------------------------------------------------------------------
 	, device        : ( dev, type ) => {
-		var type    = type || 'Alsa';
-		var vtype   = type === 'File' && dev === 'playback' ? 'FileP' : type;
-		var values  = jsonClone( D.values[ vtype ] );
-		values.type = type;
+		var type        = type || 'Alsa';
+		var vtype       = type === 'File' && dev === 'playback' ? 'FileP' : type;
+		var values      = jsonClone( D.values[ vtype ] );
+		values.type     = type;
+		values.channels = DEV[ dev ].channels;
 		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => values[ k ] = DEV[ dev ][ k ] );
-		var title   = common.key2label( dev );
+		var title       = common.key2label( dev );
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -1918,17 +1919,16 @@ var common    = {
 					Dlist.typeC.push( type.capture );
 					Dlist.typeP.push( type.playback );
 					Dlist.filename.push( { kv: S.ls.raw } );
-					Dlist.formatC.push( { kv: S.hwparams.formats.capture, nosort: true } );
-					Dlist.formatP.push( { kv: S.hwparams.formats.playback, nosort: true } );
-					Dlist.deviceC.push( S.devices.capture );
-					Dlist.deviceP.push( S.devices.playback );
-					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.hwparams.channels.capture } } );
-					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.hwparams.channels.playback } } );
-					D.values.channels = S.hwparams.channels;
-					var samplings     = { kv: S.hwparams.samplings, nosort: true }
+					Dlist.formatC.push( { kv: S.devices.capture.formats, nosort: true } );
+					Dlist.formatP.push( { kv: S.devices.playback.formats, nosort: true } );
+					Dlist.deviceC.push( S.devices.capture.device );
+					Dlist.deviceP.push( S.devices.playback.device );
+					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.devices.capture.channels } } );
+					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.devices.playback.channels } } );
+					var samplings     = { kv: S.devices.samplings, nosort: true }
 					Dlist.capture_samplerate.push( samplings );
 					D.main[ 0 ].push( samplings );
-					D0.samplerate     = Object.values( S.hwparams.samplings )
+					D0.samplerate     = Object.values( S.devices.samplings )
 					break;
 				case 'Invalid':
 					info( {
@@ -1943,7 +1943,7 @@ var common    = {
 	, wsGetConfig   : () => {
 		setTimeout( () => {
 			wscamilla.send( '"GetConfigJson"' );
-			wscamilla.send( '"GetSupportedDeviceTypes"' );
+			if ( Dlist.typeC.length === 2 ) wscamilla.send( '"GetSupportedDeviceTypes"' );
 		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 	, wsGetState    : () => {

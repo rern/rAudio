@@ -112,6 +112,15 @@ if [[ $CAMILLADSP ]]; then
 	# must stop for exclusive device access - aplay probing
 	$dirbash/cmd.sh playerstop
 	systemctl stop camilladsp
+	default=$( < /etc/default/camilladsp )
+	configfile=$( sed -n '/^CONFIG/ {s/.*=//; p}' <<< $default )
+	if grep -q -m1 configs-bt <<< $default; then
+		bluetooth=true
+		name=$( < $dirshm/btname )
+		grep -q dbus_path "$configfile" && DEVICES=( '{ "Bluez": "bluez" }' '{ "blueALSA": "bluealsa" }' )
+	else
+		DEVICES=( '{ "Loopback": "hw:Loopback,0" }' "$( < $dirshm/devices )" )
+	fi
 	for c in Loopback $CARD; do
 		lines=$( tty2std "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" )
 		CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']\r' ) )
@@ -130,25 +139,27 @@ if [[ $CAMILLADSP ]]; then
 	done
 ######## >
 	data='
-  "channels"   : {
-	  "capture"  : '${CHANNELS[0]}'
-	, "playback" : '${CHANNELS[1]}'
+  "capture"  : {
+	  "device"   : '${DEVICES[0]}'
+	, "channels" : '${CHANNELS[0]}'
+	, "formats"  : '${FORMATS[0]}'
 }
-, "formats"   : {
-	  "capture"  : '${FORMATS[0]}'
-	, "playback" : '${FORMATS[1]}'
+, "playback" : {
+	  "device"   : '${DEVICES[1]}'
+	, "channels" : '${CHANNELS[1]}'
+	, "formats"  : '${FORMATS[1]}'
 }
 , "samplings" : {
 	'${SAMPLINGS:1}'
 }'
- echo "{ $data }" | jq > $dirshm/hwparams
+	echo "{ $data }" | jq > $dirshm/camilladevices
 ######## <
 	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	if [[ $BLUETOOTH ]]; then
 		$dirsettings/camilla-bluetooth.sh btreceiver
 	else
 		fileformat="$dirsystem/camilla-$NAME"
-		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .formats.playback[0] $dirshm/hwparams )
+		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback.formats[0] $dirshm/camilladevices )
 		format0=$( getVarYml playback format )
 		if [[ $format0 != $FORMAT ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"

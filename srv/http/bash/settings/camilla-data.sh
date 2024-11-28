@@ -5,30 +5,14 @@
 . /srv/http/bash/common.sh
 . $dirshm/output
 
-default=$( < /etc/default/camilladsp )
-configfile=$( sed -n '/^CONFIG/ {s/.*=//; p}' <<< $default )
-if grep -q -m1 configs-bt <<< $default; then
-	bluetooth=true
-	name=$( < $dirshm/btname )
-	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
-else
-	devicesC='"Loopback": "hw:Loopback,0"'
-	devicesP=$( tr -d {} < $dirshm/devices )
-fi
-
-########
 data='
 , "bluetooth"  : '$bluetooth'
 , "btreceiver" : '$( exists $dirshm/btreceiver )'
 , "card"       : '$card'
 , "cardname"   : "'$name'"
-, "configname" : "'$( basename $configfile )'"
+, "configname" : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
 , "control"    : "'$mixer'"
-, "devices"    : {
-	  "capture"  : { '$devicesC' }
-	, "playback" : { '$devicesP' }
-}
-, "hwparams"   : '$( < $dirshm/hwparams )'
+, "devices"    : '$( < $dirshm/camilladevices )'
 , "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$( mpcState )'"
