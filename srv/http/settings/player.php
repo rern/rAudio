@@ -1,22 +1,4 @@
 <?php
-$id_data   = [
-	  'autoupdate'    => [ 'label' => 'Library Auto Update',   'sub' => 'auto_update' ]
-	, 'bluealsa'      => [ 'label' => 'Bluetooth',             'sub' => 'bluealsa',  'status' => true ]
-	, 'buffer'        => [ 'label' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
-	, 'crossfade'     => [ 'label' => 'Cross-Fading',          'sub' => 'crossfade' ]
-	, 'custom'        => [ 'label' => "User's Configurations", 'sub' => 'custom' ]
-	, 'device'        => [ 'label' => 'Device',                'sub' => 'hw-params', 'status' => true ]
-	, 'devicewithbt'  => [ 'label' => 'Device + Bluetooth' ]
-	, 'dop'           => [ 'label' => 'DSD over PCM',          'sub' => 'dop' ]
-	, 'ffmpeg'        => [ 'label' => 'FFmpeg',                'sub' => 'decoder' ]
-	, 'mixer'         => [ 'label' => 'Mixer Device' ]
-	, 'mixertype'     => [ 'label' => 'Volume Control' ]
-	, 'normalization' => [ 'label' => 'Normalization',         'sub' => 'volume_normalization' ]
-	, 'novolume'      => [ 'label' => 'No Volume' ]
-	, 'outputbuffer'  => [ 'label' => 'Buffer - Output',       'sub' => 'max_output_buffer' ]
-	, 'replaygain'    => [ 'label' => 'ReplayGain',            'sub' => 'replaygain' ]
-	, 'soxr'          => [ 'label' => 'SoX Resampler',         'sub' => 'resampler' ]
-];
 commonVariables( [
 	  'buttons' => [ 'camilla', 'equalizer', 'gear', 'pause', 'play', 'stop', 'volume' ]
 	, 'labels'  => [ 
@@ -56,6 +38,7 @@ $head      = [
 $body      = [
 	[
 		  'id'       => 'bluealsa'
+		, 'label'    => 'Bluetooth'
 		, 'input'    => 'btreceiver'
 		, 'help'     => <<< EOF
 $B->volume Mixer device - blueALSA volume control
@@ -64,6 +47,9 @@ EOF
 	]
 	, [
 		  'id'       => 'device'
+		, 'label'    => 'Device'
+		, 'sub'      => 'hw_params'
+		, 'status'   => true
 		, 'input'    => 'device'
 		, 'help'     => <<< EOF
 $B->camilla$B->equalizer $T->features Signal Processors enabled
@@ -73,11 +59,13 @@ EOF
 	]
 	, [
 		  'id'       => 'mixer'
+		, 'label'    => 'Mixer Device'
 		, 'input'    => 'mixer'
 		, 'help'     => $B->volume.' Mixer device volume control'
 	]
 	, [
 		  'id'       => 'mixertype'
+		, 'label'    => 'Volume Control'
 		, 'disabled' => $L->dsp.' is currently enabled.'
 		, 'help'     => <<< EOF
 $B->gear Type:
@@ -92,6 +80,7 @@ EOF
 	]
 	, [
 		  'id'       => 'devicewithbt'
+		, 'label'    => 'Device + Bluetooth'
 		, 'help'     => <<< EOF
  · Keep Output $L->device enabled when Bluetooth connected.
  · Should be disabled if not used simultaneously
@@ -104,6 +93,7 @@ $head      = [ 'title' => 'Bit-Perfect' ];
 $body      = [
 	[
 		  'id'       => 'novolume'
+		, 'label'    => 'No Volume'
 		, 'help'     => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
@@ -117,6 +107,8 @@ EOF
 	]
 	, [
 		  'id'       => 'dop'
+		, 'label'    => 'DSD over PCM'
+		, 'sub'      => 'dop'
 		, 'help'     => <<< EOF
 For DSD-capable devices that not support native DSD
  · DoP repacks 16bit DSD stream into 24bit PCM frames. 
@@ -135,18 +127,24 @@ htmlSection( $head, $body, 'bitperfect' );
 $head      = [ 'title' => 'Volume' ];
 $body      = [
 	[	  'id'       => 'crossfade'
+		, 'label'    => 'Cross-Fading'
+		, 'sub'      => 'crossfade'
 		, 'help'     => <<< EOF
 Fade-out to fade-in between playing tracks (same audio format only)
 EOF
 	]
 	, [
 		  'id'       => 'normalization'
+		, 'label'    => 'Normalization'
+		, 'sub'      => 'volume_normalization'
 		, 'help'     => <<< EOF
 Normalize the volume level of songs as they play. (16 bit PCM only)
 EOF
 	] 
 	, [
 		  'id'       => 'replaygain'
+		, 'label'    => 'ReplayGain'
+		, 'sub'      => 'replaygain'
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
@@ -164,6 +162,8 @@ $head      = [ 'title' => 'Options' ];
 $body      = [
 	[
 		  'id'       => 'buffer'
+		, 'label'    => 'Buffer - Audio'
+		, 'sub'      => 'audio_buffer'
 		, 'help'     => <<< EOF
 Increase to fix intermittent audio.
 (default: <c>4096</c> kB - 24s of CD-quality audio)
@@ -171,6 +171,8 @@ EOF
 	]
 	, [
 		  'id'       => 'outputbuffer'
+		, 'label'    => 'Buffer - Output'
+		, 'sub'      => 'max_output_buffer'
 		, 'help'     => <<< EOF
 Increase to fix missing Album list with large Library.
 (default: <c>8192</c> kB)
@@ -178,6 +180,8 @@ EOF
 	]
 	, [
 		  'id'       => 'ffmpeg'
+		, 'label'    => 'FFmpeg'
+		, 'sub'      => 'decoder'
 		, 'disabled' => $L->dabradio.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://ffmpeg.org/about.html">FFmpeg</a> - <a id="ffmpegfiletype">Decoder for more audio filetypes</a>
@@ -187,10 +191,14 @@ EOF
 	]
 	, [
 		  'id'       => 'autoupdate'
+		, 'label'    => 'Library Auto Update'
+		, 'sub'      => 'auto_update'
 		, 'help'     => 'Automatic update MPD database when files changed.'
 	]
 	, [
-		 'id'        => 'soxr'
+		  'id'       => 'soxr'
+		, 'label'    => 'SoX Resampler'
+		, 'sub'      => 'resampler'
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 $B->gear
@@ -216,6 +224,8 @@ EOF
 	]
 	, [
 		  'id'       => 'custom'
+		, 'label'    => "User's Configurations"
+		, 'sub'      => 'custom'
 		, 'help'     => 'Insert custom configurations into <c>mpd.conf</c>.'
 	]
 ];

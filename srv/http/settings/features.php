@@ -1,26 +1,4 @@
 <?php
-$id_data      = [
-	  'ap'             => [ 'label' => 'Access Point',     'sub' => 'iwctl',          'status' => true, 'exist' => true ]
-	, 'autoplay'       => [ 'label' => 'AutoPlay' ]
-	, 'camilladsp'     => [ 'label' => 'DSP',              'sub' => 'camilladsp',     'status' => true, 'exist' => true ]
-	, 'dabradio'       => [ 'label' => 'DAB Radio',        'sub' => 'mediamtx',       'status' => true, 'exist' => true ]
-	, 'equalizer'      => [ 'label' => 'Equalizer',        'sub' => 'alsaequal' ]
-	, 'httpd'          => [ 'label' => 'For browsers',     'sub' => 'MPD httpd' ]
-	, 'localbrowser'   => [ 'label' => 'Browser on RPi',   'sub' => 'firefox',        'status' => true, 'exist' => true ]
-	, 'login'          => [ 'label' => 'Password Login',   'sub' => 'password_hash' ]
-	, 'lyrics'         => [ 'label' => 'Lyrics' ]
-	, 'multiraudio'    => [ 'label' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
-	, 'nfsserver'      => [ 'label' => 'Server rAudio',    'sub' => 'nfs-server',     'status' => true ]
-	, 'scrobble'       => [ 'label' => 'Scrobbler',        'sub' => 'Last.fm' ]
-	, 'shairportsync'  => [ 'label' => 'AirPlay',          'sub' => 'shairport-sync', 'status' => true, 'exist' => true ]
-	, 'smb'            => [ 'label' => 'File Sharing',     'sub' => 'smbd',           'status' => true, 'exist' => true ]
-	, 'snapclient'     => [ 'label' => 'SnapClient',       'sub' => 'snapclient',     'status' => true, 'exist' => true ]
-	, 'snapserver'     => [ 'label' => 'SnapServer',       'sub' => 'snapserver',     'status' => true, 'exist' => true ]
-	, 'spotifyd'       => [ 'label' => 'Spotify',          'sub' => 'spotifyd',       'status' => true, 'exist' => true ]
-	, 'stoptimer'      => [ 'label' => 'Stop Timer' ]
-	, 'upmpdcli'       => [ 'label' => 'UPnP / DLNA',      'sub' => 'upmpdcli',       'status' => true, 'exist' => true ]
-	, 'volumelimit'    => [ 'label' => 'Volume Limit' ]
-];
 commonVariables( [
 	  'buttons' => [ 'dabradio', 'gear', 'lastfm', 'microsd', 'networks', 'rserver', 'usbdrive', 'warning' ]
 	, 'labels'  => [
@@ -49,8 +27,12 @@ $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
 $body         = [
-	[
+	  [
 		  'id'       => 'shairportsync'
+		, 'label'    => 'AirPlay'
+		, 'sub'      => 'shairport-sync'
+		, 'status'   => true
+		, 'exist'    => true
 		, 'help'     => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
 Note:
@@ -61,6 +43,10 @@ EOF
 	]
 	, [
 		  'id'       => 'dabradio'
+		, 'label'    => 'DAB Radio'
+		, 'sub'      => 'mediamtx'
+		, 'status'   => true
+		, 'exist'    => true
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Software-defined_radio">SDR</a> - Software-defined radio / Digital audio broadcasting
  · Stations: $B->gear<btn>Scan</btn> $T->library $B->dabradio
@@ -68,6 +54,10 @@ EOF
 	]
 	, [
 		  'id'       => 'snapclient'
+		, 'label'    => 'SnapClient'
+		, 'sub'      => 'snapclient'
+		, 'status'   => true
+		, 'exist'    => true
 		, 'help'     => <<< EOF
 $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
@@ -80,6 +70,10 @@ EOF
 	]
 	, [
 		  'id'       => 'spotifyd'
+		, 'label'    => 'Spotify'
+		, 'sub'      => 'spotifyd'
+		, 'status'   => true
+		, 'exist'    => true
 		, 'help'     => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
@@ -108,6 +102,10 @@ EOF
 	]
 	, [
 		  'id'       => 'upmpdcli'
+		, 'label'    => 'UPnP / DLNA'
+		, 'sub'      => 'upmpdcli'
+		, 'status'   => true
+		, 'exist'    => true
 		, 'help'     => <<< EOF
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device
  · Playlist - replaced by playlist of UPnP / DLNA on start
@@ -123,12 +121,18 @@ $head         = [ 'title' => 'Streamers' ];
 $body         = [
 	[
 		  'id'       => 'httpd'
+		, 'label'    => 'For browsers'
+		, 'sub'      => 'MPD httpd'
 		, 'help'     => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
 	]
 	, [
 		  'id'       => 'snapserver'
+		, 'label'    => 'SnapServer'
+		, 'sub'      => 'snapserver'
+		, 'status'   => true
+		, 'exist'    => true
 		, 'help'     => <<< EOF
 $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player
@@ -141,6 +145,10 @@ $head         = [ 'title' => 'Signal Processors' ];
 $body         = [
 	[
 		  'id'       => 'camilladsp'
+		, 'label'    => 'DSP'
+		, 'sub'      => 'camilladsp'
+		, 'status'   => true
+		, 'exist'    => true
 		, 'disabled' => $L->equalizer.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
@@ -149,6 +157,8 @@ EOF
 	]
 	, [
 		  'id'       => 'equalizer'
+		, 'label'    => 'Equalizer'
+		, 'sub'      => 'alsaequal'
 		, 'disabled' => $L->dsp.' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10-band graphic equalizer with user presets.
@@ -165,6 +175,10 @@ $head         = [ 'title' => 'Others' ];
 $body         = [
 	[
 		  'id'       => 'ap'
+		, 'label'    => 'Access Point'
+		, 'sub'      => 'iwctl'
+		, 'status'   => true
+		, 'exist'    => true
 		, 'disabled' => $L->wifi.' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://iwd.wiki.kernel.org/ap_mode">iNet Wireless Daemon</a> (iwd) - Connect with rAudio hotspot directly when no routers available.
@@ -174,6 +188,7 @@ EOF
 	]
 	, [
 		  'id'       => 'autoplay'
+		, 'label'    => 'AutoPlay'
 		, 'help'     => <<< EOF
 Start playing automatically on:
  · Bluetooth connected
@@ -183,6 +198,9 @@ EOF
 	]
 	, [
 		  'id'       => 'localbrowser'
+		, 'label'    => 'Browser on RPi'
+		, 'sub'      => 'firefox'
+		, 'exist'    => true
 		, 'help'     => <<< EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
  · Rotate - TFT 3.5" LCD needs reboot.
@@ -194,6 +212,10 @@ EOF
 	]
 	, [
 		  'id'       => 'smb'
+		, 'label'    => 'File Sharing'
+		, 'sub'      => 'smbd'
+		, 'status'   => true
+		, 'exist'    => true
 		, 'disabled' => $L->serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
@@ -206,6 +228,7 @@ EOF
 	]
 	, [
 		  'id'       => 'lyrics'
+		, 'label'    => 'Lyrics'
 		, 'help'     => <<< EOF
  · Search lyrics from user specified URL and tags.
  · Embedded lyrics:
@@ -216,6 +239,8 @@ EOF
 	]
 	, [
 		  'id'       => 'multiraudio'
+		, 'label'    => 'Multiple rAudios'
+		, 'sub'      => 'multiraudio'
 		, 'help'     => <<< EOF
 Switch between multiple rAudio devices.
 Switch: $M->multiraudio
@@ -223,6 +248,9 @@ EOF
 	]
 	, [
 		  'id'       => 'login'
+		, 'label'    => 'Password Login'
+		, 'sub'      => 'password_hash'
+		, 'status'   => true
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
 Lock: $M->lock
@@ -230,6 +258,8 @@ EOF
 	]
 	, [
 		  'id'       => 'scrobble'
+		, 'label'    => 'Scrobbler'
+		, 'sub'      => 'Last.fm'
 		, 'help'     => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
@@ -240,6 +270,8 @@ EOF
 	]
 	, [
 		  'id'       => 'nfsserver'
+		, 'label'    => 'Server rAudio'
+		, 'sub'      => 'nfs-server'
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $L->shareddata
@@ -267,6 +299,7 @@ EOF
 	]
 	, [
 		  'id'       => 'stoptimer'
+		, 'label'    => 'Stop Timer'
 		, 'help'     => <<< EOF
 Stop timer:
  · Mute
@@ -277,6 +310,7 @@ EOF
 	]
 	, [
 		  'id'       => 'volumelimit'
+		, 'label'    => 'Volume Limit'
 		, 'help'     => 'Startup volume level and maximum volume limit.'
 	]
 ];

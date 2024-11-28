@@ -1,10 +1,5 @@
 <?php
 /*
-$id_data = [ 'ID' => [
-	  'label'   => 'LABEL'
-	, 'sub'     => 'SUBLABEL'
-	, 'status'  => true
-];
 $head = [
 	  'title'   => 'TITLE'           // REQUIRED
 	, 'subhead' => true              // with no help icon
@@ -98,12 +93,10 @@ function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
 </div>';
 }
 function htmlSetting( $data ) {
-	global $id_data;
 	$data    = ( object ) $data;
 	$id      = $data->id;
-	$iddata  = ( object ) $id_data[ $id ];
-	$sub     = $iddata->sub ?? false;
-	$exist   = $iddata->exist ?? '';
+	$sub     = $data->sub ?? false;
+	$exist   = $data->exist ?? '';
 	if ( $exist ) {
 		if ( is_bool( $exist ) ) $exist = '/usr/bin/'.$sub;
 		if ( ! file_exists( $exist ) ) return;
@@ -115,8 +108,8 @@ function htmlSetting( $data ) {
 	}
 	
 	global $iconlabel;
-	$label   = $iddata->label;
-	$status  = $iddata->status ?? false;
+	$label   = $data->label;
+	$status  = $data->status ?? false;
 	$label   = '<span class="label">'.$label.'</span>';
 	$input   = $data->input ?? false;
 	$help    = $data->help ?? false;

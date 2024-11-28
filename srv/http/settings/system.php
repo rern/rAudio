@@ -7,26 +7,6 @@
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
-$id_data     = [
-	  'audio'         => [ 'label' => 'Audio',             'sub' => 'aplay',       'status' => true ]
-	, 'backup'        => [ 'label' => 'Backup' ]
-	, 'bluetooth'     => [ 'label' => 'Bluetooth',         'sub' => 'bluetoothctl',                  'exist' => $onboardwlan ]
-	, 'hostname'      => [ 'label' => 'Player Name' ]
-	, 'i2smodule'     => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
-	, 'i2s'           => [ 'label' => 'Audio - I²S',       'sub' => 'HAT' ]
-	, 'lcdchar'       => [ 'label' => 'Character LCD',     'sub' => 'RPLCD' ]
-	, 'mpdoled'       => [ 'label' => 'Spectrum OLED',     'sub' => 'mpd_oled' ]
-	, 'powerbutton'   => [ 'label' => 'Power Button',      'sub' => 'Wiring Pi' ]
-	, 'relays'        => [ 'label' => 'Relay Module',      'sub' => 'Wiring Pi' ]
-	, 'restore'       => [ 'label' => 'Restore' ]
-	, 'rotaryencoder' => [ 'label' => 'Rotary Encoder',    'sub' => 'evtest' ]
-	, 'shareddata'    => [ 'label' => 'Shared Data',       'sub' => 'Client' ]
-	, 'soundprofile'  => [ 'label' => 'Sound Profile' ]
-	, 'tft'           => [ 'label' => 'TFT 3.5" LCD',      'sub' => 'Xorg',                          'exist' => '/usr/bin/firefox' ]
-	, 'timezone'      => [ 'label' => 'Time Zone',         'sub' => 'timedatectl', 'status' => true ]
-	, 'vuled'         => [ 'label' => 'VU LED',            'sub' => 'cava' ]
-	, 'wlan'          => [ 'label' => 'Wi-Fi',             'sub' => 'iw',          'status' => true, 'exist' => $onboardwlan ]
-];
 commonVariables( [
 	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'rserver', 'usbdrive' ]
 	, 'labels'  => [
@@ -112,6 +92,9 @@ $head        = [ 'title'  => 'On-board Devices' ];
 $body        = [
 	[
 		  'id'       => 'audio'
+		, 'label'    => 'Audio'
+		, 'sub'      => 'aplay'
+		, 'status'   => true
 		, 'disabled' => 'No other audio devices available.'
 		, 'help'     => <<< EOF
  · For 3.5mm jack and HDMI audio output
@@ -120,6 +103,10 @@ EOF
 	]
 	, [
 		  'id'       => 'bluetooth'
+		, 'label'    => 'Bluetooth'
+		, 'sub'      => 'bluetoothctl'
+		, 'status'   => true
+		, 'exist'    => $onboardwlan
 		, 'disabled' => $L->bluetooth.' is currently connected.'
 		, 'help'     => <<< EOF
 $B->gear
@@ -128,6 +115,10 @@ EOF
 	]
 	, [
 		  'id'       => 'wlan'
+		, 'label'    => 'Wi-Fi'
+		, 'sub'      => 'iw'
+		, 'status'   => true
+		, 'exist'    => $onboardwlan
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 $B->gear
@@ -151,21 +142,29 @@ $head        = [ 'title' => 'GPIO Devices' ];
 $body        = [
 	  [
 		  'id'       => 'i2s'
+		, 'label'    => 'Audio - I²S'
+		, 'sub'      => 'HAT'
 		, 'help'     => $helpi2s
 	]
 	, [
 		  'id'       => 'i2smodule'
+		, 'label'    => 'Audio - I²S'
+		, 'sub'      => 'HAT'
 		, 'input'    => '<select id="i2smodule"></select>'
 		, 'help'     => $helpi2s
 	]
 	, [
 		  'id'       => 'lcdchar'
+		, 'label'    => 'Character LCD'
+		, 'sub'      => 'RPLCD'
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data on 16x2 / 20x4 LCD modules.
 EOF
 	]
 	, [
 		  'id'       => 'powerbutton'
+		, 'label'    => 'Power Button'
+		, 'sub' => 'Wiring Pi'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 $B->gear
@@ -175,6 +174,8 @@ EOF
 	]
 	, [
 		  'id'       => 'relays'
+		, 'label'    => 'Relay Module'
+		, 'sub' => 'Wiring Pi'
 		, 'help'     => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
  · Module with jumper <c>High/Low Level Trigger</c> (set to <c>High</c>)
@@ -187,6 +188,8 @@ EOF
 	],
 	[
 		  'id'       => 'rotaryencoder'
+		, 'label'    => 'Rotary Encoder'
+		, 'sub'      => 'evtest'
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  · Turn volume up/down
@@ -195,14 +198,21 @@ EOF
 	]
 	,[
 		  'id'       => 'mpdoled'
+		, 'label'    => 'Spectrum OLED'
+		, 'sub'      => 'mpd_oled'
 		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
 		  'id'       => 'tft'
+		, 'label'    => 'TFT 3.5" LCD'
+		, 'sub'      => 'Xorg'
+		, 'exist'    => '/usr/bin/firefox'
 		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 	]
 	, [
 		  'id'       => 'vuled'
+		, 'label'    => 'VU LED'
+		, 'sub'      => 'cava'
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
@@ -216,6 +226,7 @@ $head        = [ 'title' => 'Environment' ];
 $body        = [
 	[
 		  'id'       => 'hostname'
+		, 'label'    => 'Player Name'
 		, 'input'    => '<input type="text" id="hostname" readonly>'
 		, 'help'     => <<< EOF
 For:
@@ -226,6 +237,9 @@ EOF
 	]
 	, [
 		  'id'       => 'timezone'
+		, 'label'    => 'Time Zone'
+		, 'sub'      => 'timedatectl'
+		, 'status'   => true
 		, 'input'    => 'timezone'
 		, 'help'     => <<< EOF
 $B->gear
@@ -234,6 +248,7 @@ EOF
 	]
 	, [
 		  'id'       => 'soundprofile'
+		, 'label'    => 'Sound Profile'
 		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
 $B->gear
@@ -256,6 +271,7 @@ $head        = [ 'title' => 'Data and Settings' ];
 $body        = [
 	[
 		  'id'       => 'backup'
+		, 'label'    => 'Backup'
 		, 'help'     => <<< EOF
 Backup all data and settings:
  · Library: Database, Bookmarks, DAB Radio, Web Radio
@@ -266,6 +282,7 @@ EOF
 	]
 	, [
 		  'id'       => 'restore'
+		, 'label'    => 'Restore'
 		, 'help'     => <<< EOF
  · Restore all data and settings from a backup file.
  · Reset to default - Reset everything except Wi-Fi connection and custom LAN
@@ -273,6 +290,8 @@ EOF
 	]
 	, [
 		  'id'       => 'shareddata'
+		, 'label'    => 'Shared Data'
+		, 'sub'      => 'Client'
 		, 'disabled' => $L->serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:

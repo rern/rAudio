@@ -1,20 +1,13 @@
 <?php
-$id_data  = [
-	  'volume'              => [ 'label' => 'Master',        'sub' => 'hw' ]
-	, 'configuration'       => [ 'label' => 'Configuration', 'sub' => 'current', 'status' => true ]
-	, 'enable_rate_adjust'  => [ 'label' => 'Rate Adjust' ]
-	, 'capture_samplerate'  => [ 'label' => 'Capture Samplerate' ]
-	, 'stop_on_rate_change' => [ 'label' => 'Stop on Rate Change' ]
-	, 'resampler'           => [ 'label' => 'Resampler' ]
-];
 commonVariables( [
 	  'buttons' => [ 'code',   'edit',   'filters', 'flowchart', 'folderfilter', 'gear',   'graph', 'input', 'inverted', 'linear'
-				 , 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
+				   , 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
 	, 'labels'  => []
 	, 'menus'   => []
 	, 'tabs'    => []
 	
 ] );
+$status    = [ 'configuration' ];
 
 $bset     = ( object ) [];
 $bset->filters    = $B->filters.' Context menu: '.$B->graph.$B->edit.$B->remove;
@@ -77,10 +70,27 @@ for ( $i = 0; $i < 6; $i++ ) $vugrid.= '<a class="g'.$i.'"></a>';
 foreach ( [ -60, -48, -36, -24, -12, 0, 'dB' ] as $i => $db ) $vulabel.= '<a class="l'.$i.'">'.$db.'</a>';
 
 $options  = [
-	  [ 'id' => 'enable_rate_adjust',  'returnhtml' => true, 'disabled' => '<wh>Resampler</wh> set as <wh>Synchronous</wh>' ]
-	, [ 'id' => 'capture_samplerate',  'returnhtml' => true ]
-	, [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ]
-	, [ 'id' => 'resampler',           'returnhtml' => true ]
+	  [
+		  'id'         => 'enable_rate_adjust'
+		, 'label'      => 'Rate Adjust'
+		, 'returnhtml' => true
+		, 'disabled'   => '<wh>Resampler</wh> set as <wh>Synchronous</wh>'
+	]
+	, [
+		  'id'         => 'capture_samplerate'
+		, 'label'      => 'Capture Samplerate'
+		, 'returnhtml' => true
+	]
+	, [
+		  'id'         => 'stop_on_rate_change'
+		, 'label'      => 'Stop on Rate Change'
+		, 'returnhtml' => true
+	]
+	, [
+		  'id'         => 'resampler'
+		, 'label'      => 'Resampler'
+		, 'returnhtml' => true
+	]
 ];
 $htmlopt  = '';
 foreach( $options as $opt ) $htmlopt.= htmlSetting( $opt );
@@ -153,6 +163,8 @@ $body     = [
 	)
 	, [
 		  'id'     => 'configuration'
+		, 'label'  => 'Configuration'
+		, 'sub'    => 'current'
 		, 'status' => true
 		, 'input'  => 'configuration'
 		, 'help'   => <<< EOF
