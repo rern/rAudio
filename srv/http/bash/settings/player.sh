@@ -178,7 +178,6 @@ $data
 	pushRefresh
 	;;
 volume )
-	pageplayer=1
 	volume
 	;;
 volume0db )

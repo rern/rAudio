@@ -475,6 +475,7 @@ snapserverList() {
 	fi
 }
 volume() {
+	local diff filevolumemute fn_volume type val values
 	filevolumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	if [[ $TYPE != dragpress ]]; then
@@ -493,12 +494,6 @@ volume() {
 		rm -f $filevolumemute
 	fi
 	fn_volume=$( < $dirshm/volumefunction )
-	if [[ $pageplayer ]]; then
-		$fn_volume $TARGET% "$CONTROL" $CARD
-		volumeGet push
-		exit
-# --------------------------------------------------------------------
-	fi
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then
