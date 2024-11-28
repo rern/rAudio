@@ -806,7 +806,6 @@ function intervalElapsedClear() {
 function libraryHome() {
 	list( { library: 'home' }, function( data ) {
 		O             = data.order;
-		S.updating_db = data.updating;
 		if ( data.html !== V.libraryhtml ) {
 			V.libraryhtml = data.html;
 			var html      = htmlHash( data.html );

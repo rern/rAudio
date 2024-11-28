@@ -4,7 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20241122
+# 20241128
+systemctl -q is-active mediamtx && touch $dirsystem/dabradio
+
 file=$dirsystem/lcdchar.conf
 if [[ -e $file ]] && grep -q -m1 ^0= $file; then
 	rm $dirsystem/lcdchar*

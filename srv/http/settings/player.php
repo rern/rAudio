@@ -1,11 +1,11 @@
 <?php
 $id_data   = [
 	  'autoupdate'    => [ 'label' => 'Library Auto Update',   'sub' => 'auto_update' ]
-	, 'bluealsa'      => [ 'label' => 'Bluetooth',             'sub' => 'bluealsa', 'status' => true ]
+	, 'bluealsa'      => [ 'label' => 'Bluetooth',             'sub' => 'bluealsa',  'status' => true ]
 	, 'buffer'        => [ 'label' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
 	, 'crossfade'     => [ 'label' => 'Cross-Fading',          'sub' => 'crossfade' ]
 	, 'custom'        => [ 'label' => "User's Configurations", 'sub' => 'custom' ]
-	, 'device'        => [ 'label' => 'Device' ]
+	, 'device'        => [ 'label' => 'Device',                'sub' => 'hw-params', 'status' => true ]
 	, 'devicewithbt'  => [ 'label' => 'Device + Bluetooth' ]
 	, 'dop'           => [ 'label' => 'DSD over PCM',          'sub' => 'dop' ]
 	, 'ffmpeg'        => [ 'label' => 'FFmpeg',                'sub' => 'decoder' ]

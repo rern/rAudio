@@ -5,7 +5,7 @@
 . /srv/http/bash/common.sh
 
 data+=$( settingsEnabled \
-			$dirsystem camilladsp devicewithbt equalizer soxr \
+			$dirsystem camilladsp dabradio devicewithbt equalizer soxr \
 			$dirmpdconf autoupdate.conf buffer.conf custom.conf ffmpeg.conf normalization.conf outputbuffer.conf replaygain.conf )
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
@@ -19,9 +19,8 @@ data+='
 , "btmixer"     : "'$( getContent $dirshm/btmixer )'"
 , "counts"      : { '$( grep -E 'dabradio|song|webradio' < $dirmpd/counts )' }
 , "crossfade"   : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
-, "dabradio"    : '$( systemctl -q is-active mediamtx && echo true )'
 , "devices"     : '$( getContent $dirshm/devices )'
-, "dop"         : '$( grep -q dop.*yes $dirmpdconf/output.conf && echo true )'
+, "dop"         : '$( grep -qs dop.*yes $dirmpdconf/output.conf && echo true )'
 , "lastupdate"  : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
 , "lists"       : {
 	  "albumignore" : '$( exists $dirmpd/albumignore )'

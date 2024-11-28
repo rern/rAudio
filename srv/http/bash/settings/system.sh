@@ -35,7 +35,7 @@ dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
 		[[ $tft || $spimpdoled ]] && config+='
 dtparam=spi=on'
 		
-		[[ -e $file_module ]] && module=$( grep -Ev 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $file_module )
+		module=$( grep -Evs 'i2c-bcm2708|i2c-dev|snd-soc-wm8960|^#|^\s*$' $file_module )
 		[[ $tft || $i2clcdchar ]] && module+='
 i2c-bcm2708'
 		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then

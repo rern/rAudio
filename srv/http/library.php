@@ -47,7 +47,7 @@ $format  = '%'.implode( '%^^%', $f ).'%';
 $html    = '<ul id="lib-list" class="list">';
 $index0  = '';
 $indexes = [];
-foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/';
+foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/'; // $dirmpd $dirsystem $dirwebradio
 
 switch( $post->library ) {
 
@@ -160,11 +160,9 @@ case 'home':
 		}
 	}
 	$order    = file_exists( $dirsystem.'order.json' ) ? json_decode( file_get_contents( $dirsystem.'order.json' ) ) : false;
-	$updating = exec( '[[ -e '.$dirmpd.'listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
-		  'html'     => $htmlmode
-		, 'order'    => $order
-		, 'updating' => $updating
+		  'html'  => $htmlmode
+		, 'order' => $order
 	] );
 	break;
 case 'list':

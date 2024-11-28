@@ -41,8 +41,7 @@ if [[ $1 == withdisplay ]]; then
 			volumenone=true
 		fi
 	fi
-	systemctl -q is-active mediamtx && dabradio=true
-	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
+	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
 	display=$( grep -v } $dirsystem/display.json )
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
@@ -53,7 +52,7 @@ if [[ $1 == withdisplay ]]; then
 , "audiocd"      : '$( exists $dirshm/audiocd )'
 , "camilladsp"   : '$( exists $dirsystem/camilladsp )'
 , "color"        : "'$( getContent $dirsystem/color )'"
-, "dabradio"     : '$dabradio'
+, "dabradio"     : '$( exists $dirsystem/dabradio )'
 , "equalizer"    : '$( exists $dirsystem/equalizer )'
 , "loginsetting" : '$loginsetting'
 , "lock"         : '$lock'
@@ -79,9 +78,7 @@ else
 	else
 		. <( grep -E '^card|^mixer' $dirshm/output )
 	fi
-	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
-		updating_db=true
-	fi
+	[[ -e $dirmpd/listing || -e $dirmpd/updating ]] && updating_db=true || updating_db=false
 ########
 	status+='
 , "player"       : "'$player'"
