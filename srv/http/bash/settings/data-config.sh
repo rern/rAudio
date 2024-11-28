@@ -103,7 +103,7 @@ mpdoled )
 , "reboot" : '$( toReboot )'
 }'
 	;;
-multiraudioconf )
+multiraudio )
 	getContent $dirsystem/multiraudio.json
 	;;
 reboot )
