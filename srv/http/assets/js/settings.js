@@ -517,7 +517,7 @@ $( '.switch' ).on( 'click', function() {
 			bash( [ id ], error => {
 				if ( error ) {
 					S[ id ] = false;
-					$setting.addClass( 'hide' );
+					switchSet();
 					bannerHide();
 					info( {
 						  ...SW
@@ -527,6 +527,7 @@ $( '.switch' ).on( 'click', function() {
 			}, 'text' );
 		}
 	} else {                                 // disable
+		$( '#setting-'+ id ).addClass( 'hide' );
 		if ( page === 'camilla' ) {
 			DEV[ id ] = null;
 			setting.save( SW.title, 'Disable ...' );
