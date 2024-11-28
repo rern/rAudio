@@ -18,7 +18,6 @@ commonVariables( [
 	]
 	, 'tabs'    => [ 'library', 'system' ]
 ] );
-$T->library    = '<a class="helpmenu tab">'.i( 'library' ).' Library</a>';
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
