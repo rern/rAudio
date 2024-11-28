@@ -4,7 +4,10 @@
 
 . /srv/http/bash/common.sh
 . $dirshm/output
-
+if grep -q configs-bt /etc/default/camilladsp; then
+	bluetooth=true
+	name=$( < $dirshm/btname )
+fi
 data='
 , "bluetooth"  : '$bluetooth'
 , "btreceiver" : '$( exists $dirshm/btreceiver )'

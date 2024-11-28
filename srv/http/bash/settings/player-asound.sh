@@ -109,8 +109,7 @@ echo "$ASOUNDCONF" >> /etc/asound.conf # append after default lines set by playe
 
 # ----------------------------------------------------------------------------
 if [[ $CAMILLADSP ]]; then
-	# must stop for exclusive device access - aplay probing
-	$dirbash/cmd.sh playerstop
+	$dirbash/cmd.sh playerstop # must stop for exclusive device access - aplay probing
 	systemctl stop camilladsp
 	default=$( < /etc/default/camilladsp )
 	configfile=$( sed -n '/^CONFIG/ {s/.*=//; p}' <<< $default )
@@ -159,7 +158,8 @@ if [[ $CAMILLADSP ]]; then
 		$dirsettings/camilla-bluetooth.sh btreceiver
 	else
 		fileformat="$dirsystem/camilla-$NAME"
-		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .playback.formats[0] $dirshm/camilladevices )
+		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .[0] <<< ${FORMATS[1]} )
+		[[ ! $FORMAT ]] && FORMAT=S16LE
 		format0=$( getVarYml playback format )
 		if [[ $format0 != $FORMAT ]]; then
 			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"

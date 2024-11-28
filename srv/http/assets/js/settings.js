@@ -395,7 +395,6 @@ $( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return
 	
 	$( '#data' ).html( highlightJSON( S ) )
-	$( '.container' ).addClass( 'hide' );
 	$( '#button-data, #data' ).removeClass( 'hide' );
 } );
 $( '#button-data' ).on( 'click', function() {
