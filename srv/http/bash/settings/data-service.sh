@@ -49,7 +49,7 @@ $( bluealsa-aplay -L )"
 	dabradio )
 		conf="\
 <bll># rtl_test -t</bll>
-$( captureTty 'timeout 0.1 rtl_test -t' )"
+$( tty2std 'timeout 0.1 rtl_test -t' )"
 		PKG=mediamtx
 		;;
 	localbrowser )

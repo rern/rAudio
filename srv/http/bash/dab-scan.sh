@@ -5,7 +5,7 @@
 basename $0 .sh > $dirshm/script
 
 echo
-dabscan=$( captureTty 'dab-scanner-rtlsdr -C 5A' ) # capture /dev/tty
+dabscan=$( tty2std 'dab-scanner-rtlsdr -C 5A' ) # capture /dev/tty
 if ! grep -q ^audioservice <<< $dabscan; then
 	echo '
 <a class="cbr cw"> ! </a> No stations found.

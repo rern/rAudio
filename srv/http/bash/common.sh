@@ -103,9 +103,6 @@ camillaDSPstart() {
 		$dirsettings/features.sh camilladsp$'\n'OFF
 	fi
 }
-captureTty() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
-	script /dev/null -qc "$1"
-}
 cmdshWebsocket() {
 	websocat ws://$1:8080 <<< '{ "filesh": [ "'$dirbash'/cmd.sh", "'$2'" ] }'
 }
@@ -472,6 +469,9 @@ snapserverList() {
 	else
 		echo '[]'
 	fi
+}
+tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
+	script /dev/null -qc "$1"
 }
 volume() {
 	local diff filevolumemute fn_volume type val values
