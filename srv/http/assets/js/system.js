@@ -753,7 +753,7 @@ var util          = {
 			var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
 			var dot = '<grn>&ensp;•&ensp;</grn>';
 			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
-			html += '<li>'+ ico( v.icon ) + mountpoint + dot + v.size +' '+ v.source +'</li>';
+			html += '<li>'+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ v.source +'</c></li>';
 		} );
 		$( '#list' ).html( html );
 	}

@@ -28,6 +28,7 @@ data='
 	  "capture"  : { '$devicesC' }
 	, "playback" : { '$devicesP' }
 }
+, "hwparams"   : '$( < $dirshm/hwparams )'
 , "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$( mpcState )'"

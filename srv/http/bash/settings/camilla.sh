@@ -51,9 +51,6 @@ confswitch )
 	saveConfig
 	sed -i -E "s|^(CONFIG=).*|\1$CONFIG|" /etc/default/camilladsp
 	;;
-hwparams )
-	cat $dirshm/hwparams
-	;;
 restart )
 	systemctl restart camilladsp
 	;;

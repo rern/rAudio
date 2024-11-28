@@ -1915,22 +1915,20 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
-					bash( [ 'hwparams' ], data => {
-						Dlist.filename.push( { kv: S.ls.raw } );
-						Dlist.formatC.push( { kv: data.formats.capture, nosort: true } );
-						Dlist.formatP.push( { kv: data.formats.playback, nosort: true } );
-						Dlist.typeC.push( type.capture );
-						Dlist.typeP.push( type.playback );
-						Dlist.deviceC.push( S.devices.capture );
-						Dlist.deviceP.push( S.devices.playback );
-						Dlist.channelsC.push( { updn: { step: 1, min: 1, max: data.channels.capture } } );
-						Dlist.channelsP.push( { updn: { step: 1, min: 1, max: data.channels.playback } } );
-						D.values.channels  = data.channels;
-						var samplings      = { kv: data.samplings, nosort: true }
-						Dlist.capture_samplerate.push( samplings );
-						D.main[ 0 ].push( samplings );
-						D0.samplerate     = Object.values( data.samplings )
-					}, 'json' );
+					Dlist.typeC.push( type.capture );
+					Dlist.typeP.push( type.playback );
+					Dlist.filename.push( { kv: S.ls.raw } );
+					Dlist.formatC.push( { kv: S.hwparams.formats.capture, nosort: true } );
+					Dlist.formatP.push( { kv: S.hwparams.formats.playback, nosort: true } );
+					Dlist.deviceC.push( S.devices.capture );
+					Dlist.deviceP.push( S.devices.playback );
+					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.hwparams.channels.capture } } );
+					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.hwparams.channels.playback } } );
+					D.values.channels = S.hwparams.channels;
+					var samplings     = { kv: S.hwparams.samplings, nosort: true }
+					Dlist.capture_samplerate.push( samplings );
+					D.main[ 0 ].push( samplings );
+					D0.samplerate     = Object.values( S.hwparams.samplings )
 					break;
 				case 'Invalid':
 					info( {
