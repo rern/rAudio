@@ -13,7 +13,7 @@ getVarYml() { # var: value || var: "value";*
 [[ ! $CARD ]] && . <( sed -n -E '/^card|^name/ {s/(^card|^name)/\U\1/;p}' $dirshm/output )
 
 if [[ -e $dirshm/btreceiver ]]; then
-	bluetooth=1
+	BLUETOOTH=1
 	systemctl -q is-active localbrowser && action=stop || action=start
 	systemctl $action bluetoothbutton
 else
@@ -34,7 +34,7 @@ if [[ -e $dirsystem/camilladsp ]]; then
 		exit
 # --------------------------------------------------------------------
 	fi
-	camilladsp=1
+	CAMILLADSP=1
 	channels=$( getVarYml capture channels )
 	format=$( getVarYml capture format )
 	samplerate=$( getVarYml samplerate )
@@ -68,7 +68,7 @@ ctl.camilladsp {
 else
 	systemctl stop camilladsp &> /dev/null
 	rmmod snd-aloop &> /dev/null
-	if [[ $bluetooth ]]; then
+	if [[ $BLUETOOTH ]]; then
 ########
 		ASOUNDCONF+='
 pcm.bluealsa {
@@ -81,13 +81,13 @@ pcm.bluealsa {
 }'
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
-		if [[ $bluetooth ]]; then
+		if [[ $BLUETOOTH ]]; then
 			slavepcm=bluealsa
 		elif [[ $CARD != -1 ]]; then
 			slavepcm='"plughw:'$CARD',0"'
 		fi
 		if [[ $slavepcm ]]; then
-			equalizer=1
+			EQUALIZER=1
 ########
 			ASOUNDCONF+='
 pcm.!default {
@@ -108,7 +108,7 @@ fi
 echo "$ASOUNDCONF" >> /etc/asound.conf # append after default lines set by player-devices.sh
 
 # ----------------------------------------------------------------------------
-if [[ $camilladsp ]]; then
+if [[ $CAMILLADSP ]]; then
 	# must stop for exclusive device access - aplay probing
 	$dirbash/cmd.sh playerstop
 	systemctl stop camilladsp
@@ -144,7 +144,7 @@ if [[ $camilladsp ]]; then
  echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
 	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
-	if [[ $bluetooth ]]; then
+	if [[ $BLUETOOTH ]]; then
 		$dirsettings/camilla-bluetooth.sh btreceiver
 	else
 		fileformat="$dirsystem/camilla-$NAME"
