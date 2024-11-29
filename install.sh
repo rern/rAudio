@@ -89,4 +89,4 @@ $dirbash/cmd.sh cachebust
 installfinish
 
 # 20241130
-[[ -e $dirsystem/camilladsp && ! -e $dirshm/hwparams ]] && $dirsettings/player-conf.sh
+[[ -e $dirsystem/camilladsp && ! -e $dirshm/hwparams ]] && $dirsettings/camilla-devices.sh
