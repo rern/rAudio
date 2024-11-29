@@ -751,9 +751,10 @@ var render    = {
 		var ch      = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 		bash( 'data-config.sh hwparams', data => {
-			D0.samplerate                    = Object.values( data.samplings );
-			D.main[ 0 ][ 2 ].kv              = data.samplings;
-			Dlist.capture_samplerate[ 2 ].kv = data.samplings;
+			var samplings                    = data.playback.samplings;
+			D0.samplerate                    = Object.values( samplings );
+			D.main[ 0 ][ 2 ].kv              = samplings;
+			Dlist.capture_samplerate[ 2 ].kv = samplings;
 			Dlist.formatC[ 2 ].kv            = data.capture.formats;
 			Dlist.formatP[ 2 ].kv            = data.playback.formats;
 			Dlist.deviceC[ 2 ]               = data.capture.device;

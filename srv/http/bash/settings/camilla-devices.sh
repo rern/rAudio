@@ -34,17 +34,15 @@ done
 ######## >
 data='
   "capture"  : {
-	  "device"   : '${DEVICES[0]}'
-	, "channels" : '${CHANNELS[0]}'
-	, "formats"  : '${FORMATS[0]}'
+	  "device"    : '${DEVICES[0]}'
+	, "channels"  : '${CHANNELS[0]}'
+	, "formats"   : '${FORMATS[0]}'
 }
 , "playback" : {
-	  "device"   : '${DEVICES[1]}'
-	, "channels" : '${CHANNELS[1]}'
-	, "formats"  : '${FORMATS[1]}'
-}
-, "samplings" : {
-	'${SAMPLINGS:1}'
+	  "device"    : '${DEVICES[1]}'
+	, "channels"  : '${CHANNELS[1]}'
+	, "formats"   : '${FORMATS[1]}'
+	, "samplings" : { '${SAMPLINGS:1}' }
 }'
 echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
