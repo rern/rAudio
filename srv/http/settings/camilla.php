@@ -62,8 +62,6 @@ EOF
 		, 'help'   => $bset->config
 	]
 ];
-$bar      = '';
-foreach( [ '', 'peak X', 'rms X' ] as $c ) $bar.= '<div class="bar '.$c.'"></div>';
 $vugrid   = '';
 $vulabel  = '';
 for ( $i = 0; $i < 6; $i++ ) $vugrid.= '<a class="g'.$i.'"></a>';
@@ -129,7 +127,7 @@ $body     = [
 		, ''
 		, '<div id="vu">
 			<div id="vugrid">'.$vugrid.'</div>
-			<div id="in">'.str_replace( 'X', 'c0', $bar ).str_replace( 'X', 'c1', $bar ).'</div>
+			<div id="in"></div>
 			<div id="vulabel">'.$vulabel.'</div>
 			<div id="out"></div>
 		   </div>'

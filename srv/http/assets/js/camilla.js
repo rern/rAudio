@@ -739,10 +739,13 @@ var render    = {
 		$( '#configuration' )
 			.html( htmlOption( S.ls.configs ) )
 			.val( S.configname );
-		var chC = DEV.capture.channels;
-		var chP = DEV.playback.channels;
-		var ch  = chC > chP ? chC : chP;
-		var htmlout = '<div class="bar"></div><div class="bar peak p0"></div><div class="bar rms p0"></div>';
+		var chC     = DEV.capture.channels;
+		var chP     = DEV.playback.channels;
+		var ch      = chC > chP ? chC : chP;
+		var htmlin  = '<div class="bar"></div><div class="bar peak c0"></div><div class="bar rms c0"></div>';
+		var htmlout = htmlin.replace( /c0/g, 'p0' );
+		if ( chC > 1 ) for ( i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
+		$( '#in' ).html( htmlin );
 		if ( chP > 1 ) for ( i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
 		$( '#out' ).html( htmlout );
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
