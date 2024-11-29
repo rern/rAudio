@@ -1909,7 +1909,7 @@ var common    = {
 					PIP      = S.config.pipeline;
 					PRO      = S.config.processors;
 					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
-						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
+						S[ k ] = DEV[ k ] === true;
 					} );
 					Dlist.filename[ 2 ].kv = S.ls.raw;
 					if ( $( '#data' ).hasClass( 'hide' ) ) {
