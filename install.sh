@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20241130
+systemctl -q is-active mediamtx && touch $dirsystem/dabradio
+
 # 20241110
 if [[ ! -e /boot/kernel.img ]]; then
 	revision=$( grep ^Revision /proc/cpuinfo )
@@ -11,6 +14,28 @@ if [[ ! -e /boot/kernel.img ]]; then
 		file=/etc/modprobe.d/brcmfmac.conf
 		[[ ! -e $file ]] && echo 'options brcmfmac feature_disable=0x82000' > $file
 	fi
+fi
+
+# 20241108
+[[ $( pacman -Q cava ) < 'cava 0.10.2-2' ]] && pacman -Sy --noconfirm cava
+
+file=$dirsystem/lcdchar.conf
+if [[ -e $file ]] && grep -q -m1 ^0= $file; then
+	rm $dirsystem/lcdchar*
+fi
+
+# 20241111
+if [[ ! -e /boot/kernel.img ]]; then
+	revision=$( grep ^Revision /proc/cpuinfo )
+	[[ ${revision: -3:2} < 11 ]] && echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
+fi
+
+file=/etc/systemd/system/dab.service
+if [[ -e $file ]] && grep -q Requires $file; then
+	sed -i '/^Requires\|^After/ d' $file
+	rm -rf /etc/systemd/system/mediamtx.service.d
+	systemctl daemon-reload
+	systemctl try-restart mediamtx
 fi
 
 # 20241108
@@ -74,3 +99,6 @@ $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20241130
+[[ -e $dirsystem/camilladsp && ! -e $dirshm/hwparams ]] && $dirsettings/camilla-devices.sh

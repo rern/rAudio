@@ -123,9 +123,9 @@ pushRadioList() {
 	pushData radiolist '{ "type": "webradio" }'
 }
 pushSavedPlaylist() {
-	[[ ! $( ls $dirdata/playlist ) ]] && pushData savedplaylist -1 && exit
+	[[ ! $( ls $dirdata/playlist ) ]] && pushData playlists -1 && exit
 # --------------------------------------------------------------------
-	pushData savedplaylist $( php /srv/http/playlist.php list )
+	pushData playlists $( php /srv/http/playlist.php list )
 }
 radioStop() {
 	if [[ -e $dirshm/radio ]]; then
@@ -410,16 +410,7 @@ equalizer )
 	done
 	;;
 equalizerget )
-	if [[ -e $dirsystem/equalizer.json ]]; then
-		cat $dirsystem/equalizer.json
-	else
-		echo '{
-  "active" : "Flat"
-, "preset" : {
-		"Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]
-	}
-}'
-	fi
+	cat $dirsystem/equalizer.json
 	;;
 equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
@@ -588,6 +579,9 @@ mpcplayback )
 			done
 			rm -f $dirshm/cdstart
 			$dirbash/status-push.sh
+		fi
+		if [[ -e $dirshm/relayson ]]; then
+			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
 		fi
 	else
 		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
@@ -763,7 +757,7 @@ playlistpush )
 	;;
 relaystimerreset )
 	$dirbash/relays-timer.sh &> /dev/null &
-	pushData relays '{ "done": 1 }'
+	pushData relays '{ "reset": '$( getVar timer $dirsystem/relays.conf )' }'
 	;;
 savedpldelete )
 	rm "$dirplaylists/$NAME.m3u"
@@ -818,6 +812,9 @@ shareddatampdupdate )
 	systemctl restart mpd
 	notify refresh-library 'Library Update' Done
 	$dirbash/status-push.sh
+	;;
+snapserverlist )
+	snapserverList
 	;;
 splashrotate )
 	splashRotate

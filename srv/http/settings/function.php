@@ -1,70 +1,80 @@
 <?php
 /*
-$id_data = [ 'ID' => [               // REQUIRED
-	  'label'   => 'LABEL'
-	, 'sub'     => 'SUBLABEL'
-	, 'setting' => 'TYPE'
-	, 'status'  => 'SCRIPTCOMMAND'
-];
 $head = [
 	  'title'   => 'TITLE'           // REQUIRED
-	, 'subhead' => true/false        // with no help icon
-	, 'status'  => 'COMMAND'         // include status icon and status box
+	, 'subhead' => true              // with no help icon
+	, 'status'  => true              // include status icon and status box
 	, 'button'  => [ 'ICON', ... ]   // icon button
-	, 'back'    => true/false        // back button
-	, 'nohelp'  => true/false
+	, 'back'    => true              // back button
 	, 'help'    => 'HELP'
 ];
 $body = [
 	 'HTML'                          // for non-switch section
 	, [
 		  'id'       => 'ID'         // REQUIRED
+		, 'label'    => 'LABEL'
+		, 'sub'      => 'SUB'
+		, 'status'   => true         // include status icon and status box
 		, 'input'    => 'HTML/ID'    // alternative - if not switch (ID - select)
-		, 'setting'  => TYPE         // default  = $( '#setting-'+ id ).click() before enable
-		                             // false    = no setting
-		                             // 'custom' = custom setting
-		                             // 'none'   = no setting - custom enable
-		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting
-		                             // 'js'     = set by js condition
+		, 'disabled' => 'MESSAGE'    // set data-diabled - prompt on click setting icon
+		                             // 'js' = set by js condition
 		, 'help'     => 'HELP'
-		, 'exist'    => 'COMMAND'    // hide if COMMAND = false
+		, 'exist'    => 'FILE'       // hide if file not exist
 	]
 	, ...
 ];
 htmlSection( $head, $body[, $id] );
 */
+function commonVariables( $list ) {
+	foreach( [ 'B', 'L', 'M', 'T' ] as $k ) {
+		global $$k;
+		$$k = ( object ) [];
+	}
+	$list = ( object ) $list;
+	foreach( $list->buttons as $b ) $B->$b = i( $b.' btn' );
+	foreach( $list->labels as $label => $icon ) {
+		$icon     = $icon ? i( $icon ) : ' &emsp;';
+		$name     = strtolower( preg_replace( '/ |-/', '', $label ) );
+		$L->$name = '<a class="helpmenu label">'.$label.$icon.'</a>';
+	}
+	foreach( $list->menus as $name => $icon ) {
+		$M->$name = '<a class="helpmenu">'.i( $icon ).' '.ucfirst( $icon ).i( $name.' sub' ).'</a>';
+	}
+	foreach( $list->tabs as $t ) $T->$t = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
+}
+
 function htmlHead( $data ) {
-	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
+	$data    = ( object ) $data;
+	if ( isset( $data->exist ) && ! $data->exist ) return;
 	
-	$title   = $data[ 'title' ];
-	$id      = $data[ 'id' ] ?? false;
-	$status  = $data[ 'status' ] ?? false;
-	$button  = $data[ 'button' ] ?? false;
-	$help    = $data[ 'help' ] ?? false;
-	$class   = $status ? 'status' : '';
+	$id      = isset( $data->id ) ? ' id="'.$data->id.'"' : '';
+	$status  = $data->status ?? '';
+	$class   = $status ? ' class="status"' : '';
+	$dstatus = $status ? ' data-status="'.$status.'"' : '';
+	$iback   = isset( $data->back ) ? i( 'back back' ) : '';
+	$ihelp   = $iback ? '' : i( 'help help' );
 	
-	$html    = '<heading '.( $id ? ' id="'.$id.'"' : '' ).( $status ? ' data-status="'.$status.'"' : '' );
-	$html   .= $class ? ' class="'.$class.'">' : '>';
-	$html   .= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) {
+	$html    = '<heading '.$id.$class.'><span class="headtitle"'.$dstatus.'>'.$data->title.'</span>';
+	if ( isset( $data->button ) ) {
+		$button = $data->button;
 		if ( is_Array( $button ) ) {
 			foreach( $button as $icon ) $html.= i( $icon );
 		} else {
 			$html.= i( $button );
 		}
 	}
-	$html   .= isset( $data[ 'nohelp' ] ) ? '' : i( 'help help' );
-	$html   .= isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
-	$html   .= '</heading>';
-	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
+	$html   .= $ihelp.$iback.'</heading>';
+	$html   .= isset( $data->help ) ? '<span class="helpblock hide">'.$data->help.'</span>' : '';
 	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echo str_replace( '|', '<g>|</g>', $html );
 }
+function htmlMenu( $menu ) {
+	$menuhtml = '';
+	foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
+	echo '<div id="menu" class="menu hide">'.$menuhtml.'</div>';
+}
 function htmlSection( $head, $body, $id = '' ) {
-	$html = '<div';
-	$html.= $id ? ' id="div'.$id.'"' : '';
-	$html.= ' class="section">';
-	echo $html;
+	echo '<div'.( $id ? ' id="div'.$id.'"' : '' ).' class="section">';
 	if ( $head ) htmlHead( $head );
 	foreach( $body as $data ) {
 		if ( is_array( $data ) ) {
@@ -86,47 +96,41 @@ function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
 </div>';
 }
 function htmlSetting( $data ) {
-	global $id_data;
-	$id          = $data[ 'id' ];
-	$iddata      = $id_data[ $id ];
-	if ( isset( $iddata[ 'exist' ] ) && ! file_exists( '/usr/bin/'.$iddata[ 'exist' ] ) ) return;
+	$data    = ( object ) $data;
+	$id      = $data->id;
+	$sub     = $data->sub ?? false;
+	$exist   = $data->exist ?? '';
+	if ( $exist ) {
+		if ( is_bool( $exist ) ) $exist = '/usr/bin/'.$sub;
+		if ( ! file_exists( $exist ) ) return;
+	}
 	
-	if ( isset( $data[ 'html' ] ) ) {
-		echo str_replace( '|', '<g>|</g>', $data[ 'html' ] );
+	if ( isset( $data->html ) ) {
+		echo str_replace( '|', '<g>|</g>', $data->html );
 		return;
 	}
 	
-	global $features, $system;
-	$id          = $data[ 'id' ];
-	$iddata      = $id_data[ $id ];
-	$label       = $iddata[ 'label' ];
-	$sublabel    = $iddata[ 'sub' ] ?? false;
-	$status      = $iddata[ 'status' ] ?? false;
-	$setting     = $iddata[ 'setting' ] ?? 'common';
-	$label       = '<span class="label">'.$label.'</span>';
-	$input       = $data[ 'input' ] ?? false;
-	$settingicon = ! $setting || $setting === 'none' ? false : 'gear';
-	$help        = $data[ 'help' ] ?? false;
-	$icon        = $data[ 'icon' ] ?? false;
-	if ( $features || $system ) {
-		$icon = $id;
-	} else {
-		$icon = $data[ 'icon' ] ?? false;
-	}
+	global $iconlabel;
+	$label   = $data->label;
+	$status  = $data->status ?? false;
+	$label   = '<span class="label">'.$label.'</span>';
+	$input   = $data->input ?? false;
+	$help    = $data->help ?? false;
+	$icon    = $iconlabel ? $id : '';
+	$dstatus = $status ? ' status" data-status="'.$id : '';
 	
-	$html        = '<div id="div'.$id.'" class="row">';
+	$html    = '<div id="div'.$id.'" class="row">';
 	// col-l
-	$html       .= '<div class="col-l';
-	$html       .= $sublabel ? '' : ' single';
-	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
-	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
-	$html       .= $icon ? i( $icon ) : ''; // icon
-	$html       .= '</div>';
+	$html   .= '<div class="col-l'.( $sub ? '' : ' single' ).$dstatus.'">';
+	$html   .= $sub ? '<a>'.$label.'<gr>'.$sub.'</gr></a>' : $label;
+	$html   .= $icon ? i( $icon ) : ''; // icon
+	$html   .= '</div>';
 	// col-r
-	$html       .= '<div class="col-r">';
+	$html   .= '<div class="col-r">';
 	if ( ! $input ) {
-		$disabled = isset( $data[ 'disabled' ] ) ? '<span class="hide">'.$data[ 'disabled' ].'</span>' : '';
-		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div></label>';
+		$disabled = isset( $data->disabled ) ? '<span class="hide">'.$data->disabled.'</span>' : '';
+		$html    .= '<label>'.$disabled.'<input type="checkbox" id="'.$id.'" class="switch">';
+		$html    .= '<div class="switchlabel"></div></label>';
 	} else {
 		if ( ltrim( $input )[ 0 ] == '<' ) {
 			$html.= $input;
@@ -134,41 +138,14 @@ function htmlSetting( $data ) {
 			$html.= '<select id="'.$input.'"></select>';
 		}
 	}
-	// setting
-	$html       .= $settingicon ? i( $settingicon.' setting', 'setting-'.$id ) : '';
+	$html   .= i( 'gear setting', 'setting-'.$id );
 	// help
-	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
-	$html       .= '</div>
+	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
+	$html   .= '</div>
 					</div>';
 	// status
-	$html       .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
-	if ( isset( $data[ 'returnhtml' ] ) ) return $html;
+	$html   .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
+	if ( isset( $data->returnhtml ) ) return $html;
 	
 	echo $html;
 }
-function commonVariables( $list ) {
-	extract( $list );
-	foreach( $labels as $l ) { // $L_xxx - switch label
-		$icon  = isset( $l[ 1 ] ) ? i( $l[ 1 ] ) : ' &emsp;';
-		$l     = $l[ 0 ];
-		$name  = 'L_'.strtolower( preg_replace( '/ |-/', '', $l ) );
-		global $$name;
-		$$name = '<a class="helpmenu label">'.$l.$icon.'</a>';
-	}
-	foreach( $menus as $m ) { // $M_xxx - menu
-		$name  = 'M_'.str_replace( '-', '', $m[ 2 ] );
-		global $$name;
-		$$name = '<a class="helpmenu">'.i( $m[ 0 ] ).' '.$m[ 1 ].i( $m[ 2 ].' sub' ).'</a>';
-	}
-	foreach( $tabs as $t ) { // $T_xxx - tab
-		$name  = 'T_'.$t;
-		global $$name;
-		$$name = '<a class="helpmenu tab">'.i( $t ).' '.ucfirst( $t ).'</a>';
-	}
-	foreach( $buttons as $b ) { // $B_xxx - tab
-		$name  = 'B_'.$b;
-		global $$name;
-		$$name = i( $b.' btn' );
-	}
-}
-$I = 'i'; // for common.php - i() > {$I()} inside heredoc

@@ -1,7 +1,6 @@
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
-	, dots       : '· · ·'
 	, graph      : { filters: [], pipeline: [] }
 	, prevconfig : {}
 	, sortable   : {}
@@ -26,8 +25,7 @@ var F0        = {
 		, Biquad      : [
 		    'Subtype'
 		  , 'select'
-		  , [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
-			, 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform' ]
+		  , [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO', 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass',  'Allpass',   'AllpassFO',  'LinkwitzTransform' ]
 		]
 		, BiquadCombo : [
 			  'Subtype'
@@ -37,8 +35,8 @@ var F0        = {
 		, Dither      : [
 			  'Subtype'
 			, 'select'
-			, [ 'None', 'Flat', 'Highpass', 'Fweighted441', 'FweightedShort441', 'FweightedLong441', 'Gesemann441', 'Gesemann48', 'Lipshitz441', 'LipshitzLong441'
-			  , 'Shibata441', 'ShibataHigh441', 'ShibataLow441', 'Shibata48', 'ShibataHigh48', 'ShibataLow48', 'Shibata882', 'ShibataLow882', 'Shibata96', 'ShibataLow96', 'Shibata192', 'ShibataLow192' ]
+			, [ 'None',           'Flat',          'Highpass',  'Fweighted441',  'FweightedShort441', 'FweightedLong441', 'Gesemann441',   'Gesemann48', 'Lipshitz441',  'LipshitzLong441', 'Shibata441'
+			  , 'ShibataHigh441', 'ShibataLow441', 'Shibata48', 'ShibataHigh48', 'ShibataLow48',      'Shibata882',       'ShibataLow882', 'Shibata96',  'ShibataLow96', 'Shibata192',      'ShibataLow192' ]
 		]
 	}
 	, freq         : [ 'Frequency', 'number' ]
@@ -215,7 +213,7 @@ var F         = {
 		, passFO            : { name: '', type: '', subtype: '', freq: 1000, name: '' }
 		, shelfFO           : { name: '', type: '', subtype: '', freq: 1000, gain: 0 }
 		, notch             : { name: '', type: '', subtype: '', freq: 1000, q: 0, unit: 'q' }
-		, GeneralNotch      : { name: '', type: '', subtype: '', freq_z: 0, freq_p: 0, q_p: 0, normalize_at_dc:false }
+		, GeneralNotch      : { name: '', type: '', subtype: '', freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
 		, Peaking           : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
 		, LinkwitzTransform : { name: '', type: '', subtype: '', q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
 		, Free              : { name: '', type: '', subtype: '', a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
@@ -256,24 +254,24 @@ var D0        = {
 	, samplerate : [] // ^
 }
 var Dlist     = {
-	  type               : [ 'Type',                 'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
-	, profile            : [ 'Profile',              'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
-	, typeC              : [ 'Type',                 'select' ] // on 'GetSupportedDeviceTypes'
-	, typeP              : [ 'Type',                 'select' ] // ^
-	, deviceC            : [ 'Device',               'select' ] // ^
-	, deviceP            : [ 'Device',               'select' ] // ^
-	, formatC            : [ 'Format',               'select' ] // ^
-	, formatP            : [ 'Format',               'select' ] // ^
-	, filename           : [ 'Filename',             'select', S.lsraw ]
-	, channelsC          : [ 'Channels',             'number' ] // ^
-	, channelsP          : [ 'Channels',             'number' ] // ^
-	, extra_samples      : [ 'Extra samples',        'number' ]
-	, skip_bytes         : [ 'Skip bytes',           'number' ]
-	, read_bytes         : [ 'Read bytes',           'number' ]
-	, capture_samplerate : [ 'Capture samplerate',   'select' ] // ^
-	, exclusive          : [ 'Exclusive',            'checkbox' ]
-	, loopback           : [ 'Loopback',             'checkbox' ]
-	, change_format      : [ 'Change format',        'checkbox' ]
+	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
+	, profile            : [ 'Profile',            'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
+	, typeC              : [ 'Type',               'select', {} ] // on 'GetSupportedDeviceTypes'
+	, typeP              : [ 'Type',               'select', {} ] // ^
+	, deviceC            : [ 'Device',             'select', {} ]                                    // ^ > hwparams
+	, deviceP            : [ 'Device',             'select', {} ]                                    // ^
+	, formatC            : [ 'Format',             'select', { kv: {}, nosort: true } ]              // ^
+	, formatP            : [ 'Format',             'select', { kv: {}, nosort: true } ]              // ^
+	, filename           : [ 'Filename',           'select', { kv: {}, nosort: true } ]              // ^
+	, channelsC          : [ 'Channels',           'number', { updn: { step: 1, min: 1, max: 1 } } ] // ^
+	, channelsP          : [ 'Channels',           'number', { updn: { step: 1, min: 1, max: 1 } } ] // ^
+	, extra_samples      : [ 'Extra samples',      'number' ]
+	, skip_bytes         : [ 'Skip bytes',         'number' ]
+	, read_bytes         : [ 'Read bytes',         'number' ]
+	, capture_samplerate : [ 'Capture samplerate', 'select', { kv: {}, nosort: true } ]              // ^
+	, exclusive          : [ 'Exclusive',          'checkbox' ]
+	, loopback           : [ 'Loopback',           'checkbox' ]
+	, change_format      : [ 'Change format',      'checkbox' ]
 }
 var D1        = {
 	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.formatC, Dlist.channelsC ]
@@ -282,7 +280,7 @@ var D1        = {
 }
 var D         = {
 	  main      : [
-		  [ 'Sample rate',       'select' ] // on 'GetSupportedDeviceTypes'
+		  [ 'Sample rate',       'select', { kv: {}, nosort: true } ]                               // ^
 		, [ 'Chunk size',        'number' ]
 		, [ 'Queue limit',       'number' ]
 		, [ 'Silence Threshold', 'number' ]
@@ -328,12 +326,12 @@ var D         = {
 			, [ 'Sinc length',         'number' ]
 			, [ 'Oversampling factor', 'number' ]
 			, [ 'F cutoff',            'number' ]
-			, [ 'Interpolation',       'select', [ 'Nearest', 'Linear', 'Quadratic', 'Cubic' ] ]
-			, [ 'Window',              'select', [ 'Hann2', 'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ] ]
+			, [ 'Interpolation',       'select', [ 'Nearest', 'Linear',    'Quadratic',       'Cubic' ] ]
+			, [ 'Window',              'select', [ 'Hann2',   'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ] ]
 		]
 		, AsyncPoly    : [
 			  Dlist.type
-			, [ 'Interpolation',      'select', [ 'Linear', 'Cubic', 'Quintic', 'Septic' ] ]
+			, [ 'Interpolation',       'select', [ 'Linear',  'Cubic',     'Quintic',         'Septic' ] ]
 		]
 		, Synchronous : [
 			  Dlist.type
@@ -478,13 +476,13 @@ var axes      = {
 }
 
 // functions //////////////////////////////////////////////////////////////////////////////
-function renderPage() { // common from settings.js
+function renderPage() { // common from settings.js - render with 'GetConfigJson'
 	wscamilla && wscamilla.readyState === 1 ? common.wsGetConfig() : common.webSocket();
 }
 function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
 }
-function psVolume( data ) {
+ps.volume = data => {
 	if ( V.local ) {
 		V.local = false;
 		return
@@ -508,6 +506,82 @@ function psVolume( data ) {
 	}
 }
 
+var config    = {
+	  configuration       : () => {
+		if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
+			V.tabprev = V.tab;
+			V.tab     = 'config';
+			render.tab();
+		} else {
+			$( '#tab'+ V.tabprev ).trigger( 'click' );
+		}
+	}
+	, enable_rate_adjust  : () => {
+		if ( $( '#setting-enable_rate_adjust' ).siblings( 'input' ).hasClass( 'disabled' ) ) {
+			info( {
+				  ...SW
+				, message : 'Resampler type is <wh>Synchronous</wh>'
+			} );
+			switchCancel();
+			return
+		}
+		
+		var enabled = S.enable_rate_adjust;
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Adjust period', 'number' ]
+				, [ 'Target level',  'number' ]
+			]
+			, boxwidth     : 100
+			, values       : {
+				  adjust_period : DEV.adjust_period
+				, target_level  : DEV.target_level
+			}
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, ok           : () => {
+				var val =  infoVal();
+				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
+				DEV.enable_rate_adjust = true;
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, capture_samplerate  : () => {
+		var enabled = S.capture_samplerate;
+		info( {
+			  ...SW
+			, list         : Dlist.capture_samplerate
+			, boxwidth     : 120
+			, values       : [ DEV.capture_samplerate ]
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
+			, ok           : () => {
+				DEV.capture_samplerate = infoVal();
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, resampler           : () => setting.resampler( S.resampler ? DEV.resampler.type : 'AsyncSinc' )
+	, stop_on_rate_change : () => {
+		var enabled = S.stop_on_rate_change;
+		info( {
+			  ...SW
+			, list         : [ 'Rate mearsure interval', 'number' ]
+			, boxwidth     : 65
+			, values       : DEV.rate_measure_interval
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, ok           : () => {
+				DEV.stop_on_rate_change   = true;
+				DEV.rate_measure_interval = infoVal();
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+}
 var graph     = {
 	  gain     : () => {
 		var $divgraph = $( '.divgraph' );
@@ -647,22 +721,11 @@ var graph     = {
 	}
 }
 var render    = {
-	  page        : () => {
-		if ( S.bluetooth ) S.lsconfigs = S[ 'lsconfigs-bt' ];
-		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
-		S.lscoefraw = [];
-		S.lscoefwav = [];
-		S.lscoeffs.forEach( f => {
-			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
-		} );
-		$( '.container' ).removeClass( 'hide' );
-		render.status();
-		bannerHide();
-	}
-	, status      : () => {
+	  status      : () => { // onload only
 		playbackButton();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
+			$( '#divvolume .control' ).text( S.control );
 			render.volume();
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
@@ -674,36 +737,29 @@ var render    = {
 			$( '#divconfiguration .col-l i' ).remove();
 		}
 		$( '#configuration' )
-			.html( htmlOption( S.lsconfigs ) )
+			.html( htmlOption( S.ls.configs ) )
 			.val( S.configname );
-		$( '#configuration' ).prop( 'disabled', $( '#configuration option' ).length === 1 );
-		if ( $( '.vubar' ).length ) return
-		
-		// run once
-		var vugrid  = '<div id="vugrid">';
-		for ( i = 0; i < 6; i++ ) vugrid  += '<a class="g'+ i +'"></>';
-		var vulabel = '<div id="vulabel">';
-		[ -60, -48, -36, -24, -12, 0, 'dB' ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
-		var vubar   = '<div id="vu">'
-					 + vugrid +'</div>'
-					 +'<div id="in">';
-		[ 'capture', 'playback' ].forEach( k => {
-			var lb = false;
-			var cp = k[ 0 ];
-			if ( ! lb && k === 'playback' ) {
-				lb = true;
-				vubar += '</div>'+ vulabel +'</div><div id="out">';
-			}
-			for ( i = 0; i < DEV[ k ].channels; i++ ) {
-				vubar += '<div class="vubar"></div>'
-						+'<div class="vubar peak '+ cp + i +' "></div>'
-						+'<div class="vubar rms '+ cp + i +' "></div>';
-			}
-		} );
-		$( '#divvu .value' ).html( vubar +'</div></div>' );
-		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
+		var chC     = DEV.capture.channels;
+		var chP     = DEV.playback.channels;
+		var ch      = chC > chP ? chC : chP;
+		var htmlin  = '<div class="bar"></div><div class="bar peak c0"></div><div class="bar rms c0"></div>';
+		var htmlout = htmlin.replace( /c0/g, 'p0' );
+		if ( chC > 1 ) for ( i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
+		$( '#in' ).html( htmlin );
+		if ( chP > 1 ) for ( i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
+		$( '#out' ).html( htmlout );
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
-		$( '#devices' ).prepend( $( '#codeoutput' ) );
+	}
+	, statusStop  : () => {
+		if ( ! ( 'intervalvu' in V ) ) return
+		
+		V.signal = false;
+		clearInterval( V.intervalvu );
+		delete V.intervalvu;
+		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
+		$( '.peak' ).css( 'left', 0 );
+		$( '#buffer, #load' ).css( 'width', 0 );
+		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( '· · ·' );
 	}
 	, tab         : () => {
 		$( '.section:not( #divstatus )' ).addClass( 'hide' );
@@ -733,7 +789,7 @@ var render    = {
 		}
 	}
 	, volume      : () => {
-		$( '#volume .thumb' ).css( 'margin-left', ( $( '#volume-band' ).width() - 40 ) / 100 * S.volume );
+		$( '#volume .thumb' ).css( 'margin-left', ( $( '#volume' ).width() - 40 ) / 100 * S.volume );
 		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
 		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 		if ( S.volumemute ) {
@@ -744,16 +800,6 @@ var render    = {
 			$( '#divvolume .i-volume' ).removeClass( 'mute' );
 		}
 		$( '#divvolume .level' ).text( S.volumemute || S.volume )
-	}
-	, vuClear     : () => {
-		if ( ! ( 'intervalvu' in V ) ) return
-		
-		V.signal = false;
-		clearInterval( V.intervalvu );
-		delete V.intervalvu;
-		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
-		$( '.peak' ).css( 'left', 0 );
-		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( V.dots );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -835,8 +881,8 @@ var render    = {
 		return '<li data-name="'+ k +'"'+ classeq +'>'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
-		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
-		if ( S.lscoeffs.length ) S.lscoeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
+		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		if ( S.ls.coeffs ) S.ls.coeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
 	} //-----------------------------------------------------------------------------------
@@ -1019,10 +1065,11 @@ var render    = {
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		$( '#enable_rate_adjust' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
+		switchSet();
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
-		S.lsconfigs.forEach( f => {
+		S.ls.configs.forEach( f => {
 			li += '<li>'+ ico( 'file liicon' ) +'<a class="name">'+ f +'</a></li>';
 		} );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
@@ -1161,7 +1208,7 @@ var setting   = {
 				if ( subtype ) {
 					$select.eq( 1 ).on( 'input', function() {
 						var val = infoVal();
-						if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.lscoeffs.length ) {
+						if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.ls.coeffs ) {
 							info( {
 								  icon    : V.tab
 								, title   : title
@@ -1440,12 +1487,13 @@ var setting   = {
 		render.sortable( k );
 	} //-----------------------------------------------------------------------------------
 	, device        : ( dev, type ) => {
-		var type    = type || 'Alsa';
-		var vtype   = type === 'File' && dev === 'playback' ? 'FileP' : type;
-		var values  = jsonClone( D.values[ vtype ] );
-		values.type = type;
+		var type        = type || 'Alsa';
+		var vtype       = type === 'File' && dev === 'playback' ? 'FileP' : type;
+		var values      = jsonClone( D.values[ vtype ] );
+		values.type     = type;
+		values.channels = DEV[ dev ].channels;
 		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => values[ k ] = DEV[ dev ][ k ] );
-		var title   = common.key2label( dev );
+		var title       = common.key2label( dev );
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -1461,7 +1509,7 @@ var setting   = {
 				$( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
 /*				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
-					if ( typenew === 'File' && ! S.lsraw.length ) {
+					if ( typenew === 'File' && ! S.ls.raw ) {
 						info( {
 							  icon    : V.tab
 							, title   : title
@@ -1627,6 +1675,7 @@ var setting   = {
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
+			setting.switchValues();
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			if ( ! V.press ) {
 				clearTimeout( V.timeoutsave );
@@ -1634,6 +1683,9 @@ var setting   = {
 			}
 		}, wscamilla ? 0 : 300 );
 		if ( titlle ) banner( V.tab, titlle, msg );
+	}
+	, switchValues  : () => {
+		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] === true );
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
@@ -1752,17 +1804,10 @@ var common    = {
 	, webSocket     : () => {
 		if ( wscamilla && wscamilla.readyState < 2 ) return
 		
-		var cmd_el            = {
-			  GetBufferLevel    : 'buffer'
-			, GetCaptureRate    : 'capture'
-			, GetClippedSamples : 'clipped'
-			, GetProcessingLoad : 'load'
-			, GetRateAdjust     : 'rate'
-		}
 		wscamilla           = new WebSocket( 'ws://'+ location.host +':1234' );
 		wscamilla.onopen    = () => {
 			var interval = setTimeout( () => {
-				if ( wscamilla.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+				if ( wscamilla && wscamilla.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
 					clearTimeout( interval );
 					common.wsGetState();
 					common.wsGetConfig();
@@ -1777,7 +1822,7 @@ var common    = {
 		}
 		wscamilla.onclose   = () => {
 			wscamilla = null;
-			render.vuClear();
+			render.statusStop();
 			clearInterval( V.intervalstatus );
 		}
 		wscamilla.onmessage = response => {
@@ -1788,7 +1833,7 @@ var common    = {
 			switch ( cmd ) {
 				case 'GetSignalLevels':
 					if ( S.state !== 'play' ) {
-						render.vuClear();
+						render.statusStop();
 						return
 					}
 					
@@ -1811,12 +1856,23 @@ var common    = {
 				case 'GetProcessingLoad':
 				case 'GetRateAdjust':
 					if ( S.state !== 'play' ) {
-						render.vuClear();
+						render.statusStop();
 						return
 					}
 					
-					v = cmd === 'GetProcessingLoad' ? value.toLocaleString( undefined, { minimumFractionDigits: 3 } ) : value.toLocaleString();
-					$( '#divstate .'+ cmd_el[ cmd ] ).text( v );
+					var el = cmd.replace( /Get(.*)[A-Z].*/, '$1' ).toLowerCase();
+					if ( cmd === 'GetBufferLevel' ) {
+						v = value / DEV.target_level  * 100;
+						if ( v > 100 ) v = 100;
+						$( '#buffer' ).css( 'width', v +'%' );
+					} else if ( cmd === 'GetProcessingLoad' ) {
+						v = value * 100;
+						if ( v > 100 ) v = 100;
+						$( '#load' ).css( 'width', v +'%' );
+					} else {
+						var cl = cmd === 'GetRateAdjust' ? 'rate' : 'capture';
+						$( '#divstate .'+ cl ).text( value.toLocaleString() );
+					}
 					break;
 				case 'GetClippedSamples':
 					if ( V.local ) return
@@ -1830,9 +1886,11 @@ var common    = {
 					}
 					break;
 				case 'GetState':
-					if ( 'intervalvu' in V || S.state !== 'play' ) return
-					
-					V.intervalvu = setInterval( () => wscamilla.send( '"GetSignalLevels"' ), 100 );
+					if ( 'intervalvu' in V ) {
+						if ( S.state !== 'play' ) render.statusStop();
+					} else {
+						V.intervalvu = setInterval( () => wscamilla.send( '"GetSignalLevels"' ), 100 );
+					}
 					break;
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
@@ -1841,16 +1899,23 @@ var common    = {
 					MIX      = S.config.mixers;
 					PIP      = S.config.pipeline;
 					PRO      = S.config.processors;
-					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
-						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
-					} );
-					if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) );
-					switchSet( 'ready' );
-					render.page();
+					render.status();
 					render.tab();
-					break;
-				case 'GetConfigFilePath':
-					S.configname = value.split( '/' ).pop();
+					showContent();
+					var dev                          = S.devices;
+					var samplings                    = dev.playback.samplings;
+					D0.samplerate                    = Object.values( samplings );
+					D.main[ 0 ][ 2 ].kv              = samplings;
+					Dlist.capture_samplerate[ 2 ].kv = samplings;
+					Dlist.formatC[ 2 ].kv            = dev.capture.formats;
+					Dlist.formatP[ 2 ].kv            = dev.playback.formats;
+					Dlist.deviceC[ 2 ]               = dev.capture.device;
+					Dlist.deviceP[ 2 ]               = dev.playback.device;
+					Dlist.channelsC[ 2 ].updn.max    = dev.capture.channels;
+					Dlist.channelsP[ 2 ].updn.max    = dev.playback.channels;
+					Dlist.filename[ 2 ].kv           = S.ls.raw;
+					setting.switchValues();
+					wscamilla.send( '"GetSupportedDeviceTypes"' );
 					break;
 				case 'GetSupportedDeviceTypes':
 					var type = {};
@@ -1861,21 +1926,8 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
-					Dlist.formatC.push( { kv: S.formats.capture, nosort: true } );
-					Dlist.formatP.push( { kv: S.formats.playback, nosort: true } );
-					Dlist.typeC.push( type.capture );
-					Dlist.typeP.push( type.playback );
-					Dlist.deviceC.push( S.devices.capture );
-					Dlist.deviceP.push( S.devices.playback );
-					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.channels.capture } } );
-					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.channels.playback } } );
-					D.values.channels  = S.channels;
-					var samplings        = { kv: S.samplings, nosort: true }
-					Dlist.capture_samplerate.push( samplings );
-					D.main[ 0 ].push( samplings );
-					D0.samplerate      = Object.values( S.samplings )
-					$( '#divvolume .col-l gr' ).text( S.control );
-					showContent();
+					Dlist.typeC[ 2 ] = type.capture;
+					Dlist.typeP[ 2 ] = type.playback;
 					break;
 				case 'Invalid':
 					info( {
@@ -1889,13 +1941,13 @@ var common    = {
 	}
 	, wsGetConfig   : () => {
 		setTimeout( () => {
-			[ 'GetConfigFilePath', 'GetConfigJson', 'GetSupportedDeviceTypes' ].forEach( cmd => wscamilla.send( '"'+ cmd +'"' ) );
+			wscamilla.send( '"GetConfigJson"' );
 		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 	, wsGetState    : () => {
-		[ 'GetState', 'GetBufferLevel', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ].forEach( k => {
-			wscamilla.send( '"'+ k +'"' );
-		} );
+		var getstate = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ];
+		if ( S.enable_rate_adjust ) getstate.push( 'GetBufferLevel', 'GetRateAdjust' );
+		getstate.forEach( k => wscamilla.send( '"'+ k +'"' ) );
 	}
 }
 
@@ -1971,7 +2023,7 @@ $( '#volume-0, #volume-100' ).on( 'click', function() {
 	common.volumeAnimate( S.volume, current );
 	volumeSet();
 } );
-$( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
+$( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	var up = $( this ).hasClass( 'i-plus' );
 	if ( ( ! up && S.volume === 0 ) || ( up && S.volume === 100 ) ) return
 	
@@ -1984,7 +2036,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 	
 	clearInterval( V.intervalvolume );
 	volumePush();
-} ).press( '.i-minus, .i-plus', function( e ) {
+} ).press( '.col-l i, .i-plus', function( e ) {
 	var up           = $( e.target ).hasClass( 'i-plus' );
 	V.intervalvolume = setInterval( () => {
 		up ? S.volume++ : S.volume--;
@@ -1994,7 +2046,7 @@ $( '#divvolume' ).on( 'click', '.i-minus, .i-plus', function() {
 		$( '#divvolume .level' ).text( S.volume );
 		if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
 	}, 100 );
-} ).on( 'click', '.i-volume, .level', function() {
+} ).on( 'click', '.col-r .i-volume, .level', function() {
 	common.volumeAnimate( S.volumemute, S.volume );
 	volumeMuteToggle();
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
@@ -2031,15 +2083,6 @@ $( '#configuration' ).on( 'input', function() {
 	} );
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 } );
-$( '#setting-configuration' ).on( 'click', function() {
-	if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
-		V.tabprev = V.tab;
-		V.tab     = 'config';
-		render.tab();
-	} else {
-		$( '#tab'+ V.tabprev ).trigger( 'click' );
-	}
-} );
 $( '.tab' ).on( 'click', '.graphclose', function() {
 	var $this = $( this );
 	var $li   = $this.parents( 'li' );
@@ -2050,7 +2093,7 @@ $( '.tab' ).on( 'click', '.graphclose', function() {
 $( '.tab .headtitle' ).on( 'click', function() {
 	if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) $( '#'+ V.tab +' .i-back' ).trigger( 'click' );
 } );
-$( 'heading' ).on( 'click', '.i-folder-filter', function() {
+$( 'heading' ).on( 'click', '.i-folderfilter', function() {
 	render.filtersSub();
 } ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {
@@ -2088,7 +2131,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	contextMenu();
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
-	$( '#menu' ).find( '.copy, .rename, .view' ).toggleClass( 'hide', V.tab !== 'config' );
+	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
@@ -2270,52 +2313,63 @@ $( '#menu a' ).on( 'click', function( e ) {
 			setting.device( V.li.data( 'type' ) );
 			break;
 		case 'config':
-			var name = V.li.find( '.name' ).text();
+			var name  = V.li.find( '.name' ).text();
+			var icon  = V.tab;
+			var title = 'Configuration';
 			switch ( cmd ) {
 				case 'copy':
 					info( {
-						  icon         : V.tab
-						, title        : 'Configuration'
-						, message      : 'File: <wh>'+ name +'</wh>'
+						  icon         : icon
+						, title        : title
+						, message      : 'File: <c>'+ name +'</c>'
 						, list         : [ 'Copy as', 'text' ]
 						, values       : [ name ]
 						, checkchanged : true
 						, ok           : () => {
 							var newname = infoVal();
 							bash( [ 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
-							notify( V.tab, SW.title, 'Copy ...' );
+							notify( icon, title, 'Copy ...' );
 						}
 					} );
 					break;
+				case 'delete':
+					info( {
+						  icon    : icon
+						, title   : title
+						, message : 'Delete <c>'+ name +'</c> ?'
+						, oklabel : ico( 'remove' ) +'Delete'
+						, okcolor : red
+						, ok      : () => {
+							bash( [ 'confdelete', name, S.bluetooth, 'CMD NAME BT' ] );
+							notify( icon, title, 'Delete ...' );
+						}
+					} );
+					break;
+				break;
+				case 'info':
+					var name = V.li.find( '.name' ).text();
+					bash( 'data-status.sh configuration "'+ name +'"', config => {
+						$( '#codeconfig' )
+							.html( config )
+							.removeClass( 'hide' );
+					} );
+					break;
+				break;
 				case 'rename':
 					info( {
-						  icon         : V.tab
-						, title        : 'Configuration'
-						, message      : 'File: '+ name
+						  icon         : icon
+						, title        : title
+						, message      : 'File: <c>'+ name +'</c>'
 						, list         : [ 'Rename to', 'text' ]
 						, values       : [ name ]
 						, checkchanged : true
 						, ok           : () => {
 							var newname = infoVal();
 							bash( [ 'confrename', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ] );
-							notify( V.tab, SW.title, 'Rename ...' );
+							notify( icon, title, 'Rename ...' );
 						}
 					} );
 					break;
-				case 'delete':
-					info( {
-						  icon    : V.tab
-						, title   : 'Configuration'
-						, message : 'Delete <wh>'+ name +'</wh> ?'
-						, oklabel : ico( 'remove' ) +'Delete'
-						, okcolor : red
-						, ok      : () => {
-							bash( [ 'confdelete', name, S.bluetooth, 'CMD NAME BT' ] );
-							notify( V.tab, SW.title, 'Delete ...' );
-						}
-					} );
-					break;
-				break;
 			}
 	}
 } );
@@ -2504,110 +2558,9 @@ $( '#devices' ).on( 'click', 'li', function() {
 // config ---------------------------------------------------------------------------------
 $( '#config' ).on( 'click', '.i-add', function() {
 	setting.upload();
-} ).on( 'click', 'li', function( e ) {
-	if ( $( e.target ).hasClass( 'liicon' ) ) return
-	
-	var $this = $( this )
-	var $pre  = $this.find( 'pre' );
-	if ( $pre.length ) {
-		$pre.toggleClass( 'hide' );
-	} else {
-		var dir = '/srv/http/data/camilladsp/configs';
-		if ( S.bluetooth ) dir += '-bt';
-		bash( [ 'statusconfiguration', dir +'/'+ $this.text(), 'CMD FILE' ], config => {
-			$this.append( '<pre class="status">'+ config +'</pre>' );
-		} );
-	}
 } );
 // ----------------------------------------------------------------------------------------
-$( '.switch' ).on( 'click', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) {
-		info( {
-			  ...SW
-			, message : $( this ).prev().html()
-		} );
-		return
-	}
-	
-	var id       = this.id;
-	var $setting = $( '#setting-'+ id );
-	if ( DEV[ id ] ) {
-		DEV[ id ] = null;
-		setting.save( SW.title, 'Disable ...' );
-		$setting.addClass( 'hide' );
-	} else {
-		$setting.trigger( 'click' );
-	}
-} );
-$( '#setting-enable_rate_adjust' ).on( 'click', function() {
-	var $this = $( this );
-	if ( $this.siblings( 'input' ).hasClass( 'disabled' ) ) {
-		info( {
-			  ...SW
-			, message : 'Resampler type is <wh>Synchronous</wh>'
-		} );
-		switchCancel();
-		return
-	}
-	
-	var enabled = S.enable_rate_adjust;
-	info( {
-		  ...SW
-		, list         : [
-			  [ 'Adjust period', 'number' ]
-			, [ 'Target level', 'number' ]
-		]
-		, boxwidth     : 100
-		, values       : {
-			  adjust_period : DEV.adjust_period
-			, target_level  : DEV.target_level
-		}
-		, checkchanged : enabled
-		, cancel       : switchCancel
-		, ok           : () => {
-			var val =  infoVal();
-			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
-			DEV.enable_rate_adjust = true;
-			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-		}
-	} );
-} );
-$( '#setting-capture_samplerate' ).on( 'click', function() {
-	var enabled = S.capture_samplerate;
-	info( {
-		  ...SW
-		, list         : Dlist.capture_samplerate
-		, boxwidth     : 120
-		, values       : [ DEV.capture_samplerate ]
-		, checkchanged : enabled
-		, cancel       : switchCancel
-		, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
-		, ok           : () => {
-			DEV.capture_samplerate = infoVal();
-			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-		}
-	} );
-} );
-$( '#setting-stop_on_rate_change' ).on( 'click', function() {
-	var enabled = S.stop_on_rate_change;
-	info( {
-		  ...SW
-		, list         : [ 'Rate mearsure interval', 'number' ]
-		, boxwidth     : 65
-		, values       : DEV.rate_measure_interval
-		, checkchanged : enabled
-		, cancel       : switchCancel
-		, ok           : () => {
-			DEV.stop_on_rate_change   = true;
-			DEV.rate_measure_interval = infoVal();
-			setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-		}
-	} );
-} );
-$( '#setting-resampler' ).on( 'click', function() {
-	setting.resampler( S.resampler ? DEV.resampler.type : 'AsyncSinc' );
-} );
-$( '#bar-bottom div' ).on( 'click', function() {
+$( '#bar-bottom div' ).off( 'click' ).on( 'click', function() {
 	V.tab = this.id.slice( 3 );
 	render.tab();
 } );

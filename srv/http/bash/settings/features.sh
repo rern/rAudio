@@ -95,68 +95,17 @@ brightness )
 camilladsp )
 	enableFlagSet
 	$dirbash/cmd.sh playerstop
-	[[ ! $ON && -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
 	pushRestartMpd camilladsp $TF
-	;;
-confget )
-	case $NAME in
-		ap )
-			file=/var/lib/iwd/ap/$( hostname ).ap
-			echo '{ "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
-			;;
-		localbrowser )
-			brightness=$( getContent /sys/class/backlight/rpi_backlight/brightness false )
-			conf2json localbrowser.conf | sed 's/ }$/, "BRIGHTNESS": '$brightness' }/'
-			;;
-		multiraudioconf )
-			getContent $dirsystem/multiraudio.json
-			;;
-		smb )
-			file=/etc/samba/smb.conf
-			sed -n '/\[SD]/,/^\[/ p' $file | grep -q 'read only = no' && sd=true || sd=false
-			sed -n '/\[USB]/,/^\[/ p' $file | grep -q 'read only = no' && usb=true || usb=false
-			echo '{ "SD": '$sd', "USB": '$usb' }'
-			;;
-		spotify )
-			devices='"Default"'
-			lines=$( aplay -L | grep ^.*:CARD )
-			while read line; do
-				devices+=', "'$line'"'
-			done <<< $lines
-			current=$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )
-			if [[ ${current:0:3} == hw: ]]; then
-				current=Default
-			else
-				current=$( getContent $dirsystem/spotifyoutput )
-			fi
-			echo '{ "current": "'$current'", "devices": [ '$devices' ] }'
-			;;
-		* )
-			if [[ -e $dirsystem/$NAME.conf ]]; then
-				conf2json $dirsystem/$NAME.conf
-			else
-				case $NAME in
-					autoplay )  echo '{ "BLUETOOTH": true, "STARTUP": true }';;
-					lyrics )    echo '{ "URL": "https://", "START": "<", "END": "</div>", "EMBEDDED": false	}';;
-					scrobble )  echo '{ "AIRPLAY": true, "BLUETOOTH": true, "SPOTIFY": true, "UPNP": true }';;
-					stoptimer ) echo '{ "MIN": 30, "POWEROFF": false }';;
-					volumelimit )
-						volume=$( volumeGet )
-						[[ $volume == 0 || ! $volume ]] && volume=50
-						echo '{ "STARTUP": '$volume', "MAX": 100 }';;
-					* )         echo false;;
-				esac
-			fi
-			;;
-	esac
 	;;
 dabradio )
 	enableFlagSet
 	if [[ $ON ]]; then
+		systemctl enable --now mediamtx
 		[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg
 	else
 		killProcess dabscan
 		systemctl stop dab
+		systemctl disable --now mediamtx
 	fi
 	pushRefresh
 	;;
@@ -166,6 +115,14 @@ dabscan )
 	;;
 equalizer )
 	enableFlagSet
+	[[ $ON && ! -e $dirsystem/equalizer.json ]] && echo '{
+  "active" : "Flat"
+, "preset" : {
+		"Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]
+	}
+, "current": "62 62 62 62 62 62 62 62 62 62"
+
+}' | jq > $dirsystem/equalizer.json
 	pushData reload 1
 	pushRestartMpd equalizer $TF
 	;;
@@ -297,7 +254,8 @@ nfsserver )
 		mv /mnt/MPD/{SD,USB} /mnt/MPD/NAS
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
-		echo "/mnt/MPD/NAS  $( ipAddress sub )0/24(rw,sync,no_subtree_check)" > /etc/exports
+		ip=$( ipAddress )
+		echo "/mnt/MPD/NAS  ${ip%.*}.0/24(rw,sync,no_subtree_check)" > /etc/exports
 		systemctl enable --now nfs-server
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
@@ -361,21 +319,21 @@ scrobblekey )
 		--data "api_sig=$apisig" \
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
-	if [[ $response =~ error ]]; then
-		jq -r .message <<< $response
-	else
-		echo "\
+	[[ $response =~ error ]] && jq -r .message <<< $response && exit
+# --------------------------------------------------------------------
+	echo "\
 apikey=$apikey
 sharedsecret=$sharedsecret
 sk=$( jq -r .session.key <<< $response )
 " > $dirsystem/scrobblekey
-	fi
+	pushRefresh
 	;;
 scrobblekeyremove )
 	rm -f $dirsystem/{scrobble,scrobblekey}
 	pushRefresh
 	;;
-shairport-sync | spotifyd | upmpdcli )
+shairportsync | spotifyd | upmpdcli )
+	[[ $CMD == shairportsync ]] && CMD=shairport-sync
 	if [[ $ON ]]; then
 		serviceRestartEnable
 	else
@@ -430,9 +388,6 @@ snapserver )
 	$dirsettings/player-conf.sh
 	pushRefresh
 	;;
-snapserverip )
-	snapserverList | tail -1
-	;;
 spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey
 	;;
@@ -442,20 +397,22 @@ spotifykeyremove )
 	systemctl disable --now spotifyd
 	pushRefresh
 	;;
-spotifyoutputset )
+spotifyoutput )
 	file=$dirsystem/spotifyoutput
 	[[ $OUTPUT == Default ]] && rm -f "$file" || echo $OUTPUT > "$file"
+	sed -i -E 's/(volume_controller = ).*/\1"'$VOLUME'"/' /etc/spotifyd.conf
+	touch $dirshm/spotifydrestart
 	$dirsettings/player-conf.sh
+	pushRefresh
 	;;
 spotifytoken )
 	. $dirsystem/spotifykey
-	spotifyredirect=$( grep '^var redirect_uri' /srv/http/assets/js/features.js | cut -d"'" -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
 				-d "code=$CODE" \
 				-d grant_type=authorization_code \
-				--data-urlencode "redirect_uri=$spotifyredirect" )
+				--data-urlencode "redirect_uri=$REDIRECT" )
 	if grep -q -m1 error <<< $tokens; then
 		notify 'spotify blink' 'Spotify' "Error: $( jq -r .error <<< $tokens )"
 		exit

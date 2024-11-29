@@ -47,14 +47,14 @@ mixertype=' > $dirshm/output
 	pushData display '{ "volumenone": true }'
 fi
 
-. $dirsettings/player-asound.sh # >>> $bluetooth, $camilladsp, $equalizer
+. $dirsettings/player-asound.sh # >>> $BLUETOOTH, $CAMILLADSP, $EQUALIZER
 
-if [[ -e $dirshm/startup && ! $bluetooth ]]; then
+if [[ -e $dirshm/startup && ! $BLUETOOTH ]]; then
 	[[ $name0 != $NAME ]] && notify output 'Output Device' "$NAME"
 fi
 
 # outputs -----------------------------------------------------------------------------
-if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)
+if [[ $BLUETOOTH && ! $CAMILLADSP ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
 	[[ ! -e $dirsystem/devicewithbt ]] && btoutputonly=1
 	hw=bluealsa
@@ -91,12 +91,12 @@ elif [[ ! $btoutputonly && ! -e $dirshm/nosound ]]; then
 		pushData display '{ "volumenone": '$volumenone' }'
 		pushData refresh '{ "page": "features", "nosound": '$volumenone' }'
 	fi
-	if [[ $camilladsp ]]; then
+	if [[ $CAMILLADSP ]]; then
 		hw=hw:Loopback,1
 		hwspotifyd=plughw:Loopback,1
 		ln -sf $dirmpdconf/{conf/,}camilladsp.conf
-	elif [[ $equalizer ]]; then
-		[[ $bluetooth ]] && mixertype=software
+	elif [[ $EQUALIZER ]]; then
+		[[ $BLUETOOTH ]] && mixertype=software
 		hw=plug:plugequal
 #---------------< equalizer
 		AUDIOOUTPUT='
@@ -149,7 +149,7 @@ $( sed 's/  *"/^"/' <<< $AUDIOOUTPUT | column -t -s^ )
 fi
 
 if [[ -e $dirsystem/mpdoled || -e $dirsystem/vuled || -e $dirsystem/vumeter ||
-		( ! $AUDIOOUTPUT && ! $btoutputonly && ! $camilladsp && ! -e $dirsystem/snapclientserver ) ]]; then
+		( ! $AUDIOOUTPUT && ! $btoutputonly && ! $CAMILLADSP && ! -e $dirsystem/snapclientserver ) ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
 fi
 
@@ -165,10 +165,11 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
-[[ $CARD == -1 && ! $bluetooth ]] && pushStatus && exit
+pushStatus
+[[ $CARD == -1 && ! $BLUETOOTH ]] && exit
 # --------------------------------------------------------------------
 # renderers
-[[ ! $mixer || $bluetooth || $camilladsp || $equalizer ]] && mixerno=1
+[[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && mixerno=1
 
 if [[ -e /usr/bin/shairport-sync ]]; then
 	fileconf=/etc/shairport-sync.conf
@@ -211,7 +212,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ $hw0 != $hwspotifyd || $mixer0 != $mixer ]]; then
 #--------------->
 		CONF=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
-		if [[ ! $equalizer ]]; then
+		if [[ ! $EQUALIZER ]]; then
 			CONF+='
 device = "'$hwspotifyd'"
 control = "'$hwspotifyd'"
@@ -221,8 +222,30 @@ mixer = "'$mixer'"'
 #---------------<
 ######## >
 		echo "$CONF" > /etc/spotifyd.conf
+		touch $dirshm/spotifydrestart
+	fi
+	if [[ -e $dirshm/spotifydrestart ]]; then # this, features.sh spotifyoutput
+		rm -f $dirshm/spotifydrestart
 		systemctl try-restart spotifyd
 	fi
 fi
 
-pushStatus
+if [[ $CAMILLADSP ]]; then
+	. $dirsettings/camilla-devices.sh
+elif [[ $EQUALIZER ]]; then
+	value=$( getVar current $dirsystem/equalizer.json )
+	[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
+	$dirbash/cmd.sh "equalizer
+$value
+$user
+CMD VALUE USR"
+fi
+
+if [[ $BLUETOOTH ]]; then
+	function=volumeBlueAlsa
+elif [[ $mixertype == software ]]; then
+	function=volumeMpd 
+else
+	function=volumeAmixer
+fi
+echo $function > $dirshm/volumefunction

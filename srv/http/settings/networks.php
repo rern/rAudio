@@ -4,9 +4,10 @@
 commonVariables( [
 	  'buttons' => [ 'add', 'bluetooth', 'btsender', 'lan', 'search', 'wifi' ]
 	, 'labels'  => [ 
-		  [ 'Access Point', 'ap' ]
-		, [ 'Bluetooth',    'bluetooth' ]
+		  'Access Point' => 'ap'
+		, 'Bluetooth'    => 'bluetooth'
 	]
+	, 'menus'   => []
 	, 'tabs'    => [ 'features', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------
@@ -14,17 +15,17 @@ htmlHead( [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
 	, 'button' => 'search btscan'
-	, 'help'   => $B_search.' Available devices'
+	, 'help'   => $B->search.' Available devices'
 ] );
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
-	<pre id="codebluetoothlist" class="status hide"></pre>
-	<div class="helpblock hide">$B_bluetooth $B_btsender Context menu
+	<pre id="codebtinfo" class="status hide"></pre>
+	<div class="helpblock hide">$B->bluetooth$B->btsender Context menu
 	
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: $B_search Scan to connect &raquo; Select to pair
+	· On rAudio: $B->search Scan to connect &raquo; Select to pair
  • Connect / Disconnect:
 	· On receiver: Turn on / off
  • Playback controls with buttons:
@@ -33,7 +34,7 @@ $html = <<< EOF
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	· On rAudio: $T_system$L_bluetooth ■ Discoverable by senders
+	· On rAudio: $T->system$L->bluetooth ■ Discoverable by senders
 	· On sender: Search &raquo; Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect / Disconnect:
@@ -53,9 +54,9 @@ htmlHead( [
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="helpblock hide"><?=$B_add?> Manual connect
-<?=$B_search?> Available networks
-<?=$B_wifi?> Context menu
+	<div class="helpblock hide"><?=$B->add?> Manual connect
+<?=$B->search?> Available networks
+<?=$B->wifi?> Context menu
 
 Note:
  · Avoid double quotes <c>"</c> in Wi-Fi name and password.
@@ -71,8 +72,8 @@ htmlHead( [
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
-	<div class="helpblock hide"><?=$B_add?> Manual connect
-<?=$B_lan?> Context menu</div>
+	<div class="helpblock hide"><?=$B->add?> Manual connect
+<?=$B->lan?> Context menu</div>
 </div>
 </div>
 <?php
@@ -84,7 +85,7 @@ $body = [
 		, '<div id="qrap"></div>
 		   <div class="helpblock hide">Access rAudio directly without Wi-Fi router:
  • Connect <wh>Access Point</wh> with the password or scan QR code
- • Access point setting: '.$T_features.$L_accesspoint.'
+ • Access point setting: '.$T->features.$L->accesspoint.'
 
 Note: No internet connection.</div>'
 	)
@@ -104,7 +105,6 @@ htmlHead( [
 	  'title'  => 'Bluetooth'
 	, 'button' => 'bluetooth blink scanning-bt'
 	, 'back'   => true
-	, 'nohelp' => true
 ] );
 ?>
 <ul id="listbtscan" class="entries scan"></ul>
@@ -116,22 +116,17 @@ htmlHead( [
 	  'title'  => 'Wi-Fi'
 	, 'button' => 'wifi blink scanning-wifi'
 	, 'back'   => true
-	, 'nohelp' => true
 ] );
 ?>
 <ul id="listwlscan" class="entries scan"></ul>
 </div>
 
 <?php
-$menu = [
+htmlMenu( [
 	  'connect'    => 'connect'
 	, 'disconnect' => 'close'
 	, 'edit'       => 'edit'
 	, 'forget'     => 'remove'
 	, 'rename'     => 'edit'
 	, 'info'       => 'info'
-];
-$menuhtml = '';
-foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
-?>
-<div id="menu" class="menu hide"><?=$menuhtml?></div>
+] );

@@ -1,159 +1,189 @@
 <?php
-$id_data = [
-	  'volume'              => [ 'label' => 'Master',              'setting' => false,    'sub' => 'hw' ]
-	, 'configuration'       => [ 'label' => 'Configuration',       'setting' => 'custom', 'sub' => 'current', 'status' => true ]
-	, 'enable_rate_adjust'  => [ 'label' => 'Rate Adjust',         'setting' => 'custom' ]
-	, 'capture_samplerate'  => [ 'label' => 'Capture Samplerate',  'setting' => 'custom' ]
-	, 'stop_on_rate_change' => [ 'label' => 'Stop on Rate Change', 'setting' => 'custom' ]
-	, 'resampler'           => [ 'label' => 'Resampler',           'setting' => 'custom' ]
-];
 commonVariables( [
-	'buttons' => [ 'code',   'edit',   'filters', 'flowchart', 'gear', 'graph',  'input', 'inverted', 'linear'
-				 , 'mixers', 'output', 'pause',   'play',      'plus', 'remove', 'set0',  'stop',     'volume' ]
+	  'buttons' => [ 'code',   'edit',   'filters', 'flowchart', 'folderfilter', 'gear',   'graph', 'input', 'inverted', 'linear'
+				   , 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
+	, 'labels'  => []
+	, 'menus'   => []
+	, 'tabs'    => []
+	
 ] );
-$btnfilters = $B_filters.' Context menu: '.$B_graph.$B_edit.' '.$B_remove;
-$btnmixers  = $B_mixers.' Context menu: '.$B_edit.' '.$B_remove;
-$button     = [
-	  'filters'    => $B_filters.' Context menu: '.$B_graph.' '.$B_edit.' '.$B_remove
-	, 'mixers'     => $btnmixers
-	, 'processors' => str_replace( 'mixers' , 'processors', $btnmixers )
-	, 'pipeline'   => str_replace( 'filters' , 'pipeline', $btnfilters )
-	, 'config'     => str_replace( 'mixers' , 'config', $btnmixers )
-	, 'control'    => $B_volume.' '.$B_inverted.' '.$B_linear
-];
-$bset_filters    = $B_filters.' Context menu: '.$B_graph.' '.$B_edit.' '.$B_remove;
-$bset_mixers     = $btnmixers;
-$bset_processors = str_replace( 'mixers' , 'processors', $btnmixers );
-$bset_pipeline   = str_replace( 'filters' , 'pipeline', $btnfilters );
-$bset_config     = str_replace( 'mixers' , 'config', $btnmixers );
-$bset_control    = $B_volume.' '.$B_inverted.' '.$B_linear;
+$status    = [ 'configuration' ];
 
-$dots = '· · ·';
-$help       = [
-	  'status'      => <<< EOF
-$B_play $B_pause $B_stop Playback control
+$bset     = ( object ) [];
+$bset->filters    = $B->filters.' Context menu: '.$B->graph.$B->edit.$B->remove;
+$bset->mixers     = $B->mixers.' Context menu: '.$B->edit.$B->remove;
+$bset->processors = str_replace( 'mixers' , 'processors', $bset->mixers );
+$bset->pipeline   = str_replace( 'filters' , 'pipeline', $bset->filters );
+$bset->config     = str_replace( 'mixers' , 'config', $bset->mixers );
+$bset->control    = $B->volume.$B->inverted.$B->linear;
 
-<a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
+$id_tab   = [
+	  'filters'    => [
+		  'button' => [ 'folderfilter', 'add' ]
+		, 'help'   => <<< EOF
+$B->folderfilter$B->plus Finite Impulse Response (FIR) files · New
+$bset->filters Graph · Edit · Delete
+$B->code Set 0
+$bset->control Mute · Invert · Linear (Gain)
 EOF
-	, 'volume'    => <<< EOF
-$B_gear Configuration files
-$B_set0 Reset clipped count (if any)
+	]
+	, 'mixers'     => [
+		  'button' => [ 'add' ]
+		, 'help'   => <<< EOF
+$B->plus New
+$bset->mixers Edit · Delete
+$B->code$bset->control Set 0 · Mute · Invert · Linear
 EOF
-	, 'filters'   => <<< EOF
-{$I( 'folder-filter btn' )} $B_plus Finite Impulse Response (FIR) files · New
-$bset_filters Graph · Edit · Delete
-$B_code Set 0
-$bset_control Mute · Invert · Linear (Gain)
+	]
+	, 'processors' => [
+		  'button' => [ 'add' ]
+		, 'help'   => <<< EOF
+$B->plus New
+$bset->processors Edit · Delete
 EOF
-	, 'mixers'   => <<< EOF
-$B_plus New
-$bset_mixers Edit · Delete
-$B_code $bset_control Set 0 · Mute · Invert · Linear
+	]
+		
+	, 'pipeline'   => [
+		  'button' => [ 'flowchart', 'add' ]
+		, 'help'   => <<< EOF
+$B->flowchart$B->plus Step flowchart · New
+$bset->pipeline Graph · Edit · Delete
 EOF
-	, 'processors'   => <<< EOF
-$B_plus New
-$bset_processors Edit · Delete
+	]
+	, 'devices'    => [
+		  'button' => [ 'gear' ]
+		, 'help'   => <<< EOF
+$B->gear Capture sampling
+$B->input$B->output Device settings
 EOF
-	, 'pipeline' => <<< EOF
-$B_flowchart $B_plus Step flowchart · New
-$bset_pipeline Graph · Edit · Delete
-EOF
-	, 'devices'  => <<< EOF
-$B_gear Capture sampling
-$B_input $B_output Device settings
-EOF
-	, 'config'   => <<< EOF
-$bset_config
-EOF
+	]
+	, 'config'     => [
+		  'button' => [ 'add' ]
+		, 'help'   => $bset->config
+	]
 ];
-$htmls = [
-	  'volume' => '
-<div id="volume" class="slider">
-	<div class="track"></div>
-	<div class="thumb" tabindex="0"></div>
-	<div id="volume-band"></div>
-</div>
-'.i( 'plus' ).'
-<c class="level">0</c>
-'.i( 'volume' )
-	, 'labels' => '
-Buffer · Load<span class="divclipped hide"> · Clipped</span>
-<br>Sampling<span class="rateadjust"> · Adjust</span>
-'
-	, 'values' => '
-<a class="buffer">'.$dots.'</a> <gr>·</gr> <a class="load">'.$dots.'</a><span class="divclipped hide"> <gr>·</gr> <a class="clipped">'.$dots.'</a></span>
-<br><a class="capture">'.$dots.'</a><span class="rateadjust"> <gr>·</gr> <a class="rate">'.$dots.'</a></span>
-'
+$vugrid   = '';
+$vulabel  = '';
+for ( $i = 0; $i < 6; $i++ ) $vugrid.= '<a class="g'.$i.'"></a>';
+foreach ( [ -60, -48, -36, -24, -12, 0, 'dB' ] as $i => $db ) $vulabel.= '<a class="l'.$i.'">'.$db.'</a>';
+
+$options  = [
+	  [
+		  'id'         => 'enable_rate_adjust'
+		, 'label'      => 'Rate Adjust'
+		, 'returnhtml' => true
+		, 'disabled'   => '<wh>Resampler</wh> set as <wh>Synchronous</wh>'
+	]
+	, [
+		  'id'         => 'capture_samplerate'
+		, 'label'      => 'Capture Samplerate'
+		, 'returnhtml' => true
+	]
+	, [
+		  'id'         => 'stop_on_rate_change'
+		, 'label'      => 'Stop on Rate Change'
+		, 'returnhtml' => true
+	]
+	, [
+		  'id'         => 'resampler'
+		, 'label'      => 'Resampler'
+		, 'returnhtml' => true
+	]
 ];
-$tabs     = [ 'filters', 'mixers', 'processors', 'pipeline', 'devices', 'config' ];
-$htmltabs = [];
-foreach( $tabs as $id ) {
-	$html = '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$help[ $id ].'</div>';
+$htmlopt  = '';
+foreach( $options as $opt ) $htmlopt.= htmlSetting( $opt );
+$htmltab  = [];
+foreach( $id_tab as $id => $data ) {
+	$html = '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$data[ 'help' ].'</div>';
 	if ( $id === 'pipeline' ) $html.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
 	$html.= '<ul class="entries main"></ul>';
 	if ( $id === 'devices' ) {
 		$html.= '
-<div id="sampling">
-'.htmlSectionStatus( 'sampling' ).'
-</div>
-<div id="options">
-'.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true, 'disabled' => '<wh>Resampler</wh> set as <wh>Synchronous</wh>' ] ).'
-'.htmlSetting( [ 'id' => 'capture_samplerate',  'returnhtml' => true ] ).'
-'.htmlSetting( [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ] ).'
-'.htmlSetting( [ 'id' => 'resampler',           'returnhtml' => true ] ).'
-</div>
-';
-	} else if ( $id !== 'config' ) {
-		$html.= '<ul class="entries sub"></ul>';
+<div id="sampling">'.htmlSectionStatus( 'sampling' ).'</div>
+<div id="options">'.$htmlopt.'</div>';
+	} else if ( $id === 'config' ) {
+		$html.= '
+<pre id="codeconfig" class="status hide"></pre>';
+	} else {
+		$html.= '
+<ul class="entries sub"></ul>';
 	}
-	$htmltabs[ $id ] = $html.'</div>';
+	$htmltab[ $id ] = $html.'</div>';
 }
-$button = [
-	  'filters'    => [ 'folder-filter', 'add' ]
-	, 'mixers'     => [ 'add' ]
-	, 'processors' => [ 'add' ]
-	, 'pipeline'   => [ 'flowchart', 'add' ]
-	, 'devices'    => [ 'gear' ]
-	, 'config'     => ''
-];
-
 //////////////////////////////////
-$head = [ 
+$head     = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
 	, 'button' => [ 'mpd icon', 'play playback' ]
-	, 'help'   => $help[ 'status' ]
+	, 'help'   => <<< EOF
+$B->play$B->pause$B->stop Playback control
+
+<a href="https://henquist.github.io" target="_blank">CamillaDSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
+EOF
 ];
-$body = [
-	  htmlSectionStatus( 'vu' )
-	, [   'id'    => 'volume'
-		, 'icon'  => 'minus'
-		, 'input' => $htmls[ 'volume' ]
-	]
-	, htmlSectionStatus( 'state', $htmls[ 'labels' ], $htmls[ 'values' ] )
+$body     = [
+	  htmlSectionStatus(
+		  'vu'
+		, ''
+		, '<div id="vu">
+			<div id="vugrid">'.$vugrid.'</div>
+			<div id="in"></div>
+			<div id="vulabel">'.$vulabel.'</div>
+			<div id="out"></div>
+		   </div>'
+	)
+	, htmlSectionStatus(
+		  'volume'
+		, '<a><span class="label">Master</span>
+		   <gr class="control"></gr></a>'.i( 'minus' )
+		, '<div id="volume" class="slider">
+			<div class="track"></div>
+			<div class="thumb" tabindex="0"></div>
+			<div id="volume-band"></div>
+		   </div>'.i( 'plus' ).'<c class="level"></c>'.i( 'volume' )
+	)
+	, htmlSectionStatus(
+		  'state'
+		, 'Load
+		   <span class="rateadjust"><br>Buffer</span>
+		   <br>Sampling<span class="rateadjust wide"> · Adjust</span>
+		   <span class="divclipped hide"><br>Clipped</span>'
+		, '<div id="statusbar">
+			<div class="bar"></div>
+			<div id="load" class="bar"></div>
+			<div class="bar rateadjust"></div>
+			<div id="buffer" class="bar rateadjust"></div>
+		   </div>
+		   <div id="statussampling">
+			<a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>
+			<span class="divclipped hide"><br><a class="clipped"></a></span>
+		   </div>'
+	)
 	, [
 		  'id'     => 'configuration'
+		, 'label'  => 'Configuration'
+		, 'sub'    => 'current'
 		, 'status' => true
 		, 'input'  => 'configuration'
-		, 'help'   => $help[ 'volume' ]
+		, 'help'   => <<< EOF
+$B->gear Configuration files
+$B->set0 Reset clipped count (if any)
+EOF
 	]
 ];
 htmlSection( $head, $body, 'status' );
 //////////////////////////////////
-foreach( $tabs as $id ) {
+foreach( $id_tab as $id => $data ) {
 	$head = [
 		  'title'  => ucfirst( $id ).( $id === 'config' ? 'uration' : '' )
-		, 'button' => $button[ $id ]
+		, 'button' => $data[ 'button' ]
 		, 'status' => $id === 'devices' ? 'output' : false
 	];
-	$body = [ $htmltabs[ $id ] ];
+	$body = [ $htmltab[ $id ] ];
 	htmlSection( $head, $body, $id );
 }
-?>
-<div id="menu" class="menu hide">
-<a class="graph"><?=i( 'graph' )?>Graph</a>
-<a class="edit"><?=i( 'edit' )?>Edit</a>
-<a class="copy"><?=i( 'copy' )?>Copy</a>
-<a class="rename"><?=i( 'edit' )?>Rename</a>
-<a class="delete"><?=i( 'remove' )?>Delete</a>
-</div>
+$htmlmenu = '<div id="menu" class="menu hide">';
+foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete', 'info' ] as $c ) {
+	$htmlmenu.= '<a class="'.$c.'">'.i( $c ).ucfirst( $c ).'</a>';
+}
+echo $htmlmenu.'</div>';

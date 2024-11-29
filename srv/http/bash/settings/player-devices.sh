@@ -42,7 +42,7 @@ while read path; do
 	card_name+="$CARD^$NAME"$'\n'
 done <<< $proccardn
 
-if [[ $usbdac != add && -e $dirsystem/output-device ]]; then # otherwise last card
+if [[ ! -e $dirshm/usbdac && -e $dirsystem/output-device ]]; then # otherwise last card
 	outputdevice=$( < $dirsystem/output-device )
 	c_n=$( grep "$outputdevice$" <<< $card_name )
 	if [[ $c_n ]]; then
@@ -53,7 +53,7 @@ if [[ $usbdac != add && -e $dirsystem/output-device ]]; then # otherwise last ca
 	fi
 fi
 ######## >
-echo "\
+echo -n "\
 defaults.pcm.card $CARD
 defaults.ctl.card $CARD
 " > /etc/asound.conf
@@ -100,9 +100,3 @@ mixer="'$MIXER'"
 mixertype='$MIXERTYPE > $dirshm/output
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
 echo $CARD > $dirsystem/asoundcard
-if [[ -e $dirshm/btreceiver ]]; then
-	FN=volumeBlueAlsa
-else
-	[[ $MIXERTYPE == software ]] && FN=volumeMpd || FN=volumeAmixer
-fi
-echo $FN > $dirshm/volumefunction

@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1730851906' );
+	src         : url( '/assets/fonts/rern.woff2?v=1732883967' );
 }
 @font-face {
 	font-family : Lato;
@@ -34,6 +34,7 @@ i {
 .i-plus::before            { content: '\F519' }
 .i-addons::before          { content: '\F50D' }
 .i-airplay::before,
+.i-shairportsync::before,
 .i-shairport-sync::before  { content: '\F580' }
 .i-album::before           { content: '\F555' }
 .i-albumartist::before     { content: '\F557' }
@@ -91,7 +92,10 @@ i {
 .i-devices::before,
 .i-i2s::before,
 .i-i2smodule::before       { content: '\F571' }
-.i-edit::before            { content: '\F565' }
+.i-delete::before,
+.i-remove::before          { content: '\F563' }
+.i-edit::before,
+.i-rename::before          { content: '\F565' }
 .i-equalizer::before,
 .i-mixers::before          { content: '\F50C' }
 .i-eye::before             { content: '\F567' }
@@ -106,7 +110,7 @@ i {
 .i-music::before,
 .i-song::before,
 .i-title::before           { content: '\F54A' }
-.i-folder-filter::before   { content: '\F53F' }
+.i-folderfilter::before    { content: '\F53F' }
 .i-folder-forbid::before   { content: '\F537' }
 .i-folder-open::before     { content: '\F541' }
 .i-folder-plus::before     { content: '\F54D' }
@@ -185,10 +189,10 @@ i {
 .i-redo::before            { content: '\F524' }
 .i-refresh::before,
 .i-update::before          { content: '\F526' }
+.i-refreshlibrary::before,
 .i-refresh-library::before { content: '\F536' }
 .i-relays::before          { content: '\F522' }
 .i-reload::before          { content: '\F525' }
-.i-remove::before          { content: '\F563' }
 .i-repeat::before          { content: '\F511' }
 .i-repeat1::before         { content: '\F510' }
 .i-replace::before         { content: '\F531' }
@@ -267,6 +271,20 @@ sp {
 .i-libupdate {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;
+}
+.infobtn,
+.infomessage,
+#debug,
+#infoOverlay {
+	-webkit-user-select: text;
+	user-select: text;
+}
+input:focus {
+	outline: none;
+}
+.select2-container.focus {
+	outline: 2px solid var(--cgl );
+	outline-offset: 1px;
 }
 #loader,
 #fader {
@@ -404,7 +422,8 @@ code {
 .infomessage,
 .infofooter,
 #bannerTitle,
-#bannerMessage {
+#bannerMessage,
+#infoTitle {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -513,6 +532,9 @@ input[ type=range ]::-moz-range-track {
 	font-size: 18px;
 	font-weight: 300;
 }
+.inforange .sub {
+	margin-top: 5px;
+}
 .inforange i {
 	position: relative;
 	width: 40px !important;
@@ -545,8 +567,6 @@ input[ type=checkbox ] {
 	color: var( --cw ) !important;
 	background-color: var( --cg );
 	box-shadow: var( --shadow-btn );
-	-webkit-user-select: none;
-	user-select: none;
 }
 #infoBox > .infobtn {
 	margin-top: 10px;
@@ -610,11 +630,6 @@ hr {
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 	-webkit-overflow-scrolling: touch;
-	-webkit-user-select: none;
-	user-select: none;
-}
-#infoOverlay i {
-	vertical-align: -2px;
 }
 #infoOverlay a {
 	height: 40px;
@@ -665,7 +680,6 @@ hr {
 }
 #infoTop i {
 	float: left;
-	width: 30px;
 	margin-left: 5px;
 	text-align: center;
 	font-size: 28px;
@@ -707,9 +721,6 @@ hr {
 	font-size: 22px;
 	font-weight: 300;
 	line-height: 40px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 	letter-spacing: 2px;
 }
 #infoTab {
@@ -799,10 +810,6 @@ hr {
 #infoList .menu i {
 	width: 40px;
 }
-.infomessage {
-	-webkit-user-select: text;
-	user-select: text;
-}
 .infomessage pre {
 	font-size: 16px;
 }
@@ -822,13 +829,14 @@ hr {
 }
 .infofooter i {
 	margin: 0 6px;
+	vertical-align: -2px;
 }
 .infomessage {
 	padding-top: 5px;
 	line-height: 24px;
 }
 .infoprompt {
-	padding: 15px 5px;
+	padding: 25px 5px;
 }
 .infomessage i {
 	width: 25px;
@@ -1033,13 +1041,6 @@ input[ type=radio ]:disabled {
 		width: calc( 100% / 0.9 );
 		left: calc( -100% / 18 );
 	}
-}
-input:focus {
-	outline: none;
-}
-.select2-container.focus {
-	outline: 2px solid var(--cgl );
-	outline-offset: 1px;
 }
 @media ( hover:hover ) {
 	/* :hover *********************************************************/

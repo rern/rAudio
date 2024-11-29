@@ -154,7 +154,7 @@ fi
 
 touch $dirshm/startup
 
-if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
+if grep -qs startup=true $dirsystem/autoplay.conf; then
 	mpcPlayback play
 fi
 

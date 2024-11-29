@@ -25,7 +25,6 @@ files=(
 	/etc/systemd/timesyncd.conf
 	/etc/X11/xorg.conf.d/99-calibration.conf
 	/etc/X11/xorg.conf.d/99-raspi-rotate.conf
-	/mnt/MPD/NAS/data
 	/var/lib/alsa/asound.state
 	/var/lib/iwd/ap/$( hostname ).ap
 	/var/lib/snapserver/server.json
@@ -57,6 +56,8 @@ if [[ $xinitrcfiles ]]; then
 	mkdir -p $dirconfig/etc/X11/xinit
 	cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
 fi
+dirnasdata=/mnt/MPD/NAS/data
+[[ -e $dirnasdata && ! -L $dirnasdata/mpd ]] && cp -rL $dirnasdata $dirconfig
 
 services='bluetooth camilladsp iwd localbrowser mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli'
 for service in $services; do

@@ -52,7 +52,6 @@ if [[ $udev && $ACTION == disconnect ]]; then
 		MAC=${line/ *}
 		bluetoothctl info $MAC | grep -q -m1 'Connected: yes' && MAC= || break
 	done <<< $lines
-	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 	[[ $MAC ]] && disconnectRemove
 	exit
 # --------------------------------------------------------------------
@@ -142,9 +141,7 @@ if [[ $ACTION == connect || $ACTION == pair ]]; then
 		echo $btmixer > $dirshm/btmixer
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
-		if [[ -e $dirsystem/autoplay ]] && grep -q bluetooth=true $dirsystem/autoplay.conf; then
-			mpcPlayback play
-		fi
+		grep -qs bluetooth=true $dirsystem/autoplay.conf && mpcPlayback play
 	fi
 	echo $MAC $type $name >> $dirshm/btconnected
 	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh $type

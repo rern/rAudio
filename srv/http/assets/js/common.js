@@ -333,10 +333,6 @@ function info( json ) {
 			if ( ! $( this ).hasClass( 'active' ) ) I.tab[ $( this ).index() ]();
 		} );
 	}
-	if ( I.prompt ) {
-		I.oknoreset = true;
-		$( '#infoList' ).after( '<div class="infoprompt gr hide">'+ I.prompt +'</div>' );
-	}
 	var htmls = {};
 	[ 'header', 'message', 'footer' ].forEach( k => {
 		if ( I[ k ] ) {
@@ -464,7 +460,7 @@ function info( json ) {
 					htmls.list += param.sameline ? '</td>' : '</td></tr>';
 			}
 		} );
-		if ( type !== 'range' ) htmls.list = '<table>'+ htmls.list +'</table>';
+		htmls.list = '<table>'+ htmls.list +'</table>';
 	}
 	
 	// populate layout //////////////////////////////////////////////////////////////////////////////
@@ -495,7 +491,6 @@ function info( json ) {
 		} );
 		// show
 		infoToggle();
-		'focus' in I ? $inputbox.eq( I.focus ).select() : $( '#infoOverlay' ).trigger( 'focus' );
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoWidth(); // text / password / textarea
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoList a' ).removeAttr( 'href' );
@@ -571,7 +566,7 @@ function info( json ) {
 				}
 				function updnToggle( up ) {
 					var v = [];
-					$( '.updn' ).parent().prev().find( 'input' ).each( ( i, el ) => v.push( +$( el ).val() ) );
+					$( '.updn' ).parents( 'tr' ).find( 'input' ).each( ( i, el ) => v.push( +$( el ).val() ) );
 					if ( el.link && typeof up === 'boolean' )  {
 						if ( v[ 0 ] > v[ 1 ] ) {
 							var vlink = up ? v[ 0 ] : v[ 1 ];
@@ -620,6 +615,16 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
+		if ( 'focus' in I ) {
+			$inputbox.eq( I.focus ).focus();
+		} else {
+			var iL = $inputbox.length;
+			if ( iL === 1 || ( iL && ! $inputbox.eq( 0 ).val() ) ) {
+				$inputbox.eq( 0 ).focus();
+			} else {
+				$( '#infoOverlay' ).trigger( 'focus' );
+			}
+		}
 	} );
 	$( '#infoList .i-eye' ).on( 'click', function() {
 		var $this = $( this );
@@ -854,10 +859,13 @@ function infoListChange( callback, add ) {
 	$( '#infoList input' ).trigger( 'input' );
 	if ( callback ) callback( add );
 }
-function infoPrompt( message ) {
+function infoPrompt( message ) { // I.oknoreset - must be set if called after ok()
+	I.oknoreset = true;
+	if ( ! $( '.infoprompt' ).length ) $( '#infoList' ).after( '<div class="infoprompt gr hide">'+ I.prompt +'</div>' );
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
 	$( '.infoprompt' ).html( message );
 	$toggle.toggleClass( 'hide' );
+	bannerHide();
 	$( '#infoOverlay' )
 		.removeClass( 'hide' )
 		.trigger( 'focus' );
@@ -1012,6 +1020,24 @@ function infoWidth() {
 }
 
 // common info functions --------------------------------------------------
+function infoDabScan() {
+	var icon  = 'dabradio';
+	var title = 'DAB Radio';
+	info( {
+		  icon    : icon
+		, title   : title
+		, message : 'Scan for available stations?'
+		, ok      : () => {
+			addonsProgressSubmit( {
+				  alias      : icon
+				, title      : title
+				, label      : 'Scan'
+				, installurl : 'dab-scan.sh'
+				, backhref   : page ? 'settings.php?p=features' : '/'
+			} );
+		}
+	} );
+}
 function infoPower() {
 	info( {
 		  icon        : 'power'
@@ -1046,11 +1072,21 @@ function infoPowerCommand( action ) {
 	} );
 }
 
+function accent2plain( str ) {
+	return  str.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
+}
 function addonsProgressSubmit( input ) {
 	if ( input.installurl.slice( 0, 4 ) !== 'http' ) input.installurl = '/usr/bin/sudo /srv/http/bash/'+ input.installurl
 	var form  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
 	$.each( input, ( k, v ) => form += '<input type="hidden" name="'+ [ k ] +'" value="'+ v +'">' );
 	$( 'body' ).append( form +'</form>' );
+	if ( V.debug ) {
+		var data = {};
+		$( 'form' ).last().serializeArray().forEach( el => data[ el.name ] = el.value );
+		console.log( data );
+		return
+	}
+	
 	$( '#formtemp' ).submit();
 }
 function capitalize( str ) {
@@ -1069,6 +1105,9 @@ function htmlOption( el ) {
 		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
 	}
 	return options
+}
+function ipSub( ip ) {
+	return ip.replace( /(.*\..*\..*\.).*/, '$1' )
 }
 function jsonChanged( a, b ) {
 	if ( ! a || ! b || ! Object.keys( a ).length || ! Object.keys( b ).length ) return true
@@ -1185,91 +1224,92 @@ function selectText2Html( pattern ) {
 	} );
 }
 // push status
-function psNotify( data ) {
-	if ( data === false ) {
-		bannerHide();
-		return
-	}
-	
-	if ( V.relays ) {
-		if ( ! data.title ) $( '#bannerMessage' ).html( data.message );
-		return
-	}
-	
-	var icon    = data.icon;
-	var title   = data.title;
-	var message = data.message;
-	var delay   = data.delay;
-	if ( ! title ) {
-		V.relays    = true;
-		$( '#infoX' ).trigger( 'click' )
-	}
-	if ( ! page ) {
-		if ( message === 'Change track ...' ) { // audiocd
-			intervalClear();
-		} else if ( title === 'Latest' ) {
-			C.latest = 0;
-			$( '.mode.latest gr' ).empty();
-			if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-		}
-	}
-	banner( icon, title, message, delay );
-}
-function psPower( data ) {
-	loader();
-	ws        = null;
-	V[ data.type ] = true;
-	banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
-	if ( V.off ) {
-		$( '#loader' ).css( 'background', '#000000' );
-		setTimeout( () => {
-			$( '#loader svg' ).css( 'animation', 'none' );
+var ps = {
+	  notify : data => {
+		if ( data === false ) {
 			bannerHide();
-		}, 10000 );
-	} else { // reconnect after reboot
-		setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
-	}
-}
-function psRelays( data ) {
-	var relaysToggle = function() {
+			return
+		}
+		
+		if ( V.relays ) {
+			if ( ! data.title ) $( '#bannerMessage' ).html( data.message );
+			return
+		}
+		
+		var icon    = data.icon;
+		var title   = data.title;
+		var message = data.message;
+		var delay   = data.delay;
+		if ( ! title ) {
+			V.relays    = true;
+			$( '#infoX' ).trigger( 'click' )
+		}
 		if ( ! page ) {
-			$( '#relays' ).toggleClass( 'on', S.relayson );
-			$( ( $time.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+			if ( message === 'Change track ...' ) { // audiocd
+				intervalClear();
+			} else if ( title === 'Latest' ) {
+				C.latest = 0;
+				$( '.mode.latest gr' ).empty();
+				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
+			}
+		}
+		banner( icon, title, message, delay );
+	}
+	, power  : data => {
+		loader();
+		ws        = null;
+		V[ data.type ] = true;
+		banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
+		if ( V.off ) {
+			$( '#loader' ).css( 'background', '#000000' );
+			setTimeout( () => {
+				$( '#loader svg' ).css( 'animation', 'none' );
+				bannerHide();
+			}, 10000 );
+		} else { // reconnect after reboot
+			setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
 		}
 	}
-	if ( 'done' in data ) {
-		S.relayson = data.done;
-		V.relays   = false;
-		bannerHide();
-		relaysToggle();
-		return
-	}
-	
-	if ( ! ( 'timer' in data ) ) return
-	
-	info( {
-		  icon        : 'relays'
-		, title       : 'Equipments Off'
-		, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
-		, buttonlabel : ico( 'relays' ) +'Off'
-		, buttoncolor : red
-		, button      : () => bash( [ 'relays.sh', 'off' ] )
-		, oklabel     : ico( 'set0' ) +'Reset'
-		, ok          : () => {
-			bash( [ 'relaystimerreset' ] );
-			banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.timer +'m' );
-		}
-	} );
-	var delay    = 59;
-	var interval = setInterval( () => {
-		if ( delay ) {
-			$( '.infomessage a' ).text( delay-- );
-		} else {
-			clearInterval( interval );
+	, relays : data => {
+		if ( 'reset' in data ) {
 			$( '#infoX' ).trigger( 'click' );
-			relaysToggle();
+			banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ data.reset +'m' );
+			return
 		}
-	}, 1000 );
+		
+		var relaysToggle = function() {
+			clearInterval( V.intervalrelays );
+			bannerHide();
+			$( '#infoX' ).trigger( 'click' );
+			if ( ! page ) {
+				$( '#relays' ).toggleClass( 'on', S.relayson );
+				$( ( $time.is( ':visible' ) ? '#ti' : '#mi' ) +'-relays' ).toggleClass( 'hide', ! S.relayson  );
+			}
+		}
+		if ( 'done' in data ) {
+			S.relayson = data.done;
+			V.relays   = false;
+			relaysToggle();
+			return
+		}
+		
+		if ( ! ( 'countdown' in data ) ) return
+		
+		info( {
+			  icon        : 'relays'
+			, title       : 'Equipments Off'
+			, message     : '<div class="msgrelays"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object><a>60</a></div>'
+			, buttonlabel : ico( 'relays' ) +'Off'
+			, buttoncolor : red
+			, button      : () => bash( [ 'relays.sh', 'off' ] )
+			, oklabel     : ico( 'set0' ) +'Reset'
+			, ok          : () => bash( [ 'cmd.sh', 'relaystimerreset' ] )
+		} );
+		var delay        = 59;
+		V.intervalrelays = setInterval( () => {
+			delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
+		}, 1000 );
+	}
 }
 
 // page visibility -----------------------------------------------------------------
@@ -1307,6 +1347,7 @@ function volumeMaxSet() {
 	}
 }
 function volumeMuteToggle() {
+	V.volumediff = Math.abs( S.volume - S.volumemute );
 	if ( S.volumemute ) {
 		S.volume     = S.volumemute;
 		S.volumemute = 0;
@@ -1316,10 +1357,9 @@ function volumeMuteToggle() {
 	}
 	volumeSet( S.volumemute ? 'mute' : 'unmute' );
 }
-function volumePush( type, val ) {
+function volumePush() {
 	V.local = true;
-	if ( typeof val === 'undefined' ) val = S.volume;
-	ws.send( '{ "channel": "volume", "data": { "type": "'+ ( type || '' ) +'", "val": '+ val +' } }' );
+	ws.send( '{ "channel": "volume", "data": { "type": "", "val": '+ S.volume +' } }' );
 }
 function volumeSet( type ) { // type: mute / unmute
 	V.local        = true;
@@ -1397,9 +1437,11 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 		- [ CMD, 'OFF' ] : disable
 */
 function bash( args, callback, json ) {
-	var args0  = args[ 0 ];
-	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) {
-		var filesh = args0;
+	if ( typeof args === 'string' ) {
+		var filesh = 'settings/'+ args
+		args       = '';
+	} else if ( [ '.sh', '.py' ].includes( args[ 0 ].slice( -3 ) ) ) {
+		var filesh = args[ 0 ];
 		args.shift();
 	} else {
 		var filesh = page ? 'settings/'+ page +'.sh': 'cmd.sh';
@@ -1422,12 +1464,7 @@ function bash( args, callback, json ) {
 		return
 	}
 	
-	$.post( 
-		 'cmd.php'
-		, data
-		, callback || null
-		, json || null
-	);
+	$.post( 'cmd.php', data, callback || null, json || null );
 }
 function bashConsoleLog( data ) {
 	console.log( '%cDebug:', "color:red" );

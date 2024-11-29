@@ -11,29 +11,19 @@
 data+=$( settingsActive camilladsp localbrowser nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
 data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
-			$dirsystem ap autoplay dabradio equalizer login loginsetting lyrics multiraudio scrobble scrobblekey snapclient spotifykey volumelimit \
+			$dirsystem ap autoplay equalizer login loginsetting lyrics dabradio multiraudio scrobble snapclientserver volumelimit \
 			$dirshm nosound )
-
 ##########
 data+='
-, "hostname"         : "'$( hostname )'"
-, "hostip"           : "'$( ipAddress )'"
-, "ipsub"            : "'$( ipAddress sub )'"
-, "lcd"              : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
-, "nfsconnected"     : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
-, "snapserveractive" : '$( [[ $( snapclientIP ) ]] && echo true )'
-, "stoptimer"        : '$( exists $dirshm/pidstoptimer )
-
-##########
-if [[ -e /usr/bin/mediamtx ]]; then
-	script -c 'timeout 0.1 rtl_test -t' $dirshm/dabdevice &> /dev/null
-	data+='
-, "dabradio"         : '$( grep -q ^Found $dirshm/dabdevice && echo true )
-fi
+, "hostname"      : "'$( hostname )'"
+, "ip"            : "'$( ipAddress )'"
+, "nfsconnected"  : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
+, "shareddata"    : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
+, "snapclient"    : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
+, "stoptimer"     : '$( exists $dirshm/pidstoptimer )
 ##########
 [[ -e $dirshm/wlan ]] && data+='
-, "wlan"             : true
-, "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*$( < $dirshm/wlan )" && echo true )
+, "wlan"          : true
+, "wlanconnected" : '$( ip r | grep -q -m1 "^default.*$( < $dirshm/wlan )" && echo true )
 
 data2json "$data" $1

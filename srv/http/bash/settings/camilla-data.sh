@@ -4,30 +4,18 @@
 
 . /srv/http/bash/common.sh
 . $dirshm/output
-
-devicesC='"Loopback": "hw:Loopback,0"'
-devicesP=$( tr -d {} < $dirshm/devices )
 if grep -q configs-bt /etc/default/camilladsp; then
 	bluetooth=true
 	name=$( < $dirshm/btname )
-	configfile=$( getVar CONFIG /etc/default/camilladsp )
-	grep -q dbus_path "$configfile" && devicesC+=', "Bluez": "bluez"' && devicesP+=', "blueALSA": "bluealsa"'
 fi
-
-########
 data='
 , "bluetooth"  : '$bluetooth'
 , "btreceiver" : '$( exists $dirshm/btreceiver )'
 , "card"       : '$card'
 , "cardname"   : "'$name'"
-, "channels"   : '$( < $dirshm/channels )'
+, "configname" : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
 , "control"    : "'$mixer'"
-, "devices"    : {
-	  "capture"  : { '$devicesC' }
-	, "playback" : { '$devicesP' }
-}
-, "formats"    : '$( < $dirshm/formats )'
-, "samplings"  : '$( < $dirshm/samplings )'
+, "devices"    : '$( < $dirshm/hwparams )'
 , "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$( mpcState )'"
@@ -35,9 +23,13 @@ data='
 , "volumemax"  : '$( volumeMaxGet )'
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )
 dirs=$( ls $dircamilladsp )
-for dir in $dirs; do
+for d in $dirs; do
+	[[ $bluetooth && $d == configs ]] && dir=configs-bt || dir=$d
+	dirs=$( ls -1 $dircamilladsp/$dir )
+	ls+=', "'$d'": '$( line2array "$dirs" )
+done
 ########
 	data+='
-, "ls'$dir'" : [ '$( ls -1 $dircamilladsp/$dir | tr '\n' ^ | sed 's/\^$/"/; s/^/"/; s/\^/", "/g' )' ]'
-done
+, "ls"         : { '${ls:1}' }'
+
 data2json "$data" $1

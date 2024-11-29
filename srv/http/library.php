@@ -38,19 +38,18 @@ search
 */
 include 'function.php';
 
-$CMD       = $_POST[ 'library' ];
-$GMODE     = $_POST[ 'gmode' ] ?? null;
-$MODE      = $_POST[ 'mode' ] ?? null;
-$STRING    = isset( $_POST[ 'string' ] ) ? escape( $_POST[ 'string' ] ) : null;
-$formatall = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'file', 'genre', 'time', 'title', 'track' ];
-$f         = $_POST[ 'format' ] ?? $formatall;
-$format    = '%'.implode( '%^^%', $f ).'%';
-$html      = '<ul id="lib-list" class="list">';
-$index0    = '';
-$indexes   = [];
-foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/';
+$post    = ( object ) $_POST;
+$GMODE   = $post->gmode ?? null;
+$MODE    = $post->mode ?? null;
+$STRING  = isset( $post->string ) ? escape( $post->string ) : null;
+$f       = $post->format ?? [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'file', 'genre', 'time', 'title', 'track' ];
+$format  = '%'.implode( '%^^%', $f ).'%';
+$html    = '<ul id="lib-list" class="list">';
+$index0  = '';
+$indexes = [];
+foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/'; // $dirmpd $dirsystem $dirwebradio
 
-switch( $CMD ) {
+switch( $post->library ) {
 
 case 'find':
 	$format = str_replace( '%artist%', '[%albumartist%|%artist%]', $format );
@@ -102,7 +101,7 @@ case 'findartist': // artist, albumartist
 		, $lists );
 	foreach( $lists as $list ) {
 		$list       = explode( '^^', $list ); // album^^artist
-		$each       = ( object )[];
+		$each       = ( object ) [];
 		$name       = $list[ 0 ];
 		$each->name = $name;
 		$each->sort = stripSort( $name );
@@ -161,11 +160,9 @@ case 'home':
 		}
 	}
 	$order    = file_exists( $dirsystem.'order.json' ) ? json_decode( file_get_contents( $dirsystem.'order.json' ) ) : false;
-	$updating = exec( '[[ -e '.$dirmpd.'listing ]] || mpc | grep -q ^Updating && echo 1' ) ? true : false;
 	echo json_encode( [
-		  'html'     => $htmlmode
-		, 'order'    => $order
-		, 'updating' => $updating
+		  'html'  => $htmlmode
+		, 'order' => $order
 	] );
 	break;
 case 'list':
@@ -289,7 +286,7 @@ case 'search':
 	}
 	break;
 case 'track': // for tag editor
-	$file  = escape( $_POST[ 'file' ] );
+	$file  = escape( $post->file );
 	if ( is_dir( '/mnt/MPD/'.$file ) ) {
 		$wav = exec( 'mpc ls "'.$file.'" | grep -m1 "\.wav$"' ); // MPD not read albumartist in *.wav
 		if ( $wav ) {
@@ -338,7 +335,7 @@ function htmlDirectory() {
 	global $GMODE, $html, $index0, $indexes, $lists;
 	foreach( $lists as $list ) {
 		$dir        = basename( $list );
-		$each       = ( object )[];
+		$each       = ( object ) [];
 		$each->path = $list;
 		$each->dir  = $dir;
 		$each->sort = stripSort( $dir );
@@ -375,7 +372,7 @@ function htmlFind() { // non-file 'find' command
 		if ( $list === '' ) continue;
 		
 		$list = explode( '^^', $list ); // album^^artist
-		$each = ( object )[];
+		$each = ( object ) [];
 		for ( $i = 0; $i < $fL; $i++ ) {
 			$key        = $f[ $i ];
 			$each->$key = $list[ $i ];
@@ -467,9 +464,9 @@ function htmlRadio() {
 	global $dir, $files, $html, $index0, $indexes, $search, $STRING, $subdirs;
 	if ( ! $search && count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
-			$each          = ( object )[];
+			$each          = ( object ) [];
 			$dirname       = basename( $subdir );
-			$each->dir     = dirname( $subdir );
+			$each->dir     = $subdir;
 			$each->dirname = $dirname;
 			$each->sort    = stripSort( $dirname );
 			$array[]       = $each;
@@ -489,7 +486,7 @@ function htmlRadio() {
 	if ( count( $files ) ) {
 		unset( $array );
 		foreach( $files as $file ) {
-			$each          = ( object )[];
+			$each          = ( object ) [];
 			$data          = file( $file, FILE_IGNORE_NEW_LINES );
 			$name          = $data[ 0 ] ?? '';
 			$each->charset = $data[ 2 ] ?? '';
@@ -547,7 +544,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		if ( $list === '' ) continue;
 		
 		$list = explode( '^^', $list );
-		$each = ( object )[];
+		$each = ( object ) [];
 		for ( $i = 0; $i < $fL; $i++ ) $each->{$f[ $i ]} = $list[ $i ];
 		$array[] = $each;
 	}

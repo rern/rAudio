@@ -181,7 +181,6 @@ $( '#button-settings' ).on( 'click', function( e ) {
 			  icon       : 'lock'
 			, title      : 'Settings'
 			, list       : [ '', 'password' ]
-			, focus      : 0
 			, checkblank : true
 			, oklabel    : 'Login'
 			, ok         : () => {
@@ -243,8 +242,8 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			if ( active ) {
 				$( '#stop' ).trigger( 'click' );
 			} else {
-				bash( [ 'snapclient.sh' ], data => {
-					if ( data == -1 ) {
+				bash( [ 'snapserverlist' ], data => {
+					if ( ! data.length ) {
 						delete V.bannerdelay;
 						bannerHide();
 						info( {
@@ -252,8 +251,21 @@ $( '#settings' ).on( 'click', '.settings', function() {
 							, title   : 'SnapClient'
 							, message : 'No SnapServers found.'
 						} );
+						return
 					}
-				} );
+					
+					if ( data.length === 1 ) {
+						bash( [ 'snapclient.sh', data[ 0 ].replace( /.* /, '' ) ] );
+					} else {
+						info( {
+							  icon    : 'snapcast'
+							, title   : 'SnapClient'
+							, message : 'Select server:'
+							, list    : [ '', 'radio', { kv: data } ]
+							, ok      : () => bash( [ 'snapclient.sh', infoVal().replace( /.* /, '' ) ] )
+						} );
+					}
+				}, 'json' );
 			}
 			banner( 'snapcast blink', 'SnapClient', ( active ? 'Stop ...' : 'Start ...' ) );
 			break;
@@ -641,6 +653,9 @@ $( '#volume' ).roundSlider( {
 		
 		if ( V.press ) {
 			var diff  = 3;
+		} if ( 'volumediff' in V ) {
+			var diff = V.volumediff;
+			delete V.volumediff;
 		} else {
 			var diff  = Math.abs( e.value - S.volume || S.volume - S.volumemute ); // change || mute/unmute
 		}
@@ -786,7 +801,7 @@ var btnctrl = {
 	, B  : 'stop'
 	, BR : 'repeat'
 }
-$( '.map' ).on( 'click', function( e ) {
+$( '#map-cover .map' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	if ( V.press ) return
 	
@@ -973,7 +988,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 			playlistSkip();
 		}
 	}
-	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );
 } );
 $( '#previous, #next, #coverR, #coverL' ).press( function( e ) {
 	var next = [ 'next', 'coverR' ].includes( e.target.id );
@@ -1062,7 +1076,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 	}
 	
 	var message = '';
-	[ 'nas', 'sd', 'usb' ].forEach( k => message += ' &emsp; <label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
+	[ 'nas', 'sd', 'usb' ].forEach( k => message += sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
 	var kv   = {
 		  'Update changed files'    : 'update'
 		, 'Update all files'        : 'rescan'
@@ -1301,8 +1315,14 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	
 	var path  = $this.find( '.lipath' ).text();
 	V.mode    = path.split( '/' )[ 0 ].toLowerCase();
+	if ( V.mode === 'webradio' ) {
+		path = path.slice( 9 );
+		var library = 'radio';
+	} else {
+		var library = 'ls';
+	}
 	var query = {
-		  library : 'ls'
+		  library : library
 		, string  : path
 		, gmode   : V.mode
 	}
@@ -1374,6 +1394,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
 		, ok          : () => imageReplace( 'bookmark', imagefilenoext, name ) // no ext
 	} );
+} ).on( 'click', '.dabradio.nodata', function() {
+	infoDabScan();
 } ).press( '.mode.bookmark', setBookmarkEdit );
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
@@ -1686,14 +1708,16 @@ $( '#button-pl-clear' ).on( 'click', function() {
 		info( {
 			  icon       : 'playlist'
 			, title      : 'Remove From Playlist'
-			, list       : [
-				  [ '', 'radio', { kv: { '<i class="i-cursor"></i>    Select ...' : 'select' } } ]
-				, [ '', 'radio', { kv: { '<i class="i-track"></i>     Range ...'  : 'range'  } } ]
-				, [ '', 'radio', { kv: { '<i class="i-crop yl"></i>   Crop'       : 'crop'   } } ]
-				, [ '', 'radio', { kv: { '<i class="i-flash red"></i> All'        : 'all'    } } ]
-			]
+			, list       : [ '', 'radio', { 
+				  kv       : {
+					  '<i class="i-flash red"></i> All'        : 'all'
+					, '<i class="i-cursor"></i>    Select ...' : 'select'
+					, '<i class="i-track"></i>     Range ...'  : 'range'
+					, '<i class="i-crop yl"></i>   Crop'       : 'crop'
+				}
+				, sameline : false
+			} ]
 			, beforeshow : () => {
-				$( '#infoList input:checked' ).prop( 'checked', false );
 				$( '#infoList input' ).on( 'input', function() {
 					var cmd = $( '#infoList input:checked' ).val();
 					switch ( cmd ) {
@@ -1710,16 +1734,15 @@ $( '#button-pl-clear' ).on( 'click', function() {
 							bash( [ 'mpccrop' ] );
 							$( '#pl-list li:not( .active )' ).remove();
 							break;
-						case 'all':
-							bash( [ 'mpcremove' ] );
-							setPlaybackBlank();
-							renderPlaylist();
-							break;
 					}
 					$( '#infoX' ).trigger( 'click' );
 				} );
 			}
-			, okno       : true
+			, ok         : () => {
+				bash( [ 'mpcremove' ] );
+				setPlaybackBlank();
+				renderPlaylist();
+			}
 		} );
 	}
 } );

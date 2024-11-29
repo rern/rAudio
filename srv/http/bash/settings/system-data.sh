@@ -21,7 +21,7 @@ if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
 	# 20 bits: occurred > 11110000000000001111 < current
 	occurred='<gr>occurred</gr>'
-	it="<i class='i-thermometer yl'></i> CPU X"
+	it="<i class='i-thermometer yl'></i>&ensp;CPU X"
 	ito="${it/yl/gr} $occurred"
 	iv="<red class='blink'><i class='i-voltage'></i> Under-voltage</red>"
 	declare -A warnings=(
@@ -78,14 +78,7 @@ fi
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )
 	audiooutput=$( < $dirsystem/audio-output )
-	i2saudio=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
-fi
-# reboot
-if [[ -e $dirshm/reboot ]]; then
-	reboot=$( < $dirshm/reboot )
-	grep -q TFT <<< $reboot && tftreboot=true
-	grep -q Character <<< $reboot && lcdcharreboot=true
-	grep -q Spectrum <<< $reboot && mpdoledreboot=true
+	i2smodule=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
 
 data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
@@ -95,42 +88,31 @@ data+=$( settingsEnabled \
 
 ##########
 data+='
-, "audio"             : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
-, "audioaplayname"    : "'$audioaplayname'"
-, "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
-, "audiooutput"       : "'$audiooutput'"
-, "hostname"          : "'$( hostname )'"
-, "i2seeprom"         : '$( grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true )'
-, "i2saudio"             : '$i2saudio'
-, "ipsub"             : "'$( ipAddress sub )'"
-, "lan"               : '$( ip -br link | grep -q ^e && echo true )'
-, "lcdcharreboot"     : '$lcdcharreboot'
-, "list"              : '$( $dirsettings/system-storage.sh )'
-, "mirror"            : "'$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )'"
-, "mpdoledreboot"     : '$mpdoledreboot'
-, "nfsserver"         : '$nfsserver'
-, "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
-, "poweraudiophonics" : '$( grep -q 'poweroff,gpiopin=22' /boot/config.txt && echo true )'
-, "rpi01"             : '$( exists /boot/kernel.img )'
-, "shareddata"        : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
-, "status"            : "'$status'"
-, "statusvf"          : '$statusvf'
-, "system"            : "'$system'"
-, "tft"               : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
-, "tftreboot"         : '$tftreboot'
-, "timezone"          : "'$timezone'"
-, "timezoneoffset"    : "'$timezoneoffset'"'
-##########
-[[ $audioaplayname == cirrus-wm5102 ]] && data+='
-, "audiowm5102"       : "'$( < $dirsystem/audio-wm5102 )'"'
+, "audio"          : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
+, "audioaplayname" : "'$audioaplayname'"
+, "audiocards"     : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )'
+, "audiooutput"    : "'$audiooutput'"
+, "hostname"       : "'$( hostname )'"
+, "i2smodule"      : '$i2smodule'
+, "ip"             : "'$( ipAddress )'"
+, "lan"            : '$( ip -br link | grep -q ^e && echo true )'
+, "liststorage"    : '$( $dirsettings/system-storage.sh )'
+, "nfsserver"      : '$nfsserver'
+, "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
+, "status"         : "'$status'"
+, "statusvf"       : '$statusvf'
+, "system"         : "'$system'"
+, "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
+, "timezone"       : "'$timezone'"
+, "timezoneoffset" : "'$timezoneoffset'"'
 if [[ -e $dirshm/onboardwlan ]]; then
 ##########
 	data+='
-, "wlan"              : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"     : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
+, "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
+, "wlanconnected"  : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 ##########
 	data+='
-, "btconnected"       : '$( exists $dirshm/btconnected )
+, "btconnected"    : '$( exists $dirshm/btconnected )
 fi
 
 data2json "$data" $1

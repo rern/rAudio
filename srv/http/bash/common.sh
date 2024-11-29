@@ -213,23 +213,27 @@ getContent() {
 getVar() { # var=value
 	[[ ! -e $2 ]] && echo false && return
 	
-	local line
-	line=$( grep -E ^$1= $2 )                                      # var=
-	[[ ! $line ]] && line=$( grep -E "^${1// /|^}" $2 )            # var
-	[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" $2 )      #     var
-	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )       # var value > var=value
-	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line ) # var=value || var = value || var="value"; > value
-	quoteEscape $line
-}
-getVarColon() { # var: value || var: "value";*
-	[[ ! -e ${@: -1} ]] && echo false && return
-	
-	if [[ $3 ]]; then
-		sed -n -E '/^\s*'$1':/,/^\s*'$2':/ {/'$2'/! d; s/^.*:\s"*|"*$//g; p}' "$3" # /var1/,/var2/ > var2: value > value
+	local data line var
+	data=$( < $2 )
+	if [[ $( head -1 <<< $data ) == { ]]; then
+		var=$( sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' <<< $data )
 	else
-		sed -n -E '/^\s*'$1':/ {s/^.*:\s"*|"*$//g; p}' "$2"                        # var: value value
+		line=$( grep ^$1= <<< $data )                                    # var=
+		[[ ! $line ]] && line=$( grep -E "^${1// /|^}" <<< $data )       # var
+		[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" <<< $data ) #     var
+		[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )         # var value > var=value
+		var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )   # var=value || var = value || var="value"; > value
+	fi
+	[[ $var ]] && quoteEscape $var || echo $3
+}
+getVarYml() { # var: value || var: "value";*
+	if [[ $2 ]]; then
+		sed -n -E '/^\s*'$1':/,/^\s*'$2':/ {/'$2'/! d; s/^.*:\s"*|"*$//g; p}' "$fileconf" # /var1/,/var2/ > var2: value > value
+	else
+		sed -n -E '/^\s*'$1':/ {s/^.*:\s"*|"*$//g; p}' "$fileconf"                        # var: value value
 	fi
 }
+
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf
@@ -260,6 +264,9 @@ killProcess() {
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
+line2array() {
+	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
+}
 mountpointSet() {
 	umount -ql "$1"
 	mkdir -p "$1"
@@ -276,13 +283,12 @@ $2"
 		rmdir "$1"
 		systemctl daemon-reload
 		sed -n '1 {s/.*: //; p}' <<< $std
-		exit
-# --------------------------------------------------------------------
+	else
+		for i in {1..10}; do
+			sleep 1
+			mountpoint -q "$1" && break
+		done
 	fi
-	for i in {1..10}; do
-		sleep 1
-		mountpoint -q "$1" && break
-	done
 }
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
@@ -466,13 +472,20 @@ snapclientIP() {
 	[[ $clientip ]] && echo $clientip
 }
 snapserverList() {
-	local service
-	service=$( avahi-browse -d local -kprt _snapcast._tcp | tail -1 )
-	[[ ! $service ]] && return
-	
-	awk -F';' '{print $7"\n"$8}' <<< $service | sed 's/\.local$//; s/127.0.0.1/localhost/'
+	local name_ip
+	name_ip=$( avahi-browse -d local -kprt _snapcast._tcp | awk -F';' '/1704;$/&&!/^=;l/ {print $7" "$8}' )
+	if [[ $name_ip ]] ; then
+		name_ip=$( sed 's/ / @ /g; s/^/, "/; s/$/"/' <<< $name_ip )
+		echo '[ '${name_ip:1}' ]'
+	else
+		echo '[]'
+	fi
+}
+tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
+	script /dev/null -qc "$1"
 }
 volume() {
+	local diff filevolumemute fn_volume type val values
 	filevolumemute=$dirsystem/volumemute
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	if [[ $TYPE != dragpress ]]; then
@@ -491,12 +504,6 @@ volume() {
 		rm -f $filevolumemute
 	fi
 	fn_volume=$( < $dirshm/volumefunction )
-	if [[ $pageplayer ]]; then
-		$fn_volume $TARGET% "$CONTROL" $CARD
-		volumeGet push
-		exit
-# --------------------------------------------------------------------
-	fi
 	diff=$(( TARGET - CURRENT ))
 	diff=${diff#-}
 	if (( $diff < 5 )); then

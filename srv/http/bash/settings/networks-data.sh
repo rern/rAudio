@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-gatwayAddress() {
+gatewayAddress() {
 	ip r | grep -m1 "^default .* $1" | tail -1 | cut -d' ' -f3
 }
 listBluetooth() {
@@ -52,7 +52,7 @@ listWlan() {
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
   "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )'
-, "gateway" : "'$gateway'"
+, "gateway" : "'$( gatewayAddress $wlandev )'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
 }'
@@ -80,24 +80,25 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 [[ -e $dirshm/wlan ]] && listWlan
 
 # lan
-if test -e /sys/class/net/e*; then
-	deviceeth=true
-	ip=$( ipAddress e )
-	if [[ $ip ]]; then
-		gateway=$( gatwayAddress e )
-		listeth='{
-	  "ADDRESS" : "'$ip'"
-	, "GATEWAY" : "'$gateway'"
-	, "DHCP"    : '$( [[ ${ipr[6]} == dhcp ]] && echo true )'
-	}'
-	fi
+ip=$( ipAddress e )
+if [[ $ip ]]; then
+	listeth='{
+  "ADDRESS" : "'$ip'"
+, "GATEWAY" : "'$( gatewayAddress e )'"
+, "DHCP"    : '$( ip r | grep -q 'dev e.* dhcp' && echo true )'
+}'
 fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
+ip=$( ipAddress )
+if [[ $ip ]]; then
+	gateway=$( gatewayAddress )
+	hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
+fi
 ##########
 data='
 , "devicebt"    : '$devicebt'
-, "deviceeth"   : '$deviceeth'
+, "deviceeth"   : '$( ifconfig | grep -q ^e && echo true )'
 , "devicewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "ap"          : '$( exists $dirsystem/ap )'
 , "apconf"      : '$apconf'
@@ -105,9 +106,8 @@ data='
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( [[ $( iwgetid -r ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
-, "hostname"    : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
+, "hostname"    : "'$hostname'"
 , "ip"          : "'$ip'"
-, "ipsub"       : "'${ip%.*}'."
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
 , "listwl"      : '$listwl

@@ -5,10 +5,15 @@
 args2var "$1"
 
 ! playerActive mpd && $dirbash/cmd.sh playerstop
-# iwd
+# hostname
+$dirsettings/system.sh 'hostname
+rAudio
+CMD NAME'
+# accesspoint
 sed -i -E -e 's/(Passphrase=).*/\1raudioap/
 ' -e 's/(Address=|Gateway=).*/\1192.168.5.1/
-' /var/lib/iwd/ap/$( hostname ).ap
+' /var/lib/iwd/ap/rAudio.ap
+
 # localbrowser
 [[ -e /usr/bin/firefox ]] && rm -rf /root/.mozilla
 # mpd
@@ -47,7 +52,7 @@ gpu_mem=32
 hdmi_drive=2
 max_usb_current=1
 over_voltage=2"
-fi
+
 echo "$config" > /boot/config.txt
 # css color
 [[ -e $dirsystem/color ]] && rm $dirsystem/color && $dirbash/cmd.sh color
@@ -60,7 +65,7 @@ if [[ $dirs ]]; then
 		umount -l "$dir" &> /dev/null
 		rmdir "$dir" &> /dev/null
 	done <<< $dirs
-done
+fi
 sed -i '3,$ d' /etc/fstab
 
 systemctl -q disable bluetooth camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null

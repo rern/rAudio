@@ -43,14 +43,6 @@ wlanDevice() {
 
 case $CMD in
 
-bluetoothinfo )
-	info=$( bluetoothctl info $MAC )
-	grep -q -m1 'not available' <<< $info && exit
-# --------------------------------------------------------------------
-	echo "\
-<bll># bluetoothctl info $MAC</bll>
-$info"
-	;;
 btrename )
 	bluetoothctl set-alias "$NEWNAME"
 	amixer -D bluealsa scontrols | cut -d"'" -f2 > $dirshm/btmixer
@@ -136,40 +128,6 @@ profileforget )
 	fi
 	rm "/etc/netctl/$SSID"
 	pushRefresh networks pushwl
-	;;
-profileget )
-	. "/etc/netctl/$SSID"
-	data='{
-  "ESSID"    : "'$( quoteEscape $ESSID )'"
-, "KEY"      : "'$Key'"'
-	[[ $Address ]] && data+='
-, "ADDRESS"  : "'${Address/\/24}'"
-, "GATEWAY"  : "'$Gateway'"'
-	data+='
-, "SECURITY" : '$( [[ $Security == wep ]] && echo true || echo false )'
-, "HIDDEN"   : '$( [[ $Hidden == yes ]] && echo true || echo false )'
-}'
-	echo "$data"
-	;;
-statuslan )
-	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
-	echo "\
-<bll># ifconfig $lan</bll>
-$( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
-	;;
-statuswebui )
-	echo "\
-<bll># avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print \$7\": \"\$8}'</bll>
-$( avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print $7": "$8}' )"
-	;;
-statuswl )
-	wlandev=$( < $dirshm/wlan )
-	echo "\
-<bll># ifconfig $wlandev</bll>
-$( ifconfig $wlandev | grep -E -v 'RX|TX')
-
-<bll># iwconfig $wlandev</bll>
-$( iwconfig $wlandev | awk NF )"
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth

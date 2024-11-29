@@ -14,8 +14,11 @@
 	<link rel="icon" href="/assets/img/icon.png">
 
 <?php
-$hash      = '?v='.time();
 $page      = $_GET[ 'p' ] ?? '';
+$pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
+foreach( $pages as $p ) $$p = false;
+$$page     = true;
+$hash      = '?v='.time();
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 $filelogin = '/srv/http/data/system/login';
@@ -55,9 +58,6 @@ if ( ! $page ) { // main
 	}
 	$title = 'STATUS';
 } else {         // settings
-	$pages = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
-	foreach( $pages as $p ) $$p = false;
-	$$page = true;
 	$cssp  = [];
 	$css[] = 'settings';
 	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ];       // loaded with $.getScript: d3, pipelineplotter, plotly, qrcode
@@ -74,7 +74,7 @@ if ( ! $page ) { // main
 		$pagetitle = 'Addons-Progress';
 	} else if ( $camilla ) {
 		$icon      = 'camilladsp';
-		$pagetitle = 'Camilla DSP';
+		$pagetitle = 'CamillaDSP';
 		$css       = [ ...$css, 'camilla','equalizer' ];
 		$jsp[]     = 'Sortable';
 	} else if ( $guide ) {
@@ -105,7 +105,6 @@ if ( ! $addon_guide )  {
 	<div id="banner" class="hide"></div>
 	<div id="button-data" class="head hide">'.$pageicon.i( 'close' ).'<span class="title">'.$title.'-DATA</span></div>
 	<pre id="data" class="hide"></pre>
-	<div id="debug"></div>
 ';
 }
 if ( $keyboard )       $html.= '
@@ -131,6 +130,7 @@ function htmlBottom() {
 	if ( $htmlbar ) $html.= '
 	<div id="fader" class="hide"></div>
 	<div id="bar-bottom" class="'.$class.'">'.$htmlbar.'</div>
+	<div id="debug"></div>
 	'.$scripts.'
 </body>
 </html>

@@ -74,7 +74,6 @@ function bookmarkNew() {
 		, message    : '<img src="'+ src + versionHash() +'">'
 					  +'<br><wh>'+ msgpath +'</wh>'
 		, list       : [ 'As:', 'text' ]
-		, focus      : 0
 		, values     : name
 		, checkblank : true
 		, beforeshow : () => {
@@ -165,7 +164,6 @@ function directoryRename() {
 		  icon         : icon
 		, title        : title
 		, list         : [ 'Name', 'text' ]
-		, focus        : 0
 		, values       : V.list.name
 		, checkblank   : true
 		, checkchanged : true
@@ -231,7 +229,6 @@ function playlistNew( name ) {
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, list         : [ 'Name', 'text' ]
-		, focus        : 0
 		, values       : name
 		, checkblank   : true
 		, ok           : () => playlistSave( infoVal() )
@@ -244,7 +241,6 @@ function playlistRename() {
 		, title        : 'Rename Playlist'
 		, message      : 'From: <wh>'+ name +'</wh>'
 		, list         : [ 'To', 'text' ]
-		, focus        : 0
 		, values       : name
 		, checkchanged : true
 		, checkblank   : true
@@ -666,6 +662,21 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	var cmd   = $this.data( 'cmd' );
 	menuHide();
 	$( 'li.updn' ).removeClass( 'updn' );
+	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
+		$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
+		if ( S.player === 'mpd' || cmd !== 'play' ) {
+			$( '#'+ cmd ).trigger( 'click' );
+		} else {
+			$( '#stop' ).trigger( 'click' );
+			setTimeout( () => $( '#'+ cmd ).trigger( 'click' ), 2000 );
+		}
+		return
+	}
+	
+	if ( cmd === 'removerange' ) {
+		playlistRemoveRange( [ V.list.li.index() + 1, S.pllength ] );
+		return
+	}
 	
 	var cmd_function = {
 		  bookmark      : bookmarkNew
@@ -690,16 +701,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	}
 	if ( cmd in cmd_function ) {
 		cmd_function[ cmd ]();
-		return
-	}
-	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
-		if ( S.player === 'mpd' || cmd !== 'play' ) {
-			$( '#'+ cmd ).trigger( 'click' );
-		} else {
-			$( '#stop' ).trigger( 'click' );
-			setTimeout( () => $( '#'+ cmd ).trigger( 'click' ), 2000 );
-		}
 		return
 	}
 	

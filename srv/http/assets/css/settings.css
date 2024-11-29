@@ -5,7 +5,7 @@
 #listwlscan .i-lock { font-size: 16px; vertical-align: 1px }
 .menu {
 	position: absolute;
-	margin-left: 40px;
+	left: calc( 50% - 650px / 2 + 45px );
 	width: 150px;
 	padding: 0;
 	background: var( --cg );
@@ -71,7 +71,7 @@ ul {
 .section pre,
 pre.status {
 	margin-top: 0;
-	padding: 5px;
+	padding: 5px 5px 25px 5px;
 	width: 100%;
 	max-height: 75vh;
 	tab-size: 4;
@@ -89,6 +89,10 @@ pre.status {
 }
 div.helpblock {
 	margin-left: 0;
+}
+#divi2s,
+#divi2smodule {
+	height: 54px;
 }
 .helpblock {
 	display: block;
@@ -111,11 +115,13 @@ heading + .helpblock {
 .helpblock i.btn {
 	width: 22px;
 	line-height: 20px;
-	margin-left: 0;
-	margin-right: 0;
+	margin: 0 4px 0 0;
 	border: 1px solid var( --cga );
 	text-align: center;
 	border-radius: 2px;
+}
+.helpblock btn .btn {
+	border: none;
 }
 .helpblock p {
 	margin: 0 0 0 10px;
@@ -148,8 +154,13 @@ heading + .helpblock {
 .helpblock .helpmenu.tab {
 	border-top: 1px solid #000;
 }
-#infoList .helpmenu.label {
+#infoBox .helpmenu.label {
 	background: var( --cgd );
+}
+#infoBox .helpmenu.label i:not( .submenu ) {
+	width: 24px;
+	line-height: 24px;
+	font-size: 20px;
 }
 #infoList p i {
 	width: 40px;
@@ -320,7 +331,8 @@ heading i.disabled {
 .entries li span,
 .entries .li1,
 .entries .li2,
-.select2-results__options li {
+.select2-results__options li,
+#divvolume .control {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -467,7 +479,7 @@ input.disabled + .switchlabel:after {
 	width: 40px !important;
 	margin-left: 5px;
 	font-size: 26px;
-	line-height: 40px;
+	line-height: 44px;
 	text-align: center;
 }
 .setting {
@@ -605,6 +617,10 @@ input.disabled + .switchlabel:after {
 	width: 40px !important;
 	line-height: 40px;
 }
+#divstorage c {
+	color: var( --cg75 );
+	background-color: var( --cga);
+}
 
 @media (max-height: 730px) {
 	#guideimg {
@@ -654,7 +670,8 @@ input.disabled + .switchlabel:after {
 }
 @media (max-width: 615px) {
 	#bar-bottom { padding: 0 }
-	#bar-bottom a { display: none }
+	#bar-bottom a,
+	#debug { display: none }
 }
 @media (max-width: 375px) {
 	.head .title { margin-left: 10px }

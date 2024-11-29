@@ -4,7 +4,6 @@
 
 CMD=$1
 PKG=$1
-SERVICE=$1
 skip='register IPv6'
 
 configText() {
@@ -30,7 +29,6 @@ configText() {
 case $CMD in
 	ap )
 		PKG=iwd
-		SERVICE=iwd
 		conf=$( configText /var/lib/iwd/ap/$( hostname ).ap )
 		systemctl -q is-active iwd && conf+="
 <bll># iwctl ap list</bll>
@@ -49,13 +47,10 @@ $( bluealsa-aplay -L )"
 		conf=$( configText /etc/default/camilladsp )
 		;;
 	dabradio )
-		echo "\
+		conf="\
 <bll># rtl_test -t</bll>
-$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
-		! systemctl -q is-active mediamtx && exit
-# --------------------------------------------------------------------
+$( tty2std 'timeout 0.1 rtl_test -t' )"
 		PKG=mediamtx
-		SERVICE=mediamtx
 		;;
 	localbrowser )
 		PKG=firefox
@@ -90,26 +85,31 @@ $conf"
 $sharedip"
 		skip+='|Protocol not supported'
 		;;
+	shairportsync )
+		PKG=shairport-sync
+		;;
 	smb )
 		PKG=samba
 		conf=$( configText /etc/samba/smb.conf )
 		;;
 	snapclient )
 		PKG=snapcast
+		SERVICE=$CMD
 		conf="\
 $( configText /etc/default/snapclient )
 
 <bll># SnapServer</bll> <gr>(avahi-browse -kprt _snapcast._tcp)</gr>
 "
-		readarray -t name_ip <<< $( snapserverList )
-		if [[ $name_ip ]]; then
-			conf+="${name_ip[0]} @${name_ip[1]}"
+		if [[ -e $dirsystem/snapclientserver ]]; then
+			conf+='(SnapClient + SnapServer)'
 		else
-			conf+='<gr>(Not available)</gr>'
+			name_ip=$( snapserverList | jq -r .[] )
+			[[ $name_ip ]] && conf+=$name_ip || conf+='<gr>(Not available)</gr>'
 		fi
 		;;
 	snapserver )
 		PKG=snapcast
+		SERVICE=$CMD
 		conf=$( configText /etc/snapserver.conf )
 		;;
 	spotifyd )
@@ -120,6 +120,7 @@ $( configText /etc/default/snapclient )
 		;;
 esac
 [[ ! $conf ]] && conf=$( configText /etc/$PKG.conf )
+[[ ! $SERVICE ]] && SERVICE=$PKG
 status=$( systemctl status $SERVICE \
 			| grep -E -v "$skip" \
 			| sed -E  -e 's|●|<grn>*</grn>|; s|○|*|

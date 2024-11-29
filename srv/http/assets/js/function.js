@@ -145,7 +145,6 @@ function changeIP() { // for android app
 		, title        : 'IP Address'
 		, message      : 'Switch rAudio:'
 		, list         : [ 'New IP', 'text' ]
-		, focus        : 0
 		, boxwidth     : 170
 		, values       : location.host
 		, checkchanged : true
@@ -530,7 +529,7 @@ function displaySubMenu() {
 		.toggleClass( 'i-camilladsp', D.camilladsp )
 		.toggleClass( 'i-equalizer', D.equalizer );
 	D.dsp = D.camilladsp || D.equalizer;
-	[ 'dsp', 'logout', 'multiraudio', 'relays', 'snapclient' ].forEach( el => {
+	[ 'dsp', 'lock', 'multiraudio', 'relays', 'snapclient' ].forEach( el => {
 		var enabled = D[ el ];
 		$( '#'+ el )
 			.toggleClass( 'hide', ! enabled )
@@ -807,7 +806,6 @@ function intervalElapsedClear() {
 function libraryHome() {
 	list( { library: 'home' }, function( data ) {
 		O             = data.order;
-		S.updating_db = data.updating;
 		if ( data.html !== V.libraryhtml ) {
 			V.libraryhtml = data.html;
 			var html      = htmlHash( data.html );
@@ -843,7 +841,9 @@ function list( query, callback, json ) {
 }
 function lyricsGet( refresh ) {
 	banner( 'lyrics blink', 'Lyrics', 'Fetch ...', -1 );
-	bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, refresh || '', 'CMD ARTIST TITLE ACTION' ], data => {
+	var artist = accent2plain( V.lyricsartist );
+	var title  = accent2plain( V.lyricstitle );
+	bash( [ 'lyrics', artist, title, refresh || '', 'CMD ARTIST TITLE ACTION' ], data => {
 		lyricsShow( data );
 		bannerHide();
 		$( '#lyricsrefresh' ).removeClass( 'blink' );
@@ -1195,6 +1195,7 @@ function renderLibrary() { // library home
 function renderLibraryCounts() {
 	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
+	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
 		var mode  = $this.data( 'mode' );
@@ -1818,7 +1819,7 @@ function setPlaylistScroll() {
 		} else if ( S.state === 'play' ) {
 			if ( S.webradio ) {
 				$stationname.removeClass( 'hide' );
-				$name.html( S.Title || '·&ensp;·&ensp;·' );
+				$name.html( S.Title || dots );
 				if ( S.coverart && S.coverart !== S.stationcover ) {
 					$liactive.find( 'img' ).on( 'lazyloaded', setPlaylistWebRadioCoverart ); // fix - lazysizes load stationcover
 					setPlaylistWebRadioCoverart(); // lazysizes already loaded
