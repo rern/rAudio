@@ -38,7 +38,7 @@ legend .title.installed.update::before {
 }
 .revisiontext {
 	padding-left: 20px;
-	line-height: 24px;
+	line-height: 22px;
 }
 .detailtext i {
 	color: var( --cg60 );
