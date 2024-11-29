@@ -82,7 +82,12 @@ function list2JSON( list ) {
 	}
 	
 	try {
-		S = JSON.parse( list );
+		if ( $.isEmptyObject( S ) ) {
+			S = JSON.parse( list );
+		} else {
+			list = JSON.parse( list );
+			$.each( ( k, v ) => S[ k ] = v );
+		}
 	} catch( e ) {
 		errorDisplay( e.message, list );
 		return false
@@ -126,7 +131,7 @@ function refreshData() {
 			switchSet();
 			renderPage();
 		} else {
-			page === 'camilla' ? renderPage() : $( '#data' ).html( highlightJSON( S ) );
+			$( '#data' ).html( highlightJSON( S ) );
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
 	} );
@@ -157,7 +162,7 @@ function switchEnable() {
 	delete SW;
 }
 function switchSet() {
-	if ( page === 'camilla' && ( V.tab !== 'devices' || wscamilla === null ) ) return
+	if ( page === 'camilla' && V.tab !== 'devices' ) return
 	
 	var $switch = $( '.switch' );
 	$switch.removeClass( 'disabled' );
