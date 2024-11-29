@@ -165,7 +165,8 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null & # $mixer might be changed
 
-[[ $CARD == -1 && ! $BLUETOOTH ]] && pushStatus && exit
+pushStatus
+[[ $CARD == -1 && ! $BLUETOOTH ]] && exit
 # --------------------------------------------------------------------
 # renderers
 [[ ! $mixer || $BLUETOOTH || $CAMILLADSP || $EQUALIZER ]] && mixerno=1
@@ -229,4 +230,14 @@ mixer = "'$mixer'"'
 	fi
 fi
 
-pushStatus
+if [[ $CAMILLADSP ]]; then
+	. $dirsettings/camilla-devices.sh
+elif [[ $EQUALIZER ]]; then
+	value=$( getVar current $dirsystem/equalizer.json )
+	[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
+	$dirbash/cmd.sh "equalizer
+$value
+$user
+CMD VALUE USR"
+fi
+

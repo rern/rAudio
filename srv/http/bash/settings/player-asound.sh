@@ -1,8 +1,12 @@
 #!/bin/bash
 
 ### included by <<< player-conf.sh
-[[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
-[[ ! $CARD ]] && . <( sed -n -E '/^card|^name/ {s/(^card|^name)/\U\1/;p}' $dirshm/output )
+if [[ ! $dirbash ]]; then # if run directly
+	. /srv/http/bash/common.sh 
+	. $dirshm/output
+	CARD=$card
+	NAME=$name
+fi
 
 if [[ -e $dirshm/btreceiver ]]; then
 	BLUETOOTH=1
@@ -98,14 +102,3 @@ ctl.equal {
 fi
 ######## >
 echo "$ASOUNDCONF" >> /etc/asound.conf # append after default lines set by player-devices.sh
-
-if [[ $CAMILLADSP ]]; then
-	$dirsettings/camilla-devices.sh
-elif [[ -e $dirsystem/equalizer ]]; then
-	value=$( getVar current $dirsystem/equalizer.json )
-	[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
-	$dirbash/cmd.sh "equalizer
-$value
-$user
-CMD VALUE USR"
-fi

@@ -1,7 +1,12 @@
 #!/bin/bash
 
-. /srv/http/bash/common.sh
-. $dirshm/output
+### included by <<< player-conf.sh
+if [[ ! $dirbash ]]; then # if run directly
+	. /srv/http/bash/common.sh 
+	. $dirshm/output
+	CARD=$card
+	NAME=$name
+fi
 
 $dirbash/cmd.sh playerstop # must stop for aplay --dump-hw-params
 systemctl stop camilladsp
@@ -10,7 +15,7 @@ if grep -q -m1 configs-bt /etc/default/camilladsp; then
 else
 	DEVICES=( '{ "Loopback": "hw:Loopback,0" }' "$( < $dirshm/devices )" )
 fi
-for c in Loopback $card; do
+for c in Loopback $CARD; do
 	lines=$( tty2std "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" )
 	CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']\r' ) )
 	formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' <<< $lines )
@@ -47,7 +52,7 @@ if [[ -e $dirshm/btreceiver ]]; then
 	$dirsettings/camilla-bluetooth.sh btreceiver
 else
 	fileconf=$( getVar CONFIG /etc/default/camilladsp )
-	fileformat="$dirsystem/camilla-$name"
+	fileformat="$dirsystem/camilla-$NAME"
 	[[ -s $fileformat ]] && format=$( getContent "$fileformat" ) || format=$( jq -r .[0] <<< ${FORMATS[1]} )
 	format0=$( getVarYml playback format )
 	if [[ $format0 != $format ]]; then
@@ -55,6 +60,6 @@ else
 		echo $format > "$fileformat"
 	fi
 	card0=$( getVarYml playback device | cut -c4 )
-	[[ $card0 != $card ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$card',0"/' "$fileconf"
+	[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
 	camillaDSPstart
 fi
