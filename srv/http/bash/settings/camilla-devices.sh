@@ -41,7 +41,7 @@ data='
 , "samplings" : {
 	'${SAMPLINGS:1}'
 }'
-echo "{ $data }" | jq > $dirshm/camilladevices
+echo "{ $data }" | jq > $dirshm/hwparams
 ######## <
 if [[ -e $dirshm/btreceiver ]]; then
 	$dirsettings/camilla-bluetooth.sh btreceiver
