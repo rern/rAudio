@@ -157,7 +157,7 @@ function switchEnable() {
 	delete SW;
 }
 function switchSet() {
-	if ( page === 'camilla' && ( V.tab !== 'devices' || typeof S.resampler === 'undefined' ) ) return
+	if ( page === 'camilla' && ( V.tab !== 'devices' || wscamilla === null ) ) return
 	
 	var $switch = $( '.switch' );
 	$switch.removeClass( 'disabled' );
