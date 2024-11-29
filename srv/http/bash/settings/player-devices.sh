@@ -100,9 +100,3 @@ mixer="'$MIXER'"
 mixertype='$MIXERTYPE > $dirshm/output
 echo "{ ${LISTDEVICE:1} }" > $dirshm/devices
 echo $CARD > $dirsystem/asoundcard
-if [[ -e $dirshm/btreceiver ]]; then
-	FN=volumeBlueAlsa
-else
-	[[ $MIXERTYPE == software ]] && FN=volumeMpd || FN=volumeAmixer
-fi
-echo $FN > $dirshm/volumefunction

@@ -241,3 +241,11 @@ $user
 CMD VALUE USR"
 fi
 
+if [[ $BLUETOOTH ]]; then
+	FN=volumeBlueAlsa
+elif [[ $mixertype == software ]]; then
+	FN=volumeMpd 
+else
+	FN=volumeAmixer
+fi
+echo $FN > $dirshm/volumefunction
