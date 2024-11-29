@@ -105,7 +105,6 @@ if ( ! $addon_guide )  {
 	<div id="banner" class="hide"></div>
 	<div id="button-data" class="head hide">'.$pageicon.i( 'close' ).'<span class="title">'.$title.'-DATA</span></div>
 	<pre id="data" class="hide"></pre>
-	<div id="debug"></div>
 ';
 }
 if ( $keyboard )       $html.= '
@@ -131,6 +130,7 @@ function htmlBottom() {
 	if ( $htmlbar ) $html.= '
 	<div id="fader" class="hide"></div>
 	<div id="bar-bottom" class="'.$class.'">'.$htmlbar.'</div>
+	<div id="debug"></div>
 	'.$scripts.'
 </body>
 </html>

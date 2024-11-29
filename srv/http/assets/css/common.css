@@ -271,6 +271,20 @@ sp {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;
 }
+.infobtn,
+.infomessage,
+#debug,
+#infoOverlay {
+	-webkit-user-select: text;
+	user-select: text;
+}
+input:focus {
+	outline: none;
+}
+.select2-container.focus {
+	outline: 2px solid var(--cgl );
+	outline-offset: 1px;
+}
 #loader,
 #fader {
 	position   : fixed;
@@ -552,8 +566,6 @@ input[ type=checkbox ] {
 	color: var( --cw ) !important;
 	background-color: var( --cg );
 	box-shadow: var( --shadow-btn );
-	-webkit-user-select: none;
-	user-select: none;
 }
 #infoBox > .infobtn {
 	margin-top: 10px;
@@ -617,8 +629,6 @@ hr {
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 	-webkit-overflow-scrolling: touch;
-	-webkit-user-select: none;
-	user-select: none;
 }
 #infoOverlay a {
 	height: 40px;
@@ -798,10 +808,6 @@ hr {
 }
 #infoList .menu i {
 	width: 40px;
-}
-.infomessage {
-	-webkit-user-select: text;
-	user-select: text;
 }
 .infomessage pre {
 	font-size: 16px;
@@ -1034,13 +1040,6 @@ input[ type=radio ]:disabled {
 		width: calc( 100% / 0.9 );
 		left: calc( -100% / 18 );
 	}
-}
-input:focus {
-	outline: none;
-}
-.select2-container.focus {
-	outline: 2px solid var(--cgl );
-	outline-offset: 1px;
 }
 @media ( hover:hover ) {
 	/* :hover *********************************************************/
