@@ -4,11 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20241128
-if [[ -e $dirsystem/camilladsp ]]; then
-	[[ ! -e $dirshm/camilladevices ]] && $dirsettings/player-asound.sh
-fi
-
+# 20241130
 systemctl -q is-active mediamtx && touch $dirsystem/dabradio
 
 file=$dirsystem/lcdchar.conf
@@ -91,3 +87,6 @@ $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20241130
+[[ -e $dirsystem/camilladsp && ! -e $dirshm/hwparams ]] && $dirsettings/player-conf.sh
