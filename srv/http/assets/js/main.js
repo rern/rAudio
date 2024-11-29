@@ -988,7 +988,6 @@ $( '.btn-cmd' ).on( 'click', function() {
 			playlistSkip();
 		}
 	}
-	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset', true, 'CMD PLAY' ] );
 } );
 $( '#previous, #next, #coverR, #coverL' ).press( function( e ) {
 	var next = [ 'next', 'coverR' ].includes( e.target.id );

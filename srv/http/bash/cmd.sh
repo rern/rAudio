@@ -580,6 +580,9 @@ mpcplayback )
 			rm -f $dirshm/cdstart
 			$dirbash/status-push.sh
 		fi
+		if [[ -e $dirshm/relayson ]]; then
+			grep -q -m1 ^timeron=true $dirsystem/relays.conf && $dirbash/relays-timer.sh &> /dev/null &
+		fi
 	else
 		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && mpcElapsed > $dirshm/elapsed
 		mpc -q $ACTION
@@ -754,7 +757,7 @@ playlistpush )
 	;;
 relaystimerreset )
 	$dirbash/relays-timer.sh &> /dev/null &
-	[[ ! $PLAY ]] && pushData relays '{ "reset": '$( getVar timer $dirsystem/relays.conf )' }'
+	pushData relays '{ "reset": '$( getVar timer $dirsystem/relays.conf )' }'
 	;;
 savedpldelete )
 	rm "$dirplaylists/$NAME.m3u"
