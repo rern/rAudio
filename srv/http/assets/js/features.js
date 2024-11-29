@@ -510,12 +510,3 @@ function renderPage() {
 	}
 	showContent();
 }
-
-$( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-$( '#divdsp' ).on( 'click', '.switch:not( .disabled )', function() {
-	console.log(0)
-	$( '#divdsp .switch' ).addClass( 'disabled' );
-} );
-
-} );
