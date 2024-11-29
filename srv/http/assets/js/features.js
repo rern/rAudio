@@ -513,7 +513,8 @@ function renderPage() {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '#divdsp .switch' ).on( 'click', function() {
+$( '#divdsp' ).on( 'click', '.switch:not( .disabled )', function() {
+	console.log(0)
 	$( '#divdsp .switch' ).addClass( 'disabled' );
 } );
 
