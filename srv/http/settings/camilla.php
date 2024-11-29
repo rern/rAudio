@@ -131,7 +131,7 @@ $body     = [
 			<div id="vugrid">'.$vugrid.'</div>
 			<div id="in">'.str_replace( 'X', 'c0', $bar ).str_replace( 'X', 'c1', $bar ).'</div>
 			<div id="vulabel">'.$vulabel.'</div>
-			<div id="out">'.str_replace( 'X', 'p0', $bar ).'</div>
+			<div id="out"></div>
 		   </div>'
 	)
 	, htmlSectionStatus(

@@ -721,7 +721,7 @@ var graph     = {
 	}
 }
 var render    = {
-	  status      : () => {
+	  status      : () => { // onload only
 		playbackButton();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
@@ -739,30 +739,13 @@ var render    = {
 		$( '#configuration' )
 			.html( htmlOption( S.ls.configs ) )
 			.val( S.configname );
-		$( '#configuration' ).prop( 'disabled', $( '#configuration option' ).length === 1 );
-		if ( V.runonce ) return
-		
-		// run once
-		V.runonce = true;
-		if ( DEV.playback.channels > 1 ) {
-			var htmlout = $( '#out' ).html();
-			for ( i = 1; i < DEV.playback.channels; i++ ) $( '#out' ).append( htmlout.replace( '0', i +'' ) );
-		}
-		var ch      = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
+		var chC = DEV.capture.channels;
+		var chP = DEV.playback.channels;
+		var ch  = chC > chP ? chC : chP;
+		var htmlout = '<div class="bar"></div><div class="bar peak p0"></div><div class="bar rms p0"></div>';
+		if ( chP > 1 ) for ( i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
+		$( '#out' ).html( htmlout );
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
-		bash( 'data-config.sh hwparams', data => {
-			var samplings                    = data.playback.samplings;
-			D0.samplerate                    = Object.values( samplings );
-			D.main[ 0 ][ 2 ].kv              = samplings;
-			Dlist.capture_samplerate[ 2 ].kv = samplings;
-			Dlist.formatC[ 2 ].kv            = data.capture.formats;
-			Dlist.formatP[ 2 ].kv            = data.playback.formats;
-			Dlist.deviceC[ 2 ]               = data.capture.device;
-			Dlist.deviceP[ 2 ]               = data.playback.device;
-			Dlist.channelsC[ 2 ].updn.max    = data.capture.channels;
-			Dlist.channelsP[ 2 ].updn.max    = data.playback.channels;
-		}, 'json' );
-		wscamilla.send( '"GetSupportedDeviceTypes"' );
 	}
 	, statusStop  : () => {
 		if ( ! ( 'intervalvu' in V ) ) return
@@ -1689,6 +1672,7 @@ var setting   = {
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
+			setting.switchValues();
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			if ( ! V.press ) {
 				clearTimeout( V.timeoutsave );
@@ -1696,6 +1680,9 @@ var setting   = {
 			}
 		}, wscamilla ? 0 : 300 );
 		if ( titlle ) banner( V.tab, titlle, msg );
+	}
+	, switchValues  : () => {
+		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] === true );
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
@@ -1909,17 +1896,23 @@ var common    = {
 					MIX      = S.config.mixers;
 					PIP      = S.config.pipeline;
 					PRO      = S.config.processors;
-					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
-						S[ k ] = DEV[ k ] === true;
-					} );
-					Dlist.filename[ 2 ].kv = S.ls.raw;
-					if ( $( '#data' ).hasClass( 'hide' ) ) {
-						render.status();
-						render.tab();
-					} else {
-						$( '#data' ).html( highlightJSON( S ) );
-					}
+					render.status();
+					render.tab();
 					showContent();
+					var dev                          = S.devices;
+					var samplings                    = dev.playback.samplings;
+					D0.samplerate                    = Object.values( samplings );
+					D.main[ 0 ][ 2 ].kv              = samplings;
+					Dlist.capture_samplerate[ 2 ].kv = samplings;
+					Dlist.formatC[ 2 ].kv            = dev.capture.formats;
+					Dlist.formatP[ 2 ].kv            = dev.playback.formats;
+					Dlist.deviceC[ 2 ]               = dev.capture.device;
+					Dlist.deviceP[ 2 ]               = dev.playback.device;
+					Dlist.channelsC[ 2 ].updn.max    = dev.capture.channels;
+					Dlist.channelsP[ 2 ].updn.max    = dev.playback.channels;
+					Dlist.filename[ 2 ].kv           = S.ls.raw;
+					setting.switchValues();
+					wscamilla.send( '"GetSupportedDeviceTypes"' );
 					break;
 				case 'GetSupportedDeviceTypes':
 					var type = {};

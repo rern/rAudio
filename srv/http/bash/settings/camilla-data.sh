@@ -15,6 +15,7 @@ data='
 , "cardname"   : "'$name'"
 , "configname" : "'$( sed -n '/^CONFIG/ {s|.*/||; p}' /etc/default/camilladsp )'"
 , "control"    : "'$mixer'"
+, "devices"    : '$( < $dirshm/hwparams )'
 , "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
 , "state"      : "'$( mpcState )'"
