@@ -294,7 +294,7 @@ relays )
 	[[ ! -e $dirshm/relayson ]] && exit
 # --------------------------------------------------------------------
 	if grep -q timeron=true $dirsystem/relays.conf; then
-		$dirbash/relays-timer.sh
+		$dirbash/relays-timer.sh &> /dev/null &
 	else
 		killProcess relaystimer
 	fi
