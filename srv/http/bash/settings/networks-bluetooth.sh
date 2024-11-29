@@ -52,7 +52,6 @@ if [[ $udev && $ACTION == disconnect ]]; then
 		MAC=${line/ *}
 		bluetoothctl info $MAC | grep -q -m1 'Connected: yes' && MAC= || break
 	done <<< $lines
-	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 	[[ $MAC ]] && disconnectRemove
 	exit
 # --------------------------------------------------------------------

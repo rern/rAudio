@@ -1,13 +1,5 @@
 #!/bin/bash
 
-getVarYml() { # var: value || var: "value";*
-	if [[ $2 ]]; then
-		sed -n -E '/^\s*'$1':/,/^\s*'$2':/ {/'$2'/! d; s/^.*:\s"*|"*$//g; p}' "$fileconf" # /var1/,/var2/ > var2: value > value
-	else
-		sed -n -E '/^\s*'$1':/ {s/^.*:\s"*|"*$//g; p}' "$fileconf"                        # var: value value
-	fi
-}
-
 ### included by <<< player-conf.sh
 [[ ! $dirbash ]] && . /srv/http/bash/common.sh     # if run directly
 [[ ! $CARD ]] && . <( sed -n -E '/^card|^name/ {s/(^card|^name)/\U\1/;p}' $dirshm/output )
@@ -107,75 +99,13 @@ fi
 ######## >
 echo "$ASOUNDCONF" >> /etc/asound.conf # append after default lines set by player-devices.sh
 
-# ----------------------------------------------------------------------------
 if [[ $CAMILLADSP ]]; then
-	$dirbash/cmd.sh playerstop # must stop for exclusive device access - aplay probing
-	systemctl stop camilladsp
-	default=$( < /etc/default/camilladsp )
-	configfile=$( sed -n '/^CONFIG/ {s/.*=//; p}' <<< $default )
-	if grep -q -m1 configs-bt <<< $default; then
-		bluetooth=true
-		name=$( < $dirshm/btname )
-		grep -q dbus_path "$configfile" && DEVICES=( '{ "Bluez": "bluez" }' '{ "blueALSA": "bluealsa" }' )
-	else
-		DEVICES=( '{ "Loopback": "hw:Loopback,0" }' "$( < $dirshm/devices )" )
-	fi
-	for c in Loopback $CARD; do
-		lines=$( tty2std "timeout 0.1 aplay -D hw:$c /dev/zero --dump-hw-params" )
-		CHANNELS+=( $( awk '/^CHANNELS/ {print $NF}' <<< $lines | tr -d ']\r' ) )
-		formats=$( sed -n '/^FORMAT/ {s/_3LE/LE3/; s/FLOAT_LE/FLOAT32LE/; s/^.*: *\|[_\r]//g; s/ /\n/g; p}' <<< $lines )
-		listformat=
-		for f in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
-			grep -q $f <<< $formats && listformat+=', "'$f'"'
-		done
-		FORMATS+=( "[ ${listformat:1} ]" )
-		if [[ $c != Loopback ]]; then
-			ratemax=$( sed -n -E '/^RATE/ {s/.* (.*)].*/\1/; p}' <<< $lines )
-			for r in 44100 48000 88200 96000 176400 192000 352800 384000 705600 768000; do
-				(( $r > $ratemax )) && break || SAMPLINGS+=', "'$( sed 's/...$/,&/' <<< $r )'": '$r
-			done
-		fi
-	done
-######## >
-	data='
-  "capture"  : {
-	  "device"   : '${DEVICES[0]}'
-	, "channels" : '${CHANNELS[0]}'
-	, "formats"  : '${FORMATS[0]}'
-}
-, "playback" : {
-	  "device"   : '${DEVICES[1]}'
-	, "channels" : '${CHANNELS[1]}'
-	, "formats"  : '${FORMATS[1]}'
-}
-, "samplings" : {
-	'${SAMPLINGS:1}'
-}'
-	echo "{ $data }" | jq > $dirshm/camilladevices
-######## <
-	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
-	if [[ $BLUETOOTH ]]; then
-		$dirsettings/camilla-bluetooth.sh btreceiver
-	else
-		fileformat="$dirsystem/camilla-$NAME"
-		[[ -e $fileformat ]] && FORMAT=$( getContent "$fileformat" ) || FORMAT=$( jq -r .[0] <<< ${FORMATS[1]} )
-		[[ ! $FORMAT ]] && FORMAT=S16LE
-		format0=$( getVarYml playback format )
-		if [[ $format0 != $FORMAT ]]; then
-			sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$FORMAT'/' "$fileconf"
-			echo $FORMAT > "$fileformat"
-		fi
-		card0=$( getVarYml playback device | cut -c4 )
-		[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/(device: "hw:).*/\1'$CARD',0"/' "$fileconf"
-		camillaDSPstart
-	fi
-else
-	if [[ -e $dirsystem/equalizer ]]; then
-		value=$( getVar current $dirsystem/equalizer.json )
-		[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
-		$dirbash/cmd.sh "equalizer
+	$dirsettings/camilla-devices.sh
+elif [[ -e $dirsystem/equalizer ]]; then
+	value=$( getVar current $dirsystem/equalizer.json )
+	[[ $( < $dirshm/player ) =~ (airplay|spotify) ]] && user=root || user=mpd
+	$dirbash/cmd.sh "equalizer
 $value
 $user
 CMD VALUE USR"
-	fi
 fi

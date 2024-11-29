@@ -226,6 +226,14 @@ getVar() { # var=value
 	fi
 	[[ $var ]] && quoteEscape $var || echo $3
 }
+getVarYml() { # var: value || var: "value";*
+	if [[ $2 ]]; then
+		sed -n -E '/^\s*'$1':/,/^\s*'$2':/ {/'$2'/! d; s/^.*:\s"*|"*$//g; p}' "$fileconf" # /var1/,/var2/ > var2: value > value
+	else
+		sed -n -E '/^\s*'$1':/ {s/^.*:\s"*|"*$//g; p}' "$fileconf"                        # var: value value
+	fi
+}
+
 inOutputConf() {
 	local file
 	file=$dirmpdconf/output.conf

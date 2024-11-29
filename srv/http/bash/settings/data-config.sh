@@ -46,6 +46,9 @@ hddapm )
 	apm=$( hdparm -B $2 | sed -n '/APM_level/ {s/.* //; p}' )
 	[[ $apm ]] && echo $apm || echo false
 	;;
+hwparams )
+	cat $dirshm/hwparams
+	;;
 i2seeprom )
 	grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true || echo false
 	;;

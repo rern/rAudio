@@ -30,10 +30,6 @@ if systemctl -q is-active nfs-server; then # server rAudio
 elif [[ -e $filesharedip ]]; then
 	sed -i "/$( ipAddress )/ d" $filesharedip
 fi
-if [[ -e $dirsystem/camilladsp ]]; then
-	$dirsettings/camilla.sh saveconfig
-	[[ -e /etc/default/camilladsp.backup ]] && mv -f /etc/default/camilladsp{.backup,}
-fi
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 touch $dirshm/power
 mpc -q stop

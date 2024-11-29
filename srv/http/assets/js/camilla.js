@@ -256,19 +256,19 @@ var D0        = {
 var Dlist     = {
 	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
 	, profile            : [ 'Profile',            'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
-	, typeC              : [ 'Type',               'select' ] // on 'GetSupportedDeviceTypes'
-	, typeP              : [ 'Type',               'select' ] // ^
-	, deviceC            : [ 'Device',             'select' ] // ^
-	, deviceP            : [ 'Device',             'select' ] // ^
-	, formatC            : [ 'Format',             'select' ] // ^
-	, formatP            : [ 'Format',             'select' ] // ^
-	, filename           : [ 'Filename',           'select' ] // ^
-	, channelsC          : [ 'Channels',           'number' ] // ^
-	, channelsP          : [ 'Channels',           'number' ] // ^
+	, typeC              : [ 'Type',               'select', {} ] // on 'GetSupportedDeviceTypes'
+	, typeP              : [ 'Type',               'select', {} ] // ^
+	, deviceC            : [ 'Device',             'select', {} ]                                    // ^ > hwparams
+	, deviceP            : [ 'Device',             'select', {} ]                                    // ^
+	, formatC            : [ 'Format',             'select', { kv: {}, nosort: true } ]              // ^
+	, formatP            : [ 'Format',             'select', { kv: {}, nosort: true } ]              // ^
+	, filename           : [ 'Filename',           'select', { kv: {}, nosort: true } ]              // ^
+	, channelsC          : [ 'Channels',           'number', { updn: { step: 1, min: 1, max: 1 } } ] // ^
+	, channelsP          : [ 'Channels',           'number', { updn: { step: 1, min: 1, max: 1 } } ] // ^
 	, extra_samples      : [ 'Extra samples',      'number' ]
 	, skip_bytes         : [ 'Skip bytes',         'number' ]
 	, read_bytes         : [ 'Read bytes',         'number' ]
-	, capture_samplerate : [ 'Capture samplerate', 'select' ] // ^
+	, capture_samplerate : [ 'Capture samplerate', 'select', { kv: {}, nosort: true } ]              // ^
 	, exclusive          : [ 'Exclusive',          'checkbox' ]
 	, loopback           : [ 'Loopback',           'checkbox' ]
 	, change_format      : [ 'Change format',      'checkbox' ]
@@ -280,7 +280,7 @@ var D1        = {
 }
 var D         = {
 	  main      : [
-		  [ 'Sample rate',       'select' ] // on 'GetSupportedDeviceTypes'
+		  [ 'Sample rate',       'select', { kv: {}, nosort: true } ]                               // ^
 		, [ 'Chunk size',        'number' ]
 		, [ 'Queue limit',       'number' ]
 		, [ 'Silence Threshold', 'number' ]
@@ -750,6 +750,18 @@ var render    = {
 		}
 		var ch      = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
+		bash( 'data-config.sh hwparams', data => {
+			D0.samplerate                    = Object.values( data.samplings );
+			D.main[ 0 ][ 2 ].kv              = data.samplings;
+			Dlist.capture_samplerate[ 2 ].kv = data.samplings;
+			Dlist.formatC[ 2 ].kv            = data.capture.formats;
+			Dlist.formatP[ 2 ].kv            = data.playback.formats;
+			Dlist.deviceC[ 2 ]               = data.capture.device;
+			Dlist.deviceP[ 2 ]               = data.playback.device;
+			Dlist.channelsC[ 2 ].updn.max    = data.capture.channels;
+			Dlist.channelsP[ 2 ].updn.max    = data.playback.channels;
+		}, 'json' );
+		wscamilla.send( '"GetSupportedDeviceTypes"' );
 	}
 	, statusStop  : () => {
 		if ( ! ( 'intervalvu' in V ) ) return
@@ -1899,15 +1911,16 @@ var common    = {
 					[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
 						S[ k ] = ! [ null, false ].includes( DEV[ k ] );
 					} );
+					Dlist.filename[ 2 ].kv = S.ls.raw;
 					if ( $( '#data' ).hasClass( 'hide' ) ) {
 						render.status();
 						render.tab();
 					} else {
 						$( '#data' ).html( highlightJSON( S ) );
 					}
+					showContent();
 					break;
 				case 'GetSupportedDeviceTypes':
-					showContent();
 					var type = {};
 					[ 'playback', 'capture' ].forEach( ( k, i ) => {
 						type[ k ] = {};
@@ -1916,19 +1929,8 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
-					Dlist.typeC.push( type.capture );
-					Dlist.typeP.push( type.playback );
-					Dlist.filename.push( { kv: S.ls.raw } );
-					Dlist.formatC.push( { kv: S.devices.capture.formats, nosort: true } );
-					Dlist.formatP.push( { kv: S.devices.playback.formats, nosort: true } );
-					Dlist.deviceC.push( S.devices.capture.device );
-					Dlist.deviceP.push( S.devices.playback.device );
-					Dlist.channelsC.push( { updn: { step: 1, min: 1, max: S.devices.capture.channels } } );
-					Dlist.channelsP.push( { updn: { step: 1, min: 1, max: S.devices.playback.channels } } );
-					var samplings     = { kv: S.devices.samplings, nosort: true }
-					Dlist.capture_samplerate.push( samplings );
-					D.main[ 0 ].push( samplings );
-					D0.samplerate     = Object.values( S.devices.samplings )
+					Dlist.typeC[ 2 ] = type.capture;
+					Dlist.typeP[ 2 ] = type.playback;
 					break;
 				case 'Invalid':
 					info( {
@@ -1943,7 +1945,6 @@ var common    = {
 	, wsGetConfig   : () => {
 		setTimeout( () => {
 			wscamilla.send( '"GetConfigJson"' );
-			if ( Dlist.typeC.length === 2 ) wscamilla.send( '"GetSupportedDeviceTypes"' );
 		}, wscamilla.readyState === 1 ? 0 : 300 ); 
 	}
 	, wsGetState    : () => {
