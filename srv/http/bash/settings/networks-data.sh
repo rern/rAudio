@@ -48,6 +48,7 @@ listWlan() {
 					ip=$( ipAddress $wlandev )
 					[[ $ip ]] && break || sleep 1
 				done
+				gateway=$( gatwayAddress $wlandev )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
   "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )'

@@ -7,6 +7,7 @@ $( '.helphead' ).off( 'click' ).on( 'click', function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
 	$( this ).toggleClass( 'bl', hidden );
 	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
+	Object.keys( S ).forEach( k => V[ k ] = hidden );
 } );
 $( '.container' ).on( 'click', '.revision', function() {
 	$this = $( this );
@@ -15,6 +16,7 @@ $( '.container' ).on( 'click', '.revision', function() {
 	$( '.helphead' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
 	$this.toggleClass( 'active' );
+	V[ $this.parents( '.divaddon' ).prop( 'id' ) ] = hidden;
 } ).on( 'click', '#list li', function() {
 	alias = $( this ).data( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
@@ -103,7 +105,8 @@ function renderPage() {
 		var notverified = S.status.notverified.includes( alias );
 		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +'</a>' : '';
 		if ( 'revision' in addon ) {
-			var revision = '<p class="revisiontext hide">';
+			var hide     = V[ alias ] ? '' : ' hide';
+			var revision = '<p class="revisiontext'+ hide +'">';
 			addon.revision.forEach( el => revision += '<gr>•</gr> '+ el +'<br>' );
 			revision    += '</p>';
 		} else {
