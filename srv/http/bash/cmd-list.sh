@@ -38,12 +38,13 @@ touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
 [[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
 rm -f $dirmpd/{updatestart,updating}
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-[[ -e $dirdabradio ]] && dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l ) || dabradio=0
 counts='
   "song"      : '$song'
-, "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
-, "dabradio"  : '$dabradio'
 , "playlists" : '$( ls -1 $dirplaylists | wc -l )
+for d in dabradio webradio; do
+	[[ -e $dirdata/$d ]] && counts+='
+, "'$d'"      :'$( find -L $dirdata/$d -type f | grep -v -E '\.jpg$|\.png$|\.gif$' | wc -l )
+done
 if [[ $song == 0 ]]; then
 	for mode in $modes $modelatest; do
 		rm -f $dirmpd/$mode
