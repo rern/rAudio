@@ -5,8 +5,8 @@
 . /srv/http/bash/common.sh
 
 data+=$( settingsEnabled \
-			$dirsystem camilladsp dabradio devicewithbt equalizer soxr \
-			$dirmpdconf autoupdate.conf buffer.conf custom.conf ffmpeg.conf normalization.conf outputbuffer.conf replaygain.conf )
+			$dirsystem camilladsp custom dabradio devicewithbt equalizer soxr \
+			$dirmpdconf autoupdate.conf buffer.conf ffmpeg.conf normalization.conf outputbuffer.conf replaygain.conf )
 
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 mixers=$( getContent $dirshm/mixers )

@@ -84,7 +84,7 @@ audio_output {
     ...
     mixer_device   "hw:${ S.output.card }"
 </pre></td></tr>
-<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
+<tr><td><textarea style="padding-left: 42px"></textarea></td></tr>
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
 </table>`;
