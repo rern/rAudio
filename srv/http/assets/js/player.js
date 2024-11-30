@@ -301,7 +301,9 @@ var util     = {
 	}
 	, statusSet : () => {
 		var htmlstatus =  S.version +'<br>';
-		[ 'song', 'webradio', 'dabradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&ensp;'+ S.counts[ k ].toLocaleString() + sp( 15 ) );
+		[ 'song', 'webradio', 'dabradio' ].forEach( k => {
+			if ( k in S.counts ) htmlstatus += ico( k +' gr' ) +'&ensp;'+ S.counts[ k ].toLocaleString() + sp( 15 );
+		} );
 		if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
 		htmlstatus    += '<br>'+ S.lastupdate;
 		if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';
