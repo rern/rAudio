@@ -84,7 +84,7 @@ audio_output {
     ...
     mixer_device   "hw:${ S.output.card }"
 </pre></td></tr>
-<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
+<tr><td><textarea style="padding-left: 42px"></textarea></td></tr>
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
 </table>`;
@@ -109,16 +109,16 @@ audio_output {
 					}
 					
 					notifyCommon();
-					bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
-						if ( ! mpdstart ) {
+					bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], error => {
+						if ( error ) {
 							bannerHide();
 							info( {
 								  ...SW
-								, message : 'MPD failed with the added lines'
-											+'<br>Restored to previous configurations.'
+								, message : iconwarning +'MPD failed with the added lines'
+											+'<br>Current configuration restored.'
 							} );
 						}
-					}, 'json' );
+					} );
 				}
 			} );
 		} );
@@ -184,10 +184,11 @@ audio_output {
 	, mixertype    : () => {
 		info( {
 			  ...SW
-			, list   : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
-			, values : S.mixertype ? S.output.mixertype : 'hardware'
-			, cancel : switchCancel
-			, ok     : () => util.mixerSet( infoVal() )
+			, list         : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+			, values       : S.mixertype ? S.output.mixertype : 'hardware'
+			, checkchanged : S.mixertype
+			, cancel       : switchCancel
+			, ok           : () => util.mixerSet( infoVal() )
 		} );
 	}
 	, outputbuffer : values => {
@@ -301,7 +302,10 @@ var util     = {
 	}
 	, statusSet : () => {
 		var htmlstatus =  S.version +'<br>';
-		[ 'song', 'webradio', 'dabradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&ensp;'+ S.counts[ k ].toLocaleString() + sp( 15 ) );
+		[ 'song', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
+			var count = S.counts[ k ];
+			if ( count ) htmlstatus += ico( k +' gr' ) +'&ensp;'+ count.toLocaleString() + sp( 15 );
+		} );
 		if ( S.updating_db ) htmlstatus += ico( 'library gr blink' );
 		htmlstatus    += '<br>'+ S.lastupdate;
 		if ( S.updatetime ) htmlstatus += '<wide> <gr>'+ S.updatetime +'</gr></wide>';
@@ -361,7 +365,7 @@ function renderPage() {
 }
 ps.mpdUpdate = data => {
 	if ( 'done' in data ) {
-		$.each( S.counts, ( k, v ) => S[ k ] = data.done[ k ] );
+		$.each( S.counts, ( k, v ) => { S[ k ] = data.done[ k ] } );
 		S.updatetime  = data.updatetime
 		S.updating_db = false;
 		util.renderStatus();

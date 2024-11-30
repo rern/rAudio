@@ -17,7 +17,7 @@ else
 fi
 case $type in
 	audiocd )
-		coverfile=$( ls -1 $targetnoext.* 2> /dev/null | head -1 )
+		coverfile=$( ls $targetnoext.* 2> /dev/null | head -1 )
 		if [[ -e $coverfile ]]; then
 			mv -f $coverfile $coverfile.backup
 			rm -f $coverfile
@@ -41,7 +41,7 @@ case $type in
 	coverart )
 		dir=$( dirname "$target" )
 		rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
-		coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
+		coverfile=$( ls "$dir/cover".* 2> /dev/null | head -1 )
 		[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 		if [[ ! $gif ]]; then
 			cp -f $source "$target" || magick $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"

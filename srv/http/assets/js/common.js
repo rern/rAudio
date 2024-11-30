@@ -270,6 +270,10 @@ function info( json ) {
 		if ( V.press || $( this ).hasClass( 'disabled' ) ) return
 		
 		infoButtonCommand( I.ok );
+	} ).press( function() {
+		V.debug = true;
+		infoButtonCommand( I.ok );
+		V.debug = false;
 	} );
 	if ( I.file ) {
 		var htmlfile = '<div id="infoFilename"><c>(select file)</c></div>'

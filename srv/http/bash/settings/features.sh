@@ -274,8 +274,8 @@ rescan
 
 CMD ACTION PATHMPD"
 		# prepend path
-		files=$( ls -1 $dirbookmarks/* )
-		files+=$'\n'$( ls -1 $dirplaylists/* )
+		files=$( ls $dirbookmarks/* )
+		files+=$'\n'$( ls $dirplaylists/* )
 		files=$( awk NF <<< $files )
 		if [[ $files ]]; then
 			while read file; do

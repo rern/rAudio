@@ -891,7 +891,7 @@ var render    = {
 		
 		var data = render.dataSort( 'mixers' );
 		var li = '';
-		$.each( data, ( k, v ) => li+= render.mixer( k, v ) );
+		$.each( data, ( k, v ) => li += render.mixer( k, v ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
 	}
@@ -1259,7 +1259,7 @@ var setting   = {
 					[ 'q', 'bandwidth', 'slope', 'unit' ].forEach( k => delete val[ k ] );
 					val[ unit ] = q;
 				}
-				$.each( val, ( k, v ) => param[ k ] = v );
+				$.each( val, ( k, v ) => { param[ k ] = v } );
 				if ( 'filename' in param ) {
 					param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
 					if ( subtype === 'Raw' ) param.format = 'TEXT';
@@ -1382,7 +1382,7 @@ var setting   = {
 		var type   = name ? PRO[ name ].type : 'Compressor';
 		var values = jsonClone( P.values[ type ] );
 		if ( name ) {
-			$.each( PRO[ name ].parameters, ( k, v ) => values[ k ] = v );
+			$.each( PRO[ name ].parameters, ( k, v ) => { values[ k ] = v } );
 			values.name = name;
 		}
 		var title  = name ? 'Processor' : 'Add Processor'
@@ -1492,7 +1492,7 @@ var setting   = {
 		var values      = jsonClone( D.values[ vtype ] );
 		values.type     = type;
 		values.channels = DEV[ dev ].channels;
-		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => values[ k ] = DEV[ dev ][ k ] );
+		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
 		var title       = common.key2label( dev );
 		info( {
 			  icon         : V.tab
@@ -1543,7 +1543,7 @@ var setting   = {
 			, checkchanged : true
 			, ok           : () => {
 				var val = infoVal();
-				$.each( val, ( k, v ) => DEV[ k ] = v );
+				$.each( val, ( k, v ) => { DEV[ k ] = v } );
 				setting.save( title, 'Change ...' );
 				render.devices();
 			}
@@ -1554,7 +1554,7 @@ var setting   = {
 		var values  = D.resampler.values[ type ];
 		var current = S.resampler && DEV.resampler.type === values.type;
 		if ( profile ) values.profile = profile;
-		if ( current ) $.each( DEV.resampler, ( k, v ) => values[ k ] = v );
+		if ( current ) $.each( DEV.resampler, ( k, v ) => { values[ k ] = v } );
 		info( {
 			  ...SW
 			, list         : list
@@ -1685,7 +1685,7 @@ var setting   = {
 		if ( titlle ) banner( V.tab, titlle, msg );
 	}
 	, switchValues  : () => {
-		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] === true );
+		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => { S[ k ] = DEV[ k ] === true } );
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';

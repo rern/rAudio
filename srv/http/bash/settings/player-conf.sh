@@ -127,7 +127,7 @@ elif [[ ! $btoutputonly && ! -e $dirshm/nosound ]]; then
 		[[ -e "$dirsystem/dop-$name" ]] && \
 			AUDIOOUTPUT+='
 	dop            "yes"'
-		if [[ $dirsystem/custom ]]; then
+		if [[ -e $dirsystem/custom ]]; then
 			customfile="$dirsystem/custom-output-$name"
 			[[ -e "$customfile" ]] && \
 				AUDIOOUTPUT+="

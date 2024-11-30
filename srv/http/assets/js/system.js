@@ -622,7 +622,7 @@ var util          = {
 			var pin    = data.relays;
 			var name   = data.relaysname;
 			var names  = {}
-			$.each( name, ( k, v ) => names[ v ] = k );
+			$.each( name, ( k, v ) => { names[ v ] = k } );
 			var step   = { step: 1, min: 0, max: 10 }
 			var list   = [
 				  [ '', '', { suffix: ico( 'power grn' ) +' On <gr>(s)</gr>', sameline: true, colspan: 2 } ]

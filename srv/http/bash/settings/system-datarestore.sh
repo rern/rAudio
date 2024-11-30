@@ -47,7 +47,7 @@ fi
 timedatectl set-timezone $( < $dirsystem/timezone )
 [[ -e $dirsystem/crossfade ]] && mpc -q crossfade $( < $dirsystem/crossfade )
 rm -rf $backupfile $dirconfig $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
-dirs=$( ls -1d $dirnas/*/ 2> /dev/null )
+dirs=$( ls -d $dirnas/*/ 2> /dev/null )
 if [[ $dirs ]]; then
 	while read dir; do
 		umount -l "$dir" &> /dev/null

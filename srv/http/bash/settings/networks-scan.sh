@@ -31,7 +31,7 @@ if [[ $1 == wlan ]]; then
 				| sed 's/"signal":,/"signal":-67,/; s/wpa.*wpa/wpa/; s/$/}/' )
 	
 	# saved profile
-	profiles=$( ls -1p /etc/netctl | grep -v /$ )
+	profiles=$( ls -p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		while read profile; do
 			[[ $( iwgetid -r ) == $profile ]] && saved+=',"current":true' || saved=',"profile":true'

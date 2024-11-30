@@ -485,7 +485,7 @@ if [[ ! $sampling ]]; then
 fi
 if [[ $sampling && ! $audiocd && $ext != Radio && $player != upnp ]]; then
 	echo $sampling > $samplingfile
-	files=$( ls -1t $dirshm/sampling 2> /dev/null )
+	files=$( ls -t $dirshm/sampling 2> /dev/null )
 	(( $( wc -l <<< $files ) > 20 )) && rm -f "$( tail -1 <<< $files )"
 fi
 ########

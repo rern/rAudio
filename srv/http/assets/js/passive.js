@@ -221,7 +221,7 @@ ps = {
 					renderLibraryList( data );
 				} );
 			} else {
-				$.each( data.done, ( k, v ) => C[ k ] = v );
+				$.each( data.done, ( k, v ) => { C[ k ] = v } );
 				renderLibraryCounts();
 			}
 			$( '#lib-list li' ).removeClass( 'nodata' );

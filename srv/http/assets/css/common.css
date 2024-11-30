@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1732883967' );
+	src         : url( '/assets/fonts/rern.woff2?v=1732886162' );
 }
 @font-face {
 	font-family : Lato;
@@ -871,7 +871,7 @@ hr {
 	border: none;
 	outline: none;
 	font-family: Inconsolata;
-	font-size: 15px;
+	font-size: 16px;
 	line-height: 20px;
 	tab-size: 4;
 	color: var( --cw );

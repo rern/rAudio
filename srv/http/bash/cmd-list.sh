@@ -25,7 +25,7 @@ timeFormat() {
 updateDone() {
 	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	[[ -e $dirshm/tageditor ]] && counts='"tageditor"' || counts=$( < $dirmpd/counts )
-	updatetime="(MPD: $( timeFormat $mpdtime ) + Cache: $( timeFormat $SECONDS ))"
+	updatetime="(Scan: $( timeFormat $mpdtime ) • Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	pushData mpdupdate '{ "done": '$counts', "updatetime": "'$updatetime'" }'
 	rm -f $dirmpd/listing $dirshm/{albumprev,deleted,tageditor}
@@ -38,12 +38,13 @@ touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
 [[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
 rm -f $dirmpd/{updatestart,updating}
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-[[ -e $dirdabradio ]] && dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l ) || dabradio=0
 counts='
   "song"      : '$song'
-, "playlists" : '$( ls -1 $dirplaylists | wc -l )'
-, "dabradio"  : '$dabradio'
-, "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+, "playlists" : '$( ls $dirplaylists | wc -l )
+for d in dabradio webradio; do
+	[[ -e $dirdata/$d ]] && counts+='
+, "'$d'"      :'$( find -L $dirdata/$d -type f | grep -v -E '\.jpg$|\.png$|\.gif$' | wc -l )
+done
 if [[ $song == 0 ]]; then
 	for mode in $modes $modelatest; do
 		rm -f $dirmpd/$mode

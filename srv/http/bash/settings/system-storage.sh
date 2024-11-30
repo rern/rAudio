@@ -24,7 +24,7 @@ $list
 # sd
 mount | grep -q -m1 'mmcblk0p2 on /' && list+=$( listItem microsd / /dev/mmcblk0p2 true )
 # usb
-usb=$( ls -1 /dev/sd* 2> /dev/null )
+usb=$( ls /dev/sd* 2> /dev/null )
 if [[ $usb ]]; then
 	while read source; do
 		type=$( blkid -o value -s TYPE $source )
