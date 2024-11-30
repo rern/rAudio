@@ -86,7 +86,7 @@ function list2JSON( list ) {
 			S = JSON.parse( list );
 		} else {
 			list = JSON.parse( list );
-			$.each( ( k, v ) => S[ k ] = v );
+			$.each( list, ( k, v ) => { S[ k ] = v } );
 		}
 	} catch( e ) {
 		errorDisplay( e.message, list );

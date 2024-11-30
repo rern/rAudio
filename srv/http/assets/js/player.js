@@ -301,7 +301,7 @@ var util     = {
 	}
 	, statusSet : () => {
 		var htmlstatus =  S.version +'<br>';
-		[ 'song', 'webradio', 'dabradio' ].forEach( k => {
+		[ 'song', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
 			var count = S.counts[ k ];
 			if ( count ) htmlstatus += ico( k +' gr' ) +'&ensp;'+ count.toLocaleString() + sp( 15 );
 		} );
@@ -364,7 +364,7 @@ function renderPage() {
 }
 ps.mpdUpdate = data => {
 	if ( 'done' in data ) {
-		$.each( S.counts, ( k, v ) => S[ k ] = data.done[ k ] );
+		$.each( S.counts, ( k, v ) => { S[ k ] = data.done[ k ] } );
 		S.updatetime  = data.updatetime
 		S.updating_db = false;
 		util.renderStatus();
