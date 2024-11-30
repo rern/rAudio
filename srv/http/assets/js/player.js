@@ -184,10 +184,11 @@ audio_output {
 	, mixertype    : () => {
 		info( {
 			  ...SW
-			, list   : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
-			, values : S.mixertype ? S.output.mixertype : 'hardware'
-			, cancel : switchCancel
-			, ok     : () => util.mixerSet( infoVal() )
+			, list         : [ '', 'radio', { kv: { 'DAC hardware <gr>(Mixer Device)</gr>': 'hardware', 'MPD software': 'software' }, sameline: false } ]
+			, values       : S.mixertype ? S.output.mixertype : 'hardware'
+			, checkchanged : S.mixertype
+			, cancel       : switchCancel
+			, ok           : () => util.mixerSet( infoVal() )
 		} );
 	}
 	, outputbuffer : values => {
