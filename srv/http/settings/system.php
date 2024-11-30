@@ -305,7 +305,7 @@ Note:
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: $T->features$L->serverraudio
+	Server:&ensp;$T->features$L->serverraudio
 	Clients: $L->shareddata <btn>$B->rserver rAudio</btn>
 	
  • <wh>Other servers:</wh> (Alternative 2)
@@ -315,7 +315,8 @@ Note:
 		CIFS (SMB): <c>read only = no</c>
 	 · Windows:
 		Right-click Folder &raquo; Properties &raquo; 
-		- <btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo; <btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
+		- <btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo;
+			<btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
 		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
