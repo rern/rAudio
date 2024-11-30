@@ -57,7 +57,7 @@ custom )
 		if ! systemctl -q is-active mpd; then # config errors
 			rm -f $fileglobal "$fileoutput" $dirmpd/custom.conf $dirsystem/custom
 			$dirsettings/player-conf.sh
-			echo 0
+			echo -1
 		fi
 	else
 		rm -f $dirmpdconf/custom.conf $dirsystem/custom

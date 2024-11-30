@@ -109,16 +109,16 @@ audio_output {
 					}
 					
 					notifyCommon();
-					bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], mpdstart => {
-						if ( ! mpdstart ) {
+					bash( [ 'custom', global, output, S.output.name, 'CMD GLOBAL OUTPUT DEVICE' ], error => {
+						if ( error ) {
 							bannerHide();
 							info( {
 								  ...SW
-								, message : 'MPD failed with the added lines'
-											+'<br>Restored to previous configurations.'
+								, message : iconwarning +'MPD failed with the added lines'
+											+'<br>Current configuration restored.'
 							} );
 						}
-					}, 'json' );
+					} );
 				}
 			} );
 		} );
