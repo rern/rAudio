@@ -139,12 +139,13 @@ heading + .helpblock {
 }
 .helpmenu.label {
 	width: fit-content;
-	padding: 0 5px 0 10px;
+	padding-left: 10px;
 	text-align: right;
 	background: var( --cga );
 }
 .helpmenu.label i {
-	margin-left: 4px;
+	margin: 0 8px;
+	width: fit-content !important;
 }
 .helpmenu.tab {
 	padding-left: 0;
