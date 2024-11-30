@@ -177,7 +177,7 @@ case 'list':
 	break;
 case 'ls':
 	if ( in_array( $STRING, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
-		exec( 'ls -1d /mnt/MPD/'.$STRING.'/* | sed -E -e "s|^/mnt/MPD/||" -e "/NAS\/data$/ d"', $lists );
+		exec( 'ls -d /mnt/MPD/'.$STRING.'/* | sed -E -e "s|^/mnt/MPD/||" -e "/NAS\/data$/ d"', $lists );
 		htmlDirectory();
 		exit;
 //----------------------------------------------------------------------------------
@@ -226,7 +226,7 @@ case 'radio':
 	$dir     = '/srv/http/data/'.$GMODE.'/'.$STRING;
 	$subdirs = [];
 	$files   = [];
-	exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
+	exec( 'ls "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
 		, $lists );
 	foreach( $lists as $list ) {
 		$path = $dir.'/'.$list;

@@ -96,7 +96,7 @@ disconnect )
 	;;
 lanedit )
 	[[ $ADDRESS ]] && ipAvailable $ADDRESS
-	file=$( ls -1 /etc/systemd/network/e* | head -1 )
+	file=$( ls /etc/systemd/network/e* | head -1 )
 	if [[ $ADDRESS ]]; then # static
 		sed -i -E -e '/^DHCP|^Address|^Gateway/ d
 ' -e '/^DNSSEC/ i\

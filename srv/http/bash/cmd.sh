@@ -136,7 +136,7 @@ radioStop() {
 	fi
 }
 savedPlCount() {
-	playlists=$( ls -1 $dirplaylists | wc -l )
+	playlists=$( ls $dirplaylists | wc -l )
 	grep -q '"playlists".*,' $dirmpd/counts && playlists+=,
 	sed -i -E 's/("playlists" *: ).*/\1'$playlists'/' $dirmpd/counts
 	pushSavedPlaylist
@@ -311,7 +311,7 @@ coverartreset )
 	if [[ ${COVERFILE:9:13} == /data/audiocd ]]; then
 		discid=$( basename ${COVERFILE/.*} )
 		rm -f "$COVERFILE"
-		backupfile=$( ls -1 $diraudiocd/$discid.*.backup 2> /dev/null | head -1 )
+		backupfile=$( ls $diraudiocd/$discid.*.backup 2> /dev/null | head -1 )
 		if [[ $backupfile ]]; then
 			url=${backupfile/.backup}
 			mv -f $backupfile $url
@@ -440,7 +440,7 @@ librandom )
 	;;
 lsmnt )
 	for dir in NAS SD USB; do
-		lsdir=$( ls -1 /mnt/MPD/$dir 2> /dev/null )
+		lsdir=$( ls /mnt/MPD/$dir 2> /dev/null )
 		list=false
 		if [[ $lsdir ]]; then
 			mpdignore=/mnt/MPD/$dir/.mpdignore
@@ -871,7 +871,7 @@ webradioedit )
 		rm "$prevfile"
 		# stationcover
 		imgurl="$dirwebradio/img/$urlname"
-		img=$( ls -1 "$imgurl".* | head -1 )
+		img=$( ls "$imgurl".* | head -1 )
 		thumb="$imgurl-thumb.jpg"
 		if [[ $img || -e $thumb ]]; then
 			newimgurl="$dirwebradio/img/$newurlname"

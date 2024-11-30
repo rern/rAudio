@@ -25,7 +25,7 @@ data='
 dirs=$( ls $dircamilladsp )
 for d in $dirs; do
 	[[ $bluetooth && $d == configs ]] && dir=configs-bt || dir=$d
-	dirs=$( ls -1 $dircamilladsp/$dir )
+	dirs=$( ls $dircamilladsp/$dir )
 	ls+=', "'$d'": '$( line2array "$dirs" )
 done
 ########

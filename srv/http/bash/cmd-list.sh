@@ -40,7 +40,7 @@ rm -f $dirmpd/{updatestart,updating}
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
   "song"      : '$song'
-, "playlists" : '$( ls -1 $dirplaylists | wc -l )
+, "playlists" : '$( ls $dirplaylists | wc -l )
 for d in dabradio webradio; do
 	[[ -e $dirdata/$d ]] && counts+='
 , "'$d'"      :'$( find -L $dirdata/$d -type f | grep -v -E '\.jpg$|\.png$|\.gif$' | wc -l )

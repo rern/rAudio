@@ -154,8 +154,8 @@ confNotString() {
 coverFileGet() {
 	local path coverfile
 	path=$1
-	coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
-	[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
+	coverfile=$( ls -X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
+	[[ ! $coverfile ]] && coverfile=$( ls -X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" | sed 's|%2F|/|g' # preserve spaces and special characters
 }
 data2json() {
@@ -351,7 +351,7 @@ pushDataCoverart() {
 }
 pushDirCounts() {
 	dir=$1
-	dirs=$( ls -1d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
+	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
 	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
 	pushData mpdupdate '{ "counts": { "'$dir'": '$( awk NF <<< $dirs | wc -l )' } }'
 }

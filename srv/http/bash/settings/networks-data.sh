@@ -38,7 +38,7 @@ fi
 listWlan() {
 	local dbm notconnected profiles profile ssid wlandev
 	wlandev=$( < $dirshm/wlan )
-	profiles=$( ls -1p /etc/netctl | grep -v /$ )
+	profiles=$( ls -p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		while read profile; do
 			ssid=$( quoteEscape $profile )
