@@ -41,9 +41,9 @@ song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 [[ -e $dirdabradio ]] && dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l ) || dabradio=0
 counts='
   "song"      : '$song'
-, "playlists" : '$( ls -1 $dirplaylists | wc -l )'
+, "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
 , "dabradio"  : '$dabradio'
-, "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+, "playlists" : '$( ls -1 $dirplaylists | wc -l )
 if [[ $song == 0 ]]; then
 	for mode in $modes $modelatest; do
 		rm -f $dirmpd/$mode
