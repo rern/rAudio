@@ -25,7 +25,7 @@ timeFormat() {
 updateDone() {
 	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	[[ -e $dirshm/tageditor ]] && counts='"tageditor"' || counts=$( < $dirmpd/counts )
-	updatetime="(MPD: $( timeFormat $mpdtime ) + Cache: $( timeFormat $SECONDS ))"
+	updatetime="(Scan: $( timeFormat $mpdtime ) • Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
 	pushData mpdupdate '{ "done": '$counts', "updatetime": "'$updatetime'" }'
 	rm -f $dirmpd/listing $dirshm/{albumprev,deleted,tageditor}
