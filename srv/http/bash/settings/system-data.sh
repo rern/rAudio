@@ -7,15 +7,15 @@ temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
-since=$( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )
 date=$( date +'%F <gr>•</gr> %T' )
-uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
+uptime=$( uptime -p | sed -E 's/[ s]|up|ay|our|inute//g; s/,/ /g' )
+since=$( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )
 status="\
 $load<br>\
 $temp °C<br>\
 $availmem<br>\
-$date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
-$uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
+$date<wide class='gr'>&ensp;$timezone $timezoneoffset</wide><br>\
+$uptime<wide class='gr'>&ensp;since $since</wide><br>"
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
 if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
