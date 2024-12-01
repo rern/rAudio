@@ -183,7 +183,7 @@ EOF
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off:
  · $M->relays
- · $B->gear <btn>Sequence</btn> $B->power On / $B->power Off &emsp;<btn>Pin - Name</btn> $B->power
+ · $B->gear <tab>Sequence</tab> $B->power On / $B->power Off &emsp;<tab>Pin - Name</tab> $B->power
 EOF
 	],
 	[
@@ -306,7 +306,7 @@ Note:
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server:  $T->features$L->serverraudio
-	Clients: $L->shareddata <btn>$B->rserver rAudio</btn>
+	Clients: $L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create shares for music <c>source</c> and <c>data</c>

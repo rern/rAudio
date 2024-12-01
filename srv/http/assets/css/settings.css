@@ -175,12 +175,17 @@ heading + .helpblock {
 .sub {
 	color: var( --cw );
 }
-btn {
+btn,
+tab {
 	display: inline-block;
 	line-height: 22px;
 	padding: 0 3px;
 	border: 1px solid var( --cg );
 	border-radius: 3px;
+}
+tab {
+	padding: 0 20px;
+	border-radius: 3px 3px 0 0;
 }
 .clear {
 	clear: both;

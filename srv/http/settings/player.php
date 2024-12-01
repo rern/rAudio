@@ -202,10 +202,10 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 $B->gear
-<btn>Presets</btn>
+<tab>Presets</tab>
  · Quality
  · Threads
-<btn>Custom</btn>
+<tab>Custom</tab>
  · Precision - Conversion precision (20 = HQ)
  · Phase Response (50 = Linear)
  · Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
@@ -219,7 +219,7 @@ $B->gear
 	· <span>Double precision</span> : <c>16</c> even if Precision less than 20
 	· <span>Variable rate</span> : <c>32</c>
 	
-(default: <btn>Preset</btn> Quality <c>Very high</c>  Threads <c>Single</c>)
+(default: Quality <c>Very high</c>  Threads <c>Single</c>)
 EOF
 	]
 	, [

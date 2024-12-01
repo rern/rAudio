@@ -20,7 +20,6 @@ commonVariables( [
 ] );
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
-$ipsub        = substr( $ip, 0, strrpos( $ip, '.' ) );
 $fileexplorer = 'File Explorer <btn>Address bar</btn> <c>\\\\'.$ip.'</c>';
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
@@ -285,15 +284,15 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· $T->system$L->shareddata<btn>$B->rserver rAudio</btn>
+	· $T->system$L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
 	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
 	· $fileexplorer
 	 
-$B->warning Permissions for <c>/mnt/MPD/NAS</c>:
-	· Read and write for everyone on <c>$ipsub.*</c>
+<i class="i-warning"></i> Permissions set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
+	(Every <i class="i-raudio"></i> rAudio can set/update shared data.)
 EOF
 	]
 	, [
