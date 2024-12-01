@@ -6,10 +6,9 @@ temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
 load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )'&emsp;<c>'$temp'°C</c>'
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
-timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
-date=$( date +'%F <gr>•</gr> %T' )
-date+="<wide class='gr'>&ensp;${timezone/\// · } $timezoneoffset</wide>"
-since=$( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )
+date=$( date +'%F <gr>·</gr> %T' )
+date+="<wide class='gr'>&ensp;${timezone/\// · }</wide>"
+since=$( uptime -s | cut -d: -f1-2 | sed 's/ / · /' )
 uptime=$( uptime -p | sed -E 's/[ s]|up|ay|our|inute//g; s/,/ /g' )
 uptime+="<wide class='gr'>&ensp;since $since</wide>"
 for v in load availmem date uptime; do
@@ -103,7 +102,7 @@ data+='
 , "system"         : "'$system'"
 , "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
-, "timezoneoffset" : "'$timezoneoffset'"'
+, "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
 ##########
 	data+='
