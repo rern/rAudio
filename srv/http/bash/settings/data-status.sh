@@ -33,7 +33,7 @@ configuration )
 $( cat "$file" )"
 	;;
 device )
-	if [[ -e $dirsystem/camilladsp ]] || grep -q -m1 '^state="*play' $dirshm/status; then
+	if [[ -e $dirsystem/camilladsp ]] || ! grep -q -m1 '^state="*stop' $dirshm/status; then
 		[[ -e $dirsystem/camilladsp ]] && data=DSP || active=Playback
 		data='<gr>(Data not available - '$active' is active)</gr>'
 	else
