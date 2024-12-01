@@ -315,18 +315,18 @@ Note:
 		CIFS (SMB): <c>read only = no</c>
 	 · Windows:
 		Right-click Folder &raquo; Properties &raquo; 
-		- <btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo;
+		· <btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo;
 			<btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
-		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
+		· <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- $L->storage $B->add Add <c>source</c>
-		- $M->refreshlibrary Update database
-		- $L->shareddata Connect <c>data</c>
-		- Local data will be transfered to <c>data</c>
+		· $L->storage $B->add Add <c>source</c>
+		· $M->refreshlibrary Update database
+		· $L->shareddata Connect <c>data</c>
+		· Local data will be transfered to <c>data</c>
 	 · Other clients:
-		- $L->shareddata Connect <c>data</c>
-		- <c>source</c> will be connected accordingly
+		· $L->shareddata Connect <c>data</c>
+		· <c>source</c> will be connected accordingly
 EOF
 	]
 ];

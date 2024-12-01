@@ -48,7 +48,7 @@ EOF
 		, 'exist'    => true
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Software-defined_radio">SDR</a> - Software-defined radio / Digital audio broadcasting
- · Stations: $B->gear<btn>Scan</btn> $T->library $B->dabradio
+$B->gear Scan / Update stations
 EOF
 	]
 	, [

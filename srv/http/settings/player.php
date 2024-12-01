@@ -73,8 +73,8 @@ $B->gear Type:
  · MPD software: Basic - GUI knob
  
 Note: Should be disabled for best sound quality
- - GUI knob hidden
- - Use amplifier volume
+ · GUI knob hidden
+ · Use amplifier volume
 (The later in the signal chain the better sound quality.)
 EOF
 	]
@@ -202,22 +202,24 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 $B->gear
- • Presets:
-	(default: Quality <c>Very high</c>  Threads <c>Single</c>)
+<btn>Presets</btn>
+ · Quality
+ · Threads
+<btn>Custom</btn>
+ · Precision - Conversion precision (20 = HQ)
+ · Phase Response (50 = Linear)
+ · Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
+ · Stopband Begin - Aliasing/imaging control
+ · Attenuation - Lowers the source to prevent clipping
+ · Extra settings: <c>flag</c>
+	· <span>Rolloff - small</span> : <c> 0</c> at 0.01 dB
+	· <span>Rolloff - medium</span> : <c> 1</c> at 0.35 dB
+	· <span>Rolloff - none</span> : <c> 2</c> for Chebyshev bandwidth
+	· <span>High precision</span> : <c> 8</c> increase irrational ratio accuracy
+	· <span>Double precision</span> : <c>16</c> even if Precision less than 20
+	· <span>Variable rate</span> : <c>32</c>
 	
- • Custom quality:
-	· Precision - Conversion precision (20 = HQ)
-	· Phase Response (50 = Linear)
-	· Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
-	· Stopband Begin - Aliasing/imaging control
-	· Attenuation - Lowers the source to prevent clipping
-	· Extra settings: <c>flag</c>
-		- Rolloff - small <c>0</c> at 0.01 dB
-		- Rolloff - medium <c>1</c> aAt 0.35 dB
-		- Rolloff - none <c>2</c> for Chebyshev bandwidth
-		- High precision <c>8</c> increase irrational ratio accuracy
-		- Double precision <c>16</c> even if Precision less than 20
-		- Variable rate <c>32</c>
+(default: <btn>Preset</btn> Quality <c>Very high</c>  Threads <c>Single</c>)
 EOF
 	]
 	, [

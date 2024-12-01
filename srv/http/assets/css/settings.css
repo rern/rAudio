@@ -618,6 +618,10 @@ input.disabled + .switchlabel:after {
 	color: var( --cg75 );
 	background-color: var( --cga);
 }
+#divsoxr .helpblock span {
+	display: inline-block;
+	width: 112px;
+}
 
 @media (max-height: 730px) {
 	#guideimg {
