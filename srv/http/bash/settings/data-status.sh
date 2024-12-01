@@ -33,10 +33,15 @@ configuration )
 $( cat "$file" )"
 	;;
 device )
-	card=$( getVar card $dirshm/output )
-	data=$( tty2std "timeout 0.1 aplay -D hw:$card /dev/zero --dump-hw-params" \
-				| sed '1,/^---/ d; /^---/,$ d' \
-				| column -t -l2 -o ' ' )
+	if [[ -e $dirsystem/camilladsp ]] || grep -q -m1 '^state="*play' $dirshm/status; then
+		[[ -e $dirsystem/camilladsp ]] && data=DSP || active=Playback
+		data='<gr>(Data not available - '$active' is active)</gr>'
+	else
+		card=$( getVar card $dirshm/output )
+		data=$( tty2std "timeout 0.1 aplay -D hw:$card /dev/zero --dump-hw-params" \
+					| sed '1,/^---/ d; /^---/,$ d' \
+					| column -t -l2 -o ' ' )
+	fi
 	echo "\
 <bll># aplay -D hw:$card /dev/zero --dump-hw-params</bll>
 $data"
