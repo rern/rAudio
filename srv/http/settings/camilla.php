@@ -125,39 +125,47 @@ $body     = [
 	  htmlSectionStatus(
 		  'vu'
 		, ''
-		, '<div id="vu">
-			<div id="vugrid">'.$vugrid.'</div>
-			<div id="in"></div>
-			<div id="vulabel">'.$vulabel.'</div>
-			<div id="out"></div>
-		   </div>'
+		, '
+<div id="vu">
+	<div id="vugrid">'.$vugrid.'</div>
+	<div id="in"></div>
+	<div id="vulabel">'.$vulabel.'</div>
+	<div id="out"></div>
+</div>'
 	)
 	, htmlSectionStatus(
 		  'volume'
-		, '<a><span class="label">Master</span>
-		   <gr class="control"></gr></a>'.i( 'minus' )
-		, '<div id="volume" class="slider">
-			<div class="track"></div>
-			<div class="thumb" tabindex="0"></div>
-			<div id="volume-band"></div>
-		   </div>'.i( 'plus' ).'<c class="level"></c>'.i( 'volume' )
+		, '
+<a><span class="label">Master</span>
+<gr class="control"></gr></a>'.i( 'minus' )
+		, '
+<div id="volume" class="slider">
+	<div class="track"></div>
+	<div class="thumb" tabindex="0"></div>
+	<div id="volume-band"></div>
+</div>'.i( 'plus' ).'<c class="level"></c>'.i( 'volume' )
 	)
 	, htmlSectionStatus(
 		  'state'
-		, 'Processing Load
-		   <span class="rateadjust"><br>Buffer</span>
-		   <br>Sampling<span class="rateadjust wide"> · Adjust</span>
-		   <span class="divclipped hide"><br>Clipped</span>'
-		, '<div id="statusbar">
-			<div class="bar"></div>
-			<div id="load" class="bar"></div>
-			<div class="bar rateadjust"></div>
-			<div id="buffer" class="bar rateadjust"></div>
-		   </div>
-		   <div id="statussampling">
-			<a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>
-			<span class="divclipped hide"><br><a class="clipped"></a></span>
-		   </div>'
+		, '
+Processing Load
+<span class="rateadjust"><br>Buffer</span>
+<br>Sampling<span class="rateadjust wide"> · Adjust</span>
+<span class="divclipped hide"><br>Clipped</span>'
+		, '
+<div id="statusbar">
+	<div class="bar"></div>
+	<div id="load" class="bar"></div>
+	<div class="bar rateadjust"></div>
+	<div id="buffer" class="bar rateadjust"></div>
+</div>
+<div id="statussampling">
+	<a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>
+	<span class="divclipped hide"><br><a class="clipped"></a></span>
+</div>
+<span class="helpblock hide">'.$B->volume.' Mute
+'.$B->set0.' Reset clipped count (if any)
+</span>'
 	)
 	, [
 		  'id'     => 'configuration'
@@ -165,10 +173,7 @@ $body     = [
 		, 'sub'    => 'current'
 		, 'status' => true
 		, 'input'  => 'configuration'
-		, 'help'   => <<< EOF
-$B->gear Configuration files
-$B->set0 Reset clipped count (if any)
-EOF
+		, 'help'   => $B->gear.' Configuration files'
 	]
 ];
 htmlSection( $head, $body, 'status' );
