@@ -305,7 +305,7 @@ Note:
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server:&ensp;$T->features$L->serverraudio
+	Server:  $T->features$L->serverraudio
 	Clients: $L->shareddata <btn>$B->rserver rAudio</btn>
 	
  • <wh>Other servers:</wh> (Alternative 2)

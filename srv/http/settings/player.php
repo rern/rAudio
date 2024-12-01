@@ -211,15 +211,13 @@ $B->gear
 	· Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
 	· Stopband Begin - Aliasing/imaging control
 	· Attenuation - Lowers the source to prevent clipping
-	· Flags / Extra settings:
-<pre>
-<c> 0 - Rolloff - small </c> (<= 0.01 dB)
-<c> 1 - Rolloff - medium</c> (<= 0.35 dB)
-<c> 2 - Rolloff - none  </c> For Chebyshev bandwidth
-<c> 8 - High precision  </c> Increase irrational ratio accuracy
-<c>16 - Double precision</c> even if Precision <= 20
-<c>32 - Variable rate   </c>
-</pre>
+	· Extra settings: <c>flag</c>
+		- Rolloff - small <c>0</c> at 0.01 dB
+		- Rolloff - medium <c>1</c> aAt 0.35 dB
+		- Rolloff - none <c>2</c> for Chebyshev bandwidth
+		- High precision <c>8</c> increase irrational ratio accuracy
+		- Double precision <c>16</c> even if Precision less than 20
+		- Variable rate <c>32</c>
 EOF
 	]
 	, [

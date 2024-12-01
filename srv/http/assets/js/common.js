@@ -264,7 +264,9 @@ function info( json ) {
 		} );
 	}
 	$( '#infoX, #infoCancel' ).on( 'click', function() {
-		infoButtonCommand( I.cancel, 'cancel' );
+		V.local = false;
+		delete I.oknoreset;
+		infoButtonCommand( I.cancel );
 	} );
 	$( '#infoOk' ).on( 'click', function() {
 		if ( V.press || $( this ).hasClass( 'disabled' ) ) return
@@ -643,9 +645,8 @@ function info( json ) {
 	} );
 }
 
-function infoButtonCommand( fn, cancel ) {
+function infoButtonCommand( fn ) {
 	if ( typeof fn === 'function' ) fn();
-	if ( cancel ) delete I.oknoreset;
 	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
 	infoReset();

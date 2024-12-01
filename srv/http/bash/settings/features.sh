@@ -94,7 +94,6 @@ brightness )
 	;;
 camilladsp )
 	enableFlagSet
-	$dirbash/cmd.sh playerstop
 	pushRestartMpd camilladsp $TF
 	;;
 dabradio )
