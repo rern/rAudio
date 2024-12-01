@@ -45,7 +45,6 @@ $head        = [
 	, 'help'   => $B->refresh.' Refresh every 10 seconds'
 ];
 $labels      = 'CPU Load
-	<br>CPU Temp<wide>erature</wide></span>
 	<br>Available Memory
 	<br>Time
 	<br>Up Time';

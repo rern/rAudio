@@ -129,6 +129,9 @@ heading + .helpblock {
 .helpblock .img {
 	color: var( --cml );
 }
+.section c {
+	background-color: var( --cg );
+}
 .helpmenu {
 	display: inline-block;
 	width: 126px;
@@ -618,10 +621,6 @@ input.disabled + .switchlabel:after {
 	display: none;
 	width: 40px !important;
 	line-height: 40px;
-}
-#divstorage c {
-	color: var( --cg75 );
-	background-color: var( --cga);
 }
 #divsoxr .helpblock span {
 	display: inline-block;

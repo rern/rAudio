@@ -2,17 +2,17 @@
 
 . /srv/http/bash/common.sh
 
-load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )
-temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )' °C'
+temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
+load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )'&emsp;<c>'$temp'°C</c>'
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
 date=$( date +'%F <gr>•</gr> %T' )
-date+="<wide class='gr'>&ensp;$timezone $timezoneoffset</wide>"
+date+="<wide class='gr'>&ensp;${timezone/\// · } $timezoneoffset</wide>"
 since=$( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )
 uptime=$( uptime -p | sed -E 's/[ s]|up|ay|our|inute//g; s/,/ /g' )
 uptime+="<wide class='gr'>&ensp;since $since</wide>"
-for v in load temp availmem date uptime; do
+for v in load availmem date uptime; do
 	status+="${!v}<br>"
 done
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
