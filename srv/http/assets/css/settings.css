@@ -626,6 +626,9 @@ input.disabled + .switchlabel:after {
 	display: inline-block;
 	width: 112px;
 }
+#divlocalbrowser .status.error gr {
+	color: #f00 !important;
+}
 
 @media (max-height: 730px) {
 	#guideimg {

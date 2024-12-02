@@ -491,6 +491,7 @@ var util        = {
 }
 function renderPage() {
 	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
+	$( '#divlocalbrowser .status' ).toggleClass( 'error', S.localbrowser && ! S.firefox );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {
 		var nfsdisabled = icoLabel( 'Shared Data', 'networks' ) +' is currently enabled.';
