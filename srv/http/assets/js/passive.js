@@ -255,12 +255,16 @@ ps = {
 		}
 		
 		playlistBlink( 'off' );
+		var playlisthome = V.playlist && V.playlisthome;
 		if ( 'blank' in data ) {
-			setPlaybackBlank();
-			renderPlaylist();
+			if ( V.playback ) {
+				setPlaybackBlank();
+			} else if ( playlisthome ) {
+				renderPlaylist();
+			}
 			bannerHide();
 		} else {
-			if ( V.playlist && V.playlisthome ) renderPlaylist( data );
+			if ( playlisthome ) renderPlaylist( data );
 			playbackStatusGet();
 		}
 	}
