@@ -198,6 +198,7 @@ EOF
 		  'id'       => 'localbrowser'
 		, 'label'    => 'Browser on RPi'
 		, 'sub'      => 'firefox'
+		, 'status'   => true
 		, 'exist'    => true
 		, 'help'     => <<< EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
