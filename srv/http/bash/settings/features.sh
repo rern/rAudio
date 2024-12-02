@@ -35,7 +35,6 @@ iwctlAP() {
 }
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
-	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
@@ -138,6 +137,7 @@ lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
 	;;
 localbrowser )
+	enableFlagSet
 	if [[ $ON ]]; then
 		if ! grep -q console=tty3 /boot/cmdline.txt; then
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
@@ -189,22 +189,9 @@ localbrowser )
 			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
 			pushSubmenu screenoff $tf
 		fi
-		if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
-			restartlocalbrowser=1
-			systemctl restart bootsplash localbrowser &> /dev/null
-		fi
+		[[ $restart ]] && systemctl restart bootsplash localbrowser &> /dev/null
 	else
 		localbrowserDisable
-	fi
-	if [[ $restartlocalbrowser ]]; then
-		sleep 2
-		if systemctl -q is-active localbrowser; then
-			systemctl enable bootsplash localbrowser
-			systemctl stop bluetoothbutton
-		else
-			! systemctl -q is-active localbrowser && notify firefox 'Browser on RPi' 'Start failed.' 5000
-			localbrowserDisable
-		fi
 	fi
 	pushRefresh
 	;;
