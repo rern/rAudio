@@ -161,7 +161,7 @@ if [[ -e /boot/startup.sh ]]; then
 	/boot/startup.sh
 fi
 if [[ -e $dirsystem/localbrowser ]]; then
-	systemctl start bootsplash localbrowser &> /dev/null
+	systemctl start localbrowser
 fi
 
 udevil clean
