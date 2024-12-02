@@ -33,13 +33,6 @@ iwctlAP() {
 		systemctl stop iwd
 	fi
 }
-localbrowserDisable() {
-	ply-image /srv/http/assets/img/splash.png
-	systemctl disable --now bootsplash localbrowser
-	systemctl enable --now getty@tty1
-	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
-	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
-}
 localbrowserXset() {
 	local off
 	. $dirsystem/localbrowser.conf
@@ -192,7 +185,11 @@ localbrowser )
 		[[ $restart ]] && systemctl restart bootsplash localbrowser &> /dev/null
 		systemctl enable bootsplash localbrowser
 	else
-		localbrowserDisable
+		ply-image /srv/http/assets/img/splash.png
+		systemctl disable --now bootsplash localbrowser
+		systemctl enable --now getty@tty1
+		sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
+		[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 	fi
 	pushRefresh
 	;;
