@@ -70,8 +70,10 @@ var config       = {
 		}
 	}
 	, localbrowser : values => {
-		var footer = values.BRIGHTNESS ? ico( 'gear', 'brightness', 'tabindex' ) +'Brightness&emsp;' : '';
-		footer    += ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
+		if ( S.localbrowser ) {
+			var footer = values.BRIGHTNESS ? ico( 'gear', 'brightness', 'tabindex' ) +'Brightness&emsp;' : '';
+			footer    += ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
+		}
 		info( {
 			  ...SW
 			, list         : [
@@ -88,7 +90,6 @@ var config       = {
 			, beforeshow   : () => {
 				var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
 				$onwhileplay.prop( 'disabled', values.SCREENOFF === 0 );
-				$( '.infofooter' ).toggleClass( 'hide', ! S.localbrowser || ! values.BRIGHTNESS );
 				$( '#infoList tr:eq( 2 )' ).on( 'click', '.updn', function() {
 					if ( $( this ).parents( 'td' ).prev().find( 'input' ).val() != 0 ) {
 						$onwhileplay.prop( 'disabled', false );
@@ -98,8 +99,7 @@ var config       = {
 							.prop( 'checked', false );
 					}
 				} );
-				$( '.infofooter' ).on( 'click', 'input', function() {
-					switchCancel();
+				$( '#brightness' ).on( 'click', function() {
 					info( {
 						  ...SW
 						, list        : [ 'Brightness', 'range' ]
@@ -111,9 +111,12 @@ var config       = {
 						}
 						, okno        : true
 					} );
-				} ).on( 'click', '#reload', function() {
+					switchCancel();
+				} );
+				$( '#reload' ).on( 'click', function() {
 					bash( [ 'localbrowserreload' ], () => banner( SW.icon, SW.title, 'Reloaded.' ) );
-				} ).on( 'click', '#screenoff', function() {
+				} );
+				$( '#screenoff' ).on( 'click', function() {
 					bash( [ 'screentoggle' ], onoff => banner( SW.icon, SW.title, onoff ) );
 				} );
 			}

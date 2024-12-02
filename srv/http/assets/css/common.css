@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1733045558' );
+	src         : url( '/assets/fonts/rern.woff2?v=1733100907' );
 }
 @font-face {
 	font-family : Lato;
@@ -1052,6 +1052,10 @@ input[ type=radio ]:disabled {
 	.i-eye,
 	.i-volume,
 	.infobtn,
+	.infofooter i,
+	.infolabel i,
+	.infomessage img,
+	.infomessage .tagpath,
 	.inforange i,
 	.pointer,
 	#infoList .updn,
