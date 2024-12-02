@@ -16,7 +16,6 @@ data+=$( settingsEnabled \
 ##########
 data+='
 , "hostname"     : "'$( hostname )'"
-, "firefox"      : '$( systemctl -q is-active localbrowser && echo true )'
 , "ip"           : "'$( ipAddress )'"
 , "localbrowser" : '$( systemctl -q is-enabled localbrowser && echo true )'
 , "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'

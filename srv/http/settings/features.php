@@ -196,17 +196,17 @@ EOF
 	]
 	, [
 		  'id'       => 'localbrowser'
-		, 'label'    => 'Browser on RPi'
+		, 'label'    => 'Display on rAudio'
 		, 'sub'      => 'firefox'
 		, 'status'   => true
 		, 'exist'    => true
 		, 'help'     => <<< EOF
-<a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
+<a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - User interface on rAudio connected display.
  · Rotate - TFT 3.5" LCD needs reboot.
  · Screen off: $M->screenoff (Backlight still on - no energy saved)
  · run <c>xinitrc.d</c> - execute custom scripts in <c>/etc/X11/xinit/xinitrc.d</c>
 
-Note: HDMI display - Connect before boot
+Note: Connect display to rAudio before boot. Otherwise reboot required.
 EOF
 	]
 	, [
