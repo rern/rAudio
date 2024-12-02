@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20241202
-systemctl -q is-enabled localbrowser && touch $dirsystem/localbrowser
+sed -i '/^brightness/ d' $dirsystem/localbrowser.conf
 
 # 20241130
 systemctl -q is-active mediamtx && touch $dirsystem/dabradio

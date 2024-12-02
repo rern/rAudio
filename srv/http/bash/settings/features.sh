@@ -35,7 +35,7 @@ iwctlAP() {
 }
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
-	systemctl disable --now bootsplash
+	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
@@ -138,7 +138,6 @@ lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
 	;;
 localbrowser )
-	enableFlagSet
 	if [[ $ON ]]; then
 		if ! grep -q console=tty3 /boot/cmdline.txt; then
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
@@ -191,7 +190,7 @@ localbrowser )
 			pushSubmenu screenoff $tf
 		fi
 		[[ $restart ]] && systemctl restart bootsplash localbrowser &> /dev/null
-		systemctl enable bootsplash
+		systemctl enable bootsplash localbrowser
 	else
 		localbrowserDisable
 	fi

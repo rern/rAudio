@@ -69,10 +69,10 @@ var config       = {
 			bash( [ SW.id ] );
 		}
 	}
-	, localbrowser : values => {
+	, localbrowser : data => {
 		if ( S.localbrowser ) {
-			var footer = values.BRIGHTNESS ? ico( 'gear', 'brightness', 'tabindex' ) +'Brightness&emsp;' : '';
-			footer    += ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
+			var footer = ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
+			if ( data.brightness ) footer += '&emsp;'+ ico( 'gear', 'brightness', 'tabindex' ) +'Brightness';
 		}
 		info( {
 			  ...SW
@@ -85,11 +85,11 @@ var config       = {
 			]
 			, footer       : footer
 			, boxwidth     : 110
-			, values       : values
+			, values       : data.values
 			, checkchanged : S.localbrowser
 			, beforeshow   : () => {
 				var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
-				$onwhileplay.prop( 'disabled', values.SCREENOFF === 0 );
+				$onwhileplay.prop( 'disabled', data.values.SCREENOFF === 0 );
 				$( '#infoList tr:eq( 2 )' ).on( 'click', '.updn', function() {
 					if ( $( this ).parents( 'td' ).prev().find( 'input' ).val() != 0 ) {
 						$onwhileplay.prop( 'disabled', false );
@@ -103,10 +103,10 @@ var config       = {
 					info( {
 						  ...SW
 						, list        : [ 'Brightness', 'range' ]
-						, values      : S.brightness
+						, values      : data.brightness
 						, beforeshow  : () => {
 							$( '#infoList input' ).on( 'input', function() {
-								bash( [ 'brightness', val, 'CMD VAL' ] )
+								bash( [ 'brightness', +this.value, 'CMD VAL' ] )
 							} );
 						}
 						, okno        : true

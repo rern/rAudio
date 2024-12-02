@@ -148,7 +148,7 @@ audio_output {
 				$( '#infoList' ).css( 'height', '160px' );
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
 				$range.on( 'input', function() {
-					S.volume = +$range.val();
+					S.volume = +this.value;
 					volumeMaxSet();
 					util.volumeSet();
 					bash( [ ...cmd, S.volume, 'CMD CONTROL CARD CURRENT TARGET' ] );

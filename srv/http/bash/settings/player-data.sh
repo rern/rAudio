@@ -8,7 +8,7 @@ data+=$( settingsEnabled \
 			$dirsystem camilladsp custom dabradio devicewithbt equalizer soxr \
 			$dirmpdconf autoupdate.conf buffer.conf ffmpeg.conf normalization.conf outputbuffer.conf replaygain.conf )
 			
-counts=$( sed -n -E '/dabradio|playlists|song|webradio/ {s/,$//; s/^/,/; p}' $dirmpd/counts )
+counts=$( sed -n -E '/dabradio|playlists|song|webradio/ {s/^,|,$//; s/^/,/; p}' $dirmpd/counts )
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 mixers=$( getContent $dirshm/mixers )
 [[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=( $( volumeGet valdb hw ) )
