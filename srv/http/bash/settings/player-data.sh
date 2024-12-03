@@ -21,7 +21,7 @@ data+='
 , "crossfade"   : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "devices"     : '$( getContent $dirshm/devices )'
 , "dop"         : '$( grep -qs dop.*yes $dirmpdconf/output.conf && echo true )'
-, "lastupdate"  : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
+, "lastupdate"  : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>· %H:%M</gr>' )'"
 , "lists"       : {
 	  "albumignore" : '$( exists $dirmpd/albumignore )'
 	, "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
