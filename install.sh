@@ -4,11 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20241202
+# 20241206
 file=/etc/pacman.conf
 if ! grep -q linux-rpi $file; then
 	ignore=$( getVar IgnorePkg /etc/pacman.conf )
-	sed -i -e '/^#*IgnorePkg/ d' -e "/IgnoreGroup/ i\IgnorePkg   = linux-rpi $ignore" $file
+	sed -i -e '/^#*IgnorePkg/ d' -e "/^#*IgnoreGroup/ i\IgnorePkg   = linux-rpi $ignore" $file
 fi
 
 sed -i '/^brightness/ d' $dirsystem/localbrowser.conf

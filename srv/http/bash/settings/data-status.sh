@@ -167,6 +167,11 @@ $raspberrypiconf"
 <bll># i2cdetect -y $dev</bll>
 $(  i2cdetect -y $dev )"
 	fi
+	ignorepkg=$( grep ^IgnorePkg /etc/pacman.conf )
+	[[ $ignorepkg ]] && config+="
+	
+<bll># grep ^IgnorePkg /etc/pacman.conf</bll>
+$ignorepkg"
 	echo "$config"
 	;;
 timezone )
