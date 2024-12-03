@@ -137,7 +137,6 @@ function refreshData() {
 	} );
 }
 function showContent() {
-	V.ready ? delete V.ready : bannerReset();
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.container' )
@@ -173,6 +172,7 @@ function switchSet() {
 		id in config ? $this.toggleClass( 'hide', S[ id ] === false ) : $this.remove();
 	} );
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
+	bannerHide();
 }
 
 function psOnMessage( channel, data ) {
