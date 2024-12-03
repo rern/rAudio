@@ -196,7 +196,7 @@ EOF
 	]
 	, [
 		  'id'       => 'localbrowser'
-		, 'label'    => 'Display on rAudio'
+		, 'label'    => 'Browser'
 		, 'sub'      => 'firefox'
 		, 'status'   => true
 		, 'exist'    => true
