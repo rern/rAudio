@@ -67,6 +67,8 @@ function onPageInactive() {
 }
 // push status
 function psOnMessage( channel, data ) {
+	if ( data.page ) return
+	
 	switch ( channel ) {
 		case 'airplay':       ps.airplay( data );        break;
 		case 'bookmark':      ps.bookmark( data );       break;

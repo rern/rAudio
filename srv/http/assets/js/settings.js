@@ -176,6 +176,8 @@ function switchSet() {
 }
 
 function psOnMessage( channel, data ) {
+	if ( data.page !== page ) return
+	
 	switch ( channel ) {
 		case 'bluetooth': ps.bluetooth( data ); break;
 		case 'camilla':   ps.camilla( data );   break;
@@ -246,8 +248,6 @@ ps = {
 		banner( 'reboot', 'Reboot required', msg, 5000 );
 	}
 	, refresh   : data => {
-		if ( data.page !== page ) return
-		
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {
 			$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
