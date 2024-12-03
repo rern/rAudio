@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1733100907' );
+	src         : url( '/assets/fonts/rern.woff2?v=1733139637' );
 }
 @font-face {
 	font-family : Lato;
@@ -377,6 +377,7 @@ codered  {
 }
 .head .title {
 	margin-left: 15px;
+	vertical-align: -2px;
 	font-size: 26px;
 	font-weight: 300;
 	letter-spacing: 20px;
