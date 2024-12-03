@@ -204,7 +204,6 @@ EOF
 <a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - User interface on rAudio connected display.
  · Rotate - TFT 3.5" LCD needs reboot.
  · Screen off: $M->screenoff (Backlight still on - no energy saved)
- · run <c>xinitrc.d</c> - execute custom scripts in <c>/etc/X11/xinit/xinitrc.d</c>
 
 Note: Connect display to rAudio before boot. Otherwise reboot required.
 EOF
