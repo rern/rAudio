@@ -6,7 +6,10 @@ alias=r1
 
 # 20241202
 file=/etc/pacman.conf
-! grep -q linux-rpi $file && sed -i -E 's/^#*(IgnorePkg *=).*/\1 linux-rpi/' $file
+if ! grep -q linux-rpi $file; then
+	ignore=$( getVar IgnorePkg /etc/pacman.conf )
+	sed -i -e '/^#*IgnorePkg/ d' -e "/IgnoreGroup/ i\IgnorePkg   = linux-rpi $ignore" $file
+fi
 
 sed -i '/^brightness/ d' $dirsystem/localbrowser.conf
 
