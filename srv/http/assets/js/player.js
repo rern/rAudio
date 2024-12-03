@@ -302,7 +302,7 @@ var util     = {
 	}
 	, statusSet : () => {
 		var htmlstatus =  S.version +'<br>';
-		[ 'song', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
+		[ 'song', 'album', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
 			var count = S.counts[ k ];
 			if ( count ) htmlstatus += ico( k +' gr' ) +'&ensp;'+ count.toLocaleString() + sp( 15 );
 		} );
