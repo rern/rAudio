@@ -4,7 +4,7 @@ var page  = {
 	, library  : 22
 	, playlist : 39
 	, settings : 47
-	, total    : 58
+	, total    : 57
 }
 var E     = {
 	  bar   : document.getElementById( 'bar-bottom' )

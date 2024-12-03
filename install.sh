@@ -5,6 +5,12 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20241206
+dir=/srv/http/assets/img/guide
+if [[ -e $dir/58.jpg ]]; then
+	rm $dir/*
+	curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
+fi
+
 file=/etc/pacman.conf
 if ! grep -q linux-rpi $file; then
 	ignore=$( getVar IgnorePkg /etc/pacman.conf )
