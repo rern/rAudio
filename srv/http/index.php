@@ -198,11 +198,9 @@ $htmlsearch   = '
 			, [ 'refresh-library',    'update' ]
 		], '', 'button-lib-' )
 		.$htmlsearch?>
-		<div id="lib-path">
-			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
-			<div id="lib-breadcrumbs"></div>
-			<span class="lipath"></span>
-		</div>
+		<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
+		<div id="lib-breadcrumbs"></div>
+		<span class="lipath"></span>
 	</div>
 	<div id="lib-mode-list"></div>
 </div>

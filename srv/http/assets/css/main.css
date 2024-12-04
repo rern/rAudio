@@ -1354,6 +1354,15 @@ i.map.disabled, .map.disabled i {
 	top: 40px;
 	padding-right: 10px;
 }
+.content-top .title {
+	display: inline-block;
+	margin: 0 0 0 15px;
+	height: 40px;
+	line-height: 40px;
+	font-size: 26px;
+	letter-spacing: 5px;
+	color: var( --cw );
+}
 .content-top a {
 	font-size: 18px;
 }
@@ -1377,21 +1386,9 @@ i.map.disabled, .map.disabled i {
 	float: left !important;
 	margin-left: 5px;
 }
-#lib-path {
-	height: 40px;
-	line-height: 40px;
-	font-size: 18px;
-}
 #countsong,
 #countradio {
 	margin-left: 10px;
-}
-.content-top .title {
-	display: inline-block;
-	margin: 0 0 0 15px;
-	font-size: 26px;
-	letter-spacing: 5px;
-	color: var( --cw );
 }
 .lialbum,
 #button-pl-back,
@@ -1491,10 +1488,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 26px;
 	text-align: center;
 	color: var( --cm );
-}
-#lib-path span i {
-	top: 3px;
-	left: -3px;
 }
 .index {
 	position: fixed;
@@ -1621,6 +1614,7 @@ i.map.disabled, .map.disabled i {
 }
 #li-count {
 	margin-left: 20px;
+	font-size: 18px;
 	font-weight: 300;
 	color: var( --cw );
 }
