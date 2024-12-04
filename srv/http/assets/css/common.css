@@ -366,7 +366,7 @@ codered  {
 .head i {
 	width: 40px;
 	height: 40px;
-	line-height: 38px;
+	line-height: 40px;
 	text-align: center;
 	font-size: 24px;
 	color: var( --cg60 );
@@ -377,7 +377,6 @@ codered  {
 }
 .head .title {
 	margin-left: 15px;
-	vertical-align: -2px;
 	font-size: 26px;
 	font-weight: 300;
 	letter-spacing: 20px;
