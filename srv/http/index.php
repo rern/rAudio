@@ -180,7 +180,7 @@ $htmlsearch   = '
 <div id="refresh" class="page-icon"></div>
 
 <div id="bar-top" class="hide">
-	<?=i( 'raudio-nobg page-icon', 'logo' )
+	<?=i( 'raudio-nobg', 'logo' )
 	  .'<div id="playback-controls">'
 	  .iconSet( [ 'previous', 'stop', 'play', 'pause', 'next' ], 'btn btn-default btn-cmd' )
 	  .'</div>'.i( 'gear', 'button-settings' )?>
