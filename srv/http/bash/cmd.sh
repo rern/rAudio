@@ -106,7 +106,7 @@ playerStop() {
 plClear() {
 	mpc -q clear
 	radioStop
-	rm -f $dirsystem/librandom $dirshm/playlist
+	rm -f $dirsystem/librandom $dirshm/playlist*
 	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
 }
 pushPlaylist() {
