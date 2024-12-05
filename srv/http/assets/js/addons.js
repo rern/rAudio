@@ -82,6 +82,7 @@ function optionGet() {
 		}, V.addon.option ) );
 }
 function postData( opt ) {
+	loader();
 	var input = {}
 	keys = [ 'alias', 'branch', 'label' ].concat( keys );
 	keys.forEach( k => {
