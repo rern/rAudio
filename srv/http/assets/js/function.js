@@ -1434,7 +1434,7 @@ function renderSavedPl( data ) { // V.playlistlist - list of saved playlists
 	V.playlisthome  = false;
 	V.playlistlist  = true;
 	V.playlisttrack = false;
-	$( '#pl-title-saved' ).html( data.counthtml );
+	$( '#pl-title-saved' ).html( ico( 'file-playlist wh' ) +'PLAYLISTS' );
 	var html        = htmlHash( data.html );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	$( '#pl-list' ).after( html ).promise().done( renderPlaylistSet );
