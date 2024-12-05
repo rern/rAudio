@@ -211,7 +211,7 @@ i.map.disabled, .map.disabled i {
 .list li *,
 .scrollellipse,
 .tagmessage div,
-#lib-breadcrumbs,
+#lib-title,
 #lyricsartist,
 #lyricstitle {
 	white-space: nowrap;
@@ -1364,7 +1364,7 @@ i.map.disabled, .map.disabled i {
 	color: var( --cw );
 }
 .title.name,
-#pl-title-saved {
+#pl-title {
 	margin-left: 0;
 }
 .content-top a {
@@ -1396,10 +1396,10 @@ i.map.disabled, .map.disabled i {
 }
 .lialbum,
 #button-pl-back,
-#lib-breadcrumbs a {
+#lib-title a {
 	color: var( --cml );
 }
-#lib-breadcrumbs a:last-of-type {
+#lib-title a:last-of-type {
 	color: var( --cw );
 }
 .button-coverart {

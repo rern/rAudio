@@ -329,7 +329,7 @@ function savedPlaylistAddClear() {
 }
 function savedPlaylistRemove() {
 	local();
-	var plname = $( '#pl-title-saved .lipath' ).text();
+	var plname = $( '#pl-title .lipath' ).text();
 	bash( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1, 'CMD NAME ACTION POS' ] );
 	V.list.li.remove();
 }
