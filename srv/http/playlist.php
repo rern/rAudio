@@ -204,7 +204,7 @@ if ( $name ) {
 	$counthtml.='<a class="lipath">'.$name.'</a><a class="title name">'.i( 'file-playlist savedlist' ).$name.'&ensp;<gr> · </gr></a>';
 }
 if ( $count->song ) {
-	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.i( 'music' ).'<gr id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</gr>';
+	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.i( 'music' ).'<a id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</a>';
 }
 if ( $count->radio ) $counthtml.= i( 'webradio' ).'<a id="pl-radiocount">'.$count->radio.'</a>';
 if ( $count->upnp )  $counthtml.= '&emsp;'.i( 'upnp' );
