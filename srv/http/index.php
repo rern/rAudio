@@ -191,15 +191,15 @@ $htmlsearch   = '
 
 <div id="page-library" class="page hide">
 	<div class="content-top">
+		<i id="button-library" class="i-library page-icon"></i>
+		<span id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></span>
+		<span id="lib-breadcrumbs"></span>
 		<?=iconSet( [
-			  i( 'library page-icon', 'button-library' )
-			, [ 'search',             'search' ]
-			, [ 'back',               'back' ]
-			, [ 'refresh-library',    'update' ]
+			  [ 'search',          'search' ]
+			, [ 'back',            'back' ]
+			, [ 'refresh-library', 'update' ]
 		], '', 'button-lib-' )
 		.$htmlsearch?>
-		<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
-		<div id="lib-breadcrumbs"></div>
 		<span class="lipath"></span>
 	</div>
 	<div id="lib-mode-list"></div>
@@ -293,24 +293,24 @@ $htmlsearch   = '
 <div id="page-playlist" class="page hide">
 	<?=i( 'plus-o emptyadd hide' )?>
 	<div class="content-top">
+		<i id="button-playlist" class="i-playlist page-icon"></i>
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
 		<?=iconSet( [
-			  [ 'playlist page-icon', 'playlist' ]
-			, [ 'back',               'pl-back' ]
-			, [ 'search pllength',    'pl-search' ]
-		], '', 'button-' )?>
-		<div id="pl-manage" class="playlist">
-			<?=iconSet( [
-				  [ 'flash',                 'consume' ]
-				, [ 'librandom',             'librandom' ]
-				, [ 'shuffle pllength',      'shuffle' ]
-				, [ 'remove pllength',       'clear' ]
-				, [ 'save-plus pllength',    'save' ]
-				, [ 'playlists',             'playlists' ]
-			], '', 'button-pl-' )?>
-		</div>
+			  [ 'back',            'back' ]
+			, [ 'search pllength', 'search' ]
+		], '', 'button-pl-' )?>
 		<?=str_replace( 'lib-', 'pl-', $htmlsearch )?>
+		<span id="pl-manage" class="playlist">
+			<?=iconSet( [
+				  [ 'flash',              'consume' ]
+				, [ 'librandom',          'librandom' ]
+				, [ 'shuffle pllength',   'shuffle' ]
+				, [ 'remove pllength',    'clear' ]
+				, [ 'save-plus pllength', 'save' ]
+				, [ 'playlists',          'playlists' ]
+			], '', 'button-pl-' )?>
+		</span>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list"></ul>
