@@ -58,13 +58,9 @@ if ( $CMD === 'list' ) {
 ';
 	}
 	$html     .= indexBar( $indexes );
-	$count     = count( $lists );
-	$counthtml = i( 'file-playlist wh' ).'PLAYLISTS';
 	echo json_encode( [
-		  'html'      => $html
-		, 'counthtml' => $counthtml
-		, 'indexes'   => $indexes
-		, 'count'     => $count
+		  'html'    => $html
+		, 'indexes' => $indexes
 	], JSON_NUMERIC_CHECK );
 	exit;
 //----------------------------------------------------------------------------------
@@ -201,7 +197,7 @@ foreach( $lists as $list ) {
 }
 $counthtml = '';
 if ( $name ) {
-	$counthtml.='<a class="lipath">'.$name.'</a><a class="title name">'.i( 'file-playlist savedlist' ).$name.'&ensp;<gr> · </gr></a>';
+	$counthtml.='<a class="lipath">'.$name.'</a><a class="title name">'.i( 'file-playlist savedlist' ).$name.'&ensp;<gr>·</gr>&ensp;</a>';
 }
 if ( $count->song ) {
 	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.i( 'music' ).'<a id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</a>';
