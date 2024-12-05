@@ -1356,12 +1356,16 @@ i.map.disabled, .map.disabled i {
 }
 .content-top .title {
 	display: inline-block;
-	margin: 0 0 0 15px;
+	margin-left: 15px;
 	height: 40px;
 	line-height: 40px;
 	font-size: 26px;
 	letter-spacing: 5px;
 	color: var( --cw );
+}
+.title.name,
+#pl-title-saved {
+	margin-left: 0;
 }
 .content-top a {
 	font-size: 18px;

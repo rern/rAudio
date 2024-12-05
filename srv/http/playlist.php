@@ -59,7 +59,7 @@ if ( $CMD === 'list' ) {
 	}
 	$html     .= indexBar( $indexes );
 	$count     = count( $lists );
-	$counthtml = 'PLAYLISTS&emsp;<a id="pl-savedlist-count">'.number_format( $count ).'</a>'.i( 'file-playlist' );
+	$counthtml = i( 'file-playlist wh' ).'PLAYLISTS';
 	echo json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml
