@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20241206
+rm -f $dirshm/playlist*
+
 dir=/srv/http/assets/img/guide
 if [[ -e $dir/58.jpg ]]; then
 	rm $dir/*

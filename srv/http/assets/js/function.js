@@ -1020,7 +1020,7 @@ function playlistGet() {
 	}, 'json' );
 }
 function playlistInsert( pos ) {
-	var plname = $( '#savedpl-path .lipath' ).text();
+	var plname = $( '#pl-title-saved .lipath' ).text();
 	banner( 'file-playlist', V.pladd.name, 'Add ...' );
 	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME ACTION TO FILE' ], () => {
 		renderSavedPlTrack( plname );
@@ -1156,7 +1156,7 @@ function refreshData() {
 		if ( V.playlistlist ) {
 			$( '#button-pl-playlists' ).trigger( 'click' );
 		} else if ( V.playlisttrack ) {
-			renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
+			renderSavedPlTrack( $( '#pl-title-saved .lipath' ).text() );
 		} else {
 			playlistGet();
 		}
@@ -1173,6 +1173,9 @@ function renderLibrary() { // library home
 	V.mode        = '';
 	[ 'albumlist', 'librarylist', 'librarytrack', 'searchlist' ].forEach( k => V[ k ] = false );
 	V.query       = [];
+	var title     = 'LIBRARY';
+	if ( C.song ) title += '&emsp;<a>'+ C.song.toLocaleString() + ico( 'music' ) +'</a>';
+	$( '#lib-title' ).html( title );
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-path .lipath' ).empty()
 	$( '#lib-path, #lib-title, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
@@ -1193,8 +1196,6 @@ function renderLibrary() { // library home
 	setButtonUpdate();
 }
 function renderLibraryCounts() {
-	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
-	$( '#li-count' ).html( songs );
 	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
@@ -1381,7 +1382,7 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 		S.pllength     = 0;
 		S.consume      = false;
 		$( '#playback-controls' ).addClass( 'hide' );
-		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
+		$( '#pl-title' ).html( '<a class="title">PLAYLIST</a>' );
 		$( '.pllength' ).addClass( 'disabled' );
 		$( '#button-pl-consume' ).removeClass( 'bl' );
 		$( '#pl-search-close' ).trigger( 'click' );
@@ -1393,7 +1394,7 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	}
 	
 	[ 'consume', 'elapsed', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
-	$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
+	$( '#pl-title' ).html( 'PLAYLIST&emsp;'+ data.counthtml );
 	$( '.pllength' ).removeClass( 'disabled' );
 	$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', S.consume );
@@ -1417,13 +1418,13 @@ function renderPlaylistPadding() {
 function renderPlaylistSet() {
 	$( '.emptyadd, #menu-plaction' ).addClass( 'hide' );
 	if ( V.playlisthome ) {
-		$( '#pl-savedlist, #savedpl-path' ).addClass( 'hide' );
-		$( '#pl-list, #pl-path, #pl-manage, #button-pl-search' ).removeClass( 'hide' );
+		$( '#pl-savedlist, #pl-title-saved' ).addClass( 'hide' );
+		$( '#pl-list, #pl-title, #pl-manage, #button-pl-search' ).removeClass( 'hide' );
 	} else {
 		$( '#pl-savedlist' ).css( 'width', V.playlistlist ? '' : '100%' );
-		$( '#pl-list, #pl-path, #pl-manage, #pl-search, #button-pl-search' ).addClass( 'hide' );
+		$( '#pl-list, #pl-title, #pl-manage, #pl-search, #button-pl-search' ).addClass( 'hide' );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
-		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).removeClass( 'hide' );
+		$( '#pl-savedlist, #pl-title-saved, #button-pl-back' ).removeClass( 'hide' );
 	}
 	renderPlaylistPadding();
 	if ( 'pladd' in V ) $( '#bar-top, #bar-bottom, .content-top, #page-playlist .index' ).addClass( 'disabled' );
@@ -1433,7 +1434,7 @@ function renderSavedPl( data ) { // V.playlistlist - list of saved playlists
 	V.playlisthome  = false;
 	V.playlistlist  = true;
 	V.playlisttrack = false;
-	$( '#savedpl-path' ).html( data.counthtml );
+	$( '#pl-title-saved' ).html( data.counthtml );
 	var html        = htmlHash( data.html );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	$( '#pl-list' ).after( html ).promise().done( renderPlaylistSet );
@@ -1445,7 +1446,7 @@ function renderSavedPlTrack( name ) { // V.playlisttrack - tracks in a playlist
 	menuHide();
 	list( { playlist: 'get', name: name }, function( data ) {
 		$( '#page-playlist .index' ).remove();
-		$( '#savedpl-path' ).html( data.counthtml );
+		$( '#pl-title-saved' ).html( data.counthtml );
 		var html = htmlHash( data.html );
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
@@ -1975,7 +1976,7 @@ function sortPlaylist( pl, iold, inew ) {
 	if ( pl === 'pl-list' ) {
 		bash( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
 	} else {
-		bash( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME ACTION FROM TO' ] );
+		bash( [ 'savedpledit', $( '#pl-title-saved .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME ACTION FROM TO' ] );
 	}
 	var i    = Math.min( iold, inew );
 	var imax = Math.max( iold, inew ) + 1;

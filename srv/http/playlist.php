@@ -59,10 +59,7 @@ if ( $CMD === 'list' ) {
 	}
 	$html     .= indexBar( $indexes );
 	$count     = count( $lists );
-	$counthtml = '
-&emsp;<a class="pl-title spaced">PLAYLISTS</a> &emsp; 
-<wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
-'.i( 'file-playlist' );
+	$counthtml = 'PLAYLISTS&emsp;<a id="pl-savedlist-count">'.number_format( $count ).'</a>'.i( 'file-playlist' );
 	echo json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml
@@ -204,12 +201,11 @@ foreach( $lists as $list ) {
 }
 $counthtml = '';
 if ( $name ) {
-	$counthtml.='<a class="lipath">'.$name.'</a><a class="pl-title name">'.i( 'file-playlist savedlist wh' ).$name.'&ensp;<gr> · </gr></a>';
+	$counthtml.='<a class="lipath">'.$name.'</a><a class="title name">'.i( 'file-playlist savedlist' ).$name.'&ensp;<gr> · </gr></a>';
 }
 if ( $count->song ) {
-	$counthtml.= '<wh id="pl-trackcount">'.number_format( $count->song ).'</wh>'
-				.i( 'music' ).'<gr id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</gr>';
+	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.i( 'music' ).'<gr id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</gr>';
 }
-if ( $count->radio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$count->radio.'</wh>';
+if ( $count->radio ) $counthtml.= i( 'webradio' ).'<a id="pl-radiocount">'.$count->radio.'</a>';
 if ( $count->upnp )  $counthtml.= '&emsp;'.i( 'upnp' );
 output();

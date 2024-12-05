@@ -192,7 +192,7 @@ $htmlsearch   = '
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<i id="button-library" class="i-library page-icon"></i>
-		<span id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></span>
+		<span id="lib-title" class="title"></span>
 		<span id="lib-breadcrumbs"></span>
 		<?=iconSet( [
 			  [ 'search',          'search' ]
@@ -294,8 +294,8 @@ $htmlsearch   = '
 	<?=i( 'plus-o emptyadd hide' )?>
 	<div class="content-top">
 		<i id="button-playlist" class="i-playlist page-icon"></i>
-		<span id="pl-path"></span>
-		<span id="savedpl-path"></span>
+		<span id="pl-title" class="title"></span>
+		<span id="pl-title-saved" class="title"></span>
 		<?=iconSet( [
 			  [ 'back',            'back' ]
 			, [ 'search pllength', 'search' ]

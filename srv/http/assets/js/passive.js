@@ -282,7 +282,7 @@ ps = {
 		if ( V.playlistlist ) {
 			renderSavedPl( data );
 		} else if ( V.playlisttrack ) {
-			if ( 'delete' in data && $( '#savedpl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
+			if ( 'delete' in data && $( '#pl-title-saved .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 		}
 		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 		$( '.mode.playlists gr' ).text( count || '' );
@@ -298,7 +298,7 @@ ps = {
 			if ( V.playlistlist ) {
 				$( '#button-pl-playlists' ).trigger( 'click' );
 			} else if ( V.playlisttrack ) {
-				renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
+				renderSavedPlTrack( $( '#pl-title-saved .lipath' ).text() );
 			} else {
 				playlistGet();
 			}

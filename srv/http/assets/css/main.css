@@ -1401,6 +1401,7 @@ i.map.disabled, .map.disabled i {
 .button-coverart {
 	position:relative;
 	display: inline-block;
+	line-height: 40px;
 	margin-left: 15px;
 }
 #infoIcon .button-coverart {
@@ -1409,7 +1410,6 @@ i.map.disabled, .map.disabled i {
 .button-coverart::before,
 .button-coverart::after {
 	position: relative;
-	margin-left: 4px;
 	content: '\F596';
 	font-family: rern;
 	font-size: 26px;
@@ -1428,8 +1428,7 @@ i.map.disabled, .map.disabled i {
 	height: 30px;
 	border: 1px solid hsl(0,0%,30%);
 }
-#mode-title,
-.pl-title {
+#mode-title {
 	font-size: 24px !important;
 	font-weight: 300;
 	color: var( --cw );
@@ -1437,7 +1436,7 @@ i.map.disabled, .map.disabled i {
 .spaced {
 	letter-spacing: 4px;
 }
-.pl-title.name {
+.title.name {
 	letter-spacing: normal;
 }
 #button-pl-back {
@@ -1612,20 +1611,16 @@ i.map.disabled, .map.disabled i {
 	float: right;
 	font-size: 0;
 }
-#li-count {
-	margin-left: 20px;
+.title a {
 	font-size: 18px;
-	font-weight: 300;
-	color: var( --cw );
+	letter-spacing: normal;
 }
-#li-count i {
+.title i {
 	color: var( --cg60 );
 }
 #pl-count,
 #pl-path {
 	display: inline-block;
-	height: 40px;
-	line-height: 40px;
 	font-size: 18px;
 	color: var( --cg60 );
 }
@@ -1962,8 +1957,6 @@ li.active .li2 bl {
 	#bio .container { padding : 0 10px }
 	#pl-count,
 	#pl-path,
-	.pl-title { display: none }
-	.pl-title.name { display: inline }
 	#pl-savedlist-count { margin-left: -20px }
 }
 /************************************************************************************/

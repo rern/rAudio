@@ -1920,13 +1920,13 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	playlistRemove( $( this ).parent() );
 } );
-$( '#savedpl-path' ).on( 'click', '.savedlist', function() {
+$( '#pl-title-saved' ).on( 'click', '.savedlist', function() {
 	var $menu   = $( '#menu-playlist' );
 	var active = ! $menu.hasClass( 'hide' );
 	menuHide();
 	if ( active ) return
 	
-	V.list.path = $( '#savedpl-path .lipath' ).text();
+	V.list.path = $( '#pl-title-saved .lipath' ).text();
 	$menu.find( '.plrename, .pldelete' ).addClass( 'hide' );
 	contextmenuScroll( $menu, 88 );
 } );
