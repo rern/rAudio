@@ -1174,7 +1174,7 @@ function renderLibrary() { // library home
 	[ 'albumlist', 'librarylist', 'librarytrack', 'searchlist' ].forEach( k => V[ k ] = false );
 	V.query       = [];
 	var title     = 'LIBRARY';
-	if ( C.song ) title += '&emsp;<a>'+ C.song.toLocaleString() + ico( 'music' ) +'</a>';
+	if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ico( 'music' ) +'</a>';
 	$( '#lib-home-title' ).html( title );
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-path .lipath' ).empty()
@@ -1394,7 +1394,7 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	}
 	
 	[ 'consume', 'elapsed', 'librandom', 'song' ].forEach( k => S[ k ] = data[ k ] );
-	$( '#pl-home-title' ).html( 'PLAYLIST&emsp;'+ data.counthtml );
+	$( '#pl-home-title' ).html( 'PLAYLIST '+ data.counthtml );
 	$( '.pllength' ).removeClass( 'disabled' );
 	$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', S.consume );
