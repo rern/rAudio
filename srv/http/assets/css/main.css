@@ -1621,6 +1621,7 @@ i.map.disabled, .map.disabled i {
 }
 .title i {
 	color: var( --cg60 );
+	letter-spacing: normal;
 }
 #pl-count,
 #pl-path {
