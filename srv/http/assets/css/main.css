@@ -211,7 +211,7 @@ i.map.disabled, .map.disabled i {
 .list li *,
 .scrollellipse,
 .tagmessage div,
-#lib-title,
+.content-top .title,
 #lyricsartist,
 #lyricstitle {
 	white-space: nowrap;
@@ -1363,10 +1363,12 @@ i.map.disabled, .map.disabled i {
 	letter-spacing: 5px;
 	color: var( --cw );
 }
-.title.name,
 #lib-title,
 #pl-title {
 	margin-left: 0;
+}
+.title .name {
+	letter-spacing: normal;
 }
 .content-top a {
 	font-size: 18px;
@@ -1397,6 +1399,9 @@ i.map.disabled, .map.disabled i {
 }
 #lib-title {
 	width: calc( 100% - 120px );
+}
+#pl-title {
+	width: calc( 100% - 80px );
 }
 .lialbum,
 #button-pl-back,
@@ -1443,9 +1448,6 @@ i.map.disabled, .map.disabled i {
 }
 .spaced {
 	letter-spacing: 4px;
-}
-.title.name {
-	letter-spacing: normal;
 }
 #button-pl-back {
 	float: right;
