@@ -1364,6 +1364,7 @@ i.map.disabled, .map.disabled i {
 	color: var( --cw );
 }
 .title.name,
+#lib-title,
 #pl-title {
 	margin-left: 0;
 }
@@ -1393,6 +1394,9 @@ i.map.disabled, .map.disabled i {
 #countsong,
 #countradio {
 	margin-left: 10px;
+}
+#lib-title {
+	width: calc( 100% - 120px );
 }
 .lialbum,
 #button-pl-back,
@@ -1955,8 +1959,8 @@ li.active .li2 bl {
 }
 @media ( max-width: 700px ) {
 	#sampling .radio { display: inline }
-	#sampling .station { display: none }
-	#pl-count .title { display: none }
+	#sampling .station,
+	#pl-home-title { display: none }
 }
 @media ( max-width: 540px ) {
 	#bio .container { padding : 0 10px }

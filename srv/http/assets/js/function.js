@@ -1382,7 +1382,7 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 		S.pllength     = 0;
 		S.consume      = false;
 		$( '#playback-controls' ).addClass( 'hide' );
-		$( '#pl-home-title' ).html( '<a class="title">PLAYLIST</a>' );
+		$( '#pl-home-title' ).html( 'PLAYLIST' );
 		$( '.pllength' ).addClass( 'disabled' );
 		$( '#button-pl-consume' ).removeClass( 'bl' );
 		$( '#pl-search-close' ).trigger( 'click' );
