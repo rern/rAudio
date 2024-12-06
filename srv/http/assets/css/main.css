@@ -1401,7 +1401,7 @@ i.map.disabled, .map.disabled i {
 .lialbum,
 #button-pl-back,
 #lib-title a {
-	color: var( --cml );
+	color: var( --cm60 );
 }
 #lib-title a:last-of-type {
 	color: var( --cw );
