@@ -37,6 +37,7 @@ device )
 	data=$( tty2std "timeout 0.1 aplay -D hw:$card /dev/zero --dump-hw-params" \
 				| sed '1,/^---/ d; /^---/,$ d' \
 				| column -t -l2 -o ' ' )
+	[[ ! $data ]] && data='<gr>(Data not available - Device not idle)</gr>'
 	echo "\
 <bll># aplay -D hw:$card /dev/zero --dump-hw-params</bll>
 $data"
@@ -166,6 +167,11 @@ $raspberrypiconf"
 <bll># i2cdetect -y $dev</bll>
 $(  i2cdetect -y $dev )"
 	fi
+	ignorepkg=$( grep ^IgnorePkg /etc/pacman.conf )
+	[[ $ignorepkg ]] && config+="
+	
+<bll># grep ^IgnorePkg /etc/pacman.conf</bll>
+$ignorepkg"
 	echo "$config"
 	;;
 timezone )

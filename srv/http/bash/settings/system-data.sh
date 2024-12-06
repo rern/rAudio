@@ -2,20 +2,18 @@
 
 . /srv/http/bash/common.sh
 
-load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )
 temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
+load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )'&emsp;<c>'$temp'°C</c>'
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
-timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
-since=$( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )
-date=$( date +'%F <gr>•</gr> %T' )
-uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
-status="\
-$load<br>\
-$temp °C<br>\
-$availmem<br>\
-$date<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
-$uptime<wide>&ensp;<gr>since $since</gr></wide><br>"
+date=$( date +'%F <gr>·</gr> %T' )
+date+="<wide class='gr'>&ensp;${timezone/\// · }</wide>"
+since=$( uptime -s | cut -d: -f1-2 | sed 's/ / · /' )
+uptime=$( uptime -p | sed -E 's/[ s]|up|ay|our|inute//g; s/,/ /g' )
+uptime+="<wide class='gr'>&ensp;since $since</wide>"
+for v in load availmem date uptime; do
+	status+="${!v}<br>"
+done
 throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
 if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
@@ -104,7 +102,7 @@ data+='
 , "system"         : "'$system'"
 , "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
-, "timezoneoffset" : "'$timezoneoffset'"'
+, "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'
 if [[ -e $dirshm/onboardwlan ]]; then
 ##########
 	data+='

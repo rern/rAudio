@@ -4,7 +4,24 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20241129
+# 20241206
+rm -f $dirshm/playlist*
+
+dir=/srv/http/assets/img/guide
+if [[ -e $dir/58.jpg ]]; then
+	rm $dir/*
+	curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
+fi
+
+file=/etc/pacman.conf
+if ! grep -q linux-rpi $file; then
+	ignore=$( getVar IgnorePkg /etc/pacman.conf )
+	sed -i -e '/^#*IgnorePkg/ d' -e "/^#*IgnoreGroup/ i\IgnorePkg   = linux-rpi $ignore" $file
+fi
+
+sed -i '/^brightness/ d' $dirsystem/localbrowser.conf
+
+# 20241130
 systemctl -q is-active mediamtx && touch $dirsystem/dabradio
 
 # 20241110

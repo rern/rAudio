@@ -45,7 +45,6 @@ $head        = [
 	, 'help'   => $B->refresh.' Refresh every 10 seconds'
 ];
 $labels      = 'CPU Load
-	<br>CPU Temp<wide>erature</wide></span>
 	<br>Available Memory
 	<br>Time
 	<br>Up Time';
@@ -77,7 +76,10 @@ mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</
 <g># NFS:</g>
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,noauto,bg,soft,timeo=5
-</pre> · Windows shares without password: <c>net user guest /active:yes</c>
+</pre>
+Note:
+ · Directory <c>/mnt/MPD/NAS/data</c> reserved for $L->shareddata
+ · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
 ];
 $body        = [ <<< EOF
@@ -183,7 +185,7 @@ EOF
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off:
  · $M->relays
- · $B->gear <btn>Sequence</btn> $B->power On / $B->power Off &emsp;<btn>Pin - Name</btn> $B->power
+ · $B->gear <tab>Sequence</tab> $B->power On / $B->power Off &emsp;<tab>Pin - Name</tab> $B->power
 EOF
 	],
 	[
@@ -305,8 +307,8 @@ Note:
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: $T->features$L->serverraudio
-	Clients: $L->shareddata <btn>$B->rserver rAudio</btn>
+	Server:  $T->features$L->serverraudio
+	Clients: $L->shareddata <tab><i class="i-rserver"></i> rAudio</tab>
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create shares for music <c>source</c> and <c>data</c>
@@ -315,17 +317,18 @@ Note:
 		CIFS (SMB): <c>read only = no</c>
 	 · Windows:
 		Right-click Folder &raquo; Properties &raquo; 
-		- <btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo; <btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
-		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
+		· <btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo;
+			<btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
+		· <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		- $L->storage $B->add Add <c>source</c>
-		- $M->refreshlibrary Update database
-		- $L->shareddata Connect <c>data</c>
-		- Local data will be transfered to <c>data</c>
+		· $L->storage $B->add Add <c>source</c>
+		· $M->refreshlibrary Update database
+		· $L->shareddata Connect <c>data</c>
+		· Local data will be transfered to <c>data</c>
 	 · Other clients:
-		- $L->shareddata Connect <c>data</c>
-		- <c>source</c> will be connected accordingly
+		· $L->shareddata Connect <c>data</c>
+		· <c>source</c> will be connected accordingly
 EOF
 	]
 ];

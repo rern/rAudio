@@ -69,9 +69,11 @@ var config       = {
 			bash( [ SW.id ] );
 		}
 	}
-	, localbrowser : values => {
-		var footer = values.BRIGHTNESS ? ico( 'gear', 'brightness', 'tabindex' ) +'Brightness&emsp;' : '';
-		footer    += ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
+	, localbrowser : data => {
+		if ( S.localbrowser ) {
+			var footer = ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
+			if ( data.brightness ) footer += '&emsp;'+ ico( 'gear', 'brightness', 'tabindex' ) +'Brightness';
+		}
 		info( {
 			  ...SW
 			, list         : [
@@ -83,12 +85,11 @@ var config       = {
 			]
 			, footer       : footer
 			, boxwidth     : 110
-			, values       : values
+			, values       : data.values
 			, checkchanged : S.localbrowser
 			, beforeshow   : () => {
 				var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
-				$onwhileplay.prop( 'disabled', values.SCREENOFF === 0 );
-				$( '.infofooter' ).toggleClass( 'hide', ! S.localbrowser || ! values.BRIGHTNESS );
+				$onwhileplay.prop( 'disabled', data.values.SCREENOFF === 0 );
 				$( '#infoList tr:eq( 2 )' ).on( 'click', '.updn', function() {
 					if ( $( this ).parents( 'td' ).prev().find( 'input' ).val() != 0 ) {
 						$onwhileplay.prop( 'disabled', false );
@@ -98,22 +99,24 @@ var config       = {
 							.prop( 'checked', false );
 					}
 				} );
-				$( '.infofooter' ).on( 'click', 'input', function() {
-					switchCancel();
+				$( '#brightness' ).on( 'click', function() {
 					info( {
 						  ...SW
 						, list        : [ 'Brightness', 'range' ]
-						, values      : S.brightness
+						, values      : data.brightness
 						, beforeshow  : () => {
 							$( '#infoList input' ).on( 'input', function() {
-								bash( [ 'brightness', val, 'CMD VAL' ] )
+								bash( [ 'brightness', +this.value, 'CMD VAL' ] )
 							} );
 						}
 						, okno        : true
 					} );
-				} ).on( 'click', '#reload', function() {
+					switchCancel();
+				} );
+				$( '#reload' ).on( 'click', function() {
 					bash( [ 'localbrowserreload' ], () => banner( SW.icon, SW.title, 'Reloaded.' ) );
-				} ).on( 'click', '#screenoff', function() {
+				} );
+				$( '#screenoff' ).on( 'click', function() {
 					bash( [ 'screentoggle' ], onoff => banner( SW.icon, SW.title, onoff ) );
 				} );
 			}

@@ -890,7 +890,7 @@ function renderPage() {
 	} else {
 		$( '#timezone' ).html( `
 <option></option>
-<option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' &middot; ' ) +'&ensp;'+ S.timezoneoffset }</option>
+<option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' · ' ) +'&ensp;'+ S.timezoneoffset }</option>
 ` );
 	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );

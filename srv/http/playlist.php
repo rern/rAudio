@@ -2,34 +2,40 @@
 $post         = ( object ) $_POST;
 $CMD          = $post->playlist ?? $argv[ 1 ];
 $fileplaylist = '/srv/http/data/shm/playlist';
+$filecount    = $fileplaylist.'count';
 
-function output( $fromfile = '' ) {
-	global $CMD, $counthtml, $fileplaylist, $html;
-	if ( $fromfile ) {
-		$html      = file_get_contents( $fileplaylist );
-		$counthtml = file_get_contents( $fileplaylist.'count' );
-	}
-	$csc  = exec( 'mpc status %currenttime%^^%songpos%^^%consume%' );
-	$csc  = explode( '^^', $csc );
-	$mmss = explode( ':', $csc[ 0 ] );
+function output() {
+	global $CMD, $counthtml, $filecount, $fileplaylist, $html;
+	$cscl = exec( 'mpc status %currenttime%^^%songpos%^^%consume%^^%length%' );
+	$cscl = explode( '^^', $cscl );
+	$mmss = explode( ':', $cscl[ 0 ] );
 	$data = json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml
 		, 'elapsed'   => $mmss[ 0 ] * 60 + $mmss[ 1 ]
-		, 'consume'   => $csc[ 2 ] === 'on'
+		, 'consume'   => $cscl[ 2 ] === 'on'
 		, 'librandom' => file_exists( '/srv/http/data/system/librandom' )
-		, 'song'      => $csc[ 1 ] ? $csc[ 1 ] - 1 : 0
+		, 'song'      => $cscl[ 1 ] ? $cscl[ 1 ] - 1 : 0
 		, 'add'       => $CMD === 'add'
 	], JSON_NUMERIC_CHECK );
 	echo $data;
-	if ( ! $fromfile && $CMD !== 'get' ) {
-		file_put_contents( $fileplaylist, $html );
-		file_put_contents( $fileplaylist.'count', $counthtml );
+	if ( $CMD === 'current' ) {
+		if ( $cscl[ 3 ] < 200 ) { // no cache - < 200 tracks
+			if ( file_exists( $fileplaylist ) ) {
+				unlink( $fileplaylist );
+				unlink( $filecount );
+			}
+		} else if ( ! file_exists( $fileplaylist ) ) {
+			file_put_contents( $fileplaylist, $html );
+			file_put_contents( $filecount, $counthtml );
+		}
 	}
 }
 
 if ( $CMD === 'current' && file_exists( $fileplaylist ) ) {
-	output( 'fromfile' );
+	$html      = file_get_contents( $fileplaylist );
+	$counthtml = file_get_contents( $filecount );
+	output();
 	exit;
 }
 
@@ -58,16 +64,9 @@ if ( $CMD === 'list' ) {
 ';
 	}
 	$html     .= indexBar( $indexes );
-	$count     = count( $lists );
-	$counthtml = '
-&emsp;<a class="pl-title spaced">PLAYLISTS</a> &emsp; 
-<wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
-'.i( 'file-playlist' );
 	echo json_encode( [
-		  'html'      => $html
-		, 'counthtml' => $counthtml
-		, 'indexes'   => $indexes
-		, 'count'     => $count
+		  'html'    => $html
+		, 'indexes' => $indexes
 	], JSON_NUMERIC_CHECK );
 	exit;
 //----------------------------------------------------------------------------------
@@ -204,12 +203,11 @@ foreach( $lists as $list ) {
 }
 $counthtml = '';
 if ( $name ) {
-	$counthtml.='<a class="lipath">'.$name.'</a><a class="pl-title name">'.i( 'file-playlist savedlist wh' ).$name.'&ensp;<gr> · </gr></a>';
+	$counthtml.='<a class="lipath">'.$name.'</a><a class="title name">'.i( 'file-playlist savedlist' ).$name.'&ensp;<gr>·</gr>&ensp;</a>';
 }
 if ( $count->song ) {
-	$counthtml.= '<wh id="pl-trackcount">'.number_format( $count->song ).'</wh>'
-				.i( 'music' ).'<gr id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</gr>';
+	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.i( 'music' ).'<a id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</a>';
 }
-if ( $count->radio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$count->radio.'</wh>';
+if ( $count->radio ) $counthtml.= i( 'webradio' ).'<a id="pl-radiocount">'.$count->radio.'</a>';
 if ( $count->upnp )  $counthtml.= '&emsp;'.i( 'upnp' );
 output();

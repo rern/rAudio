@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1732886162' );
+	src         : url( '/assets/fonts/rern.woff2?v=1733139637' );
 }
 @font-face {
 	font-family : Lato;
@@ -366,7 +366,7 @@ codered  {
 .head i {
 	width: 40px;
 	height: 40px;
-	line-height: 38px;
+	line-height: 40px;
 	text-align: center;
 	font-size: 24px;
 	color: var( --cg60 );
@@ -401,9 +401,6 @@ code {
 	background-color: var( --cgd );
 	padding: 0 4px;
 	border-radius: 3px;
-}
-.helpblock c {
-	background-color: var( --cg );
 }
 
 /* banner() */
@@ -1055,6 +1052,10 @@ input[ type=radio ]:disabled {
 	.i-eye,
 	.i-volume,
 	.infobtn,
+	.infofooter i,
+	.infolabel i,
+	.infomessage img,
+	.infomessage .tagpath,
 	.inforange i,
 	.pointer,
 	#infoList .updn,

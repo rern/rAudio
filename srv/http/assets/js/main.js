@@ -1009,7 +1009,7 @@ $( '#bio' ).on( 'click', '.biosimilar', function() {
 	if ( 'observer' in V ) V.observer.disconnect();
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
-$( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
+$( '#lib-title' ).on( 'click', 'a', function() {
 	V.query = [];
 	delete V.gmode;
 	if ( V.query.length > 1 ) V.scrolltop[ V.query.slice( -1 )[ 0 ].modetitle ] = $( window ).scrollTop();
@@ -1038,7 +1038,7 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 	query.path      = path;
 	query.modetitle = path;
 } );
-$( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
+$( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
 } ).on( 'click', '.button-latest-clear', function() {
 	if ( V.librarytrack ) {
@@ -1059,7 +1059,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 		} );
 	}
 } );
-$( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
+$( '#lib-title' ).on ( 'click', '.button-coverart', function() {
 	infoThumbnail( $( '.button-coverart' )[ 0 ].outerHTML, 'With coverarts in folder of each album:', '' );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
@@ -1184,7 +1184,7 @@ $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
 } );
 $( '#button-lib-back' ).on( 'click', function() {
-	var $breadcrumbs = $( '#lib-breadcrumbs a' );
+	var $breadcrumbs = $( '#lib-title a' );
 	var bL           = $breadcrumbs.length
 	if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
 		$( '#library' ).trigger( 'click' );
@@ -1920,13 +1920,13 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	playlistRemove( $( this ).parent() );
 } );
-$( '#savedpl-path' ).on( 'click', '.savedlist', function() {
+$( '#pl-title' ).on( 'click', '.savedlist', function() {
 	var $menu   = $( '#menu-playlist' );
 	var active = ! $menu.hasClass( 'hide' );
 	menuHide();
 	if ( active ) return
 	
-	V.list.path = $( '#savedpl-path .lipath' ).text();
+	V.list.path = $( '#pl-title .lipath' ).text();
 	$menu.find( '.plrename, .pldelete' ).addClass( 'hide' );
 	contextmenuScroll( $menu, 88 );
 } );

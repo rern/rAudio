@@ -94,8 +94,10 @@ lcdchar )
 }'
 	;;
 localbrowser )
-	brightness=$( getContent /sys/class/backlight/rpi_backlight/brightness false )
-	conf2json localbrowser.conf | sed 's/ }$/, "BRIGHTNESS": '$brightness' }/'
+	echo '{
+  "values"     : '$( conf2json localbrowser.conf )'
+, "brightness" : '$( getContent /sys/class/backlight/rpi_backlight/brightness false )'
+}'
 	;;
 mpdoled )
 	chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )

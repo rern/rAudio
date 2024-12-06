@@ -8,7 +8,6 @@ data+=$( settingsEnabled \
 			$dirsystem camilladsp custom dabradio devicewithbt equalizer soxr \
 			$dirmpdconf autoupdate.conf buffer.conf ffmpeg.conf normalization.conf outputbuffer.conf replaygain.conf )
 			
-counts=$( sed -n -E '/dabradio|playlists|song|webradio/ {s/,$//; s/^/,/; p}' $dirmpd/counts )
 crossfade=$( mpc crossfade | cut -d' ' -f2 )
 mixers=$( getContent $dirshm/mixers )
 [[ -e $dirshm/amixercontrol && ! ( -e $dirshm/btreceiver && ! -e $dirsystem/devicewithbt ) ]] && volume=( $( volumeGet valdb hw ) )
@@ -18,11 +17,11 @@ data+='
 , "asoundcard"  : '$( getContent $dirsystem/asoundcard )'
 , "bluetooth"   : '$( exists $dirshm/btreceiver )'
 , "btmixer"     : "'$( getContent $dirshm/btmixer )'"
-, "counts"      : { '${counts:1}' }
+, "counts"      : '$( < $dirmpd/counts )'
 , "crossfade"   : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "devices"     : '$( getContent $dirshm/devices )'
 , "dop"         : '$( grep -qs dop.*yes $dirmpdconf/output.conf && echo true )'
-, "lastupdate"  : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
+, "lastupdate"  : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>· %H:%M</gr>' )'"
 , "lists"       : {
 	  "albumignore" : '$( exists $dirmpd/albumignore )'
 	, "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'

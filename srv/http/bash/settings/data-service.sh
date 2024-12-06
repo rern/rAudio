@@ -54,6 +54,7 @@ $( tty2std 'timeout 0.1 rtl_test -t' )"
 		;;
 	localbrowser )
 		PKG=firefox
+		SERVICE=$CMD
 		conf=$( configText $dirsystem/localbrowser.conf )
 		skip+='|FATAL: Module g2d_23 not found'
 		;;

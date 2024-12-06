@@ -67,6 +67,8 @@ function onPageInactive() {
 }
 // push status
 function psOnMessage( channel, data ) {
+	if ( data.page ) return
+	
 	switch ( channel ) {
 		case 'airplay':       ps.airplay( data );        break;
 		case 'bookmark':      ps.bookmark( data );       break;
@@ -255,12 +257,16 @@ ps = {
 		}
 		
 		playlistBlink( 'off' );
+		var playlisthome = V.playlist && V.playlisthome;
 		if ( 'blank' in data ) {
-			setPlaybackBlank();
-			renderPlaylist();
+			if ( V.playback ) {
+				setPlaybackBlank();
+			} else if ( playlisthome ) {
+				renderPlaylist();
+			}
 			bannerHide();
 		} else {
-			if ( V.playlist && V.playlisthome ) renderPlaylist( data );
+			if ( playlisthome ) renderPlaylist( data );
 			playbackStatusGet();
 		}
 	}
@@ -276,7 +282,7 @@ ps = {
 		if ( V.playlistlist ) {
 			renderSavedPl( data );
 		} else if ( V.playlisttrack ) {
-			if ( 'delete' in data && $( '#savedpl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
+			if ( 'delete' in data && $( '#pl-title .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 		}
 		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 		$( '.mode.playlists gr' ).text( count || '' );
@@ -292,7 +298,7 @@ ps = {
 			if ( V.playlistlist ) {
 				$( '#button-pl-playlists' ).trigger( 'click' );
 			} else if ( V.playlisttrack ) {
-				renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
+				renderSavedPlTrack( $( '#pl-title .lipath' ).text() );
 			} else {
 				playlistGet();
 			}

@@ -129,9 +129,12 @@ heading + .helpblock {
 .helpblock .img {
 	color: var( --cml );
 }
+.section c {
+	background-color: var( --cg );
+}
 .helpmenu {
 	display: inline-block;
-	width: 125px;
+	width: 126px;
 	height: 25px !important;
 	line-height: 25px;
 	padding-left: 3px;
@@ -139,20 +142,17 @@ heading + .helpblock {
 }
 .helpmenu.label {
 	width: fit-content;
-	padding: 0 5px 0 10px;
+	padding-left: 15px;
 	text-align: right;
 	background: var( --cga );
 }
 .helpmenu.label i {
-	margin-left: 4px;
+	margin: 0 8px;
+	width: fit-content !important;
 }
 .helpmenu.tab {
 	padding-left: 0;
 	text-align: center;
-}
-.helpblock .helpmenu.label,
-.helpblock .helpmenu.tab {
-	border-top: 1px solid #000;
 }
 #infoBox .helpmenu.label {
 	background: var( --cgd );
@@ -178,12 +178,17 @@ heading + .helpblock {
 .sub {
 	color: var( --cw );
 }
-btn {
+btn,
+tab {
 	display: inline-block;
 	line-height: 22px;
 	padding: 0 3px;
 	border: 1px solid var( --cg );
 	border-radius: 3px;
+}
+tab {
+	padding: 0 20px;
+	border-radius: 3px 3px 0 0;
 }
 .clear {
 	clear: both;
@@ -617,9 +622,9 @@ input.disabled + .switchlabel:after {
 	width: 40px !important;
 	line-height: 40px;
 }
-#divstorage c {
-	color: var( --cg75 );
-	background-color: var( --cga);
+#divsoxr .helpblock span {
+	display: inline-block;
+	width: 112px;
 }
 
 @media (max-height: 730px) {

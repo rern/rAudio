@@ -148,7 +148,7 @@ audio_output {
 				$( '#infoList' ).css( 'height', '160px' );
 				$( '.inforange' ).append( '<div class="sub gr"></div>' );
 				$range.on( 'input', function() {
-					S.volume = +$range.val();
+					S.volume = +this.value;
 					volumeMaxSet();
 					util.volumeSet();
 					bash( [ ...cmd, S.volume, 'CMD CONTROL CARD CURRENT TARGET' ] );
@@ -302,7 +302,7 @@ var util     = {
 	}
 	, statusSet : () => {
 		var htmlstatus =  S.version +'<br>';
-		[ 'song', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
+		[ 'song', 'album', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
 			var count = S.counts[ k ];
 			if ( count ) htmlstatus += ico( k +' gr' ) +'&ensp;'+ count.toLocaleString() + sp( 15 );
 		} );

@@ -18,7 +18,7 @@ $page      = $_GET[ 'p' ] ?? '';
 $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
-$hash      = '?v='.time();
+$hash      = '?v=1733402613';
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 $filelogin = '/srv/http/data/system/login';
@@ -85,19 +85,19 @@ if ( ! $page ) { // main
 	}
 	$title = $pagetitle;
 }
-$addon_guide = $guide || $addonsprogress;
-$keyboard    = $localhost && ! $addon_guide;
+$add_guide = $addonsprogress || $guide;
+$keyboard  = $localhost && ! $add_guide;
 if ( $keyboard ) foreach( [ 'cssp', 'css', 'jsp', 'js' ] as $ea ) $$ea[] = 'simplekeyboard';
 
-$html     = '';
-$htmlcss = '<link rel="stylesheet" href="/assets/css/';
+$html      = '';
+$htmlcss   = '<link rel="stylesheet" href="/assets/css/';
 foreach( $cssp as $c ) $html.= $htmlcss.'plugin/'.$cfiles[ $c ].'">';
 foreach( $css as $c )  $html.= $htmlcss.$c.'.css'.$hash.'">';
-$html    .= '
+$html     .= '
 </head>
 <body>
 ';
-if ( ! $addon_guide )  {
+if ( ! $add_guide )  {
 	$pageicon = $page ? i( $page.' page-icon' ) : '';
 	$html    .= '
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
@@ -112,8 +112,8 @@ if ( $keyboard )       $html.= '
 ';
 echo $html;
 
-$scripts = '';
-$htmljs  = '<script src="/assets/js/';
+$scripts   = '';
+$htmljs    = '<script src="/assets/js/';
 foreach( $jsp as $j )      $scripts.= $htmljs.'plugin/'.$jfiles[ $j ].'"></script>';
 foreach( $js as $j )       $scripts.= $htmljs.$j.'.js'.$hash.'"></script>';
 if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';

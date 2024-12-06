@@ -1070,7 +1070,8 @@ var render    = {
 	, config      : () => {
 		var li  = '';
 		S.ls.configs.forEach( f => {
-			li += '<li>'+ ico( 'file liicon' ) +'<a class="name">'+ f +'</a></li>';
+			var current = f === S.configname ? '<grn>•</grn>&ensp;' : '';
+			li += '<li>'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a></li>';
 		} );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 	} //-----------------------------------------------------------------------------------

@@ -33,13 +33,6 @@ iwctlAP() {
 		systemctl stop iwd
 	fi
 }
-localbrowserDisable() {
-	ply-image /srv/http/assets/img/splash.png
-	systemctl disable --now bootsplash localbrowser
-	systemctl enable --now getty@tty1
-	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
-	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
-}
 localbrowserXset() {
 	local off
 	. $dirsystem/localbrowser.conf
@@ -94,7 +87,6 @@ brightness )
 	;;
 camilladsp )
 	enableFlagSet
-	$dirbash/cmd.sh playerstop
 	pushRestartMpd camilladsp $TF
 	;;
 dabradio )
@@ -190,22 +182,14 @@ localbrowser )
 			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
 			pushSubmenu screenoff $tf
 		fi
-		if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
-			restartlocalbrowser=1
-			systemctl restart bootsplash localbrowser &> /dev/null
-		fi
+		[[ $restart ]] && systemctl restart bootsplash localbrowser &> /dev/null
+		systemctl enable bootsplash localbrowser
 	else
-		localbrowserDisable
-	fi
-	if [[ $restartlocalbrowser ]]; then
-		sleep 2
-		if systemctl -q is-active localbrowser; then
-			systemctl enable bootsplash localbrowser
-			systemctl stop bluetoothbutton
-		else
-			! systemctl -q is-active localbrowser && notify firefox 'Browser on RPi' 'Start failed.' 5000
-			localbrowserDisable
-		fi
+		ply-image /srv/http/assets/img/splash.png
+		systemctl disable --now bootsplash localbrowser
+		systemctl enable --now getty@tty1
+		sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
+		[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 	fi
 	pushRefresh
 	;;

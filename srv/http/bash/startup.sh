@@ -157,8 +157,9 @@ touch $dirshm/startup
 if grep -qs startup=true $dirsystem/autoplay.conf; then
 	mpcPlayback play
 fi
-
-[[ -e /boot/startup.sh ]] && /boot/startup.sh
+if [[ -e /boot/startup.sh ]]; then
+	/boot/startup.sh
+fi
 
 udevil clean
 lsblk -no path,vendor,model | grep -v ' $' > $dirshm/lsblkusb
