@@ -138,6 +138,9 @@ Audio player for
 		- Expand `root` partition:
 			- By default, `root` partition will be expanded on initial boot.
 			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
+   - Display (if needed)
+     	- Connect before boot
+     	- HDMI display on RPi 4 and 5 - Use `HDMI0` port
 
 - Boot duration
 	- RPi4: 20+ seconds
