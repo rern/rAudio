@@ -211,7 +211,7 @@ i.map.disabled, .map.disabled i {
 .list li *,
 .scrollellipse,
 .tagmessage div,
-#lib-title,
+.content-top .title,
 #lyricsartist,
 #lyricstitle {
 	white-space: nowrap;
@@ -1363,9 +1363,12 @@ i.map.disabled, .map.disabled i {
 	letter-spacing: 5px;
 	color: var( --cw );
 }
-.title.name,
+#lib-title,
 #pl-title {
 	margin-left: 0;
+}
+.title .name {
+	letter-spacing: normal;
 }
 .content-top a {
 	font-size: 18px;
@@ -1394,10 +1397,16 @@ i.map.disabled, .map.disabled i {
 #countradio {
 	margin-left: 10px;
 }
+#lib-title {
+	width: calc( 100% - 120px );
+}
+#pl-title {
+	width: calc( 100% - 80px );
+}
 .lialbum,
 #button-pl-back,
 #lib-title a {
-	color: var( --cml );
+	color: var( --cm60 );
 }
 #lib-title a:last-of-type {
 	color: var( --cw );
@@ -1439,9 +1448,6 @@ i.map.disabled, .map.disabled i {
 }
 .spaced {
 	letter-spacing: 4px;
-}
-.title.name {
-	letter-spacing: normal;
 }
 #button-pl-back {
 	float: right;
@@ -1955,8 +1961,8 @@ li.active .li2 bl {
 }
 @media ( max-width: 700px ) {
 	#sampling .radio { display: inline }
-	#sampling .station { display: none }
-	#pl-count .title { display: none }
+	#sampling .station,
+	#pl-home-title { display: none }
 }
 @media ( max-width: 540px ) {
 	#bio .container { padding : 0 10px }

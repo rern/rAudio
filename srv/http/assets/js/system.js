@@ -513,7 +513,7 @@ var util          = {
 				}
 			} );
 		}
-		, set     : error => {
+		, set     : args => {
 			bash( [ 'settings/system-mount.sh', 'cmd', ...args ], error => {
 				if ( error ) {
 					infoPrompt( '<wh>Mount failed:</wh><br><br>'+ error );
