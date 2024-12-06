@@ -193,7 +193,7 @@ $htmlsearch   = '
 	<div class="content-top">
 		<i id="button-library" class="i-library page-icon"></i>
 		<span id="lib-home-title" class="title"></span>
-		<span id="lib-title"></span>
+		<span id="lib-title" class="title"></span>
 		<?=iconSet( [
 			  [ 'search',          'search' ]
 			, [ 'back',            'back' ]
