@@ -15,8 +15,11 @@ fi
 
 file=/etc/pacman.conf
 if ! grep -q linux-rpi $file; then
-	ignore=$( getVar IgnorePkg /etc/pacman.conf )
+	[[ -e /boot/kernel7.img ]] && ignore='libunwind mesa'
 	sed -i -e '/^#*IgnorePkg/ d' -e "/^#*IgnoreGroup/ i\IgnorePkg   = linux-rpi $ignore" $file
+fi
+if [[ -e /boot/kernel7.img ]] && ! grep -q mesa $file; then
+	sed -i '/^IgnorePkg/ s/$/ mesa/' $file
 fi
 
 sed -i '/^brightness/ d' $dirsystem/localbrowser.conf
@@ -72,36 +75,6 @@ fi
 # 20241011
 file=$dirsystem/powerbutton.conf
 [[ -e $file ]] && sed -i '/reserved/ d' $file
-
-# 20240921
-file=$dirsystem/relays.conf
-if [[ -e $file ]] && ! grep -q timeron $file; then
-	! grep -q timer=0 $file && on=true
-	sed -i "/^timer=/ i\timeron=$on" $file
-fi
-
-[[ -e $dirmpd/latest && ! -e $dirmpd/latestbyartist ]] && rm -f $dirmpd/latest
-
-# 20240914
-file=$dirsystem/volumeboot
-if [[ -e $file ]]; then
-	echo "\
-startup=$( cut -d= -f2 $file.conf )
-max=100
-" > $dirsystem/volumelimit.conf
-	rm -f $file*
-	touch $dirsystem/volumelimit
-fi
-
-file=/etc/pacman.conf
-sed -i 's/wpa_supplicant//' $file
-
-if [[ -e /boot/kernel7.img ]]; then
-	! grep -q libunwind $file && sed -i -e '/^#*IgnorePkg/ d
-' -e '/^#IgnoreGroup/ i\
-IgnorePkg   = libunwind
-' $file
-fi
 
 #-------------------------------------------------------------------------------
 installstart "$1"
