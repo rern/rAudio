@@ -59,11 +59,8 @@ sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
 rm -f /root/.bash_history
-dirPermissions
 
 # webradio
-if [[ ! -e /tmp/webradio ]]; then # system-datareset.sh - keep existing
-	curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
- 	chown -R http:http $dirwebradio
-	$dirbash/cmd-list.sh
-fi
+curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
+dirPermissions
+$dirbash/cmd-list.sh
