@@ -1092,6 +1092,7 @@ function addonsProgressSubmit( input ) {
 		return
 	}
 	
+	loader();
 	$( '#formtemp' ).submit();
 }
 function capitalize( str ) {
