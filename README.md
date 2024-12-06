@@ -179,7 +179,7 @@ Audio player for
 		- On 64bit version - Very likely, kernel upgraded or not.
 - Full screen UI
 	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
-   		- APK for obsolete Android: [rAudio app](https://cloud.s-t-franz.de/s/isPGys5jYNRwdEy#)
+   		- APK for obsolete Android: [rAudio app](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio.apk)
 	- Add to Home Screen (Safari on iOS, Chrome on Android)
 - Coverart as large playback control buttons
 	- Tap top of coverart to see controls guide.
