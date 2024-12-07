@@ -1225,7 +1225,7 @@ function renderLibraryList( data ) { // V.librarylist
 	var modetitle = ! root ? data.modetitle : data.modetitle
 												.replace( 'MARTIST', 'M ARTIST' )
 												.replace( 'BRADIO', 'B RADIO' );
-	var htmlmodetitle = ico( V.mode ) +'<span id="mode-title" '+ ( root ? 'class="spaced"' : '' ) +'>'+ modetitle;
+	var htmlmodetitle = ico( V.mode ) +'<span id="mode-title">'+ modetitle;
 	if ( 'count' in data && V.mode !== 'latest' ) {
 		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
