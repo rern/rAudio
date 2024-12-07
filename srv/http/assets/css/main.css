@@ -1398,10 +1398,10 @@ i.map.disabled, .map.disabled i {
 	margin-left: 10px;
 }
 #lib-title {
-	width: calc( 100% - 125px );
+	width: calc( 100% - 120px );
 }
 #pl-title {
-	width: calc( 100% - 85px );
+	width: calc( 100% - 80px );
 }
 .lialbum,
 #button-pl-back,
