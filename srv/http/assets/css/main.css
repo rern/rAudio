@@ -2018,11 +2018,6 @@ li.active .li2 bl {
 		#page-playback { --scale: 0.75 }
 		#page-playback.barsalways { --scale: 0.65 }
 	}
-	@media ( max-height: 335px ) {
-		#bar-top,
-		#bar-bottom,
-		#page-playback { padding-top: 20px !important }
-	}
 /*----------------------------------------------------------------------------------*/
 	#coverart-block, #divcover { max-width: 50vh }
 	@media ( max-height: 540px ) {
