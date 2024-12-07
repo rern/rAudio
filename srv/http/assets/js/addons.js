@@ -3,16 +3,10 @@ var icon       = 'addons';
 var keys       = [ 'installurl', 'postinfo', 'title', 'uninstall', 'version' ];
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
-$( '.helphead' ).off( 'click' ).on( 'click', function() {
-	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
-	$( this ).toggleClass( 'bl', hidden );
-	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
-} );
 $( '.container' ).on( 'click', '.revision', function() {
 	$this = $( this );
 	$revisiontext = $this.parent().next();
 	var hidden = $revisiontext.hasClass( 'hide' );
-	$( '.helphead' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
 	$this.toggleClass( 'active' );
 } ).on( 'click', '#list li', function() {
