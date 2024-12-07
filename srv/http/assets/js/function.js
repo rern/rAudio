@@ -1136,6 +1136,7 @@ function refreshData() {
 			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) return
 			
 			if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
+				V.librarylist = false;
 				$( '.mode.album' ).trigger( 'click' );
 			} else if ( V.query.length ) {
 				var query = V.query.slice( -1 )[ 0 ];
