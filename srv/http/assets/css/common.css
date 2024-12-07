@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1733139637' );
+	src         : url( '/assets/fonts/rern.woff2?v=1733554181' );
 }
 @font-face {
 	font-family : Lato;
@@ -373,10 +373,14 @@ codered  {
 	text-shadow: var( --shadow-text );
 }
 .head .i-close {
+	float: left;
 	color: var( --cm );
 }
 .head .title {
+	display: inline-block;
 	margin-left: 15px;
+	width: calc( 100% - 55px );
+	line-height: 40px;
 	font-size: 26px;
 	font-weight: 300;
 	letter-spacing: 20px;
@@ -415,6 +419,7 @@ code {
 	background: linear-gradient( to right, var( --cm ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% );
 }
 .ellipsis,
+.head .title,
 .infoheader,
 .infomessage,
 .infofooter,

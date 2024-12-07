@@ -1225,7 +1225,7 @@ function renderLibraryList( data ) { // V.librarylist
 	var modetitle = ! root ? data.modetitle : data.modetitle
 												.replace( 'MARTIST', 'M ARTIST' )
 												.replace( 'BRADIO', 'B RADIO' );
-	var htmlmodetitle = ico( V.mode ) +'<span id="mode-title" '+ ( root ? 'class="spaced"' : '' ) +'>'+ modetitle +'</span>';
+	var htmlmodetitle = ico( V.mode ) +'<span id="mode-title" '+ ( root ? 'class="spaced"' : '' ) +'>'+ modetitle;
 	if ( 'count' in data && V.mode !== 'latest' ) {
 		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
@@ -1253,6 +1253,7 @@ function renderLibraryList( data ) { // V.librarylist
 	} else if ( V.mode === 'latest' ) {
 		htmlpath += ico( 'flash btntitle button-latest-clear' );
 	}
+	htmlpath += '</span>';
 	$( '#lib-title' )
 						.html( htmlpath )
 						.removeClass( 'hide' );

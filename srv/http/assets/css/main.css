@@ -1396,10 +1396,13 @@ i.map.disabled, .map.disabled i {
 #countradio {
 	margin-left: 10px;
 }
-#lib-title {
+#lib-title,
+#mode-title {
+	display: inline-block;
 	width: calc( 100% - 120px );
 }
 #pl-title {
+	display: inline-block;
 	width: calc( 100% - 80px );
 }
 .lialbum,
@@ -1656,7 +1659,7 @@ i.map.disabled, .map.disabled i {
 .list .single {
 	display: inline-block;
 	max-width: calc( 100% - 90px );
-	line-height: 48px;
+	line-height: 48px !important;
 	vertical-align: 5%;
 }
 .list .name {
@@ -2058,9 +2061,6 @@ li.active .li2 bl {
 		#volume-knob { width: 40% }
 		#coverart-block { width: 50% }
 		#volume-knob { margin: 20px 0 70px 0 }
-	}
-	@media ( max-width: 735px ) {
-		.title { display: none }
 	}
 	@media ( max-width: 700px ) {
 		.liinfo { display: none }
