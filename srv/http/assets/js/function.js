@@ -976,6 +976,7 @@ function playbackStatusGet( withdisplay ) {
 			delete V.coverTL;
 			displaySubMenu();
 			bannerHide();
+			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
 		}
 		if ( V.volumeactive ) delete status.volume; // immediately change volume when pageInactive > pageActive
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
@@ -1218,9 +1219,7 @@ function renderLibraryList( data ) { // V.librarylist
 	
 	V.librarylist = true;
 	$( '#lib-home-title, #lib-mode-list, .menu, #button-lib-update' ).addClass( 'hide' );
-	$( '#button-lib-back' )
-		.toggleClass( 'back-left', D.backonleft )
-		.removeClass( 'hide' );
+	$( '#button-lib-back' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).text( data.path );
 	var root      = data.modetitle.toLowerCase() === V.mode;
 	var modetitle = ! root ? data.modetitle : data.modetitle
@@ -1423,7 +1422,6 @@ function renderPlaylistSet() {
 	} else {
 		$( '#pl-savedlist' ).css( 'width', V.playlistlist ? '' : '100%' );
 		$( '#pl-list, #pl-home-title, #pl-manage, #pl-search, #button-pl-search' ).addClass( 'hide' );
-		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#pl-savedlist, #pl-title, #button-pl-back' ).removeClass( 'hide' );
 	}
 	renderPlaylistPadding();

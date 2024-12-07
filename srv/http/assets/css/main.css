@@ -1389,7 +1389,7 @@ i.map.disabled, .map.disabled i {
 	color: var( --cm );
 	z-index: 115;
 }
-.back-left {
+.i-back.left {
 	float: left !important;
 	margin-left: 5px;
 }
@@ -1398,10 +1398,10 @@ i.map.disabled, .map.disabled i {
 	margin-left: 10px;
 }
 #lib-title {
-	width: calc( 100% - 120px );
+	width: calc( 100% - 125px );
 }
 #pl-title {
-	width: calc( 100% - 80px );
+	width: calc( 100% - 85px );
 }
 .lialbum,
 #button-pl-back,
