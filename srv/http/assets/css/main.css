@@ -1446,9 +1446,6 @@ i.map.disabled, .map.disabled i {
 	font-weight: 300;
 	color: var( --cw );
 }
-.spaced {
-	letter-spacing: 4px;
-}
 #button-pl-back {
 	float: right;
 	font-size: 28px !important;
