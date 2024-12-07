@@ -1,10 +1,11 @@
 <?php
 include 'common.php';
 
-$iconhead  = '';
 if ( $addons ) {
 	$iconhead  = i( 'gear' );
-} else if ( ! $addonsprogress ) {
+} else if ( $addonsprogress ) {
+	$iconhead  = '';
+} else {
 	$iconhead  = i( 'help helphead' ).i( 'gear' );
 }
 echo '
