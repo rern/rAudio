@@ -734,7 +734,6 @@ input.disabled + .switchlabel:after {
 	.wiring,
 	#backend,
 	#bar-bottom i,
-	#button-data,
 	#ffmpegfiletype,
 	#menu {
 		cursor: pointer

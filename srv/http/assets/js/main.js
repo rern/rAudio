@@ -169,10 +169,7 @@ $( '#logo, #refresh' ).on( 'click', function() {
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return
 		
-	$( '#data' ).hasClass( 'hide' ) ? setStatusData() : $( '#button-data, #data' ).addClass( 'hide' );
-} );
-$( '#button-data' ).on( 'click', function() {
-	$( '#button-data, #data' ).addClass( 'hide' );
+	$( '#data' ).hasClass( 'hide' ) ? setStatusData() : $( '#data' ).addClass( 'hide' );
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();

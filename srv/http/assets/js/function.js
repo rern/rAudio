@@ -981,16 +981,8 @@ function playbackStatusGet( withdisplay ) {
 		if ( V.volumeactive ) delete status.volume; // immediately change volume when pageInactive > pageActive
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		V.volumecurrent = S.volume;
-		var dataerror = $( '#data .copy' ).length;
-		if ( $( '#data' ).hasClass( 'hide' ) || dataerror ) {
-			if ( dataerror ) {
-				$( '#data' ).empty();
-				$( '#button-data, #data' ).addClass( 'hide' );
-			}
-			renderPlaybackAll();
-		} else {
-			setStatusData();
-		}
+		renderPlaybackAll();
+		if ( ! $( '#data' ).hasClass( 'hide' ) ) setStatusData();
 	} );
 }
 function playlistBlink( off ) {
@@ -1926,8 +1918,9 @@ function setStatusData() {
 	}
 	var html = '';
 	$.each( list, ( k, v ) => html += '"'+ k +'": '+ highlightJSON( v ) +'<br>' );
-	$( '#data' ).html( html );
-	$( '#button-data, #data' ).removeClass( 'hide' );
+	$( '#data' )
+		.html( html )
+		.removeClass( 'hide' );
 }
 function setTrackCoverart() {
 	if ( V.mode === 'album' ) $( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );

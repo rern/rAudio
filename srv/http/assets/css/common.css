@@ -2,7 +2,6 @@
 #loader       { z-index: 120 }
 #infoOverlay,
 #keyboard,
-#button-data  { z-index: 115 }
 #data,
 #degug        { z-index: 110 }
 .head         { z-index: 95 }
@@ -383,12 +382,6 @@ codered  {
 	font-size: 26px;
 	font-weight: 300;
 	letter-spacing: 20px;
-}
-#button-data .title {
-	width: calc( 100% - 55px );
-}
-#button-data .i-close {
-	float: left;
 }
 #data hr {
 	margin-left  : -20px;

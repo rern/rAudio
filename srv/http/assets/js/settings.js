@@ -123,16 +123,11 @@ function refreshData() {
 	}
 	
 	bash( page +'-data.sh', data => {
-		if ( ! list2JSON( data ) ) return // on load, try catching any errors
-		
-		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .infobtn' ).length ) {
-			$( '#data' ).empty();
-			$( '#button-data, #data' ).addClass( 'hide' );
+		// on load, try catching any errors
+		if ( list2JSON( data ) ) {
 			switchSet();
 			renderPage();
-		} else {
-			$( '#data' ).html( highlightJSON( S ) );
-			$( '#button-data, #data' ).removeClass( 'hide' );
+			if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
 		}
 	} );
 }
@@ -362,7 +357,7 @@ $( document ).on( 'keydown', function( e ) {
 			} else if ( V.select2 ) {
 				$( '.select2-hidden-accessible' ).select2( 'close' );
 			} else if ( ! $( '#data' ).hasClass( 'hide' ) ) {
-				$( '#button-data' ).trigger( 'click' );
+				$( '.page-icon' ).trigger( 'click' );
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
 				$( '#fader' ).addClass( 'hide' );
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
@@ -388,7 +383,7 @@ $( document ).on( 'keydown', function( e ) {
 		case 'x':
 			if ( ! e.ctrlKey ) return
 			
-			var close = $( '#data' ).hasClass( 'hide' ) ? '#close' : '#button-data .i-close';
+			var close = $( '#data' ).hasClass( 'hide' ) ? '#close' : '.page-icon';
 			$( close ).trigger( 'click' );
 			break
 		case 'MediaPause':
@@ -401,13 +396,13 @@ $( document ).on( 'keydown', function( e ) {
 $( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return
 	
-	$( '#data' ).html( highlightJSON( S ) )
-	$( '#button-data, #data' ).removeClass( 'hide' );
-} );
-$( '#button-data' ).on( 'click', function() {
-	switchSet();
-	renderPage();
-	$( '#button-data, #data' ).addClass( 'hide' );
+	if ( $( '#data' ).hasClass( 'hide' ) ) {
+		$( '#data' )
+			.html( highlightJSON( S ) )
+			.removeClass( 'hide' );
+	} else {
+		$( '#data' ).addClass( 'hide' );
+	}
 } );
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );
