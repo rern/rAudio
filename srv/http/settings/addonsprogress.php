@@ -56,7 +56,7 @@ pre hr.hrlight {
 <div id="infoOverlay" class="info hide">
 	<div id="infoBox">
 		<div id="infoTopBg">
-			<div id="infoTop"><i class="i-addons"></i><a id="infoTitle"><?=$title?></a></div><i id="infoX" class="i-close infox"></i>
+			<div id="infoTop"><i class="i-addons"></i><a id="infoTitle"><?=$title?></a></div>
 		</div>
 		<div id="infoList"><div class="infomessage"><?=$postmessage?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
@@ -69,7 +69,7 @@ pre hr.hrlight {
 //if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$backhref?>' ); // on refresh page
 document.title = 'Addons';
 E      = {};
-[ 'close', 'container', 'info', 'infobtn', 'infomessage', 'infox', 'progress', 'titleicon' ].forEach( ( el ) => {
+[ 'close', 'container', 'info', 'infobtn', 'infomessage', 'progress', 'titleicon' ].forEach( ( el ) => {
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 E.container.classList.remove( 'hide' );
@@ -84,7 +84,7 @@ E.close.addEventListener( 'click', () => {
 		fetch( 'cmd.php', { method: 'POST', body: formdata } );
 	}
 } );
-[ E.infobtn, E.infox ].forEach( el => el.addEventListener( 'click', () => E.info.remove() ) );
+E.infobtn.addEventListener( 'click', () => E.info.remove() );
 scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
 document.body.addEventListener( 'keydown', e => {
 	switch( e.key ) {
