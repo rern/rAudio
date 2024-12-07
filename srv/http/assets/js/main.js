@@ -1730,9 +1730,9 @@ $( '#button-pl-clear' ).on( 'click', function() {
 						case 'crop':
 							bash( [ 'mpccrop' ] );
 							$( '#pl-list li:not( .active )' ).remove();
+							$( '#infoX' ).trigger( 'click' );
 							break;
 					}
-					$( '#infoX' ).trigger( 'click' );
 				} );
 			}
 			, ok         : () => {
