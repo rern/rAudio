@@ -18,7 +18,7 @@ $page      = $_GET[ 'p' ] ?? '';
 $pages     = [ 'features', 'player', 'networks', 'system', 'addons', 'addonsprogress', 'camilla', 'guide' ];
 foreach( $pages as $p ) $$p = false;
 $$page     = true;
-$hash      = '?v=1733402613';
+$hash      = '?v='.time();
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 $filelogin = '/srv/http/data/system/login';
@@ -103,7 +103,7 @@ if ( ! $add_guide )  {
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
 	<div id="loader">'.$logosvg.'</div>
 	<div id="banner" class="hide"></div>
-	<div id="button-data" class="head hide">'.$pageicon.i( 'close' ).'<span class="title">'.$title.'-DATA</span></div>
+	<div id="button-data" class="head hide">'.i( 'close' ).'<span class="title">'.$title.'</span></div>
 	<pre id="data" class="hide"></pre>
 ';
 }

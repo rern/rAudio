@@ -373,17 +373,22 @@ codered  {
 	text-shadow: var( --shadow-text );
 }
 .head .i-close {
-	float: left;
 	color: var( --cm );
 }
 .head .title {
 	display: inline-block;
 	margin-left: 15px;
-	width: calc( 100% - 55px );
+	width: calc( 100% - 135px );
 	line-height: 40px;
 	font-size: 26px;
 	font-weight: 300;
 	letter-spacing: 20px;
+}
+#button-data .title {
+	width: calc( 100% - 55px );
+}
+#button-data .i-close {
+	float: left;
 }
 #data hr {
 	margin-left  : -20px;

@@ -269,6 +269,7 @@ heading i.disabled {
 	float: right;
 }
 .page-icon {
+	float: left;
 	color: var( --cw ) !important;
 	background: var( --cm );
 }
