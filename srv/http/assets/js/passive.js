@@ -139,6 +139,7 @@ ps = {
 			$.get( '/assets/img/vu.svg', data => $( '#coverart' ).after( '<div id="vu">'+ data +'</div>' ), 'text' );
 		}
 		displayBars();
+		$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
 		if ( V.playback ) {
 			displayPlayback();
 			renderPlayback();
@@ -146,7 +147,6 @@ ps = {
 			if ( V.libraryhome ) {
 				renderLibrary();
 			} else {
-				$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
 				if ( V.librarytrack ) {
 					setTrackCoverart();
 					renderLibraryPadding();

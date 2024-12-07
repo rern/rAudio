@@ -192,14 +192,14 @@ $htmlsearch   = '
 <div id="page-library" class="page hide">
 	<div class="content-top">
 		<i id="button-library" class="i-library page-icon"></i>
-		<span id="lib-home-title" class="title"></span>
-		<span id="lib-title" class="title"></span>
 		<?=iconSet( [
 			  [ 'search',          'search' ]
 			, [ 'back',            'back' ]
 			, [ 'refresh-library', 'update' ]
 		], '', 'button-lib-' )
 		.$htmlsearch?>
+		<span id="lib-home-title" class="title"></span>
+		<span id="lib-title" class="title"></span>
 		<span class="lipath"></span>
 	</div>
 	<div id="lib-mode-list"></div>
@@ -294,8 +294,6 @@ $htmlsearch   = '
 	<?=i( 'plus-o emptyadd hide' )?>
 	<div class="content-top">
 		<i id="button-playlist" class="i-playlist page-icon"></i>
-		<span id="pl-home-title" class="title"></span>
-		<span id="pl-title" class="title"></span>
 		<?=iconSet( [
 			  [ 'back',            'back' ]
 			, [ 'search pllength', 'search' ]
@@ -311,6 +309,8 @@ $htmlsearch   = '
 				, [ 'playlists',          'playlists' ]
 			], '', 'button-pl-' )?>
 		</span>
+		<span id="pl-home-title" class="title"></span>
+		<span id="pl-title" class="title"></span>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list"></ul>
