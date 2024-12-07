@@ -1378,20 +1378,18 @@ i.map.disabled, .map.disabled i {
 }
 #button-lib-update,
 #button-lib-search,
+#button-lib-back,
 #button-pl-search,
 #button-pl-playlists {
 	float: right;
 }
 #button-lib-back {
-	position: relative;
-	float: right;
 	font-size: 28px;
 	color: var( --cm );
 	z-index: 115;
 }
 .i-back.left {
 	float: left !important;
-	margin-left: 5px;
 }
 #countsong,
 #countradio {
