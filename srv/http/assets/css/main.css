@@ -1355,6 +1355,7 @@ i.map.disabled, .map.disabled i {
 	padding-right: 10px;
 }
 .content-top .title {
+	display: inline-block;
 	margin-left: 15px;
 	height: 40px;
 	line-height: 40px;
@@ -1398,7 +1399,6 @@ i.map.disabled, .map.disabled i {
 }
 #lib-title,
 #mode-title {
-	display: inline-block;
 	width: calc( 100% - 120px );
 }
 #pl-title {
@@ -2113,13 +2113,12 @@ li.active .li2 bl {
 		}
 	}
 	@media ( max-width: 400px ) {
-		#button-settings { right: 10px }
 		.content-top { padding-right: 0 }
-		#li-count { margin-left: 10px }
+		#button-settings { right: 10px }
+		#lib-home-title a { display: none }
 		#pl-manage i { width: 37px }
 	}
 	@media ( max-width: 360px ) {
-		#li-count { display: none }
 		#playback-controls i { margin: 0 3px }
 		#pl-manage i { width: 36px }
 	}

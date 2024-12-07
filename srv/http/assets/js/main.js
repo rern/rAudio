@@ -1106,7 +1106,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 } );
 $( '#button-lib-search' ).on( 'click', function() {
 	if ( $( '#lib-search' ).hasClass( 'hide' ) ) {
-		$( '#lib-path span, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
+		$( '#page-library .content-top .title, #lib-path span, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
 		$( '#page-library .search:not( i )' ).removeClass( 'hide' );
 		$( '#lib-search-close' ).empty();
 		$( '#lib-path' ).css( 'max-width', 40 );
@@ -1168,11 +1168,8 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	V.searchlist = false;
 	$( '#search-list' ).remove();
-	if ( V.libraryhome ) {
-		$( '#lib-mode-list' ).removeClass( 'hide' );
-	} else {
-		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
-	}
+	$( '#page-library .content-top .title' ).removeClass( 'hide' );
+	if ( ! V.libraryhome ) $( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	$( '#page-library .search' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
