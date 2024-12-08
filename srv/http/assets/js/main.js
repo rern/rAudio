@@ -481,7 +481,7 @@ $( '#playback' ).on( 'click', function() {
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
-	if ( V.pladd ) return
+	if ( V.pladdreplaceplay ) return
 	
 	if ( V.playlist ) {
 		if ( ! V.playlisthome ) playlistGet();
