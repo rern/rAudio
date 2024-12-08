@@ -1777,7 +1777,7 @@ function setPlaylistScroll() {
 	var litop = barVisible( 80, 40 );
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$( '#pl-list li' ).removeClass( 'active updn' );
-	$liactive = $( '#pl-list li' ).eq( S.song || 0 );
+	$liactive = $( '#pl-list li' ).eq( S.song );
 	$liactive.addClass( 'active' );
 	if ( ! $( '.pl-remove' ).length && ! I.active ) {
 		if ( $( '#pl-list li' ).length < 5 ) {

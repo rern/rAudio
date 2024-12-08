@@ -481,13 +481,13 @@ $( '#playback' ).on( 'click', function() {
 	}
 } );
 $( '#playlist, #button-playlist' ).on( 'click', function() {
+	if ( V.pladd ) return
+	
 	if ( V.playlist ) {
 		if ( ! V.playlisthome ) playlistGet();
 	} else {
 		V.playlisthome ? playlistGet() : switchPage( 'playlist' );
 	}
-} ).press( function() {
-	bash( [ 'plcacheremove' ] );
 } );
 $( '#bar-top' ).on( 'click', function( e ) {
 	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide ' );
