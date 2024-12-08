@@ -2067,6 +2067,7 @@ li.active .li2 bl {
 	@media ( max-width: 500px ) {
 		#page-playback { padding-top: 60px }
 		#playback-row { margin-top: 20px }
+		#debug,
 		#time-knob { display: none }
 		#volume-knob,
 		#coverart-block	{ width: 100% }
@@ -2074,6 +2075,11 @@ li.active .li2 bl {
 		#volume-knob { width: auto }
 		#coverart-block,
 		#divcover { max-width: 100% }
+		#bar-bottom.hide {
+			display: block !important;
+			opacity: 0 !important;
+		}
+		#bar-bottom.translucent { opacity: 0.6 !important }
 		.wl { width: 46% }
 		.c1 { margin-left: 5% }
 		.c2 { margin-left: 27% }
