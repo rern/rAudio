@@ -1001,9 +1001,6 @@ function playlistGet() {
 	
 	if ( $( '#pl-list' ).is( ':empty' ) ) {
 		if ( $( '#bar-top' ).hasClass( 'hide' ) ) banner( 'playlist blink', 'Playlist', 'Get ...', -1 )
-	} else {
-		if ( ! V.playlist ) switchPage( 'playlist' );
-		setPlaylistScroll();
 	}
 	playlistBlink();
 	list( { playlist: 'current' }, data => {
@@ -1360,6 +1357,7 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	V.playlisthome  = true;
 	V.playlistlist  = false;
 	V.playlisttrack = false;
+	if ( ! V.playlist ) switchPage( 'playlist' );
 	$( '#button-pl-back' ).addClass( 'hide' );
 	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
@@ -1379,7 +1377,6 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 		$( '#pl-list' ).empty();
 		$( '.playlist, #page-playlist .emptyadd' ).removeClass( 'hide' );
 		pageScroll( 0 );
-		switchPage( 'playlist' );
 		return
 	}
 	
@@ -1765,8 +1762,9 @@ function setPlaylistInfoWidth() {
 	$title.css(  'max-width', iWdW + titleW < cW ? '' : cW - iWdW );
 }
 function setPlaylistScroll() {
+	if ( ! V.playlist || ! V.playlisthome ) return
+	
 	intervalClear();
-	switchPage( 'playlist' );
 	if ( V.sortable
 		|| [ 'airplay', 'spotify' ].includes( S.player )
 		|| ( D.audiocd && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
@@ -1824,7 +1822,7 @@ function setPlaylistScroll() {
 					intervalClear();
 					S.elapsed = 0;
 					$elapsed.empty();
-					setPlaylistScroll();
+					if ( V.playlist && V.playlisthome ) setPlaylistScroll();
 				} else {
 					elapsedtxt = second2HMS( S.elapsed );
 					$elapsed.html( ico( 'play' ) + elapsedtxt + slash );
