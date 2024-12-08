@@ -249,7 +249,6 @@ ps = {
 		orderLibrary();
 	}
 	, playlist  : data => {
-		delete V.pladdreplaceplay;
 		if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 		
 		if ( 'blink' in data ) {
