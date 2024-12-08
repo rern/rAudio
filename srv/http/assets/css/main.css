@@ -2074,6 +2074,10 @@ li.active .li2 bl {
 		#volume-knob { width: auto }
 		#coverart-block,
 		#divcover { max-width: 100% }
+		.wl { width: 46% }
+		.c1 { margin-left: 5% }
+		.c2 { margin-left: 27% }
+		.c3 { margin-left: 73% }
 	}
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }
