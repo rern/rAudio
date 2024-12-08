@@ -191,7 +191,7 @@ ps = {
 			setProgress( 0 );
 			setBlinkDot();
 		}
-		if ( V.playlist ) setPlaylistScroll();
+		setPlaylistScroll();
 	}	
 	, mpdUpdate : data => {
 		if ( 'counts' in data ) {

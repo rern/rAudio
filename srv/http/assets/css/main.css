@@ -1355,6 +1355,7 @@ i.map.disabled, .map.disabled i {
 	padding-right: 10px;
 }
 .content-top .title {
+	display: inline-block;
 	margin-left: 15px;
 	height: 40px;
 	line-height: 40px;
@@ -1377,29 +1378,29 @@ i.map.disabled, .map.disabled i {
 }
 #button-lib-update,
 #button-lib-search,
+#button-lib-back,
 #button-pl-search,
 #button-pl-playlists {
 	float: right;
 }
 #button-lib-back {
-	position: relative;
-	float: right;
 	font-size: 28px;
 	color: var( --cm );
 	z-index: 115;
 }
 .i-back.left {
 	float: left !important;
-	margin-left: 5px;
 }
 #countsong,
 #countradio {
 	margin-left: 10px;
 }
-#lib-title {
+#lib-title,
+#mode-title {
 	width: calc( 100% - 120px );
 }
 #pl-title {
+	display: inline-block;
 	width: calc( 100% - 80px );
 }
 .lialbum,
@@ -1444,9 +1445,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 24px !important;
 	font-weight: 300;
 	color: var( --cw );
-}
-.spaced {
-	letter-spacing: 4px;
 }
 #button-pl-back {
 	float: right;
@@ -1656,7 +1654,7 @@ i.map.disabled, .map.disabled i {
 .list .single {
 	display: inline-block;
 	max-width: calc( 100% - 90px );
-	line-height: 48px;
+	line-height: 48px !important;
 	vertical-align: 5%;
 }
 .list .name {
@@ -2015,11 +2013,6 @@ li.active .li2 bl {
 		#page-playback { --scale: 0.75 }
 		#page-playback.barsalways { --scale: 0.65 }
 	}
-	@media ( max-height: 335px ) {
-		#bar-top,
-		#bar-bottom,
-		#page-playback { padding-top: 20px !important }
-	}
 /*----------------------------------------------------------------------------------*/
 	#coverart-block, #divcover { max-width: 50vh }
 	@media ( max-height: 540px ) {
@@ -2059,9 +2052,6 @@ li.active .li2 bl {
 		#coverart-block { width: 50% }
 		#volume-knob { margin: 20px 0 70px 0 }
 	}
-	@media ( max-width: 735px ) {
-		.title { display: none }
-	}
 	@media ( max-width: 700px ) {
 		.liinfo { display: none }
 	}
@@ -2077,6 +2067,7 @@ li.active .li2 bl {
 	@media ( max-width: 500px ) {
 		#page-playback { padding-top: 60px }
 		#playback-row { margin-top: 20px }
+		#debug,
 		#time-knob { display: none }
 		#volume-knob,
 		#coverart-block	{ width: 100% }
@@ -2084,6 +2075,15 @@ li.active .li2 bl {
 		#volume-knob { width: auto }
 		#coverart-block,
 		#divcover { max-width: 100% }
+		#bar-bottom.hide {
+			display: block !important;
+			opacity: 0 !important;
+		}
+		#bar-bottom.translucent { opacity: 0.6 !important }
+		.wl { width: 46% }
+		.c1 { margin-left: 5% }
+		.c2 { margin-left: 27% }
+		.c3 { margin-left: 73% }
 	}
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }
@@ -2118,13 +2118,12 @@ li.active .li2 bl {
 		}
 	}
 	@media ( max-width: 400px ) {
-		#button-settings { right: 10px }
 		.content-top { padding-right: 0 }
-		#li-count { margin-left: 10px }
+		#button-settings { right: 10px }
+		#lib-home-title a { display: none }
 		#pl-manage i { width: 37px }
 	}
 	@media ( max-width: 360px ) {
-		#li-count { display: none }
 		#playback-controls i { margin: 0 3px }
 		#pl-manage i { width: 36px }
 	}

@@ -269,6 +269,7 @@ heading i.disabled {
 	float: right;
 }
 .page-icon {
+	float: left;
 	color: var( --cw ) !important;
 	background: var( --cm );
 }
@@ -733,7 +734,6 @@ input.disabled + .switchlabel:after {
 	.wiring,
 	#backend,
 	#bar-bottom i,
-	#button-data,
 	#ffmpegfiletype,
 	#menu {
 		cursor: pointer

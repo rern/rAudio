@@ -613,7 +613,6 @@ mpcremove )
 		for (( i=$TO; i >= $POS; i-- )); do
 			mpc -q del $i
 		done
-		pushPlaylist
 	else
 		if [[ $songpos == $POS ]]; then
 			[[ $pllength == $POS ]] && next=$(( POS -1 )) || next=$POS
@@ -623,8 +622,8 @@ mpcremove )
 			mpc -q play $next
 			mpc -q stop
 		fi
-		pushPlaylist
 	fi
+	pushPlaylist
 	;;
 mpcseek )
 	if [[ $STATE == stop ]]; then
@@ -736,9 +735,6 @@ order )
 	;;
 pladdrandom )
 	plAddRandom
-	;;
-plcacheremove )
-	rm -f $dirshm/playlist*
 	;;
 playerstart )
 	playerStart

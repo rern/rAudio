@@ -1,7 +1,13 @@
 <?php
 include 'common.php';
 
-$iconhead  = $addonsprogress ? '' : i( 'help helphead' ).i( 'gear' );
+if ( $addons ) {
+	$iconhead  = i( 'gear' );
+} else if ( $addonsprogress ) {
+	$iconhead  = '';
+} else {
+	$iconhead  = i( 'help helphead' ).i( 'gear' );
+}
 echo '
 <div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>
 '.i( 'close close', 'close' ).$iconhead.'

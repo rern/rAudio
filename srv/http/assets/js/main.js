@@ -169,10 +169,7 @@ $( '#logo, #refresh' ).on( 'click', function() {
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return
 		
-	$( '#data' ).hasClass( 'hide' ) ? setStatusData() : $( '#button-data, #data' ).addClass( 'hide' );
-} );
-$( '#button-data' ).on( 'click', function() {
-	$( '#button-data, #data' ).addClass( 'hide' );
+	$( '#data' ).hasClass( 'hide' ) ? setStatusData() : $( '#data' ).addClass( 'hide' );
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
@@ -460,7 +457,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	V.colorpicker   = false;
 	V.colorelements.removeAttr( 'style' );
 	V.colorelements = '';
-	if ( V.playlist && V.playlisthome ) setPlaylistScroll();
+	setPlaylistScroll();
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 } );
 $( '#library, #button-library' ).on( 'click', function() {
@@ -489,8 +486,6 @@ $( '#playlist, #button-playlist' ).on( 'click', function() {
 	} else {
 		V.playlisthome ? playlistGet() : switchPage( 'playlist' );
 	}
-} ).press( function() {
-	bash( [ 'plcacheremove' ] );
 } );
 $( '#bar-top' ).on( 'click', function( e ) {
 	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide ' );
@@ -1106,7 +1101,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 } );
 $( '#button-lib-search' ).on( 'click', function() {
 	if ( $( '#lib-search' ).hasClass( 'hide' ) ) {
-		$( '#lib-path span, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
+		$( '#page-library .content-top .title, #lib-path span, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
 		$( '#page-library .search:not( i )' ).removeClass( 'hide' );
 		$( '#lib-search-close' ).empty();
 		$( '#lib-path' ).css( 'max-width', 40 );
@@ -1168,11 +1163,8 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	V.searchlist = false;
 	$( '#search-list' ).remove();
-	if ( V.libraryhome ) {
-		$( '#lib-mode-list' ).removeClass( 'hide' );
-	} else {
-		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
-	}
+	$( '#page-library .content-top .title' ).removeClass( 'hide' );
+	if ( ! V.libraryhome ) $( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
 	$( '#page-library .search' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
@@ -1733,9 +1725,9 @@ $( '#button-pl-clear' ).on( 'click', function() {
 						case 'crop':
 							bash( [ 'mpccrop' ] );
 							$( '#pl-list li:not( .active )' ).remove();
+							$( '#infoX' ).trigger( 'click' );
 							break;
 					}
-					$( '#infoX' ).trigger( 'click' );
 				} );
 			}
 			, ok         : () => {
