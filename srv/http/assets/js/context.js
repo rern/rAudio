@@ -711,6 +711,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	_replace
 	_replaceplay
 	*/
+	if ( [ 'add', 'replace' ].includes( cmd.replace( 'play', '' ) ) ) V.playlisthtml = '';
 	var path = V.list.path;
 	// mpccmd:
 	// [ 'mpcadd', path ]
