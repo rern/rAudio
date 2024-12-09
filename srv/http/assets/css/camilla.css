@@ -474,7 +474,3 @@ i.disabled {
 #filters li {
 	cursor: default !important;
 }
-#divvolume {
-	-webkit-user-select: none;
-	user-select: none;
-}
