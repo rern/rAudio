@@ -392,6 +392,9 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 	$this.toggleClass( 'active' );
 } );
+$( '.page-icon' ).on( 'click', function() {
+	$( '#debug' ).trigger( 'click' );
+} ).press( () => location.reload() );
 $( '.playback' ).on( 'click', function() { // for player and camilla
 	S.state = S.state === 'play' ? 'pause' : 'play';
 	if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();

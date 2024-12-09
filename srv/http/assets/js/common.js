@@ -76,24 +76,26 @@ function dataError( msg, list ) {
 	if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
 	else if ( msg.includes( 'column' ) ) pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
 	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
-	var error =  '<div class="error"><codered>Errors:</codered> '+ msg
+	var error =  '<codered>Errors:</codered> '+ msg
 				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
-				+'</div>'
+				+'<hr>'
 				+'<div class="data">'
 				+ list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&gt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
 				+ '</div>'
-	dataErrorSet( error, 'copy' );
+	dataErrorSet( error );
 	loaderHide();
 }
-function dataErrorSet( error, copy ) {
-	if ( copy ) {
+function dataErrorSet( error ) {
+	$( '#data .error' ).remove();
+	$( '#banner' ).after( '<pre id="data">'+ error +'</pre>' );
+	if ( $( '#data codered' ).length ) {
 		var fn = () => {
-			banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
 			// copy2clipboard - for non https which cannot use clipboard API
 			$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
 			$( '#error' ).trigger( 'focus' ).select();
 			document.execCommand( 'copy' );
 			$( '#error' ).remove();
+			banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
 		}
 	} else {
 		var fn = () => {
@@ -102,8 +104,6 @@ function dataErrorSet( error, copy ) {
 			notify( pkg, pkg, 'Start ...' );
 		}
 	}
-	$( '#data' ).remove();
-	$( '#banner' ).after( '<pre id="data">'+ error +'</pre>' )
 	$( '#data .infobtn' ).on( 'click', fn );
 }
 // ----------------------------------------------------------------------
@@ -1505,9 +1505,6 @@ function bashConsoleLog( data ) {
 	}
 }
 
-$( '.page-icon' ).on( 'click', function() {
-	if ( page ) $( '#debug' ).trigger( 'click' );
-} ).press( () => location.reload() );
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return
 	

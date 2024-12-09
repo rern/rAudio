@@ -177,7 +177,7 @@ $htmlsearch   = '
 ';
 ?>
 
-<div id="refresh" class="page-icon"></div>
+<div id="refresh"></div>
 
 <div id="bar-top" class="hide">
 	<?=i( 'raudio-nobg', 'logo' )
@@ -191,13 +191,15 @@ $htmlsearch   = '
 
 <div id="page-library" class="page hide">
 	<div class="content-top">
-		<i id="button-library" class="i-library page-icon"></i>
-		<?=iconSet( [
-			  [ 'search',          'search' ]
-			, [ 'back',            'back' ]
-			, [ 'refresh-library', 'update' ]
-		], '', 'button-lib-' )
-		.$htmlsearch?>
+		<?php echo
+			 i( 'library page-icon', 'button-library' )
+			.iconSet( [
+				  [ 'search',          'search' ]
+				, [ 'back',            'back' ]
+				, [ 'refresh-library', 'update' ]
+			], '', 'button-lib-' )
+			.$htmlsearch;
+		?>
 		<span id="lib-home-title" class="title"></span>
 		<span id="lib-title" class="title"></span>
 		<span class="lipath"></span>
@@ -293,12 +295,14 @@ $htmlsearch   = '
 <div id="page-playlist" class="page hide">
 	<?=i( 'plus-o emptyadd hide' )?>
 	<div class="content-top">
-		<i id="button-playlist" class="i-playlist page-icon"></i>
-		<?=iconSet( [
-			  [ 'back',            'back' ]
-			, [ 'search pllength', 'search' ]
-		], '', 'button-pl-' )?>
-		<?=str_replace( 'lib-', 'pl-', $htmlsearch )?>
+		<?php echo
+			 i( 'playlist page-icon', 'button-playlist' )
+			.iconSet( [
+				  [ 'back',            'back' ]
+				, [ 'search pllength', 'search' ]
+			], '', 'button-pl-' )
+			.str_replace( 'lib-', 'pl-', $htmlsearch );
+		?>
 		<span id="pl-manage" class="playlist">
 			<?=iconSet( [
 				  [ 'flash',              'consume' ]

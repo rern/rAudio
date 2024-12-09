@@ -165,7 +165,7 @@ $( '#coverart' ).on( 'load', function() {
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
-} );
+} ).press( () => location.reload() );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	if ( D.loginsetting ) {
