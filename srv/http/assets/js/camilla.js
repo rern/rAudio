@@ -789,7 +789,7 @@ var render    = {
 		}
 	}
 	, volume      : () => {
-		$( '#volume .thumb' ).css( 'margin-left', ( $( '#volume' ).width() - 40 ) / 100 * S.volume );
+		render.volumeThumb();
 		$( '#divvolume .i-minus' ).toggleClass( 'disabled', S.volume === 0 );
 		$( '#divvolume .i-plus' ).toggleClass( 'disabled', S.volume === 100 );
 		if ( S.volumemute ) {
@@ -800,6 +800,9 @@ var render    = {
 			$( '#divvolume .i-volume' ).removeClass( 'mute' );
 		}
 		$( '#divvolume .level' ).text( S.volumemute || S.volume )
+	}
+	, volumeThumb : () => {
+		$( '#volume .thumb' ).css( 'margin-left', ( 230 - 40 ) / 100 * S.volume );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -2043,7 +2046,7 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 		up ? S.volume++ : S.volume--;
 		volumeMaxSet();
 		volumeSet();
-		$( '#volume .thumb' ).css( 'margin-left', V.volume.x );
+		render.volumeThumb();
 		$( '#divvolume .level' ).text( S.volume );
 		if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
 	}, 100 );
