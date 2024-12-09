@@ -6,6 +6,9 @@ gatewayAddress() {
 	ip r | grep -m1 "^default .* $1" | tail -1 | cut -d' ' -f3
 }
 listBluetooth() {
+	rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=true
+	[[ ! $devicebt ]] && echo false && return
+	
 	local dev devices info listbt mac
 	devices=$( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
@@ -20,23 +23,25 @@ listBluetooth() {
 }'
 		done <<< $devices
 		echo [ ${listbt:1} ]
+	else
+		echo false
 	fi
 }
 if [[ $1 == pushbt ]]; then
 	listbt=$( listBluetooth )
-	if [[ $listbt ]]; then
+	if [[ $listbt != false ]]; then
 		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
 		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
 		pushData bluetooth '{ "connected": '$connected', "btreceiver": '$btreceiver' }'
-	else
-		listbt=false
 	fi
 	pushData bluetooth "$listbt"
 	exit
 fi
 
 listWlan() {
-	local dbm notconnected profiles profile ssid wlandev
+	[[ ! -e $dirshm/wlan ]] && echo false && return
+	
+	local dbm listwl notconnected profiles profile ssid wlandev
 	wlandev=$( < $dirshm/wlan )
 	profiles=$( ls -p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
@@ -63,20 +68,16 @@ listWlan() {
 		done <<< $profiles
 	fi
 	[[ $notconnected ]] && listwl+="$notconnected"
-	[[ $listwl ]] && listwl='[ '${listwl:1}' ]' || listwl=false
+	[[ $listwl ]] && echo '[ '${listwl:1}' ]' || echo false
 }
 if [[ $1 == pushwl ]]; then
-	listWlan
-	pushData wlan '{ "listwl": '$listwl', "ip": "'$ip'", "gateway": "'$gateway'" }'
+	pushData wlan '{ "page": "networks", "listwl": '$( listWlan )', "ip": "'$ip'", "gateway": "'$gateway'" }'
 	exit
 fi
 
 # bluetooth
 rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=true
 [[ $devicebt ]] && listbt=$( listBluetooth )
-
-# wlan
-[[ -e $dirshm/wlan ]] && listWlan
 
 # lan
 ip=$( ipAddress e )
@@ -107,8 +108,8 @@ data='
 , "gateway"     : "'$gateway'"
 , "hostname"    : "'$hostname'"
 , "ip"          : "'$ip'"
-, "listbt"      : '$listbt'
+, "listbt"      : '$( listBluetooth )'
 , "listeth"     : '$listeth'
-, "listwl"      : '$listwl
+, "listwl"      : '$( listWlan )
 
 data2json "$data" $1

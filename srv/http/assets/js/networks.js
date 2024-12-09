@@ -109,23 +109,25 @@ function renderWlan() {
 }
 function scanBluetooth() {
 	bash( 'networks-scan.sh', data => {
+		var htmlbt    = '';
 		if ( data ) {
 			S.listbtscan = data;
-			var htmlbt   = '';
 			data.forEach( list => htmlbt  += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'+ ico( 'bluetooth' ) +'<wh>'+ list.name +'</wh></li>' );
-			$( '#listbtscan' ).html( htmlbt );
+		} else {
+			htmlbt       = '<li><gr>(no Bluetooth devices found)</gr></li>';
 		}
+		$( '#listbtscan' ).html( htmlbt );
 		V.timeoutscan = setTimeout( scanBluetooth, 12000 );
 	}, 'json' );
 }
 function scanWlan() {
 	bash( 'networks-scan.sh wlan', data => {
+		var htmlwl    = '';
 		if ( data ) {
 			data.sort( ( a, b ) => b.signal - a.signal );
 			S.listwlscan = data;
-			var cls = 'wlscan';
+			var cls      = 'wlscan';
 			var icon, signal;
-			var htmlwl   = '';
 			data.forEach( list => {
 				signal  = list.signal;
 				icon    = 'wifi';
@@ -144,7 +146,7 @@ function scanWlan() {
 				htmlwl += '</li>';
 			} );
 		} else {
-			var htmlwl = '<li><gr>(no access points found)</gr></li>';
+			htmlwl       = '<li><gr>(no access points found)</gr></li>';
 		}
 		$( '#listwlscan' ).html( htmlwl );
 		V.timeoutscan = setTimeout( scanWlan, 12000 );

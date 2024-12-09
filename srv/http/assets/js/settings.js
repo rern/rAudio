@@ -171,10 +171,26 @@ function switchSet() {
 }
 
 function psOnMessage( channel, data ) {
+	if ( channel == 'bluetooth' ) {
+		if ( page === 'networks' ) {
+			S.listbt = data;
+			renderBluetooth();
+		} else if ( ! data ) {
+			if ( page === 'system' ) $( '#bluetooth' ).removeClass( 'disabled' );
+		} else if ( 'connected' in data ) {
+			if ( page === 'features' ) {
+				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
+			} else if ( page === 'system' ) {
+				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
+			}
+		}
+		bannerHide();
+		return
+	}
+	
 	if ( data.page !== page ) return
 	
 	switch ( channel ) {
-		case 'bluetooth': ps.bluetooth( data ); break;
 		case 'camilla':   ps.camilla( data );   break;
 		case 'mpdplayer':
 		case 'mpdradio':  ps.mpdPlayer( data ); break;
@@ -193,26 +209,6 @@ function psOnMessage( channel, data ) {
 }
 ps = {
 	  ...ps // from settings.js
-	, bluetooth : data => { // from networks-data,sh
-		if ( ! data ) {
-			if ( page === 'networks' ) {
-				S.listbt = data;
-				render.bluetooth();
-			} else if ( page === 'system' ) {
-				$( '#bluetooth' ).removeClass( 'disabled' );
-			}
-		} else if ( 'connected' in data ) {
-			if ( page === 'features' ) {
-				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
-			} else if ( page === 'system' ) {
-				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
-			}
-		} else if ( page === 'networks' ) {
-			S.listbt = data;
-			render.bluetooth();
-		}
-		bannerHide();
-	}
 	, camilla   : data => {
 		S.range = data;
 		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
@@ -277,7 +273,7 @@ ps = {
 		}
 		
 		$.each( data, ( k, v ) => { S[ k ] = v } );
-		render.wlan();
+		renderWlan();
 	}
 }
 //---------------------------------------------------------------------------------------

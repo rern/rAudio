@@ -513,7 +513,6 @@ function displayPlayback() {
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
 	$( '#playback-row' ).css( 'align-items', D.buttons ? '' : 'center' );
-	$( '#map-time, #map-cover, #map-volume' ).toggleClass( 'hide', D.overlayno === true );
 }
 function displaySave() {
 	var values  = infoVal();
