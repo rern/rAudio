@@ -209,7 +209,8 @@ lcdcharset )
 	$dirbash/lcdchar.py $ACTION
 	;;
 mirror )
-	echo 'Server = http://'$MIRROR'.mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
+	[[ $MIRROR ]] && MIRROR+=.
+	echo 'Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
 	pushRefresh
 	;;
 mountforget )
