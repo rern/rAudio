@@ -256,6 +256,12 @@ body {
 	-moz-box-sizing    :border-box;
 	box-sizing         :border-box;
 }
+i,
+.infobtn,
+#debug {
+	-webkit-user-select: none;
+	user-select: none;
+}
 sp {
 	display: inline-block;
 	height: 0;
@@ -271,13 +277,6 @@ sp {
 .i-libupdate {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;
-}
-.infobtn,
-.infomessage,
-#debug,
-#infoOverlay {
-	-webkit-user-select: text;
-	user-select: text;
 }
 input:focus {
 	outline: none;

@@ -2003,7 +2003,7 @@ function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )
 }
 function volumeAnimate( target, volume ) {
-	clearTimeout( V.volumebar );
+	volumeBarHideClear();
 	$( '.volumeband' ).addClass( 'disabled' );
 	$( '#volume-bar' ).animate(
 		  { width: target +'%' }
@@ -2011,7 +2011,7 @@ function volumeAnimate( target, volume ) {
 			  duration : Math.abs( target - volume ) * 40
 			, easing   : 'linear'
 			, complete : () => {
-				V.volumebar = volumeBarHide();
+				volumeBarHide();
 				$( '.volumeband' ).removeClass( 'disabled' );
 				setVolume();
 			}
@@ -2019,11 +2019,14 @@ function volumeAnimate( target, volume ) {
 	);
 }
 function volumeBarHide( nodelay ) {
-	setTimeout( () => {
+	V.volumebar = setTimeout( () => {
 		$( '#info' ).removeClass( 'hide' ); // 320 x 480
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '.volumeband' ).addClass( 'transparent' );
 	}, nodelay ? 0 : 3000 );
+}
+function volumeBarHideClear() {
+	clearTimeout( V.volumebar );
 }
 function volumeBarSet( pagex ) {
 	V.volume.x = pagex - V.volume.min;
@@ -2035,7 +2038,7 @@ function volumeBarSet( pagex ) {
 function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
-	V.volumebar = volumeBarHide();
+	volumeBarHide();
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 }

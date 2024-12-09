@@ -30,12 +30,6 @@
 	text-shadow: var( --shadow-text );
 }
 
-heading,
-.col-l,
-.entries li {
-	-webkit-user-select: none;
-	user-select: none;
-}
 #loader {
 	background: #000000;
 }

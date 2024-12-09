@@ -218,13 +218,6 @@ i.map.disabled, .map.disabled i {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.page,
-#bar-bottom,
-#bar-top,
-#settings {
-	-webkit-user-select: none;
-	user-select: none;
-}
 #bar-top.disabled,
 #bar-bottom.disabled,
 .content-top.disabled,
