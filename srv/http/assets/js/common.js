@@ -1287,7 +1287,7 @@ var ps = {
 		V[ data.type ] = true;
 		banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 		if ( V.off ) {
-			$( '#loader' ).css( 'background', '#000000' );
+			$( '#loader' ).css( 'opacity', 1 );
 			setTimeout( () => {
 				$( '#loader svg' ).css( 'animation', 'none' );
 				bannerHide();

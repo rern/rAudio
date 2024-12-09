@@ -30,9 +30,6 @@
 	text-shadow: var( --shadow-text );
 }
 
-#loader {
-	background: #000000;
-}
 .head,
 #bar-bottom {
 	box-shadow: var( --shadow-bar );

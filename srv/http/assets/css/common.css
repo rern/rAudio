@@ -290,7 +290,7 @@ input:focus {
 	top        : 0;
 	width      : 100%;
 	height     : 100%;
-	background : rgba(0, 0, 0, 0.8);
+	background : #000000;
 }
 #loader svg {
 	position  : absolute;
@@ -301,6 +301,9 @@ input:focus {
 	margin    : auto;
 	width     : 50px;
 	animation : blinkopaque 1.5s linear infinite;
+}
+#loader.fader {
+	opacity: 0.8;
 }
 #loader.fader svg {
 	display: none;
