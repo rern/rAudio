@@ -2,11 +2,13 @@ function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
 	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, V.li.data( 'mac' ), 'CMD ACTION MAC' ] );
+	$( '#fader' ).removeClass( 'hide' );
 }
 function connectWiFi( data ) {
 	clearTimeout( V.timeoutscan );
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
+	notify( 'wifi', data.ESSID, 'Connect ...' );
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			bannerHide();
@@ -19,7 +21,7 @@ function connectWiFi( data ) {
 			}
 		}
 	} );
-	notify( 'wifi', data.ESSID, 'Connect ...' );
+	$( '#fader' ).removeClass( 'hide' );
 }
 function onPageInactive() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
@@ -277,7 +279,7 @@ $( '.close, .back' ).on( 'click', function() {
 } );
 $( '.back' ).on( 'click', function() {
 	$( '.helphead, #divinterface' ).removeClass( 'hide' );
-	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
+	$( '#divbluetooth, #divwifi, #divwebui, #fader' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
 	refreshData();
 } );
@@ -287,8 +289,6 @@ $( '.btscan' ).on( 'click', function() {
 	scanBluetooth();
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
-	if ( ! $( '#banner' ).hasClass( 'hide' ) ) return
-	
 	V.li = $( this );
 	bluetoothCommand( 'pair' );
 } );
@@ -306,8 +306,6 @@ $( '.wlscan' ).on( 'click', function() {
 	}
 } );
 $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
-	if ( ! $( '#banner' ).hasClass( 'hide' ) ) return
-	
 	var $this    = $( this );
 	var ssid     = $this.data( 'ssid' );
 	var security = $this.data( 'wpa' ) === 'wep';
