@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20241212
+file=$dirsystem/display.json
+! grep -q overlayno $file && sed -i '/composername/ a\  "overlayno": false,' $file
+
 # 20241208
 rm -f $dirshm/playlist*
 
