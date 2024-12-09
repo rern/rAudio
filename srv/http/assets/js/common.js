@@ -71,7 +71,7 @@ function bannerHide() {
 }
 // ----------------------------------------------------------------------
 function dataDisplay() {
-	if ( V.press || $.isEmptyObject( S ) ) return
+	if ( V.press ) return
 	
 	if ( $( '#data' ).length ) {
 		$( '#data' ).remove();
