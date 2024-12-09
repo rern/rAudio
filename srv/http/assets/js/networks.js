@@ -19,6 +19,7 @@ function connectWiFi( data ) {
 			}
 		}
 	} );
+	notify( 'wifi', data.ESSID, 'Connect ...' );
 }
 function onPageInactive() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
@@ -286,6 +287,8 @@ $( '.btscan' ).on( 'click', function() {
 	scanBluetooth();
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
+	if ( ! $( '#banner' ).hasClass( 'hide' ) ) return
+	
 	V.li = $( this );
 	bluetoothCommand( 'pair' );
 } );
@@ -303,6 +306,8 @@ $( '.wlscan' ).on( 'click', function() {
 	}
 } );
 $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
+	if ( ! $( '#banner' ).hasClass( 'hide' ) ) return
+	
 	var $this    = $( this );
 	var ssid     = $this.data( 'ssid' );
 	var security = $this.data( 'wpa' ) === 'wep';
@@ -318,7 +323,6 @@ $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
 	} else {
 		connectWiFi( { ESSID: ssid } );
 	}
-	notify( 'wifi', ssid, 'Connect ...' );
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
