@@ -68,13 +68,11 @@ function list2JSON( list ) {
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
 						+ status;
-			$( '#data' ).remove();
-			$( '#banner' ).after( '<pre id="data">'+ error +'</pre>' )
-			$( '#data' ).on( 'click', '.restart', function() {
-					var cmdsh = page === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
-					bash( cmdsh, refreshData );
-					notify( pkg, pkg, 'Start ...' );
-				} );
+			dataErrorSet( error, () => {
+				var cmdsh = page === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
+				bash( cmdsh, refreshData );
+				notify( pkg, pkg, 'Start ...' );
+			} );
 		loaderHide();
 		} );
 		return
@@ -88,7 +86,7 @@ function list2JSON( list ) {
 			$.each( list, ( k, v ) => { S[ k ] = v } );
 		}
 	} catch( e ) {
-		errorDisplay( e.message, list );
+		dataError( e.message, list );
 		return false
 	}
 	return true
@@ -386,9 +384,6 @@ $( document ).on( 'keydown', function( e ) {
 			if ( [ 'camilla', 'player' ].includes( page ) ) $( '.playback' ).trigger( 'click' );
 			break
 	}
-} );
-$( '.page-icon' ).on( 'click', function() {
-	dataDisplay();
 } );
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );

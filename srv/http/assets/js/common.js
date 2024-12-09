@@ -1,6 +1,6 @@
 /*
 $.fn.press
-banner() errorDisplay() 
+banner() dataError() 
 info()   infoPower() infoPowerCommand() infoWarning()
 loader() local()     selectSet()
 websocket
@@ -69,17 +69,9 @@ function bannerHide() {
 		.addClass( 'hide' )
 		.empty();
 }
+$( '#banner' ).on( 'click', bannerHide );
 // ----------------------------------------------------------------------
-function dataDisplay() {
-	if ( V.press ) return
-	
-	if ( $( '#data' ).length ) {
-		$( '#data' ).remove();
-	} else {
-		$( '#banner' ).after( '<pre id="data">'+ highlightJSON( S ) +'</pre>' );
-	}
-}
-function errorDisplay( msg, list ) {
+function dataError( msg, list ) {
 	var pos = msg.replace( /.* position /, '' );
 	if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
 	else if ( msg.includes( 'column' ) ) pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
@@ -90,12 +82,21 @@ function errorDisplay( msg, list ) {
 				+'<div class="data">'
 				+ list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&gt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
 				+ '</div>'
-	$( '#data' )
-		.html( error )
-		.removeClass( 'hide' );
+	dataErrorSet( error, () => {
+		banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
+		// copy2clipboard - for non https which cannot use clipboard API
+		$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
+		$( '#error' ).trigger( 'focus' ).select();
+		document.execCommand( 'copy' );
+		$( '#error' ).remove();
+	} );
 	loaderHide();
 }
-
+function dataErrorSet( error, fn ) {
+	$( '#data' ).remove();
+	$( '#banner' ).after( '<pre id="data">'+ error +'</pre>' )
+	$( '#data .infobtn' ).on( 'click', fn );
+}
 // ----------------------------------------------------------------------
 function highlightJSON( json ) {
 	var color = ( text, color ) => '<'+ color +'>'+ text +'</'+ color +'>';
@@ -1495,7 +1496,18 @@ function bashConsoleLog( data ) {
 	}
 }
 
-$( '#debug' ).press( function() {
+$( '.page-icon' ).on( 'click', function() {
+	if ( page ) $( '#debug' ).trigger( 'click' );
+} ).press( () => location.reload() );
+$( '#debug' ).on( 'click', function() {
+	if ( V.press ) return
+	
+	if ( $( '#data' ).length ) {
+		$( '#data' ).remove();
+	} else {
+		$( '#banner' ).after( '<pre id="data">'+ highlightJSON( S ) +'</pre>' );
+	}
+} ).press( function() {
 	if ( V.debug ) {
 		V.debug = false;
 		refreshData();
@@ -1532,13 +1544,3 @@ $( '#debug' ).press( function() {
 		} );
 	} );
 } );
-$( '.page-icon' ).press( () => location.reload() );
-$( '#data' ).on( 'click', '.copy', function() {
-	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
-	// copy2clipboard - for non https which cannot use clipboard API
-	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-	$( '#error' ).trigger( 'focus' ).select();
-	document.execCommand( 'copy' );
-	$( '#error' ).remove();
-} );
-$( '#banner' ).on( 'click', bannerHide );

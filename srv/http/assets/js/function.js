@@ -963,7 +963,7 @@ function playbackStatusGet( withdisplay ) {
 		try {
 			var status = JSON.parse( list );
 		} catch( e ) {
-			errorDisplay( e.message, list );
+			dataError( e.message, list );
 			return false
 		}
 		

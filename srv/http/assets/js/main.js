@@ -166,9 +166,6 @@ $( '#coverart' ).on( 'load', function() {
 $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
-$( '#debug' ).on( 'click', function() {
-	dataDisplay();
-} );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	if ( D.loginsetting ) {
