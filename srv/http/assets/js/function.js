@@ -895,7 +895,7 @@ function menuLibraryPlaylist( $tabs, click ) {
 	$tabs
 		.removeClass( 'focus' )
 		.trigger( 'blur' );
-	$( '#fader' ).addClass( 'hide' );
+	loaderHide();
 	$( '#bar-top, #bar-bottom' ).css( 'z-index', '' );
 }
 function mpcSeek( elapsed ) {
@@ -982,7 +982,7 @@ function playbackStatusGet( withdisplay ) {
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		V.volumecurrent = S.volume;
 		renderPlaybackAll();
-		if ( ! $( '#data' ).hasClass( 'hide' ) ) setStatusData();
+		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
 	} );
 }
 function playlistBlink( off ) {
@@ -1907,18 +1907,6 @@ function setProgressElapsed() {
 			if ( S.state !== 'play' ) clearInterval( V.interval.elapsed );
 		}, 1000 );
 	}
-}
-function setStatusData() {
-	var list = {
-		  status  : S
-		, display : D
-		, count   : C
-	}
-	var html = '';
-	$.each( list, ( k, v ) => html += '"'+ k +'": '+ highlightJSON( v ) +'<br>' );
-	$( '#data' )
-		.html( html )
-		.removeClass( 'hide' );
 }
 function setTrackCoverart() {
 	if ( V.mode === 'album' ) $( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );

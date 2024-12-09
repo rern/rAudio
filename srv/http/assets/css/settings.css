@@ -1,5 +1,5 @@
+#bar-bottom { z-index: 95 }
 .menu { z-index: 11 }
-#bar-bottom { z-index: 5 }
 .container input[type=checkbox] { z-index: 1 }
 
 #listwlscan .i-lock { font-size: 16px; vertical-align: 1px }
@@ -691,7 +691,6 @@ input.disabled + .switchlabel:after {
 	#bar-bottom.guide div { width: calc( 100% / 5 ) }
 	#prev,
 	#next { display: inline-block }
-	#fader { z-index: 5 }
 	#bar-bottom div:hover,
 	#next:hover,
 	#prev:hover { background-color: var( --cgd ) }

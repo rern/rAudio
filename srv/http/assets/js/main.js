@@ -113,7 +113,7 @@ window.addEventListener( 'touchstart', function( e ) {
 		|| $target.parents( '#time-knob' ).length
 		|| $target.parents( '#volume-knob' ).length
 		|| ! $( '#bio' ).hasClass( 'hide' )
-		|| ! $( '#data' ).hasClass( 'hide' )
+		|| $( '#data' ).length
 	) return
 	
 	xstart      = e.changedTouches[ 0 ].pageX;
@@ -167,9 +167,7 @@ $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
 $( '#debug' ).on( 'click', function() {
-	if ( V.press ) return
-		
-	$( '#data' ).hasClass( 'hide' ) ? setStatusData() : $( '#data' ).addClass( 'hide' );
+	dataDisplay();
 } );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();

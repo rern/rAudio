@@ -2,7 +2,7 @@ function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
 	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, V.li.data( 'mac' ), 'CMD ACTION MAC' ] );
-	$( '#fader' ).removeClass( 'hide' );
+	loader( 'fader' );
 }
 function connectWiFi( data ) {
 	clearTimeout( V.timeoutscan );
@@ -21,7 +21,7 @@ function connectWiFi( data ) {
 			}
 		}
 	} );
-	$( '#fader' ).removeClass( 'hide' );
+	loader( 'fader' );
 }
 function onPageInactive() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
@@ -279,7 +279,7 @@ $( '.close, .back' ).on( 'click', function() {
 } );
 $( '.back' ).on( 'click', function() {
 	$( '.helphead, #divinterface' ).removeClass( 'hide' );
-	$( '#divbluetooth, #divwifi, #divwebui, #fader' ).addClass( 'hide' );
+	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
 	refreshData();
 } );

@@ -900,7 +900,7 @@ function renderPage() {
 ps.storage = data => {
 	S.liststorage = data.list;
 	util.renderStorage();
-	if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
+	if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

@@ -44,7 +44,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	var arrow    = key in keyarrow;
 	var media    = key in keymedia;
 	var menu     = $( '.menu:not( .hide )' ).length ;
-	var liplmenu = ! $( '#fader' ).hasClass( 'hide' );
+	var liplmenu = ! $( '#loader' ).hasClass( 'hide' );
 	if ( [ 'Alt', 'Backspace', 'Tab' ].includes( key ) || arrow || media ) e.preventDefault();
 	if ( liplmenu ) {
 		var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
@@ -83,7 +83,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			}
 			
 			var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
-			$( '#fader' ).removeClass( 'hide' );
+			loader( 'fader' );
 			$( '.content-top i' ).removeAttr( 'tabindex' );
 			$tabs.prop( 'tabindex', 0 );
 			focusNext( $tabs, 'focus', key );

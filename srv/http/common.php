@@ -103,8 +103,6 @@ if ( ! $add_guide )  {
 	<div id="infoOverlay" class="hide" tabindex="-1"></div>
 	<div id="loader">'.$logosvg.'</div>
 	<div id="banner" class="hide"></div>
-	<div id="button-data" class="head hide">'.i( 'close' ).'<span class="title">'.$title.'</span></div>
-	<pre id="data" class="hide"></pre>
 ';
 }
 if ( $keyboard )       $html.= '
@@ -128,7 +126,6 @@ function htmlBottom() {
 		$class = 'hide';
 	}
 	if ( $htmlbar ) $html.= '
-	<div id="fader" class="hide"></div>
 	<div id="bar-bottom" class="'.$class.'">'.$htmlbar.'</div>
 	<div id="debug"></div>
 	'.$scripts.'

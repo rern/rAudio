@@ -70,6 +70,15 @@ function bannerHide() {
 		.empty();
 }
 // ----------------------------------------------------------------------
+function dataDisplay() {
+	if ( $.isEmptyObject( S ) ) return
+	
+	if ( $( '#data' ).length ) {
+		$( '#data' ).remove();
+	} else {
+		$( '#banner' ).after( '<pre id="data">'+ highlightJSON( S ) +'</pre>' );
+	}
+}
 function errorDisplay( msg, list ) {
 	var pos = msg.replace( /.* position /, '' );
 	if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
@@ -1153,7 +1162,9 @@ function jsonSort( json ) {
 	}, {} );
 }
 // ----------------------------------------------------------------------
-function loader() {
+function loader( fader ) {
+	$( '#loader' ).toggleClass( 'fader', fader === 'fader' );
+	$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );
 	$( '#loader' ).removeClass( 'hide' );
 }
 function loaderHide() {
