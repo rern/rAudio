@@ -68,12 +68,8 @@ function list2JSON( list ) {
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
 						+ status;
-			dataErrorSet( error, () => {
-				var cmdsh = page === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
-				bash( cmdsh, refreshData );
-				notify( pkg, pkg, 'Start ...' );
-			} );
-		loaderHide();
+			dataErrorSet( error );
+			loaderHide();
 		} );
 		return
 	}
@@ -124,7 +120,11 @@ function refreshData() {
 		if ( list2JSON( data ) ) {
 			switchSet();
 			renderPage();
-			if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
+			if ( $( '#data .infobtn' ).length ) {
+				$( '#data' ).remove();
+			} else if ( $( '#data' ).length ) {
+				$( '#data' ).html( highlightJSON( S ) );
+			}
 		}
 	} );
 }

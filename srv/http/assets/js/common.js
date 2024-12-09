@@ -82,17 +82,26 @@ function dataError( msg, list ) {
 				+'<div class="data">'
 				+ list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&gt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
 				+ '</div>'
-	dataErrorSet( error, () => {
-		banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
-		// copy2clipboard - for non https which cannot use clipboard API
-		$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-		$( '#error' ).trigger( 'focus' ).select();
-		document.execCommand( 'copy' );
-		$( '#error' ).remove();
-	} );
+	dataErrorSet( error, 'copy' );
 	loaderHide();
 }
-function dataErrorSet( error, fn ) {
+function dataErrorSet( error, copy ) {
+	if ( copy ) {
+		var fn = () => {
+			banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
+			// copy2clipboard - for non https which cannot use clipboard API
+			$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
+			$( '#error' ).trigger( 'focus' ).select();
+			document.execCommand( 'copy' );
+			$( '#error' ).remove();
+		}
+	} else {
+		var fn = () => {
+			var cmdsh = page === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
+			bash( cmdsh, refreshData );
+			notify( pkg, pkg, 'Start ...' );
+		}
+	}
 	$( '#data' ).remove();
 	$( '#banner' ).after( '<pre id="data">'+ error +'</pre>' )
 	$( '#data .infobtn' ).on( 'click', fn );
