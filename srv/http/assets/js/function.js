@@ -1927,9 +1927,11 @@ function setTrackCoverart() {
 function setVolume() {
 	if ( V.animate ) return
 	
-	$volumeRS.setValue( S.volume );
+	if ( D.volume ) {
+		$volumeRS.setValue( S.volume );
+		if ( ! S.volume ) $volumehandle.rsRotate( -310 );
+	}
 	setVolumeUpDn();
-	if ( ! S.volume ) $volumehandle.rsRotate( -310 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
 		.text( S.volumemute || S.volume )
@@ -2061,6 +2063,7 @@ function volumeColorUnmute() {
 }
 function volumeUpDown( up ) {
 	up ? S.volume++ : S.volume--;
+	if ( D.volume ) $volumeRS.setValue( S.volume );
 	volumeMaxSet();
 	S.volumemute = 0;
 	setVolume();

@@ -642,8 +642,11 @@ $( '#volume' ).roundSlider( {
 		}
 		
 		if ( V.press ) {
-			var diff  = 3;
-		} if ( 'volumediff' in V ) {
+			$volumehandle_tr.css( 'transition-duration', '100ms' );
+			return
+		}
+		
+		if ( 'volumediff' in V ) {
 			var diff = V.volumediff;
 			delete V.volumediff;
 		} else {
