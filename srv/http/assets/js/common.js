@@ -72,17 +72,15 @@ function bannerHide() {
 $( '#banner' ).on( 'click', bannerHide );
 // ----------------------------------------------------------------------
 function dataError( msg, list ) {
-	var pos = msg.replace( /.* position /, '' );
+	var pos   = msg.replace( /.* position /, '' );
 	if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
 	else if ( msg.includes( 'column' ) ) pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
 	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
-	var error =  '<codered>Errors:</codered> '+ msg
+	var data  = list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&gt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
+	dataErrorSet( '<codered>Errors:</codered> '+ msg
 				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
 				+'<hr>'
-				+'<div class="data">'
-				+ list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&gt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
-				+ '</div>'
-	dataErrorSet( error );
+				+'<div class="data">'+ data +'</div>' );
 	loaderHide();
 }
 function dataErrorSet( error ) {

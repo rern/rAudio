@@ -64,11 +64,10 @@ function list2JSON( list ) {
 	if ( list.trim() === 'notrunning' ) {
 		var pkg = page === 'player' ? 'mpd' : 'camilladsp';
 		bash( 'data-service.sh '+ pkg, status => {
-			var error =  iconwarning +'<c>'+ pkg +'</c> is not running'
+			dataErrorSet( iconwarning +'<c>'+ pkg +'</c> is not running'
 						+'&emsp;<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
-						+ status;
-			dataErrorSet( error );
+						+ status );
 			loaderHide();
 		} );
 		return
