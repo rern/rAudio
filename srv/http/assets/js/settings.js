@@ -130,7 +130,7 @@ function refreshData() {
 function showContent() {
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
-	$( '.container' ).removeClass( 'hide' );
+	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	loaderHide();
 }
 function switchCancel() {

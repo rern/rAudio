@@ -117,22 +117,14 @@ foreach( $js as $j )       $scripts.= $htmljs.$j.'.js'.$hash.'"></script>';
 if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
 
 function htmlBottom() {
-	global $guide, $htmlbar, $page, $scripts;
-	$html = '';
-	if ( $page ) {
-		$html .= '</div>'; // <div class="container">
-		$class = $guide ? 'guide' : '';
-	} else {
-		$class = 'hide';
-	}
-	if ( $htmlbar ) $html.= '
-	<div id="bar-bottom" class="'.$class.'">'.$htmlbar.'</div>
+	global $htmlbar, $guide, $scripts;
+	echo '
+	<div id="bar-bottom" class="hide">'.$htmlbar.'</div>
 	<div id="debug"></div>
 	'.$scripts.'
 </body>
 </html>
 ';
-	echo $html;
 }
 function i( $icon, $id = '', $cmd = '' ) {
 	$htmlid  = $id ? ' id="'.$id.'"' : '';

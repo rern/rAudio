@@ -291,9 +291,6 @@ heading i.disabled {
 	height: 40px;
 	cursor: pointer;
 }
-#bar-bottom.guide div {
-	width: calc( 100% / 4 );
-}
 #bar-bottom div.active a {
 	color: var( --cw ) !important;
 }
@@ -498,9 +495,6 @@ input.disabled + .switchlabel:after {
 	padding: 0 calc( ( 100% - 650px ) / 2 ) 80px;
 	overflow: auto;
 }
-.container.addonsprogress {
-	padding-bottom: 0;
-}
 .col-l,
 .col-r {
 	float: left;
@@ -677,7 +671,6 @@ input.disabled + .switchlabel:after {
 	#divmpd .help { display: none }
 }
 @media (hover: hover) {
-	#bar-bottom.guide div { width: calc( 100% / 5 ) }
 	#prev,
 	#next { display: inline-block }
 	#bar-bottom div:hover,

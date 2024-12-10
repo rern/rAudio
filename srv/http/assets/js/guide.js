@@ -10,6 +10,7 @@ var E     = {
 	  bar   : document.getElementById( 'bar-bottom' )
 	, close : document.getElementById( 'close' )
 	, gear  : document.querySelector( '.i-gear' )
+	, head  : document.getElementsByClassName( 'head' )[ 0 ]
 	, img   : document.getElementById( 'guideimg' )
 };
 var hash  = E.img.src.replace( /.*jpg/, '' )
@@ -49,6 +50,7 @@ for( i = 0; i < tabsL; i++ ) {
 //---------------------------------------------------------------------------------------
 document.title = 'Guide';
 [ '.container', '.helphead' ].forEach( cl => document.querySelector( cl ).remove() );
+[ 'head', 'bar' ].forEach( k => E[ k ].classList.remove( 'hide' ) );
 E.playback.classList.add( 'active' );
 E.close.addEventListener( 'click', () => location.href = '/' );
 E.gear.addEventListener( 'click', () => {

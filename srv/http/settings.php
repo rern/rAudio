@@ -9,10 +9,10 @@ if ( $addons ) {
 	$iconhead  = i( 'help helphead' ).i( 'gear' );
 }
 echo '
-<div class="head">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>
+<div class="head hide">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>
 '.i( 'close close', 'close' ).$iconhead.'
 </div>
-<div class="container '.$page.' hide" tabindex="-1">
+<div class="container hide" tabindex="-1">
 ';
 if ( $addonsprogress ) {
 	include 'settings/'.$page.'.php';
@@ -42,4 +42,5 @@ if ( $guide ) {
 	include 'settings/function.php';
 	include 'settings/'.$page.'.php'; // addons: by addons.js
 }
+echo '</div>';
 htmlBottom();
