@@ -323,7 +323,7 @@ $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
 	info( {
 		  icon    : 'wifi'
 		, title   : ssid
-		, message : encrypt ? false : 'Insecured access point'
+		, message : encrypt ? false : 'Insecure access point'
 		, list    : encrypt ? [ 'Password', 'password' ] : false
 		, oklabel : 'Connect'
 		, ok      : () => {
