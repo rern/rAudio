@@ -274,7 +274,6 @@ heading i.disabled {
 	bottom: 0;
 	width: 100%;
 	height: 40px;
-	padding: 0 55px;
 	font-size: 28px;
 	line-height: 35px;
 	text-align: center;
@@ -666,7 +665,6 @@ input.disabled + .switchlabel:after {
 	.listtitle a { width: calc( 100% / 13 ) }
 }
 @media (max-width: 615px) {
-	#bar-bottom { padding: 0 }
 	#bar-bottom a,
 	#debug { display: none }
 }
