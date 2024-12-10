@@ -138,8 +138,8 @@ function renderPage() {
 	} );
 	html       = '<ul id="list">'+ list +'</ul>'+ addons;
 	$( '.container' ).html( html ).promise().done( function() {
-		$( '.container' ).removeClass( 'hide' );
 		if ( ! S.status.online ) $( '.infobtn' ).addClass( 'disabled' );
+		$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 		loaderHide();
 		$( 'a[ href ]' ).prop( 'tabindex', -1 );
 		$( '.infobtn:not(.disabled)' ).prop( 'tabindex', 0 );
