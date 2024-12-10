@@ -117,7 +117,7 @@ foreach( $js as $j )       $scripts.= $htmljs.$j.'.js'.$hash.'"></script>';
 if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
 
 function htmlBottom() {
-	global $htmlbar, $guide, $scripts;
+	global $htmlbar, $scripts;
 	echo '
 	<div id="bar-bottom" class="hide">'.$htmlbar.'</div>
 	<div id="debug"></div>

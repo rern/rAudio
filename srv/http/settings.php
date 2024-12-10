@@ -8,12 +8,15 @@ if ( $addons ) {
 } else {
 	$iconhead  = i( 'help helphead' ).i( 'gear' );
 }
-echo '
+$container = $guide ? '' : '<div class="container hide" tabindex="-1">';
+$htmlhead  = '
 <div class="head hide">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>
 '.i( 'close close', 'close' ).$iconhead.'
-</div>
+</div>';
+if ( ! $guide ) $htmlhead.= '
 <div class="container hide" tabindex="-1">
 ';
+echo $htmlhead;
 if ( $addonsprogress ) {
 	include 'settings/'.$page.'.php';
 	exit;
@@ -35,12 +38,15 @@ foreach ( $tabs as $tab ) $htmlbar.= '<div id="'.$prefix.$tab.'">'.i( $tab ).' <
 if ( $guide ) {
 	$htmlbar.= i( 'back', 'prev' ).i( 'arrow-right', 'next' );
 	echo '
-</div>
 <img id="guideimg" src="/assets/img/guide/1.jpg'.$hash.'">
 ';
-} else if ( ! $addons ) {
-	include 'settings/function.php';
-	include 'settings/'.$page.'.php'; // addons: by addons.js
+} else {
+	if ( ! $addons ) {
+		include 'settings/function.php';
+		include 'settings/'.$page.'.php'; // addons: by addons.js
+	}
+	echo '
+</div>
+';
 }
-echo '</div>';
 htmlBottom();
