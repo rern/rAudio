@@ -41,14 +41,15 @@ fi
 listWlan() {
 	[[ ! -e $dirshm/wlan ]] && echo false && return
 	
-	local dbm listwl notconnected profiles profile ssid wlandev
+	local current dbm listwl notconnected profiles profile ssid wlandev
 	wlandev=$( < $dirshm/wlan )
 	profiles=$( ls -p /etc/netctl | grep -v /$ )
+	current=$( iwgetid -r )
 	if [[ $profiles ]]; then
 		while read profile; do
 			ssid=$( quoteEscape $profile )
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
-			if [[ $( iwgetid -r ) == $profile ]]; then
+			if [[ $current == $profile ]]; then
 				for i in {1..10}; do
 					ip=$( ipAddress $wlandev )
 					[[ $ip ]] && break || sleep 1

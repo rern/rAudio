@@ -32,9 +32,10 @@ if [[ $1 == wlan ]]; then
 	
 	# saved profile
 	profiles=$( ls -p /etc/netctl | grep -v /$ )
+	current=$( iwgetid -r )
 	if [[ $profiles ]]; then
 		while read profile; do
-			[[ $( iwgetid -r ) == $profile ]] && saved+=',"current":true' || saved=',"profile":true'
+			[[ $current == $profile ]] && saved+=',"current":true' || saved=',"profile":true'
 			scan=$( sed '/ssid.*'$profile'/ s/}$/'$saved'}/' <<< $scan  )
 		done <<< $profiles
 	fi
