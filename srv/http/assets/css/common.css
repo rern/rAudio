@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1733722315' );
+	src         : url( '/assets/fonts/rern.woff2?v=1733794951' );
 }
 @font-face {
 	font-family : Lato;
@@ -291,6 +291,7 @@ input:focus {
 	width      : 100%;
 	height     : 100%;
 	background : #000000;
+	opacity    : 0.8;
 }
 #loader svg {
 	position  : absolute;
@@ -301,12 +302,6 @@ input:focus {
 	margin    : auto;
 	width     : 50px;
 	animation : blinkopaque 1.5s linear infinite;
-}
-#loader.fader {
-	opacity: 0.8;
-}
-#loader.fader svg {
-	display: none;
 }
 .logo rect {
 	fill: var( --cm );

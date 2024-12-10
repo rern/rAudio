@@ -99,9 +99,6 @@ a {
 i.map.disabled, .map.disabled i {
 	color: var( --cgl );
 }
-#loader {
-	opacity: 0.8;
-}
 @keyframes blink { 50% { color: transparent } }
 .blink {
 	animation: 1.5s infinite linear blink;

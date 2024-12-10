@@ -1171,7 +1171,6 @@ function jsonSort( json ) {
 }
 // ----------------------------------------------------------------------
 function loader( fader ) {
-	$( '#loader' ).toggleClass( 'fader', fader === 'fader' );
 	$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );
 	$( '#loader' ).removeClass( 'hide' );
 }

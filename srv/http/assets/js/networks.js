@@ -298,7 +298,7 @@ $( '.btscan' ).on( 'click', function() {
 } );
 $( '#listbtscan' ).on( 'click', 'li:not( .current )', function() {
 	clearTimeout( V.timeoutscan );
-	loader( 'fader' );
+	loader();
 	V.li = $( this );
 	bluetoothCommand( 'pair' );
 } );
@@ -328,7 +328,7 @@ $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
 		, oklabel : 'Connect'
 		, ok      : () => {
 			clearTimeout( V.timeoutscan );
-			loader( 'fader' );
+			loader();
 			if ( encrypt ) {
 				var data = { IP: 'dhcp', ESSID: ssid, KEY: infoVal(), SECURITY: security }
 			} else {
