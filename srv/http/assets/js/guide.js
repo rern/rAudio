@@ -14,7 +14,7 @@ var E     = {
 	, img   : document.getElementById( 'guideimg' )
 };
 document.title = 'Guide';
-[ '.container', '.helphead' ].forEach( cl => document.querySelector( cl ).remove() );
+[ '.container', '.helphead', '#debug' ].forEach( cl => document.querySelector( cl ).remove() );
 [ 'head', 'bar' ].forEach( k => E[ k ].classList.remove( 'hide' ) );
 var hash  = E.img.src.replace( /.*jpg/, '' )
 var tabs  = E.bar.children;
