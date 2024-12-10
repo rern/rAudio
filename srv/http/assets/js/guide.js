@@ -13,6 +13,9 @@ var E     = {
 	, head  : document.getElementsByClassName( 'head' )[ 0 ]
 	, img   : document.getElementById( 'guideimg' )
 };
+document.title = 'Guide';
+[ '.container', '.helphead' ].forEach( cl => document.querySelector( cl ).remove() );
+[ 'head', 'bar' ].forEach( k => E[ k ].classList.remove( 'hide' ) );
 var hash  = E.img.src.replace( /.*jpg/, '' )
 var tabs  = E.bar.children;
 var tabsL = tabs.length;
@@ -48,9 +51,6 @@ for( i = 0; i < tabsL; i++ ) {
 	} );
 }
 //---------------------------------------------------------------------------------------
-document.title = 'Guide';
-[ '.container', '.helphead' ].forEach( cl => document.querySelector( cl ).remove() );
-[ 'head', 'bar' ].forEach( k => E[ k ].classList.remove( 'hide' ) );
 E.playback.classList.add( 'active' );
 E.close.addEventListener( 'click', () => location.href = '/' );
 E.gear.addEventListener( 'click', () => {

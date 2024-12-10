@@ -72,10 +72,10 @@ pre hr.hrlight {
 //if ( window.history.replaceState ) window.history.replaceState( null, null, '<?=$backhref?>' ); // on refresh page
 document.title = 'Addons';
 E      = {};
-[ 'close', 'container', 'info', 'infobtn', 'infomessage', 'progress', 'titleicon' ].forEach( ( el ) => {
+[ 'close', 'container', 'head', 'info', 'infobtn', 'infomessage', 'progress', 'titleicon' ].forEach( ( el ) => {
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
-E.container.classList.remove( 'hide' );
+[ 'head', 'container' ].forEach( k => E[ k ].classList.remove( 'hide' ) );
 E.close.addEventListener( 'click', () => {
 	if ( E.done ) {
 		location.href = '<?=$backhref?>';
