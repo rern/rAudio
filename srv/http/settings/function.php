@@ -70,7 +70,7 @@ function htmlHead( $data ) {
 }
 function htmlMenu( $menu ) {
 	$menuhtml = '';
-	foreach( $menu as $class => $icon ) $menuhtml.= '<a class="'.$class.'" tabindex="0">'.i( $icon ).ucfirst( $class ).'</a>';
+	foreach( $menu as $cmd => $icon ) $menuhtml.= '<a class="'.$cmd.'" data-cmd="'.$cmd.'"tabindex="0">'.i( $icon ).ucfirst( $cmd ).'</a>';
 	echo '<div id="menu" class="menu hide">'.$menuhtml.'</div>';
 }
 function htmlSection( $head, $body, $id = '' ) {

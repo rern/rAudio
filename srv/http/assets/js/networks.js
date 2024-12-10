@@ -32,9 +32,9 @@ function renderBluetooth() {
 	if ( S.listbt ) {
 		var htmlbt  = '';
 		S.listbt.forEach( list => {
-			var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
+			var dot = list.connected ? '<grn>•</grn>&ensp;' : '';
 			htmlbt += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
-					 + ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + dot +'&ensp;'+ list.name +'</li>';
+					 + ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + dot + list.name +'</li>';
 		} );
 		$( '#listbt' ).html( htmlbt );
 	} else {
@@ -99,7 +99,7 @@ function renderWlan() {
 				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
 						 +'&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
-				htmlwl += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•</gr>&ensp;'+ list.ssid +'</li>';
+				htmlwl += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) + list.ssid +'</li>';
 			}
 		} );
 	}
@@ -379,8 +379,8 @@ $( '.lanadd' ).on( 'click', function() {
 	settingLan();
 } );
 $( '#menu a' ).on( 'click', function() {
-	var $this      = $( this );
-	var cmd        = $this.prop( 'class' ).replace( ' active', '' );
+	var cmd = $( this ).data( 'cmd' );
+	if ( cmd !== 'info' ) V.li.find( 'i' ).addClass( 'blink' );
 	switch ( cmd ) {
 		case 'connect':
 			if ( V.listid === 'listbt' ) {
