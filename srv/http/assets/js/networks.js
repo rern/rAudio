@@ -2,10 +2,8 @@ function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
 	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, V.li.data( 'mac' ), 'CMD ACTION MAC' ] );
-	loader( 'fader' );
 }
 function connectWiFi( data ) {
-	clearTimeout( V.timeoutscan );
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
 	notify( 'wifi', data.ESSID, 'Connect ...' );
@@ -21,7 +19,6 @@ function connectWiFi( data ) {
 			}
 		}
 	} );
-	loader( 'fader' );
 }
 function onPageInactive() {
 	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
@@ -112,10 +109,21 @@ function renderWlan() {
 }
 function scanBluetooth() {
 	bash( 'networks-scan.sh', data => {
-		var htmlbt    = '';
+		var htmlbt      = '';
 		if ( data ) {
 			S.listbtscan = data;
-			data.forEach( list => htmlbt  += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'+ ico( 'bluetooth' ) +'<wh>'+ list.name +'</wh></li>' );
+			var cls, icon;
+			data.forEach( list => {
+				icon   = ico( 'bluetooth' );
+				cls    = 'btscan';
+				if ( list.current ) {
+					icon += '<grn>•</grn> ';
+					cls  += ' current';
+				} else if ( list.paired ) {
+					icon += '<gr>•</gr> ';
+				}
+				htmlbt += '<li class="'+ cls +'" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'+ icon +'<wh>'+ list.name +'</wh></li>'
+			} );
 		} else {
 			htmlbt       = '<li><gr>(no Bluetooth devices found)</gr></li>';
 		}
@@ -125,20 +133,20 @@ function scanBluetooth() {
 }
 function scanWlan() {
 	bash( 'networks-scan.sh wlan', data => {
-		var htmlwl    = '';
+		var htmlwl      = '';
 		if ( data ) {
 			data.sort( ( a, b ) => b.signal - a.signal );
 			S.listwlscan = data;
-			var cls      = 'wlscan';
-			var icon, signal;
+			var cls, icon, signal;
 			data.forEach( list => {
 				signal  = list.signal;
 				icon    = 'wifi';
 				icon   += signal > -60 ? '' : ( signal < -67 ? 1 : 2 );
 				icon    = ico( icon );
+				cls     = 'wlscan';
 				if ( list.current ) {
-					cls  += ' current';
 					icon += '<grn>•</grn> ';
+					cls  += ' current';
 				} else if ( list.profile ) {
 					icon += '<gr>•</gr> ';
 				}
@@ -288,7 +296,9 @@ $( '.btscan' ).on( 'click', function() {
 	$( '#divbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
 } );
-$( '#listbtscan' ).on( 'click', 'li', function() {
+$( '#listbtscan' ).on( 'click', 'li:not( .current )', function() {
+	clearTimeout( V.timeoutscan );
+	loader( 'fader' );
 	V.li = $( this );
 	bluetoothCommand( 'pair' );
 } );
@@ -309,18 +319,24 @@ $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
 	var $this    = $( this );
 	var ssid     = $this.data( 'ssid' );
 	var security = $this.data( 'wpa' ) === 'wep';
-	var encrypt  = $this.data( 'encrypt' );
-	if ( encrypt === 'on' ) {
-		info( {
-			  icon    : 'wifi'
-			, title   : ssid
-			, list    : [ 'Password', 'password' ]
-			, oklabel : 'Connect'
-			, ok      : () => connectWiFi( { IP: 'dhcp', ESSID: ssid, KEY: infoVal(), SECURITY: security } )
-		} );
-	} else {
-		connectWiFi( { ESSID: ssid } );
-	}
+	var encrypt  = $this.data( 'encrypt' ) === 'on';
+	info( {
+		  icon    : 'wifi'
+		, title   : ssid
+		, message : encrypt ? false : 'Insecured access point'
+		, list    : encrypt ? [ 'Password', 'password' ] : false
+		, oklabel : 'Connect'
+		, ok      : () => {
+			clearTimeout( V.timeoutscan );
+			loader( 'fader' );
+			if ( encrypt ) {
+				var data = { IP: 'dhcp', ESSID: ssid, KEY: infoVal(), SECURITY: security }
+			} else {
+				var data = { ESSID: ssid }
+			}
+			connectWiFi( data );
+		}
+	} );
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
@@ -367,7 +383,6 @@ $( '#menu a' ).on( 'click', function() {
 	var cmd        = $this.prop( 'class' ).replace( ' active', '' );
 	switch ( cmd ) {
 		case 'connect':
-			clearTimeout( V.timeoutscan );
 			if ( V.listid === 'listbt' ) {
 				bluetoothCommand( 'connect' );
 				return

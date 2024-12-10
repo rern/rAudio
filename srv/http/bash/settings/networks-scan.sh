@@ -48,17 +48,15 @@ devices=$( bluetoothctl devices \
 			| sort -k3 -fh )
 [[ ! $devices ]] && exit
 # --------------------------------------------------------------------
-# omit paired devices
+connected=$( bluetoothctl devices Connected )
 paired=$( bluetoothctl devices Paired )
-if [[ $paired ]]; then
-	while read dev; do
-		devices=$( grep -v "$dev" <<< $devices  )
-	done <<< $paired
-fi
 while read dev; do
+	mac=$( cut -d' ' -f2 <<< $dev )
 	data+=',{
-  "mac"  : "'$( cut -d' ' -f2 <<< $dev )'"
-, "name" : "'$( cut -d' ' -f3- <<< $dev )'"
+  "mac"     : "'$mac'"
+, "name"    : "'$( cut -d' ' -f3- <<< $dev )'"
+, "current" : '$( grep -q -m1 $mac <<< $connected && echo true || echo false )'
+, "paired"  : '$( grep -q -m1 $mac <<< $paired && echo true || echo false )'
 }'
 done <<< $devices
 
