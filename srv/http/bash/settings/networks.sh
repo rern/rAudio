@@ -17,12 +17,14 @@ netctlSwitch() {
 		sleep 1
 		[[ $( iwgetid -r ) == $ESSID ]] && connected=1 && break
 	done
+	[[ $( netctl is-enabled "$ESSID" ) == enabled ]] && enabled=1
 	if [[ $connected ]]; then
-		netctl enable "$ESSID"
+		[[ ! $enabled ]] && netctl enable "$ESSID"
 		avahi-daemon --kill # flush cache and restart
 		pushRefresh networks pushwl
 	else
 		echo -1
+		[[ $enabled ]] && netctl disable "$ESSID"
 		if [[ $currentssid ]]; then
 			mv -f "$dirshm/$currentssid" /etc/netctl
 			ip link set $wlandev down
