@@ -23,12 +23,13 @@ netctlSwitch() {
 		avahi-daemon --kill # flush cache and restart
 		pushRefresh networks pushwl
 	else
-		echo -1
+		notify wifi "$ESSID" 'Connecting failed.'
 		[[ $enabled ]] && netctl disable "$ESSID"
 		if [[ $currentssid ]]; then
 			mv -f "$dirshm/$currentssid" /etc/netctl
 			ip link set $wlandev down
 			netctl start "$currentssid"
+			notify wifi "$currentssid" 'Restored'
 		fi
 	fi
 }

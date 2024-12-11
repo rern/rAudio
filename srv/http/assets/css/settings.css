@@ -287,7 +287,7 @@ heading i.disabled {
 #bar-bottom div {
 	display: inline-block;
 	width: calc( 100% / 5 );
-	max-width: 160px;
+	max-width: 162px;
 	height: 40px;
 	cursor: pointer;
 }
@@ -624,9 +624,6 @@ input.disabled + .switchlabel:after {
 	.container { height: calc( 100% - 40px ) }
 	#guideimg { max-height: calc( 100% - 40px ) }
 	#bar-bottom { display: none }
-}
-@media (max-width: 800px) {
-	#bar-bottom { padding: 0 20px }
 }
 @media (max-width: 700px) {
 	.container { padding: 0 10px 80px }
