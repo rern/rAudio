@@ -64,19 +64,11 @@ function list2JSON( list ) {
 	if ( list.trim() === 'notrunning' ) {
 		var pkg = page === 'player' ? 'mpd' : 'camilladsp';
 		bash( 'data-service.sh '+ pkg, status => {
-			var error =  iconwarning +'<c>'+ pkg +'</c> is not running '
-						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
+			dataErrorSet( iconwarning +'<c>'+ pkg +'</c> is not running'
+						+'&emsp;<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
-						+ status;
-			$( '#data' )
-				.html( error )
-				.removeClass( 'hide' )
-				.on( 'click', '.restart', function() {
-					var cmdsh = page === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
-					bash( cmdsh, refreshData );
-					notify( pkg, pkg, 'Start ...' );
-				} );
-		loaderHide();
+						+ status );
+			loaderHide();
 		} );
 		return
 	}
@@ -89,7 +81,7 @@ function list2JSON( list ) {
 			$.each( list, ( k, v ) => { S[ k ] = v } );
 		}
 	} catch( e ) {
-		errorDisplay( e.message, list );
+		dataError( e.message, list );
 		return false
 	}
 	return true
@@ -127,16 +119,18 @@ function refreshData() {
 		if ( list2JSON( data ) ) {
 			switchSet();
 			renderPage();
-			if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
+			if ( $( '#data .infobtn' ).length ) {
+				$( '#data' ).remove();
+			} else if ( $( '#data' ).length ) {
+				$( '#data' ).html( highlightJSON( S ) );
+			}
 		}
 	} );
 }
 function showContent() {
 	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
-	$( '.container' )
-		.removeClass( 'hide' )
-		.trigger( 'focus' );
+	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	loaderHide();
 }
 function switchCancel() {
@@ -171,10 +165,26 @@ function switchSet() {
 }
 
 function psOnMessage( channel, data ) {
+	if ( channel == 'bluetooth' ) {
+		if ( page === 'networks' ) {
+			S.listbt = data;
+			renderBluetooth();
+		} else if ( ! data ) {
+			if ( page === 'system' ) $( '#bluetooth' ).removeClass( 'disabled' );
+		} else if ( 'connected' in data ) {
+			if ( page === 'features' ) {
+				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
+			} else if ( page === 'system' ) {
+				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
+			}
+		}
+		bannerHide();
+		return
+	}
+	
 	if ( data.page !== page ) return
 	
 	switch ( channel ) {
-		case 'bluetooth': ps.bluetooth( data ); break;
 		case 'camilla':   ps.camilla( data );   break;
 		case 'mpdplayer':
 		case 'mpdradio':  ps.mpdPlayer( data ); break;
@@ -193,26 +203,6 @@ function psOnMessage( channel, data ) {
 }
 ps = {
 	  ...ps // from settings.js
-	, bluetooth : data => { // from networks-data,sh
-		if ( ! data ) {
-			if ( page === 'networks' ) {
-				S.listbt = data;
-				render.bluetooth();
-			} else if ( page === 'system' ) {
-				$( '#bluetooth' ).removeClass( 'disabled' );
-			}
-		} else if ( 'connected' in data ) {
-			if ( page === 'features' ) {
-				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
-			} else if ( page === 'system' ) {
-				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
-			}
-		} else if ( page === 'networks' ) {
-			S.listbt = data;
-			render.bluetooth();
-		}
-		bannerHide();
-	}
 	, camilla   : data => {
 		S.range = data;
 		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
@@ -277,7 +267,7 @@ ps = {
 		}
 		
 		$.each( data, ( k, v ) => { S[ k ] = v } );
-		render.wlan();
+		renderWlan();
 	}
 }
 //---------------------------------------------------------------------------------------
@@ -290,7 +280,7 @@ $( document ).on( 'keydown', function( e ) {
 	
 	var camilla = page === 'camilla';
 	var menu    = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
-	var tabs    = ! $( '#fader' ).hasClass( 'hide' );
+	var tabs    = ! $( '#loader' ).hasClass( 'hide' );
 	var key     = e.key;
 	switch ( key ) {
 		case 'ArrowDown':
@@ -344,7 +334,7 @@ $( document ).on( 'keydown', function( e ) {
 			
 			if ( $focus.hasClass( 'switchlabel' ) ) $focus = $focus.prev();
 			$focus.trigger( 'click' );
-			$( '#fader' ).addClass( 'hide' );
+			loaderHide();
 			$( '#bar-bottom div' )
 				.removeClass( 'focus' )
 				.trigger( 'blur' );
@@ -356,14 +346,14 @@ $( document ).on( 'keydown', function( e ) {
 				$( '.menu' ).addClass( 'hide' );
 			} else if ( V.select2 ) {
 				$( '.select2-hidden-accessible' ).select2( 'close' );
-			} else if ( ! $( '#data' ).hasClass( 'hide' ) ) {
-				$( '.page-icon' ).trigger( 'click' );
+			} else if ( $( '#data' ).length ) {
+				$( '#data' ).remove();
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
-				$( '#fader' ).addClass( 'hide' );
+				loaderHide();
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
 				$( '.focus' ).trigger( 'focus' );
 			} else {
-				$( '#fader' ).removeClass( 'hide' );
+				loader( 'fader' );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
 				var $focus = $( '#bar-bottom div.active' );
 				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );
@@ -383,25 +373,13 @@ $( document ).on( 'keydown', function( e ) {
 		case 'x':
 			if ( ! e.ctrlKey ) return
 			
-			var close = $( '#data' ).hasClass( 'hide' ) ? '#close' : '.page-icon';
-			$( close ).trigger( 'click' );
+			$( '#data' ).length ? $( '#data' ).remove() : $( '#close' ).trigger( 'click' );
 			break
 		case 'MediaPause':
 		case 'MediaPlay':
 		case 'MediaPlayPause':
 			if ( [ 'camilla', 'player' ].includes( page ) ) $( '.playback' ).trigger( 'click' );
 			break
-	}
-} );
-$( '.page-icon' ).on( 'click', function() {
-	if ( $.isEmptyObject( S ) ) return
-	
-	if ( $( '#data' ).hasClass( 'hide' ) ) {
-		$( '#data' )
-			.html( highlightJSON( S ) )
-			.removeClass( 'hide' );
-	} else {
-		$( '#data' ).addClass( 'hide' );
 	}
 } );
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
@@ -411,6 +389,9 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 	$this.toggleClass( 'active' );
 } );
+$( '.page-icon' ).on( 'click', function() {
+	$( '#debug' ).trigger( 'click' );
+} ).press( () => location.reload() );
 $( '.playback' ).on( 'click', function() { // for player and camilla
 	S.state = S.state === 'play' ? 'pause' : 'play';
 	if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();

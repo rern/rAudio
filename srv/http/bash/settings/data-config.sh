@@ -53,7 +53,7 @@ i2seeprom )
 	grep -q -m1 ^force_eeprom_read=0 /boot/config.txt && echo true || echo false
 	;;
 i2slist )
-	cat  /srv/http/assets/data/system-i2s.json
+	cat /srv/http/assets/data/system-i2s.json
 	;;
 lcdchar )
 	fileconf=$dirsystem/lcdchar.conf
@@ -107,9 +107,6 @@ mpdoled )
   "values" : { "CHIP": "'$chip'", "BAUD": '$baud' }
 , "reboot" : '$( toReboot )'
 }'
-	;;
-multiraudio )
-	getContent $dirsystem/multiraudio.json
 	;;
 reboot )
 	getContent $dirshm/reboot
@@ -287,6 +284,8 @@ wlanprofile )
 * )
 	if [[ -e $dirsystem/$ID.conf ]]; then
 		conf2json $dirsystem/$ID.conf
+	elif [[ -e $dirsystem/$ID.json ]]; then
+		getContent $dirsystem/$ID.json
 	else
 		case $ID in
 			autoplay )      echo '{ "BLUETOOTH": true, "STARTUP": true }';;

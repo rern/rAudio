@@ -5,11 +5,12 @@
 #data,
 #degug        { z-index: 110 }
 .head         { z-index: 95 }
+.fader        { z-index: 20 !important }
 .albumrefresh { z-index: 1 }
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1733554181' );
+	src         : url( '/assets/fonts/rern.woff2?v=1733897751' );
 }
 @font-face {
 	font-family : Lato;
@@ -255,6 +256,12 @@ body {
 	-moz-box-sizing    :border-box;
 	box-sizing         :border-box;
 }
+i,
+.infobtn,
+#debug {
+	-webkit-user-select: none;
+	user-select: none;
+}
 sp {
 	display: inline-block;
 	height: 0;
@@ -271,13 +278,6 @@ sp {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;
 }
-.infobtn,
-.infomessage,
-#debug,
-#infoOverlay {
-	-webkit-user-select: text;
-	user-select: text;
-}
 input:focus {
 	outline: none;
 }
@@ -285,16 +285,13 @@ input:focus {
 	outline: 2px solid var(--cgl );
 	outline-offset: 1px;
 }
-#loader,
-#fader {
+#loader {
 	position   : fixed;
 	top        : 0;
 	width      : 100%;
 	height     : 100%;
-	background : rgba(0, 0, 0, 0.8);
-}
-#fader {
-	z-index: 20;
+	background : #000000;
+	opacity    : 0.8;
 }
 #loader svg {
 	position  : absolute;
@@ -377,7 +374,7 @@ codered  {
 .head .title {
 	display: inline-block;
 	margin-left: 15px;
-	width: calc( 100% - 135px );
+	max-width: calc( 100% - 135px );
 	line-height: 40px;
 	font-size: 26px;
 	font-weight: 300;
@@ -1110,9 +1107,6 @@ input[ type=radio ]:disabled {
 }
 
 @supports ( -webkit-touch-callout: none ) { /* ios only */
-	.head i {
-		line-height: 42px;
-	}
 	input[ type=checkbox ]:checked:disabled {
 		background-color: var( --cml );
 	}

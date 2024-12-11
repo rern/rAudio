@@ -113,7 +113,7 @@ window.addEventListener( 'touchstart', function( e ) {
 		|| $target.parents( '#time-knob' ).length
 		|| $target.parents( '#volume-knob' ).length
 		|| ! $( '#bio' ).hasClass( 'hide' )
-		|| ! $( '#data' ).hasClass( 'hide' )
+		|| $( '#data' ).length
 	) return
 	
 	xstart      = e.changedTouches[ 0 ].pageX;
@@ -165,12 +165,7 @@ $( '#coverart' ).on( 'load', function() {
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#logo, #refresh' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
-} );
-$( '#debug' ).on( 'click', function() {
-	if ( V.press ) return
-		
-	$( '#data' ).hasClass( 'hide' ) ? setStatusData() : $( '#data' ).addClass( 'hide' );
-} );
+} ).press( () => location.reload() );
 $( '#button-settings' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	if ( D.loginsetting ) {
@@ -647,8 +642,11 @@ $( '#volume' ).roundSlider( {
 		}
 		
 		if ( V.press ) {
-			var diff  = 3;
-		} if ( 'volumediff' in V ) {
+			$volumehandle_tr.css( 'transition-duration', '100ms' );
+			return
+		}
+		
+		if ( 'volumediff' in V ) {
 			var diff = V.volumediff;
 			delete V.volumediff;
 		} else {
@@ -691,7 +689,7 @@ $( '#volume' ).roundSlider( {
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	guideHide();
-	clearTimeout( V.volumebar );
+	volumeBarHideClear();
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	var $this = $( this );
@@ -703,7 +701,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( ! V.volume ) return
 	
-	clearTimeout( V.volumebar );
+	volumeBarHideClear();
 	V.drag = true;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 	$( '#volume-bar' ).css( 'width', V.volume.x );
@@ -723,7 +721,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	}
 	$volumeRS.setValue( S.volume );
 	V.volume    = V.drag = false;
-	V.volumebar = volumeBarHide();
+	volumeBarHide();
 } ).on( 'mouseleave', function() {
 	V.volume = V.drag = false;
 } );
@@ -747,18 +745,18 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	} else {
 		$volumeRS.setValue( S.volume );
-		clearTimeout( V.volumebar );
-		V.volumebar = volumeBarHide();
+		volumeBarHideClear();
+		volumeBarHide();
 	}
 	volumePush();
 } ).press( function( e ) {
-	clearTimeout( V.volumebar );
+	volumeBarHideClear();
 	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	var up = $( e.currentTarget ).hasClass( 'up' );
 	V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );
 } );
 $( '#volume-text' ).on( 'click', function() { // mute / unmute
-	clearTimeout( V.volumebar );
+	volumeBarHideClear();
 	volumeAnimate( S.volumemute, S.volume );
 	volumeMuteToggle();
 } );
@@ -802,7 +800,7 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 	
 	if ( $( '#info' ).hasClass( 'hide' ) ) {
 		$( '#info' ).removeClass( 'hide' );
-		clearTimeout( V.volumebar );
+		volumeBarHideClear();
 		volumeBarHide( 'nodelay' );
 		return
 		
@@ -813,7 +811,7 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 	
 	var cmd = btnctrl[ this.id.replace( /[a-z]/g, '' ) ];
 	if ( cmd === 'guide' ) {
-		clearTimeout( V.volumebar );
+		volumeBarHideClear();
 		if ( V.guide ) {
 			guideHide();
 			return

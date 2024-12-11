@@ -177,7 +177,14 @@ $ignorepkg"
 timezone )
 	echo "\
 <bll># timedatectl</bll>
-$( timedatectl )"
+$( timedatectl )
+
+<bll># cat /etc/systemd/timesyncd.conf</bll>
+$( grep -v ^# /etc/systemd/timesyncd.conf | awk NF )
+
+<bll># cat /etc/pacman.d/mirrorlist</bll>
+$( grep -v ^# /etc/pacman.d/mirrorlist )
+"
 	;;
 webui )
 	echo "\

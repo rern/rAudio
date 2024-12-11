@@ -1,5 +1,5 @@
+#bar-bottom { z-index: 95 }
 .menu { z-index: 11 }
-#bar-bottom { z-index: 5 }
 .container input[type=checkbox] { z-index: 1 }
 
 #listwlscan .i-lock { font-size: 16px; vertical-align: 1px }
@@ -30,15 +30,6 @@
 	text-shadow: var( --shadow-text );
 }
 
-heading,
-.col-l,
-.entries li {
-	-webkit-user-select: none;
-	user-select: none;
-}
-#loader {
-	background: #000000;
-}
 .head,
 #bar-bottom {
 	box-shadow: var( --shadow-bar );
@@ -283,41 +274,32 @@ heading i.disabled {
 	bottom: 0;
 	width: 100%;
 	height: 40px;
-	padding: 0 55px;
-	font-size: 28px;
-	line-height: 35px;
 	text-align: center;
 	background: var( --cga );
 	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
 }
-@supports ( -webkit-touch-callout: none ) { /* ios only */
-	#bar-bottom { line-height: 30px }
-	.helpblock i { vertical-align: 0 }
-}
 #bar-bottom div {
 	display: inline-block;
 	width: calc( 100% / 5 );
-	max-width: 160px;
+	max-width: 162px;
 	height: 40px;
+	line-height: 40px;
+	font-size: 16px;
+	font-weight: 300;
+	color: var( --cg60 );
 	cursor: pointer;
 }
-#bar-bottom.guide div {
-	width: calc( 100% / 4 );
-}
-#bar-bottom div.active a {
+#bar-bottom div.active {
 	color: var( --cw ) !important;
 }
 #bar-bottom i {
-	width: 30px;
-	vertical-align: -3px;
+	vertical-align: middle;
 	font-size: 24px;
 	color: var( --cw );
 	text-shadow: var( --shadow-text );
 }
-#bar-bottom a {
-	font-size: 16px;
-	font-weight: 300;
-	color: var( --cg60 );
+#bar-bottom span {
+	margin-left: 10px;
 }
 .transparent {
 	opacity: 0 !important;
@@ -508,9 +490,6 @@ input.disabled + .switchlabel:after {
 	padding: 0 calc( ( 100% - 650px ) / 2 ) 80px;
 	overflow: auto;
 }
-.container.addonsprogress {
-	padding-bottom: 0;
-}
 .col-l,
 .col-r {
 	float: left;
@@ -607,51 +586,23 @@ input.disabled + .switchlabel:after {
 .head .i-gear {
 	display: none;
 }
-#guideimg {
-	display: block;
-	margin: 50vh auto 0;
-	transform: translateY(-50%);
-	width: auto;
-	height: auto;
-	max-width: 650px;
-	max-height: calc( 100% - 80px );
-	border: 1px solid hsl(0,0%,15%);
-}
-#prev,
-#next {
-	display: none;
-	width: 40px !important;
-	line-height: 40px;
-}
 #divsoxr .helpblock span {
 	display: inline-block;
 	width: 112px;
 }
 
-@media (max-height: 730px) {
-	#guideimg {
-		margin-top: 40px;
-		transform: unset;
-	}
-}
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
 	.head .i-gear { display: inline-block }
 	.container { height: calc( 100% - 40px ) }
-	#guideimg { max-height: calc( 100% - 40px ) }
 	#bar-bottom { display: none }
-}
-@media (max-width: 800px) {
-	#bar-bottom { padding: 0 20px }
 }
 @media (max-width: 700px) {
 	.container { padding: 0 10px 80px }
 }
-@media (max-width: 650px) {
-	#guideimg { max-width: 100% }
-}
 @media ( max-width: 580px ) {
 	.head { padding-right: 0 !important }
+	#bar-bottom span,
 	wide { display: none }
 }
 @media (max-width: 515px) {
@@ -675,7 +626,6 @@ input.disabled + .switchlabel:after {
 	.listtitle a { width: calc( 100% / 13 ) }
 }
 @media (max-width: 615px) {
-	#bar-bottom { padding: 0 }
 	#bar-bottom a,
 	#debug { display: none }
 }
@@ -688,13 +638,7 @@ input.disabled + .switchlabel:after {
 	#divmpd .help { display: none }
 }
 @media (hover: hover) {
-	#bar-bottom.guide div { width: calc( 100% / 5 ) }
-	#prev,
-	#next { display: inline-block }
-	#fader { z-index: 5 }
 	#bar-bottom div:hover,
-	#next:hover,
-	#prev:hover { background-color: var( --cgd ) }
 	#bar-bottom div.active:hover { background-color: var( --cma ) }
 	a:hover { text-decoration: none }
 	.entries li:hover { background: var( --cga ) }
@@ -707,7 +651,7 @@ input.disabled + .switchlabel:after {
 	.back,
 	.btn,
 	.clipped::after,
-	.close,
+	.i-close,
 	.code,
 	.col-l.icon,
 	.divgain i,
@@ -719,7 +663,6 @@ input.disabled + .switchlabel:after {
 	.img,
 	.listtitle,
 	.page-icon,
-	.prev-next,
 	.setting,
 	.settings,
 	.settingedit,
@@ -770,4 +713,7 @@ input.disabled + .switchlabel:after {
 		background: var( --cgl );
 		outline: none;
 	}
+}
+@supports ( -webkit-touch-callout: none ) { /* ios only */
+	#bar-bottom i { vertical-align: -3px !important }
 }

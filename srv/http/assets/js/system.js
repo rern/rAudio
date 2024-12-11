@@ -900,7 +900,7 @@ function renderPage() {
 ps.storage = data => {
 	S.liststorage = data.list;
 	util.renderStorage();
-	if ( ! $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).html( highlightJSON( S ) )
+	if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1084,8 +1084,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 	}
 } );
 $( '#menu a' ).on( 'click', function() {
-	var $this      = $( this );
-	var cmd        = $this.prop( 'class' ).replace( ' active', '' );
+	var cmd        = $( this ).data( 'cmd' );
 	var list       = S.liststorage[ V.li.index() ];
 	var mountpoint = list.mountpoint;
 	var source     = list.source;

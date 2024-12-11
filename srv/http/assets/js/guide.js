@@ -1,3 +1,6 @@
+document.title = 'Guide';
+[ '.helphead', '#debug' ].forEach( cl => document.querySelector( cl ).remove() );
+[ '.head', '#bar-bottom' ].forEach( k => document.querySelector( k ).classList.remove( 'hide' ) );
 var n     = 1;
 var page  = {
 	  playback : 1
@@ -6,24 +9,21 @@ var page  = {
 	, settings : 47
 	, total    : 57
 }
+var hash  = '?v='+ Math.round( Date.now() / 1000 );
 var E     = {
-	  bar   : document.getElementById( 'bar-bottom' )
-	, close : document.getElementById( 'close' )
-	, gear  : document.querySelector( '.i-gear' )
-	, img   : document.getElementById( 'guideimg' )
+	  bar : document.getElementById( 'bar-bottom' )
+	, img : document.querySelector( 'img' )
 };
-var hash  = E.img.src.replace( /.*jpg/, '' )
-var tabs  = E.bar.children;
-var tabsL = tabs.length;
-for( i = 0; i < tabsL; i++ ) {
-	E[ tabs[ i ].id ] = tabs[ i ];
-	tabs[ i ].addEventListener( 'click', function() {
-		var tabactive = E.bar.querySelector( '.active' );
+[ 'close', 'library', 'playback', 'playlist', 'settings', 'prev', 'next' ].forEach( id => {
+	E[ id ] = document.getElementById( id )
+	E[ id ].addEventListener( 'click', function() {
+		var tabactive = document.querySelector( 'div.active' );
 		if ( this === tabactive ) return
 		
-		var id = this.id;
 		var active;
-		if ( id === 'next' ) {
+		if ( id === 'close' ) {
+			location.href = '/';
+		} else if ( id === 'next' ) {
 			n++;
 			if ( n > page.total ) n = 1;
 		} else if ( id === 'prev' ) {
@@ -42,16 +42,13 @@ for( i = 0; i < tabsL; i++ ) {
 			active = 'playback';
 		}
 		tabactive.className = '';
-		E[ active ].className = 'active'
+		document.getElementById( active ).className = 'active'
 		E.img.src = '/assets/img/guide/'+ n +'.jpg'+ hash;
 	} );
-}
-//---------------------------------------------------------------------------------------
-document.title = 'Guide';
-[ '.container', '.helphead' ].forEach( cl => document.querySelector( cl ).remove() );
+} );
 E.playback.classList.add( 'active' );
-E.close.addEventListener( 'click', () => location.href = '/' );
-E.gear.addEventListener( 'click', () => {
+//---------------------------------------------------------------------------------------
+document.querySelector( '.i-gear' ).addEventListener( 'click', () => {
 	var hide = window.getComputedStyle( E.bar ).getPropertyValue( 'display' ) === 'none' ;
 	E.bar.style.display = hide ? 'block' : 'none';
 } );
@@ -68,7 +65,7 @@ document.body.addEventListener( 'keydown', e => {
 			E.next.click();
 			break
 		case 'x':
-			if ( e.ctrlKey ) location.href = '/';
+			if ( e.ctrlKey ) E.close.click();
 			break
 	}
 } );

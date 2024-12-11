@@ -101,10 +101,13 @@
 	width: 230px;
 }
 #divvolume .col-l a {
-	width: 128px;
+	max-width: calc( 100% - 25px );
 }
 #divvolume .col-l i {
+	margin: 0 -15px 0 0;
+	width: 40px;
 	line-height: 40px;
+	text-align: center;
 }
 #divvolume .col-r {
 	white-space: nowrap;
@@ -331,9 +334,6 @@ i.disabled {
 .liinput .i-volume::before {
 	margin-left: 7px !important;
 }
-#divvolume c {
-	margin: 0 -4px;
-}
 .i-volume.mute {
 	color: var( --cml ) !important;
 }
@@ -473,10 +473,4 @@ i.disabled {
 .entries.sub li,
 #filters li {
 	cursor: default !important;
-}
-#divvolume,
-.i-minus,
-.i-plus {
-	-webkit-user-select: none;
-	user-select: none;
 }

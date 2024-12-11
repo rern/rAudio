@@ -1,6 +1,6 @@
 /*
 $.fn.press
-banner() errorDisplay() 
+banner() dataError() 
 info()   infoPower() infoPowerCommand() infoWarning()
 loader() local()     selectSet()
 websocket
@@ -69,24 +69,41 @@ function bannerHide() {
 		.addClass( 'hide' )
 		.empty();
 }
+$( '#banner' ).on( 'click', bannerHide );
 // ----------------------------------------------------------------------
-function errorDisplay( msg, list ) {
-	var pos = msg.replace( /.* position /, '' );
+function dataError( msg, list ) {
+	var pos   = msg.replace( /.* position /, '' );
 	if ( msg.includes( 'position' ) )    pos = msg.replace( /.*position /, '' ).replace( / .line.*/, '' );
 	else if ( msg.includes( 'column' ) ) pos = msgx.replace( /.* column /, '' ).replace( ')', '' );
 	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
-	var error =  '<div class="error"><codered>Errors:</codered> '+ msg
+	var data  = list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&gt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
+	dataErrorSet( '<codered>Errors:</codered> '+ msg
 				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
-				+'</div>'
-				+'<div class="data">'
-				+ list.slice( 0, pos ).replace( /</g, '&lt;' ) +'<codered>&gt;</codered>'+ list.slice( pos ).replace( /</g, '&lt;' );
-				+ '</div>'
-	$( '#data' )
-		.html( error )
-		.removeClass( 'hide' );
+				+'<hr>'
+				+'<div class="data">'+ data +'</div>' );
 	loaderHide();
 }
-
+function dataErrorSet( error ) {
+	$( '#data .error' ).remove();
+	$( '#banner' ).after( '<pre id="data">'+ error +'</pre>' );
+	if ( $( '#data codered' ).length ) {
+		var fn = () => {
+			// copy2clipboard - for non https which cannot use clipboard API
+			$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
+			$( '#error' ).trigger( 'focus' ).select();
+			document.execCommand( 'copy' );
+			$( '#error' ).remove();
+			banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
+		}
+	} else {
+		var fn = () => {
+			var cmdsh = page === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
+			bash( cmdsh, refreshData );
+			notify( pkg, pkg, 'Start ...' );
+		}
+	}
+	$( '#data .infobtn' ).on( 'click', fn );
+}
 // ----------------------------------------------------------------------
 function highlightJSON( json ) {
 	var color = ( text, color ) => '<'+ color +'>'+ text +'</'+ color +'>';
@@ -1153,7 +1170,8 @@ function jsonSort( json ) {
 	}, {} );
 }
 // ----------------------------------------------------------------------
-function loader() {
+function loader( fader ) {
+	$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );
 	$( '#loader' ).removeClass( 'hide' );
 }
 function loaderHide() {
@@ -1266,7 +1284,7 @@ var ps = {
 		V[ data.type ] = true;
 		banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 		if ( V.off ) {
-			$( '#loader' ).css( 'background', '#000000' );
+			$( '#loader' ).css( 'opacity', 1 );
 			setTimeout( () => {
 				$( '#loader svg' ).css( 'animation', 'none' );
 				bannerHide();
@@ -1484,7 +1502,15 @@ function bashConsoleLog( data ) {
 	}
 }
 
-$( '#debug' ).press( function() {
+$( '#debug' ).on( 'click', function() {
+	if ( V.press ) return
+	
+	if ( $( '#data' ).length ) {
+		$( '#data' ).remove();
+	} else {
+		$( '#banner' ).after( '<pre id="data">'+ highlightJSON( S ) +'</pre>' );
+	}
+} ).press( function() {
 	if ( V.debug ) {
 		V.debug = false;
 		refreshData();
@@ -1521,13 +1547,3 @@ $( '#debug' ).press( function() {
 		} );
 	} );
 } );
-$( '.page-icon' ).press( () => location.reload() );
-$( '#data' ).on( 'click', '.copy', function() {
-	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
-	// copy2clipboard - for non https which cannot use clipboard API
-	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
-	$( '#error' ).trigger( 'focus' ).select();
-	document.execCommand( 'copy' );
-	$( '#error' ).remove();
-} );
-$( '#banner' ).on( 'click', bannerHide );

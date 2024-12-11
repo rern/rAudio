@@ -895,7 +895,7 @@ function menuLibraryPlaylist( $tabs, click ) {
 	$tabs
 		.removeClass( 'focus' )
 		.trigger( 'blur' );
-	$( '#fader' ).addClass( 'hide' );
+	loaderHide();
 	$( '#bar-top, #bar-bottom' ).css( 'z-index', '' );
 }
 function mpcSeek( elapsed ) {
@@ -963,7 +963,7 @@ function playbackStatusGet( withdisplay ) {
 		try {
 			var status = JSON.parse( list );
 		} catch( e ) {
-			errorDisplay( e.message, list );
+			dataError( e.message, list );
 			return false
 		}
 		
@@ -982,7 +982,7 @@ function playbackStatusGet( withdisplay ) {
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		V.volumecurrent = S.volume;
 		renderPlaybackAll();
-		if ( ! $( '#data' ).hasClass( 'hide' ) ) setStatusData();
+		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
 	} );
 }
 function playlistBlink( off ) {
@@ -1908,18 +1908,6 @@ function setProgressElapsed() {
 		}, 1000 );
 	}
 }
-function setStatusData() {
-	var list = {
-		  status  : S
-		, display : D
-		, count   : C
-	}
-	var html = '';
-	$.each( list, ( k, v ) => html += '"'+ k +'": '+ highlightJSON( v ) +'<br>' );
-	$( '#data' )
-		.html( html )
-		.removeClass( 'hide' );
-}
 function setTrackCoverart() {
 	if ( V.mode === 'album' ) $( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );
 	if ( D.hidecover ) {
@@ -1939,9 +1927,11 @@ function setTrackCoverart() {
 function setVolume() {
 	if ( V.animate ) return
 	
-	$volumeRS.setValue( S.volume );
+	if ( D.volume ) {
+		$volumeRS.setValue( S.volume );
+		if ( ! S.volume ) $volumehandle.rsRotate( -310 );
+	}
 	setVolumeUpDn();
-	if ( ! S.volume ) $volumehandle.rsRotate( -310 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
 		.text( S.volumemute || S.volume )
@@ -2015,7 +2005,7 @@ function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )
 }
 function volumeAnimate( target, volume ) {
-	clearTimeout( V.volumebar );
+	volumeBarHideClear();
 	$( '.volumeband' ).addClass( 'disabled' );
 	$( '#volume-bar' ).animate(
 		  { width: target +'%' }
@@ -2023,7 +2013,7 @@ function volumeAnimate( target, volume ) {
 			  duration : Math.abs( target - volume ) * 40
 			, easing   : 'linear'
 			, complete : () => {
-				V.volumebar = volumeBarHide();
+				volumeBarHide();
 				$( '.volumeband' ).removeClass( 'disabled' );
 				setVolume();
 			}
@@ -2031,11 +2021,14 @@ function volumeAnimate( target, volume ) {
 	);
 }
 function volumeBarHide( nodelay ) {
-	setTimeout( () => {
+	V.volumebar = setTimeout( () => {
 		$( '#info' ).removeClass( 'hide' ); // 320 x 480
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '.volumeband' ).addClass( 'transparent' );
 	}, nodelay ? 0 : 3000 );
+}
+function volumeBarHideClear() {
+	clearTimeout( V.volumebar );
 }
 function volumeBarSet( pagex ) {
 	V.volume.x = pagex - V.volume.min;
@@ -2047,7 +2040,7 @@ function volumeBarSet( pagex ) {
 function volumeBarShow() {
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
-	V.volumebar = volumeBarHide();
+	volumeBarHide();
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 }
@@ -2070,6 +2063,7 @@ function volumeColorUnmute() {
 }
 function volumeUpDown( up ) {
 	up ? S.volume++ : S.volume--;
+	if ( D.volume ) $volumeRS.setValue( S.volume );
 	volumeMaxSet();
 	S.volumemute = 0;
 	setVolume();

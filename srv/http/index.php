@@ -1,15 +1,7 @@
 <?php
 include 'common.php';
 
-function htmlmenu( $menulist, $mode ) {
-	global $html;
-	global $kid3;
-	global $menu;
-	if ( ! $kid3 ) array_pop( $menulist );
-	foreach( $menulist as $list ) $html.= menuli( $list );
-	$menu.= menudiv( $mode, $html );
-}
-function iconSet( $array, $class = '', $prefix = '' ) {
+function buttonSet( $array, $class = '', $prefix = '' ) {
 	$icons = '';
 	foreach( $array as $a ) {
 		if ( $a[ 0 ] === '<' ) {
@@ -24,21 +16,29 @@ function iconSet( $array, $class = '', $prefix = '' ) {
 	}
 	return $icons;
 }
+function htmlMenu( $menulist, $mode ) {
+	global $html;
+	global $kid3;
+	global $menu;
+	if ( ! $kid3 ) array_pop( $menulist );
+	foreach( $menulist as $list ) $html.= menuLi( $list );
+	$menu.= menuDiv( $mode, $html );
+}
 // context menus
-function menucommon( $add, $replace ) {
+function menuCommon( $add, $replace ) {
 	$list = [
 		  [ $add,       'plus-o',  'Add',     'play-plus',    $add.'play' ]
 		, [ 'playnext', 'add',     'Play next' ]
 		, [ $replace,   'replace', 'Replace', 'play-replace', $replace.'play' ]
 	];
 	$html = '';
-	foreach( $list as $l ) $html.= menuli( $l );
+	foreach( $list as $l ) $html.= menuLi( $l );
 	return $html;
 }
-function menudiv( $id, $html ) {
+function menuDiv( $id, $html ) {
 	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
 }
-function menuli( $list ) {
+function menuLi( $list ) {
 	$command = $list[ 0 ];
 	$icon    = $list[ 1 ];
 	$label   = $list[ 2 ];
@@ -53,7 +53,7 @@ function menuli( $list ) {
 }
 $kid3       = file_exists( '/usr/bin/kid3-cli' );
 $menu       = '';
-$htmlcommon = menucommon( 'add', 'replace' );
+$htmlcommon = menuCommon( 'add', 'replace' );
 // file
 $html = $htmlcommon;
 $menulist = [
@@ -62,10 +62,10 @@ $menulist = [
 	, [ 'directory',  'folder-open',   'Browse folder' ]
 	, [ 'tag',        'tag',           'Tag Editor' ]
 ];
-htmlmenu( $menulist, 'file' );
+htmlMenu( $menulist, 'file' );
 // filepl
 $html = $htmlcommon;
-$menu.= menudiv( 'filepl', $html );
+$menu.= menuDiv( 'filepl', $html );
 // filesavedpl
 $html = $htmlcommon;
 $menulist = [
@@ -74,7 +74,7 @@ $menulist = [
 	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
 	, [ 'savedplremove', 'remove',        'Remove' ]
 ];
-htmlmenu( $menulist, 'filesavedpl' );
+htmlMenu( $menulist, 'filesavedpl' );
 // folder
 $html     = $htmlcommon;
 $menulist = [
@@ -85,7 +85,7 @@ $menulist = [
 	, [ 'directory', 'folder-open',     'Browse folder' ]
 	, [ 'tag',       'tag',             'Tag Editor' ]
 ];
-htmlmenu( $menulist, 'folder' );
+htmlMenu( $menulist, 'folder' );
 // plaction
 $html     = '';
 $menulist = [
@@ -99,19 +99,19 @@ $menulist = [
 	, [ 'similar',    'lastfm',        'Add similar' ]
 	, [ 'tag',        'info',          'Track Info' ]
 ];
-htmlmenu( $menulist, 'plaction' );
+htmlMenu( $menulist, 'plaction' );
 // playlist
-$html     = menucommon( 'pladd', 'plreplace' );
+$html     = menuCommon( 'pladd', 'plreplace' );
 $menulist = [
 	  [ 'plrename', 'edit',   'Rename' ]
 	, [ 'pldelete', 'remove', 'Delete' ]
 ];
-htmlmenu( $menulist, 'playlist' );
+htmlMenu( $menulist, 'playlist' );
 // radio bookmark
-$html     = menucommon( 'wradd', 'wrreplace' );
-$menu    .= menudiv( 'bkradio', $html );
+$html     = menuCommon( 'wradd', 'wrreplace' );
+$menu    .= menuDiv( 'bkradio', $html );
 // webradio
-$html     = menucommon( 'wradd', 'wrreplace' );
+$html     = menuCommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'bookmark',   'star',          'Bookmark' ]
 	, [ 'wredit',     'edit',          'Edit' ]
@@ -119,7 +119,7 @@ $menulist = [
 	, [ 'wrdelete',   'remove',        'Delete' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
 ];
-htmlmenu( $menulist, 'webradio' );
+htmlMenu( $menulist, 'webradio' );
 // wrdir
 $html     = '';
 $menulist = [
@@ -127,11 +127,11 @@ $menulist = [
 	, [ 'wrdirdelete', 'remove', 'Delete' ]
 	, [ 'wrdirrename', 'edit',   'Rename' ]
 ];
-htmlmenu( $menulist, 'wrdir' );
+htmlMenu( $menulist, 'wrdir' );
 
 foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ] as $mode ) {
-	$html = menucommon( $mode.'add', $mode.'replace' );
-	$menu.= menudiv( $mode, $html );
+	$html = menuCommon( $mode.'add', $mode.'replace' );
+	$menu.= menuDiv( $mode, $html );
 }
 
 $menu     = '<div id="contextmenu">'.$menu.'</div>';
@@ -177,12 +177,12 @@ $htmlsearch   = '
 ';
 ?>
 
-<div id="refresh" class="page-icon"></div>
+<div id="refresh"></div>
 
 <div id="bar-top" class="hide">
 	<?=i( 'raudio-nobg', 'logo' )
 	  .'<div id="playback-controls">'
-	  .iconSet( [ 'previous', 'stop', 'play', 'pause', 'next' ], 'btn btn-default btn-cmd' )
+	  .buttonSet( [ 'previous', 'stop', 'play', 'pause', 'next' ], 'btn btn-default btn-cmd' )
 	  .'</div>'.i( 'gear', 'button-settings' )?>
 </div>
 <div id="settings" class="menu hide">
@@ -191,13 +191,15 @@ $htmlsearch   = '
 
 <div id="page-library" class="page hide">
 	<div class="content-top">
-		<i id="button-library" class="i-library page-icon"></i>
-		<?=iconSet( [
-			  [ 'search',          'search' ]
-			, [ 'back',            'back' ]
-			, [ 'refresh-library', 'update' ]
-		], '', 'button-lib-' )
-		.$htmlsearch?>
+		<?php echo
+			 i( 'library page-icon', 'button-library' )
+			.buttonSet( [
+				  [ 'search',          'search' ]
+				, [ 'back',            'back' ]
+				, [ 'refresh-library', 'update' ]
+			], '', 'button-lib-' )
+			.$htmlsearch;
+		?>
 		<span id="lib-home-title" class="title"></span>
 		<span id="lib-title" class="title"></span>
 		<span class="lipath"></span>
@@ -207,7 +209,7 @@ $htmlsearch   = '
 
 <div id="page-playback" class="page">
 	<?=i( 'plus-o emptyadd hide' )
-		.iconset( [ 'bio', 'lyrics', 'booklet' ], 'map guide hide', 'guide-' )?>
+		.buttonSet( [ 'bio', 'lyrics', 'booklet' ], 'map guide hide', 'guide-' )?>
 	<div id="info">
 		<?=$htmlinfo?>
 		<div id="infoicon">
@@ -224,7 +226,7 @@ $htmlsearch   = '
 			<span id="elapsed" class="controls1"></span>
 			<span id="total" class="controls1"></span>
 			<div id="map-time">
-				<?=iconSet( [
+				<?=buttonSet( [
 					  [ 'scale',    'TL' ]
 					, [ 'guide',    'T' ]
 					, [ 'gear',     'TR' ]
@@ -237,7 +239,7 @@ $htmlsearch   = '
 				], 'map maptime', 'time' )?>
 			</div>
 			<div id="button-time" class="btn-group">
-				<?=iconSet( [ 'random', 'single', 'repeat' ], 'btn btn-default btn-cmd btn-toggle' )?>
+				<?=buttonSet( [ 'random', 'single', 'repeat' ], 'btn btn-default btn-cmd btn-toggle' )?>
 			</div>
 		</div>
 		<div id="coverart-block" class="hide">
@@ -247,7 +249,7 @@ $htmlsearch   = '
 				<img id="coverart" src="" class="cover hide">
 				<?=$htmlvumeter?>
 				<div id="map-cover">
-					<?=iconSet( [
+					<?=buttonSet( [
 						  [ 'scale r1 c1 ws hs',    'TL' ]
 						, [ 'guide r1 c2 wl hs',    'T' ]
 						, [ 'gear r1 c3 ws hs',     'TR' ]
@@ -260,7 +262,7 @@ $htmlsearch   = '
 					], 'map mapcover', 'cover' )?>
 				</div>
 				<div id="volume-bar" class="hide"></div>
-				<?=iconSet( [
+				<?=buttonSet( [
 					  [ 'volume',   '' ]
 					, [ 'minus dn', '-dn' ]
 					, [ 'plus up',  '-up' ]
@@ -271,7 +273,7 @@ $htmlsearch   = '
 		<div id="volume-knob" class="hide">
 			<div id="volume"></div>
 			<div id="map-volume">
-				<?=iconSet( [
+				<?=buttonSet( [
 					  [ 'plus up',  'T' ]
 					, [ 'minus dn', 'L' ]
 					, [ 'volume',   'M' ]
@@ -280,7 +282,7 @@ $htmlsearch   = '
 				], 'map mapvolume', 'vol' )?>
 			</div>
 			<div id="button-volume" class="btn-group">
-				<?=iconSet( [
+				<?=buttonSet( [
 					  [ 'minus dn', 'dn' ]
 					, [ 'volume',   'mute' ]
 					, [ 'plus up',  'up' ]
@@ -293,14 +295,16 @@ $htmlsearch   = '
 <div id="page-playlist" class="page hide">
 	<?=i( 'plus-o emptyadd hide' )?>
 	<div class="content-top">
-		<i id="button-playlist" class="i-playlist page-icon"></i>
-		<?=iconSet( [
-			  [ 'back',            'back' ]
-			, [ 'search pllength', 'search' ]
-		], '', 'button-pl-' )?>
-		<?=str_replace( 'lib-', 'pl-', $htmlsearch )?>
+		<?php echo
+			 i( 'playlist page-icon', 'button-playlist' )
+			.buttonSet( [
+				  [ 'back',            'back' ]
+				, [ 'search pllength', 'search' ]
+			], '', 'button-pl-' )
+			.str_replace( 'lib-', 'pl-', $htmlsearch );
+		?>
 		<span id="pl-manage" class="playlist">
-			<?=iconSet( [
+			<?=buttonSet( [
 				  [ 'flash',              'consume' ]
 				, [ 'librandom',          'librandom' ]
 				, [ 'shuffle pllength',   'shuffle' ]
@@ -323,9 +327,9 @@ $htmlsearch   = '
 		<img src=""><span id="lyricstitle"></span><?=i( 'close', 'lyricsclose' )?>
 	</div>
 	<div id="divlyricsartist">
-		<span id="lyricsartist"></span><?=iconSet( [ 'refresh', 'edit' ], '', 'lyrics' )?>
+		<span id="lyricsartist"></span><?=buttonSet( [ 'refresh', 'edit' ], '', 'lyrics' )?>
 		<div id="lyricseditbtngroup" class="hide">
-			<?=iconSet( [
+			<?=buttonSet( [
 				  [ 'undo hide', 'undo' ]
 				, [ 'save hide', 'save' ]
 				, [ 'remove',    'delete' ]
@@ -339,5 +343,5 @@ $htmlsearch   = '
 </div>
 <div id="bio" class="hide"></div>
 <?php
-$htmlbar = iconSet( [ 'library', 'playback', 'playlist' ] );
+$htmlbar = buttonSet( [ 'library', 'playback', 'playlist' ] );
 htmlBottom();

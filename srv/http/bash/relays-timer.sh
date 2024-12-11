@@ -8,7 +8,12 @@ echo $$ > $dirshm/pidrelaystimer
 timer=$( getVar timer $dirsystem/relays.conf )
 i=$timer
 while sleep 60; do
-	if grep -q -m1 '^state.*play' $dirshm/status || grep -q -m1 RUNNING /proc/asound/card*/pcm*p/sub*/status; then
+	if [[ -e $dirsystem/camilladsp ]]; then
+		running=
+	else
+		grep -q -m1 RUNNING /proc/asound/card*/pcm*p/sub*/status && running=1 || running=
+	fi
+	if grep -q -m1 '^state.*play' $dirshm/status || $running; then
 		i=$timer
 	else
 		(( i-- ))

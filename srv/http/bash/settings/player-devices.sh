@@ -23,6 +23,7 @@
 # name: bcm2835 Headphones
 # ...
 
+outputdevice=$( getContent $dirsystem/output-device )
 proccardn=$( ls -d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
 while read path; do
 	info=$( sed 's/bcm2835/On-board/' $path/*/info )
@@ -33,8 +34,14 @@ while read path; do
 	NAME=$name
 	CARD=${path: -1}
 	if [[ -e $path/usbmixer ]]; then
-		usbname=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $path/usbmixer )
-		[[ $usbname ]] && NAME=$usbname
+		usbmixer=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $path/usbmixer )
+		if [[ $usbmixer ]]; then
+			NAME=$usbmixer
+			if [[ $NAME == $outputdevice ]]; then
+				usbcard=$CARD
+				usbname=$NAME
+			fi
+		fi
 	fi
 	lastword=$( awk '{print $NF}' <<< $NAME )
 	[[ $lastword == *-* && $lastword =~ ^[a-z0-9-]+$ ]] && NAME=$( sed 's/ [^ ]*$//' <<< $NAME )
@@ -42,8 +49,10 @@ while read path; do
 	card_name+="$CARD^$NAME"$'\n'
 done <<< $proccardn
 
-if [[ ! -e $dirshm/usbdac && -e $dirsystem/output-device ]]; then # otherwise last card
-	outputdevice=$( < $dirsystem/output-device )
+if [[ $usbcard ]]; then
+	CARD=$usbcard
+	NAME=$usbname
+elif [[ ! -e $dirshm/usbdac && $outputdevice ]]; then # otherwise last card
 	c_n=$( grep "$outputdevice$" <<< $card_name )
 	if [[ $c_n ]]; then
 		CARD=${c_n/^*}

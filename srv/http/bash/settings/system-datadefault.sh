@@ -22,7 +22,7 @@ done
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
 	  label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
 false='albumbyartist albumyear audiocdplclear backonleft barsalways composername conductorname covervu
-	   hidecover multiraudio progress radioelapsed tapaddplay tapreplaceplay vumeter'
+	   hidecover overlayno progress radioelapsed tapaddplay tapreplaceplay vumeter'
 for i in $true; do
 	lines+='
 , "'$i'": true'
