@@ -639,8 +639,9 @@ input.disabled + .switchlabel:after {
 	#divmpd .help { display: none }
 }
 @media (hover: hover) {
-	#bar-bottom div:hover,
-	#bar-bottom div.active:hover { background-color: var( --cmd ) }
+	#bar-bottom div:hover { background-color: var( --cgl ) }
+	#bar-bottom div.active:hover { background-color: var( --cml ) }
+	#bar-bottom div:hover span { color: var( --cw ) }
 	a:hover { text-decoration: none }
 	.entries li:hover { background: var( --cga ) }
 	#menu a:hover {
