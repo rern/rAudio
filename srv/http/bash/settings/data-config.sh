@@ -109,7 +109,7 @@ mpdoled )
 }'
 	;;
 multiraudio )
-	getContent $dirsystem/multiraudio.json
+	getContent $dirsystem/multiraudio.json false
 	;;
 reboot )
 	getContent $dirshm/reboot
