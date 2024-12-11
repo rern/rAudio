@@ -293,12 +293,13 @@ heading i.disabled {
 	color: var( --cw ) !important;
 }
 #bar-bottom i {
-	width: 30px;
-	margin-right: 5px;
 	vertical-align: middle;
 	font-size: 24px;
 	color: var( --cw );
 	text-shadow: var( --shadow-text );
+}
+#bar-bottom span {
+	margin-left: 10px;
 }
 .transparent {
 	opacity: 0 !important;
@@ -627,6 +628,7 @@ input.disabled + .switchlabel:after {
 }
 @media ( max-width: 580px ) {
 	.head { padding-right: 0 !important }
+	#bar-bottom span,
 	wide { display: none }
 }
 @media (max-width: 515px) {
