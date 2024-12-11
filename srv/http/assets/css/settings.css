@@ -289,7 +289,7 @@ heading i.disabled {
 	color: var( --cg60 );
 	cursor: pointer;
 }
-#bar-bottom div.active {
+#bar-bottom div.active span {
 	color: var( --cw ) !important;
 }
 #bar-bottom i {
@@ -300,6 +300,7 @@ heading i.disabled {
 }
 #bar-bottom span {
 	margin-left: 10px;
+	color: var( --cg60 );
 }
 .transparent {
 	opacity: 0 !important;
@@ -639,7 +640,7 @@ input.disabled + .switchlabel:after {
 }
 @media (hover: hover) {
 	#bar-bottom div:hover,
-	#bar-bottom div.active:hover { background-color: var( --cma ) }
+	#bar-bottom div.active:hover { background-color: var( --cmd ) }
 	a:hover { text-decoration: none }
 	.entries li:hover { background: var( --cga ) }
 	#menu a:hover {
