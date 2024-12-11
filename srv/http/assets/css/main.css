@@ -235,14 +235,9 @@ i.map.disabled, .map.disabled i {
 	position: fixed;
 	width: 100%;
 	height: 40px;
+}
+#bar-top {
 	background: linear-gradient( to left, var( --cg ) calc( 100% - 50px ), var( --cgd ) 100% );
-}
-#bar-bottom {
-	bottom: 0;
-	background: none;
-}
-#bar-bottom.transparent {
-	display: block !important;
 }
 .content-top,
 .licover,
@@ -289,9 +284,14 @@ i.map.disabled, .map.disabled i {
 }
 /* ---------------------- bar-bottom ----------------------*/
 #bar-bottom {
+	bottom: 0;
 	font-size: 28px;
 	line-height: 40px;
 	color: var( --cw );
+	background: none;
+}
+#bar-bottom.transparent {
+	display: block !important;
 }
 #bar-bottom i {
 	width: calc( 100% / 3 );
