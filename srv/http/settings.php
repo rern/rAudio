@@ -34,7 +34,7 @@ if ( $camilla ) {
 } else {
 	$tabs   = [ 'features', 'player', 'networks', 'system', 'addons' ];
 }
-foreach ( $tabs as $tab ) $htmlbar.= '<div id="'.$prefix.$tab.'">'.i( $tab ).' <a>'.ucfirst( $tab ).'</a></div>';
+foreach ( $tabs as $tab ) $htmlbar.= '<div id="'.$prefix.$tab.'">'.i( $tab ).ucfirst( $tab ).'</div>';
 if ( $guide ) {
 	$htmlbar.= i( 'back', 'prev' ).i( 'arrow-right', 'next' );
 	echo '
