@@ -16,6 +16,10 @@ $uninstall   = $_POST[ 'uninstall' ]   ?? '';
 body {
 	height: 100vh;
 }
+.head .i-help,
+.head .i-gear {
+	display: none;
+}
 .addontitle {
 	font-size      : 18px;
 	letter-spacing : 5px;

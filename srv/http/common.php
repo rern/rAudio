@@ -66,7 +66,7 @@ if ( ! $page ) { // main
 		$cssp[] = 'select2';
 		$css[]  = 'select2';
 	}
-	if ( $addons ) $css[]  = 'addons';
+	if ( $addons ) $css[] = 'addons';
 	$icon      = $page;
 	$pagetitle = strtoupper( $page );
 	if ( $addonsprogress ) {

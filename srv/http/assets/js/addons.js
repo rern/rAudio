@@ -2,6 +2,7 @@ V              = {} // var global
 var icon       = 'addons';
 var keys       = [ 'installurl', 'postinfo', 'title', 'uninstall', 'version' ];
 
+$( '.helphead' ).remove();
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
 $( '.container' ).on( 'click', '.revision', function() {
 	$this = $( this );

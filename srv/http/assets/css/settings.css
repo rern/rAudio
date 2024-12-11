@@ -586,45 +586,19 @@ input.disabled + .switchlabel:after {
 .head .i-gear {
 	display: none;
 }
-#guideimg {
-	display: block;
-	margin: 50vh auto 0;
-	transform: translateY(-50%);
-	width: auto;
-	height: auto;
-	max-width: 650px;
-	max-height: calc( 100% - 80px );
-	border: 1px solid hsl(0,0%,15%);
-}
-#prev,
-#next {
-	display: none;
-	width: 40px !important;
-	line-height: 40px;
-}
 #divsoxr .helpblock span {
 	display: inline-block;
 	width: 112px;
 }
 
-@media (max-height: 730px) {
-	#guideimg {
-		margin-top: 40px;
-		transform: unset;
-	}
-}
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
 	.head .i-gear { display: inline-block }
 	.container { height: calc( 100% - 40px ) }
-	#guideimg { max-height: calc( 100% - 40px ) }
 	#bar-bottom { display: none }
 }
 @media (max-width: 700px) {
 	.container { padding: 0 10px 80px }
-}
-@media (max-width: 650px) {
-	#guideimg { max-width: 100% }
 }
 @media ( max-width: 580px ) {
 	.head { padding-right: 0 !important }
@@ -664,11 +638,7 @@ input.disabled + .switchlabel:after {
 	#divmpd .help { display: none }
 }
 @media (hover: hover) {
-	#prev,
-	#next { display: inline-block }
 	#bar-bottom div:hover,
-	#next:hover,
-	#prev:hover { background-color: var( --cgd ) }
 	#bar-bottom div.active:hover { background-color: var( --cma ) }
 	a:hover { text-decoration: none }
 	.entries li:hover { background: var( --cga ) }
@@ -681,7 +651,7 @@ input.disabled + .switchlabel:after {
 	.back,
 	.btn,
 	.clipped::after,
-	.close,
+	.i-close,
 	.code,
 	.col-l.icon,
 	.divgain i,
@@ -693,7 +663,6 @@ input.disabled + .switchlabel:after {
 	.img,
 	.listtitle,
 	.page-icon,
-	.prev-next,
 	.setting,
 	.settings,
 	.settingedit,
