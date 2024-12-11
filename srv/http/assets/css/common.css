@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1733794951' );
+	src         : url( '/assets/fonts/rern.woff2?v=1733843545' );
 }
 @font-face {
 	font-family : Lato;
@@ -1107,9 +1107,6 @@ input[ type=radio ]:disabled {
 }
 
 @supports ( -webkit-touch-callout: none ) { /* ios only */
-	.head i {
-		line-height: 42px;
-	}
 	input[ type=checkbox ]:checked:disabled {
 		background-color: var( --cml );
 	}
