@@ -294,7 +294,6 @@ i.map.disabled, .map.disabled i {
 	color: var( --cw );
 }
 #bar-bottom i {
-	display: inline-block;
 	width: calc( 100% / 3 );
 	text-align: center;
 }
