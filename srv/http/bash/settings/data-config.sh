@@ -108,9 +108,6 @@ mpdoled )
 , "reboot" : '$( toReboot )'
 }'
 	;;
-multiraudio )
-	getContent $dirsystem/multiraudio.json false
-	;;
 reboot )
 	getContent $dirshm/reboot
 	rm -f $dirshm/{reboot,backup.gz}
@@ -287,6 +284,8 @@ wlanprofile )
 * )
 	if [[ -e $dirsystem/$ID.conf ]]; then
 		conf2json $dirsystem/$ID.conf
+	elif [[ -e $dirsystem/$ID.json ]]; then
+		getContent $dirsystem/$ID.json
 	else
 		case $ID in
 			autoplay )      echo '{ "BLUETOOTH": true, "STARTUP": true }';;
