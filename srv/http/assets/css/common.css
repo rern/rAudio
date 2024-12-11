@@ -1107,6 +1107,7 @@ input[ type=radio ]:disabled {
 }
 
 @supports ( -webkit-touch-callout: none ) { /* ios only */
+	#bar-bottom i { vertical-align: -3px !important }
 	input[ type=checkbox ]:checked:disabled {
 		background-color: var( --cml );
 	}
