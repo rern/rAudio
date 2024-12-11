@@ -745,3 +745,6 @@ input.disabled + .switchlabel:after {
 		outline: none;
 	}
 }
+@supports ( -webkit-touch-callout: none ) { /* ios only */
+	#bar-bottom i { vertical-align: -3px !important }
+}
