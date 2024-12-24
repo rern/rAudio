@@ -246,7 +246,7 @@ $htmlsearch   = '
 			<div id="divcover" class="cover">
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
-				<img id="coverart" src="" class="cover hide">
+				<img id="coverart" src="" class="hide">
 				<?=$htmlvumeter?>
 				<div id="map-cover">
 					<?=buttonSet( [

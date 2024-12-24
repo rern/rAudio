@@ -480,6 +480,9 @@ i.map.disabled, .map.disabled i {
 }
 #coverart {
 	display: block; /* fix container div larger tahn img */
+	margin: 0 auto;
+	min-width: 230px;
+	max-width: 100%;
 }
 #coverart-block,
 #divcover {
