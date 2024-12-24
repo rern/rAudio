@@ -755,9 +755,7 @@ var util          = {
 			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
 			html += '<li>'+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ v.source +'</c></li>';
 		} );
-		$( '#list' ).html( html ).promise().done( () => {
-			$( '#divstorage' )[ 0 ].scrollIntoView();
-		} );
+		$( '#list' ).html( html );
 	}
 	, restoreReset  : () => {
 		info( {
