@@ -1682,6 +1682,7 @@ li.active .iconthumb {
 	background: none !important;
 }
 #indexcover,
+.lib-path,
 .lipath,
 .lidir,
 .liname,

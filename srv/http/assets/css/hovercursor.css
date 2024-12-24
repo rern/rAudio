@@ -1,5 +1,5 @@
 /* :hover *********************************************************/
-#lib-path a:hover {
+#lib-title a:hover {
 	color: var( --cm );
 }
 #lib-list li:hover,
@@ -125,7 +125,7 @@ li:not( .licover ),
 #eq i,
 #eq .label a,
 #liboptions,
-#lib-path a,
+#lib-title a,
 #lib-search-close,
 #lyrics i,
 #page-library i.search,
@@ -144,11 +144,11 @@ li:not( .licover ),
 #volume-text {
 	cursor: pointer;
 }
-#lib-path a:last-of-type:hover,
+#lib-title a:last-of-type:hover,
 .mode.nodata * {
 	cursor: default;
 }
-#lib-path a:last-of-type:hover {
+#lib-title a:last-of-type:hover {
 	color: var( --cw );
 }
 #bio .container:focus-visible,
