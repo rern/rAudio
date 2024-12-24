@@ -1816,6 +1816,7 @@ function setPlaylistScroll() {
 			var elapsedL0 = 0;
 			var elapsedL  = 0;
 			if ( S.elapsed ) $elapsed.html( ico( 'play' ) + second2HMS( S.elapsed ) + slash );
+			intervalElapsedClear();
 			V.interval.elapsedpl = setInterval( () => {
 				S.elapsed++;
 				if ( S.elapsed === S.Time ) {
@@ -1879,6 +1880,7 @@ function setProgressElapsed() {
 		} else {
 			$timeprogress.css( 'transition-duration', '0s' );
 		}
+		intervalElapsedClear();
 		V.interval.elapsed = setInterval( () => {
 			S.elapsed++;
 			if ( S.elapsed < S.Time ) {
@@ -1900,6 +1902,7 @@ function setProgressElapsed() {
 		$( '#elapsed' ).html( V.blinkdot );
 		$elapsed = $( '#total, #progress span' );
 		$elapsed.text( second2HMS( S.elapsed ) );
+		intervalElapsedClear();
 		V.interval.elapsed = setInterval( () => {
 			S.elapsed++;
 			elapsedhms = second2HMS( S.elapsed );
