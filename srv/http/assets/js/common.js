@@ -1338,7 +1338,7 @@ var ps = {
 
 // page visibility -----------------------------------------------------------------
 function pageActive() {
-	if ( V.pageactive || V.off ) return
+	if ( V && ( V.pageactive || V.off ) ) return
 	
 	V.pageactive = true;
 	if ( ws && ws.readyState === 1 ) {
