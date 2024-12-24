@@ -722,6 +722,10 @@ i.map.disabled, .map.disabled i {
 .mapvolume {
 	background: var( --cg );
 }
+.wl.narrow { width: 46% }
+.c1.narrow { margin-left: 5% }
+.c2.narrow { margin-left: 27% }
+.c3.narrow { margin-left: 73% }
 #coverT,
 #timeT {
 	background: var( --cga );
@@ -2075,10 +2079,6 @@ li.active .li2 bl {
 			opacity: 0 !important;
 		}
 		#bar-bottom.translucent { opacity: 0.6 !important }
-		.wl { width: 46% }
-		.c1 { margin-left: 5% }
-		.c2 { margin-left: 27% }
-		.c3 { margin-left: 73% }
 	}
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }

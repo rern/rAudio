@@ -1593,6 +1593,7 @@ function setCoverart() {
 			coverartDefault();
 		}
 	}
+	$( '.wl, .c1, .c2, .c3' ).toggleClass( 'narrow', V.wW < 500 );
 }
 function setInfo() {
 	var prev = {
