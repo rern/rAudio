@@ -6,6 +6,11 @@ args2var "$1"
 
 if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
+	if grep -q "^$mountpoint$" <<< $( awk '{print $2}' /etc/fstab ); then
+		echo "Name <c>${mountpoint/*\/}</c> already exists"
+		exit
+# --------------------------------------------------------------------
+	fi
 else # server rAudio client
 	path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
 	[[ ${path/ *} != $dirnas ]] && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
