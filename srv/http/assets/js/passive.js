@@ -93,7 +93,7 @@ function psOnMessage( channel, data ) {
 	}
 }
 ps = {
-	...ps
+	  ...ps // from common.js
 	, airplay   : data => {
 		statusUpdate( data );
 		if ( V.playback ) renderPlayback();

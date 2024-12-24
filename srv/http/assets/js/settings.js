@@ -182,7 +182,7 @@ function psOnMessage( channel, data ) {
 		return
 	}
 	
-	if ( data.page !== page ) return
+	if ( data.page !== page && ! [ 'notify', 'power', 'relays' ].includes( channel ) ) return
 	
 	switch ( channel ) {
 		case 'camilla':   ps.camilla( data );   break;
@@ -202,7 +202,7 @@ function psOnMessage( channel, data ) {
 	}
 }
 ps = {
-	  ...ps // from settings.js
+	  ...ps // from common.js
 	, camilla   : data => {
 		S.range = data;
 		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )

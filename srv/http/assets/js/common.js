@@ -1280,7 +1280,7 @@ var ps = {
 	}
 	, power  : data => {
 		loader();
-		ws        = null;
+		ws             = null;
 		V[ data.type ] = true;
 		banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 		if ( V.off ) {
