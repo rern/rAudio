@@ -755,7 +755,9 @@ var util          = {
 			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
 			html += '<li>'+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ v.source +'</c></li>';
 		} );
-		$( '#list' ).html( html );
+		$( '#list' ).html( html ).promise().done( () => {
+			$( '#divstorage' )[ 0 ].scrollIntoView();
+		} );
 	}
 	, restoreReset  : () => {
 		info( {
@@ -900,7 +902,7 @@ function renderPage() {
 ps.storage = data => {
 	S.liststorage = data.list;
 	util.renderStorage();
-	if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
+	if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
