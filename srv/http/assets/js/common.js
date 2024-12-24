@@ -57,6 +57,7 @@ function banner( icon, title, message, delay ) {
 		.removeClass( 'hide' );
 	V.bannerdelay = delay !== -1;
 	if ( V.bannerdelay ) V.timeoutbanner = setTimeout( () => {
+		delete V.bannerdelay;
 		$( '#banner' )
 			.addClass( 'hide' )
 			.empty();
