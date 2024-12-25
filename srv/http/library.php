@@ -199,28 +199,26 @@ case 'ls':
 	$plfiles = preg_grep( '/.cue$|.m3u$|.m3u8$|.pls$/', $lists );
 	unset( $lists );
 	if ( count( $plfiles ) ) {
-		asort( $plfiles );
-		$path  = explode( '.', $plfiles[ 0 ] );
-		$ext   = end( $path );
-		$lists = [];
+		$plfiles = array_unique( $plfiles ); // fix: ls lists *.cue twice
+		$path    = explode( '.', $plfiles[ 0 ] );
+		$ext     = end( $path );
 		foreach( $plfiles as $file ) {
 			$type = $ext === 'cue' ? 'ls' : 'playlist';
-			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'"'
-				, $lists ); // exec appends to existing array
+			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'" 2> /dev/null | sort -u'
+				, $lists );
 		}
-		htmlTrack();
 	} else {
 		exec( 'mpc ls -f "'.$format.'" "'.$STRING.'" 2> /dev/null'
 			, $lists );
 		if ( strpos( $lists[ 0 ],  '.wav^^' ) ) { // MPD not sort *.wav
-			$lists = '';
+			unset( $lists );
 			exec( 'mpc ls -f "%track%__'.$format.'" "'.$STRING.'" 2> /dev/null '
 					.'| sort -h '
 					.'| sed "s/^.*__//"'
 				, $lists );
 		}
-		htmlTrack();
 	}
+	htmlTrack();
 	break;
 case 'radio':
 	$dir     = '/srv/http/data/'.$GMODE.'/'.$STRING;
