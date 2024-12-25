@@ -583,12 +583,6 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$hidedate      = $each0->date && $GMODE !== 'date' ? '' : ' hide';
 		$mpdpath       = dirname( $file0 );
 		$plfile        = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep -E ".m3u$|.m3u8$|.pls$"' );
-		if ( $cue || $plfile ) {
-			$plicon = '&emsp;'.i( 'file-playlist' ).'<gr>'
-					 .( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';
-		} else {
-			$plicon = '';
-		}
 		$hhmmss        = array_column( $array, 'time' );
 		$seconds       = 0;
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
@@ -599,7 +593,8 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );
-		$ext           = strtoupper( $ext ).$plicon;
+		$ext           = strtoupper( $ext );
+		if ( $cue || $plfile ) $ext.= i( 'file-playlist' ).'<gr>'.( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';
 		$icon          = i( 'music', 'folder' );
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">

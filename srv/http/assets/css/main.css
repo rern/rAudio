@@ -1608,6 +1608,7 @@ i.map.disabled, .map.disabled i {
 	font-size: 22px !important;
 	line-height: 25px !important;
 	vertical-align: -5px;
+	text-align: center;
 	color: var( --cg60 ) !important;
 }
 .mode.updn {
