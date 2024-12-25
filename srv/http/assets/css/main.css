@@ -1611,6 +1611,9 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 ) !important;
 }
+.liinfo c {
+	background: var( --cg );
+}
 .mode.updn {
 	background: var( --cga );
 }

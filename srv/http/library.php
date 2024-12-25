@@ -592,8 +592,11 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );
-		$ext           = strtoupper( $ext );
-		if ( $cue || $plfile ) $ext.= i( 'file-playlist' ).'<gr>'.( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';
+		if ( $cue || $plfile ) {
+			$ext = '<c>'.( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</c>'.i( 'file-playlist' );
+		} else {
+			$ext = '<c>'.strtoupper( $ext ).'</c>';
+		}
 		$icon          = i( 'music', 'folder' );
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">
@@ -608,7 +611,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	<span class="lidate'.$hidedate.'"><i class="i-date"></i>'.$each0->date.'</span>
 	'.$br.'
 	<div class="liinfopath"><i class="i-folder"></i>'.$mpdpath.'</div>
-	'.$icon.$count.'<gr> • </gr>'.$totaltime.'<gr> • </gr>'.$ext.'
+	'.$icon.$count.'<gr> • </gr>'.$totaltime.'&emsp;'.$ext.'
 	</div>
 </li>';
 	}
