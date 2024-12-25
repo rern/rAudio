@@ -195,8 +195,7 @@ case 'ls':
 			}
 		}
 	}
-	// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
-	$plfiles = preg_grep( '/.cue$|.m3u$|.m3u8$|.pls$/', $lists );
+	$plfiles = preg_grep( '/.cue$|.m3u$|.m3u8$|.pls$/', $lists ); // parse if cue|m3u,|pls files
 	unset( $lists );
 	if ( count( $plfiles ) ) {
 		$plfiles = array_unique( $plfiles ); // fix: ls lists *.cue twice
