@@ -1240,7 +1240,8 @@ function renderLibraryList( data ) { // V.librarylist
 	htmlpath     += '</span>';
 	$( '#lib-title' )
 		.html( htmlpath )
-		.removeClass( 'hide' );
+		.removeClass( 'hide' )
+		.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
 	V.librarylisthtml = data.html;
 	$( '#lib-list, #page-library .index' ).remove();
 	if ( ! data.html ) return // empty radio

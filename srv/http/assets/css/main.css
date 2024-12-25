@@ -1410,6 +1410,9 @@ i.map.disabled, .map.disabled i {
 #lib-title a:last-of-type {
 	color: var( --cw );
 }
+#lib-title.path a {
+	font-weight: normal;
+}
 .button-coverart {
 	position:relative;
 	display: inline-block;
