@@ -1239,20 +1239,6 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 );
 }
-.mode .i-album,
-.mode .i-albumartist {
-	width: 45px;
-}
-.mode .i-date,
-.mode .i-latest {
-	width: 40px;
-}
-.mode .i-artist,
-.mode .i-conductor,
-.mode .i-sd,
-.mode .i-playlists {
-	width: 36px;
-}
 #lib-mode-list gr {
 	position: absolute;
 	top: 45px;
