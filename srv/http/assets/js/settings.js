@@ -98,7 +98,10 @@ function notifyCommon( message ) {
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
-function playbackButton() {
+function playbackButton( data ) {
+	if ( ! [ 'camilla', 'player' ].includes( page ) ) return
+	
+	if ( data ) [ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
 	if ( S.pllength ) {
 		var btn = S.state === 'play' ? 'pause' : 'play';
 	} else {
@@ -164,60 +167,28 @@ function switchSet() {
 	bannerHide();
 }
 
-function psOnMessage( channel, data ) {
-	if ( channel == 'bluetooth' ) {
-		if ( page === 'networks' ) {
-			S.listbt = data;
-			renderBluetooth();
-		} else if ( ! data ) {
-			if ( page === 'system' ) $( '#bluetooth' ).removeClass( 'disabled' );
-		} else if ( 'connected' in data ) {
-			if ( page === 'features' ) {
-				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
-			} else if ( page === 'system' ) {
-				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
-			}
-		}
-		bannerHide();
-		return
-	}
-	
-	if ( data.page !== page && ! [ 'notify', 'power', 'relays' ].includes( channel ) ) return
-	
-	switch ( channel ) {
-		case 'camilla':   ps.camilla( data );   break;
-		case 'mpdplayer':
-		case 'mpdradio':  ps.mpdPlayer( data ); break;
-		case 'mpdupdate': ps.mpdUpdate( data ); break; // in player.js
-		case 'notify':    ps.notify( data );    break; // in common.js
-		case 'player':    ps.player( data );    break;
-		case 'power':     ps.power( data );     break; // in common.js
-		case 'reboot':    ps.reboot( data );    break;
-		case 'refresh':   ps.refresh( data );   break;
-		case 'relays':    ps.relays( data );    break; // in common.js
-		case 'reload':    ps.reload( data );    break;
-		case 'storage':   ps.storage( data );   break; // in system.js
-		case 'volume':    ps.volume( data );    break; // in player.js
-		case 'wlan':      ps.wlan( data );      break;
-	}
-}
 ps = {
 	  ...ps // from common.js
+	, airplay   : () => true
+	, bookmark  : () => true
 	, camilla   : data => {
 		S.range = data;
 		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
 		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 	}
-	, mpdPlayer : data => {
+	, coverart  : () => true
+	, display   : () => true
+	, equalizer : () => true
+	, mpdPlayer : data => playbackButton( data )
+	, mpdRadio  : data => playbackButton( data )
+	, mpdUpdate : () => true
+	, option    : () => true
+	, order     : () => true
+	, playlist  : () => true
+	, playlists : () => true
+	, player    : data => {
 		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
 		
-		[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
-		playbackButton();
-	}
-	, mpdUpdate : () => {
-		return
-	}
-	, player    : data => {
 		var player_id = {
 			  airplay   : 'shairport-sync'
 			, bluetooth : 'bluetooth'
@@ -227,12 +198,15 @@ ps = {
 		}
 		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 	}
+	, radiolist : () => true
 	, reboot    : data => {
 		var msg = '';
 		data.id.forEach( id => msg += '<div> • '+ $( '#div'+ id +' .label' ).text() +'</div>' );
 		banner( 'reboot', 'Reboot required', msg, 5000 );
 	}
 	, refresh   : data => {
+		if ( data.page !== page ) return
+		
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {
 			$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
@@ -244,15 +218,9 @@ ps = {
 			renderPage();
 		}, 300 );
 	}
-	, reload    : data => {
-		if ( localhost ) location.reload();
-	}
-	, storage   : data => { // system.js
-		return
-	}
-	, volume    : () => { // camilla.js, player.js, system.js
-		return
-	}
+	, storage   : () => true // system.js
+	, volume    : () => true // camilla.js, player.js, system.js
+	, vumeter   : () => true
 	, wlan      : data => {
 		if ( data && 'reboot' in data ) {
 			info( {

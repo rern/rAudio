@@ -115,7 +115,6 @@ equalizer )
 , "current": "62 62 62 62 62 62 62 62 62 62"
 
 }' | jq > $dirsystem/equalizer.json
-	pushData reload 1
 	pushRestartMpd equalizer $TF
 	;;
 httpd )
@@ -194,7 +193,7 @@ localbrowser )
 	pushRefresh
 	;;
 localbrowserreload )
-	pushData reload 1
+	pushData reload '{ "page": "features"; "data": 1 }'
 	;;
 localbrowserxset )
 	localbrowserXset

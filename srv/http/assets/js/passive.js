@@ -65,33 +65,7 @@ function onPageInactive() {
 	intervalClear();
 	guideHide();
 }
-// push status
-function psOnMessage( channel, data ) {
-	if ( data.page ) return
-	
-	switch ( channel ) {
-		case 'airplay':       ps.airplay( data );        break;
-		case 'bookmark':      ps.bookmark( data );       break;
-		case 'coverart':      ps.coverart( data );       break;
-		case 'display':       ps.display( data );        break;
-		case 'equalizer':     ps.equalizer( data );      break;
-		case 'mpdplayer':     ps.mpdPlayer( data );      break;
-		case 'mpdradio':      ps.mpdRadio( data );       break;
-		case 'mpdupdate':     ps.mpdUpdate( data );      break;
-		case 'notify':        ps.notify( data );         break; // in common.js
-		case 'option':        ps.option( data );         break;
-		case 'order':         ps.order( data );          break;
-		case 'playlist':      ps.playlist( data );       break;
-		case 'playlists':     ps.playlists( data );      break;
-		case 'power':         ps.power( data );          break; // in common.js
-		case 'radiolist':     ps.radioList( data );      break;
-		case 'relays':        ps.relays( data );         break; // in common.js
-		case 'reload':        location.reload();         break;
-		case 'restore':       ps.restore( data );        break;
-		case 'volume':        ps.volume( data );         break;
-		case 'vumeter':       ps.vuMeter( data );        break;
-	}
-}
+
 ps = {
 	  ...ps // from common.js
 	, airplay   : data => {
@@ -102,6 +76,7 @@ ps = {
 		V.libraryhtml = '';
 		refreshData();
 	}
+	, camilla   : () => true
 	, coverart  : data => {
 		clearTimeout( V.timeoutCover );
 		bannerHide();
@@ -287,6 +262,7 @@ ps = {
 		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 		$( '.mode.playlists gr' ).text( count || '' );
 	}
+	, player    : () => true
 	, radioList : data => {
 		if ( 'count' in data ) {
 			C[ data.type ] = data.count;
@@ -304,15 +280,8 @@ ps = {
 			}
 		}
 	}
-	, restore   : data => {
-		if ( data.restore === 'done' ) {
-			banner( 'restore', 'Restore Settings', 'Done' );
-			setTimeout( () => location.href = '/', 2000 );
-		} else {
-			loader();
-			banner( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
-		}
-	}
+	, reboot    : () => true // settings.js
+	, refresh   : () => true // settings.js
 	, volume    : data => {
 		if ( V.local ) {
 			V.local = false;
@@ -343,4 +312,5 @@ ps = {
 	, vuMeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 	}
+	, wlan      : () => true // settings.js
 }
