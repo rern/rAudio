@@ -167,7 +167,7 @@ function switchSet() {
 	bannerHide();
 }
 [ 'airplay', 'bookmark', 'coverart', 'display', 'equalizer', 'mpdUpdate', 'option', 'order'
-, 'playlist', 'playlists', 'radiolist', 'storage', 'volume', 'vuMeter' ].forEach( k => { ps[ k ] = () => {} } );
+, 'playlist', 'playlists', 'radiolist', 'storage', 'volume', 'vuMeter', 'wlan' ].forEach( k => { ps[ k ] = () => {} } );
 ps = {
 	  ...ps // from common.js
 	, camilla   : data => {
@@ -207,22 +207,6 @@ ps = {
 			}
 			renderPage();
 		}, 300 );
-	}
-	, wlan      : data => {
-		if ( data && 'reboot' in data ) {
-			info( {
-				  icon    : 'wifi'
-				, title   : 'Wi-Fi'
-				, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
-				, oklabel : ico( 'reboot' ) +'Reboot'
-				, okcolor : orange
-				, ok      : () => bash( [ 'power.sh', 'reboot' ] )
-			} );
-			return
-		}
-		
-		$.each( data, ( k, v ) => { S[ k ] = v } );
-		renderWlan();
 	}
 }
 //---------------------------------------------------------------------------------------

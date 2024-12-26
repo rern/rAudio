@@ -279,6 +279,22 @@ function wifiDisconnect() {
 	notify( 'wifi', ssid, 'Disconnect ...' );
 	bash( [ 'disconnect', ssid, 'CMD SSID' ] );
 }
+ps.wlan = () => {
+	if ( data && 'reboot' in data ) {
+		info( {
+			  icon    : 'wifi'
+			, title   : 'Wi-Fi'
+			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
+			, oklabel : ico( 'reboot' ) +'Reboot'
+			, okcolor : orange
+			, ok      : () => bash( [ 'power.sh', 'reboot' ] )
+		} );
+		return
+	}
+	
+	$.each( data, ( k, v ) => { S[ k ] = v } );
+	renderWlan();
+}
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 

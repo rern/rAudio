@@ -193,7 +193,7 @@ localbrowser )
 	pushRefresh
 	;;
 localbrowserreload )
-	pushData reload '{ "page": "features"; "data": 1 }'
+	pushData reload 1
 	;;
 localbrowserxset )
 	localbrowserXset
