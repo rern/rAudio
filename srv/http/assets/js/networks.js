@@ -1,3 +1,20 @@
+ps.wlan = () => {
+	if ( data && 'reboot' in data ) {
+		info( {
+			  icon    : 'wifi'
+			, title   : 'Wi-Fi'
+			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
+			, oklabel : ico( 'reboot' ) +'Reboot'
+			, okcolor : orange
+			, ok      : () => bash( [ 'power.sh', 'reboot' ] )
+		} );
+		return
+	}
+	
+	$.each( data, ( k, v ) => { S[ k ] = v } );
+	renderWlan();
+}
+
 function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
@@ -278,22 +295,6 @@ function wifiDisconnect() {
 	var ssid = V.li.data( 'ssid' );
 	notify( 'wifi', ssid, 'Disconnect ...' );
 	bash( [ 'disconnect', ssid, 'CMD SSID' ] );
-}
-ps.wlan = () => {
-	if ( data && 'reboot' in data ) {
-		info( {
-			  icon    : 'wifi'
-			, title   : 'Wi-Fi'
-			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
-			, oklabel : ico( 'reboot' ) +'Reboot'
-			, okcolor : orange
-			, ok      : () => bash( [ 'power.sh', 'reboot' ] )
-		} );
-		return
-	}
-	
-	$.each( data, ( k, v ) => { S[ k ] = v } );
-	renderWlan();
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

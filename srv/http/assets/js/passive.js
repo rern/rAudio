@@ -1,71 +1,3 @@
-function radioRefresh() {
-	if ( V.query.length ) {
-		var query = V.query.slice( -1 )[ 0 ];
-		list( query, function( html ) {
-			var data = {
-				  html      : html
-				, modetitle : query.modetitle
-				, path      : query.path
-			}
-			renderLibraryList( data );
-		} );
-	} else {
-		$( '.mode.'+ V.mode ).trigger( 'click' );
-	}
-}
-function statusUpdate( data ) {
-	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
-	displayBars();
-}
-function webradioIcon( srcnoext ) {
-	var radiourl = decodeURIComponent( srcnoext )
-					.split( '/' ).pop()
-					.replace( /\|/g, '/' );
-	return $( '#lib-list li' ).filter( ( i, el ) => {
-		return $( el ).find( '.lipath' ).text() === radiourl;
-	} ).find( '.li-icon' );
-}
-// page resize -----------------------------------------------------------------
-window.addEventListener( 'resize', () => { // resize / rotate
-	var wW = window.innerWidth;
-	if ( V.wW === wW ) return // wH changes with address bar toggle on scroll up-down
-	
-	V.wH = window.innerHeight;
-	V.wW = wW;
-	setTimeout( () => {
-		var barvisible = $bartop.is( ':visible' );
-		if ( V.playback ) {
-			displayPlayback();
-			setTimeout( renderPlayback, 50 );
-			setInfoScroll();
-			if ( $( '#bioimg' ).length ) bioTitleSet();
-		} else if ( V.library ) {
-			if ( V.librarylist ) {
-				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
-				renderLibraryPadding();
-			}
-		} else {
-			renderPlaylistPadding();
-			if ( V.playlisthome ) {
-				setTimeout( () => {
-					setPlaylistInfoWidth();
-					setPlaylistScroll();
-				}, 600 );
-			}
-		}
-		displayBars();
-		if ( I.active ) infoWidth();
-	}, 0 );
-} );
-
-function onPageInactive() {
-	if ( D.progress || V.off ) return
-	
-	intervalClear();
-	guideHide();
-}
-
 ps = {
 	  ...ps // from common.js
 	, airplay   : data => {
@@ -308,4 +240,72 @@ ps = {
 	, vumeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 	}
+}
+
+function radioRefresh() {
+	if ( V.query.length ) {
+		var query = V.query.slice( -1 )[ 0 ];
+		list( query, function( html ) {
+			var data = {
+				  html      : html
+				, modetitle : query.modetitle
+				, path      : query.path
+			}
+			renderLibraryList( data );
+		} );
+	} else {
+		$( '.mode.'+ V.mode ).trigger( 'click' );
+	}
+}
+function statusUpdate( data ) {
+	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
+	displayBars();
+}
+function webradioIcon( srcnoext ) {
+	var radiourl = decodeURIComponent( srcnoext )
+					.split( '/' ).pop()
+					.replace( /\|/g, '/' );
+	return $( '#lib-list li' ).filter( ( i, el ) => {
+		return $( el ).find( '.lipath' ).text() === radiourl;
+	} ).find( '.li-icon' );
+}
+// page resize -----------------------------------------------------------------
+window.addEventListener( 'resize', () => { // resize / rotate
+	var wW = window.innerWidth;
+	if ( V.wW === wW ) return // wH changes with address bar toggle on scroll up-down
+	
+	V.wH = window.innerHeight;
+	V.wW = wW;
+	setTimeout( () => {
+		var barvisible = $bartop.is( ':visible' );
+		if ( V.playback ) {
+			displayPlayback();
+			setTimeout( renderPlayback, 50 );
+			setInfoScroll();
+			if ( $( '#bioimg' ).length ) bioTitleSet();
+		} else if ( V.library ) {
+			if ( V.librarylist ) {
+				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
+				renderLibraryPadding();
+			}
+		} else {
+			renderPlaylistPadding();
+			if ( V.playlisthome ) {
+				setTimeout( () => {
+					setPlaylistInfoWidth();
+					setPlaylistScroll();
+				}, 600 );
+			}
+		}
+		displayBars();
+		if ( I.active ) infoWidth();
+	}, 0 );
+} );
+
+function onPageInactive() {
+	if ( D.progress || V.off ) return
+	
+	intervalClear();
+	guideHide();
 }

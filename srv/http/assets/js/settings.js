@@ -4,8 +4,49 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-S              = {} // status
-V              = {}
+S  = {} // status
+V  = {}
+ps = {
+	  ...ps // from common.js
+	, camilla   : data => {
+		S.range = data;
+		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
+		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
+	}
+	, mpdplayer : data => playbackButton( data )
+	, mpdradio  : data => playbackButton( data )
+	, player    : data => {
+		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
+		
+		var player_id = {
+			  airplay   : 'shairport-sync'
+			, bluetooth : 'bluetooth'
+			, snapcast  : 'snapserver'
+			, spotify   : 'spotifyd'
+			, upnp      : 'upmpdcli'
+		}
+		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
+	}
+	, reboot    : data => {
+		var msg = '';
+		data.id.forEach( id => msg += '<div> • '+ $( '#div'+ id +' .label' ).text() +'</div>' );
+		banner( 'reboot', 'Reboot required', msg, 5000 );
+	}
+	, refresh   : data => {
+		if ( data.page !== page ) return
+		
+		clearTimeout( V.debounce );
+		V.debounce = setTimeout( () => {
+			$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+			if ( page === 'networks' ) {
+				if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
+			} else {
+				switchSet();
+			}
+			renderPage();
+		}, 300 );
+	}
+}
 
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
@@ -165,47 +206,6 @@ function switchSet() {
 	} );
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 	bannerHide();
-}
-ps = {
-	  ...ps // from common.js
-	, camilla   : data => {
-		S.range = data;
-		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
-		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
-	}
-	, mpdplayer : data => playbackButton( data )
-	, mpdradio  : data => playbackButton( data )
-	, player    : data => {
-		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
-		
-		var player_id = {
-			  airplay   : 'shairport-sync'
-			, bluetooth : 'bluetooth'
-			, snapcast  : 'snapserver'
-			, spotify   : 'spotifyd'
-			, upnp      : 'upmpdcli'
-		}
-		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
-	}
-	, reboot    : data => {
-		var msg = '';
-		data.id.forEach( id => msg += '<div> • '+ $( '#div'+ id +' .label' ).text() +'</div>' );
-		banner( 'reboot', 'Reboot required', msg, 5000 );
-	}
-	, refresh   : data => {
-		if ( data.page !== page ) return
-		
-		clearTimeout( V.debounce );
-		V.debounce = setTimeout( () => {
-			$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-			if ( page === 'networks' ) {
-				if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
-			} else {
-				switchSet();
-			}
-			renderPage();
-		}, 300 );
-	}
 }
 //---------------------------------------------------------------------------------------
 document.title = page === 'camilla' ? 'CamillaDSP' : capitalize( page );
