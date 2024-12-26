@@ -1753,10 +1753,11 @@ function setPlaybackStop() {
 function setPlaylistInfoWidth() {
 	// li-icon + margin + duration + margin
 	var $liactive = $( '#pl-list li.active' );
-	var $duration = $liactive.find( '.duration' );
 	var $title    = $liactive.find( '.name' );
 	var titleW    = $title.scrollWidth;
-	var iWdW      = 40 + 10 + $duration.width() + 9;
+	var elapsedW  = $liactive.find( '.elapsed' ).width();
+	var timeW     = $liactive.find( '.time' ).width();
+	var iWdW      = 40 + 10 + elapsedW + timeW + 9;
 	var cW        = document.body.clientWidth;
 	$title.css(  'max-width', iWdW + titleW < cW ? '' : cW - iWdW );
 }
