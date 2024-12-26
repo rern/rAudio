@@ -1773,7 +1773,7 @@ function setPlaylistScroll() {
 	
 	var litop = barVisible( 80, 40 );
 	$( '#menu-plaction' ).addClass( 'hide' );
-	$( '#pl-list li' ).removeClass( 'active updn' );
+	$( '#pl-list li' ).removeClass( 'active pause play updn' );
 	$liactive = $( '#pl-list li' ).eq( S.song );
 	$liactive.addClass( 'active' );
 	if ( ! $( '.pl-remove' ).length && ! I.active ) {
@@ -1797,11 +1797,11 @@ function setPlaylistScroll() {
 	} else {
 		if ( S.elapsed === false ) return
 		
-		var slash = S.Time ? ' <gr>/</gr>' : '';
+		$liactive.addClass( S.state );
 		if ( S.player === 'upnp' ) $liactive.find( '.time' ).text( second2HMS( S.Time ) );
 		if ( S.state === 'pause' ) {
 			elapsedtxt = second2HMS( S.elapsed );
-			$elapsed.html( ico( 'pause' ) + elapsedtxt + slash );
+			$elapsed.text( elapsedtxt );
 			setPlaylistInfoWidth();
 		} else if ( S.state === 'play' ) {
 			if ( S.webradio ) {
@@ -1814,7 +1814,7 @@ function setPlaylistScroll() {
 			}
 			var elapsedL0 = 0;
 			var elapsedL  = 0;
-			if ( S.elapsed ) $elapsed.html( ico( 'play' ) + second2HMS( S.elapsed ) + slash );
+			if ( S.elapsed ) $elapsed.html( second2HMS( S.elapsed ) );
 			intervalElapsedClear();
 			V.interval.elapsedpl = setInterval( () => {
 				S.elapsed++;
@@ -1825,7 +1825,7 @@ function setPlaylistScroll() {
 					if ( V.playlist && V.playlisthome ) setPlaylistScroll();
 				} else {
 					elapsedtxt = second2HMS( S.elapsed );
-					$elapsed.html( ico( 'play' ) + elapsedtxt + slash );
+					$elapsed.text( elapsedtxt );
 					elapsedL = elapsedtxt.length;
 					if ( elapsedL > elapsedL0 ) {
 						elapsedL0 = elapsedL;

@@ -1733,7 +1733,20 @@ li.active .iconthumb {
 #pl-list li.radio {
 	margin: 0;
 }
-
+#pl-list li.pause .elapsed::before,
+#pl-list li.play .elapsed::before {
+	content: '\F504';
+	font-family: rern;
+	margin: 0 10px;
+	color: var( --cga );
+}
+#pl-list li.play .elapsed::before {
+	content: '\F503';
+}
+#pl-list li.pause .time::before,
+#pl-list li.play .time::before {
+	content: ' / ';
+}
 .mode.nodata i {
 	color: var( --cg ) !important;
 }
