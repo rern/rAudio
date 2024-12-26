@@ -422,7 +422,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 		notify usbdrive "$name" Removed
 	fi
 	echo "$list" > $dirshm/lsblkusb
-	pushData storage '{ "page": "system", "list": '$( $dirsettings/system-storage.sh )' }'
+	pushData storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	pushDirCounts usb
 	;;
 vuled )

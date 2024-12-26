@@ -166,26 +166,17 @@ function switchSet() {
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 	bannerHide();
 }
-
+[ 'airplay', 'bookmark', 'coverart', 'display', 'equalizer', 'mpdUpdate', 'option', 'order'
+, 'playlist', 'playlists', 'radiolist', 'storage', 'volume', 'vuMeter' ].forEach( k => { ps[ k ] = () => {} } );
 ps = {
 	  ...ps // from common.js
-	, airplay   : () => true
-	, bookmark  : () => true
 	, camilla   : data => {
 		S.range = data;
 		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
 		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 	}
-	, coverart  : () => true
-	, display   : () => true
-	, equalizer : () => true
 	, mpdPlayer : data => playbackButton( data )
 	, mpdRadio  : data => playbackButton( data )
-	, mpdUpdate : () => true
-	, option    : () => true
-	, order     : () => true
-	, playlist  : () => true
-	, playlists : () => true
 	, player    : data => {
 		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
 		
@@ -198,7 +189,6 @@ ps = {
 		}
 		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 	}
-	, radiolist : () => true
 	, reboot    : data => {
 		var msg = '';
 		data.id.forEach( id => msg += '<div> • '+ $( '#div'+ id +' .label' ).text() +'</div>' );
@@ -218,9 +208,6 @@ ps = {
 			renderPage();
 		}, 300 );
 	}
-	, storage   : () => true // system.js
-	, volume    : () => true // camilla.js, player.js, system.js
-	, vumeter   : () => true
 	, wlan      : data => {
 		if ( data && 'reboot' in data ) {
 			info( {

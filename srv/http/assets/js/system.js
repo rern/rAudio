@@ -898,9 +898,12 @@ function renderPage() {
 	showContent();
 }
 ps.storage = data => {
-	S.liststorage = data.list;
-	util.renderStorage();
-	if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		S.liststorage = data.list;
+		util.renderStorage();
+		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
+	}, 1000 );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

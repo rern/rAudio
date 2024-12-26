@@ -66,6 +66,7 @@ function onPageInactive() {
 	guideHide();
 }
 
+[ 'camilla', 'player', 'reboot', 'refresh', 'wlan' ].forEach( k => { ps[ k ] = () => {} } );
 ps = {
 	  ...ps // from common.js
 	, airplay   : data => {
@@ -76,7 +77,6 @@ ps = {
 		V.libraryhtml = '';
 		refreshData();
 	}
-	, camilla   : () => true
 	, coverart  : data => {
 		clearTimeout( V.timeoutCover );
 		bannerHide();
@@ -262,7 +262,6 @@ ps = {
 		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 		$( '.mode.playlists gr' ).text( count || '' );
 	}
-	, player    : () => true
 	, radioList : data => {
 		if ( 'count' in data ) {
 			C[ data.type ] = data.count;
@@ -280,8 +279,6 @@ ps = {
 			}
 		}
 	}
-	, reboot    : () => true // settings.js
-	, refresh   : () => true // settings.js
 	, volume    : data => {
 		if ( V.local ) {
 			V.local = false;
@@ -312,5 +309,4 @@ ps = {
 	, vuMeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 	}
-	, wlan      : () => true // settings.js
 }
