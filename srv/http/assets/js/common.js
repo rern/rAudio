@@ -1333,36 +1333,7 @@ function websocketConnect( ip ) {
 			V.timeoutreload = false;
 		} else {
 			var json = JSON.parse( data );
-			var data = json.data;
-			switch ( json.channel ) {
-				case 'airplay'   : ps.airplay( data );   break;
-				case 'bluetooth' : ps.bluetooth( data ); break;
-				case 'bookmark'  : ps.bookmark( data );  break;
-				case 'camilla'   : ps.camilla( data );   break;
-				case 'coverart'  : ps.coverart( data );  break;
-				case 'display'   : ps.display( data );   break;
-				case 'equalizer' : ps.equalizer( data ); break;
-				case 'mpdplayer' : ps.mpdPlayer( data ); break;
-				case 'mpdradio'  : ps.mpdRadio( data );  break;
-				case 'mpdupdate' : ps.mpdUpdate( data ); break;
-				case 'notify'    : ps.notify( data );    break;
-				case 'option'    : ps.option( data );    break;
-				case 'order'     : ps.order( data );     break;
-				case 'playlist'  : ps.playlist( data );  break;
-				case 'playlists' : ps.playlists( data ); break;
-				case 'player'    : ps.player( data );    break;
-				case 'power'     : ps.power( data );     break;
-				case 'radiolist' : ps.radioList( data ); break;
-				case 'reboot'    : ps.reboot( data );    break;
-				case 'refresh'   : ps.refresh( data );   break;
-				case 'relays'    : ps.relays( data );    break;
-				case 'reload'    : ps.reload( data );    break;
-				case 'restore'   : ps.restore( data );   break;
-				case 'storage'   : ps.storage( data );   break;
-				case 'volume'    : ps.volume( data );    break;
-				case 'vumeter'   : ps.vuMeter( data );   break;
-				case 'wlan'      : ps.wlan( data );      break;
-			}
+			if ( json.channel in ps ) ps[ json.channel ]( json.data );
 		}
 	}
 }

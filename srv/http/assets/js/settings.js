@@ -166,8 +166,6 @@ function switchSet() {
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 	bannerHide();
 }
-[ 'airplay', 'bookmark', 'coverart', 'display', 'equalizer', 'mpdUpdate', 'option', 'order'
-, 'playlist', 'playlists', 'radiolist', 'storage', 'volume', 'vuMeter', 'wlan' ].forEach( k => { ps[ k ] = () => {} } );
 ps = {
 	  ...ps // from common.js
 	, camilla   : data => {
@@ -175,8 +173,8 @@ ps = {
 		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
 		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 	}
-	, mpdPlayer : data => playbackButton( data )
-	, mpdRadio  : data => playbackButton( data )
+	, mpdplayer : data => playbackButton( data )
+	, mpdradio  : data => playbackButton( data )
 	, player    : data => {
 		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
 		

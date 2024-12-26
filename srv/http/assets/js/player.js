@@ -363,7 +363,7 @@ function renderPage() {
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
 	showContent();
 }
-ps.mpdUpdate = data => {
+ps.mpdupdate = data => {
 	if ( 'done' in data ) {
 		$.each( S.counts, ( k, v ) => { S[ k ] = data.done[ k ] } );
 		S.updatetime  = data.updatetime

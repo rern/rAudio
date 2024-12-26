@@ -66,7 +66,6 @@ function onPageInactive() {
 	guideHide();
 }
 
-[ 'camilla', 'player', 'reboot', 'refresh', 'wlan' ].forEach( k => { ps[ k ] = () => {} } );
 ps = {
 	  ...ps // from common.js
 	, airplay   : data => {
@@ -137,7 +136,7 @@ ps = {
 		E = data;
 		eqOptionPreset();
 	}
-	, mpdPlayer : data => {
+	, mpdplayer : data => {
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {
 			if ( ! data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
@@ -155,7 +154,7 @@ ps = {
 			setTimeout( bannerHide, 3000 );
 		}, 300 );
 	}
-	, mpdRadio  : data => {
+	, mpdradio  : data => {
 		statusUpdate( data );
 		setInfo();
 		setCoverart();
@@ -168,7 +167,7 @@ ps = {
 		}
 		setPlaylistScroll();
 	}	
-	, mpdUpdate : data => {
+	, mpdupdate : data => {
 		if ( 'counts' in data ) {
 			$.each( data.counts, ( k, v ) => {
 				C[ k ] = v;
@@ -262,7 +261,7 @@ ps = {
 		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 		$( '.mode.playlists gr' ).text( count || '' );
 	}
-	, radioList : data => {
+	, radiolist : data => {
 		if ( 'count' in data ) {
 			C[ data.type ] = data.count;
 			$( '.mode.'+ data.type +' gr' ).text( data.count );
@@ -306,7 +305,7 @@ ps = {
 		setVolume();
 		V.volumecurrent = S.volume;
 	}
-	, vuMeter   : data => {
+	, vumeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 	}
 }
