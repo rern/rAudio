@@ -592,7 +592,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );
 		if ( $cue || $plfile ) {
-			$ext = '<c>'.( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</c>'.i( 'file-playlist' );
+			$ext = '<c>'.( $cue ? 'CUE' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</c>'.i( 'file-playlist' );
 		} else {
 			$ext = '<c>'.strtoupper( $ext ).'</c>';
 		}
