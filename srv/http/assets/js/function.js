@@ -800,7 +800,7 @@ function intervalClear() {
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
 function intervalElapsedClear() {
-	[ 'elapsed', 'elapsedpl' ].forEach( k => clearInterval( V.interval[ k ] ) );
+	clearInterval( V.interval.elapsed );
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
 function libraryHome() {
@@ -1812,27 +1812,7 @@ function setPlaylistScroll() {
 					setPlaylistWebRadioCoverart(); // lazysizes already loaded
 				}
 			}
-			var elapsedL0 = 0;
-			var elapsedL  = 0;
-			if ( S.elapsed ) $elapsed.html( second2HMS( S.elapsed ) );
-			intervalElapsedClear();
-			V.interval.elapsedpl = setInterval( () => {
-				S.elapsed++;
-				if ( S.elapsed === S.Time ) {
-					intervalClear();
-					S.elapsed = 0;
-					$elapsed.empty();
-					if ( V.playlist && V.playlisthome ) setPlaylistScroll();
-				} else {
-					elapsedtxt = second2HMS( S.elapsed );
-					$elapsed.text( elapsedtxt );
-					elapsedL = elapsedtxt.length;
-					if ( elapsedL > elapsedL0 ) {
-						elapsedL0 = elapsedL;
-						setPlaylistInfoWidth();
-					}
-				}
-			}, 1000 );
+			setProgressElapsed();
 		}
 	}
 }
@@ -1851,7 +1831,7 @@ function setPlayPauseColor() {
 }
 function setProgress( position ) {
 	if ( position !== 0 ) position = S.elapsed;
-	if ( S.state !== 'play' || ! position ) clearInterval( V.interval.elapsed );
+	if ( S.state !== 'play' || ! position ) intervalElapsedClear();
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
 	var w = position && S.Time ? position / S.Time * 100 : 0;
@@ -1865,11 +1845,12 @@ function setProgressAnimate() {
 	$( '#time-bar' ).css( 'width', '100%' );
 }
 function setProgressElapsed() {
-	clearInterval( V.interval.elapsed );
+	intervalElapsedClear();
 	if ( S.elapsed === false || S.state !== 'play' || 'audiocdadd' in V ) return // wait for cd cache on start
 	
 	var elapsedhms;
-	var $elapsed = S.elapsed === false ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
+	var t_e      = S.elapsed === false ? '#total' : '#elapsed';
+	var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 	if ( S.elapsed ) $elapsed.text( second2HMS( S.elapsed ) );
 	if ( S.Time ) {
 		$timeRS.option( 'max', S.Time );
@@ -1889,7 +1870,7 @@ function setProgressElapsed() {
 				}
 				elapsedhms = second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
-				if ( S.state !== 'play' ) clearInterval( V.interval.elapsed );
+				if ( S.state !== 'play' ) intervalElapsedClear();
 			} else {
 				S.elapsed = 0;
 				intervalClear();
@@ -1906,7 +1887,7 @@ function setProgressElapsed() {
 			S.elapsed++;
 			elapsedhms = second2HMS( S.elapsed );
 			$elapsed.text( elapsedhms );
-			if ( S.state !== 'play' ) clearInterval( V.interval.elapsed );
+			if ( S.state !== 'play' ) intervalElapsedClear();
 		}, 1000 );
 	}
 }
