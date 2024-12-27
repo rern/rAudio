@@ -19,12 +19,13 @@ if [[ $1 == wlan ]]; then
 # --------------------------------------------------------------------
 	scan=$( sed -E 's/^\s*|\s*$//g' <<< $scan \
 				| sed -E -n '/^ESSID|^Encryption|^IE.*WPA|^Quality/ {
+						s/\\x00//g
 						s/^Quality.*level.(.*) dBm/,{,"signal":\1/
 						s/^Encryption key:(.*)/,"encrypt":"\1"/
 						s/^ESSID:/,"ssid":/
 						s/^IE.*WPA.*/,"wpa":true/
-						s/\\x00//g
-						p}' \
+						p
+					}' \
 				| tr -d '\n' \
 				| sed 's/{,/{/g; s/,{/\n&/g' \
 				| grep -E -v '^$|"ssid":""' \
