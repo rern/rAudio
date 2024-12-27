@@ -60,6 +60,8 @@ ps = {
 					if ( albumlistchanged ) $( '.mode.'+ V.mode ).trigger( 'click' );
 				}
 			}
+		} else {
+			setProgressElapsed();
 		}
 	}
 	, equalizer : data => {

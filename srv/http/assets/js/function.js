@@ -1853,7 +1853,7 @@ function setProgressElapsed() {
 	var t_e      = S.elapsed === false ? '#total' : '#elapsed';
 	var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 	if ( S.elapsed ) $elapsed.text( second2HMS( S.elapsed ) );
-	if ( S.Time ) {
+	if ( S.Time ) { // elapsed + time
 		$timeRS.option( 'max', S.Time );
 		setProgress();
 		if ( ! localhost ) {
@@ -1861,36 +1861,30 @@ function setProgressElapsed() {
 		} else {
 			$timeprogress.css( 'transition-duration', '0s' );
 		}
-		intervalElapsedClear();
-		V.interval.elapsed = setInterval( () => {
-			S.elapsed++;
-			if ( S.elapsed < S.Time ) {
-				if ( localhost ) {
-					$timeRS.setValue( S.elapsed );
-					$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
-				}
-				elapsedhms = second2HMS( S.elapsed );
-				$elapsed.text( elapsedhms );
-				if ( S.state !== 'play' ) intervalElapsedClear();
-			} else {
-				S.elapsed = 0;
-				intervalClear();
-				$elapsed.empty();
-				setProgress( 0 );
+	} else { // elapsed only
+		if ( ! D.radioelapsed ) {
+			$( '#pl-list li.active .elapsed' ).html( V.blinkdot );
+			return
+		}
+	}
+	
+	V.interval.elapsed = setInterval( () => {
+		S.elapsed++;
+		if ( ! S.Time || S.elapsed < S.Time ) {
+			if ( localhost ) {
+				$timeRS.setValue( S.elapsed );
+				$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
 			}
-		}, 1000 );
-	} else if ( D.radioelapsed ) {
-		$( '#elapsed' ).html( V.blinkdot );
-		$elapsed = $( '#total, #progress span' );
-		$elapsed.text( second2HMS( S.elapsed ) );
-		intervalElapsedClear();
-		V.interval.elapsed = setInterval( () => {
-			S.elapsed++;
 			elapsedhms = second2HMS( S.elapsed );
 			$elapsed.text( elapsedhms );
 			if ( S.state !== 'play' ) intervalElapsedClear();
-		}, 1000 );
-	}
+		} else {
+			S.elapsed = 0;
+			intervalClear();
+			$elapsed.empty();
+			setProgress( 0 );
+		}
+	}, 1000 );
 }
 function setTrackCoverart() {
 	if ( V.mode === 'album' ) $( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );
