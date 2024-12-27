@@ -56,7 +56,7 @@ listWlan() {
 				done
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
-  "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | sed 's/\.$//' )'
+  "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )'
 , "gateway" : "'$( gatewayAddress $wlandev )'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
