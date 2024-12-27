@@ -1808,7 +1808,7 @@ li.active .li2 a,
 li.active .li2 span,
 li.active gr,
 li.active .time,
-.licover.active .i-file-playlist {
+.licover.active .i-playlists {
 	color: var( --cga ) !important;
 }
 li.active .li-icon.wh {

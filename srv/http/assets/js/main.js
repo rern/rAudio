@@ -1743,7 +1743,7 @@ $( '#button-pl-save' ).on( 'click', function() {
 				+ audiocdL ? audiocdL + ico( 'audiocd wh' ) : ''
 				+ upnpL ? upnpL +'&emsp;'+ ico( 'upnp wh' ) : ''
 				+ notsavedL ? notsavedL +'&emsp;'+ ico( 'save wh' ) : ''
-		infoWarning( 'file-playlist', 'Save Playlist', message );
+		infoWarning( 'playlists', 'Save Playlist', message );
 	} else {
 		playlistNew();
 	}

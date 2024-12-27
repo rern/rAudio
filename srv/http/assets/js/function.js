@@ -1010,7 +1010,7 @@ function playlistGet() {
 }
 function playlistInsert( pos ) {
 	var plname = $( '#pl-title .lipath' ).text();
-	banner( 'file-playlist', V.pladd.name, 'Add ...' );
+	banner( 'playlists', V.pladd.name, 'Add ...' );
 	bash( [ 'savedpledit', plname, 'add', pos, V.pladd.path, 'CMD NAME ACTION TO FILE' ], () => {
 		renderSavedPlTrack( plname );
 		if ( pos === 'last' ) {
@@ -1418,7 +1418,7 @@ function renderSavedPl( data ) { // V.playlistlist - list of saved playlists
 	V.playlisthome  = false;
 	V.playlistlist  = true;
 	V.playlisttrack = false;
-	$( '#pl-title' ).html( ico( 'file-playlist wh' ) +'PLAYLISTS' );
+	$( '#pl-title' ).html( ico( 'playlists wh' ) +'PLAYLISTS' );
 	var html        = htmlHash( data.html );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	$( '#pl-list' ).after( html ).promise().done( renderPlaylistSet );

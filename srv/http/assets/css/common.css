@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1733897751' );
+	src         : url( '/assets/fonts/rern.woff2?v=1733921041' );
 }
 @font-face {
 	font-family : Lato;
@@ -100,7 +100,6 @@ i {
 .i-mixers::before          { content: '\F50C' }
 .i-eye::before             { content: '\F567' }
 .i-file::before,
-.i-file-playlist::before,
 .i-playlists::before       { content: '\F548' }
 .i-file-music::before      { content: '\F549' }
 .i-filters::before         { content: '\F52A' }

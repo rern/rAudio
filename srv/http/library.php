@@ -199,11 +199,10 @@ case 'ls':
 	unset( $lists );
 	if ( count( $plfiles ) ) {
 		$plfiles = array_unique( $plfiles ); // fix: ls lists *.cue twice
-		$path    = explode( '.', $plfiles[ 0 ] );
-		$ext     = end( $path );
+		$cue     = substr( $plfiles[ 0 ], -3 ) === 'cue';
+		$type    = $cue ? 'ls' : 'playlist';
 		foreach( $plfiles as $file ) {
-			$type = $ext === 'cue' ? 'ls' : 'playlist';
-			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'" 2> /dev/null | sort -u'
+			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'" 2> /dev/null'
 				, $lists );
 		}
 	} else {
@@ -534,7 +533,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	global $f, $GMODE, $html, $search, $STRING, $tag;
+	global $cue, $f, $GMODE, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
@@ -548,17 +547,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	$each0      = $array[ 0 ];
 	$file0      = $each0->file;
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
-	
 	$hidecover  = exec( 'grep "hidecover.*true" '.$dirsystem.'display.json' );
-	$cuefile    = preg_replace( "/\.[^.]+$/", '.cue', $file0 );
-	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {
-		$cue       = true;
-		$cuename   = pathinfo( $cuefile, PATHINFO_BASENAME );
-		$musicfile = exec( 'mpc ls "'.dirname( $cuefile ).'" | grep -v ".cue$" | head -1' );
-		$ext       = pathinfo( $musicfile, PATHINFO_EXTENSION );
-	} else {
-		$cue = false;
-	}
 	if ( ! $hidecover && ! $search ) {
 		if ( $ext !== 'wav' ) {
 			$albumartist = $each0->albumartist;
@@ -592,9 +581,10 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );
 		if ( $cue || $plfile ) {
-			$ext = '<c>'.( $cue ? 'CUE' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</c>'.i( 'file-playlist' );
+			$ext     = $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION );
+			$exticon = i( 'playlists' );
 		} else {
-			$ext = '<c>'.strtoupper( $ext ).'</c>';
+			$exticon = '';
 		}
 		$icon          = i( 'music', 'folder' );
 		$html         .= '
@@ -610,7 +600,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	<span class="lidate'.$hidedate.'"><i class="i-date"></i>'.$each0->date.'</span>
 	'.$br.'
 	<div class="liinfopath"><i class="i-folder"></i>'.$mpdpath.'</div>
-	'.$icon.$count.'<gr> • </gr>'.$totaltime.'&emsp;'.$ext.'
+	'.$icon.$count.'<gr> • </gr>'.$totaltime.'&emsp;<c>'.strtoupper( $ext ).'</c>'.$exticon.'
 	</div>
 </li>';
 	}
@@ -632,7 +622,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		} else {
 			$datamode  = ' data-mode="'.$GMODE.'"';
 			$icon      = i( 'music', 'file' );
-			$trackname = $cue ? $cuename.'/' : '';
+			$trackname = $cue ? basename( $file0 ).' : ' : '';
 			$trackname.= basename( $path );
 		}
 		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
