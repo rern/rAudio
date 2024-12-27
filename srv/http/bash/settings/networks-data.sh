@@ -55,8 +55,7 @@ listWlan() {
 					[[ $ip ]] && break || sleep 1
 				done
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
-				[[ ! $dbm ]] && dbm=0
-				if (( $dbm > -60 )); then
+				if [[ ! $dbm || $dbm -gt -60 ]]; then
 					icon=wifi
 				elif (( $dbm < -67 )); then
 					icon=wifi1
