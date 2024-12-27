@@ -3,6 +3,13 @@
 .container input[type=checkbox] { z-index: 1 }
 
 #listwlscan .i-lock { font-size: 16px; vertical-align: 1px }
+li.current a::before,
+li.profile a::before {
+	content: '• ';
+}
+li.current a::before {
+	color: #0f0;
+}
 .menu {
 	position: absolute;
 	left: calc( 50% - 650px / 2 + 45px );

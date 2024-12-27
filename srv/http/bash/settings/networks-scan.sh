@@ -29,18 +29,12 @@ if [[ $1 == wlan ]]; then
 				| tr -d '\n' \
 				| sed 's/{,/{/g; s/,{/\n&/g' \
 				| grep -E -v '^$|"ssid":""' \
-				| sed 's/"signal":,/"signal":-67,/; s/wpa.*wpa/wpa/; s/$/}/' )
-	
-	# saved profile
-	profiles=$( ls -p /etc/netctl | grep -v /$ )
-	current=$( iwgetid -r )
-	if [[ $profiles ]]; then
-		while read profile; do
-			[[ $current == $profile ]] && saved+=',"current":true' || saved=',"profile":true'
-			scan=$( sed '/ssid.*'$profile'/ s/}$/'$saved'}/' <<< $scan  )
-		done <<< $profiles
-	fi
-	echo "[ ${scan:1} ]" # ,{...} > [ {...} ]
+				| sed 's/"signal":,/"signal":-67,/; s/wpa.*wpa/wpa/; s/$/}/' ) # ,{...} > [ {...} ]
+	echo '{
+  "scan"     : [ '${scan:1}' ]
+, "current"  : "'$( iwgetid -r )'"
+, "profiles" : '$( line2array "$( ls -p /etc/netctl | grep -v /$ )" )'
+}'
 	exit
 # --------------------------------------------------------------------
 fi

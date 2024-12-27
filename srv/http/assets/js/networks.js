@@ -112,10 +112,10 @@ function renderWlan() {
 	if ( S.listwl ) {
 		S.listwl.forEach( list => {
 			if ( list.ip ) {
-				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( list.icon ) +'<grn>•</grn>&ensp;'+ list.ssid 
-						 +'&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
+				htmlwl += '<li class="wl current" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( list.icon ) +'<a>'+ list.ssid 
+						 +'</a>&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
-				htmlwl += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) + list.ssid +'</li>';
+				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) + list.ssid +'</li>';
 			}
 		} );
 	}
@@ -149,25 +149,26 @@ function scanBluetooth() {
 }
 function scanWlan() {
 	bash( 'networks-scan.sh wlan', data => {
+		console.log(data)
 		var htmlwl      = '';
 		if ( data ) {
-			data.sort( ( a, b ) => b.signal - a.signal );
-			S.listwlscan = data;
+			var scan = data.scan;
+			scan.sort( ( a, b ) => b.signal - a.signal );
+			S.listwlscan = scan;
 			var cls, icon, signal;
-			data.forEach( list => {
-				signal  = list.signal;
-				icon    = 'wifi';
-				icon   += signal > -60 ? '' : ( signal < -67 ? 1 : 2 );
-				icon    = ico( icon );
-				cls     = 'wlscan';
-				if ( list.current ) {
-					icon += '<grn>•</grn> ';
-					cls  += ' current';
-				} else if ( list.profile ) {
-					icon += '<gr>•</gr> ';
+			scan.forEach( list => {
+				ssid   = list.ssid;
+				signal = list.signal;
+				nwifi  = signal > -60 ? '' : ( signal < -67 ? 1 : 2 );
+				cls    = '';
+				if ( ssid === data.current ) {
+					cls = ' current';
+				} else if ( data.profiles.includes( ssid ) ) {
+					cls = ' profile';
 				}
-				htmlwl += '<li class="'+ cls +'" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'+ icon;
-				htmlwl += signal && signal < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
+				if ( signal && signal < -67 ) ssid = '<gr>'+ ssid +'</gr>';
+				htmlwl += '<li class="wlscan'+ cls +'" data-ssid="'+ ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'
+						+ ico( 'wifi'+ nwifi ) +'<a>'+ ssid +'</a>';
 				if ( list.encrypt === 'on') htmlwl += ' '+ ico( 'lock' );
 				if ( signal != 0 ) htmlwl += '<gr>'+ signal +' dBm</gr>';
 				htmlwl += '</li>';
@@ -336,6 +337,12 @@ $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
 	var ssid     = $this.data( 'ssid' );
 	var security = $this.data( 'wpa' ) === 'wep';
 	var encrypt  = $this.data( 'encrypt' ) === 'on';
+	if ( $this.hasClass( 'profile' ) ) {
+		notify( 'wifi', ssid, 'Connect ...' );
+		bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
+		return
+	}
+	
 	info( {
 		  icon    : 'wifi'
 		, title   : ssid
@@ -382,10 +389,10 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
 	} else {
-		var notconnected = V.li.hasClass( 'notconnected' );
+		var current = V.li.hasClass( 'current' );
 		$( '#menu a' ).removeClass( 'hide' );
-		$( '#menu .connect' ).toggleClass( 'hide', ! notconnected );
-		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
+		$( '#menu .connect' ).toggleClass( 'hide', current );
+		$( '#menu .disconnect' ).toggleClass( 'hide', ! current );
 		$( '#menu' ).find( '.info, .rename' ).addClass( 'hide' );
 	}
 	contextMenu();
