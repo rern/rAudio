@@ -149,10 +149,9 @@ function scanBluetooth() {
 }
 function scanWlan() {
 	bash( 'networks-scan.sh wlan', data => {
-		console.log(data)
-		var htmlwl      = '';
+		var htmlwl    = '';
 		if ( data ) {
-			var scan = data.scan;
+			var scan     = data.scan;
 			scan.sort( ( a, b ) => b.signal - a.signal );
 			S.listwlscan = scan;
 			var cls, icon, signal;
