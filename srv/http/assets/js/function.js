@@ -1777,6 +1777,7 @@ function setPlaylistScroll() {
 	$( '#pl-list li' ).removeClass( 'active pause play updn' );
 	$liactive = $( '#pl-list li' ).eq( S.song );
 	$liactive.addClass( 'active' );
+	S.webradio = $liactive.hasClass( 'webradio' );
 	if ( ! $( '.pl-remove' ).length && ! I.active ) {
 		if ( $( '#pl-list li' ).length < 5 ) {
 			var top = 0;

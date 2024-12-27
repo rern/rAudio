@@ -7,7 +7,7 @@ V = {   // var global
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
-	, blinkdot      : '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>'
+	, blinkdot      : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
 	, coverart      : '/assets/img/coverart.svg'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
 	, covervu       : '/assets/img/vu.svg'
