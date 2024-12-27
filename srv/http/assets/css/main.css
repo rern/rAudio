@@ -480,6 +480,9 @@ i.map.disabled, .map.disabled i {
 }
 #coverart {
 	display: block; /* fix container div larger tahn img */
+	margin: 0 auto;
+	min-width: 230px;
+	max-width: 100%;
 }
 #coverart-block,
 #divcover {
@@ -719,6 +722,10 @@ i.map.disabled, .map.disabled i {
 .mapvolume {
 	background: var( --cg );
 }
+.wl.narrow { width: 46% }
+.c1.narrow { margin-left: 5% }
+.c2.narrow { margin-left: 27% }
+.c3.narrow { margin-left: 73% }
 #coverT,
 #timeT {
 	background: var( --cga );
@@ -1232,20 +1239,6 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 );
 }
-.mode .i-album,
-.mode .i-albumartist {
-	width: 45px;
-}
-.mode .i-date,
-.mode .i-latest {
-	width: 40px;
-}
-.mode .i-artist,
-.mode .i-conductor,
-.mode .i-sd,
-.mode .i-playlists {
-	width: 36px;
-}
 #lib-mode-list gr {
 	position: absolute;
 	top: 45px;
@@ -1402,6 +1395,9 @@ i.map.disabled, .map.disabled i {
 }
 #lib-title a:last-of-type {
 	color: var( --cw );
+}
+#lib-title.path a {
+	font-weight: normal;
 }
 .button-coverart {
 	position:relative;
@@ -1601,7 +1597,11 @@ i.map.disabled, .map.disabled i {
 	font-size: 22px !important;
 	line-height: 25px !important;
 	vertical-align: -5px;
+	text-align: center;
 	color: var( --cg60 ) !important;
+}
+.liinfo c {
+	background: var( --cg );
 }
 .mode.updn {
 	background: var( --cga );
@@ -1675,6 +1675,7 @@ li.active .iconthumb {
 	background: none !important;
 }
 #indexcover,
+.lib-path,
 .lipath,
 .lidir,
 .liname,
@@ -1732,7 +1733,20 @@ li.active .iconthumb {
 #pl-list li.radio {
 	margin: 0;
 }
-
+#pl-list li.pause .elapsed::before,
+#pl-list li.play .elapsed::before {
+	content: '\F504';
+	font-family: rern;
+	margin: 0 10px;
+	color: var( --cga );
+}
+#pl-list li.play .elapsed::before {
+	content: '\F503';
+}
+#pl-list li.pause .time::before,
+#pl-list li.play .time::before {
+	content: ' / ';
+}
 .mode.nodata i {
 	color: var( --cg ) !important;
 }
@@ -1794,7 +1808,7 @@ li.active .li2 a,
 li.active .li2 span,
 li.active gr,
 li.active .time,
-.licover.active .i-file-playlist {
+.licover.active .i-playlists {
 	color: var( --cga ) !important;
 }
 li.active .li-icon.wh {
@@ -2072,10 +2086,6 @@ li.active .li2 bl {
 			opacity: 0 !important;
 		}
 		#bar-bottom.translucent { opacity: 0.6 !important }
-		.wl { width: 46% }
-		.c1 { margin-left: 5% }
-		.c2 { margin-left: 27% }
-		.c3 { margin-left: 73% }
 	}
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }

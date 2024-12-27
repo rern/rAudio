@@ -410,10 +410,9 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	list=$( lsblk -no path,vendor,model | grep -v ' $' )
 	if [[ $CMD == usbconnect ]]; then
 		sdx=$( dmesg \
-					| tail -15 \
-					| grep ' sd.* GiB' \
-					| tail -1 \
-					| sed -E 's/.*\[|].*//g' )
+					| tail \
+					| awk -F '[][]' '/ sd .* \[sd.] / {print $4}' \
+					| tail -1 )
 		notify usbdrive "$( lsblk -no vendor,model /dev/$sdx )" Ready
 	else
 		name=$( diff $dirshm/lsblkusb <( echo "$list" ) \

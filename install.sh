@@ -4,10 +4,6 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20241212
-file=$dirsystem/display.json
-! grep -q overlayno $file && sed -i '/composername/ a\  "overlayno": false,' $file
-
 # 20241208
 rm -f $dirshm/playlist*
 
@@ -75,10 +71,6 @@ if [[ -e $file && $( sed -n -E '/^charmap/,/^p0/ p' $file | wc -l ) -gt 2 ]]; th
 	done
 	echo -e $conf > $file
 fi
-
-# 20241011
-file=$dirsystem/powerbutton.conf
-[[ -e $file ]] && sed -i '/reserved/ d' $file
 
 #-------------------------------------------------------------------------------
 installstart "$1"

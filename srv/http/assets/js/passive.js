@@ -1,99 +1,5 @@
-function radioRefresh() {
-	if ( V.query.length ) {
-		var query = V.query.slice( -1 )[ 0 ];
-		list( query, function( html ) {
-			var data = {
-				  html      : html
-				, modetitle : query.modetitle
-				, path      : query.path
-			}
-			renderLibraryList( data );
-		} );
-	} else {
-		$( '.mode.'+ V.mode ).trigger( 'click' );
-	}
-}
-function statusUpdate( data ) {
-	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
-	displayBars();
-}
-function webradioIcon( srcnoext ) {
-	var radiourl = decodeURIComponent( srcnoext )
-					.split( '/' ).pop()
-					.replace( /\|/g, '/' );
-	return $( '#lib-list li' ).filter( ( i, el ) => {
-		return $( el ).find( '.lipath' ).text() === radiourl;
-	} ).find( '.li-icon' );
-}
-// page resize -----------------------------------------------------------------
-window.addEventListener( 'resize', () => { // resize / rotate
-	var wW = window.innerWidth;
-	if ( V.wW === wW ) return // wH changes with address bar toggle on scroll up-down
-	
-	V.wH = window.innerHeight;
-	V.wW = wW;
-	setTimeout( () => {
-		var barvisible = $bartop.is( ':visible' );
-		if ( V.playback ) {
-			displayPlayback();
-			setTimeout( renderPlayback, 50 );
-			setInfoScroll();
-			if ( $( '#bioimg' ).length ) bioTitleSet();
-		} else if ( V.library ) {
-			if ( V.librarylist ) {
-				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
-				renderLibraryPadding();
-			}
-		} else {
-			renderPlaylistPadding();
-			if ( V.playlisthome ) {
-				setTimeout( () => {
-					setPlaylistInfoWidth();
-					setPlaylistScroll();
-				}, 600 );
-			}
-		}
-		displayBars();
-		if ( I.active ) infoWidth();
-	}, 0 );
-} );
-
-function onPageInactive() {
-	if ( D.progress || V.off ) return
-	
-	intervalClear();
-	guideHide();
-}
-// push status
-function psOnMessage( channel, data ) {
-	if ( data.page ) return
-	
-	switch ( channel ) {
-		case 'airplay':       ps.airplay( data );        break;
-		case 'bookmark':      ps.bookmark( data );       break;
-		case 'coverart':      ps.coverart( data );       break;
-		case 'display':       ps.display( data );        break;
-		case 'equalizer':     ps.equalizer( data );      break;
-		case 'mpdplayer':     ps.mpdPlayer( data );      break;
-		case 'mpdradio':      ps.mpdRadio( data );       break;
-		case 'mpdupdate':     ps.mpdUpdate( data );      break;
-		case 'notify':        ps.notify( data );         break; // in common.js
-		case 'option':        ps.option( data );         break;
-		case 'order':         ps.order( data );          break;
-		case 'playlist':      ps.playlist( data );       break;
-		case 'playlists':     ps.playlists( data );      break;
-		case 'power':         ps.power( data );          break; // in common.js
-		case 'radiolist':     ps.radioList( data );      break;
-		case 'relays':        ps.relays( data );         break; // in common.js
-		case 'reload':        location.reload();         break;
-		case 'restore':       ps.restore( data );        break;
-		case 'volume':        ps.volume( data );         break;
-		case 'vumeter':       ps.vuMeter( data );        break;
-	}
-}
 ps = {
-	...ps
+	  ...ps // from common.js
 	, airplay   : data => {
 		statusUpdate( data );
 		if ( V.playback ) renderPlayback();
@@ -154,6 +60,8 @@ ps = {
 					if ( albumlistchanged ) $( '.mode.'+ V.mode ).trigger( 'click' );
 				}
 			}
+		} else {
+			setProgressElapsed();
 		}
 	}
 	, equalizer : data => {
@@ -162,7 +70,7 @@ ps = {
 		E = data;
 		eqOptionPreset();
 	}
-	, mpdPlayer : data => {
+	, mpdplayer : data => {
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {
 			if ( ! data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
@@ -180,7 +88,7 @@ ps = {
 			setTimeout( bannerHide, 3000 );
 		}, 300 );
 	}
-	, mpdRadio  : data => {
+	, mpdradio  : data => {
 		statusUpdate( data );
 		setInfo();
 		setCoverart();
@@ -193,7 +101,7 @@ ps = {
 		}
 		setPlaylistScroll();
 	}	
-	, mpdUpdate : data => {
+	, mpdupdate : data => {
 		if ( 'counts' in data ) {
 			$.each( data.counts, ( k, v ) => {
 				C[ k ] = v;
@@ -287,7 +195,7 @@ ps = {
 		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 		$( '.mode.playlists gr' ).text( count || '' );
 	}
-	, radioList : data => {
+	, radiolist : data => {
 		if ( 'count' in data ) {
 			C[ data.type ] = data.count;
 			$( '.mode.'+ data.type +' gr' ).text( data.count );
@@ -302,15 +210,6 @@ ps = {
 			} else {
 				playlistGet();
 			}
-		}
-	}
-	, restore   : data => {
-		if ( data.restore === 'done' ) {
-			banner( 'restore', 'Restore Settings', 'Done' );
-			setTimeout( () => location.href = '/', 2000 );
-		} else {
-			loader();
-			banner( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
 		}
 	}
 	, volume    : data => {
@@ -340,7 +239,75 @@ ps = {
 		setVolume();
 		V.volumecurrent = S.volume;
 	}
-	, vuMeter   : data => {
+	, vumeter   : data => {
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 	}
+}
+
+function radioRefresh() {
+	if ( V.query.length ) {
+		var query = V.query.slice( -1 )[ 0 ];
+		list( query, function( html ) {
+			var data = {
+				  html      : html
+				, modetitle : query.modetitle
+				, path      : query.path
+			}
+			renderLibraryList( data );
+		} );
+	} else {
+		$( '.mode.'+ V.mode ).trigger( 'click' );
+	}
+}
+function statusUpdate( data ) {
+	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
+	displayBars();
+}
+function webradioIcon( srcnoext ) {
+	var radiourl = decodeURIComponent( srcnoext )
+					.split( '/' ).pop()
+					.replace( /\|/g, '/' );
+	return $( '#lib-list li' ).filter( ( i, el ) => {
+		return $( el ).find( '.lipath' ).text() === radiourl;
+	} ).find( '.li-icon' );
+}
+// page resize -----------------------------------------------------------------
+window.addEventListener( 'resize', () => { // resize / rotate
+	var wW = window.innerWidth;
+	if ( V.wW === wW ) return // wH changes with address bar toggle on scroll up-down
+	
+	V.wH = window.innerHeight;
+	V.wW = wW;
+	setTimeout( () => {
+		var barvisible = $bartop.is( ':visible' );
+		if ( V.playback ) {
+			displayPlayback();
+			setTimeout( renderPlayback, 50 );
+			setInfoScroll();
+			if ( $( '#bioimg' ).length ) bioTitleSet();
+		} else if ( V.library ) {
+			if ( V.librarylist ) {
+				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
+				renderLibraryPadding();
+			}
+		} else {
+			renderPlaylistPadding();
+			if ( V.playlisthome ) {
+				setTimeout( () => {
+					setPlaylistInfoWidth();
+					setPlaylistScroll();
+				}, 600 );
+			}
+		}
+		displayBars();
+		if ( I.active ) infoWidth();
+	}, 0 );
+} );
+
+function onPageInactive() {
+	if ( D.progress || V.off ) return
+	
+	intervalClear();
+	guideHide();
 }

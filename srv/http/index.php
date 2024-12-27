@@ -57,10 +57,10 @@ $htmlcommon = menuCommon( 'add', 'replace' );
 // file
 $html = $htmlcommon;
 $menulist = [
-	  [ 'similar',    'lastfm',        'Add similar' ]
-	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'directory',  'folder-open',   'Browse folder' ]
-	, [ 'tag',        'tag',           'Tag Editor' ]
+	  [ 'similar',    'lastfm',      'Add similar' ]
+	, [ 'savedpladd', 'playlists',   'Add to a playlist' ]
+	, [ 'directory',  'folder-open', 'Browse folder' ]
+	, [ 'tag',        'tag',         'Tag Editor' ]
 ];
 htmlMenu( $menulist, 'file' );
 // filepl
@@ -69,10 +69,10 @@ $menu.= menuDiv( 'filepl', $html );
 // filesavedpl
 $html = $htmlcommon;
 $menulist = [
-	  [ 'similar',       'lastfm',        'Add similar' ]
-	, [ 'wrsave',        'save',          'Save to Library' ]
-	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
-	, [ 'savedplremove', 'remove',        'Remove' ]
+	  [ 'similar',       'lastfm',    'Add similar' ]
+	, [ 'wrsave',        'save',      'Save to Library' ]
+	, [ 'savedpladd',    'playlists', 'Add to a playlist' ]
+	, [ 'savedplremove', 'remove',    'Remove' ]
 ];
 htmlMenu( $menulist, 'filesavedpl' );
 // folder
@@ -89,15 +89,15 @@ htmlMenu( $menulist, 'folder' );
 // plaction
 $html     = '';
 $menulist = [
-	  [ 'play',       'play',          'Play' ]
-	, [ 'pause',      'pause',         'Pause' ]
-	, [ 'stop',       'stop',          'Stop' ]
-	, [ 'current',    'current',       'Current' ]
-	, [ 'remove',     'remove',        'Remove', 'track', 'removerange' ]
-	, [ 'wrsave',     'save',          'Save to Library' ]
-	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'similar',    'lastfm',        'Add similar' ]
-	, [ 'tag',        'info',          'Track Info' ]
+	  [ 'play',       'play',      'Play' ]
+	, [ 'pause',      'pause',     'Pause' ]
+	, [ 'stop',       'stop',      'Stop' ]
+	, [ 'current',    'current',   'Current' ]
+	, [ 'remove',     'remove',    'Remove', 'track', 'removerange' ]
+	, [ 'wrsave',     'save',      'Save to Library' ]
+	, [ 'savedpladd', 'playlists', 'Add to a playlist' ]
+	, [ 'similar',    'lastfm',    'Add similar' ]
+	, [ 'tag',        'info',      'Track Info' ]
 ];
 htmlMenu( $menulist, 'plaction' );
 // playlist
@@ -113,11 +113,11 @@ $menu    .= menuDiv( 'bkradio', $html );
 // webradio
 $html     = menuCommon( 'wradd', 'wrreplace' );
 $menulist = [
-	  [ 'bookmark',   'star',          'Bookmark' ]
-	, [ 'wredit',     'edit',          'Edit' ]
-	, [ 'wrcoverart', 'coverart',      'Change cover art' ]
-	, [ 'wrdelete',   'remove',        'Delete' ]
-	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
+	  [ 'bookmark',   'star',      'Bookmark' ]
+	, [ 'wredit',     'edit',      'Edit' ]
+	, [ 'wrcoverart', 'coverart',  'Change cover art' ]
+	, [ 'wrdelete',   'remove',    'Delete' ]
+	, [ 'savedpladd', 'playlists', 'Add to a playlist' ]
 ];
 htmlMenu( $menulist, 'webradio' );
 // wrdir
@@ -202,7 +202,7 @@ $htmlsearch   = '
 		?>
 		<span id="lib-home-title" class="title"></span>
 		<span id="lib-title" class="title"></span>
-		<span class="lipath"></span>
+		<span class="lib-path"></span>
 	</div>
 	<div id="lib-mode-list"></div>
 </div>
@@ -246,7 +246,7 @@ $htmlsearch   = '
 			<div id="divcover" class="cover">
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
-				<img id="coverart" src="" class="cover hide">
+				<img id="coverart" src="" class="hide">
 				<?=$htmlvumeter?>
 				<div id="map-cover">
 					<?=buttonSet( [

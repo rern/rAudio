@@ -145,7 +145,7 @@ foreach( $lists as $list ) {
 '<li class="'.$class.'" '.$datatrack.'>'.
 	'<a class="lipath">'.$file.'</a>'.
 	$icon.'<div class="li1"><a class="name">'.$title.'</a>'.
-	'<a class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></a></div>'.
+	'<a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></div>'.
 	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>'.
 '</li>
 ';
@@ -162,7 +162,7 @@ foreach( $lists as $list ) {
 '<li class="upnp">'.
 	i( 'upnp', 'filesavedpl' ).
 	'<div class="li1"><a class="name">'.$title.'</a>'.
-	'<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>'.
+	'<a class="elapsed"></a></div>'.
 	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>'.
 '</li>
 ';
@@ -194,7 +194,7 @@ foreach( $lists as $list ) {
 '<li class="webradio '.$classnotsaved.'">'.
 	'<a class="lipath">'.$path.'</a>'.
 	$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><a class="name">'.( $notsaved ? '. . .' : $stationname ).'</a>'.
-	'<a class="duration"><a class="elapsed"></a><a class="time"></a></a></div>'.
+	'<a class="elapsed"></a></div>'.
 	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="stationname hide">'.$namenotsaved.'</a><a>'.$url.'</a></div>'.
 '</li>
 ';
@@ -203,7 +203,7 @@ foreach( $lists as $list ) {
 }
 $counthtml = '';
 if ( $name ) {
-	$counthtml.='<a class="lipath">'.$name.'</a><span class="name">'.i( 'file-playlist savedlist' ).$name.'</span> <gr>·</gr>';
+	$counthtml.='<a class="lipath">'.$name.'</a><span class="name">'.i( 'playlists savedlist' ).$name.'</span> <gr>·</gr>';
 }
 if ( $count->song ) {
 	$counthtml.= '<a id="pl-trackcount">'.number_format( $count->song ).'</a>'.i( 'music' ).'<a id="pl-time" data-time="'.$count->time.'">'.second2HMS( $count->time ).'</a>';

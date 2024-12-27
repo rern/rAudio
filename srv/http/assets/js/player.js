@@ -1,3 +1,28 @@
+ps.mpdupdate = data => {
+	if ( 'done' in data ) {
+		$.each( S.counts, ( k, v ) => { S[ k ] = data.done[ k ] } );
+		S.updatetime  = data.updatetime
+		S.updating_db = false;
+		util.renderStatus();
+	}
+}
+ps.volume    = data => {
+	if ( ! ( 'db' in data ) ) return
+	 
+	S.volume   = data.val;
+	S.volumedb = data.db;
+	if ( ! $( '#infoList .inforange' ).length ) return
+	
+	$( '#novolume' ).prop( 'checked', S.novolume );
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		V.local = true;
+		$( '#infoList' ).removeClass( 'hide' );
+		$( '.confirm' ).addClass( 'hide' );
+		util.volumeSet();
+	}, 300 );
+}
+
 var config   = {
 	  _disable     : {
 		  mixertype : () => {
@@ -362,30 +387,6 @@ function renderPage() {
 	[ 'albumignore', 'mpdignore', 'nonutf8' ].forEach( k => $( '#'+ k ).toggleClass( 'hide', ! S.lists[ k ] ) );
 	if ( I.range ) $( '#infoX' ).trigger( 'click' );
 	showContent();
-}
-ps.mpdUpdate = data => {
-	if ( 'done' in data ) {
-		$.each( S.counts, ( k, v ) => { S[ k ] = data.done[ k ] } );
-		S.updatetime  = data.updatetime
-		S.updating_db = false;
-		util.renderStatus();
-	}
-}
-ps.volume    = data => {
-	if ( ! ( 'db' in data ) ) return
-	 
-	S.volume   = data.val;
-	S.volumedb = data.db;
-	if ( ! $( '#infoList .inforange' ).length ) return
-	
-	$( '#novolume' ).prop( 'checked', S.novolume );
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		V.local = true;
-		$( '#infoList' ).removeClass( 'hide' );
-		$( '.confirm' ).addClass( 'hide' );
-		util.volumeSet();
-	}, 300 );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

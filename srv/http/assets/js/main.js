@@ -7,7 +7,7 @@ V = {   // var global
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
-	, blinkdot      : '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>'
+	, blinkdot      : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
 	, coverart      : '/assets/img/coverart.svg'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
 	, covervu       : '/assets/img/vu.svg'
@@ -1099,10 +1099,9 @@ $( '#button-lib-update' ).on( 'click', function() {
 } );
 $( '#button-lib-search' ).on( 'click', function() {
 	if ( $( '#lib-search' ).hasClass( 'hide' ) ) {
-		$( '#page-library .content-top .title, #lib-path span, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
+		$( '#page-library .content-top .title, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
 		$( '#page-library .search:not( i )' ).removeClass( 'hide' );
 		$( '#lib-search-close' ).empty();
-		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-search-input' ).trigger( 'focus' );
 		return
 	}
@@ -1141,7 +1140,7 @@ $( '#button-lib-search' ).on( 'click', function() {
 			} );
 			$( '#page-library i.search' ).removeClass( 'hide' );
 		} );
-		$( '#lib-path, #button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
+		$( '#button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
 		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );
 	}, 'json' );
 } );
@@ -1166,9 +1165,8 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	$( '#page-library .search' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
-	$( '#lib-path, #lib-path span, #button-lib-search' ).removeClass( 'hide' );
+	$( '#button-lib-search' ).removeClass( 'hide' );
 	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
-	$( '#lib-path' ).css( 'max-width', '' );
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
@@ -1181,7 +1179,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		return
 	}
 	
-	V.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
+	V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
 	var backmode     = 'gmode' in V && V.gmode !== V.mode;
 	if ( bL && V.mode !== 'latest' && ! backmode ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
@@ -1512,7 +1510,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 	
 	$this.addClass( 'active' );
-	var libpath  = $( '#lib-path .lipath' ).text();
+	var libpath  = $( '#page-library .lib-path' ).text();
 	var path     = $this.find( '.lipath' ).text();
 	var name     = $this.find( '.liname' ).text();
 	var mode     = $this.data( 'mode' );
@@ -1745,7 +1743,7 @@ $( '#button-pl-save' ).on( 'click', function() {
 				+ audiocdL ? audiocdL + ico( 'audiocd wh' ) : ''
 				+ upnpL ? upnpL +'&emsp;'+ ico( 'upnp wh' ) : ''
 				+ notsavedL ? notsavedL +'&emsp;'+ ico( 'save wh' ) : ''
-		infoWarning( 'file-playlist', 'Save Playlist', message );
+		infoWarning( 'playlists', 'Save Playlist', message );
 	} else {
 		playlistNew();
 	}

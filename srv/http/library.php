@@ -195,32 +195,28 @@ case 'ls':
 			}
 		}
 	}
-	// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
-	$plfiles = preg_grep( '/.cue$|.m3u$|.m3u8$|.pls$/', $lists );
+	$plfiles = preg_grep( '/.cue$|.m3u$|.m3u8$|.pls$/', $lists ); // parse if cue|m3u,|pls files
 	unset( $lists );
 	if ( count( $plfiles ) ) {
-		asort( $plfiles );
-		$path  = explode( '.', $plfiles[ 0 ] );
-		$ext   = end( $path );
-		$lists = [];
+		$plfiles = array_unique( $plfiles ); // fix: ls lists *.cue twice
+		$cue     = substr( $plfiles[ 0 ], -3 ) === 'cue';
+		$type    = $cue ? 'ls' : 'playlist';
 		foreach( $plfiles as $file ) {
-			$type = $ext === 'cue' ? 'ls' : 'playlist';
-			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'"'
-				, $lists ); // exec appends to existing array
+			exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'" 2> /dev/null'
+				, $lists );
 		}
-		htmlTrack();
 	} else {
 		exec( 'mpc ls -f "'.$format.'" "'.$STRING.'" 2> /dev/null'
 			, $lists );
 		if ( strpos( $lists[ 0 ],  '.wav^^' ) ) { // MPD not sort *.wav
-			$lists = '';
+			unset( $lists );
 			exec( 'mpc ls -f "%track%__'.$format.'" "'.$STRING.'" 2> /dev/null '
 					.'| sort -h '
 					.'| sed "s/^.*__//"'
 				, $lists );
 		}
-		htmlTrack();
 	}
+	htmlTrack();
 	break;
 case 'radio':
 	$dir     = '/srv/http/data/'.$GMODE.'/'.$STRING;
@@ -537,7 +533,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	global $f, $GMODE, $html, $search, $STRING, $tag;
+	global $cue, $f, $GMODE, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
@@ -551,17 +547,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	$each0      = $array[ 0 ];
 	$file0      = $each0->file;
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
-	
 	$hidecover  = exec( 'grep "hidecover.*true" '.$dirsystem.'display.json' );
-	$cuefile    = preg_replace( "/\.[^.]+$/", '.cue', $file0 );
-	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {
-		$cue       = true;
-		$cuename   = pathinfo( $cuefile, PATHINFO_BASENAME );
-		$musicfile = exec( 'mpc ls "'.dirname( $cuefile ).'" | grep -v ".cue$" | head -1' );
-		$ext       = pathinfo( $musicfile, PATHINFO_EXTENSION );
-	} else {
-		$cue = false;
-	}
 	if ( ! $hidecover && ! $search ) {
 		if ( $ext !== 'wav' ) {
 			$albumartist = $each0->albumartist;
@@ -583,23 +569,23 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$hidedate      = $each0->date && $GMODE !== 'date' ? '' : ' hide';
 		$mpdpath       = dirname( $file0 );
 		$plfile        = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep -E ".m3u$|.m3u8$|.pls$"' );
-		if ( $cue || $plfile ) {
-			$plicon = '&emsp;'.i( 'file-playlist' ).'<gr>'
-					 .( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';
-		} else {
-			$plicon = '';
-		}
 		$hhmmss        = array_column( $array, 'time' );
 		$seconds       = 0;
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
 		$totaltime     = second2HMS( $seconds );
-		$args          = escape( implode( "\n", [ 'cmd', $artist, $album, $each0->file, 'CMD ARTIST ALBUM FILE' ] ) );
+		$file0         = $cue ? dirname( $each0->file ) : $each0->file;
+		$args          = escape( implode( "\n", [ 'cmd', $artist, $album, $file0, 'CMD ARTIST ALBUM FILE' ] ) );
 		$coverart      = exec( '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
 		if ( ! $coverart ) $coverart = '/assets/img/coverart.svg';
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );
-		$ext           = strtoupper( $ext ).$plicon;
+		if ( $cue || $plfile ) {
+			$ext     = $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION );
+			$exticon = i( 'playlists' );
+		} else {
+			$exticon = '';
+		}
 		$icon          = i( 'music', 'folder' );
 		$html         .= '
 <li data-mode="'.$GMODE.'" class="licover">
@@ -614,7 +600,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	<span class="lidate'.$hidedate.'"><i class="i-date"></i>'.$each0->date.'</span>
 	'.$br.'
 	<div class="liinfopath"><i class="i-folder"></i>'.$mpdpath.'</div>
-	'.$icon.$count.'<gr> • </gr>'.$totaltime.'<gr> • </gr>'.$ext.'
+	'.$icon.$count.'<gr> • </gr>'.$totaltime.'&emsp;<c>'.strtoupper( $ext ).'</c>'.$exticon.'
 	</div>
 </li>';
 	}
@@ -636,7 +622,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		} else {
 			$datamode  = ' data-mode="'.$GMODE.'"';
 			$icon      = i( 'music', 'file' );
-			$trackname = $cue ? $cuename.'/' : '';
+			$trackname = $cue ? basename( $file0 ).' : ' : '';
 			$trackname.= basename( $path );
 		}
 		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';

@@ -4,8 +4,49 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-S              = {} // status
-V              = {}
+S  = {} // status
+V  = {}
+ps = {
+	  ...ps // from common.js
+	, camilla   : data => {
+		S.range = data;
+		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
+		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
+	}
+	, mpdplayer : data => playbackButton( data )
+	, mpdradio  : data => playbackButton( data )
+	, player    : data => {
+		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
+		
+		var player_id = {
+			  airplay   : 'shairport-sync'
+			, bluetooth : 'bluetooth'
+			, snapcast  : 'snapserver'
+			, spotify   : 'spotifyd'
+			, upnp      : 'upmpdcli'
+		}
+		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
+	}
+	, reboot    : data => {
+		var msg = '';
+		data.id.forEach( id => msg += '<div> • '+ $( '#div'+ id +' .label' ).text() +'</div>' );
+		banner( 'reboot', 'Reboot required', msg, 5000 );
+	}
+	, refresh   : data => {
+		if ( data.page !== page ) return
+		
+		clearTimeout( V.debounce );
+		V.debounce = setTimeout( () => {
+			$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+			if ( page === 'networks' ) {
+				if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
+			} else {
+				switchSet();
+			}
+			renderPage();
+		}, 300 );
+	}
+}
 
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
@@ -98,7 +139,10 @@ function notifyCommon( message ) {
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
-function playbackButton() {
+function playbackButton( data ) {
+	if ( ! [ 'camilla', 'player' ].includes( page ) ) return
+	
+	if ( data ) [ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
 	if ( S.pllength ) {
 		var btn = S.state === 'play' ? 'pause' : 'play';
 	} else {
@@ -162,113 +206,6 @@ function switchSet() {
 	} );
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 	bannerHide();
-}
-
-function psOnMessage( channel, data ) {
-	if ( channel == 'bluetooth' ) {
-		if ( page === 'networks' ) {
-			S.listbt = data;
-			renderBluetooth();
-		} else if ( ! data ) {
-			if ( page === 'system' ) $( '#bluetooth' ).removeClass( 'disabled' );
-		} else if ( 'connected' in data ) {
-			if ( page === 'features' ) {
-				$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
-			} else if ( page === 'system' ) {
-				$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
-			}
-		}
-		bannerHide();
-		return
-	}
-	
-	if ( data.page !== page ) return
-	
-	switch ( channel ) {
-		case 'camilla':   ps.camilla( data );   break;
-		case 'mpdplayer':
-		case 'mpdradio':  ps.mpdPlayer( data ); break;
-		case 'mpdupdate': ps.mpdUpdate( data ); break; // in player.js
-		case 'notify':    ps.notify( data );    break; // in common.js
-		case 'player':    ps.player( data );    break;
-		case 'power':     ps.power( data );     break; // in common.js
-		case 'reboot':    ps.reboot( data );    break;
-		case 'refresh':   ps.refresh( data );   break;
-		case 'relays':    ps.relays( data );    break; // in common.js
-		case 'reload':    ps.reload( data );    break;
-		case 'storage':   ps.storage( data );   break; // in system.js
-		case 'volume':    ps.volume( data );    break; // in player.js
-		case 'wlan':      ps.wlan( data );      break;
-	}
-}
-ps = {
-	  ...ps // from settings.js
-	, camilla   : data => {
-		S.range = data;
-		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
-		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
-	}
-	, mpdPlayer : data => {
-		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
-		
-		[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
-		playbackButton();
-	}
-	, mpdUpdate : () => {
-		return
-	}
-	, player    : data => {
-		var player_id = {
-			  airplay   : 'shairport-sync'
-			, bluetooth : 'bluetooth'
-			, snapcast  : 'snapserver'
-			, spotify   : 'spotifyd'
-			, upnp      : 'upmpdcli'
-		}
-		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
-	}
-	, reboot    : data => {
-		var msg = '';
-		data.id.forEach( id => msg += '<div> • '+ $( '#div'+ id +' .label' ).text() +'</div>' );
-		banner( 'reboot', 'Reboot required', msg, 5000 );
-	}
-	, refresh   : data => {
-		clearTimeout( V.debounce );
-		V.debounce = setTimeout( () => {
-			$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-			if ( page === 'networks' ) {
-				if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
-			} else {
-				switchSet();
-			}
-			renderPage();
-		}, 300 );
-	}
-	, reload    : data => {
-		if ( localhost ) location.reload();
-	}
-	, storage   : data => { // system.js
-		return
-	}
-	, volume    : () => { // camilla.js, player.js, system.js
-		return
-	}
-	, wlan      : data => {
-		if ( data && 'reboot' in data ) {
-			info( {
-				  icon    : 'wifi'
-				, title   : 'Wi-Fi'
-				, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
-				, oklabel : ico( 'reboot' ) +'Reboot'
-				, okcolor : orange
-				, ok      : () => bash( [ 'power.sh', 'reboot' ] )
-			} );
-			return
-		}
-		
-		$.each( data, ( k, v ) => { S[ k ] = v } );
-		renderWlan();
-	}
 }
 //---------------------------------------------------------------------------------------
 document.title = page === 'camilla' ? 'CamillaDSP' : capitalize( page );

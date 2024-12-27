@@ -115,7 +115,6 @@ equalizer )
 , "current": "62 62 62 62 62 62 62 62 62 62"
 
 }' | jq > $dirsystem/equalizer.json
-	pushData reload 1
 	pushRestartMpd equalizer $TF
 	;;
 httpd )

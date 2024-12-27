@@ -205,7 +205,7 @@ function infoReplace( callback ) {
 }
 function playlistDelete() {
 	info( {
-		  icon    : 'file-playlist'
+		  icon    : 'playlists'
 		, title   : 'Delete Playlist'
 		, message : 'Delete?'
 				   +'<br><wh>'+ V.list.name +'</wh>'
@@ -218,14 +218,14 @@ function playlistDelete() {
 	} );
 }
 function playlistLoad( name, play, replace ) {
-	banner( 'file-playlist', name, 'Load ...' );
+	banner( 'playlists', name, 'Load ...' );
 	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], () => {
 		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
 	} );
 }
 function playlistNew( name ) {
 	info( {
-		  icon         : 'file-playlist'
+		  icon         : 'playlists'
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, list         : [ 'Name', 'text' ]
@@ -237,7 +237,7 @@ function playlistNew( name ) {
 function playlistRename() {
 	var name = V.list.name;
 	info( {
-		  icon         : 'file-playlist'
+		  icon         : 'playlists'
 		, title        : 'Rename Playlist'
 		, message      : 'From: <wh>'+ name +'</wh>'
 		, list         : [ 'To', 'text' ]
@@ -266,7 +266,7 @@ function playlistSave( name, oldname, replace ) {
 function playlistSaveExist( type, name, oldname ) {
 	var rename = type === 'rename';
 	info( {
-		  icon        : 'file-playlist'
+		  icon        : 'playlists'
 		, title       : rename ? 'Rename Playlist' : 'Save Playlist'
 		, message     : 'Playlist: <wh>'+ name +'</wh>'
 					   +'<br><br>Already exists.'
@@ -301,7 +301,7 @@ function savedPlaylistAdd() {
 				  +'<br>'+ ico( 'file' ) +' '+ file.split( '/' ).pop() +'</div>';
 	}
 	V.pladd      = {
-		  icon    : 'file-playlist'
+		  icon    : 'playlists'
 		, title   : 'Add to a playlist'
 		, album   : album
 		, path    : file
@@ -370,7 +370,7 @@ function tagEditor() {
 			var $img =  V.list.li.find( 'img' );
 			var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
 		}
-		var fileicon = cue ? 'file-music' : 'file-playlist';
+		var fileicon = cue ? 'file-music' : 'playlists';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 					  +'<div>'+ ico( 'folder' ) +' '+ dir;
 		message += V.list.licover ? '</div>' : '<br>'+ ico( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
@@ -584,7 +584,7 @@ var listwebradio = {
 					, list       : [ 'Name', 'text' ]
 					, checkblank : true
 					, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
-					, ok         : () => bash( [ 'dirnew', '/srv/http/data/webradio/'+ $( '#lib-path .lipath' ).text() +'/'+ infoVal(), 'CMD DIR' ] )
+					, ok         : () => bash( [ 'dirnew', '/srv/http/data/webradio/'+ $( '#page-library .lib-path' ).text() +'/'+ infoVal(), 'CMD DIR' ] )
 				} );
 			} );
 	}
@@ -637,7 +637,7 @@ function webRadioNew( name, url, charset ) {
 		, checkblank : [ 0, 1 ]
 		, beforeshow : () => {
 			listwebradio.button()
-			if ( $( '#lib-path .li' ).text() ) $( '#infoList td' ).last().addClass( 'hide' );
+			if ( $( '#page-library .lib-path' ).text() ) $( '#infoList td' ).last().addClass( 'hide' );
 			if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
 		}
 		, ok         : () => {
@@ -646,7 +646,7 @@ function webRadioNew( name, url, charset ) {
 			var url     = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-*8|iso *-* */, '' );
 			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Get URL ...', -1 );
-			bash( [ 'webradioadd', $( '#lib-path .lipath' ).text(), name, url, charset, 'CMD DIR NAME URL CHARSET' ], error => {
+			bash( [ 'webradioadd', $( '#page-library .lib-path' ).text(), name, url, charset, 'CMD DIR NAME URL CHARSET' ], error => {
 				bannerHide();
 				if ( error ) webRadioExists( error, name, url, charset );
 			} );
@@ -760,7 +760,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			if ( V.list.li.data( 'mode' ) !== 'album' ) { // 1st level
 				V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
 			} else {                        // next level: mode + album || date/genre: mode + artist + album
-				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path .lipath' ).text() ];
+				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#page-library .lib-path' ).text() ];
 				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', V.list.li.find( '.name' ).text() );
 				V.mpccmd.push( 'album', V.list.li.find( '.liname' ).text() );
 			}
