@@ -41,7 +41,7 @@ fi
 listWlan() {
 	[[ ! -e $dirshm/wlan ]] && echo false && return
 	
-	local current dbm listwl notconnected profiles profile ssid wlandev
+	local current dbm icon listwl notconnected profiles profile ssid wlandev
 	wlandev=$( < $dirshm/wlan )
 	profiles=$( ls -p /etc/netctl | grep -v /$ )
 	current=$( iwgetid -r )
@@ -54,10 +54,18 @@ listWlan() {
 					ip=$( ipAddress $wlandev )
 					[[ $ip ]] && break || sleep 1
 				done
+				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
+				if (( $dbm > -60 )); then
+					icon=wifi
+				elif (( $dbm < -67 )); then
+					icon=wifi1
+				else
+					icon=wifi2
+				fi
 				listwl=',{
-  "dbm"     : '$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )'
-, "gateway" : "'$( gatewayAddress $wlandev )'"
+  "gateway" : "'$( gatewayAddress $wlandev )'"
+, "icon"    : "'$icon'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
 }'

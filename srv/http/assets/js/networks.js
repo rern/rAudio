@@ -112,8 +112,7 @@ function renderWlan() {
 	if ( S.listwl ) {
 		S.listwl.forEach( list => {
 			if ( list.ip ) {
-				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
-				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
+				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( list.icon ) +'<grn>•</grn>&ensp;'+ list.ssid 
 						 +'&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
 				htmlwl += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) + list.ssid +'</li>';
