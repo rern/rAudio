@@ -10,9 +10,14 @@ echo $$ > $dirshm/pidstatuspush
 if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
 else
-	status=$( $dirbash/status.sh )
-	statusnew=$( sed -E -n '/^, "Artist|^, "Album|^, "Composer|^, "elapsed|^, "file| *"player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {s/^,* *"//; s/" *: */=/; p}' <<< $status )
-	echo "$statusnew" > $dirshm/statusnew
+	status=$( $dirbash/status.sh | jq )
+	statusnew=$( sed -E -n \
+'/^  "Artist|^  "Album|^  "Composer|^  "elapsed|^  "file|^  "player|^  "station"|^  "state|^  "Time|^  "timestamp|^  "Title|^  "webradio/ {
+	s/^ *"|,$//g
+	s/" *: */=/
+	p
+}' <<< $status \
+| tee $dirshm/statusnew )
 	statusprev=$( < $dirshm/status )
 	compare='^Artist|^Title|^Album'
 	[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
