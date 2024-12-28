@@ -154,6 +154,11 @@ $( grep -Ev '^#|^\s*$' /boot/config.txt )
 
 <bll># firmware, bootloader</bll>
 $( pacman -Qs 'firmware|bootloader' | grep -Ev '^\s|whence' | cut -d/ -f2 )"
+	ignorepkg=$( grep ^IgnorePkg /etc/pacman.conf )
+	[[ $ignorepkg ]] && config+="
+	
+<bll># grep ^IgnorePkg /etc/pacman.conf</bll>
+$ignorepkg"
 	file_module=/etc/modules-load.d/raspberrypi.conf
 	if [[ -e $file_module ]]; then
 		config+="
@@ -166,11 +171,6 @@ $( < $file_module )"
 <bll># i2cdetect -y $dev</bll>
 $(  i2cdetect -y $dev )"
 	fi
-	ignorepkg=$( grep ^IgnorePkg /etc/pacman.conf )
-	[[ $ignorepkg ]] && config+="
-	
-<bll># grep ^IgnorePkg /etc/pacman.conf</bll>
-$ignorepkg"
 	echo "$config"
 	;;
 timezone )
