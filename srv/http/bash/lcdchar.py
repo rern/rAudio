@@ -189,6 +189,11 @@ if rows == 2:
 else:
     lines = Artist + RN + Title + RN + Album
 
+if webradio and not radioelapsed:
+    progress = ( ' ' * cols )[ :cols - 4 ]
+    lcd.write_string( lines + RN + ICON[ state ] + progress + RA )
+    sys.exit()
+# --------------------------------------------------------------------
 hhmmss = Time and second2hhmmss( round( float( Time ) ) ) or ''
 
 if state == 'stop':

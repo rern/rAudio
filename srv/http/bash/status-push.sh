@@ -56,7 +56,11 @@ if [[ $clientip ]]; then
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
-	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
+	grep -q radioelapsed.*true $dirsystem/display.json && radioelapsed=True || radioelapsed=False
+	sed -E -e 's/(true|false)$/\u\1/
+' -e "$ a\
+radioelapsed=$radioelapsed
+" $dirshm/status > $dirshm/lcdcharstatus.py
 	systemctl restart lcdchar
 fi
 
