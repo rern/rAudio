@@ -380,7 +380,7 @@ var util          = {
 			, beforeshow : () => {
 				$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
 				$( '.infofooter i' )
-					.toggleClass( 'disabled', ! S.lcdchar || data.reboot )
+					.toggleClass( 'disabled', ! S.lcdchar )
 					.on( 'click', function() {
 						bash( [ 'lcdcharset', $( this ).index() ? 'off' : 'logo', 'CMD ACTION' ] );
 				} );
