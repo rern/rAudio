@@ -5,9 +5,9 @@ import sys
 with open( '/srv/http/data/system/lcdchar.conf', 'r' ) as f:
     conf = {}
     for line in f:
-        kv        = line.split( '=' )
-        k         = kv[ 0 ]
-        v         = kv[ 1 ].rstrip()
+        kv = line.split( '=' )
+        k  = kv[ 0 ]
+        v  = kv[ 1 ].rstrip()
         if k == 'address' or k == 'cols':
             v = int( v )
         elif k == 'backlight':
@@ -15,7 +15,7 @@ with open( '/srv/http/data/system/lcdchar.conf', 'r' ) as f:
         conf[ k ] = v
 locals().update( conf ) # inf, cols, charmap, address, chip, backlight
 
-rows = cols == 16 and 2 or 4
+rows   = cols == 16 and 2 or 4
 
 if inf == 'i2c':
     from RPLCD.i2c import CharLCD
@@ -28,7 +28,7 @@ else:
     lcd = CharLCD( cols=cols, rows=rows, charmap=charmap
                  , numbering_mode=GPIO.BOARD, pin_rs=pin_rs, pin_rw=pin_rw, pin_e=pin_e, pins_data=pins_data )
 
-pause = (
+pause  = (
     0b00000,
     0b11011,
     0b11011,
@@ -38,7 +38,7 @@ pause = (
     0b00000,
     0b00000,
 )
-play = (
+play   = (
     0b10000,
     0b11000,
     0b11100,
@@ -48,7 +48,7 @@ play = (
     0b10000,
     0b00000,
 )
-stop = (
+stop   = (
     0b00000,
     0b11111,
     0b11111,
@@ -58,7 +58,7 @@ stop = (
     0b00000,
     0b00000,
 )
-logol = (
+logol  = (
     0b11111,
     0b11011,
     0b11011,
@@ -68,7 +68,7 @@ logol = (
     0b11111,
     0b11111,
 )
-logor = (
+logor  = (
     0b01110,
     0b10110,
     0b10110,
@@ -78,7 +78,7 @@ logor = (
     0b11010,
     0b11100,
 )
-dot = (
+dot    = (
     0b00000,
     0b00000,
     0b00000,
@@ -88,24 +88,24 @@ dot = (
     0b00000,
     0b00000,
 )
-char = [ pause, play, stop, logol, logor, dot ]
+char   = [ pause, play, stop, logol, logor, dot ]
 for i in range( 6 ):
     lcd.create_char( i, char[ i ] )
 
-ICON = {
+ICON   = {
       'pause' : '\x00 '
     , 'play'  : '\x01 '
     , 'stop'  : '\x02 '
 }
-RA = '\x03\x04'
-DOTS = '\x05  \x05  \x05'
-RN = '\r\n'
+RA     = '\x03\x04'
+DOTS   = '\x05  \x05  \x05'
+RN     = '\r\n'
 
 SPACES = ' ' * ( ( cols - 6 ) // 2 + 1 )
-LOGO = rows > 2 and RN or ''
-LOGO += SPACES + RA + RN + SPACES +'rAudio'
+LOGO   = rows > 2 and RN or ''
+LOGO  += SPACES + RA + RN + SPACES +'rAudio'
 
-argvL = len( sys.argv )
+argvL  = len( sys.argv )
 if argvL == 2: # 1 argument
     val = sys.argv[ 1 ]
     if val == 'off': # backlight off
@@ -141,8 +141,8 @@ def second2hhmmss( sec ):
     
 sys.path.append( '/srv/http/data/shm' )
 from lcdcharstatus import *
-keys = [ 'Album', 'Artist', 'elapsed', 'file', 'station', 'Time', 'timestamp', 'Title' ]
-data = {}
+keys   = [ 'Album', 'Artist', 'elapsed', 'file', 'station', 'Time', 'timestamp', 'Title' ]
+data   = {}
 
 if charmap == 'A00':
     import unicodedata

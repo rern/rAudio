@@ -14,8 +14,8 @@ from gi.repository import GLib
 from subprocess import Popen
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
-path = '/test/autoagent'
-filesink = '/srv/http/data/shm/bluetoothsink'
+path            = '/test/autoagent'
+filesink        = '/srv/http/data/shm/bluetoothsink'
 
 def statusPush():
     Popen( [ '/srv/http/bash/status-push.sh' ] )
@@ -41,11 +41,11 @@ def property_changed( interface, changed, invalidated, path ):
 
 if __name__ == '__main__':
     dbus.mainloop.glib.DBusGMainLoop( set_as_default=True )
-    bus = dbus.SystemBus()
+    bus      = dbus.SystemBus()
     bus.add_signal_receiver( property_changed, bus_name='org.bluez',
                              dbus_interface='org.freedesktop.DBus.Properties',
                              signal_name='PropertiesChanged',
                              path_keyword='path' )
     mainloop = GLib.MainLoop()
-    obj = bus.get_object( 'org.bluez', '/org/bluez' )
+    obj      = bus.get_object( 'org.bluez', '/org/bluez' )
     mainloop.run()
