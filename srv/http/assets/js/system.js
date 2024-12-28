@@ -1,3 +1,11 @@
+ps.storage = data => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		S.liststorage = data.list;
+		util.renderStorage();
+		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
+	}, 1000 );
+}
 var config        = {
 	  _disable      : {
 		  shareddata : () => {
@@ -896,14 +904,6 @@ function renderPage() {
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
-}
-ps.storage = data => {
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		S.liststorage = data.list;
-		util.renderStorage();
-		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
-	}, 1000 );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
