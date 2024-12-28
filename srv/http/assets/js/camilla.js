@@ -1,3 +1,26 @@
+ps.volume = data => {
+	if ( V.local ) {
+		V.local = false;
+		return
+	}
+	var vol = data.val;
+	if ( data.type === 'mute' ) {
+		common.volumeAnimate( 0, S.volume );
+		S.volume     = 0;
+		S.volumemute = vol;
+	} else if ( data.type === 'unmute' ) {
+		common.volumeAnimate( S.volumemute, 0 );
+		S.volume     = vol;
+		S.volumemute = 0;
+	} else {
+		if ( data.type === 'drag' ) {
+			V.drag = true;
+			setTimeout( () => V.drag = false, 300 );
+		}
+		common.volumeAnimate( vol, S.volume );
+		S.volume = vol;
+	}
+}
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
@@ -481,29 +504,6 @@ function renderPage() { // common from settings.js - render with 'GetConfigJson'
 }
 function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
-}
-ps.volume = data => {
-	if ( V.local ) {
-		V.local = false;
-		return
-	}
-	var vol = data.val;
-	if ( data.type === 'mute' ) {
-		common.volumeAnimate( 0, S.volume );
-		S.volume     = 0;
-		S.volumemute = vol;
-	} else if ( data.type === 'unmute' ) {
-		common.volumeAnimate( S.volumemute, 0 );
-		S.volume     = vol;
-		S.volumemute = 0;
-	} else {
-		if ( data.type === 'drag' ) {
-			V.drag = true;
-			setTimeout( () => V.drag = false, 300 );
-		}
-		common.volumeAnimate( vol, S.volume );
-		S.volume = vol;
-	}
 }
 
 var config    = {

@@ -47,7 +47,7 @@ i2c-dev'
 i2c-dev
 snd-soc-wm8960'
 		fi
-		[[ -e $module ]] && sort -u <<< $module > $file_module || rm -f $file_module
+		[[ $module ]] && sort -u <<< $module | awk NF > $file_module || rm -f $file_module
 	fi
 	if [[ $poweraudiophonic ]]; then
 		config+="
