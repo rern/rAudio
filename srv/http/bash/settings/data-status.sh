@@ -145,7 +145,6 @@ $( sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' <<< $par
 	fi
 	;;
 system )
-	firmware="pacman -Qs 'firmware|bootloader' | grep -Ev '^\s|whence' | cut -d/ -f2"
 	config="\
 <bll># cat /boot/cmdline.txt</bll>
 $( < /boot/cmdline.txt )
@@ -153,14 +152,14 @@ $( < /boot/cmdline.txt )
 <bll># cat /boot/config.txt</bll>
 $( grep -Ev '^#|^\s*$' /boot/config.txt )
 
-<bll># $firmware</bll>
-$( eval $firmware )"
-	raspberrypiconf=$( cat $filemodule 2> /dev/null )
-	if [[ $raspberrypiconf ]]; then
+<bll># firmware, bootloader</bll>
+$( pacman -Qs 'firmware|bootloader' | grep -Ev '^\s|whence' | cut -d/ -f2 )"
+	file_module=/etc/modules-load.d/raspberrypi.conf
+	if [[ -e $file_module ]]; then
 		config+="
 
-<bll># $filemodule</bll>
-$raspberrypiconf"
+<bll># cat $file_module</bll>
+$( < $file_module )"
 		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 		[[ $dev ]] && config+="
 		
