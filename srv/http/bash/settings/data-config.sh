@@ -3,10 +3,11 @@
 . /srv/http/bash/common.sh
 
 toReboot() {
-	if [[ -e $dirshm/reboot ]]; then
-		grep -q $CMD <<< $dirshm/reboot && echo true || echo false
+	if [[ -s $dirshm/reboot ]]; then
+		grep -q $ID <<< $dirshm/reboot && echo true || echo false
 	else
 		echo false
+		rm -f $dirshm/reboot
 	fi
 }
 
@@ -58,21 +59,20 @@ i2slist )
 lcdchar )
 	fileconf=$dirsystem/lcdchar.conf
 	if [[ -e $fileconf ]]; then
-		grep -q ^p0 $fileconf && conf2json $fileconf && exit # gpio
-# --------------------------------------------------------------------
 		values=$( conf2json $fileconf )
-	else
-		if [[ $2 ]]; then
-			echo '{ "INF": "gpio", "COLS": 20, "CHARMAP": "A00"
-			      , "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24
-				  , "BACKLIGHT": false }'
-			exit
+		current=$( getVar inf $fileconf )
+		[[ ! $2 && $current == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
-		fi
-		values='{ "INF": "i2c", "COLS": 20, "CHARMAP": "A00"
-		        , "ADDRESS": 39, "CHIP": "PCF8574"
-				, "BACKLIGHT": false }'
 	fi
+	val='{ "INF": "gpio", "COLS": 20, "CHARMAP": "A00"'
+	if [[ $2 == gpio ]]; then
+		[[ $current != gpio ]] && values=$val', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
+	elif [[ $2 == i2c ]]; then
+		[[ $current != i2c ]] && values=${val/gpio/i2c}', "ADDRESS": 39, "CHIP": "PCF8574"'
+	fi
+	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
+	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
+# --------------------------------------------------------------------
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	[[ $dev ]] && lines=$( i2cdetect -y $dev 2> /dev/null )
 	if [[ $lines ]]; then
@@ -87,11 +87,7 @@ lcdchar )
 	else
 		address=', "0x27": 39, "0x3f": 63'
 	fi
-	echo '{
-  "values"  : '$values'
-, "address" : { '${address:1}' }
-, "reboot"  : '$( toReboot )'
-}'
+	echo '{ "values": '$values', "current": "'$current'", "address": { '${address:1}' } }'
 	;;
 localbrowser )
 	echo '{

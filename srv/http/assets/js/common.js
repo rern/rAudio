@@ -6,7 +6,6 @@ loader() local()     selectSet()
 websocket
 bash()
 */
-
 S               = {} // status
 V               = {} // variable
 W               = {  // ws push

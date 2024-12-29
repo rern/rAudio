@@ -127,7 +127,7 @@ var config        = {
 		}
 	}
 	, lcdchar       : data => {
-		'address' in data ? util.lcdchar.i2s( data ) : util.lcdchar.gpio( data );
+		util.lcdchar[ data.values.INF ]( data );
 	}
 	, mpdoled       : data => {
 		var values     = data.values;
@@ -343,7 +343,7 @@ var util          = {
 		}
 	}
 	, lcdchar       : {
-		  gpio : values => {
+		  gpio : data => {
 			var list0 = jsonClone( util.lcdchar.list );
 			var list  = list0.slice( 0, 3 );
 			[ 'Pins: &emsp; D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => {
@@ -352,32 +352,32 @@ var util          = {
 			list.push( [ '', '' ], list0.slice( -1 )[ 0 ] );
 			info( {
 				  ...util.lcdchar.json
-				, tab          : [ () => infoSetting( 'lcdchar', util.lcdchar.i2s ), '' ]
+				, tab          : [ () => infoSetting( 'lcdchar i2c', config.lcdchar ), '' ]
 				, message      : util.gpiosvg
 				, list         : list
 				, boxwidth     : 70
-				, values       : values
-				, checkchanged : S.lcdchar
+				, values       : data.values
+				, checkchanged : S.lcdchar && data.current === 'gpio'
 			} );
 		}
-		, i2s  : data => {
+		, i2c  : data => {
 			var list          = jsonClone( util.lcdchar.list );
 			list[ 3 ][ 2 ].kv = data.address;
 			info( {
 				  ...util.lcdchar.json
-				, tab          : [ '', () => infoSetting( 'lcdchar gpio', util.lcdchar.gpio ) ]
+				, tab          : [ '', () => infoSetting( 'lcdchar gpio', config.lcdchar ) ]
 				, list         : list
 				, boxwidth     : 180
 				, values       : data.values
-				, checkchanged : S.lcdchar
+				, checkchanged : S.lcdchar && data.current === 'i2c'
 			} );
 		}
 		, json : {
-			  icon       : 'lcdchar'
-			, title      : 'Character LCD'
-			, tablabel   : [ 'I&#178;C', 'GPIO' ]
-			, footer     : ico( 'raudio' ) +'Logo&emsp;'+ ico( 'screenoff' ) +'Sleep'
-			, beforeshow : () => {
+			  icon         : 'lcdchar'
+			, title        : 'Character LCD'
+			, tablabel     : [ 'I&#178;C', 'GPIO' ]
+			, footer       : ico( 'raudio' ) +'Logo&emsp;'+ ico( 'screenoff' ) +'Sleep'
+			, beforeshow   : () => {
 				$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
 				$( '.infofooter i' )
 					.toggleClass( 'disabled', ! S.lcdchar )

@@ -2,18 +2,8 @@
 
 import sys
 
-with open( '/srv/http/data/system/lcdchar.conf', 'r' ) as f:
-    conf = {}
-    for line in f:
-        kv = line.split( '=' )
-        k  = kv[ 0 ]
-        v  = kv[ 1 ].rstrip()
-        if k == 'address' or k == 'cols':
-            v = int( v )
-        elif k == 'backlight':
-            v = bool( v )
-        conf[ k ] = v
-locals().update( conf ) # inf, cols, charmap, address, chip, backlight
+sys.path.append( '/srv/http/data/system' ) # i2c  : inf, cols, charmap, backlight, address, chip
+from lcdcharconf import *                  # gpio : inf, cols, charmap, backlight, p*...
 
 rows   = cols == 16 and 2 or 4
 
@@ -22,11 +12,10 @@ if inf == 'i2c':
     lcd = CharLCD( cols=cols, rows=rows, charmap=charmap
                  , address=address, i2c_expander=chip )
 else:
-    pins_data = [ p0, p1, p2, p3 ]
     from RPLCD.gpio import CharLCD
     from RPi import GPIO
     lcd = CharLCD( cols=cols, rows=rows, charmap=charmap
-                 , numbering_mode=GPIO.BOARD, pin_rs=pin_rs, pin_rw=pin_rw, pin_e=pin_e, pins_data=pins_data )
+                 , numbering_mode=GPIO.BOARD, pin_rs=pin_rs, pin_rw=pin_rw, pin_e=pin_e, pins_data=[ p0, p1, p2, p3 ] )
 
 pause  = (
     0b00000,
@@ -140,8 +129,8 @@ def second2hhmmss( sec ):
     return HH + MM + SS
     
 sys.path.append( '/srv/http/data/shm' )
-from lcdcharstatus import *
-keys   = [ 'Album', 'Artist', 'elapsed', 'file', 'station', 'Time', 'timestamp', 'Title' ]
+from status import *
+keys   = [ 'Album', 'Artist', 'file', 'station', 'Title' ]
 data   = {}
 
 if charmap == 'A00':
@@ -150,25 +139,16 @@ if charmap == 'A00':
         return ''.join( c for c in unicodedata.normalize( 'NFD', str )
                         if unicodedata.category( c ) != 'Mn' )
     for k in keys:
-        if k in locals():
-            if k in [ 'elapsed', 'Time', 'timestamp' ]:
-                data[ k ] = locals()[ k ]
-            else:
-                data[ k ] = normalize( locals()[ k ] )
-        else:
-            data[ k ] = ''
+        data[ k ] = k in locals() and normalize( locals()[ k ] ) or ''
 else:
     for k in keys:
         data[ k ] = k in locals() and locals()[ k ] or ''
-
+# set width
 Album     = data[ 'Album' ][ :cols ]
 Artist    = data[ 'Artist' ][ :cols ]
 file      = data[ 'file' ][ :cols ]
 station   = data[ 'station' ][ :cols ]
 Title     = data[ 'Title' ][ :cols ]
-elapsed   = data[ 'elapsed' ]
-Time      = data[ 'Time' ]
-timestamp = data[ 'timestamp' ] / 1000
 
 if webradio:
     if state != 'play':
@@ -212,7 +192,7 @@ if state != 'play' or elapsed is False: sys.exit()
 # --------------------------------------------------------------------
 row       = rows - 1
 starttime = time.time()
-elapsed  += math.ceil( ( starttime - timestamp ) / 1000 )
+elapsed  += math.ceil( ( starttime - timestamp / 1000 ) / 1000 )
 PLAY      = ICON[ 'play' ]
 
 while True:

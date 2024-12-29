@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250106
+[[ -e $dirsystem/lcdchar && ! -e $dirsystem/lcdcharconf.py ]] && $dirsettings/system.sh lcdchar
+
 # 20241208
 rm -f $dirshm/playlist*
 

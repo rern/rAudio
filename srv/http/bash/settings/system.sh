@@ -203,6 +203,20 @@ lcdchar )
 	enableFlagSet
 	i2cset=1
 	configTxt
+	if [[ $ON ]]; then
+		fileconf=$dirsystem/lcdchar.conf
+		filter='^backlight|^charmap|^chip|^inf'
+		. <( grep -E $filter $fileconf )
+		data=$( grep -v -E $filter $fileconf )
+		data+='
+backlight='$( [[ $backlight ]] && echo True || echo False )'
+inf="'$inf'"
+charmap="'$charmap'"'
+		[[ $inf == i2c ]] && data+='
+chip="'$chip'"'
+		echo "$data" > $dirsystem/lcdcharconf.py
+		$dirbash/status-push.sh
+	fi
 	;;
 lcdcharset )
 	systemctl stop lcdchar
