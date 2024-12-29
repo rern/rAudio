@@ -1,4 +1,4 @@
-ps.storage = data => {
+W.storage         = data => {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		S.liststorage = data.list;

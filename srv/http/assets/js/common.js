@@ -7,13 +7,9 @@ websocket
 bash()
 */
 
-var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
-var iconwarning = ico( 'warning yl' ) +'&ensp;';
-var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
-var orange      = '#de810e';
-var red         = '#bb2828';
-var ws;
-var ps          = {
+S               = {} // status
+V               = {} // variable
+W               = {  // ws push
 	  bluetooth : () => {
 		if ( page === 'networks' ) {
 			S.listbt = data;
@@ -127,7 +123,12 @@ var ps          = {
 		}
 	}
 }
-
+var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
+var iconwarning = ico( 'warning yl' ) +'&ensp;';
+var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
+var orange      = '#de810e';
+var red         = '#bb2828';
+var ws;
 // ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {
@@ -1441,13 +1442,13 @@ function websocketConnect( ip ) {
 			}
 		}, 100 );
 	}
-	ws.onmessage = message => { // ps: push status
+	ws.onmessage = message => {
 		var data = message.data;
 		if ( data === 'pong' ) { // on pageActive - reload if ws not response
 			V.timeoutreload = false;
 		} else {
 			var json = JSON.parse( data );
-			if ( json.channel in ps ) ps[ json.channel ]( json.data );
+			if ( json.channel in W ) W[ json.channel ]( json.data );
 		}
 	}
 }

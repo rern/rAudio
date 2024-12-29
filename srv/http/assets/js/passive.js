@@ -1,5 +1,5 @@
-ps = {
-	  ...ps // from common.js
+W = {
+	  ...W // from common.js
 	, airplay   : data => {
 		statusUpdate( data );
 		if ( V.playback ) renderPlayback();

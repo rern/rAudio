@@ -1,4 +1,4 @@
-ps.wlan = () => {
+W.wlan = () => {
 	if ( data && 'reboot' in data ) {
 		info( {
 			  icon    : 'wifi'

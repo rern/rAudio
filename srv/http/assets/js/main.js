@@ -2,7 +2,6 @@ C = {}; // counts
 D = {}; // display
 E = {}; // equalizer
 O = []; // order
-S = {}; // status
 V = {   // var global
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'

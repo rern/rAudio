@@ -4,10 +4,8 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-S  = {} // status
-V  = {}
-ps = {
-	  ...ps // from common.js
+W = {
+	  ...W // from common.js
 	, camilla   : data => {
 		S.range = data;
 		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )

@@ -1,4 +1,4 @@
-ps.volume = data => {
+W.volume      = data => {
 	if ( V.local ) {
 		V.local = false;
 		return
