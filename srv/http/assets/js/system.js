@@ -376,10 +376,10 @@ var util          = {
 			  icon         : 'lcdchar'
 			, title        : 'Character LCD'
 			, tablabel     : [ 'I&#178;C', 'GPIO' ]
-			, footer       : ico( 'raudio' ) +'Logo&emsp;'+ ico( 'screenoff' ) +'Sleep'
+			, footer       : '<a>'+ ico( 'raudio' ) +'Logo</a>&emsp;<a>'+ ico( 'screenoff' ) +'Sleep</a>'
 			, beforeshow   : () => {
 				$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
-				$( '.infofooter i' )
+				$( '.infofooter a' )
 					.toggleClass( 'disabled', ! S.lcdchar )
 					.on( 'click', function() {
 						bash( [ 'lcdchar', $( this ).index() ? 'off' : 'logo', 'CMD ACTION' ] );

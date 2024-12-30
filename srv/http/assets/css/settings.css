@@ -670,6 +670,7 @@ input.disabled + .switchlabel:after {
 	.helpblock bl,
 	.i-mute,
 	.img,
+	.infofooter a,
 	.listtitle,
 	.page-icon,
 	.setting,
