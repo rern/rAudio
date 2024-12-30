@@ -3,10 +3,10 @@
 import sys
 import json
 
-with open( '/srv/http/data/system/lcdchar.json' ) as f:
-    CONF = json.load( f ) # i2c  : INF, COLS, CHARMAP, BACKLIGHT, [ ADDRESS, CHIP | P* ... ]
-locals().update( CONF )
-rows      = COLS == 16 and 2 or 4
+with open( '/srv/http/data/system/lcdchar.json' ) as f: CONF = json.load( f )
+locals().update( CONF ) # INF, COLS, CHARMAP, BACKLIGHT, [ ADDRESS, CHIP | P* ... ]
+rows   = COLS == 16 and 2 or 4
+cmA00  = CHARMAP == 'A00'
 
 if INF == 'i2c':
     from RPLCD.i2c import CharLCD
@@ -113,8 +113,7 @@ if argvL == 2: # 1 argument
 import math
 import time
 
-if CHARMAP == 'A00':
-    A00 = True
+if cmA00:
     import unicodedata
     def normalize( str ):
         return ''.join( c for c in unicodedata.normalize( 'NFD', str )
@@ -137,13 +136,11 @@ def second2hhmmss( sec ):
     SS  = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
     
-with open( '/srv/http/data/shm/status.json' ) as f:
-    STATUS = json.load( f )
-    
+with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
 for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]:
     if k in STATUS:
         v = str( STATUS[ k ] )
-        if A00: STATUS[ k ] = normalize( v )
+        if cmA00: STATUS[ k ] = normalize( v )
         STATUS[ k ] = v[ :COLS ] # set width
     else:
         STATUS[ k ] = ''

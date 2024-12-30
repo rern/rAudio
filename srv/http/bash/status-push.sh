@@ -60,7 +60,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	if [[ ! $statusradio ]]; then
 		json=$( conf2json -nocap $dirshm/status | jq )
 		if [[ $( jq .webradio <<< $json ) == true ]]; then
-			[[ $( jq .radioelapsed $dirsystem/display.json ) == false ]] && json=$( jq '.elapsed = false' <<< $json )
+			grep -q radioelapsed.*false $dirsystem/display.json && json=$( jq '.elapsed = false' <<< $json )
 		fi
 		echo "$json" > $dirshm/status.json
 	fi
