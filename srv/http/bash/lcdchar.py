@@ -140,8 +140,8 @@ with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
 for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]:
     if k in STATUS:
         v = str( STATUS[ k ] )
-        if cmA00: STATUS[ k ] = normalize( v )
-        STATUS[ k ] = v[ :COLS ] # set width
+        if cmA00: STATUS[ k ] = normalize( v ) # character: accent with sequence code > single code
+        STATUS[ k ] = v[ :COLS ]               # set width
     else:
         STATUS[ k ] = ''
 locals().update( STATUS )
