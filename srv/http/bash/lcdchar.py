@@ -188,7 +188,7 @@ if state != 'play' or elapsed is False: sys.exit()
 # --------------------------------------------------------------------
 row       = rows - 1
 starttime = time.time()
-elapsed  += math.ceil( ( starttime - timestamp / 1000 ) / 1000 )
+elapsed  += math.ceil( ( starttime * 1000 - timestamp ) / 1000000 )
 PLAY      = ICON[ 'play' ]
 
 while True:
