@@ -376,7 +376,7 @@ var util          = {
 			  icon         : 'lcdchar'
 			, title        : 'Character LCD'
 			, tablabel     : [ 'I&#178;C', 'GPIO' ]
-			, footer       : '<a>'+ ico( 'raudio' ) +'Logo</a>&emsp;<a>'+ ico( 'screenoff' ) +'Sleep</a>'
+			, footer       : '<span>'+ ico( 'raudio' ) +'Logo</span><span>'+ ico( 'screenoff' ) +'Sleep</span>'
 			, beforeshow   : () => {
 				$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
 				$( '.infofooter a' )

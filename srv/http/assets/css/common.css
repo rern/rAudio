@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1733921041' );
+	src         : url( '/assets/fonts/rern.woff2?v=1735435369' );
 }
 @font-face {
 	font-family : Lato;
@@ -824,8 +824,12 @@ hr {
 	color: var( --cg60 );
 }
 .infofooter i {
+	width: auto !important;
 	margin: 0 6px;
 	vertical-align: -2px;
+}
+.infofooter span {
+	margin-right: 10px;
 }
 .infomessage {
 	padding-top: 5px;
@@ -1052,6 +1056,7 @@ input[ type=radio ]:disabled {
 	.i-volume,
 	.infobtn,
 	.infofooter i,
+	.infofooter span,
 	.infolabel i,
 	.infomessage img,
 	.infomessage .tagpath,

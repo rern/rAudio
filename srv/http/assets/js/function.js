@@ -741,10 +741,10 @@ function infoTitle() {
 		var titlenoparen = title.replace( / $|\(.*$/, '' );
 		list.push( [ ico( 'music wh' ) +'<gr>Title includes: </gr>'+ title.replace( /^.*\(/, '(' ),  'checkbox' ] );
 	}
-	var footer = '<span class="lyrics">'+ ico( 'lyrics' ) +' Lyrics</span>'
-				+'<span class="bio">'+ ico( 'bio' ) +' Bio</span>'
-				+'<span class="similar">'+ ico( 'lastfm' ) +' Add Similar</span>'
-				+'<span class="scrobble">'+ ico( 'lastfm' ) +' Scrobble</span>';
+	var footer = '<span class="lyrics">'+ ico( 'lyrics' ) +'Lyrics</span>'
+				+'<span class="bio">'+ ico( 'bio' ) +'Bio</span>'
+				+'<span class="similar">'+ ico( 'lastfm' ) +'Add Similar</span>'
+				+'<span class="scrobble">'+ ico( 'lastfm' ) +'Scrobble</span>';
 	info( {
 		  icon        : 'playback'
 		, title       : 'Current Track'
@@ -756,9 +756,7 @@ function infoTitle() {
 		, values      : paren ? [ artist, titlenoparen, album ] : [ artist, title, album ]
 		, beforeshow  : () => {
 			$( '#infoList input' ).eq( 2 ).toggleClass( 'hide', album === '' );
-			$( '.infofooter' )
-				.css( 'padding-left', '40px' )
-				.find( 'span' ).css( { 'margin-right': '20px', cursor: 'pointer' } );
+			$( '.infofooter' ).css( 'padding-left', '35px' );
 			$( '.infofooter .lyrics' ).toggleClass( 'hide', ! S.lyrics );
 			$( '.infofooter .scrobble' ).toggleClass( 'hide', ! S.scrobble );
 			if ( S.scrobble ) $( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || S.scrobbleconf[ S.player ] );
