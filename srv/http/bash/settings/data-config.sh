@@ -60,7 +60,7 @@ lcdchar )
 	fileconf=$dirsystem/lcdchar.json
 	if [[ -e $fileconf ]]; then
 		values=$( < $fileconf )
-		current=$( jq .INF $fileconf )
+		current=$( jq -r .INF $fileconf )
 		[[ ! $2 && $current == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
 	fi
