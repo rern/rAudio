@@ -139,7 +139,7 @@ def second2hhmmss( sec ):
 with open( '/srv/http/data/shm/status.json' ) as f: STATUS = json.load( f )
 for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]:
     if k in STATUS:
-        v = str( STATUS[ k ] )
+        v = STATUS[ k ] or DOTS
         if cmA00: STATUS[ k ] = normalize( v ) # character: accent with sequence code > single code
         STATUS[ k ] = v[ :COLS ]               # set width
     else:

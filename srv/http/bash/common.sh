@@ -288,7 +288,11 @@ $2"
 	fi
 }
 mpcElapsed() {
-	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
+	if [[ $1 ]] && grep -q radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
+		echo false
+	else
+		mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
+	fi
 }
 mpcPlayback() {
 	$dirbash/cmd.sh "mpcplayback

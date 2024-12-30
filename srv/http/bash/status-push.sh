@@ -12,13 +12,11 @@ if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 	statusradio=1
 else
 	status=$( $dirbash/status.sh | jq )
-	statusnew=$( sed -E -n \
-'/^  "Artist|^  "Album|^  "Composer|^  "elapsed|^  "file|^  "player|^  "station"|^  "state|^  "Time|^  "timestamp|^  "Title|^  "webradio/ {
-	s/^ *"|,$//g
-	s/" *: */=/
-	p
-}' <<< $status \
-| tee $dirshm/statusnew )
+	for k in Artist Album Composer elapsed file player station state Time timestamp Title webradio; do
+		filter+='|^  "'$k
+	done
+	statuslines=$( grep -E "${filter:1}" <<< $status )
+	statusnew=$( sed -E 's/^ *"|,$//g; s/" *: */=/' <<< $statuslines | tee $dirshm/statusnew )
 	statusprev=$( < $dirshm/status )
 	compare='^Artist|^Title|^Album'
 	[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
@@ -57,13 +55,7 @@ if [[ $clientip ]]; then
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
-	if [[ ! $statusradio ]]; then
-		json=$( conf2json -nocap $dirshm/status | jq )
-		if [[ $( jq .webradio <<< $json ) == true ]]; then
-			grep -q radioelapsed.*false $dirsystem/display.json && json=$( jq '.elapsed = false' <<< $json )
-		fi
-		echo "$json" > $dirshm/status.json
-	fi
+	[[ ! $statusradio ]] && jq <<< "{ ${statuslines%,} }" > $dirshm/status.json # remove trailing ,
 	systemctl restart lcdchar
 fi
 
