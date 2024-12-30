@@ -382,7 +382,7 @@ var util          = {
 				$( '.infofooter i' )
 					.toggleClass( 'disabled', ! S.lcdchar )
 					.on( 'click', function() {
-						bash( [ 'lcdcharset', $( this ).index() ? 'off' : 'logo', 'CMD ACTION' ] );
+						bash( [ 'lcdchar', $( this ).index() ? 'off' : 'logo', 'CMD ACTION' ] );
 				} );
 			}
 			, cancel     : switchCancel

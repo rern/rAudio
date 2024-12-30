@@ -200,11 +200,12 @@ dtparam=audio=on"
 	configTxt
 	;;
 lcdchar )
-	enableFlagSet
-	i2cset=1
-	configTxt
-	;;
-lcdcharset )
+	if [[ ! $ACTION ]]; then
+		enableFlagSet
+		i2cset=1
+		configTxt
+		ACTION=logo
+	fi
 	systemctl stop lcdchar
 	$dirbash/lcdchar.py $ACTION
 	;;
