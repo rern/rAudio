@@ -1,21 +1,23 @@
 #!/usr/bin/python
 
 import sys
+import json
 
-sys.path.append( '/srv/http/data/system' ) # i2c  : inf, cols, charmap, backlight, address, chip
-from lcdcharconf import *                  # gpio : inf, cols, charmap, backlight, p*...
+with open( '/srv/http/data/system/lcdchar.json' ) as f:
+    CONF = json.load( f ) # i2c  : INF, COLS, CHARMAP, BACKLIGHT, [ ADDRESS, CHIP | P* ... ]
+locals().update( CONF )
+rows      = COLS == 16 and 2 or 4
 
-rows   = cols == 16 and 2 or 4
-
-if inf == 'i2c':
+if INF == 'i2c':
     from RPLCD.i2c import CharLCD
-    lcd = CharLCD( cols=cols, rows=rows, charmap=charmap
-                 , address=address, i2c_expander=chip )
+    lcd = CharLCD( cols=COLS, rows=rows, charmap=CHARMAP
+                 , address=ADDRESS, i2c_expander=CHIP )
 else:
     from RPLCD.gpio import CharLCD
     from RPi import GPIO
-    lcd = CharLCD( cols=cols, rows=rows, charmap=charmap
-                 , numbering_mode=GPIO.BOARD, pin_rs=pin_rs, pin_rw=pin_rw, pin_e=pin_e, pins_data=[ p0, p1, p2, p3 ] )
+    GPIO.setwarnings( False )
+    lcd = CharLCD( cols=COLS, rows=rows, charmap=CHARMAP
+                 , numbering_mode=GPIO.BOARD, pin_rs=PIN_RS, pin_rw=PIN_RW, pin_e=PIN_E, pins_data=[ P0, P1, P2, P3 ] )
 
 pause  = (
     0b00000,
@@ -90,7 +92,7 @@ RA     = '\x03\x04'
 DOTS   = '\x05  \x05  \x05'
 RN     = '\r\n'
 
-SPACES = ' ' * ( ( cols - 6 ) // 2 + 1 )
+SPACES = ' ' * ( ( COLS - 6 ) // 2 + 1 )
 LOGO   = rows > 2 and RN or ''
 LOGO  += SPACES + RA + RN + SPACES +'rAudio'
 
@@ -111,6 +113,13 @@ if argvL == 2: # 1 argument
 import math
 import time
 
+if CHARMAP == 'A00':
+    A00 = True
+    import unicodedata
+    def normalize( str ):
+        return ''.join( c for c in unicodedata.normalize( 'NFD', str )
+                        if unicodedata.category( c ) != 'Mn' )
+
 def backlightOff():
     time.sleep( 60 )
     lcd.backlight_enabled = False
@@ -128,27 +137,17 @@ def second2hhmmss( sec ):
     SS  = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
     
-sys.path.append( '/srv/http/data/shm' )
-from status import *
-keys   = [ 'Album', 'Artist', 'file', 'station', 'Title' ]
-data   = {}
-
-if charmap == 'A00':
-    import unicodedata
-    def normalize( str ):
-        return ''.join( c for c in unicodedata.normalize( 'NFD', str )
-                        if unicodedata.category( c ) != 'Mn' )
-    for k in keys:
-        data[ k ] = k in locals() and normalize( locals()[ k ] ) or ''
-else:
-    for k in keys:
-        data[ k ] = k in locals() and locals()[ k ] or ''
-# set width
-Album     = data[ 'Album' ][ :cols ]
-Artist    = data[ 'Artist' ][ :cols ]
-file      = data[ 'file' ][ :cols ]
-station   = data[ 'station' ][ :cols ]
-Title     = data[ 'Title' ][ :cols ]
+with open( '/srv/http/data/shm/status.json' ) as f:
+    STATUS = json.load( f )
+    
+for k in [ 'Album', 'Artist', 'file', 'station', 'Title' ]:
+    if k in STATUS:
+        v = str( STATUS[ k ] )
+        if A00: STATUS[ k ] = normalize( v )
+        STATUS[ k ] = v[ :COLS ] # set width
+    else:
+        STATUS[ k ] = ''
+locals().update( STATUS )
 
 if webradio:
     if state != 'play':
@@ -157,14 +156,14 @@ if webradio:
     else:
         if not Artist and not Title: Artist = station
         if not Album:                Album  = station or file
-        
+
 if not Artist: Artist = DOTS
 if not Title:  Title  = DOTS
 if not Album:  Album  = DOTS
 if rows == 2:
     if state == 'play':
         lines = Title
-    elif backlight:
+    elif BACKLIGHT:
         backlightOff()
 else:
     lines = Artist + RN + Title + RN + Album
@@ -172,7 +171,7 @@ else:
 hhmmss = Time and second2hhmmss( round( float( Time ) ) ) or ''
 
 if state == 'stop':
-    progress = ( hhmmss + ' ' * cols )[ :cols - 4 ]
+    progress = ( hhmmss + ' ' * COLS )[ :COLS - 4 ]
 else:
     if elapsed is False: # can be 0
         elapsedhhmmss = ''
@@ -180,13 +179,13 @@ else:
     else:
         elapsed       = int( elapsed )
         elapsedhhmmss = second2hhmmss( elapsed )
-        slash         = cols > 16 and ' / ' or '/'
+        slash         = COLS > 16 and ' / ' or '/'
     if Time: hhmmss = slash + hhmmss
-    progress = ( elapsedhhmmss + hhmmss + ' ' * cols )[ :cols - 4 ]
+    progress = ( elapsedhhmmss + hhmmss + ' ' * COLS )[ :COLS - 4 ]
 
 lcd.write_string( lines + RN + ICON[ state ] + progress + RA )
 
-if backlight and state != 'play': backlightOff()
+if BACKLIGHT and state != 'play': backlightOff()
 
 if state != 'play' or elapsed is False: sys.exit()
 # --------------------------------------------------------------------

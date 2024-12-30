@@ -57,10 +57,10 @@ i2slist )
 	cat /srv/http/assets/data/system-i2s.json
 	;;
 lcdchar )
-	fileconf=$dirsystem/lcdchar.conf
+	fileconf=$dirsystem/lcdchar.json
 	if [[ -e $fileconf ]]; then
-		values=$( conf2json $fileconf )
-		current=$( getVar inf $fileconf )
+		values=$( < $fileconf )
+		current=$( jq .INF $fileconf )
 		[[ ! $2 && $current == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
 	fi

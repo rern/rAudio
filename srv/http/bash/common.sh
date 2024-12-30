@@ -216,13 +216,13 @@ getVar() { # var=value
 	local data line var
 	data=$( < $2 )
 	if [[ $( head -1 <<< $data ) == { ]]; then
-		var=$( sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' <<< $data )
+		var=$( sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' <<< $data )     #   var: value
 	else
 		line=$( grep ^$1= <<< $data )                                    # var=
 		[[ ! $line ]] && line=$( grep -E "^${1// /|^}" <<< $data )       # var
 		[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" <<< $data ) #     var
 		[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )         # var value > var=value
-		var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )   # var=value || var = value || var="value"; > value
+		var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )    # var=value || var = value || var="value"; > value
 	fi
 	[[ $var ]] && quoteEscape $var || echo $3
 }

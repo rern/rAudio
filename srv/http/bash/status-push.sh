@@ -7,8 +7,9 @@
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ $1 == statusradio ]]; then # from status-radio.sh
+if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 	state=play
+	statusradio=1
 else
 	status=$( $dirbash/status.sh | jq )
 	statusnew=$( sed -E -n \
@@ -56,13 +57,13 @@ if [[ $clientip ]]; then
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
-	status=$( sed -E 's/(true|false)$/\u\1/' $dirshm/status )
-	if grep -q ^webradio=true <<< $status && grep -q radioelapsed.*false $dirsystem/display.json; then
-		status="\
-$( grep -v ^elapsed <<< $status )
-elapsed=False"
+	if [[ ! $statusradio ]]; then
+		json=$( conf2json -nocap $dirshm/status | jq )
+		if [[ $( jq .webradio <<< $json ) == true ]]; then
+			[[ $( jq .radioelapsed $dirsystem/display.json ) == false ]] && json=$( jq '.elapsed = false' <<< $json )
+		fi
+		echo "$json" > $dirshm/status.json
 	fi
-	echo "$status" > $dirshm/status.py
 	systemctl restart lcdchar
 fi
 

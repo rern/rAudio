@@ -5,7 +5,11 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250106
-[[ -e $dirsystem/lcdchar && ! -e $dirsystem/lcdcharconf.py ]] && $dirsettings/system.sh lcdchar
+file=$dirsystem/lcdchar.conf
+if [[ -e $dirsystem/lcdchar.conf ]]; then
+	conf2json $file | jq > ${file/conf/json}
+	rm -f $file
+fi
 
 # 20241208
 rm -f $dirshm/playlist*

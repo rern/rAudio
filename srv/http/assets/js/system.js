@@ -386,7 +386,10 @@ var util          = {
 				} );
 			}
 			, cancel     : switchCancel
-			, ok         : switchEnable
+			, ok         : () => {
+				jsonSave( 'lcdchar', infoVal() );
+				switchEnable();
+			}
 			, fileconf   : true
 		}
 		, list : [

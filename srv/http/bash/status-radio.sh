@@ -155,6 +155,7 @@ webradio
 CMD ARTIST ALBUM MODE" &> /dev/null &
 	fi
 	pushData mpdradio "{ $data }"
+	[[ -e $dirsystem/lcdchar ]] && jq <<< "{ $data }" > $dirshm/status.json
 	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
 	radioStatusFile
 	[[ $coverart ]] && $dirbash/cmd.sh coverfileslimit
