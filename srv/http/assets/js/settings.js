@@ -4,23 +4,7 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-W = {
-	  ...W // from common.js
-	, mpdplayer : data => playbackButton( data )
-	, mpdradio  : data => playbackButton( data )
-	, player    : data => {
-		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
-		
-		var player_id = {
-			  airplay   : 'shairport-sync'
-			, bluetooth : 'bluetooth'
-			, snapcast  : 'snapserver'
-			, spotify   : 'spotifyd'
-			, upnp      : 'upmpdcli'
-		}
-		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
-	}
-	, refresh   : data => {
+W.refresh = data => {
 		if ( data.page !== page ) return
 		
 		clearTimeout( V.debounce );
@@ -34,6 +18,38 @@ W = {
 			renderPage();
 		}, 300 );
 	}
+}
+if ( [ 'camilla', 'player' ].includes( page ) ) {
+	W = {
+		  ...W // from common.js
+		, mpdplayer : data => playbackButton( data )
+		, mpdradio  : data => playbackButton( data )
+		, player    : data => {
+			var player_id = {
+				  airplay   : 'shairport-sync'
+				, bluetooth : 'bluetooth'
+				, snapcast  : 'snapserver'
+				, spotify   : 'spotifyd'
+				, upnp      : 'upmpdcli'
+			}
+			$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
+		}
+	}
+	function playbackButton( data ) {
+		if ( data ) [ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
+		if ( S.pllength ) {
+			var btn = S.state === 'play' ? 'pause' : 'play';
+		} else {
+			var btn = 'play disabled';
+		}
+		$( '.playback' ).prop( 'class', 'playback i-'+ btn );
+	}
+	$( '.playback' ).on( 'click', function() { // for player and camilla
+		S.state = S.state === 'play' ? 'pause' : 'play';
+		if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();
+		playbackButton();
+		bash( [ 'cmd.sh', 'mpcplayback' ] );
+	} );
 }
 
 function bannerReset() {
@@ -126,17 +142,6 @@ function notifyCommon( message ) {
 		message = ! ( SW.id in S ) || S[ SW.id ] ? 'Change ...' : 'Enable ...';
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
-}
-function playbackButton( data ) {
-	if ( ! [ 'camilla', 'player' ].includes( page ) ) return
-	
-	if ( data ) [ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
-	if ( S.pllength ) {
-		var btn = S.state === 'play' ? 'pause' : 'play';
-	} else {
-		var btn = 'play disabled';
-	}
-	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
 }
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
@@ -317,12 +322,6 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 $( '.page-icon' ).on( 'click', function() {
 	$( '#debug' ).trigger( 'click' );
 } ).press( () => location.reload() );
-$( '.playback' ).on( 'click', function() { // for player and camilla
-	S.state = S.state === 'play' ? 'pause' : 'play';
-	if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();
-	playbackButton();
-	bash( [ 'cmd.sh', 'mpcplayback' ] );
-} );
 $( '.head .i-gear' ).on( 'click', function() {
 	$( '#bar-bottom' ).toggle();
 } );
