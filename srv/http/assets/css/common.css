@@ -831,6 +831,9 @@ hr {
 .infofooter span {
 	margin-right: 10px;
 }
+.infofooter span:last-child {
+	margin-right: 0;
+}
 .infomessage {
 	padding-top: 5px;
 	line-height: 24px;

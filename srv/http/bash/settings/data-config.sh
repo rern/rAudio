@@ -104,10 +104,6 @@ mpdoled )
 , "reboot" : '$( toReboot )'
 }'
 	;;
-reboot )
-	getContent $dirshm/reboot
-	rm -f $dirshm/{reboot,backup.gz}
-	;;
 packagelist )
 	filepackages=/tmp/packages
 	if [[ ! -e $filepackages ]]; then
@@ -134,6 +130,10 @@ $description
 				> /tmp/packages
 	fi
 	grep -B1 -A2 --no-group-separator ^${2,} $filepackages
+	;;
+reboot )
+	getContent $dirshm/reboot
+	rm -f $dirshm/{reboot,backup.gz}
 	;;
 relays )
 	if [[ -e $dirsystem/relays.conf ]]; then

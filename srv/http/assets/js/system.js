@@ -373,24 +373,23 @@ var util          = {
 			} );
 		}
 		, json : {
-			  icon         : 'lcdchar'
-			, title        : 'Character LCD'
-			, tablabel     : [ 'I&#178;C', 'GPIO' ]
-			, footer       : '<span>'+ ico( 'raudio' ) +'Logo</span><span>'+ ico( 'screenoff' ) +'Sleep</span>'
-			, beforeshow   : () => {
+			  icon       : 'lcdchar'
+			, title      : 'Character LCD'
+			, tablabel   : [ 'I&#178;C', 'GPIO' ]
+			, footer     : '<span>'+ ico( 'raudio' ) +'Logo</span><span>'+ ico( 'screenoff' ) +'Sleep</span>'
+			, beforeshow : () => {
 				$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
-				$( '.infofooter a' )
+				$( '.infofooter span' )
 					.toggleClass( 'disabled', ! S.lcdchar )
 					.on( 'click', function() {
 						bash( [ 'lcdchar', $( this ).index() ? 'off' : 'logo', 'CMD ACTION' ] );
 				} );
 			}
-			, cancel     : switchCancel
-			, ok         : () => {
+			, cancel   : switchCancel
+			, ok       : () => {
 				jsonSave( 'lcdchar', infoVal() );
 				switchEnable();
 			}
-			, fileconf   : true
 		}
 		, list : [
 			  [ 'Type',                 'hidden'  ]

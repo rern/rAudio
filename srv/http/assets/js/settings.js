@@ -25,10 +25,8 @@ W = {
 		}
 		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 	}
-	, reboot    : data => {
-		var msg = '';
-		data.id.forEach( id => msg += '<div> • '+ $( '#div'+ id +' .label' ).text() +'</div>' );
-		banner( 'reboot', 'Reboot required', msg, 5000 );
+	, reboot    : () => {
+		if ( page === 'system' ) banner( SW.icon, SW.title, 'Reboot required', 5000 );
 	}
 	, refresh   : data => {
 		if ( data.page !== page ) return
