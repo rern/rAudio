@@ -6,11 +6,6 @@ Naming must be the same for:
 */
 W = {
 	  ...W // from common.js
-	, camilla   : data => {
-		S.range = data;
-		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
-		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
-	}
 	, mpdplayer : data => playbackButton( data )
 	, mpdradio  : data => playbackButton( data )
 	, player    : data => {
@@ -24,9 +19,6 @@ W = {
 			, upnp      : 'upmpdcli'
 		}
 		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
-	}
-	, reboot    : () => {
-		if ( page === 'system' ) banner( SW.icon, SW.title, 'Reboot required', 5000 );
 	}
 	, refresh   : data => {
 		if ( data.page !== page ) return

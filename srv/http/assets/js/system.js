@@ -1,3 +1,4 @@
+W.reboot          = () => banner( SW.icon, SW.title, 'Reboot required', 5000 );
 W.storage         = data => {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
@@ -6,6 +7,7 @@ W.storage         = data => {
 		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
 	}, 1000 );
 }
+
 var config        = {
 	  _disable      : {
 		  shareddata : () => {
