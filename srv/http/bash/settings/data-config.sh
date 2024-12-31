@@ -67,7 +67,7 @@ lcdchar )
 	val='{ "INF": "gpio", "COLS": 20, "CHARMAP": "A00"'
 	if [[ $2 == gpio ]]; then
 		[[ $current != gpio ]] && values=$val', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
-	elif [[ $2 == i2c ]]; then
+	else
 		[[ $current != i2c ]] && values=${val/gpio/i2c}', "ADDRESS": 39, "CHIP": "PCF8574"'
 	fi
 	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
