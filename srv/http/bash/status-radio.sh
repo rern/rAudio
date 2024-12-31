@@ -134,14 +134,12 @@ $( jq -r .albumTitle <<< $track )"
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
-	grep -q radioelapsed.*false $dirsystem/display.json && elapsed=false || elapsed=$( mpcElapsed )
-	pllength=$( mpc status %length% )
 	data='
   "player"   : "mpd"
 , "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
-, "elapsed"  : '$elapsed'
-, "pllength" : '$pllength'
+, "elapsed"  : '$( mpcElapsed webradio )'
+, "pllength" : '$( mpc status %length% )'
 , "state"    : "play"
 , "Title"    : "'$title'"'
 	if [[ $coverart ]]; then
