@@ -99,7 +99,7 @@ mpdoled )
 	chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 	[[ ! $baud ]] && baud=800000
-	echo '{ "values" : { "CHIP": "'$chip'", "BAUD": '$baud' } }'
+	echo '{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 	;;
 packagelist )
 	filepackages=/tmp/packages
@@ -246,7 +246,7 @@ spotifyoutput )
 	;;
 tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
-	echo '{ "values" : { "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" } }'
+	echo '{ "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }'
 	;;
 wlan )
 	echo '{
