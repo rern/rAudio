@@ -131,9 +131,7 @@ var config        = {
 	, lcdchar       : data => {
 		util.lcdchar[ data.values.INF ]( data );
 	}
-	, mpdoled       : data => {
-		var values     = data.values;
-		var buttonlogo = S.mpdoled && ! data.reboot;
+	, mpdoled       : values => {
 		var chip       = {
 			  'SSD130x SP'  : 1
 			, 'SSD130x I²C' : 3
@@ -147,7 +145,7 @@ var config        = {
 				  [ 'Controller',              'select', chip ]
 				, [ 'Refresh <gr>(baud)</gr>', 'select', { kv: { '800,000': 800000, '1,000,000': 1000000, '1,200,000': 1200000 } } ]
 			]
-			, footer       : ico( 'raudio' ) +'Logo'
+			, footer       : '<span>'+ ico( 'raudio' ) +'Logo</span>'
 			, values       : values
 			, checkchanged : S.mpdoled
 			, boxwidth     : 140
@@ -155,7 +153,11 @@ var config        = {
 				var $tr   = $( '#infoList tr' );
 				var $baud = $tr.eq( 1 )
 				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
-				$( '.infofooter i' ).toggleClass( 'disabled', ! S.mpdoled || data.reboot )
+				$( '.infofooter span' )
+					.toggleClass( 'disabled', ! S.mpdoled )
+					.on( 'click', function() {
+						bash( [ 'mpdoledlogo' ] );
+					} );
 				$tr.eq( 0 ).on( 'input', function() {
 					var val = this.value;
 					$baud.toggleClass( 'hide', val < 3 || val > 6 );
@@ -207,7 +209,7 @@ var config        = {
 		} );
 	}
 	, timezone      : () => util.server.ntp()
-	, tft           : data => {
+	, tft           : values => {
 		var type = {
 			  'Generic'               : 'tft35a'
 			, 'Waveshare (A)'         : 'waveshare35a'
@@ -215,23 +217,19 @@ var config        = {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		var buttoncalibrate = S.tft && ! data.reboot;
 		info( {
 			  ...SW
 			, list         : [ 'Type', 'select', type ]
-			, values       : data.values
+			, footer       : '<span>'+ ico( 'cursor' ) +'Calibrate</span>'
+			, values       : values
 			, checkchanged : S.tft
 			, boxwidth     : 190
-			, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
-			, button       : ! buttoncalibrate ? '' : () => {
-				info( {
-					  ...SW
-					, message : 'Calibrate touchscreen?'
-								+'<br>(Get stylus ready.)'
-					, ok      : () => {
+			, beforeshow   : () => {
+				$( '.infofooter span' )
+					.toggleClass( 'disabled', ! S.tft )
+					.on( 'click', function() {
 						notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
 						bash( [ 'tftcalibrate' ] );
-					}
 				} );
 			}
 			, cancel       : switchCancel
