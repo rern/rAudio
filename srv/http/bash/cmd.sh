@@ -68,7 +68,6 @@ playerStart() {
 			renice -n -19 -p $pid &> /dev/null
 		done
 	fi
-	pushData player '{ "player": "'$player'", "active": true }'
 }
 playerStop() {
 	local player
@@ -101,7 +100,6 @@ playerStop() {
 			$dirbash/status-push.sh
 			;;
 	esac
-	[[ $player != mpd ]] && pushData player '{ "player": "'$player'", "active": false }'
 }
 plClear() {
 	mpc -q clear

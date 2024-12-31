@@ -5,50 +5,41 @@ Naming must be the same for:
 	bash   - cmd=NAME, save to NAME.conf
 */
 W.refresh = data => {
-		if ( data.page !== page ) return
-		
-		clearTimeout( V.debounce );
-		V.debounce = setTimeout( () => {
-			$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-			if ( page === 'networks' ) {
-				if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
-			} else {
-				switchSet();
-			}
-			renderPage();
-		}, 300 );
-	}
+	if ( data.page !== page ) return
+	
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+		if ( page === 'networks' ) {
+			if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
+		} else {
+			switchSet();
+		}
+		renderPage();
+	}, 300 );
 }
 if ( [ 'camilla', 'player' ].includes( page ) ) {
 	W = {
 		  ...W // from common.js
-		, mpdplayer : data => playbackButton( data )
-		, mpdradio  : data => playbackButton( data )
-		, player    : data => {
-			var player_id = {
-				  airplay   : 'shairport-sync'
-				, bluetooth : 'bluetooth'
-				, snapcast  : 'snapserver'
-				, spotify   : 'spotifyd'
-				, upnp      : 'upmpdcli'
-			}
-			$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
-		}
+		, mpdplayer : data => headIcon.player( data )
+		, mpdradio  : data => headIcon.player( data )
 	}
-	function playbackButton( data ) {
-		if ( data ) [ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
-		if ( S.pllength ) {
-			var btn = S.state === 'play' ? 'pause' : 'play';
-		} else {
-			var btn = 'play disabled';
+	var headIcon = {
+		  control : () => {
+			$( '.playback' ).prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) );
 		}
-		$( '.playback' ).prop( 'class', 'playback i-'+ btn );
+		, player : data => {
+			if ( ! data ) return
+
+			[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
+			$( 'heading .icon' ).prop( 'class', 'icon i-'+ S.player );
+			headIcon.control();
+		}
 	}
 	$( '.playback' ).on( 'click', function() { // for player and camilla
-		S.state = S.state === 'play' ? 'pause' : 'play';
+		headIcon.control();
 		if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();
-		playbackButton();
-		bash( [ 'cmd.sh', 'mpcplayback' ] );
+		bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );
 }
 
