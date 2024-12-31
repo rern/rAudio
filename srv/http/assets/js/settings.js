@@ -18,7 +18,7 @@ W.refresh = data => {
 		renderPage();
 	}, 300 );
 }
-if ( [ 'camilla', 'player' ].includes( page ) ) {
+if ( $( 'heading .playback' ).length ) {
 	W = {
 		  ...W // from common.js
 		, mpdplayer : data => headIcon.player( data )
