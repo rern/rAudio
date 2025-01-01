@@ -246,6 +246,10 @@ mpdoledlogo )
 	systemctl stop mpd_oled
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
+	sleep 10
+	systemctl start mpd_oled
+	sleep 1
+	systemctl stop mpd_oled
 	;;
 mpdoled )
 	enableFlagSet
