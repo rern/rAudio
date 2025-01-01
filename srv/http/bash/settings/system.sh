@@ -67,7 +67,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
-		pushData reboot 1
+		pushData reboot $CMD
 		appendSortUnique $CMD $dirshm/reboot
 	else
 		sed -i "/$CMD/ d" $dirshm/reboot
@@ -254,12 +254,10 @@ mpdoled )
 			sed -i 's/-o ./-o '$CHIP'/' /etc/systemd/system/mpd_oled.service
 			systemctl daemon-reload
 		fi
-	else
-		$dirsettings/player-conf.sh
 	fi
 	i2cset=1
 	configTxt
-	[[ -e $dirsystem/mpdoled && ! -e $dirshm/reboot && ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
+	$dirsettings/player-conf.sh
 	;;
 ntp )
 	file=/etc/systemd/timesyncd.conf

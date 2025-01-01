@@ -1,4 +1,6 @@
-W.reboot          = () => banner( SW.icon, SW.title, 'Reboot required', 5000 );
+W.reboot          = id => {
+	banner( id, $( '#div'+ id +' .col-l .label' ).text(), 'Reboot required', 5000 );
+}
 W.storage         = data => {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
