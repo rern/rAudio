@@ -144,8 +144,9 @@ li:not( .licover ),
 #volume-text {
 	cursor: pointer;
 }
-#lib-title a:last-of-type:hover,
-.mode.nodata * {
+.disabled,
+.mode.nodata *,
+#lib-title a:last-of-type:hover {
 	cursor: default;
 }
 #lib-title a:last-of-type:hover {

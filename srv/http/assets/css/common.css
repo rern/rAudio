@@ -586,6 +586,7 @@ input[ type=checkbox ] {
 .disabled i {
 	color: var( --cg60 ) !important;
 	pointer-events: none;
+	cursor: default;
 }
 .infobtn.disabled {
 	background-color: var( --cgd ) !important;
@@ -594,7 +595,6 @@ input[ type=checkbox ] {
 }
 #infoOk.disabled {
 	pointer-events: auto;
-	cursor: default;
 }
 input[ type=checkbox ].disabled {
 	pointer-events: auto;

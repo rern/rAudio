@@ -26,12 +26,14 @@ if ( $( 'heading .playback' ).length ) {
 	}
 	var headIcon = {
 		  control : () => {
-			$( '.playback' ).prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) );
+			$( '.playback' )
+				.prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) )
+				.toggleClass( 'disabled', page === 'player' && S.player !== 'mpd' );
+			
 		}
 		, player : data => {
-			if ( ! data ) return
-
-			[ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
+			if ( ! data ) data = { player: S.player, state: S.state };
+			[ 'player', 'state' ].forEach( k => { S[ k ] = data[ k ] } );
 			$( 'heading .icon' ).prop( 'class', 'icon i-'+ S.player );
 			headIcon.control();
 		}
