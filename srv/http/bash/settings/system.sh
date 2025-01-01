@@ -242,22 +242,26 @@ mountunmount )
 	fi
 	pushRefresh
 	;;
-mpdoledlogo )
-	systemctl stop mpd_oled
-	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-	mpd_oled -o $type -L
-	sleep 10
-	systemctl start mpd_oled
-	sleep 1
-	systemctl stop mpd_oled
-	;;
 mpdoled )
+	systemctl stop mpd_oled
+	chip=$( awk '/^ExecStart/ {print $3}' /etc/systemd/system/mpd_oled.service )
+	mpd_oled -o $chip -L
+	(
+		[[ $ON ]] && sleep 10
+		systemctl start mpd_oled
+		sleep 0.5
+		systemctl stop mpd_oled
+	) &
+	[[ $LOGO ]] && exit
+# --------------------------------------------------------------------
 	enableFlagSet
 	if [[ $ON ]]; then
-		if [[ $( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 ) != $CHIP ]]; then
+		if [[ $chip != $CHIP ]]; then
 			sed -i 's/-o ./-o '$CHIP'/' /etc/systemd/system/mpd_oled.service
 			systemctl daemon-reload
 		fi
+	else
+		systemctl stop mpd_oled
 	fi
 	i2cset=1
 	configTxt
