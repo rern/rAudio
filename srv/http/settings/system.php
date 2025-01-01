@@ -207,7 +207,7 @@ EOF
 		, 'help'     => <<<EOF
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 
-Note: Not run with $L->airplay $L->spotify
+Note: Not yet support $L->airplay $L->spotify
 EOF
 	]
 	, [
