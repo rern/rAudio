@@ -18,28 +18,22 @@ W.refresh = data => {
 		renderPage();
 	}, 300 );
 }
-if ( $( 'heading .playback' ).length ) {
+if ( $( 'heading .playback' ).length ) { // for player and camilla
 	W = {
 		  ...W // from common.js
-		, mpdplayer : data => headIcon.player( data )
-		, mpdradio  : data => headIcon.player( data )
+		, mpdplayer : data => headIcon( data )
+		, mpdradio  : data => headIcon( data )
 	}
-	var headIcon = {
-		  control : () => {
-			$( '.playback' )
-				.prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) )
-				.toggleClass( 'disabled', page === 'player' && S.player !== 'mpd' );
-			
-		}
-		, player : data => {
-			if ( ! data ) data = { player: S.player, state: S.state };
-			[ 'player', 'state' ].forEach( k => { S[ k ] = data[ k ] } );
-			$( 'heading .icon' ).prop( 'class', 'icon i-'+ S.player );
-			headIcon.control();
-		}
+	function headIcon( data ) {
+		if ( data ) [ 'player', 'state' ].forEach( k => { S[ k ] = data[ k ] } );
+		$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
+		$( '.playback' )
+			.prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) )
+			.toggleClass( 'disabled', page === 'player' && S.player !== 'mpd' );
 	}
-	$( '.playback' ).on( 'click', function() { // for player and camilla
-		headIcon.control();
+	$( '.playback' ).on( 'click', function() {
+		S.state = S.state === 'play' ? 'pause' : 'play'
+		headIcon();
 		if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();
 		bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );

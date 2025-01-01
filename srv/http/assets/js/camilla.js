@@ -722,7 +722,7 @@ var graph     = {
 }
 var render    = {
 	  status      : () => { // onload only
-		headIcon.player();
+		headIcon();
 		if ( S.volume !== false ) {
 			$( '#divvolume' ).removeClass( 'hide' );
 			$( '#divvolume .control' ).text( S.control );

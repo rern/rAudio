@@ -114,7 +114,7 @@ foreach( $id_tab as $id => $data ) {
 $head     = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [ 'mpd icon', 'play playback' ]
+	, 'button' => [ 'mpd player', 'play playback' ]
 	, 'help'   => <<< EOF
 $B->play$B->pause$B->stop Playback control
 

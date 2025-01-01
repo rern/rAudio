@@ -349,7 +349,7 @@ var util     = {
 }
 
 function renderPage() {
-	headIcon.player();
+	headIcon();
 	util.statusSet();
 	if ( S.bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );
