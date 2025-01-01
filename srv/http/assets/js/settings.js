@@ -25,11 +25,16 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 		, mpdradio  : data => headIcon( data )
 	}
 	function headIcon( data ) {
-		if ( data ) [ 'player', 'state' ].forEach( k => { S[ k ] = data[ k ] } );
-		$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
+		if ( data ) {
+			if ( ( ! data.player || ! data.state ) || ( data.player === S.player && data.state === S.state ) return
+			
+			S.player = data.player;
+			S.state  = data.state;
+		}
 		$( '.playback' )
 			.prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) )
 			.toggleClass( 'disabled', page === 'player' && S.player !== 'mpd' );
+		$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
 	}
 	$( '.playback' ).on( 'click', function() {
 		S.state = S.state === 'play' ? 'pause' : 'play'
