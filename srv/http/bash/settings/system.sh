@@ -260,8 +260,6 @@ mpdoled )
 			sed -i 's/-o ./-o '$CHIP'/' /etc/systemd/system/mpd_oled.service
 			systemctl daemon-reload
 		fi
-	else
-		systemctl stop mpd_oled
 	fi
 	i2cset=1
 	configTxt
