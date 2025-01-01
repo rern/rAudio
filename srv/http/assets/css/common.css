@@ -839,7 +839,8 @@ hr {
 	vertical-align: -2px;
 }
 .infofooter span {
-	margin-right: 10px;
+	display: inline-block;
+	margin: 10px 10px 0 0;
 }
 .infofooter span:last-child {
 	margin-right: 0;
