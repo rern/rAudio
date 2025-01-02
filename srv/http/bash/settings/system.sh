@@ -248,9 +248,7 @@ mpdoled )
 	mpd_oled -o $chip -L
 	(
 		[[ $ON ]] && sleep 10
-		systemctl start mpd_oled
-		sleep 0.5
-		systemctl stop mpd_oled
+		timeout 0.5 mpd_oled -o $chip
 	) &
 	[[ $LOGO ]] && exit
 # --------------------------------------------------------------------
