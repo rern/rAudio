@@ -374,8 +374,8 @@ function tagEditor() {
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 					  +'<div>'+ ico( 'folder' ) +' '+ dir;
 		message += V.list.licover ? '</div>' : '<br>'+ ico( fileicon ) +' '+ file.split( '/' ).pop() +'</div>';
-		var footer   = ico( 'help', '', 'tabindex' ) +'Label';
-		if ( V.list.licover ) footer += '<a style="float: right"><c> * </c>&ensp;Various values in tracks</a>';
+		var footer   = '<span>'+ ico( 'help', '', 'tabindex' ) +'Label</span>';
+		if ( V.list.licover ) footer += '<gr style="float: right"><c>*</c> Various values in tracks</gr>';
 		info( {
 			  icon         : V.playlist ? 'info' : 'tag'
 			, title        : V.playlist ? 'Track Info' : 'Tag Editor'
@@ -396,7 +396,7 @@ function tagEditor() {
 				$( '#infoList td i:not( .i-track, .i-title )' ).css( 'cursor', 'pointer' );
 				if ( V.playlist ) $( '#infoList input' ).prop( 'disabled', 1 );
 				var inputW = parseInt( $( '#infoList input' ).css( 'width' ) );
-				$( '.infofooter i' ).on( 'click', function( e ) {
+				$( '.infofooter span' ).on( 'click', function( e ) {
 					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
 						$( '#infoList input' ).css( 'width', ( inputW - 92 ) +'px' );
 						$( '.taglabel' ).removeClass( 'hide' );
