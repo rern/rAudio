@@ -964,6 +964,11 @@ function infoFileImageResize( ext, imgW, imgH ) {
 		}
 	}
 }
+function infoFooterIcon( kv ) {
+	var footer = '';
+	$.each( kv, ( l, i ) => footer += '<span>'+ ico( i ) + l +'</span>' );
+	return footer
+}
 function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 }

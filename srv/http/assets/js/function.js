@@ -741,24 +741,22 @@ function infoTitle() {
 		var titlenoparen = title.replace( / $|\(.*$/, '' );
 		list.push( [ ico( 'music wh' ) +'<gr>Title includes: </gr>'+ title.replace( /^.*\(/, '(' ),  'checkbox' ] );
 	}
-	var footer = '<span class="lyrics">'+ ico( 'lyrics' ) +'Lyrics</span>'
-				+'<span class="bio">'+ ico( 'bio' ) +'Bio</span>'
-				+'<span class="similar">'+ ico( 'lastfm' ) +'Add Similar</span>'
-				+'<span class="scrobble">'+ ico( 'lastfm' ) +'Scrobble</span>';
 	info( {
 		  icon        : 'playback'
 		, title       : 'Current Track'
 		, list        : list
-		, footer      : footer
+		, footer      : infoFooterIcon( {
+			  Lyrics        : 'lyrics'
+			, Bio           : 'bio'
+			, 'Add Similar' : 'lastfm'
+			, Scrobble      : 'scrobble'
+		} )
 		, footeralign : 'left'
 		, width       : 460
 		, boxwidth    : 'max'
 		, values      : paren ? [ artist, titlenoparen, album ] : [ artist, title, album ]
 		, beforeshow  : () => {
 			$( '#infoList input' ).eq( 2 ).toggleClass( 'hide', album === '' );
-			$( '.infofooter' ).css( 'padding-left', '35px' );
-			$( '.infofooter .lyrics' ).toggleClass( 'hide', ! S.lyrics );
-			$( '.infofooter .scrobble' ).toggleClass( 'hide', ! S.scrobble );
 			if ( S.scrobble ) $( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || S.scrobbleconf[ S.player ] );
 			if ( paren ) {
 				$( '#infoList input:checkbox' ).on( 'input', function() {
@@ -769,20 +767,25 @@ function infoTitle() {
 				var val = infoVal();
 				$( '#infoList .scrobble' ).toggleClass( 'disabled', val[ 0 ] === '' || val[ 1 ] === '' );
 			} );
-			$( '#infoList' ).on( 'click', '.infofooter span', function() {
+			$( '.infofooter' ).css( 'padding-left', '35px' );
+			var $span = $( '.infofooter span' );
+			$span.eq( 0 ).toggleClass( 'hide', ! S.lyrics );
+			$span.eq( 3 ).toggleClass( 'hide', ! S.scrobble );
+			$span.on( 'click', function() {
 				var values = infoVal();
 				var artist = values[ 0 ]
 				var title  = values[ 1 ]
 				var $this  = $( this );
-				if ( $this.hasClass( 'lyrics' ) ) {
+				var i      = $( this ).index();
+				if ( i === 0 ) {
 					V.lyricsartist = artist || S.Artist;
 					V.lyricstitle  = title || S.Title;
 					lyricsGet();
-				} else if ( $this.hasClass( 'bio' ) ) {
+				} else if ( i === 1 ) {
 					bio( artist );
-				} else if ( $this.hasClass( 'similar' ) ) {
+				} else if ( i === 2 ) {
 					addSimilar();
-				} else if ( $this.hasClass( 'scrobble' ) ) {
+				} else {
 					bash( [ 'scrobble.sh', ...values, 'CMD ARTIST TITLE' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}

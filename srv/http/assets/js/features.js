@@ -70,10 +70,6 @@ var config       = {
 		}
 	}
 	, localbrowser : data => {
-		var f      = [ 'Reload', 'Screenoff' ];
-		if ( data.brightness ) f.push( 'Brightness' );
-		var footer = '';
-		f.forEach( k => footer += '<span>'+ ico( k.toLowerCase() ) + k +'</span>' );
 		info( {
 			  ...SW
 			, list         : [
@@ -83,7 +79,11 @@ var config       = {
 				, [ 'On while play',             'checkbox' ]
 				, [ 'Mouse pointer',             'checkbox' ]
 			]
-			, footer       : footer
+			, footer       : infoFooterIcon( {
+				  Reload     : 'reload'
+				, Screenoff  : 'screenoff'
+				, Brightness : 'brightness'
+			} )
 			, boxwidth     : 110
 			, values       : data.values
 			, checkchanged : S.localbrowser
@@ -100,7 +100,9 @@ var config       = {
 					}
 				} );
 				$( '.infofooter' ).toggleClass( 'disabled', ! S.localbrowser );
-				$( '.infofooter span' ).on( 'click', function() {
+				var $span = $( '.infofooter span' );
+				$span.eq( 2 ).toggleClass( 'hide', ! data.brightness );
+				$span.on( 'click', function() {
 					var i = $( this ).index();
 					if ( i === 0 ) {
 						bash( [ 'localbrowserreload' ], () => banner( SW.icon, SW.title, 'Reloaded.' ) );

@@ -379,14 +379,16 @@ var util          = {
 			  icon       : 'lcdchar'
 			, title      : 'Character LCD'
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
-			, footer     : '<span class="logo">'+ ico( 'raudio' ) +'Logo</span>'
-						  +'<span class="off">'+ ico( 'screenoff' ) +'Sleep</span>'
+			, footer     : infoFooterIcon( {
+				  Logo  : 'raudio'
+				, Sleep : 'screenoff'
+			} )
 			, beforeshow : () => {
 				$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
 				$( '.infofooter span' )
 					.toggleClass( 'disabled', ! S.lcdchar )
 					.on( 'click', function() {
-						bash( [ 'lcdchar', $( this ).prop( 'class' ), 'CMD ACTION' ] );
+						bash( [ 'lcdchar', $( this ).index() ? 'off' : 'logo', 'CMD ACTION' ] );
 				} );
 			}
 			, cancel   : switchCancel
