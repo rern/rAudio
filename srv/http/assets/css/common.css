@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1735640240' );
+	src         : url( '/assets/fonts/rern.woff2?v=1735640241' );
 }
 @font-face {
 	font-family : Lato;
@@ -61,6 +61,7 @@ i {
 .i-star::before            { content: '\F550' }
 .i-bluealsa::before,
 .i-bluetooth::before,
+.i-brightness::before      { content: '\F55F' }
 .i-btreceiver::before      { content: '\F51A' }
 .i-btsender::before        { content: '\F51B' }
 .i-camilla::before,
@@ -839,8 +840,7 @@ hr {
 	vertical-align: -2px;
 }
 .infofooter span {
-	display: inline-block;
-	margin: 10px 10px 0 0;
+	margin-right: 10px;
 }
 .infofooter span:last-child {
 	margin-right: 0;
@@ -1038,7 +1038,6 @@ input[ type=radio ]:disabled {
 }
 @media ( max-width: 420px ) {
 	#infoList { padding: 20px 5px 10px 5px }
-	.infoheader, .infofooter { padding: 0 5px }
 }
 @media ( max-width: 330px ) {
 	#infoOverlay {
