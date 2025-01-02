@@ -258,7 +258,8 @@ body {
 }
 i,
 .infobtn,
-#debug {
+#debug,
+#lib-list .coverart {
 	-webkit-user-select: none;
 	user-select: none;
 }
