@@ -5,6 +5,11 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250106
+if [[ $( pacman -Q audio_spectrum_oled 2> /dev/null ) ]]; then
+	pacman -R --noconfirm audio_spectrum_oled
+	pacman -Sy --noconfirm mpd_oled
+fi
+
 file=$dirsystem/lcdchar.conf
 if [[ -e $dirsystem/lcdchar.conf ]]; then
 	conf2json $file | jq > ${file/conf/json}

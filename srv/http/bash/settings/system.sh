@@ -248,7 +248,7 @@ mpdoled )
 	mpd_oled -o $chip -L
 	(
 		[[ $ON ]] && sleep 10
-		timeout 0.5 mpd_oled -o $chip
+		mpd_oled -o $chip -X
 	) &
 	[[ $LOGO ]] && exit
 # --------------------------------------------------------------------
