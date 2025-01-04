@@ -57,9 +57,7 @@ CMD ESSID"
 fi
 # pre-configure <<<-----------------------------------------------------------
 
-[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
-
-[[ -e $dirsystem/mpdoled ]] && $dirsettings/system.sh mpdoledlogo
+logoLcdOled
 
 [[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
 

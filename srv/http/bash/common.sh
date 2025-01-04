@@ -264,6 +264,13 @@ lineCount() {
 line2array() {
 	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
 }
+logoLcdOled() {
+	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
+	if [[ -e $dirsystem/mpdoled ]]; then
+		chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
+		mpd_oled -o $chip -L
+	fi
+}
 mountpointSet() {
 	umount -ql "$1"
 	mkdir -p "$1"
