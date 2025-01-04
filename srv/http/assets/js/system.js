@@ -146,6 +146,7 @@ var config        = {
 			, list         : [
 				  [ 'Controller',              'select', chip ]
 				, [ 'Refresh <gr>(baud)</gr>', 'select', { kv: { '800,000': 800000, '1,000,000': 1000000, '1,200,000': 1200000 } } ]
+				, [ 'Spectrum only',        'checkbox' ]
 			]
 			, footer       : '<span>'+ ico( 'raudio' ) +'Logo</span>'
 			, values       : values

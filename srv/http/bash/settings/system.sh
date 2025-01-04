@@ -69,7 +69,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	if [[ $reboot ]]; then
 		pushData reboot $CMD
 		appendSortUnique $CMD $dirshm/reboot
-	else
+	elif [[ -e $dirshm/reboot ]]; then
 		sed -i "/$CMD/ d" $dirshm/reboot
 	fi
 }
@@ -243,31 +243,38 @@ mountunmount )
 	pushRefresh
 	;;
 mpdoled )
-	systemctl stop mpd_oled
-	chip=$( awk '/^ExecStart/ {print $3}' /etc/systemd/system/mpd_oled.service )
-	mpd_oled -o $chip -L
-	(
-		[[ $ON ]] && sleep 10
-		mpd_oled -o $chip -X
-	) &
-	[[ $LOGO ]] && exit
+	filedef=/etc/default/mpd_oled
+	chip=$( cut -d' ' -f2 $filedef )
+	if ! systemctl -q is-active mpd_oled; then
+		mpd_oled -o $chip -L
+		(
+			[[ $ON ]] && sleep 10
+			mpd_oled -o $chip -X
+		) &
+	fi
+	[[ $LOGO ]] && systemctl stop mpd_oled && exit
 # --------------------------------------------------------------------
 	enableFlagSet
 	if [[ $ON ]]; then
-		if [[ $chip != $CHIP ]]; then
-			sed -i 's/-o ./-o '$CHIP'/' /etc/systemd/system/mpd_oled.service
-			systemctl daemon-reload
+		! grep -q '\-A' $filedef && spectrum=1
+		if [[ $SPECTRUM ]]; then
+			[[ ! $spectrum ]] && sed -i 's/ -A//' $filedef
+		else
+			[[ $spectrum ]] && sed -i 's/"$/ -A"/' $filedef
 		fi
+		[[ $chip != $CHIP ]] && sed -i 's/-o ./-o '$CHIP'/' $filedef
+		ln -sf $dirmpdconf/{conf/,}fifo.conf
+	else
+		rm -f $dirmpdconf/fifo.conf
 	fi
 	i2cset=1
 	configTxt
-	$dirsettings/player-conf.sh
+	systemctl try-restart mpd mpd_oled
 	;;
 ntp )
-	file=/etc/systemd/timesyncd.conf
 	echo "\
 [Time]
-NTP=$NTP" > $file
+NTP=$NTP" > /etc/systemd/timesyncd.conf
 	timedatectl set-ntp true
 	pushRefresh
 	;;
@@ -432,16 +439,17 @@ vuled )
 	enableFlagSet
 	pins=$( cut -d= -f2 $dirsystem/vuled.conf )
 	if [[ $ON ]]; then
-		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
+		ln -sf $dirmpdconf/{conf/,}fifo.conf
 		grep -q 'state="*play' $dirshm/status && systemctl start cava
 	else
 		if [[ -e $dirsystem/vumeter ]]; then
-			systemctl restart cava
+			systemctl try-restart cava
 		else
 			systemctl stop cava
-			$dirsettings/player-conf.sh
+			rm -f $dirmpdconf/fifo.conf
 		fi
 	fi
+	systemctl restart mpd
 	pushRefresh
 	;;
 wlan )
