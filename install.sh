@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250106
-if [[ $( pacman -Q audio_spectrum_oled 2> /dev/null ) ]]; then
+if ! pacman -Q mpd_oled &> /dev/nul; then
 	pacman -R --noconfirm audio_spectrum_oled
 	pacman -Sy --noconfirm mpd_oled
 fi
