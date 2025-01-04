@@ -61,8 +61,8 @@ i {
 .i-star::before            { content: '\F550' }
 .i-bluealsa::before,
 .i-bluetooth::before,
-.i-brightness::before      { content: '\F55F' }
 .i-btreceiver::before      { content: '\F51A' }
+.i-brightness::before      { content: '\F55F' }
 .i-btsender::before        { content: '\F51B' }
 .i-camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
