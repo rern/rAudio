@@ -6,7 +6,7 @@ alias=r1
 
 # 20250106
 if ! pacman -Q mpd_oled &> /dev/nul; then
-	pacman -R --noconfirm audio_spectrum_oled
+	pacman -R --noconfirm audio_spectrum_oled &> /dev/null
 	pacman -Sy --noconfirm mpd_oled
 fi
 
