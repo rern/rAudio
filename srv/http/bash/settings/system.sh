@@ -248,11 +248,10 @@ mpdoled )
 	if ! systemctl -q is-active mpd_oled; then
 		mpd_oled -o $chip -L
 		(
-			[[ $ON ]] && sleep 10
+			[[ $ON ]] && sleep 10 || sleep 1
 			mpd_oled -o $chip -X
 		) &
 	fi
-	[[ $LOGO ]] && systemctl stop mpd_oled && exit
 # --------------------------------------------------------------------
 	enableFlagSet
 	if [[ $ON ]]; then
@@ -270,6 +269,16 @@ mpdoled )
 	i2cset=1
 	configTxt
 	systemctl try-restart mpd mpd_oled
+	;;
+mpdoledlogo )
+	systemctl -q is-active mpd_oled && active=1
+	systemctl stop mpd_oled
+	chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
+	mpd_oled -o $chip -L
+	(
+		sleep 10
+		grep -q ^state.*play $dirshm/status && systemctl start mpd_oled || mpd_oled -o $chip -X
+	) &
 	;;
 ntp )
 	echo "\

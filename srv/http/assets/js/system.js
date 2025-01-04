@@ -159,7 +159,7 @@ var config        = {
 				$( '.infofooter span' )
 					.toggleClass( 'disabled', ! S.mpdoled )
 					.on( 'click', function() {
-						bash( [ 'mpdoled', true, 'CMD LOGO' ] );
+						bash( [ 'mpdoledlogo' ] );
 						$( '#infoX' ).trigger( 'click' );
 					} );
 				$tr.eq( 0 ).on( 'input', function() {
