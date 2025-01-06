@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+$dirbash/cmd.sh playerstop
+
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 if [[ $1 == reboot ]]; then
 	reboot=1
@@ -32,8 +34,6 @@ elif [[ -e $filesharedip ]]; then
 fi
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 touch $dirshm/power
-
-$dirbash/cmd.sh playerstop
 
 logoLcdOled
 
