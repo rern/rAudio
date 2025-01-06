@@ -393,6 +393,8 @@ elapsed='$elapsed'
 pllength='$pllength'
 state="play"
 Title="'$title'"'
+	[[ -e $dirsystem/mpdoled ]] && status+='
+volume='$( volumeGet )
 	echo "$status" > $dirshm/status
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
 }

@@ -112,8 +112,6 @@ $( jq -r .albumTitle <<< $track )"
 	title=$( quoteEscape ${metadata[1]} )
 	album=$( quoteEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
-	jq .steps[$item] <<< $json
-	echo "$artist - $title - $album - $coverurl"
 	
 	if [[ ! $title || "$artist $title $album" == $dataprev ]]; then
 		sleep 5

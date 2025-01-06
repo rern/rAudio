@@ -5,9 +5,10 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250110
-if ! pacman -Q mpd_oled &> /dev/nul; then
+file=/etc/systemd/system/mpd_oled.service
+if [[ -e $file ]]; then
+	rm -f $file
 	pacman -R --noconfirm audio_spectrum_oled &> /dev/null
-	rm -f /etc/systemd/system/mpd_oled.service
 	pacman -Sy --noconfirm mpd_oled
 fi
 
