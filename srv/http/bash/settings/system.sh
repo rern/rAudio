@@ -277,8 +277,8 @@ mpdoled )
 	if [[ $ON ]] && grep -q ^state.*play $dirshm/status; then
 		systemctl restart mpd_oled
 	else
-		[[ $ON ]] && sleep 3
-		mpd_oled -o $CHIP -x sleep
+		( [[ $ON ]] && sleep 3
+		  mpd_oled -o $CHIP -x sleep ) &
 	fi
 	;;
 mpdoledlogo )
@@ -287,10 +287,8 @@ mpdoledlogo )
 	systemctl stop mpd_oled
 	chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
 	mpd_oled -o $chip -x logo
-	(
-		sleep 3
-		grep -q ^state.*play $dirshm/status && systemctl start mpd_oled || mpd_oled -o $chip -x sleep
-	) &
+	( sleep 3
+	  grep -q ^state.*play $dirshm/status && systemctl start mpd_oled || mpd_oled -o $chip -x sleep ) &
 	;;
 ntp )
 	echo "\
