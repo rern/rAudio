@@ -246,17 +246,14 @@ mpdoled )
 	opt=$( sed 's/ -X//' /etc/default/mpd_oled )
 	chip=$( cut -d' ' -f2 <<< $opt )
 	baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
-	[[ ! $ON ]] && systemctl stop mpd_oled
-	if ! systemctl -q is-active mpd_oled; then
-		mpd_oled -o $chip -x logo
-		(
-			[[ $ON ]] && sleep 10 || sleep 1
-			mpd_oled -o $chip -x sleep
-		) &
-	fi
-# --------------------------------------------------------------------
 	enableFlagSet
 	filefifo=$dirmpdconf/fifo.conf
+	if ls /dev/i2c* &> /dev/null; then
+		i2cactive=1
+		[[ ! $CHIP ]] && CHIP=$chip
+		systemctl stop mpd_oled
+		mpd_oled -o $CHIP -x logo
+	fi
 	if [[ $ON ]]; then
 		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
 		[[ $SPECTRUM ]] && opt=$( sed 's/"$/ -X"/' <<< $opt )
@@ -275,17 +272,23 @@ mpdoled )
 	i2cset=1
 	configTxt
 	[[ $restartmpd ]] && systemctl restart mpd
-	if [[ $ON ]]; then
-		grep -q ^state.*play $dirshm/status && systemctl restart mpd_oled
+	[[ ! $i2cactive ]] && exit
+# --------------------------------------------------------------------
+	if [[ $ON ]] && grep -q ^state.*play $dirshm/status; then
+		systemctl restart mpd_oled
+	else
+		[[ $ON ]] && sleep 3
+		mpd_oled -o $CHIP -x sleep
 	fi
 	;;
 mpdoledlogo )
-	systemctl -q is-active mpd_oled && active=1
+	! ls /dev/i2c* &> /dev/null && exit
+	
 	systemctl stop mpd_oled
 	chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
 	mpd_oled -o $chip -x logo
 	(
-		sleep 10
+		sleep 3
 		grep -q ^state.*play $dirshm/status && systemctl start mpd_oled || mpd_oled -o $chip -x sleep
 	) &
 	;;
