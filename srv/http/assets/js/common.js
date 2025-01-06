@@ -1193,7 +1193,6 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
-	if( ! action ) action = '';
 	loader();
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
@@ -1208,7 +1207,7 @@ function infoPowerCommand( action ) {
 						+'<br><br>Continue?'
 			, oklabel : action ? ico( 'reboot' ) +'Reboot' : ico( 'power' ) +'Off'
 			, okcolor : action ? orange : red
-			, ok      : () => bash( [ 'power.sh', action, 'confirm' ] )
+			, ok      : () => bash( [ 'power.sh', action || '', 'confirm' ] )
 		} );
 	} );
 }
@@ -1295,7 +1294,9 @@ function loader( fader ) {
 	$( '#loader' ).removeClass( 'hide' );
 }
 function loaderHide() {
-	if ( ! V.reboot ) $( '#loader' ).addClass( 'hide' );
+	if ( 'off' in V || 'reboot' in V ) return
+	
+	$( '#loader' ).addClass( 'hide' );
 }
 
 // ----------------------------------------------------------------------

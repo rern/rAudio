@@ -243,25 +243,23 @@ mountunmount )
 	pushRefresh
 	;;
 mpdoled )
-	filedef=/etc/default/mpd_oled
-	chip=$( cut -d' ' -f2 $filedef )
+	opt=$( sed 's/ -X//' /etc/default/mpd_oled )
+	chip=$( cut -d' ' -f2 <<< $opt )
+	baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
 	if ! systemctl -q is-active mpd_oled; then
-		mpd_oled -o $chip -L
+		mpd_oled -o $chip -x logo
 		(
 			[[ $ON ]] && sleep 10 || sleep 1
-			mpd_oled -o $chip -X
+			mpd_oled -o $chip -x sleep
 		) &
 	fi
 # --------------------------------------------------------------------
 	enableFlagSet
 	if [[ $ON ]]; then
-		! grep -q '\-A' $filedef && spectrum=1
-		if [[ $SPECTRUM ]]; then
-			[[ ! $spectrum ]] && sed -i 's/ -A//' $filedef
-		else
-			[[ $spectrum ]] && sed -i 's/"$/ -A"/' $filedef
-		fi
-		[[ $chip != $CHIP ]] && sed -i 's/-o ./-o '$CHIP'/' $filedef
+		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
+		[[ $SPECTRUM ]] && opt=$( sed 's/"$/ -X"/' <<< $opt )
+		[[ $chip != $CHIP ]] && opt=$( sed 's/-o ./-o '$CHIP'/' <<< $opt )
+		echo "$opt" > /etc/default/mpd_oled
 		ln -sf $dirmpdconf/{conf/,}fifo.conf
 	else
 		rm -f $dirmpdconf/fifo.conf
@@ -274,10 +272,10 @@ mpdoledlogo )
 	systemctl -q is-active mpd_oled && active=1
 	systemctl stop mpd_oled
 	chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
-	mpd_oled -o $chip -L
+	mpd_oled -o $chip -x logo
 	(
 		sleep 10
-		grep -q ^state.*play $dirshm/status && systemctl start mpd_oled || mpd_oled -o $chip -X
+		grep -q ^state.*play $dirshm/status && systemctl start mpd_oled || mpd_oled -o $chip -x sleep
 	) &
 	;;
 ntp )

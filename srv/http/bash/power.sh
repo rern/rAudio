@@ -2,9 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-$dirbash/cmd.sh playerstop
-
-[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 if [[ $1 == reboot ]]; then
 	reboot=1
 	audioCDplClear && $dirbash/status-push.sh
@@ -14,8 +11,9 @@ else
 	audioCDplClear
 	pushData power '{ "type": "off" }'
 fi
-
-playerActive upnp && $dirbash/cmd.sh playerstop
+$dirbash/cmd.sh playerstop
+logoLcdOled
+[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )
@@ -34,8 +32,6 @@ elif [[ -e $filesharedip ]]; then
 fi
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 touch $dirshm/power
-
-logoLcdOled
 
 snapclientIP playerstop
 cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )

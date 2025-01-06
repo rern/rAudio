@@ -96,10 +96,10 @@ localbrowser )
 }'
 	;;
 mpdoled )
-	file=/etc/default/mpd_oled
-	chip=$( cut -d' ' -f2 $file )
-	baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
-	spectrum=$( grep -q '\-A' $file && echo false || echo true )
+	opt=$( < /etc/default/mpd_oled )
+	chip=$( cut -d' ' -f2 <<< $opt )
+	spectrum=$( grep -q '\-X' <<< $opt && echo true || echo false )
+	baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
 	[[ ! $baud ]] && baud=800000
 	echo '{ "CHIP": "'$chip'", "BAUD": '$baud', "SPECTRUM": '$spectrum' }'
 	;;

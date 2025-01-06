@@ -268,7 +268,7 @@ logoLcdOled() {
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 	if [[ -e $dirsystem/mpdoled ]]; then
 		chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
-		mpd_oled -o $chip -L
+		mpd_oled -o $chip -x logo
 	fi
 }
 mountpointSet() {

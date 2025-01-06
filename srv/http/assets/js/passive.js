@@ -71,6 +71,8 @@ W = {
 		eqOptionPreset();
 	}
 	, mpdplayer : data => {
+		if ( 'off' in V || 'reboot' in V ) return
+		
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {
 			if ( ! data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
