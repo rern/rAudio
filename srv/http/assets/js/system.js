@@ -1,5 +1,5 @@
-W.reboot          = id => {
-	banner( id, $( '#div'+ id +' .col-l .label' ).text(), 'Reboot required', 5000 );
+W.reboot          = data => {
+	banner( data.id, $( '#div'+ data.id +' .col-l .label' ).text(), 'Reboot required', 5000 );
 }
 W.storage         = data => {
 	clearTimeout( V.debounce );
@@ -148,7 +148,6 @@ var config        = {
 				, [ 'Refresh <gr>(baud)</gr>', 'select', { kv: { '800,000': 800000, '1,000,000': 1000000, '1,200,000': 1200000 } } ]
 				, [ 'Spectrum only',        'checkbox' ]
 			]
-			, footer       : '<span>'+ ico( 'raudio' ) +'Logo</span>'
 			, values       : values
 			, checkchanged : S.mpdoled
 			, boxwidth     : 140
@@ -156,12 +155,6 @@ var config        = {
 				var $tr   = $( '#infoList tr' );
 				var $baud = $tr.eq( 1 )
 				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
-				$( '.infofooter span' )
-					.toggleClass( 'disabled', ! S.mpdoled )
-					.on( 'click', function() {
-						bash( [ 'mpdoledlogo' ] );
-						$( '#infoX' ).trigger( 'click' );
-					} );
 				$tr.eq( 0 ).on( 'input', function() {
 					var val = this.value;
 					$baud.toggleClass( 'hide', val < 3 || val > 6 );
@@ -380,18 +373,7 @@ var util          = {
 			  icon       : 'lcdchar'
 			, title      : 'Character LCD'
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
-			, footer     : infoFooterIcon( {
-				  Logo  : 'raudio'
-				, Sleep : 'screenoff'
-			} )
-			, beforeshow : () => {
-				$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
-				$( '.infofooter span' )
-					.toggleClass( 'disabled', ! S.lcdchar )
-					.on( 'click', function() {
-						bash( [ 'lcdchar', $( this ).index() ? 'off' : 'logo', 'CMD ACTION' ] );
-				} );
-			}
+			, beforeshow : () => $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 )
 			, cancel   : switchCancel
 			, ok       : () => {
 				jsonSave( 'lcdchar', infoVal() );

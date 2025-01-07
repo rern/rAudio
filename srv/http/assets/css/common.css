@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1735640241' );
+	src         : url( '/assets/fonts/rern.woff2?v=1735997122' );
 }
 @font-face {
 	font-family : Lato;
@@ -427,6 +427,7 @@ code {
 	text-overflow: ellipsis;
 }
 #bannerTitle {
+	line-height: 22px;
 	font-size: 18px;
 	font-weight: 300;
 }

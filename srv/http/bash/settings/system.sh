@@ -67,7 +67,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
-		pushData reboot $CMD
+		pushData reboot '{ "id": "'$CMD'" }'
 		appendSortUnique $CMD $dirshm/reboot
 	elif [[ -e $dirshm/reboot ]]; then
 		sed -i "/$CMD/ d" $dirshm/reboot
@@ -243,52 +243,29 @@ mountunmount )
 	pushRefresh
 	;;
 mpdoled )
-	opt=$( sed 's/ -X//' /etc/default/mpd_oled )
-	chip=$( cut -d' ' -f2 <<< $opt )
-	baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
 	enableFlagSet
 	filefifo=$dirmpdconf/fifo.conf
-	if ls /dev/i2c* &> /dev/null; then
-		i2cactive=1
-		[[ ! $CHIP ]] && CHIP=$chip
-		systemctl stop mpd_oled
-		mpd_oled -o $CHIP -x logo
-	fi
 	if [[ $ON ]]; then
-		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
-		[[ $SPECTRUM ]] && opt=$( sed 's/"$/ -X"/' <<< $opt )
+		opt=$( sed 's/ -X//' /etc/default/mpd_oled )
+		chip=$( cut -d' ' -f2 <<< $opt )
+		baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
 		[[ $chip != $CHIP ]] && opt=$( sed 's/-o ./-o '$CHIP'/' <<< $opt )
+		[[ $SPECTRUM ]] && opt=$( sed 's/"$/ -X"/' <<< $opt )
+		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
 		echo "$opt" > /etc/default/mpd_oled
 		if [[ ! -e $filefifo ]]; then
 			ln -s $dirmpdconf/{conf/,}fifo.conf
-			restartmpd=1
+			systemctl restart mpd
 		fi
 	else
 		if [[ -e $filefifo ]]; then
 			rm $filefifo
-			restartmpd=1
+			systemctl restart mpd
 		fi
 	fi
 	i2cset=1
 	configTxt
-	[[ $restartmpd ]] && systemctl restart mpd
-	[[ ! $i2cactive ]] && exit
-# --------------------------------------------------------------------
-	if [[ $ON ]] && grep -q ^state.*play $dirshm/status; then
-		systemctl restart mpd_oled
-	else
-		( [[ $ON ]] && sleep 3
-		  mpd_oled -o $CHIP -x sleep ) &
-	fi
-	;;
-mpdoledlogo )
-	! ls /dev/i2c* &> /dev/null && exit
-	
-	systemctl stop mpd_oled
-	chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
-	mpd_oled -o $chip -x logo
-	( sleep 3
-	  grep -q ^state.*play $dirshm/status && systemctl start mpd_oled || mpd_oled -o $chip -x sleep ) &
+	systemctl try-restart mpd_oled
 	;;
 ntp )
 	echo "\
