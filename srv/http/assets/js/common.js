@@ -178,7 +178,7 @@ function banner( icon, title, message, delay ) {
 	}, delay || 3000 );
 }
 function bannerHide() {
-	if ( V.bannerdelay || V.reboot || V.relays || $( '#banner .i-warning' ).length ) return
+	if ( V.bannerdelay || V.relays ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -1452,8 +1452,11 @@ function websocketConnect( ip ) {
 		if ( data === 'pong' ) { // on pageActive - reload if ws not response
 			V.timeoutreload = false;
 		} else {
-			var json = JSON.parse( data );
-			if ( json.channel in W ) W[ json.channel ]( json.data );
+			var json    = JSON.parse( data );
+			var channel = json.channel;
+			if ( V.off || V.reboot ) return
+			
+			if ( channel in W ) W[ channel ]( json.data );
 		}
 	}
 }
