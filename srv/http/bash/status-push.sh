@@ -12,10 +12,9 @@ if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 	statusradio=1
 else
 	status=$( $dirbash/status.sh | jq )
-	for k in Artist Album Composer elapsed file player station state Time timestamp Title webradio; do
-		filter+='|^  "'$k
+	for k in Artist Album Composer Conductor elapsed file player station state Time timestamp Title volume webradio; do
+		filter+='|^  "'$k'"'
 	done
-	[[ -e $dirsystem/mpdoled ]] && filter+='|^  "volume"'
 	statuslines=$( grep -E "${filter:1}" <<< $status )
 	statusnew=$( sed -E 's/^ *"|,$//g; s/" *: */=/' <<< $statuslines | tee $dirshm/statusnew )
 	statusprev=$( < $dirshm/status )
