@@ -63,7 +63,7 @@ W               = {  // ws push
 			$( '#loader' ).css( 'opacity', 1 );
 			setTimeout( () => {
 				$( '#loader svg' ).css( 'animation', 'none' );
-				bannerHide();
+				$( '#banner' ).addClass( 'hide' );
 			}, 10000 );
 		} else { // reconnect after reboot
 			setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
@@ -178,7 +178,7 @@ function banner( icon, title, message, delay ) {
 	}, delay || 3000 );
 }
 function bannerHide() {
-	if ( V.bannerdelay || V.relays ) return
+	if ( V.bannerdelay || V.relays || V.reboot || V.off ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -1454,8 +1454,6 @@ function websocketConnect( ip ) {
 		} else {
 			var json    = JSON.parse( data );
 			var channel = json.channel;
-			if ( V.off || V.reboot ) return
-			
 			if ( channel in W ) W[ channel ]( json.data );
 		}
 	}
