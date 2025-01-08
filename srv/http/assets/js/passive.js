@@ -101,7 +101,11 @@ W = {
 			setProgress( 0 );
 			setBlinkDot();
 		}
-		setPlaylistScroll();
+		if ( V.playlist ) {
+			var $liactive = $( '#pl-list li.active' );
+			$liactive.find( '.name' ).text( S.Title );
+			$liactive.find( 'img' ).attr( 'src', S.coverart );
+		}
 	}	
 	, mpdupdate : data => {
 		if ( 'counts' in data ) {

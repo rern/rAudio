@@ -1811,19 +1811,14 @@ function setPlaylistScroll() {
 				$stationname.removeClass( 'hide' );
 				$name.html( S.Title || dots );
 				if ( S.coverart && S.coverart !== S.stationcover ) {
-					$liactive.find( 'img' ).on( 'lazyloaded', setPlaylistWebRadioCoverart ); // fix - lazysizes load stationcover
-					setPlaylistWebRadioCoverart(); // lazysizes already loaded
+					$liactive.find( 'img' ).on( 'lazyloaded', () => {
+						$( '#pl-list li.active img' ).attr( 'src', S.coverart );
+					} );
 				}
 			}
 			setProgressElapsed();
 		}
 	}
-}
-function setPlaylistWebRadioCoverart() {
-	var coverart = S.state === 'play' ? S.coverart + versionHash() : S.stationcover;
-	$( '#pl-list li.active img' )
-		.data( 'src', coverart )
-		.attr( 'src', coverart);
 }
 function setPlayPauseColor() {
 	var pause = S.state === 'pause';
