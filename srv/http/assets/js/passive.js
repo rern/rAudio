@@ -101,11 +101,7 @@ W = {
 			setProgress( 0 );
 			setBlinkDot();
 		}
-		if ( V.playlist ) {
-			var $liactive = $( '#pl-list li.active' );
-			$liactive.find( '.name' ).text( S.Title );
-			$liactive.find( 'img' ).attr( 'src', S.coverart );
-		}
+		if ( V.playlist ) setPlaylistRadioInfo();
 	}	
 	, mpdupdate : data => {
 		if ( 'counts' in data ) {

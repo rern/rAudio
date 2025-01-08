@@ -1834,18 +1834,13 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var $liactive  = $( '#pl-list li.active' );
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$liactive.find( '.song' ).empty();
-	if ( $liactive.hasClass( 'webradio' ) ) {
-		if ( S.state == 'play' ) {
-			$liactive.find( '.li1 .name' ).text( $liactive.find( '.liname' ).text() );
-			$liactive.find( '.li2 .stationname' ).addClass( 'hide' );
-			$liactive.find( '.li2 .name' ).removeClass( 'hide' );
-		}
-	}
 	if ( $this.hasClass( 'active' ) ) {
 		if ( S.state === 'play' ) {
 			if ( S.webradio ) {
+				$liactive.removeClass( 'play' );
+				$liactive.find( '.elapsed' ).empty();
+				setPlaylistRadioInfo( 'stop' );
 				$( '#stop' ).trigger( 'click' );
-				$this.find( '.elapsed' ).empty();
 			} else {
 				$( '#pause' ).trigger( 'click' );
 				$this.find( '.elapsed i' ).toggleClass( 'i-play i-pause' );

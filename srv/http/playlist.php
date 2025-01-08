@@ -169,33 +169,33 @@ foreach( $lists as $list ) {
 		$count->upnp++;
 	} else {
 		if ( str_contains( $file, '://' ) ) { // webradio / dabradio
-			$urlname     = str_replace( '/', '|', $file );
-			$radio       = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
-			$fileradio   = '/srv/http/data/'.$radio.'/'.$urlname;
+			$urlname   = str_replace( '/', '|', $file );
+			$radio     = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
+			$fileradio = '/srv/http/data/'.$radio.'/'.$urlname;
 			if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$radio.'/ -name "'.$urlname.'" | head -1' );
-			$stationname = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
+			$station   = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 		} else {
-			$urlname     = str_replace( '#', '%23', $urlname );
-			$stationname = '';
+			$urlname   = str_replace( '#', '%23', $urlname );
+			$station   = '';
 		}
-		if ( $stationname !== '' ) {
-			$notsaved    = 0;
-			$thumbsrc    = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
-			$icon        = imgIcon( $thumbsrc, 'filesavedpl', $radio );
+		if ( $station !== '' ) {
+			$notsaved = 0;
+			$thumbsrc = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
+			$icon     = imgIcon( $thumbsrc, 'filesavedpl', $radio );
 		} else {
-			$notsaved    = 1;
-			$icon        = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
+			$notsaved = 1;
+			$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
 		}
 		$classnotsaved = $notsaved ? ' notsaved' : '';
-		$namenotsaved  = $notsaved ? '' : $stationname;
+		$namenotsaved  = $notsaved ? '' : $station;
 		$url           = preg_replace( '/#charset=.*/', '', $file );
 		$path          = preg_replace( '/\?.*$/', '', $file );
 		$html         .=
 '<li class="webradio '.$classnotsaved.'">'.
 	'<a class="lipath">'.$path.'</a>'.
-	$icon.'<div class="li1"><a class="name">'.( $notsaved ? '. . .' : $stationname ).'</a>'.
+	$icon.'<div class="li1"><a class="name">'.( $notsaved ? '. . .' : $station ).'</a>'.
 	'<a class="elapsed"></a></div>'.
-	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="stationname hide">'.$namenotsaved.'</a><a>'.$url.'</a></div>'.
+	'<div class="li2"><a class="pos">'.$pos.'</a><a class="album hide"></a><a class="station hide">'.$namenotsaved.'</a><a class="url">'.$url.'</a></div>'.
 '</li>
 ';
 		$count->radio++;
