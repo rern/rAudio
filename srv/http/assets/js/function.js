@@ -1778,7 +1778,6 @@ function setPlaylistScroll() {
 	$( '#pl-list li' ).removeClass( 'active pause play updn' );
 	$liactive = $( '#pl-list li' ).eq( S.song );
 	$liactive.addClass( 'active' );
-	S.webradio = $liactive.hasClass( 'webradio' );
 	if ( ! $( '.pl-remove' ).length && ! I.active ) {
 		if ( $( '#pl-list li' ).length < 5 ) {
 			var top = 0;
@@ -1791,13 +1790,19 @@ function setPlaylistScroll() {
 	var $elapsed     = $liactive.find( '.elapsed' );
 	var $name        = $liactive.find( '.li1 .name' );
 	var $stationname = $liactive.find( '.li2 .stationname' );
-	$stationname.addClass( 'hide' );
-	if ( S.state === 'stop' || S.player === 'snapcast' ) {
+	if ( S.state === 'stop' ) {
 		if ( S.webradio ) {
-			$name.text( $liactive.find( '.liname' ).text() );
-			setPlaylistWebRadioCoverart();
+			var $img = $( '#pl-list li.active img' );
+			$img.attr( 'src', $img.data( 'src' ) );
+			$name.text( $stationname.text() );
+			$stationname.addClass( 'hide' );
 		}
 	} else {
+		if ( S.webradio && S.state === 'play' ) {
+			$stationname.removeClass( 'hide' );
+			$name.html( S.Title || dots );
+			if ( S.coverart && S.coverart !== S.stationcover ) $( '#pl-list li.active img' ).attr( 'src', S.coverart );
+		}
 		if ( S.elapsed === false ) return
 		
 		$liactive.addClass( S.state );
@@ -1806,16 +1811,7 @@ function setPlaylistScroll() {
 			elapsedtxt = second2HMS( S.elapsed );
 			$elapsed.text( elapsedtxt );
 			setPlaylistInfoWidth();
-		} else if ( S.state === 'play' ) {
-			if ( S.webradio ) {
-				$stationname.removeClass( 'hide' );
-				$name.html( S.Title || dots );
-				if ( S.coverart && S.coverart !== S.stationcover ) {
-					$liactive.find( 'img' ).on( 'lazyloaded', () => {
-						$( '#pl-list li.active img' ).attr( 'src', S.coverart );
-					} );
-				}
-			}
+		} else {
 			setProgressElapsed();
 		}
 	}

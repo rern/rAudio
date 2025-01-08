@@ -187,13 +187,13 @@ foreach( $lists as $list ) {
 			$icon        = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
 		}
 		$classnotsaved = $notsaved ? ' notsaved' : '';
-		$namenotsaved  = $notsaved ? '' : $stationname.' • ';
+		$namenotsaved  = $notsaved ? '' : $stationname;
 		$url           = preg_replace( '/#charset=.*/', '', $file );
 		$path          = preg_replace( '/\?.*$/', '', $file );
 		$html         .=
 '<li class="webradio '.$classnotsaved.'">'.
 	'<a class="lipath">'.$path.'</a>'.
-	$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><a class="name">'.( $notsaved ? '. . .' : $stationname ).'</a>'.
+	$icon.'<div class="li1"><a class="name">'.( $notsaved ? '. . .' : $stationname ).'</a>'.
 	'<a class="elapsed"></a></div>'.
 	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="stationname hide">'.$namenotsaved.'</a><a>'.$url.'</a></div>'.
 '</li>
