@@ -1864,7 +1864,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	V.list        = {};
 	V.list.li     = $thisli;
 	V.list.path   = $thisli.find( '.lipath' ).text();
-	V.list.artist = $thisli.find( '.artist' ).text();
 	V.list.name   = $thisli.find( webradio ? '.liname' : '.name' ).eq( 0 ).text();
 	V.list.index  = $thisli.index();
 	var $menu = $( '#menu-plaction' );
@@ -1938,7 +1937,6 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 				V.list.name = $this.find( '.lipath' ).text().trim();
 				V.list.path = V.list.name;
 			} else {
-				V.list.artist = $this.find( '.artist' ).text().trim();
 				V.list.name   = $this.find( '.name' ).text().trim();
 				V.list.path   = $this.find( '.lipath' ).text().trim() || V.list.name;
 				V.list.track  = $this.data( 'track' );

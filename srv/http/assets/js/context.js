@@ -2,7 +2,7 @@ function addSimilar() {
 	var icon  = 'lastfm';
 	var title = 'Add Similar';
 	banner( icon +' blink', title, 'Get similar tracks ...', -1 );
-	bash( [ 'mpcsimilar', V.list.artist, V.list.name, V.apikeylastfm, 'CMD ARTIST TITLE APIKEY' ], error => {
+	bash( [ 'mpcsimilar', V.list.path, 'CMD FILE' ], error => {
 		if ( error ) {
 			bannerHide();
 			info( {

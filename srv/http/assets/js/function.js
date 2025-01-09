@@ -259,7 +259,6 @@ function contextmenuLibrary( $li, $target ) {
 	if ( V.mode.slice( -5 ) === 'radio' ) V.list.dir = $li.find( '.lidir' ).text();
 	if ( V.librarytrack && ! V.list.licover ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
-		V.list.artist = $( '.licover .liartist' ).text() || '';
 	} else {
 		V.list.name   = $li.find( '.name' ).text() || V.list.path;
 	}

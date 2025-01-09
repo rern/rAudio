@@ -289,15 +289,13 @@ screentoggle )
 	xset q | grep 'Monitor is'
 	;;
 scrobblekey )
-	keys=( $( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
-	apikey=${keys[0]}
-	sharedsecret=${keys[1]}
-	apisig=$( echo -n "api_key${apikey}methodauth.getSessiontoken${TOKEN}${sharedsecret}" \
+	. <( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | sed 's/.*, //; s/ *: /=/' )
+	apisig=$( echo -n "api_key${apikeylastfm}methodauth.getSessiontoken${TOKEN}${sharedsecret}" \
 				| md5sum \
 				| cut -c1-32 )
 	response=$( curl -sX POST \
 		--data "method=auth.getSession" \
-		--data "api_key=$apikey" \
+		--data "api_key=$apikeylastfm" \
 		--data "token=$TOKEN" \
 		--data "api_sig=$apisig" \
 		--data "format=json" \
@@ -305,7 +303,7 @@ scrobblekey )
 	[[ $response =~ error ]] && jq -r .message <<< $response && exit
 # --------------------------------------------------------------------
 	echo "\
-apikey=$apikey
+apikey=$apikeylastfm
 sharedsecret=$sharedsecret
 sk=$( jq -r .session.key <<< $response )
 " > $dirsystem/scrobblekey

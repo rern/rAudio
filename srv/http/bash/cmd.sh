@@ -637,11 +637,15 @@ mpcshuffle )
 	pushPlaylist
 	;;
 mpcsimilar )
+	readarray -t lines <<< $( mpc ls -f %artist%^%title% "$FILE" | tr ^ '\n' )
+	artist=${lines[0]}
+	title=${lines[1]}
+	apikey=$( grep -E -m1 'apikeylastfm' /srv/http/assets/js/main.js | cut -d"'" -f2 )
 	lines=$( curl -sfG -m 5 \
-				--data-urlencode "artist=$ARTIST" \
-				--data-urlencode "track=$TITLE" \
+				--data-urlencode "artist=$artist" \
+				--data-urlencode "track=$title" \
 				--data "method=track.getsimilar" \
-				--data "api_key=$APIKEY" \
+				--data "api_key=$apikey" \
 				--data "format=json" \
 				--data "autocorrect=1" \
 				http://ws.audioscrobbler.com/2.0 \
