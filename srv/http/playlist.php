@@ -93,8 +93,8 @@ foreach( $lists as $list ) {
 	$pos++;
 	$v      = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
-	$header = strtolower( substr( $file, 0, 4 ) );
-	if ( ! in_array( $header, [ 'http', 'rtmp', 'rtp:', 'rtsp' ] ) ) {
+	$prefix = $file[ 0 ];
+	if ( in_array( $prefix, [ 'U', 'N', 'S' ] ) ) { // USB, NAS, SD
 		$sec       = HMS2second( $time );
 		$li2       = '';
 		if ( $track ) {
@@ -103,8 +103,9 @@ foreach( $lists as $list ) {
 		}
 		$artist    = $artist ?: $albumartist;
 		$album     = $album;
-		if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
-		if ( $album )  $li2.= '<a class="album">'.$album.'</a>';
+		if ( $artist )           $li2.= '<a class="artist">'.$artist.'</a>';
+		if ( $artist && $album ) $li2.= ' - ';
+		if ( $album )            $li2.= '<a class="album">'.$album.'</a>';
 		if ( ! $artist && ! $album ) $li2.= $file;
 		$datatrack = '';
 		if ( strpos( $file, '.cue/track' ) ) {
@@ -151,46 +152,51 @@ foreach( $lists as $list ) {
 ';
 		$count->song++;
 		$count->time += $sec;
-	} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
-		$li2    = '';
-		$artist = $artist;
-		$album  = $album;
-		if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
-		if ( $album )  $li2.= '<a class="album">'.$album.'</a>';
+		continue;
+	}
+	
+	$prefix        = substr( $file, 0, 10 );
+	if ( in_array( $prefix, [ 'http://192', 'http://127', 'http://loc' ] ) ) { // upnp
+		$li2       = '';
+		if ( $artist )           $li2.= '<a class="artist">'.$artist.'</a>';
+		if ( $artist && $album ) $li2.= ' - ';
+		if ( $album )            $li2.= '<a class="album">'.$album.'</a>';
 		if ( ! $artist && ! $album ) $li2.= $file;
-		$html  .=
+		$html     .=
 '<li class="upnp">'.
 	i( 'upnp', 'filesavedpl' ).
 	'<div class="li1"><a class="name">'.$title.'</a>'.
 	'<a class="elapsed"></a></div>'.
-	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>'.
+	'<div class="li2"><a class="pos">'.$pos.'</a> • '.$li2.'</div>'.
 '</li>
 ';
 		$count->upnp++;
+		continue;
+	}
+	// webradio / dabradio
+	if ( str_contains( $file, '://' ) ) {
+		$urlname   = str_replace( '/', '|', $file );
+		$radio     = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
+		$fileradio = '/srv/http/data/'.$radio.'/'.$urlname;
+		if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$radio.'/ -name "'.$urlname.'" | head -1' );
+		$station   = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 	} else {
-		if ( str_contains( $file, '://' ) ) { // webradio / dabradio
-			$urlname   = str_replace( '/', '|', $file );
-			$radio     = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
-			$fileradio = '/srv/http/data/'.$radio.'/'.$urlname;
-			if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$radio.'/ -name "'.$urlname.'" | head -1' );
-			$station   = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
-		} else {
-			$urlname   = str_replace( '#', '%23', $urlname );
-			$station   = '';
-		}
-		if ( $station !== '' ) {
-			$notsaved = 0;
-			$thumbsrc = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
-			$icon     = imgIcon( $thumbsrc, 'filesavedpl', $radio );
-		} else {
-			$notsaved = 1;
-			$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
-		}
-		$classnotsaved = $notsaved ? ' notsaved' : '';
-		$namenotsaved  = $notsaved ? '' : $station;
-		$url           = preg_replace( '/#charset=.*/', '', $file );
-		$path          = preg_replace( '/\?.*$/', '', $file );
-		$html         .=
+		$urlname   = str_replace( '#', '%23', $urlname );
+		$station   = '';
+	}
+	if ( $station !== '' ) {
+		$notsaved = 0;
+		$thumbsrc = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
+		$icon     = imgIcon( $thumbsrc, 'filesavedpl', $radio );
+	} else {
+		$notsaved = 1;
+		$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
+	}
+	$classnotsaved = $notsaved ? ' notsaved' : '';
+	$namenotsaved  = $notsaved ? '' : $station;
+	$url           = preg_replace( '/#charset=.*/', '', $file );
+	$path          = preg_replace( '/\?.*$/', '', $file );
+	$html         .=
 '<li class="webradio '.$classnotsaved.'">'.
 	'<a class="lipath">'.$path.'</a>'.
 	$icon.'<div class="li1"><a class="name">'.( $notsaved ? '. . .' : $station ).'</a>'.
@@ -198,8 +204,7 @@ foreach( $lists as $list ) {
 	'<div class="li2"><a class="pos">'.$pos.'</a><a class="artist hide"></a><a class="station hide">'.$namenotsaved.'</a><a class="url">'.$url.'</a></div>'.
 '</li>
 ';
-		$count->radio++;
-	}
+	$count->radio++;
 }
 $counthtml = '';
 if ( $name ) {

@@ -15,8 +15,8 @@ $dirbash/cmd.sh playerstop
 logoLcdOled
 [[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 
+ipserver=$( ipAddress )
 if systemctl -q is-active nfs-server; then # server rAudio
-	ipserver=$( ipAddress )
 	ipclients=$( grep -v $ipserver $filesharedip )
 	if [[ $ipclients ]]; then
 		[[ ! $2 ]] && echo -1 && exit # $2 confirm proceed
@@ -26,10 +26,8 @@ if systemctl -q is-active nfs-server; then # server rAudio
 			notify -ip $ip 'networks blink' 'Server rAudio' "$msg"
 		done
 	fi
-	sed -i "/$ipserver/ d" $filesharedip
-elif [[ -e $filesharedip ]]; then
-	sed -i "/$( ipAddress )/ d" $filesharedip
 fi
+[[ -e $filesharedip ]] && sed -i "/$ipserver/ d" $filesharedip
 [[ -e $dirshm/btreceiver ]] && cp $dirshm/btreceiver $dirsystem
 touch $dirshm/power
 
