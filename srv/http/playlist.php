@@ -155,8 +155,8 @@ foreach( $lists as $list ) {
 		continue;
 	}
 	
-	$prefix        = substr( $file, 0, 10 );
-	if ( in_array( $prefix, [ 'http://192', 'http://127', 'http://loc' ] ) ) { // upnp
+	$prefix        = substr( $file, 0, 14 );
+	if ( substr( $file, 0, 14 ) === 'http://192.168' ) { // upnp
 		$li2       = '';
 		if ( $artist )           $li2.= '<a class="artist">'.$artist.'</a>';
 		if ( $artist && $album ) $li2.= ' - ';
