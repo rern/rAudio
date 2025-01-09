@@ -142,7 +142,8 @@ foreach( $lists as $list ) {
 		$html     .=
 '<li class="'.$class.'" '.$datatrack.'>'.
 	'<a class="lipath">'.$file.'</a>'.
-	$icon.'<div class="li1"><a class="name">'.$title.'</a>'.
+	$icon.
+	'<div class="li1"><a class="name">'.$title.'</a>'.
 	'<a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></div>'.
 	'<div class="li2">'.$li2.'</div>'.
 '</li>
@@ -198,7 +199,8 @@ foreach( $lists as $list ) {
 	$html         .=
 '<li class="webradio '.$notsaved.'">'.
 	'<a class="lipath">'.$path.'</a>'.
-	$icon.'<div class="li1"><a class="name">'.$name.'</a>'.
+	$icon.
+	'<div class="li1"><a class="name">'.$name.'</a>'.
 	'<a class="elapsed"></a></div>'.
 	'<div class="li2">'.$li2.'</div>'.
 '</li>
