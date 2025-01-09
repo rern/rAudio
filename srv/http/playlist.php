@@ -195,7 +195,7 @@ foreach( $lists as $list ) {
 	'<a class="lipath">'.$path.'</a>'.
 	$icon.'<div class="li1"><a class="name">'.( $notsaved ? '. . .' : $station ).'</a>'.
 	'<a class="elapsed"></a></div>'.
-	'<div class="li2"><a class="pos">'.$pos.'</a><a class="album hide"></a><a class="station hide">'.$namenotsaved.'</a><a class="url">'.$url.'</a></div>'.
+	'<div class="li2"><a class="pos">'.$pos.'</a><a class="artist hide"></a><a class="station hide">'.$namenotsaved.'</a><a class="url">'.$url.'</a></div>'.
 '</li>
 ';
 		$count->radio++;

@@ -1768,26 +1768,26 @@ function setPlaylistRadioInfo( stop ) {
 	var $name     = $liactive.find( '.name' );
 	var $li2      = $liactive.find( '.li2' ); 
 	var $station  = $li2.find( '.station' );
-	var $album    = $li2.find( '.album' );
+	var $artist   = $li2.find( '.artist' );
 	var $url      = $li2.find( '.url' );
 	if ( S.state === 'stop' || stop ) {
 		$img.attr( 'src', $img.data( 'src' ) );
 		$name.text( $station.text() );
 		$station.addClass( 'hide' );
-		$album.addClass( 'hide' );
+		$artist.addClass( 'hide' );
 		$url.removeClass( 'hide' );
 	} else {
 		if ( S.coverart ) $img
 							.removeClass( 'lazyload' )
 							.attr( 'src', S.coverart );
 		$name.html( S.Title || dots );
-		if ( S.Album ) {
-			$album
-				.text( S.Album )
+		if ( S.Artist ) {
+			$artist
+				.text( S.Artist + ( S.Album ? ' - '+ S.Album : '' ) )
 				.removeClass( 'hide' );
 			$url.addClass( 'hide' );
 		} else {
-			$album.addClass( 'hide' );
+			$artist.addClass( 'hide' );
 			$url.removeClass( 'hide' );
 		}
 		$station.removeClass( 'hide' );

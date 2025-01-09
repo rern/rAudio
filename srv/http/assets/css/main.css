@@ -1795,9 +1795,9 @@ li.active .li1 bl {
 	font-size: 14px !important;
 	color: var( --cg60 );
 }
-.li2 .album::before,
-.li2 .station::before,
-.li2 .url::before {
+li.webradio .artist::before,
+li.webradio .station::before,
+li.webradio .url::before {
 	content: ' • ';
 }
 #pl-savedlist .li2 {
