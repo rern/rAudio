@@ -186,9 +186,11 @@ foreach( $lists as $list ) {
 		$li2     .= $station;
 		$thumbsrc = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
 		$icon     = imgIcon( $thumbsrc, 'filesavedpl', $radio );
+		$name     = $station;
 	} else {
 		$notsaved = ' notsaved';
 		$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
+		$name     = '. . .';
 	}
 	$path          = preg_replace( '/\?.*$/', '', $file );
 	$url           = preg_replace( '/#charset=.*/', '', $file );
@@ -196,7 +198,7 @@ foreach( $lists as $list ) {
 	$html         .=
 '<li class="webradio '.$notsaved.'">'.
 	'<a class="lipath">'.$path.'</a>'.
-	$icon.'<div class="li1"><a class="name">'.( $notsaved ? '. . .' : $station ).'</a>'.
+	$icon.'<div class="li1"><a class="name">'.$name.'</a>'.
 	'<a class="elapsed"></a></div>'.
 	'<div class="li2">'.$li2.'</div>'.
 '</li>
