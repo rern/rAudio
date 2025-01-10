@@ -204,7 +204,6 @@ EOF
 		  'id'       => 'mpdoled'
 		, 'label'    => 'Spectrum OLED'
 		, 'sub'      => 'mpd_oled'
-		, 'exist'    => '/usr/bin/cava'
 		, 'help'     => <<<EOF
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 
@@ -222,7 +221,6 @@ EOF
 		  'id'       => 'vuled'
 		, 'label'    => 'VU LED'
 		, 'sub'      => 'cava'
-		, 'exist'    => '/usr/bin/cava'
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
