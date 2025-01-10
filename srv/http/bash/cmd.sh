@@ -385,8 +385,6 @@ dirrename )
 display )
 	status=$( $dirbash/status.sh )
 	pushData mpdplayer "$status"
-	display=$( < $dirsystem/display.json )
-	pushData display "$display"
 	systemctl try-restart radio
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1 || prevvumeter=
 	grep -q -m1 vumeter.*true <<< $display && vumeter=1 || vumeter=
