@@ -384,7 +384,7 @@ quoteEscape() {
 }
 radioStatusFile() {
 	local status
-	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^state|^Title' $dirshm/status )
+	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^pllength|^state|^Title' $dirshm/status )
 	status+='
 Artist="'$artist'"
 Album="'$album'"
