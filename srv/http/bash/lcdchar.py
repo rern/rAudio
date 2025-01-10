@@ -158,10 +158,7 @@ if not Artist: Artist = DOTS
 if not Title:  Title  = DOTS
 if not Album:  Album  = DOTS
 if rows == 2:
-    if state == 'play':
-        lines = Title
-    elif BACKLIGHT:
-        backlightOff()
+    if state == 'play': lines = Title
 else:
     lines = Artist + RN + Title + RN + Album
 
