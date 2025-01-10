@@ -383,20 +383,21 @@ dirrename )
 	pushRadioList
 	;;
 display )
-	pushData display $( < $dirsystem/display.json )
-	# temp
-	if grep -q albumyear.*true $dirsystem/display.json && [[ ! -e $dirmpd/albumbyartist-year ]]; then
-		pushData mpdupdate '{ "type": "mpd" }'
-		$dirbash/cmd-list.sh &> /dev/null &
-	fi
-	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
-	grep -q -m1 vumeter.*true $dirsystem/display.json && touch $dirsystem/vumeter && vumeter=1
+	status=$( $dirbash/status.sh )
+	pushData mpdplayer "$status"
+	display=$( < $dirsystem/display.json )
+	pushData display "$display"
+	systemctl try-restart radio
+	[[ -e $dirsystem/vumeter ]] && prevvumeter=1 || prevvumeter=
+	grep -q -m1 vumeter.*true <<< $display && vumeter=1 || vumeter=
 	[[ $prevvumeter == $vumeter ]] && exit
 # --------------------------------------------------------------------
 	if [[ $vumeter ]]; then
+		touch $dirsystem/vumeter
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	else
 		rm -f $dirsystem/vumeter
+		[[ -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	fi
 	;;
 equalizer )

@@ -522,6 +522,7 @@ function displaySave() {
 	} );
 	if ( values.tapreplaceplay ) values.plclear = false;
 	jsonSave( 'display', values );
+	bash( [ 'display' ] );
 }
 function displaySubMenu() {
 	$( '#dsp' )
