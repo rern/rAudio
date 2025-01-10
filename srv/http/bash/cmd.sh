@@ -387,7 +387,7 @@ display )
 	pushData mpdplayer "$status"
 	systemctl try-restart radio
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1 || prevvumeter=
-	grep -q -m1 vumeter.*true <<< $display && vumeter=1 || vumeter=
+	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
 	[[ $prevvumeter == $vumeter ]] && exit
 # --------------------------------------------------------------------
 	if [[ $vumeter ]]; then
