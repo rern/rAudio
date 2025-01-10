@@ -244,7 +244,6 @@ mountunmount )
 	;;
 mpdoled )
 	enableFlagSet
-	filefifo=$dirmpdconf/fifo.conf
 	if [[ $ON ]]; then
 		opt=$( sed 's/ -X//' /etc/default/mpd_oled )
 		chip=$( cut -d' ' -f2 <<< $opt )
@@ -253,19 +252,10 @@ mpdoled )
 		[[ $SPECTRUM ]] && opt=$( sed 's/"$/ -X"/' <<< $opt )
 		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
 		echo "$opt" > /etc/default/mpd_oled
-		if [[ ! -e $filefifo ]]; then
-			ln -s $dirmpdconf/{conf/,}fifo.conf
-			systemctl restart mpd
-		fi
-	else
-		if [[ -e $filefifo ]]; then
-			rm $filefifo
-			systemctl restart mpd
-		fi
 	fi
+	fifoToggle
 	i2cset=1
 	configTxt
-	systemctl try-restart mpd_oled
 	;;
 ntp )
 	echo "\
@@ -433,19 +423,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	;;
 vuled )
 	enableFlagSet
-	pins=$( cut -d= -f2 $dirsystem/vuled.conf )
-	if [[ $ON ]]; then
-		ln -sf $dirmpdconf/{conf/,}fifo.conf
-		grep -q 'state="*play' $dirshm/status && systemctl start cava
-	else
-		if [[ -e $dirsystem/vumeter ]]; then
-			systemctl try-restart cava
-		else
-			systemctl stop cava
-			rm -f $dirmpdconf/fifo.conf
-		fi
-	fi
-	systemctl restart mpd
+	fifoToggle
 	pushRefresh
 	;;
 wlan )

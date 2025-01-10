@@ -203,6 +203,37 @@ enableFlagSet() {
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
+fifoToggle() { # mpdoled vuled vumeter
+	filefifo=$dirmpdconf/fifo.conf
+	[[ -e $dirsystem/mpdoled ]] && mpdoled=1
+	[[ -e $dirsystem/vuled ]] && vuled=1
+	if grep -q -m1 vumeter.*true $dirsystem/display.json; then
+		vumeter=1
+		touch $dirsystem/vumeter
+	else
+		rm -f $dirsystem/vumeter
+	fi
+	if [[ $mpdoled || $vuled || $vumeter ]]; then
+		if [[ ! -e $filefifo ]]; then
+			ln -s $dirmpdconf/{conf/,}fifo.conf
+			systemctl restart mpd
+			[[ $vuled || $vumeter ]] && systemctl restart cava
+		fi
+		! grep -q 'state="*play' $dirshm/status && return
+		
+		[[ $mpdoled ]] && systemctl restart mpd_oled
+		[[ $vuled || $vumeter ]] && systemctl restart cava
+	else
+		if [[ -e $filefifo ]]; then
+			[[ $mpdoled || $vuled || $vumeter ]] && return
+			
+			rm $filefifo
+			systemctl restart mpd
+		fi
+		[[ ! $mpdoled ]] && systemctl stop mpd_oled
+		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
+	fi
+}
 getContent() {
 	if [[ -e "$1" ]]; then
 		cat "$1"

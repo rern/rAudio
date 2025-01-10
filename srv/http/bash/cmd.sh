@@ -386,17 +386,7 @@ display )
 	status=$( $dirbash/status.sh )
 	pushData mpdplayer "$status"
 	systemctl try-restart radio
-	[[ -e $dirsystem/vumeter ]] && prevvumeter=1 || prevvumeter=
-	grep -q -m1 vumeter.*true $dirsystem/display.json && vumeter=1 || vumeter=
-	[[ $prevvumeter == $vumeter ]] && exit
-# --------------------------------------------------------------------
-	if [[ $vumeter ]]; then
-		touch $dirsystem/vumeter
-		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
-	else
-		rm -f $dirsystem/vumeter
-		[[ -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
-	fi
+	fifoToggle
 	;;
 equalizer )
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
