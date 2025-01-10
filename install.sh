@@ -5,6 +5,11 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250110
+if [[ $( pacman -Q python-rpi-gpio ) != 'python-rpi-gpio 0.7.1-3' ]]; then
+	pacman -R --noconfirm python-rpi-gpio
+	pacman -Sy --noconfirm python-rpi-gpio
+fi
+
 file=/etc/systemd/system/mpd_oled.service
 if [[ -e $file ]]; then
 	rm -f $file
