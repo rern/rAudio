@@ -8,7 +8,7 @@ echo $$ > $dirshm/pidrelaystimer
 timer=$( getVar timer $dirsystem/relays.conf )
 i=$timer
 while sleep 60; do
-	grep -q -m1 '^state.*play' $dirshm/status && i=$timer && continue
+	grep -q -m1 ^state.*play $dirshm/status && i=$timer && continue
 	
 	(( i-- ))
 	case $i in
