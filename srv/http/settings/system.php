@@ -54,15 +54,7 @@ $help        = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.';
-$body        = [
-	  htmlSectionStatus( 'status', $labels, '', $help )
-	, [
-		  'id'    => 'templimit'
-		, 'sub'   => 'temp_soft_limit'
-		, 'label' => 'Custom Limit'
-		, 'help'  => 'Custom temperature limit for CPU throttling (RPi 3+ only)'
-	]
-];
+$body        = [ htmlSectionStatus( 'status', $labels, '', $help ) ];
 htmlSection( $head, $body, 'status' );
 // ----------------------------------------------------------------------------------
 $uid         = exec( 'id -u mpd' );
@@ -279,6 +271,12 @@ Transmit Queue Length (default: <c>1000</c>)
 	· Number of packets allowed per kernel transmit queue in a network
 	· High - improve performance under high load
 EOF
+	]
+	, [
+		  'id'       => 'templimit'
+		, 'sub'      => 'temp_soft_limit'
+		, 'label'    => 'Custom Limit'
+		, 'help'     => 'Custom temperature limit for CPU throttling (RPi 3B+ only)'
 	]
 ];
 htmlSection( $head, $body, 'environment' );
