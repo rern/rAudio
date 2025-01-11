@@ -70,10 +70,6 @@ var config       = {
 		}
 	}
 	, localbrowser : data => {
-		if ( S.localbrowser ) {
-			var footer = ico( 'redo', 'reload', 'tabindex' ) +'Reload&emsp;'+ ico( 'screenoff', 'screenoff', 'tabindex' ) +'On/Off';
-			if ( data.brightness ) footer += '&emsp;'+ ico( 'gear', 'brightness', 'tabindex' ) +'Brightness';
-		}
 		info( {
 			  ...SW
 			, list         : [
@@ -83,7 +79,11 @@ var config       = {
 				, [ 'On while play',             'checkbox' ]
 				, [ 'Mouse pointer',             'checkbox' ]
 			]
-			, footer       : footer
+			, footer       : infoFooterIcon( {
+				  Reload     : 'reload'
+				, Screenoff  : 'screenoff'
+				, Brightness : 'brightness'
+			} )
 			, boxwidth     : 110
 			, values       : data.values
 			, checkchanged : S.localbrowser
@@ -99,25 +99,29 @@ var config       = {
 							.prop( 'checked', false );
 					}
 				} );
-				$( '#brightness' ).on( 'click', function() {
-					info( {
-						  ...SW
-						, list        : [ 'Brightness', 'range' ]
-						, values      : data.brightness
-						, beforeshow  : () => {
-							$( '#infoList input' ).on( 'input', function() {
-								bash( [ 'brightness', +this.value, 'CMD VAL' ] )
-							} );
-						}
-						, okno        : true
-					} );
-					switchCancel();
-				} );
-				$( '#reload' ).on( 'click', function() {
-					bash( [ 'localbrowserreload' ], () => banner( SW.icon, SW.title, 'Reloaded.' ) );
-				} );
-				$( '#screenoff' ).on( 'click', function() {
-					bash( [ 'screentoggle' ], onoff => banner( SW.icon, SW.title, onoff ) );
+				$( '.infofooter' ).toggleClass( 'disabled', ! S.localbrowser );
+				var $span = $( '.infofooter span' );
+				$span.eq( 2 ).toggleClass( 'hide', ! data.brightness );
+				$span.on( 'click', function() {
+					var i = $( this ).index();
+					if ( i === 0 ) {
+						bash( [ 'localbrowserreload' ], () => banner( SW.icon, SW.title, 'Reloaded.' ) );
+					} else if ( i === 1 ) {
+						bash( [ 'screentoggle' ], onoff => banner( SW.icon, SW.title, onoff ) );
+					} else {
+						info( {
+							  ...SW
+							, list        : [ 'Brightness', 'range' ]
+							, values      : data.brightness
+							, beforeshow  : () => {
+								$( '#infoList input' ).on( 'input', function() {
+									bash( [ 'brightness', +this.value, 'CMD VAL' ] )
+								} );
+							}
+							, okno        : true
+						} );
+						switchCancel();
+					}
 				} );
 			}
 			, cancel       : switchCancel

@@ -85,7 +85,7 @@ else
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
 , "control"      : "'$mixer'"
-, "counts"       : '$( getContent $dirmpd/counts '{}'  )'
+, "counts"       : '$( getContent $dirmpd/counts '{}' )'
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
 , "lyrics"       : '$( exists $dirsystem/lyrics )'
@@ -279,6 +279,7 @@ elif [[ $stream ]]; then
 			[[ $onlinefile ]] && coverart="${onlinefile:9}"
 		fi
 	else
+		webradio=1
 		ext=Radio
 		if [[ $file == *rtsp://*$( hostname -f )* ]]; then
 			ext=DAB
@@ -366,7 +367,7 @@ elif [[ $stream ]]; then
 , "Title"        : "'$Title'"
 , "webradio"     : true'
 		if [[ $radio_dab ]]; then # rp / rf / dab
-			elapsed=$( mpcElapsed )
+			elapsed=$( mpcElapsed $webradio )
 ########
 			status+='
 , "coverart"     : "'$coverart'"
@@ -496,7 +497,7 @@ status+='
 , "sampling" : "'$sampling'"'
 
 if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
-	elapsed=$( mpcElapsed )
+	elapsed=$( mpcElapsed $webradio )
 # >>>>>>>>>> webradio with found coverart
 ########
 	status+='
@@ -515,7 +516,7 @@ $Album
 $filenoesc
 CMD ARTIST ALBUM FILE" )
 fi
-elapsed=$( mpcElapsed )
+elapsed=$( mpcElapsed $webradio )
 ########
 	status+='
 , "elapsed"  : '$elapsed'

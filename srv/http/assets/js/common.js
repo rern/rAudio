@@ -6,14 +6,9 @@ loader() local()     selectSet()
 websocket
 bash()
 */
-
-var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
-var iconwarning = ico( 'warning yl' ) +'&ensp;';
-var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
-var orange      = '#de810e';
-var red         = '#bb2828';
-var ws;
-var ps          = {
+S               = {} // status
+V               = {} // variable
+W               = {  // ws push
 	  bluetooth : () => {
 		if ( page === 'networks' ) {
 			S.listbt = data;
@@ -68,7 +63,7 @@ var ps          = {
 			$( '#loader' ).css( 'opacity', 1 );
 			setTimeout( () => {
 				$( '#loader svg' ).css( 'animation', 'none' );
-				bannerHide();
+				$( '#banner' ).addClass( 'hide' );
 			}, 10000 );
 		} else { // reconnect after reboot
 			setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
@@ -127,7 +122,12 @@ var ps          = {
 		}
 	}
 }
-
+var page        = location.search.replace( /\?p=|&.*/g, '' ); // .../settings.php/p=PAGE&x=XXX... > PAGE
+var iconwarning = ico( 'warning yl' ) +'&ensp;';
+var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
+var orange      = '#de810e';
+var red         = '#bb2828';
+var ws;
 // ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {
@@ -178,7 +178,7 @@ function banner( icon, title, message, delay ) {
 	}, delay || 3000 );
 }
 function bannerHide() {
-	if ( V.bannerdelay || V.reboot || V.relays || $( '#banner .i-warning' ).length ) return
+	if ( V.bannerdelay || V.relays || V.reboot || V.off ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -964,6 +964,11 @@ function infoFileImageResize( ext, imgW, imgH ) {
 		}
 	}
 }
+function infoFooterIcon( kv ) {
+	var footer = '';
+	$.each( kv, ( l, i ) => footer += '<span>'+ ico( i ) + l +'</span>' );
+	return footer
+}
 function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 }
@@ -1188,7 +1193,6 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
-	if( ! action ) action = '';
 	loader();
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
@@ -1203,7 +1207,7 @@ function infoPowerCommand( action ) {
 						+'<br><br>Continue?'
 			, oklabel : action ? ico( 'reboot' ) +'Reboot' : ico( 'power' ) +'Off'
 			, okcolor : action ? orange : red
-			, ok      : () => bash( [ 'power.sh', action, 'confirm' ] )
+			, ok      : () => bash( [ 'power.sh', action || '', 'confirm' ] )
 		} );
 	} );
 }
@@ -1290,7 +1294,9 @@ function loader( fader ) {
 	$( '#loader' ).removeClass( 'hide' );
 }
 function loaderHide() {
-	if ( ! V.reboot ) $( '#loader' ).addClass( 'hide' );
+	if ( 'off' in V || 'reboot' in V ) return
+	
+	$( '#loader' ).addClass( 'hide' );
 }
 
 // ----------------------------------------------------------------------
@@ -1441,13 +1447,14 @@ function websocketConnect( ip ) {
 			}
 		}, 100 );
 	}
-	ws.onmessage = message => { // ps: push status
+	ws.onmessage = message => {
 		var data = message.data;
 		if ( data === 'pong' ) { // on pageActive - reload if ws not response
 			V.timeoutreload = false;
 		} else {
-			var json = JSON.parse( data );
-			if ( json.channel in ps ) ps[ json.channel ]( json.data );
+			var json    = JSON.parse( data );
+			var channel = json.channel;
+			if ( channel in W ) W[ channel ]( json.data );
 		}
 	}
 }

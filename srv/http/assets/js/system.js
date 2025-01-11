@@ -1,4 +1,7 @@
-ps.storage = data => {
+W.reboot          = data => {
+	banner( data.id, $( '#div'+ data.id +' .col-l .label' ).text(), 'Reboot required', 5000 );
+}
+W.storage         = data => {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		S.liststorage = data.list;
@@ -6,6 +9,7 @@ ps.storage = data => {
 		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
 	}, 1000 );
 }
+
 var config        = {
 	  _disable      : {
 		  shareddata : () => {
@@ -127,11 +131,9 @@ var config        = {
 		}
 	}
 	, lcdchar       : data => {
-		'address' in data ? util.lcdchar.i2s( data ) : util.lcdchar.gpio( data );
+		util.lcdchar[ data.values.INF ]( data );
 	}
-	, mpdoled       : data => {
-		var values     = data.values;
-		var buttonlogo = S.mpdoled && ! data.reboot;
+	, mpdoled       : values => {
 		var chip       = {
 			  'SSD130x SP'  : 1
 			, 'SSD130x I²C' : 3
@@ -144,8 +146,8 @@ var config        = {
 			, list         : [
 				  [ 'Controller',              'select', chip ]
 				, [ 'Refresh <gr>(baud)</gr>', 'select', { kv: { '800,000': 800000, '1,000,000': 1000000, '1,200,000': 1200000 } } ]
+				, [ 'Spectrum only',        'checkbox' ]
 			]
-			, footer       : ico( 'raudio' ) +'Logo'
 			, values       : values
 			, checkchanged : S.mpdoled
 			, boxwidth     : 140
@@ -153,7 +155,6 @@ var config        = {
 				var $tr   = $( '#infoList tr' );
 				var $baud = $tr.eq( 1 )
 				$baud.toggleClass( 'hide', S.mpdoled && ( values.CHIP < 3 || values.CHIP > 6 ) );
-				$( '.infofooter i' ).toggleClass( 'disabled', ! S.mpdoled || data.reboot )
 				$tr.eq( 0 ).on( 'input', function() {
 					var val = this.value;
 					$baud.toggleClass( 'hide', val < 3 || val > 6 );
@@ -205,7 +206,7 @@ var config        = {
 		} );
 	}
 	, timezone      : () => util.server.ntp()
-	, tft           : data => {
+	, tft           : values => {
 		var type = {
 			  'Generic'               : 'tft35a'
 			, 'Waveshare (A)'         : 'waveshare35a'
@@ -213,23 +214,19 @@ var config        = {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		var buttoncalibrate = S.tft && ! data.reboot;
 		info( {
 			  ...SW
 			, list         : [ 'Type', 'select', type ]
-			, values       : data.values
+			, footer       : '<span>'+ ico( 'cursor' ) +'Calibrate</span>'
+			, values       : values
 			, checkchanged : S.tft
 			, boxwidth     : 190
-			, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
-			, button       : ! buttoncalibrate ? '' : () => {
-				info( {
-					  ...SW
-					, message : 'Calibrate touchscreen?'
-								+'<br>(Get stylus ready.)'
-					, ok      : () => {
+			, beforeshow   : () => {
+				$( '.infofooter span' )
+					.toggleClass( 'disabled', ! S.tft )
+					.on( 'click', function() {
 						notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
 						bash( [ 'tftcalibrate' ] );
-					}
 				} );
 			}
 			, cancel       : switchCancel
@@ -343,7 +340,7 @@ var util          = {
 		}
 	}
 	, lcdchar       : {
-		  gpio : values => {
+		  gpio : data => {
 			var list0 = jsonClone( util.lcdchar.list );
 			var list  = list0.slice( 0, 3 );
 			[ 'Pins: &emsp; D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => {
@@ -352,42 +349,36 @@ var util          = {
 			list.push( [ '', '' ], list0.slice( -1 )[ 0 ] );
 			info( {
 				  ...util.lcdchar.json
-				, tab          : [ () => infoSetting( 'lcdchar', util.lcdchar.i2s ), '' ]
+				, tab          : [ () => infoSetting( 'lcdchar i2c', config.lcdchar ), '' ]
 				, message      : util.gpiosvg
 				, list         : list
 				, boxwidth     : 70
-				, values       : values
-				, checkchanged : S.lcdchar
+				, values       : data.values
+				, checkchanged : S.lcdchar && data.current === 'gpio'
 			} );
 		}
-		, i2s  : data => {
+		, i2c  : data => {
 			var list          = jsonClone( util.lcdchar.list );
 			list[ 3 ][ 2 ].kv = data.address;
 			info( {
 				  ...util.lcdchar.json
-				, tab          : [ '', () => infoSetting( 'lcdchar gpio', util.lcdchar.gpio ) ]
+				, tab          : [ '', () => infoSetting( 'lcdchar gpio', config.lcdchar ) ]
 				, list         : list
 				, boxwidth     : 180
 				, values       : data.values
-				, checkchanged : S.lcdchar
+				, checkchanged : S.lcdchar && data.current === 'i2c'
 			} );
 		}
 		, json : {
 			  icon       : 'lcdchar'
 			, title      : 'Character LCD'
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
-			, footer     : ico( 'raudio' ) +'Logo&emsp;'+ ico( 'screenoff' ) +'Sleep'
-			, beforeshow : () => {
-				$( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
-				$( '.infofooter i' )
-					.toggleClass( 'disabled', ! S.lcdchar )
-					.on( 'click', function() {
-						bash( [ 'lcdcharset', $( this ).index() ? 'off' : 'logo', 'CMD ACTION' ] );
-				} );
+			, beforeshow : () => $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 )
+			, cancel   : switchCancel
+			, ok       : () => {
+				jsonSave( 'lcdchar', infoVal() );
+				switchEnable();
 			}
-			, cancel     : switchCancel
-			, ok         : switchEnable
-			, fileconf   : true
 		}
 		, list : [
 			  [ 'Type',                 'hidden'  ]

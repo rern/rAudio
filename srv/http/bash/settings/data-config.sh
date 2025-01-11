@@ -3,10 +3,11 @@
 . /srv/http/bash/common.sh
 
 toReboot() {
-	if [[ -e $dirshm/reboot ]]; then
-		grep -q $CMD <<< $dirshm/reboot && echo true || echo false
+	if [[ -s $dirshm/reboot ]]; then
+		grep -q $ID <<< $dirshm/reboot && echo true || echo false
 	else
 		echo false
+		rm -f $dirshm/reboot
 	fi
 }
 
@@ -56,23 +57,22 @@ i2slist )
 	cat /srv/http/assets/data/system-i2s.json
 	;;
 lcdchar )
-	fileconf=$dirsystem/lcdchar.conf
+	fileconf=$dirsystem/lcdchar.json
 	if [[ -e $fileconf ]]; then
-		grep -q ^p0 $fileconf && conf2json $fileconf && exit # gpio
+		values=$( < $fileconf )
+		current=$( jq -r .INF $fileconf )
+		[[ ! $2 && $current == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
 # --------------------------------------------------------------------
-		values=$( conf2json $fileconf )
-	else
-		if [[ $2 ]]; then
-			echo '{ "INF": "gpio", "COLS": 20, "CHARMAP": "A00"
-			      , "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24
-				  , "BACKLIGHT": false }'
-			exit
-# --------------------------------------------------------------------
-		fi
-		values='{ "INF": "i2c", "COLS": 20, "CHARMAP": "A00"
-		        , "ADDRESS": 39, "CHIP": "PCF8574"
-				, "BACKLIGHT": false }'
 	fi
+	val='{ "INF": "gpio", "COLS": 20, "CHARMAP": "A00"'
+	if [[ $2 == gpio ]]; then
+		[[ $current != gpio ]] && values=$val', "P0": 21, "PIN_RS": 15, "P1": 22, "PIN_RW": 18, "P2": 23, "PIN_E": 16, "P3": 24'
+	else
+		[[ $current != i2c ]] && values=${val/gpio/i2c}', "ADDRESS": 39, "CHIP": "PCF8574"'
+	fi
+	! grep -q BACKLIGHT <<< $values && values+=', "BACKLIGHT": false }'
+	[[ $2 == gpio ]] && echo '{ "values": '$values', "current": "'$current'" }' && exit
+# --------------------------------------------------------------------
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	[[ $dev ]] && lines=$( i2cdetect -y $dev 2> /dev/null )
 	if [[ $lines ]]; then
@@ -87,11 +87,7 @@ lcdchar )
 	else
 		address=', "0x27": 39, "0x3f": 63'
 	fi
-	echo '{
-  "values"  : '$values'
-, "address" : { '${address:1}' }
-, "reboot"  : '$( toReboot )'
-}'
+	echo '{ "values": '$values', "current": "'$current'", "address": { '${address:1}' } }'
 	;;
 localbrowser )
 	echo '{
@@ -100,17 +96,12 @@ localbrowser )
 }'
 	;;
 mpdoled )
-	chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-	baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
+	opt=$( < /etc/default/mpd_oled )
+	chip=$( cut -d' ' -f2 <<< $opt )
+	spectrum=$( grep -q '\-X' <<< $opt && echo true || echo false )
+	baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
 	[[ ! $baud ]] && baud=800000
-	echo '{
-  "values" : { "CHIP": "'$chip'", "BAUD": '$baud' }
-, "reboot" : '$( toReboot )'
-}'
-	;;
-reboot )
-	getContent $dirshm/reboot
-	rm -f $dirshm/{reboot,backup.gz}
+	echo '{ "CHIP": "'$chip'", "BAUD": '$baud', "SPECTRUM": '$spectrum' }'
 	;;
 packagelist )
 	filepackages=/tmp/packages
@@ -138,6 +129,10 @@ $description
 				> /tmp/packages
 	fi
 	grep -B1 -A2 --no-group-separator ^${2,} $filepackages
+	;;
+reboot )
+	getContent $dirshm/reboot
+	rm -f $dirshm/{reboot,backup.gz}
 	;;
 relays )
 	if [[ -e $dirsystem/relays.conf ]]; then
@@ -253,10 +248,7 @@ spotifyoutput )
 	;;
 tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
-	echo '{ 
-  "values" : { "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }
-, "reboot" : '$( toReboot )'
-}'
+	echo '{ "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }'
 	;;
 wlan )
 	echo '{

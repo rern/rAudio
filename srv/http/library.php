@@ -622,8 +622,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		} else {
 			$datamode  = ' data-mode="'.$GMODE.'"';
 			$icon      = i( 'music', 'file' );
-			$trackname = $cue ? basename( $file0 ).' : ' : '';
-			$trackname.= basename( $path );
+			$trackname = $cue ? $artist.' - '.$album : basename( $path );
 		}
 		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		$i++;

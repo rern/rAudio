@@ -200,8 +200,6 @@ heading {
 	font-size: 24px;
 	font-weight: 300;
 	border-bottom: 1px solid var( --cg );
-}
-heading {
 	letter-spacing: 5px;
 }
 heading.subhead {

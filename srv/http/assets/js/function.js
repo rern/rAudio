@@ -259,7 +259,6 @@ function contextmenuLibrary( $li, $target ) {
 	if ( V.mode.slice( -5 ) === 'radio' ) V.list.dir = $li.find( '.lidir' ).text();
 	if ( V.librarytrack && ! V.list.licover ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
-		V.list.artist = $( '.licover .liartist' ).text() || '';
 	} else {
 		V.list.name   = $li.find( '.name' ).text() || V.list.path;
 	}
@@ -523,6 +522,7 @@ function displaySave() {
 	} );
 	if ( values.tapreplaceplay ) values.plclear = false;
 	jsonSave( 'display', values );
+	bash( [ 'display' ] );
 }
 function displaySubMenu() {
 	$( '#dsp' )
@@ -741,26 +741,22 @@ function infoTitle() {
 		var titlenoparen = title.replace( / $|\(.*$/, '' );
 		list.push( [ ico( 'music wh' ) +'<gr>Title includes: </gr>'+ title.replace( /^.*\(/, '(' ),  'checkbox' ] );
 	}
-	var footer = '<span class="lyrics">'+ ico( 'lyrics' ) +' Lyrics</span>'
-				+'<span class="bio">'+ ico( 'bio' ) +' Bio</span>'
-				+'<span class="similar">'+ ico( 'lastfm' ) +' Add Similar</span>'
-				+'<span class="scrobble">'+ ico( 'lastfm' ) +' Scrobble</span>';
 	info( {
 		  icon        : 'playback'
 		, title       : 'Current Track'
 		, list        : list
-		, footer      : footer
+		, footer      : infoFooterIcon( {
+			  Lyrics        : 'lyrics'
+			, Bio           : 'bio'
+			, 'Add Similar' : 'lastfm'
+			, Scrobble      : 'scrobble'
+		} )
 		, footeralign : 'left'
 		, width       : 460
 		, boxwidth    : 'max'
 		, values      : paren ? [ artist, titlenoparen, album ] : [ artist, title, album ]
 		, beforeshow  : () => {
 			$( '#infoList input' ).eq( 2 ).toggleClass( 'hide', album === '' );
-			$( '.infofooter' )
-				.css( 'padding-left', '40px' )
-				.find( 'span' ).css( { 'margin-right': '20px', cursor: 'pointer' } );
-			$( '.infofooter .lyrics' ).toggleClass( 'hide', ! S.lyrics );
-			$( '.infofooter .scrobble' ).toggleClass( 'hide', ! S.scrobble );
 			if ( S.scrobble ) $( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || S.scrobbleconf[ S.player ] );
 			if ( paren ) {
 				$( '#infoList input:checkbox' ).on( 'input', function() {
@@ -771,20 +767,25 @@ function infoTitle() {
 				var val = infoVal();
 				$( '#infoList .scrobble' ).toggleClass( 'disabled', val[ 0 ] === '' || val[ 1 ] === '' );
 			} );
-			$( '#infoList' ).on( 'click', '.infofooter span', function() {
+			$( '.infofooter' ).css( 'padding-left', '35px' );
+			var $span = $( '.infofooter span' );
+			$span.eq( 0 ).toggleClass( 'hide', ! S.lyrics );
+			$span.eq( 3 ).toggleClass( 'hide', ! S.scrobble );
+			$span.on( 'click', function() {
 				var values = infoVal();
 				var artist = values[ 0 ]
 				var title  = values[ 1 ]
 				var $this  = $( this );
-				if ( $this.hasClass( 'lyrics' ) ) {
+				var i      = $( this ).index();
+				if ( i === 0 ) {
 					V.lyricsartist = artist || S.Artist;
 					V.lyricstitle  = title || S.Title;
 					lyricsGet();
-				} else if ( $this.hasClass( 'bio' ) ) {
+				} else if ( i === 1 ) {
 					bio( artist );
-				} else if ( $this.hasClass( 'similar' ) ) {
+				} else if ( i === 2 ) {
 					addSimilar();
-				} else if ( $this.hasClass( 'scrobble' ) ) {
+				} else {
 					bash( [ 'scrobble.sh', ...values, 'CMD ARTIST TITLE' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
@@ -1761,6 +1762,37 @@ function setPlaylistInfoWidth() {
 	var cW        = document.body.clientWidth;
 	$title.css(  'max-width', iWdW + titleW < cW ? '' : cW - iWdW );
 }
+function setPlaylistRadioInfo( stop ) {
+	var $liactive = $( '#pl-list li.active' );
+	var $img      = $liactive.find( 'img' );
+	var $name     = $liactive.find( '.name' );
+	var $li2      = $liactive.find( '.li2' ); 
+	var $station  = $li2.find( '.station' );
+	var $artist   = $li2.find( '.artist' );
+	var $url      = $li2.find( '.url' );
+	if ( S.state === 'stop' || stop ) {
+		$img.attr( 'src', $img.data( 'src' ) );
+		$name.text( $station.text() );
+		$station.addClass( 'hide' );
+		$artist.addClass( 'hide' );
+		$url.removeClass( 'hide' );
+	} else {
+		if ( S.coverart ) $img
+							.removeClass( 'lazyload' )
+							.attr( 'src', S.coverart );
+		$name.html( S.Title || dots );
+		if ( S.Artist ) {
+			$artist
+				.text( S.Artist + ( S.Album ? ' - '+ S.Album : '' ) )
+				.removeClass( 'hide' );
+			$url.addClass( 'hide' );
+		} else {
+			$artist.addClass( 'hide' );
+			$url.removeClass( 'hide' );
+		}
+		$station.removeClass( 'hide' );
+	}
+}
 function setPlaylistScroll() {
 	if ( ! V.playlist || ! V.playlisthome ) return
 	
@@ -1772,12 +1804,11 @@ function setPlaylistScroll() {
 		return
 	}
 	
-	var litop = barVisible( 80, 40 );
+	var litop     = barVisible( 80, 40 );
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$( '#pl-list li' ).removeClass( 'active pause play updn' );
-	$liactive = $( '#pl-list li' ).eq( S.song );
+	var $liactive = $( '#pl-list li' ).eq( S.song );
 	$liactive.addClass( 'active' );
-	S.webradio = $liactive.hasClass( 'webradio' );
 	if ( ! $( '.pl-remove' ).length && ! I.active ) {
 		if ( $( '#pl-list li' ).length < 5 ) {
 			var top = 0;
@@ -1787,42 +1818,18 @@ function setPlaylistScroll() {
 		pageScroll( top );
 	}
 	$( '#pl-list .elapsed' ).empty();
-	var $elapsed     = $liactive.find( '.elapsed' );
-	var $name        = $liactive.find( '.li1 .name' );
-	var $stationname = $liactive.find( '.li2 .stationname' );
-	$stationname.addClass( 'hide' );
-	if ( S.state === 'stop' || S.player === 'snapcast' ) {
-		if ( S.webradio ) {
-			$name.text( $liactive.find( '.liname' ).text() );
-			setPlaylistWebRadioCoverart();
-		}
+	if ( S.webradio ) setPlaylistRadioInfo();
+	if ( S.elapsed === false ) return
+	
+	$liactive.addClass( S.state );
+	if ( S.player === 'upnp' ) $liactive.find( '.time' ).text( second2HMS( S.Time ) );
+	if ( S.state === 'pause' ) {
+		elapsedtxt = second2HMS( S.elapsed );
+		$liactive.find( '.elapsed' ).text( elapsedtxt );
+		setPlaylistInfoWidth();
 	} else {
-		if ( S.elapsed === false ) return
-		
-		$liactive.addClass( S.state );
-		if ( S.player === 'upnp' ) $liactive.find( '.time' ).text( second2HMS( S.Time ) );
-		if ( S.state === 'pause' ) {
-			elapsedtxt = second2HMS( S.elapsed );
-			$elapsed.text( elapsedtxt );
-			setPlaylistInfoWidth();
-		} else if ( S.state === 'play' ) {
-			if ( S.webradio ) {
-				$stationname.removeClass( 'hide' );
-				$name.html( S.Title || dots );
-				if ( S.coverart && S.coverart !== S.stationcover ) {
-					$liactive.find( 'img' ).on( 'lazyloaded', setPlaylistWebRadioCoverart ); // fix - lazysizes load stationcover
-					setPlaylistWebRadioCoverart(); // lazysizes already loaded
-				}
-			}
-			setProgressElapsed();
-		}
+		setProgressElapsed();
 	}
-}
-function setPlaylistWebRadioCoverart() {
-	var coverart = S.state === 'play' ? S.coverart + versionHash() : S.stationcover;
-	$( '#pl-list li.active img' )
-		.data( 'src', coverart )
-		.attr( 'src', coverart);
 }
 function setPlayPauseColor() {
 	var pause = S.state === 'pause';

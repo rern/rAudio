@@ -72,6 +72,17 @@ if ( $CMD === 'list' ) {
 //----------------------------------------------------------------------------------
 }
 
+function artistAlbum( $artist, $album, $file ) {
+	$ar_al = '';
+	if ( $artist || $album ) {
+		if ( $artist )           $ar_al.= $artist;
+		if ( $artist && $album ) $ar_al.= ' - ';
+		if ( $album )            $ar_al.= $album;
+		return $ar_al;
+	} else {
+		return $file;
+	}
+}
 $f      = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 $fL     = count( $f );
 $format = '%'.implode( '%^^%', $f ).'%';
@@ -93,26 +104,8 @@ foreach( $lists as $list ) {
 	$pos++;
 	$v      = explode( '^^', $list );
 	for ( $i = 0; $i < $fL; $i++ ) ${$f[ $i ]} = $v[ $i ];
-	$header = strtolower( substr( $file, 0, 4 ) );
-	if ( ! in_array( $header, [ 'http', 'rtmp', 'rtp:', 'rtsp' ] ) ) {
+	if ( in_array( $file[ 0 ], [ 'U', 'N', 'S' ] ) ) { // USB, NAS, SD
 		$sec       = HMS2second( $time );
-		$li2       = '';
-		if ( $track ) {
-			$track = preg_replace( '/^#*0*/', '', $track );
-			$li2  .= '<a class="track">'.$track.'</a> - ';
-		}
-		$artist    = $artist ?: $albumartist;
-		$album     = $album;
-		if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
-		if ( $album )  $li2.= '<a class="album">'.$album.'</a>';
-		if ( ! $artist && ! $album ) $li2.= $file;
-		$datatrack = '';
-		if ( strpos( $file, '.cue/track' ) ) {
-			$datatrack = 'data-track="'.$track.'"'; // for cue in edit
-			$file      = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
-		}
-		$title     = $title ?: pathinfo( $file, PATHINFO_FILENAME );
-		$ext       = '';
 		if ( substr( $file, 0, 4 ) === 'cdda' ) {
 			$discid    = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 			$cdfile    = '/srv/http/data/audiocd/'.$discid;
@@ -127,79 +120,84 @@ foreach( $lists as $list ) {
 				$album   = $audiocd[ 1 ];
 				$title   = $audiocd[ 2 ];
 				$time    = second2HMS( $audiocd[ 3 ] );
-				$track   = $track;
-				$li2     = '<a class="track">'.$track.'</a> - <a class="artist">'.$artist.'</a> - <a class="album">'.$album.'</a>';
 			}
 			$class     = 'audiocd';
 			$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
 			$thumbsrc  = '/data/audiocd/'.$discid.'.jpg';
 			$icon      = imgIcon( $thumbsrc, 'filesavedpl', 'audiocd' );
 		} else {
+			if ( $track ) $track = preg_replace( '/^#*0*/', '', $track );
+			if ( ! $artist ) $artist = $albumartist;
+			$datatrack = '';
+			if ( strpos( $file, '.cue/track' ) ) {
+				$datatrack = 'data-track="'.$track.'"'; // for cue in edit
+				$file      = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
+			}
+			$title     = $title ?: pathinfo( $file, PATHINFO_FILENAME );
 			$class     = 'file';
 			$discid    = '';
 			$path      = pathinfo( $file, PATHINFO_DIRNAME );
 			$thumbsrc  = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
 			$icon      = imgIcon( $thumbsrc, 'filesavedpl', 'music' );
 		}
+		$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );
 		$html     .=
 '<li class="'.$class.'" '.$datatrack.'>'.
 	'<a class="lipath">'.$file.'</a>'.
-	$icon.'<div class="li1"><a class="name">'.$title.'</a>'.
-	'<a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></div>'.
-	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>'.
+	$icon.
+	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$time.'</a></div>'.
+	'<div class="li2">'.$li2.'</div>'.
 '</li>
 ';
 		$count->song++;
 		$count->time += $sec;
-	} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
-		$li2    = '';
-		$artist = $artist;
-		$album  = $album;
-		if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
-		if ( $album )  $li2.= '<a class="album">'.$album.'</a>';
-		if ( ! $artist && ! $album ) $li2.= $file;
-		$html  .=
+		continue;
+	}
+	
+	if ( substr( $file, 0, 14 ) === 'http://192.168' ) { // upnp
+		$li2       = $pos.' • '.artistAlbum( $artist, $album, $file );
+		$html     .=
 '<li class="upnp">'.
 	i( 'upnp', 'filesavedpl' ).
-	'<div class="li1"><a class="name">'.$title.'</a>'.
-	'<a class="elapsed"></a></div>'.
-	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="name">'.$li2.'</a></div>'.
+	'<div class="li1"><a class="name">'.$title.'</a><a class="elapsed"></a></div>'.
+	'<div class="li2">'.$li2.'</div>'.
 '</li>
 ';
 		$count->upnp++;
+		continue;
+	}
+	// webradio / dabradio
+	if ( str_contains( $file, '://' ) ) {
+		$urlname   = str_replace( '/', '|', $file );
+		$radio     = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
+		$fileradio = '/srv/http/data/'.$radio.'/'.$urlname;
+		if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$radio.'/ -name "'.$urlname.'" | head -1' );
+		$station   = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 	} else {
-		if ( str_contains( $file, '://' ) ) { // webradio / dabradio
-			$urlname     = str_replace( '/', '|', $file );
-			$radio       = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
-			$fileradio   = '/srv/http/data/'.$radio.'/'.$urlname;
-			if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$radio.'/ -name "'.$urlname.'" | head -1' );
-			$stationname = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
-		} else {
-			$urlname     = str_replace( '#', '%23', $urlname );
-			$stationname = '';
-		}
-		if ( $stationname !== '' ) {
-			$notsaved    = 0;
-			$thumbsrc    = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
-			$icon        = imgIcon( $thumbsrc, 'filesavedpl', $radio );
-		} else {
-			$notsaved    = 1;
-			$icon        = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
-		}
-		$classnotsaved = $notsaved ? ' notsaved' : '';
-		$namenotsaved  = $notsaved ? '' : $stationname.' • ';
-		$url           = preg_replace( '/#charset=.*/', '', $file );
-		$path          = preg_replace( '/\?.*$/', '', $file );
-		$html         .=
-'<li class="webradio '.$classnotsaved.'">'.
-	'<a class="lipath">'.$path.'</a>'.
-	$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><a class="name">'.( $notsaved ? '. . .' : $stationname ).'</a>'.
-	'<a class="elapsed"></a></div>'.
-	'<div class="li2"><a class="pos">'.$pos.'</a> • <a class="stationname hide">'.$namenotsaved.'</a><a>'.$url.'</a></div>'.
+		$urlname   = str_replace( '#', '%23', $urlname );
+		$station   = '';
+	}
+	$li2           = $pos.'<a class="artist hide"></a><a class="station hide">';
+	if ( $station !== '' ) {
+		$notsaved = '';
+		$li2     .= $station;
+		$thumbsrc = '/data/'.$radio.'/img/'.$urlname.'-thumb.jpg';
+		$icon     = imgIcon( $thumbsrc, 'filesavedpl', $radio );
+	} else {
+		$notsaved = ' notsaved';
+		$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
+		$station  = '. . .';
+	}
+	$li2          .= '</a><a class="url">'.preg_replace( '/#charset=.*/', '', $file ).'</a>';
+	$html         .=
+'<li class="webradio '.$notsaved.'">'.
+	'<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>'.
+	$icon.
+	'<div class="li1"><a class="name">'.$station.'</a><a class="elapsed"></a></div>'.
+	'<div class="li2">'.$li2.'</div>'.
 '</li>
 ';
-		$count->radio++;
-	}
+	$count->radio++;
 }
 $counthtml = '';
 if ( $name ) {

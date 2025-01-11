@@ -10,11 +10,13 @@ $onboardwlan = '/srv/http/data/shm/onboardwlan';
 commonVariables( [
 	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'rserver', 'usbdrive' ]
 	, 'labels'  => [
-		  'Bluetooth'     => 'bluetooth'
+		  'Airplay'       => 'airplay'
+		, 'Bluetooth'     => 'bluetooth'
 		, 'Device'        => ''
 		, 'Output'        => ''
 		, 'Server rAudio' => 'rserver'
 		, 'Shared Data'   => 'networks'
+		, 'Spotify'       => 'spotify'
 		, 'Storage'       => ''
 	]
 	, 'menus'   => [
@@ -202,7 +204,11 @@ EOF
 		  'id'       => 'mpdoled'
 		, 'label'    => 'Spectrum OLED'
 		, 'sub'      => 'mpd_oled'
-		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
+		, 'help'     => <<<EOF
+<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
+
+Note: Not yet support $L->airplay $L->spotify
+EOF
 	]
 	, [
 		  'id'       => 'tft'

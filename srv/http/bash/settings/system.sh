@@ -67,9 +67,9 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		fi
 	fi
 	if [[ $reboot ]]; then
+		pushData reboot '{ "id": "'$CMD'" }'
 		appendSortUnique $CMD $dirshm/reboot
-		pushData reboot '{ "id": '$( line2array $( < $dirshm/reboot ) )' }'
-	else
+	elif [[ -e $dirshm/reboot ]]; then
 		sed -i "/$CMD/ d" $dirshm/reboot
 	fi
 }
@@ -200,11 +200,12 @@ dtparam=audio=on"
 	configTxt
 	;;
 lcdchar )
-	enableFlagSet
-	i2cset=1
-	configTxt
-	;;
-lcdcharset )
+	if [[ ! $ACTION ]]; then
+		enableFlagSet
+		i2cset=1
+		configTxt
+		ACTION=logo
+	fi
 	systemctl stop lcdchar
 	$dirbash/lcdchar.py $ACTION
 	;;
@@ -241,30 +242,25 @@ mountunmount )
 	fi
 	pushRefresh
 	;;
-mpdoledlogo )
-	systemctl stop mpd_oled
-	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-	mpd_oled -o $type -L
-	;;
 mpdoled )
 	enableFlagSet
 	if [[ $ON ]]; then
-		if [[ $( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 ) != $CHIP ]]; then
-			sed -i 's/-o ./-o '$CHIP'/' /etc/systemd/system/mpd_oled.service
-			systemctl daemon-reload
-		fi
-	else
-		$dirsettings/player-conf.sh
+		opt=$( sed 's/ -X//' /etc/default/mpd_oled )
+		chip=$( cut -d' ' -f2 <<< $opt )
+		baud=$( sed -n '/baudrate/ {s/.*=//; p}' /boot/config.txt )
+		[[ $chip != $CHIP ]] && opt=$( sed 's/-o ./-o '$CHIP'/' <<< $opt )
+		[[ $SPECTRUM ]] && opt=$( sed 's/"$/ -X"/' <<< $opt )
+		[[ $baud != $BAUD ]] && sed -i -E 's/(baudrate=).*/\1'$BAUD'/' /boot/config.txt
+		echo "$opt" > /etc/default/mpd_oled
 	fi
+	fifoToggle
 	i2cset=1
 	configTxt
-	[[ -e $dirsystem/mpdoled && ! -e $dirshm/reboot && ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	;;
 ntp )
-	file=/etc/systemd/timesyncd.conf
 	echo "\
 [Time]
-NTP=$NTP" > $file
+NTP=$NTP" > /etc/systemd/timesyncd.conf
 	timedatectl set-ntp true
 	pushRefresh
 	;;
@@ -427,18 +423,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	;;
 vuled )
 	enableFlagSet
-	pins=$( cut -d= -f2 $dirsystem/vuled.conf )
-	if [[ $ON ]]; then
-		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
-		grep -q 'state="*play' $dirshm/status && systemctl start cava
-	else
-		if [[ -e $dirsystem/vumeter ]]; then
-			systemctl restart cava
-		else
-			systemctl stop cava
-			$dirsettings/player-conf.sh
-		fi
-	fi
+	fifoToggle
 	pushRefresh
 	;;
 wlan )

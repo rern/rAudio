@@ -68,7 +68,6 @@ playerStart() {
 			renice -n -19 -p $pid &> /dev/null
 		done
 	fi
-	pushData player '{ "player": "'$player'", "active": true }'
 }
 playerStop() {
 	local player
@@ -101,7 +100,6 @@ playerStop() {
 			$dirbash/status-push.sh
 			;;
 	esac
-	[[ $player != mpd ]] && pushData player '{ "player": "'$player'", "active": false }'
 }
 plClear() {
 	mpc -q clear
@@ -385,21 +383,10 @@ dirrename )
 	pushRadioList
 	;;
 display )
-	pushData display $( < $dirsystem/display.json )
-	# temp
-	if grep -q albumyear.*true $dirsystem/display.json && [[ ! -e $dirmpd/albumbyartist-year ]]; then
-		pushData mpdupdate '{ "type": "mpd" }'
-		$dirbash/cmd-list.sh &> /dev/null &
-	fi
-	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
-	grep -q -m1 vumeter.*true $dirsystem/display.json && touch $dirsystem/vumeter && vumeter=1
-	[[ $prevvumeter == $vumeter ]] && exit
-# --------------------------------------------------------------------
-	if [[ $vumeter ]]; then
-		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
-	else
-		rm -f $dirsystem/vumeter
-	fi
+	status=$( $dirbash/status.sh )
+	pushData mpdplayer "$status"
+	systemctl try-restart radio
+	fifoToggle
 	;;
 equalizer )
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
@@ -639,11 +626,15 @@ mpcshuffle )
 	pushPlaylist
 	;;
 mpcsimilar )
+	readarray -t lines <<< $( mpc ls -f %artist%^%title% "$FILE" | tr ^ '\n' )
+	artist=${lines[0]}
+	title=${lines[1]}
+	apikey=$( grep -E -m1 'apikeylastfm' /srv/http/assets/js/main.js | cut -d"'" -f2 )
 	lines=$( curl -sfG -m 5 \
-				--data-urlencode "artist=$ARTIST" \
-				--data-urlencode "track=$TITLE" \
+				--data-urlencode "artist=$artist" \
+				--data-urlencode "track=$title" \
 				--data "method=track.getsimilar" \
-				--data "api_key=$APIKEY" \
+				--data "api_key=$apikey" \
 				--data "format=json" \
 				--data "autocorrect=1" \
 				http://ws.audioscrobbler.com/2.0 \

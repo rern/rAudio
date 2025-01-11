@@ -112,8 +112,6 @@ $( jq -r .albumTitle <<< $track )"
 	title=$( quoteEscape ${metadata[1]} )
 	album=$( quoteEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
-	jq .steps[$item] <<< $json
-	echo "$artist - $title - $album - $coverurl"
 	
 	if [[ ! $title || "$artist $title $album" == $dataprev ]]; then
 		sleep 5
@@ -134,14 +132,12 @@ $( jq -r .albumTitle <<< $track )"
 		fi
 	fi
 	[[ -e $coverfile ]] && coverart=${coverfile:9} || coverart=
-	elapsed=$( mpcElapsed )
-	pllength=$( mpc status %length% )
 	data='
   "player"   : "mpd"
 , "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
-, "elapsed"  : '$elapsed'
-, "pllength" : '$pllength'
+, "elapsed"  : '$( mpcElapsed webradio )'
+, "pllength" : '$( mpc status %length% )'
 , "state"    : "play"
 , "Title"    : "'$title'"'
 	if [[ $coverart ]]; then
@@ -155,6 +151,13 @@ webradio
 CMD ARTIST ALBUM MODE" &> /dev/null &
 	fi
 	pushData mpdradio "{ $data }"
+	if [[ -e $dirsystem/lcdchar ]]; then
+		data+='
+, "Time"      : false
+, "timestamp" : '$( date +%s%3N )'
+, "webradio"  : true'
+		echo "{ $data }" > $dirshm/status.json
+	fi
 	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prev}
 	radioStatusFile
 	[[ $coverart ]] && $dirbash/cmd.sh coverfileslimit

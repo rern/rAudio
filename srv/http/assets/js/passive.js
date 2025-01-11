@@ -1,5 +1,5 @@
-ps = {
-	  ...ps // from common.js
+W = {
+	  ...W // from common.js
 	, airplay   : data => {
 		statusUpdate( data );
 		if ( V.playback ) renderPlayback();
@@ -71,6 +71,8 @@ ps = {
 		eqOptionPreset();
 	}
 	, mpdplayer : data => {
+		if ( 'off' in V || 'reboot' in V ) return
+		
 		clearTimeout( V.debounce );
 		V.debounce = setTimeout( () => {
 			if ( ! data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
@@ -99,7 +101,7 @@ ps = {
 			setProgress( 0 );
 			setBlinkDot();
 		}
-		setPlaylistScroll();
+		if ( V.playlist ) setPlaylistRadioInfo();
 	}	
 	, mpdupdate : data => {
 		if ( 'counts' in data ) {

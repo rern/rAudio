@@ -1,4 +1,4 @@
-ps.mpdupdate = data => {
+W.mpdupdate  = data => {
 	if ( 'done' in data ) {
 		$.each( S.counts, ( k, v ) => { S[ k ] = data.done[ k ] } );
 		S.updatetime  = data.updatetime
@@ -6,7 +6,7 @@ ps.mpdupdate = data => {
 		util.renderStatus();
 	}
 }
-ps.volume    = data => {
+W.volume     = data => {
 	if ( ! ( 'db' in data ) ) return
 	 
 	S.volume   = data.val;
@@ -349,7 +349,7 @@ var util     = {
 }
 
 function renderPage() {
-	playbackButton();
+	headIcon();
 	util.statusSet();
 	if ( S.bluetooth ) {
 		$( '#btreceiver' ).html( '<option>'+ S.btmixer.replace( / *-* A2DP$/, '' ) +'</option>' );

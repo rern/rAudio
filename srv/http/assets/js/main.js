@@ -2,7 +2,6 @@ C = {}; // counts
 D = {}; // display
 E = {}; // equalizer
 O = []; // order
-S = {}; // status
 V = {   // var global
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
@@ -1835,18 +1834,13 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var $liactive  = $( '#pl-list li.active' );
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$liactive.find( '.song' ).empty();
-	if ( $liactive.hasClass( 'webradio' ) ) {
-		if ( S.state == 'play' ) {
-			$liactive.find( '.li1 .name' ).text( $liactive.find( '.liname' ).text() );
-			$liactive.find( '.li2 .stationname' ).addClass( 'hide' );
-			$liactive.find( '.li2 .name' ).removeClass( 'hide' );
-		}
-	}
 	if ( $this.hasClass( 'active' ) ) {
 		if ( S.state === 'play' ) {
 			if ( S.webradio ) {
+				$liactive.removeClass( 'play' );
+				$liactive.find( '.elapsed' ).empty();
+				setPlaylistRadioInfo( 'stop' );
 				$( '#stop' ).trigger( 'click' );
-				$this.find( '.elapsed' ).empty();
 			} else {
 				$( '#pause' ).trigger( 'click' );
 				$this.find( '.elapsed i' ).toggleClass( 'i-play i-pause' );
@@ -1870,7 +1864,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	V.list        = {};
 	V.list.li     = $thisli;
 	V.list.path   = $thisli.find( '.lipath' ).text();
-	V.list.artist = $thisli.find( '.artist' ).text();
 	V.list.name   = $thisli.find( webradio ? '.liname' : '.name' ).eq( 0 ).text();
 	V.list.index  = $thisli.index();
 	var $menu = $( '#menu-plaction' );
@@ -1944,7 +1937,6 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 				V.list.name = $this.find( '.lipath' ).text().trim();
 				V.list.path = V.list.name;
 			} else {
-				V.list.artist = $this.find( '.artist' ).text().trim();
 				V.list.name   = $this.find( '.name' ).text().trim();
 				V.list.path   = $this.find( '.lipath' ).text().trim() || V.list.name;
 				V.list.track  = $this.data( 'track' );

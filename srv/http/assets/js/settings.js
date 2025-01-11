@@ -4,48 +4,44 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-S  = {} // status
-V  = {}
-ps = {
-	  ...ps // from common.js
-	, camilla   : data => {
-		S.range = data;
-		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
-		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
-	}
-	, mpdplayer : data => playbackButton( data )
-	, mpdradio  : data => playbackButton( data )
-	, player    : data => {
-		if ( ! [ 'camilla', 'player' ].includes( page ) ) return
-		
-		var player_id = {
-			  airplay   : 'shairport-sync'
-			, bluetooth : 'bluetooth'
-			, snapcast  : 'snapserver'
-			, spotify   : 'spotifyd'
-			, upnp      : 'upmpdcli'
+W.refresh = data => {
+	if ( data.page !== page ) return
+	
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+		if ( page === 'networks' ) {
+			if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
+		} else {
+			switchSet();
 		}
-		$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
+		renderPage();
+	}, 300 );
+}
+if ( $( 'heading .playback' ).length ) { // for player and camilla
+	W = {
+		  ...W // from common.js
+		, mpdplayer : data => headIcon( data )
+		, mpdradio  : data => headIcon( data )
 	}
-	, reboot    : data => {
-		var msg = '';
-		data.id.forEach( id => msg += '<div> • '+ $( '#div'+ id +' .label' ).text() +'</div>' );
-		banner( 'reboot', 'Reboot required', msg, 5000 );
+	function headIcon( data ) {
+		if ( data ) {
+			if ( ( ! data.player || ! data.state ) || ( data.player === S.player && data.state === S.state ) ) return
+			
+			S.player = data.player;
+			S.state  = data.state;
+		}
+		$( '.playback' )
+			.prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) )
+			.toggleClass( 'disabled', page === 'player' && S.player !== 'mpd' );
+		$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
 	}
-	, refresh   : data => {
-		if ( data.page !== page ) return
-		
-		clearTimeout( V.debounce );
-		V.debounce = setTimeout( () => {
-			$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-			if ( page === 'networks' ) {
-				if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
-			} else {
-				switchSet();
-			}
-			renderPage();
-		}, 300 );
-	}
+	$( '.playback' ).on( 'click', function() {
+		S.state = S.state === 'play' ? 'pause' : 'play'
+		headIcon();
+		if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();
+		bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
+	} );
 }
 
 function bannerReset() {
@@ -138,17 +134,6 @@ function notifyCommon( message ) {
 		message = ! ( SW.id in S ) || S[ SW.id ] ? 'Change ...' : 'Enable ...';
 	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
-}
-function playbackButton( data ) {
-	if ( ! [ 'camilla', 'player' ].includes( page ) ) return
-	
-	if ( data ) [ 'player', 'state' ].forEach( k => S[ k ] = data[ k ] );
-	if ( S.pllength ) {
-		var btn = S.state === 'play' ? 'pause' : 'play';
-	} else {
-		var btn = 'play disabled';
-	}
-	$( '.playback' ).prop( 'class', 'playback i-'+ btn );
 }
 function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
@@ -329,12 +314,6 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 $( '.page-icon' ).on( 'click', function() {
 	$( '#debug' ).trigger( 'click' );
 } ).press( () => location.reload() );
-$( '.playback' ).on( 'click', function() { // for player and camilla
-	S.state = S.state === 'play' ? 'pause' : 'play';
-	if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();
-	playbackButton();
-	bash( [ 'cmd.sh', 'mpcplayback' ] );
-} );
 $( '.head .i-gear' ).on( 'click', function() {
 	$( '#bar-bottom' ).toggle();
 } );

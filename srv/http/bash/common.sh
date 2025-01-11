@@ -203,6 +203,37 @@ enableFlagSet() {
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
+fifoToggle() { # mpdoled vuled vumeter
+	filefifo=$dirmpdconf/fifo.conf
+	[[ -e $dirsystem/mpdoled ]] && mpdoled=1
+	[[ -e $dirsystem/vuled ]] && vuled=1
+	if grep -q -m1 vumeter.*true $dirsystem/display.json; then
+		vumeter=1
+		touch $dirsystem/vumeter
+	else
+		rm -f $dirsystem/vumeter
+	fi
+	if [[ $mpdoled || $vuled || $vumeter ]]; then
+		if [[ ! -e $filefifo ]]; then
+			ln -s $dirmpdconf/{conf/,}fifo.conf
+			systemctl restart mpd
+			[[ $vuled || $vumeter ]] && systemctl restart cava
+		fi
+		! grep -q 'state="*play' $dirshm/status && return
+		
+		[[ $mpdoled ]] && systemctl restart mpd_oled
+		[[ $vuled || $vumeter ]] && systemctl restart cava
+	else
+		if [[ -e $filefifo ]]; then
+			[[ $mpdoled || $vuled || $vumeter ]] && return
+			
+			rm $filefifo
+			systemctl restart mpd
+		fi
+		[[ ! $mpdoled ]] && systemctl stop mpd_oled
+		[[ ! $vuled && ! $vumeter ]] && systemctl stop cava
+	fi
+}
 getContent() {
 	if [[ -e "$1" ]]; then
 		cat "$1"
@@ -216,13 +247,13 @@ getVar() { # var=value
 	local data line var
 	data=$( < $2 )
 	if [[ $( head -1 <<< $data ) == { ]]; then
-		var=$( sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' <<< $data )
+		var=$( sed -n -E '/'$1'/ {s/.*: "*|"*,*$//g; p}' <<< $data )     #   var: value
 	else
 		line=$( grep ^$1= <<< $data )                                    # var=
 		[[ ! $line ]] && line=$( grep -E "^${1// /|^}" <<< $data )       # var
 		[[ ! $line ]] && line=$( grep -E "^\s*${1// /|^\s*}" <<< $data ) #     var
 		[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )         # var value > var=value
-		var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )   # var=value || var = value || var="value"; > value
+		var=$( sed -E "s/.* *= *//; s/^[\"']|[\"'];*$//g" <<< $line )    # var=value || var = value || var="value"; > value
 	fi
 	[[ $var ]] && quoteEscape $var || echo $3
 }
@@ -264,6 +295,13 @@ lineCount() {
 line2array() {
 	[[ $1 ]] && tr '\n' , <<< $1 | sed 's/^/[ "/; s/,$/" ]/; s/,/", "/g' || echo false
 }
+logoLcdOled() {
+	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
+	if [[ -e $dirsystem/mpdoled ]]; then
+		chip=$( cut -d' ' -f2 /etc/default/mpd_oled )
+		mpd_oled -o $chip -x logo
+	fi
+}
 mountpointSet() {
 	umount -ql "$1"
 	mkdir -p "$1"
@@ -288,7 +326,11 @@ $2"
 	fi
 }
 mpcElapsed() {
-	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
+	if [[ $1 ]] && grep -q radioelapsed.*false $dirsystem/display.json; then # webradio + radioelapsed
+		echo false
+	else
+		mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
+	fi
 }
 mpcPlayback() {
 	$dirbash/cmd.sh "mpcplayback
@@ -373,7 +415,7 @@ quoteEscape() {
 }
 radioStatusFile() {
 	local status
-	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^state|^Title' $dirshm/status )
+	status=$( grep -vE '^Album|^Artist|^coverart|^elapsed|^pllength|^state|^Title' $dirshm/status )
 	status+='
 Artist="'$artist'"
 Album="'$album'"

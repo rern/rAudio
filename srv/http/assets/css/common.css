@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1733921041' );
+	src         : url( '/assets/fonts/rern.woff2?v=1735997122' );
 }
 @font-face {
 	font-family : Lato;
@@ -62,6 +62,7 @@ i {
 .i-bluealsa::before,
 .i-bluetooth::before,
 .i-btreceiver::before      { content: '\F51A' }
+.i-brightness::before      { content: '\F55F' }
 .i-btsender::before        { content: '\F51B' }
 .i-camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
@@ -257,7 +258,8 @@ body {
 }
 i,
 .infobtn,
-#debug {
+#debug,
+#lib-list .coverart {
 	-webkit-user-select: none;
 	user-select: none;
 }
@@ -425,6 +427,7 @@ code {
 	text-overflow: ellipsis;
 }
 #bannerTitle {
+	line-height: 22px;
 	font-size: 18px;
 	font-weight: 300;
 }
@@ -468,6 +471,17 @@ code {
 	font-size: 13px;
 }
 
+input[ type=checkbox ],
+input[ type=radio ],
+input[ type=range ],
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button,
+input[ type=range ]::-webkit-slider-thumb {
+	appearance: none;
+}
+input[ type=number ] {
+	appearance: textfield;
+}
 input[ type=range ] {
 	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
 	--trackborder : 1px solid var( --cgd ) !important;
@@ -476,7 +490,6 @@ input[ type=range ] {
 	margin: 0;
 	max-width: 70%;
 	background: transparent;
-	-webkit-appearance: none;
 }
 input[ type=range ]::-webkit-slider-thumb {
 	height: 40px;
@@ -486,7 +499,6 @@ input[ type=range ]::-webkit-slider-thumb {
 	border-radius: 4px;
 	background: var( --glossy-btn );
 	background-color: var( --cm );
-	-webkit-appearance: none;
 	box-shadow: var( --shadow-btn );
 }
 input[ type=range ]::-moz-range-thumb { /* cannot be combined */
@@ -573,9 +585,11 @@ input[ type=checkbox ] {
 .infobtn-default {
 	background-color: var( --cg );
 }
-.disabled {
+.disabled,
+.disabled i {
 	color: var( --cg60 ) !important;
 	pointer-events: none;
+	cursor: default;
 }
 .infobtn.disabled {
 	background-color: var( --cgd ) !important;
@@ -584,7 +598,6 @@ input[ type=checkbox ] {
 }
 #infoOk.disabled {
 	pointer-events: auto;
-	cursor: default;
 }
 input[ type=checkbox ].disabled {
 	pointer-events: auto;
@@ -824,8 +837,15 @@ hr {
 	color: var( --cg60 );
 }
 .infofooter i {
+	width: auto !important;
 	margin: 0 6px;
 	vertical-align: -2px;
+}
+.infofooter span {
+	margin-right: 10px;
+}
+.infofooter span:last-child {
+	margin-right: 0;
 }
 .infomessage {
 	padding-top: 5px;
@@ -901,13 +921,6 @@ input[ type=number ]:disabled {
 	border: 1px solid var( --cgl );
 	opacity: 1;
 }
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-	-webkit-appearance: none;
-}
-input[ type=number ] {
-	-moz-appearance:textfield;
-}
 #infoPasswordBox {
 	margin-top: 0 !important;
 	outline: none;
@@ -919,7 +932,6 @@ input[ type=number ] {
 }
 input[ type=radio ],
 input[ type=checkbox ] {
-	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
 	margin: 3px 6px 3px 1px;
@@ -1028,7 +1040,6 @@ input[ type=radio ]:disabled {
 }
 @media ( max-width: 420px ) {
 	#infoList { padding: 20px 5px 10px 5px }
-	.infoheader, .infofooter { padding: 0 5px }
 }
 @media ( max-width: 330px ) {
 	#infoOverlay {
@@ -1052,6 +1063,7 @@ input[ type=radio ]:disabled {
 	.i-volume,
 	.infobtn,
 	.infofooter i,
+	.infofooter span,
 	.infolabel i,
 	.infomessage img,
 	.infomessage .tagpath,

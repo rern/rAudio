@@ -4,9 +4,9 @@ import socket
 import upnpp
 
 device = socket.gethostname() +'-UPnP/AV'
-srv = upnpp.findTypedService( device, 'avtransport', True ) # AVTransport service
+srv    = upnpp.findTypedService( device, 'avtransport', True ) # AVTransport service
 if srv:
-    retdata = upnpp.runaction( srv, 'GetMediaInfo', ['0'] )
+    retdata  = upnpp.runaction( srv, 'GetMediaInfo', ['0'] )
     metadata = retdata[ 'CurrentURIMetaData' ]
     if metadata:
         dirc = upnpp.UPnPDirContent()

@@ -7,12 +7,16 @@
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
-if [[ $1 == statusradio ]]; then # from status-radio.sh
+if [[ $1 == statusradio ]]; then # from status-radio.sh radioStatusFile
 	state=play
+	statusradio=1
 else
-	status=$( $dirbash/status.sh )
-	statusnew=$( sed -E -n '/^, "Artist|^, "Album|^, "Composer|^, "elapsed|^, "file| *"player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {s/^,* *"//; s/" *: */=/; p}' <<< $status )
-	echo "$statusnew" > $dirshm/statusnew
+	status=$( $dirbash/status.sh | jq )
+	for k in Artist Album Composer Conductor elapsed file player station state Time timestamp Title volume webradio; do
+		filter+='|^  "'$k'"'
+	done
+	statuslines=$( grep -E "${filter:1}" <<< $status )
+	statusnew=$( sed -E 's/^ *"|,$//g; s/" *: */=/' <<< $statuslines | tee $dirshm/statusnew )
 	statusprev=$( < $dirshm/status )
 	compare='^Artist|^Title|^Album'
 	[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
@@ -51,7 +55,7 @@ if [[ $clientip ]]; then
 	done
 fi
 if [[ -e $dirsystem/lcdchar ]]; then
-	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
+	[[ ! $statusradio ]] && jq <<< "{ ${statuslines%,} }" > $dirshm/status.json # remove trailing ,
 	systemctl restart lcdchar
 fi
 

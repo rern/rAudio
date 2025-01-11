@@ -18,7 +18,7 @@ data='
 , "devices"    : '$( < $dirshm/hwparams )'
 , "player"     : "'$( < $dirshm/player )'"
 , "pllength"   : '$( mpc status %length% )'
-, "state"      : "'$( mpcState )'"
+, "state"      : "'$( getVar state $dirshm/status )'"
 , "volume"     : '$( [[ $mixer ]] && volumeGet )'
 , "volumemax"  : '$( volumeMaxGet )'
 , "volumemute" : '$( getContent $dirsystem/volumemute 0 )
