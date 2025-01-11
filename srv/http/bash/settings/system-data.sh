@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
+throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex - called first to fix slip values
 temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
 load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )'&emsp;<c>'$temp'°C</c>'
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
