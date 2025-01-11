@@ -48,7 +48,8 @@ appendSortUnique() {
 	lines="\
 $( < $file )
 $data"
-	awk NF <<< $lines | sort -u > $file
+	lines=$( awk NF <<< $lines )
+	[[ $lines ]] && sort -u <<< $lines > $file || rm -f $file
 }
 args2var() { # $2 $3 ... if any, still valid
 	local argslast CFG CMD_CFG_OFF conf i k keys kL v

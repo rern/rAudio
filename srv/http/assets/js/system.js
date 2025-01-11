@@ -205,6 +205,18 @@ var config        = {
 			, fileconf     : true
 		} );
 	}
+	, templimit     : values => {
+		info( {
+			  ...SW
+			, list         : [ 'Throttle at <gr>(°C)</gr>', 'number', { updn: { step: 5, min: 50, max: 80 } } ]
+			, footer       : '(default: 60)'
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.templimit || ! S.templimit && values.DEGREE === 60
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
 	, timezone      : () => util.server.ntp()
 	, tft           : values => {
 		var type = {
@@ -845,6 +857,7 @@ function onPageInactive() {
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
+	$( '#divtemplimit' ).toggleClass( 'hide', ! S.system.includes( '3B+' ) );
 	util.renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {

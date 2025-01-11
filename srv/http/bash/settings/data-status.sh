@@ -152,24 +152,25 @@ $( < /boot/cmdline.txt )
 <bll># cat /boot/config.txt</bll>
 $( grep -Ev '^#|^\s*$' /boot/config.txt )
 
-<bll># firmware, bootloader</bll>
-$( pacman -Qs 'firmware|bootloader' | grep -Ev '^\s|whence' | cut -d/ -f2 )"
+<bll># pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader</bll>
+$( pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader )"
 	ignorepkg=$( grep ^IgnorePkg /etc/pacman.conf )
 	[[ $ignorepkg ]] && config+="
 	
 <bll># grep ^IgnorePkg /etc/pacman.conf</bll>
 $ignorepkg"
-	file_module=/etc/modules-load.d/raspberrypi.conf
-	if [[ -e $file_module ]]; then
+	filemodule=/etc/modules-load.d/raspberrypi.conf
+	module=$( grep -v snd-bcm2835 $filemodule )
+	if [[ $module ]]; then
 		config+="
 
-<bll># cat $file_module</bll>
-$( < $file_module )"
-		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-		[[ $dev ]] && config+="
+<bll># cat $filemodule</bll>
+$module"
+		devi2c=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
+		[[ $devi2c ]] && config+="
 		
-<bll># i2cdetect -y $dev</bll>
-$(  i2cdetect -y $dev )"
+<bll># i2cdetect -y $devi2c</bll>
+$(  i2cdetect -y $devi2c )"
 	fi
 	echo "$config"
 	;;

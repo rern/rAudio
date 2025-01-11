@@ -54,7 +54,15 @@ $help        = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.';
-$body        = [ htmlSectionStatus( 'status', $labels, '', $help ) ];
+$body        = [
+	  htmlSectionStatus( 'status', $labels, '', $help )
+	, [
+		  'id'    => 'templimit'
+		, 'sub'   => 'temp_soft_limit'
+		, 'label' => 'Custom Limit'
+		, 'help'  => 'Custom temperature limit for CPU throttling (RPi 3+ only)'
+	]
+];
 htmlSection( $head, $body, 'status' );
 // ----------------------------------------------------------------------------------
 $uid         = exec( 'id -u mpd' );
