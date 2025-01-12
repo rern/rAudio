@@ -19,14 +19,14 @@ if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
 	# 20 bits: occurred > 11110000000000001111 < current
 	occurred='<gr>occurred</gr>'
-	it="<i class='i-thermometer yl'></i>&ensp;CPU X"
+	it="<i class='i-templimit yl'></i>CPU X"
 	ito="${it/yl/gr} $occurred"
-	iv="<red class='blink'><i class='i-voltage'></i> Under-voltage</red>"
+	iv="<ora><i class='i-voltage blink'></i>Under-voltage</ora>"
 	declare -A warnings=(
 		 [0]=${ito/X/throttling}
 		 [1]=${ito/X/temperature limit}
 		 [2]=${ito/X/frequency capping}
-		 [3]="${iv//red/yl} $occurred"
+		 [3]="${iv//ora/yl} $occurred"
 		[16]=${it/X/throttled}
 		[17]=${it/X/temperature limit}
 		[18]=${it/X/frequency capped}

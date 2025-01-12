@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1736586706' );
+	src         : url( '/assets/fonts/rern.woff2?v=1736586709' );
 }
 @font-face {
 	font-family : Lato;
@@ -217,8 +217,7 @@ i {
 .i-stoptimer::before       { content: '\F570' }
 .i-tag::before             { content: '\F55B' }
 .i-tft::before             { content: '\F577' }
-.i-templimit::before,
-.i-thermometer::before     { content: '\F57D' }
+.i-templimit::before       { content: '\F57D' }
 .i-timezone::before        { content: '\F575' }
 .i-track::before           { content: '\F54C' }
 .i-undo::before            { content: '\F523' }

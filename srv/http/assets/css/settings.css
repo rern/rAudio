@@ -596,6 +596,9 @@ input.disabled + .switchlabel:after {
 	display: inline-block;
 	width: 112px;
 }
+#divstatus i {
+	margin-right: 5px;
+}
 
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }

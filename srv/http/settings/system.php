@@ -275,7 +275,7 @@ EOF
 	, [
 		  'id'       => 'templimit'
 		, 'sub'      => 'temp_soft_limit'
-		, 'label'    => 'Custom Limit'
+		, 'label'    => "User's Soft Limit"
 		, 'help'     => 'Custom temperature limit for CPU throttling (RPi 3B+ only)'
 	]
 ];
