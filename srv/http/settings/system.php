@@ -280,7 +280,7 @@ EOF
 Custom temperature limit for CPU speed to throttle from 1400MHz to 1200MHz.
 
 Note:
- · Default:60
+ · Default: 60°C
  · Can be raised to a maximum of 70, but may cause instability.
  · RPi 3A+ and 3B+ only
 EOF
