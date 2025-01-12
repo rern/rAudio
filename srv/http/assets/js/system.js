@@ -208,7 +208,7 @@ var config        = {
 	, templimit     : values => {
 		info( {
 			  ...SW
-			, list         : [ 'Throttle at <gr>(°C)</gr>', 'number', { updn: { step: 5, min: 50, max: 80 } } ]
+			, list         : [ 'Throttle at <gr>(°C)</gr>', 'number', { updn: { step: 1, min: 60, max: 70 } } ]
 			, footer       : '(default: 60)'
 			, boxwidth     : 70
 			, values       : values

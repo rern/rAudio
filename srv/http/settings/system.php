@@ -276,7 +276,14 @@ EOF
 		  'id'       => 'templimit'
 		, 'sub'      => 'temp_soft_limit'
 		, 'label'    => "User's Soft Limit"
-		, 'help'     => 'Custom temperature limit for CPU throttling (RPi 3B+ only)'
+		, 'help'     => <<<EOF
+Custom temperature limit for CPU speed to throttle from 1400MHz to 1200MHz.
+
+Note:
+ · Default:60
+ · Can be raised to a maximum of 70, but may cause instability.
+ · RPi 3A+ and 3B+ only
+EOF
 	]
 ];
 htmlSection( $head, $body, 'environment' );
