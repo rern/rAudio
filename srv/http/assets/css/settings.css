@@ -12,7 +12,7 @@ li.current a::before {
 }
 .menu {
 	position: absolute;
-	left: calc( 50% - 650px / 2 + 45px );
+	margin-left: 40px;
 	width: 150px;
 	padding: 0;
 	background: var( --cg );
@@ -58,6 +58,9 @@ label {
 }
 ul {
 	margin: 0;
+}
+.section {
+	position: relative;
 }
 .container::after,
 .section::after,
@@ -342,6 +345,9 @@ heading i.disabled {
 	vertical-align: -2px;
 	text-align: center;
 	color: var( --cg60 );
+}
+.entries i:first-of-type {
+	margin-right: 0;
 }
 .entries .i-save {
 	width: 20px;
