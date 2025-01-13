@@ -31,9 +31,9 @@ if [[ -e $dirsystem/camilladsp ]]; then
 # --------------------------------------------------------------------
 	fi
 	CAMILLADSP=1
-	channels=$( getVarYml capture channels )
-	format=$( getVarYml capture format )
-	samplerate=$( getVarYml samplerate )
+	channels=$( getVarCamilla capture channels )
+	format=$( getVarCamilla capture format )
+	samplerate=$( getVarCamilla samplerate )
 ########
 	ASOUNDCONF+='
 pcm.!default { 

@@ -6,13 +6,18 @@ alias=r1
 
 # 20250118
 if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; then
+	echo "$bar CamillaDSP - Upgrade ..."
 	systemctl -q is-active camilladsp && pacman stop camilladsp && camillaactive=1
-	file=$dircamilladsp/configs/camilladsp.yml
-	config=$( yq < $file )
-	pipeline=$( jq .pipeline <<< $config )
-	[[ $pipeline != null ]] && yq=yq
-	pacman -Sy --noconfirm camilladsp $yq
-	if [[ $yq ]]; then # reconfig pipeline: channel: N > channels: [ N, ... ]
+	pacman -Sy --noconfirm camilladsp yq
+	readarray -t files <<< $( ls $dircamilladsp/configs/* )
+	for file in "${files[@]}"; do
+		config=$( yq < "$file" )
+		pipeline=$( jq .pipeline <<< $config )
+		[[ $pipeline == null ]] && sed -i 's/"//g' "$file" && continue
+		
+		linenew=
+		lineprev=
+		pipelinenew=
 		pL=$( jq length <<< $pipeline )
 		for (( i=0; i <= pL; i++ )); do
 			if (( $i == $pL )); then
@@ -44,9 +49,9 @@ if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; the
 				linenew=$( jq "del(.channel) | . += { channels: [$ch] }" <<< $line )
 			fi
 		done
-		jq ".pipeline = [${pipelinenew:1}]" <<< $config | yq -y > $file
-		[[ $camillaactive ]] && pacman start camilladsp
-	fi
+		jq ".pipeline = [${pipelinenew:1}]" <<< $config | yq -y > "$file"
+	done
+	[[ $camillaactive ]] && pacman start camilladsp
 fi
 
 # 20250111

@@ -258,7 +258,9 @@ getVar() { # var=value
 	fi
 	[[ $var ]] && quoteEscape $var || echo $3
 }
-getVarYml() { # var: value || var: "value";*
+getVarCamilla() { # (camilladsp only) var: value || var: "value";*
+	local fileconf
+	fileconf=$( getVar CONFIG /etc/default/camilladsp )
 	if [[ $2 ]]; then
 		sed -n -E '/^\s*'$1':/,/^\s*'$2':/ {/'$2'/! d; s/^.*:\s"*|"*$//g; p}' "$fileconf" # /var1/,/var2/ > var2: value > value
 	else
