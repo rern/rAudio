@@ -6,7 +6,7 @@ alias=r1
 
 # 20250118
 if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; then
-	pacman -q is-active camilladsp && pacman stop camilladsp && camillaactive=1
+	systemctl -q is-active camilladsp && pacman stop camilladsp && camillaactive=1
 	file=$dircamilladsp/configs/camilladsp.yml
 	config=$( yq < $file )
 	pipeline=$( jq .pipeline <<< $config )
