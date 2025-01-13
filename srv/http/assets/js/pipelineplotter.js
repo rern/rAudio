@@ -153,26 +153,27 @@ function makeShapes( conf ) {
 			stage_start = total_length;
 			max_v       = Math.max( max_v, active_channels / 2 + 1 );
 		} else if ( step.type === 'Filter' ) {
-			const ch_nbr = step.channel;
-			for ( let m = 0; m < step.names.length; m++ ) {
-				const name      = step.names[ m ];
-				const ch_step   = stage_start + stages[ stages.length - 1 ][ ch_nbr ].length;
-				total_length    = Math.max( total_length, ch_step );
-				const io_points = appendBlock(
-					  labels
-					, boxes
-					, name
-					, ch_step * spacing_h
-					, spacing_v * ( -active_channels / 2 + 0.5 + ch_nbr )
-					, 1.25 // filter width
-					, 'filter'
-				);
-				const src_list  = stages[ stages.length - 1 ][ ch_nbr ];
-				const src_p     = src_list[ src_list.length - 1 ].output;
-				const dest_p    = io_points.input;
-				stages[ stages.length - 1 ][ ch_nbr ].push( io_points );
-				appendLink( links, labels, src_p, dest_p );
-			}
+			step.channels.forEach( ch_nbr => {
+				for ( let m = 0; m < step.names.length; m++ ) {
+					const name      = step.names[ m ];
+					const ch_step   = stage_start + stages[ stages.length - 1 ][ ch_nbr ].length;
+					total_length    = Math.max( total_length, ch_step );
+					const io_points = appendBlock(
+						  labels
+						, boxes
+						, name
+						, ch_step * spacing_h
+						, spacing_v * ( -active_channels / 2 + 0.5 + ch_nbr )
+						, 1.25 // filter width
+						, 'filter'
+					);
+					const src_list  = stages[ stages.length - 1 ][ ch_nbr ];
+					const src_p     = src_list[ src_list.length - 1 ].output;
+					const dest_p    = io_points.input;
+					stages[ stages.length - 1 ][ ch_nbr ].push( io_points );
+					appendLink( links, labels, src_p, dest_p );
+				}
+			} );
 		}
 	}
 	const playbackchannels = [];

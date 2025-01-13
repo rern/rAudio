@@ -495,12 +495,22 @@ function info( json ) {
 		htmls.list     = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
-		var colspan, kv, label, param, type;
+		var colspan, kv, label, option, param, type;
 		var i          = 0; // for radio name
 		I.list.forEach( ( l, i ) => {
 			label   = l[ 0 ];
 			type    = l[ 1 ];
-			param   = l[ 2 ] || {};
+			if ( type === 'select' ) {
+				option = l[ 2 ];
+				param  = l[ 3 ] || {};
+			} else {
+				param  = l[ 2 ] || {};
+			}
+			if ( type === 'html' ) {
+				htmls.list += '<tr><td>'+ label +'</td><td>'+ param +'</td></tr>';
+				return
+			}
+			
 			kv      = 'kv' in param ? param.kv : jsonClone( param ); // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
 			if ( [ 'checkbox', 'radio' ].includes( type ) && ! ( 'colspan' in param ) ) param.colspan = 2;
 			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
@@ -577,7 +587,7 @@ function info( json ) {
 								+'</div></td></tr>';
 					break
 				case 'select':
-					htmls.list += '<select>'+ htmlOption( param ) +'</select>';
+					htmls.list += '<select>'+ htmlOption( option ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
@@ -1042,7 +1052,7 @@ function infoSetValues() {
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
 		} else if ( $this.is( 'select' ) ) {
-			typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
+			val !== '' && typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
 		} else {
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
@@ -1082,7 +1092,7 @@ function infoVal( array ) {
 		switch ( type ) {
 			case 'checkbox':
 				val = $this.prop( 'checked' );
-				if ( val && $this.attr( 'value' ) ) val = $this.val(); // if value defined
+				if ( val && $this.attr( 'value' ) !== undefined ) val = $this.val(); // if value defined
 				break;
 			case 'number':
 			case 'range':
@@ -1108,6 +1118,7 @@ function infoVal( array ) {
 			default: // hidden, select
 				val = $this.val();
 		}
+		if ( val === '0' ) val = 0;
 		if ( typeof val !== 'string'                    // boolean
 			|| val === ''                               // empty
 			|| isNaN( val )                             // Not a Number 

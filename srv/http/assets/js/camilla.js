@@ -316,7 +316,8 @@ var D         = {
 		, Wasapi    : [ ...D1.AlsaC, Dlist.exclusive, Dlist.loopback ]
 		, Jack      : [ Dlist.typeC, Dlist.channelsC ]
 		, Stdin     : [ Dlist.typeC, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
-		, File      : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
+		, RawFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
+		, WavFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
 	}
 	, playback  : {
 		  Alsa      : D1.AlsaP
@@ -335,7 +336,8 @@ var D         = {
 		, Jack      : { type: '',                           channels: 2 }
 		, Stdin     : { type: '',               format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
 		, Stdout    : { type: '',               format: '', channels: 2 }
-		, File      : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, RawFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, WavFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
 		, FileP     : { type: '', filename: '', format: '', channels: 2 }
 	}
 	, resampler : {
@@ -969,10 +971,11 @@ var render    = {
 	}
 	, pipe        : ( el, i ) => {
 		var icon = 'pipeline liicon';
+		if ( el.bypassed ) icon += ' grd';
 		if ( el.type === 'Filter' ) {
 			icon  += ' graph';
 			var li = '<div class="li1">' + el.type +'</div>'
-					+'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
+					+'<div class="li2">channels - '+ el.channels +': '+ el.names.join( ', ' ) +'</div>';
 		} else {
 			var li = '<gr>Mixer:</gr> '+ el.name;
 		}
@@ -982,7 +985,7 @@ var render    = {
 	}
 	, pipelineSub : index => {
 		var data = PIP[ index ];
-		var li   = '<li class="lihead main" data-index="'+ index +'">'+ ico( 'pipeline' ) +'Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li   = '<li class="lihead main" data-index="'+ index +'">'+ ico( 'pipeline' ) +'Channels: '+ data.channels + ico( 'add' ) + ico( 'back' ) +'</li>';
 		data.names.forEach( ( name, i ) => li += render.pipeFilter( name, i ) );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
@@ -1419,6 +1422,8 @@ var setting   = {
 		} );
 	} //-----------------------------------------------------------------------------------
 	, pipeline      : () => {
+		var channels = '';
+		[ ...Array( DEV.playback.channels ).keys() ].forEach( c => channels += '<label><input type="checkbox" value="'+ c +'">'+ c +'</label>&emsp;' );
 		var filters = Object.keys( FIL );
 		info( {
 			  icon       : V.tab
@@ -1426,30 +1431,30 @@ var setting   = {
 			, tablabel   : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
 			, tab        : [ '', setting.pipelineMixer ]
 			, list       : [
-				  [ 'Channel', 'select', [ ...Array( DEV.playback.channels ).keys() ] ]
-				, [ 'Filters', 'select', filters, ico( 'add' ) ]
+				  [ 'Channels', 'html', channels ]
+				, [ 'Filters',  'select', filters, { suffix: ico( 'add' ) } ]
 			]
 			, beforeshow : () => {
-				$( '#infoList .select2-container' ).eq( 0 ).attr( 'style', 'width: 70px !important' );
+				$( '#infoList input' ).prop( 'checked', true );
+				$( '#infoOk' ).addClass( 'disabled' );
 				var tradd = '<tr><td></td><td><input type="text" disabled value="VALUE"></td><td>&nbsp;'+ ico( 'remove' ) +'</td></tr>';
 				$( '#infoList' ).on( 'click', '.i-add', function() {
-					$( '#infoList table' ).append( tradd.replace( 'VALUE', $( '#infoList select' ).eq( 1 ).val() ) );
+					$( '#infoList table' ).append( tradd.replace( 'VALUE', $( '#infoList select' ).val() ) );
+					$( '#infoOk' ).removeClass( 'disabled' );
 				} ).on( 'click', '.i-remove', function() {
 					$( this ).parents( 'tr' ).remove();
+					$( '#infoOk' ).toggleClass( 'disabled', $( '#infoList input:text' ).length === 0 );
 				} );
 			}
 			, ok         : () => {
-				var $input = $( '#infoList input' );
-				if ( $input.length ) {
-					var names = [];
-					$input.each( ( i, el ) => names.push( $( el ).val() ) );
-				} else {
-					var names = filters[ 0 ];
-				}
+				var channels = [];
+				var names    = [];
+				$( '#infoList input:checkbox' ).each( ( i, el ) => channels.push( +$( el ).val() ) );
+				$( '#infoList input:text' ).each( ( i, el ) => names.push( $( el ).val() ) );
 				PIP.push( {
-					  type    : 'Filter'
-					, channel : +$( '#infoList select' ).eq( 0 ).val()
-					, names   : names
+					  type     : 'Filter'
+					, channels : channels
+					, names    : names
 				} );
 				setting.pipelineSave();
 			}
@@ -1493,7 +1498,7 @@ var setting   = {
 	, device        : ( dev, type ) => {
 		var type        = type || 'Alsa';
 		var vtype       = type === 'File' && dev === 'playback' ? 'FileP' : type;
-		var values      = jsonClone( D.values[ vtype ] );
+		var values      = DEV[ dev ][ type ] === type ? DEV[ dev ][ type ] : jsonClone( D.values[ vtype ] );
 		values.type     = type;
 		values.channels = DEV[ dev ].channels;
 		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
@@ -1510,20 +1515,20 @@ var setting   = {
 				var $td    = $input.parent();
 				$td.append( $td.next().find( 'i' ) );
 				$input.css( 'width', '70px' );
-				$( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
-/*				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
+/* alsa only */ $( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
+				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
-					if ( typenew === 'File' && ! S.ls.raw ) {
+					if ( ( typenew === 'RawFile' && ! S.ls.raw ) || ( typenew === 'WavFile' && ! S.ls.wave ) ) {
 						info( {
 							  icon    : V.tab
 							, title   : title
-							, message : 'No raw files available.'
+							, message : 'No <c>'+ typenew +'</c> available.'
 							, ok      : () => setting.device( dev, type )
 						} );
 					} else {
 						setting.device( dev, typenew );
 					}
-				} );*/
+				} );
 			}
 			, ok           : () => {
 				DEV[ dev ] = infoVal();
@@ -2136,6 +2141,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
 	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
+	$( '#menu .bypass' ).toggleClass( 'hide', ! $this.hasClass( 'i-pipeline' ) );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
@@ -2291,27 +2297,37 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break;
 		case 'pipeline':
 			var title = 'Pipeline';
-			var main = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
-			var type = main ? V.li.data( 'type' ).toLowerCase() : 'filter';
-			info( {
-				  icon    : V.tab
-				, title   : title
-				, message : main ? 'Delete this '+ type +'?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
-				, ok      : () => {
-					if ( main ) {
-						var index = V.li.data( 'index' );
-						PIP.splice( index, 1 );
-					} else {
-						var pi = $( '#pipeline .lihead' ).data( 'index' );
-						var ni = V.li.data( 'index' );
-						PIP[ pi ].names.splice( ni, 1 );
-					}
-					setting.save( title, 'Remove '+ type +' ...' );
-					V.li.remove();
-					setting.sortRefresh( main ? 'main' : 'sub' );
-					graph.pipeline();
-				}
-			} );
+			switch ( cmd ) {
+				case 'delete':
+					var main = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
+					var type = main ? V.li.data( 'type' ).toLowerCase() : 'filter';
+					info( {
+						  icon    : V.tab
+						, title   : title
+						, message : main ? 'Delete this '+ type +'?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
+						, ok      : () => {
+							if ( main ) {
+								var index = V.li.data( 'index' );
+								PIP.splice( index, 1 );
+							} else {
+								var pi = $( '#pipeline .lihead' ).data( 'index' );
+								var ni = V.li.data( 'index' );
+								PIP[ pi ].names.splice( ni, 1 );
+							}
+							setting.save( title, 'Remove '+ type +' ...' );
+							V.li.remove();
+							setting.sortRefresh( main ? 'main' : 'sub' );
+							graph.pipeline();
+						}
+					} );
+					break;
+				case 'bypass':
+					var i        = V.li.index();
+					var bypassed = ! PIP[ i ].bypassed
+					PIP[ i ].bypassed = bypassed;
+					setting.save( title, bypassed ? 'Bypassed ...' : 'Restored ...' );
+					break;
+			}
 			break;
 		case 'devices':
 			setting.device( V.li.data( 'type' ) );

@@ -4,6 +4,53 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250118
+if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; then
+	pacman -q is-active camilladsp && pacman stop camilladsp && camillaactive=1
+	file=$dircamilladsp/configs/camilladsp.yml
+	config=$( yq < $file )
+	pipeline=$( jq .pipeline <<< $config )
+	[[ $camillaactive && $pipeline != null ]] && yq=yq
+	pacman -Sy --noconfirm camilladsp $yq
+	if [[ ! $yq ]]; then
+		cp -f /etc/camilladsp/configs/camilladsp.yml $dircamilladsp/configs
+	else # reconfig pipeline: channel: N > channels: [ N, ... ]
+		pL=$( jq length <<< $pipeline )
+		for (( i=0; i <= pL; i++ )); do
+			if (( $i == $pL )); then
+				[[ $linenew ]] && pipelinenew+=,$linenew
+				break
+			fi
+			
+			line=$( jq -c .[$i] <<< $pipeline )
+			if [[ $( jq -r .type <<< $line ) == Mixer ]]; then
+				[[ $linenew ]] && pipelinenew+=,$linenew
+				pipelinenew+=,$line
+				linenew=
+				lineprev=
+				continue
+				
+			fi
+			ch=$( jq .channel <<< $line )
+			if [[ ! $lineprev ]]; then
+				lineprev=$( jq 'del(.channel)' <<< $line )
+				linenew=$( jq "del(.channel) | . += { channels: [$ch] }" <<< $line )
+				continue
+				
+			fi
+			if [[ $( jq 'del(.channel)' <<< $line ) == "$lineprev" ]]; then
+				linenew=$( jq ".channels += [$ch]" <<< $linenew )
+			else
+				pipelinenew+=,$linenew
+				lineprev=$( jq 'del(.channel)' <<< $line )
+				linenew=$( jq "del(.channel) | . += { channels: [$ch] }" <<< $line )
+			fi
+		done
+		jq ".pipeline = [${pipelinenew:1}]" <<< $config | yq -y > $file
+		[[ $camillaactive ]] && pacman start camilladsp
+	fi
+fi
+
 # 20250111
 if [[ -e /boot/kernel.img ]]; then
 	if [[ $( pacman -Q cava ) != 'cava 0.7.4-1' ]]; then

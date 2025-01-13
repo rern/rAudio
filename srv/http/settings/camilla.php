@@ -188,7 +188,7 @@ foreach( $id_tab as $id => $data ) {
 	htmlSection( $head, $body, $id );
 }
 $htmlmenu = '<div id="menu" class="menu hide">';
-foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete', 'info' ] as $c ) {
+foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete', 'bypass', 'info' ] as $c ) {
 	$htmlmenu.= '<a class="'.$c.'">'.i( $c ).ucfirst( $c ).'</a>';
 }
 echo $htmlmenu.'</div>';
