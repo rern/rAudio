@@ -10,11 +10,9 @@ if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; the
 	file=$dircamilladsp/configs/camilladsp.yml
 	config=$( yq < $file )
 	pipeline=$( jq .pipeline <<< $config )
-	[[ $camillaactive && $pipeline != null ]] && yq=yq
+	[[ $pipeline != null ]] && yq=yq
 	pacman -Sy --noconfirm camilladsp $yq
-	if [[ ! $yq ]]; then
-		cp -f /etc/camilladsp/configs/camilladsp.yml $dircamilladsp/configs
-	else # reconfig pipeline: channel: N > channels: [ N, ... ]
+	if [[ $yq ]]; then # reconfig pipeline: channel: N > channels: [ N, ... ]
 		pL=$( jq length <<< $pipeline )
 		for (( i=0; i <= pL; i++ )); do
 			if (( $i == $pL )); then
