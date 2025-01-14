@@ -86,6 +86,15 @@ brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladsp )
+	if [[ $ON ]]; then
+		fileconf=$( getVar CONFIG /etc/default/camilladsp )
+		validate=$( camilladsp -c "$fileconf" )
+		if [[ $validate != 'Config is valid' ]]; then
+			notify 'warning yl' CamillaDSP "Error: <c>$fileconf</c><br>${validate/*file\!}" -1
+			exit
+# --------------------------------------------------------------------
+		fi
+	fi
 	enableFlagSet
 	pushRestartMpd camilladsp $TF
 	;;

@@ -17,19 +17,7 @@ else
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd_aloop
-	if ! aplay -l | grep -q Loopback; then
-		error='<c>Loopback</c> not available &emsp;'
-		rmmod snd-aloop &> /dev/null
-	fi
 	fileconf=$( getVar CONFIG /etc/default/camilladsp )
-	! camilladsp -c "$fileconf" &> /dev/null && error+="<c>$fileconf</c> not valid"
-	if [[ $error ]]; then
-		notify 'warning yl' CamillaDSP "Error: $error" -1
-		rm $dirsystem/camilladsp
-		$dirsettings/player-conf.sh
-		exit
-# --------------------------------------------------------------------
-	fi
 	CAMILLADSP=1
 ########
 	ASOUNDCONF+='
