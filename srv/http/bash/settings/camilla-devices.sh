@@ -52,12 +52,12 @@ else
 	fileconf=$( getVar CONFIG /etc/default/camilladsp )
 	fileformat="$dirsystem/camilla-$NAME"
 	[[ -s $fileformat ]] && format=$( getContent "$fileformat" ) || format=$( jq -r .[0] <<< ${FORMATS[1]} )
-	format0=$( getVarCamilla playback format )
+	format0=$( getVar playback.format "$fileconf" )
 	if [[ $format0 != $format ]]; then
 		sed -i -E '/playback:/,/format:/ s/^(\s*format: ).*/\1'$format'/' "$fileconf"
 		echo $format > "$fileformat"
 	fi
-	card0=$( getVarCamilla playback device | cut -c4 )
+	card0=$( getVar playback.device "$fileconf" | cut -c4 )
 	[[ $card0 != $CARD ]] && sed -i -E '/playback:/,/device:/ s/hw:.*/hw:'$CARD',0/' "$fileconf"
 	camillaDSPstart
 fi
