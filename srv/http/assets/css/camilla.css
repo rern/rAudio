@@ -49,6 +49,14 @@
 .bar.peak.red {
 	background: #f00 !important;
 }
+.bar.peak.stop,
+.bar.rms.stop,
+#buffer.stop,
+#load.stop {
+	width: 0;
+	background: none;
+	transition-duration: 0s;
+}
 .bar.rms {
 	position: relative;
 	width: 0;
