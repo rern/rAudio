@@ -31,9 +31,6 @@ if [[ -e $dirsystem/camilladsp ]]; then
 # --------------------------------------------------------------------
 	fi
 	CAMILLADSP=1
-	channels=$( getVar capture.channels "$fileconf" )
-	format=$( getVar capture.format "$fileconf" )
-	samplerate=$( getVar samplerate "$fileconf" )
 ########
 	ASOUNDCONF+='
 pcm.!default { 
@@ -47,9 +44,9 @@ pcm.camilladsp {
 			type     hw
 			card     Loopback
 			device   0
-			channels '$channels'
-			format   '$format'
-			rate     '$samplerate'
+			channels '$( getVar capture.channels "$fileconf" )'
+			format   '$( getVar capture.format "$fileconf" )'
+			rate     '$( getVar samplerate "$fileconf" )'
 		}
 	}
 }
