@@ -1694,14 +1694,25 @@ var setting   = {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			setting.switchValues();
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			local();
-			ws.send( '{ "channel": "refresh", "data": { "page": "camilla", "config": '+ JSON.stringify( S.config ) +' } }' );
+			setting.statusPush();
 			if ( ! V.press ) {
 				clearTimeout( V.timeoutsave );
 				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
 			}
 		}, wscamilla ? 0 : 300 );
 		if ( titlle ) banner( V.tab, titlle, msg );
+	}
+	, statusPush    : () => {
+		var status = { 
+			  channel : "refresh"
+			, data    : {
+				  page       : "camilla"
+				, config     : JSON.stringify( S.config )
+				, configname : S.configname // confswitch
+			}
+		}
+		local();
+		ws.send( JSON.stringify( status ) );
 	}
 	, switchValues  : () => {
 		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => { S[ k ] = DEV[ k ] === true } );
@@ -1933,6 +1944,10 @@ var common    = {
 					Dlist.filename[ 2 ].kv           = S.ls.raw;
 					setting.switchValues();
 					wscamilla.send( '"GetSupportedDeviceTypes"' );
+					if ( V.confswitch ) {
+						delete V.confswitch;
+						setting.statusPush();
+					}
 					break;
 				case 'GetSupportedDeviceTypes':
 					var type = {};
@@ -2093,6 +2108,7 @@ $( '#configuration' ).on( 'input', function() {
 	var name = $( this ).val();
 	var path = '/srv/http/data/camilladsp/configs'+ ( S.bluetooth ? '-bt/' : '/' ) + name;
 	bash( [ 'confswitch', path, 'CMD CONFIG' ], () => {
+		V.confswitch = true;
 		wscamilla.send( '{ "SetConfigFilePath": "'+ path +'" }' );
 		wscamilla.send( '"Reload"' );
 		S.configname = name;
