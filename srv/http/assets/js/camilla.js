@@ -1848,7 +1848,6 @@ var common    = {
 					
 					if ( ! V.signal ) { // restore after 1st set
 						V.signal = true;
-						$( '.peak' ).css( 'width', '3px' );
 						$( '.rms' ).css( 'transition-duration', '' );
 						setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
 					}

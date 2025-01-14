@@ -42,7 +42,7 @@
 	margin-bottom: 10px;
 }
 .bar.peak {
-	width: 0;
+	width: 3px;
 	background: var( --cm );
 	transition-duration: 1s;
 }
