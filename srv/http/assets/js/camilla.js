@@ -1694,6 +1694,8 @@ var setting   = {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			setting.switchValues();
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
+			local();
+			ws.send( '{ "channel": "refresh", "data": { "page": "camilla", "config": '+ JSON.stringify( S.config ) +' } }' );
 			if ( ! V.press ) {
 				clearTimeout( V.timeoutsave );
 				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );

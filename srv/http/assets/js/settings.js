@@ -5,7 +5,7 @@ Naming must be the same for:
 	bash   - cmd=NAME, save to NAME.conf
 */
 W.refresh = data => {
-	if ( data.page !== page ) return
+	if ( V.local || data.page !== page ) return
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
