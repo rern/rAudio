@@ -1483,6 +1483,7 @@ var setting   = {
 	, pipelineMixer : index => {
 		if ( ! setting.pipelineNone( 'mixers' ) ) return
 		
+		var edit = index !== undefined;
 		info( {
 			  icon         : V.tab
 			, title        : edit ? 'Pipeline Mixer' : 'Add Pipeline'

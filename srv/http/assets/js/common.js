@@ -1246,15 +1246,22 @@ function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );
 }
 function htmlOption( el ) {
-	var nosort = 'nosort' in el;
-	if ( 'kv' in el ) el = el.kv;
-	if ( typeof el === 'number' ) el = [ ...Array( el ).keys() ];
+	var array = false;
+	var sort  = true;
+	if ( typeof el === 'number' ) {
+		el         = [ ...Array( el ).keys() ];
+	} else if ( Array.isArray( el ) ) {
+		var array  = true;
+	} else {
+		if ( 'nosort' in el ) sort = false;
+		if ( 'kv' in el ) el = el.kv;
+	}
 	var options = '';
-	if ( Array.isArray( el ) ) { // name = value
-		if ( ! nosort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
+	if ( array ) { // name = value
+		if ( sort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
 		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
 	} else {                     // json
-		if ( ! nosort ) el = jsonSort( el );
+		if ( sort ) el = jsonSort( el );
 		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
 	}
 	return options
