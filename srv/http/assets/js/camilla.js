@@ -978,8 +978,7 @@ var render    = {
 		render.sortable( 'main' );
 	}
 	, pipe        : ( el, i ) => {
-		var icon = 'pipeline liicon edit';
-		if ( el.bypassed ) icon += ' bypassed';
+		var icon  = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
 		if ( el.type === 'Filter' ) {
 			icon  += ' graph';
 			var li = '<div class="li1">' + el.type +'</div>'
@@ -2192,7 +2191,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
 	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
 	if ( V.tab === 'pipeline' ) {
-		if ( V.li.find( 'i' ).hasClass( 'bypassed' ) ) {
+		if ( V.li.find( '.i-bypass' ).length ) {
 			var bypass = ico( 'pipeline' ) +'Restore';
 		} else {
 			var bypass = ico( 'bypass' ) +'Bypass';
@@ -2391,7 +2390,9 @@ $( '#menu a' ).on( 'click', function( e ) {
 					var bypassed      = ! PIP[ i ].bypassed
 					PIP[ i ].bypassed = bypassed;
 					setting.save( title, bypassed ? 'Bypassed ...' : 'Restored ...' );
-					V.li.find( 'i' ).toggleClass( 'bypassed', bypassed );
+					V.li.find( 'i' )
+						.removeClass()
+						.addClass( bypassed ? 'i-bypass' : 'i-pipeline' );
 					break;
 			}
 			break;
