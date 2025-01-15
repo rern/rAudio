@@ -978,7 +978,7 @@ var render    = {
 		render.sortable( 'main' );
 	}
 	, pipe        : ( el, i ) => {
-		var icon = 'pipeline liicon';
+		var icon = 'pipeline liicon edit';
 		if ( el.bypassed ) icon += ' grd';
 		if ( el.type === 'Filter' ) {
 			icon  += ' graph';
@@ -990,14 +990,6 @@ var render    = {
 		var $graph = $( '#filters .entries.main li[data-index="'+ i +'"]' ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
 		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
-	}
-	, pipelineSub : index => {
-		var data = PIP[ index ];
-		var li   = '<li class="lihead main" data-index="'+ index +'">'+ ico( 'pipeline' ) +'Channels: '+ data.channels + ico( 'add' ) + ico( 'back' ) +'</li>';
-		data.names.forEach( ( name, i ) => li += render.pipeFilter( name, i ) );
-		$( '#'+ V.tab +' .entries.sub' ).html( li );
-		render.toggle( 'sub' );
-		render.sortable( 'sub' );
 	}
 	, pipeFilter  : ( name, i ) => {
 		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon' )
@@ -1429,74 +1421,103 @@ var setting   = {
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
-	, pipeline      : () => {
+	, pipeline      : index => {
+		if ( ! setting.pipelineNone( 'filters' ) ) return
+		
 		var channels = '';
 		[ ...Array( DEV.playback.channels ).keys() ].forEach( c => channels += '<label><input type="checkbox" value="'+ c +'">'+ c +'</label>&emsp;' );
-		var filters = Object.keys( FIL );
+		var filters  = Object.keys( FIL );
+		var list     = [ [ 'Channels', 'html', channels ] ];
+		var select   = [ 'Filters',  'select', filters, { suffix: ico( 'add' ) + ico( 'remove hide' ) } ];
+		if ( index === undefined ) {
+			var edit = false;
+			list.push( select );
+		} else {
+			var edit = true;
+			var data = jsonClone( PIP[ index ] );
+			var nL   = edit ? data.names.length : 1;
+			for ( i = 0; i < nL; i++ ) list.push( select );
+		}
 		info( {
-			  icon       : V.tab
-			, title      : 'Add Pipeline'
-			, tablabel   : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
-			, tab        : [ '', setting.pipelineMixer ]
-			, list       : [
-				  [ 'Channels', 'html', channels ]
-				, [ 'Filters',  'select', filters, { suffix: ico( 'add' ) } ]
-			]
-			, beforeshow : () => {
-				$( '#infoList input' ).prop( 'checked', true );
-				$( '#infoOk' ).addClass( 'disabled' );
-				var tradd = '<tr><td></td><td><input type="text" disabled value="VALUE"></td><td>&nbsp;'+ ico( 'remove' ) +'</td></tr>';
+			  icon         : V.tab
+			, title        : edit ? 'Pipeline Filter' : 'Add Pipeline'
+			, tablabel     : edit ? '' : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
+			, tab          : edit ? '' : [ '', setting.pipelineMixer ]
+			, list         : list
+			, values       : edit ? [ ...data.channels, ...data.names ] : ''
+			, checkchanged : edit
+			, beforeshow   : () => {
+				if ( edit ) {
+					$( '#infoList i' ).toggleClass( 'hide' );
+					$( '#infoList tr' ).last().find( 'i' ).toggleClass( 'hide' );
+				} else {
+					$( '#infoList input' ).prop( 'checked', true );
+				}
+				var select = '<select>'+ htmlOption( filters ) +'</select';
 				$( '#infoList' ).on( 'click', '.i-add', function() {
-					$( '#infoList table' ).append( tradd.replace( 'VALUE', $( '#infoList select' ).val() ) );
-					$( '#infoOk' ).removeClass( 'disabled' );
+					var $trlast = $( '#infoList tr' ).last();
+					$( '#infoList table' ).append( $trlast.clone() );
+					$trlast.find( 'i' ).toggleClass( 'hide' );
+					var $trnew  = $( '#infoList tr' ).last();
+					$trnew.find( 'td' ).eq( 1 ).html( select );
+					selectSet( $trnew.find( 'select' ) );
 				} ).on( 'click', '.i-remove', function() {
 					$( this ).parents( 'tr' ).remove();
-					$( '#infoOk' ).toggleClass( 'disabled', $( '#infoList input:text' ).length === 0 );
 				} );
 			}
-			, ok         : () => {
+			, ok           : () => {
 				var channels = [];
 				var names    = [];
 				$( '#infoList input:checkbox' ).each( ( i, el ) => channels.push( +$( el ).val() ) );
-				$( '#infoList input:text' ).each( ( i, el ) => names.push( $( el ).val() ) );
-				PIP.push( {
+				$( '#infoList select' ).each( ( i, el ) => names.push( $( el ).val() ) );
+				data = {
 					  type     : 'Filter'
 					, channels : channels
 					, names    : names
-				} );
+				}
+				edit ? PIP[ index ] = data : PIP.push( data );
 				setting.pipelineSave();
 			}
 		} );
 	}
-	, pipelineMixer : () => {
-		if ( ! Object.keys( MIX ).length ) {
-			info( {
-				  icon    : V.tab
-				, title   : 'Add Pipeline'
-				, message : 'No mixers found.'
-				, ok      : setting.pipeline
-			} );
-			return
-		}
+	, pipelineMixer : index => {
+		if ( ! setting.pipelineNone( 'mixers' ) ) return
 		
 		info( {
-			  icon     : V.tab
-			, title    : 'Add Pipeline'
-			, tablabel : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
-			, tab      : [ setting.pipeline, '' ]
-			, list     : [ 'Mixers', 'select', Object.keys( MIX ) ]
-			, ok       : () => {
-				PIP.push( {
+			  icon         : V.tab
+			, title        : edit ? 'Pipeline Mixer' : 'Add Pipeline'
+			, tablabel     : edit ? '' : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
+			, tab          : edit ? '' : [ setting.pipeline, '' ]
+			, list         : [ 'Mixers', 'select', Object.keys( MIX ) ]
+			, values       : edit ? PIP[ index ].name : ''
+			, checkchanged : edit
+			, ok           : () => {
+				data = {
 					  type : 'Mixer'
 					, name : infoVal()
-				} );
+				}
+				edit ? PIP[ index ] = data : PIP.push( data );
 				setting.pipelineSave();
 			}
 		} );
+	}
+	, pipelineNone  : type => {
+		if ( Object.keys( S.config[ type ] ).length ) return true
+		
+		info( {
+			  icon    : V.tab
+			, title   : 'Add Pipeline'
+			, message : 'No '+ type +' found.'
+			, ok      : type === 'filters' ? setting.pipelineMixer : setting.pipeline
+		} );
+		return false
 	}
 	, pipelineSave  : () => {
 		setting.save( 'Add Pipeline', 'Save ...' );
 		render.pipeline();
+	}
+	, pipelineTr    : () => {
+		
 	}
 	, sortRefresh   : k => {
 		V.sortable[ k ].destroy();
@@ -2153,10 +2174,14 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 	}
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
+	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
+		$( '#menu' ).addClass( 'hide' );
+		return
+	}
+	
 	e.stopPropagation();
 	var $this  = $( this );
 	V.li       = $this.parent();
-	$( '#menu' ).addClass( 'hide' );
 	$( '#'+ V.tab +' li' ).removeClass( 'focus' );
 	if ( V.li.hasClass( 'focus' ) ) return
 	
@@ -2322,6 +2347,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 		case 'pipeline':
 			var title = 'Pipeline';
 			switch ( cmd ) {
+				case 'edit':
+					var i = V.li.index();
+					PIP[ i ].type === 'Filter' ? setting.pipeline( i ) : setting.pipelineMixer( i );
+					break;
 				case 'delete':
 					var main = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
 					var type = main ? V.li.data( 'type' ).toLowerCase() : 'filter';
@@ -2418,7 +2447,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 	}
 } );
 // filters --------------------------------------------------------------------------------
-$( '#filters' ).on( 'click', '.i-add', function() {
+$( '#filters' ).on( 'click', '.name', function( e ) {
+	e.stopPropagation();
+	$( this ).parents( 'li' ).find( '.liicon' ).trigger( 'click' );
+} ).on( 'click', '.i-add', function() {
 	setting.upload();
 } ).on( 'input', 'input[type=range]', function() {
 	setting.rangeGet( $( this ), 'input' );
@@ -2540,57 +2572,11 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var M = setting.mixerGet( $( this ) );
 	setting.mixerMap( M.name, M.index );
 } );
-// processors ---------------------------------------------------------------------------------------
-$( '#processors' ).on( 'click', 'li', function( e ) {
-	e.stopPropagation();
-	$( this ).find( '.liicon' ).trigger( 'click' );
-} );
+// processors -----------------------------------------------------------------------------
 // pipeline -------------------------------------------------------------------------------
-$( '#pipeline' ).on( 'click', 'li', function( e ) {
-	var $this = $( this );
-	if ( $( e.target ).is( 'i' ) || $this.parent().is( '.sub' ) ) return
-	
-	var index = $this.data( 'index' );
-	if ( $this.data( 'type' ) === 'Filter' ) {
-		render.pipelineSub( index );
-	} else {
-		var names  = Object.keys( MIX );
-		if ( names.length === 1 ) return
-		
-		var values = $this.find( '.li2' ).text();
-		info( {
-			  icon    : V.tab
-			, title   : 'Pipeline'
-			, message : values
-			, list    : [ '', 'select', names ]
-			, values  : values
-			, ok      : () => {
-				PIP[ index ].name = infoVal();
-				setting.save( 'Add Mixer', 'Save ...' );
-			}
-		} );
-	}
-} ).on( 'click', 'li i', function() {
-	var $this = $( this );
-	if ( $this.is( '.liicon, .i-back' ) ) return
-	
-	var title = common.tabTitle();
-	var index = $this.parents( 'li' ).data( 'index' );
-	if ( $this.hasClass( 'i-add' ) ) {
-		var title = 'Add Filter';
-		info( {
-			  icon  : V.tab
-			, title : title
-			, list  : [ 'Filter', 'select', Object.keys( FIL ) ]
-			, ok    : () => {
-				PIP[ index ].names.push( infoVal() );
-				setting.save( title, 'Save ...' );
-				setting.sortRefresh( 'sub' );
-				render.pipelineSub( index );
-				graph.pipeline();
-			}
-		} );
-	}
+$( '#processors, #pipeline' ).on( 'click', 'li', function( e ) {
+	e.stopPropagation();
+	$( this ).find( 'i' ).trigger( 'click' );
 } );
 // devices --------------------------------------------------------------------------------
 $( '#divdevices heading .i-gear' ).on( 'click', function() {

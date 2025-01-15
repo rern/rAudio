@@ -104,7 +104,7 @@ foreach( $id_tab as $id => $data ) {
 	} else if ( $id === 'config' ) {
 		$html.= '
 <pre id="codeconfig" class="status hide"></pre>';
-	} else {
+	} else if ( $id === 'filters' || $id === 'mixers' ) {
 		$html.= '
 <ul class="entries sub"></ul>';
 	}

@@ -1043,14 +1043,15 @@ function infoSetValues() {
 		type  = $this.prop( 'type' );
 		val   = I.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
-			if ( val ) {
+			if ( val || val === 0 ) {
 				var name = $this.prop( 'name' );
 				$( 'input[name='+ name +']' ).val( [ val ] );
 			} else {
 				$this.eq( 0 ).prop( 'checked', true );
 			}
 		} else if ( type === 'checkbox' ) {
-			$this.prop( 'checked',  val );
+			var checked = typeof val === 'boolean' ? val : val == $this.val();
+			$this.prop( 'checked', checked );
 		} else if ( $this.is( 'select' ) ) {
 			val !== '' && typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
 		} else {

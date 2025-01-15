@@ -475,6 +475,7 @@ i.disabled {
 }
 
 .db,
+#divfilters li .name,
 #divvolume {
 	cursor: pointer;
 }
