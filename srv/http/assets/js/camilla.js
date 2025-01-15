@@ -2578,7 +2578,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 // pipeline -------------------------------------------------------------------------------
 $( '#processors, #pipeline' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
-	$( this ).find( 'i' ).trigger( 'click' );
+	if ( ! $( e.target ).is( 'i' ) ) $( this ).find( 'i' ).trigger( 'click' );
 } );
 // devices --------------------------------------------------------------------------------
 $( '#divdevices heading .i-gear' ).on( 'click', function() {
