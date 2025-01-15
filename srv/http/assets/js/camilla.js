@@ -2363,24 +2363,17 @@ $( '#menu a' ).on( 'click', function( e ) {
 					PIP[ i ].type === 'Filter' ? setting.pipeline( i ) : setting.pipelineMixer( i );
 					break;
 				case 'delete':
-					var main = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
-					var type = main ? V.li.data( 'type' ).toLowerCase() : 'filter';
+					var type = V.li.data( 'type' ).toLowerCase();
 					info( {
 						  icon    : V.tab
 						, title   : title
-						, message : main ? 'Delete this '+ type +'?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
+						, message : 'Delete this '+ type +'?'
 						, ok      : () => {
-							if ( main ) {
-								var index = V.li.data( 'index' );
-								PIP.splice( index, 1 );
-							} else {
-								var pi = $( '#pipeline .lihead' ).data( 'index' );
-								var ni = V.li.data( 'index' );
-								PIP[ pi ].names.splice( ni, 1 );
-							}
+							var index = V.li.data( 'index' );
+							PIP.splice( index, 1 );
 							setting.save( title, 'Remove '+ type +' ...' );
 							V.li.remove();
-							setting.sortRefresh( main ? 'main' : 'sub' );
+							setting.sortRefresh( 'main' );
 							graph.pipeline();
 						}
 					} );
