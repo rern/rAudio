@@ -919,7 +919,7 @@ var render    = {
 		var data    = MIX[ name ].mapping;
 		var chin    = DEV.capture.channels;
 		var chout   = DEV.playback.channels;
-		var li      = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers subicon' ) + name
+		var li      = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers subicon' ) +'&nbsp;<a>'+ name +'</a>'
 					 + iconadd( chout === data.length ) + ico( 'back' )
 					 +'</li>';
 		var optin   = htmlOption( chin );
@@ -929,7 +929,7 @@ var render    = {
 			var opts   = optout.replace( '>'+ dest, ' selected>'+ dest );
 			var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li        += '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
-						+'<div><select>'+ opts +'</select></div>'
+						+'<div>Output&ensp;'+ dest +'</div>'
 						+ ico( kv.mute ? 'volume mute' : 'volume' ) + iconadd( chout === kv.sources.length )
 						+'</li>';
 			kv.sources.forEach( ( s, si ) => {
@@ -2204,19 +2204,13 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	}
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
-		var name = $( '#mixers .lihead' ).text();
+		var name = $( '#mixers .lihead a' ).text();
 		if ( ! MIX[ name ].mapping.length ) { // no mapping left
 			delete MIX[ name ];
 			setting.save( 'Mixer', 'Remove ...' );
 		}
-	} else if ( V.tab === 'pipeline' ) {
-		if ( ! $( '#pipeline .i-filters' ).length ) {
-			var pi = $( '#pipeline .lihead' ).data( 'index' );
-			PIP.splice( pi, 1 );
-			setting.save( 'Pipeline', 'Remove filter ...' );
-		} 
 	}
-	$( '#'+ V.tab +' .entries.main' ).removeClass( 'hide' );
+	$( '#'+ V.tab +' .entries' ).toggleClass( 'hide' );
 	render[ V.tab ]();
 } );
 $( 'body' ).on( 'click', function( e ) {
@@ -2291,20 +2285,18 @@ $( '#menu a' ).on( 'click', function( e ) {
 					break;
 				case 'delete':
 					var dest = V.li.hasClass( 'liinput main' );
+					var mi   = V.li.data( 'index' );
 					if ( main ) {
 						if ( common.inUse( name ) ) return
 						
 						var title = 'Mixer';
-						var msg = name;
+						var msg   = name;
 					} else if ( dest ) {
-						var mi    = V.li.data( 'index' );
-						var title = 'Destination';
+						var title = 'Output';
 						var msg   = '#'+ mi;
 					} else {
-						var mi    = V.li.siblings( '.main' ).data( 'index' );
-						var title = 'Source';
-						var si    = V.li.data( 'index' );
-						var msg   = '#'+ si;
+						var title = 'Input';
+						var msg   = '#'+ V.li.find( 'select' ).val();
 					}
 					var message = 'Delete <wh>'+ msg +'</wh> ?';
 					info( {
@@ -2316,7 +2308,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, ok      : () => {
 							if ( main ) {
 								delete MIX[ name ];
-							} else if ( dest ) {
+								return
+							}
+							
+							if ( dest ) {
 								MIX[ name ].mapping.splice( mi, 1 );
 								if ( ! MIX[ name ].mapping.length ) {
 									$( '#mixers .i-back' ).trigger( 'click' );
@@ -2325,7 +2320,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 								
 								V.li.siblings( '.dest'+ mi ).remove();
 							} else {
-								MIX[ name ].mapping[ mi ].sources.splice( si, 1 );
+								MIX[ name ].mapping[ mi ].sources.splice( V.li.data( 'si' ), 1 );
 							}
 							setting.save( title, 'Remove ...' );
 							V.li.remove();
