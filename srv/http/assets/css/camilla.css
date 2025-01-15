@@ -190,6 +190,9 @@
 .tab li i:not( .i-add ) {
 	float: left;
 }
+i.bypassed {
+	color : var( --cg );
+}
 .tab .li1 {
 	min-width: 130px;
 	padding: 5px 10px 0 0;

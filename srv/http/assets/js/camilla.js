@@ -979,7 +979,7 @@ var render    = {
 	}
 	, pipe        : ( el, i ) => {
 		var icon = 'pipeline liicon edit';
-		if ( el.bypassed ) icon += ' grd';
+		if ( el.bypassed ) icon += ' bypassed';
 		if ( el.type === 'Filter' ) {
 			icon  += ' graph';
 			var li = '<div class="li1">' + el.type +'</div>'
@@ -2191,7 +2191,18 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
 	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
-	$( '#menu .bypass' ).toggleClass( 'hide', ! $this.hasClass( 'i-pipeline' ) );
+	if ( V.tab === 'pipeline' ) {
+		if ( V.li.find( 'i' ).hasClass( 'bypassed' ) ) {
+			var bypass = ico( 'pipeline' ) +'Restore';
+		} else {
+			var bypass = ico( 'bypass' ) +'Bypass';
+		}
+		$( '#menu .bypass' )
+			.html( bypass )
+			.removeClass( 'hide' );
+	} else {
+		$( '#menu .bypass' ).addClass( 'hide' );
+	}
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
@@ -2376,10 +2387,11 @@ $( '#menu a' ).on( 'click', function( e ) {
 					} );
 					break;
 				case 'bypass':
-					var i        = V.li.index();
-					var bypassed = ! PIP[ i ].bypassed
+					var i             = V.li.index();
+					var bypassed      = ! PIP[ i ].bypassed
 					PIP[ i ].bypassed = bypassed;
 					setting.save( title, bypassed ? 'Bypassed ...' : 'Restored ...' );
+					V.li.find( 'i' ).toggleClass( 'bypassed', bypassed );
 					break;
 			}
 			break;

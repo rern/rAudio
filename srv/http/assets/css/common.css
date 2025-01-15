@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1736554900' );
+	src         : url( '/assets/fonts/rern.woff2?v=1736828405' );
 }
 @font-face {
 	font-family : Lato;
@@ -64,8 +64,7 @@ i {
 .i-btreceiver::before      { content: '\F51A' }
 .i-brightness::before      { content: '\F55F' }
 .i-btsender::before        { content: '\F51B' }
-.i-bypass::before,
-.i-pipeline::before        { content: '\F52B' }
+.i-bypass::before          { content: '\F56F' }
 .i-camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .i-camilla::after,
@@ -170,6 +169,7 @@ i {
 .i-powerbutton::before     { content: '\F520' }
 .i-output::before          { content: '\F528' }
 .i-pause::before           { content: '\F504' }
+.i-pipeline::before        { content: '\F52B' }
 .i-playback::before        { content: '\F507' }
 .i-playlist::before        { content: '\F508' }
 .i-play-cd::before         { content: '\F539' }
