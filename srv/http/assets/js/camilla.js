@@ -1544,18 +1544,27 @@ var setting   = {
 				var $td    = $input.parent();
 				$td.append( $td.next().find( 'i' ) );
 				$input.css( 'width', '70px' );
-/* alsa only */ $( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
 				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
-					if ( ( typenew === 'RawFile' && ! S.ls.raw ) || ( typenew === 'WavFile' && ! S.ls.wave ) ) {
+					var files   = false;
+					if ( type === 'capture' ) {
+						if ( typenew === 'RawFile' ) {
+							file = S.ls.raw;
+						} else if ( typenew === 'RawFile' ) {
+							file = S.ls.wave;
+						}
+					} else {
+						if ( typenew === 'File' ) file = S.ls.file;
+					}
+					if ( file ) {
+						setting.device( dev, typenew );
+					} else {
 						info( {
 							  icon    : V.tab
 							, title   : title
 							, message : 'No <c>'+ typenew +'</c> available.'
 							, ok      : () => setting.device( dev, type )
 						} );
-					} else {
-						setting.device( dev, typenew );
 					}
 				} );
 			}
