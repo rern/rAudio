@@ -500,25 +500,11 @@ function info( json ) {
 		I.list.forEach( ( l, i ) => {
 			label   = l[ 0 ];
 			type    = l[ 1 ];
-			if ( type === 'select' ) {
-				if ( 'kv' in l[ 2 ] ) {
-					param = l[ 2 ];
-					option = param.kv;
-				} else {
-					param  = {}
-					option = l[ 2 ];
-				}
-			} else {
-				param  = l[ 2 ] || {};
-			}
+			param   = l[ 2 ] || {};
 			if ( type === 'html' ) {
 				htmls.list += '<tr><td>'+ label +'</td><td>'+ param +'</td></tr>';
 				return
 			}
-			
-			kv      = 'kv' in param ? param.kv : jsonClone( param ); // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
-			if ( [ 'checkbox', 'radio' ].includes( type ) && ! ( 'colspan' in param ) ) param.colspan = 2;
-			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
 /*			param = {
 				  kv       : { k: V, ... }
 				, colspan  : N
@@ -527,6 +513,9 @@ function info( json ) {
 				, suffix   : UNIT
 				, updn     : { step: N, min: N, max: N }
 			}*/
+			if ( [ 'checkbox', 'radio' ].includes( type ) && ! ( 'colspan' in param ) ) param.colspan = 2;
+			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
+			kv      = 'kv' in param ? param.kv : param; // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
 			switch ( type ) {
 				case 'checkbox':
 					if ( htmls.list.slice( -3 ) === 'tr>' ) htmls.list += '<tr>'
@@ -592,7 +581,7 @@ function info( json ) {
 								+'</div></td></tr>';
 					break
 				case 'select':
-					htmls.list += '<select>'+ htmlOption( option ) +'</select>';
+					htmls.list += '<select>'+ htmlOption( kv ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
