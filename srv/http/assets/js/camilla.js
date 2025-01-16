@@ -1758,7 +1758,6 @@ var setting   = {
 				, configname : S.configname // confswitch
 			}
 		}
-		local();
 		ws.send( JSON.stringify( status ) );
 	}
 	, switchValues  : () => {
@@ -2200,17 +2199,15 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 	}
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
+	e.stopPropagation();
 	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
 		$( '#menu' ).addClass( 'hide' );
 		return
 	}
 	
-	e.stopPropagation();
 	var $this  = $( this );
 	V.li       = $this.parent();
 	$( '#'+ V.tab +' li' ).removeClass( 'focus' );
-	if ( V.li.hasClass( 'focus' ) ) return
-	
 	V.li.addClass( 'focus' );
 	contextMenu();
 	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
@@ -2403,7 +2400,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					var i             = V.li.index();
 					var bypassed      = ! PIP[ i ].bypassed
 					PIP[ i ].bypassed = bypassed;
-					setting.save( title, bypassed ? 'Bypassed ...' : 'Restored ...' );
+					setting.save( title, bypassed ? 'Bypassed' : 'Restored' );
 					V.li.find( 'i' )
 						.removeClass()
 						.addClass( bypassed ? 'i-bypass' : 'i-pipeline' );
