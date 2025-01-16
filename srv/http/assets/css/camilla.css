@@ -282,11 +282,6 @@ i.bypassed {
 .tab .i-add {
 	font-size: 22px !important;
 }
-tr .i-add,
-tr .i-remove {
-	width: 40px !important;
-	line-height: 46px;
-}
 .tab li:focus-visible {
 	background: var( --cga );
 }

@@ -654,9 +654,10 @@ var util          = {
 					);
 					values.push( pin.OND[ i ], pin.OFFD[ i ] );
 				} else {
+					var idle = ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>';
 					list.push(
-						  [ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', 'checkbox',       { sameline: true, colspan: 2 } ]
-						, [ '', 'number', { updn: { step: 1, min: 2, max: 30 } } ]
+						  [ idle, 'checkbox', { sameline: true, colspan: 2 } ]
+						, [ '',   'number',   { updn: { step: 1, min: 2, max: 30 } } ]
 					);
 					values.push( pin.TIMERON );
 					values.push( pin.TIMER );

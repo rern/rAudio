@@ -1429,7 +1429,7 @@ var setting   = {
 		} );
 		var filters  = Object.keys( FIL );
 		var list     = [ [ ico( 'output gr' ), 'html', channels ] ];
-		var select   = [ ico( 'filters gr' ),  'select', filters, { suffix: ico( 'remove' ) } ];
+		var select   = [ ico( 'filters gr' ),  'select', { kv: filters, suffix: ico( 'remove' ) } ];
 		if ( index === undefined ) {
 			var edit = false;
 			list.push( select );
@@ -1449,16 +1449,27 @@ var setting   = {
 			, beforeshow   : () => {
 				$( '#infoList td' ).eq( 0 ).css( 'width', '40px' );
 				$( '#infoList tr' ).eq( 0 ).append( '<td>'+ ico( 'add' ) +'</td>' );
-				if ( edit ) $( '#infoList input' ).prop( 'checked', true );
-				var select     = '<select>'+ htmlOption( filters ) +'</select';
+				if ( edit ) {
+					$( '#infoOk' ).addClass( 'disabled' );
+				} else {
+					$( '#infoList input' ).prop( 'checked', true );
+				}
 				var chkChanged = () => {
 					if ( edit ) {
 						$input        = $( '#infoList' ).find( 'input, select' );
-						var notchange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
-						$( '#infoOk' ).toggleClass( 'disabled', notchange );
+						$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
 					}
+					setRemove();
 				}
-				$( '#infoList' ).on( 'click', '.i-add', function() {
+				var setRemove  = () => {
+					var $remove = $( '#infoList .i-remove' );
+					$remove.toggleClass( 'disabled', $remove.length === 1 );
+				}
+				setRemove();
+				var select     = '<select>'+ htmlOption( filters ) +'</select';
+				$( '#infoList' ).on( 'input', function() {
+					chkChanged();
+				} ).on( 'click', '.i-add', function() {
 					var $trlast = $( '#infoList tr' ).last();
 					$( '#infoList table' ).append( $trlast.clone() );
 					var $trnew  = $( '#infoList tr' ).last();

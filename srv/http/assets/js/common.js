@@ -501,8 +501,13 @@ function info( json ) {
 			label   = l[ 0 ];
 			type    = l[ 1 ];
 			if ( type === 'select' ) {
-				option = l[ 2 ];
-				param  = l[ 3 ] || {};
+				if ( 'kv' in l[ 2 ] ) {
+					param = l[ 2 ];
+					option = param.kv;
+				} else {
+					param  = {}
+					option = l[ 2 ];
+				}
 			} else {
 				param  = l[ 2 ] || {};
 			}
@@ -589,11 +594,11 @@ function info( json ) {
 				case 'select':
 					htmls.list += '<select>'+ htmlOption( option ) +'</select>';
 					if ( param.suffix ) {
-						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr></td></tr>'; // default: false
+						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
 						if ( param.sameline ) {
-							var labelnext = I.list[ i + 1 ][ 0 ];
-							htmls.list += labelnext ? '<td style="padding: 0 5px; text-align: right;">'+ labelnext +'</td>' : '</td>';
+							var lblnext = I.list[ i + 1 ][ 0 ];
+							htmls.list += lblnext ? '<td style="padding: 0 5px; text-align: right;">'+ lblnext +'</td>' : '</td>';
 						} else {
 							htmls.list += '</tr>';
 						}
