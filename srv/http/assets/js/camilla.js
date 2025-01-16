@@ -1424,10 +1424,12 @@ var setting   = {
 		if ( ! setting.pipelineNone( 'filters' ) ) return
 		
 		var channels = '';
-		[ ...Array( DEV.playback.channels ).keys() ].forEach( c => channels += '<label><input type="checkbox" value="'+ c +'">'+ c +'</label>&emsp;' );
+		[ ...Array( DEV.playback.channels ).keys() ].forEach( c => {
+			channels += '<label><input type="checkbox" value="'+ c +'">'+ c +'</label>&emsp;';
+		} );
 		var filters  = Object.keys( FIL );
-		var list     = [ [ 'Channels', 'html', channels ] ];
-		var select   = [ 'Filters',  'select', filters, { suffix: ico( 'add' ) + ico( 'remove hide' ) } ];
+		var list     = [ [ ico( 'output gr' ), 'html', channels ] ];
+		var select   = [ ico( 'filters gr' ),  'select', filters, { suffix: ico( 'remove' ) } ];
 		if ( index === undefined ) {
 			var edit = false;
 			list.push( select );
@@ -1444,24 +1446,28 @@ var setting   = {
 			, tab          : edit ? '' : [ '', setting.pipelineMixer ]
 			, list         : list
 			, values       : edit ? [ ...data.channels, ...data.names ] : ''
-			, checkchanged : edit
 			, beforeshow   : () => {
-				if ( edit ) {
-					$( '#infoList i' ).toggleClass( 'hide' );
-					$( '#infoList tr' ).last().find( 'i' ).toggleClass( 'hide' );
-				} else {
-					$( '#infoList input' ).prop( 'checked', true );
+				$( '#infoList td' ).eq( 0 ).css( 'width', '40px' );
+				$( '#infoList tr' ).eq( 0 ).append( '<td>'+ ico( 'add' ) +'</td>' );
+				if ( edit ) $( '#infoList input' ).prop( 'checked', true );
+				var select     = '<select>'+ htmlOption( filters ) +'</select';
+				var chkChanged = () => {
+					if ( edit ) {
+						$input        = $( '#infoList' ).find( 'input, select' );
+						var notchange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
+						$( '#infoOk' ).toggleClass( 'disabled', notchange );
+					}
 				}
-				var select = '<select>'+ htmlOption( filters ) +'</select';
 				$( '#infoList' ).on( 'click', '.i-add', function() {
 					var $trlast = $( '#infoList tr' ).last();
 					$( '#infoList table' ).append( $trlast.clone() );
-					$trlast.find( 'i' ).toggleClass( 'hide' );
 					var $trnew  = $( '#infoList tr' ).last();
 					$trnew.find( 'td' ).eq( 1 ).html( select );
 					selectSet( $trnew.find( 'select' ) );
+					chkChanged();
 				} ).on( 'click', '.i-remove', function() {
 					$( this ).parents( 'tr' ).remove();
+					chkChanged();
 				} );
 			}
 			, ok           : () => {
