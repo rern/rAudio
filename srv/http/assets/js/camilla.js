@@ -967,10 +967,9 @@ var render    = {
 		var icon  = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
 		if ( el.type === 'Filter' ) {
 			icon  += ' graph';
-			var li = '<div class="li1">' + el.type +'</div>'
-					+'<div class="li2">channels - '+ el.channels +': '+ el.names.join( ', ' ) +'</div>';
+			var li = ico( 'filters' ) + el.names.join( ', ' ) +' <gr>(ch: '+ el.channels +')</gr>';
 		} else {
-			var li = '<gr>Mixer:</gr> '+ el.name;
+			var li = ico( 'mixers' ) + el.name;
 		}
 		var $graph = $( '#pipeline .entries.main li[data-index="'+ i +'"]' ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
@@ -1294,21 +1293,29 @@ var setting   = {
 						if ( p.type === 'Mixer' && p.name === name ) p.name = newname;
 					} );
 				} else {
+					var sources    = [];
+					for ( i = 0; i < DEV.capture.channels; i++ ) {
+						sources.push( {
+							  channel  : i
+							, gain     : 0
+							, inverted : false
+							, mute     : false
+						} );
+					}
+					var mapping    = [];
+					for ( i = 0; i < DEV.playback.channels; i++ ) {
+						mapping.push( {
+							  dest    : i
+							, sources : sources
+							, mute    : false
+						} );
+					}
 					MIX[ newname ] = {
 						  channels : {
 							  in  : DEV.capture.channels
 							, out : DEV.playback.channels
 						}
-						, mapping  : [ {
-							  dest    : 0
-							, sources : [ {
-								  channel  : 0
-								, gain     : 0
-								, inverted : false
-								, mute     : false
-							} ]
-							, mute    : false
-						} ]
+						, mapping  : mapping
 					}
 				}
 				setting.save( title, name ? 'Change ...' : 'Save ...' );
@@ -2305,10 +2312,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, ok      : () => {
 							if ( main ) {
 								delete MIX[ name ];
-								return
-							}
-							
-							if ( dest ) {
+							} else if ( dest ) {
 								MIX[ name ].mapping.splice( mi, 1 );
 								if ( ! MIX[ name ].mapping.length ) {
 									$( '#mixers .i-back' ).trigger( 'click' );
