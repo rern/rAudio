@@ -1454,31 +1454,32 @@ var setting   = {
 				} else {
 					$( '#infoList input' ).prop( 'checked', true );
 				}
-				var chkChanged = () => {
+				var setChanged = () => {
 					if ( edit ) {
-						$input        = $( '#infoList' ).find( 'input, select' );
+						$input = $( '#infoList' ).find( 'input, select' );
 						$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
 					}
-					setRemove();
+					setDisabled();
 				}
-				var setRemove  = () => {
+				var setDisabled = () => {
 					var $remove = $( '#infoList .i-remove' );
 					$remove.toggleClass( 'disabled', $remove.length === 1 );
+					$( '#infoList input:checked' ).prop( 'disabled', $( 'input:checked' ).length === 1 );
 				}
-				setRemove();
-				var select     = '<select>'+ htmlOption( filters ) +'</select';
+				setDisabled();
+				var select    = '<select>'+ htmlOption( filters ) +'</select';
 				$( '#infoList' ).on( 'input', function() {
-					chkChanged();
+					setChanged();
 				} ).on( 'click', '.i-add', function() {
 					var $trlast = $( '#infoList tr' ).last();
 					$( '#infoList table' ).append( $trlast.clone() );
 					var $trnew  = $( '#infoList tr' ).last();
 					$trnew.find( 'td' ).eq( 1 ).html( select );
 					selectSet( $trnew.find( 'select' ) );
-					chkChanged();
+					setChanged();
 				} ).on( 'click', '.i-remove', function() {
 					$( this ).parents( 'tr' ).remove();
-					chkChanged();
+					setChanged();
 				} );
 			}
 			, ok           : () => {
