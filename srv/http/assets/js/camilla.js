@@ -2195,22 +2195,16 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	V.li       = $this.parent();
 	$( '#'+ V.tab +' li' ).removeClass( 'focus' );
 	V.li.addClass( 'focus' );
-	contextMenu();
-	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
-	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
 	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
+	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
 	if ( V.tab === 'pipeline' ) {
-		if ( V.li.find( '.i-bypass' ).length ) {
-			var bypass = ico( 'pipeline' ) +'Restore';
-		} else {
-			var bypass = ico( 'bypass' ) +'Bypass';
-		}
 		$( '#menu .bypass' )
-			.html( bypass )
+			.html( PIP[ V.li.index() ].bypassed ? ico( 'pipeline' ) +'Restore' : ico( 'bypass' ) +'Bypass' )
 			.removeClass( 'hide' );
 	} else {
 		$( '#menu .bypass' ).addClass( 'hide' );
 	}
+	contextMenu();
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead a' ).text();
@@ -2232,7 +2226,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 	var $this = $( this );
 	var cmd   = $this.prop( 'class' ).replace( ' active', '' );
 	if ( cmd === 'graph' ) {
-		graph.plot();
+		V.li.find( '.divgraph' ).length ? V.li.find( '.graphclose' ).trigger( 'click' ) : graph.plot();
 		return
 	}
 	
