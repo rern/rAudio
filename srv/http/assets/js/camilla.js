@@ -614,7 +614,6 @@ var graph     = {
 		} else {
 			V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
 		}
-		console.log(V.graph)
 		var filterdelay = false;
 		if ( filters ) {
 			filterdelay = FIL[ val ].type === 'Delay';
@@ -2154,7 +2153,7 @@ $( '.tab' ).on( 'click', '.graphclose', function() {
 	var $li   = $this.parents( 'li' );
 	$this.parent().remove();
 	var val = $li.data( V.tab === 'filters' ? 'name' : 'index' );
-	V.graph[ V.tab ] = V.graph[ V.tab ].filter( v => v !== val );
+	delete V.graph[ V.tab ][ val ];
 } );
 $( '.tab .headtitle' ).on( 'click', function() {
 	if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) $( '#'+ V.tab +' .i-back' ).trigger( 'click' );
