@@ -588,10 +588,15 @@ var graph     = {
 		var $divgraph = $( '.divgraph' );
 		if ( ! $divgraph.length ) return
 		
-		V.timeoutgain = setTimeout( () => {
+		setTimeout( () => {
 			$divgraph.each( ( i, el ) => {
 				var $this = $( el );
-				$this.hasClass( 'hide' ) ? $this.remove() : graph.plot( $this.parent() );
+				if ( $this.hasClass( 'hide' ) ) {
+					$this.remove();
+				} else {
+					clearTimeout( V.debounce );
+					V.debounce = setTimeout( () => graph.plot( $this.parent() ), 300 );
+				}
 			} );
 		}, 300 );
 	}
@@ -608,12 +613,13 @@ var graph     = {
 		if ( ! $li ) $li = V.li;
 		var filters = V.tab === 'filters';
 		var val     = filters ? $li.data( 'name' ) : V.li.index();
+		if ( ! val ) return
+		
 		if ( val in V.graph[ V.tab ] ) {
 			if ( JSON.stringify( V.graph[ V.tab ][ val ] ) === JSON.stringify( S.config[ V.tab ][ val ] ) ) return
-			
-		} else {
-			V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
 		}
+		
+		V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
 		var filterdelay = false;
 		if ( filters ) {
 			filterdelay = FIL[ val ].type === 'Delay';
@@ -1690,7 +1696,6 @@ var setting   = {
 		}
 	}
 	, rangeSet      : () => {
-		if ( R.val === -100 || R.val === 100 ) clearTimeout( V.timeoutgain );
 		R.$gain.val( R.val );
 		if ( R.scale === 100 ) { // filter - Gain dB / mixer - dB
 			var val = R.val;
