@@ -607,7 +607,7 @@ var graph     = {
 		
 		if ( ! $li ) $li = V.li;
 		var filters = V.tab === 'filters';
-		var val     = $li.data( filters ? 'name' : 'index' );
+		var val     = filters ? $li.data( 'name' ) : V.li.index();
 		if ( val in V.graph[ V.tab ] ) {
 			if ( JSON.stringify( V.graph[ V.tab ][ val ] ) === JSON.stringify( S.config[ V.tab ][ val ] ) ) return
 			
@@ -971,7 +971,7 @@ var render    = {
 		} else {
 			var li = ico( 'mixers' ) + el.name;
 		}
-		var $graph = $( '#pipeline .entries.main li[data-index="'+ i +'"]' ).find( '.divgraph' );
+		var $graph = $( '#pipeline .entries.main li' ).eq( i ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
 		return '<li data-type="'+ el.type +'">'+ ico( icon ) + li +'</li>'
 	}
