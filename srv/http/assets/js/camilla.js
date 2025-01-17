@@ -2379,7 +2379,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					var bypassed      = ! PIP[ i ].bypassed
 					PIP[ i ].bypassed = bypassed;
 					setting.save( title, bypassed ? 'Bypassed' : 'Restored' );
-					V.li.find( 'i' )
+					V.li.find( 'i' ).eq( 0 )
 						.removeClass()
 						.addClass( bypassed ? 'i-bypass' : 'i-pipeline' );
 					break;
