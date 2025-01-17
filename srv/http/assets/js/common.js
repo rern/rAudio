@@ -1263,25 +1263,6 @@ function htmlOption( el ) {
 function ipSub( ip ) {
 	return ip.replace( /(.*\..*\..*\.).*/, '$1' )
 }
-function jsonChanged( a, b ) {
-	if ( ! a || ! b || ! Object.keys( a ).length || ! Object.keys( b ).length ) return true
-	
-	var changed = false;
-	$.each( a, ( k, v ) => {
-		if ( typeof v === 'object' ) {
-			if ( jsonChanged( v, b[ k ] ) ) {
-				changed = true;
-				return false
-			}
-		} else {
-			if ( v !== b[ k ] ) {
-				changed = true;
-				return false
-			}
-		}
-	} );
-	return changed
-}
 function jsonClone( json ) {
 	return JSON.parse( JSON.stringify( json ) )
 }

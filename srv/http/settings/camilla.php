@@ -1,7 +1,7 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'code',   'edit',   'filters', 'flowchart', 'folderfilter', 'gear',   'graph', 'input', 'inverted', 'linear'
-				   , 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
+	  'buttons' => [ 'code',   'drag',   'edit',   'filters', 'flowchart', 'folderfilter', 'gear',   'graph', 'input', 'inverted'
+				   , 'linear', 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
 	, 'labels'  => []
 	, 'menus'   => []
 	, 'tabs'    => []
@@ -48,6 +48,7 @@ EOF
 		, 'help'   => <<< EOF
 $B->flowchart$B->plus Step flowchart · New
 $bset->pipeline Graph · Edit · Delete
+$B->drag Drag to arrange order
 EOF
 	]
 	, 'devices'    => [

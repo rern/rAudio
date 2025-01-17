@@ -24,8 +24,7 @@ W.volume      = data => {
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
-	, graph      : { filters: [], pipeline: [] }
-	, prevconfig : {}
+	, graph      : { filters: {}, pipeline: {} }
 	, sortable   : {}
 	, tab        : 'filters'
 	, timeoutred : true
@@ -606,14 +605,16 @@ var graph     = {
 			return
 		}
 		
-		if ( V.plot ) return
-		
-		V.plot = true;
-		setTimeout( () => V.plot = false, 2000 );
 		if ( ! $li ) $li = V.li;
 		var filters = V.tab === 'filters';
 		var val     = $li.data( filters ? 'name' : 'index' );
-		V.graph[ V.tab ].push( val );
+		if ( val in V.graph[ V.tab ] ) {
+			if ( JSON.stringify( V.graph[ V.tab ][ val ] ) === JSON.stringify( S.config[ V.tab ][ val ] ) ) return
+			
+		} else {
+			V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
+		}
+		console.log(V.graph)
 		var filterdelay = false;
 		if ( filters ) {
 			filterdelay = FIL[ val ].type === 'Delay';
@@ -773,26 +774,12 @@ var render    = {
 		$( '#div'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
-		if ( [ 'config', 'devices', 'pipeline' ].includes( V.tab ) ) {
-			render[ V.tab ]();
-			return
-		}
-		
-		var $main = $( '#'+ V.tab +' .entries.main' );
-		if ( $main.is( ':empty' ) ) {
-			render.prevconfig();
-			render[ V.tab ]();
+		if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) {
+			var data = V.tab === 'pipeline' ? 'index' : 'name';
+			var val  = $( '#'+ V.tab +' .entries.sub li' ).eq( 0 ).data( data );
+			render[ V.tab +'Sub' ]( val );
 		} else {
-			if ( ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
-			
-			render.prevconfig();
-			if ( $main.hasClass( 'hide' ) ) {
-				var data = V.tab === 'pipeline' ? 'index' : 'name';
-				var val  = $( '#'+ V.tab +' .entries.sub li' ).eq( 0 ).data( data );
-				render[ V.tab +'Sub' ]( val );
-			} else {
-				render[ V.tab ]();
-			}
+			render[ V.tab ]();
 		}
 	}
 	, volume      : () => {
@@ -986,7 +973,7 @@ var render    = {
 		} else {
 			var li = '<gr>Mixer:</gr> '+ el.name;
 		}
-		var $graph = $( '#filters .entries.main li[data-index="'+ i +'"]' ).find( '.divgraph' );
+		var $graph = $( '#pipeline .entries.main li[data-index="'+ i +'"]' ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
 		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
 	}
@@ -1113,7 +1100,6 @@ var render    = {
 					.replace( /,$/, '' )
 					.replace( /([:,])/g, '$1 ' )
 	}
-	, prevconfig  : () => V.prevconfig[ V.tab ] = jsonClone( S.config[ V.tab ] )
 	, toggle      : ( sub ) => {
 		var $main = $( '#'+ V.tab +' .entries.main' );
 		var $sub  = $( '#'+ V.tab +' .entries.sub' );
@@ -1127,11 +1113,11 @@ var render    = {
 			var $entries = $main;
 		}
 		$( '#menu' ).addClass( 'hide' );
-		if ( [ 'filters', 'pipeline' ].includes( V.tab ) && V.graph[ V.tab ].length ) {
+		if ( [ 'filters', 'pipeline' ].includes( V.tab ) ) {
 			var val = V.tab === 'filters' ? 'name' : 'index';
 			$( '#'+ V.tab +' .entries.main li' ).each( ( i, el ) => {
 				var $el  = $( el );
-				if ( V.graph[ V.tab ].includes( $el.data( val ) ) ) graph.plot( $el );
+				if ( $el.data( val ) in V.graph[ V.tab ] ) graph.plot( $el );
 			} );
 		}
 		$( '.entries' ).children().removeAttr( 'tabindex' );

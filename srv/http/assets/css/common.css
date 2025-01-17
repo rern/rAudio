@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1736828405' );
+	src         : url( '/assets/fonts/rern.woff2?v=1736950183' );
 }
 @font-face {
 	font-family : Lato;
@@ -96,6 +96,7 @@ i {
 .i-i2smodule::before       { content: '\F571' }
 .i-delete::before,
 .i-remove::before          { content: '\F563' }
+.i-drag::before            { content: '\F601' }
 .i-edit::before,
 .i-rename::before          { content: '\F565' }
 .i-equalizer::before,
