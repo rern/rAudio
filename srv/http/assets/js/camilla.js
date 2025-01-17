@@ -974,10 +974,10 @@ var render    = {
 		}
 		var $graph = $( '#pipeline .entries.main li[data-index="'+ i +'"]' ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
-		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
+		return '<li data-type="'+ el.type +'">'+ ico( icon ) + li +'</li>'
 	}
 	, pipeFilter  : ( name, i ) => {
-		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon' )
+		return '<li data-name="'+ name +'">'+ ico( 'filters liicon' )
 			  +'<div class="li1">'+ name +'</div>'
 			  +'<div class="li2">'+ FIL[ name ].type +' · '+ render.json2string( FIL[ name ].parameters ) +'</div>'
 			  +'</li>'
@@ -992,12 +992,6 @@ var render    = {
 				var ai      = e.oldIndex;
 				var bi      = e.newIndex;
 				var pip     = PIP;
-				var $lihead = $( '#pipeline .lihead' );
-				if ( $lihead.length ) {
-					pip = PIP[ $lihead.data( 'index' ) ].names;
-					ai--;
-					bi--;
-				}
 				var a = pip[ ai ];
 				pip.splice( ai, 1 );
 				pip.splice( bi, 0, a );
@@ -2186,13 +2180,13 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
+	var $this = $( this );
+	V.li      = $this.parent();
 	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
 		$( '#menu' ).addClass( 'hide' );
-		return
+		if ( V.li.hasClass( 'focus' ) )return
 	}
 	
-	var $this  = $( this );
-	V.li       = $this.parent();
 	$( '#'+ V.tab +' li' ).removeClass( 'focus' );
 	V.li.addClass( 'focus' );
 	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
@@ -2367,7 +2361,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, title   : title
 						, message : 'Delete this '+ type +'?'
 						, ok      : () => {
-							var index = V.li.data( 'index' );
+							var index = V.li.index();
 							PIP.splice( index, 1 );
 							setting.save( title, 'Remove '+ type +' ...' );
 							V.li.remove();

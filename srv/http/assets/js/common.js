@@ -495,7 +495,7 @@ function info( json ) {
 		htmls.list     = '';
 		if ( typeof I.list[ 0 ] !== 'object' ) I.list = [ I.list ];
 		I.checkboxonly = ! I.list.some( l => l[ 1 ] && l[ 1 ] !== 'checkbox' );
-		var colspan, kv, label, option, param, type;
+		var colspan, kv, label, param, type;
 		var i          = 0; // for radio name
 		I.list.forEach( ( l, i ) => {
 			label   = l[ 0 ];
@@ -515,7 +515,6 @@ function info( json ) {
 			}*/
 			if ( [ 'checkbox', 'radio' ].includes( type ) && ! ( 'colspan' in param ) ) param.colspan = 2;
 			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
-			kv      = 'kv' in param ? param.kv : param; // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
 			switch ( type ) {
 				case 'checkbox':
 					if ( htmls.list.slice( -3 ) === 'tr>' ) htmls.list += '<tr>'
@@ -556,6 +555,7 @@ function info( json ) {
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
 					break;
 				case 'radio':
+					kv          = param.kv || param;
 					var isarray = Array.isArray( kv );
 					var tr      = false;
 					$.each( kv, ( k, v ) => {
@@ -581,6 +581,7 @@ function info( json ) {
 								+'</div></td></tr>';
 					break
 				case 'select':
+					kv          = param.kv || param;
 					htmls.list += '<select>'+ htmlOption( kv ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
