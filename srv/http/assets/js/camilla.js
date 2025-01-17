@@ -24,7 +24,6 @@ W.volume      = data => {
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
-	, graph      : { filters: {}, pipeline: {} }
 	, sortable   : {}
 	, tab        : 'filters'
 	, timeoutred : true
@@ -585,25 +584,18 @@ var config    = {
 }
 var graph     = {
 	  gain     : () => {
-		var $divgraph = $( '.divgraph' );
-		if ( ! $divgraph.length ) return
+		if ( V.tab !== 'filters' ) return
 		
 		setTimeout( () => {
-			$divgraph.each( ( i, el ) => {
-				var $this = $( el );
-				if ( $this.hasClass( 'hide' ) ) {
-					$this.remove();
-				} else {
-					clearTimeout( V.debounce );
-					V.debounce = setTimeout( () => graph.plot( $this.parent() ), 300 );
-				}
-			} );
+			$( '#filters .divgraph:not( .hide )' ).each( ( i, el ) => graph.plot( $( el ).parent() ) );
 		}, 300 );
 	}
 	, pipeline : () => {
 		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 	}
 	, plot     : $li => {
+		if ( V.drag ) return
+		
 		if ( typeof Plotly !== 'object' ) {
 			notify( 'graph', common.tabTitle(), 'Plot ...' );
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
@@ -612,19 +604,16 @@ var graph     = {
 		
 		if ( ! $li ) $li = V.li;
 		var filters = V.tab === 'filters';
-		var val     = filters ? $li.data( 'name' ) : V.li.index();
-		if ( ! val ) return
-		
-		if ( val in V.graph[ V.tab ] ) {
-			if ( JSON.stringify( V.graph[ V.tab ][ val ] ) === JSON.stringify( S.config[ V.tab ][ val ] ) ) return
-		}
-		
-		V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
+		var val     = $li.data( filters ? 'name' : 'index' );
 		var filterdelay = false;
 		if ( filters ) {
+			if ( ! FIL[ val ] ) return
+			
 			filterdelay = FIL[ val ].type === 'Delay';
 			var delay0  = ! filterdelay && 'gain' in FIL[ val ].parameters && FIL[ val ].parameters.gain === 0;
 		} else {
+			if ( ! PIP[ val ] ) return
+			
 			var pipelinedelay = false;
 			var delay0        = true;
 			PIP[ val ].names.forEach( n => {
@@ -979,13 +968,7 @@ var render    = {
 		}
 		var $graph = $( '#pipeline .entries.main li' ).eq( i ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
-		return '<li data-type="'+ el.type +'">'+ ico( icon ) + li +'</li>'
-	}
-	, pipeFilter  : ( name, i ) => {
-		return '<li data-name="'+ name +'">'+ ico( 'filters liicon' )
-			  +'<div class="li1">'+ name +'</div>'
-			  +'<div class="li2">'+ FIL[ name ].type +' · '+ render.json2string( FIL[ name ].parameters ) +'</div>'
-			  +'</li>'
+		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
 	}
 	, sortable    : el => {
 		if ( el in V.sortable ) return
@@ -1115,7 +1098,7 @@ var render    = {
 			var val = V.tab === 'filters' ? 'name' : 'index';
 			$( '#'+ V.tab +' .entries.main li' ).each( ( i, el ) => {
 				var $el  = $( el );
-				if ( $el.data( val ) in V.graph[ V.tab ] ) graph.plot( $el );
+				if ( $el.find( '.divgraph' ).length ) graph.plot( $el );
 			} );
 		}
 		$( '.entries' ).children().removeAttr( 'tabindex' );
@@ -2158,8 +2141,6 @@ $( '.tab' ).on( 'click', '.graphclose', function() {
 	var $this = $( this );
 	var $li   = $this.parents( 'li' );
 	$this.parent().remove();
-	var val = $li.data( V.tab === 'filters' ? 'name' : 'index' );
-	delete V.graph[ V.tab ][ val ];
 } );
 $( '.tab .headtitle' ).on( 'click', function() {
 	if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) $( '#'+ V.tab +' .i-back' ).trigger( 'click' );
@@ -2460,9 +2441,12 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	$( this ).parents( 'li' ).find( '.liicon' ).trigger( 'click' );
 } ).on( 'click', '.i-add', function() {
 	setting.upload();
+} ).on( 'touchstart mousedown keyup', 'input[type=range]', function() {
+	V.drag = true;
 } ).on( 'input', 'input[type=range]', function() {
 	setting.rangeGet( $( this ), 'input' );
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
+	delete V.drag;
 	graph.gain();
 } ).on( 'click', '.i-volume', function() {
 	var $this   = $( this );
@@ -2551,8 +2535,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	render.mixersSub( name );
 } ).on( 'input', 'input[type=range]', function() {
 	setting.rangeGet( $( this ), 'input' );
-} ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	graph.gain();
 } ).on( 'click', '.i-volume', function() {
 	var $this   = $( this );
 	var M       = setting.mixerGet( $this );
