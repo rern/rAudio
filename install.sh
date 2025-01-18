@@ -5,6 +5,12 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250118
+if grep -q '^#bind_to_address = ::' /etc/snapserver.conf; then
+	sed -i '/^#bind_to_address/ a\
+bind_to_address = 0.0.0.0
+' /etc/snapserver.conf
+fi
+
 if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; then
 	echo "$bar CamillaDSP - Upgrade ..."
 	systemctl -q is-active camilladsp && pacman stop camilladsp && camillaactive=1

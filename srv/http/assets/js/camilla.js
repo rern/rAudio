@@ -27,10 +27,9 @@ W.refresh     = data => {
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		$.each( data, ( k, v ) => {
-			if ( k === 'config' ) v = JSON.parse( v );
-			S[ k ] = v;
-		} ); // need braces
+		data.config = JSON.parse( data.config );
+		$.each( data, ( k, v ) => { S[ k ] = v } );
+		config.valuesAssign();
 		render[ V.tab ]();
 	}, 300 );
 }
@@ -593,6 +592,26 @@ var config    = {
 				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 			}
 		} );
+	}
+	, valuesAssign        : () => { // DEV, MIX, FIL, PRO, DEV ...
+		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
+			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
+		} );
+		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
+			S[ k ] = DEV[ k ] === true;
+		} );
+		var dev                          = S.devices;
+		var samplings                    = dev.playback.samplings;
+		D0.samplerate                    = Object.values( samplings );
+		D.main[ 0 ][ 2 ].kv              = samplings;
+		Dlist.capture_samplerate[ 2 ].kv = samplings;
+		Dlist.formatC[ 2 ].kv            = dev.capture.formats;
+		Dlist.formatP[ 2 ].kv            = dev.playback.formats;
+		Dlist.deviceC[ 2 ]               = dev.capture.device;
+		Dlist.deviceP[ 2 ]               = dev.playback.device;
+		Dlist.channelsC[ 2 ].updn.max    = dev.capture.channels;
+		Dlist.channelsP[ 2 ].updn.max    = dev.playback.channels;
+		Dlist.filename[ 2 ].kv           = S.ls.raw;
 	}
 }
 var graph     = {
@@ -1719,7 +1738,6 @@ var setting   = {
 	, save          : ( titlle, msg ) => {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
-			setting.switchValues();
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			if ( ! V.press ) {
 				setting.statusPush();
@@ -1739,9 +1757,6 @@ var setting   = {
 			}
 		}
 		ws.send( JSON.stringify( status ) );
-	}
-	, switchValues  : () => {
-		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => { S[ k ] = DEV[ k ] === true } );
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
@@ -1948,27 +1963,10 @@ var common    = {
 					break;
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
-					DEV      = S.config.devices;
-					FIL      = S.config.filters;
-					MIX      = S.config.mixers;
-					PIP      = S.config.pipeline;
-					PRO      = S.config.processors;
+					config.valuesAssign();
 					render.status();
 					render.tab();
 					showContent();
-					var dev                          = S.devices;
-					var samplings                    = dev.playback.samplings;
-					D0.samplerate                    = Object.values( samplings );
-					D.main[ 0 ][ 2 ].kv              = samplings;
-					Dlist.capture_samplerate[ 2 ].kv = samplings;
-					Dlist.formatC[ 2 ].kv            = dev.capture.formats;
-					Dlist.formatP[ 2 ].kv            = dev.playback.formats;
-					Dlist.deviceC[ 2 ]               = dev.capture.device;
-					Dlist.deviceP[ 2 ]               = dev.playback.device;
-					Dlist.channelsC[ 2 ].updn.max    = dev.capture.channels;
-					Dlist.channelsP[ 2 ].updn.max    = dev.playback.channels;
-					Dlist.filename[ 2 ].kv           = S.ls.raw;
-					setting.switchValues();
 					wscamilla.send( '"GetSupportedDeviceTypes"' );
 					if ( V.confswitch ) {
 						delete V.confswitch;
