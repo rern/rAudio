@@ -2112,6 +2112,7 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 } ).on( 'touchend mouseup mouseleave', '.i-minus, .i-plus, .db', function() {
 	if ( ! V.press ) return
 	
+	V.press = false;
 	clearInterval( V.intervalgain );
 	setting.save();
 } ).press( '.i-minus, .i-plus', function( e ) {
