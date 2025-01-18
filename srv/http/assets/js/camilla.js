@@ -1878,8 +1878,8 @@ var common    = {
 		}
 		wscamilla.onclose   = () => {
 			wscamilla = null;
+			[ 'intervalstatus', 'intervalvu' ].forEach( k => clearInterval( V[ k ] ) );
 			render.statusStop();
-			clearInterval( V.intervalstatus );
 		}
 		wscamilla.onmessage = response => {
 			var data  = JSON.parse( response.data );
