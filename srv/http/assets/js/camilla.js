@@ -724,7 +724,7 @@ var graph     = {
 				plots.impulse.y    = data.impulse;
 				plot.push( plots.impulse );
 			}
-			if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph" data-val="'+ val +'"></div>' );
+			if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph"></div>' );
 			var $divgraph = $li.find( '.divgraph' );
 			var options   = {
 				  displayModeBar : false
@@ -732,13 +732,9 @@ var graph     = {
 				, staticPlot     : true // disable zoom
 			}
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, options );
-			$svg = $divgraph.find( 'svg' );
-			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
+			if ( ! $divgraph.find( '.graphclose' ).length ) $divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 			elementScroll( $divgraph.parent() );
 			bannerHide();
-			$divgraph
-				.append( '<i class="i-close graphclose" tabindex="0"></i>' )
-				.removeClass( 'hide' );
 		}, 'json' );
 	}
 }
