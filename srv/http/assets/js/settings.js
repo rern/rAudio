@@ -4,7 +4,7 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-W.refresh = data => {
+W.refresh = data => { // except camilla
 	if ( data.page !== page ) return
 	
 	clearTimeout( V.debounce );

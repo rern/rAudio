@@ -3,6 +3,7 @@ W.volume      = data => {
 		V.local = false;
 		return
 	}
+	
 	var vol = data.val;
 	if ( data.type === 'mute' ) {
 		common.volumeAnimate( 0, S.volume );
@@ -20,6 +21,18 @@ W.volume      = data => {
 		common.volumeAnimate( vol, S.volume );
 		S.volume = vol;
 	}
+}
+W.refresh     = data => {
+	if ( data.page !== 'camilla' ) return
+	
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		$.each( data, ( k, v ) => {
+			if ( k === 'config' ) v = JSON.parse( v );
+			S[ k ] = v;
+		} ); // need braces
+		render[ V.tab ]();
+	}, 300 );
 }
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
@@ -583,14 +596,7 @@ var config    = {
 	}
 }
 var graph     = {
-	  gain     : () => {
-		if ( V.tab !== 'filters' ) return
-		
-		setTimeout( () => {
-			$( '#filters .divgraph:not( .hide )' ).each( ( i, el ) => graph.plot( $( el ).parent() ) );
-		}, 300 );
-	}
-	, pipeline : () => {
+	  pipeline : () => {
 		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 	}
 	, plot     : $li => {
@@ -826,9 +832,9 @@ var render    = {
 		}
 	} //-----------------------------------------------------------------------------------
 	, filters     : () => {
-		if ( ! Object.keys( FIL ).length ) return
+		if ( ! FIL ) return
 		
-		var data     = render.dataSort( 'filters' );
+		var data     = render.dataSort();
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
@@ -881,9 +887,9 @@ var render    = {
 		render.toggle( 'sub' );
 	} //-----------------------------------------------------------------------------------
 	, mixers      : () => {
-		if ( ! Object.keys( MIX ).length ) return
+		if ( ! MIX ) return
 		
-		var data = render.dataSort( 'mixers' );
+		var data = render.dataSort();
 		var li = '';
 		$.each( data, ( k, v ) => li += render.mixer( k, v ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
@@ -933,9 +939,9 @@ var render    = {
 		selectSet( $( '#mixers select' ) );
 	} //-----------------------------------------------------------------------------------
 	, processors  : () => {
-		if ( ! PRO || ! Object.keys( PRO ).length ) return
+		if ( ! PRO ) return
 		
-		var data = render.dataSort( 'processors' );
+		var data = render.dataSort();
 		var li = '';
 		$.each( data, ( k, v ) => {
 			var param = jsonClone( v.parameters );
@@ -1095,7 +1101,6 @@ var render    = {
 		}
 		$( '#menu' ).addClass( 'hide' );
 		if ( [ 'filters', 'pipeline' ].includes( V.tab ) ) {
-			var val = V.tab === 'filters' ? 'name' : 'index';
 			$( '#'+ V.tab +' .entries.main li' ).each( ( i, el ) => {
 				var $el  = $( el );
 				if ( $el.find( '.divgraph' ).length ) graph.plot( $el );
@@ -1716,8 +1721,8 @@ var setting   = {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			setting.switchValues();
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			setting.statusPush();
 			if ( ! V.press ) {
+				setting.statusPush();
 				clearTimeout( V.timeoutsave );
 				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
 			}
@@ -1967,6 +1972,7 @@ var common    = {
 					wscamilla.send( '"GetSupportedDeviceTypes"' );
 					if ( V.confswitch ) {
 						delete V.confswitch;
+						$( '.divgraph' ).remove();
 						setting.statusPush();
 					}
 					break;
@@ -2113,7 +2119,6 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 	if ( ! V.press ) return
 	
 	clearInterval( V.intervalgain );
-	if ( $( this ).parents( 'li' ).find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) graph.gain();
 	setting.save();
 } ).press( '.i-minus, .i-plus', function( e ) {
 	setting.rangeGet( $( e.currentTarget ), 'press' );
@@ -2441,13 +2446,8 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	$( this ).parents( 'li' ).find( '.liicon' ).trigger( 'click' );
 } ).on( 'click', '.i-add', function() {
 	setting.upload();
-} ).on( 'touchstart mousedown keyup', 'input[type=range]', function() {
-	V.drag = true;
 } ).on( 'input', 'input[type=range]', function() {
 	setting.rangeGet( $( this ), 'input' );
-} ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	delete V.drag;
-	graph.gain();
 } ).on( 'click', '.i-volume', function() {
 	var $this   = $( this );
 	var name    = $this.parents( 'li' ).data( 'name' );
