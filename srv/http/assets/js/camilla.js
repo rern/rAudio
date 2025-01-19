@@ -431,16 +431,20 @@ var ycommon   = {
 }
 var axes      = {
 	  freq       : {
-		  title     : {
-			  text     : 'Frequency'
-			, font     : { color: color.wl }
-			, standoff : 10
+		  filters  : {
+			  tickfont  : { color: color.wl }
+			, tickvals  : [  232,    462,     694,    926 ]
+			, ticktext  : [ '20Hz', '100Hz', '1kHz', '10kHz' ]
+			, range     : [ 232, 990 ]
+			, gridcolor : color.grd
 		}
-		, tickfont  : { color: color.wl }
-		, tickvals  : [ 0,   232,    464,     696,    928 ]
-		, ticktext  : [ '', '10Hz', '100Hz', '1kHz', '10kHz' ]
-		, range     : [ 10, 1000 ]
-		, gridcolor : color.grd
+		, pipeline : {
+			  tickfont  : { color: color.wl }
+			, tickvals  : [  0,      300,     602,    904 ]
+			, ticktext  : [ '20Hz', '100Hz', '1kHz', '10kHz' ]
+			, range     : [ 0, 990 ]
+			, gridcolor : color.grd
+		}
 	}
 	, time       : {
 		  title      : {
@@ -683,7 +687,7 @@ var graph     = {
 			plots.groupdelay.y = delay0 ? 0 : data.groupdelay;
 			var plot           = [ plots.magnitude, plots.phase, plots.groupdelay ];
 			var layout         = {
-				  xaxis         : axes.freq
+				  xaxis         : axes.freq[ V.tab ]
 				, yaxis         : axes.magnitude
 				, yaxis2        : axes.phase
 				, yaxis3        : axes.groupdelay
