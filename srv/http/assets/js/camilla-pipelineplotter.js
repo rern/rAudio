@@ -1,5 +1,6 @@
-var pipeline = {
-	  node   : $( '#pipeline .flowchart' )[ 0 ]
+var $flowchart = $( '#pipeline .flowchart' );
+var pipeline   = {
+	  node   : $flowchart[ 0 ]
 	, width  : 565
 	, height : 300
 	, color  : {
@@ -229,7 +230,7 @@ function createPipelinePlot() {
 		, [ 0, markerBoxHeight ]
 		, [ markerBoxWidth, markerBoxHeight / 2 ]
 	];
-/**/$( node ).empty();
+/**/$flowchart.empty();
 	d3
 		.select( node )
 		.append( 'defs' )
@@ -287,7 +288,9 @@ function createPipelinePlot() {
 		.attr( 'stroke', color.w );
 		
 /**/$( '.pipeline path' ).last().after( $( '.pipeline text' ) );
-	$( node ).removeClass( 'hide' );
+	$flowchart
+		.removeAttr( 'style' )
+		.removeClass( 'hide' );
 	var wmax = elw = 0;
 	$( '.flowchart rect' ).each( ( i, el ) => {
 		elw = el.getBoundingClientRect().width;

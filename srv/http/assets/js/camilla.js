@@ -621,7 +621,7 @@ var config    = {
 }
 var graph     = {
 	  pipeline : () => {
-		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
+		$( '.flowchart' ).hasClass( 'hide' ) ? createPipelinePlot() : $( '.flowchart' ).addClass( 'hide' );
 	}
 	, plot     : $li => {
 		if ( typeof Plotly !== 'object' ) {
@@ -2156,20 +2156,16 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 		setting[ V.tab.replace( /s$/, '' ) ]();
 	}
 } ).on( 'click', '.i-flowchart', function() {
-	var $flowchart = $( '.flowchart' );
-	if ( $flowchart.hasClass( 'hide' ) ) {
-		if ( typeof d3 !== 'object' ) {
-			$.when(
-				$.getScript( '/assets/js/pipelineplotter.js' ),
-				$.getScript( '/assets/js/plugin/'+ jfiles.d3 ),
-				$.Deferred( deferred => deferred.resolve() )
-			).done( () => createPipelinePlot() );
-		} else {
-			createPipelinePlot();
-		}
-	} else {
-		$flowchart.addClass( 'hide' );
+	if ( typeof d3 !== 'object' ) {
+		$.when(
+			$.getScript( '/assets/js/camilla-pipelineplotter.js' ),
+			$.getScript( '/assets/js/plugin/'+ jfiles.d3 ),
+			$.Deferred( deferred => deferred.resolve() )
+		).done( () => graph.pipeline() );
+		return
 	}
+	
+	graph.pipeline();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
