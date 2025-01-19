@@ -620,7 +620,7 @@ var config    = {
 	}
 }
 var graph     = {
-	  pipeline : () => {
+	  flowchart : () => {
 		var $flowchart = $( '.flowchart' );
 		$flowchart.hasClass( 'hide' ) ? createPipelinePlot() : $flowchart.addClass( 'hide' );
 	}
@@ -1009,7 +1009,7 @@ var render    = {
 				pip.splice( ai, 1 );
 				pip.splice( bi, 0, a );
 				setting.save( 'Pipeline', 'Change order ...' );
-				graph.pipeline();
+				graph.flowchart();
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
@@ -2152,12 +2152,12 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 	}
 } ).on( 'click', '.i-flowchart', function() {
 	if ( typeof d3 !== 'object' ) {
-		$.getScript( '/assets/js/camilla-pipelineplotter.js' );
-		$.getScript( '/assets/js/plugin/'+ jfiles.d3, graph.pipeline );
+		$.getScript( '/assets/js/camilla-flowchart.js' );
+		$.getScript( '/assets/js/plugin/'+ jfiles.d3, graph.flowchart );
 		return
 	}
 	
-	graph.pipeline();
+	graph.flowchart();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
@@ -2172,6 +2172,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	V.li.addClass( 'focus' );
 	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
 	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
+	$( '#menu .delete' ).toggleClass( 'disabled', V.tab === 'config' && S.ls.configs.length === 1 );
 	if ( V.tab === 'pipeline' ) {
 		$( '#menu .bypass' )
 			.html( PIP[ V.li.index() ].bypassed ? ico( 'pipeline' ) +'Restore' : ico( 'bypass' ) +'Bypass' )
@@ -2347,7 +2348,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							setting.save( title, 'Remove '+ type +' ...' );
 							V.li.remove();
 							setting.sortRefresh( 'main' );
-							graph.pipeline();
+							graph.flowchart();
 						}
 					} );
 					break;
