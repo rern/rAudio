@@ -429,20 +429,21 @@ var ycommon   = {
 	, anchor     : 'free'
 	, autoshift  : true
 }
+var ticktext  = [ 'Hz 20 &nbsp; ', '', '100', '', '1k', '', '10k', '20k' ];
 var axes      = {
 	  freq       : {
 		  filters  : {
 			  tickfont  : { color: color.wl }
-			, tickvals  : [  232,    462,     694,    926 ]
-			, ticktext  : [ '20Hz', '100Hz', '1kHz', '10kHz' ]
-			, range     : [ 232, 990 ]
+			, tickvals  : [ 235, 393, 462, 624, 694, 858, 926, 995 ]
+			, ticktext  : ticktext
+			, range     : [ 235, 995 ]
 			, gridcolor : color.grd
 		}
 		, pipeline : {
 			  tickfont  : { color: color.wl }
-			, tickvals  : [  5,      300,     603,    906 ]
-			, ticktext  : [ '20Hz', '100Hz', '1kHz', '10kHz' ]
-			, range     : [ 5, 990 ]
+			, tickvals  : [ 4, 210, 300, 512, 601, 815, 906, 995 ]
+			, ticktext  : ticktext
+			, range     : [ 4, 995 ]
 			, gridcolor : color.grd
 		}
 	}
