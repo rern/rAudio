@@ -434,14 +434,14 @@ var axes      = {
 	  freq       : {
 		  filters  : {
 			  tickfont  : { color: color.wl }
-			, tickvals  : [ 235, 393, 462, 624, 694, 858, 926, 995 ]
+			, tickvals  : [ 235, 393, 462, 624, 694, 858, 926, 995 ] // 235>|  ...  | 69 |  163  | 69 |  163  | 69 | .. |<995
 			, ticktext  : ticktext
 			, range     : [ 235, 995 ]
 			, gridcolor : color.grd
 		}
 		, pipeline : {
 			  tickfont  : { color: color.wl }
-			, tickvals  : [ 4, 210, 300, 512, 601, 815, 906, 995 ]
+			, tickvals  : [ 4, 210, 300, 512, 601, 815, 906, 995 ]   //   4>|  ...  | 90 |  213  | 90 |  213  | 90 | .. |<995
 			, ticktext  : ticktext
 			, range     : [ 4, 995 ]
 			, gridcolor : color.grd
