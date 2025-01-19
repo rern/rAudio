@@ -440,7 +440,7 @@ var axes      = {
 		}
 		, pipeline : {
 			  tickfont  : { color: color.wl }
-			, tickvals  : [  0,      300,     602,    904 ]
+			, tickvals  : [  0,      300,     603,    906 ]
 			, ticktext  : [ '20Hz', '100Hz', '1kHz', '10kHz' ]
 			, range     : [ 0, 990 ]
 			, gridcolor : color.grd
