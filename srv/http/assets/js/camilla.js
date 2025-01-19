@@ -649,11 +649,13 @@ var graph     = {
 		var args = JSON.stringify( filters ? FIL[ val ] : S.config );
 		if ( ! filters ) args = args.replace( /}$/, ',"index":'+ val +'}' );
 		bash( [ 'settings/camilla.py', args ], data => {
-			var impulse   = 'impulse' in data;
+			var PLOTS   = jsonClone( plots );
+			var AXES    = jsonClone( axes );
+			var impulse = 'impulse' in data;
 			if ( filterdelay ) {
-				plots.magnitude.y   = 0;
+				PLOTS.magnitude.y   = 0;
 			} else {
-				plots.magnitude.y   = data.magnitude;
+				PLOTS.magnitude.y   = data.magnitude;
 				var scale  = {
 					  groupdelay : { min: -10, max: 10 }
 					, impulse    : { min: -1, max: 1 }
@@ -676,22 +678,22 @@ var graph     = {
 						if ( range.min <= scale[ d ].min ) range.min -= 1;
 						if ( range.max >= scale[ d ].max ) range.max += 1;
 					}
-					axes[ d ].range = [ range.min, range.max ];
+					AXES[ d ].range = [ range.min, range.max ];
 					if ( d === 'impulse' ) {
-						axes[ d ].dtick = range.abs < 1 ? 0.2 : ( range.abs < 2 ? 0.5 : 1 );
+						AXES[ d ].dtick = range.abs < 1 ? 0.2 : ( range.abs < 2 ? 0.5 : 1 );
 					} else {
-						axes[ d ].dtick = range.abs < 10 ? 2 : ( range.abs < 20 ? 5 : 10 );
+						AXES[ d ].dtick = range.abs < 10 ? 2 : ( range.abs < 20 ? 5 : 10 );
 					}
 				} );
 			}
-			plots.phase.y      = data.phase;
-			plots.groupdelay.y = delay0 ? 0 : data.groupdelay;
-			var plot           = [ plots.magnitude, plots.phase, plots.groupdelay ];
+			PLOTS.phase.y      = data.phase;
+			PLOTS.groupdelay.y = delay0 ? 0 : data.groupdelay;
+			var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
 			var layout         = {
-				  xaxis         : axes.freq[ V.tab ]
-				, yaxis         : axes.magnitude
-				, yaxis2        : axes.phase
-				, yaxis3        : axes.groupdelay
+				  xaxis         : AXES.freq[ V.tab ]
+				, yaxis         : AXES.magnitude
+				, yaxis2        : AXES.phase
+				, yaxis3        : AXES.groupdelay
 				, margin        : { t: impulse ? 40 : 10, r: 40, b: 90, l: 45 }
 				, paper_bgcolor : '#000'
 				, plot_bgcolor  : '#000'
@@ -715,15 +717,16 @@ var graph     = {
 					tickvals.push( i * 20 * each );
 				}
 				ticktext[ i - 1 ]  = '';
-				axes.time.range    = [ 0, imL ];
-				axes.time.tickvals = tickvals;
-				axes.time.ticktext = ticktext;
-				layout.xaxis2      = axes.time;
-				layout.yaxis4      = axes.impulse;
-				plots.impulse.y    = data.impulse;
-				plot.push( plots.impulse );
+				AXES.time.range    = [ 0, imL ];
+				AXES.time.tickvals = tickvals;
+				AXES.time.ticktext = ticktext;
+				layout.xaxis2      = AXES.time;
+				layout.yaxis4      = AXES.impulse;
+				PLOTS.impulse.y    = data.impulse;
+				plot.push( PLOTS.impulse );
 			}
-			if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph"></div>' );
+			$li.find( '.divgraph' ).remove();
+			$li.append( '<div class="divgraph"></div>' );
 			var $divgraph = $li.find( '.divgraph' );
 			var options   = {
 				  displayModeBar : false
@@ -731,7 +734,7 @@ var graph     = {
 				, staticPlot     : true // disable zoom
 			}
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, options );
-			if ( ! $divgraph.find( '.graphclose' ).length ) $divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
+			$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 			elementScroll( $divgraph.parent() );
 			bannerHide();
 		}, 'json' );
