@@ -2137,11 +2137,6 @@ $( '#configuration' ).on( 'input', function() {
 	} );
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 } );
-$( '.tab' ).on( 'click', '.graphclose', function() {
-	var $this = $( this );
-	var $li   = $this.parents( 'li' );
-	$this.parent().remove();
-} );
 $( '.tab .headtitle' ).on( 'click', function() {
 	if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) $( '#'+ V.tab +' .i-back' ).trigger( 'click' );
 } );
@@ -2198,6 +2193,8 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	}
 	$( '#'+ V.tab +' .entries' ).toggleClass( 'hide' );
 	render[ V.tab ]();
+} ).on( 'click', '.graphclose', function() {
+	$( this ).parent().toggle();
 } );
 $( 'body' ).on( 'click', function( e ) {
 	if ( $( e.target ).hasClass( 'liicon' ) ) return
@@ -2209,7 +2206,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 	var $this = $( this );
 	var cmd   = $this.prop( 'class' ).replace( ' active', '' );
 	if ( cmd === 'graph' ) {
-		V.li.find( '.divgraph' ).length ? V.li.find( '.graphclose' ).trigger( 'click' ) : graph.plot();
+		var $divgraph = V.li.find( '.divgraph' );
+		$divgraph.length ? $divgraph.remove() : graph.plot();
 		return
 	}
 	
