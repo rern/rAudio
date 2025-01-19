@@ -621,16 +621,16 @@ var config    = {
 }
 var graph     = {
 	  pipeline : () => {
-		$( '.flowchart' ).hasClass( 'hide' ) ? createPipelinePlot() : $( '.flowchart' ).addClass( 'hide' );
+		var $flowchart = $( '.flowchart' );
+		$flowchart.hasClass( 'hide' ) ? createPipelinePlot() : $flowchart.addClass( 'hide' );
 	}
 	, plot     : $li => {
 		if ( typeof Plotly !== 'object' ) {
 			notify( 'graph', common.tabTitle(), 'Plot ...' );
-			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
+			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot( V.li ) );
 			return
 		}
 		
-		if ( ! $li ) $li = V.li;
 		var filters = V.tab === 'filters';
 		var val     = $li.data( filters ? 'name' : 'index' );
 		var filterdelay = false;
@@ -2152,11 +2152,8 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 	}
 } ).on( 'click', '.i-flowchart', function() {
 	if ( typeof d3 !== 'object' ) {
-		$.when(
-			$.getScript( '/assets/js/camilla-pipelineplotter.js' ),
-			$.getScript( '/assets/js/plugin/'+ jfiles.d3 ),
-			$.Deferred( deferred => deferred.resolve() )
-		).done( () => graph.pipeline() );
+		$.getScript( '/assets/js/camilla-pipelineplotter.js' );
+		$.getScript( '/assets/js/plugin/'+ jfiles.d3, graph.pipeline );
 		return
 	}
 	
@@ -2194,7 +2191,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$( '#'+ V.tab +' .entries' ).toggleClass( 'hide' );
 	render[ V.tab ]();
 } ).on( 'click', '.graphclose', function() {
-	$( this ).parent().toggle();
+	$( this ).parent().remove();
 } );
 $( 'body' ).on( 'click', function( e ) {
 	if ( $( e.target ).hasClass( 'liicon' ) ) return
@@ -2207,7 +2204,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 	var cmd   = $this.prop( 'class' ).replace( ' active', '' );
 	if ( cmd === 'graph' ) {
 		var $divgraph = V.li.find( '.divgraph' );
-		$divgraph.length ? $divgraph.remove() : graph.plot();
+		$divgraph.length ? $divgraph.remove() : graph.plot( V.li );
 		return
 	}
 	
@@ -2433,7 +2430,7 @@ $( '.entries' ).on( 'touchmove mousemove', 'input[type=range]', function() {
 	V.press = true;
 } ).on( 'input', 'input[type=range]', function() {
 	setting.rangeGet( $( this ), 'input' );
-} ).on( 'touchend mouseup', function() {
+} ).on( 'touchend mouseup', 'input[type=range]', function() {
 	V.press = false;
 	graph.refresh();
 } )
