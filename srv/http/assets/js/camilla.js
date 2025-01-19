@@ -429,7 +429,7 @@ var ycommon   = {
 	, anchor     : 'free'
 	, autoshift  : true
 }
-var ticktext  = [ 'Hz 20 &nbsp; ', '', '100', '', '1k', '', '10k', '20k' ];
+var ticktext  = [ 'Hz 20 &nbsp; ', 50, 100, 500, '1k', '5k', '10k', '20k' ];
 var axes      = {
 	  freq       : {
 		  filters  : {
