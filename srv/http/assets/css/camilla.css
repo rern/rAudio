@@ -285,7 +285,7 @@ i.bypassed {
 .tab li:focus-visible {
 	background: var( --cga );
 }
-.tab li:not( :focus-visible, .main ):hover {
+.tab li:not( :focus-visible ):hover {
 	background: var( --cgd );
 }
 .tab .divdest {
