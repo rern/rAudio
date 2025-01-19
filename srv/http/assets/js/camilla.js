@@ -23,7 +23,7 @@ W.volume      = data => {
 	}
 }
 W.refresh     = data => {
-	if ( data.page !== 'camilla' ) return
+	if ( V.press || V.local || data.page !== 'camilla' ) return
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
@@ -731,6 +731,11 @@ var graph     = {
 			bannerHide();
 		}, 'json' );
 	}
+	, refresh  : () => {
+		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
+			graph.plot( $( el ).parent() );
+		} );
+	}
 }
 var render    = {
 	  status      : () => { // onload only
@@ -1109,9 +1114,7 @@ var render    = {
 			var $entries = $main;
 		}
 		$( '#menu' ).addClass( 'hide' );
-		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
-			graph.plot( $( el ).parent() );
-		} );
+		graph.refresh();
 		$( '.entries' ).children().removeAttr( 'tabindex' );
 		$entries.find( '.lihead .i-add, .lihead .i-back' ).prop( 'tabindex', 0 );
 		var $li = $entries.find( 'li:not( .lihead )' );
@@ -1727,6 +1730,7 @@ var setting   = {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			if ( ! V.press ) {
+				local();
 				setting.statusPush();
 				clearTimeout( V.timeoutsave );
 				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
@@ -2426,14 +2430,20 @@ $( '#menu a' ).on( 'click', function( e ) {
 			}
 	}
 } );
+$( '.entries' ).on( 'touchmove mousemove', 'input[type=range]', function() {
+	V.press = true;
+} ).on( 'input', 'input[type=range]', function() {
+	setting.rangeGet( $( this ), 'input' );
+} ).on( 'touchend mouseup', function() {
+	V.press = false;
+	graph.refresh();
+} )
 // filters --------------------------------------------------------------------------------
 $( '#filters' ).on( 'click', '.name', function( e ) {
 	e.stopPropagation();
 	$( this ).parents( 'li' ).find( '.liicon' ).trigger( 'click' );
 } ).on( 'click', '.i-add', function() {
 	setting.upload();
-} ).on( 'input', 'input[type=range]', function() {
-	setting.rangeGet( $( this ), 'input' );
 } ).on( 'click', '.i-volume', function() {
 	var $this   = $( this );
 	var name    = $this.parents( 'li' ).data( 'name' );
@@ -2519,8 +2529,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	
 	var name  = $this.find( '.li1' ).text();
 	render.mixersSub( name );
-} ).on( 'input', 'input[type=range]', function() {
-	setting.rangeGet( $( this ), 'input' );
 } ).on( 'click', '.i-volume', function() {
 	var $this   = $( this );
 	var M       = setting.mixerGet( $this );
