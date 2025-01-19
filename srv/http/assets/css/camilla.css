@@ -353,15 +353,14 @@ i.disabled {
 .divgraph {
 	position: relative;
 	height: 300px !important;
-	margin-top: 3px;
-	padding-top: 20px !important;
+	margin-bottom: -50px;
 	background: #000;
 }
 .graphclose {
 	position: absolute;
 	color: var( --cm ) !important;
 	top: -10px;
-	right: 3px;
+	right: -10px;
 }
 .overplot .lines path {
 	stroke-opacity: 0.75 !important;
