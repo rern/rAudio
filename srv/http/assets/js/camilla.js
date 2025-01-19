@@ -641,9 +641,9 @@ var graph     = {
 				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
 			} );
 		}
-		var args = jsonClone( filters ? FIL[ val ] : S.config );
-		if ( ! filters ) args.index = val;
-		bash( [ 'settings/camilla.py', JSON.stringify( args ) ], data => {
+		var args = JSON.stringify( filters ? FIL[ val ] : S.config );
+		if ( ! filters ) args = args.replace( /}$/, ',"index":'+ val +'}' );
+		bash( [ 'settings/camilla.py', args ], data => {
 			var impulse   = 'impulse' in data;
 			if ( filterdelay ) {
 				plots.magnitude.y   = 0;
