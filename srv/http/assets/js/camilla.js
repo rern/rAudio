@@ -619,8 +619,6 @@ var graph     = {
 		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 	}
 	, plot     : $li => {
-		if ( V.drag ) return
-		
 		if ( typeof Plotly !== 'object' ) {
 			notify( 'graph', common.tabTitle(), 'Plot ...' );
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
@@ -632,13 +630,9 @@ var graph     = {
 		var val     = $li.data( filters ? 'name' : 'index' );
 		var filterdelay = false;
 		if ( filters ) {
-			if ( ! FIL[ val ] ) return
-			
 			filterdelay = FIL[ val ].type === 'Delay';
 			var delay0  = ! filterdelay && 'gain' in FIL[ val ].parameters && FIL[ val ].parameters.gain === 0;
 		} else {
-			if ( ! PIP[ val ] ) return
-			
 			var pipelinedelay = false;
 			var delay0        = true;
 			PIP[ val ].names.forEach( n => {
@@ -1115,12 +1109,9 @@ var render    = {
 			var $entries = $main;
 		}
 		$( '#menu' ).addClass( 'hide' );
-		if ( [ 'filters', 'pipeline' ].includes( V.tab ) ) {
-			$( '#'+ V.tab +' .entries.main li' ).each( ( i, el ) => {
-				var $el  = $( el );
-				if ( $el.find( '.divgraph' ).length ) graph.plot( $el );
-			} );
-		}
+		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
+			graph.plot( $( el ).parent() );
+		} );
 		$( '.entries' ).children().removeAttr( 'tabindex' );
 		$entries.find( '.lihead .i-add, .lihead .i-back' ).prop( 'tabindex', 0 );
 		var $li = $entries.find( 'li:not( .lihead )' );
