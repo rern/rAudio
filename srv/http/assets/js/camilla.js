@@ -396,33 +396,6 @@ var color     = {
 	, w   : 'hsl( 200, 3%,   60% )'
 	, wl  : 'hsl( 200, 3%,   80% )'
 }
-var plots     = {
-	  magnitude  : {
-		  yaxis : 'y'
-		, type  : 'scatter'
-		, name  : 'Gain'
-		, line  : { width : 3, color: color.m }
-	}
-	, phase      : {
-		  yaxis : 'y2'
-		, type  : 'scatter'
-		, name  : 'Phase'
-		, line  : { width : 2, color : color.r }
-	}
-	, groupdelay : {
-		  yaxis : 'y3'
-		, type  : 'scatter'
-		, name  : 'Delay'
-		, line  : { width : 2, color: color.o }
-	}
-	, impulse    : {
-		  xaxis : 'x2'
-		, yaxis : 'y4'
-		, type  : 'scatter'
-		, name  : 'Impulse'
-		, line  : { width : 1, color: color.g }
-	}
-}
 var ycommon   = {
 	  overlaying : 'y'
 	, side       : 'right'
@@ -512,6 +485,48 @@ var axes      = {
 		, anchor     : 'free'
 		, autoshift  : true
 		, shift      : -10
+	}
+}
+var plots     = {
+	  groupdelay : {
+		  yaxis : 'y3'
+		, type  : 'scatter'
+		, name  : 'Delay'
+		, line  : { width : 2, color: color.o }
+	}
+	, impulse    : {
+		  xaxis : 'x2'
+		, yaxis : 'y4'
+		, type  : 'scatter'
+		, name  : 'Impulse'
+		, line  : { width : 1, color: color.g }
+	}
+	, layout     : {
+		  margin        : { t: 10, r: 40, b: 40, l: 40 }
+		, paper_bgcolor : '#000'
+		, plot_bgcolor  : '#000'
+		, showlegend    : false
+		, hovermode     : false
+		, dragmode      : 'zoom'
+		, font          : { family: 'Inconsolata', size: 14 }
+	}
+	, magnitude  : {
+		  yaxis : 'y'
+		, type  : 'scatter'
+		, name  : 'Gain'
+		, line  : { width : 3, color: color.m }
+	}
+	, options    : {
+		  displayModeBar : false
+		, staticPlot     : true // disable zoom
+//		, scrollZoom     : true
+//		, responsive     : true
+	}
+	, phase      : {
+		  yaxis : 'y2'
+		, type  : 'scatter'
+		, name  : 'Phase'
+		, line  : { width : 2, color : color.r }
 	}
 }
 
@@ -690,22 +705,13 @@ var graph     = {
 			PLOTS.groupdelay.y = delay0 ? 0 : data.groupdelay;
 			var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
 			var layout         = {
-				  xaxis         : AXES.freq[ V.tab ]
+				  ...PLOTS.layout
+				, xaxis         : AXES.freq[ V.tab ]
 				, yaxis         : AXES.magnitude
 				, yaxis2        : AXES.phase
 				, yaxis3        : AXES.groupdelay
-				, margin        : { t: impulse ? 40 : 10, r: 40, b: 90, l: 45 }
-				, paper_bgcolor : '#000'
-				, plot_bgcolor  : '#000'
-				, showlegend    : false
-				, hovermode     : false
-				, dragmode      : 'zoom'
-				, font          : {
-					  family : 'Inconsolata'
-					, size   : 14
-				}
 			}
-			if ( impulse ) { // Conv
+			if ( 'impulse' in data ) { // Conv
 				var imL  = data.impulse.length;
 				var raw  = imL < 4500;
 				var each = raw ? imL / 80 : imL / 120;
@@ -720,6 +726,7 @@ var graph     = {
 				AXES.time.range    = [ 0, imL ];
 				AXES.time.tickvals = tickvals;
 				AXES.time.ticktext = ticktext;
+				layout.margin.t    = 40;
 				layout.xaxis2      = AXES.time;
 				layout.yaxis4      = AXES.impulse;
 				PLOTS.impulse.y    = data.impulse;
@@ -728,15 +735,14 @@ var graph     = {
 			$li.find( '.divgraph' ).remove();
 			$li.append( '<div class="divgraph"></div>' );
 			var $divgraph = $li.find( '.divgraph' );
-			var options   = {
-				  displayModeBar : false
-//				, scrollZoom     : true
-				, staticPlot     : true // disable zoom
-			}
-			Plotly.newPlot( $divgraph[ 0 ], plot, layout, options );
-			$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
-			elementScroll( $divgraph.parent() );
-			bannerHide();
+			Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options ).then( () => {
+				var divW = $( '#'+ V.tab ).width()
+				$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => { // resize for vertical scrollbar
+					if ( $( el ).find( '.svg-container' ).width() > divW ) Plotly.relayout( el, { width: divW } );
+				} );
+				$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
+				bannerHide();
+			} );
 		}, 'json' );
 	}
 	, refresh  : () => {
