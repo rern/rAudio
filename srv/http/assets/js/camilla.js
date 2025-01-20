@@ -36,7 +36,6 @@ W.refresh     = data => {
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
-	, sortable   : {}
 	, tab        : 'filters'
 	, timeoutred : true
 }
@@ -414,7 +413,7 @@ var axes      = {
 		}
 		, pipeline : {
 			  tickfont  : { color: color.wl }
-			, tickvals  : [ 4, 210, 300, 512, 601, 815, 906, 995 ]   //   4>|  ...  | 90 |  213  | 90 |  213  | 90 | .. |<995
+			, tickvals  : [ 4, 210, 300, 511, 602, 816, 905, 995 ]   //   4>|  ...  | 90 |  213  | 90 |  213  | 90 | .. |<995
 			, ticktext  : ticktext
 			, range     : [ 4, 995 ]
 			, gridcolor : color.grd
@@ -635,11 +634,14 @@ var config    = {
 	}
 }
 var graph     = {
-	  flowchart : () => {
+	  flowchart : refresh => {
 		var $flowchart = $( '.flowchart' );
-		if ( $flowchart.length ) {
-			$flowchart.remove();
-			return
+		var fL         = $flowchart.length;
+		$flowchart.remove();
+		if ( refresh ) {
+			if ( ! fL ) return
+		} else {
+			if ( fL ) return
 		}
 		
 		var ch  = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
@@ -990,7 +992,7 @@ var render    = {
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
-		render.sortable( 'main' );
+		render.sortable();
 	}
 	, pipe        : ( el, i ) => {
 		var icon  = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
@@ -1004,10 +1006,14 @@ var render    = {
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
 		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
 	}
-	, sortable    : el => {
-		if ( el in V.sortable ) return
+	, sortable    : () => {
+		if ( V.sortable ) {
+			V.sortable.destroy();
+			delete V.sortable;
+		}
+		if ( $( '#pipeline .entries li' ).length < 2 ) return
 		
-		V.sortable[ el ] = new Sortable( $( '#pipeline .entries.'+ el )[ 0 ], {
+		V.sortable = new Sortable( $( '#pipeline .entries' )[ 0 ], {
 			  ghostClass : 'sortable-ghost'
 			, delay      : 400
 			, onUpdate   : function ( e ) {
@@ -1018,7 +1024,7 @@ var render    = {
 				pip.splice( ai, 1 );
 				pip.splice( bi, 0, a );
 				setting.save( 'Pipeline', 'Change order ...' );
-				graph.flowchart();
+				graph.flowchart( true );
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
@@ -1539,11 +1545,6 @@ var setting   = {
 	}
 	, pipelineTr    : () => {
 		
-	}
-	, sortRefresh   : k => {
-		V.sortable[ k ].destroy();
-		delete V.sortable[ k ];
-		render.sortable( k );
 	} //-----------------------------------------------------------------------------------
 	, device        : ( dev, type ) => {
 		var type        = type || 'Alsa';
@@ -2162,7 +2163,7 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 } ).on( 'click', '.i-flowchart', function() {
 	if ( typeof d3 !== 'object' ) {
 		$.getScript( '/assets/js/camilla-flowchart.js' );
-		$.getScript( '/assets/js/plugin/'+ jfiles.d3, graph.flowchart );
+		$.getScript( '/assets/js/plugin/'+ jfiles.d3, () => graph.flowchart() );
 		return
 	}
 	
@@ -2352,12 +2353,15 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, title   : title
 						, message : 'Delete this '+ type +'?'
 						, ok      : () => {
-							var index = V.li.index();
-							PIP.splice( index, 1 );
+							PIP.splice( V.li.index(), 1 );
 							setting.save( title, 'Remove '+ type +' ...' );
 							V.li.remove();
-							setting.sortRefresh( 'main' );
-							graph.flowchart();
+							if ( PIP.length ) {
+								graph.flowchart( true );
+							} else {
+								$( '.i-flowchart' ).addClass( 'disabled' );
+								$( '.flowchart' ).remove();
+							}
 						}
 					} );
 					break;
