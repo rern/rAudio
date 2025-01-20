@@ -95,9 +95,8 @@ $htmlopt  = '';
 foreach( $options as $opt ) $htmlopt.= htmlSetting( $opt );
 $htmltab  = [];
 foreach( $id_tab as $id => $data ) {
-	$html = '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$data[ 'help' ].'</div>';
-	if ( $id === 'pipeline' ) $html.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
-	$html.= '<ul class="entries main"></ul>';
+	$html = '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$data[ 'help' ].'</div>'.
+			'<ul class="entries main"></ul>';
 	if ( $id === 'devices' ) {
 		$html.= '
 <div id="sampling">'.htmlSectionStatus( 'sampling' ).'</div>

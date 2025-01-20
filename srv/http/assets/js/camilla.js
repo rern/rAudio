@@ -637,11 +637,18 @@ var config    = {
 var graph     = {
 	  flowchart : () => {
 		var $flowchart = $( '.flowchart' );
-		$flowchart.hasClass( 'hide' ) ? createPipelinePlot() : $flowchart.addClass( 'hide' );
+		if ( $flowchart.length ) {
+			$flowchart.remove();
+			return
+		}
+		
+		var ch  = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
+		var svg = '<svg class="flowchart" xmlns="http://www.w3.org/2000/svg" viewBox="20 '+ ch * 30 +' 500 '+ ch * 80 +'"></svg>';
+		$( '#divpipeline .entries.main' ).before( svg );
+		createPipelinePlot();
 	}
 	, plot     : $li => {
 		if ( typeof Plotly !== 'object' ) {
-			notify( 'graph', common.tabTitle(), 'Plot ...' );
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot( V.li ) );
 			return
 		}
@@ -735,10 +742,8 @@ var graph     = {
 			$li.find( '.divgraph' ).remove();
 			$li.append( '<div class="divgraph"></div>' );
 			var $divgraph = $li.find( '.divgraph' );
-			Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options ).then( () => {
-				$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
-				bannerHide();
-			} );
+			Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
+			$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 		}, 'json' );
 	}
 	, refresh  : () => {
@@ -781,7 +786,6 @@ var render    = {
 		if ( chP > 1 ) for ( i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
 		$( '#out' ).html( htmlout );
 		render.vuBarToggle();
-		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusStop  : () => {
 		if ( ! ( 'intervalvu' in V ) ) return

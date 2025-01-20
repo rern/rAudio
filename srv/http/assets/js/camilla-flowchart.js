@@ -1,20 +1,14 @@
-var $flowchart = $( '#pipeline .flowchart' );
-var pipeline   = {
-	  node   : $flowchart[ 0 ]
-	, width  : 565
-	, height : 300
-	, color  : {
-		  filter : color.md
-		, in     : '#000'
-		, mixer  : color.rd
-		, out    : color.gd
-	}
+var boxcolor = {
+	  filter : color.md
+	, in     : '#000'
+	, mixer  : color.rd
+	, out    : color.gd
 }
 
 function appendBlock( labels, boxes, label, x, y, width, type ) { // box
 /**/const wx     = 1.4;         // common scale
 /**/const offset = wx/2 + 0.05; // offset arrow line
-/**/const fill   = pipeline.color[ type ];
+/**/const fill   = boxcolor[ type ];
 	labels.push( {
 		  x     : x
 		, y     : y + 0.1
@@ -203,21 +197,22 @@ function makeShapes( conf ) {
 	return { labels, boxes, links, max_h, max_v }
 }
 function createPipelinePlot() {
-/**/const config = S.config;
-/**/const node   = pipeline.node;
-/**/const width  = pipeline.width;
-/**/const height = pipeline.height;
+	var $flowchart = $( '#pipeline .flowchart' );
+/**/const config   = S.config;
+/**/const node     = $flowchart[ 0 ];
+/**/const width    = 565;
+/**/const height   = 300;
 	let { labels, boxes, links, max_h, max_v } = makeShapes( config );
 	max_v = max_h > 4 * max_v ? max_h / 4 : max_h = 4 * max_v
-	const yScale = d3
+	const yScale   = d3
 					.scaleLinear()
 					.domain( [ -max_v, max_v ] )
 					.range( [ 0, height ] );
-	const xScale = d3
+	const xScale   = d3
 					.scaleLinear()
 					.domain( [ -2, max_h ] )
 					.range( [ 0, width ] );
-	const linkGen = d3
+	const linkGen  = d3
 					.linkHorizontal()
 					.source( d => [ xScale( d.source[ 0 ] ), yScale( d.source[ 1 ] ) ] )
 					.target( d => [ xScale( d.target[ 0 ] ), yScale( d.target[ 1 ] ) ] );
@@ -230,7 +225,6 @@ function createPipelinePlot() {
 		, [ 0, markerBoxHeight ]
 		, [ markerBoxWidth, markerBoxHeight / 2 ]
 	];
-/**/$flowchart.empty();
 	d3
 		.select( node )
 		.append( 'defs' )
@@ -287,10 +281,7 @@ function createPipelinePlot() {
 		.attr( 'fill', 'none' )
 		.attr( 'stroke', color.w );
 		
-/**/$( '.pipeline path' ).last().after( $( '.pipeline text' ) );
-	$flowchart
-		.removeAttr( 'style' )
-		.removeClass( 'hide' );
+	$flowchart.removeAttr( 'style' );
 	var wmax = elw = 0;
 	$( '.flowchart rect' ).each( ( i, el ) => {
 		elw = el.getBoundingClientRect().width;
