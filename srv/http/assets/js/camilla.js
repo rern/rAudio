@@ -862,8 +862,6 @@ var render    = {
 		}
 	} //-----------------------------------------------------------------------------------
 	, filters     : () => {
-		if ( ! FIL ) return
-		
 		var data     = render.dataSort();
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
@@ -917,8 +915,6 @@ var render    = {
 		render.toggle( 'sub' );
 	} //-----------------------------------------------------------------------------------
 	, mixers      : () => {
-		if ( ! MIX ) return
-		
 		var data = render.dataSort();
 		var li = '';
 		$.each( data, ( k, v ) => li += render.mixer( k, v ) );
@@ -969,8 +965,6 @@ var render    = {
 		selectSet( $( '#mixers select' ) );
 	} //-----------------------------------------------------------------------------------
 	, processors  : () => {
-		if ( ! PRO ) return
-		
 		var data = render.dataSort();
 		var li = '';
 		$.each( data, ( k, v ) => {
@@ -986,13 +980,12 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, pipeline    : () => {
 		$( '.i-flowchart' ).toggleClass( 'disabled', PIP.length === 0 );
-		if ( ! PIP.length ) return
-		
 		var li = '';
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
 		render.sortable();
+		graph.flowchart( 'refresh' );
 	}
 	, pipe        : ( el, i ) => {
 		var icon  = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
@@ -1024,7 +1017,7 @@ var render    = {
 				pip.splice( ai, 1 );
 				pip.splice( bi, 0, a );
 				setting.save( 'Pipeline', 'Change order ...' );
-				graph.flowchart( true );
+				graph.flowchart( 'refresh' );
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
@@ -2357,7 +2350,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							setting.save( title, 'Remove '+ type +' ...' );
 							V.li.remove();
 							if ( PIP.length ) {
-								graph.flowchart( true );
+								graph.flowchart( 'refresh' );
 							} else {
 								$( '.i-flowchart' ).addClass( 'disabled' );
 								$( '.flowchart' ).remove();
