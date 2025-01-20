@@ -1,14 +1,13 @@
-var boxcolor = {
+var bg = {
 	  filter : color.md
 	, in     : '#000'
 	, mixer  : color.rd
 	, out    : color.gd
 }
 
-function appendBlock( labels, boxes, label, x, y, width, type ) { // box
+function appendBlock( labels, boxes, label, x, y, width, fill ) { // box
 /**/const wx     = 1.4;         // common scale
 /**/const offset = wx/2 + 0.05; // offset arrow line
-/**/const fill   = boxcolor[ type ];
 	labels.push( {
 		  x     : x
 		, y     : y + 0.1
@@ -100,15 +99,15 @@ function makeShapes( conf ) {
 			, 0
 			, spacing_v * ( -active_channels / 2 + 0.5 + n )
 			, 1
-			, 'in'
+			, bg.in
 		);
 		channels.push( [ io_points ] );
 	}
 	stages.push( channels );
 	max_v               = active_channels / 2 + 1;
 	// loop through pipeline
-	let total_length = 0;
-	let stage_start  = 0;
+	let total_length    = 0;
+	let stage_start     = 0;
 	for ( let n = 0; n < conf.pipeline.length; n++ ) {
 		const step = conf.pipeline[ n ];
 		if ( step.type === 'Mixer' ) {
@@ -127,7 +126,8 @@ function makeShapes( conf ) {
 					, label
 					, total_length * spacing_h
 					, spacing_v * ( -active_channels / 2 + 0.5 + m )
-					, 1, 'mixer'
+					, 1
+					, bg.mixer
 				);
 				mixerchannels[ m ].push( io_points );
 			}
@@ -160,7 +160,7 @@ function makeShapes( conf ) {
 						, ch_step * spacing_h
 						, spacing_v * ( -active_channels / 2 + 0.5 + ch_nbr )
 						, 1.25 // filter width
-						, 'filter'
+						, bg.filter
 					);
 					const src_list  = stages[ stages.length - 1 ][ ch_nbr ];
 					const src_p     = src_list[ src_list.length - 1 ].output;
@@ -185,7 +185,7 @@ function makeShapes( conf ) {
 			, spacing_h * total_length
 			, spacing_v * (-active_channels / 2 + 0.5 + n)
 			, 1
-			, 'out'
+			, bg.out
 		);
 		playbackchannels.push( [ io_points ] );
 		const srclen    = stages[ stages.length - 1 ][ n ].length;
