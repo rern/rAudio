@@ -501,6 +501,7 @@ input.disabled + .switchlabel:after {
 	margin: 40px 0;
 	padding: 0 calc( ( 100% - 650px ) / 2 ) 80px;
 	overflow: auto;
+	scrollbar-gutter: stable;
 }
 .col-l,
 .col-r {

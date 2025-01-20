@@ -518,9 +518,9 @@ var plots     = {
 	}
 	, options    : {
 		  displayModeBar : false
+		, responsive     : true
 		, staticPlot     : true // disable zoom
 //		, scrollZoom     : true
-//		, responsive     : true
 	}
 	, phase      : {
 		  yaxis : 'y2'
@@ -736,10 +736,6 @@ var graph     = {
 			$li.append( '<div class="divgraph"></div>' );
 			var $divgraph = $li.find( '.divgraph' );
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options ).then( () => {
-				var divW = $( '#'+ V.tab ).width()
-				$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => { // resize for vertical scrollbar
-					if ( $( el ).find( '.svg-container' ).width() > divW ) Plotly.relayout( el, { width: divW } );
-				} );
 				$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 				bannerHide();
 			} );
