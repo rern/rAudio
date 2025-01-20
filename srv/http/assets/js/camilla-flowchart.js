@@ -197,22 +197,22 @@ function makeShapes( conf ) {
 	return { labels, boxes, links, max_h, max_v }
 }
 function createPipelinePlot() {
-	var $flowchart = $( '#pipeline .flowchart' );
-/**/const config   = S.config;
-/**/const node     = $flowchart[ 0 ];
-/**/const width    = 565;
-/**/const height   = 300;
+	var $flowchart        = $( '#pipeline .flowchart' );
+/**/const config          = S.config;
+/**/const node            = $flowchart[ 0 ];
+/**/const width           = 565;
+/**/const height          = 300;
 	let { labels, boxes, links, max_h, max_v } = makeShapes( config );
 	max_v = max_h > 4 * max_v ? max_h / 4 : max_h = 4 * max_v
-	const yScale   = d3
+	const yScale          = d3
 					.scaleLinear()
 					.domain( [ -max_v, max_v ] )
 					.range( [ 0, height ] );
-	const xScale   = d3
+	const xScale          = d3
 					.scaleLinear()
 					.domain( [ -2, max_h ] )
 					.range( [ 0, width ] );
-	const linkGen  = d3
+	const linkGen         = d3
 					.linkHorizontal()
 					.source( d => [ xScale( d.source[ 0 ] ), yScale( d.source[ 1 ] ) ] )
 					.target( d => [ xScale( d.target[ 0 ] ), yScale( d.target[ 1 ] ) ] );
