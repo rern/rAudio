@@ -85,9 +85,10 @@ function deviceText( device ) {
 function createPipelinePlot() {
 	var ch               = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 	var vb_h             = FL.height / 4 * ch;            // boxH    - @ ch/box = 1/4 h
+	var vb_x             = vb_h / 10;
 	var vb_y             = ( FL.height - vb_h - 15 ) / 2; // padding - ( h - boxH - textH ) / 2
 	$( '#divpipeline .entries.main' ).before(
-		'<svg class="flowchart" xmlns="http://www.w3.org/2000/svg" viewBox="0 '+ vb_y +' '+ FL.width +' '+ vb_h +'"></svg>'
+		'<svg class="flowchart" xmlns="http://www.w3.org/2000/svg" viewBox="-'+ vb_x +' '+ vb_y +' '+ FL.width +' '+ vb_h +'"></svg>'
 	);
 	var d3svg            = d3.select( $( '#pipeline .flowchart' )[ 0 ] );
 	
@@ -228,7 +229,6 @@ function createPipelinePlot() {
 		.append( 'marker' )
 		.attr( 'id', 'arrow' )
 		// @ts-ignore
-		.attr( 'viewBox', [ 0, 0, markerBoxWidth, markerBoxHeight ] )
 		.attr( 'refX', refX )
 		.attr( 'refY', refY )
 		.attr( 'markerWidth', markerBoxWidth )
