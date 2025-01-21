@@ -74,13 +74,12 @@ function appendLink( source, dest, label ) { // line
 }
 function deviceText( device ) {
 	if ( 'device' in device ) {
-		var key = 'device';
+		return device.device
 	} else if ( 'filename' in device) {
-		var key = 'filename';
+		return device.filename
 	} else {
-		var key = 'type';
+		return device.type
 	}
-	return device[ key ]
 }
 function createPipelinePlot() {
 	var ch               = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
