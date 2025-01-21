@@ -84,10 +84,10 @@ function deviceText( device ) {
 }
 function createPipelinePlot() {
 	var ch               = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
-	var vb_h             = FL.height / 4 * ch;
-	var vb_y             = ( FL.height - vb_h ) / 2 - 10;
+	var vb_h             = FL.height / 4 * ch;            // boxH    - @ ch/box = 1/4 h
+	var vb_y             = ( FL.height - vb_h - 15 ) / 2; // padding - ( h - boxH - textH ) / 2
 	$( '#divpipeline .entries.main' ).before(
-		'<svg class="flowchart" xmlns="http://www.w3.org/2000/svg" viewBox="0 '+ vb_y +' 635 '+ vb_h +'"></svg>'
+		'<svg class="flowchart" xmlns="http://www.w3.org/2000/svg" viewBox="0 '+ vb_y +' '+ FL.width +' '+ vb_h +'"></svg>'
 	);
 	var d3svg            = d3.select( $( '#pipeline .flowchart' )[ 0 ] );
 	
