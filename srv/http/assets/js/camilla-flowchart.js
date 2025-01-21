@@ -11,7 +11,7 @@ var FL = {
 
 function appendBlock( label, x, y, fill ) { // box
 	var wx     = 1.4;         // common scale
-	var offset = wx/2 + 0.05; // offset arrow line
+	var offset = wx / 2 + 0.05; // offset arrow line
 	FL.labels.push( {
 		  x     : x
 		, y     : y + 0.1
@@ -21,10 +21,10 @@ function appendBlock( label, x, y, fill ) { // box
 		, angle : 0
 	} );
 	FL.boxes.push( {
-		  x      : x - wx/2
-		, y      : y - wx/4
+		  x      : x - wx / 2
+		, y      : y - wx / 4
 		, width  : wx
-		, height : wx/2
+		, height : wx / 2
 		, fill   : fill
 	} );
 	return {
@@ -214,10 +214,8 @@ function createPipelinePlot() {
 							.linkHorizontal()
 							.source( d => [ xScale( d.source[ 0 ] ), yScale( d.source[ 1 ] ) ] )
 							.target( d => [ xScale( d.target[ 0 ] ), yScale( d.target[ 1 ] ) ] );
-	var markerBoxWidth   = 9;
+	var markerBoxWidth   = 10;
 	var markerBoxHeight  = 6;
-	var refX             = markerBoxWidth - 2;
-	var refY             = markerBoxHeight / 2;
 	var arrowPoints      = [
 		  [ 0, 0 ]
 		, [ 0, markerBoxHeight ]
@@ -227,23 +225,20 @@ function createPipelinePlot() {
 		.append( 'defs' )
 		.append( 'marker' )
 		.attr( 'id', 'arrow' )
-		// @ts-ignore
-		.attr( 'refX', refX )
-		.attr( 'refY', refY )
+		.attr( 'refX', markerBoxWidth - 2 )
+		.attr( 'refY', markerBoxHeight / 2 )
 		.attr( 'markerWidth', markerBoxWidth )
 		.attr( 'markerHeight', markerBoxHeight )
 		.attr( 'orient', 'auto-start-reverse' )
 		.attr( 'fill', color.w )
 		.attr( 'stroke', color.w )
 		.append( 'path' )
-		// @ts-ignore
 		.attr( 'd', d3.line()( arrowPoints ) );
-	var rects = d3svg
-					.selectAll( 'rect' )
-					.data( FL.boxes )
-					.enter()
-					.append( 'rect' );
-	rects
+	d3svg
+		.selectAll( 'rect' )
+		.data( FL.boxes )
+		.enter()
+		.append( 'rect' )
 		.attr( 'x', d => xScale( d.x ) )
 		.attr( 'y', d => yScale( d.y ) )
 		.attr( 'rx', xScale( 0.1 ) - xScale( 0 ) )
@@ -252,26 +247,23 @@ function createPipelinePlot() {
 		.attr( 'height', d => yScale( d.height ) - yScale( 0 ) )
 		.style( 'fill', d => d.fill )
 		.style( 'stroke', d => d.stroke )
-	var text = d3svg
-					.selectAll( 'text' )
-					.data( FL.labels )
-					.enter()
-					.append( 'text' );
-	//Add SVG Text Element Attributes
-	text
+	d3svg
+		.selectAll( null )
+		.data( FL.links )
+		.join( 'path' )
+		.attr( 'd', linkGen )
+		.attr( 'marker-end', 'url(#arrow)' )
+		.attr( 'fill', 'none' )
+		.attr( 'stroke', color.w );
+	d3svg
+		.selectAll( 'text' )
+		.data( FL.labels )
+		.enter()
+		.append( 'text' )
 		.text( d => d.text )
 		.attr( 'font-size', d => yScale( d.size ) - yScale( 0 ) +'px' )
 		.attr( 'fill', d => d.fill )
 		.style( 'text-anchor', 'middle' )
 		.attr( 'transform', d => 'translate('+ xScale( d.x ) +', '+ yScale( d.y ) +'), rotate('+ d.angle +')' )
-	d3svg
-		.selectAll( null )
-		.data( FL.links )
-		.join( 'path' )
-		// @ts-ignore
-		.attr( 'd', linkGen )
-		.attr( 'marker-end', 'url(#arrow)' )
-		.attr( 'fill', 'none' )
-		.attr( 'stroke', color.w );
 	if ( $( '.flowchart rect' ).eq( 0 ).width() > 85 ) $( '.flowchart' ).css( 'width', '80%' );
 }
