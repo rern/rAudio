@@ -73,11 +73,12 @@ function appendLink( source, dest, label ) { // line
 	} );
 }
 function deviceText( device ) {
-	var key = 'type';
 	if ( 'device' in device ) {
-		key = 'device';
+		var key = 'device';
 	} else if ( 'filename' in device) {
-		key = 'filename';
+		var key = 'filename';
+	} else {
+		var key = 'type';
 	}
 	return device[ key ]
 }
