@@ -1,19 +1,18 @@
-const width  = 565;
-const height = 300;
-const bg     = {
-	  filter : color.md
-	, in     : '#000'
-	, mixer  : color.rd
-	, out    : color.gd
+var FL = {
+	  width  : 565
+	, height : 300
+	, color : {
+		  filter : color.md
+		, in     : '#000'
+		, mixer  : color.rd
+		, out    : color.gd
+	}
 }
-let boxes    = [];
-let labels   = [];
-let links    = [];
 
 function appendBlock( label, x, y, fill ) { // box
-/**/const wx     = 1.4;         // common scale
-/**/const offset = wx/2 + 0.05; // offset arrow line
-	labels.push( {
+/**/var wx     = 1.4;         // common scale
+/**/var offset = wx/2 + 0.05; // offset arrow line
+	FL.labels.push( {
 		  x     : x
 		, y     : y + 0.1
 		, text  : label
@@ -21,7 +20,7 @@ function appendBlock( label, x, y, fill ) { // box
 		, size  : 0.3
 		, angle : 0
 	} );
-	boxes.push( {
+	FL.boxes.push( {
 		  x      : x - wx/2
 		, y      : y - wx/4
 		, width  : wx
@@ -34,7 +33,7 @@ function appendBlock( label, x, y, fill ) { // box
 	}
 }
 function appendFrame( label, x, height ) { // in, mixer, out container
-	labels.push( {
+	FL.labels.push( {
 		  x     : x
 		, y     : -height / 2 - 0.2
 		, text  : label
@@ -42,7 +41,7 @@ function appendFrame( label, x, height ) { // in, mixer, out container
 		, size  : 0.3
 		, angle : 0
 	} );
-	boxes.push( {
+	FL.boxes.push( {
 		  x      : x - 0.7 * 1.5
 		, y      : -height / 2
 		, width  : 1.5 * 1.4
@@ -59,7 +58,7 @@ function appendLink( source, dest, label ) { // line
 			var x = source.x / 3 + ( 2 * dest.x ) / 3;
 			var y = source.y / 3 + ( 2 * dest.y ) / 3 - 0.4;
 		}
-		labels.push( {
+		FL.labels.push( {
 			  x     : x
 			, y     : y
 			, text  : label
@@ -68,7 +67,7 @@ function appendLink( source, dest, label ) { // line
 			, angle : 0
 		} );
 	}
-	links.push( {
+	FL.links.push( {
 		  source : [ source.x, source.y ]
 		, target : [ dest.x, dest.y ]
 	} );
@@ -80,72 +79,71 @@ function deviceText( device ) {
 	} else if ( 'filename' in device) {
 		key = 'filename';
 	}
-	return device [ key ]
+	return device[ key ]
 }
-function makeShapes( conf ) {
-	const spacing_h     = 2.75; // space between boxes
-	const spacing_v     = 1;
-	let max_v;
-	labels              = [];
-	boxes               = [];
-	links               = [];
-	const stages        = [];
-	const channels      = [];
-	const capture       = conf.devices.capture;
-	let active_channels = capture.channels;
+function makeShapes() {
+	FL.boxes            = [];
+	FL.labels           = [];
+	FL.links            = [];
+	var spacing_h       = 2.75; // space between boxes
+	var spacing_v       = 1;
+	var stages          = [];
+	var channels        = [];
+	var active_channels = DEV.capture.channels;
+	var max_v;
 	appendFrame(
-		deviceText( capture )
+		deviceText( DEV.capture )
 		, 0
 		, spacing_v * active_channels
 	);
-	for ( let n = 0; n < active_channels; n++ ) {
-		const io_points = appendBlock(
+	for ( n = 0; n < active_channels; n++ ) {
+		var io_points = appendBlock(
 			  'ch '+ n
 			, 0
 			, spacing_v * ( -active_channels / 2 + 0.5 + n )
-			, bg.in
+			, FL.color.in
 		);
 		channels.push( [ io_points ] );
 	}
 	stages.push( channels );
 	max_v               = active_channels / 2 + 1;
 	// loop through pipeline
-	let total_length    = 0;
-	let stage_start     = 0;
-	for ( let n = 0; n < conf.pipeline.length; n++ ) {
-		const step = conf.pipeline[ n ];
+	var total_length    = 0;
+	var stage_start     = 0;
+	for ( n = 0; n < PIP.length; n++ ) {
+		var step = PIP[ n ];
 		if ( step.type === 'Mixer' ) {
-			total_length       += 1;
-			const mixername     = step.name;
-			const mixconf       = conf.mixers[ mixername ];
-			active_channels     = mixconf.channels.out;
-			const mixerchannels = [];
-			const x             = spacing_h * total_length + 0.75;
+			total_length     += 1;
+			var mixername     = step.name;
+			var mixconf       = MIX[ mixername ];
+			active_channels   = mixconf.channels.out;
+			var mixerchannels = [];
+			var x             = spacing_h * total_length + 0.75;
 			appendFrame(
 				mixername
 				, x
 				, spacing_v * active_channels
 				);
-			for ( let m = 0; m < active_channels; m++ ) {
+			for ( m = 0; m < active_channels; m++ ) {
 				mixerchannels.push( [] );
-				const io_points = appendBlock(
+				var io_points = appendBlock(
 					  'ch '+ m
 					, x
 					, spacing_v * ( -active_channels / 2 + 0.5 + m )
-					, bg.mixer
+					, FL.color.mixer
 				);
 				mixerchannels[ m ].push( io_points );
 			}
-			for ( let m = 0; m < mixconf.mapping.length; m++ ) {
-				const mapping = mixconf.mapping[ m ];
-				const dest_ch = mapping.dest;
-				for ( let p = 0; p < mapping.sources.length; p++ ) {
-					const src    = mapping.sources[ p ];
-					const src_ch = src.channel;
-					const label  = src.gain +'dB'+ ( src.inverted ? ' inv.' : '' );
-					const srclen = stages[ stages.length - 1 ][ src_ch ].length;
-					const src_p  = stages[ stages.length - 1 ][ src_ch ][ srclen - 1 ].output;
-					const dest_p = mixerchannels[ dest_ch ][ 0 ].input;
+			for ( m = 0; m < mixconf.mapping.length; m++ ) {
+				var mapping = mixconf.mapping[ m ];
+				var dest_ch = mapping.dest;
+				for ( p = 0; p < mapping.sources.length; p++ ) {
+					var src    = mapping.sources[ p ];
+					var src_ch = src.channel;
+					var label  = src.gain +'dB'+ ( src.inverted ? ' inv.' : '' );
+					var srclen = stages[ stages.length - 1 ][ src_ch ].length;
+					var src_p  = stages[ stages.length - 1 ][ src_ch ][ srclen - 1 ].output;
+					var dest_p = mixerchannels[ dest_ch ][ 0 ].input;
 					appendLink( src_p, dest_p, label );
 				}
 			}
@@ -154,71 +152,70 @@ function makeShapes( conf ) {
 			max_v       = Math.max( max_v, active_channels / 2 + 1 );
 		} else if ( step.type === 'Filter' ) {
 			step.channels.forEach( ch_nbr => {
-				for ( let m = 0; m < step.names.length; m++ ) {
-					const ch_step   = stage_start + stages[ stages.length - 1 ][ ch_nbr ].length;
-					total_length    = Math.max( total_length, ch_step );
-					const io_points = appendBlock(
+				for ( m = 0; m < step.names.length; m++ ) {
+					var ch_step   = stage_start + stages[ stages.length - 1 ][ ch_nbr ].length;
+					total_length  = Math.max( total_length, ch_step );
+					var io_points = appendBlock(
 						  step.names[ m ]
 						, ch_step * spacing_h
 						, spacing_v * ( -active_channels / 2 + 0.5 + ch_nbr )
-						, bg.filter
+						, FL.color.filter
 					);
-					const src_list  = stages[ stages.length - 1 ][ ch_nbr ];
-					const src_p     = src_list[ src_list.length - 1 ].output;
-					const dest_p    = io_points.input;
+					var src_list  = stages[ stages.length - 1 ][ ch_nbr ];
+					var src_p     = src_list[ src_list.length - 1 ].output;
+					var dest_p    = io_points.input;
 					stages[ stages.length - 1 ][ ch_nbr ].push( io_points );
 					appendLink( src_p, dest_p );
 				}
 			} );
 		}
 	}
-	const playbackchannels = [];
-	total_length           = total_length + 1;
-	const max_h            = ( total_length + 1 ) * spacing_h;
+	var playbackchannels = [];
+	total_length         = total_length + 1;
+	var max_h            = ( total_length + 1 ) * spacing_h;
 	appendFrame(
-		  deviceText( conf.devices.playback )
+		  deviceText( DEV.playback )
 		, spacing_h * total_length
 		, spacing_v * active_channels
 	);
-	for ( let n = 0; n < active_channels; n++ ) {
-		const io_points = appendBlock(
+	for ( n = 0; n < active_channels; n++ ) {
+		var io_points = appendBlock(
 			  'ch '+ n
 			, spacing_h * total_length
 			, spacing_v * (-active_channels / 2 + 0.5 + n)
-			, bg.out
+			, FL.color.out
 		);
 		playbackchannels.push( [ io_points ] );
-		const srclen    = stages[ stages.length - 1 ][ n ].length;
-		const src_p     = stages[ stages.length - 1 ][ n ][ srclen - 1 ].output;
-		const dest_p    = io_points.input;
+		var srclen    = stages[ stages.length - 1 ][ n ].length;
+		var src_p     = stages[ stages.length - 1 ][ n ][ srclen - 1 ].output;
+		var dest_p    = io_points.input;
 		appendLink( src_p, dest_p );
 	}
 	stages.push( playbackchannels );
-	return { labels, boxes, links, max_h, max_v }
+	return { max_h, max_v }
 }
 function createPipelinePlot() {
-	var $flowchart        = $( '#pipeline .flowchart' );
-/**/const config          = S.config;
-/**/const node            = $flowchart[ 0 ];
-	let { labels, boxes, links, max_h, max_v } = makeShapes( config );
+	var $flowchart       = $( '#pipeline .flowchart' );
+/**/var node             = $flowchart[ 0 ];
+	var { max_h, max_v } = makeShapes();
 	max_v = max_h > 4 * max_v ? max_h / 4 : max_h = 4 * max_v
-	const yScale          = d3
+	var yScale           = d3
 					.scaleLinear()
 					.domain( [ -max_v, max_v ] )
-					.range( [ 0, height ] );
-	const xScale          = d3
+					.range( [ 0, FL.height ] );
+	var xScale           = d3
 					.scaleLinear()
 					.domain( [ -2, max_h ] )
-					.range( [ 0, width ] );
-	const linkGen         = d3
+					.range( [ 0, FL.width ] );
+	var linkGen          = d3
 					.linkHorizontal()
 					.source( d => [ xScale( d.source[ 0 ] ), yScale( d.source[ 1 ] ) ] )
 					.target( d => [ xScale( d.target[ 0 ] ), yScale( d.target[ 1 ] ) ] );
-	const markerBoxWidth  = 9;
-	const markerBoxHeight = 6;
-	const refX            = markerBoxWidth - 2;
-	const refY            = markerBoxHeight / 2;
-	const arrowPoints     = [
+	var markerBoxWidth   = 9;
+	var markerBoxHeight  = 6;
+	var refX             = markerBoxWidth - 2;
+	var refY             = markerBoxHeight / 2;
+	var arrowPoints      = [
 		  [ 0, 0 ]
 		, [ 0, markerBoxHeight ]
 		, [ markerBoxWidth, markerBoxHeight / 2 ]
@@ -240,10 +237,10 @@ function createPipelinePlot() {
 		.append( 'path' )
 		// @ts-ignore
 		.attr( 'd', d3.line()( arrowPoints ) );
-	const rects = d3
+	var rects = d3
 					.select( node )
 					.selectAll( 'rect' )
-					.data( boxes )
+					.data( FL.boxes )
 					.enter()
 					.append( 'rect' );
 	rects
@@ -255,10 +252,10 @@ function createPipelinePlot() {
 		.attr( 'height', d => yScale( d.height ) - yScale( 0 ) )
 		.style( 'fill', d => d.fill )
 		.style( 'stroke', d => d.stroke )
-	const text = d3
+	var text = d3
 					.select( node )
 					.selectAll( 'text' )
-					.data( labels )
+					.data( FL.labels )
 					.enter()
 					.append( 'text' );
 	//Add SVG Text Element Attributes
@@ -271,7 +268,7 @@ function createPipelinePlot() {
 	d3
 		.select( node )
 		.selectAll( null )
-		.data( links )
+		.data( FL.links )
 		.join( 'path' )
 		// @ts-ignore
 		.attr( 'd', linkGen )
