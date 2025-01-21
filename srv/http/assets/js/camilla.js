@@ -644,9 +644,6 @@ var graph     = {
 			if ( fL ) return
 		}
 		
-		var ch  = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
-		var svg = '<svg class="flowchart" xmlns="http://www.w3.org/2000/svg" viewBox="20 '+ ch * 30 +' 500 '+ ch * 80 +'"></svg>';
-		$( '#divpipeline .entries.main' ).before( svg );
 		createPipelinePlot();
 	}
 	, plot     : $li => {

@@ -1,5 +1,5 @@
 var FL = {
-	  width  : 565
+	  width  : 635
 	, height : 300
 	, color : {
 		  filter : color.md
@@ -10,8 +10,8 @@ var FL = {
 }
 
 function appendBlock( label, x, y, fill ) { // box
-/**/var wx     = 1.4;         // common scale
-/**/var offset = wx/2 + 0.05; // offset arrow line
+	var wx     = 1.4;         // common scale
+	var offset = wx/2 + 0.05; // offset arrow line
 	FL.labels.push( {
 		  x     : x
 		, y     : y + 0.1
@@ -81,15 +81,23 @@ function deviceText( device ) {
 	}
 	return device[ key ]
 }
-function makeShapes() {
-	FL.boxes            = [];
-	FL.labels           = [];
-	FL.links            = [];
-	var spacing_h       = 2.75; // space between boxes
-	var spacing_v       = 1;
-	var stages          = [];
-	var channels        = [];
-	var active_channels = DEV.capture.channels;
+function createPipelinePlot() {
+	var ch               = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
+	var vb_h             = FL.height / 4 * ch;
+	var vb_y             = ( FL.height - vb_h ) / 2 - 10;
+	$( '#divpipeline .entries.main' ).before(
+		'<svg class="flowchart" xmlns="http://www.w3.org/2000/svg" viewBox="0 '+ vb_y +' 635 '+ vb_h +'"></svg>'
+	);
+	var d3svg            = d3.select( $( '#pipeline .flowchart' )[ 0 ] );
+	
+	FL.boxes             = [];
+	FL.labels            = [];
+	FL.links             = [];
+	var spacing_h        = 2.75; // space between boxes
+	var spacing_v        = 1;
+	var stages           = [];
+	var channels         = [];
+	var active_channels  = DEV.capture.channels;
 	var max_v;
 	appendFrame(
 		deviceText( DEV.capture )
@@ -106,10 +114,10 @@ function makeShapes() {
 		channels.push( [ io_points ] );
 	}
 	stages.push( channels );
-	max_v               = active_channels / 2 + 1;
+	max_v                = active_channels / 2 + 1;
 	// loop through pipeline
-	var total_length    = 0;
-	var stage_start     = 0;
+	var total_length     = 0;
+	var stage_start      = 0;
 	for ( n = 0; n < PIP.length; n++ ) {
 		var step = PIP[ n ];
 		if ( step.type === 'Mixer' ) {
@@ -192,25 +200,19 @@ function makeShapes() {
 		appendLink( src_p, dest_p );
 	}
 	stages.push( playbackchannels );
-	return { max_h, max_v }
-}
-function createPipelinePlot() {
-	var $flowchart       = $( '#pipeline .flowchart' );
-/**/var node             = $flowchart[ 0 ];
-	var { max_h, max_v } = makeShapes();
 	max_v = max_h > 4 * max_v ? max_h / 4 : max_h = 4 * max_v
 	var yScale           = d3
-					.scaleLinear()
-					.domain( [ -max_v, max_v ] )
-					.range( [ 0, FL.height ] );
+							.scaleLinear()
+							.domain( [ -max_v, max_v ] )
+							.range( [ 0, FL.height ] );
 	var xScale           = d3
-					.scaleLinear()
-					.domain( [ -2, max_h ] )
-					.range( [ 0, FL.width ] );
+							.scaleLinear()
+							.domain( [ -2, max_h ] )
+							.range( [ 0, FL.width ] );
 	var linkGen          = d3
-					.linkHorizontal()
-					.source( d => [ xScale( d.source[ 0 ] ), yScale( d.source[ 1 ] ) ] )
-					.target( d => [ xScale( d.target[ 0 ] ), yScale( d.target[ 1 ] ) ] );
+							.linkHorizontal()
+							.source( d => [ xScale( d.source[ 0 ] ), yScale( d.source[ 1 ] ) ] )
+							.target( d => [ xScale( d.target[ 0 ] ), yScale( d.target[ 1 ] ) ] );
 	var markerBoxWidth   = 9;
 	var markerBoxHeight  = 6;
 	var refX             = markerBoxWidth - 2;
@@ -220,13 +222,12 @@ function createPipelinePlot() {
 		, [ 0, markerBoxHeight ]
 		, [ markerBoxWidth, markerBoxHeight / 2 ]
 	];
-	d3
-		.select( node )
+	d3svg
 		.append( 'defs' )
 		.append( 'marker' )
 		.attr( 'id', 'arrow' )
 		// @ts-ignore
-		.attr( 'viewBox', [ 0, 0, markerBoxWidth, markerBoxHeight + 1 ] )
+		.attr( 'viewBox', [ 0, 0, markerBoxWidth, markerBoxHeight ] )
 		.attr( 'refX', refX )
 		.attr( 'refY', refY )
 		.attr( 'markerWidth', markerBoxWidth )
@@ -237,8 +238,7 @@ function createPipelinePlot() {
 		.append( 'path' )
 		// @ts-ignore
 		.attr( 'd', d3.line()( arrowPoints ) );
-	var rects = d3
-					.select( node )
+	var rects = d3svg
 					.selectAll( 'rect' )
 					.data( FL.boxes )
 					.enter()
@@ -252,8 +252,7 @@ function createPipelinePlot() {
 		.attr( 'height', d => yScale( d.height ) - yScale( 0 ) )
 		.style( 'fill', d => d.fill )
 		.style( 'stroke', d => d.stroke )
-	var text = d3
-					.select( node )
+	var text = d3svg
 					.selectAll( 'text' )
 					.data( FL.labels )
 					.enter()
@@ -265,8 +264,7 @@ function createPipelinePlot() {
 		.attr( 'fill', d => d.fill )
 		.style( 'text-anchor', 'middle' )
 		.attr( 'transform', d => 'translate('+ xScale( d.x ) +', '+ yScale( d.y ) +'), rotate('+ d.angle +')' )
-	d3
-		.select( node )
+	d3svg
 		.selectAll( null )
 		.data( FL.links )
 		.join( 'path' )
@@ -275,12 +273,4 @@ function createPipelinePlot() {
 		.attr( 'marker-end', 'url(#arrow)' )
 		.attr( 'fill', 'none' )
 		.attr( 'stroke', color.w );
-		
-	$flowchart.removeAttr( 'style' );
-	var wmax = elw = 0;
-	$( '.flowchart rect' ).each( ( i, el ) => {
-		elw = el.getBoundingClientRect().width;
-		if ( elw > wmax ) wmax = elw;
-	} );
-	if ( wmax > 85 ) $( '.flowchart' ).width( 85 / wmax * 658 );
 }
