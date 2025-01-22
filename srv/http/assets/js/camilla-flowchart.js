@@ -8,22 +8,23 @@ var FL = {
 		, mixer  : color.rd
 		, out    : color.gd
 	}
+	, slope  : 0
 }
 
 graph.flowchart = () => {
 	var ch         = Math.max( DEV.capture.channels, DEV.playback.channels );
 	var vb_h       = FL.height / 4 * ch;            // boxH - @ ch/box = 1/4 h
-	var vb         = { x: 25, y: ( FL.height - vb_h ) / 2, w: FL.width - 65, h: vb_h } // top  - move up: ( h - boxH - textH ) / 2
+	var vb         = { x: 20, y: ( FL.height - vb_h ) / 2, w: FL.width, h: vb_h } // top  - move up: ( h - boxH - textH ) / 2
 	var d3svg      = d3
 						.select( $( '#pipeline' )[ 0 ] )
 						.append( 'svg' )
-						.attr( 'class',  'flowchart' )
-						.lower()
-						.attr( 'viewBox', vb.x +' '+ vb.y +' '+ vb.w +' '+ vb.h );
+						.attr( 'viewBox', vb.x +' '+ vb.y +' '+ vb.w +' '+ vb.h )
+						.attr( 'class',   'flowchart' )
+						.lower();
 	FL.boxes       = [];
 	FL.labels      = [];
 	FL.links       = [];
-	var spacing_h  = 2.75; // space between boxes
+	var spacing_h  = 2.2; // space between boxes
 	var spacing_v  = 1;
 	var stages     = [];
 	var channels   = [];
@@ -33,6 +34,7 @@ graph.flowchart = () => {
 		  'Capture'
 		, 0
 		, spacing_v * c_channels
+		, color.grl
 	);
 	for ( n = 0; n < c_channels; n++ ) {
 /**/	var io_points = appendBlock(
@@ -115,6 +117,7 @@ graph.flowchart = () => {
 		  'Playback'
 		, spacing_h * pip_length + 0.5
 		, spacing_v * c_channels
+		, color.grl
 	);
 	for ( n = 0; n < c_channels; n++ ) {
 /**/	var io_points = appendBlock(
@@ -195,10 +198,14 @@ graph.flowchart = () => {
 		.attr( 'fill',         d => d.fill )
 		.attr( 'transform',    d => 'translate('+ xScale( d.x ) +', '+ yScale( d.y ) +')' )
 		.style( 'text-anchor', 'middle' )
-	if ( $( '.flowchart rect' ).eq( 0 ).width() > 100 ) $( '.flowchart' ).css( 'width', '80%' );
+	if ( $( '.flowchart rect' ).eq( 0 ).width() > 110 ) $( '.flowchart' ).css( 'width', '80%' );
 }
 function appendBlock( label, x, y, fill ) { // box
 	var offset = FL.unit / 2; // offset arrow line
+	if ( FL.slope ) {
+		x += 0.7;
+		FL.slope--;
+	}
 	FL.labels.push( {
 		  x     : x
 		, y     : y + 0.01
@@ -215,31 +222,33 @@ function appendBlock( label, x, y, fill ) { // box
 	} );
 	return {
 		  output : { x: x + offset, y: y } // line out
-		, input  : { x: x - ( offset + 0.05 ), y: y } // line in (arrow head)
+		, input  : { x: x - ( offset + 0.1 ), y: y } // line in (arrow head)
 	}
 }
-function appendFrame( label, x, height ) { // in, mixer, out container
+function appendFrame( label, x, height, fill ) { // in, mixer, out container
+	if ( FL.slope ) x += 0.7;
 	FL.labels.push( {
 		  x     : x
 		, y     : -height / 2 - 0.2
 		, text  : label
-		, fill  : color.wl
+		, fill  : fill || color.wl
 		, size  : 0.3
 	} );
 	FL.boxes.push( {
-		  x      : x - 0.7 * 1.5
+		  x      : x - 0.7 * 1.2
 		, y      : -height / 2
-		, width  : FL.unit * 1.5
+		, width  : FL.unit * 1.2
 		, height : height - 0.1
 		, fill   : color.gr
 	} );
 }
 function appendLink( source, dest, label ) { // line
 	if ( label ) { // less value = move left/up
-		if ( dest.y <= source.y ) { // flat line
+		if ( dest.y === source.y ) { // flat line
 			var x = ( 2 * source.x ) / 3 + dest.x / 3;
 			var y = ( 2 * source.y ) / 3 + dest.y / 3 - 0.2;
 		} else { // slope line
+			FL.slope++;
 			var x = source.x / 3 + ( 2 * dest.x ) / 3;
 			var y = source.y / 3 + ( 2 * dest.y ) / 3;
 		}
