@@ -190,11 +190,11 @@ graph.flowchart = () => {
 		.enter()
 		.append( 'text' )
 		.text( d => d.text )
-		.attr( 'font-size',    d => yScale( d.size ) - yScale( 0 ) +'px' )
 		.attr( 'font-family', 'Inconsolata' )
+		.attr( 'font-size',    d => yScale( d.size ) - yScale( 0 ) +'px' )
 		.attr( 'fill',         d => d.fill )
-		.style( 'text-anchor', 'middle' )
 		.attr( 'transform',    d => 'translate('+ xScale( d.x ) +', '+ yScale( d.y ) +')' )
+		.style( 'text-anchor', 'middle' )
 	if ( $( '.flowchart rect' ).eq( 0 ).width() > 100 ) $( '.flowchart' ).css( 'width', '80%' );
 }
 function appendBlock( label, x, y, fill ) { // box
