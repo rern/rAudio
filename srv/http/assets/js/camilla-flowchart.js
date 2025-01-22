@@ -11,7 +11,7 @@ var FL = {
 }
 
 graph.flowchart = () => {
-	var ch         = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
+	var ch         = Math.max( DEV.capture.channels, DEV.playback.channels );
 	var vb_h       = FL.height / 4 * ch;            // boxH - @ ch/box = 1/4 h
 	var vb         = { x: 25, y: ( FL.height - vb_h ) / 2, w: FL.width - 65, h: vb_h } // top  - move up: ( h - boxH - textH ) / 2
 	var d3svg      = d3
@@ -29,13 +29,13 @@ graph.flowchart = () => {
 	var channels   = [];
 	var c_channels = DEV.capture.channels;
 	var max_v;
-	appendFrame(
+/**/appendFrame(
 		  'Capture'
 		, 0
 		, spacing_v * c_channels
 	);
 	for ( n = 0; n < c_channels; n++ ) {
-		var io_points = appendBlock(
+/**/	var io_points = appendBlock(
 			  'ch '+ n
 			, 0
 			, spacing_v * ( -c_channels / 2 + 0.5 + n )
@@ -57,14 +57,14 @@ graph.flowchart = () => {
 			var o_channels = mixconf.channels.out;
 			var m_channels = [];
 			var x          = spacing_h * pip_length + 0.75;
-			appendFrame(
+/**/		appendFrame(
 				mixername
 				, x
 				, spacing_v * o_channels
 				);
 			for ( m = 0; m < o_channels; m++ ) {
 				m_channels.push( [] );
-				var io_points = appendBlock(
+/**/			var io_points = appendBlock(
 					  'ch '+ m
 					, x
 					, spacing_v * ( -o_channels / 2 + 0.5 + m )
@@ -82,7 +82,7 @@ graph.flowchart = () => {
 					var srclen = stages[ stages.length - 1 ][ src_ch ].length;
 					var src_p  = stages[ stages.length - 1 ][ src_ch ][ srclen - 1 ].output;
 					var dest_p = m_channels[ dest_ch ][ 0 ].input;
-					appendLink( src_p, dest_p, label );
+/**/				appendLink( src_p, dest_p, label );
 				}
 			}
 			stages.push( m_channels );
@@ -93,7 +93,7 @@ graph.flowchart = () => {
 				for ( m = 0; m < step.names.length; m++ ) {
 					var ch_step   = start + stages[ stages.length - 1 ][ ch_nbr ].length;
 					pip_length  = Math.max( pip_length, ch_step );
-					var io_points = appendBlock(
+/**/				var io_points = appendBlock(
 						  step.names[ m ]
 						, ch_step * spacing_h
 						, spacing_v * ( -c_channels / 2 + 0.5 + ch_nbr )
@@ -103,7 +103,7 @@ graph.flowchart = () => {
 					var src_p     = src_list[ src_list.length - 1 ].output;
 					var dest_p    = io_points.input;
 					stages[ stages.length - 1 ][ ch_nbr ].push( io_points );
-					appendLink( src_p, dest_p );
+/**/				appendLink( src_p, dest_p );
 				}
 			} );
 		}
@@ -111,13 +111,13 @@ graph.flowchart = () => {
 	var p_channels = [];
 	pip_length     = pip_length + 1;
 	var max_h      = ( pip_length + 1 ) * spacing_h;
-	appendFrame(
+/**/appendFrame(
 		  'Playback'
 		, spacing_h * pip_length + 0.5
 		, spacing_v * c_channels
 	);
 	for ( n = 0; n < c_channels; n++ ) {
-		var io_points = appendBlock(
+/**/	var io_points = appendBlock(
 			  'ch '+ n
 			, spacing_h * pip_length + 0.5
 			, spacing_v * (-c_channels / 2 + 0.5 + n)
@@ -127,7 +127,7 @@ graph.flowchart = () => {
 		var srclen    = stages[ stages.length - 1 ][ n ].length;
 		var src_p     = stages[ stages.length - 1 ][ n ][ srclen - 1 ].output;
 		var dest_p    = io_points.input;
-		appendLink( src_p, dest_p );
+/**/	appendLink( src_p, dest_p );
 	}
 	stages.push( p_channels );
 	max_v          = max_h > 4 * max_v ? max_h / 4 : max_h = 4 * max_v
