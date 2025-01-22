@@ -638,13 +638,9 @@ var graph     = {
 		var $flowchart = $( '.flowchart' );
 		var fL         = $flowchart.length;
 		$flowchart.remove();
-		if ( refresh ) {
-			if ( ! fL ) return
-		} else {
-			if ( fL ) return
-		}
+		if ( ( refresh && ! fL ) || ( ! refresh && fL ) ) return
 		
-		createPipelinePlot();
+		graph.pipeline(); // in camilla-flowchart.js
 	}
 	, plot     : $li => {
 		if ( typeof Plotly !== 'object' ) {

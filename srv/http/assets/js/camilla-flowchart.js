@@ -1,5 +1,6 @@
 var FL = {
-	  width  : 635
+	  unit   : 1.4 // base unit: 1 = 40px
+	, width  : 635
 	, height : 300
 	, color : {
 		  filter : color.md
@@ -10,8 +11,7 @@ var FL = {
 }
 
 function appendBlock( label, x, y, fill ) { // box
-	var wx     = 1.4;         // common scale
-	var offset = wx / 2 + 0.05; // offset arrow line
+	var offset = FL.unit / 2; // offset arrow line
 	FL.labels.push( {
 		  x     : x
 		, y     : y + 0.1
@@ -21,10 +21,10 @@ function appendBlock( label, x, y, fill ) { // box
 		, angle : 0
 	} );
 	FL.boxes.push( {
-		  x      : x - wx / 2
-		, y      : y - wx / 4
-		, width  : wx
-		, height : wx / 2
+		  x      : x - FL.unit / 2
+		, y      : y - FL.unit / 4
+		, width  : FL.unit
+		, height : FL.unit / 2
 		, fill   : fill
 	} );
 	return {
@@ -81,15 +81,14 @@ function deviceText( device ) {
 		return device.type
 	}
 }
-function createPipelinePlot() {
+graph.pipeline = () => {
 	var ch               = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 	var vb_h             = FL.height / 4 * ch;            // boxH - @ ch/box = 1/4 h
 	var vb               = { x: 30, y: ( FL.height - vb_h - 20 ) / 2, w: FL.width - 90, h: vb_h } // top  - move up: ( h - boxH - textH ) / 2
-	$( '#divpipeline .entries.main' ).before(
-		'<svg class="flowchart" xmlns="http://www.w3.org/2000/svg" viewBox="'+ vb.x +' '+ vb.y +' '+ vb.w +' '+ vb.h +'"></svg>'
-	);
-	var d3svg            = d3.select( $( '#pipeline .flowchart' )[ 0 ] );
-	
+	$( '#divpipeline .entries.main' ).before( '<svg class="flowchart" xmlns="http://www.w3.org/2000/svg"></svg>' );
+	var d3svg            = d3
+							.select( $( '#pipeline .flowchart' )[ 0 ] )
+							.attr( 'viewBox', vb.x +' '+ vb.y +' '+ vb.w +' '+ vb.h );
 	FL.boxes             = [];
 	FL.labels            = [];
 	FL.links             = [];
@@ -100,7 +99,7 @@ function createPipelinePlot() {
 	var active_channels  = DEV.capture.channels;
 	var max_v;
 	appendFrame(
-		deviceText( DEV.capture )
+		  deviceText( DEV.capture )
 		, 0
 		, spacing_v * active_channels
 	);
@@ -183,13 +182,13 @@ function createPipelinePlot() {
 	var max_h            = ( total_length + 1 ) * spacing_h;
 	appendFrame(
 		  deviceText( DEV.playback )
-		, spacing_h * total_length
+		, spacing_h * total_length + 0.5
 		, spacing_v * active_channels
 	);
 	for ( n = 0; n < active_channels; n++ ) {
 		var io_points = appendBlock(
 			  'ch '+ n
-			, spacing_h * total_length
+			, spacing_h * total_length + 0.5
 			, spacing_v * (-active_channels / 2 + 0.5 + n)
 			, FL.color.out
 		);
