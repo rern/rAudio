@@ -634,13 +634,13 @@ var config    = {
 	}
 }
 var graph     = {
-	  flowchart : refresh => {
-		var $flowchart = $( '.flowchart' );
+	  pipeline : refresh => {
+		var $flowchart = $( '#pipeline .flowchart' );
 		var fL         = $flowchart.length;
 		$flowchart.remove();
 		if ( ( refresh && ! fL ) || ( ! refresh && fL ) ) return
 		
-		graph.pipeline(); // in camilla-flowchart.js
+		graph.flowchart(); // in camilla-flowchart.js
 	}
 	, plot     : $li => {
 		if ( typeof Plotly !== 'object' ) {
@@ -978,7 +978,7 @@ var render    = {
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
 		render.sortable();
-		graph.flowchart( 'refresh' );
+		graph.pipeline( 'refresh' );
 	}
 	, pipe        : ( el, i ) => {
 		var icon  = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
@@ -1010,7 +1010,7 @@ var render    = {
 				pip.splice( ai, 1 );
 				pip.splice( bi, 0, a );
 				setting.save( 'Pipeline', 'Change order ...' );
-				graph.flowchart( 'refresh' );
+				graph.pipeline( 'refresh' );
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
@@ -2149,11 +2149,11 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 } ).on( 'click', '.i-flowchart', function() {
 	if ( typeof d3 !== 'object' ) {
 		$.getScript( '/assets/js/camilla-flowchart.js' );
-		$.getScript( '/assets/js/plugin/'+ jfiles.d3, () => graph.flowchart() );
+		$.getScript( '/assets/js/plugin/'+ jfiles.d3, () => graph.pipeline() );
 		return
 	}
 	
-	graph.flowchart();
+	graph.pipeline();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
@@ -2343,7 +2343,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							setting.save( title, 'Remove '+ type +' ...' );
 							V.li.remove();
 							if ( PIP.length ) {
-								graph.flowchart( 'refresh' );
+								graph.pipeline( 'refresh' );
 							} else {
 								$( '.i-flowchart' ).addClass( 'disabled' );
 								$( '.flowchart' ).remove();
