@@ -364,11 +364,6 @@ i.disabled {
 .overplot .lines path {
 	stroke-opacity: 0.75 !important;
 }
-.flowchart {
-	display: block;
-	margin: 0 auto;
-	font-family: Inconsolata;
-}
 /* sortable */
 .sortable-ghost {
 	background: var( --cg60 );

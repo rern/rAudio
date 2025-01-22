@@ -191,9 +191,10 @@ graph.flowchart = () => {
 		.append( 'text' )
 		.text( d => d.text )
 		.attr( 'font-size',    d => yScale( d.size ) - yScale( 0 ) +'px' )
+		.attr( 'font-family', 'Inconsolata' )
 		.attr( 'fill',         d => d.fill )
 		.style( 'text-anchor', 'middle' )
-		.attr( 'transform',    d => 'translate('+ xScale( d.x ) +', '+ yScale( d.y ) +'), rotate('+ d.angle +')' )
+		.attr( 'transform',    d => 'translate('+ xScale( d.x ) +', '+ yScale( d.y ) +')' )
 	if ( $( '.flowchart rect' ).eq( 0 ).width() > 100 ) $( '.flowchart' ).css( 'width', '80%' );
 }
 function appendBlock( label, x, y, fill ) { // box
@@ -204,7 +205,6 @@ function appendBlock( label, x, y, fill ) { // box
 		, text  : label
 		, fill  : color.wl
 		, size  : 0.3
-		, angle : 0
 	} );
 	FL.boxes.push( {
 		  x      : x - FL.unit / 2
@@ -225,7 +225,6 @@ function appendFrame( label, x, height ) { // in, mixer, out container
 		, text  : label
 		, fill  : color.wl
 		, size  : 0.3
-		, angle : 0
 	} );
 	FL.boxes.push( {
 		  x      : x - 0.7 * 1.5
@@ -250,7 +249,6 @@ function appendLink( source, dest, label ) { // line
 			, text  : label
 			, fill  : color.r
 			, size  : 0.25
-			, angle : 0
 		} );
 	}
 	FL.links.push( {
