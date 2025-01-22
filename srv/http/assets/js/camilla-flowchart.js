@@ -8,7 +8,6 @@ var FL = {
 		, mixer  : color.rd
 		, out    : color.gd
 	}
-	, slope  : 0
 }
 
 graph.flowchart = () => {
@@ -202,10 +201,6 @@ graph.flowchart = () => {
 }
 function appendBlock( label, x, y, fill ) { // box
 	var offset = FL.unit / 2; // offset arrow line
-	if ( FL.slope ) {
-		x += 0.7;
-		FL.slope--;
-	}
 	FL.labels.push( {
 		  x     : x
 		, y     : y + 0.01
@@ -226,7 +221,6 @@ function appendBlock( label, x, y, fill ) { // box
 	}
 }
 function appendFrame( label, x, height, fill ) { // in, mixer, out container
-	if ( FL.slope ) x += 0.7;
 	FL.labels.push( {
 		  x     : x
 		, y     : -height / 2 - 0.2
@@ -248,7 +242,6 @@ function appendLink( source, dest, label ) { // line
 			var x = ( 2 * source.x ) / 3 + dest.x / 3;
 			var y = ( 2 * source.y ) / 3 + dest.y / 3 - 0.2;
 		} else { // slope line
-			FL.slope++;
 			var x = source.x / 3 + ( 2 * dest.x ) / 3;
 			var y = source.y / 3 + ( 2 * dest.y ) / 3;
 		}
