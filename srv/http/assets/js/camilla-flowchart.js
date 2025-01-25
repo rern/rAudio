@@ -1,16 +1,20 @@
 var X;
 
 graph.flowchart = () => {
-	var w0      = 1;
-	var h0      = 0.5;
-	var p0      = w0 * 0.1 // frame padding; box border-radius p/2; arrow w: 2p h:p
+	var w0      = 1;   // box w
+	var h0      = 0.5; // box h
+	
+	var p0      = w0 * 0.1    // frame padding; box border-radius p/2; arrow w: 2p h:p
+	var x0      = 0 + w0 / 2; // box x-pos: margin-left w/2 (box @ 0, frame @  -p)
+	var y0      = 0 - p0 * 2; // box y-pos: padding-top -2p (box @ 0, frame @ -2p)
 	X           = {
 		  W : $( '#pipeline' ).width()
 		, w : w0
 		, h : h0
-		, x : 0 + w0 / 2      // margin-left w/2 (box @ 0, frame @  -p)
-		, y : 0 - p0 * 2      // padding-top -2p (box @ 0, frame @ -2p)
 		, p : p0
+		, x : x0
+		, y : y0
+		, a : new Array( DEV.capture.channels ).fill( -x0 ) // arrow line x-pos: each channel
 		, color  : {
 			  Filter   : color.md
 			, Capture  : '#000'
@@ -21,15 +25,13 @@ graph.flowchart = () => {
 		, text  : []
 		, arrow : []
 	}
-	var d3svg      = d3
-						.select( $( '#pipeline' )[ 0 ] )
-						.append( 'svg' )
-						.attr( 'class',   'flowchart' )
-						.lower();
+	var d3svg   = d3
+					.select( $( '#pipeline' )[ 0 ] )
+					.append( 'svg' )
+					.attr( 'class',   'flowchart' )
+					.lower();
 //---------------------------------------------------------------------------------
 	X.type      = 'Capture';
-	var cL      = DEV.capture.channels;
-	X.a0        = new Array( cL ).fill( -X.x ); // arrow line start for each channel
 	add();
 	X.x += X.w * 2;
 //---------------------------------------------------------------------------------
@@ -166,8 +168,8 @@ function addBox( lbl, y, ch ) {
 		, r : X.p / 2
 		, f : X.color[ X.type ]
 	} );
-	var a0     = X.a0[ ch ];
-	X.a0[ ch ] = a0 + X.w * 2;
+	var a0     = X.a[ ch ];
+	X.a[ ch ] = a0 + X.w * 2;
 	y         += X.h / 2;
 	X.text.push( {
 		  x : X.x + X.w / 2
