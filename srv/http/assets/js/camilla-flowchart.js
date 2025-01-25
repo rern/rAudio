@@ -1,260 +1,198 @@
-var FL = {
-	  unit   : 1.4 // base unit: 1 = 40px
-	, width  : 635
-	, height : 300
-	, color : {
-		  filter : color.md
-		, in     : '#000'
-		, mixer  : color.rd
-		, out    : color.gd
-	}
-}
+var X;
 
 graph.flowchart = () => {
-	var ch         = Math.max( DEV.capture.channels, DEV.playback.channels );
-	var vb_h       = FL.height / 4 * ch;            // boxH - @ ch/box = 1/4 h
-	var vb         = { x: 20, y: ( FL.height - vb_h ) / 2, w: FL.width, h: vb_h } // top  - move up: ( h - boxH - textH ) / 2
+	var w0      = 1;
+	var h0      = 0.5;
+	var p0      = w0 * 0.1 // frame padding; box border-radius p/2; arrow w: 2p h:p
+	X           = {
+		  W : $( '#pipeline' ).width()
+		, w : w0
+		, h : h0
+		, x : 0 + w0 / 2      // margin-left w/2 (box @ 0, frame @  -p)
+		, y : 0 - p0 * 2      // padding-top -2p (box @ 0, frame @ -2p)
+		, p : p0
+		, color  : {
+			  Filter   : color.md
+			, Capture  : '#000'
+			, Mixer    : color.rd
+			, Playback : color.gd
+		}
+		, box   : []
+		, text  : []
+		, arrow : []
+	}
 	var d3svg      = d3
 						.select( $( '#pipeline' )[ 0 ] )
 						.append( 'svg' )
-						.attr( 'viewBox', vb.x +' '+ vb.y +' '+ vb.w +' '+ vb.h )
 						.attr( 'class',   'flowchart' )
 						.lower();
-	FL.boxes       = [];
-	FL.labels      = [];
-	FL.links       = [];
-	var spacing_h  = 2.2; // space between boxes
-	var spacing_v  = 1;
-	var stages     = [];
-	var channels   = [];
-	var c_channels = DEV.capture.channels;
-	var max_v;
-/**/appendFrame(
-		  'Capture'
-		, 0
-		, spacing_v * c_channels
-		, color.grl
-	);
-	for ( n = 0; n < c_channels; n++ ) {
-/**/	var io_points = appendBlock(
-			  'ch '+ n
-			, 0
-			, spacing_v * ( -c_channels / 2 + 0.5 + n )
-			, FL.color.in
-		);
-		channels.push( [ io_points ] );
-	}
-	stages.push( channels );
-	max_v                = c_channels / 2 + 1;
-	// loop through pipeline
-	var pip_length = 0;
-	var start      = 0;
-	for ( n = 0; n < PIP.length; n++ ) {
-		var step = PIP[ n ];
-		if ( step.type === 'Mixer' ) {
-			pip_length  += 1;
-			var mixername  = step.name;
-			var mixconf    = MIX[ mixername ];
-			var o_channels = mixconf.channels.out;
-			var m_channels = [];
-			var x          = spacing_h * pip_length + 0.75;
-/**/		appendFrame(
-				mixername
-				, x
-				, spacing_v * o_channels
-				);
-			for ( m = 0; m < o_channels; m++ ) {
-				m_channels.push( [] );
-/**/			var io_points = appendBlock(
-					  'ch '+ m
-					, x
-					, spacing_v * ( -o_channels / 2 + 0.5 + m )
-					, FL.color.mixer
-				);
-				m_channels[ m ].push( io_points );
-			}
-			for ( m = 0; m < mixconf.mapping.length; m++ ) {
-				var mapping = mixconf.mapping[ m ];
-				var dest_ch = mapping.dest;
-				for ( p = 0; p < mapping.sources.length; p++ ) {
-					var src    = mapping.sources[ p ];
-					var src_ch = src.channel;
-					var label  = src.gain +'dB'+ ( src.inverted ? ' inv.' : '' );
-					var srclen = stages[ stages.length - 1 ][ src_ch ].length;
-					var src_p  = stages[ stages.length - 1 ][ src_ch ][ srclen - 1 ].output;
-					var dest_p = m_channels[ dest_ch ][ 0 ].input;
-/**/				appendLink( src_p, dest_p, label );
-				}
-			}
-			stages.push( m_channels );
-			start          = pip_length;
-			max_v          = Math.max( max_v, o_channels / 2 + 1 );
-		} else if ( step.type === 'Filter' ) {
-			step.channels.forEach( ch_nbr => {
-				for ( m = 0; m < step.names.length; m++ ) {
-					var ch_step   = start + stages[ stages.length - 1 ][ ch_nbr ].length;
-					pip_length  = Math.max( pip_length, ch_step );
-/**/				var io_points = appendBlock(
-						  step.names[ m ]
-						, ch_step * spacing_h
-						, spacing_v * ( -c_channels / 2 + 0.5 + ch_nbr )
-						, FL.color.filter
-					);
-					var src_list  = stages[ stages.length - 1 ][ ch_nbr ];
-					var src_p     = src_list[ src_list.length - 1 ].output;
-					var dest_p    = io_points.input;
-					stages[ stages.length - 1 ][ ch_nbr ].push( io_points );
-/**/				appendLink( src_p, dest_p );
-				}
+//---------------------------------------------------------------------------------
+	X.type      = 'Capture';
+	var cL      = DEV.capture.channels;
+	X.a0        = new Array( cL ).fill( -X.x ); // arrow line start for each channel
+	add();
+	X.x += X.w * 2;
+//---------------------------------------------------------------------------------
+	var pipL    = PIP.length;
+	for ( var k = 0; k < pipL; k++ ) {
+		var pip = PIP[ k ];
+		X.type  = pip.type;
+		if ( X.type === 'Filter' ) {
+			pip.names.forEach( name => {
+				pip.channels.forEach( ch => {
+					addBox( name, X.h * 2 * ch, ch ); // y > down - each channel
+				} );
+				X.x += X.w * 2;                       // x > right
+			} );
+		} else {
+			cL          = Math.max( ...Object.values( MIX[ pip.name ].channels ) );
+			addFrame( pip.name, cL );
+			var same_ch = false;
+			var chs     = [];
+			MIX[ pip.name ].mapping.forEach( m => {
+				m.sources.forEach( s => {
+					ch     = s.channel;
+					if ( chs.includes( ch ) ) {
+						same_ch = true;
+						return
+					}
+					
+					addBox( 'ch '+ ch, X.h * 2 * ch, ch ); // y > down - each channel
+					chs.push( ch );
+					if ( m.sources.length < 2 || ch === m.dest ) return
+					
+					var l  = X.arrow[ X.arrow.length - 1 ];
+					var y0 = X.h / 2;
+					var y1 = X.h * 2.5;
+					[ [ y0, y1 ], [ y1, y0 ] ].forEach( y => { // cross arrow
+						X.arrow.push( {
+							  a0 : [ l.a0[ 0 ], y[ 0 ] ]
+							, a1 : [ l.a1[ 0 ], y[ 1 ] ]
+						} );
+					} );
+				} );
+				if ( ! same_ch ) X.x += X.w * 2;           // x > right
 			} );
 		}
 	}
-	var p_channels = [];
-	pip_length     = pip_length + 1;
-	var max_h      = ( pip_length + 1 ) * spacing_h;
-/**/appendFrame(
-		  'Playback'
-		, spacing_h * pip_length + 0.5
-		, spacing_v * c_channels
-		, color.grl
-	);
-	for ( n = 0; n < c_channels; n++ ) {
-/**/	var io_points = appendBlock(
-			  'ch '+ n
-			, spacing_h * pip_length + 0.5
-			, spacing_v * (-c_channels / 2 + 0.5 + n)
-			, FL.color.out
-		);
-		p_channels.push( [ io_points ] );
-		var srclen    = stages[ stages.length - 1 ][ n ].length;
-		var src_p     = stages[ stages.length - 1 ][ n ][ srclen - 1 ].output;
-		var dest_p    = io_points.input;
-/**/	appendLink( src_p, dest_p );
-	}
-	stages.push( p_channels );
-	max_v          = max_h > 4 * max_v ? max_h / 4 : max_h = 4 * max_v
-	var yScale     = d3
-						.scaleLinear()
-						.domain( [ -max_v, max_v ] )
-						.range( [ 0, FL.height + 20 ] );
-	var xScale     = d3
-						.scaleLinear()
-						.domain( [ -2, max_h ] )
-						.range( [ 0, FL.width ] );
-	var linkGen    = d3
-						.linkHorizontal()
-						.source( d => [ xScale( d.source[ 0 ] ), yScale( d.source[ 1 ] ) ] )
-						.target( d => [ xScale( d.target[ 0 ] ), yScale( d.target[ 1 ] ) ] );
-	var markerW    = 10;
-	var markerH    = 6;
-	var arrow_pos  = [
-		  [ 0, 0 ]
-		, [ 0, markerH ]
-		, [ markerW, markerH / 2 ]
-	];
-	d3svg
+//---------------------------------------------------------------------------------
+	X.type      = 'Playback';
+	add();
+//---------------------------------------------------------------------------------
+	var d3scale = d3
+					.scaleLinear()
+					.domain( [ 0, X.x + X.w + X.w / 2 ] ) // base  : last x + last box + margin
+					.range(  [ 0, X.W ] );                // target: div width
+	var d3arrow = d3
+					.linkHorizontal()
+					.source( d => [ d3scale( d.a0[ 0 ] ), d3scale( d.a0[ 1 ] ) ] )
+					.target( d => [ d3scale( d.a1[ 0 ] ), d3scale( d.a1[ 1 ] ) ] );
+	var a_h     = d3scale( X.p );
+	var a_w     = a_h * 2;
+	var a_pos   = [ [ 0, 0 ], [ 0, a_h ], [ a_w, a_h / 2 ] ];
+	d3svg // arrow line
 		.append( 'defs' )
 		.append( 'marker' )
-		.attr( 'id',          'arrow' )
-		.attr( 'refX',         markerW - 2 )
-		.attr( 'refY',         markerH / 2 )
-		.attr( 'markerWidth',  markerW )
-		.attr( 'markerHeight', markerH )
-		.attr( 'orient',       'auto-start-reverse' )
+		.attr( 'id',          'head' )
+		.attr( 'refX',         a_w )
+		.attr( 'refY',         a_h / 2 )
+		.attr( 'markerWidth',  a_w )
+		.attr( 'markerHeight', a_h )
 		.attr( 'fill',         color.w )
 		.attr( 'stroke',       color.w )
-		.append( 'path' )
-		.attr( 'd', d3.line()( arrow_pos ) );
-	d3svg
+		.append( 'path' )                // line
+		.attr( 'd',            d3.line()( a_pos ) );
+	d3svg // box
 		.selectAll( 'rect' )
-		.data( FL.boxes )
+		.data( X.box )
 		.enter()
 		.append( 'rect' )
-		.attr( 'x',       d => xScale( d.x ) )
-		.attr( 'y',       d => yScale( d.y ) )
-		.attr( 'rx',      xScale( 0.1 ) - xScale( 0 ) )
-		.attr( 'ry',      yScale( 0.1 ) - yScale( 0 ) )
-		.attr( 'width',   d => xScale( d.width ) - xScale( 0 ) )
-		.attr( 'height',  d => yScale( d.height ) - yScale( 0 ) )
-		.style( 'fill',   d => d.fill )
-		.style( 'stroke', d => d.stroke )
-	d3svg
+		.attr( 'x',       d => d3scale( d.x ) )
+		.attr( 'y',       d => d3scale( d.y ) )
+		.attr( 'width',   d => d3scale( d.w ) )
+		.attr( 'height',  d => d3scale( d.h ) )
+		.attr( 'rx',      d => d3scale( d.r ) )
+		.style( 'fill',   d => d.f )
+		.style( 'stroke', d => d.stroke );
+	d3svg // arrow head
 		.selectAll( null )
-		.data( FL.links )
+		.data( X.arrow )
 		.join( 'path' )
-		.attr( 'd',          linkGen )
-		.attr( 'marker-end', 'url(#arrow)' )
+		.attr( 'd',           d3arrow )
+		.attr( 'marker-end', 'url(#head)' )
 		.attr( 'fill',       'none' )
 		.attr( 'stroke',      color.w );
-	d3svg
+	d3svg // text
 		.selectAll( 'text' )
-		.data( FL.labels )
+		.data( X.text )
 		.enter()
 		.append( 'text' )
-		.text( d => d.text )
-		.attr( 'font-family', 'Inconsolata' )
-		.attr( 'font-size',    d => yScale( d.size ) - yScale( 0 ) +'px' )
-		.attr( 'fill',         d => d.fill )
-		.attr( 'transform',    d => 'translate('+ xScale( d.x ) +', '+ yScale( d.y ) +')' )
-		.style( 'text-anchor', 'middle' )
-	if ( $( '.flowchart rect' ).eq( 0 ).width() > 110 ) $( '.flowchart' ).css( 'width', '80%' );
-}
-function appendBlock( label, x, y, fill ) { // box
-	var offset = FL.unit / 2; // offset arrow line
-	FL.labels.push( {
-		  x     : x
-		, y     : y + 0.01
-		, text  : label
-		, fill  : color.wl
-		, size  : 0.3
-	} );
-	FL.boxes.push( {
-		  x      : x - FL.unit / 2
-		, y      : y - FL.unit / 4
-		, width  : FL.unit
-		, height : FL.unit / 2.5
-		, fill   : fill
-	} );
-	return {
-		  output : { x: x + offset, y: y } // line out
-		, input  : { x: x - ( offset + 0.1 ), y: y } // line in (arrow head)
+		.text( d => d.t )
+		.attr( 'font-family',       'Inconsolata' )
+		.attr( 'fill',               color.wl )
+		.attr( 'dominant-baseline', 'central' )
+		.attr( 'transform',          d => 'translate('+ d3scale( d.x ) +', '+ d3scale( d.y ) +')' )
+		.style( 'text-anchor',      'middle' );
+	var $svg    = $( '#pipeline svg' );
+	var y       = { 
+		  top : $svg[ 0 ].getBoundingClientRect().top + 20
+		, min : X.W
+		, max : 0
 	}
-}
-function appendFrame( label, x, height, fill ) { // in, mixer, out container
-	FL.labels.push( {
-		  x     : x
-		, y     : -height / 2 - 0.2
-		, text  : label
-		, fill  : fill || color.wl
-		, size  : 0.3
+	$svg.find( 'text, rect' ).each( ( i, el ) => {
+		y.el = el.getBoundingClientRect();
+		if ( y.el.top < y.min ) y.min = y.el.top;
+		if ( y.el.bottom > y.max ) y.max = y.el.bottom;
 	} );
-	FL.boxes.push( {
-		  x      : x - 0.7 * 1.2
-		, y      : -height / 2
-		, width  : FL.unit * 1.2
-		, height : height - 0.1
-		, fill   : color.gr
+	y.h         = y.max - y.min + 40;
+	$svg.attr( {
+		  viewBox : '0 '+ ( y.min - y.top ) +' '+ X.W +' '+ y.h
+		, width   : X.W
+		, height  : y.h
+	} ).css( 'margin', '10px 0' );
+}
+
+function add() {
+	var cL = DEV[ X.type.toLowerCase() ].channels;
+	addFrame( X.type, cL );
+	for ( var ch = 0; ch < cL; ch++ ) addBox( 'ch '+ ch, X.h * 2 * ch, ch );
+}
+function addBox( lbl, y, ch ) {
+	X.box.push( {
+		  x : X.x
+		, y : y
+		, w : X.w
+		, h : X.h
+		, r : X.p / 2
+		, f : X.color[ X.type ]
+	} );
+	var a0     = X.a0[ ch ];
+	X.a0[ ch ] = a0 + X.w * 2;
+	y         += X.h / 2;
+	X.text.push( {
+		  x : X.x + X.w / 2
+		, y : y
+		, t : lbl
+	} );
+	if ( X.type === 'Capture' ) return
+	
+	X.arrow.push( {
+		  a0 : [ a0,  y ]
+		, a1 : [ X.x, y ]
 	} );
 }
-function appendLink( source, dest, label ) { // line
-	if ( label ) { // less value = move left/up
-		if ( dest.y === source.y ) { // flat line
-			var x = ( 2 * source.x ) / 3 + dest.x / 3;
-			var y = ( 2 * source.y ) / 3 + dest.y / 3 - 0.2;
-		} else { // slope line
-			var x = source.x / 3 + ( 2 * dest.x ) / 3;
-			var y = source.y / 3 + ( 2 * dest.y ) / 3;
-		}
-		FL.labels.push( {
-			  x     : x
-			, y     : y
-			, text  : label
-			, fill  : color.r
-			, size  : 0.25
-		} );
-	}
-	FL.links.push( {
-		  source : [ source.x, source.y - 0.08 ]
-		, target : [ dest.x, dest.y - 0.08 ]
+function addFrame( lbl, ch ) {
+	X.box.push( {
+		  x : X.x - X.p
+		, y : -X.p
+		, w : X.w + X.p * 2
+		, h : X.h * ( ch * 2 - 1 ) + X.p * 2
+		, r : X.p
+		, f : color.gr
+	} );
+	X.text.push( {
+		  x : X.x + X.w / 2
+		, y : -X.h / 2 - X.p
+		, t : lbl
 	} );
 }
