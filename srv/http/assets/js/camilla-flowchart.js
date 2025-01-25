@@ -14,7 +14,7 @@ graph.flowchart = () => {
 		, p : p0
 		, x : x0
 		, y : y0
-		, a : new Array( DEV.capture.channels ).fill( -x0 ) // arrow line x-pos: each channel
+		, a : new Array( DEV.capture.channels ).fill( -x0 ) // arrow line x-pos: each channel (draw from previous box)
 		, color  : {
 			  Filter   : color.md
 			, Capture  : '#000'
@@ -31,8 +31,7 @@ graph.flowchart = () => {
 					.attr( 'class',   'flowchart' )
 					.lower();
 //---------------------------------------------------------------------------------
-	X.type      = 'Capture';
-	add();
+	add( 'Capture' );
 	X.x += X.w * 2;
 //---------------------------------------------------------------------------------
 	var pipL    = PIP.length;
@@ -78,8 +77,7 @@ graph.flowchart = () => {
 		}
 	}
 //---------------------------------------------------------------------------------
-	X.type      = 'Playback';
-	add();
+	add( 'Playback' );
 //---------------------------------------------------------------------------------
 	var d3scale = d3
 					.scaleLinear()
@@ -154,9 +152,10 @@ graph.flowchart = () => {
 	} ).css( 'margin', '10px 0' );
 }
 
-function add() {
-	var cL = DEV[ X.type.toLowerCase() ].channels;
-	addFrame( X.type, cL );
+function add( lbl ) {
+	X.type = lbl;
+	var cL = DEV[ lbl.toLowerCase() ].channels;
+	addFrame( lbl, cL );
 	for ( var ch = 0; ch < cL; ch++ ) addBox( 'ch '+ ch, X.h * 2 * ch, ch );
 }
 function addBox( lbl, y, ch ) {
