@@ -634,13 +634,193 @@ var config    = {
 	}
 }
 var graph     = {
-	  pipeline : refresh => {
+	  pipeline : () => {
 		var $flowchart = $( '#pipeline .flowchart' );
-		var fL         = $flowchart.length;
+		var fL    = $flowchart.length;
 		$flowchart.remove();
-		if ( ( refresh && ! fL ) || ( ! refresh && fL ) ) return
+		if ( fL ) graph.flowchart();
+	}
+	, flowchart : () => {
+		var w0      = 10; // box w
+		var h0      = 5;  // box h
 		
-		graph.flowchart(); // in camilla-flowchart.js
+		var p0      = w0 * 0.1    // frame padding; box border-radius p/2; arrow w: 2p h:p
+		var x0      = 0 + w0 / 2; // box x-pos: margin-left w/2 (box @ 0, frame @  -p)
+		var X       = {
+			  W : $( '#pipeline' ).width()
+			, w : w0
+			, h : h0
+			, p : p0
+			, x : x0
+			, a : new Array( DEV.capture.channels ).fill( -x0 ) // arrow line x-pos: each channel (draw from previous box)
+			, color  : {
+				  Filter   : color.md
+				, Capture  : color.grd
+				, Mixer    : color.rd
+				, Playback : '#000'
+			}
+			, box   : []
+			, text  : []
+			, arrow : []
+		}
+		//---------------------------------------------------------------------------------
+		/**/add( 'Capture' );
+			X.x += X.w * 2;
+		//---------------------------------------------------------------------------------
+			var pipL    = PIP.length;
+			for ( var k = 0; k < pipL; k++ ) {
+				var pip = PIP[ k ];
+				X.type  = pip.type;
+				if ( X.type === 'Filter' ) {
+					pip.names.forEach( name => {
+		/**/			pip.channels.forEach( ch => addBox( name, ch, FIL[ name ].parameters.gain ) );
+						X.x += X.w * 2; // x > right - each filter
+					} );
+				} else {
+					var mapping = MIX[ pip.name ].mapping;
+					addFrame( pip.name, mapping.length );
+					mapping.forEach( m => {
+						var ch   = m.dest;
+						var gain = {};
+						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
+						addBox( 'ch '+ ch, ch, gain );
+					} );
+					X.x        += X.w * 2; // x > right - each mixer
+					var x       = Math.max( ...X.a );
+					X.a         = [ x, x ]; // equalize arrow in
+				}
+			}
+		//---------------------------------------------------------------------------------
+		/**/add( 'Playback' );
+		//---------------------------------------------------------------------------------
+		var box_last = X.box[ X.box.length - 1 ];
+		console.log(box_last.y)
+		var right    = box_last.x + X.w * 1.5
+		var scale    = 635 / right;
+		[ 'arrow', 'box', 'text' ].forEach( el => {
+			X[ el ].forEach( i => {
+				if ( el === 'arrow' ) {
+					[ 0, 1 ].forEach( n => {
+						[ 'a0', 'a1' ].forEach( a => {
+							i[ a ][ n ] = Math.ceil( i[ a ][ n ] * scale );
+						} );
+					} );
+				} else {
+					$.each( i, ( k, v ) => {
+						if ( [ 'x', 'y', 'w', 'h', 'r' ].includes( k ) ) i[ k ] = Math.ceil( v * scale );
+					} );
+				}
+			} );
+		} )
+		var height = box_last.y + ( X.h + X.p ) * scale;
+		$( '#pipeline' ).prepend( '<canvas class="flowchart" width="635" height="'+ height +'"></canvas>' );
+		const canvas     = $( '.flowchart' )[ 0 ];
+		const ctx        = canvas.getContext( '2d' );
+		X.box.forEach( b => {
+			ctx.fillStyle = b.f;
+			ctx.fillRect( b.x, b.y, b.w, b.h );
+		} );
+		ctx.strokeStyle  = color.grl;
+		ctx.beginPath();
+		X.arrow.forEach( a => {
+			ctx.moveTo( a.a0[ 0 ], a.a0[ 1 ] );
+			ctx.lineTo( a.a1[ 0 ], a.a1[ 1 ] );
+			ctx.stroke();
+		} );
+		ctx.font         = '15px Inconsolata';
+		ctx.textAlign    = 'center';
+		ctx.textBaseline = 'middle';
+		X.text.forEach( t => {
+			ctx.fillStyle = t.c || color.wl;
+			ctx.fillText( t.t, t.x, t.y );
+		} );
+		function add( txt ) {
+			X.type = txt;
+			var cL = DEV[ txt.toLowerCase() ].channels;
+			addFrame( txt, cL, color.grl );
+			for ( var ch = 0; ch < cL; ch++ ) addBox( 'ch '+ ch, ch );
+		}
+		function addBox( txt, ch, gain, m_in ) {
+			var y = X.h + X.h * 2 * ch; // y > down - each channel
+			X.box.push( {
+				  x : X.x
+				, y : y
+				, w : X.w
+				, h : X.h
+				, r : X.p / 2
+				, f : X.color[ X.type ]
+			} );
+			var a0x   = X.a[ ch ]; // previous arrow x
+			X.a[ ch ] = X.x + X.w; // new arrow x: box x + box w
+			y        += X.h / 2;
+			X.text.push( { // box text
+				  x : X.x + X.w / 2
+				, y : y
+				, t : txt
+			} );
+			if ( X.type === 'Capture' ) return // no arrows, no gains
+			
+			X.arrow.push( { // flat arrow line
+				  a0 : [ a0x,  y ]
+				, a1 : [ X.x, y ]
+			} );
+			if ( X.type === 'Playback' ) return // no gains
+			
+			var ch0    = ch === 0;
+			var offset = ch0 ? -X.h : X.h;
+			if ( typeof gain === 'object' ) { // mixer - { 0: n, 1: n }
+				var ch1   = ch0 ? 1 : 0;
+				var gain1 = gain[ ch1 ];
+				gain      = gain[ ch ];
+			}
+			var g      = gainSet( gain, color );
+			X.text.push( { // gain text
+				  x : a0x + X.w / 2
+				, y : y + offset / 2
+				, t : g.db
+				, c : g.clr
+			} );
+			if ( typeof gain1 !== 'number' ) return // no crosses
+			
+			g          = gainSet( gain1, color );
+			X.text.push( { // cross gain text
+				  x : a0x + X.w / 2
+				, y : y - offset / 2
+				, t : g.db
+				, c : g.clr
+			} );
+			X.arrow.push( { // cross arrow line
+				  a0 : [ a0x,  y ]
+				, a1 : [ X.x, y - offset * 2 ]
+			} );
+		}
+		function addFrame( txt, ch, clr ) {
+			X.box.push( {
+				  x : X.x - X.p
+				, y : X.h - X.p
+				, w : X.w + X.p * 2
+				, h : X.h * ( ch * 2 - 1 ) + X.p * 2
+				, r : X.p
+				, f : color.gr
+			} );
+			X.text.push( {
+				  x : X.x + X.w / 2
+				, y : X.h / 4
+				, t : txt
+				, c : clr
+			} );
+		}
+		function gainSet( gain, color ) {
+			var db  = gain;
+			var clr = color.grl;
+			if ( gain > 0 ) {
+				db  = '+'+ gain;
+				clr = color.g;
+			} else if ( gain < 0 ) {
+				clr = color.r;
+			}
+			return { db, clr }
+		}
 	}
 	, plot     : $li => {
 		if ( typeof Plotly !== 'object' ) {
@@ -978,7 +1158,7 @@ var render    = {
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
 		render.sortable();
-		graph.pipeline( 'refresh' );
+		graph.pipeline();
 	}
 	, pipe        : ( el, i ) => {
 		var icon  = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
@@ -1010,7 +1190,7 @@ var render    = {
 				pip.splice( ai, 1 );
 				pip.splice( bi, 0, a );
 				setting.save( 'Pipeline', 'Change order ...' );
-				graph.pipeline( 'refresh' );
+				graph.pipeline();
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
@@ -2149,13 +2329,8 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 		setting[ V.tab.replace( /s$/, '' ) ]();
 	}
 } ).on( 'click', '.i-flowchart', function() {
-	if ( typeof d3 !== 'object' ) {
-		$.getScript( '/assets/js/camilla-flowchart.js' );
-		$.getScript( '/assets/js/plugin/'+ jfiles.d3, () => graph.pipeline() );
-		return
-	}
-	
-	graph.pipeline();
+	var $flowchart = $( '#pipeline .flowchart' );
+	$flowchart.length ? $flowchart.remove() : graph.flowchart();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
@@ -2345,7 +2520,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							setting.save( title, 'Remove '+ type +' ...' );
 							V.li.remove();
 							if ( PIP.length ) {
-								graph.pipeline( 'refresh' );
+								graph.pipeline();
 							} else {
 								$( '.i-flowchart' ).addClass( 'disabled' );
 								$( '.flowchart' ).remove();
