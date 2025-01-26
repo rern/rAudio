@@ -40,8 +40,8 @@ graph.flowchart = () => {
 		X.type  = pip.type;
 		if ( X.type === 'Filter' ) {
 			pip.names.forEach( name => {
-/**/			pip.channels.forEach( ch => addBox( name, ch ) ); // y > down - each channel
-				X.x += X.w * 2;                                   // x > right
+/**/			pip.channels.forEach( ch => addBox( name, ch, FIL[ name ].parameters.gain ) );
+				X.x += X.w * 2; // x > right
 			} );
 		} else {
 			var channels = MIX[ pip.name ].channels;
@@ -52,12 +52,11 @@ graph.flowchart = () => {
 				m.sources.forEach( s => {
 					ch = s.channel;
 					if ( chs.includes( ch ) ) return // skip same ch in each mixer
-					
-/**/				addBox( 'ch '+ ch, ch, channels.in ); // y > down - each channel
+/**/				addBox( 'ch '+ ch, ch, s.gain, channels.in );
 					chs.push( ch );
 				} );
 			} );
-			X.x         += X.w * 2;                       // x > right
+			X.x         += X.w * 2; // x > right
 			var x        = Math.max( ...X.a );
 			X.a          = [ x, x ];
 		}
@@ -115,7 +114,7 @@ graph.flowchart = () => {
 		.append( 'text' )
 		.text( d => d.t )
 		.attr( 'font-family',       'Inconsolata' )
-		.attr( 'fill',               color.wl )
+		.attr( 'fill',               d => d.c || color.wl )
 		.attr( 'dominant-baseline', 'central' )
 		.attr( 'transform',          d => 'translate('+ d3scale( d.x ) +', '+ d3scale( d.y ) +')' )
 		.style( 'text-anchor',      'middle' );
@@ -141,11 +140,11 @@ graph.flowchart = () => {
 function add( lbl ) {
 	X.type = lbl;
 	var cL = DEV[ lbl.toLowerCase() ].channels;
-	addFrame( lbl, cL );
+	addFrame( lbl, cL, color.grl );
 	for ( var ch = 0; ch < cL; ch++ ) addBox( 'ch '+ ch, ch );
 }
-function addBox( lbl, ch, mixer_in ) {
-	var y = X.h * 2 * ch;
+function addBox( lbl, ch, gain, m_in ) {
+	var y = X.h * 2 * ch; // y > down - each channel
 	X.box.push( {
 		  x : X.x
 		, y : y
@@ -162,21 +161,36 @@ function addBox( lbl, ch, mixer_in ) {
 		, y : y
 		, t : lbl
 	} );
-	if ( X.type === 'Capture' ) return
+	if ( X.type === 'Capture' ) return // no arrows, no gains
 	
 	X.arrow.push( {
 		  a0 : [ a0,  y ]
 		, a1 : [ X.x, y ]
 	} );
-	if ( typeof mixer_in === 'undefined' || mixer_in < 2 ) return
+	if ( X.type === 'Playback' ) return // no gains
 	
-	var y1 = ch === 0 ? y + X.h * 2 : y - X.h * 2;
-	X.arrow.push( { // mixer cross arrow
+	var ch0    = ch === 0;
+	var offset = ch0 ? -X.h : X.h;
+	X.text.push( { // gain
+		  x : a0 + X.w / 2
+		, y : y + offset / 2
+		, t : gain +'dB'
+		, c : color.grl
+	} );
+	if ( X.type !== 'Mixer' || m_in < 2 ) return // no crosses
+	
+	X.text.push( { // cross gain
+		  x : a0 + X.w / 2 - X.p
+		, y : y - offset / 2
+		, t : gain +'dB'
+		, c : color.grl
+	} );
+	X.arrow.push( { // cross arrow
 		  a0 : [ a0,  y ]
-		, a1 : [ X.x, y1 ]
+		, a1 : [ X.x, y - offset * 2 ]
 	} );
 }
-function addFrame( lbl, ch ) {
+function addFrame( lbl, ch, clr ) {
 	X.box.push( {
 		  x : X.x - X.p
 		, y : -X.p
@@ -189,5 +203,6 @@ function addFrame( lbl, ch ) {
 		  x : X.x + X.w / 2
 		, y : -X.h / 2 - X.p
 		, t : lbl
+		, c : clr
 	} );
 }
