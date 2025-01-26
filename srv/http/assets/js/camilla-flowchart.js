@@ -133,13 +133,13 @@ graph.flowchart = () => {
 	} ).css( 'margin', '10px 0' );
 }
 
-function add( lbl ) {
-	X.type = lbl;
-	var cL = DEV[ lbl.toLowerCase() ].channels;
-	addFrame( lbl, cL, color.grl );
+function add( txt ) {
+	X.type = txt;
+	var cL = DEV[ txt.toLowerCase() ].channels;
+	addFrame( txt, cL, color.grl );
 	for ( var ch = 0; ch < cL; ch++ ) addBox( 'ch '+ ch, ch );
 }
-function addBox( lbl, ch, gain, m_in ) {
+function addBox( txt, ch, gain, m_in ) {
 	var y = X.h * 2 * ch; // y > down - each channel
 	X.box.push( {
 		  x : X.x
@@ -152,14 +152,14 @@ function addBox( lbl, ch, gain, m_in ) {
 	var a0x   = X.a[ ch ]; // previous arrow x
 	X.a[ ch ] = X.x + X.w; // new arrow x: box x + box w
 	y        += X.h / 2;
-	X.text.push( {
+	X.text.push( { // box text
 		  x : X.x + X.w / 2
 		, y : y
-		, t : lbl
+		, t : txt
 	} );
 	if ( X.type === 'Capture' ) return // no arrows, no gains
 	
-	X.arrow.push( {
+	X.arrow.push( { // flat arrow line
 		  a0 : [ a0x,  y ]
 		, a1 : [ X.x, y ]
 	} );
@@ -167,13 +167,13 @@ function addBox( lbl, ch, gain, m_in ) {
 	
 	var ch0    = ch === 0;
 	var offset = ch0 ? -X.h : X.h;
-	if ( typeof gain === 'object' ) { // mixer
+	if ( typeof gain === 'object' ) { // mixer - { 0: n, 1: n }
 		var ch1   = ch0 ? 1 : 0;
 		var gain1 = gain[ ch1 ];
 		gain      = gain[ ch ];
 	}
 	if ( gain > 0 ) gain = '+'+ gain;
-	X.text.push( { // gain
+	X.text.push( { // gain text
 		  x : a0x + X.w / 2
 		, y : y + offset / 2
 		, t : gain
@@ -182,18 +182,18 @@ function addBox( lbl, ch, gain, m_in ) {
 	if ( typeof gain1 !== 'number' ) return // no crosses
 	
 	if ( gain1 > 0 ) gain1 = '+'+ gain1;
-	X.text.push( { // cross gain
+	X.text.push( { // cross gain text
 		  x : a0x + X.w / 2
 		, y : y - offset / 2
 		, t : gain1
 		, c : color.grl
 	} );
-	X.arrow.push( { // cross arrow
+	X.arrow.push( { // cross arrow line
 		  a0 : [ a0x,  y ]
 		, a1 : [ X.x, y - offset * 2 ]
 	} );
 }
-function addFrame( lbl, ch, clr ) {
+function addFrame( txt, ch, clr ) {
 	X.box.push( {
 		  x : X.x - X.p
 		, y : -X.p
@@ -205,7 +205,7 @@ function addFrame( lbl, ch, clr ) {
 	X.text.push( {
 		  x : X.x + X.w / 2
 		, y : -X.h / 2 - X.p
-		, t : lbl
+		, t : txt
 		, c : clr
 	} );
 }
