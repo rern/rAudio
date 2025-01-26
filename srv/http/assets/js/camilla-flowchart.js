@@ -172,21 +172,21 @@ function addBox( txt, ch, gain, m_in ) {
 		var gain1 = gain[ ch1 ];
 		gain      = gain[ ch ];
 	}
-	if ( gain > 0 ) gain = '+'+ gain;
+	var g      = gainSet( gain, color );
 	X.text.push( { // gain text
 		  x : a0x + X.w / 2
 		, y : y + offset / 2
-		, t : gain
-		, c : color.grl
+		, t : g.db
+		, c : g.clr
 	} );
 	if ( typeof gain1 !== 'number' ) return // no crosses
 	
-	if ( gain1 > 0 ) gain1 = '+'+ gain1;
+	g          = gainSet( gain1, color );
 	X.text.push( { // cross gain text
 		  x : a0x + X.w / 2
 		, y : y - offset / 2
-		, t : gain1
-		, c : color.grl
+		, t : g.db
+		, c : g.clr
 	} );
 	X.arrow.push( { // cross arrow line
 		  a0 : [ a0x,  y ]
@@ -208,4 +208,15 @@ function addFrame( txt, ch, clr ) {
 		, t : txt
 		, c : clr
 	} );
+}
+function gainSet( gain, color ) {
+	var db  = gain;
+	var clr = color.grl;
+	if ( gain > 0 ) {
+		db  = '+'+ gain;
+		clr = color.g;
+	} else if ( gain < 0 ) {
+		clr = color.r;
+	}
+	return { db, clr }
 }
