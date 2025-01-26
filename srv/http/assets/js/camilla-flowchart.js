@@ -41,24 +41,20 @@ graph.flowchart = () => {
 		if ( X.type === 'Filter' ) {
 			pip.names.forEach( name => {
 /**/			pip.channels.forEach( ch => addBox( name, ch, FIL[ name ].parameters.gain ) );
-				X.x += X.w * 2; // x > right - each pipeline
+				X.x += X.w * 2; // x > right - each filter
 			} );
 		} else {
-			var channels = MIX[ pip.name ].channels;
-			cL           = Math.max( channels.in, channels.out );
-			addFrame( pip.name, cL );
-			var chs      = [];
-			MIX[ pip.name ].mapping.forEach( m => {
-				m.sources.forEach( s => {
-					ch = s.channel;
-					if ( chs.includes( ch ) ) return // skip same ch in each mixer
-/**/				addBox( 'ch '+ ch, ch, s.gain, channels.in );
-					chs.push( ch );
-				} );
+			var mapping = MIX[ pip.name ].mapping;
+			addFrame( pip.name, mapping.length );
+			mapping.forEach( m => {
+				var ch   = m.dest;
+				var gain = {};
+				m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
+				addBox( 'ch '+ ch, ch, gain );
 			} );
-			X.x         += X.w * 2; // x > right - each pipeline
-			var x        = Math.max( ...X.a );
-			X.a          = [ x, x ];
+			X.x        += X.w * 2; // x > right - each mixer
+			var x       = Math.max( ...X.a );
+			X.a         = [ x, x ]; // equalize arrow in
 		}
 	}
 //---------------------------------------------------------------------------------
@@ -153,8 +149,8 @@ function addBox( lbl, ch, gain, m_in ) {
 		, r : X.p / 2
 		, f : X.color[ X.type ]
 	} );
-	var a0    = X.a[ ch ];
-	X.a[ ch ] = a0 + X.w * 2;
+	var a0x   = X.a[ ch ]; // previous arrow x
+	X.a[ ch ] = X.x + X.w; // new arrow x: box x + box w
 	y        += X.h / 2;
 	X.text.push( {
 		  x : X.x + X.w / 2
@@ -164,29 +160,36 @@ function addBox( lbl, ch, gain, m_in ) {
 	if ( X.type === 'Capture' ) return // no arrows, no gains
 	
 	X.arrow.push( {
-		  a0 : [ a0,  y ]
+		  a0 : [ a0x,  y ]
 		, a1 : [ X.x, y ]
 	} );
 	if ( X.type === 'Playback' ) return // no gains
 	
 	var ch0    = ch === 0;
 	var offset = ch0 ? -X.h : X.h;
+	if ( typeof gain === 'object' ) { // mixer
+		var ch1   = ch0 ? 1 : 0;
+		var gain1 = gain[ ch1 ];
+		gain      = gain[ ch ];
+	}
+	if ( gain > 0 ) gain = '+'+ gain;
 	X.text.push( { // gain
-		  x : a0 + X.w / 2 + X.p
+		  x : a0x + X.w / 2
 		, y : y + offset / 2
-		, t : gain +'dB'
+		, t : gain
 		, c : color.grl
 	} );
-	if ( X.type !== 'Mixer' || m_in < 2 ) return // no crosses
+	if ( typeof gain1 !== 'number' ) return // no crosses
 	
+	if ( gain1 > 0 ) gain1 = '+'+ gain1;
 	X.text.push( { // cross gain
-		  x : a0 + X.w / 2
+		  x : a0x + X.w / 2
 		, y : y - offset / 2
-		, t : gain +'dB'
+		, t : gain1
 		, c : color.grl
 	} );
 	X.arrow.push( { // cross arrow
-		  a0 : [ a0,  y ]
+		  a0 : [ a0x,  y ]
 		, a1 : [ X.x, y - offset * 2 ]
 	} );
 }
