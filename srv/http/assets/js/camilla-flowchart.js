@@ -41,7 +41,7 @@ graph.flowchart = () => {
 		if ( X.type === 'Filter' ) {
 			pip.names.forEach( name => {
 /**/			pip.channels.forEach( ch => addBox( name, ch, FIL[ name ].parameters.gain ) );
-				X.x += X.w * 2; // x > right
+				X.x += X.w * 2; // x > right - each pipeline
 			} );
 		} else {
 			var channels = MIX[ pip.name ].channels;
@@ -56,7 +56,7 @@ graph.flowchart = () => {
 					chs.push( ch );
 				} );
 			} );
-			X.x         += X.w * 2; // x > right
+			X.x         += X.w * 2; // x > right - each pipeline
 			var x        = Math.max( ...X.a );
 			X.a          = [ x, x ];
 		}
@@ -172,7 +172,7 @@ function addBox( lbl, ch, gain, m_in ) {
 	var ch0    = ch === 0;
 	var offset = ch0 ? -X.h : X.h;
 	X.text.push( { // gain
-		  x : a0 + X.w / 2
+		  x : a0 + X.w / 2 + X.p
 		, y : y + offset / 2
 		, t : gain +'dB'
 		, c : color.grl
@@ -180,7 +180,7 @@ function addBox( lbl, ch, gain, m_in ) {
 	if ( X.type !== 'Mixer' || m_in < 2 ) return // no crosses
 	
 	X.text.push( { // cross gain
-		  x : a0 + X.w / 2 - X.p
+		  x : a0 + X.w / 2
 		, y : y - offset / 2
 		, t : gain +'dB'
 		, c : color.grl
