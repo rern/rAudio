@@ -40,10 +40,8 @@ graph.flowchart = () => {
 		X.type  = pip.type;
 		if ( X.type === 'Filter' ) {
 			pip.names.forEach( name => {
-				pip.channels.forEach( ch => {
-/**/				addBox( name, ch ); // y > down - each channel
-				} );
-				X.x += X.w * 2; // x > right
+/**/			pip.channels.forEach( ch => addBox( name, ch ) ); // y > down - each channel
+				X.x += X.w * 2;                                   // x > right
 			} );
 		} else {
 			var channels = MIX[ pip.name ].channels;
@@ -59,7 +57,7 @@ graph.flowchart = () => {
 					chs.push( ch );
 				} );
 			} );
-			X.x         += X.w * 2; // x > right
+			X.x         += X.w * 2;                       // x > right
 			var x        = Math.max( ...X.a );
 			X.a          = [ x, x ];
 		}
