@@ -17,9 +17,9 @@ graph.flowchart = () => {
 		, a : new Array( DEV.capture.channels ).fill( -x0 ) // arrow line x-pos: each channel (draw from previous box)
 		, color  : {
 			  Filter   : color.md
-			, Capture  : '#000'
+			, Capture  : color.grd
 			, Mixer    : color.rd
-			, Playback : color.gd
+			, Playback : '#000'
 		}
 		, box   : []
 		, text  : []
@@ -31,7 +31,7 @@ graph.flowchart = () => {
 					.attr( 'class',   'flowchart' )
 					.lower();
 //---------------------------------------------------------------------------------
-	add( 'Capture' );
+/**/add( 'Capture' );
 	X.x += X.w * 2;
 //---------------------------------------------------------------------------------
 	var pipL    = PIP.length;
@@ -41,43 +41,31 @@ graph.flowchart = () => {
 		if ( X.type === 'Filter' ) {
 			pip.names.forEach( name => {
 				pip.channels.forEach( ch => {
-					addBox( name, X.h * 2 * ch, ch ); // y > down - each channel
+/**/				addBox( name, ch ); // y > down - each channel
 				} );
-				X.x += X.w * 2;                       // x > right
+				X.x += X.w * 2; // x > right
 			} );
 		} else {
-			cL          = Math.max( ...Object.values( MIX[ pip.name ].channels ) );
+			var channels = MIX[ pip.name ].channels;
+			cL           = Math.max( channels.in, channels.out );
 			addFrame( pip.name, cL );
-			var same_ch = false;
-			var chs     = [];
+			var chs      = [];
 			MIX[ pip.name ].mapping.forEach( m => {
 				m.sources.forEach( s => {
-					ch     = s.channel;
-					if ( chs.includes( ch ) ) {
-						same_ch = true;
-						return
-					}
+					ch = s.channel;
+					if ( chs.includes( ch ) ) return // skip same ch in each mixer
 					
-					addBox( 'ch '+ ch, X.h * 2 * ch, ch ); // y > down - each channel
+/**/				addBox( 'ch '+ ch, ch, channels.in ); // y > down - each channel
 					chs.push( ch );
-					if ( m.sources.length < 2 || ch === m.dest ) return
-					
-					var l  = X.arrow[ X.arrow.length - 1 ];
-					var y0 = X.h / 2;
-					var y1 = X.h * 2.5;
-					[ [ y0, y1 ], [ y1, y0 ] ].forEach( y => { // cross arrow
-						X.arrow.push( {
-							  a0 : [ l.a0[ 0 ], y[ 0 ] ]
-							, a1 : [ l.a1[ 0 ], y[ 1 ] ]
-						} );
-					} );
 				} );
-				if ( ! same_ch ) X.x += X.w * 2;           // x > right
 			} );
+			X.x         += X.w * 2; // x > right
+			var x        = Math.max( ...X.a );
+			X.a          = [ x, x ];
 		}
 	}
 //---------------------------------------------------------------------------------
-	add( 'Playback' );
+/**/add( 'Playback' );
 //---------------------------------------------------------------------------------
 	var d3scale = d3
 					.scaleLinear()
@@ -156,9 +144,10 @@ function add( lbl ) {
 	X.type = lbl;
 	var cL = DEV[ lbl.toLowerCase() ].channels;
 	addFrame( lbl, cL );
-	for ( var ch = 0; ch < cL; ch++ ) addBox( 'ch '+ ch, X.h * 2 * ch, ch );
+	for ( var ch = 0; ch < cL; ch++ ) addBox( 'ch '+ ch, ch );
 }
-function addBox( lbl, y, ch ) {
+function addBox( lbl, ch, mixer_in ) {
+	var y = X.h * 2 * ch;
 	X.box.push( {
 		  x : X.x
 		, y : y
@@ -167,9 +156,9 @@ function addBox( lbl, y, ch ) {
 		, r : X.p / 2
 		, f : X.color[ X.type ]
 	} );
-	var a0     = X.a[ ch ];
+	var a0    = X.a[ ch ];
 	X.a[ ch ] = a0 + X.w * 2;
-	y         += X.h / 2;
+	y        += X.h / 2;
 	X.text.push( {
 		  x : X.x + X.w / 2
 		, y : y
@@ -180,6 +169,13 @@ function addBox( lbl, y, ch ) {
 	X.arrow.push( {
 		  a0 : [ a0,  y ]
 		, a1 : [ X.x, y ]
+	} );
+	if ( typeof mixer_in === 'undefined' || mixer_in < 2 ) return
+	
+	var y1 = ch === 0 ? y + X.h * 2 : y - X.h * 2;
+	X.arrow.push( { // mixer cross arrow
+		  a0 : [ a0,  y ]
+		, a1 : [ X.x, y1 ]
 	} );
 }
 function addFrame( lbl, ch ) {
