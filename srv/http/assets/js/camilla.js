@@ -867,7 +867,7 @@ var render    = {
 		var icongain   = '';
 		var disabled   = '';
 		if ( v.type === 'Gain' ) {
-			var scale = param.scale === 'linear' ? 10 : 100;
+			var scale = param.scale === 'linear' ? 100 : 10;
 			icongain  = ico( param.mute ? 'volume mute' : 'volume' )
 					  + ico( param.inverted ? 'inverted bl' : 'inverted' )
 					  + ico( param.scale === 'linear' ? 'linear bl' : 'linear' );
@@ -946,7 +946,7 @@ var render    = {
 				var disabled = source.mute ? ' disabled' : '';
 				var linear   = source.scale === 'linear';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + render.htmlRange( linear ? 10 : 100, gain, disabled )
+					 + render.htmlRange( linear ? 100 : 10, gain, disabled )
 					 + ico( source.mute ? 'volume mute' : 'volume' )
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
 					 + ico( linear ? 'linear bl' : 'linear' )
@@ -1480,7 +1480,9 @@ var setting   = {
 			, ok           : () => {
 				var channels = [];
 				var names    = [];
-				$( '#infoList input:checkbox' ).each( ( i, el ) => channels.push( +$( el ).val() ) );
+				$( '#infoList input:checkbox' ).each( ( i, el ) => {
+					if ( $( el ).prop( 'checked' ) ) channels.push( +$( el ).val() );
+				} );
 				$( '#infoList select' ).each( ( i, el ) => names.push( $( el ).val() ) );
 				data = {
 					  type     : 'Filter'
