@@ -707,7 +707,7 @@ var graph     = {
 				, w : X.w + X.p * 2
 				, h : X.h * ( ch * 2 - 1 ) + X.p * 2
 				, r : X.p
-				, f : color.gr
+				, f : color.grd
 			} );
 			X.text.push( {
 				  x : Math.round( X.x + X.w / 2 )
@@ -744,7 +744,7 @@ var graph     = {
 				, aw     : Math.round( w0 * 0.15 )
 				, color  : {
 					  Filter   : color.md
-					, Capture  : color.grd
+					, Capture  : color.grl
 					, Mixer    : color.rd
 					, Playback : '#000'
 				}
@@ -796,8 +796,8 @@ var graph     = {
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
 			} );
-			ctx.strokeStyle     = color.grl;
-			ctx.fillStyle       = color.grl;
+			ctx.strokeStyle     = color.gr;
+			ctx.fillStyle       = color.gr;
 			ctx.beginPath();
 			var ah = Math.round( X.aw / 4 );
 			var x0, y0, x1, y1, xa;
