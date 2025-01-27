@@ -797,7 +797,7 @@ var graph     = {
 				ctx.fill();
 			} );
 			ctx.strokeStyle     = color.gr;
-			ctx.fillStyle       = color.gr;
+			ctx.fillStyle       = color.grl;
 			ctx.beginPath();
 			var ah = Math.round( X.aw / 4 );
 			var x0, y0, x1, y1, xa;
