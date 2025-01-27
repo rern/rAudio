@@ -728,20 +728,21 @@ var graph     = {
 		}
 		, flowchart : () => {
 			var canvasW = $( '#pipeline' ).width();
-			var bL      = 2;                               // capture + playback
-			PIP.forEach( pip => pip.type === 'Filter' ? pip.names.forEach( name => bL++ ) : bL++ );
-			var canvasL = bL * 2;                          // |--boxC----boxN----boxP--|
+			var boxL    = 2;                               // capture + playback
+			PIP.forEach( pip => pip.type === 'Filter' ? pip.names.forEach( name => boxL++ ) : boxL++ );
+			var canvasL = boxL * 2;                        // |--boxC----boxN----boxP--|
 			var w0      = Math.round( canvasW / canvasL ); // box w (base unit)
 			var h0      = Math.round( w0 / 2 );
 			var max_ch  = Math.max( DEV.capture.channels, DEV.playback.channels );
 			var canvasH = h0 * ( max_ch * 2 + 1 );
 			X           = {
-				  w : w0
-				, h : h0
-				, p : Math.round( w0 / 10 ) // frame padding; box border-radius p/2; arrow w: 2p h:p
-				, x : h0
-				, a : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
-				, aw     : Math.round( w0 * 0.15 )
+				  w      : w0
+				, h      : h0
+				, p      : Math.round( w0 / 10 )                         // frame padding
+				, x      : h0                                            // box0 start x
+				, a      : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
+				, aw     : Math.round( w0 * 0.15 )                       // arrow head w
+				, fs     : parseInt( $( 'body' ).css( 'font-size' ) )    // font size (15 - scaled to fit)
 				, dpxr   : window.devicePixelRatio
 				, color  : {
 					  Filter   : color.md
@@ -753,45 +754,41 @@ var graph     = {
 				, text  : []
 				, arrow : []
 			}
-			//---------------------------------------------------------------------------------
-/**/			graph.pipeline.add( 'Capture' );
-				X.x += X.w * 2;
-			//---------------------------------------------------------------------------------
-				PIP.forEach( pip => {
-					X.type  = pip.type;
-					if ( X.type === 'Filter' ) {
-						pip.names.forEach( name => {
-/**/						pip.channels.forEach( ch => graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain ) );
-							X.x += X.w * 2; // x > right - each filter
-						} );
-					} else {
-						var mapping = MIX[ pip.name ].mapping;
-/**/					graph.pipeline.addFrame( pip.name, mapping.length );
-						mapping.forEach( m => {
-							var ch   = m.dest;
-							var gain = {};
-							m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
-/**/						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
-						} );
-						X.x        += X.w * 2; // x > right - each mixer
-						var x       = Math.max( ...X.a );
-						X.a         = [ x, x ]; // equalize arrow in
-					}
-				} );
-			//---------------------------------------------------------------------------------
-			/**/graph.pipeline.add( 'Playback' );
-			//---------------------------------------------------------------------------------
+			graph.pipeline.add( 'Capture' );
+			X.x += X.w * 2;
+			PIP.forEach( pip => {
+				X.type  = pip.type;
+				if ( X.type === 'Filter' ) {
+					pip.names.forEach( name => {
+						pip.channels.forEach( ch => graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain ) );
+						X.x += X.w * 2; // x > right - each filter
+					} );
+				} else {
+					var mapping = MIX[ pip.name ].mapping;
+					graph.pipeline.addFrame( pip.name, mapping.length );
+					mapping.forEach( m => {
+						var ch   = m.dest;
+						var gain = {};
+						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
+						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
+					} );
+					X.x        += X.w * 2; // x > right - each mixer
+					var x       = Math.max( ...X.a );
+					X.a         = [ x, x ]; // equalize arrow in
+				}
+			} );
+			graph.pipeline.add( 'Playback' );
 			$( '#pipeline' ).prepend( '<canvas class="flowchart"></canvas>' );
 			var canvas          = $( '.flowchart' )[ 0 ];
-			canvas.width        = canvasW * X.dpxr;
-			canvas.height       = canvasH * X.dpxr;
-			canvas.style.width  = canvasW +'px';
-			canvas.style.height = canvasH +'px';
+			canvas.width        = canvasW * X.dpxr; // fix - blur elements
+			canvas.height       = canvasH * X.dpxr; // ^
+			canvas.style.width  = canvasW +'px';    // ^
+			canvas.style.height = canvasH +'px';    // ^
 			canvas.style.margin = '20px 0';
 			var ctx             = canvas.getContext( '2d' );
-			ctx.scale( X.dpxr, X.dpxr );
-			ctx.save()
-/**/		X.box.forEach( b => {
+			ctx.scale( X.dpxr, X.dpxr );            // ^
+			ctx.save();
+			X.box.forEach( b => { //-------------------------------
 				ctx.fillStyle = b.f;
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
@@ -804,35 +801,34 @@ var graph     = {
 			ctx.beginPath();
 			var ah = Math.round( X.aw / 4 );
 			var x0, y0, x1, y1, xa;
-/**/		X.arrow.forEach( a => {
+			X.arrow.forEach( a => { //-------------------------------
 				x0 = a.a0[ 0 ];
 				y0 = a.a0[ 1 ];
-				x1 = a.a1[ 0 ] - 1; // fix - head overlap
+				x1 = a.a1[ 0 ] - 1; // omit mitter head
 				y1 = a.a1[ 1 ];
 				xa = x1 - X.aw;
-				ctx.moveTo( x0, y0 );      // .
-				ctx.lineTo( xa, y1 );      // -
-				ctx.lineTo( xa, y1 - ah ); // |
-				ctx.lineTo( x1, y1 );      /* \ */
-				ctx.lineTo( xa, y1 + ah ); // /
-				ctx.lineTo( xa, y1 );      // |
+				ctx.moveTo( x0, y0 );
+				ctx.lineTo( xa, y1 );
+				ctx.lineTo( xa, y1 - ah );
+				ctx.lineTo( x1, y1 );
+				ctx.lineTo( xa, y1 + ah );
+				ctx.lineTo( xa, y1 );
 				ctx.stroke();
 				ctx.fill();
 			} );
 			ctx.textAlign       = 'center';
 			ctx.textBaseline    = 'middle';
-			ctx.font            = '15px Inconsolata';
-			var px              = 15;
+			ctx.font            = X.fs +'px Inconsolata';
 			X.text.forEach( t => {
 				var w = ctx.measureText( t.t ).width;
-				while ( w > X.w ) {
-					px--;
-					ctx.font = px +'px Inconsolata';
+				while ( w > X.w ) { // scale font size to fit text
+					X.fs--;
+					ctx.font = X.fs +'px Inconsolata';
 					w = ctx.measureText( t.t ).width;
 				}
 			} );
-			ctx.font            = px +'px Inconsolata';
-/**/		X.text.forEach( t => {
+			ctx.font            = X.fs +'px Inconsolata';
+			X.text.forEach( t => { //-------------------------------
 				ctx.fillStyle = t.c || color.wl;
 				if ( t.a ) { // cross gain
 					ctx.save();
