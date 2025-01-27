@@ -636,13 +636,13 @@ var config    = {
 }
 var graph     = {
 	  pipeline    : {
-		  add      : txt => {
+		  add       : txt => {
 			X.type = txt;
 			var cL = DEV[ txt.toLowerCase() ].channels;
 			graph.pipeline.addFrame( txt, cL, color.grl );
 			for ( var ch = 0; ch < cL; ch++ ) graph.pipeline.addBox( 'ch '+ ch, ch );
 		}
-		, addBox   : ( txt, ch, gain, m_in ) => {
+		, addBox    : ( txt, ch, gain, m_in ) => {
 			var y = X.h + X.h * 2 * ch; // y > down - each channel
 			X.box.push( {
 				  x : X.x
@@ -700,7 +700,7 @@ var graph     = {
 			} );
 			X.arrow.push( a ); // cross arrow line
 		}
-		, addFrame : ( txt, ch, clr ) => {
+		, addFrame  : ( txt, ch, clr ) => {
 			X.box.push( {
 				  x : X.x - X.p
 				, y : X.h - X.p
@@ -716,7 +716,7 @@ var graph     = {
 				, c : clr
 			} );
 		}
-		, gainSet  : ( gain, color ) => {
+		, gainSet   : ( gain, color ) => {
 			var db  = gain;
 			var clr = color.grl;
 			if ( gain > 0 ) {
@@ -727,7 +727,7 @@ var graph     = {
 			}
 			return { db, clr }
 		}
-		, plot     : () => {
+		, flowchart : () => {
 			var canvasW = $( '#pipeline' ).width();
 			var bL      = 2;                               // capture + playback
 			PIP.forEach( pip => pip.type === 'Filter' ? pip.names.forEach( name => bL++ ) : bL++ );
@@ -738,8 +738,7 @@ var graph     = {
 			var max_ch  = Math.max( DEV.capture.channels, DEV.playback.channels );
 			var canvasH = h0 * ( max_ch * 2 + 1 );
 			X           = {
-				  W : $( '#pipeline' ).width()
-				, w : w0
+				  w : w0
 				, h : h0
 				, p : w0 / 10
 				, x : h0
@@ -836,11 +835,11 @@ var graph     = {
 				}
 			} );
 		}
-		, refresh  : () => {
+		, refresh   : () => {
 			var $flowchart = $( '#pipeline .flowchart' );
-			var fL    = $flowchart.length;
+			var fL         = $flowchart.length;
 			$flowchart.remove();
-			if ( fL ) graph.pipeline.plot();
+			if ( fL ) graph.pipeline.flowchart();
 		}
 	}
 	, plot        : $li => {
@@ -2351,7 +2350,7 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 	}
 } ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '#pipeline .flowchart' );
-	$flowchart.length ? $flowchart.remove() : graph.pipeline.plot();
+	$flowchart.length ? $flowchart.remove() : graph.pipeline.flowchart();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
