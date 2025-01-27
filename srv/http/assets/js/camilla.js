@@ -649,14 +649,14 @@ var graph     = {
 				, y : y
 				, w : X.w
 				, h : X.h
-				, r : X.p / 2
+				, r : Math.round( X.p / 2 )
 				, f : X.color[ X.type ]
 			} );
 			var a0x   = X.a[ ch ]; // previous arrow x
 			X.a[ ch ] = X.x + X.w; // new arrow x: box x + box w
-			y        += X.h / 2;
+			y        += Math.round( X.h / 2 );
 			X.text.push( { // box text
-				  x : X.x + X.w / 2
+				  x : X.x + Math.round( X.w / 2 )
 				, y : y
 				, t : txt
 			} );
@@ -664,7 +664,7 @@ var graph     = {
 			
 			X.arrow.push( { // flat arrow line
 				  a0 : [ a0x,  y ]
-				, a1 : [ X.x, y ]
+				, a1 : [ X.x,  y ]
 			} );
 			if ( X.type === 'Playback' ) return // no gains
 			
@@ -676,10 +676,10 @@ var graph     = {
 				gain      = gain[ ch ];
 			}
 			var g      = graph.pipeline.dbSet( gain );
-			var tx0    = a0x + X.w / 2 - X.p;
+			var tx0    = a0x + Math.round( X.w / 2 ) - X.p;
 			X.text.push( { // gain text
 				  x : tx0
-				, y : y + offset / 4
+				, y : y + Math.round( offset / 4 )
 				, t : g.db
 				, c : g.clr
 			} );
@@ -687,13 +687,13 @@ var graph     = {
 			
 			g          = graph.pipeline.dbSet( gain1 );
 			a          = {
-				  a0 : [ a0x,  y ]
+				  a0 : [ a0x, y ]
 				, a1 : [ X.x, y - offset * 2 ]
 			}
-			var angle  = Math.atan2( a.a1[ 1 ] - a.a0[ 1 ], a.a1[ 0 ] - a.a0[ 0 ] ); // radian = Math.atan2( y1 - y0, x1 - x0 )
+			var angle  = Math.atan2( a.a1[ 1 ] - a.a0[ 1 ], a.a1[ 0 ] - a.a0[ 0 ] - X.aw ); // radian = Math.atan2( y1 - y0, x1 - x0 )
 			X.text.push( { // cross gain text
 				  x : tx0
-				, y : y - offset / 2
+				, y : y - Math.round( offset / 2 )
 				, t : g.db
 				, c : g.clr
 				, a : angle
@@ -710,8 +710,8 @@ var graph     = {
 				, f : color.gr
 			} );
 			X.text.push( {
-				  x : X.x + X.w / 2
-				, y : X.h / 4
+				  x : Math.round( X.x + X.w / 2 )
+				, y : Math.round( X.h / 4 )
 				, t : txt
 				, c : clr
 			} );
@@ -732,16 +732,16 @@ var graph     = {
 			PIP.forEach( pip => pip.type === 'Filter' ? pip.names.forEach( name => bL++ ) : bL++ );
 			var canvasL = bL * 2;                          // |--boxC----boxN----boxP--|
 			var w0      = Math.round( canvasW / canvasL ); // box w (base unit)
-			var p0      = w0 / 10;                         // frame padding; box border-radius p/2; arrow w: 2p h:p
-			var h0      = w0 / 2;
+			var h0      = Math.round( w0 / 2 );
 			var max_ch  = Math.max( DEV.capture.channels, DEV.playback.channels );
 			var canvasH = h0 * ( max_ch * 2 + 1 );
 			X           = {
 				  w : w0
 				, h : h0
-				, p : w0 / 10
+				, p : Math.round( w0 / 10 ) // frame padding; box border-radius p/2; arrow w: 2p h:p
 				, x : h0
 				, a : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
+				, aw     : Math.round( w0 * 0.15 )
 				, color  : {
 					  Filter   : color.md
 					, Capture  : color.grd
@@ -799,15 +799,14 @@ var graph     = {
 			ctx.strokeStyle     = color.grl;
 			ctx.fillStyle       = color.grl;
 			ctx.beginPath();
-			var ah = X.p / 2;
-			var aw = ah * 3;
+			var ah = Math.round( X.aw / 4 );
 			var x0, y0, x1, y1, xa;
 			X.arrow.forEach( a => {
 				x0 = a.a0[ 0 ];
 				y0 = a.a0[ 1 ];
-				x1 = a.a1[ 0 ] - dpx_ratio; // fix - head overlap
+				x1 = a.a1[ 0 ] - 1; // fix - head overlap
 				y1 = a.a1[ 1 ];
-				xa = x1 - aw;
+				xa = x1 - X.aw;
 				ctx.moveTo( x0, y0 );      // .
 				ctx.lineTo( xa, y1 );      // -
 				ctx.lineTo( xa, y1 - ah ); // |
