@@ -355,10 +355,6 @@ htmlSection( $head, $body, 'datasetting' );
 // ----------------------------------------------------------------------------------
 $listui      = [
 	[
-	    'D3'
-	  , 'Library for bespoke data visualization'
-	  , 'https://d3js.org/'
-	],[
 	    'HTML5-Color-Picker'
 	  , 'A scaleable color picker implemented using HTML5'
 	  , 'https://github.com/NC22/HTML5-Color-Picker'
