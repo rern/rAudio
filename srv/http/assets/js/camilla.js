@@ -709,13 +709,13 @@ var graph     = {
 		ctx.strokeStyle     = color.grl;
 		ctx.fillStyle       = color.grl;
 		ctx.beginPath();
-		var aw = X.p * 2;
 		var ah = X.p / 2;
+		var aw = ah * 3;
 		var x0, y0, x1, y1, xa;
 		X.arrow.forEach( a => {
 			x0 = a.a0[ 0 ];
 			y0 = a.a0[ 1 ];
-			x1 = a.a1[ 0 ] - 2;
+			x1 = a.a1[ 0 ] - dpx_ratio; // fix - head overlap
 			y1 = a.a1[ 1 ];
 			xa = x1 - aw;
 			ctx.moveTo( x0, y0 );      // .
