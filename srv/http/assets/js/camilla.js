@@ -732,7 +732,16 @@ var graph     = {
 		ctx.textBaseline    = 'middle';
 		X.text.forEach( t => {
 			ctx.fillStyle = t.c || color.wl;
-			ctx.fillText( t.t, t.x, t.y );
+			if ( t.a ) { // cross gain
+				ctx.save();
+				ctx.translate( t.x, t.y );
+				ctx.rotate( t.a );
+				ctx.translate( -t.x,-t.y );
+				ctx.fillText( t.t, t.x, t.y );
+				ctx.restore();
+			} else {
+				ctx.fillText( t.t, t.x, t.y );
+			}
 		} );
 	}
 	, flowchartXY : {
@@ -786,16 +795,19 @@ var graph     = {
 			if ( typeof gain1 !== 'number' ) return // no crosses
 			
 			g          = graph.flowchartXY.gainSet( gain1, color );
+			a          = {
+				  a0 : [ a0x,  y ]
+				, a1 : [ X.x, y - offset * 2 ]
+			}
+			var angle  = Math.atan2( a.a1[ 1 ] - a.a0[ 1 ], a.a1[ 0 ] - a.a0[ 0 ] ); // radian = Math.atan2( y1 - y0, x1 - x0 )
 			X.text.push( { // cross gain text
-				  x : tx0 - X.p * 2
+				  x : tx0
 				, y : y - offset / 2
 				, t : g.db
 				, c : g.clr
+				, a : angle
 			} );
-			X.arrow.push( { // cross arrow line
-				  a0 : [ a0x,  y ]
-				, a1 : [ X.x, y - offset * 2 ]
-			} );
+			X.arrow.push( a ); // cross arrow line
 		}
 		, addFrame : ( txt, ch, clr ) => {
 			X.box.push( {
