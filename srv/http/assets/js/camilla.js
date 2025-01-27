@@ -41,6 +41,7 @@ V             = {
 }
 var wscamilla = null
 var R         = {}
+var X         = {}
 // filters //////////////////////////////////////////////////////////////////////////////
 var F0        = {
 	  type         : [
@@ -634,25 +635,23 @@ var config    = {
 	}
 }
 var graph     = {
-	  pipeline : () => {
-		var $flowchart = $( '#pipeline .flowchart' );
-		var fL    = $flowchart.length;
-		$flowchart.remove();
-		if ( fL ) graph.flowchart();
-	}
-	, flowchart : () => {
-		var w0      = 10; // box w
-		var h0      = 5;  // box h
-		
-		var p0      = w0 * 0.1    // frame padding; box border-radius p/2; arrow w: 2p h:p
-		var x0      = 0 + w0 / 2; // box x-pos: margin-left w/2 (box @ 0, frame @  -p)
-		var X       = {
+	  flowchart   : () => {
+		var canvasW = $( '#pipeline' ).width();
+		var bL      = 2;                               // capture + playback
+		PIP.forEach( pip => pip.type === 'Filter' ? pip.names.forEach( name => bL++ ) : bL++ );
+		var canvasL = bL * 2;                          // |--boxC----boxN----boxP--|
+		var w0      = Math.round( canvasW / canvasL ); // box w (base unit)
+		var p0      = w0 / 10;                         // frame padding; box border-radius p/2; arrow w: 2p h:p
+		var h0      = w0 / 2;
+		var max_ch  = Math.max( DEV.capture.channels, DEV.playback.channels );
+		var canvasH = h0 * ( max_ch * 2 + 1 );
+		X           = {
 			  W : $( '#pipeline' ).width()
 			, w : w0
 			, h : h0
-			, p : p0
-			, x : x0
-			, a : new Array( DEV.capture.channels ).fill( -x0 ) // arrow line x-pos: each channel (draw from previous box)
+			, p : w0 / 10
+			, x : h0
+			, a : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
 			, color  : {
 				  Filter   : color.md
 				, Capture  : color.grd
@@ -664,83 +663,86 @@ var graph     = {
 			, arrow : []
 		}
 		//---------------------------------------------------------------------------------
-		/**/add( 'Capture' );
+		/**/graph.flowchartXY.add( 'Capture' );
 			X.x += X.w * 2;
 		//---------------------------------------------------------------------------------
-			var pipL    = PIP.length;
-			for ( var k = 0; k < pipL; k++ ) {
-				var pip = PIP[ k ];
+			PIP.forEach( pip => {
 				X.type  = pip.type;
 				if ( X.type === 'Filter' ) {
 					pip.names.forEach( name => {
-		/**/			pip.channels.forEach( ch => addBox( name, ch, FIL[ name ].parameters.gain ) );
+		/**/			pip.channels.forEach( ch => graph.flowchartXY.addBox( name, ch, FIL[ name ].parameters.gain ) );
 						X.x += X.w * 2; // x > right - each filter
 					} );
 				} else {
 					var mapping = MIX[ pip.name ].mapping;
-					addFrame( pip.name, mapping.length );
+		/**/		graph.flowchartXY.addFrame( pip.name, mapping.length );
 					mapping.forEach( m => {
 						var ch   = m.dest;
 						var gain = {};
 						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
-						addBox( 'ch '+ ch, ch, gain );
+		/**/			graph.flowchartXY.addBox( 'ch '+ ch, ch, gain );
 					} );
 					X.x        += X.w * 2; // x > right - each mixer
 					var x       = Math.max( ...X.a );
 					X.a         = [ x, x ]; // equalize arrow in
 				}
-			}
-		//---------------------------------------------------------------------------------
-		/**/add( 'Playback' );
-		//---------------------------------------------------------------------------------
-		var box_last = X.box[ X.box.length - 1 ];
-		console.log(box_last.y)
-		var right    = box_last.x + X.w * 1.5
-		var scale    = 635 / right;
-		[ 'arrow', 'box', 'text' ].forEach( el => {
-			X[ el ].forEach( i => {
-				if ( el === 'arrow' ) {
-					[ 0, 1 ].forEach( n => {
-						[ 'a0', 'a1' ].forEach( a => {
-							i[ a ][ n ] = Math.ceil( i[ a ][ n ] * scale );
-						} );
-					} );
-				} else {
-					$.each( i, ( k, v ) => {
-						if ( [ 'x', 'y', 'w', 'h', 'r' ].includes( k ) ) i[ k ] = Math.ceil( v * scale );
-					} );
-				}
 			} );
-		} )
-		var height = box_last.y + ( X.h + X.p ) * scale;
-		$( '#pipeline' ).prepend( '<canvas class="flowchart" width="635" height="'+ height +'"></canvas>' );
-		const canvas     = $( '.flowchart' )[ 0 ];
-		const ctx        = canvas.getContext( '2d' );
+		//---------------------------------------------------------------------------------
+		/**/graph.flowchartXY.add( 'Playback' );
+		//---------------------------------------------------------------------------------
+		$( '#pipeline' ).prepend( '<canvas class="flowchart"></canvas>' );
+		var canvas          = $( '.flowchart' )[ 0 ];
+		var dpx_ratio       = window.devicePixelRatio;
+		canvas.width        = canvasW * dpx_ratio;
+		canvas.height       = canvasH * dpx_ratio;
+		canvas.style.width  = canvasW +'px';
+		canvas.style.height = canvasH +'px';
+		canvas.style.margin = '20px 0';
+		var ctx             = canvas.getContext( '2d' );
+		ctx.scale( dpx_ratio, dpx_ratio );
 		X.box.forEach( b => {
 			ctx.fillStyle = b.f;
-			ctx.fillRect( b.x, b.y, b.w, b.h );
+			ctx.beginPath();
+			ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
+			ctx.fill();
 		} );
-		ctx.strokeStyle  = color.grl;
+		ctx.strokeStyle     = color.grl;
+		ctx.fillStyle       = color.grl;
 		ctx.beginPath();
+		var aw = X.p * 2;
+		var ah = X.p / 2;
+		var x0, y0, x1, y1, xa;
 		X.arrow.forEach( a => {
-			ctx.moveTo( a.a0[ 0 ], a.a0[ 1 ] );
-			ctx.lineTo( a.a1[ 0 ], a.a1[ 1 ] );
+			x0 = a.a0[ 0 ];
+			y0 = a.a0[ 1 ];
+			x1 = a.a1[ 0 ] - 2;
+			y1 = a.a1[ 1 ];
+			xa = x1 - aw;
+			ctx.moveTo( x0, y0 );      // .
+			ctx.lineTo( xa, y1 );      // -
+			ctx.lineTo( xa, y1 - ah ); // |
+			ctx.lineTo( x1, y1 );      /* \ */
+			ctx.lineTo( xa, y1 + ah ); // /
+			ctx.lineTo( xa, y1 );      // |
 			ctx.stroke();
+			ctx.fill();
 		} );
-		ctx.font         = '15px Inconsolata';
-		ctx.textAlign    = 'center';
-		ctx.textBaseline = 'middle';
+		ctx.font            = '1em Inconsolata';
+		ctx.textAlign       = 'center';
+		ctx.textBaseline    = 'middle';
 		X.text.forEach( t => {
 			ctx.fillStyle = t.c || color.wl;
 			ctx.fillText( t.t, t.x, t.y );
 		} );
-		function add( txt ) {
+	}
+	, flowchartXY : {
+		  add : txt => {
 			X.type = txt;
 			var cL = DEV[ txt.toLowerCase() ].channels;
-			addFrame( txt, cL, color.grl );
-			for ( var ch = 0; ch < cL; ch++ ) addBox( 'ch '+ ch, ch );
+			graph.flowchartXY.addFrame( txt, cL, color.grl );
+			for ( var ch = 0; ch < cL; ch++ ) graph.flowchartXY.addBox( 'ch '+ ch, ch );
 		}
-		function addBox( txt, ch, gain, m_in ) {
+		, addBox : ( txt, ch, gain, m_in ) => {
 			var y = X.h + X.h * 2 * ch; // y > down - each channel
 			X.box.push( {
 				  x : X.x
@@ -773,18 +775,19 @@ var graph     = {
 				var gain1 = gain[ ch1 ];
 				gain      = gain[ ch ];
 			}
-			var g      = gainSet( gain, color );
+			var g      = graph.flowchartXY.gainSet( gain, color );
+			var tx0    = a0x + X.w / 2 - X.p;
 			X.text.push( { // gain text
-				  x : a0x + X.w / 2
-				, y : y + offset / 2
+				  x : tx0
+				, y : y + offset / 4
 				, t : g.db
 				, c : g.clr
 			} );
 			if ( typeof gain1 !== 'number' ) return // no crosses
 			
-			g          = gainSet( gain1, color );
+			g          = graph.flowchartXY.gainSet( gain1, color );
 			X.text.push( { // cross gain text
-				  x : a0x + X.w / 2
+				  x : tx0 - X.p * 2
 				, y : y - offset / 2
 				, t : g.db
 				, c : g.clr
@@ -794,7 +797,7 @@ var graph     = {
 				, a1 : [ X.x, y - offset * 2 ]
 			} );
 		}
-		function addFrame( txt, ch, clr ) {
+		, addFrame : ( txt, ch, clr ) => {
 			X.box.push( {
 				  x : X.x - X.p
 				, y : X.h - X.p
@@ -810,7 +813,7 @@ var graph     = {
 				, c : clr
 			} );
 		}
-		function gainSet( gain, color ) {
+		, gainSet : ( gain, color ) => {
 			var db  = gain;
 			var clr = color.grl;
 			if ( gain > 0 ) {
@@ -822,7 +825,13 @@ var graph     = {
 			return { db, clr }
 		}
 	}
-	, plot     : $li => {
+	, pipeline    : () => {
+		var $flowchart = $( '#pipeline .flowchart' );
+		var fL    = $flowchart.length;
+		$flowchart.remove();
+		if ( fL ) graph.flowchart();
+	}
+	, plot        : $li => {
 		if ( typeof Plotly !== 'object' ) {
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot( V.li ) );
 			return

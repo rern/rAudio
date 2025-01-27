@@ -443,9 +443,6 @@ i.disabled {
 #codeoutput {
 	margin-top: 15px;
 }
-.flowchart {
-	margin: 20px 0;
-}
 
 @media (max-width: 610px) {
 	.liicon { display: none }
