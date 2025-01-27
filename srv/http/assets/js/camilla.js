@@ -796,10 +796,7 @@ var graph     = {
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
-				ctx.shadowOffsetX = -2;
-				ctx.shadowOffsetY = 2;
-				ctx.shadowBlur    = 2;
-				ctx.shadowColor   = '#000';
+				graph.pipeline.shadow( ctx, 2 );
 			} );
 			ctx.restore();
 			ctx.strokeStyle     = color.gr;
@@ -837,10 +834,7 @@ var graph     = {
 				} else {
 					ctx.fillText( t.t, t.x, t.y );
 				}
-				ctx.shadowOffsetX = -1;
-				ctx.shadowOffsetY = 1;
-				ctx.shadowBlur    = 1;
-				ctx.shadowColor   = '#000';
+				graph.pipeline.shadow( ctx, 1 );
 			} );
 		}
 		, refresh   : () => {
@@ -848,6 +842,12 @@ var graph     = {
 			var fL         = $flowchart.length;
 			$flowchart.remove();
 			if ( fL ) graph.pipeline.flowchart();
+		}
+		, shadow    : ( ctx, offset ) => {
+			ctx.shadowOffsetX = -offset;
+			ctx.shadowOffsetY = offset;
+			ctx.shadowBlur    = offset;
+			ctx.shadowColor   = '#000';
 		}
 	}
 	, plot        : $li => {
