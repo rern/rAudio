@@ -248,7 +248,7 @@ var config        = {
 	, vuled         : values => {
 		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
 		var leds   = Object.keys( values ).length + 1;
-		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', util.board2bcm ] );
+		for ( var i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', util.board2bcm ] );
 		info( {
 			  ...SW
 			, message      : util.gpiosvg
@@ -599,7 +599,7 @@ var util          = {
 				, [ '', '', { suffix: ico( 'tag gr' ) +' Name' } ]
 			]
 			var kL     = keys.length;
-			for ( i = 0; i < kL; i++ ) {
+			for ( var i = 0; i < kL; i++ ) {
 				list.push( [ '', 'select', { kv: util.board2bcm, sameline: true } ], [ '', 'text' ] );
 			}
 			info( {
@@ -641,7 +641,7 @@ var util          = {
 			];
 			var values = [];
 			var pL     = pin.ON.length;
-			for ( i = 0; i < pL; i++ ) {
+			for ( var i = 0; i < pL; i++ ) {
 				list.push(
 					  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
 					, [ '', 'select', { kv: names, colspan: 2 } ]
@@ -721,7 +721,7 @@ var util          = {
 				}
 			} else {
 				var pL = order.ON.length;
-				for ( i = 0; i < pL; i++ ) {
+				for ( var i = 0; i < pL; i++ ) {
 					var j          = i * 4;
 					order.ON[ i ]  = v[ j ];
 					order.OFF[ i ] = v[ j + 1 ];

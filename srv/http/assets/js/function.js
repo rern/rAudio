@@ -1228,7 +1228,7 @@ function renderLibraryList( data ) { // V.librarylist
 		htmlpath    += '<a>'+ dir0 +' / <span class="lidir">'+ dir0 +'</span></a>';
 		var lidir    = dir0;
 		var iL       = dir.length;
-		for ( i = 1; i < iL; i++ ) {
+		for ( var i = 1; i < iL; i++ ) {
 			lidir    += '/'+ dir[ i ];
 			htmlpath += '<a>'+ dir[ i ] +' / <span class="lidir">'+ lidir +'</span></a>';
 		}

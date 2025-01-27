@@ -689,7 +689,7 @@ function info( json ) {
 		if ( I.updn.length ) {
 			var max = [];
 			var min = [];
-			for ( i = 0; i < I.updn.length; i++ ) {
+			for ( var i = 0; i < I.updn.length; i++ ) {
 				min.push( I.updn[ i ].min );
 				max.push( I.updn[ i ].max );
 			}
@@ -717,7 +717,7 @@ function info( json ) {
 						}
 					}
 					if ( I.checkchanged ) $num.trigger( 'input' );
-					for ( i = 0; i < I.updn.length; i++ ) {
+					for ( var i = 0; i < I.updn.length; i++ ) {
 						$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', v[ i ] === min[ i ] );
 						$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', v[ i ] === max[ i ] );
 					}

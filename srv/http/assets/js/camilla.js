@@ -918,7 +918,7 @@ var graph     = {
 				var iL   = raw ? 5 : 7;
 				var ticktext = [];
 				var tickvals = [];
-				for ( i = 0; i < iL; i++ ) {
+				for ( var i = 0; i < iL; i++ ) {
 					ticktext.push( i * 20 );
 					tickvals.push( i * 20 * each );
 				}
@@ -974,9 +974,9 @@ var render    = {
 		var ch      = chC > chP ? chC : chP;
 		var htmlin  = '<div class="bar"></div><div class="bar peak c0"></div><div class="bar rms c0"></div>';
 		var htmlout = htmlin.replace( /c0/g, 'p0' );
-		if ( chC > 1 ) for ( i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
+		if ( chC > 1 ) for ( var i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
 		$( '#in' ).html( htmlin );
-		if ( chP > 1 ) for ( i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
+		if ( chP > 1 ) for ( var i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
 		$( '#out' ).html( htmlout );
 		render.vuBarToggle();
 	}
@@ -1501,7 +1501,7 @@ var setting   = {
 					} );
 				} else {
 					var sources    = [];
-					for ( i = 0; i < DEV.capture.channels; i++ ) {
+					for ( var i = 0; i < DEV.capture.channels; i++ ) {
 						sources.push( {
 							  channel  : i
 							, gain     : 0
@@ -1510,7 +1510,7 @@ var setting   = {
 						} );
 					}
 					var mapping    = [];
-					for ( i = 0; i < DEV.playback.channels; i++ ) {
+					for ( var i = 0; i < DEV.playback.channels; i++ ) {
 						mapping.push( {
 							  dest    : i
 							, sources : sources
@@ -1630,7 +1630,7 @@ var setting   = {
 			var edit = true;
 			var data = jsonClone( PIP[ index ] );
 			var nL   = edit ? data.names.length : 1;
-			for ( i = 0; i < nL; i++ ) list.push( select );
+			for ( var i = 0; i < nL; i++ ) list.push( select );
 		}
 		info( {
 			  icon         : V.tab
@@ -2661,7 +2661,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	var width = ( max - min ) / bands;        // log10 / band
 	var v0    = min + width / 2;              // log10 midband
 	var v     = [ v0 ];
-	for ( i = 0; i < bands - 1; i++ ) {
+	for ( var i = 0; i < bands - 1; i++ ) {
 		v0 += width;
 		v.push( v0 );
 	}

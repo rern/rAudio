@@ -196,7 +196,7 @@ $( '#button-settings' ).on( 'click', function( e ) {
 			var ctx    = canvas.getContext( '2d' );
 			var cw     = canvas.width / 2;
 			var ch     = canvas.height / 2;
-			for( i = 0; i < 360; i += 0.25 ) {
+			for ( var i = 0; i < 360; i += 0.25 ) {
 				var rad         = i * Math.PI / 180;
 				ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
 				ctx.beginPath();
