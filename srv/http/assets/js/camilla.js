@@ -675,7 +675,7 @@ var graph     = {
 				var gain1 = gain[ ch1 ];
 				gain      = gain[ ch ];
 			}
-			var g      = graph.pipeline.dbSet( gain, color );
+			var g      = graph.pipeline.dbSet( gain );
 			var tx0    = a0x + X.w / 2 - X.p;
 			X.text.push( { // gain text
 				  x : tx0
@@ -685,7 +685,7 @@ var graph     = {
 			} );
 			if ( typeof gain1 !== 'number' ) return // no crosses
 			
-			g          = graph.pipeline.dbSet( gain1, color );
+			g          = graph.pipeline.dbSet( gain1 );
 			a          = {
 				  a0 : [ a0x,  y ]
 				, a1 : [ X.x, y - offset * 2 ]
@@ -716,13 +716,12 @@ var graph     = {
 				, c : clr
 			} );
 		}
-		, dbSet     : ( gain, color ) => {
-			var db  = gain;
+		, dbSet     : db => {
 			var clr = color.grl;
-			if ( gain > 0 ) {
-				db  = '+'+ gain;
+			if ( db > 0 ) {
+				db  = '+'+ db;
 				clr = color.g;
-			} else if ( gain < 0 ) {
+			} else if ( db < 0 ) {
 				clr = color.r;
 			}
 			return { db, clr }
