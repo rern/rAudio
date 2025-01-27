@@ -41,7 +41,7 @@ V             = {
 }
 var wscamilla = null
 var R         = {}
-var X         = {}
+var X         = {} // flowchart
 // filters //////////////////////////////////////////////////////////////////////////////
 var F0        = {
 	  type         : [
@@ -742,6 +742,7 @@ var graph     = {
 				, x : h0
 				, a : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
 				, aw     : Math.round( w0 * 0.15 )
+				, dpxr   : window.devicePixelRatio
 				, color  : {
 					  Filter   : color.md
 					, Capture  : color.grl
@@ -753,24 +754,24 @@ var graph     = {
 				, arrow : []
 			}
 			//---------------------------------------------------------------------------------
-			/**/graph.pipeline.add( 'Capture' );
+/**/			graph.pipeline.add( 'Capture' );
 				X.x += X.w * 2;
 			//---------------------------------------------------------------------------------
 				PIP.forEach( pip => {
 					X.type  = pip.type;
 					if ( X.type === 'Filter' ) {
 						pip.names.forEach( name => {
-			/**/			pip.channels.forEach( ch => graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain ) );
+/**/						pip.channels.forEach( ch => graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain ) );
 							X.x += X.w * 2; // x > right - each filter
 						} );
 					} else {
 						var mapping = MIX[ pip.name ].mapping;
-			/**/		graph.pipeline.addFrame( pip.name, mapping.length );
+/**/					graph.pipeline.addFrame( pip.name, mapping.length );
 						mapping.forEach( m => {
 							var ch   = m.dest;
 							var gain = {};
 							m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
-			/**/			graph.pipeline.addBox( 'ch '+ ch, ch, gain );
+/**/						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
 						} );
 						X.x        += X.w * 2; // x > right - each mixer
 						var x       = Math.max( ...X.a );
@@ -782,17 +783,16 @@ var graph     = {
 			//---------------------------------------------------------------------------------
 			$( '#pipeline' ).prepend( '<canvas class="flowchart"></canvas>' );
 			var canvas          = $( '.flowchart' )[ 0 ];
-			var dpx_ratio       = window.devicePixelRatio;
-			canvas.width        = canvasW * dpx_ratio;
-			canvas.height       = canvasH * dpx_ratio;
+			canvas.width        = canvasW * X.dpxr;
+			canvas.height       = canvasH * X.dpxr;
 			canvas.style.width  = canvasW +'px';
 			canvas.style.height = canvasH +'px';
 			canvas.style.margin = '20px 0';
 			var ctx             = canvas.getContext( '2d' );
+			ctx.scale( X.dpxr, X.dpxr );
 			ctx.save()
-			ctx.scale( dpx_ratio, dpx_ratio );
-			X.box.forEach( b => {
-				ctx.fillStyle     = b.f;
+/**/		X.box.forEach( b => {
+				ctx.fillStyle = b.f;
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
@@ -804,7 +804,7 @@ var graph     = {
 			ctx.beginPath();
 			var ah = Math.round( X.aw / 4 );
 			var x0, y0, x1, y1, xa;
-			X.arrow.forEach( a => {
+/**/		X.arrow.forEach( a => {
 				x0 = a.a0[ 0 ];
 				y0 = a.a0[ 1 ];
 				x1 = a.a1[ 0 ] - 1; // fix - head overlap
@@ -822,8 +822,8 @@ var graph     = {
 			ctx.font            = '1em Inconsolata';
 			ctx.textAlign       = 'center';
 			ctx.textBaseline    = 'middle';
-			X.text.forEach( t => {
-				ctx.fillStyle     = t.c || color.wl;
+/**/		X.text.forEach( t => {
+				ctx.fillStyle = t.c || color.wl;
 				if ( t.a ) { // cross gain
 					ctx.save();
 					ctx.translate( t.x, t.y );
@@ -844,6 +844,7 @@ var graph     = {
 			if ( fL ) graph.pipeline.flowchart();
 		}
 		, shadow    : ( ctx, offset ) => {
+			offset *= X.dpxr;
 			ctx.shadowOffsetX = -offset;
 			ctx.shadowOffsetY = offset;
 			ctx.shadowBlur    = offset;
