@@ -746,7 +746,7 @@ var graph     = {
 					  Filter   : color.md
 					, Capture  : color.grl
 					, Mixer    : color.rd
-					, Playback : '#000'
+					, Playback : color.gr
 				}
 				, box   : []
 				, text  : []
@@ -789,13 +789,19 @@ var graph     = {
 			canvas.style.height = canvasH +'px';
 			canvas.style.margin = '20px 0';
 			var ctx             = canvas.getContext( '2d' );
+			ctx.save()
 			ctx.scale( dpx_ratio, dpx_ratio );
 			X.box.forEach( b => {
 				ctx.fillStyle = b.f;
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
+				ctx.shadowOffsetX = -2;
+				ctx.shadowOffsetY = 2;
+				ctx.shadowBlur    = 2;
+				ctx.shadowColor   = '#000';
 			} );
+			ctx.restore();
 			ctx.strokeStyle     = color.gr;
 			ctx.fillStyle       = color.grl;
 			ctx.beginPath();
