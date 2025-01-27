@@ -792,7 +792,7 @@ var graph     = {
 			ctx.save()
 			ctx.scale( dpx_ratio, dpx_ratio );
 			X.box.forEach( b => {
-				ctx.fillStyle = b.f;
+				ctx.fillStyle     = b.f;
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
@@ -826,7 +826,7 @@ var graph     = {
 			ctx.textAlign       = 'center';
 			ctx.textBaseline    = 'middle';
 			X.text.forEach( t => {
-				ctx.fillStyle = t.c || color.wl;
+				ctx.fillStyle     = t.c || color.wl;
 				if ( t.a ) { // cross gain
 					ctx.save();
 					ctx.translate( t.x, t.y );
@@ -837,6 +837,10 @@ var graph     = {
 				} else {
 					ctx.fillText( t.t, t.x, t.y );
 				}
+				ctx.shadowOffsetX = -1;
+				ctx.shadowOffsetY = 1;
+				ctx.shadowBlur    = 1;
+				ctx.shadowColor   = '#000';
 			} );
 		}
 		, refresh   : () => {
