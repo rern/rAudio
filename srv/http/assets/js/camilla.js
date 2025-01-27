@@ -819,20 +819,19 @@ var graph     = {
 				ctx.stroke();
 				ctx.fill();
 			} );
-			ctx.font            = '15px Inconsolata';
 			ctx.textAlign       = 'center';
 			ctx.textBaseline    = 'middle';
-			var max_w           = X.w;
-			var f_s             = 15;
+			ctx.font            = '15px Inconsolata';
+			var px              = 15;
 			X.text.forEach( t => {
-				var t_w = ctx.measureText( t.t ).width;
-				while ( t_w > max_w ) {
-					f_s--;
-					ctx.font = f_s +'px Inconsolata';
-					t_w = ctx.measureText( t.t ).width;
+				var w = ctx.measureText( t.t ).width;
+				while ( w > X.w ) {
+					px--;
+					ctx.font = px +'px Inconsolata';
+					w = ctx.measureText( t.t ).width;
 				}
 			} );
-			ctx.font            = f_s +'px Inconsolata';
+			ctx.font            = px +'px Inconsolata';
 /**/		X.text.forEach( t => {
 				ctx.fillStyle = t.c || color.wl;
 				if ( t.a ) { // cross gain
