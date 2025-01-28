@@ -669,19 +669,19 @@ var graph     = {
 				var gain1 = gain[ ch1 ];
 				gain      = gain[ ch ];
 			}
-			var arrow  = typeof gain === 'number';
-			var type_p = X.type === 'Playback';
-			if ( arrow || type_p ) {
+			var has_g  = typeof gain === 'number';
+			var box_p  = X.type === 'Playback';
+			if ( has_g || box_p ) {
 				X.arrow.push( { // flat arrow line
 					  a0 : [ a0x,  y ]
 					, a1 : [ X.x,  y ]
 				} );
 			}
-			if ( type_p ) return // no gains
+			if ( box_p ) return // no gains
 			
 			var g      = graph.pipeline.dbSet( gain );
 			var tx0    = a0x + Math.round( X.w / 2 );
-			if ( arrow ) {
+			if ( has_g ) {
 				X.text.push( { // gain text
 					  x : tx0
 					, y : y + Math.round( offset / 4 )
