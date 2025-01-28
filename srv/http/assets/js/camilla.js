@@ -1293,6 +1293,8 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];
+		if ( ! kv ) return
+		
 		var data = {};
 		var keys = Object.keys( kv );
 		keys.sort().forEach( k => data[ k ] = kv[ k ] );
