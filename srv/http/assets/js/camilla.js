@@ -676,7 +676,7 @@ var graph     = {
 				gain      = gain[ ch ];
 			}
 			var g      = graph.pipeline.dbSet( gain );
-			var tx0    = a0x + Math.round( X.w / 2 ) - X.p;
+			var tx0    = a0x + Math.round( X.w / 2 );
 			X.text.push( { // gain text
 				  x : tx0
 				, y : y + Math.round( offset / 4 )
@@ -741,7 +741,7 @@ var graph     = {
 				, p      : Math.round( w0 / 10 )                         // frame padding
 				, x      : h0                                            // box0 start x
 				, a      : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
-				, aw     : Math.round( w0 * 0.15 )                       // arrow head w
+				, aw     : Math.round( w0 / 8 )                       // arrow head w
 				, fs     : parseInt( $( 'body' ).css( 'font-size' ) )    // font size (15 - scaled to fit)
 				, dpxr   : window.devicePixelRatio
 				, color  : {
@@ -754,6 +754,14 @@ var graph     = {
 				, text  : []
 				, arrow : []
 			}
+			function shadow( offset ) {
+				offset *= X.dpxr;
+				ctx.shadowOffsetX = -offset;
+				ctx.shadowOffsetY = offset;
+				ctx.shadowBlur    = offset;
+				ctx.shadowColor   = '#000';
+			}
+			
 			graph.pipeline.add( 'Capture' );
 			X.x += X.w * 2;
 			PIP.forEach( pip => {
@@ -793,13 +801,13 @@ var graph     = {
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
-				graph.pipeline.shadow( ctx, 2 );
+				shadow( 2 );
 			} );
 			ctx.restore();
 			ctx.strokeStyle     = color.gr;
 			ctx.fillStyle       = color.grl;
 			ctx.beginPath();
-			var ah = Math.round( X.aw / 4 );
+			var ay = Math.round( X.aw / 4 );
 			var x0, y0, x1, y1, xa;
 			X.arrow.forEach( a => { //-------------------------------
 				x0 = a.a0[ 0 ];
@@ -809,9 +817,9 @@ var graph     = {
 				xa = x1 - X.aw;
 				ctx.moveTo( x0, y0 );
 				ctx.lineTo( xa, y1 );
-				ctx.lineTo( xa, y1 - ah );
+				ctx.lineTo( xa, y1 - ay );
 				ctx.lineTo( x1, y1 );
-				ctx.lineTo( xa, y1 + ah );
+				ctx.lineTo( xa, y1 + ay );
 				ctx.lineTo( xa, y1 );
 				ctx.stroke();
 				ctx.fill();
@@ -840,7 +848,7 @@ var graph     = {
 				} else {
 					ctx.fillText( t.t, t.x, t.y );
 				}
-				graph.pipeline.shadow( ctx, 1 );
+				shadow( 1 );
 			} );
 		}
 		, refresh   : () => {
@@ -848,13 +856,6 @@ var graph     = {
 			var fL         = $flowchart.length;
 			$flowchart.remove();
 			if ( fL ) graph.pipeline.flowchart();
-		}
-		, shadow    : ( ctx, offset ) => {
-			offset *= X.dpxr;
-			ctx.shadowOffsetX = -offset;
-			ctx.shadowOffsetY = offset;
-			ctx.shadowBlur    = offset;
-			ctx.shadowColor   = '#000';
 		}
 	}
 	, plot        : $li => {

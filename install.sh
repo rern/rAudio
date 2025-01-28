@@ -109,9 +109,6 @@ fi
 
 [[ ! -e /boot/kernel.img ]] && sed -i '/^brightness/ d' $dirsystem/localbrowser.conf
 
-# 20241130
-systemctl -q is-active mediamtx && touch $dirsystem/dabradio
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -125,6 +122,3 @@ $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
-
-# 20241130
-[[ -e $dirsystem/camilladsp && ! -e $dirshm/hwparams ]] && $dirsettings/camilla-devices.sh
