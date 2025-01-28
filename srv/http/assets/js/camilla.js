@@ -662,12 +662,6 @@ var graph     = {
 			} );
 			if ( X.type === 'Capture' ) return // no arrows, no gains
 			
-			X.arrow.push( { // flat arrow line
-				  a0 : [ a0x,  y ]
-				, a1 : [ X.x,  y ]
-			} );
-			if ( X.type === 'Playback' ) return // no gains
-			
 			var ch0    = ch === 0;
 			var offset = ch0 ? -X.h : X.h;
 			if ( typeof gain === 'object' ) { // mixer - { 0: n, 1: n }
@@ -675,14 +669,24 @@ var graph     = {
 				var gain1 = gain[ ch1 ];
 				gain      = gain[ ch ];
 			}
+			if ( X.type === 'Playback' || gain !== undefined ) {
+				X.arrow.push( { // flat arrow line
+					  a0 : [ a0x,  y ]
+					, a1 : [ X.x,  y ]
+				} );
+			}
+			if ( X.type === 'Playback' ) return // no gains
+			
 			var g      = graph.pipeline.dbSet( gain );
 			var tx0    = a0x + Math.round( X.w / 2 );
-			X.text.push( { // gain text
-				  x : tx0
-				, y : y + Math.round( offset / 4 )
-				, t : g.db
-				, c : g.clr
-			} );
+			if ( typeof gain === 'number' ) {
+				X.text.push( { // gain text
+					  x : tx0
+					, y : y + Math.round( offset / 4 )
+					, t : g.db
+					, c : g.clr
+				} );
+			}
 			if ( typeof gain1 !== 'number' ) return // no crosses
 			
 			g          = graph.pipeline.dbSet( gain1 );
@@ -2756,7 +2760,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	setting.save();
 } ).on( 'input', 'select', function() {
 	var M   = setting.mixerGet( $( this ) );
-	var val = +$this.val();
+	var val = +$( this ).val();
 	if ( typeof M.si === 'number' ) {
 		MIX[ M.name ].mapping[ M.index ].sources[ M.si ].channel = val;
 	} else {
