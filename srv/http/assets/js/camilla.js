@@ -897,31 +897,23 @@ var graph     = {
 				PLOTS.magnitude.y   = data.magnitude;
 				var scale  = {
 					  groupdelay : { min: -10, max: 10 }
-					, impulse    : { min: -1, max: 1 }
-					, magnitude  : { min: -6, max: 6 }
+					, impulse    : { min:  -1, max: 1 }
+					, magnitude  : { min:  -6, max: 6 }
 				}
 				var minmax = {};
 				[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
 					if ( ! ( d in data ) ) return
 					
-					var v = data[ d ];
-					minmax[ d ] = { value  : v };
-					[ 'min', 'max' ].forEach( k => minmax[ d ][ k ] = Math[ k ]( ...v ) );
-					if ( minmax[ d ].max < scale[ d ].max ) minmax[ d ].max = scale[ d ].max;
-					if ( minmax[ d ].min > scale[ d ].min ) minmax[ d ].min = scale[ d ].min;
-					minmax[ d ].abs = Math.max( Math.abs( minmax[ d ].min ), Math.abs( minmax[ d ].max ) );
-					var range  = minmax[ d ];
-					if ( d !== 'magnitude' ) {
-						range.min = -range.abs;
-					} else {
-						if ( range.min <= scale[ d ].min ) range.min -= 1;
-						if ( range.max >= scale[ d ].max ) range.max += 1;
-					}
-					AXES[ d ].range = [ range.min, range.max ];
+					var min         = Math.min( ...data[ d ] );
+					var max         = Math.max( ...data[ d ] );
+					max             = Math.max( max, scale[ d ].max );
+					min             = Math.min( min, scale[ d ].min )
+					var abs         = Math.max( Math.abs( min ), Math.abs( max ) ) + 1;
+					AXES[ d ].range = [ -abs, abs ];
 					if ( d === 'impulse' ) {
-						AXES[ d ].dtick = range.abs < 1 ? 0.2 : ( range.abs < 2 ? 0.5 : 1 );
+						AXES[ d ].dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
 					} else {
-						AXES[ d ].dtick = range.abs < 10 ? 2 : ( range.abs < 20 ? 5 : 10 );
+						AXES[ d ].dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
 					}
 				} );
 			}
