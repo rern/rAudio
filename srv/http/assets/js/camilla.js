@@ -723,13 +723,15 @@ var graph     = {
 			} );
 		}
 		, dbSet     : db => {
+			var plus = ''
 			var clr = color.grl;
 			if ( db > 0 ) {
-				db  = '+'+ db;
+				plus  = '+';
 				clr = color.g;
 			} else if ( db < 0 ) {
 				clr = color.r;
 			}
+			db = plus + db.toFixed( 1 );
 			return { db, clr }
 		}
 		, flowchart : () => {
