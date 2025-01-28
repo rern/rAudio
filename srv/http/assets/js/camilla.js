@@ -741,7 +741,7 @@ var graph     = {
 				, p      : Math.round( w0 / 10 )                         // frame padding
 				, x      : h0                                            // box0 start x
 				, a      : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
-				, aw     : Math.round( w0 / 8 )                       // arrow head w
+				, aw     : Math.round( w0 / 8 )                          // arrow head w
 				, fs     : parseInt( $( 'body' ).css( 'font-size' ) )    // font size (15 - scaled to fit)
 				, dpxr   : window.devicePixelRatio
 				, color  : {
@@ -840,7 +840,7 @@ var graph     = {
 				ctx.fillStyle = t.c || color.wl;
 				if ( t.a ) { // cross gain
 					ctx.save();
-					ctx.translate( t.x, t.y );
+					ctx.translate( t.x - X.p, t.y );
 					ctx.rotate( t.a );
 					ctx.translate( -t.x,-t.y );
 					ctx.fillText( t.t, t.x, t.y );
