@@ -513,7 +513,7 @@ function info( json ) {
 				, suffix   : UNIT
 				, updn     : { step: N, min: N, max: N }
 			}*/
-			if ( [ 'checkbox', 'radio' ].includes( type ) && ! ( 'colspan' in param ) ) param.colspan = 2;
+			if ( [ 'checkbox', 'radio' ].includes( type ) && ( 'kv' in param && ! param.colspan ) ) param.colspan = 2;
 			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
 			switch ( type ) {
 				case 'checkbox':

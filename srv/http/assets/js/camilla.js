@@ -97,7 +97,7 @@ var Flist     = {
 	, shelf   : [ ...F1.pass.slice( 0, 4 ), F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
 	, passFO  : F1.pass.slice( 0, 4 )
 	, shelfFO : [ ...F1.pass.slice( 0, 4 ), F0.gain ]
-	, notch   : [ ...F1.pass, F0.qbandwidth ]
+	, Notch   : [ ...F1.pass, F0.qbandwidth ]
 }
 var F         = {
 	  Gain        : [
@@ -166,7 +166,7 @@ var F         = {
 		, LowshelfFO        : Flist.shelfFO
 		, HighshelfFO       : Flist.shelfFO
 		, Peaking           : [ ...F1.pass.slice( 0, 4 ), F0.gain, F0.q, F0.qbandwidth ]
-		, Notch             : Flist.notch
+		, Notch             : Flist.Notch
 		, GeneralNotch      : [
 			  F0.name
 			, F0.type
@@ -175,8 +175,8 @@ var F         = {
 			, [ 'Pole Q',          'number' ]
 			, [ 'Normalize at DC', 'checkbox' ]
 		]
-		, Bandpass          : Flist.notch
-		, Allpass           : Flist.notch
+		, Bandpass          : Flist.Notch
+		, Allpass           : Flist.Notch
 		, AllpassFO         : Flist.passFO
 		, LinkwitzTransform : [
 			...F1.pass.slice( 0, 3 )
@@ -245,7 +245,7 @@ var F         = {
 		, shelf             : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
 		, passFO            : { name: '', type: '', subtype: '', freq: 1000, name: '' }
 		, shelfFO           : { name: '', type: '', subtype: '', freq: 1000, gain: 0 }
-		, notch             : { name: '', type: '', subtype: '', freq: 1000, q: 0, unit: 'q' }
+		, Notch             : { name: '', type: '', subtype: '', freq: 1000, q: 0, unit: 'q' }
 		, GeneralNotch      : { name: '', type: '', subtype: '', freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
 		, Peaking           : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
 		, LinkwitzTransform : { name: '', type: '', subtype: '', q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
@@ -1362,18 +1362,16 @@ var setting   = {
 			if ( [ 'Hig', 'Low' ].includes( subtype.slice( 0, 3 ) ) ) {
 				var vsubtype = subtype.replace( /High|Low/, '' );
 			} else if ( subtype.slice( -4 ) === 'pass' ) {
-				var vsubtype = 'notch';
+				var vsubtype = 'Notch';
 			} else if ( subtype === 'AllpassFO' ) {
 				var vsubtype = 'passFO';
 			} else {
-				var vsubtype = type;
+				var vsubtype = subtype;
 			}
 		} else if ( type === 'BiquadCombo' ) {
 			var vsubtype = [ 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ].includes( subtype ) ? subtype : type;
-		} else if ( type === 'Conv' ) {
-			var vsubtype = subtype;
 		} else {
-			var vsubtype = type;
+			var vsubtype = subtype;
 		}
 		var values  = F.values[ vsubtype ];
 		values.type = type;
