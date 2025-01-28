@@ -904,17 +904,18 @@ var graph     = {
 				[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
 					if ( ! ( d in data ) ) return
 					
-					var min         = Math.min( ...data[ d ] );
-					var max         = Math.max( ...data[ d ] );
-					max             = Math.max( max, scale[ d ].max );
-					min             = Math.min( min, scale[ d ].min )
-					var abs         = Math.max( Math.abs( min ), Math.abs( max ) ) + 1;
-					AXES[ d ].range = [ -abs, abs ];
+					var min = Math.min( ...data[ d ] );
+					var max = Math.max( ...data[ d ] );
+					max     = Math.max( max, scale[ d ].max );
+					min     = Math.min( min, scale[ d ].min )
+					var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + 1;
 					if ( d === 'impulse' ) {
-						AXES[ d ].dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
+						dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
 					} else {
-						AXES[ d ].dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
+						dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
 					}
+					AXES[ d ].dtick = dtick
+					AXES[ d ].range = [ -abs, abs ];
 				} );
 			}
 			PLOTS.phase.y      = data.phase;
