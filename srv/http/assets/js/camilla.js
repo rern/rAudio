@@ -792,13 +792,13 @@ var graph     = {
 				}
 			} );
 			graph.pipeline.add( 'Playback' );
-			$( '#pipeline' ).prepend( '<canvas class="flowchart"></canvas>' );
-			var canvas          = $( '.flowchart' )[ 0 ];
+			$( '#pipeline' ).prepend( '<canvas></canvas>' );
+			var canvas          = $( '#pipeline canvas' )[ 0 ];
 			canvas.width        = canvasW * X.dpxr; // fix - blur elements
 			canvas.height       = canvasH * X.dpxr; // ^
 			canvas.style.width  = canvasW +'px';    // ^
 			canvas.style.height = canvasH +'px';    // ^
-			canvas.style.margin = '20px 0';
+			canvas.style.margin = '20px 0 0 0';
 			var ctx             = canvas.getContext( '2d' );
 			ctx.scale( X.dpxr, X.dpxr );            // ^
 			ctx.save();
@@ -858,7 +858,7 @@ var graph     = {
 			} );
 		}
 		, refresh   : () => {
-			var $flowchart = $( '#pipeline .flowchart' );
+			var $flowchart = $( '#pipeline canvas' );
 			var fL         = $flowchart.length;
 			$flowchart.remove();
 			if ( fL ) graph.pipeline.flowchart();
@@ -2366,7 +2366,7 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 		setting[ V.tab.replace( /s$/, '' ) ]();
 	}
 } ).on( 'click', '.i-flowchart', function() {
-	var $flowchart = $( '#pipeline .flowchart' );
+	var $flowchart = $( '#pipeline canvas' );
 	$flowchart.length ? $flowchart.remove() : graph.pipeline.flowchart();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
@@ -2560,7 +2560,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 								graph.pipeline.refresh();
 							} else {
 								$( '.i-flowchart' ).addClass( 'disabled' );
-								$( '.flowchart' ).remove();
+								$( '#pipeline canvas' ).remove();
 							}
 						}
 					} );
