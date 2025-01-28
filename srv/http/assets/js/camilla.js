@@ -40,7 +40,7 @@ V             = {
 	, timeoutred : true
 }
 var wscamilla = null
-var R         = {}
+var R         = {} // range
 var X         = {} // flowchart
 // filters //////////////////////////////////////////////////////////////////////////////
 var F0        = {
