@@ -5,10 +5,10 @@ import sys
 
 args = json.loads( sys.argv[ 1 ].replace( '\\"', '"' ) )
 
-if 'index' in args: # not filter
+if 'index' in args: # pipeline
     from camilladsp_plot import eval_filterstep
     data = eval_filterstep( args, args[ 'index' ] )
-else:
+else:               # filter
     from camilladsp_plot import eval_filter
     data = eval_filter( args )
     

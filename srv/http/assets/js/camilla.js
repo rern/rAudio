@@ -1086,10 +1086,10 @@ var render    = {
 		render.toggle();
 	}
 	, filter      : ( k, v ) => {
-		var param      = v.parameters;
-		var scale      = false;
-		var icongain   = '';
-		var disabled   = '';
+		var param    = v.parameters;
+		var scale    = false;
+		var icongain = '';
+		var disabled = '';
 		if ( v.type === 'Gain' ) {
 			var scale = param.scale === 'linear' ? 100 : 10;
 			icongain  = ico( param.mute ? 'volume mute' : 'volume' )
@@ -1114,17 +1114,19 @@ var render    = {
 			var li        = '<div class="li1">'+ k +'</div>'
 						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
-		var $graph = $( '#filters .entries.main li[data-name="'+ k +'"]' ).find( '.divgraph' );
+		var $graph   = $( '#filters .entries.main li[data-name="'+ k +'"]' ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
+		var icon;
 		if ( param.type === 'GraphicEqualizer' ) {
-			var icon    = 'equalizer';
+			icon = 'equalizer';
 			var cl_eq = ' class="eq"';
 		} else {
-			var icon    = 'filters';
+			icon = 'filters';
 			var cl_eq = '';
 		}
-		var cl_graph = cl_eq || 'gain' in param ? ' graph' : '';
-		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ ico( icon +' liicon edit'+ cl_graph ) + li  +'</li>'
+		icon        += [ 'Volume', 'Dither', 'Limiter' ].includes( v.type ) ? '' : ' graph';
+		icon        += ' liicon edit';
+		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ ico( icon ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
