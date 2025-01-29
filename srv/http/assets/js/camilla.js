@@ -1118,12 +1118,13 @@ var render    = {
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
 		if ( param.type === 'GraphicEqualizer' ) {
 			var icon    = 'equalizer';
-			var classeq = ' class="eq"';
+			var cl_eq = ' class="eq"';
 		} else {
 			var icon    = 'filters';
-			var classeq = '';
+			var cl_eq = '';
 		}
-		return '<li data-name="'+ k +'"'+ classeq +'>'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
+		var cl_graph = cl_eq || 'gain' in param ? ' graph' : '';
+		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ ico( icon +' liicon edit'+ cl_graph ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
