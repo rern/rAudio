@@ -382,6 +382,7 @@ var D         = {
 // graph //////////////////////////////////////////////////////////////////////////////
 var color     = {
 	  g   : 'hsl( 100, 90%,  40% )'
+	, ga  : 'hsl( 100, 90%,  30% )'
 	, gd  : 'hsl( 100, 90%,  20% )'
 	, gr  : 'hsl( 200, 3%,   30% )'
 	, grl : 'hsl( 200, 3%,   50% )'
@@ -392,6 +393,7 @@ var color     = {
 	, o   : 'hsl( 30,  80%,  50% )'
 	, od  : 'hsl( 30,  80%,  20% )'
 	, r   : 'hsl( 0,   70%,  50% )'
+	, ra  : 'hsl( 0,   70%,  40% )'
 	, rd  : 'hsl( 0,   70%,  20% )'
 	, w   : 'hsl( 200, 3%,   60% )'
 	, wl  : 'hsl( 200, 3%,   80% )'
@@ -639,7 +641,7 @@ var graph     = {
 		  add       : txt => {
 			X.type = txt;
 			var cL = DEV[ txt.toLowerCase() ].channels;
-			graph.pipeline.addFrame( txt, cL, color.grl );
+			graph.pipeline.addFrame( txt, cL );
 			for ( var ch = 0; ch < cL; ch++ ) graph.pipeline.addBox( 'ch '+ ch, ch );
 		}
 		, addBox    : ( txt, ch, gain, m_in ) => {
@@ -661,7 +663,7 @@ var graph     = {
 			var a0x    = X.ax[ ch ]; // previous arrow x
 			X.ax[ ch ] = X.x + X.w;  // new arrow x: box x + box w
 			y         += Math.round( X.h / 2 );
-			X.text.push( { // label
+			X.text.push( { //----
 				  x : X.x + Math.round( X.w / 2 )
 				, y : y
 				, t : txt
@@ -712,7 +714,7 @@ var graph     = {
 			} );
 			X.arrow.push( xy ); //---- cross arrow
 		}
-		, addFrame  : ( txt, ch, clr ) => {
+		, addFrame  : ( txt, ch ) => {
 			X.box.push( { //----
 				  x : X.x - X.p
 				, y : X.h - X.p
@@ -725,7 +727,7 @@ var graph     = {
 				  x : Math.round( X.x + X.w / 2 )
 				, y : Math.round( X.h / 4 )
 				, t : txt
-				, c : clr
+				, c : color.grl
 			} );
 		}
 		, ctxShadow : ( offset ) => {
@@ -736,16 +738,10 @@ var graph     = {
 			X.ctx.shadowColor   = '#000';
 		}
 		, dbText    : gain => {
-			var p = '';
 			var c = color.grl;
-			if ( gain > 0 ) {
-				p = '+';
-				c = color.g;
-			} else if ( gain < 0 ) {
-				c = color.r;
-			}
-			var t = p + gain.toFixed( 1 );
-			return { t, c }
+			if ( gain > 0 )      c = color.ga;
+			else if ( gain < 0 ) c = color.ra;
+			return { t: ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 ), c: c }
 		}
 		, flowchart : () => {
 			var canvasW = $( '#pipeline' ).width();
@@ -759,6 +755,7 @@ var graph     = {
 			var p0      = Math.round( w0 / 10 );
 			var max_ch  = Math.max( DEV.capture.channels, DEV.playback.channels );
 			var canvasH = h0 * ( max_ch * 2 ) + p0;
+			var f0      = parseInt( $( 'body' ).css( 'font-size' ) )    // font size (15 - scaled to fit)
 			X           = {
 				  w     : w0
 				, h     : h0
@@ -766,7 +763,6 @@ var graph     = {
 				, x     : h0                                            // box0 start x
 				, ax    : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
 				, aw    : Math.round( w0 / 8 )                          // arrow head w
-				, fs    : parseInt( $( 'body' ).css( 'font-size' ) )    // font size (15 - scaled to fit)
 				, dpxr  : window.devicePixelRatio
 				, box   : []
 				, text  : []
@@ -798,14 +794,18 @@ var graph     = {
 			} );
 			graph.pipeline.add( 'Playback' );
 			$( '#pipeline' ).prepend( '<canvas></canvas>' );
-			var canvas          = $( '#pipeline canvas' )[ 0 ];
+			var $canvas         = $( '#pipeline canvas' );
+			$canvas // fix - blur elements
+				.attr( 'width', canvasW * X.dpxr )
+				.attr( 'height', canvasH * X.dpxr )
+				.css( {
+					  width  : canvasW +'px'
+					, height : canvasH +'px'
+					, margin : '20px 0'
+				} );
+			var canvas          = $canvas[ 0 ];
 			var ctx             = canvas.getContext( '2d' );
 			X.ctx               = ctx; // for ctxShadow()
-			canvas.width        = canvasW * X.dpxr; // fix - blur elements
-			canvas.height       = canvasH * X.dpxr; // ^
-			canvas.style.width  = canvasW +'px';    // ^
-			canvas.style.height = canvasH +'px';    // ^
-			canvas.style.margin = '20px 0';
 			ctx.scale( X.dpxr, X.dpxr );            // ^
 			ctx.save();
 			X.box.forEach( b => { //-------------------------------
@@ -816,8 +816,8 @@ var graph     = {
 				graph.pipeline.ctxShadow( 2 );
 			} );
 			ctx.restore();
-			ctx.strokeStyle     = color.gr;
-			ctx.fillStyle       = color.grl;
+			ctx.strokeStyle  = color.gr;
+			ctx.fillStyle    = color.grl;
 			ctx.beginPath();
 			var ay = Math.round( X.aw / 4 );
 			var x0, y0, x1, y1, xa;
@@ -836,19 +836,21 @@ var graph     = {
 				ctx.stroke();
 				ctx.fill();
 			} );
-			ctx.textAlign       = 'center';
-			ctx.textBaseline    = 'middle';
-			ctx.font            = X.fs +'px Inconsolata';
-			X.text.forEach( t => {
-				var w = ctx.measureText( t.t ).width;
-				while ( w > X.w ) { // scale font size to fit text
-					X.fs--;
-					ctx.font = X.fs +'px Inconsolata';
-					w = ctx.measureText( t.t ).width;
-				}
-			} );
-			ctx.font            = X.fs +'px Inconsolata';
+			ctx.textAlign    = 'center';
+			ctx.textBaseline = 'middle';
+			var font         = 'px Inconsolata';
 			X.text.forEach( t => { //-------------------------------
+				ctx.font      = f0 + font;
+				if ( ! t.c ) { // box label
+					var fs   = f0;
+					var w    = ctx.measureText( t.t ).width;
+					while ( w > X.w ) { // reduce to fit box
+						fs--;
+						ctx.font = fs + font;
+						w        = ctx.measureText( t.t ).width;
+					}
+					ctx.font = fs + font;
+				}
 				ctx.fillStyle = t.c || color.wl;
 				if ( t.a ) { // cross gain
 					ctx.save();
@@ -1379,11 +1381,11 @@ var setting   = {
 			var vsubtype = subtype;
 		}
 		var values  = F.values[ vsubtype ];
+		values.name = name;
 		values.type = type;
 		if ( subtype ) values.subtype = subtype;
 		var current = name in FIL && FIL[ name ].type === values.type && FIL[ name ].parameters.type === values.subtype;
 		if ( current ) {
-			values.name = name;
 			if ( subtype === 'FivePointPeq' ) {
 				Object.keys( F0.FivePointPeq ).forEach( k => {
 					values[ k ] = [];
@@ -1415,9 +1417,9 @@ var setting   = {
 			, beforeshow   : () => {
 				$( '#infoList td:first-child' ).css( 'min-width', '125px' );
 				var $select = $( '#infoList select' );
-				$select.eq( 0 ).on( 'input', function() {
+				$select.on( 'input', function() {
 					var val     = infoVal();
-					var subtype = val.type in F0.subtype ? F0.subtype[ val.type ][ 2 ][ 0 ] : '';
+					var subtype = val.type in F0.subtype ? val.subtype || F0.subtype[ val.type ][ 2 ][ 0 ] : '';
 					setting.filter( val.type, subtype, val.name );
 				} );
 				if ( subtype ) {
