@@ -836,13 +836,10 @@ var graph     = {
 			} );
 			ctx.textAlign    = 'center';
 			ctx.textBaseline = 'middle';
-			ctx.font         = '15px Inconsolata';
-			var cL           = Math.floor( X.w * 0.9  / ctx.measureText( '0' ).width );
 			X.text.forEach( t => { //-------------------------------
 				ctx.fillStyle = t.c || color.wl;
+				ctx.font = ( t.c ? 12 : 15 ) +'px Inconsolata';
 				if ( t.a ) { // cross gain
-					if ( t.t.length > cL ) return
-					
 					ctx.save();
 					ctx.translate( t.x - X.p, t.y );
 					ctx.rotate( t.a );
@@ -851,10 +848,8 @@ var graph     = {
 					ctx.restore();
 				} else {
 					var txt = t.t;
-					if ( t.c ) { // gain
-						if ( txt.length > cL ) return
-						
-					} else {
+					if ( ! t.c ) { // gain
+						var cL = Math.floor( X.w * 0.9  / ctx.measureText( '0' ).width );
 						if ( txt.length > cL ) txt = txt.replace( /^ch /, '' );
 						if ( ! t.f ) txt = txt.slice( 0, cL ); // if not fram, trim
 					}
