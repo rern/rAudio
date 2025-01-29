@@ -657,7 +657,7 @@ var graph     = {
 				, w : X.w
 				, h : X.h
 				, r : Math.round( X.p / 2 )
-				, f : c[ X.type ]
+				, c : c[ X.type ]
 			} );
 			var a0x    = X.ax[ ch ]; // previous arrow x
 			X.ax[ ch ] = X.x + X.w;  // new arrow x: box x + box w
@@ -720,7 +720,7 @@ var graph     = {
 				, w : X.w + X.p * 2
 				, h : X.h * ( ch * 2 - 1 ) + X.p * 2
 				, r : X.p
-				, f : color.grd
+				, c : color.grd
 			} );
 			X.text.push( { //----
 				  x : Math.round( X.x + X.w / 2 )
@@ -754,7 +754,6 @@ var graph     = {
 			var p0      = Math.round( w0 / 10 );
 			var max_ch  = Math.max( DEV.capture.channels, DEV.playback.channels );
 			var canvasH = h0 * ( max_ch * 2 ) + p0;
-			var f0      = parseInt( $( 'body' ).css( 'font-size' ) )    // font size (15 - scaled to fit)
 			X           = {
 				  w     : w0
 				, h     : h0
@@ -808,7 +807,7 @@ var graph     = {
 			ctx.scale( X.dpxr, X.dpxr );            // ^
 			ctx.save();
 			X.box.forEach( b => { //-------------------------------
-				ctx.fillStyle = b.f;
+				ctx.fillStyle = b.c;
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
@@ -837,20 +836,13 @@ var graph     = {
 			} );
 			ctx.textAlign    = 'center';
 			ctx.textBaseline = 'middle';
-			var font         = 'px Inconsolata';
+			ctx.font         = '15px Inconsolata';
+			var cL           = Math.floor( X.w * 0.9  / ctx.measureText( '0' ).width );
 			X.text.forEach( t => { //-------------------------------
-				ctx.font      = f0 + font;
-				var fs        = f0;
-				var w         = ctx.measureText( t.t ).width;
-				var b_w       = t.f ? ( X.w - X.p ) * 2 : X.w - X.p * 2;
-				while ( w > b_w ) { // reduce to fit box
-					fs--;
-					ctx.font = fs + font;
-					w        = ctx.measureText( t.t ).width;
-				}
-				ctx.font      = fs + font;
 				ctx.fillStyle = t.c || color.wl;
 				if ( t.a ) { // cross gain
+					if ( t.t.length > cL ) return
+					
 					ctx.save();
 					ctx.translate( t.x - X.p, t.y );
 					ctx.rotate( t.a );
@@ -858,7 +850,15 @@ var graph     = {
 					ctx.fillText( t.t, t.x, t.y );
 					ctx.restore();
 				} else {
-					ctx.fillText( t.t, t.x, t.y );
+					var txt = t.t;
+					if ( t.c ) { // gain
+						if ( txt.length > cL ) return
+						
+					} else {
+						if ( txt.length > cL ) txt = txt.replace( /^ch /, '' );
+						if ( ! t.f ) txt = txt.slice( 0, cL ); // if not fram, trim
+					}
+					ctx.fillText( txt, t.x, t.y );
 				}
 				graph.pipeline.ctxShadow( 1 );
 			} );
