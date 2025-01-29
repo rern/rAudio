@@ -726,7 +726,7 @@ var graph     = {
 				  x : Math.round( X.x + X.w / 2 )
 				, y : Math.round( X.h / 4 )
 				, t : txt
-				, c : color.grl
+				, f : true
 			} );
 		}
 		, ctxShadow : ( offset ) => {
@@ -840,16 +840,15 @@ var graph     = {
 			var font         = 'px Inconsolata';
 			X.text.forEach( t => { //-------------------------------
 				ctx.font      = f0 + font;
-				if ( ! t.c ) { // box label
-					var fs   = f0;
-					var w    = ctx.measureText( t.t ).width;
-					while ( w > X.w ) { // reduce to fit box
-						fs--;
-						ctx.font = fs + font;
-						w        = ctx.measureText( t.t ).width;
-					}
+				var fs        = f0;
+				var w         = ctx.measureText( t.t ).width;
+				var b_w       = t.f ? ( X.w - X.p ) * 2 : X.w - X.p * 2;
+				while ( w > b_w ) { // reduce to fit box
+					fs--;
 					ctx.font = fs + font;
+					w        = ctx.measureText( t.t ).width;
 				}
+				ctx.font      = fs + font;
 				ctx.fillStyle = t.c || color.wl;
 				if ( t.a ) { // cross gain
 					ctx.save();
