@@ -1,3 +1,4 @@
+.i-restore::before { content: '\F52B' }
 #vu {
 	position: relative;
 	width: 230px;

@@ -2391,12 +2391,15 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
 	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
 	$( '#menu .delete' ).toggleClass( 'disabled', V.tab === 'config' && S.ls.configs.length === 1 );
+	if ( V.tab === 'mixers' && $( '#mixers .entries.sub' ).hasClass( 'hide' ) ) {
+		$( '#menu' ).find( '.edit, .rename' ).toggleClass( 'hide' );
+	}
 	if ( V.tab === 'pipeline' ) {
-		$( '#menu .bypass' )
-			.html( PIP[ V.li.index() ].bypassed ? ico( 'pipeline' ) +'Restore' : ico( 'bypass' ) +'Bypass' )
-			.removeClass( 'hide' );
+		var bypassed = PIP[ V.li.index() ].bypassed === true;
+		$( '#menu' ).find( '.bypass' ).toggleClass( 'hide', bypassed );
+		$( '#menu' ).find( '.restore' ).toggleClass( 'hide', ! bypassed );
 	} else {
-		$( '#menu .bypass' ).addClass( 'hide' );
+		$( '#menu' ).find( '.bypass, .restore' ).addClass( 'hide' );
 	}
 	contextMenu();
 } ).on( 'click', '.i-back', function() {
@@ -2480,9 +2483,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 			var name  = V.li.data( 'name' );
 			var main  = $( '#mixers .entries.sub' ).hasClass( 'hide' );
 			switch ( cmd ) {
-				case 'edit':
-					setting.mixer( name );
-					break;
 				case 'delete':
 					var dest = V.li.hasClass( 'liinput main' );
 					var mi   = V.li.data( 'index' );
@@ -2523,6 +2523,9 @@ $( '#menu a' ).on( 'click', function( e ) {
 							V.li.remove();
 						}
 					} );
+					break;
+				case 'rename':
+					setting.mixer( name );
 					break;
 			}
 			break;
@@ -2574,6 +2577,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					} );
 					break;
 				case 'bypass':
+				case 'restore':
 					var i             = V.li.index();
 					var bypassed      = ! PIP[ i ].bypassed
 					PIP[ i ].bypassed = bypassed;
