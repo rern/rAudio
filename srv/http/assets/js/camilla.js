@@ -168,8 +168,7 @@ var F         = {
 		, Peaking           : [ ...F1.pass.slice( 0, 4 ), F0.gain, F0.q, F0.qbandwidth ]
 		, Notch             : Flist.Notch
 		, GeneralNotch      : [
-			  F0.name
-			, F0.type
+			...F1.pass.slice( 0, 3 )
 			, [ 'Zero frequency',  'number' ]
 			, [ 'Pole frequency',  'number' ]
 			, [ 'Pole Q',          'number' ]
@@ -1420,26 +1419,24 @@ var setting   = {
 			, beforeshow   : () => {
 				$( '#infoList td:first-child' ).css( 'min-width', '125px' );
 				var $select = $( '#infoList select' );
-				$select.on( 'input', function() {
+				$select.eq( 0 ).on( 'input', function() {
 					var val     = infoVal();
-					var subtype = val.type in F0.subtype ? val.subtype || F0.subtype[ val.type ][ 2 ][ 0 ] : '';
+					var subtype = val.type in F0.subtype ? val.subtype : val.type;
 					setting.filter( val.type, subtype, val.name );
 				} );
-				if ( subtype ) {
-					$select.eq( 1 ).on( 'input', function() {
-						var val = infoVal();
-						if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.ls.coeffs ) {
-							info( {
-								  icon    : V.tab
-								, title   : title
-								, message : 'Filter files not available.'
-								, ok      : () => setting.filter( 'Conv', subtype, val.name )
-							} );
-						} else {
-							setting.filter( val.type, val.subtype, val.name );
-						}
-					} );
-				}
+				$select.eq( 1 ).on( 'input', function() {
+					var val = infoVal();
+					if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.ls.coeffs ) {
+						info( {
+							  icon    : V.tab
+							, title   : title
+							, message : 'Filter files not available.'
+							, ok      : () => setting.filter( 'Conv', subtype, val.name )
+						} );
+					} else {
+						setting.filter( val.type, val.subtype, val.name );
+					}
+				} );
 				var $radio = $( '#infoList input:radio' );
 				if ( $radio.length ) {
 					var $label = $radio.parents( 'tr' ).prev().find( 'td' ).eq( 0 );
