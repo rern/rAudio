@@ -643,19 +643,25 @@ var graph     = {
 			for ( var ch = 0; ch < cL; ch++ ) graph.pipeline.addBox( 'ch '+ ch, ch );
 		}
 		, addBox    : ( txt, ch, gain, m_in ) => {
-			var y = X.h + X.h * 2 * ch; // y > down - each channel
-			X.box.push( {
+			var y      = X.h + X.h * 2 * ch; // y > down - each channel
+			var c      = {
+				  Filter   : color.md
+				, Capture  : color.grl
+				, Mixer    : color.rd
+				, Playback : color.gr
+			}
+			X.box.push( { //----
 				  x : X.x
 				, y : y
 				, w : X.w
 				, h : X.h
 				, r : Math.round( X.p / 2 )
-				, f : X.color[ X.type ]
+				, f : c[ X.type ]
 			} );
-			var a0x   = X.a[ ch ]; // previous arrow x
-			X.a[ ch ] = X.x + X.w; // new arrow x: box x + box w
-			y        += Math.round( X.h / 2 );
-			X.text.push( { // box text
+			var a0x    = X.ax[ ch ]; // previous arrow x
+			X.ax[ ch ] = X.x + X.w;  // new arrow x: box x + box w
+			y         += Math.round( X.h / 2 );
+			X.text.push( { // label
 				  x : X.x + Math.round( X.w / 2 )
 				, y : y
 				, t : txt
@@ -672,42 +678,42 @@ var graph     = {
 			var has_g  = typeof gain === 'number';
 			var box_p  = X.type === 'Playback';
 			if ( has_g || box_p ) {
-				X.arrow.push( { // flat arrow line
-					  a0 : [ a0x,  y ]
-					, a1 : [ X.x,  y ]
-				} );
+				X.arrow.push( [ //----
+					  { x: a0x,  y: y }
+					, { x: X.x,  y: y }
+				] );
 			}
 			if ( box_p ) return // no gains
 			
-			var g      = graph.pipeline.dbSet( gain );
+			var db     = graph.pipeline.dbText( gain );
 			var tx0    = a0x + Math.round( X.w / 2 );
 			if ( has_g ) {
-				X.text.push( { // gain text
+				X.text.push( { //---- gain
 					  x : tx0
 					, y : y + Math.round( offset / 4 )
-					, t : g.db
-					, c : g.clr
+					, t : db.t
+					, c : db.c
 				} );
 			}
 			if ( typeof gain1 !== 'number' ) return // no crosses
 			
-			g          = graph.pipeline.dbSet( gain1 );
-			a          = {
-				  a0 : [ a0x, y ]
-				, a1 : [ X.x, y - offset * 2 ]
-			}
-			var angle  = Math.atan2( a.a1[ 1 ] - a.a0[ 1 ], a.a1[ 0 ] - a.a0[ 0 ] - X.aw ); // radian = Math.atan2( y1 - y0, x1 - x0 )
-			X.text.push( { // cross gain text
+			var db     = graph.pipeline.dbText( gain1 );
+			var xy     = [
+				  { x: a0x, y: y }
+				, { x: X.x, y: y - offset * 2 }
+			]
+			var angle  = Math.atan2( xy[ 1 ].y - xy[ 0 ].y, xy[ 1 ].x - xy[ 0 ].x - X.aw ); // Math.atan2( y1 - y0, x1 - x0 - aw )
+			X.text.push( { //---- cross gain
 				  x : tx0
 				, y : y - Math.round( offset / 2 )
-				, t : g.db
-				, c : g.clr
-				, a : angle
+				, t : db.t
+				, c : db.c
+				, a : angle // radian
 			} );
-			X.arrow.push( a ); // cross arrow line
+			X.arrow.push( xy ); //---- cross arrow
 		}
 		, addFrame  : ( txt, ch, clr ) => {
-			X.box.push( {
+			X.box.push( { //----
 				  x : X.x - X.p
 				, y : X.h - X.p
 				, w : X.w + X.p * 2
@@ -715,59 +721,56 @@ var graph     = {
 				, r : X.p
 				, f : color.grd
 			} );
-			X.text.push( {
+			X.text.push( { //----
 				  x : Math.round( X.x + X.w / 2 )
 				, y : Math.round( X.h / 4 )
 				, t : txt
 				, c : clr
 			} );
 		}
-		, dbSet     : db => {
-			var plus = ''
-			var clr = color.grl;
-			if ( db > 0 ) {
-				plus  = '+';
-				clr = color.g;
-			} else if ( db < 0 ) {
-				clr = color.r;
+		, ctxShadow : ( offset ) => {
+			offset *= X.dpxr;
+			X.ctx.shadowOffsetX = -offset;
+			X.ctx.shadowOffsetY = offset;
+			X.ctx.shadowBlur    = offset;
+			X.ctx.shadowColor   = '#000';
+		}
+		, dbText    : gain => {
+			var p = '';
+			var c = color.grl;
+			if ( gain > 0 ) {
+				p = '+';
+				c = color.g;
+			} else if ( gain < 0 ) {
+				c = color.r;
 			}
-			db = plus + db.toFixed( 1 );
-			return { db, clr }
+			var t = p + gain.toFixed( 1 );
+			return { t, c }
 		}
 		, flowchart : () => {
 			var canvasW = $( '#pipeline' ).width();
 			var boxL    = 2;                               // capture + playback
-			PIP.forEach( pip => pip.type === 'Filter' ? pip.names.forEach( name => boxL++ ) : boxL++ );
+			PIP.forEach( pip => {
+				boxL += pip.type === 'Filter' ? pip.names.length : 1;
+			} );
 			var canvasL = boxL * 2;                        // |--boxC----boxN----boxP--|
-			var w0      = Math.round( canvasW / canvasL ); // box w (base unit)
+			var w0      = Math.round( canvasW / canvasL ); // box w (base unit) - round to prevent blurry
 			var h0      = Math.round( w0 / 2 );
+			var p0      = Math.round( w0 / 10 );
 			var max_ch  = Math.max( DEV.capture.channels, DEV.playback.channels );
-			var canvasH = h0 * ( max_ch * 2 + 1 );
+			var canvasH = h0 * ( max_ch * 2 ) + p0;
 			X           = {
-				  w      : w0
-				, h      : h0
-				, p      : Math.round( w0 / 10 )                         // frame padding
-				, x      : h0                                            // box0 start x
-				, a      : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
-				, aw     : Math.round( w0 / 8 )                          // arrow head w
-				, fs     : parseInt( $( 'body' ).css( 'font-size' ) )    // font size (15 - scaled to fit)
-				, dpxr   : window.devicePixelRatio
-				, color  : {
-					  Filter   : color.md
-					, Capture  : color.grl
-					, Mixer    : color.rd
-					, Playback : color.gr
-				}
+				  w     : w0
+				, h     : h0
+				, p     : p0                                            // frame padding
+				, x     : h0                                            // box0 start x
+				, ax    : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
+				, aw    : Math.round( w0 / 8 )                          // arrow head w
+				, fs    : parseInt( $( 'body' ).css( 'font-size' ) )    // font size (15 - scaled to fit)
+				, dpxr  : window.devicePixelRatio
 				, box   : []
 				, text  : []
 				, arrow : []
-			}
-			function shadow( offset ) {
-				offset *= X.dpxr;
-				ctx.shadowOffsetX = -offset;
-				ctx.shadowOffsetY = offset;
-				ctx.shadowBlur    = offset;
-				ctx.shadowColor   = '#000';
 			}
 			
 			graph.pipeline.add( 'Capture' );
@@ -789,19 +792,20 @@ var graph     = {
 						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
 					} );
 					X.x        += X.w * 2; // x > right - each mixer
-					var x       = Math.max( ...X.a );
-					X.a         = [ x, x ]; // equalize arrow in
+					var x       = Math.max( ...X.ax );
+					X.ax        = [ x, x ]; // equalize arrow in
 				}
 			} );
 			graph.pipeline.add( 'Playback' );
 			$( '#pipeline' ).prepend( '<canvas></canvas>' );
 			var canvas          = $( '#pipeline canvas' )[ 0 ];
+			var ctx             = canvas.getContext( '2d' );
+			X.ctx               = ctx; // for ctxShadow()
 			canvas.width        = canvasW * X.dpxr; // fix - blur elements
 			canvas.height       = canvasH * X.dpxr; // ^
 			canvas.style.width  = canvasW +'px';    // ^
 			canvas.style.height = canvasH +'px';    // ^
-			canvas.style.margin = '20px 0 0 0';
-			var ctx             = canvas.getContext( '2d' );
+			canvas.style.margin = '20px 0';
 			ctx.scale( X.dpxr, X.dpxr );            // ^
 			ctx.save();
 			X.box.forEach( b => { //-------------------------------
@@ -809,7 +813,7 @@ var graph     = {
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
-				shadow( 2 );
+				graph.pipeline.ctxShadow( 2 );
 			} );
 			ctx.restore();
 			ctx.strokeStyle     = color.gr;
@@ -817,11 +821,11 @@ var graph     = {
 			ctx.beginPath();
 			var ay = Math.round( X.aw / 4 );
 			var x0, y0, x1, y1, xa;
-			X.arrow.forEach( a => { //-------------------------------
-				x0 = a.a0[ 0 ];
-				y0 = a.a0[ 1 ];
-				x1 = a.a1[ 0 ] - 1; // omit mitter head
-				y1 = a.a1[ 1 ];
+			X.arrow.forEach( xy => { //-------------------------------
+				x0 = xy[ 0 ].x;
+				y0 = xy[ 0 ].y;
+				x1 = xy[ 1 ].x - 1; // omit mitter head
+				y1 = xy[ 1 ].y;
 				xa = x1 - X.aw;
 				ctx.moveTo( x0, y0 );
 				ctx.lineTo( xa, y1 );
@@ -856,7 +860,7 @@ var graph     = {
 				} else {
 					ctx.fillText( t.t, t.x, t.y );
 				}
-				shadow( 1 );
+				graph.pipeline.ctxShadow( 1 );
 			} );
 		}
 		, refresh   : () => {
@@ -897,20 +901,19 @@ var graph     = {
 				PLOTS.magnitude.y   = 0;
 			} else {
 				PLOTS.magnitude.y   = data.magnitude;
-				var scale  = {
+				var minmax          = {
 					  groupdelay : { min: -10, max: 10 }
 					, impulse    : { min:  -1, max: 1 }
 					, magnitude  : { min:  -6, max: 6 }
-				}
-				var minmax = {};
+				};
 				[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
 					if ( ! ( d in data ) ) return
 					
 					var min = Math.min( ...data[ d ] );
 					var max = Math.max( ...data[ d ] );
-					max     = Math.max( max, scale[ d ].max );
-					min     = Math.min( min, scale[ d ].min )
-					var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + 1;
+					max     = Math.max( max, minmax[ d ].max );
+					min     = Math.min( min, minmax[ d ].min )
+					var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ].max * 0.1;
 					if ( d === 'impulse' ) {
 						dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
 					} else {
