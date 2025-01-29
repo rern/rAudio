@@ -2329,12 +2329,14 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 // common ---------------------------------------------------------------------------------
 $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, mixersSub
 	setting.rangeGet( $( this ), 'click' );
+	graph.refresh();
 } ).on( 'touchend mouseup mouseleave', '.i-minus, .i-plus, .db', function() {
 	if ( ! V.press ) return
 	
 	V.press = false;
 	clearInterval( V.intervalgain );
 	setting.save();
+	graph.refresh();
 } ).press( '.i-minus, .i-plus', function( e ) {
 	setting.rangeGet( $( e.currentTarget ), 'press' );
 } );
@@ -2649,7 +2651,7 @@ $( '.entries' ).on( 'touchmove mousemove', 'input[type=range]', function() {
 	V.press = true;
 } ).on( 'input', 'input[type=range]', function() {
 	setting.rangeGet( $( this ), 'input' );
-} ).on( 'touchend mouseup', 'input[type=range]', function() {
+} ).on( 'touchend mouseup mouseleave', 'input[type=range]', function() {
 	V.press = false;
 	graph.refresh();
 } )
