@@ -671,48 +671,44 @@ var graph     = {
 			} );
 			if ( X.type === 'Capture' ) return // no arrows, no gains
 			
+			X.arrow.push( [ //----
+				  { x: a0x,  y: y }
+				, { x: X.x,  y: y }
+			] );
+			if ( X.type === 'Playback' ) return // no gains
+			
 			var ch0    = ch === 0;
-			var offset = ch0 ? -X.h : X.h;
-			if ( typeof gain === 'object' ) { // mixer - { 0: n, 1: n }
-				var ch1   = ch0 ? 1 : 0;
-				var gain1 = gain[ ch1 ];
-				gain      = gain[ ch ];
-			}
-			var has_g  = typeof gain === 'number';
-			var box_p  = X.type === 'Playback';
-			if ( has_g || box_p ) {
-				X.arrow.push( [ //----
-					  { x: a0x,  y: y }
-					, { x: X.x,  y: y }
-				] );
-			}
-			if ( box_p ) return // no gains
+			var mix    = typeof gain === 'object';
+			var g      = mix ? gain[ ch ] : gain;
 			
-			var db     = graph.pipeline.dbText( gain );
+			var db     = graph.pipeline.dbText( g );
 			var tx0    = a0x + Math.round( X.w / 2 );
-			if ( has_g ) {
-				X.text.push( { //----
-					  x : tx0
-					, y : y + Math.round( offset / 4 )
-					, t : db.t
-					, c : db.c
-				} );
-			}
-			if ( typeof gain1 !== 'number' ) return // no crosses
-			
-			var db     = graph.pipeline.dbText( gain1 );
-			var xy     = [
-				  { x: a0x, y: y }
-				, { x: X.x, y: y - offset * 2 }
-			]
-			X.arrow.push( xy ); //----
-			var angle  = Math.atan2( xy[ 1 ].y - xy[ 0 ].y, xy[ 1 ].x - xy[ 0 ].x - X.aw ); // Math.atan2( y1 - y0, x1 - x0 - aw )
 			X.text.push( { //----
 				  x : tx0
-				, y : y - Math.round( offset / 2 )
+				, y : y
 				, t : db.t
 				, c : db.c
-				, a : angle // radian
+			} );
+			if ( ! mix ) return // no crosses
+			
+			gain.forEach( ( g, s_ch ) => {
+				if ( s_ch === ch ) return
+				
+				var xy     = [
+					  { x: a0x, y: y + X.h * 2 * ( s_ch - ch ) }
+					, { x: X.x, y: y }
+				]
+				X.arrow.push( xy ); //----
+				var db     = graph.pipeline.dbText( g );
+				var angle  = Math.atan2( xy[ 1 ].y - xy[ 0 ].y, xy[ 1 ].x - xy[ 0 ].x - X.aw ); // Math.atan2( y1 - y0, x1 - x0 - aw )
+				var offset = s_ch > ch ? -X.h : X.h;
+				X.text.push( { //----
+					  x : tx0 + X.aw * 2
+					, y : y - Math.round( offset / 2 )
+					, t : db.t
+					, c : db.c
+					, a : angle // radian
+				} );
 			} );
 		}
 		, addFrame  : ( txt, ch ) => {
@@ -740,8 +736,8 @@ var graph     = {
 		}
 		, dbText    : gain => {
 			var c = color.grl;
-			if ( gain > 0 )      c = color.ga;
-			else if ( gain < 0 ) c = color.ra;
+			if ( gain > 0 )      c = color.g;
+			else if ( gain < 0 ) c = color.r;
 			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
 			return { t: gain, c: c }
 		}
@@ -784,7 +780,7 @@ var graph     = {
 					graph.pipeline.addFrame( pip.name, mapping.length );
 					mapping.forEach( m => {
 						var ch   = m.dest;
-						var gain = {};
+						var gain = [];
 						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
 						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
 					} );
