@@ -659,10 +659,6 @@ var graph     = {
 				, r : Math.round( X.p / 2 )
 				, c : c[ X.type ]
 			} );
-			if ( ch < DEV.capture.channels ) { // capture only
-				var a0x    = X.ax[ ch ]; // previous arrow x
-				X.ax[ ch ] = X.x + X.w;  // new arrow x: box x + box w
-			}
 			y         += Math.round( X.h / 2 );
 			X.text.push( { //----
 				  x : X.x + Math.round( X.w / 2 )
@@ -672,31 +668,30 @@ var graph     = {
 			if ( X.type === 'Capture' ) return // no arrows, no gains
 			
 			X.arrow.push( [ //----
-				  { x: a0x,  y: y }
-				, { x: X.x,  y: y }
+				  { x: X.ax[ ch ], y: y }
+				, { x: X.x,        y: y }
 			] );
 			if ( X.type === 'Playback' ) return // no gains
 			
 			var ch0    = ch === 0;
-			var mix    = typeof gain === 'object';
-			var g      = mix ? gain[ ch ] : gain;
-			
+			var g_obj  = typeof gain === 'object';
+			var g      = g_obj ? gain[ ch ] : gain;
 			var db     = graph.pipeline.dbText( g );
-			var tx0    = a0x + Math.round( X.w / 2 );
+			var tx0    = X.ax[ ch ] + Math.round( X.w / 2 );
 			X.text.push( { //----
 				  x : tx0
 				, y : y
 				, t : db.t
 				, c : db.c
 			} );
-			if ( ! mix ) return // no crosses
+			if ( ! g_obj ) return // no crosses
 			
 			gain.forEach( ( g, s_ch ) => {
 				if ( s_ch === ch ) return
 				
 				var xy     = [
-					  { x: a0x, y: y + X.h * 2 * ( s_ch - ch ) }
-					, { x: X.x, y: y }
+					  { x: X.ax[ s_ch ], y: y + X.h * 2 * ( s_ch - ch ) }
+					, { x: X.x,          y: y }
 				]
 				X.arrow.push( xy ); //----
 				var db     = graph.pipeline.dbText( g );
@@ -752,15 +747,17 @@ var graph     = {
 			var w0      = Math.round( canvasW / canvasL ); // box w (base unit) - round to prevent blurry
 			var h0      = Math.round( w0 / 2 );
 			var p0      = Math.round( w0 / 10 );
-			var max_ch  = Math.max( DEV.capture.channels, DEV.playback.channels );
-			var canvasH = h0 * ( max_ch * 2 ) + p0;
+			var ch_capt = DEV.capture.channels;
+			var ch_play = DEV.playback.channels;
+			var max_ch  = Math.max( ch_capt, ch_play );
+			var canvasH = h0 * ( Math.max( ch_capt, ch_play ) * 2 ) + p0; // |-label-box0----box1-p|
 			X           = {
 				  w     : w0
 				, h     : h0
-				, p     : p0                                            // frame padding
-				, x     : h0                                            // box0 start x
-				, ax    : new Array( DEV.capture.channels ).fill( -h0 ) // arrow line x-pos: each channel (draw from previous box)
-				, aw    : Math.round( w0 / 8 )                          // arrow head w
+				, p     : p0                                   // frame padding
+				, x     : h0                                   // box0 start x
+				, ax    : new Array( ch_capt ).fill( h0 + w0 ) // arrow line x[ 0 ]: each channel (draw from previous box)
+				, aw    : Math.round( w0 / 8 )                 // arrow head w
 				, dpxr  : window.devicePixelRatio
 				, box   : []
 				, text  : []
@@ -773,7 +770,10 @@ var graph     = {
 				X.type  = pip.type;
 				if ( X.type === 'Filter' ) {
 					pip.names.forEach( name => {
-						pip.channels.forEach( ch => graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain ) );
+						pip.channels.forEach( ch => {
+							graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain );
+							X.ax[ ch ] = X.x + X.w;
+						} );
 						X.x += X.w * 2; // x > right - each filter
 					} );
 				} else {
@@ -785,9 +785,9 @@ var graph     = {
 						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
 						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
 					} );
-					X.x        += X.w * 2; // x > right - each mixer
-					var x       = Math.max( ...X.ax );
+					var x       = X.x + X.w;
 					X.ax        = [ x, x ]; // equalize arrow in
+					X.x        += X.w * 2; // x > right - each mixer
 				}
 			} );
 			graph.pipeline.add( 'Playback' );
