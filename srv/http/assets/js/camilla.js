@@ -700,11 +700,12 @@ var graph     = {
 				]
 				X.arrow.push( xy ); //----
 				var db     = graph.pipeline.dbText( g );
-				var angle  = Math.atan2( xy[ 1 ].y - xy[ 0 ].y, xy[ 1 ].x - xy[ 0 ].x - X.aw ); // Math.atan2( y1 - y0, x1 - x0 - aw )
-				var offset = s_ch > ch ? -X.h : X.h;
+				var x_diff = xy[ 1 ].x - xy[ 0 ].x - X.aw;
+				var y_diff = xy[ 1 ].y - xy[ 0 ].y;
+				var angle  = Math.atan2( y_diff, x_diff );
 				X.text.push( { //----
-					  x : tx0 + X.aw * 2
-					, y : y - Math.round( offset / 2 )
+					  x : xy[ 0 ].x + x_diff / 4
+					, y : xy[ 0 ].y + y_diff / 4
 					, t : db.t
 					, c : db.c
 					, a : angle // radian
@@ -840,7 +841,7 @@ var graph     = {
 				ctx.font = ( t.c ? 12 : 15 ) +'px Inconsolata';
 				if ( t.a ) { // cross gain
 					ctx.save();
-					ctx.translate( t.x - X.p, t.y );
+					ctx.translate( t.x, t.y );
 					ctx.rotate( t.a );
 					ctx.translate( -t.x,-t.y );
 					ctx.fillText( t.t, t.x, t.y );
