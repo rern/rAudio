@@ -381,7 +381,6 @@ var D         = {
 // graph //////////////////////////////////////////////////////////////////////////////
 var color     = {
 	  g   : 'hsl( 100, 90%,  40% )'
-	, ga  : 'hsl( 100, 90%,  30% )'
 	, gd  : 'hsl( 100, 90%,  20% )'
 	, gr  : 'hsl( 200, 3%,   30% )'
 	, grl : 'hsl( 200, 3%,   50% )'
@@ -392,7 +391,6 @@ var color     = {
 	, o   : 'hsl( 30,  80%,  50% )'
 	, od  : 'hsl( 30,  80%,  20% )'
 	, r   : 'hsl( 0,   70%,  50% )'
-	, ra  : 'hsl( 0,   70%,  40% )'
 	, rd  : 'hsl( 0,   70%,  20% )'
 	, w   : 'hsl( 200, 3%,   60% )'
 	, wl  : 'hsl( 200, 3%,   80% )'
@@ -644,13 +642,13 @@ var graph     = {
 			for ( var ch = 0; ch < cL; ch++ ) graph.pipeline.addBox( 'ch '+ ch, ch );
 		}
 		, addBox    : ( txt, ch, gain ) => {
-			var y      = X.h + X.h * 2 * ch; // y > down - each channel
-			var c      = {
+			var c  = {
 				  Filter   : color.md
-				, Capture  : color.grl
+				, Capture  : '#000'
 				, Mixer    : color.rd
 				, Playback : color.gr
 			}
+			var y  = X.h + X.h * 2 * ch; // y > down - each channel
 			X.box.push( { //----
 				  x : X.x
 				, y : y
@@ -659,7 +657,7 @@ var graph     = {
 				, r : Math.round( X.p / 2 )
 				, c : c[ X.type ]
 			} );
-			y         += Math.round( X.h / 2 );
+			y       += Math.round( X.h / 2 );
 			X.text.push( { //----
 				  x : X.x + Math.round( X.w / 2 )
 				, y : y
@@ -673,18 +671,15 @@ var graph     = {
 			] );
 			if ( X.type === 'Playback' ) return // no gains
 			
-			var ch0    = ch === 0;
-			var g_obj  = typeof gain === 'object';
-			var g      = g_obj ? gain[ ch ] : gain;
-			var db     = graph.pipeline.dbText( g );
-			var tx0    = X.ax[ ch ] + Math.round( X.w / 2 );
+			var g  = X.type === 'Mixer' ? gain[ ch ] : gain;
+			var db = graph.pipeline.dbText( g );
 			X.text.push( { //----
-				  x : tx0
+				  x : X.ax[ ch ] + Math.round( X.w / 2 )
 				, y : y
 				, t : db.t
 				, c : db.c
 			} );
-			if ( ! g_obj ) return // no crosses
+			if ( X.type !== 'Mixer' ) return // no crosses
 			
 			gain.forEach( ( g, s_ch ) => {
 				if ( s_ch === ch ) return
@@ -724,7 +719,7 @@ var graph     = {
 			} );
 		}
 		, ctxShadow : ( offset ) => {
-			offset *= X.dpxr;
+			offset             *= X.dpxr;
 			X.ctx.shadowOffsetX = -offset;
 			X.ctx.shadowOffsetY = offset;
 			X.ctx.shadowBlur    = offset;
@@ -732,7 +727,7 @@ var graph     = {
 		}
 		, dbText    : gain => {
 			var c = color.grl;
-			if ( gain > 0 )      c = color.g;
+			if ( gain > 0 )      c = color.m;
 			else if ( gain < 0 ) c = color.r;
 			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
 			return { t: gain, c: c }
@@ -749,7 +744,6 @@ var graph     = {
 			var p0      = Math.round( w0 / 10 );
 			var ch_capt = DEV.capture.channels;
 			var ch_play = DEV.playback.channels;
-			var max_ch  = Math.max( ch_capt, ch_play );
 			var canvasH = h0 * ( Math.max( ch_capt, ch_play ) * 2 ) + p0; // |-label-box0----box1-p|
 			X           = {
 				  w     : w0
