@@ -643,7 +643,7 @@ var graph     = {
 			graph.pipeline.addFrame( txt, cL );
 			for ( var ch = 0; ch < cL; ch++ ) graph.pipeline.addBox( 'ch '+ ch, ch );
 		}
-		, addBox    : ( txt, ch, gain, m_in ) => {
+		, addBox    : ( txt, ch, gain ) => {
 			var y      = X.h + X.h * 2 * ch; // y > down - each channel
 			var c      = {
 				  Filter   : color.md
@@ -659,8 +659,10 @@ var graph     = {
 				, r : Math.round( X.p / 2 )
 				, c : c[ X.type ]
 			} );
-			var a0x    = X.ax[ ch ]; // previous arrow x
-			X.ax[ ch ] = X.x + X.w;  // new arrow x: box x + box w
+			if ( ch < DEV.capture.channels ) { // capture only
+				var a0x    = X.ax[ ch ]; // previous arrow x
+				X.ax[ ch ] = X.x + X.w;  // new arrow x: box x + box w
+			}
 			y         += Math.round( X.h / 2 );
 			X.text.push( { //----
 				  x : X.x + Math.round( X.w / 2 )
@@ -689,7 +691,7 @@ var graph     = {
 			var db     = graph.pipeline.dbText( gain );
 			var tx0    = a0x + Math.round( X.w / 2 );
 			if ( has_g ) {
-				X.text.push( { //---- gain
+				X.text.push( { //----
 					  x : tx0
 					, y : y + Math.round( offset / 4 )
 					, t : db.t
@@ -703,15 +705,15 @@ var graph     = {
 				  { x: a0x, y: y }
 				, { x: X.x, y: y - offset * 2 }
 			]
+			X.arrow.push( xy ); //----
 			var angle  = Math.atan2( xy[ 1 ].y - xy[ 0 ].y, xy[ 1 ].x - xy[ 0 ].x - X.aw ); // Math.atan2( y1 - y0, x1 - x0 - aw )
-			X.text.push( { //---- cross gain
+			X.text.push( { //----
 				  x : tx0
 				, y : y - Math.round( offset / 2 )
 				, t : db.t
 				, c : db.c
 				, a : angle // radian
 			} );
-			X.arrow.push( xy ); //---- cross arrow
 		}
 		, addFrame  : ( txt, ch ) => {
 			X.box.push( { //----
@@ -740,7 +742,8 @@ var graph     = {
 			var c = color.grl;
 			if ( gain > 0 )      c = color.ga;
 			else if ( gain < 0 ) c = color.ra;
-			return { t: ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 ), c: c }
+			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
+			return { t: gain, c: c }
 		}
 		, flowchart : () => {
 			var canvasW = $( '#pipeline' ).width();
