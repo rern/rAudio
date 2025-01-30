@@ -734,23 +734,23 @@ var graph     = {
 		}
 		, flowchart : () => {
 			var canvasW = $( '#pipeline' ).width();
-			var boxL    = 2;                               // capture + playback
-			PIP.forEach( pip => {
-				boxL += pip.type === 'Filter' ? pip.names.length : 1;
-			} );
-			var canvasL = boxL * 2;                        // |--boxC----boxN----boxP--|
-			var w0      = Math.round( canvasW / canvasL ); // box w (base unit) - round to prevent blurry
+			var boxL    = 2; // capture + playback
+			PIP.forEach( pip => {                                     //     cap                   pla
+				boxL += pip.type === 'Filter' ? pip.names.length : 1; // --|boxC0|----|box N|----|boxP1|--
+			} );                                                      //
+			var canvasL = boxL * 2;                                   // --|boxC0|----|box N|----|boxP1|--
+			var w0      = Math.round( canvasW / canvasL ); // box w (base unit)
 			var h0      = Math.round( w0 / 2 );
 			var p0      = Math.round( w0 / 10 );
 			var ch_capt = DEV.capture.channels;
 			var ch_play = DEV.playback.channels;
-			var canvasH = h0 * ( Math.max( ch_capt, ch_play ) * 2 ) + p0; // |-label-box0----box1-p|
+			var canvasH = h0 * ( Math.max( ch_capt, ch_play ) * 2 ) + p0;
 			X           = {
 				  w     : w0
 				, h     : h0
 				, p     : p0                                   // frame padding
 				, x     : h0                                   // box0 start x
-				, ax    : new Array( ch_capt ).fill( h0 + w0 ) // arrow line x[ 0 ]: each channel (draw from previous box)
+				, ax    : new Array( ch_capt ).fill( h0 + w0 ) // arrow line x start: each channel (draw from previous box)
 				, aw    : Math.round( w0 / 8 )                 // arrow head w
 				, dpxr  : window.devicePixelRatio
 				, box   : []
