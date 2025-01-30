@@ -387,6 +387,7 @@ var color     = {
 	, grd : 'hsl( 200, 3%,   20% )'
 	, grk : 'hsl( 200, 3%,   10% )'
 	, m   : 'hsl( 200, 100%, 50% )'
+	, ma  : 'hsl( 200, 100%, 40% )'
 	, md  : 'hsl( 200, 100%, 20% )'
 	, o   : 'hsl( 30,  80%,  50% )'
 	, od  : 'hsl( 30,  80%,  20% )'
@@ -644,9 +645,9 @@ var graph     = {
 		, addBox    : ( txt, ch, gain ) => {
 			var c  = {
 				  Filter   : color.md
-				, Capture  : '#000'
+				, Capture  : color.gr
 				, Mixer    : color.rd
-				, Playback : color.gr
+				, Playback : '#000'
 			}
 			var y  = X.h + X.h * 2 * ch; // y > down - each channel
 			X.box.push( { //----
@@ -727,7 +728,7 @@ var graph     = {
 		}
 		, dbText    : gain => {
 			var c = color.grl;
-			if ( gain > 0 )      c = color.m;
+			if ( gain > 0 )      c = color.ma;
 			else if ( gain < 0 ) c = color.r;
 			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
 			return { t: gain, c: c }
