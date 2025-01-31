@@ -649,6 +649,7 @@ var graph     = {
 				, Mixer    : color.rd
 				, Playback : '#000'
 			}
+			Object.keys( c ).forEach( k => { X[ k ] = X.type === k } );
 			var y  = X.h + X.h * 2 * ch; // y > down - each channel
 			X.box.push( { //----
 				  x : X.x
@@ -664,29 +665,32 @@ var graph     = {
 				, y : y
 				, t : txt
 			} );
-			if ( X.type === 'Capture' ) return // no arrows, no gains
+			if ( X.Capture ) return // no arrows, no gains
 			
-			X.arrow.push( [ //----
-				  { x: X.ax[ ch ], y: y }
-				, { x: X.x,        y: y }
-			] );
-			if ( X.type === 'Playback' ) return // no gains
+			var g  = X.Mixer ? gain[ ch ] : gain;
+			if ( g !== undefined ) {
+				var db = graph.pipeline.dbText( g );
+				X.text.push( { //----
+					  x : X.ax[ ch ] + Math.round( X.w / 2 )
+					, y : y
+					, t : db.t
+					, c : db.c
+				} );
+			}
+			if ( g !== undefined || X.Playback ) { // Playback always has arrows in
+				X.arrow.push( [ //----
+					  { x: X.ax[ ch ], y: y }
+					, { x: X.x,        y: y }
+				] );
+			}
+			if ( X.Playback || ! X.Mixer ) return
 			
-			var g  = X.type === 'Mixer' ? gain[ ch ] : gain;
-			var db = graph.pipeline.dbText( g );
-			X.text.push( { //----
-				  x : X.ax[ ch ] + Math.round( X.w / 2 )
-				, y : y
-				, t : db.t
-				, c : db.c
-			} );
-			if ( X.type !== 'Mixer' ) return // no crosses
-			
-			gain.forEach( ( g, s_ch ) => {
-				if ( s_ch === ch ) return
+			$.each( gain, ( ch_s, g ) => {
+				ch_s = +ch_s;
+				if ( ch_s === ch ) return
 				
 				var xy     = [
-					  { x: X.ax[ s_ch ], y: y + X.h * 2 * ( s_ch - ch ) }
+					  { x: X.ax[ ch_s ], y: y + X.h * 2 * ( ch_s - ch ) }
 					, { x: X.x,          y: y }
 				]
 				X.arrow.push( xy ); //----
@@ -777,12 +781,12 @@ var graph     = {
 					if ( mL > 1 ) graph.pipeline.addFrame( pip.name, mL );
 					mapping.forEach( m => {
 						var ch   = m.dest;
-						var gain = [];
+						var gain = {};
 						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
 						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
 						if ( mL === 1 ) X.ax[ ch ] = X.x + X.w;
 					} );
-					if ( mL > 1 ) for ( var ch = 0; ch < ch_play; ch++ ) X.ax[ ch ] = X.x + X.w; // equalize arrow in
+					if ( mL > 1 ) for ( var ch = 0; ch < ch_play; ch++ ) X.ax[ ch ] = X.x + X.w;
 					X.x        += X.w * 2; // x > right - each mixer
 				}
 			} );
