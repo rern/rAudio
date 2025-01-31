@@ -943,10 +943,6 @@ input[ type=checkbox ] {
 	border-radius: 3px;
 	background-color: var( --cg );
 }
-.container input[ type=radio ],
-.container input[ type=checkbox ] {
-	display:none;
-}
 input[ type=radio ] {
 	width: 26px;
 	height: 26px;

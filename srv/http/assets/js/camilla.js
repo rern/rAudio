@@ -1143,27 +1143,24 @@ var render    = {
 		var li      = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers subicon' ) +'&nbsp;<a>'+ name +'</a>'
 					 + iconadd( chout === data.length ) + ico( 'back' )
 					 +'</li>';
-		var optin   = htmlOption( chin );
-		var optout  = htmlOption( chout );
 		data.forEach( ( kv, i ) => {
 			var dest   = kv.dest;
-			var opts   = optout.replace( '>'+ dest, ' selected>'+ dest );
 			var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li        += '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
-						+'<div>Output&ensp;'+ dest +'</div>'
+						+'<div>Out: '+ dest +'</div>'
 						+ ico( kv.mute ? 'volume mute' : 'volume' ) + iconadd( chout === kv.sources.length )
 						+'</li>';
 			kv.sources.forEach( ( s, si ) => {
-				var source   = data[ i ].sources[ si ];
-				var channel  = source.channel;
-				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
-				var gain     = source.gain || 0;
-				var disabled = source.mute ? ' disabled' : '';
-				var linear   = source.scale === 'linear';
-				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
+				var sources  = data[ i ].sources[ si ];
+				var ch       = sources.channel;
+				var gain     = sources.gain || 0;
+				var disabled = sources.mute ? ' disabled' : '';
+				var linear   = sources.scale === 'linear';
+				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'" data-source="'+ ch +'">'
+					 + ico( 'input liicon' ) +'In: '+ ch +'&emsp;'
 					 + render.htmlRange( linear ? 100 : 10, gain, disabled )
-					 + ico( source.mute ? 'volume mute' : 'volume' )
-					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
+					 + ico( sources.mute ? 'volume mute' : 'volume' )
+					 + ico( sources.inverted ? 'inverted bl' : 'inverted' )
 					 + ico( linear ? 'linear bl' : 'linear' )
 					 +'</li>';
 			} );
@@ -2483,10 +2480,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 						var msg   = name;
 					} else if ( dest ) {
 						var title = 'Output';
-						var msg   = '#'+ mi;
+						var msg   = ico( 'output gr' ) +' Out: '+ V.li.data( 'dest' );
 					} else {
 						var title = 'Input';
-						var msg   = '#'+ V.li.find( 'select' ).val();
+						var msg   = ico( 'input gr' ) +' In: '+ V.li.data( 'source' );
 					}
 					var message = 'Delete <wh>'+ msg +'</wh> ?';
 					info( {
