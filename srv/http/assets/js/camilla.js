@@ -773,15 +773,16 @@ var graph     = {
 					} );
 				} else {
 					var mapping = MIX[ pip.name ].mapping;
-					graph.pipeline.addFrame( pip.name, mapping.length );
+					var mL      = mapping.length;
+					if ( mL > 1 ) graph.pipeline.addFrame( pip.name, mL );
 					mapping.forEach( m => {
 						var ch   = m.dest;
 						var gain = [];
 						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
 						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
+						if ( mL === 1 ) X.ax[ ch ] = X.x + X.w;
 					} );
-					var x       = X.x + X.w;
-					X.ax        = [ x, x ]; // equalize arrow in
+					if ( mL > 1 ) for ( var ch = 0; ch < ch_play; ch++ ) X.ax[ ch ] = X.x + X.w; // equalize arrow in
 					X.x        += X.w * 2; // x > right - each mixer
 				}
 			} );
@@ -1555,7 +1556,7 @@ var setting   = {
 					if ( mapping.length ) {
 						var ch    = [];
 						mapping.forEach( m => ch.push( m.dest ) );
-						setting.mixerMapCheck( ch );
+						setting.mixerMapCheck( ch, 'playback' );
 					}
 				}
 				, ok         : () => {
@@ -1574,6 +1575,7 @@ var setting   = {
 						, sources : sources
 					}
 					MIX[ name ].mapping.push( mapping );
+					MIX[ name ].mapping.sort( ( a, b ) => a.dest - b.dest );
 					setting.save( title, 'Save ...' );
 					render.mixersSub( name );
 				}
@@ -1591,7 +1593,7 @@ var setting   = {
 						
 						var ch    = [];
 						m.sources.forEach( s => ch.push( s.channel ) );
-						setting.mixerMapCheck( ch );
+						setting.mixerMapCheck( ch, 'capture' );
 					} );
 				}
 				, ok         : () => {
@@ -1602,26 +1604,20 @@ var setting   = {
 						, mute     : false
 					}
 					MIX[ name ].mapping[ index ].sources.push( source );
+					MIX[ name ].mapping[ index ].sources.sort( ( a, b ) => a.channel - b.channel );
 					setting.save( title, 'Save ...' );
 					render.mixersSub( name );
 				}
 			} );
 		}
 	}
-	, mixerMapCheck : ch => {
-		var $next = false;
-		$( '#infoList input' ).each( ( i, el ) => {
-			var $this = $( el );
-			$this.prop( 'disabled', ch.includes( i ) );
-			if ( ! $this.prop( 'checked' ) ) return
-			
-			$next = $this.parent().next();
-			if ( ! $next.length ) $next = $this.parent().prev();
-		} );
-		if ( $next ) {
-			$( '#infoList input' ).prop( 'checked', false );
-			$next.find( 'input' ).prop( 'checked', true );
-		}
+	, mixerMapCheck : ( ch, c_p ) => {
+		$( '#infoList input' ).each( ( i, el ) => $( el ).prop( 'disabled', ch.includes( i ) ) );
+		var ch_capt = Array.from( Array( DEV[ c_p ].channels ).keys() );
+		var ch_diff = ch_capt.filter( c => ! ch.includes( c ) );
+		$( '#infoList input' )
+			.prop( 'checked', false )
+			.eq( ch_diff[ 0 ] ).prop( 'checked', true );
 	} //-----------------------------------------------------------------------------------
 	, processor     : name => {
 		var type   = name ? PRO[ name ].type : 'Compressor';
