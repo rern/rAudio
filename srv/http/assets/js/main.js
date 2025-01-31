@@ -1160,7 +1160,11 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	V.searchlist = false;
 	$( '#search-list' ).remove();
 	$( '#page-library .content-top .title' ).removeClass( 'hide' );
-	if ( ! V.libraryhome ) $( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
+	if ( V.libraryhome ) {
+		$( '#lib-mode-list' ).removeClass( 'hide' );
+	} else {
+		$( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
+	}
 	$( '#page-library .search' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
