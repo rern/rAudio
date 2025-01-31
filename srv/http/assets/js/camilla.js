@@ -728,7 +728,7 @@ var graph     = {
 		}
 		, dbText    : gain => {
 			var c = color.grl;
-			if ( gain > 0 )      c = color.ma;
+			if ( gain > 0 )      c = color.wl;
 			else if ( gain < 0 ) c = color.r;
 			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
 			return { t: gain, c: c }
@@ -1543,25 +1543,35 @@ var setting   = {
 		} );
 	}
 	, mixerMap      : ( name, index ) => {
+		var mapping = MIX[ V.li.data( 'name' ) ].mapping;
 		if ( index === 'dest' ) {
-			var title = 'Add Destination';
+			var title = 'Add Destination / Out';
 			info( {
 				  icon       : V.tab
 				, title      : title
-				, list       : [ 'Playback channel', 'select', DEV.playback.channels ]
-				, boxwidth   : 70
+				, message    : 'Channel:'
+				, list       : [ '', 'radio', [ ...Array( DEV.playback.channels ).keys() ] ]
+				, beforeshow : () => {
+					if ( mapping.length ) {
+						var ch    = [];
+						mapping.forEach( m => ch.push( m.dest ) );
+						setting.mixerMapCheck( ch );
+					}
+				}
 				, ok         : () => {
+					var sources = [];
+					for ( var ch = 0; ch < DEV.capture.channels; ch++ ) {
+						sources.push( {
+							  channel  : ch
+							, gain     : 0
+							, inverted : false
+							, mute     : false
+						} );
+					}
 					var mapping = {
 						  dest    : infoVal()
 						, mute    : false
-						, sources : [
-							{
-								  channel  : 0
-								, gain     : 0
-								, inverted : false
-								, mute     : false
-							}
-						]
+						, sources : sources
 					}
 					MIX[ name ].mapping.push( mapping );
 					setting.save( title, 'Save ...' );
@@ -1569,12 +1579,21 @@ var setting   = {
 				}
 			} );
 		} else {
-			var title = 'Add Source';
+			var title = 'Add Source / In';
 			info( {
 				  icon       : V.tab
 				, title      : title
-				, list       : [ 'Capture channel', 'select', DEV.capture.channels ]
-				, boxwidth   : 70
+				, message    : 'Channel:'
+				, list       : [ '', 'radio', [ ...Array( DEV.capture.channels ).keys() ] ]
+				, beforeshow : () => {
+					mapping.forEach( m => {
+						if ( ! m.sources.length || m.dest !== V.li.data( 'dest' ) ) return
+						
+						var ch    = [];
+						m.sources.forEach( s => ch.push( s.channel ) );
+						setting.mixerMapCheck( ch );
+					} );
+				}
 				, ok         : () => {
 					var source = {
 						  channel  : infoVal()
@@ -1587,6 +1606,21 @@ var setting   = {
 					render.mixersSub( name );
 				}
 			} );
+		}
+	}
+	, mixerMapCheck : ch => {
+		var $next = false;
+		$( '#infoList input' ).each( ( i, el ) => {
+			var $this = $( el );
+			$this.prop( 'disabled', ch.includes( i ) );
+			if ( ! $this.prop( 'checked' ) ) return
+			
+			$next = $this.parent().next();
+			if ( ! $next.length ) $next = $this.parent().prev();
+		} );
+		if ( $next ) {
+			$( '#infoList input' ).prop( 'checked', false );
+			$next.find( 'input' ).prop( 'checked', true );
 		}
 	} //-----------------------------------------------------------------------------------
 	, processor     : name => {
@@ -2497,17 +2531,11 @@ $( '#menu a' ).on( 'click', function( e ) {
 								delete MIX[ name ];
 							} else if ( dest ) {
 								MIX[ name ].mapping.splice( mi, 1 );
-								if ( ! MIX[ name ].mapping.length ) {
-									$( '#mixers .i-back' ).trigger( 'click' );
-									return
-								}
-								
-								V.li.siblings( '.dest'+ mi ).remove();
 							} else {
 								MIX[ name ].mapping[ mi ].sources.splice( V.li.data( 'si' ), 1 );
 							}
 							setting.save( title, 'Remove ...' );
-							V.li.remove();
+							render.mixersSub( name );
 						}
 					} );
 					break;
@@ -2762,7 +2790,9 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	}
 	setting.save( M.name, 'Change ...' );
 } ).on( 'click', '.i-add', function() {
-	var M = setting.mixerGet( $( this ) );
+	var $this = $( this );
+	V.li  = $this.parent();
+	var M = setting.mixerGet( $this );
 	setting.mixerMap( M.name, M.index );
 } );
 // processors -----------------------------------------------------------------------------
