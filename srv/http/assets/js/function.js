@@ -247,6 +247,7 @@ function colorSetPicker() {
 }
 function contextmenuLibrary( $li, $target ) {
 	menuHide();
+	var mode           = V.searchlist ? $li.data( 'mode' ) : V.mode;
 	var $menu          = $( '#menu-'+ $li.find( '.li-icon' ).data( 'menu' ) );
 	V.list             = {};
 	V.list.li          = $li;
@@ -256,7 +257,6 @@ function contextmenuLibrary( $li, $target ) {
 	// album mode  - path > tracks
 	// other modes - name > name-album > filtered tracks
 	V.list.path        = $li.find( '.lipath' ).text() || $( '#mode-title' ).text();
-	var mode           = V.searchlist ? $li.data( 'mode' ) : V.mode;
 	if ( mode.slice( -5 ) === 'radio' ) V.list.dir = $li.find( '.lidir' ).text();
 	if ( V.librarytrack && ! V.list.licover ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
@@ -1214,7 +1214,7 @@ function renderLibraryList( data ) { // V.librarylist
 								.replace( 'MARTIST', 'M ARTIST' )
 								.replace( 'BRADIO', 'B RADIO' );
 	}
-	var htmlmodetitle = ico( data.icon ) +'<span id="mode-title">'+ data.modetitle;
+	var htmlmodetitle = ico( data.icon || V.mode ) +'<span id="mode-title">'+ data.modetitle;
 	if ( 'count' in data && V.mode !== 'latest' ) {
 		$( '#lib-list' ).css( 'width', '100%' );
 		var htmlpath = '';
