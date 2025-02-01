@@ -723,12 +723,12 @@ var graph     = {
 				, f : true
 			} );
 		}
-		, ctxShadow : ( offset ) => {
+		, ctxShadow : ( ctx, offset ) => {
 			offset             *= X.dpxr;
-			X.ctx.shadowOffsetX = -offset;
-			X.ctx.shadowOffsetY = offset;
-			X.ctx.shadowBlur    = offset;
-			X.ctx.shadowColor   = '#000';
+			ctx.shadowOffsetX = -offset;
+			ctx.shadowOffsetY = offset;
+			ctx.shadowBlur    = offset;
+			ctx.shadowColor   = '#000';
 		}
 		, dbText    : gain => {
 			var c = color.grl;
@@ -771,9 +771,9 @@ var graph     = {
 					pip.names.forEach( name => {
 						pip.channels.forEach( ch => {
 							graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain );
-							X.ax[ ch ] = X.x + X.w;
+							X.ax[ ch ] = X.x + X.w; // ax > each playback
 						} );
-						X.x += X.w * 2; // x > right - each filter
+						X.x += X.w * 2;             // x  > each filter
 					} );
 				} else {
 					var mapping = MIX[ pip.name ].mapping;
@@ -784,10 +784,9 @@ var graph     = {
 						var gain = {};
 						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
 						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
-						if ( mL === 1 ) X.ax[ ch ] = X.x + X.w;
 					} );
-					if ( mL > 1 ) for ( var ch = 0; ch < ch_play; ch++ ) X.ax[ ch ] = X.x + X.w;
-					X.x        += X.w * 2; // x > right - each mixer
+					for ( var ch = 0; ch < ch_play; ch++ ) X.ax[ ch ] = X.x + X.w; // ax > each playback
+					X.x        += X.w * 2;                                         // x  > each mixer
 				}
 			} );
 			graph.pipeline.add( 'Playback' );
@@ -803,15 +802,14 @@ var graph     = {
 				} );
 			var canvas          = $canvas[ 0 ];
 			var ctx             = canvas.getContext( '2d' );
-			X.ctx               = ctx; // for ctxShadow()
-			ctx.scale( X.dpxr, X.dpxr );            // ^
+			ctx.scale( X.dpxr, X.dpxr );
 			ctx.save();
 			X.box.forEach( b => { //-------------------------------
 				ctx.fillStyle = b.c;
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
-				graph.pipeline.ctxShadow( 2 );
+				graph.pipeline.ctxShadow( ctx, 2 );
 			} );
 			ctx.restore();
 			ctx.strokeStyle  = color.gr;
@@ -822,7 +820,7 @@ var graph     = {
 			X.arrow.forEach( xy => { //-------------------------------
 				x0 = xy[ 0 ].x;
 				y0 = xy[ 0 ].y;
-				x1 = xy[ 1 ].x - 1; // omit mitter head
+				x1 = xy[ 1 ].x - 1; // omit 1px mitter head
 				y1 = xy[ 1 ].y;
 				xa = x1 - X.aw;
 				ctx.moveTo( x0, y0 );
@@ -855,7 +853,7 @@ var graph     = {
 					}
 					ctx.fillText( txt, t.x, t.y );
 				}
-				graph.pipeline.ctxShadow( 1 );
+				graph.pipeline.ctxShadow( ctx, 1 );
 			} );
 		}
 		, refresh   : () => {
