@@ -1159,6 +1159,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	V.searchlist = false;
 	$( '#search-list' ).remove();
+	menuHide();
 	if ( V.libraryhome ) {
 		$( '#lib-home-title, #lib-mode-list' ).removeClass( 'hide' );
 	} else {
