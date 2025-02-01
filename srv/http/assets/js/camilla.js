@@ -720,7 +720,7 @@ var graph     = {
 				  x : Math.round( X.x + X.w / 2 )
 				, y : Math.round( X.h / 4 )
 				, t : txt
-				, f : true
+				, f : 'frame'
 			} );
 		}
 		, ctxShadow : ( ctx, offset ) => {
@@ -773,7 +773,7 @@ var graph     = {
 							graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain );
 							X.ax[ ch ] = X.x + X.w; // ax > each playback
 						} );
-						X.x += X.w * 2;             // x  > each filter
+						X.x += X.w * 2;             // x  > each name in filter set
 					} );
 				} else {
 					var mapping = MIX[ pip.name ].mapping;
@@ -786,7 +786,7 @@ var graph     = {
 						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
 					} );
 					for ( var ch = 0; ch < ch_play; ch++ ) X.ax[ ch ] = X.x + X.w; // ax > each playback
-					X.x        += X.w * 2;                                         // x  > each mixer
+					X.x        += X.w * 2;                                         // x  > each mixer set
 				}
 			} );
 			graph.pipeline.add( 'Playback' );
@@ -849,7 +849,7 @@ var graph     = {
 					if ( ! t.c ) { // gain
 						var cL = Math.floor( X.w * 0.9  / ctx.measureText( '0' ).width );
 						if ( txt.length > cL ) txt = txt.replace( /^ch /, '' );
-						if ( ! t.f ) txt = txt.slice( 0, cL ); // if not fram, trim
+						if ( ! t.f ) txt = txt.slice( 0, cL ); // if not frame, trim
 					}
 					ctx.fillText( txt, t.x, t.y );
 				}
