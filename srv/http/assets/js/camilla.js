@@ -765,28 +765,28 @@ var graph     = {
 			
 			graph.pipeline.add( 'Capture' );
 			X.x += X.w * 2;
-			PIP.forEach( pip => {
+			PIP.forEach( pip => {                     // @ step
 				X.type  = pip.type;
 				if ( X.type === 'Filter' ) {
-					pip.names.forEach( name => {
-						pip.channels.forEach( ch => {
+					pip.names.forEach( name => {      // @ filter  < @ step
+						pip.channels.forEach( ch => { // @ channel < @ filter < @ step
 							graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain );
-							X.ax[ ch ] = X.x + X.w; // ax > each playback
+							X.ax[ ch ] = X.x + X.w;   // ax >| @ channel < @ filter < @ step
 						} );
-						X.x += X.w * 2;             // x  > each name in filter set
+						X.x += X.w * 2;               // x  >| @ filter  < @ step
 					} );
 				} else {
 					var mapping = MIX[ pip.name ].mapping;
 					var mL      = mapping.length;
 					if ( mL > 1 ) graph.pipeline.addFrame( pip.name, mL );
-					mapping.forEach( m => {
+					mapping.forEach( m => {                                        // @ playback channel      < @ step
 						var ch   = m.dest;
 						var gain = {};
 						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
 						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
 					} );
-					for ( var ch = 0; ch < ch_play; ch++ ) X.ax[ ch ] = X.x + X.w; // ax > each playback
-					X.x        += X.w * 2;                                         // x  > each mixer set
+					for ( var ch = 0; ch < ch_capt; ch++ ) X.ax[ ch ] = X.x + X.w; // ax >| @ capture channel < @ step
+					X.x        += X.w * 2;                                         // x  >| @ mixer           < @ step
 				}
 			} );
 			graph.pipeline.add( 'Playback' );
