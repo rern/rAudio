@@ -767,7 +767,7 @@ var graph     = {
 			X.x += X.w * 2;
 			PIP.forEach( pip => {                     // @ step
 				X.type  = pip.type;
-				if ( X.type === 'Filter' ) {
+				if ( pip.type === 'Filter' ) {
 					pip.names.forEach( name => {      // @ filter  < @ step
 						pip.channels.forEach( ch => { // @ channel < @ filter < @ step
 							graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain );
@@ -863,29 +863,30 @@ var graph     = {
 			if ( fL ) graph.pipeline.flowchart();
 		}
 	}
-	, plot        : $li => {
+	, plot        : () => {
 		if ( typeof Plotly !== 'object' ) {
-			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot( V.li ) );
+			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
 			return
 		}
 		
-		var filters = V.tab === 'filters';
-		var val     = $li.data( filters ? 'name' : 'index' );
+		var filters     = V.tab === 'filters';
 		var filterdelay = false;
 		if ( filters ) {
-			filterdelay = FIL[ val ].type === 'Delay';
-			var delay0  = ! filterdelay && 'gain' in FIL[ val ].parameters && FIL[ val ].parameters.gain === 0;
+			var f       = FIL[ V.li.data( 'name' ) ];
+			filterdelay = f.type === 'Delay';
+			var delay0  = ! filterdelay && 'gain' in f.parameters && f.parameters.gain === 0;
 		} else {
 			var pipelinedelay = false;
 			var delay0        = true;
-			PIP[ val ].names.forEach( n => {
-				var filter = FIL[ n ];
-				if ( ! pipelinedelay && filter.type === 'Delay' ) pipelinedelay = true;
-				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
+			var index         = V.li.data( 'index' );
+			PIP[ index ].names.forEach( n => {
+				var f = FIL[ n ];
+				if ( ! pipelinedelay && f.type === 'Delay' ) pipelinedelay = true;
+				if ( delay0 && 'gain' in f.parameters && f.parameters.gain !== 0 ) delay0 = false;
 			} );
 		}
-		var args = JSON.stringify( filters ? FIL[ val ] : S.config );
-		if ( ! filters ) args = args.replace( /}$/, ',"index":'+ val +'}' );
+		var args = JSON.stringify( filters ? f : S.config );
+		if ( ! filters ) args = args.replace( /}$/, ',"index":'+ index +'}' );
 		bash( [ 'settings/camilla.py', args ], data => {
 			var PLOTS   = jsonClone( plots );
 			var AXES    = jsonClone( axes );
@@ -947,16 +948,17 @@ var graph     = {
 				PLOTS.impulse.y    = data.impulse;
 				plot.push( PLOTS.impulse );
 			}
-			$li.find( '.divgraph' ).remove();
-			$li.append( '<div class="divgraph"></div>' );
-			var $divgraph = $li.find( '.divgraph' );
+			V.li.find( '.divgraph' ).remove();
+			V.li.append( '<div class="divgraph"></div>' );
+			var $divgraph = V.li.find( '.divgraph' );
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
 			$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 		}, 'json' );
 	}
 	, refresh  : () => {
 		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
-			graph.plot( $( el ).parent() );
+			V.li = $( el ).parent();
+			graph.plot();
 		} );
 	}
 }
@@ -1208,6 +1210,7 @@ var render    = {
 		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
 	}
 	, sortable    : () => {
+		$( '#menu' ).addClass( 'hide' );
 		if ( V.sortable ) {
 			V.sortable.destroy();
 			delete V.sortable;
@@ -1218,14 +1221,11 @@ var render    = {
 			  ghostClass : 'sortable-ghost'
 			, delay      : 400
 			, onUpdate   : function ( e ) {
-				var ai      = e.oldIndex;
-				var bi      = e.newIndex;
-				var pip     = PIP;
-				var a = pip[ ai ];
-				pip.splice( ai, 1 );
-				pip.splice( bi, 0, a );
+				var a  = jsonClone( PIP[ e.oldIndex ] );
+				PIP.splice( e.oldIndex, 1 );
+				PIP.splice( e.newIndex, 0, a );
 				setting.save( 'Pipeline', 'Change order ...' );
-				graph.pipeline.refresh();
+				render.pipeline();
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
@@ -2445,7 +2445,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 	var cmd   = $this.prop( 'class' ).replace( ' active', '' );
 	if ( cmd === 'graph' ) {
 		var $divgraph = V.li.find( '.divgraph' );
-		$divgraph.length ? $divgraph.remove() : graph.plot( V.li );
+		$divgraph.length ? $divgraph.remove() : graph.plot();
 		return
 	}
 	
