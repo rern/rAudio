@@ -1175,6 +1175,13 @@ $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
 } );
 $( '#button-lib-back' ).on( 'click', function() {
+	if ( V.searchlist ) {
+		$( '#lib-list' ).remove();
+		$( '#lib-title, #button-lib-back' ).addClass( 'hide' );
+		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );
+		return
+	}
+	
 	var $breadcrumbs = $( '#lib-title a' );
 	var bL           = $breadcrumbs.length
 	if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
@@ -1512,7 +1519,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		return
 	}
 	
-	$this.addClass( 'active' );
+	if ( ! V.searchlist ) $this.addClass( 'active' );
 	var libpath  = $( '#page-library .lib-path' ).text();
 	var path     = $this.find( '.lipath' ).text();
 	var name     = $this.find( '.liname' ).text();
@@ -1537,7 +1544,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			contextmenuLibrary( $this, $target );
 			return
 		}
-	} else if ( V.mode.slice( -6 ) === 'artist' ) { // dabradio, webradio
+	} else if ( ! V.searchlist && V.mode.slice( -6 ) === 'artist' ) { // dabradio, webradio
 		var query = {
 			  library : 'findartist'
 			, mode    : V.mode
@@ -1553,7 +1560,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var query = {
 			  library : 'find'
-			, mode    : V.mode
+			, mode    : V.searchlist ? mode : V.mode
 			, string  : path
 			, format  : format
 		}
@@ -1596,6 +1603,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		
 		var data = {
 			  html      : html
+			, icon      : V.searchlist ? mode : V.mode
 			, modetitle : modetitle
 			, path      : path
 		}

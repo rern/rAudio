@@ -1382,7 +1382,7 @@ i.map.disabled, .map.disabled i {
 }
 #lib-title,
 #mode-title {
-	width: calc( 100% - 120px );
+	max-width: calc( 100% - 120px );
 }
 #pl-title {
 	display: inline-block;

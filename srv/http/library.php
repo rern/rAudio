@@ -263,7 +263,7 @@ case 'search':
 				$name = $data[ 1 ];
 				$path = $tag === 'album' ? end( $data ) : $name;
 				$html.= '
-<li data-mode="'.$MODE.'">
+<li data-mode="'.$tag.'">
 	<a class="lipath">'.$path.'</a>
 	'.i( $tag, $tag ).'<span class="single name">'.preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name ).'</span>
 </li>';
