@@ -1170,6 +1170,7 @@ $( '#lib-search-input' ).on( 'input', function( e ) {
 } );
 $( '#button-lib-back' ).on( 'click', function() {
 	if ( V.search ) {
+		V.query.pop();
 		$( '#lib-list' ).remove();
 		$( '#button-lib-back' ).addClass( 'hide' );
 		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );

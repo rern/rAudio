@@ -1235,16 +1235,18 @@ function renderLibraryList( data ) { // V.librarylist
 			htmlpath += '<a>'+ dir[ i ] +' / <span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
-	if ( V.mode === 'webradio' ) {
-		htmlpath += ico( 'add btntitle button-webradio-new' );
-	} else if ( V.mode === 'latest' ) {
-		htmlpath += ico( 'flash btntitle button-latest-clear' );
+	if ( ! V.search ) {
+		if ( V.mode === 'webradio' ) {
+			htmlpath += ico( 'add btntitle button-webradio-new' );
+		} else if ( V.mode === 'latest' ) {
+			htmlpath += ico( 'flash btntitle button-latest-clear' );
+		}
+		htmlpath     += '</span>';
+		$( '#lib-title' )
+			.html( htmlpath )
+			.removeClass( 'hide' )
+			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
 	}
-	htmlpath     += '</span>';
-	$( '#lib-title' )
-		.html( htmlpath )
-		.removeClass( 'hide' )
-		.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
 	V.librarylisthtml = data.html;
 	$( '#lib-list, #page-library .index' ).remove();
 	if ( ! data.html ) return // empty radio
