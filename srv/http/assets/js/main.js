@@ -1140,8 +1140,11 @@ $( '#button-lib-search' ).on( 'click', function() {
 				var icon = $( el ).prop( 'class' ).replace( / .*/, '' );
 				$( el ).toggleClass( 'disabled', $( '#search-list .'+ icon ).length === 0 );
 			} );
-			$( '#lib-title' ).html( ico( 'search' ) + keyword );
-			$( '#lib-title, #page-library i.search' ).removeClass( 'hide' );
+			$( '#page-library i.search' ).removeClass( 'hide' );
+			$( '#lib-title' )
+					.html( ico( 'search' ) + keyword )
+					.addClass( 'search' )
+					.removeClass( 'hide' );
 		} );
 		$( '#button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
 		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );

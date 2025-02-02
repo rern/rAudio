@@ -1164,6 +1164,7 @@ function renderLibrary() { // library home
 	var title     = 'LIBRARY';
 	if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ico( 'music' ) +'</a>';
 	$( '#lib-home-title' ).html( title );
+	$( '#lib-title' ).removeClass( 'search' );
 	$( '#page-library .lib-path' ).empty()
 	$( '#lib-home-title, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
 	$( '#lib-title, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
