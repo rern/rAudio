@@ -2064,9 +2064,6 @@ li.active .li2 bl {
 		#lib-title.search,
 		.liinfo { display: none }
 	}
-	@media ( max-width: 612px ) {
-		#button-lib-search { display: none }
-	}
 	@media ( max-width: 590px ) {
 		#playback-row { align-items: flex-start }
 	}
