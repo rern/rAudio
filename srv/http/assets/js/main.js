@@ -456,8 +456,11 @@ $( 'body' ).on( 'click', '#colorok', function() {
 } );
 $( '#library, #button-library' ).on( 'click', function() {
 	if ( V.library ) {
-		if ( V.search ) $( '#lib-search-close' ).trigger( 'click' );
-		if ( V.librarylist ) libraryHome();
+		if ( V.search ) {
+			$( '#lib-search-close' ).trigger( 'click' );
+		} else if ( V.librarylist ) {
+			libraryHome();
+		}
 	} else {
 		switchPage( 'library' );
 		refreshData();
@@ -1137,7 +1140,8 @@ $( '#button-lib-search' ).on( 'click', function() {
 				var icon = $( el ).prop( 'class' ).replace( / .*/, '' );
 				$( el ).toggleClass( 'disabled', $( '#search-list .'+ icon ).length === 0 );
 			} );
-			$( '#page-library i.search' ).removeClass( 'hide' );
+			$( '#lib-title' ).html( ico( 'search' ) + keyword );
+			$( '#lib-title, #page-library i.search' ).removeClass( 'hide' );
 		} );
 		$( '#button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
 		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );
@@ -1159,17 +1163,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	V.search = false;
 	$( '#search-list' ).remove();
-	menuHide();
-	if ( V.libraryhome ) {
-		$( '#lib-home-title, #lib-mode-list' ).removeClass( 'hide' );
-	} else {
-		$( '#lib-title, #button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
-	}
-	$( '#page-library .search' ).addClass( 'hide' );
-	$( '#lib-search-close' ).empty();
-	$( '#lib-search-input' ).val( '' );
-	$( '#button-lib-search' ).removeClass( 'hide' );
-	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
+	$( '#library' ).trigger( 'click' );
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
@@ -1177,7 +1171,7 @@ $( '#lib-search-input' ).on( 'input', function( e ) {
 $( '#button-lib-back' ).on( 'click', function() {
 	if ( V.search ) {
 		$( '#lib-list' ).remove();
-		$( '#lib-title, #button-lib-back' ).addClass( 'hide' );
+		$( '#button-lib-back' ).addClass( 'hide' );
 		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );
 		return
 	}
@@ -1226,7 +1220,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 } ).on( 'click', '.mode:not( .bookmark, .bkradio, .nodata )', function() {
 	V.mode          = $( this ).data( 'mode' );
 	V.modescrolltop = $( window ).scrollTop();
-	$( '#lib-search-close' ).trigger( 'click' );
 	if ( V.mode === 'playlists' ) {
 		$( '#button-pl-playlists' ).trigger( 'click' );
 		setTimeout( () => $( '#playlist' ).trigger( 'click' ), 100 );

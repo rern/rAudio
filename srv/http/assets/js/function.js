@@ -1214,14 +1214,14 @@ function renderLibraryList( data ) { // V.librarylist
 								.replace( 'MARTIST', 'M ARTIST' )
 								.replace( 'BRADIO', 'B RADIO' );
 	}
-	var htmlmodetitle = ico( data.icon || V.mode ) +'<span id="mode-title">'+ data.modetitle;
+	var htmltitle = '<span id="mode-title">'+ data.modetitle;
 	if ( 'count' in data && V.mode !== 'latest' ) {
 		$( '#lib-list' ).css( 'width', '100%' );
 		var htmlpath = '';
 	} else if ( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ) {
-		var htmlpath = htmlmodetitle;
+		var htmlpath = ico( V.mode ) + htmltitle;
 	} else if ( ! [ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( V.mode ) ) {
-		var htmlpath = htmlmodetitle;
+		var htmlpath = ico( V.search ? 'search' : V.mode ) + htmltitle;
 	} else if ( data.path ) { // dir breadcrumbs
 		var dir      = data.path.split( '/' );
 		var dir0     = dir[ 0 ];
