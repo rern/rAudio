@@ -613,20 +613,20 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$title  = $each->title;
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		if ( $search ) {
-			$datamode  = '';
-			$icon      = i( $tag, 'file' );
+			$datamode  = strtolower( substr( $path, 0, 3 ) );
+			$icon      = i( $tag === 'title' ? 'music' : $tag, 'file' );
 			$$tag      = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $each->$tag );
 			$trackname = $tag === 'albumartist' ? $albumartist : $artist;
 			$trackname.= ' - '.$album;
 		} else {
-			$datamode  = ' data-mode="'.$GMODE.'"';
+			$datamode  = $GMODE;
 			$icon      = i( 'music', 'file' );
 			$trackname = $cue ? $artist.' - '.$album : basename( $path );
 		}
 		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		$i++;
 		$html  .= '
-<li'.$datamode.$track1.'>
+<li data-mode="'.$datamode.'" '.$track1.'>
 	<a class="lipath">'.$path.'</a>
 	'.$icon.'<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>
 	<div class="li2">'.$i.' • '.$trackname.'</div>

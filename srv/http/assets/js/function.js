@@ -246,6 +246,12 @@ function colorSetPicker() {
 	} );
 }
 function contextmenuLibrary( $li, $target ) {
+	if ( $li.hasClass( 'active' ) && ! $( '#contextmenu' ).hasClass( 'hide' ) ) {
+		$li.removeClass( 'active' );
+		menuHide();
+		return
+	}
+	
 	menuHide();
 	var mode           = V.search ? $li.data( 'mode' ) : V.mode;
 	var $menu          = $( '#menu-'+ $li.find( '.li-icon' ).data( 'menu' ) );
@@ -258,10 +264,10 @@ function contextmenuLibrary( $li, $target ) {
 	// other modes - name > name-album > filtered tracks
 	V.list.path        = $li.find( '.lipath' ).text() || $( '#mode-title' ).text();
 	if ( mode.slice( -5 ) === 'radio' ) V.list.dir = $li.find( '.lidir' ).text();
-	if ( V.librarytrack && ! V.list.licover ) {
-		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
+	if ( V.librarytrack && ! V.list.licover && $li.find( '.li1' ).length ) {
+		V.list.name = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 	} else {
-		V.list.name   = $li.find( '.name' ).text() || V.list.path;
+		V.list.name = $li.find( '.name' ).text() || V.list.path;
 	}
 	V.list.track = $li.data( 'track' ) || '';  // cue - in contextmenu
 	if ( ( D.tapaddplay || D.tapreplaceplay )
@@ -1173,7 +1179,7 @@ function renderLibrary() { // library home
 	$( '#page-library .content-top, #page-library .search, #lib-list' ).addClass( 'hide' );
 	$( '#page-library .content-top, #lib-mode-list' ).removeClass( 'hide' );
 	$( '#lib-list, #page-library .index, #search-list' ).remove();
-	$( '#lib-mode-list' )
+	$( '#lib-mode-list, #search-list' )
 		.css( 'padding-top', barVisible( '', 50 ) )
 		.removeClass( 'hide' );
 	if ( O ) orderLibrary();
