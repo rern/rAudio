@@ -646,7 +646,7 @@ var graph     = {
 			var c  = {
 				  Filter   : color.md
 				, Capture  : color.gr
-				, Mixer    : color.rd
+				, Mixer    : color.gd
 				, Playback : color.grk
 			}
 			Object.keys( c ).forEach( k => { X[ k ] = X.type === k } );
