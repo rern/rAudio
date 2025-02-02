@@ -1137,7 +1137,7 @@ var render    = {
 	, mixer       : ( k, v ) => {
 		return '<li data-name="'+ k +'">'+ ico( 'mixers liicon edit' )
 			  +'<div class="li1">'+ k +'</div>'
-			  +'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
+			  +'<div class="li2">'+ render.mixerMap( v.mapping ) +'</div>'
 			  +'</li>'
 	}
 	, mixersSub   : name => {
@@ -1173,6 +1173,16 @@ var render    = {
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
 		selectSet( $( '#mixers select' ) );
+	}
+	, mixerMap    : mapping => {
+		var ch = '';
+		mapping.forEach( m => {
+			ch     += ' · out: '+ m.dest;
+			var src = ''
+			m.sources.forEach( s => src += ','+ s.channel );
+			ch += ' in: '+ src.slice( 1 );
+		} );
+		return ch.slice( 3 )
 	} //-----------------------------------------------------------------------------------
 	, processors  : () => {
 		var data = render.dataSort();
@@ -1203,7 +1213,8 @@ var render    = {
 			icon  += ' graph';
 			var li = ico( 'filters' ) + el.names.join( ', ' ) +' <gr>(ch: '+ el.channels +')</gr>';
 		} else {
-			var li = ico( 'mixers' ) + el.name;
+			var ch = render.mixerMap( MIX[ el.name ].mapping )
+			var li = ico( 'mixers' ) + el.name +' <gr>('+ ch +')</gr>';
 		}
 		var $graph = $( '#pipeline .entries.main li' ).eq( i ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
