@@ -1141,6 +1141,7 @@ var render    = {
 			  +'</li>'
 	}
 	, mixersSub   : name => {
+		console.log(name)
 		var iconadd = max => ico( max ? 'add disabled' : 'add' );
 		var data    = MIX[ name ].mapping;
 		var chin    = DEV.capture.channels;
@@ -1177,9 +1178,9 @@ var render    = {
 	, mixerMap    : mapping => {
 		var ch = '';
 		mapping.forEach( m => {
-			ch     += ' · out: '+ m.dest;
+			ch     += ' • out: '+ m.dest;
 			var src = ''
-			m.sources.forEach( s => src += ','+ s.channel );
+			m.sources.forEach( s => src += '·'+ s.channel );
 			ch += ' in: '+ src.slice( 1 );
 		} );
 		return ch.slice( 3 )
@@ -1208,17 +1209,24 @@ var render    = {
 		graph.pipeline.refresh();
 	}
 	, pipe        : ( el, i ) => {
-		var icon  = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
+		var icon   = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
 		if ( el.type === 'Filter' ) {
-			icon  += ' graph';
-			var li = ico( 'filters' ) + el.names.join( ', ' ) +' <gr>(ch: '+ el.channels +')</gr>';
+			icon      += ' graph';
+			var icon_s = 'filters'
+			var li1    = el.names.join( ' · ' );
+			var li2    = 'ch: '+ el.channels.join( '·' );;
 		} else {
-			var ch = render.mixerMap( MIX[ el.name ].mapping )
-			var li = ico( 'mixers' ) + el.name +' <gr>('+ ch +')</gr>';
+			var icon_s = 'mixers'
+			var li1    = el.name;
+			var li2    = render.mixerMap( MIX[ el.name ].mapping );
 		}
 		var $graph = $( '#pipeline .entries.main li' ).eq( i ).find( '.divgraph' );
 		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
-		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
+		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( icon_s )
+				+'<div class="li1">'+ li1 +'</div>'
+				+'<div class="li2">'+ li2 +'</div>'
+				+'</li>';
+		return li
 	}
 	, sortable    : () => {
 		$( '#menu' ).addClass( 'hide' );
@@ -2426,8 +2434,9 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	}
 	if ( V.tab === 'pipeline' ) {
 		var bypassed = PIP[ V.li.index() ].bypassed === true;
-		$( '#menu' ).find( '.bypass' ).toggleClass( 'hide', bypassed );
-		$( '#menu' ).find( '.restore' ).toggleClass( 'hide', ! bypassed );
+		$( '#menu .bypass' ).toggleClass( 'hide', bypassed );
+		$( '#menu .restore' ).toggleClass( 'hide', ! bypassed );
+		$( '#menu .edit' ).toggleClass( 'disabled', V.li.data( 'type' ) === 'Mixer' && Object.keys( MIX ).length < 2 );
 	} else {
 		$( '#menu' ).find( '.bypass, .restore' ).addClass( 'hide' );
 	}
@@ -2544,7 +2553,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 								MIX[ name ].mapping[ mi ].sources.splice( V.li.data( 'si' ), 1 );
 							}
 							setting.save( title, 'Remove ...' );
-							render.mixersSub( name );
+							main ? render.mixers( name ) : render.mixersSub( name );
 						}
 					} );
 					break;
