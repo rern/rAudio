@@ -1134,7 +1134,7 @@ $( '#button-lib-search' ).on( 'click', function() {
 		$( '#page-library' ).append( html ).promise().done( () => {
 			renderLibraryPadding();
 			pageScroll( 0 );
-			var icon0 = $( '#search-list i' ).eq( 0 ).prop( 'class' ).replace( / .*/, '' );
+			var icon0 = $( '#search-list .li-icon' ).eq( 0 ).prop( 'class' ).replace( / .*/, '' );
 			$( '#page-library .content-top' ).find( '.'+ icon0 ).removeClass( 'gr' );
 			$( '#page-library i.search' ).each( ( i, el ) => {
 				var icon = $( el ).prop( 'class' ).replace( / .*/, '' );
@@ -1523,6 +1523,11 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var limode   = $this.data( 'mode' );
 	var modefile = [ 'sd', 'nas', 'usb' ].includes( V.mode );
 	// modes: sd, nas, usb, dabradio, webradio, album, artist, albumartist, composer, conductor, date, genre
+	if ( V.search && limode.slice( -5 ) === 'radio' ) {
+		$this.find( '.li-icon' ).trigger( 'click' );
+		return
+	}
+	
 	if ( [ 'sd', 'nas', 'usb' ].includes( limode ) ) { // file
 		var query = {
 			  library : 'ls'

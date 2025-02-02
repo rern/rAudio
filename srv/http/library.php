@@ -499,11 +499,10 @@ function htmlRadio() {
 			$filename    = basename( $each->file );
 			$url         = str_replace( '|', '/', $filename );
 			$thumbsrc    = substr( $each->file, 9, 14 ).'/img/'.$filename.'-thumb.jpg';
-			$icon        = $search ? i( 'webradio', 'webradio' ) : imgIcon( $thumbsrc, 'webradio' );
 			$name        = $each->name;
 			$html       .= '
-<li class="file"'.$datacharset.$dataindex.'>
-	'.$icon.'
+<li class="file" data-mode="webradio" '.$datacharset.$dataindex.'>
+	'.imgIcon( $thumbsrc, 'webradio' ).'
 	<a class="lidir">'.dirname( $each->file ).'</a>
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
