@@ -247,7 +247,7 @@ function colorSetPicker() {
 }
 function contextmenuLibrary( $li, $target ) {
 	menuHide();
-	var mode           = V.searchlist ? $li.data( 'mode' ) : V.mode;
+	var mode           = V.search ? $li.data( 'mode' ) : V.mode;
 	var $menu          = $( '#menu-'+ $li.find( '.li-icon' ).data( 'menu' ) );
 	V.list             = {};
 	V.list.li          = $li;
@@ -1159,7 +1159,7 @@ function refreshData() {
 function renderLibrary() { // library home
 	V.libraryhome = true;
 	V.mode        = '';
-	[ 'albumlist', 'librarylist', 'librarytrack', 'searchlist' ].forEach( k => V[ k ] = false );
+	[ 'albumlist', 'librarylist', 'librarytrack', 'search' ].forEach( k => V[ k ] = false );
 	V.query       = [];
 	var title     = 'LIBRARY';
 	if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ico( 'music' ) +'</a>';
@@ -1197,7 +1197,7 @@ function renderLibraryCounts() {
 	$( '.mode .label' ).toggleClass( 'hide', ! D.label );
 }
 function renderLibraryList( data ) { // V.librarylist
-	if ( ! V.searchlist ) {
+	if ( ! V.search ) {
 		V.libraryhome = false;
 		if ( V.librarylist && data.html === V.librarylisthtml ) {
 			if ( V.color ) colorSet()
@@ -1288,7 +1288,7 @@ function renderLibraryPadding() {
 		$( '#lib-list' ).css( 'padding-bottom', '100vh' ); // force scrollbar to get .coverart height
 		padding += $( '.coverart' ).eq( 0 ).height() - 49;
 	}
-	var $list = V.searchlist ? $( '#search-list' ) : $( '#lib-list' );
+	var $list = V.search ? $( '#search-list' ) : $( '#lib-list' );
 	$list.css( {
 		  'padding-bottom' : 'calc( 100vh - '+ padding +'px )'
 		, 'width'          :  V.librarytrack ? '100%' : ''

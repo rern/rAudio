@@ -456,7 +456,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 } );
 $( '#library, #button-library' ).on( 'click', function() {
 	if ( V.library ) {
-		if ( V.searchlist ) $( '#lib-search-close' ).trigger( 'click' );
+		if ( V.search ) $( '#lib-search-close' ).trigger( 'click' );
 		if ( V.librarylist ) libraryHome();
 	} else {
 		switchPage( 'library' );
@@ -1124,7 +1124,7 @@ $( '#button-lib-search' ).on( 'click', function() {
 			return
 		}
 		
-		V.searchlist  = true;
+		V.search      = true;
 		V.librarylist = true;
 		var html      = htmlHash( data.html );
 		$( '#search-list' ).remove();
@@ -1153,11 +1153,11 @@ $( '#page-library i.search' ).on( 'click', function() {
 	
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( V.searchlist ) $( '#button-lib-search' ).trigger( 'click' );
+	if ( V.search ) $( '#button-lib-search' ).trigger( 'click' );
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
-	V.searchlist = false;
+	V.search = false;
 	$( '#search-list' ).remove();
 	menuHide();
 	if ( V.libraryhome ) {
@@ -1175,7 +1175,7 @@ $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
 } );
 $( '#button-lib-back' ).on( 'click', function() {
-	if ( V.searchlist ) {
+	if ( V.search ) {
 		$( '#lib-list' ).remove();
 		$( '#lib-title, #button-lib-back' ).addClass( 'hide' );
 		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );
@@ -1519,14 +1519,14 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		return
 	}
 	
-	if ( ! V.searchlist ) $this.addClass( 'active' );
+	if ( ! V.search ) $this.addClass( 'active' );
 	var libpath  = $( '#page-library .lib-path' ).text();
 	var path     = $this.find( '.lipath' ).text();
 	var name     = $this.find( '.liname' ).text();
-	var mode     = $this.data( 'mode' );
+	var limode   = $this.data( 'mode' );
 	var modefile = [ 'sd', 'nas', 'usb' ].includes( V.mode );
 	// modes: sd, nas, usb, dabradio, webradio, album, artist, albumartist, composer, conductor, date, genre
-	if ( [ 'sd', 'nas', 'usb' ].includes( mode ) ) { // file
+	if ( [ 'sd', 'nas', 'usb' ].includes( limode ) ) { // file
 		var query = {
 			  library : 'ls'
 			, string  : path
@@ -1544,7 +1544,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			contextmenuLibrary( $this, $target );
 			return
 		}
-	} else if ( ! V.searchlist && V.mode.slice( -6 ) === 'artist' ) { // dabradio, webradio
+	} else if ( ! V.search && V.mode.slice( -6 ) === 'artist' ) { // dabradio, webradio
 		var query = {
 			  library : 'findartist'
 			, mode    : V.mode
@@ -1552,7 +1552,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, format  : [ 'album', 'file' ]
 		}
 		var modetitle = path;
-	} else if ( mode !== 'album' ) { // non-album
+	} else if ( limode !== 'album' ) { // non-album
 		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
 			var format = [ 'artist', 'album' ];
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
@@ -1560,7 +1560,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var query = {
 			  library : 'find'
-			, mode    : V.searchlist ? mode : V.mode
+			, mode    : V.search ? limode : V.mode
 			, string  : path
 			, format  : format
 		}
@@ -1603,7 +1603,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		
 		var data = {
 			  html      : html
-			, icon      : V.searchlist ? mode : V.mode
+			, icon      : V.search ? limode : V.mode
 			, modetitle : modetitle
 			, path      : path
 		}
