@@ -647,7 +647,7 @@ var graph     = {
 				  Filter   : color.md
 				, Capture  : color.gr
 				, Mixer    : color.rd
-				, Playback : '#000'
+				, Playback : color.grk
 			}
 			Object.keys( c ).forEach( k => { X[ k ] = X.type === k } );
 			var y  = X.h + X.h * 2 * ch; // y > down - each channel

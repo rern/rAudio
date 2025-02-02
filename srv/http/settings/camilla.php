@@ -1,7 +1,7 @@
 <?php
 commonVariables( [
-	  'buttons' => [ 'code',   'drag',   'edit',   'filters', 'flowchart', 'folderfilter', 'gear',   'graph', 'input', 'inverted'
-				   , 'linear', 'mixers', 'output', 'pause',   'play',      'plus',         'remove', 'set0',  'stop',  'volume' ]
+	  'buttons' => [ 'code',   'drag',   'edit', 'filters', 'flowchart', 'folderfilter', 'gear', 'graph',  'input', 'inverted'
+				   , 'linear', 'mixers', 'mute', 'output',  'pause',     'play',         'plus', 'remove', 'set0',  'stop', 'volume' ]
 	, 'labels'  => []
 	, 'menus'   => []
 	, 'tabs'    => []
@@ -15,7 +15,8 @@ $bset->mixers     = $B->mixers.' Context menu: '.$B->edit.$B->remove;
 $bset->processors = str_replace( 'mixers' , 'processors', $bset->mixers );
 $bset->pipeline   = str_replace( 'filters' , 'pipeline', $bset->filters );
 $bset->config     = str_replace( 'mixers' , 'config', $bset->mixers );
-$bset->control    = $B->volume.$B->inverted.$B->linear;
+$bset->control    = $B->inverted.$B->linear;
+$bset->volume     = $B->code.$B->volume;
 
 $id_tab   = [
 	  'filters'    => [
@@ -23,8 +24,8 @@ $id_tab   = [
 		, 'help'   => <<< EOF
 $B->folderfilter$B->plus Finite Impulse Response (FIR) files · New
 $bset->filters Graph · Edit · Delete
-$B->code Set 0
-$bset->control Mute · Invert · Linear (Gain)
+$bset->volume 0db · Mute
+$bset->control Invert · Linear (Gain)
 EOF
 	]
 	, 'mixers'     => [
@@ -32,7 +33,8 @@ EOF
 		, 'help'   => <<< EOF
 $B->plus New
 $bset->mixers Edit · Delete
-$B->code$bset->control Set 0 · Mute · Invert · Linear
+$bset->volume 0dB · Mute
+$bset->control Invert · Linear
 EOF
 	]
 	, 'processors' => [
@@ -163,7 +165,7 @@ Processing Load
 	<a class="capture"></a><span class="rateadjust"> <gr>·</gr> <a class="rate"></a></span>
 	<span class="divclipped hide"><br><a class="clipped"></a></span>
 </div>
-<span class="helpblock hide">'.$B->volume.' Mute
+<span class="helpblock hide">'.$B->volume.$B->mute.' Mute · Unmute
 '.$B->set0.' Reset clipped count (if any)
 </span>'
 	)
