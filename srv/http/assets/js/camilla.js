@@ -887,6 +887,7 @@ var graph     = {
 		}
 		var args = JSON.stringify( filters ? f : S.config );
 		if ( ! filters ) args = args.replace( /}$/, ',"index":'+ index +'}' );
+		V.li.find( '.liicon' ).addClass( 'blink' );
 		bash( [ 'settings/camilla.py', args ], data => {
 			var PLOTS   = jsonClone( plots );
 			var AXES    = jsonClone( axes );
@@ -953,6 +954,7 @@ var graph     = {
 			var $divgraph = V.li.find( '.divgraph' );
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
 			$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
+			V.li.find( '.liicon' ).removeClass( 'blink' );
 		}, 'json' );
 	}
 	, refresh  : () => {
@@ -1178,10 +1180,10 @@ var render    = {
 	, mixerMap    : mapping => {
 		var ch = '';
 		mapping.forEach( m => {
-			ch     += ' • out: '+ m.dest;
+			ch     += ' • ch: '+ m.dest;
 			var src = ''
-			m.sources.forEach( s => src += '·'+ s.channel );
-			ch += ' in: '+ src.slice( 1 );
+			m.sources.forEach( s => src += '··'+ s.channel );
+			ch += ' &#9668; '+ src.slice( 2 );
 		} );
 		return ch.slice( 3 )
 	} //-----------------------------------------------------------------------------------
@@ -1213,8 +1215,8 @@ var render    = {
 		if ( el.type === 'Filter' ) {
 			icon      += ' graph';
 			var icon_s = 'filters'
-			var li1    = el.names.join( ' · ' );
-			var li2    = 'ch: '+ el.channels.join( '·' );;
+			var li1    = el.names.join( ' <gr>•</gr> ' );
+			var li2    = 'ch: '+ el.channels.join( ' • ' );;
 		} else {
 			var icon_s = 'mixers'
 			var li1    = el.name;
