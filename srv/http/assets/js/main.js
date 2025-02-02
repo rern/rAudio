@@ -1166,7 +1166,7 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	V.search = false;
 	$( '#search-list' ).remove();
-	$( '#library' ).trigger( 'click' );
+	libraryHome();
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
 	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
@@ -1523,7 +1523,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var limode   = $this.data( 'mode' );
 	var modefile = [ 'sd', 'nas', 'usb' ].includes( V.mode );
 	// modes: sd, nas, usb, dabradio, webradio, album, artist, albumartist, composer, conductor, date, genre
-	if ( V.search && limode.slice( -5 ) === 'radio' ) {
+	if ( $this.hasClass( 'file' ) ) {
 		$this.find( '.li-icon' ).trigger( 'click' );
 		return
 	}
