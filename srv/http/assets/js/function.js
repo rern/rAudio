@@ -1242,7 +1242,7 @@ function renderLibraryList( data ) { // V.librarylist
 			htmlpath += '<a>'+ dir[ i ] +' / <span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
-	if ( ! V.search ) {
+	if ( V.mode ) {
 		if ( V.mode === 'webradio' ) {
 			htmlpath += ico( 'add btntitle button-webradio-new' );
 		} else if ( V.mode === 'latest' ) {

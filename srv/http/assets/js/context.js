@@ -133,29 +133,26 @@ function directoryDelete() {
 	} );
 }
 function directoryList() {
-	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
-		var path      = V.list.path;
-		var modetitle = path;
-		var query     = {
-			  library : 'ls'
-			, string  : path
-			, gmode   : path.split( '/' )[ 0 ].toLowerCase()
-		}
-		list( query, function( html ) {
-			var data = {
-				  html      : html
-				, modetitle : modetitle
-				, path      : path
-			}
-			V.librarylisthtml = '';
-			renderLibraryList( data );
-		} );
-		query.path      = path;
-		query.modetitle = modetitle;
-		V.query.push( query );
-	} else {
-		$( '#lib-list .liinfopath' ).trigger( 'click' );
+	var path      = V.list.path;
+	var modetitle = path;
+	var mode      = path.split( '/' )[ 0 ].toLowerCase();
+	var query     = {
+		  library : 'ls'
+		, string  : path
+		, gmode   : mode
 	}
+	list( query, function( html ) {
+		var data = {
+			  html      : html
+			, modetitle : modetitle
+			, path      : path
+		}
+		V.librarylisthtml = '';
+		var mode0         = V.mode;
+		V.mode            = mode;
+		renderLibraryList( data );
+		setTimeout( () => V.mode = mode0, 300 );
+	} );
 }
 function directoryRename() {
 	var icon  = 'webradio';

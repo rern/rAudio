@@ -1030,8 +1030,6 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = path;
-	query.modetitle = path;
 } );
 $( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
@@ -1135,7 +1133,6 @@ $( '#button-lib-search' ).on( 'click', function() {
 			pageScroll( 0 );
 			$( '#lib-title' )
 					.html( ico( 'search' ) + keyword )
-					.addClass( 'search' )
 					.removeClass( 'hide' );
 		} );
 		$( '#button-lib-back, #lib-mode-list' ).addClass( 'hide' );
@@ -1169,22 +1166,29 @@ $( '#lib-search-input' ).on( 'input', function() {
 } );
 $( '#button-lib-back' ).on( 'click', function() {
 	if ( V.search ) {
-		V.query.pop();
 		$( '#lib-list' ).remove();
 		$( '#button-lib-back' ).addClass( 'hide' );
+		$( '#lib-title' ).html( ico( 'search' ) + $( '#lib-search-input' ).val() );
 		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );
 		return
 	}
 	
-	var $breadcrumbs = $( '#lib-title a' );
-	var bL           = $breadcrumbs.length
-	if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
+	if ( V.query.length === 1 ) {
 		$( '#library' ).trigger( 'click' );
 		return
 	}
 	
+	if ( ! V.query.length ) {
+		var $breadcrumbs = $( '#lib-title a' );
+		var bL           = $breadcrumbs.length
+		if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
+			$( '#library' ).trigger( 'click' );
+			return
+		}
+		
+	}
 	V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
-	var backmode     = 'gmode' in V && V.gmode !== V.mode;
+	var backmode = 'gmode' in V && V.gmode !== V.mode;
 	if ( bL && V.mode !== 'latest' && ! backmode ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 	} else {
@@ -1255,9 +1259,11 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = V.mode.slice( -5 ) === 'radio' ? '' : path;
-	query.modetitle = path;
-	if ( query.query !== 'ls' && query.query !== 'radio' ) V.query.push( query );
+	if ( query.library !== 'ls' && query.library !== 'radio' ) {
+		query.path      = V.mode.slice( -5 ) === 'radio' ? '' : path;
+		query.modetitle = path;
+		V.query.push( query );
+	}
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	if ( V.press || $( '.bkedit' ).length ) return
 	
@@ -1325,9 +1331,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = path;
-	query.modetitle = path;
-	V.query.push( query );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
 	var name  = $this.find( '.bkname' ).text();
@@ -1425,8 +1428,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		renderLibraryList( data );
 	} );
-	query.modetitle = 'ALBUM';
-	V.query.push( query );
 } ).press( '.coverart', function( e ) {
 	var $this  = $( e.currentTarget );
 	var src    = $this.find( 'img' ).attr( 'src' );
@@ -1505,7 +1506,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 				}
 				renderLibraryList( data );
 			} );
-			V.query.push( query );
 		}
 		return
 	}
@@ -1605,9 +1605,11 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = path;
-	query.modetitle = modetitle;
-	if ( query.query !== 'ls' || ! modefile ) V.query.push( query );
+	if ( query.library !== 'ls' || ! modefile ) {
+		query.path      = path;
+		query.modetitle = modetitle;
+		V.query.push( query );
+	}
 } );
 $( '.page' ).on( 'click', 'a.indexed', function() {
 	var $this = $( this );
