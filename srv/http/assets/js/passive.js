@@ -12,7 +12,22 @@ W = {
 		clearTimeout( V.timeoutCover );
 		bannerHide();
 		$( '#liimg' ).css( 'opacity', '' );
-		'stationcover' in data ? S.stationcover = data.url : S.coverart = data.url;
+		if ( 'stationcover' in data ) {
+			S.stationcover = data.url
+			if ( V.mode === 'webradio' ) {
+				var url = data.url.slice( 0, -4 ) +'-thumb.jpg';
+				$( '#lib-list img' ).each( ( i, el ) => {
+					var $img = $( el );
+					var src  = $img.attr( 'src' ).slice( 0, -13 );
+					if ( src === url ) {
+						$img.attr( 'src', src + versionHash() );
+						return false
+					}
+				} );
+			}
+		} else {
+			S.coverart = data.url;
+		}
 		setCoverart();
 		if ( data.radioalbum ) { // online coverarts come with album name
 			S.Album = data.radioalbum;
