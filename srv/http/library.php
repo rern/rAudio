@@ -273,18 +273,21 @@ case 'search':
 			}
 		}
 	}
-	$html.= '
-</ul>
-<div class="index modes">';
-	foreach( $t as $mode ) $html.= i( $mode );
-	$html.= '
-</div>';
 	exec( "grep -m1 -rin '$STRING' /srv/http/data/*radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
 		, $files );
 	$c     = count( $files );
-	if ( $c ) htmlRadio();
-	$count+= $c;
+	if ( $c ) {
+		htmlRadio();
+		$count+= $c;
+		$t[]   = 'webradio';
+	}
 	if ( $count ) {
+		$html.= '
+</ul>
+<div class="index modes">';
+		foreach( $t as $mode ) $html.= i( $mode );
+		$html.= '
+</div>';
 		echo json_encode( [ 'html' => $html, 'count' => $count ] );
 	} else {
 		echo -1;
@@ -508,21 +511,22 @@ function htmlRadio() {
 			$filename    = basename( $each->file );
 			$url         = str_replace( '|', '/', $filename );
 			$thumbsrc    = substr( $each->file, 9, 14 ).'/img/'.$filename.'-thumb.jpg';
+			$icon        = $search ? i( 'webradio li-icon' ) : imgIcon( $thumbsrc, 'webradio' );
 			$name        = $each->name;
 			$html       .= '
 <li class="file" data-mode="webradio" '.$datacharset.$dataindex.'>
-	'.imgIcon( $thumbsrc, 'webradio' ).'
+	'.$icon.'
 	<a class="lidir">'.dirname( $each->file ).'</a>
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
 			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
 			if ( substr( $each->file, 15, 8 ) === 'webradio' ) {
-				$html.=
-	'<div class="li1 name">'.$name.'</div>
+				$html.= '
+	<div class="li1 name">'.$name.'</div>
 	<div class="li2">'.$url.'</div>';
 			} else {
-				$html.=
-	'<span class="single name">'.$name.'</span>';
+				$html.= '
+	<span class="single name">'.$name.'</span>';
 			}
 			$i++;
 			$html.= '
