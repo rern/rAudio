@@ -170,8 +170,8 @@ foreach( [ 'artist', 'title', 'album', 'composer', 'conductor' ] as $id ) {
 	$htmlinfo.= '<div id="div'.$id.'"'.$hide.'><span id="'.$id.'" class="info"></span></div>';
 }
 $htmlsearch   = '
-<div id="lib-search" class="hide">
-	<div id="lib-search-close"></div>
+<div id="lib-search" class="search hide">
+	<div id="lib-search-close" class="searchclose"></div>
 	<input id="lib-search-input" type="text" spellcheck="false">
 </div>
 ';
