@@ -1102,7 +1102,7 @@ $( '#button-lib-update' ).on( 'click', function() {
 $( '#button-lib-search' ).on( 'click', function() {
 	if ( $( '#lib-search' ).hasClass( 'hide' ) ) {
 		$( '#page-library .content-top .title, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
-		$( '#page-library .search:not( i )' ).removeClass( 'hide' );
+		$( '#lib-search' ).removeClass( 'hide' );
 		$( '#lib-search-close' ).empty();
 		$( '#lib-search-input' ).trigger( 'focus' );
 		return
@@ -1143,9 +1143,12 @@ $( '#button-lib-search' ).on( 'click', function() {
 	}, 'json' );
 } );
 $( '#page-library' ).on( 'click', '.index.modes i', function() {
-	var mode   = this.className.replace( 'i-', '' );
-	var scroll = $( '#search-list li[data-mode='+ mode +']' ).eq( 0 ).offset().top;
-	scroll    -= $( '.content-top' )[ 0 ].getBoundingClientRect().bottom;
+	var scroll = 0;
+	if ( $( this ).index() > 0 ) {
+		var mode = this.className.replace( 'i-', '' );
+		scroll   = $( '#search-list li[data-mode='+ mode +']' ).eq( 0 ).offset().top;
+		scroll  -= $( '.content-top' )[ 0 ].getBoundingClientRect().bottom;
+	}
 	$( window ).scrollTop( scroll );
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
@@ -1154,14 +1157,15 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	$( '#search-list' ).remove();
 	libraryHome();
 } );
-$( '#lib-search-input' ).on( 'input', function( e ) {
+$( '#lib-search-input' ).on( 'input', function() {
 	if ( ! V.search ) return
 	
 	if ( $( '#lib-search-input' ).val() ) {
 		$( '#button-lib-search' ).trigger( 'click' );
 	} else {
 		V.search = false;
-		$( '#lib-title, #lib-search-close, #search-list' ).empty();
+		$( '#lib-title, #lib-search-close' ).empty();
+		$( '#search-list, .index.modes' ).remove();
 	}
 } );
 $( '#button-lib-back' ).on( 'click', function() {

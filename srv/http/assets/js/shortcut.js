@@ -25,12 +25,11 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
 	
 	var key     = e.key;
-	var $search  = $( '.search:not( .hide )' );
-	if ( $search.length ) {
+	if ( ! $( '#lib-search' ).hasClass( 'hide' ) ) {
 		if ( key === 'Escape' ) {
-			$search.find( '.searchclose' ).trigger( 'click' );
+			$( '#lib-search-close' ).trigger( 'click' );
 		} else if ( key === 'Enter' ) {
-			$search.siblings( '.i-search' ).trigger( 'click' );
+			$( '#button-lib-search' ).trigger( 'click' );
 		}
 		return
 	}

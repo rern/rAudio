@@ -1455,23 +1455,12 @@ i.map.disabled, .map.disabled i {
 	white-space: nowrap;
 	float: right;
 }
-.search input {
-	width: 140px;
-	height: 32px !important;
-	margin: 0;
-	padding: 5px 5px 2px 5px;
-	border: 1px solid var( --cg );
-	color: var( --cw );
-	background-color: #000000;
-	font-family: Lato;
-	font-size: 18px;
-}
-.searchclose {
+#lib-search-close {
 	display: inline-block;
 	margin-right: 5px;
 	font-size: 18px;
 }
-.searchclose::before {
+#lib-search-close::before {
 	content: "\F56C";
 	font-family: rern;
 	display: inline-block;
@@ -1482,6 +1471,17 @@ i.map.disabled, .map.disabled i {
 	font-size: 26px;
 	text-align: center;
 	color: var( --cm );
+}
+#lib-search-input {
+	width: 140px;
+	height: 32px !important;
+	margin: 0;
+	padding: 5px 5px 2px 5px;
+	border: 1px solid var( --cg );
+	color: var( --cw );
+	background-color: #000000;
+	font-family: Lato;
+	font-size: 18px;
 }
 .index {
 	position: fixed;
