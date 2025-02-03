@@ -1129,21 +1129,24 @@ $( '#button-lib-search' ).on( 'click', function() {
 		
 		V.search      = true;
 		V.librarylist = true;
-		var html      = htmlHash( data.html );
 		$( '#search-list' ).remove();
-		$( '#page-library' ).append( html ).promise().done( () => {
+		$( '#page-library' ).append( data.html ).promise().done( () => {
 			renderLibraryPadding();
 			pageScroll( 0 );
-			var icon0 = $( '#search-list .li-icon' ).eq( 0 ).prop( 'class' ).replace( / .*/, '' );
-			$( '#page-library .content-top' ).find( '.'+ icon0 ).removeClass( 'gr' );
 			$( '#lib-title' )
 					.html( ico( 'search' ) + keyword )
 					.addClass( 'search' )
 					.removeClass( 'hide' );
 		} );
-		$( '#button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
+		$( '#button-lib-back, #lib-mode-list' ).addClass( 'hide' );
 		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );
 	}, 'json' );
+} );
+$( '#page-library' ).on( 'click', '.index.modes i', function() {
+	var mode   = this.className.replace( 'i-', '' );
+	var scroll = $( '#search-list li[data-mode='+ mode +']' ).eq( 0 ).offset().top;
+	scroll    -= $( '.content-top' )[ 0 ].getBoundingClientRect().bottom;
+	$( window ).scrollTop( scroll );
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();

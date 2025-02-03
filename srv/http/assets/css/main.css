@@ -1514,6 +1514,14 @@ i.map.disabled, .map.disabled i {
 	color: var( --cw );
 	text-shadow: var( --shadow-text );
 }
+.index.modes i {
+	width: 40px;
+	line-height: 38px;
+	padding: 0;
+	font-size: 24px;
+	text-align: center;
+	color: var( --cg60 );
+}
 #lib-list .coverart {
 	max-width: 200px;
 }

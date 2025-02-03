@@ -1285,7 +1285,6 @@ function renderLibraryList( data ) { // V.librarylist
 		}
 		renderLibraryPadding();
 		$( '#lib-search, #button-lib-search, #search-list' ).addClass( 'hide' );
-		$( '#lib-list' ).removeClass( 'hide' );
 		pageScroll( V.scrolltop[ data.path ] || 0 );
 	} );
 }

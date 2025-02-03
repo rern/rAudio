@@ -238,6 +238,7 @@ case 'search':
 	$search = true;
 	$html   = str_replace( 'lib', 'search', $html );
 	$count  = 0;
+	$t      = [];
 	foreach( [ 'albumartist', 'artist', 'album', 'composer', 'conductor', 'title' ] as $tag ) {
 		unset( $lists );
 		if ( $tag === 'title' ) {
@@ -254,6 +255,7 @@ case 'search':
 		if ( ! $c ) continue;
 		
 		$count+= $c;
+		$t[]   = $tag;
 		if ( $tag === 'title' ) {
 			$GMODE  = 'file';
 			htmlTrack();
@@ -265,18 +267,25 @@ case 'search':
 				$html.= '
 <li data-mode="'.$tag.'">
 	<a class="lipath">'.$path.'</a>
-	'.i( $tag, $tag ).'<span class="single name">'.preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name ).'</span>
+	'.i( $tag, $tag ).'
+	<span class="single name">'.preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name ).'</span>
 </li>';
 			}
 		}
 	}
+	$html.= '
+</ul>
+<div class="index modes">';
+	foreach( $t as $mode ) $html.= i( $mode );
+	$html.= '
+</div>';
 	exec( "grep -m1 -rin '$STRING' /srv/http/data/*radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
 		, $files );
 	$c     = count( $files );
 	if ( $c ) htmlRadio();
 	$count+= $c;
 	if ( $count ) {
-		echo json_encode( [ 'html' => $html.'</ul>', 'count' => $count ] );
+		echo json_encode( [ 'html' => $html, 'count' => $count ] );
 	} else {
 		echo -1;
 	}
@@ -613,17 +622,18 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$title  = $each->title;
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		if ( $search ) {
-			$datamode  = strtolower( substr( $path, 0, 3 ) );
+			$datamode  = 'title';
 			$icon      = i( $tag === 'title' ? 'music' : $tag, 'file' );
 			$$tag      = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $each->$tag );
 			$trackname = $tag === 'albumartist' ? $albumartist : $artist;
 			$trackname.= ' - '.$album;
+			$track1    = '';
 		} else {
 			$datamode  = $GMODE;
 			$icon      = i( 'music', 'file' );
 			$trackname = $cue ? $artist.' - '.$album : basename( $path );
+			$track1    = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		}
-		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		$i++;
 		$html  .= '
 <li data-mode="'.$datamode.'" '.$track1.'>
