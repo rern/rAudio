@@ -16,12 +16,14 @@
 #bar-bottom i.active:hover,
 #button-library:hover,
 #button-playlist:hover,
-#lib-list li.active:hover,
-#pl-savedlist li.active:hover,
-#pl-list li.active:hover,
 #playback-controls button.active:hover,
 #playback-row .btn.active:hover {
 	background-color: var( --cml ) !important;
+}
+#lib-list li.active:hover,
+#pl-savedlist li.active:hover,
+#pl-list li.active:hover {
+	background-color: var( --cm );
 }
 .licover.active:hover {
 	background: linear-gradient( #000000 195px, var( --cml ) 0 ) !important;
