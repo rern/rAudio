@@ -273,13 +273,16 @@ case 'search':
 			}
 		}
 	}
-	exec( "grep -m1 -rin '$STRING' /srv/http/data/*radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
-		, $files );
-	$c     = count( $files );
-	if ( $c ) {
-		htmlRadio();
-		$count+= $c;
-		$t[]   = 'webradio';
+	foreach( [ 'webradio', 'dabradio' ] as $radio ) {
+		unset( $files );
+		exec( "grep -m1 -rin '$STRING' /srv/http/data/$radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
+			, $files );
+		$c     = count( $files );
+		if ( $c ) {
+			htmlRadio();
+			$count+= $c;
+			$t[]   = $radio;
+		}
 	}
 	if ( $count ) {
 		$html.= '
@@ -483,7 +486,7 @@ function htmlRadio() {
 		foreach( $array as $each ) {
 			$dataindex = count( $files ) ? '' : dataIndex( $each->sort );
 			$html.= '
-<li class="dir"'.$dataindex.'>
+<li data-mode="'.$MODE.'" class="dir"'.$dataindex.'>
 	'.imgIcon( str_replace( '/srv/http', '', $each->dir ).'/thumb.jpg', 'wrdir' ).'
 	<a class="lidir">'.$each->dir.'</a>
 	<a class="lipath">'.$each->dirname.'</a>
