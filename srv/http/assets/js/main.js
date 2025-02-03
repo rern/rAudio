@@ -1161,7 +1161,8 @@ $( '#lib-search-input' ).on( 'input', function( e ) {
 		$( '#button-lib-search' ).trigger( 'click' );
 	} else {
 		V.search = false;
-		$( '#lib-title, #lib-search-close, #search-list' ).empty();
+		$( '#lib-title, #lib-search-close' ).empty();
+		$( '#search-list, .index.modes' ).remove();
 	}
 } );
 $( '#button-lib-back' ).on( 'click', function() {

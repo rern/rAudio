@@ -24,12 +24,13 @@ if ( localhost ) {
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
 	
-	var key     = e.key;
-	if ( ! $( '#lib-search' ).hasClass( 'hide' ) ) {
+	var key      = e.key;
+	var $search  = $( '.search:not( .hide )' );
+	if ( $search.length ) {
 		if ( key === 'Escape' ) {
-			$( '#lib-search-close' ).trigger( 'click' );
+			$search.find( '.searchclose' ).trigger( 'click' );
 		} else if ( key === 'Enter' ) {
-			$( '#button-lib-search' ).trigger( 'click' );
+			$search.siblings( '.i-search' ).trigger( 'click' );
 		}
 		return
 	}
