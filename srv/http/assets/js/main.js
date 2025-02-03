@@ -1103,7 +1103,7 @@ $( '#button-lib-search' ).on( 'click', function() {
 	if ( $( '#lib-search' ).hasClass( 'hide' ) ) {
 		$( '#page-library .content-top .title, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
 		$( '#page-library .search:not( i )' ).removeClass( 'hide' );
-		$( '#lib-search-close' ).empty();
+		$( '#lib-title, #lib-search-close' ).empty();
 		$( '#lib-search-input' ).trigger( 'focus' );
 		return
 	}
@@ -1153,13 +1153,10 @@ $( '#page-library' ).on( 'click', '.index.modes i', function() {
 	scroll    -= $( '.content-top' )[ 0 ].getBoundingClientRect().bottom;
 	pageScroll( scroll );
 } );
-$( '#lib-search-close' ).on( 'click', function( e ) {
-	e.stopPropagation();
-	V.search = false;
-	$( '#search-list' ).remove();
+$( '#lib-search-close' ).on( 'click', function() {
 	libraryHome();
 } );
-$( '#lib-search-input' ).on( 'input', function( e ) {
+$( '#lib-search-input' ).on( 'input', function() {
 	if ( ! V.search ) return
 	
 	if ( $( '#lib-search-input' ).val() ) {

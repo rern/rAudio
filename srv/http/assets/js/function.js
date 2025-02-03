@@ -1164,13 +1164,13 @@ function refreshData() {
 }
 function renderLibrary() { // library home
 	V.libraryhome = true;
+	V.search      = false;
 	V.mode        = '';
 	[ 'albumlist', 'librarylist', 'librarytrack', 'search' ].forEach( k => V[ k ] = false );
 	V.query       = [];
 	var title     = 'LIBRARY';
 	if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ico( 'music' ) +'</a>';
 	$( '#lib-home-title' ).html( title );
-	$( '#lib-title' ).removeClass( 'search' );
 	$( '#page-library .lib-path' ).empty()
 	$( '#lib-home-title, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
 	$( '#lib-title, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
