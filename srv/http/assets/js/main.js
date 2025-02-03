@@ -1143,10 +1143,15 @@ $( '#button-lib-search' ).on( 'click', function() {
 	}, 'json' );
 } );
 $( '#page-library' ).on( 'click', '.index.modes i', function() {
+	if ( ! $( this ).index() ) {
+		pageScroll( 0 );
+		return
+	}
+	
 	var mode   = this.className.replace( 'i-', '' );
 	var scroll = $( '#search-list li[data-mode='+ mode +']' ).eq( 0 ).offset().top;
 	scroll    -= $( '.content-top' )[ 0 ].getBoundingClientRect().bottom;
-	$( window ).scrollTop( scroll );
+	pageScroll( scroll );
 } );
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
