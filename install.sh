@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250118
+# 20250203
 if grep -q '^#bind_to_address = ::' /etc/snapserver.conf; then
 	sed -i '/^#bind_to_address/ a\
 bind_to_address = 0.0.0.0

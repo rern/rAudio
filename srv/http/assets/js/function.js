@@ -892,7 +892,7 @@ function lyricsShow( data ) {
 function menuHide() {
 	$( '.menu' ).addClass( 'hide' );
 	$( '.contextmenu ' ).find( 'a, i' ).removeClass( 'hide' );
-	$( '#lib-list li, #pl-savedlist li' ).removeClass( 'active' );
+	$( '#lib-list li, #pl-savedlist li, #search-list li' ).removeClass( 'active' );
 	$( '#pl-list li' ).removeClass( 'updn' );
 }
 function menuLibraryPlaylist( $tabs, click ) {

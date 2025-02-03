@@ -1145,9 +1145,6 @@ $( '#button-lib-search' ).on( 'click', function() {
 		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );
 	}, 'json' );
 } );
-$( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( V.search ) $( '#button-lib-search' ).trigger( 'click' );
-} );
 $( '#lib-search-close' ).on( 'click', function( e ) {
 	e.stopPropagation();
 	V.search = false;
@@ -1155,7 +1152,14 @@ $( '#lib-search-close' ).on( 'click', function( e ) {
 	libraryHome();
 } );
 $( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
+	if ( ! V.search ) return
+	
+	if ( $( '#lib-search-input' ).val() ) {
+		$( '#button-lib-search' ).trigger( 'click' );
+	} else {
+		V.search = false;
+		$( '#lib-title, #lib-search-close, #search-list' ).empty();
+	}
 } );
 $( '#button-lib-back' ).on( 'click', function() {
 	if ( V.search ) {
@@ -1465,8 +1469,8 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	
 	var limode   = $this.data( 'mode' );
 	if ( $target.is( '.li-icon, .licoverimg' )
-		|| $this.find( '.i-music' ).length
 		|| $target.data( 'menu' )
+		|| $this.find( '.i-music' ).length
 		|| limode.slice( -5 ) === 'radio'
 	) {
 		contextmenuLibrary( $this, $target );
@@ -1508,7 +1512,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( ! V.search ) $this.addClass( 'active' );
 	var libpath  = $( '#page-library .lib-path' ).text();
 	var path     = $this.find( '.lipath' ).text();
-	var name     = $this.find( '.liname' ).text();
 	var modefile = [ 'sd', 'nas', 'usb' ].includes( V.mode );
 	// modes: sd, nas, usb, dabradio, webradio, album, artist, albumartist, composer, conductor, date, genre
 	if ( [ 'sd', 'nas', 'usb' ].includes( limode ) ) { // file
@@ -1524,7 +1527,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, string  : path
 		}
 		var modetitle = path;
-	} else if ( ! V.search && V.mode.slice( -6 ) === 'artist' ) { // dabradio, webradio
+	} else if ( ! V.search && V.mode.slice( -6 ) === 'artist' ) {
 		var query = {
 			  library : 'findartist'
 			, mode    : V.mode
@@ -1546,6 +1549,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var modetitle = path;
 	} else { // album
+		var name = $this.find( '.liname' ).text();
 		if ( V.mode === 'album' ) {
 			if ( name ) { // albums with the same names
 				var query = {
@@ -1563,6 +1567,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 				}
 				var modetitle = path;
 			}
+		} else if ( V.search ) {
+			var query = {
+				  library : 'ls'
+				, string  : path
+			}
+			var modetitle = '';
 		} else {
 			var query = {
 				  library : 'find'
