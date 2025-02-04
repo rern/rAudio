@@ -1156,9 +1156,10 @@ $( '#lib-search-close' ).on( 'click', function() {
 $( '#lib-search-input' ).on( 'input', function() {
 	if ( ! V.search ) return
 	
-	if ( $( '#lib-search-input' ).val() ) {
+	var kL = $( '#lib-search-input' ).val().length;
+	if ( kL > 2 ) {
 		$( '#button-lib-search' ).trigger( 'click' );
-	} else {
+	} else if ( ! kL ) {
 		V.search = false;
 		$( '#lib-title, #lib-search-close' ).empty();
 		$( '#search-list, .index.modes' ).remove();
