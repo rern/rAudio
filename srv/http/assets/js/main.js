@@ -1271,11 +1271,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	V.list.name = V.list.li.find( '.bkname' ).text();
 	V.list.path = V.list.li.find( '.lipath' ).text();
 	V.mpccmd  = [ 'mpcadd', V.list.path ];
-	if ( D.tapaddplay || D.tapreplaceplay ) {
-		V.action = D.tapaddplay ? 'addplay' : 'replaceplay';
-		addToPlaylistCommand();
-		return
-	}
+	if ( tapAddReplace() ) return
 	
 	var $img = V.list.li.find( '.bkcoverart' );
 	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
@@ -1475,6 +1471,9 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
 	var limode   = $this.data( 'mode' );
+	var modefile = [ 'sd', 'nas', 'usb' ].includes( limode ); // modes: sd, nas, usb, dabradio, webradio, album, artist, albumartist, composer, conductor, date, genre
+	if ( modefile && tapAddReplace() ) return
+	
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )
 		|| $this.find( '.i-music' ).length
@@ -1518,14 +1517,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( ! V.search ) $this.addClass( 'active' );
 	var libpath  = $( '#page-library .lib-path' ).text();
 	var path     = $this.find( '.lipath' ).text();
-	var modefile = [ 'sd', 'nas', 'usb' ].includes( V.mode );
-	// modes: sd, nas, usb, dabradio, webradio, album, artist, albumartist, composer, conductor, date, genre
-	if ( [ 'sd', 'nas', 'usb' ].includes( limode ) ) { // file
+	if ( modefile ) {
 		var query = {
 			  library : 'ls'
 			, string  : path
 		}
-		var modetitle = modefile ? path : $( '#mode-title' ).text();
+		var modetitle = path;
 	} else if ( V.mode.slice( -5 ) === 'radio' ) { // dabradio, webradio
 		if ( libpath ) path = libpath +'/'+ path;
 		var query = {
