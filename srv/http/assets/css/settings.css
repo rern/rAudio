@@ -396,6 +396,7 @@ input[type=image] {
 }
 #logotext gr {
 	font-size: 15px;
+	font-weight: normal;
 	letter-spacing: normal;
 }
 .list {
