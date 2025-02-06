@@ -864,15 +864,6 @@ var graph     = {
 		}
 	}
 	, plot        : () => {
-		if ( typeof Plotly !== 'object' ) {
-			[ 'camilladsp_plot', 'math', 'plotly' ].forEach( k => {
-				$.getScript( '/assets/js/plugin/'+ jfiles[ k ], () => {
-					if ( k === 'plotly' ) graph.plot();
-				} );
-			} );
-			return
-		}
-		
 		if ( V.tab === 'filters' ) {
 			evalFilter( V.li.data( 'name' ) );
 		} else {
