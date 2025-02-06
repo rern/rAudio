@@ -865,34 +865,36 @@ var graph     = {
 	}
 	, plot        : () => {
 		if ( typeof Plotly !== 'object' ) {
-			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
+			[ 'camilladsp_plot', 'math', 'plotly' ].forEach( k => {
+				$.getScript( '/assets/js/plugin/'+ jfiles[ k ], () => {
+					if ( k === 'plotly' ) graph.plot();
+				} );
+			} );
 			return
 		}
 		
-		var filters     = V.tab === 'filters';
-		var filterdelay = false;
-		if ( filters ) {
-			var f       = FIL[ V.li.data( 'name' ) ];
-			filterdelay = f.type === 'Delay';
-			var delay0  = ! filterdelay && 'gain' in f.parameters && f.parameters.gain === 0;
+		if ( V.tab === 'filters' ) {
+			evalFilter( V.li.data( 'name' ) );
 		} else {
-			var pipelinedelay = false;
-			var delay0        = true;
-			var index         = V.li.data( 'index' );
-			PIP[ index ].names.forEach( n => {
-				var f = FIL[ n ];
-				if ( ! pipelinedelay && f.type === 'Delay' ) pipelinedelay = true;
-				if ( delay0 && 'gain' in f.parameters && f.parameters.gain !== 0 ) delay0 = false;
-			} );
+			evalFilterStep( V.li.data( 'index' ) );
 		}
-		var args = JSON.stringify( filters ? f : S.config );
-		if ( ! filters ) args = args.replace( /}$/, ',"index":'+ index +'}' );
-		V.li.find( '.liicon' ).addClass( 'blink' );
-		bash( [ 'settings/camilla.py', args ], data => {
-			var PLOTS   = jsonClone( plots );
-			var AXES    = jsonClone( axes );
-			var impulse = 'impulse' in data;
-			if ( filterdelay ) {
+	}
+	, plotSet     : data => {
+			var PLOTS = jsonClone( plots );
+			var AXES  = jsonClone( axes );
+			if ( V.tab === 'filters' ) {
+				var f      = FIL[ V.li.data( 'name' ) ];
+				var delay  = f.type === 'Delay';                  // if filter has delay
+				var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
+			} else {
+				var delay  = false;
+				PIP[ V.li.data( 'index' ) ].names.forEach( n => { // if any filter has delay
+					var f      = FIL[ n ];
+					if ( ! delay && f.type === 'Delay' ) delay = true;
+					var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
+				} );
+			}
+			if ( delay ) {
 				PLOTS.magnitude.y   = 0;
 			} else {
 				PLOTS.magnitude.y   = data.magnitude;
@@ -955,7 +957,6 @@ var graph     = {
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
 			$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 			V.li.find( '.liicon' ).removeClass( 'blink' );
-		}, 'json' );
 	}
 	, refresh  : () => {
 		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
@@ -1217,16 +1218,18 @@ var render    = {
 			var icon_s = 'filters'
 			var li1    = el.names.join( ' <gr>•</gr> ' );
 			var li2    = 'ch: '+ el.channels.join( ' • ' );;
+			var $graph = $( '#pipeline .entries.main li' ).eq( i ).find( '.divgraph' );
+			var graph  = $graph.length ? $graph[ 0 ].outerHTML : '';
 		} else {
 			var icon_s = 'mixers'
 			var li1    = el.name;
 			var li2    = render.mixerMap( MIX[ el.name ].mapping );
+			var graph  = '';
 		}
-		var $graph = $( '#pipeline .entries.main li' ).eq( i ).find( '.divgraph' );
-		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
 		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( icon_s )
 				+'<div class="li1">'+ li1 +'</div>'
 				+'<div class="li2">'+ li2 +'</div>'
+				+ graph
 				+'</li>';
 		return li
 	}
