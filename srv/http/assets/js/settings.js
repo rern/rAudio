@@ -76,12 +76,9 @@ function currentStatus( id, arg ) {
 			.html( status )
 			.data( 'status', id )
 			.data( 'arg', arg || '' )
-			.removeClass( 'hide' );
-		if ( id === 'mpdconf' ) {
-			setTimeout( () => $( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() ), 100 );
-		} else if ( [ 'albumignore', 'mpdignore' ].includes( id ) ) {
-			$( '.container' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
-		}
+			.removeClass( 'hide' ).promise().done( () => {
+				if ( page === 'player' ) util.statusScroll( id );
+			} );
 		bannerReset();
 	} );
 }

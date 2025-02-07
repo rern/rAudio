@@ -325,6 +325,13 @@ var util     = {
 			} );
 		}
 	}
+	, statusScroll : id => {
+		if ( id === 'mpdconf' ) {
+			$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
+		} else if ( [ 'albumignore', 'mpdignore' ].includes( id ) ) {
+			$( '.container' ).scrollTop( $( '#'+ id ).offset().top + window.innerHeight );
+		}
+	}
 	, statusSet : () => {
 		var htmlstatus =  S.version +'<br>';
 		[ 'song', 'album', 'webradio', 'dabradio', 'playlists' ].forEach( k => {
