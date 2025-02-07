@@ -871,6 +871,11 @@ var graph     = {
 		}
 	}
 	, plotLy      : data => {
+		if ( ! data ) {
+			banner( 'graph', 'Graph', 'Not available.' );
+			return
+		}
+		
 		var PLOTS = jsonClone( plots );
 		var AXES  = jsonClone( axes );
 		if ( V.tab === 'filters' ) {
