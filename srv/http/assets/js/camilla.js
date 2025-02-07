@@ -573,9 +573,9 @@ var config    = {
 			, checkchanged : enabled
 			, cancel       : switchCancel
 			, ok           : () => {
-				var val =  infoVal();
-				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
 				DEV.enable_rate_adjust = true;
+				var val                =  infoVal();
+				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
 				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 			}
 		} );
@@ -591,7 +591,7 @@ var config    = {
 			, cancel       : switchCancel
 			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
 			, ok           : () => {
-				DEV.capture_samplerate = infoVal();
+				DEV.capture_samplerate = DEV.samplerate;
 				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 			}
 		} );
@@ -617,9 +617,7 @@ var config    = {
 		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
 			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
 		} );
-		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
-			S[ k ] = DEV[ k ] === true;
-		} );
+		config.valueSwitch();
 		var dev                          = S.devices;
 		var samplings                    = dev.playback.samplings;
 		D0.samplerate                    = Object.values( samplings );
@@ -632,6 +630,11 @@ var config    = {
 		Dlist.channelsC[ 2 ].updn.max    = dev.capture.channels;
 		Dlist.channelsP[ 2 ].updn.max    = dev.playback.channels;
 		Dlist.filename[ 2 ].kv           = S.ls.raw;
+	}
+	, valueSwitch         : () => {
+		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
+			S[ k ] = DEV[ k ] !== null;
+		} );
 	}
 }
 var graph     = {
@@ -2002,6 +2005,10 @@ var setting   = {
 			}, 1000 );
 		}, wscamilla ? 0 : 300 );
 		if ( titlle ) banner( V.tab, titlle, msg );
+		if ( V.tab === 'devices' ) {
+			config.valueSwitch();
+			render.devices();
+		}
 	}
 	, statusPush    : () => {
 		var status = { 
