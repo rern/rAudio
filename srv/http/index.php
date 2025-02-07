@@ -179,7 +179,7 @@ $htmlsearch   = '
 
 <div id="refresh"></div>
 
-<div id="bar-top" class="hide">
+<div id="bar-top">
 	<?=i( 'raudio-nobg', 'logo' )
 	  .'<div id="playback-controls">'
 	  .buttonSet( [ 'previous', 'stop', 'play', 'pause', 'next' ], 'btn btn-default btn-cmd' )
