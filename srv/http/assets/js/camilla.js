@@ -1990,16 +1990,16 @@ var setting   = {
 		}
 	}
 	, save          : ( titlle, msg ) => {
+		clearTimeout( V.timeoutsave );
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			graph.refresh();
-			if ( ! V.press ) {
+			V.timeoutsave = setTimeout( () => {
 				local();
 				setting.statusPush();
-				clearTimeout( V.timeoutsave );
-				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
-			}
+				bash( [ 'saveconfig' ] );
+			}, 1000 );
 		}, wscamilla ? 0 : 300 );
 		if ( titlle ) banner( V.tab, titlle, msg );
 	}
