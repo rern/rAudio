@@ -2415,13 +2415,10 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	V.li      = $this.parent();
-	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
-		$( '#menu' ).addClass( 'hide' );
-		if ( V.li.hasClass( 'focus' ) )return
-	}
+	if ( ! contextMenuToggle() ) return
 	
-	$( '#'+ V.tab +' li' ).removeClass( 'focus' );
-	V.li.addClass( 'focus' );
+	$( '#'+ V.tab +' li' ).removeClass( 'active' );
+	V.li.addClass( 'active' );
 	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
 	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
 	$( '#menu .delete' ).toggleClass( 'disabled', V.tab === 'config' && S.ls.configs.length === 1 );

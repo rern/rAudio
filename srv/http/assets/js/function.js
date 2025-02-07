@@ -1998,6 +1998,15 @@ function switchPage( page ) {
 	$( '.page' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
+function tapAddReplace() {
+	if ( D.tapaddplay || D.tapreplaceplay ) {
+		V.action = D.tapaddplay ? 'addplay' : 'replaceplay';
+		addToPlaylistCommand();
+		return true
+	}
+	
+	return false
+}
 function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )
 }

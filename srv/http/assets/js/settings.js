@@ -51,10 +51,21 @@ function bannerReset() {
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function contextMenu() {
-	$( '#menu' )
+	var $menu   = $( '#menu' );
+	$menu
 		.removeClass( 'hide' )
 		.css( 'top', $( '.container' ).scrollTop() + V.li.offset().top + 8 );
-	elementScroll( $( '#menu' ) );
+	var bottom = $( '#menu' )[ 0 ].getBoundingClientRect().bottom;
+	if ( bottom > window.innerHeight - 40 + $( window ).scrollTop() ) $( '.container' ).animate( { scrollTop: bottom } );
+}
+function contextMenuToggle() {
+	var $menu = $( '#menu' );
+	if ( ! $menu.hasClass( 'hide' ) && V.li.hasClass( 'active' ) ) {
+		$menu.addClass( 'hide' );
+		return false
+	}
+	
+	return true
 }
 function currentStatus( id, arg ) {
 	var $el = $( '#code'+ id );
@@ -73,12 +84,6 @@ function currentStatus( id, arg ) {
 		}
 		bannerReset();
 	} );
-}
-function elementScroll( $el ) {
-	var menuH   = $el.height();
-	var targetB = $el.offset().top + menuH;
-	var wH      = window.innerHeight;
-	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( '.container' ).animate( { scrollTop: targetB - wH + 42 } );
 }
 function infoSetting( id, callback ) {
 	var filesh = 'settings/data-config.sh '+ id;

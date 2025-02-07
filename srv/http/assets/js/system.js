@@ -994,6 +994,8 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	V.li      = $this;
+	if ( ! contextMenuToggle() ) return
+	
 	var i     = $this.index()
 	var list  = S.liststorage[ i ];
 	$( '#codestorageinfo' )
@@ -1008,6 +1010,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
+	$( 'li' ).removeClass( 'active' );
 	$this.addClass( 'active' );
 	if ( list.icon === 'microsd' ) {
 		$( '#menu a' ).addClass( 'hide' );
