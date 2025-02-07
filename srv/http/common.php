@@ -75,7 +75,7 @@ if ( ! $page ) { // main
 	} else if ( $camilla ) {
 		$icon      = 'camilladsp';
 		$pagetitle = 'CamillaDSP';
-		$css       = [ ...$css, 'camilla','equalizer' ];
+		$css       = [ ...$css, 'camilla', 'equalizer' ];
 		$jsp       = [ ...$jsp, 'camilladsp_plot', 'complex', 'plotly', 'Sortable' ];
 	} else if ( $guide ) {
 		$icon      = 'help';
