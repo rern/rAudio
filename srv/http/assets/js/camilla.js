@@ -617,7 +617,6 @@ var config    = {
 		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
 			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
 		} );
-		config.valueSwitch();
 		var dev                          = S.devices;
 		var samplings                    = dev.playback.samplings;
 		D0.samplerate                    = Object.values( samplings );
@@ -630,11 +629,6 @@ var config    = {
 		Dlist.channelsC[ 2 ].updn.max    = dev.capture.channels;
 		Dlist.channelsP[ 2 ].updn.max    = dev.playback.channels;
 		Dlist.filename[ 2 ].kv           = S.ls.raw;
-	}
-	, valueSwitch         : () => {
-		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
-			S[ k ] = DEV[ k ] !== null;
-		} );
 	}
 }
 var graph     = {
@@ -1275,9 +1269,9 @@ var render    = {
 			}
 		} );
 		var keys = [];
-		if ( S.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
-		if ( S.capture_samplerate ) keys.push( 'capture_samplerate' );
-		if ( S.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
+		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
+		if ( DEV.capture_samplerate ) keys.push( 'capture_samplerate' );
+		if ( DEV.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
 		if ( keys.length ) {
 			labels += '<hr>';
 			values += '<hr>';
@@ -1286,7 +1280,7 @@ var render    = {
 				values += DEV[ k ].toLocaleString() +'<br>';
 			} );
 		}
-		if ( S.resampler ) {
+		if ( DEV.resampler ) {
 			labels += 'Resampler<br>'
 			values += DEV.resampler.type +'<br>';
 			if ( 'profile' in DEV.resampler ) {
@@ -1301,6 +1295,9 @@ var render    = {
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		$( '#enable_rate_adjust' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
+		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
+			S[ k ] = DEV[ k ] !== null;
+		} );
 		switchSet();
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
@@ -2005,10 +2002,7 @@ var setting   = {
 			}, 1000 );
 		}, wscamilla ? 0 : 300 );
 		if ( titlle ) banner( V.tab, titlle, msg );
-		if ( V.tab === 'devices' ) {
-			config.valueSwitch();
-			render.devices();
-		}
+		if ( V.tab === 'devices' ) render.devices();
 	}
 	, statusPush    : () => {
 		var status = { 
