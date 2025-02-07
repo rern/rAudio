@@ -871,83 +871,83 @@ var graph     = {
 		}
 	}
 	, plotLy      : data => {
-			var PLOTS = jsonClone( plots );
-			var AXES  = jsonClone( axes );
-			if ( V.tab === 'filters' ) {
-				var f      = FIL[ V.li.data( 'name' ) ];
-				var delay  = f.type === 'Delay';                  // if filter has delay
+		var PLOTS = jsonClone( plots );
+		var AXES  = jsonClone( axes );
+		if ( V.tab === 'filters' ) {
+			var f      = FIL[ V.li.data( 'name' ) ];
+			var delay  = f.type === 'Delay';                  // if filter has delay
+			var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
+		} else {
+			var delay  = false;
+			PIP[ V.li.data( 'index' ) ].names.forEach( n => { // if any filter has delay
+				var f      = FIL[ n ];
+				if ( ! delay && f.type === 'Delay' ) delay = true;
 				var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
-			} else {
-				var delay  = false;
-				PIP[ V.li.data( 'index' ) ].names.forEach( n => { // if any filter has delay
-					var f      = FIL[ n ];
-					if ( ! delay && f.type === 'Delay' ) delay = true;
-					var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
-				} );
-			}
-			if ( delay ) {
-				PLOTS.magnitude.y   = 0;
-			} else {
-				PLOTS.magnitude.y   = data.magnitude;
-				var minmax          = {
-					  groupdelay : { min: -10, max: 10 }
-					, impulse    : { min:  -1, max: 1 }
-					, magnitude  : { min:  -6, max: 6 }
-				};
-				[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
-					if ( ! ( d in data ) ) return
-					
-					var min = Math.min( ...data[ d ] );
-					var max = Math.max( ...data[ d ] );
-					max     = Math.max( max, minmax[ d ].max );
-					min     = Math.min( min, minmax[ d ].min )
-					var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ].max * 0.1;
-					if ( d === 'impulse' ) {
-						dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
-					} else {
-						dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
-					}
-					AXES[ d ].dtick = dtick
-					AXES[ d ].range = [ -abs, abs ];
-				} );
-			}
-			PLOTS.phase.y      = data.phase;
-			PLOTS.groupdelay.y = delay0 ? 0 : data.groupdelay;
-			var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
-			var layout         = {
-				  ...PLOTS.layout
-				, xaxis         : AXES.freq[ V.tab ]
-				, yaxis         : AXES.magnitude
-				, yaxis2        : AXES.phase
-				, yaxis3        : AXES.groupdelay
-			}
-			if ( 'impulse' in data ) { // Conv
-				var imL  = data.impulse.length;
-				var raw  = imL < 4500;
-				var each = raw ? imL / 80 : imL / 120;
-				var iL   = raw ? 5 : 7;
-				var ticktext = [];
-				var tickvals = [];
-				for ( var i = 0; i < iL; i++ ) {
-					ticktext.push( i * 20 );
-					tickvals.push( i * 20 * each );
+			} );
+		}
+		if ( delay ) {
+			PLOTS.magnitude.y   = 0;
+		} else {
+			PLOTS.magnitude.y   = data.magnitude;
+			var minmax          = {
+				  groupdelay : { min: -10, max: 10 }
+				, impulse    : { min:  -1, max: 1 }
+				, magnitude  : { min:  -6, max: 6 }
+			};
+			[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
+				if ( ! ( d in data ) ) return
+				
+				var min = Math.min( ...data[ d ] );
+				var max = Math.max( ...data[ d ] );
+				max     = Math.max( max, minmax[ d ].max );
+				min     = Math.min( min, minmax[ d ].min )
+				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ].max * 0.1;
+				if ( d === 'impulse' ) {
+					dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
+				} else {
+					dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
 				}
-				ticktext[ i - 1 ]  = '';
-				AXES.time.range    = [ 0, imL ];
-				AXES.time.tickvals = tickvals;
-				AXES.time.ticktext = ticktext;
-				layout.margin.t    = 40;
-				layout.xaxis2      = AXES.time;
-				layout.yaxis4      = AXES.impulse;
-				PLOTS.impulse.y    = data.impulse;
-				plot.push( PLOTS.impulse );
+				AXES[ d ].dtick = dtick
+				AXES[ d ].range = [ -abs, abs ];
+			} );
+		}
+		PLOTS.phase.y      = data.phase;
+		PLOTS.groupdelay.y = delay0 ? 0 : data.groupdelay;
+		var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
+		var layout         = {
+			  ...PLOTS.layout
+			, xaxis         : AXES.freq[ V.tab ]
+			, yaxis         : AXES.magnitude
+			, yaxis2        : AXES.phase
+			, yaxis3        : AXES.groupdelay
+		}
+		if ( 'impulse' in data ) { // Conv
+			var imL  = data.impulse.length;
+			var raw  = imL < 4500;
+			var each = raw ? imL / 80 : imL / 120;
+			var iL   = raw ? 5 : 7;
+			var ticktext = [];
+			var tickvals = [];
+			for ( var i = 0; i < iL; i++ ) {
+				ticktext.push( i * 20 );
+				tickvals.push( i * 20 * each );
 			}
-			V.li.find( '.divgraph' ).remove();
-			V.li.append( '<div class="divgraph"></div>' );
-			var $divgraph = V.li.find( '.divgraph' );
-			Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
-			$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
-			V.li.find( '.liicon' ).removeClass( 'blink' );
+			ticktext[ i - 1 ]  = '';
+			AXES.time.range    = [ 0, imL ];
+			AXES.time.tickvals = tickvals;
+			AXES.time.ticktext = ticktext;
+			layout.margin.t    = 40;
+			layout.xaxis2      = AXES.time;
+			layout.yaxis4      = AXES.impulse;
+			PLOTS.impulse.y    = data.impulse;
+			plot.push( PLOTS.impulse );
+		}
+		V.li.find( '.divgraph' ).remove();
+		V.li.append( '<div class="divgraph"></div>' );
+		var $divgraph = V.li.find( '.divgraph' );
+		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
+		$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
+		V.li.find( '.liicon' ).removeClass( 'blink' );
 	}
 	, refresh  : () => {
 		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
@@ -1989,6 +1989,7 @@ var setting   = {
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
+			graph.refresh();
 			if ( ! V.press ) {
 				local();
 				setting.statusPush();
@@ -2364,14 +2365,12 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 // common ---------------------------------------------------------------------------------
 $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, mixersSub
 	setting.rangeGet( $( this ), 'click' );
-	graph.refresh();
 } ).on( 'touchend mouseup mouseleave', '.i-minus, .i-plus, .db', function() {
 	if ( ! V.press ) return
 	
 	V.press = false;
 	clearInterval( V.intervalgain );
 	setting.save();
-	graph.refresh();
 } ).press( '.i-minus, .i-plus', function( e ) {
 	setting.rangeGet( $( e.currentTarget ), 'press' );
 } );
@@ -2678,13 +2677,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 			}
 	}
 } );
-$( '.entries' ).on( 'touchmove mousemove', 'input[type=range]', function() {
-	V.press = true;
-} ).on( 'input', 'input[type=range]', function() {
+$( '.entries' ).on( 'input', 'input[type=range]', function() {
 	setting.rangeGet( $( this ), 'input' );
-} ).on( 'touchend mouseup mouseleave', 'input[type=range]', function() {
-	V.press = false;
-	graph.refresh();
 } )
 // filters --------------------------------------------------------------------------------
 $( '#filters' ).on( 'click', '.name', function( e ) {
