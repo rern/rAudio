@@ -196,7 +196,7 @@ function colorSet() {
 	</div>
 </div>
 ` );
-	typeof KellyColorPicker === 'function' ? colorSetPicker() : $.getScript( '/assets/js/plugin/'+ jfiles.html5kellycolorpicker, colorSetPicker );
+	colorSetPicker();
 }
 function colorSetPicker() {
 	local();
@@ -1726,11 +1726,6 @@ function setPlaybackBlank() {
 function setPlaybackBlankQR() {
 	var ip = S.ip || D.apconf.ip;
 	if ( ! ip ) return
-	
-	if ( typeof QRCode !== 'function' ) {
-		$.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
-		return
-	}
 	
 	var htmlqr = '';
 	if ( ! S.ip && D.ap ) {

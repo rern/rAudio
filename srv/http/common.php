@@ -48,7 +48,7 @@ foreach( $jsfiles as $file ) {
 if ( ! $page ) { // main
 	$cssp  = [ 'roundslider' ];
 	$css   = [ ...$css, 'main', 'hovercursor' ];
-	$jsp   = [ 'jquery', 'lazysizes', 'roundslider', 'Sortable' ]; // loaded with $.getScript: html5colorpicker, pica, qrcode
+	$jsp   = [ 'html5kellycolorpicker', 'jquery', 'lazysizes', 'pica', 'qrcode', 'roundslider', 'Sortable' ];
 	$js    = [ 'common', 'context', 'function', 'main', 'passive', 'shortcut' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
@@ -60,7 +60,7 @@ if ( ! $page ) { // main
 } else {         // settings
 	$cssp  = [];
 	$css[] = 'settings';
-	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ];       // loaded with $.getScript: d3, pipelineplotter, plotly, qrcode
+	$jsp   = [ 'jquery', $networks ? 'qrcode' : 'select2' ];
 	$js    = [ 'common', 'settings', $page ];
 	if ( ! $guide && ! $networks && ! $addonsprogress ) {
 		$cssp[] = 'select2';
@@ -112,9 +112,8 @@ echo $html;
 
 $scripts   = '';
 $htmljs    = '<script src="/assets/js/';
-foreach( $jsp as $j )      $scripts.= $htmljs.'plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )       $scripts.= $htmljs.$j.'.js'.$hash.'"></script>';
-if ( ! $page || $camilla ) $scripts.= '<script>var jfiles = '.json_encode( $jfiles ).'</script>';
+foreach( $jsp as $j ) $scripts.= $htmljs.'plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )  $scripts.= $htmljs.$j.'.js'.$hash.'"></script>';
 
 function htmlBottom() {
 	global $htmlbar, $scripts;

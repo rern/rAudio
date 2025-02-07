@@ -858,7 +858,7 @@ function infoFileImage() {
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
 	if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
-		infoFileImageLoad();
+		infoFileImageReader();
 	} else { // animated gif or not
 		var formdata = new FormData();
 		formdata.append( 'cmd', 'giftype' );
@@ -879,13 +879,10 @@ function infoFileImage() {
 						bannerHide();
 					}
 				} else {
-					infoFileImageLoad();
+					infoFileImageReader();
 				}
 			} );
 	}
-}
-function infoFileImageLoad() {
-	V.pica ? infoFileImageReader() : $.getScript( '/assets/js/plugin/'+ jfiles.pica, infoFileImageReader );
 }
 function infoFileImageReader() {
 	var maxsize   = ( V.library && V.libraryhome ) ? 200 : 1000;
@@ -906,7 +903,7 @@ function infoFileImageReader() {
 				var canvas    = document.createElement( 'canvas' );
 				canvas.width  = resize.w;
 				canvas.height = resize.h;
-				V.pica = pica.resize( filecanvas, canvas, picaOption ).then( function() {
+				pica.resize( filecanvas, canvas, picaOption ).then( function() {
 					infoFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
 				} );
 			} else {
