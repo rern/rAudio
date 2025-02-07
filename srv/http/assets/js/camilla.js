@@ -865,17 +865,16 @@ var graph     = {
 	}
 	, plot        : () => {
 		if ( V.tab === 'filters' ) {
-			evalFilter( V.li.data( 'name' ) );
+			var data = evalFilter( V.li.data( 'name' ) );
 		} else {
-			evalFilterStep( V.li.data( 'index' ) );
+			var data = evalFilterStep( V.li.data( 'index' ) );
 		}
-	}
-	, plotLy      : data => {
-		if ( ! data ) {
+		if ( data == -1 ) {
 			banner( 'graph', 'Graph', 'Not available.' );
 			return
 		}
-		
+	}
+	, plotLy      : data => {
 		var PLOTS = jsonClone( plots );
 		var AXES  = jsonClone( axes );
 		if ( V.tab === 'filters' ) {
