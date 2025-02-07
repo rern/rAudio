@@ -118,7 +118,7 @@ foreach( $js as $j )  $scripts.= $htmljs.$j.'.js'.$hash.'"></script>';
 function htmlBottom() {
 	global $htmlbar, $scripts;
 	echo '
-	<div id="bar-bottom" class="hide">'.$htmlbar.'</div>
+	<div id="bar-bottom">'.$htmlbar.'</div>
 	<div id="debug"></div>
 	'.$scripts.'
 </body>
