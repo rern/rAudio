@@ -56,9 +56,9 @@ var F0        = {
 			, [ 'Dummy', 'Raw', 'Wav', 'Values' ]
 		]
 		, Biquad      : [
-		    'Subtype'
-		  , 'select'
-		  , [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO', 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass',  'Allpass',   'AllpassFO',  'LinkwitzTransform' ]
+			  'Subtype'
+			, 'select'
+			, [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO', 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass',  'Allpass',   'AllpassFO',  'LinkwitzTransform' ]
 		]
 		, BiquadCombo : [
 			  'Subtype'
@@ -223,10 +223,10 @@ var F         = {
 		, [ 'Soft clip',  'checkbox' ]
 	]
 	, DiffEq      : [
-		F0.name
-	  , F0.type
-	  , [ 'a', 'text' ]
-	  , [ 'b', 'text' ]
+		  F0.name
+		, F0.type
+		, [ 'a', 'text' ]
+		, [ 'b', 'text' ]
 	]
 //
 	, values      : {
@@ -1990,12 +1990,12 @@ var setting   = {
 		}
 	}
 	, save          : ( titlle, msg ) => {
-		clearTimeout( V.timeoutsave );
+		clearTimeout( V.debounce );
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			graph.refresh();
-			V.timeoutsave = setTimeout( () => {
+			V.debounce = setTimeout( () => {
 				local();
 				setting.statusPush();
 				bash( [ 'saveconfig' ] );
