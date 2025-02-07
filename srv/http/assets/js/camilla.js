@@ -870,7 +870,7 @@ var graph     = {
 			evalFilterStep( V.li.data( 'index' ) );
 		}
 	}
-	, plotSet     : data => {
+	, plotLy      : data => {
 			var PLOTS = jsonClone( plots );
 			var AXES  = jsonClone( axes );
 			if ( V.tab === 'filters' ) {
