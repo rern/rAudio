@@ -861,10 +861,9 @@ var graph     = {
 		}
 	}
 	, filters      : name => {
-		var samplerate = DEV.samplerate;
 		var filter     = FIL[ name ];
-		var f          = graph.filterLog( 1, samplerate * 0.95 / 2 );
-		var currfilt   = graph.filterData( filter, samplerate );
+		var f          = graph.filterLog( 1, DEV.samplerate * 0.95 / 2 );
+		var currfilt   = graph.filterData( filter );
 		if ( ! currfilt ) return
 		
 		var [ ma, ph ] = currfilt.gainAndPhase( f );
@@ -883,22 +882,24 @@ var graph     = {
 		}
 		graph.plotLy( result );
 	}
-	, filterData   : ( filter, samplerate ) => {
+	, filterData   : ( filter, volume ) => {
+		var param      = filter.parameters;
+		var samplerate = DEV.samplerate;
 		switch( filter.type ) {
 			case 'Biquad':
-				return new Biquad( filter.parameters, samplerate )
+				return new Biquad( param, samplerate )
 			case 'BiquadCombo':
-				return new BiquadCombo( filter.parameters, samplerate )
+				return new BiquadCombo( param, samplerate )
 			case 'Conv':
-				return new Conv( filter.parameters || null, samplerate )
+				return new Conv( param || null, samplerate )
 			case 'Delay':
-				return new Delay( filter.parameters, samplerate )
+				return new Delay( param, samplerate )
 			case 'DiffEq':
-				return new DiffEq( filter.parameters, samplerate )
+				return new DiffEq( param, samplerate )
 			case 'Gain':
-				return new Gain( filter.parameters )
+				return new Gain( param )
 			case 'Loudness':
-				return new Loudness( filter.parameters, samplerate, volume )
+				return new Loudness( param, samplerate, volume )
 			case 'Dither':
 			case 'Volume':
 				return new BaseFilter()
@@ -907,20 +908,20 @@ var graph     = {
 				return false
 		}
 	}
-	, filterLog    : ( minval, maxval ) => {
-		var logmin  = Math.log10( minval );
-		var logmax  = Math.log10( maxval );
+	, filterLog    : ( min, max ) => {
+		var logmin  = Math.log10( min );
+		var logmax  = Math.log10( max );
 		var perstep = ( logmax - logmin ) / 1000;
 		var values  = Array.from( { length: 1000 }, ( _, n ) => 10 ** ( logmin + n * perstep ) );
 		return values
 	}
 	, pipeline     : index => {
-		var samplerate = DEV.samplerate;
-		var f          = graph.filterLog( 10, samplerate * 0.95 / 2 );
+		var f          = graph.filterLog( 10, DEV.samplerate * 0.95 / 2 );
 		var totcgain   = new Array( 1000 ).fill( 1 );
 		var currfilt;
 		PIP[ index ].names.forEach( name => {
-			currfilt         = graph.filterData( FIL[ name ], samplerate );
+			var filter       = FIL[ name ];
+			currfilt         = graph.filterData( filter );
 			if ( ! currfilt ) return false
 			
 			var [ _, cgain ] = currfilt.complexGain( f );
