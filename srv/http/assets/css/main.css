@@ -118,6 +118,7 @@ i.map.disabled, .map.disabled i {
 	padding: 0;
 	background: var( --cg );
 	box-shadow: var( --shadow-menu );
+	scroll-margin-bottom: 40px;
 }
 .menu.fixed {
 	position: fixed;

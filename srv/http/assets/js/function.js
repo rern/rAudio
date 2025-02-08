@@ -319,10 +319,7 @@ function contextmenuScroll( $menu, menutop ) {
 		.css( 'top',  menutop )
 		.toggleClass( 'fixed', fixedmenu )
 		.removeClass( 'hide' );
-	var targetB   = $menu[ 0 ].getBoundingClientRect().bottom;
-	var topH      = barVisible( 80, 40 );
-	var wT        = $( window ).scrollTop();
-	if ( targetB > ( V.wH - topH + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - V.wH + 42 } );
+	scrollUpToView( $menu );
 }
 function coverartChange() {
 	if ( V.playback ) {

@@ -1305,6 +1305,9 @@ function qrCode( msg ) {
 	} );
 	return qr.outerHTML
 }
+function scrollUpToView( $el ) {
+	$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
+}
 function sp( px ) {
 	return '<sp style="width: '+ px +'px"></sp>'
 }

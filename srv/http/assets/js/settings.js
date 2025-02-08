@@ -55,8 +55,7 @@ function contextMenu() {
 	$menu
 		.removeClass( 'hide' )
 		.css( 'top', $( '.container' ).scrollTop() + V.li.offset().top + 9 );
-	var bottom = $( '#menu' )[ 0 ].getBoundingClientRect().bottom;
-	if ( bottom > window.innerHeight - 40 + $( window ).scrollTop() ) $( '.container' ).animate( { scrollTop: bottom } );
+	scrollUpToView( $menu );
 }
 function contextMenuToggle() {
 	var $menu = $( '#menu' );

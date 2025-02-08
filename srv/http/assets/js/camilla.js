@@ -1022,7 +1022,7 @@ var graph     = {
 		var $divgraph = V.li.find( '.divgraph' );
 		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
 		$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
-		V.li.find( '.liicon' ).removeClass( 'blink' );
+		scrollUpToView( $divgraph );
 	}
 	, refresh      : () => {
 		$( '#'+ V.tab +' .entries.main li.graph' ).each( ( i, el ) => {
