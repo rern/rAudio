@@ -632,12 +632,12 @@ var config    = {
 	}
 }
 var graph     = {
-	  pipeline    : {
+	  flowchart    : {
 		  add       : txt => {
 			X.type = txt;
 			var cL = DEV[ txt.toLowerCase() ].channels;
-			graph.pipeline.addFrame( txt, cL );
-			for ( var ch = 0; ch < cL; ch++ ) graph.pipeline.addBox( 'ch '+ ch, ch );
+			graph.flowchart.addFrame( txt, cL );
+			for ( var ch = 0; ch < cL; ch++ ) graph.flowchart.addBox( 'ch '+ ch, ch );
 		}
 		, addBox    : ( txt, ch, gain ) => {
 			var c  = {
@@ -666,7 +666,7 @@ var graph     = {
 			
 			var g  = X.Mixer ? gain[ ch ] : gain;
 			if ( g !== undefined ) {
-				var db = graph.pipeline.dbText( g );
+				var db = graph.flowchart.dbText( g );
 				X.text.push( { //----
 					  x : X.ax[ ch ] + Math.round( X.w / 2 )
 					, y : y
@@ -691,7 +691,7 @@ var graph     = {
 					, { x: X.x,          y: y }
 				]
 				X.arrow.push( xy ); //----
-				var db     = graph.pipeline.dbText( g );
+				var db     = graph.flowchart.dbText( g );
 				var x_diff = xy[ 1 ].x - xy[ 0 ].x - X.aw;
 				var y_diff = xy[ 1 ].y - xy[ 0 ].y;
 				var angle  = Math.atan2( y_diff, x_diff );
@@ -734,7 +734,7 @@ var graph     = {
 			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
 			return { t: gain, c: c }
 		}
-		, flowchart : () => {
+		, chart : () => {
 			var canvasW = $( '#pipeline' ).width();
 			var boxL    = 2; // capture + playback
 			PIP.forEach( pip => {                                     //     cap                   pla
@@ -760,14 +760,14 @@ var graph     = {
 				, arrow : []
 			}
 			
-			graph.pipeline.add( 'Capture' );
+			graph.flowchart.add( 'Capture' );
 			X.x += X.w * 2;
 			PIP.forEach( pip => {                     // @ step
 				X.type  = pip.type;
 				if ( pip.type === 'Filter' ) {
 					pip.names.forEach( name => {      // @ filter  < @ step
 						pip.channels.forEach( ch => { // @ channel < @ filter < @ step
-							graph.pipeline.addBox( name, ch, FIL[ name ].parameters.gain );
+							graph.flowchart.addBox( name, ch, FIL[ name ].parameters.gain );
 							X.ax[ ch ] = X.x + X.w;   // ax >| @ channel < @ filter < @ step
 						} );
 						X.x += X.w * 2;               // x  >| @ filter  < @ step
@@ -775,18 +775,18 @@ var graph     = {
 				} else {
 					var mapping = MIX[ pip.name ].mapping;
 					var mL      = mapping.length;
-					if ( mL > 1 ) graph.pipeline.addFrame( pip.name, mL );
+					if ( mL > 1 ) graph.flowchart.addFrame( pip.name, mL );
 					mapping.forEach( m => {                                        // @ playback channel      < @ step
 						var ch   = m.dest;
 						var gain = {};
 						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
-						graph.pipeline.addBox( 'ch '+ ch, ch, gain );
+						graph.flowchart.addBox( 'ch '+ ch, ch, gain );
 					} );
 					for ( var ch = 0; ch < ch_capt; ch++ ) X.ax[ ch ] = X.x + X.w; // ax >| @ capture channel < @ step
 					X.x        += X.w * 2;                                         // x  >| @ mixer           < @ step
 				}
 			} );
-			graph.pipeline.add( 'Playback' );
+			graph.flowchart.add( 'Playback' );
 			$( '#pipeline' ).prepend( '<canvas></canvas>' );
 			var $canvas         = $( '#pipeline canvas' );
 			$canvas // fix - blur elements
@@ -806,7 +806,7 @@ var graph     = {
 				ctx.beginPath();
 				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
 				ctx.fill();
-				graph.pipeline.ctxShadow( ctx, 2 );
+				graph.flowchart.ctxShadow( ctx, 2 );
 			} );
 			ctx.restore();
 			ctx.strokeStyle  = color.gr;
@@ -850,28 +850,98 @@ var graph     = {
 					}
 					ctx.fillText( txt, t.x, t.y );
 				}
-				if ( t.c ) graph.pipeline.ctxShadow( ctx, 1 );
+				if ( t.c ) graph.flowchart.ctxShadow( ctx, 1 );
 			} );
 		}
 		, refresh   : () => {
 			var $flowchart = $( '#pipeline canvas' );
 			var fL         = $flowchart.length;
 			$flowchart.remove();
-			if ( fL ) graph.pipeline.flowchart();
+			if ( fL ) graph.flowchart.chart();
 		}
 	}
-	, plot        : () => {
-		if ( V.tab === 'filters' ) {
-			var data = evalFilter( V.li.data( 'name' ) );
-		} else {
-			var data = evalFilterStep( V.li.data( 'index' ) );
+	, filters      : name => {
+		var samplerate = DEV.samplerate;
+		var filter     = FIL[ name ];
+		var f          = graph.filterLog( 1.0, samplerate * 0.95 / 2.0 );
+		var currfilt   = graph.filterData( filter, samplerate );
+		if ( ! currfilt ) banner( 'graph', 'Graph', 'Not available.' );
+		
+		var [ ma, ph ] = currfilt.gainAndPhase( f );
+		var [ fg, gr ] = calcGroupDelay( f, ph );
+		var result     = {
+			  f            : f
+			, f_groupdelay : fg
+			, groupdelay   : gr
+			, magnitude    : ma
+			, phase        : ph
 		}
-		if ( data == -1 ) {
-			banner( 'graph', 'Graph', 'Not available.' );
-			return
+		if ( filter.type === 'Conv' ) {
+			var [ ti, im ] = currfilt.getImpulse();
+			result.time    = ti;
+			result.impulse = im;
+		}
+		graph.plotLy( result );
+	}
+	, filterData   : ( filter, samplerate ) => {
+		switch( filter.type ) {
+			case 'Biquad':
+				return new Biquad( filter.parameters, samplerate )
+			case 'BiquadCombo':
+				return new BiquadCombo( filter.parameters, samplerate )
+			case 'Conv':
+				return new Conv( filter.parameters || null, samplerate )
+			case 'Delay':
+				return new Delay( filter.parameters, samplerate )
+			case 'DiffEq':
+				return new DiffEq( filter.parameters, samplerate )
+			case 'Gain':
+				return new Gain( filter.parameters )
+			case 'Loudness':
+				return new Loudness( filter.parameters, samplerate, volume )
+			case 'Dither':
+			case 'Volume':
+				return new BaseFilter()
+			default:
+				return false
 		}
 	}
-	, plotLy      : data => {
+	, filterLog    : ( minval, maxval ) => {
+		var logmin  = Math.log10( minval );
+		var logmax  = Math.log10( maxval );
+		var perstep = ( logmax - logmin ) / 1000;
+		var values  = Array.from( { length: 1000 }, ( _, n ) => 10 ** ( logmin + n * perstep ) );
+		return values
+	}
+	, pipeline     : index => {
+		var samplerate = DEV.samplerate;
+		var f          = graph.filterLog( 10.0, samplerate * 0.95 / 2.0 );
+		var totcgain   = new Array( 1000 ).fill( 1.0 );
+		var currfilt;
+		PIP[ index ].names.forEach( name => {
+			currfilt         = graph.filterData( FIL[ name ], samplerate );
+			if ( ! currfilt ) return false
+			
+			var [ _, cgain ] = currfilt.complexGain( f );
+			totcgain         = totcgain.map( ( cg, i ) => cgain[ i ].mul( cg ) );
+		});
+		if ( ! currfilt ) banner( 'graph', 'Graph', 'Not available.' );
+		
+		var ma         = totcgain.map( cg => 20.0 * Math.log10( cg.abs() + 1.0e-15 ) );
+		var ph         = totcgain.map( cg => 180 / Math.PI * Math.atan2( cg.im, cg.re ) );
+		var [ fg, gr ] = calcGroupDelay( f, ph );
+		graph.plotLy( {
+			  f            : f
+			, f_groupdelay : fg
+			, groupdelay   : gr
+			, magnitude    : ma
+			, phase        : ph
+		} );
+	}
+	, plot         : () => {
+		graph[ V.tab ]( V.li.data( V.tab === 'filters' ? 'name' : 'index' ) );
+	}
+	, plotLy       : data => {
 		var PLOTS = jsonClone( plots );
 		var AXES  = jsonClone( axes );
 		if ( V.tab === 'filters' ) {
@@ -950,14 +1020,14 @@ var graph     = {
 		$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 		V.li.find( '.liicon' ).removeClass( 'blink' );
 	}
-	, refresh  : () => {
+	, refresh      : () => {
 		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
 			V.li = $( el ).parent();
 			graph.plot();
 		} );
 	}
 }
-window.addEventListener( 'resize', graph.pipeline.refresh );
+window.addEventListener( 'resize', graph.flowchart.refresh );
 
 var render    = {
 	  status      : () => { // onload only
@@ -1201,7 +1271,7 @@ var render    = {
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
 		render.sortable();
-		graph.pipeline.refresh();
+		graph.flowchart.refresh();
 	}
 	, pipe        : ( el, i ) => {
 		var icon   = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
@@ -2412,7 +2482,7 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 	}
 } ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '#pipeline canvas' );
-	$flowchart.length ? $flowchart.remove() : graph.pipeline.flowchart();
+	$flowchart.length ? $flowchart.remove() : graph.flowchart.chart();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
@@ -2461,7 +2531,11 @@ $( '#menu a' ).on( 'click', function( e ) {
 	var cmd   = $this.prop( 'class' ).replace( ' active', '' );
 	if ( cmd === 'graph' ) {
 		var $divgraph = V.li.find( '.divgraph' );
-		$divgraph.length ? $divgraph.remove() : graph.plot();
+		if ( $divgraph.length ) {
+			$divgraph.remove();
+		} else {
+			graph.plot();
+		}
 		return
 	}
 	
@@ -2597,7 +2671,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							setting.save( title, 'Remove '+ type +' ...' );
 							V.li.remove();
 							if ( PIP.length ) {
-								graph.pipeline.refresh();
+								graph.flowchart.refresh();
 							} else {
 								$( '.i-flowchart' ).addClass( 'disabled' );
 								$( '#pipeline canvas' ).remove();
