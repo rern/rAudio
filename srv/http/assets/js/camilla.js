@@ -558,7 +558,7 @@ var config    = {
 			return
 		}
 		
-		var enabled = S.enable_rate_adjust;
+		var enabled = DEV.enable_rate_adjust;
 		info( {
 			  ...SW
 			, list         : [
@@ -581,7 +581,7 @@ var config    = {
 		} );
 	}
 	, capture_samplerate  : () => {
-		var enabled = S.capture_samplerate;
+		var enabled = DEV.capture_samplerate;
 		info( {
 			  ...SW
 			, list         : Dlist.capture_samplerate
@@ -596,9 +596,9 @@ var config    = {
 			}
 		} );
 	}
-	, resampler           : () => setting.resampler( S.resampler ? DEV.resampler.type : 'AsyncSinc' )
+	, resampler           : () => setting.resampler( DEV.resampler ? DEV.resampler.type : 'AsyncSinc' )
 	, stop_on_rate_change : () => {
-		var enabled = S.stop_on_rate_change;
+		var enabled = DEV.stop_on_rate_change;
 		info( {
 			  ...SW
 			, list         : [ 'Rate mearsure interval', 'number' ]
@@ -969,7 +969,7 @@ var render    = {
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
-		$( '.rateadjust' ).toggleClass( 'hide', ! S.enable_rate_adjust );
+		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ico( 'bluetooth' ) );
 		} else {
@@ -1287,18 +1287,17 @@ var render    = {
 				labels += 'Profile<br>'
 				values += DEV.resampler.profile +'<br>';
 			}
-			if ( S.capture_samplerate ) {
+			if ( DEV.capture_samplerate ) {
 				labels += 'Capture samplerate<br>'
 				values += DEV.capture_samplerate +'<br>';
 			}
 		}
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
-		$( '#enable_rate_adjust' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
-		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => {
-			S[ k ] = DEV[ k ] !== null;
+		$( '#enable_rate_adjust' ).toggleClass( 'disabled', DEV.resampler !== null && DEV.resampler.type === 'Synchronous' );
+		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( id => {
+			$( '#'+ id ).prop( 'checked', DEV[ id ] !== null );
 		} );
-		switchSet();
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
@@ -1870,7 +1869,7 @@ var setting   = {
 	, resampler     : ( type, profile ) => {
 		var list    = D.resampler[ type ];
 		var values  = D.resampler.values[ type ];
-		var current = S.resampler && DEV.resampler.type === values.type;
+		var current = DEV.resampler && DEV.resampler.type === values.type;
 		if ( profile ) values.profile = profile;
 		if ( current ) $.each( DEV.resampler, ( k, v ) => { values[ k ] = v } );
 		info( {
@@ -1899,7 +1898,7 @@ var setting   = {
 			, cancel       : switchCancel
 			, ok           : () => {
 				var val        = infoVal();
-				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = false;
+				if ( val.type === 'Synchronous' && DEV.enable_rate_adjust ) DEV.enable_rate_adjust = false;
 				DEV.resampler = val;
 				setting.save( SW.title, 'Change ...' );
 			}
@@ -2143,7 +2142,7 @@ var common    = {
 						if ( V.local ) return
 						
 						common.wsGetState();
-						if ( S.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
+						if ( DEV.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
 					}, 1000 );
 				}
 			}, 100 );
@@ -2260,7 +2259,7 @@ var common    = {
 	}
 	, wsGetState    : () => {
 		var getstate = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ];
-		if ( S.enable_rate_adjust ) getstate.push( 'GetBufferLevel', 'GetRateAdjust' );
+		if ( S.config && DEV.enable_rate_adjust ) getstate.push( 'GetBufferLevel', 'GetRateAdjust' );
 		getstate.forEach( k => wscamilla.send( '"'+ k +'"' ) );
 	}
 }
