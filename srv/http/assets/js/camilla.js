@@ -899,7 +899,7 @@ var graph     = {
 			case 'Gain':
 				return new Gain( param )
 			case 'Loudness':
-				return new Loudness( param, samplerate, volume )
+				return new Loudness( param, samplerate, S.volume )
 			case 'Dither':
 			case 'Volume':
 				return new BaseFilter()
