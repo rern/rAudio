@@ -791,15 +791,7 @@ var graph     = {
 			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
 			return { t: gain, c: c }
 		}
-		, refresh   : () => {
-			var $flowchart = $( '#pipeline canvas' );
-			var fL         = $flowchart.length;
-			$flowchart.remove();
-			if ( fL ) graph.pipeline.flowchart();
-		}
-	}
-	, pipeline     : {
-		  flowchart : () => {
+		, plot      : () => {
 			var canvasW = $( '#pipeline' ).width();
 			var boxL    = 2; // capture + playback
 			PIP.forEach( pip => {                                     //     cap                   pla
@@ -918,7 +910,15 @@ var graph     = {
 				if ( t.c ) graph.flowchart.ctxShadow( ctx, 1 );
 			} );
 		}
-		, plot      : index => {
+		, refresh   : () => {
+			var $flowchart = $( '#pipeline canvas' );
+			var fL         = $flowchart.length;
+			$flowchart.remove();
+			if ( fL ) graph.flowchart.plot();
+		}
+	}
+	, pipeline     : {
+		  plot : index => {
 			var f          = graph.filters.logSpace( 10, DEV.samplerate * 0.95 / 2 );
 			var totcgain   = new Array( 1000 ).fill( 1 );
 			var currfilt;
@@ -1026,13 +1026,15 @@ var graph     = {
 		var $divgraph = V.li.find( '.divgraph' );
 		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
 		$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
-		scrollUpToView( $divgraph );
+		if ( ! V.refresh ) scrollUpToView( $divgraph );
 	}
 	, refresh      : () => {
+		V.refresh = true;
 		$( '#'+ V.tab +' .entries.main li.graph' ).each( ( i, el ) => {
 			V.li = $( el );
 			graph.plot();
 		} );
+		delete V.refresh;
 	}
 }
 window.addEventListener( 'resize', graph.flowchart.refresh );
@@ -2487,7 +2489,7 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 	}
 } ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '#pipeline canvas' );
-	$flowchart.length ? $flowchart.remove() : graph.pipeline.flowchart();
+	$flowchart.length ? $flowchart.remove() : graph.flowchart.plot();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
