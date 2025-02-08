@@ -941,7 +941,6 @@ var graph     = {
 		} );
 	}
 	, plot         : () => {
-		console.log('plot')
 		graph[ V.tab ]( V.li.data( V.tab === 'filters' ? 'name' : 'index' ) );
 	}
 	, plotLy       : data => {
