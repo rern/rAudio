@@ -1268,11 +1268,10 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	if ( V.press || $( '.bkedit' ).length ) return
 	
-	V.list.li   = $( this );
-	V.list.name = V.list.li.find( '.bkname' ).text();
-	V.list.path = V.list.li.find( '.lipath' ).text();
-	V.mpccmd  = [ 'mpcadd', V.list.path ];
-	if ( tapAddReplace() ) return
+	if ( D.tapaddplay || D.tapreplaceplay ) {
+		tapAddReplace( $( this ) );
+		return
+	}
 	
 	var $img = V.list.li.find( '.bkcoverart' );
 	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
@@ -1330,7 +1329,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	} );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
-	var name  = $this.find( '.bkname' ).text();
+	var name  = $this.find( '.name' ).text();
 	var $img  = $this.find( 'img' );
 	if ( $img.length ) {
 		var icon = '<img src="'+ $img.attr( 'src' ) +'">'
@@ -1348,7 +1347,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	} );
 } ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
-	var name  = $this.find( '.bkname' ).text();
+	var name  = $this.find( '.name' ).text();
 	info( {
 		  icon         : 'bookmark'
 		, title        : 'Rename Bookmark'
@@ -1363,7 +1362,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	} );
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent().parent();
-	var name  = $this.find( '.bkname' ).text();
+	var name  = $this.find( '.name' ).text();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
 		var icon    = 'coverart';
@@ -1467,21 +1466,27 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	e.stopPropagation();
 	if ( V.press ) return
 	
-	var $this    = $( this );
-	var $target  = $( e.target );
+	var $this      = $( this );
+	var $target    = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
-	var limode   = $this.data( 'mode' );
-	var modefile = [ 'sd', 'nas', 'usb' ].includes( limode ); // modes: sd, nas, usb, dabradio, webradio, album, artist, albumartist, composer, conductor, date, genre
-	if ( modefile && tapAddReplace() ) return
-	
+	var limode     = $this.data( 'mode' );
+	var l_modefile = [ 'sd', 'nas', 'usb' ].includes( limode );
+	var l_radio    = limode.slice( -5 ) === 'radio'; // radio .dir has no mode
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )
 		|| $this.find( '.i-music' ).length
-		|| limode.slice( -5 ) === 'radio'
+		|| l_radio
 	) {
 		contextmenuLibrary( $this, $target );
 		return
+	}
+	
+	if ( D.tapaddplay || D.tapreplaceplay ) {
+		if ( $this.find( '.li-icon' ).is( '.i-music' ) || l_radio ) {
+			tapAddReplace( $this );
+			return
+		}
 	}
 	
 	menuHide();
@@ -1516,14 +1521,15 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 	
 	if ( ! V.search ) $this.addClass( 'active' );
-	var libpath  = $( '#page-library .lib-path' ).text();
-	var path     = $this.find( '.lipath' ).text();
-	if ( modefile ) {
+	var libpath    = $( '#page-library .lib-path' ).text();
+	var path       = $this.find( '.lipath' ).text();
+	var v_modefile = [ 'sd', 'nas', 'usb', 'webradio', 'dabradio' ].includes( V.mode );
+	if ( l_modefile ) {
 		var query = {
 			  library : 'ls'
 			, string  : path
 		}
-		var modetitle = path;
+		var modetitle = v_modefile ? path : $( '#page-library .lib-path' ).text(); // keep title of non-file modes
 	} else if ( V.mode.slice( -5 ) === 'radio' ) { // dabradio, webradio
 		if ( libpath ) path = libpath +'/'+ path;
 		var query = {
@@ -1603,7 +1609,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		renderLibraryList( data );
 	} );
-	if ( query.library !== 'ls' || ! modefile ) {
+	if ( ! v_modefile ) {
 		query.path      = path;
 		query.modetitle = modetitle;
 		V.query.push( query );

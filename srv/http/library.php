@@ -154,7 +154,7 @@ case 'home':
 			$htmlmode.= '
 <div class="mode bookmark '.$bkradio.'">
 	<a class="lipath">'.$bkpath.'</a>
-	<a class="bkname hide">'.$name.'</a>
+	<a class="name hide">'.$name.'</a>
 	<img class="bkcoverart" src="'.$src.'^^^">
 </div>';
 		}
@@ -517,7 +517,7 @@ function htmlRadio() {
 			$icon        = $search ? i( 'webradio li-icon' ) : imgIcon( $thumbsrc, 'webradio' );
 			$name        = $each->name;
 			$html       .= '
-<li class="file" data-mode="webradio" '.$datacharset.$dataindex.'>
+<li data-mode="webradio" '.$datacharset.$dataindex.'>
 	'.$icon.'
 	<a class="lidir">'.dirname( $each->file ).'</a>
 	<a class="lipath">'.$url.'</a>

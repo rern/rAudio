@@ -1993,14 +1993,12 @@ function switchPage( page ) {
 	$( '.page' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
-function tapAddReplace() {
-	if ( D.tapaddplay || D.tapreplaceplay ) {
-		V.action = D.tapaddplay ? 'addplay' : 'replaceplay';
-		addToPlaylistCommand();
-		return true
-	}
-	
-	return false
+function tapAddReplace( $li ) {
+	V.mpccmd    = [ 'mpcadd', $li.find( '.lipath' ).text() ];
+	V.action    = D.tapaddplay ? 'addplay' : 'replaceplay';
+	V.list.li   = $li;
+	V.list.name = $li.find( '.name' ).text()
+	addToPlaylistCommand();
 }
 function versionHash() {
 	return '?v='+ Math.round( Date.now() / 1000 )
