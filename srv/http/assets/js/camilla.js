@@ -632,7 +632,64 @@ var config    = {
 	}
 }
 var graph     = {
-	  flowchart    : {
+	  filters      : {
+		  plot     : name => {
+			var filter     = FIL[ name ];
+			var f          = graph.filters.logSpace( 1, DEV.samplerate * 0.95 / 2 );
+			var currfilt   = graph.filters.data( filter );
+			if ( ! currfilt ) return
+			
+			var [ ma, ph ] = currfilt.gainAndPhase( f );
+			var [ fg, gr ] = calcGroupDelay( f, ph );
+			var result     = {
+				  f            : f
+				, f_groupdelay : fg
+				, groupdelay   : gr
+				, magnitude    : ma
+				, phase        : ph
+			}
+			if ( filter.type === 'Conv' ) {
+				var [ ti, im ] = currfilt.getImpulse();
+				result.time    = ti;
+				result.impulse = im;
+			}
+			graph.plotLy( result );
+		}
+		, data     : ( filter, volume ) => {
+			var param      = filter.parameters;
+			var samplerate = DEV.samplerate;
+			switch( filter.type ) {
+				case 'Biquad':
+					return new Biquad( param, samplerate )
+				case 'BiquadCombo':
+					return new BiquadCombo( param, samplerate )
+	/*			case 'Conv': // require: fft, audiofileread
+					return new Conv( param || null, samplerate )*/
+				case 'Delay':
+					return new Delay( param, samplerate )
+				case 'DiffEq':
+					return new DiffEq( param, samplerate )
+				case 'Gain':
+					return new Gain( param )
+				case 'Loudness':
+					return new Loudness( param, samplerate, S.volume )
+				case 'Dither':
+				case 'Volume':
+					return new BaseFilter()
+				default:
+					banner( 'graph', 'Graph', 'Not available.' );
+					return false
+			}
+		}
+		, logSpace : ( min, max ) => {
+			var logmin  = Math.log10( min );
+			var logmax  = Math.log10( max );
+			var perstep = ( logmax - logmin ) / 1000;
+			var values  = Array.from( { length: 1000 }, ( _, n ) => 10 ** ( logmin + n * perstep ) );
+			return values
+		}
+	}
+	, flowchart    : {
 		  add       : txt => {
 			X.type = txt;
 			var cL = DEV[ txt.toLowerCase() ].channels;
@@ -739,63 +796,6 @@ var graph     = {
 			var fL         = $flowchart.length;
 			$flowchart.remove();
 			if ( fL ) graph.pipeline.flowchart();
-		}
-	}
-	, filters      : {
-		  plot     : name => {
-			var filter     = FIL[ name ];
-			var f          = graph.filters.logSpace( 1, DEV.samplerate * 0.95 / 2 );
-			var currfilt   = graph.filters.data( filter );
-			if ( ! currfilt ) return
-			
-			var [ ma, ph ] = currfilt.gainAndPhase( f );
-			var [ fg, gr ] = calcGroupDelay( f, ph );
-			var result     = {
-				  f            : f
-				, f_groupdelay : fg
-				, groupdelay   : gr
-				, magnitude    : ma
-				, phase        : ph
-			}
-			if ( filter.type === 'Conv' ) {
-				var [ ti, im ] = currfilt.getImpulse();
-				result.time    = ti;
-				result.impulse = im;
-			}
-			graph.plotLy( result );
-		}
-		, data     : ( filter, volume ) => {
-			var param      = filter.parameters;
-			var samplerate = DEV.samplerate;
-			switch( filter.type ) {
-				case 'Biquad':
-					return new Biquad( param, samplerate )
-				case 'BiquadCombo':
-					return new BiquadCombo( param, samplerate )
-	/*			case 'Conv': // require: fft, audiofileread
-					return new Conv( param || null, samplerate )*/
-				case 'Delay':
-					return new Delay( param, samplerate )
-				case 'DiffEq':
-					return new DiffEq( param, samplerate )
-				case 'Gain':
-					return new Gain( param )
-				case 'Loudness':
-					return new Loudness( param, samplerate, S.volume )
-				case 'Dither':
-				case 'Volume':
-					return new BaseFilter()
-				default:
-					banner( 'graph', 'Graph', 'Not available.' );
-					return false
-			}
-		}
-		, logSpace : ( min, max ) => {
-			var logmin  = Math.log10( min );
-			var logmax  = Math.log10( max );
-			var perstep = ( logmax - logmin ) / 1000;
-			var values  = Array.from( { length: 1000 }, ( _, n ) => 10 ** ( logmin + n * perstep ) );
-			return values
 		}
 	}
 	, pipeline     : {
