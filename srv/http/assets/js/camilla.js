@@ -863,9 +863,9 @@ var graph     = {
 	, filters      : name => {
 		var samplerate = DEV.samplerate;
 		var filter     = FIL[ name ];
-		var f          = graph.filterLog( 1.0, samplerate * 0.95 / 2.0 );
+		var f          = graph.filterLog( 1, samplerate * 0.95 / 2 );
 		var currfilt   = graph.filterData( filter, samplerate );
-		if ( ! currfilt ) banner( 'graph', 'Graph', 'Not available.' );
+		if ( ! currfilt ) return
 		
 		var [ ma, ph ] = currfilt.gainAndPhase( f );
 		var [ fg, gr ] = calcGroupDelay( f, ph );
@@ -903,6 +903,7 @@ var graph     = {
 			case 'Volume':
 				return new BaseFilter()
 			default:
+				banner( 'graph', 'Graph', 'Not available.' );
 				return false
 		}
 	}
@@ -915,8 +916,8 @@ var graph     = {
 	}
 	, pipeline     : index => {
 		var samplerate = DEV.samplerate;
-		var f          = graph.filterLog( 10.0, samplerate * 0.95 / 2.0 );
-		var totcgain   = new Array( 1000 ).fill( 1.0 );
+		var f          = graph.filterLog( 10, samplerate * 0.95 / 2 );
+		var totcgain   = new Array( 1000 ).fill( 1 );
 		var currfilt;
 		PIP[ index ].names.forEach( name => {
 			currfilt         = graph.filterData( FIL[ name ], samplerate );
@@ -925,9 +926,9 @@ var graph     = {
 			var [ _, cgain ] = currfilt.complexGain( f );
 			totcgain         = totcgain.map( ( cg, i ) => cgain[ i ].mul( cg ) );
 		});
-		if ( ! currfilt ) banner( 'graph', 'Graph', 'Not available.' );
+		if ( ! currfilt ) return
 		
-		var ma         = totcgain.map( cg => 20.0 * Math.log10( cg.abs() + 1.0e-15 ) );
+		var ma         = totcgain.map( cg => 20 * Math.log10( cg.abs() + 1e-15 ) );
 		var ph         = totcgain.map( cg => 180 / Math.PI * Math.atan2( cg.im, cg.re ) );
 		var [ fg, gr ] = calcGroupDelay( f, ph );
 		graph.plotLy( {
