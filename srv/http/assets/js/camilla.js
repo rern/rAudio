@@ -941,6 +941,7 @@ var graph     = {
 		} );
 	}
 	, plot         : () => {
+		console.log('plot')
 		graph[ V.tab ]( V.li.data( V.tab === 'filters' ? 'name' : 'index' ) );
 	}
 	, plotLy       : data => {
@@ -1016,15 +1017,17 @@ var graph     = {
 			plot.push( PLOTS.impulse );
 		}
 		V.li.find( '.divgraph' ).remove();
-		V.li.append( '<div class="divgraph"></div>' );
+		V.li
+			.addClass( 'graph' )
+			.append( '<div class="divgraph"></div>' );
 		var $divgraph = V.li.find( '.divgraph' );
 		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
 		$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 		V.li.find( '.liicon' ).removeClass( 'blink' );
 	}
 	, refresh      : () => {
-		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
-			V.li = $( el ).parent();
+		$( '#'+ V.tab +' .entries.main li.graph' ).each( ( i, el ) => {
+			V.li = $( el );
 			graph.plot();
 		} );
 	}
@@ -1174,19 +1177,17 @@ var render    = {
 			var li        = '<div class="li1">'+ k +'</div>'
 						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
-		var $graph   = $( '#filters .entries.main li[data-name="'+ k +'"]' ).find( '.divgraph' );
-		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
-		var icon;
+		var cl_graph = $( '#filters li[data-name="'+ k +'"]' ).hasClass( 'graph' ) ? ' class="graph"' : '';
 		if ( param.type === 'GraphicEqualizer' ) {
-			icon = 'equalizer';
+			var icon = 'equalizer';
 			var cl_eq = ' class="eq"';
 		} else {
-			icon = 'filters';
+			var icon = 'filters';
 			var cl_eq = '';
 		}
 		icon        += [ 'Volume', 'Dither', 'Limiter' ].includes( v.type ) ? '' : ' graph';
 		icon        += ' liicon edit';
-		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ ico( icon ) + li  +'</li>'
+		return '<li data-name="'+ k +'"'+ cl_graph + cl_eq +'>'+ ico( icon ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -1276,24 +1277,22 @@ var render    = {
 		graph.flowchart.refresh();
 	}
 	, pipe        : ( el, i ) => {
-		var icon   = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
+		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
+		var cl_graph = '';
 		if ( el.type === 'Filter' ) {
 			icon      += ' graph';
 			var icon_s = 'filters'
 			var li1    = el.names.join( ' <gr>•</gr> ' );
 			var li2    = 'ch: '+ el.channels.join( ' • ' );;
-			var $graph = $( '#pipeline .entries.main li' ).eq( i ).find( '.divgraph' );
-			var graph  = $graph.length ? $graph[ 0 ].outerHTML : '';
+			cl_graph   = $( '#pipeline .main li' ).eq( i ).hasClass( 'graph' ) ? ' class="graph"' : '';
 		} else {
 			var icon_s = 'mixers'
 			var li1    = el.name;
 			var li2    = render.mixerMap( MIX[ el.name ].mapping );
-			var graph  = '';
 		}
-		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( icon_s )
+		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'"'+ cl_graph +'>'+ ico( icon ) + ico( icon_s )
 				+'<div class="li1">'+ li1 +'</div>'
 				+'<div class="li2">'+ li2 +'</div>'
-				+ graph
 				+'</li>';
 		return li
 	}
