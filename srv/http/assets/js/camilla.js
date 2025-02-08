@@ -1246,10 +1246,10 @@ var render    = {
 	, mixerMap    : mapping => {
 		var ch = '';
 		mapping.forEach( m => {
-			ch     += ' • ch: '+ m.dest;
+			ch     += ' • ch: <c>'+ m.dest +'</c>';
 			var src = ''
-			m.sources.forEach( s => src += '··'+ s.channel );
-			ch += ' &#9668; '+ src.slice( 2 );
+			m.sources.forEach( s => src += '-'+ s.channel );
+			ch += ' &#8672; <c>'+ src.slice( 1 ) +'</c>';
 		} );
 		return ch.slice( 3 )
 	} //-----------------------------------------------------------------------------------
@@ -1283,7 +1283,8 @@ var render    = {
 			icon      += ' graph';
 			var icon_s = 'filters'
 			var li1    = el.names.join( ' <gr>•</gr> ' );
-			var li2    = 'ch: '+ el.channels.join( ' • ' );;
+			var li2    = 'ch: ';
+			el.channels.forEach( c => li2 += '<c>'+ c +'</c> ' );
 			cl_graph   = $( '#pipeline .main li' ).eq( i ).hasClass( 'graph' ) ? ' class="graph"' : '';
 		} else {
 			var icon_s = 'mixers'
