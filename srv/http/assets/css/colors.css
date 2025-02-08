@@ -1,18 +1,18 @@
 :root {
 	--cd   : hsl(200,100%,35%); /* default main */
-	--cw   : hsl(0,0%,90%);     /* white */
+	--cw   : hsl(  0,  0%,90%); /* white */
 	--cm60 : hsl(200,100%,60%); /* main-60% */
 	--cml  : hsl(200,100%,40%); /* main-light */
 	--cm   : hsl(200,100%,35%); /* main */
 	--cma  : hsl(200,100%,30%); /* main-active */
 	--cmd  : hsl(200,100%,20%); /* main-dark */
-	--cg75 : hsl(200,3%,75%);   /* gray-75% */
-	--cg70 : hsl(200,3%,70%);   /* gray-70% */
-	--cg60 : hsl(200,3%,60%);   /* gray-60% */
-	--cgl  : hsl(200,3%,40%);   /* gray-light */
-	--cg   : hsl(200,3%,30%);   /* gray */
-	--cga  : hsl(200,3%,20%);   /* gray-active */
-	--cgd  : hsl(200,3%,10%);   /* gray-dark */
+	--cg75 : hsl(200,  3%,75%); /* gray-75% */
+	--cg70 : hsl(200,  3%,70%); /* gray-70% */
+	--cg60 : hsl(200,  3%,60%); /* gray-60% */
+	--cgl  : hsl(200,  3%,40%); /* gray-light */
+	--cg   : hsl(200,  3%,30%); /* gray */
+	--cga  : hsl(200,  3%,20%); /* gray-active */
+	--cgd  : hsl(200,  3%,10%); /* gray-dark */
 	
 	--shadow-btn    : -2px  2px 4px      #000;
 	--shadow-btn-u  : -2px -2px 4px      #000;
@@ -35,6 +35,7 @@ bl,  .bl  { color : var( --cm ) !important }
 bll, .bll { color : var( --cm60 ) !important }
 g         { color : var( --cgl ) }
 gr,  .gr  { color : var( --cg60 ) !important }
+.grd      { color : var( --cg ) !important }
 grn, .grn { color : #0f0 !important }
 ora, .ora { color : #f80 !important }
 pur, .pur { color : #f0f !important }

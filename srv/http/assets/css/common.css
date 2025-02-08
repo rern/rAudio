@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1735997122' );
+	src         : url( '/assets/fonts/rern.woff2?v=1736950183' );
 }
 @font-face {
 	font-family : Lato;
@@ -64,6 +64,7 @@ i {
 .i-btreceiver::before      { content: '\F51A' }
 .i-brightness::before      { content: '\F55F' }
 .i-btsender::before        { content: '\F51B' }
+.i-bypass::before          { content: '\F56F' }
 .i-camilla::before,
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .i-camilla::after,
@@ -95,6 +96,7 @@ i {
 .i-i2smodule::before       { content: '\F571' }
 .i-delete::before,
 .i-remove::before          { content: '\F563' }
+.i-drag::before            { content: '\F601' }
 .i-edit::before,
 .i-rename::before          { content: '\F565' }
 .i-equalizer::before,
@@ -217,7 +219,7 @@ i {
 .i-stoptimer::before       { content: '\F570' }
 .i-tag::before             { content: '\F55B' }
 .i-tft::before             { content: '\F577' }
-.i-thermometer::before     { content: '\F57D' }
+.i-templimit::before       { content: '\F57D' }
 .i-timezone::before        { content: '\F575' }
 .i-track::before           { content: '\F54C' }
 .i-undo::before            { content: '\F523' }
@@ -259,6 +261,7 @@ body {
 i,
 .infobtn,
 #debug,
+#divpipeline li,
 #lib-list .coverart {
 	-webkit-user-select: none;
 	user-select: none;
@@ -939,10 +942,6 @@ input[ type=checkbox ] {
 	border: none;
 	border-radius: 3px;
 	background-color: var( --cg );
-}
-.container input[ type=radio ],
-.container input[ type=checkbox ] {
-	display:none;
 }
 input[ type=radio ] {
 	width: 26px;

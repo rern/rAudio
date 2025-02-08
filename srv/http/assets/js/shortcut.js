@@ -24,7 +24,7 @@ if ( localhost ) {
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( V.local || I.active || V.colorpicker ) return
 	
-	var key     = e.key;
+	var key      = e.key;
 	var $search  = $( '.search:not( .hide )' );
 	if ( $search.length ) {
 		if ( key === 'Escape' ) {

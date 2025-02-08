@@ -196,7 +196,7 @@ $( '#button-settings' ).on( 'click', function( e ) {
 			var ctx    = canvas.getContext( '2d' );
 			var cw     = canvas.width / 2;
 			var ch     = canvas.height / 2;
-			for( i = 0; i < 360; i += 0.25 ) {
+			for ( var i = 0; i < 360; i += 0.25 ) {
 				var rad         = i * Math.PI / 180;
 				ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
 				ctx.beginPath();
@@ -456,8 +456,11 @@ $( 'body' ).on( 'click', '#colorok', function() {
 } );
 $( '#library, #button-library' ).on( 'click', function() {
 	if ( V.library ) {
-		if ( V.searchlist ) $( '#lib-search-close' ).trigger( 'click' );
-		if ( V.librarylist ) libraryHome();
+		if ( V.search ) {
+			$( '#lib-search-close' ).trigger( 'click' );
+		} else if ( V.librarylist ) {
+			libraryHome();
+		}
 	} else {
 		switchPage( 'library' );
 		refreshData();
@@ -1027,8 +1030,6 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = path;
-	query.modetitle = path;
 } );
 $( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
@@ -1100,13 +1101,13 @@ $( '#button-lib-search' ).on( 'click', function() {
 	if ( $( '#lib-search' ).hasClass( 'hide' ) ) {
 		$( '#page-library .content-top .title, #button-lib-back, #button-lib-update' ).addClass( 'hide' );
 		$( '#page-library .search:not( i )' ).removeClass( 'hide' );
-		$( '#lib-search-close' ).empty();
+		$( '#lib-title, #lib-search-close' ).empty();
 		$( '#lib-search-input' ).trigger( 'focus' );
 		return
 	}
 	
 	var keyword = $( '#lib-search-input' ).val();
-	if ( ! keyword || $( '#search-list' ).length ) return
+	if ( ! keyword || keyword === $( '#lib-title' ).text() ) return
 	
 	var query = {
 		  library : 'search'
@@ -1124,62 +1125,71 @@ $( '#button-lib-search' ).on( 'click', function() {
 			return
 		}
 		
-		V.searchlist  = true;
+		V.search      = true;
 		V.librarylist = true;
-		var html      = htmlHash( data.html );
 		$( '#search-list' ).remove();
-		$( '#page-library' ).append( html ).promise().done( () => {
+		$( '#page-library' ).append( data.html ).promise().done( () => {
 			renderLibraryPadding();
 			pageScroll( 0 );
-			var icon0 = $( '#search-list i' ).eq( 0 ).prop( 'class' ).replace( / .*/, '' );
-			$( '#page-library .content-top' ).find( '.'+ icon0 ).removeClass( 'gr' );
-			$( '#page-library i.search' ).each( ( i, el ) => {
-				var icon = $( el ).prop( 'class' ).replace( / .*/, '' );
-				$( el ).toggleClass( 'disabled', $( '#search-list .'+ icon ).length === 0 );
-			} );
-			$( '#page-library i.search' ).removeClass( 'hide' );
+			$( '#lib-title' )
+					.html( ico( 'search' ) + keyword )
+					.removeClass( 'hide' );
 		} );
-		$( '#button-lib-back, #lib-mode-list, #lib-list, #page-library .index' ).addClass( 'hide' );
+		$( '#button-lib-back, #lib-mode-list' ).addClass( 'hide' );
 		$( '#lib-search-close' ).html( data.count +' <gr>of</gr>' );
 	}, 'json' );
 } );
-$( '#page-library i.search' ).on( 'click', function() {
-	var $this   = $( this );
-	var icon    = $this.prop( 'class' ).replace( / .*/, '' );
-	var scrollT = $( '#search-list li' ).find( '.'+ icon ).eq( 0 ).parent().offset().top;
-	pageScroll( scrollT - barVisible( 80, 40 ) );
-	$( '#page-library i.search' ).addClass( 'gr' );
-	$this.removeClass( 'gr' );
+$( '#page-library' ).on( 'click', '.index.modes i', function() {
+	if ( ! $( this ).index() ) {
+		pageScroll( 0 );
+		return
+	}
 	
+	var mode   = this.className.replace( 'i-', '' );
+	var scroll = $( '#search-list li[data-mode='+ mode +']' ).eq( 0 ).offset().top;
+	scroll    -= $( '.content-top' )[ 0 ].getBoundingClientRect().bottom;
+	pageScroll( scroll );
 } );
-$( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( V.searchlist ) $( '#button-lib-search' ).trigger( 'click' );
+$( '#lib-search-close' ).on( 'click', function() {
+	libraryHome();
 } );
-$( '#lib-search-close' ).on( 'click', function( e ) {
-	e.stopPropagation();
-	V.searchlist = false;
-	$( '#search-list' ).remove();
-	$( '#page-library .content-top .title' ).removeClass( 'hide' );
-	if ( ! V.libraryhome ) $( '#button-lib-back, #lib-list, #page-library .index' ).removeClass( 'hide' );
-	$( '#page-library .search' ).addClass( 'hide' );
-	$( '#lib-search-close' ).empty();
-	$( '#lib-search-input' ).val( '' );
-	$( '#button-lib-search' ).removeClass( 'hide' );
-	$( '#button-lib-update' ).toggleClass( 'hide', V.mode !== '' );
-} );
-$( '#lib-search-input' ).on( 'input', function( e ) {
-	if ( e.key === 'Enter' ) $( '#button-lib-search' ).trigger( 'click' );
+$( '#lib-search-input' ).on( 'input', function() {
+	if ( ! V.search ) return
+	
+	var kL = $( '#lib-search-input' ).val().length;
+	if ( kL > 2 ) {
+		$( '#button-lib-search' ).trigger( 'click' );
+	} else if ( ! kL ) {
+		V.search = false;
+		$( '#lib-title, #lib-search-close' ).empty();
+		$( '#search-list, .index.modes' ).remove();
+	}
 } );
 $( '#button-lib-back' ).on( 'click', function() {
-	var $breadcrumbs = $( '#lib-title a' );
-	var bL           = $breadcrumbs.length
-	if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
+	if ( V.search ) {
+		$( '#lib-list' ).remove();
+		$( '#button-lib-back' ).addClass( 'hide' );
+		$( '#lib-title' ).html( ico( 'search' ) + $( '#lib-search-input' ).val() );
+		$( '#lib-search, #button-lib-search, #search-list' ).removeClass( 'hide' );
+		return
+	}
+	
+	if ( V.query.length === 1 ) {
 		$( '#library' ).trigger( 'click' );
 		return
 	}
 	
+	if ( ! V.query.length ) {
+		var $breadcrumbs = $( '#lib-title a' );
+		var bL           = $breadcrumbs.length
+		if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
+			$( '#library' ).trigger( 'click' );
+			return
+		}
+		
+	}
 	V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
-	var backmode     = 'gmode' in V && V.gmode !== V.mode;
+	var backmode = 'gmode' in V && V.gmode !== V.mode;
 	if ( bL && V.mode !== 'latest' && ! backmode ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 	} else {
@@ -1215,7 +1225,6 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 } ).on( 'click', '.mode:not( .bookmark, .bkradio, .nodata )', function() {
 	V.mode          = $( this ).data( 'mode' );
 	V.modescrolltop = $( window ).scrollTop();
-	$( '#lib-search-close' ).trigger( 'click' );
 	if ( V.mode === 'playlists' ) {
 		$( '#button-pl-playlists' ).trigger( 'click' );
 		setTimeout( () => $( '#playlist' ).trigger( 'click' ), 100 );
@@ -1251,19 +1260,16 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = V.mode.slice( -5 ) === 'radio' ? '' : path;
-	query.modetitle = path;
-	if ( query.query !== 'ls' && query.query !== 'radio' ) V.query.push( query );
+	if ( query.library !== 'ls' && query.library !== 'radio' ) {
+		query.path      = V.mode.slice( -5 ) === 'radio' ? '' : path;
+		query.modetitle = path;
+		V.query.push( query );
+	}
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	if ( V.press || $( '.bkedit' ).length ) return
 	
-	V.list.li   = $( this );
-	V.list.name = V.list.li.find( '.bkname' ).text();
-	V.list.path = V.list.li.find( '.lipath' ).text();
-	V.mpccmd  = [ 'mpcadd', V.list.path ];
 	if ( D.tapaddplay || D.tapreplaceplay ) {
-		V.action = D.tapaddplay ? 'addplay' : 'replaceplay';
-		addToPlaylistCommand();
+		tapAddReplace( $( this ) );
 		return
 	}
 	
@@ -1321,12 +1327,9 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = path;
-	query.modetitle = path;
-	V.query.push( query );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
-	var name  = $this.find( '.bkname' ).text();
+	var name  = $this.find( '.name' ).text();
 	var $img  = $this.find( 'img' );
 	if ( $img.length ) {
 		var icon = '<img src="'+ $img.attr( 'src' ) +'">'
@@ -1344,7 +1347,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	} );
 } ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
-	var name  = $this.find( '.bkname' ).text();
+	var name  = $this.find( '.name' ).text();
 	info( {
 		  icon         : 'bookmark'
 		, title        : 'Rename Bookmark'
@@ -1359,7 +1362,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	} );
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent().parent();
-	var name  = $this.find( '.bkname' ).text();
+	var name  = $this.find( '.name' ).text();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
 		var icon    = 'coverart';
@@ -1421,8 +1424,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		renderLibraryList( data );
 	} );
-	query.modetitle = 'ALBUM';
-	V.query.push( query );
 } ).press( '.coverart', function( e ) {
 	var $this  = $( e.currentTarget );
 	var src    = $this.find( 'img' ).attr( 'src' );
@@ -1465,17 +1466,30 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	e.stopPropagation();
 	if ( V.press ) return
 	
-	var $this   = $( this );
-	var $target = $( e.target );
+	var $this      = $( this );
+	var $target    = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
-	var menushow = $( '.contextmenu:not( .hide )' ).length;
-	menuHide();
-	if ( ( menushow && V.mode !== 'webradio' && $target.is( '.li-icon' ) ) || $target.is( '.li-icon, .licoverimg' ) ) {
+	var limode     = $this.data( 'mode' );
+	var l_modefile = [ 'sd', 'nas', 'usb' ].includes( limode );
+	var l_radio    = limode.slice( -5 ) === 'radio'; // radio .dir has no mode
+	if ( $target.is( '.li-icon, .licoverimg' )
+		|| $target.data( 'menu' )
+		|| $this.find( '.i-music' ).length
+		|| l_radio
+	) {
 		contextmenuLibrary( $this, $target );
 		return
 	}
 	
+	if ( D.tapaddplay || D.tapreplaceplay ) {
+		if ( $this.find( '.li-icon' ).is( '.i-music' ) || l_radio ) {
+			tapAddReplace( $this );
+			return
+		}
+	}
+	
+	menuHide();
 	if ( $this.hasClass( 'licover' ) ) {
 		if ( $target.is( '.liartist, .i-artist, .i-albumartist, .licomposer, .i-composer' ) ) {
 			var name = ( $target.is( '.licomposer, .i-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();
@@ -1497,43 +1511,33 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 				}
 				renderLibraryList( data );
 			} );
-			V.query.push( query );
 		}
-		return
-	} else if ( $target.hasClass( 'lialbum' ) ) {
-		if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
-		return
-	} else if ( $this.find( '.i-music' ).length || $target.data( 'menu' ) ) {
-		contextmenuLibrary( $this, $target );
 		return
 	}
 	
-	$this.addClass( 'active' );
-	var libpath  = $( '#page-library .lib-path' ).text();
-	var path     = $this.find( '.lipath' ).text();
-	var name     = $this.find( '.liname' ).text();
-	var mode     = $this.data( 'mode' );
-	var modefile = [ 'sd', 'nas', 'usb' ].includes( V.mode );
-	// modes: sd, nas, usb, dabradio, webradio, album, artist, albumartist, composer, conductor, date, genre
-	if ( [ 'sd', 'nas', 'usb' ].includes( mode ) ) { // file
+	if ( $target.hasClass( 'lialbum' ) ) {
+		if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
+		return
+	}
+	
+	if ( ! V.search ) $this.addClass( 'active' );
+	var libpath    = $( '#page-library .lib-path' ).text();
+	var path       = $this.find( '.lipath' ).text();
+	var v_modefile = [ 'sd', 'nas', 'usb', 'webradio', 'dabradio' ].includes( V.mode );
+	if ( l_modefile ) {
 		var query = {
 			  library : 'ls'
 			, string  : path
 		}
-		var modetitle = modefile ? path : $( '#mode-title' ).text();
+		var modetitle = v_modefile ? path : $( '#page-library .lib-path' ).text(); // keep title of non-file modes
 	} else if ( V.mode.slice( -5 ) === 'radio' ) { // dabradio, webradio
 		if ( libpath ) path = libpath +'/'+ path;
-		if ( $this.hasClass( 'dir' ) ) {
-			var query = {
-				  library : 'radio'
-				, string  : path
-			}
-			var modetitle = path;
-		} else {
-			contextmenuLibrary( $this, $target );
-			return
+		var query = {
+			  library : 'radio'
+			, string  : path
 		}
-	} else if ( V.mode.slice( -6 ) === 'artist' ) { // dabradio, webradio
+		var modetitle = path;
+	} else if ( ! V.search && V.mode.slice( -6 ) === 'artist' ) {
 		var query = {
 			  library : 'findartist'
 			, mode    : V.mode
@@ -1541,7 +1545,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			, format  : [ 'album', 'file' ]
 		}
 		var modetitle = path;
-	} else if ( mode !== 'album' ) { // non-album
+	} else if ( limode !== 'album' ) { // non-album
 		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
 			var format = [ 'artist', 'album' ];
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
@@ -1549,12 +1553,13 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var query = {
 			  library : 'find'
-			, mode    : V.mode
+			, mode    : V.search ? limode : V.mode
 			, string  : path
 			, format  : format
 		}
 		var modetitle = path;
 	} else { // album
+		var name = $this.find( '.liname' ).text();
 		if ( V.mode === 'album' ) {
 			if ( name ) { // albums with the same names
 				var query = {
@@ -1572,6 +1577,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 				}
 				var modetitle = path;
 			}
+		} else if ( V.search ) {
+			var query = {
+				  library : 'ls'
+				, string  : path
+			}
+			var modetitle = '';
 		} else {
 			var query = {
 				  library : 'find'
@@ -1592,14 +1603,17 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		
 		var data = {
 			  html      : html
+			, icon      : V.search ? limode : V.mode
 			, modetitle : modetitle
 			, path      : path
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = path;
-	query.modetitle = modetitle;
-	if ( query.query !== 'ls' || ! modefile ) V.query.push( query );
+	if ( ! v_modefile ) {
+		query.path      = path;
+		query.modetitle = modetitle;
+		V.query.push( query );
+	}
 } );
 $( '.page' ).on( 'click', 'a.indexed', function() {
 	var $this = $( this );

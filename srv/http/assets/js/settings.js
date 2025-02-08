@@ -4,7 +4,7 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-W.refresh = data => {
+W.refresh = data => { // except camilla
 	if ( data.page !== page ) return
 	
 	clearTimeout( V.debounce );
@@ -51,10 +51,20 @@ function bannerReset() {
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function contextMenu() {
-	$( '#menu' )
+	var $menu   = $( '#menu' );
+	$menu
 		.removeClass( 'hide' )
-		.css( 'top', $( '.container' ).scrollTop() + V.li.offset().top + 8 );
-	elementScroll( $( '#menu' ) );
+		.css( 'top', $( '.container' ).scrollTop() + V.li.offset().top + 9 );
+	scrollUpToView( $menu );
+}
+function contextMenuToggle() {
+	var $menu = $( '#menu' );
+	if ( ! $menu.hasClass( 'hide' ) && V.li.hasClass( 'active' ) ) {
+		$menu.addClass( 'hide' );
+		return false
+	}
+	
+	return true
 }
 function currentStatus( id, arg ) {
 	var $el = $( '#code'+ id );
@@ -65,20 +75,11 @@ function currentStatus( id, arg ) {
 			.html( status )
 			.data( 'status', id )
 			.data( 'arg', arg || '' )
-			.removeClass( 'hide' );
-		if ( id === 'mpdconf' ) {
-			setTimeout( () => $( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() ), 100 );
-		} else if ( [ 'albumignore', 'mpdignore' ].includes( id ) ) {
-			$( '.container' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
-		}
+			.removeClass( 'hide' ).promise().done( () => {
+				if ( page === 'player' ) util.statusScroll( id );
+			} );
 		bannerReset();
 	} );
-}
-function elementScroll( $el ) {
-	var menuH   = $el.height();
-	var targetB = $el.offset().top + menuH;
-	var wH      = window.innerHeight;
-	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( '.container' ).animate( { scrollTop: targetB - wH + 42 } );
 }
 function infoSetting( id, callback ) {
 	var filesh = 'settings/data-config.sh '+ id;
@@ -179,8 +180,6 @@ function switchEnable() {
 	delete SW;
 }
 function switchSet() {
-	if ( page === 'camilla' && V.tab !== 'devices' ) return
-	
 	var $switch = $( '.switch' );
 	$switch.removeClass( 'disabled' );
 	$switch.each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );

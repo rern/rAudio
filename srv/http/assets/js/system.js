@@ -205,6 +205,18 @@ var config        = {
 			, fileconf     : true
 		} );
 	}
+	, templimit     : values => {
+		info( {
+			  ...SW
+			, list         : [ 'Throttle at <gr>(°C)</gr>', 'number', { updn: { step: 1, min: 60, max: 70 } } ]
+			, footer       : '(default: 60)'
+			, boxwidth     : 70
+			, values       : values
+			, checkchanged : S.templimit || ! S.templimit && values.DEGREE === 60
+			, cancel       : switchCancel
+			, ok           : switchEnable
+		} );
+	}
 	, timezone      : () => util.server.ntp()
 	, tft           : values => {
 		var type = {
@@ -236,7 +248,7 @@ var config        = {
 	, vuled         : values => {
 		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
 		var leds   = Object.keys( values ).length + 1;
-		for ( i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', util.board2bcm ] );
+		for ( var i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', util.board2bcm ] );
 		info( {
 			  ...SW
 			, message      : util.gpiosvg
@@ -587,7 +599,7 @@ var util          = {
 				, [ '', '', { suffix: ico( 'tag gr' ) +' Name' } ]
 			]
 			var kL     = keys.length;
-			for ( i = 0; i < kL; i++ ) {
+			for ( var i = 0; i < kL; i++ ) {
 				list.push( [ '', 'select', { kv: util.board2bcm, sameline: true } ], [ '', 'text' ] );
 			}
 			info( {
@@ -629,7 +641,7 @@ var util          = {
 			];
 			var values = [];
 			var pL     = pin.ON.length;
-			for ( i = 0; i < pL; i++ ) {
+			for ( var i = 0; i < pL; i++ ) {
 				list.push(
 					  [ '', 'select', { kv: names, sameline: true, colspan: 2 } ]
 					, [ '', 'select', { kv: names, colspan: 2 } ]
@@ -642,9 +654,10 @@ var util          = {
 					);
 					values.push( pin.OND[ i ], pin.OFFD[ i ] );
 				} else {
+					var idle = ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>';
 					list.push(
-						  [ ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>', 'checkbox',       { sameline: true, colspan: 2 } ]
-						, [ '', 'number', { updn: { step: 1, min: 2, max: 30 } } ]
+						  [ idle, 'checkbox', { sameline: true, colspan: 2 } ]
+						, [ '',   'number',   { updn: { step: 1, min: 2, max: 30 } } ]
 					);
 					values.push( pin.TIMERON );
 					values.push( pin.TIMER );
@@ -708,7 +721,7 @@ var util          = {
 				}
 			} else {
 				var pL = order.ON.length;
-				for ( i = 0; i < pL; i++ ) {
+				for ( var i = 0; i < pL; i++ ) {
 					var j          = i * 4;
 					order.ON[ i ]  = v[ j ];
 					order.OFF[ i ] = v[ j + 1 ];
@@ -845,6 +858,7 @@ function onPageInactive() {
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
+	$( '#divtemplimit' ).toggleClass( 'hide', ! S.system.includes( '3B+' ) );
 	util.renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
@@ -980,6 +994,8 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	V.li      = $this;
+	if ( ! contextMenuToggle() ) return
+	
 	var i     = $this.index()
 	var list  = S.liststorage[ i ];
 	$( '#codestorageinfo' )
@@ -994,6 +1010,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
+	$( 'li' ).removeClass( 'active' );
 	$this.addClass( 'active' );
 	if ( list.icon === 'microsd' ) {
 		$( '#menu a' ).addClass( 'hide' );

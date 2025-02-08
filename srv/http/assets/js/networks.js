@@ -363,6 +363,8 @@ $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	V.li = $( this );
+	if ( ! contextMenuToggle() ) return
+	
 	if ( V.li.hasClass( 'bt' ) && ! $('#codebtinfo' ).hasClass( 'hide' ) ) {
 		$('#codebtinfo' ).addClass( 'hide' );
 		return

@@ -501,9 +501,10 @@ function info( json ) {
 			label   = l[ 0 ];
 			type    = l[ 1 ];
 			param   = l[ 2 ] || {};
-			kv      = 'kv' in param ? param.kv : jsonClone( param ); // radio/select - { kv: {k: v, ... }, ... } || {k: v, ... }
-			if ( [ 'checkbox', 'radio' ].includes( type ) && ! ( 'colspan' in param ) ) param.colspan = 2;
-			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
+			if ( type === 'html' ) {
+				htmls.list += '<tr><td>'+ label +'</td><td>'+ param +'</td></tr>';
+				return
+			}
 /*			param = {
 				  kv       : { k: V, ... }
 				, colspan  : N
@@ -512,6 +513,8 @@ function info( json ) {
 				, suffix   : UNIT
 				, updn     : { step: N, min: N, max: N }
 			}*/
+			if ( [ 'checkbox', 'radio' ].includes( type ) && ( 'kv' in param && ! param.colspan ) ) param.colspan = 2;
+			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
 			switch ( type ) {
 				case 'checkbox':
 					if ( htmls.list.slice( -3 ) === 'tr>' ) htmls.list += '<tr>'
@@ -552,6 +555,7 @@ function info( json ) {
 					htmls.list += '<input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>';
 					break;
 				case 'radio':
+					kv          = param.kv || param;
 					var isarray = Array.isArray( kv );
 					var tr      = false;
 					$.each( kv, ( k, v ) => {
@@ -577,13 +581,14 @@ function info( json ) {
 								+'</div></td></tr>';
 					break
 				case 'select':
-					htmls.list += '<select>'+ htmlOption( param ) +'</select>';
+					kv          = param.kv || param;
+					htmls.list += '<select>'+ htmlOption( kv ) +'</select>';
 					if ( param.suffix ) {
-						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr></td></tr>'; // default: false
+						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
 						if ( param.sameline ) {
-							var labelnext = I.list[ i + 1 ][ 0 ];
-							htmls.list += labelnext ? '<td style="padding: 0 5px; text-align: right;">'+ labelnext +'</td>' : '</td>';
+							var lblnext = I.list[ i + 1 ][ 0 ];
+							htmls.list += lblnext ? '<td style="padding: 0 5px; text-align: right;">'+ lblnext +'</td>' : '</td>';
 						} else {
 							htmls.list += '</tr>';
 						}
@@ -684,7 +689,7 @@ function info( json ) {
 		if ( I.updn.length ) {
 			var max = [];
 			var min = [];
-			for ( i = 0; i < I.updn.length; i++ ) {
+			for ( var i = 0; i < I.updn.length; i++ ) {
 				min.push( I.updn[ i ].min );
 				max.push( I.updn[ i ].max );
 			}
@@ -712,7 +717,7 @@ function info( json ) {
 						}
 					}
 					if ( I.checkchanged ) $num.trigger( 'input' );
-					for ( i = 0; i < I.updn.length; i++ ) {
+					for ( var i = 0; i < I.updn.length; i++ ) {
 						$( '#infoList .dn' ).eq( i ).toggleClass( 'disabled', v[ i ] === min[ i ] );
 						$( '#infoList .up' ).eq( i ).toggleClass( 'disabled', v[ i ] === max[ i ] );
 					}
@@ -853,7 +858,7 @@ function infoFileImage() {
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
 	if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
-		infoFileImageLoad();
+		infoFileImageReader();
 	} else { // animated gif or not
 		var formdata = new FormData();
 		formdata.append( 'cmd', 'giftype' );
@@ -874,13 +879,10 @@ function infoFileImage() {
 						bannerHide();
 					}
 				} else {
-					infoFileImageLoad();
+					infoFileImageReader();
 				}
 			} );
 	}
-}
-function infoFileImageLoad() {
-	V.pica ? infoFileImageReader() : $.getScript( '/assets/js/plugin/'+ jfiles.pica, infoFileImageReader );
 }
 function infoFileImageReader() {
 	var maxsize   = ( V.library && V.libraryhome ) ? 200 : 1000;
@@ -901,7 +903,7 @@ function infoFileImageReader() {
 				var canvas    = document.createElement( 'canvas' );
 				canvas.width  = resize.w;
 				canvas.height = resize.h;
-				V.pica = pica.resize( filecanvas, canvas, picaOption ).then( function() {
+				pica.resize( filecanvas, canvas, picaOption ).then( function() {
 					infoFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
 				} );
 			} else {
@@ -1033,16 +1035,17 @@ function infoSetValues() {
 		type  = $this.prop( 'type' );
 		val   = I.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
-			if ( val ) {
+			if ( val || val === 0 ) {
 				var name = $this.prop( 'name' );
 				$( 'input[name='+ name +']' ).val( [ val ] );
 			} else {
 				$this.eq( 0 ).prop( 'checked', true );
 			}
 		} else if ( type === 'checkbox' ) {
-			$this.prop( 'checked',  val );
+			var checked = typeof val === 'boolean' ? val : val == $this.val();
+			$this.prop( 'checked', checked );
 		} else if ( $this.is( 'select' ) ) {
-			typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
+			val !== '' && typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
 		} else {
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
@@ -1082,7 +1085,7 @@ function infoVal( array ) {
 		switch ( type ) {
 			case 'checkbox':
 				val = $this.prop( 'checked' );
-				if ( val && $this.attr( 'value' ) ) val = $this.val(); // if value defined
+				if ( val && $this.attr( 'value' ) !== undefined ) val = $this.val(); // if value defined
 				break;
 			case 'number':
 			case 'range':
@@ -1108,6 +1111,7 @@ function infoVal( array ) {
 			default: // hidden, select
 				val = $this.val();
 		}
+		if ( val === '0' ) val = 0;
 		if ( typeof val !== 'string'                    // boolean
 			|| val === ''                               // empty
 			|| isNaN( val )                             // Not a Number 
@@ -1234,40 +1238,28 @@ function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );
 }
 function htmlOption( el ) {
-	var nosort = 'nosort' in el;
-	if ( 'kv' in el ) el = el.kv;
-	if ( typeof el === 'number' ) el = [ ...Array( el ).keys() ];
+	var array = false;
+	var sort  = true;
+	if ( typeof el === 'number' ) {
+		el         = [ ...Array( el ).keys() ];
+	} else if ( Array.isArray( el ) ) {
+		var array  = true;
+	} else {
+		if ( 'nosort' in el ) sort = false;
+		if ( 'kv' in el ) el = el.kv;
+	}
 	var options = '';
-	if ( Array.isArray( el ) ) { // name = value
-		if ( ! nosort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
+	if ( array ) { // name = value
+		if ( sort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
 		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
 	} else {                     // json
-		if ( ! nosort ) el = jsonSort( el );
+		if ( sort ) el = jsonSort( el );
 		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
 	}
 	return options
 }
 function ipSub( ip ) {
 	return ip.replace( /(.*\..*\..*\.).*/, '$1' )
-}
-function jsonChanged( a, b ) {
-	if ( ! a || ! b || ! Object.keys( a ).length || ! Object.keys( b ).length ) return true
-	
-	var changed = false;
-	$.each( a, ( k, v ) => {
-		if ( typeof v === 'object' ) {
-			if ( jsonChanged( v, b[ k ] ) ) {
-				changed = true;
-				return false
-			}
-		} else {
-			if ( v !== b[ k ] ) {
-				changed = true;
-				return false
-			}
-		}
-	} );
-	return changed
 }
 function jsonClone( json ) {
 	return JSON.parse( JSON.stringify( json ) )
@@ -1312,6 +1304,9 @@ function qrCode( msg ) {
 		, pal : [ '#969a9c' ]
 	} );
 	return qr.outerHTML
+}
+function scrollUpToView( $el ) {
+	$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
 }
 function sp( px ) {
 	return '<sp style="width: '+ px +'px"></sp>'

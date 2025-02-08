@@ -16,17 +16,19 @@
 #bar-bottom i.active:hover,
 #button-library:hover,
 #button-playlist:hover,
-#lib-list li.active:hover,
-#pl-savedlist li.active:hover,
-#pl-list li.active:hover,
 #playback-controls button.active:hover,
 #playback-row .btn.active:hover {
 	background-color: var( --cml ) !important;
 }
+#lib-list li.active:hover,
+#pl-savedlist li.active:hover,
+#pl-list li.active:hover {
+	background-color: var( --cm );
+}
 .licover.active:hover {
 	background: linear-gradient( #000000 195px, var( --cml ) 0 ) !important;
 }
-.mode:hover {
+.mode:not( .nodata ):hover {
 	background: var( --cga );
 }
 .menu a:hover,
@@ -100,11 +102,12 @@ li:not( .licover ),
 .emptyadd,
 .i-search,
 .index a.indexed,
+.index i,
 .licoverimg,
 .liinfo,
 .map,
 .menu a,
-.mode,
+.mode:not( .nodata ),
 .rs-container,
 .savedlist,
 .submenu:not( .disabled ),
@@ -128,7 +131,6 @@ li:not( .licover ),
 #lib-title a,
 #lib-search-close,
 #lyrics i,
-#page-library i.search,
 #pl-manage i,
 #pl-search-close,
 #playericon.i-audiocd,
@@ -145,7 +147,6 @@ li:not( .licover ),
 	cursor: pointer;
 }
 .disabled,
-.mode.nodata *,
 #lib-title a:last-of-type:hover {
 	cursor: default;
 }

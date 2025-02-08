@@ -12,7 +12,7 @@ li.current a::before {
 }
 .menu {
 	position: absolute;
-	left: calc( 50% - 650px / 2 + 45px );
+	margin-left: 40px;
 	width: 150px;
 	padding: 0;
 	background: var( --cg );
@@ -58,6 +58,9 @@ label {
 }
 ul {
 	margin: 0;
+}
+.section {
+	position: relative;
 }
 .container::after,
 .section::after,
@@ -343,6 +346,9 @@ heading i.disabled {
 	text-align: center;
 	color: var( --cg60 );
 }
+.entries i:first-of-type {
+	margin-right: 0;
+}
 .entries .i-save {
 	width: 20px;
 	font-size: 22px;
@@ -390,6 +396,7 @@ input[type=image] {
 }
 #logotext gr {
 	font-size: 15px;
+	font-weight: normal;
 	letter-spacing: normal;
 }
 .list {
@@ -495,6 +502,7 @@ input.disabled + .switchlabel:after {
 	margin: 40px 0;
 	padding: 0 calc( ( 100% - 650px ) / 2 ) 80px;
 	overflow: auto;
+	scrollbar-gutter: stable;
 }
 .col-l,
 .col-r {
@@ -595,6 +603,9 @@ input.disabled + .switchlabel:after {
 #divsoxr .helpblock span {
 	display: inline-block;
 	width: 112px;
+}
+#divstatus i {
+	margin-right: 5px;
 }
 
 @media (max-height: 570px) {

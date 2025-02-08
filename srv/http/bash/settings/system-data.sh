@@ -2,6 +2,7 @@
 
 . /srv/http/bash/common.sh
 
+throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex - called first to fix slip values
 temp=$( vcgencmd measure_temp | tr -dc [:digit:]. )
 load=$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )'&emsp;<c>'$temp'°C</c>'
 availmem=$( free -h | awk '/^Mem/ {print $NF}' | sed -E 's|(.i)| \1B|' )
@@ -14,27 +15,30 @@ uptime+="<wide class='gr'>&ensp;since $since</wide>"
 for v in load availmem date uptime; do
 	status+="${!v}<br>"
 done
-throttled=$( vcgencmd get_throttled | cut -d= -f2 2> /dev/null )  # hex
 if [[ $throttled && $throttled != 0x0 ]]; then
 	binary=$( perl -e "printf '%020b', $throttled" ) # hex > bin
 	# 20 bits: occurred > 11110000000000001111 < current
 	occurred='<gr>occurred</gr>'
-	it="<i class='i-thermometer yl'></i>&ensp;CPU X"
+	it="<i class='i-templimit yl'></i>CPU X"
 	ito="${it/yl/gr} $occurred"
-	iv="<red class='blink'><i class='i-voltage'></i> Under-voltage</red>"
+	iv="<ora><i class='i-voltage blink'></i>Under-voltage</ora>"
 	declare -A warnings=(
 		 [0]=${ito/X/throttling}
 		 [1]=${ito/X/temperature limit}
 		 [2]=${ito/X/frequency capping}
-		 [3]="${iv//red/yl} $occurred"
+		 [3]="${iv//ora/yl} $occurred"
 		[16]=${it/X/throttled}
 		[17]=${it/X/temperature limit}
 		[18]=${it/X/frequency capped}
 		[19]=$iv
 	)
-	for i in 19 3 18 17 16 2 1 0; do
-		current=$(( i + 16 ))
-		[[ ${binary:current:1} != 1 && ${binary:i:1} == 1 ]] && status+="${warnings[$i]}<br>"
+	for i in 19 18 17 16; do
+		if [[ ${binary:$i:1} == 1 ]]; then
+			status+="${warnings[$i]}<br>"
+		else
+			j=$(( i - 16 ))
+			[[ ${binary:$j:1} == 1 ]] && status+="${warnings[$j]}<br>"
+		fi
 	done
 fi
 # for interval refresh
@@ -100,6 +104,7 @@ data+='
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
 , "system"         : "'$system'"
+, "templimit"      : '$( grep -q ^temp_soft_limit /boot/config.txt && echo true )'
 , "tft"            : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "timezone"       : "'$timezone'"
 , "timezoneoffset" : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"'

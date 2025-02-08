@@ -89,7 +89,7 @@ function eqOptionPreset() {
 function eqSlide( band, v ) {
 	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
 	if ( E.active === 'Flat' ) {
-		for ( i = 1; i < 10; i++ ) {
+		for ( var i = 1; i < 10; i++ ) {
 			var name = 'New '+ i;
 			if ( ! ( name in E.preset ) ) break;
 		}

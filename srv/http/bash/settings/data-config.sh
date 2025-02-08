@@ -2,15 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-toReboot() {
-	if [[ -s $dirshm/reboot ]]; then
-		grep -q $ID <<< $dirshm/reboot && echo true || echo false
-	else
-		echo false
-		rm -f $dirshm/reboot
-	fi
-}
-
 ID=$1
 
 case $ID in
@@ -245,6 +236,11 @@ spotifyoutput )
 	devices=$( aplay -L | sed -n '/^.*:CARD/ {s/^/, "/; s/$/"/p}' )
 	volume=$( getVar volume_controller /etc/spotifyd.conf )
 	echo '{ "values": { "OUTPUT": "'$current'", "VOLUME": "'$volume'" }, "devices": [ "Default"'$devices' ] }'
+	;;
+templimit )
+	line=$( grep ^temp_soft_limit /boot/config.txt )
+	[[ $line ]] && degree=$( cut -d= -f2 <<< $line ) || degree=60
+	echo '{ "DEGREE": '$degree' }'
 	;;
 tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )

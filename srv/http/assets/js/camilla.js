@@ -3,6 +3,7 @@ W.volume      = data => {
 		V.local = false;
 		return
 	}
+	
 	var vol = data.val;
 	if ( data.type === 'mute' ) {
 		common.volumeAnimate( 0, S.volume );
@@ -21,17 +22,26 @@ W.volume      = data => {
 		S.volume = vol;
 	}
 }
+W.refresh     = data => {
+	if ( V.press || V.local || data.page !== 'camilla' ) return
+	
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		data.config = JSON.parse( data.config );
+		$.each( data, ( k, v ) => { S[ k ] = v } );
+		config.valuesAssign();
+		render[ V.tab ]();
+	}, 300 );
+}
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
-	, graph      : { filters: [], pipeline: [] }
-	, prevconfig : {}
-	, sortable   : {}
 	, tab        : 'filters'
 	, timeoutred : true
 }
 var wscamilla = null
-var R         = {}
+var R         = {} // range
+var X         = {} // flowchart
 // filters //////////////////////////////////////////////////////////////////////////////
 var F0        = {
 	  type         : [
@@ -46,9 +56,9 @@ var F0        = {
 			, [ 'Dummy', 'Raw', 'Wav', 'Values' ]
 		]
 		, Biquad      : [
-		    'Subtype'
-		  , 'select'
-		  , [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO', 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass',  'Allpass',   'AllpassFO',  'LinkwitzTransform' ]
+			  'Subtype'
+			, 'select'
+			, [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO', 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass',  'Allpass',   'AllpassFO',  'LinkwitzTransform' ]
 		]
 		, BiquadCombo : [
 			  'Subtype'
@@ -87,7 +97,7 @@ var Flist     = {
 	, shelf   : [ ...F1.pass.slice( 0, 4 ), F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
 	, passFO  : F1.pass.slice( 0, 4 )
 	, shelfFO : [ ...F1.pass.slice( 0, 4 ), F0.gain ]
-	, notch   : [ ...F1.pass, F0.qbandwidth ]
+	, Notch   : [ ...F1.pass, F0.qbandwidth ]
 }
 var F         = {
 	  Gain        : [
@@ -156,17 +166,16 @@ var F         = {
 		, LowshelfFO        : Flist.shelfFO
 		, HighshelfFO       : Flist.shelfFO
 		, Peaking           : [ ...F1.pass.slice( 0, 4 ), F0.gain, F0.q, F0.qbandwidth ]
-		, Notch             : Flist.notch
+		, Notch             : Flist.Notch
 		, GeneralNotch      : [
-			  F0.name
-			, F0.type
+			...F1.pass.slice( 0, 3 )
 			, [ 'Zero frequency',  'number' ]
 			, [ 'Pole frequency',  'number' ]
 			, [ 'Pole Q',          'number' ]
 			, [ 'Normalize at DC', 'checkbox' ]
 		]
-		, Bandpass          : Flist.notch
-		, Allpass           : Flist.notch
+		, Bandpass          : Flist.Notch
+		, Allpass           : Flist.Notch
 		, AllpassFO         : Flist.passFO
 		, LinkwitzTransform : [
 			...F1.pass.slice( 0, 3 )
@@ -214,10 +223,10 @@ var F         = {
 		, [ 'Soft clip',  'checkbox' ]
 	]
 	, DiffEq      : [
-		F0.name
-	  , F0.type
-	  , [ 'a', 'text' ]
-	  , [ 'b', 'text' ]
+		  F0.name
+		, F0.type
+		, [ 'a', 'text' ]
+		, [ 'b', 'text' ]
 	]
 //
 	, values      : {
@@ -235,7 +244,7 @@ var F         = {
 		, shelf             : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
 		, passFO            : { name: '', type: '', subtype: '', freq: 1000, name: '' }
 		, shelfFO           : { name: '', type: '', subtype: '', freq: 1000, gain: 0 }
-		, notch             : { name: '', type: '', subtype: '', freq: 1000, q: 0, unit: 'q' }
+		, Notch             : { name: '', type: '', subtype: '', freq: 1000, q: 0, unit: 'q' }
 		, GeneralNotch      : { name: '', type: '', subtype: '', freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
 		, Peaking           : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
 		, LinkwitzTransform : { name: '', type: '', subtype: '', q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
@@ -316,7 +325,8 @@ var D         = {
 		, Wasapi    : [ ...D1.AlsaC, Dlist.exclusive, Dlist.loopback ]
 		, Jack      : [ Dlist.typeC, Dlist.channelsC ]
 		, Stdin     : [ Dlist.typeC, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
-		, File      : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
+		, RawFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
+		, WavFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
 	}
 	, playback  : {
 		  Alsa      : D1.AlsaP
@@ -335,7 +345,8 @@ var D         = {
 		, Jack      : { type: '',                           channels: 2 }
 		, Stdin     : { type: '',               format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
 		, Stdout    : { type: '',               format: '', channels: 2 }
-		, File      : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, RawFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		, WavFile   : { type: '', filename: '', format: '', channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
 		, FileP     : { type: '', filename: '', format: '', channels: 2 }
 	}
 	, resampler : {
@@ -376,6 +387,7 @@ var color     = {
 	, grd : 'hsl( 200, 3%,   20% )'
 	, grk : 'hsl( 200, 3%,   10% )'
 	, m   : 'hsl( 200, 100%, 50% )'
+	, ma  : 'hsl( 200, 100%, 40% )'
 	, md  : 'hsl( 200, 100%, 20% )'
 	, o   : 'hsl( 30,  80%,  50% )'
 	, od  : 'hsl( 30,  80%,  20% )'
@@ -384,51 +396,29 @@ var color     = {
 	, w   : 'hsl( 200, 3%,   60% )'
 	, wl  : 'hsl( 200, 3%,   80% )'
 }
-var plots     = {
-	  magnitude  : {
-		  yaxis : 'y'
-		, type  : 'scatter'
-		, name  : 'Gain'
-		, line  : { width : 3, color: color.m }
-	}
-	, phase      : {
-		  yaxis : 'y2'
-		, type  : 'scatter'
-		, name  : 'Phase'
-		, line  : { width : 2, color : color.r }
-	}
-	, groupdelay : {
-		  yaxis : 'y3'
-		, type  : 'scatter'
-		, name  : 'Delay'
-		, line  : { width : 2, color: color.o }
-	}
-	, impulse    : {
-		  xaxis : 'x2'
-		, yaxis : 'y4'
-		, type  : 'scatter'
-		, name  : 'Impulse'
-		, line  : { width : 1, color: color.g }
-	}
-}
 var ycommon   = {
 	  overlaying : 'y'
 	, side       : 'right'
 	, anchor     : 'free'
 	, autoshift  : true
 }
+var ticktext  = [ 20, 50, 100, 500, '1k', '5k', '10k', '20k' ];
 var axes      = {
 	  freq       : {
-		  title     : {
-			  text     : 'Frequency'
-			, font     : { color: color.wl }
-			, standoff : 10
+		  filters  : {
+			  tickfont  : { color: color.wl }
+			, tickvals  : [ 235, 393, 462, 624, 694, 858, 926, 995 ] // 235>|  ...  | 69 |  163  | 69 |  163  | 69 | .. |<995
+			, ticktext  : ticktext
+			, range     : [ 235, 995 ]
+			, gridcolor : color.grd
 		}
-		, tickfont  : { color: color.wl }
-		, tickvals  : [ 0,   232,    464,     696,    928 ]
-		, ticktext  : [ '', '10Hz', '100Hz', '1kHz', '10kHz' ]
-		, range     : [ 10, 1000 ]
-		, gridcolor : color.grd
+		, pipeline : {
+			  tickfont  : { color: color.wl }
+			, tickvals  : [ 4, 210, 300, 511, 602, 816, 905, 995 ]   //   4>|  ...  | 90 |  213  | 90 |  213  | 90 | .. |<995
+			, ticktext  : ticktext
+			, range     : [ 4, 995 ]
+			, gridcolor : color.grd
+		}
 	}
 	, time       : {
 		  title      : {
@@ -497,6 +487,48 @@ var axes      = {
 		, shift      : -10
 	}
 }
+var plots     = {
+	  groupdelay : {
+		  yaxis : 'y3'
+		, type  : 'scatter'
+		, name  : 'Delay'
+		, line  : { width : 2, color: color.o }
+	}
+	, impulse    : {
+		  xaxis : 'x2'
+		, yaxis : 'y4'
+		, type  : 'scatter'
+		, name  : 'Impulse'
+		, line  : { width : 1, color: color.g }
+	}
+	, layout     : {
+		  margin        : { t: 10, r: 40, b: 40, l: 40 }
+		, paper_bgcolor : '#000'
+		, plot_bgcolor  : '#000'
+		, showlegend    : false
+		, hovermode     : false
+		, dragmode      : 'zoom'
+		, font          : { family: 'Inconsolata', size: 14 }
+	}
+	, magnitude  : {
+		  yaxis : 'y'
+		, type  : 'scatter'
+		, name  : 'Gain'
+		, line  : { width : 3, color: color.m }
+	}
+	, options    : {
+		  displayModeBar : false
+		, responsive     : true
+		, staticPlot     : true // disable zoom
+//		, scrollZoom     : true
+	}
+	, phase      : {
+		  yaxis : 'y2'
+		, type  : 'scatter'
+		, name  : 'Phase'
+		, line  : { width : 2, color : color.r }
+	}
+}
 
 // functions //////////////////////////////////////////////////////////////////////////////
 function renderPage() { // common from settings.js - render with 'GetConfigJson'
@@ -526,7 +558,7 @@ var config    = {
 			return
 		}
 		
-		var enabled = S.enable_rate_adjust;
+		var enabled = DEV.enable_rate_adjust;
 		info( {
 			  ...SW
 			, list         : [
@@ -541,15 +573,15 @@ var config    = {
 			, checkchanged : enabled
 			, cancel       : switchCancel
 			, ok           : () => {
-				var val =  infoVal();
-				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
 				DEV.enable_rate_adjust = true;
+				var val                =  infoVal();
+				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
 				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 			}
 		} );
 	}
 	, capture_samplerate  : () => {
-		var enabled = S.capture_samplerate;
+		var enabled = DEV.capture_samplerate;
 		info( {
 			  ...SW
 			, list         : Dlist.capture_samplerate
@@ -559,14 +591,14 @@ var config    = {
 			, cancel       : switchCancel
 			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
 			, ok           : () => {
-				DEV.capture_samplerate = infoVal();
+				DEV.capture_samplerate = DEV.samplerate;
 				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
 			}
 		} );
 	}
-	, resampler           : () => setting.resampler( S.resampler ? DEV.resampler.type : 'AsyncSinc' )
+	, resampler           : () => setting.resampler( DEV.resampler ? DEV.resampler.type : 'AsyncSinc' )
 	, stop_on_rate_change : () => {
-		var enabled = S.stop_on_rate_change;
+		var enabled = DEV.stop_on_rate_change;
 		info( {
 			  ...SW
 			, list         : [ 'Rate mearsure interval', 'number' ]
@@ -581,145 +613,426 @@ var config    = {
 			}
 		} );
 	}
+	, valuesAssign        : () => { // DEV, MIX, FIL, PRO, DEV ...
+		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
+			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
+		} );
+		var dev                          = S.devices;
+		var samplings                    = dev.playback.samplings;
+		D0.samplerate                    = Object.values( samplings );
+		D.main[ 0 ][ 2 ].kv              = samplings;
+		Dlist.capture_samplerate[ 2 ].kv = samplings;
+		Dlist.formatC[ 2 ].kv            = dev.capture.formats;
+		Dlist.formatP[ 2 ].kv            = dev.playback.formats;
+		Dlist.deviceC[ 2 ]               = dev.capture.device;
+		Dlist.deviceP[ 2 ]               = dev.playback.device;
+		Dlist.channelsC[ 2 ].updn.max    = dev.capture.channels;
+		Dlist.channelsP[ 2 ].updn.max    = dev.playback.channels;
+		Dlist.filename[ 2 ].kv           = S.ls.raw;
+	}
 }
 var graph     = {
-	  gain     : () => {
-		var $divgraph = $( '.divgraph' );
-		if ( ! $divgraph.length ) return
-		
-		V.timeoutgain = setTimeout( () => {
-			$divgraph.each( ( i, el ) => {
-				var $this = $( el );
-				$this.hasClass( 'hide' ) ? $this.remove() : graph.plot( $this.parent() );
-			} );
-		}, 300 );
-	}
-	, pipeline : () => {
-		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
-	}
-	, plot     : $li => {
-		if ( typeof Plotly !== 'object' ) {
-			notify( 'graph', common.tabTitle(), 'Plot ...' );
-			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
-			return
+	  flowchart    : {
+		  add       : txt => {
+			X.type = txt;
+			var cL = DEV[ txt.toLowerCase() ].channels;
+			graph.flowchart.addFrame( txt, cL );
+			for ( var ch = 0; ch < cL; ch++ ) graph.flowchart.addBox( 'ch '+ ch, ch );
 		}
-		
-		if ( V.plot ) return
-		
-		V.plot = true;
-		setTimeout( () => V.plot = false, 2000 );
-		if ( ! $li ) $li = V.li;
-		var filters = V.tab === 'filters';
-		var val     = $li.data( filters ? 'name' : 'index' );
-		V.graph[ V.tab ].push( val );
-		var filterdelay = false;
-		if ( filters ) {
-			filterdelay = FIL[ val ].type === 'Delay';
-			var delay0  = ! filterdelay && 'gain' in FIL[ val ].parameters && FIL[ val ].parameters.gain === 0;
-		} else {
-			var pipelinedelay = false;
-			var delay0        = true;
-			PIP[ val ].names.forEach( n => {
-				var filter = FIL[ n ];
-				if ( ! pipelinedelay && filter.type === 'Delay' ) pipelinedelay = true;
-				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
+		, addBox    : ( txt, ch, gain ) => {
+			var c  = {
+				  Filter   : color.md
+				, Capture  : color.gr
+				, Mixer    : color.gd
+				, Playback : color.grk
+			}
+			Object.keys( c ).forEach( k => { X[ k ] = X.type === k } );
+			var y  = X.h + X.h * 2 * ch; // y > down - each channel
+			X.box.push( { //----
+				  x : X.x
+				, y : y
+				, w : X.w
+				, h : X.h
+				, r : Math.round( X.p / 2 )
+				, c : c[ X.type ]
 			} );
-		}
-		var args = jsonClone( filters ? FIL[ val ] : S.config );
-		if ( ! filters ) args.index = val;
-		bash( [ 'settings/camilla.py', JSON.stringify( args ) ], data => {
-			var impulse   = 'impulse' in data;
-			if ( filterdelay ) {
-				plots.magnitude.y   = 0;
-			} else {
-				plots.magnitude.y   = data.magnitude;
-				var scale  = {
-					  groupdelay : { min: -10, max: 10 }
-					, impulse    : { min: -1, max: 1 }
-					, magnitude  : { min: -6, max: 6 }
-				}
-				var minmax = {};
-				[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
-					if ( ! ( d in data ) ) return
-					
-					var v = data[ d ];
-					minmax[ d ] = { value  : v };
-					[ 'min', 'max' ].forEach( k => minmax[ d ][ k ] = Math[ k ]( ...v ) );
-					if ( minmax[ d ].max < scale[ d ].max ) minmax[ d ].max = scale[ d ].max;
-					if ( minmax[ d ].min > scale[ d ].min ) minmax[ d ].min = scale[ d ].min;
-					minmax[ d ].abs = Math.max( Math.abs( minmax[ d ].min ), Math.abs( minmax[ d ].max ) );
-					var range  = minmax[ d ];
-					if ( d !== 'magnitude' ) {
-						range.min = -range.abs;
-					} else {
-						if ( range.min <= scale[ d ].min ) range.min -= 1;
-						if ( range.max >= scale[ d ].max ) range.max += 1;
-					}
-					axes[ d ].range = [ range.min, range.max ];
-					if ( d === 'impulse' ) {
-						axes[ d ].dtick = range.abs < 1 ? 0.2 : ( range.abs < 2 ? 0.5 : 1 );
-					} else {
-						axes[ d ].dtick = range.abs < 10 ? 2 : ( range.abs < 20 ? 5 : 10 );
-					}
+			y       += Math.round( X.h / 2 );
+			X.text.push( { //----
+				  x : X.x + Math.round( X.w / 2 )
+				, y : y
+				, t : txt
+			} );
+			if ( X.Capture ) return // no arrows, no gains
+			
+			var g  = X.Mixer ? gain[ ch ] : gain;
+			if ( g !== undefined ) {
+				var db = graph.flowchart.dbText( g );
+				X.text.push( { //----
+					  x : X.ax[ ch ] + Math.round( X.w / 2 )
+					, y : y
+					, t : db.t
+					, c : db.c
 				} );
 			}
-			plots.phase.y      = data.phase;
-			plots.groupdelay.y = delay0 ? 0 : data.groupdelay;
-			var plot           = [ plots.magnitude, plots.phase, plots.groupdelay ];
-			var layout         = {
-				  xaxis         : axes.freq
-				, yaxis         : axes.magnitude
-				, yaxis2        : axes.phase
-				, yaxis3        : axes.groupdelay
-				, margin        : { t: impulse ? 40 : 10, r: 40, b: 90, l: 45 }
-				, paper_bgcolor : '#000'
-				, plot_bgcolor  : '#000'
-				, showlegend    : false
-				, hovermode     : false
-				, dragmode      : 'zoom'
-				, font          : {
-					  family : 'Inconsolata'
-					, size   : 14
+			if ( g !== undefined || X.Playback ) { // Playback always has arrows in
+				X.arrow.push( [ //----
+					  { x: X.ax[ ch ], y: y }
+					, { x: X.x,        y: y }
+				] );
+			}
+			if ( X.Playback || ! X.Mixer ) return
+			
+			$.each( gain, ( ch_s, g ) => {
+				ch_s = +ch_s;
+				if ( ch_s === ch ) return
+				
+				var xy     = [
+					  { x: X.ax[ ch_s ], y: y + X.h * 2 * ( ch_s - ch ) }
+					, { x: X.x,          y: y }
+				]
+				X.arrow.push( xy ); //----
+				var db     = graph.flowchart.dbText( g );
+				var x_diff = xy[ 1 ].x - xy[ 0 ].x - X.aw;
+				var y_diff = xy[ 1 ].y - xy[ 0 ].y;
+				var angle  = Math.atan2( y_diff, x_diff );
+				X.text.push( { //----
+					  x : xy[ 0 ].x + x_diff / 4
+					, y : xy[ 0 ].y + y_diff / 4
+					, t : db.t
+					, c : db.c
+					, a : angle // radian
+				} );
+			} );
+		}
+		, addFrame  : ( txt, ch ) => {
+			X.box.push( { //----
+				  x : X.x - X.p
+				, y : X.h - X.p
+				, w : X.w + X.p * 2
+				, h : X.h * ( ch * 2 - 1 ) + X.p * 2
+				, r : X.p
+				, c : color.grd
+			} );
+			X.text.push( { //----
+				  x : Math.round( X.x + X.w / 2 )
+				, y : Math.round( X.h / 4 )
+				, t : txt
+				, f : 'frame'
+			} );
+		}
+		, ctxShadow : ( ctx, offset ) => {
+			offset             *= X.dpxr;
+			ctx.shadowOffsetX = -offset;
+			ctx.shadowOffsetY = offset;
+			ctx.shadowBlur    = offset;
+			ctx.shadowColor   = '#000';
+		}
+		, dbText    : gain => {
+			var c = color.grl;
+			if ( gain > 0 )      c = color.wl;
+			else if ( gain < 0 ) c = color.r;
+			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
+			return { t: gain, c: c }
+		}
+		, chart : () => {
+			var canvasW = $( '#pipeline' ).width();
+			var boxL    = 2; // capture + playback
+			PIP.forEach( pip => {                                     //     cap                   pla
+				boxL += pip.type === 'Filter' ? pip.names.length : 1; // --|boxC0|----|box N|----|boxP1|--
+			} );                                                      //
+			var canvasL = boxL * 2;                                   // --|boxC0|----|box N|----|boxP1|--
+			var w0      = Math.round( canvasW / canvasL ); // box w (base unit)
+			var h0      = Math.round( w0 / 2 );
+			var p0      = Math.round( w0 / 10 );
+			var ch_capt = DEV.capture.channels;
+			var ch_play = DEV.playback.channels;
+			var canvasH = h0 * ( Math.max( ch_capt, ch_play ) * 2 ) + p0;
+			X           = {
+				  w     : w0
+				, h     : h0
+				, p     : p0                                   // frame padding
+				, x     : h0                                   // box0 start x
+				, ax    : new Array( ch_capt ).fill( h0 + w0 ) // arrow line x start: each channel (draw from previous box)
+				, aw    : Math.round( w0 / 8 )                 // arrow head w
+				, dpxr  : window.devicePixelRatio
+				, box   : []
+				, text  : []
+				, arrow : []
+			}
+			
+			graph.flowchart.add( 'Capture' );
+			X.x += X.w * 2;
+			PIP.forEach( pip => {                     // @ step
+				X.type  = pip.type;
+				if ( pip.type === 'Filter' ) {
+					pip.names.forEach( name => {      // @ filter  < @ step
+						pip.channels.forEach( ch => { // @ channel < @ filter < @ step
+							graph.flowchart.addBox( name, ch, FIL[ name ].parameters.gain );
+							X.ax[ ch ] = X.x + X.w;   // ax >| @ channel < @ filter < @ step
+						} );
+						X.x += X.w * 2;               // x  >| @ filter  < @ step
+					} );
+				} else {
+					var mapping = MIX[ pip.name ].mapping;
+					var mL      = mapping.length;
+					if ( mL > 1 ) graph.flowchart.addFrame( pip.name, mL );
+					mapping.forEach( m => {                                        // @ playback channel      < @ step
+						var ch   = m.dest;
+						var gain = {};
+						m.sources.forEach( s => { gain[ s.channel ] = s.gain } );
+						graph.flowchart.addBox( 'ch '+ ch, ch, gain );
+					} );
+					for ( var ch = 0; ch < ch_capt; ch++ ) X.ax[ ch ] = X.x + X.w; // ax >| @ capture channel < @ step
+					X.x        += X.w * 2;                                         // x  >| @ mixer           < @ step
 				}
-			}
-			if ( impulse ) { // Conv
-				var imL  = data.impulse.length;
-				var raw  = imL < 4500;
-				var each = raw ? imL / 80 : imL / 120;
-				var iL   = raw ? 5 : 7;
-				var ticktext = [];
-				var tickvals = [];
-				for ( i = 0; i < iL; i++ ) {
-					ticktext.push( i * 20 );
-					tickvals.push( i * 20 * each );
+			} );
+			graph.flowchart.add( 'Playback' );
+			$( '#pipeline' ).prepend( '<canvas></canvas>' );
+			var $canvas         = $( '#pipeline canvas' );
+			$canvas // fix - blur elements
+				.attr( 'width', canvasW * X.dpxr )
+				.attr( 'height', canvasH * X.dpxr )
+				.css( {
+					  width  : canvasW +'px'
+					, height : canvasH +'px'
+					, margin : '20px 0'
+				} );
+			var canvas          = $canvas[ 0 ];
+			var ctx             = canvas.getContext( '2d' );
+			ctx.scale( X.dpxr, X.dpxr );
+			ctx.save();
+			X.box.forEach( b => { //-------------------------------
+				ctx.fillStyle = b.c;
+				ctx.beginPath();
+				ctx.roundRect( b.x, b.y, b.w, b.h, b.r );
+				ctx.fill();
+				graph.flowchart.ctxShadow( ctx, 2 );
+			} );
+			ctx.restore();
+			ctx.strokeStyle  = color.gr;
+			ctx.fillStyle    = color.grl;
+			ctx.beginPath();
+			var ay = Math.round( X.aw / 4 );
+			var x0, y0, x1, y1, xa;
+			X.arrow.forEach( xy => { //-------------------------------
+				x0 = xy[ 0 ].x;
+				y0 = xy[ 0 ].y;
+				x1 = xy[ 1 ].x - 1; // omit 1px mitter head
+				y1 = xy[ 1 ].y;
+				xa = x1 - X.aw;
+				ctx.moveTo( x0, y0 );
+				ctx.lineTo( xa, y1 );
+				ctx.lineTo( xa, y1 - ay );
+				ctx.lineTo( x1, y1 );
+				ctx.lineTo( xa, y1 + ay );
+				ctx.lineTo( xa, y1 );
+				ctx.stroke();
+				ctx.fill();
+			} );
+			ctx.textAlign    = 'center';
+			ctx.textBaseline = 'middle';
+			X.text.forEach( t => { //-------------------------------
+				ctx.fillStyle = t.c || color.wl;
+				ctx.font = ( t.c ? 12 : 15 ) +'px Inconsolata';
+				if ( t.a ) { // cross gain
+					ctx.save();
+					ctx.translate( t.x, t.y );
+					ctx.rotate( t.a );
+					ctx.translate( -t.x,-t.y );
+					ctx.fillText( t.t, t.x, t.y );
+					ctx.restore();
+				} else {
+					var txt = t.t;
+					if ( ! t.c ) { // not gain
+						var cL = Math.floor( X.w * 0.9  / ctx.measureText( '0' ).width );
+						if ( txt.length > cL ) txt = txt.replace( /^ch /, '' );
+						if ( ! t.f ) txt = txt.slice( 0, cL ); // if not frame, trim
+					}
+					ctx.fillText( txt, t.x, t.y );
 				}
-				ticktext[ i - 1 ]  = '';
-				axes.time.range    = [ 0, imL ];
-				axes.time.tickvals = tickvals;
-				axes.time.ticktext = ticktext;
-				layout.xaxis2      = axes.time;
-				layout.yaxis4      = axes.impulse;
-				plots.impulse.y    = data.impulse;
-				plot.push( plots.impulse );
+				if ( t.c ) graph.flowchart.ctxShadow( ctx, 1 );
+			} );
+		}
+		, refresh   : () => {
+			var $flowchart = $( '#pipeline canvas' );
+			var fL         = $flowchart.length;
+			$flowchart.remove();
+			if ( fL ) graph.flowchart.chart();
+		}
+	}
+	, filters      : name => {
+		var filter     = FIL[ name ];
+		var f          = graph.filterLog( 1, DEV.samplerate * 0.95 / 2 );
+		var currfilt   = graph.filterData( filter );
+		if ( ! currfilt ) return
+		
+		var [ ma, ph ] = currfilt.gainAndPhase( f );
+		var [ fg, gr ] = calcGroupDelay( f, ph );
+		var result     = {
+			  f            : f
+			, f_groupdelay : fg
+			, groupdelay   : gr
+			, magnitude    : ma
+			, phase        : ph
+		}
+		if ( filter.type === 'Conv' ) {
+			var [ ti, im ] = currfilt.getImpulse();
+			result.time    = ti;
+			result.impulse = im;
+		}
+		graph.plotLy( result );
+	}
+	, filterData   : ( filter, volume ) => {
+		var param      = filter.parameters;
+		var samplerate = DEV.samplerate;
+		switch( filter.type ) {
+			case 'Biquad':
+				return new Biquad( param, samplerate )
+			case 'BiquadCombo':
+				return new BiquadCombo( param, samplerate )
+/*			case 'Conv': // require: fft, audiofileread
+				return new Conv( param || null, samplerate )*/
+			case 'Delay':
+				return new Delay( param, samplerate )
+			case 'DiffEq':
+				return new DiffEq( param, samplerate )
+			case 'Gain':
+				return new Gain( param )
+			case 'Loudness':
+				return new Loudness( param, samplerate, S.volume )
+			case 'Dither':
+			case 'Volume':
+				return new BaseFilter()
+			default:
+				banner( 'graph', 'Graph', 'Not available.' );
+				return false
+		}
+	}
+	, filterLog    : ( min, max ) => {
+		var logmin  = Math.log10( min );
+		var logmax  = Math.log10( max );
+		var perstep = ( logmax - logmin ) / 1000;
+		var values  = Array.from( { length: 1000 }, ( _, n ) => 10 ** ( logmin + n * perstep ) );
+		return values
+	}
+	, pipeline     : index => {
+		var f          = graph.filterLog( 10, DEV.samplerate * 0.95 / 2 );
+		var totcgain   = new Array( 1000 ).fill( 1 );
+		var currfilt;
+		PIP[ index ].names.forEach( name => {
+			var filter       = FIL[ name ];
+			currfilt         = graph.filterData( filter );
+			if ( ! currfilt ) return false
+			
+			var [ _, cgain ] = currfilt.complexGain( f );
+			totcgain         = totcgain.map( ( cg, i ) => cgain[ i ].mul( cg ) );
+		});
+		if ( ! currfilt ) return
+		
+		var ma         = totcgain.map( cg => 20 * Math.log10( cg.abs() + 1e-15 ) );
+		var ph         = totcgain.map( cg => 180 / Math.PI * Math.atan2( cg.im, cg.re ) );
+		var [ fg, gr ] = calcGroupDelay( f, ph );
+		graph.plotLy( {
+			  f            : f
+			, f_groupdelay : fg
+			, groupdelay   : gr
+			, magnitude    : ma
+			, phase        : ph
+		} );
+	}
+	, plot         : () => {
+		graph[ V.tab ]( V.li.data( V.tab === 'filters' ? 'name' : 'index' ) );
+	}
+	, plotLy       : data => {
+		var PLOTS = jsonClone( plots );
+		var AXES  = jsonClone( axes );
+		if ( V.tab === 'filters' ) {
+			var f      = FIL[ V.li.data( 'name' ) ];
+			var delay  = f.type === 'Delay';                  // if filter has delay
+			var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
+		} else {
+			var delay  = false;
+			PIP[ V.li.data( 'index' ) ].names.forEach( n => { // if any filter has delay
+				var f      = FIL[ n ];
+				if ( ! delay && f.type === 'Delay' ) delay = true;
+				var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
+			} );
+		}
+		if ( delay ) {
+			PLOTS.magnitude.y   = 0;
+		} else {
+			PLOTS.magnitude.y   = data.magnitude;
+			var minmax          = {
+				  groupdelay : { min: -10, max: 10 }
+				, impulse    : { min:  -1, max: 1 }
+				, magnitude  : { min:  -6, max: 6 }
+			};
+			[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
+				if ( ! ( d in data ) ) return
+				
+				var min = Math.min( ...data[ d ] );
+				var max = Math.max( ...data[ d ] );
+				max     = Math.max( max, minmax[ d ].max );
+				min     = Math.min( min, minmax[ d ].min )
+				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ].max * 0.1;
+				if ( d === 'impulse' ) {
+					dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
+				} else {
+					dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
+				}
+				AXES[ d ].dtick = dtick
+				AXES[ d ].range = [ -abs, abs ];
+			} );
+		}
+		PLOTS.phase.y      = data.phase;
+		PLOTS.groupdelay.y = delay0 ? 0 : data.groupdelay;
+		var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
+		var layout         = {
+			  ...PLOTS.layout
+			, xaxis         : AXES.freq[ V.tab ]
+			, yaxis         : AXES.magnitude
+			, yaxis2        : AXES.phase
+			, yaxis3        : AXES.groupdelay
+		}
+		if ( 'impulse' in data ) { // Conv
+			var imL  = data.impulse.length;
+			var raw  = imL < 4500;
+			var each = raw ? imL / 80 : imL / 120;
+			var iL   = raw ? 5 : 7;
+			var ticktext = [];
+			var tickvals = [];
+			for ( var i = 0; i < iL; i++ ) {
+				ticktext.push( i * 20 );
+				tickvals.push( i * 20 * each );
 			}
-			if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph" data-val="'+ val +'"></div>' );
-			var $divgraph = $li.find( '.divgraph' );
-			var options   = {
-				  displayModeBar : false
-//				, scrollZoom     : true
-				, staticPlot     : true // disable zoom
-			}
-			Plotly.newPlot( $divgraph[ 0 ], plot, layout, options );
-			$svg = $divgraph.find( 'svg' );
-			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
-			elementScroll( $divgraph.parent() );
-			bannerHide();
-			$divgraph
-				.append( '<i class="i-close graphclose" tabindex="0"></i>' )
-				.removeClass( 'hide' );
-		}, 'json' );
+			ticktext[ i - 1 ]  = '';
+			AXES.time.range    = [ 0, imL ];
+			AXES.time.tickvals = tickvals;
+			AXES.time.ticktext = ticktext;
+			layout.margin.t    = 40;
+			layout.xaxis2      = AXES.time;
+			layout.yaxis4      = AXES.impulse;
+			PLOTS.impulse.y    = data.impulse;
+			plot.push( PLOTS.impulse );
+		}
+		V.li.find( '.divgraph' ).remove();
+		V.li
+			.addClass( 'graph' )
+			.append( '<div class="divgraph"></div>' );
+		var $divgraph = V.li.find( '.divgraph' );
+		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
+		$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
+		scrollUpToView( $divgraph );
+	}
+	, refresh      : () => {
+		$( '#'+ V.tab +' .entries.main li.graph' ).each( ( i, el ) => {
+			V.li = $( el );
+			graph.plot();
+		} );
 	}
 }
+window.addEventListener( 'resize', graph.flowchart.refresh );
+
 var render    = {
 	  status      : () => { // onload only
 		headIcon();
@@ -730,7 +1043,7 @@ var render    = {
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
-		$( '.rateadjust' ).toggleClass( 'hide', ! S.enable_rate_adjust );
+		$( '.rateadjust' ).toggleClass( 'hide', ! DEV.enable_rate_adjust );
 		if ( S.bluetooth ) {
 			if ( ! $( '#divconfiguration .col-l i' ).length ) $( '#divconfiguration a' ).after( ico( 'bluetooth' ) );
 		} else {
@@ -739,16 +1052,21 @@ var render    = {
 		$( '#configuration' )
 			.html( htmlOption( S.ls.configs ) )
 			.val( S.configname );
+		if ( $( '#vu .bar' ).length ) {
+			render.vuBarToggle();
+			return
+		}
+		
 		var chC     = DEV.capture.channels;
 		var chP     = DEV.playback.channels;
 		var ch      = chC > chP ? chC : chP;
 		var htmlin  = '<div class="bar"></div><div class="bar peak c0"></div><div class="bar rms c0"></div>';
 		var htmlout = htmlin.replace( /c0/g, 'p0' );
-		if ( chC > 1 ) for ( i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
+		if ( chC > 1 ) for ( var i = 1; i < chC; i++ ) htmlin += htmlin.replace( /0/g, i +'' );
 		$( '#in' ).html( htmlin );
-		if ( chP > 1 ) for ( i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
+		if ( chP > 1 ) for ( var i = 1; i < chP; i++ ) htmlout += htmlout.replace( /0/g, i +'' );
 		$( '#out' ).html( htmlout );
-		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
+		render.vuBarToggle();
 	}
 	, statusStop  : () => {
 		if ( ! ( 'intervalvu' in V ) ) return
@@ -756,8 +1074,7 @@ var render    = {
 		V.signal = false;
 		clearInterval( V.intervalvu );
 		delete V.intervalvu;
-		$( '.peak, .rms' ).css( { 'transition-duration': '0s', width: 0 } );
-		$( '.peak' ).css( 'left', 0 );
+		render.vuBarToggle();
 		$( '#buffer, #load' ).css( 'width', 0 );
 		$( '#divstate' ).find( '.buffer, .load, .capture, .rate' ).html( '· · ·' );
 	}
@@ -766,26 +1083,12 @@ var render    = {
 		$( '#div'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
-		if ( [ 'config', 'devices', 'pipeline' ].includes( V.tab ) ) {
-			render[ V.tab ]();
-			return
-		}
-		
-		var $main = $( '#'+ V.tab +' .entries.main' );
-		if ( $main.is( ':empty' ) ) {
-			render.prevconfig();
-			render[ V.tab ]();
+		if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) {
+			var data = V.tab === 'pipeline' ? 'index' : 'name';
+			var val  = $( '#'+ V.tab +' .entries.sub li' ).eq( 0 ).data( data );
+			render[ V.tab +'Sub' ]( val );
 		} else {
-			if ( ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
-			
-			render.prevconfig();
-			if ( $main.hasClass( 'hide' ) ) {
-				var data = V.tab === 'pipeline' ? 'index' : 'name';
-				var val  = $( '#'+ V.tab +' .entries.sub li' ).eq( 0 ).data( data );
-				render[ V.tab +'Sub' ]( val );
-			} else {
-				render[ V.tab ]();
-			}
+			render[ V.tab ]();
 		}
 	}
 	, volume      : () => {
@@ -803,6 +1106,9 @@ var render    = {
 	}
 	, volumeThumb : () => {
 		$( '#volume .thumb' ).css( 'margin-left', ( 230 - 40 ) / 100 * S.volume );
+	}
+	, vuBarToggle : () => {
+		$( '.peak, .rms, #load, #buffer' ).toggleClass( 'stop', ! V.signal || S.state !== 'play' );
 	}
 	, vuLevel     : ( rms, cpi, db ) => {
 		if ( db < -98 ) {
@@ -835,21 +1141,19 @@ var render    = {
 		}
 	} //-----------------------------------------------------------------------------------
 	, filters     : () => {
-		if ( ! Object.keys( FIL ).length ) return
-		
-		var data     = render.dataSort( 'filters' );
+		var data     = render.dataSort();
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
 	}
 	, filter      : ( k, v ) => {
-		var param      = v.parameters;
-		var scale      = false;
-		var icongain   = '';
-		var disabled   = '';
+		var param    = v.parameters;
+		var scale    = false;
+		var icongain = '';
+		var disabled = '';
 		if ( v.type === 'Gain' ) {
-			var scale = param.scale === 'linear' ? 10 : 100;
+			var scale = param.scale === 'linear' ? 100 : 10;
 			icongain  = ico( param.mute ? 'volume mute' : 'volume' )
 					  + ico( param.inverted ? 'inverted bl' : 'inverted' )
 					  + ico( param.scale === 'linear' ? 'linear bl' : 'linear' );
@@ -872,16 +1176,17 @@ var render    = {
 			var li        = '<div class="li1">'+ k +'</div>'
 						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
-		var $graph = $( '#filters .entries.main li[data-name="'+ k +'"]' ).find( '.divgraph' );
-		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
+		var cl_graph = $( '#filters li[data-name="'+ k +'"]' ).hasClass( 'graph' ) ? ' class="graph"' : '';
 		if ( param.type === 'GraphicEqualizer' ) {
-			var icon    = 'equalizer';
-			var classeq = ' class="eq"';
+			var icon = 'equalizer';
+			var cl_eq = ' class="eq"';
 		} else {
-			var icon    = 'filters';
-			var classeq = '';
+			var icon = 'filters';
+			var cl_eq = '';
 		}
-		return '<li data-name="'+ k +'"'+ classeq +'>'+ ico( icon +' liicon edit graph' ) + li  +'</li>'
+		icon        += [ 'Volume', 'Dither', 'Limiter' ].includes( v.type ) ? '' : ' graph';
+		icon        += ' liicon edit';
+		return '<li data-name="'+ k +'"'+ cl_graph + cl_eq +'>'+ ico( icon ) + li  +'</li>'
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -890,9 +1195,7 @@ var render    = {
 		render.toggle( 'sub' );
 	} //-----------------------------------------------------------------------------------
 	, mixers      : () => {
-		if ( ! Object.keys( MIX ).length ) return
-		
-		var data = render.dataSort( 'mixers' );
+		var data = render.dataSort();
 		var li = '';
 		$.each( data, ( k, v ) => li += render.mixer( k, v ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
@@ -901,38 +1204,36 @@ var render    = {
 	, mixer       : ( k, v ) => {
 		return '<li data-name="'+ k +'">'+ ico( 'mixers liicon edit' )
 			  +'<div class="li1">'+ k +'</div>'
-			  +'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
+			  +'<div class="li2">'+ render.mixerMap( v.mapping ) +'</div>'
 			  +'</li>'
 	}
 	, mixersSub   : name => {
+		console.log(name)
 		var iconadd = max => ico( max ? 'add disabled' : 'add' );
 		var data    = MIX[ name ].mapping;
 		var chin    = DEV.capture.channels;
 		var chout   = DEV.playback.channels;
-		var li      = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers subicon' ) + name
+		var li      = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers subicon' ) +'&nbsp;<a>'+ name +'</a>'
 					 + iconadd( chout === data.length ) + ico( 'back' )
 					 +'</li>';
-		var optin   = htmlOption( chin );
-		var optout  = htmlOption( chout );
 		data.forEach( ( kv, i ) => {
 			var dest   = kv.dest;
-			var opts   = optout.replace( '>'+ dest, ' selected>'+ dest );
 			var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li        += '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
-						+'<div><select>'+ opts +'</select></div>'
+						+'<div>Out: '+ dest +'</div>'
 						+ ico( kv.mute ? 'volume mute' : 'volume' ) + iconadd( chout === kv.sources.length )
 						+'</li>';
 			kv.sources.forEach( ( s, si ) => {
-				var source   = data[ i ].sources[ si ];
-				var channel  = source.channel;
-				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
-				var gain     = source.gain || 0;
-				var disabled = source.mute ? ' disabled' : '';
-				var linear   = source.scale === 'linear';
-				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + render.htmlRange( linear ? 10 : 100, gain, disabled )
-					 + ico( source.mute ? 'volume mute' : 'volume' )
-					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
+				var sources  = data[ i ].sources[ si ];
+				var ch       = sources.channel;
+				var gain     = sources.gain || 0;
+				var disabled = sources.mute ? ' disabled' : '';
+				var linear   = sources.scale === 'linear';
+				li += '<li class="liinput dest'+ i +'"'+ i_name +'" data-si="'+ si +'" data-source="'+ ch +'">'
+					 + ico( 'input liicon' ) +'In: '+ ch +'&emsp;'
+					 + render.htmlRange( linear ? 100 : 10, gain, disabled )
+					 + ico( sources.mute ? 'volume mute' : 'volume' )
+					 + ico( sources.inverted ? 'inverted bl' : 'inverted' )
 					 + ico( linear ? 'linear bl' : 'linear' )
 					 +'</li>';
 			} );
@@ -940,11 +1241,19 @@ var render    = {
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
 		selectSet( $( '#mixers select' ) );
+	}
+	, mixerMap    : mapping => {
+		var ch = '';
+		mapping.forEach( m => {
+			ch     += ' • ch: <c>'+ m.dest +'</c>';
+			var src = ''
+			m.sources.forEach( s => src += '-'+ s.channel );
+			ch += ' &#8672; <c>'+ src.slice( 1 ) +'</c>';
+		} );
+		return ch.slice( 3 )
 	} //-----------------------------------------------------------------------------------
 	, processors  : () => {
-		if ( ! PRO || ! Object.keys( PRO ).length ) return
-		
-		var data = render.dataSort( 'processors' );
+		var data = render.dataSort();
 		var li = '';
 		$.each( data, ( k, v ) => {
 			var param = jsonClone( v.parameters );
@@ -959,62 +1268,51 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, pipeline    : () => {
 		$( '.i-flowchart' ).toggleClass( 'disabled', PIP.length === 0 );
-		if ( ! PIP.length ) return
-		
 		var li = '';
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
-		render.sortable( 'main' );
+		render.sortable();
+		graph.flowchart.refresh();
 	}
 	, pipe        : ( el, i ) => {
-		var icon = 'pipeline liicon';
+		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
+		var cl_graph = '';
 		if ( el.type === 'Filter' ) {
-			icon  += ' graph';
-			var li = '<div class="li1">' + el.type +'</div>'
-					+'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
+			icon      += ' graph';
+			var icon_s = 'filters'
+			var li1    = el.names.join( ' <gr>•</gr> ' );
+			var li2    = 'ch: ';
+			el.channels.forEach( c => li2 += '<c>'+ c +'</c> ' );
+			cl_graph   = $( '#pipeline .main li' ).eq( i ).hasClass( 'graph' ) ? ' class="graph"' : '';
 		} else {
-			var li = '<gr>Mixer:</gr> '+ el.name;
+			var icon_s = 'mixers'
+			var li1    = el.name;
+			var li2    = render.mixerMap( MIX[ el.name ].mapping );
 		}
-		var $graph = $( '#filters .entries.main li[data-index="'+ i +'"]' ).find( '.divgraph' );
-		if ( $graph.length ) li += $graph[ 0 ].outerHTML;
-		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + li +'</li>'
+		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'"'+ cl_graph +'>'+ ico( icon ) + ico( icon_s )
+				+'<div class="li1">'+ li1 +'</div>'
+				+'<div class="li2">'+ li2 +'</div>'
+				+'</li>';
+		return li
 	}
-	, pipelineSub : index => {
-		var data = PIP[ index ];
-		var li   = '<li class="lihead main" data-index="'+ index +'">'+ ico( 'pipeline' ) +'Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
-		data.names.forEach( ( name, i ) => li += render.pipeFilter( name, i ) );
-		$( '#'+ V.tab +' .entries.sub' ).html( li );
-		render.toggle( 'sub' );
-		render.sortable( 'sub' );
-	}
-	, pipeFilter  : ( name, i ) => {
-		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon' )
-			  +'<div class="li1">'+ name +'</div>'
-			  +'<div class="li2">'+ FIL[ name ].type +' · '+ render.json2string( FIL[ name ].parameters ) +'</div>'
-			  +'</li>'
-	}
-	, sortable    : el => {
-		if ( el in V.sortable ) return
+	, sortable    : () => {
+		$( '#menu' ).addClass( 'hide' );
+		if ( V.sortable ) {
+			V.sortable.destroy();
+			delete V.sortable;
+		}
+		if ( $( '#pipeline .entries li' ).length < 2 ) return
 		
-		V.sortable[ el ] = new Sortable( $( '#pipeline .entries.'+ el )[ 0 ], {
+		V.sortable = new Sortable( $( '#pipeline .entries' )[ 0 ], {
 			  ghostClass : 'sortable-ghost'
 			, delay      : 400
 			, onUpdate   : function ( e ) {
-				var ai      = e.oldIndex;
-				var bi      = e.newIndex;
-				var pip     = PIP;
-				var $lihead = $( '#pipeline .lihead' );
-				if ( $lihead.length ) {
-					pip = PIP[ $lihead.data( 'index' ) ].names;
-					ai--;
-					bi--;
-				}
-				var a = pip[ ai ];
-				pip.splice( ai, 1 );
-				pip.splice( bi, 0, a );
+				var a  = jsonClone( PIP[ e.oldIndex ] );
+				PIP.splice( e.oldIndex, 1 );
+				PIP.splice( e.newIndex, 0, a );
 				setting.save( 'Pipeline', 'Change order ...' );
-				graph.pipeline();
+				render.pipeline();
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
@@ -1042,9 +1340,9 @@ var render    = {
 			}
 		} );
 		var keys = [];
-		if ( S.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
-		if ( S.capture_samplerate ) keys.push( 'capture_samplerate' );
-		if ( S.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
+		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
+		if ( DEV.capture_samplerate ) keys.push( 'capture_samplerate' );
+		if ( DEV.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
 		if ( keys.length ) {
 			labels += '<hr>';
 			values += '<hr>';
@@ -1053,22 +1351,24 @@ var render    = {
 				values += DEV[ k ].toLocaleString() +'<br>';
 			} );
 		}
-		if ( S.resampler ) {
+		if ( DEV.resampler ) {
 			labels += 'Resampler<br>'
 			values += DEV.resampler.type +'<br>';
 			if ( 'profile' in DEV.resampler ) {
 				labels += 'Profile<br>'
 				values += DEV.resampler.profile +'<br>';
 			}
-			if ( S.capture_samplerate ) {
+			if ( DEV.capture_samplerate ) {
 				labels += 'Capture samplerate<br>'
 				values += DEV.capture_samplerate +'<br>';
 			}
 		}
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
-		$( '#enable_rate_adjust' ).toggleClass( 'disabled', S.resampler && DEV.resampler.type === 'Synchronous' );
-		switchSet();
+		$( '#enable_rate_adjust' ).toggleClass( 'disabled', DEV.resampler !== null && DEV.resampler.type === 'Synchronous' );
+		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( id => {
+			$( '#'+ id ).prop( 'checked', DEV[ id ] !== null );
+		} );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
 		var li  = '';
@@ -1080,6 +1380,8 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];
+		if ( ! kv ) return
+		
 		var data = {};
 		var keys = Object.keys( kv );
 		keys.sort().forEach( k => data[ k ] = kv[ k ] );
@@ -1111,7 +1413,6 @@ var render    = {
 					.replace( /,$/, '' )
 					.replace( /([:,])/g, '$1 ' )
 	}
-	, prevconfig  : () => V.prevconfig[ V.tab ] = jsonClone( S.config[ V.tab ] )
 	, toggle      : ( sub ) => {
 		var $main = $( '#'+ V.tab +' .entries.main' );
 		var $sub  = $( '#'+ V.tab +' .entries.sub' );
@@ -1125,13 +1426,7 @@ var render    = {
 			var $entries = $main;
 		}
 		$( '#menu' ).addClass( 'hide' );
-		if ( [ 'filters', 'pipeline' ].includes( V.tab ) && V.graph[ V.tab ].length ) {
-			var val = V.tab === 'filters' ? 'name' : 'index';
-			$( '#'+ V.tab +' .entries.main li' ).each( ( i, el ) => {
-				var $el  = $( el );
-				if ( V.graph[ V.tab ].includes( $el.data( val ) ) ) graph.plot( $el );
-			} );
-		}
+		graph.refresh();
 		$( '.entries' ).children().removeAttr( 'tabindex' );
 		$entries.find( '.lihead .i-add, .lihead .i-back' ).prop( 'tabindex', 0 );
 		var $li = $entries.find( 'li:not( .lihead )' );
@@ -1154,25 +1449,23 @@ var setting   = {
 			if ( [ 'Hig', 'Low' ].includes( subtype.slice( 0, 3 ) ) ) {
 				var vsubtype = subtype.replace( /High|Low/, '' );
 			} else if ( subtype.slice( -4 ) === 'pass' ) {
-				var vsubtype = 'notch';
+				var vsubtype = 'Notch';
 			} else if ( subtype === 'AllpassFO' ) {
 				var vsubtype = 'passFO';
 			} else {
-				var vsubtype = type;
+				var vsubtype = subtype;
 			}
 		} else if ( type === 'BiquadCombo' ) {
 			var vsubtype = [ 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ].includes( subtype ) ? subtype : type;
-		} else if ( type === 'Conv' ) {
-			var vsubtype = subtype;
 		} else {
-			var vsubtype = type;
+			var vsubtype = subtype;
 		}
 		var values  = F.values[ vsubtype ];
+		values.name = name;
 		values.type = type;
 		if ( subtype ) values.subtype = subtype;
 		var current = name in FIL && FIL[ name ].type === values.type && FIL[ name ].parameters.type === values.subtype;
 		if ( current ) {
-			values.name = name;
 			if ( subtype === 'FivePointPeq' ) {
 				Object.keys( F0.FivePointPeq ).forEach( k => {
 					values[ k ] = [];
@@ -1206,24 +1499,22 @@ var setting   = {
 				var $select = $( '#infoList select' );
 				$select.eq( 0 ).on( 'input', function() {
 					var val     = infoVal();
-					var subtype = val.type in F0.subtype ? F0.subtype[ val.type ][ 2 ][ 0 ] : '';
+					var subtype = val.type in F0.subtype ? val.subtype : val.type;
 					setting.filter( val.type, subtype, val.name );
 				} );
-				if ( subtype ) {
-					$select.eq( 1 ).on( 'input', function() {
-						var val = infoVal();
-						if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.ls.coeffs ) {
-							info( {
-								  icon    : V.tab
-								, title   : title
-								, message : 'Filter files not available.'
-								, ok      : () => setting.filter( 'Conv', subtype, val.name )
-							} );
-						} else {
-							setting.filter( val.type, val.subtype, val.name );
-						}
-					} );
-				}
+				$select.eq( 1 ).on( 'input', function() {
+					var val = infoVal();
+					if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.ls.coeffs ) {
+						info( {
+							  icon    : V.tab
+							, title   : title
+							, message : 'Filter files not available.'
+							, ok      : () => setting.filter( 'Conv', subtype, val.name )
+						} );
+					} else {
+						setting.filter( val.type, val.subtype, val.name );
+					}
+				} );
 				var $radio = $( '#infoList input:radio' );
 				if ( $radio.length ) {
 					var $label = $radio.parents( 'tr' ).prev().find( 'td' ).eq( 0 );
@@ -1313,21 +1604,29 @@ var setting   = {
 						if ( p.type === 'Mixer' && p.name === name ) p.name = newname;
 					} );
 				} else {
+					var sources    = [];
+					for ( var i = 0; i < DEV.capture.channels; i++ ) {
+						sources.push( {
+							  channel  : i
+							, gain     : 0
+							, inverted : false
+							, mute     : false
+						} );
+					}
+					var mapping    = [];
+					for ( var i = 0; i < DEV.playback.channels; i++ ) {
+						mapping.push( {
+							  dest    : i
+							, sources : sources
+							, mute    : false
+						} );
+					}
 					MIX[ newname ] = {
 						  channels : {
 							  in  : DEV.capture.channels
 							, out : DEV.playback.channels
 						}
-						, mapping  : [ {
-							  dest    : 0
-							, sources : [ {
-								  channel  : 0
-								, gain     : 0
-								, inverted : false
-								, mute     : false
-							} ]
-							, mute    : false
-						} ]
+						, mapping  : mapping
 					}
 				}
 				setting.save( title, name ? 'Change ...' : 'Save ...' );
@@ -1336,38 +1635,58 @@ var setting   = {
 		} );
 	}
 	, mixerMap      : ( name, index ) => {
+		var mapping = MIX[ V.li.data( 'name' ) ].mapping;
 		if ( index === 'dest' ) {
-			var title = 'Add Destination';
+			var title = 'Add Destination / Out';
 			info( {
 				  icon       : V.tab
 				, title      : title
-				, list       : [ 'Playback channel', 'select', DEV.playback.channels ]
-				, boxwidth   : 70
+				, message    : 'Channel:'
+				, list       : [ '', 'radio', [ ...Array( DEV.playback.channels ).keys() ] ]
+				, beforeshow : () => {
+					if ( mapping.length ) {
+						var ch    = [];
+						mapping.forEach( m => ch.push( m.dest ) );
+						setting.mixerMapCheck( ch, 'playback' );
+					}
+				}
 				, ok         : () => {
+					var sources = [];
+					for ( var ch = 0; ch < DEV.capture.channels; ch++ ) {
+						sources.push( {
+							  channel  : ch
+							, gain     : 0
+							, inverted : false
+							, mute     : false
+						} );
+					}
 					var mapping = {
 						  dest    : infoVal()
 						, mute    : false
-						, sources : [
-							{
-								  channel  : 0
-								, gain     : 0
-								, inverted : false
-								, mute     : false
-							}
-						]
+						, sources : sources
 					}
 					MIX[ name ].mapping.push( mapping );
+					MIX[ name ].mapping.sort( ( a, b ) => a.dest - b.dest );
 					setting.save( title, 'Save ...' );
 					render.mixersSub( name );
 				}
 			} );
 		} else {
-			var title = 'Add Source';
+			var title = 'Add Source / In';
 			info( {
 				  icon       : V.tab
 				, title      : title
-				, list       : [ 'Capture channel', 'select', DEV.capture.channels ]
-				, boxwidth   : 70
+				, message    : 'Channel:'
+				, list       : [ '', 'radio', [ ...Array( DEV.capture.channels ).keys() ] ]
+				, beforeshow : () => {
+					mapping.forEach( m => {
+						if ( ! m.sources.length || m.dest !== V.li.data( 'dest' ) ) return
+						
+						var ch    = [];
+						m.sources.forEach( s => ch.push( s.channel ) );
+						setting.mixerMapCheck( ch, 'capture' );
+					} );
+				}
 				, ok         : () => {
 					var source = {
 						  channel  : infoVal()
@@ -1376,11 +1695,20 @@ var setting   = {
 						, mute     : false
 					}
 					MIX[ name ].mapping[ index ].sources.push( source );
+					MIX[ name ].mapping[ index ].sources.sort( ( a, b ) => a.channel - b.channel );
 					setting.save( title, 'Save ...' );
 					render.mixersSub( name );
 				}
 			} );
 		}
+	}
+	, mixerMapCheck : ( ch, c_p ) => {
+		$( '#infoList input' ).each( ( i, el ) => $( el ).prop( 'disabled', ch.includes( i ) ) );
+		var ch_capt = Array.from( Array( DEV[ c_p ].channels ).keys() );
+		var ch_diff = ch_capt.filter( c => ! ch.includes( c ) );
+		$( '#infoList input' )
+			.prop( 'checked', false )
+			.eq( ch_diff[ 0 ] ).prop( 'checked', true );
 	} //-----------------------------------------------------------------------------------
 	, processor     : name => {
 		var type   = name ? PRO[ name ].type : 'Compressor';
@@ -1418,82 +1746,129 @@ var setting   = {
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
-	, pipeline      : () => {
-		var filters = Object.keys( FIL );
+	, pipeline      : index => {
+		if ( ! setting.pipelineNone( 'filters' ) ) return
+		
+		var channels = '';
+		[ ...Array( DEV.playback.channels ).keys() ].forEach( c => {
+			channels += '<label><input type="checkbox" value="'+ c +'">'+ c +'</label>&emsp;';
+		} );
+		var filters  = Object.keys( FIL );
+		var list     = [ [ ico( 'output gr' ), 'html', channels ] ];
+		var select   = [ ico( 'filters gr' ),  'select', { kv: filters, suffix: ico( 'remove' ) } ];
+		if ( index === undefined ) {
+			var edit = false;
+			list.push( select );
+		} else {
+			var edit = true;
+			var data = jsonClone( PIP[ index ] );
+			var nL   = edit ? data.names.length : 1;
+			for ( var i = 0; i < nL; i++ ) list.push( select );
+		}
 		info( {
-			  icon       : V.tab
-			, title      : 'Add Pipeline'
-			, tablabel   : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
-			, tab        : [ '', setting.pipelineMixer ]
-			, list       : [
-				  [ 'Channel', 'select', [ ...Array( DEV.playback.channels ).keys() ] ]
-				, [ 'Filters', 'select', filters, ico( 'add' ) ]
-			]
-			, beforeshow : () => {
-				$( '#infoList .select2-container' ).eq( 0 ).attr( 'style', 'width: 70px !important' );
-				var tradd = '<tr><td></td><td><input type="text" disabled value="VALUE"></td><td>&nbsp;'+ ico( 'remove' ) +'</td></tr>';
-				$( '#infoList' ).on( 'click', '.i-add', function() {
-					$( '#infoList table' ).append( tradd.replace( 'VALUE', $( '#infoList select' ).eq( 1 ).val() ) );
+			  icon         : V.tab
+			, title        : edit ? 'Pipeline Filter' : 'Add Pipeline'
+			, tablabel     : edit ? '' : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
+			, tab          : edit ? '' : [ '', setting.pipelineMixer ]
+			, list         : list
+			, values       : edit ? [ ...data.channels, ...data.names ] : ''
+			, beforeshow   : () => {
+				$( '#infoList td' ).eq( 0 ).css( 'width', '40px' );
+				$( '#infoList tr' ).eq( 0 ).append( '<td>'+ ico( 'add' ) +'</td>' );
+				if ( edit ) {
+					$( '#infoOk' ).addClass( 'disabled' );
+				} else {
+					$( '#infoList input' ).prop( 'checked', true );
+				}
+				var setChanged = () => {
+					if ( edit ) {
+						$input = $( '#infoList' ).find( 'input, select' );
+						$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
+					}
+					setDisabled();
+				}
+				var setDisabled = () => {
+					var $remove = $( '#infoList .i-remove' );
+					$remove.toggleClass( 'disabled', $remove.length === 1 );
+					$( '#infoList input:checked' ).prop( 'disabled', $( 'input:checked' ).length === 1 );
+				}
+				setDisabled();
+				var select    = '<select>'+ htmlOption( filters ) +'</select';
+				$( '#infoList' ).on( 'input', function() {
+					setChanged();
+				} ).on( 'click', '.i-add', function() {
+					var $trlast = $( '#infoList tr' ).last();
+					$( '#infoList table' ).append( $trlast.clone() );
+					var $trnew  = $( '#infoList tr' ).last();
+					$trnew.find( 'td' ).eq( 1 ).html( select );
+					selectSet( $trnew.find( 'select' ) );
+					setChanged();
 				} ).on( 'click', '.i-remove', function() {
 					$( this ).parents( 'tr' ).remove();
+					setChanged();
 				} );
 			}
-			, ok         : () => {
-				var $input = $( '#infoList input' );
-				if ( $input.length ) {
-					var names = [];
-					$input.each( ( i, el ) => names.push( $( el ).val() ) );
-				} else {
-					var names = filters[ 0 ];
-				}
-				PIP.push( {
-					  type    : 'Filter'
-					, channel : +$( '#infoList select' ).eq( 0 ).val()
-					, names   : names
+			, ok           : () => {
+				var channels = [];
+				var names    = [];
+				$( '#infoList input:checkbox' ).each( ( i, el ) => {
+					if ( $( el ).prop( 'checked' ) ) channels.push( +$( el ).val() );
 				} );
+				$( '#infoList select' ).each( ( i, el ) => names.push( $( el ).val() ) );
+				data = {
+					  type     : 'Filter'
+					, channels : channels
+					, names    : names
+				}
+				edit ? PIP[ index ] = data : PIP.push( data );
 				setting.pipelineSave();
 			}
 		} );
 	}
-	, pipelineMixer : () => {
-		if ( ! Object.keys( MIX ).length ) {
-			info( {
-				  icon    : V.tab
-				, title   : 'Add Pipeline'
-				, message : 'No mixers found.'
-				, ok      : setting.pipeline
-			} );
-			return
-		}
+	, pipelineMixer : index => {
+		if ( ! setting.pipelineNone( 'mixers' ) ) return
 		
+		var edit = index !== undefined;
 		info( {
-			  icon     : V.tab
-			, title    : 'Add Pipeline'
-			, tablabel : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
-			, tab      : [ setting.pipeline, '' ]
-			, list     : [ 'Mixers', 'select', Object.keys( MIX ) ]
-			, ok       : () => {
-				PIP.push( {
+			  icon         : V.tab
+			, title        : edit ? 'Pipeline Mixer' : 'Add Pipeline'
+			, tablabel     : edit ? '' : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
+			, tab          : edit ? '' : [ setting.pipeline, '' ]
+			, list         : [ 'Mixers', 'select', Object.keys( MIX ) ]
+			, values       : edit ? PIP[ index ].name : ''
+			, checkchanged : edit
+			, ok           : () => {
+				data = {
 					  type : 'Mixer'
 					, name : infoVal()
-				} );
+				}
+				edit ? PIP[ index ] = data : PIP.push( data );
 				setting.pipelineSave();
 			}
 		} );
+	}
+	, pipelineNone  : type => {
+		if ( Object.keys( S.config[ type ] ).length ) return true
+		
+		info( {
+			  icon    : V.tab
+			, title   : 'Add Pipeline'
+			, message : 'No '+ type +' found.'
+			, ok      : type === 'filters' ? setting.pipelineMixer : setting.pipeline
+		} );
+		return false
 	}
 	, pipelineSave  : () => {
 		setting.save( 'Add Pipeline', 'Save ...' );
 		render.pipeline();
 	}
-	, sortRefresh   : k => {
-		V.sortable[ k ].destroy();
-		delete V.sortable[ k ];
-		render.sortable( k );
+	, pipelineTr    : () => {
+		
 	} //-----------------------------------------------------------------------------------
 	, device        : ( dev, type ) => {
 		var type        = type || 'Alsa';
 		var vtype       = type === 'File' && dev === 'playback' ? 'FileP' : type;
-		var values      = jsonClone( D.values[ vtype ] );
+		var values      = DEV[ dev ][ type ] === type ? DEV[ dev ][ type ] : jsonClone( D.values[ vtype ] );
 		values.type     = type;
 		values.channels = DEV[ dev ].channels;
 		if ( DEV[ dev ].type === type ) $.each( values, ( k, v ) => { values[ k ] = DEV[ dev ][ k ] } );
@@ -1510,20 +1885,29 @@ var setting   = {
 				var $td    = $input.parent();
 				$td.append( $td.next().find( 'i' ) );
 				$input.css( 'width', '70px' );
-				$( '#infoList select' ).slice( 0, 2 ).prop( 'disabled', true );
-/*				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
+				$( '#infoList select' ).eq( 0 ).on( 'input', function() {
 					var typenew = $( this ).val();
-					if ( typenew === 'File' && ! S.ls.raw ) {
+					var files   = false;
+					if ( type === 'capture' ) {
+						if ( typenew === 'RawFile' ) {
+							file = S.ls.raw;
+						} else if ( typenew === 'RawFile' ) {
+							file = S.ls.wave;
+						}
+					} else {
+						if ( typenew === 'File' ) file = S.ls.file;
+					}
+					if ( file ) {
+						setting.device( dev, typenew );
+					} else {
 						info( {
 							  icon    : V.tab
 							, title   : title
-							, message : 'No raw files available.'
+							, message : 'No <c>'+ typenew +'</c> available.'
 							, ok      : () => setting.device( dev, type )
 						} );
-					} else {
-						setting.device( dev, typenew );
 					}
-				} );*/
+				} );
 			}
 			, ok           : () => {
 				DEV[ dev ] = infoVal();
@@ -1556,7 +1940,7 @@ var setting   = {
 	, resampler     : ( type, profile ) => {
 		var list    = D.resampler[ type ];
 		var values  = D.resampler.values[ type ];
-		var current = S.resampler && DEV.resampler.type === values.type;
+		var current = DEV.resampler && DEV.resampler.type === values.type;
 		if ( profile ) values.profile = profile;
 		if ( current ) $.each( DEV.resampler, ( k, v ) => { values[ k ] = v } );
 		info( {
@@ -1585,7 +1969,7 @@ var setting   = {
 			, cancel       : switchCancel
 			, ok           : () => {
 				var val        = infoVal();
-				if ( val.type === 'Synchronous' && S.enable_rate_adjust ) DEV.enable_rate_adjust = false;
+				if ( val.type === 'Synchronous' && DEV.enable_rate_adjust ) DEV.enable_rate_adjust = false;
 				DEV.resampler = val;
 				setting.save( SW.title, 'Change ...' );
 			}
@@ -1643,7 +2027,6 @@ var setting   = {
 		}
 	}
 	, rangeSet      : () => {
-		if ( R.val === -100 || R.val === 100 ) clearTimeout( V.timeoutgain );
 		R.$gain.val( R.val );
 		if ( R.scale === 100 ) { // filter - Gain dB / mixer - dB
 			var val = R.val;
@@ -1677,19 +2060,30 @@ var setting   = {
 		}
 	}
 	, save          : ( titlle, msg ) => {
+		clearTimeout( V.debounce );
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
-			setting.switchValues();
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
-			if ( ! V.press ) {
-				clearTimeout( V.timeoutsave );
-				V.timeoutsave = setTimeout( () => bash( [ 'saveconfig' ] ), 1000 );
-			}
+			graph.refresh();
+			V.debounce = setTimeout( () => {
+				local();
+				setting.statusPush();
+				bash( [ 'saveconfig' ] );
+			}, 1000 );
 		}, wscamilla ? 0 : 300 );
 		if ( titlle ) banner( V.tab, titlle, msg );
+		if ( V.tab === 'devices' ) render.devices();
 	}
-	, switchValues  : () => {
-		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( k => { S[ k ] = DEV[ k ] === true } );
+	, statusPush    : () => {
+		var status = { 
+			  channel : "refresh"
+			, data    : {
+				  page       : "camilla"
+				, config     : JSON.stringify( S.config )
+				, configname : S.configname // confswitch
+			}
+		}
+		ws.send( JSON.stringify( status ) );
 	}
 	, upload        : () => {
 		var filters = V.tab === 'filters';
@@ -1819,15 +2213,15 @@ var common    = {
 						if ( V.local ) return
 						
 						common.wsGetState();
-						if ( S.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
+						if ( DEV.enable_rate_adjust ) wscamilla.send( '"GetRateAdjust"' );
 					}, 1000 );
 				}
 			}, 100 );
 		}
 		wscamilla.onclose   = () => {
 			wscamilla = null;
+			[ 'intervalstatus', 'intervalvu' ].forEach( k => clearInterval( V[ k ] ) );
 			render.statusStop();
-			clearInterval( V.intervalstatus );
 		}
 		wscamilla.onmessage = response => {
 			var data  = JSON.parse( response.data );
@@ -1841,12 +2235,6 @@ var common    = {
 						return
 					}
 					
-					if ( ! V.signal ) { // restore after 1st set
-						V.signal = true;
-						$( '.peak' ).css( 'width', '3px' );
-						$( '.rms' ).css( 'transition-duration', '' );
-						setTimeout( () => $( '.peak' ).css( 'transition-duration', '' ), 200 );
-					}
 					[ 'playback_peak', 'playback_rms', 'capture_peak', 'capture_rms' ].forEach( k => {
 						cp = k[ 0 ];
 						value[ k ].forEach( ( db, i ) => {
@@ -1893,33 +2281,25 @@ var common    = {
 					if ( 'intervalvu' in V ) {
 						if ( S.state !== 'play' ) render.statusStop();
 					} else {
+						if ( ! V.signal ) { // restore after 1st set
+							V.signal = true;
+							render.vuBarToggle();
+						}
 						V.intervalvu = setInterval( () => wscamilla.send( '"GetSignalLevels"' ), 100 );
 					}
 					break;
 				case 'GetConfigJson':
 					S.config = JSON.parse( value );
-					DEV      = S.config.devices;
-					FIL      = S.config.filters;
-					MIX      = S.config.mixers;
-					PIP      = S.config.pipeline;
-					PRO      = S.config.processors;
+					config.valuesAssign();
 					render.status();
 					render.tab();
 					showContent();
-					var dev                          = S.devices;
-					var samplings                    = dev.playback.samplings;
-					D0.samplerate                    = Object.values( samplings );
-					D.main[ 0 ][ 2 ].kv              = samplings;
-					Dlist.capture_samplerate[ 2 ].kv = samplings;
-					Dlist.formatC[ 2 ].kv            = dev.capture.formats;
-					Dlist.formatP[ 2 ].kv            = dev.playback.formats;
-					Dlist.deviceC[ 2 ]               = dev.capture.device;
-					Dlist.deviceP[ 2 ]               = dev.playback.device;
-					Dlist.channelsC[ 2 ].updn.max    = dev.capture.channels;
-					Dlist.channelsP[ 2 ].updn.max    = dev.playback.channels;
-					Dlist.filename[ 2 ].kv           = S.ls.raw;
-					setting.switchValues();
 					wscamilla.send( '"GetSupportedDeviceTypes"' );
+					if ( V.confswitch ) {
+						delete V.confswitch;
+						$( '.divgraph' ).remove();
+						setting.statusPush();
+					}
 					break;
 				case 'GetSupportedDeviceTypes':
 					var type = {};
@@ -1950,7 +2330,7 @@ var common    = {
 	}
 	, wsGetState    : () => {
 		var getstate = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetProcessingLoad' ];
-		if ( S.enable_rate_adjust ) getstate.push( 'GetBufferLevel', 'GetRateAdjust' );
+		if ( S.config && DEV.enable_rate_adjust ) getstate.push( 'GetBufferLevel', 'GetRateAdjust' );
 		getstate.forEach( k => wscamilla.send( '"'+ k +'"' ) );
 	}
 }
@@ -2063,8 +2443,8 @@ $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, 
 } ).on( 'touchend mouseup mouseleave', '.i-minus, .i-plus, .db', function() {
 	if ( ! V.press ) return
 	
+	V.press = false;
 	clearInterval( V.intervalgain );
-	if ( $( this ).parents( 'li' ).find( '.divgraph' ).length || $( '#pipeline .divgraph' ).length ) graph.gain();
 	setting.save();
 } ).press( '.i-minus, .i-plus', function( e ) {
 	setting.rangeGet( $( e.currentTarget ), 'press' );
@@ -2080,19 +2460,13 @@ $( '#configuration' ).on( 'input', function() {
 	var name = $( this ).val();
 	var path = '/srv/http/data/camilladsp/configs'+ ( S.bluetooth ? '-bt/' : '/' ) + name;
 	bash( [ 'confswitch', path, 'CMD CONFIG' ], () => {
+		V.confswitch = true;
 		wscamilla.send( '{ "SetConfigFilePath": "'+ path +'" }' );
 		wscamilla.send( '"Reload"' );
 		S.configname = name;
 		setTimeout( () => common.wsGetConfig(), 300 );
 	} );
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
-} );
-$( '.tab' ).on( 'click', '.graphclose', function() {
-	var $this = $( this );
-	var $li   = $this.parents( 'li' );
-	$this.parent().remove();
-	var val = $li.data( V.tab === 'filters' ? 'name' : 'index' );
-	V.graph[ V.tab ] = V.graph[ V.tab ].filter( v => v !== val );
 } );
 $( '.tab .headtitle' ).on( 'click', function() {
 	if ( $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) $( '#'+ V.tab +' .i-back' ).trigger( 'click' );
@@ -2108,50 +2482,44 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 		setting[ V.tab.replace( /s$/, '' ) ]();
 	}
 } ).on( 'click', '.i-flowchart', function() {
-	var $flowchart = $( '.flowchart' );
-	if ( $flowchart.hasClass( 'hide' ) ) {
-		if ( typeof d3 !== 'object' ) {
-			$.when(
-				$.getScript( '/assets/js/pipelineplotter.js' ),
-				$.getScript( '/assets/js/plugin/'+ jfiles.d3 ),
-				$.Deferred( deferred => deferred.resolve() )
-			).done( () => createPipelinePlot() );
-		} else {
-			createPipelinePlot();
-		}
-	} else {
-		$flowchart.addClass( 'hide' );
-	}
+	var $flowchart = $( '#pipeline canvas' );
+	$flowchart.length ? $flowchart.remove() : graph.flowchart.chart();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
-	var $this  = $( this );
-	V.li       = $this.parent();
-	$( '#menu' ).addClass( 'hide' );
-	$( '#'+ V.tab +' li' ).removeClass( 'focus' );
-	if ( V.li.hasClass( 'focus' ) ) return
+	var $this = $( this );
+	V.li      = $this.parent();
+	if ( ! contextMenuToggle() ) return
 	
-	V.li.addClass( 'focus' );
-	contextMenu();
-	$( '#menu .graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
-	$( '#menu .edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
+	$( '#'+ V.tab +' li' ).removeClass( 'active' );
+	V.li.addClass( 'active' );
 	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
+	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
+	$( '#menu .delete' ).toggleClass( 'disabled', V.tab === 'config' && S.ls.configs.length === 1 );
+	if ( V.tab === 'mixers' && $( '#mixers .entries.sub' ).hasClass( 'hide' ) ) {
+		$( '#menu' ).find( '.edit, .rename' ).toggleClass( 'hide' );
+	}
+	if ( V.tab === 'pipeline' ) {
+		var bypassed = PIP[ V.li.index() ].bypassed === true;
+		$( '#menu .bypass' ).toggleClass( 'hide', bypassed );
+		$( '#menu .restore' ).toggleClass( 'hide', ! bypassed );
+		$( '#menu .edit' ).toggleClass( 'disabled', V.li.data( 'type' ) === 'Mixer' && Object.keys( MIX ).length < 2 );
+	} else {
+		$( '#menu' ).find( '.bypass, .restore' ).addClass( 'hide' );
+	}
+	contextMenu();
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
-		var name = $( '#mixers .lihead' ).text();
+		var name = $( '#mixers .lihead a' ).text();
 		if ( ! MIX[ name ].mapping.length ) { // no mapping left
 			delete MIX[ name ];
 			setting.save( 'Mixer', 'Remove ...' );
 		}
-	} else if ( V.tab === 'pipeline' ) {
-		if ( ! $( '#pipeline .i-filters' ).length ) {
-			var pi = $( '#pipeline .lihead' ).data( 'index' );
-			PIP.splice( pi, 1 );
-			setting.save( 'Pipeline', 'Remove filter ...' );
-		} 
 	}
-	$( '#'+ V.tab +' .entries.main' ).removeClass( 'hide' );
+	$( '#'+ V.tab +' .entries' ).toggleClass( 'hide' );
 	render[ V.tab ]();
+} ).on( 'click', '.graphclose', function() {
+	$( this ).parent().remove();
 } );
 $( 'body' ).on( 'click', function( e ) {
 	if ( $( e.target ).hasClass( 'liicon' ) ) return
@@ -2163,7 +2531,12 @@ $( '#menu a' ).on( 'click', function( e ) {
 	var $this = $( this );
 	var cmd   = $this.prop( 'class' ).replace( ' active', '' );
 	if ( cmd === 'graph' ) {
-		graph.plot();
+		var $divgraph = V.li.find( '.divgraph' );
+		if ( $divgraph.length ) {
+			$divgraph.remove();
+		} else {
+			graph.plot();
+		}
 		return
 	}
 	
@@ -2220,25 +2593,20 @@ $( '#menu a' ).on( 'click', function( e ) {
 			var name  = V.li.data( 'name' );
 			var main  = $( '#mixers .entries.sub' ).hasClass( 'hide' );
 			switch ( cmd ) {
-				case 'edit':
-					setting.mixer( name );
-					break;
 				case 'delete':
 					var dest = V.li.hasClass( 'liinput main' );
+					var mi   = V.li.data( 'index' );
 					if ( main ) {
 						if ( common.inUse( name ) ) return
 						
 						var title = 'Mixer';
-						var msg = name;
+						var msg   = name;
 					} else if ( dest ) {
-						var mi    = V.li.data( 'index' );
-						var title = 'Destination';
-						var msg   = '#'+ mi;
+						var title = 'Output';
+						var msg   = ico( 'output gr' ) +' Out: '+ V.li.data( 'dest' );
 					} else {
-						var mi    = V.li.siblings( '.main' ).data( 'index' );
-						var title = 'Source';
-						var si    = V.li.data( 'index' );
-						var msg   = '#'+ si;
+						var title = 'Input';
+						var msg   = ico( 'input gr' ) +' In: '+ V.li.data( 'source' );
 					}
 					var message = 'Delete <wh>'+ msg +'</wh> ?';
 					info( {
@@ -2252,19 +2620,16 @@ $( '#menu a' ).on( 'click', function( e ) {
 								delete MIX[ name ];
 							} else if ( dest ) {
 								MIX[ name ].mapping.splice( mi, 1 );
-								if ( ! MIX[ name ].mapping.length ) {
-									$( '#mixers .i-back' ).trigger( 'click' );
-									return
-								}
-								
-								V.li.siblings( '.dest'+ mi ).remove();
 							} else {
-								MIX[ name ].mapping[ mi ].sources.splice( si, 1 );
+								MIX[ name ].mapping[ mi ].sources.splice( V.li.data( 'si' ), 1 );
 							}
 							setting.save( title, 'Remove ...' );
-							V.li.remove();
+							main ? render.mixers( name ) : render.mixersSub( name );
 						}
 					} );
+					break;
+				case 'rename':
+					setting.mixer( name );
 					break;
 			}
 			break;
@@ -2291,27 +2656,41 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break;
 		case 'pipeline':
 			var title = 'Pipeline';
-			var main = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
-			var type = main ? V.li.data( 'type' ).toLowerCase() : 'filter';
-			info( {
-				  icon    : V.tab
-				, title   : title
-				, message : main ? 'Delete this '+ type +'?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
-				, ok      : () => {
-					if ( main ) {
-						var index = V.li.data( 'index' );
-						PIP.splice( index, 1 );
-					} else {
-						var pi = $( '#pipeline .lihead' ).data( 'index' );
-						var ni = V.li.data( 'index' );
-						PIP[ pi ].names.splice( ni, 1 );
-					}
-					setting.save( title, 'Remove '+ type +' ...' );
-					V.li.remove();
-					setting.sortRefresh( main ? 'main' : 'sub' );
-					graph.pipeline();
-				}
-			} );
+			switch ( cmd ) {
+				case 'edit':
+					var i = V.li.index();
+					PIP[ i ].type === 'Filter' ? setting.pipeline( i ) : setting.pipelineMixer( i );
+					break;
+				case 'delete':
+					var type = V.li.data( 'type' ).toLowerCase();
+					info( {
+						  icon    : V.tab
+						, title   : title
+						, message : 'Delete this '+ type +'?'
+						, ok      : () => {
+							PIP.splice( V.li.index(), 1 );
+							setting.save( title, 'Remove '+ type +' ...' );
+							V.li.remove();
+							if ( PIP.length ) {
+								graph.flowchart.refresh();
+							} else {
+								$( '.i-flowchart' ).addClass( 'disabled' );
+								$( '#pipeline canvas' ).remove();
+							}
+						}
+					} );
+					break;
+				case 'bypass':
+				case 'restore':
+					var i             = V.li.index();
+					var bypassed      = ! PIP[ i ].bypassed
+					PIP[ i ].bypassed = bypassed;
+					setting.save( title, bypassed ? 'Bypassed' : 'Restored' );
+					V.li.find( '.liicon' )
+						.removeClass()
+						.addClass( bypassed ? 'i-bypass' : 'i-pipeline' );
+					break;
+			}
 			break;
 		case 'devices':
 			setting.device( V.li.data( 'type' ) );
@@ -2377,13 +2756,15 @@ $( '#menu a' ).on( 'click', function( e ) {
 			}
 	}
 } );
-// filters --------------------------------------------------------------------------------
-$( '#filters' ).on( 'click', '.i-add', function() {
-	setting.upload();
-} ).on( 'input', 'input[type=range]', function() {
+$( '.entries' ).on( 'input', 'input[type=range]', function() {
 	setting.rangeGet( $( this ), 'input' );
-} ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	graph.gain();
+} )
+// filters --------------------------------------------------------------------------------
+$( '#filters' ).on( 'click', '.name', function( e ) {
+	e.stopPropagation();
+	$( this ).parents( 'li' ).find( '.liicon' ).trigger( 'click' );
+} ).on( 'click', '.i-add', function() {
+	setting.upload();
 } ).on( 'click', '.i-volume', function() {
 	var $this   = $( this );
 	var name    = $this.parents( 'li' ).data( 'name' );
@@ -2410,7 +2791,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	var width = ( max - min ) / bands;        // log10 / band
 	var v0    = min + width / 2;              // log10 midband
 	var v     = [ v0 ];
-	for ( i = 0; i < bands - 1; i++ ) {
+	for ( var i = 0; i < bands - 1; i++ ) {
 		v0 += width;
 		v.push( v0 );
 	}
@@ -2469,10 +2850,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	
 	var name  = $this.find( '.li1' ).text();
 	render.mixersSub( name );
-} ).on( 'input', 'input[type=range]', function() {
-	setting.rangeGet( $( this ), 'input' );
-} ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	graph.gain();
 } ).on( 'click', '.i-volume', function() {
 	var $this   = $( this );
 	var M       = setting.mixerGet( $this );
@@ -2489,7 +2866,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	setting.save();
 } ).on( 'input', 'select', function() {
 	var M   = setting.mixerGet( $( this ) );
-	var val = +$this.val();
+	var val = +$( this ).val();
 	if ( typeof M.si === 'number' ) {
 		MIX[ M.name ].mapping[ M.index ].sources[ M.si ].channel = val;
 	} else {
@@ -2497,60 +2874,16 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	}
 	setting.save( M.name, 'Change ...' );
 } ).on( 'click', '.i-add', function() {
-	var M = setting.mixerGet( $( this ) );
+	var $this = $( this );
+	V.li  = $this.parent();
+	var M = setting.mixerGet( $this );
 	setting.mixerMap( M.name, M.index );
 } );
-// processors ---------------------------------------------------------------------------------------
-$( '#processors' ).on( 'click', 'li', function( e ) {
-	e.stopPropagation();
-	$( this ).find( '.liicon' ).trigger( 'click' );
-} );
+// processors -----------------------------------------------------------------------------
 // pipeline -------------------------------------------------------------------------------
-$( '#pipeline' ).on( 'click', 'li', function( e ) {
-	var $this = $( this );
-	if ( $( e.target ).is( 'i' ) || $this.parent().is( '.sub' ) ) return
-	
-	var index = $this.data( 'index' );
-	if ( $this.data( 'type' ) === 'Filter' ) {
-		render.pipelineSub( index );
-	} else {
-		var names  = Object.keys( MIX );
-		if ( names.length === 1 ) return
-		
-		var values = $this.find( '.li2' ).text();
-		info( {
-			  icon    : V.tab
-			, title   : 'Pipeline'
-			, message : values
-			, list    : [ '', 'select', names ]
-			, values  : values
-			, ok      : () => {
-				PIP[ index ].name = infoVal();
-				setting.save( 'Add Mixer', 'Save ...' );
-			}
-		} );
-	}
-} ).on( 'click', 'li i', function() {
-	var $this = $( this );
-	if ( $this.is( '.liicon, .i-back' ) ) return
-	
-	var title = common.tabTitle();
-	var index = $this.parents( 'li' ).data( 'index' );
-	if ( $this.hasClass( 'i-add' ) ) {
-		var title = 'Add Filter';
-		info( {
-			  icon  : V.tab
-			, title : title
-			, list  : [ 'Filter', 'select', Object.keys( FIL ) ]
-			, ok    : () => {
-				PIP[ index ].names.push( infoVal() );
-				setting.save( title, 'Save ...' );
-				setting.sortRefresh( 'sub' );
-				render.pipelineSub( index );
-				graph.pipeline();
-			}
-		} );
-	}
+$( '#processors, #pipeline' ).on( 'click', 'li', function( e ) {
+	e.stopPropagation();
+	if ( ! $( e.target ).is( 'i' ) ) $( this ).find( 'i' ).trigger( 'click' );
 } );
 // devices --------------------------------------------------------------------------------
 $( '#divdevices heading .i-gear' ).on( 'click', function() {

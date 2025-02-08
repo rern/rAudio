@@ -118,6 +118,7 @@ i.map.disabled, .map.disabled i {
 	padding: 0;
 	background: var( --cg );
 	box-shadow: var( --shadow-menu );
+	scroll-margin-bottom: 40px;
 }
 .menu.fixed {
 	position: fixed;
@@ -208,7 +209,7 @@ i.map.disabled, .map.disabled i {
 .coverart2,
 .label,
 .liinfo div,
-.list li *,
+.list li *:not( .licoverimg ),
 .scrollellipse,
 .tagmessage div,
 .content-top .title,
@@ -1382,7 +1383,7 @@ i.map.disabled, .map.disabled i {
 }
 #lib-title,
 #mode-title {
-	width: calc( 100% - 120px );
+	max-width: calc( 100% - 120px );
 }
 #pl-title {
 	display: inline-block;
@@ -1468,7 +1469,6 @@ i.map.disabled, .map.disabled i {
 }
 .searchclose {
 	display: inline-block;
-	margin-right: 5px;
 	font-size: 18px;
 }
 .searchclose::before {
@@ -1476,7 +1476,6 @@ i.map.disabled, .map.disabled i {
 	font-family: rern;
 	display: inline-block;
 	width: 40px;
-	margin-right: 5px;
 	line-height: 40px;
 	vertical-align: -2px;
 	font-size: 26px;
@@ -1513,6 +1512,14 @@ i.map.disabled, .map.disabled i {
 .index a.indexed {
 	color: var( --cw );
 	text-shadow: var( --shadow-text );
+}
+.index.modes i {
+	width: 40px;
+	line-height: 38px;
+	padding: 0;
+	font-size: 24px;
+	text-align: center;
+	color: var( --cg60 );
 }
 #lib-list .coverart {
 	max-width: 200px;
@@ -2061,10 +2068,8 @@ li.active .li2 bl {
 		#volume-knob { margin: 20px 0 70px 0 }
 	}
 	@media ( max-width: 700px ) {
+		#lib-title.search,
 		.liinfo { display: none }
-	}
-	@media ( max-width: 612px ) {
-		#page-library i.search { display: none }
 	}
 	@media ( max-width: 590px ) {
 		#playback-row { align-items: flex-start }

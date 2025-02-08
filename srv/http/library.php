@@ -154,7 +154,7 @@ case 'home':
 			$htmlmode.= '
 <div class="mode bookmark '.$bkradio.'">
 	<a class="lipath">'.$bkpath.'</a>
-	<a class="bkname hide">'.$name.'</a>
+	<a class="name hide">'.$name.'</a>
 	<img class="bkcoverart" src="'.$src.'^^^">
 </div>';
 		}
@@ -238,7 +238,8 @@ case 'search':
 	$search = true;
 	$html   = str_replace( 'lib', 'search', $html );
 	$count  = 0;
-	foreach( [ 'title', 'albumartist', 'artist', 'album', 'composer', 'conductor' ] as $tag ) {
+	$t      = [];
+	foreach( [ 'albumartist', 'artist', 'album', 'composer', 'conductor', 'title' ] as $tag ) {
 		unset( $lists );
 		if ( $tag === 'title' ) {
 			$f      = [ 'album', 'albumartist', 'artist', 'file', 'title', 'time', 'track' ];
@@ -254,6 +255,7 @@ case 'search':
 		if ( ! $c ) continue;
 		
 		$count+= $c;
+		$t[]   = $tag;
 		if ( $tag === 'title' ) {
 			$GMODE  = 'file';
 			htmlTrack();
@@ -263,20 +265,33 @@ case 'search':
 				$name = $data[ 1 ];
 				$path = $tag === 'album' ? end( $data ) : $name;
 				$html.= '
-<li data-mode="'.$MODE.'">
+<li data-mode="'.$tag.'">
 	<a class="lipath">'.$path.'</a>
-	'.i( $tag, $tag ).'<span class="single name">'.preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name ).'</span>
+	'.i( $tag, $tag ).'
+	<span class="single name">'.preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name ).'</span>
 </li>';
 			}
 		}
 	}
-	exec( "grep -m1 -rin '$STRING' /srv/http/data/*radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
-		, $files );
-	$c     = count( $files );
-	if ( $c ) htmlRadio();
-	$count+= $c;
+	foreach( [ 'webradio', 'dabradio' ] as $radio ) {
+		unset( $files );
+		exec( "grep -m1 -rin '$STRING' /srv/http/data/$radio --exclude-dir img | sed -n '/:1:/ {s/:1:.*//; p}'"
+			, $files );
+		$c     = count( $files );
+		if ( $c ) {
+			htmlRadio();
+			$count+= $c;
+			$t[]   = $radio;
+		}
+	}
 	if ( $count ) {
-		echo json_encode( [ 'html' => $html.'</ul>', 'count' => $count ] );
+		$html.= '
+</ul>
+<div class="index modes">';
+		foreach( $t as $mode ) $html.= i( $mode );
+		$html.= '
+</div>';
+		echo json_encode( [ 'html' => $html, 'count' => $count ] );
 	} else {
 		echo -1;
 	}
@@ -471,7 +486,7 @@ function htmlRadio() {
 		foreach( $array as $each ) {
 			$dataindex = count( $files ) ? '' : dataIndex( $each->sort );
 			$html.= '
-<li class="dir"'.$dataindex.'>
+<li data-mode="'.$MODE.'" class="dir"'.$dataindex.'>
 	'.imgIcon( str_replace( '/srv/http', '', $each->dir ).'/thumb.jpg', 'wrdir' ).'
 	<a class="lidir">'.$each->dir.'</a>
 	<a class="lipath">'.$each->dirname.'</a>
@@ -499,22 +514,22 @@ function htmlRadio() {
 			$filename    = basename( $each->file );
 			$url         = str_replace( '|', '/', $filename );
 			$thumbsrc    = substr( $each->file, 9, 14 ).'/img/'.$filename.'-thumb.jpg';
-			$icon        = $search ? i( 'webradio', 'webradio' ) : imgIcon( $thumbsrc, 'webradio' );
+			$icon        = $search ? i( 'webradio li-icon' ) : imgIcon( $thumbsrc, 'webradio' );
 			$name        = $each->name;
 			$html       .= '
-<li class="file"'.$datacharset.$dataindex.'>
+<li data-mode="webradio" '.$datacharset.$dataindex.'>
 	'.$icon.'
 	<a class="lidir">'.dirname( $each->file ).'</a>
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
 			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
 			if ( substr( $each->file, 15, 8 ) === 'webradio' ) {
-				$html.=
-	'<div class="li1 name">'.$name.'</div>
+				$html.= '
+	<div class="li1 name">'.$name.'</div>
 	<div class="li2">'.$url.'</div>';
 			} else {
-				$html.=
-	'<span class="single name">'.$name.'</span>';
+				$html.= '
+	<span class="single name">'.$name.'</span>';
 			}
 			$i++;
 			$html.= '
@@ -614,20 +629,21 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$title  = $each->title;
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		if ( $search ) {
-			$datamode  = '';
-			$icon      = i( $tag, 'file' );
+			$datamode  = 'title';
+			$icon      = i( $tag === 'title' ? 'music' : $tag, 'file' );
 			$$tag      = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $each->$tag );
 			$trackname = $tag === 'albumartist' ? $albumartist : $artist;
 			$trackname.= ' - '.$album;
+			$track1    = '';
 		} else {
-			$datamode  = ' data-mode="'.$GMODE.'"';
+			$datamode  = $GMODE;
 			$icon      = i( 'music', 'file' );
 			$trackname = $cue ? $artist.' - '.$album : basename( $path );
+			$track1    = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		}
-		$track1 = ( $i || $search || $hidecover ) ? '' : ' class="track1"';
 		$i++;
 		$html  .= '
-<li'.$datamode.$track1.'>
+<li data-mode="'.$datamode.'" '.$track1.'>
 	<a class="lipath">'.$path.'</a>
 	'.$icon.'<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>
 	<div class="li2">'.$i.' • '.$trackname.'</div>
