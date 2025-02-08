@@ -890,8 +890,8 @@ var graph     = {
 				return new Biquad( param, samplerate )
 			case 'BiquadCombo':
 				return new BiquadCombo( param, samplerate )
-			case 'Conv':
-				return new Conv( param || null, samplerate )
+/*			case 'Conv': // require: fft, audiofileread
+				return new Conv( param || null, samplerate )*/
 			case 'Delay':
 				return new Delay( param, samplerate )
 			case 'DiffEq':
