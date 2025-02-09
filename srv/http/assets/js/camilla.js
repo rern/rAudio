@@ -632,7 +632,64 @@ var config    = {
 	}
 }
 var graph     = {
-	  flowchart    : {
+	  filters      : {
+		  plot     : name => {
+			var filter     = FIL[ name ];
+			var f          = graph.filters.logSpace( 1, DEV.samplerate * 0.95 / 2 );
+			var currfilt   = graph.filters.data( filter );
+			if ( ! currfilt ) return
+			
+			var [ ma, ph ] = currfilt.gainAndPhase( f );
+			var [ fg, gr ] = calcGroupDelay( f, ph );
+			var result     = {
+				  f            : f
+				, f_groupdelay : fg
+				, groupdelay   : gr
+				, magnitude    : ma
+				, phase        : ph
+			}
+			if ( filter.type === 'Conv' ) {
+				var [ ti, im ] = currfilt.getImpulse();
+				result.time    = ti;
+				result.impulse = im;
+			}
+			graph.plotLy( result );
+		}
+		, data     : ( filter, volume ) => {
+			var param      = filter.parameters;
+			var samplerate = DEV.samplerate;
+			switch( filter.type ) {
+				case 'Biquad':
+					return new Biquad( param, samplerate )
+				case 'BiquadCombo':
+					return new BiquadCombo( param, samplerate )
+	/*			case 'Conv': // require: fft, audiofileread
+					return new Conv( param || null, samplerate )*/
+				case 'Delay':
+					return new Delay( param, samplerate )
+				case 'DiffEq':
+					return new DiffEq( param, samplerate )
+				case 'Gain':
+					return new Gain( param )
+				case 'Loudness':
+					return new Loudness( param, samplerate, S.volume )
+				case 'Dither':
+				case 'Volume':
+					return new BaseFilter()
+				default:
+					banner( 'graph', 'Graph', 'Not available.' );
+					return false
+			}
+		}
+		, logSpace : ( min, max ) => {
+			var logmin  = Math.log10( min );
+			var logmax  = Math.log10( max );
+			var perstep = ( logmax - logmin ) / 1000;
+			var values  = Array.from( { length: 1000 }, ( _, n ) => 10 ** ( logmin + n * perstep ) );
+			return values
+		}
+	}
+	, flowchart    : {
 		  add       : txt => {
 			X.type = txt;
 			var cL = DEV[ txt.toLowerCase() ].channels;
@@ -734,7 +791,7 @@ var graph     = {
 			if ( gain !== 0 ) gain = ( gain > 0 ? '+' : '' ) + gain.toFixed( 1 );
 			return { t: gain, c: c }
 		}
-		, chart : () => {
+		, plot      : () => {
 			var canvasW = $( '#pipeline' ).width();
 			var boxL    = 2; // capture + playback
 			PIP.forEach( pip => {                                     //     cap                   pla
@@ -857,91 +914,38 @@ var graph     = {
 			var $flowchart = $( '#pipeline canvas' );
 			var fL         = $flowchart.length;
 			$flowchart.remove();
-			if ( fL ) graph.flowchart.chart();
+			if ( fL ) graph.flowchart.plot();
 		}
 	}
-	, filters      : name => {
-		var filter     = FIL[ name ];
-		var f          = graph.filterLog( 1, DEV.samplerate * 0.95 / 2 );
-		var currfilt   = graph.filterData( filter );
-		if ( ! currfilt ) return
-		
-		var [ ma, ph ] = currfilt.gainAndPhase( f );
-		var [ fg, gr ] = calcGroupDelay( f, ph );
-		var result     = {
-			  f            : f
-			, f_groupdelay : fg
-			, groupdelay   : gr
-			, magnitude    : ma
-			, phase        : ph
-		}
-		if ( filter.type === 'Conv' ) {
-			var [ ti, im ] = currfilt.getImpulse();
-			result.time    = ti;
-			result.impulse = im;
-		}
-		graph.plotLy( result );
-	}
-	, filterData   : ( filter, volume ) => {
-		var param      = filter.parameters;
-		var samplerate = DEV.samplerate;
-		switch( filter.type ) {
-			case 'Biquad':
-				return new Biquad( param, samplerate )
-			case 'BiquadCombo':
-				return new BiquadCombo( param, samplerate )
-/*			case 'Conv': // require: fft, audiofileread
-				return new Conv( param || null, samplerate )*/
-			case 'Delay':
-				return new Delay( param, samplerate )
-			case 'DiffEq':
-				return new DiffEq( param, samplerate )
-			case 'Gain':
-				return new Gain( param )
-			case 'Loudness':
-				return new Loudness( param, samplerate, S.volume )
-			case 'Dither':
-			case 'Volume':
-				return new BaseFilter()
-			default:
-				banner( 'graph', 'Graph', 'Not available.' );
-				return false
-		}
-	}
-	, filterLog    : ( min, max ) => {
-		var logmin  = Math.log10( min );
-		var logmax  = Math.log10( max );
-		var perstep = ( logmax - logmin ) / 1000;
-		var values  = Array.from( { length: 1000 }, ( _, n ) => 10 ** ( logmin + n * perstep ) );
-		return values
-	}
-	, pipeline     : index => {
-		var f          = graph.filterLog( 10, DEV.samplerate * 0.95 / 2 );
-		var totcgain   = new Array( 1000 ).fill( 1 );
-		var currfilt;
-		PIP[ index ].names.forEach( name => {
-			var filter       = FIL[ name ];
-			currfilt         = graph.filterData( filter );
-			if ( ! currfilt ) return false
+	, pipeline     : {
+		  plot : index => {
+			var f          = graph.filters.logSpace( 10, DEV.samplerate * 0.95 / 2 );
+			var totcgain   = new Array( 1000 ).fill( 1 );
+			var currfilt;
+			PIP[ index ].names.forEach( name => {
+				var filter       = FIL[ name ];
+				currfilt         = graph.filters.data( filter );
+				if ( ! currfilt ) return false
+				
+				var [ _, cgain ] = currfilt.complexGain( f );
+				totcgain         = totcgain.map( ( cg, i ) => cgain[ i ].mul( cg ) );
+			});
+			if ( ! currfilt ) return
 			
-			var [ _, cgain ] = currfilt.complexGain( f );
-			totcgain         = totcgain.map( ( cg, i ) => cgain[ i ].mul( cg ) );
-		});
-		if ( ! currfilt ) return
-		
-		var ma         = totcgain.map( cg => 20 * Math.log10( cg.abs() + 1e-15 ) );
-		var ph         = totcgain.map( cg => 180 / Math.PI * Math.atan2( cg.im, cg.re ) );
-		var [ fg, gr ] = calcGroupDelay( f, ph );
-		graph.plotLy( {
-			  f            : f
-			, f_groupdelay : fg
-			, groupdelay   : gr
-			, magnitude    : ma
-			, phase        : ph
-		} );
+			var ma         = totcgain.map( cg => 20 * Math.log10( cg.abs() + 1e-15 ) );
+			var ph         = totcgain.map( cg => 180 / Math.PI * Math.atan2( cg.im, cg.re ) );
+			var [ fg, gr ] = calcGroupDelay( f, ph );
+			graph.plotLy( {
+				  f            : f
+				, f_groupdelay : fg
+				, groupdelay   : gr
+				, magnitude    : ma
+				, phase        : ph
+			} );
+		}
 	}
 	, plot         : () => {
-		graph[ V.tab ]( V.li.data( V.tab === 'filters' ? 'name' : 'index' ) );
+		graph[ V.tab ].plot( V.li.data( V.tab === 'filters' ? 'name' : 'index' ) );
 	}
 	, plotLy       : data => {
 		var PLOTS = jsonClone( plots );
@@ -1022,13 +1026,15 @@ var graph     = {
 		var $divgraph = V.li.find( '.divgraph' );
 		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
 		$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
-		scrollUpToView( $divgraph );
+		if ( ! V.refresh ) scrollUpToView( $divgraph );
 	}
 	, refresh      : () => {
+		V.refresh = true;
 		$( '#'+ V.tab +' .entries.main li.graph' ).each( ( i, el ) => {
 			V.li = $( el );
 			graph.plot();
 		} );
+		delete V.refresh;
 	}
 }
 window.addEventListener( 'resize', graph.flowchart.refresh );
@@ -2483,7 +2489,7 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 	}
 } ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '#pipeline canvas' );
-	$flowchart.length ? $flowchart.remove() : graph.flowchart.chart();
+	$flowchart.length ? $flowchart.remove() : graph.flowchart.plot();
 } );
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
@@ -2519,7 +2525,9 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$( '#'+ V.tab +' .entries' ).toggleClass( 'hide' );
 	render[ V.tab ]();
 } ).on( 'click', '.graphclose', function() {
-	$( this ).parent().remove();
+	var $this = $( this );
+	$this.parents( 'li' ).removeClass( 'graph' );
+	$this.parent().remove();
 } );
 $( 'body' ).on( 'click', function( e ) {
 	if ( $( e.target ).hasClass( 'liicon' ) ) return
@@ -2533,6 +2541,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 	if ( cmd === 'graph' ) {
 		var $divgraph = V.li.find( '.divgraph' );
 		if ( $divgraph.length ) {
+			V.li.removeClass( 'graph' );
 			$divgraph.remove();
 		} else {
 			graph.plot();
