@@ -1148,6 +1148,8 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, filters     : () => {
 		var data     = render.dataSort();
+		if ( ! data ) return
+
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
@@ -1202,7 +1204,9 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, mixers      : () => {
 		var data = render.dataSort();
-		var li = '';
+		if ( ! data ) return
+		
+		var li   = '';
 		$.each( data, ( k, v ) => li += render.mixer( k, v ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 		render.toggle();
@@ -1214,7 +1218,6 @@ var render    = {
 			  +'</li>'
 	}
 	, mixersSub   : name => {
-		console.log(name)
 		var iconadd = max => ico( max ? 'add disabled' : 'add' );
 		var data    = MIX[ name ].mapping;
 		var chin    = DEV.capture.channels;
@@ -1260,7 +1263,9 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, processors  : () => {
 		var data = render.dataSort();
-		var li = '';
+		if ( ! data ) return
+		
+		var li   = '';
 		$.each( data, ( k, v ) => {
 			var param = jsonClone( v.parameters );
 			[ 'channels', 'monitor_channels', 'process_channels' ].forEach( k => delete param[ k ] );
@@ -1273,7 +1278,10 @@ var render    = {
 		render.toggle();
 	} //-----------------------------------------------------------------------------------
 	, pipeline    : () => {
-		$( '.i-flowchart' ).toggleClass( 'disabled', PIP.length === 0 );
+		var nopip = ! PIP || ! PIP.length;
+		$( '.i-flowchart' ).toggleClass( 'disabled', nopip );
+		if ( nopip ) return
+		
 		var li = '';
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
@@ -1386,10 +1394,10 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];
-		if ( ! kv ) return
+		var keys = Object.keys( kv );
+		if ( ! keys.length ) return false
 		
 		var data = {};
-		var keys = Object.keys( kv );
 		keys.sort().forEach( k => data[ k ] = kv[ k ] );
 		return data
 	}
@@ -1745,7 +1753,7 @@ var setting   = {
 					S.config.processors = {}
 					PRO = S.config.processors;
 				}
-				PRO[ namenew ] = { type: v.type, parameters: val }
+				PRO[ namenew ] = { type: typenew, parameters: val }
 				if ( name in PRO && name !== namenew ) delete PRO[ name ];
 				setting.save( title, name ? 'Change ...' : 'Save ...' );
 				render.processors();
