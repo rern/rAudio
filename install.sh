@@ -14,48 +14,13 @@ fi
 if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; then
 	echo "$bar CamillaDSP - Upgrade ..."
 	systemctl -q is-active camilladsp && pacman stop camilladsp && camillaactive=1
-	pacman -Sy --noconfirm camilladsp yq
+	pacman -Sy --noconfirm camilladsp
 	readarray -t files <<< $( ls $dircamilladsp/configs/* )
 	for file in "${files[@]}"; do
-		config=$( yq < "$file" )
-		pipeline=$( jq .pipeline <<< $config )
-		[[ $pipeline == null ]] && sed -i 's/"//g' "$file" && continue
-		
-		linenew=
-		lineprev=
-		pipelinenew=
-		pL=$( jq length <<< $pipeline )
-		for (( i=0; i <= pL; i++ )); do
-			if (( $i == $pL )); then
-				[[ $linenew ]] && pipelinenew+=,$linenew
-				break
-			fi
-			
-			line=$( jq -c .[$i] <<< $pipeline )
-			if [[ $( jq -r .type <<< $line ) == Mixer ]]; then
-				[[ $linenew ]] && pipelinenew+=,$linenew
-				pipelinenew+=,$line
-				linenew=
-				lineprev=
-				continue
-				
-			fi
-			ch=$( jq .channel <<< $line )
-			if [[ ! $lineprev ]]; then
-				lineprev=$( jq 'del(.channel)' <<< $line )
-				linenew=$( jq "del(.channel) | . += { channels: [$ch] }" <<< $line )
-				continue
-				
-			fi
-			if [[ $( jq 'del(.channel)' <<< $line ) == "$lineprev" ]]; then
-				linenew=$( jq ".channels += [$ch]" <<< $linenew )
-			else
-				pipelinenew+=,$linenew
-				lineprev=$( jq 'del(.channel)' <<< $line )
-				linenew=$( jq "del(.channel) | . += { channels: [$ch] }" <<< $line )
-			fi
-		done
-		jq ".pipeline = [${pipelinenew:1}]" <<< $config | yq -y > "$file"
+		sed -i -e '/^pipeline/,$ d
+' -e '$ a\
+pipeline: []
+' "$file"
 	done
 	[[ $camillaactive ]] && pacman start camilladsp
 fi
@@ -122,3 +87,9 @@ $dirbash/cmd.sh cachebust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
+
+# 20250208
+if [[ $camillaactive ]]; then
+	echo "$info CamillaDSP - Pipeline was reset."
+	echo 'Need reconfiguration.'
+fi
