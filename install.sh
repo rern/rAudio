@@ -17,7 +17,10 @@ if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; the
 	pacman -Sy --noconfirm camilladsp
 	readarray -t files <<< $( ls $dircamilladsp/configs/* )
 	for file in "${files[@]}"; do
-		sed -n '/^pipeline/,$ p' "$file" | grep -q 'channel:' && sed -i '/^pipeline/,$ d' "$file"
+		if sed -n '/^pipeline/,$ p' "$file" | grep -q 'channel:'; then
+			sed -i '/^pipeline/,$ d' "$file"
+			echo 'pipeline: []' >> "$file"
+		fi
 	done
 	[[ $camillaactive ]] && pacman start camilladsp
 fi
