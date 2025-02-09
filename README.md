@@ -97,18 +97,25 @@ Audio player for
 		- Windows, MacOS, Ubuntu: [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
 		- Manjaro: `pacman -Sy rpi-imager`
 		- Others: [Build and install](https://github.com/raspberrypi/rpi-imager)
-	- Download an image file.
+	- Download an image file
 	- **Raspberry Pi Imager:**
 		- `CHOOSE DEVICE` - (No need)
-		- `CHOOSE OS` > Use custom
+		- `CHOOSE OS`
+    		- Select "Use custom" (bottom of the list)
+        	- Select the image file
 		- `CHOOSE STORAGE`:
 			- Select SD card - normal boot
 			- Select USB drive - boot from USB drive without SD card
 				- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
 				- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
 				- Should be used only when USB drive is faster than SD card.
-		- `NEXT` - (No customization settings)
-		- Once writing done, verifying is not needed.
+		- `NEXT`
+    		- `NO` customization settings
+        	- `YES` continue
+    	- On Windows - To ensure filesystem set properly:
+       		- `CANCEL WRITE` when reach at least 2% on 1st write.
+           	- Continue with `NEXT` again and let the writing finish.
+		- Once writing done, verifying is not normally needed.
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
