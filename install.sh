@@ -36,7 +36,7 @@ else
 	[[ $( pacman -Q cava ) < 'cava 0.10.3-2' ]] && pacman -Sy --noconfirm cava
 fi
 
-if [[ $( pacman -Q python-rpi-gpio ) < 'python-rpi-gpio 0.7.1-4' ]]; then
+if [[ $( pacman -Q python-rpi-gpio ) < 'python-rpi-gpio 0.7.1-3' ]]; then
 	pacman -R --noconfirm python-rpi-gpio
 	pacman -Sy --noconfirm python-rpi-gpio
 fi
