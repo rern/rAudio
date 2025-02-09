@@ -27,13 +27,13 @@ fi
 
 # 20250111
 if [[ -e /boot/kernel.img ]]; then
-	if [[ $( pacman -Q cava ) != 'cava 0.7.4-1' ]]; then
+	if [[ $( pacman -Q cava ) < 'cava 0.7.4-1' ]]; then
 		wget https://github.com/rern/rern.github.io/raw/refs/heads/main/armv6h/cava-0.7.4-1-any.pkg.tar.xz
 		pacman -U --noconfirm cava-0.7.4-1-any.pkg.tar.xz
 		rm cava-0.7.4-1-any.pkg.tar.xz
 	fi
 else
-	[[ $( pacman -Q cava ) != 'cava 0.10.3-2' ]] && pacman -Sy --noconfirm cava
+	[[ $( pacman -Q cava ) < 'cava 0.10.3-2' ]] && pacman -Sy --noconfirm cava
 fi
 
 if [[ $( pacman -Q python-rpi-gpio ) < 'python-rpi-gpio 0.7.1-3' ]]; then
@@ -53,26 +53,6 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then
 	conf2json $file | jq > ${file/conf/json}
 	rm -f $file
 fi
-
-# 20241208
-rm -f $dirshm/playlist*
-
-dir=/srv/http/assets/img/guide
-if [[ -e $dir/58.jpg ]]; then
-	rm $dir/*
-	curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
-fi
-
-file=/etc/pacman.conf
-if ! grep -q linux-rpi $file; then
-	[[ -e /boot/kernel7.img ]] && ignore='libunwind mesa'
-	sed -i -e '/^#*IgnorePkg/ d' -e "/^#*IgnoreGroup/ i\IgnorePkg   = linux-rpi $ignore" $file
-fi
-if [[ -e /boot/kernel7.img ]] && ! grep -q mesa $file; then
-	sed -i '/^IgnorePkg/ s/$/ mesa/' $file
-fi
-
-[[ ! -e /boot/kernel.img ]] && sed -i '/^brightness/ d' $dirsystem/localbrowser.conf
 
 #-------------------------------------------------------------------------------
 installstart "$1"
