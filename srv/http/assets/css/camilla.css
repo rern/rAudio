@@ -17,9 +17,9 @@
 #out::before {
 	position: absolute;
 	display: block;
-	left: -60px;
+	left: -90px;
 	top: calc(50% - 8px);
-	width: 45px;
+	width: 77px;
 	line-height: 16px;
 	text-align: center;
 	background: var( --cg );
@@ -30,10 +30,10 @@
 	background: var( --cgl );
 }
 #in::before {
-	content: 'In';
+	content: 'Capture';
 }
 #out::before {
-	content: 'Out';
+	content: 'Playback';
 }
 .bar {
 	position: absolute;
