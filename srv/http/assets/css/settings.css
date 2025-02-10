@@ -295,6 +295,7 @@ heading i.disabled {
 	font-size: 16px;
 	font-weight: 300;
 	color: var( --cg60 );
+	text-shadow: var( --shadow-text );
 	cursor: pointer;
 }
 #bar-bottom div.active span {
@@ -304,7 +305,6 @@ heading i.disabled {
 	vertical-align: middle;
 	font-size: 24px;
 	color: var( --cw );
-	text-shadow: var( --shadow-text );
 }
 #bar-bottom span {
 	margin-left: 10px;
