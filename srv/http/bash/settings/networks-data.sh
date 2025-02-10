@@ -2,9 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-gatewayAddress() {
-	ip r | grep -m1 "^default .* $1" | tail -1 | cut -d' ' -f3
-}
 listBluetooth() {
 	rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=true
 	[[ ! $devicebt ]] && echo false && return
@@ -38,6 +35,8 @@ if [[ $1 == pushbt ]]; then
 	exit
 fi
 
+gateway=$( ip -j r | jq -r .[0].gateway )
+
 listWlan() {
 	[[ ! -e $dirshm/wlan ]] && echo false && return
 	
@@ -63,7 +62,7 @@ listWlan() {
 					icon=wifi2
 				fi
 				listwl=',{
-  "gateway" : "'$( gatewayAddress $wlandev )'"
+  "gateway" : "'$gateway'"
 , "icon"    : "'$icon'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
@@ -92,17 +91,14 @@ ip=$( ipAddress e )
 if [[ $ip ]]; then
 	listeth='{
   "ADDRESS" : "'$ip'"
-, "GATEWAY" : "'$( gatewayAddress e )'"
+, "GATEWAY" : "'$gateway'"
 , "DHCP"    : '$( ip r | grep -q 'dev e.* dhcp' && echo true )'
 }'
 fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ip=$( ipAddress )
-if [[ $ip ]]; then
-	gateway=$( gatewayAddress )
-	hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
-fi
+[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ##########
 data='
 , "devicebt"    : '$devicebt'
