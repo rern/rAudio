@@ -1257,7 +1257,7 @@ var render    = {
 			ch     += ' • ch: <c>'+ m.dest +'</c>';
 			var src = ''
 			m.sources.forEach( s => src += '-'+ s.channel );
-			ch += ' &#8672; <c>'+ src.slice( 1 ) +'</c>';
+			ch += ' &#8672; <cc>'+ src.slice( 1 ) +'</cc>';
 		} );
 		return ch.slice( 3 )
 	} //-----------------------------------------------------------------------------------
