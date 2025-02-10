@@ -39,6 +39,9 @@ fi
 if [[ $( pacman -Q python-rpi-gpio ) < 'python-rpi-gpio 0.7.1-3' ]]; then
 	pacman -R --noconfirm python-rpi-gpio
 	pacman -Sy --noconfirm python-rpi-gpio
+	if [[ $( python -V ) < 'Python 3.13.1' ]]; then
+		mv /lib/python3.13/site-packages/RPi* /lib/python3.12/site-packages
+	fi
 fi
 
 file=/etc/systemd/system/mpd_oled.service
