@@ -444,6 +444,10 @@ i.disabled {
 #codeoutput {
 	margin-top: 15px;
 }
+cc {
+	background: var( --cgl );
+	color: #000;
+}
 
 @media (max-width: 610px) {
 	.liicon { display: none }
