@@ -88,7 +88,7 @@ soundProfile() {
 		touch $dirsystem/soundprofile
 	fi
 	sysctl vm.swappiness=$swappiness
-	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
+	lan=$( lanDevice )
 	if [[ $lan ]]; then
 		ip link set $lan mtu $mtu
 		ip link set $lan txqueuelen $txqueuelen

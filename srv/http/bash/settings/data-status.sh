@@ -43,7 +43,7 @@ device )
 $data"
 	;;
 lan )
-	lan=$( ip -br link | awk '/^e/ {print $1; exit}' )
+	lan=$( lanDevice )
 	echo "\
 <bll># ifconfig $lan</bll>
 $( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"

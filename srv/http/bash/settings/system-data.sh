@@ -97,7 +97,7 @@ data+='
 , "hostname"       : "'$( hostname )'"
 , "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"
-, "lan"            : '$( ip -br link | grep -q ^e && echo true )'
+, "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
 , "liststorage"    : '$( $dirsettings/system-storage.sh )'
 , "nfsserver"      : '$nfsserver'
 , "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
@@ -112,7 +112,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 ##########
 	data+='
 , "wlan"           : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconnected"  : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
+, "wlanconnected"  : '$( ip route | grep -q -m1 wlan0 && echo true )
 ##########
 	data+='
 , "btconnected"    : '$( exists $dirshm/btconnected )
