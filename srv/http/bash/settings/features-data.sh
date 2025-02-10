@@ -15,16 +15,16 @@ data+=$( settingsEnabled \
 			$dirshm nosound )
 ##########
 data+='
-, "hostname"     : "'$( hostname )'"
-, "ip"           : "'$( ipAddress )'"
-, "localbrowser" : '$( systemctl -q is-enabled localbrowser && echo true )'
-, "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "shareddata"   : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
-, "snapclient"   : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
-, "stoptimer"    : '$( exists $dirshm/pidstoptimer )
+, "hostname"      : "'$( hostname )'"
+, "ip"            : "'$( ipAddress )'"
+, "localbrowser"  : '$( systemctl -q is-enabled localbrowser && echo true )'
+, "nfsconnected"  : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
+, "shareddata"    : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
+, "snapclient"    : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
+, "stoptimer"     : '$( exists $dirshm/pidstoptimer )
 ##########
 [[ -e $dirshm/wlan ]] && data+='
 , "wlan"          : true
-, "wlanconnected" : '$( ip r | grep -q -m1 "^default.*$( < $dirshm/wlan )" && echo true )
+, "wlanconnected" : '$( ip route | grep -q -m1 $( < $dirshm/wlan ) && echo true )
 
 data2json "$data" $1
