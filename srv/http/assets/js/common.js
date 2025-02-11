@@ -1306,6 +1306,8 @@ function qrCode( msg ) {
 	return qr.outerHTML
 }
 function scrollUpToView( $el ) {
+	if ( $el[ 0 ].getBoundingClientRect().bottom < window.innerHeight - 40 ) return
+	
 	$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
 }
 function sp( px ) {
