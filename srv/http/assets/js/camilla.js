@@ -1398,6 +1398,8 @@ var render    = {
 	} //-----------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];
+		if ( ! kv ) return
+		
 		var keys = Object.keys( kv );
 		if ( ! keys.length ) return false
 		
