@@ -27,7 +27,7 @@
 }
 #in::before {
 	color: #000;
-	background: var( --cgl );
+	background: var( --cg50 );
 }
 #in::before {
 	content: 'Capture';
@@ -448,8 +448,12 @@ i.disabled {
 	margin-top: 15px;
 }
 cc {
-	background: var( --cgl );
+	background: var( --cg50 );
 	color: #000;
+}
+cp {
+	background: var( --cg );
+	color: var( --cw );
 }
 
 @media (max-width: 610px) {

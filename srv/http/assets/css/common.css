@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1739180816' );
+	src         : url( '/assets/fonts/rern.woff2?v=1739235523' );
 }
 @font-face {
 	font-family : Lato;
@@ -398,6 +398,7 @@ codered  {
 
 c,
 cc,
+cp,
 code {
 	font-family: 'Inconsolata';
 	font-size: 15px;

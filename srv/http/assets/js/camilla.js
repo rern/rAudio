@@ -699,7 +699,7 @@ var graph     = {
 		, addBox    : ( txt, ch, gain ) => {
 			var c  = {
 				  Filter   : color.md
-				, Capture  : color.gr
+				, Capture  : color.grl
 				, Mixer    : color.gd
 				, Playback : color.grk
 			}
@@ -718,6 +718,7 @@ var graph     = {
 				  x : X.x + Math.round( X.w / 2 )
 				, y : y
 				, t : txt
+				, c : X.Capture ? '#000' : ''
 			} );
 			if ( X.Capture ) return // no arrows, no gains
 			
@@ -729,6 +730,7 @@ var graph     = {
 					, y : y
 					, t : db.t
 					, c : db.c
+					, a : 0
 				} );
 			}
 			if ( g !== undefined || X.Playback ) { // Playback always has arrows in
@@ -888,9 +890,12 @@ var graph     = {
 			} );
 			ctx.textAlign    = 'center';
 			ctx.textBaseline = 'middle';
+			var gain;
 			X.text.forEach( t => { //-------------------------------
+				gain          = 'a' in t;
 				ctx.fillStyle = t.c || color.wl;
-				ctx.font = ( t.c ? 12 : 15 ) +'px Inconsolata';
+				ctx.font = ( gain ? 12 : 15 ) +'px Inconsolata';
+				graph.flowchart.ctxShadow( ctx, gain ? 2 : 0 );
 				if ( t.a ) { // cross gain
 					ctx.save();
 					ctx.translate( t.x, t.y );
@@ -900,14 +905,13 @@ var graph     = {
 					ctx.restore();
 				} else {
 					var txt = t.t;
-					if ( ! t.c ) { // not gain
+					if ( ! gain ) { // not gain
 						var cL = Math.floor( X.w * 0.9  / ctx.measureText( '0' ).width );
 						if ( txt.length > cL ) txt = txt.replace( /^ch /, '' );
 						if ( ! t.f ) txt = txt.slice( 0, cL ); // if not frame, trim
 					}
 					ctx.fillText( txt, t.x, t.y );
 				}
-				if ( t.c ) graph.flowchart.ctxShadow( ctx, 1 );
 			} );
 		}
 		, refresh   : () => {
@@ -1254,10 +1258,10 @@ var render    = {
 	, mixerMap    : mapping => {
 		var ch = '';
 		mapping.forEach( m => {
-			ch     += ' • ch ';
+			ch     += ' • ';
 			var src = ''
-			m.sources.forEach( s => src += '-'+ s.channel );
-			ch += '<cc>'+ src.slice( 1 ) +'</cc> &#8674; <c>'+ m.dest +'</c>';
+			m.sources.forEach( s => ch += '<cc>'+ s.channel +'</cc> ' );
+			ch += '&#8674; <cp>'+ m.dest +'</cp>';
 		} );
 		return ch.slice( 3 )
 	} //-----------------------------------------------------------------------------------
@@ -1296,7 +1300,7 @@ var render    = {
 			icon      += ' graph';
 			var icon_s = 'filters'
 			var li1    = el.names.join( ' <gr>•</gr> ' );
-			var li2    = 'ch ';
+			var li2    = '';
 			el.channels.forEach( c => li2 += '<cc>'+ c +'</cc> ' );
 			cl_graph   = $( '#pipeline .main li' ).eq( i ).hasClass( 'graph' ) ? ' class="graph"' : '';
 		} else {
