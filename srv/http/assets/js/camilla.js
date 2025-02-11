@@ -1254,7 +1254,7 @@ var render    = {
 	, mixerMap    : mapping => {
 		var ch = '';
 		mapping.forEach( m => {
-			ch     += ' • ch: ';
+			ch     += ' • ch ';
 			var src = ''
 			m.sources.forEach( s => src += '-'+ s.channel );
 			ch += '<cc>'+ src.slice( 1 ) +'</cc> &#8674; <c>'+ m.dest +'</c>';
@@ -1296,7 +1296,7 @@ var render    = {
 			icon      += ' graph';
 			var icon_s = 'filters'
 			var li1    = el.names.join( ' <gr>•</gr> ' );
-			var li2    = 'ch: ';
+			var li2    = 'ch ';
 			el.channels.forEach( c => li2 += '<cc>'+ c +'</cc> ' );
 			cl_graph   = $( '#pipeline .main li' ).eq( i ).hasClass( 'graph' ) ? ' class="graph"' : '';
 		} else {
