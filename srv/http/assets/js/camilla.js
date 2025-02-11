@@ -701,7 +701,7 @@ var graph     = {
 				  Filter   : color.md
 				, Capture  : color.grl
 				, Mixer    : color.gd
-				, Playback : color.grk
+				, Playback : color.gr
 			}
 			Object.keys( c ).forEach( k => { X[ k ] = X.type === k } );
 			var y  = X.h + X.h * 2 * ch; // y > down - each channel
@@ -1385,7 +1385,7 @@ var render    = {
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		$( '#enable_rate_adjust' ).toggleClass( 'disabled', DEV.resampler !== null && DEV.resampler.type === 'Synchronous' );
 		[ 'capture_samplerate', 'enable_rate_adjust', 'resampler', 'stop_on_rate_change' ].forEach( id => {
-			$( '#'+ id ).prop( 'checked', DEV[ id ] !== null );
+			$( '#'+ id ).prop( 'checked', ! ( DEV[ id ] === null || DEV[ id ] === false ) );
 		} );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
