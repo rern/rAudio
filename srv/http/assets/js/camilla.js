@@ -895,7 +895,7 @@ var graph     = {
 				gain          = 'a' in t;
 				ctx.fillStyle = t.c || color.wl;
 				ctx.font = ( gain ? 12 : 15 ) +'px Inconsolata';
-				graph.flowchart.ctxShadow( ctx, gain ? 2 : 0 );
+				graph.flowchart.ctxShadow( ctx, gain ? 1 : 0 );
 				if ( t.a ) { // cross gain
 					ctx.save();
 					ctx.translate( t.x, t.y );
