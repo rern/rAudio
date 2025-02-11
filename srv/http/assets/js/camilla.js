@@ -1261,7 +1261,7 @@ var render    = {
 			ch     += ' • ';
 			var src = ''
 			m.sources.forEach( s => ch += '<cc>'+ s.channel +'</cc> ' );
-			ch += '&#8674; <cp>'+ m.dest +'</cp>';
+			ch += '» <cp>'+ m.dest +'</cp>';
 		} );
 		return ch.slice( 3 )
 	} //-----------------------------------------------------------------------------------
