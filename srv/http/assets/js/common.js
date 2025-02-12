@@ -1537,7 +1537,7 @@ function bashConsoleLog( data ) {
 	}
 }
 
-$( '#logo, #refresh, .page-icon' ).press( () => location.reload() );
+$( '.pagerefresh' ).press( () => location.reload() );
 
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return

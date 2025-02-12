@@ -2,7 +2,7 @@
 include 'common.php';
 
 $htmlhead  = '
-<div class="head hide">'.i( $icon.' page-icon' ).'<span class="title">'.$title.'</span>
+<div class="head hide">'.i( $icon.' page-icon pagerefresh' ).'<span class="title">'.$title.'</span>
 '.i( 'close close', 'close' ).i( 'help helphead' ).i( 'gear' ).'
 </div>';
 if ( ! $guide ) $htmlhead.= '
