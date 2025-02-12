@@ -738,25 +738,26 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	guideHide();
 	volumeUpDown( $this.hasClass( 'up' ) );
 	if ( $this.hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
-} ).on( 'touchend mouseup mouseleave', function() {
-	if ( ! V.press ) return
-	
-	clearInterval( V.interval.volume );
-	if ( D.volume ) {
-		$( '#volume-text' ).text( S.volume );
-		$( '#volume-bar' ).css( 'width', S.volume +'%' );
-	} else {
-		$volumeRS.setValue( S.volume );
+} ).press( 
+	  e => { 
 		volumeBarHideClear();
-		volumeBarHide();
+		if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
+		var up = $( e.currentTarget ).hasClass( 'up' );
+		V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );
 	}
-	volumePush();
-} ).press( function( e ) {
-	volumeBarHideClear();
-	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-	var up = $( e.currentTarget ).hasClass( 'up' );
-	V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );
-} );
+	, () => { // on end
+		clearInterval( V.interval.volume );
+		if ( D.volume ) {
+			$( '#volume-text' ).text( S.volume );
+			$( '#volume-bar' ).css( 'width', S.volume +'%' );
+		} else {
+			$volumeRS.setValue( S.volume );
+			volumeBarHideClear();
+			volumeBarHide();
+		}
+		volumePush();
+	}
+);
 $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	volumeBarHideClear();
 	volumeAnimate( S.volumemute, S.volume );

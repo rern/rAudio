@@ -130,24 +130,25 @@ var red         = '#bb2828';
 var ws;
 // ----------------------------------------------------------------------
 /*
-$( ELEMENT ).press( DELEGATE, function( e ) {
+$( ELEMENT ).press( DELEGATE, CALLBACK, ON_END );
 	- this not applicable
 	- cannot be attached with .on
 	- DELEGATE : optional
-} );
 events:
 	- move  : mouseenter > mousemove > mouseleave > mouseout
 	- click : mousedown  > mouseup   > click
 	- touch : touchstart > touchmove > touchend
 */
-$.fn.press = function( arg1, arg2 ) {
-	var callback, delegate, timeout;
-	if ( arg2 ) { 
+$.fn.press = function( arg1, arg2, arg3 ) {
+	var callback, delegate, onend, timeout;
+	if ( typeof arg1 === 'string' ) { 
 		delegate = arg1;
 		callback = arg2;
+		onend    = arg3
 	} else {
 		delegate = '';
 		callback = arg1;
+		onend    = arg2
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
@@ -155,6 +156,9 @@ $.fn.press = function( arg1, arg2 ) {
 			callback( e ); // e.currentTarget = ELEMENT
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
+		if ( ! V.press ) return
+		
+		if ( onend ) onend();
 		clearTimeout( timeout );
 		setTimeout( () => V.press = false, 300 ); // needed for mouse events
 	} );

@@ -2080,12 +2080,14 @@ var setting   = {
 		}
 	}
 	, save          : ( titlle, msg ) => {
+		console.log('save')
 		clearTimeout( V.debounce );
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			graph.refresh();
 			V.debounce = setTimeout( () => {
+				console.log('saveconfig')
 				local();
 				setting.statusPush();
 				bash( [ 'saveconfig' ] );
@@ -2435,40 +2437,38 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	volumeMaxSet();
 	render.volume();
 	volumeSet();
-} ).on( 'touchend mouseup mouseleave', function() {
-	if ( ! V.press )  return
-	
-	clearInterval( V.intervalvolume );
-	volumePush();
-} ).press( '.col-l i, .i-plus', function( e ) {
-	var up           = $( e.target ).hasClass( 'i-plus' );
-	V.intervalvolume = setInterval( () => {
-		up ? S.volume++ : S.volume--;
-		volumeMaxSet();
-		volumeSet();
-		render.volumeThumb();
-		$( '#divvolume .level' ).text( S.volume );
-		if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
-	}, 100 );
 } ).on( 'click', '.col-r .i-volume, .level', function() {
 	common.volumeAnimate( S.volumemute, S.volume );
 	volumeMuteToggle();
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
-} );
+} ).press(
+	  '.col-l i, .i-plus'
+	, e => {
+		var up           = $( e.target ).hasClass( 'i-plus' );
+		V.intervalvolume = setInterval( () => {
+			up ? S.volume++ : S.volume--;
+			volumeMaxSet();
+			volumeSet();
+			render.volumeThumb();
+			$( '#divvolume .level' ).text( S.volume );
+			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
+		}, 100 );
+	}
+	, () => {
+		clearInterval( V.intervalvolume );
+		volumePush();
+	}
+);
 // common ---------------------------------------------------------------------------------
 $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, mixersSub
 	setting.rangeGet( $( this ), 'click' );
-} ).on( 'touchend mouseup mouseleave', '.i-minus, .i-plus, .db', function() {
-	if ( ! V.press ) return
-	
-	V.press = false;
-	clearInterval( V.intervalgain );
-	setting.save();
-} ).press( '.i-minus, .i-plus', function( e ) {
-	setting.rangeGet( $( e.currentTarget ), 'press' );
-} );
+} ).press(
+	  '.i-minus, .i-plus'
+	,  e => setting.rangeGet( $( e.currentTarget ), 'press' )
+	, () => clearInterval( V.intervalgain ) // on end
+);
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	local( 2000 );
 	$( '.divclipped' ).addClass( 'hide' );
