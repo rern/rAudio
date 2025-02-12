@@ -738,14 +738,14 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	guideHide();
 	volumeUpDown( $this.hasClass( 'up' ) );
 	if ( $this.hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
-} ).press( 
-	  e => { 
+} ).press( {
+	  callback : e => { 
 		volumeBarHideClear();
 		if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 		var up = $( e.currentTarget ).hasClass( 'up' );
 		V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );
 	}
-	, () => { // on end
+	, end     : () => { // on end
 		clearInterval( V.interval.volume );
 		if ( D.volume ) {
 			$( '#volume-text' ).text( S.volume );
@@ -757,7 +757,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 		}
 		volumePush();
 	}
-);
+} );
 $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	volumeBarHideClear();
 	volumeAnimate( S.volumemute, S.volume );
@@ -1387,22 +1387,27 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
 	infoDabScan();
-} ).press( '.mode.bookmark', setBookmarkEdit );
-new Sortable( document.getElementById( 'lib-mode-list' ), {
-	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
-	  ghostClass    : 'lib-sortable-ghost'
-	, delay         : 400
-	, onMove       : function() {
-		$( '.bkedit' ).remove();
-		$( '.mode.edit' ).removeClass( 'edit' );
-	}
-	, onUpdate      : function () {
-		var order = [];
-		$( '.mode' ).each( ( i, el ) => {
-			var $el  = $( el );
-			order.push( $el.hasClass( 'bookmark' ) ? $el.find( '.lipath' ).text() : $el.data( 'mode' ) );
+} ).press( {
+	  target   : '.mode.bookmark'
+	, callback : () => {
+		setBookmarkEdit();
+		new Sortable( document.getElementById( 'lib-mode-list' ), {
+			// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
+			  ghostClass    : 'lib-sortable-ghost'
+			, delay         : 400
+			, onMove       : function() {
+				$( '.bkedit' ).remove();
+				$( '.mode.edit' ).removeClass( 'edit' );
+			}
+			, onUpdate      : function () {
+				var order = [];
+				$( '.mode' ).each( ( i, el ) => {
+					var $el  = $( el );
+					order.push( $el.hasClass( 'bookmark' ) ? $el.find( '.lipath' ).text() : $el.data( 'mode' ) );
+				} );
+				jsonSave( 'order', order );
+			}
 		} );
-		jsonSave( 'order', order );
 	}
 } );
 $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
@@ -1425,26 +1430,29 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		renderLibraryList( data );
 	} );
-} ).press( '.coverart', function( e ) {
-	var $this  = $( e.currentTarget );
-	var src    = $this.find( 'img' ).attr( 'src' );
-	var i      = D.albumbyartist ? '21' : '12';
-	var album  = $this.find( '.coverart'+ i[ 0 ] ).text();
-	var artist = $this.find( '.coverart'+ i[ 1 ] ).text();
-	info( {
-		  icon    : 'album'
-		, title   : 'Album Thumbnail'
-		, message :  '<img src="'+ src +'">'
-					+'<br><wh>'+ ico( 'album' ) + album +'</wh>'
-					+'<br>'+ ico( 'artist wh' ) + artist
-					+'<br><br>Exclude this thumbnail?'
-		, okcolor : orange
-		, oklabel : ico( 'remove' ) +'Exclude'
-		, ok      : () => {
-			bash( [ 'albumignore', album, artist, 'CMD ALBUM ARTIST' ] );
-			$this.remove();
-		}
-	} );
+} ).press( {
+	  target   : '.coverart'
+	, callback : function( e ) {
+		var $this  = $( e.currentTarget );
+		var src    = $this.find( 'img' ).attr( 'src' );
+		var i      = D.albumbyartist ? '21' : '12';
+		var album  = $this.find( '.coverart'+ i[ 0 ] ).text();
+		var artist = $this.find( '.coverart'+ i[ 1 ] ).text();
+		info( {
+			  icon    : 'album'
+			, title   : 'Album Thumbnail'
+			, message :  '<img src="'+ src +'">'
+						+'<br><wh>'+ ico( 'album' ) + album +'</wh>'
+						+'<br>'+ ico( 'artist wh' ) + artist
+						+'<br><br>Exclude this thumbnail?'
+			, okcolor : orange
+			, oklabel : ico( 'remove' ) +'Exclude'
+			, ok      : () => {
+				bash( [ 'albumignore', album, artist, 'CMD ALBUM ARTIST' ] );
+				$this.remove();
+			}
+		} );
+	}
 } ).on( 'click', '.coveredit',  function() {
 	var $this   = $( this );
 	var $img    = $this.siblings( 'img' );
@@ -1458,11 +1466,14 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	} else {
 		coverartChange();
 	}
-} ).press( '.licoverimg',  function( e ) {
-	var $this = $( e.currentTarget );
-	$this.parent().removeClass( 'active' );
-	$( '#menu-album' ).addClass( 'hide' );
-	coverartChange();
+} ).press( {
+	  target   : '.licoverimg'
+	, callback : function( e ) {
+		var $this = $( e.currentTarget );
+		$this.parent().removeClass( 'active' );
+		$( '#menu-album' ).addClass( 'hide' );
+		coverartChange();
+	}
 } ).on( 'click', '#lib-list li, #search-list li', function( e ) {
 	e.stopPropagation();
 	if ( V.press ) return

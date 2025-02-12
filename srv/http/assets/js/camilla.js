@@ -2441,9 +2441,9 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	$( '#out .peak' ).css( 'transition-duration', '0s' );
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
-} ).press(
-	  '.col-l i, .i-plus'
-	, e => {
+} ).press( {
+	  target   : '.col-l i, .i-plus'
+	, callback : e => {
 		var up           = $( e.target ).hasClass( 'i-plus' );
 		V.intervalvolume = setInterval( () => {
 			up ? S.volume++ : S.volume--;
@@ -2454,19 +2454,19 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 			if ( S.volume === 0 || S.volume === 100 ) clearInterval( V.intervalvolume );
 		}, 100 );
 	}
-	, () => {
+	, end     : () => {
 		clearInterval( V.intervalvolume );
 		volumePush();
 	}
-);
+} );
 // common ---------------------------------------------------------------------------------
 $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, mixersSub
 	setting.rangeGet( $( this ), 'click' );
-} ).press(
-	  '.i-minus, .i-plus'
-	,  e => setting.rangeGet( $( e.currentTarget ), 'press' )
-	, () => clearInterval( V.intervalgain ) // on end
-);
+} ).press( {
+	  target   : '.i-minus, .i-plus'
+	, callback :  e => setting.rangeGet( $( e.currentTarget ), 'press' )
+	, end      : () => clearInterval( V.intervalgain ) // on end
+} );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	local( 2000 );
 	$( '.divclipped' ).addClass( 'hide' );
