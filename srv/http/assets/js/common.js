@@ -330,8 +330,9 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 } ).on( 'click', '#infoList', function() {
 	$( '#infoList input' ).removeClass( 'focus' );
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
-} ).press( '#infoIcon', function() { // usage
-	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
+} ).press( { // usage
+	  target   : '#infoIcon'
+	, callback : () => window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' )
 } );
 	
 I = { active: false }
