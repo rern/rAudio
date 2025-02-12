@@ -2080,14 +2080,12 @@ var setting   = {
 		}
 	}
 	, save          : ( titlle, msg ) => {
-		console.log('save')
 		clearTimeout( V.debounce );
 		setTimeout( () => {
 			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 			wscamilla.send( '{ "SetConfigJson": "'+ config +'" }' );
 			graph.refresh();
 			V.debounce = setTimeout( () => {
-				console.log('saveconfig')
 				local();
 				setting.statusPush();
 				bash( [ 'saveconfig' ] );
