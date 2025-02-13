@@ -130,31 +130,31 @@ var red         = '#bb2828';
 var ws;
 // ----------------------------------------------------------------------
 /*
-$( ELEMENT ).press( TARGET, CALLBACK, ON_END );
+$( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
 	- this not applicable
 	- cannot be attached with .on
-	- TARGET : optional
+	- delagate - optional
 events:
 	- move  : mouseenter > mousemove > mouseleave > mouseout
 	- click : mousedown  > mouseup   > click
 	- touch : touchstart > touchmove > touchend
 */
 $.fn.press = function( args ) {
-	var callback, target, end, timeout;
+	var action, delegate, end, timeout;
 	if ( typeof args === 'function' ) {
-		target   = '';
-		callback = args;
+		delegate = '';
+		action   = args;
 	} else {
-		target   = args.target; // delegate
-		callback = args.callback;
+		delegate = args.delegate;
+		action   = args.action;
 		end      = args.end;
 	}
-	this.on( 'touchstart mousedown', target, function( e ) {
+	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
 			V.press = true;
-			callback( e ); // e.currentTarget = ELEMENT
+			action( e ); // e.currentTarget = ELEMENT
 		}, 1000 );
-	} ).on( 'touchend mouseup mouseleave', target, function() {
+	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( timeout );
 		setTimeout( () => {
 			if ( V.press && end ) end();
@@ -331,8 +331,8 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 	$( '#infoList input' ).removeClass( 'focus' );
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } ).press( { // usage
-	  target   : '#infoIcon'
-	, callback : () => window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' )
+	  delegate : '#infoIcon'
+	, action   : () => window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' )
 } );
 	
 I = { active: false }
@@ -407,7 +407,7 @@ function info( json ) {
 		if ( V.press || $( this ).hasClass( 'disabled' ) ) return
 		
 		infoButtonCommand( I.ok );
-	} ).press( function() {
+	} ).press( () => {
 		V.debug = true;
 		infoButtonCommand( I.ok );
 		V.debug = false;
@@ -685,7 +685,7 @@ function info( json ) {
 			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
 				clearTimeout( V.timeout.range );
 				if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
-			} ).press( function( e ) {
+			} ).press( e => {
 				var up = $( e.target ).hasClass( 'up' );
 				V.timeout.range = setInterval( () => rangeSet( up ), 100 );
 			} );
@@ -729,7 +729,7 @@ function info( json ) {
 				updnToggle();
 				$updn.on( 'click', function() {
 					if ( ! V.press ) numberset( $( this ) );
-				} ).press( function( e ) {
+				} ).press( e => {
 					var $target = $( e.target );
 					V.timeout.updni = setInterval( () => numberset( $target ), 100 );
 					V.timeout.updnt = setTimeout( () => { // @5 after 3s
@@ -1547,7 +1547,7 @@ $( '#debug' ).on( 'click', function() {
 	} else {
 		$( '#banner' ).after( '<pre id="data">'+ highlightJSON( S ) +'</pre>' );
 	}
-} ).press( function() {
+} ).press( () => {
 	if ( V.debug ) {
 		V.debug = false;
 		refreshData();

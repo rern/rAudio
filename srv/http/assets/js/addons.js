@@ -40,8 +40,8 @@ $( '.container' ).on( 'click', '.revision', function() {
 } ).on( 'click', '.thumbnail', function() {
 	if ( S.status.online ) $( this ).prev().find( '.source' )[ 0 ].trigger( 'click' );
 } ).press( {
-	  target   : '.install'
-	, callback : e => {
+	  delegate : '.install'
+	, action   : e => {
 		if ( ! S.status.online ) return
 		
 		addonData( $( e.currentTarget ) );

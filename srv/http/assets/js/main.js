@@ -739,13 +739,13 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	volumeUpDown( $this.hasClass( 'up' ) );
 	if ( $this.hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
 } ).press( {
-	  callback : e => { 
+	  action   : e => { 
 		volumeBarHideClear();
 		if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 		var up = $( e.currentTarget ).hasClass( 'up' );
 		V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );
 	}
-	, end     : () => { // on end
+	, end      : () => { // on end
 		clearInterval( V.interval.volume );
 		if ( D.volume ) {
 			$( '#volume-text' ).text( S.volume );
@@ -763,7 +763,7 @@ $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	volumeAnimate( S.volumemute, S.volume );
 	volumeMuteToggle();
 } );
-$( '#coverM' ).press( function( e ) {
+$( '#coverM' ).press( e => {
 	if ( ! S.pllength
 		|| V.guide
 		|| ( S.webradio && S.state === 'play' )
@@ -775,7 +775,7 @@ $( '#coverM' ).press( function( e ) {
 } ).on( 'click', '.cover-save', function() {
 	coverartSave();
 } );
-$( '#coverT' ).press( function() {
+$( '#coverT' ).press( () => {
 	if ( typeof Android === 'object' ) {
 		changeIP();
 	} else {
@@ -985,7 +985,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 		}
 	}
 } );
-$( '#previous, #next, #coverR, #coverL' ).press( function( e ) {
+$( '#previous, #next, #coverR, #coverL' ).press( e => {
 	var next = [ 'next', 'coverR' ].includes( e.target.id );
 	if ( ( next && S.song + 1 === S.pllength ) || ( ! next && S.song === 0 ) ) return
 	
@@ -1388,8 +1388,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 } ).on( 'click', '.dabradio.nodata', function() {
 	infoDabScan();
 } ).press( {
-	  target   : '.mode.bookmark'
-	, callback : () => {
+	  delegate : '.mode.bookmark'
+	, action   : () => {
 		setBookmarkEdit();
 		new Sortable( document.getElementById( 'lib-mode-list' ), {
 			// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
@@ -1431,8 +1431,8 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		renderLibraryList( data );
 	} );
 } ).press( {
-	  target   : '.coverart'
-	, callback : function( e ) {
+	  delegate : '.coverart'
+	, action   : function( e ) {
 		var $this  = $( e.currentTarget );
 		var src    = $this.find( 'img' ).attr( 'src' );
 		var i      = D.albumbyartist ? '21' : '12';
@@ -1467,8 +1467,8 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		coverartChange();
 	}
 } ).press( {
-	  target   : '.licoverimg'
-	, callback : function( e ) {
+	  delegate : '.licoverimg'
+	, action   : function( e ) {
 		var $this = $( e.currentTarget );
 		$this.parent().removeClass( 'active' );
 		$( '#menu-album' ).addClass( 'hide' );

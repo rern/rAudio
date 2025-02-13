@@ -2442,8 +2442,8 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 	setTimeout( () => $( '#out .peak' ).css( 'transition-duration', '' ), 100 );
 
 } ).press( {
-	  target   : '.col-l i, .i-plus'
-	, callback : e => {
+	  delegate : '.col-l i, .i-plus'
+	, action   : e => {
 		var up           = $( e.target ).hasClass( 'i-plus' );
 		V.intervalvolume = setInterval( () => {
 			up ? S.volume++ : S.volume--;
@@ -2463,8 +2463,8 @@ $( '#divvolume' ).on( 'click', '.col-l i, .i-plus', function() {
 $( '.entries' ).on( 'click', '.i-minus, .i-plus, .db', function() { // filters, mixersSub
 	setting.rangeGet( $( this ), 'click' );
 } ).press( {
-	  target   : '.i-minus, .i-plus'
-	, callback :  e => setting.rangeGet( $( e.currentTarget ), 'press' )
+	  delegate : '.i-minus, .i-plus'
+	, action   :  e => setting.rangeGet( $( e.currentTarget ), 'press' )
 	, end      : () => clearInterval( V.intervalgain ) // on end
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
