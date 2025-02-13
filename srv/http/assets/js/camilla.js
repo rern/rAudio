@@ -63,7 +63,7 @@ var F0        = {
 		, BiquadCombo : [
 			  'Subtype'
 			, 'select'
-			, [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass', 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ]
+			, []
 		]
 		, Dither      : [
 			  'Subtype'
@@ -78,6 +78,13 @@ var F0        = {
 	, qbandwidth   : [ '',          'radio', { Q: 'q', Bandwidth: 'bandwidth' } ]
 	, name         : [ 'Name',      'text' ]
 	, fader        : [ 'Fader',     'text' ]
+	, Free         : [
+		  [ 'a1', 'number' ]
+		, [ 'a2', 'number' ]
+		, [ 'b0', 'number' ]
+		, [ 'b1', 'number' ]
+		, [ 'b2', 'number' ]
+	]
 	, FivePointPeq : {
 		  Lowshelf  : [ 'fls', 'gls', 'qls' ]
 		, Peaking1  : [ 'fp1', 'gp1', 'qp1' ]
@@ -85,7 +92,20 @@ var F0        = {
 		, Peaking3  : [ 'fp3', 'gp3', 'qp3' ]
 		, Highshelf : [ 'fhs', 'ghs', 'qhs' ]
 	}
+	, GeneralNotch : [
+		, [ 'Zero frequency',  'number' ]
+		, [ 'Pole frequency',  'number' ]
+		, [ 'Pole Q',          'number' ]
+		, [ 'Normalize at DC', 'checkbox' ]
+	]
+	, LinkwitzTransform : [
+		, [ 'Q act',            'number' ]
+		, [ 'Q target',         'number' ]
+		, [ 'Frequency act',    'number' ]
+		, [ 'Frequency target', 'number' ]
+	]
 }
+F0.subtype.BiquadCombo[ 2 ] = [ ...F0.subtype.Biquad[ 2 ], 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass', 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ];
 var F1        = {
 	  pass   : [ F0.name, F0.type, F0.subtype.Biquad, F0.freq, F0.q ]
 	, conv   : [ F0.name, F0.type, F0.subtype.Conv ]
@@ -98,7 +118,9 @@ var Flist     = {
 	, passFO  : F1.pass.slice( 0, 4 )
 	, shelfFO : [ ...F1.pass.slice( 0, 4 ), F0.gain ]
 	, Notch   : [ ...F1.pass, F0.qbandwidth ]
+	, combo   : F1.combo
 }
+
 var F         = {
 	  Gain        : [
 		  F0.name
@@ -148,67 +170,17 @@ var F         = {
 			, [ 'Values', 'text' ]
 		]
 	}
-	, Biquad      : {
-		  Free              : [
-			...F1.pass.slice( 0, 3 )
-			, [ 'a1', 'number' ]
-			, [ 'a2', 'number' ]
-			, [ 'b0', 'number' ]
-			, [ 'b1', 'number' ]
-			, [ 'b2', 'number' ]
-		]
-		, Lowpass           : Flist.pass
-		, Highpass          : Flist.pass
-		, Lowshelf          : Flist.shelf
-		, Highshelf         : Flist.shelf
-		, LowpassFO         : Flist.passFO
-		, HighpassFO        : Flist.passFO
-		, LowshelfFO        : Flist.shelfFO
-		, HighshelfFO       : Flist.shelfFO
-		, Peaking           : [ ...F1.pass.slice( 0, 4 ), F0.gain, F0.q, F0.qbandwidth ]
-		, Notch             : Flist.Notch
-		, GeneralNotch      : [
-			...F1.pass.slice( 0, 3 )
-			, [ 'Zero frequency',  'number' ]
-			, [ 'Pole frequency',  'number' ]
-			, [ 'Pole Q',          'number' ]
-			, [ 'Normalize at DC', 'checkbox' ]
-		]
-		, Bandpass          : Flist.Notch
-		, Allpass           : Flist.Notch
-		, AllpassFO         : Flist.passFO
-		, LinkwitzTransform : [
-			...F1.pass.slice( 0, 3 )
-			, [ 'Q act',            'number' ]
-			, [ 'Q target',         'number' ]
-			, [ 'Frequency act',    'number' ]
-			, [ 'Frequency target', 'number' ]
-		]
-	}
-	, BiquadCombo : {
-		  ButterworthLowpass    : F1.combo
-		, ButterworthHighpass   : F1.combo
-		, LinkwitzRileyLowpass  : F1.combo
-		, LinkwitzRileyHighpass : F1.combo
-		, Tilt                  : [
-			  ...F1.combo.slice( 0, 3 )
-			, [ 'Gain', 'number' ]
-		]
-		, FivePointPeq          : [
-			  ...F1.combo.slice( 0, 3 )
-			, [ 'Lowshelf',  'text' ] // fls, gls, qls
-			, [ 'Peaking 1', 'text' ] // fp1, gp1, qp1
-			, [ 'Peaking 2', 'text' ] // fp2, gp2, qp2
-			, [ 'Peaking 3', 'text' ] // fp3, gp3, qp3
-			, [ 'Highshelf', 'text' ] // fhs, ghs, qhs
-			, [ '',          '', '&nbsp;<c>freq, gain, q</c>' ]
-		]
-		, GraphicEqualizer     : [
-			  ...F1.combo.slice( 0, 3 )
-			, [ 'Frequency min', 'number' ]
-			, [ 'Frequency max', 'number' ]
-			, [ 'Bands',         'number' ]
-		]
+	, Biquad      : { // define later: Free, Peaking, GeneralNotch, LinkwitzTransform, Lowpass, Highpass
+		  Lowshelf    : Flist.shelf
+		, Highshelf   : Flist.shelf
+		, LowpassFO   : Flist.passFO
+		, HighpassFO  : Flist.passFO
+		, LowshelfFO  : Flist.shelfFO
+		, HighshelfFO : Flist.shelfFO
+		, Notch       : Flist.Notch
+		, Bandpass    : Flist.Notch
+		, Allpass     : Flist.Notch
+		, AllpassFO   : Flist.passFO
 	}
 	, Dither      : [
 		  F0.name
@@ -260,6 +232,42 @@ var F         = {
 		, DiffEq            : { name: '', type: '', a: [ 1, 0 ], b: [ 1, 0 ] }
 	}
 }
+F.BiquadCombo = {
+	 ...F.Biquad
+	, ButterworthLowpass    : F1.combo
+	, ButterworthHighpass   : F1.combo
+	, LinkwitzRileyLowpass  : F1.combo
+	, LinkwitzRileyHighpass : F1.combo
+	, Tilt                  : [
+		  ...F1.combo.slice( 0, 3 )
+		, [ 'Gain', 'number' ]
+	]
+	, FivePointPeq          : [
+		  ...F1.combo.slice( 0, 3 )
+		, [ 'Lowshelf',  'text' ] // fls, gls, qls
+		, [ 'Peaking 1', 'text' ] // fp1, gp1, qp1
+		, [ 'Peaking 2', 'text' ] // fp2, gp2, qp2
+		, [ 'Peaking 3', 'text' ] // fp3, gp3, qp3
+		, [ 'Highshelf', 'text' ] // fhs, ghs, qhs
+		, [ '',          '', '&nbsp;<c>freq, gain, q</c>' ]
+	]
+	, GraphicEqualizer     : [
+		  ...F1.combo.slice( 0, 3 )
+		, [ 'Frequency min', 'number' ]
+		, [ 'Frequency max', 'number' ]
+		, [ 'Bands',         'number' ]
+	]
+};
+[ 'Biquad', 'BiquadCombo' ].forEach( type => {
+	var f1 = type === 'Biquad' ? 'pass' : 'combo';
+	F[ type ].Free              = [ ...F1[ f1 ].slice( 0, 3 ), ...F0.Free ];
+	F[ type ].Peaking           = [ ...F1[ f1 ].slice( 0, 4 ), F0.gain, F0.q, F0.qbandwidth ];
+	F[ type ].GeneralNotch      = [ ...F1[ f1 ].slice( 0, 3 ), ...F0.GeneralNotch ];
+	F[ type ].LinkwitzTransform = [ ...F1[ f1 ].slice( 0, 3 ), ...F0.LinkwitzTransform ];
+	F[ type ].Lowpass           = Flist[ f1 ];
+	F[ type ].Highpass          = Flist[ f1 ];
+} );
+
 var P         = { // processor
 	  Compressor : [
 		  [ 'Name',             'text' ]
@@ -1472,24 +1480,25 @@ var render    = {
 }
 var setting   = {
 	  filter        : ( type, subtype, name ) => {
-		var list  = subtype in F[ type ] ? F[ type ][ subtype ] : F[ type ];
+		var list     = subtype in F[ type ] ? F[ type ][ subtype ] : F[ type ];
+		var vsubtype = type;
 		if ( type === 'Biquad' ) {
 			if ( [ 'Hig', 'Low' ].includes( subtype.slice( 0, 3 ) ) ) {
-				var vsubtype = subtype.replace( /High|Low/, '' );
+				vsubtype = subtype.replace( /High|Low/, '' );
 			} else if ( subtype.slice( -4 ) === 'pass' ) {
-				var vsubtype = 'Notch';
+				vsubtype = 'Notch';
 			} else if ( subtype === 'AllpassFO' ) {
-				var vsubtype = 'passFO';
+				vsubtype = 'passFO';
 			} else {
-				var vsubtype = subtype;
+				vsubtype = subtype;
 			}
 		} else if ( type === 'BiquadCombo' ) {
-			var vsubtype = [ 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ].includes( subtype ) ? subtype : type;
+			vsubtype = [ 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ].includes( subtype ) ? subtype : type;
 		} else {
-			var vsubtype = subtype;
+			vsubtype = subtype;
 		}
-		var values  = F.values[ vsubtype ];
-		values.name = name;
+		var values  = vsubtype in F.values ? F.values[ vsubtype ] : {};
+		values.name = name || '';
 		values.type = type;
 		if ( subtype ) values.subtype = subtype;
 		var current = name in FIL && FIL[ name ].type === values.type && FIL[ name ].parameters.type === values.subtype;
@@ -1527,8 +1536,16 @@ var setting   = {
 				var $select = $( '#infoList select' );
 				$select.eq( 0 ).on( 'input', function() {
 					var val     = infoVal();
-					var subtype = val.type in F0.subtype ? val.subtype : val.type;
-					setting.filter( val.type, subtype, val.name );
+					var type    = val.type;
+					var subtype = val.subtype;
+					var name    = val.name;
+					if ( type in F0.subtype ) {
+						var subtypelist = F0.subtype[ type ][ 2 ];
+						if ( ! subtypelist.includes( subtype ) ) subtype = subtypelist[ 0 ];
+					} else {
+						subtype         = '';
+					}
+					setting.filter( type, subtype, name );
 				} );
 				$select.eq( 1 ).on( 'input', function() {
 					var val = infoVal();
