@@ -2230,7 +2230,7 @@ var common    = {
 		return capitalized
 	}
 	, list2array    : list => { // '1, 2, 3' > [ 1, 2, 3 ]
-		return list.replace( /[ \]\[]/g, '' ).split( ',' ).map( Number )
+		return list.replace( /[\[ \]]/g, '' ).split( ',' ).map( Number )
 	}
 	, tabTitle      : () => capitalize( V.tab )
 	, volumeAnimate : ( target, volume ) => {
