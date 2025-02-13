@@ -212,7 +212,7 @@ var F         = {
 		, Dummy             : { name: '', type: '', subtype: '', length: 65536 } // min = 1
 		, Raw               : { name: '', type: '', subtype: '', filename: '', format: 'TEXT', skip_bytes_lines: 0, read_bytes_lines: 0 }
 		, Wav               : { name: '', type: '', subtype: '', filename: '', channel: 0 }
-		, Values            : { name: '', type: '', subtype: '', values: [ 1, 0, 0, 0 ] }
+		, Values            : { name: '', type: '', subtype: '', values: [ 0.0, 0.1, 0.2, 0.3 ] }
 		// Biquad
 		, pass              : { name: '', type: '', subtype: '', freq: 1000, q: 0 }
 		, shelf             : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
