@@ -30,7 +30,7 @@ function equalizer() {
 			, list       : htmleq.replace( 'PRESETS', htmlOption( Object.keys( E.preset ) ) )
 			, values     : [ E.active, E.active, ...E.preset[ E.active ] ]
 			, beforeshow : () => {
-				$( '#infoBox' ).css( 'width', 550 );
+				$( '#infoBox' ).css( 'width', 540 );
 				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
 				$( '#eq .select2-container' ).css( 'width', '' );
 				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag

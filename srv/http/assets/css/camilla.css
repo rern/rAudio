@@ -438,15 +438,11 @@ i.disabled {
 #eq {
 	height: 385px !important;
 }
-#eq .vertical {
-	left: 10px !important;
-	top: calc( 100% - 80px ) !important;
-}
 #eq .vertical::before {
 	right: 150px !important;
 }
 #eq .bottom {
-	bottom: 50px !important;
+	bottom: 60px !important;
 }
 #codeoutput {
 	margin-top: 15px;
