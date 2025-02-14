@@ -1499,7 +1499,6 @@ var render    = {
 }
 var setting   = {
 	  filter        : ( type, subtype, name, edit ) => {
-		console.log( type, subtype, name, edit )
 		if ( edit ) {
 			var list   = subtype ? F[ type ][ subtype ] : F[ type ];
 			var values = { name: name, type: type }
