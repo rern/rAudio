@@ -43,33 +43,38 @@ var wscamilla = null
 var R         = {} // range
 var X         = {} // flowchart
 // filters //////////////////////////////////////////////////////////////////////////////
+var F0_select = [ 'Allpass',     'AllpassFO',         'Bandpass', 'Free',      'GeneralNotch', 'Highpass',   'HighpassFO', 'Highshelf'
+				, 'HighshelfFO', 'LinkwitzTransform', 'Lowpass',  'LowpassFO', 'Lowshelf',     'LowshelfFO', 'Notch',      'Peaking'
+				// combo
+				, 'ButterworthHighpass', 'ButterworthLowpass', 'FivePointPeq', 'GraphicEqualizer', 'LinkwitzRileyHighpass', 'LinkwitzRileyLowpass', 'Tilt' ];
 var F0        = {
 	  type         : [
 		  'Type'
 		, 'select'
-		, [ 'Gain', 'Loudness', 'Delay', 'Conv', 'Biquad', 'BiquadCombo', 'Dither', 'Limiter', 'DiffEq' ] // omit Volume - use alsa directly
+		, [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'DiffEq', 'Dither', 'Gain', 'Limiter', 'Loudness' ] // omit Volume - use alsa directly
 	]
 	, subtype      : {
 		  Conv        : [
 			  'Subtype'
 			, 'select'
-			, [ 'Dummy', 'Raw', 'Wav', 'Values' ]
+			, [ 'Dummy', 'Raw', 'Values', 'Wav' ]
 		]
 		, Biquad      : [
 			  'Subtype'
 			, 'select'
-			, [ 'Free', 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO', 'Peaking', 'Notch', 'GeneralNotch', 'Bandpass',  'Allpass',   'AllpassFO',  'LinkwitzTransform' ]
+			, F0_select.slice( 0, -7 )
 		]
 		, BiquadCombo : [
 			  'Subtype'
 			, 'select'
-			, []
+			, F0_select
 		]
 		, Dither      : [
 			  'Subtype'
 			, 'select'
-			, [ 'None',           'Flat',          'Highpass',  'Fweighted441',  'FweightedShort441', 'FweightedLong441', 'Gesemann441',   'Gesemann48', 'Lipshitz441',  'LipshitzLong441', 'Shibata441'
-			  , 'ShibataHigh441', 'ShibataLow441', 'Shibata48', 'ShibataHigh48', 'ShibataLow48',      'Shibata882',       'ShibataLow882', 'Shibata96',  'ShibataLow96', 'Shibata192',      'ShibataLow192' ]
+			, [ 'Flat',           'Fweighted441',    'FweightedLong441', 'FweightedShort441', 'Gesemann441',  'Gesemann48',    'Highpass'
+			  , 'Lipshitz441',    'LipshitzLong441', 'Shibata192',       'Shibata441',        'Shibata48',    'Shibata882',    'Shibata96'
+			  , 'ShibataHigh441', 'ShibataHigh48',   'ShibataLow192',    'ShibataLow441',     'ShibataLow48', 'ShibataLow882', 'ShibataLow96' ]
 		]
 	}
 	, freq         : [ 'Frequency', 'number' ]
@@ -105,14 +110,13 @@ var F0        = {
 		, [ 'Frequency target', 'number' ]
 	]
 }
-F0.subtype.BiquadCombo[ 2 ] = [ ...F0.subtype.Biquad[ 2 ], 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass', 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ];
 F0.pass       = [ F0.name, F0.type, F0.subtype.Biquad,      F0.freq,               F0.q ];
 F0.passC      = [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' ], F0.freq ];
 F0.conv       = [ F0.name, F0.type, F0.subtype.Conv ];
 F0.fader      = [ F0.name, F0.type, F0.fader ];
 F0.pass0_4    = F0.pass.slice( 0, 4 );
 F0.passC0_3   = F0.passC.slice( 0, 3 );
-var Flist     = {
+F0.list       = {
 	  pass    : F0.pass
 	, passC   : F0.passC
 	, shelf   : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
@@ -171,16 +175,16 @@ var F         = {
 		]
 	}
 	, Biquad      : { // define later: Free, Peaking, GeneralNotch, LinkwitzTransform, Lowpass, Highpass
-		  Lowshelf    : Flist.shelf
-		, Highshelf   : Flist.shelf
-		, LowpassFO   : Flist.passFO
-		, HighpassFO  : Flist.passFO
-		, LowshelfFO  : Flist.shelfFO
-		, HighshelfFO : Flist.shelfFO
-		, Notch       : Flist.Notch
-		, Bandpass    : Flist.Notch
-		, Allpass     : Flist.Notch
-		, AllpassFO   : Flist.passFO
+		  Lowshelf    : F0.list.shelf
+		, Highshelf   : F0.list.shelf
+		, LowpassFO   : F0.list.passFO
+		, HighpassFO  : F0.list.passFO
+		, LowshelfFO  : F0.list.shelfFO
+		, HighshelfFO : F0.list.shelfFO
+		, Notch       : F0.list.Notch
+		, Bandpass    : F0.list.Notch
+		, Allpass     : F0.list.Notch
+		, AllpassFO   : F0.list.passFO
 	}
 	, Dither      : [
 		  F0.name
@@ -267,8 +271,8 @@ F.BiquadCombo = {
 	F[ type ].Peaking           = [ ...p_0_4, F0.gain, F0.q, F0.qbandwidth ];
 	F[ type ].GeneralNotch      = [ ...p_0_3, ...F0.GeneralNotch ];
 	F[ type ].LinkwitzTransform = [ ...p_0_3, ...F0.LinkwitzTransform ];
-	F[ type ].Lowpass           = Flist[ f1 ];
-	F[ type ].Highpass          = Flist[ f1 ];
+	F[ type ].Lowpass           = F0.list[ f1 ];
+	F[ type ].Highpass          = F0.list[ f1 ];
 } );
 
 var P         = { // processor
@@ -287,7 +291,20 @@ var P         = { // processor
 		, [ 'Process channels', 'text' ]
 	]
 	, values     : {
-		Compressor : { name: '', type: '', channels: 2, attack: 0.025, release: 1.0, threshold: -25, factor: 5.0, makeup_gain: 0, clip_limit: 0, soft_clip: false, monitor_channels: '0, 1', process_channels: '0, 1' }
+		Compressor : {
+			  name             : ''
+			, type             : ''
+			, channels         : 2
+			, attack           : 0.025
+			, release          : 1.0
+			, threshold        : -25
+			, factor           : 5.0
+			, makeup_gain      : 0
+			, clip_limit       : 0
+			, soft_clip        : false
+			, monitor_channels : '0, 1'
+			, process_channels : '0, 1'
+		}
 	}
 }
 // devices /////////////////////////////////////////////////////////////////////////////////////////
@@ -296,7 +313,7 @@ var D0        = {
 	, listsample : {} // on GetSupportedDeviceTypes
 	, samplerate : [] // ^
 }
-var Dlist     = {
+D0.list       = {
 	  type               : [ 'Type',               'select', [ 'AsyncSinc', 'AsyncPoly', 'Synchronous' ] ]
 	, profile            : [ 'Profile',            'select', { kv: [ 'Accurate', 'Balanced', 'Fast', 'VeryFast', 'Custom' ], nosort: true } ]
 	, typeC              : [ 'Type',               'select', {} ] // on 'GetSupportedDeviceTypes'
@@ -316,9 +333,9 @@ var Dlist     = {
 	, loopback           : [ 'Loopback',           'checkbox' ]
 	, change_format      : [ 'Change format',      'checkbox' ]
 }
-D0.AlsaC      = [ Dlist.typeC,         Dlist.deviceC,    Dlist.formatC, Dlist.channelsC ];
-D0.AlsaP      = [ Dlist.typeP,         Dlist.deviceP,    Dlist.formatP, Dlist.channelsP ];
-D0.extra      = [ Dlist.extra_samples, Dlist.skip_bytes, Dlist.read_bytes ];
+D0.AlsaC      = [ D0.list.typeC,         D0.list.deviceC,    D0.list.formatC, D0.list.channelsC ];
+D0.AlsaP      = [ D0.list.typeP,         D0.list.deviceP,    D0.list.formatP, D0.list.channelsP ];
+D0.extra      = [ D0.list.extra_samples, D0.list.skip_bytes, D0.list.read_bytes ];
 var D         = {
 	  main      : [
 		  [ 'Sample rate',       'select', { kv: {}, nosort: true } ]                               // ^
@@ -329,22 +346,22 @@ var D         = {
 	]
 	, capture   : {
 		  Alsa      : D0.AlsaC
-		, CoreAudio : [ ...D0.AlsaC, Dlist.change_format ]
+		, CoreAudio : [ ...D0.AlsaC,   D0.list.change_format ]
 		, Pulse     : D0.AlsaC
-		, Wasapi    : [ ...D0.AlsaC, Dlist.exclusive, Dlist.loopback ]
-		, Jack      : [ Dlist.typeC, Dlist.channelsC ]
-		, Stdin     : [ Dlist.typeC, Dlist.formatC, Dlist.channelsC, ...D0.extra ]
-		, RawFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D0.extra ]
-		, WavFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D0.extra ]
+		, Wasapi    : [ ...D0.AlsaC,   D0.list.exclusive, D0.list.loopback ]
+		, Jack      : [ D0.list.typeC, D0.list.channelsC ]
+		, Stdin     : [ D0.list.typeC, D0.list.formatC,   D0.list.channelsC,                  ...D0.extra ]
+		, RawFile   : [ D0.list.typeC, D0.list.filename,  D0.list.formatC, D0.list.channelsC, ...D0.extra ]
+		, WavFile   : [ D0.list.typeC, D0.list.filename,  D0.list.formatC, D0.list.channelsC, ...D0.extra ]
 	}
 	, playback  : {
 		  Alsa      : D0.AlsaP
-		, CoreAudio : [ ...D0.AlsaP, Dlist.change_format ]
+		, CoreAudio : [ ...D0.AlsaP,   D0.list.change_format ]
 		, Pulse     : D0.AlsaP
-		, Wasapi    : [ ...D0.AlsaP, Dlist.exclusive, Dlist.loopback ]
-		, Jack      : [ Dlist.typeP, Dlist.channelsP ]
-		, Stdout    : [ Dlist.typeP, Dlist.formatP, Dlist.channelsP ]
-		, File      : [ Dlist.typeP, Dlist.filename, Dlist.formatP, Dlist.channelsP ]
+		, Wasapi    : [ ...D0.AlsaP,   D0.list.exclusive, D0.list.loopback ]
+		, Jack      : [ D0.list.typeP, D0.list.channelsP ]
+		, Stdout    : [ D0.list.typeP, D0.list.formatP,   D0.list.channelsP ]
+		, File      : [ D0.list.typeP, D0.list.filename,  D0.list.formatP, D0.list.channelsP ]
 	}
 	, values    : {
 		  Alsa      : { type: '', device: '',   format: '', channels: 2 }
@@ -360,12 +377,12 @@ var D         = {
 	}
 	, resampler : {
 		  AsyncSinc    : [
-			  Dlist.type
-			, Dlist.profile
+			  D0.list.type
+			, D0.list.profile
 		]
 		, Custom       : [
-			  Dlist.type
-			, Dlist.profile
+			  D0.list.type
+			, D0.list.profile
 			, [ 'Sinc length',         'number' ]
 			, [ 'Oversampling factor', 'number' ]
 			, [ 'F cutoff',            'number' ]
@@ -373,11 +390,11 @@ var D         = {
 			, [ 'Window',              'select', [ 'Hann2',   'Blackman2', 'BlackmanHarris2', 'BlackmanHarris2' ] ]
 		]
 		, AsyncPoly    : [
-			  Dlist.type
+			  D0.list.type
 			, [ 'Interpolation',       'select', [ 'Linear',  'Cubic',     'Quintic',         'Septic' ] ]
 		]
 		, Synchronous : [
-			  Dlist.type
+			  D0.list.type
 		]
 		, values      : {
 			  AsyncSinc   : { type: 'AsyncSinc', profile: 'Balanced' }
@@ -593,7 +610,7 @@ var config    = {
 		var enabled = DEV.capture_samplerate;
 		info( {
 			  ...SW
-			, list         : Dlist.capture_samplerate
+			, list         : D0.list.capture_samplerate
 			, boxwidth     : 120
 			, values       : [ DEV.capture_samplerate ]
 			, checkchanged : enabled
@@ -630,14 +647,14 @@ var config    = {
 		var samplings                    = dev.playback.samplings;
 		D0.samplerate                    = Object.values( samplings );
 		D.main[ 0 ][ 2 ].kv              = samplings;
-		Dlist.capture_samplerate[ 2 ].kv = samplings;
-		Dlist.formatC[ 2 ].kv            = dev.capture.formats;
-		Dlist.formatP[ 2 ].kv            = dev.playback.formats;
-		Dlist.deviceC[ 2 ]               = dev.capture.device;
-		Dlist.deviceP[ 2 ]               = dev.playback.device;
-		Dlist.channelsC[ 2 ].updn.max    = dev.capture.channels;
-		Dlist.channelsP[ 2 ].updn.max    = dev.playback.channels;
-		Dlist.filename[ 2 ].kv           = S.ls.raw;
+		D0.list.capture_samplerate[ 2 ].kv = samplings;
+		D0.list.formatC[ 2 ].kv            = dev.capture.formats;
+		D0.list.formatP[ 2 ].kv            = dev.playback.formats;
+		D0.list.deviceC[ 2 ]               = dev.capture.device;
+		D0.list.deviceP[ 2 ]               = dev.playback.device;
+		D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
+		D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
+		D0.list.filename[ 2 ].kv           = S.ls.raw;
 	}
 }
 var graph     = {
@@ -2354,8 +2371,8 @@ var common    = {
 							type[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 						} );
 					} );
-					Dlist.typeC[ 2 ] = type.capture;
-					Dlist.typeP[ 2 ] = type.playback;
+					D0.list.typeC[ 2 ] = type.capture;
+					D0.list.typeP[ 2 ] = type.playback;
 					break;
 				case 'Invalid':
 					info( {
