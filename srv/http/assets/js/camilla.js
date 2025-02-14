@@ -106,21 +106,19 @@ var F0        = {
 	]
 }
 F0.subtype.BiquadCombo[ 2 ] = [ ...F0.subtype.Biquad[ 2 ], 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass', 'Tilt', 'FivePointPeq', 'GraphicEqualizer' ];
-var F1        = {
-	  pass  : [ F0.name, F0.type, F0.subtype.Biquad, F0.freq, F0.q ]
-	, passC : [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' ], F0.freq ]
-	, conv  : [ F0.name, F0.type, F0.subtype.Conv ]
-	, fader : [ F0.name, F0.type, F0.fader ]
-}
-F1.pass0_4    = F1.pass.slice( 0, 4 );
-F1.passC0_3   = F1.passC.slice( 0, 3 );
+F0.pass       = [ F0.name, F0.type, F0.subtype.Biquad,      F0.freq,               F0.q ];
+F0.passC      = [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' ], F0.freq ];
+F0.conv       = [ F0.name, F0.type, F0.subtype.Conv ];
+F0.fader      = [ F0.name, F0.type, F0.fader ];
+F0.pass0_4    = F0.pass.slice( 0, 4 );
+F0.passC0_3   = F0.passC.slice( 0, 3 );
 var Flist     = {
-	  pass    : F1.pass
-	, passC   : F1.passC
-	, shelf   : [ ...F1.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
-	, passFO  : F1.pass0_4
-	, shelfFO : [ ...F1.pass0_4, F0.gain ]
-	, Notch   : [ ...F1.pass, F0.qbandwidth ]
+	  pass    : F0.pass
+	, passC   : F0.passC
+	, shelf   : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
+	, passFO  : F0.pass0_4
+	, shelfFO : [ ...F0.pass0_4, F0.gain ]
+	, Notch   : [ ...F0.pass, F0.qbandwidth ]
 }
 
 var F         = {
@@ -133,11 +131,11 @@ var F         = {
 		, [ 'Mute',     'checkbox' ]
 	]
 	, Volume      : [
-		  ...F1.fader
+		  ...F0.fader
 		, [ 'Ramp time', 'number' ]
 	]
 	, Loudness    : [
-		  ...F1.fader
+		  ...F0.fader
 		, [ 'Reference level', 'number' ]
 		, [ 'High boost',      'number' ]
 		, [ 'Low boost',       'number' ]
@@ -152,23 +150,23 @@ var F         = {
 	]
 	, Conv        : {
 		  Dummy  : [
-			  ...F1.conv
+			  ...F0.conv
 			, [ 'Length', 'number' ]
 		]
 		, Raw    : [
-			  ...F1.conv
+			  ...F0.conv
 			, [ 'File',             'select' ]
 			, [ 'Format',           'select', [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ] ]
 			, [ 'Skip bytes lines', 'number' ]
 			, [ 'Read bytes lines', 'number' ]
 		]
 		, Wav    : [
-			  ...F1.conv
+			  ...F0.conv
 			, [ 'File',    'select' ]
 			, [ 'Channel', 'number' ]
 		]
 		, Values : [
-			  ...F1.conv
+			  ...F0.conv
 			, [ 'Values', 'text' ]
 		]
 	}
@@ -237,16 +235,16 @@ var F         = {
 Object.keys( F0.FivePointPeq ).forEach( k => { F.values.FivePointPeq[ k ] = [ 0, 0, 0 ] } );
 F.BiquadCombo = {
 	 ...F.Biquad
-	, ButterworthLowpass    : F1.passC
-	, ButterworthHighpass   : F1.passC
-	, LinkwitzRileyLowpass  : F1.passC
-	, LinkwitzRileyHighpass : F1.passC
+	, ButterworthLowpass    : F0.passC
+	, ButterworthHighpass   : F0.passC
+	, LinkwitzRileyLowpass  : F0.passC
+	, LinkwitzRileyHighpass : F0.passC
 	, Tilt                  : [
-		  ...F1.passC0_3
+		  ...F0.passC0_3
 		, [ 'Gain', 'number' ]
 	]
 	, FivePointPeq          : [
-		  ...F1.passC0_3
+		  ...F0.passC0_3
 		, [ 'Lowshelf',  'text' ]
 		, [ 'Peaking 1', 'text' ]
 		, [ 'Peaking 2', 'text' ]
@@ -255,7 +253,7 @@ F.BiquadCombo = {
 		, [ '',          '',     '&nbsp;<c>freq, gain, q</c>' ]
 	]
 	, GraphicEqualizer     : [
-		  ...F1.passC.slice( 0, 3 )
+		  ...F0.passC.slice( 0, 3 )
 		, [ 'Frequency min', 'number' ]
 		, [ 'Frequency max', 'number' ]
 		, [ 'Bands',         'number' ]
@@ -263,8 +261,8 @@ F.BiquadCombo = {
 };
 [ 'Biquad', 'BiquadCombo' ].forEach( type => {
 	var f1    = type === 'Biquad' ? 'pass' : 'passC';
-	var p_0_3 = F1[ f1 ].slice( 0, 3 );
-	var p_0_4 = F1[ f1 ].slice( 0, 4 );
+	var p_0_3 = F0[ f1 ].slice( 0, 3 );
+	var p_0_4 = F0[ f1 ].slice( 0, 4 );
 	F[ type ].Free              = [ ...p_0_3, ...F0.Free ];
 	F[ type ].Peaking           = [ ...p_0_4, F0.gain, F0.q, F0.qbandwidth ];
 	F[ type ].GeneralNotch      = [ ...p_0_3, ...F0.GeneralNotch ];
@@ -318,11 +316,9 @@ var Dlist     = {
 	, loopback           : [ 'Loopback',           'checkbox' ]
 	, change_format      : [ 'Change format',      'checkbox' ]
 }
-var D1        = {
-	  AlsaC : [ Dlist.typeC, Dlist.deviceC, Dlist.formatC, Dlist.channelsC ]
-	, AlsaP : [ Dlist.typeP, Dlist.deviceP, Dlist.formatP, Dlist.channelsP ]
-	, extra : [ Dlist.extra_samples, Dlist.skip_bytes, Dlist.read_bytes ]
-}
+D0.AlsaC      = [ Dlist.typeC,         Dlist.deviceC,    Dlist.formatC, Dlist.channelsC ];
+D0.AlsaP      = [ Dlist.typeP,         Dlist.deviceP,    Dlist.formatP, Dlist.channelsP ];
+D0.extra      = [ Dlist.extra_samples, Dlist.skip_bytes, Dlist.read_bytes ];
 var D         = {
 	  main      : [
 		  [ 'Sample rate',       'select', { kv: {}, nosort: true } ]                               // ^
@@ -332,20 +328,20 @@ var D         = {
 		, [ 'Silence Timeout',   'number' ]
 	]
 	, capture   : {
-		  Alsa      : D1.AlsaC
-		, CoreAudio : [ ...D1.AlsaC, Dlist.change_format ]
-		, Pulse     : D1.AlsaC
-		, Wasapi    : [ ...D1.AlsaC, Dlist.exclusive, Dlist.loopback ]
+		  Alsa      : D0.AlsaC
+		, CoreAudio : [ ...D0.AlsaC, Dlist.change_format ]
+		, Pulse     : D0.AlsaC
+		, Wasapi    : [ ...D0.AlsaC, Dlist.exclusive, Dlist.loopback ]
 		, Jack      : [ Dlist.typeC, Dlist.channelsC ]
-		, Stdin     : [ Dlist.typeC, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
-		, RawFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
-		, WavFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D1.extra ]
+		, Stdin     : [ Dlist.typeC, Dlist.formatC, Dlist.channelsC, ...D0.extra ]
+		, RawFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D0.extra ]
+		, WavFile   : [ Dlist.typeC, Dlist.filename, Dlist.formatC, Dlist.channelsC, ...D0.extra ]
 	}
 	, playback  : {
-		  Alsa      : D1.AlsaP
-		, CoreAudio : [ ...D1.AlsaP, Dlist.change_format ]
-		, Pulse     : D1.AlsaP
-		, Wasapi    : [ ...D1.AlsaP, Dlist.exclusive, Dlist.loopback ]
+		  Alsa      : D0.AlsaP
+		, CoreAudio : [ ...D0.AlsaP, Dlist.change_format ]
+		, Pulse     : D0.AlsaP
+		, Wasapi    : [ ...D0.AlsaP, Dlist.exclusive, Dlist.loopback ]
 		, Jack      : [ Dlist.typeP, Dlist.channelsP ]
 		, Stdout    : [ Dlist.typeP, Dlist.formatP, Dlist.channelsP ]
 		, File      : [ Dlist.typeP, Dlist.filename, Dlist.formatP, Dlist.channelsP ]
