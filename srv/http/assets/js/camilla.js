@@ -212,7 +212,7 @@ var F         = {
 		, Dummy             : { name: '', type: '', subtype: '', length: 65536 } // min = 1
 		, Raw               : { name: '', type: '', subtype: '', filename: '', format: 'TEXT', skip_bytes_lines: 0, read_bytes_lines: 0 }
 		, Wav               : { name: '', type: '', subtype: '', filename: '', channel: 0 }
-		, Values            : { name: '', type: '', subtype: '', values: [ 0.0, 0.1, 0.2, 0.3 ] }
+		, Values            : { name: '', type: '', subtype: '', values: [ 0.1, 0.2, 0.3, 0.4 ] }
 		// Biquad
 		, pass              : { name: '', type: '', subtype: '', freq: 1000, q: 0 }
 		, shelf             : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
@@ -226,7 +226,7 @@ var F         = {
 		// BiquadCombo
 		, BiquadCombo       : { name: '', type: '', subtype: '', order: 2, freq: 1000 }
 		, Tilt              : { name: '', type: '', subtype: '', gain: 0 }
-		, FivePointPeq      : { name: '', type: '', subtype: '', Lowshelf: [ 0, 0, 0 ], Peaking1: [ 0, 0, 0 ], Peaking2: [ 0, 0, 0 ], Peaking3: [ 0, 0, 0 ], Highshelf: [ 0, 0, 0 ] }
+		, FivePointPeq      : { name: '', type: '', subtype: '' }
 		, GraphicEqualizer  : { name: '', type: '', subtype: '', freq_min: 20, freq_max: 20000, bands: 10 }
 		//
 		, Dither            : { name: '', type: '', subtype: '', bits: 16 }
@@ -234,6 +234,7 @@ var F         = {
 		, DiffEq            : { name: '', type: '', a: [ 1, 0 ], b: [ 1, 0 ] }
 	}
 }
+Object.keys( F0.FivePointPeq ).forEach( k => { F.values.FivePointPeq[ k ] = [ 0, 0, 0 ] } );
 F.BiquadCombo = {
 	 ...F.Biquad
 	, ButterworthLowpass    : F1.passC
@@ -246,12 +247,12 @@ F.BiquadCombo = {
 	]
 	, FivePointPeq          : [
 		  ...F1.passC0_3
-		, [ 'Lowshelf',  'text' ] // fls, gls, qls
-		, [ 'Peaking 1', 'text' ] // fp1, gp1, qp1
-		, [ 'Peaking 2', 'text' ] // fp2, gp2, qp2
-		, [ 'Peaking 3', 'text' ] // fp3, gp3, qp3
-		, [ 'Highshelf', 'text' ] // fhs, ghs, qhs
-		, [ '',          '', '&nbsp;<c>freq, gain, q</c>' ]
+		, [ 'Lowshelf',  'text' ]
+		, [ 'Peaking 1', 'text' ]
+		, [ 'Peaking 2', 'text' ]
+		, [ 'Peaking 3', 'text' ]
+		, [ 'Highshelf', 'text' ]
+		, [ '',          '',     '&nbsp;<c>freq, gain, q</c>' ]
 	]
 	, GraphicEqualizer     : [
 		  ...F1.passC.slice( 0, 3 )
@@ -1573,28 +1574,30 @@ var setting   = {
 				}
 			}
 			, ok           : () => {
-				var val     = infoVal();
-				var newname = val.name;
-				type        = val.type;
-				subtype     = val.subtype;
-				if ( type === 'DiffEq' ) {
-					[ 'a', 'b' ].forEach( k => val[ k ] = common.list2array( val[ k ] ) );
+				var val        = infoVal();
+				var newname    = val.name;
+				type           = val.type;
+				subtype        = val.subtype;
+				if ( subtype === 'GraphicEqualizer' ) {
+					var bands = val.bands;
+					if ( current ) {
+						if ( bands !== values.bands ) {
+							delete val.gain;
+							val.gains = Array( bands ).fill( 0 );
+						}
+					} else {
+						val.gains = Array( bands ).fill( 0 );
+					}
+					delete val.bands;
 				} else if ( subtype === 'FivePointPeq' ) {
 					Object.keys( F0.FivePointPeq ).forEach( k => {
-						var v = common.list2array( val[ k ] );
 						F0.FivePointPeq[ k ].forEach( ( key, i ) => {
-							val[ key ] = v[ i ];
+							val[ key ] = val[ k ][ i ];
 						} );
 						delete val[ k ];
 					} );
-				} else if ( subtype === 'GraphicEqualizer' ) {
-					var bands = val.bands;
-					delete val.bands;
-					val.gains = Array( bands ).fill( 0 );
-				} else if ( subtype === 'Values' ) {
-					val.values = common.list2array( val.values );
 				}
-				var param = {}
+				var param      = {}
 				if ( 'subtype' in val ) param.type = subtype;
 				[ 'name', 'type', 'subtype' ].forEach( k => delete val[ k ] );
 				if ( 'q' in values && 'unit' in values ) {
@@ -1783,7 +1786,6 @@ var setting   = {
 				var typenew = val.type;
 				var namenew = val.name;
 				[ 'name', 'type' ].forEach( k => delete val[ k ] );
-				[ 'monitor_channels', 'process_channels' ].forEach( k => val[ k ] = common.list2array( val[ k ] ) );
 				if ( ! PRO ) {
 					S.config.processors = {}
 					PRO = S.config.processors;
@@ -2228,9 +2230,6 @@ var common    = {
 		
 		var capitalized = array.map( el => common.key2label( el ) );
 		return capitalized
-	}
-	, list2array    : list => { // '1, 2, 3' > [ 1, 2, 3 ]
-		return list.replace( /[\[ \]]/g, '' ).split( ',' ).map( Number )
 	}
 	, tabTitle      : () => capitalize( V.tab )
 	, volumeAnimate : ( target, volume ) => {

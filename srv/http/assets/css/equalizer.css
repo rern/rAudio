@@ -92,8 +92,11 @@
 #eq .vertical {
 	position: relative;
 	max-width: 300px;
-	margin: 0 auto;
+	margin: 0;
 	transform : rotate( -90deg );
+	transform-origin: top left;
+	left: 15px;
+	top: calc( 100% - 125px );
 }
 #eq .vertical::before { /* flat line */
 	position: absolute;

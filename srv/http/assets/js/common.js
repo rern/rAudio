@@ -1051,6 +1051,10 @@ function infoSetValues() {
 		} else if ( $this.is( 'select' ) ) {
 			val !== '' && typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
 		} else {
+			if ( Array.isArray( val ) ) { // array > array literal
+				val = '[ '+ val.join( ', ' ) +' ]';
+				$this.addClass( 'array' );
+			}
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
 		}
@@ -1107,7 +1111,14 @@ function infoVal( array ) {
 				}
 				break;
 			case 'text':
-				val = $this.val().trim();
+				if ( $this.hasClass( 'array' ) ) { // array literal > array
+					val = $this.val()
+								.replace( /[\[ \]]/g, '' )
+								.split( ',' );
+					val = JSON.parse( '['+ val +']' );
+				} else {
+					val = $this.val().trim();
+				}
 				break;
 			case 'textarea':
 				val = $this.val().trim().replace( /\n/g, '\\n' );
