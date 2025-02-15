@@ -43,10 +43,6 @@ var wscamilla = null
 var R         = {} // range
 var X         = {} // flowchart
 // filters //////////////////////////////////////////////////////////////////////////////
-var F_subtype = [ 'Allpass',     'AllpassFO',         'Bandpass', 'Free',      'GeneralNotch', 'Highpass',   'HighpassFO', 'Highshelf'
-				, 'HighshelfFO', 'LinkwitzTransform', 'Lowpass',  'LowpassFO', 'Lowshelf',     'LowshelfFO', 'Notch',      'Peaking'
-				// combo
-				, 'ButterworthHighpass', 'ButterworthLowpass', 'FivePointPeq', 'GraphicEqualizer', 'LinkwitzRileyHighpass', 'LinkwitzRileyLowpass', 'Tilt' ];
 var F0        = {
 	  type         : [
 		  'Type'
@@ -57,12 +53,13 @@ var F0        = {
 		  Biquad      : [
 			  'Subtype'
 			, 'select'
-			, F_subtype.slice( 0, -7 )
+			, [ 'Allpass',     'AllpassFO',         'Bandpass', 'Free',      'GeneralNotch', 'Highpass',   'HighpassFO', 'Highshelf'
+			  , 'HighshelfFO', 'LinkwitzTransform', 'Lowpass',  'LowpassFO', 'Lowshelf',     'LowshelfFO', 'Notch',      'Peaking' ]
 		]
 		, BiquadCombo : [
 			  'Subtype'
 			, 'select'
-			, F_subtype
+			, [ 'ButterworthHighpass', 'ButterworthLowpass', 'FivePointPeq', 'GraphicEqualizer', 'LinkwitzRileyHighpass', 'LinkwitzRileyLowpass', 'Tilt' ]
 		]
 		, Conv        : [
 			  'Subtype'
@@ -137,6 +134,31 @@ var F         = {
 		, Bandpass    : F0.list.Notch
 		, Allpass     : F0.list.Notch
 		, AllpassFO   : F0.list.passFO
+	}
+	, BiquadCombo : {
+		  ButterworthLowpass    : F0.passC
+		, ButterworthHighpass   : F0.passC
+		, LinkwitzRileyLowpass  : F0.passC
+		, LinkwitzRileyHighpass : F0.passC
+		, Tilt                  : [
+			  ...F0.passC0_3
+			, [ 'Gain', 'number' ]
+		]
+		, FivePointPeq          : [
+			  ...F0.passC0_3
+			, [ 'Lowshelf',  'text' ]
+			, [ 'Peaking 1', 'text' ]
+			, [ 'Peaking 2', 'text' ]
+			, [ 'Peaking 3', 'text' ]
+			, [ 'Highshelf', 'text' ]
+			, [ '',          '',     '&nbsp;<c>freq, gain, q</c>' ]
+		]
+		, GraphicEqualizer     : [
+			  ...F0.passC.slice( 0, 3 )
+			, [ 'Frequency min', 'number' ]
+			, [ 'Frequency max', 'number' ]
+			, [ 'Bands',         'number' ]
+		]
 	}
 	, Conv        : {
 		  Dummy  : [
@@ -238,32 +260,6 @@ var F         = {
 	}
 }
 Object.keys( F0.FivePointPeq ).forEach( k => { F.values.FivePointPeq[ k ] = [ 0, 0, 0 ] } );
-F.BiquadCombo = {
-	 ...F.Biquad
-	, ButterworthLowpass    : F0.passC
-	, ButterworthHighpass   : F0.passC
-	, LinkwitzRileyLowpass  : F0.passC
-	, LinkwitzRileyHighpass : F0.passC
-	, Tilt                  : [
-		  ...F0.passC0_3
-		, [ 'Gain', 'number' ]
-	]
-	, FivePointPeq          : [
-		  ...F0.passC0_3
-		, [ 'Lowshelf',  'text' ]
-		, [ 'Peaking 1', 'text' ]
-		, [ 'Peaking 2', 'text' ]
-		, [ 'Peaking 3', 'text' ]
-		, [ 'Highshelf', 'text' ]
-		, [ '',          '',     '&nbsp;<c>freq, gain, q</c>' ]
-	]
-	, GraphicEqualizer     : [
-		  ...F0.passC.slice( 0, 3 )
-		, [ 'Frequency min', 'number' ]
-		, [ 'Frequency max', 'number' ]
-		, [ 'Bands',         'number' ]
-	]
-};
 [ 'Biquad', 'BiquadCombo' ].forEach( type => {
 	var f1    = type === 'Biquad' ? 'pass' : 'passC';
 	var p_0_3 = F0[ f1 ].slice( 0, 3 );
@@ -1521,12 +1517,14 @@ var setting   = {
 		} else {
 			var values = { name: name || '', type: type }
 			if ( ! subtype && type in F0.subtype ) {
-				if ( type === 'Conv' ) {
+				if ( type === 'Biquad' ) {
+					subtype = 'Allpass';
+				} else if ( type === 'BiquadCombo' ) {
+					subtype = 'ButterworthLowpass';
+				} else if ( type === 'Conv' ) {
 					subtype = 'Dummy';
 				} else if ( type === 'Dither' ) {
 					subtype = 'Flat';
-				} else {
-					subtype = 'Allpass';
 				}
 			}
 			if ( subtype ) {
