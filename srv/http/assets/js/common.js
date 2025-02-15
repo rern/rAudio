@@ -130,33 +130,36 @@ var red         = '#bb2828';
 var ws;
 // ----------------------------------------------------------------------
 /*
-$( ELEMENT ).press( DELEGATE, function( e ) {
+$( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
 	- this not applicable
 	- cannot be attached with .on
-	- DELEGATE : optional
-} );
+	- delagate - optional
 events:
 	- move  : mouseenter > mousemove > mouseleave > mouseout
 	- click : mousedown  > mouseup   > click
 	- touch : touchstart > touchmove > touchend
 */
-$.fn.press = function( arg1, arg2 ) {
-	var callback, delegate, timeout;
-	if ( arg2 ) { 
-		delegate = arg1;
-		callback = arg2;
-	} else {
+$.fn.press = function( args ) {
+	var action, delegate, end, timeout;
+	if ( typeof args === 'function' ) {
 		delegate = '';
-		callback = arg1;
+		action   = args;
+	} else {
+		delegate = args.delegate;
+		action   = args.action;
+		end      = args.end;
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
 			V.press = true;
-			callback( e ); // e.currentTarget = ELEMENT
+			action( e ); // e.currentTarget = ELEMENT
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( timeout );
-		setTimeout( () => V.press = false, 300 ); // needed for mouse events
+		setTimeout( () => { // after last action timeout
+			if ( V.press && end ) end();
+			V.press = false;
+		}, 0 );
 	} );
 	return this // allow chain
 }
@@ -327,8 +330,9 @@ $( '#infoOverlay' ).on( 'keydown', function( e ) {
 } ).on( 'click', '#infoList', function() {
 	$( '#infoList input' ).removeClass( 'focus' );
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
-} ).press( '#infoIcon', function() { // usage
-	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
+} ).press( { // usage
+	  delegate : '#infoIcon'
+	, action   : () => window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' )
 } );
 	
 I = { active: false }
@@ -403,7 +407,7 @@ function info( json ) {
 		if ( V.press || $( this ).hasClass( 'disabled' ) ) return
 		
 		infoButtonCommand( I.ok );
-	} ).press( function() {
+	} ).press( () => {
 		V.debug = true;
 		infoButtonCommand( I.ok );
 		V.debug = false;
@@ -681,7 +685,7 @@ function info( json ) {
 			$( '.inforange i' ).on( 'touchend mouseup keyup', function() { // increment up/dn
 				clearTimeout( V.timeout.range );
 				if ( ! V.press ) rangeSet( $( this ).hasClass( 'up' ) );
-			} ).press( function( e ) {
+			} ).press( e => {
 				var up = $( e.target ).hasClass( 'up' );
 				V.timeout.range = setInterval( () => rangeSet( up ), 100 );
 			} );
@@ -725,7 +729,7 @@ function info( json ) {
 				updnToggle();
 				$updn.on( 'click', function() {
 					if ( ! V.press ) numberset( $( this ) );
-				} ).press( function( e ) {
+				} ).press( e => {
 					var $target = $( e.target );
 					V.timeout.updni = setInterval( () => numberset( $target ), 100 );
 					V.timeout.updnt = setTimeout( () => { // @5 after 3s
@@ -1047,6 +1051,10 @@ function infoSetValues() {
 		} else if ( $this.is( 'select' ) ) {
 			val !== '' && typeof val !== 'undefined' ? $this.val( val ) : el.selectedIndex = 0;
 		} else {
+			if ( Array.isArray( val ) ) { // array > array literal
+				val = '[ '+ val.join( ', ' ) +' ]';
+				$this.addClass( 'array' );
+			}
 			$this.val( val );
 			if ( type === 'range' ) $('.inforange .value' ).text( val );
 		}
@@ -1103,7 +1111,14 @@ function infoVal( array ) {
 				}
 				break;
 			case 'text':
-				val = $this.val().trim();
+				if ( $this.hasClass( 'array' ) ) { // array literal > array
+					val = $this.val()
+								.replace( /[\[ \]]/g, '' )
+								.split( ',' );
+					val = JSON.parse( '['+ val +']' );
+				} else {
+					val = $this.val().trim();
+				}
 				break;
 			case 'textarea':
 				val = $this.val().trim().replace( /\n/g, '\\n' );
@@ -1306,6 +1321,8 @@ function qrCode( msg ) {
 	return qr.outerHTML
 }
 function scrollUpToView( $el ) {
+	if ( $el[ 0 ].getBoundingClientRect().bottom < window.innerHeight - 40 ) return
+	
 	$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
 }
 function sp( px ) {
@@ -1531,6 +1548,8 @@ function bashConsoleLog( data ) {
 	}
 }
 
+$( '.pagerefresh' ).press( () => location.reload() );
+
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return
 	
@@ -1539,7 +1558,7 @@ $( '#debug' ).on( 'click', function() {
 	} else {
 		$( '#banner' ).after( '<pre id="data">'+ highlightJSON( S ) +'</pre>' );
 	}
-} ).press( function() {
+} ).press( () => {
 	if ( V.debug ) {
 		V.debug = false;
 		refreshData();

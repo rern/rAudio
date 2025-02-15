@@ -275,7 +275,7 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	ip r | grep "dev $1.*link" | tail -1 | cut -d' ' -f9
+	ip -j route | jq -r .[0].prefsrc
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
@@ -292,6 +292,9 @@ killProcess() {
 		kill -9 $( < $filepid ) &> /dev/null
 		rm $filepid
 	fi
+}
+lanDevice() {
+	ip -br link | awk '/^e/ {print $1; exit}'
 }
 lineCount() {
 	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0

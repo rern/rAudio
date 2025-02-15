@@ -17,9 +17,9 @@
 #out::before {
 	position: absolute;
 	display: block;
-	left: -60px;
+	left: -90px;
 	top: calc(50% - 8px);
-	width: 45px;
+	width: 77px;
 	line-height: 16px;
 	text-align: center;
 	background: var( --cg );
@@ -27,13 +27,13 @@
 }
 #in::before {
 	color: #000;
-	background: var( --cgl );
+	background: var( --cg50 );
 }
 #in::before {
-	content: 'In';
+	content: 'Capture';
 }
 #out::before {
-	content: 'Out';
+	content: 'Playback';
 }
 .bar {
 	position: absolute;
@@ -138,7 +138,7 @@
 	vertical-align: 4px;
 	text-align: center;
 	color: var( --cw );
-	background-color: var( --cga );
+	background-color: var( --cg );
 }
 .db {
 	float: left;
@@ -288,6 +288,9 @@ i.bypassed {
 }
 .tab li:not( :focus-visible ):hover {
 	background: var( --cgd );
+}
+.tab li.graph:hover {
+	background: none;
 }
 .tab .divdest {
 	padding-bottom: 20px;
@@ -439,10 +442,18 @@ i.disabled {
 	right: 150px !important;
 }
 #eq .bottom {
-	bottom: 50px !important;
+	bottom: 60px !important;
 }
 #codeoutput {
 	margin-top: 15px;
+}
+cc {
+	background: var( --cg50 );
+	color: #000;
+}
+cp {
+	background: var( --cg );
+	color: var( --cw );
 }
 
 @media (max-width: 610px) {

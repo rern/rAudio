@@ -39,24 +39,27 @@ $( '.container' ).on( 'click', '.revision', function() {
 	}
 } ).on( 'click', '.thumbnail', function() {
 	if ( S.status.online ) $( this ).prev().find( '.source' )[ 0 ].trigger( 'click' );
-} ).press( '.install', function( e ) {
-	if ( ! S.status.online ) return
-	
-	addonData( $( e.currentTarget ) );
-	info( {
-		  icon     : icon
-		, title    : V.addon.title
-		, list     : [ 'Branch / Release', 'text' ]
-		, boxwidth : 200
-		, values   : 'UPDATE'
-		, ok       : () => {
-			V.branch = infoVal();
-			if ( ! V.branch ) return
-			
-			V.installurl = V.addon.installurl.replace( 'raw/main', 'raw/'+ V.branch );
-			'option' in V.addon ? optionGet() : postData();
-		}
-	} );
+} ).press( {
+	  delegate : '.install'
+	, action   : e => {
+		if ( ! S.status.online ) return
+		
+		addonData( $( e.currentTarget ) );
+		info( {
+			  icon     : icon
+			, title    : V.addon.title
+			, list     : [ 'Branch / Release', 'text' ]
+			, boxwidth : 200
+			, values   : 'UPDATE'
+			, ok       : () => {
+				V.branch = infoVal();
+				if ( ! V.branch ) return
+				
+				V.installurl = V.addon.installurl.replace( 'raw/main', 'raw/'+ V.branch );
+				'option' in V.addon ? optionGet() : postData();
+			}
+		} );
+	}
 } );
 
 function addonData( $this ) {

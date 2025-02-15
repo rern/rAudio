@@ -312,7 +312,7 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 } );
 $( '.page-icon' ).on( 'click', function() {
 	$( '#debug' ).trigger( 'click' );
-} ).press( () => location.reload() );
+} );
 $( '.head .i-gear' ).on( 'click', function() {
 	$( '#bar-bottom' ).toggle();
 } );

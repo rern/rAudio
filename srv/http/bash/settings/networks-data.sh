@@ -2,9 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-gatewayAddress() {
-	ip r | grep -m1 "^default .* $1" | tail -1 | cut -d' ' -f3
-}
 listBluetooth() {
 	rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=true
 	[[ ! $devicebt ]] && echo false && return
@@ -38,6 +35,10 @@ if [[ $1 == pushbt ]]; then
 	exit
 fi
 
+ip_route=$( ip -j route )
+ip_route_c=$( jq -c .[] <<< $ip_route | grep default )
+gateway=$( jq -r .[0].gateway <<< $ip_route )
+
 listWlan() {
 	[[ ! -e $dirshm/wlan ]] && echo false && return
 	
@@ -50,10 +51,9 @@ listWlan() {
 			ssid=$( quoteEscape $profile )
 			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
 			if [[ $current == $profile ]]; then
-				for i in {1..10}; do
-					ip=$( ipAddress $wlandev )
-					[[ $ip ]] && break || sleep 1
-				done
+				while read l; do
+					[[ $( jq -r .[0].dst <<< $l ) == $wlandev ]] && ip=$( jq -r .[0].prefsrc <<< $l )
+				done <<< $ip_route_c
 				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 				if [[ ! $dbm || $dbm -gt -60 ]]; then
 					icon=wifi
@@ -63,7 +63,7 @@ listWlan() {
 					icon=wifi2
 				fi
 				listwl=',{
-  "gateway" : "'$( gatewayAddress $wlandev )'"
+  "gateway" : "'$gateway'"
 , "icon"    : "'$icon'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
@@ -88,21 +88,19 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=t
 [[ $devicebt ]] && listbt=$( listBluetooth )
 
 # lan
-ip=$( ipAddress e )
-if [[ $ip ]]; then
+ip_route_e=$( grep -m1 'dev":"e' <<< $ip_route_c )
+if [[ $ip_route_e ]]; then
+	ip=$( jq -r .prefsrc <<< $ip_route_e )
 	listeth='{
-  "ADDRESS" : "'$ip'"
-, "GATEWAY" : "'$( gatewayAddress e )'"
-, "DHCP"    : '$( ip r | grep -q 'dev e.* dhcp' && echo true )'
+  "ADDRESS" : "'$( jq -r .prefsrc <<< $ip_route_e )'"
+, "GATEWAY" : "'$gateway'"
+, "DHCP"    : '$( [[ $( jq -r .protocol <<< $ip_route_e ) == dhcp ]] && echo true )'
 }'
 fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
-ip=$( ipAddress )
-if [[ $ip ]]; then
-	gateway=$( gatewayAddress )
-	hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
-fi
+ip=$( jq -r .[0].prefsrc <<< $ip_route )
+[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ##########
 data='
 , "devicebt"    : '$devicebt'

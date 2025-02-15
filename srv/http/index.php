@@ -177,10 +177,10 @@ $htmlsearch   = '
 ';
 ?>
 
-<div id="refresh"></div>
+<div class="pagerefresh"></div>
 
 <div id="bar-top">
-	<?=i( 'raudio-nobg', 'logo' )
+	<?=i( 'raudio-nobg pagerefresh', 'logo' )
 	  .'<div id="playback-controls">'
 	  .buttonSet( [ 'previous', 'stop', 'play', 'pause', 'next' ], 'btn btn-default btn-cmd' )
 	  .'</div>'.i( 'gear', 'button-settings' )?>

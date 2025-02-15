@@ -12,7 +12,7 @@
 .band,
 .emptyadd,
 #volume-text { z-index: 102 }
-#refresh { z-index: 100 }
+div.pagerefresh { z-index: 100 }
 #lib-search,
 #pl-search { z-index: 96 }
 .coveredit,
@@ -226,7 +226,7 @@ i.map.disabled, .map.disabled i {
 	opacity: 0.5;
 }
 /* ---------------------- bars ----------------------*/
-#refresh {
+div.pagerefresh {
 	position: fixed;
 	width: 40px;
 	height: 40px;

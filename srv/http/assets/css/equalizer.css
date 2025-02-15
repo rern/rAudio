@@ -36,8 +36,7 @@
 /* size - position */
 #eq           { height : var( --eqAllH ) }
 #eq i         { width  : var( --eqBandW ) }
-#eq .vertical { top    : var( --eqSliderT );
-                width  : var( --eqSliderH ); }
+#eq .vertical { width  : var( --eqSliderH ) }
 #eq .label a  { width  : var( --eqLabel ) }
 #eq input     { height : var( --eqBandW ) }
 #eqname,
@@ -92,8 +91,10 @@
 #eq .vertical {
 	position: relative;
 	max-width: 300px;
-	margin: 0 auto;
+	margin: 0;
 	transform : rotate( -90deg );
+	transform-origin: top left;
+	translate: 10px 300px;
 }
 #eq .vertical::before { /* flat line */
 	position: absolute;
