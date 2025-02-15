@@ -115,15 +115,19 @@ F0.passC      = [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' 
 F0.pass0_3    = F0.pass.slice( 0, 3 );
 F0.pass0_4    = F0.pass.slice( 0, 4 );
 F0.passC0_3   = F0.passC.slice( 0, 3 );
+F0.v_nt       = { name: '', type: '' }
+F0.v_nts      = { name: '', type: '', subtype: '' }
 
 F0.list       = {
-	  pass    : F0.pass
-	, passC   : F0.passC
-	, shelf   : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
-	, passFO  : F0.pass0_4
-	, shelfFO : [ ...F0.pass0_4, F0.gain ]
-	, notch   : [ ...F0.pass,    F0.qbandwidth ]
+	  fivepoint : { name: '', type: '', subtype: '' }
+	, notch     : [ ...F0.pass,    F0.qbandwidth ]
+	, pass      : F0.pass
+	, passC     : F0.passC
+	, passFO    : F0.pass0_4
+	, shelf     : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
+	, shelfFO   : [ ...F0.pass0_4, F0.gain ]
 }
+$.each( F0.FivePointPeq, ( k, v ) => { F0.list.fivepoint[ k ] = [ 0, 0, 0 ] } );
 var F         = {
 	  Biquad      : {
 		  Free              : [ ...F0.pass0_3, ...F0.Free ]
@@ -218,38 +222,37 @@ var F         = {
 	]
 //
 	, values      : {
-		  Biquad      : {                                            // parameters
-			  Free              : { name: '', type: '', subtype: '', a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
-			, GeneralNotch      : { name: '', type: '', subtype: '', freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
-			, LinkwitzTransform : { name: '', type: '', subtype: '', q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
-			, Notch             : { name: '', type: '', subtype: '', freq: 1000, q: 0, unit: 'q' }
-			, Peaking           : { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
+		  Biquad      : {                        // parameters
+			  Free              : { ...F0.v_nts, a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
+			, GeneralNotch      : { ...F0.v_nts, freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
+			, LinkwitzTransform : { ...F0.v_nts, q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
+			, Notch             : { ...F0.v_nts, freq: 1000, q: 0, unit: 'q' }
+			, Peaking           : { ...F0.v_nts, freq: 1000, gain: 0, q: 0, unit: 'q' }
 			// the rest - define next
 		}
 		, BiquadCombo : {
-			  FivePointPeq      : { name: '', type: '', subtype: '' }
-			, GraphicEqualizer  : { name: '', type: '', subtype: '', freq_min: 20, freq_max: 20000, bands: 10 }
-			, Tilt              : { name: '', type: '', subtype: '', gain: 0 }
+			  FivePointPeq      : F0.list.fivepoint
+			, GraphicEqualizer  : { ...F0.v_nts, freq_min: 20, freq_max: 20000, bands: 10 }
+			, Tilt              : { ...F0.v_nts, gain: 0 }
 			// the rest - define next
 		}
 		, Conv        : {
-			  Dummy             : { name: '', type: '', subtype: '', length: 65536 } // min = 1
-			, Raw               : { name: '', type: '', subtype: '', filename: '', format: 'TEXT', skip_bytes_lines: 0, read_bytes_lines: 0 }
-			, Values            : { name: '', type: '', subtype: '', values: [ 0.1, 0.2, 0.3, 0.4 ] }
-			, Wav               : { name: '', type: '', subtype: '', filename: '', channel: 0 }
+			  Dummy             : { ...F0.v_nts, length: 65536 } // min = 1
+			, Raw               : { ...F0.v_nts, filename: '', format: 'TEXT', skip_bytes_lines: 0, read_bytes_lines: 0 }
+			, Values            : { ...F0.v_nts, values: [ 0.1, 0.2, 0.3, 0.4 ] }
+			, Wav               : { ...F0.v_nts, filename: '', channel: 0 }
 		}
 		, Dither      : {
 			// define next
-		}
-		, Delay       : { name: '', type: '',              delay: 0, unit: 'ms', subsample: false }
-		, DiffEq      : { name: '', type: '',              a: [ 1, 0 ], b: [ 1, 0 ] }
-		, Gain        : { name: '', type: '',              gain: 0, scale: 'dB', inverted: false, mute: false } // +-150dB / +-10 linear
-		, Limiter     : { name: '', type: '',              clip_limit: -10.0, soft_clip: false }
-		, Loudness    : { name: '', type: '',              fader : 'main', reference_level: 25, high_boost: 10, low_boost: 10, attenuate_mid: false }
-		, Volume      : { name: '', type: '',              ramp_time: 400, fader: 'Aux1' }
+		}                             // parameters
+		, Delay       : { ...F0.v_nt, delay: 0, unit: 'ms', subsample: false }
+		, DiffEq      : { ...F0.v_nt, a: [ 1, 0 ], b: [ 1, 0 ] }
+		, Gain        : { ...F0.v_nt, gain: 0, scale: 'dB', inverted: false, mute: false } // +-150dB / +-10 linear
+		, Limiter     : { ...F0.v_nt, clip_limit: -10.0, soft_clip: false }
+		, Loudness    : { ...F0.v_nt, fader : 'main', reference_level: 25, high_boost: 10, low_boost: 10, attenuate_mid: false }
+		, Volume      : { ...F0.v_nt, ramp_time: 400, fader: 'Aux1' }
 	}
 };
-Object.keys( F0.FivePointPeq ).forEach( k => { F.values.BiquadCombo.FivePointPeq[ k ] = [ 0, 0, 0 ] } );
 [ 'Biquad', 'BiquadCombo', 'Conv', 'Dither' ].forEach( type => {
 	F0.subtype[ type ][ 2 ].forEach( sub => {
 		if ( type === 'Biquad' ) {
