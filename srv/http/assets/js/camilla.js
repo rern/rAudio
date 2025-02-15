@@ -43,6 +43,8 @@ var wscamilla = null
 var R         = {} // range
 var X         = {} // flowchart
 // filters //////////////////////////////////////////////////////////////////////////////
+var n_t       = { name: '', type: '' }
+var n_t_s     = { name: '', type: '', subtype: '' }
 var F0        = {
 	  type         : [
 		  'Type'
@@ -106,6 +108,14 @@ var F0        = {
 		, [ 'Frequency act',    'number' ]
 		, [ 'Frequency target', 'number' ]
 	]
+	, values       : {
+		  dither  : { ...n_t_s, bits: 16 }
+		, pass    : { ...n_t_s, freq: 1000, q: 0 }
+		, passFO  : { ...n_t_s, freq: 1000 }
+		, passC   : { ...n_t_s, order: 2, freq: 1000 }
+		, shelf   : { ...n_t_s, freq: 1000, gain: 0, q: 0, unit: 'q' }
+		, shelfFO : { ...n_t_s, freq: 1000, gain: 0 }
+	}
 }
 F0.conv       = [ F0.name, F0.type, F0.subtype.Conv ];
 F0.dither     = [ F0.name, F0.type, F0.subtype.Dither, [ 'Bits', 'number' ] ];
@@ -115,8 +125,6 @@ F0.passC      = [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' 
 F0.pass0_3    = F0.pass.slice( 0, 3 );
 F0.pass0_4    = F0.pass.slice( 0, 4 );
 F0.passC0_3   = F0.passC.slice( 0, 3 );
-F0.v_nt       = { name: '', type: '' }
-F0.v_nts      = { name: '', type: '', subtype: '' }
 
 F0.list       = {
 	  fivepoint : { name: '', type: '', subtype: '' }
@@ -223,34 +231,34 @@ var F         = {
 //
 	, values      : {
 		  Biquad      : {                        // parameters
-			  Free              : { ...F0.v_nts, a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
-			, GeneralNotch      : { ...F0.v_nts, freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
-			, LinkwitzTransform : { ...F0.v_nts, q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
-			, Notch             : { ...F0.v_nts, freq: 1000, q: 0, unit: 'q' }
-			, Peaking           : { ...F0.v_nts, freq: 1000, gain: 0, q: 0, unit: 'q' }
+			  Free              : { ...n_t_s, a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
+			, GeneralNotch      : { ...n_t_s, freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
+			, LinkwitzTransform : { ...n_t_s, q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
+			, Notch             : { ...n_t_s, freq: 1000, q: 0, unit: 'q' }
+			, Peaking           : { ...n_t_s, freq: 1000, gain: 0, q: 0, unit: 'q' }
 			// the rest - define next
 		}
 		, BiquadCombo : {
 			  FivePointPeq      : F0.list.fivepoint
-			, GraphicEqualizer  : { ...F0.v_nts, freq_min: 20, freq_max: 20000, bands: 10 }
-			, Tilt              : { ...F0.v_nts, gain: 0 }
+			, GraphicEqualizer  : { ...n_t_s, freq_min: 20, freq_max: 20000, bands: 10 }
+			, Tilt              : { ...n_t_s, gain: 0 }
 			// the rest - define next
 		}
 		, Conv        : {
-			  Dummy             : { ...F0.v_nts, length: 65536 } // min = 1
-			, Raw               : { ...F0.v_nts, filename: '', format: 'TEXT', skip_bytes_lines: 0, read_bytes_lines: 0 }
-			, Values            : { ...F0.v_nts, values: [ 0.1, 0.2, 0.3, 0.4 ] }
-			, Wav               : { ...F0.v_nts, filename: '', channel: 0 }
+			  Dummy             : { ...n_t_s, length: 65536 } // min = 1
+			, Raw               : { ...n_t_s, filename: '', format: 'TEXT', skip_bytes_lines: 0, read_bytes_lines: 0 }
+			, Values            : { ...n_t_s, values: [ 0.1, 0.2, 0.3, 0.4 ] }
+			, Wav               : { ...n_t_s, filename: '', channel: 0 }
 		}
 		, Dither      : {
 			// define next
 		}                             // parameters
-		, Delay       : { ...F0.v_nt, delay: 0, unit: 'ms', subsample: false }
-		, DiffEq      : { ...F0.v_nt, a: [ 1, 0 ], b: [ 1, 0 ] }
-		, Gain        : { ...F0.v_nt, gain: 0, scale: 'dB', inverted: false, mute: false } // +-150dB / +-10 linear
-		, Limiter     : { ...F0.v_nt, clip_limit: -10.0, soft_clip: false }
-		, Loudness    : { ...F0.v_nt, fader : 'main', reference_level: 25, high_boost: 10, low_boost: 10, attenuate_mid: false }
-		, Volume      : { ...F0.v_nt, ramp_time: 400, fader: 'Aux1' }
+		, Delay       : { ...n_t, delay: 0, unit: 'ms', subsample: false }
+		, DiffEq      : { ...n_t, a: [ 1, 0 ], b: [ 1, 0 ] }
+		, Gain        : { ...n_t, gain: 0, scale: 'dB', inverted: false, mute: false } // +-150dB / +-10 linear
+		, Limiter     : { ...n_t, clip_limit: -10.0, soft_clip: false }
+		, Loudness    : { ...n_t, fader : 'main', reference_level: 25, high_boost: 10, low_boost: 10, attenuate_mid: false }
+		, Volume      : { ...n_t, ramp_time: 400, fader: 'Aux1' }
 	}
 };
 [ 'Biquad', 'BiquadCombo', 'Conv', 'Dither' ].forEach( type => {
@@ -258,25 +266,25 @@ var F         = {
 		if ( type === 'Biquad' ) {
 			if ( sub.slice( -4 ) === 'pass' ) {
 				F[ type ][ sub ]        = F0.list[ [ 'H', 'L' ].includes( sub[ 0 ] ) ? 'pass' : 'notch' ];
-				F.values[ type ][ sub ] = { name: '', type: '', subtype: '', freq: 1000, q: 0 }
+				F.values[ type ][ sub ] = F0.values.pass
 			} else if ( sub.slice( -6 ) === 'passFO' ) {
 				F[ type ][ sub ]        = F0.list.passFO;
-				F.values[ type ][ sub ] = { name: '', type: '', subtype: '', freq: 1000, name: '' }
+				F.values[ type ][ sub ] = F0.values.passFO
 			} else if ( sub.slice( -5 ) === 'shelf' ) {
 				F[ type ][ sub ]        = F0.list.shelf;
-				F.values[ type ][ sub ] = { name: '', type: '', subtype: '', freq: 1000, gain: 0, q: 0, unit: 'q' }
+				F.values[ type ][ sub ] = F0.values.shelf
 			} else if ( sub.slice( -7 ) === 'shelfFO' ) {
 				F[ type ][ sub ]        = F0.list.shelfFO;
-				F.values[ type ][ sub ] = { name: '', type: '', subtype: '', freq: 1000, gain: 0 }
+				F.values[ type ][ sub ] = F0.values.shelfFO
 			}
 		} else if ( type === 'BiquadCombo' ) {
 			if ( [ 'B', 'L' ].includes( sub[ 0 ] ) ) {
 				F[ type ][ sub ]        = F0.passC;
-				F.values[ type ][ sub ] = { name: '', type: '', subtype: '', order: 2, freq: 1000 }
+				F.values[ type ][ sub ] = F0.values.passC
 			}
 		} else if ( type === 'Dither' ) {
 			F[ type ][ sub ]        = F0.dither;
-			F.values[ type ][ sub ] = { name: '', type: '', subtype: '', bits: 16 }
+			F.values[ type ][ sub ] = F0.values.dither
 		}
 	} );
 } );
