@@ -138,7 +138,7 @@
 	vertical-align: 4px;
 	text-align: center;
 	color: var( --cw );
-	background-color: var( --cga );
+	background-color: var( --cg );
 }
 .db {
 	float: left;
