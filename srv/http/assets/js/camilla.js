@@ -1516,20 +1516,10 @@ var setting   = {
 			}
 		} else {
 			var values = { name: name || '', type: type }
-			if ( ! subtype && type in F0.subtype ) {
-				if ( type === 'Biquad' ) {
-					subtype = 'Allpass';
-				} else if ( type === 'BiquadCombo' ) {
-					subtype = 'ButterworthLowpass';
-				} else if ( type === 'Conv' ) {
-					subtype = 'Dummy';
-				} else if ( type === 'Dither' ) {
-					subtype = 'Flat';
-				}
-			}
+			if ( ! subtype && type in F0.subtype ) subtype = F0.subtype[ type ][ 2 ][ 0 ];
 			if ( subtype ) {
 				values.subtype = subtype;
-				var list       = F[ type ][ subtype ];
+				var list       = type === 'Dither' ? F.Dither : F[ type ][ subtype ];
 				if ( type === 'Biquad' ) {
 					subtype = subtype.replace( /All|Band|High|Low/, '' ); // XXXpass, XXXpassFO, XXXshelf, XXXshelfFO
 				} else if ( type === 'BiquadCombo' ) {
