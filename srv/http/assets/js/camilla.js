@@ -1515,15 +1515,15 @@ var setting   = {
 		if ( edit ) {
 			var values = { name: name, type: type }
 			var list   = F[ type ];
-			var kv     = F.values[ type ];
+			var kv     = F.values[ type ]; // keep order - list : values
 			if ( subtype ) {
 				values.subtype = subtype;
 				list           = list[ subtype ];
 				kv             = kv[ subtype ];
 			}
 			var param  = FIL[ name ].parameters;
-			$.each( kv, ( k, v ) => { // F.values[ type ] - keep values order
-				if ( ! ( k in values ) ) values[ k ] = param[ k ] || ''; // exclude: name, type, subtype
+			$.each( kv, ( k, v ) => {
+				if ( ! ( k in values ) ) values[ k ] = param[ k ]; // exclude: name, type, subtype
 			} );
 			if ( type === 'BiquadCombo' ) {
 				if ( subtype === 'FivePointPeq' ) {
@@ -1775,42 +1775,37 @@ var setting   = {
 			.prop( 'checked', false )
 			.eq( ch_diff[ 0 ] ).prop( 'checked', true );
 	} //-----------------------------------------------------------------------------------
-	, processor     : name => {
-		var type   = name ? PRO[ name ].type : 'Compressor';
-		var values = jsonClone( P.values[ type ] );
-		if ( name ) {
-			$.each( PRO[ name ].parameters, ( k, v ) => { values[ k ] = v } );
-			values.name = name;
+	, processor     : ( name, edit ) => {
+		if ( edit ) {
+			var values = {}
+			var param  = PRO[ name ].parameters;
+			$.each( P.values.Compressor, ( k, v ) => { values[ k ] = param[ k ] } );
+		} else {
+			var values = P.values.Compressor;
+			if ( name ) values.name = name;
 		}
-		var title  = name ? 'Processor' : 'Add Processor'
+		var title = edit ? 'Processor' : 'Add Processor'
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, list         : name ? P[ PRO[ name ].type ] : P.Compressor
+			, list         : edit ? P[ PRO[ name ].type ] : P.Compressor
 			, boxwidth     : 150
 			, values       : values
 			, checkblank   : true
-			, checkchanged : name
-			, beforeshow   : () => {
-				if ( name ) $( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
-			}
+			, checkchanged : edit
 			, ok           : () => {
-				var val = infoVal();
-				var typenew = val.type;
-				var namenew = val.name;
+				var val        = infoVal();
+				var typenew    = val.type;
+				var namenew    = val.name;
 				[ 'name', 'type' ].forEach( k => delete val[ k ] );
-				if ( ! PRO ) {
-					S.config.processors = {}
-					PRO = S.config.processors;
-				}
 				PRO[ namenew ] = { type: typenew, parameters: val }
-				if ( name in PRO && name !== namenew ) delete PRO[ name ];
-				setting.save( title, name ? 'Change ...' : 'Save ...' );
+				if ( edit && name !== namenew ) delete PRO[ name ];
+				setting.save( title, edit ? 'Change ...' : 'Save ...' );
 				render.processors();
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
-	, pipeline      : index => {
+	, pipeline      : ( index, edit ) => {
 		if ( ! setting.pipelineNone( 'filters' ) ) return
 		
 		var channels = '';
@@ -1820,14 +1815,12 @@ var setting   = {
 		var filters  = Object.keys( FIL );
 		var list     = [ [ ico( 'output gr' ), 'html', channels ] ];
 		var select   = [ ico( 'filters gr' ),  'select', { kv: filters, suffix: ico( 'remove' ) } ];
-		if ( index === undefined ) {
-			var edit = false;
-			list.push( select );
-		} else {
-			var edit = true;
+		if ( edit ) {
 			var data = jsonClone( PIP[ index ] );
 			var nL   = edit ? data.names.length : 1;
 			for ( var i = 0; i < nL; i++ ) list.push( select );
+		} else {
+			list.push( select );
 		}
 		info( {
 			  icon         : V.tab
@@ -2700,7 +2693,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			var name  = V.li.data( 'name' );
 			switch ( cmd ) {
 				case 'edit':
-					setting.processor( name );
+					setting.processor( name, 'edit' );
 					break;
 				case 'delete':
 					info( {
@@ -2721,7 +2714,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			switch ( cmd ) {
 				case 'edit':
 					var i = V.li.index();
-					PIP[ i ].type === 'Filter' ? setting.pipeline( i ) : setting.pipelineMixer( i );
+					PIP[ i ].type === 'Filter' ? setting.pipeline( i, 'edit' ) : setting.pipelineMixer( i, 'edit' );
 					break;
 				case 'delete':
 					var type = V.li.data( 'type' ).toLowerCase();
