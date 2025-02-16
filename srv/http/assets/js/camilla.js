@@ -89,13 +89,6 @@ var F0        = {
 		, [ 'b1', 'number' ]
 		, [ 'b2', 'number' ]
 	]
-	, FivePointPeq : {
-		  Lowshelf  : [ 'fls', 'gls', 'qls' ]
-		, Peaking1  : [ 'fp1', 'gp1', 'qp1' ]
-		, Peaking2  : [ 'fp2', 'gp2', 'qp2' ]
-		, Peaking3  : [ 'fp3', 'gp3', 'qp3' ]
-		, Highshelf : [ 'fhs', 'ghs', 'qhs' ]
-	}
 	, GeneralNotch : [
 		  [ 'Zero frequency',  'number' ]
 		, [ 'Pole frequency',  'number' ]
@@ -134,6 +127,16 @@ F0.list       = {
 	, shelf     : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
 	, shelfFO   : [ ...F0.pass0_4, F0.gain ]
 }
+F0.list.FivePointPeq = `
+<table>
+<tr><td>Name</td><td><input type="text"></td></tr>
+<tr><td>Type</td><td><select>${ htmlOption( F0.type[ 2 ] ) }</select></td></tr>
+<tr><td>Subtype</td><td><select>${ htmlOption( F0.subtype.BiquadCombo[ 2 ] ) }</select></td></tr>
+<tr><td>        </td><td>Frequency</td><td>Gain</td><td>Q</td></tr>`;
+var td_input         = '<td><input type="number"></td>';
+[ 'Lowshelf', 'Peaking 1', 'Peaking 2', 'Peaking 3', 'Highshelf' ].forEach( k => {
+	F0.list.FivePointPeq += '<tr><td>'+ k +'</td>'+ td_input.repeat( 3 ) +'</tr>';
+} );
 var F         = {
 	  Biquad      : {
 		  Free              : [ ...F0.pass0_3, ...F0.Free ]
@@ -144,15 +147,7 @@ var F         = {
 		// the rest - assign later
 	}
 	, BiquadCombo : {
-		  FivePointPeq          : [
-			  ...F0.passC0_3
-			, [ 'Lowshelf',  'text' ]
-			, [ 'Peaking 1', 'text' ]
-			, [ 'Peaking 2', 'text' ]
-			, [ 'Peaking 3', 'text' ]
-			, [ 'Highshelf', 'text' ]
-//			, [ '',          '',     '&nbsp;<c>freq, gain, q</c>' ]
-		]
+		  FivePointPeq         : F0.list.FivePointPeq
 		, GraphicEqualizer     : [
 			  ...F0.passC.slice( 0, 3 )
 			, [ 'Frequency min', 'number' ]
@@ -239,11 +234,11 @@ var F         = {
 		, BiquadCombo : {
 			  FivePointPeq      : {
 				  ... n_t_s
-				, Lowshelf  : [    60, 0, 0.5 ]
-				, Peaking1  : [   240, 0, 0.5 ]
-				, Peaking2  : [   900, 0, 0.5 ]
-				, Peaking3  : [  4000, 0, 0.5 ]
-				, Highshelf : [ 14000, 0, 0.5 ]
+				, fls:    60, gls: 0, qls: 0.5
+				, fp1:   240, gp1: 0, qp1: 0.5
+				, fp2:   900, gp2: 0, qp2: 0.5
+				, fp3:  4000, gp3: 0, qp3: 0.5
+				, fhs: 14000, ghs: 0, qhs: 0.5
 			}
 			, GraphicEqualizer  : { ...n_t_s, freq_min: 20, freq_max: 20000, bands: 10 }
 			, Tilt              : { ...n_t_s, gain: 0 }
@@ -1532,16 +1527,7 @@ var setting   = {
 			$.each( kv, ( k, v ) => {
 				if ( ! ( k in values ) ) values[ k ] = param[ k ]; // exclude: name, type, subtype
 			} );
-			if ( type === 'BiquadCombo' ) {
-				if ( subtype === 'FivePointPeq' ) {
-					$.each( F0.FivePointPeq, ( k, v ) => { // param kv to values array group
-						values[ k ] = [];
-						v.forEach( p => values[ k ].push( param[ p ] ) );
-					} );
-				} else if ( subtype === 'GraphicEqualizer' ) {
-					values.bands = param.gains.length;
-				}
-			}
+			if ( subtype === 'GraphicEqualizer' ) values.bands = param.gains.length;
 		} else {
 			var values = { name: name || '', type: type }
 			var list   = F[ type ];
@@ -1566,7 +1552,27 @@ var setting   = {
 			, checkblank   : true
 			, checkchanged : edit
 			, beforeshow   : () => {
-				$( '#infoList td:first-child' ).css( 'min-width', '125px' );
+				$( '#infoList td:first-child' ).css( 'min-width', '80px' );
+				if ( subtype === 'FivePointPeq' ) {
+					$( '#infoList tr' ).each( ( i, tr ) => {
+						var $td = $( tr ).find( 'td' );
+						if ( i < 4 ) {
+							if ( i < 3 ) {
+								$td.eq( 1 ).prop( 'colspan', 3 );
+							} else {
+								$td.css( 'text-align', 'center' );
+							}
+						} else {
+							$td.each( ( j, t ) => {
+								if ( j === 0 ) return
+								
+								var w = j === 1 ? '85px' : '50px';
+								$( t ).css( { 'min-width': w, width: w } );
+								$( t ).find( 'input' ).css( { width: w, 'text-align': 'right' } );
+							} );
+						}
+					} );
+				}
 				var $select = $( '#infoList select' );
 				$select.eq( 0 ).on( 'input', function() {
 					var val = infoVal();
@@ -2876,10 +2882,13 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		var hz     = [];
 		var values = [];
 		var g_k    = [];
-		$.each( F0.FivePointPeq, ( k, v ) => {
-			hz.push( param[ v[ 0 ] ] );
-			values.push( param[ v[ 1 ] ] );
-			g_k.push( v[ 1 ] );
+		$.each( F.values.BiquadCombo.FivePointPeq, ( k, v ) => {
+			if ( k[ 0 ] === 'f' ) {
+				hz.push( param[ k ] );
+			} else if ( k[ 0 ] === 'g' ) {
+				values.push( param[ k ] );
+				g_k.push( k );
+			}
 		} );
 	}
 	var list       = setting.fileterEq( hz, bands );
