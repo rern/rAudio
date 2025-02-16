@@ -1112,10 +1112,11 @@ function infoVal( array ) {
 				break;
 			case 'text':
 				if ( $this.hasClass( 'array' ) ) { // array literal > array
-					val = $this.val()
-								.replace( /[\[ \]]/g, '' )
+					var v0 = $this.val()
+								.replace( /[\[\]]/g, '' )
 								.split( ',' );
-					val = JSON.parse( '['+ val +']' );
+					val    = [];
+					v0.forEach( v => val.push( isNaN( v ) ? v : +v ) );
 				} else {
 					val = $this.val().trim();
 				}

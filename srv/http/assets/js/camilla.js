@@ -127,15 +127,13 @@ F0.pass0_4    = F0.pass.slice( 0, 4 );
 F0.passC0_3   = F0.passC.slice( 0, 3 );
 
 F0.list       = {
-	  fivepoint : { name: '', type: '', subtype: '' }
-	, notch     : [ ...F0.pass,    F0.qbandwidth ]
+	  notch     : [ ...F0.pass,    F0.qbandwidth ]
 	, pass      : F0.pass
 	, passC     : F0.passC
 	, passFO    : F0.pass0_4
 	, shelf     : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
 	, shelfFO   : [ ...F0.pass0_4, F0.gain ]
 }
-$.each( F0.FivePointPeq, ( k, v ) => { F0.list.fivepoint[ k ] = [ 0, 0, 0 ] } );
 var F         = {
 	  Biquad      : {
 		  Free              : [ ...F0.pass0_3, ...F0.Free ]
@@ -239,7 +237,14 @@ var F         = {
 			// the rest - define next
 		}
 		, BiquadCombo : {
-			  FivePointPeq      : F0.list.fivepoint
+			  FivePointPeq      : {
+				  ... n_t_s
+				, Lowshelf  : [    60, 0, 0.5 ]
+				, Peaking1  : [   240, 0, 0.5 ]
+				, Peaking2  : [   900, 0, 0.5 ]
+				, Peaking3  : [  4000, 0, 0.5 ]
+				, Highshelf : [ 14000, 0, 0.5 ]
+			}
 			, GraphicEqualizer  : { ...n_t_s, freq_min: 20, freq_max: 20000, bands: 10 }
 			, Tilt              : { ...n_t_s, gain: 0 }
 			// the rest - define next
@@ -1209,7 +1214,10 @@ var render    = {
 	}
 	, filter      : ( k, v ) => {
 		var param    = v.parameters;
+		var eq       = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type );
+		var cl_eq    = '';
 		var scale    = false;
+		var icon     = 'filters';
 		var icongain = '';
 		var disabled = '';
 		if ( v.type === 'Gain' ) {
@@ -1232,18 +1240,17 @@ var render    = {
 					+ icongain
 					+'</div>';
 		} else {
-			var paramdata = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type ) ? param.type : render.json2string( param );
+			if ( eq ) {
+				icon = 'equalizer';
+				cl_eq = ' class="eq"';
+				var paramdata = param.type;
+			} else {
+				var paramdata = render.json2string( param );
+			}
 			var li        = '<div class="li1">'+ k +'</div>'
 						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
 		var cl_graph = $( '#filters li[data-name="'+ k +'"]' ).hasClass( 'graph' ) ? ' class="graph"' : '';
-		if ( param.type === 'GraphicEqualizer' ) {
-			var icon = 'equalizer';
-			var cl_eq = ' class="eq"';
-		} else {
-			var icon = 'filters';
-			var cl_eq = '';
-		}
 		icon        += [ 'Volume', 'Dither', 'Limiter' ].includes( v.type ) ? '' : ' graph';
 		icon        += ' liicon edit';
 		return '<li data-name="'+ k +'"'+ cl_graph + cl_eq +'>'+ ico( icon ) + li  +'</li>'
@@ -1603,11 +1610,11 @@ var setting   = {
 					}
 					delete val.bands;
 				} else if ( subtype === 'FivePointPeq' ) {
-					Object.keys( F0.FivePointPeq ).forEach( k => {
-						F0.FivePointPeq[ k ].forEach( ( key, i ) => {
-							val[ key ] = val[ k ][ i ];
+					$.each( F0.FivePointPeq, ( k, v ) => {
+						val[ k ].forEach( ( p, i ) => {
+							val[ v[ i ] ] = p;
+							delete val[ k ];
 						} );
-						delete val[ k ];
 					} );
 				}
 				var param      = {}
@@ -1639,6 +1646,19 @@ var setting   = {
 				render.filters();
 			}
 		} );
+	}
+	, fileterEq     : ( hz, bands ) => {
+		var l_hz = '';
+		hz.forEach( h => {
+			if ( h > 999 ) h = Math.round( h / 1000 ) +'k'
+			l_hz += '<a>'+ h +'</a>';
+		} );
+		return `
+<div id="eq">
+<div class="label up">${ l_hz }</div>
+<div class="bottom"><div class="label dn">${ l_hz }</div></div>
+<div class="inforange vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
+</div>`;
 	} //-----------------------------------------------------------------------------------
 	, mixer         : name => {
 		var title = name ? 'Mixer' : 'Add Mixer'
@@ -2836,39 +2856,37 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	$this.hasClass( 'i-inverted' ) ? param.inverted = checked : setting.scaleSet( checked, param, $this );
 	setting.save();
 } ).on( 'click', 'li.eq', function( e ) {
-	if ( $( e.target ).parents( '.divgraph' ).length ) return
-	
 	var name  = $( this ).data( 'name' );
 	var param = FIL[ name ].parameters;
-	var bands = param.gains.length;
-	var min   = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
-	var max   = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
-	var width = ( max - min ) / bands;        // log10 / band
-	var v0    = min + width / 2;              // log10 midband
-	var v     = [ v0 ];
-	for ( var i = 0; i < bands - 1; i++ ) {
-		v0 += width;
-		v.push( v0 );
+	if ( param.type === 'GraphicEqualizer' ) {
+		var bands  = param.gains.length;
+		var min    = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
+		var max    = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
+		var width  = ( max - min ) / bands;        // log10 / band
+		var v0     = min + width / 2;              // log10 midband
+		var hz      = [ Math.round( Math.pow( 10, v0 ) ) ];
+		for ( var i = 0; i < bands - 1; i++ ) {
+			v0 += width;
+			hz.push( Math.round( Math.pow( 10, v0 ) ) );
+		}
+		var values = param.gains
+	} else {
+		var bands  = 5;
+		var hz     = [];
+		var values = [];
+		$.each( F0.FivePointPeq, ( k, v ) => {
+			hz.push( param[ v[ 0 ] ] );
+			values.push( param[ v[ 1 ] ] );
+		} );
 	}
-	var labelhz = '';
-	v.forEach( val => {
-		var hz = Math.round( Math.pow( 10, val ) ); // log10 > Hz
-		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k'
-		labelhz += '<a>'+ hz +'</a>';
-	} );
-	var list    = `
-<div id="eq">
-<div class="label up">${ labelhz }</div>
-<div class="bottom"><div class="label dn">${ labelhz }</div></div>
-<div class="inforange vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
-</div>`;
-	var flatButton = () => $( '#infoOk' ).toggleClass( 'disabled', param.gains.reduce( ( a, b ) => a + b, 0 ) === 0 );
+	var list       = setting.fileterEq( hz, bands );
+	var flatButton = () => $( '#infoOk' ).toggleClass( 'disabled', values.reduce( ( a, b ) => a + b, 0 ) === 0 );
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
 		, list       : list
 		, width      : 50 * bands + 40
-		, values     : param.gains
+		, values     : values
 		, beforeshow : () => {
 			flatButton();
 			$( '.inforange input' ).on( 'input', function() {
