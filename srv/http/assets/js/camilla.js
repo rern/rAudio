@@ -2856,9 +2856,10 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	$this.hasClass( 'i-inverted' ) ? param.inverted = checked : setting.scaleSet( checked, param, $this );
 	setting.save();
 } ).on( 'click', 'li.eq', function( e ) {
-	var name  = $( this ).data( 'name' );
-	var param = FIL[ name ].parameters;
-	if ( param.type === 'GraphicEqualizer' ) {
+	var name    = $( this ).data( 'name' );
+	var param   = FIL[ name ].parameters;
+	var graphic = param.type === 'GraphicEqualizer';
+	if ( graphic ) {
 		var bands  = param.gains.length;
 		var min    = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
 		var max    = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
@@ -2874,13 +2875,20 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		var bands  = 5;
 		var hz     = [];
 		var values = [];
+		var g_k    = [];
 		$.each( F0.FivePointPeq, ( k, v ) => {
 			hz.push( param[ v[ 0 ] ] );
 			values.push( param[ v[ 1 ] ] );
+			g_k.push( v[ 1 ] );
 		} );
 	}
 	var list       = setting.fileterEq( hz, bands );
 	var flatButton = () => $( '#infoOk' ).toggleClass( 'disabled', values.reduce( ( a, b ) => a + b, 0 ) === 0 );
+	function valSet( i, val ) {
+		graphic ? param.gains[ i ] = val : param[ g_k[ i ] ] = val;
+		setting.save();
+		flatButton();
+	}
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
@@ -2891,25 +2899,23 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 			flatButton();
 			$( '.inforange input' ).on( 'input', function() {
 				var $this = $( this );
-				param.gains[ $this.index() ] = +$this.val();
-				setting.save();
-				flatButton();
+				var i     = $this.index();
+				var val   = +$this.val();
+				valSet( i, val );
 			} );
 			$( '#eq .label a' ).on( 'click', function() {
 				var $this = $( this );
 				var i     = $this.index();
-				var gain  = param.gains[ i ];
-				$this.parent().hasClass( 'up' ) ? gain++ : gain--;
-				$( '.inforange input' ).eq( i ).val( gain );
-				param.gains[ i ] = gain;
-				setting.save();
-				flatButton();
+				var val   = graphic ? param.gains[ i ] : param[ g_k[ i ] ];
+				$this.parent().hasClass( 'up' ) ? val++ : val--;
+				$( '.inforange input' ).eq( i ).val( val );
+				valSet( i, val );
 			} );
 		}
 		, oklabel    : ico( 'set0' ) +'Flat'
 		, oknoreset  : true
 		, ok         : () => {
-			param.gains = Array( bands ).fill( 0 );
+			graphic ? param.gains = Array( bands ).fill( 0 ) : g_k.forEach( k => { param[ k ] = 0 } );
 			setting.save();
 			$( '.inforange input' ).val( 0 );
 			$( '#infoOk' ).addClass( 'disabled' );
