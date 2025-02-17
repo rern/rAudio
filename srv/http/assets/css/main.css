@@ -144,7 +144,6 @@ i.map.disabled, .map.disabled i {
 .menu i {
 	width: 40px;
 	line-height: 40px;
-	vertical-align: bottom;
 	text-align: center;
 	font-size: 22px;
 	color: var( --cw );
