@@ -76,12 +76,12 @@ var F0        = {
 			  , 'ShibataHigh441', 'ShibataHigh48',   'ShibataLow192',    'ShibataLow441',     'ShibataLow48', 'ShibataLow882', 'ShibataLow96' ]
 		]
 	}
+	, name         : [ 'Name',      'text' ]
+	, fader        : [ 'Fader',     'text' ]
 	, freq         : [ 'Frequency', 'number' ]
 	, gain         : [ 'Gain',      'number' ]
 	, q            : [ 'Q',         'number' ]
 	, qbandwidth   : [ '',          'radio', { Q: 'q', Bandwidth: 'bandwidth' } ]
-	, name         : [ 'Name',      'text' ]
-	, fader        : [ 'Fader',     'text' ]
 	, Free         : [
 		  [ 'a1', 'number' ]
 		, [ 'a2', 'number' ]
@@ -124,19 +124,14 @@ F0.list       = {
 	, pass      : F0.pass
 	, passC     : F0.passC
 	, passFO    : F0.pass0_4
+	, peq       : [ ...F0.passC0_3, [ '', '', 'Frequency</td><td>Gain</td><td>Q' ] ]
 	, shelf     : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
 	, shelfFO   : [ ...F0.pass0_4, F0.gain ]
 }
-F0.list.FivePointPeq = `
-<table>
-<tr><td>Name</td><td><input type="text"></td></tr>
-<tr><td>Type</td><td><select>${ htmlOption( F0.type[ 2 ] ) }</select></td></tr>
-<tr><td>Subtype</td><td><select>${ htmlOption( F0.subtype.BiquadCombo[ 2 ] ) }</select></td></tr>
-<tr><td>        </td><td>Frequency</td><td>Gain</td><td>Q</td></tr>`;
-var td_input         = '<td><input type="number"></td>';
-[ 'Lowshelf', 'Peaking 1', 'Peaking 2', 'Peaking 3', 'Highshelf' ].forEach( k => {
-	F0.list.FivePointPeq += '<tr><td>'+ k +'</td>'+ td_input.repeat( 3 ) +'</tr>';
-} );
+var peq = [ 'Lowshelf', 'Peaking 1', 'Peaking 2', 'Peaking 3', 'Highshelf' ];
+for ( var i = 0; i < 15; i++ ) {
+	F0.list.peq.push( [ i % 3 ? '' : peq[ i / 3 ], 'number', { sameline: i % 3 < 2 } ] );
+}
 var F         = {
 	  Biquad      : {
 		  Free              : [ ...F0.pass0_3, ...F0.Free ]
@@ -147,9 +142,9 @@ var F         = {
 		// the rest - assign later
 	}
 	, BiquadCombo : {
-		  FivePointPeq         : F0.list.FivePointPeq
+		  FivePointPeq         : F0.list.peq
 		, GraphicEqualizer     : [
-			  ...F0.passC.slice( 0, 3 )
+			  ...F0.passC0_3
 			, [ 'Frequency min', 'number' ]
 			, [ 'Frequency max', 'number' ]
 			, [ 'Bands',         'number' ]
@@ -2889,7 +2884,9 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 <div class="bottom"><div class="label dn">${ l_hz }</div></div>
 <div class="inforange vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
 </div>`;
-	var flatButton = () => $( '#infoOk' ).toggleClass( 'disabled', values.reduce( ( a, b ) => a + b, 0 ) === 0 );
+	function flatButton() {
+		$( '#infoOk' ).toggleClass( 'disabled', values.reduce( ( a, b ) => a + b, 0 ) === 0 );
+	}
 	function valSet( i, val ) {
 		peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
 		setting.save();

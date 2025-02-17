@@ -602,7 +602,7 @@ function info( json ) {
 					htmls.list += '<textarea></textarea></td></tr>';
 					break;
 				default: // generic string
-					htmls.list += param.suffix || '';
+					htmls.list += param.suffix ? param.suffix : param || '';
 					htmls.list += param.sameline ? '</td>' : '</td></tr>';
 			}
 		} );
