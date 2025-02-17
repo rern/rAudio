@@ -1301,9 +1301,9 @@ function eqDiv( min, max, freq, bottom = '' ) {
 	var input  = '<input type="range" min="'+ min +'" max="'+ max +'">';
 	var label  = '';
 	var slider = '';
-	freq.forEach( h => {
-		if ( h > 999 ) h = Math.round( h / 1000 ) +'k';
-		label  += '<a>'+ h +'</a>';
+	freq.forEach( hz => {
+		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k';
+		label  += '<a>'+ hz +'</a>';
 		slider += input;
 	} );
 	return `
