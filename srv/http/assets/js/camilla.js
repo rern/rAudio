@@ -1652,19 +1652,6 @@ var setting   = {
 				render.filters();
 			}
 		} );
-	}
-	, fileterEq     : ( hz, bands ) => {
-		var l_hz = '';
-		hz.forEach( h => {
-			if ( h > 999 ) h = Math.round( h / 1000 ) +'k'
-			l_hz += '<a>'+ h +'</a>';
-		} );
-		return `
-<div id="eq">
-<div class="label up">${ l_hz }</div>
-<div class="bottom"><div class="label dn">${ l_hz }</div></div>
-<div class="inforange vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
-</div>`;
 	} //-----------------------------------------------------------------------------------
 	, mixer         : name => {
 		var title = name ? 'Mixer' : 'Add Mixer'
@@ -2864,20 +2851,8 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 } ).on( 'click', 'li.eq', function( e ) {
 	var name    = $( this ).data( 'name' );
 	var param   = FIL[ name ].parameters;
-	var graphic = param.type === 'GraphicEqualizer';
-	if ( graphic ) {
-		var bands  = param.gains.length;
-		var min    = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
-		var max    = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
-		var width  = ( max - min ) / bands;        // log10 / band
-		var v0     = min + width / 2;              // log10 midband
-		var hz      = [ Math.round( Math.pow( 10, v0 ) ) ];
-		for ( var i = 0; i < bands - 1; i++ ) {
-			v0 += width;
-			hz.push( Math.round( Math.pow( 10, v0 ) ) );
-		}
-		var values = param.gains
-	} else {
+	var peq     = param.type === 'FivePointPeq';
+	if ( peq ) {
 		var bands  = 5;
 		var hz     = [];
 		var values = [];
@@ -2890,11 +2865,33 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 				g_k.push( k );
 			}
 		} );
+	} else {
+		var bands  = param.gains.length;
+		var min    = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
+		var max    = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
+		var width  = ( max - min ) / bands;        // log10 / band
+		var v0     = min + width / 2;              // log10 midband
+		var hz      = [ Math.round( Math.pow( 10, v0 ) / 10 ) * 10 ];
+		for ( var i = 0; i < bands - 1; i++ ) {
+			v0 += width;
+			hz.push( Math.round( Math.pow( 10, v0 ) / 10 ) * 10 );
+		}
+		var values = param.gains
 	}
-	var list       = setting.fileterEq( hz, bands );
+	var l_hz    = '';
+	hz.forEach( h => {
+		if ( h > 999 ) h = Math.round( h / 1000 ) +'k';
+		l_hz += '<a>'+ h +'</a>';
+	} );
+	var list    =  `
+<div id="eq">
+<div class="label up">${ l_hz }</div>
+<div class="bottom"><div class="label dn">${ l_hz }</div></div>
+<div class="inforange vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
+</div>`;
 	var flatButton = () => $( '#infoOk' ).toggleClass( 'disabled', values.reduce( ( a, b ) => a + b, 0 ) === 0 );
 	function valSet( i, val ) {
-		graphic ? param.gains[ i ] = val : param[ g_k[ i ] ] = val;
+		peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
 		setting.save();
 		flatButton();
 	}
@@ -2915,7 +2912,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 			$( '#eq .label a' ).on( 'click', function() {
 				var $this = $( this );
 				var i     = $this.index();
-				var val   = graphic ? param.gains[ i ] : param[ g_k[ i ] ];
+				var val   = peq ? param[ g_k[ i ] ] : param.gains[ i ];
 				$this.parent().hasClass( 'up' ) ? val++ : val--;
 				$( '.inforange input' ).eq( i ).val( val );
 				valSet( i, val );
@@ -2924,7 +2921,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		, oklabel    : ico( 'set0' ) +'Flat'
 		, oknoreset  : true
 		, ok         : () => {
-			graphic ? param.gains = Array( bands ).fill( 0 ) : g_k.forEach( k => { param[ k ] = 0 } );
+			peq ? g_k.forEach( k => { param[ k ] = 0 } ) : param.gains = Array( bands ).fill( 0 );
 			setting.save();
 			$( '.inforange input' ).val( 0 );
 			$( '#infoOk' ).addClass( 'disabled' );
