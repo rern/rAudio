@@ -1367,7 +1367,6 @@ var render    = {
 		
 		V.sortable = new Sortable( $( '#pipeline .entries' )[ 0 ], {
 			  ghostClass : 'sortable-ghost'
-			, delay      : 400
 			, onUpdate   : function ( e ) {
 				var a  = jsonClone( PIP[ e.oldIndex ] );
 				PIP.splice( e.oldIndex, 1 );
