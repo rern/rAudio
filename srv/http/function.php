@@ -24,8 +24,9 @@ function i( $icon, $menu = '' ) {
 	return '<i class="i-'.$icon.$htmlmenu.'"></i>';
 }
 function imgIcon( $thumbsrc, $menu, $icon = '' ) {
-	$htmlicon = $icon ? ' data-icon="'.$icon.'"' : '';
-	return '<img class="lazyload iconthumb li-icon '.$icon.'"'.$htmlicon.' data-src="'.$thumbsrc.'^^^" data-menu="'.$menu.'">';
+	$htmlicon  = $icon ? ' data-icon="'.$icon.'"' : '';
+	$thumbfile = rawurlencode( $thumbsrc ); # preserve spaces and special characters
+	return '<img class="lazyload iconthumb li-icon '.$icon.'"'.$htmlicon.' data-src="'.$thumbfile.'^^^" data-menu="'.$menu.'">';
 }
 function indexBar( $indexes ) {
 	$indexbar  = '<a class="indexed">#</a>';

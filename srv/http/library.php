@@ -485,9 +485,10 @@ function htmlRadio() {
 		sortList( $array );
 		foreach( $array as $each ) {
 			$dataindex = count( $files ) ? '' : dataIndex( $each->sort );
+			$thumbfile = substr( $each->dir, 9 ).'/thumb.jpg';
 			$html.= '
 <li data-mode="'.$MODE.'" class="dir"'.$dataindex.'>
-	'.imgIcon( str_replace( '/srv/http', '', $each->dir ).'/thumb.jpg', 'wrdir' ).'
+	'.imgIcon( $thumbfile, 'wrdir' ).'
 	<a class="lidir">'.$each->dir.'</a>
 	<a class="lipath">'.$each->dirname.'</a>
 	<span class="single name">'.$each->dirname.'</span>
