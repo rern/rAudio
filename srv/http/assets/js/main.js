@@ -1274,12 +1274,15 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		return
 	}
 	
-	var $img = V.list.li.find( '.bkcoverart' );
-	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
+	var $this = $( this );
+	var $img  = $this.find( '.bkcoverart' );
+	var icon  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
+	var name  = $this.find( '.name' ).text();
+	var path  = $this.find( '.lipath' ).text();
 	var htmllist = `\
 <div class="infomessage">${ icon }<br>
-<wh>${ V.list.name }</wh>
-<a class="li2 hide">${ V.list.path }</a>
+<wh>${ name }</wh>
+<a class="li2 hide">${ path }</a>
 </div>
 <div class="menu">
 <a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
