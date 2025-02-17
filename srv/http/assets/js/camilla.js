@@ -1207,7 +1207,7 @@ var render    = {
 		var eq       = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type );
 		var cl_eq    = '';
 		var scale    = false;
-		var icon     = 'filters';
+		var icon     = ico( 'filters liicon graph edit' );
 		var icongain = '';
 		var disabled = '';
 		if ( v.type === 'Gain' ) {
@@ -1231,7 +1231,7 @@ var render    = {
 					+'</div>';
 		} else {
 			if ( eq ) {
-				icon = 'equalizer';
+				icon += ico( 'mixers' );
 				cl_eq = ' class="eq"';
 				var paramdata = param.type;
 			} else {
@@ -1241,9 +1241,7 @@ var render    = {
 						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
 		var cl_graph = $( '#filters li[data-name="'+ k +'"]' ).hasClass( 'graph' ) ? ' class="graph"' : '';
-		icon        += [ 'Volume', 'Dither', 'Limiter' ].includes( v.type ) ? '' : ' graph';
-		icon        += ' liicon edit';
-		return '<li data-name="'+ k +'"'+ cl_graph + cl_eq +'>'+ ico( icon ) + li  +'</li>'
+		return '<li data-name="'+ k +'"'+ cl_graph + cl_eq +'>'+ icon + li  +'</li>'
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
