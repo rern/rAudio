@@ -1297,6 +1297,22 @@ function jsonSort( json ) {
 	}, {} );
 }
 // ----------------------------------------------------------------------
+function eqDiv( freq, max = 40, bottom = '' ) {
+	var input  = '<input type="range" min="-40" max="'+ max +'">';
+	var label  = '';
+	var slider = '';
+	freq.forEach( h => {
+		if ( h > 999 ) h = Math.round( h / 1000 ) +'k';
+		label  += '<a>'+ h +'</a>';
+		slider += input;
+	} );
+	return `
+<div id="eq">
+<div class="label up">${ label }</div>
+<div class="bottom"><div class="label dn">${ label }</div>${ bottom }</div>
+<div class="inforange vertical">${ slider }</div>
+</div>`;
+}
 function loader( fader ) {
 	$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );
 	$( '#loader' ).removeClass( 'hide' );

@@ -2847,12 +2847,12 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	var peq     = param.type === 'FivePointPeq';
 	if ( peq ) {
 		var bands  = 5;
-		var hz     = [];
+		var freq   = [];
 		var values = [];
 		var g_k    = [];
 		$.each( F.values.BiquadCombo.FivePointPeq, ( k, v ) => {
 			if ( k[ 0 ] === 'f' ) {
-				hz.push( param[ k ] );
+				freq.push( param[ k ] );
 			} else if ( k[ 0 ] === 'g' ) {
 				values.push( param[ k ] );
 				g_k.push( k );
@@ -2864,24 +2864,13 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		var max    = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
 		var width  = ( max - min ) / bands;        // log10 / band
 		var v0     = min + width / 2;              // log10 midband
-		var hz      = [ Math.round( Math.pow( 10, v0 ) / 10 ) * 10 ];
+		var freq   = [ Math.round( Math.pow( 10, v0 ) / 10 ) * 10 ];
 		for ( var i = 0; i < bands - 1; i++ ) {
 			v0 += width;
-			hz.push( Math.round( Math.pow( 10, v0 ) / 10 ) * 10 );
+			freq.push( Math.round( Math.pow( 10, v0 ) / 10 ) * 10 );
 		}
 		var values = param.gains
 	}
-	var l_hz    = '';
-	hz.forEach( h => {
-		if ( h > 999 ) h = Math.round( h / 1000 ) +'k';
-		l_hz += '<a>'+ h +'</a>';
-	} );
-	var list    =  `
-<div id="eq">
-<div class="label up">${ l_hz }</div>
-<div class="bottom"><div class="label dn">${ l_hz }</div></div>
-<div class="inforange vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
-</div>`;
 	function flatButton() {
 		$( '#infoOk' ).toggleClass( 'disabled', values.reduce( ( a, b ) => a + b, 0 ) === 0 );
 	}
@@ -2893,7 +2882,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
-		, list       : list
+		, list       : eqDiv( freq )
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {
