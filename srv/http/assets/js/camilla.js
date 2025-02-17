@@ -121,13 +121,12 @@ F0.pass0_4    = F0.pass.slice( 0, 4 );
 F0.passC0_3   = F0.passC.slice( 0, 3 );
 
 F0.list       = {
-	  notch     : [ ...F0.pass,    F0.qbandwidth ]
-	, pass      : F0.pass
-	, passC     : F0.passC
-	, passFO    : F0.pass0_4
-	, peq       : [ ...F0.passC0_3, [ '', '', 'Frequency</td><td>Gain</td><td>Q' ] ]
-	, shelf     : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
-	, shelfFO   : [ ...F0.pass0_4, F0.gain ]
+	  pass    : F0.pass
+	, passC   : F0.passC
+	, passFO  : F0.pass0_4
+	, peq     : [ ...F0.passC0_3, [ '', '', 'Frequency</td><td>Gain</td><td>Q' ] ]
+	, shelf   : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
+	, shelfFO : [ ...F0.pass0_4, F0.gain ]
 }
 for ( var i = 0; i < 15; i++ ) {
 	F0.list.peq.push( [ i % 3 ? '' : F0.peq[ i / 3 ], 'number', { sameline: i % 3 < 2 } ] );
@@ -137,19 +136,19 @@ var F         = {
 		  Free              : [ ...F0.pass0_3, ...F0.Free ]
 		, GeneralNotch      : [ ...F0.pass0_3, ...F0.GeneralNotch ]
 		, LinkwitzTransform : [ ...F0.pass0_3, ...F0.LinkwitzTransform ]
-		, Notch             : F0.list.notch
+		, Notch             : [ ...F0.pass,    F0.qbandwidth ]
 		, Peaking           : [ ...F0.pass0_4, F0.gain, F0.q, F0.qbandwidth ]
 		// the rest - assign later
 	}
 	, BiquadCombo : {
-		  FivePointPeq         : F0.list.peq
-		, GraphicEqualizer     : [
+		  FivePointPeq     : F0.list.peq
+		, GraphicEqualizer : [
 			  ...F0.passC0_3
 			, [ 'Frequency min', 'number' ]
 			, [ 'Frequency max', 'number' ]
 			, [ 'Bands',         'number' ]
 		]
-		, Tilt                  : [
+		, Tilt              : [
 			  ...F0.passC0_3
 			, [ 'Gain', 'number' ]
 		]
