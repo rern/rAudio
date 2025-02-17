@@ -2882,7 +2882,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
-		, list       : eqDiv( freq )
+		, list       : eqDiv( -40, 40, freq )
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {

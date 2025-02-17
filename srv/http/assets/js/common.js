@@ -1297,8 +1297,8 @@ function jsonSort( json ) {
 	}, {} );
 }
 // ----------------------------------------------------------------------
-function eqDiv( freq, max = 40, bottom = '' ) {
-	var input  = '<input type="range" min="-40" max="'+ max +'">';
+function eqDiv( min, max, freq, bottom = '' ) {
+	var input  = '<input type="range" min="'+ min +'" max="'+ max +'">';
 	var label  = '';
 	var slider = '';
 	freq.forEach( h => {

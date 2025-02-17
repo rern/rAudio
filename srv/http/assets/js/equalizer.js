@@ -1,6 +1,6 @@
 var eqtimeout, equser;
 var flat   = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
-var freq   = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
+var freq   = [ 30, 60, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 ];
 var bottom =  ico( 'remove hide', 'eqdelete' )
 			+ ico( 'edit', 'eqrename' )
 			+ ico( 'save disabled hide', 'eqsave' )
@@ -14,7 +14,7 @@ function equalizer() {
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
-			, list       : eqDiv( freq, 80, bottom.replace( 'PRESETS', opt ) )
+			, list       : eqDiv( 40, 80, freq, bottom.replace( 'PRESETS', opt ) )
 			, values     : [ E.active, E.active, ...E.preset[ E.active ] ]
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 540 );
