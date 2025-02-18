@@ -1186,7 +1186,8 @@ div.pagerefresh {
 #lib-mode-list {
 	display: grid;
 	grid-template-columns: repeat( auto-fit, minmax( 190px, auto ) );
-	padding: 90px 7px 117px 7px;
+/*	grid-template-rows: 110px repeat(auto-fill, 110px);*/
+	padding: 90px 7px 50px 7px;
 }
 @media ( max-width: 773px ) { #lib-mode-list { grid-template-columns: repeat( auto-fit, minmax( 160px, auto ) ) } }
 @media ( max-width: 493px ) { #lib-mode-list { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
