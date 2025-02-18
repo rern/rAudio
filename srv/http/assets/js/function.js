@@ -1490,7 +1490,7 @@ function setBookmarkEdit() {
 		var $this      = $( el );
 		var buttonhtml = ico( 'remove bkedit bk-remove' );
 		if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit bkedit bk-rename' );
-		if ( ! S.webradio ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
+		if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode.bookmark' ).addClass( 'edit' );
