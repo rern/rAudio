@@ -2049,9 +2049,14 @@ $( '#lyricsdelete' ).on( 'click', function() {
 		}
 	} );
 } );
+var sortableOpt = {
+	  delay            : 200
+	, delayOnTouchOnly : true
+}
 // onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 new Sortable( document.getElementById( 'lib-mode-list' ), {
-	  onClone  : () => V.sortable = true
+	  ...sortableOpt
+	, onClone  : () => V.sortable = true
 	, onUpdate : () => {
 		var order = [];
 		$( '.mode' ).each( ( i, el ) => {
@@ -2063,7 +2068,8 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	, onEnd    : () => delete V.sortable
 } );
 new Sortable( document.getElementById( 'pl-list' ), {
-	  ghostClass : 'pl-sortable-ghost'
+	  ...sortableOpt
+	, ghostClass : 'pl-sortable-ghost'
 	, onStart    : function() {
 		$( '#pl-list li.active' ).addClass( 'sortactive' );
 	}
@@ -2074,7 +2080,8 @@ new Sortable( document.getElementById( 'pl-list' ), {
 	}
 } );
 new Sortable( document.getElementById( 'pl-savedlist' ), {
-	  ghostClass : 'pl-sortable-ghost'
+	  ...sortableOpt
+	, ghostClass : 'pl-sortable-ghost'
 	, onUpdate   : function ( e ) {
 		sortPlaylist( 'pl-savedlist', e.oldIndex, e.newIndex );
 	}

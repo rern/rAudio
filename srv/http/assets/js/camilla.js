@@ -1366,8 +1366,10 @@ var render    = {
 		if ( $( '#pipeline .entries li' ).length < 2 ) return
 		
 		V.sortable = new Sortable( $( '#pipeline .entries' )[ 0 ], {
-			  ghostClass : 'sortable-ghost'
-			, onUpdate   : function ( e ) {
+			  delay            : 200
+			, delayOnTouchOnly : true
+			, ghostClass       : 'sortable-ghost'
+			, onUpdate         : function ( e ) {
 				var a  = jsonClone( PIP[ e.oldIndex ] );
 				PIP.splice( e.oldIndex, 1 );
 				PIP.splice( e.newIndex, 0, a );
