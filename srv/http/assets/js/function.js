@@ -1479,7 +1479,7 @@ function setBlinkDot() {
 	}
 }
 function setBookmarkEdit() {
-	if ( $( '.bkedit' ).length ) {
+	if ( ! V.press && $( '.bkedit' ).length ) {
 		$( '.bkedit' ).remove();
 		$( '.mode.edit' ).removeClass( 'edit' );
 		return
