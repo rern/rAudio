@@ -1218,7 +1218,7 @@ div.pagerefresh {
 .mode {
 	position: relative;
 	height: 110px;
-	border: 2px solid #000;
+	border: 2px solid transparent;
 	border-radius: 5px;
 	color: var( --cg60 );
 	text-align: center;
@@ -1834,43 +1834,15 @@ li.active .name bl {
 li.active .li2 bl {
 	color: var( --cw ) !important;
 }
-
-.lib-sortable-ghost .mode::after {
-	position: absolute;
-	content: "\F600";
-	font-family: rern;
-	left: 0;
-	top: 0;
-	width: 100%;
-	font-size: 36px;
-	line-height: 116px;
-	color: var( --cw );
-}
-.lib-sortable-ghost .mode {
-	background: var( --cg60 );
-}
-.lib-sortable-ghost .mode > * {
-	opacity: 0.5;
+.pl-sortable-ghost .li-icon {
+	opacity: 0.5 !important;
 }
 .pl-sortable-ghost {
 	background: var( --cg60 );
 }
-.pl-sortable-ghost .li-icon {
-	visibility: hidden;
-}
 .pl-sortable-ghost a,
 .pl-sortable-ghost .li2 {
 	color: var( --cg ) !important;
-}
-.pl-sortable-ghost::before {
-	position: absolute;
-	content: "\F601";
-	font-family: rern;
-	width: 40px;
-	text-align: center;
-	font-size: 22px;
-	line-height: 30px;
-	color: var( --cw );
 }
 #playlist-empty {
 	width: 100%;

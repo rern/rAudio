@@ -1393,23 +1393,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 } ).press( {
 	  delegate : '.mode.bookmark'
 	, action   : () => {
-		setBookmarkEdit();
-		new Sortable( document.getElementById( 'lib-mode-list' ), {
-			// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
-			  ghostClass : 'lib-sortable-ghost'
-			, onChoose   : function() {
-				$( '.bkedit' ).remove();
-				$( '.mode.edit' ).removeClass( 'edit' );
-			}
-			, onUpdate   : function () {
-				var order = [];
-				$( '.mode' ).each( ( i, el ) => {
-					var $el  = $( el );
-					order.push( $el.hasClass( 'bookmark' ) ? $el.find( '.lipath' ).text() : $el.data( 'mode' ) );
-				} );
-				jsonSave( 'order', order );
-			}
-		} );
+		if ( ! V.sortable ) setBookmarkEdit();
 	}
 } );
 $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
@@ -1820,23 +1804,6 @@ $( '#pl-search-close' ).on( 'click', function() {
 		return $( this ).html().replace( /<bll>|<\/bll>/g, '' );
 	} )
 } );
-new Sortable( document.getElementById( 'pl-list' ), {
-	  ghostClass : 'pl-sortable-ghost'
-	, onStart    : function() {
-		$( '#pl-list li.active' ).addClass( 'sortactive' );
-	}
-	, onUpdate   : function ( e ) {
-		S.song = $( '#pl-list li.sortactive' ).index();
-		$( '#pl-list li.sortactive' ).removeClass( 'sortactive' );
-		sortPlaylist( 'pl-list', e.oldIndex, e.newIndex );
-	}
-} );
-new Sortable( document.getElementById( 'pl-savedlist' ), {
-	  ghostClass : 'pl-sortable-ghost'
-	, onUpdate   : function ( e ) {
-		sortPlaylist( 'pl-savedlist', e.oldIndex, e.newIndex );
-	}
-} );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( 'plrange' in V ) {
 		var pos     = $( this ).index() + 1;
@@ -2081,6 +2048,36 @@ $( '#lyricsdelete' ).on( 'click', function() {
 			lyricsHide();
 		}
 	} );
+} );
+// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
+new Sortable( document.getElementById( 'lib-mode-list' ), {
+	  onClone  : () => V.sortable = true
+	, onUpdate : () => {
+		var order = [];
+		$( '.mode' ).each( ( i, el ) => {
+			var $el  = $( el );
+			order.push( $el.hasClass( 'bookmark' ) ? $el.find( '.lipath' ).text() : $el.data( 'mode' ) );
+		} );
+		jsonSave( 'order', order );
+	}
+	, onEnd    : () => delete V.sortable
+} );
+new Sortable( document.getElementById( 'pl-list' ), {
+	  ghostClass : 'pl-sortable-ghost'
+	, onStart    : function() {
+		$( '#pl-list li.active' ).addClass( 'sortactive' );
+	}
+	, onUpdate   : function ( e ) {
+		S.song = $( '#pl-list li.sortactive' ).index();
+		$( '#pl-list li.sortactive' ).removeClass( 'sortactive' );
+		sortPlaylist( 'pl-list', e.oldIndex, e.newIndex );
+	}
+} );
+new Sortable( document.getElementById( 'pl-savedlist' ), {
+	  ghostClass : 'pl-sortable-ghost'
+	, onUpdate   : function ( e ) {
+		sortPlaylist( 'pl-savedlist', e.oldIndex, e.newIndex );
+	}
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
