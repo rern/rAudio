@@ -158,7 +158,7 @@ $.fn.press = function( args ) {
 		clearTimeout( timeout );
 		setTimeout( () => { // after last action timeout
 			if ( V.press && end ) end();
-			V.press = false;
+			setTimeout( () => V.press = false, 300 );
 		}, 0 );
 	} );
 	return this // allow chain
