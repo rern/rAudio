@@ -78,7 +78,7 @@ function artistAlbum( $artist, $album, $file ) {
 		if ( $artist )           $ar_al.= $artist;
 		if ( $artist && $album ) $ar_al.= ' - ';
 		if ( $album )            $ar_al.= $album;
-		return $ar_al;
+		return '<a class="ar_al">'.$ar_al.'</a>';
 	} else {
 		return $file;
 	}

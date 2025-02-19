@@ -1774,24 +1774,22 @@ $( '#button-pl-search' ).on( 'click', function() {
 } );
 $( '#pl-search-input' ).on( 'input', function() {
 	var keyword = $( '#pl-search-input' ).val();
-	var regex   = new RegExp( keyword, 'i' );
+	var regex   = new RegExp( keyword, 'ig' );
 	var count   = 0;
 	$( '#pl-list li' ).each( ( i, el ) => {
 		var $this = $( el );
-		var name   = $this.find( '.name' ).text();
-		var artist = $this.find( '.artist' ).text();
-		var album  = $this.find( '.album' ).text();
-		var txt    = name + artist + album;
-		var match  = txt.search( regex ) !== -1 ? true : false;
-		count      = match ? ( count + 1 ) : count;
-		$this.toggleClass( 'hide', ! match );
-		if ( match ) {
-			name   = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			artist = artist.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
-			album  = album.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+		var name  = $this.find( '.li1 .name' ).text();
+		var ar_al = $this.find( '.ar_al' ).text();
+		var txt   = name + ar_al;
+		if ( txt.search( regex ) !== -1 ) {
+			count++;
+			name  = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			ar_al = ar_al.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
 			$this.find( '.name' ).html( name );
-			$this.find( '.artist' ).html( artist );
-			$this.find( '.album' ).html( album );
+			$this.find( '.ar_al' ).html( ar_al );
+			$this.removeClass( 'hide' );
+		} else {
+			$this.addClass( 'hide' );
 		}
 	} );
 	pageScroll( 0 );
