@@ -4,6 +4,12 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250215
+file=/etc/pacman.conf
+if [[ -e /boot/kernel8.img ]]; then
+	grep -q '^IgnorePkg.*linux-rpi' $file && sed -i 's/^IgnorePkg.*/#IgnorePkg   =/' $file
+fi
+
 # 20250208
 if grep -q '^#bind_to_address = ::' /etc/snapserver.conf; then
 	sed -i '/^#bind_to_address/ a\

@@ -1195,9 +1195,9 @@ function renderLibraryCounts() {
 		$this
 			.toggleClass( 'hide', ! D[ mode ] )
 			.toggleClass( 'nodata', ! count );
-		if ( typeof count !== 'boolean' ) $this.find( 'gr' ).html( count ? count.toLocaleString() : '' );
+		var $gr   = $this.find( 'gr' );
+		if ( $gr.length ) $gr.html( count ? count.toLocaleString() : '' );
 	} );
-	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 	$( '.mode .label' ).toggleClass( 'hide', ! D.label );
 }
 function renderLibraryList( data ) { // V.librarylist

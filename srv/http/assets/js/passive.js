@@ -210,12 +210,13 @@ W = {
 			if ( 'delete' in data && $( '#pl-title .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 		}
 		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
-		$( '.mode.playlists gr' ).text( count || '' );
+		$( '.mode.playlists gr' ).text( count ? count.toLocaleString() : '' );
 	}
 	, radiolist : data => {
 		if ( 'count' in data ) {
-			C[ data.type ] = data.count;
-			$( '.mode.'+ data.type +' gr' ).text( data.count );
+			var count      = data.count;
+			C[ data.type ] = count;
+			$( '.mode.'+ data.type +' gr' ).text( count ? count.toLocaleString() : '' );
 		}
 		if ( V.library ) {
 			if ( V.librarylist && V.mode === data.type ) radioRefresh();

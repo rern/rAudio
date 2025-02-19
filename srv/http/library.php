@@ -112,7 +112,7 @@ case 'findartist': // artist, albumartist
 	foreach( $array as $each ) {
 		$mode      = strtolower( explode( '/', $each->path )[ 0 ] );
 		$dataindex = dataIndex( $each->sort );
-		$icon      = imgIcon( rawurlencode( '/mnt/MPD/'.$each->path.'/thumb.jpg' ), 'folder' );
+		$icon      = imgIcon( '/mnt/MPD/'.$each->path.'/thumb.jpg', 'folder' );
 		$html     .= '
 <li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.'
 <a class="lipath">'.$each->path.'</a>
@@ -129,10 +129,11 @@ case 'home':
 	$htmlmode = '';
 	foreach( $modes as $mode ) {
 		$lipath   = str_replace( ' ', '', $mode );
-		$modeLC   = strtolower( $lipath );
+		$mode_l   = strtolower( $lipath );
+		$gr       = in_array( $mode, [ 'NAS', 'SD', 'USB' ] ) ? '' : '<gr></gr>';
 		$htmlmode.= '
-<div class="mode '.$modeLC.'" data-mode="'.$modeLC.'">
-	<i class="i-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
+<div class="mode '.$mode_l.'" data-mode="'.$mode_l.'">
+	<i class="i-'.$mode_l.'"></i>'.$gr.'<a class="label">'.$mode.'</a>
 </div>';
 	}
 	// bookmarks
@@ -361,7 +362,7 @@ function htmlDirectory() {
 		$dir       = is_dir( '/mnt/MPD/'.$path );
 		if ( $dir ) {
 			$mode = strtolower( explode( '/', $path )[ 0 ] );
-			$icon = imgIcon( rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' ), 'folder' );
+			$icon = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', 'folder' );
 		} else {
 			$mode = $GMODE;
 			$icon = i( 'music ', 'file' );
@@ -439,7 +440,7 @@ function htmlList() { // non-file 'list' command
 			$dataindex = dataIndex( $data[ 0 ] );
 			$path      = end( $data );
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
-			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
+			$icon      = imgIcon( '/mnt/MPD/'.$path.'/coverart.jpg', 'folder' );
 			if ( $display->albumbyartist ) {
 				$artist = $data[ 1 ];
 				$l1     = $artist;
@@ -462,7 +463,7 @@ function htmlList() { // non-file 'list' command
 <div class="coverart"'.$dataindex.'>
 	<a class="lipath">'.$path.'</a>
 	<a class="liname">'.$album.'</a>
-	<div><img class="lazyload" data-src="'.$coverfile.'^^^"></div>
+	'.$icon.'
 	<a class="coverart1">'.$l1.'</a>
 	<a class="coverart2">'.$l2.'</a>
 </div>';
@@ -485,10 +486,11 @@ function htmlRadio() {
 		sortList( $array );
 		foreach( $array as $each ) {
 			$dataindex = count( $files ) ? '' : dataIndex( $each->sort );
-			$thumbfile = substr( $each->dir, 9 ).'/thumb.jpg';
+			$thumbsrc  = substr( $each->dir, 9 ).'/thumb.jpg';
+			$icon      = imgIcon( $thumbsrc, 'wrdir' );
 			$html.= '
 <li data-mode="'.$MODE.'" class="dir"'.$dataindex.'>
-	'.imgIcon( $thumbfile, 'wrdir' ).'
+	'.$icon.'
 	<a class="lidir">'.$each->dir.'</a>
 	<a class="lipath">'.$each->dirname.'</a>
 	<span class="single name">'.$each->dirname.'</span>

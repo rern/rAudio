@@ -1594,7 +1594,9 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	query.gmode            = V.mode;
 	list( query, function( html ) {
 		if ( ! html ) {
-			$this.addClass( 'nodata' );
+			$this
+				.removeClass( 'active' )
+				.addClass( 'nodata' );
 			contextmenuLibrary( $this, $target );
 			return
 		}

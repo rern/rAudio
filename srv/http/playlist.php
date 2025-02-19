@@ -137,7 +137,7 @@ foreach( $lists as $list ) {
 			$class     = 'file';
 			$discid    = '';
 			$path      = pathinfo( $file, PATHINFO_DIRNAME );
-			$thumbsrc  = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
+			$thumbsrc  = '/mnt/MPD/'.$path.'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
 			$icon      = imgIcon( $thumbsrc, 'filesavedpl', 'music' );
 		}
 		$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );
