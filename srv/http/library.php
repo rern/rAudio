@@ -440,7 +440,7 @@ function htmlList() { // non-file 'list' command
 			$dataindex = dataIndex( $data[ 0 ] );
 			$path      = end( $data );
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
-			$icon      = imgIcon( '/mnt/MPD/'.$path.'/coverart.jpg', 'folder' );
+			$thumbfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' );
 			if ( $display->albumbyartist ) {
 				$artist = $data[ 1 ];
 				$l1     = $artist;
@@ -463,7 +463,7 @@ function htmlList() { // non-file 'list' command
 <div class="coverart"'.$dataindex.'>
 	<a class="lipath">'.$path.'</a>
 	<a class="liname">'.$album.'</a>
-	'.$icon.'
+	<img class="lazyload" data-src="'.$thumbfile.'">
 	<a class="coverart1">'.$l1.'</a>
 	<a class="coverart2">'.$l2.'</a>
 </div>';

@@ -1249,6 +1249,8 @@ div.pagerefresh {
 .label,
 .bklabel {
 	display: block;
+	margin: 0 auto;
+	max-width: 180px;
 	font-size: 16px;
 	color: var( --cg60 );
 }
@@ -1520,10 +1522,9 @@ div.pagerefresh {
 	padding-bottom: 100%;
 }
 .coverart img {
-	position: absolute;
 	bottom: 0;
 	width: 100%;
-	height: 100%;
+	height: auto;
 	object-fit: contain;
 	border-right: 1px solid hsl(0,0%,15%);
 	pointer-events: none;
@@ -1534,10 +1535,8 @@ div.pagerefresh {
 	padding-left: 2px;
 	line-height: 18px;
 }
-.coverart1 {
-	padding-top: 3px;
-}
 .coverart2 {
+	padding-bottom: 3px;
 	color: var( --cg60 );
 }
 .coverart.active .coverart2 {

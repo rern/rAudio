@@ -1174,19 +1174,25 @@ $( '#button-lib-back' ).on( 'click', function() {
 		return
 	}
 	
-	if ( V.query.length === 1 ) {
-		$( '#library' ).trigger( 'click' );
+	if ( V.mode === 'album' ) {
+		$( '.licover' ).length ? $( '.mode.album' ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 		return
-	}
-	
-	if ( ! V.query.length ) {
-		var $breadcrumbs = $( '#lib-title a' );
-		var bL           = $breadcrumbs.length
-		if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
+		
+	} else {
+		if ( V.query.length === 1 && V.mode !== 'album' ) {
 			$( '#library' ).trigger( 'click' );
 			return
 		}
 		
+		if ( ! V.query.length ) {
+			var $breadcrumbs = $( '#lib-title a' );
+			var bL           = $breadcrumbs.length
+			if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
+				$( '#library' ).trigger( 'click' );
+				return
+			}
+			
+		}
 	}
 	V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
 	var backmode = 'gmode' in V && V.gmode !== V.mode;
@@ -1260,11 +1266,11 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		}
 		renderLibraryList( data );
 	} );
-	if ( query.library !== 'ls' && query.library !== 'radio' ) {
-		query.path      = V.mode.slice( -5 ) === 'radio' ? '' : path;
-		query.modetitle = path;
-		V.query.push( query );
-	}
+	if ( query.library === 'ls' || query.library === 'radio' || V.mode === 'album' ) return
+	
+	query.path      = V.mode.slice( -5 ) === 'radio' ? '' : path;
+	query.modetitle = path;
+	V.query.push( query );
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	if ( V.press || $( '.bkedit' ).length ) return
 	
