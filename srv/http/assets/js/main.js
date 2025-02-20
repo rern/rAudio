@@ -781,7 +781,6 @@ $( '#coverT' ).press( () => {
 	} else {
 		banner( 'coverart blink', 'Coverart Online', 'Fetch ...', -1 );
 		bash( [ 'coverartonline', S.Artist, S.Album.replace( /\(.*/, '' ), 'CMD ARTIST ALBUM' ], url => {
-			console.log( url );
 			bannerHide();
 		} );
 	}
@@ -1274,14 +1273,14 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		return
 	}
 	
-	var $this = $( this );
-	var $img  = $this.find( '.bkcoverart' );
-	var icon  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
-	var name  = $this.find( '.name' ).text();
-	var path  = $this.find( '.lipath' ).text();
+	var $this    = $( this );
+	var $img     = $this.find( '.bkcoverart' );
+	var icon     = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
+	var path     = $this.find( '.lipath' ).text();
+	V.list.name  = $this.find( '.name' ).text();
 	var htmllist = `\
 <div class="infomessage">${ icon }<br>
-<wh>${ name }</wh>
+<wh>${ V.list.name }</wh>
 <a class="li2 hide">${ path }</a>
 </div>
 <div class="menu">
@@ -1298,9 +1297,8 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 			$( '#infoList' ).find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$( '#infoList' ).find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 			$( '#infoList' ).on( 'click', '.cmd', function() {
-				V.list.li = $( '.infomessage' );
-				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];
-				V.action  = $( this ).data( 'cmd' );
+				V.mpccmd    = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
+				V.action    = $( this ).data( 'cmd' );
 				addToPlaylist();
 			} );
 		}

@@ -42,7 +42,7 @@ function addToPlaylistCommand() {
 	}
 	V.title       = cmd_title[ V.action ];
 	V.msg         =  '<a class="li1">'+ V.list.name +'</a>';
-	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
+	if ( V.list.li && V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
 	banner( 'playlist', V.title, V.msg );
 	bash( V.mpccmd );
 	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) switchPage( 'playback' );
