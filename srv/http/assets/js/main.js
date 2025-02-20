@@ -2070,7 +2070,6 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 } );
 new Sortable( document.getElementById( 'pl-list' ), {
 	  ...sortableOpt
-	, ghostClass : 'pl-sortable-ghost'
 	, onStart    : function() {
 		$( '#pl-list li.active' ).addClass( 'sortactive' );
 	}
@@ -2082,7 +2081,6 @@ new Sortable( document.getElementById( 'pl-list' ), {
 } );
 new Sortable( document.getElementById( 'pl-savedlist' ), {
 	  ...sortableOpt
-	, ghostClass : 'pl-sortable-ghost'
 	, onUpdate   : function ( e ) {
 		sortPlaylist( 'pl-savedlist', e.oldIndex, e.newIndex );
 	}

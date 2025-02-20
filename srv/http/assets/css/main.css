@@ -1204,21 +1204,18 @@ div.pagerefresh {
 #lib-mode-list.bars-off::after {
 	height: 10px;
 }
-#lib-mode-list .bookmark {
-    vertical-align: -1px;
-}
 #lib-mode-list.nolabel .bookmark {
     vertical-align: -33px;
 }
 .mode {
 	position: relative;
 	height: 110px;
-	border: 2px solid transparent;
 	border-radius: 5px;
 	color: var( --cg60 );
 	text-align: center;
 }
 .mode.edit {
+	border: 2px solid #000;
 	background: hsl( 0, 0%, 15% );
 }
 .mode.edit .i-bookmark,
@@ -1829,14 +1826,14 @@ li.active .name bl {
 li.active .li2 bl {
 	color: var( --cw ) !important;
 }
-.pl-sortable-ghost .li-icon {
-	opacity: 0.5 !important;
-}
-.pl-sortable-ghost {
+#page-playlist .sortable-chosen {
 	background: var( --cg60 );
 }
-.pl-sortable-ghost a,
-.pl-sortable-ghost .li2 {
+#page-playlist .sortable-chosen .li-icon {
+	opacity: 0.5 !important;
+}
+#page-playlist .sortable-chosen a,
+#page-playlist .sortable-chosen .li2 {
 	color: var( --cg ) !important;
 }
 #playlist-empty {

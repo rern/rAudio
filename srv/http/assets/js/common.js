@@ -127,6 +127,11 @@ var iconwarning = ico( 'warning yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
+var sortableOpt = {
+	  delay               : 200
+	, delayOnTouchOnly    : true
+	, touchStartThreshold : 5
+}
 var ws;
 // ----------------------------------------------------------------------
 /*
