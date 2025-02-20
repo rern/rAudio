@@ -20,7 +20,7 @@
 	left: -90px;
 	top: calc(50% - 8px);
 	width: 77px;
-	line-height: 16px;
+	line-height: 17px;
 	text-align: center;
 	background: var( --cg );
 	border-radius: 3px;
@@ -134,11 +134,10 @@
 	display: inline-block;
 	width: 45px;
 	min-width: 45px;
-	line-height: 16px;
+	line-height: 17px;
 	vertical-align: 4px;
 	text-align: center;
 	color: var( --cw );
-	background-color: var( --cg );
 }
 .db {
 	float: left;
@@ -440,6 +439,10 @@ i.disabled {
 }
 #codeoutput {
 	margin-top: 15px;
+}
+cc,
+cp {
+	line-height: 17px;
 }
 cc {
 	background: var( --cg50 );
