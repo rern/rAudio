@@ -9,7 +9,7 @@ file=/etc/pacman.conf
 if grep -q 'linux-rpi' $file; then
 	if [[ -e /boot/kernel8.img ]]; then
 		sed -i 's/^IgnorePkg.*/#IgnorePkg   =/' $file
-	else if [[ -e /boot/kernel7.img ]]; then
+	elif [[ -e /boot/kernel7.img ]]; then
 		sed -i 's/ linux-rpi//' $file
 	fi
 fi
