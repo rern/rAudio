@@ -20,14 +20,13 @@ hhmmss() {
 tagColor() {
 	echo '<a class="cc">'$@'</a>'
 }
-warningWrite() {
-	echo "   $warn" No write permission: $( tagColor $dir ) $( stat -c '%A (%a)' "$dir" )
-}
 
 dir="/mnt/MPD/$path"
-[[ ! -w "$dir" ]] && warningWrite && exit
+if [[ ! -w "$dir" ]]; then
+	echo "   $warn" No write permission: $( tagColor $dir ) $( stat -c '%A (%a)' "$dir" )
+	exit
 # --------------------------------------------------------------------
-
+fi
 echo -e "\nDirectory: $( tagColor $dir )\n"
 
 SECONDS=0
@@ -96,15 +95,9 @@ while read mpdpath; do
 			[[ $? == 0 ]] && magick "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg" || error=1
 		fi
 		if [[ $error ]]; then
-			if [[ ! -w "$dir" ]]; then
-				warningWrite
-				errorwrite+="
-$dir"
-			else
-				echo "   $warn Coversion failed: $( tagColor $coverfile )"
-				errorconvert+="
+			echo "   $warn Coversion failed: $( tagColor $coverfile )"
+			errorconvert+="
 $coverfile"
-			fi
 		else
 			(( thumb++ ))
 			echo "   $padg #$thumb - Thumbnail created."
