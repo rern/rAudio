@@ -1365,7 +1365,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, ok           : () => bash( [ 'bookmarkrename', name, infoVal(), 'CMD NAME NEWNAME' ] )
 	} );
 } ).on( 'click', '.bk-cover', function() {
-	var $this = $( this ).parent().parent();
+	var $this = $( this ).parent();
 	var name  = $this.find( '.name' ).text();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
@@ -1375,7 +1375,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	} else {
 		var icon    = 'bookmark';
 		var message = '<div class="infobookmark">'+ ico( 'bookmark' )
-					 +'<br><span class="bklabel">'+ name +'</span></div>';
+					 +'<span class="bklabel">'+ name +'</span></div>';
 	}
 	var imagefilenoext = '/mnt/MPD/'+ $this.find( '.lipath' ).text() +'/coverart';
 	info( {

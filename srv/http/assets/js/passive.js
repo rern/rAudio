@@ -12,7 +12,20 @@ W = {
 		clearTimeout( V.timeoutCover );
 		bannerHide();
 		$( '#liimg' ).css( 'opacity', '' );
-		if ( 'stationcover' in data ) {
+		if ( data.bookmark ) {
+			if ( V.library && V.libraryhome ) {
+				$( '.bookmark .lipath' ).each( ( i, el ) => {
+					var $el = $( el );
+					if ( $el.text() === data.bookmark ) {
+						$el.siblings( 'img' ).attr( 'src', data.url + versionHash() );
+						return false
+					}
+				} );
+			}
+			return
+		}
+		
+		if ( data.radio ) {
 			S.stationcover = data.url
 			if ( V.mode === 'webradio' ) {
 				var url = data.url.slice( 0, -4 ) +'-thumb.jpg';

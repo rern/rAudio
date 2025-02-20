@@ -6,8 +6,12 @@ alias=r1
 
 # 20250215
 file=/etc/pacman.conf
-if [[ -e /boot/kernel8.img ]]; then
-	grep -q '^IgnorePkg.*linux-rpi' $file && sed -i 's/^IgnorePkg.*/#IgnorePkg   =/' $file
+if grep -q 'linux-rpi' $file; then
+	if [[ -e /boot/kernel8.img ]]; then
+		sed -i 's/^IgnorePkg.*/#IgnorePkg   =/' $file
+	else if [[ -e /boot/kernel7.img ]]; then
+		sed -i 's/ linux-rpi//' $file
+	fi
 fi
 
 # 20250208

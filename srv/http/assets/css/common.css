@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1739235523' );
+	src         : url( '/assets/fonts/rern.woff2?v=1739883529' );
 }
 @font-face {
 	font-family : Lato;
@@ -672,10 +672,6 @@ hr {
 }
 #infoOverlay .button-coverart::before {
 	top: 1px;
-}
-#infoList .bklabel {
-	height: auto;
-	line-height: 30px;
 }
 #infoTopBg {
 	width: 100%;
