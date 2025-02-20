@@ -2049,11 +2049,6 @@ $( '#lyricsdelete' ).on( 'click', function() {
 		}
 	} );
 } );
-var sortableOpt = {
-	  delay               : 200
-	, delayOnTouchOnly    : true
-	, touchStartThreshold : 5
-}
 // onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ...sortableOpt
