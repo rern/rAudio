@@ -1222,7 +1222,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 } );
 $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
-} ).on( 'click', '.mode:not( .bookmark, .bkradio, .nodata )', function() {
+} ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {
 	V.mode          = $( this ).data( 'mode' );
 	V.modescrolltop = $( window ).scrollTop();
 	if ( V.mode === 'playlists' ) {
@@ -2051,6 +2051,12 @@ $( '#lyricsdelete' ).on( 'click', function() {
 // onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ...sortableOpt
+	, onChoose : () => {
+		setTimeout( () => {
+			$( '.mode' ).removeClass( 'edit' );
+			$( '.mode .bkedit' ).remove();
+		}, 300 );
+	}
 	, onClone  : () => V.sortable = true
 	, onUpdate : () => {
 		var order = [];
