@@ -1885,9 +1885,10 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$menu.find( '.pause, .stop, .current' ).addClass( 'hide' );
 	}
 	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
-	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', webradio );
+	$menu.find( '.similar' ).toggleClass( 'hide', webradio );
 	$menu.find( '.tag' ).toggleClass( 'hide', webradio || upnp || audiocd );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', ! notsaved );
+	$menu.find( '.i-track.submenu' ).toggleClass( 'disabled', S.pllength < 2 );
 	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	playlistRemove( $( this ).parent() );

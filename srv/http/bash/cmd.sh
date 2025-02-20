@@ -594,22 +594,15 @@ mpcremove )
 	if [[ $TO ]]; then
 		if (( $songpos >= $POS && $songpos <= $TO )); then
 			[[ $pllength == $TO ]] && next=$(( POS -1 )) || next=$(( END + 1 ))
-			mpc -q play $next
-			mpc -q stop
 		fi
-		for (( i=$TO; i >= $POS; i-- )); do
-			mpc -q del $i
-		done
+		POS+=-$TO
 	else
 		if [[ $songpos == $POS ]]; then
 			[[ $pllength == $POS ]] && next=$(( POS -1 )) || next=$POS
 		fi
-		mpc -q del $POS
-		if [[ $next ]]; then
-			mpc -q play $next
-			mpc -q stop
-		fi
 	fi
+	mpc -q del $POS
+	[[ $next ]] && mpc -q play $next && mpc -q stop
 	pushPlaylist
 	;;
 mpcseek )
