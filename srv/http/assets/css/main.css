@@ -1522,7 +1522,6 @@ div.pagerefresh {
 	padding-bottom: 100%;
 }
 .coverart img {
-	bottom: 0;
 	width: 100%;
 	height: auto;
 	object-fit: contain;
