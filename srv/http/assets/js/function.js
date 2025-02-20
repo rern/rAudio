@@ -1268,9 +1268,13 @@ function renderLibraryList( data ) { // V.librarylist
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
 		if ( V.mode === 'album' ) { // V.albumlist
 			V.albumlist = true;
-			if ( ! $( '.licover' ).length ) $( '#lib-list img' ).eq( 0 ).on( 'load', function() {
-				$( '#mode-title' ).append( '<span class="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
-			} );
+			if ( $( '.licover' ).length ) {
+				$( '.liinfo .lialbum' ).addClass( 'hide' );
+			} else {
+				$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
+					$( '#mode-title' ).append( '<span class="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
+				} );
+			}
 			if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
 		} else {
 			V.albumlist = false;
