@@ -164,6 +164,8 @@ if [[ $albumdiff ]]; then
 	else
 		rm -f $dirmpd/latest*
 	fi
+else
+	rm -f $dirmpd/latest*
 fi
 for mode in $modes latest; do
 	file=$dirmpd/$mode
