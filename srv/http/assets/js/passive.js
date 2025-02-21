@@ -320,7 +320,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
-				renderLibraryPadding();
+				renderLibraryPadding( [ 'album', 'latest' ].includes( V.mode ) ? $( '.coverart' ).eq( 0 ).height() : false );
 			}
 		} else {
 			renderPlaylistPadding();
