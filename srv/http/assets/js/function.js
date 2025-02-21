@@ -1284,24 +1284,29 @@ function renderLibraryList( data ) { // V.librarylist
 				setTrackCoverart();
 			}
 		}
-		renderLibraryPadding();
 		$( '#lib-search, #button-lib-search, #search-list' ).addClass( 'hide' );
 		pageScroll( V.scrolltop[ data.path ] || 0 );
+		if ( [ 'album', 'latest' ].includes( V.mode ) ) {
+			$( '.coverart img' ).eq( 0 ).on( 'lazyloaded', function() {
+				renderLibraryPadding( $( '.coverart' ).eq( 0 ).height() );
+			});
+		} else {
+			renderLibraryPadding();
+		}
 	} );
 }
-function renderLibraryPadding() {
+function renderLibraryPadding( coverartH ) {
 	var padding = barVisible( 129, 89 );
 	if ( V.librarytrack ) {
 		if ( D.fixedcover && V.wH > 734 ) padding += 230;
-	} else if ( [ 'album', 'latest' ].includes( V.mode ) ) {
-		$( '#lib-list' ).css( 'padding-bottom', '100vh' ); // force scrollbar to get .coverart height
-		padding += $( '.coverart' ).eq( 0 ).height() - 49;
+	} else if ( coverartH ) {
+		padding += coverartH - 49;
 	}
 	var $list = V.search ? $( '#search-list' ) : $( '#lib-list' );
 	$list.css( {
 		  'padding-bottom' : 'calc( 100vh - '+ padding +'px )'
 		, 'width'          :  V.librarytrack ? '100%' : ''
-	} )
+	} );
 }
 function renderPlayback() {
 	if ( ! S.state ) return // suppress on reboot
