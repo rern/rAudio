@@ -716,14 +716,6 @@ var graph     = {
 					return false
 			}
 		}
-		, fetchConv : file => {
-			file = '/data/camilladsp/configs/'+ file;
-			fetch( file )
-				.then( response => response.text() )
-				.then( text => {
-					console.log( text );
-				} );
-		}
 		, logSpace : ( min, max ) => {
 			var logmin  = Math.log10( min );
 			var logmax  = Math.log10( max );
