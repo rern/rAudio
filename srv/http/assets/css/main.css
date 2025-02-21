@@ -1518,7 +1518,7 @@ div.pagerefresh {
 	width: 100%;
 	height: auto;
 	object-fit: contain;
-	border-right: 1px solid hsl(0,0%,15%);
+	border-right: 1px solid var( --cgd );
 	pointer-events: none;
 }
 .coverart1,
