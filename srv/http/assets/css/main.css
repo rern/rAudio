@@ -1514,13 +1514,6 @@ div.pagerefresh {
 	text-align: center;
 	color: var( --cg60 );
 }
-#lib-list .coverart {
-	max-width: 200px;
-}
-.coverart div {
-	position: relative;
-	padding-bottom: 100%;
-}
 .coverart img {
 	width: 100%;
 	height: auto;
