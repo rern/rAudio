@@ -25,8 +25,15 @@ data='
 dirs=$( ls $dircamilladsp )
 for d in $dirs; do
 	[[ $bluetooth && $d == configs ]] && dir=configs-bt || dir=$d
-	dirs=$( ls $dircamilladsp/$dir )
-	ls+=', "'$d'": '$( line2array "$dirs" )
+	if [[ $dir == coeffs ]]; then
+		dirs=$( ls $dircamilladsp/$dir | grep -v '\.wav$' )
+		ls+=', "'$d'": '$( line2array "$dirs" )
+		dirs=$( ls $dircamilladsp/$dir | grep '\.wav$' )
+		ls+=', "coeffswav": '$( line2array "$dirs" )
+	else
+		dirs=$( ls $dircamilladsp/$dir )
+		ls+=', "'$d'": '$( line2array "$dirs" )
+	fi
 done
 ########
 	data+='

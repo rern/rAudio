@@ -652,10 +652,10 @@ var config    = {
 		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
 			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
 		} );
-		var dev                          = S.devices;
-		var samplings                    = dev.playback.samplings;
-		D0.samplerate                    = Object.values( samplings );
-		D.main[ 0 ][ 2 ].kv              = samplings;
+		var dev                            = S.devices;
+		var samplings                      = dev.playback.samplings;
+		D0.samplerate                      = Object.values( samplings );
+		D.main[ 0 ][ 2 ].kv                = samplings;
 		D0.list.capture_samplerate[ 2 ].kv = samplings;
 		D0.list.formatC[ 2 ].kv            = dev.capture.formats;
 		D0.list.formatP[ 2 ].kv            = dev.playback.formats;
@@ -664,6 +664,8 @@ var config    = {
 		D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
 		D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
 		D0.list.filename[ 2 ].kv           = S.ls.raw;
+		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
+		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
 	}
 }
 var graph     = {
@@ -1564,16 +1566,18 @@ var setting   = {
 				} );
 				$select.eq( 1 ).on( 'input', function() {
 					var val = infoVal();
-					if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.ls.coeffs ) {
-						info( {
-							  icon    : V.tab
-							, title   : title
-							, message : 'Filter files not available.'
-							, ok      : () => setting.filter( 'Conv', '', val.name )
-						} );
-					} else {
-						setting.filter( val.type, val.subtype, val.name );
+					if ( val.type === 'Conv' ) {
+						if ( ( val.subtype === 'Raw' && ! S.ls.coeffs ) || ( val.subtype === 'Wav' && ! S.ls.coeffswav ) ) {
+							info( {
+								  icon    : V.tab
+								, title   : title
+								, message : 'Filter files not available.'
+								, ok      : () => setting.filter( 'Conv', '', val.name )
+							} );
+							return
+						}
 					}
+					setting.filter( val.type, val.subtype, val.name );
 				} );
 				var $radio = $( '#infoList input:radio' );
 				if ( $radio.length ) {
