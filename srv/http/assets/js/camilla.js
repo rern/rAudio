@@ -690,9 +690,7 @@ var graph     = {
 				graph.plotLy( result );
 				return
 			}
-			console.log(param)
 			bash( "camilla-audiofileread.py '"+ JSON.stringify( param ) +"'", impulse => {
-				console.log(impulse)
 				var currfilt   = new Conv( param, DEV.samplerate, impulse );
 				var [ ti, im ] = currfilt.getImpulse();
 				var [ ma, ph ] = currfilt.gainAndPhase( f );
