@@ -672,25 +672,41 @@ var graph     = {
 	  filters      : {
 		  plot     : name => {
 			var filter     = FIL[ name ];
+			var param      = filter.parameters;
 			var f          = graph.filters.logSpace( 1, DEV.samplerate * 0.95 / 2 );
-			var currfilt   = graph.filters.data( filter );
-			if ( ! currfilt ) return
-			
-			var [ ma, ph ] = currfilt.gainAndPhase( f );
-			var [ fg, gr ] = calcGroupDelay( f, ph );
-			var result     = {
-				  f            : f
-				, f_groupdelay : fg
-				, groupdelay   : gr
-				, magnitude    : ma
-				, phase        : ph
+			if ( filter.type !== 'Conv' && ! ( 'filename' in param ) ) {
+				var currfilt   = graph.filters.data( filter );
+				if ( ! currfilt ) return
+				
+				var [ ma, ph ] = currfilt.gainAndPhase( f );
+				var [ fg, gr ] = calcGroupDelay( f, ph );
+				var result     = {
+					  f            : f
+					, f_groupdelay : fg
+					, groupdelay   : gr
+					, magnitude    : ma
+					, phase        : ph
+				}
+				graph.plotLy( result );
+				return
 			}
-			if ( filter.type === 'Conv' ) {
+			console.log(param)
+			bash( "camilla-audiofileread.py '"+ JSON.stringify( param ) +"'", impulse => {
+				console.log(impulse)
+				var currfilt   = new Conv( param, DEV.samplerate, impulse );
 				var [ ti, im ] = currfilt.getImpulse();
-				result.time    = ti;
-				result.impulse = im;
-			}
-			graph.plotLy( result );
+				var [ ma, ph ] = currfilt.gainAndPhase( f );
+				var [ fg, gr ] = calcGroupDelay( f, ph );
+				var result     = {
+					  f            : f
+					, f_groupdelay : fg
+					, groupdelay   : gr
+					, impulse      : im
+//					, magnitude    : ma
+//					, phase        : ph
+				}
+				graph.plotLy( result );
+			}, 'json' );
 		}
 		, data     : ( filter, volume ) => {
 			var param      = filter.parameters;
@@ -1008,20 +1024,27 @@ var graph     = {
 		} else {
 			PLOTS.magnitude.y   = data.magnitude;
 			var minmax          = {
-				  groupdelay : { min: -10, max: 10 }
-				, impulse    : { min:  -1, max: 1 }
-				, magnitude  : { min:  -6, max: 6 }
+				  groupdelay : 1000 
+				, impulse    : 1
+				, magnitude  : 6
 			};
 			[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
-				if ( ! ( d in data ) ) return
-				
+				if ( ! ( d in data ) ) {
+					if ( d === 'magnitude' ) {
+						AXES[ d ].dtick = 8
+						AXES[ d ].range = [ -6, 6 ];
+					}
+					return
+				}
 				var min = Math.min( ...data[ d ] );
 				var max = Math.max( ...data[ d ] );
-				max     = Math.max( max, minmax[ d ].max );
-				min     = Math.min( min, minmax[ d ].min )
-				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ].max * 0.1;
+				max     = Math.max( max, minmax[ d ] );
+				min     = Math.min( min, -minmax[ d ] )
+				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ] * 0.1;
 				if ( d === 'impulse' ) {
 					dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
+				} else if ( d === 'groupdelay' ) {
+					dtick = abs < 500 ? 100 : ( abs < 1000 ? 200 : 500 );
 				} else {
 					dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
 				}
@@ -1029,7 +1052,7 @@ var graph     = {
 				AXES[ d ].range = [ -abs, abs ];
 			} );
 		}
-		PLOTS.phase.y      = data.phase;
+		if ( 'phase' in data ) PLOTS.phase.y      = data.phase;
 		PLOTS.groupdelay.y = delay0 ? 0 : data.groupdelay;
 		var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
 		var layout         = {
@@ -1511,7 +1534,11 @@ var setting   = {
 			}
 			var param  = FIL[ name ].parameters;
 			$.each( kv, ( k, v ) => {
-				if ( ! ( k in values ) ) values[ k ] = param[ k ]; // exclude: name, type, subtype
+				if ( ! ( k in values ) ) { // exclude: name, type, subtype
+					var val = param[ k ];
+					if ( k === 'filename' ) val = val.split( '/' ).pop();
+					values[ k ] = val;
+				}
 			} );
 			if ( subtype === 'GraphicEqualizer' ) values.bands = param.gains.length;
 		} else {
@@ -1621,10 +1648,7 @@ var setting   = {
 					val[ unit ] = q;
 				}
 				$.each( val, ( k, v ) => { param[ k ] = v } );
-				if ( 'filename' in param ) {
-					param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
-					if ( subtype === 'Raw' ) param.format = 'TEXT';
-				}
+				if ( 'filename' in param ) param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
 				FIL[ newname ] = { type: type, parameters : param }
 				if ( name in FIL && name !== newname ) {
 					delete FIL[ name ];
