@@ -1050,8 +1050,8 @@ var graph     = {
 				AXES[ d ].range = [ -abs, abs ];
 			} );
 		}
-		if ( 'phase' in data ) PLOTS.phase.y      = data.phase;
-		PLOTS.groupdelay.y = delay0 ? 0 : data.groupdelay;
+		PLOTS.phase.y      = 'phase' in data ? data.phase : false;
+		PLOTS.groupdelay.y = delay0 ? false : data.groupdelay;
 		var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
 		var layout         = {
 			  ...PLOTS.layout
