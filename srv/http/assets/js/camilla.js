@@ -671,15 +671,12 @@ var config    = {
 var graph     = {
 	  filters      : {
 		  plot     : $li => {
-			var filter     = FIL[ $li.data( 'name' ) ];
-			var param      = filter.parameters;
-			var f          = graph.filters.logSpace( 1, DEV.samplerate * 0.95 / 2 );
-			if ( filter.type !== 'Conv' && ! ( 'filename' in param ) ) {
-				var currfilt   = graph.filters.data( filter );
-				if ( ! currfilt ) return
-				
-				var [ ma, ph ] = currfilt.gainAndPhase( f );
-				var [ fg, gr ] = calcGroupDelay( f, ph );
+			var filter    = FIL[ $li.data( 'name' ) ];
+			var f         = logSpace();
+			var classdata = graph.filters.data( filter );
+			if ( ! classdata ) return
+			
+			classdata.gainAndPhase( f, false, ( ma, ph, fg, gr ) => {
 				graph.plotLy( $li, {
 					  f            : f
 					, f_groupdelay : fg
@@ -687,24 +684,9 @@ var graph     = {
 					, magnitude    : ma
 					, phase        : ph
 				} );
-				return
-			}
-			bash( "camilla-audiofileread.py '"+ JSON.stringify( param ) +"'", impulse => {
-				var currfilt   = new Conv( param, DEV.samplerate, impulse );
-				var [ ti, im ] = currfilt.getImpulse();
-				var [ ma, ph ] = currfilt.gainAndPhase( f );
-				var [ fg, gr ] = calcGroupDelay( f, ph );
-				graph.plotLy( $li, {
-					  f            : f
-					, f_groupdelay : fg
-					, groupdelay   : gr
-					, impulse      : im
-//					, magnitude    : ma
-//					, phase        : ph
-				} );
-			}, 'json' );
+			} );
 		}
-		, data     : ( filter, volume ) => {
+		, data     : filter => {
 			var param      = filter.parameters;
 			var samplerate = DEV.samplerate;
 			switch( filter.type ) {
@@ -729,13 +711,6 @@ var graph     = {
 					banner( 'graph', 'Graph', 'Not available.' );
 					return false
 			}
-		}
-		, logSpace : ( min, max ) => {
-			var logmin  = Math.log10( min );
-			var logmax  = Math.log10( max );
-			var perstep = ( logmax - logmin ) / 1000;
-			var values  = Array.from( { length: 1000 }, ( _, n ) => 10 ** ( logmin + n * perstep ) );
-			return values
 		}
 	}
 	, flowchart    : {
@@ -972,19 +947,17 @@ var graph     = {
 	}
 	, pipeline     : {
 		  plot : $li => {
-			var f          = graph.filters.logSpace( 10, DEV.samplerate * 0.95 / 2 );
+			var f          = logSpace();
 			var totcgain   = new Array( 1000 ).fill( 1 );
-			var currfilt;
+			var classdata;
 			PIP[ $li.data( 'index' ) ].names.forEach( name => {
 				var filter       = FIL[ name ];
-				currfilt         = graph.filters.data( filter );
-				if ( ! currfilt ) return false
+				classdata        = graph.filters.data( filter );
+				if ( ! classdata ) return false
 				
-				var [ _, cgain ] = currfilt.complexGain( f );
+				var [ _, cgain ] = classdata.complexGain( f );
 				totcgain         = totcgain.map( ( cg, i ) => cgain[ i ].mul( cg ) );
 			});
-			if ( ! currfilt ) return
-			
 			var ma         = totcgain.map( cg => 20 * Math.log10( cg.abs() + 1e-15 ) );
 			var ph         = totcgain.map( cg => 180 / Math.PI * Math.atan2( cg.im, cg.re ) );
 			var [ fg, gr ] = calcGroupDelay( f, ph );
@@ -1017,7 +990,7 @@ var graph     = {
 		} else {
 			PLOTS.magnitude.y   = data.magnitude;
 			var minmax          = {
-				  groupdelay : 1000 
+				  groupdelay : 50 
 				, impulse    : 1
 				, magnitude  : 6
 			};
@@ -1037,7 +1010,7 @@ var graph     = {
 				if ( d === 'impulse' ) {
 					dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
 				} else if ( d === 'groupdelay' ) {
-					dtick = abs < 500 ? 100 : ( abs < 1000 ? 200 : 500 );
+					dtick = abs < 100 ? 20 : ( abs < 500 ? 100 : 500 );
 				} else {
 					dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
 				}
@@ -1045,7 +1018,7 @@ var graph     = {
 				AXES[ d ].range = [ -abs, abs ];
 			} );
 		}
-		PLOTS.phase.y      = 'phase' in data ? data.phase : false;
+		PLOTS.phase.y      = data.phase;
 		PLOTS.groupdelay.y = delay0 ? false : data.groupdelay;
 		var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
 		var layout         = {
@@ -1075,6 +1048,7 @@ var graph     = {
 			layout.yaxis4      = AXES.impulse;
 			PLOTS.impulse.y    = data.impulse;
 			plot.push( PLOTS.impulse );
+			PLOTS.phase.line.width = 1;
 		}
 		if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph"></div>' );
 		var $divgraph = $li.find( '.divgraph' );
@@ -1344,10 +1318,10 @@ var render    = {
 		graph.flowchart.refresh();
 	}
 	, pipe        : ( el, i ) => {
-		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
+		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon';
 		var graph    = '';
 		if ( el.type === 'Filter' ) {
-			icon      += ' graph';
+			icon      += FIL[ el.names[ 0 ] ].type === 'Conv' ? '' : ' edit graph';
 			var icon_s = 'filters'
 			var li1    = el.names.join( ' <gr>•</gr> ' );
 			var li2    = '';
@@ -1829,7 +1803,14 @@ var setting   = {
 		[ ...Array( DEV.playback.channels ).keys() ].forEach( c => {
 			channels += '<label><input type="checkbox" value="'+ c +'">'+ c +'</label>&emsp;';
 		} );
-		var filters  = Object.keys( FIL );
+		if ( edit ) {
+			var filters  = [];
+			$.each( FIL, ( k, v ) => {
+				if ( v.type !== 'Conv' ) filters.push( k );
+			} );
+		} else {
+			var filters  = Object.keys( FIL );
+		}
 		var list     = [ [ ico( 'output gr' ), 'html', channels ] ];
 		var select   = [ ico( 'filters gr' ),  'select', { kv: filters, suffix: ico( 'remove' ) } ];
 		if ( edit ) {
@@ -1865,6 +1846,7 @@ var setting   = {
 					var $remove = $( '#infoList .i-remove' );
 					$remove.toggleClass( 'disabled', $remove.length === 1 );
 					$( '#infoList input:checked' ).prop( 'disabled', $( 'input:checked' ).length === 1 );
+					$( '#infoList .i-add' ).toggleClass( 'disabled', FIL[ $( '#infoList select' ).val() ].type === 'Conv' );
 				}
 				setDisabled();
 				var select    = '<select>'+ htmlOption( filters ) +'</select';
