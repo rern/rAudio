@@ -670,8 +670,8 @@ var config    = {
 }
 var graph     = {
 	  filters      : {
-		  plot     : name => {
-			var filter     = FIL[ name ];
+		  plot     : $li => {
+			var filter     = FIL[ $li.data( 'name' ) ];
 			var param      = filter.parameters;
 			var f          = graph.filters.logSpace( 1, DEV.samplerate * 0.95 / 2 );
 			if ( filter.type !== 'Conv' && ! ( 'filename' in param ) ) {
@@ -680,14 +680,13 @@ var graph     = {
 				
 				var [ ma, ph ] = currfilt.gainAndPhase( f );
 				var [ fg, gr ] = calcGroupDelay( f, ph );
-				var result     = {
+				graph.plotLy( $li, {
 					  f            : f
 					, f_groupdelay : fg
 					, groupdelay   : gr
 					, magnitude    : ma
 					, phase        : ph
-				}
-				graph.plotLy( result );
+				} );
 				return
 			}
 			bash( "camilla-audiofileread.py '"+ JSON.stringify( param ) +"'", impulse => {
@@ -695,15 +694,14 @@ var graph     = {
 				var [ ti, im ] = currfilt.getImpulse();
 				var [ ma, ph ] = currfilt.gainAndPhase( f );
 				var [ fg, gr ] = calcGroupDelay( f, ph );
-				var result     = {
+				graph.plotLy( $li, {
 					  f            : f
 					, f_groupdelay : fg
 					, groupdelay   : gr
 					, impulse      : im
 //					, magnitude    : ma
 //					, phase        : ph
-				}
-				graph.plotLy( result );
+				} );
 			}, 'json' );
 		}
 		, data     : ( filter, volume ) => {
@@ -973,11 +971,11 @@ var graph     = {
 		}
 	}
 	, pipeline     : {
-		  plot : index => {
+		  plot : $li => {
 			var f          = graph.filters.logSpace( 10, DEV.samplerate * 0.95 / 2 );
 			var totcgain   = new Array( 1000 ).fill( 1 );
 			var currfilt;
-			PIP[ index ].names.forEach( name => {
+			PIP[ $li.data( 'index' ) ].names.forEach( name => {
 				var filter       = FIL[ name ];
 				currfilt         = graph.filters.data( filter );
 				if ( ! currfilt ) return false
@@ -990,7 +988,7 @@ var graph     = {
 			var ma         = totcgain.map( cg => 20 * Math.log10( cg.abs() + 1e-15 ) );
 			var ph         = totcgain.map( cg => 180 / Math.PI * Math.atan2( cg.im, cg.re ) );
 			var [ fg, gr ] = calcGroupDelay( f, ph );
-			graph.plotLy( {
+			graph.plotLy( $li, {
 				  f            : f
 				, f_groupdelay : fg
 				, groupdelay   : gr
@@ -999,19 +997,16 @@ var graph     = {
 			} );
 		}
 	}
-	, plot         : () => {
-		graph[ V.tab ].plot( V.li.data( V.tab === 'filters' ? 'name' : 'index' ) );
-	}
-	, plotLy       : data => {
+	, plotLy       : ( $li, data ) => {
 		var PLOTS = jsonClone( plots );
 		var AXES  = jsonClone( axes );
 		if ( V.tab === 'filters' ) {
-			var f      = FIL[ V.li.data( 'name' ) ];
+			var f      = FIL[ $li.data( 'name' ) ];
 			var delay  = f.type === 'Delay';                  // if filter has delay
 			var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
 		} else {
 			var delay  = false;
-			PIP[ V.li.data( 'index' ) ].names.forEach( n => { // if any filter has delay
+			PIP[ $li.data( 'index' ) ].names.forEach( n => { // if any filter has delay
 				var f      = FIL[ n ];
 				if ( ! delay && f.type === 'Delay' ) delay = true;
 				var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
@@ -1081,20 +1076,16 @@ var graph     = {
 			PLOTS.impulse.y    = data.impulse;
 			plot.push( PLOTS.impulse );
 		}
-		V.li.find( '.divgraph' ).remove();
-		V.li
-			.addClass( 'graph' )
-			.append( '<div class="divgraph"></div>' );
-		var $divgraph = V.li.find( '.divgraph' );
+		if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph"></div>' );
+		var $divgraph = $li.find( '.divgraph' );
 		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
-		$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
+		if ( ! $li.find( '.graphclose' ).length ) $divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 		if ( ! V.refresh ) scrollUpToView( $divgraph );
 	}
 	, refresh      : () => {
 		V.refresh = true;
-		$( '#'+ V.tab +' .entries.main li.graph' ).each( ( i, el ) => {
-			V.li = $( el );
-			graph.plot();
+		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
+			graph[ V.tab ].plot( $( el ).parent() );
 		} );
 		delete V.refresh;
 	}
@@ -1255,8 +1246,9 @@ var render    = {
 			var li        = '<div class="li1">'+ k +'</div>'
 						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
-		var cl_graph = $( '#filters li[data-name="'+ k +'"]' ).hasClass( 'graph' ) ? ' class="graph"' : '';
-		return '<li data-name="'+ k +'"'+ cl_graph + cl_eq +'>'+ icon + li  +'</li>'
+		var $graph   = $( '#filters li[data-name="'+ k +'"] .divgraph' );
+		var graph    = $graph.length ? $graph[ 0 ].outerHTML : '';
+		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ icon + li + graph +'</li>'
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -1353,22 +1345,24 @@ var render    = {
 	}
 	, pipe        : ( el, i ) => {
 		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
-		var cl_graph = '';
+		var graph    = '';
 		if ( el.type === 'Filter' ) {
 			icon      += ' graph';
 			var icon_s = 'filters'
 			var li1    = el.names.join( ' <gr>•</gr> ' );
 			var li2    = '';
 			el.channels.forEach( c => li2 += '<cc>'+ c +'</cc> ' );
-			cl_graph   = $( '#pipeline .main li' ).eq( i ).hasClass( 'graph' ) ? ' class="graph"' : '';
+			var $graph = $( '#pipeline li[data-index="'+ i +'"] .divgraph' );
+			graph      = $graph.length ? $graph[ 0 ].outerHTML : '';
 		} else {
 			var icon_s = 'mixers'
 			var li1    = el.name;
 			var li2    = render.mixerMap( MIX[ el.name ].mapping );
 		}
-		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'"'+ cl_graph +'>'+ ico( icon ) + ico( icon_s )
+		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( icon_s )
 				+'<div class="li1">'+ li1 +'</div>'
 				+'<div class="li2">'+ li2 +'</div>'
+				+ graph
 				+'</li>';
 		return li
 	}
@@ -2613,7 +2607,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			V.li.removeClass( 'graph' );
 			$divgraph.remove();
 		} else {
-			graph.plot();
+			graph[ V.tab ].plot( V.li );
 		}
 		return
 	}
