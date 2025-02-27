@@ -466,7 +466,7 @@ var axes      = {
 		, overlaying : 'x'
 		, side       : 'top'
 	}
-	, magnitude  : {
+	, gain       : {
 		  title        : {
 			  text     : 'Gain'
 			, font     : { color: color.m }
@@ -545,7 +545,7 @@ var plots     = {
 		, dragmode      : 'zoom'
 		, font          : { family: 'Inconsolata', size: 14 }
 	}
-	, magnitude  : {
+	, gain       : {
 		  yaxis : 'y'
 		, type  : 'scatter'
 		, name  : 'Gain'
@@ -672,18 +672,12 @@ var graph     = {
 	  filters      : {
 		  plot     : $li => {
 			var filter    = FIL[ $li.data( 'name' ) ];
-			var f         = logSpace();
+			var f         = graph.filters.logSpace();
 			var classdata = graph.filters.data( filter );
 			if ( ! classdata ) return
 			
-			classdata.gainAndPhase( f, false, ( ma, ph, fg, gr ) => {
-				graph.plotLy( $li, {
-					  f            : f
-					, f_groupdelay : fg
-					, groupdelay   : gr
-					, magnitude    : ma
-					, phase        : ph
-				} );
+			classdata.gainAndPhase( f, false, ( fg, ga, gr, ph, im ) => {
+				graph.plotLy( $li, fg, ga, gr, ph, im );
 			} );
 		}
 		, data     : filter => {
@@ -711,6 +705,13 @@ var graph     = {
 					banner( 'graph', 'Graph', 'Not available.' );
 					return false
 			}
+		}
+		, logSpace : () => {
+			let logmin  = V.tab === 'filters' ? 0 : 1;
+			let logmax  = Math.log10( DEV.samplerate * 0.95 / 2 );
+			let perstep = ( logmax - logmin ) / 1000;
+			let values  = Array.from( { length: 1000 }, ( v, i ) => 10 ** ( logmin + i * perstep ) );
+			return values;
 		}
 	}
 	, flowchart    : {
@@ -947,30 +948,40 @@ var graph     = {
 	}
 	, pipeline     : {
 		  plot : $li => {
-			var f          = logSpace();
-			var totcgain   = new Array( 1000 ).fill( 1 );
+			var f          = graph.filters.logSpace();
 			var classdata;
-			PIP[ $li.data( 'index' ) ].names.forEach( name => {
-				var filter       = FIL[ name ];
-				classdata        = graph.filters.data( filter );
-				if ( ! classdata ) return false
-				
-				var [ _, cgain ] = classdata.complexGain( f );
-				totcgain         = totcgain.map( ( cg, i ) => cgain[ i ].mul( cg ) );
-			});
-			var ma         = totcgain.map( cg => 20 * Math.log10( cg.abs() + 1e-15 ) );
-			var ph         = totcgain.map( cg => 180 / Math.PI * Math.atan2( cg.im, cg.re ) );
-			var [ fg, gr ] = calcGroupDelay( f, ph );
-			graph.plotLy( $li, {
-				  f            : f
-				, f_groupdelay : fg
-				, groupdelay   : gr
-				, magnitude    : ma
-				, phase        : ph
-			} );
+			var names      = PIP[ $li.data( 'index' ) ].names;
+			var filter     = FIL[ names[ 0 ] ];
+			if ( filter.type === 'Conv' ) {
+				classdata  = graph.filters.data( filter );
+				classdata.gainAndPhase( f, false, ( fg, ga, gr, ph, im ) => {
+					graph.plotLy( $li, fg, ga, gr, ph, im );
+				} );
+			} else {
+				var totcga = new Array( 1000 ).fill( 1 );
+				names.forEach( name => {
+					filter         = FIL[ name ];
+					classdata      = graph.filters.data( filter );
+					if ( ! classdata ) return false
+					
+					var [ _, cga ] = classdata.complexGain( f );
+					totcga          = totcga.map( ( cg, i ) => cga[ i ].mul( cg ) );
+				});
+				var ga         = mapGain( totcga );
+				var ph         = mapPhase( totcga );
+				var [ fg, gr ] = calcGroupDelay( f, ph );
+				graph.plotLy( $li, fg, ga, gr, ph );
+			}
 		}
 	}
-	, plotLy       : ( $li, data ) => {
+	, plotLy       : ( $li, fg, ga, gr, ph, im ) => {
+		var data  = {
+			  f_groupdelay : fg
+			, groupdelay   : gr
+			, gain         : ga
+			, phase        : ph
+		}
+		if ( im ) data.impulse = im;
 		var PLOTS = jsonClone( plots );
 		var AXES  = jsonClone( axes );
 		if ( V.tab === 'filters' ) {
@@ -986,17 +997,17 @@ var graph     = {
 			} );
 		}
 		if ( delay ) {
-			PLOTS.magnitude.y   = 0;
+			PLOTS.gain.y   = 0;
 		} else {
-			PLOTS.magnitude.y   = data.magnitude;
+			PLOTS.gain.y   = data.gain;
 			var minmax          = {
 				  groupdelay : 50 
 				, impulse    : 1
-				, magnitude  : 6
+				, gain       : 6
 			};
-			[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
+			[ 'groupdelay', 'impulse', 'gain' ].forEach( d => {
 				if ( ! ( d in data ) ) {
-					if ( d === 'magnitude' ) {
+					if ( d === 'gain' ) {
 						AXES[ d ].dtick = 8
 						AXES[ d ].range = [ -6, 6 ];
 					}
@@ -1020,15 +1031,15 @@ var graph     = {
 		}
 		PLOTS.phase.y      = data.phase;
 		PLOTS.groupdelay.y = delay0 ? false : data.groupdelay;
-		var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
+		var plot           = [ PLOTS.gain, PLOTS.phase, PLOTS.groupdelay ];
 		var layout         = {
 			  ...PLOTS.layout
 			, xaxis         : AXES.freq[ V.tab ]
-			, yaxis         : AXES.magnitude
+			, yaxis         : AXES.gain
 			, yaxis2        : AXES.phase
 			, yaxis3        : AXES.groupdelay
 		}
-		if ( 'impulse' in data ) { // Conv
+		if ( im ) { // Conv
 			var imL  = data.impulse.length;
 			var raw  = imL < 4500;
 			var each = raw ? imL / 80 : imL / 120;
@@ -1321,7 +1332,8 @@ var render    = {
 		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon';
 		var graph    = '';
 		if ( el.type === 'Filter' ) {
-			icon      += FIL[ el.names[ 0 ] ].type === 'Conv' ? '' : ' edit graph';
+			icon      += ' graph';
+			icon      += FIL[ el.names[ 0 ] ].type === 'Conv' ? '' : ' edit';
 			var icon_s = 'filters'
 			var li1    = el.names.join( ' <gr>•</gr> ' );
 			var li2    = '';
