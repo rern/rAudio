@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250215
+# 20250228
 file=/etc/pacman.conf
 if grep -q 'linux-rpi' $file; then
 	if [[ -e /boot/kernel8.img ]]; then

@@ -573,106 +573,11 @@ function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
 }
 
-var config    = {
-	  configuration       : () => {
-		if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
-			V.tabprev = V.tab;
-			V.tab     = 'config';
-			render.tab();
-		} else {
-			$( '#tab'+ V.tabprev ).trigger( 'click' );
-		}
-	}
-	, enable_rate_adjust  : () => {
-		if ( $( '#setting-enable_rate_adjust' ).siblings( 'input' ).hasClass( 'disabled' ) ) {
-			info( {
-				  ...SW
-				, message : 'Resampler type is <wh>Synchronous</wh>'
-			} );
-			switchCancel();
-			return
-		}
-		
-		var enabled = DEV.enable_rate_adjust;
-		info( {
-			  ...SW
-			, list         : [
-				  [ 'Adjust period', 'number' ]
-				, [ 'Target level',  'number' ]
-			]
-			, boxwidth     : 100
-			, values       : {
-				  adjust_period : DEV.adjust_period
-				, target_level  : DEV.target_level
-			}
-			, checkchanged : enabled
-			, cancel       : switchCancel
-			, ok           : () => {
-				DEV.enable_rate_adjust = true;
-				var val                =  infoVal();
-				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
-				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-			}
-		} );
-	}
-	, capture_samplerate  : () => {
-		var enabled = DEV.capture_samplerate;
-		info( {
-			  ...SW
-			, list         : D0.list.capture_samplerate
-			, boxwidth     : 120
-			, values       : [ DEV.capture_samplerate ]
-			, checkchanged : enabled
-			, cancel       : switchCancel
-			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
-			, ok           : () => {
-				DEV.capture_samplerate = DEV.samplerate;
-				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-			}
-		} );
-	}
-	, resampler           : () => setting.resampler( DEV.resampler ? DEV.resampler.type : 'AsyncSinc' )
-	, stop_on_rate_change : () => {
-		var enabled = DEV.stop_on_rate_change;
-		info( {
-			  ...SW
-			, list         : [ 'Rate mearsure interval', 'number' ]
-			, boxwidth     : 65
-			, values       : DEV.rate_measure_interval
-			, checkchanged : enabled
-			, cancel       : switchCancel
-			, ok           : () => {
-				DEV.stop_on_rate_change   = true;
-				DEV.rate_measure_interval = infoVal();
-				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-			}
-		} );
-	}
-	, valuesAssign        : () => { // DEV, MIX, FIL, PRO, DEV ...
-		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
-			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
-		} );
-		var dev                            = S.devices;
-		var samplings                      = dev.playback.samplings;
-		D0.samplerate                      = Object.values( samplings );
-		D.main[ 0 ][ 2 ].kv                = samplings;
-		D0.list.capture_samplerate[ 2 ].kv = samplings;
-		D0.list.formatC[ 2 ].kv            = dev.capture.formats;
-		D0.list.formatP[ 2 ].kv            = dev.playback.formats;
-		D0.list.deviceC[ 2 ]               = dev.capture.device;
-		D0.list.deviceP[ 2 ]               = dev.playback.device;
-		D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
-		D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
-		D0.list.filename[ 2 ].kv           = S.ls.raw;
-		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
-		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
-	}
-}
 var graph     = {
 	  filters      : {
 		  plot     : $li => {
 			var filter    = FIL[ $li.data( 'name' ) ];
-			var f         = graph.filters.logSpace();
+			var f         = graph.filters.logSpace( 0 );
 			var classdata = graph.filters.data( filter );
 			if ( ! classdata ) return
 			
@@ -706,8 +611,7 @@ var graph     = {
 					return false
 			}
 		}
-		, logSpace : () => {
-			let logmin  = V.tab === 'filters' ? 0 : 1;
+		, logSpace : logmin => {
 			let logmax  = Math.log10( DEV.samplerate * 0.95 / 2 );
 			let perstep = ( logmax - logmin ) / 1000;
 			let values  = Array.from( { length: 1000 }, ( v, i ) => 10 ** ( logmin + i * perstep ) );
@@ -948,7 +852,7 @@ var graph     = {
 	}
 	, pipeline     : {
 		  plot : $li => {
-			var f          = graph.filters.logSpace();
+			var f          = graph.filters.logSpace( 1 );
 			var classdata;
 			var names      = PIP[ $li.data( 'index' ) ].names;
 			var filter     = FIL[ names[ 0 ] ];
@@ -1077,6 +981,101 @@ var graph     = {
 }
 window.addEventListener( 'resize', graph.flowchart.refresh );
 
+var config    = {
+	  configuration       : () => {
+		if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
+			V.tabprev = V.tab;
+			V.tab     = 'config';
+			render.tab();
+		} else {
+			$( '#tab'+ V.tabprev ).trigger( 'click' );
+		}
+	}
+	, enable_rate_adjust  : () => {
+		if ( $( '#setting-enable_rate_adjust' ).siblings( 'input' ).hasClass( 'disabled' ) ) {
+			info( {
+				  ...SW
+				, message : 'Resampler type is <wh>Synchronous</wh>'
+			} );
+			switchCancel();
+			return
+		}
+		
+		var enabled = DEV.enable_rate_adjust;
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Adjust period', 'number' ]
+				, [ 'Target level',  'number' ]
+			]
+			, boxwidth     : 100
+			, values       : {
+				  adjust_period : DEV.adjust_period
+				, target_level  : DEV.target_level
+			}
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, ok           : () => {
+				DEV.enable_rate_adjust = true;
+				var val                =  infoVal();
+				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, capture_samplerate  : () => {
+		var enabled = DEV.capture_samplerate;
+		info( {
+			  ...SW
+			, list         : D0.list.capture_samplerate
+			, boxwidth     : 120
+			, values       : [ DEV.capture_samplerate ]
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
+			, ok           : () => {
+				DEV.capture_samplerate = DEV.samplerate;
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, resampler           : () => setting.resampler( DEV.resampler ? DEV.resampler.type : 'AsyncSinc' )
+	, stop_on_rate_change : () => {
+		var enabled = DEV.stop_on_rate_change;
+		info( {
+			  ...SW
+			, list         : [ 'Rate mearsure interval', 'number' ]
+			, boxwidth     : 65
+			, values       : DEV.rate_measure_interval
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, ok           : () => {
+				DEV.stop_on_rate_change   = true;
+				DEV.rate_measure_interval = infoVal();
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, valuesAssign        : () => { // DEV, MIX, FIL, PRO, DEV ...
+		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
+			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
+		} );
+		var dev                            = S.devices;
+		var samplings                      = dev.playback.samplings;
+		D0.samplerate                      = Object.values( samplings );
+		D.main[ 0 ][ 2 ].kv                = samplings;
+		D0.list.capture_samplerate[ 2 ].kv = samplings;
+		D0.list.formatC[ 2 ].kv            = dev.capture.formats;
+		D0.list.formatP[ 2 ].kv            = dev.playback.formats;
+		D0.list.deviceC[ 2 ]               = dev.capture.device;
+		D0.list.deviceP[ 2 ]               = dev.playback.device;
+		D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
+		D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
+		D0.list.filename[ 2 ].kv           = S.ls.raw;
+		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
+		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
+	}
+}
 var render    = {
 	  status      : () => { // onload only
 		headIcon();
