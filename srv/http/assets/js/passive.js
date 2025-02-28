@@ -12,7 +12,20 @@ W = {
 		clearTimeout( V.timeoutCover );
 		bannerHide();
 		$( '#liimg' ).css( 'opacity', '' );
-		if ( 'stationcover' in data ) {
+		if ( data.bookmark ) {
+			if ( V.library && V.libraryhome ) {
+				$( '.bookmark .lipath' ).each( ( i, el ) => {
+					var $el = $( el );
+					if ( $el.text() === data.bookmark ) {
+						$el.siblings( 'img' ).attr( 'src', data.url + versionHash() );
+						return false
+					}
+				} );
+			}
+			return
+		}
+		
+		if ( data.radio ) {
 			S.stationcover = data.url
 			if ( V.mode === 'webradio' ) {
 				var url = data.url.slice( 0, -4 ) +'-thumb.jpg';
@@ -210,12 +223,13 @@ W = {
 			if ( 'delete' in data && $( '#pl-title .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 		}
 		$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
-		$( '.mode.playlists gr' ).text( count || '' );
+		$( '.mode.playlists gr' ).text( count ? count.toLocaleString() : '' );
 	}
 	, radiolist : data => {
 		if ( 'count' in data ) {
-			C[ data.type ] = data.count;
-			$( '.mode.'+ data.type +' gr' ).text( data.count );
+			var count      = data.count;
+			C[ data.type ] = count;
+			$( '.mode.'+ data.type +' gr' ).text( count ? count.toLocaleString() : '' );
 		}
 		if ( V.library ) {
 			if ( V.librarylist && V.mode === data.type ) radioRefresh();
@@ -306,7 +320,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
-				renderLibraryPadding();
+				renderLibraryPadding( [ 'album', 'latest' ].includes( V.mode ) ? $( '.coverart' ).eq( 0 ).height() : false );
 			}
 		} else {
 			renderPlaylistPadding();

@@ -127,6 +127,11 @@ var iconwarning = ico( 'warning yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
+var sortableOpt = {
+	  delay               : 200
+	, delayOnTouchOnly    : true
+	, touchStartThreshold : 5
+}
 var ws;
 // ----------------------------------------------------------------------
 /*
@@ -158,7 +163,7 @@ $.fn.press = function( args ) {
 		clearTimeout( timeout );
 		setTimeout( () => { // after last action timeout
 			if ( V.press && end ) end();
-			V.press = false;
+			setTimeout( () => V.press = false, 300 );
 		}, 0 );
 	} );
 	return this // allow chain
@@ -602,7 +607,7 @@ function info( json ) {
 					htmls.list += '<textarea></textarea></td></tr>';
 					break;
 				default: // generic string
-					htmls.list += param.suffix || '';
+					htmls.list += param.suffix ? param.suffix : param || '';
 					htmls.list += param.sameline ? '</td>' : '</td></tr>';
 			}
 		} );
@@ -1112,10 +1117,11 @@ function infoVal( array ) {
 				break;
 			case 'text':
 				if ( $this.hasClass( 'array' ) ) { // array literal > array
-					val = $this.val()
-								.replace( /[\[ \]]/g, '' )
+					var v0 = $this.val()
+								.replace( /[\[\]]/g, '' )
 								.split( ',' );
-					val = JSON.parse( '['+ val +']' );
+					val    = [];
+					v0.forEach( v => val.push( isNaN( v ) ? v : +v ) );
 				} else {
 					val = $this.val().trim();
 				}
@@ -1296,6 +1302,22 @@ function jsonSort( json ) {
 	}, {} );
 }
 // ----------------------------------------------------------------------
+function eqDiv( min, max, freq, bottom = '' ) {
+	var input  = '<input type="range" min="'+ min +'" max="'+ max +'">';
+	var label  = '';
+	var slider = '';
+	freq.forEach( hz => {
+		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k';
+		label  += '<a>'+ hz +'</a>';
+		slider += input;
+	} );
+	return `
+<div id="eq">
+<div class="label up">${ label }</div>
+<div class="bottom"><div class="label dn">${ label }</div>${ bottom }</div>
+<div class="inforange vertical">${ slider }</div>
+</div>`;
+}
 function loader( fader ) {
 	$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );
 	$( '#loader' ).removeClass( 'hide' );

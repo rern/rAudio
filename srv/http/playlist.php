@@ -78,7 +78,7 @@ function artistAlbum( $artist, $album, $file ) {
 		if ( $artist )           $ar_al.= $artist;
 		if ( $artist && $album ) $ar_al.= ' - ';
 		if ( $album )            $ar_al.= $album;
-		return $ar_al;
+		return '<a class="ar_al">'.$ar_al.'</a>';
 	} else {
 		return $file;
 	}
@@ -137,7 +137,7 @@ foreach( $lists as $list ) {
 			$class     = 'file';
 			$discid    = '';
 			$path      = pathinfo( $file, PATHINFO_DIRNAME );
-			$thumbsrc  = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
+			$thumbsrc  = '/mnt/MPD/'.$path.'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
 			$icon      = imgIcon( $thumbsrc, 'filesavedpl', 'music' );
 		}
 		$li2       = $pos.' • '.$track.' - '.artistAlbum( $artist, $album, $file );

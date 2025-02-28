@@ -20,7 +20,7 @@
 	left: -90px;
 	top: calc(50% - 8px);
 	width: 77px;
-	line-height: 16px;
+	line-height: 17px;
 	text-align: center;
 	background: var( --cg );
 	border-radius: 3px;
@@ -134,11 +134,10 @@
 	display: inline-block;
 	width: 45px;
 	min-width: 45px;
-	line-height: 16px;
+	line-height: 17px;
 	vertical-align: 4px;
 	text-align: center;
 	color: var( --cw );
-	background-color: var( --cg );
 }
 .db {
 	float: left;
@@ -369,33 +368,27 @@ i.disabled {
 	stroke-opacity: 0.75 !important;
 }
 /* sortable */
-.sortable-ghost {
+.sortable-chosen {
 	background: var( --cg60 );
 }
-.sortable-ghost .li-icon {
+.sortable-chosen .li-icon {
 	visibility: hidden;
 }
-.sortable-ghost a,
-.sortable-ghost .li2 {
+.sortable-chosen a,
+.sortable-chosen .li2 {
 	color: var( --cg ) !important;
-}
-.value .clipped::after,
-.sortable-ghost::before {
-	position: absolute;
-	content: "\f601";
-	font-family: rern;
-	width: 40px;
-	font-size: 22px;
-	line-height: 30px;
-	text-align: center;
-	color: var( --cw );
 }
 .value .clipped {
 	color: #f80;
 }
 .value .clipped::after {
-	content: "\f515";
+	position: absolute;
+	content: '\f515';
+	font-family: rern;
+	width: 40px;
+	font-size: 22px;
 	line-height: 24px;
+	text-align: center;
 	color: var( --cg60 );
 }
 .helpmenu {
@@ -446,6 +439,10 @@ i.disabled {
 }
 #codeoutput {
 	margin-top: 15px;
+}
+cc,
+cp {
+	line-height: 17px;
 }
 cc {
 	background: var( --cg50 );

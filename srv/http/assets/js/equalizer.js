@@ -1,33 +1,20 @@
 var eqtimeout, equser;
-var flat    = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
-var freq    = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
-var band    = [];
-var labelhz = '';
-freq.forEach( ( hz, i ) => {
-	band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
-	labelhz += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
-} );
-var htmleq  = `
-<div id="eq">
-<div class="label up">${ labelhz }</div>
-<div class="bottom">
-	<div class="label dn">${ labelhz }</div>
-	${ ico( 'remove hide', 'eqdelete' ) }
-	${ ico( 'edit', 'eqrename' ) }
-	${ ico( 'save disabled hide', 'eqsave' ) }
-	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
-	${ ico( 'add', 'eqnew' ) + ico( 'back bl hide', 'eqback' ) }
-</div>
-<div class="inforange vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
-</div>`;
+var flat   = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
+var freq   = [ 30, 60, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 ];
+var bottom =  ico( 'remove hide', 'eqdelete' )
+			+ ico( 'edit', 'eqrename' )
+			+ ico( 'save disabled hide', 'eqsave' )
+			+'<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>'
+			+ ico( 'add', 'eqnew' ) + ico( 'back bl hide', 'eqback' );
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
-		E        = data || { active: "Flat", preset: { Flat: Array.from( new Array( 10 ), () => 62 ) } }
-		equser   = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
+		E       = data || { active: "Flat", preset: { Flat: Array.from( new Array( 10 ), () => 62 ) } }
+		equser  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
+		var opt = htmlOption( Object.keys( E.preset ) )
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
-			, list       : htmleq.replace( 'PRESETS', htmlOption( Object.keys( E.preset ) ) )
+			, list       : eqDiv( 40, 80, freq, bottom.replace( 'PRESETS', opt ) )
 			, values     : [ E.active, E.active, ...E.preset[ E.active ] ]
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 540 );

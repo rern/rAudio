@@ -43,8 +43,6 @@ var wscamilla = null
 var R         = {} // range
 var X         = {} // flowchart
 // filters //////////////////////////////////////////////////////////////////////////////
-var n_t       = { name: '', type: '' }
-var n_t_s     = { name: '', type: '', subtype: '' }
 var F0        = {
 	  type         : [
 		  'Type'
@@ -76,12 +74,12 @@ var F0        = {
 			  , 'ShibataHigh441', 'ShibataHigh48',   'ShibataLow192',    'ShibataLow441',     'ShibataLow48', 'ShibataLow882', 'ShibataLow96' ]
 		]
 	}
+	, name         : [ 'Name',      'text' ]
+	, fader        : [ 'Fader',     'text' ]
 	, freq         : [ 'Frequency', 'number' ]
 	, gain         : [ 'Gain',      'number' ]
 	, q            : [ 'Q',         'number' ]
 	, qbandwidth   : [ '',          'radio', { Q: 'q', Bandwidth: 'bandwidth' } ]
-	, name         : [ 'Name',      'text' ]
-	, fader        : [ 'Fader',     'text' ]
 	, Free         : [
 		  [ 'a1', 'number' ]
 		, [ 'a2', 'number' ]
@@ -89,13 +87,6 @@ var F0        = {
 		, [ 'b1', 'number' ]
 		, [ 'b2', 'number' ]
 	]
-	, FivePointPeq : {
-		  Lowshelf  : [ 'fls', 'gls', 'qls' ]
-		, Peaking1  : [ 'fp1', 'gp1', 'qp1' ]
-		, Peaking2  : [ 'fp2', 'gp2', 'qp2' ]
-		, Peaking3  : [ 'fp3', 'gp3', 'qp3' ]
-		, Highshelf : [ 'fhs', 'ghs', 'qhs' ]
-	}
 	, GeneralNotch : [
 		  [ 'Zero frequency',  'number' ]
 		, [ 'Pole frequency',  'number' ]
@@ -108,61 +99,58 @@ var F0        = {
 		, [ 'Frequency act',    'number' ]
 		, [ 'Frequency target', 'number' ]
 	]
-	, values       : {
-		  dither  : { ...n_t_s, bits: 16 }
-		, pass    : { ...n_t_s, freq: 1000, q: 0 }
-		, passFO  : { ...n_t_s, freq: 1000 }
-		, passC   : { ...n_t_s, order: 2, freq: 1000 }
-		, shelf   : { ...n_t_s, freq: 1000, gain: 0, q: 0, unit: 'q' }
-		, shelfFO : { ...n_t_s, freq: 1000, gain: 0 }
-	}
+	, n_t          : { name: '', type: '' }
+	, n_t_s        : { name: '', type: '', subtype: '' }
+	, peq          : [ 'Lowshelf', 'Peaking 1', 'Peaking 2', 'Peaking 3', 'Highshelf' ]
 }
+F0.values     = {
+	  dither  : { ...F0.n_t_s, bits: 16 }
+	, pass    : { ...F0.n_t_s, freq: 1000, q: 0 }
+	, passFO  : { ...F0.n_t_s, freq: 1000 }
+	, passC   : { ...F0.n_t_s, order: 2, freq: 1000 }
+	, shelf   : { ...F0.n_t_s, freq: 1000, gain: 0, q: 0, unit: 'q' }
+	, shelfFO : { ...F0.n_t_s, freq: 1000, gain: 0 }
+}
+F0.biquad     = [ F0.name, F0.type, F0.subtype.Biquad ];
+F0.biquad_f   = [ ...F0.biquad, F0.freq ];
+F0.biquadC    = [ F0.name, F0.type, F0.subtype.BiquadCombo ];
 F0.conv       = [ F0.name, F0.type, F0.subtype.Conv ];
 F0.dither     = [ F0.name, F0.type, F0.subtype.Dither, [ 'Bits', 'number' ] ];
 F0.fader      = [ F0.name, F0.type, F0.fader ];
-F0.pass       = [ F0.name, F0.type, F0.subtype.Biquad,      F0.freq,               F0.q ];
-F0.passC      = [ F0.name, F0.type, F0.subtype.BiquadCombo, [ 'Order', 'number' ], F0.freq ];
-F0.pass0_3    = F0.pass.slice( 0, 3 );
-F0.pass0_4    = F0.pass.slice( 0, 4 );
-F0.passC0_3   = F0.passC.slice( 0, 3 );
+F0.pass       = [ ...F0.biquad_f, F0.q ];
+F0.passC      = [ ...F0.biquadC, [ 'Order', 'number' ], F0.freq ];
 
 F0.list       = {
-	  fivepoint : { name: '', type: '', subtype: '' }
-	, notch     : [ ...F0.pass,    F0.qbandwidth ]
+	  notch     : [ ...F0.pass,    F0.qbandwidth ]
 	, pass      : F0.pass
 	, passC     : F0.passC
-	, passFO    : F0.pass0_4
-	, shelf     : [ ...F0.pass0_4, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
-	, shelfFO   : [ ...F0.pass0_4, F0.gain ]
+	, passFO    : F0.biquad_f
+	, peq       : [ ...F0.biquadC, [ '', '', 'Frequency</td><td>Gain</td><td>Q' ] ]
+	, shelf     : [ ...F0.biquad_f, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
+	, shelfFO   : [ ...F0.biquad_f, F0.gain ]
 }
-$.each( F0.FivePointPeq, ( k, v ) => { F0.list.fivepoint[ k ] = [ 0, 0, 0 ] } );
+for ( var i = 0; i < 15; i++ ) {
+	F0.list.peq.push( [ i % 3 ? '' : F0.peq[ i / 3 ], 'number', { sameline: i % 3 < 2 } ] );
+}
 var F         = {
 	  Biquad      : {
-		  Free              : [ ...F0.pass0_3, ...F0.Free ]
-		, GeneralNotch      : [ ...F0.pass0_3, ...F0.GeneralNotch ]
-		, LinkwitzTransform : [ ...F0.pass0_3, ...F0.LinkwitzTransform ]
+		  Free              : [ ...F0.biquad, ...F0.Free ]
+		, GeneralNotch      : [ ...F0.biquad, ...F0.GeneralNotch ]
+		, LinkwitzTransform : [ ...F0.biquad, ...F0.LinkwitzTransform ]
 		, Notch             : F0.list.notch
-		, Peaking           : [ ...F0.pass0_4, F0.gain, F0.q, F0.qbandwidth ]
+		, Peaking           : [ ...F0.biquad_f, F0.gain, F0.q, F0.qbandwidth ]
 		// the rest - assign later
 	}
 	, BiquadCombo : {
-		  FivePointPeq          : [
-			  ...F0.passC0_3
-			, [ 'Lowshelf',  'text' ]
-			, [ 'Peaking 1', 'text' ]
-			, [ 'Peaking 2', 'text' ]
-			, [ 'Peaking 3', 'text' ]
-			, [ 'Highshelf', 'text' ]
-//			, [ '',          '',     '&nbsp;<c>freq, gain, q</c>' ]
-		]
-		, GraphicEqualizer     : [
-			  ...F0.passC.slice( 0, 3 )
+		  FivePointPeq     : F0.list.peq
+		, GraphicEqualizer : [
+			  ...F0.biquadC
 			, [ 'Frequency min', 'number' ]
 			, [ 'Frequency max', 'number' ]
 			, [ 'Bands',         'number' ]
 		]
-		, Tilt                  : [
-			  ...F0.passC0_3
+		, Tilt             : [
+			  ...F0.biquadC
 			, [ 'Gain', 'number' ]
 		]
 		// the rest - assign later
@@ -231,34 +219,41 @@ var F         = {
 //
 	, values      : {
 		  Biquad      : {                        // parameters
-			  Free              : { ...n_t_s, a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
-			, GeneralNotch      : { ...n_t_s, freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
-			, LinkwitzTransform : { ...n_t_s, q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
-			, Notch             : { ...n_t_s, freq: 1000, q: 0, unit: 'q' }
-			, Peaking           : { ...n_t_s, freq: 1000, gain: 0, q: 0, unit: 'q' }
+			  Free              : { ...F0.n_t_s, a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
+			, GeneralNotch      : { ...F0.n_t_s, freq_z: 0,  freq_p: 0, q_p: 0, normalize_at_dc:false }
+			, LinkwitzTransform : { ...F0.n_t_s, q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
+			, Notch             : { ...F0.n_t_s, freq: 1000, q: 0, unit: 'q' }
+			, Peaking           : { ...F0.n_t_s, freq: 1000, gain: 0, q: 0, unit: 'q' }
 			// the rest - define next
 		}
 		, BiquadCombo : {
-			  FivePointPeq      : F0.list.fivepoint
-			, GraphicEqualizer  : { ...n_t_s, freq_min: 20, freq_max: 20000, bands: 10 }
-			, Tilt              : { ...n_t_s, gain: 0 }
+			  FivePointPeq      : {
+				  ... F0.n_t_s
+				, fls:    60, gls: 0, qls: 0.5
+				, fp1:   240, gp1: 0, qp1: 0.5
+				, fp2:   900, gp2: 0, qp2: 0.5
+				, fp3:  4000, gp3: 0, qp3: 0.5
+				, fhs: 14000, ghs: 0, qhs: 0.5
+			}
+			, GraphicEqualizer  : { ...F0.n_t_s, freq_min: 20, freq_max: 20000, bands: 10 }
+			, Tilt              : { ...F0.n_t_s, gain: 0 }
 			// the rest - define next
 		}
 		, Conv        : {
-			  Dummy             : { ...n_t_s, length: 65536 } // min = 1
-			, Raw               : { ...n_t_s, filename: '', format: 'TEXT', skip_bytes_lines: 0, read_bytes_lines: 0 }
-			, Values            : { ...n_t_s, values: [ 0.1, 0.2, 0.3, 0.4 ] }
-			, Wav               : { ...n_t_s, filename: '', channel: 0 }
+			  Dummy             : { ...F0.n_t_s, length: 65536 } // min = 1
+			, Raw               : { ...F0.n_t_s, filename: '', format: 'TEXT', skip_bytes_lines: 0, read_bytes_lines: 0 }
+			, Values            : { ...F0.n_t_s, values: [ 0.1, 0.2, 0.3, 0.4 ] }
+			, Wav               : { ...F0.n_t_s, filename: '', channel: 0 }
 		}
 		, Dither      : {
 			// define next
 		}                             // parameters
-		, Delay       : { ...n_t, delay: 0, unit: 'ms', subsample: false }
-		, DiffEq      : { ...n_t, a: [ 1, 0 ], b: [ 1, 0 ] }
-		, Gain        : { ...n_t, gain: 0, scale: 'dB', inverted: false, mute: false } // +-150dB / +-10 linear
-		, Limiter     : { ...n_t, clip_limit: -10.0, soft_clip: false }
-		, Loudness    : { ...n_t, fader : 'main', reference_level: 25, high_boost: 10, low_boost: 10, attenuate_mid: false }
-		, Volume      : { ...n_t, ramp_time: 400, fader: 'Aux1' }
+		, Delay       : { ...F0.n_t, delay: 0, unit: 'ms', subsample: false }
+		, DiffEq      : { ...F0.n_t, a: [ 1, 0 ], b: [ 1, 0 ] }
+		, Gain        : { ...F0.n_t, gain: 0, scale: 'dB', inverted: false, mute: false } // +-150dB / +-10 linear
+		, Limiter     : { ...F0.n_t, clip_limit: -10.0, soft_clip: false }
+		, Loudness    : { ...F0.n_t, fader : 'main', reference_level: 25, high_boost: 10, low_boost: 10, attenuate_mid: false }
+		, Volume      : { ...F0.n_t, ramp_time: 400, fader: 'Aux1' }
 	}
 };
 [ 'Biquad', 'BiquadCombo', 'Conv', 'Dither' ].forEach( type => {
@@ -471,7 +466,7 @@ var axes      = {
 		, overlaying : 'x'
 		, side       : 'top'
 	}
-	, magnitude  : {
+	, gain       : {
 		  title        : {
 			  text     : 'Gain'
 			, font     : { color: color.m }
@@ -550,7 +545,7 @@ var plots     = {
 		, dragmode      : 'zoom'
 		, font          : { family: 'Inconsolata', size: 14 }
 	}
-	, magnitude  : {
+	, gain       : {
 		  yaxis : 'y'
 		, type  : 'scatter'
 		, name  : 'Gain'
@@ -578,124 +573,19 @@ function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
 }
 
-var config    = {
-	  configuration       : () => {
-		if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
-			V.tabprev = V.tab;
-			V.tab     = 'config';
-			render.tab();
-		} else {
-			$( '#tab'+ V.tabprev ).trigger( 'click' );
-		}
-	}
-	, enable_rate_adjust  : () => {
-		if ( $( '#setting-enable_rate_adjust' ).siblings( 'input' ).hasClass( 'disabled' ) ) {
-			info( {
-				  ...SW
-				, message : 'Resampler type is <wh>Synchronous</wh>'
-			} );
-			switchCancel();
-			return
-		}
-		
-		var enabled = DEV.enable_rate_adjust;
-		info( {
-			  ...SW
-			, list         : [
-				  [ 'Adjust period', 'number' ]
-				, [ 'Target level',  'number' ]
-			]
-			, boxwidth     : 100
-			, values       : {
-				  adjust_period : DEV.adjust_period
-				, target_level  : DEV.target_level
-			}
-			, checkchanged : enabled
-			, cancel       : switchCancel
-			, ok           : () => {
-				DEV.enable_rate_adjust = true;
-				var val                =  infoVal();
-				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
-				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-			}
-		} );
-	}
-	, capture_samplerate  : () => {
-		var enabled = DEV.capture_samplerate;
-		info( {
-			  ...SW
-			, list         : D0.list.capture_samplerate
-			, boxwidth     : 120
-			, values       : [ DEV.capture_samplerate ]
-			, checkchanged : enabled
-			, cancel       : switchCancel
-			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
-			, ok           : () => {
-				DEV.capture_samplerate = DEV.samplerate;
-				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-			}
-		} );
-	}
-	, resampler           : () => setting.resampler( DEV.resampler ? DEV.resampler.type : 'AsyncSinc' )
-	, stop_on_rate_change : () => {
-		var enabled = DEV.stop_on_rate_change;
-		info( {
-			  ...SW
-			, list         : [ 'Rate mearsure interval', 'number' ]
-			, boxwidth     : 65
-			, values       : DEV.rate_measure_interval
-			, checkchanged : enabled
-			, cancel       : switchCancel
-			, ok           : () => {
-				DEV.stop_on_rate_change   = true;
-				DEV.rate_measure_interval = infoVal();
-				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
-			}
-		} );
-	}
-	, valuesAssign        : () => { // DEV, MIX, FIL, PRO, DEV ...
-		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
-			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
-		} );
-		var dev                          = S.devices;
-		var samplings                    = dev.playback.samplings;
-		D0.samplerate                    = Object.values( samplings );
-		D.main[ 0 ][ 2 ].kv              = samplings;
-		D0.list.capture_samplerate[ 2 ].kv = samplings;
-		D0.list.formatC[ 2 ].kv            = dev.capture.formats;
-		D0.list.formatP[ 2 ].kv            = dev.playback.formats;
-		D0.list.deviceC[ 2 ]               = dev.capture.device;
-		D0.list.deviceP[ 2 ]               = dev.playback.device;
-		D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
-		D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
-		D0.list.filename[ 2 ].kv           = S.ls.raw;
-	}
-}
 var graph     = {
 	  filters      : {
-		  plot     : name => {
-			var filter     = FIL[ name ];
-			var f          = graph.filters.logSpace( 1, DEV.samplerate * 0.95 / 2 );
-			var currfilt   = graph.filters.data( filter );
-			if ( ! currfilt ) return
+		  plot     : $li => {
+			var filter    = FIL[ $li.data( 'name' ) ];
+			var f         = graph.filters.logSpace( 0 );
+			var classdata = graph.filters.data( filter );
+			if ( ! classdata ) return
 			
-			var [ ma, ph ] = currfilt.gainAndPhase( f );
-			var [ fg, gr ] = calcGroupDelay( f, ph );
-			var result     = {
-				  f            : f
-				, f_groupdelay : fg
-				, groupdelay   : gr
-				, magnitude    : ma
-				, phase        : ph
-			}
-			if ( filter.type === 'Conv' ) {
-				var [ ti, im ] = currfilt.getImpulse();
-				result.time    = ti;
-				result.impulse = im;
-			}
-			graph.plotLy( result );
+			classdata.gainAndPhase( f, false, ( fg, ga, gr, ph, im ) => {
+				graph.plotLy( $li, fg, ga, gr, ph, im );
+			} );
 		}
-		, data     : ( filter, volume ) => {
+		, data     : filter => {
 			var param      = filter.parameters;
 			var samplerate = DEV.samplerate;
 			switch( filter.type ) {
@@ -703,8 +593,8 @@ var graph     = {
 					return new Biquad( param, samplerate )
 				case 'BiquadCombo':
 					return new BiquadCombo( param, samplerate )
-	/*			case 'Conv': // require: fft, audiofileread
-					return new Conv( param || null, samplerate )*/
+				case 'Conv':
+					return new Conv( param, samplerate )
 				case 'Delay':
 					return new Delay( param, samplerate )
 				case 'DiffEq':
@@ -721,20 +611,11 @@ var graph     = {
 					return false
 			}
 		}
-		, fetchConv : file => {
-			file = '/data/camilladsp/configs/'+ file;
-			fetch( file )
-				.then( response => response.text() )
-				.then( text => {
-					console.log( text );
-				} );
-		}
-		, logSpace : ( min, max ) => {
-			var logmin  = Math.log10( min );
-			var logmax  = Math.log10( max );
-			var perstep = ( logmax - logmin ) / 1000;
-			var values  = Array.from( { length: 1000 }, ( _, n ) => 10 ** ( logmin + n * perstep ) );
-			return values
+		, logSpace : logmin => {
+			let logmax  = Math.log10( DEV.samplerate * 0.95 / 2 );
+			let perstep = ( logmax - logmin ) / 1000;
+			let values  = Array.from( { length: 1000 }, ( v, i ) => 10 ** ( logmin + i * perstep ) );
+			return values;
 		}
 	}
 	, flowchart    : {
@@ -970,69 +851,81 @@ var graph     = {
 		}
 	}
 	, pipeline     : {
-		  plot : index => {
-			var f          = graph.filters.logSpace( 10, DEV.samplerate * 0.95 / 2 );
-			var totcgain   = new Array( 1000 ).fill( 1 );
-			var currfilt;
-			PIP[ index ].names.forEach( name => {
-				var filter       = FIL[ name ];
-				currfilt         = graph.filters.data( filter );
-				if ( ! currfilt ) return false
-				
-				var [ _, cgain ] = currfilt.complexGain( f );
-				totcgain         = totcgain.map( ( cg, i ) => cgain[ i ].mul( cg ) );
-			});
-			if ( ! currfilt ) return
-			
-			var ma         = totcgain.map( cg => 20 * Math.log10( cg.abs() + 1e-15 ) );
-			var ph         = totcgain.map( cg => 180 / Math.PI * Math.atan2( cg.im, cg.re ) );
-			var [ fg, gr ] = calcGroupDelay( f, ph );
-			graph.plotLy( {
-				  f            : f
-				, f_groupdelay : fg
-				, groupdelay   : gr
-				, magnitude    : ma
-				, phase        : ph
-			} );
+		  plot : $li => {
+			var f          = graph.filters.logSpace( 1 );
+			var classdata;
+			var names      = PIP[ $li.data( 'index' ) ].names;
+			var filter     = FIL[ names[ 0 ] ];
+			if ( filter.type === 'Conv' ) {
+				classdata  = graph.filters.data( filter );
+				classdata.gainAndPhase( f, false, ( fg, ga, gr, ph, im ) => {
+					graph.plotLy( $li, fg, ga, gr, ph, im );
+				} );
+			} else {
+				var totcga = new Array( 1000 ).fill( 1 );
+				names.forEach( name => {
+					filter         = FIL[ name ];
+					classdata      = graph.filters.data( filter );
+					if ( ! classdata ) return false
+					
+					var [ _, cga ] = classdata.complexGain( f );
+					totcga          = totcga.map( ( cg, i ) => cga[ i ].mul( cg ) );
+				});
+				var ga         = mapGain( totcga );
+				var ph         = mapPhase( totcga );
+				var [ fg, gr ] = calcGroupDelay( f, ph );
+				graph.plotLy( $li, fg, ga, gr, ph );
+			}
 		}
 	}
-	, plot         : () => {
-		graph[ V.tab ].plot( V.li.data( V.tab === 'filters' ? 'name' : 'index' ) );
-	}
-	, plotLy       : data => {
+	, plotLy       : ( $li, fg, ga, gr, ph, im ) => {
+		var data  = {
+			  f_groupdelay : fg
+			, groupdelay   : gr
+			, gain         : ga
+			, phase        : ph
+		}
+		if ( im ) data.impulse = im;
 		var PLOTS = jsonClone( plots );
 		var AXES  = jsonClone( axes );
 		if ( V.tab === 'filters' ) {
-			var f      = FIL[ V.li.data( 'name' ) ];
+			var f      = FIL[ $li.data( 'name' ) ];
 			var delay  = f.type === 'Delay';                  // if filter has delay
 			var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
 		} else {
 			var delay  = false;
-			PIP[ V.li.data( 'index' ) ].names.forEach( n => { // if any filter has delay
+			PIP[ $li.data( 'index' ) ].names.forEach( n => { // if any filter has delay
 				var f      = FIL[ n ];
 				if ( ! delay && f.type === 'Delay' ) delay = true;
 				var delay0 = ! delay && 'gain' in f.parameters && f.parameters.gain === 0;
 			} );
 		}
 		if ( delay ) {
-			PLOTS.magnitude.y   = 0;
+			PLOTS.gain.y   = 0;
 		} else {
-			PLOTS.magnitude.y   = data.magnitude;
+			PLOTS.gain.y   = data.gain;
 			var minmax          = {
-				  groupdelay : { min: -10, max: 10 }
-				, impulse    : { min:  -1, max: 1 }
-				, magnitude  : { min:  -6, max: 6 }
+				  groupdelay : 50 
+				, impulse    : 1
+				, gain       : 6
 			};
-			[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
-				if ( ! ( d in data ) ) return
-				
+			[ 'groupdelay', 'impulse', 'gain' ].forEach( d => {
+				if ( ! ( d in data ) ) {
+					if ( d === 'gain' ) {
+						AXES[ d ].dtick = 8
+						AXES[ d ].range = [ -6, 6 ];
+					}
+					return
+				}
 				var min = Math.min( ...data[ d ] );
 				var max = Math.max( ...data[ d ] );
-				max     = Math.max( max, minmax[ d ].max );
-				min     = Math.min( min, minmax[ d ].min )
-				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ].max * 0.1;
+				max     = Math.max( max, minmax[ d ] );
+				min     = Math.min( min, -minmax[ d ] )
+				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ] * 0.1;
 				if ( d === 'impulse' ) {
 					dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
+				} else if ( d === 'groupdelay' ) {
+					dtick = abs < 100 ? 20 : ( abs < 500 ? 100 : 500 );
 				} else {
 					dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
 				}
@@ -1041,16 +934,16 @@ var graph     = {
 			} );
 		}
 		PLOTS.phase.y      = data.phase;
-		PLOTS.groupdelay.y = delay0 ? 0 : data.groupdelay;
-		var plot           = [ PLOTS.magnitude, PLOTS.phase, PLOTS.groupdelay ];
+		PLOTS.groupdelay.y = delay0 ? false : data.groupdelay;
+		var plot           = [ PLOTS.gain, PLOTS.phase, PLOTS.groupdelay ];
 		var layout         = {
 			  ...PLOTS.layout
 			, xaxis         : AXES.freq[ V.tab ]
-			, yaxis         : AXES.magnitude
+			, yaxis         : AXES.gain
 			, yaxis2        : AXES.phase
 			, yaxis3        : AXES.groupdelay
 		}
-		if ( 'impulse' in data ) { // Conv
+		if ( im ) { // Conv
 			var imL  = data.impulse.length;
 			var raw  = imL < 4500;
 			var each = raw ? imL / 80 : imL / 120;
@@ -1070,27 +963,119 @@ var graph     = {
 			layout.yaxis4      = AXES.impulse;
 			PLOTS.impulse.y    = data.impulse;
 			plot.push( PLOTS.impulse );
+			PLOTS.phase.line.width = 1;
 		}
-		V.li.find( '.divgraph' ).remove();
-		V.li
-			.addClass( 'graph' )
-			.append( '<div class="divgraph"></div>' );
-		var $divgraph = V.li.find( '.divgraph' );
+		if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph"></div>' );
+		var $divgraph = $li.find( '.divgraph' );
 		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
-		$divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
+		if ( ! $li.find( '.graphclose' ).length ) $divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
 		if ( ! V.refresh ) scrollUpToView( $divgraph );
 	}
 	, refresh      : () => {
 		V.refresh = true;
-		$( '#'+ V.tab +' .entries.main li.graph' ).each( ( i, el ) => {
-			V.li = $( el );
-			graph.plot();
+		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
+			graph[ V.tab ].plot( $( el ).parent() );
 		} );
 		delete V.refresh;
 	}
 }
 window.addEventListener( 'resize', graph.flowchart.refresh );
 
+var config    = {
+	  configuration       : () => {
+		if ( $( '#divconfig' ).hasClass( 'hide' ) ) {
+			V.tabprev = V.tab;
+			V.tab     = 'config';
+			render.tab();
+		} else {
+			$( '#tab'+ V.tabprev ).trigger( 'click' );
+		}
+	}
+	, enable_rate_adjust  : () => {
+		if ( $( '#setting-enable_rate_adjust' ).siblings( 'input' ).hasClass( 'disabled' ) ) {
+			info( {
+				  ...SW
+				, message : 'Resampler type is <wh>Synchronous</wh>'
+			} );
+			switchCancel();
+			return
+		}
+		
+		var enabled = DEV.enable_rate_adjust;
+		info( {
+			  ...SW
+			, list         : [
+				  [ 'Adjust period', 'number' ]
+				, [ 'Target level',  'number' ]
+			]
+			, boxwidth     : 100
+			, values       : {
+				  adjust_period : DEV.adjust_period
+				, target_level  : DEV.target_level
+			}
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, ok           : () => {
+				DEV.enable_rate_adjust = true;
+				var val                =  infoVal();
+				[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, capture_samplerate  : () => {
+		var enabled = DEV.capture_samplerate;
+		info( {
+			  ...SW
+			, list         : D0.list.capture_samplerate
+			, boxwidth     : 120
+			, values       : [ DEV.capture_samplerate ]
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, beforeshow   : () => $( '#infoList option[value='+ DEV.samplerate +']' ).remove()
+			, ok           : () => {
+				DEV.capture_samplerate = DEV.samplerate;
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, resampler           : () => setting.resampler( DEV.resampler ? DEV.resampler.type : 'AsyncSinc' )
+	, stop_on_rate_change : () => {
+		var enabled = DEV.stop_on_rate_change;
+		info( {
+			  ...SW
+			, list         : [ 'Rate mearsure interval', 'number' ]
+			, boxwidth     : 65
+			, values       : DEV.rate_measure_interval
+			, checkchanged : enabled
+			, cancel       : switchCancel
+			, ok           : () => {
+				DEV.stop_on_rate_change   = true;
+				DEV.rate_measure_interval = infoVal();
+				setting.save( SW.title, enabled ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}
+	, valuesAssign        : () => { // DEV, MIX, FIL, PRO, DEV ...
+		[ 'devices', 'mixers', 'filters', 'processors', 'pipeline' ].forEach( k => {
+			window[ k.slice( 0, 3 ).toUpperCase() ] = S.config[ k ];
+		} );
+		var dev                            = S.devices;
+		var samplings                      = dev.playback.samplings;
+		D0.samplerate                      = Object.values( samplings );
+		D.main[ 0 ][ 2 ].kv                = samplings;
+		D0.list.capture_samplerate[ 2 ].kv = samplings;
+		D0.list.formatC[ 2 ].kv            = dev.capture.formats;
+		D0.list.formatP[ 2 ].kv            = dev.playback.formats;
+		D0.list.deviceC[ 2 ]               = dev.capture.device;
+		D0.list.deviceP[ 2 ]               = dev.playback.device;
+		D0.list.channelsC[ 2 ].updn.max    = dev.capture.channels;
+		D0.list.channelsP[ 2 ].updn.max    = dev.playback.channels;
+		D0.list.filename[ 2 ].kv           = S.ls.raw;
+		if ( S.ls.coeffs ) F.Conv.Raw[ 3 ].push( S.ls.coeffs );
+		if ( S.ls.coeffswav ) F.Conv.Wav[ 3 ].push( S.ls.coeffswav );
+	}
+}
 var render    = {
 	  status      : () => { // onload only
 		headIcon();
@@ -1209,7 +1194,10 @@ var render    = {
 	}
 	, filter      : ( k, v ) => {
 		var param    = v.parameters;
+		var eq       = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type );
+		var cl_eq    = '';
 		var scale    = false;
+		var icon     = ico( 'filters liicon graph edit' );
 		var icongain = '';
 		var disabled = '';
 		if ( v.type === 'Gain' ) {
@@ -1232,21 +1220,19 @@ var render    = {
 					+ icongain
 					+'</div>';
 		} else {
-			var paramdata = [ 'FivePointPeq', 'GraphicEqualizer' ].includes( param.type ) ? param.type : render.json2string( param );
+			if ( eq ) {
+				icon += ico( 'mixers' );
+				cl_eq = ' class="eq"';
+				var paramdata = param.type;
+			} else {
+				var paramdata = render.json2string( param );
+			}
 			var li        = '<div class="li1">'+ k +'</div>'
 						   +'<div class="li2">'+ v.type +' · '+ paramdata +'</div>';
 		}
-		var cl_graph = $( '#filters li[data-name="'+ k +'"]' ).hasClass( 'graph' ) ? ' class="graph"' : '';
-		if ( param.type === 'GraphicEqualizer' ) {
-			var icon = 'equalizer';
-			var cl_eq = ' class="eq"';
-		} else {
-			var icon = 'filters';
-			var cl_eq = '';
-		}
-		icon        += [ 'Volume', 'Dither', 'Limiter' ].includes( v.type ) ? '' : ' graph';
-		icon        += ' liicon edit';
-		return '<li data-name="'+ k +'"'+ cl_graph + cl_eq +'>'+ ico( icon ) + li  +'</li>'
+		var $graph   = $( '#filters li[data-name="'+ k +'"] .divgraph' );
+		var graph    = $graph.length ? $graph[ 0 ].outerHTML : '';
+		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ icon + li + graph +'</li>'
 	}
 	, filtersSub  : k => {
 		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -1342,23 +1328,26 @@ var render    = {
 		graph.flowchart.refresh();
 	}
 	, pipe        : ( el, i ) => {
-		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon edit';
-		var cl_graph = '';
+		var icon     = ( el.bypassed ? 'bypass' : 'pipeline' ) +' liicon';
+		var graph    = '';
 		if ( el.type === 'Filter' ) {
 			icon      += ' graph';
+			icon      += FIL[ el.names[ 0 ] ].type === 'Conv' ? '' : ' edit';
 			var icon_s = 'filters'
 			var li1    = el.names.join( ' <gr>•</gr> ' );
 			var li2    = '';
 			el.channels.forEach( c => li2 += '<cc>'+ c +'</cc> ' );
-			cl_graph   = $( '#pipeline .main li' ).eq( i ).hasClass( 'graph' ) ? ' class="graph"' : '';
+			var $graph = $( '#pipeline li[data-index="'+ i +'"] .divgraph' );
+			graph      = $graph.length ? $graph[ 0 ].outerHTML : '';
 		} else {
 			var icon_s = 'mixers'
 			var li1    = el.name;
 			var li2    = render.mixerMap( MIX[ el.name ].mapping );
 		}
-		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'"'+ cl_graph +'>'+ ico( icon ) + ico( icon_s )
+		var li = '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( icon_s )
 				+'<div class="li1">'+ li1 +'</div>'
 				+'<div class="li2">'+ li2 +'</div>'
+				+ graph
 				+'</li>';
 		return li
 	}
@@ -1371,9 +1360,8 @@ var render    = {
 		if ( $( '#pipeline .entries li' ).length < 2 ) return
 		
 		V.sortable = new Sortable( $( '#pipeline .entries' )[ 0 ], {
-			  ghostClass : 'sortable-ghost'
-			, delay      : 400
-			, onUpdate   : function ( e ) {
+			...sortableOpt
+			, onUpdate         : function ( e ) {
 				var a  = jsonClone( PIP[ e.oldIndex ] );
 				PIP.splice( e.oldIndex, 1 );
 				PIP.splice( e.newIndex, 0, a );
@@ -1515,26 +1503,21 @@ var setting   = {
 		if ( edit ) {
 			var values = { name: name, type: type }
 			var list   = F[ type ];
-			var kv     = F.values[ type ];
+			var kv     = F.values[ type ]; // keep order - list : values
 			if ( subtype ) {
 				values.subtype = subtype;
 				list           = list[ subtype ];
 				kv             = kv[ subtype ];
 			}
 			var param  = FIL[ name ].parameters;
-			$.each( kv, ( k, v ) => { // F.values[ type ] - keep values order
-				if ( ! ( k in values ) ) values[ k ] = param[ k ] || ''; // exclude: name, type, subtype
-			} );
-			if ( type === 'BiquadCombo' ) {
-				if ( subtype === 'FivePointPeq' ) {
-					$.each( F0.FivePointPeq, ( k, v ) => { // param kv to values array group
-						values[ k ] = [];
-						v.forEach( p => values[ k ].push( param[ p ] ) );
-					} );
-				} else if ( subtype === 'GraphicEqualizer' ) {
-					values.bands = param.gains.length;
+			$.each( kv, ( k, v ) => {
+				if ( ! ( k in values ) ) { // exclude: name, type, subtype
+					var val = param[ k ];
+					if ( k === 'filename' ) val = val.split( '/' ).pop();
+					values[ k ] = val;
 				}
-			}
+			} );
+			if ( subtype === 'GraphicEqualizer' ) values.bands = param.gains.length;
 		} else {
 			var values = { name: name || '', type: type }
 			var list   = F[ type ];
@@ -1559,7 +1542,27 @@ var setting   = {
 			, checkblank   : true
 			, checkchanged : edit
 			, beforeshow   : () => {
-				$( '#infoList td:first-child' ).css( 'min-width', '125px' );
+				$( '#infoList td:first-child' ).css( 'min-width', '80px' );
+				if ( subtype === 'FivePointPeq' ) {
+					$( '#infoList tr' ).each( ( i, tr ) => {
+						var $td = $( tr ).find( 'td' );
+						if ( i < 4 ) {
+							if ( i < 3 ) {
+								$td.eq( 1 ).prop( 'colspan', 3 );
+							} else {
+								$td.css( 'text-align', 'center' );
+							}
+						} else {
+							$td.each( ( j, t ) => {
+								if ( j === 0 ) return
+								
+								var w = j === 1 ? '85px' : '50px';
+								$( t ).css( { 'min-width': w, width: w } );
+								$( t ).find( 'input' ).css( { width: w, 'text-align': 'right' } );
+							} );
+						}
+					} );
+				}
 				var $select = $( '#infoList select' );
 				$select.eq( 0 ).on( 'input', function() {
 					var val = infoVal();
@@ -1567,16 +1570,18 @@ var setting   = {
 				} );
 				$select.eq( 1 ).on( 'input', function() {
 					var val = infoVal();
-					if ( val.type === 'Conv' && [ 'Raw', 'Wav' ].includes( val.subtype ) && ! S.ls.coeffs ) {
-						info( {
-							  icon    : V.tab
-							, title   : title
-							, message : 'Filter files not available.'
-							, ok      : () => setting.filter( 'Conv', '', val.name )
-						} );
-					} else {
-						setting.filter( val.type, val.subtype, val.name );
+					if ( val.type === 'Conv' ) {
+						if ( ( val.subtype === 'Raw' && ! S.ls.coeffs ) || ( val.subtype === 'Wav' && ! S.ls.coeffswav ) ) {
+							info( {
+								  icon    : V.tab
+								, title   : title
+								, message : 'Filter files not available.'
+								, ok      : () => setting.filter( 'Conv', '', val.name )
+							} );
+							return
+						}
 					}
+					setting.filter( val.type, val.subtype, val.name );
 				} );
 				var $radio = $( '#infoList input:radio' );
 				if ( $radio.length ) {
@@ -1603,11 +1608,11 @@ var setting   = {
 					}
 					delete val.bands;
 				} else if ( subtype === 'FivePointPeq' ) {
-					Object.keys( F0.FivePointPeq ).forEach( k => {
-						F0.FivePointPeq[ k ].forEach( ( key, i ) => {
-							val[ key ] = val[ k ][ i ];
+					$.each( F0.FivePointPeq, ( k, v ) => {
+						val[ k ].forEach( ( p, i ) => {
+							val[ v[ i ] ] = p;
+							delete val[ k ];
 						} );
-						delete val[ k ];
 					} );
 				}
 				var param      = {}
@@ -1620,10 +1625,7 @@ var setting   = {
 					val[ unit ] = q;
 				}
 				$.each( val, ( k, v ) => { param[ k ] = v } );
-				if ( 'filename' in param ) {
-					param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
-					if ( subtype === 'Raw' ) param.format = 'TEXT';
-				}
+				if ( 'filename' in param ) param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
 				FIL[ newname ] = { type: type, parameters : param }
 				if ( name in FIL && name !== newname ) {
 					delete FIL[ name ];
@@ -1775,59 +1777,59 @@ var setting   = {
 			.prop( 'checked', false )
 			.eq( ch_diff[ 0 ] ).prop( 'checked', true );
 	} //-----------------------------------------------------------------------------------
-	, processor     : name => {
-		var type   = name ? PRO[ name ].type : 'Compressor';
-		var values = jsonClone( P.values[ type ] );
-		if ( name ) {
-			$.each( PRO[ name ].parameters, ( k, v ) => { values[ k ] = v } );
-			values.name = name;
+	, processor     : ( name, edit ) => {
+		if ( edit ) {
+			var values = {}
+			var param  = PRO[ name ].parameters;
+			$.each( P.values.Compressor, ( k, v ) => { values[ k ] = param[ k ] } );
+		} else {
+			var values = P.values.Compressor;
+			if ( name ) values.name = name;
 		}
-		var title  = name ? 'Processor' : 'Add Processor'
+		var title = edit ? 'Processor' : 'Add Processor'
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, list         : name ? P[ PRO[ name ].type ] : P.Compressor
+			, list         : edit ? P[ PRO[ name ].type ] : P.Compressor
 			, boxwidth     : 150
 			, values       : values
 			, checkblank   : true
-			, checkchanged : name
-			, beforeshow   : () => {
-				if ( name ) $( '#infoList select' ).eq( 0 ).prop( 'disabled', true );
-			}
+			, checkchanged : edit
 			, ok           : () => {
-				var val = infoVal();
-				var typenew = val.type;
-				var namenew = val.name;
+				var val        = infoVal();
+				var typenew    = val.type;
+				var namenew    = val.name;
 				[ 'name', 'type' ].forEach( k => delete val[ k ] );
-				if ( ! PRO ) {
-					S.config.processors = {}
-					PRO = S.config.processors;
-				}
 				PRO[ namenew ] = { type: typenew, parameters: val }
-				if ( name in PRO && name !== namenew ) delete PRO[ name ];
-				setting.save( title, name ? 'Change ...' : 'Save ...' );
+				if ( edit && name !== namenew ) delete PRO[ name ];
+				setting.save( title, edit ? 'Change ...' : 'Save ...' );
 				render.processors();
 			}
 		} );
 	} //-----------------------------------------------------------------------------------
-	, pipeline      : index => {
+	, pipeline      : ( index, edit ) => {
 		if ( ! setting.pipelineNone( 'filters' ) ) return
 		
 		var channels = '';
 		[ ...Array( DEV.playback.channels ).keys() ].forEach( c => {
 			channels += '<label><input type="checkbox" value="'+ c +'">'+ c +'</label>&emsp;';
 		} );
-		var filters  = Object.keys( FIL );
+		if ( edit ) {
+			var filters  = [];
+			$.each( FIL, ( k, v ) => {
+				if ( v.type !== 'Conv' ) filters.push( k );
+			} );
+		} else {
+			var filters  = Object.keys( FIL );
+		}
 		var list     = [ [ ico( 'output gr' ), 'html', channels ] ];
 		var select   = [ ico( 'filters gr' ),  'select', { kv: filters, suffix: ico( 'remove' ) } ];
-		if ( index === undefined ) {
-			var edit = false;
-			list.push( select );
-		} else {
-			var edit = true;
+		if ( edit ) {
 			var data = jsonClone( PIP[ index ] );
 			var nL   = edit ? data.names.length : 1;
 			for ( var i = 0; i < nL; i++ ) list.push( select );
+		} else {
+			list.push( select );
 		}
 		info( {
 			  icon         : V.tab
@@ -1855,6 +1857,7 @@ var setting   = {
 					var $remove = $( '#infoList .i-remove' );
 					$remove.toggleClass( 'disabled', $remove.length === 1 );
 					$( '#infoList input:checked' ).prop( 'disabled', $( 'input:checked' ).length === 1 );
+					$( '#infoList .i-add' ).toggleClass( 'disabled', FIL[ $( '#infoList select' ).val() ].type === 'Conv' );
 				}
 				setDisabled();
 				var select    = '<select>'+ htmlOption( filters ) +'</select';
@@ -2597,7 +2600,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			V.li.removeClass( 'graph' );
 			$divgraph.remove();
 		} else {
-			graph.plot();
+			graph[ V.tab ].plot( V.li );
 		}
 		return
 	}
@@ -2700,7 +2703,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			var name  = V.li.data( 'name' );
 			switch ( cmd ) {
 				case 'edit':
-					setting.processor( name );
+					setting.processor( name, 'edit' );
 					break;
 				case 'delete':
 					info( {
@@ -2721,7 +2724,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			switch ( cmd ) {
 				case 'edit':
 					var i = V.li.index();
-					PIP[ i ].type === 'Filter' ? setting.pipeline( i ) : setting.pipelineMixer( i );
+					PIP[ i ].type === 'Filter' ? setting.pipeline( i, 'edit' ) : setting.pipelineMixer( i, 'edit' );
 					break;
 				case 'delete':
 					var type = V.li.data( 'type' ).toLowerCase();
@@ -2843,62 +2846,70 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	$this.hasClass( 'i-inverted' ) ? param.inverted = checked : setting.scaleSet( checked, param, $this );
 	setting.save();
 } ).on( 'click', 'li.eq', function( e ) {
-	if ( $( e.target ).parents( '.divgraph' ).length ) return
-	
-	var name  = $( this ).data( 'name' );
-	var param = FIL[ name ].parameters;
-	var bands = param.gains.length;
-	var min   = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
-	var max   = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
-	var width = ( max - min ) / bands;        // log10 / band
-	var v0    = min + width / 2;              // log10 midband
-	var v     = [ v0 ];
-	for ( var i = 0; i < bands - 1; i++ ) {
-		v0 += width;
-		v.push( v0 );
+	var name    = $( this ).data( 'name' );
+	var param   = FIL[ name ].parameters;
+	var peq     = param.type === 'FivePointPeq';
+	if ( peq ) {
+		var bands  = 5;
+		var freq   = [];
+		var values = [];
+		var g_k    = [];
+		$.each( F.values.BiquadCombo.FivePointPeq, ( k, v ) => {
+			if ( k[ 0 ] === 'f' ) {
+				freq.push( param[ k ] );
+			} else if ( k[ 0 ] === 'g' ) {
+				values.push( param[ k ] );
+				g_k.push( k );
+			}
+		} );
+	} else {
+		var bands  = param.gains.length;
+		var min    = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
+		var max    = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
+		var width  = ( max - min ) / bands;        // log10 / band
+		var v0     = min + width / 2;              // log10 midband
+		var freq   = [ Math.round( Math.pow( 10, v0 ) / 10 ) * 10 ];
+		for ( var i = 0; i < bands - 1; i++ ) {
+			v0 += width;
+			freq.push( Math.round( Math.pow( 10, v0 ) / 10 ) * 10 );
+		}
+		var values = param.gains
 	}
-	var labelhz = '';
-	v.forEach( val => {
-		var hz = Math.round( Math.pow( 10, val ) ); // log10 > Hz
-		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k'
-		labelhz += '<a>'+ hz +'</a>';
-	} );
-	var list    = `
-<div id="eq">
-<div class="label up">${ labelhz }</div>
-<div class="bottom"><div class="label dn">${ labelhz }</div></div>
-<div class="inforange vertical">${ '<input type="range" min="-40" max="40">'.repeat( bands ) }</div>
-</div>`;
-	var flatButton = () => $( '#infoOk' ).toggleClass( 'disabled', param.gains.reduce( ( a, b ) => a + b, 0 ) === 0 );
+	function flatButton() {
+		$( '#infoOk' ).toggleClass( 'disabled', values.reduce( ( a, b ) => a + b, 0 ) === 0 );
+	}
+	function valSet( i, val ) {
+		peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
+		setting.save();
+		flatButton();
+	}
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
-		, list       : list
+		, list       : eqDiv( -40, 40, freq )
 		, width      : 50 * bands + 40
-		, values     : param.gains
+		, values     : values
 		, beforeshow : () => {
 			flatButton();
 			$( '.inforange input' ).on( 'input', function() {
 				var $this = $( this );
-				param.gains[ $this.index() ] = +$this.val();
-				setting.save();
-				flatButton();
+				var i     = $this.index();
+				var val   = +$this.val();
+				valSet( i, val );
 			} );
 			$( '#eq .label a' ).on( 'click', function() {
 				var $this = $( this );
 				var i     = $this.index();
-				var gain  = param.gains[ i ];
-				$this.parent().hasClass( 'up' ) ? gain++ : gain--;
-				$( '.inforange input' ).eq( i ).val( gain );
-				param.gains[ i ] = gain;
-				setting.save();
-				flatButton();
+				var val   = peq ? param[ g_k[ i ] ] : param.gains[ i ];
+				$this.parent().hasClass( 'up' ) ? val++ : val--;
+				$( '.inforange input' ).eq( i ).val( val );
+				valSet( i, val );
 			} );
 		}
 		, oklabel    : ico( 'set0' ) +'Flat'
 		, oknoreset  : true
 		, ok         : () => {
-			param.gains = Array( bands ).fill( 0 );
+			peq ? g_k.forEach( k => { param[ k ] = 0 } ) : param.gains = Array( bands ).fill( 0 );
 			setting.save();
 			$( '.inforange input' ).val( 0 );
 			$( '#infoOk' ).addClass( 'disabled' );

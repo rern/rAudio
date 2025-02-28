@@ -77,10 +77,11 @@
 	transform: translateX( -50% );
 }
 #eq i {
-	font-size: 24px;
-}
-#eq i {
 	position: relative;
+	width: 40px !important;
+	height: 40px !important;
+	line-height: 40px !important;
+	vertical-align: middle;
 }
 #eqdelete {
 	margin-left: calc( var( --eqBandW ) * -1 );

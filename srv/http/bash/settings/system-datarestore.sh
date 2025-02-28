@@ -12,20 +12,15 @@ dirconfig=$dirdata/config
 [[ $( mpcState ) == play ]] && $dirbash/cmd.sh playerstop
 [[ -e $dirmpd/listing ]] && killall cmd-list.sh
 mpc | grep -q ^Updating && systemctl restart mpd
-rm -f $dirmpd/{listing,updating}
-
+rm -rf $dirdata/{mpd,playlists,webradio}
 if [[ $libraryonly ]]; then
-	rm -rf $dirdata/{mpd,playlists,webradio}
 	bsdtar xpf $backupfile -C /srv/http data/{mpd,playlists,webradio}
 	systemctl restart mpd
 	exit
 # --------------------------------------------------------------------
 fi
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
-
-
 bsdtar xpf $backupfile -C /srv/http
-
 dirPermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 partuuid=$( grep -m1 ^PARTUUID /etc/fstab | cut -d- -f1 )

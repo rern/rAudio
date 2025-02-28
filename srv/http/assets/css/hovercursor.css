@@ -28,9 +28,6 @@
 .licover.active:hover {
 	background: linear-gradient( #000000 195px, var( --cml ) 0 ) !important;
 }
-.mode:not( .nodata ):hover {
-	background: var( --cga );
-}
 .menu a:hover,
 .submenu:not( .disabled ):hover,
 #bar-bottom i:hover,
@@ -96,7 +93,7 @@ li:not( .licover ),
 .button-latest-clear,
 .button-webradio-new,
 .close-root,
-.coverart div,
+.coverart,
 .coveredit,
 .bkedit,
 .emptyadd,

@@ -36,7 +36,9 @@ case $type in
 		else
 			gifsicle -O3 --resize-fit 200x200 $source > "$target"
 		fi
-		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
+		dir=$( dirname "$target" )
+		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
+		data=', "bookmark": "'${dir:9}'"'
 		;;
 	coverart )
 		dir=$( dirname "$target" )
@@ -60,10 +62,10 @@ case $type in
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 		fi
 		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
+		data=', "radio": true'
 		;;
 esac
 coverart=${target/\/srv\/http}
 [[ ${target:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
-[[ ${type: -5} == radio ]] && stationcover=', "stationcover": true'
-pushData coverart '{ "url": "'$coverart'"'$stationcover' }'
+pushData coverart '{ "url": "'$coverart'"'$data' }'
 rm -f $dirshm/{embedded,local,online}/*
