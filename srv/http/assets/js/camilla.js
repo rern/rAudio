@@ -965,18 +965,17 @@ var graph     = {
 			plot.push( PLOTS.impulse );
 			PLOTS.phase.line.width = 1;
 		}
-		if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph"></div>' );
+		var graphnew = ! $li.find( '.divgraph' ).length;
+		if ( graphnew ) $li.append( '<div class="divgraph"></div>' );
 		var $divgraph = $li.find( '.divgraph' );
 		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
 		if ( ! $li.find( '.graphclose' ).length ) $divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
-		if ( ! V.refresh ) scrollUpToView( $divgraph );
+		if ( graphnew ) scrollUpToView( $divgraph );
 	}
 	, refresh      : () => {
-		V.refresh = true;
 		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
 			graph[ V.tab ].plot( $( el ).parent() );
 		} );
-		delete V.refresh;
 	}
 }
 window.addEventListener( 'resize', graph.flowchart.refresh );
