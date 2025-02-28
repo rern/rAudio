@@ -446,6 +446,14 @@ lsmnt )
 	echo '{ "nas": '$NAS', "sd": '$SD', "usb": '$USB' }'
 	;;
 lyrics )
+	if [[ ! $ACTION ]]; then
+		filelrc="/mnt/MPD/${FILE%.*}.lrc"
+		if [[ -e $filelrc ]]; then
+			grep -v ']$' "$filelrc" | sed -e 's/\[.*]//' -e '0,/^$/ d'
+			exit
+# --------------------------------------------------------------------
+		fi
+	fi
 	name="$ARTIST - $TITLE"
 	name=${name//\/}
 	lyricsfile="$dirlyrics/${name,,}.txt"

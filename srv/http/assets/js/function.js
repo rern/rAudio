@@ -846,7 +846,7 @@ function lyricsGet( refresh ) {
 	banner( 'lyrics blink', 'Lyrics', 'Fetch ...', -1 );
 	var artist = accent2plain( V.lyricsartist );
 	var title  = accent2plain( V.lyricstitle );
-	bash( [ 'lyrics', artist, title, refresh || '', 'CMD ARTIST TITLE ACTION' ], data => {
+	bash( [ 'lyrics', artist, title, S.file, refresh || '', 'CMD ARTIST TITLE FILE ACTION' ], data => {
 		lyricsShow( data );
 		bannerHide();
 		$( '#lyricsrefresh' ).removeClass( 'blink' );
