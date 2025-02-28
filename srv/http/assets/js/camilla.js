@@ -2857,7 +2857,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 			if ( k[ 0 ] === 'f' ) {
 				freq.push( param[ k ] );
 			} else if ( k[ 0 ] === 'g' ) {
-				values.push( param[ k ] );
+				values.push( param[ k ] * 10 );
 				g_k.push( k );
 			}
 		} );
@@ -2872,10 +2872,15 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 			v0 += width;
 			freq.push( Math.round( Math.pow( 10, v0 ) / 10 ) * 10 );
 		}
-		var values = param.gains
+		var values = param.gains.map( g => g * 10 );
 	}
 	function flatButton() {
-		$( '#infoOk' ).toggleClass( 'disabled', values.reduce( ( a, b ) => a + b, 0 ) === 0 );
+		if ( peq ) {
+			var flat = ! g_k.some( k => param[ k ] !== 0 );
+		} else {
+			var flat = values.reduce( ( a, b ) => a + b, 0 ) === 0;
+		}
+		$( '#infoOk' ).toggleClass( 'disabled', flat );
 	}
 	function valSet( i, val ) {
 		peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
@@ -2885,7 +2890,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
-		, list       : eqDiv( -40, 40, freq )
+		, list       : eqDiv( -100, 100, freq )
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {
@@ -2894,7 +2899,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 				var $this = $( this );
 				var i     = $this.index();
 				var val   = +$this.val();
-				valSet( i, val );
+				valSet( i, val / 10 );
 			} );
 			$( '#eq .label a' ).on( 'click', function() {
 				var $this = $( this );
@@ -2902,7 +2907,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 				var val   = peq ? param[ g_k[ i ] ] : param.gains[ i ];
 				$this.parent().hasClass( 'up' ) ? val++ : val--;
 				$( '.inforange input' ).eq( i ).val( val );
-				valSet( i, val );
+				valSet( i, val / 10 );
 			} );
 		}
 		, oklabel    : ico( 'set0' ) +'Flat'
