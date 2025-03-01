@@ -2783,7 +2783,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon    : icon
 						, title   : title
-						, message : 'Delete <c>'+ name +'</c> ?'
+						, message : '<c>'+ name +'</c>'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
