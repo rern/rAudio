@@ -27,7 +27,7 @@ W.refresh     = data => {
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		$.each( data.config, ( k, v ) => { S[ k ] = v } );
+		$.each( data, ( k, v ) => { S[ k ] = v } );
 		config.valuesAssign();
 		render[ V.tab ]();
 	}, 300 );
