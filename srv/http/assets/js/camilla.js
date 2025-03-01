@@ -27,8 +27,7 @@ W.refresh     = data => {
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		data.config = JSON.parse( data.config );
-		$.each( data, ( k, v ) => { S[ k ] = v } );
+		$.each( data.config, ( k, v ) => { S[ k ] = v } );
 		config.valuesAssign();
 		render[ V.tab ]();
 	}, 300 );
@@ -1236,7 +1235,7 @@ var render    = {
 	, filtersSub  : k => {
 		var li    = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		var files = S.ls.coeffs ? [ ...S.ls.coeffs ] : [];
-		if ( S.ls.coeffswav ) files.push( S.ls.coeffswav );
+		if ( S.ls.coeffswav ) files.push( ...S.ls.coeffswav );
 		if ( files.length ) files.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
@@ -2183,7 +2182,6 @@ var setting   = {
 							infoWarning(  V.tab,  title, message );
 						}
 					} );
-				common.webSocket();
 			}
 		} );
 	}
@@ -2639,7 +2637,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 					break;
 				case 'delete':
 					if ( common.inUse( name ) ) return
-					
 					info( {
 						  icon    : V.tab
 						, title   : title
