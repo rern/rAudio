@@ -29,7 +29,8 @@ W.refresh     = data => {
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } );
 		config.valuesAssign();
-		render[ V.tab ]();
+		render[ $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ? V.tab +'Sub' : V.tab ]();
+		bannerHide();
 	}, 300 );
 }
 // variables //////////////////////////////////////////////////////////////////////////////
@@ -1647,8 +1648,8 @@ var setting   = {
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, message      : name ? 'Rename <wh>'+ name +'</wh> to:' : ''
-			, list         : [ 'Name', 'text' ]
+			, message      : name ? 'Rename <wh>'+ name +'</wh>' : ''
+			, list         : [ 'To', 'text' ]
 			, values       : name
 			, checkblank   : true
 			, checkchanged : name
@@ -2615,8 +2616,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 						info( {
 							  icon         : V.tab
 							, title        : title
-							, message      : 'Rename <wh>'+ name +'</wh> to:'
-							, list         : [ 'Name', 'text' ]
+							, message      : 'Rename <wh>'+ name +'</wh>'
+							, list         : [ 'To', 'text' ]
 							, values       : name
 							, checkblank   : true
 							, checkchanged : true
@@ -2640,7 +2641,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon    : V.tab
 						, title   : title
-						, message : 'Delete: <wh>'+ name +'</wh> ?'
+						, message : '<wh>'+ name +'</wh> ?'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
@@ -2671,7 +2672,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						var title = 'Input';
 						var msg   = ico( 'input gr' ) +' In: '+ V.li.data( 'source' );
 					}
-					var message = 'Delete <wh>'+ msg +'</wh> ?';
+					var message = '<wh>'+ msg +'</wh> ?';
 					info( {
 						  icon    : V.tab
 						, title   : title
@@ -2707,7 +2708,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon    : V.tab
 						, title   : title
-						, message : 'Delete <wh>'+ name +'</wh> ?'
+						, message : '<wh>'+ name +'</wh> ?'
 						, ok      : () => {
 							delete PRO[ name ];
 							setting.save( title, 'Remove ...' );
@@ -2729,7 +2730,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon    : V.tab
 						, title   : title
-						, message : 'Delete this '+ type +'?'
+						, message : '<wh>'+ type +'</wh>'
 						, ok      : () => {
 							PIP.splice( V.li.index(), 1 );
 							setting.save( title, 'Remove '+ type +' ...' );
@@ -2805,8 +2806,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon         : icon
 						, title        : title
-						, message      : 'File: <c>'+ name +'</c>'
-						, list         : [ 'Rename to', 'text' ]
+						, message      : 'Rename <c>'+ name +'</c>'
+						, list         : [ 'To', 'text' ]
 						, values       : [ name ]
 						, checkchanged : true
 						, ok           : () => {
