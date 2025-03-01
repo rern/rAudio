@@ -1234,8 +1234,10 @@ var render    = {
 		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ icon + li + graph +'</li>'
 	}
 	, filtersSub  : k => {
-		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
-		if ( S.ls.coeffs ) S.ls.coeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
+		var li    = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var files = S.ls.coeffs ? [ ...S.ls.coeffs ] : [];
+		if ( S.ls.coeffswav ) files.push( S.ls.coeffswav );
+		if ( files.length ) files.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
 	} //-----------------------------------------------------------------------------------
