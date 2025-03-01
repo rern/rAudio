@@ -475,12 +475,10 @@ cp {
 	#divstatus .rateadjust.wide { display: none }
 }
 
-.db,
-#divfilters li .name,
-#divvolume {
+#divvolume .col-l,
+#divvolume .col-r > * {
 	cursor: pointer;
 }
-.entries.sub li,
-#filters li {
+.entries.sub li {
 	cursor: default !important;
 }
