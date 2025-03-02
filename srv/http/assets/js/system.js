@@ -595,9 +595,9 @@ var util          = {
 			var values = [];
 			keys.forEach( p => values.push( p, name[ p ] ) );
 			var list   = [
-				  [ '', '', { suffix: ico( 'gpiopins gr' ) +'Pin', sameline: true } ]
-				, [ '', '', { suffix: ico( 'tag gr' ) +' Name' } ]
-			]
+				  [ '', ico( 'gpiopins gr' ) +'Pin', { sameline: true } ]
+				, [ '', ico( 'tag gr' ) +' Name' ]
+			];
 			var kL     = keys.length;
 			for ( var i = 0; i < kL; i++ ) {
 				list.push( [ '', 'select', { kv: util.board2bcm, sameline: true } ], [ '', 'text' ] );
@@ -636,8 +636,8 @@ var util          = {
 			$.each( name, ( k, v ) => { names[ v ] = k } );
 			var step   = { step: 1, min: 0, max: 10 }
 			var list   = [
-				  [ '', '', { suffix: ico( 'power grn' ) +' On <gr>(s)</gr>', sameline: true, colspan: 2 } ]
-				, [ '', '', { suffix: ico( 'power red' ) +' Off <gr>(s)</gr>', colspan: 2 } ]
+				  [ '', ico( 'power grn' ) +' On <gr>(s)</gr>',  { sameline: true, colspan: 2 } ]
+				, [ '', ico( 'power red' ) +' Off <gr>(s)</gr>', { colspan: 2 } ]
 			];
 			var values = [];
 			var pL     = pin.ON.length;

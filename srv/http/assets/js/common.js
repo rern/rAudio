@@ -606,8 +606,9 @@ function info( json ) {
 				case 'textarea':
 					htmls.list += '<textarea></textarea></td></tr>';
 					break;
-				default: // generic string
-					if ( ! $.isEmptyObject( param ) ) htmls.list += param.suffix ? param.suffix : '';
+				default: // string
+					if ( type ) htmls.list += type;
+					if ( 'suffix' in param ) htmls.list += '</td><td>'+ param.suffix;
 					htmls.list += param.sameline ? '</td>' : '</td></tr>';
 			}
 		} );
