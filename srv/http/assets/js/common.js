@@ -607,7 +607,7 @@ function info( json ) {
 					htmls.list += '<textarea></textarea></td></tr>';
 					break;
 				default: // generic string
-					htmls.list += param.suffix ? param.suffix : param || '';
+					if ( ! $.isEmptyObject( param ) ) htmls.list += param.suffix ? param.suffix : '';
 					htmls.list += param.sameline ? '</td>' : '</td></tr>';
 			}
 		} );

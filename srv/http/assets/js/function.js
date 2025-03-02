@@ -1187,6 +1187,12 @@ function renderLibrary() { // library home
 	setButtonUpdate();
 }
 function renderLibraryCounts() {
+	if ( ! D.count ) {
+		$( '.mode gr' ).addClass( 'hide' );
+		return
+	}
+	
+	$( '.mode gr' ).removeClass( 'hide' );
 	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
