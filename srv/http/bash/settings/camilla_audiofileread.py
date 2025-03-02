@@ -3,6 +3,7 @@
 import struct
 import csv
 import itertools
+from camilla_cooley_tukey import fft
 
 NUMBERFORMATS = {
     1: "int",
@@ -253,5 +254,9 @@ def read_wav_header(filename):
 import sys
 import json
 
-conf = json.loads( sys.argv[ 1 ] )
-print( read_coeffs( conf ) )
+conf    = json.loads( sys.argv[ 1 ] )
+impulse = read_coeffs( conf )
+fft_imp = fft( impulse )
+f_i     = [ { "re": z.real, "im": z.imag } for z in fft_imp ]
+
+print( json.dumps( [ impulse, f_i ] ) )
