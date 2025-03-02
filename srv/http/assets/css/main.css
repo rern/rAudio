@@ -2042,6 +2042,7 @@ li.active .li2 bl {
 		#volume-knob { width: auto }
 		#coverart-block,
 		#divcover { max-width: 100% }
+		#coverart { min-width: auto }
 		#bar-bottom.hide {
 			display: block !important;
 			opacity: 0 !important;

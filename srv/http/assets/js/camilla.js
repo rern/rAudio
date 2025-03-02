@@ -922,12 +922,26 @@ var graph     = {
 				max     = Math.max( max, minmax[ d ] );
 				min     = Math.min( min, -minmax[ d ] )
 				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ] * 0.1;
-				if ( d === 'impulse' ) {
-					dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
+				if ( d === 'gain' ) {
+					dtick = abs < 10
+								? 2
+								: abs < 20
+									? 5
+									: abs < 30
+										? 10
+										: 20;
 				} else if ( d === 'groupdelay' ) {
-					dtick = abs < 100 ? 20 : ( abs < 500 ? 100 : 500 );
+					dtick = abs < 100
+								? 20
+								: abs < 500
+									? 100
+									: 500;
 				} else {
-					dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
+					dtick = abs < 1
+							? 0.2
+							: abs < 2
+								? 0.5
+								: 1;
 				}
 				AXES[ d ].dtick = dtick
 				AXES[ d ].range = [ -abs, abs ];
