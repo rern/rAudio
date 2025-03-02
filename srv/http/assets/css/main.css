@@ -39,8 +39,10 @@ div.pagerefresh { z-index: 100 }
 #time .rs-inner-container::after { z-index: 1 }
 @media ( orientation: portrait ) { @media ( max-width: 480px ) { #bioimg { z-index: -5 } } }
 
-img {
+img,
+.licoverimg {
 	-webkit-touch-callout: none;
+	-webkit-user-select: none;
 }
 a {
 	color: var( --cw );

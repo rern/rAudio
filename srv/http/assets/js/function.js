@@ -1493,23 +1493,6 @@ function setBlinkDot() {
 		}
 	}
 }
-function setBookmarkEdit() {
-	if ( ! V.press && $( '.bkedit' ).length ) {
-		$( '.bkedit' ).remove();
-		$( '.mode.edit' ).removeClass( 'edit' );
-		return
-	}
-	
-	V.bklabel = $( this ).find( '.label' );
-	$( '.mode.bookmark' ).each( ( i, el ) => {
-		var $this      = $( el );
-		var buttonhtml = ico( 'remove bkedit bk-remove' );
-		if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit bkedit bk-rename' );
-		if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
-		$this.append( buttonhtml );
-	} );
-	$( '.mode.bookmark' ).addClass( 'edit' );
-}
 function setButtonOptions() {
 	$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 	$( '#relays' ).toggleClass( 'on', S.relayson );

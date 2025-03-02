@@ -161,8 +161,10 @@ $.fn.press = function( args ) {
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( timeout );
+		if ( ! V.press ) return
+		
 		setTimeout( () => { // after last action timeout
-			if ( V.press && end ) end();
+			if ( end ) end();
 			setTimeout( () => V.press = false, 300 );
 		}, 0 );
 	} );

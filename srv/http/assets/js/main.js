@@ -1226,6 +1226,8 @@ $( '#button-lib-back' ).on( 'click', function() {
 $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
 } ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {
+	if ( V.press ) return
+	
 	V.mode          = $( this ).data( 'mode' );
 	V.modescrolltop = $( window ).scrollTop();
 	if ( V.mode === 'playlists' ) {
@@ -1308,10 +1310,9 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, okno      : true
 	} );
 } ).on( 'click', '.mode.bookmark:not( .bkradio )', function( e ) { // delegate - id changed on renamed
-	var $this = $( this );
 	if ( V.press || $( '.bkedit' ).length ) return
 	
-	var path  = $this.find( '.lipath' ).text();
+	var path  = $( this ).find( '.lipath' ).text();
 	V.mode    = path.split( '/' )[ 0 ].toLowerCase();
 	if ( V.mode === 'webradio' ) {
 		path = path.slice( 9 );
