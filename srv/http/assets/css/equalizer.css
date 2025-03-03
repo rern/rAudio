@@ -63,12 +63,16 @@
 	line-height: 24px;
 	color: var( --cw );
 	text-align: center;
+	text-shadow: none;
 	font-family: Inconsolata;
 	background: var( --cg );
 	border-radius: 3px;
+	cursor: pointer;
 }
 #eq .label.dn a {
-	color: var( --cg60 );
+	height: 17px;
+	line-height: 17px;
+	font-size: 15px;
 }
 #eq .bottom {
 	position: absolute;

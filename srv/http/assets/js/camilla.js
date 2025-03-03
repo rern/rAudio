@@ -2895,6 +2895,12 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 			var flat = values.reduce( ( a, b ) => a + b, 0 ) === 0;
 		}
 		$( '#infoOk' ).toggleClass( 'disabled', flat );
+		var $db = $( '.label.dn a' );
+		param.gains.forEach( ( v, i ) => {
+			$db.eq( i )
+				.text( v.toFixed( 1 ) )
+				.toggleClass( 'disabled', v === 0 );
+		} );
 	}
 	function valSet( i, val ) {
 		peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
@@ -2904,7 +2910,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
-		, list       : eqDiv( -100, 100, freq )
+		, list       : eqDiv( -100, 100, freq, '', 10 )
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {
@@ -2919,9 +2925,9 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 				var $this = $( this );
 				var i     = $this.index();
 				var val   = peq ? param[ g_k[ i ] ] : param.gains[ i ];
-				$this.parent().hasClass( 'up' ) ? val++ : val--;
-				$( '.inforange input' ).eq( i ).val( val );
-				valSet( i, val / 10 );
+				val      += $this.parent().hasClass( 'up' ) ? 0.1 : -0.1;
+				$( '.inforange input' ).eq( i ).val( val * 10 );
+				valSet( i, val );
 			} );
 		}
 		, oklabel    : ico( 'set0' ) +'Flat'
