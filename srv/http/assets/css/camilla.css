@@ -418,10 +418,6 @@ i.disabled {
 #eq {
 	height: 370px !important;
 }
-#eq .bottom {
-	bottom: 70px !important;
-	height: 20px;
-}
 #codeoutput {
 	margin-top: 15px;
 }

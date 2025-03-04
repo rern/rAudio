@@ -71,7 +71,7 @@
 }
 #eq .bottom {
 	position: absolute;
-	bottom: 25px;
+	top: 410px;
 	left: 50%;
 	transform: translateX( -50% );
 }
