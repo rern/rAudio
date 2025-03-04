@@ -69,6 +69,10 @@
 	border-radius: 3px;
 	cursor: pointer;
 }
+#eq .label.dn,
+#eq .label.up {
+	max-width: unset;
+}
 #eq .label.dn a {
 	height: 17px;
 	line-height: 17px;

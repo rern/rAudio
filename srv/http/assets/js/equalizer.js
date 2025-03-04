@@ -1,6 +1,8 @@
 var eqtimeout, equser;
-var flat   = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
+var flat   = new Array( 10 ).fill( 62 );
 var freq   = [ 30, 60, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 ];
+var bands  = [];
+freq.forEach( ( hz, i ) => bands.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) ) );
 var bottom =  ico( 'remove hide', 'eqdelete' )
 			+ ico( 'edit', 'eqrename' )
 			+ ico( 'save disabled hide', 'eqsave' )
@@ -8,18 +10,21 @@ var bottom =  ico( 'remove hide', 'eqdelete' )
 			+ ico( 'add', 'eqnew' ) + ico( 'back bl hide', 'eqback' );
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
-		E       = data || { active: "Flat", preset: { Flat: Array.from( new Array( 10 ), () => 62 ) } }
+		E       = data || { active: "Flat", preset: { Flat: flat } }
+		
 		equser  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
-		var opt = htmlOption( Object.keys( E.preset ) )
+		var opt = htmlOption( Object.keys( E.preset ) );
+		var eqv = E.preset[ E.active ];
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
 			, list       : eqDiv( 40, 80, freq, bottom.replace( 'PRESETS', opt ) )
-			, values     : [ E.active, E.active, ...E.preset[ E.active ] ]
+			, values     : [ E.active, E.active, ...eqv ]
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 540 );
 				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
 				$( '#eq .select2-container' ).css( 'width', '' );
+				eqv.forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v ) );
 				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
 					var $this, ystart, val, prevval;
 					var yH   = $( '.inforange input' ).width() - 40;
@@ -38,14 +43,14 @@ function equalizer() {
 						
 						prevval   = v;
 						$this.val( v );
-						eqSlide( band[ $this.index() ], v );
+						eqSlide( $this.index(), v );
 					} ).on( 'touchend', function() {
 						eqSlideEnd();
 					} );
 				} else {
 					$( '.inforange input' ).on( 'input', function() {
 						var $this = $( this );
-						eqSlide( band[ $this.index() ], +$this.val() );
+						eqSlide( $this.index(), +$this.val() );
 					} ).on( 'touchend mouseup keyup', function() {
 						eqSlideEnd();
 					} );
@@ -73,7 +78,8 @@ function eqOptionPreset() {
 	$( '#eq .select2-container' ).removeAttr( 'style' );
 	if ( name ) $( '#eq .select2-container' ).addClass( 'hide' );
 }
-function eqSlide( band, v ) {
+function eqSlide( index, v ) {
+	var band = bands[ index ];
 	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
 	if ( E.active === 'Flat' ) {
 		for ( var i = 1; i < 10; i++ ) {
@@ -83,6 +89,7 @@ function eqSlide( band, v ) {
 		E.active         = name;
 		E.preset[ name ] = E.preset.Flat;
 	}
+	$( '#eq .label.dn a' ).eq( index ).text( v );
 }
 function eqSlideEnd() {
 	E.preset[ E.active ] = infoVal().slice( 2 );
@@ -142,17 +149,10 @@ $( '#infoOverlay' ).on( 'click', '#eqrename, #eqnew', function() {
 } ).on( 'click', '.up, .dn', function( e ) {
 	clearTimeout( eqtimeout )
 	var $this  = $( this );
-	if ( $this.hasClass( 'up' ) ) {
-		var i    = $( '.label.up a' ).index( e.target );
-		var v    = '1%+';
-		var updn = 1;
-	} else {
-		var i    = $( '.label.dn a' ).index( e.target );
-		var v    = '1%-';
-		var updn = -1;
-	}
+	var i      = $this.index();
 	var $range = $( '.inforange input' ).eq( i );
-	$range.val( +$range.val() + updn );
-	eqSlide( band[ i ], v );
+	var v      = +$range.val() + ( $this.hasClass( 'up' ) ? 1 : -1 );
+	$range.val( v );
+	eqSlide( i, v );
 	eqtimeout  = setTimeout( eqSlideEnd, 1000 );
 } );
