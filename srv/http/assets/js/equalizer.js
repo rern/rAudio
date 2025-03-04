@@ -4,7 +4,7 @@ var freq   = [ 30, 60, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 ];
 var bands  = [];
 freq.forEach( ( hz, i ) => bands.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) ) );
 var bottom =  ico( 'remove hide', 'eqdelete' )
-			+ ico( 'edit', 'eqrename' )
+			+ ico( 'edit', 'eqedit' )
 			+ ico( 'save disabled hide', 'eqsave' )
 			+'<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>'
 			+ ico( 'add', 'eqnew' ) + ico( 'back bl hide', 'eqback' );
@@ -21,7 +21,7 @@ function equalizer() {
 			, values     : [ E.active, E.active, ...E.preset[ E.active ] ]
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 540 );
-				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
+				eqEditToggle();
 				$( '#eq .select2-container' ).css( 'width', '' );
 				eqText();
 				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
@@ -60,6 +60,9 @@ function equalizer() {
 		} );
 	}, 'json' );
 }
+function eqEditToggle() {
+	$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
+}
 function eqPreset( v ) {
 	E.preset.Flat = flat;
 	E.current     = v;
@@ -96,25 +99,71 @@ function eqSlideEnd() {
 	E.preset.Flat        = flat;
 	E.current            = E.preset[ E.active ].join( ' ' );
 	jsonSave( 'equalizer', E );
-	$( '#eqrename' ).removeClass( 'disabled' );
+	$( '#eqedit' ).removeClass( 'disabled' );
 	eqOptionPreset();
 }
 function eqText() {
 	E.preset[ E.active ].forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v ) );
 }
 
-$( '#infoOverlay' ).on( 'click', '#eqrename, #eqnew', function() {
-	this.id === 'eqrename' ? $( '#eqdelete' ).removeClass( 'hide' ) : $( '#eqdelete' ).addClass( 'hide' );
-	$( '#eqrename, #eq .select2-container, #eqnew' ).addClass( 'hide' );
+$( '#infoOverlay' ).on( 'click', '#eqnew', function() {
+	$( '#eq .select2-container, #eqnew' ).addClass( 'hide' );
 	$( '#eqsave, #eqname, #eqback' ).removeClass( 'hide' );
 	$( '#eqname' )
 		.css( 'display', 'inline-block' )
 		.val( E.active );
+} ).on( 'click', '#eqedit', function() {
+	var list    = [];
+	var values  = [];
+	var presets = Object.keys( E.preset ).sort();
+	presets.forEach( k => {
+		if ( k === 'Flat' ) return
+		
+		list.push( [ '', 'text', { suffix: ico( 'remove' ) } ] );
+		values.push( k );
+	} );
+	info( {
+		  icon         : 'equalizer'
+		, title        : 'Presets'
+		, list         : list
+		, values       : values
+		, checkchanged : true
+		, beforeshow   : () => {
+			$( '#infoList i' ).on( 'click', function() {
+				var preset = $( this ).parents( 'tr' ).find( 'input' ).val();
+				info( {
+					  icon    : 'equalizer'
+					, title   : 'Delete'
+					, message : preset
+					, oklabel : ico( 'remove' ) +'Delete'
+					, okcolor : red
+					, ok      : () => {
+						if ( preset === E.active ) E.active = 'Flat';
+						delete E.preset[ preset ];
+						jsonSave( 'equalizer', E );
+					}
+				} );
+			} );
+		}
+		, ok      : () => {
+			var val = infoVal();
+			if ( typeof val === 'string' ) val = [ val ];
+			val.forEach( ( name1, i ) => {
+				var name0 = presets[ i ];
+				if ( name0 !== name1 ) {
+					if ( E.active === name0 ) E.active = name1;
+					E.preset[ name1 ] = E.preset[ name0 ];
+					delete E.preset[ name0 ];
+				}
+			} );
+			jsonSave( 'equalizer', E );
+		}
+	} );
 } ).on( 'click', '#eqback', function() {
-	$( '#eqrename, #eq .select2-container, #eqnew' ).removeClass( 'hide' );
+	$( '#eq .select2-container, #eqnew' ).removeClass( 'hide' );
 	$( '#eqdelete, #eqsave, #eqname, #eqback' ).addClass( 'hide' );
 	$( '#eqname' ).empty();
-	$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
+	eqEditToggle();
 } ).on( 'input', '#eqname', function( e ) {
 	var $eqsave = $( '#eqsave' );
 	$eqsave.toggleClass( 'disabled', $( this ).val().trim() in E.preset );
@@ -126,7 +175,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename, #eqnew', function() {
 	E.active = name;
 	I.values = [ E.active, E.active, ...E.preset[ E.active ] ];
 	infoSetValues();
-	$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
+	eqEditToggle();
 	eqPreset( E.preset[ name ].join( ' ' ) );
 } ).on( 'click', '#eqdelete', function() {       // delete
 	delete E.preset[ E.active ];

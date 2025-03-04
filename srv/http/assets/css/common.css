@@ -1065,6 +1065,7 @@ input[ type=radio ]:disabled {
 	.infomessage .tagpath,
 	.inforange i,
 	.pointer,
+	#infoList i,
 	#infoList .updn,
 	#infoTab,
 	#infoButton gr,
