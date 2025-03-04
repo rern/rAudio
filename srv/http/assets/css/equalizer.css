@@ -51,8 +51,9 @@
 #eq .label a {
 	display: inline-block;
 	margin: var( --eqLabelM );
-	height: 25px;
-	line-height: 24px;
+	height: 17px;
+	line-height: 17px;
+	font-size: 15px;
 	color: var( --cw );
 	text-align: center;
 	text-shadow: none;
@@ -66,14 +67,11 @@
 	max-width: unset;
 }
 #eq .label.dn a {
-	height: 17px;
-	line-height: 17px;
-	font-size: 15px;
 	background: var( --cgd );
 }
 #eq .bottom {
 	position: absolute;
-	bottom: 15px;
+	bottom: 25px;
 	left: 50%;
 	transform: translateX( -50% );
 }
@@ -83,12 +81,6 @@
 	height: 40px !important;
 	line-height: 40px !important;
 	vertical-align: middle;
-}
-#eqdelete {
-	margin-left: calc( var( --eqBandW ) * -1 );
-}
-#eqname {
-	padding-right: 21px;
 }
 #eq .vertical {
 	position: relative;
@@ -122,4 +114,5 @@
 #divpreset {
 	display: inline-block;
 	width: 230px;
+	height: 42px;
 }

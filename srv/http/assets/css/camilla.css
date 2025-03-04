@@ -416,10 +416,11 @@ i.disabled {
 	background-color: var( --cmd );
 }
 #eq {
-	height: 385px !important;
+	height: 370px !important;
 }
 #eq .bottom {
-	bottom: 60px !important;
+	bottom: 70px !important;
+	height: 20px;
 }
 #codeoutput {
 	margin-top: 15px;

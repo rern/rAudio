@@ -2910,7 +2910,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		, values     : values
 		, beforeshow : () => {
 			flatButton();
-			param.gains.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( v.toFixed( 1 ) ) );
+			values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
 			$( '.inforange input' ).on( 'input', function() {
 				var $this = $( this );
 				var i     = $this.index();
