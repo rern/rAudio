@@ -151,8 +151,8 @@ $( '#infoOverlay' ).on( 'click', '#eqrename, #eqnew', function() {
 	var $this  = $( this );
 	var i      = $this.index();
 	var $range = $( '.inforange input' ).eq( i );
-	var v      = +$range.val() + ( $this.hasClass( 'up' ) ? 1 : -1 );
-	$range.val( v );
-	eqSlide( i, v );
+	var val    = +$range.val() + ( $this.hasClass( 'up' ) ? 1 : -1 );
+	$range.val( val );
+	eqSlide( i, val );
 	eqtimeout  = setTimeout( eqSlideEnd, 1000 );
 } );

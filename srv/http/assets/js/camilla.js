@@ -2895,26 +2895,22 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 			var flat = values.reduce( ( a, b ) => a + b, 0 ) === 0;
 		}
 		$( '#infoOk' ).toggleClass( 'disabled', flat );
-		var $db = $( '.label.dn a' );
-		param.gains.forEach( ( v, i ) => {
-			$db.eq( i )
-				.text( v.toFixed( 1 ) )
-				.toggleClass( 'disabled', v === 0 );
-		} );
 	}
 	function valSet( i, val ) {
 		peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
 		setting.save();
 		flatButton();
+		$( '.label.dn a' ).eq( i ).text( val.toFixed( 1 ) );
 	}
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
-		, list       : eqDiv( -100, 100, freq, '', 10 )
+		, list       : eqDiv( -100, 100, freq )
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {
 			flatButton();
+			param.gains.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( v.toFixed( 1 ) ) );
 			$( '.inforange input' ).on( 'input', function() {
 				var $this = $( this );
 				var i     = $this.index();
@@ -2937,6 +2933,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 			setting.save();
 			$( '.inforange input' ).val( 0 );
 			$( '#infoOk' ).addClass( 'disabled' );
+			$( '.label.dn a' ).text( '0.0' );
 		}
 	} );
 } );
