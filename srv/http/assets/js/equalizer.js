@@ -62,13 +62,6 @@ function equalizer() {
 function eqEditToggle() {
 	$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
 }
-function eqPreset( v ) {
-	E.preset.Flat = flat;
-	E.current     = v;
-	jsonSave( 'equalizer', E );
-	bash( [ 'equalizer', v, equser, 'CMD VALUES USR' ] );
-	eqText();
-}
 function eqOptionPreset() {
 	local(); // suppress input event
 	var name   = ! $( '#eqname' ).hasClass( 'hide' );
@@ -79,6 +72,12 @@ function eqOptionPreset() {
 	selectSet();
 	$( '#eq .select2-container' ).removeAttr( 'style' );
 	if ( name ) $( '#eq .select2-container' ).addClass( 'hide' );
+}
+function eqPreset( v ) {
+	E.preset.Flat = flat;
+	jsonSave( 'equalizer', E );
+	bash( [ 'equalizer', v, equser, 'CMD VALUES USR' ] );
+	eqText();
 }
 function eqSlide( index, v ) {
 	var band = bands[ index ];
@@ -96,7 +95,6 @@ function eqSlide( index, v ) {
 function eqSlideEnd() {
 	E.preset[ E.active ] = infoVal().slice( 2 );
 	E.preset.Flat        = flat;
-	E.current            = E.preset[ E.active ].join( ' ' );
 	jsonSave( 'equalizer', E );
 	$( '#eqedit' ).removeClass( 'disabled' );
 	eqOptionPreset();
@@ -175,11 +173,12 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	I.values = [ E.active, E.active, ...E.preset[ E.active ] ];
 	infoSetValues();
 	eqEditToggle();
-	eqPreset( E.preset[ name ].join( ' ' ) );
+	eqPreset();
+	selectSet();
 } ).on( 'click', '#eqdelete', function() {       // delete
 	delete E.preset[ E.active ];
 	E.active = 'Flat';
-	eqPreset( E.preset.Flat.join( ' ' ) );
+	eqPreset();
 	$( '#eqback' ).trigger( 'click' );
 	eqOptionPreset();
 } ).on( 'click', '#eqsave', function() {
@@ -195,7 +194,6 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	}
 	$( '#eqback' ).trigger( 'click' );
 	E.preset.Flat = flat;
-	E.current     = E.preset[ name ].join( ' ' );
 	jsonSave( 'equalizer', E );
 } ).on( 'click', '.up, .dn', function( e ) {
 	clearTimeout( eqtimeout )

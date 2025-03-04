@@ -43,10 +43,6 @@
 #eq .select2-container { 
 	width: calc( var( --eqBandW ) * 4 ) !important;
 }
-#eq .select2-results__options li {
-	text-align: center;
-	padding-right: 20px;
-}
 
 @media ( max-width: 530px ) {
 	#eq input::-webkit-slider-thumb { width : var( --eqThumbW ) }
