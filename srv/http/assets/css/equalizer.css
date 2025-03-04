@@ -39,10 +39,6 @@
 #eq .vertical { width  : var( --eqSliderH ) }
 #eq .label a  { width  : var( --eqLabel ) }
 #eq input     { height : var( --eqBandW ) }
-#eqname,
-#eq .select2-container { 
-	width: calc( var( --eqBandW ) * 4 ) !important;
-}
 
 @media ( max-width: 530px ) {
 	#eq input::-webkit-slider-thumb { width : var( --eqThumbW ) }
@@ -122,4 +118,8 @@
 }
 #eq input::-moz-range-thumb {
 	transform : rotate( 90deg );
+}
+#divpreset {
+	display: inline-block;
+	width: 230px;
 }
