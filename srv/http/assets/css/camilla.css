@@ -418,9 +418,6 @@ i.disabled {
 #eq {
 	height: 385px !important;
 }
-#eq .vertical::before {
-	right: 150px !important;
-}
 #eq .bottom {
 	bottom: 60px !important;
 }

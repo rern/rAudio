@@ -111,7 +111,7 @@
 	content: '';
 	width: 1px;
 	height: 100%;
-	right: 138px;
+	right: 150px;
 	background: var( --cgl );
 }
 #eq input {

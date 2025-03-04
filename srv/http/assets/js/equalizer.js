@@ -11,13 +11,12 @@ var bottom =  ico( 'remove hide', 'eqdelete' )
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
 		E       = data || { active: "Flat", preset: { Flat: flat } }
-		
 		equser  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
 		var opt = htmlOption( Object.keys( E.preset ) );
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
-			, list       : eqDiv( 40, 80, freq, bottom.replace( 'PRESETS', opt ) )
+			, list       : eqDiv( 42, 82, freq, bottom.replace( 'PRESETS', opt ) )
 			, values     : [ E.active, E.active, ...E.preset[ E.active ] ]
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 540 );
@@ -92,7 +91,7 @@ function eqSlide( index, v ) {
 		E.active         = name;
 		E.preset[ name ] = E.preset.Flat;
 	}
-	$( '#eq .label.dn a' ).eq( index ).text( v );
+	$( '#eq .label.dn a' ).eq( index ).text( v - 62 );
 }
 function eqSlideEnd() {
 	E.preset[ E.active ] = infoVal().slice( 2 );
@@ -103,7 +102,7 @@ function eqSlideEnd() {
 	eqOptionPreset();
 }
 function eqText() {
-	E.preset[ E.active ].forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v ) );
+	E.preset[ E.active ].forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v - 62 ) );
 }
 
 $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
