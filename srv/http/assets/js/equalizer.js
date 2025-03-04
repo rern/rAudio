@@ -14,17 +14,16 @@ function equalizer() {
 		
 		equser  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
 		var opt = htmlOption( Object.keys( E.preset ) );
-		var eqv = E.preset[ E.active ];
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
 			, list       : eqDiv( 40, 80, freq, bottom.replace( 'PRESETS', opt ) )
-			, values     : [ E.active, E.active, ...eqv ]
+			, values     : [ E.active, E.active, ...E.preset[ E.active ] ]
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 540 );
 				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
 				$( '#eq .select2-container' ).css( 'width', '' );
-				eqv.forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v ) );
+				eqText();
 				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
 					var $this, ystart, val, prevval;
 					var yH   = $( '.inforange input' ).width() - 40;
@@ -66,6 +65,7 @@ function eqPreset( v ) {
 	E.current     = v;
 	jsonSave( 'equalizer', E );
 	bash( [ 'equalizer', v, equser, 'CMD VALUES USR' ] );
+	eqText();
 }
 function eqOptionPreset() {
 	local(); // suppress input event
@@ -98,6 +98,9 @@ function eqSlideEnd() {
 	jsonSave( 'equalizer', E );
 	$( '#eqrename' ).removeClass( 'disabled' );
 	eqOptionPreset();
+}
+function eqText() {
+	E.preset[ E.active ].forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v ) );
 }
 
 $( '#infoOverlay' ).on( 'click', '#eqrename, #eqnew', function() {
