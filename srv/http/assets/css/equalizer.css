@@ -6,8 +6,6 @@
 	--eqSliderH : 300px;
 	--eqBandW   : 50px;
 	--eqAllH    : calc( var( --eqSliderH ) + 125px ); /* console H = 25 + sliderW + 40 */
-	--eqSliderT : calc( ( var( --eqSliderH ) - var( --eqBandW ) * 10 ) / 2 ); /* ( sliderW - sliderH x 10 ) / 2 */
-	--eqPresetW : calc( var( --eqBandW ) * 5 );
 	--eqLabel   : calc( var( --eqBandW ) - 10px );
 	--eqLabelM  : 0 5px;
 }
