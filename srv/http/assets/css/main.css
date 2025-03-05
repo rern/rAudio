@@ -41,6 +41,7 @@ div.pagerefresh { z-index: 100 }
 
 img,
 .licoverimg {
+	user-select: none;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 }

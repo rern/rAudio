@@ -185,10 +185,10 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	jsonSave( 'equalizer', E );
 } ).on( 'click', '.up, .dn', function( e ) {
 	clearTimeout( eqtimeout )
-	var $this  = $( this );
+	var $this  = $( e.target );
 	var i      = $this.index();
 	var $range = $( '.inforange input' ).eq( i );
-	var val    = +$range.val() + ( $this.hasClass( 'up' ) ? 1 : -1 );
+	var val    = +$range.val() + ( $this.parent().hasClass( 'up' ) ? 1 : -1 );
 	$range.val( val );
 	eqSlide( i, val );
 	eqtimeout  = setTimeout( eqSlideEnd, 1000 );
