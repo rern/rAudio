@@ -186,9 +186,10 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 } ).on( 'click', '.up, .dn', function( e ) {
 	clearTimeout( eqtimeout )
 	var $this  = $( e.target );
+	var updn   = $this.parent().hasClass( 'up' ) ? 1 : -1;
 	var i      = $this.index();
 	var $range = $( '.inforange input' ).eq( i );
-	var val    = +$range.val() + ( $this.parent().hasClass( 'up' ) ? 1 : -1 );
+	var val    = +$range.val() + updn;
 	$range.val( val );
 	eqSlide( i, val );
 	eqtimeout  = setTimeout( eqSlideEnd, 1000 );

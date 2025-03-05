@@ -2911,19 +2911,42 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		, beforeshow : () => {
 			flatButton();
 			values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
-			$( '.inforange input' ).on( 'input', function() {
-				var $this = $( this );
-				var i     = $this.index();
-				var val   = +$this.val();
-				valSet( i, val / 10 );
-			} );
+			if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
+					var $this, ystart, val, prevval;
+					var yH   = $( '.inforange input' ).width() - 40;
+					var step = yH / 40;
+					$( '.inforange input' ).on( 'touchstart', function( e ) {
+						$this  = $( this );
+						ystart = e.changedTouches[ 0 ].pageY;
+						val    = +$this.val();
+					} ).on( 'touchmove', function( e ) {
+						var pageY = e.changedTouches[ 0 ].pageY;
+						var diff  = ystart - pageY;
+						if ( Math.abs( diff ) < step ) return
+						
+						var v     = val + Math.round( diff / step );
+						if ( v === prevval || v > 80 || v < 40 ) return
+						
+						prevval   = v;
+						$this.val( v );
+						eqSlide( $this.index(), v );
+						valSet( $this.index(), v / 10 );
+					} );
+			} else {
+				$( '.inforange input' ).on( 'input', function() {
+					var $this = $( this );
+					var i     = $this.index();
+					valSet( i, +$this.val() / 10 );
+				} );
+			}
 			$( '#eq .label a' ).on( 'click', function() {
-				var $this = $( this );
-				var i     = $this.index();
-				var val   = peq ? param[ g_k[ i ] ] : param.gains[ i ];
-				val      += $this.parent().hasClass( 'up' ) ? 0.1 : -0.1;
-				$( '.inforange input' ).eq( i ).val( val * 10 );
-				valSet( i, val );
+				var $this  = $( this );
+				var updn   = $this.parent().hasClass( 'up' ) ? 1 : -1;
+				var i      = $this.index();
+				var $range = $( '.inforange input' ).eq( i );
+				var val    = +$range.val() + updn;
+				$range.val( val );
+				valSet( i, val / 10 );
 			} );
 		}
 		, oklabel    : ico( 'set0' ) +'Flat'
