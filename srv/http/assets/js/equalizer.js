@@ -52,6 +52,17 @@ function equalizer() {
 						eqSlideEnd();
 					} );
 				}
+				$( '#eq .label a' ).on( 'click', function() {
+					clearTimeout( eqtimeout )
+					var $this  = $( this );
+					var updn   = $this.parent().hasClass( 'up' ) ? 1 : -1;
+					var i      = $this.index();
+					var $range = $( '.inforange input' ).eq( i );
+					var val    = +$range.val() + updn;
+					$range.val( val );
+					eqSlide( i, val );
+					eqtimeout  = setTimeout( eqSlideEnd, 1000 );
+				} );
 			}
 			, cancel     : () => E = {}
 			, okno       : true
@@ -183,14 +194,4 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( '#eqback' ).trigger( 'click' );
 	E.preset.Flat = flat;
 	jsonSave( 'equalizer', E );
-} ).on( 'click', '.up, .dn', function( e ) {
-	clearTimeout( eqtimeout )
-	var $this  = $( e.target );
-	var updn   = $this.parent().hasClass( 'up' ) ? 1 : -1;
-	var i      = $this.index();
-	var $range = $( '.inforange input' ).eq( i );
-	var val    = +$range.val() + updn;
-	$range.val( val );
-	eqSlide( i, val );
-	eqtimeout  = setTimeout( eqSlideEnd, 1000 );
 } );
