@@ -2909,44 +2909,13 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {
-			flatButton();
-			values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
-			if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
-					var $this, ystart, val, prevval;
-					var yH   = $( '.inforange input' ).width() - 40;
-					var step = yH / 40;
-					$( '.inforange input' ).on( 'touchstart', function( e ) {
-						$this  = $( this );
-						ystart = e.changedTouches[ 0 ].pageY;
-						val    = +$this.val();
-					} ).on( 'touchmove', function( e ) {
-						var pageY = e.changedTouches[ 0 ].pageY;
-						var diff  = ystart - pageY;
-						if ( Math.abs( diff ) < step ) return
-						
-						var v     = val + Math.round( diff / step );
-						if ( v === prevval || v > 80 || v < 40 ) return
-						
-						prevval   = v;
-						$this.val( v );
-						eqSlide( $this.index(), v );
-						valSet( $this.index(), v / 10 );
-					} );
-			} else {
-				$( '.inforange input' ).on( 'input', function() {
-					var $this = $( this );
-					var i     = $this.index();
-					valSet( i, +$this.val() / 10 );
-				} );
-			}
-			$( '#eq .label a' ).on( 'click', function() {
-				var $this  = $( this );
-				var updn   = $this.parent().hasClass( 'up' ) ? 1 : -1;
-				var i      = $this.index();
-				var $range = $( '.inforange input' ).eq( i );
-				var val    = +$range.val() + updn;
-				$range.val( val );
-				valSet( i, val / 10 );
+			eqDivBeforeShow( {
+				  misc  : () => {
+					flatButton();
+					values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
+				}
+				, input : ( i, v ) => valSet( i, v / 10 )
+				, click : ( i, v ) => valSet( i, v / 10 )
 			} );
 		}
 		, oklabel    : ico( 'set0' ) +'Flat'

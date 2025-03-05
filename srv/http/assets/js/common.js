@@ -1317,9 +1317,58 @@ function eqDiv( min, max, freq, bottom = '' ) {
 	return `
 <div id="eq">
 <div class="label up">${ label }</div>
-<div class="bottom"><div class="label dn">${ label }</div>${ bottom }</div>
 <div class="inforange vertical">${ slider }</div>
+<div class="bottom"><div class="label dn">${ label }</div>${ bottom }</div>
 </div>`;
+}
+function eqDivBeforeShow( fn ) {
+	fn.misc();
+	var eqH = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top;
+	$( '#eq' ).css( 'height', eqH );
+	$( '#infoBox' ).css( 'width', $( '#eq .inforange' ).height() + 40 );
+	if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
+		var $this, ystart, val, prevval;
+		var yH   = $( '.inforange input' ).width() - 40;
+		var step = yH / 40;
+		$( '.inforange input' ).on( 'touchstart', function( e ) {
+			$this  = $( this );
+			ystart = e.changedTouches[ 0 ].pageY;
+			val    = +$this.val();
+		} ).on( 'touchmove', function( e ) {
+			var pageY = e.changedTouches[ 0 ].pageY;
+			var diff  = ystart - pageY;
+			if ( Math.abs( diff ) < step ) return
+			
+			var v     = val + Math.round( diff / step );
+			if ( v === prevval || v > 80 || v < 40 ) return
+			
+			prevval   = v;
+			$this.val( v );
+			fn.input( $this.index(), v );
+		} ).on( 'touchend', function() {
+			if ( 'end' in fn ) fn.end();
+		} );
+	} else {
+		$( '.inforange input' ).on( 'input', function() {
+			var $this = $( this );
+			fn.click( $this.index(), +$this.val() );
+		} ).on( 'touchend mouseup keyup', function() {
+			if ( 'end' in fn ) fn.end();
+		} );
+	}
+	$( '#eq .label a' ).on( 'click', function() {
+		var $this  = $( this );
+		var updn   = $this.parent().hasClass( 'up' ) ? 1 : -1;
+		var i      = $this.index();
+		var $range = $( '.inforange input' ).eq( i );
+		var val    = +$range.val() + updn;
+		$range.val( val );
+		fn.click( i, val );
+		if ( 'end' in fn ) {
+			clearTimeout( eqtimeout )
+			eqtimeout = setTimeout( eqSlideEnd, 1000 );
+		}
+	} );
 }
 function loader( fader ) {
 	$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );

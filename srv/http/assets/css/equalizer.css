@@ -5,7 +5,6 @@
 :root {
 	--eqSliderH : 300px;
 	--eqBandW   : 50px;
-	--eqAllH    : calc( var( --eqSliderH ) + 125px ); /* console H = 25 + sliderW + 40 */
 	--eqLabel   : calc( var( --eqBandW ) - 10px );
 	--eqLabelM  : 0 5px;
 }
@@ -32,7 +31,6 @@
 }
 
 /* size - position */
-#eq           { height : var( --eqAllH ) }
 #eq i         { width  : var( --eqBandW ) }
 #eq .vertical { width  : var( --eqSliderH ) }
 #eq .label a  { width  : var( --eqLabel ) }

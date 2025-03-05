@@ -1,6 +1,3 @@
-#eq {
-	--eqAllH: calc( var( --eqSliderH ) + 70px );
-}
 .i-restore::before { content: '\F52B' }
 #vu {
 	position: relative;
@@ -477,4 +474,7 @@ cp {
 }
 .entries.sub li {
 	cursor: default !important;
+}
+#eq .label.dn {
+	margin-bottom: 0;
 }

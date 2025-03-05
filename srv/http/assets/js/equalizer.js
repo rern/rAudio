@@ -5,7 +5,7 @@ var bands  = [];
 freq.forEach( ( hz, i ) => bands.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) ) );
 var bottom =  ico( 'edit', 'eqedit' )
 			+ ico( 'save disabled hide', 'eqsave' )
-			+'<div id="divpreset"><input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select></div>'
+			+'<div id="divpreset"><select id="eqpreset">PRESETS</select><input id="eqname" type="text" class="hide"></div>'
 			+ ico( 'add', 'eqnew' ) + ico( 'back bl hide', 'eqback' );
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
@@ -16,52 +16,20 @@ function equalizer() {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
 			, list       : eqDiv( 42, 82, freq, bottom.replace( 'PRESETS', opt ) )
-			, values     : [ E.active, E.active, ...E.preset[ E.active ] ]
+			, values     : [ ...E.preset[ E.active ], E.active ]
 			, beforeshow : () => {
-				$( '#infoBox' ).css( 'width', 540 );
-				eqEditToggle();
-				$( '#eq .select2-container' ).css( 'width', '' );
-				eqText();
-				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
-					var $this, ystart, val, prevval;
-					var yH   = $( '.inforange input' ).width() - 40;
-					var step = yH / 40;
-					$( '.inforange input' ).on( 'touchstart', function( e ) {
-						$this  = $( this );
-						ystart = e.changedTouches[ 0 ].pageY;
-						val    = +$this.val();
-					} ).on( 'touchmove', function( e ) {
-						var pageY = e.changedTouches[ 0 ].pageY;
-						var diff  = ystart - pageY;
-						if ( Math.abs( diff ) < step ) return
-						
-						var v     = val + Math.round( diff / step );
-						if ( v === prevval || v > 80 || v < 40 ) return
-						
-						prevval   = v;
-						$this.val( v );
-						eqSlide( $this.index(), v );
-					} ).on( 'touchend', function() {
-						eqSlideEnd();
-					} );
-				} else {
-					$( '.inforange input' ).on( 'input', function() {
-						var $this = $( this );
-						eqSlide( $this.index(), +$this.val() );
-					} ).on( 'touchend mouseup keyup', function() {
-						eqSlideEnd();
-					} );
-				}
-				$( '#eq .label a' ).on( 'click', function() {
-					clearTimeout( eqtimeout )
-					var $this  = $( this );
-					var updn   = $this.parent().hasClass( 'up' ) ? 1 : -1;
-					var i      = $this.index();
-					var $range = $( '.inforange input' ).eq( i );
-					var val    = +$range.val() + updn;
-					$range.val( val );
-					eqSlide( i, val );
-					eqtimeout  = setTimeout( eqSlideEnd, 1000 );
+				eqDivBeforeShow( {
+					  misc  : () => {
+						eqEditToggle();
+						eqText();
+						$( '#eq .select2-container' ).css( 'width', '' );
+					}
+					, input : ( i, v ) => eqSlide( i, v )
+					, end   : eqSlideEnd
+					, click : ( i, v ) => {
+						eqSlide( i, v );
+						eqtimeout  = setTimeout( eqSlideEnd, 1000 );
+					}
 				} );
 			}
 			, cancel     : () => E = {}
@@ -77,7 +45,7 @@ function eqOptionPreset() {
 	var name   = ! $( '#eqname' ).hasClass( 'hide' );
 	var eqname = name ? $( '#eqname' ).val() : E.active;
 	$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
-	I.values = [ eqname, E.active, ...E.preset[ E.active ] ];
+	I.values = [ ...E.preset[ E.active ], E.active ];
 	infoSetValues();
 	selectSet();
 	$( '#eq .select2-container' ).removeAttr( 'style' );
@@ -103,7 +71,7 @@ function eqSlide( index, v ) {
 	$( '#eq .label.dn a' ).eq( index ).text( v - 62 );
 }
 function eqSlideEnd() {
-	E.preset[ E.active ] = infoVal().slice( 2 );
+	E.preset[ E.active ] = infoVal().slice( 0, -2 );
 	E.preset.Flat        = flat;
 	jsonSave( 'equalizer', E );
 	$( '#eqedit' ).removeClass( 'disabled' );
@@ -148,6 +116,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 						if ( preset === E.active ) E.active = 'Flat';
 						delete E.preset[ preset ];
 						jsonSave( 'equalizer', E );
+						equalizer();
 					}
 				} );
 			} );
@@ -172,15 +141,14 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( '#eqname' ).empty();
 	eqEditToggle();
 } ).on( 'input', '#eqname', function( e ) {
-	var $eqsave = $( '#eqsave' );
-	$eqsave.toggleClass( 'disabled', $( this ).val().trim() in E.preset );
+	$( '#eqsave' ).toggleClass( 'disabled', $( this ).val().trim() in E.preset );
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );
-} ).on( 'input', '#eqpreset', function() {      // preset
+} ).on( 'input', '#eqpreset', function() { // preset
 	if ( V.local ) return
 	
 	var name = $( this ).val();
 	E.active = name;
-	I.values = [ E.active, E.active, ...E.preset[ E.active ] ];
+	I.values = [ ...E.preset[ E.active ], E.active ];
 	infoSetValues();
 	eqEditToggle();
 	eqPreset();
