@@ -1,3 +1,6 @@
+#eq {
+	--eqAllH: calc( var( --eqSliderH ) + 70px );
+}
 .i-restore::before { content: '\F52B' }
 #vu {
 	position: relative;
@@ -414,9 +417,6 @@ i.disabled {
 }
 .slider.disabled .thumb {
 	background-color: var( --cmd );
-}
-#eq {
-	height: 370px !important;
 }
 #codeoutput {
 	margin-top: 15px;

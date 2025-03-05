@@ -2,7 +2,7 @@
 #eq .vertical { z-index: 0 }
 
  /* calc var */
-#eq {
+:root {
 	--eqSliderH : 300px;
 	--eqBandW   : 50px;
 	--eqAllH    : calc( var( --eqSliderH ) + 125px ); /* console H = 25 + sliderW + 40 */
