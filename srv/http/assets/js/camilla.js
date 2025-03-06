@@ -626,9 +626,9 @@ var graph     = {
 			for ( var ch = 0; ch < cL; ch++ ) graph.flowchart.addBox( 'ch '+ ch, ch );
 		}
 		, addBox    : ( txt, ch, gain ) => {
-			var conv = gain === 'conv';
+			var nodb = gain === false;
 			var c    = {
-				  Filter   : conv ? color.gd : color.md
+				  Filter   : nodb ? color.gd : color.md
 				, Capture  : color.grl
 				, Mixer    : color.od
 				, Playback : color.gr
@@ -653,7 +653,7 @@ var graph     = {
 			if ( X.Capture ) return // no arrows, no gains
 			
 			var g    = X.Mixer ? gain[ ch ] : gain;
-			if ( g !== undefined && ! conv ) {
+			if ( g !== undefined && ! nodb ) {
 				var db = graph.flowchart.dbText( g );
 				X.text.push( { //----
 					  x : X.ax[ ch ] + Math.round( X.w / 2 )
@@ -756,7 +756,8 @@ var graph     = {
 				if ( pip.type === 'Filter' ) {
 					pip.names.forEach( name => {      // @ filter  < @ step
 						pip.channels.forEach( ch => { // @ channel < @ filter < @ step
-							var gain = FIL[ name ].type === 'Conv' ? 'conv' : FIL[ name ].parameters.gain;
+							var param  = FIL[ name ].parameters;
+							var gain   = 'gain' in param ? param.gain : false;
 							graph.flowchart.addBox( name, ch, gain );
 							X.ax[ ch ] = X.x + X.w;   // ax >| @ channel < @ filter < @ step
 						} );
