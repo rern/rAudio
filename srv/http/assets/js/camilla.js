@@ -628,9 +628,9 @@ var graph     = {
 		, addBox    : ( txt, ch, gain ) => {
 			var conv = gain === 'conv';
 			var c    = {
-				  Filter   : conv ? color.ma : color.md
+				  Filter   : conv ? color.gd : color.md
 				, Capture  : color.grl
-				, Mixer    : color.gd
+				, Mixer    : color.rd
 				, Playback : color.gr
 			}
 			Object.keys( c ).forEach( k => { X[ k ] = X.type === k } );
