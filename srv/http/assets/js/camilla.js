@@ -626,14 +626,15 @@ var graph     = {
 			for ( var ch = 0; ch < cL; ch++ ) graph.flowchart.addBox( 'ch '+ ch, ch );
 		}
 		, addBox    : ( txt, ch, gain ) => {
-			var c  = {
-				  Filter   : color.md
+			var conv = gain === 'conv';
+			var c    = {
+				  Filter   : conv ? color.ma : color.md
 				, Capture  : color.grl
 				, Mixer    : color.gd
 				, Playback : color.gr
 			}
 			Object.keys( c ).forEach( k => { X[ k ] = X.type === k } );
-			var y  = X.h + X.h * 2 * ch; // y > down - each channel
+			var y    = X.h + X.h * 2 * ch; // y > down - each channel
 			X.box.push( { //----
 				  x : X.x
 				, y : y
@@ -651,8 +652,8 @@ var graph     = {
 			} );
 			if ( X.Capture ) return // no arrows, no gains
 			
-			var g  = X.Mixer ? gain[ ch ] : gain;
-			if ( g !== undefined && g !== false ) {
+			var g    = X.Mixer ? gain[ ch ] : gain;
+			if ( g !== undefined && ! conv ) {
 				var db = graph.flowchart.dbText( g );
 				X.text.push( { //----
 					  x : X.ax[ ch ] + Math.round( X.w / 2 )
@@ -755,8 +756,7 @@ var graph     = {
 				if ( pip.type === 'Filter' ) {
 					pip.names.forEach( name => {      // @ filter  < @ step
 						pip.channels.forEach( ch => { // @ channel < @ filter < @ step
-							var gain = FIL[ name ].parameters.gain;
-							if ( gain === undefined ) gain = false;
+							var gain = FIL[ name ].type === 'Conv' ? 'conv' : FIL[ name ].parameters.gain;
 							graph.flowchart.addBox( name, ch, gain );
 							X.ax[ ch ] = X.x + X.w;   // ax >| @ channel < @ filter < @ step
 						} );
