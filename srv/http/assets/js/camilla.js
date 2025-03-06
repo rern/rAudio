@@ -652,7 +652,7 @@ var graph     = {
 			if ( X.Capture ) return // no arrows, no gains
 			
 			var g  = X.Mixer ? gain[ ch ] : gain;
-			if ( g !== undefined ) {
+			if ( g !== undefined && g !== false ) {
 				var db = graph.flowchart.dbText( g );
 				X.text.push( { //----
 					  x : X.ax[ ch ] + Math.round( X.w / 2 )
@@ -755,7 +755,9 @@ var graph     = {
 				if ( pip.type === 'Filter' ) {
 					pip.names.forEach( name => {      // @ filter  < @ step
 						pip.channels.forEach( ch => { // @ channel < @ filter < @ step
-							graph.flowchart.addBox( name, ch, FIL[ name ].parameters.gain );
+							var gain = FIL[ name ].parameters.gain;
+							if ( gain === undefined ) gain = false;
+							graph.flowchart.addBox( name, ch, gain );
 							X.ax[ ch ] = X.x + X.w;   // ax >| @ channel < @ filter < @ step
 						} );
 						X.x += X.w * 2;               // x  >| @ filter  < @ step
