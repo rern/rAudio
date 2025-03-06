@@ -125,7 +125,7 @@ F0.list       = {
 	, pass      : F0.pass
 	, passC     : F0.passC
 	, passFO    : F0.biquad_f
-	, peq       : [ ...F0.biquadC, [ '', '', 'Frequency</td><td>Gain</td><td>Q' ] ]
+	, peq       : [ ...F0.biquadC, [ '', 'Frequency</td><td>Gain</td><td>Q' ] ]
 	, shelf     : [ ...F0.biquad_f, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
 	, shelfFO   : [ ...F0.biquad_f, F0.gain ]
 }
