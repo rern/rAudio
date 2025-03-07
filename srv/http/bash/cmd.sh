@@ -388,7 +388,7 @@ display )
 	systemctl try-restart radio
 	fifoToggle
 	;;
-equalizer ) # shell mixer: sudo -u $USR alsamixer -D equal
+equalizer ) # shell mixer: sudo -u [mpd|root] alsamixer -D equal
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
 	v=( $VALUES )
 	for (( i=0; i < 10; i++ )); do
