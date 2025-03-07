@@ -133,15 +133,15 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );
 } ).on( 'input', '#eqpreset', function() { // preset
 	var name = $( this ).val();
-	E.active = name;
-	E.preset.Flat = eq.flat;
-	jsonSave( 'equalizer', E );
-	bash( [ 'equalizer', E, eq.user, 'CMD VALUES USR' ] );
+	E.active   = name;
+	var values = E.preset[ name ];
+	bash( [ 'equalizer', values.join( ' ' ), eq.user, 'CMD VALUES USR' ] );
 	eqText();
-	I.values = [ ...E.preset[ E.active ], E.active ];
+	I.values = [ ...values, name ];
 	infoSetValues();
 	selectSet();
 	eqEditToggle();
+	jsonSave( 'equalizer', E );
 } ).on( 'click', '#eqsave', function() {
 	var name         = $( '#eqname' ).val();
 	var oldname      = E.active;
