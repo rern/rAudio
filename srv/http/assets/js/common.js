@@ -1346,14 +1346,14 @@ function eqDivBeforeShow( fn ) {
 			$this.val( v );
 			fn.input( $this.index(), v );
 		} ).on( 'touchend', function() {
-			if ( 'end' in fn ) fn.end();
+			fn.end();
 		} );
 	} else {
 		$( '.inforange input' ).on( 'input', function() {
 			var $this = $( this );
 			fn.click( $this.index(), +$this.val() );
 		} ).on( 'touchend mouseup keyup', function() {
-			if ( 'end' in fn ) fn.end();
+			fn.end();
 		} );
 	}
 	$( '#eq .label a' ).on( 'click', function() {
