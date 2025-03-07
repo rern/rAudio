@@ -29,8 +29,8 @@ function equalizer() {
 							$( '#eq .select2-container' ).css( 'width', '' );
 						}
 						, input : ( i, v ) => {
-							bash( [ 'equalizerset', eq.bands[ index ], v, eq.user, 'CMD BAND VAL USR' ] );
-							$( '#eq .label.dn a' ).eq( index ).text( v - 62 );
+							bash( [ 'equalizerset', eq.bands[ 1 ], v, eq.user, 'CMD BAND VAL USR' ] );
+							$( '#eq .label.dn a' ).eq( 1 ).text( v - 62 );
 						}
 						, end   : () => {
 							if ( E.active === 'Flat' ) {
