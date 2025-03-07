@@ -1323,13 +1323,15 @@ function eqDiv( min, max, freq, bottom = '' ) {
 }
 function eqDivBeforeShow( fn ) {
 	fn.init();
-	var eqH = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top;
+	var eqH     = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top;
 	$( '#eq' ).css( 'height', eqH );
 	$( '#infoBox' ).css( 'width', $( '#eq .inforange' ).height() + 40 );
+	var $range0 = $( '.inforange input' ).eq( 0 );
+	var max     = +$range0.prop( 'max' );
+	var min     = +$range0.prop( 'min' );
+	var incr    = ( $range0.width() - 40 ) / ( max - min );
 	if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
 		var $this, ystart, val, prevval;
-		var yH   = $( '.inforange input' ).width() - 40;
-		var step = yH / 40;
 		$( '.inforange input' ).on( 'touchstart', function( e ) {
 			$this  = $( this );
 			ystart = e.changedTouches[ 0 ].pageY;
@@ -1337,11 +1339,16 @@ function eqDivBeforeShow( fn ) {
 		} ).on( 'touchmove', function( e ) {
 			var pageY = e.changedTouches[ 0 ].pageY;
 			var diff  = ystart - pageY;
-			if ( Math.abs( diff ) < step ) return
+			if ( Math.abs( diff ) < incr ) return
 			
-			val      += Math.round( diff / step );
-			if ( val === prevval || val > 80 || val < 40 ) return
+			val      += Math.round( diff / incr );
+			if ( val === prevval ) return
 			
+			if ( val > max ) {
+				val = max;
+			} else if ( val < min ) {
+				val = min;
+			}
 			prevval   = val;
 			$this.val( val );
 			fn.input( $this.index(), val );
@@ -1358,11 +1365,9 @@ function eqDivBeforeShow( fn ) {
 				delete V.eqinput;
 			} else { // ios safari not fire input
 				var $this = $( this );
-				var step  = $this.prop( 'max' ) - $this.prop( 'min' );
-				var each  = $( '.inforange' ).width() - 20 / step; // width - before rotate
 				var top   = $( '.inforange' ).offset().top + 10;
-				var diff  = Math.round( ( e.pageY - top ) / each );
-				var val   = $this.prop( 'max' ) - diff;
+				var diff  = Math.round( ( e.pageY - top ) / incr );
+				var val   = max - diff;
 				$this.val( val );
 				fn.input( $this.index(), val );
 			}
