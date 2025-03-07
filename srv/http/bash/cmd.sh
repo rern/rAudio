@@ -100,6 +100,7 @@ playerStop() {
 			$dirbash/status-push.sh
 			;;
 	esac
+	[[ -e $dirshm/pidrelaystimer ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
 plClear() {
 	mpc -q clear
