@@ -92,12 +92,6 @@ W = {
 			setProgressElapsed();
 		}
 	}
-	, equalizer : data => {
-		if ( V.local || ! ( 'active' in E ) ) return
-		
-		E = data;
-		eqOptionPreset();
-	}
 	, mpdplayer : data => {
 		if ( 'off' in V || 'reboot' in V ) return
 		
