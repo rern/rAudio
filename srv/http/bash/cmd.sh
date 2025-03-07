@@ -397,9 +397,6 @@ equalizer ) # shell mixer: sudo -u $USR amixer -D equal
 		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
 	done
 	;;
-equalizerget )
-	cat $dirsystem/equalizer.json
-	;;
 equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
 	;;

@@ -9,14 +9,17 @@ var eq = {
 }
 eq.freq.forEach( ( hz, i ) => eq.bands.push( '0'+ i +'. '+ eq.freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) ) );
 function equalizer() {
-	bash( [ 'equalizerget' ], data => {
-		E       = data || { active: "Flat", preset: { Flat: eq.flat } }
+	fetch( '/data/system/equalizer.json' )
+		.then( data => data.json() )
+		.then( data => {
+		E        = data || { active: "Flat", preset: { Flat: eq.flat } }
 		eq.user  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
-		var opt = htmlOption( Object.keys( E.preset ) );
+		var opt  = htmlOption( Object.keys( E.preset ) );
+		var freq = eq.freq.map( f => f < 31 ? f * 1000 : f ); 
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
-			, list       : eqDiv( 42, 82, eq.freq, eq.bottom.replace( 'PRESETS', opt ) )
+			, list       : eqDiv( 42, 82, freq, eq.bottom.replace( 'PRESETS', opt ) )
 			, values     : [ ...E.preset[ E.active ], E.active ]
 			, beforeshow : () => {
 				eqDivBeforeShow( {
@@ -36,26 +39,25 @@ function equalizer() {
 			, cancel     : () => E = {}
 			, okno       : true
 		} );
-	}, 'json' );
+	} );
 }
 function eqEditToggle() {
 	$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
 }
 function eqSlide( index, v ) {
 	bash( [ 'equalizerset', eq.bands[ index ], v, eq.user, 'CMD BAND VAL USR' ] );
+	$( '#eq .label.dn a' ).eq( index ).text( v - 62 );
+}
+function eqSlideEnd() {
 	if ( E.active === 'Flat' ) {
 		for ( var i = 1; i < 10; i++ ) {
 			var name = 'New '+ i;
 			if ( ! ( name in E.preset ) ) break;
 		}
 		E.active         = name;
-		E.preset[ name ] = E.preset.Flat;
+		E.preset[ name ] = eq.flat;
 	}
-	$( '#eq .label.dn a' ).eq( index ).text( v - 62 );
-}
-function eqSlideEnd() {
 	E.preset[ E.active ] = infoVal().slice( 0, -2 );
-	E.preset.Flat        = eq.flat;
 	jsonSave( 'equalizer', E );
 	$( '#eqedit' ).removeClass( 'disabled' );
 	$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );

@@ -2899,11 +2899,13 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		}
 		$( '#infoOk' ).toggleClass( 'disabled', flat );
 	}
-	function valSet( i, val ) {
+	function slide( i, val ) {
 		peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
-		setting.save();
-		flatButton();
 		$( '.label.dn a' ).eq( i ).text( val.toFixed( 1 ) );
+	}
+	function slideEnd() {
+		flatButton();
+		setting.save();
 	}
 	info( {
 		  icon       : 'equalizer'
@@ -2917,8 +2919,12 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 					flatButton();
 					values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
 				}
-				, input : ( i, v ) => valSet( i, v / 10 )
-				, click : ( i, v ) => valSet( i, v / 10 )
+				, input : ( i, v ) => slide( i, v / 10 )
+				, end   : slideEnd
+				, click : ( i, v ) => {
+					slide( i, v / 10 )
+					slideEnd();
+				}
 			} );
 		}
 		, oklabel    : ico( 'set0' ) +'Flat'
