@@ -40,26 +40,8 @@ function equalizer() {
 function eqEditToggle() {
 	$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
 }
-function eqOptionPreset() {
-	local(); // suppress input event
-	var name   = ! $( '#eqname' ).hasClass( 'hide' );
-	var eqname = name ? $( '#eqname' ).val() : E.active;
-	$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
-	I.values = [ ...E.preset[ E.active ], E.active ];
-	infoSetValues();
-	selectSet();
-	$( '#eq .select2-container' ).removeAttr( 'style' );
-	if ( name ) $( '#eq .select2-container' ).addClass( 'hide' );
-}
-function eqPreset( v ) {
-	E.preset.Flat = flat;
-	jsonSave( 'equalizer', E );
-	bash( [ 'equalizer', v, equser, 'CMD VALUES USR' ] );
-	eqText();
-}
 function eqSlide( index, v ) {
-	var band = bands[ index ];
-	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USR' ] );
+	bash( [ 'equalizerset', bands[ index ], v, equser, 'CMD BAND VAL USR' ] );
 	if ( E.active === 'Flat' ) {
 		for ( var i = 1; i < 10; i++ ) {
 			var name = 'New '+ i;
@@ -75,7 +57,10 @@ function eqSlideEnd() {
 	E.preset.Flat        = flat;
 	jsonSave( 'equalizer', E );
 	$( '#eqedit' ).removeClass( 'disabled' );
-	eqOptionPreset();
+	$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
+	I.values = [ ...E.preset[ E.active ], E.active ];
+	infoSetValues();
+	selectSet();
 }
 function eqText() {
 	E.preset[ E.active ].forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v - 62 ) );
@@ -144,15 +129,16 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( '#eqsave' ).toggleClass( 'disabled', $( this ).val().trim() in E.preset );
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );
 } ).on( 'input', '#eqpreset', function() { // preset
-	if ( V.local ) return
-	
 	var name = $( this ).val();
 	E.active = name;
+	E.preset.Flat = flat;
+	jsonSave( 'equalizer', E );
+	bash( [ 'equalizer', E, equser, 'CMD VALUES USR' ] );
+	eqText();
 	I.values = [ ...E.preset[ E.active ], E.active ];
 	infoSetValues();
-	eqEditToggle();
-	eqPreset();
 	selectSet();
+	eqEditToggle();
 } ).on( 'click', '#eqsave', function() {
 	var name         = $( '#eqname' ).val();
 	var oldname      = E.active;
