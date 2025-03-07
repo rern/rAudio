@@ -1152,12 +1152,6 @@ function refreshData() {
 			playlistGet();
 		}
 	}
-	if ( 'active' in E ) {
-		bash( [ 'equalizerget' ], function( data ) {
-			E = data;
-			eqOptionPreset();
-		}, 'json' );
-	}
 }
 function renderLibrary() { // library home
 	V.libraryhome = true;
