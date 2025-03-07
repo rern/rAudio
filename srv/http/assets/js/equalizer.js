@@ -23,17 +23,13 @@ function equalizer() {
 			, values     : [ ...E.preset[ E.active ], E.active ]
 			, beforeshow : () => {
 				eqDivBeforeShow( {
-					  misc  : () => {
+					  init  : () => {
 						eqEditToggle();
 						eqText();
 						$( '#eq .select2-container' ).css( 'width', '' );
 					}
 					, input : ( i, v ) => eqSlide( i, v )
 					, end   : eqSlideEnd
-					, click : ( i, v ) => {
-						eqSlide( i, v );
-						setTimeout( eqSlideEnd, 1000 );
-					}
 				} );
 			}
 			, cancel     : () => E = {}
@@ -57,13 +53,13 @@ function eqSlideEnd() {
 		E.active         = name;
 		E.preset[ name ] = eq.flat;
 	}
-	E.preset[ E.active ] = infoVal().slice( 0, -2 );
-	jsonSave( 'equalizer', E );
+	E.preset[ E.active ] = infoVal().slice( 0, 10 );
 	$( '#eqedit' ).removeClass( 'disabled' );
 	$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
 	I.values = [ ...E.preset[ E.active ], E.active ];
 	infoSetValues();
 	selectSet();
+	jsonSave( 'equalizer', E );
 }
 function eqText() {
 	E.preset[ E.active ].forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v - 62 ) );

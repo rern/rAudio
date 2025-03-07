@@ -2899,14 +2899,6 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		}
 		$( '#infoOk' ).toggleClass( 'disabled', flat );
 	}
-	function slide( i, val ) {
-		peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
-		$( '.label.dn a' ).eq( i ).text( val.toFixed( 1 ) );
-	}
-	function slideEnd() {
-		flatButton();
-		setting.save();
-	}
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
@@ -2915,15 +2907,18 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		, values     : values
 		, beforeshow : () => {
 			eqDivBeforeShow( {
-				  misc  : () => {
-					flatButton();
+				  init  : () => {
 					values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
+					flatButton();
 				}
-				, input : ( i, v ) => slide( i, v / 10 )
-				, end   : slideEnd
-				, click : ( i, v ) => {
-					slide( i, v / 10 )
-					slideEnd();
+				, input : ( i, v ) => {
+					var val = v / 10;
+					peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
+					$( '.label.dn a' ).eq( i ).text( val.toFixed( 1 ) );
+				}
+				, end   : () => {
+					setting.save();
+					flatButton();
 				}
 			} );
 		}

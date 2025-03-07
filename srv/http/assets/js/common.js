@@ -1322,7 +1322,7 @@ function eqDiv( min, max, freq, bottom = '' ) {
 </div>`;
 }
 function eqDivBeforeShow( fn ) {
-	fn.misc();
+	fn.init();
 	var eqH = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top;
 	$( '#eq' ).css( 'height', eqH );
 	$( '#infoBox' ).css( 'width', $( '#eq .inforange' ).height() + 40 );
@@ -1339,19 +1339,19 @@ function eqDivBeforeShow( fn ) {
 			var diff  = ystart - pageY;
 			if ( Math.abs( diff ) < step ) return
 			
-			var v     = val + Math.round( diff / step );
-			if ( v === prevval || v > 80 || v < 40 ) return
+			val      += Math.round( diff / step );
+			if ( val === prevval || val > 80 || val < 40 ) return
 			
-			prevval   = v;
-			$this.val( v );
-			fn.input( $this.index(), v );
+			prevval   = val;
+			$this.val( val );
+			fn.input( $this.index(), val );
 		} ).on( 'touchend', function() {
 			fn.end();
 		} );
 	} else {
 		$( '.inforange input' ).on( 'input', function() {
 			var $this = $( this );
-			fn.click( $this.index(), +$this.val() );
+			fn.input( $this.index(), +$this.val() );
 		} ).on( 'touchend mouseup keyup', function() {
 			fn.end();
 		} );
@@ -1363,8 +1363,8 @@ function eqDivBeforeShow( fn ) {
 		var $range = $( '.inforange input' ).eq( i );
 		var val    = +$range.val() + updn;
 		$range.val( val );
-		fn.click( i, val );
-		if ( 'end' in fn ) fn.end();
+		fn.input( $this.index(), val );
+		fn.end();
 	} );
 }
 function loader( fader ) {
