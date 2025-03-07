@@ -95,7 +95,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 						if ( preset === E.active ) E.active = 'Flat';
 						delete E.preset[ preset ];
 						jsonSave( 'equalizer', E );
-						equalizer();
+						setTimeout( equalizer, 300 );
 					}
 				} );
 			} );

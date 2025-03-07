@@ -1350,9 +1350,22 @@ function eqDivBeforeShow( fn ) {
 		} );
 	} else {
 		$( '.inforange input' ).on( 'input', function() {
+			V.eqinput = true;
 			var $this = $( this );
 			fn.input( $this.index(), +$this.val() );
-		} ).on( 'touchend mouseup keyup', function() {
+		} ).on( 'touchend mouseup keyup', function( e ) {
+			if ( V.eqinput ) {
+				delete V.eqinput;
+			} else { // ios safari not fire input
+				var $this = $( this );
+				var step  = $this.prop( 'max' ) - $this.prop( 'min' );
+				var each  = $( '.inforange' ).width() - 20 / step; // width - before rotate
+				var top   = $( '.inforange' ).offset().top + 10;
+				var diff  = Math.round( ( e.pageY - top ) / each );
+				var val   = $this.prop( 'max' ) - diff;
+				$this.val( val );
+				fn.input( $this.index(), val );
+			}
 			fn.end();
 		} );
 	}
