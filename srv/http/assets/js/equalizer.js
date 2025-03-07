@@ -24,42 +24,37 @@ function equalizer() {
 			, beforeshow : () => {
 				eqDivBeforeShow( {
 					  init  : () => {
-						eqEditToggle();
+						$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
 						eqText();
 						$( '#eq .select2-container' ).css( 'width', '' );
 					}
-					, input : ( i, v ) => eqSlide( i, v )
-					, end   : eqSlideEnd
+					, input : ( i, v ) => {
+						bash( [ 'equalizerset', eq.bands[ index ], v, eq.user, 'CMD BAND VAL USR' ] );
+						$( '#eq .label.dn a' ).eq( index ).text( v - 62 );
+					}
+					, end   : () => {
+						if ( E.active === 'Flat' ) {
+							for ( var i = 1; i < 10; i++ ) {
+								var name = 'New '+ i;
+								if ( ! ( name in E.preset ) ) break;
+							}
+							E.active         = name;
+							E.preset[ name ] = eq.flat;
+						}
+						E.preset[ E.active ] = infoVal().slice( 0, 10 );
+						$( '#eqedit' ).removeClass( 'disabled' );
+						$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
+						I.values = [ ...E.preset[ E.active ], E.active ];
+						infoSetValues();
+						selectSet();
+						jsonSave( 'equalizer', E );
+					}
 				} );
 			}
 			, cancel     : () => E = {}
 			, okno       : true
 		} );
 	} );
-}
-function eqEditToggle() {
-	$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
-}
-function eqSlide( index, v ) {
-	bash( [ 'equalizerset', eq.bands[ index ], v, eq.user, 'CMD BAND VAL USR' ] );
-	$( '#eq .label.dn a' ).eq( index ).text( v - 62 );
-}
-function eqSlideEnd() {
-	if ( E.active === 'Flat' ) {
-		for ( var i = 1; i < 10; i++ ) {
-			var name = 'New '+ i;
-			if ( ! ( name in E.preset ) ) break;
-		}
-		E.active         = name;
-		E.preset[ name ] = eq.flat;
-	}
-	E.preset[ E.active ] = infoVal().slice( 0, 10 );
-	$( '#eqedit' ).removeClass( 'disabled' );
-	$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
-	I.values = [ ...E.preset[ E.active ], E.active ];
-	infoSetValues();
-	selectSet();
-	jsonSave( 'equalizer', E );
 }
 function eqText() {
 	E.preset[ E.active ].forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v - 62 ) );
@@ -123,7 +118,6 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( '#eqedit, #eq .select2-container, #eqnew' ).removeClass( 'hide' );
 	$( '#eqsave, #eqname, #eqback' ).addClass( 'hide' );
 	$( '#eqname' ).empty();
-	eqEditToggle();
 } ).on( 'input', '#eqname', function( e ) {
 	$( '#eqsave' ).toggleClass( 'disabled', $( this ).val().trim() in E.preset );
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );
@@ -131,13 +125,15 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	var name = $( this ).val();
 	E.active   = name;
 	var values = E.preset[ name ];
-	bash( [ 'equalizer', values.join( ' ' ), eq.user, 'CMD VALUES USR' ] );
-	eqText();
-	I.values = [ ...values, name ];
-	infoSetValues();
-	selectSet();
-	eqEditToggle();
-	jsonSave( 'equalizer', E );
+	banner( 'equalizer', 'Preset', 'Change ...', -1 );
+	bash( [ 'equalizer', values.join( ' ' ), eq.user, 'CMD VALUES USR' ], function() {
+		bannerHide();
+		eqText();
+		I.values = [ ...values, name ];
+		infoSetValues();
+		selectSet();
+		jsonSave( 'equalizer', E );
+	} );
 } ).on( 'click', '#eqsave', function() {
 	var name         = $( '#eqname' ).val();
 	var oldname      = E.active;
