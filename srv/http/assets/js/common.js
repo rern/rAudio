@@ -1361,9 +1361,9 @@ function eqDivBeforeShow( fn ) {
 		var updn   = $this.parent().hasClass( 'up' ) ? 1 : -1;
 		var i      = $this.index();
 		var $range = $( '.inforange input' ).eq( i );
-		var val    = +$range.val() + updn;
-		$range.val( val );
-		fn.input( $this.index(), val );
+		var v      = +$range.val() + updn;
+		$range.val( v );
+		fn.input( i, v );
 		fn.end();
 	} );
 }
