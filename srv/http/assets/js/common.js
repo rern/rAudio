@@ -1364,10 +1364,7 @@ function eqDivBeforeShow( fn ) {
 		var val    = +$range.val() + updn;
 		$range.val( val );
 		fn.click( i, val );
-		if ( 'end' in fn ) {
-			clearTimeout( eqtimeout )
-			eqtimeout = setTimeout( eqSlideEnd, 1000 );
-		}
+		if ( 'end' in fn ) fn.end();
 	} );
 }
 function loader( fader ) {
