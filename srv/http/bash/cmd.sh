@@ -396,7 +396,6 @@ equalizer ) # shell mixer: sudo -u $USR alsamixer -D equal
 		band=( "0$i. ${freq[i]} $unit" )
 		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
 	done
-	echo 1
 	;;
 equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL

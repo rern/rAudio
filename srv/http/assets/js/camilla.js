@@ -39,7 +39,7 @@ V             = {
 	, tab        : 'filters'
 	, timeoutred : true
 }
-var wscamilla = null
+var wscamilla = { readyState: 0 }
 var R         = {} // range
 var X         = {} // flowchart
 // filters //////////////////////////////////////////////////////////////////////////////
@@ -567,7 +567,7 @@ var plots     = {
 
 // functions //////////////////////////////////////////////////////////////////////////////
 function renderPage() { // common from settings.js - render with 'GetConfigJson'
-	wscamilla && wscamilla.readyState === 1 ? common.wsGetConfig() : common.webSocket();
+	wscamilla.readyState === 1 ? common.wsGetConfig() : common.webSocket();
 }
 function onPageInactive() {
 	if ( wscamilla ) wscamilla.close();
@@ -2281,12 +2281,12 @@ var common    = {
 		);
 	}
 	, webSocket     : () => {
-		if ( wscamilla && wscamilla.readyState < 2 ) return
+		if ( wscamilla.readyState < 2 ) return
 		
 		wscamilla           = new WebSocket( 'ws://'+ location.host +':1234' );
 		wscamilla.onopen    = () => {
 			var interval = setTimeout( () => {
-				if ( wscamilla && wscamilla.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
+				if ( wscamilla.readyState === 1 ) { // 0=created, 1=ready, 2=closing, 3=closed
 					clearTimeout( interval );
 					common.wsGetState();
 					common.wsGetConfig();
@@ -2300,7 +2300,7 @@ var common    = {
 			}, 100 );
 		}
 		wscamilla.onclose   = () => {
-			wscamilla = null;
+			wscamilla = { readyState: 0 };
 			[ 'intervalstatus', 'intervalvu' ].forEach( k => clearInterval( V[ k ] ) );
 			render.statusStop();
 		}

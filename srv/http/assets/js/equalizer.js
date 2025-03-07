@@ -9,51 +9,51 @@ var eq = {
 }
 eq.freq.forEach( ( hz, i ) => eq.bands.push( '0'+ i +'. '+ eq.freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) ) );
 function equalizer() {
-	fetch( '/data/system/equalizer.json' )
+	fetch( '/data/system/equalizer.json', { cache: 'no-store' } )
 		.then( data => data.json() )
 		.then( data => {
-		E        = data || { active: "Flat", preset: { Flat: eq.flat } }
-		eq.user  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
-		var opt  = htmlOption( Object.keys( E.preset ) );
-		var freq = eq.freq.map( f => f < 31 ? f * 1000 : f ); 
-		info( {
-			  icon       : 'equalizer'
-			, title      : 'Equalizer'
-			, list       : eqDiv( 42, 82, freq, eq.bottom.replace( 'PRESETS', opt ) )
-			, values     : [ ...E.preset[ E.active ], E.active ]
-			, beforeshow : () => {
-				eqDivBeforeShow( {
-					  init  : () => {
-						$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
-						eqText();
-						$( '#eq .select2-container' ).css( 'width', '' );
-					}
-					, input : ( i, v ) => {
-						bash( [ 'equalizerset', eq.bands[ index ], v, eq.user, 'CMD BAND VAL USR' ] );
-						$( '#eq .label.dn a' ).eq( index ).text( v - 62 );
-					}
-					, end   : () => {
-						if ( E.active === 'Flat' ) {
-							for ( var i = 1; i < 10; i++ ) {
-								var name = 'New '+ i;
-								if ( ! ( name in E.preset ) ) break;
-							}
-							E.active         = name;
-							E.preset[ name ] = eq.flat;
+			E        = data || { active: "Flat", preset: { Flat: eq.flat } }
+			eq.user  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
+			var opt  = htmlOption( Object.keys( E.preset ) );
+			var freq = eq.freq.map( f => f < 31 ? f * 1000 : f ); 
+			info( {
+				  icon       : 'equalizer'
+				, title      : 'Equalizer'
+				, list       : eqDiv( 42, 82, freq, eq.bottom.replace( 'PRESETS', opt ) )
+				, values     : [ ...E.preset[ E.active ], E.active ]
+				, beforeshow : () => {
+					eqDivBeforeShow( {
+						  init  : () => {
+							$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
+							eqText();
+							$( '#eq .select2-container' ).css( 'width', '' );
 						}
-						E.preset[ E.active ] = infoVal().slice( 0, 10 );
-						$( '#eqedit' ).removeClass( 'disabled' );
-						$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
-						I.values = [ ...E.preset[ E.active ], E.active ];
-						infoSetValues();
-						selectSet();
-						jsonSave( 'equalizer', E );
-					}
-				} );
-			}
-			, cancel     : () => E = {}
-			, okno       : true
-		} );
+						, input : ( i, v ) => {
+							bash( [ 'equalizerset', eq.bands[ index ], v, eq.user, 'CMD BAND VAL USR' ] );
+							$( '#eq .label.dn a' ).eq( index ).text( v - 62 );
+						}
+						, end   : () => {
+							if ( E.active === 'Flat' ) {
+								for ( var i = 1; i < 10; i++ ) {
+									var name = 'New '+ i;
+									if ( ! ( name in E.preset ) ) break;
+								}
+								E.active         = name;
+								E.preset[ name ] = eq.flat;
+							}
+							E.preset[ E.active ] = infoVal().slice( 0, 10 );
+							$( '#eqedit' ).removeClass( 'disabled' );
+							$( '#eqpreset' ).html( htmlOption( Object.keys( E.preset ) ) );
+							I.values = [ ...E.preset[ E.active ], E.active ];
+							infoSetValues();
+							selectSet();
+							jsonSave( 'equalizer', E );
+						}
+					} );
+				}
+				, cancel     : () => E = {}
+				, okno       : true
+			} );
 	} );
 }
 function eqText() {
@@ -122,18 +122,15 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( '#eqsave' ).toggleClass( 'disabled', $( this ).val().trim() in E.preset );
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );
 } ).on( 'input', '#eqpreset', function() { // preset
-	var name = $( this ).val();
+	var name   = $( this ).val();
 	E.active   = name;
 	var values = E.preset[ name ];
-	banner( 'equalizer', 'Preset', 'Change ...', -1 );
-	bash( [ 'equalizer', values.join( ' ' ), eq.user, 'CMD VALUES USR' ], function() {
-		bannerHide();
-		eqText();
-		I.values = [ ...values, name ];
-		infoSetValues();
-		selectSet();
-		jsonSave( 'equalizer', E );
-	} );
+	bash( [ 'equalizer', values.join( ' ' ), eq.user, 'CMD VALUES USR' ] );
+	eqText();
+	I.values = [ ...values, name ];
+	infoSetValues();
+	selectSet();
+	jsonSave( 'equalizer', E );
 } ).on( 'click', '#eqsave', function() {
 	var name         = $( '#eqname' ).val();
 	var oldname      = E.active;

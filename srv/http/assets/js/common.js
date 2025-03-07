@@ -56,7 +56,7 @@ W               = {  // ws push
 	}
 	, power  : data => {
 		loader();
-		ws             = null;
+		ws             = { readyState: 0 };
 		V[ data.type ] = true;
 		banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
 		if ( V.off ) {
@@ -132,7 +132,7 @@ var sortableOpt = {
 	, delayOnTouchOnly    : true
 	, touchStartThreshold : 5
 }
-var ws;
+var ws = { readyState: 0 }
 // ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
@@ -1456,7 +1456,7 @@ function pageActive() {
 	if ( V && ( V.pageactive || V.off ) ) return
 	
 	V.pageactive = true;
-	if ( ws && ws.readyState === 1 ) {
+	if ( ws.readyState === 1 ) {
 		V.timeoutreload = true;
 		setTimeout( () => { // reconnect if ws not response on wakeup
 			if ( V.timeoutreload ) websocketReconnect();
@@ -1509,7 +1509,7 @@ function volumeSet( type ) { // type: mute / unmute
 	V.volumecurrent = S.volume;
 }
 function websocketConnect( ip ) {
-	if ( ws && ws.readyState === 1 ) return
+	if ( ws.readyState === 1 ) return
 	
 	ws           = new WebSocket( 'ws://'+ ( ip || location.host ) +':8080' );
 	ws.onopen    = () => {
