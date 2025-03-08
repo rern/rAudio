@@ -1,13 +1,7 @@
 function equalizer() {
 	fetch( '/data/system/equalizer.json', { cache: 'no-store' } )
-		.then( data => {
-			if ( data.ok ) return data.json();
-			
-			return { active: "Flat", preset: { Flat: eq.flat } }
-		} )
-		.then( data => {
-			eq.info( data )
-		} );
+		.then( data => data.json() )
+		.then( data => eq.info( data ) );
 }
 
 var eq = {

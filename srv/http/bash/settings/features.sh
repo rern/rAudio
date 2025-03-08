@@ -118,12 +118,8 @@ equalizer )
 	enableFlagSet
 	[[ $ON && ! -e $dirsystem/equalizer.json ]] && echo '{
   "active" : "Flat"
-, "preset" : {
-		"Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]
-	}
-, "current": "62 62 62 62 62 62 62 62 62 62"
-
-}' | jq > $dirsystem/equalizer.json
+, "preset" : { "Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ] }
+}' > $dirsystem/equalizer.json
 	pushRestartMpd equalizer $TF
 	;;
 httpd )
