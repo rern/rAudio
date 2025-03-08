@@ -1421,10 +1421,7 @@ function sp( px ) {
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
 	var options = { minimumResultsForSearch: 10 }
-	if ( ! $select ) {
-		$select = $( '#infoList select' );
-		if ( $( '#infoList #eq' ).length ) options.dropdownParent = $( '#eq' );
-	}
+	if ( ! $select ) $select = $( '#infoList select' );
 	$select
 		.select2( options ).on( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
 			local(); // fix: onblur / onpagehide

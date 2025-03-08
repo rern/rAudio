@@ -1,3 +1,15 @@
+function equalizer() {
+	fetch( '/data/system/equalizer.json', { cache: 'no-store' } )
+		.then( data => {
+			if ( data.ok ) return data.json();
+			
+			return { active: "Flat", preset: { Flat: eq.flat } }
+		} )
+		.then( data => {
+			eq.info( data )
+		} );
+}
+
 var eq = {
 	  flat   : new Array( 10 ).fill( 62 )
 	, freq  : [ 31, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 ]
@@ -11,21 +23,10 @@ eq.freq.forEach( ( hz, i ) => {
 	var band = hz < 1000 ? hz +' Hz' : ( hz / 1000 ) +' kHz';
 	eq.bands.push( '0'+ i +'. '+ band );
 } );
-function equalizer() {
-	fetch( '/data/system/equalizer.json', { cache: 'no-store' } )
-		.then( data => {
-			if ( data.ok ) return data.json();
-			
-			return { active: "Flat", preset: { Flat: eq.flat } }
-		} )
-		.then( data => {
-			infoEqualizer( data )
-		} );
-}
-function eqLevel() {
+eq.level = () => {
 	E.preset[ E.active ].forEach( ( v, i ) => $( '#eq .label.dn a' ).eq( i ).text( v - 62 ) );
 }
-function infoEqualizer( data ) {
+eq.info  = data => {
 	E = data;
 	eq.user  = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
 	var opt  = htmlOption( Object.keys( E.preset ) );
@@ -37,9 +38,8 @@ function infoEqualizer( data ) {
 		, beforeshow : () => {
 			eqDivBeforeShow( {
 				  init  : () => {
+				  	eq.level();
 					$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );
-					eqLevel();
-					$( '#eq .select2-container' ).css( 'width', '' );
 				}
 				, input : ( i, v ) => {
 					bash( [ 'equalizerset', eq.bands[ i ], v, eq.user, 'CMD BAND VAL USR' ] );
@@ -113,10 +113,10 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 				$( '#infoOk' ).removeClass( 'disabled' );
 			} );
 		}
-		, cancel       : () => infoEqualizer( E )
+		, cancel       : () => eq.info( E )
 		, ok           : () => {
 			jsonSave( 'equalizer', e );
-			infoEqualizer( e );
+			eq.info( e );
 		}
 	} );
 } ).on( 'click', '#eqback', function() {
@@ -131,10 +131,9 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	E.active   = name;
 	var values = E.preset[ name ];
 	bash( [ 'equalizer', values.join( ' ' ), eq.user, 'CMD VALUES USR' ] );
-	eqLevel();
 	I.values = [ ...values, name ];
 	infoSetValues();
-	selectSet();
+	eq.level();
 	jsonSave( 'equalizer', E );
 } ).on( 'click', '#eqsave', function() {
 	var name         = $( '#eqname' ).val();

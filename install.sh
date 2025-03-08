@@ -35,35 +35,6 @@ if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; the
 	[[ $camillaactive ]] && pacman start camilladsp
 fi
 
-# 20250111
-if [[ -e /boot/kernel.img ]]; then
-	if [[ $( pacman -Q cava ) < 'cava 0.7.4-1' ]]; then
-		wget https://github.com/rern/rern.github.io/raw/refs/heads/main/armv6h/cava-0.7.4-1-any.pkg.tar.xz
-		pacman -U --noconfirm cava-0.7.4-1-any.pkg.tar.xz
-		rm cava-0.7.4-1-any.pkg.tar.xz
-	fi
-else
-	[[ $( pacman -Q cava ) < 'cava 0.10.3-2' ]] && pacman -Sy --noconfirm cava
-fi
-
-if [[ $( pacman -Q python-rpi-gpio ) < 'python-rpi-gpio 0.7.1-3' ]]; then
-	pacman -R --noconfirm python-rpi-gpio
-	pacman -Sy --noconfirm python-rpi-gpio
-fi
-
-file=/etc/systemd/system/mpd_oled.service
-if [[ -e $file ]]; then
-	rm -f $file
-	pacman -R --noconfirm audio_spectrum_oled &> /dev/null
-	pacman -Sy --noconfirm mpd_oled
-fi
-
-file=$dirsystem/lcdchar.conf
-if [[ -e $dirsystem/lcdchar.conf ]]; then
-	conf2json $file | jq > ${file/conf/json}
-	rm -f $file
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
