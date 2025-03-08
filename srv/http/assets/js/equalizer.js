@@ -87,11 +87,12 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	} );
 	var e = jsonClone( E );
 	info( {
-		  icon       : 'equalizer'
-		, title      : 'Presets'
-		, list       : list
-		, values     : values
-		, beforeshow : () => {
+		  icon         : 'equalizer'
+		, title        : 'Presets'
+		, list         : list
+		, values       : values
+		, checkchanged : true
+		, beforeshow   : () => {
 			$( '#infoList input' ).on( 'blur', function() {
 				var index = $( this ).parents( 'tr' ).index();
 				var name0 = values[ index ];
@@ -109,10 +110,11 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 				delete e.preset[ name1 ];
 				$tr.remove();
 				if ( ! $( '#infoList tr' ).length ) $( '#infoList table' ).append( '<tr><td><gr>(empty)<gr></td></tr>' );
+				$( '#infoOk' ).removeClass( 'disabled' );
 			} );
 		}
-		, cancel     : equalizer
-		, ok         : () => {
+		, cancel       : () => infoEqualizer( E )
+		, ok           : () => {
 			jsonSave( 'equalizer', e );
 			infoEqualizer( e );
 		}
