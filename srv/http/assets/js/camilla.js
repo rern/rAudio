@@ -2902,11 +2902,11 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
-		, list       : eqDiv( -100, 100, freq )
+		, list       : eqHtml( -100, 100, freq )
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {
-			eqDivBeforeShow( {
+			eqBeforeShow( {
 				  init  : () => {
 					values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
 					flatButton();

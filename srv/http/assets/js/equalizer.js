@@ -27,10 +27,10 @@ eq.info  = data => {
 	info( {
 		  icon       : 'equalizer'
 		, title      : 'Equalizer'
-		, list       : eqDiv( 42, 82, eq.freq, eq.bottom.replace( 'PRESETS', opt ) )
+		, list       : eqHtml( 42, 82, eq.freq, eq.bottom.replace( 'PRESETS', opt ) )
 		, values     : [ ...E.preset[ E.active ], E.active ]
 		, beforeshow : () => {
-			eqDivBeforeShow( {
+			eqBeforeShow( {
 				  init  : () => {
 				  	eq.level();
 					$( '#eqedit' ).toggleClass( 'disabled', Object.keys( E.preset ).length === 1 );

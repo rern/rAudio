@@ -1239,7 +1239,7 @@ function infoPowerCommand( action ) {
 		} );
 	} );
 }
-
+// ----------------------------------------------------------------------
 function accent2plain( str ) {
 	return  str.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
 }
@@ -1285,6 +1285,28 @@ function htmlOption( el ) {
 function ipSub( ip ) {
 	return ip.replace( /(.*\..*\..*\.).*/, '$1' )
 }
+function local( delay ) {
+	V.local = true;
+	setTimeout( () => V.local = false, delay || 300 );
+}
+function qrCode( msg ) {
+	var qr = QRCode( {
+		  msg : msg
+		, dim : 115
+		, pad : 0
+		, pal : [ '#969a9c' ]
+	} );
+	return qr.outerHTML
+}
+function scrollUpToView( $el ) {
+	if ( $el[ 0 ].getBoundingClientRect().bottom < window.innerHeight - 40 ) return
+	
+	$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
+}
+function sp( px ) {
+	return '<sp style="width: '+ px +'px"></sp>'
+}
+// ----------------------------------------------------------------------
 function jsonClone( json ) {
 	return JSON.parse( JSON.stringify( json ) )
 }
@@ -1305,23 +1327,7 @@ function jsonSort( json ) {
 	}, {} );
 }
 // ----------------------------------------------------------------------
-function eqDiv( min, max, freq, bottom = '' ) {
-	var input  = '<input type="range" min="'+ min +'" max="'+ max +'">';
-	var label  = '';
-	var slider = '';
-	freq.forEach( hz => {
-		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k';
-		label  += '<a>'+ hz +'</a>';
-		slider += input;
-	} );
-	return `
-<div id="eq">
-<div class="label up">${ label }</div>
-<div class="inforange vertical">${ slider }</div>
-<div class="bottom"><div class="label dn">${ label }</div>${ bottom }</div>
-</div>`;
-}
-function eqDivBeforeShow( fn ) {
+function eqBeforeShow( fn ) {
 	fn.init();
 	var eqH     = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top;
 	$( '#eq' ).css( 'height', eqH );
@@ -1385,6 +1391,23 @@ function eqDivBeforeShow( fn ) {
 		fn.end();
 	} );
 }
+function eqHtml( min, max, freq, bottom = '' ) {
+	var input  = '<input type="range" min="'+ min +'" max="'+ max +'">';
+	var label  = '';
+	var slider = '';
+	freq.forEach( hz => {
+		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k';
+		label  += '<a>'+ hz +'</a>';
+		slider += input;
+	} );
+	return `
+<div id="eq">
+<div class="label up">${ label }</div>
+<div class="inforange vertical">${ slider }</div>
+<div class="bottom"><div class="label dn">${ label }</div>${ bottom }</div>
+</div>`;
+}
+// ----------------------------------------------------------------------
 function loader( fader ) {
 	$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );
 	$( '#loader' ).removeClass( 'hide' );
@@ -1394,30 +1417,6 @@ function loaderHide() {
 	
 	$( '#loader' ).addClass( 'hide' );
 }
-
-// ----------------------------------------------------------------------
-function local( delay ) {
-	V.local = true;
-	setTimeout( () => V.local = false, delay || 300 );
-}
-function qrCode( msg ) {
-	var qr = QRCode( {
-		  msg : msg
-		, dim : 115
-		, pad : 0
-		, pal : [ '#969a9c' ]
-	} );
-	return qr.outerHTML
-}
-function scrollUpToView( $el ) {
-	if ( $el[ 0 ].getBoundingClientRect().bottom < window.innerHeight - 40 ) return
-	
-	$el[ 0 ].scrollIntoView( { block: 'end', behavior: 'smooth' } );
-}
-function sp( px ) {
-	return '<sp style="width: '+ px +'px"></sp>'
-}
-
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
 	var options = { minimumResultsForSearch: 10 }
