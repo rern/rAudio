@@ -20,9 +20,6 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
-	if [[ ! -e /boot/kernel.img ]] && (( ${revision: -4:1} < 3 )); then # not legacy kernel && not RPi 4/5: SAE(WPA3), FWSUP
-		echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
-	fi
 	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
 		systemctl enable getty@tty1
 		systemctl disable --now bootsplash localbrowser
