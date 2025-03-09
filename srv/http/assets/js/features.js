@@ -155,7 +155,7 @@ var config       = {
 			, list         : [
 				  [ 'URL',             'text' ]
 				, [ 'Start tag',       'text' ]
-				, [ '',                '', { suffix: '<gr>Lyrics content ...</gr>' } ]
+				, [ '',                '<gr>Lyrics content ...</gr>' ]
 				, [ 'End tag',         'text' ]
 				, [ 'Embedded lyrics', 'checkbox' ]
 			]
