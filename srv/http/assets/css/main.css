@@ -39,8 +39,11 @@ div.pagerefresh { z-index: 100 }
 #time .rs-inner-container::after { z-index: 1 }
 @media ( orientation: portrait ) { @media ( max-width: 480px ) { #bioimg { z-index: -5 } } }
 
-img {
+img,
+.licoverimg {
+	user-select: none;
 	-webkit-touch-callout: none;
+	-webkit-user-select: none;
 }
 a {
 	color: var( --cw );
@@ -125,25 +128,29 @@ i.map.disabled, .map.disabled i {
 }
 .menu .sub {
 	width: calc( 100% - 40px );
+	border-right: 1px solid var( --cga );
 }
 .menu a + .submenu {
-	display: none;;
+	display: none;
 }
 .menu a.sub + .submenu {
-	display: block;
+	display: inline-block;
 }
 .menu a {
 	display: inline-block;
-	width: 100%;
 	margin: 0;
-	line-height: 40px;
+	width: 100%;
+	height: 40px;
+	line-height: 38px;
 	font-size: 16px;
 	color: var( --cg75 );
 	border-top: 1px solid var( --cga ) !important;
 }
 .menu i {
+	display: inline-block;
 	width: 40px;
-	line-height: 40px;
+	line-height: 38px;
+	vertical-align: -2px;
 	text-align: center;
 	font-size: 22px;
 	color: var( --cw );
@@ -158,7 +165,6 @@ i.map.disabled, .map.disabled i {
 .submenu {
 	float: right;
 	border-top: 1px solid var( --cga );
-	border-left: 1px solid var( --cga );
 }
 #screenoff {
 	border-left: 1px solid #000000;
@@ -2042,6 +2048,7 @@ li.active .li2 bl {
 		#volume-knob { width: auto }
 		#coverart-block,
 		#divcover { max-width: 100% }
+		#coverart { min-width: auto }
 		#bar-bottom.hide {
 			display: block !important;
 			opacity: 0 !important;

@@ -20,18 +20,11 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
-	BB=${revision: -3:2}
-	# not legacy kernel && not RPi 5, 4: SAE(WPA3), FWSUP
-	[[ ! -e /boot/kernel.img && $BB < 11 ]] && echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
-	# Zero 2
-	if [[ $BB == 12 ]]; then
+	if [[ ${revision: -3:2} == 12 ]]; then # zero 2
 		systemctl enable getty@tty1
 		systemctl disable --now bootsplash localbrowser
-		pacman -R --noconfirm firefox matchbox-window-manager plymouth-lite-rbp-git upower \
-			xf86-video-fbturbo xf86-input-evdev xf86-video-fbdev xf86-video-vesa xinput_calibrator xorg-server xorg-xinit
-		rm -f /etc/systemd/system/{bootsplash,localbrowser}
-		rm -rf /etc/X11
 		sed -i 's/tty3 .*/tty1/' /boot/cmdline.txt
+		mv /usr/bin/firefox{,.backup}
 	fi
 fi
 

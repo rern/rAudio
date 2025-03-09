@@ -846,7 +846,7 @@ function lyricsGet( refresh ) {
 	banner( 'lyrics blink', 'Lyrics', 'Fetch ...', -1 );
 	var artist = accent2plain( V.lyricsartist );
 	var title  = accent2plain( V.lyricstitle );
-	bash( [ 'lyrics', artist, title, refresh || '', 'CMD ARTIST TITLE ACTION' ], data => {
+	bash( [ 'lyrics', artist, title, S.file, refresh || '', 'CMD ARTIST TITLE FILE ACTION' ], data => {
 		lyricsShow( data );
 		bannerHide();
 		$( '#lyricsrefresh' ).removeClass( 'blink' );
@@ -1152,12 +1152,6 @@ function refreshData() {
 			playlistGet();
 		}
 	}
-	if ( 'active' in E ) {
-		bash( [ 'equalizerget' ], function( data ) {
-			E = data;
-			eqOptionPreset();
-		}, 'json' );
-	}
 }
 function renderLibrary() { // library home
 	V.libraryhome = true;
@@ -1187,6 +1181,12 @@ function renderLibrary() { // library home
 	setButtonUpdate();
 }
 function renderLibraryCounts() {
+	if ( ! D.count ) {
+		$( '.mode gr' ).addClass( 'hide' );
+		return
+	}
+	
+	$( '.mode gr' ).removeClass( 'hide' );
 	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
@@ -1486,23 +1486,6 @@ function setBlinkDot() {
 			setProgress( 0 );
 		}
 	}
-}
-function setBookmarkEdit() {
-	if ( ! V.press && $( '.bkedit' ).length ) {
-		$( '.bkedit' ).remove();
-		$( '.mode.edit' ).removeClass( 'edit' );
-		return
-	}
-	
-	V.bklabel = $( this ).find( '.label' );
-	$( '.mode.bookmark' ).each( ( i, el ) => {
-		var $this      = $( el );
-		var buttonhtml = ico( 'remove bkedit bk-remove' );
-		if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit bkedit bk-rename' );
-		if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
-		$this.append( buttonhtml );
-	} );
-	$( '.mode.bookmark' ).addClass( 'edit' );
 }
 function setButtonOptions() {
 	$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );

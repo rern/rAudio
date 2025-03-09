@@ -1,4 +1,4 @@
-W.wlan = () => {
+W.wlan = data => {
 	if ( data && 'reboot' in data ) {
 		info( {
 			  icon    : 'wifi'
@@ -162,7 +162,7 @@ function scanWlan() {
 				cls    = '';
 				if ( ssid === data.current ) {
 					cls = ' current';
-				} else if ( data.profiles.includes( ssid ) ) {
+				} else if ( data.profiles && data.profiles.includes( ssid ) ) {
 					cls = ' profile';
 				}
 				if ( signal && signal < -67 ) ssid = '<gr>'+ ssid +'</gr>';

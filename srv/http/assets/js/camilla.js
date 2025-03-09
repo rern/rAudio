@@ -27,10 +27,10 @@ W.refresh     = data => {
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		data.config = JSON.parse( data.config );
 		$.each( data, ( k, v ) => { S[ k ] = v } );
 		config.valuesAssign();
-		render[ V.tab ]();
+		render[ $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ? V.tab +'Sub' : V.tab ]();
+		bannerHide();
 	}, 300 );
 }
 // variables //////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ F0.list       = {
 	, pass      : F0.pass
 	, passC     : F0.passC
 	, passFO    : F0.biquad_f
-	, peq       : [ ...F0.biquadC, [ '', '', 'Frequency</td><td>Gain</td><td>Q' ] ]
+	, peq       : [ ...F0.biquadC, [ '', 'Frequency</td><td>Gain</td><td>Q' ] ]
 	, shelf     : [ ...F0.biquad_f, F0.gain, F0.q, [ '', 'radio', { Q: 'q', Slope: 'slope' } ] ]
 	, shelfFO   : [ ...F0.biquad_f, F0.gain ]
 }
@@ -626,14 +626,15 @@ var graph     = {
 			for ( var ch = 0; ch < cL; ch++ ) graph.flowchart.addBox( 'ch '+ ch, ch );
 		}
 		, addBox    : ( txt, ch, gain ) => {
-			var c  = {
-				  Filter   : color.md
+			var nodb = gain === false;
+			var c    = {
+				  Filter   : nodb ? color.gd : color.md
 				, Capture  : color.grl
-				, Mixer    : color.gd
+				, Mixer    : color.od
 				, Playback : color.gr
 			}
 			Object.keys( c ).forEach( k => { X[ k ] = X.type === k } );
-			var y  = X.h + X.h * 2 * ch; // y > down - each channel
+			var y    = X.h + X.h * 2 * ch; // y > down - each channel
 			X.box.push( { //----
 				  x : X.x
 				, y : y
@@ -651,8 +652,8 @@ var graph     = {
 			} );
 			if ( X.Capture ) return // no arrows, no gains
 			
-			var g  = X.Mixer ? gain[ ch ] : gain;
-			if ( g !== undefined ) {
+			var g    = X.Mixer ? gain[ ch ] : gain;
+			if ( g !== undefined && ! nodb ) {
 				var db = graph.flowchart.dbText( g );
 				X.text.push( { //----
 					  x : X.ax[ ch ] + Math.round( X.w / 2 )
@@ -755,7 +756,9 @@ var graph     = {
 				if ( pip.type === 'Filter' ) {
 					pip.names.forEach( name => {      // @ filter  < @ step
 						pip.channels.forEach( ch => { // @ channel < @ filter < @ step
-							graph.flowchart.addBox( name, ch, FIL[ name ].parameters.gain );
+							var param  = FIL[ name ].parameters;
+							var gain   = 'gain' in param ? param.gain : false;
+							graph.flowchart.addBox( name, ch, gain );
 							X.ax[ ch ] = X.x + X.w;   // ax >| @ channel < @ filter < @ step
 						} );
 						X.x += X.w * 2;               // x  >| @ filter  < @ step
@@ -922,12 +925,26 @@ var graph     = {
 				max     = Math.max( max, minmax[ d ] );
 				min     = Math.min( min, -minmax[ d ] )
 				var abs = Math.max( Math.abs( min ), Math.abs( max ) ) + minmax[ d ] * 0.1;
-				if ( d === 'impulse' ) {
-					dtick = abs < 1 ? 0.2 : ( abs < 2 ? 0.5 : 1 );
+				if ( d === 'gain' ) {
+					dtick = abs < 10
+								? 2
+								: abs < 20
+									? 5
+									: abs < 30
+										? 10
+										: 20;
 				} else if ( d === 'groupdelay' ) {
-					dtick = abs < 100 ? 20 : ( abs < 500 ? 100 : 500 );
+					dtick = abs < 100
+								? 20
+								: abs < 500
+									? 100
+									: 500;
 				} else {
-					dtick = abs < 10 ? 2 : ( abs < 20 ? 5 : 10 );
+					dtick = abs < 1
+							? 0.2
+							: abs < 2
+								? 0.5
+								: 1;
 				}
 				AXES[ d ].dtick = dtick
 				AXES[ d ].range = [ -abs, abs ];
@@ -965,18 +982,17 @@ var graph     = {
 			plot.push( PLOTS.impulse );
 			PLOTS.phase.line.width = 1;
 		}
-		if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph"></div>' );
+		var graphnew = ! $li.find( '.divgraph' ).length;
+		if ( graphnew ) $li.append( '<div class="divgraph"></div>' );
 		var $divgraph = $li.find( '.divgraph' );
 		Plotly.newPlot( $divgraph[ 0 ], plot, layout, PLOTS.options );
 		if ( ! $li.find( '.graphclose' ).length ) $divgraph.append( '<i class="i-close graphclose" tabindex="0"></i>' );
-		if ( ! V.refresh ) scrollUpToView( $divgraph );
+		if ( graphnew ) scrollUpToView( $divgraph );
 	}
 	, refresh      : () => {
-		V.refresh = true;
 		$( '#'+ V.tab +' .entries.main .divgraph' ).each( ( i, el ) => {
 			graph[ V.tab ].plot( $( el ).parent() );
 		} );
-		delete V.refresh;
 	}
 }
 window.addEventListener( 'resize', graph.flowchart.refresh );
@@ -1235,8 +1251,10 @@ var render    = {
 		return '<li data-name="'+ k +'"'+ cl_eq +'>'+ icon + li + graph +'</li>'
 	}
 	, filtersSub  : k => {
-		var li = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
-		if ( S.ls.coeffs ) S.ls.coeffs.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
+		var li    = '<li class="lihead main files">'+ ico( 'folderfilter' ) +'&ensp;Finite Impulse Response'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var files = S.ls.coeffs ? [ ...S.ls.coeffs ] : [];
+		if ( S.ls.coeffswav ) files.push( ...S.ls.coeffswav );
+		if ( files.length ) files.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		$( '#'+ V.tab +' .entries.sub' ).html( li );
 		render.toggle( 'sub' );
 	} //-----------------------------------------------------------------------------------
@@ -1647,8 +1665,8 @@ var setting   = {
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, message      : name ? 'Rename <wh>'+ name +'</wh> to:' : ''
-			, list         : [ 'Name', 'text' ]
+			, message      : name ? 'Rename <wh>'+ name +'</wh>' : ''
+			, list         : [ 'To', 'text' ]
 			, values       : name
 			, checkblank   : true
 			, checkchanged : name
@@ -2182,7 +2200,6 @@ var setting   = {
 							infoWarning(  V.tab,  title, message );
 						}
 					} );
-				common.webSocket();
 			}
 		} );
 	}
@@ -2616,8 +2633,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 						info( {
 							  icon         : V.tab
 							, title        : title
-							, message      : 'Rename <wh>'+ name +'</wh> to:'
-							, list         : [ 'Name', 'text' ]
+							, message      : 'Rename <wh>'+ name +'</wh>'
+							, list         : [ 'To', 'text' ]
 							, values       : name
 							, checkblank   : true
 							, checkchanged : true
@@ -2638,11 +2655,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 					break;
 				case 'delete':
 					if ( common.inUse( name ) ) return
-					
 					info( {
 						  icon    : V.tab
 						, title   : title
-						, message : 'Delete: <wh>'+ name +'</wh> ?'
+						, message : '<wh>'+ name +'</wh> ?'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
@@ -2673,7 +2689,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						var title = 'Input';
 						var msg   = ico( 'input gr' ) +' In: '+ V.li.data( 'source' );
 					}
-					var message = 'Delete <wh>'+ msg +'</wh> ?';
+					var message = '<wh>'+ msg +'</wh> ?';
 					info( {
 						  icon    : V.tab
 						, title   : title
@@ -2709,7 +2725,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon    : V.tab
 						, title   : title
-						, message : 'Delete <wh>'+ name +'</wh> ?'
+						, message : '<wh>'+ name +'</wh> ?'
 						, ok      : () => {
 							delete PRO[ name ];
 							setting.save( title, 'Remove ...' );
@@ -2731,7 +2747,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon    : V.tab
 						, title   : title
-						, message : 'Delete this '+ type +'?'
+						, message : '<wh>'+ type +'</wh>'
 						, ok      : () => {
 							PIP.splice( V.li.index(), 1 );
 							setting.save( title, 'Remove '+ type +' ...' );
@@ -2784,7 +2800,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon    : icon
 						, title   : title
-						, message : 'Delete <c>'+ name +'</c> ?'
+						, message : '<c>'+ name +'</c>'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
@@ -2807,8 +2823,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 					info( {
 						  icon         : icon
 						, title        : title
-						, message      : 'File: <c>'+ name +'</c>'
-						, list         : [ 'Rename to', 'text' ]
+						, message      : 'Rename <c>'+ name +'</c>'
+						, list         : [ 'To', 'text' ]
 						, values       : [ name ]
 						, checkchanged : true
 						, ok           : () => {
@@ -2858,7 +2874,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 			if ( k[ 0 ] === 'f' ) {
 				freq.push( param[ k ] );
 			} else if ( k[ 0 ] === 'g' ) {
-				values.push( param[ k ] );
+				values.push( param[ k ] * 10 );
 				g_k.push( k );
 			}
 		} );
@@ -2867,43 +2883,43 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		var min    = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
 		var max    = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
 		var width  = ( max - min ) / bands;        // log10 / band
-		var v0     = min + width / 2;              // log10 midband
-		var freq   = [ Math.round( Math.pow( 10, v0 ) / 10 ) * 10 ];
-		for ( var i = 0; i < bands - 1; i++ ) {
-			v0 += width;
-			freq.push( Math.round( Math.pow( 10, v0 ) / 10 ) * 10 );
+		var hz     = min + width / 2;              // log10 midband
+		var freq   = [];
+		for ( var i = 0; i < bands; i++ ) {
+			freq.push( Math.pow( 10, hz ) );
+			hz += width;
 		}
-		var values = param.gains
+		var values = param.gains.map( g => g * 10 );
 	}
 	function flatButton() {
-		$( '#infoOk' ).toggleClass( 'disabled', values.reduce( ( a, b ) => a + b, 0 ) === 0 );
-	}
-	function valSet( i, val ) {
-		peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
-		setting.save();
-		flatButton();
+		if ( peq ) {
+			var flat = ! g_k.some( k => param[ k ] !== 0 );
+		} else {
+			var flat = values.reduce( ( a, b ) => a + b, 0 ) === 0;
+		}
+		$( '#infoOk' ).toggleClass( 'disabled', flat );
 	}
 	info( {
 		  icon       : 'equalizer'
 		, title      : name
-		, list       : eqDiv( -40, 40, freq )
+		, list       : eqHtml( -100, 100, freq )
 		, width      : 50 * bands + 40
 		, values     : values
 		, beforeshow : () => {
-			flatButton();
-			$( '.inforange input' ).on( 'input', function() {
-				var $this = $( this );
-				var i     = $this.index();
-				var val   = +$this.val();
-				valSet( i, val );
-			} );
-			$( '#eq .label a' ).on( 'click', function() {
-				var $this = $( this );
-				var i     = $this.index();
-				var val   = peq ? param[ g_k[ i ] ] : param.gains[ i ];
-				$this.parent().hasClass( 'up' ) ? val++ : val--;
-				$( '.inforange input' ).eq( i ).val( val );
-				valSet( i, val );
+			eqBeforeShow( {
+				  init  : () => {
+					values.forEach( ( v, i ) => $( '.label.dn a' ).eq( i ).text( ( v / 10 ).toFixed( 1 ) ) );
+					flatButton();
+				}
+				, input : ( i, v ) => {
+					var val = v / 10;
+					peq ? param[ g_k[ i ] ] = val : param.gains[ i ] = val;
+					$( '.label.dn a' ).eq( i ).text( val.toFixed( 1 ) );
+				}
+				, end   : () => {
+					setting.save();
+					flatButton();
+				}
 			} );
 		}
 		, oklabel    : ico( 'set0' ) +'Flat'
@@ -2913,6 +2929,7 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 			setting.save();
 			$( '.inforange input' ).val( 0 );
 			$( '#infoOk' ).addClass( 'disabled' );
+			$( '.label.dn a' ).text( '0.0' );
 		}
 	} );
 } );

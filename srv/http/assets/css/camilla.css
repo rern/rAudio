@@ -282,15 +282,6 @@ i.bypassed {
 .tab .i-add {
 	font-size: 22px !important;
 }
-.tab li:focus-visible {
-	background: var( --cga );
-}
-.tab li:not( :focus-visible ):hover {
-	background: var( --cgd );
-}
-.tab li.graph:hover {
-	background: none;
-}
 .tab .divdest {
 	padding-bottom: 20px;
 }
@@ -331,10 +322,6 @@ i.bypassed {
 	--trackborder : 1px solid var( --cga ) !important;
 	margin: 2px 0 0 0;
 	max-width: 230px;
-}
-li:focus-visible input[ type=range ] {
-	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
-	--trackborder : 1px solid var( --cgd ) !important;
 }
 i.disabled {
 	pointer-events: none;
@@ -428,15 +415,6 @@ i.disabled {
 .slider.disabled .thumb {
 	background-color: var( --cmd );
 }
-#eq {
-	height: 385px !important;
-}
-#eq .vertical::before {
-	right: 150px !important;
-}
-#eq .bottom {
-	bottom: 60px !important;
-}
 #codeoutput {
 	margin-top: 15px;
 }
@@ -474,13 +452,29 @@ cp {
 	#divvolume .col-l a { width: 85px }
 	#divstatus .rateadjust.wide { display: none }
 }
+@media (hover: hover) {
+	.tab li:focus-visible {
+		background: var( --cga );
+	}
+	.tab li:not( :focus-visible ):hover {
+		background: var( --cgd );
+	}
+	.tab li.graph:hover {
+		background: none;
+	}
+	li:focus-visible input[ type=range ] {
+		--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
+		--trackborder : 1px solid var( --cgd ) !important;
+	}
+}
 
-.db,
-#divfilters li .name,
-#divvolume {
+#divvolume .col-l,
+#divvolume .col-r > * {
 	cursor: pointer;
 }
-.entries.sub li,
-#filters li {
+.entries.sub li {
 	cursor: default !important;
+}
+#eq .label.dn {
+	margin-bottom: 0;
 }

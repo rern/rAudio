@@ -2,12 +2,9 @@
 #eq .vertical { z-index: 0 }
 
  /* calc var */
-#eq {
+:root {
 	--eqSliderH : 300px;
 	--eqBandW   : 50px;
-	--eqAllH    : calc( var( --eqSliderH ) + 125px ); /* console H = 25 + sliderW + 40 */
-	--eqSliderT : calc( ( var( --eqSliderH ) - var( --eqBandW ) * 10 ) / 2 ); /* ( sliderW - sliderH x 10 ) / 2 */
-	--eqPresetW : calc( var( --eqBandW ) * 5 );
 	--eqLabel   : calc( var( --eqBandW ) - 10px );
 	--eqLabelM  : 0 5px;
 }
@@ -34,19 +31,10 @@
 }
 
 /* size - position */
-#eq           { height : var( --eqAllH ) }
 #eq i         { width  : var( --eqBandW ) }
 #eq .vertical { width  : var( --eqSliderH ) }
 #eq .label a  { width  : var( --eqLabel ) }
 #eq input     { height : var( --eqBandW ) }
-#eqname,
-#eq .select2-container { 
-	width: calc( var( --eqBandW ) * 4 ) !important;
-}
-#eq .select2-results__options li {
-	text-align: center;
-	padding-right: 20px;
-}
 
 @media ( max-width: 530px ) {
 	#eq input::-webkit-slider-thumb { width : var( --eqThumbW ) }
@@ -59,20 +47,30 @@
 #eq .label a {
 	display: inline-block;
 	margin: var( --eqLabelM );
-	height: 25px;
-	line-height: 24px;
+	height: 17px;
+	line-height: 17px;
+	font-size: 15px;
 	color: var( --cw );
 	text-align: center;
+	text-shadow: none;
 	font-family: Inconsolata;
 	background: var( --cg );
 	border-radius: 3px;
+	cursor: pointer;
+}
+#eq .label.dn,
+#eq .label.up {
+	max-width: unset;
+	user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
 }
 #eq .label.dn a {
-	color: var( --cg60 );
+	background: var( --cgd );
 }
 #eq .bottom {
 	position: absolute;
-	bottom: 15px;
+	top: 405px;
 	left: 50%;
 	transform: translateX( -50% );
 }
@@ -82,12 +80,6 @@
 	height: 40px !important;
 	line-height: 40px !important;
 	vertical-align: middle;
-}
-#eqdelete {
-	margin-left: calc( var( --eqBandW ) * -1 );
-}
-#eqname {
-	padding-right: 21px;
 }
 #eq .vertical {
 	position: relative;
@@ -102,7 +94,7 @@
 	content: '';
 	width: 1px;
 	height: 100%;
-	right: 138px;
+	right: 150px;
 	background: var( --cgl );
 }
 #eq input {
@@ -117,4 +109,9 @@
 }
 #eq input::-moz-range-thumb {
 	transform : rotate( 90deg );
+}
+#divpreset {
+	display: inline-block;
+	width: 230px;
+	height: 42px;
 }

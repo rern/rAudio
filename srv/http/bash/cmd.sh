@@ -100,6 +100,7 @@ playerStop() {
 			$dirbash/status-push.sh
 			;;
 	esac
+	[[ $( getVar timeron $dirsystem/relays.conf ) == true ]] && $dirbash/relays-timer.sh &> /dev/null &
 }
 plClear() {
 	mpc -q clear
@@ -388,7 +389,7 @@ display )
 	systemctl try-restart radio
 	fifoToggle
 	;;
-equalizer )
+equalizer ) # shell mixer: sudo -u [mpd|root] alsamixer -D equal
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
 	v=( $VALUES )
 	for (( i=0; i < 10; i++ )); do
@@ -396,9 +397,6 @@ equalizer )
 		band=( "0$i. ${freq[i]} $unit" )
 		sudo -u $USR amixer -MqD equal sset "$band" ${v[i]}
 	done
-	;;
-equalizerget )
-	cat $dirsystem/equalizer.json
 	;;
 equalizerset ) # slide
 	sudo -u $USR amixer -MqD equal sset "$BAND" $VAL
@@ -446,6 +444,14 @@ lsmnt )
 	echo '{ "nas": '$NAS', "sd": '$SD', "usb": '$USB' }'
 	;;
 lyrics )
+	if [[ ! $ACTION ]]; then
+		filelrc="/mnt/MPD/${FILE%.*}.lrc"
+		if [[ -e $filelrc ]]; then
+			grep -v ']$' "$filelrc" | sed -e 's/\[.*]//' -e '0,/^$/ d'
+			exit
+# --------------------------------------------------------------------
+		fi
+	fi
 	name="$ARTIST - $TITLE"
 	name=${name//\/}
 	lyricsfile="$dirlyrics/${name,,}.txt"

@@ -132,7 +132,7 @@ var sortableOpt = {
 	, delayOnTouchOnly    : true
 	, touchStartThreshold : 5
 }
-var ws;
+var ws = null;
 // ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( { delegate: 'element', action: FUNCTION0, end: FUNCTION1 );
@@ -161,8 +161,10 @@ $.fn.press = function( args ) {
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( timeout );
+		if ( ! V.press ) return
+		
 		setTimeout( () => { // after last action timeout
-			if ( V.press && end ) end();
+			if ( end ) end();
 			setTimeout( () => V.press = false, 300 );
 		}, 0 );
 	} );
@@ -606,8 +608,9 @@ function info( json ) {
 				case 'textarea':
 					htmls.list += '<textarea></textarea></td></tr>';
 					break;
-				default: // generic string
-					htmls.list += param.suffix ? param.suffix : param || '';
+				default: // string
+					if ( type ) htmls.list += type;
+					if ( 'suffix' in param ) htmls.list += '</td><td>'+ param.suffix;
 					htmls.list += param.sameline ? '</td>' : '</td></tr>';
 			}
 		} );
@@ -1236,7 +1239,7 @@ function infoPowerCommand( action ) {
 		} );
 	} );
 }
-
+// ----------------------------------------------------------------------
 function accent2plain( str ) {
 	return  str.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
 }
@@ -1282,53 +1285,6 @@ function htmlOption( el ) {
 function ipSub( ip ) {
 	return ip.replace( /(.*\..*\..*\.).*/, '$1' )
 }
-function jsonClone( json ) {
-	return JSON.parse( JSON.stringify( json ) )
-}
-function jsonSave( name, json ) {
-	if ( typeof json === 'object' ) json = JSON.stringify( json );
-	var data = '{ "json": '+ json +', "name": "'+ name +'" }';
-	if ( V.debug ) {
-		bashConsoleLog( data );
-		return
-	}
-	
-	ws.send( data );
-}
-function jsonSort( json ) {
-	return Object.keys( json ).sort().reduce( function ( result, key ) {
-		result[ key ] = json[ key ];
-		return result;
-	}, {} );
-}
-// ----------------------------------------------------------------------
-function eqDiv( min, max, freq, bottom = '' ) {
-	var input  = '<input type="range" min="'+ min +'" max="'+ max +'">';
-	var label  = '';
-	var slider = '';
-	freq.forEach( hz => {
-		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k';
-		label  += '<a>'+ hz +'</a>';
-		slider += input;
-	} );
-	return `
-<div id="eq">
-<div class="label up">${ label }</div>
-<div class="bottom"><div class="label dn">${ label }</div>${ bottom }</div>
-<div class="inforange vertical">${ slider }</div>
-</div>`;
-}
-function loader( fader ) {
-	$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );
-	$( '#loader' ).removeClass( 'hide' );
-}
-function loaderHide() {
-	if ( 'off' in V || 'reboot' in V ) return
-	
-	$( '#loader' ).addClass( 'hide' );
-}
-
-// ----------------------------------------------------------------------
 function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
@@ -1350,14 +1306,121 @@ function scrollUpToView( $el ) {
 function sp( px ) {
 	return '<sp style="width: '+ px +'px"></sp>'
 }
-
+// ----------------------------------------------------------------------
+function jsonClone( json ) {
+	return JSON.parse( JSON.stringify( json ) )
+}
+function jsonSave( name, json ) {
+	if ( typeof json === 'object' ) json = JSON.stringify( json );
+	var data = '{ "json": '+ json +', "name": "'+ name +'" }';
+	if ( V.debug ) {
+		bashConsoleLog( data );
+		return
+	}
+	
+	ws.send( data );
+}
+function jsonSort( json ) {
+	return Object.keys( json ).sort().reduce( function ( result, key ) {
+		result[ key ] = json[ key ];
+		return result;
+	}, {} );
+}
+// ----------------------------------------------------------------------
+function eqBeforeShow( fn ) {
+	fn.init();
+	var eqH     = $( '#eq .bottom' )[ 0 ].getBoundingClientRect().bottom - $( '#eq .up' ).offset().top;
+	$( '#eq' ).css( 'height', eqH );
+	$( '#infoBox' ).css( 'width', $( '#eq .inforange' ).height() + 40 );
+	var $range0 = $( '.inforange input' ).eq( 0 );
+	var max     = +$range0.prop( 'max' );
+	var min     = +$range0.prop( 'min' );
+	var incr    = ( $range0.width() - 40 ) / ( max - min );
+	if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
+		var $this, ystart, val, prevval;
+		$( '.inforange input' ).on( 'touchstart', function( e ) {
+			$this  = $( this );
+			ystart = e.changedTouches[ 0 ].pageY;
+			val    = +$this.val();
+		} ).on( 'touchmove', function( e ) {
+			var pageY = e.changedTouches[ 0 ].pageY;
+			var diff  = ystart - pageY;
+			if ( Math.abs( diff ) < incr ) return
+			
+			val      += Math.round( diff / incr );
+			if ( val === prevval ) return
+			
+			if ( val > max ) {
+				val = max;
+			} else if ( val < min ) {
+				val = min;
+			}
+			prevval   = val;
+			$this.val( val );
+			fn.input( $this.index(), val );
+		} ).on( 'touchend', function() {
+			fn.end();
+		} );
+	} else {
+		$( '.inforange input' ).on( 'input', function() {
+			V.eqinput = true;
+			var $this = $( this );
+			fn.input( $this.index(), +$this.val() );
+		} ).on( 'touchend mouseup keyup', function( e ) {
+			if ( V.eqinput ) {
+				delete V.eqinput;
+			} else { // ios safari not fire input
+				var $this = $( this );
+				var top   = $( '.inforange' ).offset().top + 10;
+				var diff  = Math.round( ( e.pageY - top ) / incr );
+				var val   = max - diff;
+				$this.val( val );
+				fn.input( $this.index(), val );
+			}
+			fn.end();
+		} );
+	}
+	$( '#eq .label a' ).on( 'click', function() {
+		var $this  = $( this );
+		var updn   = $this.parent().hasClass( 'up' ) ? 1 : -1;
+		var i      = $this.index();
+		var $range = $( '.inforange input' ).eq( i );
+		var v      = +$range.val() + updn;
+		$range.val( v );
+		fn.input( i, v );
+		fn.end();
+	} );
+}
+function eqHtml( min, max, freq, bottom = '' ) {
+	var input  = '<input type="range" min="'+ min +'" max="'+ max +'">';
+	var label  = '';
+	var slider = '';
+	freq.forEach( hz => {
+		hz = hz > 999 ? Math.round( hz / 1000 ) +'k' : Math.round( hz / 5 ) * 5;
+		label  += '<a>'+ hz +'</a>';
+		slider += input;
+	} );
+	return `
+<div id="eq">
+<div class="label up">${ label }</div>
+<div class="inforange vertical">${ slider }</div>
+<div class="bottom"><div class="label dn">${ label }</div>${ bottom }</div>
+</div>`;
+}
+// ----------------------------------------------------------------------
+function loader( fader ) {
+	$( '#loader svg' ).toggleClass( 'hide', fader === 'fader' );
+	$( '#loader' ).removeClass( 'hide' );
+}
+function loaderHide() {
+	if ( 'off' in V || 'reboot' in V ) return
+	
+	$( '#loader' ).addClass( 'hide' );
+}
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
 	var options = { minimumResultsForSearch: 10 }
-	if ( ! $select ) {
-		$select = $( '#infoList select' );
-		if ( $( '#infoList #eq' ).length ) options.dropdownParent = $( '#eq' );
-	}
+	if ( ! $select ) $select = $( '#infoList select' );
 	$select
 		.select2( options ).on( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
 			local(); // fix: onblur / onpagehide

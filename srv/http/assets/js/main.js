@@ -1223,9 +1223,9 @@ $( '#button-lib-back' ).on( 'click', function() {
 		}
 	}
 } );
-$( '#lib-mode-list' ).on( 'click', function( e ) {
-	if ( ! V.press && $( '.bkedit' ).length && ! $( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
-} ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {
+$( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {
+	if ( V.press ) return
+	
 	V.mode          = $( this ).data( 'mode' );
 	V.modescrolltop = $( window ).scrollTop();
 	if ( V.mode === 'playlists' ) {
@@ -1308,10 +1308,9 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, okno      : true
 	} );
 } ).on( 'click', '.mode.bookmark:not( .bkradio )', function( e ) { // delegate - id changed on renamed
-	var $this = $( this );
 	if ( V.press || $( '.bkedit' ).length ) return
 	
-	var path  = $this.find( '.lipath' ).text();
+	var path  = $( this ).find( '.lipath' ).text();
 	V.mode    = path.split( '/' )[ 0 ].toLowerCase();
 	if ( V.mode === 'webradio' ) {
 		path = path.slice( 9 );
@@ -1394,7 +1393,17 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 } ).press( {
 	  delegate : '.mode.bookmark'
 	, action   : () => {
-		if ( ! V.sortable ) setBookmarkEdit();
+		if ( V.sortable ) return
+		
+		V.bklabel = $( this ).find( '.label' );
+		$( '.mode.bookmark' ).each( ( i, el ) => {
+			var $this      = $( el );
+			var buttonhtml = ico( 'remove bkedit bk-remove' );
+			if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit bkedit bk-rename' );
+			if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
+			$this.append( buttonhtml );
+		} );
+		$( '.mode.bookmark' ).addClass( 'edit' );
 	}
 } );
 $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
@@ -2055,6 +2064,8 @@ $( '#lyricsdelete' ).on( 'click', function() {
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ...sortableOpt
 	, onChoose : () => {
+		if ( V.press ) return
+		
 		setTimeout( () => {
 			$( '.mode' ).removeClass( 'edit' );
 			$( '.mode .bkedit' ).remove();
