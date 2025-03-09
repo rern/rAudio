@@ -188,7 +188,8 @@ function settingLan( v ) {
 		SW.buttonlabel = ico( 'undo' ) +'DHCP'
 		SW.button      = () => {
 			bash( [ 'lanedit' ] );
-			notify( icon, title, 'Reconnect ...' );
+			notify( SW.icon, SW.title, 'Reconnect ...' );
+			V.li.find( 'i' ).addClass( 'blink' );
 		}
 	}
 	info( {
@@ -205,6 +206,7 @@ function settingLan( v ) {
 		, checkip      : [ 0, 1 ]
 		, ok           : () => {
 			var val  = infoVal();
+			V.li.find( 'i' ).addClass( 'blink' );
 			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], avail => {
 				if ( avail == -1 ) {
 					bannerHide();
@@ -277,6 +279,7 @@ function settingWifi( values ) {
 			var val = infoVal();
 			connectWiFi( val );
 			notify( 'wifi', val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
+			V.li.find( 'i' ).addClass( 'blink' );
 		}
 	} );
 }
@@ -294,6 +297,7 @@ function wifiDisconnect() {
 	var ssid = V.li.data( 'ssid' );
 	notify( 'wifi', ssid, 'Disconnect ...' );
 	bash( [ 'disconnect', ssid, 'CMD SSID' ] );
+	V.li.find( 'i' ).addClass( 'blink' );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -404,7 +408,6 @@ $( '.lanadd' ).on( 'click', function() {
 } );
 $( '#menu a' ).on( 'click', function() {
 	var cmd = $( this ).data( 'cmd' );
-	if ( cmd !== 'info' ) V.li.find( 'i' ).addClass( 'blink' );
 	switch ( cmd ) {
 		case 'connect':
 			if ( V.listid === 'listbt' ) {
@@ -420,6 +423,7 @@ $( '#menu a' ).on( 'click', function() {
 			var ssid = V.li.data( 'ssid' );
 			notify( 'wifi', ssid, 'Connect ...' );
 			bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
+			V.li.find( 'i' ).addClass( 'blink' );
 			break
 		case 'disconnect':
 			if ( V.listid === 'listbt' ) {
@@ -467,6 +471,7 @@ $( '#menu a' ).on( 'click', function() {
 				, ok         : () => {
 					notify( icon, ssid, 'Forget ...' );
 					bash( [ 'profileforget', ssid, 'CMD SSID' ] );
+					V.li.find( 'i' ).addClass( 'blink' );
 				}
 			} );
 			break
@@ -487,6 +492,7 @@ $( '#menu a' ).on( 'click', function() {
 				, ok           : () => {
 					notify( icon, name, 'Change ...' );
 					bash( [ 'btrename', name, infoVal(), 'CMD NAME NEWNAME' ] );
+					V.li.find( 'i' ).addClass( 'blink' );
 				}
 			} );
 			break

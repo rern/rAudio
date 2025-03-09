@@ -4,12 +4,6 @@
 
 args2var "$1"
 
-ipAvailable() {
-	if [[ $1 != $( ipAddress ) ]] && ipOnline $1; then
-		echo 'IP <wh>'$1'</wh> already in use.'
-		rexit
-	fi
-}
 netctlSwitch() {
 	ip link set $wlandev down
 	[[ $currentssid ]] && netctl switch-to "$ESSID" || netctl start "$ESSID"
@@ -56,7 +50,8 @@ btrename )
 connect )
 	wlandev=$( < $dirshm/wlan )
 	if [[ $ADDRESS ]]; then
-		ipAvailable $ADDRESS
+		ipOnline $ADDRESS && echo -1 && exit
+# --------------------------------------------------------------------
 		iptype=static
 	else
 		iptype=dhcp
@@ -98,7 +93,12 @@ disconnect )
 	pushRefresh networks pushwl
 	;;
 lanedit )
-	[[ $ADDRESS ]] && ipAvailable $ADDRESS
+	echo 000
+	if [[ $ADDRESS ]]; then
+		ipOnline $ADDRESS && echo -1 && exit
+# --------------------------------------------------------------------
+	fi
+	echo 111
 	file=$( ls /etc/systemd/network/e* | head -1 )
 	if [[ $ADDRESS ]]; then # static
 		sed -i -E -e '/^DHCP|^Address|^Gateway/ d
@@ -111,6 +111,7 @@ Gateway='$GATEWAY $file
 	fi
 	systemctl restart systemd-networkd
 	avahi-daemon --kill # flush cache and restart
+	pushRefresh
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )
