@@ -170,8 +170,8 @@ var config       = {
 	}
 	, multiraudio  : data => {
 		var list = [
-			  [ '', '',     { suffix: 'Name', sameline: true } ]
-			, [ '', '',     { suffix: 'IP' } ]
+			  [ '', 'Name', { sameline: true } ]
+			, [ '', 'IP' ]
 		];
 		var listname = [ '', 'text', { sameline: true } ];
 		var listip   = [ '', 'text' ];
