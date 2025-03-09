@@ -21,8 +21,9 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
 	BB=${revision: -3:2}
-	# not legacy kernel && not RPi 4/5: SAE(WPA3), FWSUP
-	[[ ! -e /boot/kernel.img && ! ( $BB == 11 || $BB == 17 ) ]] && echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
+	if [[ ! -e /boot/kernel.img ]]; then # not legacy kernel && not RPi 4/5: SAE(WPA3), FWSUP
+		[[ $BB != 11 && $BB != 17 ]] && echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
+	fi
 fi
 
 backupfile=$( ls /boot/*.gz 2> /dev/null | head -1 )
