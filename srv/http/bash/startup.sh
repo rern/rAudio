@@ -20,9 +20,8 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	revision=$( grep ^Revision /proc/cpuinfo )
-	BB=${revision: -3:2}
-	if [[ ! -e /boot/kernel.img ]]; then # not legacy kernel && not RPi 4/5: SAE(WPA3), FWSUP
-		[[ $BB != 11 && $BB != 17 ]] && echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
+	if [[ ! -e /boot/kernel.img ]] && (( ${revision: -4:1} < 3 )); then # not legacy kernel && not RPi 4/5: SAE(WPA3), FWSUP
+		echo 'options brcmfmac feature_disable=0x82000' > /etc/modprobe.d/brcmfmac.conf
 	fi
 fi
 
