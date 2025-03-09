@@ -566,8 +566,8 @@ var listwebradio = {
 		  [ 'Name',    'text', { colspan: 3 } ]
 		, [ 'URL',     'text', { colspan: 3 } ]
 		, [ 'Charset', 'text', { sameline: true } ]
-		, [ '',        '',     { suffix: '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help gr' ), sameline: true } ]
-		, [ '',        '',     { suffix: '<gr>New folder</gr> <i class="i-folder-plus" tabindex="0"></i>' } ]
+		, [ '',        '<a href="https://www.iana.org/assignments/character-sets/character-sets.xhtml" target="_blank">'+ ico( 'help gr' ), { sameline: true } ]
+		, [ '',        '<gr>New folder</gr> <i class="i-folder-plus" tabindex="0"></i>' ]
 	]
 	, button : () => {
 		$( '#infoList tr' ).last().find( 'td' ).eq( 1 ).css( 'width', '190px' );

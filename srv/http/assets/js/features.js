@@ -155,7 +155,7 @@ var config       = {
 			, list         : [
 				  [ 'URL',             'text' ]
 				, [ 'Start tag',       'text' ]
-				, [ '',                '', { suffix: '<gr>Lyrics content ...</gr>' } ]
+				, [ '',                '<gr>Lyrics content ...</gr>' ]
 				, [ 'End tag',         'text' ]
 				, [ 'Embedded lyrics', 'checkbox' ]
 			]
@@ -170,8 +170,8 @@ var config       = {
 	}
 	, multiraudio  : data => {
 		var list = [
-			  [ '', '',     { suffix: 'Name', sameline: true } ]
-			, [ '', '',     { suffix: 'IP' } ]
+			  [ '', 'Name', { sameline: true } ]
+			, [ '', 'IP' ]
 		];
 		var listname = [ '', 'text', { sameline: true } ];
 		var listip   = [ '', 'text' ];
