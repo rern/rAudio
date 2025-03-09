@@ -1396,7 +1396,7 @@ function eqHtml( min, max, freq, bottom = '' ) {
 	var label  = '';
 	var slider = '';
 	freq.forEach( hz => {
-		if ( hz > 999 ) hz = Math.round( hz / 1000 ) +'k';
+		hz = hz > 999 ? Math.round( hz / 1000 ) +'k' : Math.round( hz / 5 ) * 5;
 		label  += '<a>'+ hz +'</a>';
 		slider += input;
 	} );

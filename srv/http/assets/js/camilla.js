@@ -2883,11 +2883,11 @@ $( '#filters' ).on( 'click', '.name', function( e ) {
 		var min    = Math.log10( param.freq_min ); // Hz > log10 : 20 > 1.3
 		var max    = Math.log10( param.freq_max ); // Hz > log10 : 20000 > 4.3
 		var width  = ( max - min ) / bands;        // log10 / band
-		var v0     = min + width / 2;              // log10 midband
-		var freq   = [ Math.round( Math.pow( 10, v0 ) / 10 ) * 10 ];
-		for ( var i = 0; i < bands - 1; i++ ) {
-			v0 += width;
-			freq.push( Math.round( Math.pow( 10, v0 ) / 10 ) * 10 );
+		var hz     = min + width / 2;              // log10 midband
+		var freq   = [];
+		for ( var i = 0; i < bands; i++ ) {
+			freq.push( Math.pow( 10, hz ) );
+			hz += width;
 		}
 		var values = param.gains.map( g => g * 10 );
 	}
