@@ -15,7 +15,7 @@ netctlSwitch() {
 	if [[ $connected ]]; then
 		[[ ! $enabled ]] && netctl enable "$ESSID"
 		avahi-daemon --kill # flush cache and restart
-		pushRefresh networks pushwl
+		pushRefresh
 	else
 		notify wifi "$ESSID" 'Connecting failed.'
 		[[ $enabled ]] && netctl disable "$ESSID"
@@ -43,7 +43,7 @@ case $CMD in
 btrename )
 	bluetoothctl set-alias "$NEWNAME"
 	amixer -D bluealsa scontrols | cut -d"'" -f2 > $dirshm/btmixer
-	pushRefresh networks pushbt
+	pushRefresh
 	pushRefresh player
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
@@ -90,7 +90,7 @@ disconnect )
 	netctl stop "$SSID"
 	systemctl stop wpa_supplicant
 	ip link set $( < $dirshm/wlan ) up
-	pushRefresh networks pushwl
+	pushRefresh
 	;;
 lanedit )
 	echo 000
@@ -111,6 +111,9 @@ Gateway='$GATEWAY $file
 	fi
 	systemctl restart systemd-networkd
 	avahi-daemon --kill # flush cache and restart
+	for i in {0..5}; do
+		[[ $( ifconfig | grep -A1 ^e | awk '/inet .* netmask/ {print $2}' ) ]] && break || sleep 1
+	done
 	pushRefresh
 	;;
 profileconnect )
@@ -131,7 +134,7 @@ profileforget )
 		ip link set $( < $dirshm/wlan ) up
 	fi
 	rm "/etc/netctl/$SSID"
-	pushRefresh networks pushwl
+	pushRefresh
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
@@ -139,14 +142,14 @@ usbbluetoothon ) # from usbbluetooth.rules
 # --------------------------------------------------------------------
 	sleep 3
 	pushRefresh features
-	pushRefresh networks pushbt
+	pushRefresh
 	notify bluetooth 'USB Bluetooth' Ready
 	;;
 usbbluetoothoff ) # from usbbluetooth.rules
 	! rfkill | grep -q -m1 bluetooth && systemctl stop bluetooth
 	notify bluetooth 'USB Bluetooth' Removed
 	pushRefresh features
-	pushRefresh networks pushbt
+	pushRefresh
 	;;
 usbwifion )
 	wlanDevice

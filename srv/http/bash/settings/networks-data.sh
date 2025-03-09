@@ -2,99 +2,71 @@
 
 . /srv/http/bash/common.sh
 
-listBluetooth() {
-	rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=true
-	[[ ! $devicebt ]] && echo false && return
-	
-	local dev devices info listbt mac
+if rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth; then
+	devicebt=true
 	devices=$( bluetoothctl devices Paired | sort -k3 -fh  )
-	if [[ $devices ]]; then
-		while read dev; do
-			mac=$( cut -d' ' -f2 <<< $dev )
-			info=$( bluetoothctl info $mac )
-			listbt+=',{
-  "mac"       : "'$mac'"
+fi
+if [[ $devices ]]; then
+	while read dev; do
+		mac=$( cut -d' ' -f2 <<< $dev )
+		info=$( bluetoothctl info $mac )
+		listbt+=',{
+"mac"       : "'$mac'"
 , "name"      : "'$( cut -d' ' -f3- <<< $dev )'"
 , "connected" : '$( grep -q -m1 'Connected: yes' <<< $info && echo true || echo false )'
 , "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< $info | tr -d '\n' )'"
 }'
-		done <<< $devices
-		echo [ ${listbt:1} ]
-	else
-		echo false
-	fi
-}
-if [[ $1 == pushbt ]]; then
-	listbt=$( listBluetooth )
-	if [[ $listbt != false ]]; then
-		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
-		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
-		pushData bluetooth '{ "connected": '$connected', "btreceiver": '$btreceiver' }'
-	fi
-	pushData bluetooth "$listbt"
-	exit
+	done <<< $devices
+	listbt='[ '${listbt:1}' ]'
 fi
 
 gateway=$( ip -j route | jq -r .[0].gateway )
 
-listWlan() {
-	[[ ! -e $dirshm/wlan ]] && echo false && return
-	
-	local current dbm icon listwl notconnected profiles profile ssid wlandev
-	wlandev=$( < $dirshm/wlan )
-	profiles=$( ls -p /etc/netctl | grep -v /$ )
-	current=$( iwgetid -r )
-	if [[ $profiles ]]; then
-		while read profile; do
-			ssid=$( quoteEscape $profile )
-			! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
-			if [[ $current == $profile ]]; then
-				ip=$( ifconfig $wlandev | awk '/inet .* netmask/ {print $2}' )
-				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
-				if [[ ! $dbm || $dbm -gt -60 ]]; then
-					icon=wifi
-				elif (( $dbm < -67 )); then
-					icon=wifi1
-				else
-					icon=wifi2
-				fi
-				listwl=',{
-  "gateway" : "'$gateway'"
+wlandev=$( < $dirshm/wlan )
+profiles=$( ls -p /etc/netctl | grep -v /$ )
+current=$( iwgetid -r )
+if [[ $profiles ]]; then
+	while read profile; do
+		ssid=$( quoteEscape $profile )
+		! grep -q 'Interface="*'$wlandev "/etc/netctl/$profile" && continue
+		if [[ $current == $profile ]]; then
+			ip=$( ifconfig $wlandev | awk '/inet .* netmask/ {print $2}' )
+			dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
+			if [[ ! $dbm || $dbm -gt -60 ]]; then
+				icon=wifi
+			elif (( $dbm < -67 )); then
+				icon=wifi1
+			else
+				icon=wifi2
+			fi
+			listwl=',{
+"gateway" : "'$gateway'"
 , "icon"    : "'$icon'"
 , "ip"      : "'$ip'"
 , "ssid"    : "'$ssid'"
 }'
-			else
-				notconnected+=',{
-  "ssid"    : "'$ssid'"
+		else
+			notconnected+=',{
+"ssid"    : "'$ssid'"
 }'
-			fi
-		done <<< $profiles
-	fi
-	[[ $notconnected ]] && listwl+="$notconnected"
-	[[ $listwl ]] && echo '[ '${listwl:1}' ]' || echo false
-}
-if [[ $1 == pushwl ]]; then
-	pushData wlan '{ "page": "networks", "listwl": '$( listWlan )', "ip": "'$ip'", "gateway": "'$gateway'" }'
-	exit
+		fi
+	done <<< $profiles
 fi
-
-# bluetooth
-rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && devicebt=true
-[[ $devicebt ]] && listbt=$( listBluetooth )
+[[ $notconnected ]] && listwl+="$notconnected"
+[[ $listwl ]] && listwl='[ '${listwl:1}' ]'
 
 # lan
-iplan=$( ifconfig | grep -A1 ^e | awk '/inet .* netmask/ {print $2}' )
-if [[ $iplan ]]; then
-	ip=$iplan
+ip=$( ifconfig | grep -A1 ^e | awk '/inet .* netmask/ {print $2}' )
+if [[ $ip ]]; then
 	listeth='{
-  "ADDRESS" : "'$iplan'"
+  "ADDRESS" : "'$ip'"
 , "GATEWAY" : "'$gateway'"
 , "DHCP"    : '$( ip -j route | jq -c .[] | grep -q 'dev":"e.*dhcp' && echo true )'
 }'
 fi
 
 [[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
+ip=$( ipAddress )
 [[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ##########
 data='
@@ -109,8 +81,8 @@ data='
 , "gateway"     : "'$gateway'"
 , "hostname"    : "'$hostname'"
 , "ip"          : "'$ip'"
-, "listbt"      : '$( listBluetooth )'
+, "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
-, "listwl"      : '$( listWlan )
+, "listwl"      : '$listwl
 
 data2json "$data" $1

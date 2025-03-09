@@ -275,7 +275,7 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	ip -j route | jq -r .[0].prefsrc
+	ifconfig | awk '/inet/ {print $2}' | grep -v 127.0.0.1 | head -1
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
