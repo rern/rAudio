@@ -187,9 +187,9 @@ function settingLan( v ) {
 	if ( v && ! v.DHCP ) {
 		SW.buttonlabel = ico( 'undo' ) +'DHCP'
 		SW.button      = () => {
-			bash( [ 'lanedit' ] );
-			notify( SW.icon, SW.title, 'Reconnect ...' );
 			V.li.find( 'i' ).addClass( 'blink' );
+			notify( SW.icon, SW.title, 'Change ...' );
+			bash( [ 'lanedit' ] );
 		}
 	}
 	info( {
@@ -207,6 +207,7 @@ function settingLan( v ) {
 		, ok           : () => {
 			var val  = infoVal();
 			V.li.find( 'i' ).addClass( 'blink' );
+			notify( SW.icon, SW.title, v ? 'Change ...' : 'Connect ...' );
 			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], avail => {
 				if ( avail == -1 ) {
 					bannerHide();
@@ -216,8 +217,6 @@ function settingLan( v ) {
 						, message : 'IP <wh>'+ val.ADDRESS +'</wh> already in use.'
 						, ok      : () => settingLan( val )
 					} );
-				} else {
-					notify( SW.icon, SW.title, v ? 'Reconnect ...' : 'Connect ...' );
 				}
 			} );
 		}
