@@ -111,7 +111,7 @@ Gateway='$GATEWAY $file
 	fi
 	systemctl restart systemd-networkd
 	avahi-daemon --kill # flush cache and restart
-	for i in {0..5}; do
+	for i in {0..9}; do
 		[[ $( ifconfig | grep -A1 ^e | awk '/inet .* netmask/ {print $2}' ) ]] && break || sleep 1
 	done
 	pushRefresh
