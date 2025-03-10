@@ -33,6 +33,8 @@ function connectWiFi( data ) {
 					, title   : data.ESSID
 					, message : error
 				} );
+			} else {
+				changeIpConnect( data.ADDRESS );
 			}
 		}
 	} );
@@ -43,6 +45,9 @@ function onPageInactive() {
 	clearTimeout( V.timeoutscan );
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
+}
+function changeIpConnect( ip ) {
+	if ( S.ip === location.hostname ) location.href = 'http://'+ ip +'/settings.php?p=networks';
 }
 function renderBluetooth() {
 	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).trigger( 'click' );
@@ -198,7 +203,7 @@ function settingLan() {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
-		, footer       : S.ip ===  S.listeth.ip ? warningIp( 'This is' ) : ''
+		, footer       : S.ip ===  location.hostname ? warningIp( 'This is' ) : ''
 		, values       : S.listeth
 		, focus        : 0
 		, checkchanged : true
@@ -208,16 +213,18 @@ function settingLan() {
 			var val  = infoVal();
 			V.li.find( 'i' ).addClass( 'blink' );
 			notify( SW.icon, SW.title, 'Change ...' );
-			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], std => {
-				console.log( std )
-				if ( std == -1 ) {
+			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], error => {
+				var ip = val.ADDRESS;
+				if ( error == -1 ) {
 					bannerHide();
 					info( {
 						  icon    : SW.icon
 						, title   : 'Duplicate IP'
-						, message : 'IP <wh>'+ val.ADDRESS +'</wh> already in use.'
+						, message : 'IP <wh>'+ ip +'</wh> already in use.'
 						, ok      : () => settingLan()
 					} );
+				} else {
+					changeIpConnect( ip );
 				}
 			} );
 		}
@@ -236,7 +243,7 @@ function settingWifi( values ) {
 	];
 	var I    = {
 		  icon     : 'wifi'
-		, title    : ( V.edit ? 'Edit' : 'Add' ) +' Connection'
+		, title    : 'Wi-Fi Connection'
 		, tablabel : [ 'DHCP', 'Static IP' ]
 	}
 	if ( dhcp ) {

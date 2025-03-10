@@ -52,6 +52,7 @@ connect )
 	if [[ $ADDRESS ]]; then
 		ipOnline $ADDRESS && echo -1 && exit
 # --------------------------------------------------------------------
+		echo 1
 		iptype=static
 	else
 		iptype=dhcp
