@@ -93,7 +93,6 @@ disconnect )
 	pushRefresh
 	;;
 lanedit )
-	echo 000
 	if [[ $ADDRESS ]]; then
 		ipOnline $ADDRESS && echo -1 && exit
 # --------------------------------------------------------------------

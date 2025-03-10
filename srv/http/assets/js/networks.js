@@ -179,12 +179,12 @@ function scanWlan() {
 		V.timeoutscan = setTimeout( scanWlan, 12000 );
 	}, 'json' );
 }
-function settingLan( v ) {
+function settingLan() {
 	SW         = {
 		  icon  : 'lan'
-		, title : ( v ? 'Edit' : 'Add' ) +' LAN Connection'
+		, title : 'LAN Connection'
 	}
-	if ( v && ! v.DHCP ) {
+	if ( ! S.listeth.DHCP ) {
 		SW.buttonlabel = ico( 'undo' ) +'DHCP'
 		SW.button      = () => {
 			V.li.find( 'i' ).addClass( 'blink' );
@@ -198,8 +198,8 @@ function settingLan( v ) {
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
 		]
-		, footer       : v ? warningIp( 'This is' ) : ''
-		, values       : v || { ADDRESS: ipSub( S.ip ), GATEWAY: S.gateway }
+		, footer       : S.ip ===  S.listeth.ip ? warningIp( 'This is' ) : ''
+		, values       : S.listeth
 		, focus        : 0
 		, checkchanged : true
 		, checkblank   : true
@@ -207,15 +207,16 @@ function settingLan( v ) {
 		, ok           : () => {
 			var val  = infoVal();
 			V.li.find( 'i' ).addClass( 'blink' );
-			notify( SW.icon, SW.title, v ? 'Change ...' : 'Connect ...' );
-			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], avail => {
-				if ( avail == -1 ) {
+			notify( SW.icon, SW.title, 'Change ...' );
+			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], std => {
+				console.log( std )
+				if ( std == -1 ) {
 					bannerHide();
 					info( {
 						  icon    : SW.icon
 						, title   : 'Duplicate IP'
 						, message : 'IP <wh>'+ val.ADDRESS +'</wh> already in use.'
-						, ok      : () => settingLan( val )
+						, ok      : () => settingLan()
 					} );
 				}
 			} );
@@ -449,7 +450,7 @@ $( '#menu a' ).on( 'click', function() {
 				V.edit = true;
 				infoSetting( 'wlanprofile "'+ V.li.data( 'ssid' ) +'"', values => settingWifi( values ) );
 			} else {
-				settingLan( S.listeth );
+				settingLan();
 			}
 			break
 		case 'forget':
