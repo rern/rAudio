@@ -20,6 +20,15 @@ function bluetoothCommand( action ) {
 	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
 	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, V.li.data( 'mac' ), 'CMD ACTION MAC' ] );
 }
+function changeIpConnect( ip ) {
+	if ( S.ip !== location.hostname ) return
+	
+	try {
+		location.href = 'http://'+ ip +'/settings.php?p=networks';
+	} catch( error ) {
+		setTimeout( () => changeIpConnect( ip ), 1000 );
+	}
+}
 function connectWiFi( data ) {
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
@@ -45,9 +54,6 @@ function onPageInactive() {
 	clearTimeout( V.timeoutscan );
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
-}
-function changeIpConnect( ip ) {
-	if ( S.ip === location.hostname ) location.href = 'http://'+ ip +'/settings.php?p=networks';
 }
 function renderBluetooth() {
 	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).trigger( 'click' );
