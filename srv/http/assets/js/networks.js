@@ -33,7 +33,7 @@ function changeIp( result, icon, title, val, callback ) {
 		return
 	}
 	
-	if ( S.ip === location.hostname ) {
+	if ( V.li.data( 'ip' ) === location.hostname ) {
 		banner( icon, title, 'Reconnect ... ' );
 		changeIpConnect( ip );
 	}
@@ -91,7 +91,8 @@ function renderPage() {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
 		var htmllan = '';
-		if ( S.listeth ) htmllan = '<li>'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.listeth.ADDRESS
+		var ipeth   = S.listeth.ADDRESS;
+		if ( S.listeth ) htmllan = '<li data-ip="'+ ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ ipeth
 								 +'&ensp;<gr>&raquo;&ensp;'+ S.listeth.GATEWAY +'</gr></li>';
 		$( '#listlan' ).html( htmllan );
 		$( '#divlan' ).removeClass( 'hide' );
@@ -195,7 +196,7 @@ function scanWlan() {
 		V.timeoutscan = setTimeout( scanWlan, 12000 );
 	}, 'json' );
 }
-function settingLan() {
+function settingLan( values ) {
 	SW         = {
 		  icon  : 'lan'
 		, title : 'LAN Connection'
@@ -208,6 +209,11 @@ function settingLan() {
 			bash( [ 'lanedit' ] );
 		}
 	}
+	
+	if ( ! values ) {
+		values = jsonClone( S.listeth );
+		delete values.DHCP;
+	}
 	info( {
 		  ...SW
 		, list         : [
@@ -215,10 +221,9 @@ function settingLan() {
 			, [ 'Gateway', 'text' ]
 		]
 		, footer       : S.ip ===  location.hostname ? warningIp( 'This is' ) : ''
-		, values       : S.listeth
+		, values       : values
 		, focus        : 0
 		, checkchanged : true
-		, checkblank   : true
 		, checkip      : [ 0, 1 ]
 		, ok           : () => {
 			var val  = infoVal();
@@ -270,7 +275,7 @@ function settingWifi( values ) {
 	if ( V.edit ) {
 		if ( ! dhcp ) json.focus = 2
 		json.footer = warningIp( 'This is' );
-		json.checkchanged = ( values.ADDRESS && ! dhcp ) || ( ! values.ADDRESS && dhcp );
+		json.checkchanged = true;
 	} else {
 		json.focus = 0
 		json.checkchanged = false;
