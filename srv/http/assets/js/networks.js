@@ -48,8 +48,10 @@ function changeIpConnect( ip ) {
 function connectWiFi( val ) {
 	var keys   = Object.keys( val );
 	var values = Object.values( val );
-	notify( I.icon, val.ESSID, 'Connect ...' );
+	V.li.find( 'i' ).addClass( 'blink' );
+	notify( I.icon, val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], result => {
+		console.log(result)
 		changeIp( result, I.icon, I.title, val, settingWifi );
 	} );
 }
@@ -265,6 +267,7 @@ function settingWifi( values ) {
 		list.splice( 2, 2 );
 	} else {
 		json.tab = [ () => {
+			V.edit  = false;
 			var val = infoVal();
 			delete val.ADDRESS;
 			delete val.GATEWAY;
@@ -287,12 +290,7 @@ function settingWifi( values ) {
 		, values       : values
 		, checkblank   : [ 0 ]
 		, checklength  : { 1: [ 8, 'min' ] }
-		, ok           : () => {
-			var val = infoVal();
-			connectWiFi( val );
-			notify( json.icon, val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
-			V.li.find( 'i' ).addClass( 'blink' );
-		}
+		, ok           : () => connectWiFi( infoVal() )
 	} );
 }
 function warningAp() {

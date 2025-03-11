@@ -52,11 +52,11 @@ connect )
 	if [[ $ADDRESS ]]; then
 		ipOnline $ADDRESS && echo -1 && exit
 # --------------------------------------------------------------------
-		echo 1
 		iptype=static
 	else
 		iptype=dhcp
 	fi
+	echo 1
 	currentssid=$( iwgetid -r )
 	[[ $currentssid == $ESSID ]] && cp "/etc/netctl/$currentssid" $dirshm
 	data='Interface='$wlandev'
@@ -98,7 +98,7 @@ lanedit )
 		ipOnline $ADDRESS && echo -1 && exit
 # --------------------------------------------------------------------
 	fi
-	echo 111
+	echo 1
 	file=$( ls /etc/systemd/network/e* | head -1 )
 	if [[ $ADDRESS ]]; then # static
 		sed -i -E -e '/^DHCP|^Address|^Gateway/ d
