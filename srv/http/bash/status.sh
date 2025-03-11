@@ -222,11 +222,12 @@ status+='
 , "song"      : '$song'
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
-if [[ $pllength  == 0 && ! $snapclient ]]; then
+if [[ $pllength == 0 && ! $snapclient ]]; then
+	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='
 , "coverart" : ""
-, "hostname" : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
+, "hostname" : "'${hostname/.*}'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
 	statusData
