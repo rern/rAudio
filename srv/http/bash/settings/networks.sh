@@ -56,7 +56,6 @@ connect )
 	else
 		iptype=dhcp
 	fi
-	echo 1
 	currentssid=$( iwgetid -r )
 	[[ $currentssid == $ESSID ]] && cp "/etc/netctl/$currentssid" $dirshm
 	data='Interface='$wlandev'
@@ -98,7 +97,7 @@ lanedit )
 		ipOnline $ADDRESS && echo -1 && exit
 # --------------------------------------------------------------------
 	fi
-	echo 1
+	pushData changeip '{ "ip": "'$ADDRESS'" }'
 	file=$( ls /etc/systemd/network/e* | head -1 )
 	if [[ $ADDRESS ]]; then # static
 		sed -i -E -e '/^DHCP|^Address|^Gateway/ d

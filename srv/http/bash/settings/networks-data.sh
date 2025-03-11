@@ -79,7 +79,7 @@ data='
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( [[ $( iwgetid -r ) ]] && echo true )'
 , "gateway"     : "'$gateway'"
-, "hostname"    : "'$hostname'"
+, "hostname"    : "'${hostname/.*}'"
 , "ip"          : "'$ip'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'

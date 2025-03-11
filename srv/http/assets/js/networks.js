@@ -1,4 +1,4 @@
-W.wlan = data => {
+W.wlan     = data => {
 	if ( data && 'reboot' in data ) {
 		info( {
 			  icon    : 'wifi'
@@ -23,6 +23,7 @@ function bluetoothCommand( action ) {
 function changeIp( result, icon, title, val, callback ) {
 	var ip = val.ADDRESS;
 	if ( result == -1 ) {
+		clearTimeout( V.timeoutchangeip );
 		bannerHide();
 		info( {
 			  icon    : icon
@@ -30,20 +31,21 @@ function changeIp( result, icon, title, val, callback ) {
 			, message : 'IP <c>'+ ip +'</c> already in use.'
 			, ok      : () => callback( val )
 		} );
-		return
-	}
-	
-	if ( V.li.data( 'ip' ) === location.hostname ) {
-		banner( icon, title, 'Reconnect ... ' );
-		changeIpConnect( ip );
 	}
 }
 function changeIpConnect( ip ) {
+	if ( ! ip ) ip = S.hostname;
+	banner( 'networks blink', 'Connection', 'Connect to '+ ip );
 	try {
 		location.href = 'http://'+ ip +'/settings.php?p=networks';
 	} catch( error ) {
 		setTimeout( () => changeIpConnect( ip ), 1000 );
 	}
+}
+function changeIpSwitch( ip ) {
+	if ( V.li.data( 'ip' ) !== location.hostname || S.hostname === location.hostname ) return
+	
+	V.timeoutchangeip = setTimeout( () => changeIpConnect( ip ), 3000 );
 }
 function connectWiFi( val ) {
 	var keys   = Object.keys( val );
@@ -51,7 +53,6 @@ function connectWiFi( val ) {
 	V.li.find( 'i' ).addClass( 'blink' );
 	notify( I.icon, val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], result => {
-		console.log(result)
 		changeIp( result, I.icon, I.title, val, settingWifi );
 	} );
 }
@@ -234,6 +235,7 @@ function settingLan( values ) {
 			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], result => {
 				changeIp( result, SW.icon, SW.title, val, settingLan );
 			} );
+			changeIpSwitch( val.ADDRESS );
 		}
 	} );
 }
@@ -290,7 +292,11 @@ function settingWifi( values ) {
 		, values       : values
 		, checkblank   : [ 0 ]
 		, checklength  : { 1: [ 8, 'min' ] }
-		, ok           : () => connectWiFi( infoVal() )
+		, ok           : () => {
+			var val = infoVal();
+			connectWiFi( val );
+			changeIpSwitch( val.ADDRESS );
+		}
 	} );
 }
 function warningAp() {
