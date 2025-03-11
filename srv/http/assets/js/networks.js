@@ -20,32 +20,37 @@ function bluetoothCommand( action ) {
 	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
 	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, V.li.data( 'mac' ), 'CMD ACTION MAC' ] );
 }
-function changeIpConnect( ip ) {
-	if ( S.ip !== location.hostname ) return
+function changeIp( result, icon, title, val, callback ) {
+	var ip = val.ADDRESS;
+	if ( result == -1 ) {
+		bannerHide();
+		info( {
+			  icon    : icon
+			, title   : title
+			, message : 'IP <c>'+ ip +'</c> already in use.'
+			, ok      : () => callback( val )
+		} );
+		return
+	}
 	
+	if ( S.ip === location.hostname ) {
+		banner( icon, title, 'Reconnect ... ' );
+		changeIpConnect( ip );
+	}
+}
+function changeIpConnect( ip ) {
 	try {
 		location.href = 'http://'+ ip +'/settings.php?p=networks';
 	} catch( error ) {
 		setTimeout( () => changeIpConnect( ip ), 1000 );
 	}
 }
-function connectWiFi( data ) {
-	var keys   = Object.keys( data );
-	var values = Object.values( data );
-	notify( 'wifi', data.ESSID, 'Connect ...' );
-	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
-		if ( error == -1 ) {
-			bannerHide();
-			if ( error ) {
-				info( {
-					  icon    : 'wifi'
-					, title   : data.ESSID
-					, message : error
-				} );
-			} else {
-				changeIpConnect( data.ADDRESS );
-			}
-		}
+function connectWiFi( val ) {
+	var keys   = Object.keys( val );
+	var values = Object.values( val );
+	notify( I.icon, val.ESSID, 'Connect ...' );
+	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], result => {
+		changeIp( result, I.icon, I.title, val, settingWifi );
 	} );
 }
 function onPageInactive() {
@@ -219,19 +224,8 @@ function settingLan() {
 			var val  = infoVal();
 			V.li.find( 'i' ).addClass( 'blink' );
 			notify( SW.icon, SW.title, 'Change ...' );
-			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], error => {
-				var ip = val.ADDRESS;
-				if ( error == -1 ) {
-					bannerHide();
-					info( {
-						  icon    : SW.icon
-						, title   : 'Duplicate IP'
-						, message : 'IP <wh>'+ ip +'</wh> already in use.'
-						, ok      : () => settingLan()
-					} );
-				} else {
-					changeIpConnect( ip );
-				}
+			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], result => {
+				changeIp( result, SW.icon, SW.title, val, settingLan );
 			} );
 		}
 	} );
@@ -247,13 +241,13 @@ function settingWifi( values ) {
 		, [ 'WEP Protocol', 'checkbox' ]
 		, [ 'Hidden SSID',  'checkbox' ]
 	];
-	var I    = {
+	var json = {
 		  icon     : 'wifi'
 		, title    : 'Wi-Fi Connection'
 		, tablabel : [ 'DHCP', 'Static IP' ]
 	}
 	if ( dhcp ) {
-		I.tab = [ '', () => {
+		json.tab = [ '', () => {
 			var v     = infoVal();
 			var keys  = Object.keys( v );
 			keys.splice( 2, 0, 'ADDRESS', 'GATEWAY' ); // insert in order
@@ -265,24 +259,24 @@ function settingWifi( values ) {
 		} ];
 		list.splice( 2, 2 );
 	} else {
-		I.tab = [ () => {
+		json.tab = [ () => {
 			var val = infoVal();
 			delete val.ADDRESS;
 			delete val.GATEWAY;
 			settingWifi( val );
 		}, '' ]
-		I.checkip = [ 2, 3 ];
+		json.checkip = [ 2, 3 ];
 	}
 	if ( V.edit ) {
-		if ( ! dhcp ) I.focus = 2
-		I.footer = warningIp( 'This is' );
-		I.checkchanged = ( values.ADDRESS && ! dhcp ) || ( ! values.ADDRESS && dhcp );
+		if ( ! dhcp ) json.focus = 2
+		json.footer = warningIp( 'This is' );
+		json.checkchanged = ( values.ADDRESS && ! dhcp ) || ( ! values.ADDRESS && dhcp );
 	} else {
-		I.focus = 0
-		I.checkchanged = false;
+		json.focus = 0
+		json.checkchanged = false;
 	}
 	info( {
-			...I
+			...json
 		, boxwidth     : 180
 		, list         : list
 		, values       : values
@@ -291,7 +285,7 @@ function settingWifi( values ) {
 		, ok           : () => {
 			var val = infoVal();
 			connectWiFi( val );
-			notify( 'wifi', val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
+			notify( json.icon, val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
 			V.li.find( 'i' ).addClass( 'blink' );
 		}
 	} );
@@ -369,11 +363,11 @@ $( '#listwlscan' ).on( 'click', 'li:not( .current )', function() {
 			clearTimeout( V.timeoutscan );
 			loader();
 			if ( encrypt ) {
-				var data = { IP: 'dhcp', ESSID: ssid, KEY: infoVal(), SECURITY: security }
+				var val = { IP: 'dhcp', ESSID: ssid, KEY: infoVal(), SECURITY: security }
 			} else {
-				var data = { ESSID: ssid }
+				var val = { ESSID: ssid }
 			}
-			connectWiFi( data );
+			connectWiFi( val );
 		}
 	} );
 } );
