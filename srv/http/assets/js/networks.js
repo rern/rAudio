@@ -34,8 +34,6 @@ function changeIp( result, icon, title, val, callback ) {
 	}
 }
 function changeIpConnect( ip ) {
-	if ( ! ip ) ip = S.hostname;
-	banner( 'networks blink', 'Connection', 'Connect to '+ ip );
 	try {
 		location.href = 'http://'+ ip +'/settings.php?p=networks';
 	} catch( error ) {
@@ -45,7 +43,13 @@ function changeIpConnect( ip ) {
 function changeIpSwitch( ip ) {
 	if ( V.li.data( 'ip' ) !== location.hostname || S.hostname === location.hostname ) return
 	
-	V.timeoutchangeip = setTimeout( () => changeIpConnect( ip ), 3000 );
+	var delay = 3000;
+	if ( ! ip ) {
+		ip    = S.hostname;
+		delay = 10000;
+	}
+	notify( 'networks', 'Connection', 'Reconnect @ '+ ip +' ...' );
+	V.timeoutchangeip = setTimeout( () => changeIpConnect( ip ), delay );
 }
 function connectWiFi( val ) {
 	var keys   = Object.keys( val );
@@ -200,25 +204,18 @@ function scanWlan() {
 	}, 'json' );
 }
 function settingLan( values ) {
-	SW         = {
-		  icon  : 'lan'
-		, title : 'LAN Connection'
-	}
-	if ( ! S.listeth.DHCP ) {
-		SW.buttonlabel = ico( 'undo' ) +'DHCP'
-		SW.button      = () => {
-			V.li.find( 'i' ).addClass( 'blink' );
-			notify( SW.icon, SW.title, 'Change ...' );
-			bash( [ 'lanedit' ] );
-		}
-	}
-	
-	if ( ! values ) {
-		values = jsonClone( S.listeth );
+	if ( values ) {
+		var dhcp = values.DHCP;
+	} else {
+		values   = S.listeth;
+		var dhcp = values.DHCP
 		delete values.DHCP;
 	}
+	var icon  = 'lan';
+	var title = 'LAN Connection';
 	info( {
-		  ...SW
+		  icon         : icon
+		, title        : title
 		, list         : [
 			  [ 'IP',      'text' ]
 			, [ 'Gateway', 'text' ]
@@ -228,12 +225,20 @@ function settingLan( values ) {
 		, focus        : 0
 		, checkchanged : true
 		, checkip      : [ 0, 1 ]
+		, beforeshow   : () => $( '.extrabtn' ).toggleClass( 'disabled', dhcp )
+		, buttonlabel  : ico( 'undo' ) +'DHCP'
+		, button       : () => {
+			V.li.find( 'i' ).addClass( 'blink' );
+			notify( icon, title, 'Change ...' );
+			bash( [ 'lanedit' ] );
+			changeIpSwitch();
+		}
 		, ok           : () => {
 			var val  = infoVal();
 			V.li.find( 'i' ).addClass( 'blink' );
-			notify( SW.icon, SW.title, 'Change ...' );
+			notify( icon, title, 'Change ...' );
 			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], result => {
-				changeIp( result, SW.icon, SW.title, val, settingLan );
+				changeIp( result, icon, title, val, settingLan );
 			} );
 			changeIpSwitch( val.ADDRESS );
 		}
