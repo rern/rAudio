@@ -226,7 +226,7 @@ function settingLan( values ) {
 		, checkchanged : true
 		, checkip      : [ 0, 1 ]
 		, beforeshow   : () => $( '.extrabtn' ).toggleClass( 'disabled', dhcp )
-		, buttonlabel  : ico( 'undo' ) +'DHCP'
+		, buttonlabel  : 'DHCP'
 		, button       : () => {
 			V.li.find( 'i' ).addClass( 'blink' );
 			notify( icon, title, 'Change ...' );
