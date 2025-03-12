@@ -415,7 +415,7 @@ latestclear )
 	;;
 librandom )
 	if [[ $ON ]]; then
-		mpc -q random 0
+		mpc -q random off
 		[[ $ALBUM ]] && echo album > $dirsystem/librandom || touch $dirsystem/librandom
 		[[ $ACTION == play ]] && pos=$(( $( mpc status %length% ) + 1 ))
 		plAddRandom
@@ -547,9 +547,9 @@ mpcmove )
 	pushPlaylist
 	;;
 mpcoption )
-	[[ ! $ONOFF ]] && ONOFF=false
-	mpc -q $OPTION $ONOFF
-	pushData option '{ "'$OPTION'": '$ONOFF' }'
+	[[ ! $TF ]] && TF=false
+	mpc -q $OPTION $TF
+	pushData option '{ "'$OPTION'": '$TF' }'
 	;;
 mpcplayback )
 	if [[ ! $ACTION ]]; then

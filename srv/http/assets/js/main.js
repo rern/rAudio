@@ -903,12 +903,11 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 		case 'repeat':
 			if ( S.repeat ) {
 				if ( S.single ) {
-					$( '#single' ).trigger( 'click' );
-					S.repeat = false;
-					S.single = false;
+					[ 'repeat', 'single' ].forEach( option => {
+						S[ option ] = false;
+						bash( [ 'mpcoption', option, false, 'CMD OPTION TF' ] );
+					} );
 					setButtonOptions();
-					local( 600 );
-					[ 'repeat', 'single' ].forEach( option => bash( [ 'mpcoption', option, false, 'CMD OPTION ONOFF' ] ) );
 				} else {
 					$( '#single' ).trigger( 'click' );
 				}
@@ -928,9 +927,9 @@ $( '.btn-cmd' ).on( 'click', function() {
 	if ( S.player === 'mpd' && S.state === cmd ) return
 	
 	if ( $( this ).hasClass( 'btn-toggle' ) ) {
-		var onoff = ! S[ cmd ];
-		S[ cmd ] = onoff;
-		bash( [ 'mpcoption', cmd, onoff, 'CMD OPTION ONOFF' ] );
+		var tf   = ! S[ cmd ];
+		S[ cmd ] = tf;
+		bash( [ 'mpcoption', cmd, tf, 'CMD OPTION TF' ] );
 		setButtonOptions();
 		local( 600 );
 	} else {
@@ -1664,7 +1663,7 @@ $( '#button-pl-consume' ).on( 'click', function() {
 	S.consume = ! S.consume;
 	$( this ).toggleClass( 'bl', S.consume );
 	banner( 'playlist', 'Consume Mode', S.consume ? 'On - Remove each song after played.' : 'Off' );
-	bash( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION ONOFF' ] );
+	bash( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION TF' ] );
 } );
 $( '#button-pl-librandom' ).on( 'click', function() {
 	var $this = $( this );
