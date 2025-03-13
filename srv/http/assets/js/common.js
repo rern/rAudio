@@ -1487,7 +1487,7 @@ function pageInactive() {
 	V.pageactive = false;
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 }
-document.onvisibilitychange = () => document.visibilityState === 'hidden' ? pageInactive() : pageActive();
+document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
 window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
