@@ -205,7 +205,7 @@ function settingLan( values ) {
 	if ( values ) {
 		var dhcp = values.DHCP;
 	} else {
-		values   = S.list.lan;
+		values   = jsonClone( S.list.lan );
 		var dhcp = values.DHCP
 		delete values.DHCP;
 	}
@@ -231,7 +231,7 @@ function settingLan( values ) {
 			bash( [ 'lanedit' ] );
 			changeIpSwitch();
 		}
-		, oklabel      : 'Static'
+		, oklabel      : dhcp ? 'Static' : ''
 		, ok           : () => {
 			var val  = infoVal();
 			V.li.find( 'i' ).addClass( 'blink' );
