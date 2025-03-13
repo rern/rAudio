@@ -233,6 +233,7 @@ function settingLan( values ) {
 			bash( [ 'lanedit' ] );
 			changeIpSwitch();
 		}
+		, oklabel      : 'Static'
 		, ok           : () => {
 			var val  = infoVal();
 			V.li.find( 'i' ).addClass( 'blink' );
