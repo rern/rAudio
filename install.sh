@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250315
+mv /lib/systemd/{system,user}/spotifyd.service
+ln -s /lib/systemd/{user,system}/spotifyd.service
+
 # 20250228
 file=/etc/pacman.conf
 if grep -q 'linux-rpi' $file; then
