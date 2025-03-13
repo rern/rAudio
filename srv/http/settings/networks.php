@@ -1,5 +1,5 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
-<div id="divbt" class="section">
+<div id="divbluetooth" class="section">
 <?php
 commonVariables( [
 	  'buttons' => [ 'add', 'bluetooth', 'btsender', 'lan', 'search', 'wifi' ]
@@ -18,7 +18,7 @@ htmlHead( [
 	, 'help'   => $B->search.' Available devices'
 ] );
 $html = <<< EOF
-	<ul id="listbt" class="entries"></ul>
+	<ul id="bluetooth" class="entries"></ul>
 	<pre id="codebtinfo" class="status hide"></pre>
 	<div class="helpblock hide">$B->bluetooth$B->btsender Context menu
 	
@@ -44,7 +44,7 @@ EOF;
 echo $html;
 ?>
 </div>
-<div id="divwl" class="section">
+<div id="divwlan" class="section">
 <?php
 // ----------------------------------------------------------------------------------
 htmlHead( [
@@ -53,7 +53,7 @@ htmlHead( [
 	, 'button' => [ 'add wladd', 'search wlscan' ]
 ] );
 ?>
-	<ul id="listwl" class="entries"></ul>
+	<ul id="wlan" class="entries"></ul>
 	<div class="helpblock hide"><?=$B->add?> Manual connect
 <?=$B->search?> Available networks
 <?=$B->wifi?> Context menu
@@ -71,7 +71,7 @@ htmlHead( [
 	, 'button' => 'add lanadd'
 ] );
 ?>
-	<ul id="listlan" class="entries"></ul>
+	<ul id="lan" class="entries"></ul>
 	<div class="helpblock hide"><?=$B->add?> Manual connect
 <?=$B->lan?> Context menu</div>
 </div>
@@ -98,7 +98,7 @@ Note: No internet connection.</div>'
 ];
 htmlSection( $head, $body, 'webui' );
 ?>
-<div id="divbluetooth" class="section hide"> <!-- -------------------------------------------------------------- -->
+<div id="divscanbluetooth" class="section hide"> <!-- -------------------------------------------------------------- -->
 <?php
 // ----------------------------------------------------------------------------------
 htmlHead( [
@@ -107,9 +107,9 @@ htmlHead( [
 	, 'back'   => true
 ] );
 ?>
-<ul id="listbtscan" class="entries scan"></ul>
+<ul id="scanbluetooth" class="entries scan"></ul>
 </div>
-<div id="divwifi" class="section hide">
+<div id="divscanwlan" class="section hide">
 <?php
 // ----------------------------------------------------------------------------------
 htmlHead( [
@@ -118,7 +118,7 @@ htmlHead( [
 	, 'back'   => true
 ] );
 ?>
-<ul id="listwlscan" class="entries scan"></ul>
+<ul id="scanwlan" class="entries scan"></ul>
 </div>
 
 <?php

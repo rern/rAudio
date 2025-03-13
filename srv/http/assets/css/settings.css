@@ -2,7 +2,7 @@
 .menu { z-index: 11 }
 .container input[type=checkbox] { z-index: 1 }
 
-#listwlscan .i-lock { font-size: 16px; vertical-align: 1px }
+#scanwlan .i-lock { font-size: 16px; vertical-align: 1px }
 li.current a::before,
 li.profile a::before {
 	content: '• ';
