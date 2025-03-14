@@ -77,12 +77,6 @@ Security='$security
 	[[ $HIDDEN ]] && data+='
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
-	
-	if [[ -e $dirsystem/ap ]]; then
-		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
-		exit
-# --------------------------------------------------------------------
-	fi
 	netctl stop "$ESSID"
 	netctlSwitch
 	;;
@@ -97,7 +91,6 @@ lanedit )
 		ipOnline $ADDRESS && echo -1 && exit
 # --------------------------------------------------------------------
 	fi
-	pushData changeip '{ "ip": "'$ADDRESS'" }'
 	file=$( ls /etc/systemd/network/e* | head -1 )
 	if [[ $ADDRESS ]]; then # static
 		sed -i -E -e '/^DHCP|^Address|^Gateway/ d

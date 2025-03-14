@@ -1,20 +1,3 @@
-W.wlan     = data => {
-	if ( data && 'reboot' in data ) {
-		info( {
-			  icon    : 'wifi'
-			, title   : 'Wi-Fi'
-			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
-			, oklabel : ico( 'reboot' ) +'Reboot'
-			, okcolor : orange
-			, ok      : () => bash( [ 'power.sh', 'reboot' ] )
-		} );
-		return
-	}
-	
-	$.each( data, ( k, v ) => { S[ k ] = v } );
-	renderWlan();
-}
-
 function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
@@ -34,15 +17,14 @@ function changeIp( result, icon, title, val, callback ) {
 	}
 }
 function changeIpConnect( ip ) {
+	var href = 'http://IP/settings.php?p=networks';
 	try {
-		location.href = 'http://'+ ip +'/settings.php?p=networks';
+		location.href = href.replace( 'IP', ip );
 	} catch( error ) {
 		setTimeout( () => changeIpConnect( ip ), 1000 );
 	}
 }
 function changeIpSwitch( ip ) {
-	if ( V.li.data( 'ip' ) !== location.hostname || S.hostname === location.hostname ) return
-	
 	var delay = 3000;
 	if ( ! ip ) {
 		ip    = S.hostname;
@@ -50,6 +32,11 @@ function changeIpSwitch( ip ) {
 	}
 	notify( V.wlan ? 'wlan' : 'lan', 'Reconnect', 'rAudio @ http://'+ ip +' ...' );
 	V.timeoutchangeip = setTimeout( () => changeIpConnect( ip ), delay );
+}
+function changeSsid( ssid ) {
+	notify( 'wifi', ssid, 'Connect ...' );
+	bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
+	V.li.find( 'i' ).addClass( 'blink' );
 }
 function connectWiFi( val ) {
 	var keys   = Object.keys( val );
@@ -303,13 +290,6 @@ function settingWifi( values ) {
 		}
 	} );
 }
-function warningAp() {
-	info( {
-		  icon    : 'wifi'
-		, title   : 'Wi-Fi'
-		, message : '<a class="helpmenu label">Access Point<i class="i-ap"></i></a> is currently active.'
-	} );
-}
 function warningIp( action ) {
 	if ( V.li && V.li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>'+ action +' current connection</wh>'
 }
@@ -348,7 +328,11 @@ $( '.wladd' ).on( 'click', function() {
 } );
 $( '.wlscan' ).on( 'click', function() {
 	if ( S.ap && ! S.apstartup ) {
-		warningAp();
+		info( {
+			  icon    : 'wifi'
+			, title   : 'Wi-Fi'
+			, message : '<a class="helpmenu label">Access Point<i class="i-ap"></i></a> is currently active.'
+		} );
 	} else {
 		$( '.helphead, #divinterface, #divwebui' ).addClass( 'hide' );
 		$( '#divscanwlan' ).removeClass( 'hide' );
@@ -436,15 +420,25 @@ $( '#menu a' ).on( 'click', function() {
 				return
 			}
 			
-			if ( S.ap ) {
-				warningAp();
+			var ssid = V.li.data( 'ssid' );
+			if ( ! S.ap || localhost ) {
+				changeSsid( ssid );
 				return
 			}
 			
-			var ssid = V.li.data( 'ssid' );
-			notify( 'wifi', ssid, 'Connect ...' );
-			bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
-			V.li.find( 'i' ).addClass( 'blink' );
+			info( {
+				  icon    : 'ap'
+				, title   : 'Access Point'
+				, message : '<p>Switch to <wh>'+ ssid +'</wh>'
+						   +'<br>· Disconnect all rAudio connections'
+						   +'<br>· Reconnect at:</p>'
+				, list    : [ 'IP / Hostname', 'text' ]
+				, values  : S.hostname
+				, ok      : () => {
+					changeSsid( ssid );
+					setTimeout( changeIpSwitch( infoVal() ), 5000 );
+				}
+			} );
 			break
 		case 'disconnect':
 			if ( V.bluetooth ) {
