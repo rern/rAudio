@@ -377,7 +377,13 @@ function stationArt() { // station / folder
 		}
 		, buttonlabel : ico( dir ? 'folder' : mode ) +' Icon'
 		, buttoncolor : orange
-		, button      : () => bash( [ 'stationartreset', imagefilenoext, 'CMD FILENOEXT' ] )
+		, button      : () => {
+			if ( dir ) {
+				bash( [ 'coverartreset', '/srv/http/data/'+ path, 'CMD DIR' ] );
+			} else {
+				bash( [ 'stationartreset', imagefilenoext, 'CMD FILENOEXT' ] );
+			}
+		}
 		, ok          : () => imageReplace( mode, imagefilenoext )
 	} );
 }

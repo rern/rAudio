@@ -225,7 +225,7 @@ bookmarkadd )
 	fi
 	pushData bookmark 1
 	;;
-bookmarkcoverreset )
+coverreset )
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
 	pushData bookmark 1
 	;;
