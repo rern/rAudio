@@ -362,14 +362,14 @@ function htmlDirectory() {
 		if ( $dir ) {
 			$mode  = strtolower( explode( '/', $path )[ 0 ] );
 			$icon  = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', 'folder' );
-			$class = ' class="dir"';
+//			$class = ' class="dir"';
 		} else {
 			$mode  = $GMODE;
 			$icon  = i( 'music ', 'file' );
-			$class = '';
+//			$class = '';
 		}
 		$htmlli   = '
-<li data-mode="'.$mode.'"'.$class.$dataindex.'>'.$icon.'
+<li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.'
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$name.'</span>
 </li>';
