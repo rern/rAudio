@@ -1386,7 +1386,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
-		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', dir + path, 'CMD DIR' ] )
+		, button      : ! thumbnail ? '' : () => bash( [ 'coverreset', dir + path, 'CMD DIR' ] )
 		, ok          : () => {
 			imageReplace( 'bookmark', imagefilenoext, name ); // no ext
 		}
