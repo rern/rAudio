@@ -342,60 +342,6 @@ function similarAdd() {
 		addSimilar();
 	}
 }
-function stationArt() { // station / folder
-	if ( V.playback ) {
-		var coverart  = S.stationcover || V.coverdefault;
-		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
-		var url       = S.file;
-		var name      = S.station;
-		var dir       = '';
-	} else {
-		var $liicon   = V.list.li.find( '.li-icon' );
-		var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
-		var mode      = V.mode;
-		var path      = V.list.li.find( '.lipath' ).text();
-		var pathsplit = path.split( '//' );
-		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-		var name      = V.list.name;
-		var dir       = V.list.li.hasClass( 'dir' );
-	}
-	if ( dir ) {
-		dir                = V.list.li.find( '.lidir' ).text();
-		mode               = 'folder';
-		var imagefilenoext = dir + '/coverart';
-	} else {
-		var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
-	}
-	info( {
-		  icon        : 'coverart'
-		, title       : dir ? 'Folder Art' : 'Station Art'
-		, message     : '<img class="imgold" src="'+ coverart +'" >'
-					   +'<p class="infoimgname">'+ name +'</p>'
-		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
-		, beforeshow  : () => {
-			$( '.imgold' ).on( 'error', function() {
-				imageOnError( this );
-			} );
-			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
-		}
-		, buttonlabel : ico( mode ) +' Icon'
-		, buttoncolor : orange
-		, button      : () => {
-			if ( dir ) {
-				bash( [ 'thumbreset', dir, 'CMD DIR' ] );
-			} else {
-				bash( [ 'stationartreset', imagefilenoext, 'CMD FILENOEXT' ] );
-			}
-			V.list.li.find( 'img' ).remove();
-			V.list.li.prepend( '<i class="i-'+ mode +' li-icon" data-menu="wrdir"></i>' );
-		}
-		, ok          : () => {
-			V.list.li.find( 'i, img' ).remove();
-			V.list.li.prepend( '<img class="iconthumb li-icon" src="'+ $( '.infoimgnew' ).attr( 'src' ) +'">' );
-			imageReplace( mode, imagefilenoext );
-		}
-	} );
-}
 function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
@@ -529,6 +475,60 @@ function tagModeSwitch() {
 		V.library  = true;
 		V.page     = 'library';
 	}
+}
+function thumbnail() { // station / folder
+	if ( V.playback ) {
+		var coverart  = S.stationcover || V.coverdefault;
+		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
+		var url       = S.file;
+		var name      = S.station;
+		var dir       = '';
+	} else {
+		var $liicon   = V.list.li.find( '.li-icon' );
+		var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
+		var mode      = V.mode;
+		var path      = V.list.li.find( '.lipath' ).text();
+		var pathsplit = path.split( '//' );
+		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
+		var name      = V.list.name;
+		var dir       = V.list.li.hasClass( 'dir' );
+	}
+	if ( dir ) {
+		dir                = V.list.li.find( '.lidir' ).text();
+		mode               = 'folder';
+		var imagefilenoext = dir + '/coverart';
+	} else {
+		var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
+	}
+	info( {
+		  icon        : 'coverart'
+		, title       : dir ? 'Folder Art' : 'Station Art'
+		, message     : '<img class="imgold" src="'+ coverart +'" >'
+					   +'<p class="infoimgname">'+ name +'</p>'
+		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
+		, beforeshow  : () => {
+			$( '.imgold' ).on( 'error', function() {
+				imageOnError( this );
+			} );
+			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
+		}
+		, buttonlabel : ico( mode ) +' Icon'
+		, buttoncolor : orange
+		, button      : () => {
+			if ( dir ) {
+				bash( [ 'thumbreset', dir, 'CMD DIR' ] );
+			} else {
+				bash( [ 'stationartreset', imagefilenoext, 'CMD FILENOEXT' ] );
+			}
+			V.list.li.find( 'img' ).remove();
+			V.list.li.prepend( '<i class="i-'+ mode +' li-icon" data-menu="wrdir"></i>' );
+		}
+		, ok          : () => {
+			V.list.li.find( 'i, img' ).remove();
+			V.list.li.prepend( '<img class="iconthumb li-icon" src="'+ $( '.infoimgnew' ).attr( 'src' ) +'">' );
+			imageReplace( mode, imagefilenoext );
+		}
+	} );
 }
 function thumbnailUpdate() {
 	var $img = V.list.li.find( 'img' );
@@ -707,9 +707,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		, savedpladd    : savedPlaylistAdd
 		, savedplremove : savedPlaylistRemove
 		, similar       : similarAdd
-		, stationart    : stationArt
 		, tag           : tagEditor
-		, thumb         : thumbnailUpdate
+		, thumbnail     : thumbnail
+		, thumbupdate   : thumbnailUpdate
 		, update        : updateDirectory
 		, wrdelete      : webRadioDelete
 		, wrdirdelete   : directoryDelete

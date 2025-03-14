@@ -78,12 +78,12 @@ htmlMenu( $menulist, 'filesavedpl' );
 // folder
 $html     = $htmlcommon;
 $menulist = [
-	  [ 'bookmark',  'star',            'Bookmark' ]
-	, [ 'exclude',   'folder-forbid',   'Exclude directory' ]
-	, [ 'update',    'refresh-library', 'Update database' ]
-	, [ 'thumb',     'coverart',        'Update thumbnails' ]
-	, [ 'directory', 'folder-open',     'Browse folder' ]
-	, [ 'tag',       'tag',             'Tag Editor' ]
+	  [ 'bookmark',    'star',            'Bookmark' ]
+	, [ 'exclude',     'folder-forbid',   'Exclude directory' ]
+	, [ 'update',      'refresh-library', 'Update database' ]
+	, [ 'thumbupdate', 'coverart',        'Update thumbnails' ]
+	, [ 'directory',   'folder-open',     'Browse folder' ]
+	, [ 'tag',         'tag',             'Tag Editor' ]
 ];
 htmlMenu( $menulist, 'folder' );
 // plaction
@@ -115,7 +115,7 @@ $html     = menuCommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'bookmark',   'star',      'Bookmark' ]
 	, [ 'wredit',     'edit',      'Edit' ]
-	, [ 'stationart', 'coverart',  'Station art' ]
+	, [ 'thumbnail',  'coverart',  'Station art' ]
 	, [ 'wrdelete',   'remove',    'Delete' ]
 	, [ 'savedpladd', 'playlists', 'Add to a playlist' ]
 ];
@@ -124,7 +124,7 @@ htmlMenu( $menulist, 'webradio' );
 $html     = '';
 $menulist = [
 	  [ 'bookmark',    'star',     'Bookmark' ]
-	, [ 'stationart',  'coverart', 'Folder thumbnail' ]
+	, [ 'thumbnail',   'coverart', 'Folder thumbnail' ]
 	, [ 'wrdirdelete', 'remove',   'Delete' ]
 	, [ 'wrdirrename', 'edit',     'Rename' ]
 ];
