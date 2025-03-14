@@ -225,10 +225,6 @@ bookmarkadd )
 	fi
 	pushData bookmark 1
 	;;
-coverreset )
-	rm -f "$DIR/coverart".* "$DIR/thumb".*
-	pushData bookmark 1
-	;;
 bookmarkremove )
 	bkfile="$dirbookmarks/${NAME//\//|}"
 	if [[ -e $dirsystem/order.json ]]; then
@@ -807,6 +803,10 @@ splashrotate )
 stationartreset ) # station / folder
 	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
 	pushDataCoverart
+	;;
+thumbreset )
+	rm -f "$DIR/coverart".* "$DIR/thumb".*
+	pushData bookmark 1
 	;;
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1

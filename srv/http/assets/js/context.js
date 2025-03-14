@@ -348,6 +348,7 @@ function stationArt() { // station / folder
 		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
 		var url       = S.file;
 		var name      = S.station;
+		var dir       = '';
 	} else {
 		var $liicon   = V.list.li.find( '.li-icon' );
 		var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
@@ -356,10 +357,12 @@ function stationArt() { // station / folder
 		var pathsplit = path.split( '//' );
 		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 		var name      = V.list.name;
+		var dir       = V.list.li.hasClass( 'dir' );
 	}
-	var dir            = V.list.li.hasClass( 'dir' );
 	if ( dir ) {
-		var imagefilenoext = '/srv/http/data/'+ path + '/coverart';
+		dir                = V.list.li.find( '.lidir' ).text();
+		mode               = 'folder';
+		var imagefilenoext = dir + '/coverart';
 	} else {
 		var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
 	}
@@ -375,16 +378,22 @@ function stationArt() { // station / folder
 			} );
 			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
 		}
-		, buttonlabel : ico( dir ? 'folder' : mode ) +' Icon'
+		, buttonlabel : ico( mode ) +' Icon'
 		, buttoncolor : orange
 		, button      : () => {
 			if ( dir ) {
-				bash( [ 'coverartreset', '/srv/http/data/'+ path, 'CMD DIR' ] );
+				bash( [ 'thumbreset', dir, 'CMD DIR' ] );
 			} else {
 				bash( [ 'stationartreset', imagefilenoext, 'CMD FILENOEXT' ] );
 			}
+			V.list.li.find( 'img' ).remove();
+			V.list.li.prepend( '<i class="i-'+ mode +' li-icon" data-menu="wrdir"></i>' );
 		}
-		, ok          : () => imageReplace( mode, imagefilenoext )
+		, ok          : () => {
+			V.list.li.find( 'i, img' ).remove();
+			V.list.li.prepend( '<img class="iconthumb li-icon" src="'+ $( '.infoimgnew' ).attr( 'src' ) +'">' );
+			imageReplace( mode, imagefilenoext );
+		}
 	} );
 }
 function tagEditor() {

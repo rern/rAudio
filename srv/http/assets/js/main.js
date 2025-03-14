@@ -1386,7 +1386,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
-		, button      : ! thumbnail ? '' : () => bash( [ 'coverreset', dir + path, 'CMD DIR' ] )
+		, button      : ! thumbnail ? '' : () => {
+			bash( [ 'thumbreset', dir + path, 'CMD DIR' ] );
+		}
 		, ok          : () => {
 			imageReplace( 'bookmark', imagefilenoext, name ); // no ext
 		}
@@ -1605,6 +1607,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 	V.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode            = V.mode;
+		console.log( query )
 	list( query, function( html ) {
 		if ( ! html ) {
 			$this

@@ -223,14 +223,13 @@ case 'radio':
 	$dir     = '/srv/http/data/'.$GMODE.'/'.$STRING;
 	$subdirs = [];
 	$files   = [];
-	exec( 'ls "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
+	exec( 'ls -d "'.$dir.'"/* | grep -E -v "/img$|\.jpg$|\.gif$"'
 		, $lists );
 	foreach( $lists as $list ) {
-		$path = $dir.'/'.$list;
-		if ( is_dir( $path ) ) {
-			$subdirs[] = $path;
+		if ( is_dir( $list ) ) {
+			$subdirs[] = $list;
 		} else {
-			$files[] = $path;
+			$files[] = $list;
 		}
 	}
 	htmlRadio();

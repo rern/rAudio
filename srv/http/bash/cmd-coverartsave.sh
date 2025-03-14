@@ -28,7 +28,7 @@ case $type in
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 		fi
 		;;
-	bookmark )
+	bookmark | folder )
 		name=${args[3]}
 		rm -f "$targetnoext".*
 		if [[ ! $gif ]]; then
