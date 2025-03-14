@@ -342,6 +342,45 @@ function similarAdd() {
 		addSimilar();
 	}
 }
+function stationArt() { // station / folder
+	if ( V.playback ) {
+		var coverart  = S.stationcover || V.coverdefault;
+		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
+		var url       = S.file;
+		var name      = S.station;
+	} else {
+		var $liicon   = V.list.li.find( '.li-icon' );
+		var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
+		var mode      = V.mode;
+		var path      = V.list.li.find( '.lipath' ).text();
+		var pathsplit = path.split( '//' );
+		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
+		var name      = V.list.name;
+	}
+	var dir            = V.list.li.hasClass( 'dir' );
+	if ( dir ) {
+		var imagefilenoext = '/srv/http/data/'+ path + '/coverart';
+	} else {
+		var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
+	}
+	info( {
+		  icon        : 'coverart'
+		, title       : dir ? 'Folder Art' : 'Station Art'
+		, message     : '<img class="imgold" src="'+ coverart +'" >'
+					   +'<p class="infoimgname">'+ name +'</p>'
+		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
+		, beforeshow  : () => {
+			$( '.imgold' ).on( 'error', function() {
+				imageOnError( this );
+			} );
+			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
+		}
+		, buttonlabel : ico( dir ? 'folder' : mode ) +' Icon'
+		, buttoncolor : orange
+		, button      : () => bash( [ 'stationartreset', imagefilenoext, 'CMD FILENOEXT' ] )
+		, ok          : () => imageReplace( mode, imagefilenoext )
+	} );
+}
 function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
@@ -509,39 +548,6 @@ function updateDirectory() {
 		, ok         : () => bash( [ 'mpcupdate', infoVal(), V.list.path, 'CMD ACTION PATHMPD' ] )
 	} );
 }
-function webRadioCoverart() {
-	if ( V.playback ) {
-		var coverart  = S.stationcover || V.coverdefault;
-		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
-		var url       = S.file;
-		var name      = S.station;
-	} else {
-		var $liicon   = V.list.li.find( '.li-icon' );
-		var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
-		var mode      = V.mode;
-		var pathsplit = V.list.li.find( '.lipath' ).text().split( '//' );
-		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-		var name      = V.list.name;
-	}
-	var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
-	info( {
-		  icon        : 'coverart'
-		, title       : ( mode === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
-		, message     : '<img class="imgold" src="'+ coverart +'" >'
-					  + '<p class="infoimgname">'+ name +'</p>'
-		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
-		, beforeshow  : () => {
-			$( '.imgold' ).on( 'error', function() {
-				imageOnError( this );
-			} );
-			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
-		}
-		, buttonlabel : ico( mode ) +'Default'
-		, buttoncolor : orange
-		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, 'CMD FILENOEXT' ] )
-		, ok          : () => imageReplace( mode, imagefilenoext )
-	} );
-}
 function webRadioDelete() {
 	var name = V.list.name;
 	var img  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
@@ -686,10 +692,10 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		, savedpladd    : savedPlaylistAdd
 		, savedplremove : savedPlaylistRemove
 		, similar       : similarAdd
+		, stationart    : stationArt
 		, tag           : tagEditor
 		, thumb         : thumbnailUpdate
 		, update        : updateDirectory
-		, wrcoverart    : webRadioCoverart
 		, wrdelete      : webRadioDelete
 		, wrdirdelete   : directoryDelete
 		, wrdirrename   : directoryRename

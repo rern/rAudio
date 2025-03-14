@@ -804,6 +804,10 @@ snapserverlist )
 splashrotate )
 	splashRotate
 	;;
+stationartreset ) # station / folder
+	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
+	pushDataCoverart
+	;;
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
 	;;
@@ -830,10 +834,6 @@ $CHARSET" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
 	webRadioSampling $url "$file" &> /dev/null &
-	;;
-webradiocoverreset )
-	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-	pushDataCoverart
 	;;
 webradiodelete )
 	urlname=${URL//\//|}

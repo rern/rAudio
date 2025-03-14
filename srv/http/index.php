@@ -115,17 +115,18 @@ $html     = menuCommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'bookmark',   'star',      'Bookmark' ]
 	, [ 'wredit',     'edit',      'Edit' ]
-	, [ 'wrcoverart', 'coverart',  'Change cover art' ]
+	, [ 'stationart', 'coverart',  'Station art' ]
 	, [ 'wrdelete',   'remove',    'Delete' ]
 	, [ 'savedpladd', 'playlists', 'Add to a playlist' ]
 ];
 htmlMenu( $menulist, 'webradio' );
-// wrdir
+// wr folder
 $html     = '';
 $menulist = [
-	  [ 'bookmark',    'star',   'Bookmark' ]
-	, [ 'wrdirdelete', 'remove', 'Delete' ]
-	, [ 'wrdirrename', 'edit',   'Rename' ]
+	  [ 'bookmark',    'star',     'Bookmark' ]
+	, [ 'stationart',  'coverart', 'Folder thumbnail' ]
+	, [ 'wrdirdelete', 'remove',   'Delete' ]
+	, [ 'wrdirrename', 'edit',     'Rename' ]
 ];
 htmlMenu( $menulist, 'wrdir' );
 
