@@ -361,14 +361,16 @@ function htmlDirectory() {
 		$name      = in_array( $GMODE, [ 'nas', 'sd', 'usb' ] ) ? basename( $path ) : $path;
 		$dir       = is_dir( '/mnt/MPD/'.$path );
 		if ( $dir ) {
-			$mode = strtolower( explode( '/', $path )[ 0 ] );
-			$icon = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', 'folder' );
+			$mode  = strtolower( explode( '/', $path )[ 0 ] );
+			$icon  = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', 'folder' );
+			$class = ' class="dir"';
 		} else {
-			$mode = $GMODE;
-			$icon = i( 'music ', 'file' );
+			$mode  = $GMODE;
+			$icon  = i( 'music ', 'file' );
+			$class = '';
 		}
 		$htmlli   = '
-<li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.'
+<li data-mode="'.$mode.'"'.$class.$dataindex.'>'.$icon.'
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$name.'</span>
 </li>';

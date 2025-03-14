@@ -226,9 +226,7 @@ bookmarkadd )
 	pushData bookmark 1
 	;;
 bookmarkcoverreset )
-	path=$( < "$dirbookmarks/$NAME" )
-	[[ ${path:0:1} != '/' ]] && path="/mnt/MPD/$path"
-	rm -f "$path/coverart".*
+	rm -f "$DIR/coverart".* "$DIR/thumb".*
 	pushData bookmark 1
 	;;
 bookmarkremove )

@@ -1487,7 +1487,7 @@ function pageInactive() {
 	V.pageactive = false;
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 }
-document.onvisibilitychange = () => document.hidden ? pageInactive() : pageActive();
+document.onvisibilitychange = () => document.visibilityState === 'hidden' ? pageInactive() : pageActive();
 window.onblur     = pageInactive;
 window.onfocus    = pageActive;
 window.onpagehide = pageInactive;
@@ -1556,17 +1556,11 @@ function websocketConnect( ip ) {
 	}
 }
 function websocketReconnect() {
-	$.post( 'cmd.php', { cmd: 'startupready' }, ready => {
-		if ( ready ) {
-			V.timeoutreload ? location.reload() : websocketConnect();
-		} else {
-			setTimeout( websocketReconnect, 1000 );
-		}
-	} ).fail( () => {
-		V.timeoutreload = true;
-		loader();
+	try {
+		V.timeoutreload ? location.reload() : websocketConnect();
+	} catch( error ) {
 		setTimeout( websocketReconnect, 1000 );
-	} );
+	}
 }
 /* bash
 Multiline arguments - no escape \" \` in js values > escape in php instead

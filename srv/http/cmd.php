@@ -97,9 +97,6 @@ case 'sort': // from cmd-list.sh
 		file_put_contents( $file, $list );
 	}
 	break;
-case 'startupready':
-	if ( file_exists( $dirshm.'startup' ) ) echo 1;
-	break;
 case 'timezonelist': // $.post from system.js
 	$list   = timezone_identifiers_list();
 	$option = '<option value="auto">Auto</option>';

@@ -12,15 +12,10 @@ W = {
 		clearTimeout( V.timeoutCover );
 		bannerHide();
 		$( '#liimg' ).css( 'opacity', '' );
-		if ( data.bookmark ) {
+		if ( 'bookmark' in data ) {
 			if ( V.library && V.libraryhome ) {
-				$( '.bookmark .lipath' ).each( ( i, el ) => {
-					var $el = $( el );
-					if ( $el.text() === data.bookmark ) {
-						$el.siblings( 'img' ).attr( 'src', data.url + versionHash() );
-						return false
-					}
-				} );
+				V.libraryhtml = '';
+				libraryHome();
 			}
 			return
 		}

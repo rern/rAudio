@@ -1376,7 +1376,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var message = '<div class="infobookmark">'+ ico( 'bookmark' )
 					 +'<span class="bklabel">'+ name +'</span></div>';
 	}
-	var imagefilenoext = '/mnt/MPD/'+ $this.find( '.lipath' ).text() +'/coverart';
+	var path           = $this.find( '.lipath' ).text();
+	var dir            = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/' : '/mnt/MPD/';
+	var imagefilenoext = dir + path +'/coverart';
 	info( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
@@ -1384,8 +1386,10 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
-		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
-		, ok          : () => imageReplace( 'bookmark', imagefilenoext, name ) // no ext
+		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', dir + path, 'CMD DIR' ] )
+		, ok          : () => {
+			imageReplace( 'bookmark', imagefilenoext, name ); // no ext
+		}
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
 	infoDabScan();
