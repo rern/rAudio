@@ -1607,7 +1607,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 	V.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode            = V.mode;
-		console.log( query )
 	list( query, function( html ) {
 		if ( ! html ) {
 			$this
