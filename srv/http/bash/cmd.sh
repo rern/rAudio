@@ -683,7 +683,8 @@ mpcupdate )
 	if [[ $ACTION ]]; then
 		echo "\
 ACTION=$ACTION
-PATHMPD=\"$PATHMPD\"" > $dirmpd/updating
+PATHMPD=\"$PATHMPD\"
+LATEST=$LATEST" > $dirmpd/updating
 	else
 		. <( $dirmpd/updating )
 	fi

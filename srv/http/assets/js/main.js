@@ -1067,8 +1067,11 @@ $( '#button-lib-update' ).on( 'click', function() {
 		return
 	}
 	
+	var modes   = [ 'NAS', 'SD', 'USB' ];
 	var message = '';
-	[ 'nas', 'sd', 'usb' ].forEach( k => message += sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
+	modes.forEach( k => {
+		message += sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
+	} );
 	var kv   = {
 		  'Update changed files'    : 'update'
 		, 'Update all files'        : 'rescan'
@@ -1077,19 +1080,22 @@ $( '#button-lib-update' ).on( 'click', function() {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : message +'&ensp;<hr>'
-		, list       : [ '', 'radio', { kv: kv, sameline: false } ]
-		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update' }
+		, list       : [
+			  [ '',                   'radio', { kv: kv, sameline: false } ]
+			, [ 'Append Latest list', 'checkbox' ]
+		]
+		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
 		, ok         : () => {
 			var val = infoVal();
 			var path = '';
 			if ( val.ACTION !== 'refresh' ) {
 				var modes = [];
-				[ 'NAS', 'SD', 'USB' ].forEach( k => {
+				modes.forEach( k => {
 					if ( val[ k ] ) modes.push( k );
 				} );
 				if ( modes.length < 3 ) path = modes.join( ' ' );
 			}
-			bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] );
+			bash( [ 'mpcupdate', val.ACTION, path, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
 		}
 	} );
 } );
