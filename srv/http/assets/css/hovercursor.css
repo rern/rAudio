@@ -20,13 +20,10 @@
 #playback-row .btn.active:hover {
 	background-color: var( --cml ) !important;
 }
-#lib-list li.active:hover,
+#lib-list li:not( .licover ).active:hover,
 #pl-savedlist li.active:hover,
 #pl-list li.active:hover {
 	background-color: var( --cm );
-}
-.licover.active:hover {
-	background: linear-gradient( #000000 195px, var( --cml ) 0 ) !important;
 }
 .menu a:hover,
 .submenu:not( .disabled ):hover,
@@ -47,7 +44,7 @@
 }
 /* :active:hover *********************************************************/
 #colorok:active:hover,
-#lib-list li.active:active:hover,
+#lib-list li:not( .licover ).active:active:hover,
 #pl-savedlist li.active:active:hover,
 #pl-list li.active:active:hover,
 #playback-controls button.active:active:hover,
@@ -73,9 +70,6 @@
 #power:hover,
 #screenoff:hover {
 	background-color: var( --cgd ) !important;
-}
-.licover.active:active:hover {
-	background: linear-gradient( #000000 189px, var( --cma ) 41px ) !important;
 }
 .sub.nohover:hover {
 	background-color: var( --cg ) !important;

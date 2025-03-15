@@ -1544,11 +1544,13 @@ div.pagerefresh {
 	margin: 0;
 	list-style: none
 }
+.list li {
+	border-bottom: 1px solid var( --cga );
+}
 .list li:not( .licover ) {
 	display: block;
 	height: 49px;
 	line-height: 20px;
-	border-bottom: 1px solid var( --cga );
 	color: var( --cg60 );
 }
 .licover {
@@ -1561,9 +1563,6 @@ div.pagerefresh {
 }
 .licover.nofixed {
 	position: relative;
-}
-.licover.active {
-	background: linear-gradient( #000000 195px, var( --cm ) 0 );
 }
 .licoverimg {
 	position: relative;
@@ -1807,15 +1806,11 @@ li.active .li2,
 li.active .li2 a,
 li.active .li2 span,
 li.active gr,
-li.active .time,
-.licover.active .i-playlists {
+li.active .time {
 	color: var( --cga ) !important;
 }
 li.active .li-icon.wh {
 	color: var( --cw ) !important;
-}
-li.active gr {
-
 }
 li.active .name bl {
 	color: var( --cg ) !important;
