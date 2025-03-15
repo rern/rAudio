@@ -492,7 +492,8 @@ function thumbnail() { // station / folder
 		var dir       = V.list.li.hasClass( 'dir' );
 	}
 	if ( dir ) {
-		dir                = mode.slice( -5 ) === 'radio' ? V.list.li.find( '.lidir' ).text() : V.list.li.find( '.lipath' ).text();
+		var $lidir         = V.list.li.find( '.lidir' );
+		dir                = $lidir.length ? $lidir.text() : V.list.li.find( '.lipath' ).text();
 		mode               = 'folder';
 		var imagefilenoext = dir + '/coverart';
 	} else {
@@ -500,7 +501,7 @@ function thumbnail() { // station / folder
 	}
 	info( {
 		  icon        : 'coverart'
-		, title       : dir ? 'Folder Art' : 'Station Art'
+		, title       : dir ? 'Folder Thumbnail' : 'Station Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 					   +'<p class="infoimgname">'+ name +'</p>'
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
