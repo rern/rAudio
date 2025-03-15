@@ -290,6 +290,7 @@ function contextmenuLibrary( $li, $target ) {
 		$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 		$menu.find( '.update' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
 		$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
+		$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover );
 		$menu.find( '.directory' ).toggleClass( 'hide', filemode || ! V.librarytrack );
 		$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
 		$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );
