@@ -771,7 +771,7 @@ $( '#coverM' ).press( e => {
 		|| [ 'coverL', 'coverR', 'coverT' ].includes( e.target.id )
 	) return
 	
-	S.webradio ? webRadioCoverart() : coverartChange();
+	S.webradio ? thumbnail() : coverartChange();
 } ).on( 'click', '.cover-save', function() {
 	coverartSave();
 } );

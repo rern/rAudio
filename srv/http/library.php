@@ -114,9 +114,10 @@ case 'findartist': // artist, albumartist
 		$dataindex = dataIndex( $each->sort );
 		$icon      = imgIcon( '/mnt/MPD/'.$each->path.'/thumb.jpg', 'folder' );
 		$html     .= '
-<li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.'
-<a class="lipath">'.$each->path.'</a>
-<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
+<li data-mode="'.$mode.'"'.$dataindex.'>
+	'.$icon.'
+	<a class="lipath">'.$each->path.'</a>
+	<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
 </li>';
 	}
 	$html.= indexBar( $indexes );
@@ -362,14 +363,15 @@ function htmlDirectory() {
 		if ( $dir ) {
 			$mode  = strtolower( explode( '/', $path )[ 0 ] );
 			$icon  = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', 'folder' );
-//			$class = ' class="dir"';
+			$class = ' class="dir"';
 		} else {
 			$mode  = $GMODE;
 			$icon  = i( 'music ', 'file' );
-//			$class = '';
+			$class = '';
 		}
 		$htmlli   = '
-<li data-mode="'.$mode.'"'.$dataindex.'>'.$icon.'
+<li'.$class.' data-mode="'.$mode.'"'.$dataindex.'>
+	'.$icon.'
 	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$name.'</span>
 </li>';
@@ -415,7 +417,8 @@ function htmlFind() { // non-file 'find' command
 		$html     .= '
 <li data-mode="'.$datamode.'"'.$dataindex.'">
 	<a class="liname">'.$liname.'</a>
-	'.$icon.'<span class="single">'.$name.'</span>
+	'.$icon.'
+	<span class="single">'.$name.'</span>
 </li>';
 	}
 	$html          .= indexBar( $indexes );
@@ -490,7 +493,7 @@ function htmlRadio() {
 			$thumbsrc  = substr( $each->dir, 9 ).'/thumb.jpg';
 			$icon      = imgIcon( $thumbsrc, 'wrdir' );
 			$html.= '
-<li data-mode="'.$MODE.'" class="dir"'.$dataindex.'>
+<li class="dir" data-mode="'.$MODE.'" '.$dataindex.'>
 	'.$icon.'
 	<a class="lidir">'.$each->dir.'</a>
 	<a class="lipath">'.$each->dirname.'</a>
@@ -649,7 +652,8 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$html  .= '
 <li data-mode="'.$datamode.'" '.$track1.'>
 	<a class="lipath">'.$path.'</a>
-	'.$icon.'<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>
+	'.$icon.'
+	<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>
 	<div class="li2">'.$i.' • '.$trackname.'</div>
 </li>';
 	}

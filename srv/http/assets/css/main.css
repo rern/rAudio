@@ -1329,9 +1329,6 @@ div.pagerefresh {
 .infomessage .thumbnail img {
 	margin-bottom: -5px;
 }
-li.dir img {
-	box-shadow: 4px -4px var( --cg60 );
-}
 
 /* ---------------------- breadcrumb and index ---------------------- */
 .content-top {

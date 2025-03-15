@@ -79,6 +79,7 @@ htmlMenu( $menulist, 'filesavedpl' );
 $html     = $htmlcommon;
 $menulist = [
 	  [ 'bookmark',    'star',            'Bookmark' ]
+	, [ 'thumbnail',   'coverart',        'Folder thumbnail' ]
 	, [ 'exclude',     'folder-forbid',   'Exclude directory' ]
 	, [ 'update',      'refresh-library', 'Update database' ]
 	, [ 'thumbupdate', 'coverart',        'Update thumbnails' ]

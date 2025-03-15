@@ -1125,7 +1125,7 @@ function refreshData() {
 		if ( V.libraryhome ) { // home
 			libraryHome();
 		} else {
-			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) return
+			if ( [ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( V.mode ) ) return
 			
 			if ( V.query.length ) {
 				var query = V.query.slice( -1 )[ 0 ];

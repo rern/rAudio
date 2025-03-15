@@ -221,7 +221,21 @@ W = {
 			$( '.mode.'+ data.type +' gr' ).text( count ? count.toLocaleString() : '' );
 		}
 		if ( V.library ) {
-			if ( V.librarylist && V.mode === data.type ) radioRefresh();
+			if ( V.librarylist && V.mode === data.type ) {
+				var path = $( '.lib-path' ).text();
+				if ( path ) {
+					list( { library: "radio", string: path, gmode: "webradio" }, html => {
+						renderLibraryList(  {
+							  html      : html
+							, icon      : V.mode
+							, modetitle : path
+							, path      : path
+						} );
+					} );
+				} else {
+					$( '.mode.'+ V.mode ).trigger( 'click' );
+				}
+			}
 		} else if ( V.playlist ) {
 			if ( V.playlistlist ) {
 				$( '#button-pl-playlists' ).trigger( 'click' );
@@ -264,21 +278,6 @@ W = {
 	}
 }
 
-function radioRefresh() {
-	if ( V.query.length ) {
-		var query = V.query.slice( -1 )[ 0 ];
-		list( query, function( html ) {
-			var data = {
-				  html      : html
-				, modetitle : query.modetitle
-				, path      : query.path
-			}
-			renderLibraryList( data );
-		} );
-	} else {
-		$( '.mode.'+ V.mode ).trigger( 'click' );
-	}
-}
 function statusUpdate( data ) {
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();

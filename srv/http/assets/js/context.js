@@ -480,7 +480,7 @@ function thumbnail() { // station / folder
 	if ( V.playback ) {
 		var coverart  = S.stationcover || V.coverdefault;
 		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
-		var url       = S.file;
+		var path       = S.file;
 		var name      = S.station;
 		var dir       = '';
 	} else {
@@ -488,17 +488,15 @@ function thumbnail() { // station / folder
 		var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
 		var mode      = V.mode;
 		var path      = V.list.li.find( '.lipath' ).text();
-		var pathsplit = path.split( '//' );
-		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 		var name      = V.list.name;
 		var dir       = V.list.li.hasClass( 'dir' );
 	}
 	if ( dir ) {
-		dir                = V.list.li.find( '.lidir' ).text();
+		dir                = mode.slice( -5 ) === 'radio' ? V.list.li.find( '.lidir' ).text() : V.list.li.find( '.lipath' ).text();
 		mode               = 'folder';
 		var imagefilenoext = dir + '/coverart';
 	} else {
-		var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
+		var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ path.replace( /\//g, '|' );
 	}
 	info( {
 		  icon        : 'coverart'
