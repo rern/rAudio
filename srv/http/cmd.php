@@ -35,7 +35,7 @@ case 'giftype': // formdata from common.js
 case 'imagereplace': // $.post from function.js
 	$imagefile = $post->imagefile;
 	$type      = $post->type;
-	if ( $type === 'coverart' && ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
+	if ( ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	$bookmarkname = $post->bookmarkname ?? '';
 	$imagedata    = $post->imagedata;

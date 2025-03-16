@@ -495,7 +495,7 @@ function thumbnail() { // station / folder
 		var $lidir         = V.list.li.find( '.lidir' );
 		dir                = $lidir.length ? $lidir.text() : V.list.li.find( '.lipath' ).text();
 		mode               = 'folder';
-		var imagefilenoext = dir + '/coverart';
+		var imagefilenoext = '/srv/http/mnt/MPD/'+ dir + '/coverart';
 	} else {
 		var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ path.replace( /\//g, '|' );
 	}
