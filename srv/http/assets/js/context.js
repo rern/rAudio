@@ -522,21 +522,9 @@ function thumbnail() { // station / folder
 			} else {
 				bash( [ 'stationartreset', imagefilenoext, 'CMD FILENOEXT' ] );
 			}
-			if ( V.playback ) {
-				$( '#coverart' ).attr( 'src', V.coverart );
-			} else {
-				V.list.li.find( 'img' ).remove();
-				V.list.li.prepend( '<i class="i-'+ mode +' li-icon" data-menu="wrdir"></i>' );
-			}
 		}
 		, ok          : () => {
 			var src = $( '.infoimgnew' ).attr( 'src' );
-			if ( V.playback ) {
-				$( '#coverart' ).attr( 'src', src );
-			} else {
-				V.list.li.find( 'i, img' ).remove();
-				V.list.li.prepend( '<img class="iconthumb li-icon" src="'+ src +'">' );
-			}
 			imageReplace( mode, imagefilenoext );
 		}
 	} );
