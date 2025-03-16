@@ -22,7 +22,6 @@ W = {
 		} else if ( V.library && V.libraryhome ) {
 			$img = $( '#lib-mode-list img' );
 		} else {
-			list = true;
 			$img = $( '.list:not( .hide ) img' );
 		}
 		

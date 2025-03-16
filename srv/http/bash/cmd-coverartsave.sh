@@ -67,6 +67,7 @@ case $type in
 		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$thumb"
 		;;
 esac
+target=$( php -r "echo rawurlencode( '${target//\'/\\\'}' );" )
 thumb=$( php -r "echo rawurlencode( '${thumb//\'/\\\'}' );" )
-pushData coverart '{ "type": "'$type'", "coverart": "'${target//\'/\\\'}'", "thumb": "'$thumb'" }'
+pushData coverart '{ "type": "'$type'", "coverart": "'$target'", "thumb": "'$thumb'" }'
 rm -f $dirshm/{embedded,local,online}/*

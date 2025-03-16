@@ -18,8 +18,8 @@ fi
 if [[ -f $localfile ]]; then
 	cat $localfile
 	exit
+# --------------------------------------------------------------------
 fi
-
 # found embedded
 embeddedname=$( alphaNumeric $filename ).jpg
 embeddedfile=$dirshm/embedded/$embeddedname
