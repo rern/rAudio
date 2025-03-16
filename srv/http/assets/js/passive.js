@@ -36,15 +36,20 @@ W = {
 		} else {
 			S.coverart = data.url;
 		}
-		setCoverart();
 		if ( data.radioalbum ) { // online coverarts come with album name
 			S.Album = data.radioalbum;
 			setInfo();
 		}
-		if ( V.library ) return
-		
-		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
-		if ( ! V.playback ) refreshData();
+		var $coverart =  V.playback ? $( '#coverart' ) : $( '#liimg' );
+		$coverart.attr( 'src', $coverart.attr( 'src' ) + 0 );
+		if ( V.playback || ( V.library && V.libraryhome ) ) return
+			
+		var $img = V.library ? $( '#lib-list img' ) : $( '#pl-list img' );
+		var $el;
+		$img.each( ( i, el ) => {
+			$el = $( el );
+			$el.attr( 'src', $el.attr( 'src' ) + 0 );
+		} );
 	}
 	, display   : data => {
 		if ( 'submenu' in data ) {
