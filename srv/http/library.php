@@ -495,7 +495,6 @@ function htmlRadio() {
 			$html.= '
 <li class="dir" data-mode="'.$MODE.'" '.$dataindex.'>
 	'.$icon.'
-	<a class="lidir">'.$each->dir.'</a>
 	<a class="lipath">'.$each->dirname.'</a>
 	<span class="single name">'.$each->dirname.'</span>
 </li>';
@@ -526,7 +525,6 @@ function htmlRadio() {
 			$html       .= '
 <li data-mode="webradio" '.$datacharset.$dataindex.'>
 	'.$icon.'
-	<a class="lidir">'.dirname( $each->file ).'</a>
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$name.'</a>';
 			if ( $search ) $name = preg_replace( "/($STRING)/i", '<bll>$1</bll>', $name );
