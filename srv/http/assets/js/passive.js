@@ -11,44 +11,36 @@ W = {
 	, coverart  : data => {
 		clearTimeout( V.timeoutCover );
 		bannerHide();
-		$( '#liimg' ).css( 'opacity', '' );
-		if ( 'bookmark' in data ) {
-			if ( V.library && V.libraryhome ) {
-				V.libraryhtml = '';
-				libraryHome();
-			}
-			return
+		if ( V.playlist && V.playlistlist ) return
+		
+		var coverart = data.coverart;
+		var ext      = coverart.slice( -3 );
+		var hash     = versionHash();
+		var $img;
+		if ( V.playback ) {
+			$img = $( '#coverart' );
+		} else if ( V.library && V.libraryhome ) {
+			$img = $( '#lib-mode-list img' );
+		} else {
+			list = true;
+			$img = $( '.list:not( .hide ) img' );
 		}
 		
-		if ( data.radio ) {
-			S.stationcover = data.url
-			if ( V.mode === 'webradio' ) {
-				var url = data.url.slice( 0, -4 ) +'-thumb.jpg';
-				$( '#lib-list img' ).each( ( i, el ) => {
-					var $img = $( el );
-					var src  = $img.attr( 'src' ).slice( 0, -13 );
-					if ( src === url ) {
-						$img.attr( 'src', src + versionHash() );
-						return false
-					}
-				} );
-			}
+		if ( ! $img.length ) return
+		
+		if ( $img.eq( 0 ).attr( 'src' ).slice( -22, -17 ) === 'thumb' ) {
+			var covernoext = data.thumb.slice( 0, -3 );
 		} else {
-			S.coverart = data.url;
+			var covernoext = coverart.slice( 0, -3 );
 		}
-		if ( data.radioalbum ) { // online coverarts come with album name
-			S.Album = data.radioalbum;
-			setInfo();
-		}
-		var $coverart =  V.playback ? $( '#coverart' ) : $( '#liimg' );
-		$coverart.attr( 'src', $coverart.attr( 'src' ) + 0 );
-		if ( V.playback || ( V.library && V.libraryhome ) ) return
-			
-		var $img = V.library ? $( '#lib-list img' ) : $( '#pl-list img' );
-		var $el;
+		var $el, src;
 		$img.each( ( i, el ) => {
-			$el = $( el );
-			$el.attr( 'src', $el.attr( 'src' ) + 0 );
+			$el      = $( el );
+			srcnoext = $el.attr( 'src' ).slice( 0, -16 ); // slice jpg?v=1234567890
+			if ( srcnoext === covernoext ) {
+				$el.attr( 'src', covernoext + ext + hash );
+				return false
+			}
 		} );
 	}
 	, display   : data => {
