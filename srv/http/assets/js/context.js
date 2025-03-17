@@ -156,7 +156,7 @@ function directoryList() {
 	} );
 }
 function directoryPath() {
-	return '/srv/http/data/webradio/'+ $( '.lib-path' ).text()
+	return '/srv/http/data/webradio'+ $( '.lib-path' ).text()
 }
 function directoryRename() {
 	var icon  = 'webradio';
@@ -482,7 +482,7 @@ function tagModeSwitch() {
 }
 function thumbnail() { // station / folder
 	if ( V.playback ) { // radio only
-		var coverart  = S.stationcover || V.coverdefault;
+		var coverart  = $( '#coverart' ).attr( 'src' );
 		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
 		var name      = S.station;
 		var dir       = '';

@@ -43,7 +43,7 @@ case $type in
 		;;
 	coverart )
 		dir=$( dirname "$target" )
-		rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
+		rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".* $dirshm/local/*.*
 		coverfile=$( ls "$dir/cover".* 2> /dev/null | head -1 )
 		[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 		if [[ ! $gif ]]; then
@@ -67,7 +67,11 @@ case $type in
 		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$thumb"
 		;;
 esac
+if [[ $type == audiocd || ${type: -5} == radio ]]; then # remove /srv/http
+	target=${target:9}
+	thumb=${thumb:9}
+fi
 target=$( php -r "echo rawurlencode( '${target//\'/\\\'}' );" )
 thumb=$( php -r "echo rawurlencode( '${thumb//\'/\\\'}' );" )
-pushData coverart '{ "type": "'$type'", "coverart": "'$target'", "thumb": "'$thumb'" }'
+pushData coverart '{ "coverart": "'$target'", "thumb": "'$thumb'" }'
 rm -f $dirshm/{embedded,local,online}/*
