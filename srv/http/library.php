@@ -439,12 +439,13 @@ function htmlList() { // non-file 'list' command
 		}
 	} else {
 		global $display;
+		$filename = 'coverart.jpg?v='.time();
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
 			$dataindex = dataIndex( $data[ 0 ] );
 			$path      = end( $data );
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
-			$thumbfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' );
+			$thumbfile = rawurlencode( '/mnt/MPD/'.$path.'/' ).$filename;
 			if ( $display->albumbyartist ) {
 				$artist = $data[ 1 ];
 				$l1     = $artist;

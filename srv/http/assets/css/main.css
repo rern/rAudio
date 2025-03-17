@@ -1523,6 +1523,7 @@ div.pagerefresh {
 .coverart img {
 	width: 100%;
 	height: auto;
+	aspect-ratio: 1;
 	object-fit: contain;
 	border-right: 1px solid var( --cgd );
 	pointer-events: none;

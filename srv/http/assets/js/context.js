@@ -512,7 +512,7 @@ function thumbnail() { // station / folder
 			$( '.imgold' ).on( 'error', function() {
 				imageOnError( this );
 			} );
-			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
+			$( '.extrabtn' ).toggleClass( 'hide', coverart.slice( 0, -13 ) === V.coverdefault );
 		}
 		, buttonlabel : ico( mode ) +' Icon'
 		, buttoncolor : orange
