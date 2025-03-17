@@ -5,8 +5,7 @@ W = {
 		if ( V.playback ) renderPlayback();
 	}
 	, bookmark  : () => {
-		V.libraryhtml = '';
-		libraryHome();
+		libraryHome( 'nocache' );
 	}
 	, cover     : data => {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
@@ -16,18 +15,15 @@ W = {
 		bannerHide();
 		if ( V.playlist && V.playlistlist ) return
 		
+		if ( V.library && V.libraryhome ) {
+			libraryHome( 'nocache' );
+			return
+		}
+		
 		var coverart = data.coverart;
 		var ext      = coverart.slice( -3 );
 		var hash     = versionHash();
-		var $img;
-		if ( V.playback ) {
-			$img = $( '#coverart' );
-		} else if ( V.library && V.libraryhome ) {
-			$img = $( '#lib-mode-list img' );
-		} else {
-			$img = $( '.list:not( .hide ) img' );
-		}
-		
+		var $img     = V.playback ? $( '#coverart' ) : $( '.list:not( .hide ) img' );
 		if ( ! $img.length ) return
 		
 		if ( $img.eq( 0 ).attr( 'src' ).slice( -22, -17 ) === 'thumb' ) {

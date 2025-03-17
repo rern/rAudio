@@ -807,7 +807,8 @@ function intervalElapsedClear() {
 	clearInterval( V.interval.elapsed );
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
-function libraryHome() {
+function libraryHome( nocache ) {
+	if ( nocache ) V.libraryhtml = '';
 	list( { library: 'home' }, function( data ) {
 		O = data.order;
 		if ( data.html !== V.libraryhtml ) {
