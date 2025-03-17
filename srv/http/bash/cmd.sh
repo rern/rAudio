@@ -309,7 +309,10 @@ coverartreset )
 		if [[ $backupfile ]]; then
 			coverart=${backupfile:0:-7}
 			mv -f "$backupfile" "$coverart"
-			pushData coverart '{ "coverart": "'$coverart'", "thumb": "" }'
+			pushData coverart '{
+  "coverart" : "'$coverart'"
+, "current"  : '$CURRENT'
+}'
 		else
 			$dirbash/status-coverartonline.sh "cmd
 $ARTIST
@@ -798,11 +801,18 @@ splashrotate )
 	;;
 stationartreset ) # station / folder
 	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-	pushData coverart '{ "coverart": "'$FILENOEXT'.jpg", "thumb": "'$FILENOEXT'-thumb.jpg" }'
+	pushData coverart '{
+  "coverart" : "'$FILENOEXT'.jpg"
+, "thumb"    : "'$FILENOEXT'-thumb.jpg"
+, "current"  : '$CURRENT'
+}'
 	;;
 thumbreset )
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
-	pushData coverart '{ "coverart": "'$DIR'/coverart.jpg", "thumb": "'$DIR'/thumb.jpg" }'
+	pushData coverart '{
+  "coverart" : "'$DIR'/coverart.jpg"
+, "thumb"    : "'$DIR'/thumb.jpg"
+}'
 	;;
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1

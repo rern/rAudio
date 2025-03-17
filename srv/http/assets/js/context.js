@@ -512,20 +512,21 @@ function thumbnail() { // station / folder
 			$( '.imgold' ).on( 'error', function() {
 				imageOnError( this );
 			} );
-			$( '.extrabtn' ).toggleClass( 'hide', coverart.slice( 0, -13 ) === V.coverdefault );
+			$( '.extrabtn' ).toggleClass( 'hide', coverart.replace( /\?v=.*/, '' ) === V.coverdefault );
 		}
-		, buttonlabel : ico( mode ) +' Icon'
+		, buttonlabel : V.library ? ico( mode ) +' Icon' : ico( 'remove' ) +' Remove'
 		, buttoncolor : orange
 		, button      : () => {
 			if ( dir ) {
 				bash( [ 'thumbreset', path, 'CMD DIR' ] );
 			} else {
-				bash( [ 'stationartreset', imagefilenoext, 'CMD FILENOEXT' ] );
+				bash( [ 'stationartreset', imagefilenoext, V.playback, 'CMD FILENOEXT CURRENT' ] );
 			}
+			V.playback ? coverartDefault() : V.list.li.find( 'img' ).attr( 'src', '' );
 		}
 		, ok          : () => {
 			var src = $( '.infoimgnew' ).attr( 'src' );
-			imageReplace( mode, imagefilenoext );
+			imageReplace( mode, imagefilenoext, V.playback );
 		}
 	} );
 }

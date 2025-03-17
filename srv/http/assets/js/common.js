@@ -864,6 +864,7 @@ function infoClearTimeout( all ) { // ok for both timeout and interval
 	timeout.forEach( k => clearTimeout( V.timeout[ k ] ) );
 }
 function infoFileImage() {
+	$( '#infoButton a' ).addClass( 'disabled' );
 	delete I.infofilegif;
 	V.timeout.file = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
 	I.rotate   = 0;
@@ -965,6 +966,7 @@ function infoFileImageRender( src, original, resize ) {
 			+'</div>'
 		+'</span>'
 	);
+	$( '#infoButton a' ).removeClass( 'disabled' );
 }
 function infoFileImageResize( ext, imgW, imgH ) {
 	var maxsize = ( V.library && V.libraryhome ) ? 200 : ( ext === 'gif' ? 600 : 1000 );

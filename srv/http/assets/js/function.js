@@ -361,14 +361,15 @@ function coverartChange() {
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
-		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +'Remove'
-		, buttoncolor : ! coverartlocal ? '' : red
+		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +' Remove'
+		, buttoncolor : ! coverartlocal ? '' : orange
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = src.replace( /\?v.*/, '' ).slice( -3 );
-			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, 'CMD COVERFILE MPDPATH ARTIST ALBUM' ] );
+			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, V.playback, 'CMD COVERFILE MPDPATH ARTIST ALBUM CURRENT' ] );
+			V.playback ? coverartDefault() : V.list.li.find( 'img' ).attr( 'src', '' );
 		}
 		, ok          : () => {
-			imageReplace( 'coverart', imagefilenoext );
+			imageReplace( 'coverart', imagefilenoext, V.playback );
 			banner( icon, title, 'Change ...' );
 		}
 	} );
@@ -425,7 +426,7 @@ function coverartSave() {
 						+'<p class="infoimgname">'+ ico( 'folder' ) +' '+ album
 						+'<br>'+ ico( 'artist' ) +' '+ artist +'</p>'
 			, ok      : () => {
-				imageReplace( 'coverart', path +'/cover' );
+				imageReplace( 'coverart', path +'/cover', V.playback );
 				banner( icon, title, 'Save ...' );
 			}
 		} );
@@ -617,13 +618,14 @@ function imageOnError( el, bookmark ) {
 		$( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
 	}
 }
-function imageReplace( type, imagefilenoext, bookmarkname ) {
+function imageReplace( type, imagefilenoext, bookmarkname, current ) {
 	var data = {
 		  cmd          : 'imagereplace'
 		, type         : type
 		, imagefile    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
 		, bookmarkname : bookmarkname || ''
 		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
+		, current      : current
 	}
 	$.post( 'cmd.php', data, ( std ) => {
 		if ( std == -1 ) infoWarning( I.icon, I.title, 'Target directory not writable.' )

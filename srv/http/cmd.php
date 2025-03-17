@@ -35,6 +35,7 @@ case 'giftype': // formdata from common.js
 case 'imagereplace': // $.post from function.js
 	$imagefile = $post->imagefile;
 	$type      = $post->type;
+	$current   = $post->current;
 	if ( ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	$bookmarkname = $post->bookmarkname ?? '';
@@ -47,7 +48,7 @@ case 'imagereplace': // $.post from function.js
 	} else {
 		$tmpfile = $imagedata;
 	}
-	$args         = escape( implode( "\n", [ $type, $tmpfile, $imagefile, $bookmarkname ] ) );
+	$args         = escape( implode( "\n", [ $type, $tmpfile, $imagefile, $bookmarkname, $current ] ) );
 	shell_exec( $dirbash.'cmd-coverartsave.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js

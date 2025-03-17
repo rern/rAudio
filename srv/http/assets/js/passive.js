@@ -21,9 +21,13 @@ W = {
 		}
 		
 		var coverart = data.coverart;
-		var ext      = coverart.slice( -3 );
 		var hash     = versionHash();
-		var $img     = V.playback ? $( '#coverart' ) : $( '.list:not( .hide ) img' );
+		if ( V.playback ) {
+			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + hash );
+			return
+		}
+		
+		var $img     = $( '.list:not( .hide ) img' );
 		if ( ! $img.length ) return
 		
 		if ( $img.eq( 0 ).attr( 'src' ).slice( -22, -17 ) === 'thumb' ) {
@@ -36,7 +40,7 @@ W = {
 			$el      = $( el );
 			srcnoext = $el.attr( 'src' ).slice( 0, -16 ); // slice jpg?v=1234567890
 			if ( srcnoext === covernoext ) {
-				$el.attr( 'src', covernoext + ext + hash );
+				$el.attr( 'src', coverart + hash );
 				return false
 			}
 		} );

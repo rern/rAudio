@@ -7,6 +7,7 @@ readarray -t args <<< $1
 type=${args[0]}
 source=${args[1]}
 target=${args[2]}
+current=${args[3]}
 targetnoext=${target:0:-4}
 [[ ${target:9:13} == '/data/audiocd' ]] && type=audiocd
 if [[ ${target: -3} == gif ]]; then
@@ -69,5 +70,9 @@ case $type in
 esac
 target=$( sed "s/'/\\\'/g; s|^/srv/http||" <<< $target )
 thumb=$( sed "s/'/\\\'/g; s|^/srv/http||" <<< $thumb )
-pushData coverart '{ "coverart": "'$target'", "thumb": "'$thumb'" }'
+pushData coverart '{
+  "coverart" : "'$( php -r "echo rawurlencode( '$target' );" )'"
+, "thumb"    : "'$( php -r "echo rawurlencode( '$thumb' );" )'"
+, "current"  : '$current'
+}'
 rm -f $dirshm/{embedded,local,online}/*
