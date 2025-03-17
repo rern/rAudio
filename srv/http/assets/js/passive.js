@@ -6,7 +6,10 @@ W = {
 	}
 	, bookmark  : () => {
 		V.libraryhtml = '';
-		refreshData();
+		libraryHome();
+	}
+	, cover     : data => {
+		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
 	}
 	, coverart  : data => {
 		clearTimeout( V.timeoutCover );

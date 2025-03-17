@@ -226,7 +226,7 @@ bookmarkadd )
 	pushData bookmark 1
 	;;
 bookmarkremove )
-	bkfile="$dirbookmarks/${NAME//\//|}"
+	bkfile="$dirbookmarks/$NAME"
 	if [[ -e $dirsystem/order.json ]]; then
 		path=$( sed 's/"/\\"/g' "$bkfile" )
 		order=$( cat $dirsystem/order.json | jq "del( .. | select( . == \"$path\" ) )" )
@@ -236,7 +236,7 @@ bookmarkremove )
 	pushData bookmark 1
 	;;
 bookmarkrename )
-	mv $dirbookmarks/{"${NAME//\//|}","${NEWNAME//\//|}"} 
+	mv $dirbookmarks/{"$NAME","$NEWNAME"}
 	pushData bookmark 1
 	;;
 cachebust )
@@ -305,11 +305,11 @@ coverartreset )
 	if [[ ${COVERFILE:9:13} == /data/audiocd ]]; then
 		discid=$( basename ${COVERFILE/.*} )
 		rm -f "$COVERFILE"
-		backupfile=$( ls $diraudiocd/$discid.*.backup 2> /dev/null | head -1 )
+		backupfile=$( ls $COVERFILE.backup 2> /dev/null | head -1 )
 		if [[ $backupfile ]]; then
-			url=${backupfile/.backup}
-			mv -f $backupfile $url
-			pushDataCoverart ${url:9}
+			coverart=${backupfile:0:-7}
+			mv -f "$backupfile" "$coverart"
+			pushData coverart '{ "coverart": "'$coverart'", "thumb": "" }'
 		else
 			$dirbash/status-coverartonline.sh "cmd
 $ARTIST
@@ -322,26 +322,21 @@ CMD ARTIST ALBUM MODE DISCID" &> /dev/null &
 # --------------------------------------------------------------------
 	fi
 	dir=$( dirname "$COVERFILE" )
-	rm -f "$COVERFILE" "$dir/{coverart,thumb}".* $dirshm/{embedded,local}/*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
-		restorefile=${backupfile:0:-7}
-		mv "$backupfile" "$restorefile"
-		pushDataCoverart "$restorefile"
-		if [[ ${restorefile: -3} != gif ]]; then
-			magick "$restorefile" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
-			magick "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-		else
-			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
-			magick "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-		fi
+		source=$dirshm/cover
+		target=${backupfile:0:-7}
+		mv -f "$backupfile" $source
+		$dirbash/cmd-coverartsave.sh "coverart
+$source
+$target"
+		[[ -e "$target" ]] && rm -f $source 
 	else
 		url=$( $dirbash/status-coverart.sh "cmd
 $ARTIST
 $ALBUM
 $COVERFILE
 CMD ARTIST ALBUM FILE" )
-		pushDataCoverart "$url"
 	fi
 	;;
 coverfileget )
@@ -803,11 +798,11 @@ splashrotate )
 	;;
 stationartreset ) # station / folder
 	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-	pushDataCoverart
+	pushData coverart '{ "coverart": "'$FILENOEXT'.jpg", "thumb": "'$FILENOEXT'-thumb.jpg" }'
 	;;
 thumbreset )
 	rm -f "$DIR/coverart".* "$DIR/thumb".*
-	pushData bookmark 1
+	pushData coverart '{ "coverart": "'$DIR'/coverart.jpg", "thumb": "'$DIR'/thumb.jpg" }'
 	;;
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1

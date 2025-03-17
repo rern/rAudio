@@ -67,11 +67,7 @@ case $type in
 		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$thumb"
 		;;
 esac
-if [[ $type == audiocd || ${type: -5} == radio ]]; then # remove /srv/http
-	target=${target:9}
-	thumb=${thumb:9}
-fi
-target=$( php -r "echo rawurlencode( '${target//\'/\\\'}' );" )
-thumb=$( php -r "echo rawurlencode( '${thumb//\'/\\\'}' );" )
+target=$( sed "s/'/\\\'/g; s|^/srv/http||" <<< $target )
+thumb=$( sed "s/'/\\\'/g; s|^/srv/http||" <<< $thumb )
 pushData coverart '{ "coverart": "'$target'", "thumb": "'$thumb'" }'
 rm -f $dirshm/{embedded,local,online}/*

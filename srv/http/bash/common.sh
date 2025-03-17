@@ -393,11 +393,6 @@ pushData() {
 		pushWebsocket $ip $channel $data
 	done
 }
-pushDataCoverart() {
-	pushData coverart '{ "url": "'$1'", "radioalbum" : "'$2'" }'
-	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status
-	$dirbash/cmd.sh coverfileslimit
-}
 pushDirCounts() {
 	dir=$1
 	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )

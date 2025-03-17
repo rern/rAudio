@@ -1410,8 +1410,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		$( '.mode.bookmark' ).each( ( i, el ) => {
 			var $this      = $( el );
 			var buttonhtml = ico( 'remove bkedit bk-remove' );
-			if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit bkedit bk-rename' );
-			if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
+			if ( ! $this.find( 'img' ).length )  buttonhtml += ico( 'edit bkedit bk-rename' );
+			if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += ico( 'coverart bkedit bk-cover' );
 			$this.append( buttonhtml );
 		} );
 		$( '.mode.bookmark' ).addClass( 'edit' );
