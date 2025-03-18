@@ -397,7 +397,7 @@ pushDirCounts() {
 	dir=$1
 	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
 	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
-	pushData mpdupdate '{ "counts": { "'$dir'": '$( awk NF <<< $dirs | wc -l )' } }'
+	pushData mpdupdate '{ "done": true }'
 }
 pushRefresh() {
 	local page push

@@ -677,7 +677,7 @@ mpcskippl )
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
-	pushData mpdupdate '{ "type": "mpd" }'
+	pushData mpdupdate '{ "start": true }'
 	if [[ $ACTION ]]; then
 		echo "\
 ACTION=$ACTION
@@ -689,7 +689,7 @@ LATEST=$LATEST" > $dirmpd/updating
 	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )
-	pushData mpdupdate '{ "stop": true }'
+	pushData mpdupdate '{ "done": true }'
 	systemctl restart mpd
 	if [[ -e $dirmpd/listing ]]; then
 		killall cmd-list.sh
@@ -702,7 +702,7 @@ mpdignore )
 	appendSortUnique "$dir" "/mnt/MPD/$mpdpath/.mpdignore"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
-	pushData mpdupdate '{ "type": "mpd" }'
+	pushData mpdupdate '{ "start": true }'
 	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database

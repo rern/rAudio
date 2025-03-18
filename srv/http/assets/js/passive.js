@@ -13,8 +13,7 @@ W = {
 	}
 	, coverart  : data => {
 		bannerHide();
-		V.librarylisthtml = '';
-		V.playlisthtml    = '';
+		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		if ( V.playback ) {
 			if ( S.webradio ) return
 			
@@ -25,29 +24,8 @@ W = {
 				data.current = path0 === path1;
 			}
 			if ( data.current ) $( '#coverart' ).attr( 'src', data.coverart + versionHash() );
-		} else if ( V.library ) {
-			if ( V.libraryhome ) {
-				libraryHome();
-			} else {
-				var query = V.query[ V.query.length -1 ];
-				list( query, function( html ) {
-					if ( html ) {
-						var data = {
-							  html      : html
-							, icon      : query.mode
-							, modetitle : query.modetitle
-							, path      : query.path || V.mode.toUpperCase()
-						}
-						renderLibraryList( data );
-					}
-				} );
-			}
 		} else {
-			if ( V.playlisthome ) {
-				playlistGet( 'nocache' );
-			} else if ( V.playlisttrack ) {
-				renderSavedPlTrack( $( '#pl-title .name' ).text() );
-			}
+			refreshAll();
 		}
 	}
 	, display   : data => {
@@ -125,41 +103,14 @@ W = {
 		if ( V.playlist ) setPlaylistRadioInfo();
 	}	
 	, mpdupdate : data => {
-		if ( 'counts' in data ) {
-			$.each( data.counts, ( k, v ) => {
-				C[ k ] = v;
-				$( '.mode.'+ k ).toggleClass( 'nodata', ! v || v === 0 );
-				if ( V.mode === k ) $( '#library' ).trigger( 'click' );
-				$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
-			} );
-			return
-		}
-		
-		if ( 'type' in data ) {
-			if ( data.type === 'mpd' ) S.updating_db = true;
-		} else if ( 'stop' in data ) {
-			S.updating_db = false;
-		} else if ( 'done' in data ) {
-			S.updating_db = false;
+		if ( data.start ) {
+			S.updating_db = true;
+			setButtonUpdating();
+		} else if ( data.done ) {
 			V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 			banner( 'refresh-library', 'Library Update', 'Done' );
-			if ( data.done === 'tageditor' ) {
-				var query = V.query[ V.query.length - 1 ];
-				list( query, function( html ) {
-					var data = {
-						  html      : html
-						, modetitle : query.path
-						, path      : query.path
-					}
-					renderLibraryList( data );
-				} );
-			} else {
-				$.each( data.done, ( k, v ) => { C[ k ] = v } );
-				renderLibraryCounts();
-			}
-			$( '#lib-list li' ).removeClass( 'nodata' );
+			V.playback ? playbackStatusGet( 'withdisplay' ) : refreshAll();
 		}
-		setButtonUpdating();
 	}
 	, option    : data => {
 		if ( V.local ) return

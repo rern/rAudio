@@ -27,7 +27,7 @@ updateDone() {
 	[[ -e $dirshm/tageditor ]] && counts='"tageditor"' || counts=$( < $dirmpd/counts )
 	updatetime="(Scan: $( timeFormat $mpdtime ) • Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
-	pushData mpdupdate '{ "done": '$counts', "updatetime": "'$updatetime'" }'
+	pushData mpdupdate '{ "done": true }'
 	rm -f $dirmpd/listing $dirshm/{albumprev,deleted,tageditor}
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &

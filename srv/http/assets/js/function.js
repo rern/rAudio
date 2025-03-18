@@ -1121,6 +1121,32 @@ function playlistSkip() {
 	}
 	bash( [ 'mpcskippl', S.song + 1, S.state, 'CMD POS ACTION' ] );
 }
+function refreshAll() {
+	if ( V.library ) {
+		if ( V.libraryhome ) {
+			libraryHome();
+		} else {
+			var query = V.query[ V.query.length -1 ];
+			list( query, function( html ) {
+				if ( html ) {
+					var data = {
+						  html      : html
+						, icon      : query.mode
+						, modetitle : query.modetitle
+						, path      : query.path || V.mode.toUpperCase()
+					}
+					renderLibraryList( data );
+				}
+			} );
+		}
+	} else {
+		if ( V.playlisthome ) {
+			playlistGet( 'nocache' );
+		} else if ( V.playlisttrack ) {
+			renderSavedPlTrack( $( '#pl-title .name' ).text() );
+		}
+	}
+}
 function refreshData() {
 	if ( V.library ) {
 		if ( $( '#lib-search-input' ).val() ) return
