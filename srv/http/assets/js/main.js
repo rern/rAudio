@@ -1186,14 +1186,11 @@ $( '#button-lib-back' ).on( 'click', function() {
 			return
 		}
 		
-		if ( ! V.query.length ) {
-			var $breadcrumbs = $( '#lib-title a' );
-			var bL           = $breadcrumbs.length
-			if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
-				$( '#library' ).trigger( 'click' );
-				return
-			}
-			
+		var $breadcrumbs = $( '#lib-title a' );
+		var bL           = $breadcrumbs.length
+		if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
+			$( '#library' ).trigger( 'click' );
+			return
 		}
 	}
 	V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
@@ -1268,8 +1265,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		}
 		renderLibraryList( data );
 	} );
-	if ( query.library === 'ls' || query.library === 'radio' || V.mode === 'album' ) return
-	
 	query.path      = V.mode.slice( -5 ) === 'radio' ? '' : path;
 	query.modetitle = path;
 	V.query.push( query );

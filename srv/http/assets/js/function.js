@@ -625,7 +625,7 @@ function imageReplace( type, imagefilenoext, bookmarkname, current ) {
 		, imagefile    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
 		, bookmarkname : bookmarkname || ''
 		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
-		, current      : current
+		, current      : current || false
 	}
 	$.post( 'cmd.php', data, ( std ) => {
 		if ( std == -1 ) infoWarning( I.icon, I.title, 'Target directory not writable.' )

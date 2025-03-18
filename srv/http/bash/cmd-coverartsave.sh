@@ -8,6 +8,7 @@ type=${args[0]}
 source=${args[1]}
 target=${args[2]}
 current=${args[3]}
+[[ ! $current ]] && current=false
 targetnoext=${target:0:-4}
 [[ ${target:9:13} == '/data/audiocd' ]] && type=audiocd
 if [[ ${target: -3} == gif ]]; then

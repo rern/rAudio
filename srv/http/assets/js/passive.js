@@ -12,8 +12,9 @@ W = {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
 	}
 	, coverart  : data => {
-		V.libraryhtml  = '';
-		V.playlisthtml = '';
+		bannerHide();
+		V.librarylisthtml = '';
+		V.playlisthtml    = '';
 		if ( V.playback ) {
 			if ( S.webradio ) return
 			
@@ -35,7 +36,7 @@ W = {
 							  html      : html
 							, icon      : query.mode
 							, modetitle : query.modetitle
-							, path      : query.path
+							, path      : query.path || V.mode.toUpperCase()
 						}
 						renderLibraryList( data );
 					}

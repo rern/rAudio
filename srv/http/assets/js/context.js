@@ -522,7 +522,6 @@ function thumbnail() { // station / folder
 			} else {
 				bash( [ 'stationartreset', imagefilenoext, V.playback, 'CMD FILENOEXT CURRENT' ] );
 			}
-			V.playback ? coverartDefault() : V.list.li.find( 'img' ).attr( 'src', '' );
 		}
 		, ok          : () => {
 			var src = $( '.infoimgnew' ).attr( 'src' );

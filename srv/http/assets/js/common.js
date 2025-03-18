@@ -865,8 +865,8 @@ function infoClearTimeout( all ) { // ok for both timeout and interval
 }
 function infoFileImage() {
 	$( '#infoButton a' ).addClass( 'disabled' );
+	$( '#infoFileLabel i' ).addClass( 'blink' );
 	delete I.infofilegif;
-	V.timeout.file = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
 	I.rotate   = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
@@ -888,7 +888,6 @@ function infoFileImage() {
 						var imgH   = img.height;
 						var resize = infoFileImageResize( 'gif', imgW, imgH );
 						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						clearTimeout( V.timeout.file );
 						bannerHide();
 					}
 				} else {
@@ -966,7 +965,8 @@ function infoFileImageRender( src, original, resize ) {
 			+'</div>'
 		+'</span>'
 	);
-	$( '#infoButton a' ).removeClass( 'disabled' );
+	$( '#infoButton a' ).removeClass( 'disabled blink' );
+	$( '#infoFileLabel i' ).removeClass( 'blink' );
 }
 function infoFileImageResize( ext, imgW, imgH ) {
 	var maxsize = ( V.library && V.libraryhome ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
