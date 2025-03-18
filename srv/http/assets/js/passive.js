@@ -15,7 +15,7 @@ W = {
 		bannerHide();
 		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		if ( V.playback ) {
-			if ( S.webradio ) return
+			if ( S.webradio && S.state === 'play' ) return
 			
 			if ( ! data.current ) {
 				var path0 = S.file.substr( 0, S.file.lastIndexOf( '/' ) );
