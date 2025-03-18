@@ -5,45 +5,49 @@ W = {
 		if ( V.playback ) renderPlayback();
 	}
 	, bookmark  : () => {
-		libraryHome( 'nocache' );
+		V.libraryhtml = '';
+		if ( V.library && V.libraryhome ) libraryHome();
 	}
 	, cover     : data => {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
 	}
 	, coverart  : data => {
-		clearTimeout( V.timeoutCover );
-		bannerHide();
-		if ( V.playlist && V.playlistlist ) return
-		
-		if ( V.library && V.libraryhome ) {
-			libraryHome( 'nocache' );
-			return
-		}
-		
-		var coverart = data.coverart;
-		var hash     = versionHash();
+		V.libraryhtml  = '';
+		V.playlisthtml = '';
 		if ( V.playback ) {
-			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + hash );
-			return
-		}
-		
-		var $img     = $( '.list:not( .hide ) img' );
-		if ( ! $img.length ) return
-		
-		if ( $img.eq( 0 ).attr( 'src' ).slice( -22, -17 ) === 'thumb' ) {
-			var covernoext = data.thumb.slice( 0, -3 );
-		} else {
-			var covernoext = coverart.slice( 0, -3 );
-		}
-		var $el, src;
-		$img.each( ( i, el ) => {
-			$el      = $( el );
-			srcnoext = $el.attr( 'src' ).slice( 0, -16 ); // slice jpg?v=1234567890
-			if ( srcnoext === covernoext ) {
-				$el.attr( 'src', coverart + hash );
-				return false
+			if ( S.webradio ) return
+			
+			if ( ! data.current ) {
+				var path0 = S.file.substr( 0, S.file.lastIndexOf( '/' ) );
+				var cover = decodeURIComponent( data.coverart );
+				var path1 = cover.substr( 0, cover.lastIndexOf( '/' ) );
+				data.current = path0 === path1;
 			}
-		} );
+			if ( data.current ) $( '#coverart' ).attr( 'src', data.coverart + versionHash() );
+		} else if ( V.library ) {
+			if ( V.libraryhome ) {
+				libraryHome();
+			} else {
+				var query = V.query[ V.query.length -1 ];
+				list( query, function( html ) {
+					if ( html ) {
+						var data = {
+							  html      : html
+							, icon      : query.mode
+							, modetitle : query.modetitle
+							, path      : query.path
+						}
+						renderLibraryList( data );
+					}
+				} );
+			}
+		} else {
+			if ( V.playlisthome ) {
+				playlistGet( 'nocache' );
+			} else if ( V.playlisttrack ) {
+				renderSavedPlTrack( $( '#pl-title .name' ).text() );
+			}
+		}
 	}
 	, display   : data => {
 		if ( 'submenu' in data ) {

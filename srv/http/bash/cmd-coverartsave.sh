@@ -28,7 +28,6 @@ case $type in
 		else
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 		fi
-		thumb=$target
 		;;
 	bookmark | folder )
 		name=${args[3]}
@@ -39,8 +38,7 @@ case $type in
 			gifsicle -O3 --resize-fit 200x200 $source > "$target"
 		fi
 		dir=$( dirname "$target" )
-		thumb="$dir/thumb.jpg"
-		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$thumb"
+		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		;;
 	coverart )
 		dir=$( dirname "$target" )
@@ -54,8 +52,7 @@ case $type in
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 			gifsicle -O3 --resize-fit 200x200 $source > "$dir/coverart.gif"
 		fi
-		thumb="$dir/thumb.jpg"
-		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$thumb"
+		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		;;
 	dabradio | webradio )
 		rm -f "$targetnoext".* "$targetnoext-thumb".*
@@ -64,15 +61,12 @@ case $type in
 		else
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 		fi
-		thumb="$targetnoext-thumb.jpg"
-		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$thumb"
+		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
 		;;
 esac
 target=$( sed "s/'/\\\'/g; s|^/srv/http||" <<< $target )
-thumb=$( sed "s/'/\\\'/g; s|^/srv/http||" <<< $thumb )
 pushData coverart '{
   "coverart" : "'$( php -r "echo rawurlencode( '$target' );" )'"
-, "thumb"    : "'$( php -r "echo rawurlencode( '$thumb' );" )'"
 , "current"  : '$current'
 }'
 rm -f $dirshm/{embedded,local,online}/*

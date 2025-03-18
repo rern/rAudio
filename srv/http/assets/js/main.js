@@ -1630,11 +1630,9 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		renderLibraryList( data );
 	} );
-	if ( ! v_modefile ) {
-		query.path      = path;
-		query.modetitle = modetitle;
-		V.query.push( query );
-	}
+	query.path      = path;
+	query.modetitle = modetitle;
+	V.query.push( query );
 } );
 $( '.page' ).on( 'click', 'a.indexed', function() {
 	var $this = $( this );
