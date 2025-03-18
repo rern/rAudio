@@ -17,7 +17,11 @@ W = {
 		if ( V.playback ) {
 			if ( S.webradio && S.state === 'play' ) return
 			
-			var coverart = decodeURIComponent( data.coverart ).replace( '/srv/http', '' );
+			if ( data.coverart[ 0 ] === '/' ) {
+				var coverart = data.coverart.replace( '/srv/http', '' );
+			} else {
+				var coverart = decodeURIComponent( data.coverart.replace( '%2Fsrv%2Fhttp', '' ) );
+			}
 			if ( ! data.current ) {
 				if ( S.webradio ) {
 					var path0 = S.file;                                         // url
