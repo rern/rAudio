@@ -12,7 +12,6 @@ W = {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
 	}
 	, coverart  : data => {
-				console.log(data)
 		bannerHide();
 		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		if ( V.playback ) {
@@ -28,7 +27,6 @@ W = {
 					var path1 = coverart.substr( 0, coverart.lastIndexOf( '/' ) );
 				}
 				data.current = path0 === path1;
-				console.log(data.current, path0, path1)
 			}
 			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + versionHash() );
 		} else {
