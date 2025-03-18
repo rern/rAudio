@@ -12,23 +12,25 @@ W = {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
 	}
 	, coverart  : data => {
+				console.log(data)
 		bannerHide();
 		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		if ( V.playback ) {
 			if ( S.webradio && S.state === 'play' ) return
 			
+			var coverart = decodeURIComponent( data.coverart ).replace( '/srv/http', '' );
 			if ( ! data.current ) {
-				var cover = decodeURIComponent( data.coverart );
-				if ( cover.slice( 0, 5 ) === '/data' ) {
-					var path0 = S.file;
-					var path1 = cover.slice( 19, -4 ).replace( /\|/g, '/' ); // /data/webradio/img/url.jpg
+				if ( S.webradio ) {
+					var path0 = S.file;                                         // url
+					var path1 = coverart.slice( 19, -4 ).replace( /\|/g, '/' ); // /data/webradio/img/url.jpg
 				} else {
 					var path0 = S.file.substr( 0, S.file.lastIndexOf( '/' ) );
-					var path1 = cover.substr( 0, cover.lastIndexOf( '/' ) );
+					var path1 = coverart.substr( 0, coverart.lastIndexOf( '/' ) );
 				}
 				data.current = path0 === path1;
+				console.log(data.current, path0, path1)
 			}
-			if ( data.current ) $( '#coverart' ).attr( 'src', data.coverart + versionHash() );
+			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + versionHash() );
 		} else {
 			refreshAll();
 		}

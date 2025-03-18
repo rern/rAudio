@@ -65,9 +65,8 @@ case $type in
 		magick "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
 		;;
 esac
-target=$( sed "s/'/\\\'/g; s|^/srv/http||" <<< $target )
 pushData coverart '{
-  "coverart" : "'$( php -r "echo rawurlencode( '$target' );" )'"
+  "coverart" : "'$( php -r "echo rawurlencode( '${target//\'/\\\'}' );" )'"
 , "current"  : '$current'
 }'
 rm -f $dirshm/{embedded,local,online}/*
