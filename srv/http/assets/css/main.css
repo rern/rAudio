@@ -2039,11 +2039,10 @@ li.active .li2 bl {
 		#debug,
 		#time-knob { display: none }
 		#volume-knob,
-		#coverart-block	{ width: 100% }
 		#coverart-block,
 		#volume-knob { width: auto }
 		#coverart-block,
-		#divcover { max-width: 100% }
+		#divcover { max-width: 100vw }
 		#coverart { min-width: auto }
 		#bar-bottom.hide {
 			display: block !important;
