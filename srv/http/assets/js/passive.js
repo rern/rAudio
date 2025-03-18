@@ -18,9 +18,14 @@ W = {
 			if ( S.webradio && S.state === 'play' ) return
 			
 			if ( ! data.current ) {
-				var path0 = S.file.substr( 0, S.file.lastIndexOf( '/' ) );
 				var cover = decodeURIComponent( data.coverart );
-				var path1 = cover.substr( 0, cover.lastIndexOf( '/' ) );
+				if ( cover.slice( 0, 5 ) === '/data' ) {
+					var path0 = S.file;
+					var path1 = cover.slice( 19, -4 ).replace( /\|/g, '/' ); // /data/webradio/img/url.jpg
+				} else {
+					var path0 = S.file.substr( 0, S.file.lastIndexOf( '/' ) );
+					var path1 = cover.substr( 0, cover.lastIndexOf( '/' ) );
+				}
 				data.current = path0 === path1;
 			}
 			if ( data.current ) $( '#coverart' ).attr( 'src', data.coverart + versionHash() );
