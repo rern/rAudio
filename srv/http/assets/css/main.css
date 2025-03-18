@@ -1314,11 +1314,6 @@ div.pagerefresh {
 	border-radius: 50%;
 	box-shadow: var( --shadow-text );
 }
-.infoimgname {
-	line-height: 25px;
-	text-align: center !important;
-	clear: both;
-}
 .infomessage .thumbnail {
 	display: inline-block;
 	margin-bottom: 10px;
