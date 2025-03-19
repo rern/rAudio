@@ -446,7 +446,7 @@ function cssKeyframes( name, trx0, trx100 ) {
 	);
 }
 function dirName( path ) {
-	return path.substring( 0, path.lastIndexOf( '/' ) )
+	return path.slice( 0, path.lastIndexOf( '/' ) )
 }	
 function displayBars() {
 	if ( ! $( '#bio' ).hasClass( 'hide' ) ) return

@@ -12,25 +12,27 @@ W = {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
 	}
 	, coverart  : data => {
+		console.log(data)
 		bannerHide();
 		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		if ( V.playback ) {
 			if ( S.webradio && S.state === 'play' ) return
 			
-			if ( data.coverart[ 0 ] === '/' ) {
-				var coverart = data.coverart.replace( '/srv/http', '' );
-			} else {
-				var coverart = decodeURIComponent( data.coverart.replace( '%2Fsrv%2Fhttp', '' ) );
-			}
+			var encoded  = data.coverart[ 0 ] === '%';
+			var regex    = encode ? /^...srv...http/ : /^.srv.http/;
+			var coverart = data.coverart.replace( regex, '' );
 			if ( ! data.current ) {
+				var cover   = encoded ? decodeURIComponent( coverart ) : coverart;
+				cover       = cover.replace( /^.mnt.MPD./, '' );
 				if ( S.webradio ) {
-					var path0 = S.file;                                         // url
-					var path1 = coverart.slice( 19, -4 ).replace( /\|/g, '/' ); // /data/webradio/img/url.jpg
+					var path0 = S.file.replace( /\//g, '|' ); // http://url                        > http:||url
+					var path1 = cover.slice( 19, -4 );        // /data/webradio/img/http:||url.ext > http:||url
 				} else {
-					var path0 = S.file.substr( 0, S.file.lastIndexOf( '/' ) );
-					var path1 = coverart.substr( 0, coverart.lastIndexOf( '/' ) );
+					var path0 = dirName( S.file );            // dir/file.ext  > dir
+					var path1 = dirName( cover );             // dir/cover.ext > dir
 				}
 				data.current = path0 === path1;
+				console.log(data.current, path0, path1);
 			}
 			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + versionHash() );
 		} else {
