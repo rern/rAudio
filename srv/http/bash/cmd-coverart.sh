@@ -18,15 +18,15 @@ if [[ $type == reset ]]; then
 			rm -f "$dir/cover".* "$dir/coverart".* "$dir/thumb".* $dirshm/{embedded,local,online}/*
 			pushData coverart '{ "coverart": "'$coverart'", "current": '${args[3]}' }'
 			;;
+		folder )
+			dir=${args[2]}
+			rm -f "$dir/coverart".* "$dir/thumb".*
+			pushData coverart '{ "coverart": "'$dir'/coverart.jpg" }'
+			;;
 		stationart )
 			filenoext=${args[2]}
 			rm "$filenoext".* "$filenoext-thumb".*
 			pushData coverart '{ "coverart": "'$filenoext'.jpg", "current": '${args[3]}' }'
-			;;
-		thumb )
-			dir=${args[2]}
-			rm -f "$dir/coverart".* "$dir/thumb".*
-			pushData coverart '{ "coverart": "'$dir'/coverart.jpg" }'
 			;;
 	esac
 	exit
