@@ -47,7 +47,7 @@ case 'imagereplace': // $.post from function.js
 	} else {
 		$tmpfile = $imagedata;
 	}
-	$args         = escape( implode( "\n", [ $type, $tmpfile, $imagefile, $current ] ) );
+	$args         = escape( implode( "\n", [ $type, $tmpfile, $imagefile, $current, 'CMD SOURCE TARGET CURRENT' ] ) );
 	shell_exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js

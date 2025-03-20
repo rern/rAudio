@@ -365,7 +365,7 @@ function coverartChange() {
 		, buttoncolor : ! coverartlocal ? '' : orange
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = src.replace( /\?v.*/, '' ).slice( -3 );
-			bash( [ 'cmd-coverart.sh', 'reset', 'coverart', imagefilenoext +'.'+ ext, V.playback ] );
+			bash( [ 'cmd-coverart.sh', 'reset', 'coverart', imagefilenoext +'.'+ ext, V.playback, 'CMD TYPE FILE CURRENT' ] );
 			V.playback ? coverartDefault() : V.list.li.find( 'img' ).attr( 'src', '' );
 		}
 		, ok          : () => {

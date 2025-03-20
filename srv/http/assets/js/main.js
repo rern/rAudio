@@ -1388,7 +1388,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
 		, button      : ! thumbnail ? '' : () => {
-			bash( [ 'cmd-coverart.sh', 'reset', 'thumb', dir + path ] );
+			bash( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir + path, 'CMD TYPE DIR' ] );
 		}
 		, ok          : () => {
 			imageReplace( 'bookmark', imagefilenoext, name ); // no ext

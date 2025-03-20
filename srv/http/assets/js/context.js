@@ -517,11 +517,10 @@ function thumbnail() { // station / folder
 		, buttonlabel : V.library ? ico( mode ) +' Icon' : ico( 'remove' ) +' Remove'
 		, buttoncolor : orange
 		, button      : () => {
-			var cmd = [ 'cmd-coverart.sh', 'reset' ];
 			if ( dir ) {
-				bash( [ ...cmd, 'folder', path ] );
+				bash( [ 'cmd-coverart.sh', 'reset', 'folderthumb', path, 'CMD TYPE DIR' ] );
 			} else {
-				bash( [ ...cmd, 'stationart', imagefilenoext, V.playback ] );
+				bash( [ 'cmd-coverart.sh', 'reset', 'stationart', imagefilenoext, V.playback, 'CMD TYPE FILENOEXT CURRENT' ] );
 			}
 		}
 		, ok          : () => {

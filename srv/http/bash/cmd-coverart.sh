@@ -6,27 +6,22 @@
 
 . /srv/http/bash/common.sh
 
-readarray -t args <<< $1
+args2var "$1"
 
-type=${args[0]}
-
-if [[ $type == reset ]]; then
-	case ${args[1]} in
+if [[ $CMD == reset ]]; then
+	case $TYPE in
 		coverart )
-			coverart=${args[2]}
-			dir=$( dirname "$coverart" )
+			dir=$( dirname "$FILE" )
 			rm -f "$dir/cover".* "$dir/coverart".* "$dir/thumb".* $dirshm/{embedded,local,online}/*
-			pushData coverart '{ "coverart": "'$coverart'", "current": '${args[3]}' }'
+			pushData coverart '{ "coverart": "'$FILE'", "current": '$CURRENT' }'
 			;;
-		folder )
-			dir=${args[2]}
-			rm -f "$dir/coverart".* "$dir/thumb".*
-			pushData coverart '{ "coverart": "'$dir'/coverart.jpg" }'
+		folderthumb )
+			rm -f "$DIR/coverart".* "$DIR/thumb".*
+			pushData coverart '{ "coverart": "'$DIR'/coverart.jpg" }'
 			;;
 		stationart )
-			filenoext=${args[2]}
-			rm "$filenoext".* "$filenoext-thumb".*
-			pushData coverart '{ "coverart": "'$filenoext'.jpg", "current": '${args[3]}' }'
+			rm "$FILENOEXT".* "$FILENOEXT-thumb".*
+			pushData coverart '{ "coverart": "'$FILENOEXT'.jpg", "current": '$CURRENT' }'
 			;;
 	esac
 	exit
@@ -34,45 +29,41 @@ if [[ $type == reset ]]; then
 fi
 
 imageSave() {
-	src=$1
-	targ=$2
+	source=$1
+	target=$2
 	size=$3
-	if [[ ${targ: -3} == gif ]]; then
-		gifsicle -O3 --resize-fit $sizex$size "$src" > "$targ"
+	if [[ ${target: -3} == gif ]]; then
+		gifsicle -O3 --resize-fit $sizex$size "$source" > "$target"
 	else
-		magick "$src" -thumbnail $sizex$size\> -unsharp 0x.5 "$targ"
+		magick "$source" -thumbnail $sizex$size\> -unsharp 0x.5 "$target"
 	fi
 }
 
-source=${args[1]}
-target=${args[2]}
-current=${args[3]}
-[[ ! $current ]] && current=false
-targetnoext=${target:0:-4}
+targetnoext=${TARGET:0:-4}
 rm -f "$targetnoext".*
 
-[[ ${target:9:13} == '/data/audiocd' ]] && type=audiocd
-case $type in
+[[ ${TARGET:9:13} == '/data/audiocd' ]] && TYPE=audiocd
+case $CMD in
 	audiocd )
-		imageSave "$source" "$target" 1000
+		imageSave "$SOURCE" "$TARGET" 1000
 		;;
 	bookmark | folder )
-		imageSave "$source" "$target" 200
-		imageSave "$target" "$( dirname "$target" )"/thumb.jpg 80
+		imageSave "$SOURCE" "$TARGET" 200
+		imageSave "$TARGET" "$( dirname "$TARGET" )"/thumb.jpg 80
 		;;
 	coverart )
-		dir=$( dirname "$target" )
-		imageSave "$source" "$target" 1000
-		imageSave "$target" "$dir"/coverart.${target: -3} 200
-		imageSave "$target" "$dir"/thumb.jpg 80
+		dir=$( dirname "$TARGET" )
+		imageSave "$SOURCE" "$TARGET" 1000
+		imageSave "$TARGET" "$dir"/coverart.${TARGET: -3} 200
+		imageSave "$TARGET" "$dir"/thumb.jpg 80
 		;;
 	dabradio | webradio )
-		imageSave $source "$target" 1000
-		imageSave "$target" "$targetnoext"-thumb.jpg 80
+		imageSave $SOURCE "$TARGET" 1000
+		imageSave "$TARGET" "$targetnoext"-thumb.jpg 80
 		;;
 esac
 pushData coverart '{
-  "coverart" : "'$( php -r "echo rawurlencode( '${target//\'/\\\'}' );" )'"
-, "current"  : '$current'
+  "coverart" : "'$( php -r "echo rawurlencode( '${TARGET//\'/\\\'}' );" )'"
+, "current"  : '$CURRENT'
 }'
 rm -f $dirshm/{embedded,local,online}/*
