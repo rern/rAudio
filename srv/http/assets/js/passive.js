@@ -12,14 +12,13 @@ W = {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
 	}
 	, coverart  : data => {
-		console.log(data)
 		bannerHide();
 		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		if ( V.playback ) {
 			if ( S.webradio && S.state === 'play' ) return
 			
 			var encoded  = data.coverart[ 0 ] === '%';
-			var regex    = encode ? /^...srv...http/ : /^.srv.http/;
+			var regex    = encoded ? /^...srv...http/ : /^.srv.http/;
 			var coverart = data.coverart.replace( regex, '' );
 			if ( ! data.current ) {
 				var cover   = encoded ? decodeURIComponent( coverart ) : coverart;
@@ -32,7 +31,6 @@ W = {
 					var path1 = dirName( cover );             // dir/cover.ext > dir
 				}
 				data.current = path0 === path1;
-				console.log(data.current, path0, path1);
 			}
 			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + versionHash() );
 		} else {

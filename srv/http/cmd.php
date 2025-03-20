@@ -38,7 +38,6 @@ case 'imagereplace': // $.post from function.js
 	$current   = $post->current;
 	if ( ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
-	$bookmarkname = $post->bookmarkname ?? '';
 	$imagedata    = $post->imagedata;
 	$jpg          = substr( $imagedata, 0, 4 ) === 'data'; // animated gif passed as already uploaded tmp/file
 	if ( $jpg ) {
@@ -48,8 +47,8 @@ case 'imagereplace': // $.post from function.js
 	} else {
 		$tmpfile = $imagedata;
 	}
-	$args         = escape( implode( "\n", [ $type, $tmpfile, $imagefile, $bookmarkname, $current ] ) );
-	shell_exec( $dirbash.'cmd-coverartsave.sh "'.$args.'"' );
+	$args         = escape( implode( "\n", [ $type, $tmpfile, $imagefile, $current ] ) );
+	shell_exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js
 	$filelogin   = $dirdata.'system/login';

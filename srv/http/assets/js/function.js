@@ -341,7 +341,7 @@ function coverartChange() {
 	}
 	if ( V.playback ) {
 		var pbonlinefetched = $( '#divcover .cover-save' ).length;
-		var pbcoverdefault  = $( '#coverart' ).attr( 'src' ) === V.coverdefault;
+		var pbcoverdefault  = $( '#coverart' ).attr( 'src' ).slice( 0, -13 ) === V.coverdefault;
 		var embedded        = $( '#coverart' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
 	} else {
 		var lionlinefetched = $( '.licover .cover-save' ).length;
@@ -365,7 +365,7 @@ function coverartChange() {
 		, buttoncolor : ! coverartlocal ? '' : orange
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = src.replace( /\?v.*/, '' ).slice( -3 );
-			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, V.playback, 'CMD COVERFILE MPDPATH ARTIST ALBUM CURRENT' ] );
+			bash( [ 'cmd-coverart.sh', 'reset', 'coverart', imagefilenoext +'.'+ ext, V.playback ] );
 			V.playback ? coverartDefault() : V.list.li.find( 'img' ).attr( 'src', '' );
 		}
 		, ok          : () => {
@@ -618,12 +618,11 @@ function imageOnError( el, bookmark ) {
 		$( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
 	}
 }
-function imageReplace( type, imagefilenoext, bookmarkname, current ) {
+function imageReplace( type, imagefilenoext, current ) {
 	var data = {
 		  cmd          : 'imagereplace'
 		, type         : type
 		, imagefile    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
-		, bookmarkname : bookmarkname || ''
 		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 		, current      : current || false
 	}

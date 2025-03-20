@@ -301,44 +301,6 @@ $ALBUM
 debug
 CMD ARTIST ALBUM DEBUG"
 	;;
-coverartreset )
-	if [[ ${COVERFILE:9:13} == /data/audiocd ]]; then
-		discid=$( basename ${COVERFILE/.*} )
-		rm -f "$COVERFILE"
-		backupfile=$( ls $COVERFILE.backup 2> /dev/null | head -1 )
-		if [[ $backupfile ]]; then
-			coverart=${backupfile:0:-7}
-			mv -f "$backupfile" "$coverart"
-			pushData coverart '{ "coverart" : "'$coverart'", "current"  : '$CURRENT' }'
-		else
-			$dirbash/status-coverartonline.sh "cmd
-$ARTIST
-$ALBUM
-audiocd
-$discid
-CMD ARTIST ALBUM MODE DISCID" &> /dev/null &
-		fi
-		exit
-# --------------------------------------------------------------------
-	fi
-	dir=$( dirname "$COVERFILE" )
-	backupfile=$( ls -p "$dir"/*.backup | head -1 )
-	if [[ -e $backupfile ]]; then
-		source=$dirshm/cover
-		target=${backupfile:0:-7}
-		mv -f "$backupfile" $source
-		$dirbash/cmd-coverartsave.sh "coverart
-$source
-$target"
-		[[ -e "$target" ]] && rm -f $source 
-	else
-		url=$( $dirbash/status-coverart.sh "cmd
-$ARTIST
-$ALBUM
-$COVERFILE
-CMD ARTIST ALBUM FILE" )
-	fi
-	;;
 coverfileget )
 	path="/mnt/MPD/$DIR"
 	src=$( coverFileGet "$path" )
@@ -795,14 +757,6 @@ snapserverlist )
 	;;
 splashrotate )
 	splashRotate
-	;;
-stationartreset ) # station / folder
-	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-	pushData coverart '{ "coverart" : "'$FILENOEXT'.jpg", "current"  : '$CURRENT' }'
-	;;
-thumbreset )
-	rm -f "$DIR/coverart".* "$DIR/thumb".*
-	pushData coverart '{ "coverart" : "'$DIR'/coverart.jpg" }'
 	;;
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1

@@ -517,11 +517,9 @@ function thumbnail() { // station / folder
 		, buttonlabel : V.library ? ico( mode ) +' Icon' : ico( 'remove' ) +' Remove'
 		, buttoncolor : orange
 		, button      : () => {
-			if ( dir ) {
-				bash( [ 'thumbreset', path, 'CMD DIR' ] );
-			} else {
-				bash( [ 'stationartreset', imagefilenoext, V.playback, 'CMD FILENOEXT CURRENT' ] );
-			}
+			var args = [ 'cmd-coverart.sh', 'reset' ];
+			dir ? args.push( 'thumb', path ) : args.push( 'station', imagefilenoext, V.playback );
+			bash( args );
 		}
 		, ok          : () => {
 			var src = $( '.infoimgnew' ).attr( 'src' );
