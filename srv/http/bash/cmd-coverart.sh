@@ -37,15 +37,10 @@ imageSave() {
 	src=$1
 	targ=$2
 	size=$3
-	[[ $gif ]] && (( $size == 2400 )) && size=600
-	if (( $size < 600 || ( $w > $size || $h > $size ) )); then
-		if [[ ${targ: -3} == gif ]]; then
-			gifsicle -O3 --resize-fit $sizex$size $src > "$targ"
-		else
-			magick $src -thumbnail $sizex$size\> -unsharp 0x.5 "$targ"
-		fi
+	if [[ ${targ: -3} == gif ]]; then
+		gifsicle -O3 --resize-fit $sizex$size "$src" > "$targ"
 	else
-		cp -f $src "$targ"
+		magick "$src" -thumbnail $sizex$size\> -unsharp 0x.5 "$targ"
 	fi
 }
 
@@ -53,32 +48,27 @@ source=${args[1]}
 target=${args[2]}
 current=${args[3]}
 [[ ! $current ]] && current=false
-[[ ${target:9:13} == '/data/audiocd' ]] && type=audiocd
-wh=$( identify -ping -format '%w %h' $source )
-w=${wh/ *}
-h=${wh/* }
 targetnoext=${target:0:-4}
 rm -f "$targetnoext".*
 
+[[ ${target:9:13} == '/data/audiocd' ]] && type=audiocd
 case $type in
 	audiocd )
-		imageSave $source "$target" 2400
+		imageSave "$source" "$target" 1000
 		;;
 	bookmark | folder )
-		imageSave $source "$target" 200
-		imageSave "$target" "$( dirname "$target" )/thumb.jpg" 80
+		imageSave "$source" "$target" 200
+		imageSave "$target" "$( dirname "$target" )"/thumb.jpg 80
 		;;
 	coverart )
-		echo --- $source --- "$target" ---
 		dir=$( dirname "$target" )
-		rm -f "$dir/coverart".*
-		imageSave $source "$target" 2400
-		imageSave "$target" "$dir/coverart.${target: -3}" 200
-		imageSave "$target" "$dir/thumb.jpg" 80
+		imageSave "$source" "$target" 1000
+		imageSave "$target" "$dir"/coverart.${target: -3} 200
+		imageSave "$target" "$dir"/thumb.jpg 80
 		;;
 	dabradio | webradio )
-		imageSave $source "$target" 2400
-		imageSave "$target" "$targetnoext-thumb.jpg" 80
+		imageSave $source "$target" 1000
+		imageSave "$target" "$targetnoext"-thumb.jpg 80
 		;;
 esac
 pushData coverart '{
