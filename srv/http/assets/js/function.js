@@ -323,33 +323,34 @@ function contextmenuScroll( $menu, menutop ) {
 }
 function coverartChange() {
 	if ( V.playback ) {
-		var src    = $( '#coverart' ).attr( 'src' );
-		var path   = dirName( S.file );
-		var album  = S.Album;
-		var artist = S.Artist;
+		var $coverart     = $( '#coverart' );
+		var path          = dirName( S.file );
+		var album         = S.Album;
+		var artist        = S.Artist;
+		var onlinefetched = $( '#divcover .cover-save' ).length;
 	} else {
-		var src = $( '#liimg' ).attr( 'src' );
-		var path   = $( '.licover .lipath' ).text();
+		var $coverart     = $( '#liimg' );
+		var path          = $( '.licover .lipath' ).text();
 		if ( path.split( '.' ).pop() === 'cue' ) path = dirName( path );
-		var album  = $( '.licover .lialbum' ).text();
-		var artist = $( '.licover .liartist' ).text();
+		var album         = $( '.licover .lialbum' ).text();
+		var artist        = $( '.licover .liartist' ).text();
+		var onlinefetched = $( '.licover .cover-save' ).length;
 	}
-	if ( 'discid' in S ) {
-		var imagefilenoext = '/srv/http/data/audiocd/'+ S.discid;
+	var src          = $coverart.attr( 'src' );
+	var coverdefault = src.slice( 0, -13 ) === V.coverdefault;
+	if ( coverdefault ) {
+		if ( 'discid' in S ) {
+			var file = '/srv/http/data/audiocd/'+ S.discid +'.jpg';
+		} else {
+			var file = '/mnt/MPD/'+ path +'/cover.jpg';
+		}
 	} else {
-		var imagefilenoext = '/mnt/MPD/'+ path +'/cover';
+		var file = decodeURIComponent( src.slice( 0, -13 ) );
+		if ( file.slice( 0, 4 ) !== '/srv' ) file = '/srv/http'+ file;
 	}
-	if ( V.playback ) {
-		var pbonlinefetched = $( '#divcover .cover-save' ).length;
-		var pbcoverdefault  = $( '#coverart' ).attr( 'src' ).slice( 0, -13 ) === V.coverdefault;
-		var embedded        = $( '#coverart' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
-	} else {
-		var lionlinefetched = $( '.licover .cover-save' ).length;
-		var licoverdefault  = $( '.licoverimg img' ).attr( 'src' ) === V.coverdefault;
-		var embedded        = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
-	}
-	var coverartlocal = ( V.playback && ! embedded && ! pbonlinefetched && ! pbcoverdefault )
-						|| ( V.library && ! embedded && ! lionlinefetched && ! licoverdefault )
+	var embedded        = src.split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
+	var coverartlocal = ( V.playback && ! embedded && ! onlinefetched && ! coverdefault )
+						|| ( V.library && ! embedded && ! onlinefetched && ! coverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 	var icon  = 'coverart';
 	var title = 'Change Album Cover Art';
@@ -364,12 +365,11 @@ function coverartChange() {
 		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +' Remove'
 		, buttoncolor : ! coverartlocal ? '' : orange
 		, button      : ! coverartlocal ? '' : () => {
-			var ext = src.replace( /\?v.*/, '' ).slice( -3 );
-			bash( [ 'cmd-coverart.sh', 'reset', 'coverart', imagefilenoext +'.'+ ext, V.playback, 'CMD TYPE FILE CURRENT' ] );
-			V.playback ? coverartDefault() : V.list.li.find( 'img' ).attr( 'src', '' );
+			bash( [ 'cmd-coverart.sh', 'reset', 'coverart', file, V.playback, 'CMD TYPE FILE CURRENT' ] );
+			if ( V.playback ) coverartDefault();
 		}
 		, ok          : () => {
-			imageReplace( 'coverart', imagefilenoext, V.playback );
+			imageReplace( 'coverart', file.slice( 0, -4 ), V.playback );
 			banner( icon, title, 'Change ...' );
 		}
 	} );

@@ -1331,6 +1331,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		}
 		renderLibraryList( data );
 	} );
+	query.path      = path;
+	query.modetitle = path;
+	V.query.push( query );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
 	var name  = $this.find( '.name' ).text();

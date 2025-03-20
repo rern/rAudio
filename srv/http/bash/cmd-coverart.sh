@@ -62,6 +62,7 @@ case $CMD in
 		imageSave "$TARGET" "$targetnoext"-thumb.jpg 80
 		;;
 esac
+[[ ! $CURRENT ]] && CURRENT=false
 pushData coverart '{
   "coverart" : "'$( php -r "echo rawurlencode( '${TARGET//\'/\\\'}' );" )'"
 , "current"  : '$CURRENT'
