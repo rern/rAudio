@@ -620,14 +620,17 @@ function imageOnError( el, bookmark ) {
 }
 function imageReplace( type, imagefilenoext ) {
 	var data = {
-		  cmd          : 'imagereplace'
-		, type         : type
-		, imagefile    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
-		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
-		, current      : V.playback
+		  cmd     : 'imagereplace'
+		, type    : type
+		, file    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
+		, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
+		, current : V.playback
 	}
 	$.post( 'cmd.php', data, ( std ) => {
-		if ( std == -1 ) infoWarning( I.icon, I.title, 'Target directory not writable.' )
+		if ( std == -1 ) {
+			var dir = imagefilenoext.slice( 0, imagefilenoext.lastIndexOf( '/' ) );
+			infoWarning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
+		}
 	} );
 	banner( I.icon +' blink', I.title, 'Change ...', -1 );
 }
