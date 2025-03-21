@@ -57,6 +57,6 @@ case $CMD in
 esac
 pushData coverart '{
   "coverart" : "'$( php -r "echo rawurlencode( '${TARGET//\'/\\\'}' );" )'"
-, "current"  : '$CURRENT'
+, "current"  : '$( [[ $CURRENT ]] && echo true || echo false )'
 }'
 rm -f $dirshm/{embedded,local,online}/*

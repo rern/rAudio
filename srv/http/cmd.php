@@ -34,8 +34,6 @@ case 'giftype': // formdata from common.js
 	break;
 case 'imagereplace': // $.post from function.js
 	$imagefile = $post->imagefile;
-	$type      = $post->type;
-	$current   = $post->current;
 	if ( ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
 	$imagedata = $post->imagedata;
@@ -47,7 +45,7 @@ case 'imagereplace': // $.post from function.js
 	} else {
 		copy( $imagedata, $imagefile );
 	}
-	$args      = escape( implode( "\n", [ $type, $imagefile, $current, 'CMD TARGET CURRENT' ] ) );
+	$args      = escape( implode( "\n", [ $post->type, $imagefile, $post->current, 'CMD TARGET CURRENT' ] ) );
 	shell_exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js
