@@ -38,16 +38,16 @@ case 'imagereplace': // $.post from function.js
 	$current   = $post->current;
 	if ( ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
-	$imagedata    = $post->imagedata;
-	$jpg          = substr( $imagedata, 0, 4 ) === 'data'; // animated gif passed as already uploaded tmp/file
+	$imagedata = $post->imagedata;
+	$jpg       = substr( $imagedata, 0, 4 ) === 'data'; // animated gif passed as already uploaded tmp/file
+	exec( 'rm -f "'.substr( $imagefile, 0, -4 ).'".*' ); // remove existing *.jpg, *.png, *.gif
 	if ( $jpg ) {
-		$tmpfile = $dirshm.'local/binary';
 		$base64  = preg_replace( '/^.*,/', '', $imagedata ); // data:imgae/jpeg;base64,... > ...
-		file_put_contents( $tmpfile, base64_decode( $base64 ) );
+		file_put_contents( $imagefile, base64_decode( $base64 ) );
 	} else {
-		$tmpfile = $imagedata;
+		copy( $imagedata, $imagefile );
 	}
-	$args         = escape( implode( "\n", [ $type, $tmpfile, $imagefile, $current, 'CMD SOURCE TARGET CURRENT' ] ) );
+	$args      = escape( implode( "\n", [ $type, $imagefile, $current, 'CMD TARGET CURRENT' ] ) );
 	shell_exec( $dirbash.'cmd-coverart.sh "'.$args.'"' );
 	break;
 case 'login': // $.post from features.js

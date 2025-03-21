@@ -369,7 +369,7 @@ function coverartChange() {
 			if ( V.playback ) coverartDefault();
 		}
 		, ok          : () => {
-			imageReplace( 'coverart', file.slice( 0, -4 ), V.playback );
+			imageReplace( 'coverart', file.slice( 0, -4 ) );
 			banner( icon, title, 'Change ...' );
 		}
 	} );
@@ -426,7 +426,7 @@ function coverartSave() {
 						+'<p class="infoimgname">'+ ico( 'folder' ) +' '+ album
 						+'<br>'+ ico( 'artist' ) +' '+ artist +'</p>'
 			, ok      : () => {
-				imageReplace( 'coverart', path +'/cover', V.playback );
+				imageReplace( 'coverart', path +'/cover' );
 				banner( icon, title, 'Save ...' );
 			}
 		} );
@@ -618,18 +618,18 @@ function imageOnError( el, bookmark ) {
 		$( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
 	}
 }
-function imageReplace( type, imagefilenoext, current ) {
+function imageReplace( type, imagefilenoext ) {
 	var data = {
 		  cmd          : 'imagereplace'
 		, type         : type
 		, imagefile    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
 		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
-		, current      : current || false
+		, current      : V.playback
 	}
 	$.post( 'cmd.php', data, ( std ) => {
 		if ( std == -1 ) infoWarning( I.icon, I.title, 'Target directory not writable.' )
 	} );
-	banner( 'coverart', I.title, 'Change ...', -1 );
+	banner( I.icon +' blink', I.title, 'Change ...', -1 );
 }
 function infoDisplayKeyValue( type ) {
 	var json   = chkdisplay[ type ];

@@ -525,7 +525,7 @@ function thumbnail() { // station / folder
 		}
 		, ok          : () => {
 			var src = $( '.infoimgnew' ).attr( 'src' );
-			imageReplace( mode, imagefilenoext, V.playback );
+			imageReplace( mode, imagefilenoext );
 		}
 	} );
 }

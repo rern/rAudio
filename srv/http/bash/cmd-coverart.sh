@@ -40,29 +40,21 @@ imageSave() {
 }
 
 targetnoext=${TARGET:0:-4}
-rm -f "$targetnoext".*
 
 [[ ${TARGET:9:13} == '/data/audiocd' ]] && TYPE=audiocd
 case $CMD in
-	audiocd )
-		imageSave "$SOURCE" "$TARGET" 1000
-		;;
 	bookmark | folder )
-		imageSave "$SOURCE" "$TARGET" 200
 		imageSave "$TARGET" "$( dirname "$TARGET" )"/thumb.jpg 80
 		;;
 	coverart )
 		dir=$( dirname "$TARGET" )
-		imageSave "$SOURCE" "$TARGET" 1000
 		imageSave "$TARGET" "$dir"/coverart.${TARGET: -3} 200
 		imageSave "$TARGET" "$dir"/thumb.jpg 80
 		;;
 	dabradio | webradio )
-		imageSave $SOURCE "$TARGET" 1000
 		imageSave "$TARGET" "$targetnoext"-thumb.jpg 80
 		;;
 esac
-[[ ! $CURRENT ]] && CURRENT=false
 pushData coverart '{
   "coverart" : "'$( php -r "echo rawurlencode( '${TARGET//\'/\\\'}' );" )'"
 , "current"  : '$CURRENT'

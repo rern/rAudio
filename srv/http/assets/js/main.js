@@ -1382,19 +1382,18 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	}
 	var path           = $this.find( '.lipath' ).text();
 	var dir            = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/' : '/mnt/MPD/';
-	var imagefilenoext = dir + path +'/coverart';
 	info( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
 		, message     : message
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
-		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
+		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +' Icon'
 		, buttoncolor : ! thumbnail ? '' : orange
 		, button      : ! thumbnail ? '' : () => {
 			bash( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir + path, 'CMD TYPE DIR' ] );
 		}
 		, ok          : () => {
-			imageReplace( 'bookmark', imagefilenoext, name ); // no ext
+			imageReplace( 'bookmark', dir + path +'/coverart' );
 		}
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
