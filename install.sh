@@ -25,7 +25,7 @@ bind_to_address = 0.0.0.0
 ' /etc/snapserver.conf
 fi
 
-if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; then
+if [[ -e /usr/bin/camilladsp && $( camilladsp -V | cut -c 12 ) != 3 ]]; then
 	echo "$bar CamillaDSP - Upgrade ..."
 	systemctl -q is-active camilladsp && pacman stop camilladsp && camillaactive=1
 	pacman -Sy --noconfirm camilladsp
