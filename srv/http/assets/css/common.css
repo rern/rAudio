@@ -276,7 +276,7 @@ sp {
 .hide { display: none !important }
 .hidden { visibility: hidden }
 @keyframes blinkopaque {
-	50% { color: transparent } 
+	50% { opacity: 0 } 
 }
 
 .blink,
