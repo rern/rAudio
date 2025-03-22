@@ -28,7 +28,7 @@ case 'datarestore': // formdata from system.js
 	break;
 case 'giftype': // formdata from common.js
 	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];
-	$animated = exec( $sudo.'/usr/bin/identify -format "%n" '.$tmpfile ) > 1;
+	$animated = exec( $sudo.'/usr/bin/gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
 	echo $animated;
 	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
