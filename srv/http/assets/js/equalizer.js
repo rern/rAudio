@@ -131,11 +131,12 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	jsonSave( 'equalizer', E );
 } ).on( 'click', '#eqsave', function() {
 	var name         = $( '#eqname' ).val();
-	var oldname      = E.active;
+	E.preset[ name ] = E.preset[ E.active ];
 	E.active         = name;
-	E.preset[ name ] = E.preset[ oldname ];
-	delete E.preset[ oldname ];
-	$( '#eqback' ).trigger( 'click' );
-	E.preset.Flat = eq.flat;
 	jsonSave( 'equalizer', E );
+	$( '#eqback' ).trigger( 'click' );
+	$( '#eqpreset' )
+		.html( htmlOption( Object.keys( E.preset ) ) )
+		.val( name )
+		.trigger( 'change' );
 } );

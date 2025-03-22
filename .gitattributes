@@ -12,10 +12,14 @@
 *.js    text eol=lf
 *.json  text eol=lf
 *.md    text eol=lf
+*.php   text eol=lf
 *.py    text eol=lf
 *.sh    text eol=lf
 *.txt   text eol=lf
 *.xml   text eol=lf
+
+# Ensure those won't be messed up with
+*.jpg binary
 
 # Ensure those won't be messed up with
 *.jpg binary

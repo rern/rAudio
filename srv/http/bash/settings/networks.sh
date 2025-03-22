@@ -4,12 +4,6 @@
 
 args2var "$1"
 
-ipAvailable() {
-	if [[ $1 != $( ipAddress ) ]] && ipOnline $1; then
-		echo 'IP <wh>'$1'</wh> already in use.'
-		rexit
-	fi
-}
 netctlSwitch() {
 	ip link set $wlandev down
 	[[ $currentssid ]] && netctl switch-to "$ESSID" || netctl start "$ESSID"
@@ -21,7 +15,7 @@ netctlSwitch() {
 	if [[ $connected ]]; then
 		[[ ! $enabled ]] && netctl enable "$ESSID"
 		avahi-daemon --kill # flush cache and restart
-		pushRefresh networks pushwl
+		pushRefresh
 	else
 		notify wifi "$ESSID" 'Connecting failed.'
 		[[ $enabled ]] && netctl disable "$ESSID"
@@ -49,14 +43,15 @@ case $CMD in
 btrename )
 	bluetoothctl set-alias "$NEWNAME"
 	amixer -D bluealsa scontrols | cut -d"'" -f2 > $dirshm/btmixer
-	pushRefresh networks pushbt
+	pushRefresh
 	pushRefresh player
 	[[ -e $dirsystem/camilladsp ]] && pushRefresh camilla
 	;;
 connect )
 	wlandev=$( < $dirshm/wlan )
 	if [[ $ADDRESS ]]; then
-		ipAvailable $ADDRESS
+		ipOnline $ADDRESS && echo -1 && exit
+# --------------------------------------------------------------------
 		iptype=static
 	else
 		iptype=dhcp
@@ -82,12 +77,6 @@ Security='$security
 	[[ $HIDDEN ]] && data+='
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
-	
-	if [[ -e $dirsystem/ap ]]; then
-		pushData wlan '{"ssid":"'$ESSID'","reboot":1}'
-		exit
-# --------------------------------------------------------------------
-	fi
 	netctl stop "$ESSID"
 	netctlSwitch
 	;;
@@ -95,10 +84,13 @@ disconnect )
 	netctl stop "$SSID"
 	systemctl stop wpa_supplicant
 	ip link set $( < $dirshm/wlan ) up
-	pushRefresh networks pushwl
+	pushRefresh
 	;;
 lanedit )
-	[[ $ADDRESS ]] && ipAvailable $ADDRESS
+	if [[ $ADDRESS ]]; then
+		ipOnline $ADDRESS && echo -1 && exit
+# --------------------------------------------------------------------
+	fi
 	file=$( ls /etc/systemd/network/e* | head -1 )
 	if [[ $ADDRESS ]]; then # static
 		sed -i -E -e '/^DHCP|^Address|^Gateway/ d
@@ -111,6 +103,10 @@ Gateway='$GATEWAY $file
 	fi
 	systemctl restart systemd-networkd
 	avahi-daemon --kill # flush cache and restart
+	for i in {0..9}; do
+		[[ $( ifconfig | grep -A1 ^e | awk '/inet .* netmask/ {print $2}' ) ]] && break || sleep 1
+	done
+	pushRefresh
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )
@@ -130,7 +126,7 @@ profileforget )
 		ip link set $( < $dirshm/wlan ) up
 	fi
 	rm "/etc/netctl/$SSID"
-	pushRefresh networks pushwl
+	pushRefresh
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
@@ -138,14 +134,14 @@ usbbluetoothon ) # from usbbluetooth.rules
 # --------------------------------------------------------------------
 	sleep 3
 	pushRefresh features
-	pushRefresh networks pushbt
+	pushRefresh
 	notify bluetooth 'USB Bluetooth' Ready
 	;;
 usbbluetoothoff ) # from usbbluetooth.rules
 	! rfkill | grep -q -m1 bluetooth && systemctl stop bluetooth
 	notify bluetooth 'USB Bluetooth' Removed
 	pushRefresh features
-	pushRefresh networks pushbt
+	pushRefresh
 	;;
 usbwifion )
 	wlanDevice

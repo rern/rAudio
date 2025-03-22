@@ -222,11 +222,12 @@ status+='
 , "song"      : '$song'
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
-if [[ $pllength  == 0 && ! $snapclient ]]; then
+if [[ $pllength == 0 && ! $snapclient ]]; then
+	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='
 , "coverart" : ""
-, "hostname" : "'$( avahi-resolve -a4 $ip | awk '{print $NF}' )'"
+, "hostname" : "'${hostname/.*}'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
 	statusData
@@ -316,6 +317,7 @@ elif [[ $stream ]]; then
 				if [[ ! -e $dirshm/radio ]]; then
 					state=play
 					stationcover=${dirradio:9}/img/$urlname.jpg
+					stationcover=$( php -r "echo rawurlencode( '${stationcover//\'/\\\'}' );" )
 					datastation='
   "coverart"     : "'$stationcover'"
 , "file"         : "'$file'"
@@ -348,6 +350,7 @@ elif [[ $stream ]]; then
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
 					coverart="${coverfile:9}"
+					coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
 					Album=$( getContent $dirshm/webradio/$covername )
 				fi
 			fi
@@ -355,6 +358,7 @@ elif [[ $stream ]]; then
 		if [[ $displaycover ]]; then
 			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
 			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
+			stationcover=$( php -r "echo rawurlencode( '${stationcover//\'/\\\'}' );" )
 		fi
 ########
 		status+='

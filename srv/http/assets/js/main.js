@@ -771,7 +771,7 @@ $( '#coverM' ).press( e => {
 		|| [ 'coverL', 'coverR', 'coverT' ].includes( e.target.id )
 	) return
 	
-	S.webradio ? webRadioCoverart() : coverartChange();
+	S.webradio ? thumbnail() : coverartChange();
 } ).on( 'click', '.cover-save', function() {
 	coverartSave();
 } );
@@ -903,12 +903,11 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 		case 'repeat':
 			if ( S.repeat ) {
 				if ( S.single ) {
-					$( '#single' ).trigger( 'click' );
-					S.repeat = false;
-					S.single = false;
+					[ 'repeat', 'single' ].forEach( option => {
+						S[ option ] = false;
+						bash( [ 'mpcoption', option, false, 'CMD OPTION TF' ] );
+					} );
 					setButtonOptions();
-					local( 600 );
-					[ 'repeat', 'single' ].forEach( option => bash( [ 'mpcoption', option, false, 'CMD OPTION ONOFF' ] ) );
 				} else {
 					$( '#single' ).trigger( 'click' );
 				}
@@ -928,9 +927,9 @@ $( '.btn-cmd' ).on( 'click', function() {
 	if ( S.player === 'mpd' && S.state === cmd ) return
 	
 	if ( $( this ).hasClass( 'btn-toggle' ) ) {
-		var onoff = ! S[ cmd ];
-		S[ cmd ] = onoff;
-		bash( [ 'mpcoption', cmd, onoff, 'CMD OPTION ONOFF' ] );
+		var tf   = ! S[ cmd ];
+		S[ cmd ] = tf;
+		bash( [ 'mpcoption', cmd, tf, 'CMD OPTION TF' ] );
 		setButtonOptions();
 		local( 600 );
 	} else {
@@ -1068,8 +1067,11 @@ $( '#button-lib-update' ).on( 'click', function() {
 		return
 	}
 	
+	var modes   = [ 'NAS', 'SD', 'USB' ];
 	var message = '';
-	[ 'nas', 'sd', 'usb' ].forEach( k => message += sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k +'"></i>'+ k.toUpperCase() +'</label>' );
+	modes.forEach( k => {
+		message += sp( 20 ) +'<label><input type="checkbox"><i class="i-'+ k.toLowerCase() +'"></i>'+ k +'</label>';
+	} );
 	var kv   = {
 		  'Update changed files'    : 'update'
 		, 'Update all files'        : 'rescan'
@@ -1078,19 +1080,22 @@ $( '#button-lib-update' ).on( 'click', function() {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : message +'&ensp;<hr>'
-		, list       : [ '', 'radio', { kv: kv, sameline: false } ]
-		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update' }
+		, list       : [
+			  [ '',                   'radio', { kv: kv, sameline: false } ]
+			, [ 'Append Latest list', 'checkbox' ]
+		]
+		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
 		, ok         : () => {
 			var val = infoVal();
 			var path = '';
 			if ( val.ACTION !== 'refresh' ) {
 				var modes = [];
-				[ 'NAS', 'SD', 'USB' ].forEach( k => {
+				modes.forEach( k => {
 					if ( val[ k ] ) modes.push( k );
 				} );
 				if ( modes.length < 3 ) path = modes.join( ' ' );
 			}
-			bash( [ 'mpcupdate', val.ACTION, path, 'CMD ACTION PATHMPD' ] );
+			bash( [ 'mpcupdate', val.ACTION, path, val.LATEST, 'CMD ACTION PATHMPD LATEST' ] );
 		}
 	} );
 } );
@@ -1181,14 +1186,11 @@ $( '#button-lib-back' ).on( 'click', function() {
 			return
 		}
 		
-		if ( ! V.query.length ) {
-			var $breadcrumbs = $( '#lib-title a' );
-			var bL           = $breadcrumbs.length
-			if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
-				$( '#library' ).trigger( 'click' );
-				return
-			}
-			
+		var $breadcrumbs = $( '#lib-title a' );
+		var bL           = $breadcrumbs.length
+		if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
+			$( '#library' ).trigger( 'click' );
+			return
 		}
 	}
 	V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
@@ -1263,8 +1265,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		}
 		renderLibraryList( data );
 	} );
-	if ( query.library === 'ls' || query.library === 'radio' || V.mode === 'album' ) return
-	
 	query.path      = V.mode.slice( -5 ) === 'radio' ? '' : path;
 	query.modetitle = path;
 	V.query.push( query );
@@ -1331,6 +1331,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		}
 		renderLibraryList( data );
 	} );
+	query.path      = path;
+	query.modetitle = path;
+	V.query.push( query );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
 	var name  = $this.find( '.name' ).text();
@@ -1377,16 +1380,21 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var message = '<div class="infobookmark">'+ ico( 'bookmark' )
 					 +'<span class="bklabel">'+ name +'</span></div>';
 	}
-	var imagefilenoext = '/mnt/MPD/'+ $this.find( '.lipath' ).text() +'/coverart';
+	var path           = $this.find( '.lipath' ).text();
+	var dir            = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/' : '/mnt/MPD/';
 	info( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
 		, message     : message
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
-		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
+		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +' Icon'
 		, buttoncolor : ! thumbnail ? '' : orange
-		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
-		, ok          : () => imageReplace( 'bookmark', imagefilenoext, name ) // no ext
+		, button      : ! thumbnail ? '' : () => {
+			bash( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir + path, 'CMD TYPE DIR' ] );
+		}
+		, ok          : () => {
+			imageReplace( 'bookmark', dir + path +'/coverart' );
+		}
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
 	infoDabScan();
@@ -1399,8 +1407,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		$( '.mode.bookmark' ).each( ( i, el ) => {
 			var $this      = $( el );
 			var buttonhtml = ico( 'remove bkedit bk-remove' );
-			if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit bkedit bk-rename' );
-			if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
+			if ( ! $this.find( 'img' ).length )  buttonhtml += ico( 'edit bkedit bk-rename' );
+			if ( ! $this.hasClass( 'bkradio' ) ) buttonhtml += ico( 'coverart bkedit bk-cover' );
 			$this.append( buttonhtml );
 		} );
 		$( '.mode.bookmark' ).addClass( 'edit' );
@@ -1619,11 +1627,9 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		renderLibraryList( data );
 	} );
-	if ( ! v_modefile ) {
-		query.path      = path;
-		query.modetitle = modetitle;
-		V.query.push( query );
-	}
+	query.path      = path;
+	query.modetitle = modetitle;
+	V.query.push( query );
 } );
 $( '.page' ).on( 'click', 'a.indexed', function() {
 	var $this = $( this );
@@ -1664,7 +1670,7 @@ $( '#button-pl-consume' ).on( 'click', function() {
 	S.consume = ! S.consume;
 	$( this ).toggleClass( 'bl', S.consume );
 	banner( 'playlist', 'Consume Mode', S.consume ? 'On - Remove each song after played.' : 'Off' );
-	bash( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION ONOFF' ] );
+	bash( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION TF' ] );
 } );
 $( '#button-pl-librandom' ).on( 'click', function() {
 	var $this = $( this );

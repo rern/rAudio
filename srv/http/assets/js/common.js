@@ -864,8 +864,9 @@ function infoClearTimeout( all ) { // ok for both timeout and interval
 	timeout.forEach( k => clearTimeout( V.timeout[ k ] ) );
 }
 function infoFileImage() {
+	$( '#infoButton a' ).addClass( 'disabled' );
+	$( '#infoFileLabel i' ).addClass( 'blink' );
 	delete I.infofilegif;
-	V.timeout.file = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
 	I.rotate   = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
@@ -887,7 +888,6 @@ function infoFileImage() {
 						var imgH   = img.height;
 						var resize = infoFileImageResize( 'gif', imgW, imgH );
 						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						clearTimeout( V.timeout.file );
 						bannerHide();
 					}
 				} else {
@@ -965,6 +965,8 @@ function infoFileImageRender( src, original, resize ) {
 			+'</div>'
 		+'</span>'
 	);
+	$( '#infoButton a' ).removeClass( 'disabled blink' );
+	$( '#infoFileLabel i' ).removeClass( 'blink' );
 }
 function infoFileImageResize( ext, imgW, imgH ) {
 	var maxsize = ( V.library && V.libraryhome ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
@@ -1396,7 +1398,7 @@ function eqHtml( min, max, freq, bottom = '' ) {
 	var label  = '';
 	var slider = '';
 	freq.forEach( hz => {
-		hz = hz > 999 ? Math.round( hz / 1000 ) +'k' : Math.round( hz / 5 ) * 5;
+		hz = hz > 999 ? Math.round( hz / 1000 ) +'k' : Math.round( hz );
 		label  += '<a>'+ hz +'</a>';
 		slider += input;
 	} );
@@ -1556,17 +1558,11 @@ function websocketConnect( ip ) {
 	}
 }
 function websocketReconnect() {
-	$.post( 'cmd.php', { cmd: 'startupready' }, ready => {
-		if ( ready ) {
-			V.timeoutreload ? location.reload() : websocketConnect();
-		} else {
-			setTimeout( websocketReconnect, 1000 );
-		}
-	} ).fail( () => {
-		V.timeoutreload = true;
-		loader();
+	try {
+		V.timeoutreload ? location.reload() : websocketConnect();
+	} catch( error ) {
 		setTimeout( websocketReconnect, 1000 );
-	} );
+	}
 }
 /* bash
 Multiline arguments - no escape \" \` in js values > escape in php instead

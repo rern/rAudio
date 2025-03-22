@@ -157,7 +157,7 @@ coverFileGet() {
 	path=$1
 	coverfile=$( ls -X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
-	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" | sed 's|%2F|/|g' # preserve spaces and special characters
+	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
 }
 data2json() {
 	local json page
@@ -275,7 +275,7 @@ inOutputConf() {
 	[[ -e $file ]] && grep -q -m1 "$1" $file && return 0
 }
 ipAddress() {
-	ip -j route | jq -r .[0].prefsrc
+	ifconfig | awk '/inet/ {print $2}' | grep -v 127.0.0.1 | head -1
 }
 ipOnline() {
 	timeout 3 ping -c 1 -w 1 $1 &> /dev/null && return 0
@@ -393,16 +393,11 @@ pushData() {
 		pushWebsocket $ip $channel $data
 	done
 }
-pushDataCoverart() {
-	pushData coverart '{ "url": "'$1'", "radioalbum" : "'$2'" }'
-	sed -i -e '/^coverart=/ d' -e "$ a\coverart=$1" $dirshm/status
-	$dirbash/cmd.sh coverfileslimit
-}
 pushDirCounts() {
 	dir=$1
 	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
 	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
-	pushData mpdupdate '{ "counts": { "'$dir'": '$( awk NF <<< $dirs | wc -l )' } }'
+	pushData mpdupdate '{ "done": true }'
 }
 pushRefresh() {
 	local page push

@@ -102,11 +102,6 @@ a {
 i.map.disabled, .map.disabled i {
 	color: var( --cgl );
 }
-@keyframes blink { 50% { color: transparent } }
-.blink {
-	animation: 1.5s infinite linear blink;
-	text-shadow: none;
-}
 #logo {
 	position: absolute;
 	left: -3px;
@@ -1314,11 +1309,6 @@ div.pagerefresh {
 	border-radius: 50%;
 	box-shadow: var( --shadow-text );
 }
-.infoimgname {
-	line-height: 25px;
-	text-align: center !important;
-	clear: both;
-}
 .infomessage .thumbnail {
 	display: inline-block;
 	margin-bottom: 10px;
@@ -1523,6 +1513,7 @@ div.pagerefresh {
 .coverart img {
 	width: 100%;
 	height: auto;
+	aspect-ratio: 1;
 	object-fit: contain;
 	border-right: 1px solid var( --cgd );
 	pointer-events: none;
@@ -1544,11 +1535,13 @@ div.pagerefresh {
 	margin: 0;
 	list-style: none
 }
+.list li {
+	border-bottom: 1px solid var( --cga );
+}
 .list li:not( .licover ) {
 	display: block;
 	height: 49px;
 	line-height: 20px;
-	border-bottom: 1px solid var( --cga );
 	color: var( --cg60 );
 }
 .licover {
@@ -1561,9 +1554,6 @@ div.pagerefresh {
 }
 .licover.nofixed {
 	position: relative;
-}
-.licover.active {
-	background: linear-gradient( #000000 195px, var( --cm ) 0 );
 }
 .licoverimg {
 	position: relative;
@@ -1651,7 +1641,7 @@ div.pagerefresh {
 	float: left;
 	display: block;
 	width: 40px;
-	min-height: 20px;
+	height: 40px;
 	margin-top: 3px;
 	margin-right: 10px;
 	font-size: 24px;
@@ -1807,15 +1797,11 @@ li.active .li2,
 li.active .li2 a,
 li.active .li2 span,
 li.active gr,
-li.active .time,
-.licover.active .i-playlists {
+li.active .time {
 	color: var( --cga ) !important;
 }
 li.active .li-icon.wh {
 	color: var( --cw ) !important;
-}
-li.active gr {
-
 }
 li.active .name bl {
 	color: var( --cg ) !important;
@@ -2043,11 +2029,10 @@ li.active .li2 bl {
 		#debug,
 		#time-knob { display: none }
 		#volume-knob,
-		#coverart-block	{ width: 100% }
 		#coverart-block,
 		#volume-knob { width: auto }
 		#coverart-block,
-		#divcover { max-width: 100% }
+		#divcover { max-width: 100vw }
 		#coverart { min-width: auto }
 		#bar-bottom.hide {
 			display: block !important;

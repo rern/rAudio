@@ -4,6 +4,12 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250322
+if [[ ! -e /lib/systemd/user/spotifyd.service ]]; then
+	mv /lib/systemd/{system,user}/spotifyd.service
+	ln -s /lib/systemd/{user,system}/spotifyd.service
+fi
+
 # 20250228
 file=/etc/pacman.conf
 if grep -q 'linux-rpi' $file; then
@@ -21,7 +27,7 @@ bind_to_address = 0.0.0.0
 ' /etc/snapserver.conf
 fi
 
-if [[ -e /usr/bin/camilladsp && $( camilladsp -V ) != 'CamillaDSP 3.0.0' ]]; then
+if [[ -e /usr/bin/camilladsp && $( camilladsp -V | cut -c 12 ) != 3 ]]; then
 	echo "$bar CamillaDSP - Upgrade ..."
 	systemctl -q is-active camilladsp && pacman stop camilladsp && camillaactive=1
 	pacman -Sy --noconfirm camilladsp

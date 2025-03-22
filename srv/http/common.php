@@ -34,7 +34,7 @@ if ( file_exists( $filelogin ) && ! file_exists( $filelogin.'setting' ) ) {
 $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
-// css / js filename with version
+// plugin: css / js filename with version
 $cssfiles  = array_slice( scandir( '/srv/http/assets/css/plugin' ), 2 );
 foreach( $cssfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];

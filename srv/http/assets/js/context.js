@@ -116,7 +116,8 @@ function directoryDelete() {
 		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
-			bash( [ 'dirdelete', V.list.dir +'/'+ V.list.name, 'CMD DIR' ], std => {
+			var dir = directoryPath();
+			bash( [ 'dirdelete', dir +'/'+ V.list.name, 'CMD DIR' ], std => {
 				if ( std == -1 ) {
 					info( {
 						  icon    : icon
@@ -125,7 +126,7 @@ function directoryDelete() {
 									+'<br>Confirm delete?'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
-						, ok      : () => bash( [ 'dirdelete', V.list.dir, true, 'CMD DIR CONFIRM' ] )
+						, ok      : () => bash( [ 'dirdelete', dir, true, 'CMD DIR CONFIRM' ] )
 					} );
 				}
 			} );
@@ -154,6 +155,9 @@ function directoryList() {
 		setTimeout( () => V.mode = mode0, 300 );
 	} );
 }
+function directoryPath() {
+	return '/srv/http/data/webradio'+ $( '.lib-path' ).text()
+}
 function directoryRename() {
 	var icon  = 'webradio';
 	var title = 'Rename Directory';
@@ -167,7 +171,7 @@ function directoryRename() {
 		, oklabel      : 'Rename'
 		, ok           : () => {
 			var newname = infoVal();
-			bash( [ 'dirrename', V.list.dir, V.list.name, newname, 'CMD DIR NAME NEWNAME' ], std => {
+			bash( [ 'dirrename', directoryPath(), V.list.name, newname, 'CMD DIR NAME NEWNAME' ], std => {
 				if ( std == -1 ) {
 					info( {
 						  icon    : icon
@@ -476,6 +480,55 @@ function tagModeSwitch() {
 		V.page     = 'library';
 	}
 }
+function thumbnail() { // station / folder
+	if ( V.playback ) { // radio only
+		var coverart  = $( '#coverart' ).attr( 'src' );
+		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
+		var name      = S.station;
+		var dir       = '';
+	} else {
+		var $liicon   = V.list.li.find( '.li-icon' );
+		var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
+		var mode      = V.mode;
+		var name      = V.list.name;
+		var dir       = V.list.li.hasClass( 'dir' );
+	}
+	if ( dir ) {
+		mode               = 'folder';
+		var path           = V.mode.slice( -5 ) === 'radio' ? directoryPath() : '/mnt/MPD';
+		path              += '/'+ V.list.path;
+		var imagefilenoext = path + '/coverart';
+	} else { // radio only
+		var path           = V.playback ? S.file : V.list.path;
+		var imagefilenoext = directoryPath() +'/img/'+ path.replace( /\//g, '|' );
+	}
+	info( {
+		  icon        : 'coverart'
+		, title       : dir ? 'Folder Thumbnail' : 'Station Art'
+		, message     : '<img class="imgold" src="'+ coverart +'" >'
+					   +'<p class="infoimgname">'+ name +'</p>'
+		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
+		, beforeshow  : () => {
+			$( '.imgold' ).on( 'error', function() {
+				imageOnError( this );
+			} );
+			$( '.extrabtn' ).toggleClass( 'hide', coverart.replace( /\?v=.*/, '' ) === V.coverdefault );
+		}
+		, buttonlabel : V.library ? ico( mode ) +' Icon' : ico( 'remove' ) +' Remove'
+		, buttoncolor : orange
+		, button      : () => {
+			if ( dir ) {
+				bash( [ 'cmd-coverart.sh', 'reset', 'folderthumb', path, 'CMD TYPE DIR' ] );
+			} else {
+				bash( [ 'cmd-coverart.sh', 'reset', 'stationart', imagefilenoext, V.playback, 'CMD TYPE FILENOEXT CURRENT' ] );
+			}
+		}
+		, ok          : () => {
+			var src = $( '.infoimgnew' ).attr( 'src' );
+			imageReplace( mode, imagefilenoext );
+		}
+	} );
+}
 function thumbnailUpdate() {
 	var $img = V.list.li.find( 'img' );
 	var src  = $img.attr( 'src' );
@@ -509,39 +562,6 @@ function updateDirectory() {
 		, ok         : () => bash( [ 'mpcupdate', infoVal(), V.list.path, 'CMD ACTION PATHMPD' ] )
 	} );
 }
-function webRadioCoverart() {
-	if ( V.playback ) {
-		var coverart  = S.stationcover || V.coverdefault;
-		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
-		var url       = S.file;
-		var name      = S.station;
-	} else {
-		var $liicon   = V.list.li.find( '.li-icon' );
-		var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
-		var mode      = V.mode;
-		var pathsplit = V.list.li.find( '.lipath' ).text().split( '//' );
-		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-		var name      = V.list.name;
-	}
-	var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
-	info( {
-		  icon        : 'coverart'
-		, title       : ( mode === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
-		, message     : '<img class="imgold" src="'+ coverart +'" >'
-					  + '<p class="infoimgname">'+ name +'</p>'
-		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
-		, beforeshow  : () => {
-			$( '.imgold' ).on( 'error', function() {
-				imageOnError( this );
-			} );
-			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
-		}
-		, buttonlabel : ico( mode ) +'Default'
-		, buttoncolor : orange
-		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, 'CMD FILENOEXT' ] )
-		, ok          : () => imageReplace( mode, imagefilenoext )
-	} );
-}
 function webRadioDelete() {
 	var name = V.list.name;
 	var img  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
@@ -557,7 +577,7 @@ function webRadioDelete() {
 		, okcolor : red
 		, ok      : () => {
 			V.list.li.remove();
-			bash( ['webradiodelete', V.list.dir, url, V.mode, 'CMD DIR URL MODE' ] );
+			bash( ['webradiodelete', directoryPath(), url, V.mode, 'CMD DIR URL MODE' ] );
 		}
 	} );
 }
@@ -609,7 +629,7 @@ function webRadioEdit() {
 			var name    = values[ 0 ];
 			var newurl  = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-*8|iso *-* */, '' );
-			bash( [ 'webradioedit', V.list.dir, name, newurl, charset, V.list.path, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
+			bash( [ 'webradioedit', directoryPath(), name, newurl, charset, V.list.path, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
 		}
@@ -687,9 +707,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		, savedplremove : savedPlaylistRemove
 		, similar       : similarAdd
 		, tag           : tagEditor
-		, thumb         : thumbnailUpdate
+		, thumbnail     : thumbnail
+		, thumbupdate   : thumbnailUpdate
 		, update        : updateDirectory
-		, wrcoverart    : webRadioCoverart
 		, wrdelete      : webRadioDelete
 		, wrdirdelete   : directoryDelete
 		, wrdirrename   : directoryRename

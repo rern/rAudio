@@ -225,14 +225,8 @@ bookmarkadd )
 	fi
 	pushData bookmark 1
 	;;
-bookmarkcoverreset )
-	path=$( < "$dirbookmarks/$NAME" )
-	[[ ${path:0:1} != '/' ]] && path="/mnt/MPD/$path"
-	rm -f "$path/coverart".*
-	pushData bookmark 1
-	;;
 bookmarkremove )
-	bkfile="$dirbookmarks/${NAME//\//|}"
+	bkfile="$dirbookmarks/$NAME"
 	if [[ -e $dirsystem/order.json ]]; then
 		path=$( sed 's/"/\\"/g' "$bkfile" )
 		order=$( cat $dirsystem/order.json | jq "del( .. | select( . == \"$path\" ) )" )
@@ -242,7 +236,7 @@ bookmarkremove )
 	pushData bookmark 1
 	;;
 bookmarkrename )
-	mv $dirbookmarks/{"${NAME//\//|}","${NEWNAME//\//|}"} 
+	mv $dirbookmarks/{"$NAME","$NEWNAME"}
 	pushData bookmark 1
 	;;
 cachebust )
@@ -306,49 +300,6 @@ $ARTIST
 $ALBUM
 debug
 CMD ARTIST ALBUM DEBUG"
-	;;
-coverartreset )
-	if [[ ${COVERFILE:9:13} == /data/audiocd ]]; then
-		discid=$( basename ${COVERFILE/.*} )
-		rm -f "$COVERFILE"
-		backupfile=$( ls $diraudiocd/$discid.*.backup 2> /dev/null | head -1 )
-		if [[ $backupfile ]]; then
-			url=${backupfile/.backup}
-			mv -f $backupfile $url
-			pushDataCoverart ${url:9}
-		else
-			$dirbash/status-coverartonline.sh "cmd
-$ARTIST
-$ALBUM
-audiocd
-$discid
-CMD ARTIST ALBUM MODE DISCID" &> /dev/null &
-		fi
-		exit
-# --------------------------------------------------------------------
-	fi
-	dir=$( dirname "$COVERFILE" )
-	rm -f "$COVERFILE" "$dir/{coverart,thumb}".* $dirshm/{embedded,local}/*
-	backupfile=$( ls -p "$dir"/*.backup | head -1 )
-	if [[ -e $backupfile ]]; then
-		restorefile=${backupfile:0:-7}
-		mv "$backupfile" "$restorefile"
-		pushDataCoverart "$restorefile"
-		if [[ ${restorefile: -3} != gif ]]; then
-			magick "$restorefile" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
-			magick "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-		else
-			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
-			magick "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-		fi
-	else
-		url=$( $dirbash/status-coverart.sh "cmd
-$ARTIST
-$ALBUM
-$COVERFILE
-CMD ARTIST ALBUM FILE" )
-		pushDataCoverart "$url"
-	fi
 	;;
 coverfileget )
 	path="/mnt/MPD/$DIR"
@@ -415,7 +366,7 @@ latestclear )
 	;;
 librandom )
 	if [[ $ON ]]; then
-		mpc -q random 0
+		mpc -q random off
 		[[ $ALBUM ]] && echo album > $dirsystem/librandom || touch $dirsystem/librandom
 		[[ $ACTION == play ]] && pos=$(( $( mpc status %length% ) + 1 ))
 		plAddRandom
@@ -547,9 +498,9 @@ mpcmove )
 	pushPlaylist
 	;;
 mpcoption )
-	[[ ! $ONOFF ]] && ONOFF=false
-	mpc -q $OPTION $ONOFF
-	pushData option '{ "'$OPTION'": '$ONOFF' }'
+	[[ ! $TF ]] && TF=false
+	mpc -q $OPTION $TF
+	pushData option '{ "'$OPTION'": '$TF' }'
 	;;
 mpcplayback )
 	if [[ ! $ACTION ]]; then
@@ -685,18 +636,19 @@ mpcskippl )
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
-	pushData mpdupdate '{ "type": "mpd" }'
+	pushData mpdupdate '{ "start": true }'
 	if [[ $ACTION ]]; then
 		echo "\
 ACTION=$ACTION
-PATHMPD=\"$PATHMPD\"" > $dirmpd/updating
+PATHMPD=\"$PATHMPD\"
+LATEST=$LATEST" > $dirmpd/updating
 	else
 		. <( $dirmpd/updating )
 	fi
 	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )
-	pushData mpdupdate '{ "stop": true }'
+	pushData mpdupdate '{ "done": true }'
 	systemctl restart mpd
 	if [[ -e $dirmpd/listing ]]; then
 		killall cmd-list.sh
@@ -709,7 +661,7 @@ mpdignore )
 	appendSortUnique "$dir" "/mnt/MPD/$mpdpath/.mpdignore"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
-	pushData mpdupdate '{ "type": "mpd" }'
+	pushData mpdupdate '{ "start": true }'
 	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
@@ -832,10 +784,6 @@ $CHARSET" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
 	webRadioSampling $url "$file" &> /dev/null &
-	;;
-webradiocoverreset )
-	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-	pushDataCoverart
 	;;
 webradiodelete )
 	urlname=${URL//\//|}

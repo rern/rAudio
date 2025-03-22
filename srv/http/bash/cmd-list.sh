@@ -27,7 +27,7 @@ updateDone() {
 	[[ -e $dirshm/tageditor ]] && counts='"tageditor"' || counts=$( < $dirmpd/counts )
 	updatetime="(Scan: $( timeFormat $mpdtime ) • Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
-	pushData mpdupdate '{ "done": '$counts', "updatetime": "'$updatetime'" }'
+	pushData mpdupdate '{ "done": true }'
 	rm -f $dirmpd/listing $dirshm/{albumprev,deleted,tageditor}
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &
@@ -36,6 +36,7 @@ updateDone() {
 touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
 [[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
+grep -q LATEST=true $dirmpd/updating && appendlatest=1
 rm -f $dirmpd/{updatestart,updating}
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
@@ -139,13 +140,16 @@ php /srv/http/cmd.php sort "$modes"
 ##### latest
 [[ -e $dirmpd/album && -e $dirshm/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
 if [[ $albumdiff ]]; then
-	new=$( grep '^<' <<< $albumdiff )     # '< I^^ALBUM^^ARTIST^^DIR'
 	deleted=$( grep '^>' <<< $albumdiff ) # '> ...'
-	[[ $new ]] && cut -c 6- <<< $new > $dirmpd/latest
+	new=$( grep '^<' <<< $albumdiff )     # '< I^^ALBUM^^ARTIST^^DIR'
 	if [[ $deleted ]]; then
 		cut -c 6- <<< $deleted > $dirshm/deleted
 		latest=$( grep -Fvx -f $dirshm/deleted $dirmpd/latest )
 		[[ $latest ]] && echo "$latest" > $dirmpd/latest
+	fi
+	if [[ $new ]]; then
+		new=$( cut -c 6- <<< $new )
+		[[ $appendlatest ]] && echo "$new" >> $dirmpd/latest || echo "$new" > $dirmpd/latest
 	fi
 	if [[ -s $dirmpd/latest ]]; then
 		artist_album_year=$( awk -F'^' 'NF {print $3"^^"$7"^^"$5}' $dirmpd/albumbyartist-year )

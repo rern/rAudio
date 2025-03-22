@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1740709041' );
+	src         : url( '/assets/fonts/rern.woff2?v=1741785045' );
 }
 @font-face {
 	font-family : Lato;
@@ -86,7 +86,7 @@ i {
 .i-sliders::before         { content: '\F50B' }
 .i-copy::before            { content: '\F54E' }
 .i-coverart::before        { content: '\F58A'; position: absolute; }
-.i-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 40%; text-shadow: none; }
+.i-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 0.6; text-shadow: none; }
 .i-crop::before            { content: '\F568' }
 .i-cursor::before          { content: '\F56E' }
 .i-dabradio::before        { content: '\F589' }
@@ -275,11 +275,16 @@ sp {
 }
 .hide { display: none !important }
 .hidden { visibility: hidden }
-@keyframes blinkopaque { 50% { opacity: 0 } }
+@keyframes blinkopaque {
+	50% { opacity: 0 } 
+}
 
 .blink,
 .i-libupdate {
 	animation: blinkopaque 1.5s linear infinite;
+}
+.blink,
+.i-libupdate {
 	text-shadow: none !important;
 }
 input:focus {
@@ -591,7 +596,7 @@ input[ type=checkbox ] {
 	background-color: var( --cg );
 }
 .disabled,
-.disabled i {
+.disabled i:not( .blink ) {
 	color: var( --cg60 ) !important;
 	pointer-events: none;
 	cursor: default;

@@ -263,7 +263,6 @@ function contextmenuLibrary( $li, $target ) {
 	// album mode  - path > tracks
 	// other modes - name > name-album > filtered tracks
 	V.list.path        = $li.find( '.lipath' ).text() || $( '#mode-title' ).text();
-	if ( mode.slice( -5 ) === 'radio' ) V.list.dir = $li.find( '.lidir' ).text();
 	if ( V.librarytrack && ! V.list.licover && $li.find( '.li1' ).length ) {
 		V.list.name = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 	} else {
@@ -290,6 +289,7 @@ function contextmenuLibrary( $li, $target ) {
 		$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 		$menu.find( '.update' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
 		$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
+		$menu.find( '.thumbnail' ).toggleClass( 'hide', V.list.licover );
 		$menu.find( '.directory' ).toggleClass( 'hide', filemode || ! V.librarytrack );
 		$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
 		$menu.find( '.wredit' ).toggleClass( 'hide', mode !== 'webradio' );
@@ -323,33 +323,34 @@ function contextmenuScroll( $menu, menutop ) {
 }
 function coverartChange() {
 	if ( V.playback ) {
-		var src    = $( '#coverart' ).attr( 'src' );
-		var path   = dirName( S.file );
-		var album  = S.Album;
-		var artist = S.Artist;
+		var $coverart     = $( '#coverart' );
+		var path          = dirName( S.file );
+		var album         = S.Album;
+		var artist        = S.Artist;
+		var onlinefetched = $( '#divcover .cover-save' ).length;
 	} else {
-		var src = $( '#liimg' ).attr( 'src' );
-		var path   = $( '.licover .lipath' ).text();
+		var $coverart     = $( '#liimg' );
+		var path          = $( '.licover .lipath' ).text();
 		if ( path.split( '.' ).pop() === 'cue' ) path = dirName( path );
-		var album  = $( '.licover .lialbum' ).text();
-		var artist = $( '.licover .liartist' ).text();
+		var album         = $( '.licover .lialbum' ).text();
+		var artist        = $( '.licover .liartist' ).text();
+		var onlinefetched = $( '.licover .cover-save' ).length;
 	}
-	if ( 'discid' in S ) {
-		var imagefilenoext = '/srv/http/data/audiocd/'+ S.discid;
+	var src          = $coverart.attr( 'src' );
+	var coverdefault = src.slice( 0, -13 ) === V.coverdefault;
+	if ( coverdefault ) {
+		if ( 'discid' in S ) {
+			var file = '/srv/http/data/audiocd/'+ S.discid +'.jpg';
+		} else {
+			var file = '/mnt/MPD/'+ path +'/cover.jpg';
+		}
 	} else {
-		var imagefilenoext = '/mnt/MPD/'+ path +'/cover';
+		var file = decodeURIComponent( src.slice( 0, -13 ) );
+		if ( file.slice( 0, 4 ) !== '/srv' ) file = '/srv/http'+ file;
 	}
-	if ( V.playback ) {
-		var pbonlinefetched = $( '#divcover .cover-save' ).length;
-		var pbcoverdefault  = $( '#coverart' ).attr( 'src' ) === V.coverdefault;
-		var embedded        = $( '#coverart' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
-	} else {
-		var lionlinefetched = $( '.licover .cover-save' ).length;
-		var licoverdefault  = $( '.licoverimg img' ).attr( 'src' ) === V.coverdefault;
-		var embedded        = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
-	}
-	var coverartlocal = ( V.playback && ! embedded && ! pbonlinefetched && ! pbcoverdefault )
-						|| ( V.library && ! embedded && ! lionlinefetched && ! licoverdefault )
+	var embedded        = src.split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
+	var coverartlocal = ( V.playback && ! embedded && ! onlinefetched && ! coverdefault )
+						|| ( V.library && ! embedded && ! onlinefetched && ! coverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 	var icon  = 'coverart';
 	var title = 'Change Album Cover Art';
@@ -361,14 +362,14 @@ function coverartChange() {
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
 		, file        : { oklabel: ico( 'flash' ) +'Replace', type: 'image/*' }
-		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +'Remove'
-		, buttoncolor : ! coverartlocal ? '' : red
+		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +' Remove'
+		, buttoncolor : ! coverartlocal ? '' : orange
 		, button      : ! coverartlocal ? '' : () => {
-			var ext = src.replace( /\?v.*/, '' ).slice( -3 );
-			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, 'CMD COVERFILE MPDPATH ARTIST ALBUM' ] );
+			bash( [ 'cmd-coverart.sh', 'reset', 'coverart', file, V.playback, 'CMD TYPE FILE CURRENT' ] );
+			if ( V.playback ) coverartDefault();
 		}
 		, ok          : () => {
-			imageReplace( 'coverart', imagefilenoext );
+			imageReplace( 'coverart', file.slice( 0, -4 ) );
 			banner( icon, title, 'Change ...' );
 		}
 	} );
@@ -445,7 +446,7 @@ function cssKeyframes( name, trx0, trx100 ) {
 	);
 }
 function dirName( path ) {
-	return path.substring( 0, path.lastIndexOf( '/' ) )
+	return path.slice( 0, path.lastIndexOf( '/' ) )
 }	
 function displayBars() {
 	if ( ! $( '#bio' ).hasClass( 'hide' ) ) return
@@ -617,18 +618,21 @@ function imageOnError( el, bookmark ) {
 		$( '#infoList input' ).parents( 'tr' ).removeClass( 'hide' );
 	}
 }
-function imageReplace( type, imagefilenoext, bookmarkname ) {
+function imageReplace( type, imagefilenoext ) {
 	var data = {
-		  cmd          : 'imagereplace'
-		, type         : type
-		, imagefile    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
-		, bookmarkname : bookmarkname || ''
-		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
+		  cmd     : 'imagereplace'
+		, type    : type
+		, file    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
+		, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
+		, current : V.playback
 	}
 	$.post( 'cmd.php', data, ( std ) => {
-		if ( std == -1 ) infoWarning( I.icon, I.title, 'Target directory not writable.' )
+		if ( std == -1 ) {
+			var dir = imagefilenoext.slice( 0, imagefilenoext.lastIndexOf( '/' ) );
+			infoWarning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
+		}
 	} );
-	banner( 'coverart', I.title, 'Change ...', -1 );
+	banner( I.icon +' blink', I.title, 'Change ...', -1 );
 }
 function infoDisplayKeyValue( type ) {
 	var json   = chkdisplay[ type ];
@@ -807,7 +811,8 @@ function intervalElapsedClear() {
 	clearInterval( V.interval.elapsed );
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
-function libraryHome() {
+function libraryHome( nocache ) {
+	if ( nocache ) V.libraryhtml = '';
 	list( { library: 'home' }, function( data ) {
 		O = data.order;
 		if ( data.html !== V.libraryhtml ) {
@@ -1118,6 +1123,32 @@ function playlistSkip() {
 	}
 	bash( [ 'mpcskippl', S.song + 1, S.state, 'CMD POS ACTION' ] );
 }
+function refreshAll() {
+	if ( V.library ) {
+		if ( V.libraryhome ) {
+			libraryHome();
+		} else {
+			var query = V.query[ V.query.length -1 ];
+			list( query, function( html ) {
+				if ( html ) {
+					var data = {
+						  html      : html
+						, icon      : query.mode
+						, modetitle : query.modetitle
+						, path      : query.path || V.mode.toUpperCase()
+					}
+					renderLibraryList( data );
+				}
+			} );
+		}
+	} else {
+		if ( V.playlisthome ) {
+			playlistGet( 'nocache' );
+		} else if ( V.playlisttrack ) {
+			renderSavedPlTrack( $( '#pl-title .name' ).text() );
+		}
+	}
+}
 function refreshData() {
 	if ( V.library ) {
 		if ( $( '#lib-search-input' ).val() ) return
@@ -1125,7 +1156,7 @@ function refreshData() {
 		if ( V.libraryhome ) { // home
 			libraryHome();
 		} else {
-			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) return
+			if ( [ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( V.mode ) ) return
 			
 			if ( V.query.length ) {
 				var query = V.query.slice( -1 )[ 0 ];
