@@ -35,7 +35,7 @@ imageSave() {
 	if [[ ${target: -3} == gif ]]; then
 		gifsicle -O3 --resize-fit $sizex$size "$source" > "$target"
 	else
-		[[ ${source: -3} == gif ]] && source=$( gifsicle "$source" '#0' > $dirshm/local/tmp.gif )
+		[[ ${source: -3} == gif ]] && source+='[0]'
 		magick "$source" -thumbnail $sizex$size\> -unsharp 0x.5 "$target"
 	fi
 }
