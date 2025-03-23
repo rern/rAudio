@@ -161,10 +161,10 @@ case 'home':
 </div>';
 		}
 	}
-	$order    = file_exists( $dirsystem.'order.json' ) ? json_decode( file_get_contents( $dirsystem.'order.json' ) ) : false;
+	$order    = file_exists( $dirsystem.'order.json' ) ? file_get_contents( $dirsystem.'order.json' ) : false;
 	echo json_encode( [
 		  'html'  => $htmlmode
-		, 'order' => $order
+		, 'order' => json_decode( $order )
 	] );
 	break;
 case 'list':
