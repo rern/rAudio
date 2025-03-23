@@ -1310,6 +1310,7 @@ div.pagerefresh {
 	box-shadow: var( --shadow-text );
 }
 #infoIcon img {
+	margin-top: 7px;
 	width: 26px;
 	height: 26px;
 }
@@ -1431,7 +1432,6 @@ div.pagerefresh {
 }
 .icoverart-refresh img {
 	position: absolute;
-	top: 8px;
 	width: 30px;
 	height: 30px;
 }
