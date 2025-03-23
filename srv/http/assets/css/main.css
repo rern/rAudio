@@ -1309,6 +1309,18 @@ div.pagerefresh {
 	border-radius: 50%;
 	box-shadow: var( --shadow-text );
 }
+#infoIcon .icoverart {
+	width: 26px;
+	vertical-align: -4px;
+}
+.menu .icoverart {
+	margin: 0 9px;
+	width: 22px;
+	vertical-align: middle;
+}
+.menu .button-coverart .icoverart {
+	margin: 0 3px;
+}
 .infomessage .thumbnail {
 	display: inline-block;
 	margin-bottom: 10px;
@@ -1395,6 +1407,10 @@ div.pagerefresh {
 	line-height: 40px;
 	margin-left: 15px;
 }
+.menu .button-coverart {
+	margin: 0 6px;
+	vertical-align: -4px;
+}
 #infoIcon .button-coverart {
 	margin-left: 0;
 }
@@ -1414,7 +1430,7 @@ div.pagerefresh {
 }
 .button-coverart img {
 	position: absolute;
-	top: 5px;
+	top: 6px;
 	width: 30px;
 	height: 30px;
 	border: 1px solid hsl(0,0%,30%);

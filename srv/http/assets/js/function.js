@@ -712,25 +712,6 @@ function infoLibraryOption() {
 		, ok           : displaySave
 	} );
 }
-function infoThumbnail( icon, message, path, subdir ) {
-	if ( ! path ) subdir = true;
-	var list = [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ];
-	info( {
-		  icon    : icon
-		, title   : 'Update Thumbnails'
-		, message : message
-		, list    : subdir ? list : false
-		, ok      : () => {
-			addonsProgressSubmit( {
-				  alias      : 'thumbnail'
-				, title      : 'Album Thumbnails'
-				, label      : 'Update'
-				, installurl : "albumthumbnail.sh '"+ path +"' "+ infoVal()
-				, backhref   : '/'
-			} );
-		}
-	} );
-}
 function infoTitle() {
 	var artist = S.Artist;
 	var title  = S.Title;

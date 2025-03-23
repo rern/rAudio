@@ -301,12 +301,6 @@ $ALBUM
 debug
 CMD ARTIST ALBUM DEBUG"
 	;;
-coverfileget )
-	path="/mnt/MPD/$DIR"
-	src=$( coverFileGet "$path" )
-	subdir=$( ls -d "$path"/*/ 2> /dev/null | wc -l )
-	echo '{ "src": "'$src'", "subdir": '$subdir' }'
-	;;
 coverfileslimit )
 	for type in local online webradio; do
 		ls -t $dirshm/$type/* 2> /dev/null \

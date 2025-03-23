@@ -8,6 +8,7 @@ V = {   // var global
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
 	, blinkdot      : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
 	, coverart      : '/assets/img/coverart.svg'
+	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
 	, covervu       : '/assets/img/vu.svg'
 	, page          : 'playback'
@@ -1052,7 +1053,7 @@ $( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
 	}
 } );
 $( '#lib-title' ).on ( 'click', '.button-coverart', function() {
-	infoThumbnail( $( '.button-coverart' )[ 0 ].outerHTML, 'With coverarts in folder of each album:', '' );
+	thumbnailUpdate( 'modealbum' );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
 	if ( S.updating_db ) {
