@@ -1444,7 +1444,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var album  = $this.find( '.coverart'+ i[ 0 ] ).text();
 		var artist = $this.find( '.coverart'+ i[ 1 ] ).text();
 		info( {
-			  icon    : 'album'
+			  icon    : V.icoverart
 			, title   : 'Album Thumbnail'
 			, message :  '<img src="'+ src +'">'
 						+'<br><wh>'+ ico( 'album' ) + album +'</wh>'
