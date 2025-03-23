@@ -627,7 +627,7 @@ function imageReplace( type, imagefilenoext ) {
 			infoWarning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
 		}
 	} );
-	banner( I.icon +' blink', I.title, 'Change ...', -1 );
+	banner( V.icoverart.replace( 'coverart', 'coverart blink' ), I.title, 'Change ...', -1 );
 }
 function infoDisplayKeyValue( type ) {
 	var json   = chkdisplay[ type ];
