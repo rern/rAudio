@@ -49,11 +49,14 @@ function menuLi( $list ) {
 		$sub     = '';
 		$submenu = '';
 	}
-	return '<a data-cmd="'.$command.'" class="'.$command.$sub.'">'.i( $icon ).$label.'</a>'.$submenu;
+	if ( $icon[ 0 ] !== '<' ) $icon = i( $icon );
+	return '<a data-cmd="'.$command.'" class="'.$command.$sub.'">'.$icon.$label.'</a>'.$submenu;
 }
-$kid3       = file_exists( '/usr/bin/kid3-cli' );
-$menu       = '';
-$htmlcommon = menuCommon( 'add', 'replace' );
+$coverart    = '<img class="icoverart" src="/assets/img/coverart.svg">';
+$thumbupdate = '<span class="icoverart-refresh">'.$coverart.'</span>';
+$kid3        = file_exists( '/usr/bin/kid3-cli' );
+$menu        = '';
+$htmlcommon  = menuCommon( 'add', 'replace' );
 // file
 $html = $htmlcommon;
 $menulist = [
@@ -79,10 +82,10 @@ htmlMenu( $menulist, 'filesavedpl' );
 $html     = $htmlcommon;
 $menulist = [
 	  [ 'bookmark',    'star',            'Bookmark' ]
-	, [ 'thumbnail',   'coverart',        'Folder thumbnail' ]
+	, [ 'thumbnail',   $coverart,         'Folder thumbnail' ]
+	, [ 'thumbupdate', $thumbupdate,      'Update thumbnails' ]
 	, [ 'exclude',     'folder-forbid',   'Exclude directory' ]
 	, [ 'update',      'refresh-library', 'Update database' ]
-	, [ 'thumbupdate', 'coverart',        'Update thumbnails' ]
 	, [ 'directory',   'folder-open',     'Browse folder' ]
 	, [ 'tag',         'tag',             'Tag Editor' ]
 ];
@@ -116,7 +119,7 @@ $html     = menuCommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'bookmark',   'star',      'Bookmark' ]
 	, [ 'wredit',     'edit',      'Edit' ]
-	, [ 'thumbnail',  'coverart',  'Station art' ]
+	, [ 'thumbnail',  $coverart,   'Station art' ]
 	, [ 'wrdelete',   'remove',    'Delete' ]
 	, [ 'savedpladd', 'playlists', 'Add to a playlist' ]
 ];
@@ -125,7 +128,7 @@ htmlMenu( $menulist, 'webradio' );
 $html     = '';
 $menulist = [
 	  [ 'bookmark',    'star',     'Bookmark' ]
-	, [ 'thumbnail',   'coverart', 'Folder thumbnail' ]
+	, [ 'thumbnail',   $coverart,  'Folder thumbnail' ]
 	, [ 'wrdirdelete', 'remove',   'Delete' ]
 	, [ 'wrdirrename', 'edit',     'Rename' ]
 ];
