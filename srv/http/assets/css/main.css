@@ -1217,7 +1217,7 @@ div.pagerefresh {
 }
 .mode.edit {
 	border: 2px solid #000;
-	background: hsl( 0, 0%, 15% );
+	background: var( --cga );
 }
 .mode.edit .i-bookmark,
 .mode.edit img,
