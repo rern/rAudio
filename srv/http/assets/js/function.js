@@ -355,7 +355,7 @@ function coverartChange() {
 	var icon  = 'coverart';
 	var title = 'Change Album Cover Art';
 	info( {
-		  icon        : icon
+		  icon        : V.icoverart
 		, title       : title
 		, message     : '<img class="imgold" src="'+ src +'">'
 					   +'<p class="infoimgname">'+ ico( 'album wh' ) +' '+ album

@@ -1309,7 +1309,7 @@ div.pagerefresh {
 	border-radius: 50%;
 	box-shadow: var( --shadow-text );
 }
-#infoIcon .icoverart {
+#infoIcon img {
 	width: 26px;
 	vertical-align: -4px;
 }
@@ -1433,6 +1433,8 @@ div.pagerefresh {
 	top: 6px;
 	width: 30px;
 	height: 30px;
+}
+#lib-title .button-coverart img {
 	border: 1px solid hsl(0,0%,30%);
 }
 #mode-title {
