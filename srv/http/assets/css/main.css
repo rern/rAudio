@@ -1435,7 +1435,8 @@ div.pagerefresh {
 	width: 30px;
 	height: 30px;
 }
-#lib-title img {
+#mode-title img {
+	top: 5px;
 	border: 1px solid hsl(0,0%,30%);
 }
 #mode-title {
