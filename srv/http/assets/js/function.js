@@ -1206,8 +1206,6 @@ function renderLibrary() { // library home
 		.removeClass( 'hide' );
 	if ( O ) orderLibrary();
 	pageScroll( V.modescrolltop );
-	$( '.bkedit' ).remove();
-	$( '.mode.edit' ).removeClass( 'edit' );
 	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
