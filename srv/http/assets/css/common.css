@@ -672,6 +672,11 @@ hr {
 .infobtn {
 	text-shadow: var( --shadow-text );
 }
+#bannerIcon img {
+	width: 22px;
+	height: 22px;
+	margin-top: 3px;
+}
 #infoOverlay .icoverart-refresh {
 	text-shadow: none;
 }
@@ -705,20 +710,6 @@ hr {
 }
 #infoTop .albumrefresh {
 	color: var( --cw );
-}
-#infoTop .imgicon {
-	position: relative;
-	float: left;
-	margin-top: 4px;
-	width: 35px;
-}
-#infoTop .imgicon i {
-	position: absolute;
-	line-height: 32px;
-}
-#infoTop .imgicon img {
-	width: 30px;
-	vertical-align: -1px;
 }
 #infoX {
 	float: right;

@@ -174,8 +174,9 @@ $.fn.press = function( args ) {
 function banner( icon, title, message, delay ) {
 	clearTimeout( V.timeoutbanner );
 	var bottom = $( '#bar-bottom' ).is( '.transparent, :hidden' ) || ! $( '#loader' ).hasClass( 'hide' ) ? '10px' : '';
+	if ( icon[ 0 ] !== '<' ) icon = ico( icon );
 	$( '#banner' )
-		.html( '<div id="bannerIcon">'+ ico( icon ) +'</div><div id="bannerTitle">'+ title +'</div>'
+		.html( '<div id="bannerIcon">'+ icon +'</div><div id="bannerTitle">'+ title +'</div>'
 			  +'<div id="bannerMessage">'+ message +'</div>' )
 		.css( 'bottom', bottom )
 		.removeClass( 'hide' );

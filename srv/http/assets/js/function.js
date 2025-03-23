@@ -352,11 +352,9 @@ function coverartChange() {
 	var coverartlocal = ( V.playback && ! embedded && ! onlinefetched && ! coverdefault )
 						|| ( V.library && ! embedded && ! onlinefetched && ! coverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
-	var icon  = 'coverart';
-	var title = 'Change Album Cover Art';
 	info( {
 		  icon        : V.icoverart
-		, title       : title
+		, title       : 'Album Cover Art'
 		, message     : '<img class="imgold" src="'+ src +'">'
 					   +'<p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
@@ -368,10 +366,7 @@ function coverartChange() {
 			bash( [ 'cmd-coverart.sh', 'reset', 'coverart', file, V.playback, 'CMD TYPE FILE CURRENT' ] );
 			if ( V.playback ) coverartDefault();
 		}
-		, ok          : () => {
-			imageReplace( 'coverart', file.slice( 0, -4 ) );
-			banner( icon, title, 'Change ...' );
-		}
+		, ok          : () => imageReplace( 'coverart', file.slice( 0, -4 ) )
 	} );
 }
 function coverartDefault() {
