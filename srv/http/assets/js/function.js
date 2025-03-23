@@ -1208,16 +1208,6 @@ function renderLibrary() { // library home
 	pageScroll( V.modescrolltop );
 	$( '.bkedit' ).remove();
 	$( '.mode.edit' ).removeClass( 'edit' );
-	renderLibraryCounts();
-	setButtonUpdate();
-}
-function renderLibraryCounts() {
-	if ( ! D.count ) {
-		$( '.mode gr' ).addClass( 'hide' );
-		return
-	}
-	
-	$( '.mode gr' ).removeClass( 'hide' );
 	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
@@ -1229,7 +1219,9 @@ function renderLibraryCounts() {
 		var $gr   = $this.find( 'gr' );
 		if ( $gr.length ) $gr.html( count ? count.toLocaleString() : '' );
 	} );
+	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 	$( '.mode .label' ).toggleClass( 'hide', ! D.label );
+	setButtonUpdate();
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( ! V.search ) {
