@@ -463,8 +463,8 @@ $( '#library, #button-library' ).on( 'click', function() {
 			libraryHome();
 		}
 	} else {
+		libraryHome();
 		switchPage( 'library' );
-		refreshData();
 	}
 	if ( S.updating_db ) banner( 'library blink', 'Library Database', 'Update ...' );
 } );

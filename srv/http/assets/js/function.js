@@ -965,8 +965,8 @@ function playbackStatusGet( withdisplay ) {
 		if ( V.volumeactive ) delete status.volume; // immediately change volume when pageInactive > pageActive
 		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
 		V.volumecurrent = S.volume;
-		renderPlaybackAll();
 		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
+		V.playback ? renderPlaybackAll() : refreshAll();
 	} );
 }
 function playlistBlink( off ) {
@@ -1122,43 +1122,13 @@ function refreshAll() {
 			playlistGet( 'nocache' );
 		} else if ( V.playlisttrack ) {
 			renderSavedPlTrack( $( '#pl-title .name' ).text() );
-		}
-	}
-}
-function refreshData() {
-	if ( V.library ) {
-		if ( $( '#lib-search-input' ).val() ) return
-		
-		if ( V.libraryhome ) { // home
-			libraryHome();
-		} else {
-			if ( [ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( V.mode ) ) return
-			
-			if ( V.query.length ) {
-				var query = V.query.slice( -1 )[ 0 ];
-				list( query, function( html ) {
-					var data = {
-						  html      : html
-						, modetitle : query.modetitle
-						, path      : query.path
-					}
-					renderLibraryList( data );
-				} );
-			} else {
-				$( '.mode.'+ V.mode ).trigger( 'click' );
-			}
-		}
-	} else if ( V.playback ) {
-		playbackStatusGet( 'withdisplay' );
-	} else {
-		if ( V.playlistlist ) {
-			$( '#button-pl-playlists' ).trigger( 'click' );
-		} else if ( V.playlisttrack ) {
-			renderSavedPlTrack( $( '#pl-title .lipath' ).text() );
 		} else {
 			playlistGet();
 		}
 	}
+}
+function refreshData() {
+	playbackStatusGet( 'withdisplay' );
 }
 function renderLibrary() { // library home
 	V.libraryhome = true;
