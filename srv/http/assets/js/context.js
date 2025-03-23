@@ -531,7 +531,7 @@ function thumbnail() { // station / folder
 }
 function thumbnailUpdate( modealbum ) {
 	if ( modealbum ) {
-		var src  = $( '#mode-title .button-coverart img' ).attr( 'src' );
+		var src  = $( '#mode-title .icoverart-refresh img' ).attr( 'src' );
 		var msg  = ''
 		var path = '';
 	} else {
@@ -540,7 +540,7 @@ function thumbnailUpdate( modealbum ) {
 		var path = V.list.path;
 		var msg  = ico( 'folder gr' ) +' '+ path
 	}
-	var icon = '<span class="button-coverart"><img src="'+ src +'"></span>';
+	var icon = '<span class="icoverart-refresh"><img src="'+ src +'"></span>';
 	info( {
 		  icon    : icon
 		, title   : 'Update Thumbnails'

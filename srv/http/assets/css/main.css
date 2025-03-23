@@ -1311,14 +1311,15 @@ div.pagerefresh {
 }
 #infoIcon img {
 	width: 26px;
-	vertical-align: -4px;
+	height: 26px;
 }
 .menu .icoverart {
 	margin: 0 9px;
 	width: 22px;
 	vertical-align: middle;
 }
-.menu .button-coverart .icoverart {
+.menu .icoverart-refresh .icoverart {
+	top: 5px;
 	margin: 0 3px;
 }
 .infomessage .thumbnail {
@@ -1401,40 +1402,40 @@ div.pagerefresh {
 #lib-title.path a {
 	font-weight: normal;
 }
-.button-coverart {
+.icoverart-refresh {
 	position:relative;
 	display: inline-block;
 	line-height: 40px;
 	margin-left: 15px;
 }
-.menu .button-coverart {
+.menu .icoverart-refresh {
 	margin: 0 6px;
 	vertical-align: -4px;
 }
-#infoIcon .button-coverart {
+#infoIcon .icoverart-refresh {
 	margin-left: 0;
 }
-.button-coverart::before,
-.button-coverart::after {
+.icoverart-refresh::before,
+.icoverart-refresh::after {
 	position: relative;
 	content: '\F596';
 	font-family: rern;
 	font-size: 26px;
 	z-index: 2;
 }
-.button-coverart::before {
+.icoverart-refresh::before {
 	position: absolute;
 	content: '\F595';
 	color: var( --cg );
 	z-index: 1;
 }
-.button-coverart img {
+.icoverart-refresh img {
 	position: absolute;
-	top: 6px;
+	top: 8px;
 	width: 30px;
 	height: 30px;
 }
-#lib-title .button-coverart img {
+#lib-title img {
 	border: 1px solid hsl(0,0%,30%);
 }
 #mode-title {

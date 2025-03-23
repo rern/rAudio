@@ -672,10 +672,10 @@ hr {
 .infobtn {
 	text-shadow: var( --shadow-text );
 }
-#infoOverlay .button-coverart {
+#infoOverlay .icoverart-refresh {
 	text-shadow: none;
 }
-#infoOverlay .button-coverart::before {
+#infoOverlay .icoverart-refresh::before {
 	top: 1px;
 }
 #infoTopBg {
