@@ -53,7 +53,7 @@ function menuLi( $list ) {
 	return '<a data-cmd="'.$command.'" class="'.$command.$sub.'">'.$icon.$label.'</a>'.$submenu;
 }
 $coverart    = '<img class="icoverart" src="/assets/img/coverart.svg">';
-$thumbupdate = '<span class="icoverart-refresh">'.$coverart.'</span>';
+$thumbupdate = $coverart.i( 'refresh-overlay' );
 $kid3        = file_exists( '/usr/bin/kid3-cli' );
 $menu        = '';
 $htmlcommon  = menuCommon( 'add', 'replace' );

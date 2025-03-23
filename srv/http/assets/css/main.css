@@ -1315,13 +1315,9 @@ div.pagerefresh {
 	height: 26px;
 }
 .menu .icoverart {
-	margin: 0 9px;
-	width: 22px;
+	width: 40px;
+	padding: 9px;
 	vertical-align: middle;
-}
-.menu .icoverart-refresh .icoverart {
-	top: 5px;
-	margin: 0 3px;
 }
 .infomessage .thumbnail {
 	display: inline-block;
@@ -1403,41 +1399,18 @@ div.pagerefresh {
 #lib-title.path a {
 	font-weight: normal;
 }
-.icoverart-refresh {
-	position:relative;
-	display: inline-block;
-	line-height: 40px;
-	margin-left: 15px;
-}
-.menu .icoverart-refresh {
-	margin: 0 6px;
-	vertical-align: -4px;
-}
-#infoIcon .icoverart-refresh {
-	margin-left: 0;
-}
-.icoverart-refresh::before,
-.icoverart-refresh::after {
+#thumbupdate {
 	position: relative;
-	content: '\F596';
-	font-family: rern;
-	font-size: 26px;
-	z-index: 2;
+	margin-left: 20px;
 }
-.icoverart-refresh::before {
-	position: absolute;
-	content: '\F595';
-	color: var( --cg );
-	z-index: 1;
-}
-.icoverart-refresh img {
-	position: absolute;
-	width: 30px;
-	height: 30px;
-}
-#mode-title img {
-	top: 5px;
+#thumbupdate img {
+	width: 26px;
+	height: 26px;
+	vertical-align: -5px;
 	border: 1px solid hsl(0,0%,30%);
+}
+#thumbupdate i {
+	left: -20px;
 }
 #mode-title {
 	font-size: 24px !important;

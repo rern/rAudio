@@ -1269,7 +1269,7 @@ function renderLibraryList( data ) { // V.librarylist
 				$( '.liinfo .lialbum' ).addClass( 'hide' );
 			} else {
 				$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
-					$( '#mode-title' ).append( '<span class="icoverart-refresh"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
+					$( '#mode-title' ).append( '<span id="thumbupdate"><img src="'+ $( this ).attr( 'src' ) +'"><i class="i-refresh-overlay"></i></span>' );
 				} );
 			}
 			if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );

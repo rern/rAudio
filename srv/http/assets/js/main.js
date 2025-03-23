@@ -1052,7 +1052,7 @@ $( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
 		} );
 	}
 } );
-$( '#lib-title' ).on ( 'click', '.icoverart-refresh', function() {
+$( '#lib-title' ).on ( 'click', '#thumbupdate', function() {
 	thumbnailUpdate( 'modealbum' );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
