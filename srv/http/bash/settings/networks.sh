@@ -82,8 +82,10 @@ Security='$security
 	[[ $HIDDEN ]] && data+='
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
-	netctl stop "$ESSID"
-	netctlSwitch
+	if [[ $CONNECTED ]]; then
+		netctl stop "$ESSID"
+		netctlSwitch
+	fi
 	;;
 disconnect )
 	netctl stop "$SSID"

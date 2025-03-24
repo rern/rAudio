@@ -8,12 +8,8 @@ function accesspoint2ssid( ssid, val ) {
 		, list    : [ 'IP / Hostname', 'text' ]
 		, values  : S.hostname
 		, ok      : () => {
-			if ( typeof val === 'object' ) {
-				connectWiFi( val );
-			} else {
-				changeSsid( ssid );
-				setTimeout( changeIpSwitch( infoVal() ), 5000 );
-			}
+			typeof val === 'object' ? connectWiFi( val ) : changeSsid( ssid );
+			setTimeout( changeIpSwitch( infoVal() ), 5000 );
 		}
 	} );
 }
@@ -44,6 +40,8 @@ function changeIpConnect( ip ) {
 	}
 }
 function changeIpSwitch( ip ) {
+	if ( ! V.li.hasClass( 'current' ) ) return
+	
 	var delay = 3000;
 	if ( ! ip ) {
 		ip    = S.hostname;
@@ -58,11 +56,12 @@ function changeSsid( ssid ) {
 	V.li.find( 'i' ).addClass( 'blink' );
 }
 function connectWiFi( val ) {
-	var keys   = Object.keys( val );
-	var values = Object.values( val );
+	var keys      = Object.keys( val );
+	var values    = Object.values( val );
+	var connected = V.li.data( 'ip' ) || false;
 	V.li.find( 'i' ).addClass( 'blink' );
 	notify( I.icon, val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
-	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], result => {
+	bash( [ 'connect', ...values, connected, 'CMD '+ keys.join( ' ' ) +' CONNECTED' ], result => {
 		changeIp( result, I.icon, I.title, val, settingWifi );
 	} );
 }
