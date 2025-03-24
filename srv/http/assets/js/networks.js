@@ -1,10 +1,7 @@
 function accesspoint2ssid( ssid, val ) {
-	var mesage = '';
-	if ( S.ap && S.apconf.ip === location.hostname ) {
-		message = '<p>· Disable and switch to <wh>'+ ssid +'</wh>'
-				+'<br>· All clients must be switched as well.'
-				+'<br>· New rAudio URL: <c>http://'+ S.hostname +'</c></p>';
-	}
+	var message = '<p>· Disable and switch to <wh>'+ ssid +'</wh>'
+				 +'<br>· All clients must be switched as well.';
+	if ( S.ap && S.apconf.ip === location.hostname ) message += '<br>· New rAudio URL: <c>http://'+ S.hostname +'</c></p>';
 	info( {
 		  icon    : 'ap'
 		, title   : 'Access Point'
