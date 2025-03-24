@@ -56,8 +56,13 @@ connect )
 	else
 		iptype=dhcp
 	fi
-	currentssid=$( iwgetid -r )
-	[[ $currentssid == $ESSID ]] && cp "/etc/netctl/$currentssid" $dirshm
+	if [[ -e $dirsystem/ap ]]; then
+		systemctl stop iwd
+		rm -f $dirsystem/{ap,ap.conf}
+	else
+		currentssid=$( iwgetid -r )
+		[[ $currentssid == $ESSID ]] && cp "/etc/netctl/$currentssid" $dirshm
+	fi
 	data='Interface='$wlandev'
 Connection=wireless
 IP='$iptype'

@@ -72,10 +72,8 @@ ap )
 	else
 		systemctl stop iwd
 		rm -f $dirsystem/{ap,ap.conf}
-		wlanDisable
 	fi
 	pushRefresh
-	pushData refresh '{ "page": "system", "iwd": '$TF' }'
 	pushRefresh networks
 	;;
 autoplay | lyrics | scrobble )

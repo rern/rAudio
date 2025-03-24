@@ -1,3 +1,22 @@
+function accesspoint2ssid( ssid, val ) {
+	info( {
+		  icon    : 'ap'
+		, title   : 'Access Point'
+		, message : '<p>· Disable and disconnect all clients'
+				   +'<br>· Connect <wh>'+ ssid +'</wh>'
+				   +'<br>· Reconnect rAudio at:</p>'
+		, list    : [ 'IP / Hostname', 'text' ]
+		, values  : S.hostname
+		, ok      : () => {
+			if ( typeof val === 'object' ) {
+				connectWiFi( val );
+			} else {
+				changeSsid( ssid );
+				setTimeout( changeIpSwitch( infoVal() ), 5000 );
+			}
+		}
+	} );
+}
 function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
@@ -327,17 +346,9 @@ $( '.wladd' ).on( 'click', function() {
 	settingWifi();
 } );
 $( '.wlscan' ).on( 'click', function() {
-	if ( S.ap && ! S.apstartup ) {
-		info( {
-			  icon    : 'wifi'
-			, title   : 'Wi-Fi'
-			, message : '<a class="helpmenu label">Access Point<i class="i-ap"></i></a> is currently active.'
-		} );
-	} else {
-		$( '.helphead, #divinterface, #divwebui' ).addClass( 'hide' );
-		$( '#divscanwlan' ).removeClass( 'hide' );
-		scanWlan();
-	}
+	$( '.helphead, #divinterface, #divwebui' ).addClass( 'hide' );
+	$( '#divscanwlan' ).removeClass( 'hide' );
+	scanWlan();
 } );
 $( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
 	var $this    = $( this );
@@ -345,26 +356,22 @@ $( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
 	var security = $this.data( 'wpa' ) === 'wep';
 	var encrypt  = $this.data( 'encrypt' ) === 'on';
 	if ( $this.hasClass( 'profile' ) ) {
-		notify( 'wifi', ssid, 'Connect ...' );
-		bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
+		S.ap ? accesspoint2ssid( ssid ) : changeSsid( ssid );
 		return
 	}
 	
 	info( {
 		  icon    : 'wifi'
 		, title   : ssid
-		, message : encrypt ? false : 'Insecure access point'
+		, message : encrypt ? false : iconwarning +'Unsecured access point'
 		, list    : encrypt ? [ 'Password', 'password' ] : false
 		, oklabel : 'Connect'
 		, ok      : () => {
 			clearTimeout( V.timeoutscan );
 			loader();
-			if ( encrypt ) {
-				var val = { IP: 'dhcp', ESSID: ssid, KEY: infoVal(), SECURITY: security }
-			} else {
-				var val = { ESSID: ssid }
-			}
-			connectWiFi( val );
+			var val = { ESSID: ssid }
+			if ( encrypt ) val = { ...val, IP: 'dhcp', KEY: infoVal(), SECURITY: security }
+			S.ap ? accesspoint2ssid( ssid, val ) : connectWiFi( val );
 		}
 	} );
 } );
@@ -426,19 +433,20 @@ $( '#menu a' ).on( 'click', function() {
 				return
 			}
 			
-			info( {
-				  icon    : 'ap'
-				, title   : 'Access Point'
-				, message : '<p>Switch to <wh>'+ ssid +'</wh>'
-						   +'<br>· Disconnect all rAudio connections'
-						   +'<br>· Reconnect at:</p>'
-				, list    : [ 'IP / Hostname', 'text' ]
-				, values  : S.hostname
-				, ok      : () => {
-					changeSsid( ssid );
-					setTimeout( changeIpSwitch( infoVal() ), 5000 );
+			if ( S.ap ) {
+				if ( localhost ) {
+					info( {
+						  icon    : 'ap'
+						, title   : 'Access Point'
+						, message : 'Disconnect all clients?'
+						, ok      : () => changeSsid( ssid )
+					} );
+				} else {
+					accesspoint2ssid( ssid );
 				}
-			} );
+			} else {
+				changeSsid( ssid );
+			}
 			break
 		case 'disconnect':
 			if ( V.bluetooth ) {
