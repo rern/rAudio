@@ -1,17 +1,21 @@
 function accesspoint2ssid( ssid, val ) {
-	info( {
+	var current = V.li.data( 'ip' ) === location.hostname;
+	var json = {
 		  icon    : 'ap'
 		, title   : 'Access Point'
 		, message : '<p>· Disable and disconnect all clients'
 				   +'<br>· Connect <wh>'+ ssid +'</wh>'
-				   +'<br>· Reconnect rAudio at:</p>'
-		, list    : [ 'IP / Hostname', 'text' ]
-		, values  : S.hostname
+				   + ( current ? '<br>· Reconnect rAudio at:</p>' : '</p>' )
 		, ok      : () => {
 			typeof val === 'object' ? connectWiFi( val ) : changeSsid( ssid );
 			setTimeout( changeIpSwitch( infoVal() ), 5000 );
 		}
-	} );
+	}
+	if ( current ) {
+		json.list  = [ 'IP / Hostname', 'text' ];
+		jsonvalues = S.hostname;
+	}
+	info( json );
 }
 function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
@@ -166,7 +170,8 @@ function scanBluetooth() {
 				} else if ( list.paired ) {
 					icon += '<gr>•</gr> ';
 				}
-				htmlbt += '<li class="'+ cls +'" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'+ icon +'<wh>'+ list.name +'</wh></li>'
+				htmlbt += '<li class="'+ cls +'" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
+						+ icon +'<wh>'+ list.name +'</wh></li>';
 			} );
 		} else {
 			htmlbt       = '<li><gr>(no Bluetooth devices found)</gr></li>';
@@ -195,8 +200,8 @@ function scanWlan() {
 				if ( signal && signal < -67 ) ssid = '<gr>'+ ssid +'</gr>';
 				htmlwl += '<li class="wlscan'+ cls +'" data-ssid="'+ ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'
 						+ ico( 'wifi'+ nwifi ) +'<a>'+ ssid +'</a>';
-				if ( list.encrypt === 'on') htmlwl += ' '+ ico( 'lock' );
-				if ( signal != 0 ) htmlwl += '<gr>'+ signal +' dBm</gr>';
+				htmlwl += list.encrypt === 'on' ? ico( 'lock' ) : '&ensp;';
+				htmlwl += signal != 0 ? '<gr>'+ signal +' dBm</gr>' : '';
 				htmlwl += '</li>';
 			} );
 		} else {
