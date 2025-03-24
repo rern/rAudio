@@ -7,8 +7,9 @@ ID=$1
 case $ID in
 
 ap )
-	file=/var/lib/iwd/ap/$( hostname ).ap
-	echo '{ "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
+	ssid=$( hostname )
+	file=/var/lib/iwd/ap/$ssid.ap
+	echo '{ "SSID": "'$ssid'", "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
 	;;
 audio-wm5102 )
 	echo '{ "outputtype" : "'$( getContent $dirsystem/audio-wm5102 'HPOUT2 Digital' )'" }'

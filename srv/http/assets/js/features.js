@@ -35,14 +35,16 @@ var config       = {
 			  ...SW
 			, footer       : '(8 characters or more)'
 			, list         : [
-				  [ 'IP',       'text' ]
+				  [ 'SSID',     'text' ]
+				, [ 'IP',       'text' ]
 				, [ 'Password', 'text' ]
 			]
 			, values       : values
+			, beforeshow : () => $( '#infoList input' ).eq( 0 ).addClass( 'disabled' )
 			, checkchanged : S.ap
 			, checkblank   : true
-			, checkip      : [ 0 ]
-			, checklength  : { 1: [ 8, 'min' ] }
+			, checkip      : [ 1 ]
+			, checklength  : { 2: [ 8, 'min' ] }
 			, cancel       : switchCancel
 			, ok           : switchEnable
 		} );
