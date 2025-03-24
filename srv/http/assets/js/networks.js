@@ -7,6 +7,7 @@ function accesspoint2ssid( ssid, val ) {
 				   +'<br>· Connect <wh>'+ ssid +'</wh>'
 				   + ( current ? '<br>· Reconnect rAudio at:</p>' : '</p>' )
 		, ok      : () => {
+			$( '#wlan li.ap' ).remove();
 			if ( typeof val === 'object' ) {
 				var ip = val.ADDRESS || '';
 				connectWiFi( val );
