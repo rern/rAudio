@@ -1,28 +1,19 @@
 function accesspoint2ssid( ssid, val ) {
-	var current = V.li.data( 'ip' ) === location.hostname;
-	var json = {
+	var mesage = '';
+	if ( S.ap && S.apconf.ip === location.hostname ) {
+		message = '<p>· Disable and switch to <wh>'+ ssid +'</wh>'
+				+'<br>· All clients must be switched as well.'
+				+'<br>· New rAudio URL: <c>http://'+ S.hostname +'</c></p>';
+	}
+	info( {
 		  icon    : 'ap'
 		, title   : 'Access Point'
-		, message : '<p>· Disable and disconnect all clients'
-				   +'<br>· Connect <wh>'+ ssid +'</wh>'
-				   + ( current ? '<br>· Reconnect rAudio at:</p>' : '</p>' )
+		, message : message
 		, ok      : () => {
 			$( '#wlan li.ap' ).remove();
-			if ( typeof val === 'object' ) {
-				var ip = val.ADDRESS || '';
-				connectWiFi( val );
-			} else {
-				var ip = '';
-				changeSsid( ssid );
-			}
-			setTimeout( changeIpSwitch( ip ), 5000 );
+			typeof val === 'object' ? connectWiFi( val ) : changeSsid( ssid );
 		}
-	}
-	if ( current ) {
-		json.list  = [ 'IP / Hostname', 'text' ];
-		jsonvalues = S.hostname;
-	}
-	info( json );
+	} );
 }
 function bluetoothCommand( action ) {
 	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
@@ -121,8 +112,7 @@ function renderPage() {
 		$( '#divlan' ).removeClass( 'hide' );
 	}
 	$( '#divap' ).toggleClass( 'hide', ! S.ap );
-	var ip = S.ip || S.apconf.ip;
-	if ( ! ip ) {
+	if ( ! S.ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return
 	}
@@ -133,12 +123,10 @@ function renderPage() {
 				  +'<br>'+ qrCode( S.apconf.qr )
 		$( '#qrap' ).html( html );
 	}
-	if ( ip ) {
-		var html = '<gr>http://</gr>'+ ip
-				 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-				 +'<br>'+ qrCode( 'http://'+ ip )
-		$( '#qrurl' ).html( html );
-	}
+	var html = '<gr>http://</gr>'+ S.ip
+			 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
+			 +'<br>'+ qrCode( 'http://'+ S.ip )
+	$( '#qrurl' ).html( html );
 	$( '#divwebui' ).removeClass( 'hide' );
 	showContent();
 }
@@ -379,7 +367,6 @@ $( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
 		, oklabel : 'Connect'
 		, ok      : () => {
 			clearTimeout( V.timeoutscan );
-			loader();
 			var val = { ESSID: ssid }
 			if ( encrypt ) val = { ...val, IP: 'dhcp', KEY: infoVal(), SECURITY: security }
 			S.ap ? accesspoint2ssid( ssid, val ) : connectWiFi( val );

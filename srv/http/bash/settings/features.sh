@@ -26,6 +26,7 @@ iwctlAP() {
 , "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
 , "ssid"       : "'$hostname'"
 }' > $dirsystem/ap.conf
+		avahi-daemon --kill
 		[[ ! -e $dirshm/apstartup ]] && touch $dirsystem/ap
 		iw $wlandev set power_save off
 	else

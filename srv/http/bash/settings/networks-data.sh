@@ -65,13 +65,9 @@ if [[ $ip ]]; then
 }'
 fi
 
+[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
 ip=$( ipAddress )
-if [[ -e $dirsystem/ap ]]; then
-	apconf=$( getContent $dirsystem/ap.conf )
-	hostname=$( hostname )
-else
-	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
-fi
+[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ##########
 data='
 , "device"    : {
