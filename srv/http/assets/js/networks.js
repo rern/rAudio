@@ -7,8 +7,14 @@ function accesspoint2ssid( ssid, val ) {
 				   +'<br>· Connect <wh>'+ ssid +'</wh>'
 				   + ( current ? '<br>· Reconnect rAudio at:</p>' : '</p>' )
 		, ok      : () => {
-			typeof val === 'object' ? connectWiFi( val ) : changeSsid( ssid );
-			setTimeout( changeIpSwitch( infoVal() ), 5000 );
+			if ( typeof val === 'object' ) {
+				var ip = val.ADDRESS || '';
+				connectWiFi( val );
+			} else {
+				var ip = '';
+				changeSsid( ssid );
+			}
+			setTimeout( changeIpSwitch( ip ), 5000 );
 		}
 	}
 	if ( current ) {

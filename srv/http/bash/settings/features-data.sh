@@ -8,6 +8,11 @@
 
 . /srv/http/bash/common.sh
 
+if [[ ! -e $dirsystem/ap ]]; then
+	wlanconnected=$( ifconfig $( < $dirshm/wlan ) \
+						| awk '/inet/ {print $2}' \
+						| grep -qv 127.0.0.1 && echo true )
+fi
 data+=$( settingsActive camilladsp nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
 data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
@@ -25,6 +30,6 @@ data+='
 ##########
 [[ -e $dirshm/wlan ]] && data+='
 , "wlan"          : true
-, "wlanconnected" : '$( ip route | grep -q -m1 $( < $dirshm/wlan ) && echo true )
+, "wlanconnected" : '$wlanconnected
 
 data2json "$data" $1
