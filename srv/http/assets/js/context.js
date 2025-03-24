@@ -148,9 +148,9 @@ function directoryList() {
 			, modetitle : modetitle
 			, path      : path
 		}
-		V.librarylisthtml = '';
-		var mode0         = V.mode;
-		V.mode            = mode;
+		V.html.librarylist = '';
+		var mode0          = V.mode;
+		V.mode             = mode;
 		renderLibraryList( data );
 		setTimeout( () => V.mode = mode0, 300 );
 	} );
@@ -734,7 +734,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	_replace
 	_replaceplay
 	*/
-	if ( [ 'add', 'replace' ].includes( cmd.replace( 'play', '' ) ) ) V.playlisthtml = '';
+	if ( [ 'add', 'replace' ].includes( cmd.replace( 'play', '' ) ) ) V.html.playlist = '';
 	var path = V.list.path;
 	// mpccmd:
 	// [ 'mpcadd', path ]

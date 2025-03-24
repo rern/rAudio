@@ -8,6 +8,7 @@ V = {   // var global
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
 	, blinkdot      : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
 	, coverart      : '/assets/img/coverart.svg'
+	, html          : {}
 	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
 	, covervu       : '/assets/img/vu.svg'
@@ -473,7 +474,7 @@ $( '#playback' ).on( 'click', function() {
 		$( '#stop' ).trigger( 'click' );
 	} else {
 		if ( ! V.playback ) {
-			playbackStatusGet();
+			refreshData();
 			switchPage( 'playback' );
 		}
 	}

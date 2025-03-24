@@ -787,13 +787,12 @@ function intervalElapsedClear() {
 	clearInterval( V.interval.elapsed );
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
-function libraryHome( nocache ) {
-	if ( nocache ) V.libraryhtml = '';
+function libraryHome() {
 	list( { library: 'home' }, function( data ) {
 		O = data.order;
-		if ( data.html !== V.libraryhtml ) {
-			V.libraryhtml = data.html;
-			var html      = htmlHash( data.html );
+		if ( data.html !== V.html.library ) {
+			V.html.library = data.html;
+			var html       = htmlHash( data.html );
 			$( '#lib-mode-list' ).html( html );
 		}
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -928,47 +927,6 @@ function orderLibrary() {
 function pageScroll( top ) {
 	setTimeout( () => $( 'html, body' ).scrollTop( top ), 0 );
 }
-function playbackStatusGet( withdisplay ) {
-	bash( [ 'status.sh', withdisplay ], list => {
-		if ( list == -1 ) {
-			loaderHide();
-			info( {
-				  icon    : 'networks'
-				, title   : 'Shared Data'
-				, message : iconwarning +'Server offline'
-							+'<br><br>Disable and restore local data?'
-				, cancel  : loader
-				, okcolor : orange
-				, ok      : () => bash( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
-			} );
-			return
-		}
-		
-		try {
-			var status = JSON.parse( list );
-		} catch( e ) {
-			dataError( e.message, list );
-			return false
-		}
-		
-		C = status.counts;
-		delete status.counts;
-		if ( 'display' in status ) {
-			D              = status.display;
-			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
-			delete status.display;
-			delete V.coverTL;
-			displaySubMenu();
-			bannerHide();
-			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
-		}
-		if ( V.volumeactive ) delete status.volume; // immediately change volume when pageInactive > pageActive
-		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
-		V.volumecurrent = S.volume;
-		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
-		V.playback ? renderPlaybackAll() : refreshAll();
-	} );
-}
 function playlistBlink( off ) {
 	if ( off ) {
 		clearTimeout( V.timeoutpl );
@@ -1100,6 +1058,7 @@ function playlistSkip() {
 	bash( [ 'mpcskippl', S.song + 1, S.state, 'CMD POS ACTION' ] );
 }
 function refreshAll() {
+	V.html = {}
 	if ( V.library ) {
 		if ( V.libraryhome ) {
 			libraryHome();
@@ -1119,7 +1078,7 @@ function refreshAll() {
 		}
 	} else {
 		if ( V.playlisthome ) {
-			playlistGet( 'nocache' );
+			playlistGet();
 		} else if ( V.playlisttrack ) {
 			renderSavedPlTrack( $( '#pl-title .name' ).text() );
 		} else {
@@ -1128,7 +1087,45 @@ function refreshAll() {
 	}
 }
 function refreshData() {
-	playbackStatusGet( 'withdisplay' );
+	bash( [ 'status.sh' ], list => {
+		if ( list == -1 ) {
+			loaderHide();
+			info( {
+				  icon    : 'networks'
+				, title   : 'Shared Data'
+				, message : iconwarning +'Server offline'
+							+'<br><br>Disable and restore local data?'
+				, cancel  : loader
+				, okcolor : orange
+				, ok      : () => bash( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
+			} );
+			return
+		}
+		
+		try {
+			var status = JSON.parse( list );
+		} catch( e ) {
+			dataError( e.message, list );
+			return false
+		}
+		
+		C = status.counts;
+		delete status.counts;
+		if ( 'display' in status ) {
+			D              = status.display;
+			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
+			delete status.display;
+			delete V.coverTL;
+			displaySubMenu();
+			bannerHide();
+			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
+		}
+		if ( V.volumeactive ) delete status.volume; // immediately change volume when pageInactive > pageActive
+		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		V.volumecurrent = S.volume;
+		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
+		V.playback ? renderPlaybackAll() : refreshAll();
+	} );
 }
 function renderLibrary() { // library home
 	V.libraryhome = true;
@@ -1170,7 +1167,7 @@ function renderLibrary() { // library home
 function renderLibraryList( data ) { // V.librarylist
 	if ( ! V.search ) {
 		V.libraryhome = false;
-		if ( V.librarylist && data.html === V.librarylisthtml ) {
+		if ( V.librarylist && data.html === V.html.librarylist ) {
 			if ( V.color ) colorSet()
 			return
 		}
@@ -1218,7 +1215,7 @@ function renderLibraryList( data ) { // V.librarylist
 			.removeClass( 'hide' )
 			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
 	}
-	V.librarylisthtml = data.html;
+	V.html.librarylist = data.html;
 	$( '#lib-list, #page-library .index' ).remove();
 	if ( ! data.html ) return // empty radio
 	
@@ -1349,9 +1346,9 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 		.toggleClass( 'disabled', C.song === 0 || ! ( 'song' in C ) );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	if ( ! data ) {
-		V.playlisthtml = '';
-		S.pllength     = 0;
-		S.consume      = false;
+		V.html.playlist = '';
+		S.pllength      = 0;
+		S.consume       = false;
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-home-title' ).html( 'PLAYLIST' );
 		$( '.pllength' ).addClass( 'disabled' );
@@ -1368,9 +1365,9 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	$( '.pllength' ).removeClass( 'disabled' );
 	$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', S.consume );
-	if ( data.html !== V.playlisthtml ) {
-		V.playlisthtml = data.html;
-		var html = htmlHash( data.html );
+	if ( data.html !== V.html.playlist ) {
+		V.html.playlist = data.html;
+		var html        = htmlHash( data.html );
 		$( '#pl-list' ).html( html ).promise().done( () => {
 			renderPlaylistSet();
 			setPlaylistScroll();

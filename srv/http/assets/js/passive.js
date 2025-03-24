@@ -5,7 +5,7 @@ W = {
 		if ( V.playback ) renderPlayback();
 	}
 	, bookmark  : () => {
-		V.libraryhtml = '';
+		V.html.library = '';
 		if ( V.library && V.libraryhome ) libraryHome();
 	}
 	, cover     : data => {
@@ -13,7 +13,7 @@ W = {
 	}
 	, coverart  : data => {
 		bannerHide();
-		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
+		V.html = {}
 		if ( V.playback ) {
 			if ( S.webradio && S.state === 'play' ) return
 			
@@ -116,9 +116,9 @@ W = {
 			S.updating_db = true;
 			setButtonUpdating();
 		} else if ( data.done ) {
-			V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
+			V.html = {}
 			banner( 'refresh-library', 'Library Update', 'Done' );
-			V.playback ? playbackStatusGet( 'withdisplay' ) : refreshAll();
+			V.playback ? refreshData() : refreshAll();
 		}
 	}
 	, option    : data => {
@@ -158,7 +158,7 @@ W = {
 			bannerHide();
 		} else {
 			if ( playlisthome ) renderPlaylist( data );
-			playbackStatusGet();
+			refreshData();
 		}
 	}
 	, playlists : data => {
