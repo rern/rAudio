@@ -40,10 +40,10 @@ div.pagerefresh { z-index: 100 }
 @media ( orientation: portrait ) { @media ( max-width: 480px ) { #bioimg { z-index: -5 } } }
 
 img,
-.licoverimg {
+#map-cover {
 	user-select: none;
-	-webkit-touch-callout: none;
 	-webkit-user-select: none;
+	-webkit-touch-callout: none;
 }
 a {
 	color: var( --cw );
@@ -449,19 +449,15 @@ div.pagerefresh {
 #coverart-block,
 #volume-knob {
 	position: relative;
-	text-align: center
-}
-#time-knob > div:first-child, 
-#volume-knob > div:first-child {
-	margin: 0 auto;
-}
-#time-knob,
-#coverart-block,
-#volume-knob {
 	padding: 0;
 	text-align: center;
 	width: 33%;
 	min-width: 250px;
+	text-align: center;
+}
+#time-knob > div:first-child, 
+#volume-knob > div:first-child {
+	margin: 0 auto;
 }
 #time-knob,
 #volume-knob {

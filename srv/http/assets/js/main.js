@@ -765,27 +765,24 @@ $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	volumeAnimate( S.volumemute, S.volume );
 	volumeMuteToggle();
 } );
-$( '#coverM' ).press( e => {
+$( '#divcover' ).on( 'click', '.cover-save', function() {
+	coverartSave();
+} ).press( e => {
+	if ( typeof Android === 'object' && e.target.id === 'coverT' ) {
+		changeIP();
+		return
+	}
+	
 	if ( ! S.pllength
 		|| V.guide
 		|| ( S.webradio && S.state === 'play' )
-		|| $( e.target ).hasClass( 'band' )
-		|| [ 'coverL', 'coverR', 'coverT' ].includes( e.target.id )
+		|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 	) return
 	
 	S.webradio ? thumbnail() : coverartChange();
-} ).on( 'click', '.cover-save', function() {
-	coverartSave();
 } );
 $( '#coverT' ).press( () => {
-	if ( typeof Android === 'object' ) {
-		changeIP();
-	} else {
-		banner( 'coverart blink', 'Coverart Online', 'Fetch ...', -1 );
-		bash( [ 'coverartonline', S.Artist, S.Album.replace( /\(.*/, '' ), 'CMD ARTIST ALBUM' ], url => {
-			bannerHide();
-		} );
-	}
+	if ( typeof Android === 'object' ) changeIP();
 } );
 var btnctrl = {
 	  TL : 'cover'

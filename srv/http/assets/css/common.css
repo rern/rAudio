@@ -263,11 +263,10 @@ body {
 }
 i,
 .infobtn,
-#debug,
-#divpipeline li,
-#lib-list .coverart {
-	-webkit-user-select: none;
+#debug {
 	user-select: none;
+	-webkit-user-select: none;
+	-webkit-touch-callout: none;
 }
 sp {
 	display: inline-block;

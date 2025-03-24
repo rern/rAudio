@@ -228,8 +228,8 @@ $htmlsearch   = '
 		<div id="time-knob" class="hide">
 			<div id="time"></div>
 			<div id="timeicon"><?=$timeicon?></div>
-			<span id="elapsed" class="controls1"></span>
-			<span id="total" class="controls1"></span>
+			<span id="elapsed"></span>
+			<span id="total"></span>
 			<div id="map-time">
 				<?=buttonSet( [
 					  [ 'scale',    'TL' ]
