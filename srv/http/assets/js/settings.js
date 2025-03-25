@@ -81,6 +81,9 @@ function currentStatus( id, arg ) {
 		bannerReset();
 	} );
 }
+function entriesStatusHide() {
+	$( '.section' ).each( ( i, el ) => $( el ).find( 'pre' ).last().addClass( 'hide' ) );
+}
 function infoSetting( id, callback ) {
 	var filesh = 'settings/data-config.sh '+ id;
 	if ( V.debug ) console.log( filesh );
@@ -303,6 +306,13 @@ $( document ).on( 'keydown', function( e ) {
 			break
 	}
 } );
+$( 'body' ).on( 'click', function( e ) {
+	if ( ! $( '#menu' ).length ) return
+	
+	$( '#menu' ).addClass( 'hide' );
+	$( 'li' ).removeClass( 'active' );
+	if ( ! $( e.target ).is( 'pre.status' ) ) entriesStatusHide();
+} );
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );
 	var id    = $this.data( 'status' );
@@ -362,13 +372,6 @@ $( '#bar-bottom div' ).on( 'click', function() {
 	loader();
 	location.href = 'settings.php?p='+ this.id;
 } );
-if ( $( '#menu' ).length ) {
-	$( 'body' ).on( 'click', function( e ) {
-		$( '#menu' ).addClass( 'hide' );
-		$( 'li' ).removeClass( 'active' );
-		if ( ! $( e.target ).is( 'pre.status' ) ) $( '.entries' ).siblings( 'pre' ).last().addClass( 'hide' );
-	} );
-}
 $( '.switch, .setting' ).on( 'click', function() {
 	if ( V.local ) return
 	

@@ -375,13 +375,6 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	V.li = $( this );
 	if ( ! contextMenuToggle() ) return
 	
-	if ( V.li.hasClass( 'bt' ) && ! $('#codebtinfo' ).hasClass( 'hide' ) ) {
-		$('#codebtinfo' ).addClass( 'hide' );
-		return
-	}
-	
-	if ( V.li.hasClass( 'ap' ) ) return
-	
 	[ 'bluetooth', 'lan', 'wlan' ].forEach( k => { V[ k ] = false } );
 	V[ V.li.parent().prop( 'id' ) ] = true;
 	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
@@ -407,6 +400,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$( '#menu .disconnect' ).toggleClass( 'hide', ! current );
 		$( '#menu' ).find( '.info, .rename' ).addClass( 'hide' );
 	}
+	if ( V.li.hasClass( 'wl' ) ) $( '#menu' ).find( '.info' ).removeClass( 'hide' );
 	contextMenu();
 } );
 $( '.lanadd' ).on( 'click', function() {
@@ -494,7 +488,13 @@ $( '#menu a' ).on( 'click', function() {
 			} );
 			break
 		case 'info':
-			currentStatus( 'btinfo', V.li.data( 'mac' ) );
+			if ( ! V.li.parent().next().hasClass( 'hide' ) ) return
+			
+			if ( V.bluetooth ) {
+				currentStatus( 'btinfo', V.li.data( 'mac' ) );
+			} else {
+				currentStatus( 'wlinfo', V.li.data( 'ssid' ) );
+			}
 			break
 		case 'rename':
 			var icon  = 'bluetooth';

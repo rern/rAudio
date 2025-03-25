@@ -998,9 +998,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	
 	var i     = $this.index()
 	var list  = S.liststorage[ i ];
-	$( '#codestorageinfo' )
-		.addClass( 'hide' )
-		.empty();
+	entriesStatusHide();
 	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
 		info( {
 			  icon    : 'networks'

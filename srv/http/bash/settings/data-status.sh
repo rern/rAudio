@@ -200,6 +200,9 @@ $( ifconfig $wlandev | grep -E -v 'RX|TX')
 <bll># iwconfig $wlandev</bll>
 $( iwconfig $wlandev | awk NF )"
 	;;
+wlinfo )
+	netctl status "$2" | statusColor
+	;;
 wlan )
 	echo '<bll># iw reg get</bll>'
 	iw reg get

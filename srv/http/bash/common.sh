@@ -522,6 +522,15 @@ snapserverList() {
 		echo '[]'
 	fi
 }
+statusColor() {
+	sed -E  -e 's|●|<grn>&</grn>|
+					' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
+										 s|(enabled)|<grn>\1</grn>|g}
+					' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
+										 s|inactive|<ora>&</ora>|
+										 s|(failed)|<red>\1</red>|ig}
+					' -e '/^\s*Status:/  s|"online"|<grn>&</grn>|'
+}
 tty2std() { # if output is not stdout - /dev/tty: aplay dab-scanner-rtlsdr rtl_test
 	script /dev/null -qc "$1"
 }

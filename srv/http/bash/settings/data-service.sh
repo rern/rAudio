@@ -124,11 +124,7 @@ esac
 [[ ! $SERVICE ]] && SERVICE=$PKG
 status=$( systemctl status $SERVICE \
 			| grep -E -v "$skip" \
-			| sed -E  -e 's|●|<grn>*</grn>|; s|○|*|
-					' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
-										 s|(enabled)|<grn>\1</grn>|g}
-					' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
-										 s|(failed)|<red>\1</red>|ig}' )
+			| statusColor )
 
 echo "\
 $conf
