@@ -990,12 +990,11 @@ $( '.addnas' ).on( 'click', function() {
 	SW = { icon: 'networks' }
 	util.mount.mount();
 } );
-$( '#list' ).on( 'click', 'li', function( e ) {
-	e.stopPropagation();
+$( '#list' ).on( 'click', 'li', function() {
 	$li      = $( this );
-	if ( ! contextMenuToggle() ) return
+	if ( ! contextMenuToggle( $li ) ) return
 	
-	var i    = $li.index()
+	var i    = $li.index();
 	var list = S.liststorage[ i ];
 	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
 		info( {

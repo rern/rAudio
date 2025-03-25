@@ -373,18 +373,12 @@ $( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
 		}
 	} );
 } );
-$( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
-	e.stopPropagation();
+$( '.entries:not( .scan )' ).on( 'click', 'li', function() {
 	$li = $( this );
-	if ( ! contextMenuToggle() ) return
+	if ( ! contextMenuToggle( $li ) ) return
 	
 	V.bluetooth = V.lan = V.wlan = false;
 	V[ $li.parent().prop( 'id' ) ] = true;
-	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
-		$( '#menu' ).addClass( 'hide' );
-		if ( $li.hasClass( 'active' ) ) return
-	}
-	
 	$( '#menu a' ).addClass( 'hide' );
 	if ( V.bluetooth ) {
 		var connected = $li.find( 'grn' ).length === 1;

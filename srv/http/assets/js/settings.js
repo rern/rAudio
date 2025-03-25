@@ -55,10 +55,11 @@ function contextMenu() {
 		.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 9 );
 	scrollUpToView( $menu );
 }
-function contextMenuToggle() {
-	var $menu = $( '#menu' );
-	$( 'li' ).removeClass( 'active' );
-	if ( ! $menu.hasClass( 'hide' ) && $li.hasClass( 'active' ) ) {
+function contextMenuToggle( $li ) {
+	var active = $li.hasClass( 'active' );
+	var $menu  = $( '#menu' );
+	$li.parent().find( 'li' ).removeClass( 'active' );
+	if ( ! $menu.hasClass( 'hide' ) && active ) {
 		$menu.addClass( 'hide' );
 		return false
 	}
@@ -325,7 +326,7 @@ $( document ).on( 'keydown', function( e ) {
 } );
 if ( $( '#menu' ).length ) {
 	$( 'body' ).on( 'click', function( e ) {
-		if ( I.active ) return
+		if ( I.active || $( e.target ).closest( 'li' ).length ) return
 		
 		$( '#menu' ).addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
