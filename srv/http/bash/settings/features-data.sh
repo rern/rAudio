@@ -8,11 +8,6 @@
 
 . /srv/http/bash/common.sh
 
-if [[ ! -e $dirsystem/ap ]]; then
-	wlanconnected=$( ifconfig $( < $dirshm/wlan ) \
-						| awk '/inet/ {print $2}' \
-						| grep -qv 127.0.0.1 && echo true )
-fi
 data+=$( settingsActive camilladsp nfs-server shairport-sync smb snapserver spotifyd upmpdcli )
 data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
@@ -20,16 +15,16 @@ data+=$( settingsEnabled \
 			$dirshm nosound )
 ##########
 data+='
-, "hostname"      : "'$( hostname )'"
-, "ip"            : "'$( ipAddress )'"
-, "localbrowser"  : '$( systemctl -q is-enabled localbrowser && echo true )'
-, "nfsconnected"  : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "shareddata"    : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
-, "snapclient"    : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
-, "stoptimer"     : '$( exists $dirshm/pidstoptimer )
+, "hostname"     : "'$( hostname )'"
+, "ip"           : "'$( ipAddress )'"
+, "localbrowser" : '$( systemctl -q is-enabled localbrowser && echo true )'
+, "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
+, "shareddata"   : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
+, "snapclient"   : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
+, "stoptimer"    : '$( exists $dirshm/pidstoptimer )
 ##########
 [[ -e $dirshm/wlan ]] && data+='
-, "wlan"          : true
-, "wlanconnected" : '$wlanconnected
+, "ssid"         : "'$( iwgetid -r )'"
+, "wlan"         : true'
 
 data2json "$data" $1
