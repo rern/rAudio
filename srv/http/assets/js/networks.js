@@ -7,7 +7,6 @@ function accesspoint2ssid( ssid, val ) {
 				   +'<br>· Connected clients will be dropped.'
 				   + ( changeip ? '<br>· New rAudio URL: <c>http://'+ S.hostname +'</c>' : '' ) +'</p>'
 		, ok      : () => {
-			$( '#wlan li.ap' ).remove();
 			typeof val === 'object' ? connectWiFi( val ) : changeSsid( ssid );
 		}
 	} );
