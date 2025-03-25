@@ -171,7 +171,7 @@ function switchCancel() {
 }
 function switchEnable() {
 	var infoval = infoVal();
-	var keys  = Object.keys( infoval );
+	var keys    = Object.keys( infoval );
 	var values  = Object.values( infoval );
 	var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
 	notifyCommon();

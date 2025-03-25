@@ -201,7 +201,11 @@ $( ifconfig $wlandev | grep -E -v 'RX|TX')
 $( iwconfig $wlandev | awk NF )"
 	;;
 wlinfo )
-	netctl status "$2" | statusColor
+	if [[ $2 ]]; then
+		netctl status "$2" | statusColor
+	else
+		$dirsettings/data-service.sh ap
+	fi
 	;;
 wlan )
 	echo '<bll># iw reg get</bll>'

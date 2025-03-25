@@ -288,7 +288,7 @@ wlanprofile )
 , "MTU"        : '$( cat $dirlan/mtu )'
 , "TXQUEUELEN" : '$( cat $dirlan/tx_queue_len )'
 }';;
-			stoptimer )     echo '{ "MIN": 30, "POWEROFF": false }';;
+			stoptimer )     echo '{ values: { "MIN": 30, "POWEROFF": false }, "active": "'$( exists $dirshm/pidstoptimer )'" }';;
 			volumelimit )
 				volume=$( volumeGet )
 				[[ $volume == 0 || ! $volume ]] && volume=50

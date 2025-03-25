@@ -31,39 +31,37 @@ var config       = {
 	}
 	, _prompt      : {}
 	, ap           : values => {
-		if ( S.ssid ) {
-			info( {
-				  ...SW
-				, message : ico( 'wifi gr' ) +' <wh>Wi-Fi</wh> is currently connected.'
-							+'<br><wh>'+ S.ssid +'</wh> will be <wh>disconnected</wh> on enable.'
-							+'<br><br>Continue?'
-				, cancel  : switchCancel
-				, ok      : () => {
-					var ssid = S.ssid;
-					S.ssid = '';
-					setTimeout( () => S.ssid = ssid, 300 );
-					config.ap( values );
-				}
-			} );
-			return
-		}
-		
 		info( {
 			  ...SW
-			, footer       : '(8 characters or more)'
+			, message      : '<wh>Wi-Fi</wh> is currently connected to:'
+							+'<br>'+ ico( 'wifi' ) +' <wh>'+ S.ssid +'</wh>'
+							+'<br><br>Continue and disconnect?'
 			, list         : [
 				  [ 'SSID',     'text' ]
 				, [ 'IP',       'text' ]
 				, [ 'Password', 'text' ]
 			]
+			, footer       : '(8 characters or more)'
 			, values       : values
-			, beforeshow : () => $( '#infoList input' ).eq( 0 ).addClass( 'disabled' )
+			, beforeshow : () => {
+				$( '.infomessage' ).addClass( 'hide' );
+				$( '#infoList input' ).eq( 0 ).addClass( 'disabled' );
+			}
 			, checkchanged : S.ap
 			, checkblank   : true
 			, checkip      : [ 1 ]
 			, checklength  : { 2: [ 8, 'min' ] }
 			, cancel       : switchCancel
-			, ok           : switchEnable
+			, ok           : () => {
+				if ( S.ssid && $( '.infomessage' ).hasClass( 'hide' ) ) {
+					I.oknoreset = true;
+					$( '#infoList' ).children().toggleClass( 'hide' );
+					$( '.infomessage' ).removeClass( 'hide' );
+				} else {
+					I.oknoreset = false;
+					switchEnable();
+				}
+			}
 		} );
 	}
 	, autoplay     : values => {
@@ -378,8 +376,8 @@ var config       = {
 				, [ 'Power off on stop', 'checkbox' ]
 			]
 			, boxwidth     : 70
-			, values       : values
-			, checkchanged : S.stoptimer
+			, values       : values.values
+			, checkchanged : values.active
 			, cancel       : switchCancel
 			, ok           : switchEnable
 			, fileconf     : true

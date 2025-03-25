@@ -384,16 +384,15 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	
 	$( 'li' ).removeClass( 'active' );
 	V.li.addClass( 'active' );
+	$( '#menu a' ).addClass( 'hide' );
 	if ( V.bluetooth ) {
 		var connected = V.li.find( 'grn' ).length === 1;
-		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
 		$( '#menu' ).find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
 	} else if ( V.lan ) {
-		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
-	} else {
+	} else if ( ! V.li.hasClass( 'ap' ) ) {
 		var current = V.li.hasClass( 'current' );
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', current );
@@ -497,7 +496,7 @@ $( '#menu a' ).on( 'click', function() {
 			if ( V.bluetooth ) {
 				currentStatus( 'btinfo', V.li.data( 'mac' ) );
 			} else {
-				currentStatus( 'wlinfo', V.li.data( 'ssid' ) );
+				currentStatus( 'wlinfo', V.li.hasClass( 'ap' ) ? '' : V.li.data( 'ssid' ) );
 			}
 			break
 		case 'rename':
