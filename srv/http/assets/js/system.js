@@ -992,12 +992,11 @@ $( '.addnas' ).on( 'click', function() {
 } );
 $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
-	var $this = $( this );
-	V.li      = $this;
+	$li      = $( this );
 	if ( ! contextMenuToggle() ) return
 	
-	var i     = $this.index()
-	var list  = S.liststorage[ i ];
+	var i    = $li.index()
+	var list = S.liststorage[ i ];
 	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
 		info( {
 			  icon    : 'networks'
@@ -1007,8 +1006,6 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	$( 'li' ).removeClass( 'active' );
-	$this.addClass( 'active' );
 	if ( list.icon === 'microsd' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
@@ -1093,7 +1090,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 } );
 $( '#menu a' ).on( 'click', function() {
 	var cmd        = $( this ).data( 'cmd' );
-	var list       = S.liststorage[ V.li.index() ];
+	var list       = S.liststorage[ $li.index() ];
 	var mountpoint = list.mountpoint;
 	var source     = list.source;
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {

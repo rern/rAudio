@@ -4,6 +4,7 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
+var $li   = '';
 W.refresh = data => { // except camilla
 	if ( data.page !== page ) return
 	
@@ -48,14 +49,16 @@ function bannerReset() {
 }
 function contextMenu() {
 	var $menu   = $( '#menu' );
+	$li.addClass( 'active' );
 	$menu
 		.removeClass( 'hide' )
-		.css( 'top', $( '.container' ).scrollTop() + V.li.offset().top + 9 );
+		.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 9 );
 	scrollUpToView( $menu );
 }
 function contextMenuToggle() {
 	var $menu = $( '#menu' );
-	if ( ! $menu.hasClass( 'hide' ) && V.li.hasClass( 'active' ) ) {
+	$( 'li' ).removeClass( 'active' );
+	if ( ! $menu.hasClass( 'hide' ) && $li.hasClass( 'active' ) ) {
 		$menu.addClass( 'hide' );
 		return false
 	}
@@ -79,17 +82,17 @@ function currentStatus( id, arg ) {
 }
 function entriesInfo( id, arg ) {
 	var $code = $( '#code'+ id );
-	var index = V.li.data( 'index' );
+	var index = $li.data( 'index' );
 	var pre   = '<li class="pre"><pre id="code'+ id +'" class="status li" data-liindex="'+ index +'"></pre></li>';
 	if ( ! $code.length ) {
-		V.li.after( pre );
+		$li.after( pre );
 		currentStatus( id, arg );
 	} else {
 		var liindex = $code.data( 'liindex' );
 		$code.parent().remove();
 		if ( liindex === index ) return
 		
-		V.li.after( pre );
+		$li.after( pre );
 		currentStatus( id, arg );
 	}
 }
@@ -265,7 +268,7 @@ $( document ).on( 'keydown', function( e ) {
 			
 			e.preventDefault();
 			if ( menu ) {
-				V.li = $( '.entries li.active' );
+				$li = $( '.entries li.active' );
 				$focus.trigger( 'click' );
 				return
 			}
