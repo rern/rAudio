@@ -77,8 +77,21 @@ function currentStatus( id, arg ) {
 		bannerReset();
 	} );
 }
-function entriesStatusHide() {
-	$( '.section' ).each( ( i, el ) => $( el ).find( 'pre' ).last().addClass( 'hide' ) );
+function entriesInfo( id, arg ) {
+	var $code = $( '#code'+ id );
+	var index = V.li.data( 'index' );
+	var pre   = '<pre id="code'+ id +'" class="status li" data-liindex="'+ index +'"></pre>';
+	if ( ! $code.length ) {
+		V.li.after( pre );
+		currentStatus( id, arg );
+	} else {
+		var liindex = $code.data( 'liindex' );
+		$code.remove();
+		if ( liindex === index ) return
+		
+		V.li.after( pre );
+		currentStatus( id, arg );
+	}
 }
 function infoSetting( id, callback ) {
 	var filesh = 'settings/data-config.sh '+ id;
@@ -315,7 +328,7 @@ if ( $( '#menu' ).length ) {
 		$( 'li' ).removeClass( 'active' );
 		if ( $( e.target ).is( '.menu a' ) || $( e.target ).is( 'pre' ) ) return
 		
-		entriesStatusHide();
+		$( '.status.li' ).remove();
 	} );
 }
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {

@@ -54,7 +54,6 @@ htmlHead( [
 ] );
 ?>
 	<ul id="wlan" class="entries"></ul>
-	<pre id="codewlinfo" class="status hide"></pre>
 	<div class="helpblock hide"><?=$B->add?> Manual connect
 <?=$B->search?> Available networks
 <?=$B->wifi?> Context menu

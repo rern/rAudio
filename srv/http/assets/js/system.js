@@ -765,7 +765,7 @@ var util          = {
 			var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
 			var dot = '<grn>&ensp;•&ensp;</grn>';
 			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
-			html += '<li>'+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ v.source +'</c></li>';
+			html += '<li data-index="'+ i +'">'+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ v.source +'</c></li>';
 		} );
 		$( '#list' ).html( html );
 	}
@@ -998,7 +998,6 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	
 	var i     = $this.index()
 	var list  = S.liststorage[ i ];
-	entriesStatusHide();
 	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
 		info( {
 			  icon    : 'networks'
@@ -1110,12 +1109,7 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			var $code = $( '#codestorageinfo' );
-			if ( $code.hasClass( 'hide' ) ) {
-				currentStatus( 'storageinfo', source );
-			} else {
-				$code.addClass( 'hide' );
-			}
+			entriesInfo( 'storageinfo', source )
 			break
 		case 'remount':
 			notify( icon, title, 'Remount ...' );

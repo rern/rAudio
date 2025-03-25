@@ -131,16 +131,19 @@ function renderWlan() {
 	if ( ! $( '#divscanwlan' ).hasClass( 'hide' ) ) $( '#divscanwlan .back' ).trigger( 'click' );
 	var html = '';
 	if ( S.ap ) {
-		html += '<li class="wl ap">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
+		html += '<li class="wl ap" data-index="0">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
 				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip +'</li>';
 	}
 	if ( S.list.wlan ) {
-		S.list.wlan.forEach( list => {
+		S.list.wlan.forEach( ( list, i ) => {
+			if ( S.ap ) i++;
+			var index = ' data-index="'+ i +'"';
 			if ( list.ip ) {
-				html += '<li class="wl current" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( list.icon ) +'<a>'+ list.ssid 
-						 +'</a>&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
+				html += '<li class="wl current" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'"'+ index +'>'
+					   + ico( list.icon ) +'<a>'+ list.ssid 
+					   +'</a>&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
-				html += '<li class="wl" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) + list.ssid +'</li>';
+				html += '<li class="wl" data-ssid="'+ list.ssid +'"'+ index +'>'+ ico( 'wifi' ) + list.ssid +'</li>';
 			}
 		} );
 	}
@@ -487,17 +490,16 @@ $( '#menu a' ).on( 'click', function() {
 			} );
 			break
 		case 'info':
-			var $status = V.li.parent().next();
-			if ( ! $status.hasClass( 'hide' ) ) {
-				$status.addClass( 'hide' )
-				return
-			}
-			
 			if ( V.bluetooth ) {
+				var id  = 'btinfo';
+				var arg = V.li.data( 'mac' );
 				currentStatus( 'btinfo', V.li.data( 'mac' ) );
 			} else {
+				var id  = 'wlinfo';
+				var arg = V.li.hasClass( 'ap' ) ? '' : V.li.data( 'ssid' );
 				currentStatus( 'wlinfo', V.li.hasClass( 'ap' ) ? '' : V.li.data( 'ssid' ) );
 			}
+			entriesInfo( id, arg );
 			break
 		case 'rename':
 			var icon  = 'bluetooth';
