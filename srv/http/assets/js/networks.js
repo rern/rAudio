@@ -1,11 +1,11 @@
 function accesspoint2ssid( ssid, val ) {
-	var message = '<p>· Disable and switch to <wh>'+ ssid +'</wh>'
-				 +'<br>· All clients must be switched as well.';
-	if ( S.ap && S.apconf.ip === location.hostname ) message += '<br>· New rAudio URL: <c>http://'+ S.hostname +'</c></p>';
+	var changeip = S.ap && S.apconf.ip === location.hostname;
 	info( {
 		  icon    : 'ap'
 		, title   : 'Access Point'
-		, message : message
+		, message : '<p>· Disable and connect <wh>'+ ssid +'</wh>'
+				   +'<br>· Connected clients will be dropped.'
+				   + ( changeip ? '<br>· New rAudio URL: <c>http://'+ S.hostname +'</c>' : '' ) +'</p>'
 		, ok      : () => {
 			$( '#wlan li.ap' ).remove();
 			typeof val === 'object' ? connectWiFi( val ) : changeSsid( ssid );
