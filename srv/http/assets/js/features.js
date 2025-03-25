@@ -34,8 +34,8 @@ var config       = {
 		info( {
 			  ...SW
 			, message      : '<wh>Wi-Fi</wh> is currently connected to:'
-							+'<br>'+ ico( 'wifi' ) +' <wh>'+ S.ssid +'</wh>'
-							+'<br><br>Continue and disconnect?'
+							+'<br>'+ ico( 'wifi gr' ) +' <wh>'+ S.ssid +'</wh>'
+							+'<br><br>Enable and disconnect?'
 			, list         : [
 				  [ 'SSID',     'text' ]
 				, [ 'IP',       'text' ]
