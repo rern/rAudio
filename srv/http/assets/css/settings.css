@@ -82,6 +82,10 @@ pre.status {
 	line-height: 20px;
 	overflow-x: auto;
 }
+li.pre {
+	height: 100% !important;
+	max-height: 75vh;
+}
 .section pre code {
 	background: var( --cg );
 }

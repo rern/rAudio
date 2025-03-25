@@ -75,9 +75,9 @@ function renderBluetooth() {
 	if ( ! $( '#divscanbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).trigger( 'click' );
 	var html  = '';
 	if ( S.list.bluetooth ) {
-		S.list.bluetooth.forEach( list => {
+		S.list.bluetooth.forEach( ( list, i ) => {
 			var dot = list.connected ? '<grn>•</grn>&ensp;' : '';
-			html += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
+			html += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'" data-index="'+ i +'">'
 					 + ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + dot + list.name +'</li>';
 		} );
 	}
@@ -493,11 +493,9 @@ $( '#menu a' ).on( 'click', function() {
 			if ( V.bluetooth ) {
 				var id  = 'btinfo';
 				var arg = V.li.data( 'mac' );
-				currentStatus( 'btinfo', V.li.data( 'mac' ) );
 			} else {
 				var id  = 'wlinfo';
 				var arg = V.li.hasClass( 'ap' ) ? '' : V.li.data( 'ssid' );
-				currentStatus( 'wlinfo', V.li.hasClass( 'ap' ) ? '' : V.li.data( 'ssid' ) );
 			}
 			entriesInfo( id, arg );
 			break

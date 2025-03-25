@@ -63,11 +63,11 @@ function contextMenuToggle() {
 	return true
 }
 function currentStatus( id, arg ) {
-	var $el = $( '#code'+ id );
-	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
+	var $code = $( '#code'+ id );
+	if ( $code.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	bash( 'data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
 		clearTimeout( timeoutGet );
-		$el
+		$code
 			.html( status )
 			.data( 'status', id )
 			.data( 'arg', arg || '' )
@@ -80,13 +80,13 @@ function currentStatus( id, arg ) {
 function entriesInfo( id, arg ) {
 	var $code = $( '#code'+ id );
 	var index = V.li.data( 'index' );
-	var pre   = '<pre id="code'+ id +'" class="status li" data-liindex="'+ index +'"></pre>';
+	var pre   = '<li class="pre"><pre id="code'+ id +'" class="status li" data-liindex="'+ index +'"></pre></li>';
 	if ( ! $code.length ) {
 		V.li.after( pre );
 		currentStatus( id, arg );
 	} else {
 		var liindex = $code.data( 'liindex' );
-		$code.remove();
+		$code.parent().remove();
 		if ( liindex === index ) return
 		
 		V.li.after( pre );
@@ -328,7 +328,7 @@ if ( $( '#menu' ).length ) {
 		$( 'li' ).removeClass( 'active' );
 		if ( $( e.target ).is( '.menu a' ) || $( e.target ).is( 'pre' ) ) return
 		
-		$( '.status.li' ).remove();
+		$( 'li.pre' ).remove();
 	} );
 }
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
