@@ -488,7 +488,11 @@ $( '#menu a' ).on( 'click', function() {
 			} );
 			break
 		case 'info':
-			if ( ! V.li.parent().next().hasClass( 'hide' ) ) return
+			var $status = V.li.parent().next();
+			if ( ! $status.hasClass( 'hide' ) ) {
+				$status.addClass( 'hide' )
+				return
+			}
 			
 			if ( V.bluetooth ) {
 				currentStatus( 'btinfo', V.li.data( 'mac' ) );

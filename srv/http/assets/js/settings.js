@@ -10,11 +10,7 @@ W.refresh = data => { // except camilla
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-		if ( page === 'networks' ) {
-			if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
-		} else {
-			switchSet();
-		}
+		switchSet();
 		renderPage();
 	}, 300 );
 }
@@ -183,6 +179,13 @@ function switchEnable() {
 	delete SW;
 }
 function switchSet() {
+	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
+	bannerHide();
+	if ( page === 'networks' ) {
+		if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
+		return
+	}
+	
 	var $switch = $( '.switch' );
 	$switch.removeClass( 'disabled' );
 	$switch.each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
@@ -191,8 +194,6 @@ function switchSet() {
 		var id    = el.id.slice( 8 ); // setting-id > id
 		id in config ? $this.toggleClass( 'hide', S[ id ] === false ) : $this.remove();
 	} );
-	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
-	bannerHide();
 }
 //---------------------------------------------------------------------------------------
 document.title = page === 'camilla' ? 'CamillaDSP' : capitalize( page );
@@ -306,13 +307,17 @@ $( document ).on( 'keydown', function( e ) {
 			break
 	}
 } );
-$( 'body' ).on( 'click', function( e ) {
-	if ( ! $( '#menu' ).length ) return
-	
-	$( '#menu' ).addClass( 'hide' );
-	$( 'li' ).removeClass( 'active' );
-	if ( ! $( e.target ).is( 'pre.status' ) ) entriesStatusHide();
-} );
+if ( $( '#menu' ).length ) {
+	$( 'body' ).on( 'click', function( e ) {
+		if ( I.active ) return
+		
+		$( '#menu' ).addClass( 'hide' );
+		$( 'li' ).removeClass( 'active' );
+		if ( $( e.target ).is( '.menu a' ) || $( e.target ).is( 'pre' ) ) return
+		
+		entriesStatusHide();
+	} );
+}
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );
 	var id    = $this.data( 'status' );
