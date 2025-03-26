@@ -373,7 +373,7 @@ $( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function() {
 	$li = $( this );
-	if ( $li.hasClass( 'pre' ) || ! contextMenuToggle( $li ) ) return
+	if ( ! contextMenuToggle( $li ) ) return
 	
 	V.bluetooth = V.lan = V.wlan = false;
 	V[ $li.parent().prop( 'id' ) ] = true;

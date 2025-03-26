@@ -56,6 +56,8 @@ function contextMenu() {
 	scrollUpToView( $menu );
 }
 function contextMenuToggle( $li ) {
+	if ( $li.hasClass( 'info' ) ) return false
+		
 	var active = $li.hasClass( 'active' );
 	var $menu  = $( '#menu' );
 	$li.siblings().removeClass( 'active' );
@@ -66,8 +68,8 @@ function contextMenuToggle( $li ) {
 	
 	return true
 }
-function currentStatus( id, arg ) {
-	var $code = $( '#code'+ id );
+function currentStatus( id, arg, $code ) {
+	if ( ! $code ) $code = $( '#code'+ id );
 	if ( $code.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	bash( 'data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
 		clearTimeout( timeoutGet );
@@ -82,17 +84,16 @@ function currentStatus( id, arg ) {
 	} );
 }
 function entriesInfo( id, arg ) {
-	var $code = $( '#code'+ id );
 	var index = $li.data( 'index' );
-	var pre   = '<li id="code'+ id +'" class="pre status li hide" data-liindex="'+ index +'"></li>';
-	if ( $code.length ) {
+	if ( $li.next().hasClass( 'info' ) ) {
+		var $code   = $li.next(); 
 		var liindex = $code.data( 'liindex' );
 		$code.remove();
 		if ( liindex === index ) return
 	}
 	
-	$li.after( pre );
-	currentStatus( id, arg );
+	$li.after( '<li class="info status hide" data-liindex="'+ index +'"></li>' );
+	currentStatus( id, arg, $li.next() );
 }
 function infoSetting( id, callback ) {
 	var filesh = 'settings/data-config.sh '+ id;
@@ -220,9 +221,9 @@ if ( $( '#menu' ).length ) {
 		
 		$( '#menu' ).addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
-		if ( $( e.target ).is( '.menu a' ) || $( e.target ).is( 'pre, .pre' ) ) return
+		if ( $( e.target ).is( '.menu a' ) || $( e.target ).is( 'pre, .info' ) ) return
 		
-		$( 'li.pre' ).remove();
+		$( 'li.info' ).remove();
 	} );
 }
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
