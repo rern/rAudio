@@ -21,7 +21,7 @@ bluetooth )
 <bll># bluetoothctl show</bll>
 $( bluetoothctl show )"
 	;;
-btinfo )
+bluetoothinfo )
 	echo "\
 <bll># bluetoothctl info $2</bll>
 $( bluetoothctl info $2 )"
@@ -200,7 +200,7 @@ $( ifconfig $wlandev | grep -E -v 'RX|TX')
 <bll># iwconfig $wlandev</bll>
 $( iwconfig $wlandev | awk NF )"
 	;;
-wlinfo )
+wlaninfo )
 	if [[ $2 ]]; then
 		netctl status "$2" | statusColor
 	else

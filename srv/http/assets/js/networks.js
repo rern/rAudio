@@ -79,7 +79,7 @@ function renderBluetooth() {
 					 + ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + dot + list.name +'</li>';
 		} );
 	}
-	$( '#bluetooth' ).html( html );
+	renderList( 'bluetooth', html );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 }
 function renderPage() {
@@ -145,7 +145,7 @@ function renderWlan() {
 			}
 		} );
 	}
-	$( '#wlan' ).html( html );
+	renderList( 'wlan', html );
 	$( '#divwlan' ).removeClass( 'hide' );
 	bannerHide();
 }
@@ -481,10 +481,10 @@ $( '#menu a' ).on( 'click', function() {
 			break
 		case 'info':
 			if ( V.bluetooth ) {
-				var id  = 'btinfo';
+				var id  = 'bluetooth';
 				var arg = $li.data( 'mac' );
 			} else {
-				var id  = 'wlinfo';
+				var id  = 'wlan';
 				var arg = $li.hasClass( 'ap' ) ? '' : $li.data( 'ssid' );
 			}
 			entriesInfo( id, arg );

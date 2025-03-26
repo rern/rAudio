@@ -765,9 +765,10 @@ var util          = {
 			var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
 			var dot = '<grn>&ensp;•&ensp;</grn>';
 			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
-			html += '<li data-index="'+ i +'">'+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ v.source +'</c></li>';
+			html += '<li data-index="'+ i +'" data-source="'+ v.source +'">'
+					+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ v.source +'</c></li>';
 		} );
-		$( '#list' ).html( html );
+		renderList( 'storage', html );
 	}
 	, restoreReset  : () => {
 		info( {
@@ -990,7 +991,7 @@ $( '.addnas' ).on( 'click', function() {
 	SW = { icon: 'networks' }
 	util.mount.mount();
 } );
-$( '#list' ).on( 'click', 'li', function() {
+$( '#storage' ).on( 'click', 'li', function() {
 	$li      = $( this );
 	if ( ! contextMenuToggle( $li ) ) return
 	
@@ -1105,7 +1106,7 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			entriesInfo( 'storageinfo', source )
+			entriesInfo( 'storage', source )
 			break
 		case 'remount':
 			notify( icon, title, 'Remount ...' );

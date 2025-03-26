@@ -83,16 +83,6 @@ function currentStatus( id, arg, $code ) {
 		bannerReset();
 	} );
 }
-function entriesInfo( id, arg ) {
-	if ( $li.next().hasClass( 'info' ) ) {
-		var $code   = $li.next(); 
-		$code.remove();
-		return
-	}
-	
-	$li.after( '<li class="info status hide" data-id="'+ $li.data( V.wlan ? 'ssid' : 'mac' ) +'"></li>' );
-	currentStatus( id, arg, $li.next() );
-}
 function infoSetting( id, callback ) {
 	var filesh = 'settings/data-config.sh '+ id;
 	if ( V.debug ) console.log( filesh );
@@ -194,12 +184,9 @@ function switchEnable() {
 function switchSet() {
 	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 	bannerHide();
-	if ( page === 'networks' ) {
-		if ( $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).trigger( 'click' );
-		return
-	}
-	
 	var $switch = $( '.switch' );
+	if ( ! $switch.length ) return
+	
 	$switch.removeClass( 'disabled' );
 	$switch.each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
@@ -214,6 +201,11 @@ localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_bla
 $( '#'+ page ).addClass( 'active' );
 
 if ( $( '#menu' ).length ) {
+	var lidata = {
+		  bluetooth : 'mac'
+		, storage   : 'source'
+		, wlan      : 'ssid'
+	}
 	$( 'body' ).on( 'click', function( e ) {
 		if ( I.active || $( e.target ).is( 'li' ) || $( e.target ).parents( 'li' ).length ) return
 		
@@ -223,6 +215,30 @@ if ( $( '#menu' ).length ) {
 		
 		$( 'li.info' ).remove();
 	} );
+	function entriesInfo( id, arg ) {
+		if ( $li.next().hasClass( 'info' ) ) {
+			var $code   = $li.next(); 
+			$code.remove();
+			return
+		}
+		
+		$li.after( '<li class="info status hide" data-id="'+ $li.data( lidata[ id ] ) +'"></li>' );
+		currentStatus( id +'info', arg, $li.next() );
+	}
+	function renderList( id, html ) {
+		var $el = $( '#'+ id );
+		if ( html ) {
+			var liinfo = [];
+			$el.find( 'li.info' ).each( ( i, el ) => liinfo.push( $( el ).data( 'id' ) ) );
+		}
+		$el.html( html );
+		if ( html && liinfo.length ) {
+			liinfo.forEach( d => {
+				$li = $el.find( 'li[data-'+ lidata[ id ] +'="'+ d +'"]' );
+				entriesInfo( id, d );
+			} );
+		}
+	}
 }
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );

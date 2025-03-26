@@ -85,7 +85,7 @@ Note:
 EOF
 ];
 $body        = [ <<< EOF
-<ul id="list" class="entries"></ul>
+<ul id="storage" class="entries"></ul>
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
 $B->microsd$B->usbdrive$B->networks Context menu</div>
 EOF ];
