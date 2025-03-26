@@ -47,27 +47,6 @@ function bannerReset() {
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
-function contextMenu() {
-	var $menu   = $( '#menu' );
-	$li.addClass( 'active' );
-	$menu
-		.removeClass( 'hide' )
-		.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 9 );
-	scrollUpToView( $menu );
-}
-function contextMenuToggle( $li ) {
-	if ( $li.hasClass( 'info' ) ) return false
-		
-	var active = $li.hasClass( 'active' );
-	var $menu  = $( '#menu' );
-	$li.siblings().removeClass( 'active' );
-	if ( ! $menu.hasClass( 'hide' ) && active ) {
-		$menu.addClass( 'hide' );
-		return false
-	}
-	
-	return true
-}
 function currentStatus( id, arg, $code ) {
 	if ( ! $code ) $code = $( '#code'+ id );
 	if ( $code.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
@@ -201,20 +180,43 @@ localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_bla
 $( '#'+ page ).addClass( 'active' );
 
 if ( $( '#menu' ).length ) {
+	var $menu  = $( '#menu' );
 	var lidata = {
 		  bluetooth : 'mac'
 		, storage   : 'source'
 		, wlan      : 'ssid'
 	}
 	$( 'body' ).on( 'click', function( e ) {
-		if ( I.active || $( e.target ).is( 'li' ) || $( e.target ).parents( 'li' ).length ) return
+		if ( I.active
+			|| $( e.target ).parents( '.entries' ).length
+			|| $( e.target ).parents( '#menu' ).length
+		) return
 		
-		$( '#menu' ).addClass( 'hide' );
+		$menu.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
 		if ( $( e.target ).is( '.menu a' ) || $( e.target ).is( 'pre, .info' ) ) return
 		
 		$( 'li.info' ).remove();
 	} );
+	function contextMenu() {
+		$li.addClass( 'active' );
+		$menu
+			.removeClass( 'hide' )
+			.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 9 );
+		scrollUpToView( $menu );
+	}
+	function contextMenuToggle( $li ) {
+		if ( $li.hasClass( 'info' ) ) return false
+			
+		var active = $li.hasClass( 'active' );
+		$li.siblings().removeClass( 'active' );
+		if ( ! $menu.hasClass( 'hide' ) && active ) {
+			$menu.addClass( 'hide' );
+			return false
+		}
+		
+		return true
+	}
 	function entriesInfo( id, arg ) {
 		if ( $li.next().hasClass( 'info' ) ) {
 			var $code   = $li.next(); 

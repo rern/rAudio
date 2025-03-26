@@ -129,7 +129,7 @@ function renderWlan() {
 	if ( ! $( '#divscanwlan' ).hasClass( 'hide' ) ) $( '#divscanwlan .back' ).trigger( 'click' );
 	var html = '';
 	if ( S.ap ) {
-		html += '<li class="wl ap" data-index="0">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
+		html += '<li class="wl ap" data-index="0" data-ssid="">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
 				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip +'</li>';
 	}
 	if ( S.list.wlan ) {
@@ -380,9 +380,9 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function() {
 	$( '#menu a' ).addClass( 'hide' );
 	if ( V.bluetooth ) {
 		var connected = $li.find( 'grn' ).length === 1;
-		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
-		$( '#menu' ).find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
+		$menu.find( '.forget, .info' ).removeClass( 'hide' );
+		$menu.find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
 	} else if ( V.lan ) {
 		$( '#menu .edit' ).removeClass( 'hide' );
 	} else if ( ! $li.hasClass( 'ap' ) ) {
@@ -390,9 +390,9 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function() {
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', current );
 		$( '#menu .disconnect' ).toggleClass( 'hide', ! current );
-		$( '#menu' ).find( '.info, .rename' ).addClass( 'hide' );
+		$menu.find( '.info, .rename' ).addClass( 'hide' );
 	}
-	if ( $li.hasClass( 'wl' ) ) $( '#menu' ).find( '.info' ).removeClass( 'hide' );
+	if ( $li.hasClass( 'wl' ) ) $menu.find( '.info' ).removeClass( 'hide' );
 	contextMenu();
 } );
 $( '.lanadd' ).on( 'click', function() {
@@ -400,6 +400,7 @@ $( '.lanadd' ).on( 'click', function() {
 	settingLan();
 } );
 $( '#menu a' ).on( 'click', function() {
+	$menu.addClass( 'hide' );
 	var cmd = $( this ).data( 'cmd' );
 	switch ( cmd ) {
 		case 'connect':

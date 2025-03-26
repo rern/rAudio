@@ -75,7 +75,7 @@ pre.status {
 	margin-top: 0;
 	padding: 5px 5px 25px 5px;
 	width: 100%;
-	max-height: 75vh;
+	max-height: 50vh;
 	tab-size: 4;
 	background: var( --cgd );
 	font-family: Inconsolata;
@@ -86,6 +86,7 @@ pre.status {
 li.info {
 	height: 100% !important;
 	white-space: pre !important;
+	overflow-y: auto !important;
 }
 .section pre code {
 	background: var( --cg );

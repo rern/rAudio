@@ -1089,6 +1089,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 	}
 } );
 $( '#menu a' ).on( 'click', function() {
+	$menu.addClass( 'hide' );
 	var cmd        = $( this ).data( 'cmd' );
 	var list       = S.liststorage[ $li.index() ];
 	var mountpoint = list.mountpoint;
