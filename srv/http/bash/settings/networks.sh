@@ -13,7 +13,6 @@ netctlSwitch() {
 		[[ $( iwgetid -r ) == $ESSID ]] && connected=1 && break
 	done
 	if [[ $connected ]]; then
-		[[ $currentssid ]] && netctl disable "currentssid" &> /dev/null
 		netctl enable "$ESSID" &> /dev/null
 		avahi-daemon --kill # flush cache and restart
 		pushRefresh
