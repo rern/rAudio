@@ -992,7 +992,7 @@ $( '.addnas' ).on( 'click', function() {
 } );
 $( '#list' ).on( 'click', 'li', function() {
 	$li      = $( this );
-	if ( ! contextMenuToggle( $li ) ) return
+	if ( $li.hasClass( 'pre' ) || ! contextMenuToggle( $li ) ) return
 	
 	var i    = $li.index();
 	var list = S.liststorage[ i ];

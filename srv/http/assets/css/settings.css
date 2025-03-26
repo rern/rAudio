@@ -70,6 +70,7 @@ ul {
 	clear: both;
 }
 .section pre,
+li.pre,
 pre.status {
 	margin-top: 0;
 	padding: 5px 5px 25px 5px;
@@ -78,13 +79,13 @@ pre.status {
 	tab-size: 4;
 	background: var( --cgd );
 	font-family: Inconsolata;
-	font-size: 15px;
+	font-size: 15px !important;
 	line-height: 20px;
 	overflow-x: auto;
 }
 li.pre {
 	height: 100% !important;
-	max-height: 75vh;
+	white-space: pre !important;
 }
 .section pre code {
 	background: var( --cg );
@@ -663,7 +664,7 @@ input.disabled + .switchlabel:after {
 	#bar-bottom div.active:hover { background-color: var( --cml ) }
 	#bar-bottom div:hover span { color: var( --cw ) }
 	a:hover { text-decoration: none }
-	.entries li:hover { background: var( --cga ) }
+	.entries li:not( .pre ):hover { background: var( --cga ) }
 	#menu a:hover {
 		color: var( --cw );
 		background-color: var( --cgl );
@@ -678,7 +679,7 @@ input.disabled + .switchlabel:after {
 	.col-l.icon,
 	.divgain i,
 	.edit,
-	.entries li,
+	.entries li:not( .pre ),
 	.helphead,
 	.helpblock bl,
 	.i-mute,
@@ -689,7 +690,7 @@ input.disabled + .switchlabel:after {
 	.settings,
 	.settingedit,
 	.slider,
-	.status:not(pre,.single),
+	.status:not(pre, .pre, .single),
 	.switchlabel,
 	.tab .i-add,
 	.tab .i-remove,

@@ -58,7 +58,7 @@ function contextMenu() {
 function contextMenuToggle( $li ) {
 	var active = $li.hasClass( 'active' );
 	var $menu  = $( '#menu' );
-	$li.parent().find( 'li' ).removeClass( 'active' );
+	$li.siblings().removeClass( 'active' );
 	if ( ! $menu.hasClass( 'hide' ) && active ) {
 		$menu.addClass( 'hide' );
 		return false
@@ -84,18 +84,15 @@ function currentStatus( id, arg ) {
 function entriesInfo( id, arg ) {
 	var $code = $( '#code'+ id );
 	var index = $li.data( 'index' );
-	var pre   = '<li class="pre"><pre id="code'+ id +'" class="status li" data-liindex="'+ index +'"></pre></li>';
-	if ( ! $code.length ) {
-		$li.after( pre );
-		currentStatus( id, arg );
-	} else {
+	var pre   = '<li id="code'+ id +'" class="pre status li hide" data-liindex="'+ index +'"></li>';
+	if ( $code.length ) {
 		var liindex = $code.data( 'liindex' );
-		$code.parent().remove();
+		$code.remove();
 		if ( liindex === index ) return
-		
-		$li.after( pre );
-		currentStatus( id, arg );
 	}
+	
+	$li.after( pre );
+	currentStatus( id, arg );
 }
 function infoSetting( id, callback ) {
 	var filesh = 'settings/data-config.sh '+ id;
@@ -217,120 +214,13 @@ document.title = page === 'camilla' ? 'CamillaDSP' : capitalize( page );
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 $( '#'+ page ).addClass( 'active' );
 
-$( document ).on( 'keydown', function( e ) {
-	if ( I.active ) return
-	
-	var camilla = page === 'camilla';
-	var menu    = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
-	var tabs    = ! $( '#loader' ).hasClass( 'hide' );
-	var key     = e.key;
-	switch ( key ) {
-		case 'ArrowDown':
-		case 'ArrowUp':
-			if ( V.select2 ) return
-			
-			e.preventDefault();
-			if ( ! camilla && tabs ) return
-			
-			if ( menu ) {
-				focusNext( $( '.menu a:not( .hide )' ), 'active', key );
-				return
-			}
-			
-			var index = 0;
-			var $tabs = $( '[ tabindex=0 ]:not( .menu a )' ).filter( ( i, el ) => {
-				if ( $( el ).parents( '.section' ).hasClass( 'hide' )
-					|| $( el ).parents( '.row' ).hasClass( 'hide' )
-					|| $( el ).is( '.setting.hide' )
-				) return
-					
-				return $( el )
-			} );
-			focusNext( $tabs, 'focus', key );
-			break
-		case 'ArrowLeft':
-		case 'ArrowRight':
-			if ( menu ) {
-				if ( key === 'ArrowLeft' ) $( '.menu' ).addClass( 'hide' );
-			} else if ( $( 'pre.status:not( .hide )' ).length ) {
-				$( 'pre.status' ).addClass( 'hide' );
-			} else if ( $( '.entries li:focus' ).length ) {
-				var $target = $( '.entries li:focus' );
-				if ( camilla ) $target = $target.find( '.liicon' );
-				$target.trigger( 'click' );
-			} else if ( tabs ) {
-				focusNext( $( '#bar-bottom div' ), 'focus', key );
-			}
-			break
-		case ' ':
-		case 'Enter':
-			var $focus = $( document.activeElement );
-			if ( ! $focus.length ) return
-			
-			e.preventDefault();
-			if ( menu ) {
-				$li = $( '.entries li.active' );
-				$focus.trigger( 'click' );
-				return
-			}
-			
-			if ( $focus.hasClass( 'switchlabel' ) ) $focus = $focus.prev();
-			$focus.trigger( 'click' );
-			loaderHide();
-			$( '#bar-bottom div' )
-				.removeClass( 'focus' )
-				.trigger( 'blur' );
-			break
-		case 'Alt':
-		case 'Escape':
-			e.preventDefault();
-			if ( menu ) {
-				$( '.menu' ).addClass( 'hide' );
-			} else if ( V.select2 ) {
-				$( '.select2-hidden-accessible' ).select2( 'close' );
-			} else if ( $( '#data' ).length ) {
-				$( '#data' ).remove();
-			} else if ( $( '#bar-bottom div:focus' ).length ) {
-				loaderHide();
-				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
-				$( '.focus' ).trigger( 'focus' );
-			} else {
-				loader( 'fader' );
-				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
-				var $focus = $( '#bar-bottom div.active' );
-				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );
-				$focus.trigger( 'focus' );
-			}
-			break
-		case 'Backspace':
-			$( '.section:not( .hide ) .i-back' ).trigger( 'click' );
-			break
-		case 'F1':
-			e.preventDefault();
-			$( '.helphead' ).trigger( 'click' );
-			break
-		case 'Tab':
-			document.activeElement.scrollIntoView( { block: 'center' } );
-			break
-		case 'x':
-			if ( ! e.ctrlKey ) return
-			
-			$( '#data' ).length ? $( '#data' ).remove() : $( '#close' ).trigger( 'click' );
-			break
-		case 'MediaPause':
-		case 'MediaPlay':
-		case 'MediaPlayPause':
-			if ( [ 'camilla', 'player' ].includes( page ) ) $( '.playback' ).trigger( 'click' );
-			break
-	}
-} );
 if ( $( '#menu' ).length ) {
 	$( 'body' ).on( 'click', function( e ) {
-		if ( I.active || $( e.target ).closest( 'li' ).length ) return
+		if ( I.active || $( e.target ).is( 'li' ) || $( e.target ).parents( 'li' ).length ) return
 		
 		$( '#menu' ).addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
-		if ( $( e.target ).is( '.menu a' ) || $( e.target ).is( 'pre' ) ) return
+		if ( $( e.target ).is( '.menu a' ) || $( e.target ).is( 'pre, .pre' ) ) return
 		
 		$( 'li.pre' ).remove();
 	} );
@@ -468,5 +358,113 @@ $( '.setting' ).on( 'click', function() {
 		config[ id ]();
 	} else {
 		infoSetting( id );
+	}
+} );
+// kb shortcut
+$( document ).on( 'keydown', function( e ) {
+	if ( I.active ) return
+	
+	var camilla = page === 'camilla';
+	var menu    = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
+	var tabs    = ! $( '#loader' ).hasClass( 'hide' );
+	var key     = e.key;
+	switch ( key ) {
+		case 'ArrowDown':
+		case 'ArrowUp':
+			if ( V.select2 ) return
+			
+			e.preventDefault();
+			if ( ! camilla && tabs ) return
+			
+			if ( menu ) {
+				focusNext( $( '.menu a:not( .hide )' ), 'active', key );
+				return
+			}
+			
+			var index = 0;
+			var $tabs = $( '[ tabindex=0 ]:not( .menu a )' ).filter( ( i, el ) => {
+				if ( $( el ).parents( '.section' ).hasClass( 'hide' )
+					|| $( el ).parents( '.row' ).hasClass( 'hide' )
+					|| $( el ).is( '.setting.hide' )
+				) return
+					
+				return $( el )
+			} );
+			focusNext( $tabs, 'focus', key );
+			break
+		case 'ArrowLeft':
+		case 'ArrowRight':
+			if ( menu ) {
+				if ( key === 'ArrowLeft' ) $( '.menu' ).addClass( 'hide' );
+			} else if ( $( 'pre.status:not( .hide )' ).length ) {
+				$( 'pre.status' ).addClass( 'hide' );
+			} else if ( $( '.entries li:focus' ).length ) {
+				var $target = $( '.entries li:focus' );
+				if ( camilla ) $target = $target.find( '.liicon' );
+				$target.trigger( 'click' );
+			} else if ( tabs ) {
+				focusNext( $( '#bar-bottom div' ), 'focus', key );
+			}
+			break
+		case ' ':
+		case 'Enter':
+			var $focus = $( document.activeElement );
+			if ( ! $focus.length ) return
+			
+			e.preventDefault();
+			if ( menu ) {
+				$li = $( '.entries li.active' );
+				$focus.trigger( 'click' );
+				return
+			}
+			
+			if ( $focus.hasClass( 'switchlabel' ) ) $focus = $focus.prev();
+			$focus.trigger( 'click' );
+			loaderHide();
+			$( '#bar-bottom div' )
+				.removeClass( 'focus' )
+				.trigger( 'blur' );
+			break
+		case 'Alt':
+		case 'Escape':
+			e.preventDefault();
+			if ( menu ) {
+				$( '.menu' ).addClass( 'hide' );
+			} else if ( V.select2 ) {
+				$( '.select2-hidden-accessible' ).select2( 'close' );
+			} else if ( $( '#data' ).length ) {
+				$( '#data' ).remove();
+			} else if ( $( '#bar-bottom div:focus' ).length ) {
+				loaderHide();
+				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
+				$( '.focus' ).trigger( 'focus' );
+			} else {
+				loader( 'fader' );
+				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
+				var $focus = $( '#bar-bottom div.active' );
+				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );
+				$focus.trigger( 'focus' );
+			}
+			break
+		case 'Backspace':
+			$( '.section:not( .hide ) .i-back' ).trigger( 'click' );
+			break
+		case 'F1':
+			e.preventDefault();
+			$( '.helphead' ).trigger( 'click' );
+			break
+		case 'Tab':
+			document.activeElement.scrollIntoView( { block: 'center' } );
+			break
+		case 'x':
+			if ( ! e.ctrlKey ) return
+			
+			$( '#data' ).length ? $( '#data' ).remove() : $( '#close' ).trigger( 'click' );
+			break
+		case 'MediaPause':
+		case 'MediaPlay':
+		case 'MediaPlayPause':
+			if ( [ 'camilla', 'player' ].includes( page ) ) $( '.playback' ).trigger( 'click' );
+			break
 	}
 } );
