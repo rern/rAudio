@@ -84,15 +84,13 @@ function currentStatus( id, arg, $code ) {
 	} );
 }
 function entriesInfo( id, arg ) {
-	var index = $li.data( 'index' );
 	if ( $li.next().hasClass( 'info' ) ) {
 		var $code   = $li.next(); 
-		var liindex = $code.data( 'liindex' );
 		$code.remove();
-		if ( liindex === index ) return
+		return
 	}
 	
-	$li.after( '<li class="info status hide" data-liindex="'+ index +'"></li>' );
+	$li.after( '<li class="info status hide" data-id="'+ $li.data( V.wlan ? 'ssid' : 'mac' ) +'"></li>' );
 	currentStatus( id, arg, $li.next() );
 }
 function infoSetting( id, callback ) {
