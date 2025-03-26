@@ -218,26 +218,18 @@ if ( $( '#menu' ).length ) {
 		return true
 	}
 	function entriesInfo( id, arg ) {
-		if ( $li.next().hasClass( 'info' ) ) {
-			var $code   = $li.next(); 
-			$code.remove();
-			return
-		}
-		
-		$li.after( '<li class="info status hide" data-id="'+ $li.data( lidata[ id ] ) +'"></li>' );
+		if ( ! $li.next().hasClass( 'info' ) ) $li.after( '<li class="info status hide" data-id="'+ $li.data( lidata[ id ] ) +'"></li>' );
 		currentStatus( id +'info', arg, $li.next() );
 	}
 	function renderList( id, html ) {
-		var $el = $( '#'+ id );
-		if ( html ) {
-			var liinfo = [];
-			$el.find( 'li.info' ).each( ( i, el ) => liinfo.push( $( el ).data( 'id' ) ) );
-		}
-		$el.html( html );
-		if ( html && liinfo.length ) {
-			liinfo.forEach( d => {
-				$li = $el.find( 'li[data-'+ lidata[ id ] +'="'+ d +'"]' );
-				entriesInfo( id, d );
+		var $list = $( '#'+ id );
+		$list.html( html );
+		var $liinfo = $list.find( 'li.info' );
+		if ( $liinfo.length ) {
+			$liinfo.each( ( i, el ) => {
+				var $el = $( el );
+				$li = $el.prev();
+				entriesInfo( id, $el.data( 'id' ) );
 			} );
 		}
 	}

@@ -70,19 +70,29 @@ function onPageInactive() {
 	$( '.back' ).trigger( 'click' );
 }
 function renderBluetooth() {
-	if ( ! $( '#divscanbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).trigger( 'click' );
 	var html  = '';
 	if ( S.list.bluetooth ) {
 		S.list.bluetooth.forEach( ( list, i ) => {
+			var mac = list.mac;
 			var dot = list.connected ? '<grn>•</grn>&ensp;' : '';
-			html += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'" data-index="'+ i +'">'
+			html += '<li class="bt" data-mac="'+ mac +'" data-name="'+ list.name +'" data-index="'+ i +'">'
 					 + ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + dot + list.name +'</li>';
+			if ( mac in V.liinfo ) html += V.liinfo[ mac ];
 		} );
 	}
 	renderList( 'bluetooth', html );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 }
 function renderPage() {
+	V.liinfo    = {}
+	var $liinfo = $( 'li.info' );
+	if ( $liinfo.length ) {
+		$liinfo.each( ( i, el ) => {
+			var $el = $( el );
+			var id  = $el.data( 'id' ) || 'ap';
+			V.liinfo[ id ] = $el[ 0 ].outerHTML;
+		} );
+	}
 	if ( ! S.device.bluetooth ) {
 		$( '#divbluetooth' ).addClass( 'hide' );
 	} else {
@@ -126,23 +136,25 @@ function renderPage() {
 	showContent();
 }
 function renderWlan() {
-	if ( ! $( '#divscanwlan' ).hasClass( 'hide' ) ) $( '#divscanwlan .back' ).trigger( 'click' );
 	var html = '';
 	if ( S.ap ) {
 		html += '<li class="wl ap" data-index="0" data-ssid="">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
 				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip +'</li>';
+		if ( 'ap' in V.liinfo ) html += V.liinfo.ap;
 	}
 	if ( S.list.wlan ) {
 		S.list.wlan.forEach( ( list, i ) => {
 			if ( S.ap ) i++;
+			var ssid  = list.ssid;
 			var index = ' data-index="'+ i +'"';
 			if ( list.ip ) {
-				html += '<li class="wl current" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'"'+ index +'>'
-					   + ico( list.icon ) +'<a>'+ list.ssid 
+				html += '<li class="wl" data-ssid="'+ ssid +'" data-ip="'+ list.ip +'"'+ index +'>'
+					   + ico( list.icon ) +'<a>'+ ssid 
 					   +'</a>&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
 			} else {
-				html += '<li class="wl" data-ssid="'+ list.ssid +'"'+ index +'>'+ ico( 'wifi' ) + list.ssid +'</li>';
+				html += '<li class="wl" data-ssid="'+ ssid +'"'+ index +'>'+ ico( 'wifi' ) + ssid +'</li>';
 			}
+			if ( ssid in V.liinfo ) html += V.liinfo[ ssid ];
 		} );
 	}
 	renderList( 'wlan', html );
@@ -318,10 +330,8 @@ function wifiDisconnect() {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.close, .back' ).on( 'click', function() {
-	clearTimeout( V.timeoutscan );
-} );
 $( '.back' ).on( 'click', function() {
+	clearTimeout( V.timeoutscan );
 	$( '#divscanbluetooth, #divscanwlan' ).addClass( 'hide' );
 	$( '#scanwlan, #scanbluetooth' ).empty();
 	$( '.helphead, #divinterface, #divwebui' ).removeClass( 'hide' );
@@ -481,6 +491,11 @@ $( '#menu a' ).on( 'click', function() {
 			} );
 			break
 		case 'info':
+			if ( $li.next().hasClass( 'info' ) ) {
+				$li.next().remove();
+				break;
+			}
+			
 			if ( V.bluetooth ) {
 				var id  = 'bluetooth';
 				var arg = $li.data( 'mac' );

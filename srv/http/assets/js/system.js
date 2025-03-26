@@ -1107,7 +1107,7 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			entriesInfo( 'storage', source )
+			$li.next().hasClass( 'info' ) ? $li.next().remove() : entriesInfo( 'storage', source )
 			break
 		case 'remount':
 			notify( icon, title, 'Remount ...' );
