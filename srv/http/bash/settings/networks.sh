@@ -5,22 +5,22 @@
 args2var "$1"
 
 netctlSwitch() {
+	currentssid=$( iwgetid -r )
 	ip link set $wlandev down
 	[[ $currentssid ]] && netctl switch-to "$ESSID" || netctl start "$ESSID"
 	for i in {0..20}; do
 		sleep 1
 		[[ $( iwgetid -r ) == $ESSID ]] && connected=1 && break
 	done
-	[[ $( netctl is-enabled "$ESSID" ) == enabled ]] && enabled=1
 	if [[ $connected ]]; then
-		[[ ! $enabled ]] && netctl enable "$ESSID"
+		[[ $currentssid ]] && netctl disable "currentssid" &> /dev/null
+		netctl enable "$ESSID" &> /dev/null
 		avahi-daemon --kill # flush cache and restart
 		pushRefresh
 	else
 		notify wifi "$ESSID" 'Connecting failed.'
-		[[ $enabled ]] && netctl disable "$ESSID"
 		if [[ $currentssid ]]; then
-			mv -f "$dirshm/$currentssid" /etc/netctl
+			echo "$backup" > "/etc/netctl/$currentssid"
 			ip link set $wlandev down
 			netctl start "$currentssid"
 			notify wifi "$currentssid" 'Restored'
@@ -61,7 +61,7 @@ connect )
 		rm -f $dirsystem/{ap,ap.conf}
 	else
 		currentssid=$( iwgetid -r )
-		[[ $currentssid == $ESSID ]] && cp "/etc/netctl/$currentssid" $dirshm
+		[[ $currentssid == $ESSID ]] && backup=$( < "/etc/netctl/$currentssid" )
 	fi
 	data='Interface='$wlandev'
 Connection=wireless
@@ -82,10 +82,7 @@ Security='$security
 	[[ $HIDDEN ]] && data+='
 Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
-	if [[ $CONNECTED ]]; then
-		netctl stop "$ESSID"
-		netctlSwitch
-	fi
+	[[ $( iwgetid -r ) ]] && netctlSwitch
 	;;
 disconnect )
 	netctl stop "$SSID"
@@ -126,12 +123,12 @@ profileconnect )
 	netctlSwitch
 	;;
 profileforget )
-	netctl is-enabled "$SSID" && netctl disable "$SSID"
 	if netctl is-active "$SSID" &> /dev/null; then
 		netctl stop "$SSID"
 		systemctl stop wpa_supplicant
 		ip link set $( < $dirshm/wlan ) up
 	fi
+	netctl is-enabled "$SSID" &> /dev/null && netctl disable "$SSID"
 	rm "/etc/netctl/$SSID"
 	pushRefresh
 	;;

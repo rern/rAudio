@@ -56,10 +56,9 @@ function changeSsid( ssid ) {
 function connectWiFi( val ) {
 	var keys      = Object.keys( val );
 	var values    = Object.values( val );
-	var connected = $li.data( 'ip' ) || false;
 	$li.find( 'i' ).addClass( 'blink' );
 	notify( I.icon, val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
-	bash( [ 'connect', ...values, connected, 'CMD '+ keys.join( ' ' ) +' CONNECTED' ], result => {
+	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], result => {
 		changeIp( result, I.icon, I.title, val, settingWifi );
 	} );
 }
