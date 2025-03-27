@@ -20,9 +20,6 @@
 
 # Ensure those won't be messed up with
 *.jpg binary
-
-# Ensure those won't be messed up with
-*.jpg binary
 *.png binary
 *.gif binary
 *.data binary
