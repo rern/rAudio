@@ -81,6 +81,7 @@ pre.status {
 	font-size: 15px !important;
 	line-height: 20px;
 	overflow-x: auto;
+	scrollbar-width: thin;
 }
 .section pre code {
 	background: var( --cg );
