@@ -760,13 +760,16 @@ var util          = {
 		}
 	}
 	, renderStorage : () => {
-		var html  = '';
+		infoList();
+		var html    = '';
 		$.each( S.liststorage, ( i, v ) => {
 			var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
-			var dot = '<grn>&ensp;•&ensp;</grn>';
+			var dot        = '<grn>&ensp;•&ensp;</grn>';
 			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
-			html += '<li data-index="'+ i +'" data-source="'+ v.source +'">'
-					+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ v.source +'</c></li>';
+			var source     = v.source;
+			var info       = source in V.liinfo ? V.liinfo[ source ] : '';
+			html += '<li data-index="'+ i +'" data-source="'+ source +'">'
+					+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ source +'</c>'+ info +'</li>';
 		} );
 		renderList( 'storage', html );
 	}
@@ -991,11 +994,11 @@ $( '.addnas' ).on( 'click', function() {
 	SW = { icon: 'networks' }
 	util.mount.mount();
 } );
-$( '#storage' ).on( 'click', 'li', function() {
-	$li      = $( this );
-	if ( ! contextMenuToggle( $li ) ) return
+$( '#storage' ).on( 'click', 'li', function( e ) {
+	$LI      = $( this );
+	if ( contextMenuActive( e.target ) ) return
 	
-	var i    = $li.index();
+	var i    = $LI.index();
 	var list = S.liststorage[ i ];
 	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
 		info( {
@@ -1091,7 +1094,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 $( '#menu a' ).on( 'click', function() {
 	$menu.addClass( 'hide' );
 	var cmd        = $( this ).data( 'cmd' );
-	var list       = S.liststorage[ $li.index() ];
+	var list       = S.liststorage[ $LI.index() ];
 	var mountpoint = list.mountpoint;
 	var source     = list.source;
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
@@ -1107,7 +1110,7 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			$li.next().hasClass( 'info' ) ? $li.next().remove() : entriesInfo( 'storage', source )
+			infoToggle( 'storage', source );
 			break
 		case 'remount':
 			notify( icon, title, 'Remount ...' );

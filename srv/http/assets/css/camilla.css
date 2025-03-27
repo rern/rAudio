@@ -348,7 +348,7 @@ i.disabled {
 .graphclose {
 	position: absolute;
 	color: var( --cm ) !important;
-	top: -10px;
+	top: -10px !important;
 	right: -10px;
 }
 .overplot .lines path {

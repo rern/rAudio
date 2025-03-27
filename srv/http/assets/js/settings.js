@@ -4,7 +4,6 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-var $li   = '';
 W.refresh = data => { // except camilla
 	if ( data.page !== page ) return
 	
@@ -15,6 +14,8 @@ W.refresh = data => { // except camilla
 		renderPage();
 	}, 300 );
 }
+var $LI   = '';
+var $menu = $( '#menu' );
 if ( $( 'heading .playback' ).length ) { // for player and camilla
 	W = {
 		  ...W // from common.js
@@ -46,6 +47,25 @@ function bannerReset() {
 	$( '#bannerIcon i' ).removeClass( 'blink' );
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
+}
+function contextMenu() {
+	$LI.addClass( 'active' );
+	$menu
+		.removeClass( 'hide' )
+		.css( 'top', $( '.container' ).scrollTop() + $LI.offset().top + 9 );
+	scrollUpToView( $menu );
+}
+function contextMenuActive( target ) {
+	if ( $( target ).is( 'pre' ) ) return true
+		
+	var active = $LI.hasClass( 'active' );
+	$LI.siblings().removeClass( 'active' );
+	if ( ! $menu.hasClass( 'hide' ) && active ) {
+		$menu.addClass( 'hide' );
+		return true
+	}
+	
+	return false
 }
 function currentStatus( id, arg, $code ) {
 	if ( ! $code ) $code = $( '#code'+ id );
@@ -179,44 +199,48 @@ document.title = page === 'camilla' ? 'CamillaDSP' : capitalize( page );
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 $( '#'+ page ).addClass( 'active' );
 
-if ( $( '#menu' ).length ) {
-	var $menu  = $( '#menu' );
+if ( [ 'networks', 'system' ].includes( page ) ) {
 	var lidata = {
 		  bluetooth : 'mac'
 		, storage   : 'source'
 		, wlan      : 'ssid'
 	}
 	$( '.container' ).on( 'click', function( e ) {
-		if ( $( e.target ).parents( '.section, #menu' ).length ) return
+		var $target = $( e.target );
+		if ( $target.is( 'pre' ) ) $menu.addClass( 'hide' );
+		if ( $target.is( '.i-close' ) ) infoToggle();
+		if ( $target.parents( '.section, #menu' ).length ) return
 		
 		$menu.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
-		if ( $( e.target ).is( '.menu a' ) || $( e.target ).is( 'pre, .info' ) ) return
-		
-		$( 'li.info' ).remove();
 	} );
-	function contextMenu() {
-		$li.addClass( 'active' );
-		$menu
-			.removeClass( 'hide' )
-			.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 9 );
-		scrollUpToView( $menu );
-	}
-	function contextMenuToggle( $li ) {
-		if ( $li.hasClass( 'info' ) ) return false
-			
-		var active = $li.hasClass( 'active' );
-		$li.siblings().removeClass( 'active' );
-		if ( ! $menu.hasClass( 'hide' ) && active ) {
-			$menu.addClass( 'hide' );
-			return false
-		}
-		
-		return true
-	}
 	function entriesInfo( id, arg ) {
-		if ( ! $li.next().hasClass( 'info' ) ) $li.after( '<li class="info status hide" data-id="'+ $li.data( lidata[ id ] ) +'"></li>' );
-		currentStatus( id +'info', arg, $li.next() );
+		if ( ! $LI.find( 'pre' ).length ) $LI.append( '<pre class="status hide" data-id="'+ $LI.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
+		currentStatus( id +'info', arg, $LI.find( 'pre' ) );
+	}
+	function infoHtml( id ) {
+		var html = id in V.liinfo ? V.liinfo[ id ] + ico( 'close' ) : '';
+		return html
+	}
+	function infoList() {
+		V.liinfo    = {}
+		var $liinfo = $( 'li pre' );
+		if ( $liinfo.length ) {
+			$liinfo.each( ( i, el ) => {
+				var $el = $( el );
+				var id  = $el.data( 'id' ) || 'ap';
+				V.liinfo[ id ] = $el[ 0 ].outerHTML;
+			} );
+		}
+	}
+	function infoToggle( id, arg ) {
+		var $info = $LI.find( 'pre' );
+		if ( $info.length ) {
+			$info.next().remove();
+			$info.remove();
+		} else {
+			entriesInfo( id, arg );
+		}
 	}
 	function renderList( id, html ) {
 		var $list = $( '#'+ id );
@@ -225,7 +249,7 @@ if ( $( '#menu' ).length ) {
 		if ( $liinfo.length ) {
 			$liinfo.each( ( i, el ) => {
 				var $el = $( el );
-				$li = $el.prev();
+				$LI = $el.prev();
 				entriesInfo( id, $el.data( 'id' ) );
 			} );
 		}
@@ -419,7 +443,7 @@ $( document ).on( 'keydown', function( e ) {
 			
 			e.preventDefault();
 			if ( menu ) {
-				$li = $( '.entries li.active' );
+				$LI = $( '.entries li.active' );
 				$focus.trigger( 'click' );
 				return
 			}
