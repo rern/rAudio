@@ -199,62 +199,6 @@ document.title = page === 'camilla' ? 'CamillaDSP' : capitalize( page );
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 $( '#'+ page ).addClass( 'active' );
 
-if ( [ 'networks', 'system' ].includes( page ) ) {
-	var lidata = {
-		  bluetooth : 'mac'
-		, storage   : 'source'
-		, wlan      : 'ssid'
-	}
-	$( '.container' ).on( 'click', function( e ) {
-		var $target = $( e.target );
-		if ( $target.is( 'pre' ) ) $menu.addClass( 'hide' );
-		if ( $target.is( '.i-close' ) ) infoToggle();
-		if ( $target.parents( '.section, #menu' ).length ) return
-		
-		$menu.addClass( 'hide' );
-		$( 'li' ).removeClass( 'active' );
-	} );
-	function entriesInfo( id, arg ) {
-		if ( ! $LI.find( 'pre' ).length ) $LI.append( '<pre class="status hide" data-id="'+ $LI.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
-		currentStatus( id +'info', arg, $LI.find( 'pre' ) );
-	}
-	function infoHtml( id ) {
-		var html = id in V.liinfo ? V.liinfo[ id ] + ico( 'close' ) : '';
-		return html
-	}
-	function infoList() {
-		V.liinfo    = {}
-		var $liinfo = $( 'li pre' );
-		if ( $liinfo.length ) {
-			$liinfo.each( ( i, el ) => {
-				var $el = $( el );
-				var id  = $el.data( 'id' ) || 'ap';
-				V.liinfo[ id ] = $el[ 0 ].outerHTML;
-			} );
-		}
-	}
-	function infoToggle( id, arg ) {
-		var $info = $LI.find( 'pre' );
-		if ( $info.length ) {
-			$info.next().remove();
-			$info.remove();
-		} else {
-			entriesInfo( id, arg );
-		}
-	}
-	function renderList( id, html ) {
-		var $list = $( '#'+ id );
-		$list.html( html );
-		var $liinfo = $list.find( 'li.info' );
-		if ( $liinfo.length ) {
-			$liinfo.each( ( i, el ) => {
-				var $el = $( el );
-				$LI = $el.prev();
-				entriesInfo( id, $el.data( 'id' ) );
-			} );
-		}
-	}
-}
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );
 	var id    = $this.data( 'status' );
@@ -498,3 +442,60 @@ $( document ).on( 'keydown', function( e ) {
 			break
 	}
 } );
+// context menu
+if ( [ 'networks', 'system' ].includes( page ) ) {
+	var lidata = {
+		  bluetooth : 'mac'
+		, storage   : 'source'
+		, wlan      : 'ssid'
+	}
+	$( '.container' ).on( 'click', function( e ) {
+		var $target = $( e.target );
+		if ( $target.is( 'pre' ) ) $menu.addClass( 'hide' );
+		if ( $target.is( '.i-close' ) ) infoToggle();
+		if ( $target.parents( '.section, #menu' ).length ) return
+		
+		$menu.addClass( 'hide' );
+		$( 'li' ).removeClass( 'active' );
+	} );
+	function entriesInfo( id, arg ) {
+		if ( ! $LI.find( 'pre' ).length ) $LI.append( '<pre class="status hide" data-id="'+ $LI.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
+		currentStatus( id +'info', arg, $LI.find( 'pre' ) );
+	}
+	function infoHtml( id ) {
+		var html = id in V.liinfo ? V.liinfo[ id ] + ico( 'close' ) : '';
+		return html
+	}
+	function infoList() {
+		V.liinfo    = {}
+		var $liinfo = $( 'li pre' );
+		if ( $liinfo.length ) {
+			$liinfo.each( ( i, el ) => {
+				var $el = $( el );
+				var id  = $el.data( 'id' ) || 'ap';
+				V.liinfo[ id ] = $el[ 0 ].outerHTML;
+			} );
+		}
+	}
+	function infoToggle( id, arg ) {
+		var $info = $LI.find( 'pre' );
+		if ( $info.length ) {
+			$info.next().remove();
+			$info.remove();
+		} else {
+			entriesInfo( id, arg );
+		}
+	}
+	function renderList( id, html ) {
+		var $list = $( '#'+ id );
+		$list.html( html );
+		var $liinfo = $list.find( 'li.info' );
+		if ( $liinfo.length ) {
+			$liinfo.each( ( i, el ) => {
+				var $el = $( el );
+				$LI = $el.prev();
+				entriesInfo( id, $el.data( 'id' ) );
+			} );
+		}
+	}
+}
