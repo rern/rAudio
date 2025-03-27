@@ -33,6 +33,8 @@ case $CMD in
 		systemctl -q is-active iwd && conf+="
 <bll># iwctl ap list</bll>
 $( iwctl ap list | perl -pe 's/\e\[[0-9;]*m//g' )" # remove stdout colors
+		[[ $2 ]] && echo "$conf" && exit
+# --------------------------------------------------------------------
 		;;
 	bluealsa )
 		conf="\

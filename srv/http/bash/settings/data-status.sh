@@ -204,7 +204,7 @@ wlaninfo )
 	if [[ $2 ]]; then
 		iw dev wlan0 scan ssid "$2"
 	else
-		$dirsettings/data-service.sh ap
+		$dirsettings/data-service.sh ap nostatus
 	fi
 	;;
 wlan )

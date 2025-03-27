@@ -49,7 +49,7 @@ function bannerReset() {
 }
 function currentStatus( id, arg, $code ) {
 	if ( ! $code ) $code = $( '#code'+ id );
-	if ( $code.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
+	if ( $code.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 1000 );
 	bash( 'data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
 		clearTimeout( timeoutGet );
 		$code
