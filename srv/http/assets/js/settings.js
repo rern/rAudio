@@ -59,7 +59,7 @@ function currentStatus( id, arg, $code ) {
 			.removeClass( 'hide' ).promise().done( () => {
 				if ( page === 'player' ) util.statusScroll( id );
 			} );
-		bannerReset();
+		bannerHide();
 	} );
 }
 function infoSetting( id, callback ) {

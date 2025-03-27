@@ -202,7 +202,7 @@ $( iwconfig $wlandev | awk NF )"
 	;;
 wlaninfo )
 	if [[ $2 ]]; then
-		netctl status "$2" | statusColor
+		iw dev wlan0 scan ssid "$2"
 	else
 		$dirsettings/data-service.sh ap
 	fi
