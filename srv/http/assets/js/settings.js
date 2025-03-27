@@ -69,9 +69,10 @@ function contextMenuActive( target ) {
 }
 function currentStatus( id, arg, $code ) {
 	if ( ! $code ) $code = $( '#code'+ id );
-	if ( $code.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 1000 );
+	var delay      = id === 'wlaninfo' && arg ? 0 : 1000;
+	$LI.find( 'i' ).addClass( 'blink' );
 	bash( 'data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
-		clearTimeout( timeoutGet );
+		$LI.find( 'i' ).removeClass( 'blink' );
 		$code
 			.html( status )
 			.data( 'status', id )
