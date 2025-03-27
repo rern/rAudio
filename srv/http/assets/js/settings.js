@@ -186,11 +186,8 @@ if ( $( '#menu' ).length ) {
 		, storage   : 'source'
 		, wlan      : 'ssid'
 	}
-	$( 'body' ).on( 'click', function( e ) {
-		if ( I.active
-			|| $( e.target ).parents( '.entries' ).length
-			|| $( e.target ).parents( '#menu' ).length
-		) return
+	$( '.container' ).on( 'click', function( e ) {
+		if ( $( e.target ).parents( '.section, #menu' ).length ) return
 		
 		$menu.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
