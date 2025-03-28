@@ -71,11 +71,10 @@ function currentStatus( id, arg, $code ) {
 	$icon = false;
 	if ( $code ) {
 		$icon = $LI.find( 'i' );
+		$icon.addClass( 'blink' );
 	} else {
 		$code = $( '#code'+ id );
 	}
-	var delay = id === 'wlaninfo' && arg ? 0 : 1000;
-	if ( $icon ) $icon.addClass( 'blink' );
 	bash( 'data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
 		if ( $icon ) $icon.removeClass( 'blink' );
 		$code
@@ -211,6 +210,7 @@ $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $code = $( '#code'+ id );
 	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 	$this.toggleClass( 'active' );
+	$menu.addClass( 'hide' );
 } );
 $( '.page-icon' ).on( 'click', function() {
 	$( '#debug' ).trigger( 'click' );
@@ -492,7 +492,10 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 				$info.next().remove();
 				$info.remove();
 			} else {
-				liStatus.get( id, arg );
+				if ( ! $LI.find( 'pre' ).length ) {
+					$LI.append( '<pre class="status hide" data-id="'+ $LI.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
+				}
+				currentStatus( id +'info', arg, $LI.find( 'pre' ) );
 			}
 		}
 	}
@@ -503,8 +506,7 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 		if ( $liinfo.length ) {
 			$liinfo.each( ( i, el ) => {
 				var $el = $( el );
-				$LI = $el.prev();
-				liStatus.get( id, $el.data( 'id' ) );
+				currentStatus( id, $el.data( 'id' ), $el );
 			} );
 		}
 	}
