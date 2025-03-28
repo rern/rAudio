@@ -87,7 +87,7 @@ pre.status {
 	background: var( --cg );
 }
 .status.li + pre,
-.helpblock.li {
+.status.li + .helpblock + pre {
 	margin-bottom: 30px;
 }
 li pre {
