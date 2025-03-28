@@ -46,7 +46,7 @@ lan )
 	lan=$( lanDevice )
 	echo "\
 <bll># ifconfig $lan</bll>
-$( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
+$( ifconfig $lan )"
 	;;
 mpdignore )
 	files=$( < $dirmpd/mpdignorelist )
@@ -194,15 +194,23 @@ $( avahi-browse -d local _http._tcp -rpt | awk -F';' '!/^+|^=;lo/ {print $7": "$
 wl )
 	wlandev=$( < $dirshm/wlan )
 	echo "\
-<bll># ifconfig $wlandev</bll>
-$( ifconfig $wlandev | grep -E -v 'RX|TX')
+<bll># iw dev</bll>
+$( iw dev )
 
 <bll># iwconfig $wlandev</bll>
-$( iwconfig $wlandev | awk NF )"
+$( iwconfig $wlandev )"
 	;;
 wlaninfo )
 	if [[ $2 ]]; then
-		iw dev wlan0 scan ssid "$2"
+		wlandev=$( < $dirshm/wlan )
+		if ip addr show $wlandev | grep -q 'state DOWN'; then
+			down=1
+			ifconfig $wlandev up
+		fi
+		data=$( iw dev $wlandev scan ssid "$2" )
+		[[ ! $data ]] && data='(Not found)'
+		echo "$data"
+		[[ $down ]] && ifconfig $wlandev down
 	else
 		$dirsettings/data-service.sh ap nostatus
 	fi
