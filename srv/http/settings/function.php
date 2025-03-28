@@ -74,8 +74,8 @@ function htmlMenu( $menu ) {
 	foreach( $menu as $cmd => $icon ) $menuhtml.= '<a class="'.$cmd.'" data-cmd="'.$cmd.'"tabindex="0">'.i( $icon ).ucfirst( $cmd ).'</a>';
 	echo '<div id="menu" class="menu hide">'.$menuhtml.'</div>';
 }
-function htmlSection( $head, $body, $id = '' ) {
-	echo '<div'.( $id ? ' id="div'.$id.'"' : '' ).' class="section">';
+function htmlSection( $head, $body, $id = '', $class = '' ) {
+	echo '<div'.( $id ? ' id="div'.$id.'"' : '' ).' class="section '.$class.'">';
 	if ( $head ) htmlHead( $head );
 	foreach( $body as $data ) {
 		if ( is_array( $data ) ) {

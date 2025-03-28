@@ -83,13 +83,12 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
 Note:
  · Directory <c>/mnt/MPD/NAS/data</c> reserved for $L->shareddata
  · Windows shares without password: <c>net user guest /active:yes</c>
-EOF
-];
-$body        = [ <<< EOF
-<ul id="storage" class="entries"></ul>
+
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
 $B->microsd$B->usbdrive$B->networks Context menu</div>
-EOF ];
+EOF
+];
+$body        = [ '<ul id="storage" class="entries"></ul>' ];
 htmlSection( $head, $body, 'storage' );
 // ----------------------------------------------------------------------------------
 $head        = [ 'title'  => 'On-board Devices' ];

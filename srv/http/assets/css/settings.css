@@ -86,7 +86,8 @@ pre.status {
 .section pre code {
 	background: var( --cg );
 }
-.status.li + pre {
+.status.li + pre,
+.helpblock.li {
 	margin-bottom: 30px;
 }
 li pre {

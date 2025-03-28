@@ -1,8 +1,7 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
-<div id="divbluetooth" class="section">
 <?php
 commonVariables( [
-	  'buttons' => [ 'add', 'bluetooth', 'btsender', 'lan', 'search', 'wifi' ]
+	  'buttons' => [ 'add', 'ap', 'bluetooth', 'btsender', 'lan', 'search', 'wifi', 'wifi1' ]
 	, 'labels'  => [ 
 		  'Access Point' => 'ap'
 		, 'Bluetooth'    => 'bluetooth'
@@ -11,16 +10,13 @@ commonVariables( [
 	, 'tabs'    => [ 'features', 'system' ]
 ] );
 // ----------------------------------------------------------------------------------
-htmlHead( [
+$head = [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
 	, 'button' => 'search btscan'
 	, 'list'   => true
-] );
-$html = <<< EOF
-	<ul id="bluetooth" class="entries"></ul>
-	<div class="helpblock hide">$B->search Available devices
-$B->bluetooth$B->btsender Context menu
+	, 'help'   => <<< EOF
+$B->search Available devices
 	
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
@@ -39,46 +35,65 @@ $B->bluetooth$B->btsender Context menu
 	· Forget / remove should be done on both rAudio and sender
  • Connect / Disconnect:
 	· On sender
-</div>
-EOF;
-echo $html;
-?>
-</div>
-<div id="divwlan" class="section">
-<?php
+	
+$B->bluetooth$B->btsender Context menu
+EOF
+];
+$body = [ '<ul id="bluetooth" class="entries"></ul>' ];
+htmlSection( $head, $body, 'bluetooth' );
 // ----------------------------------------------------------------------------------
-htmlHead( [
+$head = [
 	  'title'  => 'Wi-Fi'
 	, 'status' => 'wl'
 	, 'button' => [ 'add wladd', 'search wlscan' ]
 	, 'list'   => true
-] );
-?>
-	<ul id="wlan" class="entries"></ul>
-	<div class="helpblock hide"><?=$B->add?> Manual connect
-<?=$B->search?> Available networks
-<?=$B->wifi?> Context menu
+	, 'help'   => <<< EOF
+$B->add Manual connect
+$B->search Available networks
 
 Note:
  · Avoid double quotes <c>"</c> in Wi-Fi name and password.
- · Access points with 1 bar icon <?=i( 'wifi1' )?> might be unstable.</div>
-</div>
-<div id="divlan" class="section">
-<?php
+ · Access points with 1 bar $B->wifi1 might be unstable.
+
+$B->wifi$B->ap Context menu
+EOF
+];
+$body = [ '<ul id="wlan" class="entries"></ul>' ];
+htmlSection( $head, $body, 'wlan' );
 // ----------------------------------------------------------------------------------
-htmlHead( [
+$head = [
 	  'title'  => 'Wired LAN'
 	, 'status' => 'lan'
 	, 'button' => 'add lanadd'
 	, 'list'   => true
-] );
+	, 'help'   => <<< EOF
+$B->add Manual connect
+$B->lan Context menu
+EOF
+];
+$body = [ '<ul id="lan" class="entries"></ul>' ];
+htmlSection( $head, $body, 'wlan' );
+// ----------------------------------------------------------------------------------
 ?>
-	<ul id="lan" class="entries"></ul>
-	<div class="helpblock hide"><?=$B->add?> Manual connect
-<?=$B->lan?> Context menu</div>
-</div>
 </div>
 <?php
+// ----------------------------------------------------------------------------------
+$head = [
+	  'title'  => 'Bluetooth'
+	, 'button' => 'bluetooth blink scanning-bt'
+	, 'back'   => true
+];
+$body = [ '<ul id="scanbluetooth" class="entries scan"></ul>' ];
+htmlSection( $head, $body, 'scanbluetooth', 'hide' );
+// ----------------------------------------------------------------------------------
+$head = [
+	  'title'  => 'Wi-Fi'
+	, 'button' => 'wifi blink scanning-wifi'
+	, 'back'   => true
+];
+$body = [ '<ul id="scanwlan" class="entries scan"></ul>' ];
+htmlSection( $head, $body, 'scanwlan', 'hide' );
+// ----------------------------------------------------------------------------------
 $head = [ 'title'  => 'Web <a class="hideN">User </a>Interface' ];
 $body = [
 	  htmlSectionStatus(
@@ -99,31 +114,7 @@ Note: No internet connection.</div>'
 	)
 ];
 htmlSection( $head, $body, 'webui' );
-?>
-<div id="divscanbluetooth" class="section hide"> <!-- -------------------------------------------------------------- -->
-<?php
 // ----------------------------------------------------------------------------------
-htmlHead( [
-	  'title'  => 'Bluetooth'
-	, 'button' => 'bluetooth blink scanning-bt'
-	, 'back'   => true
-] );
-?>
-<ul id="scanbluetooth" class="entries scan"></ul>
-</div>
-<div id="divscanwlan" class="section hide">
-<?php
-// ----------------------------------------------------------------------------------
-htmlHead( [
-	  'title'  => 'Wi-Fi'
-	, 'button' => 'wifi blink scanning-wifi'
-	, 'back'   => true
-] );
-?>
-<ul id="scanwlan" class="entries scan"></ul>
-</div>
-
-<?php
 htmlMenu( [
 	  'connect'    => 'connect'
 	, 'disconnect' => 'close'
