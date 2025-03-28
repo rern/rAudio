@@ -472,6 +472,7 @@ cp {
 #divvolume .col-r > * {
 	cursor: pointer;
 }
+.divgraph,
 .entries.sub li {
 	cursor: default !important;
 }
