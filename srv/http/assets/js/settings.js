@@ -458,11 +458,15 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 	$( '.container' ).on( 'click', function( e ) {
 		var $target = $( e.target );
 		if ( $target.is( 'pre' ) ) $menu.addClass( 'hide' );
-		if ( $target.is( '.i-close' ) ) liStatus.set();
 		if ( $target.parents( '.section, #menu' ).length ) return
 		
 		$menu.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
+	} );
+	$( '.entries' ).on( 'click', '.i-close', function() {
+		var $this = $( this );
+		$this.prev().remove();
+		$this.remove();
 	} );
 	var liStatus = {
 		  activeHtml : id => {
@@ -480,23 +484,11 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 				} );
 			}
 		}
-		, get        : ( id, arg ) => {
+		, set        : ( id, arg ) => {
 			if ( ! $LI.find( 'pre' ).length ) {
 				$LI.append( '<pre class="status hide" data-id="'+ $LI.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
 			}
 			currentStatus( id +'info', arg, $LI.find( 'pre' ) );
-		}
-		, set        : ( id, arg ) => {
-			var $info = $LI.find( 'pre' );
-			if ( $info.length ) {
-				$info.next().remove();
-				$info.remove();
-			} else {
-				if ( ! $LI.find( 'pre' ).length ) {
-					$LI.append( '<pre class="status hide" data-id="'+ $LI.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
-				}
-				currentStatus( id +'info', arg, $LI.find( 'pre' ) );
-			}
 		}
 	}
 	function renderList( id, html ) {
