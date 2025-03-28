@@ -476,6 +476,3 @@ cp {
 .entries.sub li {
 	cursor: default !important;
 }
-#eq .label.dn {
-	margin-bottom: 0;
-}
