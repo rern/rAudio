@@ -15,11 +15,12 @@ htmlHead( [
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluez'
 	, 'button' => 'search btscan'
-	, 'help'   => $B->search.' Available devices'
+	, 'list'   => true
 ] );
 $html = <<< EOF
 	<ul id="bluetooth" class="entries"></ul>
-	<div class="helpblock hide">$B->bluetooth$B->btsender Context menu
+	<div class="helpblock hide">$B->search Available devices
+$B->bluetooth$B->btsender Context menu
 	
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
@@ -50,6 +51,7 @@ htmlHead( [
 	  'title'  => 'Wi-Fi'
 	, 'status' => 'wl'
 	, 'button' => [ 'add wladd', 'search wlscan' ]
+	, 'list'   => true
 ] );
 ?>
 	<ul id="wlan" class="entries"></ul>
@@ -68,6 +70,7 @@ htmlHead( [
 	  'title'  => 'Wired LAN'
 	, 'status' => 'lan'
 	, 'button' => 'add lanadd'
+	, 'list'   => true
 ] );
 ?>
 	<ul id="lan" class="entries"></ul>

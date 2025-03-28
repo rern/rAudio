@@ -86,6 +86,9 @@ pre.status {
 .section pre code {
 	background: var( --cg );
 }
+.status.li + pre {
+	margin-bottom: 30px;
+}
 li pre {
 	cursor: text;
 }

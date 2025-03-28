@@ -63,6 +63,7 @@ $head        = [
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
 	, 'button' => 'add addnas'
+	, 'list'   => true
 	, 'help'   => <<< EOF
 $B->add Add network storage
 

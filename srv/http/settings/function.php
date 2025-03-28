@@ -48,8 +48,9 @@ function htmlHead( $data ) {
 	if ( isset( $data->exist ) && ! $data->exist ) return;
 	
 	$id      = isset( $data->id ) ? ' id="'.$data->id.'"' : '';
+	$list    = isset( $data->list ) ? ' li' : '';
 	$status  = $data->status ?? '';
-	$class   = $status ? ' class="status"' : '';
+	$class   = $status ? ' class="status'.$list.'"' : '';
 	$dstatus = $status ? ' data-status="'.$status.'"' : '';
 	$iback   = isset( $data->back ) ? i( 'back back' ) : '';
 	$ihelp   = $iback ? '' : i( 'help help' );

@@ -760,14 +760,14 @@ var util          = {
 		}
 	}
 	, renderStorage : () => {
-		infoList();
+		liStatus.activeList();
 		var html    = '';
 		$.each( S.liststorage, ( i, v ) => {
 			var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
 			var dot        = '<grn>&ensp;•&ensp;</grn>';
 			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
 			var source     = v.source;
-			var info       = source in V.liinfo ? V.liinfo[ source ] : '';
+			var info       = liStatus.activeHtml( source );
 			html += '<li data-index="'+ i +'" data-source="'+ source +'">'
 					+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ source +'</c>'+ info +'</li>';
 		} );
@@ -1110,7 +1110,7 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			infoToggle( 'storage', source );
+			liStatus.set( 'storage', source );
 			break
 		case 'remount':
 			notify( icon, title, 'Remount ...' );

@@ -75,7 +75,7 @@ function renderBluetooth() {
 		S.list.bluetooth.forEach( ( list, i ) => {
 			var mac  = list.mac;
 			var dot  = list.connected ? '<grn>•</grn>&ensp;' : '';
-			var info = infoHtml( mac );
+			var info = liStatus.activeHtml( mac );
 			html += '<li class="bt" data-mac="'+ mac +'" data-name="'+ list.name +'" data-index="'+ i +'">'
 					 + ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + dot + list.name + info +'</li>';
 		} );
@@ -84,7 +84,7 @@ function renderBluetooth() {
 	$( '#divbluetooth' ).removeClass( 'hide' );
 }
 function renderPage() {
-	infoList();
+	liStatus.activeList();
 	if ( ! S.device.bluetooth ) {
 		$( '#divbluetooth' ).addClass( 'hide' );
 	} else {
@@ -94,7 +94,6 @@ function renderPage() {
 		$( '#divwlan' ).addClass( 'hide' );
 	} else {
 		renderWlan();
-		$( '.wladd' ).toggleClass( 'hide', S.ap );
 	}
 	if ( ! S.device.lan ) {
 		$( '#divlan' ).addClass( 'hide' );
@@ -130,8 +129,8 @@ function renderPage() {
 function renderWlan() {
 	var html = '';
 	if ( S.ap ) {
-		var info = 'ap' in V.liinfo ? V.liinfo.ap + ico( 'close' ) : '';
-		html += '<li class="wl ap" data-index="0" data-ssid="">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
+		var info = liStatus.activeHtml( 'ap' );
+		html    += '<li class="wl ap" data-index="0" data-ssid="">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
 				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip + info +'</li>';
 	}
 	if ( S.list.wlan ) {
@@ -139,7 +138,7 @@ function renderWlan() {
 			if ( S.ap ) i++;
 			var ssid  = list.ssid;
 			var index = ' data-index="'+ i +'"';
-			var info  = ssid in V.liinfo ? V.liinfo[ ssid ] + ico( 'close' ) : '';
+			var info  = liStatus.activeHtml( ssid );
 			if ( list.ip ) {
 				html += '<li class="wl" data-ssid="'+ ssid +'" data-ip="'+ list.ip +'"'+ index +'>'
 					   + ico( list.icon ) +'<a>'+ ssid 
@@ -490,7 +489,7 @@ $( '#menu a' ).on( 'click', function() {
 				var id  = 'wlan';
 				var arg = $LI.hasClass( 'ap' ) ? '' : $LI.data( 'ssid' );
 			}
-			infoToggle( id, arg );
+			liStatus.set( id, arg );
 			break
 		case 'rename':
 			var icon  = 'bluetooth';

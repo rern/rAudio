@@ -1474,11 +1474,11 @@ function pageActive() {
 	
 	V.pageactive = true;
 	if ( ws && ws.readyState === 1 ) {
+		ws.send( '"ping"' );
 		V.timeoutreload = true;
 		setTimeout( () => { // reconnect if ws not response on wakeup
 			if ( V.timeoutreload ) websocketReconnect();
 		}, 300 );
-		ws.send( '"ping"' );
 	} else {
 		websocketReconnect();
 	}
