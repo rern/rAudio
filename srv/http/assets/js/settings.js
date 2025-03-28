@@ -68,11 +68,16 @@ function contextMenuActive( target ) {
 	return false
 }
 function currentStatus( id, arg, $code ) {
-	if ( ! $code ) $code = $( '#code'+ id );
-	var delay      = id === 'wlaninfo' && arg ? 0 : 1000;
-	$LI.find( 'i' ).addClass( 'blink' );
+	$icon = false;
+	if ( $code ) {
+		$icon = $LI.find( 'i' );
+	} else {
+		$code = $( '#code'+ id );
+	}
+	var delay = id === 'wlaninfo' && arg ? 0 : 1000;
+	if ( $icon ) $icon.addClass( 'blink' );
 	bash( 'data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
-		$LI.find( 'i' ).removeClass( 'blink' );
+		if ( $icon ) $icon.removeClass( 'blink' );
 		$code
 			.html( status )
 			.data( 'status', id )
