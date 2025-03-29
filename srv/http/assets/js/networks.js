@@ -378,7 +378,6 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	
 	V.bluetooth = V.lan = V.wlan = false;
 	V[ $LI.parent().prop( 'id' ) ] = true;
-	$( '#menu a' ).addClass( 'hide' );
 	if ( V.bluetooth ) {
 		var connected = $LI.find( 'grn' ).length === 1;
 		$( '#menu .connect' ).toggleClass( 'hide', connected );

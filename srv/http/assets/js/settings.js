@@ -52,20 +52,14 @@ function contextMenu() {
 	$LI.addClass( 'active' );
 	$menu
 		.removeClass( 'hide' )
-		.css( 'top', $( '.container' ).scrollTop() + $LI.offset().top + 9 );
+		.css( 'top', $( '.container' ).scrollTop() + $LI.offset().top + 8 );
 	scrollUpToView( $menu );
 }
 function contextMenuActive( target ) {
-	if ( $( target ).is( 'pre' ) ) return true
-		
-	var active = $LI.hasClass( 'active' );
-	$LI.siblings().removeClass( 'active' );
-	if ( ! $menu.hasClass( 'hide' ) && active ) {
-		$menu.addClass( 'hide' );
-		return true
-	}
-	
-	return false
+	var active = ! $menu.hasClass( 'hide' ) && $LI.hasClass( 'active' );
+	$menu.addClass( 'hide' );
+	$( '.entries li' ).removeClass( 'active' );
+	return active
 }
 function currentStatus( id, arg, $code ) {
 	$icon = false;
@@ -456,9 +450,7 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 		, wlan      : 'ssid'
 	}
 	$( '.container' ).on( 'click', function( e ) {
-		var $target = $( e.target );
-		if ( $target.is( 'pre' ) ) $menu.addClass( 'hide' );
-		if ( $target.parents( '.section, #menu' ).length ) return
+		if ( $( e.target ).parents( '.section' ).length ) return
 		
 		$menu.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
