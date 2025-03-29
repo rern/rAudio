@@ -450,7 +450,7 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 		, wlan      : 'ssid'
 	}
 	$( '.container' ).on( 'click', function( e ) {
-		if ( $( e.target ).parents( '.section' ).length ) return
+		if ( $( e.target ).parents( '.entries' ).length ) return
 		
 		$menu.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
