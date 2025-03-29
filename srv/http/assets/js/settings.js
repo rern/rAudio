@@ -466,17 +466,17 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 	} );
 	var liStatus = {
 		  activeHtml : id => {
-			var html = id in V.liinfo ? V.liinfo[ id ] + ico( 'close' ) : '';
+			var html = id in V.lipre ? V.lipre[ id ] + ico( 'close' ) : '';
 			return html
 		}
 		, activeList : () => {
-			V.liinfo    = {}
+			V.lipre    = {}
 			var $lipre = $( 'li pre' );
 			if ( $lipre.length ) {
 				$lipre.each( ( i, el ) => {
 					var $el = $( el );
 					var id  = $el.data( 'id' ) || 'ap';
-					V.liinfo[ id ] = $el[ 0 ].outerHTML;
+					V.lipre[ id ] = $el[ 0 ].outerHTML;
 				} );
 			}
 		}
