@@ -490,6 +490,7 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 	function renderList( id, html ) {
 		var $list = $( '#'+ id );
 		$list.html( html );
+		$menu.addClass( 'hide' ); // $LI must be reset after $list.html( html );
 		var $lipre = $list.find( 'pre.li' );
 		if ( $lipre.length ) {
 			$lipre.each( ( i, el ) => {
