@@ -378,6 +378,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	
 	V.bluetooth = V.lan = V.wlan = false;
 	V[ $LI.parent().prop( 'id' ) ] = true;
+	$( '#menu a' ).addClass( 'hide' );
 	if ( V.bluetooth ) {
 		var connected = $LI.find( 'grn' ).length === 1;
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
@@ -385,14 +386,15 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$menu.find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
 	} else if ( V.lan ) {
 		$( '#menu .edit' ).removeClass( 'hide' );
-	} else if ( ! $LI.hasClass( 'ap' ) ) {
+	} else if ( $LI.hasClass( 'ap' ) ) {
+		$( '#menu .info' ).removeClass( 'hide' );
+	} else {
 		var current = $LI.hasClass( 'current' );
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', current );
 		$( '#menu .disconnect' ).toggleClass( 'hide', ! current );
-		$menu.find( '.info, .rename' ).addClass( 'hide' );
+		$( '#menu .rename' ).addClass( 'hide' );
 	}
-	if ( $LI.hasClass( 'wl' ) ) $menu.find( '.info' ).removeClass( 'hide' );
 	contextMenu();
 } );
 $( '.lanadd' ).on( 'click', function() {
