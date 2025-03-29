@@ -61,15 +61,19 @@ function contextMenuActive( target ) {
 	$( '.entries li' ).removeClass( 'active' );
 	return active
 }
-function currentStatus( id, arg, $code ) {
-	$icon = false;
-	if ( $code ) {
-		$icon = $LI.find( 'i' );
+function currentStatus( id, arg, $li ) {
+	var $icon = false;
+	var $code;
+	var cmd   = id;
+	if ( $li ) {
+		$icon = $li.find( 'i' );
 		$icon.addClass( 'blink' );
+		$code = $li.find( 'pre' );
+		cmd   = id +'info';
 	} else {
 		$code = $( '#code'+ id );
 	}
-	bash( 'data-status.sh '+ id + ( arg ? ' '+ arg : '' ), status => {
+	bash( 'data-status.sh '+ cmd + ( arg ? ' '+ arg : '' ), status => {
 		if ( $icon ) $icon.removeClass( 'blink' );
 		$code
 			.html( status )
@@ -180,7 +184,7 @@ function switchEnable() {
 	delete SW;
 }
 function switchSet() {
-	$( 'pre.status:not( .hide )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
+	$( 'pre.status:not( .hide, .li )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
 	bannerHide();
 	var $switch = $( '.switch' );
 	if ( ! $switch.length ) return
@@ -467,9 +471,9 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 		}
 		, activeList : () => {
 			V.liinfo    = {}
-			var $liinfo = $( 'li pre' );
-			if ( $liinfo.length ) {
-				$liinfo.each( ( i, el ) => {
+			var $lipre = $( 'li pre' );
+			if ( $lipre.length ) {
+				$lipre.each( ( i, el ) => {
 					var $el = $( el );
 					var id  = $el.data( 'id' ) || 'ap';
 					V.liinfo[ id ] = $el[ 0 ].outerHTML;
@@ -478,19 +482,19 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 		}
 		, set        : ( id, arg ) => {
 			if ( ! $LI.find( 'pre' ).length ) {
-				$LI.append( '<pre class="status hide" data-id="'+ $LI.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
+				$LI.append( '<pre class="status li hide" data-id="'+ $LI.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
 			}
-			currentStatus( id +'info', arg, $LI.find( 'pre' ) );
+			currentStatus( id, arg, $LI );
 		}
 	}
 	function renderList( id, html ) {
 		var $list = $( '#'+ id );
 		$list.html( html );
-		var $liinfo = $list.find( 'li.info' );
-		if ( $liinfo.length ) {
-			$liinfo.each( ( i, el ) => {
-				var $el = $( el );
-				currentStatus( id, $el.data( 'id' ), $el );
+		var $lipre = $list.find( 'pre.li' );
+		if ( $lipre.length ) {
+			$lipre.each( ( i, el ) => {
+				var $pre = $( el );
+				currentStatus( id, $pre.data( 'id' ), $pre.parent() );
 			} );
 		}
 	}
