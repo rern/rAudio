@@ -1489,6 +1489,7 @@ function pageInactive() {
 	if ( V.local || V.debug ) return // V.local from select2
 	
 	V.pageactive = false;
+	$( '.menu:not( #settings )' ).addClass( 'hide' );
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 }
 document.onvisibilitychange = () => document.visibilityState === 'hidden' ? pageInactive() : pageActive();

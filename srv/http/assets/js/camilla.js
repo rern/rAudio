@@ -2602,15 +2602,8 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$this.parents( 'li' ).removeClass( 'graph' );
 	$this.parent().remove();
 } );
-$( 'body' ).on( 'click', function( e ) {
-	if ( $( e.target ).hasClass( 'liicon' ) ) return
-	
-	$menu.addClass( 'hide' );
-	$( '#'+ V.tab +' .entries li' ).removeClass( 'active' );
-} );
 $( '#menu a' ).on( 'click', function( e ) {
-	var $this = $( this );
-	var cmd   = $this.prop( 'class' ).replace( ' active', '' );
+	var cmd   = $( this ).data( 'cmd' );
 	if ( cmd === 'graph' ) {
 		var $divgraph = $LI.find( '.divgraph' );
 		if ( $divgraph.length ) {

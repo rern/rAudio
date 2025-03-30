@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1742875314' );
+	src         : url( '/assets/fonts/rern.woff2?v=1743254832' );
 }
 @font-face {
 	font-family : Lato;
@@ -72,13 +72,16 @@ i {
 .i-capslock::before        { content: '\F607' }
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }
-.i-close::before           { content: '\F56C' }
+.i-close::before,
+.i-disconnect::before,
+.i-unmount::before         { content: '\F56C' }
 .i-code::before            { content: '\F59E' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
 .i-config::before          { content: '\F53E' }
 .i-connect::before,
-.i-current::before         { content: '\F56D' }
+.i-current::before,
+.i-remount::before         { content: '\F56D' }
 .i-consume::before,
 .i-flash::before           { content: '\F566' }
 .i-controls::before,
@@ -95,6 +98,7 @@ i {
 .i-i2s::before,
 .i-i2smodule::before       { content: '\F571' }
 .i-delete::before,
+.i-forget::before,
 .i-remove::before          { content: '\F563' }
 .i-drag::before            { content: '\F601' }
 .i-edit::before,
@@ -205,7 +209,8 @@ i {
 .i-restore::before         { content: '\F544' }
 .i-save::before            { content: '\F542' }
 .i-save-plus::before       { content: '\F545' }
-.i-screenoff::before       { content: '\F547' }
+.i-screenoff::before,
+.i-sleep::before           { content: '\F547' }
 .i-scale::before           { content: '\F592' }
 .i-search::before          { content: '\F56A' }
 .i-set0::before            { content: '\F515' }

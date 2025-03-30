@@ -440,10 +440,4 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 </div>
 
 <?php
-htmlMenu( [
-	  'info'    => 'info'
-	, 'forget'  => 'remove'
-	, 'remount' => 'connect'
-	, 'sleep'   => 'screenoff'
-	, 'unmount' => 'close'
-] );
+htmlMenu( [ 'info', 'forget', 'remount', 'sleep', 'unmount' ] );

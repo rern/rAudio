@@ -139,7 +139,6 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 	$menu.= menuDiv( $mode, $html );
 }
 
-$menu     = '<div id="contextmenu">'.$menu.'</div>';
 $ids      = [ 'random', 'repeat',   'single',    'repeat1', 'consume', 'librandom'
 			, 'mute',   'btsender', 'libupdate', 'addons',  'relays',  'stoptimer' ];
 $modeicon = '';
@@ -325,7 +324,7 @@ $htmlsearch   = '
 	<ul id="pl-savedlist" class="list"></ul>
 </div>
 
-<?=$menu?>
+<div><?=$menu?></div>
 
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">

@@ -48,19 +48,6 @@ function bannerReset() {
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
-function contextMenu() {
-	$LI.addClass( 'active' );
-	$menu
-		.removeClass( 'hide' )
-		.css( 'top', $( '.container' ).scrollTop() + $LI.offset().top + 8 );
-	scrollUpToView( $menu );
-}
-function contextMenuActive( target ) {
-	var active = V.refresh || ( ! $menu.hasClass( 'hide' ) && $LI.hasClass( 'active' ) );
-	$menu.addClass( 'hide' );
-	$( '.entries li' ).removeClass( 'active' );
-	return active
-}
 function currentStatus( id, arg, $li ) {
 	var $icon = false;
 	var $code;
@@ -448,11 +435,19 @@ $( document ).on( 'keydown', function( e ) {
 	}
 } );
 // context menu
-if ( [ 'networks', 'system' ].includes( page ) ) {
-	var lidata = {
-		  bluetooth : 'mac'
-		, storage   : 'source'
-		, wlan      : 'ssid'
+if ( $( '#menu' ).length ) {
+	function contextMenu() {
+		$LI.addClass( 'active' );
+		$menu
+			.removeClass( 'hide' )
+			.css( 'top', $( '.container' ).scrollTop() + $LI.offset().top + 8 );
+		scrollUpToView( $menu );
+	}
+	function contextMenuActive( target ) {
+		var active = V.refresh || ( ! $menu.hasClass( 'hide' ) && $LI.hasClass( 'active' ) );
+		$menu.addClass( 'hide' );
+		$( '.entries li' ).removeClass( 'active' );
+		return active
 	}
 	$( '.container' ).on( 'click', function( e ) {
 		if ( $( e.target ).parents( '.entries' ).length ) return
@@ -460,6 +455,13 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 		$menu.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
 	} );
+}
+if ( [ 'networks', 'system' ].includes( page ) ) {
+	var lidata = {
+		  bluetooth : 'mac'
+		, storage   : 'source'
+		, wlan      : 'ssid'
+	}
 	$( '.entries' ).on( 'click', '.i-close', function() {
 		var $this = $( this );
 		$this.prev().remove();

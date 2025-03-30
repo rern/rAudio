@@ -246,7 +246,7 @@ function colorSetPicker() {
 	} );
 }
 function contextmenuLibrary( $li, $target ) {
-	if ( $li.hasClass( 'active' ) && ! $( '#contextmenu' ).hasClass( 'hide' ) ) {
+	if ( $li.hasClass( 'active' ) ) {
 		$li.removeClass( 'active' );
 		menuHide();
 		return

@@ -142,7 +142,7 @@ function renderWlan() {
 			if ( list.ip ) {
 				html += '<li class="wl" data-ssid="'+ ssid +'" data-ip="'+ list.ip +'"'+ index +'>'
 					   + ico( list.icon ) +'<a>'+ ssid 
-					   +'</a>&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr>'+ info +'</li>';
+					   +'</a>&ensp;<grn>•</grn>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr>'+ info +'</li>';
 			} else {
 				html += '<li class="wl" data-ssid="'+ ssid +'"'+ index +'>'+ ico( 'wifi' ) + ssid + info +'</li>';
 			}

@@ -115,11 +115,4 @@ Note: No internet connection.</div>'
 ];
 htmlSection( $head, $body, 'webui' );
 // ----------------------------------------------------------------------------------
-htmlMenu( [
-	  'connect'    => 'connect'
-	, 'disconnect' => 'close'
-	, 'edit'       => 'edit'
-	, 'forget'     => 'remove'
-	, 'rename'     => 'edit'
-	, 'info'       => 'info'
-] );
+htmlMenu( [ 'connect', 'disconnect', 'edit', 'forget', 'rename', 'info' ] );
