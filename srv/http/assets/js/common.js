@@ -1225,8 +1225,8 @@ function infoPower() {
 }
 function infoPowerCommand( action ) {
 	var label = capitalize( action );
-	notify( action, 'Power', label +' ...' );
 	loader();
+	notify( action, 'Power', label +' ...' );
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
@@ -1241,10 +1241,7 @@ function infoPowerCommand( action ) {
 						+'<br><br>Continue?'
 			, oklabel : ico( action ) + label
 			, okcolor : action === 'off' ? red : orange
-			, ok      : () => {
-				notify( action, 'Power', label +' ...' );
-				bash( [ 'power.sh', action || '', 'confirm' ] );
-			}
+			, ok      : () => bash( [ 'power.sh', action || '', 'confirm' ] )
 		} );
 	} );
 }
@@ -1297,6 +1294,10 @@ function ipSub( ip ) {
 function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
+}
+function notify( icon, title, message, delay ) {
+	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
+	banner( icon +' blink', title, message, delay || -1 );
 }
 function qrCode( msg ) {
 	var qr = QRCode( {

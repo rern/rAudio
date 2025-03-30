@@ -115,10 +115,6 @@ function list2JSON( list ) {
 	}
 	return true
 }
-function notify( icon, title, message, delay ) {
-	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
-	banner( icon +' blink', title, message, delay || -1 );
-}
 function notifyCommon( message ) {
 	if ( typeof message === 'boolean' ) {
 		message = message ? 'Enable ...' : 'Disable ...';
