@@ -56,7 +56,7 @@ function contextMenu() {
 	scrollUpToView( $menu );
 }
 function contextMenuActive( target ) {
-	var active = ! $menu.hasClass( 'hide' ) && $LI.hasClass( 'active' );
+	var active = V.refresh || ( ! $menu.hasClass( 'hide' ) && $LI.hasClass( 'active' ) );
 	$menu.addClass( 'hide' );
 	$( '.entries li' ).removeClass( 'active' );
 	return active
@@ -166,6 +166,7 @@ function showContent() {
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	loaderHide();
+	delete V.refresh;
 }
 function switchCancel() {
 	$( '#'+ SW.id )

@@ -1473,6 +1473,7 @@ function pageActive() {
 	if ( V && ( V.pageactive || V.off ) ) return
 	
 	V.pageactive = true;
+	V.refresh    = true;
 	if ( ws && ws.readyState === 1 ) {
 		ws.send( '"ping"' );
 		V.timeoutreload = true;
