@@ -1220,11 +1220,14 @@ function infoPower() {
 		, button      : () => infoPowerCommand( 'reboot' )
 		, oklabel     : ico( 'power' ) +'Off'
 		, okcolor     : red
-		, ok          : infoPowerCommand
+		, ok          : () => infoPowerCommand( 'off' )
 	} );
 }
 function infoPowerCommand( action ) {
+	var label = capitalize( action );
 	loader();
+	bannerHide();
+	notify( action, 'Power', label +' ...' );
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
@@ -1236,8 +1239,8 @@ function infoPowerCommand( action ) {
 						+'<br><wh>Shared Data</wh> on clients will stop.'
 						+'<br>(Resume when server online again)'
 						+'<br><br>Continue?'
-			, oklabel : action ? ico( 'reboot' ) +'Reboot' : ico( 'power' ) +'Off'
-			, okcolor : action ? orange : red
+			, oklabel : ico( action ) + label
+			, okcolor : action === 'off' ? red : orange
 			, ok      : () => bash( [ 'power.sh', action || '', 'confirm' ] )
 		} );
 	} );
