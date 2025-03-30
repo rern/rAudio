@@ -1058,7 +1058,6 @@ function playlistSkip() {
 	bash( [ 'mpcskippl', S.song + 1, S.state, 'CMD POS ACTION' ] );
 }
 function refreshAll() {
-	V.html = {}
 	if ( V.library ) {
 		if ( V.libraryhome ) {
 			libraryHome();
@@ -1167,13 +1166,13 @@ function renderLibrary() { // library home
 function renderLibraryList( data ) { // V.librarylist
 	if ( ! V.search ) {
 		V.libraryhome = false;
-		if ( V.librarylist && data.html === V.html.librarylist ) {
+		V.librarylist = true;
+		if ( data.html === V.html.librarylist ) {
 			if ( V.color ) colorSet()
 			return
 		}
 	}
 	
-	V.librarylist = true;
 	$( '#lib-home-title, #lib-mode-list, .menu, #button-lib-update' ).addClass( 'hide' );
 	$( '#button-lib-back' ).removeClass( 'hide' );
 	$( '#page-library .lib-path' ).text( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ? '' : data.path );
