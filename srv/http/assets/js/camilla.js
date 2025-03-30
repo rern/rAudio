@@ -1720,7 +1720,8 @@ var setting   = {
 		} );
 	}
 	, mixerMap      : ( name, index ) => {
-		var mapping = MIX[ $LI.data( 'name' ) ].mapping;
+		var $li     = $( 'li.active' );
+		var mapping = MIX[ $li.data( 'name' ) ].mapping;
 		if ( index === 'dest' ) {
 			var title = 'Add Destination / Out';
 			info( {
@@ -1765,7 +1766,7 @@ var setting   = {
 				, list       : [ '', 'radio', [ ...Array( DEV.capture.channels ).keys() ] ]
 				, beforeshow : () => {
 					mapping.forEach( m => {
-						if ( ! m.sources.length || m.dest !== $LI.data( 'dest' ) ) return
+						if ( ! m.sources.length || m.dest !== $li.data( 'dest' ) ) return
 						
 						var ch    = [];
 						m.sources.forEach( s => ch.push( s.channel ) );
@@ -2567,11 +2568,11 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
-	$LI      = $this.parent();
-	if ( contextMenuActive( e.target ) ) return
+	var $li   = $this.parent();
+	if ( contextMenuActive( $li ) ) return
 	
 	$( '#'+ V.tab +' li' ).removeClass( 'active' );
-	$LI.addClass( 'active' );
+	$li.addClass( 'active' );
 	$menu.find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
 	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
 	$( '#menu .delete' ).toggleClass( 'disabled', V.tab === 'config' && S.ls.configs.length === 1 );
@@ -2579,14 +2580,14 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 		$menu.find( '.edit, .rename' ).toggleClass( 'hide' );
 	}
 	if ( V.tab === 'pipeline' ) {
-		var bypassed = PIP[ $LI.index() ].bypassed === true;
+		var bypassed = PIP[ $li.index() ].bypassed === true;
 		$( '#menu .bypass' ).toggleClass( 'hide', bypassed );
 		$( '#menu .restore' ).toggleClass( 'hide', ! bypassed );
-		$( '#menu .edit' ).toggleClass( 'disabled', $LI.data( 'type' ) === 'Mixer' && Object.keys( MIX ).length < 2 );
+		$( '#menu .edit' ).toggleClass( 'disabled', $li.data( 'type' ) === 'Mixer' && Object.keys( MIX ).length < 2 );
 	} else {
 		$menu.find( '.bypass, .restore' ).addClass( 'hide' );
 	}
-	contextMenu();
+	contextMenu( $li );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead a' ).text();
@@ -2603,14 +2604,15 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$this.parent().remove();
 } );
 $( '#menu a' ).on( 'click', function( e ) {
-	var cmd   = $( this ).data( 'cmd' );
+	var $li = $( 'li.active' );
+	var cmd = $( this ).data( 'cmd' );
 	if ( cmd === 'graph' ) {
-		var $divgraph = $LI.find( '.divgraph' );
+		var $divgraph = $li.find( '.divgraph' );
 		if ( $divgraph.length ) {
-			$LI.removeClass( 'graph' );
+			$li.removeClass( 'graph' );
 			$divgraph.remove();
 		} else {
-			graph[ V.tab ].plot( $LI );
+			graph[ V.tab ].plot( $li );
 		}
 		return
 	}
@@ -2618,8 +2620,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 	switch ( V.tab ) {
 		case 'filters':
 			var title = file ? 'Filter File' : 'Filter';
-			var name  = $LI.data( 'name' );
-			var file  = $LI.find( '.i-file' ).length;
+			var name  = $li.data( 'name' );
+			var file  = $li.find( '.i-file' ).length;
 			switch ( cmd ) {
 				case 'edit':
 					if ( file ) {
@@ -2657,19 +2659,19 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, ok      : () => {
 							file ? bash( [ 'coefdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
 							setting.save( title, 'Delete ...' );
-							$LI.remove();
+							$li.remove();
 						}
 					} );
 					break;
 			}
 			break;
 		case 'mixers':
-			var name  = $LI.data( 'name' );
+			var name  = $li.data( 'name' );
 			var main  = $( '#mixers .entries.sub' ).hasClass( 'hide' );
 			switch ( cmd ) {
 				case 'delete':
-					var dest = $LI.hasClass( 'liinput main' );
-					var mi   = $LI.data( 'index' );
+					var dest = $li.hasClass( 'liinput main' );
+					var mi   = $li.data( 'index' );
 					if ( main ) {
 						if ( common.inUse( name ) ) return
 						
@@ -2677,10 +2679,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 						var msg   = name;
 					} else if ( dest ) {
 						var title = 'Output';
-						var msg   = ico( 'output gr' ) +' Out: '+ $LI.data( 'dest' );
+						var msg   = ico( 'output gr' ) +' Out: '+ $li.data( 'dest' );
 					} else {
 						var title = 'Input';
-						var msg   = ico( 'input gr' ) +' In: '+ $LI.data( 'source' );
+						var msg   = ico( 'input gr' ) +' In: '+ $li.data( 'source' );
 					}
 					var message = '<wh>'+ msg +'</wh> ?';
 					info( {
@@ -2695,7 +2697,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							} else if ( dest ) {
 								MIX[ name ].mapping.splice( mi, 1 );
 							} else {
-								MIX[ name ].mapping[ mi ].sources.splice( $LI.data( 'si' ), 1 );
+								MIX[ name ].mapping[ mi ].sources.splice( $li.data( 'si' ), 1 );
 							}
 							setting.save( title, 'Remove ...' );
 							main ? render.mixers( name ) : render.mixersSub( name );
@@ -2709,7 +2711,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break;
 		case 'processors':
 			var title = 'Processors';
-			var name  = $LI.data( 'name' );
+			var name  = $li.data( 'name' );
 			switch ( cmd ) {
 				case 'edit':
 					setting.processor( name, 'edit' );
@@ -2722,7 +2724,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, ok      : () => {
 							delete PRO[ name ];
 							setting.save( title, 'Remove ...' );
-							$LI.remove();
+							$li.remove();
 						}
 					} );
 					break;
@@ -2732,19 +2734,19 @@ $( '#menu a' ).on( 'click', function( e ) {
 			var title = 'Pipeline';
 			switch ( cmd ) {
 				case 'edit':
-					var i = $LI.index();
+					var i = $li.index();
 					PIP[ i ].type === 'Filter' ? setting.pipeline( i, 'edit' ) : setting.pipelineMixer( i, 'edit' );
 					break;
 				case 'delete':
-					var type = $LI.data( 'type' ).toLowerCase();
+					var type = $li.data( 'type' ).toLowerCase();
 					info( {
 						  icon    : V.tab
 						, title   : title
 						, message : '<wh>'+ type +'</wh>'
 						, ok      : () => {
-							PIP.splice( $LI.index(), 1 );
+							PIP.splice( $li.index(), 1 );
 							setting.save( title, 'Remove '+ type +' ...' );
-							$LI.remove();
+							$li.remove();
 							if ( PIP.length ) {
 								graph.flowchart.refresh();
 							} else {
@@ -2756,21 +2758,21 @@ $( '#menu a' ).on( 'click', function( e ) {
 					break;
 				case 'bypass':
 				case 'restore':
-					var i             = $LI.index();
+					var i             = $li.index();
 					var bypassed      = ! PIP[ i ].bypassed
 					PIP[ i ].bypassed = bypassed;
 					setting.save( title, bypassed ? 'Bypassed' : 'Restored' );
-					$LI.find( '.liicon' )
+					$li.find( '.liicon' )
 						.removeClass()
 						.addClass( bypassed ? 'i-bypass' : 'i-pipeline' );
 					break;
 			}
 			break;
 		case 'devices':
-			setting.device( $LI.data( 'type' ) );
+			setting.device( $li.data( 'type' ) );
 			break;
 		case 'config':
-			var name  = $LI.find( '.name' ).text();
+			var name  = $li.find( '.name' ).text();
 			var icon  = V.tab;
 			var title = 'Configuration';
 			switch ( cmd ) {
@@ -2804,7 +2806,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					break;
 				break;
 				case 'info':
-					var name = $LI.find( '.name' ).text();
+					var name = $li.find( '.name' ).text();
 					bash( 'data-status.sh configuration "'+ name +'"', config => {
 						$( '#codeconfig' )
 							.html( config )
@@ -2958,7 +2960,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	setting.save( M.name, 'Change ...' );
 } ).on( 'click', '.i-add', function() {
 	var $this = $( this );
-	$LI  = $this.parent();
 	var M = setting.mixerGet( $this );
 	setting.mixerMap( M.name, M.index );
 } );

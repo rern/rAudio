@@ -14,7 +14,6 @@ W.refresh = data => { // except camilla
 		renderPage();
 	}, 300 );
 }
-var $LI   = '';
 var $menu = $( '#menu' );
 if ( $( 'heading .playback' ).length ) { // for player and camilla
 	W = {
@@ -53,7 +52,7 @@ function currentStatus( id, arg, $li ) {
 	var $code;
 	var cmd   = id;
 	if ( $li ) {
-		$icon = $li.find( 'i' );
+		$icon = $li.find( 'i' ).eq( 0 );
 		$icon.addClass( 'blink' );
 		$code = $li.find( 'pre' );
 		cmd   = id +'info';
@@ -375,7 +374,6 @@ $( document ).on( 'keydown', function( e ) {
 			
 			e.preventDefault();
 			if ( menu ) {
-				$LI = $( '.entries li.active' );
 				$focus.trigger( 'click' );
 				return
 			}
@@ -432,15 +430,15 @@ $( document ).on( 'keydown', function( e ) {
 } );
 // context menu
 if ( $( '#menu' ).length ) {
-	function contextMenu() {
-		$LI.addClass( 'active' );
+	function contextMenu( $li ) {
+		$li.addClass( 'active' );
 		$menu
 			.removeClass( 'hide' )
-			.css( 'top', $( '.container' ).scrollTop() + $LI.offset().top + 8 );
+			.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 8 );
 		scrollUpToView( $menu );
 	}
-	function contextMenuActive( target ) {
-		var active = V.refresh || ( ! $menu.hasClass( 'hide' ) && $LI.hasClass( 'active' ) );
+	function contextMenuActive( $li ) {
+		var active = V.refresh || ( ! $menu.hasClass( 'hide' ) && $li.hasClass( 'active' ) );
 		$menu.addClass( 'hide' );
 		$( '.entries li' ).removeClass( 'active' );
 		return active
@@ -480,16 +478,16 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 			}
 		}
 		, set        : ( id, arg ) => {
-			if ( ! $LI.find( 'pre' ).length ) {
-				$LI.append( '<pre class="status li hide" data-id="'+ $LI.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
+			var $li = $( 'li.active' );
+			if ( ! $li.find( 'pre' ).length ) {
+				$li.append( '<pre class="status li hide" data-id="'+ $li.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
 			}
-			currentStatus( id, arg, $LI );
+			currentStatus( id, arg, $li );
 		}
 	}
 	function renderList( id, html ) {
 		var $list = $( '#'+ id );
 		$list.html( html );
-		$menu.addClass( 'hide' ); // $LI must be reset after $list.html( html );
 		var $lipre = $list.find( 'pre.li' );
 		if ( $lipre.length ) {
 			$lipre.each( ( i, el ) => {

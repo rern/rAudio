@@ -994,11 +994,11 @@ $( '.addnas' ).on( 'click', function() {
 	SW = { icon: 'networks' }
 	util.mount.mount();
 } );
-$( '#storage' ).on( 'click', 'li', function( e ) {
-	$LI      = $( this );
-	if ( contextMenuActive( e.target ) ) return
+$( '#storage' ).on( 'click', 'li', function() {
+	var $li  = $( this );
+	if ( contextMenuActive( $li ) ) return
 	
-	var i    = $LI.index();
+	var i    = $li.index();
 	var list = S.liststorage[ i ];
 	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
 		info( {
@@ -1018,7 +1018,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
-	contextMenu();
+	contextMenu( $li );
 } );
 $( '#i2smodule' ).on( 'input', function() {
 	var aplayname = this.value;
@@ -1094,7 +1094,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 $( '#menu a' ).on( 'click', function() {
 	$menu.addClass( 'hide' );
 	var cmd        = $( this ).data( 'cmd' );
-	var list       = S.liststorage[ $LI.index() ];
+	var list       = S.liststorage[ $( 'li.active' ).index() ];
 	var mountpoint = list.mountpoint;
 	var source     = list.source;
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
