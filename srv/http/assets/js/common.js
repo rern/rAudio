@@ -1225,13 +1225,13 @@ function infoPower() {
 }
 function infoPowerCommand( action ) {
 	var label = capitalize( action );
-	loader();
-	bannerHide();
 	notify( action, 'Power', label +' ...' );
+	loader();
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
 		loaderHide();
+		bannerHide();
 		info( {
 			  icon    : 'power'
 			, title   : 'Power'
@@ -1241,7 +1241,10 @@ function infoPowerCommand( action ) {
 						+'<br><br>Continue?'
 			, oklabel : ico( action ) + label
 			, okcolor : action === 'off' ? red : orange
-			, ok      : () => bash( [ 'power.sh', action || '', 'confirm' ] )
+			, ok      : () => {
+				notify( action, 'Power', label +' ...' );
+				bash( [ 'power.sh', action || '', 'confirm' ] );
+			}
 		} );
 	} );
 }
