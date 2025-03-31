@@ -435,6 +435,7 @@ $( document ).on( 'keydown', function( e ) {
 if ( $( '#menu' ).length ) {
 	function contextMenu( $li ) {
 		$li.addClass( 'active' );
+		if ( $li.find( 'pre' ).length ) $( '#menu .info' ).addClass( 'hide' );
 		$menu
 			.removeClass( 'hide' )
 			.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 8 );
