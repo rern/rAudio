@@ -195,6 +195,10 @@ function bannerHide() {
 		.addClass( 'hide' )
 		.empty();
 }
+function notify( icon, title, message, delay ) {
+	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
+	banner( icon +' blink', title, message, delay || -1 );
+}
 $( '#banner' ).on( 'click', bannerHide );
 // ----------------------------------------------------------------------
 function dataError( msg, list ) {
@@ -1294,10 +1298,6 @@ function ipSub( ip ) {
 function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
-}
-function notify( icon, title, message, delay ) {
-	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
-	banner( icon +' blink', title, message, delay || -1 );
 }
 function qrCode( msg ) {
 	var qr = QRCode( {
