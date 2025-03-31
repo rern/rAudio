@@ -764,10 +764,11 @@ var util          = {
 		
 		var html = '';
 		S.list.storage.forEach( list => {
-			var mountpoint = list.mountpoint === '/' ? 'SD' : list.mountpoint.replace( '/mnt/MPD/', '' );
+			var mountpoint = list.mountpoint;
 			var source     = list.source;
-			html		  += '<li data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'+ ico( list.icon ) + mountpoint
-						  + ( list.size ? dot : dot.replace( /grn/g, 'red' ) ) + list.size +' <c>'+ source +'</c></li>';
+			html		  += '<li data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
+							+ ico( list.icon ) + mountpoint.slice( 9 )
+							+ ( list.size ? dot : dot.replace( /grn/g, 'red' ) ) + list.size +' <c>'+ source +'</c></li>';
 		} );
 		renderList( 'storage', html );
 	}
@@ -997,7 +998,8 @@ $( '#storage' ).on( 'click', 'li', function() {
 	if ( contextMenuActive( $li ) ) return
 	
 	var mountpoint = $li.data( 'mountpoint' );
-	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint ) ) {
+	var shareddata = [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint );
+	if ( shareddata ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
@@ -1005,13 +1007,15 @@ $( '#storage' ).on( 'click', 'li', function() {
 		} );
 		return
 	}
-	if ( mountpoint === 'SD' ) {
+	
+	if ( mountpoint === '/mnt/MPD/SD' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
 		var mounted = $li.find( 'grn' ).length === 1;
-		$( '#menu .forget' ).toggleClass( 'hide', mountpoint !== 'NAS' );
-		$( '#menu .remount' ).toggleClass( 'hide', mounted );
+		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
+		$( '#menu .forget' ).toggleClass( 'hide', shareddata || usb );
+		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
 	contextMenu( $li );
@@ -1103,14 +1107,14 @@ $( '#menu a' ).on( 'click', function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
-			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
+			bash( [ 'forget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
 			currentStatus( 'storage', source, 'info' );
 			break
-		case 'remount':
-			notify( icon, title, 'Remount ...' );
-			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
+		case 'mount':
+			notify( icon, title, 'Mount ...' );
+			bash( [ 'mount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'sleep':
 			var dev = list.source;
@@ -1141,7 +1145,7 @@ $( '#menu a' ).on( 'click', function() {
 			break
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
-			bash( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
+			bash( [ 'unmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 	}
 } );

@@ -145,6 +145,24 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
+forget | mount | unmount )
+	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
+		[[ $CMD == mount ]] && mount "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
+	else
+		[[ $CMD == mount ]] && udevil mount $SOURCE || udevil umount -l "$MOUNTPOINT"
+	fi
+	if [[ $CMD == forget ]]; then
+		rmdir "$MOUNTPOINT" &> /dev/null
+		fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
+		column -t <<< $fstab > /etc/fstab
+		systemctl daemon-reload
+		$dirbash/cmd.sh "mpcupdate
+update
+NAS
+CMD ACTION PATHMPD"
+	fi
+	pushRefresh
+	;;
 gpiopintoggle )
 	[[ $( gpioget -a -c0 --numeric $PIN ) == 0 ]] && onoff=1 || onoff=0
 	gpioset -t0 -c0 $PIN=$onoff
@@ -215,34 +233,6 @@ lcdchar )
 mirror )
 	[[ $MIRROR ]] && MIRROR+=.
 	echo 'Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
-	pushRefresh
-	;;
-mountforget )
-	umount -l "$MOUNTPOINT"
-	rmdir "$MOUNTPOINT" &> /dev/null
-	fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
-	$dirbash/cmd.sh "mpcupdate
-update
-NAS
-CMD ACTION PATHMPD"
-	pushRefresh
-	;;
-mountremount )
-	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
-		mount "$MOUNTPOINT"
-	else
-		udevil mount $SOURCE
-	fi
-	pushRefresh
-	;;
-mountunmount )
-	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
-		umount -l "$MOUNTPOINT"
-	else
-		udevil umount -l "$MOUNTPOINT"
-	fi
 	pushRefresh
 	;;
 mpdoled )

@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1743254832' );
+	src         : url( '/assets/fonts/rern.woff2?v=1743417778' );
 }
 @font-face {
 	font-family : Lato;
@@ -81,7 +81,7 @@ i {
 .i-config::before          { content: '\F53E' }
 .i-connect::before,
 .i-current::before,
-.i-remount::before         { content: '\F56D' }
+.i-mount::before           { content: '\F56D' }
 .i-consume::before,
 .i-flash::before           { content: '\F566' }
 .i-controls::before,
