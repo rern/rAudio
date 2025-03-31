@@ -109,6 +109,7 @@ function list2JSON( list ) {
 			S = JSON.parse( list );
 		} else {
 			list = JSON.parse( list );
+			if ( 'list' in V ) V.list = jsonClone( S.list ); // networks, system
 			$.each( list, ( k, v ) => { S[ k ] = v } );
 		}
 	} catch( e ) {
@@ -151,7 +152,6 @@ function showContent() {
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	loaderHide();
-	if ( 'list' in S ) V.list = jsonClone( S.list );
 }
 function switchCancel() {
 	$( '#'+ SW.id )
@@ -454,14 +454,13 @@ if ( $( '#menu' ).length ) {
 	} );
 }
 if ( [ 'networks', 'system' ].includes( page ) ) {
+	V.list = {}
 	$( '.entries' ).on( 'click', '.i-close', function() {
 		var $this = $( this );
 		$this.prev().remove();
 		$this.remove();
 	} );
 	function listEqual( list ) {
-		if ( ! V.list ) return false
-		
 		return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
 	}
 	function renderList( id, html ) {
