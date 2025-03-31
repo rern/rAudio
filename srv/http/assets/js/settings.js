@@ -15,6 +15,7 @@ W.refresh = data => { // except camilla
 	}, 300 );
 }
 var $menu = $( '#menu' );
+var dot   = '&ensp;<grn>•</grn>&ensp;';
 if ( $( 'heading .playback' ).length ) { // for player and camilla
 	W = {
 		  ...W // from common.js
@@ -47,20 +48,22 @@ function bannerReset() {
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
-function currentStatus( id, arg, $li ) {
-	var $icon = false;
-	var $code;
-	var cmd   = id;
-	if ( $li ) {
-		$icon = $li.find( 'i' ).eq( 0 );
+function currentStatus( id, arg, lidata ) {
+	if ( lidata ) {
+		var $li   = $( 'li[ data-'+ lidata +'="'+ arg +'" ]' );
+		if ( ! $li.find( 'pre' ).length ) {
+			$li.append( '<pre class="status li hide" data-id="'+ arg +'"></pre>'+ ico( 'close' ) );
+		}
+		var $code = $li.find( 'pre' );
+		var cmd   = id +'info';
+		var $icon = $li.find( 'i' ).eq( 0 );
 		$icon.addClass( 'blink' );
-		$code = $li.find( 'pre' );
-		cmd   = id +'info';
 	} else {
-		$code = $( '#code'+ id );
+		var $code = $( '#code'+ id );
+		var cmd   = id;
 	}
 	bash( 'data-status.sh '+ cmd + ( arg ? ' '+ arg : '' ), status => {
-		if ( $icon ) $icon.removeClass( 'blink' );
+		if ( lidata ) $icon.removeClass( 'blink' );
 		$code
 			.html( status )
 			.data( 'status', id )
@@ -148,7 +151,7 @@ function showContent() {
 	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	loaderHide();
-	delete V.refresh;
+	if ( 'list' in S ) V.list = jsonClone( S.list );
 }
 function switchCancel() {
 	$( '#'+ SW.id )
@@ -438,7 +441,7 @@ if ( $( '#menu' ).length ) {
 		scrollUpToView( $menu );
 	}
 	function contextMenuActive( $li ) {
-		var active = V.refresh || ( ! $menu.hasClass( 'hide' ) && $li.hasClass( 'active' ) );
+		var active = ! $menu.hasClass( 'hide' ) && $li.hasClass( 'active' );
 		$menu.addClass( 'hide' );
 		$( '.entries li' ).removeClass( 'active' );
 		return active
@@ -451,49 +454,25 @@ if ( $( '#menu' ).length ) {
 	} );
 }
 if ( [ 'networks', 'system' ].includes( page ) ) {
-	var lidata = {
-		  bluetooth : 'mac'
-		, storage   : 'source'
-		, wlan      : 'ssid'
-	}
 	$( '.entries' ).on( 'click', '.i-close', function() {
 		var $this = $( this );
 		$this.prev().remove();
 		$this.remove();
 	} );
-	var liStatus = {
-		  activeHtml : id => {
-			var html = id in V.lipre ? V.lipre[ id ] + ico( 'close' ) : '';
-			return html
-		}
-		, activeList : () => {
-			V.lipre    = {}
-			var $lipre = $( 'li pre' );
-			if ( $lipre.length ) {
-				$lipre.each( ( i, el ) => {
-					var $el = $( el );
-					var id  = $el.data( 'id' ) || 'ap';
-					V.lipre[ id ] = $el[ 0 ].outerHTML;
-				} );
-			}
-		}
-		, set        : ( id, arg ) => {
-			var $li = $( 'li.active' );
-			if ( ! $li.find( 'pre' ).length ) {
-				$li.append( '<pre class="status li hide" data-id="'+ $li.data( lidata[ id ] ) +'"></pre>'+ ico( 'close' ) );
-			}
-			currentStatus( id, arg, $li );
-		}
+	function listEqual( list ) {
+		if ( ! V.list ) return false
+		
+		return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
 	}
 	function renderList( id, html ) {
 		var $list = $( '#'+ id );
 		$list.html( html );
-		var $lipre = $list.find( 'pre.li' );
-		if ( $lipre.length ) {
-			$lipre.each( ( i, el ) => {
-				var $pre = $( el );
-				currentStatus( id, $pre.data( 'id' ), $pre.parent() );
-			} );
+		var lidata = {
+			  bluetooth : 'mac'
+			, storage   : 'source'
+			, wlan      : 'ssid'
 		}
+		var $lipre = $list.find( 'pre.li' );
+		$lipre.each( ( i, el ) => currentStatus( id, $( el ).data( 'id' ), lidata[ id ] ) );
 	}
 }

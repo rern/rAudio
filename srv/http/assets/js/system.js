@@ -4,7 +4,7 @@ W.reboot          = data => {
 W.storage         = data => {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		S.liststorage = data.list;
+		S.list.storage = data.list;
 		util.renderStorage();
 		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
 	}, 1000 );
@@ -760,16 +760,14 @@ var util          = {
 		}
 	}
 	, renderStorage : () => {
-		liStatus.activeList();
-		var html    = '';
-		$.each( S.liststorage, ( i, v ) => {
-			var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
-			var dot        = '<grn>&ensp;•&ensp;</grn>';
-			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
-			var source     = v.source;
-			var info       = liStatus.activeHtml( source );
-			html += '<li data-index="'+ i +'" data-source="'+ source +'">'
-					+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ source +'</c>'+ info +'</li>';
+		if ( listEqual( 'storage' ) ) return
+		
+		var html = '';
+		S.list.storage.forEach( list => {
+			var mountpoint = list.mountpoint === '/' ? 'SD' : list.mountpoint.replace( '/mnt/MPD/', '' );
+			var source     = list.source;
+			html		  += '<li data-source="'+ source +'" data-mountpoint="'+ mountpoint +'">'+ ico( list.icon ) + mountpoint
+						  + ( list.size ? dot : dot.replace( /grn/g, 'red' ) ) + list.size +' <c>'+ source +'</c></li>';
 		} );
 		renderList( 'storage', html );
 	}
@@ -995,12 +993,11 @@ $( '.addnas' ).on( 'click', function() {
 	util.mount.mount();
 } );
 $( '#storage' ).on( 'click', 'li', function() {
-	var $li  = $( this );
+	var $li        = $( this );
 	if ( contextMenuActive( $li ) ) return
 	
-	var i    = $li.index();
-	var list = S.liststorage[ i ];
-	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
+	var mountpoint = $li.data( 'mountpoint' );
+	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint ) ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
@@ -1008,13 +1005,12 @@ $( '#storage' ).on( 'click', 'li', function() {
 		} );
 		return
 	}
-	
-	if ( list.icon === 'microsd' ) {
+	if ( mountpoint === 'SD' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var mounted = list.size !== '';
-		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
+		var mounted = $li.find( 'grn' ).length === 1;
+		$( '#menu .forget' ).toggleClass( 'hide', mountpoint !== 'NAS' );
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
@@ -1094,9 +1090,9 @@ $( '.listtitle' ).on( 'click', function( e ) {
 $( '#menu a' ).on( 'click', function() {
 	$menu.addClass( 'hide' );
 	var cmd        = $( this ).data( 'cmd' );
-	var list       = S.liststorage[ $( 'li.active' ).index() ];
-	var mountpoint = list.mountpoint;
-	var source     = list.source;
+	var $li        = $( 'li.active' );
+	var mountpoint = $li.data( 'mountpoint' );
+	var source     = $li.data( 'source' );
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
 		var icon  = 'networks';
 		var title = 'Network Mount';
@@ -1110,7 +1106,7 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			liStatus.set( 'storage', source );
+			currentStatus( 'storage', source, 'source' );
 			break
 		case 'remount':
 			notify( icon, title, 'Remount ...' );

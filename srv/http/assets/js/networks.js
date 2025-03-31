@@ -14,7 +14,7 @@ function accesspoint2ssid( ssid, val ) {
 function bluetoothCommand( action, $li ) {
 	var icon  = $li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 	notify( icon, $li.data( 'name' ), capitalize( action ) +' ...', -1 );
-	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, $li.data( 'mac' ), 'CMD ACTION MAC' ] );
+	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, $li.data( 'id' ), 'CMD ACTION MAC' ] );
 }
 function changeIp( result, icon, title, val, callback ) {
 	var ip = val.ADDRESS;
@@ -69,44 +69,62 @@ function onPageInactive() {
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
 }
-function renderBluetooth() {
-	var html  = '';
-	if ( S.list.bluetooth ) {
-		S.list.bluetooth.forEach( ( list, i ) => {
-			var mac  = list.mac;
-			var dot  = list.connected ? '<grn>•</grn>&ensp;' : '';
-			var info = liStatus.activeHtml( mac );
-			html += '<li class="bt" data-mac="'+ mac +'" data-name="'+ list.name +'" data-index="'+ i +'">'
-					 + ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + dot + list.name + info +'</li>';
-		} );
+var render = {
+	  bluetooth : () => {
+		if ( listEqual( 'bluetooth' ) ) return
+		
+		var html  = '';
+		if ( S.list.bluetooth ) {
+			S.list.bluetooth.forEach( list => {
+				html   += '<li class="bt" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
+						+ ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + ( list.connected ? dot : '' ) + list.name +'</li>';
+			} );
+		}
+		renderList( 'bluetooth', html );
+		$( '#divbluetooth' ).removeClass( 'hide' );
 	}
-	renderList( 'bluetooth', html );
-	$( '#divbluetooth' ).removeClass( 'hide' );
-}
-function renderPage() {
-	liStatus.activeList();
-	if ( ! S.device.bluetooth ) {
-		$( '#divbluetooth' ).addClass( 'hide' );
-	} else {
-		renderBluetooth();
-	}
-	if ( ! S.device.wlan ) {
-		$( '#divwlan' ).addClass( 'hide' );
-	} else {
-		renderWlan();
-	}
-	if ( ! S.device.lan ) {
-		$( '#divlan' ).addClass( 'hide' );
-	} else {
+	, lan       : () => {
 		var html = '';
 		if ( S.list.lan ) {
 			var ipeth = S.list.lan.ADDRESS;
-			html      =  '<li data-ip="'+ ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ ipeth
-						+'&ensp;<gr>&raquo;&ensp;'+ S.list.lan.GATEWAY +'</gr></li>';
+			html      =  '<li data-ip="'+ ipeth +'">'
+						+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ ipeth +'&ensp;<gr>&raquo;&ensp;'+ S.list.lan.GATEWAY +'</gr></li>';
 		}
 		$( '#lan' ).html( html );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
+	, wlan      : () => {
+		if ( listEqual( 'wlan' ) ) return
+		
+		var html = '';
+		if ( S.ap ) {
+			html +=  '<li class="wl ap" data-id="ap">'
+					+ ico( 'ap' ) +'<gr>Access point'+ dot +'&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip +'</li>';
+		}
+		if ( S.list.wlan ) {
+			S.list.wlan.forEach( ( list, i ) => {
+				if ( S.ap ) i++;
+				var ssid  = list.ssid;
+				html += '<li class="wl" data-id="'+ ssid +'"';
+				if ( list.ip ) {
+					html +=  ' data-ip="'+ list.ip +'">'
+							+ ico( list.icon ) +'<a>'+ ssid 
+							+'</a>'+ dot + list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
+				} else {
+					html +=  '>'
+							+ ico( 'wifi' ) + ssid +'</li>';
+				}
+			} );
+		}
+		renderList( 'wlan', html );
+		$( '#divwlan' ).removeClass( 'hide' );
+		bannerHide();
+	}
+}
+function renderPage() {
+	[ 'bluetooth', 'wlan', 'lan' ].forEach( k => {
+		S.device[ k ] ? render[ k ]() : $( '#div'+ k ).addClass( 'hide' );
+	} );
 	$( '#divap' ).toggleClass( 'hide', ! S.ap );
 	if ( ! S.ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
@@ -126,32 +144,6 @@ function renderPage() {
 	$( '#divwebui' ).removeClass( 'hide' );
 	showContent();
 }
-function renderWlan() {
-	var html = '';
-	if ( S.ap ) {
-		var info = liStatus.activeHtml( 'ap' );
-		html    += '<li class="wl ap" data-index="0" data-ssid="">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
-				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip + info +'</li>';
-	}
-	if ( S.list.wlan ) {
-		S.list.wlan.forEach( ( list, i ) => {
-			if ( S.ap ) i++;
-			var ssid  = list.ssid;
-			var index = ' data-index="'+ i +'"';
-			var info  = liStatus.activeHtml( ssid );
-			if ( list.ip ) {
-				html += '<li class="wl" data-ssid="'+ ssid +'" data-ip="'+ list.ip +'"'+ index +'>'
-					   + ico( list.icon ) +'<a>'+ ssid 
-					   +'</a>&ensp;<grn>•</grn>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr>'+ info +'</li>';
-			} else {
-				html += '<li class="wl" data-ssid="'+ ssid +'"'+ index +'>'+ ico( 'wifi' ) + ssid + info +'</li>';
-			}
-		} );
-	}
-	renderList( 'wlan', html );
-	$( '#divwlan' ).removeClass( 'hide' );
-	bannerHide();
-}
 function scanBluetooth() {
 	bash( 'networks-scan.sh', data => {
 		var htmlbt      = '';
@@ -166,7 +158,7 @@ function scanBluetooth() {
 				} else if ( list.paired ) {
 					icon += '<gr>•</gr> ';
 				}
-				htmlbt += '<li class="'+ cls +'" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
+				htmlbt += '<li class="'+ cls +'" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
 						+ icon +'<wh>'+ list.name +'</wh></li>';
 			} );
 		} else {
@@ -194,7 +186,7 @@ function scanWlan() {
 					cls = ' profile';
 				}
 				if ( signal && signal < -67 ) ssid = '<gr>'+ ssid +'</gr>';
-				htmlwl += '<li class="wlscan'+ cls +'" data-ssid="'+ ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'
+				htmlwl += '<li class="wlscan'+ cls +'" data-id="'+ ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'
 						+ ico( 'wifi'+ nwifi ) +'<a>'+ ssid +'</a>';
 				htmlwl += list.encrypt === 'on' ? ico( 'lock' ) : '&ensp;';
 				htmlwl += signal != 0 ? '<gr>'+ signal +' dBm</gr>' : '';
@@ -315,7 +307,7 @@ function warningIp( action, $li ) {
 	if ( $li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>'+ action +' current connection</wh>'
 }
 function wifiDisconnect() {
-	var ssid = $( 'li.active' ).data( 'ssid' );
+	var ssid = $( 'li.active' ).data( 'id' );
 	notify( 'wifi', ssid, 'Disconnect ...' );
 	bash( [ 'disconnect', ssid, 'CMD SSID' ] );
 	$( 'li.active i' ).addClass( 'blink' );
@@ -335,11 +327,6 @@ $( '.btscan' ).on( 'click', function() {
 	$( '#divscanbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
 } );
-$( '#scanbluetooth' ).on( 'click', 'li:not( .current )', function() {
-	clearTimeout( V.timeoutscan );
-	loader();
-	bluetoothCommand( 'pair', $( this ) );
-} );
 $( '.wladd' ).on( 'click', function() {
 	delete V.edit;
 	settingWifi();
@@ -349,9 +336,14 @@ $( '.wlscan' ).on( 'click', function() {
 	$( '#divscanwlan' ).removeClass( 'hide' );
 	scanWlan();
 } );
+$( '#scanbluetooth' ).on( 'click', 'li:not( .current )', function() {
+	clearTimeout( V.timeoutscan );
+	loader();
+	bluetoothCommand( 'pair', $( this ) );
+} );
 $( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
 	var $this    = $( this );
-	var ssid     = $this.data( 'ssid' );
+	var ssid     = $this.data( 'id' );
 	var security = $this.data( 'wpa' ) === 'wep';
 	var encrypt  = $this.data( 'encrypt' ) === 'on';
 	if ( $this.hasClass( 'profile' ) ) {
@@ -412,7 +404,7 @@ $( '#menu a' ).on( 'click', function() {
 				return
 			}
 			
-			var ssid = $li.data( 'ssid' );
+			var ssid = $li.data( 'id' );
 			if ( ! S.ap || localhost ) {
 				changeSsid( ssid );
 				return
@@ -456,7 +448,7 @@ $( '#menu a' ).on( 'click', function() {
 		case 'edit':
 			if ( V.wlan ) {
 				V.edit = true;
-				infoSetting( 'wlanprofile "'+ $li.data( 'ssid' ) +'"', values => settingWifi( values ) );
+				infoSetting( 'wlanprofile "'+ $li.data( 'id' ) +'"', values => settingWifi( values ) );
 			} else {
 				settingLan();
 			}
@@ -467,7 +459,7 @@ $( '#menu a' ).on( 'click', function() {
 				return
 			}
 			
-			var ssid = $li.data( 'ssid' );
+			var ssid = $li.data( 'id' );
 			var icon = 'wifi';
 			info( {
 				  icon       : icon
@@ -484,14 +476,7 @@ $( '#menu a' ).on( 'click', function() {
 			} );
 			break
 		case 'info':
-			if ( V.bluetooth ) {
-				var id  = 'bluetooth';
-				var arg = $li.data( 'mac' );
-			} else {
-				var id  = 'wlan';
-				var arg = $li.hasClass( 'ap' ) ? '' : $li.data( 'ssid' );
-			}
-			liStatus.set( id, arg );
+			currentStatus( $li.parent()[ 0 ].id, $li.data( 'id' ), 'id' );
 			break
 		case 'rename':
 			var icon = 'bluetooth';
