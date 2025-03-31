@@ -382,10 +382,10 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function() {
 	} else if ( $li.hasClass( 'ap' ) ) {
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var current = $li.hasClass( 'current' );
+		var connected = $li.data( 'ip' ) !== undefined;
 		$( '#menu a' ).removeClass( 'hide' );
-		$( '#menu .connect' ).toggleClass( 'hide', current );
-		$( '#menu .disconnect' ).toggleClass( 'hide', ! current );
+		$( '#menu .connect' ).toggleClass( 'hide', connected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', ! connected );
 		$( '#menu .rename' ).addClass( 'hide' );
 	}
 	contextMenu( $li );
