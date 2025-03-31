@@ -766,7 +766,7 @@ var util          = {
 		S.list.storage.forEach( list => {
 			var mountpoint = list.mountpoint === '/' ? 'SD' : list.mountpoint.replace( '/mnt/MPD/', '' );
 			var source     = list.source;
-			html		  += '<li data-source="'+ source +'" data-mountpoint="'+ mountpoint +'">'+ ico( list.icon ) + mountpoint
+			html		  += '<li data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'+ ico( list.icon ) + mountpoint
 						  + ( list.size ? dot : dot.replace( /grn/g, 'red' ) ) + list.size +' <c>'+ source +'</c></li>';
 		} );
 		renderList( 'storage', html );
@@ -1092,7 +1092,7 @@ $( '#menu a' ).on( 'click', function() {
 	var cmd        = $( this ).data( 'cmd' );
 	var $li        = $( 'li.active' );
 	var mountpoint = $li.data( 'mountpoint' );
-	var source     = $li.data( 'source' );
+	var source     = $li.data( 'id' );
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
 		var icon  = 'networks';
 		var title = 'Network Mount';
@@ -1106,7 +1106,7 @@ $( '#menu a' ).on( 'click', function() {
 			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			currentStatus( 'storage', source, 'source' );
+			currentStatus( 'storage', source, 'info' );
 			break
 		case 'remount':
 			notify( icon, title, 'Remount ...' );

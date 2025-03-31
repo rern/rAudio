@@ -48,11 +48,11 @@ function bannerReset() {
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
-function currentStatus( id, arg, lidata ) {
-	if ( lidata ) {
-		var $li   = $( 'li[ data-'+ lidata +'="'+ arg +'" ]' );
+function currentStatus( id, arg, info ) {
+	if ( info ) {
+		var $li   = $( 'li[ data-id="'+ arg +'" ]' );
 		if ( ! $li.find( 'pre' ).length ) {
-			$li.append( '<pre class="status li hide" data-id="'+ arg +'"></pre>'+ ico( 'close' ) );
+			$li.append( '<pre class="status li hide" data-arg="'+ arg +'"></pre>'+ ico( 'close' ) );
 		}
 		var $code = $li.find( 'pre' );
 		var cmd   = id +'info';
@@ -63,7 +63,7 @@ function currentStatus( id, arg, lidata ) {
 		var cmd   = id;
 	}
 	bash( 'data-status.sh '+ cmd + ( arg ? ' '+ arg : '' ), status => {
-		if ( lidata ) $icon.removeClass( 'blink' );
+		if ( info ) $icon.removeClass( 'blink' );
 		$code
 			.html( status )
 			.data( 'status', id )
@@ -467,12 +467,6 @@ if ( [ 'networks', 'system' ].includes( page ) ) {
 	function renderList( id, html ) {
 		var $list = $( '#'+ id );
 		$list.html( html );
-		var lidata = {
-			  bluetooth : 'mac'
-			, storage   : 'source'
-			, wlan      : 'ssid'
-		}
-		var $lipre = $list.find( 'pre.li' );
-		$lipre.each( ( i, el ) => currentStatus( id, $( el ).data( 'id' ), lidata[ id ] ) );
+		$list.find( 'pre.li' ).each( ( i, el ) => currentStatus( id, $( el ).data( 'arg' ), 'info' ) );
 	}
 }

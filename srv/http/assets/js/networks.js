@@ -476,7 +476,7 @@ $( '#menu a' ).on( 'click', function() {
 			} );
 			break
 		case 'info':
-			currentStatus( $li.parent()[ 0 ].id, $li.data( 'id' ), 'id' );
+			currentStatus( $li.parent()[ 0 ].id, $li.data( 'id' ), 'info' );
 			break
 		case 'rename':
 			var icon = 'bluetooth';
