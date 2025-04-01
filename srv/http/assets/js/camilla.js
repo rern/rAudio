@@ -2603,7 +2603,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$this.parents( 'li' ).removeClass( 'graph' );
 	$this.parent().remove();
 } );
-$( '#menu a' ).on( 'click', function( e ) {
+$( '#menu a' ).on( 'click', function() {
 	var $li = $( 'li.active' );
 	var cmd = $( this ).data( 'cmd' );
 	if ( cmd === 'graph' ) {
