@@ -1511,6 +1511,7 @@ div.pagerefresh {
 .coverart2 {
 	display: block;
 	padding-left: 2px;
+	font-size: 16px;
 	line-height: 18px;
 }
 .coverart2 {
@@ -1527,7 +1528,7 @@ div.pagerefresh {
 .list li {
 	border-bottom: 1px solid var( --cga );
 }
-.list li:not( .licover ) {
+.list li:not( .coverart, .licover ) {
 	display: block;
 	height: 49px;
 	line-height: 20px;

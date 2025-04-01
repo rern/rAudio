@@ -465,13 +465,13 @@ function htmlList() { // non-file 'list' command
 				$l2     = $artist;
 			}
 			$html     .= '
-<div class="coverart"'.$dataindex.'>
+<li class="coverart"'.$dataindex.'>
 	<a class="lipath">'.$path.'</a>
 	<a class="liname">'.$album.'</a>
 	<img class="lazyload" data-src="'.$thumbfile.'">
 	<a class="coverart1">'.$l1.'</a>
 	<a class="coverart2">'.$l2.'</a>
-</div>';
+</li>';
 		}
 	}
 	$html    .= indexBar( $indexes );
