@@ -36,7 +36,6 @@ W.refresh     = data => {
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
-	, list       : {}
 	, tab        : 'filters'
 	, timeoutred : true
 }

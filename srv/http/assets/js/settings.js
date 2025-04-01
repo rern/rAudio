@@ -433,7 +433,6 @@ $( document ).on( 'keydown', function( e ) {
 } );
 // context menu
 if ( $menu.length ) {
-	V.list = {}
 	var menu = {
 		  command  : ( $this, e ) => {
 			if ( $this.hasClass( 'gr' ) ) {
@@ -476,6 +475,8 @@ if ( $menu.length ) {
 		$this.remove();
 	} );
 	function listEqual( list ) {
+		if ( ! V.list ) return false
+		
 		return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
 	}
 	function renderList( id, html ) {
