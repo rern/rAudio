@@ -1443,10 +1443,12 @@ var render    = {
 		} );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
-		var li  = '';
+		var li = '';
 		S.ls.configs.forEach( f => {
 			var current = f === S.configname ? '<grn>•</grn>&ensp;' : '';
-			li += '<li data-id="'+ f +'">'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a></li>';
+			var $pre = $( '#config li[data-id="'+ f +'"] pre' );
+			var pre  = $pre.length ? $pre[ 0 ].outerHTML + ico( 'close infoclose' ) : '';
+			li += '<li data-id="'+ f +'">'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a>'+ pre +'</li>';
 		} );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 	} //-----------------------------------------------------------------------------------
