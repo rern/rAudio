@@ -5,10 +5,6 @@ export $( dbus-launch )
 
 . /srv/http/bash/common.sh
 
-for file in /etc/X11/xinit/xinitrc.d/*; do
-	. "$file"
-done
-
 $dirsettings/features.sh localbrowserxset
 
 if [[ ! $( ipAddress ) ]] || grep -q cursor=true /srv/http/data/system/localbrowser.conf; then
