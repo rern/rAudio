@@ -432,7 +432,7 @@ $( document ).on( 'keydown', function( e ) {
 	}
 } );
 // context menu
-if ( $( '#menu' ).length ) {
+if ( $menu.length ) {
 	var menu = {
 		  command  : ( $this, e ) => {
 			if ( $this.hasClass( 'gr' ) ) {
