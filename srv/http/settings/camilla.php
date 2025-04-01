@@ -103,9 +103,6 @@ foreach( $id_tab as $id => $data ) {
 		$html.= '
 <div id="sampling">'.htmlSectionStatus( 'sampling' ).'</div>
 <div id="options">'.$htmlopt.'</div>';
-	} else if ( $id === 'config' ) {
-		$html.= '
-<pre id="codeconfig" class="status hide"></pre>';
 	} else if ( $id === 'filters' || $id === 'mixers' ) {
 		$html.= '
 <ul class="entries sub"></ul>';

@@ -49,10 +49,10 @@ function bannerReset() {
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function currentStatus( id, arg, info ) {
-	if ( info ) {
+	if ( info ) { // context menu
 		var $li   = $( 'li[ data-id="'+ arg +'" ]' );
 		if ( ! $li.find( 'pre' ).length ) {
-			$li.append( '<pre class="status li hide" data-arg="'+ arg +'"></pre>'+ ico( 'close' ) );
+			$li.append( '<pre class="status li hide" data-arg="'+ arg +'"></pre>'+ ico( 'close infoclose' ) );
 		}
 		var $code = $li.find( 'pre' );
 		var cmd   = id +'info';
@@ -435,7 +435,7 @@ $( document ).on( 'keydown', function( e ) {
 if ( $( '#menu' ).length ) {
 	function contextMenu( $li ) {
 		$li.addClass( 'active' );
-		if ( $li.find( 'pre' ).length ) $( '#menu .info' ).addClass( 'hide' );
+		$( '#menu .info' ).toggleClass( 'disabled', $li.find( 'pre' ).length > 0 );
 		$menu
 			.removeClass( 'hide' )
 			.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 8 );
@@ -453,14 +453,14 @@ if ( $( '#menu' ).length ) {
 		$menu.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
 	} );
-}
-if ( [ 'networks', 'system' ].includes( page ) ) {
-	V.list = {}
-	$( '.entries' ).on( 'click', '.i-close', function() {
+	$( '.entries' ).on( 'click', '.infoclose', function() {
 		var $this = $( this );
 		$this.prev().remove();
 		$this.remove();
 	} );
+}
+if ( [ 'networks', 'system' ].includes( page ) ) {
+	V.list = {}
 	function listEqual( list ) {
 		return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
 	}

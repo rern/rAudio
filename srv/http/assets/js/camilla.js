@@ -1446,7 +1446,7 @@ var render    = {
 		var li  = '';
 		S.ls.configs.forEach( f => {
 			var current = f === S.configname ? '<grn>•</grn>&ensp;' : '';
-			li += '<li>'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a></li>';
+			li += '<li data-id="'+ f +'">'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a></li>';
 		} );
 		$( '#'+ V.tab +' .entries.main' ).html( li );
 	} //-----------------------------------------------------------------------------------
@@ -2806,12 +2806,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					break;
 				break;
 				case 'info':
-					var name = $li.find( '.name' ).text();
-					bash( 'data-status.sh configuration "'+ name +'"', config => {
-						$( '#codeconfig' )
-							.html( config )
-							.removeClass( 'hide' );
-					} );
+					currentStatus( 'camilla', $li.find( '.name' ).text(), 'info' );
 					break;
 				break;
 				case 'rename':
