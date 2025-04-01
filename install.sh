@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250404
+if [[ $( pacman -Q snapcast ) != 'snapcast 0.31.0-3' ]]; then
+	pacman -Sy --noconfirm snapcast
+fi
+
 # 20250322
 if [[ ! -e /lib/systemd/user/spotifyd.service ]]; then
 	mv /lib/systemd/{system,user}/spotifyd.service
