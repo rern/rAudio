@@ -678,7 +678,7 @@ input.disabled + .switchlabel:after {
 	#bar-bottom div.active:hover { background-color: var( --cml ) }
 	#bar-bottom div:hover span { color: var( --cw ) }
 	a:hover { text-decoration: none }
-	.entries li:not( .info ):hover { background: var( --cga ) }
+	.entries li:not( .info ):hover { background: var( --cgd ) }
 	#menu a:hover {
 		color: var( --cw );
 		background-color: var( --cgl );
