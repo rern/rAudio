@@ -1450,7 +1450,9 @@ var render    = {
 			var pre  = $pre.length ? $pre[ 0 ].outerHTML + ico( 'close infoclose' ) : '';
 			li += '<li data-id="'+ f +'">'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a>'+ pre +'</li>';
 		} );
-		$( '#'+ V.tab +' .entries.main' ).html( li );
+		var $list = $( '#'+ V.tab +' .entries.main' );
+		$list.html( li );
+		$list.find( 'pre.li' ).each( ( i, el ) => currentStatus( 'camilla', $( el ).data( 'arg' ), 'info' ) );
 	} //-----------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];
