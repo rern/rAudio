@@ -367,7 +367,7 @@ $( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function() {
 	var $li = $( this );
-	if ( contextMenuActive( $li ) ) return
+	if ( menu.isactive( $li ) ) return
 	
 	V.bluetooth = V.lan = V.wlan = false;
 	V[ $li.parent().prop( 'id' ) ] = true;
@@ -388,15 +388,16 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function() {
 		$( '#menu .disconnect' ).toggleClass( 'hide', ! connected );
 		$( '#menu .rename' ).addClass( 'hide' );
 	}
-	contextMenu( $li );
+	menu.show( $li );
 } );
 $( '.lanadd' ).on( 'click', function() {
 	settingLan();
 } );
-$( '#menu a' ).on( 'click', function() {
-	$menu.addClass( 'hide' );
+$( '#menu a' ).on( 'click', function( e ) {
+	var cmd = menu.command( $( this ), e );
+	if ( ! cmd ) return
+
 	var $li = $( 'li.active' );
-	var cmd = $( this ).data( 'cmd' );
 	switch ( cmd ) {
 		case 'connect':
 			if ( V.bluetooth ) {

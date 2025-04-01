@@ -2569,13 +2569,13 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	var $li   = $this.parent();
-	if ( contextMenuActive( $li ) ) return
+	if ( menu.isactive( $li ) ) return
 	
 	$( '#'+ V.tab +' li' ).removeClass( 'active' );
 	$li.addClass( 'active' );
 	$menu.find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
 	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
-	$( '#menu .delete' ).toggleClass( 'disabled', V.tab === 'config' && S.ls.configs.length === 1 );
+	$( '#menu .delete' ).toggleClass( 'gr', V.tab === 'config' && S.ls.configs.length === 1 );
 	if ( V.tab === 'mixers' && $( '#mixers .entries.sub' ).hasClass( 'hide' ) ) {
 		$menu.find( '.edit, .rename' ).toggleClass( 'hide' );
 	}
@@ -2587,7 +2587,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	} else {
 		$menu.find( '.bypass, .restore' ).addClass( 'hide' );
 	}
-	contextMenu( $li );
+	menu.show( $li );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead a' ).text();
@@ -2603,9 +2603,11 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$this.parents( 'li' ).removeClass( 'graph' );
 	$this.parent().remove();
 } );
-$( '#menu a' ).on( 'click', function() {
+$( '#menu a' ).on( 'click', function( e ) {
+	var cmd = menu.command( $( this ), e );
+	if ( ! cmd ) return
+	
 	var $li = $( 'li.active' );
-	var cmd = $( this ).data( 'cmd' );
 	if ( cmd === 'graph' ) {
 		var $divgraph = $li.find( '.divgraph' );
 		if ( $divgraph.length ) {
@@ -2974,6 +2976,8 @@ $( '#devices' ).on( 'click', 'li', function() {
 // config ---------------------------------------------------------------------------------
 $( '#config' ).on( 'click', '.i-add', function() {
 	setting.upload();
+} ).on( 'click', 'li', function() {
+	$( this ).find( '.liicon' ).trigger( 'click' );
 } );
 // ----------------------------------------------------------------------------------------
 $( '#bar-bottom div' ).off( 'click' ).on( 'click', function() {

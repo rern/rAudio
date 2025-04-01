@@ -433,19 +433,29 @@ $( document ).on( 'keydown', function( e ) {
 } );
 // context menu
 if ( $( '#menu' ).length ) {
-	function contextMenu( $li ) {
-		$li.addClass( 'active' );
-		$( '#menu .info' ).toggleClass( 'disabled', $li.find( 'pre' ).length > 0 );
-		$menu
-			.removeClass( 'hide' )
-			.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 8 );
-		scrollUpToView( $menu );
-	}
-	function contextMenuActive( $li ) {
-		var active = ! $menu.hasClass( 'hide' ) && $li.hasClass( 'active' );
-		$menu.addClass( 'hide' );
-		$( '.entries li' ).removeClass( 'active' );
-		return active
+	var menu = {
+		  command  : ( $this, e ) => {
+			if ( $this.hasClass( 'gr' ) ) {
+				e.stopPropagation();
+				return false
+			}
+			
+			return $this.data( 'cmd' )
+		}
+		, isactive : $li => {
+			var active = ! $menu.hasClass( 'hide' ) && $li.hasClass( 'active' );
+			$menu.addClass( 'hide' );
+			$( '.entries li' ).removeClass( 'active' );
+			return active
+		}
+		, show     : $li => {
+			$li.addClass( 'active' );
+			$( '#menu .info' ).toggleClass( 'gr', $li.find( 'pre' ).length > 0 );
+			$menu
+				.removeClass( 'hide' )
+				.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 8 );
+			scrollUpToView( $menu );
+		}
 	}
 	$( '.container' ).on( 'click', function( e ) {
 		if ( $( e.target ).parents( '.entries' ).length ) return

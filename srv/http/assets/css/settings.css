@@ -36,6 +36,9 @@ li.current a::before {
 	color: var( --cw );
 	text-shadow: var( --shadow-text );
 }
+.menu a.gr i {
+	color: var( --gr );
+}
 
 .head,
 #bar-bottom {

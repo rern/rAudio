@@ -995,7 +995,7 @@ $( '.addnas' ).on( 'click', function() {
 } );
 $( '#storage' ).on( 'click', 'li', function() {
 	var $li        = $( this );
-	if ( contextMenuActive( $li ) ) return
+	if ( menu.isactive( $li ) ) return
 	
 	var mountpoint = $li.data( 'mountpoint' );
 	var shareddata = [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint );
@@ -1018,7 +1018,7 @@ $( '#storage' ).on( 'click', 'li', function() {
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
-	contextMenu( $li );
+	menu.show( $li );
 } );
 $( '#i2smodule' ).on( 'input', function() {
 	var aplayname = this.value;
@@ -1091,9 +1091,10 @@ $( '.listtitle' ).on( 'click', function( e ) {
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
-$( '#menu a' ).on( 'click', function() {
-	$menu.addClass( 'hide' );
-	var cmd        = $( this ).data( 'cmd' );
+$( '#menu a' ).on( 'click', function( e ) {
+	var cmd = menu.command( $( this ), e );
+	if ( ! cmd ) return
+	
 	var $li        = $( 'li.active' );
 	var mountpoint = $li.data( 'mountpoint' );
 	var source     = $li.data( 'id' );
