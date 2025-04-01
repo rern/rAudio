@@ -108,8 +108,8 @@ function list2JSON( list ) {
 		if ( $.isEmptyObject( S ) ) {
 			S = JSON.parse( list );
 		} else {
+			if ( $menu.length ) V.list = jsonClone( S.list ); // networks, system
 			list = JSON.parse( list );
-			if ( 'list' in V ) V.list = jsonClone( S.list ); // networks, system
 			$.each( list, ( k, v ) => { S[ k ] = v } );
 		}
 	} catch( e ) {
@@ -433,6 +433,7 @@ $( document ).on( 'keydown', function( e ) {
 } );
 // context menu
 if ( $menu.length ) {
+	V.list = {}
 	var menu = {
 		  command  : ( $this, e ) => {
 			if ( $this.hasClass( 'gr' ) ) {
@@ -442,7 +443,13 @@ if ( $menu.length ) {
 			
 			return $this.data( 'cmd' )
 		}
-		, isactive : $li => {
+		, isActive : ( $li, e ) => {
+			if ( $( e.target ).is( 'pre' ) ) {
+				e.stopPropagation();
+				$menu.addClass( 'hide' );
+				return true
+			}
+			
 			var active = ! $menu.hasClass( 'hide' ) && $li.hasClass( 'active' );
 			$menu.addClass( 'hide' );
 			$( '.entries li' ).removeClass( 'active' );
@@ -468,14 +475,11 @@ if ( $menu.length ) {
 		$this.prev().remove();
 		$this.remove();
 	} );
-}
-if ( [ 'networks', 'system' ].includes( page ) ) {
-	V.list = {}
 	function listEqual( list ) {
 		return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
 	}
 	function renderList( id, html ) {
-		var $list = $( '#'+ id );
+		var $list = id === 'camilla' ? $( '#config .entries.main' ) : $( '#'+ id );
 		$list.html( html );
 		$list.find( 'pre.li' ).each( ( i, el ) => currentStatus( id, $( el ).data( 'arg' ), 'info' ) );
 	}

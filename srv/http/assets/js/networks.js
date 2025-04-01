@@ -365,9 +365,9 @@ $( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
 		}
 	} );
 } );
-$( '.entries:not( .scan )' ).on( 'click', 'li', function() {
+$( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	var $li = $( this );
-	if ( menu.isactive( $li ) ) return
+	if ( menu.isActive( $li, e ) ) return
 	
 	V.bluetooth = V.lan = V.wlan = false;
 	V[ $li.parent().prop( 'id' ) ] = true;

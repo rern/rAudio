@@ -36,6 +36,7 @@ W.refresh     = data => {
 // variables //////////////////////////////////////////////////////////////////////////////
 V             = {
 	  clipped    : false
+	, list       : {}
 	, tab        : 'filters'
 	, timeoutred : true
 }
@@ -1443,6 +1444,8 @@ var render    = {
 		} );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
+		if ( listEqual( 'camilla' ) ) return
+		
 		var li = '';
 		S.ls.configs.forEach( f => {
 			var current = f === S.configname ? '<grn>•</grn>&ensp;' : '';
@@ -1450,9 +1453,7 @@ var render    = {
 			var pre  = $pre.length ? $pre[ 0 ].outerHTML + ico( 'close infoclose' ) : '';
 			li += '<li data-id="'+ f +'">'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a>'+ pre +'</li>';
 		} );
-		var $list = $( '#'+ V.tab +' .entries.main' );
-		$list.html( li );
-		$list.find( 'pre.li' ).each( ( i, el ) => currentStatus( 'camilla', $( el ).data( 'arg' ), 'info' ) );
+		renderList( 'camilla', li );
 	} //-----------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];
@@ -2573,7 +2574,7 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	var $li   = $this.parent();
-	if ( menu.isactive( $li ) ) return
+	if ( menu.isActive( $li, e ) ) return
 	
 	$( '#'+ V.tab +' li' ).removeClass( 'active' );
 	$li.addClass( 'active' );
@@ -2980,8 +2981,11 @@ $( '#devices' ).on( 'click', 'li', function() {
 // config ---------------------------------------------------------------------------------
 $( '#config' ).on( 'click', '.i-add', function() {
 	setting.upload();
-} ).on( 'click', 'li', function() {
-	$( this ).find( '.liicon' ).trigger( 'click' );
+} ).on( 'click', 'li', function( e ) {
+	var $this = $( this );
+	if ( menu.isActive( $this, e ) ) return
+	
+	$this.find( '.liicon' ).trigger( 'click' );
 } );
 // ----------------------------------------------------------------------------------------
 $( '#bar-bottom div' ).off( 'click' ).on( 'click', function() {

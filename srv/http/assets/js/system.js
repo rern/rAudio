@@ -993,9 +993,9 @@ $( '.addnas' ).on( 'click', function() {
 	SW = { icon: 'networks' }
 	util.mount.mount();
 } );
-$( '#storage' ).on( 'click', 'li', function() {
+$( '#storage' ).on( 'click', 'li', function( e ) {
 	var $li        = $( this );
-	if ( menu.isactive( $li ) ) return
+	if ( menu.isActive( $li, e ) ) return
 	
 	var mountpoint = $li.data( 'mountpoint' );
 	var shareddata = [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint );
