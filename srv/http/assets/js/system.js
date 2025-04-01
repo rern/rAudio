@@ -760,7 +760,7 @@ var util          = {
 		}
 	}
 	, renderStorage : () => {
-		if ( listEqual( 'storage' ) ) return
+		if ( list.equal( 'storage' ) ) return
 		
 		var html = '';
 		S.list.storage.forEach( list => {
@@ -770,7 +770,7 @@ var util          = {
 							+ ico( list.icon ) + mountpoint.slice( 9 )
 							+ ( list.size ? dot : dot.replace( /grn/g, 'red' ) ) + list.size +' <c>'+ source +'</c></li>';
 		} );
-		renderList( 'storage', html );
+		list.render( 'storage', html );
 	}
 	, restoreReset  : () => {
 		info( {

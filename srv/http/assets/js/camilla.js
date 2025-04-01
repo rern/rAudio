@@ -1443,7 +1443,7 @@ var render    = {
 		} );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
-		if ( listEqual( 'camilla' ) ) return
+		if ( list.equal( 'camilla' ) ) return
 		
 		var li = '';
 		S.ls.configs.forEach( f => {
@@ -1452,7 +1452,7 @@ var render    = {
 			var pre  = $pre.length ? $pre[ 0 ].outerHTML + ico( 'close infoclose' ) : '';
 			li += '<li data-id="'+ f +'">'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a>'+ pre +'</li>';
 		} );
-		renderList( 'camilla', li );
+		list.render( 'camilla', li );
 	} //-----------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];

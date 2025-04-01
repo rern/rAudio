@@ -108,7 +108,7 @@ function list2JSON( list ) {
 		if ( $.isEmptyObject( S ) ) {
 			S = JSON.parse( list );
 		} else {
-			if ( $menu.length ) V.list = jsonClone( S.list ); // networks, system
+			if ( $menu.length ) V.list = jsonClone( S.list );
 			list = JSON.parse( list );
 			$.each( list, ( k, v ) => { S[ k ] = v } );
 		}
@@ -433,6 +433,18 @@ $( document ).on( 'keydown', function( e ) {
 } );
 // context menu
 if ( $menu.length ) {
+	var list = {
+		  equal  : list => {
+			if ( ! V.list ) return false
+			
+			return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
+		}
+		, render : ( id, html ) => {
+			var $list = id === 'camilla' ? $( '#config .entries.main' ) : $( '#'+ id );
+			$list.html( html );
+			$list.find( 'pre.li' ).each( ( i, el ) => currentStatus( id, $( el ).data( 'arg' ), 'info' ) );
+		}
+	}
 	var menu = {
 		  command  : ( $this, e ) => {
 			if ( $this.hasClass( 'gr' ) ) {
@@ -474,14 +486,4 @@ if ( $menu.length ) {
 		$this.prev().remove();
 		$this.remove();
 	} );
-	function listEqual( list ) {
-		if ( ! V.list ) return false
-		
-		return JSON.stringify( S.list[ list ] ) === JSON.stringify( V.list[ list ] )
-	}
-	function renderList( id, html ) {
-		var $list = id === 'camilla' ? $( '#config .entries.main' ) : $( '#'+ id );
-		$list.html( html );
-		$list.find( 'pre.li' ).each( ( i, el ) => currentStatus( id, $( el ).data( 'arg' ), 'info' ) );
-	}
 }

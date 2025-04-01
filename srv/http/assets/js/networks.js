@@ -71,7 +71,7 @@ function onPageInactive() {
 }
 var render = {
 	  bluetooth : () => {
-		if ( listEqual( 'bluetooth' ) ) return
+		if ( list.equal( 'bluetooth' ) ) return
 		
 		var html  = '';
 		if ( S.list.bluetooth ) {
@@ -80,7 +80,7 @@ var render = {
 						+ ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + ( list.connected ? dot : '' ) + list.name +'</li>';
 			} );
 		}
-		renderList( 'bluetooth', html );
+		list.render( 'bluetooth', html );
 		$( '#divbluetooth' ).removeClass( 'hide' );
 	}
 	, lan       : () => {
@@ -94,7 +94,7 @@ var render = {
 		$( '#divlan' ).removeClass( 'hide' );
 	}
 	, wlan      : () => {
-		if ( listEqual( 'wlan' ) ) return
+		if ( list.equal( 'wlan' ) ) return
 		
 		var html = '';
 		if ( S.ap ) {
@@ -116,7 +116,7 @@ var render = {
 				}
 			} );
 		}
-		renderList( 'wlan', html );
+		list.render( 'wlan', html );
 		$( '#divwlan' ).removeClass( 'hide' );
 		bannerHide();
 	}
