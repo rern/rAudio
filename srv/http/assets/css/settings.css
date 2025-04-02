@@ -461,11 +461,11 @@ input[type=image] {
 	box-shadow: inset 0px 1px 2px #000000;
 }
 .btn-primary,
-.switchlabel:after,
-input:checked + .switchlabel:after {
+.switchlabel::after,
+input:checked + .switchlabel::after {
 	background: var( --glossy-btn );
 }
-.switchlabel:after {
+.switchlabel::after {
 	content: '';
 	position: absolute;
 	top: 0;
@@ -477,21 +477,24 @@ input:checked + .switchlabel:after {
 	border-radius: 4px;
 	transition: 0.3s;
 }
-input:checked + .switchlabel:after {
+input:checked + .switchlabel::after {
 	left: 50%;
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
-.switchlabel:active:after {
+input.inactive:checked + .switchlabel::after {
+	background: var( --cm );
+}
+.switchlabel:active::after {
 	width: 40px;
 }
-input:checked.disabled + .switchlabel:after {
+input:checked.disabled + .switchlabel::after {
 	background-color: var( --cmd );
 }
 input.disabled + .switchlabel {
 	background-color: var( --cga );
 }
-input.disabled + .switchlabel:after {
+input.disabled + .switchlabel::after {
 	background-color: var( --cgd );
 }
 .setting,
