@@ -66,9 +66,6 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 			(( $count == 1 )) || ( (( $count == 2 )) && ! cmp -s $tmp_module $file_module ) && reboot=1
 		fi
 	fi
-	rebootSet
-}
-rebootSet() {
 	if [[ $reboot ]]; then
 		pushData reboot '{ "id": "'$CMD'" }'
 		appendSortUnique $CMD $dirshm/reboot
@@ -351,21 +348,12 @@ soundprofile )
 	pushRefresh
 	;;
 templimit )
-	lines=$( < /boot/config.txt )
-	degree=$( getVar temp_soft_limit <<< $lines )
-	config=$( grep -v ^temp_soft_limit <<< $lines )
+	config=$( grep -v ^temp_soft_limit $file_config )
 	if [[ $ON ]]; then
-		(( $DEGREE != $degree && $DEGREE != 60 )) && config+="
+		config+="
 temp_soft_limit=$DEGREE"
 	fi
-	echo "$config" > /boot/config.txt
-	if [[ $degree ]]; then
-		[[ ! $ON || $degree != $DEGREE ]] && reboot=1
-	else
-		[[ $ON ]] && reboot=1
-	fi
-	rebootSet
-	pushRefresh
+	configTxt
 	;;
 tft )
 	config=$( grep -Ev '^hdmi_force_hotplug|:rotate=' $file_config )
