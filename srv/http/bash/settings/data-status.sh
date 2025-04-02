@@ -76,7 +76,9 @@ infowlan )
 		fi
 		data=$( iw dev $wlandev scan ssid "$2" )
 		[[ ! $data ]] && data='(Not found)'
-		echo "$data"
+		echo "\
+<bll># iw dev $wlandev scan ssid \"$2\"</bll>
+$data"
 		[[ $down ]] && ifconfig $wlandev down
 	else
 		$dirsettings/data-service.sh ap nostatus
