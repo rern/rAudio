@@ -7,6 +7,7 @@ alias=r1
 # 20250404
 if [[ $( pacman -Q snapcast ) != 'snapcast 0.31.0-3' ]]; then
 	pacman -Sy --noconfirm snapcast
+	sed -i -e '/^bind_to_address/ d' -e '/^#bind_to_address/ a\bind_to_address = 0.0.0.0' /etc/snapserver.conf
 fi
 
 # 20250322

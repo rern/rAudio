@@ -55,7 +55,7 @@ function currentStatus( id, arg, info ) {
 			$li.append( '<pre class="status li hide" data-arg="'+ arg +'"></pre>'+ ico( 'close infoclose' ) );
 		}
 		var $code = $li.find( 'pre' );
-		var cmd   = id +'info';
+		var cmd   = info + id;
 		var $icon = $li.find( 'i' ).eq( 0 );
 		$icon.addClass( 'blink' );
 	} else {

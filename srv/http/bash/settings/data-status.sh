@@ -21,17 +21,6 @@ bluetooth )
 <bll># bluetoothctl show</bll>
 $( bluetoothctl show )"
 	;;
-bluetoothinfo )
-	echo "\
-<bll># bluetoothctl info $2</bll>
-$( bluetoothctl info $2 )"
-	;;
-camillainfo | configuration )
-	[[ $2 ]] && file="$dircamilladsp/configs/$2" || file=$( getVar CONFIG /etc/default/camilladsp )
-	echo "\
-<bll># cat $file</bll>
-$( cat "$file" )"
-	;;
 device )
 	card=$( getVar card $dirshm/output )
 	data=$( tty2std "timeout 0.1 aplay -D hw:$card /dev/zero --dump-hw-params" \
@@ -41,6 +30,57 @@ device )
 	echo "\
 <bll># aplay -D hw:$card /dev/zero --dump-hw-params</bll>
 $data"
+	;;
+infobluetooth )
+	echo "\
+<bll># bluetoothctl info $2</bll>
+$( bluetoothctl info $2 )"
+	;;
+infocamilla | configuration )
+	[[ $2 ]] && file="$dircamilladsp/configs/$2" || file=$( getVar CONFIG /etc/default/camilladsp )
+	echo "\
+<bll># cat $file</bll>
+$( cat "$file" )"
+	;;
+infostorage )
+	DEV=$2
+	if [[ ${DEV:0:8} == /dev/mmc ]]; then
+		dev=/sys/block/${DEV:5:-2}/device
+		for k in cid csd scr; do
+			data+="\
+<bll># mmc $k read $dev</bll>
+$( mmc $k read $dev )
+"
+		done
+		echo "$data"
+	else
+		dev=$( tr -d 0-9 <<< $DEV )
+		data="\
+<bll># lsblk -no vendor,model $dev</bll>
+$( lsblk -no vendor,model $dev )"
+		param=$( hdparm -I $DEV )
+		if [[ $param ]]; then
+			data+="
+<bll># hdparm -I $DEV</bll>
+$( sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' <<< $param )"
+		fi
+		echo "$data"
+	fi
+	;;
+infowlan )
+	if [[ $2 ]]; then
+		wlandev=$( < $dirshm/wlan )
+		if ip addr show $wlandev | grep -q 'state DOWN'; then
+			down=1
+			ifconfig $wlandev up
+		fi
+		data=$( iw dev $wlandev scan ssid "$2" )
+		[[ ! $data ]] && data='(Not found)'
+		echo "$data"
+		[[ $down ]] && ifconfig $wlandev down
+	else
+		$dirsettings/data-service.sh ap nostatus
+	fi
 	;;
 lan )
 	lan=$( lanDevice )
@@ -119,31 +159,6 @@ $( < /etc/fstab )
 
 $2"
 	;;
-storageinfo )
-	DEV=$2
-	if [[ ${DEV:0:8} == /dev/mmc ]]; then
-		dev=/sys/block/${DEV:5:-2}/device
-		for k in cid csd scr; do
-			data+="\
-<bll># mmc $k read $dev</bll>
-$( mmc $k read $dev )
-"
-		done
-		echo "$data"
-	else
-		dev=$( tr -d 0-9 <<< $DEV )
-		data="\
-<bll># lsblk -no vendor,model $dev</bll>
-$( lsblk -no vendor,model $dev )"
-		param=$( hdparm -I $DEV )
-		if [[ $param ]]; then
-			data+="
-<bll># hdparm -I $DEV</bll>
-$( sed -E -e '1,3 d' -e '/^ATA device|Media.*:|Serial.*:|Transport:/ d' <<< $param )"
-		fi
-		echo "$data"
-	fi
-	;;
 system )
 	config="\
 <bll># cat /boot/cmdline.txt</bll>
@@ -199,21 +214,6 @@ $( iw dev )
 
 <bll># iwconfig $wlandev</bll>
 $( iwconfig $wlandev )"
-	;;
-wlaninfo )
-	if [[ $2 ]]; then
-		wlandev=$( < $dirshm/wlan )
-		if ip addr show $wlandev | grep -q 'state DOWN'; then
-			down=1
-			ifconfig $wlandev up
-		fi
-		data=$( iw dev $wlandev scan ssid "$2" )
-		[[ ! $data ]] && data='(Not found)'
-		echo "$data"
-		[[ $down ]] && ifconfig $wlandev down
-	else
-		$dirsettings/data-service.sh ap nostatus
-	fi
 	;;
 wlan )
 	echo '<bll># iw reg get</bll>'
