@@ -482,9 +482,6 @@ input:checked + .switchlabel::after {
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
-input.inactive:checked + .switchlabel::after {
-	background: var( --cm );
-}
 .switchlabel:active::after {
 	width: 40px;
 }
@@ -496,6 +493,9 @@ input.disabled + .switchlabel {
 }
 input.disabled + .switchlabel::after {
 	background-color: var( --cgd );
+}
+input.inactive + .switchlabel::after {
+	background: var( --cm );
 }
 .setting,
 .settingedit {

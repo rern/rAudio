@@ -531,5 +531,6 @@ function renderPage() {
 		$( '#camilladsp' ).toggleClass( 'disabled', S.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
+	$( '#localbrowser' ).toggleClass( 'inactive', S.localbrowser === -1 );
 	showContent();
 }
