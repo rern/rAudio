@@ -58,7 +58,7 @@ $( tty2std 'timeout 0.1 rtl_test -t' )"
 		PKG=firefox
 		SERVICE=$CMD
 		conf=$( configText $dirsystem/localbrowser.conf )
-		skip+='|FATAL: Module g2d_23 not found'
+		skip+='|FATAL: Module g2d_23 not found|XKEYBOARD keymap|Could not resolve keysym|Errors from xkbcomp|Failed to connect to session manager'
 		;;
 	mpd )
 		conf=$( grep -Ev '^i|^#' $mpdconf )
