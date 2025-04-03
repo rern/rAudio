@@ -452,7 +452,6 @@ input[type=image] {
 .switchlabel {
 	display: inline-block;
 	position: relative;
-	text-indent: -9999px;
 	width: 80px;
 	height: 40px;
 	margin-bottom: 5px;
@@ -482,6 +481,15 @@ input:checked + .switchlabel::after {
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
+input.inactive:checked + .switchlabel::before {
+	content: '\F562';
+	position: absolute;
+	left: 51px;
+	top: 10px;
+	font-family: rern;
+	font-size: 18px;
+	z-index: 1;
+}
 .switchlabel:active::after {
 	width: 40px;
 }
@@ -493,9 +501,6 @@ input.disabled + .switchlabel {
 }
 input.disabled + .switchlabel::after {
 	background-color: var( --cgd );
-}
-input.inactive + .switchlabel::after {
-	background: var( --cm );
 }
 .setting,
 .settingedit {
