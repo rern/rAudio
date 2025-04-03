@@ -199,9 +199,6 @@ localbrowser )
 localbrowserreload )
 	pushData reload 1
 	;;
-localbrowserxset )
-	localbrowserXset
-	;;
 login )
 	pushRefresh
 	pushSubmenu lock $( [[ -e $dirsystem/login ]] && echo true || echo false )
@@ -410,6 +407,13 @@ spotifytoken )
 	CMD=spotifyd
 	serviceRestartEnable
 	pushRefresh
+	;;
+startx )
+	localbrowserXset
+	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
+	matchbox-window-manager -use_cursor $cursor &
+	export $( dbus-launch )
+	firefox -kiosk -private http://localhost
 	;;
 stoptimer )
 	killProcess stoptimer

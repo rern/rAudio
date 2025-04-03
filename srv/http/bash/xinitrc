@@ -1,16 +1,5 @@
 #!/bin/bash
 
-export $( dbus-launch )
-[[ -e /boot/kernel7.img ]] && export LIBGL_ALWAYS_INDIRECT=1 # fix: MESA: error: ZINK: vkCreateInstance failed
+# run by startx
 
-. /srv/http/bash/common.sh
-
-$dirsettings/features.sh localbrowserxset
-
-if [[ ! $( ipAddress ) ]] || grep -q cursor=true /srv/http/data/system/localbrowser.conf; then
-	cursor=yes
-else
-	cursor=no
-fi
-matchbox-window-manager -use_cursor $cursor &
-firefox -kiosk -private http://localhost
+/srv/http/bash/settings/features.sh startx
