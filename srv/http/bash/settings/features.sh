@@ -139,28 +139,14 @@ localbrowser )
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-		if [[ -e /tmp/localbrowser.conf ]]; then
-			diff=$( grep -Fxvf $dirsystem/localbrowser.conf /tmp/localbrowser.conf )
-			if [[ $diff ]]; then
-				for k in cursor rotate screenoff zoom; do
-					grep -q -m1 ^$k <<< $diff && printf -v diff$k '%s' 1
-				done
-				[[ $diffcursor || $diffzoom ]] && restart=1
-			fi
-		else
-			restart=1
-		fi
 		scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
 		profile=$( ls /root/.mozilla/firefox | grep release$ )
-		echo '
-user_pref("layout.css.devPixelsPerPx", "'$scale'");
-user_pref("layout.css.prefers-color-scheme.content-override", 0);
-user_pref("browser.display.background_color.dark", "#000000");
-' > /root/.mozilla/firefox/$profile/user.js
+		echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' /root/.mozilla/firefox/$profile/user.js
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then # tft
+			rotate=$( sed -n -E '/waveshare|tft35a/ {s/.*rotate=(.*)/\1/; p}' /boot/config.txt )
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
-			if [[ ! -e /tmp/localbrowser.conf || $diffrotate ]]; then
+			if [[ ! $RESTORE && $ROTATE != $rotate ]]; then
 				appendSortUnique localbrowser $dirshm/reboot
 				notify localbrowser 'Rotate Browser on RPi' 'Reboot required.' 5000
 				exit
@@ -184,13 +170,13 @@ user_pref("browser.display.background_color.dark", "#000000");
 				$dirbash/cmd.sh splashrotate
 			fi
 		fi
-		if [[ $diffscreenoff ]]; then
+		if [[ ! $RESTORE ]]; then
 			localbrowserXset
 			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
 			pushSubmenu screenoff $tf
+			systemctl restart bootsplash localbrowser &> /dev/null
+			systemctl enable bootsplash localbrowser
 		fi
-		[[ $restart ]] && systemctl restart bootsplash localbrowser &> /dev/null
-		systemctl enable bootsplash localbrowser
 	else
 		ply-image /srv/http/assets/img/splash.png
 		systemctl disable --now bootsplash localbrowser
@@ -199,9 +185,6 @@ user_pref("browser.display.background_color.dark", "#000000");
 		[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 	fi
 	pushRefresh
-	;;
-localbrowserreload )
-	pushData reload 1
 	;;
 login )
 	pushRefresh

@@ -122,7 +122,8 @@ var config       = {
 				$span.on( 'click', function() {
 					var i = $( this ).index();
 					if ( i === 0 ) {
-						bash( [ 'localbrowserreload' ], () => banner( SW.icon, SW.title, 'Reloaded.' ) );
+						ws.send( '{ "channel": "reload", "data": 1 }' );
+						banner( SW.icon, SW.title, 'Reloaded.' );
 					} else if ( i === 1 ) {
 						bash( [ 'screentoggle' ], onoff => banner( SW.icon, SW.title, onoff ) );
 					} else {
