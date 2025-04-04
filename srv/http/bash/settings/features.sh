@@ -152,7 +152,11 @@ localbrowser )
 		fi
 		scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
 		profile=$( ls /root/.mozilla/firefox | grep release$ )
-		echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
+		echo '
+user_pref("layout.css.devPixelsPerPx", "'$scale'");
+user_pref("layout.css.prefers-color-scheme.content-override", 0);
+user_pref("browser.display.background_color.dark", "#000000");
+' > /root/.mozilla/firefox/$profile/user.js
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then # tft
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
