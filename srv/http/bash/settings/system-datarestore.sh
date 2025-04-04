@@ -59,15 +59,10 @@ if [[ $mountpoints ]]; then
 fi
 [[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus
 if systemctl -q is-enabled localbrowser; then
-	. $dirsystem/localbrowser.conf
+	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
 	$dirsettings/features.sh "localbrowser
 $rotate
-$zoom
-$screenoff
-$onwhileplay
-$cursor
-true
-CFG ROTATE ZOOM SCREENOFF ONWHILEPLAY CURSOR RESTORE"
+CMD ROTATE"
 fi
 
 $dirbash/power.sh reboot

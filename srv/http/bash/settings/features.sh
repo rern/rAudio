@@ -135,18 +135,16 @@ lastfmkey )
 	;;
 localbrowser )
 	if [[ $ON ]]; then
+		[[ ! $ZOOM ]] && restore=1
 		if ! grep -q console=tty3 /boot/cmdline.txt; then
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-		scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
-		profile=$( ls /root/.mozilla/firefox | grep release$ )
-		echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' /root/.mozilla/firefox/$profile/user.js
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then # tft
 			rotate=$( sed -n -E '/waveshare|tft35a/ {s/.*rotate=(.*)/\1/; p}' /boot/config.txt )
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
-			if [[ ! $RESTORE && $ROTATE != $rotate ]]; then
+			if [[ ! $restore && $ROTATE != $rotate ]]; then
 				appendSortUnique localbrowser $dirshm/reboot
 				notify localbrowser 'Rotate Browser on RPi' 'Reboot required.' 5000
 				exit
@@ -170,8 +168,7 @@ localbrowser )
 				$dirbash/cmd.sh splashrotate
 			fi
 		fi
-		if [[ ! $RESTORE ]]; then
-			localbrowserXset
+		if [[ ! $restore ]]; then
 			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
 			pushSubmenu screenoff $tf
 			systemctl restart bootsplash localbrowser &> /dev/null
@@ -397,6 +394,10 @@ spotifytoken )
 	;;
 startx )
 	localbrowserXset
+	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
+	scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
+	profile=$( ls /root/.mozilla/firefox | grep release$ )
+	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
