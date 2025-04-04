@@ -58,11 +58,9 @@ if [[ $mountpoints ]]; then
 	done <<< $mountpoints
 fi
 [[ -e /etc/modprobe.d/cirrus.conf ]] && touch /boot/cirrus
-if systemctl -q is-enabled localbrowser; then
-	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
-	$dirsettings/features.sh "localbrowser
+rotate=$( getVar rotate $dirsystem/localbrowser.conf )
+$dirsettings/features.sh "localbrowser
 $rotate
 CMD ROTATE"
-fi
 
 $dirbash/power.sh reboot
