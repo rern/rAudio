@@ -1,5 +1,3 @@
 #!/bin/bash
 
-# run by startx
-
 /srv/http/bash/settings/features.sh startx
