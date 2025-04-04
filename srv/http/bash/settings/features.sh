@@ -135,7 +135,6 @@ lastfmkey )
 	;;
 localbrowser )
 	if [[ $ON ]]; then
-		[[ ! $ZOOM ]] && restore=1
 		if ! grep -q console=tty3 /boot/cmdline.txt; then
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
@@ -144,7 +143,7 @@ localbrowser )
 			rotate=$( sed -n -E '/waveshare|tft35a/ {s/.*rotate=(.*)/\1/; p}' /boot/config.txt )
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
-			if [[ ! $restore && $ROTATE != $rotate ]]; then
+			if [[ $ROTATE != $rotate ]]; then
 				appendSortUnique localbrowser $dirshm/reboot
 				notify localbrowser 'Rotate Browser on RPi' 'Reboot required.' 5000
 				exit
@@ -165,15 +164,13 @@ localbrowser )
 				else 
 					sed "s/ROTATION_SETTING/$rotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 				fi
-				$dirbash/cmd.sh splashrotate
+				splashrotate
 			fi
 		fi
-		if [[ ! $restore ]]; then
-			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
-			pushSubmenu screenoff $tf
-			systemctl restart bootsplash localbrowser &> /dev/null
-			systemctl enable bootsplash localbrowser
-		fi
+		[[ $SCREENOFF == 0 ]] && tf=false || tf=true
+		pushSubmenu screenoff $tf
+		systemctl restart bootsplash localbrowser &> /dev/null
+		systemctl enable bootsplash localbrowser
 	else
 		ply-image /srv/http/assets/img/splash.png
 		systemctl disable --now bootsplash localbrowser

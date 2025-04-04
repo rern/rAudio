@@ -42,8 +42,6 @@ zoom=100
 screenoff=0
 onwhileplay=
 cursor=" > $dirsystem/localbrowser.conf
-else
-	rm -f /srv/http/assets/img/splah.png $dirbash/xinitrc
 fi
 
 # mirror

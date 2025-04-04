@@ -522,6 +522,28 @@ snapserverList() {
 		echo '[]'
 	fi
 }
+splash() {
+	dirimg=/srv/http/assets/img
+	dirtmp=$1
+	if [[ $2 == backup ]]; then
+		[[ -e /etc/X11/xorg.conf.d/99-raspi-rotate.conf ]] && cp $dirimg/splash.png $dirtmp
+	else
+		[[ -e $dirtmp/splash.png ]] && mv -f $dirtmp/splash.png $dirimg
+	fi
+}
+splashRotate() {
+	local rotate
+	dirimg=/srv/http/assets/img
+	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
+	magick \
+		-density 48 \
+		-background none $dirimg/icon.svg \
+		-rotate $rotate \
+		-gravity center \
+		-background '#000' \
+		-extent 1920x1080 \
+		$dirimg/splash.png
+}
 statusColor() {
 	sed -E  -e 's|●|<grn>&</grn>|
 					' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
