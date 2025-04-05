@@ -522,15 +522,6 @@ snapserverList() {
 		echo '[]'
 	fi
 }
-splash() {
-	dirimg=/srv/http/assets/img
-	dirtmp=$1
-	if [[ $2 == backup ]]; then
-		[[ -e /etc/X11/xorg.conf.d/99-raspi-rotate.conf ]] && cp $dirimg/splash.png $dirtmp
-	else
-		[[ -e $dirtmp/splash.png ]] && mv -f $dirtmp/splash.png $dirimg
-	fi
-}
 splashRotate() {
 	local rotate
 	dirimg=/srv/http/assets/img
