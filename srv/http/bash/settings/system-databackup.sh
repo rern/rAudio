@@ -58,7 +58,6 @@ if [[ $xinitrcfiles ]]; then
 fi
 dirnasdata=/mnt/MPD/NAS/data
 [[ -e $dirnasdata && ! -L $dirnasdata/mpd ]] && cp -rL $dirnasdata $dirconfig
-splash $dirconfig backup
 
 services='bluetooth camilladsp iwd localbrowser mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli'
 for service in $services; do
