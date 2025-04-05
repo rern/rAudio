@@ -95,6 +95,8 @@ var config       = {
 				, [ 'Screen off <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 60 } } ]
 				, [ 'On while play',             'checkbox' ]
 				, [ 'Mouse pointer',             'checkbox' ]
+				, [ '',                          'checkbox' ]
+				, [ '',                          'checkbox' ]
 			]
 			, footer       : infoFooterIcon( {
 				  Reload     : 'reload'
@@ -102,12 +104,13 @@ var config       = {
 				, Brightness : 'brightness'
 			} )
 			, boxwidth     : 110
-			, values       : data.values
+			, values       : { ...data.values, R_CHANGED: false, RESTART: false }
 			, checkchanged : S.localbrowser
 			, beforeshow   : () => {
+				$( '#infoList tr' ).last().addClass( 'hide' ).prev().addClass( 'hide' )
 				var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
 				$onwhileplay.prop( 'disabled', data.values.SCREENOFF === 0 );
-				$( '#infoList tr:eq( 2 )' ).on( 'click', '.updn', function() {
+				$( '#infoList tr' ).eq( 2 ).on( 'click', '.updn', function() {
 					if ( $( this ).parents( 'td' ).prev().find( 'input' ).val() != 0 ) {
 						$onwhileplay.prop( 'disabled', false );
 					} else {
@@ -143,7 +146,19 @@ var config       = {
 				} );
 			}
 			, cancel       : switchCancel
-			, ok           : switchEnable
+			, ok           : () => {
+				var v          = infoVal();
+				var values     = data.values;
+				var $r_changed = $( '#infoList input' ).eq( 4 );
+				var $restart   = $( '#infoList input' ).eq( 5 );
+				if ( v.ROTATE !== values.ROTATE ) {
+					$r_changed.prop( 'checked', true );
+					$restart.prop( 'checked', true );
+				} else {
+					if ( v.ZOOM !== values.ZOOM || v.CURSOR !== values.CURSOR ) $restart.prop( 'checked', true );
+				}
+				switchEnable();
+			}
 			, fileconf     : true
 		} );
 	}

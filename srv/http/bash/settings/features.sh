@@ -140,25 +140,23 @@ localbrowser )
 			systemctl disable --now getty@tty1
 		fi
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then # tft
-			rotate=$( sed -n -E '/waveshare|tft35a/ {s/.*rotate=(.*)/\1/; p}' /boot/config.txt )
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
-			if [[ $ROTATE != $rotate ]]; then
+			if [[ $R_CHANGED ]]; then
 				appendSortUnique localbrowser $dirshm/reboot
 				notify localbrowser 'Rotate Browser on RPi' 'Reboot required.' 5000
 				exit
 # --------------------------------------------------------------------
 			fi
 		else # hdmi
-			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
-			[[ -e $rotateconf ]] && rotateprev=$( awk '/rotate/ {print $NF}' $rotateconf | tr -d '"' )
 			case $ROTATE in
 				0 )   rotate=NORMAL;;
 				270 ) rotate=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
 				90 )  rotate=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
 				180 ) rotate=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
-			if [[ $rotateprev != $rotate ]]; then
+			if [[ $R_CHANGED ]]; then
+				rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 				if [[ $ROTATE == 0 ]]; then
 					rm -f $rotateconf
 				else 
@@ -167,10 +165,15 @@ localbrowser )
 				splashrotate
 			fi
 		fi
+		profile=$( ls /root/.mozilla/firefox | grep release$ )
+		scale=$( cut -d'"' -f4 /root/.mozilla/firefox/$profile/user.js )
+		
 		[[ $SCREENOFF == 0 ]] && tf=false || tf=true
 		pushSubmenu screenoff $tf
-		systemctl restart bootsplash localbrowser &> /dev/null
-		systemctl enable bootsplash localbrowser
+		if [[ $RESTART ]]; then
+			systemctl restart bootsplash localbrowser &> /dev/null
+			systemctl enable bootsplash localbrowser
+		fi
 	else
 		ply-image /srv/http/assets/img/splash.png
 		systemctl disable --now bootsplash localbrowser

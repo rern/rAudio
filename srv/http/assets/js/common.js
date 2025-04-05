@@ -598,7 +598,7 @@ function info( json ) {
 					break
 				case 'select':
 					kv          = param.kv || param;
-					htmls.list += '<select>'+ htmlOption( kv ) +'</select>';
+					htmls.list += '<select>'+ htmlOption( kv, param.nosort ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
@@ -1271,23 +1271,21 @@ function addonsProgressSubmit( input ) {
 function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );
 }
-function htmlOption( el ) {
+function htmlOption( el, nosort ) {
 	var array = false;
-	var sort  = true;
 	if ( typeof el === 'number' ) {
 		el         = [ ...Array( el ).keys() ];
 	} else if ( Array.isArray( el ) ) {
 		var array  = true;
 	} else {
-		if ( 'nosort' in el ) sort = false;
 		if ( 'kv' in el ) el = el.kv;
 	}
 	var options = '';
 	if ( array ) { // name = value
-		if ( sort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
+		if ( ! nosort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
 		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
 	} else {                     // json
-		if ( sort ) el = jsonSort( el );
+		if ( ! nosort ) el = jsonSort( el );
 		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
 	}
 	return options
