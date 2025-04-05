@@ -21,7 +21,6 @@ if [[ $libraryonly ]]; then
 fi
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 bsdtar xpf $backupfile -C /srv/http
-splash $dirconfig restore
 dirPermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 partuuid=$( grep -m1 ^PARTUUID /etc/fstab | cut -d- -f1 )
