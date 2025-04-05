@@ -45,7 +45,6 @@ getinstallzip() {
 	rm $installfile $tmpdir/{.*,*} &> /dev/null
 	cp -r $tmpdir/* /
 	rm -rf $tmpdir
-	splashRotate
 }
 installstart() { # $1-'u'=update
 	rm $0
