@@ -151,8 +151,8 @@ var config       = {
 				var values     = data.values;
 				var $r_changed = $( '#infoList input' ).eq( 4 );
 				var $restart   = $( '#infoList input' ).eq( 5 );
-				if ( v.ROTATE !== values.ROTATE ) {
-					$r_changed.prop( 'checked', true );
+				if ( v.ROTATE !== values.ROTATE ) $r_changed.prop( 'checked', true );
+				if ( ! S.localbrowser || v.ROTATE !== values.ROTATE ) {
 					$restart.prop( 'checked', true );
 				} else {
 					if ( v.ZOOM !== values.ZOOM || v.CURSOR !== values.CURSOR ) $restart.prop( 'checked', true );
