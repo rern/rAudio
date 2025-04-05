@@ -191,7 +191,7 @@ dirPermissions() {
 			  /srv/http/settings/camilla.php \
 			  $dirsettings/camilla*
 	fi
-	[[ ! -e /usr/bin/firefox ]] && rm -f /srv/http/assets/img/splash.png $dirbash/xinitrc
+	[[ -e /usr/bin/firefox ]] && splashRotate
 	chown -R http:http /srv &> /dev/null
 	chown -R mpd:mpd $dirmpd $dirplaylists &> /dev/null
 	chmod -R u=rw,go=r,a+X /srv
