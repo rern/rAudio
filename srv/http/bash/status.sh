@@ -28,25 +28,24 @@ if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
 	[[ ! $mounted ]] && echo -1 && exit
 # --------------------------------------------------------------------
 fi
-if [[ $1 == withdisplay ]]; then
-	if [[ -e $dirshm/nosound ]]; then
-		volumenone=true
+if [[ -e $dirshm/nosound ]]; then
+	volumenone=true
+else
+	. <( grep -E '^mixer|^mixertype' $dirshm/output )
+	if [[ $mixertype != none ]] \
+		|| [[ -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] \
+		|| [[ -e $dirsystem/camilladsp && $mixer ]]; then
+		volumenone=false
 	else
-		. <( grep -E '^mixer|^mixertype' $dirshm/output )
-		if [[ $mixertype != none ]] \
-			|| [[ -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] \
-			|| [[ -e $dirsystem/camilladsp && $mixer ]]; then
-			volumenone=false
-		else
-			volumenone=true
-		fi
+		volumenone=true
 	fi
-	grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
-	display=$( grep -v } $dirsystem/display.json )
-	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
-	[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
-	[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
-	display+='
+fi
+grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
+display=$( grep -v } $dirsystem/display.json )
+[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
+[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
+[[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
+display+='
 , "ap"           : '$( exists $dirsystem/ap )'
 , "apconf"       : '$apconf'
 , "audiocd"      : '$( exists $dirshm/audiocd )'
@@ -62,7 +61,8 @@ if [[ $1 == withdisplay ]]; then
 , "snapclient"   : '$( exists $dirsystem/snapclient )'
 , "volumenone"   : '$volumenone'
 }'
-fi
+status+='
+, "display"      : '$display
 
 if [[ $1 == snapclient ]]; then
 	snapclient=1
@@ -108,9 +108,6 @@ else
 , "scrobbleconf" : '${scrobbleconf,,}
 	fi
 fi
-########
-[[ $display ]] && status+='
-, "display"      : '$display
 
 if [[ $player != mpd && $player != upnp ]]; then
 	case $player in

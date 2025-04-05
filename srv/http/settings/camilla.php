@@ -103,9 +103,6 @@ foreach( $id_tab as $id => $data ) {
 		$html.= '
 <div id="sampling">'.htmlSectionStatus( 'sampling' ).'</div>
 <div id="options">'.$htmlopt.'</div>';
-	} else if ( $id === 'config' ) {
-		$html.= '
-<pre id="codeconfig" class="status hide"></pre>';
 	} else if ( $id === 'filters' || $id === 'mixers' ) {
 		$html.= '
 <ul class="entries sub"></ul>';
@@ -189,8 +186,4 @@ foreach( $id_tab as $id => $data ) {
 	$body = [ $htmltab[ $id ] ];
 	htmlSection( $head, $body, $id );
 }
-$htmlmenu = '<div id="menu" class="menu hide">';
-foreach( [ 'graph', 'edit', 'copy', 'rename', 'delete', 'bypass', 'restore', 'info' ] as $c ) {
-	$htmlmenu.= '<a class="'.$c.'">'.i( $c ).ucfirst( $c ).'</a>';
-}
-echo $htmlmenu.'</div>';
+htmlMenu( [ 'graph', 'edit', 'copy', 'rename', 'delete', 'bypass', 'restore', 'info' ] );

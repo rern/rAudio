@@ -4,6 +4,19 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250404
+file=/etc/systemd/system/localbrowser.service
+if grep -q startx$ $file; then
+	sed -i -E 's|^(ExecStart=).*|\1/usr/bin/startx /srv/http/bash/startx.sh|' $file
+	systemctl daemon-reload
+	rm /etc/X11/xinit/xinitrc
+fi
+
+if [[ $( pacman -Q snapcast ) != 'snapcast 0.31.0-3' ]]; then
+	pacman -Sy --noconfirm snapcast
+	sed -i -e '/^bind_to_address/ d' -e '/^#bind_to_address/ a\bind_to_address = 0.0.0.0' /etc/snapserver.conf
+fi
+
 # 20250322
 if [[ ! -e /lib/systemd/user/spotifyd.service ]]; then
 	mv /lib/systemd/{system,user}/spotifyd.service

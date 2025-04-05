@@ -41,7 +41,7 @@ if [[ -e $dirsystem/netctlprofile ]]; then
 fi
 timedatectl set-timezone $( < $dirsystem/timezone )
 [[ -e $dirsystem/crossfade ]] && mpc -q crossfade $( < $dirsystem/crossfade )
-rm -rf $backupfile $dirconfig $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
+rm -rf $dirconfig $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
 dirs=$( ls -d $dirnas/*/ 2> /dev/null )
 if [[ $dirs ]]; then
 	while read dir; do

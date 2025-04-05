@@ -36,6 +36,9 @@ li.current a::before {
 	color: var( --cw );
 	text-shadow: var( --shadow-text );
 }
+.menu a.gr i {
+	color: var( --gr );
+}
 
 .head,
 #bar-bottom {
@@ -71,19 +74,33 @@ ul {
 }
 .section pre,
 pre.status {
-	margin-top: 0;
+	margin: 2px 0 5px;
 	padding: 5px 5px 25px 5px;
 	width: 100%;
-	max-height: 75vh;
+	max-height: 50vh;
 	tab-size: 4;
 	background: var( --cgd );
 	font-family: Inconsolata;
-	font-size: 15px;
+	font-size: 15px !important;
 	line-height: 20px;
 	overflow-x: auto;
+	scrollbar-width: thin;
 }
 .section pre code {
 	background: var( --cg );
+}
+.status.li + pre,
+.status.li + .helpblock + pre {
+	margin-bottom: 21px;
+}
+li pre {
+	cursor: text;
+}
+li .i-close {
+	position: absolute;
+	top: 50px;
+	right: 0;
+	color: var( --cm ) !important;
 }
 #prefiletype {
 	white-space: pre-wrap;
@@ -354,8 +371,10 @@ heading i.disabled {
 	font-size: 22px;
 }
 .entries li {
+	position: relative;
 	display: block;
-	height: 49px;
+	height: fit-content;
+	min-height: 49px;
 	padding-top: 3px;
 	font-size: 18px;
 	border-bottom: 1px solid var( --cga );
@@ -433,7 +452,6 @@ input[type=image] {
 .switchlabel {
 	display: inline-block;
 	position: relative;
-	text-indent: -9999px;
 	width: 80px;
 	height: 40px;
 	margin-bottom: 5px;
@@ -442,11 +460,11 @@ input[type=image] {
 	box-shadow: inset 0px 1px 2px #000000;
 }
 .btn-primary,
-.switchlabel:after,
-input:checked + .switchlabel:after {
+.switchlabel::after,
+input:checked + .switchlabel::after {
 	background: var( --glossy-btn );
 }
-.switchlabel:after {
+.switchlabel::after {
 	content: '';
 	position: absolute;
 	top: 0;
@@ -458,21 +476,30 @@ input:checked + .switchlabel:after {
 	border-radius: 4px;
 	transition: 0.3s;
 }
-input:checked + .switchlabel:after {
+input:checked + .switchlabel::after {
 	left: 50%;
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
-.switchlabel:active:after {
+input.inactive:checked + .switchlabel::before {
+	content: '\F562';
+	position: absolute;
+	left: 51px;
+	top: 10px;
+	font-family: rern;
+	font-size: 18px;
+	z-index: 1;
+}
+.switchlabel:active::after {
 	width: 40px;
 }
-input:checked.disabled + .switchlabel:after {
+input:checked.disabled + .switchlabel::after {
 	background-color: var( --cmd );
 }
 input.disabled + .switchlabel {
 	background-color: var( --cga );
 }
-input.disabled + .switchlabel:after {
+input.disabled + .switchlabel::after {
 	background-color: var( --cgd );
 }
 .setting,
@@ -659,7 +686,7 @@ input.disabled + .switchlabel:after {
 	#bar-bottom div.active:hover { background-color: var( --cml ) }
 	#bar-bottom div:hover span { color: var( --cw ) }
 	a:hover { text-decoration: none }
-	.entries li:hover { background: var( --cga ) }
+	.entries li:not( .info ):hover { background: var( --cgd ) }
 	#menu a:hover {
 		color: var( --cw );
 		background-color: var( --cgl );
@@ -674,7 +701,7 @@ input.disabled + .switchlabel:after {
 	.col-l.icon,
 	.divgain i,
 	.edit,
-	.entries li,
+	.entries li:not( .info ),
 	.helphead,
 	.helpblock bl,
 	.i-mute,
@@ -685,7 +712,7 @@ input.disabled + .switchlabel:after {
 	.settings,
 	.settingedit,
 	.slider,
-	.status:not(pre,.single),
+	.status:not(pre, .info, .single),
 	.switchlabel,
 	.tab .i-add,
 	.tab .i-remove,

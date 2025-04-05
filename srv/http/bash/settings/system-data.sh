@@ -98,7 +98,7 @@ data+='
 , "i2smodule"      : '$i2smodule'
 , "ip"             : "'$( ipAddress )'"
 , "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
-, "liststorage"    : '$( $dirsettings/system-storage.sh )'
+, "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
 , "nfsserver"      : '$nfsserver'
 , "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
 , "status"         : "'$status'"

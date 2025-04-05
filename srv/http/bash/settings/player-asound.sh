@@ -18,6 +18,9 @@ fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd_aloop
 	fileconf=$( getVar CONFIG /etc/default/camilladsp )
+	channels=$( getVar capture.channels "$fileconf" )
+	format=$( getVar capture.format "$fileconf" )
+	rate=$( getVar devices.samplerate "$fileconf" )
 	CAMILLADSP=1
 ########
 	ASOUNDCONF+='
@@ -32,9 +35,9 @@ pcm.camilladsp {
 			type     hw
 			card     Loopback
 			device   0
-			channels '$( getVar capture.channels "$fileconf" )'
-			format   '$( getVar capture.format "$fileconf" )'
-			rate     '$( getVar samplerate "$fileconf" )'
+			channels '$channels'
+			format   '$format'
+			rate     '$rate'
 		}
 	}
 }
@@ -83,6 +86,27 @@ ctl.equal {
 	type equal
 }'
 		fi
+	fi
+	if [[ -e $dirmpdconf/snapserver.conf ]]; then
+		ASOUNDCONF+='
+pcm.!default {
+	type plug
+	slave.pcm rate48000Hz
+}
+pcm.rate48000Hz {
+	type rate
+	slave {
+		pcm writeFile
+		format S16_LE
+		rate 48000
+	}
+}
+pcm.writeFile {
+	type file
+	slave.pcm null
+	file "/tmp/snapfifo"
+	format "raw"
+}'
 	fi
 fi
 ######## >

@@ -1370,7 +1370,7 @@ var render    = {
 		return li
 	}
 	, sortable    : () => {
-		$( '#menu' ).addClass( 'hide' );
+		$menu.addClass( 'hide' );
 		if ( V.sortable ) {
 			V.sortable.destroy();
 			delete V.sortable;
@@ -1443,12 +1443,16 @@ var render    = {
 		} );
 	} //-----------------------------------------------------------------------------------
 	, config      : () => {
-		var li  = '';
+		if ( list.equal( 'camilla' ) ) return
+		
+		var li = '';
 		S.ls.configs.forEach( f => {
 			var current = f === S.configname ? '<grn>•</grn>&ensp;' : '';
-			li += '<li>'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a></li>';
+			var $pre = $( '#config li[data-id="'+ f +'"] pre' );
+			var pre  = $pre.length ? $pre[ 0 ].outerHTML + ico( 'close infoclose' ) : '';
+			li += '<li data-id="'+ f +'">'+ ico( 'file liicon' ) + current +'<a class="name">'+ f +'</a>'+ pre +'</li>';
 		} );
-		$( '#'+ V.tab +' .entries.main' ).html( li );
+		list.render( 'camilla', li );
 	} //-----------------------------------------------------------------------------------
 	, dataSort    : () => {
 		var kv   = S.config[ V.tab ];
@@ -1499,7 +1503,7 @@ var render    = {
 			$sub.addClass( 'hide' );
 			var $entries = $main;
 		}
-		$( '#menu' ).addClass( 'hide' );
+		$menu.addClass( 'hide' );
 		graph.refresh();
 		$( '.entries' ).children().removeAttr( 'tabindex' );
 		$entries.find( '.lihead .i-add, .lihead .i-back' ).prop( 'tabindex', 0 );
@@ -1720,7 +1724,8 @@ var setting   = {
 		} );
 	}
 	, mixerMap      : ( name, index ) => {
-		var mapping = MIX[ V.li.data( 'name' ) ].mapping;
+		var $li     = $( 'li.active' );
+		var mapping = MIX[ $li.data( 'name' ) ].mapping;
 		if ( index === 'dest' ) {
 			var title = 'Add Destination / Out';
 			info( {
@@ -1765,7 +1770,7 @@ var setting   = {
 				, list       : [ '', 'radio', [ ...Array( DEV.capture.channels ).keys() ] ]
 				, beforeshow : () => {
 					mapping.forEach( m => {
-						if ( ! m.sources.length || m.dest !== V.li.data( 'dest' ) ) return
+						if ( ! m.sources.length || m.dest !== $li.data( 'dest' ) ) return
 						
 						var ch    = [];
 						m.sources.forEach( s => ch.push( s.channel ) );
@@ -2567,26 +2572,26 @@ $( 'heading' ).on( 'click', '.i-folderfilter', function() {
 $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
-	V.li      = $this.parent();
-	if ( ! contextMenuToggle() ) return
+	var $li   = $this.parent();
+	if ( menu.isActive( $li, e ) ) return
 	
 	$( '#'+ V.tab +' li' ).removeClass( 'active' );
-	V.li.addClass( 'active' );
-	$( '#menu' ).find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
+	$li.addClass( 'active' );
+	$menu.find( '.copy, .rename, .info' ).toggleClass( 'hide', V.tab !== 'config' );
 	[ 'edit', 'graph' ].forEach( k => $( '#menu .'+ k ).toggleClass( 'hide', ! $this.hasClass( k ) ) )
-	$( '#menu .delete' ).toggleClass( 'disabled', V.tab === 'config' && S.ls.configs.length === 1 );
+	$( '#menu .delete' ).toggleClass( 'gr', V.tab === 'config' && S.ls.configs.length === 1 );
 	if ( V.tab === 'mixers' && $( '#mixers .entries.sub' ).hasClass( 'hide' ) ) {
-		$( '#menu' ).find( '.edit, .rename' ).toggleClass( 'hide' );
+		$menu.find( '.edit, .rename' ).toggleClass( 'hide' );
 	}
 	if ( V.tab === 'pipeline' ) {
-		var bypassed = PIP[ V.li.index() ].bypassed === true;
+		var bypassed = PIP[ $li.index() ].bypassed === true;
 		$( '#menu .bypass' ).toggleClass( 'hide', bypassed );
 		$( '#menu .restore' ).toggleClass( 'hide', ! bypassed );
-		$( '#menu .edit' ).toggleClass( 'disabled', V.li.data( 'type' ) === 'Mixer' && Object.keys( MIX ).length < 2 );
+		$( '#menu .edit' ).toggleClass( 'disabled', $li.data( 'type' ) === 'Mixer' && Object.keys( MIX ).length < 2 );
 	} else {
-		$( '#menu' ).find( '.bypass, .restore' ).addClass( 'hide' );
+		$menu.find( '.bypass, .restore' ).addClass( 'hide' );
 	}
-	contextMenu();
+	menu.show( $li );
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead a' ).text();
@@ -2602,22 +2607,18 @@ $( '.entries' ).on( 'click', '.liicon', function( e ) {
 	$this.parents( 'li' ).removeClass( 'graph' );
 	$this.parent().remove();
 } );
-$( 'body' ).on( 'click', function( e ) {
-	if ( $( e.target ).hasClass( 'liicon' ) ) return
-	
-	$( '#menu' ).addClass( 'hide' );
-	$( '#'+ V.tab +' .entries li' ).removeClass( 'active' );
-} );
 $( '#menu a' ).on( 'click', function( e ) {
-	var $this = $( this );
-	var cmd   = $this.prop( 'class' ).replace( ' active', '' );
+	var cmd = menu.command( $( this ), e );
+	if ( ! cmd ) return
+	
+	var $li = $( 'li.active' );
 	if ( cmd === 'graph' ) {
-		var $divgraph = V.li.find( '.divgraph' );
+		var $divgraph = $li.find( '.divgraph' );
 		if ( $divgraph.length ) {
-			V.li.removeClass( 'graph' );
+			$li.removeClass( 'graph' );
 			$divgraph.remove();
 		} else {
-			graph[ V.tab ].plot( V.li );
+			graph[ V.tab ].plot( $li );
 		}
 		return
 	}
@@ -2625,8 +2626,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 	switch ( V.tab ) {
 		case 'filters':
 			var title = file ? 'Filter File' : 'Filter';
-			var name  = V.li.data( 'name' );
-			var file  = V.li.find( '.i-file' ).length;
+			var name  = $li.data( 'name' );
+			var file  = $li.find( '.i-file' ).length;
 			switch ( cmd ) {
 				case 'edit':
 					if ( file ) {
@@ -2664,19 +2665,19 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, ok      : () => {
 							file ? bash( [ 'coefdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
 							setting.save( title, 'Delete ...' );
-							V.li.remove();
+							$li.remove();
 						}
 					} );
 					break;
 			}
 			break;
 		case 'mixers':
-			var name  = V.li.data( 'name' );
+			var name  = $li.data( 'name' );
 			var main  = $( '#mixers .entries.sub' ).hasClass( 'hide' );
 			switch ( cmd ) {
 				case 'delete':
-					var dest = V.li.hasClass( 'liinput main' );
-					var mi   = V.li.data( 'index' );
+					var dest = $li.hasClass( 'liinput main' );
+					var mi   = $li.data( 'index' );
 					if ( main ) {
 						if ( common.inUse( name ) ) return
 						
@@ -2684,10 +2685,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 						var msg   = name;
 					} else if ( dest ) {
 						var title = 'Output';
-						var msg   = ico( 'output gr' ) +' Out: '+ V.li.data( 'dest' );
+						var msg   = ico( 'output gr' ) +' Out: '+ $li.data( 'dest' );
 					} else {
 						var title = 'Input';
-						var msg   = ico( 'input gr' ) +' In: '+ V.li.data( 'source' );
+						var msg   = ico( 'input gr' ) +' In: '+ $li.data( 'source' );
 					}
 					var message = '<wh>'+ msg +'</wh> ?';
 					info( {
@@ -2702,7 +2703,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							} else if ( dest ) {
 								MIX[ name ].mapping.splice( mi, 1 );
 							} else {
-								MIX[ name ].mapping[ mi ].sources.splice( V.li.data( 'si' ), 1 );
+								MIX[ name ].mapping[ mi ].sources.splice( $li.data( 'si' ), 1 );
 							}
 							setting.save( title, 'Remove ...' );
 							main ? render.mixers( name ) : render.mixersSub( name );
@@ -2716,7 +2717,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break;
 		case 'processors':
 			var title = 'Processors';
-			var name  = V.li.data( 'name' );
+			var name  = $li.data( 'name' );
 			switch ( cmd ) {
 				case 'edit':
 					setting.processor( name, 'edit' );
@@ -2729,7 +2730,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, ok      : () => {
 							delete PRO[ name ];
 							setting.save( title, 'Remove ...' );
-							V.li.remove();
+							$li.remove();
 						}
 					} );
 					break;
@@ -2739,19 +2740,19 @@ $( '#menu a' ).on( 'click', function( e ) {
 			var title = 'Pipeline';
 			switch ( cmd ) {
 				case 'edit':
-					var i = V.li.index();
+					var i = $li.index();
 					PIP[ i ].type === 'Filter' ? setting.pipeline( i, 'edit' ) : setting.pipelineMixer( i, 'edit' );
 					break;
 				case 'delete':
-					var type = V.li.data( 'type' ).toLowerCase();
+					var type = $li.data( 'type' ).toLowerCase();
 					info( {
 						  icon    : V.tab
 						, title   : title
 						, message : '<wh>'+ type +'</wh>'
 						, ok      : () => {
-							PIP.splice( V.li.index(), 1 );
+							PIP.splice( $li.index(), 1 );
 							setting.save( title, 'Remove '+ type +' ...' );
-							V.li.remove();
+							$li.remove();
 							if ( PIP.length ) {
 								graph.flowchart.refresh();
 							} else {
@@ -2763,21 +2764,21 @@ $( '#menu a' ).on( 'click', function( e ) {
 					break;
 				case 'bypass':
 				case 'restore':
-					var i             = V.li.index();
+					var i             = $li.index();
 					var bypassed      = ! PIP[ i ].bypassed
 					PIP[ i ].bypassed = bypassed;
 					setting.save( title, bypassed ? 'Bypassed' : 'Restored' );
-					V.li.find( '.liicon' )
+					$li.find( '.liicon' )
 						.removeClass()
 						.addClass( bypassed ? 'i-bypass' : 'i-pipeline' );
 					break;
 			}
 			break;
 		case 'devices':
-			setting.device( V.li.data( 'type' ) );
+			setting.device( $li.data( 'type' ) );
 			break;
 		case 'config':
-			var name  = V.li.find( '.name' ).text();
+			var name  = $li.find( '.name' ).text();
 			var icon  = V.tab;
 			var title = 'Configuration';
 			switch ( cmd ) {
@@ -2811,12 +2812,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					break;
 				break;
 				case 'info':
-					var name = V.li.find( '.name' ).text();
-					bash( 'data-status.sh configuration "'+ name +'"', config => {
-						$( '#codeconfig' )
-							.html( config )
-							.removeClass( 'hide' );
-					} );
+					currentStatus( 'camilla', $li.find( '.name' ).text(), 'info' );
 					break;
 				break;
 				case 'rename':
@@ -2965,7 +2961,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	setting.save( M.name, 'Change ...' );
 } ).on( 'click', '.i-add', function() {
 	var $this = $( this );
-	V.li  = $this.parent();
 	var M = setting.mixerGet( $this );
 	setting.mixerMap( M.name, M.index );
 } );
@@ -2985,6 +2980,11 @@ $( '#devices' ).on( 'click', 'li', function() {
 // config ---------------------------------------------------------------------------------
 $( '#config' ).on( 'click', '.i-add', function() {
 	setting.upload();
+} ).on( 'click', 'li', function( e ) {
+	var $this = $( this );
+	if ( menu.isActive( $this, e ) ) return
+	
+	$this.find( '.liicon' ).trigger( 'click' );
 } );
 // ----------------------------------------------------------------------------------------
 $( '#bar-bottom div' ).off( 'click' ).on( 'click', function() {

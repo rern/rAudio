@@ -246,7 +246,7 @@ function colorSetPicker() {
 	} );
 }
 function contextmenuLibrary( $li, $target ) {
-	if ( $li.hasClass( 'active' ) && ! $( '#contextmenu' ).hasClass( 'hide' ) ) {
+	if ( $li.hasClass( 'active' ) ) {
 		$li.removeClass( 'active' );
 		menuHide();
 		return
@@ -352,11 +352,9 @@ function coverartChange() {
 	var coverartlocal = ( V.playback && ! embedded && ! onlinefetched && ! coverdefault )
 						|| ( V.library && ! embedded && ! onlinefetched && ! coverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
-	var icon  = 'coverart';
-	var title = 'Change Album Cover Art';
 	info( {
-		  icon        : icon
-		, title       : title
+		  icon        : V.icoverart
+		, title       : 'Album Cover Art'
 		, message     : '<img class="imgold" src="'+ src +'">'
 					   +'<p class="infoimgname">'+ ico( 'album wh' ) +' '+ album
 					   +'<br>'+ ico( 'artist wh' ) +' '+ artist +'</p>'
@@ -368,10 +366,7 @@ function coverartChange() {
 			bash( [ 'cmd-coverart.sh', 'reset', 'coverart', file, V.playback, 'CMD TYPE FILE CURRENT' ] );
 			if ( V.playback ) coverartDefault();
 		}
-		, ok          : () => {
-			imageReplace( 'coverart', file.slice( 0, -4 ) );
-			banner( icon, title, 'Change ...' );
-		}
+		, ok          : () => imageReplace( 'coverart', file.slice( 0, -4 ) )
 	} );
 }
 function coverartDefault() {
@@ -632,7 +627,7 @@ function imageReplace( type, imagefilenoext ) {
 			infoWarning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
 		}
 	} );
-	banner( I.icon +' blink', I.title, 'Change ...', -1 );
+	banner( V.icoverart.replace( 'coverart', 'coverart blink' ), I.title, 'Change ...', -1 );
 }
 function infoDisplayKeyValue( type ) {
 	var json   = chkdisplay[ type ];
@@ -710,25 +705,6 @@ function infoLibraryOption() {
 			} );
 		}
 		, ok           : displaySave
-	} );
-}
-function infoThumbnail( icon, message, path, subdir ) {
-	if ( ! path ) subdir = true;
-	var list = [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ];
-	info( {
-		  icon    : icon
-		, title   : 'Update Thumbnails'
-		, message : message
-		, list    : subdir ? list : false
-		, ok      : () => {
-			addonsProgressSubmit( {
-				  alias      : 'thumbnail'
-				, title      : 'Album Thumbnails'
-				, label      : 'Update'
-				, installurl : "albumthumbnail.sh '"+ path +"' "+ infoVal()
-				, backhref   : '/'
-			} );
-		}
 	} );
 }
 function infoTitle() {
@@ -811,13 +787,12 @@ function intervalElapsedClear() {
 	clearInterval( V.interval.elapsed );
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
-function libraryHome( nocache ) {
-	if ( nocache ) V.libraryhtml = '';
+function libraryHome() {
 	list( { library: 'home' }, function( data ) {
 		O = data.order;
-		if ( data.html !== V.libraryhtml ) {
-			V.libraryhtml = data.html;
-			var html      = htmlHash( data.html );
+		if ( data.html !== V.html.library ) {
+			V.html.library = data.html;
+			var html       = htmlHash( data.html );
 			$( '#lib-mode-list' ).html( html );
 		}
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -951,47 +926,6 @@ function orderLibrary() {
 }
 function pageScroll( top ) {
 	setTimeout( () => $( 'html, body' ).scrollTop( top ), 0 );
-}
-function playbackStatusGet( withdisplay ) {
-	bash( [ 'status.sh', withdisplay ], list => {
-		if ( list == -1 ) {
-			loaderHide();
-			info( {
-				  icon    : 'networks'
-				, title   : 'Shared Data'
-				, message : iconwarning +'Server offline'
-							+'<br><br>Disable and restore local data?'
-				, cancel  : loader
-				, okcolor : orange
-				, ok      : () => bash( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
-			} );
-			return
-		}
-		
-		try {
-			var status = JSON.parse( list );
-		} catch( e ) {
-			dataError( e.message, list );
-			return false
-		}
-		
-		C = status.counts;
-		delete status.counts;
-		if ( 'display' in status ) {
-			D              = status.display;
-			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
-			delete status.display;
-			delete V.coverTL;
-			displaySubMenu();
-			bannerHide();
-			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
-		}
-		if ( V.volumeactive ) delete status.volume; // immediately change volume when pageInactive > pageActive
-		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
-		V.volumecurrent = S.volume;
-		renderPlaybackAll();
-		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
-	} );
 }
 function playlistBlink( off ) {
 	if ( off ) {
@@ -1143,46 +1077,54 @@ function refreshAll() {
 		}
 	} else {
 		if ( V.playlisthome ) {
-			playlistGet( 'nocache' );
+			playlistGet();
 		} else if ( V.playlisttrack ) {
 			renderSavedPlTrack( $( '#pl-title .name' ).text() );
-		}
-	}
-}
-function refreshData() {
-	if ( V.library ) {
-		if ( $( '#lib-search-input' ).val() ) return
-		
-		if ( V.libraryhome ) { // home
-			libraryHome();
-		} else {
-			if ( [ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( V.mode ) ) return
-			
-			if ( V.query.length ) {
-				var query = V.query.slice( -1 )[ 0 ];
-				list( query, function( html ) {
-					var data = {
-						  html      : html
-						, modetitle : query.modetitle
-						, path      : query.path
-					}
-					renderLibraryList( data );
-				} );
-			} else {
-				$( '.mode.'+ V.mode ).trigger( 'click' );
-			}
-		}
-	} else if ( V.playback ) {
-		playbackStatusGet( 'withdisplay' );
-	} else {
-		if ( V.playlistlist ) {
-			$( '#button-pl-playlists' ).trigger( 'click' );
-		} else if ( V.playlisttrack ) {
-			renderSavedPlTrack( $( '#pl-title .lipath' ).text() );
 		} else {
 			playlistGet();
 		}
 	}
+}
+function refreshData() {
+	bash( [ 'status.sh' ], list => {
+		if ( list == -1 ) {
+			loaderHide();
+			info( {
+				  icon    : 'networks'
+				, title   : 'Shared Data'
+				, message : iconwarning +'Server offline'
+							+'<br><br>Disable and restore local data?'
+				, cancel  : loader
+				, okcolor : orange
+				, ok      : () => bash( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
+			} );
+			return
+		}
+		
+		try {
+			var status = JSON.parse( list );
+		} catch( e ) {
+			dataError( e.message, list );
+			return false
+		}
+		
+		C = status.counts;
+		delete status.counts;
+		if ( 'display' in status ) {
+			D              = status.display;
+			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
+			delete status.display;
+			delete V.coverTL;
+			displaySubMenu();
+			bannerHide();
+			$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
+		}
+		if ( V.volumeactive ) delete status.volume; // immediately change volume when pageInactive > pageActive
+		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		V.volumecurrent = S.volume;
+		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
+		V.playback ? renderPlaybackAll() : refreshAll();
+	} );
 }
 function renderLibrary() { // library home
 	V.libraryhome = true;
@@ -1206,18 +1148,6 @@ function renderLibrary() { // library home
 		.removeClass( 'hide' );
 	if ( O ) orderLibrary();
 	pageScroll( V.modescrolltop );
-	$( '.bkedit' ).remove();
-	$( '.mode.edit' ).removeClass( 'edit' );
-	renderLibraryCounts();
-	setButtonUpdate();
-}
-function renderLibraryCounts() {
-	if ( ! D.count ) {
-		$( '.mode gr' ).addClass( 'hide' );
-		return
-	}
-	
-	$( '.mode gr' ).removeClass( 'hide' );
 	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {
 		var $this = $( el );
@@ -1229,18 +1159,20 @@ function renderLibraryCounts() {
 		var $gr   = $this.find( 'gr' );
 		if ( $gr.length ) $gr.html( count ? count.toLocaleString() : '' );
 	} );
+	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 	$( '.mode .label' ).toggleClass( 'hide', ! D.label );
+	setButtonUpdate();
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( ! V.search ) {
 		V.libraryhome = false;
-		if ( V.librarylist && data.html === V.librarylisthtml ) {
+		V.librarylist = true;
+		if ( data.html === V.html.librarylist ) {
 			if ( V.color ) colorSet()
 			return
 		}
 	}
 	
-	V.librarylist = true;
 	$( '#lib-home-title, #lib-mode-list, .menu, #button-lib-update' ).addClass( 'hide' );
 	$( '#button-lib-back' ).removeClass( 'hide' );
 	$( '#page-library .lib-path' ).text( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ? '' : data.path );
@@ -1282,7 +1214,7 @@ function renderLibraryList( data ) { // V.librarylist
 			.removeClass( 'hide' )
 			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
 	}
-	V.librarylisthtml = data.html;
+	V.html.librarylist = data.html;
 	$( '#lib-list, #page-library .index' ).remove();
 	if ( ! data.html ) return // empty radio
 	
@@ -1303,7 +1235,7 @@ function renderLibraryList( data ) { // V.librarylist
 				$( '.liinfo .lialbum' ).addClass( 'hide' );
 			} else {
 				$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
-					$( '#mode-title' ).append( '<span class="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
+					$( '#mode-title' ).append( '<span id="thumbupdate"><img src="'+ $( this ).attr( 'src' ) +'"><i class="i-refresh-overlay"></i></span>' );
 				} );
 			}
 			if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
@@ -1413,9 +1345,9 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 		.toggleClass( 'disabled', C.song === 0 || ! ( 'song' in C ) );
 	$( '#pl-savedlist, #page-playlist .index' ).remove();
 	if ( ! data ) {
-		V.playlisthtml = '';
-		S.pllength     = 0;
-		S.consume      = false;
+		V.html.playlist = '';
+		S.pllength      = 0;
+		S.consume       = false;
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-home-title' ).html( 'PLAYLIST' );
 		$( '.pllength' ).addClass( 'disabled' );
@@ -1432,9 +1364,9 @@ function renderPlaylist( data ) { // V.playlisthome - current playlist
 	$( '.pllength' ).removeClass( 'disabled' );
 	$( '#button-pl-shuffle' ).toggleClass( 'disabled', S.pllength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', S.consume );
-	if ( data.html !== V.playlisthtml ) {
-		V.playlisthtml = data.html;
-		var html = htmlHash( data.html );
+	if ( data.html !== V.html.playlist ) {
+		V.html.playlist = data.html;
+		var html        = htmlHash( data.html );
 		$( '#pl-list' ).html( html ).promise().done( () => {
 			renderPlaylistSet();
 			setPlaylistScroll();

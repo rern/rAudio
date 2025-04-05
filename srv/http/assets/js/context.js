@@ -148,9 +148,9 @@ function directoryList() {
 			, modetitle : modetitle
 			, path      : path
 		}
-		V.librarylisthtml = '';
-		var mode0         = V.mode;
-		V.mode            = mode;
+		V.html.librarylist = '';
+		var mode0          = V.mode;
+		V.mode             = mode;
 		renderLibraryList( data );
 		setTimeout( () => V.mode = mode0, 300 );
 	} );
@@ -503,7 +503,7 @@ function thumbnail() { // station / folder
 		var imagefilenoext = directoryPath() +'/img/'+ path.replace( /\//g, '|' );
 	}
 	info( {
-		  icon        : 'coverart'
+		  icon        : V.icoverart
 		, title       : dir ? 'Folder Thumbnail' : 'Station Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 					   +'<p class="infoimgname">'+ name +'</p>'
@@ -529,27 +529,33 @@ function thumbnail() { // station / folder
 		}
 	} );
 }
-function thumbnailUpdate() {
-	var $img = V.list.li.find( 'img' );
-	var src  = $img.attr( 'src' );
-	if ( $img.length ) {
-		var icon    = '<span class="button-coverart"><img src="'+ src +'"></span>';
-		var message = '<div class="thumbnail"><img src="'+ src +'" style="opacity: 0.5">'
-					 +'<br>thumb.jpg</div>';
+function thumbnailUpdate( modealbum ) {
+	if ( modealbum ) {
+		var src  = $( '#mode-title img' ).attr( 'src' );
+		var msg  = ''
+		var path = '';
 	} else {
-		var icon    = 'coverart';
-		var message = '';
+		var $img = V.list.li.find( 'img' );
+		var src  = $img.length ? $img.attr( 'src' ) : V.coverart;
+		var path = V.list.path;
+		var msg  = ico( 'folder gr' ) +' '+ path
 	}
-	bash( [ 'coverfileget', V.list.path, 'CMD DIR' ], data => {
-		if ( data.src ) {
-			message += '<div class="thumbnail"><img src="'+ data.src + versionHash() +'">'
-					  +'<br>'+ data.src.replace( /.*\//, '' ) +'</div>';
-		} else {
-			message += '<br>With coverarts in each subfolder:';
+	var icon = '<img src="'+ src +'"><i class="i-refresh-overlay"></i>';
+	info( {
+		  icon    : icon
+		, title   : 'Update Thumbnails'
+		, message : msg
+		, list    : [ '', 'radio', { kv: { 'Only added or removed': false, 'Rebuild all': true }, sameline: false } ]
+		, ok      : () => {
+			addonsProgressSubmit( {
+				  alias      : 'thumbnail'
+				, title      : 'Album Thumbnails'
+				, label      : 'Update'
+				, installurl : "albumthumbnail.sh '"+ path +"' "+ infoVal()
+				, backhref   : '/'
+			} );
 		}
-		message    += '<br>'+ ico( 'folder gr' ) +' <wh>'+ V.list.path +'</wh>';
-		infoThumbnail( icon, message, V.list.path, data.subdir );
-	}, 'json' );
+	} );
 }
 function updateDirectory() {
 	if ( V.list.path.slice( -3 ) === 'cue' ) V.list.path = dirName( V.list.path );
@@ -728,7 +734,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	_replace
 	_replaceplay
 	*/
-	if ( [ 'add', 'replace' ].includes( cmd.replace( 'play', '' ) ) ) V.playlisthtml = '';
+	if ( [ 'add', 'replace' ].includes( cmd.replace( 'play', '' ) ) ) V.html.playlist = '';
 	var path = V.list.path;
 	// mpccmd:
 	// [ 'mpcadd', path ]

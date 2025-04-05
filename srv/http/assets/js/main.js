@@ -8,6 +8,8 @@ V = {   // var global
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
 	, blinkdot      : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
 	, coverart      : '/assets/img/coverart.svg'
+	, html          : {}
+	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
 	, covervu       : '/assets/img/vu.svg'
 	, page          : 'playback'
@@ -462,8 +464,8 @@ $( '#library, #button-library' ).on( 'click', function() {
 			libraryHome();
 		}
 	} else {
+		libraryHome();
 		switchPage( 'library' );
-		refreshData();
 	}
 	if ( S.updating_db ) banner( 'library blink', 'Library Database', 'Update ...' );
 } );
@@ -472,7 +474,7 @@ $( '#playback' ).on( 'click', function() {
 		$( '#stop' ).trigger( 'click' );
 	} else {
 		if ( ! V.playback ) {
-			playbackStatusGet();
+			refreshData();
 			switchPage( 'playback' );
 		}
 	}
@@ -763,27 +765,24 @@ $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	volumeAnimate( S.volumemute, S.volume );
 	volumeMuteToggle();
 } );
-$( '#coverM' ).press( e => {
+$( '#divcover' ).on( 'click', '.cover-save', function() {
+	coverartSave();
+} ).press( e => {
+	if ( typeof Android === 'object' && e.target.id === 'coverT' ) {
+		changeIP();
+		return
+	}
+	
 	if ( ! S.pllength
 		|| V.guide
 		|| ( S.webradio && S.state === 'play' )
-		|| $( e.target ).hasClass( 'band' )
-		|| [ 'coverL', 'coverR', 'coverT' ].includes( e.target.id )
+		|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 	) return
 	
 	S.webradio ? thumbnail() : coverartChange();
-} ).on( 'click', '.cover-save', function() {
-	coverartSave();
 } );
 $( '#coverT' ).press( () => {
-	if ( typeof Android === 'object' ) {
-		changeIP();
-	} else {
-		banner( 'coverart blink', 'Coverart Online', 'Fetch ...', -1 );
-		bash( [ 'coverartonline', S.Artist, S.Album.replace( /\(.*/, '' ), 'CMD ARTIST ALBUM' ], url => {
-			bannerHide();
-		} );
-	}
+	if ( typeof Android === 'object' ) changeIP();
 } );
 var btnctrl = {
 	  TL : 'cover'
@@ -1051,8 +1050,8 @@ $( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
 		} );
 	}
 } );
-$( '#lib-title' ).on ( 'click', '.button-coverart', function() {
-	infoThumbnail( $( '.button-coverart' )[ 0 ].outerHTML, 'With coverarts in folder of each album:', '' );
+$( '#lib-title' ).on ( 'click', '#thumbupdate', function() {
+	thumbnailUpdate( 'modealbum' );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
 	if ( S.updating_db ) {
@@ -1443,7 +1442,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var album  = $this.find( '.coverart'+ i[ 0 ] ).text();
 		var artist = $this.find( '.coverart'+ i[ 1 ] ).text();
 		info( {
-			  icon    : 'album'
+			  icon    : V.icoverart
 			, title   : 'Album Thumbnail'
 			, message :  '<img src="'+ src +'">'
 						+'<br><wh>'+ ico( 'album' ) + album +'</wh>'

@@ -145,18 +145,6 @@ shairportStop() {
 	systemctl restart shairport-sync
 	$dirbash/status-push.sh
 }
-splashRotate() {
-	local rotate
-	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
-	magick \
-		-density 48 \
-		-background none $dirimg/icon.svg \
-		-rotate $rotate \
-		-gravity center \
-		-background '#000' \
-		-extent 1920x1080 \
-		$dirimg/splash.png
-}
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
@@ -290,7 +278,7 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 " $dirimg/icon.svg
 	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| magick -density 96 -background none - $dirimg/icon.png
-	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
+	splashRotate
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	pushData reload 1
 	;;
@@ -300,12 +288,6 @@ $ARTIST
 $ALBUM
 debug
 CMD ARTIST ALBUM DEBUG"
-	;;
-coverfileget )
-	path="/mnt/MPD/$DIR"
-	src=$( coverFileGet "$path" )
-	subdir=$( ls -d "$path"/*/ 2> /dev/null | wc -l )
-	echo '{ "src": "'$src'", "subdir": '$subdir' }'
 	;;
 coverfileslimit )
 	for type in local online webradio; do
@@ -754,9 +736,6 @@ shareddatampdupdate )
 	;;
 snapserverlist )
 	snapserverList
-	;;
-splashrotate )
-	splashRotate
 	;;
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1

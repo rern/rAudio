@@ -7,8 +7,9 @@ ID=$1
 case $ID in
 
 ap )
-	file=/var/lib/iwd/ap/$( hostname ).ap
-	echo '{ "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
+	ssid=$( hostname )
+	file=/var/lib/iwd/ap/$ssid.ap
+	echo '{ "SSID": "'$ssid'", "IP": "'$( getVar Address $file )'", "PASSPHRASE": "'$( getVar Passphrase $file )'" }'
 	;;
 audio-wm5102 )
 	echo '{ "outputtype" : "'$( getContent $dirsystem/audio-wm5102 'HPOUT2 Digital' )'" }'
@@ -287,7 +288,7 @@ wlanprofile )
 , "MTU"        : '$( cat $dirlan/mtu )'
 , "TXQUEUELEN" : '$( cat $dirlan/tx_queue_len )'
 }';;
-			stoptimer )     echo '{ "MIN": 30, "POWEROFF": false }';;
+			stoptimer )     echo '{ values: { "MIN": 30, "POWEROFF": false }, "active": "'$( exists $dirshm/pidstoptimer )'" }';;
 			volumelimit )
 				volume=$( volumeGet )
 				[[ $volume == 0 || ! $volume ]] && volume=50

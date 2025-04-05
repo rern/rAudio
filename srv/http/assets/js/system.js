@@ -4,7 +4,7 @@ W.reboot          = data => {
 W.storage         = data => {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		S.liststorage = data.list;
+		S.list.storage = data.list;
 		util.renderStorage();
 		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
 	}, 1000 );
@@ -760,14 +760,17 @@ var util          = {
 		}
 	}
 	, renderStorage : () => {
-		var html  = '';
-		$.each( S.liststorage, ( i, v ) => {
-			var mountpoint = v.mountpoint === '/' ? 'SD' : v.mountpoint.replace( '/mnt/MPD/', '' );
-			var dot = '<grn>&ensp;•&ensp;</grn>';
-			if ( ! v.size ) dot = dot.replace( /grn/g, 'red' );
-			html += '<li>'+ ico( v.icon ) + mountpoint + dot + v.size +' <c>'+ v.source +'</c></li>';
+		if ( list.equal( 'storage' ) ) return
+		
+		var html = '';
+		S.list.storage.forEach( list => {
+			var mountpoint = list.mountpoint;
+			var source     = list.source;
+			html		  += '<li data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
+							+ ico( list.icon ) + mountpoint.slice( 9 )
+							+ ( list.size ? dot : dot.replace( /grn/g, 'red' ) ) + list.size +' <c>'+ source +'</c></li>';
 		} );
-		$( '#list' ).html( html );
+		list.render( 'storage', html );
 	}
 	, restoreReset  : () => {
 		info( {
@@ -990,18 +993,13 @@ $( '.addnas' ).on( 'click', function() {
 	SW = { icon: 'networks' }
 	util.mount.mount();
 } );
-$( '#list' ).on( 'click', 'li', function( e ) {
-	e.stopPropagation();
-	var $this = $( this );
-	V.li      = $this;
-	if ( ! contextMenuToggle() ) return
+$( '#storage' ).on( 'click', 'li', function( e ) {
+	var $li        = $( this );
+	if ( menu.isActive( $li, e ) ) return
 	
-	var i     = $this.index()
-	var list  = S.liststorage[ i ];
-	$( '#codestorageinfo' )
-		.addClass( 'hide' )
-		.empty();
-	if ( [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( list.mountpoint ) ) {
+	var mountpoint = $li.data( 'mountpoint' );
+	var shareddata = [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint );
+	if ( shareddata ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
@@ -1010,18 +1008,17 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	$( 'li' ).removeClass( 'active' );
-	$this.addClass( 'active' );
-	if ( list.icon === 'microsd' ) {
+	if ( mountpoint === '/mnt/MPD/SD' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var mounted = list.size !== '';
-		$( '#menu .forget' ).toggleClass( 'hide', list.mountpoint.slice( 0, 12 ) !== '/mnt/MPD/NAS' );
-		$( '#menu .remount' ).toggleClass( 'hide', mounted );
+		var mounted = $li.find( 'grn' ).length === 1;
+		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
+		$( '#menu .forget' ).toggleClass( 'hide', shareddata || usb );
+		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
-	contextMenu();
+	menu.show( $li );
 } );
 $( '#i2smodule' ).on( 'input', function() {
 	var aplayname = this.value;
@@ -1094,11 +1091,13 @@ $( '.listtitle' ).on( 'click', function( e ) {
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
-$( '#menu a' ).on( 'click', function() {
-	var cmd        = $( this ).data( 'cmd' );
-	var list       = S.liststorage[ V.li.index() ];
-	var mountpoint = list.mountpoint;
-	var source     = list.source;
+$( '#menu a' ).on( 'click', function( e ) {
+	var cmd = menu.command( $( this ), e );
+	if ( ! cmd ) return
+	
+	var $li        = $( 'li.active' );
+	var mountpoint = $li.data( 'mountpoint' );
+	var source     = $li.data( 'id' );
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
 		var icon  = 'networks';
 		var title = 'Network Mount';
@@ -1109,19 +1108,14 @@ $( '#menu a' ).on( 'click', function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
-			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
+			bash( [ 'forget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			var $code = $( '#codestorageinfo' );
-			if ( $code.hasClass( 'hide' ) ) {
-				currentStatus( 'storageinfo', source );
-			} else {
-				$code.addClass( 'hide' );
-			}
+			currentStatus( 'storage', source, 'info' );
 			break
-		case 'remount':
-			notify( icon, title, 'Remount ...' );
-			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
+		case 'mount':
+			notify( icon, title, 'Mount ...' );
+			bash( [ 'mount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'sleep':
 			var dev = list.source;
@@ -1152,7 +1146,7 @@ $( '#menu a' ).on( 'click', function() {
 			break
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
-			bash( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
+			bash( [ 'unmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 	}
 } );

@@ -48,8 +48,9 @@ function htmlHead( $data ) {
 	if ( isset( $data->exist ) && ! $data->exist ) return;
 	
 	$id      = isset( $data->id ) ? ' id="'.$data->id.'"' : '';
+	$list    = isset( $data->list ) ? ' li' : '';
 	$status  = $data->status ?? '';
-	$class   = $status ? ' class="status"' : '';
+	$class   = $status ? ' class="status'.$list.'"' : '';
 	$dstatus = $status ? ' data-status="'.$status.'"' : '';
 	$iback   = isset( $data->back ) ? i( 'back back' ) : '';
 	$ihelp   = $iback ? '' : i( 'help help' );
@@ -70,11 +71,11 @@ function htmlHead( $data ) {
 }
 function htmlMenu( $menu ) {
 	$menuhtml = '';
-	foreach( $menu as $cmd => $icon ) $menuhtml.= '<a class="'.$cmd.'" data-cmd="'.$cmd.'"tabindex="0">'.i( $icon ).ucfirst( $cmd ).'</a>';
+	foreach( $menu as $cmd ) $menuhtml.= '<a class="'.$cmd.'" data-cmd="'.$cmd.'" tabindex="0">'.i( $cmd ).ucfirst( $cmd ).'</a>';
 	echo '<div id="menu" class="menu hide">'.$menuhtml.'</div>';
 }
-function htmlSection( $head, $body, $id = '' ) {
-	echo '<div'.( $id ? ' id="div'.$id.'"' : '' ).' class="section">';
+function htmlSection( $head, $body, $id = '', $class = '' ) {
+	echo '<div'.( $id ? ' id="div'.$id.'"' : '' ).' class="section '.$class.'">';
 	if ( $head ) htmlHead( $head );
 	foreach( $body as $data ) {
 		if ( is_array( $data ) ) {

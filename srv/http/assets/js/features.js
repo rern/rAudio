@@ -33,18 +33,35 @@ var config       = {
 	, ap           : values => {
 		info( {
 			  ...SW
-			, footer       : '(8 characters or more)'
+			, message      : '<wh>Wi-Fi</wh> is currently connected to:'
+							+'<br>'+ ico( 'wifi gr' ) +' <wh>'+ S.ssid +'</wh>'
+							+'<br><br>Enable and disconnect?'
 			, list         : [
-				  [ 'IP',       'text' ]
+				  [ 'SSID',     'text' ]
+				, [ 'IP',       'text' ]
 				, [ 'Password', 'text' ]
 			]
+			, footer       : '(8 characters or more)'
 			, values       : values
+			, beforeshow : () => {
+				$( '.infomessage' ).addClass( 'hide' );
+				$( '#infoList input' ).eq( 0 ).addClass( 'disabled' );
+			}
 			, checkchanged : S.ap
 			, checkblank   : true
-			, checkip      : [ 0 ]
-			, checklength  : { 1: [ 8, 'min' ] }
+			, checkip      : [ 1 ]
+			, checklength  : { 2: [ 8, 'min' ] }
 			, cancel       : switchCancel
-			, ok           : switchEnable
+			, ok           : () => {
+				if ( S.ssid && $( '.infomessage' ).hasClass( 'hide' ) ) {
+					I.oknoreset = true;
+					$( '#infoList' ).children().toggleClass( 'hide' );
+					$( '.infomessage' ).removeClass( 'hide' );
+				} else {
+					I.oknoreset = false;
+					switchEnable();
+				}
+			}
 		} );
 	}
 	, autoplay     : values => {
@@ -78,6 +95,8 @@ var config       = {
 				, [ 'Screen off <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 60 } } ]
 				, [ 'On while play',             'checkbox' ]
 				, [ 'Mouse pointer',             'checkbox' ]
+				, [ '',                          'checkbox' ]
+				, [ '',                          'checkbox' ]
 			]
 			, footer       : infoFooterIcon( {
 				  Reload     : 'reload'
@@ -85,12 +104,13 @@ var config       = {
 				, Brightness : 'brightness'
 			} )
 			, boxwidth     : 110
-			, values       : data.values
+			, values       : { ...data.values, R_CHANGED: false, RESTART: false }
 			, checkchanged : S.localbrowser
 			, beforeshow   : () => {
+				$( '#infoList tr' ).last().addClass( 'hide' ).prev().addClass( 'hide' )
 				var $onwhileplay = $( '#infoList input:checkbox' ).eq( 0 );
 				$onwhileplay.prop( 'disabled', data.values.SCREENOFF === 0 );
-				$( '#infoList tr:eq( 2 )' ).on( 'click', '.updn', function() {
+				$( '#infoList tr' ).eq( 2 ).on( 'click', '.updn', function() {
 					if ( $( this ).parents( 'td' ).prev().find( 'input' ).val() != 0 ) {
 						$onwhileplay.prop( 'disabled', false );
 					} else {
@@ -105,7 +125,8 @@ var config       = {
 				$span.on( 'click', function() {
 					var i = $( this ).index();
 					if ( i === 0 ) {
-						bash( [ 'localbrowserreload' ], () => banner( SW.icon, SW.title, 'Reloaded.' ) );
+						ws.send( '{ "channel": "reload", "data": 1 }' );
+						banner( SW.icon, SW.title, 'Reloaded.' );
 					} else if ( i === 1 ) {
 						bash( [ 'screentoggle' ], onoff => banner( SW.icon, SW.title, onoff ) );
 					} else {
@@ -125,7 +146,19 @@ var config       = {
 				} );
 			}
 			, cancel       : switchCancel
-			, ok           : switchEnable
+			, ok           : () => {
+				var v          = infoVal();
+				var values     = data.values;
+				var $r_changed = $( '#infoList input' ).eq( 4 );
+				var $restart   = $( '#infoList input' ).eq( 5 );
+				if ( v.ROTATE !== values.ROTATE ) $r_changed.prop( 'checked', true );
+				if ( ! S.localbrowser || v.ROTATE !== values.ROTATE ) {
+					$restart.prop( 'checked', true );
+				} else {
+					if ( v.ZOOM !== values.ZOOM || v.CURSOR !== values.CURSOR ) $restart.prop( 'checked', true );
+				}
+				switchEnable();
+			}
 			, fileconf     : true
 		} );
 	}
@@ -359,8 +392,8 @@ var config       = {
 				, [ 'Power off on stop', 'checkbox' ]
 			]
 			, boxwidth     : 70
-			, values       : values
-			, checkchanged : S.stoptimer
+			, values       : values.values
+			, checkchanged : values.active
 			, cancel       : switchCancel
 			, ok           : switchEnable
 			, fileconf     : true
@@ -494,7 +527,6 @@ var util        = {
 	}
 }
 function renderPage() {
-	$( '#ap' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {
 		var nfsdisabled = icoLabel( 'Shared Data', 'networks' ) +' is currently enabled.';
@@ -515,5 +547,6 @@ function renderPage() {
 		$( '#camilladsp' ).toggleClass( 'disabled', S.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
+	$( '#localbrowser' ).toggleClass( 'inactive', S.localbrowser === -1 );
 	showContent();
 }

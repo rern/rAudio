@@ -348,7 +348,7 @@ i.disabled {
 .graphclose {
 	position: absolute;
 	color: var( --cm ) !important;
-	top: -10px;
+	top: -10px !important;
 	right: -10px;
 }
 .overplot .lines path {
@@ -472,9 +472,7 @@ cp {
 #divvolume .col-r > * {
 	cursor: pointer;
 }
+.divgraph,
 .entries.sub li {
 	cursor: default !important;
-}
-#eq .label.dn {
-	margin-bottom: 0;
 }

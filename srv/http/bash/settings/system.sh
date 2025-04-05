@@ -66,9 +66,6 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 			(( $count == 1 )) || ( (( $count == 2 )) && ! cmp -s $tmp_module $file_module ) && reboot=1
 		fi
 	fi
-	rebootSet
-}
-rebootSet() {
 	if [[ $reboot ]]; then
 		pushData reboot '{ "id": "'$CMD'" }'
 		appendSortUnique $CMD $dirshm/reboot
@@ -145,6 +142,24 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
+forget | mount | unmount )
+	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
+		[[ $CMD == mount ]] && mount "$MOUNTPOINT" || umount -l "$MOUNTPOINT"
+	else
+		[[ $CMD == mount ]] && udevil mount $SOURCE || udevil umount -l "$MOUNTPOINT"
+	fi
+	if [[ $CMD == forget ]]; then
+		rmdir "$MOUNTPOINT" &> /dev/null
+		fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
+		column -t <<< $fstab > /etc/fstab
+		systemctl daemon-reload
+		$dirbash/cmd.sh "mpcupdate
+update
+NAS
+CMD ACTION PATHMPD"
+	fi
+	pushRefresh
+	;;
 gpiopintoggle )
 	[[ $( gpioget -a -c0 --numeric $PIN ) == 0 ]] && onoff=1 || onoff=0
 	gpioset -t0 -c0 $PIN=$onoff
@@ -215,34 +230,6 @@ lcdchar )
 mirror )
 	[[ $MIRROR ]] && MIRROR+=.
 	echo 'Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
-	pushRefresh
-	;;
-mountforget )
-	umount -l "$MOUNTPOINT"
-	rmdir "$MOUNTPOINT" &> /dev/null
-	fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
-	$dirbash/cmd.sh "mpcupdate
-update
-NAS
-CMD ACTION PATHMPD"
-	pushRefresh
-	;;
-mountremount )
-	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
-		mount "$MOUNTPOINT"
-	else
-		udevil mount $SOURCE
-	fi
-	pushRefresh
-	;;
-mountunmount )
-	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
-		umount -l "$MOUNTPOINT"
-	else
-		udevil umount -l "$MOUNTPOINT"
-	fi
 	pushRefresh
 	;;
 mpdoled )
@@ -361,21 +348,12 @@ soundprofile )
 	pushRefresh
 	;;
 templimit )
-	lines=$( < /boot/config.txt )
-	degree=$( getVar temp_soft_limit <<< $lines )
-	config=$( grep -v ^temp_soft_limit <<< $lines )
+	config=$( grep -v ^temp_soft_limit $file_config )
 	if [[ $ON ]]; then
-		(( $DEGREE != $degree && $DEGREE != 60 )) && config+="
+		config+="
 temp_soft_limit=$DEGREE"
 	fi
-	echo "$config" > /boot/config.txt
-	if [[ $degree ]]; then
-		[[ ! $ON || $degree != $DEGREE ]] && reboot=1
-	else
-		[[ $ON ]] && reboot=1
-	fi
-	rebootSet
-	pushRefresh
+	configTxt
 	;;
 tft )
 	config=$( grep -Ev '^hdmi_force_hotplug|:rotate=' $file_config )

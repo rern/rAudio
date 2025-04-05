@@ -177,7 +177,6 @@ $body         = [
 		, 'sub'      => 'iwctl'
 		, 'status'   => true
 		, 'exist'    => true
-		, 'disabled' => $L->wifi.' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://iwd.wiki.kernel.org/ap_mode">iNet Wireless Daemon</a> (iwd) - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.

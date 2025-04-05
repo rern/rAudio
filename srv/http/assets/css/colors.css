@@ -1,19 +1,19 @@
 :root {
-	--cd   : hsl(200,100%,35%); /* default main */
-	--cw   : hsl(  0,  0%,90%); /* white */
-	--cm60 : hsl(200,100%,60%); /* main-60% */
-	--cml  : hsl(200,100%,40%); /* main-light */
-	--cm   : hsl(200,100%,35%); /* main */
-	--cma  : hsl(200,100%,30%); /* main-active */
-	--cmd  : hsl(200,100%,20%); /* main-dark */
-	--cg75 : hsl(200,  3%,75%); /* gray-75% */
-	--cg70 : hsl(200,  3%,70%); /* gray-70% */
-	--cg60 : hsl(200,  3%,60%); /* gray-60% */
-	--cg50 : hsl(200,  3%,50%); /* gray-50% */
-	--cgl  : hsl(200,  3%,40%); /* gray-light */
-	--cg   : hsl(200,  3%,30%); /* gray */
-	--cga  : hsl(200,  3%,20%); /* gray-active */
-	--cgd  : hsl(200,  3%,10%); /* gray-dark */
+	--cd   : hsl(200, 100%, 35%); /* default main */
+	--cw   : hsl(  0,   0%, 90%); /* white */
+	--cm60 : hsl(200, 100%, 60%); /* main-60% */
+	--cml  : hsl(200, 100%, 40%); /* main-light */
+	--cm   : hsl(200, 100%, 35%); /* main */
+	--cma  : hsl(200, 100%, 30%); /* main-active */
+	--cmd  : hsl(200, 100%, 20%); /* main-dark */
+	--cg75 : hsl(200,   3%, 75%); /* gray-75% */
+	--cg70 : hsl(200,   3%, 70%); /* gray-70% */
+	--cg60 : hsl(200,   3%, 60%); /* gray-60% */
+	--cg50 : hsl(200,   3%, 50%); /* gray-50% */
+	--cgl  : hsl(200,   3%, 40%); /* gray-light */
+	--cg   : hsl(200,   3%, 30%); /* gray */
+	--cga  : hsl(200,   3%, 20%); /* gray-active */
+	--cgd  : hsl(200,   3%, 10%); /* gray-dark */
 	
 	--shadow-btn    : -2px  2px 4px      #000;
 	--shadow-btn-u  : -2px -2px 4px      #000;
@@ -25,11 +25,11 @@
 	--shadow-search : -2px  2px 4px      #000;
 	--shadow-select : -1px  1px 1px      #000;
 	--shadow-text   : -1px  0   2px      #000;
-								   /* w    h      x    y   inner(color)       w    outer(color)      w */
-	--glossy-btn   : radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	--glossy-btn-l : radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	--glossy-btn-m : linear-gradient( to bottom, hsla(0,0%,100%,.3) 0%, hsla(0,0%,100%,.3) 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100% );
-	--glossy-btn-r : radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+								   /* w    h      x    y   inner(color)       w    outer(color)       w */
+	--glossy-btn   : radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%, 0) 55% );
+	--glossy-btn-l : radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%, 0) 55% );
+	--glossy-btn-r : radial-gradient( 300% 90% at   0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%, 0) 55% );
+	--glossy-btn-m : linear-gradient( to bottom,           hsla(0,0%,100%,.3)  0%, hsla(0,0%,100%,.3) 45%, hsla(0,0%,0%,0) 50%, hsla(0,0%,0%,0) 100% );
 }
 
 bl,  .bl  { color : var( --cm ) !important }

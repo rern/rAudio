@@ -13,18 +13,17 @@ data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
 			$dirsystem ap autoplay equalizer login loginsetting lyrics dabradio multiraudio scrobble snapclientserver volumelimit \
 			$dirshm nosound )
+systemctl -q is-active localbrowser && localbrowser=true
+[[ ! $localbrowser ]] && systemctl -q is-enabled localbrowser && localbrowser=-1
 ##########
 data+='
-, "hostname"      : "'$( hostname )'"
-, "ip"            : "'$( ipAddress )'"
-, "localbrowser"  : '$( systemctl -q is-enabled localbrowser && echo true )'
-, "nfsconnected"  : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "shareddata"    : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
-, "snapclient"    : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
-, "stoptimer"     : '$( exists $dirshm/pidstoptimer )
-##########
-[[ -e $dirshm/wlan ]] && data+='
-, "wlan"          : true
-, "wlanconnected" : '$( ip route | grep -q -m1 $( < $dirshm/wlan ) && echo true )
+, "hostname"     : "'$( hostname )'"
+, "ip"           : "'$( ipAddress )'"
+, "localbrowser" : '$localbrowser'
+, "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
+, "shareddata"   : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
+, "snapclient"   : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
+, "ssid"         : "'$( iwgetid -r )'"
+, "wlan"         : '$( [[ -e $dirshm/wlan ]] && echo true )
 
 data2json "$data" $1

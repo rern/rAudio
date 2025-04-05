@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1741785045' );
+	src         : url( '/assets/fonts/rern.woff2?v=1743417778' );
 }
 @font-face {
 	font-family : Lato;
@@ -72,13 +72,16 @@ i {
 .i-capslock::before        { content: '\F607' }
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }
-.i-close::before           { content: '\F56C' }
+.i-close::before,
+.i-disconnect::before,
+.i-unmount::before         { content: '\F56C' }
 .i-code::before            { content: '\F59E' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
 .i-config::before          { content: '\F53E' }
 .i-connect::before,
-.i-current::before         { content: '\F56D' }
+.i-current::before,
+.i-mount::before           { content: '\F56D' }
 .i-consume::before,
 .i-flash::before           { content: '\F566' }
 .i-controls::before,
@@ -86,7 +89,7 @@ i {
 .i-sliders::before         { content: '\F50B' }
 .i-copy::before            { content: '\F54E' }
 .i-coverart::before        { content: '\F58A'; position: absolute; }
-.i-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 0.6; text-shadow: none; }
+.i-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 0.6; -webkit-text-stroke: 1px var( --cgl ); }
 .i-crop::before            { content: '\F568' }
 .i-cursor::before          { content: '\F56E' }
 .i-dabradio::before        { content: '\F589' }
@@ -95,6 +98,7 @@ i {
 .i-i2s::before,
 .i-i2smodule::before       { content: '\F571' }
 .i-delete::before,
+.i-forget::before,
 .i-remove::before          { content: '\F563' }
 .i-drag::before            { content: '\F601' }
 .i-edit::before,
@@ -193,6 +197,9 @@ i {
 .i-update::before          { content: '\F526' }
 .i-refreshlibrary::before,
 .i-refresh-library::before { content: '\F536' }
+.i-refresh-overlay         { position: absolute; left: -12px; }
+.i-refresh-overlay::before { content: '\F595'; position: absolute; color: var( --cg ); z-index: 1; }
+.i-refresh-overlay::after  { content: '\F596'; position: absolute; z-index: 2; }
 .i-relays::before          { content: '\F522' }
 .i-reload::before          { content: '\F525' }
 .i-repeat::before          { content: '\F511' }
@@ -202,7 +209,8 @@ i {
 .i-restore::before         { content: '\F544' }
 .i-save::before            { content: '\F542' }
 .i-save-plus::before       { content: '\F545' }
-.i-screenoff::before       { content: '\F547' }
+.i-screenoff::before,
+.i-sleep::before           { content: '\F547' }
 .i-scale::before           { content: '\F592' }
 .i-search::before          { content: '\F56A' }
 .i-set0::before            { content: '\F515' }
@@ -260,11 +268,10 @@ body {
 }
 i,
 .infobtn,
-#debug,
-#divpipeline li,
-#lib-list .coverart {
-	-webkit-user-select: none;
+#debug {
 	user-select: none;
+	-webkit-user-select: none;
+	-webkit-touch-callout: none;
 }
 sp {
 	display: inline-block;
@@ -672,11 +679,10 @@ hr {
 .infobtn {
 	text-shadow: var( --shadow-text );
 }
-#infoOverlay .button-coverart {
-	text-shadow: none;
-}
-#infoOverlay .button-coverart::before {
-	top: 1px;
+#bannerIcon img {
+	width: 22px;
+	height: 22px;
+	margin-top: 3px;
 }
 #infoTopBg {
 	width: 100%;
@@ -703,22 +709,8 @@ hr {
 #infoTop .i-camilladsp {
 	margin-right: 6px;
 }
-#infoTop .albumrefresh {
-	color: var( --cw );
-}
-#infoTop .imgicon {
-	position: relative;
-	float: left;
-	margin-top: 4px;
-	width: 35px;
-}
-#infoTop .imgicon i {
-	position: absolute;
-	line-height: 32px;
-}
-#infoTop .imgicon img {
-	width: 30px;
-	vertical-align: -1px;
+#infoTop .i-refresh-overlay {
+	left: 4px;
 }
 #infoX {
 	float: right;

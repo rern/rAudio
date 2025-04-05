@@ -32,11 +32,14 @@ for d in $dirs; do
 		ls+=', "coeffswav": '$( line2array "$dirs" )
 	else
 		dirs=$( ls $dircamilladsp/$dir )
-		ls+=', "'$d'": '$( line2array "$dirs" )
+		dirs=$( line2array "$dirs" )
+		ls+=', "'$d'": '$dirs
+		[[ $d == configs ]] && list=$dirs
 	fi
 done
 ########
 	data+='
+, "list"       : { "camilla": '$list' }
 , "ls"         : { '${ls:1}' }'
 
 data2json "$data" $1

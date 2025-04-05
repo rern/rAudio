@@ -26,6 +26,7 @@ iwctlAP() {
 , "qr"         : "WIFI:S:'$hostname';T:WPA;P:'$Passphrase';"
 , "ssid"       : "'$hostname'"
 }' > $dirsystem/ap.conf
+		avahi-daemon --kill
 		[[ ! -e $dirshm/apstartup ]] && touch $dirsystem/ap
 		iw $wlandev set power_save off
 	else
@@ -67,15 +68,13 @@ ap )
 	if [[ $ON ]]; then
 		sed -i -E -e 's/(Passphrase=).*/\1'$PASSPHRASE'/
 ' -e 's/(Address=).*/\1'$IP'/
-' /var/lib/iwd/ap/$( hostname ).ap
+' /var/lib/iwd/ap/$SSID.ap
 		iwctlAP
 	else
 		systemctl stop iwd
 		rm -f $dirsystem/{ap,ap.conf}
-		wlanDisable
 	fi
 	pushRefresh
-	pushData refresh '{ "page": "system", "iwd": '$TF' }'
 	pushRefresh networks
 	;;
 autoplay | lyrics | scrobble )
@@ -140,54 +139,41 @@ localbrowser )
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-		if [[ -e /tmp/localbrowser.conf ]]; then
-			diff=$( grep -Fxvf $dirsystem/localbrowser.conf /tmp/localbrowser.conf )
-			if [[ $diff ]]; then
-				for k in cursor rotate screenoff zoom; do
-					grep -q -m1 ^$k <<< $diff && printf -v diff$k '%s' 1
-				done
-				[[ $diffcursor || $diffzoom ]] && restart=1
-			fi
-		else
-			restart=1
-		fi
-		scale=$( awk 'BEGIN { printf "%.2f", '$ZOOM/100' }' )
-		profile=$( ls /root/.mozilla/firefox | grep release$ )
-		echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then # tft
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
-			if [[ ! -e /tmp/localbrowser.conf || $diffrotate ]]; then
+			if [[ $R_CHANGED ]]; then
 				appendSortUnique localbrowser $dirshm/reboot
 				notify localbrowser 'Rotate Browser on RPi' 'Reboot required.' 5000
 				exit
 # --------------------------------------------------------------------
 			fi
 		else # hdmi
-			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
-			[[ -e $rotateconf ]] && rotateprev=$( awk '/rotate/ {print $NF}' $rotateconf | tr -d '"' )
 			case $ROTATE in
 				0 )   rotate=NORMAL;;
 				270 ) rotate=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
 				90 )  rotate=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
 				180 ) rotate=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
-			if [[ $rotateprev != $rotate ]]; then
+			if [[ $R_CHANGED ]]; then
+				rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 				if [[ $ROTATE == 0 ]]; then
 					rm -f $rotateconf
 				else 
 					sed "s/ROTATION_SETTING/$rotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 				fi
-				$dirbash/cmd.sh splashrotate
+				splashrotate
 			fi
 		fi
-		if [[ $diffscreenoff ]]; then
-			localbrowserXset
-			[[ $SCREENOFF == 0 ]] && tf=false || tf=true
-			pushSubmenu screenoff $tf
+		profile=$( ls /root/.mozilla/firefox | grep release$ )
+		scale=$( cut -d'"' -f4 /root/.mozilla/firefox/$profile/user.js )
+		
+		[[ $SCREENOFF == 0 ]] && tf=false || tf=true
+		pushSubmenu screenoff $tf
+		if [[ $RESTART ]]; then
+			systemctl restart bootsplash localbrowser &> /dev/null
+			systemctl enable bootsplash localbrowser
 		fi
-		[[ $restart ]] && systemctl restart bootsplash localbrowser &> /dev/null
-		systemctl enable bootsplash localbrowser
 	else
 		ply-image /srv/http/assets/img/splash.png
 		systemctl disable --now bootsplash localbrowser
@@ -196,12 +182,6 @@ localbrowser )
 		[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 	fi
 	pushRefresh
-	;;
-localbrowserreload )
-	pushData reload 1
-	;;
-localbrowserxset )
-	localbrowserXset
 	;;
 login )
 	pushRefresh
@@ -411,6 +391,17 @@ spotifytoken )
 	CMD=spotifyd
 	serviceRestartEnable
 	pushRefresh
+	;;
+startx )
+	localbrowserXset
+	zoom=$( getVar zoom $dirsystem/localbrowser.conf )
+	scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
+	profile=$( ls /root/.mozilla/firefox | grep release$ )
+	echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > /root/.mozilla/firefox/$profile/user.js
+	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
+	matchbox-window-manager -use_cursor $cursor &
+	export $( dbus-launch )
+	firefox -kiosk -private http://localhost
 	;;
 stoptimer )
 	killProcess stoptimer

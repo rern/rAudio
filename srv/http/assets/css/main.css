@@ -40,10 +40,10 @@ div.pagerefresh { z-index: 100 }
 @media ( orientation: portrait ) { @media ( max-width: 480px ) { #bioimg { z-index: -5 } } }
 
 img,
-.licoverimg {
+#map-cover {
 	user-select: none;
-	-webkit-touch-callout: none;
 	-webkit-user-select: none;
+	-webkit-touch-callout: none;
 }
 a {
 	color: var( --cw );
@@ -449,19 +449,15 @@ div.pagerefresh {
 #coverart-block,
 #volume-knob {
 	position: relative;
-	text-align: center
-}
-#time-knob > div:first-child, 
-#volume-knob > div:first-child {
-	margin: 0 auto;
-}
-#time-knob,
-#coverart-block,
-#volume-knob {
 	padding: 0;
 	text-align: center;
 	width: 33%;
 	min-width: 250px;
+	text-align: center;
+}
+#time-knob > div:first-child, 
+#volume-knob > div:first-child {
+	margin: 0 auto;
 }
 #time-knob,
 #volume-knob {
@@ -1217,7 +1213,7 @@ div.pagerefresh {
 }
 .mode.edit {
 	border: 2px solid #000;
-	background: hsl( 0, 0%, 15% );
+	background: var( --cga );
 }
 .mode.edit .i-bookmark,
 .mode.edit img,
@@ -1309,6 +1305,16 @@ div.pagerefresh {
 	border-radius: 50%;
 	box-shadow: var( --shadow-text );
 }
+#infoIcon img {
+	margin-top: 7px;
+	width: 26px;
+	height: 26px;
+}
+.menu .icoverart {
+	width: 40px;
+	padding: 9px;
+	vertical-align: middle;
+}
 .infomessage .thumbnail {
 	display: inline-block;
 	margin-bottom: 10px;
@@ -1389,35 +1395,18 @@ div.pagerefresh {
 #lib-title.path a {
 	font-weight: normal;
 }
-.button-coverart {
-	position:relative;
-	display: inline-block;
-	line-height: 40px;
-	margin-left: 15px;
-}
-#infoIcon .button-coverart {
-	margin-left: 0;
-}
-.button-coverart::before,
-.button-coverart::after {
+#thumbupdate {
 	position: relative;
-	content: '\F596';
-	font-family: rern;
-	font-size: 26px;
-	z-index: 2;
+	margin-left: 20px;
 }
-.button-coverart::before {
-	position: absolute;
-	content: '\F595';
-	color: var( --cg );
-	z-index: 1;
-}
-.button-coverart img {
-	position: absolute;
-	top: 5px;
-	width: 30px;
-	height: 30px;
+#thumbupdate img {
+	width: 26px;
+	height: 26px;
+	vertical-align: -5px;
 	border: 1px solid hsl(0,0%,30%);
+}
+#thumbupdate i {
+	left: -20px;
 }
 #mode-title {
 	font-size: 24px !important;
@@ -1522,6 +1511,7 @@ div.pagerefresh {
 .coverart2 {
 	display: block;
 	padding-left: 2px;
+	font-size: 16px;
 	line-height: 18px;
 }
 .coverart2 {
@@ -1538,7 +1528,7 @@ div.pagerefresh {
 .list li {
 	border-bottom: 1px solid var( --cga );
 }
-.list li:not( .licover ) {
+.list li:not( .coverart, .licover ) {
 	display: block;
 	height: 49px;
 	line-height: 20px;

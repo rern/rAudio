@@ -1,7 +1,20 @@
-function bluetoothCommand( action ) {
-	var icon  = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
-	notify( icon, V.li.data( 'name' ), capitalize( action ) +' ...', -1 );
-	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, V.li.data( 'mac' ), 'CMD ACTION MAC' ] );
+function accesspoint2ssid( ssid, val ) {
+	var changeip = S.ap && S.apconf.ip === location.hostname;
+	info( {
+		  icon    : 'ap'
+		, title   : 'Access Point'
+		, message : '<p>· Disable and connect <wh>'+ ssid +'</wh>'
+				   +'<br>· Connected clients will be dropped.'
+				   + ( changeip ? '<br>· New rAudio URL: <c>http://'+ S.hostname +'</c>' : '' ) +'</p>'
+		, ok      : () => {
+			typeof val === 'object' ? connectWiFi( val ) : changeSsid( ssid );
+		}
+	} );
+}
+function bluetoothCommand( action, $li ) {
+	var icon  = $li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
+	notify( icon, $li.data( 'name' ), capitalize( action ) +' ...', -1 );
+	bash( [ 'settings/networks-bluetooth.sh', 'cmd', action, $li.data( 'id' ), 'CMD ACTION MAC' ] );
 }
 function changeIp( result, icon, title, val, callback ) {
 	var ip = val.ADDRESS;
@@ -25,6 +38,8 @@ function changeIpConnect( ip ) {
 	}
 }
 function changeIpSwitch( ip ) {
+	if ( ! $( 'li.active' ).hasClass( 'current' ) ) return
+	
 	var delay = 3000;
 	if ( ! ip ) {
 		ip    = S.hostname;
@@ -36,12 +51,12 @@ function changeIpSwitch( ip ) {
 function changeSsid( ssid ) {
 	notify( 'wifi', ssid, 'Connect ...' );
 	bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
-	V.li.find( 'i' ).addClass( 'blink' );
+	$( 'li.active i' ).addClass( 'blink' );
 }
 function connectWiFi( val ) {
-	var keys   = Object.keys( val );
-	var values = Object.values( val );
-	V.li.find( 'i' ).addClass( 'blink' );
+	var keys      = Object.keys( val );
+	var values    = Object.values( val );
+	$( 'li.active i' ).addClass( 'blink' );
 	notify( I.icon, val.ESSID, V.edit ? 'Change ...' : 'Connect ...' );
 	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], result => {
 		changeIp( result, I.icon, I.title, val, settingWifi );
@@ -54,46 +69,64 @@ function onPageInactive() {
 	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	$( '.back' ).trigger( 'click' );
 }
-function renderBluetooth() {
-	if ( ! $( '#divscanbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).trigger( 'click' );
-	var html  = '';
-	if ( S.list.bluetooth ) {
-		S.list.bluetooth.forEach( list => {
-			var dot = list.connected ? '<grn>•</grn>&ensp;' : '';
-			html += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
-					 + ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + dot + list.name +'</li>';
-		} );
+var render = {
+	  bluetooth : () => {
+		if ( list.equal( 'bluetooth' ) ) return
+		
+		var html  = '';
+		if ( S.list.bluetooth ) {
+			S.list.bluetooth.forEach( list => {
+				html   += '<li class="bt" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
+						+ ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + ( list.connected ? dot : '' ) + list.name +'</li>';
+			} );
+		}
+		list.render( 'bluetooth', html );
+		$( '#divbluetooth' ).removeClass( 'hide' );
 	}
-	$( '#bluetooth' ).html( html );
-	$( '#divbluetooth' ).removeClass( 'hide' );
-}
-function renderPage() {
-	if ( ! S.device.bluetooth ) {
-		$( '#divbluetooth' ).addClass( 'hide' );
-	} else {
-		renderBluetooth();
-	}
-	if ( ! S.device.wlan ) {
-		$( '#divwlan' ).addClass( 'hide' );
-	} else {
-		renderWlan();
-		$( '.wladd' ).toggleClass( 'hide', S.ap );
-	}
-	if ( ! S.device.lan ) {
-		$( '#divlan' ).addClass( 'hide' );
-	} else {
+	, lan       : () => {
 		var html = '';
 		if ( S.list.lan ) {
 			var ipeth = S.list.lan.ADDRESS;
-			html      =  '<li data-ip="'+ ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ ipeth
-						+'&ensp;<gr>&raquo;&ensp;'+ S.list.lan.GATEWAY +'</gr></li>';
+			html      =  '<li data-ip="'+ ipeth +'">'
+						+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ ipeth +'&ensp;<gr>&raquo;&ensp;'+ S.list.lan.GATEWAY +'</gr></li>';
 		}
 		$( '#lan' ).html( html );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
+	, wlan      : () => {
+		if ( list.equal( 'wlan' ) ) return
+		
+		var html = '';
+		if ( S.ap ) {
+			html +=  '<li class="wl ap" data-id="ap">'
+					+ ico( 'ap' ) +'<gr>Access point'+ dot +'&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip +'</li>';
+		}
+		if ( S.list.wlan ) {
+			S.list.wlan.forEach( ( list, i ) => {
+				if ( S.ap ) i++;
+				var ssid  = list.ssid;
+				html += '<li class="wl" data-id="'+ ssid +'"';
+				if ( list.ip ) {
+					html +=  ' data-ip="'+ list.ip +'">'
+							+ ico( list.icon ) +'<a>'+ ssid 
+							+'</a>'+ dot + list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
+				} else {
+					html +=  '>'
+							+ ico( 'wifi' ) + ssid +'</li>';
+				}
+			} );
+		}
+		list.render( 'wlan', html );
+		$( '#divwlan' ).removeClass( 'hide' );
+		bannerHide();
+	}
+}
+function renderPage() {
+	[ 'bluetooth', 'wlan', 'lan' ].forEach( k => {
+		S.device[ k ] ? render[ k ]() : $( '#div'+ k ).addClass( 'hide' );
+	} );
 	$( '#divap' ).toggleClass( 'hide', ! S.ap );
-	var ip = S.ip || S.apconf.ip;
-	if ( ! ip ) {
+	if ( ! S.ip ) {
 		$( '#divwebui' ).addClass( 'hide' );
 		return
 	}
@@ -104,35 +137,12 @@ function renderPage() {
 				  +'<br>'+ qrCode( S.apconf.qr )
 		$( '#qrap' ).html( html );
 	}
-	if ( ip ) {
-		var html = '<gr>http://</gr>'+ ip
-				 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
-				 +'<br>'+ qrCode( 'http://'+ ip )
-		$( '#qrurl' ).html( html );
-	}
+	var html = '<gr>http://</gr>'+ S.ip
+			 + ( S.hostname ? '<br><gr>http://'+ S.hostname +'</gr>' : '' )
+			 +'<br>'+ qrCode( 'http://'+ S.ip )
+	$( '#qrurl' ).html( html );
 	$( '#divwebui' ).removeClass( 'hide' );
 	showContent();
-}
-function renderWlan() {
-	if ( ! $( '#divscanwlan' ).hasClass( 'hide' ) ) $( '#divscanwlan .back' ).trigger( 'click' );
-	var html = '';
-	if ( S.ap ) {
-		html += '<li class="wl ap">'+ ico( 'ap' ) +'<grn>•</grn>&ensp;'
-				 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.apconf.ip +'</li>';
-	}
-	if ( S.list.wlan ) {
-		S.list.wlan.forEach( list => {
-			if ( list.ip ) {
-				html += '<li class="wl current" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'">'+ ico( list.icon ) +'<a>'+ list.ssid 
-						 +'</a>&ensp;<gr>•</gr>&ensp;'+ list.ip +'&ensp;<gr>&raquo;&ensp;'+ list.gateway +'</gr></li>';
-			} else {
-				html += '<li class="wl" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) + list.ssid +'</li>';
-			}
-		} );
-	}
-	$( '#wlan' ).html( html );
-	$( '#divwlan' ).removeClass( 'hide' );
-	bannerHide();
 }
 function scanBluetooth() {
 	bash( 'networks-scan.sh', data => {
@@ -148,7 +158,8 @@ function scanBluetooth() {
 				} else if ( list.paired ) {
 					icon += '<gr>•</gr> ';
 				}
-				htmlbt += '<li class="'+ cls +'" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'+ icon +'<wh>'+ list.name +'</wh></li>'
+				htmlbt += '<li class="'+ cls +'" data-id="'+ list.mac +'" data-name="'+ list.name +'">'
+						+ icon +'<wh>'+ list.name +'</wh></li>';
 			} );
 		} else {
 			htmlbt       = '<li><gr>(no Bluetooth devices found)</gr></li>';
@@ -175,10 +186,10 @@ function scanWlan() {
 					cls = ' profile';
 				}
 				if ( signal && signal < -67 ) ssid = '<gr>'+ ssid +'</gr>';
-				htmlwl += '<li class="wlscan'+ cls +'" data-ssid="'+ ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'
+				htmlwl += '<li class="wlscan'+ cls +'" data-id="'+ ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'
 						+ ico( 'wifi'+ nwifi ) +'<a>'+ ssid +'</a>';
-				if ( list.encrypt === 'on') htmlwl += ' '+ ico( 'lock' );
-				if ( signal != 0 ) htmlwl += '<gr>'+ signal +' dBm</gr>';
+				htmlwl += list.encrypt === 'on' ? ico( 'lock' ) : '&ensp;';
+				htmlwl += signal != 0 ? '<gr>'+ signal +' dBm</gr>' : '';
 				htmlwl += '</li>';
 			} );
 		} else {
@@ -196,6 +207,7 @@ function settingLan( values ) {
 		var dhcp = values.DHCP
 		delete values.DHCP;
 	}
+	var $li   = $( 'li.active' );
 	var icon  = 'lan';
 	var title = 'LAN Connection';
 	info( {
@@ -213,7 +225,7 @@ function settingLan( values ) {
 		, beforeshow   : () => $( '.extrabtn' ).toggleClass( 'disabled', dhcp )
 		, buttonlabel  : 'DHCP'
 		, button       : () => {
-			V.li.find( 'i' ).addClass( 'blink' );
+			$li.find( 'i' ).addClass( 'blink' );
 			notify( icon, title, 'Change ...' );
 			bash( [ 'lanedit' ] );
 			changeIpSwitch();
@@ -221,7 +233,7 @@ function settingLan( values ) {
 		, oklabel      : dhcp ? 'Static' : ''
 		, ok           : () => {
 			var val  = infoVal();
-			V.li.find( 'i' ).addClass( 'blink' );
+			$li.find( 'i' ).addClass( 'blink' );
 			notify( icon, title, 'Change ...' );
 			bash( [ 'lanedit', ...Object.values( val ), 'CMD '+ Object.keys( val ).join( ' ' ) ], result => {
 				changeIp( result, icon, title, val, settingLan );
@@ -290,22 +302,21 @@ function settingWifi( values ) {
 		}
 	} );
 }
-function warningIp( action ) {
-	if ( V.li && V.li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>'+ action +' current connection</wh>'
+function warningIp( action, $li ) {
+	var $li = $( 'li.active' );
+	if ( $li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>'+ action +' current connection</wh>'
 }
 function wifiDisconnect() {
-	var ssid = V.li.data( 'ssid' );
+	var ssid = $( 'li.active' ).data( 'id' );
 	notify( 'wifi', ssid, 'Disconnect ...' );
 	bash( [ 'disconnect', ssid, 'CMD SSID' ] );
-	V.li.find( 'i' ).addClass( 'blink' );
+	$( 'li.active i' ).addClass( 'blink' );
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.close, .back' ).on( 'click', function() {
-	clearTimeout( V.timeoutscan );
-} );
 $( '.back' ).on( 'click', function() {
+	clearTimeout( V.timeoutscan );
 	$( '#divscanbluetooth, #divscanwlan' ).addClass( 'hide' );
 	$( '#scanwlan, #scanbluetooth' ).empty();
 	$( '.helphead, #divinterface, #divwebui' ).removeClass( 'hide' );
@@ -316,137 +327,112 @@ $( '.btscan' ).on( 'click', function() {
 	$( '#divscanbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
 } );
-$( '#scanbluetooth' ).on( 'click', 'li:not( .current )', function() {
-	clearTimeout( V.timeoutscan );
-	loader();
-	V.li = $( this );
-	bluetoothCommand( 'pair' );
-} );
 $( '.wladd' ).on( 'click', function() {
 	delete V.edit;
 	settingWifi();
 } );
 $( '.wlscan' ).on( 'click', function() {
-	if ( S.ap && ! S.apstartup ) {
-		info( {
-			  icon    : 'wifi'
-			, title   : 'Wi-Fi'
-			, message : '<a class="helpmenu label">Access Point<i class="i-ap"></i></a> is currently active.'
-		} );
-	} else {
-		$( '.helphead, #divinterface, #divwebui' ).addClass( 'hide' );
-		$( '#divscanwlan' ).removeClass( 'hide' );
-		scanWlan();
-	}
+	$( '.helphead, #divinterface, #divwebui' ).addClass( 'hide' );
+	$( '#divscanwlan' ).removeClass( 'hide' );
+	scanWlan();
+} );
+$( '#scanbluetooth' ).on( 'click', 'li:not( .current )', function() {
+	clearTimeout( V.timeoutscan );
+	loader();
+	bluetoothCommand( 'pair', $( this ) );
 } );
 $( '#scanwlan' ).on( 'click', 'li:not( .current )', function() {
 	var $this    = $( this );
-	var ssid     = $this.data( 'ssid' );
+	var ssid     = $this.data( 'id' );
 	var security = $this.data( 'wpa' ) === 'wep';
 	var encrypt  = $this.data( 'encrypt' ) === 'on';
 	if ( $this.hasClass( 'profile' ) ) {
-		notify( 'wifi', ssid, 'Connect ...' );
-		bash( [ 'profileconnect', ssid, 'CMD ESSID' ] );
+		S.ap ? accesspoint2ssid( ssid ) : changeSsid( ssid );
 		return
 	}
 	
 	info( {
 		  icon    : 'wifi'
 		, title   : ssid
-		, message : encrypt ? false : 'Insecure access point'
+		, message : encrypt ? false : iconwarning +'Unsecured access point'
 		, list    : encrypt ? [ 'Password', 'password' ] : false
 		, oklabel : 'Connect'
 		, ok      : () => {
 			clearTimeout( V.timeoutscan );
-			loader();
-			if ( encrypt ) {
-				var val = { IP: 'dhcp', ESSID: ssid, KEY: infoVal(), SECURITY: security }
-			} else {
-				var val = { ESSID: ssid }
-			}
-			connectWiFi( val );
+			var val = { ESSID: ssid }
+			if ( encrypt ) val = { ...val, IP: 'dhcp', KEY: infoVal(), SECURITY: security }
+			S.ap ? accesspoint2ssid( ssid, val ) : connectWiFi( val );
 		}
 	} );
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
-	e.stopPropagation();
-	V.li = $( this );
-	if ( ! contextMenuToggle() ) return
+	var $li = $( this );
+	if ( menu.isActive( $li, e ) ) return
 	
-	if ( V.li.hasClass( 'bt' ) && ! $('#codebtinfo' ).hasClass( 'hide' ) ) {
-		$('#codebtinfo' ).addClass( 'hide' );
-		return
-	}
-	
-	if ( V.li.hasClass( 'ap' ) ) return
-	
-	[ 'bluetooth', 'lan', 'wlan' ].forEach( k => { V[ k ] = false } );
-	V[ V.li.parent().prop( 'id' ) ] = true;
-	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
-		$( '#menu' ).addClass( 'hide' );
-		if ( V.li.hasClass( 'active' ) ) return
-	}
-	
-	$( 'li' ).removeClass( 'active' );
-	V.li.addClass( 'active' );
+	V.bluetooth = V.lan = V.wlan = false;
+	V[ $li.parent().prop( 'id' ) ] = true;
+	$( '#menu a' ).addClass( 'hide' );
 	if ( V.bluetooth ) {
-		var connected = V.li.find( 'grn' ).length === 1;
-		$( '#menu a' ).addClass( 'hide' );
-		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
+		var connected = $li.find( 'grn' ).length === 1;
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
-		$( '#menu' ).find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
+		$menu.find( '.forget, .info' ).removeClass( 'hide' );
+		$menu.find( '.disconnect, .rename' ).toggleClass( 'hide', ! connected );
 	} else if ( V.lan ) {
-		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
+	} else if ( $li.hasClass( 'ap' ) ) {
+		$( '#menu .info' ).removeClass( 'hide' );
 	} else {
-		var current = V.li.hasClass( 'current' );
+		var connected = $li.data( 'ip' ) !== undefined;
 		$( '#menu a' ).removeClass( 'hide' );
-		$( '#menu .connect' ).toggleClass( 'hide', current );
-		$( '#menu .disconnect' ).toggleClass( 'hide', ! current );
-		$( '#menu' ).find( '.info, .rename' ).addClass( 'hide' );
+		$( '#menu .connect' ).toggleClass( 'hide', connected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', ! connected );
+		$( '#menu .rename' ).addClass( 'hide' );
 	}
-	contextMenu();
+	menu.show( $li );
 } );
 $( '.lanadd' ).on( 'click', function() {
-	delete V.li;
 	settingLan();
 } );
-$( '#menu a' ).on( 'click', function() {
-	var cmd = $( this ).data( 'cmd' );
+$( '#menu a' ).on( 'click', function( e ) {
+	var cmd = menu.command( $( this ), e );
+	if ( ! cmd ) return
+
+	var $li = $( 'li.active' );
 	switch ( cmd ) {
 		case 'connect':
 			if ( V.bluetooth ) {
-				bluetoothCommand( 'connect' );
+				bluetoothCommand( 'connect', $li );
 				return
 			}
 			
-			var ssid = V.li.data( 'ssid' );
+			var ssid = $li.data( 'id' );
 			if ( ! S.ap || localhost ) {
 				changeSsid( ssid );
 				return
 			}
 			
-			info( {
-				  icon    : 'ap'
-				, title   : 'Access Point'
-				, message : '<p>Switch to <wh>'+ ssid +'</wh>'
-						   +'<br>· Disconnect all rAudio connections'
-						   +'<br>· Reconnect at:</p>'
-				, list    : [ 'IP / Hostname', 'text' ]
-				, values  : S.hostname
-				, ok      : () => {
-					changeSsid( ssid );
-					setTimeout( changeIpSwitch( infoVal() ), 5000 );
+			if ( S.ap ) {
+				if ( localhost ) {
+					info( {
+						  icon    : 'ap'
+						, title   : 'Access Point'
+						, message : 'Disconnect all clients?'
+						, ok      : () => changeSsid( ssid )
+					} );
+				} else {
+					accesspoint2ssid( ssid );
 				}
-			} );
+			} else {
+				changeSsid( ssid );
+			}
 			break
 		case 'disconnect':
 			if ( V.bluetooth ) {
-				bluetoothCommand( 'disconnect' );
+				bluetoothCommand( 'disconnect', $li );
 				return
 			}
 			
-			if ( V.li.data( 'ip' ) !== location.hostname ) {
+			if ( $li.data( 'ip' ) !== location.hostname ) {
 				wifiDisconnect();
 				return
 			}
@@ -463,18 +449,18 @@ $( '#menu a' ).on( 'click', function() {
 		case 'edit':
 			if ( V.wlan ) {
 				V.edit = true;
-				infoSetting( 'wlanprofile "'+ V.li.data( 'ssid' ) +'"', values => settingWifi( values ) );
+				infoSetting( 'wlanprofile "'+ $li.data( 'id' ) +'"', values => settingWifi( values ) );
 			} else {
 				settingLan();
 			}
 			break
 		case 'forget':
 			if ( V.bluetooth ) {
-				bluetoothCommand( 'remove' );
+				bluetoothCommand( 'remove', $li );
 				return
 			}
 			
-			var ssid = V.li.data( 'ssid' );
+			var ssid = $li.data( 'id' );
 			var icon = 'wifi';
 			info( {
 				  icon       : icon
@@ -486,16 +472,16 @@ $( '#menu a' ).on( 'click', function() {
 				, ok         : () => {
 					notify( icon, ssid, 'Forget ...' );
 					bash( [ 'profileforget', ssid, 'CMD SSID' ] );
-					V.li.find( 'i' ).addClass( 'blink' );
+					$li.find( 'i' ).addClass( 'blink' );
 				}
 			} );
 			break
 		case 'info':
-			currentStatus( 'btinfo', V.li.data( 'mac' ) );
+			currentStatus( $li.parent()[ 0 ].id, $li.data( 'id' ), 'info' );
 			break
 		case 'rename':
-			var icon  = 'bluetooth';
-			var name = V.li.data( 'name' );
+			var icon = 'bluetooth';
+			var name = $li.data( 'name' );
 			info( {
 				  icon         : icon
 				, title        : 'Rename'
@@ -507,7 +493,7 @@ $( '#menu a' ).on( 'click', function() {
 				, ok           : () => {
 					notify( icon, name, 'Change ...' );
 					bash( [ 'btrename', name, infoVal(), 'CMD NAME NEWNAME' ] );
-					V.li.find( 'i' ).addClass( 'blink' );
+					$li.find( 'i' ).addClass( 'blink' );
 				}
 			} );
 			break

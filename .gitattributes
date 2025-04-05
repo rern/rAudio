@@ -15,14 +15,13 @@
 *.php   text eol=lf
 *.py    text eol=lf
 *.sh    text eol=lf
+*.svg   text eol=lf
 *.txt   text eol=lf
 *.xml   text eol=lf
 
 # Ensure those won't be messed up with
-*.jpg binary
-
-# Ensure those won't be messed up with
-*.jpg binary
-*.png binary
-*.gif binary
-*.data binary
+*.jpg   binary
+*.png   binary
+*.gif   binary
+*.data  binary
+*.woff2 binary

@@ -174,8 +174,9 @@ $.fn.press = function( args ) {
 function banner( icon, title, message, delay ) {
 	clearTimeout( V.timeoutbanner );
 	var bottom = $( '#bar-bottom' ).is( '.transparent, :hidden' ) || ! $( '#loader' ).hasClass( 'hide' ) ? '10px' : '';
+	if ( icon[ 0 ] !== '<' ) icon = ico( icon );
 	$( '#banner' )
-		.html( '<div id="bannerIcon">'+ ico( icon ) +'</div><div id="bannerTitle">'+ title +'</div>'
+		.html( '<div id="bannerIcon">'+ icon +'</div><div id="bannerTitle">'+ title +'</div>'
 			  +'<div id="bannerMessage">'+ message +'</div>' )
 		.css( 'bottom', bottom )
 		.removeClass( 'hide' );
@@ -193,6 +194,10 @@ function bannerHide() {
 	$( '#banner' )
 		.addClass( 'hide' )
 		.empty();
+}
+function notify( icon, title, message, delay ) {
+	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
+	banner( icon +' blink', title, message, delay || -1 );
 }
 $( '#banner' ).on( 'click', bannerHide );
 // ----------------------------------------------------------------------
@@ -593,7 +598,7 @@ function info( json ) {
 					break
 				case 'select':
 					kv          = param.kv || param;
-					htmls.list += '<select>'+ htmlOption( kv ) +'</select>';
+					htmls.list += '<select>'+ htmlOption( kv, param.nosort ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
@@ -1219,15 +1224,18 @@ function infoPower() {
 		, button      : () => infoPowerCommand( 'reboot' )
 		, oklabel     : ico( 'power' ) +'Off'
 		, okcolor     : red
-		, ok          : infoPowerCommand
+		, ok          : () => infoPowerCommand( 'off' )
 	} );
 }
 function infoPowerCommand( action ) {
+	var label = capitalize( action );
 	loader();
+	notify( action, 'Power', label +' ...' );
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
 		loaderHide();
+		bannerHide();
 		info( {
 			  icon    : 'power'
 			, title   : 'Power'
@@ -1235,8 +1243,8 @@ function infoPowerCommand( action ) {
 						+'<br><wh>Shared Data</wh> on clients will stop.'
 						+'<br>(Resume when server online again)'
 						+'<br><br>Continue?'
-			, oklabel : action ? ico( 'reboot' ) +'Reboot' : ico( 'power' ) +'Off'
-			, okcolor : action ? orange : red
+			, oklabel : ico( action ) + label
+			, okcolor : action === 'off' ? red : orange
 			, ok      : () => bash( [ 'power.sh', action || '', 'confirm' ] )
 		} );
 	} );
@@ -1263,23 +1271,21 @@ function addonsProgressSubmit( input ) {
 function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );
 }
-function htmlOption( el ) {
+function htmlOption( el, nosort ) {
 	var array = false;
-	var sort  = true;
 	if ( typeof el === 'number' ) {
 		el         = [ ...Array( el ).keys() ];
 	} else if ( Array.isArray( el ) ) {
 		var array  = true;
 	} else {
-		if ( 'nosort' in el ) sort = false;
 		if ( 'kv' in el ) el = el.kv;
 	}
 	var options = '';
 	if ( array ) { // name = value
-		if ( sort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
+		if ( ! nosort ) el.sort( ( a, b ) => a.toString().localeCompare( b.toString(), 'en', { numeric: true } ) );
 		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
 	} else {                     // json
-		if ( sort ) el = jsonSort( el );
+		if ( ! nosort ) el = jsonSort( el );
 		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
 	}
 	return options
@@ -1473,11 +1479,11 @@ function pageActive() {
 	
 	V.pageactive = true;
 	if ( ws && ws.readyState === 1 ) {
+		ws.send( '"ping"' );
 		V.timeoutreload = true;
 		setTimeout( () => { // reconnect if ws not response on wakeup
 			if ( V.timeoutreload ) websocketReconnect();
 		}, 300 );
-		ws.send( '"ping"' );
 	} else {
 		websocketReconnect();
 	}
@@ -1487,6 +1493,7 @@ function pageInactive() {
 	if ( V.local || V.debug ) return // V.local from select2
 	
 	V.pageactive = false;
+	$( '.menu:not( #settings )' ).addClass( 'hide' );
 	if ( typeof onPageInactive === 'function' ) onPageInactive();
 }
 document.onvisibilitychange = () => document.visibilityState === 'hidden' ? pageInactive() : pageActive();

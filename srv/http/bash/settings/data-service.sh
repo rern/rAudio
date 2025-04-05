@@ -33,6 +33,8 @@ case $CMD in
 		systemctl -q is-active iwd && conf+="
 <bll># iwctl ap list</bll>
 $( iwctl ap list | perl -pe 's/\e\[[0-9;]*m//g' )" # remove stdout colors
+		[[ $2 ]] && echo "$conf" && exit
+# --------------------------------------------------------------------
 		;;
 	bluealsa )
 		conf="\
@@ -56,7 +58,7 @@ $( tty2std 'timeout 0.1 rtl_test -t' )"
 		PKG=firefox
 		SERVICE=$CMD
 		conf=$( configText $dirsystem/localbrowser.conf )
-		skip+='|FATAL: Module g2d_23 not found'
+		skip+='|FATAL: Module g2d_23 not found|XKEYBOARD keymap|Could not resolve keysym|Errors from xkbcomp|Failed to connect to session manager'
 		;;
 	mpd )
 		conf=$( grep -Ev '^i|^#' $mpdconf )
@@ -124,11 +126,7 @@ esac
 [[ ! $SERVICE ]] && SERVICE=$PKG
 status=$( systemctl status $SERVICE \
 			| grep -E -v "$skip" \
-			| sed -E  -e 's|●|<grn>*</grn>|; s|○|*|
-					' -e '/^\s*Loaded:/ {s|(disabled)|<yl>\1</yl>|g
-										 s|(enabled)|<grn>\1</grn>|g}
-					' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
-										 s|(failed)|<red>\1</red>|ig}' )
+			| statusColor )
 
 echo "\
 $conf
