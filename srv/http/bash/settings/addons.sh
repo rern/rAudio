@@ -38,7 +38,6 @@ getinstallzip() {
 		bsdtar xf $installfile --strip 1 -C /usr/local/bin $uninstallfile
 		chmod 755 /usr/local/bin/$uninstallfile
 	fi
-	splash $dirshm backup
 	tmpdir=/tmp/install
 	rm -rf $tmpdir
 	mkdir -p $tmpdir
@@ -46,7 +45,7 @@ getinstallzip() {
 	rm $installfile $tmpdir/{.*,*} &> /dev/null
 	cp -r $tmpdir/* /
 	rm -rf $tmpdir
-	splash $dirshm restore
+	splashRotate
 }
 installstart() { # $1-'u'=update
 	rm $0
