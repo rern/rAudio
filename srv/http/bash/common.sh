@@ -41,8 +41,9 @@ alphaNumeric() {
 }
 appendSortUnique() {
 	local data file lines
-	data=$1
-	file=$2
+	file=$1
+	shift
+	data=$@
 	[[ ! -e $file ]] && echo "$data" > $file && return
 	
 	lines="\
@@ -474,7 +475,7 @@ sharedDataLink() {
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
-	appendSortUnique data $dirnas/.mpdignore
+	appendSortUnique $dirnas/.mpdignore data
 	[[ $1 == rserver && -e $dirshareddata/source ]] && return
 	
 	readarray -t source <<< $( < $dirshareddata/source )

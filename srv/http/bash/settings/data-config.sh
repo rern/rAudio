@@ -123,8 +123,11 @@ $description
 	grep -B1 -A2 --no-group-separator ^${2,} $filepackages
 	;;
 reboot )
-	getContent $dirshm/reboot
-	rm -f $dirshm/{reboot,backup.gz}
+	if [[ -e $dirshm/reboot ]]; then
+		list=$( < $dirshm/reboot )
+		rm -f $dirshm/reboot
+		echo { ${list:1} }
+	fi
 	;;
 relays )
 	if [[ -e $dirsystem/relays.conf ]]; then

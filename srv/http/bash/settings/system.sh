@@ -68,9 +68,10 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	fi
 	if [[ $reboot ]]; then
 		pushData reboot '{ "id": "'$CMD'" }'
-		appendSortUnique $CMD $dirshm/reboot
+		name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
+		appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 	elif [[ -e $dirshm/reboot ]]; then
-		sed -i "/$CMD/ d" $dirshm/reboot
+		sed -i '/^, "'$CMD'"/ d' $dirshm/reboot
 	fi
 }
 soundProfile() {

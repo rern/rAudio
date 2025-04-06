@@ -47,7 +47,7 @@ if [[ $SHAREDDATA ]]; then
 		sharedDataCopy $rserver
 	fi
 	sharedDataLink $rserver
-	appendSortUnique $( ipAddress ) $filesharedip
+	appendSortUnique $filesharedip $( ipAddress )
 	mpc -q clear
 	systemctl restart mpd
 	[[ $rescan ]] && $dirbash/cmd.sh "mpcupdate
