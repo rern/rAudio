@@ -177,7 +177,7 @@ function banner( icon, title, message, delay ) {
 	if ( icon[ 0 ] !== '<' ) icon = ico( icon );
 	$( '#banner' )
 		.html( '<div id="bannerIcon">'+ icon +'</div><div id="bannerTitle">'+ title +'</div>'
-			  +'<div id="bannerMessage">'+ message +'</div>' )
+			  +'<div id="bannerMessage"'+ ( notitle = title ? '' : ' class="notitle"' ) +'>'+ message +'</div>' )
 		.css( 'bottom', bottom )
 		.removeClass( 'hide' );
 	V.bannerdelay = delay !== -1;
