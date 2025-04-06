@@ -31,8 +31,8 @@ while read path; do
 	[[ ! $name ]] && name=$( grep -m1 ^id <<< $info | cut -d' ' -f2- )
 	[[ $name == Loopback* ]] && continue
 	
-	NAME=$name
 	CARD=${path: -1}
+	[[ $CARD == 0 && -e $dirsystem/audio-output ]] && NAME=$( < $dirsystem/audio-output ) || NAME=$name
 	if [[ -e $path/usbmixer ]]; then
 		usbmixer=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $path/usbmixer )
 		if [[ $usbmixer ]]; then
