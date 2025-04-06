@@ -25,6 +25,7 @@
 
 outputdevice=$( getContent $dirsystem/output-device )
 proccardn=$( ls -d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
+lastcard=${proccardn: -1}
 while read path; do
 	info=$( sed 's/bcm2835/On-board/' $path/*/info )
 	name=$( grep -m1 ^name <<< $info | cut -d' ' -f2- )
@@ -32,7 +33,7 @@ while read path; do
 	[[ $name == Loopback* ]] && continue
 	
 	CARD=${path: -1}
-	[[ $CARD == 0 && -e $dirsystem/audio-output ]] && NAME=$( < $dirsystem/audio-output ) || NAME=$name
+	[[ $CARD == $lastcard && -e $dirsystem/audio-output ]] && NAME=$( < $dirsystem/audio-output ) || NAME=$name
 	if [[ -e $path/usbmixer ]]; then
 		usbmixer=$( sed -n -E '/^Card/ {s/^Card: | at .*//g; p}' $path/usbmixer )
 		if [[ $usbmixer ]]; then
