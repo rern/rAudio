@@ -28,7 +28,7 @@ for pin in $pins; do
 	message=$( sed -z 's/\n/<br>/g; s/<br>$//' <<< $message )
 	message=$( quoteEscape $message )
 	[[ ! $relayson ]] && message="<wh>$message</wh>"
-	notify 'relays blink' '' $message
+	notify 'relays blink' '' "$message"
 	[[ ${delay[i]} ]] && sleep ${delay[i]}
 	(( i++ ))
 done
