@@ -89,7 +89,7 @@ camilladsp )
 		fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		validate=$( camilladsp -c "$fileconf" )
 		if [[ $validate != 'Config is valid' ]]; then
-			notify 'warning yl' CamillaDSP "Error: <c>$fileconf</c><br>${validate/*file\!}" -1
+			notify 'warning yl blink' CamillaDSP "Error: <c>$fileconf</c><br>${validate/*file\!}"
 			exit
 # --------------------------------------------------------------------
 		fi

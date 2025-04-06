@@ -127,6 +127,8 @@ reboot )
 		list=$( < $dirshm/reboot )
 		rm -f $dirshm/reboot
 		echo { ${list:1} }
+	else
+		echo false
 	fi
 	;;
 relays )
