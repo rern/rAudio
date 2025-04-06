@@ -25,8 +25,8 @@
 
 outputdevice=$( getContent $dirsystem/output-device )
 proccardn=$( ls -d /proc/asound/card[0-9] ) # not depend on /etc/asound.conf which might be broken from bad script
-lastcard=${proccardn: -1}
-[[ $( ls -d /proc/asound/card[0-9]/usbmixer 2> /dev/null ) ]] && (( lastcard-- ))
+usbdac=$( ls -d /proc/asound/card[0-9]/usbmixer 2> /dev/null | wc -l )
+lastcard=$(( ${proccardn: -1} - usbdac )) # i2s card
 while read path; do
 	info=$( sed 's/bcm2835/On-board/' $path/*/info )
 	name=$( grep -m1 ^name <<< $info | cut -d' ' -f2- )
