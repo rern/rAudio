@@ -149,7 +149,7 @@ if [[ $trackcd ]]; then
 	mpc -q stop
 fi
 $dirbash/cmd.sh playlistpush
-notify audiocd 'Audio CD' 'Ready'
+notify audiocd 'Audio CD' Ready
 if [[ ! $album ]]; then
 	line=$( head -1 $diraudiocd/$discid )
 	artist=${line/^*}

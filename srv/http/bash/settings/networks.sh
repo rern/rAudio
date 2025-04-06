@@ -22,7 +22,7 @@ netctlSwitch() {
 			echo "$backup" > "/etc/netctl/$currentssid"
 			ip link set $wlandev down
 			netctl start "$currentssid"
-			notify wifi "$currentssid" 'Restored'
+			notify wifi "$currentssid" Restored
 		fi
 	fi
 }
