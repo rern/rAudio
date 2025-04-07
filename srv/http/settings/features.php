@@ -20,6 +20,7 @@ commonVariables( [
 ] );
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
+$fileexplorer = 'File Explorer <btn>Address bar</btn> <c>\\\\'.$ip.'</c>';
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
@@ -217,6 +218,7 @@ EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
+ · Windows: $fileexplorer
  
 Note: $L->serverraudio should yield better performance.
 EOF
@@ -285,6 +287,7 @@ EOF
 	
  • <wh>Windows NFS clients:</wh>
 	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
+	· $fileexplorer
 	 
 <i class="i-warning"></i> Permissions set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
 	(Every <i class="i-raudio"></i> rAudio can set/update shared data.)
