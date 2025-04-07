@@ -114,12 +114,13 @@ W = {
 	, mpdupdate : data => {
 		if ( data.start ) {
 			S.updating_db = true;
-			setButtonUpdating();
 		} else if ( data.done ) {
 			V.html = {}
+			S.updating_db = false;
 			banner( 'refresh-library', 'Library Update', 'Done' );
 			V.playback ? refreshData() : refreshAll();
 		}
+		setButtonUpdating();
 	}
 	, option    : data => {
 		if ( V.local ) return
