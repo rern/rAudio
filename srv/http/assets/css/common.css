@@ -286,12 +286,10 @@ sp {
 	50% { opacity: 0 } 
 }
 
-.blink,
-.i-libupdate {
+.blink::before,
+.blink::after,
+.i-libupdate::before {
 	animation: blinkopaque 1.5s linear infinite;
-}
-.blink,
-.i-libupdate {
 	text-shadow: none !important;
 }
 input:focus {
