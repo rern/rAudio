@@ -20,7 +20,11 @@ commonVariables( [
 ] );
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
-$fileexplorer = 'File Explorer <btn>Address bar</btn> <c>\\\\'.$ip.'</c>';
+$fileexplorer = <<< EOF
+File Explorer (<btn>Insecured guest logons</btn> enbled)
+	 · <btn>Map network drive...</btn> > Folder: <c>\\\\$ip\USB</c>
+	 · or <btn>Address bar</btn> <c>\\\\$ip</c>
+EOF;
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
@@ -218,7 +222,7 @@ EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
- · Windows: $fileexplorer
+ · Windows $fileexplorer
  
 Note: $L->serverraudio should yield better performance.
 EOF
