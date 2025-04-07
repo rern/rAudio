@@ -4,6 +4,7 @@
 
 CMD=$1
 PKG=$1
+SERVICE=$1
 skip='register IPv6'
 
 configText() {
@@ -29,6 +30,7 @@ configText() {
 case $CMD in
 	ap )
 		PKG=iwd
+		SERVICE=$PKG
 		conf=$( configText /var/lib/iwd/ap/$( hostname ).ap )
 		systemctl -q is-active iwd && conf+="
 <bll># iwctl ap list</bll>
@@ -42,21 +44,21 @@ $( iwctl ap list | perl -pe 's/\e\[[0-9;]*m//g' )" # remove stdout colors
 $( bluealsa-aplay -L )"
 		;;
 	bluez )
-		conf=$( configText /etc/bluetooth/main.conf )
 		SERVICE=bluetooth
+		conf=$( configText /etc/bluetooth/main.conf )
 		;;
 	camilladsp )
 		conf=$( configText /etc/default/camilladsp )
 		;;
 	dabradio )
+		PKG=mediamtx
+		SERVICE=$PKG
 		conf="\
 <bll># rtl_test -t</bll>
 $( tty2std 'timeout 0.1 rtl_test -t' )"
-		PKG=mediamtx
 		;;
 	localbrowser )
 		PKG=firefox
-		SERVICE=$CMD
 		conf=$( configText $dirsystem/localbrowser.conf )
 		skip+='|FATAL: Module g2d_23 not found|XKEYBOARD keymap|Could not resolve keysym|Errors from xkbcomp|Failed to connect to session manager'
 		;;
@@ -90,6 +92,7 @@ $sharedip"
 		;;
 	shairportsync )
 		PKG=shairport-sync
+		SERVICE=$PKG
 		;;
 	smb )
 		PKG=samba
@@ -97,11 +100,10 @@ $sharedip"
 		;;
 	snapclient )
 		PKG=snapcast
-		SERVICE=$CMD
 		conf="\
 $( configText /etc/default/snapclient )
 
-<bll># SnapServer</bll> <gr>(avahi-browse -kprt _snapcast._tcp)</gr>
+<bll># avahi-browse -kprt _snapcast._tcp</bll> <gr>(SnapServer list)</gr>
 "
 		if [[ -e $dirsystem/snapclientserver ]]; then
 			conf+='(SnapClient + SnapServer)'
@@ -112,7 +114,6 @@ $( configText /etc/default/snapclient )
 		;;
 	snapserver )
 		PKG=snapcast
-		SERVICE=$CMD
 		conf=$( configText /etc/snapserver.conf )
 		;;
 	spotifyd )
@@ -123,7 +124,6 @@ $( configText /etc/default/snapclient )
 		;;
 esac
 [[ ! $conf ]] && conf=$( configText /etc/$PKG.conf )
-[[ ! $SERVICE ]] && SERVICE=$PKG
 status=$( systemctl status $SERVICE \
 			| grep -E -v "$skip" \
 			| statusColor )

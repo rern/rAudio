@@ -247,7 +247,6 @@ EOF
 		  'id'       => 'login'
 		, 'label'    => 'Password Login'
 		, 'sub'      => 'password_hash'
-		, 'status'   => true
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
 Lock: $M->lock
