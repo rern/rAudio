@@ -464,7 +464,6 @@ $( '#library, #button-library' ).on( 'click', function() {
 			libraryHome();
 		}
 	} else {
-		libraryHome();
 		switchPage( 'library' );
 	}
 	if ( S.updating_db ) banner( 'library blink', 'Library Database', 'Update ...' );

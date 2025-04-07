@@ -1938,7 +1938,7 @@ function switchPage( page ) {
 		pageScroll( 0 );
 		vu();
 	} else if ( V.library ) {
-		V.librarylist ? pageScroll( V.liscrolltop ) : renderLibrary();
+		V.librarylist ? pageScroll( V.liscrolltop ) : libraryHome();
 	} else {
 		if ( ! V.playlisthome ) pageScroll( V.plscrolltop );
 	}
