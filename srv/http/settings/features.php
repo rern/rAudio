@@ -21,9 +21,11 @@ commonVariables( [
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = <<< EOF
-File Explorer (<btn>Insecured guest logons</btn> enbled)
-	 · <btn>Map network drive...</btn> > Folder: <c>\\\\$ip\USB</c>
-	 · or <btn>Address bar</btn> <c>\\\\$ip</c>
+File Explorer:
+	 · <btn>Map network drive...</btn>
+	 · Folder: <c>\\\\$ip\USB</c>
+	 · Check <btn>Connect using different credentials</btn>
+	 · Username: <c>root</c>&emsp;Password: <c>***</c>
 EOF;
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
