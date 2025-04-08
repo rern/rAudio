@@ -21,12 +21,14 @@ commonVariables( [
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = <<< EOF
-File Explorer:
-	 · <btn>Map network drive...</btn>
-	 · Folder: <c>\\\\$ip\USB</c>
-	 · Check <btn>Connect using different credentials</btn>
-	 · Username: <c>root</c>&emsp;Password: <c>***</c>
+Windows File Explorer:
+	» <btn>Map network drive...</btn>
+	» Folder: <c>\\\\$ip\SD</c> or <c>\\\\$ip\USB</c>
+	» Check <btn>Connect using different credentials</btn>
+	» Username: <c>root</c>&emsp;Password: <c>***</c>
+	<btn>Finish</btn>
 EOF;
+$fileexpl_nfs = str_replace( "\t", "\t\t", $fileexplorer );
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
@@ -86,22 +88,22 @@ Require:
 
 To create Spotify private app:
 <btn>Log in</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
-	· with normal Spotify account
-	· Verify email if prompted
+	- with normal Spotify account
+	- Verify email if prompted
 <btn>Create app</btn>
-	· App name: <c>rAudio</c>
-	· App description: <c>(any)</c>
-	· Website: <c>(any)</c>
-	· Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
-	· <c>Save</c>
-<btn>Dashboard</btn> · <btn>rAudio</btn> · <btn>Settings</btn>
-	· <btn>Basic Information</btn> · <btn>User Management</btn>
-		· Fullname: <c>(any)</c>
-		· Email: <c>(Spotify Account email)</c>
-		· <c>Add user</c>
-	· <btn>Basic Information</btn>
-		· <c>Client ID</c>
-		· <c>Client secret</c>
+	» App name: <c>rAudio</c>
+	» App description: <c>(any)</c>
+	» Website: <c>(any)</c>
+	» Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
+	<btn>Save</btn>
+<btn>Dashboard</btn> » <btn>rAudio</btn> » <btn>Settings</btn>
+	» <btn>Basic Information</btn> » <btn>User Management</btn>
+		» Fullname - <c>(any)</c>
+		» Email - <c>(Spotify Account email)</c>
+		<btn>Add user</btn>
+	» <btn>Basic Information</btn> (the required data)
+		- <c>Client ID</c>
+		- <c>Client secret</c>
 EOF
 	]
 	, [
@@ -224,7 +226,7 @@ EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
- · Windows $fileexplorer
+ · $fileexplorer
  
 Note: $L->serverraudio should yield better performance.
 EOF
@@ -293,7 +295,7 @@ EOF
 	
  • <wh>Windows NFS clients:</wh>
 	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
-	· $fileexplorer
+	· $fileexpl_nfs
 	 
 <i class="i-warning"></i> Permissions set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
 	(Every <i class="i-raudio"></i> rAudio can set/update shared data.)
