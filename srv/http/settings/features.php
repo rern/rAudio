@@ -25,8 +25,9 @@ Windows File Explorer:
 	» <btn>Map network drive...</btn>
 	» Folder: <c>\\\\$ip\SD</c> or <c>\\\\$ip\USB</c>
 	» Check <btn>Connect using different credentials</btn>
-	» Username: <c>root</c>&emsp;Password: <c>***</c>
 	<btn>Finish</btn>
+	» Username: <c>root</c>
+	» Password: <c>***</c>
 EOF;
 $fileexpl_nfs = str_replace( "\t", "\t\t", $fileexplorer );
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
