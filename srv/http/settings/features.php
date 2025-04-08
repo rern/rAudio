@@ -21,7 +21,7 @@ commonVariables( [
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = <<< EOF
-Windows File Explorer:
+Windows <btn>This PC</btn> or <btn>Network</btn>
 	» <btn>Map network drive...</btn>
 	» Folder: <c>\\\\$ip\SD</c> or <c>\\\\$ip\USB</c>
 	» Check <btn>Connect using different credentials</btn>
@@ -295,7 +295,7 @@ EOF
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
-	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
+	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
 	· $fileexpl_nfs
 	 
 <i class="i-warning"></i> Permissions set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
