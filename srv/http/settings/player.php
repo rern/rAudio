@@ -112,7 +112,7 @@ EOF
 		, 'help'     => <<< EOF
 For DSD-capable devices that not support native DSD
  · DoP repacks 16bit DSD stream into 24bit PCM frames. 
- · PCM frames transmitted to DAC and reassembled back to original DSD stream.
+ · PCM frames transmitted to DAC and unpacked to original DSD.
  · DoP is bit-perfect by itself. (with expense of double bandwith)
  · Enabled:
 	· if DAC not support native DSD.
@@ -212,12 +212,12 @@ $B->gear
  · Stopband Begin - Aliasing/imaging control
  · Attenuation - Lowers the source to prevent clipping
  · Extra settings: <c>flag</c>
-	· <span>Rolloff - small</span> : <c> 0</c> at 0.01 dB
-	· <span>Rolloff - medium</span> : <c> 1</c> at 0.35 dB
-	· <span>Rolloff - none</span> : <c> 2</c> for Chebyshev bandwidth
-	· <span>High precision</span> : <c> 8</c> increase irrational ratio accuracy
-	· <span>Double precision</span> : <c>16</c> even if Precision less than 20
-	· <span>Variable rate</span> : <c>32</c>
+	- <span>Rolloff - small</span> : <c> 0</c> at 0.01 dB
+	- <span>Rolloff - medium</span> : <c> 1</c> at 0.35 dB
+	- <span>Rolloff - none</span> : <c> 2</c> for Chebyshev bandwidth
+	- <span>High precision</span> : <c> 8</c> increase irrational ratio accuracy
+	- <span>Double precision</span> : <c>16</c> even if Precision less than 20
+	- <span>Variable rate</span> : <c>32</c>
 	
 (default: Quality <c>Very high</c>  Threads <c>Single</c>)
 EOF
