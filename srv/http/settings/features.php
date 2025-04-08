@@ -70,8 +70,8 @@ $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · Connect: $M->snapcast
  · SnapClient and SnapServer can be enabled on the same device.
-	· Enable SnapServer before SnapClient
-	· SnapClient auto connect/disconnect on play/stop (no connect icon)
+	- Enable SnapServer before SnapClient
+	- SnapClient connect/disconnect on play/stop (no connect icon)
  · Web interface: <c>http://SNAPSERVER_IP:1780</c>
 EOF
 	]
@@ -225,7 +225,7 @@ EOF
 		, 'disabled' => $L->serverraudio.' is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
- · Much faster than SCP / WinSCP when transfer large or a lot of files
+ · Much faster than SCP or ftp when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  · $fileexplorer
  
@@ -281,8 +281,8 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $L->shareddata
  • <wh>rAudio Shared Data server:</wh>
-	· IP address - This rAudio must be set to static / fixed to prevent change on reboot.
-	· Password - if changed, must be the same on all clients.
+	» IP address: This rAudio must be set to static / fixed to prevent change on reboot.
+	» Password: if changed, must be the same on all clients.
 	· In $T->library
 		· $B->microsd SD and $B->usbdrive USB will be hidden.
 		· $B->usbdrive USB items will be displayed in $B->networks NAS instead.
