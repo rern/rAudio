@@ -287,8 +287,7 @@ sp {
 }
 
 .blink::before,
-.blink::after,
-.i-libupdate::before {
+.blink::after {
 	animation: blinkopaque 1.5s linear infinite;
 	text-shadow: none !important;
 }

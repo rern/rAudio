@@ -142,8 +142,10 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 $ids      = [ 'random', 'repeat',   'single',    'repeat1', 'consume', 'librandom'
 			, 'mute',   'btsender', 'libupdate', 'addons',  'relays',  'stoptimer' ];
 $modeicon = '';
-foreach( $ids as $id ) $modeicon.= i( $id.' hide', 'mi-'.$id );
-if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
+foreach( $ids as $id ) {
+	$blink    = $localhost || $id !== 'libupdate' ? '' : ' blink';
+	$modeicon.= i( $id.' hide'.$blink, 'mi-'.$id );
+}
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
 $dsp      = $equalizer ? 'equalizer' : 'camilladsp';
 $settinglist = [
