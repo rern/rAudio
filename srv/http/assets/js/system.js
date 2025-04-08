@@ -908,7 +908,7 @@ function renderPage() {
 <option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' · ' ) +'&ensp;'+ S.timezoneoffset }</option>
 ` );
 	}
-	$( '#divtemplimit' ).toggleClass( 'hide', S.rpi3plus );
+	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
