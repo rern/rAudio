@@ -861,7 +861,6 @@ function onPageInactive() {
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
-	$( '#divtemplimit' ).toggleClass( 'hide', ! S.system.includes( '3B+' ) );
 	util.renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
@@ -909,6 +908,7 @@ function renderPage() {
 <option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' · ' ) +'&ensp;'+ S.timezoneoffset }</option>
 ` );
 	}
+	$( '#divtemplimit' ).toggleClass( 'hide', S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
