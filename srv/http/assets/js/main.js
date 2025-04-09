@@ -1184,43 +1184,38 @@ $( '#button-lib-back' ).on( 'click', function() {
 			return
 		}
 		
-		var $breadcrumbs = $( '#lib-title a' );
-		var bL           = $breadcrumbs.length
-		if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
-			$( '#library' ).trigger( 'click' );
+		if ( [ 'nas', 'nas', 'usb' ].includes( V.mode ) ) {
+			var $breadcrumbs = $( '#lib-title a' );
+			$breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 			return
 		}
+		
 	}
 	V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
-	var backmode = 'gmode' in V && V.gmode !== V.mode;
-	if ( bL && V.mode !== 'latest' && ! backmode ) {
-		bL > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
+	V.query.pop();
+	var query = V.query.slice( -1 )[ 0 ];
+	if ( query === 'album' ) {
+		$( '.mode.album' ).trigger( 'click' );
 	} else {
-		V.query.pop();
-		var query = V.query.slice( -1 )[ 0 ];
-		if ( query === 'album' ) {
-			$( '.mode.album' ).trigger( 'click' );
-		} else {
-			if ( 'gmode' in query ) V.mode = query.gmode;
-			list( query, function( html ) {
-				if ( html != -1 ) {
-					if ( backmode ) V.mode = V.gmode;
-					if ( V.mode === 'album' ) {
-						var path = 'ALBUM';
-					} else {
-						var path = query.path;
-					}
-					var data = {
-						  html      : html
-						, modetitle : query.modetitle
-						, path      : path
-					}
-					renderLibraryList( data );
+		if ( 'gmode' in query ) V.mode = query.gmode;
+		list( query, function( html ) {
+			if ( html != -1 ) {
+				if ( 'gmode' in V && V.gmode !== V.mode ) V.mode = V.gmode;
+				if ( V.mode === 'album' ) {
+					var path = 'ALBUM';
 				} else {
-					$( '#button-lib-back' ).trigger( 'click' ); 
+					var path = query.path;
 				}
-			} );
-		}
+				var data = {
+					  html      : html
+					, modetitle : query.modetitle
+					, path      : path
+				}
+				renderLibraryList( data );
+			} else {
+				$( '#button-lib-back' ).trigger( 'click' ); 
+			}
+		} );
 	}
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {

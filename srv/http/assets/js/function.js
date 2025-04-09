@@ -788,6 +788,7 @@ function intervalElapsedClear() {
 	if ( D.vumeter ) $( '#vuneedle' ).css( 'transform', '' );
 }
 function libraryHome() {
+	V.html.librarylist = '';
 	list( { library: 'home' }, function( data ) {
 		O = data.order;
 		[ 'nas', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
