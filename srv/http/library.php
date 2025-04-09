@@ -161,10 +161,32 @@ case 'home':
 </div>';
 		}
 	}
-	$order    = file_exists( $dirsystem.'order.json' ) ? file_get_contents( $dirsystem.'order.json' ) : false;
+	$lsmnt    = ( object ) [];
+	foreach( [ 'NAS', 'SD', 'USB' ] as $dir ) {
+		$lsdir = glob( '/mnt/MPD/'.$dir.'/*' );
+		$list  = false;
+		if ( $lsdir ) {
+			$mpdignore = "/mnt/MPD/$dir/.mpdignore";
+			if ( file_exists( $mpdignore ) ) {
+				$ignore = file( $mpdignore );
+				foreach( $lsdir as $d ) {
+					if ( preg_grep( '/^$d$/', $ignore ) ) {
+						$list = true;
+						break;
+					}
+				}
+			} else {
+				$list   = true;
+			}
+		}
+		$dir         = strtolower( $dir );
+		$lsmnt->$dir = $list;
+	}
+	$order    = json_decode( @file_get_contents( $dirsystem.'order.json' ) );
 	echo json_encode( [
 		  'html'  => $htmlmode
-		, 'order' => json_decode( $order )
+		, 'lsmnt' => $lsmnt
+		, 'order' => $order || false
 	] );
 	break;
 case 'list':

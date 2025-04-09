@@ -357,25 +357,6 @@ librandom )
 	fi
 	pushData option '{ "librandom": '$TF' }'
 	;;
-lsmnt )
-	for dir in NAS SD USB; do
-		lsdir=$( ls /mnt/MPD/$dir 2> /dev/null )
-		list=false
-		if [[ $lsdir ]]; then
-			mpdignore=/mnt/MPD/$dir/.mpdignore
-			if [[ ! -e $mpdignore ]]; then
-				list=true
-			else
-				ignore=$( < $mpdignore )
-				while read d; do
-					! grep -q "^$d$" <<< $ignore && list=true && break
-				done <<< $lsdir
-			fi
-		fi
-		printf -v $dir '%s' $list
-	done
-	echo '{ "nas": '$NAS', "sd": '$SD', "usb": '$USB' }'
-	;;
 lyrics )
 	if [[ ! $ACTION ]]; then
 		filelrc="/mnt/MPD/${FILE%.*}.lrc"

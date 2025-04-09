@@ -790,6 +790,7 @@ function intervalElapsedClear() {
 function libraryHome() {
 	list( { library: 'home' }, function( data ) {
 		O = data.order;
+		[ 'nas', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
 		if ( data.html !== V.html.library ) {
 			V.html.library = data.html;
 			var html       = htmlHash( data.html );
@@ -1161,7 +1162,7 @@ function renderLibrary() { // library home
 	} );
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 	$( '.mode .label' ).toggleClass( 'hide', ! D.label );
-	setButtonUpdate();
+	$( '#button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( ! V.search ) {
@@ -1482,7 +1483,6 @@ function setButtonOptions() {
 		} );
 	}
 	setButtonUpdateAddons();
-	setButtonUpdate();
 	setButtonUpdating();
 	if ( $volume.is( ':hidden' ) ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
 }
@@ -1498,20 +1498,6 @@ function setButtonUpdateAddons() {
 		$( '#button-settings, #addons i' ).removeClass( 'bl' );
 		$( '#mi-addons, #ti-addons' ).addClass( 'hide' );
 	}
-}
-function setButtonUpdate() {
-	var toggle = () => {
-		$( '#update, #button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
-	}
-	if ( 'nas' in C ) {
-		toggle();
-		return
-	}
-	
-	bash( [ 'lsmnt' ], tf => {
-		$.each( tf, ( k, v ) => { C[ k ] = v } );
-		toggle();
-	}, 'json' );
 }
 function setButtonUpdating() {
 	clearInterval( V.interval.blinkupdate );
