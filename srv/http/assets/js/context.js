@@ -116,7 +116,7 @@ function directoryDelete() {
 		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
-			var dir = directoryPath();
+			var dir = webradioPath();
 			bash( [ 'dirdelete', dir +'/'+ V.list.name, 'CMD DIR' ], std => {
 				if ( std == -1 ) {
 					info( {
@@ -155,9 +155,6 @@ function directoryList() {
 		setTimeout( () => V.mode = mode0, 300 );
 	} );
 }
-function directoryPath() {
-	return '/srv/http/data/webradio'+ $( '.lib-path' ).text()
-}
 function directoryRename() {
 	var icon  = 'webradio';
 	var title = 'Rename Directory';
@@ -171,7 +168,7 @@ function directoryRename() {
 		, oklabel      : 'Rename'
 		, ok           : () => {
 			var newname = infoVal();
-			bash( [ 'dirrename', directoryPath(), V.list.name, newname, 'CMD DIR NAME NEWNAME' ], std => {
+			bash( [ 'dirrename', webradioPath(), V.list.name, newname, 'CMD DIR NAME NEWNAME' ], std => {
 				if ( std == -1 ) {
 					info( {
 						  icon    : icon
@@ -495,12 +492,12 @@ function thumbnail() { // station / folder
 	}
 	if ( dir ) {
 		mode               = 'folder';
-		var path           = V.mode.slice( -5 ) === 'radio' ? directoryPath() : '/mnt/MPD';
+		var path           = V.mode.slice( -5 ) === 'radio' ? webradioPath() : '/mnt/MPD';
 		path              += '/'+ V.list.path;
 		var imagefilenoext = path + '/coverart';
 	} else { // radio only
 		var path           = V.playback ? S.file : V.list.path;
-		var imagefilenoext = directoryPath() +'/img/'+ path.replace( /\//g, '|' );
+		var imagefilenoext = webradioPath() +'/img/'+ path.replace( /\//g, '|' );
 	}
 	info( {
 		  icon        : V.icoverart
@@ -583,7 +580,7 @@ function webRadioDelete() {
 		, okcolor : red
 		, ok      : () => {
 			V.list.li.remove();
-			bash( ['webradiodelete', directoryPath(), url, V.mode, 'CMD DIR URL MODE' ] );
+			bash( ['webradiodelete', webradioPath(), url, V.mode, 'CMD DIR URL MODE' ] );
 		}
 	} );
 }
@@ -635,7 +632,7 @@ function webRadioEdit() {
 			var name    = values[ 0 ];
 			var newurl  = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-*8|iso *-* */, '' );
-			bash( [ 'webradioedit', directoryPath(), name, newurl, charset, V.list.path, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
+			bash( [ 'webradioedit', webradioPath(), name, newurl, charset, V.list.path, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
 		}
@@ -675,6 +672,9 @@ function webRadioNew( name, url, charset ) {
 			} );
 		}
 	} );
+}
+function webradioPath() {
+	return '/srv/http/data/webradio'+ $( '.lib-path' ).text()
 }
 function webRadioSave() {
 	webRadioNew( '', V.list.li.find( '.lipath' ).text() );
