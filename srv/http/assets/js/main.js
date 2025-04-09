@@ -1174,8 +1174,8 @@ $( '#button-lib-back' ).on( 'click', function() {
 		return
 	}
 	
-	if ( V.mode === 'album' ) {
-		$( '.licover' ).length ? $( '.mode.album' ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
+	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
+		$( '.licover' ).length ? $( '.mode.'+ V.mode ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 		return
 		
 	} else {
@@ -1230,7 +1230,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	}
 	
 	var path = V.mode.toUpperCase();
-	// V.modes: sd, nas, usb, webradio, dabradio, album, artist, albumartist, composer, conductor, genre, playlists
+	// V.modes: sd, nas, usb, webradio, dabradio, album, latest, artist, albumartist, composer, conductor, genre, playlists
 	// ( coverart, bookmark by other functions )
 	if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) { // browse by directory
 		var query = {
@@ -1427,6 +1427,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		renderLibraryList( data );
 	} );
+	V.query.push( query );
 } ).press( {
 	  delegate : '.coverart'
 	, action   : function( e ) {

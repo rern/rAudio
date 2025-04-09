@@ -209,7 +209,7 @@ i.map.disabled, .map.disabled i {
 .coverart2,
 .label,
 .liinfo div,
-.list li *:not( .licoverimg ),
+.list li *:not( img, .licoverimg ),
 .scrollellipse,
 .tagmessage div,
 .content-top .title,
