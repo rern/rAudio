@@ -1614,6 +1614,9 @@ div.pagerefresh {
 	grid-template-columns: repeat( auto-fit, minmax( 160px, auto ) );
 	justify-content: start;
 }
+li.coverart {
+	max-width: 200px;
+}
 @media ( max-width: 518px ) { #lib-list.album { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
 #lib-list li.track1 {
 	margin-top: 230px;
