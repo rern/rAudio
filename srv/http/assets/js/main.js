@@ -1184,7 +1184,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 			return
 		}
 		
-		if ( [ 'nas', 'nas', 'usb' ].includes( V.mode ) ) {
+		if ( modeFile() ) {
 			var $breadcrumbs = $( '#lib-title a' );
 			$breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 			return
@@ -1232,7 +1232,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	var path = V.mode.toUpperCase();
 	// V.modes: sd, nas, usb, webradio, dabradio, album, latest, artist, albumartist, composer, conductor, genre, playlists
 	// ( coverart, bookmark by other functions )
-	if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) { // browse by directory
+	if ( modeFile() ) { // browse by directory
 		var query = {
 			  library : 'ls'
 			, string  : path
@@ -1481,7 +1481,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
 	var limode     = $this.data( 'mode' );
-	var l_modefile = [ 'sd', 'nas', 'usb' ].includes( limode );
+	var l_modefile = modeFile();
 	var l_radio    = limode.slice( -5 ) === 'radio'; // radio .dir has no mode
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )
@@ -1533,7 +1533,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( ! V.search ) $this.addClass( 'active' );
 	var libpath    = $( '#page-library .lib-path' ).text();
 	var path       = $this.find( '.lipath' ).text();
-	var v_modefile = [ 'sd', 'nas', 'usb', 'webradio', 'dabradio' ].includes( V.mode );
+	var v_modefile = modeFile( 'radio' );
 	if ( l_modefile ) {
 		var query = {
 			  library : 'ls'
