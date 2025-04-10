@@ -741,12 +741,12 @@ var util          = {
 				if ( Array.isArray( val ) ) val = val.join( ' ' );
 				pins.push( val );
 			} );
-			if ( tabname ) {
-				util.relays.order( data );
-			} else {
+			if ( S.relays || ! tabname ) {
 				notifyCommon();
 				bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
 				jsonSave( 'relays', name );
+			} else {
+				util.relays.order( data );
 			}
 		}
 		, tab    : [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ]
