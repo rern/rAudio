@@ -378,17 +378,14 @@ pushData() {
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	if [[ $channel == mpdupdate ]]; then
-		if [[ $data == *done* ]]; then
-			sharedip=$( grep -v $( ipAddress ) $filesharedip )
-			for ip in $sharedip; do
-				cmdshWebsocket $ip shareddatampdupdate
-			done
-			return
-		fi
+	sharedip=$( grep -v $( ipAddress ) $filesharedip )
+	if [[ $channel == mpdupdate && $data == '{ "done": true }' ]]; then
+		for ip in $sharedip; do
+			cmdshWebsocket $ip shareddatampdupdate
+		done
+		return
 	fi
 	
-	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
 		pushWebsocket $ip $channel $data
 	done
@@ -407,9 +404,14 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushWebsocket() {
-	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
-		data='{ "channel": "'$2'", "data": '${@:3}' }'
-		websocat -B 10485760 ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+	local channel data ip
+	ip=$1
+	channel=$2
+	shift 2
+	data=$@
+	if [[ $ip == 127.0.0.1 ]] || ipOnline $ip; then
+		data='{ "channel": "'$channel'", "data": '$data' }'
+		websocat -B 10485760 ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	fi
 }
 quoteEscape() {
