@@ -101,9 +101,8 @@ data+='
 , "ip"             : "'$( ipAddress )'"
 , "lan"            : '$( [[ $( lanDevice ) ]] && echo true )'
 , "list"           : { "storage": '$( $dirsettings/system-storage.sh )' }
-, "nfsserver"      : '$nfsserver'
 , "rpi3plus"       : '$rpi3plus'
-, "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*true <<< $data && echo true )'
+, "shareddata"     : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*false <<< $data && echo true )'
 , "status"         : "'$status'"
 , "statusvf"       : '$statusvf'
 , "system"         : "'$system'"
