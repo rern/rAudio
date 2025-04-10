@@ -170,7 +170,8 @@ case 'home':
 			if ( file_exists( $mpdignore ) ) {
 				$ignore = file( $mpdignore );
 				foreach( $lsdir as $d ) {
-					if ( preg_grep( "/^$d$/", $ignore ) ) {
+					$pattern = '/'.preg_quote( $d, '/' ).'/';
+					if ( ! preg_grep( $pattern, $ignore ) ) {
 						$list = true;
 						break;
 					}
