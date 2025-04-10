@@ -569,7 +569,7 @@ function imageLoad( list ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
 				var src = $this.attr( 'src' );
-				if ( V.mode.slice( -5 ) === 'radio' ) {
+				if ( modeRadio() ) {
 					if ( $this.parent().hasClass( 'dir' ) ) {
 						var icon = 'folder';
 						var menu = 'wrdir';
@@ -888,6 +888,9 @@ function modeFile( radio ) {
 	if ( radio ) modes.push( 'dabradio', 'webradio' );
 	return modes.includes( V.mode )
 }
+function modeRadio() {
+	return V.mode.slice( -5 ) === 'radio'
+}
 function mpcSeek( elapsed ) {
 	S.elapsed = elapsed;
 	local();
@@ -1189,10 +1192,11 @@ function renderLibraryList( data ) { // V.librarylist
 								.replace( 'BRADIO', 'B RADIO' );
 	}
 	var htmltitle = '<span id="mode-title">'+ data.modetitle;
+	var moderadio = modeRadio();
 	if ( 'count' in data && V.mode !== 'latest' ) {
 		$( '#lib-list' ).css( 'width', '100%' );
 		var htmlpath = '';
-	} else if ( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ) {
+	} else if ( moderadio && ! data.path ) { // radio root
 		var htmlpath = ico( V.mode ) + htmltitle;
 	} else if ( ! modeFile( 'radio' ) ) {
 		var htmlpath = ico( V.search ? 'search' : V.mode ) + htmltitle;
@@ -1200,7 +1204,7 @@ function renderLibraryList( data ) { // V.librarylist
 		var dir      = data.path.split( '/' );
 		var dir0     = dir[ 0 ];
 		var htmlpath = ico( V.mode );
-		if ( V.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ V.mode +' / </a>';
+		if ( moderadio ) htmlpath += '<a>'+ V.mode +' / </a>';
 		htmlpath    += '<a>'+ dir0 +' / <span class="lidir">'+ dir0 +'</span></a>';
 		var lidir    = dir0;
 		var iL       = dir.length;

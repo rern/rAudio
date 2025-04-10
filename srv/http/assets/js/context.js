@@ -58,7 +58,7 @@ function bookmarkNew() {
 		var name    = V.list.name;
 		var msgpath = name;
 	} else {
-		if ( V.mode.slice( -5 ) === 'radio' ) {
+		if ( modeRadio() ) {
 			var path = V.mode +'/'+ V.list.path;
 			var src  = '/data/'+ path +'/coverart.jpg';
 		} else {
@@ -492,7 +492,7 @@ function thumbnail() { // station / folder
 	}
 	if ( dir ) {
 		mode               = 'folder';
-		var path           = V.mode.slice( -5 ) === 'radio' ? webradioPath() : '/mnt/MPD';
+		var path           = modeRadio() ? webradioPath() : '/mnt/MPD';
 		path              += '/'+ V.list.path;
 		var imagefilenoext = path + '/coverart';
 	} else { // radio only
@@ -674,7 +674,7 @@ function webRadioNew( name, url, charset ) {
 	} );
 }
 function webradioPath() {
-	return '/srv/http/data/webradio'+ $( '.lib-path' ).text()
+	return '/srv/http/data/webradio/'+ $( '.lib-path' ).text()
 }
 function webRadioSave() {
 	webRadioNew( '', V.list.li.find( '.lipath' ).text() );
@@ -747,7 +747,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' ); // must keep order otherwise replaceplay -> play, addplay -> play
 	switch ( mode ) {
 		case '':
-			if ( V.list.singletrack || V.mode.slice( -5 ) === 'radio' ) { // single track
+			if ( V.list.singletrack || modeRadio() ) { // single track
 				V.mpccmd = [ 'mpcadd', path ];
 			} else if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
 				V.mpccmd = [ 'mpcaddfind', V.mode, path, 'album', V.list.album ];
