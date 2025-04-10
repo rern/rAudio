@@ -174,8 +174,7 @@ case 'home':
 			
 			$ignore = file( $mpdignore );
 			foreach( $lsdir as $d ) {
-				$pattern = '|^'.preg_quote( $d, '|' ).'$|';
-				if ( ! preg_grep( $pattern, $ignore ) ) {
+				if ( ! in_array( basename( $d ), $ignore ) ) {
 					$list = true;
 					break;
 				}
