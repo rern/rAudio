@@ -89,7 +89,6 @@ data+=$( settingsActive bluetooth nfs-server rotaryencoder smb )
 data+=$( settingsEnabled \
 			$dirsystem ap lcdchar mpdoled powerbutton relays soundprofile vuled \
 			$dirshm relayson )
-
 ##########
 data+='
 , "audio"          : '$( grep -q -m1 ^dtparam=audio=on /boot/config.txt && echo true )'
