@@ -256,6 +256,8 @@ CMD ACTION PATHMPD"
 		fi
 	else
 		mv /mnt/MPD/NAS/{SD,USB} /mnt/MPD
+		rm -rf /mnt/MPD/NAS/data
+		rm -f /mnt/MPD/NAS/.mpdignore
 		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
 		chmod 755 $dirnas $dirnas/{SD,USB}
