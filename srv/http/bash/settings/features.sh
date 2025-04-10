@@ -176,6 +176,7 @@ localbrowser )
 		if [[ $RESTART ]]; then
 			systemctl restart bootsplash localbrowser &> /dev/null
 			systemctl enable bootsplash localbrowser
+			sleep 1
 		fi
 	else
 		ply-image /srv/http/assets/img/splash.png
