@@ -125,9 +125,9 @@ case 'findartist': // artist, albumartist
 	exit;
 //----------------------------------------------------------------------------------
 case 'home':
-	$modes    = [ 'Album',  'Artist', 'Album Artist', 'Composer',  'Conductor', 'Date',      'Genre'
+	$modes     = [ 'Album',  'Artist', 'Album Artist', 'Composer',  'Conductor', 'Date',      'Genre'
 				, 'Latest', 'NAS',    'SD',           'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
-	$htmlmode = '';
+	$htmlmode  = '';
 	foreach( $modes as $mode ) {
 		$lipath   = str_replace( ' ', '', $mode );
 		$mode_l   = strtolower( $lipath );
@@ -138,8 +138,8 @@ case 'home':
 </div>';
 	}
 	// bookmarks
-	$dir      = '/srv/http/data/bookmarks';
-	$files    = array_slice( scandir( $dir ), 2 ); // remove ., ..
+	$dir       = '/srv/http/data/bookmarks';
+	$files     = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
 			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
@@ -161,7 +161,7 @@ case 'home':
 </div>';
 		}
 	}
-	$lsmnt    = ( object ) [];
+	$lsmnt     = ( object ) [];
 	foreach( [ 'NAS', 'SD', 'USB' ] as $dir ) {
 		$lsdir = glob( '/mnt/MPD/'.$dir.'/*' );
 		$list  = false;
@@ -182,11 +182,12 @@ case 'home':
 		$dir         = strtolower( $dir );
 		$lsmnt->$dir = $list;
 	}
-	$order    = json_decode( @file_get_contents( $dirsystem.'order.json' ) );
+	$fileorder = $dirsystem.'order.json';
+	$order     = file_exists( $fileorder ) ? json_decode( file_get_contents( $fileorder ) ) : false;
 	echo json_encode( [
 		  'html'  => $htmlmode
 		, 'lsmnt' => $lsmnt
-		, 'order' => $order || false
+		, 'order' => $order
 	] );
 	break;
 case 'list':
