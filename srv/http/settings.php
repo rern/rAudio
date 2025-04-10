@@ -18,6 +18,7 @@ if ( $addonsprogress ) {
 $iconlabel = $features || $system;
 $prefix    = '';
 $htmlbar   = '';
+$isenabled = ' is currently enabled.';
 if ( $camilla ) {
 	$tabs   = [ 'filters', 'mixers', 'processors', 'pipeline', 'devices' ];
 	$prefix = 'tab';

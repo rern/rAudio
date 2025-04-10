@@ -66,7 +66,7 @@ EOF
 	, [
 		  'id'       => 'mixertype'
 		, 'label'    => 'Volume Control'
-		, 'disabled' => $L->dsp.' is currently enabled.'
+		, 'disabled' => $L->dsp.$isenabled
 		, 'help'     => <<< EOF
 $B->gear Type:
  · Mixer device: Good - DAC hardware via GUI knob (if available)
@@ -182,7 +182,7 @@ EOF
 		  'id'       => 'ffmpeg'
 		, 'label'    => 'FFmpeg'
 		, 'sub'      => 'decoder'
-		, 'disabled' => $L->dabradio.' is currently enabled.'
+		, 'disabled' => $L->dabradio.$isenabled
 		, 'help'     => <<< EOF
 <a href="https://ffmpeg.org/about.html">FFmpeg</a> - <a id="ffmpegfiletype">Decoder for more audio filetypes</a>
 <pre id="prefiletype" class="hide"></pre>

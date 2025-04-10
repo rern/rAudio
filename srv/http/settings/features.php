@@ -156,7 +156,7 @@ $body         = [
 		, 'sub'      => 'camilladsp'
 		, 'status'   => true
 		, 'exist'    => true
-		, 'disabled' => $L->equalizer.' is currently enabled.'
+		, 'disabled' => $L->equalizer.$isenabled
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: $M->camilladsp
@@ -166,7 +166,7 @@ EOF
 		  'id'       => 'equalizer'
 		, 'label'    => 'Equalizer'
 		, 'sub'      => 'alsaequal'
-		, 'disabled' => $L->dsp.' is currently enabled.'
+		, 'disabled' => $L->dsp.$isenabled
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10-band graphic equalizer with user presets.
 Control: $M->equalizer
@@ -222,7 +222,7 @@ EOF
 		, 'sub'      => 'smbd'
 		, 'status'   => true
 		, 'exist'    => true
-		, 'disabled' => $L->serverraudio.' is currently active.'
+		, 'disabled' => $L->serverraudio.$isenabled
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP or ftp when transfer large or a lot of files
@@ -277,12 +277,13 @@ EOF
 		  'id'       => 'nfsserver'
 		, 'label'    => 'Server rAudio'
 		, 'sub'      => 'nfs-server'
+		, 'status'   => true
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $L->shareddata
  • <wh>rAudio Shared Data server:</wh>
-	» IP address: This rAudio must be set to static / fixed to prevent change on reboot.
-	» Password: if changed, must be the same on all clients.
+	· IP address: (This rAudio must be set to static / fixed.)
+	· Password: (if changed, must be the same on all clients.)
 	· In $T->library
 		· $B->microsd SD and $B->usbdrive USB will be hidden.
 		· $B->usbdrive USB items will be displayed in $B->networks NAS instead.
@@ -297,9 +298,11 @@ EOF
  • <wh>Windows NFS clients:</wh>
 	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
 	· $fileexpl_nfs
-	 
-<i class="i-warning"></i> Permissions set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
-	(Every <i class="i-raudio"></i> rAudio can set/update shared data.)
+
+Note:
+<i class="i-warning"></i> Permissions:
+ · Set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
+ · Every <i class="i-raudio"></i> rAudio can set/update shared data.
 EOF
 	]
 	, [
