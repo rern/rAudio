@@ -167,17 +167,16 @@ case 'home':
 		$list  = false;
 		if ( $lsdir ) {
 			$mpdignore = "/mnt/MPD/$dir/.mpdignore";
-			if ( ! file_exists( $mpdignore ) ) {
-				$list   = true;
-				continue;
-			}
-			
-			$ignore = file( $mpdignore );
-			foreach( $lsdir as $d ) {
-				if ( ! in_array( basename( $d ), $ignore ) ) {
-					$list = true;
-					break;
+			if ( file_exists( $mpdignore ) ) {
+				$ignore = file( $mpdignore, FILE_IGNORE_NEW_LINES );
+				foreach( $lsdir as $d ) {
+					if ( ! in_array( basename( $d ), $ignore ) ) {
+						$list = true;
+						break;
+					}
 				}
+			} else {
+				$list   = true;
 			}
 		}
 		$dir         = strtolower( $dir );
