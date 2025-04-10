@@ -1014,6 +1014,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	} else {
 		var mounted = $li.find( 'grn' ).length === 1;
 		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
+		$menu.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
 		$( '#menu .forget' ).toggleClass( 'hide', shareddata || usb );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );

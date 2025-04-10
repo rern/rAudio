@@ -4,6 +4,8 @@
 
 args2var "$1"
 
+! ipOnline $IP && echo "<c>$IP</c> not reachable." && exit
+# --------------------------------------------------------------------
 if [[ $PROTOCOL ]]; then
 	mountpoint="$dirnas/$NAME"
 	if grep -q "^$mountpoint$" <<< $( awk '{print $2}' /etc/fstab ); then
