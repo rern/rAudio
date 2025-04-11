@@ -739,9 +739,7 @@ webradioadd )
 	url=$( urldecode $URL )
 	urlname=${url//\//|}
 	webradioM3uPlsVerify $url
-	file=$dirwebradio
-	[[ $DIR ]] && file+="/$DIR"
-	file+="/$urlname"
+	file+="$DIR/$urlname"
 	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 # --------------------------------------------------------------------
 	echo "\
