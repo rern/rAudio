@@ -125,7 +125,7 @@ function directoryDelete() {
 						  icon    : icon
 						, title   : title
 						, message : msg +'&nbsp; not empty.'
-									+'<br>Continue?'
+									+'<br><br>Continue?'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => bash( cmd )
