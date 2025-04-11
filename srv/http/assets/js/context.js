@@ -108,22 +108,22 @@ function currentSet() {
 function directoryDelete() {
 	var icon  = 'webradio';
 	var title = 'Delete Directory';
-	var dir   = ico( 'folder gr' ) +' <wh>'+ V.list.name +'</wh>';
+	var msg   = ico( 'folder gr' ) +' <wh>'+ V.list.name +'</wh>';
 	info( {
 		  icon    : icon
 		, title   : title
-		, message : dir
+		, message : msg
 		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
-			var dir = webradioPath();
-			bash( [ 'dirdelete', dir +'/'+ V.list.name, 'CMD DIR' ], std => {
+			var dir   = webradioPath() + V.list.name;
+			bash( [ 'dirdelete', dir, 'CMD DIR' ], std => {
 				if ( std == -1 ) {
 					info( {
 						  icon    : icon
 						, title   : title
-						, message : dir +' not empty.'
-									+'<br>Confirm delete?'
+						, message : msg +'&nbsp; not empty.'
+									+'<br>Continue?'
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => bash( [ 'dirdelete', dir, true, 'CMD DIR CONFIRM' ] )
