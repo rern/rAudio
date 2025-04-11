@@ -208,7 +208,7 @@ $htmlsearch   = '
 		?>
 		<span id="lib-home-title" class="title"></span>
 		<span id="lib-title" class="title"></span>
-		<span class="lib-path"></span>
+		<span id="lib-path"></span>
 	</div>
 	<div id="lib-mode-list"></div>
 </div>

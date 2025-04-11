@@ -297,12 +297,19 @@ coverfileslimit )
 	done
 	;;
 dirdelete )
-	[[ ! $CONFIRM && $( ls "$DIR" ) ]] && echo -1 && exit
+	dir="$DIR/$NAME"
+	[[ ! $CONFIRM && $( ls "$dir" ) ]] && echo -1 && exit
 # --------------------------------------------------------------------
-	rm -rf "$DIR"
+	stations=$( find "$dir" -type f -exec basename {} \; )
+	rm -rf "$dir"
 	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
 	pushRadioList
+	while read s; do
+		find $dirwebradio -name "$s" -exec false {} + || continue # continue on 1st found
+		
+		rm -f "$dirwebradio/img/$s".*
+	done <<< $stations
 	;;
 dirnew )
 	mkdir -p "$DIR"
