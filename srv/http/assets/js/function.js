@@ -799,7 +799,7 @@ function libraryHome() {
 		}
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 		if ( V.library ) {
-			if ( V.librarylist ) V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
+			if ( V.librarylist ) V.scrolltop[ $( '#lib-path' ).text() ] = $( window ).scrollTop();
 			renderLibrary();
 		} else {
 			switchPage( 'library' );
@@ -1077,7 +1077,6 @@ function refreshAll() {
 				if ( html ) {
 					var data = {
 						  html      : html
-						, icon      : query.mode
 						, modetitle : query.modetitle
 						, path      : query.path || V.mode.toUpperCase()
 					}
@@ -1145,7 +1144,7 @@ function renderLibrary() { // library home
 	var title     = 'LIBRARY';
 	if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ico( 'music' ) +'</a>';
 	$( '#lib-home-title' ).html( title );
-	$( '#page-library .lib-path' ).empty()
+	$( '#lib-path' ).empty()
 	$( '#lib-home-title, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );
 	$( '#lib-title, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
@@ -1185,14 +1184,20 @@ function renderLibraryList( data ) { // V.librarylist
 	
 	$( '#lib-home-title, #lib-mode-list, .menu, #button-lib-update' ).addClass( 'hide' );
 	$( '#button-lib-back' ).removeClass( 'hide' );
-	$( '#page-library .lib-path' ).text( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ? '' : data.path );
+	var moderadio = modeRadio();
+	if ( moderadio ) {
+		var libpath = '/srv/http/data/webradio';
+		if ( data.path ) libpath += '/'+ data.path;
+	} else {
+		var libpath = data.path;
+	}
+	$( '#lib-path' ).text( libpath );
 	if ( data.modetitle.toLowerCase() === V.mode ) {
 		data.modetitle = data.modetitle
 								.replace( 'MARTIST', 'M ARTIST' )
 								.replace( 'BRADIO', 'B RADIO' );
 	}
 	var htmltitle = '<span id="mode-title">'+ data.modetitle;
-	var moderadio = modeRadio();
 	if ( 'count' in data && V.mode !== 'latest' ) {
 		$( '#lib-list' ).css( 'width', '100%' );
 		var htmlpath = '';

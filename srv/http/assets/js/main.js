@@ -1191,7 +1191,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		}
 		
 	}
-	V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
+	V.scrolltop[ $( '#lib-path' ).text() ] = $( window ).scrollTop();
 	V.query.pop();
 	var query = V.query.slice( -1 )[ 0 ];
 	if ( query === 'album' ) {
@@ -1199,17 +1199,13 @@ $( '#button-lib-back' ).on( 'click', function() {
 	} else {
 		if ( 'gmode' in query ) V.mode = query.gmode;
 		list( query, function( html ) {
-			if ( html != -1 ) {
-				if ( 'gmode' in V && V.gmode !== V.mode ) V.mode = V.gmode;
-				var data = {
-					  html      : html
-					, modetitle : query.modetitle
-					, path      : V.mode === 'album' ? 'ALBUM' : query.path
-				}
-				renderLibraryList( data );
-			} else {
-				$( '#button-lib-back' ).trigger( 'click' ); 
+			if ( 'gmode' in V && V.gmode !== V.mode ) V.mode = V.gmode;
+			var data = {
+				  html      : html
+				, modetitle : query.modetitle
+				, path      : V.mode === 'album' ? 'ALBUM' : query.path
 			}
+			renderLibraryList( data );
 		} );
 	}
 } );
@@ -1527,7 +1523,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 	
 	if ( ! V.search ) $this.addClass( 'active' );
-	var libpath    = $( '#page-library .lib-path' ).text();
+	var libpath    = $( '#lib-path' ).text();
 	var path       = $this.find( '.lipath' ).text();
 	var v_modefile = modeFile( 'radio' );
 	if ( l_modefile ) {
@@ -1535,9 +1531,8 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			  library : 'ls'
 			, string  : path
 		}
-		var modetitle = v_modefile ? path : $( '#page-library .lib-path' ).text(); // keep title of non-file modes
+		var modetitle = v_modefile ? path : $( '#lib-path' ).text(); // keep title of non-file modes
 	} else if ( modeRadio() ) { // dabradio, webradio
-		if ( libpath ) path = libpath +'/'+ path;
 		var query = {
 			  library : 'radio'
 			, string  : path
@@ -1611,7 +1606,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		
 		var data = {
 			  html      : html
-			, icon      : V.search ? limode : V.mode
 			, modetitle : modetitle
 			, path      : path
 		}
