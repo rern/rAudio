@@ -190,5 +190,19 @@ updateDone
 	fi
 	
 	list=$( find -L /mnt/MPD -name .mpdignore )
-	[[ $list ]] && sort -V <<< $list > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
+	if [[ $list ]]; then
+		while read file; do # verify ignored dirs exist
+			dir=$( dirname "$file" )
+			while read d; do
+				[[ ! -e "$dir/$d" ]] && sed -i "/^$d$/ d" "$file"
+			done < "$file"
+			if [[ ! $( awk NF "$file" ) ]]; then
+				rm -f "$file"
+				list=$( grep -v "^$file$" <<< $list )
+			fi
+		done <<< $list
+		[[ $list ]] && sort -V <<< $list > $dirmpd/mpdignorelist
+	else
+		rm -f $dirmpd/mpdignorelist
+	fi
 ) &

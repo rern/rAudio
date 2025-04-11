@@ -72,7 +72,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 	elif [[ -e $dirshm/reboot ]]; then
 		sed -i '/^, "'$CMD'"/ d' $dirshm/reboot
-		[[ ! -s $dirshm/reboot ]] && rm -f $dirshm/reboot
+		[[ ! $( awk NF $dirshm/reboot ) ]] && rm -f $dirshm/reboot
 	fi
 }
 soundProfile() {
