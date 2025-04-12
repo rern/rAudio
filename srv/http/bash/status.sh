@@ -20,14 +20,8 @@ statusData() {
 	fi
 }
 
-if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
-	for i in {1..10}; do
-		sleep 1
-		[[ -e $dirmpd/counts ]] && mounted=1 && break
-	done
-	[[ ! $mounted ]] && echo -1 && exit
+[[ -L $dirmpd && ! -s $dirmpd ]] && echo -1 && exit
 # --------------------------------------------------------------------
-fi
 if [[ -e $dirshm/nosound ]]; then
 	volumenone=true
 else
