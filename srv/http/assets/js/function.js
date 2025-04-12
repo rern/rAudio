@@ -1097,11 +1097,10 @@ function refreshAll() {
 function refreshData() {
 	bash( [ 'status.sh' ], list => {
 		if ( list == -1 ) {
-			loaderHide();
 			info( {
 				  icon    : 'networks'
 				, title   : 'Shared Data'
-				, message : iconwarning +'Server offline'
+				, message : iconwarning +'<wh>Server offline</wh>'
 							+'<br><br>Disable and restore local data?'
 				, cancel  : loader
 				, okcolor : orange
