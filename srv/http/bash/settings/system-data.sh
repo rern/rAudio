@@ -46,36 +46,55 @@ fi
 # --------------------------------------------------------------------
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )
-	[[ -e $shm/rpi3plus ]] && rpi3plus=true
+	[[ -e $dirshm/rpi3plus ]] && rpi3plus=true
 else
 	# cpu
 	revision=$( grep ^Revision /proc/cpuinfo )
 	BB=${revision: -3:2}
 	C=${revision: -4:1}
 	# system
-	readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
-	cpu=${cpu[0]}
-	core=${cpu[1]}
-	speed=${cpu[2]/.*}
-	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
-	(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
-	soccpu+=" @ $speed"
+	kernel=$( uname -rm | sed -E 's| (.*)| <gr>\1</gr>|' )
 	model=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
 	if [[ $model == *BeagleBone* ]]; then
 		soc=AM3358
 	else
-		declare -A C_soc=( [0]=2835 [1]=2836 [204]=2837 [208]=2837 [20d]=2837B0 [20e]=2837B0 [212]=2710A1 [3]=2711 [4]=2712 )
-		[[ $C != 2 ]] && c=$C || c=$C$BB
-		kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
-		soc=BCM${C_soc[$c]}$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
-		[[ $BB == 0d || $BB == 0e ]] && rpi3plus=true && touch $dirshm/rpi3plus
+		[[ $C == 2 ]] && C+=$BB
+		case $C in
+			0 )
+				cpu=ARM1176JZF-S
+				soc=2835;;
+			1 )
+				cpu=Cortex-A7
+				soc=2836;;
+			204 | 208 )
+				cpu=Cortex-A53
+				soc=2837;;
+			20d | 20e )
+				cpu=Cortex-A53
+				soc=2837B0;;
+			212 )
+				cpu=Cortex-A53
+				soc=2710A1;;
+			3 )
+				cpu=Cortex-A72
+				soc=2711;;
+			4 )
+				cpu=Cortex-A76
+				soc=2712;;
+		esac
+		[[ $C != 0 ]] && cpu="4 x $cpu"
+		[[ $soc == 2837B0 ]] && rpi3plus=true && touch $dirshm/rpi3plus
+		soc=BCM$soc
+		free=$( free -h | awk '/^Mem/ {print $2}' | sed -E 's|(.i)| \1B|' )
 	fi
+	speed=$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )
+	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $kernel<br>\
 $model<br>\
-$soc<br>\
-$soccpu"
+$soc <gr>•</gr> $free<br>\
+$cpu @ $speed"
 	echo $system > $dirshm/system
 fi
 # i2smodule

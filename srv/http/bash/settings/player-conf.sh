@@ -79,6 +79,7 @@ if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	[[ ! $AUDIOOUTPUTBT ]] && ln -sf $dirmpdconf/{conf/,}httpd.conf # set as output to allow play
 	if [[ $usbdac == remove ]]; then
+		rm -f $dirshm/usbdac
 		pushData display '{ "volumenone": true }'
 		pushData refresh '{ "page": "features", "nosound": true }'
 	fi
