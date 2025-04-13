@@ -1928,11 +1928,11 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 			V.list.li = $this; // for contextmenu
 			$( '#pl-savedlist li.active' ).removeClass( 'active' );
 			if ( V.playlistlist ) {
-				V.list.name = $this.find( '.lipath' ).text().trim();
+				V.list.name = $this.find( '.lipath' ).text();
 				V.list.path = V.list.name;
 			} else {
-				V.list.name   = $this.find( '.name' ).text().trim();
-				V.list.path   = $this.find( '.lipath' ).text().trim() || V.list.name;
+				V.list.name   = $this.find( '.name' ).text();
+				V.list.path   = $this.find( '.lipath' ).text() || V.list.name;
 				V.list.track  = $this.data( 'track' );
 				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', S.pllength === 0 );
 				$( '.remove' ).removeClass( 'hide' );
