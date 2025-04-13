@@ -142,7 +142,7 @@ case 'home':
 	$files     = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
+			$bkpath   = str_replace( "\n", '', file_get_contents( $dir.'/'.$name ) );
 			$prefix   = substr( $bkpath, 0, 4 );
 			if ( in_array( $prefix, [ 'http', 'rtsp' ] ) ) {
 				$bkradio  = 'bkradio';
