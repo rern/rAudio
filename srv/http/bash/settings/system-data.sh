@@ -68,7 +68,7 @@ else
 		[[ $C != 2 ]] && c=$C || c=$C$BB
 		kernel=$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )
 		soc=BCM${C_soc[$c]}$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
-		[[ $BB == 0d || $BB == 0e ]] && rpi3plus=true && touch $shm/rpi3plus
+		[[ $BB == 0d || $BB == 0e ]] && rpi3plus=true && touch $dirshm/rpi3plus
 	fi
 	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
