@@ -606,7 +606,7 @@ var listwebradio = {
 					, list       : [ 'Name', 'text' ]
 					, checkblank : true
 					, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
-					, ok         : () => bash( [ 'dirnew', '/srv/http/data/webradio/'+ $( '#lib-path' ).text() +'/'+ infoVal(), 'CMD DIR' ] )
+					, ok         : () => bash( [ 'dirnew', $( '#lib-path' ).text() +'/'+ infoVal(), 'CMD DIR' ] )
 				} );
 			} );
 	}
@@ -659,7 +659,6 @@ function webRadioNew( name, url, charset ) {
 		, checkblank : [ 0, 1 ]
 		, beforeshow : () => {
 			listwebradio.button()
-			if ( $( '#lib-path' ).text() ) $( '#infoList td' ).last().addClass( 'hide' );
 			if ( V.playlist ) $( '#infoList input' ).eq( 1 ).prop( 'disabled', true );
 		}
 		, ok         : () => {
