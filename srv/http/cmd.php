@@ -47,10 +47,13 @@ case 'imagereplace': // $.post from function.js
 	break;
 case 'login': // $.post from features.js
 	$filelogin   = $dirdata.'system/login';
-	$filesetting = $filelogin.'setting';
 	$pwd         = $post->pwd;
-	if ( file_exists( $filelogin ) && ! password_verify( $pwd, file_get_contents( $filelogin ) ) ) exit( '-1' );
+	if ( file_exists( $filelogin ) ) {
+		$password = rtrim( file_get_contents( $filelogin ), "\n" );
+		if ( ! password_verify( $pwd, $password ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
+	}
+	$filesetting = $filelogin.'setting';
 	if ( isset( $post->disable ) ) {
 		unlink( $filelogin );
 		unlink( $filesetting );
