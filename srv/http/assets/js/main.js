@@ -510,8 +510,8 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 		&& ( ! S.webradio || ( S.state === 'play' && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
 		if ( S.Title.includes( '(' ) ) {
-			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], function( paren ) {
-				if ( paren === '-1' ) {
+			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], paren => {
+				if ( paren == -1 ) {
 					infoTitle();
 				} else {
 					S.scrobble && S.webradio ? infoTitle() : lyrics();
