@@ -24,8 +24,8 @@ timeFormat() {
 }
 updateDone() {
 	if [[ $counts ]]; then
-		pushData mpdupdate '{ '$counts' }'
 		jq -S <<< "{ $counts }" > $dirmpd/counts
+		pushData mpdupdate '{ '$counts' }'
 	fi
 	updatetime="(Scan: $( timeFormat $mpdtime ) • Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
