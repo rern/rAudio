@@ -23,10 +23,12 @@ timeFormat() {
 	date -d@$1 -u '+%-Hh %-Mm %-Ss' | sed -E 's/0h 0m |0h //'
 }
 updateDone() {
-	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
+	if [[ $counts ]]; then
+		pushData mpdupdate '{ '$counts' }'
+		jq -S <<< "{ $counts }" > $dirmpd/counts
+	fi
 	updatetime="(Scan: $( timeFormat $mpdtime ) • Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
-	pushData mpdupdate '{ '$counts' }'
 	rm -f $dirmpd/listing $dirshm/{albumprev,deleted,tageditor}
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &
