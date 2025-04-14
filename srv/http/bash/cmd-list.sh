@@ -35,8 +35,7 @@ updateDone() {
 
 touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-[[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
-grep -q LATEST=true $dirmpd/updating && appendlatest=1
+grep -qs LATEST=true $dirmpd/updating && appendlatest=1
 rm -f $dirmpd/{updatestart,updating}
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
@@ -94,6 +93,7 @@ if [[ ! $mpclistall ]]; then # very large database
 	echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 	systemctl restart mpd
 fi
+[[ -s $dirmpd/album ]] && cut -c 4- $dirmpd/album | sort > $dirshm/albumprev # for diff latest albums
 if [[ $albumlist ]]; then # album^^artist^^date^^dir
 	filewav=$( grep \.wav$ <<< $mpclistall )
 	if [[ $filewav ]]; then # mpd not support *.wav albumartist
@@ -126,57 +126,52 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 		artist_album_dir+="$tagartist^^$tagalbum^^$tagdir"$'\n'
 		artist_date_album_dir+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
 	done <<< $albumlist
-	sort -u <<< $album_artist_dir > $dirmpd/album
+	sort -u <<< ${album_artist_dir:0:-1} > $dirmpd/album # remove last newlines for diff
 	sort -u <<< $artist_album_dir > $dirmpd/albumbyartist
 	sort -u <<< $artist_date_album_dir > $dirmpd/albumbyartist-year
 else
-	rm -f $dirmpd/{album,albumbyartist}
+	rm -f $dirmpd/{album,albumbyartist*}
 fi
 for mode in albumartist artist composer conductor date genre; do
 	data=$( mpc list $mode | awk NF )
 	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
 done
-php /srv/http/cmd.php sort "$modes"
 ##### latest
 [[ -e $dirmpd/album && -e $dirshm/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
 if [[ $albumdiff ]]; then
-	deleted=$( grep '^>' <<< $albumdiff ) # '> ...'
 	new=$( grep '^<' <<< $albumdiff )     # '< I^^ALBUM^^ARTIST^^DIR'
-	if [[ $deleted ]]; then
-		cut -c 6- <<< $deleted > $dirshm/deleted
-		latest=$( grep -Fvx -f $dirshm/deleted $dirmpd/latest )
-		[[ $latest ]] && echo "$latest" > $dirmpd/latest
+	if [[ ! $new || ( $new && $appendlatest ) ]]; then
+		deleted=$( grep '^>' <<< $albumdiff ) # '> ...'
+		if [[ $deleted ]]; then
+			cut -c 3- <<< $deleted > $dirshm/deleted
+			latest=$( grep -Fvx -f $dirshm/deleted $dirmpd/latest )
+		fi
 	fi
 	if [[ $new ]]; then
-		new=$( cut -c 6- <<< $new )
-		[[ $appendlatest ]] && echo "$new" >> $dirmpd/latest || echo "$new" > $dirmpd/latest
+		new=$( cut -c 3- <<< $new )
+		[[ ! $appendlatest ]] && rm -f $dirmpd/latest
+		echo "\
+$latest
+$new" | sort -u | awk NF >> $dirmpd/latest
+	else
+		[[ $latest ]] && echo "$latest" > $dirmpd/latest || rm -f $dirmpd/latest*
 	fi
 	if [[ -s $dirmpd/latest ]]; then
-		artist_album_year=$( awk -F'^' 'NF {print $3"^^"$7"^^"$5}' $dirmpd/albumbyartist-year )
-		while read line; do
-			readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
-			tagalbum=${tags[0]}
-			tagartist=${tags[1]}
-			tagdir=${tags[2]}
-			latestbyartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
-			linedate=$( grep -m 1 "^$tagartist^^$tagalbum^" <<< $artist_album_year )
-			latestbyartistyear+="$tagartist^^${linedate/*^}^^$tagalbum^^$tagdir"$'\n'
-		done < $dirmpd/latest
-		echo "$latestbyartist" > $dirmpd/latestbyartist
-		echo "$latestbyartistyear" > $dirmpd/latestbyartist-year
-		php /srv/http/cmd.php sort "$modelatest"
-	else
-		rm -f $dirmpd/latest*
+		byartist=$( awk -F'^' 'NF {print $3"^^"$1"^^"$5}' $dirmpd/latest | tee $dirmpd/latestbyartist )
+		dirs=$( awk -F'^' 'NF {print $NF}' <<< $byartist )
+		artistyear=$( < $dirmpd/albumbyartist-year )
+		while read d; do
+			byyear+=$( grep -m1 "$d$" <<< $artistyear )$'\n'
+		done <<< $dirs
+		echo "$byyear" > $dirmpd/latestbyartist-year
 	fi
-else
-	rm -f $dirmpd/latest*
 fi
 for mode in $modes latest; do
 	file=$dirmpd/$mode
 	[[ $mode != *by* ]] && counts+='
 , "'$mode'" : '$( lineCount $file )
 done
-rm -f $dirshm/{albumprev,deleted}
+php /srv/http/cmd.php sort "$modes $modelatest"
 
 updateDone
 
