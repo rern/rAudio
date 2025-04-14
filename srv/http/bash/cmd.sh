@@ -284,7 +284,6 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 	;;
 countMnt )
 	for dir in NAS SD USB; do
-		[[ $( ls -A /mnt/MPD/$dir ) ]] && tf=true || tf=false
 		counts+=', "'${dir,,}'" : '$( [[ $( ls -A /mnt/MPD/$dir ) ]] && echo true || echo false )
 	done
 	echo "{ ${counts:1} }"
