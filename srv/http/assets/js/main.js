@@ -1122,7 +1122,7 @@ $( '#button-lib-search' ).on( 'click', function() {
 		, format  : [ 'album', 'albumartist', 'artist', 'file', 'title', 'time', 'track' ]
 	}
 	list( query, function( data ) {
-		if ( data === -1 ) {
+		if ( data == -1 ) {
 			info( {
 				  icon    : 'library'
 				, title   : 'Library Search'
