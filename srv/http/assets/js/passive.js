@@ -112,9 +112,10 @@ W = {
 		if ( V.playlist ) setPlaylistRadioInfo();
 	}	
 	, mpdupdate : data => {
-		if ( data.start ) {
+		if ( typeof data === 'boolean' ) {
 			S.updating_db = true;
-		} else if ( data.done ) {
+		} else {
+			$.each( data, ( k, v ) => { C[ k ] = v } );
 			V.html = {}
 			S.updating_db = false;
 			banner( 'refresh-library', 'Library Update', 'Done' );

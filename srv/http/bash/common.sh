@@ -367,7 +367,11 @@ playerActive() {
 pushData() {
 	local channel data ip json path sharedip webradiocopy
 	channel=$1
-	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
+	if [[ $2 ]]; then
+		data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
+	else
+		data=true
+	fi
 	pushWebsocket 127.0.0.1 $channel $data
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data

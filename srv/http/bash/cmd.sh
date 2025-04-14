@@ -211,7 +211,7 @@ bookmarkadd )
 		order=$( jq '. + ["'$DIR'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json
 	fi
-	pushData bookmark true
+	pushData bookmark
 	;;
 bookmarkremove )
 	bkfile="$dirbookmarks/$NAME"
@@ -221,11 +221,11 @@ bookmarkremove )
 		echo "$order" > $dirsystem/order.json
 	fi
 	rm "$bkfile"
-	pushData bookmark true
+	pushData bookmark
 	;;
 bookmarkrename )
 	mv $dirbookmarks/{"$NAME","$NEWNAME"}
-	pushData bookmark true
+	pushData bookmark
 	;;
 cachebust )
 	hash="?v=$( date +%s )'"
@@ -280,7 +280,7 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 		| magick -density 96 -background none - $dirimg/icon.png
 	splashRotate
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
-	pushData reload true
+	pushData reload
 	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd
@@ -606,7 +606,7 @@ mpcskippl )
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
-	pushData mpdupdate true
+	pushData mpdupdate
 	if [[ $ACTION ]]; then
 		echo "\
 ACTION=$ACTION
@@ -631,7 +631,7 @@ mpdignore )
 	appendSortUnique "/mnt/MPD/$mpdpath/.mpdignore" "$dir"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
-	pushData mpdupdate true
+	pushData mpdupdate
 	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
