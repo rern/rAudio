@@ -6,7 +6,8 @@
 # - mixer_type    - from file if manually set | hardware if mixer | software
 # - mixer_control - from file if manually set | mixer | null
 # - mixer_device  - card index
-[[ -e /dev/shm/usbdacflag ]] && exit # $dirshm/usbdacflag
+
+[[ -e /dev/shm/usbdac_rules ]] && exit # debounce usbdac.rules
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
@@ -20,12 +21,14 @@ pushStatus() {
 
 if [[ $1 ]]; then
 	usbdac=$1
+	touch $dirshm/usbdac_rules
 	if [[ $usbdac == add ]]; then
-		touch $dirshm/{usbdac,usbdacadd}
+		touch $dirshm/usbdac
 		alsactl restore # store - saved by cmd.sh - volumeGet push
+	else
+		rm -f $dirshm/usbdac
 	fi
-	touch $dirshm/usbdacflag
-	( sleep 3; rm -f $dirshm/{usbdacadd,usbdacflag} ) &
+	( sleep 3; rm -f $dirshm/usbdac_rules ) &
 fi
 rm -f $dirmpdconf/{bluetooth,camilladsp,fifo,output}.conf
 
@@ -79,7 +82,6 @@ if [[ $CARD == -1 ]]; then # no audio devices
 	rm -f $dirmpdconf/{output,soxr}.conf
 	[[ ! $AUDIOOUTPUTBT ]] && ln -sf $dirmpdconf/{conf/,}httpd.conf # set as output to allow play
 	if [[ $usbdac == remove ]]; then
-		rm -f $dirshm/usbdac
 		pushData display '{ "volumenone": true }'
 		pushData refresh '{ "page": "features", "nosound": true }'
 	fi

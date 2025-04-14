@@ -1,9 +1,9 @@
 #!/bin/bash
 
+[[ -e /dev/shm/usbdac_rules ]] && exit # debounce usbdac.rules
+# --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-[[ -e $dirshm/usbdacadd ]] && exit
-# --------------------------------------------------------------------
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
