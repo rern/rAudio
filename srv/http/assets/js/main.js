@@ -274,7 +274,14 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			V.screenoff = true;
 			break;
 		case 'refresh-library':
-			$( '#button-lib-update' ).trigger( 'click' );
+			if ( 'sd' in C ) {
+				$( '#button-lib-update' ).trigger( 'click' );
+			} else {
+				bash( [ 'countMnt' ], counts => {
+					$.each( counts, ( k, v ) => { C[ k ] = v } );
+					$( '#button-lib-update' ).trigger( 'click' );
+				}, 'json' );
+			}
 			break;
 		case 'color':
 			V.color = true;
