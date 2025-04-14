@@ -36,7 +36,7 @@ for addon in $addons; do
 	fi
 done
 if [[ $update ]]; then
-	pushData option '{ "addons": 1 }'
+	pushData option '{ "addons": true }'
 	touch $diraddons/update
 else
 	rm -f $diraddons/update

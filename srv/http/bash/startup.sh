@@ -160,7 +160,7 @@ if [[ ! -e $diraddons/update ]]; then
 		rversion=$( sed -n '/"r1"/,/"version"/ {/version/!d; s/"//g; s/.*: //; p}' <<< $data )
 		if [[ $rversion != $( < $diraddons/r1 ) ]]; then
 			touch $diraddons/update
-			pushData option '{ "addons": 1 }'
+			pushData option '{ "addons": true }'
 		fi
 	fi
 fi

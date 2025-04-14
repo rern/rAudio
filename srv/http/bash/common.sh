@@ -365,7 +365,7 @@ playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
 }
 pushData() {
-	local channel data ip json path sharedip updatedone webradiocopy
+	local channel data ip json path sharedip webradiocopy
 	channel=$1
 	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
 	pushWebsocket 127.0.0.1 $channel $data
@@ -378,7 +378,6 @@ pushData() {
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	[[ $channel == mpdupdate && $data == '{ "done": true }' ]] && updatedone=1
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
 		[[ $updatedone ]] && cmdshWebsocket $ip shareddatampdupdate || pushWebsocket $ip $channel $data
@@ -388,7 +387,8 @@ pushDirCounts() {
 	dir=$1
 	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
 	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
-	pushData mpdupdate '{ "done": true }'
+	updatedone=1
+	pushData mpdupdate '{ "'$dir'": '$( wc -l <<< $dirs )' }'
 }
 pushRefresh() {
 	local page push

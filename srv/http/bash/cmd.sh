@@ -211,7 +211,7 @@ bookmarkadd )
 		order=$( jq '. + ["'$DIR'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json
 	fi
-	pushData bookmark 1
+	pushData bookmark true
 	;;
 bookmarkremove )
 	bkfile="$dirbookmarks/$NAME"
@@ -221,11 +221,11 @@ bookmarkremove )
 		echo "$order" > $dirsystem/order.json
 	fi
 	rm "$bkfile"
-	pushData bookmark 1
+	pushData bookmark true
 	;;
 bookmarkrename )
 	mv $dirbookmarks/{"$NAME","$NEWNAME"}
-	pushData bookmark 1
+	pushData bookmark true
 	;;
 cachebust )
 	hash="?v=$( date +%s )'"
@@ -280,7 +280,7 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 		| magick -density 96 -background none - $dirimg/icon.png
 	splashRotate
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
-	pushData reload 1
+	pushData reload true
 	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd
@@ -606,7 +606,7 @@ mpcskippl )
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
-	pushData mpdupdate '{ "start": true }'
+	pushData mpdupdate true
 	if [[ $ACTION ]]; then
 		echo "\
 ACTION=$ACTION
@@ -618,7 +618,7 @@ LATEST=$LATEST" > $dirmpd/updating
 	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )
-	pushData mpdupdate '{ "done": true }'
+	pushData mpdupdate $( < $dirmpd/counts )
 	systemctl restart mpd
 	if [[ -e $dirmpd/listing ]]; then
 		killall cmd-list.sh
@@ -631,7 +631,7 @@ mpdignore )
 	appendSortUnique "/mnt/MPD/$mpdpath/.mpdignore" "$dir"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
-	pushData mpdupdate '{ "start": true }'
+	pushData mpdupdate true
 	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
