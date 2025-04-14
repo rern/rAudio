@@ -277,7 +277,7 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			if ( 'sd' in C ) {
 				$( '#button-lib-update' ).trigger( 'click' );
 			} else {
-				bash( [ 'countMnt' ], counts => {
+				$.post( 'cmd.php', { cmd: 'countmnt' }, counts => {
 					$.each( counts, ( k, v ) => { C[ k ] = v } );
 					$( '#button-lib-update' ).trigger( 'click' );
 				}, 'json' );

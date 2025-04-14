@@ -1,4 +1,23 @@
 <?php // for library.php, playlist.php
+function countMnt() {
+	$lsmnt     = ( object ) [];
+	foreach( [ 'NAS', 'SD', 'USB' ] as $dir ) {
+		$lsdir = glob( '/mnt/MPD/'.$dir.'/*' );
+		$list  = false;
+		if ( $lsdir ) {
+			$mpdignore = "/mnt/MPD/$dir/.mpdignore";
+			if ( file_exists( $mpdignore ) ) {
+				$ignore = file( $mpdignore, FILE_IGNORE_NEW_LINES );
+				if ( count( $ignore ) < count( $lsdir ) ) $list = true;
+			} else {
+				$list   = true;
+			}
+		}
+		$dir         = strtolower( $dir );
+		$lsmnt->$dir = $list;
+	}
+	return $lsmnt;
+}
 function dataIndex( $str ) {
 	global $index0, $indexes;
 	$index     = strtoupper( mb_substr( $str, 0, 1, 'UTF-8' ) );

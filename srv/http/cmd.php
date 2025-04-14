@@ -20,6 +20,10 @@ case 'camilla': // formdata from camilla.js
 	fileUploadSave( $dirdata.'camilladsp/'.$post->dir.'/'.$_FILES[ 'file' ][ 'name' ] );
 	exec( $dirsettings.'camilla-data.sh pushrefresh' );
 	break;
+case 'countmnt':
+	include 'function.php';
+	echo json_encode( countMnt() );
+	break;
 case 'datarestore': // formdata from system.js
 	fileUploadSave( $dirshm.'backup.gz' );
 	$libraryonly = $post->libraryonly ?? '';

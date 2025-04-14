@@ -161,22 +161,7 @@ case 'home':
 </div>';
 		}
 	}
-	$lsmnt     = ( object ) [];
-	foreach( [ 'NAS', 'SD', 'USB' ] as $dir ) {
-		$lsdir = glob( '/mnt/MPD/'.$dir.'/*' );
-		$list  = false;
-		if ( $lsdir ) {
-			$mpdignore = "/mnt/MPD/$dir/.mpdignore";
-			if ( file_exists( $mpdignore ) ) {
-				$ignore = file( $mpdignore, FILE_IGNORE_NEW_LINES );
-				if ( count( $ignore ) < count( $lsdir ) ) $list = true;
-			} else {
-				$list   = true;
-			}
-		}
-		$dir         = strtolower( $dir );
-		$lsmnt->$dir = $list;
-	}
+	$lsmnt     = countMnt();
 	$fileorder = $dirsystem.'order.json';
 	$order     = file_exists( $fileorder ) ? json_decode( file_get_contents( $fileorder ) ) : false;
 	echo json_encode( [
