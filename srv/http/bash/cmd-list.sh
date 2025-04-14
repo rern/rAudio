@@ -127,7 +127,7 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 		artist_album_dir+="$tagartist^^$tagalbum^^$tagdir"$'\n'
 		artist_date_album_dir+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
 	done <<< $albumlist
-	sort -u <<< ${album_artist_dir:0:-1} > $dirmpd/album # remove last newlines for diff
+	sort -u <<< $album_artist_dir > $dirmpd/album
 	sort -u <<< $artist_album_dir > $dirmpd/albumbyartist
 	sort -u <<< $artist_date_album_dir > $dirmpd/albumbyartist-year
 else
@@ -138,7 +138,7 @@ for mode in albumartist artist composer conductor date genre; do
 	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
 done
 ##### latest
-[[ -e $dirmpd/album && -e $dirshm/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
+[[ -e $dirmpd/album && -e $dirshm/albumprev ]] && albumdiff=$( diff -B $dirmpd/album $dirshm/albumprev )
 if [[ $albumdiff ]]; then
 	new=$( grep '^<' <<< $albumdiff )     # '< I^^ALBUM^^ARTIST^^DIR'
 	if [[ ! $new || ( $new && $appendlatest ) ]]; then
