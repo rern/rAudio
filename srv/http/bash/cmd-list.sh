@@ -158,7 +158,7 @@ $new" | sort -u | awk NF >> $dirmpd/latest
 		[[ $latest ]] && echo "$latest" > $dirmpd/latest || rm -f $dirmpd/latest*
 	fi
 	if [[ -s $dirmpd/latest ]]; then
-		byartist=$( awk -F'^' 'NF {print $3"^^"$1"^^"$5}' $dirmpd/latest | tee $dirmpd/latestbyartist )
+		byartist=$( awk -F'^' '{print $3"^^"$1"^^"$5}' $dirmpd/latest | tee $dirmpd/latestbyartist )
 		dirs=$( awk -F'^' '{print $NF}' <<< $byartist )
 		artistyear=$( < $dirmpd/albumbyartist-year )
 		while read d; do
