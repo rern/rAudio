@@ -11,6 +11,9 @@
 
 modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
 modelatest='latest latestbyartist latestbyartist-year'
+file_album_prev=$dirshm/albumprev
+file_album_a_y=$dirmpd/albumbyartist-year
+file_latest_a_y=$dirmpd/latestbyartist-year
 
 albumList() {
 	mpclistall=$( mpc -f '[%albumartist%|%artist%]^^%date%^^%album%^^%file%' listall 2> /dev/null )        # include no album tag
@@ -54,7 +57,7 @@ if [[ $song == 0 ]]; then
 # --------------------------------------------------------------------
 fi
 ##### album
-[[ -e $dirmpd/albumbyartist-year ]] && cut -c 4- $dirmpd/albumbyartist-year > $dirshm/albumprev
+[[ -e $file_album_a_y ]] && cut -c 4- $file_album_a_y > $file_album_prev
 albumList
 if [[ ! $mpclistall ]]; then # very large database
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
@@ -95,26 +98,17 @@ if [[ ! $mpclistall ]]; then # very large database
 	systemctl restart mpd
 fi
 if [[ $albumlist ]]; then
-	filewav=$( grep \.wav$ <<< $mpclistall )
-	if [[ $filewav ]]; then # mpd not support *.wav albumartist
-		dirwav=$( sed 's|.*\^||; s|/[^/]*$||' <<< $filewav | sort -u )
-		if [[ $dirwav ]]; then
-			while read dir; do
-				dir=${dir//[/\\[/} # escape n-n to not as range in grep
-				file=$( grep -m1 "$dir" <<< $mpclistall )
-				albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/${file/*^}" 2> /dev/null )
-				if [[ $albumartist ]]; then
-					line=$( grep -m1 "$dir$" <<< $albumlist )
-					readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
-					albumlist="\
-$( grep -v "$dir$" <<< $albumlist )
-${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
-				fi
-			done <<< $dirwav
-		fi
+	linewav=$( grep \.wav$ <<< $mpclistall ) # mpd not support *.wav albumartist
+	if [[ $linewav ]]; then
+		dirwav=$( sed 's|.*^||; s|/[^/]*$||; s|\[|\\[|' <<< $linewav | sort -u ) # path > dir > escape [ (to not mean [x-y] in grep)
+		while read dir; do
+			file=$( ls "/mnt/MPD/$dir/*.wav" | head -1 )
+			albumartist=$( kid3-cli -c 'get albumartist' "$file" 2> /dev/null )
+			[[ $albumartist ]] && albumlist=$( sed -n "/\^$dir$/ { s/[^^]*/$albumartist/; p}" <<< $albumlist )
+		done <<< $dirwav
 	fi
 	albumlist=$( sort -u <<< $albumlist | awk NF )
-	echo "$albumlist" > $dirmpd/albumbyartist-year # %artist%^^%date^^%album%^^%file%
+	echo "$albumlist" > $file_album_a_y # %artist%^^%date^^%album%^^%file%
 	awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $albumlist > $dirmpd/albumbyartist
 	awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $albumlist > $dirmpd/album
 else
@@ -125,18 +119,18 @@ for mode in albumartist artist composer conductor date genre; do
 	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
 done
 ##### latest
-if [[ -e $dirshm/albumprev ]]; then # skip if initial scan
+if [[ -e $file_album_prev ]]; then # skip if initial scan
 	if grep -qs LATEST=true $dirmpd/updating; then # append
-		if [[ -e $dirmpd/latestbyartist-year && -e $dirmpd/albumbyartist-year ]]; then
-			latest=$( comm -12 --nocheck-order $dirmpd/latestbyartist-year $dirmpd/albumbyartist-year ) # in both - exclude deleted
-		fi
+		if [[ -e $file_latest_a_y && -e $file_album_a_y ]]; then
+			latest=$( comm -12 --nocheck-order $file_latest_a_y $file_album_a_y )
+		fi                #-12 : not in 1 only + not in 2 only > in both - exclude deleted
 	fi
-	if [[ -e $dirmpd/albumbyartist-year && -e $dirshm/albumprev ]]; then
-		latest+=$'\n'$( comm -23 --nocheck-order $dirmpd/albumbyartist-year $dirshm/albumprev )         # in 1st file only - new
-	fi
+	if [[ -e $file_album_a_y && -e $file_album_prev ]]; then
+		latest+=$'\n'$( comm -23 --nocheck-order $file_album_a_y $file_album_prev )
+	fi                      #-23 : not in 2 only + not in 3(both) > in 1 only -new latest
 	latest=$( sort -u <<< $latest | awk NF )
 	if [[ $latest ]]; then
-		echo "$latest" > $dirmpd/latestbyartist-year
+		echo "$latest" > $file_latest_a_y
 		awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $latest > $dirmpd/latestbyartist
 		awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $latest > $dirmpd/latest
 	fi
