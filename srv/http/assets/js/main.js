@@ -1090,6 +1090,9 @@ $( '#button-lib-update' ).on( 'click', function() {
 			, [ 'Append Latest list', 'checkbox' ]
 		]
 		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
+		, beforeshow : () => {
+			if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
+		}
 		, ok         : () => {
 			var val = infoVal();
 			var path = '';

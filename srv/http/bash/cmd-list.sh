@@ -36,7 +36,6 @@ updateDone() {
 
 touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-grep -qs LATEST=true $dirmpd/updating && appendlatest=1
 rm -f $dirmpd/{updatestart,updating}
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
@@ -55,6 +54,7 @@ if [[ $song == 0 ]]; then
 # --------------------------------------------------------------------
 fi
 ##### album
+[[ -e $dirmpd/albumbyartist-year ]] && cut -c 4- $dirmpd/albumbyartist-year > $dirshm/albumprev
 albumList
 if [[ ! $mpclistall ]]; then # very large database
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
@@ -94,7 +94,6 @@ if [[ ! $mpclistall ]]; then # very large database
 	echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 	systemctl restart mpd
 fi
-[[ -s $dirmpd/album ]] && cut -c 4- $dirmpd/album | sort > $dirshm/albumprev # for diff latest albums
 if [[ $albumlist ]]; then # album^^artist^^date^^dir
 	filewav=$( grep \.wav$ <<< $mpclistall )
 	if [[ $filewav ]]; then # mpd not support *.wav albumartist
@@ -114,22 +113,10 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 			done <<< $dirwav
 		fi
 	fi
-	albumignore=$( getContent $dirmpd/albumignore )
-	while read line; do
-		readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
-		tagalbum=${tags[0]}
-		tagartist=${tags[1]}
-		[[ $albumignore ]] && grep -q "^$tagalbum^^$tagartist\$" <<< $albumignore && continue
-		
-		tagdate=${tags[2]}
-		tagdir=${tags[3]}
-		album_artist_dir+="$tagalbum^^$tagartist^^$tagdir"$'\n'
-		artist_album_dir+="$tagartist^^$tagalbum^^$tagdir"$'\n'
-		artist_date_album_dir+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
-	done <<< $albumlist
-	sort -u <<< $album_artist_dir > $dirmpd/album
-	sort -u <<< $artist_album_dir > $dirmpd/albumbyartist
-	sort -u <<< $artist_date_album_dir > $dirmpd/albumbyartist-year
+	albumlist=$( sort -u <<< $albumlist | awk NF )
+	echo "$albumlist" > $dirmpd/albumbyartist-year # %album%^^%artist%^^%date^^%file%
+	awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $albumlist > $dirmpd/albumbyartist
+	awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $albumlist > $dirmpd/album
 else
 	rm -f $dirmpd/{album,albumbyartist*}
 fi
@@ -138,33 +125,20 @@ for mode in albumartist artist composer conductor date genre; do
 	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
 done
 ##### latest
-[[ -e $dirmpd/album && -e $dirshm/albumprev ]] && albumdiff=$( diff -B $dirmpd/album $dirshm/albumprev )
-if [[ $albumdiff ]]; then
-	new=$( grep '^<' <<< $albumdiff )     # '< I^^ALBUM^^ARTIST^^DIR'
-	if [[ ! $new || ( $new && $appendlatest ) ]]; then
-		deleted=$( grep '^>' <<< $albumdiff ) # '> ...'
-		if [[ $deleted ]]; then
-			cut -c 3- <<< $deleted > $dirshm/deleted
-			latest=$( grep -Fvx -f $dirshm/deleted $dirmpd/latest )
+if [[ -e $dirshm/albumprev ]]; then # skip if initial scan
+	if grep -qs LATEST=true $dirmpd/updating; then # append
+		if [[ -e $dirmpd/latestbyartist-year && -e $dirmpd/albumbyartist-year ]]; then
+			latest=$( comm -12 --nocheck-order $dirmpd/latestbyartist-year $dirmpd/albumbyartist-year ) # in both - exclude deleted
 		fi
 	fi
-	if [[ $new ]]; then
-		new=$( cut -c 3- <<< $new )
-		[[ ! $appendlatest ]] && rm -f $dirmpd/latest
-		echo "\
-$latest
-$new" | sort -u | awk NF >> $dirmpd/latest
-	else
-		[[ $latest ]] && echo "$latest" > $dirmpd/latest || rm -f $dirmpd/latest*
+	if [[ -e $dirmpd/albumbyartist-year && -e $dirshm/albumprev ]]; then
+		latest+=$'\n'$( comm -23 --nocheck-order $dirmpd/albumbyartist-year $dirshm/albumprev )         # in 1st file only - new
 	fi
-	if [[ -s $dirmpd/latest ]]; then
-		byartist=$( awk -F'^' '{print $3"^^"$1"^^"$5}' $dirmpd/latest | tee $dirmpd/latestbyartist )
-		dirs=$( awk -F'^' '{print $NF}' <<< $byartist )
-		artistyear=$( < $dirmpd/albumbyartist-year )
-		while read d; do
-			byyear+=$( grep -m1 "$d$" <<< $artistyear )$'\n'
-		done <<< $dirs
-		echo "$byyear" > $dirmpd/latestbyartist-year
+	latest=$( sort -u <<< $latest | awk NF )
+	if [[ $latest ]]; then # %album%^^%artist%^^%date^^%file%
+		echo "$latest" > $dirmpd/latestbyartist-year
+		awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $latest > $dirmpd/latestbyartist
+		awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $latest > $dirmpd/latest
 	fi
 fi
 for mode in $modes latest; do
