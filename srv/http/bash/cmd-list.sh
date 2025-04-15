@@ -14,10 +14,14 @@ modelatest='latest latestbyartist latestbyartist-year'
 file_album_prev=$dirshm/albumprev
 file_album_a_y=$dirmpd/albumbyartist-year
 file_latest_a_y=$dirmpd/latestbyartist-year
+format='[%albumartist%|%artist%]^^%date%^^%album%^^%file%'
 
 albumList() {
-	mpclistall=$( mpc -f '[%albumartist%|%artist%]^^%date%^^%album%^^%file%' listall 2> /dev/null )        # include no album tag
-	[[ $mpclistall ]] && albumlist=$( awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}'<<< $mpclistall ) # exclude no album tag, strip filename, sort unique
+	mpclistall=$( mpc -f $format listall 2> /dev/null )
+	[[ $mpclistall ]] && albumlist=$( excludeNoAlbum "$mpclistall" )
+}
+excludeNoAlbum() { # exclude no album tag, strip filename, sort unique
+	awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}' <<< $1
 }
 notifyError() {
 	notify 'refresh-library blink' 'Library Database' "$1" 3000
@@ -88,7 +92,8 @@ if [[ ! $mpclistall ]]; then # very large database
 		fi
 		if [[ $albums ]]; then
 			while read a; do
-				albumlist+=$( mpc -f '[%albumartist%|%artist%]^^%date^^%album%^^%file%' find album "$a" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
+				mpclistfind=$( mpc -f $format find album "$a" )
+				albumlist+=$( excludeNoAlbum "$mpclistfind" )
 			done <<< $albums
 		else
 			notifyError 'Library is too large.<br>Album list will not be available.'
