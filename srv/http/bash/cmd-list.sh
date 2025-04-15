@@ -13,7 +13,7 @@ modes='album albumbyartist albumbyartist-year albumartist artist composer conduc
 modelatest='latest latestbyartist latestbyartist-year'
 
 albumList() {
-	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
+	mpclistall=$( mpc -f '[%albumartist%|%artist%]^^%date%^^%album%^^%file%' listall 2> /dev/null )        # include no album tag
 	[[ $mpclistall ]] && albumlist=$( awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}'<<< $mpclistall ) # exclude no album tag, strip filename, sort unique
 }
 notifyError() {
@@ -85,7 +85,7 @@ if [[ ! $mpclistall ]]; then # very large database
 		fi
 		if [[ $albums ]]; then
 			while read a; do
-				albumlist+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$a" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
+				albumlist+=$( mpc -f '[%albumartist%|%artist%]^^%date^^%album%^^%file%' find album "$a" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
 			done <<< $albums
 		else
 			notifyError 'Library is too large.<br>Album list will not be available.'
@@ -94,7 +94,7 @@ if [[ ! $mpclistall ]]; then # very large database
 	echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 	systemctl restart mpd
 fi
-if [[ $albumlist ]]; then # album^^artist^^date^^dir
+if [[ $albumlist ]]; then
 	filewav=$( grep \.wav$ <<< $mpclistall )
 	if [[ $filewav ]]; then # mpd not support *.wav albumartist
 		dirwav=$( sed 's|.*\^||; s|/[^/]*$||' <<< $filewav | sort -u )
@@ -114,7 +114,7 @@ ${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
 		fi
 	fi
 	albumlist=$( sort -u <<< $albumlist | awk NF )
-	echo "$albumlist" > $dirmpd/albumbyartist-year # %album%^^%artist%^^%date^^%file%
+	echo "$albumlist" > $dirmpd/albumbyartist-year # %artist%^^%date^^%album%^^%file%
 	awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $albumlist > $dirmpd/albumbyartist
 	awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $albumlist > $dirmpd/album
 else
@@ -135,7 +135,7 @@ if [[ -e $dirshm/albumprev ]]; then # skip if initial scan
 		latest+=$'\n'$( comm -23 --nocheck-order $dirmpd/albumbyartist-year $dirshm/albumprev )         # in 1st file only - new
 	fi
 	latest=$( sort -u <<< $latest | awk NF )
-	if [[ $latest ]]; then # %album%^^%artist%^^%date^^%file%
+	if [[ $latest ]]; then
 		echo "$latest" > $dirmpd/latestbyartist-year
 		awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $latest > $dirmpd/latestbyartist
 		awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $latest > $dirmpd/latest
