@@ -1169,7 +1169,6 @@ function renderLibrary() { // library home
 	} );
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 	$( '.mode .label' ).toggleClass( 'hide', ! D.label );
-	$( '#button-lib-update' ).toggleClass( 'disabled', ! C.nas && ! C.sd && ! C.usb );
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( ! V.search ) {
