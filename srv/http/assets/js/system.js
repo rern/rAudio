@@ -248,7 +248,7 @@ var config        = {
 	, vuled         : values => {
 		var list   = [ [ ico( 'vuled gr' ) +'LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
 		var leds   = Object.keys( values ).length;
-		var ipower = ico( 'power' ) +'&emsp;';
+		var ipower = ico( 'power' ) +'&emsp;# ';
 		for ( var i = 0; i < leds; i++ ) list.push(  [ ipower + ( i + 1 ), 'select', util.board2bcm ] );
 		info( {
 			  ...SW
@@ -259,6 +259,7 @@ var config        = {
 			, checkunique  : true
 			, boxwidth     : 70
 			, beforeshow   : () => {
+				$( '#infoList .i-power' ).css( 'vertical-align', '-2px' );
 				infoListAddRemove( () => {
 					var infoval = infoVal( 'array' );
 					$( '#infoList tr' ).each( ( i, el ) => {
@@ -698,8 +699,7 @@ var util          = {
 							var ar = i % 2 ? von : voff;
 							ar.push( $( el ).val() );
 						} );
-						I.notunique = von.length !== new Set( von ).size || voff.length !== new Set( voff ).size;
-						if ( I.notunique ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
+						if ( von.length !== new Set( von ).size || voff.length !== new Set( voff ).size ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
 					} );
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
