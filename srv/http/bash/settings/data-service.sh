@@ -122,6 +122,10 @@ $( configText /etc/default/snapclient )
 	upmpdcli )
 		skip+='|not creating entry for'
 		;;
+	vuled )
+		PKG=cava
+		SERVICE=$PKG
+		;;
 esac
 [[ ! $conf ]] && conf=$( configText /etc/$PKG.conf )
 status=$( systemctl status $SERVICE \

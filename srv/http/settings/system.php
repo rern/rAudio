@@ -220,6 +220,7 @@ EOF
 		  'id'       => 'vuled'
 		, 'label'    => 'VU LED'
 		, 'sub'      => 'cava'
+		, 'status'   => true
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>

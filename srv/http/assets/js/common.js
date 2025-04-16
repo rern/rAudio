@@ -670,7 +670,6 @@ function info( json ) {
 		I.checklength ? infoCheckLength() : I.notlength = false;
 		I.notchange = I.values && I.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.notlength || I.notchange ); // initial check
-		I.notunique = false;
 		infoCheckSet();
 		if ( I.range ) {
 			var $range    = $( '.inforange input' );
@@ -848,19 +847,16 @@ function infoCheckSet() {
 	if ( ! check ) return
 	
 	$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
-		if ( I.checkchanged ) I.notchange = I.values.join( '' ) === infoVal( 'array' ).join( '' );
+		var infoval = infoVal( 'array' );
+		if ( I.checkchanged ) I.notchange = I.values.join( '' ) === infoval.join( '' );
 		if ( I.checkblank )  V.timeout.blank  = setTimeout( infoCheckBlank, 0 );   // #1
 		if ( I.checklength ) V.timeout.length = setTimeout( infoCheckLength, 20 ); // #2
 		if ( I.checkip )     V.timeout.ip     = setTimeout( infoCheckIP, 40 );     // #3
-		if ( I.checkunique ) V.timeout.unique = setTimeout( infoCheckUnique, 60 ); // #4
 		V.timeout.check = setTimeout( () => {
-			$( '#infoOk' ).toggleClass( 'disabled', I.notchange || I.blank || I.notlength || I.notip || I.notunique );
+			var disabled = I.notchange || I.blank || I.notlength || I.notip || infoval.length !== new Set( infoval ).size;
+			$( '#infoOk' ).toggleClass( 'disabled', disabled );
 		}, 100 );
 	} );
-}
-function infoCheckUnique() {
-	var infoval = infoVal( 'array' );
-	I.notunique = infoval.length !== new Set( infoval ).size;
 }
 function infoClearTimeout( all ) { // ok for both timeout and interval
 	if ( ! ( 'timeout' in V ) ) return
@@ -1018,7 +1014,7 @@ function infoListChange( callback, add ) {
 		infoCheckBlank();
 	}
 	infoCheckSet();
-	$( '#infoList input' ).trigger( 'input' );
+	$input.trigger( 'input' );
 	if ( callback ) callback( add );
 }
 function infoPrompt( message ) { // I.oknoreset - must be set if called after ok()

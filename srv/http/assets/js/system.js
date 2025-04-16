@@ -246,20 +246,23 @@ var config        = {
 		} );
 	}
 	, vuled         : values => {
-		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
-		var leds   = Object.keys( values ).length + 1;
-		for ( var i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', util.board2bcm ] );
+		var list   = [ [ ico( 'vuled gr' ) +'LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
+		var leds   = Object.keys( values ).length;
+		var ipower = ico( 'power' ) +'&emsp;';
+		for ( var i = 0; i < leds; i++ ) list.push(  [ ipower + ( i + 1 ), 'select', util.board2bcm ] );
 		info( {
 			  ...SW
 			, message      : util.gpiosvg
 			, list         : list
 			, values       : values
 			, checkchanged : S.vuled
+			, checkunique  : true
 			, boxwidth     : 70
 			, beforeshow   : () => {
 				infoListAddRemove( () => {
-					$( '#infoList tr' ).slice( 1 ).each( ( i, el ) => {
-						$( el ).find( 'td' ).eq( 0 ).html( ico( 'power' ) +'&emsp;'+ ( i + 1 ) );
+					var infoval = infoVal( 'array' );
+					$( '#infoList tr' ).each( ( i, el ) => {
+						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( ipower + i );
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );

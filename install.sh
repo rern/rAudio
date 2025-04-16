@@ -4,6 +4,15 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250418
+file=/etc/systemd/system/cava.service
+if ! grep -q ^User $file; then
+	sed -i '/^ExecStart/ i\User=root' $file
+	ln -s /etc/cava.conf /root/.config/cava
+	systemctl daemon-reload
+	[[ -e $dirsystem/vuled ]] && systemctl start cava
+fi
+
 # 20250404
 file=/etc/systemd/system/localbrowser.service
 if grep -q startx$ $file; then
