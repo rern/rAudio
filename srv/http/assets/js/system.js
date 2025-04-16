@@ -246,10 +246,11 @@ var config        = {
 		} );
 	}
 	, vuled         : values => {
+		values     = Object.values( values );
+		var vL     = values.length;
 		var list   = [ [ ico( 'vuled gr' ) +'LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
-		var leds   = Object.keys( values ).length;
 		var ipower = ico( 'power' ) +'&emsp;# ';
-		for ( var i = 0; i < leds; i++ ) list.push(  [ ipower + ( i + 1 ), 'select', util.board2bcm ] );
+		for ( var i = 0; i < vL; i++ ) list.push(  [ ipower + ( i + 1 ), 'select', util.board2bcm ] );
 		info( {
 			  ...SW
 			, message      : util.gpiosvg
@@ -270,8 +271,13 @@ var config        = {
 				util.relays.toggle();
 			}
 			, cancel       : switchCancel
-			, ok           : switchEnable
-			, fileconf     : true
+			, ok           : () => {
+				var pins = infoVal();
+				var cmd  = 'CFG';
+				pins.forEach( ( v, i ) => cmd += ' P'+ i );
+				notifyCommon();
+				bash( [ 'vuled', ...pins, cmd ] );
+			}
 		} );
 	}
 	, wlan          : data => {

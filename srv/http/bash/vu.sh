@@ -13,7 +13,6 @@ if [[ -e $dirsystem/vuled ]]; then
 	for (( i=0; i < $pL; i++ )); do
 		on+=( "$( echo ${p[@]:0:$i} )" )
 	done
-	vuL=$i
 fi
 
 j=0
@@ -21,7 +20,7 @@ while read vu; do
 	v=${vu:0:-1}
 	if [[ $vuled ]]; then
 		gpioset -t0 -c0 $pin_0 # all off
-		l=$(( v / vuL ))
+		l=$(( v / i ))
 		if (( $l > 0 )); then
 			for i in ${on[$l]}; do
 				gpioset -t0 -c0 $i=1
