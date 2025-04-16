@@ -127,8 +127,8 @@ done
 if [[ -e $file_album_prev ]]; then # skip if initial scan
 	if grep -qs LATEST=true $dirmpd/updating; then # append
 		if [[ -e $file_latest_a_y && -e $file_album_a_y ]]; then
-			latest=$( comm -12 --nocheck-order $file_latest_a_y $file_album_a_y )
-		fi                #-12 : not in 1 only + not in 2 only > in both - exclude deleted
+			latest=$( cut -c 4- $file_latest_a_y | comm -12 --nocheck-order - $file_album_a_y )
+		fi                                             #-12 : not in 1 only + not in 2 only > in both - exclude deleted
 	fi
 	if [[ -e $file_album_a_y && -e $file_album_prev ]]; then
 		latest+=$'\n'$( comm -23 --nocheck-order $file_album_a_y $file_album_prev )
