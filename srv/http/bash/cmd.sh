@@ -347,7 +347,7 @@ latestclear )
 		count=$( lineCount $dirmpd/latest )
 		notify latest Latest 'Album cleared.'
 	else
-		> $dirmpd/latest
+		rm -f $dirmpd/latest*
 		count=0
 		notify latest Latest Cleared
 	fi
@@ -622,7 +622,7 @@ mpcupdatestop )
 	systemctl restart mpd
 	if [[ -e $dirmpd/listing ]]; then
 		killall cmd-list.sh
-		rm -f $dirmpd/{listing,updating} $dirshm/{listing,tageditor}
+		rm -f $dirmpd/{listing,updating} $dirshm/listing
 	fi
 	;;
 mpdignore )

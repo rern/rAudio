@@ -9,8 +9,6 @@
 
 . /srv/http/bash/common.sh
 
-modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
-modelatest='latest latestbyartist latestbyartist-year'
 file_album_prev=$dirshm/albumprev
 file_album_a_y=$dirmpd/albumbyartist-year
 file_latest_a_y=$dirmpd/latestbyartist-year
@@ -36,14 +34,17 @@ updateDone() {
 	fi
 	updatetime="(Scan: $( timeFormat $mpdtime ) • Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
-	rm -f $dirmpd/listing $dirshm/{albumprev,deleted,tageditor}
+	rm -f $dirmpd/listing $dirshm/albumprev
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &
 }
 
-touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
+touch $dirmpd/listing $dirshm/listing # for debounce mpdidle
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
+grep -qs LATEST=true $dirmpd/updating && latestappend=1
+[[ -e $file_album_a_y ]] && cut -c 4- $file_album_a_y > $file_album_prev && albumprev=1
 rm -f $dirmpd/{updatestart,updating}
+
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
   "song"      : '$song'
@@ -53,15 +54,12 @@ for d in dabradio webradio; do
 , "'$d'"      :'$( find -L $dirdata/$d -type f | grep -v -E '\.jpg$|\.png$|\.gif$' | wc -l )
 done
 if [[ $song == 0 ]]; then
-	for mode in $modes $modelatest; do
-		rm -f $dirmpd/$mode
-	done
+	find $dirmpd -type f ! -name *.db -delete
 	updateDone
 	exit
 # --------------------------------------------------------------------
 fi
 ##### album
-[[ -e $file_album_a_y ]] && cut -c 4- $file_album_a_y > $file_album_prev
 albumList
 if [[ ! $mpclistall ]]; then # very large database
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
@@ -119,20 +117,14 @@ if [[ $albumlist ]]; then
 else
 	rm -f $dirmpd/{album,albumbyartist*}
 fi
-for mode in albumartist artist composer conductor date genre; do
-	data=$( mpc list $mode | awk NF )
-	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
-done
 ##### latest
-if [[ -e $file_album_prev ]]; then # skip if initial scan
-	if grep -qs LATEST=true $dirmpd/updating; then # append
-		if [[ -e $file_latest_a_y && -e $file_album_a_y ]]; then
-			latest=$( cut -c 4- $file_latest_a_y | comm -12 --nocheck-order - $file_album_a_y )
-		fi                                             #-12 : not in 1 only + not in 2 only > in both - exclude deleted
+if [[ $albumprev && $albumlist ]]; then # skip if initial scan
+	if [[ $latestappend && -e $file_latest_a_y ]]; then
+		latest=$( comm -12 --nocheck-order <( cut -c 4- $file_latest_a_y ) <( echo "$albumlist" ) )
 	fi
-	if [[ -e $file_album_a_y && -e $file_album_prev ]]; then
-		latest+=$'\n'$( comm -23 --nocheck-order $file_album_a_y $file_album_prev )
-	fi                      #-23 : not in 2 only + not in 3(both) > in 1 only -new latest
+	if [[ $albumlist ]]; then
+		latest+=$'\n'$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album_prev )
+	fi                      #-23 suppress: in 2 only && in 3(both) >> in 1 only -new latest
 	latest=$( sort -u <<< $latest | awk NF )
 	if [[ $latest ]]; then
 		echo "$latest" > $file_latest_a_y
@@ -140,11 +132,20 @@ if [[ -e $file_album_prev ]]; then # skip if initial scan
 		awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $latest > $dirmpd/latest
 	fi
 fi
+[[ ! $latest ]] && rm -f $dirmpd/latest*
+##### mode others
+modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
+modelatest='latest latestbyartist latestbyartist-year'
+for mode in albumartist artist composer conductor date genre; do
+	data=$( mpc list $mode | awk NF )
+	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
+done
 for mode in $modes latest; do
 	file=$dirmpd/$mode
 	[[ $mode != *by* ]] && counts+='
 , "'$mode'" : '$( lineCount $file )
 done
+
 php /srv/http/cmd.php sort "$modes $modelatest"
 
 updateDone

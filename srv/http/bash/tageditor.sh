@@ -43,7 +43,6 @@ $( sed -E '/^TITLE|^PERFORMER|^REM/ d; s/^(\s+PERFORMER ).*/\1'$ARTIST'/' "$path
 	dirupdate=$( dirname "$FILE" )
 fi
 
-touch $dirshm/tageditor
 $dirbash/cmd.sh "mpcupdate
 update
 $dirupdate

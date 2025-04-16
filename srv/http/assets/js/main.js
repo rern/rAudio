@@ -1434,17 +1434,14 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	  delegate : '.coverart'
 	, action   : function( e ) {
 		var $this  = $( e.currentTarget );
-		var src    = $this.find( 'img' ).attr( 'src' );
-		var i      = D.albumbyartist ? '21' : '12';
-		var album  = $this.find( '.coverart'+ i[ 0 ] ).text();
-		var artist = $this.find( '.coverart'+ i[ 1 ] ).text();
 		info( {
 			  icon    : V.icoverart
-			, title   : 'Album Thumbnail'
-			, message :  '<img src="'+ src +'">'
-						+'<br><wh>'+ ico( 'album' ) + album +'</wh>'
-						+'<br>'+ ico( 'artist wh' ) + artist
-						+'<br><br>Exclude this thumbnail?'
+			, title   : capitalize( V.mode ) +' Thumbnail'
+			, message : $this.find( 'img' )[ 0 ].outerHTML
+						+'<p>'+ $this.find( '.coverart1' ).text()
+						+'<br>'+ $this.find( '.coverart2' ).text()
+						+'</p>'
+						+'<br>Remove this thumbnail from list?'
 			, okcolor : orange
 			, oklabel : ico( 'remove' ) +'Exclude'
 			, ok      : () => {
