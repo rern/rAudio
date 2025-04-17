@@ -14,43 +14,43 @@
 <path class="gr" d="M378.7,37.2c0,12.9,0,24.2,0,37.1H1.2v-45c123.5,0,245.5,0,369,0L378.7,37.2z"/>
 
 <circle class="blk" cx="14.2" cy="42.5" r="6.7"/>
-<circle class="grn" cx="32.7" cy="42.5" r="6.7"/>
-<circle class="grn" cx="51.2" cy="42.5" r="6.7"/>
-<circle class="grn" cx="69.7" cy="42.5" r="6.7"/>
-<circle class="grn" cx="88.2" cy="42.5" r="6.7"/>
-<circle class="grn" cx="106.7" cy="42.5" r="6.7"/>
+<circle class="grn" cx="32.7" cy="42.5" r="6.7" data-bcm="26"/>
+<circle class="grn" cx="51.2" cy="42.5" r="6.7" data-bcm="19"/>
+<circle class="grn" cx="69.7" cy="42.5" r="6.7" data-bcm="13"/>
+<circle class="grn" cx="88.2" cy="42.5" r="6.7" data-bcm="6"/>
+<circle class="grn" cx="106.7" cy="42.5" r="6.7" data-bcm="5"/>
 <circle class="grl" cx="125.2" cy="42.5" r="6.7"/>
 <circle class="blk" cx="143.7" cy="42.5" r="6.7"/>
-<circle class="grn" cx="162.2" cy="42.5" r="6.7"/>
-<circle class="grn" cx="180.7" cy="42.5" r="6.7"/>
-<circle class="grn" cx="199.2" cy="42.5" r="6.7"/>
+<circle class="grn" cx="162.2" cy="42.5" r="6.7" data-bcm="11"/>
+<circle class="grn" cx="180.7" cy="42.5" r="6.7" data-bcm="9"/>
+<circle class="grn" cx="199.2" cy="42.5" r="6.7" data-bcm="10"/>
 <circle class="ora" cx="217.7" cy="42.5" r="6.7"/>
-<circle class="grn" cx="236.2" cy="42.5" r="6.7"/>
-<circle class="grn" cx="254.7" cy="42.5" r="6.7"/>
-<circle class="grn" cx="273.2" cy="42.5" r="6.7"/>
+<circle class="grn" cx="236.2" cy="42.5" r="6.7" data-bcm="22"/>
+<circle class="grn" cx="254.7" cy="42.5" r="6.7" data-bcm="27"/>
+<circle class="grn" cx="273.2" cy="42.5" r="6.7" data-bcm="17"/>
 <circle class="blk" cx="291.7" cy="42.5" r="6.7"/>
-<circle class="grn" cx="310.2" cy="42.5" r="6.7"/>
-<circle class="bl" cx="329.2" cy="42.5" r="6.7"/>
-<circle class="bl" cx="347.2" cy="42.5" r="6.7"/>
+<circle class="grn" cx="310.2" cy="42.5" r="6.7" data-bcm="4"/>
+<circle class="bl" cx="329.2" cy="42.5" r="6.7" data-bcm="3"/>
+<circle class="bl" cx="347.2" cy="42.5" r="6.7" data-bcm="2"/>
 <path class="ora" d="M359.1,47.5v-10c0-1,0.8-1.6,1.6-1.6h10.1c1,0,1.6,0.8,1.6,1.6v10.1c0,1-0.8,1.6-1.6,1.6h-10.1 C359.8,49.3,359.1,48.5,359.1,47.5z"/>
 
-<circle class="grn" cx="14.2" cy="61" r="6.7"/>
-<circle class="grn" cx="32.7" cy="61" r="6.7"/>
-<circle class="grn" cx="51.2" cy="61" r="6.7"/>
+<circle class="grn" cx="14.2" cy="61" r="6.7" data-bcm="21"/>
+<circle class="grn" cx="32.7" cy="61" r="6.7" data-bcm="20"/>
+<circle class="grn" cx="51.2" cy="61" r="6.7" data-bcm="16"/>
 <circle class="blk" cx="69.7" cy="61" r="6.7"/>
-<circle class="grn" cx="88.2" cy="61" r="6.7"/>
+<circle class="grn" cx="88.2" cy="61" r="6.7" data-bcm="12"/>
 <circle class="blk" cx="106.7" cy="61" r="6.7"/>
 <circle class="grl" cx="125.2" cy="61" r="6.7"/>
-<circle class="grn" cx="143.7" cy="61" r="6.7"/>
-<circle class="grn" cx="162.2" cy="61" r="6.7"/>
-<circle class="grn" cx="180.7" cy="61" r="6.7"/>
+<circle class="grn" cx="143.7" cy="61" r="6.7" data-bcm="7"/>
+<circle class="grn" cx="162.2" cy="61" r="6.7" data-bcm="8"/>
+<circle class="grn" cx="180.7" cy="61" r="6.7" data-bcm="25"/>
 <circle class="blk" cx="199.2" cy="61" r="6.7"/>
-<circle class="grn" cx="217.7" cy="61" r="6.7"/>
-<circle class="grn" cx="236.2" cy="61" r="6.7"/>
+<circle class="grn" cx="217.7" cy="61" r="6.7" data-bcm="24"/>
+<circle class="grn" cx="236.2" cy="61" r="6.7" data-bcm="23"/>
 <circle class="blk" cx="254.7" cy="61" r="6.7"/>
-<circle class="grn" cx="273.2" cy="61" r="6.7"/>
-<circle class="grn" cx="291.7" cy="61" r="6.7"/>
-<circle class="grn" cx="310.2" cy="61" r="6.7"/>
+<circle class="grn" cx="273.2" cy="61" r="6.7" data-bcm="18"/>
+<circle class="grn" cx="291.7" cy="61" r="6.7" data-bcm="15"/>
+<circle class="grn" cx="310.2" cy="61" r="6.7" data-bcm="14"/>
 <circle class="blk" cx="328.7" cy="61" r="6.7"/>
 <circle class="red" cx="347.2" cy="61" r="6.7"/>
 <circle class="red" cx="365.7" cy="61" r="6.7"/>

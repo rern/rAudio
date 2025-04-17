@@ -634,6 +634,10 @@ input.disabled + .switchlabel::after {
 #divstatus i {
 	margin-right: 5px;
 }
+circle.on {
+	stroke: red;
+	stroke-width: 3px;
+}
 
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }

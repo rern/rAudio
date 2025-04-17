@@ -1,5 +1,8 @@
 W.gpio            = data => {
-	if ( $( '#infoList .i-power' ).length > 2 ) util.gpioState( data.state );
+	if ( ! $( '#infoList svg' ).length ) return
+	
+	V.gpiostate = data.state;
+	util.gpioState();
 }
 W.reboot          = data => {
 	banner( data.id, $( '#div'+ data.id +' .col-l .label' ).text(), 'Reboot required', 5000 );
@@ -249,28 +252,41 @@ var config        = {
 		} );
 	}
 	, vuled         : data => {
-		var vL     = data.values.length;
-		var list   = [ [ ico( 'power' ) +' LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
-		var ipower = ico( 'power' ) +'&emsp;# ';
-		for ( var i = 0; i < vL; i++ ) list.push(  [ ipower + ( i + 1 ), 'select', util.board2bcm ] );
+		V.gpiostate = data.state;
+		var vL      = data.values.length;
+		var list    = [ [ ico( 'vuled gr' ) +' LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
+		for ( var i = 0; i < vL; i++ ) list.push(  [ '# '+ ( i + 1 ), 'select', util.board2bcm ] );
 		info( {
 			  ...SW
 			, message      : util.gpiosvg
 			, list         : list
+			, footer       : ico( 'power' ) +'On/Off'
 			, values       : data.values
 			, checkchanged : S.vuled
 			, checkunique  : true
 			, boxwidth     : 70
 			, beforeshow   : () => {
-				$( '#infoList .i-power' ).css( 'vertical-align', '-2px' );
+				$( '#infoList .i-power' ).on( 'click', function() {
+					var onoff = 1;
+					$( '#infoList select' ).each( ( i, el ) => {
+						var pin = $( el ).val();
+						if ( $( '#infoList circle[ data-bcm="'+ pin +'" ]' ).hasClass( 'on' ) ) {
+							onoff = 0;
+							return false
+						}
+					} );
+					var pin   = '';
+					I.values.forEach( p => pin += p +'='+ onoff +' ' );
+					bash( [ 'gpiotoggle', pin, 'CMD PIN' ] );
+				} );
 				infoListAddRemove( () => {
 					var infoval = infoVal( 'array' );
 					$( '#infoList tr' ).each( ( i, el ) => {
-						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( ipower + i );
+						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( '# '+ i );
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );
-				util.gpioToggle( data.state );
+				util.gpioState();
 			}
 			, cancel       : switchCancel
 			, ok           : () => {
@@ -301,41 +317,13 @@ var util          = {
 		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 	}
-	, gpioState     : state => {
-		$( '#infoList select' ).each( ( i, el ) => {
+	, gpioState     : () => {
+		$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
 			var $el = $( el );
-			$el.parents( 'tr' ).find( '.i-power' ).toggleClass( 'red', state[ $el.val() ] );
+			$el.toggleClass( 'on', V.gpiostate[ $el.data( 'bcm' ) ] );
 		} );
 	}
 	, gpiosvg       : $( '#gpiosvg' ).html()
-	, gpioToggle    : state => {
-		if ( state ) util.gpioState( state );
-		$( '#infoList' ).on( 'click', '.i-power', function() {
-			if ( S.relayson && SW.icon === 'relays' ) {
-				infoPrompt( '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON' );
-			} else {
-				var $this = $( this );
-				if ( $this.parents( 'tr' ).index() === 0 ) {
-					var on = ! $( '#infoList .i-power.red' ).length;
-					if ( SW.icon === 'relays' ) { // relays order
-						if ( I.tab[ 1 ] ) on = $this.hasClass( 'grn' );
-						bash( [ 'relays.sh', on ? '' : 'off' ] );
-					} else {
-						var onoff = on ? 1 : 0;
-						var pin   = '';
-						I.values.forEach( p => pin += p +'='+ onoff +' ' );
-						bash( [ 'gpiotoggle', pin, 'CMD PIN' ] );
-					}
-					$( '#infoList tr' ).slice( 1 ).find( '.i-power' ).toggleClass( 'red', on );
-				} else {
-					var pin = $this.parents( 'tr' ).find( 'select' ).val() +'=';
-					pin    += $this.hasClass( 'red' ) ? 0 : 1
-					bash( [ 'gpiotoggle', pin, 'CMD PIN' ] );
-					$this.toggleClass( 'red' );
-				}
-			}
-		} );
-	}
 	, hostname      : () => {
 		SW = {
 			  id    : 'hostname'
@@ -633,6 +621,7 @@ var util          = {
 		}
 	, relays        : {
 		  name   : data => {
+			V.gpiostate = data.state;
 			var name   = data.names;
 			var keys   = Object.keys( name );
 			var values = [];
@@ -651,7 +640,7 @@ var util          = {
 				, tab          : [ () => util.relays.order( data ), '' ]
 				, message      : util.gpiosvg
 				, list         : list
-				, boxwidth     : 70
+				, boxwidth     : 80
 				, propmt       : true
 				, checkblank   : true
 				, checkchanged : S.relays
@@ -661,11 +650,11 @@ var util          = {
 					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 					$( '#infoList td:first-child' ).remove();
 					$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
-					infoListAddRemove( add => {
-						if ( add ) $( '#infoList .i-power' ).last().removeClass( 'red' );
+					$( '#infoList' ).on( 'click', '.i-power', function() {
+						bash( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
-					$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
-					util.gpioToggle( data.state );
+					infoListAddRemove();
+					util.gpioState();
 				}
 				, cancel       : switchCancel
 				, ok           : () => util.relays.set( data )
@@ -735,7 +724,7 @@ var util          = {
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 					} );
-					util.gpioToggle();
+					delete V.gpiostate;
 				}
 				, cancel       : switchCancel
 				, ok           : () => util.relays.set( data )
@@ -1176,6 +1165,10 @@ $( '#menu a' ).on( 'click', function( e ) {
 			bash( [ 'unmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 	}
+} );
+$( '#infoOverlay' ).on( 'click', 'circle', function( e ) {
+	var pin = $( this ).data( 'bcm' );
+	bash( [ 'gpiotoggle', pin +'='+ ( V.gpiostate[ pin ] ? 0 : 1 ), 'CMD PIN' ] );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

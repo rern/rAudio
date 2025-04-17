@@ -186,7 +186,7 @@ EOF
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off:
  · $M->relays
- · $B->gear> <tab>Sequence</tab>$B->power All &emsp;<tab>Pin - Name</tab>$B->power Each pin
+ · $B->gear> <tab style="width: 115px">Sequence</tab>$B->power All &emsp; <tab>Pin - Name</tab> <grn>&#9679;</grn> Each pin
 EOF
 	],
 	[
@@ -224,7 +224,7 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
- · $B->gear> $B->power On/Off: Each pin
+ · On/Off: $B->gear> <grn>&#9679;</grn> Each pin&emsp;$B->power All
 EOF
 	]
 ];
