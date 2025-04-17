@@ -148,8 +148,13 @@ relays )
 	else
 		relaysname='{ "17": "DAC", "27": "PreAmp", "22": "Amp", "23": "Subwoofer" }'
 	fi
+	pins=$( jq keys <<< $relaysname | tr -d '[] "\n' | tr , ' ' )
+	for p in $pins; do
+		[[ $( gpioget -a -c0 --numeric $p ) == 0 ]] && tf=false || tf=true
+		state+=", $tf"
+	done
 	echo '{
-  "relays" : {
+  "relays"     : {
 	  "ON"      : [ '${on// /,}' ]
 	, "OFF"     : [ '${off// /,}' ]
 	, "OND"     : [ '${ond// /,}' ]
@@ -158,6 +163,7 @@ relays )
 	, "TIMER"   : '$timer'
 }
 , "relaysname" : '$relaysname'
+, "state"      : [ '${state:1}' ]
 }'
 	;;
 replaygain )
@@ -254,7 +260,15 @@ tft )
 	;;
 vuled )
 	file=$dirsystem/vuled.conf
-	[[ -e $file ]] && echo "[ $( tr ' ' , < $file ) ]" || echo '[ 14, 15, 18, 23, 24, 25, 8 ]'
+	[[ -e $file ]] && conf=$( < $file ) || conf='14 15 18 23 24 25 8'
+	for p in $conf; do
+		[[ $( gpioget -a -c0 --numeric $p ) == 0 ]] && tf=false || tf=true
+		state+=", $tf"
+	done
+	echo '{
+  "values" : [ '$( tr ' ' , <<< $conf )' ]
+, "state"  : [ '${state:1}' ]
+}'
 	;;
 wlan )
 	echo '{

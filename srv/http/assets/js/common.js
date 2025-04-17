@@ -1018,7 +1018,9 @@ function infoListChange( callback, add ) {
 	if ( callback ) callback( add );
 }
 function infoPrompt( message ) { // I.oknoreset - must be set if called after ok()
-	I.oknoreset = true;
+	I.oknoreset    = true;
+	var okdisabled = $( '#infoOk' ).hasClass( 'disabled' );
+	$( '#infoOk' ).removeClass( 'disabled' );
 	if ( ! $( '.infoprompt' ).length ) $( '#infoList' ).after( '<div class="infoprompt gr hide">'+ I.prompt +'</div>' );
 	var $toggle = $( '#infoX, #infoTab, .infoheader, #infoList, .infofooter, .infoprompt' );
 	$( '.infoprompt' ).html( message );
@@ -1029,7 +1031,9 @@ function infoPrompt( message ) { // I.oknoreset - must be set if called after ok
 		.trigger( 'focus' );
 	$( '#infoOk' ).off( 'click' ).on( 'click', function() {
 		$toggle.toggleClass( 'hide' );
-		$( '#infoOk' ).off( 'click' ).on( 'click', I.ok );
+		$( '#infoOk' )
+			.off( 'click' ).on( 'click', I.ok )
+			.toggleClass( 'disabled', okdisabled );
 	} );
 }
 function infoReset() {
