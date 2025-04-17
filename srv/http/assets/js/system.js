@@ -300,7 +300,7 @@ var util          = {
 	}
 	, gpiosvg       : $( '#gpiosvg' ).html()
 	, gpioToggle    : state => {
-		state.forEach( ( on, i ) => $( '#infoList .i-power' ).eq( i + 1 ).toggleClass( 'red', on ) );
+		if ( state ) state.forEach( ( on, i ) => $( '#infoList .i-power' ).eq( i + 1 ).toggleClass( 'red', on ) );
 		$( '#infoList' ).on( 'click', '.i-power', function() {
 			if ( S.relayson ) {
 				infoPrompt( '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON' );
