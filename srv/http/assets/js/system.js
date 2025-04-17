@@ -246,7 +246,6 @@ var config        = {
 		} );
 	}
 	, vuled         : values => {
-		values     = Object.values( values );
 		var vL     = values.length;
 		var list   = [ [ ico( 'vuled gr' ) +'LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
 		var ipower = ico( 'power' ) +'&emsp;# ';
@@ -272,11 +271,8 @@ var config        = {
 			}
 			, cancel       : switchCancel
 			, ok           : () => {
-				var pins = infoVal();
-				var cmd  = 'CFG';
-				pins.forEach( ( v, i ) => cmd += ' P'+ i );
 				notifyCommon();
-				bash( [ 'vuled', ...pins, cmd ] );
+				bash( [ 'vuled', infoVal().join( ' ' ), 'CMD PINS' ] );
 			}
 		} );
 	}

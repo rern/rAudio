@@ -7,9 +7,14 @@ alias=r1
 # 20250418
 file=/etc/systemd/system/cava.service
 if ! grep -q ^User $file; then
-	sed -i '/^ExecStart/ i\User=root' $file
+	sed -i -e '/^ExecStart/ i\User=root' -e 's/cava/vu/' $file
 	ln -s /etc/cava.conf /root/.config/cava
 	systemctl daemon-reload
+	file=$dirsystem/vuled.conf
+	if [[ -e $file ]] && grep -q = $file; then
+		conf=$( sed 's/.*=//' $file )
+		echo $conf > $file 
+	fi
 	[[ -e $dirsystem/vuled ]] && systemctl start cava
 fi
 

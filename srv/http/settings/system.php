@@ -81,7 +81,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
       -o defaults,noauto,bg,soft,timeo=5
 </pre>
 Note:
- · Directory <c>/mnt/MPD/NAS/data</c> reserved for $L->shareddata
+ · Name: <c>data</c> (directory <c>/mnt/MPD/NAS/data</c>) reserved for $L->shareddata
  · Windows shares without password: <c>net user guest /active:yes</c>
 
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
@@ -186,7 +186,7 @@ EOF
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off:
  · $M->relays
- · $B->gear <tab>Sequence</tab> $B->power On / $B->power Off &emsp;<tab>Pin - Name</tab> $B->power
+ · $B->gear> <tab>Sequence</tab>$B->power All &emsp;<tab>Pin - Name</tab>$B->power Each pin
 EOF
 	],
 	[
@@ -224,7 +224,7 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
- · $B->gear$B->power On / Off
+ · $B->gear> $B->power On/Off: Each pin
 EOF
 	]
 ];

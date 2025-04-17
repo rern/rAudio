@@ -252,6 +252,10 @@ tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
 	echo '{ "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }'
 	;;
+vuled )
+	file=$dirsystem/vuled.conf
+	[[ -e $file ]] && echo "[ $( tr ' ' , < $file ) ]" || echo '[ 14, 15, 18, 23, 24, 25, 8 ]'
+	;;
 wlan )
 	echo '{
 	  "values" : {
@@ -298,7 +302,6 @@ wlanprofile )
 				volume=$( volumeGet )
 				[[ $volume == 0 || ! $volume ]] && volume=50
 				echo '{ "STARTUP": '$volume', "MAX": 100 }';;
-			vuled )         echo '{ "P0": 14, "P1": 15, "P2": 18, "P3": 23, "P4": 24, "P5": 25, "P6": 8	}';;
 			* )             echo false;;
 		esac
 	fi

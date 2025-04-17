@@ -423,6 +423,7 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	;;
 vuled )
 	enableFlagSet
+	[[ $PINS ]] && echo $PINS > $dirsystem/vuled.conf
 	fifoToggle
 	pushRefresh
 	;;

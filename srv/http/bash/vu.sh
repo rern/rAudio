@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-pin_0=$( sed 's/.*=//; s/$/=0/' $dirsystem/vuled.conf )
+pin_0=$( sed 's/$/=0/; s/ /=0\n/g' $dirsystem/vuled.conf )
 [[ $1 == stop ]] && gpioset -t0 -c0 $pin_0 && exit
 # --------------------------------------------------------------------
 [[ -e $dirsystem/vumeter ]] && vumeter=1 && j=0
@@ -22,7 +22,7 @@ cava -p /etc/cava.conf | while read vu; do
 			vr=$(( v + ir )) # v - roundup
 			v=$(( vr / pL ))
 		fi
-		gpioset -t0 -c0 ${on[v]}
+		gpioset -t0 -c0 ${on[v]} # p1=0 p2=1 ... : 0-off, 1-on
 	fi
 	if [[ $vumeter ]]; then
 		(( j++ ))
