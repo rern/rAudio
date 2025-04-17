@@ -169,7 +169,6 @@ gpiotoggle )
 		pin=$( sed 's/$/='$ONOFF'/; s/ /='$ONOFF'\n/g' $dirsystem/vuled.conf )
 	fi
 	gpioset -t0 -c0 $pin
-	echo $ONOFF
 	;;
 hddapm )
 	hdparm -q -B $LEVEL $DEV
