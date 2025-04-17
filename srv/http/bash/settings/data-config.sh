@@ -144,17 +144,12 @@ relays )
 		timer=5
 	fi
 	if [[ -e $dirsystem/relays.json ]]; then
-		relaysname=$( getContent $dirsystem/relays.json )
+		names=$( getContent $dirsystem/relays.json )
 	else
-		relaysname='{ "17": "DAC", "27": "PreAmp", "22": "Amp", "23": "Subwoofer" }'
+		names='{ "17": "DAC", "27": "PreAmp", "22": "Amp", "23": "Subwoofer" }'
 	fi
-	pins=$( jq keys <<< $relaysname | tr -d '[] "\n' | tr , ' ' )
-	for p in $pins; do
-		[[ $( gpioget -a -c0 --numeric $p ) == 0 ]] && tf=false || tf=true
-		state+=", $tf"
-	done
 	echo '{
-  "relays"     : {
+  "relays" : {
 	  "ON"      : [ '${on// /,}' ]
 	, "OFF"     : [ '${off// /,}' ]
 	, "OND"     : [ '${ond// /,}' ]
@@ -162,8 +157,8 @@ relays )
 	, "TIMERON" : '$timeron'
 	, "TIMER"   : '$timer'
 }
-, "relaysname" : '$relaysname'
-, "state"      : [ '${state:1}' ]
+, "names"  : '$names'
+, "state"  : '$( gpioState )'
 }'
 	;;
 replaygain )
@@ -261,13 +256,9 @@ tft )
 vuled )
 	file=$dirsystem/vuled.conf
 	[[ -e $file ]] && conf=$( < $file ) || conf='14 15 18 23 24 25 8'
-	for p in $conf; do
-		[[ $( gpioget -a -c0 --numeric $p ) == 0 ]] && tf=false || tf=true
-		state+=", $tf"
-	done
 	echo '{
   "values" : [ '$( tr ' ' , <<< $conf )' ]
-, "state"  : [ '${state:1}' ]
+, "state"  : '$( gpioState )'
 }'
 	;;
 wlan )

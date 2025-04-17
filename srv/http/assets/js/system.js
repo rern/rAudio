@@ -1,3 +1,6 @@
+W.gpio            = data => {
+	if ( $( '#infoList .i-power' ).length > 2 ) util.gpioState( data.state );
+}
 W.reboot          = data => {
 	banner( data.id, $( '#div'+ data.id +' .col-l .label' ).text(), 'Reboot required', 5000 );
 }
@@ -298,25 +301,36 @@ var util          = {
 		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 	}
+	, gpioState     : state => {
+		$( '#infoList select' ).each( ( i, el ) => {
+			var $el = $( el );
+			$el.parents( 'tr' ).find( '.i-power' ).toggleClass( 'red', state[ $el.val() ] );
+		} );
+	}
 	, gpiosvg       : $( '#gpiosvg' ).html()
 	, gpioToggle    : state => {
-		if ( state ) state.forEach( ( on, i ) => $( '#infoList .i-power' ).eq( i + 1 ).toggleClass( 'red', on ) );
+		if ( state ) util.gpioState( state );
 		$( '#infoList' ).on( 'click', '.i-power', function() {
 			if ( S.relayson ) {
 				infoPrompt( '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON' );
 			} else {
 				var $this = $( this );
 				if ( $this.parents( 'tr' ).index() === 0 ) {
-					if ( ! state ) { // relays order
-						bash( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
+					var on = ! $( '#infoList .i-power.red' ).length;
+					if ( SW.icon === 'relays' ) { // relays order
+						if ( I.tab[ 1 ] ) on = $this.hasClass( 'grn' );
+						bash( [ 'relays.sh', on ? '' : 'off' ] );
 					} else {
-						var onoff = $( '#infoList .i-power.red' ).length ? 0 : 1;
-						bash( [ 'gpiotoggle', onoff, 'CMD ONOFF' ] );
-						$( '#infoList .i-power' ).slice( 1 ).toggleClass( 'red', onoff === 1 );
+						var onoff = on ? 1 : 0;
+						var pin   = '';
+						I.values.forEach( p => pin += p +'='+ onoff +' ' );
+						bash( [ 'gpiotoggle', pin, 'CMD PIN' ] );
 					}
+					$( '#infoList tr' ).slice( 1 ).find( '.i-power' ).toggleClass( 'red', on );
 				} else {
-					var pin   = +$this.parents( 'tr' ).find( 'select' ).val();
-					bash( [ 'gpiotoggle', $this.hasClass( 'red' ) ? 0 : 1, pin, 'CMD ONOFF PIN' ] );
+					var pin = $this.parents( 'tr' ).find( 'select' ).val() +'=';
+					pin    += $this.hasClass( 'red' ) ? 0 : 1
+					bash( [ 'gpiotoggle', pin, 'CMD PIN' ] );
 					$this.toggleClass( 'red' );
 				}
 			}
@@ -619,7 +633,7 @@ var util          = {
 		}
 	, relays        : {
 		  name   : data => {
-			var name   = data.relaysname;
+			var name   = data.names;
 			var keys   = Object.keys( name );
 			var values = [];
 			keys.forEach( p => values.push( p, name[ p ] ) );
@@ -659,7 +673,7 @@ var util          = {
 		}
 		, order  : data => {
 			var pin    = data.relays;
-			var name   = data.relaysname;
+			var name   = data.names;
 			var names  = {}
 			$.each( name, ( k, v ) => { names[ v ] = k } );
 			var step   = { step: 1, min: 0, max: 10 }
@@ -729,7 +743,7 @@ var util          = {
 		}
 		, set    : data => {
 			var order   = data.relays;
-			var name    = data.relaysname;
+			var name    = data.names;
 			var v       = infoVal();
 			var tabname = I.tab[ 0 ];
 			if ( tabname ) {

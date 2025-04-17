@@ -137,6 +137,9 @@ if [[ ! -e $dirmpd/mpd.db || -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
+[[ -e $dirsystem/relays ]] && pins="$( getVar on $dirsystem/relays.conf ) "
+[[ -e $dirsystem/vuled ]] && pins+="$( < $dirsystem/vuled.conf ) "
+[[ $pins ]] && gpioset -t0 -c0 ${pins// /=0 }
 # usb wlan || no wlan || not ap + not connected
 if (( $( rfkill | grep -c wlan ) > 1 )) || [[ ! $netctllist && ! $ap ]]; then
 	rmmod brcmfmac_wcc brcmfmac &> /dev/null

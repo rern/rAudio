@@ -163,12 +163,8 @@ CMD ACTION PATHMPD"
 	pushRefresh
 	;;
 gpiotoggle )
-	if [[ $PIN ]]; then
-		pin=$PIN=$ONOFF
-	else
-		pin=$( sed 's/$/='$ONOFF'/; s/ /='$ONOFF'\n/g' $dirsystem/vuled.conf )
-	fi
-	gpioset -t0 -c0 $pin
+	gpioset -t0 -c0 $PIN
+	gpioState push
 	;;
 hddapm )
 	hdparm -q -B $LEVEL $DEV
@@ -290,13 +286,6 @@ relays )
 	else
 		killProcess relaystimer
 	fi
-	;;
-relaysstatus ) 
-	for p in $PINS; do
-		[[ $( gpioget -a -c0 --numeric $p ) == 0 ]] && tf=false || tf=true
-		on+=", $tf"
-	done
-	echo '[ '${on:1}' ]'
 	;;
 rotaryencoder )
 	if [[ $ON ]]; then

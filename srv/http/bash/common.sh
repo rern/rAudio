@@ -218,7 +218,7 @@ fifoToggle() { # mpdoled vuled vumeter
 		if [[ ! -e $filefifo ]]; then
 			ln -s $dirmpdconf/{conf/,}fifo.conf
 			systemctl restart mpd
-			[[ $vuled || $vumeter ]] && systemctl restart cava
+			[[ $vuled || $vumeter ]] && systemctl try-restart cava
 		fi
 		! grep -q 'state="*play' $dirshm/status && return
 		
@@ -268,6 +268,14 @@ getVar() { # var=value
 			[[ $var ]] && quoteEscape $var || echo $3
 			;;
 	esac
+}
+gpioState() {
+	for p in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27; do
+		[[ $( gpioget -a -c0 --numeric $p ) == 0 ]] && tf=false || tf=true # -a : prevent reset
+		state+=', "'$p'": '$tf
+	done
+	state="{ ${state:1} }"
+	[[ $1 ]] && pushData gpio '{ "page": "system", "state": '$state' }' || echo $state
 }
 inOutputConf() {
 	local file

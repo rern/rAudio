@@ -3,7 +3,8 @@
 . /srv/http/bash/common.sh
 
 pin_0=$( sed 's/$/=0/; s/ /=0\n/g' $dirsystem/vuled.conf )
-[[ $1 == stop ]] && gpioset -t0 -c0 $pin_0 && exit
+gpioset -t0 -c0 $pin_0
+[[ $1 == stop ]] && exit
 # --------------------------------------------------------------------
 [[ -e $dirsystem/vumeter ]] && vumeter=1 && j=0
 if [[ -e $dirsystem/vuled ]]; then
