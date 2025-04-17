@@ -311,7 +311,7 @@ var util          = {
 	, gpioToggle    : state => {
 		if ( state ) util.gpioState( state );
 		$( '#infoList' ).on( 'click', '.i-power', function() {
-			if ( S.relayson ) {
+			if ( S.relayson && SW.icon === 'relays' ) {
 				infoPrompt( '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON' );
 			} else {
 				var $this = $( this );
