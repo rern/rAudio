@@ -266,7 +266,7 @@ var config        = {
 			, checkunique  : true
 			, boxwidth     : 70
 			, beforeshow   : () => {
-				$( '#infoList .i-power' ).on( 'click', function() {
+				$( '#infoList .infofooter' ).on( 'click', function() {
 					var onoff = 1;
 					$( '#infoList select' ).each( ( i, el ) => {
 						var pin = $( el ).val();
