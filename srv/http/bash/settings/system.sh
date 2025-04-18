@@ -164,7 +164,6 @@ CMD ACTION PATHMPD"
 	;;
 gpiotoggle )
 	gpioset -t0 -c0 $PIN
-	gpioState push
 	;;
 hddapm )
 	hdparm -q -B $LEVEL $DEV

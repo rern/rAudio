@@ -1,9 +1,3 @@
-W.gpio            = data => {
-	if ( ! $( '#infoList svg' ).length ) return
-	
-	V.gpiostate = data.state;
-	util.gpioState();
-}
 W.reboot          = data => {
 	banner( data.id, $( '#div'+ data.id +' .col-l .label' ).text(), 'Reboot required', 5000 );
 }
@@ -252,11 +246,9 @@ var config        = {
 		} );
 	}
 	, vuled         : data => {
-		V.gpiostate = data.state;
-		var vL      = data.values.length;
-		var list    = [ [ ico( 'vuled gr' ) +' LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
-		var prefix  = '<gr>#</gr> ';
-		for ( var i = 0; i < vL; i++ ) list.push(  [ prefix + ( i + 1 ), 'select', util.board2bcm ] );
+		var list   = [ [ ico( 'vuled gr' ) +' LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
+		var prefix = '<gr>#</gr> ';
+		data.values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), 'select', util.board2bcm ] ) );
 		info( {
 			  ...SW
 			, message      : util.gpiosvg
@@ -268,25 +260,24 @@ var config        = {
 			, boxwidth     : 70
 			, beforeshow   : () => {
 				$( '#infoList .infofooter' ).on( 'click', function() {
-					var onoff = 1;
-					$( '#infoList select' ).each( ( i, el ) => {
-						var pin = $( el ).val();
-						if ( $( '#infoList circle[ data-bcm="'+ pin +'" ]' ).hasClass( 'on' ) ) {
-							onoff = 0;
-							return false
-						}
+					var pins = infoVal();
+					var on   = ! pins.some( p => data.state[ p ] );
+					var pin  = '';
+					pins.forEach( p => {
+						data.state[ p ] = on;
+						pin += p +'='+ on +' ';
+						$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
 					} );
-					var pin   = '';
-					I.values.forEach( p => pin += p +'='+ onoff +' ' );
 					bash( [ 'gpiotoggle', pin, 'CMD PIN' ] );
 				} );
 				infoListAddRemove( () => {
+					var infoval = infoVal( 'array' );
 					$( '#infoList tr' ).each( ( i, el ) => {
-						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( prefix + i );
+						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( pregix + i );
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );
-				util.gpioState();
+				util.gpioState( data.state );
 			}
 			, cancel       : switchCancel
 			, ok           : () => {
@@ -317,10 +308,17 @@ var util          = {
 		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 	}
-	, gpioState     : () => {
+	, gpioState     : state => {
 		$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
 			var $el = $( el );
-			$el.toggleClass( 'on', V.gpiostate[ $el.data( 'bcm' ) ] );
+			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
+		} );
+		$( '#infoOverlay' ).on( 'click', 'circle', function( e ) {
+			var p = $( this ).data( 'bcm' );
+			var on  = ! state[ p ];
+			state[ p ] = on;
+			$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
+			bash( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
 		} );
 	}
 	, gpiosvg       : $( '#gpiosvg' ).html()
@@ -621,7 +619,6 @@ var util          = {
 		}
 	, relays        : {
 		  name   : data => {
-			V.gpiostate = data.state;
 			var name   = data.names;
 			var keys   = Object.keys( name );
 			var values = [];
@@ -654,7 +651,7 @@ var util          = {
 						bash( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
 					infoListAddRemove();
-					util.gpioState();
+					util.gpioState( data.state );
 				}
 				, cancel       : switchCancel
 				, ok           : () => util.relays.set( data )
@@ -724,7 +721,7 @@ var util          = {
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 					} );
-					delete V.gpiostate;
+					util.gpioState( data.state );
 				}
 				, cancel       : switchCancel
 				, ok           : () => util.relays.set( data )
@@ -1165,10 +1162,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 			bash( [ 'unmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 	}
-} );
-$( '#infoOverlay' ).on( 'click', 'circle', function( e ) {
-	var pin = $( this ).data( 'bcm' );
-	bash( [ 'gpiotoggle', pin +'='+ ( V.gpiostate[ pin ] ? 0 : 1 ), 'CMD PIN' ] );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
