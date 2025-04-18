@@ -255,7 +255,7 @@ var config        = {
 		V.gpiostate = data.state;
 		var vL      = data.values.length;
 		var list    = [ [ ico( 'vuled gr' ) +' LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
-		for ( var i = 0; i < vL; i++ ) list.push(  [ '# '+ ( i + 1 ), 'select', util.board2bcm ] );
+		for ( var i = 0; i < vL; i++ ) list.push(  [ '<gr>#</gr> '+ ( i + 1 ), 'select', util.board2bcm ] );
 		info( {
 			  ...SW
 			, message      : util.gpiosvg
@@ -282,7 +282,7 @@ var config        = {
 				infoListAddRemove( () => {
 					var infoval = infoVal( 'array' );
 					$( '#infoList tr' ).each( ( i, el ) => {
-						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( '# '+ i );
+						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( '<gr>#</gr> '+ i );
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );
