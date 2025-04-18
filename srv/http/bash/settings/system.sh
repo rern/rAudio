@@ -279,8 +279,14 @@ relays )
 	enableFlagSet
 	pushRefresh
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
-	[[ ! -e $dirshm/relayson ]] && exit
+	if [[ ! -e $dirshm/relayson ]]; then
+		if [[ $ON ]]; then
+			pins="$( getVar on $dirsystem/relays.conf ) "
+			gpioset -t0 -c0 ${pins// /=0 }
+		fi
+		exit
 # --------------------------------------------------------------------
+	fi
 	if grep -q timeron=true $dirsystem/relays.conf; then
 		$dirbash/relays-timer.sh &> /dev/null &
 	else
@@ -416,6 +422,10 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 vuled )
 	enableFlagSet
 	[[ $PINS ]] && echo $PINS > $dirsystem/vuled.conf
+	if [[ $ON ]]; then
+		pins="$( < $dirsystem/vuled.conf ) "
+		gpioset -t0 -c0 ${pins// /=0 }
+	fi
 	fifoToggle
 	pushRefresh
 	;;
