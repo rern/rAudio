@@ -43,4 +43,3 @@ else
 fi
 sleep 1
 pushData relays '{ "done": '$done' }'
-gpioState push
