@@ -3,8 +3,13 @@
 . /srv/http/bash/common.sh
 
 gpioState() {
-	gpioget -a -c0 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 \
-		| sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' -e 's/^/{ /; s/,$/ }/'
+	[[ -e $dirsystem/vuled ]] && grep -q '^state="play"' $dirshm/status && vuledactive=1
+	if [[ -e $dirsystem/relayson || $vuledactive ]]; then
+		echo false
+	else
+		gpioget -a -c0 $( gpioinfo -c0 | sed -n '/GPIO/ {s/:.*//; s/.* //; p}' ) \
+			| sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' -e 's/^/{ /; s/,$/ }/'
+	fi
 }
 
 ID=$1

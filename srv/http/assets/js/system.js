@@ -309,6 +309,8 @@ var util          = {
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 	}
 	, gpioState     : state => {
+		if ( ! state ) return // relays / vuled active
+		
 		$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
 			var $el = $( el );
 			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );

@@ -7,6 +7,7 @@
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
+$greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
 	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'rserver', 'usbdrive' ]
 	, 'labels'  => [
@@ -186,7 +187,9 @@ EOF
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 On/Off:
  · $M->relays
- · $B->gear> <tab style="width: 115px">Sequence</tab>$B->power All &emsp; <tab>Pin - Name</tab> <grn>&#9679;</grn> Each pin
+ · $B->gear>
+	<tab style="width: 115px">Sequence</tab>$B->power All
+	<tab>Pin - Name</tab>$greendot
 EOF
 	],
 	[
@@ -224,7 +227,9 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
- · On/Off: $B->gear> <grn>&#9679;</grn> Each pin&emsp;$B->power All
+ · $B->gear On/Off: (while stop)
+	$greendot
+	$B->power All
 EOF
 	]
 ];
