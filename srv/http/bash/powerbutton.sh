@@ -1,8 +1,7 @@
 #!/bin/bash
 
 if grep -q 'poweroff,gpiopin=22' /boot/config.txt; then # audiophonic
-	gpioset -t0 -c0 4=0
-	gpioset -t0 -c0 22=1
+	gpioset -t0 -c0 4=0 22=1
 	gpiomon -q -b pull-down -e rising -c0 -n1 17
 	gpioset -t0 -c0 4=1
 	sleep 1
