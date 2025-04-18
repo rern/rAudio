@@ -281,7 +281,6 @@ var config        = {
 					bash( [ 'gpiotoggle', pin, 'CMD PIN' ] );
 				} );
 				infoListAddRemove( () => {
-					var infoval = infoVal( 'array' );
 					$( '#infoList tr' ).each( ( i, el ) => {
 						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( prefix + i );
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
