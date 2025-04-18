@@ -185,9 +185,8 @@ EOF
  · Module with jumper <c>High/Low Level Trigger</c> (set to <c>High</c>)
  · Can be enabled and run as a test without a connected relay module.
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
-On/Off:
- · $M->relays
- · $B->gear>
+On/Off: $M->relays
+Toggle: $B->gear>
 	<tab style="width: 115px">Sequence</tab>$B->power All
 	<tab>Pin - Name</tab>$greendot
 EOF
@@ -227,7 +226,7 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
- · $B->gear On/Off: (while stop)
+ · $B->gear Toggle:
 	$greendot
 	$B->power All
 EOF
