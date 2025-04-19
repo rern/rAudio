@@ -407,6 +407,7 @@ startx )
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
+	export MOZ_USE_XINPUT2=1
 	firefox -kiosk -private http://localhost
 	;;
 stoptimer )
