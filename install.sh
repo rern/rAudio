@@ -6,7 +6,7 @@ alias=r1
 
 # 20250420
 if ! locale | grep -q ^LANG=.*utf8; then
-	! locale | grep -q ^LANG=C.utf8 && locale-gen C.utf8
+	! locale -a | grep -q ^C.utf8 && locale-gen C.utf8
 	localectl set-locale LANG=C.utf8
 fi
 
