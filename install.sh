@@ -7,7 +7,10 @@ alias=r1
 # 20250505
 
 # 20250420
-! locale | grep -q ^LANG=.*utf8 && localectl set-locale LANG=C.utf8
+if ! locale | grep -q ^LANG=.*utf8; then
+	! locale -a | grep -q ^C.utf8 && locale-gen C.utf8
+	localectl set-locale LANG=C.utf8
+fi
 
 file=/etc/systemd/system/cava.service
 if ! grep -q ^User $file; then
