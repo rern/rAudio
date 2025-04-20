@@ -7,14 +7,11 @@ gpioState() {
 	if [[ -e $dirsystem/relayson || $vuledactive ]]; then
 		echo false
 	else
-		local input output pins state
+		local output pins state
 		pins=$( gpioinfo -c0 | grep GPIO )
-		input=$( sed -n '/input/ {s/:.*//; s/.* //; p}' <<< $pins )
-		output=$( sed -n '/output/ {s/:.*//; s/.* //; p}' <<< $pins )
-		state=$( gpioget -a -c0 $output | sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' )
-		for p in $input; do
-			state+=' "'$p'": false,'
-		done
+		output=$( sed -n '/output$/ {s/:.*//; s/.* //; p}' <<< $pins )
+		state=$( sed -n '/input$/ {s/.*line */"/; s/:.*GPIO.*/": false,/; p}' <<< $pins )
+		state+=$( gpioget -a -c0 $output | sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' )
 		echo '{ '${state:0:-1}' }'
 	fi
 }

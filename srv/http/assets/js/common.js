@@ -848,12 +848,13 @@ function infoCheckSet() {
 	
 	$( '#infoList' ).find( 'input, select, textarea' ).on( 'input', function() {
 		var infoval = infoVal( 'array' );
-		if ( I.checkchanged ) I.notchange = I.values.join( '' ) === infoval.join( '' );
+		if ( I.checkchanged ) I.notchange     = I.values.join( '' ) === infoval.join( '' );
 		if ( I.checkblank )  V.timeout.blank  = setTimeout( infoCheckBlank, 0 );   // #1
 		if ( I.checklength ) V.timeout.length = setTimeout( infoCheckLength, 20 ); // #2
 		if ( I.checkip )     V.timeout.ip     = setTimeout( infoCheckIP, 40 );     // #3
 		V.timeout.check = setTimeout( () => {
-			var disabled = I.notchange || I.blank || I.notlength || I.notip || infoval.length !== new Set( infoval ).size;
+			var unique   = I.checkunique ? infoval.length === new Set( infoval ).size : true;
+			var disabled = I.notchange || I.blank || I.notlength || I.notip || ! unique;
 			$( '#infoOk' ).toggleClass( 'disabled', disabled );
 		}, 100 );
 	} );

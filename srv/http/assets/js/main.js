@@ -1242,7 +1242,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	} else if ( moderadio ) {
 		var query = {
 			  library : 'radio'
-			, gmode   : V.mode
+			, string  : '/srv/http/data/'+ V.mode
 		}
 	} else { // browse by modes
 		var query = {
@@ -1260,7 +1260,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = modeRadio() ? '' : path;
+	query.path      = moderadio ? '' : path;
 	query.modetitle = path;
 	V.query.push( query );
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
@@ -1542,7 +1542,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	} else if ( modeRadio() ) { // dabradio, webradio
 		var query = {
 			  library : 'radio'
-			, string  : path
+			, string  : libpath +'/'+ path
 		}
 		var modetitle = path;
 	} else if ( ! V.search && V.mode.slice( -6 ) === 'artist' ) {
