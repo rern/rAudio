@@ -699,6 +699,8 @@ circle.on {
 		color: var( --cw );
 		background-color: var( --cgl );
 	}
+	circle.bl,
+	circle.grn,
 	heading i,
 	table i,
 	.back,
