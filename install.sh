@@ -4,8 +4,8 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250418
-[[ $( locale | head -1 ) != LANG=C.utf8 ]] && localectl set-locale LANG=C.utf8
+# 20250419
+! locale | grep -q ^LANG=.*utf8 && localectl set-locale LANG=C.utf8
 
 file=/etc/systemd/system/cava.service
 if ! grep -q ^User $file; then
