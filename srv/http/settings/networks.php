@@ -32,10 +32,12 @@ $B->search Available devices
  • Pair:
 	· On rAudio: $T->system$L->bluetooth ■ Discoverable by senders
 	· On sender: Search &raquo; Select <wh>rAudio</wh> to pair
-	· Forget / remove should be done on both rAudio and sender
  • Connect / Disconnect:
 	· On sender
 	
+Note:
+Forget / remove should be done on both rAudio and sender
+
 $B->bluetooth$B->btsender Context menu
 EOF
 ];

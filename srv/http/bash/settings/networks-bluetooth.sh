@@ -4,13 +4,13 @@
 #   (delay - connect right after paired > mixer not yet ready)
 # Connect: trust > connect > get sink_source
 # Disconnect / Remove: disconnect
-[[ -e /srv/http/data/shm/btflag ]] && exit # flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
+
+[[ -e /dev/shm/bluetooth_rules ]] && exit # debounce bluetooth.rules
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
-# flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
-touch $dirshm/btflag
-( sleep 5; rm $dirshm/btflag ) &> /dev/null &
+touch $dirshm/bluetooth_rules
+( sleep 5; rm -f $dirshm/bluetooth_rules ) &
 
 args2var "$1"
 

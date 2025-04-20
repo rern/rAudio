@@ -19,7 +19,7 @@ if [[ $? == 0 ]]; then
 	echo "$data" > $diraddons/addonslist.json
 else
 	online=false
-	notify addons Addons 'Server not reachable.' -1
+	notify 'warning yl blink' Addons 'Server not reachable.'
 fi
 ########
 [[ ! $data ]] && data=$( < $diraddons/addonslist.json )
@@ -36,7 +36,7 @@ for addon in $addons; do
 	fi
 done
 if [[ $update ]]; then
-	pushData option '{ "addons": 1 }'
+	pushData option '{ "addons": true }'
 	touch $diraddons/update
 else
 	rm -f $diraddons/update

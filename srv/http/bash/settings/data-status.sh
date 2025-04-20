@@ -187,7 +187,7 @@ $module"
 		[[ $devi2c ]] && config+="
 		
 <bll># i2cdetect -y $devi2c</bll>
-$(  i2cdetect -y $devi2c )"
+$( i2cdetect -y $devi2c )"
 	fi
 	echo "$config"
 	;;
@@ -200,7 +200,7 @@ $( timedatectl )
 $( grep -v ^# /etc/systemd/timesyncd.conf | awk NF )
 
 <bll># cat /etc/pacman.d/mirrorlist</bll>
-$( grep -v ^# /etc/pacman.d/mirrorlist )
+$( grep -Ev '^#|^$' /etc/pacman.d/mirrorlist )
 "
 	;;
 webui )

@@ -89,7 +89,7 @@ camilladsp )
 		fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		validate=$( camilladsp -c "$fileconf" )
 		if [[ $validate != 'Config is valid' ]]; then
-			notify 'warning yl' CamillaDSP "Error: <c>$fileconf</c><br>${validate/*file\!}" -1
+			notify 'warning yl blink' CamillaDSP "Error: <c>$fileconf</c><br>${validate/*file\!}"
 			exit
 # --------------------------------------------------------------------
 		fi
@@ -143,10 +143,13 @@ localbrowser )
 			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
 			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
 			if [[ $R_CHANGED ]]; then
-				appendSortUnique localbrowser $dirshm/reboot
-				notify localbrowser 'Rotate Browser on RPi' 'Reboot required.' 5000
-				exit
+				rotate=$( sed -n '/dtoverlay=.*:rotate=/ {s/.*=//; p}' /tmp/config.txt )
+				if [[ $rotate != $ROTATE ]]; then
+					appendSortUnique $dirshm/reboot ', "localbrowser": "Browser"'
+					notify localbrowser Browser 'Reboot required.' 5000
+					exit
 # --------------------------------------------------------------------
+				fi
 			fi
 		else # hdmi
 			case $ROTATE in
@@ -173,6 +176,7 @@ localbrowser )
 		if [[ $RESTART ]]; then
 			systemctl restart bootsplash localbrowser &> /dev/null
 			systemctl enable bootsplash localbrowser
+			sleep 1
 		fi
 	else
 		ply-image /srv/http/assets/img/splash.png
@@ -252,6 +256,8 @@ CMD ACTION PATHMPD"
 		fi
 	else
 		mv /mnt/MPD/NAS/{SD,USB} /mnt/MPD
+		rm -rf /mnt/MPD/NAS/data
+		rm -f /mnt/MPD/NAS/.mpdignore
 		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
 		chmod 755 $dirnas $dirnas/{SD,USB}
@@ -401,6 +407,7 @@ startx )
 	[[ $cursor || ! $( ipAddress ) ]] && cursor=yes || cursor=no
 	matchbox-window-manager -use_cursor $cursor &
 	export $( dbus-launch )
+	export MOZ_USE_XINPUT2=1
 	firefox -kiosk -private http://localhost
 	;;
 stoptimer )

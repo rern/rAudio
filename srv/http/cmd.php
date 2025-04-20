@@ -20,6 +20,10 @@ case 'camilla': // formdata from camilla.js
 	fileUploadSave( $dirdata.'camilladsp/'.$post->dir.'/'.$_FILES[ 'file' ][ 'name' ] );
 	exec( $dirsettings.'camilla-data.sh pushrefresh' );
 	break;
+case 'countmnt':
+	include 'function.php';
+	echo json_encode( countMnt() );
+	break;
 case 'datarestore': // formdata from system.js
 	fileUploadSave( $dirshm.'backup.gz' );
 	$libraryonly = $post->libraryonly ?? '';
@@ -47,10 +51,13 @@ case 'imagereplace': // $.post from function.js
 	break;
 case 'login': // $.post from features.js
 	$filelogin   = $dirdata.'system/login';
-	$filesetting = $filelogin.'setting';
 	$pwd         = $post->pwd;
-	if ( file_exists( $filelogin ) && ! password_verify( $pwd, file_get_contents( $filelogin ) ) ) exit( '-1' );
+	if ( file_exists( $filelogin ) ) {
+		$password = rtrim( file_get_contents( $filelogin ), "\n" );
+		if ( ! password_verify( $pwd, $password ) ) exit( '-1' );
 //----------------------------------------------------------------------------------
+	}
+	$filesetting = $filelogin.'setting';
 	if ( isset( $post->disable ) ) {
 		unlink( $filelogin );
 		unlink( $filesetting );

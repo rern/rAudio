@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1743417778' );
+	src         : url( '/assets/fonts/rern.woff2?v=1743858212' );
 }
 @font-face {
 	font-family : Lato;
@@ -286,12 +286,9 @@ sp {
 	50% { opacity: 0 } 
 }
 
-.blink,
-.i-libupdate {
+.blink::before,
+.blink::after {
 	animation: blinkopaque 1.5s linear infinite;
-}
-.blink,
-.i-libupdate {
 	text-shadow: none !important;
 }
 input:focus {
@@ -444,7 +441,7 @@ code {
 	text-overflow: ellipsis;
 }
 #bannerTitle {
-	line-height: 22px;
+	line-height: 24px;
 	font-size: 18px;
 	font-weight: 300;
 }
@@ -466,6 +463,9 @@ code {
 }
 #bannerMessage {
 	font-size: 16px;
+}
+#bannerMessage.notitle {
+	padding-top: 2px;
 }
 #bannerMessage i {
 	margin-right: 5px;

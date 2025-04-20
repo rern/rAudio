@@ -245,29 +245,45 @@ var config        = {
 			, ok           : switchEnable
 		} );
 	}
-	, vuled         : values => {
-		var list   = [ [ ico( 'vuled gr' ) +'LED', '', { suffix: ico( 'gpiopins gr' ) +'Pin' } ] ];
-		var leds   = Object.keys( values ).length + 1;
-		for ( var i = 1; i < leds; i++ ) list.push(  [ ico( 'power' ) +'&emsp;'+ i, 'select', util.board2bcm ] );
+	, vuled         : data => {
+		var list   = [ [ ico( 'vuled gr' ) +' LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
+		var prefix = '<gr>#</gr> ';
+		data.values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), 'select', util.board2bcm ] ) );
 		info( {
 			  ...SW
 			, message      : util.gpiosvg
 			, list         : list
-			, values       : values
+			, footer       : ico( 'power' ) +'On/Off'
+			, values       : data.values
 			, checkchanged : S.vuled
+			, checkunique  : true
 			, boxwidth     : 70
 			, beforeshow   : () => {
+				$( '#infoList .infofooter' ).on( 'click', function() {
+					var pins = infoVal();
+					var on   = ! pins.some( p => data.state[ p ] );
+					var pin  = '';
+					pins.forEach( p => {
+						data.state[ p ] = on;
+						pin += p +'='+ on +' ';
+						$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
+					} );
+					bash( [ 'gpiotoggle', pin, 'CMD PIN' ] );
+				} );
 				infoListAddRemove( () => {
-					$( '#infoList tr' ).slice( 1 ).each( ( i, el ) => {
-						$( el ).find( 'td' ).eq( 0 ).html( ico( 'power' ) +'&emsp;'+ ( i + 1 ) );
+					var infoval = infoVal( 'array' );
+					$( '#infoList tr' ).each( ( i, el ) => {
+						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( pregix + i );
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );
-				util.relays.toggle();
+				util.gpioState( data.state );
 			}
 			, cancel       : switchCancel
-			, ok           : switchEnable
-			, fileconf     : true
+			, ok           : () => {
+				notifyCommon();
+				bash( [ 'vuled', infoVal().join( ' ' ), 'CMD PINS' ] );
+			}
 		} );
 	}
 	, wlan          : data => {
@@ -291,6 +307,21 @@ var util          = {
 	  board2bcm     : {
 		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
+	}
+	, gpioState     : state => {
+		if ( ! state ) return // relays / vuled active
+		
+		$( '#infoList circle[ data-bcm ]' ).each( ( i, el ) => {
+			var $el = $( el );
+			$el.toggleClass( 'on', state[ $el.data( 'bcm' ) ] );
+		} );
+		$( '#infoOverlay' ).on( 'click', 'circle', function( e ) {
+			var p = $( this ).data( 'bcm' );
+			var on  = ! state[ p ];
+			state[ p ] = on;
+			$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
+			bash( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
+		} );
 	}
 	, gpiosvg       : $( '#gpiosvg' ).html()
 	, hostname      : () => {
@@ -590,7 +621,7 @@ var util          = {
 		}
 	, relays        : {
 		  name   : data => {
-			var name   = data.relaysname;
+			var name   = data.names;
 			var keys   = Object.keys( name );
 			var values = [];
 			keys.forEach( p => values.push( p, name[ p ] ) );
@@ -608,7 +639,7 @@ var util          = {
 				, tab          : [ () => util.relays.order( data ), '' ]
 				, message      : util.gpiosvg
 				, list         : list
-				, boxwidth     : 70
+				, boxwidth     : 80
 				, propmt       : true
 				, checkblank   : true
 				, checkchanged : S.relays
@@ -618,12 +649,11 @@ var util          = {
 					$( '#infoList td' ).css( { 'padding-right': 0, 'text-align': 'left' } );
 					$( '#infoList td:first-child' ).remove();
 					$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
-					infoListAddRemove( add => {
-						if ( add ) $( '#infoList .i-power' ).last().removeClass( 'red' );
+					$( '#infoList' ).on( 'click', '.i-power', function() {
+						bash( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
-					$( '#infoList tr' ).prepend( '<td>'+ ico( 'power' ) +'</td>' );
-					$( '#infoList td' ).eq( 0 ).empty();
-					util.relays.toggle();
+					infoListAddRemove();
+					util.gpioState( data.state );
 				}
 				, cancel       : switchCancel
 				, ok           : () => util.relays.set( data )
@@ -631,7 +661,7 @@ var util          = {
 		}
 		, order  : data => {
 			var pin    = data.relays;
-			var name   = data.relaysname;
+			var name   = data.names;
 			var names  = {}
 			$.each( name, ( k, v ) => { names[ v ] = k } );
 			var step   = { step: 1, min: 0, max: 10 }
@@ -680,13 +710,6 @@ var util          = {
 					var $timer   = $tdtimer.slice( 1 )
 					$tdtimer.eq( 0 ).css( { height: '40px','text-align': 'right' } );
 					$timer.toggleClass( 'hide', ! pin.TIMERON );
-					$( '#infoList' ).on( 'click', '.i-power', function() {
-						if ( S.relayson ) {
-							infoPrompt( util.relays.prompt );
-						} else {
-							bash( [ 'relays.sh', $( this ).hasClass( 'grn' ) ? '' : 'off' ] );
-						}
-					} );
 					$( '#infoList' ).on( 'input', 'select', function() {
 						var $select = $( '#infoList select' );
 						var von   = [];
@@ -695,21 +718,20 @@ var util          = {
 							var ar = i % 2 ? von : voff;
 							ar.push( $( el ).val() );
 						} );
-						I.notunique = von.length !== new Set( von ).size || voff.length !== new Set( voff ).size;
-						if ( I.notunique ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
+						if ( von.length !== new Set( von ).size || voff.length !== new Set( voff ).size ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
 					} );
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 					} );
+					util.gpioState( data.state );
 				}
 				, cancel       : switchCancel
 				, ok           : () => util.relays.set( data )
 			} );
 		}
-		, prompt : '<a class="helpmenu label">Relay Module<i class="i-relays"></i></a> is currently ON'
 		, set    : data => {
 			var order   = data.relays;
-			var name    = data.relaysname;
+			var name    = data.names;
 			var v       = infoVal();
 			var tabname = I.tab[ 0 ];
 			if ( tabname ) {
@@ -741,23 +763,15 @@ var util          = {
 				if ( Array.isArray( val ) ) val = val.join( ' ' );
 				pins.push( val );
 			} );
-			notifyCommon();
-			bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
-			jsonSave( 'relays', name );
-			if ( tabname ) util.relays.name( data );
+			if ( S.relays || ! tabname ) {
+				notifyCommon();
+				bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
+				jsonSave( 'relays', name );
+			} else {
+				util.relays.order( data );
+			}
 		}
 		, tab    : [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ]
-		, toggle : () => {
-			$( '#infoList' ).on( 'click', '.i-power', function() {
-				if ( S.relayson ) {
-					infoPrompt( util.relays.prompt );
-				} else {
-					var $this = $( this );
-					var pin   = +$this.parents( 'tr' ).find( 'select' ).val();
-					bash( [ 'gpiopintoggle', pin, 'CMD PIN' ], onoff => $this.toggleClass( 'red', onoff == 1 ) );
-				}
-			} );
-		}
 	}
 	, renderStorage : () => {
 		if ( list.equal( 'storage' ) ) return
@@ -861,7 +875,6 @@ function onPageInactive() {
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
-	$( '#divtemplimit' ).toggleClass( 'hide', ! S.system.includes( '3B+' ) );
 	util.renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
@@ -909,6 +922,7 @@ function renderPage() {
 <option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' · ' ) +'&ensp;'+ S.timezoneoffset }</option>
 ` );
 	}
+	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
 	showContent();
@@ -1014,6 +1028,7 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	} else {
 		var mounted = $li.find( 'grn' ).length === 1;
 		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
+		$menu.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
 		$( '#menu .forget' ).toggleClass( 'hide', shareddata || usb );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );

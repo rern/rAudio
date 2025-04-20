@@ -112,14 +112,16 @@ W = {
 		if ( V.playlist ) setPlaylistRadioInfo();
 	}	
 	, mpdupdate : data => {
-		if ( data.start ) {
+		if ( typeof data === 'boolean' ) {
 			S.updating_db = true;
-			setButtonUpdating();
-		} else if ( data.done ) {
+		} else {
+			$.each( data, ( k, v ) => { C[ k ] = v } );
 			V.html = {}
+			S.updating_db = false;
 			banner( 'refresh-library', 'Library Update', 'Done' );
 			V.playback ? refreshData() : refreshAll();
 		}
+		setButtonUpdating();
 	}
 	, option    : data => {
 		if ( V.local ) return
@@ -186,18 +188,18 @@ W = {
 		}
 		if ( V.library ) {
 			if ( V.librarylist && V.mode === data.type ) {
-				var path = $( '.lib-path' ).text();
-				if ( path ) {
-					list( { library: "radio", string: path, gmode: "webradio" }, html => {
-						renderLibraryList(  {
-							  html      : html
-							, icon      : V.mode
-							, modetitle : path
-							, path      : path
-						} );
-					} );
-				} else {
+				if ( V.query.length === 1 ) {
 					$( '.mode.'+ V.mode ).trigger( 'click' );
+				} else {
+					var query = V.query.slice( -1 )[ 0 ];
+					list( query, html => {
+						var data = {
+							  html      : html
+							, modetitle : query.modetitle
+							, path      : query.path
+						}
+						renderLibraryList( data );
+					} );
 				}
 			}
 		} else if ( V.playlist ) {

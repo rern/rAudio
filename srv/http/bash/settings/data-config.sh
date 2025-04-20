@@ -2,6 +2,16 @@
 
 . /srv/http/bash/common.sh
 
+gpioState() {
+	[[ -e $dirsystem/vuled ]] && grep -q '^state="play"' $dirshm/status && vuledactive=1
+	if [[ -e $dirsystem/relayson || $vuledactive ]]; then
+		echo false
+	else
+		gpioget -a -c0 $( gpioinfo -c0 | sed -n '/GPIO/ {s/:.*//; s/.* //; p}' ) \
+			| sed -e 's/=active/: true,/g; s/=inactive/: false,/g;' -e 's/^/{ /; s/,$/ }/'
+	fi
+}
+
 ID=$1
 
 case $ID in
@@ -123,8 +133,13 @@ $description
 	grep -B1 -A2 --no-group-separator ^${2,} $filepackages
 	;;
 reboot )
-	getContent $dirshm/reboot
-	rm -f $dirshm/{reboot,backup.gz}
+	if [[ -e $dirshm/reboot ]]; then
+		list=$( < $dirshm/reboot )
+		rm -f $dirshm/reboot
+		echo { ${list:1} }
+	else
+		echo false
+	fi
 	;;
 relays )
 	if [[ -e $dirsystem/relays.conf ]]; then
@@ -139,9 +154,9 @@ relays )
 		timer=5
 	fi
 	if [[ -e $dirsystem/relays.json ]]; then
-		relaysname=$( getContent $dirsystem/relays.json )
+		names=$( getContent $dirsystem/relays.json )
 	else
-		relaysname='{ "17": "DAC", "27": "PreAmp", "22": "Amp", "23": "Subwoofer" }'
+		names='{ "17": "DAC", "27": "PreAmp", "22": "Amp", "23": "Subwoofer" }'
 	fi
 	echo '{
   "relays" : {
@@ -152,7 +167,8 @@ relays )
 	, "TIMERON" : '$timeron'
 	, "TIMER"   : '$timer'
 }
-, "relaysname" : '$relaysname'
+, "names"  : '$names'
+, "state"  : '$( gpioState )'
 }'
 	;;
 replaygain )
@@ -247,6 +263,14 @@ tft )
 	model=$( sed -n -E '/rotate=/ {s/dtoverlay=(.*):rotate.*/\1/; p}' /boot/config.txt )
 	echo '{ "MODEL": "'$( [[ $model ]] && echo $model || echo tft35a )'" }'
 	;;
+vuled )
+	file=$dirsystem/vuled.conf
+	[[ -e $file ]] && conf=$( < $file ) || conf='14 15 18 23 24 25 8'
+	echo '{
+  "values" : [ '$( tr ' ' , <<< $conf )' ]
+, "state"  : '$( gpioState )'
+}'
+	;;
 wlan )
 	echo '{
 	  "values" : {
@@ -293,7 +317,6 @@ wlanprofile )
 				volume=$( volumeGet )
 				[[ $volume == 0 || ! $volume ]] && volume=50
 				echo '{ "STARTUP": '$volume', "MAX": 100 }';;
-			vuled )         echo '{ "P0": 14, "P1": 15, "P2": 18, "P3": 23, "P4": 24, "P5": 25, "P6": 8	}';;
 			* )             echo false;;
 		esac
 	fi

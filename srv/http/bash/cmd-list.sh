@@ -9,12 +9,17 @@
 
 . /srv/http/bash/common.sh
 
-modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
-modelatest='latest latestbyartist latestbyartist-year'
+file_album_prev=$dirshm/albumprev
+file_album_a_y=$dirmpd/albumbyartist-year
+file_latest_a_y=$dirmpd/latestbyartist-year
+format='[%albumartist%|%artist%]^^%date%^^%album%^^%file%'
 
 albumList() {
-	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
-	[[ $mpclistall ]] && albumlist=$( awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}'<<< $mpclistall ) # exclude no album tag, strip filename, sort unique
+	mpclistall=$( mpc -f $format listall 2> /dev/null )
+	[[ $mpclistall ]] && albumlist=$( excludeNoAlbum "$mpclistall" )
+}
+excludeNoAlbum() { # exclude no album tag, strip filename, sort unique
+	awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}' <<< $1
 }
 notifyError() {
 	notify 'refresh-library blink' 'Library Database' "$1" 3000
@@ -23,21 +28,23 @@ timeFormat() {
 	date -d@$1 -u '+%-Hh %-Mm %-Ss' | sed -E 's/0h 0m |0h //'
 }
 updateDone() {
-	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
-	[[ -e $dirshm/tageditor ]] && counts='"tageditor"' || counts=$( < $dirmpd/counts )
+	if [[ $counts ]]; then
+		jq -S <<< "{ $counts }" > $dirmpd/counts
+		pushData mpdupdate '{ '$counts' }'
+	fi
 	updatetime="(Scan: $( timeFormat $mpdtime ) • Cache: $( timeFormat $SECONDS ))"
 	echo $updatetime > $dirmpd/updatetime
-	pushData mpdupdate '{ "done": true }'
-	rm -f $dirmpd/listing $dirshm/{albumprev,deleted,tageditor}
+	rm -f $dirmpd/listing $dirshm/albumprev
 	$dirbash/status-push.sh
 	( sleep 3 && rm -f $dirshm/listing ) &
 }
 
-touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
+touch $dirmpd/listing $dirshm/listing # for debounce mpdidle
 [[ -e $dirmpd/updatestart ]] && mpdtime=$(( $( date +%s ) - $( < $dirmpd/updatestart ) )) || mpdtime=0
-[[ -s $dirmpd/album ]] && cp -f $dirmpd/album $dirshm/albumprev # for latest albums
-grep -q LATEST=true $dirmpd/updating && appendlatest=1
+grep -qs LATEST=true $dirmpd/updating && latestappend=1
+[[ -e $file_album_a_y ]] && cut -c 4- $file_album_a_y > $file_album_prev && albumprev=1
 rm -f $dirmpd/{updatestart,updating}
+
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
   "song"      : '$song'
@@ -47,9 +54,7 @@ for d in dabradio webradio; do
 , "'$d'"      :'$( find -L $dirdata/$d -type f | grep -v -E '\.jpg$|\.png$|\.gif$' | wc -l )
 done
 if [[ $song == 0 ]]; then
-	for mode in $modes $modelatest; do
-		rm -f $dirmpd/$mode
-	done
+	find $dirmpd -type f ! -name *.db -delete
 	updateDone
 	exit
 # --------------------------------------------------------------------
@@ -85,7 +90,8 @@ if [[ ! $mpclistall ]]; then # very large database
 		fi
 		if [[ $albums ]]; then
 			while read a; do
-				albumlist+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$a" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
+				mpclistfind=$( mpc -f $format find album "$a" )
+				albumlist+=$( excludeNoAlbum "$mpclistfind" )
 			done <<< $albums
 		else
 			notifyError 'Library is too large.<br>Album list will not be available.'
@@ -94,89 +100,53 @@ if [[ ! $mpclistall ]]; then # very large database
 	echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 	systemctl restart mpd
 fi
-if [[ $albumlist ]]; then # album^^artist^^date^^dir
-	filewav=$( grep \.wav$ <<< $mpclistall )
-	if [[ $filewav ]]; then # mpd not support *.wav albumartist
-		dirwav=$( sed 's|.*\^||; s|/[^/]*$||' <<< $filewav | sort -u )
-		if [[ $dirwav ]]; then
-			while read dir; do
-				dir=${dir//[/\\[/} # escape n-n to not as range in grep
-				file=$( grep -m1 "$dir" <<< $mpclistall )
-				albumartist=$( kid3-cli -c 'get albumartist' "/mnt/MPD/${file/*^}" 2> /dev/null )
-				if [[ $albumartist ]]; then
-					line=$( grep -m1 "$dir$" <<< $albumlist )
-					readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
-					albumlist="\
-$( grep -v "$dir$" <<< $albumlist )
-${tags[0]}^^$albumartist^^${tags[2]}^^$dir"
-				fi
-			done <<< $dirwav
-		fi
+if [[ $albumlist ]]; then
+	linewav=$( grep \.wav$ <<< $mpclistall ) # mpd not support *.wav albumartist
+	if [[ $linewav ]]; then
+		dirwav=$( sed 's|.*^||; s|/[^/]*$||; s|\[|\\[|' <<< $linewav | sort -u ) # path > dir > escape [ (to not mean [x-y] in grep)
+		while read dir; do
+			file=$( ls "/mnt/MPD/$dir/*.wav" | head -1 )
+			albumartist=$( kid3-cli -c 'get albumartist' "$file" 2> /dev/null )
+			[[ $albumartist ]] && albumlist=$( sed -n "/\^$dir$/ { s/[^^]*/$albumartist/; p}" <<< $albumlist )
+		done <<< $dirwav
 	fi
-	albumignore=$( getContent $dirmpd/albumignore )
-	while read line; do
-		readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
-		tagalbum=${tags[0]}
-		tagartist=${tags[1]}
-		[[ $albumignore ]] && grep -q "^$tagalbum^^$tagartist\$" <<< $albumignore && continue
-		
-		tagdate=${tags[2]}
-		tagdir=${tags[3]}
-		album_artist_dir+="$tagalbum^^$tagartist^^$tagdir"$'\n'
-		artist_album_dir+="$tagartist^^$tagalbum^^$tagdir"$'\n'
-		artist_date_album_dir+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
-	done <<< $albumlist
-	sort -u <<< $album_artist_dir > $dirmpd/album
-	sort -u <<< $artist_album_dir > $dirmpd/albumbyartist
-	sort -u <<< $artist_date_album_dir > $dirmpd/albumbyartist-year
+	albumlist=$( sort -u <<< $albumlist | awk NF )
+	echo "$albumlist" > $file_album_a_y # %artist%^^%date^^%album%^^%file%
+	awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $albumlist > $dirmpd/albumbyartist
+	awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $albumlist > $dirmpd/album
 else
-	rm -f $dirmpd/{album,albumbyartist}
+	rm -f $dirmpd/{album,albumbyartist*}
 fi
+##### latest
+if [[ $albumprev && $albumlist ]]; then # skip if initial scan
+	if [[ $latestappend && -e $file_latest_a_y ]]; then
+		latest=$( comm -12 --nocheck-order <( cut -c 4- $file_latest_a_y ) <( echo "$albumlist" ) )
+	fi
+	if [[ $albumlist ]]; then
+		latest+=$'\n'$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album_prev )
+	fi                      #-23 suppress: in 2 only && in 3(both) >> in 1 only -new latest
+	latest=$( sort -u <<< $latest | awk NF )
+	if [[ $latest ]]; then
+		echo "$latest" > $file_latest_a_y
+		awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $latest > $dirmpd/latestbyartist
+		awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $latest > $dirmpd/latest
+	fi
+fi
+[[ ! $latest ]] && rm -f $dirmpd/latest*
+##### mode others
+modes='album albumbyartist albumbyartist-year albumartist artist composer conductor date genre'
+modelatest='latest latestbyartist latestbyartist-year'
 for mode in albumartist artist composer conductor date genre; do
 	data=$( mpc list $mode | awk NF )
 	[[ $data ]] && echo "$data" > $dirmpd/$mode || rm -f $dirmpd/$mode
 done
-php /srv/http/cmd.php sort "$modes"
-##### latest
-[[ -e $dirmpd/album && -e $dirshm/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
-if [[ $albumdiff ]]; then
-	deleted=$( grep '^>' <<< $albumdiff ) # '> ...'
-	new=$( grep '^<' <<< $albumdiff )     # '< I^^ALBUM^^ARTIST^^DIR'
-	if [[ $deleted ]]; then
-		cut -c 6- <<< $deleted > $dirshm/deleted
-		latest=$( grep -Fvx -f $dirshm/deleted $dirmpd/latest )
-		[[ $latest ]] && echo "$latest" > $dirmpd/latest
-	fi
-	if [[ $new ]]; then
-		new=$( cut -c 6- <<< $new )
-		[[ $appendlatest ]] && echo "$new" >> $dirmpd/latest || echo "$new" > $dirmpd/latest
-	fi
-	if [[ -s $dirmpd/latest ]]; then
-		artist_album_year=$( awk -F'^' 'NF {print $3"^^"$7"^^"$5}' $dirmpd/albumbyartist-year )
-		while read line; do
-			readarray -t tags <<< $( echo -e "${line//^^/\\n}" )
-			tagalbum=${tags[0]}
-			tagartist=${tags[1]}
-			tagdir=${tags[2]}
-			latestbyartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
-			linedate=$( grep -m 1 "^$tagartist^^$tagalbum^" <<< $artist_album_year )
-			latestbyartistyear+="$tagartist^^${linedate/*^}^^$tagalbum^^$tagdir"$'\n'
-		done < $dirmpd/latest
-		echo "$latestbyartist" > $dirmpd/latestbyartist
-		echo "$latestbyartistyear" > $dirmpd/latestbyartist-year
-		php /srv/http/cmd.php sort "$modelatest"
-	else
-		rm -f $dirmpd/latest*
-	fi
-else
-	rm -f $dirmpd/latest*
-fi
 for mode in $modes latest; do
 	file=$dirmpd/$mode
 	[[ $mode != *by* ]] && counts+='
 , "'$mode'" : '$( lineCount $file )
 done
-rm -f $dirshm/{albumprev,deleted}
+
+php /srv/http/cmd.php sort "$modes $modelatest"
 
 updateDone
 
@@ -190,5 +160,19 @@ updateDone
 	fi
 	
 	list=$( find -L /mnt/MPD -name .mpdignore )
-	[[ $list ]] && sort -V <<< $list > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
+	if [[ $list ]]; then
+		while read file; do # verify ignored dirs exist
+			dir=$( dirname "$file" )
+			while read d; do
+				[[ ! -e "$dir/$d" ]] && sed -i "/^$d$/ d" "$file"
+			done < "$file"
+			if [[ ! $( awk NF "$file" ) ]]; then
+				rm -f "$file"
+				list=$( grep -v "^$file$" <<< $list )
+			fi
+		done <<< $list
+		[[ $list ]] && sort -V <<< $list > $dirmpd/mpdignorelist
+	else
+		rm -f $dirmpd/mpdignorelist
+	fi
 ) &

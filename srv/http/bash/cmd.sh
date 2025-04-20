@@ -200,7 +200,7 @@ albumignore )
 	sed -i "/\^$ALBUM^^$ARTIST^/ d" $dirmpd/album
 	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
 	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/albumbyartist-year
-	appendSortUnique "$ALBUM^^$ARTIST" $dirmpd/albumignore
+	appendSortUnique $dirmpd/albumignore "$ALBUM^^$ARTIST"
 	;;
 bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
@@ -211,7 +211,7 @@ bookmarkadd )
 		order=$( jq '. + ["'$DIR'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json
 	fi
-	pushData bookmark 1
+	pushData bookmark
 	;;
 bookmarkremove )
 	bkfile="$dirbookmarks/$NAME"
@@ -221,11 +221,11 @@ bookmarkremove )
 		echo "$order" > $dirsystem/order.json
 	fi
 	rm "$bkfile"
-	pushData bookmark 1
+	pushData bookmark
 	;;
 bookmarkrename )
 	mv $dirbookmarks/{"$NAME","$NEWNAME"}
-	pushData bookmark 1
+	pushData bookmark
 	;;
 cachebust )
 	hash="?v=$( date +%s )'"
@@ -280,7 +280,7 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 		| magick -density 96 -background none - $dirimg/icon.png
 	splashRotate
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
-	pushData reload 1
+	pushData reload
 	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd
@@ -297,12 +297,19 @@ coverfileslimit )
 	done
 	;;
 dirdelete )
-	[[ ! $CONFIRM && $( ls "$DIR" ) ]] && echo -1 && exit
+	dir="$DIR/$NAME"
+	[[ ! $CONFIRM && $( ls "$dir" ) ]] && echo -1 && exit
 # --------------------------------------------------------------------
-	rm -rf "$DIR"
+	stations=$( find "$dir" -type f -exec basename {} \; )
+	rm -rf "$dir"
 	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 	sed -i -E 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
 	pushRadioList
+	while read s; do
+		find $dirwebradio -name "$s" -exec false {} + || continue # continue on 1st found
+		
+		rm -f "$dirwebradio/img/$s".*
+	done <<< $stations
 	;;
 dirnew )
 	mkdir -p "$DIR"
@@ -340,7 +347,7 @@ latestclear )
 		count=$( lineCount $dirmpd/latest )
 		notify latest Latest 'Album cleared.'
 	else
-		> $dirmpd/latest
+		rm -f $dirmpd/latest*
 		count=0
 		notify latest Latest Cleared
 	fi
@@ -356,25 +363,6 @@ librandom )
 		rm -f $dirsystem/librandom
 	fi
 	pushData option '{ "librandom": '$TF' }'
-	;;
-lsmnt )
-	for dir in NAS SD USB; do
-		lsdir=$( ls /mnt/MPD/$dir 2> /dev/null )
-		list=false
-		if [[ $lsdir ]]; then
-			mpdignore=/mnt/MPD/$dir/.mpdignore
-			if [[ ! -e $mpdignore ]]; then
-				list=true
-			else
-				ignore=$( < $mpdignore )
-				while read d; do
-					! grep -q "^$d$" <<< $ignore && list=true && break
-				done <<< $lsdir
-			fi
-		fi
-		printf -v $dir '%s' $list
-	done
-	echo '{ "nas": '$NAS', "sd": '$SD', "usb": '$USB' }'
 	;;
 lyrics )
 	if [[ ! $ACTION ]]; then
@@ -618,7 +606,7 @@ mpcskippl )
 	;;
 mpcupdate )
 	date +%s > $dirmpd/updatestart # /usr/bin/ - fix date command not found
-	pushData mpdupdate '{ "start": true }'
+	pushData mpdupdate
 	if [[ $ACTION ]]; then
 		echo "\
 ACTION=$ACTION
@@ -630,20 +618,20 @@ LATEST=$LATEST" > $dirmpd/updating
 	[[ $PATHMPD == */* ]] && mpc -q $ACTION "$PATHMPD" || mpc -q $ACTION $PATHMPD # NAS SD USB all(blank) - no quotes
 	;;
 mpcupdatestop )
-	pushData mpdupdate '{ "done": true }'
+	pushData mpdupdate $( < $dirmpd/counts )
 	systemctl restart mpd
 	if [[ -e $dirmpd/listing ]]; then
 		killall cmd-list.sh
-		rm -f $dirmpd/{listing,updating} $dirshm/{listing,tageditor}
+		rm -f $dirmpd/{listing,updating} $dirshm/listing
 	fi
 	;;
 mpdignore )
 	dir=$( basename "$DIR" )
 	mpdpath=$( dirname "$DIR" )
-	appendSortUnique "$dir" "/mnt/MPD/$mpdpath/.mpdignore"
+	appendSortUnique "/mnt/MPD/$mpdpath/.mpdignore" "$dir"
 	[[ ! $( mpc ls "$mpdpath" 2> /dev/null ) ]] && exit
 # --------------------------------------------------------------------
-	pushData mpdupdate '{ "start": true }'
+	pushData mpdupdate
 	echo "$mpdpath" > $dirmpd/updating
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
@@ -751,9 +739,7 @@ webradioadd )
 	url=$( urldecode $URL )
 	urlname=${url//\//|}
 	webradioM3uPlsVerify $url
-	file=$dirwebradio
-	[[ $DIR ]] && file+="/$DIR"
-	file+="/$urlname"
+	file+="$DIR/$urlname"
 	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 # --------------------------------------------------------------------
 	echo "\

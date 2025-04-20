@@ -68,9 +68,11 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	fi
 	if [[ $reboot ]]; then
 		pushData reboot '{ "id": "'$CMD'" }'
-		appendSortUnique $CMD $dirshm/reboot
+		name=$( sed -n "/'id'.*'$CMD'/ {n; s/.* => *'//; s/'//; p}" /srv/http/settings/system.php )
+		appendSortUnique $dirshm/reboot ', "'$CMD'": "'$name'"'
 	elif [[ -e $dirshm/reboot ]]; then
-		sed -i "/$CMD/ d" $dirshm/reboot
+		sed -i '/^, "'$CMD'"/ d' $dirshm/reboot
+		[[ ! $( awk NF $dirshm/reboot ) ]] && rm -f $dirshm/reboot
 	fi
 }
 soundProfile() {
@@ -160,10 +162,8 @@ CMD ACTION PATHMPD"
 	fi
 	pushRefresh
 	;;
-gpiopintoggle )
-	[[ $( gpioget -a -c0 --numeric $PIN ) == 0 ]] && onoff=1 || onoff=0
-	gpioset -t0 -c0 $PIN=$onoff
-	echo $onoff
+gpiotoggle )
+	gpioset -t0 -c0 $PIN
 	;;
 hddapm )
 	hdparm -q -B $LEVEL $DEV
@@ -278,20 +278,19 @@ relays )
 	enableFlagSet
 	pushRefresh
 	pushData display '{ "submenu": "relays", "value": '$TF' }'
-	[[ ! -e $dirshm/relayson ]] && exit
+	if [[ ! -e $dirshm/relayson ]]; then
+		if [[ $ON ]]; then
+			pins="$( getVar on $dirsystem/relays.conf ) "
+			gpioset -t0 -c0 ${pins// /=0 }
+		fi
+		exit
 # --------------------------------------------------------------------
+	fi
 	if grep -q timeron=true $dirsystem/relays.conf; then
 		$dirbash/relays-timer.sh &> /dev/null &
 	else
 		killProcess relaystimer
 	fi
-	;;
-relaysstatus ) 
-	for p in $PINS; do
-		[[ $( gpioget -a -c0 --numeric $p ) == 0 ]] && tf=false || tf=true
-		on+=", $tf"
-	done
-	echo '[ '${on:1}' ]'
 	;;
 rotaryencoder )
 	if [[ $ON ]]; then
@@ -421,6 +420,11 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	;;
 vuled )
 	enableFlagSet
+	[[ $PINS ]] && echo $PINS > $dirsystem/vuled.conf
+	if [[ $ON ]]; then
+		pins="$( < $dirsystem/vuled.conf ) "
+		gpioset -t0 -c0 ${pins// /=0 }
+	fi
 	fifoToggle
 	pushRefresh
 	;;

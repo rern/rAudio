@@ -274,7 +274,14 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			V.screenoff = true;
 			break;
 		case 'refresh-library':
-			$( '#button-lib-update' ).trigger( 'click' );
+			if ( 'sd' in C ) {
+				$( '#button-lib-update' ).trigger( 'click' );
+			} else {
+				$.post( 'cmd.php', { cmd: 'countmnt' }, counts => {
+					$.each( counts, ( k, v ) => { C[ k ] = v } );
+					$( '#button-lib-update' ).trigger( 'click' );
+				}, 'json' );
+			}
 			break;
 		case 'color':
 			V.color = true;
@@ -464,7 +471,6 @@ $( '#library, #button-library' ).on( 'click', function() {
 			libraryHome();
 		}
 	} else {
-		libraryHome();
 		switchPage( 'library' );
 	}
 	if ( S.updating_db ) banner( 'library blink', 'Library Database', 'Update ...' );
@@ -504,8 +510,8 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 		&& ( ! S.webradio || ( S.state === 'play' && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
 		if ( S.Title.includes( '(' ) ) {
-			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], function( paren ) {
-				if ( paren === '-1' ) {
+			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], paren => {
+				if ( paren == -1 ) {
 					infoTitle();
 				} else {
 					S.scrobble && S.webradio ? infoTitle() : lyrics();
@@ -1007,7 +1013,7 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 	delete V.gmode;
 	if ( V.query.length > 1 ) V.scrolltop[ V.query.slice( -1 )[ 0 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
-	if ( V.mode.slice( -5 ) === 'radio' ) {
+	if ( modeRadio() ) {
 		var query = {
 			  library : 'radio'
 			, string  : path
@@ -1020,7 +1026,7 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 	}
 	query.gmode = V.mode;
 	list( query, function( html ) {
-		if ( ! path && V.mode.slice( -5 ) === 'radio' ) path = V.mode.toUpperCase();
+		if ( ! path && modeRadio() ) path = V.mode.toUpperCase();
 		var data = {
 			  html      : html
 			, modetitle : path
@@ -1084,6 +1090,9 @@ $( '#button-lib-update' ).on( 'click', function() {
 			, [ 'Append Latest list', 'checkbox' ]
 		]
 		, values     : { NAS: C.nas, SD: C.sd, USB: C.usb, ACTION: 'update', LATEST: false }
+		, beforeshow : () => {
+			if ( ! C.latest ) $( '#infoList input' ).last().prop( 'disabled', true );
+		}
 		, ok         : () => {
 			var val = infoVal();
 			var path = '';
@@ -1116,7 +1125,7 @@ $( '#button-lib-search' ).on( 'click', function() {
 		, format  : [ 'album', 'albumartist', 'artist', 'file', 'title', 'time', 'track' ]
 	}
 	list( query, function( data ) {
-		if ( data === -1 ) {
+		if ( data == -1 ) {
 			info( {
 				  icon    : 'library'
 				, title   : 'Library Search'
@@ -1175,8 +1184,8 @@ $( '#button-lib-back' ).on( 'click', function() {
 		return
 	}
 	
-	if ( V.mode === 'album' ) {
-		$( '.licover' ).length ? $( '.mode.album' ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
+	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
+		$( '.licover' ).length ? $( '.mode.'+ V.mode ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 		return
 		
 	} else {
@@ -1185,43 +1194,29 @@ $( '#button-lib-back' ).on( 'click', function() {
 			return
 		}
 		
-		var $breadcrumbs = $( '#lib-title a' );
-		var bL           = $breadcrumbs.length
-		if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
-			$( '#library' ).trigger( 'click' );
+		if ( modeFile() ) {
+			var $breadcrumbs = $( '#lib-title a' );
+			$breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 			return
 		}
+		
 	}
-	V.scrolltop[ $( '#page-library .lib-path' ).text() ] = $( window ).scrollTop();
-	var backmode = 'gmode' in V && V.gmode !== V.mode;
-	if ( bL && V.mode !== 'latest' && ! backmode ) {
-		bL > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
+	V.scrolltop[ $( '#lib-path' ).text() ] = $( window ).scrollTop();
+	V.query.pop();
+	var query = V.query.slice( -1 )[ 0 ];
+	if ( query === 'album' ) {
+		$( '.mode.album' ).trigger( 'click' );
 	} else {
-		V.query.pop();
-		var query = V.query.slice( -1 )[ 0 ];
-		if ( query === 'album' ) {
-			$( '.mode.album' ).trigger( 'click' );
-		} else {
-			if ( 'gmode' in query ) V.mode = query.gmode;
-			list( query, function( html ) {
-				if ( html != -1 ) {
-					if ( backmode ) V.mode = V.gmode;
-					if ( V.mode === 'album' ) {
-						var path = 'ALBUM';
-					} else {
-						var path = query.path;
-					}
-					var data = {
-						  html      : html
-						, modetitle : query.modetitle
-						, path      : path
-					}
-					renderLibraryList( data );
-				} else {
-					$( '#button-lib-back' ).trigger( 'click' ); 
-				}
-			} );
-		}
+		if ( 'gmode' in query ) V.mode = query.gmode;
+		list( query, function( html ) {
+			if ( 'gmode' in V && V.gmode !== V.mode ) V.mode = V.gmode;
+			var data = {
+				  html      : html
+				, modetitle : query.modetitle
+				, path      : V.mode === 'album' ? 'ALBUM' : query.path
+			}
+			renderLibraryList( data );
+		} );
 	}
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {
@@ -1235,15 +1230,16 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		return
 	}
 	
-	var path = V.mode.toUpperCase();
-	// V.modes: sd, nas, usb, webradio, dabradio, album, artist, albumartist, composer, conductor, genre, playlists
+	var moderadio = modeRadio();
+	var path      = V.mode.toUpperCase();
+	// V.modes: sd, nas, usb, webradio, dabradio, album, latest, artist, albumartist, composer, conductor, genre, playlists
 	// ( coverart, bookmark by other functions )
-	if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) { // browse by directory
+	if ( modeFile() ) { // browse by directory
 		var query = {
 			  library : 'ls'
 			, string  : path
 		}
-	} else if ( V.mode.slice( -5 ) === 'radio' ) {
+	} else if ( moderadio ) {
 		var query = {
 			  library : 'radio'
 			, gmode   : V.mode
@@ -1260,11 +1256,11 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var data = {
 			  html      : html
 			, modetitle : path
-			, path      : path
+			, path      : moderadio ? '' : path
 		}
 		renderLibraryList( data );
 	} );
-	query.path      = V.mode.slice( -5 ) === 'radio' ? '' : path;
+	query.path      = modeRadio() ? '' : path;
 	query.modetitle = path;
 	V.query.push( query );
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
@@ -1433,21 +1429,19 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		renderLibraryList( data );
 	} );
+	V.query.push( query );
 } ).press( {
 	  delegate : '.coverart'
 	, action   : function( e ) {
 		var $this  = $( e.currentTarget );
-		var src    = $this.find( 'img' ).attr( 'src' );
-		var i      = D.albumbyartist ? '21' : '12';
-		var album  = $this.find( '.coverart'+ i[ 0 ] ).text();
-		var artist = $this.find( '.coverart'+ i[ 1 ] ).text();
 		info( {
 			  icon    : V.icoverart
-			, title   : 'Album Thumbnail'
-			, message :  '<img src="'+ src +'">'
-						+'<br><wh>'+ ico( 'album' ) + album +'</wh>'
-						+'<br>'+ ico( 'artist wh' ) + artist
-						+'<br><br>Exclude this thumbnail?'
+			, title   : capitalize( V.mode ) +' Thumbnail'
+			, message : $this.find( 'img' )[ 0 ].outerHTML
+						+'<p>'+ $this.find( '.coverart1' ).text()
+						+'<br>'+ $this.find( '.coverart2' ).text()
+						+'</p>'
+						+'<br>Remove this thumbnail from list?'
 			, okcolor : orange
 			, oklabel : ico( 'remove' ) +'Exclude'
 			, ok      : () => {
@@ -1481,24 +1475,24 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	e.stopPropagation();
 	if ( V.press ) return
 	
-	var $this      = $( this );
-	var $target    = $( e.target );
+	var $this       = $( this );
+	var $target     = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
-	var limode     = $this.data( 'mode' );
-	var l_modefile = [ 'sd', 'nas', 'usb' ].includes( limode );
-	var l_radio    = limode.slice( -5 ) === 'radio'; // radio .dir has no mode
+	var limode      = $this.data( 'mode' );
+	var l_modefile  = [ 'nas', 'sd', 'usb' ].includes( limode );
+	var l_moderadio = limode.slice( -5 ) === 'radio'; // radio .dir has no mode
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )
 		|| $this.find( '.i-music' ).length
-		|| l_radio
+		|| l_moderadio
 	) {
 		contextmenuLibrary( $this, $target );
 		return
 	}
 	
 	if ( D.tapaddplay || D.tapreplaceplay ) {
-		if ( $this.find( '.li-icon' ).is( '.i-music' ) || l_radio ) {
+		if ( $this.find( '.li-icon' ).is( '.i-music' ) || l_moderadio ) {
 			tapAddReplace( $this );
 			return
 		}
@@ -1536,17 +1530,16 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 	
 	if ( ! V.search ) $this.addClass( 'active' );
-	var libpath    = $( '#page-library .lib-path' ).text();
+	var libpath    = $( '#lib-path' ).text();
 	var path       = $this.find( '.lipath' ).text();
-	var v_modefile = [ 'sd', 'nas', 'usb', 'webradio', 'dabradio' ].includes( V.mode );
+	var v_modefile = modeFile( 'radio' );
 	if ( l_modefile ) {
 		var query = {
 			  library : 'ls'
 			, string  : path
 		}
-		var modetitle = v_modefile ? path : $( '#page-library .lib-path' ).text(); // keep title of non-file modes
-	} else if ( V.mode.slice( -5 ) === 'radio' ) { // dabradio, webradio
-		if ( libpath ) path = libpath +'/'+ path;
+		var modetitle = v_modefile ? path : $( '#lib-path' ).text(); // keep title of non-file modes
+	} else if ( modeRadio() ) { // dabradio, webradio
 		var query = {
 			  library : 'radio'
 			, string  : path
@@ -1620,7 +1613,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		
 		var data = {
 			  html      : html
-			, icon      : V.search ? limode : V.mode
 			, modetitle : modetitle
 			, path      : path
 		}
@@ -1943,11 +1935,11 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 			V.list.li = $this; // for contextmenu
 			$( '#pl-savedlist li.active' ).removeClass( 'active' );
 			if ( V.playlistlist ) {
-				V.list.name = $this.find( '.lipath' ).text().trim();
+				V.list.name = $this.find( '.lipath' ).text();
 				V.list.path = V.list.name;
 			} else {
-				V.list.name   = $this.find( '.name' ).text().trim();
-				V.list.path   = $this.find( '.lipath' ).text().trim() || V.list.name;
+				V.list.name   = $this.find( '.name' ).text();
+				V.list.path   = $this.find( '.lipath' ).text() || V.list.name;
 				V.list.track  = $this.data( 'track' );
 				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', S.pllength === 0 );
 				$( '.remove' ).removeClass( 'hide' );

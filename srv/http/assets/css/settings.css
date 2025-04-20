@@ -594,8 +594,12 @@ input.disabled + .switchlabel::after {
 	display: none;
 	color: var( --cw );
 }
+#infoList:has( svg ) {
+	padding-top: 10px;
+}
 .infomessage:has( svg ) {
 	width: 100%;
+	padding: 0;
 }
 .gpiopins {
 	margin-top: 0;
@@ -633,6 +637,10 @@ input.disabled + .switchlabel::after {
 }
 #divstatus i {
 	margin-right: 5px;
+}
+circle.on {
+	stroke: red;
+	stroke-width: 4px;
 }
 
 @media (max-height: 570px) {

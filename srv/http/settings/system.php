@@ -7,6 +7,7 @@
 <div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $onboardwlan = '/srv/http/data/shm/onboardwlan';
+$greendot    = '&nbsp; <grn>&#9679;</grn> &nbsp; Each pin';
 commonVariables( [
 	  'buttons' => [ 'add', 'gear', 'microsd', 'networks', 'power', 'refresh', 'rserver', 'usbdrive' ]
 	, 'labels'  => [
@@ -81,7 +82,7 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
       -o defaults,noauto,bg,soft,timeo=5
 </pre>
 Note:
- · Directory <c>/mnt/MPD/NAS/data</c> reserved for $L->shareddata
+ · Name: <c>data</c> (directory <c>/mnt/MPD/NAS/data</c>) reserved for $L->shareddata
  · Windows shares without password: <c>net user guest /active:yes</c>
 
 <div class="helpblock hide">Path: <c>/mnt/MPD/...</c>
@@ -184,9 +185,10 @@ EOF
  · Module with jumper <c>High/Low Level Trigger</c> (set to <c>High</c>)
  · Can be enabled and run as a test without a connected relay module.
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
-On/Off:
- · $M->relays
- · $B->gear <tab>Sequence</tab> $B->power On / $B->power Off &emsp;<tab>Pin - Name</tab> $B->power
+On/Off: $M->relays
+Toggle: $B->gear>
+	<tab style="width: 115px">Sequence</tab>$B->power All
+	<tab>Pin - Name</tab>$greendot
 EOF
 	],
 	[
@@ -220,10 +222,13 @@ EOF
 		  'id'       => 'vuled'
 		, 'label'    => 'VU LED'
 		, 'sub'      => 'cava'
+		, 'status'   => true
 		, 'help'     => <<< EOF
 <a class="img" data-name="vuled">LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
- · $B->gear$B->power On / Off
+ · $B->gear Toggle:
+	$greendot
+	$B->power All
 EOF
 	]
 ];
@@ -259,16 +264,16 @@ EOF
 		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
 $B->gear
-Swapiness (default: <c>60</c>)
-	· Balance between swap disk vs system memory cache
-	· Low - less swap
-Maximum Transmission Unit (default: <c>1500</c> bytes)
-	· Maximum size of one packet that can be transmitted in a network
-	· High - less overhead more efficiency
-	· Low - less delay
-Transmit Queue Length (default: <c>1000</c>)
-	· Number of packets allowed per kernel transmit queue in a network
-	· High - improve performance under high load
+ · Swapiness (default: <c>60</c>)
+	- Balance between swap disk vs system memory cache
+	- Low - less swap
+ · Maximum Transmission Unit (default: <c>1500</c> bytes)
+	- Maximum size of one packet that can be transmitted
+	- High - less overhead more efficiency
+	- Low - less delay
+ · Transmit Queue Length (default: <c>1000</c>)
+	- Number of packets allowed per kernel transmit queue
+	- High - improve performance under high load
 EOF
 	]
 	, [
@@ -312,7 +317,7 @@ EOF
 		  'id'       => 'shareddata'
 		, 'label'    => 'Shared Data'
 		, 'sub'      => 'Client'
-		, 'disabled' => $L->serverraudio.' is currently active.'
+		, 'disabled' => $L->serverraudio.$isenabled
 		, 'help'     => <<< EOF
 Connect shared data as client for:
  · Library database
@@ -321,8 +326,8 @@ Connect shared data as client for:
 
 Note:
  • Enabled - $B->microsd SD and $B->usbdrive USB:
-	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
-	 · Not availble in Library home
+	 - Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
+	 - Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server:  $T->features$L->serverraudio
@@ -331,22 +336,21 @@ Note:
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create shares for music <c>source</c> and <c>data</c>
 	 · Linux permissions:
-		NFS: <c>777</c>
-		CIFS (SMB): <c>read only = no</c>
-	 · Windows:
-		Right-click Folder &raquo; Properties &raquo; 
-		· <btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo;
-			<btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
-		· <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
+		- NFS: <c>777</c>
+		- CIFS (SMB): <c>read only = no</c>
+	 · Windows <btn>Folder</btn> <btn>Properties</btn> - right-click 
+		- <btn>Sharing</btn> <btn>Advanced Sharing...</btn>
+		- <btn>Permissions</btn> <c>Everyone</c> - <c>Full Control</c>
+		- <btn>Security</btn> <c>Everyone</c> - <c>Full Control</c>
 	Clients:
 	 · 1st client:
-		· $L->storage $B->add Add <c>source</c>
-		· $M->refreshlibrary Update database
-		· $L->shareddata Connect <c>data</c>
-		· Local data will be transfered to <c>data</c>
+		- $L->storage $B->add Add <c>source</c>
+		- $M->refreshlibrary Update database
+		- $L->shareddata Connect <c>data</c>
+		- Local data will be transfered to <c>data</c>
 	 · Other clients:
-		· $L->shareddata Connect <c>data</c>
-		· <c>source</c> will be connected accordingly
+		- $L->shareddata Connect <c>data</c>
+		- <c>source</c> will be connected accordingly
 EOF
 	]
 ];

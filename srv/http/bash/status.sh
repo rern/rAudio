@@ -20,14 +20,8 @@ statusData() {
 	fi
 }
 
-if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
-	for i in {1..10}; do
-		sleep 1
-		[[ -e $dirmpd/counts ]] && mounted=1 && break
-	done
-	[[ ! $mounted ]] && echo -1 && exit
+[[ -L $dirmpd && ! -s $dirmpd ]] && echo -1 && exit
 # --------------------------------------------------------------------
-fi
 if [[ -e $dirshm/nosound ]]; then
 	volumenone=true
 else
@@ -196,7 +190,7 @@ while read line; do
 			;; # value of $key as "var name" - value of $val as "var value"
 		Album | AlbumArtist | Artist | Composer | Conductor | Title )
 			printf -v $key '%s' "$( quoteEscape $val )"
-			;;                   # string to escape " for json and trim leading/trailing spaces
+			;; # string to escape " for json
 		file )
 			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )

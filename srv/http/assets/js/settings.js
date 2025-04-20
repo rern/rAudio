@@ -221,21 +221,19 @@ $( '#close' ).on( 'click', function() {
 			return
 		}
 		
-		var message = '<wh>Reboot required for:</wh>';
-		list.split( '\n' ).forEach( id => {
-			message += '<br>'+ ico( id ) +' '+ $( '#div'+ id +' .label' ).eq( 0 ).text();
-		} );
+		var message = '';
+		$.each( list, ( k, v ) => message += ico( k ) +' '+ v +'<br>' );
 		info( {
-			  icon         : page
+			  icon         : 'system'
 			, title        : 'System Setting'
-			, message      : message
-			, messagealign : 'left'
+			, header       : '<wh>Reboot required for:</wh>'
+			, message      : '<p>'+ message +'</p>'
 			, cancel       : () => location.href = '/'
 			, okcolor      : orange
 			, oklabel      : ico( 'reboot' ) +'Reboot'
 			, ok           : () => infoPowerCommand( 'reboot' )
 		} );
-	}, 'text' );
+	}, 'json' );
 } );
 $( '.help' ).on( 'click', function() {
 	var $this  = $( this );

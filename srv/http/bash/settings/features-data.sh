@@ -13,15 +13,16 @@ data+=$( settingsEnabled \
 			$dirmpdconf httpd.conf \
 			$dirsystem ap autoplay equalizer login loginsetting lyrics dabradio multiraudio scrobble snapclientserver volumelimit \
 			$dirshm nosound )
-systemctl -q is-active localbrowser && localbrowser=true
-[[ ! $localbrowser ]] && systemctl -q is-enabled localbrowser && localbrowser=-1
+if systemctl -q is-enabled localbrowser; then
+	systemctl -q is-active localbrowser && localbrowser=true || localbrowser=-1
+fi
 ##########
 data+='
 , "hostname"     : "'$( hostname )'"
 , "ip"           : "'$( ipAddress )'"
 , "localbrowser" : '$localbrowser'
 , "nfsconnected" : '$( [[ -e $filesharedip && $( lineCount $filesharedip ) > 1 ]] && echo true )'
-, "shareddata"   : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
+, "shareddata"   : '$( [[ -L $dirmpd ]] && grep -q nfsserver.*false <<< $data && echo true )'
 , "snapclient"   : '$( ls $dirsystem/snapclien* &> /dev/null && echo true  )'
 , "ssid"         : "'$( iwgetid -r )'"
 , "wlan"         : '$( [[ -e $dirshm/wlan ]] && echo true )

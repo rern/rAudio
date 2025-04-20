@@ -20,7 +20,16 @@ commonVariables( [
 ] );
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
-$fileexplorer = 'File Explorer <btn>Address bar</btn> <c>\\\\'.$ip.'</c>';
+$fileexplorer = <<< EOF
+Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
+	» <btn>Map network drive...</btn>
+	» Folder: <c>\\\\$ip\SD</c> or <c>\\\\$ip\USB</c>
+	» Check <btn>Connect using different credentials</btn>
+	<btn>Finish</btn>
+	» Username: <c>root</c>
+	» Password: <c>***</c>
+EOF;
+$fileexpl_nfs = str_replace( "\t", "\t\t", $fileexplorer );
 $snapweb      = $B->gear.' <a href="https://github.com/badaix/snapweb">Snapweb</a> - Manage clients with built-in streaming renderer'."\n";
 // ----------------------------------------------------------------------------------
 $head         = [ 'title' => 'Renderers' ];
@@ -61,8 +70,8 @@ $snapweb
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Synchronous multiroom audio player.
  · Connect: $M->snapcast
  · SnapClient and SnapServer can be enabled on the same device.
-	· Enable SnapServer before SnapClient
-	· SnapClient auto connect/disconnect on play/stop (no connect icon)
+	- Enable SnapServer before SnapClient
+	- SnapClient connect/disconnect on play/stop (no connect icon)
  · Web interface: <c>http://SNAPSERVER_IP:1780</c>
 EOF
 	]
@@ -80,22 +89,22 @@ Require:
 
 To create Spotify private app:
 <btn>Log in</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
-	· with normal Spotify account
-	· Verify email if prompted
+	- with normal Spotify account
+	- Verify email if prompted
 <btn>Create app</btn>
-	· App name: <c>rAudio</c>
-	· App description: <c>(any)</c>
-	· Website: <c>(any)</c>
-	· Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
-	· <c>Save</c>
-<btn>Dashboard</btn> · <btn>rAudio</btn> · <btn>Settings</btn>
-	· <btn>Basic Information</btn> · <btn>User Management</btn>
-		· Fullname: <c>(any)</c>
-		· Email: <c>(Spotify Account email)</c>
-		· <c>Add user</c>
-	· <btn>Basic Information</btn>
-		· <c>Client ID</c>
-		· <c>Client secret</c>
+	» App name: <c>rAudio</c>
+	» App description: <c>(any)</c>
+	» Website: <c>(any)</c>
+	» Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
+	<btn>Save</btn>
+<btn>Dashboard</btn> » <btn>rAudio</btn> » <btn>Settings</btn>
+	» <btn>Basic Information</btn> » <btn>User Management</btn>
+		» Fullname - <c>(any)</c>
+		» Email - <c>(Spotify Account email)</c>
+		<btn>Add user</btn>
+	» <btn>Basic Information</btn> (the required data)
+		- <c>Client ID</c>
+		- <c>Client secret</c>
 EOF
 	]
 	, [
@@ -147,7 +156,7 @@ $body         = [
 		, 'sub'      => 'camilladsp'
 		, 'status'   => true
 		, 'exist'    => true
-		, 'disabled' => $L->equalizer.' is currently enabled.'
+		, 'disabled' => $L->equalizer.$isenabled
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: $M->camilladsp
@@ -157,7 +166,7 @@ EOF
 		  'id'       => 'equalizer'
 		, 'label'    => 'Equalizer'
 		, 'sub'      => 'alsaequal'
-		, 'disabled' => $L->dsp.' is currently enabled.'
+		, 'disabled' => $L->dsp.$isenabled
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10-band graphic equalizer with user presets.
 Control: $M->equalizer
@@ -213,12 +222,12 @@ EOF
 		, 'sub'      => 'smbd'
 		, 'status'   => true
 		, 'exist'    => true
-		, 'disabled' => $L->serverraudio.' is currently active.'
+		, 'disabled' => $L->serverraudio.$isenabled
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
- · Much faster than SCP / WinSCP when transfer large or a lot of files
+ · Much faster than SCP or ftp when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
- · Windows: $fileexplorer
+ · $fileexplorer
  
 Note: $L->serverraudio should yield better performance.
 EOF
@@ -247,7 +256,6 @@ EOF
 		  'id'       => 'login'
 		, 'label'    => 'Password Login'
 		, 'sub'      => 'password_hash'
-		, 'status'   => true
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
 Lock: $M->lock
@@ -269,12 +277,13 @@ EOF
 		  'id'       => 'nfsserver'
 		, 'label'    => 'Server rAudio'
 		, 'sub'      => 'nfs-server'
+		, 'status'   => true
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and $L->shareddata
  • <wh>rAudio Shared Data server:</wh>
-	· IP address - This rAudio must be set to static / fixed to prevent change on reboot.
-	· Password - if changed, must be the same on all clients.
+	· IP address - This rAudio must be set to static / fixed.
+	· Password - If changed, must be the same on all clients.)
 	· In $T->library
 		· $B->microsd SD and $B->usbdrive USB will be hidden.
 		· $B->usbdrive USB items will be displayed in $B->networks NAS instead.
@@ -287,11 +296,13 @@ EOF
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
-	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
-	· $fileexplorer
-	 
-<i class="i-warning"></i> Permissions set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
-	(Every <i class="i-raudio"></i> rAudio can set/update shared data.)
+	· Enable Windows Features <btn>Services for NFS</btn> <btn>Client for NFS</btn>
+	· $fileexpl_nfs
+
+Note:
+<i class="i-warning"></i> Permissions:
+ · Set when enabled: <c>/mnt/MPD/NAS</c> - <c>drwxrwxrwx</c>
+ · Every <i class="i-raudio"></i> rAudio can set/update shared data.
 EOF
 	]
 	, [

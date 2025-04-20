@@ -41,15 +41,15 @@ alphaNumeric() {
 }
 appendSortUnique() {
 	local data file lines
-	data=$1
-	file=$2
+	file=$1
+	shift
+	data=$@
 	[[ ! -e $file ]] && echo "$data" > $file && return
 	
 	lines="\
 $( < $file )
 $data"
-	lines=$( awk NF <<< $lines )
-	[[ $lines ]] && sort -u <<< $lines > $file || rm -f $file
+	awk NF <<< $lines | sort -u <<< $lines > $file
 }
 args2var() { # $2 $3 ... if any, still valid
 	local argslast CFG CMD_CFG_OFF conf i k keys kL v
@@ -218,7 +218,7 @@ fifoToggle() { # mpdoled vuled vumeter
 		if [[ ! -e $filefifo ]]; then
 			ln -s $dirmpdconf/{conf/,}fifo.conf
 			systemctl restart mpd
-			[[ $vuled || $vumeter ]] && systemctl restart cava
+			[[ $vuled || $vumeter ]] && systemctl try-restart cava
 		fi
 		! grep -q 'state="*play' $dirshm/status && return
 		
@@ -365,9 +365,13 @@ playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
 }
 pushData() {
-	local channel data ip json path sharedip updatedone webradiocopy
+	local channel data ip json path sharedip webradiocopy
 	channel=$1
-	data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
+	if [[ $2 ]]; then
+		data=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< ${@:2} ) # $2 - end: empty value > false
+	else
+		data=true
+	fi
 	pushWebsocket 127.0.0.1 $channel $data
 	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
@@ -378,26 +382,17 @@ pushData() {
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	if [[ $channel == mpdupdate ]]; then
-		if [[ $data == *done* ]]; then
-			sharedip=$( grep -v $( ipAddress ) $filesharedip )
-			for ip in $sharedip; do
-				cmdshWebsocket $ip shareddatampdupdate
-			done
-			return
-		fi
-	fi
-	
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		pushWebsocket $ip $channel $data
+		[[ $updatedone ]] && cmdshWebsocket $ip shareddatampdupdate || pushWebsocket $ip $channel $data
 	done
 }
 pushDirCounts() {
 	dir=$1
 	dirs=$( ls -d /mnt/MPD/${dir^^}/*/ 2> /dev/null )
 	[[ $dir == nas ]] && dirs=$( grep -v /mnt/MPD/NAS/data/ <<< $dirs )
-	pushData mpdupdate '{ "done": true }'
+	updatedone=1
+	pushData mpdupdate '{ "'$dir'": '$( wc -l <<< $dirs )' }'
 }
 pushRefresh() {
 	local page push
@@ -407,9 +402,14 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushWebsocket() {
-	if [[ $1 == 127.0.0.1 ]] || ipOnline $1; then
-		data='{ "channel": "'$2'", "data": '${@:3}' }'
-		websocat -B 10485760 ws://$1:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
+	local channel data ip
+	ip=$1
+	channel=$2
+	shift 2
+	data=$@
+	if [[ $ip == 127.0.0.1 ]] || ipOnline $ip; then
+		data='{ "channel": "'$channel'", "data": '$data' }'
+		websocat -B 10485760 ws://$ip:8080 <<< $( tr -d '\n' <<< $data ) # remove newlines - preserve spaces
 	fi
 }
 quoteEscape() {
@@ -474,7 +474,7 @@ sharedDataLink() {
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
 	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
-	appendSortUnique data $dirnas/.mpdignore
+	appendSortUnique $dirnas/.mpdignore data
 	[[ $1 == rserver && -e $dirshareddata/source ]] && return
 	
 	readarray -t source <<< $( < $dirshareddata/source )

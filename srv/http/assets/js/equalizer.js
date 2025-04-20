@@ -90,7 +90,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 			$( '#infoList input' ).on( 'blur', function() {
 				var index = $( this ).parents( 'tr' ).index();
 				var name0 = values[ index ];
-				var name1 = $( this ).val().trim();
+				var name1 = $( this ).val();
 				if ( name0 !== name1 ) {
 					if ( e.active === name0 ) e.active = name1;
 					e.preset[ name1 ] = e.preset[ name0 ];
@@ -118,7 +118,7 @@ $( '#infoOverlay' ).on( 'click', '#eqnew', function() {
 	$( '#eqsave, #eqname, #eqback' ).addClass( 'hide' );
 	$( '#eqname' ).empty();
 } ).on( 'input', '#eqname', function( e ) {
-	$( '#eqsave' ).toggleClass( 'disabled', $( this ).val().trim() in E.preset );
+	$( '#eqsave' ).toggleClass( 'disabled', $( this ).val() in E.preset );
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );
 } ).on( 'input', '#eqpreset', function() { // preset
 	var name   = $( this ).val();
