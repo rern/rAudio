@@ -62,11 +62,8 @@ fi
 
 [[ $state == play ]] && start_stop=start || start_stop=stop
 [[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
-
-if [[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]]; then
-	systemctl $start_stop cava
-	[[ $state != play && -e $dirsystem/vumeter ]] && pushData vumeter '{ "val": 0 }'
-fi
+[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
+[[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
 
