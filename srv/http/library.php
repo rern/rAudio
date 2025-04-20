@@ -224,7 +224,7 @@ case 'ls':
 	htmlTrack();
 	break;
 case 'radio':
-	$dir     = '/srv/http/data/'.$GMODE.'/'.$STRING;
+	$dir     = $STRING;
 	$subdirs = [];
 	$files   = [];
 	exec( 'ls -d "'.$dir.'"/* | grep -E -v "/img$|\.jpg$|\.gif$"'
