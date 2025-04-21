@@ -21,6 +21,11 @@ albumList() {
 excludeNoAlbum() { # exclude no album tag, strip filename, sort unique
 	awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}' <<< $1
 }
+list2file() {
+	echo "$2" > $dirmpd/$1'byartist-year' # %artist%^^%date^^%album%^^%file%
+	awk -F'^' '{print $1"^^"$5"^^"$7}' <<< "$2" | sort -u > $dirmpd/$1'byartist'
+	awk -F'^' '{print $5"^^"$1"^^"$7}' <<< "$2" | sort -u > $dirmpd/$1
+}
 notifyError() {
 	notify 'refresh-library blink' 'Library Database' "$1" 3000
 }
@@ -101,19 +106,16 @@ if [[ ! $mpclistall ]]; then # very large database
 	systemctl restart mpd
 fi
 if [[ $albumlist ]]; then
-	linewav=$( grep \.wav$ <<< $mpclistall ) # mpd not support *.wav albumartist
-	if [[ $linewav ]]; then
-		dirwav=$( sed 's|.*^||; s|/[^/]*$||; s|\[|\\[|' <<< $linewav | sort -u ) # path > dir > escape [ (to not mean [x-y] in grep)
+	dirwav=$( sed -n -E '/\.wav$/ {s/.*\^//; s|/[^/]+$||; p}' <<< $albumlist | sort -u ) # mpd not support *.wav albumartist
+	if [[ $dirwav ]]; then
 		while read dir; do
-			file=$( ls "/mnt/MPD/$dir/*.wav" | head -1 )
+			file=$( ls "/mnt/MPD/$dir/"*.wav | head -1 )
 			albumartist=$( kid3-cli -c 'get albumartist' "$file" 2> /dev/null )
-			[[ $albumartist ]] && albumlist=$( sed -n "/\^$dir$/ { s/[^^]*/$albumartist/; p}" <<< $albumlist )
+			[[ $albumartist ]] && albumlist=$( sed -n '\|\^'$dir'\/.*wav$| {s/[^^]*/'$albumartist'/; p}' <<< $albumlist )
 		done <<< $dirwav
 	fi
 	albumlist=$( sort -u <<< $albumlist | awk NF )
-	echo "$albumlist" > $file_album_a_y # %artist%^^%date^^%album%^^%file%
-	awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $albumlist > $dirmpd/albumbyartist
-	awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $albumlist > $dirmpd/album
+	list2file album "$albumlist"
 else
 	rm -f $dirmpd/{album,albumbyartist*}
 fi
@@ -126,11 +128,7 @@ if [[ $albumprev && $albumlist ]]; then # skip if initial scan
 		latest+=$'\n'$( comm -23 --nocheck-order <( echo "$albumlist" ) $file_album_prev )
 	fi                      #-23 suppress: in 2 only && in 3(both) >> in 1 only -new latest
 	latest=$( sort -u <<< $latest | awk NF )
-	if [[ $latest ]]; then
-		echo "$latest" > $file_latest_a_y
-		awk -F'^' '{print $1"^^"$5"^^"$7}' <<< $latest > $dirmpd/latestbyartist
-		awk -F'^' '{print $5"^^"$1"^^"$7}' <<< $latest > $dirmpd/latest
-	fi
+	[[ $latest ]] && list2file latest "$latest"
 fi
 [[ ! $latest ]] && rm -f $dirmpd/latest*
 ##### mode others

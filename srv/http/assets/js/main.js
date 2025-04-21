@@ -1182,7 +1182,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 	}
 	
 	var $target = '';
-	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
+	if ( modeAlbum() ) {
 		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
 	} else if ( modeFile( 'radio' ) ) {
 		var $breadcrumbs = $( '#lib-title a' );
@@ -1204,7 +1204,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		var data = {
 			  html      : html
 			, modetitle : query.modetitle
-			, path      : V.mode === 'album' ? 'ALBUM' : query.path
+			, path      : query.path
 		}
 		renderLibraryList( data );
 	} );
@@ -1550,7 +1550,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var modetitle = path;
 	} else { // album
 		var name = $this.find( '.liname' ).text();
-		if ( V.mode === 'album' ) {
+		if ( modeAlbum() ) {
 			if ( name ) { // albums with the same names
 				var query = {
 					  library : 'find'
