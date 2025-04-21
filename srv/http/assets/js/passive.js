@@ -70,7 +70,7 @@ W = {
 				if ( V.librarytrack ) {
 					setTrackCoverart();
 					renderLibraryPadding();
-				} else if ( [ 'album', 'latest' ].includes( V.mode ) ) {
+				} else if ( modeAlbum() ) {
 					if ( albumlistchanged ) $( '.mode.'+ V.mode ).trigger( 'click' );
 				}
 			}
@@ -274,7 +274,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
-				renderLibraryPadding( [ 'album', 'latest' ].includes( V.mode ) ? $( '.coverart' ).eq( 0 ).height() : false );
+				renderLibraryPadding( modeAlbum() ? $( '.coverart' ).eq( 0 ).height() : false );
 			}
 		} else {
 			renderPlaylistPadding();
