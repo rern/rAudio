@@ -678,7 +678,7 @@ function webRadioSave() {
 	webRadioNew( '', V.list.li.find( '.lipath' ).text() );
 }
 //----------------------------------------------------------------------------------------------
-$( '.menu a, .menu .submenu' ).on( 'click', function() {
+$( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	var $this = $( this );
 	var cmd   = $this.data( 'cmd' );
 	menuHide();
