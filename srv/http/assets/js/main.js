@@ -1034,8 +1034,7 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		}
 		renderLibraryList( data );
 	} );
-} );
-$( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
+} ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
 } ).on( 'click', '.button-latest-clear', function() {
 	if ( V.librarytrack ) {
@@ -1055,8 +1054,7 @@ $( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
 			, ok           : () => bash( [ 'latestclear' ], () => $( '#library' ).trigger( 'click' ) )
 		} );
 	}
-} );
-$( '#lib-title' ).on ( 'click', '#thumbupdate', function() {
+} ).on ( 'click', '#thumbupdate', function() {
 	thumbnailUpdate( 'modealbum' );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
