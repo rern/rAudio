@@ -115,10 +115,13 @@ W = {
 		if ( typeof data === 'boolean' ) {
 			S.updating_db = true;
 		} else {
+			S.updating_db = false;
+			if ( 'done' in data ) {
+				banner( 'refresh-library', 'Library Update', 'Done' );
+				delete data.done;
+			}
 			$.each( data, ( k, v ) => { C[ k ] = v } );
 			V.html = {}
-			S.updating_db = false;
-			banner( 'refresh-library', 'Library Update', 'Done' );
 			V.playback ? refreshData() : refreshAll();
 		}
 		setButtonUpdating();
