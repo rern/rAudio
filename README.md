@@ -84,7 +84,7 @@ Audio player for
 - [**rAudio Discussions**](https://github.com/rern/rAudio/discussions) - Questions, comments and bug reports
 
 ### Image files
-- Raspberry Pi - [**Release i20250208**](https://github.com/rern/rAudio/releases/tag/i20250208)
+- Raspberry Pi - [**Release i20250309**](https://github.com/rern/rAudio/releases/tag/i20250309)
 - BeagleBone Black - [DIY](https://github.com/rern/rAudio/discussions/299)
 - CubieBoard2 - [DIY](https://github.com/jazzi/rOS)
 
