@@ -112,10 +112,8 @@ W = {
 		if ( V.playlist ) setPlaylistRadioInfo();
 	}	
 	, mpdupdate : data => {
-		if ( typeof data === 'boolean' ) {
-			S.updating_db = true;
-		} else {
-			S.updating_db = false;
+		S.updating_db = typeof data === 'boolean';
+		if ( ! S.updating_db ) {
 			if ( 'done' in data ) {
 				banner( 'refresh-library', 'Library Update', 'Done' );
 				delete data.done;
