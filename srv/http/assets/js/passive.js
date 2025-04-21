@@ -70,7 +70,7 @@ W = {
 				if ( V.librarytrack ) {
 					setTrackCoverart();
 					renderLibraryPadding();
-				} else if ( [ 'album', 'latest' ].includes( V.mode ) ) {
+				} else if ( modeAlbum() ) {
 					if ( albumlistchanged ) $( '.mode.'+ V.mode ).trigger( 'click' );
 				}
 			}
@@ -112,13 +112,14 @@ W = {
 		if ( V.playlist ) setPlaylistRadioInfo();
 	}	
 	, mpdupdate : data => {
-		if ( typeof data === 'boolean' ) {
-			S.updating_db = true;
-		} else {
+		S.updating_db = typeof data === 'boolean';
+		if ( ! S.updating_db ) {
+			if ( 'done' in data ) {
+				banner( 'refresh-library', 'Library Update', 'Done' );
+				delete data.done;
+			}
 			$.each( data, ( k, v ) => { C[ k ] = v } );
 			V.html = {}
-			S.updating_db = false;
-			banner( 'refresh-library', 'Library Update', 'Done' );
 			V.playback ? refreshData() : refreshAll();
 		}
 		setButtonUpdating();
@@ -274,7 +275,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
-				renderLibraryPadding( [ 'album', 'latest' ].includes( V.mode ) ? $( '.coverart' ).eq( 0 ).height() : false );
+				renderLibraryPadding( modeAlbum() ? $( '.coverart' ).eq( 0 ).height() : false );
 			}
 		} else {
 			renderPlaylistPadding();

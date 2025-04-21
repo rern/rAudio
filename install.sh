@@ -4,7 +4,13 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20250420
+if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
+	for t in album latest; do
+		sort -o $dirmpd/$t{,}
+		sort -o $dirmpd/$t'byartist'{,}
+	done
+fi
+
 if ! locale | grep -q ^LANG=.*utf8; then
 	! locale -a | grep -q ^C.utf8 && locale-gen C.utf8
 	localectl set-locale LANG=C.utf8

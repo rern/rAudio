@@ -54,23 +54,16 @@ if [[ $clientip ]]; then
 		pushWebsocket $ip mpdplayer $status
 	done
 fi
+
 if [[ -e $dirsystem/lcdchar ]]; then
 	[[ ! $statusradio ]] && jq <<< "{ ${statuslines%,} }" > $dirshm/status.json # remove trailing ,
 	systemctl restart lcdchar
 fi
 
-if [[ -e $dirsystem/mpdoled ]]; then
-	[[ $state == play ]] && start_stop=start || start_stop=stop
-	systemctl $start_stop mpd_oled
-fi
-
-[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && cava=1
-if [[ $state == play ]]; then
-	[[ $cava ]] && systemctl start cava
-else
-	[[ $cava ]] && systemctl stop cava
-	[[ -e $dirsystem/vumeter ]] && pushData vumeter '{ "val": 0 }'
-fi
+[[ $state == play ]] && start_stop=start || start_stop=stop
+[[ -e $dirsystem/mpdoled ]] && systemctl $start_stop mpd_oled
+[[ -e $dirsystem/vuled || -e $dirsystem/vumeter ]] && systemctl $start_stop cava
+[[ -e $dirsystem/vumeter && $state != play ]] && pushData vumeter '{ "val": 0 }'
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom &
 

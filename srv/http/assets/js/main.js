@@ -1009,7 +1009,7 @@ $( '#bio' ).on( 'click', '.biosimilar', function() {
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-title' ).on( 'click', 'a', function() {
-	V.query = [];
+	V.query  = [];
 	delete V.gmode;
 	if ( V.query.length > 1 ) V.scrolltop[ V.query.slice( -1 )[ 0 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
@@ -1026,16 +1026,14 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 	}
 	query.gmode = V.mode;
 	list( query, function( html ) {
-		if ( ! path && modeRadio() ) path = V.mode.toUpperCase();
 		var data = {
 			  html      : html
-			, modetitle : path
+			, modetitle : path === '/srv/http/data/'+ V.mode ? V.mode.toUpperCase() : path
 			, path      : path
 		}
 		renderLibraryList( data );
 	} );
-} );
-$( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
+} ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
 } ).on( 'click', '.button-latest-clear', function() {
 	if ( V.librarytrack ) {
@@ -1055,8 +1053,7 @@ $( '#lib-title' ).on( 'click', '.button-webradio-new', function() {
 			, ok           : () => bash( [ 'latestclear' ], () => $( '#library' ).trigger( 'click' ) )
 		} );
 	}
-} );
-$( '#lib-title' ).on ( 'click', '#thumbupdate', function() {
+} ).on ( 'click', '#thumbupdate', function() {
 	thumbnailUpdate( 'modealbum' );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
@@ -1184,40 +1181,33 @@ $( '#button-lib-back' ).on( 'click', function() {
 		return
 	}
 	
-	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
-		$( '.licover' ).length ? $( '.mode.'+ V.mode ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
-		return
-		
-	} else {
-		if ( V.query.length === 1 && V.mode !== 'album' ) {
-			$( '#library' ).trigger( 'click' );
-			return
-		}
-		
-		if ( modeFile() ) {
-			var $breadcrumbs = $( '#lib-title a' );
-			$breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
-			return
-		}
-		
+	var $target = '';
+	if ( modeAlbum() ) {
+		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
+	} else if ( modeFile( 'radio' ) ) {
+		var $breadcrumbs = $( '#lib-title a' );
+		$target = $breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ) : $( '#library' );
+	} else if ( V.query.length === 1 && ! modeRadio() ) {
+		$target = $( '#library' );
 	}
+	if ( $target ) {
+		$target.trigger( 'click' );
+		return
+	}
+	
 	V.scrolltop[ $( '#lib-path' ).text() ] = $( window ).scrollTop();
 	V.query.pop();
 	var query = V.query.slice( -1 )[ 0 ];
-	if ( query === 'album' ) {
-		$( '.mode.album' ).trigger( 'click' );
-	} else {
-		if ( 'gmode' in query ) V.mode = query.gmode;
-		list( query, function( html ) {
-			if ( 'gmode' in V && V.gmode !== V.mode ) V.mode = V.gmode;
-			var data = {
-				  html      : html
-				, modetitle : query.modetitle
-				, path      : V.mode === 'album' ? 'ALBUM' : query.path
-			}
-			renderLibraryList( data );
-		} );
-	}
+	if ( 'gmode' in query ) V.mode = query.gmode;
+	list( query, function( html ) {
+		if ( 'gmode' in V && V.gmode !== V.mode ) V.mode = V.gmode;
+		var data = {
+			  html      : html
+			, modetitle : query.modetitle
+			, path      : query.path
+		}
+		renderLibraryList( data );
+	} );
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {
 	if ( V.press ) return
@@ -1240,9 +1230,10 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 			, string  : path
 		}
 	} else if ( moderadio ) {
+		var pathradio = '/srv/http/data/'+ V.mode;
 		var query = {
 			  library : 'radio'
-			, string  : '/srv/http/data/'+ V.mode
+			, string  : pathradio
 		}
 	} else { // browse by modes
 		var query = {
@@ -1256,7 +1247,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var data = {
 			  html      : html
 			, modetitle : path
-			, path      : moderadio ? '' : path
+			, path      : moderadio ? pathradio : path
 		}
 		renderLibraryList( data );
 	} );
@@ -1276,27 +1267,17 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	var icon     = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
 	var path     = $this.find( '.lipath' ).text();
 	V.list.name  = $this.find( '.name' ).text();
-	var htmllist = `\
-<div class="infomessage">${ icon }<br>
-<wh>${ V.list.name }</wh>
-<a class="li2 hide">${ path }</a>
-</div>
-<div class="menu">
-<a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
-<a data-cmd="playnext" class="playnext cmd"><i class="i-add"></i>Play next</a>
-<a data-cmd="replace" class="replace sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
-</div>`;
 	info( {
 		  icon       : 'playlist'
 		, title      : 'Add to Playlist'
-		, list       : htmllist
-		, values     : 'addplay'
+		, message    : icon +'<br><wh>'+ V.list.name +'</wh><a class="li2 hide">'+ path +'</a>'
+		, list       : '<div class="menu">'+ $( '#menu-bkradio' ).html() +'</div>'
 		, beforeshow : () => {
 			$( '#infoList' ).find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$( '#infoList' ).find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
-			$( '#infoList' ).on( 'click', '.cmd', function() {
-				V.mpccmd    = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
-				V.action    = $( this ).data( 'cmd' );
+			$( '#infoList' ).on( 'click', '.menu a, .menu .submenu', function() {
+				V.action = $( this ).data( 'cmd' );
+				V.mpccmd = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
 				addToPlaylist();
 			} );
 		}
@@ -1306,9 +1287,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	if ( V.press || $( '.bkedit' ).length ) return
 	
 	var path  = $( this ).find( '.lipath' ).text();
-	V.mode    = path.split( '/' )[ 0 ].toLowerCase();
+	V.mode    = path.slice( 0, 4 ) === '/srv' ? path.slice( 15, 23 ) : path.split( '/' )[ 0 ].toLowerCase();
 	if ( V.mode === 'webradio' ) {
-		path = path.slice( 9 );
 		var library = 'radio';
 	} else {
 		var library = 'ls';
@@ -1375,8 +1355,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var message = '<div class="infobookmark">'+ ico( 'bookmark' )
 					 +'<span class="bklabel">'+ name +'</span></div>';
 	}
-	var path           = $this.find( '.lipath' ).text();
-	var dir            = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/' : '/mnt/MPD/';
+	var dir   = '/mnt/MPD/'+ $this.find( '.lipath' ).text();
 	info( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
@@ -1385,10 +1364,10 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +' Icon'
 		, buttoncolor : ! thumbnail ? '' : orange
 		, button      : ! thumbnail ? '' : () => {
-			bash( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir + path, 'CMD TYPE DIR' ] );
+			bash( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir, 'CMD TYPE DIR' ] );
 		}
 		, ok          : () => {
-			imageReplace( 'bookmark', dir + path +'/coverart' );
+			imageReplace( 'bookmark', dir +'/coverart' );
 		}
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
@@ -1532,21 +1511,22 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( ! V.search ) $this.addClass( 'active' );
 	var libpath    = $( '#lib-path' ).text();
 	var path       = $this.find( '.lipath' ).text();
-	var v_modefile = modeFile( 'radio' );
+	var moderadio  = modeRadio();
 	if ( l_modefile ) {
-		var query = {
+		var query     = {
 			  library : 'ls'
 			, string  : path
 		}
-		var modetitle = v_modefile ? path : $( '#lib-path' ).text(); // keep title of non-file modes
-	} else if ( modeRadio() ) { // dabradio, webradio
-		var query = {
+		var modetitle = modeFile( 'radio' ) ? path : $( '#lib-path' ).text(); // keep title of non-file modes
+	} else if ( moderadio ) { // dabradio, webradio
+		path          = libpath +'/'+ path;
+		var query     = {
 			  library : 'radio'
-			, string  : libpath +'/'+ path
+			, string  : path
 		}
 		var modetitle = path;
 	} else if ( ! V.search && V.mode.slice( -6 ) === 'artist' ) {
-		var query = {
+		var query     = {
 			  library : 'findartist'
 			, mode    : V.mode
 			, string  : path
@@ -1559,7 +1539,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
 			var format = [ 'album', 'artist' ];
 		}
-		var query = {
+		var query     = {
 			  library : 'find'
 			, mode    : V.search ? limode : V.mode
 			, string  : path
@@ -1568,7 +1548,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var modetitle = path;
 	} else { // album
 		var name = $this.find( '.liname' ).text();
-		if ( V.mode === 'album' ) {
+		if ( modeAlbum() ) {
 			if ( name ) { // albums with the same names
 				var query = {
 					  library : 'find'
