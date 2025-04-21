@@ -1191,7 +1191,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 			return
 		}
 		
-		if ( modeFile() ) {
+		if ( modeFile( 'radio' ) ) {
 			var $breadcrumbs = $( '#lib-title a' );
 			$breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
 			return
