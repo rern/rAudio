@@ -12,7 +12,6 @@ if ! grep -q list2file $dirbash/cmd-list.sh && ! awk 'a[$0]++{exit 1}' $dirmpd/a
 	done
 fi
 
-# 20250420
 if ! locale | grep -q ^LANG=.*utf8; then
 	! locale -a | grep -q ^C.utf8 && locale-gen C.utf8
 	localectl set-locale LANG=C.utf8
@@ -48,6 +47,16 @@ fi
 if [[ ! -e /lib/systemd/user/spotifyd.service ]]; then
 	mv /lib/systemd/{system,user}/spotifyd.service
 	ln -s /lib/systemd/{user,system}/spotifyd.service
+fi
+
+# 20250228
+file=/etc/pacman.conf
+if grep -q 'linux-rpi' $file; then
+	if [[ -e /boot/kernel8.img ]]; then
+		sed -i 's/^IgnorePkg.*/#IgnorePkg   =/' $file
+	elif [[ -e /boot/kernel7.img ]]; then
+		sed -i 's/ linux-rpi//' $file
+	fi
 fi
 
 #-------------------------------------------------------------------------------
