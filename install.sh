@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20250422
-if ! grep -q list2file $dirbash/cmd-list.sh && ! awk 'a[$0]++{exit 1}' $dirmpd/album; then
+if [[ -e $dirmpd/album ]] && ! awk 'a[$0]++{exit 1}' $dirmpd/album; then
 	for t in album latest; do
 		sort -o $dirmpd/$t{,}
 		sort -o $dirmpd/$t'byartist'{,}
