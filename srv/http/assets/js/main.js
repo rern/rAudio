@@ -1181,40 +1181,33 @@ $( '#button-lib-back' ).on( 'click', function() {
 		return
 	}
 	
+	var $target = '';
 	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
-		$( '.licover' ).length ? $( '.mode.'+ V.mode ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
-		return
-		
-	} else {
-		if ( V.query.length === 1 && V.mode !== 'album' ) {
-			$( '#library' ).trigger( 'click' );
-			return
-		}
-		
-		if ( modeFile( 'radio' ) ) {
-			var $breadcrumbs = $( '#lib-title a' );
-			$breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
-			return
-		}
-		
+		$target = $( '.licover' ).length ? $( '.mode.'+ V.mode ) : $( '#library' );
+	} else if ( modeFile( 'radio' ) ) {
+		var $breadcrumbs = $( '#lib-title a' );
+		$target = $breadcrumbs.length > 1 ? $breadcrumbs.eq( -2 ) : $( '#library' );
+	} else if ( V.query.length === 1 && ! modeRadio() ) {
+		$target = $( '#library' );
 	}
+	if ( $target ) {
+		$target.trigger( 'click' );
+		return
+	}
+	
 	V.scrolltop[ $( '#lib-path' ).text() ] = $( window ).scrollTop();
 	V.query.pop();
 	var query = V.query.slice( -1 )[ 0 ];
-	if ( query === 'album' ) {
-		$( '.mode.album' ).trigger( 'click' );
-	} else {
-		if ( 'gmode' in query ) V.mode = query.gmode;
-		list( query, function( html ) {
-			if ( 'gmode' in V && V.gmode !== V.mode ) V.mode = V.gmode;
-			var data = {
-				  html      : html
-				, modetitle : query.modetitle
-				, path      : V.mode === 'album' ? 'ALBUM' : query.path
-			}
-			renderLibraryList( data );
-		} );
-	}
+	if ( 'gmode' in query ) V.mode = query.gmode;
+	list( query, function( html ) {
+		if ( 'gmode' in V && V.gmode !== V.mode ) V.mode = V.gmode;
+		var data = {
+			  html      : html
+			, modetitle : query.modetitle
+			, path      : V.mode === 'album' ? 'ALBUM' : query.path
+		}
+		renderLibraryList( data );
+	} );
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .nodata )', function() {
 	if ( V.press ) return
