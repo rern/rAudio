@@ -1514,12 +1514,12 @@ function setButtonUpdating() {
 		} else {
 			$( '#library, #button-library' ).addClass( 'blink' );
 		}
-		$( '#button-lib-update' ).addClass( 'bl' );
+		$( '#refresh-library, #button-lib-update' ).addClass( 'bl' );
 		if ( localhost ) blinkUpdate();
 		$( '#update' ).addClass( 'on' );
 	} else {
 		$( '#library, #button-library' ).removeClass( 'blink' );
-		$( '#button-lib-update' ).removeClass( 'bl' );
+		$( '#refresh-library, #button-lib-update' ).removeClass( 'bl' );
 		$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}
