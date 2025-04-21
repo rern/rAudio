@@ -1182,14 +1182,7 @@ function renderLibraryList( data ) { // V.librarylist
 	
 	$( '#lib-home-title, #lib-mode-list, .menu, #button-lib-update' ).addClass( 'hide' );
 	$( '#button-lib-back' ).removeClass( 'hide' );
-	var moderadio = modeRadio();
-	if ( moderadio ) {
-		var libpath = '/srv/http/data/webradio';
-		if ( data.path ) libpath += '/'+ data.path;
-	} else {
-		var libpath = data.path;
-	}
-	$( '#lib-path' ).text( libpath );
+	$( '#lib-path' ).text( data.path );
 	if ( data.modetitle.toLowerCase() === V.mode ) {
 		data.modetitle = data.modetitle
 								.replace( 'MARTIST', 'M ARTIST' )
@@ -1199,7 +1192,7 @@ function renderLibraryList( data ) { // V.librarylist
 	if ( 'count' in data && V.mode !== 'latest' ) {
 		$( '#lib-list' ).css( 'width', '100%' );
 		var htmlpath = '';
-	} else if ( moderadio && ! data.path ) { // radio root
+	} else if ( data.path === '/srv/http/data/'+ V.mode ) { // radio root
 		var htmlpath = ico( V.mode ) + htmltitle;
 	} else if ( ! modeFile( 'radio' ) ) {
 		var htmlpath = ico( V.search ? 'search' : V.mode ) + htmltitle;
@@ -1207,7 +1200,6 @@ function renderLibraryList( data ) { // V.librarylist
 		var dir      = data.path.split( '/' );
 		var dir0     = dir[ 0 ];
 		var htmlpath = ico( V.mode );
-		if ( moderadio ) htmlpath += '<a>'+ V.mode +' / </a>';
 		htmlpath    += '<a>'+ dir0 +' / <span class="lidir">'+ dir0 +'</span></a>';
 		var lidir    = dir0;
 		var iL       = dir.length;
@@ -1227,6 +1219,7 @@ function renderLibraryList( data ) { // V.librarylist
 			.html( htmlpath )
 			.removeClass( 'hide' )
 			.toggleClass( 'path', $( '#lib-title a' ).length > 0 );
+		if ( modeRadio () ) $( '#lib-title a' ).slice( 0, 4 ).remove();
 	}
 	V.html.librarylist = data.html;
 	$( '#lib-list, #page-library .index' ).remove();

@@ -1009,7 +1009,7 @@ $( '#bio' ).on( 'click', '.biosimilar', function() {
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-title' ).on( 'click', 'a', function() {
-	V.query = [];
+	V.query  = [];
 	delete V.gmode;
 	if ( V.query.length > 1 ) V.scrolltop[ V.query.slice( -1 )[ 0 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
@@ -1026,10 +1026,9 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 	}
 	query.gmode = V.mode;
 	list( query, function( html ) {
-		if ( ! path && modeRadio() ) path = V.mode.toUpperCase();
 		var data = {
 			  html      : html
-			, modetitle : path
+			, modetitle : path === '/srv/http/data/'+ V.mode ? V.mode.toUpperCase() : path
 			, path      : path
 		}
 		renderLibraryList( data );
@@ -1238,9 +1237,10 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 			, string  : path
 		}
 	} else if ( moderadio ) {
+		var pathradio = '/srv/http/data/'+ V.mode;
 		var query = {
 			  library : 'radio'
-			, string  : '/srv/http/data/'+ V.mode
+			, string  : pathradio
 		}
 	} else { // browse by modes
 		var query = {
@@ -1254,7 +1254,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var data = {
 			  html      : html
 			, modetitle : path
-			, path      : moderadio ? '' : path
+			, path      : moderadio ? pathradio : path
 		}
 		renderLibraryList( data );
 	} );
@@ -1274,27 +1274,17 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	var icon     = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
 	var path     = $this.find( '.lipath' ).text();
 	V.list.name  = $this.find( '.name' ).text();
-	var htmllist = `\
-<div class="infomessage">${ icon }<br>
-<wh>${ V.list.name }</wh>
-<a class="li2 hide">${ path }</a>
-</div>
-<div class="menu">
-<a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
-<a data-cmd="playnext" class="playnext cmd"><i class="i-add"></i>Play next</a>
-<a data-cmd="replace" class="replace sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
-</div>`;
 	info( {
 		  icon       : 'playlist'
 		, title      : 'Add to Playlist'
-		, list       : htmllist
-		, values     : 'addplay'
+		, message    : icon +'<br><wh>'+ V.list.name +'</wh><a class="li2 hide">'+ path +'</a>'
+		, list       : '<div class="menu">'+ $( '#menu-bkradio' ).html() +'</div>'
 		, beforeshow : () => {
 			$( '#infoList' ).find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$( '#infoList' ).find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
-			$( '#infoList' ).on( 'click', '.cmd', function() {
-				V.mpccmd    = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
-				V.action    = $( this ).data( 'cmd' );
+			$( '#infoList' ).on( 'click', '.menu a, .menu .submenu', function() {
+				V.action = $( this ).data( 'cmd' );
+				V.mpccmd = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
 				addToPlaylist();
 			} );
 		}
@@ -1530,21 +1520,22 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( ! V.search ) $this.addClass( 'active' );
 	var libpath    = $( '#lib-path' ).text();
 	var path       = $this.find( '.lipath' ).text();
-	var v_modefile = modeFile( 'radio' );
+	var moderadio  = modeRadio();
 	if ( l_modefile ) {
-		var query = {
+		var query     = {
 			  library : 'ls'
 			, string  : path
 		}
-		var modetitle = v_modefile ? path : $( '#lib-path' ).text(); // keep title of non-file modes
-	} else if ( modeRadio() ) { // dabradio, webradio
-		var query = {
+		var modetitle = modeFile( 'radio' ) ? path : $( '#lib-path' ).text(); // keep title of non-file modes
+	} else if ( moderadio ) { // dabradio, webradio
+		path          = libpath +'/'+ path;
+		var query     = {
 			  library : 'radio'
-			, string  : libpath +'/'+ path
+			, string  : path
 		}
 		var modetitle = path;
 	} else if ( ! V.search && V.mode.slice( -6 ) === 'artist' ) {
-		var query = {
+		var query     = {
 			  library : 'findartist'
 			, mode    : V.mode
 			, string  : path
@@ -1557,7 +1548,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
 			var format = [ 'album', 'artist' ];
 		}
-		var query = {
+		var query     = {
 			  library : 'find'
 			, mode    : V.search ? limode : V.mode
 			, string  : path

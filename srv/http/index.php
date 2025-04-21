@@ -112,7 +112,7 @@ $menulist = [
 ];
 htmlMenu( $menulist, 'playlist' );
 // radio bookmark
-$html     = menuCommon( 'wradd', 'wrreplace' );
+$html     = menuCommon( 'add', 'replace' );
 $menu    .= menuDiv( 'bkradio', $html );
 // webradio
 $html     = menuCommon( 'wradd', 'wrreplace' );
@@ -326,7 +326,7 @@ $htmlsearch   = '
 	<ul id="pl-savedlist" class="list"></ul>
 </div>
 
-<div><?=$menu?></div>
+<div id="menus"><?=$menu?></div>
 
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
