@@ -59,14 +59,16 @@ function bookmarkNew() {
 		var msgpath = name;
 	} else {
 		if ( modeRadio() ) {
-			var path = V.mode +'/'+ V.list.path;
-			var src  = '/data/'+ path +'/coverart.jpg';
+			var name    = V.list.name;
+			var path    = $( '#lib-path' ).text() +'/'+ name;
+			var src     = path.slice( 9 ) +'/coverart.jpg';
+			var msgpath = path.slice( 24 );
 		} else {
-			var path = V.list.path.slice( -4 ) === '.cue' ? dirName( path ) : V.list.path;
-			var src  = '/mnt/MPD/'+ path +'/coverart.jpg';
+			var path    = V.list.path.slice( -4 ) === '.cue' ? dirName( path ) : V.list.path;
+			var src     = '/mnt/MPD/'+ path +'/coverart.jpg';
+			var msgpath = path;
+			var name    = path.split( '/' ).pop();
 		}
-		var msgpath = path;
-		var name    = path.split( '/' ).pop()
 	}
 	info( {
 		  icon       : 'bookmark'

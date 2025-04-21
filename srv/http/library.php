@@ -148,10 +148,11 @@ case 'home':
 				$bkradio  = 'bkradio';
 				$dirradio = $prefix === 'http' ? 'webradio' : 'dabradio';
 				$src      = '/data/'.$dirradio.'/img/'.str_replace( '/', '|', $bkpath ).'.jpg';
+				$bkpath   = '/srv/http/data/'.$dirradio;
 			} else {
 				$bkradio  = '';
-				$src      = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
-				$src     .= $bkpath.'/coverart.jpg';
+				$src      = substr( $bkpath, 0, 4 ) === '/srv' ? substr( $bkpath, 9 ) : '/mnt/MPD/'.$bkpath;
+				$src     .= '/coverart.jpg';
 			}
 			$htmlmode.= '
 <div class="mode bookmark '.$bkradio.'">

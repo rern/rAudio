@@ -1287,9 +1287,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 	if ( V.press || $( '.bkedit' ).length ) return
 	
 	var path  = $( this ).find( '.lipath' ).text();
-	V.mode    = path.split( '/' )[ 0 ].toLowerCase();
+	V.mode    = path.slice( 0, 4 ) === '/srv' ? path.slice( 15, 23 ) : path.split( '/' )[ 0 ].toLowerCase();
 	if ( V.mode === 'webradio' ) {
-		path = path.slice( 9 );
 		var library = 'radio';
 	} else {
 		var library = 'ls';
@@ -1356,8 +1355,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		var message = '<div class="infobookmark">'+ ico( 'bookmark' )
 					 +'<span class="bklabel">'+ name +'</span></div>';
 	}
-	var path           = $this.find( '.lipath' ).text();
-	var dir            = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/' : '/mnt/MPD/';
+	var dir   = '/mnt/MPD/'+ $this.find( '.lipath' ).text();
 	info( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
@@ -1366,10 +1364,10 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +' Icon'
 		, buttoncolor : ! thumbnail ? '' : orange
 		, button      : ! thumbnail ? '' : () => {
-			bash( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir + path, 'CMD TYPE DIR' ] );
+			bash( [ 'cmd-coverart.sh', 'reset', 'folderthumb', dir, 'CMD TYPE DIR' ] );
 		}
 		, ok          : () => {
-			imageReplace( 'bookmark', dir + path +'/coverart' );
+			imageReplace( 'bookmark', dir +'/coverart' );
 		}
 	} );
 } ).on( 'click', '.dabradio.nodata', function() {
