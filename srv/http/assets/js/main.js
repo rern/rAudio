@@ -1512,11 +1512,20 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var libpath    = $( '#lib-path' ).text();
 	var path       = $this.find( '.lipath' ).text();
 	if ( l_modefile ) {
-		var query     = {
-			  library : 'ls'
-			, string  : path
+		if ( modeFile( 'radio' ) ) {
+			var query     = {
+				  library : 'ls'
+				, string  : path
+			}
+			var modetitle = path;
+		} else {
+			var query     = {
+				  library : 'lsmode'
+				, string  : [ path, libpath ]
+			}
+			var modetitle = libpath; // keep title of non-file modes
+			console.log(query)
 		}
-		var modetitle = modeFile( 'radio' ) ? path : libpath; // keep title of non-file modes
 	} else if ( modeRadio() ) { // dabradio, webradio
 		path          = libpath +'/'+ path;
 		var query     = {

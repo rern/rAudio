@@ -224,6 +224,15 @@ case 'ls':
 	}
 	htmlTrack();
 	break;
+case 'lsmode':
+	$i = array_search( $GMODE, $f );
+	array_splice( $f, $i, 1 );
+	array_unshift( $f, $GMODE );
+	$format = '%'.implode( '%^^%', $f ).'%';
+	exec( 'mpc ls -f "'.$format.'" "'.$STRING[ 0 ].'" | grep "^'.trim( $STRING[ 1 ] ).'"'
+		, $lists );
+	htmlTrack();
+	break;;
 case 'radio':
 	$dir     = $STRING;
 	$subdirs = [];
