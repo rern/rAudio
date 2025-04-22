@@ -1635,11 +1635,28 @@ function bashConsoleLog( data ) {
 		console.log( bashcmd );
 	}
 }
+function debug( disable ) {
+	if ( disable ) {
+		V.debug = false;
+		refreshData();
+		$( '#debug' ).removeClass( 'active' );
+		console.log( '\x1B[36mDebug:\x1B[0m Disabled' );
+	} else {
+		V.debug = true;
+		$( '#debug' ).addClass( 'active' );
+		console.log( '\x1B[36mDebug:\x1B[0m Data to server blocked' );
+	}
+}
 
 $( '.pagerefresh' ).press( () => location.reload() );
 
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return
+	
+	if ( V.debug ) {
+		debug( 'disable' );
+		return
+	}
 	
 	if ( $( '#data' ).length ) {
 		$( '#data' ).remove();
@@ -1648,14 +1665,16 @@ $( '#debug' ).on( 'click', function() {
 	}
 } ).press( () => {
 	if ( V.debug ) {
-		V.debug = false;
-		refreshData();
-		$( '#debug' ).removeClass( 'active' );
-		console.log( '\x1B[36mDebug:\x1B[0m Disabled' );
+		debug( 'disable' );
 		return
 	}
 	
 	bash( [ 'cmd.sh', 'cachetype' ], type => {
+		if ( type === 'time' ) {
+			debug();
+			return
+		}
+		
 		info( {
 			  icon  : 'flash'
 			, title : 'Debug / Cache'
@@ -1671,9 +1690,7 @@ $( '#debug' ).on( 'click', function() {
 				$( '#infoList input' ).on( 'click', function() {
 					type = $( this ).val();
 					if ( type === 'debug' ) {
-						V.debug = true;
-						$( '#debug' ).addClass( 'active' );
-						console.log( '\x1B[36mDebug:\x1B[0m Data to server blocked' );
+						debug();
 						$( '#infoX' ).trigger( 'click' );
 					} else {
 						bash( [ 'cmd.sh', 'cachebust', type === 'time', 'CMD TIME' ], location.reload() );

@@ -1458,9 +1458,9 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	var $target     = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
-	var limode      = $this.data( 'mode' );
-	var l_modefile  = [ 'nas', 'sd', 'usb' ].includes( limode );
-	var l_moderadio = limode.slice( -5 ) === 'radio'; // radio .dir has no mode
+	var l_mode      = $this.data( 'mode' );
+	var l_modefile  = [ 'nas', 'sd', 'usb' ].includes( l_mode );
+	var l_moderadio = l_mode.slice( -5 ) === 'radio'; // radio .dir has no mode
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )
 		|| $this.find( '.i-music' ).length
@@ -1511,15 +1511,14 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( ! V.search ) $this.addClass( 'active' );
 	var libpath    = $( '#lib-path' ).text();
 	var path       = $this.find( '.lipath' ).text();
-	var moderadio  = modeRadio();
 	if ( l_modefile ) {
 		var query     = {
 			  library : 'ls'
 			, string  : path
 		}
-		var modetitle = modeFile( 'radio' ) ? path : $( '#lib-path' ).text(); // keep title of non-file modes
-	} else if ( moderadio ) { // dabradio, webradio
-		path          = libpath +'/'+ path;
+		var modetitle = modeFile( 'radio' ) ? path : libpath; // keep title of non-file modes
+	} else if ( modeRadio() ) { // dabradio, webradio
+		path = libpath +'/'+ path;
 		var query     = {
 			  library : 'radio'
 			, string  : path
@@ -1529,11 +1528,11 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var query     = {
 			  library : 'findartist'
 			, mode    : V.mode
-			, string  : path
+			, string  : path.trim()
 			, format  : [ 'album', 'file' ]
 		}
 		var modetitle = path;
-	} else if ( limode !== 'album' ) { // non-album
+	} else if ( l_mode !== 'album' ) { // non-album
 		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
 			var format = [ 'artist', 'album' ];
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
@@ -1541,8 +1540,8 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var query     = {
 			  library : 'find'
-			, mode    : V.search ? limode : V.mode
-			, string  : path
+			, mode    : V.search ? l_mode : V.mode
+			, string  : path.trim()
 			, format  : format
 		}
 		var modetitle = path;
@@ -1550,32 +1549,32 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var name = $this.find( '.liname' ).text();
 		if ( modeAlbum() ) {
 			if ( name ) { // albums with the same names
-				var query = {
+				var query     = {
 					  library : 'find'
 					, mode    : [ 'album', 'artist', 'file' ]
-					, string  : [ name, path ]
+					, string  : [ name.trim(), path ]
 				}
 				var modetitle = name;
 			} else {
-				var query = {
+				var query     = {
 					  library : 'find'
 					, mode    : 'album'
-					, string  : path
+					, string  : path.trim()
 					, format  : [ 'album', 'artist' ]
 				}
 				var modetitle = path;
 			}
 		} else if ( V.search ) {
-			var query = {
+			var query     = {
 				  library : 'ls'
 				, string  : path
 			}
 			var modetitle = '';
 		} else {
-			var query = {
+			var query     = {
 				  library : 'find'
 				, mode    : [ 'album', V.mode ]
-				, string  : [ name, libpath ]
+				, string  : [ name.trim(), libpath ]
 			}
 			var modetitle = libpath;
 		}
@@ -1593,6 +1592,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		
 		var data = {
 			  html      : html
+			, icon      : V.search ? l_mode : V.mode
 			, modetitle : modetitle
 			, path      : path
 		}

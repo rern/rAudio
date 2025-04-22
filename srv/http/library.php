@@ -344,8 +344,17 @@ case 'track': // for tag editor
 	
 }
 
-function escape( $string ) { // for passing bash arguments
+function esc( $string ) {
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
+}
+function escape( $string ) { // for passing bash arguments
+	if ( is_array( $string ) ) {
+		$ar = [];
+		foreach( $string as $s ) $ar[] = esc( $s );
+		return $ar;
+	}
+
+	return esc( $string );
 }
 function htmlDirectory() {
 	global $GMODE, $html, $index0, $indexes, $lists;
