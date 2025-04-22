@@ -469,6 +469,9 @@ function displayBars() {
 	displayBottom();
 	if ( ! S.state || ! barVisible() ) return // suppress on reboot
 	
+	 displayBarsControls();
+}
+function displayBarsControls() {
 	var mpd_upnp = [ 'mpd', 'upnp' ].includes( S.player );
 	var noprevnext = S.pllength < 2 || ! mpd_upnp;
 	$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 );
@@ -1136,6 +1139,7 @@ function refreshData() {
 		V.volumecurrent = S.volume;
 		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) )
 		V.playback ? renderPlaybackAll() : refreshAll();
+		displayBarsControls();
 	} );
 }
 function renderLibrary() { // library home

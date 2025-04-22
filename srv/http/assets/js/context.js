@@ -750,7 +750,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			if ( V.list.singletrack || modeRadio() ) { // single track
 				V.mpccmd = [ 'mpcadd', path ];
 			} else if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
-				V.mpccmd = [ 'mpcaddfind', V.mode, path, 'album', V.list.album ];
+				V.mpccmd = [ 'mpcaddfind', V.mode, path.trim(), 'album', V.list.album.trim() ];
 			} else { // directory / album / saved playlist track
 				V.mpccmd = V.playlisttrack ? [ 'mpcadd', path ] : [ 'mpcaddls', path ];
 			}
@@ -781,11 +781,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			break;
 		default: // MODE
 			if ( V.list.li.data( 'mode' ) !== 'album' ) { // 1st level
-				V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
+				V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path.trim() ];
 			} else {                        // next level: mode + album || date/genre: mode + artist + album
-				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text() ];
-				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', V.list.li.find( '.name' ).text() );
-				V.mpccmd.push( 'album', V.list.li.find( '.liname' ).text() );
+				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text().trim() ];
+				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', V.list.li.find( '.name' ).text().trim() );
+				V.mpccmd.push( 'album', V.list.li.find( '.liname' ).text().trim() );
 			}
 		break
 	}
