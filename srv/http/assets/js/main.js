@@ -1524,7 +1524,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 				, string  : [ path, libpath ]
 			}
 			var modetitle = libpath; // keep title of non-file modes
-			console.log(query)
 		}
 	} else if ( modeRadio() ) { // dabradio, webradio
 		path          = libpath +'/'+ path;
