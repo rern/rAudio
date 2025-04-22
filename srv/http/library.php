@@ -54,7 +54,7 @@ switch( $post->library ) {
 case 'find':
 	$format = str_replace( '%artist%', '[%albumartist%|%artist%]', $format );
 	if ( is_array( $MODE ) ) {
-		exec( 'mpc find '.$MODE[ 0 ].' "'.$STRING[ 0 ].'" '.$MODE[ 1 ].' "'.$STRING[ 1 ].'" 2> /dev/null '
+		exec( 'mpc find '.$MODE[ 0 ].' "'.trim( $STRING[ 0 ] ).'" '.$MODE[ 1 ].' "'.trim( $STRING[ 1 ] ).'" 2> /dev/null '
 				."| sed 's|/[^/]*$||' "
 				."| sort -u "
 				."| awk 'NF && !a[$0]++'"
@@ -94,7 +94,7 @@ case 'find':
 	}
 	break;
 case 'findartist': // artist, albumartist
-	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
+	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.trim( $STRING ).'" 2> /dev/null '
 			."| sed 's|/[^/]*$||' "
 			."| sort -u "
 			."| awk 'NF && !a[$0]++'"

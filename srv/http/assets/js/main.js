@@ -1528,7 +1528,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var query     = {
 			  library : 'findartist'
 			, mode    : V.mode
-			, string  : path.trim()
+			, string  : path
 			, format  : [ 'album', 'file' ]
 		}
 		var modetitle = path;
@@ -1541,7 +1541,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var query     = {
 			  library : 'find'
 			, mode    : V.search ? l_mode : V.mode
-			, string  : path.trim()
+			, string  : path
 			, format  : format
 		}
 		var modetitle = path;
@@ -1552,14 +1552,14 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 				var query     = {
 					  library : 'find'
 					, mode    : [ 'album', 'artist', 'file' ]
-					, string  : [ name.trim(), path ]
+					, string  : [ name, path ]
 				}
 				var modetitle = name;
 			} else {
 				var query     = {
 					  library : 'find'
 					, mode    : 'album'
-					, string  : path.trim()
+					, string  : path
 					, format  : [ 'album', 'artist' ]
 				}
 				var modetitle = path;
@@ -1574,7 +1574,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 			var query     = {
 				  library : 'find'
 				, mode    : [ 'album', V.mode ]
-				, string  : [ name.trim(), libpath ]
+				, string  : [ name, libpath ]
 			}
 			var modetitle = libpath;
 		}
