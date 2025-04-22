@@ -1518,7 +1518,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var modetitle = modeFile( 'radio' ) ? path : libpath; // keep title of non-file modes
 	} else if ( modeRadio() ) { // dabradio, webradio
-		path = libpath +'/'+ path;
+		path          = libpath +'/'+ path;
 		var query     = {
 			  library : 'radio'
 			, string  : path
@@ -1592,7 +1592,6 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		
 		var data = {
 			  html      : html
-			, icon      : V.search ? l_mode : V.mode
 			, modetitle : modetitle
 			, path      : path
 		}
