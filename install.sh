@@ -11,7 +11,7 @@ if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
 	done
 fi
 
-if ! locale | grep -q ^LANG=.*utf8; then
+if ! locale | grep -qi ^LANG=.*utf-*8; then
 	! locale -a | grep -q ^C.utf8 && locale-gen C.utf8
 	localectl set-locale LANG=C.utf8
 fi
