@@ -39,20 +39,27 @@ search
 include 'function.php';
 
 $post    = ( object ) $_POST;
+$CMD     = $post->library;
 $GMODE   = $post->gmode ?? null;
 $MODE    = $post->mode ?? null;
 $STRING  = isset( $post->string ) ? escape( $post->string ) : null;
-$f       = $post->format ?? [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'file', 'genre', 'time', 'title', 'track' ];
-$format  = '%'.implode( '%^^%', $f ).'%';
 $html    = '<ul id="lib-list" class="list">';
 $index0  = '';
 $indexes = [];
-foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/'; // $dirmpd $dirsystem $dirwebradio
+$f       = $post->format ?? [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'file', 'genre', 'time', 'title', 'track' ];
+if ( $CMD === 'lsmode' ) {
+	$i = array_search( $GMODE, $f );
+	array_splice( $f, $i, 1 );
+	array_unshift( $f, $GMODE );
+}
+$format = '%'.implode( '%^^%', $f ).'%';
+$format = str_replace( '%albumartist%', '[%albumartist%|%artist%]', $format );
+// $dirmpd $dirsystem $dirwebradio
+foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'.$k.'/';
 
-switch( $post->library ) {
+switch( $CMD ) {
 
 case 'find':
-	$format = str_replace( '%artist%', '[%albumartist%|%artist%]', $format );
 	if ( is_array( $MODE ) ) {
 		exec( 'mpc find '.$MODE[ 0 ].' "'.trim( $STRING[ 0 ] ).'" '.$MODE[ 1 ].' "'.trim( $STRING[ 1 ] ).'" 2> /dev/null '
 				."| sed 's|/[^/]*$||' "
@@ -62,23 +69,8 @@ case 'find':
 		htmlDirectory();
 		exit;
 //----------------------------------------------------------------------------------
-		$file = $lists[ 0 ];
-		unset( $lists );
-		if ( substr( $file, -14, 4 ) !== '.cue' ) {
-			exec( 'mpc find -f "'.$format.'" '.$MODE[ 0 ].' "'.$STRING[ 0 ].'" '.$MODE[ 1 ].' "'.$STRING[ 1 ].'" 2> /dev/null '
-					."| awk 'NF && !a[$0]++'"
-				, $lists );
-			if ( ! count( $lists ) ) { // find with albumartist
-				exec( 'mpc find -f "'.$format.'" '.$MODE[ 0 ].' "'.$STRING[ 0 ].'" albumartist "'.$STRING[ 1 ].'" 2> /dev/null '
-						."| awk 'NF && !a[$0]++'"
-					, $lists );
-			}
-		} else { // $file = '/path/to/file.cue/track0001'
-			$format = '%'.implode( '%^^%', $f ).'%';
-			exec( 'mpc -f "'.$format.'" playlist "'.dirname( $file ).'"'
-				, $lists );
-		}
-	} else if ( $MODE === 'album' ) {
+	}
+	if ( $MODE === 'album' ) {
 		exec( 'mpc find -f "'.$format.'" album "'.$STRING.'" 2> /dev/null '
 				."| awk 'NF && !a[$0]++'"
 			, $lists );
@@ -230,11 +222,6 @@ case 'ls':
 	htmlTrack();
 	break;
 case 'lsmode':
-	$i      = array_search( $GMODE, $f );
-	array_splice( $f, $i, 1 );
-	array_unshift( $f, $GMODE );
-	$format = '%'.implode( '%^^%', $f ).'%';
-	$format = str_replace( '%albumartist%', '[%albumartist%|%artist%]', $format );
 	exec( 'mpc ls -f "'.$format.'" "'.$STRING[ 0 ].'" | grep "^'.trim( $STRING[ 1 ] ).'"'
 		, $lists );
 	htmlTrack();
