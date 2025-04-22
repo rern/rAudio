@@ -86,6 +86,12 @@ case 'find':
 		exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
 				."| awk 'NF && !a[$0]++'"
 			, $lists );
+		if ( end( $f ) === 'file' ) {
+			$lists = array_map( function( $l ) {
+				return dirname( $l );
+			}, $lists );
+			$lists = array_unique( $lists );
+		}
 	}
 	if ( count( $f ) > 3 ) {
 		htmlTrack();
@@ -94,7 +100,7 @@ case 'find':
 	}
 	break;
 case 'findartist': // artist, albumartist
-	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.trim( $STRING ).'" 2> /dev/null '
+	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.trim( $STRING ).'" '
 			."| sed 's|/[^/]*$||' "
 			."| sort -u "
 			."| awk 'NF && !a[$0]++'"
@@ -112,10 +118,9 @@ case 'findartist': // artist, albumartist
 	foreach( $array as $each ) {
 		$mode      = strtolower( explode( '/', $each->path )[ 0 ] );
 		$dataindex = dataIndex( $each->sort );
-		$icon      = imgIcon( '/mnt/MPD/'.$each->path.'/thumb.jpg', 'folder' );
 		$html     .= '
 <li data-mode="'.$mode.'"'.$dataindex.'>
-	'.$icon.'
+	'.i( 'album li-icon' ).'
 	<a class="lipath">'.$each->path.'</a>
 	<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
 </li>';
@@ -225,10 +230,11 @@ case 'ls':
 	htmlTrack();
 	break;
 case 'lsmode':
-	$i = array_search( $GMODE, $f );
+	$i      = array_search( $GMODE, $f );
 	array_splice( $f, $i, 1 );
 	array_unshift( $f, $GMODE );
 	$format = '%'.implode( '%^^%', $f ).'%';
+	$format = str_replace( '%albumartist%', '[%albumartist%|%artist%]', $format );
 	exec( 'mpc ls -f "'.$format.'" "'.$STRING[ 0 ].'" | grep "^'.trim( $STRING[ 1 ] ).'"'
 		, $lists );
 	htmlTrack();
@@ -415,8 +421,7 @@ function htmlFind() { // non-file 'find' command
 			$each->$key = $list[ $i ];
 			$each->sort = stripSort( $list[ 0 ] ).stripSort( $list[ 1 ] );
 		}
-		if ( isset( $list[ $fL ] ) ) $each->path = $list[ $fL ];
-		$array[] = $each;
+		$array[]    = $each;
 	}
 	sortList( $array );
 	$key0           = $f[ 0 ];
@@ -434,10 +439,11 @@ function htmlFind() { // non-file 'find' command
 			$name.= '<gr> • </gr>'.$val1;
 		}
 		$dataindex = dataIndex( $each->sort );
-		$datamode  = property_exists( $each, 'path' ) ? $MODE : 'album'; // cue //////////////////////////////////////////////////////////////////
+		$datamode  = property_exists( $each, 'file' ) ? 'file' : 'album'; // $each->file - value as dir
 		$liname    = $modedate_genre ? $val1 : $val0;
 		$html     .= '
 <li data-mode="'.$datamode.'"'.$dataindex.'">
+	<a class="lipath">'.$each->file.'</a>
 	<a class="liname">'.$liname.'</a>
 	'.$icon.'
 	<span class="single">'.$name.'</span>
@@ -575,7 +581,7 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		exit;
 //----------------------------------------------------------------------------------
 	}
-	global $cue, $f, $GMODE, $html, $search, $STRING, $tag;
+	global $f, $GMODE, $html, $search, $STRING, $tag;
 	if ( ! $search ) $html = str_replace( '">', ' track">' , $html );
 	$fL         = count( $f );
 	foreach( $lists as $list ) {
@@ -588,7 +594,9 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 	}
 	$each0      = $array[ 0 ];
 	$file0      = $each0->file;
+	if ( substr( $file0, -14, 10 ) === '.cue/track' ) $file0 = dirname( $file0 ); // *.cue/track000n
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
+	$cue        = $ext === 'cue';
 	$hidecover  = exec( 'grep "hidecover.*true" '.$dirsystem.'display.json' );
 	if ( ! $hidecover && ! $search ) {
 		if ( $ext !== 'wav' ) {
@@ -615,7 +623,6 @@ function htmlTrack() { // track list - no sort ($string: cuefile or search)
 		$seconds       = 0;
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
 		$totaltime     = second2HMS( $seconds );
-		$file0         = $cue ? dirname( $each0->file ) : $each0->file;
 		$args          = escape( implode( "\n", [ 'cmd', $artist, $album, $file0, 'CMD ARTIST ALBUM FILE' ] ) );
 		$coverart      = exec( '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
 		if ( ! $coverart ) $coverart = '/assets/img/coverart.svg';
