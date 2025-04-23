@@ -6,9 +6,9 @@ $dirsettings = $dirbash.'settings/';
 $dirdata     = '/srv/http/data/';
 $dirshm      = $dirdata.'shm/';
 
-$cmd         = $post->cmd ?? $argv[ 1 ];
+$CMD         = $post->cmd ?? $argv[ 1 ];
 
-switch( $cmd ) {
+switch( $CMD ) {
 
 case 'bash':
 	$command = $dirbash.$post->filesh;
