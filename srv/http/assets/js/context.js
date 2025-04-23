@@ -234,7 +234,10 @@ var context = {
 			}
 		} );
 	}
-	, crop          : () => bash( [ 'mpccrop' ] )
+	, crop          : () => {
+		bash( [ 'mpccrop' ] );
+		$( '#pl-list li:not( .active )' ).remove();
+	}
 	, current       : () => {
 		S.song = V.list.index;
 		setPlaylistScroll();

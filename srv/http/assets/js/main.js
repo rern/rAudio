@@ -1721,8 +1721,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 							playlistRemoveRange();
 							break;
 						case 'crop':
-							bash( [ 'mpccrop' ] );
-							$( '#pl-list li:not( .active )' ).remove();
+							context.crop();
 							$( '#infoX' ).trigger( 'click' );
 							break;
 					}
