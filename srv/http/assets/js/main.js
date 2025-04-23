@@ -785,7 +785,7 @@ $( '#divcover' ).on( 'click', '.cover-save', function() {
 		|| [ 'time-band', 'volume-band' ].includes( e.target.id )
 	) return
 	
-	S.webradio ? thumbnail() : coverartChange();
+	S.webradio ? context.thumbnail() : coverartChange();
 } );
 $( '#coverT' ).press( () => {
 	if ( typeof Android === 'object' ) changeIP();
@@ -1054,7 +1054,7 @@ $( '#lib-title' ).on( 'click', 'a', function() {
 		} );
 	}
 } ).on ( 'click', '#thumbupdate', function() {
-	thumbnailUpdate( 'modealbum' );
+	context.thumbupdate( 'modealbum' );
 } );
 $( '#button-lib-update' ).on( 'click', function() {
 	if ( S.updating_db ) {
@@ -1875,11 +1875,13 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		$menu.find( '.pause, .stop, .current' ).addClass( 'hide' );
 	}
+	var singletrack = S.pllength < 2;
 	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
 	$menu.find( '.similar' ).toggleClass( 'hide', webradio );
 	$menu.find( '.tag' ).toggleClass( 'hide', webradio || upnp || audiocd );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', ! notsaved );
-	$menu.find( '.i-track.submenu' ).toggleClass( 'disabled', S.pllength < 2 );
+	$menu.find( '.remove' ).toggleClass( 'sub', ! singletrack );
+	$menu.find( '.crop, .i-track.submenu' ).toggleClass( 'hide', singletrack );
 	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	playlistRemove( $( this ).parent() );
