@@ -12,7 +12,13 @@ switch( $cmd ) {
 
 case 'bash':
 	$command = $dirbash.$post->filesh;
-	$command.= $post->args ? ' "'.escape( implode( "\n", $post->args ) ).'"' : '';
+	if ( $post->args ) {
+		if ( is_array( $post->args ) ) {
+			$command.= ' "'.escape( implode( "\n", $post->args ) ).'"';
+		} else {
+			$command.= ' '.$post->args;
+		}
+	}
 	$result  = shell_exec( $command );
 	echo rtrim( $result );
 	break;
