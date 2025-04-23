@@ -60,36 +60,12 @@ foreach( [ 'mpd', 'system', 'webradio' ] as $k ) ${'dir'.$k} = '/srv/http/data/'
 switch( $CMD ) {
 
 case 'find':
-	if ( is_array( $MODE ) ) {
-		exec( 'mpc find '.$MODE[ 0 ].' "'.trim( $STRING[ 0 ] ).'" '.$MODE[ 1 ].' "'.trim( $STRING[ 1 ] ).'" 2> /dev/null '
-				."| sed 's|/[^/]*$||' "
-				."| sort -u "
-				."| awk 'NF && !a[$0]++'"
-			, $lists );
-		htmlDirectory();
-		exit;
-//----------------------------------------------------------------------------------
-	}
-	if ( $MODE === 'album' ) {
-		exec( 'mpc find -f "'.$format.'" album "'.$STRING.'" 2> /dev/null '
-				."| awk 'NF && !a[$0]++'"
-			, $lists );
-	} else {
-		exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
-				."| awk 'NF && !a[$0]++'"
-			, $lists );
-		if ( end( $f ) === 'file' ) {
-			$lists = array_map( function( $l ) {
-				return dirname( $l );
-			}, $lists );
-			$lists = array_unique( $lists );
-		}
-	}
-	if ( count( $f ) > 3 ) {
-		htmlTrack();
-	} else { // modes - album, composer, conductor, date, genre
-		htmlFind();
-	}
+	exec( 'mpc find '.$MODE[ 0 ].' "'.trim( $STRING[ 0 ] ).'" '.$MODE[ 1 ].' "'.trim( $STRING[ 1 ] ).'" 2> /dev/null '
+			."| sed 's|/[^/]*$||' "
+			."| sort -u "
+			."| awk 'NF && !a[$0]++'"
+		, $lists );
+	htmlDirectory();
 	break;
 case 'findartist': // artist, albumartist
 	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.trim( $STRING ).'" '
@@ -119,8 +95,7 @@ case 'findartist': // artist, albumartist
 	}
 	$html.= indexBar( $indexes );
 	echo $html;
-	exit;
-//----------------------------------------------------------------------------------
+	break;
 case 'home':
 	$modes     = [ 'Album',  'Artist', 'Album Artist', 'Composer',  'Conductor', 'Date',      'Genre'
 				, 'Latest', 'NAS',    'SD',           'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
@@ -168,6 +143,22 @@ case 'home':
 		, 'order' => $order
 	] );
 	break;
+case 'findmode':
+	exec( 'mpc find -f "'.$format.'" '.$MODE.' "'.$STRING.'" 2> /dev/null '
+			."| awk 'NF && !a[$0]++'"
+		, $lists );
+	if ( end( $f ) === 'file' ) {
+		$lists = array_map( function( $l ) {
+			return dirname( $l );
+		}, $lists );
+		$lists = array_unique( $lists );
+	}
+	if ( count( $f ) > 3 ) {
+		htmlTrack();
+	} else { // modes - album, composer, conductor, date, genre
+		htmlFind();
+	}
+	break;
 case 'list':
 	$filemode = $dirmpd.$MODE;
 	if ( in_array( $MODE, [ 'album', 'latest' ] ) ) {
@@ -179,12 +170,6 @@ case 'list':
 	if ( count( $lists ) ) htmlList();
 	break;
 case 'ls':
-	if ( in_array( $STRING, [ 'NAS', 'SD', 'USB' ] ) ) { // file modes - show all dirs in root
-		exec( 'ls -d /mnt/MPD/'.$STRING.'/* | sed -E -e "s|^/mnt/MPD/||" -e "/NAS\/data$/ d"', $lists );
-		htmlDirectory();
-		exit;
-//----------------------------------------------------------------------------------
-	}
 	exec( 'mpc ls "'.$STRING.'" 2> /dev/null'
 		, $lists );
 	if ( ! count( $lists ) ) exit;
@@ -220,6 +205,10 @@ case 'ls':
 		}
 	}
 	htmlTrack();
+	break;
+case 'lsdir':
+	exec( 'ls -d /mnt/MPD/'.$STRING.'/* | sed -E -e "s|^/mnt/MPD/||" -e "/NAS\/data$/ d"', $lists );
+	htmlDirectory();
 	break;
 case 'lsmode':
 	exec( 'mpc ls -f "'.$format.'" "'.$STRING[ 0 ].'" | grep "^'.trim( $STRING[ 1 ] ).'"'
