@@ -11,8 +11,9 @@ $cmd         = $post->cmd ?? $argv[ 1 ];
 switch( $cmd ) {
 
 case 'bash':
+	$args    = $post->args ?? '';
 	$command = $dirbash.$post->filesh;
-	$command.= isset( $post->args ) ? ' "'.escape( implode( "\n", $post->args ) ).'"' : '';
+	$command.= $args ? ' "'.escape( implode( "\n", $args ) ).'"' : '';
 	$result  = shell_exec( $command );
 	echo rtrim( $result );
 	break;
