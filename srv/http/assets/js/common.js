@@ -1250,7 +1250,7 @@ function infoPowerCommand( action ) {
 function infoPowerSplash( action ) {
 	V[ action ] = true;
 	loader();
-	banner( action +' blink', 'Power', action === 'off' ? 'Off ...' : 'Reboot ...', -1 );
+	if ( ! S.relayson ) banner( action +' blink', 'Power', action === 'off' ? 'Off ...' : 'Reboot ...', -1 );
 }
 // ----------------------------------------------------------------------
 function accent2plain( str ) {
@@ -1597,8 +1597,6 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 		- [ CMD, 'OFF' ] : disable
 */
 function bash( args, callback, json ) {
-	if ( ! args ) return
-	
 	if ( typeof args === 'string' ) {
 		var filesh = 'settings/'+ args
 		args       = '';
