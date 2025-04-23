@@ -1,12 +1,11 @@
 <?php
 $post        = ( object ) $_POST;
+$CMD         = $post->cmd ?? $argv[ 1 ]; // $argv - sort : from cmd-list.sh
 $sudo        = '/usr/bin/sudo ';
 $dirbash     = $sudo.'/srv/http/bash/';
 $dirsettings = $dirbash.'settings/';
 $dirdata     = '/srv/http/data/';
 $dirshm      = $dirdata.'shm/';
-
-$CMD         = $post->cmd ?? $argv[ 1 ];
 
 switch( $CMD ) {
 
