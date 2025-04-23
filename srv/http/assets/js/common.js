@@ -1561,6 +1561,7 @@ function websocketConnect( ip ) {
 			var json    = JSON.parse( data );
 			var channel = json.channel;
 			if ( channel in W ) W[ channel ]( json.data );
+			if ( V.debug ) console.log( json );
 		}
 	}
 }
