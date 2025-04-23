@@ -467,9 +467,7 @@ function displayBars() {
 		$( '.emptyadd' ).css( 'top', '' );
 	}
 	displayBottom();
-	if ( ! S.state || ! barVisible() ) return // suppress on reboot
-	
-	 displayBarsControls();
+	if ( barVisible() ) displayBarsControls();
 }
 function displayBarsControls() {
 	var mpd_upnp = [ 'mpd', 'upnp' ].includes( S.player );
@@ -478,7 +476,7 @@ function displayBarsControls() {
 	$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 	$( '#pause' ).toggleClass( 'hide', S.webradio );
 	$( '#playback-controls i' ).removeClass( 'active' );
-	$( '#'+ S.state ).addClass( 'active' ); // suppress on reboot
+	$( '#'+ ( S.state || 'stop' ) ).addClass( 'active' );
 	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 	$( '#coverM' ).toggleClass( 'disabled', ! mpd_upnp );
 }

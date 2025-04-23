@@ -55,11 +55,9 @@ W               = {  // ws push
 		banner( icon, title, message, delay );
 	}
 	, power  : data => {
-		loader();
-		ws             = null;
-		V[ data.type ] = true;
-		banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
-		if ( V.off ) {
+		ws = null;
+		infoPowerSplash( data.type );
+		if ( data.type === 'off' ) {
 			$( '#loader' ).css( 'opacity', 1 );
 			setTimeout( () => {
 				$( '#loader svg' ).css( 'animation', 'none' );
@@ -1229,9 +1227,8 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
+	infoPowerSplash( action );
 	var label = capitalize( action );
-	loader();
-	notify( action, 'Power', label +' ...' );
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
@@ -1249,6 +1246,11 @@ function infoPowerCommand( action ) {
 			, ok      : () => bash( [ 'power.sh', action || '', 'confirm' ] )
 		} );
 	} );
+}
+function infoPowerSplash( action ) {
+	V[ action ] = true;
+	loader();
+	banner( action +' blink', 'Power', action === 'off' ? 'Off ...' : 'Reboot ...', -1 );
 }
 // ----------------------------------------------------------------------
 function accent2plain( str ) {

@@ -2,6 +2,9 @@
 
 . /srv/http/bash/common.sh
 
+$dirbash/cmd.sh playerstop
+logoLcdOled
+[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
 if [[ $1 == reboot ]]; then
 	reboot=1
 	audioCDplClear && $dirbash/status-push.sh
@@ -11,10 +14,6 @@ else
 	audioCDplClear
 	pushData power '{ "type": "off" }'
 fi
-$dirbash/cmd.sh playerstop
-logoLcdOled
-[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off
-
 ipserver=$( ipAddress )
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipclients=$( grep -v $ipserver $filesharedip )
