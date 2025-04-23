@@ -1597,6 +1597,8 @@ Multiline arguments - no escape \" \` in js values > escape in php instead
 		- [ CMD, 'OFF' ] : disable
 */
 function bash( args, callback, json ) {
+	if ( ! args ) return
+	
 	if ( typeof args === 'string' ) {
 		var filesh = 'settings/'+ args
 		args       = '';
