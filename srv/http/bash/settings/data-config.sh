@@ -197,7 +197,7 @@ servermirror )
 	list=$( curl --connect-timeout 3 -sfL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist )
 	if [[ $? == 0 ]]; then
 		mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
-		[[ $mirror ]] && list=$( sed "0,/^Server/ s|//.*mirror|//$mirror.mirror|" <<< $list )
+		[[ $mirror ]] && list=$( sed "1,/^Server/ s|//.*mirror|//$mirror.mirror|" <<< $list )
 		echo "$list" > $file
 	else
 		list=$( < $file )
