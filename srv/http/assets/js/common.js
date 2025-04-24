@@ -1430,10 +1430,9 @@ function loaderHide() {
 }
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
-	var options = { minimumResultsForSearch: 10 }
 	if ( ! $select ) $select = $( '#infoList select' );
 	$select
-		.select2( options ).on( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
+		.select2( { minimumResultsForSearch: 10 } ).one( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
 			local(); // fix: onblur / onpagehide
 			V.select2 = true;
 			setTimeout( () => {
@@ -1442,7 +1441,7 @@ function selectSet( $select ) {
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
 			if ( I.active && I.boxwidth ) $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', I.boxwidth +'px' );
-		} ).on( 'select2:closing', function() {
+		} ).one( 'select2:closing', function() {
 			local(); // fix: onblur / onpagehide / Enter
 			setTimeout( () => {
 				V.select2 = false;
@@ -1460,7 +1459,7 @@ function selectSet( $select ) {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
 		} );
-	$( '#infoList .select2-container' ).attr( 'style', 'width: '+ I.boxW +'px !important' );
+	$( '#infoList .select2-container' ).css( 'width', I.boxW +'px' );
 }
 function selectText2Html( pattern ) {
 	function htmlSet( $el ) {
