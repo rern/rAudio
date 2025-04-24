@@ -36,6 +36,7 @@ var config        = {
 				, message : 'Save all data and settings'
 				, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
 				, values  : 'rAudio_backup-'+ ymd
+				, cancel  : switchCancel
 				, ok      : () => {
 					notifyCommon( 'Process ...' );
 					bash( 'system-databackup.sh', data => {
@@ -79,6 +80,7 @@ var config        = {
 				, tab      : [ '', util.restoreReset ]
 				, list     : [ 'Library database only', 'checkbox' ]
 				, file     : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
+				, cancel   : switchCancel
 				, oklabel  : ico( 'restore' ) +'Restore'
 				, okcolor  : orange
 				, ok       : () => {

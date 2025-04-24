@@ -1441,6 +1441,7 @@ function selectSet( $select ) {
 				if ( navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
+			if ( I.active && I.boxwidth ) $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', I.boxwidth +'px' );
 		} ).on( 'select2:closing', function() {
 			local(); // fix: onblur / onpagehide / Enter
 			setTimeout( () => {
