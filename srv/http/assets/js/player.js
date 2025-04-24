@@ -317,7 +317,7 @@ var util     = {
 				, checkblank   : true
 				, checkchanged : S.soxr
 				, boxwidth     : 70
-				, beforeshow   : () => selectSetWidth( 160 )
+				, beforeshow   : () => selectSetWidth( 1, 160 )
 				, cancel       : switchCancel
 				, ok           : switchEnable
 			} );

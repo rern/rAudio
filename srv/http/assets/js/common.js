@@ -1461,9 +1461,10 @@ function selectSet( $select ) {
 		} );
 	$( '#infoList .select2-container' ).css( 'width', I.boxW +'px' );
 }
-function selectSetWidth( px ) {
+function selectSetWidth( index, px ) {
 	$( '#infoList .select2-container' ).last().css( 'width', px +'px' );
-	$( '#infoList select' ).last().one( 'select2:open', () => {
+	$( '#infoList select' ).eq( index ).one( 'select2:open', () => {
+		console.log(9)
 		$( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', px +'px' );
 	} );
 }
