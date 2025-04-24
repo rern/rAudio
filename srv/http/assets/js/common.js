@@ -558,7 +558,7 @@ function info( json ) {
 				case 'text':
 					htmls.list += '<input type="'+ type +'"'+ ( param.updn && ! param.updn.enable ? ' disabled' : '' ) +'>';
 					if ( param.suffix ) {
-						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr>';
+						htmls.list += '<td><gr>'+ param.suffix +'</gr>';
 					} else if ( param.updn ) {
 						I.updn.push( param.updn );
 						htmls.list += '<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' );
