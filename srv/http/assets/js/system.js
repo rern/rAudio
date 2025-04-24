@@ -416,18 +416,21 @@ var util          = {
 			  icon       : 'lcdchar'
 			, title      : 'Character LCD'
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
-			, beforeshow : () => $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 )
+			, beforeshow : () => {
+				if ( I.values[ 0 ] === 'gpio' ) $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
+			}
 			, cancel   : switchCancel
 			, ok       : () => {
+				
 				jsonSave( 'lcdchar', infoVal() );
 				switchEnable();
 			}
 		}
 		, list : [
 			  [ 'Type',                 'hidden'  ]
-			, [ 'Size',                 'radio',    { kv: { '20 x 4': 20, '16 x 2': 16 } } ]
+			, [ 'Size',                 'radio',    { kv: { '20<gr>x</gr>4': 20, '20<gr>x</gr>2': 18, '16<gr>x</gr>2': 16 } } ]
 			, [ 'Character Map',        'radio',    { kv: [ 'A00', 'A02' ] } ]
-			, [ 'Address',              'radio',    [ '' ] ] /*'by confget'*/
+			, [ 'Address',              'radio',    [ '' ] ] // set by infoSetting
 			, [ 'Chip',                 'select',   [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
 			, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
 		]

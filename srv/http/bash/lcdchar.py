@@ -5,7 +5,8 @@ import json
 
 with open( '/srv/http/data/system/lcdchar.json' ) as f: CONF = json.load( f )
 locals().update( CONF ) # INF, COLS, CHARMAP, BACKLIGHT, [ ADDRESS, CHIP | P* ... ]
-rows   = COLS == 16 and 2 or 4
+rows   = COLS < 20 and 2 or 4
+if COLS == 18: COLS = 20 # 20 x 2
 cmA00  = CHARMAP == 'A00'
 
 if INF == 'i2c':
