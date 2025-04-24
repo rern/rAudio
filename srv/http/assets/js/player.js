@@ -307,10 +307,10 @@ var util     = {
 				, list         : [
 					  [ 'Type',           'hidden' ]
 					, [ 'Precision',      'select', { kv: [ 16, 20, 24, 28, 32 ], suffix: 'bit' } ]
-					, [ 'Phase Response', 'number', { suffix: '0-100' } ]
-					, [ 'Passband End',   'number', { suffix: '0-100%' } ]
-					, [ 'Stopband Begin', 'number', { suffix: '100-150%' } ]
-					, [ 'Attenuation',    'number', { suffix: '0-30dB' } ]
+					, [ 'Phase Response', 'number', { suffix: '(0-100)' } ]
+					, [ 'Passband End',   'number', { suffix: '(0-100%)' } ]
+					, [ 'Stopband Begin', 'number', { suffix: '(100-150%)' } ]
+					, [ 'Attenuation',    'number', { suffix: '(0-30dB)' } ]
 					, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2 } ]
 				]
 				, values       : values
