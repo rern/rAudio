@@ -1647,7 +1647,7 @@ function debug( disable ) {
 	} else {
 		V.debug = true;
 		$( '#debug' ).addClass( 'active' );
-		console.log( '\x1B[36mDebug\x1B[0m Send: blocked - Receive: pushed' );
+		console.log( '\x1B[36mDebug\x1B[0m Block: send - Show: command, pushed data' );
 	}
 }
 

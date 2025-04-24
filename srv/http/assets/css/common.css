@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1745398466' );
+	src         : url( '/assets/fonts/rern.woff2?v=1745407421' );
 }
 @font-face {
 	font-family : Lato;
@@ -346,16 +346,6 @@ input:focus {
 	border-bottom : 1px solid var( --cg );
 }
 
-#debug {
-	position: fixed;
-	bottom: 0;
-	width: 40px;
-	height: 40px;
-	z-index: 110;
-}
-#debug.active {
-	background : #fff;
-}
 codered  {
 	padding : 0px 5px 3px 5px;
 	border-radius : 3px;
@@ -398,6 +388,20 @@ codered  {
 	margin-right : -20px;
 }
 
+#debug {
+	position: fixed;
+	bottom: 0;
+	width: 40px;
+	line-height: 40px;
+	font-size: 24px;
+	text-align: center;
+	color: transparent;
+	z-index: 110;
+}
+#debug.active {
+	color: #000;
+	background : #fff;
+}
 .splash {
 	background: #000000 !important;
 }
