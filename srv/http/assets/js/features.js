@@ -384,16 +384,16 @@ var config       = {
 			} );
 		}
 	}
-	, stoptimer    : values => {
+	, stoptimer    : data => {
 		info( {
 			  ...SW
 			, list         : [
-				  [ 'Minutes',           'number', { updn: { step: 5, min: 5, max: 120 } } ]
-				, [ 'Power off on stop', 'checkbox' ]
+				  [ 'Minutes',           'number',   { updn: { step: 5, min: 5, max: 120 } } ]
+				, [ 'Power off on stop', 'checkbox', { colspan: 2 } ]
 			]
 			, boxwidth     : 70
-			, values       : values.values
-			, checkchanged : values.active
+			, values       : data.values
+			, checkchanged : data.active
 			, cancel       : switchCancel
 			, ok           : switchEnable
 			, fileconf     : true
