@@ -286,7 +286,7 @@ var util     = {
 				, values       : values
 				, checkblank   : true
 				, checkchanged : S.soxr
-				, boxwidth     : 180
+				, boxwidth     : 120
 				, cancel       : switchCancel
 				, ok           : switchEnable
 			} );
@@ -316,8 +316,8 @@ var util     = {
 				, values       : values
 				, checkblank   : true
 				, checkchanged : S.soxr
-				, boxwidth     : 80
-				, beforeshow   : () => selectSetWidth( 170 )
+				, boxwidth     : 70
+				, beforeshow   : () => selectSetWidth( 160 )
 				, cancel       : switchCancel
 				, ok           : switchEnable
 			} );
