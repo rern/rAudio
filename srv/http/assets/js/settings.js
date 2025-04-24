@@ -31,7 +31,7 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 		}
 		$( '.playback' )
 			.prop( 'class', 'playback i-'+ ( S.state === 'play' ? 'pause' : 'play' ) )
-			.toggleClass( 'disabled', page === 'player' && S.player !== 'mpd' );
+			.toggleClass( 'disabled', S.pllength === 0 || S.player !== 'mpd' );
 		$( 'heading .player' ).prop( 'class', 'player i-'+ S.player );
 	}
 	$( '.playback' ).on( 'click', function() {
