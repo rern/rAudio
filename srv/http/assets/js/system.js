@@ -420,6 +420,7 @@ var util          = {
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
 			, beforeshow : () => {
 				if ( I.values[ 0 ] === 'gpio' ) $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
+				$( '#infoList label' ).css( 'width', '70px' );
 			}
 			, cancel   : switchCancel
 			, ok       : () => {

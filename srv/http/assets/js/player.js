@@ -317,12 +317,7 @@ var util     = {
 				, checkblank   : true
 				, checkchanged : S.soxr
 				, boxwidth     : 105
-				, beforeshow   : () => {
-					$( '#infoList .select2-container' ).last().css( 'width', '200px' );
-					$( '#infoList select' ).last().one( 'select2:open', () => {
-						$( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', '200px' );
-					} );
-				}
+				, beforeshow   : () => selectSetWidth( 200 )
 				, cancel       : switchCancel
 				, ok           : switchEnable
 			} );

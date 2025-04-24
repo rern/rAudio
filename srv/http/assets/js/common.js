@@ -1461,6 +1461,12 @@ function selectSet( $select ) {
 		} );
 	$( '#infoList .select2-container' ).css( 'width', I.boxW +'px' );
 }
+function selectSetWidth( px ) {
+	$( '#infoList .select2-container' ).last().css( 'width', px +'px' );
+	$( '#infoList select' ).last().one( 'select2:open', () => {
+		$( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', px +'px' );
+	} );
+}
 function selectText2Html( pattern ) {
 	function htmlSet( $el ) {
 		$.each( pattern, ( k, v ) => {
