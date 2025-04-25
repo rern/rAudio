@@ -1022,6 +1022,12 @@ function playlistRemove( $li ) {
 	} else {
 		bash( [ 'mpcremove', $li.index() + 1, 'CMD POS' ] );
 	}
+	S.pllength--;
+	$( '#pl-trackcount' ).text( S.pllength );
+	var time = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
+	$( '#pl-time' )
+		.data( 'time', time )
+		.text( second2HMS( time ) );
 	$li.remove();
 }
 function playlistRemoveRange( range ) {

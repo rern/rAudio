@@ -1714,8 +1714,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 						case 'select':
 							$( '#pl-list .li1' ).before( ico( 'remove pl-remove' ) );
 							$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
-							infoButtonCommand();
-							local();
+							$( '#infoX' ).trigger( 'click' );
 							break;
 						case 'range':
 							playlistRemoveRange();
