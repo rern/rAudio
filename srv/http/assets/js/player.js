@@ -311,13 +311,12 @@ var util     = {
 					, [ 'Passband End',   'number', { suffix: '(0-100%)' } ]
 					, [ 'Stopband Begin', 'number', { suffix: '(100-150%)' } ]
 					, [ 'Attenuation',    'number', { suffix: '(0-30dB)' } ]
-					, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2 } ]
+					, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2, width: 160 } ]
 				]
 				, values       : values
 				, checkblank   : true
 				, checkchanged : S.soxr
 				, boxwidth     : 70
-				, beforeshow   : () => selectSetWidth( 1, 160 )
 				, cancel       : switchCancel
 				, ok           : switchEnable
 			} );

@@ -527,8 +527,9 @@ function info( json ) {
 				, suffix   : UNIT
 				, updn     : { step: N, min: N, max: N }
 			}*/
-			if ( [ 'checkbox', 'radio' ].includes( type ) && ( 'kv' in param && ! param.colspan ) ) param.colspan = 2;
-			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
+			colspan  = param.colspan || 0;
+			if ( [ 'checkbox', 'radio' ].includes( type ) && ! colspan ) colspan = 2;
+			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
 			switch ( type ) {
 				case 'checkbox':
 					if ( htmls.list.slice( -3 ) === 'tr>' ) htmls.list += '<tr>'
@@ -538,8 +539,7 @@ function info( json ) {
 					htmls.list += '<tr class="hide"><td></td><td>';
 					break;
 				case 'radio':
-					colspan     = param.colspan || 2;
-					htmls.list += '<tr><td>'+ label +'</td><td colspan="'+ colspan +'">';
+					htmls.list += '<tr><td>'+ label +'</td><td'+ colspan +'>';
 					break;
 				case 'range':
 					htmls.list += '<tr><td'+ colspan +'>';
@@ -596,7 +596,8 @@ function info( json ) {
 					break
 				case 'select':
 					kv          = param.kv || param;
-					htmls.list += '<select>'+ htmlOption( kv, param.nosort ) +'</select>';
+					datawidth   = param.width ? ' data-width="'+ param.width +'"' : '';
+					htmls.list += '<select'+ datawidth +'>'+ htmlOption( kv, param.nosort ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
@@ -1184,9 +1185,10 @@ function infoWidth() {
 	} else {
 		I.boxW   = 230;
 	}
-	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' )
-		.parent().addBack()
-		.css( 'width', I.boxW +'px' )
+	$( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' ).each( ( i, el ) => {
+		var $el = $( el );
+		if ( ! $el.attr( 'style' ) ) $el.parent().addBack().css( 'width', I.boxW +'px' );
+	} );
 	if ( $( '#infoList select' ).length ) selectSet();
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
 		$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
@@ -1432,7 +1434,9 @@ function loaderHide() {
 function selectSet( $select ) {
 	if ( ! $select ) $select = $( '#infoList select' );
 	$select
-		.select2( { minimumResultsForSearch: 10 } ).one( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
+		.select2( {
+			minimumResultsForSearch: 10
+		} ).one( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
 			local(); // fix: onblur / onpagehide
 			V.select2 = true;
 			setTimeout( () => {
@@ -1440,7 +1444,7 @@ function selectSet( $select ) {
 				if ( navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
-			if ( I.active && I.boxwidth ) $( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', I.boxwidth +'px' );
+			if ( I.active && I.boxwidth ) selectSetWidth( I.boxwidth );
 		} ).one( 'select2:closing', function() {
 			local(); // fix: onblur / onpagehide / Enter
 			setTimeout( () => {
@@ -1460,13 +1464,16 @@ function selectSet( $select ) {
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
 		} );
 	$( '#infoList .select2-container' ).css( 'width', I.boxW +'px' );
-}
-function selectSetWidth( index, px ) {
-	$( '#infoList .select2-container' ).last().css( 'width', px +'px' );
-	$( '#infoList select' ).eq( index ).one( 'select2:open', () => {
-		console.log(9)
-		$( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', px +'px' );
+	// if select width set
+	$( '#infoList select[ data-width ]' ).each( ( i, el ) => {
+		var $el   = $( el );
+		var width = $el.data( 'width' );
+		$el.next().css( 'width', width +'px' );
+		$el.one( 'select2:open', () => selectSetWidth( width ) );
 	} );
+}
+function selectSetWidth( width ) {
+	$( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', width +'px' );
 }
 function selectText2Html( pattern ) {
 	function htmlSet( $el ) {
