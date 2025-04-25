@@ -6,7 +6,8 @@
 
 isChanged() {
 	for k in $@; do
-		[[ $( getVar $k $dirshm/status ) != ${!k} ]] && return 0
+		prev=$( sed -n -E '/^'$k'/ {s/.*="*|"*$//g; p}' <<< $statusprev )
+		[[ $prev != ${!k} ]] && return 0
 	done
 }
 
