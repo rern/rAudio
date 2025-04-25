@@ -287,7 +287,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			}
 		}
 		displayBars();
-		if ( I.active ) infoWidth();
+		if ( I.active ) infoWidth( 'resize' );
 	}, 0 );
 } );
 

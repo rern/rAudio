@@ -526,27 +526,29 @@ function info( json ) {
 				, sameline : T/F
 				, suffix   : UNIT
 				, updn     : { step: N, min: N, max: N }
+				, width    : N
 			}*/
 			colspan  = param.colspan || 0;
+			width    = param.width && type !== 'select' ? ' style="width='+ param.width +'px"' : '';
 			if ( [ 'checkbox', 'radio' ].includes( type ) && ! colspan ) colspan = 2;
 			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
 			switch ( type ) {
 				case 'checkbox':
 					if ( htmls.list.slice( -3 ) === 'tr>' ) htmls.list += '<tr>'
-					htmls.list += I.checkboxonly ? '<td>' : '<td></td><td'+ colspan +'>';
+					htmls.list += I.checkboxonly ? '<td>' : '<td></td><td'+ colspan + width +'>';
 					break;
 				case 'hidden':
 					htmls.list += '<tr class="hide"><td></td><td>';
 					break;
 				case 'radio':
-					htmls.list += '<tr><td>'+ label +'</td><td'+ colspan +'>';
+					htmls.list += '<tr><td>'+ label +'</td><td'+ colspan + width +'>';
 					break;
 				case 'range':
-					htmls.list += '<tr><td'+ colspan +'>';
+					htmls.list += '<tr><td'+ colspan + width +'>';
 					break;
 				default:
 					htmls.list += htmls.list.slice( -3 ) === 'td>' ? '' : '<tr><td>'+ label +'</td>';
-					htmls.list += '<td'+ colspan +'>';
+					htmls.list += '<td'+ colspan + width +'>';
 			}
 			switch ( type ) {
 				case 'checkbox':
@@ -1168,7 +1170,7 @@ function infoWarning( icon, title, message ) {
 		, message : iconwarning + message
 	} );
 }
-function infoWidth() {
+function infoWidth( resize ) {
 	if ( I.boxwidth ) {
 		var widthmax = I.boxwidth === 'max';
 		if ( widthmax ) {
@@ -1189,11 +1191,11 @@ function infoWidth() {
 		var $el = $( el );
 		if ( ! $el.attr( 'style' ) ) $el.parent().addBack().css( 'width', I.boxW +'px' );
 	} );
-	if ( $( '#infoList select' ).length ) selectSet();
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
 		$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
 	}
 	if ( I.checkboxonly ) $( '#infoList td' ).css( 'text-align', 'left' );
+	if ( ! resize && $( '#infoList select' ).length ) selectSet();
 }
 
 // common info functions --------------------------------------------------
