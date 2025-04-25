@@ -4,6 +4,12 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
+isChanged() {
+	for k in $@; do
+		[[ $( getVar $k $dirshm/status ) != ${!k} ]] && return 0
+	done
+}
+
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
@@ -18,15 +24,13 @@ else
 	statuslines=$( grep -E "${filter:1}" <<< $status )
 	statusnew=$( sed -E 's/^ *"|,$//g; s/" *: */=/' <<< $statuslines | tee $dirshm/statusnew )
 	statusprev=$( < $dirshm/status )
-	compare='^Artist|^Title|^Album'
-	[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
 	. <( echo "$statusnew" )
+	isChanged Artist Title Album && trackchanged=1
 	if [[ $webradio == true ]]; then
 		[[ ! $trackchanged && $state == play ]] && exit
 # --------------------------------------------------------------------
 	else
-		compare='^state|^elapsed'
-		[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && statuschanged=1
+		isChanged state elapsed && statuschanged=1
 		[[ ! $trackchanged && ! $statuschanged ]] && exit
 # --------------------------------------------------------------------
 	fi
