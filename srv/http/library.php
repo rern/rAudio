@@ -97,14 +97,16 @@ case 'findartist': // artist, albumartist
 	echo $html;
 	break;
 case 'home':
-	$modes     = [ 'Album',  'Artist', 'Album Artist', 'Composer',  'Conductor', 'Date',      'Genre'
-				, 'Latest', 'NAS',    'SD',           'USB',       'Playlists', 'Web Radio', 'DAB Radio' ];
+	$modes     = [ 'Album',  'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date',      'Genre'
+				 , 'Latest', 'NAS',    'SD',           'USB',      'Playlists', 'Web Radio', 'DAB Radio' ];
+	$modes_l   = [];
 	$htmlmode  = '';
 	foreach( $modes as $mode ) {
-		$lipath   = str_replace( ' ', '', $mode );
-		$mode_l   = strtolower( $lipath );
-		$gr       = in_array( $mode, [ 'NAS', 'SD', 'USB' ] ) ? '' : '<gr></gr>';
-		$htmlmode.= '
+		$lipath    = str_replace( ' ', '', $mode );
+		$mode_l    = strtolower( $lipath );
+		$modes_l[] = $mode_l;
+		$gr        = in_array( $mode, [ 'NAS', 'SD', 'USB' ] ) ? '' : '<gr></gr>';
+		$htmlmode .= '
 <div class="mode '.$mode_l.'" data-mode="'.$mode_l.'">
 	<i class="i-'.$mode_l.'"></i>'.$gr.'<a class="label">'.$mode.'</a>
 </div>';
@@ -114,13 +116,12 @@ case 'home':
 	$files     = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$bkpath   = rtrim( file_get_contents( $dir.'/'.$name ), "\n" );
-			$prefix   = substr( $bkpath, 0, 4 );
+			$bkpath = rtrim( file_get_contents( $dir.'/'.$name ), "\n" );
+			$prefix = substr( $bkpath, 0, 4 );
 			if ( in_array( $prefix, [ 'http', 'rtsp' ] ) ) {
 				$bkradio  = 'bkradio';
 				$dirradio = $prefix === 'http' ? 'webradio' : 'dabradio';
 				$src      = '/data/'.$dirradio.'/img/'.str_replace( '/', '|', $bkpath ).'.jpg';
-				$bkpath   = '/srv/http/data/'.$dirradio;
 			} else {
 				$bkradio  = '';
 				$src      = substr( $bkpath, 0, 4 ) === '/srv' ? substr( $bkpath, 9 ) : '/mnt/MPD/'.$bkpath;
@@ -140,6 +141,7 @@ case 'home':
 	echo json_encode( [
 		  'html'  => $htmlmode
 		, 'lsmnt' => $lsmnt
+		, 'modes' => $modes_l
 		, 'order' => $order
 	] );
 	break;

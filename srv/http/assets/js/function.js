@@ -792,7 +792,7 @@ function intervalElapsedClear() {
 function libraryHome() {
 	V.html.librarylist = '';
 	list( { library: 'home' }, function( data ) {
-		O = data.order;
+		O = { modes: data.modes, order: data.order };
 		[ 'nas', 'sd', 'usb' ].forEach( k => { C[ k ] = data.lsmnt[ k ] } );
 		if ( data.html !== V.html.library ) {
 			V.html.library = data.html;
@@ -929,11 +929,21 @@ function mpcSeekBar( pageX ) {
 	if ( ! V.drag ) mpcSeek( elapsed );
 }
 function orderLibrary() {
-	O.forEach( mode => {
-		if ( mode.includes( '/' ) ) {
-			var $libmode = $( '.mode.bookmark' ).filter( ( i, el ) => $( el ).find( '.lipath' ).text() === mode );
+	if ( O.order === false ) return
+	
+	O.order.forEach( mode => {
+		var $libmode = false;
+		if ( O.modes.includes( mode ) ) {
+			$libmode = $( '.mode.'+ mode );
 		} else {
-			var $libmode = $( '.mode.'+ mode );
+			$( '.mode.bookmark' ).filter( ( i, el ) => {
+				var $el = $( el );
+				var cl  = $el.hasClass( 'bkradio' ) ? '.name' : '.lipath';
+				if ( $el.find( cl ).text() === mode ) {
+					$libmode = $el;
+					return false
+				}
+			} );
 		}
 		$libmode.detach();
 		$( '#lib-mode-list' ).append( $libmode );
@@ -1166,7 +1176,7 @@ function renderLibrary() { // library home
 	$( '#lib-mode-list, #search-list' )
 		.css( 'padding-top', barVisible( '', 50 ) )
 		.removeClass( 'hide' );
-	if ( O ) orderLibrary();
+	orderLibrary();
 	pageScroll( V.modescrolltop );
 	$( '.mode.dabradio' ).toggleClass( 'hide', C.dabradio === 0 );
 	$( '.mode:not( .bookmark )' ).each( ( i, el ) => {

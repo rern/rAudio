@@ -184,10 +184,10 @@ var context = {
 		// #1 - track list - show image from licover
 		// #2 - dir list   - show image from path + coverart.jpg
 		// #3 - no cover   - icon + directory name
-		if ( [ 'http', 'rtsp' ].includes( V.list.path.slice( 0, 4 ) ) ) {
+		var path = V.list.path;
+		if ( [ 'http', 'rtsp' ].includes( path.slice( 0, 4 ) ) ) {
 			var $img = V.list.li.find( '.iconthumb' );
 			var src = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
-			var path    = V.list.path;
 			var name    = V.list.name;
 			var msgpath = name;
 		} else {
@@ -197,7 +197,7 @@ var context = {
 				var src     = path.slice( 9 ) +'/coverart.jpg';
 				var msgpath = path.slice( 24 );
 			} else {
-				var path    = V.list.path.slice( -4 ) === '.cue' ? dirName( path ) : V.list.path;
+				if ( path.slice( -4 ) === '.cue' ) path = dirName( path );
 				var src     = '/mnt/MPD/'+ path +'/coverart.jpg';
 				var msgpath = path;
 				var name    = path.split( '/' ).pop();

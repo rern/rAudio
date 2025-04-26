@@ -139,7 +139,7 @@ W = {
 	, order     : data => {
 		if ( V.local ) return
 		
-		O = data;
+		O.order = data;
 		orderLibrary();
 	}
 	, playlist  : data => {

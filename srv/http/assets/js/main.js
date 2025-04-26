@@ -1,7 +1,7 @@
 C = {}; // counts
 D = {}; // display
 E = {}; // equalizer
-O = []; // order
+O = {}; // order
 V = {   // var global
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
@@ -2055,7 +2055,12 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 		var order = [];
 		$( '.mode' ).each( ( i, el ) => {
 			var $el  = $( el );
-			order.push( $el.hasClass( 'bookmark' ) ? $el.find( '.lipath' ).text() : $el.data( 'mode' ) );
+			if ( $el.hasClass( 'bookmark' ) ) {
+				var data = $el.find( $el.hasClass( 'bkradio' ) ? '.name' : '.lipath' ).text();
+			} else {
+				var data = $el.data( 'mode' );
+			}
+			order.push( data );
 		} );
 		jsonSave( 'order', order );
 	}
