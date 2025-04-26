@@ -24,7 +24,7 @@ else
 	done
 	statuslines=$( grep -E "${filter:1}" <<< $status )
 	statusnew=$( sed -E 's/^ *"|,$//g; s/" *: */=/' <<< $statuslines | tee $dirshm/statusnew )
-	statusprev=$( < $dirshm/status )
+	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( echo "$statusnew" )
 	isChanged Artist Title Album && trackchanged=1
 	if [[ $webradio == true ]]; then
