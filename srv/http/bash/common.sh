@@ -152,6 +152,9 @@ confNotString() {
 	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
 	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
+countRadio() {
+	find -L $dirdata/$1 ! -path '*/img/*' -type f ! -regex '.*\.\(jpg\|gif\|png\)$' | wc -l
+}
 coverFileGet() {
 	local path coverfile
 	path=$1
