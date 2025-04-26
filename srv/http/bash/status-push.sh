@@ -44,11 +44,9 @@ else
 	mv -f $dirshm/status{new,}
 fi
 
-if systemctl -q is-active localbrowser; then
-	if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-		export DISPLAY=:0
-		[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
-	fi
+if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
+	export DISPLAY=:0
+	[[ $( mpcState ) == play ]] && xset -dpms || xset +dpms
 fi
 
 clientip=$( snapclientIP )
