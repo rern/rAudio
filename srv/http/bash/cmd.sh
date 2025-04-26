@@ -150,13 +150,10 @@ urldecode() { # for webradio url to filename
 	echo -e "${_//%/\\x}"
 }
 webradioCount() {
-	local counts type
-	counts=$( grep -vE '{|radio|}' $dirmpd/counts )
-	for type in dabradio webradio; do
-		[[ -e $dirdata/$type ]] && counts+='
-  "'$type'" : '$( countRadio $type )','
-	done
-	echo '{ '${counts:0:-1}' }' | jq -S > $dirmpd/counts
+	local counts
+	counts=$( grep -vE '{|radio|}' $dirmpd/counts | sed '$ s/,$//' )
+	counts+=$( countRadio )
+	echo '{ '${counts:1}' }' | jq -S > $dirmpd/counts
 }
 webradioM3uPlsVerify() {
 	local ext url

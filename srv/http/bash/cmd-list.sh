@@ -52,10 +52,7 @@ song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 counts='
   "song"      : '$song'
 , "playlists" : '$( ls $dirplaylists | wc -l )
-for type in dabradio webradio; do
-	[[ -e $dirdata/$type ]] && counts+='
-, "'$type'" : '$( countRadio $type )
-done
+counts+=$( countRadio )
 if [[ $song == 0 ]]; then
 	find $dirmpd -type f ! -name *.db -delete
 	updateDone

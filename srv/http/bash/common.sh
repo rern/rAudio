@@ -153,7 +153,12 @@ confNotString() {
 	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
 countRadio() {
-	find -L $dirdata/$1 ! -path '*/img/*' -type f ! -regex '.*\.\(jpg\|gif\|png\)$' | wc -l
+	local counts type
+	for type in dabradio webradio; do
+		[[ -e $dirdata/$type ]] && counts+='
+, "'$type'" : '$( find -L $dirdata/$type ! -path '*/img/*' -type f ! -regex '.*\.\(jpg\|gif\|png\)$' | wc -l )
+	done
+	echo "$counts"
 }
 coverFileGet() {
 	local path coverfile
