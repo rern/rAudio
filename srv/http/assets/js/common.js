@@ -1234,6 +1234,7 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
+	V[ action ] = true;
 	loader();
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
