@@ -55,5 +55,4 @@ else
 	name=$( alphaNumeric $ARTIST$ALBUM )
 	cover=$dirshm/$prefix/${name,,}.$ext
 fi
-curl -sfL $url -o $cover
-[[ -e $cover ]] && pushData cover '{ "cover": "'$cover'" }'
+curl -sfL $url -o $cover && sleep 1 && pushData cover '{ "cover": "'$cover'" }'
