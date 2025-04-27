@@ -431,7 +431,7 @@ var util          = {
 		}
 		, list : [
 			  [ 'Type',                 'hidden'  ]
-			, [ 'Size',                 'radio',    { kv: { '20<gr>x</gr>4': 20, '20<gr>x</gr>2': 18, '16<gr>x</gr>2': 16 } } ]
+			, [ 'Size',                 'radio',    { kv: { '20x4': 20, '16x2': 16 } } ]
 			, [ 'Character Map',        'radio',    { kv: [ 'A00', 'A02' ] } ]
 			, [ 'Address',              'radio',    [ '' ] ] // set by infoSetting
 			, [ 'Chip',                 'select',   [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
