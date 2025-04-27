@@ -624,6 +624,7 @@ function imageReplace( type, imagefilenoext ) {
 		, current : V.playback
 	}
 	if ( V.debug ) {
+		console.log( '%cDebug: %ccmd.php', 'color:red', 'color:white' );
 		console.log( data );
 		return
 	}

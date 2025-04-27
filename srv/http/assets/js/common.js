@@ -1640,7 +1640,7 @@ function bash( args, callback, json ) {
 	$.post( 'cmd.php', data, callback || null, json || null );
 }
 function bashConsoleLog( data ) {
-	console.log( '%cDebug:', "color:red" );
+	console.log( '%cDebug:', 'color:red' );
 	if ( typeof data === 'string' ) {
 		console.log( JSON.parse( data ) );
 		console.log( "websocat ws://127.0.0.1:8080 <<< '"+ data +"'" );
