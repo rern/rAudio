@@ -623,6 +623,11 @@ function imageReplace( type, imagefilenoext ) {
 		, data    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 		, current : V.playback
 	}
+	if ( V.debug ) {
+		console.log( data );
+		return
+	}
+	
 	$.post( 'cmd.php', data, std => {
 		if ( std == -1 ) {
 			bannerHide();
