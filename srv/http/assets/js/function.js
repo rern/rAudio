@@ -625,6 +625,7 @@ function imageReplace( type, imagefilenoext ) {
 	}
 	$.post( 'cmd.php', data, std => {
 		if ( std == -1 ) {
+			bannerHide();
 			var dir = imagefilenoext.slice( 0, imagefilenoext.lastIndexOf( '/' ) );
 			infoWarning( I.icon, I.title, 'No write permission:<br><c>'+ dir +'</c>' );
 		}

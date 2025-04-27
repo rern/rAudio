@@ -515,7 +515,7 @@ var context = {
 			var imagefilenoext = path + '/coverart';
 		} else { // radio only
 			var path           = V.playback ? S.file : V.list.path;
-			var imagefilenoext = $( '#lib-path' ).text() +'/img/'+ path.replace( /\//g, '|' );
+			var imagefilenoext = '/srv/http/data/'+ V.mode +'/img/'+ path.replace( /\//g, '|' );
 		}
 		info( {
 			  icon        : V.icoverart
