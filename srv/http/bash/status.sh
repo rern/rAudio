@@ -479,7 +479,7 @@ if [[ ! $sampling ]]; then
 	fi
 	if [[ $ext == Radio ]]; then
 		echo "\
-$( head -1 "$radiofile" )
+$station
 $sampling" > "$radiofile"
 	else
 		sampling+=" • $ext"
