@@ -55,16 +55,19 @@ W               = {  // ws push
 		banner( icon, title, message, delay );
 	}
 	, power  : data => {
-		ws = null;
-		infoPowerSplash( data.type );
-		if ( data.type === 'off' ) {
+		var action  = data.type;
+		V[ action ] = true;
+		ws          = null;
+		loader();
+		banner( action +' blink', 'Power', capitalize( action ) +' ...', -1 );
+		if ( action === 'off' ) {
 			$( '#loader' ).css( 'opacity', 1 );
 			setTimeout( () => {
 				$( '#loader svg' ).css( 'animation', 'none' );
 				$( '#banner' ).addClass( 'hide' );
-			}, 10000 );
+			}, 12000 );
 		} else { // reconnect after reboot
-			setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
+			setTimeout( websocketReconnect, data.startup + 8000 ); // add shutdown 8s
 		}
 	}
 	, relays : data => {
@@ -1231,8 +1234,7 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
-	infoPowerSplash( action );
-	var label = capitalize( action );
+	loader();
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
@@ -1245,16 +1247,11 @@ function infoPowerCommand( action ) {
 						+'<br><wh>Shared Data</wh> on clients will stop.'
 						+'<br>(Resume when server online again)'
 						+'<br><br>Continue?'
-			, oklabel : ico( action ) + label
+			, oklabel : ico( action ) + capitalize( action )
 			, okcolor : action === 'off' ? red : orange
 			, ok      : () => bash( [ 'power.sh', action || '', 'confirm' ] )
 		} );
 	} );
-}
-function infoPowerSplash( action ) {
-	V[ action ] = true;
-	loader();
-	if ( ! S.relayson ) banner( action +' blink', 'Power', action === 'off' ? 'Off ...' : 'Reboot ...', -1 );
 }
 // ----------------------------------------------------------------------
 function accent2plain( str ) {
