@@ -372,6 +372,10 @@ notify() { # icon title message delayms
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
 }
+pushBookmark() {
+	data=$( php /srv/http/library.php home )
+	pushData bookmark "$data"
+}
 pushData() {
 	local channel data ip json path sharedip webradiocopy
 	channel=$1

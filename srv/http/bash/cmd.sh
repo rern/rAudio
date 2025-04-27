@@ -108,10 +108,6 @@ plClear() {
 	rm -f $dirsystem/librandom $dirshm/playlist*
 	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
 }
-pushBookmark() {
-	data=$( php /srv/http/library.php home )
-	pushData bookmark "$data"
-}
 pushPlaylist() {
 	[[ -e $dirshm/pushplaylist ]] && exit
 # --------------------------------------------------------------------
