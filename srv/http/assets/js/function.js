@@ -748,7 +748,6 @@ function infoTitle() {
 		, boxwidth    : 'max'
 		, values      : paren ? [ artist, titlenoparen, album ] : [ artist, title, album ]
 		, beforeshow  : () => {
-			$( '#infoList input' ).eq( 2 ).toggleClass( 'hide', album === '' );
 			if ( S.scrobble ) $( '.infofooter .scrobble' ).toggleClass( 'disabled', ! artist || ! title || ! S.webradio || S.scrobbleconf[ S.player ] );
 			if ( paren ) {
 				$( '#infoList input:checkbox' ).on( 'input', function() {
