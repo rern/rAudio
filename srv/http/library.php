@@ -39,7 +39,7 @@ search
 include 'function.php';
 
 $post    = ( object ) $_POST;
-$CMD     = $post->library;
+$CMD     = $post->library ?? $argv[ 1 ];
 $GMODE   = $post->gmode ?? null;
 $MODE    = $post->mode ?? null;
 $STRING  = isset( $post->string ) ? escape( $post->string ) : null;

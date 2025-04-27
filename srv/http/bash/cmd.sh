@@ -108,6 +108,10 @@ plClear() {
 	rm -f $dirsystem/librandom $dirshm/playlist*
 	[[ $CMD == mpcremove ]] && pushData playlist '{ "blank": true }'
 }
+pushBookmark() {
+	data=$( php /srv/http/library.php home )
+	pushData bookmark "$data"
+}
 pushPlaylist() {
 	[[ -e $dirshm/pushplaylist ]] && exit
 # --------------------------------------------------------------------
@@ -201,29 +205,28 @@ albumignore )
 	appendSortUnique $dirmpd/albumignore "$ALBUM^^$ARTIST"
 	;;
 bookmarkadd )
-	bkfile="$dirbookmarks/${NAME//\//|}"
-	[[ -e $bkfile ]] && echo -1 && exit
+	file_bk="$dirbookmarks/${NAME//\//|}"
+	[[ -e $file_bk ]] && echo -1 && exit
 # --------------------------------------------------------------------
-	echo "$DIR" > "$bkfile"
-	if [[ -e $dirsystem/order.json ]]; then
-		order=$( jq '. + ["'$DIR'"]' $dirsystem/order.json )
-		echo "$order" > $dirsystem/order.json
-	fi
-	pushData bookmark
+	echo "$DIR" > "$file_bk"
+	file_order=$dirsystem/order.json
+	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${DIR//\"/\\\\\"}\"" $file_order
+	pushBookmark
 	;;
 bookmarkremove )
-	bkfile="$dirbookmarks/$NAME"
-	if [[ -e $dirsystem/order.json ]]; then
-		path=$( sed 's/"/\\"/g' "$bkfile" )
-		order=$( cat $dirsystem/order.json | jq "del( .. | select( . == \"$path\" ) )" )
-		echo "$order" > $dirsystem/order.json
+	file_bk="$dirbookmarks/$NAME"
+	file_order=$dirsystem/order.json
+	if [[ -e $file_order ]]; then
+		line=$( sed 's/"/\\"/g' "$file_bk" )
+		order=$( grep -Ev "\[|\"$line\"|]" $file_order | sed '$ s/,$//' )
+		echo "[ $order ]" | jq > $file_order
 	fi
-	rm "$bkfile"
-	pushData bookmark
+	rm "$file_bk"
+	pushBookmark
 	;;
 bookmarkrename )
 	mv $dirbookmarks/{"$NAME","$NEWNAME"}
-	pushData bookmark
+	pushBookmark
 	;;
 cachebust )
 	hash="?v=$( date +%s )'"

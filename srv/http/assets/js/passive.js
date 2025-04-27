@@ -4,9 +4,15 @@ W = {
 		statusUpdate( data );
 		if ( V.playback ) renderPlayback();
 	}
-	, bookmark  : () => {
-		V.html.library = '';
-		if ( V.library && V.libraryhome ) libraryHome();
+	, bookmark  : data => {
+		if ( ! V.library || ! V.libraryhome ) return
+		
+		O.order        = data.order;
+		V.html.library = data.html;
+		var html       = htmlHash( data.html );
+		$( '#lib-mode-list' ).html( html );
+		libraryHomeImgError();
+		orderLibrary();
 	}
 	, cover     : data => {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
