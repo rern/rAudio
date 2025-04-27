@@ -154,6 +154,7 @@ webradioCount() {
 	counts=$( grep -vE '{|radio|}' $dirmpd/counts | sed '$ s/,$//' )
 	counts+=$( countRadio )
 	echo '{ '${counts:1}' }' | jq -S > $dirmpd/counts
+	pushRadioList
 }
 webradioM3uPlsVerify() {
 	local ext url
@@ -754,7 +755,7 @@ webradiodelete )
 	rm -f "$DIR/$urlname"
 	path=$dirdata/$MODE
 	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/$urlname".* "$path/img/$urlname-thumb".*
-	webradioCount $MODE
+	webradioCount
 	;;
 webradioedit )
 	newurlname=${NEWURL//\//|}
