@@ -230,13 +230,13 @@ function colorSetPicker() {
 				if ( ! V.local ) $( '#colorok' ).removeClass( 'disabled' );
 				// background
 				$bg_cg.css( 'background-color', hsg +'30%)' );
-				$bg_cm.add( V.list.li ).css( 'background-color', hex );
+				$bg_cm.add( $LI ).css( 'background-color', hex );
 				$bg_cga.css( 'background-color', hsg +'20%)' );
 				// text
 				$t_cgl.css( 'color', hsg +'40%)' );
 				$t_cg.css( 'color', hex );
 				$t_cg60.not( '.active' ).find( 'i, .li2' ).css( 'css', 'color: '+ hsg +'60%)' );
-				V.list.li.find( 'i, .time, .li2' ).css( 'color', hsg +'30%)' );
+				$LI.find( 'i, .time, .li2' ).css( 'color', hsg +'30%)' );
 				$menu_a.css( 'color', hsg +'75%)' );
 				// line
 				$t_cg60.css( 'border-bottom', '1px solid '+ hsg +'20%)' );
@@ -245,30 +245,29 @@ function colorSetPicker() {
 		}
 	} );
 }
-function contextmenuLibrary( $li, $target ) {
-	if ( $li.hasClass( 'active' ) ) {
-		$li.removeClass( 'active' );
+function contextmenuLibrary( $target ) {
+	if ( $LI.hasClass( 'active' ) ) {
+		$LI.removeClass( 'active' );
 		menuHide();
 		return
 	}
 	
 	menuHide();
-	var mode           = V.search ? $li.data( 'mode' ) : V.mode;
-	var $menu          = $( '#menu-'+ $li.find( '.li-icon' ).data( 'menu' ) );
+	var mode           = V.search ? $LI.data( 'mode' ) : V.mode;
+	var $menu          = $( '#menu-'+ $LI.find( '.li-icon' ).data( 'menu' ) );
 	V.list             = {};
-	V.list.li          = $li;
-	V.list.licover     = $li.hasClass( 'licover' );
-	V.list.singletrack = ! V.list.licover && $li.find( '.li-icon' ).hasClass( 'i-music' );
+	V.list.licover     = $LI.hasClass( 'licover' );
+	V.list.singletrack = ! V.list.licover && $LI.find( '.li-icon' ).hasClass( 'i-music' );
 	// file modes  - path > path ... > tracks
 	// album mode  - path > tracks
 	// other modes - name > name-album > filtered tracks
-	V.list.path        = $li.find( '.lipath' ).text() || $( '#mode-title' ).text();
-	if ( V.librarytrack && ! V.list.licover && $li.find( '.li1' ).length ) {
-		V.list.name = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
+	V.list.path        = $LI.find( '.lipath' ).text() || $( '#mode-title' ).text();
+	if ( V.librarytrack && ! V.list.licover && $LI.find( '.li1' ).length ) {
+		V.list.name = $LI.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 	} else {
-		V.list.name = $li.find( '.name' ).text() || V.list.path;
+		V.list.name = $LI.find( '.name' ).text() || V.list.path;
 	}
-	V.list.track = $li.data( 'track' ) || '';  // cue - in contextmenu
+	V.list.track = $LI.data( 'track' ) || '';  // cue - in contextmenu
 	if ( ( D.tapaddplay || D.tapreplaceplay )
 		&& ! V.color
 		&& ! $target.hasClass( 'li-icon' )
@@ -277,10 +276,10 @@ function contextmenuLibrary( $li, $target ) {
 	) {
 		var i = D.tapaddplay ? 0 : 1;
 		$menu.find( '.submenu' ).eq( i ).trigger( 'click' );
-		$li.addClass( 'active' );
+		$LI.addClass( 'active' );
 		return
 	}
-	if ( V.list.li.hasClass( 'nodata' ) ) {
+	if ( $LI.hasClass( 'nodata' ) ) {
 		$menu.find( 'a, .submenu' ).addClass( 'hide' );
 		$menu.find( '.exclude, .update' ).removeClass( 'hide' );
 	} else {
@@ -297,20 +296,20 @@ function contextmenuLibrary( $li, $target ) {
 		$menu.find( '.wrdirrename' ).toggleClass( 'hide', mode.slice( -5 ) !== 'radio' );
 		$menu.find( '.update, .tag' ).toggleClass( 'disabled', S.updating_db );
 	}
-	$li.siblings( 'li' ).removeClass( 'active' );
-	$li.addClass( 'active' );
+	$LI.siblings( 'li' ).removeClass( 'active' );
+	$LI.addClass( 'active' );
 	if ( V.list.licover ) {
 		var menutop = barVisible( 310, 270 );
 	} else {
-		var menutop = $li.offset().top + 48;
+		var menutop = $LI.offset().top + 48;
 	}
 	contextmenuScroll( $menu, menutop );
-	if ( ! modeFile() || $li.hasClass( 'nodata' ) ) return
+	if ( ! modeFile() || $LI.hasClass( 'nodata' ) ) return
 	
 	bash( [ 'mpcls', V.list.path, 'CMD DIR' ], function( data ) {
 		if ( ! data ) {
-			$li.addClass( 'nodata' );
-			contextmenuLibrary( $li, $target );
+			$LI.addClass( 'nodata' );
+			contextmenuLibrary( $target );
 		}
 	}, 'json' );
 }
@@ -1029,19 +1028,19 @@ function playlistInsertTarget() {
 	} );
 	bannerHide();
 }
-function playlistRemove( $li ) {
+function playlistRemove() {
 	if ( S.pllength === 1 ) {
 		bash( [ 'mpcremove' ] );
 	} else {
-		bash( [ 'mpcremove', $li.index() + 1, 'CMD POS' ] );
+		bash( [ 'mpcremove', $LI.index() + 1, 'CMD POS' ] );
 	}
 	S.pllength--;
 	$( '#pl-trackcount' ).text( S.pllength );
-	var time = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
+	var time = $( '#pl-time' ).data( 'time' ) - $LI.find( '.time' ).data( 'time' );
 	$( '#pl-time' )
 		.data( 'time', time )
 		.text( second2HMS( time ) );
-	$li.remove();
+	$LI.remove();
 }
 function playlistRemoveRange( range ) {
 	bannerHide();
@@ -1964,11 +1963,10 @@ function switchPage( page ) {
 	$( '.page' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
-function tapAddReplace( $li ) {
-	V.mpccmd    = [ 'mpcadd', $li.find( '.lipath' ).text() ];
+function tapAddReplace() {
+	V.mpccmd    = [ 'mpcadd', $LI.find( '.lipath' ).text() ];
 	V.action    = D.tapaddplay ? 'addplay' : 'replaceplay';
-	V.list.li   = $li;
-	V.list.name = $li.find( '.name' ).text()
+	V.list.name = $LI.find( '.name' ).text()
 	addToPlaylistCommand();
 }
 function versionHash() {

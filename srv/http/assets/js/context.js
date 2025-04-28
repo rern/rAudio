@@ -42,7 +42,7 @@ function addToPlaylistCommand() {
 	}
 	V.title       = cmd_title[ V.action ];
 	V.msg         =  '<a class="li1">'+ V.list.name +'</a>';
-	if ( V.list.li && V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
+	if ( $LI.find( '.li2' ).length ) V.msg += '<a class="li2">'+ $LI.find( '.li2' ).text() +'</a>';
 	banner( 'playlist', V.title, V.msg );
 	var cmd = V.mpccmd[ 0 ] === 'mpcaddfind' ? V.mpccmd.map( v => v.trim() ) : V.mpccmd;
 	bash( cmd );
@@ -186,7 +186,7 @@ var context = {
 		// #3 - no cover   - icon + directory name
 		var path = V.list.path;
 		if ( [ 'http', 'rtsp' ].includes( path.slice( 0, 4 ) ) ) {
-			var $img = V.list.li.find( '.iconthumb' );
+			var $img = $LI.find( '.iconthumb' );
 			var src = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
 			var name    = V.list.name;
 			var msgpath = name;
@@ -273,7 +273,7 @@ var context = {
 			, message : 'Exclude from Library:'
 						+'<br>'+ ico( 'folder' ) +'&ensp;<wh>'+ V.list.path +'</wh>'
 			, ok      : () => {
-				bash( [ 'mpdignore', V.list.path, 'CMD DIR' ], () => V.list.li.remove() );
+				bash( [ 'mpdignore', V.list.path, 'CMD DIR' ], () => $LI.remove() );
 				var dir = V.list.path.split( '/' ).pop();
 			}
 		} );
@@ -302,26 +302,26 @@ var context = {
 			, okcolor : red
 			, ok      : () => {
 				bash( [ 'savedpldelete', V.list.name, 'CMD NAME' ] );
-				V.list.li.remove();
+				$LI.remove();
 			}
 		} );
 	}
 	, remove        : () => {
 		V.contextmenu = true;
 		setTimeout( () => V.contextmenu = false, 500 );
-		playlistRemove( V.list.li );
+		playlistRemove();
 	}
-	, removerange   : () => playlistRemoveRange( [ V.list.li.index() + 1, S.pllength ] )
+	, removerange   : () => playlistRemoveRange( [ $LI.index() + 1, S.pllength ] )
 	, savedpladd    : () => {
 		if ( V.playlist ) {
-			var album = V.list.li.find( '.album' ).text();
+			var album = $LI.find( '.album' ).text();
 			var file  = V.list.path;
 		} else {
 			var album = $( '.licover .lialbum' ).text();
-			var file  = V.list.li.find( '.lipath' ).text();
+			var file  = $LI.find( '.lipath' ).text();
 		}
 		
-		var $img     = V.library && V.librarytrack ? $( '#liimg' ) : V.list.li.find( 'img' );
+		var $img     = V.library && V.librarytrack ? $( '#liimg' ) : $LI.find( 'img' );
 		var message  = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '';
 		if ( file.slice( 0, 4 ) === 'http' ) { // webradio
 			message += '<div>'+ ico( 'webradio' ) +' <wh>'+ V.list.name +'</wh>'
@@ -356,8 +356,8 @@ var context = {
 	, savedplremove : () => {
 		local();
 		var plname = $( '#pl-title .lipath' ).text();
-		bash( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1, 'CMD NAME ACTION POS' ] );
-		V.list.li.remove();
+		bash( [ 'savedpledit', plname, 'remove', $LI.index() + 1, 'CMD NAME ACTION POS' ] );
+		$LI.remove();
 	}
 	, similar       : () => {
 		if ( D.plsimilar ) {
@@ -390,10 +390,10 @@ var context = {
 				listinfo.push( [ '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +'"></i>', 'text' ] );
 			} );
 			if ( V.library ) {
-				var $img = V.librarytrack ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
+				var $img = V.librarytrack ? $( '.licoverimg img' ) : $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ) : V.coverdefault;
 			} else {
-				var $img =  V.list.li.find( 'img' );
+				var $img =  $LI.find( 'img' );
 				var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
 			}
 			var fileicon = cue ? 'file-music' : 'playlists';
@@ -502,11 +502,11 @@ var context = {
 			var name      = S.station;
 			var dir       = '';
 		} else {
-			var $liicon   = V.list.li.find( '.li-icon' );
+			var $liicon   = $LI.find( '.li-icon' );
 			var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
 			var mode      = V.mode;
 			var name      = V.list.name;
-			var dir       = V.list.li.hasClass( 'dir' );
+			var dir       = $LI.hasClass( 'dir' );
 		}
 		if ( dir ) {
 			mode               = 'folder';
@@ -550,7 +550,7 @@ var context = {
 			var msg  = ''
 			var path = '';
 		} else {
-			var $img = V.list.li.find( 'img' );
+			var $img = $LI.find( 'img' );
 			var src  = $img.length ? $img.attr( 'src' ) : V.coverart;
 			var path = V.list.path;
 			var msg  = ico( 'folder gr' ) +' '+ path
@@ -585,8 +585,8 @@ var context = {
 	}
 	, wrdelete      : () => {
 		var name = V.list.name;
-		var img  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
-		var url  = V.list.li.find( '.li2' ).text();
+		var img  = $LI.find( 'img' ).attr( 'src' ) || V.coverdefault;
+		var url  = $LI.find( '.li2' ).text();
 		info( {
 			  icon    : V.mode
 			, title   : 'Delete '+ ( V.mode === 'webradio' ? 'Web Radio' : 'DAB Radio' )
@@ -597,7 +597,7 @@ var context = {
 			, oklabel : ico( 'remove' ) +'Delete'
 			, okcolor : red
 			, ok      : () => {
-				V.list.li.remove();
+				$LI.remove();
 				bash( ['webradiodelete', $( '#lib-path' ).text(), url, V.mode, 'CMD DIR URL MODE' ] );
 			}
 		} );
@@ -662,9 +662,9 @@ var context = {
 		info( {
 			  icon         : 'webradio'
 			, title        : 'Edit Web Radio'
-			, message      : '<img src="'+ ( V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
+			, message      : '<img src="'+ ( $LI.find( 'img' ).attr( 'src' ) || V.coverdefault ) +'">'
 			, list         : listwebradio.list
-			, values       : [ V.list.name, V.list.path, V.list.li.data( 'charset' ) || 'UTF-8' ]
+			, values       : [ V.list.name, V.list.path, $LI.data( 'charset' ) || 'UTF-8' ]
 			, checkchanged : true
 			, checkblank   : [ 0, 1 ]
 			, boxwidth     : 'max'
@@ -687,7 +687,7 @@ var context = {
 			}
 		} );
 	}
-	, wrsave        : () => webRadioNew( '', V.list.li.find( '.lipath' ).text() )
+	, wrsave        : () => webRadioNew( '', $LI.find( '.lipath' ).text() )
 }
 $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	var $this = $( this );
@@ -695,7 +695,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	menuHide();
 	$( 'li.updn' ).removeClass( 'updn' );
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
+		$( '#pl-list li' ).eq( $LI.index() ).trigger( 'click' );
 		if ( S.player === 'mpd' || cmd !== 'play' ) {
 			$( '#'+ cmd ).trigger( 'click' );
 		} else {
@@ -758,12 +758,12 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			break
 		case 'wr':
 			cmd = cmd.slice( 2 );
-			var charset = V.list.li.data( 'charset' );
+			var charset = $LI.data( 'charset' );
 			if ( charset ) path += '#charset='+ charset
 			V.mpccmd = [ 'mpcadd', path ];
 			break;
 		default: // MODE
-			var datamode = V.list.li.data( 'mode' );
+			var datamode = $LI.data( 'mode' );
 			if ( datamode !== 'album' ) { // 1st level
 				if ( datamode !== 'file' ) {
 					V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
@@ -772,8 +772,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 				}
 			} else {                        // next level: mode + album || date/genre: mode + artist + album
 				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text() ];
-				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', V.list.li.find( '.name' ).text() );
-				V.mpccmd.push( 'album', V.list.li.find( '.liname' ).text() );
+				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', $LI.find( '.name' ).text() );
+				V.mpccmd.push( 'album', $LI.find( '.liname' ).text() );
 			}
 		break
 	}

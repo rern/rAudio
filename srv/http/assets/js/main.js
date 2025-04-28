@@ -25,6 +25,7 @@ V = {   // var global
 [ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0 );
 [ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true );
 var $bartop     = $( '#bar-top' );
+var $LI         = '';
 var $time       = $( '#time-knob' );
 var $volume     = $( '#volume-knob' );
 var data        = {}
@@ -1257,16 +1258,16 @@ $( '#lib-mode-list' ).on( 'click', '.mode:not( .bookmark, .bkradio, .edit, .noda
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	if ( V.press || $( '.bkedit' ).length ) return
 	
+	$LI          = $( this );
 	if ( D.tapaddplay || D.tapreplaceplay ) {
-		tapAddReplace( $( this ) );
+		tapAddReplace();
 		return
 	}
 	
-	var $this    = $( this );
-	var $img     = $this.find( '.bkcoverart' );
+	var $img     = $LI.find( '.bkcoverart' );
 	var icon     = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
-	var path     = $this.find( '.lipath' ).text();
-	V.list.name  = $this.find( '.name' ).text();
+	var path     = $LI.find( '.lipath' ).text();
+	V.list.name  = $LI.find( '.name' ).text();
 	info( {
 		  icon       : 'playlist'
 		, title      : 'Add to Playlist'
@@ -1449,33 +1450,33 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	e.stopPropagation();
 	if ( V.press ) return
 	
-	var $this       = $( this );
+	$LI             = $( this );
 	var $target     = $( e.target );
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
-	var l_mode      = $this.data( 'mode' );
+	var l_mode      = $LI.data( 'mode' );
 	var l_modefile  = [ 'file', 'nas', 'sd', 'usb' ].includes( l_mode );
 	var l_moderadio = l_mode.slice( -5 ) === 'radio'; // radio .dir has no mode
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )
-		|| $this.find( '.i-music' ).length
+		|| $LI.find( '.i-music' ).length
 		|| l_moderadio
 	) {
-		contextmenuLibrary( $this, $target );
+		contextmenuLibrary( $target );
 		return
 	}
 	
 	if ( D.tapaddplay || D.tapreplaceplay ) {
-		if ( $this.find( '.li-icon' ).is( '.i-music' ) || l_moderadio ) {
-			tapAddReplace( $this );
+		if ( $LI.find( '.li-icon' ).is( '.i-music' ) || l_moderadio ) {
+			tapAddReplace();
 			return
 		}
 	}
 	
 	menuHide();
-	if ( $this.hasClass( 'licover' ) ) {
+	if ( $LI.hasClass( 'licover' ) ) {
 		if ( $target.is( '.liartist, .i-artist, .i-albumartist, .licomposer, .i-composer' ) ) {
-			var name = ( $target.is( '.licomposer, .i-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();
+			var name = ( $target.is( '.licomposer, .i-composer' ) ) ? $LI.find( '.licomposer' ).text() : $LI.find( '.liartist' ).text();
 			bio( name );
 		} else if ( $target.hasClass( 'liinfopath' ) ) {
 			V.gmode     = V.mode;
@@ -1499,13 +1500,13 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	}
 	
 	if ( $target.hasClass( 'lialbum' ) ) {
-		if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
+		if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $LI.find( '.liartist' ).text() +'/'+ $LI.find( '.lialbum' ).text(), '_blank' );
 		return
 	}
 	
-	if ( ! V.search ) $this.addClass( 'active' );
+	if ( ! V.search ) $LI.addClass( 'active' );
 	var libpath    = $( '#lib-path' ).text();
-	var path       = $this.find( '.lipath' ).text();
+	var path       = $LI.find( '.lipath' ).text();
 	if ( l_modefile ) {
 		if ( modeFile( 'radio' ) ) {
 			var query     = {
@@ -1549,7 +1550,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		}
 		var modetitle = path;
 	} else { // album
-		var name = $this.find( '.liname' ).text();
+		var name = $LI.find( '.liname' ).text();
 		if ( modeAlbum() ) {
 			if ( name ) { // albums with the same names
 				var query     = {
@@ -1586,10 +1587,10 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	query.gmode            = V.mode;
 	list( query, function( html ) {
 		if ( ! html ) {
-			$this
+			$LI
 				.removeClass( 'active' )
 				.addClass( 'nodata' );
-			contextmenuLibrary( $this, $target );
+			contextmenuLibrary( $target );
 			return
 		}
 		
@@ -1839,27 +1840,26 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( 'plrange' in V ) return
 	
 	var $this     = $( this );
-	var $thisli   = $this.parent();
+	$LI           = $this.parent();
 	var webradio  = $this.hasClass( 'webradio' );
 	V.list        = {};
-	V.list.li     = $thisli;
-	V.list.path   = $thisli.find( '.lipath' ).text();
-	V.list.name   = $thisli.find( webradio ? '.liname' : '.name' ).eq( 0 ).text();
-	V.list.index  = $thisli.index();
+	V.list.path   = $LI.find( '.lipath' ).text();
+	V.list.name   = $LI.find( webradio ? '.liname' : '.name' ).eq( 0 ).text();
+	V.list.index  = $LI.index();
 	var $menu = $( '#menu-plaction' );
 	var menushow  = ! $menu.hasClass( 'hide' );
-	var updn = $thisli.hasClass( 'updn' );
+	var updn = $LI.hasClass( 'updn' );
 	menuHide();
 	$( '.pl-remove' ).remove();
 	if ( menushow && updn ) return
 	
 	var state     = S.state;
 	var play      = state === 'play';
-	var active    = $thisli.hasClass( 'active' );
-	var audiocd   = $thisli.hasClass( 'audiocd' );
-	var notsaved  = $thisli.hasClass( 'notsaved' );
-	var upnp      = $thisli.hasClass( 'upnp' );
-	$thisli.addClass( 'updn' );
+	var active    = $LI.hasClass( 'active' );
+	var audiocd   = $LI.hasClass( 'audiocd' );
+	var notsaved  = $LI.hasClass( 'notsaved' );
+	var upnp      = $LI.hasClass( 'upnp' );
+	$LI.addClass( 'updn' );
 	$( '#menu-plaction a' ).removeClass( 'hide' );
 	$menu.find( '.current' ).toggleClass( 'hide', active || play );
 	if ( S.player === 'mpd' || S.player === 'upnp' ) {
@@ -1880,7 +1880,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$menu.find( '.wrsave' ).toggleClass( 'hide', ! notsaved );
 	$menu.find( '.remove' ).toggleClass( 'sub', ! singletrack );
 	$menu.find( '.crop, .i-track.submenu' ).toggleClass( 'hide', singletrack );
-	contextmenuScroll( $menu, $thisli.offset().top + 48 );
+	contextmenuScroll( $menu, $LI.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	playlistRemove( $( this ).parent() );
 } );
@@ -1896,33 +1896,32 @@ $( '#pl-title' ).on( 'click', '.savedlist', function() {
 } );
 $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 	e.stopPropagation();
+	$LI          = $( this );
 	var $target  = $( e.target );
-	var $this    = $( this );
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
-	var active   = $this.hasClass( 'active' );
+	var active   = $LI.hasClass( 'active' );
 	menuHide();
 	if ( menushow && active ) return
 	
 	var liicon   = $target.hasClass( 'li-icon' );
 	if ( V.playlisttrack || liicon ) {
 		if ( 'pladd' in V ) {
-			V.pladd.index = $this.index();
-			V.pladd.track = $this.find( '.li1 .name' ).text()
-							+'<br><gr>'+ $this.find( '.li2 .name' ).text() +'</gr>';
+			V.pladd.index = $LI.index();
+			V.pladd.track = $LI.find( '.li1 .name' ).text()
+							+'<br><gr>'+ $LI.find( '.li2 .name' ).text() +'</gr>';
 			playlistInsertSelect();
 		} else {
-			var menu  = $target.data( 'menu' ) || $this.find( '.li-icon' ).data ( 'menu' );
+			var menu  = $target.data( 'menu' ) || $LI.find( '.li-icon' ).data ( 'menu' );
 			var $menu = $( '#menu-'+ menu );
 			V.list    = {};
-			V.list.li = $this; // for contextmenu
 			$( '#pl-savedlist li.active' ).removeClass( 'active' );
 			if ( V.playlistlist ) {
-				V.list.name = $this.find( '.lipath' ).text();
+				V.list.name = $LI.find( '.lipath' ).text();
 				V.list.path = V.list.name;
 			} else {
-				V.list.name   = $this.find( '.name' ).text();
-				V.list.path   = $this.find( '.lipath' ).text() || V.list.name;
-				V.list.track  = $this.data( 'track' );
+				V.list.name   = $LI.find( '.name' ).text();
+				V.list.path   = $LI.find( '.lipath' ).text() || V.list.name;
+				V.list.track  = $LI.data( 'track' );
 				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', S.pllength === 0 );
 				$( '.remove' ).removeClass( 'hide' );
 				$( '.tag' ).addClass( 'hide' );
@@ -1936,16 +1935,16 @@ $( '#page-playlist' ).on( 'click', '#pl-savedlist li', function( e ) {
 				}
 				
 				$menu.find( '.similar' ).toggleClass( 'hide', S.webradio );
-				$menu.find( '.wrsave' ).toggleClass( 'hide', ! $this.hasClass( 'notsaved' ) );
+				$menu.find( '.wrsave' ).toggleClass( 'hide', ! $LI.hasClass( 'notsaved' ) );
 			}
-			$this.addClass( 'active' );
+			$LI.addClass( 'active' );
 			$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', S.pllength === 0 );
 			$menu.find( '.playnext' ).toggleClass( 'hide', S.state !== 'play' );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', S.player !== 'mpd' );
-			contextmenuScroll( $menu, $this.position().top + 48 );
+			contextmenuScroll( $menu, $LI.position().top + 48 );
 		}
 	} else {
-		var name = $this.find( '.lipath' ).text();
+		var name = $LI.find( '.lipath' ).text();
 		renderSavedPlTrack( name );
 		if ( 'pladd' in V ) {
 			V.pladd.name = name;
