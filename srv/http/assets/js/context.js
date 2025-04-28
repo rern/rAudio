@@ -764,16 +764,16 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			break;
 		default: // MODE
 			var datamode = $LI.data( 'mode' );
-			if ( datamode !== 'album' ) { // 1st level
-				if ( datamode !== 'file' ) {
-					V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
-				} else {
-					V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text(), 'lsmode', V.list.path ];
-				}
-			} else {                        // next level: mode + album || date/genre: mode + artist + album
+			if ( datamode === 'album' ) { // 1st level
 				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text() ];
 				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', $LI.find( '.name' ).text() );
 				V.mpccmd.push( 'album', $LI.find( '.liname' ).text() );
+			} else { // next level: mode + album || date/genre: mode + artist + album
+				if ( datamode === 'lsmode' ) { // last list before track
+					V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text(), 'lsmode', V.list.path ];
+				} else {
+					V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
+				}
 			}
 		break
 	}

@@ -1455,7 +1455,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( $target.is( '.i-save, .coverart' ) ) return
 	
 	var l_mode      = $LI.data( 'mode' );
-	var l_modefile  = [ 'file', 'nas', 'sd', 'usb' ].includes( l_mode );
+	var l_modefile  = [ 'lsmode', 'nas', 'sd', 'usb' ].includes( l_mode );
 	var l_moderadio = l_mode.slice( -5 ) === 'radio'; // radio .dir has no mode
 	if ( $target.is( '.li-icon, .licoverimg' )
 		|| $target.data( 'menu' )

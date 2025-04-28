@@ -417,9 +417,9 @@ function htmlFind() { // non-file 'find' command
 			$val1 = $each->$key1;
 			$name.= '<gr> • </gr>'.$val1;
 		}
+		$path      = $each->file ?? '';
+		$datamode  = $path ? 'lsmode' : 'album'; // $each->file - value as dir
 		$dataindex = dataIndex( $each->sort );
-		$datamode  = property_exists( $each, 'file' ) ? 'file' : 'album'; // $each->file - value as dir
-		$path      = $each->file;
 		$icon      = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
 		$liname    = $modedate_genre ? $val1 : $val0;
 		$html     .= '
