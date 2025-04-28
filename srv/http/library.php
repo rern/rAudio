@@ -86,10 +86,12 @@ case 'findartist': // artist, albumartist
 	foreach( $array as $each ) {
 		$mode      = strtolower( explode( '/', $each->path )[ 0 ] );
 		$dataindex = dataIndex( $each->sort );
+		$path      = $each->path;
+		$icon      = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
 		$html     .= '
 <li data-mode="'.$mode.'"'.$dataindex.'>
-	'.i( 'album li-icon' ).'
-	<a class="lipath">'.$each->path.'</a>
+	'.$icon.'
+	<a class="lipath">'.$path.'</a>
 	<span class="single name">'.$each->name.'<gr> • '.$each->path.'</gr></span>
 </li>';
 	}
@@ -410,7 +412,6 @@ function htmlFind() { // non-file 'find' command
 		$val0       = $each->$key0;
 		if ( ! $val0 ) continue;
 		
-		$icon      = '<i class="li-icon i-album" data-menu="'.$GMODE.'"></i>';
 		$name      = '<a class="name">'.$val0.'</a>';
 		if ( ! $modeartist && $key1 ) {
 			$val1 = $each->$key1;
@@ -418,10 +419,12 @@ function htmlFind() { // non-file 'find' command
 		}
 		$dataindex = dataIndex( $each->sort );
 		$datamode  = property_exists( $each, 'file' ) ? 'file' : 'album'; // $each->file - value as dir
+		$path      = $each->file;
+		$icon      = imgIcon( '/mnt/MPD/'.$path.'/thumb.jpg', $GMODE );
 		$liname    = $modedate_genre ? $val1 : $val0;
 		$html     .= '
 <li data-mode="'.$datamode.'"'.$dataindex.'">
-	<a class="lipath">'.$each->file.'</a>
+	<a class="lipath">'.$path.'</a>
 	<a class="liname">'.$liname.'</a>
 	'.$icon.'
 	<span class="single">'.$name.'</span>
