@@ -763,8 +763,13 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 			V.mpccmd = [ 'mpcadd', path ];
 			break;
 		default: // MODE
-			if ( V.list.li.data( 'mode' ) !== 'album' ) { // 1st level
-				V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
+			var datamode = V.list.li.data( 'mode' );
+			if ( datamode !== 'album' ) { // 1st level
+				if ( datamode !== 'file' ) {
+					V.mpccmd = [ 'mpcaddfind', V.mode, V.list.path ];
+				} else {
+					V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text(), 'lsmode', V.list.path ];
+				}
 			} else {                        // next level: mode + album || date/genre: mode + artist + album
 				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#lib-path' ).text() ];
 				if ( [ 'date', 'genre' ].includes( V.mode ) ) V.mpccmd.push( 'artist', V.list.li.find( '.name' ).text() );
