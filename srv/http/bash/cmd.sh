@@ -208,6 +208,13 @@ bookmarkadd )
 	echo "$DIR" > "$file_bk"
 	file_order=$dirsystem/order.json
 	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${DIR//\"/\\\\\"}\"" $file_order
+	dir="/mnt/MPD/$DIR"
+	if [[ -d $dir  ]] && ! ls "$dir/coverart".* 2> /dev/null; then
+		target=$( coverFileGet "$dir" raw )
+		[[ $target ]] && $dirbash/cmd-coverart.sh "coverart
+$target
+CMD TARGET"
+	fi
 	pushBookmark
 	;;
 bookmarkremove )

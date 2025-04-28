@@ -813,14 +813,8 @@ function libraryHome() {
 			switchPage( 'library' );
 			if ( S.updating_db ) banner( 'refresh-library blink', 'Library Database', 'Update ...' );
 		}
-		libraryHomeImgError();
 		if ( V.color ) $( '.mode.webradio' ).trigger( 'click' );
 	}, 'json' );
-}
-function libraryHomeImgError() {
-	$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
-		imageOnError( this, $( this ).prev().text() );
-	} );
 }
 function list( query, callback, json ) {
 	if ( V.debug ) {
@@ -1173,6 +1167,9 @@ function renderLibrary() { // library home
 	V.query       = [];
 	var title     = 'LIBRARY';
 	if ( C.song ) title += ' <a>'+ C.song.toLocaleString() + ico( 'music' ) +'</a>';
+	$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
+		imageOnError( this, $( this ).prev().text() );
+	} );
 	$( '#lib-home-title' ).html( title );
 	$( '#lib-path' ).empty()
 	$( '#lib-home-title, #button-lib-search, #button-lib-update' ).removeClass( 'hide' );

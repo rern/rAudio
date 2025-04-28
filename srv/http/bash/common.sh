@@ -165,7 +165,11 @@ coverFileGet() {
 	path=$1
 	coverfile=$( ls -X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
-	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
+	[[ ! $coverfile ]] && return
+	
+	[[ $2 ]] && echo $coverfile && return
+	
+	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
 }
 data2json() {
 	local json page

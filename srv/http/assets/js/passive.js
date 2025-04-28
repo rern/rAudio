@@ -11,8 +11,7 @@ W = {
 		V.html.library = data.html;
 		var html       = htmlHash( data.html );
 		$( '#lib-mode-list' ).html( html );
-		libraryHomeImgError();
-		orderLibrary();
+		renderLibrary();
 	}
 	, cover     : data => {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );

@@ -198,7 +198,7 @@ var context = {
 				var msgpath = path.slice( 24 );
 			} else {
 				if ( path.slice( -4 ) === '.cue' ) path = dirName( path );
-				var src     = '/mnt/MPD/'+ path +'/coverart.jpg';
+				var src     = '/mnt/MPD/'+ path +'/cover.jpg';
 				var msgpath = path;
 				var name    = path.split( '/' ).pop();
 			}
