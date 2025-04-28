@@ -788,5 +788,19 @@ $sampling
 $CHARSET" > "$newfile"
 	pushRadioList
 	;;
+webradiotitle )
+	metaint=$( curl -s -I -H "Icy-MetaData: 1" "$URL" \
+				| grep -i "icy-metaint" \
+				| awk '{print $2}' \
+				| tr -d '\r' )
+	[[ ! $metaint ]] && exit
+# --------------------------------------------------------------------
+	curl -s -H 'Icy-MetaData: 1' "$URL" \
+		| dd bs=1 skip=$metaint count=255 2>/dev/null \
+		| tr -d '\0' \
+#               ...StreamTitle='ARTIST - TITLE';StreamUrl='URL';StreamArtwork='ARTWORK';...
+		| grep -o "StreamTitle='[^'][^;]*'" \
+		| sed "s/StreamTitle=' *//; s/ *'$//"
+	;;
 	
 esac
