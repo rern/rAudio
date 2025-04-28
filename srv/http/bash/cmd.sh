@@ -795,12 +795,12 @@ webradiotitle )
 				| tr -d '\r' )
 	[[ ! $metaint ]] && exit
 # --------------------------------------------------------------------
+# stream: ...[N icy-metaint]...StreamTitle='ARTIST - TITLE';StreamUrl='URL';StreamArtwork='ARTWORK';\0\0\0>>>\0[255]...
 	curl -s -H 'Icy-MetaData: 1' "$URL" \
 		| dd bs=1 skip=$metaint count=255 2>/dev/null \
 		| tr -d '\0' \
 		| grep -o "StreamTitle='[^'][^;]*'" \
 		| sed "s/StreamTitle=' *//; s/ *'$//"
-# ...StreamTitle='ARTIST - TITLE';StreamUrl='URL';StreamArtwork='ARTWORK';...
 	;;
 	
 esac
