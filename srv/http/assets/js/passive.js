@@ -226,7 +226,7 @@ W = {
 		
 		if ( 'volumenone' in data ) {
 			D.volumenone = data.volumenone;
-			$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
+			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
 			return
 		}
 		if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
@@ -271,7 +271,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 	V.wH = window.innerHeight;
 	V.wW = wW;
 	setTimeout( () => {
-		var barvisible = $bartop.is( ':visible' );
 		if ( V.playback ) {
 			displayPlayback();
 			setTimeout( renderPlayback, 50 );

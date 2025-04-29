@@ -1,5 +1,5 @@
 function barVisible( a, b ) {
-	var visible = ! $bartop.hasClass( 'hide' );
+	var visible = ! $( '#bar-top' ).hasClass( 'hide' );
 	if ( ! a ) return visible
 	
 	return visible ? a : b
@@ -487,10 +487,10 @@ function displayBottom() {
 	$( '#'+ V.page ).addClass( 'active' );
 }
 function displayPlayback() {
-	$time.toggleClass( 'hide', ! D.time );              // #time hidden on load - set before get :hidden
-	var hidetime   = ! D.time || $time.is( ':hidden' ); // #time hidden by css on small screen
+	$TIME.toggleClass( 'hide', ! D.time );              // #time hidden on load - set before get :hidden
+	var hidetime   = ! D.time || $TIME.is( ':hidden' ); // #time hidden by css on small screen
 	var hidevolume = ! D.volume || D.volumenone;
-	$volume.toggleClass( 'hide', hidevolume );
+	$VOLUME.toggleClass( 'hide', hidevolume );
 	var $cover     = $( '#coverart-block' );
 	$cover.toggleClass( 'hide', ! D.cover );
 	if ( ( hidetime || hidevolume ) && V.wW > 500 ) {
@@ -508,7 +508,7 @@ function displayPlayback() {
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', S.pllength === 0 || S.webradio || S.player !== 'mpd' );
 	$( '#time' ).toggleClass( 'disabled', S.webradio || ! [ 'mpd', 'upnp' ].includes( S.player ) );
-	$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || $volume.is( ':visible' ) );
+	$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || $VOLUME.is( ':visible' ) );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
 	$( '#playback-row' ).css( 'align-items', D.buttons ? '' : 'center' );
@@ -654,6 +654,125 @@ function infoDisplayKeyValue( type ) {
 		}
 	} );
 	return { keys : keys, values: values, list: list }
+}
+var infoFile = {
+	  get    : () => {
+		$( '#infoButton a' ).addClass( 'disabled' );
+		$( '#infoFileLabel i' ).addClass( 'blink' );
+		delete I.infofilegif;
+		I.rotate   = 0;
+		$( '.infoimgname' ).addClass( 'hide' );
+		$( '.infoimgnew, .infoimgwh' ).remove();
+		if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
+			infoFile.reader();
+		} else { // animated gif or not
+			var formdata = new FormData();
+			formdata.append( 'cmd', 'giftype' );
+			formdata.append( 'file', I.infofile );
+			fetch( 'cmd.php', { method: 'POST', body: formdata } )
+				.then( response => response.json() ) // set response data as json > animated
+				.then( animated => { // 0 / 1
+					if ( animated ) {
+						I.infofilegif = '/srv/http/data/shm/local/tmp.gif';
+						var img    = new Image();
+						img.src    = URL.createObjectURL( I.infofile );
+						img.onload = function() {
+							var imgW   = img.width;
+							var imgH   = img.height;
+							var resize = infoFile.resize( 'gif', imgW, imgH );
+							infoFile.render( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
+							bannerHide();
+						}
+					} else {
+						infoFile.reader();
+					}
+				} );
+		}
+	}
+	, reader : () => {
+		var maxsize   = ( V.library && V.libraryhome ) ? 200 : 1000;
+		var reader    = new FileReader();
+		reader.onload = function( e ) {
+			var img    = new Image();
+			img.src    = e.target.result;
+			img.onload = function() {
+				var imgW          = img.width;
+				var imgH          = img.height;
+				var filecanvas    = document.createElement( 'canvas' );
+				var ctx           = filecanvas.getContext( '2d' );
+				filecanvas.width  = imgW;
+				filecanvas.height = imgH;
+				ctx.drawImage( img, 0, 0 );
+				var resize = infoFile.resize( 'jpg', imgW, imgH );
+				if ( resize ) {
+					var canvas    = document.createElement( 'canvas' );
+					canvas.width  = resize.w;
+					canvas.height = resize.h;
+					pica.resize( filecanvas, canvas, picaOption ).then( function() {
+						infoFile.render( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
+					} );
+				} else {
+					infoFile.render( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
+				}
+				clearTimeout( V.timeout.file );
+				bannerHide();
+			}
+		}
+		reader.readAsDataURL( I.infofile );
+		$( '#infoList' )
+			.off( 'click', '.infoimgnew' )
+			.on( 'click', '.infoimgnew', function() {
+			if ( ! $( '.infomessage .rotate' ).length ) return
+			
+			I.rotate     += 90;
+			if ( I.rotate === 360 ) I.rotate = 0;
+			var canvas    = document.createElement( 'canvas' );
+			var ctx       = canvas.getContext( '2d' );
+			var image     = $( this )[ 0 ];
+			var img       = new Image();
+			img.src       = image.src;
+			img.onload    = function() {
+				ctx.drawImage( image, 0, 0 );
+			}
+			var w         = img.width;
+			var h         = img.height;
+			var cw        = Math.round( w / 2 );
+			var ch        = Math.round( h / 2 );
+			canvas.width  = h;
+			canvas.height = w;
+			ctx.translate( ch, cw );
+			ctx.rotate( Math.PI / 2 );
+			ctx.drawImage( img, -cw, -ch );
+			image.src     = canvas.toDataURL( 'image/jpeg' );
+		} );
+	}
+	, render : ( src, original, resize ) => {
+		$( '.infomessage .imgnew' ).remove();
+		$( '.infomessage' ).append(
+			 '<span class="imgnew">'
+				+'<img class="infoimgnew" src="'+ src +'">'
+				+'<div class="infoimgwh">'
+				+ ( resize ? resize : '' )
+				+ ( original ? 'original: '+ original : '' )
+				+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ico( 'redo rotate' ) +'Tap to rotate' )
+				+'</div>'
+			+'</span>'
+		);
+		$( '#infoButton a' ).removeClass( 'disabled blink' );
+		$( '#infoFileLabel i' ).removeClass( 'blink' );
+	}
+	, resize : ( ext, imgW, imgH ) => {
+		var maxsize = ( V.library && V.libraryhome ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
+		if ( imgW > maxsize || imgH > maxsize ) {
+			var w = imgW > imgH ? maxsize : Math.round( imgW / imgH * maxsize );
+			var h = imgW > imgH ? Math.round( imgH / imgW * maxsize ) : maxsize;
+			return {
+				  w   : w
+				, h   : h
+				, wxh : w +' x '+ h
+			}
+		}
+	}
 }
 function infoLibrary() {
 	var kv = infoDisplayKeyValue( 'library' );
@@ -1328,7 +1447,7 @@ function renderPlayback() {
 		return
 	}
 	
-	$timeRS.option( 'max', S.Time || 100 );
+	$TIME_RS.option( 'max', S.Time || 100 );
 	if ( S.state === 'stop' ) {
 		setPlaybackStop();
 		return
@@ -1487,7 +1606,7 @@ function setButtonOptions() {
 	$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 	$( '#relays' ).toggleClass( 'on', S.relayson );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
-	var timevisible = $time.is( ':visible' );
+	var timevisible = $TIME.is( ':visible' );
 	var prefix = timevisible ? 'ti' : 'mi';
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btreceiver );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
@@ -1516,13 +1635,13 @@ function setButtonOptions() {
 	}
 	setButtonUpdateAddons();
 	setButtonUpdating();
-	if ( $volume.is( ':hidden' ) ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
+	if ( $VOLUME.is( ':hidden' ) ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
 }
 function setButtonUpdateAddons() {
 	if ( S.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( ! barVisible() ) {
-			var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
+			var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
 			$( '#'+ prefix +'-addons' ).addClass( 'hide' );
 			$( '#'+ prefix +'-addons' ).removeClass( 'hide' );
 		}
@@ -1535,7 +1654,7 @@ function setButtonUpdating() {
 	clearInterval( V.interval.blinkupdate );
 	if ( S.updating_db ) {
 		if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
-			var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
+			var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
 			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
 		} else {
 			$( '#library, #button-library' ).addClass( 'blink' );
@@ -1817,16 +1936,16 @@ function setPlayPauseColor() {
 function setProgress( position ) {
 	if ( position !== 0 ) position = S.elapsed;
 	if ( S.state !== 'play' || ! position ) intervalElapsedClear();
-	$timeprogress.css( 'transition-duration', '0s' );
-	$timeRS.setValue( position );
+	$TIME_RS_PROG.css( 'transition-duration', '0s' );
+	$TIME_RS.setValue( position );
 	var w = position && S.Time ? position / S.Time * 100 : 0;
 	$( '#time-bar' ).css( 'width', w +'%' );
 }
 function setProgressAnimate() {
 	if ( ! D.time && ! D.cover ) return
 	
-	$timeprogress.css( 'transition-duration', S.Time - S.elapsed +'s' );
-	$timeRS.setValue( S.Time );
+	$TIME_RS_PROG.css( 'transition-duration', S.Time - S.elapsed +'s' );
+	$TIME_RS.setValue( S.Time );
 	$( '#time-bar' ).css( 'width', '100%' );
 }
 function setProgressElapsed() {
@@ -1838,12 +1957,12 @@ function setProgressElapsed() {
 	var $elapsed = $( t_e +', #progress span, #pl-list li.active .elapsed' );
 	if ( S.elapsed ) $elapsed.text( second2HMS( S.elapsed ) );
 	if ( S.Time ) { // elapsed + time
-		$timeRS.option( 'max', S.Time );
+		$TIME_RS.option( 'max', S.Time );
 		setProgress();
 		if ( ! localhost ) {
 			setTimeout( setProgressAnimate, 0 ); // delay to after setvalue on load
 		} else {
-			$timeprogress.css( 'transition-duration', '0s' );
+			$TIME_RS_PROG.css( 'transition-duration', '0s' );
 		}
 	} else { // elapsed only
 		if ( ! D.radioelapsed ) {
@@ -1856,7 +1975,7 @@ function setProgressElapsed() {
 		S.elapsed++;
 		if ( ! S.Time || S.elapsed < S.Time ) {
 			if ( localhost ) {
-				$timeRS.setValue( S.elapsed );
+				$TIME_RS.setValue( S.elapsed );
 				$( '#time-bar' ).css( 'width', S.elapsed / S.Time * 100 +'%' );
 			}
 			elapsedhms = second2HMS( S.elapsed );
@@ -1890,16 +2009,16 @@ function setVolume() {
 	if ( V.animate ) return
 	
 	if ( D.volume ) {
-		$volumeRS.setValue( S.volume );
-		if ( ! S.volume ) $volumehandle.rsRotate( -310 );
+		$VOLUME_RS.setValue( S.volume );
+		if ( ! S.volume ) $VOL_HANDLE.rsRotate( -310 );
 	}
 	setVolumeUpDn();
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
 		.text( S.volumemute || S.volume )
 		.toggleClass( 'bll', S.volumemute > 0 );
-	if ( $volume.is( ':hidden' ) ) {
-		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
+	if ( $VOLUME.is( ':hidden' ) ) {
+		var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
 		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! S.volumemute );
 	}
 	S.volumemute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
@@ -2013,25 +2132,25 @@ function volumeBarShow() {
 	$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 }
 function volumeColorMute() {
-	$volumetooltip
+	$VOL_TOOLTIP
 		.text( S.volumemute )
 		.addClass( 'bl' );
-	$volumehandle.addClass( 'bgr60' );
+	$VOL_HANDLE.addClass( 'bgr60' );
 	$( '#volmute' ).addClass( 'mute active' );
-	if ( $volume.is( ':hidden' ) ) {
-		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
+	if ( $VOLUME.is( ':hidden' ) ) {
+		var prefix = $TIME.is( ':visible' ) ? 'ti' : 'mi';
 		$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 	}
 }
 function volumeColorUnmute() {
-	$volumetooltip.removeClass( 'bl' );
-	$volumehandle.removeClass( 'bgr60' );
+	$VOL_TOOLTIP.removeClass( 'bl' );
+	$VOL_HANDLE.removeClass( 'bgr60' );
 	$( '#volmute' ).removeClass( 'mute active' )
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeUpDown( up ) {
 	up ? S.volume++ : S.volume--;
-	if ( D.volume ) $volumeRS.setValue( S.volume );
+	if ( D.volume ) $VOLUME_RS.setValue( S.volume );
 	volumeMaxSet();
 	S.volumemute = 0;
 	setVolume();

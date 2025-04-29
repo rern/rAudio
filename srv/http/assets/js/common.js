@@ -473,7 +473,7 @@ function info( json ) {
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.extrabtn' ).addClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( typeimage ) infoFileImage();
+				if ( typeimage ) infoFile.get();
 			}
 		} );
 	}
@@ -868,123 +868,6 @@ function infoClearTimeout( all ) { // ok for both timeout and interval
 	
 	var timeout = all ? Object.keys( V.timeout ) : [ 'updni', 'updnt' ];
 	timeout.forEach( k => clearTimeout( V.timeout[ k ] ) );
-}
-function infoFileImage() {
-	$( '#infoButton a' ).addClass( 'disabled' );
-	$( '#infoFileLabel i' ).addClass( 'blink' );
-	delete I.infofilegif;
-	I.rotate   = 0;
-	$( '.infoimgname' ).addClass( 'hide' );
-	$( '.infoimgnew, .infoimgwh' ).remove();
-	if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
-		infoFileImageReader();
-	} else { // animated gif or not
-		var formdata = new FormData();
-		formdata.append( 'cmd', 'giftype' );
-		formdata.append( 'file', I.infofile );
-		fetch( 'cmd.php', { method: 'POST', body: formdata } )
-			.then( response => response.json() ) // set response data as json > animated
-			.then( animated => { // 0 / 1
-				if ( animated ) {
-					I.infofilegif = '/srv/http/data/shm/local/tmp.gif';
-					var img    = new Image();
-					img.src    = URL.createObjectURL( I.infofile );
-					img.onload = function() {
-						var imgW   = img.width;
-						var imgH   = img.height;
-						var resize = infoFileImageResize( 'gif', imgW, imgH );
-						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						bannerHide();
-					}
-				} else {
-					infoFileImageReader();
-				}
-			} );
-	}
-}
-function infoFileImageReader() {
-	var maxsize   = ( V.library && V.libraryhome ) ? 200 : 1000;
-	var reader    = new FileReader();
-	reader.onload = function( e ) {
-		var img    = new Image();
-		img.src    = e.target.result;
-		img.onload = function() {
-			var imgW          = img.width;
-			var imgH          = img.height;
-			var filecanvas    = document.createElement( 'canvas' );
-			var ctx           = filecanvas.getContext( '2d' );
-			filecanvas.width  = imgW;
-			filecanvas.height = imgH;
-			ctx.drawImage( img, 0, 0 );
-			var resize = infoFileImageResize( 'jpg', imgW, imgH );
-			if ( resize ) {
-				var canvas    = document.createElement( 'canvas' );
-				canvas.width  = resize.w;
-				canvas.height = resize.h;
-				pica.resize( filecanvas, canvas, picaOption ).then( function() {
-					infoFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
-				} );
-			} else {
-				infoFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
-			}
-			clearTimeout( V.timeout.file );
-			bannerHide();
-		}
-	}
-	reader.readAsDataURL( I.infofile );
-	$( '#infoList' )
-		.off( 'click', '.infoimgnew' )
-		.on( 'click', '.infoimgnew', function() {
-		if ( ! $( '.infomessage .rotate' ).length ) return
-		
-		I.rotate     += 90;
-		if ( I.rotate === 360 ) I.rotate = 0;
-		var canvas    = document.createElement( 'canvas' );
-		var ctx       = canvas.getContext( '2d' );
-		var image     = $( this )[ 0 ];
-		var img       = new Image();
-		img.src       = image.src;
-		img.onload    = function() {
-			ctx.drawImage( image, 0, 0 );
-		}
-		var w         = img.width;
-		var h         = img.height;
-		var cw        = Math.round( w / 2 );
-		var ch        = Math.round( h / 2 );
-		canvas.width  = h;
-		canvas.height = w;
-		ctx.translate( ch, cw );
-		ctx.rotate( Math.PI / 2 );
-		ctx.drawImage( img, -cw, -ch );
-		image.src     = canvas.toDataURL( 'image/jpeg' );
-	} );
-}
-function infoFileImageRender( src, original, resize ) {
-	$( '.infomessage .imgnew' ).remove();
-	$( '.infomessage' ).append(
-		 '<span class="imgnew">'
-			+'<img class="infoimgnew" src="'+ src +'">'
-			+'<div class="infoimgwh">'
-			+ ( resize ? resize : '' )
-			+ ( original ? 'original: '+ original : '' )
-			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ico( 'redo rotate' ) +'Tap to rotate' )
-			+'</div>'
-		+'</span>'
-	);
-	$( '#infoButton a' ).removeClass( 'disabled blink' );
-	$( '#infoFileLabel i' ).removeClass( 'blink' );
-}
-function infoFileImageResize( ext, imgW, imgH ) {
-	var maxsize = ( V.library && V.libraryhome ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
-	if ( imgW > maxsize || imgH > maxsize ) {
-		var w = imgW > imgH ? maxsize : Math.round( imgW / imgH * maxsize );
-		var h = imgW > imgH ? Math.round( imgH / imgW * maxsize ) : maxsize;
-		return {
-			  w   : w
-			, h   : h
-			, wxh : w +' x '+ h
-		}
-	}
 }
 function infoFooterIcon( kv ) {
 	var footer = '';

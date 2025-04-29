@@ -24,19 +24,12 @@ V = {   // var global
 [ 'lyrics',        'lyricsartist', 'mode' ].forEach(                                      k => V[ k ] = '' );
 [ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0 );
 [ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true );
-var $bartop     = $( '#bar-top' );
 var $LI         = '';
-var $time       = $( '#time-knob' );
-var $volume     = $( '#volume-knob' );
+var $TIME       = $( '#time-knob' );
+var $VOLUME     = $( '#volume-knob' );
 var data        = {}
 var dots        = '·&ensp;·&ensp;·';
-var picaOption  = { // pica.js
-	  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
-	, unsharpThreshold : 5    // 0...100 Default = 0 (try 10)
-	, unsharpRadius    : 0.6
-//	, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
-//	, alpha            : true // Default = false (black crop background)
-};
+var vumeter     = '<img class="imgicon" src="'+ V.covervu +'"> ';
 var icon_player = {
 	  airplay   : 'AirPlay'
 	, bluetooth : 'Bluetooth'
@@ -44,7 +37,6 @@ var icon_player = {
 	, spotify   : 'Spotify'
 	, upnp      : 'UPnP'
 }
-var vumeter     = '<img class="imgicon" src="'+ V.covervu +'"> ';
 var chkdisplay  = {
 	  library       : {
 		  album          : ico( 'album' ) +'<gr>Album</gr>'
@@ -94,6 +86,20 @@ var chkdisplay  = {
 		, plsimilar      : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'lastfm' ) +'Add similar</a>'
 		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
 	}
+}
+var picaOption  = { // pica.js
+	  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
+	, unsharpThreshold : 5    // 0...100 Default = 0 (try 10)
+	, unsharpRadius    : 0.6
+//	, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
+//	, alpha            : true // Default = false (black crop background)
+};
+var rsOption    = {
+	  animation   : false
+	, borderWidth : 0
+	, radius      : 115
+	, svgMode     : true
+	, width       : 22
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -562,18 +568,15 @@ $( '#elapsed' ).on( 'click', function() {
 	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
 } );
 $( '#time' ).roundSlider( {
-	  sliderType  : 'min-range'
-	, svgMode     : true
-	, borderWidth : 0
-	, radius      : 115
+	  ...rsOption
+	, sliderType  : 'min-range'
 	, width       : 22
 	, startAngle  : 90
 	, endAngle    : 450
 	, showTooltip : false
-	, animation   : false
 	, create      : function ( e ) {
-		$timeRS       = this;
-		$timeprogress = $( '#time .rs-transition, #time-bar' );
+		$TIME_RS      = this;
+		$TIME_RS_PROG = $( '#time .rs-transition, #time-bar' );
 	}
 	, start       : function () { // drag start
 		V.drag = true;
@@ -618,21 +621,18 @@ $( '#volume' ).roundSlider( {
 	// drag     : start > [ beforeValueChange > drag > valueChange ] > change > stop
 	// setValue : beforeValueChange > valueChange
 	// angle    : this._handle1.angle (instaed of inconsistent e.handle.angle/e.handles[ 0 ].angle)
-	  svgMode           : true
-	, borderWidth       : 0
-	, radius            : 115
+	  ...rsOption
 	, width             : 50
 	, handleSize        : '-25'
 	, startAngle        : -50
 	, endAngle          : 230
 	, editableTooltip   : false
-	, animation         : false
 	, create            : function () {
-		V.create         = true;
-		$volumeRS        = this;
-		$volumetooltip   = $( '#volume .rs-tooltip' );
-		$volumehandle    = $( '#volume .rs-handle' );
-		$volumehandle_tr = $( '#volume .rs-handle, #volume .rs-transition' );
+		V.create       = true;
+		$VOLUME_RS     = this;
+		$VOL_TOOLTIP   = $( '#volume .rs-tooltip' );
+		$VOL_HANDLE    = $( '#volume .rs-handle' );
+		$VOL_HANDLE_TR = $( '#volume .rs-handle, #volume .rs-transition' );
 	}
 	, start             : function( e ) {
 		V.drag = true;
@@ -646,14 +646,14 @@ $( '#volume' ).roundSlider( {
 			banner( 'volumelimit', 'Volume Limit', 'Max: '+ S.volumemax );
 			if ( S.volume === S.volumemax ) return false
 			
-			$volumeRS.setValue( S.volumemax );
+			$VOLUME_RS.setValue( S.volumemax );
 			S.volume = S.volumemax;
 			volumeSet();
 			return false
 		}
 		
 		if ( V.press ) {
-			$volumehandle_tr.css( 'transition-duration', '100ms' );
+			$VOL_HANDLE_TR.css( 'transition-duration', '100ms' );
 			return
 		}
 		
@@ -664,16 +664,16 @@ $( '#volume' ).roundSlider( {
 			var diff  = Math.abs( e.value - S.volume || S.volume - S.volumemute ); // change || mute/unmute
 		}
 		V.animate = diff * 40; // 1% : 40ms
-		$volumehandle_tr.css( 'transition-duration', V.animate +'ms' );
+		$VOL_HANDLE_TR.css( 'transition-duration', V.animate +'ms' );
 		setTimeout( () => {
-			$volumehandle_tr.css( 'transition-duration', '100ms' );
+			$VOL_HANDLE_TR.css( 'transition-duration', '100ms' );
 			$( '#volume-knob' ).css( 'pointer-events', '' );
 			V.animate = false;
 		}, V.animate );
 	}
 	, drag              : function( e ) {
 		S.volume = e.value;
-		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
+		$VOL_HANDLE.rsRotate( e.value ? -this._handle1.angle : -310 );
 		volumeSet();
 	}
 	, change            : function( e ) {
@@ -682,13 +682,13 @@ $( '#volume' ).roundSlider( {
 		S.volume = e.value;
 		$( '#volume-knob' ).css( 'pointer-events', 'none' );
 		volumeSet();
-		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
+		$VOL_HANDLE.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, valueChange       : function( e ) {
 		if ( V.drag || ! V.create ) return // ! V.create - suppress fire before 'create'
 		
 		S.volume     = e.value;
-		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
+		$VOL_HANDLE.rsRotate( e.value ? -this._handle1.angle : -310 );
 		setVolumeUpDn();
 		if ( S.volumemute ) volumeColorUnmute();
 	}
@@ -730,7 +730,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		volumeAnimate( S.volume, V.volume.current );
 		volumeSet();
 	}
-	$volumeRS.setValue( S.volume );
+	$VOLUME_RS.setValue( S.volume );
 	V.volume    = V.drag = false;
 	volumeBarHide();
 } ).on( 'mouseleave', function() {
@@ -760,7 +760,7 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 			$( '#volume-text' ).text( S.volume );
 			$( '#volume-bar' ).css( 'width', S.volume +'%' );
 		} else {
-			$volumeRS.setValue( S.volume );
+			$VOLUME_RS.setValue( S.volume );
 			volumeBarHideClear();
 			volumeBarHide();
 		}
@@ -826,8 +826,8 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 		}
 		
 		V.guide    = true;
-		var time   = $time.is( ':visible' );
-		var volume = $volume.is( ':visible' );
+		var time   = $TIME.is( ':visible' );
+		var volume = $VOLUME.is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.mapcover, .guide' ).addClass( 'mapshow' );
 		if ( S.pllength ) {
@@ -864,7 +864,7 @@ $( '#map-cover .map' ).on( 'click', function( e ) {
 			if ( ! ( 'coverTL' in V )
 				&& ( V.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 				&& ! D.volumenone
-				&& $volume.is( ':hidden' )
+				&& $VOLUME.is( ':hidden' )
 			) {
 				if ( $( '#info' ).hasClass( 'hide' ) ) {
 					$( '#info' ).removeClass( 'hide' );
