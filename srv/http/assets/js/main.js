@@ -87,19 +87,21 @@ var chkdisplay  = {
 		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
 	}
 }
-var picaOption  = { // pica.js
-	  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
-	, unsharpThreshold : 5    // 0...100 Default = 0 (try 10)
-	, unsharpRadius    : 0.6
-//	, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
-//	, alpha            : true // Default = false (black crop background)
-};
-var rsOption    = {
-	  animation   : false
-	, borderWidth : 0
-	, radius      : 115
-	, svgMode     : true
-	, width       : 22
+var option      = {
+	  pica : {
+		  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
+		, unsharpThreshold : 5    // 0...100 Default = 0 (try 10)
+		, unsharpRadius    : 0.6
+//		, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
+//		, alpha            : true // Default = false (black crop background)
+	}
+	, roundslider : {
+		  animation   : false
+		, borderWidth : 0
+		, radius      : 115
+		, svgMode     : true
+		, width       : 22
+	}
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -568,7 +570,7 @@ $( '#elapsed' ).on( 'click', function() {
 	S.state === 'play' ? $( '#pause' ).trigger( 'click' ) : $( '#play' ).trigger( 'click' );
 } );
 $( '#time' ).roundSlider( {
-	  ...rsOption
+	  ...option.roundslider
 	, sliderType  : 'min-range'
 	, width       : 22
 	, startAngle  : 90
@@ -621,7 +623,7 @@ $( '#volume' ).roundSlider( {
 	// drag     : start > [ beforeValueChange > drag > valueChange ] > change > stop
 	// setValue : beforeValueChange > valueChange
 	// angle    : this._handle1.angle (instaed of inconsistent e.handle.angle/e.handles[ 0 ].angle)
-	  ...rsOption
+	  ...option.roundslider
 	, width             : 50
 	, handleSize        : '-25'
 	, startAngle        : -50

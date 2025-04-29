@@ -708,7 +708,7 @@ var infoFile = {
 					var canvas    = document.createElement( 'canvas' );
 					canvas.width  = resize.w;
 					canvas.height = resize.h;
-					pica.resize( filecanvas, canvas, picaOption ).then( function() {
+					pica.resize( filecanvas, canvas, option.pica ).then( function() {
 						infoFile.render( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
 					} );
 				} else {
