@@ -2153,33 +2153,35 @@ var UTIL      = {
 		}
 		DISPLAY.pageScroll( 0 );
 		$( '#lyrics' ).before( `
-	<div id="colorpicker">
-		<div id="divcolor">
-		<i id="colorcancel" class="i-close"></i>
-		<canvas id="canvascolor"></canvas>
-		<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary disabled">OK</a>
-		</div>
+<div id="colorpicker">
+	<div id="divcolor">
+	<i id="colorcancel" class="i-close"></i>
+	<canvas id="canvascolor"></canvas>
+	<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary disabled">OK</a>
 	</div>
-	` );
+</div>
+` );
 		LOCAL();
-		var bars = UTIL.barVisible();
+		var bars  = UTIL.barVisible();
 		if ( V.library ) {
-			var $bg_cg  = bars ? $( '#bar-top, #playback-controls i, .menu a, .submenu, #playlist' ) : $( '.menu a, .submenu' );
+			var $bg_cg  = bars ? $( '#bar-top, #playback-controls i, #playlist' ) : $();
 			var $bg_cm  = bars ? $( '#playback-controls .active, #colorok, #library, #button-library' ) : $( '#colorok, #button-library' );
 			var $bg_cga = bars ? $( '.content-top, #playback, #lib-index' ) : $( '.content-top, #lib-index' );
 			var $t_cg   = $( '#colorcancel, #button-lib-back, #lib-title a:first-of-type, #lib-title a:last-of-type' );
 			var $t_cgl  = $( '#lib-index a' );
 			var $t_cg60 = $( '#lib-list li' );
 		} else {
-			var $bg_cg  = bars ? $( '#bar-top, #playback-controls i, .menu a, .submenu, #library' ) : $( '.menu a, .submenu' );
+			var $bg_cg  = bars ? $( '#bar-top, #playback-controls i, #library' ) : $();
 			var $bg_cm  = bars ? $( '#playback-controls .active, #colorok, #playlist, #button-playlist' ) : $( '#colorok, #button-playlist' );
 			var $bg_cga = bars ? $( '.content-top, #playback, #pl-index' ) : $( '.content-top, #pl-index' );
 			var $t_cg   = $( '#colorcancel, #button-pl-back' );
 			var $t_cgl  = $( '#pl-index a' );
 			var $t_cg60 = V.playlisthome ? $( '#pl-list li' ) : $( '#pl-savedlist li' );
 		}
-		var $menu_a     = $( '.menu a' ).not( '.hide' );
-		V.colorelements = $( 'body' ).add( $bg_cg ).add( $bg_cm ).add( $bg_cga ).add( $t_cg ).add( $t_cgl ).add( $t_cg60 ).add( $menu_a );
+		var $menu = $( '.menu:not( .hide )' ).find( 'a:not( .hide ), .submenu:not( .hide )' );
+		$bg_cg.add( $menu );
+		V.colorelements = $bg_cg.add( $bg_cm ).add( $bg_cga ).add( $t_cg ).add( $t_cgl ).add( $t_cg60 );
+		var hsl         = ( h, br ) => 'hsl('+ h +',3%,'+ br +'%)';
 		V.colorpicker   = new KellyColorPicker( {
 			  place  : 'canvascolor'
 			, size   : 230
@@ -2187,22 +2189,21 @@ var UTIL      = {
 			, userEvents : {
 				change : function( e ) {
 					var hex = e.getCurColorHex();
-					var h = Math.round( 360 * e.getCurColorHsv().h );
-					var hsg = 'hsl('+ h +',3%,';
-					if ( ! V.local ) $( '#colorok' ).removeClass( 'disabled' );
+					var h   = Math.round( 360 * e.getCurColorHsv().h );
 					// background
-					$bg_cg.css( 'background-color', hsg +'30%)' );
+					$bg_cg.css( 'background-color', hsl( h, 30 ) );
 					$bg_cm.add( $LI ).css( 'background-color', hex );
-					$bg_cga.css( 'background-color', hsg +'20%)' );
+					$bg_cga.css( 'background-color', hsl( h, 20 ) );
 					// text
-					$t_cgl.css( 'color', hsg +'40%)' );
+					$t_cgl.css( 'color', hsl( h, 40 ) );
 					$t_cg.css( 'color', hex );
-					$t_cg60.not( '.active' ).find( 'i, .li2' ).css( 'css', 'color: '+ hsg +'60%)' );
-					$LI.find( 'i, .time, .li2' ).css( 'color', hsg +'30%)' );
-					$menu_a.css( 'color', hsg +'75%)' );
+					$t_cg60.not( '.active' ).find( 'i, .li2' ).css( 'css', 'color: '+ hsl( h, 60 ) );
+					$LI.find( 'i, .time, .li2' ).css( 'color', hsl( h, 30 ) );
+					$menu.css( 'color', hsl( h, 75 ) );
 					// line
-					$t_cg60.css( 'border-bottom', '1px solid '+ hsg +'20%)' );
-					$menu_a.css( 'border-top', '1px solid '+ hsg +'20%)' );
+					$t_cg60.css( 'border-bottom', '1px solid '+ hsl( h, 20 ) );
+					$menu.css( 'border-top', '1px solid '+ hsl( h, 20 ) );
+					if ( ! V.local ) $( '#colorok' ).removeClass( 'disabled' );
 				}
 			}
 		} );
