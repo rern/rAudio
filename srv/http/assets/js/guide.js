@@ -1,19 +1,19 @@
 document.title = 'Guide';
 [ '.helphead', '#debug' ].forEach( cl => document.querySelector( cl ).remove() );
 [ '.head', '#bar-bottom' ].forEach( k => document.querySelector( k ).classList.remove( 'hide' ) );
-var n     = 1;
-var page  = {
+var P          = {
 	  playback : 1
 	, library  : 22
 	, playlist : 39
 	, settings : 47
 	, total    : 57
 }
-var hash  = '?v='+ Math.round( Date.now() / 1000 );
-var E     = {
+var E          = {
 	  bar : document.getElementById( 'bar-bottom' )
 	, img : document.querySelector( 'img' )
 };
+var HASH       = '?v='+ Math.round( Date.now() / 1000 );
+var n          = 1;
 [ 'close', 'library', 'playback', 'playlist', 'settings', 'prev', 'next' ].forEach( id => {
 	E[ id ] = document.getElementById( id )
 	E[ id ].addEventListener( 'click', function() {
@@ -25,25 +25,25 @@ var E     = {
 			location.href = '/';
 		} else if ( id === 'next' ) {
 			n++;
-			if ( n > page.total ) n = 1;
+			if ( n > P.total ) n = 1;
 		} else if ( id === 'prev' ) {
 			n--;
-			if ( n < 1 ) n = page.total;
+			if ( n < 1 ) n = P.total;
 		} else {
-			n = page[ id ];
+			n = P[ id ];
 		}
-		if ( n >= page.settings ) {
+		if ( n >= P.settings ) {
 			active = 'settings';
-		} else if ( n >= page.playlist ) {
+		} else if ( n >= P.playlist ) {
 			active = 'playlist';
-		} else if ( n >= page.library ) {
+		} else if ( n >= P.library ) {
 			active = 'library';
 		} else {
 			active = 'playback';
 		}
 		tabactive.className = '';
 		document.getElementById( active ).className = 'active'
-		E.img.src = '/assets/img/guide/'+ n +'.jpg'+ hash;
+		E.img.src = '/assets/img/guide/'+ n +'.jpg'+ HASH;
 	} );
 } );
 E.playback.classList.add( 'active' );

@@ -1,9 +1,7 @@
-V              = {} // var global
-var icon       = 'addons';
-var keys       = [ 'installurl', 'postmessage', 'title', 'uninstall', 'version' ];
+var KEYS = [ 'installurl', 'postmessage', 'title', 'uninstall', 'version' ];
 
 $( '.helphead' ).remove();
-if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
+if ( V.localhost ) $( 'a' ).removeAttr( 'href' );
 $( '.container' ).on( 'click', '.revision', function() {
 	$this = $( this );
 	$revisiontext = $this.parent().next();
@@ -17,8 +15,8 @@ $( '.container' ).on( 'click', '.revision', function() {
 	$this       = $( this );
 	if ( $this.hasClass( 'disabled' ) && ! $this.hasClass( 'uninstall' ) ) {
 		if ( ! S.status.online ) {
-			info( {
-				  icon    : icon
+			INFO( {
+				  icon    : 'addons'
 				, title   : 'Addons'
 				, message : 'Internet connection is offline.'
 			} );
@@ -30,8 +28,8 @@ $( '.container' ).on( 'click', '.revision', function() {
 	if ( 'option' in V.addon ) {
 		optionGet();
 	} else {
-		info( {
-			  icon    : icon
+		INFO( {
+			  icon    : 'addons'
 			, title   : V.addon.title
 			, message : V.addon.version ? V.label +' to <wh>'+ V.addon.version +'</wh> ?' : V.label +'?'
 			, ok      : postData
@@ -45,14 +43,14 @@ $( '.container' ).on( 'click', '.revision', function() {
 		if ( ! S.status.online ) return
 		
 		addonData( $( e.currentTarget ) );
-		info( {
-			  icon     : icon
+		INFO( {
+			  icon     : 'addons'
 			, title    : V.addon.title
 			, list     : [ 'Branch / Release', 'text' ]
 			, boxwidth : 200
 			, values   : 'UPDATE'
 			, ok       : () => {
-				V.branch = infoVal();
+				V.branch = _INFO.val();
 				if ( ! V.branch ) return
 				
 				V.installurl = V.addon.installurl.replace( 'raw/main', 'raw/'+ V.branch );
@@ -67,22 +65,22 @@ function addonData( $this ) {
 	V.addon  = S[ V.alias ];
 	V.branch = 'main';
 	V.label  = $this.find( '.label' ).text();
-	keys.forEach( k => V[ k ] = V.addon[ k ] || -1 );
+	KEYS.forEach( k => V[ k ] = V.addon[ k ] || -1 );
 }
 function buttonLabel( icon, label ) {
-	return ico( icon ) +' <span class="label">'+ label +'</span>';
+	return ICON( icon ) +' <span class="label">'+ label +'</span>';
 }
 function optionGet() {
-	info( $.extend( {
-			  icon  : icon
+	INFO( $.extend( {
+			  icon  : 'addons'
 			, title : V.addon.title
-			, ok    : () => postData( infoVal() )
+			, ok    : () => postData( _INFO.val() )
 		}, V.addon.option ) );
 }
 function postData( opt ) {
 	var input = {}
-	keys = [ 'alias', 'branch', 'label' ].concat( keys );
-	keys.forEach( k => {
+	KEYS = [ 'alias', 'branch', 'label' ].concat( KEYS );
+	KEYS.forEach( k => {
 		if ( V[ k ] !== -1 ) input[ k ] = V[ k ];
 	} );
 	if ( opt ) {
@@ -90,7 +88,7 @@ function postData( opt ) {
 		opt.forEach( v => input[ 'opt[]' ] = v );
 	}
 	if ( opt ) opt.forEach( v => input[ 'opt[]' ] = v );
-	addonsProgressSubmit( input );
+	COMMON.formSubmit( input );
 }
 function renderPage() {
 	var list   = '';
@@ -108,7 +106,7 @@ function renderPage() {
 			var revision = '';
 		}
 		if ( notverified ) {
-			var button   = iconwarning + addon.notverified;
+			var button   = V.i_warning + addon.notverified;
 		} else {
 			var installed   = S.status.installed.includes( alias ) ? ' installed' : '';
 			var update      = S.status.update.includes( alias ) ? ' update' : '';
@@ -144,7 +142,7 @@ function renderPage() {
 	$( '.container' ).html( html ).promise().done( function() {
 		if ( ! S.status.online ) $( '.infobtn' ).addClass( 'disabled' );
 		$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
-		loaderHide();
+		COMMON.loaderHide();
 		$( 'a[ href ]' ).prop( 'tabindex', -1 );
 		$( '.infobtn:not(.disabled)' ).prop( 'tabindex', 0 );
 	} );
