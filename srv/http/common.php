@@ -49,7 +49,7 @@ if ( ! $page ) { // main
 	$cssp  = [ 'roundslider' ];
 	$css   = [ ...$css, 'main', 'hovercursor' ];
 	$jsp   = [ 'html5kellycolorpicker', 'jquery', 'lazysizes', 'pica', 'qrcode', 'roundslider', 'Sortable' ];
-	$js    = [ 'common', 'context', 'function', 'main', 'passive', 'shortcut' ];
+	$js    = [ 'common', 'context', 'main', 'function', 'passive', 'shortcut' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
 		$css    = [ ...$css, 'select2', 'equalizer' ];
@@ -119,7 +119,7 @@ function htmlBottom() {
 	global $htmlbar, $scripts;
 	echo '
 	<div id="bar-bottom">'.$htmlbar.'</div>
-	<div id="debug"></div>
+	<i id="debug" class="i-info"></i>
 	'.$scripts.'
 </body>
 </html>
