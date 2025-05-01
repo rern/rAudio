@@ -2174,8 +2174,8 @@ var UTIL      = {
 					$.each( { cm60: 60, cml: 40, cm: 35, cma: 30, cmd: 20 }, ( k, v ) => {
 						$root.css( '--'+ k, 'hsl( '+ h +', '+ s +'%,'+ ( l + v - 35 ) +'% )' );
 					} );
-					[ 75, 70, 60, 50, 40, 30, 20, 10 ].forEach( n => {
-						$root.css( '--cg'+ n, 'hsl( '+ h +', 3%,'+ n +'% )' );
+					$.each( { cg75: 75, cg70: 70, cg60: 60, cg50: 50, cgl: 40, cg: 30, cga: 20, cgd: 10 }, ( k, v ) => {
+						$root.css( '--'+ k, 'hsl( '+ h +', 3%,'+ v +'% )' );
 					} );
 					V.hsl = h +' '+ s +' '+ l;
 				}
