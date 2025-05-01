@@ -901,10 +901,7 @@ var LIBRARY   = {
 		if ( ! V.search ) {
 			V.libraryhome = false;
 			V.librarylist = true;
-			if ( data.html === V.html.librarylist ) {
-				if ( V.color ) UTIL.colorSet()
-				return
-			}
+			if ( data.html === V.html.librarylist ) return
 		}
 		
 		V.html.librarylist = data.html;

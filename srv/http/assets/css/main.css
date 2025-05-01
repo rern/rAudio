@@ -96,6 +96,13 @@ a {
 #colorreset {
 	background-color: var( --cd );
 }
+.colordefault {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	background: var( --cd );
+	vertical-align: -4px;
+}
 .submenu.disabled {
 	color: var( --cg60 ) !important;
 }

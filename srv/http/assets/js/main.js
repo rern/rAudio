@@ -306,7 +306,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	INFO( {
 		  icon       : 'color'
 		, title      : 'Colors'
-		, message    : 'Reset colors to default?'
+		, message    : 'Reset colors to <div class="colordefault"></div> ?'
 		, beforeshow : () => {
 			$( '#infoIcon' ).html( '<canvas></canvas>' );
 			var ctx = $( '#infoIcon canvas' )[ 0 ].getContext( '2d' );
