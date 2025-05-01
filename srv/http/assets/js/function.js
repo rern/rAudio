@@ -2158,26 +2158,17 @@ var UTIL      = {
 	</div>
 </div>
 ` );
-		var bars  = UTIL.barVisible();
-		if ( V.library ) {
-			var $bg_cg  = bars ? $( '#bar-top, #playback-controls i, #playlist' ) : $();
-			var $bg_cm  = bars ? $( '#playback-controls .active, #colorok, #library, #button-library' ) : $( '#colorok, #button-library' );
-			var $bg_cga = bars ? $( '.content-top, #playback, #lib-index' ) : $( '.content-top, #lib-index' );
-			var $t_cg   = $( '#colorcancel, #button-lib-back, #lib-title a:first-of-type, #lib-title a:last-of-type' );
-			var $t_cgl  = $( '#lib-index a' );
-			var $t_cg60 = $( '#lib-list li' );
-		} else {
-			var $bg_cg  = bars ? $( '#bar-top, #playback-controls i, #library' ) : $();
-			var $bg_cm  = bars ? $( '#playback-controls .active, #colorok, #playlist, #button-playlist' ) : $( '#colorok, #button-playlist' );
-			var $bg_cga = bars ? $( '.content-top, #playback, #pl-index' ) : $( '.content-top, #pl-index' );
-			var $t_cg   = $( '#colorcancel, #button-pl-back' );
-			var $t_cgl  = $( '#pl-index a' );
-			var $t_cg60 = V.playlisthome ? $( '#pl-list li' ) : $( '#pl-savedlist li' );
-		}
-		var $menu = $( '.menu:not( .hide )' ).find( 'a:not( .hide ), .submenu:not( .hide )' );
+		var $bg_cg  = $( '#bar-top, #playback-controls i, #bar-bottom i:not( .active )' )
+		var $bg_cm  = $( '#playback-controls .active, .page:not( .hide ) .page-icon, #colorok, #bar-bottom .active' )
+		var $bg_cga = $( '.content-top, #playback, .page:not( .hide ) .index' );
+		var $t_cgl  = $( '.page:not( .hide ) .index a' );
+		var $t_cg60 = $( '.page:not( .hide ) list:not( .hide ) li' );
+		var $t_cm   = $( '#colorcancel, .content-top .i-back, #lib-title a:not( :last-child )' );
+		var $menu   = $( '.menu:not( .hide )' ).find( 'a, .submenu' );
 		$bg_cg.add( $menu );
-		V.colorelements = $bg_cg.add( $bg_cm ).add( $bg_cga ).add( $t_cg ).add( $t_cgl ).add( $t_cg60 );
+		V.colorelements = $bg_cg.add( $bg_cm ).add( $bg_cga ).add( $t_cm ).add( $t_cgl ).add( $t_cg60 );
 		var hsl         = ( h, br ) => 'hsl('+ h +',3%,'+ br +'%)';
+		LOCAL(); // force disable ok
 		V.colorpicker   = new KellyColorPicker( {
 			  place  : 'canvascolor'
 			, size   : 230
@@ -2192,7 +2183,7 @@ var UTIL      = {
 					$bg_cga.css( 'background-color', hsl( h, 20 ) );
 					// text
 					$t_cgl.css( 'color', hsl( h, 40 ) );
-					$t_cg.css( 'color', hex );
+					$t_cm.css( 'color', hex );
 					$t_cg60.not( '.active' ).find( 'i, .li2' ).css( 'css', 'color: '+ hsl( h, 60 ) );
 					$LI.find( 'i, .time, .li2' ).css( 'color', hsl( h, 30 ) );
 					$menu.css( 'color', hsl( h, 75 ) );

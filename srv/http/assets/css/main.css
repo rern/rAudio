@@ -1684,10 +1684,11 @@ li.active .iconthumb {
 #pl-savedlist {
 	width: calc( 100% - 38px );
 }
-.list li.active:not(.licover),
-#lib-list .active a {
-	color: var( --cw );
+.list li.active:not(.licover) {
 	background: var( --cm );
+}
+#lib-list li.active a {
+	color: var( --cw );
 }
 #pl-list .pl-remove {
 	float: right;
