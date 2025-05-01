@@ -35,28 +35,30 @@ else
 	fi
 fi
 grep -qs screenoff=[1-9] $dirsystem/localbrowser.conf && screenoff=true || screenoff=false
-display=$( grep -v } $dirsystem/display.json )
+display=$( grep -v '^[{}]' $dirsystem/display.json )
 [[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
-[[ -e $dirsystem/ap ]] && apconf=$( getContent $dirsystem/ap.conf )
+if [[ -e $dirsystem/ap ]]; then
+	ap=true
+	apconf=$( getContent $dirsystem/ap.conf )
+fi
 [[ -e $dirsystem/loginsetting ]] && loginsetting=true || lock=$( exists $dirsystem/login )
 display+='
-, "ap"           : '$( exists $dirsystem/ap )'
+, "ap"           : '$ap'
 , "apconf"       : '$apconf'
 , "audiocd"      : '$( exists $dirshm/audiocd )'
 , "camilladsp"   : '$( exists $dirsystem/camilladsp )'
 , "color"        : "'$( getContent $dirsystem/color )'"
 , "dabradio"     : '$( exists $dirsystem/dabradio )'
 , "equalizer"    : '$( exists $dirsystem/equalizer )'
-, "loginsetting" : '$loginsetting'
 , "lock"         : '$lock'
+, "loginsetting" : '$loginsetting'
 , "multiraudio"  : '$( exists $dirsystem/multiraudio )'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "screenoff"    : '$screenoff'
 , "snapclient"   : '$( exists $dirsystem/snapclient )'
-, "volumenone"   : '$volumenone'
-}'
+, "volumenone"   : '$volumenone
 status+='
-, "display"      : '$display
+, "display"      : { '$display' }'
 
 if [[ $1 == snapclient ]]; then
 	snapclient=1
@@ -477,7 +479,13 @@ if [[ ! $sampling ]]; then
 			sampling+=" $( calc 2 $bitrate/1000000 ) Mbit/s"
 		fi
 	fi
-	[[ $ext != Radio ]] && sampling+=" • $ext"
+	if [[ $ext == Radio ]]; then
+		echo "\
+$station
+$sampling" > "$radiofile"
+	else
+		sampling+=" • $ext"
+	fi
 fi
 if [[ $sampling && ! $audiocd && $ext != Radio && $player != upnp ]]; then
 	echo $sampling > $samplingfile
