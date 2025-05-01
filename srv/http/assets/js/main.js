@@ -245,9 +245,9 @@ $( '#settings' ).on( 'click', '.settings', function() {
 		case 'color':
 			V.color = true;
 			if ( V.library ) {
-				V.librarylist && V.mode !== 'album' ? UTIL.colorSet() : $( '.mode.webradio' ).trigger( 'click' );
+				V.librarylist && V.mode !== 'album' ? UTIL.colorPicker() : $( '.mode.webradio' ).trigger( 'click' );
 			} else if ( V.playlist && S.pllength ) {
-				UTIL.colorSet();
+				UTIL.colorPicker();
 			} else {
 				$( '#library' ).trigger( 'click' );
 			}
@@ -286,21 +286,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 	DISPLAY.option.playlist();
 } );
 $( 'body' ).on( 'click', '#colorok', function() {
-	var hsv = V.colorpicker.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
-	var s   = hsv.s;
-	var v   = hsv.v;
-	var L   = ( 2 - s ) * v / 2;
-	if ( L && L < 1 ) {
-		S = L < 0.5 ? s * v / ( L * 2 ) : s * v / ( 2 - L * 2 );
-		var h = Math.round( 360 * hsv.h );
-		var s = Math.round( S * 100 );
-		var l = Math.round( L * 100 );
-	} else {
-		var h = 0;
-		var s = 0;
-		var l = L * 100;
-	}
-	BASH( [ 'color', h +' '+ s +' '+ l, 'CMD HSL' ] );
+	BASH( [ 'color', V.hsl, 'CMD HSL' ] );
 	COMMON.loader();
 } ).on( 'click', '#colorreset', function() {
 	INFO( {
@@ -318,10 +304,9 @@ $( 'body' ).on( 'click', '#colorok', function() {
 		}
 	} );
 } ).on( 'click', '#colorcancel', function() {
-	V.colorelements.removeAttr( 'style' );
+	$( 'html' ).removeAttr( 'style' );
 	V.colorpicker.destroy();
 	delete V.colorpicker;
-	delete V.colorelements;
 	$( '#colorpicker' ).remove();
 	if ( S.player === 'mpd' ) {
 		if ( V.playlist ) PLAYLIST.render.scroll();

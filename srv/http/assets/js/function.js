@@ -972,7 +972,7 @@ var LIBRARY   = {
 				if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
 			} else {
 				if ( V.color ) {
-					UTIL.colorSet();
+					UTIL.colorPicker();
 				} else if ( V.librarytrack ) {
 					LIBRARY.coverart();
 				}
@@ -2128,8 +2128,8 @@ var UTIL      = {
 			}
 		} );
 	}
-	, colorSet        : () => {
-		V.color = false;
+	, colorPicker     : () => {
+		V.color       = false;
 		$( 'body' ).css( 'overflow', 'hidden' );
 		if ( V.library ) {
 			if ( V.librarytrack && $( '.licover' ).is( ':visible' ) ) {
@@ -2154,43 +2154,30 @@ var UTIL      = {
 	<div id="divcolor">
 	<i id="colorcancel" class="i-close"></i>
 	<canvas id="canvascolor"></canvas>
-	<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary disabled">OK</a>
+	<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
 </div>
 ` );
-		var $bg_cg  = $( '#bar-top, #playback-controls i, #bar-bottom i:not( .active )' )
-		var $bg_cm  = $( '#playback-controls .active, .page:not( .hide ) .page-icon, #colorok, #bar-bottom .active' )
-		var $bg_cga = $( '.content-top, #playback, .page:not( .hide ) .index' );
-		var $t_cgl  = $( '.page:not( .hide ) .index a' );
-		var $t_cg60 = $( '.page:not( .hide ) list:not( .hide ) li' );
-		var $t_cm   = $( '#colorcancel, .content-top .i-back, #lib-title a:not( :last-child )' );
-		var $menu   = $( '.menu:not( .hide )' ).find( 'a, .submenu' );
-		$bg_cg.add( $menu );
-		V.colorelements = $bg_cg.add( $bg_cm ).add( $bg_cga ).add( $t_cm ).add( $t_cgl ).add( $t_cg60 );
-		var hsl         = ( h, br ) => 'hsl('+ h +',3%,'+ br +'%)';
-		LOCAL(); // force disable ok
-		V.colorpicker   = new KellyColorPicker( {
-			  place  : 'canvascolor'
-			, size   : 230
-			, color  : $( '#button-library' ).css( 'background-color' )
+		V.colorpicker = new KellyColorPicker( {
+			  place      : 'canvascolor'
+			, size       : 230
+			, color      : $( '.page-icon' ).css( 'background-color' )
 			, userEvents : {
-				change : function( e ) {
-					var hex = e.getCurColorHex();
-					var h   = Math.round( 360 * e.getCurColorHsv().h );
-					// background
-					$bg_cg.css( 'background-color', hsl( h, 30 ) );
-					$bg_cm.add( $LI ).css( 'background-color', hex );
-					$bg_cga.css( 'background-color', hsl( h, 20 ) );
-					// text
-					$t_cgl.css( 'color', hsl( h, 40 ) );
-					$t_cm.css( 'color', hex );
-					$t_cg60.not( '.active' ).find( 'i, .li2' ).css( 'css', 'color: '+ hsl( h, 60 ) );
-					$LI.find( 'i, .time, .li2' ).css( 'color', hsl( h, 30 ) );
-					$menu.css( 'color', hsl( h, 75 ) );
-					// line
-					$t_cg60.css( 'border-bottom', '1px solid '+ hsl( h, 20 ) );
-					$menu.css( 'border-top', '1px solid '+ hsl( h, 20 ) );
-					if ( ! V.local ) $( '#colorok' ).removeClass( 'disabled' );
+				change : e => {
+					var hsv = e.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
+					var h = Math.round( 360 * hsv.h );
+					var l = hsv.v - hsv.v * hsv.s / 2;
+					var m = Math.min( l, 1 - l );
+					var s = m ? Math.round( ( hsv.v - l ) / m * 100 ) : 0;
+					l     = Math.round( l * 100 );
+					var $root = $( ':root' );
+					$.each( { cm60: 60, cml: 40, cm: 35, cma: 30, cmd: 20 }, ( k, v ) => {
+						$root.css( '--'+ k, 'hsl( '+ h +', '+ s +'%,'+ ( l + v - 35 ) +'% )' );
+					} );
+					[ 75, 70, 60, 50, 40, 30, 20, 10 ].forEach( n => {
+						$root.css( '--cg'+ n, 'hsl( '+ h +', 3%,'+ n +'% )' );
+					} );
+					V.hsl = h +' '+ s +' '+ l;
 				}
 			}
 		} );
