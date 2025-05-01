@@ -2161,7 +2161,6 @@ var UTIL      = {
 	</div>
 </div>
 ` );
-		LOCAL();
 		var bars  = UTIL.barVisible();
 		if ( V.library ) {
 			var $bg_cg  = bars ? $( '#bar-top, #playback-controls i, #playlist' ) : $();

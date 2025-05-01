@@ -318,13 +318,16 @@ $( 'body' ).on( 'click', '#colorok', function() {
 		}
 	} );
 } ).on( 'click', '#colorcancel', function() {
-	$( '#colorpicker' ).remove();
-	V.colorpicker.destroy();
-	V.colorpicker   = false;
 	V.colorelements.removeAttr( 'style' );
-	V.colorelements = '';
-	PLAYLIST.render.scroll();
-	if ( S.player !== 'mpd' ) UTIL.switchPage( 'playback' );
+	V.colorpicker.destroy();
+	delete V.colorpicker;
+	delete V.colorelements;
+	$( '#colorpicker' ).remove();
+	if ( S.player === 'mpd' ) {
+		if ( V.playlist ) PLAYLIST.render.scroll();
+	} else {
+		UTIL.switchPage( 'playback' );
+	}
 } );
 $( '#library, #button-library' ).on( 'click', function() {
 	if ( V.library ) {
