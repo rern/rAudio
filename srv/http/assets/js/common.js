@@ -110,9 +110,7 @@ W               = {  // ws push
 			delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
 		}, 1000 );
 	}
-	, reload    : () => {
-		if ( localhost ) location.reload();
-	}
+	, reload    : () => location.reload()
 	, restore   : data => {
 		if ( data.restore === 'done' ) {
 			banner( 'restore', 'Restore Settings', 'Done' );
