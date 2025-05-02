@@ -218,7 +218,7 @@ var COLOR     = {
 		} );
 	}
 	, set     : hsl => {
-		BASH( [ 'color', hsl, JSON.stringify( V.color ), 'CMD HSL CMCG' ] );
+		BASH( [ 'color', hsl, JSON.stringify( V.css ), 'CMD HSL CMCG' ] );
 		COLOR.destroy();
 		COMMON.loader();
 	}
