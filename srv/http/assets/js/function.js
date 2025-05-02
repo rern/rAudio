@@ -197,9 +197,9 @@ var COLOR     = {
 </div>
 ` );
 		V.colorpicker = new KellyColorPicker( {
-			  place      : 'canvascolor'
+			  color      : $( '.page-icon' ).css( 'background-color' )
+			, place      : 'canvascolor'
 			, size       : 230
-			, color      : $( '.page-icon' ).css( 'background-color' )
 			, userEvents : {
 				change : e => {
 					var hsv   = e.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
@@ -209,9 +209,8 @@ var COLOR     = {
 					var s     = m ? Math.round( ( hsv.v - l ) / m * 100 ) : 0;
 					l         = Math.round( l * 100 );
 					var $root = $( ':root' );
-					var hslh  = 'hsl( '+ h +', ';
-					$.each( V.css.cm, ( k, v ) => $root.css( '--'+ k, hslh + s +'%,'+ ( l + v - 35 ) +'% )' ) );
-					$.each( V.css.cg, ( k, v ) => $root.css( '--'+ k, hslh +'3%,'+ v +'% )' ) );
+					$.each( V.css.cm, ( k, v ) => $root.css( '--'+ k, 'hsl( '+ h +', '+ s +'%,'+ ( l + v - 35 ) +'% )' ) );
+					$.each( V.css.cg, ( k, v ) => $root.css( '--'+ k, 'hsl( '+ h +', 3%,'+ v +'% )' ) );
 					V.hsl     = h +' '+ s +' '+ l;
 				}
 			}
