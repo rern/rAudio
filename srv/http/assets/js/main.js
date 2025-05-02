@@ -292,19 +292,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 $( 'body' ).on( 'click', '#colorok', function() {
 	COLOR.set( V.hsl );
 } ).on( 'click', '#colorreset', function() {
-	INFO( {
-		  icon       : 'color'
-		, title      : 'Colors'
-		, message    : 'Reset colors to default?'
-		, beforeshow : () => {
-			$( '#infoIcon' ).html( '<canvas></canvas>' );
-			var ctx = $( '#infoIcon canvas' )[ 0 ].getContext( '2d' );
-			ctx.drawImage( $( '#color canvas' )[ 0 ], 0, 0 );
-		}
-		, okcolor    : 'var( --cd )'
-		, oklabel    : ICON( 'set0' ) +'Reset'
-		, ok         : () => COLOR.set( 'reset' )
-	} );
+	COLOR.set( 'reset' );
 } ).on( 'click', '#colorcancel', function() {
 	COLOR.destroy();
 	if ( S.player === 'mpd' ) {
