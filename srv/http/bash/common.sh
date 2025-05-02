@@ -152,12 +152,24 @@ confNotString() {
 	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
 	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
+countRadio() {
+	local counts type
+	for type in dabradio webradio; do
+		[[ -e $dirdata/$type ]] && counts+='
+, "'$type'" : '$( find -L $dirdata/$type ! -path '*/img/*' -type f ! -regex '.*\.\(jpg\|gif\|png\)$' | wc -l )
+	done
+	echo "$counts"
+}
 coverFileGet() {
 	local path coverfile
 	path=$1
 	coverfile=$( ls -X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ ! $coverfile ]] && coverfile=$( ls -X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
-	[[ $coverfile ]] && php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
+	[[ ! $coverfile ]] && return
+	
+	[[ $2 ]] && echo $coverfile && return
+	
+	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" # preserve spaces and special characters
 }
 data2json() {
 	local json page
@@ -363,6 +375,10 @@ notify() { # icon title message delayms
 }
 playerActive() {
 	[[ $( < $dirshm/player ) == $1 ]] && return 0
+}
+pushBookmark() {
+	data=$( php /srv/http/library.php home )
+	pushData bookmark "$data"
 }
 pushData() {
 	local channel data ip json path sharedip webradiocopy

@@ -302,7 +302,7 @@ function settingWifi( values ) {
 		}
 	} );
 }
-function warningIp( action, $li ) {
+function warningIp( action ) {
 	var $li = $( 'li.active' );
 	if ( $li.data( 'ip' ) === location.hostname ) return iconwarning +'<wh>'+ action +' current connection</wh>'
 }

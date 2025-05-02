@@ -119,7 +119,7 @@ function htmlBottom() {
 	global $htmlbar, $scripts;
 	echo '
 	<div id="bar-bottom">'.$htmlbar.'</div>
-	<div id="debug"></div>
+	<i id="debug" class="i-info"></i>
 	'.$scripts.'
 </body>
 </html>

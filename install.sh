@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20250428
+file=/etc/pacman.conf
+! grep -q mpd $file && sed -i '/IgnorePkg *=/ {s/^#//; s/$/ mpd/}' $file
+
 if [[ -e $dirmpd/album && $( uniq -d $dirmpd/album ) ]]; then
 	for t in album latest; do
 		sort -o $dirmpd/$t{,}
@@ -39,23 +43,17 @@ fi
 
 if [[ $( pacman -Q snapcast ) != 'snapcast 0.31.0-3' ]]; then
 	pacman -Sy --noconfirm snapcast
-	sed -i -e '/^bind_to_address/ d' -e '/^#bind_to_address/ a\bind_to_address = 0.0.0.0' /etc/snapserver.conf
+	if [[ $? == 0 ]]; then
+		sed -i -e '/^bind_to_address/ d' -e '/^#bind_to_address/ a\bind_to_address = 0.0.0.0' /etc/snapserver.conf
+	else
+		echo $warn upgrade snapcast failed.
+	fi
 fi
 
 # 20250322
 if [[ ! -e /lib/systemd/user/spotifyd.service ]]; then
 	mv /lib/systemd/{system,user}/spotifyd.service
 	ln -s /lib/systemd/{user,system}/spotifyd.service
-fi
-
-# 20250228
-file=/etc/pacman.conf
-if grep -q 'linux-rpi' $file; then
-	if [[ -e /boot/kernel8.img ]]; then
-		sed -i 's/^IgnorePkg.*/#IgnorePkg   =/' $file
-	elif [[ -e /boot/kernel7.img ]]; then
-		sed -i 's/ linux-rpi//' $file
-	fi
 fi
 
 #-------------------------------------------------------------------------------

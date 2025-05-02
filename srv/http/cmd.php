@@ -1,18 +1,18 @@
 <?php
 $post        = ( object ) $_POST;
+$CMD         = $post->cmd ?? $argv[ 1 ]; // $argv - sort : from cmd-list.sh
 $sudo        = '/usr/bin/sudo ';
 $dirbash     = $sudo.'/srv/http/bash/';
 $dirsettings = $dirbash.'settings/';
 $dirdata     = '/srv/http/data/';
 $dirshm      = $dirdata.'shm/';
 
-$cmd         = $post->cmd ?? $argv[ 1 ];
-
-switch( $cmd ) {
+switch( $CMD ) {
 
 case 'bash':
-	$command = $dirbash.$post->filesh;
-	$command.= $post->args ? ' "'.escape( implode( "\n", $post->args ) ).'"' : '';
+	$args    = $post->args ?? '';
+	if ( is_array( $args ) ) $args = escape( implode( "\n", $args ) );
+	$command = $dirbash.$post->filesh.' "'.$args.'"';
 	$result  = shell_exec( $command );
 	echo rtrim( $result );
 	break;

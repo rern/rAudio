@@ -150,12 +150,11 @@ urldecode() { # for webradio url to filename
 	echo -e "${_//%/\\x}"
 }
 webradioCount() {
-	local count type
-	[[ $1 == dabradio ]] && type=dabradio || type=webradio
-	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
-	pushData radiolist '{ "type": "'$type'", "count": '$count' }'
-	grep -q -m1 "$type.*,"$ $dirmpd/counts && count+=,
-	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
+	local counts
+	counts=$( grep -vE '{|radio|}' $dirmpd/counts | sed '$ s/,$//' )
+	counts+=$( countRadio )
+	echo '{ '${counts:1}' }' | jq -S > $dirmpd/counts
+	pushRadioList
 }
 webradioM3uPlsVerify() {
 	local ext url
@@ -203,38 +202,44 @@ albumignore )
 	appendSortUnique $dirmpd/albumignore "$ALBUM^^$ARTIST"
 	;;
 bookmarkadd )
-	bkfile="$dirbookmarks/${NAME//\//|}"
-	[[ -e $bkfile ]] && echo -1 && exit
+	file_bk="$dirbookmarks/${NAME//\//|}"
+	[[ -e $file_bk ]] && echo -1 && exit
 # --------------------------------------------------------------------
-	echo "$DIR" > "$bkfile"
-	if [[ -e $dirsystem/order.json ]]; then
-		order=$( jq '. + ["'$DIR'"]' $dirsystem/order.json )
-		echo "$order" > $dirsystem/order.json
+	echo "$DIR" > "$file_bk"
+	file_order=$dirsystem/order.json
+	[[ -e $file_order ]] && sed -i -e 's/"$/",/' -e "/]/ i\  \"${DIR//\"/\\\\\"}\"" $file_order
+	dir="/mnt/MPD/$DIR"
+	if [[ -d $dir  ]] && ! ls "$dir/coverart".* 2> /dev/null; then
+		target=$( coverFileGet "$dir" raw )
+		[[ $target ]] && $dirbash/cmd-coverart.sh "coverart
+$target
+CMD TARGET"
 	fi
-	pushData bookmark
+	pushBookmark
 	;;
 bookmarkremove )
-	bkfile="$dirbookmarks/$NAME"
-	if [[ -e $dirsystem/order.json ]]; then
-		path=$( sed 's/"/\\"/g' "$bkfile" )
-		order=$( cat $dirsystem/order.json | jq "del( .. | select( . == \"$path\" ) )" )
-		echo "$order" > $dirsystem/order.json
+	file_bk="$dirbookmarks/$NAME"
+	file_order=$dirsystem/order.json
+	if [[ -e $file_order ]]; then
+		line=$( sed 's/"/\\"/g' "$file_bk" )
+		order=$( grep -Ev "\[|\"$line\"|]" $file_order | sed '$ s/,$//' )
+		echo "[ $order ]" | jq > $file_order
 	fi
-	rm "$bkfile"
-	pushData bookmark
+	rm "$file_bk"
+	pushBookmark
 	;;
 bookmarkrename )
 	mv $dirbookmarks/{"$NAME","$NEWNAME"}
-	pushData bookmark
+	pushBookmark
 	;;
 cachebust )
 	hash="?v=$( date +%s )'"
-	sed -E -i "0,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
+	sed -E -i "1,/rern.woff2/ s/(rern.woff2).*'/\1$hash/" /srv/http/assets/css/common.css
 	if [[ $TIME ]]; then
 		hashtime="?v='.time()"
 		! grep -q $hashtime /srv/http/common.php && hash=$hashtime
 	fi
-	sed -i "0,/?v=.*/ s/?v=.*/$hash;/" /srv/http/common.php
+	sed -i "1,/?v=.*/ s/?v=.*/$hash;/" /srv/http/common.php
 	;;
 cachetype )
 	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
@@ -368,7 +373,7 @@ lyrics )
 	if [[ ! $ACTION ]]; then
 		filelrc="/mnt/MPD/${FILE%.*}.lrc"
 		if [[ -e $filelrc ]]; then
-			grep -v ']$' "$filelrc" | sed -e 's/\[.*]//' -e '0,/^$/ d'
+			grep -v ']$' "$filelrc" | sed -e 's/\[.*]//' -e '1,/^$/ d'
 			exit
 # --------------------------------------------------------------------
 		fi
@@ -421,7 +426,14 @@ mpcaddfind )
 	if [[ $MODE3 ]]; then
 		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2" $MODE3 "$STRING3"
 	elif [[ $MODE2 ]]; then
-		mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2"
+		if [[ $MODE2 == lsmode ]]; then
+			mpc -q ls -f %$MODE%^%file% "$STRING2" \
+				| grep "^$STRING" \
+				| cut -d^ -f2 \
+				| mpc -q add &> /dev/null
+		else
+			mpc -q findadd $MODE "$STRING" $MODE2 "$STRING2"
+		fi
 	else
 		mpc -q findadd $MODE "$STRING"
 	fi
@@ -473,6 +485,8 @@ mpcoption )
 	pushData option '{ "'$OPTION'": '$TF' }'
 	;;
 mpcplayback )
+	(( $( mpc status %length% ) == 0 )) && exit
+# --------------------------------------------------------------------
 	if [[ ! $ACTION ]]; then
 		! playerActive mpd && playerstop && exit
 # --------------------------------------------------------------------
@@ -755,7 +769,7 @@ webradiodelete )
 	rm -f "$DIR/$urlname"
 	path=$dirdata/$MODE
 	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/$urlname".* "$path/img/$urlname-thumb".*
-	webradioCount $MODE
+	webradioCount
 	;;
 webradioedit )
 	newurlname=${NEWURL//\//|}
@@ -787,6 +801,21 @@ $NAME
 $sampling
 $CHARSET" > "$newfile"
 	pushRadioList
+	;;
+webradiotitle )
+	url=$( getVar file $dirshm/status )
+	metaint=$( curl -s -I -H "Icy-MetaData: 1" "$url" \
+				| grep -i "icy-metaint" \
+				| awk '{print $2}' \
+				| tr -d '\r' )
+	[[ ! $metaint ]] && exit
+# --------------------------------------------------------------------
+# stream: ...[N icy-metaint]...StreamTitle='ARTIST - TITLE';StreamUrl='URL';StreamArtwork='ARTWORK';\0\0\0>>>\0[255]...
+	curl -s -H 'Icy-MetaData: 1' "$url" \
+		| dd bs=1 skip=$metaint count=255 2>/dev/null \
+		| tr -d '\0' \
+		| grep -o "StreamTitle='[^'][^;]*'" \
+		| sed "s/StreamTitle=' *//; s/ *'$//"
 	;;
 	
 esac

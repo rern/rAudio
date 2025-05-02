@@ -4,9 +4,14 @@ W = {
 		statusUpdate( data );
 		if ( V.playback ) renderPlayback();
 	}
-	, bookmark  : () => {
-		V.html.library = '';
-		if ( V.library && V.libraryhome ) libraryHome();
+	, bookmark  : data => {
+		if ( ! V.library || ! V.libraryhome ) return
+		
+		O.order        = data.order;
+		V.html.library = data.html;
+		var html       = htmlHash( data.html );
+		$( '#lib-mode-list' ).html( html );
+		renderLibrary();
 	}
 	, cover     : data => {
 		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
@@ -139,7 +144,7 @@ W = {
 	, order     : data => {
 		if ( V.local ) return
 		
-		O = data;
+		O.order = data;
 		orderLibrary();
 	}
 	, playlist  : data => {
@@ -221,7 +226,7 @@ W = {
 		
 		if ( 'volumenone' in data ) {
 			D.volumenone = data.volumenone;
-			$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
+			$VOLUME.toggleClass( 'hide', ! D.volume || D.volumenone );
 			return
 		}
 		if ( [ 'mute', 'unmute' ].includes( data.type ) ) {
@@ -266,7 +271,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 	V.wH = window.innerHeight;
 	V.wW = wW;
 	setTimeout( () => {
-		var barvisible = $bartop.is( ':visible' );
 		if ( V.playback ) {
 			displayPlayback();
 			setTimeout( renderPlayback, 50 );
@@ -287,7 +291,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			}
 		}
 		displayBars();
-		if ( I.active ) infoWidth();
+		if ( I.active ) infoWidth( 'resize' );
 	}, 0 );
 } );
 

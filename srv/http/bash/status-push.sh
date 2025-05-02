@@ -4,6 +4,13 @@
 # --------------------------------------------------------------------
 . /srv/http/bash/common.sh
 
+isChanged() {
+	for k in $@; do
+		prev=$( sed -n -E '/^'$k'/ {s/.*="*|"*$//g; p}' <<< $statusprev )
+		[[ $prev != ${!k} ]] && return 0
+	done
+}
+
 killProcess statuspush
 echo $$ > $dirshm/pidstatuspush
 
@@ -17,16 +24,14 @@ else
 	done
 	statuslines=$( grep -E "${filter:1}" <<< $status )
 	statusnew=$( sed -E 's/^ *"|,$//g; s/" *: */=/' <<< $statuslines | tee $dirshm/statusnew )
-	statusprev=$( < $dirshm/status )
-	compare='^Artist|^Title|^Album'
-	[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
+	statusprev=$( cat $dirshm/status 2> /dev/null )
 	. <( echo "$statusnew" )
+	isChanged Artist Title Album && trackchanged=1
 	if [[ $webradio == true ]]; then
 		[[ ! $trackchanged && $state == play ]] && exit
 # --------------------------------------------------------------------
 	else
-		compare='^state|^elapsed'
-		[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && statuschanged=1
+		isChanged state elapsed && statuschanged=1
 		[[ ! $trackchanged && ! $statuschanged ]] && exit
 # --------------------------------------------------------------------
 	fi
@@ -39,11 +44,9 @@ else
 	mv -f $dirshm/status{new,}
 fi
 
-if systemctl -q is-active localbrowser; then
-	if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-		export DISPLAY=:0
-		[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
-	fi
+if systemctl -q is-active localbrowser && grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
+	export DISPLAY=:0
+	[[ $( mpcState ) == play ]] && xset -dpms || xset +dpms
 fi
 
 clientip=$( snapclientIP )
