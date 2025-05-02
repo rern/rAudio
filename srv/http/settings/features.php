@@ -22,7 +22,7 @@ $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = <<< EOF
 Windows <btn>This PC</btn> or <btn>Network</btn> - right-click
-	» <btn>Map network drive...</btn>
+	<btn>Map network drive...</btn>
 	» Folder: <c>\\\\$ip\SD</c> or <c>\\\\$ip\USB</c>
 	» Check <btn>Connect using different credentials</btn>
 	<btn>Finish</btn>

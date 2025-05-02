@@ -36,6 +36,7 @@ var config        = {
 				, message : 'Save all data and settings'
 				, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
 				, values  : 'rAudio_backup-'+ ymd
+				, cancel  : switchCancel
 				, ok      : () => {
 					notifyCommon( 'Process ...' );
 					bash( 'system-databackup.sh', data => {
@@ -79,6 +80,7 @@ var config        = {
 				, tab      : [ '', util.restoreReset ]
 				, list     : [ 'Library database only', 'checkbox' ]
 				, file     : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
+				, cancel   : switchCancel
 				, oklabel  : ico( 'restore' ) +'Restore'
 				, okcolor  : orange
 				, ok       : () => {
@@ -416,18 +418,22 @@ var util          = {
 			  icon       : 'lcdchar'
 			, title      : 'Character LCD'
 			, tablabel   : [ 'I&#178;C', 'GPIO' ]
-			, beforeshow : () => $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 )
+			, beforeshow : () => {
+				if ( I.values[ 0 ] === 'gpio' ) $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
+				$( '#infoList label' ).css( 'width', '70px' );
+			}
 			, cancel   : switchCancel
 			, ok       : () => {
+				
 				jsonSave( 'lcdchar', infoVal() );
 				switchEnable();
 			}
 		}
 		, list : [
 			  [ 'Type',                 'hidden'  ]
-			, [ 'Size',                 'radio',    { kv: { '20 x 4': 20, '16 x 2': 16 } } ]
+			, [ 'Size',                 'radio',    { kv: { '20x4': 20, '16x2': 16 } } ]
 			, [ 'Character Map',        'radio',    { kv: [ 'A00', 'A02' ] } ]
-			, [ 'Address',              'radio',    [ '' ] ] /*'by confget'*/
+			, [ 'Address',              'radio',    [ '' ] ] // set by infoSetting
 			, [ 'Chip',                 'select',   [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
 			, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
 		]

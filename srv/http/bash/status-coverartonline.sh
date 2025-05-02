@@ -56,4 +56,5 @@ else
 	cover=$dirshm/$prefix/${name,,}.$ext
 fi
 curl -sfL $url -o $cover
-[[ -e $cover ]] && pushData cover '{ "cover": "'$cover'" }'
+[[ ${cover:0:4} == /srv ]] && cover=${cover:9}
+pushData cover '{ "cover": "'$cover'" }'

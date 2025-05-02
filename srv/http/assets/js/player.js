@@ -286,7 +286,7 @@ var util     = {
 				, values       : values
 				, checkblank   : true
 				, checkchanged : S.soxr
-				, boxwidth     : 180
+				, boxwidth     : 120
 				, cancel       : switchCancel
 				, ok           : switchEnable
 			} );
@@ -307,19 +307,16 @@ var util     = {
 				, list         : [
 					  [ 'Type',           'hidden' ]
 					, [ 'Precision',      'select', { kv: [ 16, 20, 24, 28, 32 ], suffix: 'bit' } ]
-					, [ 'Phase Response', 'number', { suffix: '0-100' } ]
-					, [ 'Passband End',   'number', { suffix: '0-100%' } ]
-					, [ 'Stopband Begin', 'number', { suffix: '100-150%' } ]
-					, [ 'Attenuation',    'number', { suffix: '0-30dB' } ]
-					, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2 } ]
+					, [ 'Phase Response', 'number', { suffix: '(0-100)' } ]
+					, [ 'Passband End',   'number', { suffix: '(0-100%)' } ]
+					, [ 'Stopband Begin', 'number', { suffix: '(100-150%)' } ]
+					, [ 'Attenuation',    'number', { suffix: '(0-30dB)' } ]
+					, [ 'Bitmask Flag',   'select', { kv: flag, colspan: 2, width: 160 } ]
 				]
 				, values       : values
 				, checkblank   : true
 				, checkchanged : S.soxr
-				, boxwidth     : 105
-				, beforeshow   : () => {
-					$( '#infoList .select2-container' ).last().attr( 'style', 'width: 100% !important' )
-				}
+				, boxwidth     : 70
 				, cancel       : switchCancel
 				, ok           : switchEnable
 			} );

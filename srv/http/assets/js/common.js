@@ -55,18 +55,19 @@ W               = {  // ws push
 		banner( icon, title, message, delay );
 	}
 	, power  : data => {
+		var action  = data.type;
+		V[ action ] = true;
+		ws          = null;
 		loader();
-		ws             = null;
-		V[ data.type ] = true;
-		banner( data.type +' blink', 'Power', V.off ? 'Off ...' : 'Reboot ...', -1 );
-		if ( V.off ) {
+		banner( action +' blink', 'Power', capitalize( action ) +' ...', -1 );
+		if ( action === 'off' ) {
 			$( '#loader' ).css( 'opacity', 1 );
 			setTimeout( () => {
 				$( '#loader svg' ).css( 'animation', 'none' );
 				$( '#banner' ).addClass( 'hide' );
-			}, 10000 );
+			}, 12000 );
 		} else { // reconnect after reboot
-			setTimeout( websocketReconnect, data.startup + 5000 ); // add shutdown 5s
+			setTimeout( websocketReconnect, data.startup + 8000 ); // add shutdown 8s
 		}
 	}
 	, relays : data => {
@@ -109,9 +110,7 @@ W               = {  // ws push
 			delay ? $( '.infomessage a' ).text( delay-- ) : relaysToggle();
 		}, 1000 );
 	}
-	, reload    : () => {
-		if ( localhost ) location.reload();
-	}
+	, reload    : () => location.reload()
 	, restore   : data => {
 		if ( data.restore === 'done' ) {
 			banner( 'restore', 'Restore Settings', 'Done' );
@@ -472,7 +471,7 @@ function info( json ) {
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.extrabtn' ).addClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( typeimage ) infoFileImage();
+				if ( typeimage ) infoFile.get();
 			}
 		} );
 	}
@@ -528,27 +527,29 @@ function info( json ) {
 				, sameline : T/F
 				, suffix   : UNIT
 				, updn     : { step: N, min: N, max: N }
+				, width    : N
 			}*/
-			if ( [ 'checkbox', 'radio' ].includes( type ) && ( 'kv' in param && ! param.colspan ) ) param.colspan = 2;
-			colspan = param.colspan && param.colspan > 1 ? ' colspan="'+ param.colspan +'"' : '';
+			colspan  = param.colspan || 0;
+			width    = param.width && type !== 'select' ? ' style="width='+ param.width +'px"' : '';
+			if ( [ 'checkbox', 'radio' ].includes( type ) && ! colspan ) colspan = 2;
+			colspan  = colspan ? ' colspan="'+ colspan +'"' : '';
 			switch ( type ) {
 				case 'checkbox':
 					if ( htmls.list.slice( -3 ) === 'tr>' ) htmls.list += '<tr>'
-					htmls.list += I.checkboxonly ? '<td>' : '<td></td><td'+ colspan +'>';
+					htmls.list += I.checkboxonly ? '<td>' : '<td></td><td'+ colspan + width +'>';
 					break;
 				case 'hidden':
 					htmls.list += '<tr class="hide"><td></td><td>';
 					break;
 				case 'radio':
-					colspan     = param.colspan || 2;
-					htmls.list += '<tr><td>'+ label +'</td><td colspan="'+ colspan +'">';
+					htmls.list += '<tr><td>'+ label +'</td><td'+ colspan + width +'>';
 					break;
 				case 'range':
-					htmls.list += '<tr><td'+ colspan +'>';
+					htmls.list += '<tr><td'+ colspan + width +'>';
 					break;
 				default:
 					htmls.list += htmls.list.slice( -3 ) === 'td>' ? '' : '<tr><td>'+ label +'</td>';
-					htmls.list += '<td'+ colspan +'>';
+					htmls.list += '<td'+ colspan + width +'>';
 			}
 			switch ( type ) {
 				case 'checkbox':
@@ -560,7 +561,7 @@ function info( json ) {
 				case 'text':
 					htmls.list += '<input type="'+ type +'"'+ ( param.updn && ! param.updn.enable ? ' disabled' : '' ) +'>';
 					if ( param.suffix ) {
-						htmls.list += '<td>&nbsp;<gr>'+ param.suffix +'</gr>';
+						htmls.list += '<td><gr>'+ param.suffix +'</gr>';
 					} else if ( param.updn ) {
 						I.updn.push( param.updn );
 						htmls.list += '<td>'+ ico( 'remove updn dn' ) + ico( 'plus-circle updn up' );
@@ -598,7 +599,8 @@ function info( json ) {
 					break
 				case 'select':
 					kv          = param.kv || param;
-					htmls.list += '<select>'+ htmlOption( kv, param.nosort ) +'</select>';
+					datawidth   = param.width ? ' data-width="'+ param.width +'"' : '';
+					htmls.list += '<select'+ datawidth +'>'+ htmlOption( kv, param.nosort ) +'</select>';
 					if ( param.suffix ) {
 						htmls.list += '<td><gr>'+ param.suffix +'</gr></td></tr>'; // default: false
 					} else {
@@ -865,123 +867,6 @@ function infoClearTimeout( all ) { // ok for both timeout and interval
 	var timeout = all ? Object.keys( V.timeout ) : [ 'updni', 'updnt' ];
 	timeout.forEach( k => clearTimeout( V.timeout[ k ] ) );
 }
-function infoFileImage() {
-	$( '#infoButton a' ).addClass( 'disabled' );
-	$( '#infoFileLabel i' ).addClass( 'blink' );
-	delete I.infofilegif;
-	I.rotate   = 0;
-	$( '.infoimgname' ).addClass( 'hide' );
-	$( '.infoimgnew, .infoimgwh' ).remove();
-	if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
-		infoFileImageReader();
-	} else { // animated gif or not
-		var formdata = new FormData();
-		formdata.append( 'cmd', 'giftype' );
-		formdata.append( 'file', I.infofile );
-		fetch( 'cmd.php', { method: 'POST', body: formdata } )
-			.then( response => response.json() ) // set response data as json > animated
-			.then( animated => { // 0 / 1
-				if ( animated ) {
-					I.infofilegif = '/srv/http/data/shm/local/tmp.gif';
-					var img    = new Image();
-					img.src    = URL.createObjectURL( I.infofile );
-					img.onload = function() {
-						var imgW   = img.width;
-						var imgH   = img.height;
-						var resize = infoFileImageResize( 'gif', imgW, imgH );
-						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						bannerHide();
-					}
-				} else {
-					infoFileImageReader();
-				}
-			} );
-	}
-}
-function infoFileImageReader() {
-	var maxsize   = ( V.library && V.libraryhome ) ? 200 : 1000;
-	var reader    = new FileReader();
-	reader.onload = function( e ) {
-		var img    = new Image();
-		img.src    = e.target.result;
-		img.onload = function() {
-			var imgW          = img.width;
-			var imgH          = img.height;
-			var filecanvas    = document.createElement( 'canvas' );
-			var ctx           = filecanvas.getContext( '2d' );
-			filecanvas.width  = imgW;
-			filecanvas.height = imgH;
-			ctx.drawImage( img, 0, 0 );
-			var resize = infoFileImageResize( 'jpg', imgW, imgH );
-			if ( resize ) {
-				var canvas    = document.createElement( 'canvas' );
-				canvas.width  = resize.w;
-				canvas.height = resize.h;
-				pica.resize( filecanvas, canvas, picaOption ).then( function() {
-					infoFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
-				} );
-			} else {
-				infoFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
-			}
-			clearTimeout( V.timeout.file );
-			bannerHide();
-		}
-	}
-	reader.readAsDataURL( I.infofile );
-	$( '#infoList' )
-		.off( 'click', '.infoimgnew' )
-		.on( 'click', '.infoimgnew', function() {
-		if ( ! $( '.infomessage .rotate' ).length ) return
-		
-		I.rotate     += 90;
-		if ( I.rotate === 360 ) I.rotate = 0;
-		var canvas    = document.createElement( 'canvas' );
-		var ctx       = canvas.getContext( '2d' );
-		var image     = $( this )[ 0 ];
-		var img       = new Image();
-		img.src       = image.src;
-		img.onload    = function() {
-			ctx.drawImage( image, 0, 0 );
-		}
-		var w         = img.width;
-		var h         = img.height;
-		var cw        = Math.round( w / 2 );
-		var ch        = Math.round( h / 2 );
-		canvas.width  = h;
-		canvas.height = w;
-		ctx.translate( ch, cw );
-		ctx.rotate( Math.PI / 2 );
-		ctx.drawImage( img, -cw, -ch );
-		image.src     = canvas.toDataURL( 'image/jpeg' );
-	} );
-}
-function infoFileImageRender( src, original, resize ) {
-	$( '.infomessage .imgnew' ).remove();
-	$( '.infomessage' ).append(
-		 '<span class="imgnew">'
-			+'<img class="infoimgnew" src="'+ src +'">'
-			+'<div class="infoimgwh">'
-			+ ( resize ? resize : '' )
-			+ ( original ? 'original: '+ original : '' )
-			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ico( 'redo rotate' ) +'Tap to rotate' )
-			+'</div>'
-		+'</span>'
-	);
-	$( '#infoButton a' ).removeClass( 'disabled blink' );
-	$( '#infoFileLabel i' ).removeClass( 'blink' );
-}
-function infoFileImageResize( ext, imgW, imgH ) {
-	var maxsize = ( V.library && V.libraryhome ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
-	if ( imgW > maxsize || imgH > maxsize ) {
-		var w = imgW > imgH ? maxsize : Math.round( imgW / imgH * maxsize );
-		var h = imgW > imgH ? Math.round( imgH / imgW * maxsize ) : maxsize;
-		return {
-			  w   : w
-			, h   : h
-			, wxh : w +' x '+ h
-		}
-	}
-}
 function infoFooterIcon( kv ) {
 	var footer = '';
 	$.each( kv, ( l, i ) => footer += '<span>'+ ico( i ) + l +'</span>' );
@@ -1169,7 +1054,7 @@ function infoWarning( icon, title, message ) {
 		, message : iconwarning + message
 	} );
 }
-function infoWidth() {
+function infoWidth( resize ) {
 	if ( I.boxwidth ) {
 		var widthmax = I.boxwidth === 'max';
 		if ( widthmax ) {
@@ -1186,14 +1071,15 @@ function infoWidth() {
 	} else {
 		I.boxW   = 230;
 	}
-	$( '#infoList table' ).find( 'input:text, input[type=number], input:password, textarea' )
-		.parent().addBack()
-		.css( 'width', I.boxW +'px' )
-	if ( $( '#infoList select' ).length ) selectSet();
+	$( '#infoList' ).find( 'input:text, input[type=number], input:password, textarea' ).each( ( i, el ) => {
+		var $el = $( el );
+		if ( ! $el.attr( 'style' ) ) $el.parent().addBack().css( 'width', I.boxW +'px' );
+	} );
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
 		$( '#infoList' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoList table' ).width() );
 	}
 	if ( I.checkboxonly ) $( '#infoList td' ).css( 'text-align', 'left' );
+	if ( ! resize && $( '#infoList select' ).length ) selectSet();
 }
 
 // common info functions --------------------------------------------------
@@ -1229,9 +1115,8 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
-	var label = capitalize( action );
+	V[ action ] = true;
 	loader();
-	notify( action, 'Power', label +' ...' );
 	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
@@ -1244,7 +1129,7 @@ function infoPowerCommand( action ) {
 						+'<br><wh>Shared Data</wh> on clients will stop.'
 						+'<br>(Resume when server online again)'
 						+'<br><br>Continue?'
-			, oklabel : ico( action ) + label
+			, oklabel : ico( action ) + capitalize( action )
 			, okcolor : action === 'off' ? red : orange
 			, ok      : () => bash( [ 'power.sh', action || '', 'confirm' ] )
 		} );
@@ -1428,10 +1313,11 @@ function loaderHide() {
 }
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
-	var options = { minimumResultsForSearch: 10 }
 	if ( ! $select ) $select = $( '#infoList select' );
 	$select
-		.select2( options ).on( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
+		.select2( {
+			minimumResultsForSearch: 10
+		} ).one( 'select2:open', () => { // fix: scroll on info - set current value 3rd from top
 			local(); // fix: onblur / onpagehide
 			V.select2 = true;
 			setTimeout( () => {
@@ -1439,7 +1325,8 @@ function selectSet( $select ) {
 				if ( navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
-		} ).on( 'select2:closing', function() {
+			if ( I.active && I.boxwidth ) selectSetWidth( I.boxwidth );
+		} ).one( 'select2:closing', function() {
 			local(); // fix: onblur / onpagehide / Enter
 			setTimeout( () => {
 				V.select2 = false;
@@ -1457,7 +1344,17 @@ function selectSet( $select ) {
 			var $this = $( el );
 			$this.prop( 'disabled', $this.find( 'option' ).length === 1 );
 		} );
-	$( '#infoList .select2-container' ).attr( 'style', 'width: '+ I.boxW +'px !important' );
+	$( '#infoList .select2-container' ).css( 'width', I.boxW +'px' );
+	// if select width set
+	$( '#infoList select[ data-width ]' ).each( ( i, el ) => {
+		var $el   = $( el );
+		var width = $el.data( 'width' );
+		$el.next().css( 'width', width +'px' );
+		$el.one( 'select2:open', () => selectSetWidth( width ) );
+	} );
+}
+function selectSetWidth( width ) {
+	$( '.select2-dropdown' ).find( 'span' ).addBack().css( 'width', width +'px' );
 }
 function selectText2Html( pattern ) {
 	function htmlSet( $el ) {
@@ -1561,6 +1458,7 @@ function websocketConnect( ip ) {
 			var json    = JSON.parse( data );
 			var channel = json.channel;
 			if ( channel in W ) W[ channel ]( json.data );
+			if ( V.debug ) console.log( json );
 		}
 	}
 }
@@ -1624,7 +1522,7 @@ function bash( args, callback, json ) {
 	$.post( 'cmd.php', data, callback || null, json || null );
 }
 function bashConsoleLog( data ) {
-	console.log( '%cDebug:', "color:red" );
+	console.log( '%cDebug:', 'color:red' );
 	if ( typeof data === 'string' ) {
 		console.log( JSON.parse( data ) );
 		console.log( "websocat ws://127.0.0.1:8080 <<< '"+ data +"'" );
@@ -1635,11 +1533,28 @@ function bashConsoleLog( data ) {
 		console.log( bashcmd );
 	}
 }
+function debug( disable ) {
+	if ( disable ) {
+		V.debug = false;
+		refreshData();
+		$( '#debug' ).removeClass( 'active' );
+		console.log( '\x1B[36mDebug:\x1B[0m Disabled' );
+	} else {
+		V.debug = true;
+		$( '#debug' ).addClass( 'active' );
+		console.log( '\x1B[36mDebug\x1B[0m Block: send - Show: command, pushed data' );
+	}
+}
 
 $( '.pagerefresh' ).press( () => location.reload() );
 
 $( '#debug' ).on( 'click', function() {
 	if ( V.press ) return
+	
+	if ( V.debug ) {
+		debug( 'disable' );
+		return
+	}
 	
 	if ( $( '#data' ).length ) {
 		$( '#data' ).remove();
@@ -1648,14 +1563,16 @@ $( '#debug' ).on( 'click', function() {
 	}
 } ).press( () => {
 	if ( V.debug ) {
-		V.debug = false;
-		refreshData();
-		$( '#debug' ).removeClass( 'active' );
-		console.log( '\x1B[36mDebug:\x1B[0m Disabled' );
+		debug( 'disable' );
 		return
 	}
 	
 	bash( [ 'cmd.sh', 'cachetype' ], type => {
+		if ( type === 'time' ) {
+			debug();
+			return
+		}
+		
 		info( {
 			  icon  : 'flash'
 			, title : 'Debug / Cache'
@@ -1671,9 +1588,7 @@ $( '#debug' ).on( 'click', function() {
 				$( '#infoList input' ).on( 'click', function() {
 					type = $( this ).val();
 					if ( type === 'debug' ) {
-						V.debug = true;
-						$( '#debug' ).addClass( 'active' );
-						console.log( '\x1B[36mDebug:\x1B[0m Data to server blocked' );
+						debug();
 						$( '#infoX' ).trigger( 'click' );
 					} else {
 						bash( [ 'cmd.sh', 'cachebust', type === 'time', 'CMD TIME' ], location.reload() );

@@ -56,8 +56,12 @@ case $CMD in
 		imageSave "$TARGET" "$targetnoext"-thumb.jpg 80
 		;;
 esac
-pushData coverart '{
+if [[ $CMD == bookmark ]]; then
+	pushBookmark
+else
+	pushData coverart '{
   "coverart" : "'$( php -r "echo rawurlencode( '${TARGET//\'/\\\'}' );" )'"
 , "current"  : '$( [[ $CURRENT ]] && echo true || echo false )'
 }'
+fi
 rm -f $dirshm/{embedded,local,online}/*

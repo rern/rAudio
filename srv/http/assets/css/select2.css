@@ -1,6 +1,5 @@
 .select2-container {
 	max-width     : 230px;
-	width         : 100% !important;
 	height        : 40px;
 	margin-bottom : 10px;
 	font-size     : 16px;
@@ -8,6 +7,9 @@
 	border-radius : 4px;
 	box-shadow    : var( --shadow-select );
 	text-align    : left;
+}
+.container .select2-container {
+	width         : 100% !important;
 }
 .select2-selection {
 	height: 40px !important;

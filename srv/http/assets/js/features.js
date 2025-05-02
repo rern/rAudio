@@ -87,14 +87,15 @@ var config       = {
 		}
 	}
 	, localbrowser : data => {
+		var rotate = { Normal: 0, '90° CW': 90, '90° CCW': 270, '180°': 180 }
 		info( {
 			  ...SW
 			, list         : [
-				  [ 'Rotation',                  'select', { kv: { Normal: 0, '90° CW': 90, '90° CCW': 270, '180°': 180 }, nosort: true } ]
+				  [ 'Rotation',                  'select', { kv: rotate, nosort : true, colspan : 2, width : 120 } ]
 				, [ 'Zoom <gr>(%)</gr>',         'number', { updn: { step: 5, min: 50, max: 300 } } ]
 				, [ 'Screen off <gr>(min)</gr>', 'number', { updn: { step: 1, min: 0, max: 60 } } ]
-				, [ 'On while play',             'checkbox' ]
-				, [ 'Mouse pointer',             'checkbox' ]
+				, [ 'On while play',             'checkbox', { colspan: 2 } ]
+				, [ 'Mouse pointer',             'checkbox', { colspan: 2 } ]
 				, [ '',                          'checkbox' ]
 				, [ '',                          'checkbox' ]
 			]
@@ -103,7 +104,7 @@ var config       = {
 				, Screenoff  : 'screenoff'
 				, Brightness : 'brightness'
 			} )
-			, boxwidth     : 110
+			, boxwidth     : 70
 			, values       : { ...data.values, R_CHANGED: false, RESTART: false }
 			, checkchanged : S.localbrowser
 			, beforeshow   : () => {
@@ -384,16 +385,16 @@ var config       = {
 			} );
 		}
 	}
-	, stoptimer    : values => {
+	, stoptimer    : data => {
 		info( {
 			  ...SW
 			, list         : [
-				  [ 'Minutes',           'number', { updn: { step: 5, min: 5, max: 120 } } ]
-				, [ 'Power off on stop', 'checkbox' ]
+				  [ 'Minutes',           'number',   { updn: { step: 5, min: 5, max: 120 } } ]
+				, [ 'Power off on stop', 'checkbox', { colspan: 2 } ]
 			]
 			, boxwidth     : 70
-			, values       : values.values
-			, checkchanged : values.active
+			, values       : data.values
+			, checkchanged : data.active
 			, cancel       : switchCancel
 			, ok           : switchEnable
 			, fileconf     : true

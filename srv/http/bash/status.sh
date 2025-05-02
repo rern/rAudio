@@ -477,7 +477,13 @@ if [[ ! $sampling ]]; then
 			sampling+=" $( calc 2 $bitrate/1000000 ) Mbit/s"
 		fi
 	fi
-	[[ $ext != Radio ]] && sampling+=" • $ext"
+	if [[ $ext == Radio ]]; then
+		echo "\
+$station
+$sampling" > "$radiofile"
+	else
+		sampling+=" • $ext"
+	fi
 fi
 if [[ $sampling && ! $audiocd && $ext != Radio && $player != upnp ]]; then
 	echo $sampling > $samplingfile
