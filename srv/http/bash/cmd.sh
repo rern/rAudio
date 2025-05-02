@@ -245,44 +245,38 @@ cachetype )
 	grep -q "?v='.time()" /srv/http/common.php && echo time || echo static
 	;;
 color )
+	hsl=( 200 100 35 ) # default
 	file=$dirsystem/color
-	[[ $HSL == reset ]] && rm -f $file && HSL=
-	if [[ $HSL ]]; then
-		echo $HSL > $file
+	if [[ $HSL == reset ]]; then
+		rm -f $file
+	elif [[ $HSL ]]; then
 		hsl=( $HSL )
-	else
-		if [[ -e $file ]]; then
-			hsl=( $( < $file ) )
-		else
-			hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
-						| sed 's/.*(\(.*\)).*/\1/' \
-						| tr ',' ' ' \
-						| tr -d % ) )
-		fi
+		echo $HSL > $file
+	elif [[ -e $file ]]; then # restore
+		hsl=( $( < $file ) )
 	fi
-	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
-	hs="$h,$s%,"
-	hsg="$h,3%,"
-	hsl="${hs}$l%"
-	sed -i -E "
-s|(--cm60 *: *hsl).*;|\1(${hs}$(( l + 25 ))%);|
- s|(--cml *: *hsl).*;|\1(${hs}$(( l + 5 ))%);|
-  s|(--cm *: *hsl).*;|\1($hsl);|
- s|(--cma *: *hsl).*;|\1(${hs}$(( l - 5 ))%);|
- s|(--cmd *: *hsl).*;|\1(${hs}$(( l - 15 ))%);|
-s|(--cg75 *: *hsl).*;|\1(${hsg}75%);|
-s|(--cg60 *: *hsl).*;|\1(${hsg}60%);|
- s|(--cgl *: *hsl).*;|\1(${hsg}40%);|
-  s|(--cg *: *hsl).*;|\1(${hsg}30%);|
- s|(--cga *: *hsl).*;|\1(${hsg}20%);|
- s|(--cgd *: *hsl).*;|\1(${hsg}10%);|
-" /srv/http/assets/css/colors.css
-	sed -i -E "
-s|(rect.*hsl).*;|\1($hsl);|
-s|(path.*hsl).*;|\1(${hsg}75%);|
-" $dirimg/icon.svg
-	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
-		| magick -density 96 -background none - $dirimg/icon.png
+	h=${hsl[0]}
+	s=${hsl[1]}
+	l=${hsl[2]}
+	cmcg=$( jq <<< $CMCG | sed -E -e '/\{|}/ d' -e 's/[ ":,]//g' )
+	for k_v in $cmcg; do
+		k=${k_v:0:-2}
+		v=${k_v: -2}
+		if [[ ${k:0:2} == cm ]]; then
+			S=$s
+			L=$(( l + v - 35 ))
+		else
+			S=3
+			L=$v
+		fi
+		regex+='s|(--'$k' *: *hsl).*;|\1('$h', '$S'%, '$L'%);|;'
+	done
+	sed -i -E "$regex" /srv/http/assets/css/colors.css
+	sed -i -E '
+s|(rect.*hsl).*;|\1('$h', '$s'%, '$l'%);|
+s|(path.*hsl).*;|\1('$h', 3%, 75%);|
+' $dirimg/icon.svg
+	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg | magick -density 96 -background none - $dirimg/icon.png
 	splashRotate
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	pushData reload

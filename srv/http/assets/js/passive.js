@@ -2,22 +2,22 @@ W = {
 	  ...W // from common.js
 	, airplay   : data => {
 		statusUpdate( data );
-		if ( V.playback ) renderPlayback();
+		if ( V.playback ) PLAYBACK.main();
 	}
 	, bookmark  : data => {
 		if ( ! V.library || ! V.libraryhome ) return
 		
 		O.order        = data.order;
 		V.html.library = data.html;
-		var html       = htmlHash( data.html );
+		var html       = UTIL.htmlHash( data.html );
 		$( '#lib-mode-list' ).html( html );
-		renderLibrary();
+		DISPLAY.library();
 	}
 	, cover     : data => {
-		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + versionHash() );
+		if ( V.playback ) $( '#coverart' ).attr( 'src', data.cover + UTIL.versionHash() );
 	}
 	, coverart  : data => {
-		bannerHide();
+		BANNER_HIDE();
 		V.html = {}
 		if ( V.playback ) {
 			if ( S.webradio && S.state === 'play' ) return
@@ -32,26 +32,26 @@ W = {
 					var path0 = S.file.replace( /\//g, '|' ); // http://url                        > http:||url
 					var path1 = cover.slice( 19, -4 );        // /data/webradio/img/http:||url.ext > http:||url
 				} else {
-					var path0 = dirName( S.file );            // dir/file.ext  > dir
-					var path1 = dirName( cover );             // dir/cover.ext > dir
+					var path0 = UTIL.dirName( S.file );            // dir/file.ext  > dir
+					var path1 = UTIL.dirName( cover );             // dir/cover.ext > dir
 				}
 				data.current = path0 === path1;
 			}
-			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + versionHash() );
+			if ( data.current ) $( '#coverart' ).attr( 'src', coverart + UTIL.versionHash() );
 		} else {
-			refreshAll();
+			UTIL.refresh();
 		}
 	}
 	, display   : data => {
 		if ( 'submenu' in data ) {
 			D[ data.submenu ] = data.value;
-			displaySubMenu();
+			DISPLAY.subMenu();
 			return
 		}
 		
 		if ( 'updateaddons' in data ) {
 			S.updateaddons = data.updateaddons ? true : false;
-			setButtonUpdateAddons();
+			PLAYBACK.button.update();
 			return
 		}
 		
@@ -63,24 +63,24 @@ W = {
 		} else if ( ! $( '#vu' ).length ) {
 			$.get( '/assets/img/vu.svg', data => $( '#coverart' ).after( '<div id="vu">'+ data +'</div>' ), 'text' );
 		}
-		displayBars();
+		DISPLAY.bars();
 		$( '.content-top .i-back' ).toggleClass( 'left', D.backonleft );
 		if ( V.playback ) {
-			displayPlayback();
-			renderPlayback();
+			DISPLAY.playback();
+			PLAYBACK.main();
 		} else if ( V.library ) {
 			if ( V.libraryhome ) {
-				renderLibrary();
+				DISPLAY.library();
 			} else {
 				if ( V.librarytrack ) {
-					setTrackCoverart();
-					renderLibraryPadding();
-				} else if ( modeAlbum() ) {
+					LIBRARY.coverart();
+					LIBRARY.padding();
+				} else if ( MODE.album() ) {
 					if ( albumlistchanged ) $( '.mode.'+ V.mode ).trigger( 'click' );
 				}
 			}
 		} else {
-			setProgressElapsed();
+			PLAYBACK.elapsed();
 		}
 	}
 	, mpdplayer : data => {
@@ -94,83 +94,83 @@ W = {
 			}
 			statusUpdate( data );
 			if ( V.playback ) {
-				renderPlaybackAll();
+				UTIL.refreshPlayback();
 			} else if ( V.library ) {
-				refreshData();
+				REFRESHDATA();
 			} else {
-				setPlaylistScroll();
+				PLAYLIST.render.scroll();
 			}
-			setTimeout( bannerHide, 3000 );
+			setTimeout( BANNER_HIDE, 3000 );
 		}, 300 );
 	}
 	, mpdradio  : data => {
 		statusUpdate( data );
-		setInfo();
-		setCoverart();
+		PLAYBACK.info.set();
+		PLAYBACK.coverart();
 		if ( D.radioelapsed ) {
-			$( '#progress' ).html( ico( 'play' ) +'<span></span>' );
-			setProgressElapsed();
+			$( '#progress' ).html( ICON( 'play' ) +'<span></span>' );
+			PLAYBACK.elapsed();
 		} else {
-			setProgress( 0 );
-			setBlinkDot();
+			PLAYBACK.progress.set( 0 );
+			UTIL.blinkDot();
 		}
-		if ( V.playlist ) setPlaylistRadioInfo();
+		if ( V.playlist ) PLAYLIST.render.widthRadio();
 	}	
 	, mpdupdate : data => {
 		S.updating_db = typeof data === 'boolean';
 		if ( ! S.updating_db ) {
 			if ( 'done' in data ) {
-				banner( 'refresh-library', 'Library Update', 'Done' );
+				BANNER( 'refresh-library', 'Library Update', 'Done' );
 				delete data.done;
 			}
 			$.each( data, ( k, v ) => { C[ k ] = v } );
 			V.html = {}
-			V.playback ? refreshData() : refreshAll();
+			V.playback ? REFRESHDATA() : UTIL.refresh();
 		}
-		setButtonUpdating();
+		PLAYBACK.button.updating();
 	}
 	, option    : data => {
 		if ( V.local ) return
 		
 		if ( 'addons' in data ) {
-			setButtonUpdateAddons();
+			PLAYBACK.button.update();
 			return
 		}
 		
 		var option = Object.keys( data )[ 0 ];
 		S[ option ] = Object.values( data )[ 0 ];
-		setButtonOptions();
+		PLAYBACK.button.options();
 	}
 	, order     : data => {
 		if ( V.local ) return
 		
 		O.order = data;
-		orderLibrary();
+		LIBRARY.order();
 	}
 	, playlist  : data => {
 		if ( V.local || V.sortable || $( '.pl-remove' ).length ) return
 		
 		if ( 'blink' in data ) {
-			playlistBlink();
+			PLAYLIST.blink();
 			return
 		}
 		
-		playlistBlink( 'off' );
+		PLAYLIST.blink( 'off' );
 		var playlisthome = V.playlist && V.playlisthome;
 		if ( 'blank' in data ) {
 			if ( V.playback ) {
-				setPlaybackBlank();
+				PLAYBACK.blank();
 			} else if ( playlisthome ) {
-				renderPlaylist();
+				PLAYLIST.render.home();
 			}
-			bannerHide();
+			BANNER_HIDE();
 		} else {
-			if ( playlisthome ) renderPlaylist( data );
-			refreshData();
+			if ( playlisthome ) PLAYLIST.render.home( data );
+			REFRESHDATA();
 		}
 	}
 	, playlists : data => {
-		savedPlaylistAddClear();
+		PLAYLIST.playlists.addClear();
 		if ( V.playlistlist && data == -1 ) {
 			$( '#playlist' ).trigger( 'click' );
 			return
@@ -179,7 +179,7 @@ W = {
 		var count   = data.count;
 		C.playlists = count;
 		if ( V.playlistlist ) {
-			renderSavedPl( data );
+			PLAYLIST.playlists.home( data );
 		} else if ( V.playlisttrack ) {
 			if ( 'delete' in data && $( '#pl-title .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 		}
@@ -198,13 +198,13 @@ W = {
 					$( '.mode.'+ V.mode ).trigger( 'click' );
 				} else {
 					var query = V.query.slice( -1 )[ 0 ];
-					list( query, html => {
+					LIST( query, html => {
 						var data = {
 							  html      : html
 							, modetitle : query.modetitle
 							, path      : query.path
 						}
-						renderLibraryList( data );
+						LIBRARY.list( data );
 					} );
 				}
 			}
@@ -212,9 +212,9 @@ W = {
 			if ( V.playlistlist ) {
 				$( '#button-pl-playlists' ).trigger( 'click' );
 			} else if ( V.playlisttrack ) {
-				renderSavedPlTrack( $( '#pl-title .lipath' ).text() );
+				PLAYLIST.playlists.list( $( '#pl-title .lipath' ).text() );
 			} else {
-				playlistGet();
+				PLAYLIST.get();
 			}
 		}
 	}
@@ -242,7 +242,7 @@ W = {
 			S.volume = data.val;
 			S.volumemute = 0;
 		}
-		setVolume();
+		VOLUME.setValue();
 		V.volumecurrent = S.volume;
 	}
 	, vumeter   : data => {
@@ -252,16 +252,8 @@ W = {
 
 function statusUpdate( data ) {
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
-	displayBars();
-}
-function webradioIcon( srcnoext ) {
-	var radiourl = decodeURIComponent( srcnoext )
-					.split( '/' ).pop()
-					.replace( /\|/g, '/' );
-	return $( '#lib-list li' ).filter( ( i, el ) => {
-		return $( el ).find( '.lipath' ).text() === radiourl;
-	} ).find( '.li-icon' );
+	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) DISPLAY.bottom();
+	DISPLAY.bars();
 }
 // page resize -----------------------------------------------------------------
 window.addEventListener( 'resize', () => { // resize / rotate
@@ -272,32 +264,32 @@ window.addEventListener( 'resize', () => { // resize / rotate
 	V.wW = wW;
 	setTimeout( () => {
 		if ( V.playback ) {
-			displayPlayback();
-			setTimeout( renderPlayback, 50 );
-			setInfoScroll();
+			DISPLAY.playback();
+			setTimeout( PLAYBACK.main, 50 );
+			PLAYBACK.info.scroll();
 			if ( $( '#bioimg' ).length ) bioTitleSet();
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
-				renderLibraryPadding( modeAlbum() ? $( '.coverart' ).eq( 0 ).height() : false );
+				LIBRARY.padding( MODE.album() ? $( '.coverart' ).eq( 0 ).height() : false );
 			}
 		} else {
-			renderPlaylistPadding();
+			PLAYLIST.render.padding();
 			if ( V.playlisthome ) {
 				setTimeout( () => {
-					setPlaylistInfoWidth();
-					setPlaylistScroll();
+					PLAYLIST.render.width();
+					PLAYLIST.render.scroll();
 				}, 600 );
 			}
 		}
-		displayBars();
-		if ( I.active ) infoWidth( 'resize' );
+		DISPLAY.bars();
+		if ( I.active ) _INFO.width( 'resize' );
 	}, 0 );
 } );
 
 function onPageInactive() {
 	if ( D.progress || V.off ) return
 	
-	intervalClear();
-	guideHide();
+	UTIL.intervalClear.all();
+	DISPLAY.guideHide();
 }

@@ -1,26 +1,26 @@
 W.reboot          = data => {
-	banner( data.id, $( '#div'+ data.id +' .col-l .label' ).text(), 'Reboot required', 5000 );
+	BANNER( data.id, $( '#div'+ data.id +' .col-l .label' ).text(), 'Reboot required', 5000 );
 }
 W.storage         = data => {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		S.list.storage = data.list;
-		util.renderStorage();
-		if ( $( '#data' ).length ) $( '#data' ).html( highlightJSON( S ) );
+		UTIL.renderStorage();
+		if ( $( '#data' ).length ) $( '#data' ).html( COMMON.json.highlight( S ) );
 	}, 1000 );
 }
 
-var config        = {
+var CONFIG        = {
 	  _disable      : {
 		  shareddata : () => {
-			info( {
+			INFO( {
 				  ...SW
 				, message : 'Disable and restore local data?'
-				, cancel  : switchCancel
-				, okcolor : orange
+				, cancel  : SWITCH.cancel
+				, okcolor : V.orange
 				, ok      : () => {
-					notifyCommon( 'Disable ...' );
-					bash( [ 'shareddatadisable', 'OFF' ] );
+					NOTIFY_COMMON( 'Disable ...' );
+					BASH( [ 'shareddatadisable', 'OFF' ] );
 				}
 			} );
 		}
@@ -31,17 +31,17 @@ var config        = {
 			var month = '0'+ ( d.getMonth() + 1 );
 			var date  = '0'+ d.getDate();
 			var ymd   = d.getFullYear() + month.slice( -2 ) + date.slice( -2 );
-			info( {
+			INFO( {
 				  ...SW
 				, message : 'Save all data and settings'
 				, list    : [ 'Filename', 'text', { suffix: '.gz' } ]
 				, values  : 'rAudio_backup-'+ ymd
-				, cancel  : switchCancel
+				, cancel  : SWITCH.cancel
 				, ok      : () => {
-					notifyCommon( 'Process ...' );
-					bash( 'system-databackup.sh', data => {
+					NOTIFY_COMMON( 'Process ...' );
+					BASH( 'system-databackup.sh', data => {
 						if ( data == 1 ) {
-							notifyCommon( 'Download ...' );
+							NOTIFY_COMMON( 'Download ...' );
 							fetch( '/data/shm/backup.gz' )
 								.then( response => response.blob() )
 								.then( blob => {
@@ -49,63 +49,63 @@ var config        = {
 									var a = document.createElement( 'a' );
 									a.style.display = 'none';
 									a.href = url;
-									a.download = infoVal() +'.gz';
+									a.download = _INFO.val() +'.gz';
 									document.body.appendChild( a );
 									a.click();
 									setTimeout( () => {
 										a.remove();
 										window.URL.revokeObjectURL( url );
-										bannerHide();
+										BANNER_HIDE();
 									}, 1000 );
 								} ).catch( () => {
-									infoWarning( SW.icon, SW.title, 'File download failed.' )
-									bannerHide();
+									_INFO.warning( SW.icon, SW.title, 'File download failed.' )
+									BANNER_HIDE();
 								} );
 						} else {
-							info( {
+							INFO( {
 								  ...SW
 								, message : 'Backup failed.'
 							} );
-							bannerHide();
+							BANNER_HIDE();
 						}
 					} );
 				}
 			} );
 		}
-		, i2s     : () => util.i2sSelect.option()
+		, i2s     : () => UTIL.i2sSelect.option()
 		, restore : () => {
-			info( {
+			INFO( {
 				  ...SW
 				, tablabel : [ 'From Backup', 'Reset To Default' ]
-				, tab      : [ '', util.restoreReset ]
+				, tab      : [ '', UTIL.restoreReset ]
 				, list     : [ 'Library database only', 'checkbox' ]
-				, file     : { oklabel: ico( 'restore' ) +'Restore', type : '.gz' }
-				, cancel   : switchCancel
-				, oklabel  : ico( 'restore' ) +'Restore'
-				, okcolor  : orange
+				, file     : { oklabel: ICON( 'restore' ) +'Restore', type : '.gz' }
+				, cancel   : SWITCH.cancel
+				, oklabel  : ICON( 'restore' ) +'Restore'
+				, okcolor  : V.orange
 				, ok       : () => {
-					notifyCommon( 'Restore ...' );
+					NOTIFY_COMMON( 'Restore ...' );
 					var formdata = new FormData();
 					formdata.append( 'cmd', 'datarestore' );
 					formdata.append( 'file', I.infofile );
-					formdata.append( 'libraryonly', infoVal() );
+					formdata.append( 'libraryonly', _INFO.val() );
 					fetch( 'cmd.php', { method: 'POST', body: formdata } )
 						.then( response => response.text() )
 						.then( message => {
-							loaderHide();
+							COMMON.loaderHide();
 							if ( message ) {
-								bannerHide();
-								infoWarning(  SW.icon,  SW.title, message );
+								BANNER_HIDE();
+								_INFO.warning(  SW.icon,  SW.title, message );
 							}
 						} );
-					loader();
+					COMMON.loader();
 				}
 			} );
 		}
-		, shareddata    : () => util.mount.mount()
+		, shareddata    : () => UTIL.mount.mount()
 	}
 	, bluetooth     : values => {
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'Discoverable <gr>by senders</gr>',             'checkbox' ]
@@ -113,27 +113,27 @@ var config        = {
 			]
 			, values       : values
 			, checkchanged : S.bluetooth
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 		} );
 	}
 	, i2smodule     : () => {
 		if ( S.audioaplayname === 'cirrus-wm5102' ) {
-			util.wm5102();
+			UTIL.wm5102();
 		} else {
-			infoSetting( 'i2smodule', values => {
-				info( {
+			SETTING( 'i2smodule', values => {
+				INFO( {
 					  ...SW
 					, list         : [ 'Disable I²S HAT EEPROM read', 'checkbox' ]
 					, values       : values
 					, checkchanged : true
-					, ok           : () => bash( [ 'i2seeprom', infoVal() ] )
+					, ok           : () => BASH( [ 'i2seeprom', _INFO.val() ] )
 				} );
 			} );
 		}
 	}
 	, lcdchar       : data => {
-		util.lcdchar[ data.values.INF ]( data );
+		UTIL.lcdchar[ data.values.INF ]( data );
 	}
 	, mpdoled       : values => {
 		var chip       = {
@@ -143,7 +143,7 @@ var config        = {
 			, 'SH1106 I²C'  : 6
 			, 'SH1106 SPI'  : 7
 		}
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'Controller',              'select', chip ]
@@ -162,36 +162,36 @@ var config        = {
 					$baud.toggleClass( 'hide', val < 3 || val > 6 );
 				} );
 			}
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 		} );
 	}
 	, powerbutton   : values => {
-		values === true ? util.powerbutton.ap() : util.powerbutton.sw( values );
+		values === true ? UTIL.powerbutton.ap() : UTIL.powerbutton.sw( values );
 	}
 	, relays        : data => {
-		S.relays ? util.relays.order( data ) : util.relays.name( data );
+		S.relays ? UTIL.relays.order( data ) : UTIL.relays.name( data );
 	}
 	, rotaryencoder : values => {
-		info( {
+		INFO( {
 			  ...SW
-			, message      : util.gpiosvg
+			, message      : UTIL.gpiosvg
 			, list         : [
-				  [ 'CLK',  'select', util.board2bcm ]
-				, [ 'DT',   'select', util.board2bcm ]
-				, [ 'SW',   'select', util.board2bcm ]
+				  [ 'CLK',  'select', UTIL.board2bcm ]
+				, [ 'DT',   'select', UTIL.board2bcm ]
+				, [ 'SW',   'select', UTIL.board2bcm ]
 				, [ 'Step', 'radio',  { '1%': 1, '2%': 2 } ]
 			]
 			, boxwidth     : 70
 			, values       : values
 			, checkchanged : S.rotaryencoder
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 			, fileconf     : true
 		} );
 	}
 	, soundprofile  : values => {
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [ 
 				  [ 'Swappiness',            'number' ]
@@ -202,24 +202,24 @@ var config        = {
 			, values       : values
 			, checkchanged : true
 			, checkblank   : true
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 			, fileconf     : true
 		} );
 	}
 	, templimit     : values => {
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [ 'Throttle at <gr>(°C)</gr>', 'number', { updn: { step: 1, min: 60, max: 70 } } ]
 			, footer       : '(default: 60)'
 			, boxwidth     : 70
 			, values       : values
 			, checkchanged : S.templimit || ! S.templimit && values.DEGREE === 60
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 		} );
 	}
-	, timezone      : () => util.server.ntp()
+	, timezone      : () => UTIL.server.ntp()
 	, tft           : values => {
 		var type = {
 			  'Generic'               : 'tft35a'
@@ -228,10 +228,10 @@ var config        = {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [ 'Type', 'select', type ]
-			, footer       : '<span>'+ ico( 'cursor' ) +'Calibrate</span>'
+			, footer       : '<span>'+ ICON( 'cursor' ) +'Calibrate</span>'
 			, values       : values
 			, checkchanged : S.tft
 			, boxwidth     : 190
@@ -239,30 +239,30 @@ var config        = {
 				$( '.infofooter span' )
 					.toggleClass( 'disabled', ! S.tft )
 					.on( 'click', function() {
-						notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
-						bash( [ 'tftcalibrate' ] );
+						NOTIFY( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
+						BASH( [ 'tftcalibrate' ] );
 				} );
 			}
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 		} );
 	}
 	, vuled         : data => {
-		var list   = [ [ ico( 'vuled gr' ) +' LED', ico( 'gpiopins gr' ) +'Pin', '' ] ];
+		var list   = [ [ ICON( 'vuled gr' ) +' LED', ICON( 'gpiopins gr' ) +'Pin', '' ] ];
 		var prefix = '<gr>#</gr> ';
-		data.values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), 'select', util.board2bcm ] ) );
-		info( {
+		data.values.forEach( ( p, i ) => list.push(  [ prefix + ( i + 1 ), 'select', UTIL.board2bcm ] ) );
+		INFO( {
 			  ...SW
-			, message      : util.gpiosvg
+			, message      : UTIL.gpiosvg
 			, list         : list
-			, footer       : ico( 'power' ) +'On/Off'
+			, footer       : ICON( 'power' ) +'On/Off'
 			, values       : data.values
 			, checkchanged : S.vuled
 			, checkunique  : true
 			, boxwidth     : 70
 			, beforeshow   : () => {
 				$( '#infoList .infofooter' ).on( 'click', function() {
-					var pins = infoVal();
+					var pins = _INFO.val();
 					var on   = ! pins.some( p => data.state[ p ] );
 					var pin  = '';
 					pins.forEach( p => {
@@ -270,27 +270,27 @@ var config        = {
 						pin += p +'='+ on +' ';
 						$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
 					} );
-					bash( [ 'gpiotoggle', pin, 'CMD PIN' ] );
+					BASH( [ 'gpiotoggle', pin, 'CMD PIN' ] );
 				} );
-				infoListAddRemove( () => {
-					var infoval = infoVal( 'array' );
+				_INFO.addRemove( () => {
+					var infoval = _INFO.val( 'array' );
 					$( '#infoList tr' ).each( ( i, el ) => {
 						if ( i ) $( el ).find( 'td' ).eq( 0 ).html( prefix + i );
 						$( '#infoList .i-remove' ).toggleClass( 'disabled', $( '#infoList select' ).length < 2 );
 					} );
 				} );
-				util.gpioState( data.state );
+				UTIL.gpioState( data.state );
 			}
-			, cancel       : switchCancel
+			, cancel       : SWITCH.cancel
 			, ok           : () => {
-				notifyCommon();
-				bash( [ 'vuled', infoVal().join( ' ' ), 'CMD PINS' ] );
+				NOTIFY_COMMON();
+				BASH( [ 'vuled', _INFO.val().join( ' ' ), 'CMD PINS' ] );
 			}
 		} );
 	}
 	, wlan          : data => {
-		var accesspoint = 'Auto start Access Point<br>'+ sp( 30 ) +'<gr>(if not connected)</gr>';
-		info( {
+		var accesspoint = 'Auto start Access Point<br>'+ COMMON.sp( 30 ) +'<gr>(if not connected)</gr>';
+		INFO( {
 			  ...SW
 			, list         : [
 				  [ 'Country',   'select', data.list ]
@@ -299,13 +299,13 @@ var config        = {
 			, boxwidth     : 250
 			, values       : data.values
 			, checkchanged : S.wlan
-			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
-			, cancel       : switchCancel
-			, ok           : switchEnable
+			, beforeshow   : () => COMMON.select.text2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
+			, cancel       : SWITCH.cancel
+			, ok           : SWITCH.enable
 		} );
 	}
 }
-var util          = {
+var UTIL          = {
 	  board2bcm     : {
 		   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 		, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
@@ -322,7 +322,7 @@ var util          = {
 			var on  = ! state[ p ];
 			state[ p ] = on;
 			$( '#infoList circle[ data-bcm="'+ p +'" ]' ).toggleClass( 'on', on );
-			bash( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
+			BASH( [ 'gpiotoggle', p +'='+ on, 'CMD PIN' ] );
 		} );
 	}
 	, gpiosvg       : $( '#gpiosvg' ).html()
@@ -332,7 +332,7 @@ var util          = {
 			, icon  : 'hostname'
 			, title : 'Player Name'
 		}
-		info( {
+		INFO( {
 			  ...SW
 			, list         : [ 'Name', 'text' ]
 			, values       : { NAME: S.hostname }
@@ -344,7 +344,7 @@ var util          = {
 				} );
 			}
 			, ok           : () => {
-				switchEnable();
+				SWITCH.enable();
 				$( '#hostname' ).addClass( 'disabled' );
 			}
 		} );
@@ -358,16 +358,16 @@ var util          = {
 		, option : () => {
 			if ( $( '#i2smodule option' ).length > 2 ) {
 				if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
-					util.i2sSelect.show();
+					UTIL.i2sSelect.show();
 					$( '#i2smodule' ).select2( 'open' );
 				}
 			} else {
 				$( '#i2smodule' ).select2( 'close' );
-				infoSetting( 'i2slist', list => {
+				SETTING( 'i2slist', list => {
 					list[ '(None / Auto detect)' ] = '';
-					$( '#i2smodule' ).html( htmlOption( list ) );
-					util.i2sSelect.select();
-					util.i2sSelect.show();
+					$( '#i2smodule' ).html( COMMON.htmlOption( list ) );
+					UTIL.i2sSelect.select();
+					UTIL.i2sSelect.show();
 					$( '#i2smodule' ).select2( 'open' );
 				} );
 			}
@@ -386,16 +386,16 @@ var util          = {
 	}
 	, lcdchar       : {
 		  gpio : data => {
-			var list0 = jsonClone( util.lcdchar.list );
+			var list0 = COMMON.json.clone( UTIL.lcdchar.list );
 			var list  = list0.slice( 0, 3 );
 			[ 'Pins: &emsp; D4', 'RS', 'D5', 'RW', 'D6', 'E', 'D7' ].forEach( ( k, i ) => {
-				list.push( [ k, 'select', { kv: util.board2bcm, sameline: i % 2 === 0 } ] );
+				list.push( [ k, 'select', { kv: UTIL.board2bcm, sameline: i % 2 === 0 } ] );
 			} );
 			list.push( [ '', '' ], list0.slice( -1 )[ 0 ] );
-			info( {
-				  ...util.lcdchar.json
-				, tab          : [ () => infoSetting( 'lcdchar i2c', config.lcdchar ), '' ]
-				, message      : util.gpiosvg
+			INFO( {
+				  ...UTIL.lcdchar.json
+				, tab          : [ () => SETTING( 'lcdchar i2c', CONFIG.lcdchar ), '' ]
+				, message      : UTIL.gpiosvg
 				, list         : list
 				, boxwidth     : 70
 				, values       : data.values
@@ -403,11 +403,11 @@ var util          = {
 			} );
 		}
 		, i2c  : data => {
-			var list          = jsonClone( util.lcdchar.list );
+			var list          = COMMON.json.clone( UTIL.lcdchar.list );
 			list[ 3 ][ 2 ].kv = data.address;
-			info( {
-				  ...util.lcdchar.json
-				, tab          : [ '', () => infoSetting( 'lcdchar gpio', config.lcdchar ) ]
+			INFO( {
+				  ...UTIL.lcdchar.json
+				, tab          : [ '', () => SETTING( 'lcdchar gpio', CONFIG.lcdchar ) ]
 				, list         : list
 				, boxwidth     : 180
 				, values       : data.values
@@ -422,24 +422,24 @@ var util          = {
 				if ( I.values[ 0 ] === 'gpio' ) $( '#infoList label' ).parents( 'td' ).prop( 'colspan', 3 );
 				$( '#infoList label' ).css( 'width', '70px' );
 			}
-			, cancel   : switchCancel
+			, cancel   : SWITCH.cancel
 			, ok       : () => {
 				
-				jsonSave( 'lcdchar', infoVal() );
-				switchEnable();
+				COMMON.json.save( 'lcdchar', _INFO.val() );
+				SWITCH.enable();
 			}
 		}
 		, list : [
 			  [ 'Type',                 'hidden'  ]
 			, [ 'Size',                 'radio',    { kv: { '20x4': 20, '16x2': 16 } } ]
 			, [ 'Character Map',        'radio',    { kv: [ 'A00', 'A02' ] } ]
-			, [ 'Address',              'radio',    [ '' ] ] // set by infoSetting
+			, [ 'Address',              'radio',    [ '' ] ] // set by SETTING
 			, [ 'Chip',                 'select',   [ 'PCF8574', 'MCP23008', 'MCP23017' ] ]
 			, [ 'Idle sleep <gr>(60s)', 'checkbox' ]
 		]
 	}
 	, ledcalc       : () => {
-		info( {
+		INFO( {
 			  icon       : 'vuled'
 			, title      : 'LED Resister Calculator'
 			, list       : [
@@ -469,30 +469,32 @@ var util          = {
 		} );
 	}
 	, mount         : {
-		  mount   : nfs => {
-			var nfs        = nfs || false;
-			var shareddata = SW.id === 'shareddata';
-			var conf       = {
-				  cifs : {
-					  PROTOCOL : 'cifs'
-					, NAME     : ''
-					, IP       : ipSub( S.ip )
-					, SHARE    : ''
-					, USR      : ''
-					, PASSWORD : ''
-					, OPTIONS  : '' 
-				}
-				, nfs  : {
-					  PROTOCOL : 'nfs'
-					, NAME     : ''
-					, IP       : ipSub( S.ip )
-					, SHARE    : ''
-					, OPTIONS  : ''
+		  mount   : values => {
+			if ( ! values || values === 'nfs' ) {
+				if ( values ) {
+					values = {
+						  PROTOCOL : 'nfs'
+						, NAME     : ''
+						, IP       : COMMON.ipSub( S.ip )
+						, SHARE    : ''
+						, OPTIONS  : ''
+					}
+				} else {
+					values = {
+						  PROTOCOL : 'cifs'
+						, NAME     : ''
+						, IP       : COMMON.ipSub( S.ip )
+						, SHARE    : ''
+						, USR      : ''
+						, PASSWORD : ''
+						, OPTIONS  : '' 
+					}
 				}
 			}
-			var values     = nfs ? conf.nfs : conf.cifs;
-			var tab = nfs ? [ util.mount.mount, '' ] : [ '', () => util.mount.mount( 'nfs' ) ];
-			if ( shareddata ) tab.push( util.mount.rServer );
+			var nfs        = values.PROTOCOL === 'nfs';
+			var tab        = nfs ? [ UTIL.mount.mount, '' ] : [ '', () => UTIL.mount.mount( 'nfs' ) ];
+			var shareddata = SW.id === 'shareddata';
+			if ( shareddata ) tab.push( UTIL.mount.rServer );
 			var icon       = 'networks';
 			var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 			var suffix     = { suffix: '<wh>*</wh>' }
@@ -506,10 +508,10 @@ var util          = {
 				, [ 'Options',   'text' ]
 			];
 			if ( nfs ) list.splice( 4, 2 );
-			info( {
+			INFO( {
 				  icon       : icon
 				, title      : title
-				, tablabel   : shareddata ? util.mount.tab : [ 'CIFS', 'NFS' ]
+				, tablabel   : shareddata ? UTIL.mount.tab : [ 'CIFS', 'NFS' ]
 				, tab        : tab
 				, list       : list
 				, values     : values
@@ -532,77 +534,80 @@ var util          = {
 						} );
 					}
 				}
-				, cancel     : switchCancel
+				, cancel     : SWITCH.cancel
 				, oknoreset  : true
 				, ok         : () => {
-					var infoval = infoVal();
+					var infoval = _INFO.val();
 					if ( ! shareddata && infoval.NAME === 'data' ) infoval.NAME += '1'; // reserve 'data' for shared data
 					infoval.SHAREDDATA = shareddata;
 					var keys = Object.keys( infoval );
 					var vals = Object.values( infoval );
-					notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
-					util.mount.set( [ ...vals, 'CMD '+ keys.join( ' ' ) ] );
+					NOTIFY( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
+					UTIL.mount.set( [ ...vals, 'CMD '+ keys.join( ' ' ) ], infoval );
 				}
 			} );
 		}
-		, rServer : () => {
-			info( {
+		, rServer : values => {
+			INFO( {
 				  ...SW
-				, tablabel  : util.mount.tab
-				, tab       : [ util.mount.mount, () => util.mount.mount( 'nfs' ), '' ]
+				, tablabel  : UTIL.mount.tab
+				, tab       : [ UTIL.mount.mount, () => UTIL.mount.mount( 'nfs' ), '' ]
 				, list      : [ 'Server IP', 'text' ]
-				, values    : { IP: I.active && I.values ? infoVal().IP : ipSub( S.ip ) }
+				, values    : values || { IP: I.active && I.values ? _INFO.val().IP : COMMON.ipSub( S.ip ) }
 				, checkip   : [ 0 ]
-				, cancel    : switchCancel
+				, cancel    : SWITCH.cancel
 				, oknoreset : true
 				, ok        : () => {
-					notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-					util.mount.set( [ infoVal().IP, true, 'CMD IP SHAREDDATA' ] );
+					var infoval = _INFO.val();
+					NOTIFY( SW.icon, SW.title, 'Connect Server rAudio ...' );
+					UTIL.mount.set( [ infoval.IP, true, 'CMD IP SHAREDDATA' ], infoval );
 				}
 			} );
 		}
-		, set     : args => {
-			bash( [ 'settings/system-mount.sh', 'cmd', ...args ], error => {
+		, set     : ( args, values ) => {
+			BASH( [ 'settings/system-mount.sh', 'cmd', ...args ], error => {
 				if ( error ) {
-					infoPrompt( '<wh>Mount failed:</wh><br><br>'+ error );
+					_INFO.warning( SW.icon, SW.title, '<wh>Mount failed:</wh><br><br>'+ error, () => {
+						'PROTOCOL' in values ? UTIL.mount.mount( values ) : UTIL.mount.rServer( values );
+					} )
 				} else {
 					$( '#infoX' ).trigger( 'click' );
 				}
 			} );
 		}
-		, tab     : [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ]
+		, tab     : [ 'CIFS', 'NFS', ICON( 'rserver' ) +' rAudio' ]
 	}
 	, powerbutton   : {
 		  sw : values => {
-			info( {
+			INFO( {
 				  ...SW
 				, tablabel     : [ 'Generic', 'Audiophonic' ]
-				, tab          : [ '', util.powerbutton.ap ]
-				, message      : util.gpiosvg
+				, tab          : [ '', UTIL.powerbutton.ap ]
+				, message      : UTIL.gpiosvg
 				, list         : [ 
 					  [ 'On',       'select', { 5: 3 } ]
-					, [ 'Off',      'select', util.board2bcm ]
-					, [ 'LED',      'select', util.board2bcm ]
+					, [ 'Off',      'select', UTIL.board2bcm ]
+					, [ 'LED',      'select', UTIL.board2bcm ]
 				]
 				, boxwidth     : 70
 				, values       : values
 				, checkchanged : S.powerbutton
 				, beforeshow   : () => $( '.pwr' ).removeClass( 'hide' )
-				, cancel       : switchCancel
-				, ok           : switchEnable
+				, cancel       : SWITCH.cancel
+				, ok           : SWITCH.enable
 				, fileconf     : true
 			} );
 		}
 		, ap : () => {
-			info( {
+			INFO( {
 				  ...SW
 				, tablabel     : [ 'Generic', 'Audiophonic' ]
-				, tab          : [ () => infoSetting( 'powerbutton', util.powerbutton.sw ), '' ]
+				, tab          : [ () => SETTING( 'powerbutton', UTIL.powerbutton.sw ), '' ]
 				, list         : [ 'Power management module', 'checkbox' ]
 				, checkchanged : S.powerbutton
 				, values       : { ON: true }
-				, cancel       : switchCancel
-				, ok           : switchEnable
+				, cancel       : SWITCH.cancel
+				, ok           : SWITCH.enable
 			} );
 		}
 	}
@@ -618,7 +623,7 @@ var util          = {
 		
 		$this.addClass( 'blink wh' )
 		V.intstatus = setInterval( () => {
-			bash( 'system-data.sh status', data => {
+			BASH( 'system-data.sh status', data => {
 				$( '#divstatus .value' ).html( data );
 				$this.toggleClass( 'i-refresh blink i-flash' );
 				setTimeout( () => $this.toggleClass( 'i-refresh blink i-flash' ), 300 );
@@ -632,18 +637,18 @@ var util          = {
 			var values = [];
 			keys.forEach( p => values.push( p, name[ p ] ) );
 			var list   = [
-				  [ '', ico( 'gpiopins gr' ) +'Pin', { sameline: true } ]
-				, [ '', ico( 'tag gr' ) +' Name' ]
+				  [ '', ICON( 'gpiopins gr' ) +'Pin', { sameline: true } ]
+				, [ '', ICON( 'tag gr' ) +' Name' ]
 			];
 			var kL     = keys.length;
 			for ( var i = 0; i < kL; i++ ) {
-				list.push( [ '', 'select', { kv: util.board2bcm, sameline: true } ], [ '', 'text' ] );
+				list.push( [ '', 'select', { kv: UTIL.board2bcm, sameline: true } ], [ '', 'text' ] );
 			}
-			info( {
+			INFO( {
 				  ...SW
-				, tablabel     : util.relays.tab
-				, tab          : [ () => util.relays.order( data ), '' ]
-				, message      : util.gpiosvg
+				, tablabel     : UTIL.relays.tab
+				, tab          : [ () => UTIL.relays.order( data ), '' ]
+				, message      : UTIL.gpiosvg
 				, list         : list
 				, boxwidth     : 80
 				, propmt       : true
@@ -656,13 +661,13 @@ var util          = {
 					$( '#infoList td:first-child' ).remove();
 					$( '#infoList input' ).parent().addBack().css( 'width', '160px' );
 					$( '#infoList' ).on( 'click', '.i-power', function() {
-						bash( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
+						BASH( [ 'relays.sh', $this.hasClass( 'grn' ) ? '' : 'off' ] );
 					} );
-					infoListAddRemove();
-					util.gpioState( data.state );
+					_INFO.addRemove();
+					UTIL.gpioState( data.state );
 				}
-				, cancel       : switchCancel
-				, ok           : () => util.relays.set( data )
+				, cancel       : SWITCH.cancel
+				, ok           : () => UTIL.relays.set( data )
 			} );
 		}
 		, order  : data => {
@@ -672,8 +677,8 @@ var util          = {
 			$.each( name, ( k, v ) => { names[ v ] = k } );
 			var step   = { step: 1, min: 0, max: 10 }
 			var list   = [
-				  [ '', ico( 'power grn' ) +' On <gr>(s)</gr>',  { sameline: true, colspan: 2 } ]
-				, [ '', ico( 'power red' ) +' Off <gr>(s)</gr>', { colspan: 2 } ]
+				  [ '', ICON( 'power grn' ) +' On <gr>(s)</gr>',  { sameline: true, colspan: 2 } ]
+				, [ '', ICON( 'power red' ) +' Off <gr>(s)</gr>', { colspan: 2 } ]
 			];
 			var values = [];
 			var pL     = pin.ON.length;
@@ -690,7 +695,7 @@ var util          = {
 					);
 					values.push( pin.OND[ i ], pin.OFFD[ i ] );
 				} else {
-					var idle = ico( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>';
+					var idle = ICON( 'stoptimer yl' ) +' Idle to Off <gr>(m)</gr>';
 					list.push(
 						  [ idle, 'checkbox', { sameline: true, colspan: 2 } ]
 						, [ '',   'number',   { updn: { step: 1, min: 2, max: 30 } } ]
@@ -699,10 +704,10 @@ var util          = {
 					values.push( pin.TIMER );
 				}
 			}
-			info( {
+			INFO( {
 				  ...SW
-				, tablabel     : util.relays.tab
-				, tab          : [ '', () => util.relays.name( data ) ]
+				, tablabel     : UTIL.relays.tab
+				, tab          : [ '', () => UTIL.relays.name( data ) ]
 				, list         : list
 				, boxwidth     : window.innerWidth > 410 ? 180 : window.innerWidth / 2 -20
 				, lableno      : true
@@ -724,21 +729,21 @@ var util          = {
 							var ar = i % 2 ? von : voff;
 							ar.push( $( el ).val() );
 						} );
-						if ( von.length !== new Set( von ).size || voff.length !== new Set( voff ).size ) banner( SW.icon, SW.title, 'Duplicate devices', 6000 )
+						if ( von.length !== new Set( von ).size || voff.length !== new Set( voff ).size ) BANNER( SW.icon, SW.title, 'Duplicate devices', 6000 )
 					} );
 					$( '#infoList input:checkbox' ).on( 'input', function() {
 						$timer.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 					} );
-					util.gpioState( data.state );
+					UTIL.gpioState( data.state );
 				}
-				, cancel       : switchCancel
-				, ok           : () => util.relays.set( data )
+				, cancel       : SWITCH.cancel
+				, ok           : () => UTIL.relays.set( data )
 			} );
 		}
 		, set    : data => {
 			var order   = data.relays;
 			var name    = data.names;
-			var v       = infoVal();
+			var v       = _INFO.val();
 			var tabname = I.tab[ 0 ];
 			if ( tabname ) {
 				v.forEach( ( el, i ) => i % 2 ? name[ p ] = el : p = el );
@@ -770,30 +775,30 @@ var util          = {
 				pins.push( val );
 			} );
 			if ( S.relays || ! tabname ) {
-				notifyCommon();
-				bash( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
-				jsonSave( 'relays', name );
+				NOTIFY_COMMON();
+				BASH( [ 'relays', ...pins, 'CFG '+ keys.join( ' ' ) ] );
+				COMMON.json.save( 'relays', name );
 			} else {
-				util.relays.order( data );
+				UTIL.relays.order( data );
 			}
 		}
-		, tab    : [ ico( 'power' ) +' Sequence', ico( 'tag' ) +' Pin - Name' ]
+		, tab    : [ ICON( 'power' ) +' Sequence', ICON( 'tag' ) +' Pin - Name' ]
 	}
 	, renderStorage : () => {
-		if ( list.equal( 'storage' ) ) return
+		if ( LIST.equal( 'storage' ) ) return
 		
 		var html = '';
 		S.list.storage.forEach( list => {
 			var mountpoint = list.mountpoint;
 			var source     = list.source;
 			html		  += '<li data-id="'+ source +'" data-mountpoint="'+ mountpoint +'">'
-							+ ico( list.icon ) + mountpoint.slice( 9 )
-							+ ( list.size ? dot : dot.replace( /grn/g, 'red' ) ) + list.size +' <c>'+ source +'</c></li>';
+							+ ICON( list.icon ) + mountpoint.slice( 9 ) +'&ensp;'
+							+ ( list.size ? '<grn>•</grn>' : '<red>•</red>' ) +'&ensp;'+ list.size +' <c>'+ source +'</c></li>';
 		} );
-		list.render( 'storage', html );
+		LIST.render( 'storage', html );
 	}
 	, restoreReset  : () => {
-		info( {
+		INFO( {
 			  ...SW
 			, tablabel : [ 'From Backup', 'Reset To Default' ]
 			, tab      : [ () => $( '#restore' ).triger( 'click' ), '' ]
@@ -801,60 +806,60 @@ var util          = {
 				  [ 'Keep Library data',     'checkbox' ]
 				, [ 'Keep Network settings', 'checkbox' ]
 			]
-			, oklabel  : ico( 'set0' ) +'Reset'
-			, okcolor  : orange
+			, oklabel  : ICON( 'set0' ) +'Reset'
+			, okcolor  : V.orange
 			, ok       : () => {
-				notifyCommon( 'Reset to default ...' );
-				bash( [ 'settings/system-datareset.sh', 'cmd', ...infoVal(), 'CMD KEEPLIBRARY KEEPNETWORK' ] );
-				loader();
+				NOTIFY_COMMON( 'Reset to default ...' );
+				BASH( [ 'settings/system-datareset.sh', 'cmd', ..._INFO.val(), 'CMD KEEPLIBRARY KEEPNETWORK' ] );
+				COMMON.loader();
 			}
 		} );
 		$( '#restore' ).prop( 'checked', 0 );
 	}
 	, server        : {
 		  mirror : () => {
-			notifyCommon( 'Get mirror server list ...' );
-			infoSetting( 'servermirror', data => {
-				bannerHide();
+			NOTIFY_COMMON( 'Get mirror server list ...' );
+			SETTING( 'servermirror', data => {
+				BANNER_HIDE();
 				SW.id = 'mirror';
-				info( {
+				INFO( {
 					  ...SW
 					, tablabel     : [ 'Time', 'Package Mirror' ]
-					, tab          : [ () => infoSetting( 'serverntp', util.server.ntp ), '' ]
+					, tab          : [ () => SETTING( 'serverntp', UTIL.server.ntp ), '' ]
 					, list         : [ 'Mirror', 'select', data.list ]
 					, boxwidth     : 240
 					, values       : data.values
 					, checkchanged : true
-					, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
-					, ok           : switchEnable
+					, beforeshow   : () => COMMON.select.text2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
+					, ok           : SWITCH.enable
 				} );
 			} );
 		}
 		, ntp    : () => {
-			infoSetting( 'serverntp', data => {
+			SETTING( 'serverntp', data => {
 				SW.id    = 'ntp';
 				SW.title = 'Servers';
 				if ( ! data.rpi01 ) {
 					SW.tablabel = [ 'Time', 'Package Mirror' ];
-					SW.tab      = [ '', util.server.mirror ];
+					SW.tab      = [ '', UTIL.server.mirror ];
 				}
-				info( {
+				INFO( {
 					  ...SW
 					, list         : [ 'NTP', 'text' ]
 					, boxwidth     : 240
 					, values       : data.values
 					, checkchanged : true
 					, checkblank   : [ 0 ]
-					, ok           : switchEnable
+					, ok           : SWITCH.enable
 				} );
 			} );
 		}
 	}
 	, wm5102        : () => {
-		infoSetting( 'audio-wm5102', data => {
+		SETTING( 'audio-wm5102', data => {
 			var icon   = 'i2s';
 			var output = $( '#i2smodule' ).find( ':selected' ).text();
-			info( {
+			INFO( {
 				  icon         : icon
 				, title        : output
 				, list         : [ 'Output', 'select', {
@@ -867,8 +872,8 @@ var util          = {
 				, values       : data.outputtype
 				, checkchanged : S.i2smodule
 				, ok           : () => {
-					notify( icon, output, 'Change ...' );
-					bash( [ 'i2smodule', 'cirrus-wm5102', output, infoVal(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] );
+					NOTIFY( icon, output, 'Change ...' );
+					BASH( [ 'i2smodule', 'cirrus-wm5102', output, _INFO.val(), 'CMD APLAYNAME OUTPUT OUTPUTTYPE' ] );
 				}
 			} );
 		} );
@@ -881,7 +886,7 @@ function onPageInactive() {
 function renderPage() {
 	$( '#divsystem .value' ).html( S.system );
 	$( '#divstatus .value' ).html( S.status );
-	util.renderStorage();
+	UTIL.renderStorage();
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
 			$( '#divbluetooth .col-l' )
@@ -894,7 +899,7 @@ function renderPage() {
 		if ( 'wlan' in S ) {
 			$( '#wlan' )
 				.toggleClass( 'disabled', S.ap || S.wlanconnected )
-				.prev().html( S.ap ? icoLabel( 'Access Point', 'ap' ) +' is currently enabled.' : icoLabel( 'Wi-Fi', 'wifi' ) +' is currently connected.' );
+				.prev().html( S.ap ? LABEL_ICON( 'Access Point', 'ap' ) +' is currently enabled.' : LABEL_ICON( 'Wi-Fi', 'wifi' ) +' is currently connected.' );
 			$( '#divwlan .col-l' )
 				.toggleClass( 'single', ! S.wlan )
 				.toggleClass( 'status', S.wlan );
@@ -907,13 +912,13 @@ function renderPage() {
 	$( '#audio' ).toggleClass( 'disabled', ! S.audiocards );
 	if ( S.i2smodule ) {
 		if ( $( '#i2smodule option' ).length ) {
-			util.i2sSelect.select();
+			UTIL.i2sSelect.select();
 		} else {
 			$( '#i2smodule' ).html( '<option></option><option selected>'+ S.audiooutput +'</option>' );
 		}
-		util.i2sSelect.show();
+		UTIL.i2sSelect.show();
 	} else {
-		util.i2sSelect.hide();
+		UTIL.i2sSelect.hide();
 	}
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.lan );
 	$( '#hostname' )
@@ -931,12 +936,12 @@ function renderPage() {
 	$( '#divtemplimit' ).toggleClass( 'hide', ! S.rpi3plus );
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( 'a[ href ]' ).prop( 'tabindex', -1 );
-	showContent();
+	CONTENT();
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.power' ).on( 'click', infoPower );
+$( '.power' ).on( 'click', COMMON.power );
 $( '.img' ).on( 'click', function() {
 	function htmlLegend( data, key, val ) {
 		if ( typeof data !== 'object' ) data = [ [ data, key, val ] ];
@@ -969,7 +974,7 @@ $( '.img' ).on( 'click', function() {
 								, [ 'grn', 'D4-7', '21-24' ]
 							] )
 						+ i2c + vcc1 + htmlLegend( 'red', '5V', 4 ) + scasdl
-						+'</p><br>'+ ico( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
+						+'</p><br>'+ ICON( 'warning yl' ) +' <wh>I²C VCC</wh> - 5V to 3.3V modification'
 						+'<br><img style="margin: 5px 0 0; width: 120px; height: auto;" src="/assets/img/i2cbackpack.jpg">'
 		, mpdoled       : gnd + vcc1
 						+ i2c + scasdl
@@ -985,13 +990,13 @@ $( '.img' ).on( 'click', function() {
 						  +'<br><c>+: not use</c></p>'
 	}
 	var list    = '<img src="/assets/img/'+ name +'.jpg?v='+ Math.round( Date.now() / 1000 ) +'">';
-	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += util.gpiosvg;
+	if ( ! [ 'lcd', 'powerbutton', 'relays', 'vuled' ].includes( name ) ) list += UTIL.gpiosvg;
 	if ( name in txt ) list += '<br>'+ txt[ name ];
 	var pinhide = {
 		  lcdchar : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26,     19,         13, 12, 11, 10, 8, 7 ]
 		, mpdoled : [ 40, 38, 37, 36, 35, 33, 32, 31, 29, 26, 21,     16, 15, 13, 12, 11, 10, 8, 7 ]
 	}
-	info( {
+	INFO( {
 		  icon       : title[ name ][ 1 ] || name
 		, title      : title[ name ][ 0 ]
 		, list       : list
@@ -999,7 +1004,7 @@ $( '.img' ).on( 'click', function() {
 			if ( name in pinhide ) {
 				pinhide[ name ].forEach( n => {
 					$( '.board .p'+ n ).addClass( 'hide' );
-					$( '.bcm .p'+ util.board2bcm[ n ] ).addClass( 'hide' );
+					$( '.bcm .p'+ UTIL.board2bcm[ n ] ).addClass( 'hide' );
 				} );
 			}
 			$( '#infoList svg .power' ).toggleClass( 'hide', [ 'mpdoled', 'rotaryencoder' ].includes( name ) );
@@ -1008,22 +1013,22 @@ $( '.img' ).on( 'click', function() {
 		, okno       : true
 	} );
 } );
-$( '.refresh' ).on( 'click', util.refresh );
+$( '.refresh' ).on( 'click', UTIL.refresh );
 $( '.addnas' ).on( 'click', function() {
 	SW = { icon: 'networks' }
-	util.mount.mount();
+	UTIL.mount.mount();
 } );
 $( '#storage' ).on( 'click', 'li', function( e ) {
 	var $li        = $( this );
-	if ( menu.isActive( $li, e ) ) return
+	if ( MENU.isActive( $li, e ) ) return
 	
 	var mountpoint = $li.data( 'mountpoint' );
 	var shareddata = [ '/mnt/MPD/NAS', '/mnt/MPD/NAS/data' ].includes( mountpoint );
 	if ( shareddata ) {
-		info( {
+		INFO( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
-			, message : 'Used by <wh>Shared Data '+ ico( 'networks' ) +'</wh>'
+			, message : 'Used by <wh>Shared Data '+ ICON( 'networks' ) +'</wh>'
 		} );
 		return
 	}
@@ -1034,42 +1039,42 @@ $( '#storage' ).on( 'click', 'li', function( e ) {
 	} else {
 		var mounted = $li.find( 'grn' ).length === 1;
 		var usb     = mountpoint.substr( 9, 3 ) === 'USB';
-		$menu.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
+		$MENU.find( '.info, .sleep' ).toggleClass( 'hide', ! usb );
 		$( '#menu .forget' ).toggleClass( 'hide', shareddata || usb );
 		$( '#menu .mount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', ! mounted );
 	}
-	menu.show( $li );
+	MENU.show( $li );
 } );
 $( '#i2smodule' ).on( 'input', function() {
 	var aplayname = this.value;
 	var icon      = 'i2smodule';
 	var title     = 'Audio - I²S';
 	if ( aplayname === 'cirrus-wm5102' ) {
-		util.wm5102();
+		UTIL.wm5102();
 	} else {
-		bash( [ 'i2smodule', aplayname, $( this ).find( ':selected' ).text(), 'CMD APLAYNAME OUTPUT' ] );
+		BASH( [ 'i2smodule', aplayname, $( this ).find( ':selected' ).text(), 'CMD APLAYNAME OUTPUT' ] );
 		if ( ! aplayname ) {
-			util.i2sSelect.hide();
+			UTIL.i2sSelect.hide();
 			var msg = 'Disable ...';
 		} else {
 			var msg = S.i2smodule ? 'Change ...' : 'Enable ...';
 		}
-		notify( icon, title, msg );
+		NOTIFY( icon, title, msg );
 	}
 } ).on( 'select2:open', function( e ) {
 	if ( $( '#i2smodule option' ).length > 2 ) return
 	
 	$( '#i2smodule' ).select2( 'close' );
-	util.i2sSelect.option();
+	UTIL.i2sSelect.option();
 } ).on( 'select2:close', function () {
-	if ( ! this.value ) util.i2sSelect.hide();
+	if ( ! this.value ) UTIL.i2sSelect.hide();
 } );
-$( '#ledcalc' ).on( 'click', util.ledcalc );
-$( '#hostname' ).on( 'click', util.hostname );
+$( '#ledcalc' ).on( 'click', UTIL.ledcalc );
+$( '#hostname' ).on( 'click', UTIL.hostname );
 $( '#timezone' ).on( 'input', function( e ) {
-	notify( 'timezone', 'Timezone', 'Change ...' );
-	bash( [ 'timezone', this.value, 'CMD TIMEZONE' ] );
+	NOTIFY( 'timezone', 'Timezone', 'Change ...' );
+	BASH( [ 'timezone', this.value, 'CMD TIMEZONE' ] );
 } ).on( 'select2:open', function( e ) {
 	if ( $( '#timezone option' ).length > 2 ) return
 	
@@ -1090,7 +1095,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 	if ( ! $this.hasClass( 'backend' ) ) { // js
 		$this.toggleClass( 'active' );
 		$list.toggleClass( 'hide' )
-		if ( localhost ) $( '.list a' ).remove();
+		if ( V.localhost ) $( '.list a' ).remove();
 	} else if ( $target.is( 'a' ) ) {      // package
 		var active = $target.hasClass( 'wh' );
 		$( '.listtitle a' ).removeAttr( 'class' );
@@ -1099,13 +1104,13 @@ $( '.listtitle' ).on( 'click', function( e ) {
 			return
 		}
 		
-		var timeout = setTimeout( () => banner( 'system blink', 'Backend', 'List ...', -1 ), 1000 );
-		bash( 'data-config.sh packagelist '+ $target.text(), data => {
+		var timeout = setTimeout( () => BANNER( 'system blink', 'Backend', 'List ...', -1 ), 1000 );
+		BASH( 'data-config.sh packagelist '+ $target.text(), data => {
 			clearTimeout( timeout );
 			$list.html( data );
 			$target.addClass( 'wh' );
-			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
-			bannerHide();
+			if ( V.localhost ) $( '.list a' ).removeAttr( 'href' );
+			BANNER_HIDE();
 		} );
 	} else {
 		$list.addClass( 'hide' );
@@ -1113,7 +1118,7 @@ $( '.listtitle' ).on( 'click', function( e ) {
 	}
 } );
 $( '#menu a' ).on( 'click', function( e ) {
-	var cmd = menu.command( $( this ), e );
+	var cmd = MENU.command( $( this ), e );
 	if ( ! cmd ) return
 	
 	var $li        = $( 'li.active' );
@@ -1128,22 +1133,22 @@ $( '#menu a' ).on( 'click', function( e ) {
 	}
 	switch ( cmd ) {
 		case 'forget':
-			notify( icon, title, 'Forget ...' );
-			bash( [ 'forget', mountpoint, 'CMD MOUNTPOINT' ] );
+			NOTIFY( icon, title, 'Forget ...' );
+			BASH( [ 'forget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 		case 'info':
-			currentStatus( 'storage', source, 'info' );
+			STATUS( 'storage', source, 'info' );
 			break
 		case 'mount':
-			notify( icon, title, 'Mount ...' );
-			bash( [ 'mount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
+			NOTIFY( icon, title, 'Mount ...' );
+			BASH( [ 'mount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'sleep':
 			var dev = list.source;
 			title   = 'HDD Sleep';
-			infoSetting( 'hddapm '+ dev, values => {
+			SETTING( 'hddapm '+ dev, values => {
 				if ( ! values ) {
-					info( {
+					INFO( {
 						  icon    : icon
 						, title   : title
 						, message : '<c>'+ dev +'</c> not support'
@@ -1151,7 +1156,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					return
 				}
 				
-				info( {
+				INFO( {
 					  icon         : icon
 					, title        : title
 					, list         : [ 'Timeout <gr>(min)</gr>', 'number', { updn: { step: 1, min: 1, max: 20 } } ]
@@ -1159,15 +1164,15 @@ $( '#menu a' ).on( 'click', function( e ) {
 					, values       : Math.round( values * 5 / 60 )
 					, checkchanged : true
 					, ok           : () => {
-						notify( icon, title, 'Change ...' );
-						bash( [ 'hddapm', dev, infoVal() * 60 / 5, 'CMD DEV LEVEL' ] );
+						NOTIFY( icon, title, 'Change ...' );
+						BASH( [ 'hddapm', dev, _INFO.val() * 60 / 5, 'CMD DEV LEVEL' ] );
 					}
 				} );
 			} );
 			break
 		case 'unmount':
-			notify( icon, title, 'Unmount ...' )
-			bash( [ 'unmount', mountpoint, 'CMD MOUNTPOINT' ] );
+			NOTIFY( icon, title, 'Unmount ...' )
+			BASH( [ 'unmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break
 	}
 } );

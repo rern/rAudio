@@ -1,11 +1,11 @@
 // keyboard controls
-var keyarrow = {
+var KEY_ARROW = {
 	  ArrowLeft  : 'previous'
 	, ArrowRight : 'next'
 	, ArrowUp    : 'volup'
 	, ArrowDown  : 'voldn'
 }
-var keymedia = {
+var KEY_MEDIA = {
 	  MediaNextTrack     : 'next'
 	, MediaPause         : 'pause'
 	, MediaPlay          : 'play'
@@ -15,10 +15,20 @@ var keymedia = {
 	, MediaTrackPrevious : 'previous'
 	, MediaTrackNext     : 'next'
 }
-if ( localhost ) {
-	keymedia.AudioVolumeDown = 'voldn';
-	keymedia.AudioVolumeMute = 'volmute';
-	keymedia.AudioVolumeUp   = 'volup';
+if ( V.localhost ) {
+	KEY_MEDIA.AudioVolumeDown = 'voldn';
+	KEY_MEDIA.AudioVolumeMute = 'volmute';
+	KEY_MEDIA.AudioVolumeUp   = 'volup';
+}
+
+function menuLibraryPlaylist( $tabs, click ) {
+	V.liplmenu = false;
+	if ( click ) $( document.activeElement ).trigger( 'click' );
+	$tabs
+		.removeClass( 'focus' )
+		.trigger( 'blur' );
+	COMMON.loaderHide();
+	$( '#bar-top, #bar-bottom' ).css( 'z-index', '' );
 }
 
 $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
@@ -41,8 +51,8 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		return
 	}
 	
-	var arrow    = key in keyarrow;
-	var media    = key in keymedia;
+	var arrow    = key in KEY_ARROW;
+	var media    = key in KEY_MEDIA;
 	var menu     = $( '.menu:not( .hide )' ).length ;
 	var liplmenu = ! $( '#loader' ).hasClass( 'hide' );
 	if ( [ 'Alt', 'Backspace', 'Tab' ].includes( key ) || arrow || media ) e.preventDefault();
@@ -51,7 +61,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		switch ( key ) {
 			case 'ArrowLeft':
 			case 'ArrowRight':
-				focusNext( $tabs, 'focus', key );
+				COMMON.focusNext( $tabs, 'focus', key );
 				return
 			case 'Alt':
 			case 'Escape':
@@ -69,7 +79,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // media key ----------------------------------------------------------
 	if ( ! menu && ( media || key === ' ' ) ) {
 		e.preventDefault();
-		var cmd = key === ' ' ? 'toggle' : keymedia[ key ];
+		var cmd = key === ' ' ? 'toggle' : KEY_MEDIA[ key ];
 		if ( cmd === 'toggle' ) cmd = S.state === 'play' ? ( S.webradio ? 'stop' : 'pause' ) : 'play';
 		$( '#'+ cmd ).trigger( 'click' );
 		return
@@ -83,10 +93,10 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			}
 			
 			var $tabs = V.library ? $( '#page-library .content-top > i:not( .hide, .page-icon )' ) : $( '#pl-manage i' );
-			loader( 'fader' );
+			COMMON.loader( 'fader' );
 			$( '.content-top i' ).removeAttr( 'tabindex' );
 			$tabs.prop( 'tabindex', 0 );
-			focusNext( $tabs, 'focus', key );
+			COMMON.focusNext( $tabs, 'focus', key );
 			$( '#bar-top, #bar-bottom' ).css( 'z-index', 19 );
 			return
 // settings -----------------------------------------------------------
@@ -105,7 +115,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		case 'Tab':
 			if ( liplmenu ) return
 			
-			focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
+			COMMON.focusNext( $( '#bar-bottom i' ), 'active', e.shiftKey ? 'ArrowLeft' : 'ArrowRight' );
 			return
 	}
 	
@@ -113,7 +123,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 	if ( menu ) {
 		var $menu = $( '.menu:not( .hide )' );
 		if ( arrow ) {
-			focusNext( $menu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
+			COMMON.focusNext( $menu.find( 'a:not( .hide ), .submenu:not( .hide )' ), 'active', key )
 		} else if ( [ ' ', 'Enter' ].includes( key ) ) {
 			$menu.find( '.active' ).trigger( 'click' );
 		}
@@ -138,7 +148,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 // arrow key -------------------------------------------------------
 	if ( V.playback ) {
 		if ( arrow ) {
-			$( '#'+ keyarrow[ key ] ).trigger( 'click' );
+			$( '#'+ KEY_ARROW[ key ] ).trigger( 'click' );
 			return
 		}
 	} else if ( V.library ) {
@@ -147,7 +157,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		// home /////////////////////////////////////////
 		if ( ! $( '#lib-mode-list' ).hasClass( 'hide' ) ) {
 			if ( arrow ) {
-				focusNext( $( '.mode:not( .hide ):not( .nodata )' ), 'updn', key );
+				COMMON.focusNext( $( '.mode:not( .hide ):not( .nodata )' ), 'updn', key );
 			} else if ( key === 'Enter' ) {
 				$( '.mode.updn' ).trigger( 'click' );
 			}
@@ -156,7 +166,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 		
 		if ( V.albumlist && ! V.librarytrack ) { // album
 			if ( arrow ) {
-				focusNext( $( '#lib-list .coverart' ), 'active', key )
+				COMMON.focusNext( $( '#lib-list .coverart' ), 'active', key )
 			} else if ( key === 'Enter' ) {
 				var $active = $( '#lib-list .coverart.active' );
 				V.iactive   = $active.index();
@@ -172,7 +182,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			// list ///////////////////////////////////////
 			case 'ArrowUp':
 			case 'ArrowDown':
-				focusNext( $( '#lib-list li' ), 'active', key );
+				COMMON.focusNext( $( '#lib-list li' ), 'active', key );
 				return;
 			case 'Enter':
 				var $liactive = $( '#lib-list li.active' );
@@ -186,13 +196,13 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 				}
 				return
 		}
-		menuHide();
+		MENU.hide();
 	} else if ( V.playlist ) {
 		if ( V.playlisthome ) {
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					focusNext( $( '#pl-list li' ), 'updn', key );
+					COMMON.focusNext( $( '#pl-list li' ), 'updn', key );
 					return
 				case 'ArrowRight':
 					$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .li-icon' ).trigger( 'click' ) : $( '#pl-list li.active .li-icon' ).trigger( 'click' );
@@ -208,7 +218,7 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault()
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':
-					focusNext( $( '#pl-savedlist li' ), 'active', key );
+					COMMON.focusNext( $( '#pl-savedlist li' ), 'active', key );
 					return
 				case 'ArrowRight':
 					$( '#pl-savedlist li.active .li-icon' ).trigger( 'click' );

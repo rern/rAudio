@@ -4,18 +4,146 @@ Naming must be the same for:
 	js     - id = icon = NAME, #setting-NAME
 	bash   - cmd=NAME, save to NAME.conf
 */
-W.refresh = data => { // except camilla
-	if ( data.page !== page ) return
+$MENU      = $( '#menu' );
+function CONTENT() {
+	if ( $( 'select' ).length ) COMMON.select.set( $( 'select' ) );
+	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
+	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
+	COMMON.loaderHide();
+}
+function LABEL_ICON( label, icon ) {
+	return '<a class="helpmenu label">'+ label + ( icon ? '<i class="i-'+ icon +'"></i>' : '&emsp;' ) +'</a>'
+}
+function NOTIFY_COMMON( message ) {
+	if ( typeof message === 'boolean' ) {
+		message = message ? 'Enable ...' : 'Disable ...';
+	} else if ( ! message ) {
+		message = ! ( SW.id in S ) || S[ SW.id ] ? 'Change ...' : 'Enable ...';
+	}
+	BANNER( SW.icon +' blink', SW.title, message, -1 );
+}
+function REFRESHDATA() {
+	if ( PAGE === 'guide' || ( I.active && ! I.rangelabel ) ) return
+	
+	if ( PAGE === 'features' && ! /features$/.test( window.location.href ) ) { // authorization: spotify / scrobble
+		UTIL.redirect();
+		return
+	}
+	
+	BASH( PAGE +'-data.sh', list => {
+		// on load, try catching any errors
+		if ( list.trim() === 'notrunning' ) {
+			var pkg = PAGE === 'player' ? 'mpd' : 'camilladsp';
+			BASH( 'data-service.sh '+ pkg, status => {
+				COMMON.dataErrorSet( V.i_warning +'<c>'+ pkg +'</c> is not running'
+							+'&emsp;<a class="infobtn infobtn-primary restart">'+ ICON( 'refresh' ) +'Start</a>'
+							+'<hr>'
+							+ status );
+				COMMON.loaderHide();
+			} );
+			return
+		}
+		
+		try {
+			if ( $.isEmptyObject( S ) ) {
+				S = JSON.parse( list );
+			} else {
+				if ( $MENU.length ) V.list = COMMON.json.clone( S.list );
+				list = JSON.parse( list );
+				$.each( list, ( k, v ) => { S[ k ] = v } );
+			}
+		} catch( e ) {
+			COMMON.dataError( e.message, list );
+			return false
+		}
+		
+		SWITCH.set();
+		renderPage();
+		if ( $( '#data .infobtn' ).length ) {
+			$( '#data' ).remove();
+		} else if ( $( '#data' ).length ) {
+			$( '#data' ).html( COMMON.json.highlight( S ) );
+		}
+	} );
+}
+function SETTING( id, callback ) {
+	var filesh = 'settings/data-config.sh '+ id;
+	if ( V.debug ) console.log( filesh );
+	$.post(
+		  'cmd.php'
+		, { cmd: 'bash', filesh: filesh }
+		, callback || CONFIG[ id ]
+		, 'json'
+	);
+}
+function STATUS( id, arg, info ) {
+	if ( info ) { // context menu
+		var $li   = $( 'li[ data-id="'+ arg +'" ]' );
+		if ( ! $li.find( 'pre' ).length ) {
+			$li.append( '<pre class="status li hide" data-arg="'+ arg +'"></pre>'+ ICON( 'close infoclose' ) );
+		}
+		var $code = $li.find( 'pre' );
+		var cmd   = info + id;
+		var $icon = $li.find( 'i' ).eq( 0 );
+		$icon.addClass( 'blink' );
+	} else {
+		var $code = $( '#code'+ id );
+		var cmd   = id;
+	}
+	BASH( 'data-status.sh '+ cmd + ( arg ? ' '+ arg : '' ), status => {
+		if ( info ) $icon.removeClass( 'blink' );
+		$code
+			.html( status )
+			.data( 'status', id )
+			.data( 'arg', arg || '' )
+			.removeClass( 'hide' ).promise().done( () => {
+				if ( PAGE === 'player' ) UTIL.statusScroll( id );
+			} );
+		BANNER_HIDE();
+	} );
+}
+var SWITCH = {
+	  cancel : () => {
+		$( '#'+ SW.id )
+			.prop( 'checked', S[ SW.id ] )
+			.toggleClass( 'disabled', SW.disabled );
+		delete SW;
+		BANNER_HIDE();
+	}
+	, enable : () => {
+		var infoval = _INFO.val();
+		var keys    = Object.keys( infoval );
+		var values  = Object.values( infoval );
+		var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
+		NOTIFY_COMMON();
+		BASH( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
+		delete SW;
+	}
+	, set    : () => {
+		$( 'pre.status:not( .hide, .li )' ).each( ( i, el ) => STATUS( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
+		BANNER_HIDE();
+		var $switch = $( '.switch' );
+		if ( ! $switch.length ) return
+		
+		$switch.removeClass( 'disabled' );
+		$switch.each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
+		$( '.setting' ).each( ( i, el ) => {
+			var $this = $( el );
+			var id    = el.id.slice( 8 ); // setting-id > id
+			id in CONFIG ? $this.toggleClass( 'hide', S[ id ] === false ) : $this.remove();
+		} );
+	}
+}
+W.refresh  = data => { // except camilla
+	if ( data.page !== PAGE ) return
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-		switchSet();
+		SWITCH.set();
 		renderPage();
 	}, 300 );
 }
-var $menu = $( '#menu' );
-var dot   = '&ensp;<grn>•</grn>&ensp;';
 if ( $( 'heading .playback' ).length ) { // for player and camilla
 	W = {
 		  ...W // from common.js
@@ -37,164 +165,23 @@ if ( $( 'heading .playback' ).length ) { // for player and camilla
 	$( '.playback' ).on( 'click', function() {
 		S.state = S.state === 'play' ? 'pause' : 'play'
 		headIcon();
-		if ( page === 'camilla' && S.state === 'pause' ) render.statusStop();
-		bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
+		if ( PAGE === 'camilla' && S.state === 'pause' ) render.statusStop();
+		BASH( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 	} );
 }
 
-function bannerReset() {
-	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
-	$( '#bannerIcon i' ).removeClass( 'blink' );
-	clearTimeout( I.timeoutbanner );
-	I.timeoutbanner = setTimeout( bannerHide, delay );
-}
-function currentStatus( id, arg, info ) {
-	if ( info ) { // context menu
-		var $li   = $( 'li[ data-id="'+ arg +'" ]' );
-		if ( ! $li.find( 'pre' ).length ) {
-			$li.append( '<pre class="status li hide" data-arg="'+ arg +'"></pre>'+ ico( 'close infoclose' ) );
-		}
-		var $code = $li.find( 'pre' );
-		var cmd   = info + id;
-		var $icon = $li.find( 'i' ).eq( 0 );
-		$icon.addClass( 'blink' );
-	} else {
-		var $code = $( '#code'+ id );
-		var cmd   = id;
-	}
-	bash( 'data-status.sh '+ cmd + ( arg ? ' '+ arg : '' ), status => {
-		if ( info ) $icon.removeClass( 'blink' );
-		$code
-			.html( status )
-			.data( 'status', id )
-			.data( 'arg', arg || '' )
-			.removeClass( 'hide' ).promise().done( () => {
-				if ( page === 'player' ) util.statusScroll( id );
-			} );
-		bannerHide();
-	} );
-}
-function infoSetting( id, callback ) {
-	var filesh = 'settings/data-config.sh '+ id;
-	if ( V.debug ) console.log( filesh );
-	$.post(
-		  'cmd.php'
-		, { cmd: 'bash', filesh: filesh }
-		, callback || config[ id ]
-		, 'json'
-	);
-}
-function json2array( keys, json ) {
-	if ( ! json ) return false
-	
-	var values = [];
-	keys.forEach( k => values.push( json[ k ] ) );
-	return values
-}
-function list2JSON( list ) {
-	if ( list.trim() === 'notrunning' ) {
-		var pkg = page === 'player' ? 'mpd' : 'camilladsp';
-		bash( 'data-service.sh '+ pkg, status => {
-			dataErrorSet( iconwarning +'<c>'+ pkg +'</c> is not running'
-						+'&emsp;<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
-						+'<hr>'
-						+ status );
-			loaderHide();
-		} );
-		return
-	}
-	
-	try {
-		if ( $.isEmptyObject( S ) ) {
-			S = JSON.parse( list );
-		} else {
-			if ( $menu.length ) V.list = jsonClone( S.list );
-			list = JSON.parse( list );
-			$.each( list, ( k, v ) => { S[ k ] = v } );
-		}
-	} catch( e ) {
-		dataError( e.message, list );
-		return false
-	}
-	return true
-}
-function notifyCommon( message ) {
-	if ( typeof message === 'boolean' ) {
-		message = message ? 'Enable ...' : 'Disable ...';
-	} else if ( ! message ) {
-		message = ! ( SW.id in S ) || S[ SW.id ] ? 'Change ...' : 'Enable ...';
-	}
-	banner( SW.icon +' blink', SW.title, message, -1 );
-}
-function refreshData() {
-	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
-	
-	if ( page === 'features' && ! /features$/.test( window.location.href ) ) { // authorization: spotify / scrobble
-		util.redirect();
-		return
-	}
-	
-	bash( page +'-data.sh', data => {
-		// on load, try catching any errors
-		if ( list2JSON( data ) ) {
-			switchSet();
-			renderPage();
-			if ( $( '#data .infobtn' ).length ) {
-				$( '#data' ).remove();
-			} else if ( $( '#data' ).length ) {
-				$( '#data' ).html( highlightJSON( S ) );
-			}
-		}
-	} );
-}
-function showContent() {
-	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
-	$( 'heading:not( .hide ) i, .switchlabel, .setting, input:text, .entries:not( .hide ) li:not( .lihead )' ).prop( 'tabindex', 0 );
-	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
-	loaderHide();
-}
-function switchCancel() {
-	$( '#'+ SW.id )
-		.prop( 'checked', S[ SW.id ] )
-		.toggleClass( 'disabled', SW.disabled );
-	delete SW;
-	bannerHide();
-}
-function switchEnable() {
-	var infoval = infoVal();
-	var keys    = Object.keys( infoval );
-	var values  = Object.values( infoval );
-	var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
-	notifyCommon();
-	bash( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
-	delete SW;
-}
-function switchSet() {
-	$( 'pre.status:not( .hide, .li )' ).each( ( i, el ) => currentStatus( $( el ).data( 'status' ), $( el ).data( 'arg' ) ) );
-	bannerHide();
-	var $switch = $( '.switch' );
-	if ( ! $switch.length ) return
-	
-	$switch.removeClass( 'disabled' );
-	$switch.each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
-	$( '.setting' ).each( ( i, el ) => {
-		var $this = $( el );
-		var id    = el.id.slice( 8 ); // setting-id > id
-		id in config ? $this.toggleClass( 'hide', S[ id ] === false ) : $this.remove();
-	} );
-}
 //---------------------------------------------------------------------------------------
-document.title = page === 'camilla' ? 'CamillaDSP' : capitalize( page );
-localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
-$( '#'+ page ).addClass( 'active' );
+document.title = PAGE === 'camilla' ? 'CamillaDSP' : COMMON.capitalize( PAGE );
+V.localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
+$( '#'+ PAGE ).addClass( 'active' );
 
 $( '.container' ).on( 'click', '.status .headtitle, .col-l.status', function() {
 	var $this = $( this );
 	var id    = $this.data( 'status' );
 	var $code = $( '#code'+ id );
-	$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
+	$code.hasClass( 'hide' ) ? STATUS( id ) : $code.addClass( 'hide' );
 	$this.toggleClass( 'active' );
-	$menu.addClass( 'hide' );
+	$MENU.addClass( 'hide' );
 } );
 $( '.page-icon' ).on( 'click', function() {
 	$( '#debug' ).trigger( 'click' );
@@ -215,23 +202,23 @@ $( '.helphead' ).on( 'click', function() {
 	}
 } );
 $( '#close' ).on( 'click', function() {
-	bash( 'data-config.sh reboot', list => {
+	BASH( 'data-config.sh reboot', list => {
 		if ( ! list ) {
 			location.href = '/';
 			return
 		}
 		
 		var message = '';
-		$.each( list, ( k, v ) => message += ico( k ) +' '+ v +'<br>' );
-		info( {
+		$.each( list, ( k, v ) => message += ICON( k ) +' '+ v +'<br>' );
+		INFO( {
 			  icon         : 'system'
 			, title        : 'System Setting'
 			, header       : '<wh>Reboot required for:</wh>'
 			, message      : '<p>'+ message +'</p>'
 			, cancel       : () => location.href = '/'
-			, okcolor      : orange
-			, oklabel      : ico( 'reboot' ) +'Reboot'
-			, ok           : () => infoPowerCommand( 'reboot' )
+			, okcolor      : V.orange
+			, oklabel      : ICON( 'reboot' ) +'Reboot'
+			, ok           : () => COMMON.powerAction( 'reboot' )
 		} );
 	}, 'json' );
 } );
@@ -243,18 +230,18 @@ $( '.help' ).on( 'click', function() {
 	$( '.helphead' ).toggleClass( 'bl', $( '.help' ).hasClass( 'bl' ) );
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
-	loader();
+	COMMON.loader();
 	location.href = 'settings.php?p='+ this.id;
 } );
 $( '.switch, .setting' ).on( 'click', function() {
 	if ( V.local ) return
 	
-	local();
+	LOCAL();
 	var id   = this.id.replace( 'setting-', '' );
 	var icon = id;
-	if ( page === 'player' ) {
+	if ( PAGE === 'player' ) {
 		icon = 'mpd';
-	} else if ( page === 'camilla' ) {
+	} else if ( PAGE === 'camilla' ) {
 		icon = V.tab || 'camilladsp';
 	}
 	SW = {
@@ -270,7 +257,7 @@ $( '.switch' ).on( 'click', function() {
 	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {     // disabled
 		$this.prop( 'checked', ! checked );
-		info( {
+		INFO( {
 			  ...SW
 			, message : $this.prev().html()
 		} );
@@ -280,20 +267,20 @@ $( '.switch' ).on( 'click', function() {
 	$this.addClass( 'disabled' );
 	var $setting = $( '#setting-'+ id ); 
 	if ( checked ) {                  // enable
-		if ( id in config ) {                //    config
+		if ( id in CONFIG ) {                //    config
 			$setting.trigger( 'click' );
-		} else if ( id in config._prompt ) { //    prompt
+		} else if ( id in CONFIG._prompt ) { //    prompt
 			$this.prop( 'checked', false );
-			config._prompt[ id ]();
+			CONFIG._prompt[ id ]();
 		} else {                             //    no config
 			S[ id ] = true;
-			notifyCommon( true );
-			bash( [ id ], error => {
+			NOTIFY_COMMON( true );
+			BASH( [ id ], error => {
 				if ( error ) {
 					S[ id ] = false;
-					switchSet();
-					bannerHide();
-					info( {
+					SWITCH.set();
+					BANNER_HIDE();
+					INFO( {
 						  ...SW
 						, message : error
 					} );
@@ -302,31 +289,31 @@ $( '.switch' ).on( 'click', function() {
 		}
 	} else {                                 // disable
 		$( '#setting-'+ id ).addClass( 'hide' );
-		if ( page === 'camilla' ) {
+		if ( PAGE === 'camilla' ) {
 			DEV[ id ] = null;
 			setting.save( SW.title, 'Disable ...' );
 			$setting.addClass( 'hide' );
-		} else if ( id in config._disable ) {
-			config._disable[ id ]();
+		} else if ( id in CONFIG._disable ) {
+			CONFIG._disable[ id ]();
 		} else {
-			notifyCommon( 'Disable ...' );
-			bash( [ id, 'OFF' ] );
+			NOTIFY_COMMON( 'Disable ...' );
+			BASH( [ id, 'OFF' ] );
 		}
 	}
 } );
 $( '.setting' ).on( 'click', function() {
 	var id = SW.id;
-	if ( config[ id ].toString()[ 1 ] === ')' ) { // no data to get
-		config[ id ]();
+	if ( CONFIG[ id ].toString()[ 1 ] === ')' ) { // no data to get
+		CONFIG[ id ]();
 	} else {
-		infoSetting( id );
+		SETTING( id );
 	}
 } );
 // kb shortcut
 $( document ).on( 'keydown', function( e ) {
 	if ( I.active ) return
 	
-	var camilla = page === 'camilla';
+	var camilla = PAGE === 'camilla';
 	var menu    = $( '.menu' ).length && ! $( '.menu' ).hasClass( 'hide' );
 	var tabs    = ! $( '#loader' ).hasClass( 'hide' );
 	var key     = e.key;
@@ -339,7 +326,7 @@ $( document ).on( 'keydown', function( e ) {
 			if ( ! camilla && tabs ) return
 			
 			if ( menu ) {
-				focusNext( $( '.menu a:not( .hide )' ), 'active', key );
+				COMMON.focusNext( $( '.menu a:not( .hide )' ), 'active', key );
 				return
 			}
 			
@@ -352,7 +339,7 @@ $( document ).on( 'keydown', function( e ) {
 					
 				return $( el )
 			} );
-			focusNext( $tabs, 'focus', key );
+			COMMON.focusNext( $tabs, 'focus', key );
 			break
 		case 'ArrowLeft':
 		case 'ArrowRight':
@@ -365,7 +352,7 @@ $( document ).on( 'keydown', function( e ) {
 				if ( camilla ) $target = $target.find( '.liicon' );
 				$target.trigger( 'click' );
 			} else if ( tabs ) {
-				focusNext( $( '#bar-bottom div' ), 'focus', key );
+				COMMON.focusNext( $( '#bar-bottom div' ), 'focus', key );
 			}
 			break
 		case ' ':
@@ -381,7 +368,7 @@ $( document ).on( 'keydown', function( e ) {
 			
 			if ( $focus.hasClass( 'switchlabel' ) ) $focus = $focus.prev();
 			$focus.trigger( 'click' );
-			loaderHide();
+			COMMON.loaderHide();
 			$( '#bar-bottom div' )
 				.removeClass( 'focus' )
 				.trigger( 'blur' );
@@ -396,11 +383,11 @@ $( document ).on( 'keydown', function( e ) {
 			} else if ( $( '#data' ).length ) {
 				$( '#data' ).remove();
 			} else if ( $( '#bar-bottom div:focus' ).length ) {
-				loaderHide();
+				COMMON.loaderHide();
 				$( '#bar-bottom div' ).removeAttr( 'tabindex' );
 				$( '.focus' ).trigger( 'focus' );
 			} else {
-				loader( 'fader' );
+				COMMON.loader( 'fader' );
 				$( '#bar-bottom div' ).prop( 'tabindex', 0 );
 				var $focus = $( '#bar-bottom div.active' );
 				if ( ! $focus.length ) $focus =  $( '#bar-bottom div' ).eq( 0 );
@@ -425,13 +412,13 @@ $( document ).on( 'keydown', function( e ) {
 		case 'MediaPause':
 		case 'MediaPlay':
 		case 'MediaPlayPause':
-			if ( [ 'camilla', 'player' ].includes( page ) ) $( '.playback' ).trigger( 'click' );
+			if ( [ 'camilla', 'player' ].includes( PAGE ) ) $( '.playback' ).trigger( 'click' );
 			break
 	}
 } );
 // context menu
-if ( $menu.length ) {
-	var list = {
+if ( $MENU.length ) {
+	var LIST = {
 		  equal  : list => {
 			if ( ! V.list ) return false
 			
@@ -440,10 +427,10 @@ if ( $menu.length ) {
 		, render : ( id, html ) => {
 			var $list = id === 'camilla' ? $( '#config .entries.main' ) : $( '#'+ id );
 			$list.html( html );
-			$list.find( 'pre.li' ).each( ( i, el ) => currentStatus( id, $( el ).data( 'arg' ), 'info' ) );
+			$list.find( 'pre.li' ).each( ( i, el ) => STATUS( id, $( el ).data( 'arg' ), 'info' ) );
 		}
 	}
-	var menu = {
+	var MENU = {
 		  command  : ( $this, e ) => {
 			if ( $this.hasClass( 'gr' ) ) {
 				e.stopPropagation();
@@ -455,28 +442,28 @@ if ( $menu.length ) {
 		, isActive : ( $li, e ) => {
 			if ( $( e.target ).is( 'pre' ) ) {
 				e.stopPropagation();
-				$menu.addClass( 'hide' );
+				$MENU.addClass( 'hide' );
 				return true
 			}
 			
-			var active = ! $menu.hasClass( 'hide' ) && $li.hasClass( 'active' );
-			$menu.addClass( 'hide' );
+			var active = ! $MENU.hasClass( 'hide' ) && $li.hasClass( 'active' );
+			$MENU.addClass( 'hide' );
 			$( '.entries li' ).removeClass( 'active' );
 			return active
 		}
 		, show     : $li => {
 			$li.addClass( 'active' );
 			$( '#menu .info' ).toggleClass( 'gr', $li.find( 'pre' ).length > 0 );
-			$menu
+			$MENU
 				.removeClass( 'hide' )
 				.css( 'top', $( '.container' ).scrollTop() + $li.offset().top + 8 );
-			scrollUpToView( $menu );
+			COMMON.scrollToView( $MENU );
 		}
 	}
 	$( '.container' ).on( 'click', function( e ) {
 		if ( $( e.target ).parents( '.entries' ).length ) return
 		
-		$menu.addClass( 'hide' );
+		$MENU.addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
 	} );
 	$( '.entries' ).on( 'click', '.infoclose', function() {
