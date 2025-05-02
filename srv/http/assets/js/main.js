@@ -10,10 +10,6 @@ V = {   // var global
 	, blinkdot      : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
 	, coverart      : '/assets/img/coverart.svg'
 	, covervu       : '/assets/img/vu.svg'
-	, css           : {
-		  cm : { cm60: 60,  cml: 40,   cm: 35,  cma: 30, cmd: 20 }
-		, cg : { cg75: 75, cg70: 70, cg60: 60, cg50: 50, cgl: 40, cg: 30, cga: 20, cgd: 10 }
-	}
 	, dots          : '·&ensp;·&ensp;·'
 	, html          : {}
 	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
@@ -245,14 +241,16 @@ $( '#settings' ).on( 'click', '.settings', function() {
 			}
 			break;
 		case 'color':
-			V.color = true;
-			if ( V.library ) {
-				V.librarylist && V.mode !== 'album' ? COLOR.picker() : $( '.mode.webradio' ).trigger( 'click' );
-			} else if ( V.playlist && S.pllength ) {
-				COLOR.picker();
-			} else {
-				$( '#library' ).trigger( 'click' );
-			}
+			BASH( [ 'colorcss' ], css => {
+				V.color = css;
+				if ( V.library ) {
+					V.librarylist && V.mode !== 'album' ? COLOR.picker() : $( '.mode.webradio' ).trigger( 'click' );
+				} else if ( V.playlist && S.pllength ) {
+					COLOR.picker();
+				} else {
+					$( '#library' ).trigger( 'click' );
+				}
+			}, 'json' );
 			break;
 		case 'multiraudio':
 			BASH( [ 'multiraudiolist' ], data => {

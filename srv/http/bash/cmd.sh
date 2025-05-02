@@ -281,6 +281,12 @@ s|(path.*hsl).*;|\1('$h', 3%, 75%);|
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	pushData reload
 	;;
+colorcss )
+	css=$( sed -n -E '/^\s*--c[mg]/ {s|.*--([^ ]*).*(..)..|,"\1":\2|; p}' /srv/http/assets/css/colors.css )
+	cm=$( grep cm <<< $css )
+	cg=$( grep cg <<< $css )
+	echo '{ "cm": { '${cm:1}' }, "cg": { '${cg:1}' } }'
+	;;
 coverartonline )
 	$dirbash/status-coverartonline.sh "cmd
 $ARTIST

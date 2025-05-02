@@ -209,15 +209,15 @@ var COLOR     = {
 					var s     = m ? Math.round( ( hsv.v - l ) / m * 100 ) : 0;
 					l         = Math.round( l * 100 );
 					var $root = $( ':root' );
-					$.each( V.css.cm, ( k, v ) => $root.css( '--'+ k, 'hsl( '+ h +', '+ s +'%,'+ ( l + v - 35 ) +'% )' ) );
-					$.each( V.css.cg, ( k, v ) => $root.css( '--'+ k, 'hsl( '+ h +', 3%,'+ v +'% )' ) );
+					$.each( V.color.cm, ( k, v ) => $root.css( '--'+ k, 'hsl( '+ h +', '+ s +'%,'+ ( l + v - 35 ) +'% )' ) );
+					$.each( V.color.cg, ( k, v ) => $root.css( '--'+ k, 'hsl( '+ h +', 3%,'+ v +'% )' ) );
 					V.hsl     = h +' '+ s +' '+ l;
 				}
 			}
 		} );
 	}
 	, set     : hsl => {
-		BASH( [ 'color', hsl, JSON.stringify( V.css ), 'CMD HSL CMCG' ] );
+		BASH( [ 'color', hsl, JSON.stringify( V.color ), 'CMD HSL CMCG' ] );
 		COLOR.destroy();
 		COMMON.loader();
 	}
