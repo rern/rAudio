@@ -159,6 +159,70 @@ var BIO       = {
 		COMMON.loaderHide();
 	}
 }
+var COLOR     = {
+	  destroy : () => {
+		$( 'html' ).removeAttr( 'style' );
+		V.colorpicker.destroy();
+		delete V.colorpicker;
+		delete V.color;
+		$( '#colorpicker' ).remove();
+	}
+	, picker  : () => {
+		$( 'body' ).css( 'overflow', 'hidden' );
+		if ( V.library ) {
+			if ( V.librarytrack && $( '.licover' ).is( ':visible' ) ) {
+				$( '.licover' ).css( 'margin-top', '-230px' );
+				$( '#lib-list li.track1' ).css( 'margin-top', 0 );
+				$( '#lib-list li' ).eq( 1 ).trigger( 'click' )
+				setTimeout( () => $( '#lib-list li' ).eq( 1 ).addClass( 'active' ), 0 );
+			} else {
+				$( '#lib-list .li-icon' ).eq( 0 ).trigger( 'click' );
+			}
+		} else {
+			if ( V.playlisthome ) {
+				$( '#pl-list li' ).slice( 0, S.song ).css( 'display', 'none' );
+				$( '#pl-list li.active .li-icon' ).trigger( 'click' );
+			} else {
+				$( '#pl-savedlist .li-icon' ).eq( 0 ).trigger( 'click' );
+			}
+		}
+		DISPLAY.pageScroll( 0 );
+		$( '#lyrics' ).before( `
+<div id="colorpicker">
+<div id="divcolor">
+<i id="colorcancel" class="i-close"></i>
+<canvas id="canvascolor"></canvas>
+<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary">OK</a>
+</div>
+</div>
+` );
+		V.colorpicker = new KellyColorPicker( {
+			  place      : 'canvascolor'
+			, size       : 230
+			, color      : $( '.page-icon' ).css( 'background-color' )
+			, userEvents : {
+				change : e => {
+					var hsv   = e.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
+					var h     = Math.round( 360 * hsv.h );
+					var l     = hsv.v - hsv.v * hsv.s / 2;
+					var m     = Math.min( l, 1 - l );
+					var s     = m ? Math.round( ( hsv.v - l ) / m * 100 ) : 0;
+					l         = Math.round( l * 100 );
+					var $root = $( ':root' );
+					var hslh  = 'hsl( '+ h +', ';
+					$.each( V.css.cm, ( k, v ) => $root.css( '--'+ k, hslh + s +'%,'+ ( l + v - 35 ) +'% )' ) );
+					$.each( V.css.cg, ( k, v ) => $root.css( '--'+ k, hslh +'3%,'+ v +'% )' ) );
+					V.hsl     = h +' '+ s +' '+ l;
+				}
+			}
+		} );
+	}
+	, set     : hsl => {
+		BASH( [ 'color', hsl, JSON.stringify( V.color ), 'CMD HSL CMCG' ] );
+		COLOR.destroy();
+		COMMON.loader();
+	}
+}
 var COVERART  = {
 	  change  : () =>  {
 		if ( V.playback ) {
@@ -972,7 +1036,7 @@ var LIBRARY   = {
 				if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
 			} else {
 				if ( V.color ) {
-					UTIL.colorPicker();
+					COLOR.picker();
 				} else if ( V.librarytrack ) {
 					LIBRARY.coverart();
 				}
@@ -2124,60 +2188,6 @@ var UTIL      = {
 						, message : 'Not found: '+ ip
 						, ok      : UTIL.changeIP
 					} );
-				}
-			}
-		} );
-	}
-	, colorPicker     : () => {
-		V.color       = false;
-		$( 'body' ).css( 'overflow', 'hidden' );
-		if ( V.library ) {
-			if ( V.librarytrack && $( '.licover' ).is( ':visible' ) ) {
-				$( '.licover' ).css( 'margin-top', '-230px' );
-				$( '#lib-list li.track1' ).css( 'margin-top', 0 );
-				$( '#lib-list li' ).eq( 1 ).trigger( 'click' )
-				setTimeout( () => $( '#lib-list li' ).eq( 1 ).addClass( 'active' ), 0 );
-			} else {
-				$( '#lib-list .li-icon' ).eq( 0 ).trigger( 'click' );
-			}
-		} else {
-			if ( V.playlisthome ) {
-				$( '#pl-list li' ).slice( 0, S.song ).css( 'display', 'none' );
-				$( '#pl-list li.active .li-icon' ).trigger( 'click' );
-			} else {
-				$( '#pl-savedlist .li-icon' ).eq( 0 ).trigger( 'click' );
-			}
-		}
-		DISPLAY.pageScroll( 0 );
-		$( '#lyrics' ).before( `
-<div id="colorpicker">
-	<div id="divcolor">
-	<i id="colorcancel" class="i-close"></i>
-	<canvas id="canvascolor"></canvas>
-	<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary">OK</a>
-	</div>
-</div>
-` );
-		V.colorpicker = new KellyColorPicker( {
-			  place      : 'canvascolor'
-			, size       : 230
-			, color      : $( '.page-icon' ).css( 'background-color' )
-			, userEvents : {
-				change : e => {
-					var hsv = e.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
-					var h = Math.round( 360 * hsv.h );
-					var l = hsv.v - hsv.v * hsv.s / 2;
-					var m = Math.min( l, 1 - l );
-					var s = m ? Math.round( ( hsv.v - l ) / m * 100 ) : 0;
-					l     = Math.round( l * 100 );
-					var $root = $( ':root' );
-					$.each( { cm60: 60, cml: 40, cm: 35, cma: 30, cmd: 20 }, ( k, v ) => {
-						$root.css( '--'+ k, 'hsl( '+ h +', '+ s +'%,'+ ( l + v - 35 ) +'% )' );
-					} );
-					$.each( { cg75: 75, cg70: 70, cg60: 60, cg50: 50, cgl: 40, cg: 30, cga: 20, cgd: 10 }, ( k, v ) => {
-						$root.css( '--'+ k, 'hsl( '+ h +', 3%,'+ v +'% )' );
-					} );
-					V.hsl = h +' '+ s +' '+ l;
 				}
 			}
 		} );

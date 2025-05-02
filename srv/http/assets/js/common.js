@@ -84,11 +84,10 @@ function BASH( args, callback, json ) {
 		var data = '{ "filesh": [ "'+ filesh +'", "'+ args.join( '\\n' ).replace( /"/g, '\\"' ) +'" ] }';
 		if ( V.debug ) {
 			COMMON.debugConsole( data );
+		} else {
+			WS.send( data );
 			return
 		}
-		
-		WS.send( data );
-		return
 	}
 	// php
 	var data = { cmd: 'bash', filesh: filesh, args: args || '' }

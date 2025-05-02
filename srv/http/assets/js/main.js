@@ -9,12 +9,15 @@ V = {   // var global
 	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
 	, blinkdot      : '<wh class="dot dot1">·</wh>&ensp;<wh class="dot dot2">·</wh>&ensp;<wh class="dot dot3">·</wh>'
 	, coverart      : '/assets/img/coverart.svg'
+	, covervu       : '/assets/img/vu.svg'
+	, css           : {
+		  cm : { cm60: 60, cml: 40, cm: 35, cma: 30, cmd: 20 }
+		, cg : { cg75: 75, cg70: 70, cg60: 60, cg50: 50, cgl: 40, cg: 30, cga: 20, cgd: 10 }
+	}
 	, dots          : '·&ensp;·&ensp;·'
 	, html          : {}
 	, icoverart     : '<img class="icoverart" src="/assets/img/coverart.svg">'
 	, icoversave    : '<div class="coveredit cover-save">'+ ICON( 'save' ) +'</div>'
-	, covervu       : '/assets/img/vu.svg'
-	, page          : 'playback'
 	, option        : {
 		...V.option
 		, pica        : {
@@ -32,6 +35,7 @@ V = {   // var global
 			, width       : 22
 		}
 	}
+	, page          : 'playback'
 	, scrollspeed   : 80 // pixel/s
 	, similarpl     : -1
 	, vumeter       : '<img class="imgicon" src="'+ V.covervu +'"> '
@@ -245,9 +249,9 @@ $( '#settings' ).on( 'click', '.settings', function() {
 		case 'color':
 			V.color = true;
 			if ( V.library ) {
-				V.librarylist && V.mode !== 'album' ? UTIL.colorPicker() : $( '.mode.webradio' ).trigger( 'click' );
+				V.librarylist && V.mode !== 'album' ? COLOR.picker() : $( '.mode.webradio' ).trigger( 'click' );
 			} else if ( V.playlist && S.pllength ) {
-				UTIL.colorPicker();
+				COLOR.picker();
 			} else {
 				$( '#library' ).trigger( 'click' );
 			}
@@ -286,8 +290,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 	DISPLAY.option.playlist();
 } );
 $( 'body' ).on( 'click', '#colorok', function() {
-	BASH( [ 'color', V.hsl, 'CMD HSL' ] );
-	COMMON.loader();
+	COLOR.set( V.hsl );
 } ).on( 'click', '#colorreset', function() {
 	INFO( {
 		  icon       : 'color'
@@ -298,16 +301,10 @@ $( 'body' ).on( 'click', '#colorok', function() {
 			var ctx = $( '#infoIcon canvas' )[ 0 ].getContext( '2d' );
 			ctx.drawImage( $( '#color canvas' )[ 0 ], 0, 0 );
 		}
-		, ok         : () => {
-			BASH( [ 'color', 'reset', 'CMD HSL' ] );
-			COMMON.loader();
-		}
+		, ok         : () => COLOR.set( 'reset' )
 	} );
 } ).on( 'click', '#colorcancel', function() {
-	$( 'html' ).removeAttr( 'style' );
-	V.colorpicker.destroy();
-	delete V.colorpicker;
-	$( '#colorpicker' ).remove();
+	COLOR.destroy();
 	if ( S.player === 'mpd' ) {
 		if ( V.playlist ) PLAYLIST.render.scroll();
 	} else {
