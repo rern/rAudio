@@ -93,8 +93,15 @@ a {
 #divcolor .btn.disabled {
 	background-color: var( --cg ) !important;
 }
+.colordefault,
 #colorreset {
 	background-color: var( --cd );
+}
+.colordefault {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	vertical-align: -4px;
 }
 .submenu.disabled {
 	color: var( --cg60 ) !important;
@@ -1677,10 +1684,12 @@ li.active .iconthumb {
 #pl-savedlist {
 	width: calc( 100% - 38px );
 }
-.list li.active:not(.licover),
-#lib-list .active a {
-	color: var( --cw );
+.list li.active:not(.licover) {
 	background: var( --cm );
+}
+#lib-list li.active a {
+	color: var( --cw );
+
 }
 #pl-list .pl-remove {
 	float: right;
