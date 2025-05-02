@@ -93,15 +93,8 @@ a {
 #divcolor .btn.disabled {
 	background-color: var( --cg ) !important;
 }
-.colordefault,
 #colorreset {
 	background-color: var( --cd );
-}
-.colordefault {
-	display: inline-block;
-	width: 20px;
-	height: 20px;
-	vertical-align: -4px;
 }
 .submenu.disabled {
 	color: var( --cg60 ) !important;
