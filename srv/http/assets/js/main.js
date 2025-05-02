@@ -11,7 +11,7 @@ V = {   // var global
 	, coverart      : '/assets/img/coverart.svg'
 	, covervu       : '/assets/img/vu.svg'
 	, css           : {
-		  cm : { cm60: 60, cml: 40, cm: 35, cma: 30, cmd: 20 }
+		  cm : { cm60: 60,  cml: 40,   cm: 35,  cma: 30, cmd: 20 }
 		, cg : { cg75: 75, cg70: 70, cg60: 60, cg50: 50, cgl: 40, cg: 30, cga: 20, cgd: 10 }
 	}
 	, dots          : '·&ensp;·&ensp;·'
@@ -36,18 +36,16 @@ V = {   // var global
 		}
 	}
 	, page          : 'playback'
-	, scrollspeed   : 80 // pixel/s
-	, similarpl     : -1
 	, vumeter       : '<img class="imgicon" src="'+ V.covervu +'"> '
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
 };
-[ 'bioartist',     'query' ].forEach(                                                     k => V[ k ] = [] );
-[ 'interval',      'list',         'scrolltop',   'status' ].forEach(                     k => V[ k ] = {} );
+[ 'bioartist',     'query' ].forEach(                                            k => V[ k ] = [] );
+[ 'interval',      'list',         'scrolltop',   'status' ].forEach(            k => V[ k ] = {} );
 [ 'guide',         'library',      'librarylist', 'local', 'playlist' ].forEach( k => V[ k ] = false );
-[ 'lyrics',        'lyricsartist', 'mode' ].forEach(                                      k => V[ k ] = '' );
-[ 'modescrolltop', 'rotate' ].forEach(                                                    k => V[ k ] = 0 );
-[ 'playback',      'playlisthome' ].forEach(                                              k => V[ k ] = true );
+[ 'lyrics',        'lyricsartist', 'mode' ].forEach(                             k => V[ k ] = '' );
+[ 'modescrolltop', 'rotate' ].forEach(                                           k => V[ k ] = 0 );
+[ 'playback',      'playlisthome' ].forEach(                                     k => V[ k ] = true );
 $LI     = '';
 $TIME   = $( '#time-knob' );
 $VOLUME = $( '#volume-knob' );

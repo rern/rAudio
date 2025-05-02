@@ -1525,7 +1525,7 @@ var PLAYBACK  = {
 			
 			$( '.scrollleft' ).css( { // same width and speed
 				  width     : tWmax
-				, animation : ( V.wW + tWmax ) / V.scrollspeed +'s infinite linear scrollleft'
+				, animation : ( ( V.wW + tWmax ) / 80 ) +'s infinite linear scrollleft'
 			} );
 			if ( V.localhost ) {
 				$( '.scrollleft' )
