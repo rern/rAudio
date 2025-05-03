@@ -257,7 +257,7 @@ color )
 $css" $filecss
 	else # reset
 		rm -f $dirsystem/csscolor
-		sed -i -e '/^\t--c[gm].*hsl/ d
+		grep -q 'DEFAULT*/$' $filecss && sed -i -e '/^\t--c[gm].*hsl/ d
 ' -e '/^\/.*--c[gm].*hsl/ {s|^/\*||; s|DEFAULT\*/$||}
 ' $filecss
 		cg75='hsl(200,3%,75%)'
