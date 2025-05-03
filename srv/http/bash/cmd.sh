@@ -253,7 +253,7 @@ color )
 		! grep -q 'DEFAULT*/$' $filecss && sed -i '/^\t--c[gm].*hsl/ {s|^|/*|; s|$|DEFAULT*/|}' $filecss
 		css='\'$( sed 's/^/\t/; $!s/$/\\/' <<< $css ) # '\' - fix 1st tab
 		sed -i -e '/^\t--c[gm].*hsl/ d
-' -e "/^\t*--cw.*hsl/ a\
+' -e "/^:root/ a\
 $css" $filecss
 	else # reset
 		rm -f $dirsystem/csscolor

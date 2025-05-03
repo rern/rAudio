@@ -1,6 +1,4 @@
 :root {
-	--cd   : hsl(200, 100%, 35%); /* default main*/
-	--cw   : hsl(  0,   0%, 90%); /* white */
 	--cg75 : hsl(200, 3%, 75%);
 	--cg70 : hsl(200, 3%, 70%);
 	--cg60 : hsl(200, 3%, 60%);
@@ -22,6 +20,8 @@
 	--cg   : var( --cg30 );
 	--cga  : var( --cg20 );
 	--cgd  : var( --cg10 );
+	--cd   : hsl(200, 100%, 35%); /* default main*/
+	--cw   : hsl(  0,   0%, 90%); /* white */
 	
 	--shadow-btn    : -2px  2px 4px      #000;
 	--shadow-btn-u  : -2px -2px 4px      #000;
