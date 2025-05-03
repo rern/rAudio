@@ -257,13 +257,13 @@ color )
 $css" $filecss
 	else # reset
 		rm -f $dirsystem/csscolor
-		grep -q 'DEFAULT*/$' $filecss && sed -i -e '/^\t--c[gm].*hsl/ d
+		grep -q 'DEFAULT\*/$' $filecss && sed -i -e '/^\t--c[gm].*hsl/ d
 ' -e '/^\/.*--c[gm].*hsl/ {s|^/\*||; s|DEFAULT\*/$||}
 ' $filecss
 		cg75='hsl(200,3%,75%)'
 		cm35='hsl(200,100%,35%)'
 	fi
-	sed -i -E 's|(rect.*fill:).*;|\1'$cm35'|; s|(path.*fill:).*;|\1'$cg75'|' $dirimg/icon.svg
+	sed -i -E 's|(rect.*fill:).*( width)|\1'$cm35'"\2|; s|(path.*fill:).*( d=)|\1'$cg75'"\2|' $dirimg/icon.svg
 	sed -i 's/icon.png/&?v='$( date +%s )'/' /srv/http/common.php
 	sed -E 's|(path.*)75%|\190%|' $dirimg/icon.svg | magick -density 96 -background none - $dirimg/icon.png
 	splashRotate
