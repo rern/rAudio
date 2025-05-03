@@ -66,6 +66,17 @@ getinstallzip
 . $dirbash/common.sh
 dirPermissions
 $dirbash/cmd.sh cachebust
-[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+[[ -e $dirsystem/csscolor ]] && $dirbash/cmd.sh "color
+restore
+CMD CSS"
 
 installfinish
+
+# 20250503
+[[ -e $dirsystem/color ]] && exit
+
+rm $dirsystem/color
+echo "
+$info Color setting was reset.
+Please set your color again.
+"

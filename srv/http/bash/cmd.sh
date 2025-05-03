@@ -248,7 +248,11 @@ cachetype )
 color )
 	filecss=$dircss/colors.css
 	if [[ $CSS ]]; then
-		css=$( echo -e "$CSS" | tee $dirsystem/csscolor )
+		if [[ $CSS == restore ]]; then # from install.sh, system-datarestore.sh
+			css=$( < $dirsystem/csscolor )
+		else
+			css=$( echo -e "$CSS" | tee $dirsystem/csscolor )
+		fi
 		. <( sed -nE '/cg75|cm35/ {s/--//; s/ : /="/; s/.$/"/; s/ //g; p}' <<< $css ) # $cg75, $cm35 for svg
 		! grep -q 'DEFAULT*/$' $filecss && sed -i '/^\t--c[gm].*hsl/ {s|^|/*|; s|$|DEFAULT*/|}' $filecss
 		css='\'$( sed 's/^/\t/; $!s/$/\\/' <<< $css ) # '\' - fix 1st tab
